@@ -1,0 +1,448 @@
+/********************************************************************* 
+  CombLayer : MNCPX Input builder
+ 
+ * File:   build/TS2moly.cxx
+*
+ * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ *
+ ****************************************************************************/
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
+#include <cmath>
+#include <complex>
+#include <list>
+#include <vector>
+#include <set>
+#include <map>
+#include <string>
+#include <algorithm>
+#include <boost/array.hpp>
+#include <boost/shared_ptr.hpp>
+
+#include "Exception.h"
+#include "FileReport.h"
+#include "GTKreport.h"
+#include "NameStack.h"
+#include "RegMethod.h"
+#include "OutputLog.h"
+#include "BaseVisit.h"
+#include "BaseModVisit.h"
+#include "support.h"
+#include "stringCombine.h"
+#include "MatrixBase.h"
+#include "Matrix.h"
+#include "Vec3D.h"
+#include "Triple.h"
+#include "NRange.h"
+#include "NList.h"
+#include "Quaternion.h"
+#include "Surface.h"
+#include "surfIndex.h"
+#include "surfRegister.h"
+#include "objectRegister.h"
+#include "surfEqual.h"
+#include "localRotate.h"
+#include "masterRotate.h"
+#include "surfDivide.h"
+#include "surfDIter.h"
+#include "Quadratic.h"
+#include "Plane.h"
+#include "Cylinder.h"
+#include "Cone.h"
+#include "Sphere.h"
+#include "Rules.h"
+#include "varList.h"
+#include "Code.h"
+#include "FuncDataBase.h"
+#include "HeadRule.h"
+#include "Object.h"
+#include "Qhull.h"
+#include "KGroup.h"
+#include "SrcData.h"
+#include "SrcItem.h"
+#include "Source.h"
+#include "Simulation.h"
+#include "ModelSupport.h"
+#include "generateSurf.h"
+#include "LinkUnit.h"
+#include "FixedComp.h"
+#include "ContainedComp.h"
+#include "TargetBase.h"
+#include "TS2target.h"
+#include "TS2moly.h"
+
+namespace TMRSystem
+{
+
+TS2moly::TS2moly(const std::string& MKey,const std::string& TKey) : 
+  TS2target(TKey),
+  molyIndex(ModelSupport::objectRegister::Instance().cell(MKey)),
+  molyKey(MKey),cellIndex(molyIndex+1)
+  /*!
+    Constructor BUT ALL variable are left unpopulated.
+    \param MKey :: Name for Moly changers
+    \param TKey :: Name for Target
+  */
+{}
+
+TS2moly::TS2moly(const TS2moly& A) :  
+  TS2target(A),
+  molyIndex(A.molyIndex),molyKey(A.molyKey),cellIndex(A.cellIndex),
+  PCut(A.PCut),SCent(A.SCent),Radius(A.Radius),
+  SCut(A.SCut),CCut(A.CCut)
+  /*!
+    Copy constructor
+    \param A :: TS2moly to copy
+  */
+{}
+
+TS2moly&
+TS2moly::operator=(const TS2moly& A)
+  /*!
+    Assignment operator
+    \param A :: TS2moly to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      TS2target::operator=(A);
+      cellIndex=A.cellIndex;
+      PCut=A.PCut;
+      SCent=A.SCent;
+      Radius=A.Radius;
+      SCut=A.SCut;
+      CCut=A.CCut;
+    }
+  return *this;
+}
+
+
+TS2moly*
+TS2moly::clone() const
+  /*!
+    Clone funciton
+    \return new(this)
+  */
+{
+  return new TS2moly(*this);
+}
+  
+TS2moly::~TS2moly() 
+  /*!
+    Destructor
+  */
+{}
+
+void
+TS2moly::populate(const Simulation& System)
+  /*!
+    Populate all the variables
+    \param System :: Simulation to use
+  */
+{
+  const FuncDataBase& Control=System.getDataBase();
+
+  const size_t nPlates=Control.EvalVar<size_t>(molyKey+"NPlates");
+  for(size_t i=0;i<nPlates;i++)
+    {
+      plateCut Item;
+      const std::string keyIndex(StrFunc::makeString(molyKey+"P",i+1));
+      const double PY=
+	Control.EvalPair<double>(keyIndex,molyKey+"P","Dist");
+      Item.centre=Y*PY;
+      Item.axis=Y;
+      Item.thick=
+	Control.EvalPair<double>(keyIndex,molyKey+"P","Thick");
+      
+      Item.mat=Control.EvalPair<int>(keyIndex,molyKey+"P","Mat");
+      Item.layerMat=Control.EvalPair<int>(keyIndex,molyKey+"P","LayerMat");
+      if (Item.layerMat>=0)
+	Item.layerThick=Control.EvalPair<double>
+	  (keyIndex,molyKey+"P","LayerThick");
+      PCut.push_back(Item);
+    }
+  // Sphere:
+  const size_t nSphere=Control.EvalVar<size_t>(molyKey+"NCutSph");
+  for(size_t i=0;i<nSphere;i++)
+    {
+      sphereCut Item;
+      
+      const std::string keyIndex(StrFunc::makeString(molyKey+"CutSph",i+1));
+      Item.centre=Control.EvalPair<Geometry::Vec3D>
+	(keyIndex,molyKey+"CutSph","Cent");
+      Item.axis=Control.EvalPair<Geometry::Vec3D>
+	(keyIndex,molyKey+"CutSph","Axis");
+      Item.axis.makeUnit();
+      Item.radius=Control.EvalPair<double>(keyIndex,molyKey+"CutSph","Radius");
+      Item.dist=Control.EvalPair<double>(keyIndex,molyKey+"CutSph","Dist");
+      Item.mat=Control.EvalPair<int>(keyIndex,molyKey+"CutSph","Mat");
+      Item.defCutPlane();
+      SCut.push_back(Item);
+    }
+
+  // Cones:
+  const int nCone=Control.EvalVar<int>(molyKey+"NCone");
+  for(int i=0;i<nCone;i++)
+    {
+      coneCut Item;
+      
+      const std::string keyIndex(StrFunc::makeString(molyKey+"Cone",i+1));
+      Item.centre=Control.EvalPair<Geometry::Vec3D>
+	(keyIndex,molyKey+"Cone","Cent");
+      Item.axis=Control.EvalPair<Geometry::Vec3D>
+	(keyIndex,molyKey+"Cone","Axis");
+      Item.axis.makeUnit();
+      Item.angleA=Control.EvalPair<double>(keyIndex,molyKey+"Cone","AngleA");
+      Item.angleB=Control.EvalPair<double>(keyIndex,molyKey+"Cone","AngleB");
+      Item.dist=Control.EvalPair<double>(keyIndex,molyKey+"Cone","Dist");
+      Item.mat=Control.EvalPair<int>(keyIndex,molyKey+"Cone","Mat");
+      Item.layerMat=Control.EvalPair<int>(keyIndex,molyKey+"Cone","LayerMat");
+      Item.layerThick=
+	Control.EvalPair<double>(keyIndex,molyKey+"Cone","LayerThick");
+      Item.layerThick*=cos(M_PI*fabs(Item.angleA)/180.0);
+      //      Item.defCutPlane();
+      CCut.push_back(Item);
+    }
+  return;
+}
+
+void
+TS2moly::createUnitVector(const attachSystem::FixedComp& FC)
+  /*!
+    Create the unit vectors
+    \param FC :: Target component
+  */
+{
+  ELog::RegMethod RegA("TS2moly","createUnitVector");
+
+  FixedComp::createUnitVector(FC);
+  return;
+}
+
+void
+TS2moly::createSurfaces()
+  /*!
+    Create All the surfaces
+   */
+{
+  ELog::RegMethod RegA("TS2moly","createSurface");
+
+  // Plates at 0 index offset:
+  int offset(molyIndex);
+  for(size_t i=0;i<PCut.size();i++)
+    {
+      const plateCut& Item=PCut[i];
+      const Geometry::Vec3D Pt=Origin+Item.centre;
+
+      ModelSupport::buildPlane(SMap,offset+1,Pt,Item.axis);
+      ModelSupport::buildPlane(SMap,offset+2,
+			       Pt+Item.axis*Item.thick,Item.axis);
+      if (Item.layerMat>=0)
+	{
+	  ModelSupport::buildPlane(SMap,offset+11,
+				   Pt+Item.axis*Item.layerThick,Item.axis);
+	  ModelSupport::buildPlane(SMap,offset+12,
+				   Pt+Item.axis*(Item.thick-Item.layerThick),
+				   Item.axis);
+	}
+      offset+=100;
+    }
+
+  // SpherCuts at 500 index offset:
+  offset=molyIndex+2000;
+  for(size_t i=0;i<SCut.size();i++)
+    {
+      sphereCut& Item=SCut[i];
+      Item.axisCalc(X,Y,Z);
+      const Geometry::Vec3D CP(Origin+Item.centre);
+      ModelSupport::buildPlane
+	(SMap,offset+1, CP-
+	 Item.axis*(Item.dist/2.0+Item.negCutPlane),
+	 Item.axis);			       
+      ModelSupport::buildPlane
+	(SMap,offset+2,CP+
+	 Item.axis*(Item.dist/2.0+Item.posCutPlane),
+	 Item.axis);	
+      ModelSupport::buildSphere
+	(SMap,offset+7,CP-Item.axis*
+	 (Item.dist+Item.radius),Item.radius);
+      ModelSupport::buildSphere
+	(SMap,offset+8,CP+Item.axis*
+	 (Item.dist+Item.radius),Item.radius);
+      offset+=100;
+    }
+
+  // Cones:
+  offset=molyIndex+3000;
+  for(size_t i=0;i<CCut.size();i++)
+    {
+      coneCut& Item=CCut[i];
+      Item.axisCalc(X,Y,Z);
+      const Geometry::Vec3D CP(Origin+Item.centre);
+      ModelSupport::buildCone(SMap,offset+7,CP,Item.axis,Item.angleA,
+			      Item.cutFlagA());
+      ModelSupport::buildCone(SMap,offset+8,CP+Item.axis*Item.dist,
+			      Item.axis,Item.angleB,Item.cutFlagB());
+      ModelSupport::buildCone(SMap,offset+17,CP+Item.axis*0.3,
+			      Item.axis,Item.angleA,Item.cutFlagA());
+      ModelSupport::buildCone(SMap,offset+18,CP+Item.axis*(Item.dist-0.3),
+			      Item.axis,Item.angleB,Item.cutFlagB());
+      offset+=100;
+    }
+  
+  return;
+}
+
+void
+TS2moly::createObjects(Simulation& System)
+  /*!
+    Adds the Chip guide components
+    \param System :: Simulation to create objects in
+  */
+{
+  ELog::RegMethod RegA("TS2moly","createObjects");
+
+  std::string Out;
+  int offset;
+
+  MonteCarlo::Qhull* QPtrA=System.findQhull(this->getMainBody());
+  MonteCarlo::Qhull* QPtrB=System.findQhull(this->getSkinBody());
+  if (!QPtrA || !QPtrB)
+    ELog::EM<<"Failed on QHull for main body "<<
+      this->getMainBody()<<":"<<this->getSkinBody()<<ELog::endErr;
+
+  if (!PCut.empty())
+    {
+      offset=molyIndex;
+      HeadRule ExPlate;
+      for(size_t i=0;i<PCut.size();i++)
+	{
+	  Out=ModelSupport::getComposite(SMap,offset,"1 -2 ");    
+	  ExPlate.addUnion(Out);
+	  if (PCut[i].layerMat<0)
+	    {
+	      Out+=getContainer();
+	      System.addCell(MonteCarlo::Qhull
+			     (cellIndex++,PCut[i].mat,0.0,Out));
+	    }
+	  else
+	    {
+	      Out=ModelSupport::getComposite(SMap,offset,"1 -11 ");    
+	      Out+=getContainer();
+	      
+	      System.addCell(MonteCarlo::Qhull(cellIndex++,
+					       PCut[i].layerMat,0.0,Out));
+	      Out=ModelSupport::getComposite(SMap,offset,"12 -2 ");    
+	      Out+=getContainer();
+	      System.addCell(MonteCarlo::Qhull(cellIndex++,
+					       PCut[i].layerMat,0.0,Out));
+	      Out=ModelSupport::getComposite(SMap,offset,"11 -12 ");    ;
+	      Out+=getContainer();
+	      System.addCell(MonteCarlo::Qhull(cellIndex++,
+					       PCut[i].mat,0.0,Out));
+	    }
+	  offset+=100;
+	}
+      ExPlate.makeComplement();
+      QPtrA->addSurfString(ExPlate.display());
+      QPtrB->addSurfString(ExPlate.display());
+    }
+
+  if (!SCut.empty())
+    {
+      // Sphere:
+      offset=molyIndex+2000;
+      for(size_t i=0;i<SCut.size();i++)
+	{
+	  Out=ModelSupport::getComposite(SMap,offset,"1 -2 7 8 ");
+	  addOuterUnionSurf(Out);
+	  Out+=getContainer();
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,SCut[i].mat,0.0,Out));
+	  offset+=100;
+	}
+    }
+
+  // Cone:
+  if (!CCut.empty())
+    {
+      HeadRule ExCone;
+      offset=molyIndex+3000;
+      for(size_t i=0;i<CCut.size();i++)
+	{
+	  // Ta layer
+	  std::ostringstream cx;
+	  cx<<" "<< -CCut[i].cutFlagA()*SMap.realSurf(offset+7)
+	    <<" "<< CCut[i].cutFlagA()*SMap.realSurf(offset+17)<<" ";
+	  if (CCut[i].dist<0)
+	    cx<< CCut[i].cutFlagB()*SMap.realSurf(offset+18)<<" ";
+	  Out=cx.str()+getContainer();
+	  System.addCell(MonteCarlo::Qhull
+			 (cellIndex++,CCut[i].layerMat,0.0,Out));
+	  
+	  cx.str("");
+	  cx<<" "<< -CCut[i].cutFlagA()*SMap.realSurf(offset+17)
+	    <<" "<< CCut[i].cutFlagB()*SMap.realSurf(offset+18)<<" ";
+	  Out=cx.str()+getContainer();
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,CCut[i].mat,0.0,Out));
+
+	  cx.str("");
+	  cx<<" "<< CCut[i].cutFlagB()*SMap.realSurf(offset+8)
+	    <<" "<< -CCut[i].cutFlagB()*SMap.realSurf(offset+18)<<" ";
+	  if (CCut[i].dist<0)
+	    cx<< -CCut[i].cutFlagA()*SMap.realSurf(offset+7)<<" ";
+	  Out=cx.str()+getContainer();
+	  System.addCell(MonteCarlo::Qhull
+			 (cellIndex++,CCut[i].layerMat,0.0,Out));
+
+	  cx.str("");
+	  cx<<" "<< -CCut[i].cutFlagA()*SMap.realSurf(offset+7)
+	    <<" "<< CCut[i].cutFlagB()*SMap.realSurf(offset+8)<<" ";
+	  ExCone.addUnion(cx.str());      
+	  offset+=100;
+	}
+      ExCone.makeComplement();
+      QPtrA->addSurfString(ExCone.display());
+      QPtrB->addSurfString(ExCone.display());
+    }
+
+  return;
+}
+  
+void
+TS2moly::createAll(Simulation& System,
+		   const attachSystem::FixedComp& FC)
+  /*!
+    Generic function to create everything
+    \param System :: Simulation item
+    \param FC :: Target reference object to build relative to
+  */
+{
+  ELog::RegMethod RegA("TS2moly","createAll");
+
+  TS2target::createAll(System,FC);
+  addInnerBoundary(*this);
+  
+  populate(System);
+  createUnitVector(*this);
+  createSurfaces();
+  createObjects(System);
+  return;
+}
+  
+}  // NAMESPACE TMRsystem

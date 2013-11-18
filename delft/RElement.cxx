@@ -1,0 +1,160 @@
+/********************************************************************* 
+  CombLayer : MNCPX Input builder
+ 
+ * File:   delft/RElement.cxx
+*
+ * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ *
+ ****************************************************************************/
+#include <iomanip>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <complex>
+#include <set>
+#include <map>
+#include <list>
+#include <vector>
+#include <string>
+#include <boost/shared_ptr.hpp>
+#include <boost/multi_array.hpp>
+
+#include "Exception.h"
+#include "FileReport.h"
+#include "GTKreport.h"
+#include "NameStack.h"
+#include "RegMethod.h"
+#include "OutputLog.h"
+#include "BaseVisit.h"
+#include "BaseModVisit.h"
+#include "support.h"
+#include "MatrixBase.h"
+#include "Matrix.h"
+#include "Vec3D.h"
+#include "Triple.h"
+#include "NRange.h"
+#include "NList.h"
+#include "Quaternion.h"
+#include "localRotate.h"
+#include "masterRotate.h"
+#include "Surface.h"
+#include "surfIndex.h"
+#include "surfRegister.h"
+#include "objectRegister.h"
+#include "surfDIter.h"
+#include "Quadratic.h"
+#include "Plane.h"
+#include "Cylinder.h"
+#include "Rules.h"
+#include "varList.h"
+#include "Code.h"
+#include "FuncDataBase.h"
+#include "HeadRule.h"
+#include "Object.h"
+#include "Qhull.h"
+#include "KGroup.h"
+#include "Source.h"
+#include "Simulation.h"
+#include "ModelSupport.h"
+#include "generateSurf.h"
+#include "LinkUnit.h"
+#include "FixedComp.h"
+#include "LinearComp.h"
+#include "ContainedComp.h"
+
+#include "ReactorGrid.h"
+#include "RElement.h"
+
+namespace delftSystem
+{
+
+RElement::RElement(const size_t XI,const size_t YI,
+		   const std::string& Key) : 
+  attachSystem::FixedComp(Key,6),
+  attachSystem::ContainedComp(),
+  XIndex(XI),YIndex(YI),
+  surfIndex(ModelSupport::objectRegister::Instance().
+	    cell(ReactorGrid::getElementName(Key,XI,YI))),
+  cellIndex(surfIndex+1)
+  /*!
+    Constructor BUT ALL variable are left unpopulated.
+    \param Key :: KeyName
+  */
+{}
+
+RElement::RElement(const RElement& A) : 
+  attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
+  XIndex(A.XIndex),YIndex(A.YIndex),surfIndex(A.surfIndex),
+  cellIndex(A.cellIndex),insertCell(A.insertCell),
+  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
+  xyAngle(A.xyAngle),zAngle(A.zAngle)
+  /*!
+    Copy constructor
+    \param A :: RElement to copy
+  */
+{}
+
+RElement&
+RElement::operator=(const RElement& A)
+  /*!
+    Assignment operator
+    \param A :: RElement to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedComp::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
+      cellIndex=A.cellIndex;
+      insertCell=A.insertCell;
+      xStep=A.xStep;
+      yStep=A.yStep;
+      zStep=A.zStep;
+      xyAngle=A.xyAngle;
+      zAngle=A.zAngle;
+    }
+  return *this;
+}
+
+void
+RElement::populate(const Simulation& System)
+  /*!
+    Populate all the variables
+    Requires that unset values are copied from previous block
+    \param System :: Simulation to use
+  */
+{
+  ELog::RegMethod RegA("RElement","populate");
+  const FuncDataBase& Control=System.getDataBase();
+
+  xStep=ReactorGrid::getElement<double>(Control,keyName+"XStep",
+					XIndex,YIndex);
+  yStep=ReactorGrid::getElement<double>(Control,keyName+"YStep",
+					XIndex,YIndex);
+  zStep=ReactorGrid::getElement<double>(Control,keyName+"ZStep",
+					XIndex,YIndex);
+
+  xyAngle=ReactorGrid::getElement<double>(Control,keyName+"XYAngle",
+					  XIndex,YIndex);
+  zAngle=ReactorGrid::getElement<double>(Control,keyName+"ZAngle",
+					 XIndex,YIndex);
+
+  return;
+}
+
+
+} // NAMESPACE shutterSystem
