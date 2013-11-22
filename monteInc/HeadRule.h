@@ -56,6 +56,7 @@ class HeadRule
 
  public:
 
+
   HeadRule();
   HeadRule(const HeadRule&);
   HeadRule& operator=(const HeadRule&);
@@ -79,9 +80,12 @@ class HeadRule
   bool isDirectionValid(const Geometry::Vec3D&,const int) const; 
 
   std::set<const Geometry::Surface*> getOppositeSurfaces() const;
-  int removeItems(const int);
+  std::vector<int> getTopSurfaces() const;
 
+  int removeItems(const int);
+  int removeTopItem(const int);
   int substituteSurf(const int,const int,const Geometry::Surface*);
+
   void makeComplement();
 
   int procString(const std::string&);
@@ -90,6 +94,8 @@ class HeadRule
   void addUnion(const int);
   void addIntersection(const std::string&);
   void addUnion(const std::string&);
+  void addIntersection(const HeadRule&);
+  void addUnion(const HeadRule&);
   void addIntersection(const Rule*);
   void addUnion(const Rule*);
 

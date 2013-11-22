@@ -84,7 +84,7 @@ addUnion(const MonteCarlo::Object& Obj,Rule*& outRule)
     \param outRule :: Rule to modify
   */
 {
-  ELog::RegMethod RegA("ContainedComp","addUnion<Obj,Rule>");
+  ELog::RegMethod RegA("AttachSupport[F]","addUnion<Obj,Rule>");
 
   createAddition(-1,Obj.topRule()->clone(),outRule);
   return;
@@ -99,7 +99,7 @@ addUnion(const int SN,const Geometry::Surface* SPtr,
     \param outRule :: Rule to modify
   */
 {
-  ELog::RegMethod RegA("ContainedComp","addUnion<int,Rule>");
+  ELog::RegMethod RegA("AttachSupport[F]","addUnion<int,Rule>");
   createAddition(-1,new SurfPoint(SPtr,SN),outRule);  
   return;
 }
@@ -112,7 +112,7 @@ addIntersection(const MonteCarlo::Object& Obj,Rule*& outRule)
     \param outRule :: Rule to modify
   */
 {
-  ELog::RegMethod RegA("ContainedComp","addIntersection<Obj,Rule>");
+  ELog::RegMethod RegA("AttachSupport[F]","addIntersection<Obj,Rule>");
 
   createAddition(1,Obj.topRule()->clone(),outRule);
   return;
@@ -128,7 +128,7 @@ addIntersection(const int SN,const Geometry::Surface* SPtr,
     \param outRule :: Rule to modify
   */
 {
-  ELog::RegMethod RegA("ContainedComp","addIntersection<int,Rule>");
+  ELog::RegMethod RegA("AttachSupport[F]","addIntersection<int,Rule>");
   createAddition(1,new SurfPoint(SPtr,SN),outRule);  
   return;
 }

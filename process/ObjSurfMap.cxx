@@ -166,8 +166,6 @@ ObjSurfMap::addSurfaces(MonteCarlo::Object* OPtr)
 {
   ELog::RegMethod RegA("ObjSurfMap","addSurfaces");
   
-  ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
-
   // signed set
   const std::set<int>& sSet=OPtr->getSurfSet();
   std::set<int>::const_iterator sc;

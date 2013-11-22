@@ -85,7 +85,6 @@
 #include "pipeUnit.h"
 #include "PipeLine.h"
 #include "SupplyPipe.h"
-
 #include "Debug.h"
 
 namespace essSystem
@@ -94,12 +93,56 @@ namespace essSystem
 SupplyPipe::SupplyPipe(const std::string& Key)  :
   attachSystem::FixedComp(Key,0),
   pipeIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(pipeIndex+1),Coaxial("LowCoAx")
+  cellIndex(pipeIndex+1),Coaxial(Key+"CoAx")
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
   */
 {}
+
+SupplyPipe::SupplyPipe(const SupplyPipe& A) : 
+  attachSystem::FixedComp(A),
+  pipeIndex(A.pipeIndex),cellIndex(A.cellIndex),
+  NSegIn(A.NSegIn),inRadius(A.inRadius),
+  inAlRadius(A.inAlRadius),midAlRadius(A.midAlRadius),
+  voidRadius(A.voidRadius),outAlRadius(A.outAlRadius),
+  inMat(A.inMat),inAlMat(A.inAlMat),midAlMat(A.midAlMat),
+  voidMat(A.voidMat),outAlMat(A.outAlMat),
+  Coaxial(A.Coaxial),PPts(A.PPts)
+  /*!
+    Copy constructor
+    \param A :: SupplyPipe to copy
+  */
+{}
+
+SupplyPipe&
+SupplyPipe::operator=(const SupplyPipe& A)
+  /*!
+    Assignment operator
+    \param A :: SupplyPipe to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedComp::operator=(A);
+      cellIndex=A.cellIndex;
+      NSegIn=A.NSegIn;
+      inRadius=A.inRadius;
+      inAlRadius=A.inAlRadius;
+      midAlRadius=A.midAlRadius;
+      voidRadius=A.voidRadius;
+      outAlRadius=A.outAlRadius;
+      inMat=A.inMat;
+      inAlMat=A.inAlMat;
+      midAlMat=A.midAlMat;
+      voidMat=A.voidMat;
+      outAlMat=A.outAlMat;
+      Coaxial=A.Coaxial;
+      PPts=A.PPts;
+    }
+  return *this;
+}
 
 SupplyPipe::~SupplyPipe() 
   /*!
@@ -127,36 +170,44 @@ SupplyPipe::populate(const Simulation& System)
     }
   inRadius=Control.EvalVar<double>(keyName+"InRadius"); 
   inAlRadius=Control.EvalVar<double>(keyName+"InAlRadius"); 
-  midRadius=Control.EvalVar<double>(keyName+"MidRadius"); 
   midAlRadius=Control.EvalVar<double>(keyName+"MidAlRadius"); 
+  voidRadius=Control.EvalVar<double>(keyName+"VoidRadius"); 
+  outAlRadius=Control.EvalVar<double>(keyName+"OutAlRadius"); 
 
   inMat=Control.EvalVar<int>(keyName+"InMat"); 
   inAlMat=Control.EvalVar<int>(keyName+"InAlMat"); 
-  midMat=Control.EvalVar<int>(keyName+"MidMat"); 
   midAlMat=Control.EvalVar<int>(keyName+"MidAlMat"); 
+  voidMat=Control.EvalVar<int>(keyName+"VoidMat"); 
+  outAlMat=Control.EvalVar<int>(keyName+"OutAlMat"); 
   
   return;
 }
   
 
 void
-SupplyPipe::createUnitVector(const attachSystem::FixedComp& CUnit,
-			  const size_t sideIndex)
+SupplyPipe::createUnitVector(const attachSystem::FixedComp& FC,
+			     const size_t layerIndex,
+			     const size_t sideIndex)
   /*!
     Create the unit vectors
-    - Y Points towards NIMROD
-    - X Across the moderator
-    - Z up (towards the target)
-    \param CUnit :: Fixed unit that it is connected to 
-    \param sideIndex :: Connection point to use as origin
+    \param FC :: Fixed unit that it is connected to 
+    \param sideIndex :: Connection point to use as origin [0 for origin]
   */
 {
   ELog::RegMethod RegA("SupplyPipe","createUnitVector");
 
-  FixedComp::createUnitVector(CUnit);
-  const attachSystem::LinkUnit& LU=CUnit.getLU(sideIndex);
-  Origin=LU.getConnectPt();
+  FixedComp::createUnitVector(FC);
+  const attachSystem::LayerComp* LC=
+    dynamic_cast<const attachSystem::LayerComp*>(&FC);
 
+  if (LC && sideIndex)
+    {
+      Origin=LC->getSurfacePoint(layerIndex,sideIndex-1);
+      ELog::EM<<"Side = "<<sideIndex-1<<":"
+	      <<FC.getLinkAxis(sideIndex-1)<<ELog::endDebug;
+      FC.selectAltAxis(sideIndex-1,X,Y,Z);
+      ELog::EM<<" XYZ == "<<X<<":"<<Y<<":"<<Z<<ELog::endDebug;
+    }
   return;
 }
 
@@ -166,64 +217,83 @@ SupplyPipe::insertInlet(Simulation& System,
 			const size_t lSideIndex)
   /*!
     Add a pipe to the hydrogen system:
-    \remark This should be called after the void vessel has
+    \remark This should be called after the moderator has
     been constructed and all objects inserted.
     \param System :: Simulation to add pipe to
     \param FC :: layer values
     \param lSideIndex :: point for side of moderator
   */
 {
-  ELog::RegMethod RegA("SupplyPipe","insertOuter");
-
+  ELog::RegMethod RegA("SupplyPipe","insertInlet");
   const attachSystem::LayerComp* LC=
     dynamic_cast<const attachSystem::LayerComp*>(&FC);
+ 
   if (!LC)
     throw ColErr::CastError<void>(0,"FixedComp to LayerComp");
 
-  Geometry::Vec3D Pt=
-    X*PPts[0].X()+Y*PPts[0].Y()+
-    Z*PPts[0].Z();
-  Coaxial.addPoint(Origin+Pt);
-  
-  // GET Z Point from layer
-  const Geometry::Vec3D PtZ=LC->getSurfacePoint(2,lSideIndex);
-  Pt=X*Origin.X()+Y*Origin.Y()+Z*PtZ.Z();
-  Coaxial.addPoint(Pt);
+  Geometry::Vec3D Pt= Origin+X*PPts[0].X()+
+    Y*PPts[0].Y()+Z*PPts[0].Z();
 
-  Coaxial.setActive(0,3);  
+  // GET Z Point from layer
+  Geometry::Vec3D PtZ=LC->getSurfacePoint(0,lSideIndex);
+  const int commonSurf=LC->getCommonSurf(lSideIndex);
+  const std::string commonStr=(commonSurf) ? 		       
+    StrFunc::makeString(commonSurf) : "";
+  if (PtZ!=Pt)
+    Coaxial.addPoint(Pt);
+
+  Coaxial.addSurfPoint(PtZ,
+		       LC->getLayerString(0,lSideIndex),
+		       commonStr);
+
+
+  PtZ=LC->getSurfacePoint(2,lSideIndex);
+  if (PtZ!=Pt)
+    Coaxial.addSurfPoint(PtZ,LC->getLayerString(2,lSideIndex),
+			 commonStr);
+
   // Inner Points
   for(size_t i=1;i<=NSegIn;i++)
     {
-       Pt=X*PPts[i].X()+Y*PPts[i].Y()+Z*PPts[i].Z();
-       Coaxial.addPoint(Origin+Pt);
+       Pt=Origin+X*PPts[i].X()+Y*PPts[i].Y()+Z*PPts[i].Z();
+       Coaxial.addPoint(Pt);
     }  
-
+  
   Coaxial.addRadius(inRadius,inMat,0.0);
   Coaxial.addRadius(inAlRadius,inAlMat,0.0);
-  Coaxial.addRadius(midRadius,midMat,0.0);
   Coaxial.addRadius(midAlRadius,midAlMat,0.0);
+  Coaxial.addRadius(voidRadius,voidMat,0.0);
+  Coaxial.addRadius(outAlRadius,outAlMat,0.0);
+
+  Coaxial.setActive(0,1);  
+  // Coaxial.setActive(1,5);
+  // Coaxial.setActive(2,29);
+  // Coaxial.setActive(3,29);
+  
   Coaxial.createAll(System);
   return;
 }
   
 void
 SupplyPipe::createAll(Simulation& System,
-		      const attachSystem::FixedComp& FUnit,
-		      const size_t sideIndex,
-		      const size_t laySideIndex)
+		      const attachSystem::FixedComp& FC,
+		      const size_t orgLayerIndex,
+		      const size_t orgSideIndex,
+		      const size_t exitSideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation to create objects in
-    \param FUnit :: Fixed Base unit
-    \param sideIndex :: FixUnit
+    \param FC :: Fixed Base unit
+    \param sideIndex :: Link point for origin 
+    \param sideIndex :: Link point for origin 
+    \param laySideIndex :: layer to pass pipe though
   */
 {
   ELog::RegMethod RegA("SupplyPipe","createAll");
-
   populate(System);
 
-  createUnitVector(FUnit,sideIndex);
-  insertInlet(System,FUnit,laySideIndex);
+  createUnitVector(FC,orgLayerIndex,orgSideIndex);
+  insertInlet(System,FC,exitSideIndex);
     
   return;
 }

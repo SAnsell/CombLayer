@@ -197,13 +197,13 @@ CylPreMod::checkItems(const attachSystem::FixedComp& Mod)
   FLpts.clear();
   FLunit.clear();
 
-  if (Mod.NConnect()<4)
-    throw ColErr::IndexError<size_t>(4,Mod.NConnect(),"Moderator LU size");
+  if (Mod.NConnect()<6)
+    throw ColErr::IndexError<size_t>(6,Mod.NConnect(),"Moderator LU size");
   
   Geometry::Vec3D OutPt=Mod.getLinkPt(0);
   innerRadius=OutPt.Distance(Origin);
   // Never figure out if we are +/- Z so decided to test
-  for(size_t i=2;i<4;i++)
+  for(size_t i=4;i<6;i++)
     {
       OutPt=Mod.getLinkPt(i)-Origin;
       const Geometry::Vec3D TP=Mod.getLinkPt(i);

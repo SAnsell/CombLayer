@@ -79,6 +79,7 @@ class makeESS
   boost::shared_ptr<moderatorSystem::FlightLine> LowBFL;  ///< Lower Mode FL
   boost::shared_ptr<CylPreMod> LowPre;  ///< Upper Mod (Pre)
   boost::shared_ptr<SupplyPipe> LowSupplyPipe;  ///< Lower supply 
+  boost::shared_ptr<SupplyPipe> LowReturnPipe;  ///< Lower supply 
 
   boost::shared_ptr<CylModerator> TopMod;   ///< Upper Mod
   boost::shared_ptr<moderatorSystem::FlightLine> TopAFL;  ///< Upper Mode FL

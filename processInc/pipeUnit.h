@@ -72,12 +72,16 @@ class pipeUnit : public attachSystem::FixedComp,
   Geometry::Vec3D ANorm;    ///< A-Pt Normal [outer]
   Geometry::Vec3D BNorm;    ///< B-Pt Normal [outer]
 
+  HeadRule ASurf;           ///< Start point rule if used [inward facing]
+  HeadRule BSurf;           ///< End point rule if used [inward facing]
+
   size_t activeFlag;           ///< Flag for active layers
   std::vector<cylValues> cylVar;      ///< Cylinder variables
 
   void calcNorm(const int,const Geometry::Vec3D&,
 		const Geometry::Vec3D&);
   void checkForward();
+  std::string createCaps() const;
 
   void populate(const size_t,const std::vector<cylValues>&);
   void createSurfaces();
@@ -102,6 +106,8 @@ class pipeUnit : public attachSystem::FixedComp,
 
   /// Set surface number
   void setPoints(const Geometry::Vec3D&,const Geometry::Vec3D&);
+  void setASurf(const HeadRule&);
+  void setBSurf(const HeadRule&);
   void connectFrom(pipeUnit*);
   void connectTo(pipeUnit*);
 

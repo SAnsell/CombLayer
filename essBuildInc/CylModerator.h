@@ -77,7 +77,7 @@ class CylModerator : public essMod
   virtual Geometry::Vec3D getSurfacePoint(const size_t,const size_t) const;
   virtual int getLayerSurf(const size_t,const size_t) const;
   virtual std::string getLayerString(const size_t,const size_t) const;
-
+  virtual int getCommonSurf(const size_t) const;
   
   void createAll(Simulation&,const attachSystem::FixedComp&);
   

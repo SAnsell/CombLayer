@@ -271,21 +271,42 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("zero",0.0);     // Zero
   Control.addVariable("one",1.0);      // one
 
-
   Control.addVariable("LSupplyNSegIn",2);
-  Control.addVariable("LSupplyPPt0",Geometry::Vec3D(0,0,8));
-  Control.addVariable("LSupplyPPt1",Geometry::Vec3D(0,0,-35));
-  Control.addVariable("LSupplyPPt2",Geometry::Vec3D(0,10,-35));
+  Control.addVariable("LSupplyPPt0",Geometry::Vec3D(0,0,0.0));
+  Control.addVariable("LSupplyPPt1",Geometry::Vec3D(0,-19.25,0));
+  // mod xyangle (125.5)+pipe xyangle (57.5) e.g 3.0052=65*SIN(-(125.15+57.5)/180*PI())
+  Control.addVariable("LSupplyPPt2",Geometry::Vec3D(3.005,-19.25,64.930));
 
-  Control.addVariable("LSupplyInRadius",1.0);
-  Control.addVariable("LSupplyInAlRadius",1.4);
-  Control.addVariable("LSupplyMidRadius",3.0);
-  Control.addVariable("LSupplyMidAlRadius",3.5);
+  Control.addVariable("LSupplyInRadius",1.5);
+  Control.addVariable("LSupplyInAlRadius",1.7);
+  Control.addVariable("LSupplyMidAlRadius",1.8);
+  Control.addVariable("LSupplyVoidRadius",2.3);
+  Control.addVariable("LSupplyOutAlRadius",2.5);
 
-  Control.addVariable("LSupplyInMat",7);
+  Control.addVariable("LSupplyInMat",25);
   Control.addVariable("LSupplyInAlMat",5);
-  Control.addVariable("LSupplyMidMat",0);
   Control.addVariable("LSupplyMidAlMat",5);
+  Control.addVariable("LSupplyVoidMat",0);
+  Control.addVariable("LSupplyOutAlMat",5);
+
+  // low mod return pipe
+
+  Control.addVariable("LReturnNSegIn",1);
+  Control.addVariable("LReturnPPt0",Geometry::Vec3D(0,0,0));
+  Control.addVariable("LReturnPPt1",Geometry::Vec3D(0,30,0));
+
+
+  Control.addVariable("LReturnInRadius",1.5);
+  Control.addVariable("LReturnInAlRadius",1.7);
+  Control.addVariable("LReturnMidAlRadius",1.8);
+  Control.addVariable("LReturnVoidRadius",2.3);
+  Control.addVariable("LReturnOutAlRadius",2.5);
+
+  Control.addVariable("LReturnInMat",25);
+  Control.addVariable("LReturnInAlMat",5);
+  Control.addVariable("LReturnMidAlMat",5);
+  Control.addVariable("LReturnVoidMat",0);
+  Control.addVariable("LReturnOutAlMat",5);
 
   //
   Control.addVariable("LowModXStep",0.0);  

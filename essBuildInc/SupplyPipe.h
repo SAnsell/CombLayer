@@ -39,27 +39,33 @@ class SupplyPipe : public attachSystem::FixedComp
 {
  private:
   
+  // const int pipeIndex; 
   const int pipeIndex;          ///< Index of surface offset
   int cellIndex;                ///< Cell index
-  
-  ModelSupport::PipeLine Coaxial; ///< Global outer
-  
+   
   size_t NSegIn;                      ///< Number of segments  
-  std::vector<Geometry::Vec3D> PPts;  ///< Pipe points
 
   double inRadius;                   ///< H2 material
   double inAlRadius;                 ///< Al material
-  double midRadius;                   ///< H2 material
-  double midAlRadius;                 ///< Al material
+  double midAlRadius;                   ///< H2 material
+  double voidRadius;                 ///< Al material
+  double outAlRadius;                 ///< Al material
 
   int inMat;                       ///< inner H2 
   int inAlMat;                       ///< inner Al layer
-  int midMat;                       ///< mid vacuum
-  int midAlMat;                     ///< mid Al layer
+  int midAlMat;                       ///< mid vacuum
+  int voidMat;                     ///< mid Al layer
+  int outAlMat;                     ///< mid Al layer
+
+
+  ModelSupport::PipeLine Coaxial;      ///< Global outer
+
+  std::vector<Geometry::Vec3D> PPts;  ///< Pipe points
+
   
   void populate(const Simulation&);
-  void createUnitVector(const attachSystem::FixedComp&,const size_t);
-
+  void createUnitVector(const attachSystem::FixedComp&,const size_t,
+			const size_t);
   void insertInlet(Simulation&,const attachSystem::FixedComp&,
 		   const size_t);
 
@@ -72,7 +78,7 @@ class SupplyPipe : public attachSystem::FixedComp
 
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const size_t,const size_t);
+		 const size_t,const size_t,const size_t);
 
 };
 

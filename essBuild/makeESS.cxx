@@ -116,6 +116,7 @@ makeESS::makeESS() :
   LowBFL(new moderatorSystem::FlightLine("LowBFlight")),
   LowPre(new CylPreMod("LowPre")),
   LowSupplyPipe(new SupplyPipe("LSupply")),
+  LowReturnPipe(new SupplyPipe("LReturn")),
 
   TopMod(new CylModerator("TopMod")),
   TopAFL(new moderatorSystem::FlightLine("TopAFlight")),
@@ -137,8 +138,6 @@ makeESS::makeESS() :
   OR.addObject(LowAFL);
   OR.addObject(LowBFL);
   OR.addObject(LowPre);
-  OR.addObject(LowSupplyPipe);
-
   OR.addObject(TopMod);
   OR.addObject(TopAFL);
   OR.addObject(TopBFL);
@@ -224,11 +223,6 @@ makeESS::topFlightLines(Simulation& System)
   return;
 }
 
-void
-makeESS::buildLayerMod(Simulation& System)
-{
-
-}
 
 void
 makeESS::makeTarget(Simulation& System,	       
@@ -423,7 +417,8 @@ makeESS::build(Simulation* SimPtr,
 
   createGuides(*SimPtr);  
 
-  LowSupplyPipe->createAll(*SimPtr,*LowMod,2,4);
+  LowSupplyPipe->createAll(*SimPtr,*LowMod,0,6,4);
+  LowReturnPipe->createAll(*SimPtr,*LowMod,0,3,2);
   
   return;
 }

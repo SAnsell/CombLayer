@@ -81,6 +81,7 @@ testFunction::applyTest(const int extra)
       &testFunction::testAnalyse,
       &testFunction::testBuiltIn,
       &testFunction::testEval,
+      &testFunction::testString,
       &testFunction::testVec3D
     };
 
@@ -89,6 +90,7 @@ testFunction::applyTest(const int extra)
       "Analyse",
       "BuiltIn",
       "Eval",
+      "String",
       "Vec3D"
     };
 
@@ -277,5 +279,18 @@ testFunction::testVec3D()
   return 0;
 }
 
+
+int
+testFunction::testString()
+  /*!
+    Test a function of a string
+    \return -ve on error 
+  */
+{
+  ELog::RegMethod RegA("testFucntion","testString");
+  FuncDataBase XX;   
+  //  XX.addVariable("test","AA");
   
+  return 0;
+}
   

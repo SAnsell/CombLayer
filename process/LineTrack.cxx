@@ -197,16 +197,6 @@ LineTrack::calculate(const Simulation& ASim)
 	  prevOPtr=OPtr;
 	  nOut.moveForward(aDist);
 	  
-	  // const Geometry::Cylinder* CXPtr=
-	  //   dynamic_cast<const Geometry::Cylinder*>
-	  //   (ModelSupport::surfIndex::Instance().getSurf(9));
-	  // if (CXPtr)
-	  //   ELog::EM<<"CXPtr == "<<*CXPtr<<ELog::endDebug;
-
-	  // const Geometry::Cone* CYPtr=
-	  //   dynamic_cast<const Geometry::Cone*>
-	  //   (ModelSupport::surfIndex::Instance().getSurf(8));
-
 	  OPtr=OSMPtr->findNextObject(SN,nOut.Pos,OPtr->getName());
 	  if (OPtr==0)
 	    {

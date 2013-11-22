@@ -39,6 +39,7 @@ private:
   int testAnalyse();
   int testBuiltIn();
   int testEval();
+  int testString();
   int testVec3D();
  
 public:

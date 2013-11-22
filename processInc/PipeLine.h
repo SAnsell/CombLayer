@@ -41,16 +41,17 @@ class PipeLine
 {
  private:
 
-  ModelSupport::surfRegister SMap; ///< Surface register
-  const int pipeIndex;             ///< Index of surface offset
   const std::string keyName;       ///< KeyName
-  int cellIndex;                   ///< Cell index
   
   int nCylinder;                   ///< Number of pre-cylinders
   std::vector<cylValues> CV;       ///< Cylinder Values [ one for each radius]
 
-  std::vector<Geometry::Vec3D> Pts;  ///< Points in pipe
-  std::vector<int> activeFlags;      ///< Activity flags : one for each PUnit
+  std::vector<Geometry::Vec3D> Pts;      ///< Points in pipe
+
+  std::map<size_t,HeadRule> layerSurf;  ///< Outgoing surface
+  std::map<size_t,HeadRule> commonSurf;  ///< common surface
+
+  std::vector<int> activeFlags;          ///< Activity flags : one for each PUnit
  
   std::vector<pipeUnit*> PUnits;     ///< pipeUnits (1 less than Pts)
 
@@ -71,6 +72,9 @@ class PipeLine
       
   void setPoints(const std::vector<Geometry::Vec3D>&);  
   void addPoint(const Geometry::Vec3D&);
+  void addSurfPoint(const Geometry::Vec3D&,const std::string&);
+  void addSurfPoint(const Geometry::Vec3D&,const std::string&,
+		    const std::string&);
   void addRadius(const double,const int,const double);
   void setActive(const size_t,const int);
 

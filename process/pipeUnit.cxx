@@ -101,8 +101,8 @@ pipeUnit::pipeUnit(const pipeUnit& A) :
   attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),prev(A.prev),
   next(A.next),APt(A.APt),BPt(A.BPt),Axis(A.Axis),
-  ANorm(A.ANorm),BNorm(A.BNorm),activeFlag(A.activeFlag),
-  cylVar(A.cylVar)
+  ANorm(A.ANorm),BNorm(A.BNorm),ASurf(A.ASurf),BSurf(A.BSurf),
+  activeFlag(A.activeFlag),cylVar(A.cylVar)
   /*!
     Copy constructor
     \param A :: pipeUnit to copy
@@ -127,6 +127,8 @@ pipeUnit::operator=(const pipeUnit& A)
       Axis=A.Axis;
       ANorm=A.ANorm;
       BNorm=A.BNorm;
+      ASurf=A.ASurf;
+      BSurf=A.BSurf;
       activeFlag=A.activeFlag;
       cylVar=A.cylVar;
     }
@@ -139,6 +141,19 @@ pipeUnit::~pipeUnit()
   */
 {}
 
+void
+pipeUnit::setASurf(const HeadRule& AR)
+{
+  ASurf=AR;
+  return;
+}
+
+void
+pipeUnit::setBSurf(const HeadRule& BR)
+{
+  BSurf=BR;
+  return;
+}
 
 void
 pipeUnit::setPoints(const Geometry::Vec3D& A,
@@ -290,8 +305,10 @@ pipeUnit::createSurfaces()
 {
   ELog::RegMethod RegA("pipeUnit","createSurface");
 
-  ModelSupport::buildPlane(SMap,surfIndex+5,APt,ANorm);  
-  ModelSupport::buildPlane(SMap,surfIndex+6,BPt,BNorm);
+  if (!ASurf.hasRule())
+    ModelSupport::buildPlane(SMap,surfIndex+5,APt,ANorm);  
+  if (!BSurf.hasRule())
+    ModelSupport::buildPlane(SMap,surfIndex+6,BPt,BNorm);
   // Create cylinders
   
   size_t bitIndex(1);    // Index for flag bit [Which to build]
@@ -306,6 +323,22 @@ pipeUnit::createSurfaces()
   return;
 }
 
+std::string
+pipeUnit::createCaps() const
+  /*!
+    Creates the caps with the appropiate surfaces
+    \return caps string [inward pointing]
+  */
+{
+  ELog::RegMethod RegA("pipeUnit","createCap");
+
+  std::string Out=ModelSupport::getSetComposite(SMap,surfIndex," 5 6 ");
+  Out+=ASurf.display()+" "+BSurf.display();        // A/BSurf self test
+  return Out;
+}
+  
+
+
 void
 pipeUnit::createOuterObject()
   /*!
@@ -318,8 +351,8 @@ pipeUnit::createOuterObject()
   const size_t outerIndex=getOuterIndex();
 
   const int SI(surfIndex+static_cast<int>(outerIndex)*10);
-  const std::string Out=
-    ModelSupport::getComposite(SMap,SI,surfIndex," -7 5M 6M ");
+  std::string Out=createCaps();
+  Out+=ModelSupport::getComposite(SMap,SI," -7 ");
   addOuterSurf(Out);
   return;
 }
@@ -336,13 +369,13 @@ pipeUnit::createObjects(Simulation& System)
   std::string Out;
   int SI(surfIndex);
   int SIprev(0);
-
+  const std::string Cap=createCaps();
   size_t bitIndex(1);
   for(size_t i=0;i<cylVar.size();i++)
     {
       if (!activeFlag || (activeFlag & bitIndex))
 	{
-	  Out=ModelSupport::getComposite(SMap,SI,surfIndex," -7 5M 6M ");
+	  Out=Cap+ModelSupport::getComposite(SMap,SI," -7 ");
 	  if (SIprev)
 	    Out+=ModelSupport::getComposite(SMap,SIprev," 7 ");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,cylVar[i].MatN,

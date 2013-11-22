@@ -66,7 +66,6 @@ HeadRule::HeadRule() :
   */
 {}
 
-
 HeadRule::HeadRule(const HeadRule& A) :
   HeadNode((A.HeadNode) ? A.HeadNode->clone() : 0)
   /*!
@@ -209,7 +208,7 @@ HeadRule::isDirectionValid(const Geometry::Vec3D& Pt,const int S)const
 
 int
 HeadRule::pairValid(const int S,const Geometry::Vec3D& Pt)const
-  /*!
+  /*!e
     Calculate if an object is valid
     \param S :: Surface number to alternate on
     \param Pt :: Point to test
@@ -257,6 +256,97 @@ HeadRule::getOppositeSurfaces() const
 }
 
 
+std::vector<int>
+HeadRule::getTopSurfaces() const
+  /*!
+    Calculate the surfaces that are within the top level
+    \return Set of surface
+  */
+{
+  ELog::RegMethod RegA("HeadRule","getOppositeSurfaces");
+  std::vector<int> Out;
+  const SurfPoint* SP;
+  if (!HeadNode) return Out;
+
+
+  const Rule *headPtr,*leafA,*leafB;       
+  // Parent : left/right : Child
+
+  // Tree stack of rules
+  std::stack<const Rule*> TreeLine;   
+  TreeLine.push(HeadNode);
+  while (!TreeLine.empty())        // need to exit on active
+    {
+      headPtr=TreeLine.top();
+      TreeLine.pop();	  
+      if (headPtr->type()==1)        // MUST BE INTERSECTION
+	{
+	  leafA=headPtr->leaf(0);        // get leaves (two of) 
+	  leafB=headPtr->leaf(1);
+	  if (leafA)
+	    TreeLine.push(leafA);
+	  if (leafB)
+	    TreeLine.push(leafB);
+	}
+      else if (headPtr->type()==0)        // MIGHT BE SURF
+	{
+	  SP=dynamic_cast<const SurfPoint*>(HeadNode);
+	  if (SP)
+	    Out.push_back(SP->getSign()*SP->getKeyN());
+	}
+    }
+  return Out;
+}
+
+int
+HeadRule::removeTopItem(const int SN) 
+  /*!
+    Given a signed surface SN , removes the first instance 
+    of that surface from the Rule within the top level
+    \param SN :: Signed surface to remove
+    \return -ve on error, 0 on not-found and 1 on success
+  */
+{
+  ELog::RegMethod RegA("HeadRule","removeTopItem");
+
+  if (!HeadNode) return 0;
+
+  Rule *headPtr,*leafA,*leafB;       
+  // Parent : left/right : Child
+
+  // Tree stack of rules
+  std::stack<Rule*> TreeLine;   
+  TreeLine.push(HeadNode);
+  while (!TreeLine.empty())        // need to exit on active
+    {
+      headPtr=TreeLine.top();
+      TreeLine.pop();	  
+      if (headPtr->type()==1)        // MUST BE INTERSECTION
+	{
+	  leafA=headPtr->leaf(0);        // get leaves (two of) 
+	  leafB=headPtr->leaf(1);
+	  if (leafA)
+	    TreeLine.push(leafA);
+	  if (leafB)
+	    TreeLine.push(leafB);
+	}
+      else if (headPtr->type()==0)        // MIGHT BE SURF
+	{
+	  const SurfPoint* SP=
+	    dynamic_cast<const SurfPoint*>(HeadNode);
+	  if (SP)
+	    {
+	      const int SNtest=SP->getSign()*SP->getKeyN();
+	      if (SNtest==SN)
+		{
+		  removeItem(headPtr);
+		  return 1; 
+		}
+	    }
+	}
+    }
+  return 0;
+}
 
 int
 HeadRule::removeItems(const int SN) 
@@ -264,7 +354,7 @@ HeadRule::removeItems(const int SN)
     Given a signed surface SN , removes the first instance 
     of that surface from the Rule
     \param SN :: Signed surface to remove
-    \return -ve on error, 0 on not-found and 1 on success
+    \return -ve on error, 0 on not-found and Number removed on success
   */
 {
   ELog::RegMethod RegA("HeadRule","removeItems");
@@ -497,13 +587,54 @@ HeadRule::addUnion(const std::string& RStr)
 }
 
 void
+HeadRule::addIntersection(const HeadRule& AHead) 
+  /*!
+    Add a rule in addition
+    \param AHead :: Otehr head rule
+   */
+{
+  ELog::RegMethod RegA("HeadRule","addIntersection<HeadRule>");
+  if (!AHead.HeadNode) return;
+
+  // This is empty
+  if (!HeadNode)
+    {
+      HeadNode=AHead.HeadNode->clone();
+      return;
+    }
+  createAddition(1,AHead.getTopRule());
+  return;
+}
+
+
+void
+HeadRule::addUnion(const HeadRule& AHead) 
+  /*!
+    Add a rule in addition
+    \param AHead :: Other head rule
+   */
+{
+  ELog::RegMethod RegA("HeadRule","addUnion<HeadRule>");
+  if (!AHead.HeadNode) return;
+
+  // This is empty
+  if (!HeadNode)
+    {
+      HeadNode=AHead.HeadNode->clone();
+      return;
+    }
+  createAddition(-1,AHead.getTopRule());
+  return;
+}
+
+void
 HeadRule::addIntersection(const Rule* RPtr) 
   /*!
     Add a rule in addition
     \param RPtr :: Rule pointer
    */
 {
-  ELog::RegMethod RegA("HeadRule","addIntersection");
+  ELog::RegMethod RegA("HeadRule","addIntersection<Rule>");
   if (!RPtr) return;
 
   // This is empty

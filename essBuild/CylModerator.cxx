@@ -266,12 +266,20 @@ CylModerator::createLinks()
       FixedComp::setConnect(1,Origin+Y*radius[nLayers],Y);
       FixedComp::setLinkSurf(1,SMap.realSurf(SI+7));
       FixedComp::addLinkSurf(1,SMap.realSurf(modIndex+2));
-      
-      FixedComp::setConnect(2,Origin-Z*(height[nLayers]/2.0),-Z);
-      FixedComp::setLinkSurf(2,-SMap.realSurf(SI+5));
 
-      FixedComp::setConnect(3,Origin+Z*(height[nLayers]/2.0),Z);
-      FixedComp::setLinkSurf(3,SMap.realSurf(SI+6));
+      FixedComp::setConnect(2,Origin-X*radius[nLayers],-X);
+      FixedComp::setLinkSurf(2,SMap.realSurf(SI+7));
+      FixedComp::addLinkSurf(2,-SMap.realSurf(modIndex+1));
+
+      FixedComp::setConnect(3,Origin+X*radius[nLayers],X);
+      FixedComp::setLinkSurf(3,SMap.realSurf(SI+7));
+      FixedComp::addLinkSurf(3,SMap.realSurf(modIndex+1));
+      
+      FixedComp::setConnect(4,Origin-Z*(height[nLayers]/2.0),-Z);
+      FixedComp::setLinkSurf(4,-SMap.realSurf(SI+5));
+
+      FixedComp::setConnect(5,Origin+Z*(height[nLayers]/2.0),Z);
+      FixedComp::setLinkSurf(5,SMap.realSurf(SI+6));
     }
   else 
     ELog::EM<<"NO Layers in CylModerator"<<ELog::endErr;
@@ -317,8 +325,8 @@ CylModerator::getSurfacePoint(const size_t layerIndex,
 }
 
 std::string
-CylModerator::getLayerString(const size_t sideIndex,
-			     const size_t layerIndex) const
+CylModerator::getLayerString(const size_t layerIndex,
+			     const size_t sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
     \param sideIndex :: Side [0-5]
@@ -336,17 +344,13 @@ CylModerator::getLayerString(const size_t sideIndex,
   switch(sideIndex)
     {
     case 0:
-      cx<<" "<<SMap.realSurf(SI+7)<<" ";
-      return cx.str();
+      return ModelSupport::getComposite(SMap,SI,modIndex," 7 -2M ");
     case 1:
-      cx<<" "<<SMap.realSurf(SI+7)<<" ";
-      return cx.str();
+      return ModelSupport::getComposite(SMap,SI,modIndex," 7 2M ");
     case 2:
-      cx<<" "<<SMap.realSurf(SI+7)<<" ";
-      return cx.str();
+      return ModelSupport::getComposite(SMap,SI,modIndex," 7 -1M ");
     case 3:
-      cx<<" "<<SMap.realSurf(SI+7)<<" ";
-      return cx.str();
+      return ModelSupport::getComposite(SMap,SI,modIndex," 7 1M ");
     case 4:
       cx<<" "<<-SMap.realSurf(SI+5)<<" ";
       return cx.str();
@@ -367,7 +371,7 @@ CylModerator::getLayerSurf(const size_t layerIndex,
     \return Surface string
   */
 {
-  ELog::RegMethod RegA("H2Moderator","getLayerSurf");
+  ELog::RegMethod RegA("CylModerator","getLayerSurf");
 
   if (layerIndex>=nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
@@ -387,6 +391,33 @@ CylModerator::getLayerSurf(const size_t layerIndex,
       return -SMap.realSurf(SI+5);
     case 5:
       return SMap.realSurf(SI+6);
+    }
+  throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
+}
+
+int
+CylModerator::getCommonSurf(const size_t sideIndex) const
+  /*!
+    Given a side calculate the boundary surface
+    \param sideIndex :: Side [0-5]
+    \return Common dividing surface [outward pointing]
+  */
+{
+  ELog::RegMethod RegA("CylModerator","getCommonSurf");
+
+  switch(sideIndex)
+    {
+    case 0:
+      return -SMap.realSurf(modIndex+2);
+    case 1:
+      return SMap.realSurf(modIndex+2);
+    case 2:
+      return -SMap.realSurf(modIndex+1);
+    case 3:
+      return SMap.realSurf(modIndex+1);
+    case 4:
+    case 5:
+      return 0;
     }
   throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
 }

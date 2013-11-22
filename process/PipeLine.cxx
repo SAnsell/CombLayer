@@ -87,9 +87,7 @@ namespace ModelSupport
 {
 
 PipeLine::PipeLine(const std::string& Key)  :
-  pipeIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  keyName(Key),cellIndex(pipeIndex+1),
-  nCylinder(0)
+  keyName(Key),nCylinder(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -97,9 +95,9 @@ PipeLine::PipeLine(const std::string& Key)  :
 {}
 
 PipeLine::PipeLine(const PipeLine& A) : 
-  SMap(A.SMap),pipeIndex(A.pipeIndex),keyName(A.keyName),
-  cellIndex(A.cellIndex),nCylinder(A.nCylinder),
-  CV(A.CV),Pts(A.Pts),activeFlags(A.activeFlags),PUnits(A.PUnits)
+  keyName(A.keyName),nCylinder(A.nCylinder),CV(A.CV),
+  Pts(A.Pts),layerSurf(A.layerSurf),commonSurf(A.commonSurf),
+  activeFlags(A.activeFlags)
   /*!
     Copy constructor
     \param A :: PipeLine to copy
@@ -116,12 +114,13 @@ PipeLine::operator=(const PipeLine& A)
 {
   if (this!=&A)
     {
-      SMap=A.SMap;
-      cellIndex=A.cellIndex;
       nCylinder=A.nCylinder;
       CV=A.CV;
       Pts=A.Pts;
+      layerSurf=A.layerSurf;
+      commonSurf=A.commonSurf;
       activeFlags=A.activeFlags;
+      clearPUnits();
     }
   return *this;
 }
@@ -174,6 +173,53 @@ PipeLine::addPoint(const Geometry::Vec3D& Pt)
   return;
 }
 
+void 
+PipeLine::addSurfPoint(const Geometry::Vec3D& Pt,const std::string& surfStr)
+  /*!
+    Add an additional point
+    \param Pt :: Point to add
+    \param surfStr :: Outgoing surface string
+   */
+{ 
+  ELog::RegMethod RegA("PipeLine","addSurfPoint");
+  addSurfPoint(Pt,surfStr,std::string());
+  return;
+}
+
+void 
+PipeLine::addSurfPoint(const Geometry::Vec3D& Pt,
+		       const std::string& surfStr,
+		       const std::string& commonStr)
+  /*!
+    Add an additional point
+    \param Pt :: Point to add
+    \param surfStr :: Outgoing surface string
+    \param commonSurf :: common surface
+   */
+{ 
+  ELog::RegMethod RegA("PipeLine","addSurfPoint");
+
+  HeadRule LSurf,CSurf;
+
+  if (LSurf.procString(surfStr)!=1)
+    throw ColErr::InvalidLine("surfStr",surfStr,0);
+
+  layerSurf.insert(std::map<size_t,HeadRule>::value_type(Pts.size(),LSurf));
+  if (!commonStr.empty())
+    {
+      if (CSurf.procString(commonStr)!=1)
+	throw ColErr::InvalidLine("commonStr",commonStr,0);
+    }
+  // insert empty rule if needed
+  commonSurf.insert(std::map<size_t,HeadRule>::value_type(Pts.size(),CSurf));
+
+  Pts.push_back(Pt);
+  if (Pts.size()>1)
+    activeFlags.push_back(0);
+
+  return;
+}
+
 void
 PipeLine::setActive(const size_t uIndex,const int flag)
   /*!
@@ -205,12 +251,12 @@ PipeLine::addRadius(const double R,const int M,const double T)
   nCylinder++;
   if (!CV.empty() && CV.back().CRadius>R)
     ELog::EM<<"Radius for pipes must in increasing order"<<ELog::endErr;
-    
+   
   CV.push_back(cylValues(R,M,T));
 
   return;
 }
-
+ 
 int
 PipeLine::createUnits(Simulation& System)
   /*!
@@ -228,10 +274,28 @@ PipeLine::createUnits(Simulation& System)
     }
   
   // Set the points
+  HeadRule PtRule;
   for(size_t i=1;i<Pts.size();i++)
     {
       pipeUnit* PU=new pipeUnit(keyName,i);
       PU->setPoints(Pts[i-1],Pts[i]);
+      if (layerSurf.find(i-1)!=layerSurf.end())
+	{
+	  PtRule=layerSurf[i-1];
+	  PtRule.addIntersection(commonSurf[i-1]);
+	  ELog::EM<<"ASurf == "<<PtRule.display()<<ELog::endCrit;
+	  PU->setASurf(PtRule);
+	}
+      // Complementary object only for modified surface
+      if (layerSurf.find(i)!=layerSurf.end())
+	{
+	  PtRule=layerSurf[i];
+	  PtRule.makeComplement();
+	  PtRule.addIntersection(commonSurf[i]);
+	  ELog::EM<<"LSurf["<<i<<"] == "<<layerSurf[i].display()<<ELog::endCrit;
+	  ELog::EM<<"BSurf == "<<PtRule.display()<<ELog::endCrit;
+	  PU->setBSurf(PtRule);
+	}
       PUnits.push_back(PU);
     } 
   for(size_t i=0;i<PUnits.size();i++)
