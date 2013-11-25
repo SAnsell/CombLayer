@@ -75,6 +75,7 @@
 #include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -188,12 +189,12 @@ MerlinPipe::populate(const Simulation& System)
   watSkinRadius=Control.EvalVar<double>(keyName+"WaterSkinRadius"); 
   watRadius=Control.EvalVar<double>(keyName+"WaterRadius"); 
 
-  outMat=Control.EvalVar<int>(keyName+"OutMat"); 
-  outVacMat=Control.EvalVar<int>(keyName+"OutVacMat"); 
-  midMat=Control.EvalVar<int>(keyName+"MidMat"); 
-  midVacMat=Control.EvalVar<int>(keyName+"MidVacMat"); 
-  watSkinMat=Control.EvalVar<int>(keyName+"WaterSkinMat"); 
-  watMat=Control.EvalVar<int>(keyName+"WaterMat"); 
+  outMat=ModelSupport::EvalMat<int>(Control,keyName+"OutMat"); 
+  outVacMat=ModelSupport::EvalMat<int>(Control,keyName+"OutVacMat"); 
+  midMat=ModelSupport::EvalMat<int>(Control,keyName+"MidMat"); 
+  midVacMat=ModelSupport::EvalMat<int>(Control,keyName+"MidVacMat"); 
+  watSkinMat=ModelSupport::EvalMat<int>(Control,keyName+"WaterSkinMat"); 
+  watMat=ModelSupport::EvalMat<int>(Control,keyName+"WaterMat"); 
 
   // wInXoffset=Control.EvalVar<double>(keyName+"WInXOff"); 
   // wInYoffset=Control.EvalVar<double>(keyName+"WInYOff"); 

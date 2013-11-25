@@ -75,6 +75,7 @@
 #include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "chipDataStore.h"
 #include "LinkUnit.h"
@@ -186,19 +187,19 @@ TriangleMod::populate(const Simulation& System)
   baseClearance=Control.EvalVar<double>(keyName+"BaseClearance");
 
   innerStep=Control.EvalVar<double>(keyName+"InnerStep");
-  innerMat=Control.EvalVar<int>(keyName+"InnerMat");
+  innerMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerMat");
 
 // Poison
   poisonStep=Control.EvalVar<double>(keyName+"PoisonStep");
   poisonThick=Control.EvalVar<double>(keyName+"PoisonThick");
   pCladThick=Control.EvalVar<double>(keyName+"PCladThick");
-  pCladMat=Control.EvalVar<int>(keyName+"PCladMat");
-  poisonMat=Control.EvalVar<int>(keyName+"PoisonMat");
+  pCladMat=ModelSupport::EvalMat<int>(Control,keyName+"PCladMat");
+  poisonMat=ModelSupport::EvalMat<int>(Control,keyName+"PoisonMat");
 //
 
-  modTemp=Control.EvalVar<int>(keyName+"ModTemp");
-  modMat=Control.EvalVar<int>(keyName+"ModMat");
-  wallMat=Control.EvalVar<int>(keyName+"WallMat");
+  modTemp=Control.EvalVar<double>(keyName+"ModTemp");
+  modMat=ModelSupport::EvalMat<int>(Control,keyName+"ModMat");
+  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   
   return;
 }

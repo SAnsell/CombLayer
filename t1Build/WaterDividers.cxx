@@ -76,6 +76,7 @@
 #include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "SimProcess.h"
 #include "chipDataStore.h"
@@ -237,8 +238,8 @@ WaterDividers::populate(const Simulation& System)
   insHeight=Control.EvalVar<double>(keyName+"InsHeight");              
   insRad=Control.EvalVar<double>(keyName+"InsRad");             
 
-  dMat=Control.EvalVar<int>(keyName+"Mat");
-  insMat=Control.EvalVar<int>(keyName+"InsMat");
+  dMat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
+  insMat=ModelSupport::EvalMat<int>(Control,keyName+"InsMat");
 
   cornerThick=Control.EvalVar<double>(keyName+"CornerThick");
   cornerWidth=Control.EvalVar<double>(keyName+"CornerWidth");

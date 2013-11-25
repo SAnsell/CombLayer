@@ -76,6 +76,7 @@
 #include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -208,10 +209,10 @@ CH4Moderator::populate(const Simulation& System)
   poisonAlThick=Control.EvalVar<double>(keyName+"PoisonAlThick");
 
   // Materials
-  alMat=Control.EvalVar<int>(keyName+"AlMat");
-  ch4Mat=Control.EvalVar<int>(keyName+"CH4Mat");
-  voidMat=Control.EvalVar<int>(keyName+"VoidMat");
-  poisonMat=Control.EvalVar<int>(keyName+"PoisonMat");
+  alMat=ModelSupport::EvalMat<int>(Control,keyName+"AlMat");
+  ch4Mat=ModelSupport::EvalMat<int>(Control,keyName+"CH4Mat");
+  voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
+  poisonMat=ModelSupport::EvalMat<int>(Control,keyName+"PoisonMat");
   
   ch4Temp=Control.EvalVar<double>(keyName+"CH4Temp");
   return;

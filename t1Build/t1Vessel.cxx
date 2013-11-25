@@ -48,7 +48,6 @@
 #include "Matrix.h"
 #include "Tensor.h"
 #include "Vec3D.h"
-#include "PointOperation.h"
 #include "Triple.h"
 #include "NRange.h"
 #include "NList.h"
@@ -57,18 +56,12 @@
 #include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
-#include "surfDIter.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "surfEqual.h"
-#include "surfDivide.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
-#include "Line.h"
-#include "LineIntersectVisit.h"
 #include "Rules.h"
-#include "Convex.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -77,20 +70,16 @@
 #include "Qhull.h"
 #include "KGroup.h"
 #include "Source.h"
-#include "shutterBlock.h"
 #include "SimProcess.h"
 #include "SurInter.h"
 #include "Simulation.h"
-#include "chipDataStore.h"
-#include "insertInfo.h"
-#include "insertBaseInfo.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "ContainedComp.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "t1Vessel.h"
-
 
 namespace shutterSystem
 {
@@ -226,8 +215,8 @@ t1Vessel::populate(const Simulation& System)
   WindowAngleROff=Control.EvalVar<double>(keyName+"WindowAngleROffset");
   WindowAngleLOff=Control.EvalVar<double>(keyName+"WindowAngleLOffset");
 
-  Mat=Control.EvalVar<int>(keyName+"Mat");
-  WindowMat=Control.EvalVar<int>(keyName+"WindowMat");
+  Mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
+  WindowMat=ModelSupport::EvalMat<int>(Control,keyName+"WindowMat");
       
   populated = 1;
   return;

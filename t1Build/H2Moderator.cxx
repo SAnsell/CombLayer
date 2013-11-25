@@ -76,6 +76,7 @@
 #include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -196,9 +197,9 @@ H2Moderator::populate(const Simulation& System)
   clearTop=Control.EvalVar<double>(keyName+"ClearTop");
 
   // Materials
-  alMat=Control.EvalVar<int>(keyName+"AlMat");
-  lh2Mat=Control.EvalVar<int>(keyName+"Lh2Mat");
-  voidMat=Control.EvalVar<int>(keyName+"VoidMat");
+  alMat=ModelSupport::EvalMat<int>(Control,keyName+"AlMat");
+  lh2Mat=ModelSupport::EvalMat<int>(Control,keyName+"Lh2Mat");
+  voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
 
   h2Temp=Control.EvalVar<double>(keyName+"Lh2Temp");
   applyModification();

@@ -76,6 +76,7 @@
 #include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -195,10 +196,10 @@ H2Section::populate(const Simulation& System)
   siThick=Control.EvalVar<double>(keyName+"SiThick");
 
   // Materials
-  alMat=Control.EvalVar<int>(keyName+"AlMat");
-  lh2Mat=Control.EvalVar<int>(keyName+"Lh2Mat");
-  siMat=Control.EvalVar<int>(keyName+"SiMat");
-  lh2Temp=Control.EvalVar<int>(keyName+"Lh2Temp");
+  alMat=ModelSupport::EvalMat<int>(Control,keyName+"AlMat");
+  lh2Mat=ModelSupport::EvalMat<int>(Control,keyName+"Lh2Mat");
+  siMat=ModelSupport::EvalMat<int>(Control,keyName+"SiMat");
+  lh2Temp=Control.EvalVar<double>(keyName+"Lh2Temp");
 
   return;
 }

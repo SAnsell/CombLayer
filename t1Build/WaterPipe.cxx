@@ -75,6 +75,7 @@
 #include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -179,9 +180,9 @@ WaterPipe::populate(const Simulation& System)
   voidRadius=Control.EvalVar<double>(keyName+"VoidRadius"); 
   steelRadius=Control.EvalVar<double>(keyName+"SteelRadius"); 
 
-  outMat=Control.EvalVar<int>(keyName+"OuterMat"); 
-  watMat=Control.EvalVar<int>(keyName+"WaterMat"); 
-  steelMat=Control.EvalVar<int>(keyName+"SteelMat"); 
+  outMat=ModelSupport::EvalMat<int>(Control,keyName+"OuterMat"); 
+  watMat=ModelSupport::EvalMat<int>(Control,keyName+"WaterMat"); 
+  steelMat=ModelSupport::EvalMat<int>(Control,keyName+"SteelMat"); 
 
 
   return;

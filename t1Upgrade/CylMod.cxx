@@ -59,6 +59,7 @@
 #include "Qhull.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "support.h"
 #include "stringCombine.h"
@@ -154,8 +155,8 @@ CylMod::populate(const FuncDataBase& Control)
 	    (StrFunc::makeString(keyName+"HGap",i));   
 	  R+=Control.EvalVar<double>
 	    (StrFunc::makeString(keyName+"RadGap",i));   
-	  M=Control.EvalVar<int>
-	    (StrFunc::makeString(keyName+"Material",i));   
+	  M=ModelSupport::EvalMat<int>
+	    (Control,StrFunc::makeString(keyName+"Material",i));   
 	  T=(!M) ? 0.0 : 
 	    Control.EvalVar<double>(StrFunc::makeString(keyName+"Temp",i)); 
 	}
@@ -163,8 +164,8 @@ CylMod::populate(const FuncDataBase& Control)
 	{
 	  H=Control.EvalVar<double>(keyName+"Height");   
 	  R=Control.EvalVar<double>(keyName+"Radius");   
-	  M=Control.EvalVar<int>(keyName+"Mat");   
-	  T=Control.EvalVar<int>(keyName+"Temp");   
+	  M=ModelSupport::EvalMat<int>(Control,keyName+"Mat");   
+	  T=Control.EvalVar<double>(keyName+"Temp");   
 	}
       radius.push_back(R);
       height.push_back(H);

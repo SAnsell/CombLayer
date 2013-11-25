@@ -77,6 +77,7 @@
 #include "Qhull.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "ContainedComp.h"
 #include "LinkUnit.h"
@@ -164,7 +165,7 @@ t1CylVessel::populate(const Simulation& System)
   baseRadius=Control.EvalVar<double>(keyName+"BaseRadius");
   topRadius=Control.EvalVar<double>(keyName+"TopRadius");
 
-  wallMat=Control.EvalVar<int>(keyName+"WallMat");
+  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
       
   populated = 1;
   return;

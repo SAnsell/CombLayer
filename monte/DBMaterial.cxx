@@ -671,7 +671,7 @@ DBMaterial::setMaterial(const MonteCarlo::Material& MO)
 
   const std::string& MName=MO.getName();
   const int MIndex=MO.getNumber();
-  ELog::EM<<"Check of MName:"<<MName<<" "<<MIndex<<ELog::endDebug;
+
   checkNameIndex(MIndex,MName);
   MStore.insert(MTYPE::value_type(MIndex,MO));
   IndexMap.insert(SCTYPE::value_type(MName,MIndex));
@@ -773,6 +773,58 @@ DBMaterial::getMaterial(const std::string& MName) const
   if (mc==IndexMap.end())
     throw ColErr::InContainerError<std::string>(MName,"IndexMap");
   return getMaterial(mc->second);
+}
+
+int
+DBMaterial::hasKey(const std::string& Key) const
+  /*!
+    Determine if the string exists in the data base
+    \param Key :: KeyName
+    \return matNumber / 0 on fail
+  */
+{
+  ELog::RegMethod RegA("DBMaterial","hasKey<string>");
+  
+  SCTYPE::const_iterator sc=IndexMap.find(Key);
+  return (sc==IndexMap.end()) ? 0 : sc->second;
+}
+
+int
+DBMaterial::hasKey(const int KeyNum) const
+  /*!
+    Determine if the index exists in the data base
+    \param KeyNum :: key number
+    \return matNumber / 0 on fail
+  */
+{
+  ELog::RegMethod RegA("DBMaterial","hasKey<int>");
+  
+  MTYPE::const_iterator mc=MStore.find(KeyNum);
+  return (mc==MStore.end()) ? 0 : KeyNum;
+}
+
+const std::string&
+DBMaterial::getKey(const int KeyNum) const
+  /*!
+    Determine if the index exists in the data base
+    \param KeyNum :: key number
+    \return matNumber / 0 on fail
+  */
+{
+  ELog::RegMethod RegA("DBMaterial","getKey");
+  
+  MTYPE::const_iterator mc=MStore.find(KeyNum);
+  if (mc==MStore.end())
+    throw ColErr::InContainerError<int>(KeyNum,"KeyNum");
+  
+  const std::string& OutStr=mc->second.getName();
+  SCTYPE::const_iterator sc=IndexMap.find(OutStr);
+  if (sc==IndexMap.end())
+    throw ColErr::InContainerError<std::string>(OutStr,"IndexMap");
+  if (sc->second!=KeyNum)
+    throw ColErr::MisMatch<int>(KeyNum,sc->second,"KeyNum/IndexMap");
+  
+  return OutStr;
 }
 
 

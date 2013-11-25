@@ -59,6 +59,7 @@
 #include "Qhull.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "support.h"
 #include "SurInter.h"
@@ -157,8 +158,8 @@ CylPreSimple::populate(const FuncDataBase& Control)
 	(StrFunc::makeString(keyName+"Depth",i+1));   
       R+=Control.EvalVar<double>
 	(StrFunc::makeString(keyName+"Thick",i+1));   
-      M=Control.EvalVar<int>
-	(StrFunc::makeString(keyName+"Material",i+1));   
+      M=ModelSupport::EvalMat<int>
+	(Control,StrFunc::makeString(keyName+"Material",i+1));   
       const std::string TStr=StrFunc::makeString(keyName+"Temp",i+1);
       T=(!M || !Control.hasVariable(TStr)) ?
 	0.0 : Control.EvalVar<double>(TStr); 

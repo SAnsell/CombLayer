@@ -86,6 +86,7 @@
 #include "insertInfo.h"
 #include "insertBaseInfo.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "ContainedComp.h"
 #include "LinkUnit.h"
@@ -172,8 +173,8 @@ MonoPlug::populate(const Simulation& System)
   plugClearance=Control.EvalVar<double>(keyName+"PlugClearance");   
   dividerZLen=Control.EvalVar<double>(keyName+"DivideLen");   
  
-  steelMat=Control.EvalVar<int>(keyName+"SteelMat");
-  concMat=Control.EvalVar<int>(keyName+"ConcMat");
+  steelMat=ModelSupport::EvalMat<int>(Control,keyName+"SteelMat");
+  concMat=ModelSupport::EvalMat<int>(Control,keyName+"ConcMat");
       
   return;
 }

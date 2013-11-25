@@ -75,6 +75,7 @@
 #include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -180,8 +181,8 @@ CH4Pipe::populate(const Simulation& System)
   alTerRadius=Control.EvalVar<double>(keyName+"AlTerRadius");
   clearRadius=Control.EvalVar<double>(keyName+"ClearRadius");
 
-  alMat=Control.EvalVar<int>(keyName+"AlMat"); 
-  ch4Mat=Control.EvalVar<int>(keyName+"CH4Mat"); 
+  alMat=ModelSupport::EvalMat<int>(Control,keyName+"AlMat"); 
+  ch4Mat=ModelSupport::EvalMat<int>(Control,keyName+"CH4Mat"); 
   ch4Temp=Control.EvalVar<double>(keyName+"CH4Temp"); 
 
   return;

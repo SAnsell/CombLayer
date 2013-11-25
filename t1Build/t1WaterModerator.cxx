@@ -76,6 +76,7 @@
 #include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -90,7 +91,7 @@ namespace ts1System
 t1WaterModerator::t1WaterModerator(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::FixedComp(Key,0),
   waterIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(waterIndex+1),populated(0)
+  cellIndex(waterIndex+1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -99,8 +100,7 @@ t1WaterModerator::t1WaterModerator(const std::string& Key)  :
 
 t1WaterModerator::t1WaterModerator(const t1WaterModerator& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  waterIndex(A.waterIndex),
-  cellIndex(A.cellIndex),populated(A.populated),
+  waterIndex(A.waterIndex),cellIndex(A.cellIndex),
   xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
   xyAngle(A.xyAngle),xOutSize(A.xOutSize),yOutSize(A.yOutSize),
   zOutSize(A.zOutSize),alThickOut(A.alThickOut),alMat(A.alMat),waterMat(A.waterMat)
@@ -123,7 +123,6 @@ t1WaterModerator::operator=(const t1WaterModerator& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
       cellIndex=A.cellIndex;
-      populated=A.populated;
       xStep=A.xStep;
       yStep=A.yStep;
       zStep=A.zStep;
@@ -168,11 +167,10 @@ t1WaterModerator::populate(const Simulation& System)
   alThickOut=Control.EvalVar<double>(keyName+"AlThickOut");
 
   // Materials
-  alMat=Control.EvalVar<int>(keyName+"AlMat");
-  waterMat=Control.EvalVar<int>(keyName+"WaterMat");
+  alMat=ModelSupport::EvalMat<int>(Control,keyName+"AlMat");
+  waterMat=ModelSupport::EvalMat<int>(Control,keyName+"WaterMat");
 
 
-  populated |= 1;
   return;
 }
   

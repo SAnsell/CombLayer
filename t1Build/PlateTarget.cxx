@@ -78,6 +78,7 @@
 #include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "SimProcess.h"
 #include "chipDataStore.h"
@@ -203,10 +204,10 @@ PlateTarget::populate(const Simulation& System)
       (StrFunc::makeString(keyName+"BlockType",i),1);
   
 
-  feMat=Control.EvalVar<int>(keyName+"FeMat");
-  taMat=Control.EvalVar<int>(keyName+"TaMat");
-  wMat=Control.EvalVar<int>(keyName+"WMat");
-  waterMat=Control.EvalVar<int>(keyName+"WaterMat");
+  feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
+  taMat=ModelSupport::EvalMat<int>(Control,keyName+"TaMat");
+  wMat=ModelSupport::EvalMat<int>(Control,keyName+"WMat");
+  waterMat=ModelSupport::EvalMat<int>(Control,keyName+"WaterMat");
 
   populated |= 1;
   return;

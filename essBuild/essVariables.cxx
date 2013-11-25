@@ -665,8 +665,8 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("BeRefRadius",29.9);
   Control.addVariable("BeRefHeight",89.8);
   Control.addVariable("BeRefWallThick",0.1);
-  Control.addVariable("BeRefRefMat",37);
-  Control.addVariable("BeRefWallMat",5);
+  Control.addVariable("BeRefRefMat","Be300K");
+  Control.addVariable("BeRefWallMat","Aluminium");
   
 
   Control.addVariable("BulkXStep",0.0);
@@ -685,13 +685,13 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("BulkRadius2",65.0);
   Control.addVariable("BulkHeight2",75.0);
   Control.addVariable("BulkDepth2",75.0);
-  Control.addVariable("BulkMat2",3);           // stainless
+  Control.addVariable("BulkMat2","Stainless304");           // stainless
 
   // Bulk steel layer [No individual guides]
   Control.addVariable("BulkRadius3",200.0);
   Control.addVariable("BulkHeight3",200.0);
   Control.addVariable("BulkDepth3",200.0);
-  Control.addVariable("BulkMat3",54);           // Bulk Steel
+  Control.addVariable("BulkMat3","CastIron");           // Bulk Steel
 
 
   // BULK FLIGHT VOID

@@ -77,6 +77,7 @@
 #include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -214,7 +215,8 @@ CH4Layer::populate(const Simulation& System)
       Front=checkUnit(Control,i+1,"Front",1.0,"Depth",0.5,"Layer",1.0);
       Back=checkUnit(Control,i+1,"Back",1.0,"Depth",0.5,"Layer",1.0);
 
-      mat=Control.EvalVar<int>(keyName+StrFunc::makeString("Mat",i+1));
+      mat=ModelSupport::EvalMat<int>(Control,
+				     keyName+StrFunc::makeString("Mat",i+1));
       temp=Control.EvalDefVar<double>
 	(keyName+StrFunc::makeString("Temp",i+1),0.0);
       

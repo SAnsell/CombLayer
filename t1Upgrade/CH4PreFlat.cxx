@@ -75,6 +75,7 @@
 #include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "surfExpand.h"
 #include "chipDataStore.h"
@@ -174,11 +175,10 @@ CH4PreFlat::populate(const Simulation& System)
   depth=Control.EvalVar<double>(keyName+"Depth");
 
   alThick=Control.EvalVar<double>(keyName+"AlThick");
-  vacThick=Control.EvalVar<double>(keyName+"VacThick");
-
-  modTemp=Control.EvalVar<int>(keyName+"ModTemp");
-  modMat=Control.EvalVar<int>(keyName+"ModMat");
-  alMat=Control.EvalVar<int>(keyName+"AlMat");
+  vacThick=Control.EvalVar<double>(keyName+"VacThick"); 
+  modTemp=Control.EvalVar<double>(keyName+"ModTemp");
+  modMat=ModelSupport::EvalMat<int>(Control,keyName+"ModMat");
+  alMat=ModelSupport::EvalMat<int>(Control,keyName+"AlMat");
   
   return;
 }

@@ -75,6 +75,7 @@
 #include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -189,9 +190,9 @@ H2Pipe::populate(const Simulation& System)
   clearRadius=Control.EvalVar<double>(keyName+"ClearRadius");
   steelRadius=Control.EvalVar<double>(keyName+"SteelRadius");
 
-  alMat=Control.EvalVar<int>(keyName+"AlMat");
-  steelMat=Control.EvalVar<int>(keyName+"SteelMat");    
-  h2Mat=Control.EvalVar<int>(keyName+"H2Mat"); 
+  alMat=ModelSupport::EvalMat<int>(Control,keyName+"AlMat");
+  steelMat=ModelSupport::EvalMat<int>(Control,keyName+"SteelMat");    
+  h2Mat=ModelSupport::EvalMat<int>(Control,keyName+"H2Mat"); 
   h2Temp=Control.EvalVar<double>(keyName+"H2Temp"); 
 
   return;

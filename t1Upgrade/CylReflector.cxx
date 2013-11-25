@@ -78,6 +78,7 @@
 #include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "chipDataStore.h"
 #include "LinkUnit.h"
@@ -187,8 +188,8 @@ CylReflector::populate(const Simulation& System)
 	(keyName+StrFunc::makeString("Height",i+1));
       depth[i]=Control.EvalVar<double>
 	(keyName+StrFunc::makeString("Depth",i+1));
-      Mat[i]=Control.EvalVar<int>
-	(keyName+StrFunc::makeString("Mat",i+1));
+      Mat[i]=ModelSupport::EvalMat<int>(Control,
+	keyName+StrFunc::makeString("Mat",i+1));
       if (i)
 	COffset[i]=Control.EvalDefVar<Geometry::Vec3D>
 	  (keyName+StrFunc::makeString("Offset",i+1),

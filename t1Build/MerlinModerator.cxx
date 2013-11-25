@@ -77,6 +77,7 @@
 #include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -188,9 +189,9 @@ MerlinModerator::populate(const Simulation& System)
     } 
 
   // Materials
-  alMat=Control.EvalVar<int>(keyName+"AlMat");
-  waterMat=Control.EvalVar<int>(keyName+"WaterMat");
-  poisonMat=Control.EvalVar<int>(keyName+"PoisonMat");
+  alMat=ModelSupport::EvalMat<int>(Control,keyName+"AlMat");
+  waterMat=ModelSupport::EvalMat<int>(Control,keyName+"WaterMat");
+  poisonMat=ModelSupport::EvalMat<int>(Control,keyName+"PoisonMat");
 
   applyModification();
   return;

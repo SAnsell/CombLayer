@@ -31,7 +31,7 @@ namespace ts1System
 /*!
   \class t1WaterModerator
   \version 1.0
-  \author F Burge
+  \author F. Burge
   \date June 2012
   \brief TS1 t1WaterModerator [insert object]
 */
@@ -43,7 +43,6 @@ class t1WaterModerator : public attachSystem::ContainedComp,
   
   const int waterIndex;           ///< Index of surface offset
   int cellIndex;                ///< Cell index
-  int populated;                ///< 1:var,2:axis,4:cent,8:face,16:cell
   
   double xStep;                 ///< Offset on X to Target
   double yStep;                 ///< Offset on Y to Target [+ve forward]
@@ -57,8 +56,6 @@ class t1WaterModerator : public attachSystem::ContainedComp,
 
   int alMat;                    ///< Al
   int waterMat;                   ///< water
-
-  
 
   void populate(const Simulation&);
   void createUnitVector(const attachSystem::FixedComp&);

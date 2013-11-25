@@ -78,6 +78,7 @@
 #include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -194,9 +195,9 @@ SideCoolTarget::populate(const Simulation& System)
   voidThick=Control.EvalVar<double>(keyName+"VoidThick");
   cutAngle=Control.EvalVar<double>(keyName+"CutAngle");
 
-  wMat=Control.EvalVar<int>(keyName+"WMat");
-  taMat=Control.EvalVar<int>(keyName+"TaMat");
-  waterMat=Control.EvalVar<int>(keyName+"WaterMat");
+  wMat=ModelSupport::EvalMat<int>(Control,keyName+"WMat");
+  taMat=ModelSupport::EvalMat<int>(Control,keyName+"TaMat");
+  waterMat=ModelSupport::EvalMat<int>(Control,keyName+"WaterMat");
 
   targetTemp=Control.EvalVar<double>(keyName+"TargetTemp");
   waterTemp=Control.EvalVar<double>(keyName+"WaterTemp");

@@ -83,6 +83,10 @@ class DBMaterial
   void setNeutMaterial(const int,const scatterSystem::neutMaterial&);
   void setNeutMaterial(const int,const scatterSystem::neutMaterial*);
 
+  int hasKey(const std::string&) const;
+  int hasKey(const int) const;
+  const std::string& getKey(const int) const;
+
   void resetActive();
   void setActive(const int);
   bool isActive(const int) const;

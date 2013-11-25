@@ -76,6 +76,7 @@
 #include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -175,7 +176,7 @@ t1Reflector::populate(const Simulation& System)
   cutLen=Control.EvalVar<double>(keyName+"CutLen");
 
   // Material
-  defMat=Control.EvalVar<int>(keyName+"DefMat");
+  defMat=ModelSupport::EvalMat<int>(Control,keyName+"DefMat");
 
   // Box information
   baseZCut=Control.EvalVar<double>(keyName+"BaseZCut");

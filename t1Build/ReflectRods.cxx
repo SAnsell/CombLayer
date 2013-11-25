@@ -77,6 +77,7 @@
 #include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -157,9 +158,9 @@ ReflectRods::populate(const Simulation& System)
       radius=Control.EvalVar<double>(keyName+"Radius");
       linerThick=Control.EvalVar<double>(keyName+"LinerThick");
 
-      innerMat=Control.EvalVar<int>(keyName+"InnerMat");
-      linerMat=Control.EvalVar<int>(keyName+"LinerMat");
-      defMat=Control.EvalVar<int>(keyName+"DefMat");
+      innerMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerMat");
+      linerMat=ModelSupport::EvalMat<int>(Control,keyName+"LinerMat");
+      defMat=ModelSupport::EvalMat<int>(Control,keyName+"DefMat");
 
 
       populated= (radius<Geometry::zeroTol) ? 0 : 1;

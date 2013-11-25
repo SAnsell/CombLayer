@@ -78,6 +78,7 @@
 #include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "SimProcess.h"
 #include "chipDataStore.h"
@@ -239,9 +240,9 @@ PressVessel::populate(const Simulation& System)
   sideWallThick=Control.EvalVar<double>(keyName+"SideWallThick");
   frontWallThick=Control.EvalVar<double>(keyName+"FrontWallThick");
   // Material
-  wallMat=Control.EvalVar<int>(keyName+"WallMat");
-  taMat=Control.EvalVar<int>(keyName+"TaMat");
-  waterMat=Control.EvalVar<int>(keyName+"WaterMat");
+  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
+  taMat=ModelSupport::EvalMat<int>(Control,keyName+"TaMat");
+  waterMat=ModelSupport::EvalMat<int>(Control,keyName+"WaterMat");
 
   viewRadius=Control.EvalVar<double>("ProtonVoidViewRadius");
   viewSteelRadius=Control.EvalVar<double>(keyName+"ViewSteelRadius");

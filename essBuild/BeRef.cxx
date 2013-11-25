@@ -59,6 +59,7 @@
 #include "Qhull.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "support.h"
 #include "stringCombine.h"
@@ -107,9 +108,8 @@ BeRef::populate(const FuncDataBase& Control)
   radius=Control.EvalVar<double>(keyName+"Radius");   
   height=Control.EvalVar<double>(keyName+"Height");   
   wallThick=Control.EvalVar<double>(keyName+"WallThick");   
-
-  refMat=Control.EvalVar<int>(keyName+"RefMat");   
-  wallMat=Control.EvalVar<int>(keyName+"WallMat");
+  refMat=ModelSupport::EvalMat<int>(Control,keyName+"RefMat");   
+  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");   
   
   return;
 }
