@@ -77,13 +77,20 @@ class Material
 
   static int lineType(std::string&);
 
-  void setName(const std::string& A) { Name=A; }  ///< Set the material name
-  std::string getName() const { return Name; }    ///< Get the material name
+  /// Set the material name
+  void setName(const std::string& A) { Name=A; }  
+  /// Get the material name
+  const std::string& getName() const { return Name; } 
 
-  void setNumber(const int nA) { Mnum=nA; }  ///< set the Material number
-  int getNumber() const { return Mnum; }     ///< Assesor function to Number
+  /// set the Material number
+  void setNumber(const int nA) { Mnum=nA; } 
+  /// Assesor function to Number
+  int getNumber() const { return Mnum; }
 
   int setMaterial(const std::vector<std::string>&);
+  int setMaterial(const int,const std::string&,
+		  const std::string&,const std::string&,
+		  const std::string&);
   int setMaterial(const int,const std::string&,const std::string&,
 		  const std::string&);
 

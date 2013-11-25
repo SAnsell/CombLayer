@@ -91,6 +91,7 @@ class FuncDataBase
   /// Add variable
   template<typename T>
   void addVariable(const std::string&,const T&);
+  void addVariable(const std::string&,const char*);
   void addVariable(const std::string&);
   template<typename T>
   void setVariable(const std::string&,const T&);

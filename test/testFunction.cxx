@@ -81,7 +81,7 @@ testFunction::applyTest(const int extra)
       &testFunction::testAnalyse,
       &testFunction::testBuiltIn,
       &testFunction::testEval,
-      &testFunction::testString,
+      &testFunction::testString, 
       &testFunction::testVec3D
     };
 
@@ -289,8 +289,16 @@ testFunction::testString()
 {
   ELog::RegMethod RegA("testFucntion","testString");
   FuncDataBase XX;   
-  //  XX.addVariable("test","AA");
-  
+  XX.addVariable("test",std::string("AA"));
+  XX.addVariable("testB","BB");
+  const std::string A=XX.EvalVar<std::string>("test");
+  const std::string B=XX.EvalVar<std::string>("testB");
+  if (A!="AA" || B!="BB")
+    {
+        ELog::EM<<"A == "<<A<<ELog::endDebug;
+	return -1;
+    }
+
   return 0;
 }
   

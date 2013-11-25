@@ -41,13 +41,16 @@ namespace ModelSupport
 class DBMaterial
 {  
  private:
-
+  /// String convert type
+  typedef std::map<std::string,int> SCTYPE;
   /// Storage type for Materials
   typedef std::map<int,MonteCarlo::Material> MTYPE;
+
   /// Storage type for Neut Materials
   typedef std::map<int,scatterSystem::neutMaterial*> NTYPE;
 
-  MTYPE  MStore;    ///< Store of materials
+  SCTYPE IndexMap;   ///< Map of indexes
+  MTYPE  MStore;     ///< Store of materials
   NTYPE  NStore;     ///< Store of neutron materials [if exist]
   /// Active list
   std::set<int> active;
@@ -61,7 +64,8 @@ class DBMaterial
 
   void initMaterial();
   void initMXUnits();
-  
+  void checkNameIndex(const int,const std::string&) const;
+
  public:
   
   static DBMaterial& Instance();
@@ -71,10 +75,14 @@ class DBMaterial
   /// get data store
   const MTYPE& getStore() const { return MStore; }
   const NTYPE& getNeutMat() const { return NStore; }
+  const MonteCarlo::Material& getMaterial(const int) const;
+  const MonteCarlo::Material& getMaterial(const std::string&) const;
 
+  void resetMaterial(const MonteCarlo::Material&);
   void setMaterial(const MonteCarlo::Material&);
   void setNeutMaterial(const int,const scatterSystem::neutMaterial&);
   void setNeutMaterial(const int,const scatterSystem::neutMaterial*);
+
   void resetActive();
   void setActive(const int);
   bool isActive(const int) const;

@@ -230,6 +230,33 @@ Material::getExtraType(std::string& Line,std::string& particles)
 
 int
 Material::setMaterial(const int MIndex,
+		      const std::string& N,
+		      const std::string& MLine,
+		      const std::string& MTLine,
+		      const std::string& LibLine)
+  /*!
+    Sets the material given a full line from MCNPX.
+    Passes strings of type 
+     - m1 56097.70c 0.034 
+     - mt24 be77.0k hlib=.24h
+    \param MIndex :: Index number
+    \param N :: Name
+    \param MLine :: Zaid line
+    \param MTLine :: Treatment line
+    \param LibLine :: Libraries
+    \retval -ve :: on error
+    \retval 0 :: on success
+  */
+{
+
+  ELog::RegMethod RegA("Material","setMaterial(i,s,s,s,s)");
+  const int retVal=setMaterial(MIndex,MLine,MTLine,LibLine);
+  if (!retVal) Name=N;
+  return retVal; 
+}
+
+int
+Material::setMaterial(const int MIndex,
 		      const std::string& MLine,
 		      const std::string& MTLine,
 		      const std::string& LibLine)
@@ -259,6 +286,11 @@ Material::setMaterial(const int MIndex,
       return -1;
     }
   
+  zaidVec.clear();
+  mxCards.clear();
+  Libs.clear();
+  SQW.clear();
+
   Zaid AZ;
   double Dens;                   // density
   std::vector<std::string>::iterator vc;

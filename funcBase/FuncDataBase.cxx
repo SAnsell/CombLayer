@@ -773,6 +773,19 @@ FuncDataBase::addVariable(const std::string& Name,const T& V)
   return;
 }
 
+void
+FuncDataBase::addVariable(const std::string& Name,const char* V)
+  /*!
+    Adds this function if the Code system has been 
+    executed
+    \param Name :: Name of the variable
+    \param V :: Variable to add
+  */
+{
+  VList.addVar<std::string>(Name,std::string(V));
+  return;
+}
+
 template<typename T>
 void
 FuncDataBase::setVariable(const std::string& Name,const T& V)
@@ -921,6 +934,7 @@ template void FuncDataBase::addVariable(const std::string&,const Code&);
 template void FuncDataBase::addVariable(const std::string&,const int&);
 template void FuncDataBase::addVariable(const std::string&,const size_t&);
 
+
 template void FuncDataBase::setVariable(const std::string&,const Geometry::Vec3D&);
 template void FuncDataBase::setVariable(const std::string&,const double&);
 template void FuncDataBase::setVariable(const std::string&,const std::string&);
@@ -932,6 +946,7 @@ template double FuncDataBase::EvalVar(const std::string&) const;
 template Geometry::Vec3D FuncDataBase::EvalVar(const std::string&) const;
 template int FuncDataBase::EvalVar(const std::string&) const;
 template size_t FuncDataBase::EvalVar(const std::string&) const;
+template std::string FuncDataBase::EvalVar(const std::string&) const;
 
 template double FuncDataBase::EvalDefVar(const std::string&,
 					 const double&) const;

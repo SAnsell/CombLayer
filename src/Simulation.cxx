@@ -934,7 +934,6 @@ Simulation::setMaterialDensity(OTYPE& ObjGroup)
   OTYPE::iterator vc;
 
   ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();  
-  const std::map<int,MonteCarlo::Material>& MList=DB.getStore();
   std::map<int,MonteCarlo::Material>::const_iterator mc;
 
   for(vc=ObjGroup.begin();vc!=ObjGroup.end();vc++)
@@ -942,14 +941,8 @@ Simulation::setMaterialDensity(OTYPE& ObjGroup)
       const int matN=vc->second->getMat();
       if (matN!=0)
         {
-	  mc=MList.find(matN);
-	  if (mc==MList.end())
-	    {
-	      ELog::EM<<"No Material in Cell: "<<vc->second->getName()
-		      <<" Material ID:"<<matN<<ELog::endErr;
-	      return -1;
-	    }
-	  vc->second->setDensity(mc->second.getAtomDensity());
+	  const MonteCarlo::Material& MC=DB.getMaterial(matN);
+	  vc->second->setDensity(MC.getAtomDensity());
 	}
     }
   return 0;
@@ -977,24 +970,6 @@ Simulation::setMaterialDensity(const int cellNum)
   ObjSet.insert(*vc);
   setMaterialDensity(ObjSet);
   return 0;
-}
-
-const MonteCarlo::Material&
-Simulation::getMaterial(const int MatN) const
-  /*!
-    Gets the material object
-    \param MatN :: Material number to get
-    \throw InContainer on material List: Object material mismatch
-    \retval 0 :: success
-   */
-{
-  ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();  
-  const std::map<int,MonteCarlo::Material>& MList=DB.getStore();
-  std::map<int,MonteCarlo::Material>::const_iterator mc=MList.find(MatN);
-  if (mc==MList.end())
-    throw ColErr::InContainerError<int>(MatN,"Simulation::getMaterial");
-  
-  return mc->second;
 }
 
 Geometry::Transform*

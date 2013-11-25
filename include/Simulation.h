@@ -153,7 +153,6 @@ class Simulation
   int existCell(const int) const;              ///< check if cell exist
   int getCellMaterial(const int) const;        ///< return cell material
   int bindCell(const int,const int);
-  const MonteCarlo::Material& getMaterial(const int) const; 
   int setMaterialDensity(OTYPE&);
   int setMaterialDensity(const int);
 

@@ -1256,10 +1256,10 @@ sub printMainAll
       $uniqOut.= $allItem;
       $cleanOut.= "./".$tname."/*.o "
     }
-  $tarOut.= checkExists("./old/*.cxx ");
-  $tarOut.= checkExists("./old/*.c ");
-  $tarOut.= checkExists("./old/*.f ");
-  $tarOut.= checkExists("./old/*.h ");
+#  $tarOut.= checkExists("./old/*.cxx ");
+#  $tarOut.= checkExists("./old/*.c ");
+#  $tarOut.= checkExists("./old/*.f ");
+#  $tarOut.= checkExists("./old/*.h ");
   $tarOut.= checkExists("./".$self->{luaShared}."/*.pkg ") if ($self->{lua});
   $tarOut.= checkExists("./".$self->{luaShared}."/*.hxx ") if ($self->{lua});
   $tarOut.= checkExists("./".$self->{swigShared}."/*.i ") if ($self->{swig});
