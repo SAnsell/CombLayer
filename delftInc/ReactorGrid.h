@@ -99,6 +99,9 @@ class ReactorGrid : public attachSystem::FixedComp,
   template<typename T> 
   static T getElement(const FuncDataBase&,const std::string&,
 		      const size_t,const size_t);
+
+  static int getMatElement(const FuncDataBase&,const std::string&,
+			   const size_t,const size_t);
   // Helper for the fuel element  
   static std::string getElementName(const std::string&,
 				    const size_t,const size_t);

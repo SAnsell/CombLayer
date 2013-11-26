@@ -89,9 +89,9 @@ TS1layout(FuncDataBase& Control)
   Control.addVariable("beamDY",0.0);             // Shift in beam horrizontal
 
 
-  Control.addVariable("tungmat",38);              // Material for target (W pure)
-  Control.addVariable("coolant",31);              // Material for coolant 
-  Control.addVariable("cladmat",32);              // Cladding material
+  Control.addVariable("tungmat","Tungsten");       // Material for target (W pure)
+  Control.addVariable("coolant","D2O");              // Material for coolant 
+  Control.addVariable("cladmat","Tantalum");         // Cladding material
 
 // ------------
 // Decoupler
@@ -100,7 +100,7 @@ TS1layout(FuncDataBase& Control)
   Control.addVariable("nvane",0);
   Control.addVariable("nslice",0);
   Control.addVariable("vaneThick",0.12);
-  Control.addVariable("vanemat",7);        // cadmium
+  Control.addVariable("vanemat","Cadmium");        // cadmium
 
 // ----------
 // Split
@@ -144,7 +144,7 @@ TS1layout(FuncDataBase& Control)
   Control.addVariable("watThick",2.1);        // 1/2 thickness 
   Control.addVariable("waterAl",0.3);         // Aluminium thickness
   
-  Control.addVariable("watPoisMat",6);        // Poison material (Gd)
+  Control.addVariable("watPoisMat","Gadolinium");        // Poison material (Gd)
   Control.addVariable("watPoisThick",0.05);   // Poison thickness
   Control.addVariable("watPoisDepth",1.5);    // Poison depth
 
@@ -220,9 +220,9 @@ TS1layout(FuncDataBase& Control)
   Control.addVariable("mPreBase",0.0);          // distance from target
   Control.addVariable("mPreTop",0.6);           // toward target
 
-  Control.addVariable("mliqtemp",90);           // Methan temperature
+  Control.addVariable("mliqtemp",100.0);           // Methan temperature
   Control.addVariable("methmat",29);            // Methane material (liq)
-  Control.addVariable("gdmat",6);               // Methane material (liq)
+  Control.addVariable("gdmat","Gadolinium");    // Methane poisioning
 
   Control.Parse("methInnerAl+methVac+methOuterAl");
   Control.addVariable("mLayers");

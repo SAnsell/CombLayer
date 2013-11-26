@@ -67,13 +67,11 @@
 #include "Qhull.h"
 #include "KGroup.h"
 #include "Source.h"
-#include "shutterBlock.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "LinearComp.h"
 #include "ContainedComp.h"
 
 #include "ReactorGrid.h"
@@ -122,9 +120,9 @@ AirBoxElement::populate(const Simulation& System,
   wallThick=ReactorGrid::getElement<double>
     (Control,keyName+"WallThick",XIndex,YIndex);
 
-  innerMat=ReactorGrid::getElement<int>
+  innerMat=ReactorGrid::getMatElement
     (Control,keyName+"InnerMat",XIndex,YIndex);
-  wallMat=ReactorGrid::getElement<int>
+  wallMat=ReactorGrid::getMatElement
     (Control,keyName+"WallMat",XIndex,YIndex);
   
   return;

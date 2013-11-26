@@ -59,6 +59,7 @@
 #include "Qhull.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "support.h"
 #include "stringCombine.h"
@@ -163,10 +164,10 @@ NiGuide::populate(const FuncDataBase& Control)
   height=Control.EvalVar<double>(keyName+"Height");
   length=Control.EvalVar<double>(keyName+"Length");
   
-  wallThick=Control.EvalVar<double>(keyName+"WallThick");
-  
-  wallMat=Control.EvalVar<int>(keyName+"WallMat");  
-//   beMat=Control.EvalVar<int>(keyName+"BeMat");  
+  wallThick=Control.EvalVar<double>(keyName+"WallThick");  
+  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");  
+
+//   beMat=ModelSupport::EvalMat<int>(Control,keyName+"BeMat");  
 //   beTemp=Control.EvalVar<double>(keyName+"BeTemp");
   
   

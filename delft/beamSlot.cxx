@@ -44,6 +44,7 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
+#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -77,6 +78,7 @@
 #include "Simulation.h"
 #include "SimProcess.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "chipDataStore.h"
 #include "LinkUnit.h"
@@ -153,32 +155,26 @@ beamSlot::populate(const Simulation& System)
   
   const FuncDataBase& Control=System.getDataBase();
 
+  const std::string keyNum(keyName+StrFunc::makeString(slotNumber));
   // First get inner widths:
-  xStep=SimProcess::getIndexVar<double>(Control,keyName,
-					"XStep",slotNumber);
-  zStep=SimProcess::getIndexVar<double>(Control,keyName,
-					"ZStep",slotNumber);
+  xStep=Control.EvalPair<double>(keyNum+"XStep",keyName+"XStep");
+  zStep=Control.EvalPair<double>(keyNum+"ZStep",keyName+"ZStep");
 
-  xyAngle=SimProcess::getIndexVar<double>(Control,keyName,
-					  "XYAngle",slotNumber);
-  axisAngle=SimProcess::getIndexVar<double>(Control,keyName,
-					    "AxisAngle",slotNumber);
-  zAngle=SimProcess::getIndexVar<double>(Control,keyName,
-					 "ZAngle",slotNumber);
+  xyAngle=Control.EvalPair<double>(keyNum+"XYAngle",keyName+"XYAngle");
+  axisAngle=Control.EvalPair<double>(keyNum+"AxisAngle",keyName+"AxisAngle");
+  zAngle=Control.EvalPair<double>(keyNum+"ZAngle",keyName+"ZAngle");
 
-  xSize=SimProcess::getIndexVar<double>(Control,keyName,
-					"XSize",slotNumber);
-  zSize=SimProcess::getIndexVar<double>(Control,keyName,
-					"ZSize",slotNumber);
+  xSize=Control.EvalPair<double>(keyNum+"XSize",keyName+"XSize");
+  zSize=Control.EvalPair<double>(keyNum+"ZSize",keyName+"ZSize");
 
-  endThick=SimProcess::getIndexVar<double>(Control,keyName,
-					"EndThick",slotNumber);
-  divideThick=SimProcess::getIndexVar<double>(Control,keyName,
-					      "DivideThick",slotNumber);
+  endThick=Control.EvalPair<double>(keyNum+"EndThick",keyName+"EndThick");
+  divideThick=Control.EvalPair<double>(keyNum+"DivideThick",
+				       keyName+"DivideThick");
   NChannels=SimProcess::getIndexVar<size_t>(Control,keyName,
 					"NChannels",slotNumber);
-  glassMat=SimProcess::getIndexVar<int>(Control,keyName,
-					"GlassMat",slotNumber);
+
+  glassMat=ModelSupport::EvalMat<int>(Control,keyNum+"GlassMat",
+				      keyName+"GlassMat");
 
   return;
 }

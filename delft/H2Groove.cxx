@@ -43,6 +43,7 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
+#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -74,8 +75,8 @@
 #include "KGroup.h"
 #include "Source.h"
 #include "Simulation.h"
-#include "SimProcess.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "chipDataStore.h"
 #include "LinkUnit.h"
@@ -155,18 +156,20 @@ H2Groove::populate(const Simulation& System)
   
   const FuncDataBase& Control=System.getDataBase();
 
-  face=SimProcess::getIndexVar<int>(Control,keyName,"Face",gIndex);
+  const std::string keyNum(keyName+StrFunc::makeString(gIndex));
 
-  xStep=SimProcess::getIndexVar<double>(Control,keyName,"XStep",gIndex);
-  yStep=SimProcess::getIndexVar<double>(Control,keyName,"YStep",gIndex);
-  zStep=SimProcess::getIndexVar<double>(Control,keyName,"ZStep",gIndex);
+  face=Control.EvalPair<int>(keyNum+"Face",keyName+"Face");
 
-  height=SimProcess::getIndexVar<double>(Control,keyName,"Height",gIndex);
-  xyAngleA=SimProcess::getIndexVar<double>(Control,keyName,"XYAngleA",gIndex);
-  xyAngleB=SimProcess::getIndexVar<double>(Control,keyName,"XYAngleB",gIndex);
+  xStep=Control.EvalPair<double>(keyNum+"XStep",keyName+"XStep");
+  yStep=Control.EvalPair<double>(keyNum+"YStep",keyName+"YStep");
+  zStep=Control.EvalPair<double>(keyNum+"ZStep",keyName+"ZStep");
+
+  height=Control.EvalPair<double>(keyNum+"Height",keyName+"Height");
+  xyAngleA=Control.EvalPair<double>(keyNum+"XYAngleA",keyName+"XYAngleA");
+  xyAngleB=Control.EvalPair<double>(keyNum+"XYAngleB",keyName+"XYAngleB");
   
-  siMat=SimProcess::getIndexVar<int>(Control,keyName,"SiMat",gIndex);
-  siTemp=SimProcess::getIndexVar<double>(Control,keyName,"SiTemp",gIndex);
+  siMat=ModelSupport::EvalMat<int>(Control,keyNum+"SiMat",keyNum+"SiMat");
+  siTemp=Control.EvalPair<double>(keyNum+"SiTemp",keyName+"SiTemp");
 
   return;
 }

@@ -46,10 +46,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "Tally.h"
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
@@ -57,13 +53,9 @@
 #include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "surfEqual.h"
-#include "surfDivide.h"
-#include "surfDIter.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
-#include "Line.h"
 #include "Rules.h"
 #include "varList.h"
 #include "Code.h"
@@ -71,10 +63,9 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "chipDataStore.h"
 #include "LinkUnit.h"
@@ -167,7 +158,7 @@ OrthoInsert::populate(const Simulation& System)
   hydroThick=Control.EvalVar<double>(keyName+"HydroThick");
 
   orthoTemp=Control.EvalDefVar<double>(keyName+"OrthoTemp",-1.0);
-  orthoMat=Control.EvalVar<int>(keyName+"Mat");
+  orthoMat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 
   populated |= 1;
   return;

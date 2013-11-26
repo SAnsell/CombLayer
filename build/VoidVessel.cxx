@@ -85,6 +85,7 @@
 #include "insertInfo.h"
 #include "insertBaseInfo.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "ContainedComp.h"
 #include "LinkUnit.h"
@@ -228,8 +229,8 @@ VoidVessel::populate(const Simulation& System)
   vWindowAngleROff=Control.EvalVar<double>(keyName+"WindowAngleROffset");
   vWindowAngleLOff=Control.EvalVar<double>(keyName+"WindowAngleLOffset");
 
-  vMat=Control.EvalVar<int>(keyName+"Mat");
-  vWindowMat=Control.EvalVar<int>(keyName+"WindowMat");
+  vMat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
+  vWindowMat=ModelSupport::EvalMat<int>(Control,keyName+"WindowMat");
       
   populated = 1;
   return;

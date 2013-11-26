@@ -75,6 +75,7 @@
 #include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "chipDataStore.h"
 #include "LinkUnit.h"
@@ -194,8 +195,8 @@ H2Vac::populate(const Simulation& System)
   clearSide=Control.EvalVar<double>(keyName+"ClearSide");
   
   // Material
-  alMat=Control.EvalVar<int>(keyName+"AlMat");
-  outMat=Control.EvalVar<int>(keyName+"OutMat");
+  alMat=ModelSupport::EvalMat<int>(Control,keyName+"AlMat");
+  outMat=ModelSupport::EvalMat<int>(Control,keyName+"OutMat");
 
   return;
 }

@@ -48,10 +48,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "Tally.h"
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
@@ -73,10 +69,9 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "surfExpand.h"
 #include "LinkUnit.h"
@@ -159,6 +154,7 @@ LinkWrapper::populate(const Simulation& System)
   
   const FuncDataBase& Control=System.getDataBase();
 
+  ELog::EM<<"PRE :"<<keyName<<ELog::endDebug;
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");
   for(size_t i=0;i<nLayers;i++)
     {
@@ -166,11 +162,12 @@ LinkWrapper::populate(const Simulation& System)
       std::string kMat=keyName+"LayMat";
       layerThick.push_back(Control.EvalVar<double>
 			   (StrFunc::makeString(kItem,i+1)));
-      layerMat.push_back(Control.EvalVar<int>
-			   (StrFunc::makeString(kMat,i+1)));
+      layerMat.push_back(ModelSupport::EvalMat<int>
+			 (Control,StrFunc::makeString(kMat,i+1)));
     }
   // Material
-  defMat=Control.EvalVar<int>(keyName+"DefMat");
+  ELog::EM<<"key :"<<keyName<<ELog::endDebug;
+  defMat=ModelSupport::EvalMat<int>(Control,keyName+"DefMat");
   return;
 }
   

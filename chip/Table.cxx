@@ -71,10 +71,9 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "chipDataStore.h"
 #include "LinkUnit.h"
@@ -173,9 +172,8 @@ Table::populate(const Simulation& System)
   surThick=Control.EvalVar<double>(keyName+"SurThick");
   sideThick=Control.EvalVar<double>(keyName+"SideThick");
 
-
-  topMat=Control.EvalVar<int>(keyName+"TopMat");
-  defMat=Control.EvalVar<int>(keyName+"Mat");
+  topMat=ModelSupport::EvalMat<int>(Control,keyName+"TopMat");
+  defMat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 
   populated |= 1;
   return;

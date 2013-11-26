@@ -86,6 +86,7 @@
 #include "insertInfo.h"
 #include "insertBaseInfo.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "ContainedComp.h"
 #include "LinkUnit.h"
@@ -135,7 +136,8 @@ CylinderColl::populate(const Simulation& System)
       const double thick=
 	Control.EvalVar<double>(keyName+StrFunc::makeString("Thick",i+1));
       const int mat=
-	Control.EvalVar<int>(keyName+StrFunc::makeString("Mat",i+1));
+	ModelSupport::EvalMat<int>(Control,keyName+
+				   StrFunc::makeString("Mat",i+1));
       const Geometry::Vec3D AOffVec=
 	Control.EvalVar<Geometry::Vec3D>
 	(keyName+StrFunc::makeString("AOffVec",i+1));
@@ -143,7 +145,6 @@ CylinderColl::populate(const Simulation& System)
 	Control.EvalVar<Geometry::Vec3D>
 	(keyName+StrFunc::makeString("BOffVec",i+1));
       CVec.push_back(ModelSupport::cylTrack(iR,iR+thick,mat,0.0));
-      ELog::EM<<"Cylinder == "<<CVec.back()<<ELog::endDebug;
     }
   return;
 }

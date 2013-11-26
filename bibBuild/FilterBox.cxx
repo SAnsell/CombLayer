@@ -59,6 +59,7 @@
 #include "Qhull.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "support.h"
 #include "stringCombine.h"
@@ -157,8 +158,8 @@ FilterBox::populate(const FuncDataBase& Control)
   wallThick=Control.EvalVar<double>(keyName+"WallThick");;
   wallGap=Control.EvalVar<double>(keyName+"WallGap");;
 
-  wallMat=Control.EvalVar<int>(keyName+"WallMat");
-  beMat=Control.EvalVar<int>(keyName+"BeMat");
+  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
+  beMat=ModelSupport::EvalMat<int>(Control,keyName+"BeMat");
 
   beTemp=Control.EvalVar<double>(keyName+"BeTemp");
 

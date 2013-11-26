@@ -59,6 +59,7 @@
 #include "Qhull.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "support.h"
 #include "stringCombine.h"
@@ -161,8 +162,8 @@ WaterMod::populate(const FuncDataBase& Control)
 
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
 
-  wallMat=Control.EvalVar<int>(keyName+"WallMat");  
-  waterMat=Control.EvalVar<int>(keyName+"WaterMat");  
+  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");  
+  waterMat=ModelSupport::EvalMat<int>(Control,keyName+"WaterMat");  
 
   return;
 }

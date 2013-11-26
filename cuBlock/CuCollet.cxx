@@ -33,7 +33,6 @@
 #include <algorithm>
 #include <iterator>
 #include <boost/shared_ptr.hpp>
-#include <boost/array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -47,40 +46,29 @@
 #include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
-#include "Tensor.h"
 #include "Vec3D.h"
 #include "PointOperation.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
-#include "surfDIter.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "surfEqual.h"
-#include "surfDivide.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
-#include "Line.h"
-#include "LineIntersectVisit.h"
 #include "Rules.h"
-#include "Convex.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "SimProcess.h"
 #include "SurInter.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "ContainedComp.h"
 #include "LinkUnit.h"
@@ -132,9 +120,9 @@ CuCollet::populate(const Simulation& System)
   steelThick=Control.EvalVar<double>(keyName+"SteelThick");   
   cuThick=Control.EvalVar<double>(keyName+"CuThick");   
 
-  cerMat=Control.EvalVar<int>(keyName+"CeramicMat");
-  steelMat=Control.EvalVar<int>(keyName+"SteelMat");
-  cuMat=Control.EvalVar<int>(keyName+"CuMat");
+  cerMat=ModelSupport::EvalMat<int>(Control,keyName+"CeramicMat");
+  steelMat=ModelSupport::EvalMat<int>(Control,keyName+"SteelMat");
+  cuMat=ModelSupport::EvalMat<int>(Control,keyName+"CuMat");
       
   return;
 }

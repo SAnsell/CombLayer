@@ -59,6 +59,7 @@
 #include "Qhull.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "support.h"
 #include "stringCombine.h"
@@ -172,8 +173,8 @@ ColdH2Mod::populate(const FuncDataBase& Control)
 
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
 
-  modMat=Control.EvalVar<int>(keyName+"ModMat");  
-  wallMat=Control.EvalVar<int>(keyName+"WallMat");  
+  modMat=ModelSupport::EvalMat<int>(Control,keyName+"ModMat");  
+  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");  
     
   premThick=Control.EvalVar<double>(keyName+"PremThick");
   wallPremThick=Control.EvalVar<double>(keyName+"WallPremThick");

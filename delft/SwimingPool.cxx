@@ -76,6 +76,7 @@
 #include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "chipDataStore.h"
 #include "LinkUnit.h"
@@ -164,7 +165,7 @@ SwimingPool::populate(const Simulation& System)
   doorWidth=Control.EvalVar<double>(keyName+"DoorWidth");
   doorLength=Control.EvalVar<double>(keyName+"DoorLength");
 
-  waterMat=Control.EvalVar<int>(keyName+"WaterMat");
+  waterMat=ModelSupport::EvalMat<int>(Control,keyName+"WaterMat");
 
   return;
 }

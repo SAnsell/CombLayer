@@ -33,7 +33,6 @@
 #include <algorithm>
 #include <boost/shared_ptr.hpp>
 #include <boost/bind.hpp>
-#include <boost/array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -47,10 +46,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "Tally.h"
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
@@ -58,9 +53,6 @@
 #include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "surfEqual.h"
-#include "surfDivide.h"
-#include "surfDIter.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
@@ -72,18 +64,15 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "SimProcess.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "LinearComp.h"
 #include "ContainedComp.h"
 #include "pipeUnit.h"
 #include "PipeLine.h"
-#include "SimProcess.h"
 #include "RefBolts.h"
 
 #include "Debug.h"
@@ -176,7 +165,7 @@ RefBolts::createBoltGrp(Simulation& System,const std::string& subKey)
       if (Control.hasVariable(cx.str()+"Track0"))
 	{
 	  //  Get Default/base radii
-	  matN=Control.EvalDefVar<int>(cx.str()+"Mat",matN); 
+	  matN=ModelSupport::EvalDefMat<int>(Control,cx.str()+"Mat",matN); 
 	  if (Control.hasVariable(cx.str()+"Radius0"))
 	    Radii=SimProcess::getVarVec<double>(Control,cx.str()+"Radius");
 	  std::vector<Geometry::Vec3D> Track=

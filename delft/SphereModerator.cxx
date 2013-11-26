@@ -75,6 +75,7 @@
 #include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "chipDataStore.h"
 #include "LinkUnit.h"
@@ -190,8 +191,8 @@ SphereModerator::populate(const Simulation& System)
   pipeAlRadius=Control.EvalVar<double>(keyName+"PipeAlRadius");
 
   modTemp=Control.EvalVar<double>(keyName+"ModTemp");
-  modMat=Control.EvalVar<int>(keyName+"ModMat");
-  alMat=Control.EvalVar<int>(keyName+"AlMat");
+  modMat=ModelSupport::EvalMat<int>(Control,keyName+"ModMat");
+  alMat=ModelSupport::EvalMat<int>(Control,keyName+"AlMat");
 
   return;
 }

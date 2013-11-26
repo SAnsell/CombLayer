@@ -59,6 +59,7 @@
 #include "Qhull.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "support.h"
 #include "stringCombine.h"
@@ -154,8 +155,8 @@ DetectorArray::populate(const FuncDataBase& Control)
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
   height=Control.EvalVar<double>(keyName+"Height");
 
-  wallMat=Control.EvalVar<int>(keyName+"WallMat");
-  detMat=Control.EvalVar<int>(keyName+"DetMat");
+  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
+  detMat=ModelSupport::EvalMat<int>(Control,keyName+"DetMat");
 
   nDet=Control.EvalVar<size_t>(keyName+"NDetector");
   initAngle=M_PI*Control.EvalVar<double>(keyName+"InitAngle")/180.0;

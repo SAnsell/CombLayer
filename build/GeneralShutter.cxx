@@ -43,6 +43,7 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
+#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Tensor.h"
@@ -76,6 +77,7 @@
 #include "SimProcess.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -228,45 +230,47 @@ GeneralShutter::populate(const Simulation& System)
   closed=SimProcess::getDefIndexVar<int>(Control,keyName,
 					 "Closed",shutterNumber+1,0);
 
-  totalWidth=SimProcess::getIndexVar<double>
-    (Control,keyName,"Width",shutterNumber+1);
+  const std::string keyNum=
+    StrFunc::makeString(keyName,shutterNumber+1);
+  
+  totalWidth=Control.EvalPair<double>
+    (keyNum+"Width",keyName+"Width");
 
-  upperSteel=SimProcess::getIndexVar<double>
-    (Control,keyName,"UpperSteel",shutterNumber+1);
-  lowerSteel=SimProcess::getIndexVar<double>
-    (Control,keyName,"LowerSteel",shutterNumber+1);
+  upperSteel=Control.EvalPair<double>
+    (keyNum+"UpperSteel",keyName+"UpperSteel");
+  lowerSteel=Control.EvalPair<double>
+    (keyNum+"LowerSteel",keyName+"LowerSteel");
 
-  shutterHeight=SimProcess::getIndexVar<double>
-    (Control,keyName,"Height",shutterNumber+1);
+  shutterHeight=Control.EvalPair<double>
+    (keyNum+"Height",keyName+"Height");
   voidZOffset=SimProcess::getDefIndexVar<double>
     (Control,keyName,"VoidZOffset",shutterNumber+1,0.0);
   centZOffset=SimProcess::getDefIndexVar<double>
     (Control,keyName,"centZOffset",shutterNumber+1,0.0);
   openZShift=SimProcess::getDefIndexVar<double>
     (Control,keyName,"OpenZShift",shutterNumber+1,0.0);
-  closedZShift=openZShift-SimProcess::getIndexVar<double>
-    (Control,keyName,"ClosedZOffset",shutterNumber+1);
+  closedZShift=openZShift-Control.EvalPair<double>
+    (keyNum+"ClosedZOffset",keyName+"ClosedZOffset");
 
-  voidDivide=SimProcess::getIndexVar<double>
-    (Control,keyName,"VoidDivide",shutterNumber+1);
-  voidHeight=SimProcess::getIndexVar<double>
-    (Control,keyName,"VoidHeight",shutterNumber+1);
-  voidHeightInner=SimProcess::getIndexVar<double>
-    (Control,keyName,"VoidHeightInner",shutterNumber+1);
-  voidWidthInner=SimProcess::getIndexVar<double>
-    (Control,keyName,"VoidWidthInner",shutterNumber+1);
-  voidHeightOuter=SimProcess::getIndexVar<double>
-    (Control,keyName,"VoidHeightOuter",shutterNumber+1);
-  voidWidthOuter=SimProcess::getIndexVar<double>
-    (Control,keyName,"VoidWidthOuter",shutterNumber+1);
-  
-  xyAngle=SimProcess::getIndexVar<double>
-    (Control,keyName,"XYAngle",shutterNumber+1);
+  voidDivide=Control.EvalPair<double>
+    (keyNum+"VoidDivide",keyName+"VoidDivide");
+  voidHeight=Control.EvalPair<double>
+    (keyNum+"VoidHeight",keyName+"VoidHeight");
+  voidHeightInner=Control.EvalPair<double>
+    (keyNum+"VoidHeightInner",keyName+"VoidHeightInner");
+  voidWidthInner=Control.EvalPair<double>
+    (keyNum+"VoidWidthInner",keyName+"VoidWidthInner");
+  voidHeightOuter=Control.EvalPair<double>
+    (keyNum+"VoidHeightOuter",keyName+"VoidHeightOuter");
+  voidWidthOuter=Control.EvalPair<double>
+    (keyNum+"VoidWidthOuter",keyName+"VoidWidthOuter");  
+  xyAngle=Control.EvalPair<double>
+    (keyNum+"XYAngle",keyName+"XYAngle");
   zAngle=SimProcess::getDefIndexVar<double>
     (Control,keyName,"ZAngle",shutterNumber+1,0.0);
 
-  shutterMat=SimProcess::getIndexVar<int>(Control,keyName,
-					  "SteelMat",shutterNumber+1);
+  shutterMat=ModelSupport::EvalMat<int>
+    (Control,keyNum+"SteelMat",keyName+"SteelMat");
   
   // This sets group of objects within the shutter
   // They require that each unit is fully defined and 

@@ -78,6 +78,7 @@
 #include "SimProcess.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h" 
@@ -131,6 +132,45 @@ ReactorGrid::getElement(const FuncDataBase& Control,
   // Finally All missing 
   if (Control.hasVariable(Name))
     return Control.EvalVar<T>(Name);
+  
+  ELog::EM<<"NO variable:"<<Name<<ELog::endTrace;
+  throw ColErr::InContainerError<std::string>(Name,"Variable name");
+}
+
+int
+ReactorGrid::getMatElement(const FuncDataBase& Control,
+			   const std::string& Name,const size_t I,
+			   const size_t J) 
+ /*!
+   Check to convert a Name + a number string into a material number
+   \param Control :: Function base to search
+   \param Name :: Master name
+   \param I :: Index (A-Z) type [A on viewed face]
+   \param J :: Index (Number) type
+   \return variable value
+ */
+{
+  ELog::RegMethod RegA("ReactorGrid","getMatElement");
+
+  const std::string Key[2]=
+    { 
+      std::string(1,static_cast<char>(I)+'A'),
+      StrFunc::makeString(J),
+    };
+  // Completely specified:
+  if (Control.hasVariable(Name+Key[0]+Key[1]))
+    return ModelSupport::EvalMat<int>(Control,Name+Key[0]+Key[1]);
+
+  // One Missing
+  for(size_t i=0;i<2;i++)
+    {
+      const std::string KN(Name+Key[i]);
+      if (Control.hasVariable(KN))
+	return ModelSupport::EvalMat<int>(Control,KN);
+    }
+  // Finally All missing 
+  if (Control.hasVariable(Name))
+    return ModelSupport::EvalMat<int>(Control,Name);
   
   ELog::EM<<"NO variable:"<<Name<<ELog::endTrace;
   throw ColErr::InContainerError<std::string>(Name,"Variable name");
@@ -234,8 +274,8 @@ ReactorGrid::populate(const Simulation& System)
 
   plateThick=Control.EvalVar<double>(keyName+"PlateThick");
   plateRadius=Control.EvalVar<double>(keyName+"PlateRadius");
-  plateMat=Control.EvalVar<int>(keyName+"PlateMat");
-  waterMat=Control.EvalVar<int>(keyName+"WaterMat");
+  plateMat=ModelSupport::EvalMat<int>(Control,keyName+"PlateMat");
+  waterMat=ModelSupport::EvalMat<int>(Control,keyName+"WaterMat");
 
   if (!(NX*NY) || (NX*NY)>4000)
     throw ColErr::IndexError<size_t>(NX*NY,4000,

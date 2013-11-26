@@ -49,8 +49,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
@@ -64,8 +62,6 @@
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
-#include "Line.h"
-#include "LineIntersectVisit.h"
 #include "Rules.h"
 #include "surfFunctors.h"
 #include "SurInter.h"
@@ -75,9 +71,9 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "SimProcess.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "chipDataStore.h"
 #include "shutterBlock.h"
@@ -242,9 +238,9 @@ ChipIRGuide::populate(const Simulation& System)
 	(Control.EvalPair<int>(keyIndex,keyName+"Liner","Mat"));
     }
 
-  steelMat=Control.EvalVar<int>(keyName+"SteelMat");
-  concMat=Control.EvalVar<int>(keyName+"ConcMat");
-  wallMat=Control.EvalVar<int>(keyName+"WallMat");
+  steelMat=ModelSupport::EvalMat<int>(Control,keyName+"SteelMat");
+  concMat=ModelSupport::EvalMat<int>(Control,keyName+"ConcMat");
+  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
   // Steel lines:
   roofSteel=Control.EvalVar<double>(keyName+"RoofSteel");

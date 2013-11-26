@@ -59,6 +59,7 @@
 #include "Qhull.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "support.h"
 #include "stringCombine.h"
@@ -152,7 +153,7 @@ GuideBox::populate(const FuncDataBase& Control)
 
   NiRadius=Control.EvalVar<double>(keyName+"NiRadius");
   NiThickness=Control.EvalVar<double>(keyName+"NiThickness");
-  mat=Control.EvalVar<int>(keyName+"Mat");
+  mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 
   return;
 }

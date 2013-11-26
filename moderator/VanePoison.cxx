@@ -46,10 +46,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "Tally.h"
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
@@ -62,8 +58,6 @@
 #include "surfDIter.h"
 #include "Quadratic.h"
 #include "Plane.h"
-#include "Cylinder.h"
-#include "Line.h"
 #include "Rules.h"
 #include "varList.h"
 #include "Code.h"
@@ -71,12 +65,10 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
@@ -168,10 +160,10 @@ VanePoison::populate(const Simulation& System)
   yOffset=Control.EvalVar<double>(keyName+"YOffset");
   zOffset=Control.EvalVar<double>(keyName+"ZOffset");
 
-  modTemp=Control.EvalVar<int>(keyName+"ModTemp");
-  modMat=Control.EvalVar<int>(keyName+"ModMat");
-  bladeMat=Control.EvalVar<int>(keyName+"BladeMat");
-  absMat=Control.EvalVar<int>(keyName+"AbsMat");
+  modTemp=Control.EvalVar<double>(keyName+"ModTemp");
+  modMat=ModelSupport::EvalMat<int>(Control,keyName+"ModMat");
+  bladeMat=ModelSupport::EvalMat<int>(Control,keyName+"BladeMat");
+  absMat=ModelSupport::EvalMat<int>(Control,keyName+"AbsMat");
   
   return;
 }

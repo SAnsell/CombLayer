@@ -207,18 +207,18 @@ FuelElement::populate(const Simulation& System)
   barOffset=ReactorGrid::getElement<double>(Control,keyName+"BarOffset",
 					    XIndex,YIndex);
 
-  alMat=ReactorGrid::getElement<int>(Control,keyName+"AlMat",
+  alMat=ReactorGrid::getMatElement(Control,keyName+"AlMat",
+				   XIndex,YIndex);
+  fuelMat=ReactorGrid::getMatElement(Control,keyName+"FuelMat",
 				     XIndex,YIndex);
-  fuelMat=ReactorGrid::getElement<int>(Control,keyName+"FuelMat",
-				     XIndex,YIndex);
-  watMat=ReactorGrid::getElement<int>(Control,keyName+"WaterMat",
-				     XIndex,YIndex);
-
+  watMat=ReactorGrid::getMatElement(Control,keyName+"WaterMat",
+				    XIndex,YIndex);
+  
 
   /// JUNK
   nFuel=ReactorGrid::getElement<size_t>(Control,keyName+"NFuelDivide",
 					XIndex,YIndex);
-  int fM[]={fuelMat,watMat};
+  const int fM[]={fuelMat,watMat};
   for(size_t i=1;i<nFuel;i++)
     {
       fuelFrac.push_back(static_cast<double>(i+1)/

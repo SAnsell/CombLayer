@@ -59,6 +59,7 @@
 #include "Qhull.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "support.h"
 #include "stringCombine.h"
@@ -155,9 +156,9 @@ ProtonPipe::populate(const FuncDataBase& Control)
   length=Control.EvalVar<double>(keyName+"Length");
   innerLength=Control.EvalVar<double>(keyName+"InnerLength");
 
-  voidMat=Control.EvalVar<int>(keyName+"VoidMat");
-  innerWallMat=Control.EvalVar<int>(keyName+"InnerWallMat");
-  wallMat=Control.EvalVar<int>(keyName+"WallMat");
+  voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
+  innerWallMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerWallMat");
+  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
   return;
 }

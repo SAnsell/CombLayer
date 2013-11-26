@@ -77,6 +77,7 @@
 #include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "SimProcess.h"
 #include "chipDataStore.h"
 #include "LinkUnit.h"

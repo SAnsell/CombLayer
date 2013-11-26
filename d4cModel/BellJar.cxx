@@ -59,6 +59,7 @@
 #include "Qhull.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "support.h"
 #include "stringCombine.h"
@@ -162,9 +163,9 @@ BellJar::populate(const FuncDataBase& Control)
   colWidth=Control.EvalVar<double>(keyName+"ColWidth");
   colFront=Control.EvalVar<double>(keyName+"ColFront");
   colBack=Control.EvalVar<double>(keyName+"ColBack");
-  colMat=Control.EvalVar<int>(keyName+"ColMat");
+  colMat=ModelSupport::EvalMat<int>(Control,keyName+"ColMat");
 
-  wallMat=Control.EvalVar<int>(keyName+"WallMat");
+  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
   int NL(1);
   std::string KN=keyName+StrFunc::makeString("ColAngle",NL);

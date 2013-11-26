@@ -47,10 +47,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "Tally.h"
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
@@ -74,10 +70,9 @@
 #include "ReadFunctions.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "chipDataStore.h"
 #include "LinkUnit.h"
@@ -168,8 +163,10 @@ GuideShield::populate(const Simulation& System)
 				 StrFunc::makeString("Width",i+1));
       H+=Control.EvalPair<double>(keyName,baseName,
 				 StrFunc::makeString("Height",i+1));
-      M=Control.EvalPair<int>(keyName,baseName,
-				 StrFunc::makeString("Mat",i+1));
+      M=ModelSupport::EvalMat<int>
+	(Control,keyName+StrFunc::makeString("Mat",i+1),
+	 baseName+StrFunc::makeString("Mat",i+1));
+
       Height.push_back(H);
       Width.push_back(W);
       Mat.push_back(M);
