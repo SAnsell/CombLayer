@@ -88,6 +88,7 @@
 #include "insertBaseInfo.h"
 #include "chipDataStore.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -206,7 +207,7 @@ BulkShield::populate(const Simulation& System)
   totalHeight=Control.EvalVar<double>(keyName+"Roof");
   totalDepth=Control.EvalVar<double>(keyName+"Floor");
   
-  ironMat=Control.EvalVar<int>(keyName+"IronMat");
+  ironMat=ModelSupport::EvalMat<int>(Control,keyName+"IronMat");
 
   CS.setVNum(chipIRDatum::torpedoRing,torpedoRadius);
 

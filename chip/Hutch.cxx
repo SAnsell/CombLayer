@@ -72,8 +72,6 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "shutterBlock.h"
 #include "SimProcess.h"
 #include "SurInter.h"
@@ -81,6 +79,7 @@
 #include "Simulation.h"
 #include "SpecialSurf.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -366,16 +365,16 @@ ChipIRHutch::populate(const Simulation& System)
   bsWidth=Control.EvalVar<double>(keyName+"BSOpenWidth");
   bsHeight=Control.EvalVar<double>(keyName+"BSOpenHeight");
 
-  roofMat=Control.EvalVar<int>(keyName+"RoofMat");
-  wallMat=Control.EvalVar<int>(keyName+"WallMat");  
-  innerWallMat=Control.EvalVar<int>(keyName+"InnerWallMat");  
-  rearVoidMat=Control.EvalVar<int>(keyName+"RearVoidMat");  
-  floorMat=Control.EvalVar<int>(keyName+"FloorMat");
-  falseFloorMat=Control.EvalVar<int>(keyName+"FalseFloorMat");
-  screenMat=Control.EvalVar<int>(keyName+"ScreenMat");
+  roofMat=ModelSupport::EvalMat<int>(Control,keyName+"RoofMat");
+  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");  
+  innerWallMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerWallMat");  
+  rearVoidMat=ModelSupport::EvalMat<int>(Control,keyName+"RearVoidMat");  
+  floorMat=ModelSupport::EvalMat<int>(Control,keyName+"FloorMat");
+  falseFloorMat=ModelSupport::EvalMat<int>(Control,keyName+"FalseFloorMat");
+  screenMat=ModelSupport::EvalMat<int>(Control,keyName+"ScreenMat");
 
   fbLength=Control.EvalVar<double>(keyName+"FBLen");
-  fbMat=Control.EvalVar<int>(keyName+"FBmat");
+  fbMat=ModelSupport::EvalMat<int>(Control,keyName+"FBmat");
 
   // Samples:
   const int nSamples=Control.EvalVar<int>(keyName+"NSamples");

@@ -77,7 +77,7 @@ EvalMat(const FuncDataBase& Control,const std::string& Key)
   if (out)
     return out;
   out=Control.EvalVar<int>(Key);  // throws if cannot make an int
-  if(!DB.hasKey(out))
+  if(out && !DB.hasKey(out))
     throw ColErr::InContainerError<int>(out,"Material not present");
   return out;
 }
@@ -106,6 +106,55 @@ EvalMat(const FuncDataBase& Control,const std::string& Key)
   
   return DB.getKey(out);
 }
+
+template<typename T>
+T
+EvalMat(const FuncDataBase& Control,
+	const std::string& KeyA,
+	const std::string& KeyB)
+  /*!
+    Determine the material name based either on the string
+    value or the material number
+    \param KeyA :: First string to search    
+    \param KeyB :: Second string to search 
+    \return MatNumber
+  */
+{
+  ELog::RegMethod RegA("MaterialSupport[F]","EvalMat<string,string>");
+  return (Control.hasVariable(KeyA)) ? 
+    EvalMat<T>(Control,KeyA) : EvalMat<T>(Control,KeyB);
+}
+
+template<typename T>
+T
+EvalDefMat(const FuncDataBase& Control,
+	   const std::string& KeyA,
+	   const T& defVal)
+  /*!
+    Determine the material name based either on the string
+    value or the material number
+    \param KeyA :: First string to search    
+    \param KeyB :: Second string to search 
+    \return MatNumber
+  */
+{
+  ELog::RegMethod RegA("MaterialSupport[F]","EvalDefMat");
+  return (Control.hasVariable(KeyA)) ? 
+    EvalMat<T>(Control,KeyA) : defVal;
+}
+
+
+template int 
+EvalMat(const FuncDataBase&,const std::string&,
+	const std::string&);
+
+template std::string
+EvalMat(const FuncDataBase&,const std::string&,
+	 const std::string&);
+
+template int 
+EvalDefMat(const FuncDataBase&,const std::string&,
+	const int&);
 
 
 

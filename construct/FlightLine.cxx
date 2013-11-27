@@ -48,10 +48,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "Tally.h"
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
@@ -73,12 +69,10 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
@@ -192,11 +186,12 @@ FlightLine::populate(const Simulation& System)
       cx.str("");
       cx<<i+1;
       lThick.push_back(Control.EvalVar<double>(keyName+"LinerThick"+cx.str()));
-      lMat.push_back(Control.EvalVar<int>(keyName+"LinerMat"+cx.str()));
+      lMat.push_back(ModelSupport::EvalMat<int>
+		     (Control,keyName+"LinerMat"+cx.str()));
     }
   
   if (Control.hasVariable(keyName+"SideIndex"))
-    plateIndex=Control.EvalVar<int>(keyName+"SideIndex");
+    plateIndex=ModelSupport::EvalMat<int>(Control,keyName+"SideIndex");
   
   return;
 }

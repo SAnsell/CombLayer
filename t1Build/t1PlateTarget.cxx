@@ -189,6 +189,7 @@ t1PlateTarget::addProtonLine(Simulation& System,
   ELog::RegMethod RegA("t1PlateTarget","addProtonLine");
 
   PLine->createAll(System,*PressVObj,-7,refFC,index);
+  ELog::EM<<"ASDFASDF "<<ELog::endDebug;
   createBeamWindow(System);
   
   return;

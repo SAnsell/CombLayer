@@ -59,6 +59,7 @@
 #include "Qhull.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "support.h"
 #include "stringCombine.h"
@@ -195,15 +196,15 @@ RotorWheel::populate(const FuncDataBase& Control)
   pbDepth=Control.EvalVar<double>(keyName+"PbDepth");
   pbThick=Control.EvalVar<double>(keyName+"PbThick");
 
-  beMat=Control.EvalVar<int>(keyName+"BeMat");  
-  wallMat=Control.EvalVar<int>(keyName+"WallMat");  
-  waterMat=Control.EvalVar<int>(keyName+"WaterMat");  
+  beMat=ModelSupport::EvalMat<int>(Control,keyName+"BeMat");  
+  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");  
+  waterMat=ModelSupport::EvalMat<int>(Control,keyName+"WaterMat");  
 
-  vesselMat=Control.EvalVar<int>(keyName+"VesselMat");
-  polyMat=Control.EvalVar<int>(keyName+"PolyMat");
-  pbMat=Control.EvalVar<int>(keyName+"PbMat");
+  vesselMat=ModelSupport::EvalMat<int>(Control,keyName+"VesselMat");
+  polyMat=ModelSupport::EvalMat<int>(Control,keyName+"PolyMat");
+  pbMat=ModelSupport::EvalMat<int>(Control,keyName+"PbMat");
 
-  xStep=radius-beLength/2;
+  xStep=radius-beLength/2.0;
 
   return;
 }

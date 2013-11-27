@@ -54,7 +54,6 @@
 #include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "surfDIter.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
@@ -66,14 +65,11 @@
 #include "Object.h"
 #include "Qhull.h"
 #include "KGroup.h"
-#include "Source.h"
-#include "shutterBlock.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "LinearComp.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 
@@ -121,9 +117,9 @@ HfElement::populate(const Simulation& System)
       Exclude.insert(nElement-(i+1));
     }
 
-  absMat=ReactorGrid::getElement<int>(Control,cntlKey+"AbsMat",
-				       XIndex,YIndex);
-  bladeMat=ReactorGrid::getElement<int>(Control,cntlKey+"BladeMat",
+  absMat=ReactorGrid::getMatElement(Control,cntlKey+"AbsMat",
+				    XIndex,YIndex);
+  bladeMat=ReactorGrid::getMatElement(Control,cntlKey+"BladeMat",
 				       XIndex,YIndex);
 
   lift=ReactorGrid::getElement<double>

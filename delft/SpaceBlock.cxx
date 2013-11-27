@@ -77,6 +77,7 @@
 #include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -130,7 +131,7 @@ SpaceBlock::populate(const Simulation& System)
   length=Control.EvalVar<double>(keyName+"Length");
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
-  mat=Control.EvalVar<int>(keyName+"Mat");
+  mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 
   return 1;
 }

@@ -46,11 +46,7 @@
 #include "support.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
-#include "Tensor.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
@@ -59,8 +55,6 @@
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "surfEqual.h"
-#include "surfDivide.h"
-#include "surfDIter.h"
 #include "Quaternion.h"
 #include "Quadratic.h"
 #include "Plane.h"
@@ -72,17 +66,15 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "SimProcess.h"
 #include "Simulation.h"
 #include "ReadFunctions.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "LinearComp.h"
 #include "ContainedComp.h"
 #include "beamBlock.h"
 #include "BeamStop.h"
@@ -221,9 +213,9 @@ BeamStop::populate(const Simulation& System)
   concLength=Control.EvalVar<double>(keyName+"ConcLength");
   concHeight=Control.EvalVar<double>(keyName+"ConcHeight");
 
-  defInnerMat=Control.EvalVar<int>(keyName+"InnerMat");
-  steelMat=Control.EvalVar<int>(keyName+"SteelMat");
-  concMat=Control.EvalVar<int>(keyName+"ConcMat");
+  defInnerMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerMat");
+  steelMat=ModelSupport::EvalMat<int>(Control,keyName+"SteelMat");
+  concMat=ModelSupport::EvalMat<int>(Control,keyName+"ConcMat");
 
   populated |= 1;
   

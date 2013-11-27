@@ -48,9 +48,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "Tally.h"
 #include "Quaternion.h"
 #include "Surface.h"
 #include "surfIndex.h"
@@ -65,8 +62,8 @@
 #include "Object.h"
 #include "Qhull.h"
 #include "Simulation.h"
-
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "chipDataStore.h"
 #include "LinkUnit.h"
@@ -162,7 +159,8 @@ ChipSample::populate(const Simulation& System)
       width=Control.EvalPair<double>(keyIndex,keyName,"Width");
       height=Control.EvalPair<double>(keyIndex,keyName,"Height");
       length=Control.EvalPair<double>(keyIndex,keyName,"Depth");
-      defMat=Control.EvalPair<int>(keyIndex,keyName,"DefMat");
+      defMat=ModelSupport::EvalMat<int>(Control,keyIndex+"DefMat",
+					keyName+"DefMat");
       
       populated = 1;
     }

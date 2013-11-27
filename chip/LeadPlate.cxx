@@ -73,10 +73,9 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -204,8 +203,8 @@ LeadPlate::populate(const Simulation& System)
       radius=Control.EvalVar<double>(keyName+"Radius");
       linerThick=Control.EvalVar<double>(keyName+"LinerThick");
 
-      defMat=Control.EvalVar<int>(keyName+"DefMat");
-      supportMat=Control.EvalVar<int>(keyName+"SupportMat");
+      defMat=ModelSupport::EvalMat<int>(Control,keyName+"DefMat");
+      supportMat=ModelSupport::EvalMat<int>(Control,keyName+"SupportMat");
 
       populated= (!activeFlag || thick<Geometry::zeroTol) ? 0 : 1;
     }

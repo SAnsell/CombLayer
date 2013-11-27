@@ -47,9 +47,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "Tally.h"
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
@@ -59,13 +56,9 @@
 #include "objectRegister.h"
 #include "generateSurf.h"
 #include "surfEqual.h"
-#include "surfDivide.h"
-#include "surfDIter.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
-#include "Line.h"
-#include "LineIntersectVisit.h"
 #include "Rules.h"
 #include "varList.h"
 #include "Code.h"
@@ -73,13 +66,11 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "LinearComp.h"
 #include "SecondTrack.h"
 #include "TwinComp.h"
 #include "ContainedComp.h"
@@ -179,7 +170,6 @@ ColBox::populate(const Simulation& System)
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
   depth=Control.EvalVar<double>(keyName+"Depth");
-  defMat=Control.EvalVar<int>(keyName+"DefMat");
 
   roofThick=Control.EvalVar<double>(keyName+"RoofThick");
   floorThick=Control.EvalVar<double>(keyName+"FloorThick");
@@ -189,8 +179,8 @@ ColBox::populate(const Simulation& System)
   viewX=Control.EvalVar<double>(keyName+"ViewX");
   viewZ=Control.EvalVar<double>(keyName+"ViewZ");
 
-  outMat=Control.EvalVar<int>(keyName+"OutMat");
-  defMat=Control.EvalVar<int>(keyName+"DefMat");
+  outMat=ModelSupport::EvalMat<int>(Control,keyName+"OutMat");
+  defMat=ModelSupport::EvalMat<int>(Control,keyName+"DefMat");
 
   populated |= 1;
   return;

@@ -33,7 +33,6 @@
 #include <algorithm>
 #include <boost/shared_ptr.hpp>
 #include <boost/bind.hpp>
-#include <boost/array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -48,9 +47,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
@@ -75,12 +71,10 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "SimProcess.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "chipDataStore.h"
-#include "shutterBlock.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h" 
 #include "ContainedComp.h"
@@ -133,7 +127,7 @@ Building::populate(const Simulation& System)
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
   roofThick=Control.EvalVar<double>(keyName+"RoofThick");
 
-  concMat=Control.EvalVar<int>(keyName+"ConcMat");
+  concMat=ModelSupport::EvalMat<int>(Control,keyName+"ConcMat");
 
   return;
 }

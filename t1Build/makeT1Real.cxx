@@ -106,6 +106,7 @@
 #include "t1PlateTarget.h"
 #include "Cannelloni.h"
 #include "InnerTarget.h"
+#include "CylFluxTrap.h"
 #include "SideCoolTarget.h"
 #include "MonoPlug.h"
 #include "World.h"
@@ -419,9 +420,9 @@ makeT1Real::build(Simulation* SimPtr,
       IParam.compValue("E",std::string("Reflector")))
     return;
 
-  // Add target flight line\
+  // Add target flight line
   TarObj->addProtonLine(*SimPtr,*RefObj,-1);
-  
+
   RefObj->addToInsertChain(*Lh2ModObj);
   Lh2ModObj->createAll(*SimPtr,*VoidObj);
 

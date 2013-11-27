@@ -47,10 +47,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "Tally.h"
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
@@ -72,16 +68,13 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "LinearComp.h"
 #include "ContainedComp.h"
-#include "t1Reflector.h"
 #include "BeamWindow.h"
 
 namespace ts1System
@@ -162,8 +155,8 @@ BeamWindow::populate(const Simulation& System)
       incThick2=Control.EvalVar<double>(keyName+"IncThick2");
       
       // Materials
-      inconelMat=Control.EvalVar<int>(keyName+"InconelMat");
-      waterMat=Control.EvalVar<int>(keyName+"WaterMat");
+      inconelMat=ModelSupport::EvalMat<int>(Control,keyName+"InconelMat");
+      waterMat=ModelSupport::EvalMat<int>(Control,keyName+"WaterMat");
 
       populated = (incThick1*waterThick*incThick2
 		   <Geometry::zeroTol) ? 0 : 1;

@@ -72,10 +72,9 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "chipDataStore.h"
 #include "LinkUnit.h"
@@ -170,7 +169,7 @@ ScatterPlate::populate(const Simulation& System)
       width=Control.EvalVar<double>(keyName+"Width");
       height=Control.EvalVar<double>(keyName+"Height");
       depth=Control.EvalVar<double>(keyName+"Depth");
-      defMat=Control.EvalVar<int>(keyName+"DefMat");
+      defMat=ModelSupport::EvalMat<int>(Control,keyName+"DefMat");
       
       // Layers
       nLayers=Control.EvalVar<size_t>(keyName+"NLayers");

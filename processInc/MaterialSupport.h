@@ -26,6 +26,10 @@
 namespace ModelSupport
 {
   template<typename T> T EvalMat(const FuncDataBase&,const std::string&);
+  template<typename T> T EvalMat(const FuncDataBase&,const std::string&,
+				 const std::string&);
+  template<typename T> T EvalDefMat(const FuncDataBase&,const std::string&,
+				    const T&);
 }
 
 #endif

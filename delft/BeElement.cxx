@@ -65,15 +65,12 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "shutterBlock.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "LinearComp.h"
 #include "ContainedComp.h"
 
 #include "ReactorGrid.h"
@@ -110,7 +107,7 @@ BeElement::populate(const Simulation& System)
   TopHeight=ReactorGrid::getElement<double>
     (Control,keyName+"TopHeight",XIndex,YIndex);
 
-  beMat=ReactorGrid::getElement<int>
+  beMat=ReactorGrid::getMatElement
     (Control,keyName+"Mat",XIndex,YIndex);
   
   return;

@@ -75,6 +75,7 @@
 #include "shutterBlock.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -94,7 +95,8 @@ namespace shutterSystem
 
 BlockShutter::BlockShutter(const int ID,const std::string& K,
 			 const std::string& ZK) :
-  GeneralShutter(ID,K),b4cMat(47),blockKey(ZK)
+  GeneralShutter(ID,K),b4cMat(47),
+  blockKey(ZK)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param ID :: Index number of shutter
@@ -169,7 +171,7 @@ BlockShutter::populate(const Simulation& System)
   colletHGap=Control.EvalVar<double>(blockKey+"ColletHGap");
   colletVGap=Control.EvalVar<double>(blockKey+"ColletVGap");
   colletFGap=Control.EvalVar<double>(blockKey+"ColletFGap");
-  colletMat=Control.EvalVar<int>(blockKey+"ColletMat");
+  colletMat=ModelSupport::EvalMat<int>(Control,blockKey+"ColletMat");
 
   populated|=2;
   return;

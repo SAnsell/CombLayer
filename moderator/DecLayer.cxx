@@ -33,7 +33,6 @@
 #include <algorithm>
 #include <functional>
 #include <boost/shared_ptr.hpp>
-#include <boost/array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -47,11 +46,7 @@
 #include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
-#include "Tensor.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
@@ -59,18 +54,13 @@
 #include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "surfEqual.h"
-#include "surfDivide.h"
-#include "surfDIter.h"
 #include "Quaternion.h"
 #include "Quadratic.h"
 #include "Plane.h"
-#include "Cylinder.h"
 #include "Rules.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
-#include "Vertex.h"
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
@@ -78,7 +68,7 @@
 #include "Simulation.h"
 #include "ReadFunctions.h"
 #include "ModelSupport.h"
-#include "ObjSurfMap.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -159,7 +149,7 @@ DecLayer::populate(const Simulation& System)
 	     (Control.EvalPair<double>(keyIndex,lkeyName,"Temp"));
 	 }	 
      }
-  centMat=Control.EvalVar<int>(lkeyName+"CentMat");
+  centMat=ModelSupport::EvalMat<int>(Control,lkeyName+"CentMat");
   centTemp=Control.EvalVar<double>(lkeyName+"CentTemp");
   populated |= 1;  
   return;

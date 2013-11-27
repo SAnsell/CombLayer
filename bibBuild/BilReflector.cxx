@@ -47,10 +47,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "Tally.h"
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
@@ -62,9 +58,8 @@
 #include "surfDivide.h"
 #include "surfDIter.h"
 #include "Quadratic.h"
-#include "Plane.h"
+#include "Plane.h" 
 #include "Cylinder.h"
-#include "Line.h"
 #include "Rules.h"
 #include "varList.h"
 #include "Code.h"
@@ -74,25 +69,14 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
-#include "TargetBase.h"
-#include "TS2target.h"
-#include "TS2moly.h"
-#include "Groove.h"
-#include "Hydrogen.h"
-#include "OrthoInsert.h"
-#include "VacVessel.h"
-#include "FlightLine.h"
-#include "World.h"
 #include "BilReflector.h"
 
 namespace bibSystem
@@ -201,32 +185,32 @@ BilReflector::populate(const Simulation& System)
   BeHeight=Control.EvalVar<double>(keyName+"BeHeight");
   BeDepth=Control.EvalVar<double>(keyName+"BeDepth");
   BeRadius=Control.EvalVar<double>(keyName+"BeRadius");
-  BeMat=Control.EvalVar<int>(keyName+"BeMat");
+  BeMat=ModelSupport::EvalMat<int>(Control,keyName+"BeMat");
 
   InnerHeight=Control.EvalVar<double>(keyName+"InnerHeight");
   InnerDepth=Control.EvalVar<double>(keyName+"InnerDepth");
   InnerRadius=Control.EvalVar<double>(keyName+"InnerRadius");
-  InnerMat=Control.EvalVar<int>(keyName+"InnerMat");
+  InnerMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerMat");
 
   PbHeight=Control.EvalVar<double>(keyName+"PbHeight");
   PbDepth=Control.EvalVar<double>(keyName+"PbDepth");
   PbRadius=Control.EvalVar<double>(keyName+"PbRadius");
-  PbMat=Control.EvalVar<int>(keyName+"PbMat");
+  PbMat=ModelSupport::EvalMat<int>(Control,keyName+"PbMat");
 
   MidHeight=Control.EvalVar<double>(keyName+"MidHeight");
   MidDepth=Control.EvalVar<double>(keyName+"MidDepth");
   MidRadius=Control.EvalVar<double>(keyName+"MidRadius");
-  MidMat=Control.EvalVar<int>(keyName+"MidMat");
+  MidMat=ModelSupport::EvalMat<int>(Control,keyName+"MidMat");
 
   OuterHeight=Control.EvalVar<double>(keyName+"OuterHeight");
   OuterDepth=Control.EvalVar<double>(keyName+"OuterDepth");
   OuterRadius=Control.EvalVar<double>(keyName+"OuterRadius");
-  OuterMat=Control.EvalVar<int>(keyName+"OuterMat");
+  OuterMat=ModelSupport::EvalMat<int>(Control,keyName+"OuterMat");
 
   OuterPbHeight=Control.EvalVar<double>(keyName+"OuterPbHeight");
   OuterPbDepth=Control.EvalVar<double>(keyName+"OuterPbDepth");
   OuterPbRadius=Control.EvalVar<double>(keyName+"OuterPbRadius");
-  OuterPbMat=Control.EvalVar<int>(keyName+"OuterPbMat");
+  OuterPbMat=ModelSupport::EvalMat<int>(Control,keyName+"OuterPbMat");
 
   return;
 }

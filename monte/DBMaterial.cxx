@@ -101,6 +101,13 @@ DBMaterial::initMaterial()
   const std::string MLib="hlib=.70h pnlib=70u";
 
   MonteCarlo::Material MObj;
+  // TWO ULTRA SPECIAL MATERIALS!!!
+  MObj.setMaterial(-1,"InValid","00000.00c 1.0","",MLib); 
+  setMaterial(MObj);
+  MObj.setMaterial(0,"Void","00000.00c 1.0","",MLib);
+  setMaterial(MObj);
+
+
   MObj.setMaterial(1,"MachineTugnsten",
 		   "26000.55c 0.001773 28000.50c 0.003935 74182.24c 0.0165487 "
 		   "74183.24c 0.0089819772 74184.24c 0.0192722  74186.24c "
@@ -123,6 +130,7 @@ DBMaterial::initMaterial()
 		   "29063.24c 0.00004  29065.24c 0.00002 "
 		   "30000.70c 0.000145 ","al.20t",MLib);
   setMaterial(MObj);
+
   // Material #4 : Methane + 10% Al.
   MObj.setMaterial(4,"CH4inFoam",
 		   "6000.70c 0.0167364 1001.70c 0.066945 13027.24c 0.0060185",
@@ -171,7 +179,7 @@ DBMaterial::initMaterial()
 		   "40000.60c 0.10636","h/zr.01t zr/h.01t",MLib);
   setMaterial(MObj);
 
-  // Material #16: Liquid para-hydrogen (original))
+  // Material #16: Liquid para-hydrogen (original)
   //Total atom density 0.041957 -  20 K; 0.07021 grams per cc
   MObj.setMaterial(16,"paraH2-org","1001.70c 0.041957","parah.20t",MLib);
   setMaterial(MObj);
@@ -242,6 +250,11 @@ DBMaterial::initMaterial()
   MObj.setMaterial(31,"D2O",
 		   "1001.70c 0.00016542 1002.24c 0.06600341 "
 		   "8016.24c 0.03308442","hwtr.01t",MLib);
+  setMaterial(MObj);
+
+  // Material #32 Tantalum (old version)
+  // Total atom density 0.05524655 - 16.60 grams per cc
+  MObj.setMaterial(32,"Tantalum","73181.50c 0.05524655","",MLib);
   setMaterial(MObj);
 
   // Material #33 Nickel
@@ -916,7 +929,8 @@ DBMaterial::writeMCNPX(std::ostream& OX) const
 	  if (mp==MStore.end())
 	    throw ColErr::InContainerError<int>(mp->first,
 						"DBMaterial::writeMCNPX");
-	  mp->second.write(OX);
+	  if (mp->first)
+	    mp->second.write(OX);
 	}
     }
   return;

@@ -46,10 +46,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "Tally.h"
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
@@ -71,10 +67,9 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "chipDataStore.h"
 #include "LinkUnit.h"
@@ -191,9 +186,9 @@ Decoupled::populate(const Simulation& System)
   alSides=Control.EvalVar<double>(keyName+"AlSides");
   alUpDown=Control.EvalVar<double>(keyName+"AlUpDown");
 
-  modTemp=Control.EvalVar<int>(keyName+"ModTemp");
-  modMat=Control.EvalVar<int>(keyName+"ModMat");
-  alMat=Control.EvalVar<int>(keyName+"AlMat");
+  modTemp=Control.EvalVar<double>(keyName+"ModTemp");
+  modMat=ModelSupport::EvalMat<int>(Control,keyName+"ModMat");
+  alMat=ModelSupport::EvalMat<int>(Control,keyName+"AlMat");
   
   populated |= 1;
   return;

@@ -46,10 +46,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "Tally.h"
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
@@ -57,13 +53,8 @@
 #include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "surfEqual.h"
-#include "surfDivide.h"
-#include "surfDIter.h"
 #include "Quadratic.h"
 #include "Plane.h"
-#include "Cylinder.h"
-#include "Line.h"
 #include "Rules.h"
 #include "varList.h"
 #include "Code.h"
@@ -71,15 +62,12 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "Simulation.h"
-#include "ModelSupport.h"
 #include "SimProcess.h"
-#include "chipDataStore.h"
+#include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "LinearComp.h"
 #include "ContainedComp.h"
 #include "VacVessel.h"
 #include "Decoupled.h"
@@ -204,13 +192,13 @@ DecouplePipe::populate(const Simulation& System)
   if (HeTrack.empty())
     ELog::EM<<"He Track empty : "<<ELog::endErr;
 
-  outMat=Control.EvalVar<int>(keyName+"OutMat"); 
-  outAlMat=Control.EvalVar<int>(keyName+"OutAlMat"); 
-  outVacMat=Control.EvalVar<int>(keyName+"OutVacMat"); 
-  innerAlMat=Control.EvalVar<int>(keyName+"InnerAlMat"); 
-  innerMat=Control.EvalVar<int>(keyName+"InnerMat"); 
-  heMat=Control.EvalVar<int>(keyName+"HeMat"); 
-  heAlMat=Control.EvalVar<int>(keyName+"HeAlMat"); 
+  outMat=ModelSupport::EvalMat<int>(Control,keyName+"OutMat"); 
+  outAlMat=ModelSupport::EvalMat<int>(Control,keyName+"OutAlMat"); 
+  outVacMat=ModelSupport::EvalMat<int>(Control,keyName+"OutVacMat"); 
+  innerAlMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerAlMat"); 
+  innerMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerMat"); 
+  heMat=ModelSupport::EvalMat<int>(Control,keyName+"HeMat"); 
+  heAlMat=ModelSupport::EvalMat<int>(Control,keyName+"HeAlMat"); 
   
   populated |= 1;
   return;

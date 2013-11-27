@@ -32,8 +32,6 @@
 #include <string>
 #include <algorithm>
 #include <boost/shared_ptr.hpp>
-#include <boost/bind.hpp>
-#include <boost/array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -65,7 +63,6 @@
 #include "Plane.h"
 #include "Cylinder.h"
 #include "Line.h"
-#include "LineIntersectVisit.h"
 #include "Rules.h"
 #include "surfFunctors.h"
 #include "SurInter.h"
@@ -80,7 +77,6 @@
 #include "ModelSupport.h"
 #include "generateSurf.h"
 #include "chipDataStore.h"
-#include "shutterBlock.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h" 
 #include "ContainedComp.h"

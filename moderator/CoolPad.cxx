@@ -32,9 +32,6 @@
 #include <string>
 #include <algorithm>
 #include <boost/shared_ptr.hpp>
-#include <boost/bind.hpp>
-#include <boost/array.hpp>
-#include <boost/multi_array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -74,10 +71,9 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "chipDataStore.h"
 #include "LinkUnit.h"
@@ -170,7 +166,7 @@ CoolPad::populate(const Simulation& System)
       thick=Control.EvalPair<double>(keyIndex,keyName,"Thick");
       width=Control.EvalPair<double>(keyIndex,keyName,"Width");
       height=Control.EvalPair<double>(keyIndex,keyName,"Height");
-      Mat=Control.EvalPair<int>(keyIndex,keyName,"Mat");
+      Mat=ModelSupport::EvalMat<int>(Control,keyIndex+"Mat",keyName+"Mat");
       const int nZ=Control.EvalPair<int>(keyIndex,keyName,"NZigZag");
       CPts.clear();
       for(int i=0;i<nZ;i++)

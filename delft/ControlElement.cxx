@@ -160,10 +160,10 @@ ControlElement::populate(const Simulation& System)
   cEndIndex=ReactorGrid::getElement<size_t>(Control,cntlKey+"CEndIndex",
 					    XIndex,YIndex);
  
-  absMat=ReactorGrid::getElement<int>(Control,cntlKey+"AbsMat",
-				       XIndex,YIndex);
-  cladMat=ReactorGrid::getElement<int>(Control,cntlKey+"CladMat",
-				       XIndex,YIndex);
+  absMat=ReactorGrid::getMatElement(Control,cntlKey+"AbsMat",
+				    XIndex,YIndex);
+  cladMat=ReactorGrid::getMatElement(Control,cntlKey+"CladMat",
+				     XIndex,YIndex);
 
 
   lift=ReactorGrid::getElement<double>

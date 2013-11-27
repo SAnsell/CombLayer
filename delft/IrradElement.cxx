@@ -142,13 +142,13 @@ IrradElement::populate(const Simulation& System)
   waterRadius=ReactorGrid::getElement<double>
     (Control,keyName+"WaterRadius",XIndex,YIndex);
   
-  beMat=ReactorGrid::getElement<int>
+  beMat=ReactorGrid::getMatElement
     (Control,keyName+"BeMat",XIndex,YIndex);
-  pipeMat=ReactorGrid::getElement<int>
+  pipeMat=ReactorGrid::getMatElement
     (Control,keyName+"PipeMat",XIndex,YIndex);
-  sampleMat=ReactorGrid::getElement<int>
+  sampleMat=ReactorGrid::getMatElement
     (Control,keyName+"SampleMat",XIndex,YIndex);
-  waterMat=ReactorGrid::getElement<int>
+  waterMat=ReactorGrid::getMatElement
     (Control,keyName+"WaterMat",XIndex,YIndex);
   
   return;
