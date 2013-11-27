@@ -77,7 +77,7 @@ void ESSLayerMod(FuncDataBase& Control)
   // al layer
   Control.addVariable("LowModHGap1",0.3);
   Control.addVariable("LowModRadGap1",0.3);
-  Control.addVariable("LowModMaterial1",5);  // Al materk
+  Control.addVariable("LowModMaterial1","Aluminium");  // Al materk
   Control.addVariable("LowModTemp1",20.0);  
   // Vac gap
   Control.addVariable("LowModHGap2",0.5);
@@ -86,7 +86,7 @@ void ESSLayerMod(FuncDataBase& Control)
   // Next Al layer
   Control.addVariable("LowModHGap3",0.2);
   Control.addVariable("LowModRadGap3",0.2);
-  Control.addVariable("LowModMaterial3",5); 
+  Control.addVariable("LowModMaterial3","Aluminium"); 
   Control.addVariable("LowModTemp3",77.0);  
   // He Layer
   Control.addVariable("LowModHGap4",0.2);
@@ -95,7 +95,7 @@ void ESSLayerMod(FuncDataBase& Control)
   // Outer Layer
   Control.addVariable("LowModHGap5",0.2);
   Control.addVariable("LowModRadGap5",0.2);
-  Control.addVariable("LowModMaterial5",5); 
+  Control.addVariable("LowModMaterial5","Aluminium"); 
   Control.addVariable("LowModTemp5",300.0); 
   // Clearance
   Control.addVariable("LowModHGap6",0.2);
@@ -131,7 +131,7 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("SegWheelShaftBaseThick",3.0);
   Control.addVariable("SegWheelShaftBaseFootThick",13.5);
 
-  Control.addVariable("SegWheelCladShaftMat",1);
+  Control.addVariable("SegWheelCladShaftMat","Stainless304");
   Control.addVariable("SegWheelCoolingShaftMatInt",3);
   Control.addVariable("SegWheelCoolingShaftMatExt",0);
  
@@ -167,11 +167,12 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("SegWheelCaseRadius",125.0);
   Control.addVariable("SegWheelVoidRadius",126.0);
 
-  Control.addVariable("SegWheelWMat",74);
-  Control.addVariable("SegWheelSteelMat",3);
-  Control.addVariable("SegWheelHeMat",9);
+  // Material types 1:2:3
+  Control.addVariable("SegWheelWMat","Tungsten");
+  Control.addVariable("SegWheelSteelMat","Stainless304");
+  Control.addVariable("SegWheelHeMat","helium");
 
-  Control.addVariable("SegWheelInnerMat",3);
+  Control.addVariable("SegWheelInnerMat","Stainless304");
 
   Control.addVariable("SegWheelNLayers",25);
 

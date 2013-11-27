@@ -154,7 +154,6 @@ LinkWrapper::populate(const Simulation& System)
   
   const FuncDataBase& Control=System.getDataBase();
 
-  ELog::EM<<"PRE :"<<keyName<<ELog::endDebug;
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");
   for(size_t i=0;i<nLayers;i++)
     {
@@ -166,7 +165,6 @@ LinkWrapper::populate(const Simulation& System)
 			 (Control,StrFunc::makeString(kMat,i+1)));
     }
   // Material
-  ELog::EM<<"key :"<<keyName<<ELog::endDebug;
   defMat=ModelSupport::EvalMat<int>(Control,keyName+"DefMat");
   return;
 }
