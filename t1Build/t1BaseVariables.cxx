@@ -81,9 +81,9 @@ TS1PlateTarget(FuncDataBase& Control)
   Control.addVariable("PVesselTopWallThick",2.70);   // Thickness (Z)
   Control.addVariable("PVesselSideWallThick",2.40);  // Thickness (X/Y)
   Control.addVariable("PVesselFrontWallThick",4.20); // Thickness (X/Y)
-  Control.addVariable("PVesselWallMat",3);           // Steel 304
-  Control.addVariable("PVesselTaMat",32);            // Ta material
-  Control.addVariable("PVesselWaterMat",31);         // Water [D2O]  
+  Control.addVariable("PVesselWallMat","Stainless304");           // Steel 304
+  Control.addVariable("PVesselTaMat","Tantalum");            // Ta material
+  Control.addVariable("PVesselWaterMat","D2O");      // D2O  [if 88 then 80% D2O + 20% H2O (by VOLUME)]  
 
   Control.addVariable("PVesselCornerCutX",6.87);          
   Control.addVariable("PVesselCornerCutY",2.65);          
@@ -317,7 +317,7 @@ TS1CylTarget(FuncDataBase& Control)
   Control.addVariable("t1CylTargetBoreRadius",5.70);  // Master bore  
   // TARGET of TS2
   Control.addVariable("t1CylTargetXOffset",0.0);           // Offset ref centre
-  Control.addVariable("t1CylTargetYOffset",0.0);           // Offset ref centre
+  Control.addVariable("t1CylTargetYOffset",3.0);           // Offset ref centre
   Control.addVariable("t1CylTargetZOffset",0.0);           // Offset ref centre
   Control.addVariable("t1CylTargetMainLength",33.0);       // Length from 
   Control.addVariable("t1CylTargetCoreRadius",4.9);       // W radius 
@@ -733,8 +733,8 @@ TS1base(FuncDataBase& Control)
   // ALL SHUTTERS HAVE DIFFERENT POSITIONS:
   Control.addVariable("shutter1OpenZShift",-14.00);    // N1 [Methane] 
   Control.addVariable("shutter2OpenZShift",-14.00);    // N2  	       
-  Control.addVariable("shutter3OpenZShift",-14.00);    // N3	       
-  Control.addVariable("shutter4OpenZShift",-14.00);    // N4 [Hydrogen]
+  Control.addVariable("shutter3OpenZShift",-14.00);    // N3 [Hydrogen]	       
+  Control.addVariable("shutter4OpenZShift",-14.00);    // N4
   Control.addVariable("shutter5OpenZShift",-14.00);    // N5 	       
   Control.addVariable("shutter6OpenZShift",-14.00);    // N6	       
   Control.addVariable("shutter7OpenZShift",14.00);     // N7 [Water]   
@@ -752,8 +752,8 @@ TS1base(FuncDataBase& Control)
 
   Control.addVariable("shutter1XYAngle",46.00);       // Angle N1 [Methane]
   Control.addVariable("shutter2XYAngle",59.00);       // Angle N2
-  Control.addVariable("shutter3XYAngle",72.00);       // Angle N3
-  Control.addVariable("shutter4XYAngle",85.00);       // Angle N4 [Hydrogen]
+  Control.addVariable("shutter3XYAngle",72.00);       // Angle N3 [Hydrogen]
+  Control.addVariable("shutter4XYAngle",85.00);       // Angle N4
   Control.addVariable("shutter5XYAngle",98.00);       // Angle N5
   Control.addVariable("shutter6XYAngle",111.00);      // Angle N6
   Control.addVariable("shutter7XYAngle",124.00);      // Angle N7 [Water]
@@ -848,20 +848,20 @@ TS1base(FuncDataBase& Control)
   Prisma.buildVar(Control,0.0,-1.7,0.0,6.17,8.61,0.35,0.47); // xstep
   Surf.buildVar(Control,2.0,2.2,-1.5,6.74,4.8,0.05,0.44); // (xstep; zang = estimated) 
   Crisp.buildVar(Control,2.0,2.2,-1.5,7.91,4.57,0.22,0.275); // (xstep; zang = estimated)
-  Loq.buildVar(Control,0.0,2.2,0.0,3.0,3.0,0.0,0.0); // DRAWINGS* (default beam size = 3 x 3 cm)
-  Iris.buildVar(Control,0.0,2.0,0.0,3.0,3.0,0.0,0.0); // DRAWINGS* (default beam size = 3 x 3 cm)
+  Loq.buildVar(Control,0.0,2.2,0.0,7.9,7.9,0.395,0.395); // xstep
+  Iris.buildVar(Control,0.0,2.0,0.0,7.0,7.0,0.0,0.0); // DRAWINGS* (default beam size = 7 x 7 cm)
   PolarisII.buildVar(Control,0.0,-1.7,0.0,8.22,7.93,0.35,0.22); // xstep
-  Tosca.buildVar(Control,0.0,-1.5,0.0,3.0,3.0,0.0,0.0); // DRAWINGS* (default beam size = 3 x 3 cm)
+  Tosca.buildVar(Control,0.0,-1.5,0.0,8.4,8.0,0.16,0.088); // from Instr. Techical. Spec. ver1 (xstep) 
   Het.buildVar(Control,-0.6,-1.3,0.0,7.90,7.90,0.63,0.63);    
   Maps.buildVar(Control,0.0,1.3,0.0,7.34,7.34,0.22,0.22); // xstep 
   Vesuvio.buildVar(Control,0.0,1.7,0.0,7.38,7.38,0.58,0.58);
   Sxd.buildVar(Control,2.0,2.0,0.0,8.88,8.88,0.58,0.58); // (xstep = estimate)
   Merlin.buildVar(Control,-2.0,-2.2,0.0,9.4,9.4,0.0,0.0); // DRAWINGS* (beam size = 9.4 x 9.4 cm - from Rob Bewley)
-  S5.buildVar(Control,0.0,-2.2,0.0,3.0,3.0,0.0,0.0); // CLOSED
+  S5.buildVar(Control,0.0,-2.2,0.0,7.0,7.0,0.0,0.0); // CLOSED
   Mari.buildVar(Control,0.0,2.0,0.0,7.74,7.74,0.48,0.48); // xstep 
-  Gem.buildVar(Control,0.0,1.4,0.0,3.0,3.0,0.0,0.0);  // DRAWINGS* (default beam size = 3 x 3 cm)
-  Hrpd.buildVar(Control,0.0,1.5,0.0,3.0,3.0,0.0,0.0);  // DRAWINGS* (default beam size = 3 x 3 cm)
-  Pearl.buildVar(Control,0.0,1.3,0.0,3.0,3.0,0.0,0.0);  // DRAWINGS* (default beam size = 3 x 3 cm)
+  Gem.buildVar(Control,0.0,1.4,0.0,7.0,7.0,0.0,0.0);  // DRAWINGS* (default beam size = 7 x 7 cm)
+  Hrpd.buildVar(Control,0.0,1.5,0.0,7.0,7.0,0.0,0.0);  // DRAWINGS* (default beam size = 7 x 7 cm)
+  Pearl.buildVar(Control,0.0,1.3,0.0,7.0,7.0,0.0,0.0);  // DRAWINGS* (default beam size = 7 x 7 cm)
     
   return;
 }  

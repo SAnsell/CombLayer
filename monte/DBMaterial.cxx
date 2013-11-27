@@ -130,6 +130,7 @@ DBMaterial::initMaterial()
 		   "29063.24c 0.00004  29065.24c 0.00002 "
 		   "30000.70c 0.000145 ","al.20t",MLib);
   setMaterial(MObj);
+
   // Material #4 : Methane + 10% Al.
   MObj.setMaterial(4,"CH4inFoam",
 		   "6000.70c 0.0167364 1001.70c 0.066945 13027.24c 0.0060185",
@@ -178,7 +179,7 @@ DBMaterial::initMaterial()
 		   "40000.60c 0.10636","h/zr.01t zr/h.01t",MLib);
   setMaterial(MObj);
 
-  // Material #16: Liquid para-hydrogen (original))
+  // Material #16: Liquid para-hydrogen (original)
   //Total atom density 0.041957 -  20 K; 0.07021 grams per cc
   MObj.setMaterial(16,"paraH2-org","1001.70c 0.041957","parah.20t",MLib);
   setMaterial(MObj);
@@ -928,7 +929,8 @@ DBMaterial::writeMCNPX(std::ostream& OX) const
 	  if (mp==MStore.end())
 	    throw ColErr::InContainerError<int>(mp->first,
 						"DBMaterial::writeMCNPX");
-	  mp->second.write(OX);
+	  if (mp->first)
+	    mp->second.write(OX);
 	}
     }
   return;
