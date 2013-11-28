@@ -64,6 +64,9 @@ class FItem
   virtual void setValue(const std::string&);
   virtual void setValue(const Code&);
 
+  /// Accessor to active
+  int isActive() const { return active; }
+
   ///\cond ABSTRACT
 
   virtual void getValue(Geometry::Vec3D&) const= 0;
@@ -73,8 +76,7 @@ class FItem
   virtual void getValue(std::string&) const= 0; 
 
   virtual std::string typeKey() const =0;
-  virtual void write(std::ostream&) const=0;
-  
+  virtual void write(std::ostream&) const=0;  
   ///\endcond ABSTRACT
 };
 

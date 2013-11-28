@@ -1778,9 +1778,12 @@ Simulation::writeVariables(std::ostream& OX) const
   for(vc=Ptr.begin();vc!=Ptr.end();vc++)
     {
       std::string Val;
-      vc->second->getValue(Val);
-      OX<<"c "<<vc->first<<" "
-	<<Val<<std::endl;
+      if (vc->second->isActive())
+	{
+	  vc->second->getValue(Val);
+	  OX<<"c "<<vc->first<<" "
+	    <<Val<<std::endl;
+	}
     }
   
   return;
