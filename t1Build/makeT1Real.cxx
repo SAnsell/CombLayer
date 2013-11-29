@@ -106,7 +106,6 @@
 #include "t1PlateTarget.h"
 #include "Cannelloni.h"
 #include "InnerTarget.h"
-#include "CylFluxTrap.h"
 #include "SideCoolTarget.h"
 #include "MonoPlug.h"
 #include "World.h"
