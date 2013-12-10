@@ -521,13 +521,13 @@ void createSNSInputs(inputParam& IParam)
   return;
 }
 
-void createEPBCollInputs(inputParam& IParam)
+void createMuonInputs(inputParam& IParam)
   /*!
     Set the specialise inputs for EPB on TS2
     \param IParam :: Input Parameters
   */
 {
-  ELog::RegMethod RegA("MainProcess::","createEPBCollInputs");
+  ELog::RegMethod RegA("MainProcess::","createMuonInputs");
   createInputs(IParam);
 
   IParam.setValue("sdefType",std::string("TS1EpbColl")); 

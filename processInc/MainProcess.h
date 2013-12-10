@@ -54,11 +54,12 @@ namespace mainSystem
 
   void createBilbauInputs(inputParam&);
   void createCuInputs(inputParam&);
+  void createDelftInputs(inputParam&);
   void createEPBInputs(inputParam&);
   void createESSInputs(inputParam&);
   void createFullInputs(inputParam&);
   void createLensInputs(inputParam&);
-  void createDelftInputs(inputParam&);
+  void createMuonInputs(inputParam&);
   void createSiliconInputs(inputParam&);
   void createSNSInputs(inputParam&);
   void createTS1Inputs(inputParam&);

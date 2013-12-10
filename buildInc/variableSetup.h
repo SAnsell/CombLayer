@@ -39,6 +39,7 @@ namespace setVariable
   void EPBVariables(FuncDataBase&);
   void SNSVariables(FuncDataBase&);
   void IMatVariables(FuncDataBase&);
+  void MuonVariables(FuncDataBase&);
   void D4CModel(FuncDataBase&);
   void LensModel(FuncDataBase&);
   void RefBolts(FuncDataBase&);

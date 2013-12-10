@@ -54,13 +54,14 @@ namespace setVariable
 {
 
 void
-MuVariables(FuncDataBase& Control)
+MuonVariables(FuncDataBase& Control)
   /*!
     Function to set the control variables and constants
     -- This version is for Muon Beamline 
     \param Control :: Function data base to add constants too
   */
 {
+  ELog::RegMethod RegA("muVariables[F]","MuonVariables");
 // -----------
 // GLOBAL stuff
 // -----------
@@ -81,8 +82,10 @@ MuVariables(FuncDataBase& Control)
   Control.addVariable("TargShieldForwThick",90.0);       
   Control.addVariable("TargShieldBackThick",60.0);         
   Control.addVariable("TargShieldMuonThick",20.0);       
-  Control.addVariable("TargShieldJapThick",20.0);         
-  Control.addVariable("TargShieldMat",95);      // Mild Steel - XC-06 is mild enough!
+  Control.addVariable("TargShieldJapThick",20.0);  
+
+  // Mild Steel - XC-06 is mild enough!       
+  Control.addVariable("TargShieldMat","SteelXC06");
   
   // Target Vessel Box
   Control.addVariable("VesselBoxXStep",0.0);  
@@ -95,7 +98,7 @@ MuVariables(FuncDataBase& Control)
   Control.addVariable("VesselBoxWidth",32.0);        
   Control.addVariable("VesselBoxSteelThick",1.0);        
 
-  Control.addVariable("VesselBoxSteelMat",3);      // Stainless steel 304
+  Control.addVariable("VesselBoxSteelMat","Stainless304");
 
   // Carbon Target
   Control.addVariable("CarbonTrgtXStep",0.0);  
@@ -107,7 +110,8 @@ MuVariables(FuncDataBase& Control)
   Control.addVariable("CarbonTrgtDepth",0.7);  
   Control.addVariable("CarbonTrgtWidth",5.0);        
 
-  Control.addVariable("CarbonTrgtMat",96);       // Carbon, Graphite (Reactor Grade): see MaterialsComposition2.pdf
+  // Carbon, Graphite (Reactor Grade):
+  Control.addVariable("CarbonTrgtMat","Graphite"); 
 
   // EPB Tube - In
   Control.addVariable("EpbInTubeXStep",0.0);  
@@ -116,7 +120,7 @@ MuVariables(FuncDataBase& Control)
   Control.addVariable("EpbInTubeRadius",12.1);
   Control.addVariable("EpbInTubeThick",0.5);
   Control.addVariable("EpbInTubeLength",123.25-15.0);      
-  Control.addVariable("EpbInTubeMat",94);     // Stainless steel 316L
+  Control.addVariable("EpbInTubeMat","Stainless316L"); 
 
 //   EPB beamline
 
@@ -127,7 +131,7 @@ MuVariables(FuncDataBase& Control)
   Control.addVariable("EpbOutTubeRadius",12.1);
   Control.addVariable("EpbOutTubeThick",0.5);
   Control.addVariable("EpbOutTubeLength",90.0-15.0);      
-  Control.addVariable("EpbOutTubeMat",94);     // Stainless steel 316L
+  Control.addVariable("EpbOutTubeMat","Stainless316L");
 
   // 1st Collimator
   Control.addVariable("FirstCollXStep",0.0);  
@@ -138,8 +142,8 @@ MuVariables(FuncDataBase& Control)
   Control.addVariable("FirstCollRadiusStartCone",3.74);  
   Control.addVariable("FirstCollRadiusStopCone",6.85);  
   Control.addVariable("FirstCollLength",65.0);      
-  Control.addVariable("FirstCollTubeMat",73);     // Copper
-  Control.addVariable("FirstCollInnerMat",73);      // Copper
+  Control.addVariable("FirstCollTubeMat","Copper");     // Copper
+  Control.addVariable("FirstCollInnerMat","Copper");      // Copper
 
   // 3rd Collimator - simple
   Control.addVariable("ThirdCollXStep",0.0);  
@@ -150,8 +154,8 @@ MuVariables(FuncDataBase& Control)
   Control.addVariable("ThirdCollRadiusStartCone",4.96);  
   Control.addVariable("ThirdCollRadiusStopCone",5.91);  
   Control.addVariable("ThirdCollLength",61.0);      
-  Control.addVariable("ThirdCollTubeMat",73);     // Copper
-  Control.addVariable("ThirdCollInnerMat",73);     // Copper
+  Control.addVariable("ThirdCollTubeMat","Copper");     // Copper
+  Control.addVariable("ThirdCollInnerMat","Copper");     // Copper
 
   // Collimator shield 1 (Layered if needed)
   Control.addVariable("FirstShieldXStep",0.0);  
@@ -161,7 +165,7 @@ MuVariables(FuncDataBase& Control)
   Control.addVariable("FirstShieldHeight",160.5);  
   Control.addVariable("FirstShieldDepth",100.0);  
   Control.addVariable("FirstShieldWidth",140.0);          
-  Control.addVariable("FirstShieldSteelMat",95);      // Mild Steel - XC-06 is mild enough!
+  Control.addVariable("FirstShieldSteelMat","SteelXC06");      // Mild Steel - XC-06 is mild enough!
   Control.addVariable("FirstShieldNLayers",0);      // Number of layers  
 
   // Tube in 1st shield
@@ -171,7 +175,7 @@ MuVariables(FuncDataBase& Control)
   Control.addVariable("FirstTubeRadius",12.1);
   Control.addVariable("FirstTubeThick",0.5);
   Control.addVariable("FirstTubeLength",44.8);      
-  Control.addVariable("FirstTubeMat",94);     // Stainless steel 316L
+  Control.addVariable("FirstTubeMat","Stainless316L");
 
   
   // Collimator shield 3 - Layered
@@ -182,7 +186,7 @@ MuVariables(FuncDataBase& Control)
   Control.addVariable("ThirdShieldHeight",320.0);  
   Control.addVariable("ThirdShieldDepth",76.0);  
   Control.addVariable("ThirdShieldWidth",166.0);        
-  Control.addVariable("ThirdShieldSteelMat",95);      // Mild Steel - XC-06 is mild enough!
+  Control.addVariable("ThirdShieldSteelMat","SteelXC06");      // Mild Steel - XC-06 is mild enough!
   Control.addVariable("ThirdShieldNLayers",17);      // Number of layers
 
   // Tube in layered shield
@@ -192,7 +196,7 @@ MuVariables(FuncDataBase& Control)
   Control.addVariable("ThirdTubeRadius",11.15);
   Control.addVariable("ThirdTubeThick",0.5);
   Control.addVariable("ThirdTubeLength",78.0);      
-  Control.addVariable("ThirdTubeMat",94);     // Stainless steel 316L
+  Control.addVariable("ThirdTubeMat","Stainless316L");
 
    // Profile monitor
   Control.addVariable("ProfileMonitorXStep",0.0);  
@@ -202,7 +206,7 @@ MuVariables(FuncDataBase& Control)
   Control.addVariable("ProfileMonitorHeight",35.0);  
   Control.addVariable("ProfileMonitorDepth",12.0);  
   Control.addVariable("ProfileMonitorWidth",35.0);        
-  Control.addVariable("ProfileMonitorSteelMat",3);      // Stainless steel
+  Control.addVariable("ProfileMonitorSteelMat","Stainless304");
   
   // Q44 quadrupole (Q-11/13 or Q-2 type) chech this! conflicting drawings...
   Control.addVariable("Q44quadXStep",0.0);  
@@ -224,9 +228,9 @@ MuVariables(FuncDataBase& Control)
   Control.addVariable("Q44quadInsertSize",30.0);      //
   Control.addVariable("Q44quadInsertThick",10.0);      //
   
-  Control.addVariable("Q44quadSteelMat",95);      // Steel XC-06: Soft magnetic (yoke) steel
-  Control.addVariable("Q44quadCopperMat",73);     // Copper
-  Control.addVariable("Q44quadInsertMat",95);      // Steel XC-06: Soft magnetic (yoke) steel
+  Control.addVariable("Q44quadSteelMat","SteelXC06");      // Steel XC-06: Soft magnetic (yoke) steel
+  Control.addVariable("Q44quadCopperMat","Copper");     // Copper
+  Control.addVariable("Q44quadInsertMat","SteelXC06");      // Steel XC-06: Soft magnetic (yoke) steel
 
   // Final Tube 
   Control.addVariable("FinalTubeXStep",0.0);  
@@ -235,7 +239,7 @@ MuVariables(FuncDataBase& Control)
   Control.addVariable("FinalTubeRadius",16.0);
   Control.addVariable("FinalTubeThick",0.5);
   Control.addVariable("FinalTubeLength",100.0);      
-  Control.addVariable("FinalTubeMat",94);     // Stainless steel 316L
+  Control.addVariable("FinalTubeMat","Stainless316L");
 
 
 
@@ -261,9 +265,9 @@ MuVariables(FuncDataBase& Control)
   Control.addVariable("Q1quadInsertSize",18.2);      //
   Control.addVariable("Q1quadInsertThick",4.0);      //
   
-  Control.addVariable("Q1quadSteelMat",95);      // Steel XC-06: Soft magnetic (yoke) steel
-  Control.addVariable("Q1quadCopperMat",73);     // Copper
-  Control.addVariable("Q1quadInsertMat",95);      // Steel XC-06: Soft magnetic (yoke) steel
+  Control.addVariable("Q1quadSteelMat","SteelXC06");      // Steel XC-06: Soft magnetic (yoke) steel
+  Control.addVariable("Q1quadCopperMat","Copper");     // Copper
+  Control.addVariable("Q1quadInsertMat","SteelXC06");      // Steel XC-06: Soft magnetic (yoke) steel
 
   // Q2 quadrupole (Q-35 type) 
   Control.addVariable("Q2quadXStep",208.10);  
@@ -285,9 +289,9 @@ MuVariables(FuncDataBase& Control)
   Control.addVariable("Q2quadInsertSize",16.0);      //
   Control.addVariable("Q2quadInsertThick",3.0);      //
   
-  Control.addVariable("Q2quadSteelMat",95);      // Steel XC-06: Soft magnetic (yoke) steel
-  Control.addVariable("Q2quadCopperMat",73);     // Copper
-  Control.addVariable("Q2quadInsertMat",95);    // Steel XC-06: Soft magnetic (yoke) steel
+  Control.addVariable("Q2quadSteelMat","SteelXC06");      // Steel XC-06: Soft magnetic (yoke) steel
+  Control.addVariable("Q2quadCopperMat","Copper");
+  Control.addVariable("Q2quadInsertMat","SteelXC06");    // Steel XC-06: Soft magnetic (yoke) steel
   
 
 

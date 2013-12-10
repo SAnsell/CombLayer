@@ -134,14 +134,14 @@ main(int argc,char* argv[])
   InputControl::mainVector(argc,argv,Names);
   mainSystem::inputParam IParam;
 //  createMuInputs(IParam);
-  createEPBCollInputs(IParam);
+  mainSystem::createMuonInputs(IParam);
 
   const int iteractive(IterVal.empty() ? 0 : 1);   
   Simulation* SimPtr=createSimulation(IParam,Names,Oname);
   if (!SimPtr) return -1;
 
   // The big variable setting
-  setVariable::MuVariables(SimPtr->getDataBase());
+  setVariable::MuonVariables(SimPtr->getDataBase());
   InputModifications(SimPtr,IParam,Names);
   mainSystem::setVariables(*SimPtr,IParam,Names);
 
@@ -174,8 +174,6 @@ main(int argc,char* argv[])
 	  SimPtr->removeComplements();
 	  SimPtr->removeDeadCells();            // Generic
 	  SimPtr->removeDeadSurfaces(0);         
-
-	  SimPtr->removeOppositeSurfaces();
 
 	  ModelSupport::setDefaultPhysics(*SimPtr,IParam);
 	  const int renumCellWork=tallySelection(*SimPtr,IParam);

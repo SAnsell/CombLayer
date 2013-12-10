@@ -698,9 +698,9 @@ DBMaterial::initMaterial()
   
   // Material #88: D2O + H2O mixture (80% D2O & 20% H2O)    (by VOLUME)
   // Total atom density 0.0996049 - 1.0856 grams per cc
-  MObj.setMaterial(88,"1001.70c 1.327648e-02 1002.24c 5.296063e-02 "
-		   "8016.24c 0.03336781","lwtr.01t hwtr.01t",
-		   MLib);
+  MObj.setMaterial(88,"80D2O/20H2O","1001.70c 1.327648e-02 "
+		   "1002.24c 5.296063e-02 8016.24c 0.03336781",
+		   "lwtr.01t hwtr.01t",MLib);
   setMaterial(MObj);
 
   // Material #89 Boral (95% Aluminium & 5% Boron) 
@@ -763,7 +763,7 @@ DBMaterial::initMaterial()
   // density 0.085238 
   MObj.setMaterial(96,"Graphite",  
 		   "6000.70c 8.523759e-02 5010.70c "
-		   "1.894100e-08 5011.70c 7.576401e-08"
+		   "1.894100e-08 5011.70c 7.576401e-08",
 		   "",MLib);
   setMaterial(MObj);
 
