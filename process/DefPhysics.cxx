@@ -214,6 +214,45 @@ setDefRotation(const mainSystem::inputParam& IParam)
   return retFlag;
 }
 
+void
+setPhysicsModel(physicsSystem::LSwitchCard& lea,
+		const std::string& PModel)
+  /*!
+    Set the physics model based on the input parameter set
+    \param lea :: Physics system
+    \param PModel :: Physics model to choose 
+  */
+{
+  ELog::RegMethod RegA("DefPhysics[F]","setPhysicsModel");
+
+// Goran
+
+  ELog::EM<<"Physics Model == "<<PModel<<ELog::endBasic;
+
+  if (PModel=="CEM03")
+    lea.setValues("lca","2 1 1 0023 1 1 0 1 1 0");  // CEM
+  else if (PModel=="IA")
+    lea.setValues("lca","2 1 0 0023 1 1 2 1 2 0");  // INCL4 - ABLA
+  else if (PModel=="BD")
+    lea.setValues("lca","2 1 1 0023 1 1 0 1 0 0");  // Bertini - DrANnnesner   
+  else if (PModel=="BA")
+    lea.setValues("lca","2 1 1 0023 1 1 2 1 0 0");  // Bertini - ABLA  
+  else
+    {
+      ELog::EM<<"physModel :\n"
+	"CEM03 :: CEM03 model \n"
+	"IA :: INCL4 - ABLA model \n"
+	"BD :: Bertini - Dresner model \n"
+	"BA :: Bertini - ABLA model"<<ELog::endBasic;
+      throw ColErr::ExitAbort("No model");
+    }
+  lea.setValues("lea","1 4 1 0 1 0 0 1");
+
+  return;
+}
+
+
+
 void setDefaultPhysics(Simulation& System,
 		       const mainSystem::inputParam& IParam)
   /*!
@@ -276,8 +315,11 @@ void setDefaultPhysics(Simulation& System,
   // LCA ielas ipreq iexisa ichoic jcoul nexite npidk noact icem ilaq 
   // LEA ipht icc nobalc nobale ifbrk ilvden ievap nofis
   physicsSystem::LSwitchCard& lea=PC.getLEA();
-  lea.setValues("lca","2 1 1 0023 1 1 0 1 1 0");
-  lea.setValues("lea","1 4 1 0 1 0 0 1");
+
+  // GORAN
+  const std::string PModel=IParam.getValue<std::string>("physModel");
+  setPhysicsModel(lea,PModel);
+
 
   PC.setNPS(IParam.getValue<int>("nps"));
   PC.setRND(IParam.getValue<long int>("random"));	
@@ -286,9 +328,10 @@ void setDefaultPhysics(Simulation& System,
   return; 
 }
 
-void setReactorPhysics(Simulation& System,
-		       const mainSystem::inputParam& IParam)
-  /*!
+void 
+setReactorPhysics(Simulation& System,
+		  const mainSystem::inputParam& IParam)
+/*!
     Set the default Physics
     \param System :: Simulation
     \param IParam :: Input parameter
@@ -341,7 +384,10 @@ void setReactorPhysics(Simulation& System,
   // LCA ielas ipreq iexisa ichoic jcoul nexite npidk noact icem ilaq 
   // LEA ipht icc nobalc nobale ifbrk ilvden ievap nofis
   physicsSystem::LSwitchCard& lea=PC.getLEA();
-  lea.setValues("lca","2 1 1 0023 1 1 0 1 1 0");
+  lea.setValues("lca","2 1 1 0023 1 1 0 1 1 0");  // CEM
+//  lea.setValues("lca","2 1 0 0023 1 1 2 1 2 0");  // INCL4 - ABLA
+//  lea.setValues("lca","2 1 1 0023 1 1 0 1 0 0");  // Bertini - Dresner
+//  lea.setValues("lca","2 1 1 0023 1 1 2 1 0 0");  // Bertini - ABLA     
   lea.setValues("lea","1 4 1 0 1 0 0 1");
 
   PC.setNPS(IParam.getValue<int>("nps"));

@@ -162,17 +162,24 @@ sourceSelection(Simulation& System,const mainSystem::inputParam& IParam)
 	CSdef.setCutEnergy(IParam.getValue<double>("ECut"));
       return;
     }
+  const std::string sdefType=IParam.getValue<std::string>("sdefType");
   ELog::EM<<"SDEF == "<<IParam.getValue<std::string>("sdefType")<<
     ELog::endDebug;
-  if (IParam.getValue<std::string>("sdefType")=="TS1")
+  if (sdefType=="TS1")
     SDef::createTS1Source(Control,sourceCard);
-  else if (IParam.getValue<std::string>("sdefType")=="TS1Gauss")
+  else if (sdefType=="TS1Gauss") 
     SDef::createTS1GaussianSource(Control,sourceCard);
-  else if (IParam.getValue<std::string>("sdefType")=="Bilbao")
+  else if (sdefType=="TS1GaussNew")
+    SDef::createTS1GaussianNewSource(Control,sourceCard);     
+  else if (sdefType=="TS1Muon")
+    SDef::createTS1MuonSource(Control,sourceCard); // Goran
+  else if (sdefType=="TS1EpbColl")
+    SDef::createTS1EpbCollSource(Control,sourceCard); // Goran
+  else if (sdefType=="Bilbao")
     SDef::createBilbaoSource(Control,sourceCard);
-  else if (IParam.getValue<std::string>("sdefType")=="ess")
+  else if (sdefType=="ess")
     SDef::createESSSource(Control,sourceCard);
-  else if (IParam.getValue<std::string>("sdefType")=="TS2")
+  else if (sdefType=="TS2")
     {
   // Basic TS2 source
       if(IParam.hasKey("horr") && IParam.flag("horr"))
@@ -186,7 +193,10 @@ sourceSelection(Simulation& System,const mainSystem::inputParam& IParam)
       ELog::EM<<"sdefType :\n"
 	"TS1 :: Target station one \n"
 	"TS2 :: Target station two \n"
-	"TS1Gauss :: Target station one [old gaussian beam] \n"
+	"TS1Gauss :: Target station one [old gaussian beam] sigma = 15 mm \n"
+	"TS1GaussNew :: Target station one [old gaussian beam] sigma = 18 mm \n"	
+	"TS1Muon :: TS1 [proton beam for muon target] \n"
+	"TS1EpbColl :: TS1 [proton beam for 3rd collimator] \n"			
 	"ess :: ESS beam proton"
 	"Bilbao :: Bilbao beam proton"<<ELog::endBasic;
     }

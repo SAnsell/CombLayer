@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   processInc/MaterialSupport.h
+ * File:   epbBuildInc/makeEPB.h
 *
  * Copyright (c) 2004-2013 by Stuart Ansell
  *
@@ -18,18 +18,46 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
- *************************************************************************/
-#ifndef ModelSupport_MaterialSupport_h
-#define ModelSupport_MaterialSupport_h
+ ****************************************************************************/
+#ifndef epbSystem_makeSNS_h
+#define epbSystem_makeSNS_h
 
+/*!
+  \namespace snsSystem
+  \brief General SNS stuff
+  \version 1.0
+  \date September 2013
+  \author S. Ansell
+*/
 
-namespace ModelSupport
+namespace snsSystem
 {
-  template<typename T> T EvalMat(const FuncDataBase&,const std::string&);
-  template<typename T> T EvalMat(const FuncDataBase&,const std::string&,
-				 const std::string&);
-  template<typename T> T EvalDefMat(const FuncDataBase&,const std::string&,
-				    const T&);
+  class targetFront;
+  /*!
+    \class makeSNS
+    \version 1.0
+    \author S. Ansell
+    \date December 2013
+    \brief Top level builder for the whole SNS model
+  */
+  
+class makeSNS
+{
+ private:
+  
+  boost::shared_ptr<targetFront> tarFrontObj;  ///< Front target section
+
+ public:
+  
+  makeSNS();
+  makeSNS(const makeSNS&);
+  makeSNS& operator=(const makeSNS&);
+  ~makeSNS();
+  
+  void build(Simulation*,const mainSystem::inputParam&);
+
+};
+
 }
 
 #endif

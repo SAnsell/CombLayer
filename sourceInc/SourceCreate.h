@@ -25,12 +25,16 @@
 namespace SDef
 {
   class Source;
-  
+  void createGaussianSource(Source&,const double,const double,const double);  
+
   void createSimpleSource(Source&,const double,const double);
   void createBilbaoSource(const FuncDataBase&,Source&);
   void createESSSource(const FuncDataBase&,Source&);
   void createTS1Source(const FuncDataBase&,Source&);
   void createTS1GaussianSource(const FuncDataBase&,Source&);
+  void createTS1GaussianNewSource(const FuncDataBase&,Source&);   // Goran
+  void createTS1MuonSource(const FuncDataBase&,Source&); // Goran
+  void createTS1EpbCollSource(const FuncDataBase&,Source&);   // Goran    
   void createTS2Source(Source&);
 }
 

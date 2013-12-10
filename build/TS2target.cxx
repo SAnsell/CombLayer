@@ -46,19 +46,14 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Quaternion.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "surfEqual.h"
 #include "localRotate.h"
 #include "masterRotate.h"
 #include "surfDivide.h"
-#include "surfDIter.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
@@ -70,12 +65,9 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "SrcData.h"
-#include "SrcItem.h"
-#include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -262,11 +254,11 @@ TS2target::populate(const Simulation& System)
   flangeClear=Control.EvalVar<double>(keyName+"FlangeClear");
   flangeRadius=Control.EvalVar<double>(keyName+"FlangeRadius");
   flangeYStep=Control.EvalVar<double>(keyName+"FlangeYStep");
-  flangeMat=Control.EvalVar<int>(keyName+"FlangeMat");
+  flangeMat=ModelSupport::EvalMat<int>(Control,keyName+"FlangeMat");
 
-  wMat=Control.EvalVar<int>(keyName+"WMat");
-  taMat=Control.EvalVar<int>(keyName+"TaMat");
-  waterMat=Control.EvalVar<int>(keyName+"WaterMat");
+  wMat=ModelSupport::EvalMat<int>(Control,keyName+"WMat");
+  taMat=ModelSupport::EvalMat<int>(Control,keyName+"TaMat");
+  waterMat=ModelSupport::EvalMat<int>(Control,keyName+"WaterMat");
 
   targetTemp=Control.EvalVar<double>(keyName+"TargetTemp");
   waterTemp=Control.EvalVar<double>(keyName+"WaterTemp");

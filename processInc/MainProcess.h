@@ -60,6 +60,7 @@ namespace mainSystem
   void createLensInputs(inputParam&);
   void createDelftInputs(inputParam&);
   void createSiliconInputs(inputParam&);
+  void createSNSInputs(inputParam&);
   void createTS1Inputs(inputParam&);
   void createInputs(inputParam&);
 

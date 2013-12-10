@@ -233,6 +233,7 @@ createInputs(inputParam& IParam)
   IParam.regFlag("sdefVoid","sdefVoid");
   IParam.regDefItem("sdefEnergy","sdefEnergy",1,800.0);
   IParam.regDefItem<std::string>("sdefType","sdefType",1,"");
+  IParam.regDefItem<std::string>("physModel","physicsModel",1,"CEM03"); 
   IParam.regDefItem<double>("SA","sdefAngle",1,35.0);
   IParam.regItem<std::string>("SF","sdefFile");
   IParam.regDefItem<int>("SI","sdefIndex",1,1);
@@ -301,6 +302,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("SI","Source Index value [1:2]");
   IParam.setDesc("SObj","Source Initialization Object");
   IParam.setDesc("sdefType","Source Type (TS1/TS2)");
+  IParam.setDesc("physModel","Physics Model"); 
   IParam.setDesc("SP","Source start point");
   IParam.setDesc("SV","Sourece direction vector");
   IParam.setDesc("SZ","Source direction: Rotation to +ve Z [deg]");
@@ -495,7 +497,7 @@ void createESSInputs(inputParam& IParam)
 
 void createEPBInputs(inputParam& IParam)
   /*!
-    Set the specialise inputs for TS2
+    Set the specialise inputs for ESS EPB magnets
     \param IParam :: Input Parameters
   */
 {
@@ -503,6 +505,32 @@ void createEPBInputs(inputParam& IParam)
   createInputs(IParam);
   
   IParam.setValue("sdefType",std::string("ess"));  
+  return;
+}
+
+void createSNSInputs(inputParam& IParam)
+  /*!
+    Set the specialise inputs for SNS
+    \param IParam :: Input Parameters
+  */
+{
+  ELog::RegMethod RegA("MainProcess::","createSNSInputs");
+  createInputs(IParam);
+  
+  IParam.setValue("sdefType",std::string("ess"));  
+  return;
+}
+
+void createEPBCollInputs(inputParam& IParam)
+  /*!
+    Set the specialise inputs for EPB on TS2
+    \param IParam :: Input Parameters
+  */
+{
+  ELog::RegMethod RegA("MainProcess::","createEPBCollInputs");
+  createInputs(IParam);
+
+  IParam.setValue("sdefType",std::string("TS1EpbColl")); 
   return;
 }
 
