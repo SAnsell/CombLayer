@@ -23,7 +23,7 @@
 #define epbSystem_makeEPB_h
 
 /*!
-  \namespace eepSystem
+  \namespace epbSystem
   \brief General EPB stuff
   \version 1.0
   \date September 2013

@@ -170,7 +170,6 @@ main(int argc,char* argv[])
 	    tallySelection(*SimPtr,IParam);
 
 	  SimPtr->removeComplements();
-	  SimPtr->removeDeadCells();            // Generic
 	  SimPtr->removeDeadSurfaces(0);         
 
 	  if (createVTK(IParam,SimPtr,Oname))

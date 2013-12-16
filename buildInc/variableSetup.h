@@ -37,10 +37,13 @@ namespace setVariable
   void DelftModel(FuncDataBase&);
   void EssVariables(FuncDataBase&);
   void EPBVariables(FuncDataBase&);
+  void SNSVariables(FuncDataBase&);
   void IMatVariables(FuncDataBase&);
+  void MuonVariables(FuncDataBase&);
   void D4CModel(FuncDataBase&);
   void LensModel(FuncDataBase&);
   void RefBolts(FuncDataBase&);
+
 
   void TS1base(FuncDataBase&);
   void TS1CylTarget(FuncDataBase&);

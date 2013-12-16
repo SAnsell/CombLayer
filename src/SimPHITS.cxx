@@ -95,7 +95,6 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "AlterSurfBase.h"
 #include "RemoveCell.h"
 #include "weightManager.h"
 #include "ModeCard.h"

@@ -167,7 +167,6 @@ main(int argc,char* argv[])
       lensObj.build(SimPtr,IParam);
       
       SimPtr->removeComplements();
-      SimPtr->removeDeadCells();            // Generic
       SimPtr->removeDeadSurfaces(0);         
       
       SimPtr->removeOppositeSurfaces();

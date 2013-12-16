@@ -42,7 +42,6 @@ namespace physicsSystem
   class PhysicsCards;
 }
 
-class AlterSurfBase;
 class RemoveCell;
 
 namespace ModelSupport
@@ -83,8 +82,6 @@ class Simulation
   std::string cmdLine;                  ///< Command line : historical recall 
   int CNum;                             ///< Number of complementary components
   FuncDataBase DB;                      ///< DataBase of variables
-  AlterSurfBase* ASurfPtr;              ///< AlterSurface pointer
-  RemoveCell* RCellPtr;                 ///< RemoveCell pointer
   ModelSupport::ObjSurfMap* OSMPtr;     ///< Object surface map [if required]
   MonteCarlo::Object* curObjPtr;        ///< Last find pointer
 
@@ -134,10 +131,6 @@ class Simulation
   /// set the command line
   void setCmdLine(const std::string& S) { cmdLine=S; }
   void resetAll();
-  /// Register an altered surface
-  void registerAlterSurface(AlterSurfBase* Ptr) { ASurfPtr=Ptr; }
-  /// Register remove cell
-  void registerRemoveCell(RemoveCell* Ptr) { RCellPtr=Ptr; }
   void readMaster(const std::string&);   
   int applyTransforms();  
   void populateWCells();
@@ -199,7 +192,6 @@ class Simulation
   void processCellsImp();           
   int makeVirtual(const int);
 
-  int removeDeadCells();     
   int removeDeadSurfaces(const int); 
   int removeCells(const int,const int); 
   int removeCell(const int);

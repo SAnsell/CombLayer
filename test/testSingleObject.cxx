@@ -81,7 +81,6 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "AlterSurfBase.h"
 #include "RemoveCell.h"
 #include "WForm.h"
 #include "weightManager.h"

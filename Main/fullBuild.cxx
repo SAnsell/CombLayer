@@ -180,7 +180,6 @@ main(int argc,char* argv[])
 
 	  //      WeightSystem::addForcedCollision(Sim,40.0);
 	  SimPtr->removeComplements();
-	  SimPtr->removeDeadCells();            // Generic
 	  SimPtr->removeDeadSurfaces(0);         
 
 	  ModelSupport::setDefaultPhysics(*SimPtr,IParam);

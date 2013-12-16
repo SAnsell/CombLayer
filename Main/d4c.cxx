@@ -154,7 +154,6 @@ main(int argc,char* argv[])
       dObj.build(SimPtr,IParam);
       
       SimPtr->removeComplements();
-      SimPtr->removeDeadCells();            // Generic
       SimPtr->removeDeadSurfaces(0);         
       
       SimPtr->removeOppositeSurfaces();

@@ -6,7 +6,8 @@ use getMake;
 use strict;
 
 ## EXECUTABLES
-my @masterprog=("fullBuild","ess","t1Real","t1MarkII","testMain"); 
+my @masterprog=("fullBuild","ess","muBeam",
+		"sns","t1Real","t1MarkII","testMain"); 
 
 my @noncompile=("bilbau","clayer","cuBuild","d4c","detectSim",
 		"epb","ess","fussion","lens",
@@ -14,17 +15,18 @@ my @noncompile=("bilbau","clayer","cuBuild","d4c","detectSim",
 
 
 ## CXX Directory
-my @sublibdir=("src","attachComp","bibBuild","build",                      # 0
-	       "chip","construct","crystal","cuBlock",                     # 4
-	       "d4cModel","delft","endf","epbBuild",                       # 8
-               "essBuild","funcBase","geometry","global",                  # 12
-	       "imat","input","instrument","lensModel",                    # 16
-               "log","md5","moderator","monte",                            # 20
-               "mersenne","physics","poly","process",                      # 24
-               "scatMat","source","support","tally",                       # 28
-               "t1Build","t1Upgrade","transport","visit",                  # 32
-	       "weights","world","work","xml",                             # 36
-	       "zoom","special","test");                                   # 40
+my @sublibdir=("src","attachComp","bibBuild","build",                    # 0
+	       "chip","construct","crystal","cuBlock",                   # 4
+	       "d4cModel","delft","endf","epbBuild",                     # 8
+               "essBuild","funcBase","geometry","global",                # 12
+	       "imat","input","instrument","lensModel",                  # 16
+               "log","md5","moderator","mersenne",                       # 20 
+	       "monte","muon","physics","poly",                          # 24
+	       "process","scatMat","snsBuild","source",                  # 28
+	       "support", "tally","t1Build","t1Upgrade",                 # 32
+	       "transport","visit","weights","world",                    # 36
+	       "work","xml","zoom","special",                            # 40
+	       "test");                            
 
 my @core=qw( src attachComp construct crystal endf funcBase
              geometry global input instrument log md5 monte 
@@ -34,8 +36,8 @@ my @core=qw( src attachComp construct crystal endf funcBase
 
 my @coreInc=qw( include  attachCompInc constructInc crystalInc 
              endfInc funcBaseInc geomInc globalInc inputInc
-             instrumentInc logInc md5Inc monteInc 
-             mersenneInc physicsInc polyInc processInc scatMatInc
+             instrumentInc logInc md5Inc  mersenneInc
+             monteInc muonInc physicsInc polyInc processInc scatMatInc
              sourceInc supportInc tallyInc transportInc visitInc
              weightsInc worldInc workInc xmlInc specialInc testInclude);
 
@@ -45,11 +47,11 @@ my @libnames=@sublibdir;
 my @incdir=("include","attachCompInc","bibBuildInc","buildInc","chipInc",
 	    "constructInc","crystalInc","cuBlockInc","d4cModelInc",
 	    "delftInc","endfInc","epbBuildInc","essBuildInc",
-            "funcBaseInc","geomInc",
-	    "globalInc","imatInc","inputInc","instrumentInc",
-	    "lensModelInc","logInc","md5Inc","mersenneInc",
-	    "moderatorInc","monteInc","physicsInc","polyInc",
-	    "processInc","scatMatInc","sourceInc","specialInc",
+            "funcBaseInc","geomInc","globalInc","imatInc",
+	    "inputInc","instrumentInc","lensModelInc","logInc",
+	    "md5Inc","mersenneInc","moderatorInc","monteInc",
+	    "muonInc","physicsInc","polyInc",
+	    "processInc","scatMatInc","snsBuildInc","sourceInc","specialInc",
 	    "supportInc","tallyInc","t1BuildInc","t1UpgradeInc",
 	    "transportInc","visitInc","weightsInc","workInc",
 	    "worldInc","xmlInc","zoomInc","testInclude");   ## Includes
@@ -67,7 +69,7 @@ my @libflags=("","","","","",
 	      "","","","",
 	      "","","","",
 	      "","","","",
-	      "","","","");
+	      "","","","","","");
 
 my $gM=new getMake;
 
@@ -81,24 +83,26 @@ $gM->addIncDir(\@incdir);
 #	      "process","support","test","lensModel");                  
 
 
-$gM->addDepUnit("bilbau",   [2,9,35,0,25,17,29,23,13,20,31,5,6,34,28,21,10,27,37,38,23,14,24,0,39,26,30,36,15,1,35,3]);
+$gM->addDepUnit("bilbau",   [2,9,37,0,26,17,31,24,13,20,33,5,6,36,29,21,10,28,39,40,24,14,23,0,41,27,32,38,15,1,37,3]);
 
-$gM->addDepUnit("pressure", [35,40,0,23,15,13,20,4,23,24,25,14,31,38,39,26,17,27,35,36,21,1,35]);
-$gM->addDepUnit("divide",   [41,35,4,3,40,0,25,23,13,20,23,24,0,14,17,27,38,39,26,30,36,21,15,1,35]);
-$gM->addDepUnit("fullBuild",[3,35,4,22,3,40,16,0,25,5,34,28,6,10,17,29,23,13,20,31,27,31,37,23,14,24,0,38,39,26,30,36,21,15,1,35]);
-$gM->addDepUnit("d4c",      [8,19,35,0,25,17,18,29,23,13,20,5,6,34,28,10,34,28,31,27,31,37,5,23,14,24,0,39,26,30,36,38,21,15,1,35]);
-$gM->addDepUnit("lens",     [19,35,0,25,17,29,23,13,20,5,6,34,28,10,34,28,31,27,31,37,5,23,14,24,0,39,26,30,36,21,15,1,35]);
-$gM->addDepUnit("simple",   [35,25,0,17,29,23,13,20,6,34,28,10,27,31,37,23,14,24,0,39,26,30,36,21,15,1,27,38,31,35]);
-$gM->addDepUnit("t1MarkII", [33,32,16,4,3,35,22,40,0,5,6,34,28,10,25,17,27,29,23,13,20,23,31,14,24,0,37,38,39,26,30,36,21,15,1,35,26]);
-$gM->addDepUnit("ts1layer", [3,35,4,22,3,40,0,25,17,27,23,13,20,23,31,14,24,0,38,39,26,30,36,21,15,1,35,26]);
-$gM->addDepUnit("t1Real",   [32,16,4,3,35,22,40,0,5,6,34,28,10,25,17,27,29,23,13,20,23,31,14,24,0,37,38,39,26,30,36,21,15,1,35,26]);
-$gM->addDepUnit("reactor",  [9,35,0,25,17,29,23,13,20,5,34,28,6,10,31,27,31,37,23,14,24,0,39,26,30,36,21,38,15,1,35]);
-$gM->addDepUnit("siMod",    [9,35,0,25,17,29,23,13,20,31,5,6,34,28,10,27,37,23,14,24,0,39,26,30,36,15,1,35]);
-$gM->addDepUnit("cuBuild",  [7,9,35,0,25,17,29,23,13,20,31,5,6,34,28,21,10,27,37,38,23,14,24,0,39,26,30,36,15,1,35]);
-$gM->addDepUnit("ess",      [12,9,35,0,25,17,29,23,13,20,31,5,6,34,28,21,10,27,37,38,23,14,24,0,39,26,30,36,15,1,35]);
-$gM->addDepUnit("epb",      [11,9,35,0,25,17,29,23,13,20,31,5,6,34,28,21,10,27,37,38,23,14,24,0,39,26,30,36,15,1,35]);
+$gM->addDepUnit("pressure", [37,42,0,24,15,13,20,4,24,23,26,14,33,40,41,27,17,28,37,38,21,1,37]);
+$gM->addDepUnit("divide",   [43,37,4,3,42,0,26,24,13,20,24,23,0,14,17,28,40,41,27,32,38,21,15,1,37]);
+$gM->addDepUnit("fullBuild",[3,37,4,22,3,42,16,0,26,5,36,29,6,10,17,31,24,13,20,33,28,33,39,24,14,23,0,40,41,27,32,38,21,15,1,37]);
+$gM->addDepUnit("d4c",      [8,19,37,0,26,17,18,31,24,13,20,5,6,36,29,10,36,29,33,28,33,39,5,24,14,23,0,41,27,32,38,40,21,15,1,37]);
+$gM->addDepUnit("lens",     [19,37,0,26,17,31,24,13,20,5,6,36,29,10,36,29,33,28,33,39,5,24,14,23,0,41,27,32,38,21,15,1,37]);
+$gM->addDepUnit("simple",   [37,26,0,17,31,24,13,20,6,36,29,10,28,33,39,24,14,23,0,41,27,32,38,21,15,1,28,40,33,37]);
+$gM->addDepUnit("t1MarkII", [35,34,16,4,3,37,22,42,0,5,6,36,29,10,26,17,28,31,24,13,20,24,33,14,23,0,39,40,41,27,32,38,21,15,1,37,27]);
+$gM->addDepUnit("ts1layer", [3,37,4,22,3,42,0,26,17,28,24,13,20,24,33,14,23,0,40,41,27,32,38,21,15,1,37,27]);
+$gM->addDepUnit("t1Real",   [34,16,4,3,37,22,42,0,5,6,36,29,10,26,17,28,31,24,13,20,24,33,14,23,0,39,40,41,27,32,38,21,15,1,37,27]);
+$gM->addDepUnit("reactor",  [9,37,0,26,17,31,24,13,20,5,36,29,6,10,33,28,33,39,24,14,23,0,41,27,32,38,21,40,15,1,37]);
+$gM->addDepUnit("siMod",    [37,0,26,17,31,24,13,20,33,5,6,36,29,10,28,39,24,14,23,0,41,27,32,38,15,1,37]);
+$gM->addDepUnit("cuBuild",  [7,9,37,0,26,17,31,24,13,20,33,5,6,36,29,21,10,28,39,40,24,14,23,0,41,27,32,38,15,1,37]);
+$gM->addDepUnit("ess",      [12,37,0,26,17,31,24,13,20,33,5,6,36,29,21,10,28,39,40,24,14,23,0,41,27,32,38,15,1,37]);
+$gM->addDepUnit("sns",      [30,37,0,26,17,31,24,13,20,33,5,6,36,29,21,10,28,39,40,24,14,23,0,41,27,32,38,15,1,37]);
+$gM->addDepUnit("epb",      [11,9,37,0,26,17,31,24,13,20,33,5,6,36,29,21,10,28,39,40,24,14,23,0,41,27,32,38,15,1,37]);
+$gM->addDepUnit("muBeam",   [25,34,16,4,3,37,22,42,0,5,6,36,29,10,26,17,28,31,24,13,20,24,33,14,23,0,39,40,41,27,32,38,21,15,1,37,27]);
 
-$gM->addDepUnit("testMain", [42,3,35,4,33,16,22,3,40,5,6,34,28,10,32,0,25,17,27,29,23,13,20,14,31,24,0,38,39,26,30,37,36,21,15,1,35,26]);
+$gM->addDepUnit("testMain", [44,3,37,4,35,16,22,3,42,5,6,36,29,10,34,0,26,17,28,31,24,13,20,14,33,23,0,40,41,27,32,39,38,21,15,1,37,27]);
 
 ##
 ## START OF MAIN:::

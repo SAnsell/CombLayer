@@ -86,7 +86,6 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "AlterSurfBase.h"
 #include "RemoveCell.h"
 #include "WForm.h"
 #include "weightManager.h"
@@ -106,7 +105,7 @@
 #include "Simulation.h"
 
 Simulation::Simulation()  :
-  CNum(100000),ASurfPtr(0),RCellPtr(0),OSMPtr(new ModelSupport::ObjSurfMap),
+  CNum(100000),OSMPtr(new ModelSupport::ObjSurfMap),
   PhysPtr(new physicsSystem::PhysicsCards)
   /*!
     Start of simulation Object
@@ -117,8 +116,6 @@ Simulation::Simulation()  :
 
 Simulation::Simulation(const Simulation& A)  :
   inputFile(A.inputFile),CNum(A.CNum),DB(A.DB),
-  ASurfPtr((A.ASurfPtr) ? A.ASurfPtr->clone() : 0),
-  RCellPtr((A.RCellPtr) ? A.RCellPtr->clone() : 0),
   OSMPtr(new ModelSupport::ObjSurfMap),
   TList(A.TList),  cellOutOrder(A.cellOutOrder),
   PhysPtr(new physicsSystem::PhysicsCards(*A.PhysPtr))
@@ -162,8 +159,6 @@ Simulation::operator=(const Simulation& A)
       inputFile=A.inputFile;
       CNum=A.CNum;
       DB=A.DB;
-      ASurfPtr=(A.ASurfPtr) ? A.ASurfPtr->clone() : 0;
-      RCellPtr=(A.RCellPtr) ? A.RCellPtr->clone() : 0;
       TList=A.TList;
       cellOutOrder=A.cellOutOrder;
       delete PhysPtr;
@@ -196,8 +191,6 @@ Simulation::~Simulation()
   */
 {
   ModelSupport::SimTrack::Instance().clearSim(this);
-  delete RCellPtr;
-  delete ASurfPtr;
   delete PhysPtr;
   delete OSMPtr;
   deleteObjects();
@@ -739,86 +732,6 @@ Simulation::removeCell(const int Index)
 //  processCellsImp();
 
   return 1;
-}
-
-int
-Simulation::removeDeadCells()
-  /*!
-    This eliminates those cells/surfaces decided by the
-    logic store in AlterSurf/RemoveCell.
-    \return Number of cells removed.
-   */
-{
-  ELog::RegMethod RegA("Simulation","removeDeadCells");
-  ModelSupport::SimTrack& ST(ModelSupport::SimTrack::Instance());
-
-  ELog::CellM.lock();
-  int cnt(0);
-
-  // Note: it is dangerous to call populateSurfaces since
-  //  there will be a number on on-existant surfaces
-  // Remove them first then execute populate:
-  if (ASurfPtr)
-    {
-      ASurfPtr->reInit();
-      ELog::EM<<"Excess surfaces removed by : "<<
-	ASurfPtr->className()<<ELog::endDiag;
-
-      const std::map<int,int>& Asurf=ASurfPtr->getMap();
-      std::map<int,int>::const_iterator ac;
-      for(ac=Asurf.begin();ac!=Asurf.end();ac++)
-        {
-	  if (!ac->second)
-	    removeAllSurface(ac->first);
-	  else
-	    substituteAllSurface(ac->first,ac->second);
-	}
-    }
-
-  std::vector<int> deadCells;
-  OTYPE::iterator vc=OList.begin();
-  try
-    {
-      // Process cells
-      if (RCellPtr)
-        {	  
-	  ELog::EM<<"Excess cells removed by : "<<
-	    RCellPtr->className()<<ELog::endDiag;
-	  RCellPtr->reconfigure(DB);
-	  while(vc!=OList.end())
-	    {  
-	      if (RCellPtr->toBeRemoved(vc->first,*(vc->second)))
-		deadCells.push_back(vc->first);
-	      vc++;
-	    }
-	}
-    }
-  catch (ColErr::ExBase& EType)
-    {
-      ELog::EM<<EType.what()<<std::endl;
-      ELog::EM<<"Error with cell "<<vc->first<<ELog::endErr;
-      throw ColErr::ExitAbort(RegA.getFull());
-    }
-  /// DELETE Dead cells
-  std::vector<int>::const_iterator dc;
-  for(dc=deadCells.begin();dc!=deadCells.end();dc++)
-    {
-      OTYPE::iterator dmc=OList.find(*dc);
-      if (dmc!=OList.end())
-	{
-	  ST.checkDelete(this,dmc->second);
-	  delete dmc->second;
-	  OList.erase(dmc);
-	}
-    }
-		  
-       
-  // Now process Physics so importance/volume cards can be set
-  //  processCellsImp();
-
-  // Force write
-  ELog::CellM.dispatch(1);
-  return cnt;
 }
 
 int 

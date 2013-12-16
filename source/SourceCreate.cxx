@@ -273,28 +273,31 @@ createTS1Source(const FuncDataBase& Control,Source& sourceCard)
 }
 
 void
-createTS1GaussianSource(const FuncDataBase& Control,Source& sourceCard)
+createGaussianSource(Source& sourceCard,
+		     const double E,
+		     const double yStart,
+		     const double width)
   /*!
     Creates a target 1 proton source [gaussian]
     \param sourceCard :: Source system
+    \param E :: Energy [meV]
+    \param yStart :: y Position 
+    \param width :: fwhm
    */
 {
   ELog::RegMethod RegA("SourceCreate","createTS1GaussianSource");
-
-  const double E=Control.EvalDefVar<double>("sdefEnergy",800.0);
-  const double yStart=Control.EvalDefVar<double>("sdefYPos",-10.0);
 
   sourceCard.setActive();
   sourceCard.setComp("dir",1.0);
   sourceCard.setComp("vec",Geometry::Vec3D(0,1,0));
   sourceCard.setComp("par",9);
-  sourceCard.setComp("erg",800.0);
-  //  sourceCard.setComp("ccc",76);
-  sourceCard.setComp("y",-10.0);
+  sourceCard.setComp("erg",E);
+  //  sourceCard.setComp("ccc",2570);
+  sourceCard.setComp("y",yStart);
 
   SrcData D1(1);
   SrcProb SP1(1);
-  SP1.setFminus(-41,3.5322,0);  
+  SP1.setFminus(-41,width,0);  
   D1.addUnit(SP1);
 
   SrcData D2(2);
@@ -302,6 +305,79 @@ createTS1GaussianSource(const FuncDataBase& Control,Source& sourceCard)
   sourceCard.setData("x",D1);
   sourceCard.setData("z",D2);
 
+  return;
+}
+
+void
+createTS1GaussianSource(const FuncDataBase& Control,
+			Source& sourceCard)
+  /*!
+    Creates a target 1 proton source [gaussian]
+    FWHM == 1.5*2.35482 ==> 3.53223 <----------- "OLD" VALUE          
+    \param sourceCard :: Source system
+   */
+{
+  ELog::RegMethod RegA("SourceCreate","createTS1GaussianSource");
+
+  const double E=Control.EvalDefVar<double>("sdefEnergy",800.0);
+  const double yStart=Control.EvalDefVar<double>("sdefYPos",-20.0);
+
+  createGaussianSource(sourceCard,E,yStart,3.5322);
+  return;
+}
+
+void
+createTS1GaussianNewSource(const FuncDataBase& Control,
+			   Source& sourceCard)
+  /*
+    Creates a target 1 proton source [gaussian]
+    FWHM == 1.8*2.35482 ==> 4.23868 <----------- "NEW" VALUE  // Goran
+    (see B. Jones, D.J. Adams, Design and operational experience of delivering beam to ISIS TS1, November 2013)          
+    \param sourceCard :: Source system
+   */
+
+{
+  ELog::RegMethod RegA("SourceCreate","createTS1GaussianSource");
+
+  const double E=Control.EvalDefVar<double>("sdefEnergy",800.0);
+  const double yStart=Control.EvalDefVar<double>("sdefYPos",-20.0);
+
+  createGaussianSource(sourceCard,E,yStart,3.5322);
+  return;
+}
+
+void
+createTS1MuonSource(const FuncDataBase& Control,Source& sourceCard)
+  /*!
+    Creates a intermediate target proton source [gaussian]
+    FWHM == 0.5*2.35482 ==> 1.17741   // Goran
+    (see B. Jones, D.J. Adams, Design and operational experience of delivering beam to ISIS TS1, November 2013)          
+    \param sourceCard :: Source system
+   */
+{
+  ELog::RegMethod RegA("SourceCreate","TS1MuonSource");
+
+  const double E=Control.EvalDefVar<double>("sdefEnergy",800.0);
+  const double yStart=Control.EvalDefVar<double>("sdefYPos",-15.0);
+  createGaussianSource(sourceCard,E,yStart,1.17741);
+
+  return;
+}
+
+void
+createTS1EpbCollSource(const FuncDataBase& Control,Source& sourceCard)
+  /*!
+    Creates a proton source [gaussian] for 3rd collimator in TS1 EPB
+     FWHM == 1.0*2.35482 ==> 2.35482   // Goran - Find the value !!! 
+    \param sourceCard :: Source system
+   */
+{
+  ELog::RegMethod RegA("SourceCreate","createTS1EpbCollSource");
+
+
+  const double E=Control.EvalDefVar<double>("sdefEnergy",800.0);
+  const double yStart=Control.EvalDefVar<double>("sdefYPos",80.0);
+  createGaussianSource(sourceCard,E,yStart,2.35482);
   return;
 }
 
