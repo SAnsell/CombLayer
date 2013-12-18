@@ -41,7 +41,7 @@ class MerlinModerator : public attachSystem::ContainedComp,
 {
  private:
   
-  const int merlinIndex;           ///< Index of surface offset
+  const int merlinIndex;        ///< Index of surface offset
   int cellIndex;                ///< Cell index
   
   double xStep;                 ///< Offset on X to Target
@@ -56,14 +56,16 @@ class MerlinModerator : public attachSystem::ContainedComp,
   double vacThick;              ///< Outer void
 
   size_t nPoison;                  ///< Number of poison layers
+  size_t vaneSide;                 ///< Side for vanes 0 -- none :P 
   std::vector<double> poisonYStep; ///< Poison Offset to origin
   std::vector<double> poisonThick; ///< Poison (Gadolinium) thickness
 
   int alMat;                    ///< Al
   int waterMat;                   ///< water
-  int poisonMat;                  ///< Poison (Gadolinium)
-  
+  int poisonMat;                  ///< Poison (Gadolinium)  
+
   std::map<size_t,double> modLayer;  ///< Surface modification layer
+  int mainCell;                      ///< Main water cell
 
   void applyModification();
   Geometry::Vec3D getSurfacePoint(const size_t,const size_t) const;
@@ -73,6 +75,7 @@ class MerlinModerator : public attachSystem::ContainedComp,
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
+  void createVanes(Simulation&);
 
  public:
 

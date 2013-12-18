@@ -277,6 +277,8 @@ VanePoison::createObjects(Simulation& System,
       size_t zDown(FC.findLinkAxis(-Z));
       if (zUp<6) zUp+=6;
       if (zDown<6) zDown+=6;
+      if (zUp>5)                 // Inner points are reversed
+	std::swap(zUp,zDown);      
       zBase=FC.getLinkString(zDown);
       zTop=FC.getLinkString(zUp);
     }

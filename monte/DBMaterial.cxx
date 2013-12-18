@@ -398,7 +398,7 @@ DBMaterial::initMaterial()
   setMaterial(MObj);
 
   // Material #55 Silicon with no-bragg
-  MObj.setMaterial(55,"SiCrystral","14028.24c 0.05","si.80t",MLib);
+  MObj.setMaterial(55,"SiCrystal","14028.24c 0.05","si.80t",MLib);
   setMaterial(MObj);
 
   // Material #56 Tin [Density 7310kg/m3]:

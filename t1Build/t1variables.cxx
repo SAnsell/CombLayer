@@ -288,13 +288,14 @@ TS1real(FuncDataBase& Control)
   Control.addVariable("MerlinModInnerThick",0.35);    // guess
   Control.addVariable("MerlinModVacThick",0.1);    // guess
 
-  Control.addVariable("MerlinModNPoison",1);      // ok
+  Control.addVariable("MerlinModVaneSide",0);      // No vanes
+  Control.addVariable("MerlinModNPoison",1);       // ok
   Control.addVariable("MerlinModPoisonYStep1",0.00);      // ok
   Control.addVariable("MerlinModPoisonThick1",0.005);      //  
 
-  Control.addVariable("MerlinModAlMat",5);       // Al 
-  Control.addVariable("MerlinModWaterMat",11);      // water
-  Control.addVariable("MerlinModPoisonMat",6);      // Gadolinium
+  Control.addVariable("MerlinModAlMat","Aluminium");       // Al 
+  Control.addVariable("MerlinModWaterMat","H2O");      // water
+  Control.addVariable("MerlinModPoisonMat","Gadolinium");      // Gadolinium
 
   // Water Upstream Moderator:
   Control.addVariable("WaterModXStep",0.0);      // guess
@@ -309,15 +310,32 @@ TS1real(FuncDataBase& Control)
   Control.addVariable("WaterModInnerThick",0.35);    // guess
   Control.addVariable("WaterModVacThick",0.1);    // guess
 
+  Control.addVariable("WaterModVaneSide",1);      // far side
+  
+  Control.addVariable("WaterModVanesNBlades",12);       // Number of blades
+  Control.addVariable("WaterModVanesBladeWidth",0.3);   // Thickness [total]
+  Control.addVariable("WaterModVanesBladeGap",0.2);     // Space of blade
+  Control.addVariable("WaterModVanesAbsThick",0.05);    // Space in blade
+  Control.addVariable("WaterModVanesYLength",1.5);      // Planeare
+  Control.addVariable("WaterModVanesZLength",-1.0);     // -ve : to to bottom
+  Control.addVariable("WaterModVanesXOffset",0.0);       
+  Control.addVariable("WaterModVanesYOffset",0.0);       
+  Control.addVariable("WaterModVanesZOffset",0.0);       
+  Control.addVariable("WaterModVanesModTemp",0.0);     // Temperature
+
+  Control.addVariable("WaterModVanesModMat","H2O");  // Water
+  Control.addVariable("WaterModVanesBladeMat","SiCrystal");          // Silicon
+  Control.addVariable("WaterModVanesAbsMat","Gadolinium");           // GD
+
   Control.addVariable("WaterModNPoison",2);      // ok
   Control.addVariable("WaterModPoisonYStep1",-0.75125);      // ok
   Control.addVariable("WaterModPoisonThick1",0.005);      // ok
   Control.addVariable("WaterModPoisonYStep2",0.75125);      // ok
   Control.addVariable("WaterModPoisonThick2",0.005);      // ok
 
-  Control.addVariable("WaterModAlMat",5);       // Al 
-  Control.addVariable("WaterModWaterMat",11);      // water
-  Control.addVariable("WaterModPoisonMat",6);      // Gadolinium
+  Control.addVariable("WaterModAlMat","Aluminium");       // Al 
+  Control.addVariable("WaterModWaterMat","H2O");      // water
+  Control.addVariable("WaterModPoisonMat","Gadolinium");      // Gadolinium
 
   // Flightline LH2 Moderator:
 
@@ -333,8 +351,8 @@ TS1real(FuncDataBase& Control)
   Control.addVariable("H2FlightNLiner",0);           // Number of layers
   Control.addVariable("H2FlightLinerThick1",0.5);    // Thickness
   Control.addVariable("H2FlightLinerThick2",0.12);   // Thickness
-  Control.addVariable("H2FlightLinerMat1",5);        //  Cadnium
-  Control.addVariable("H2FlightLinerMat2",7);        //  Cadnium
+  Control.addVariable("H2FlightLinerMat1","Aluminium"); 
+  Control.addVariable("H2FlightLinerMat2","Cadnium"); 
 
   // Flightline #1 CH4 Moderator:
 
@@ -351,8 +369,8 @@ TS1real(FuncDataBase& Control)
   Control.addVariable("CH4FlightSNLiner",0);           // Number of layers
   Control.addVariable("CH4FlightSLinerThick1",0.5);    // Thickness
   Control.addVariable("CH4FlightSLinerThick2",0.12);   // Thickness
-  Control.addVariable("CH4FlightSLinerMat1",5);        //  Cadnium
-  Control.addVariable("CH4FlightSLinerMat2",7);        //  Cadnium
+  Control.addVariable("CH4FlightSLinerMat1","Aluminium");        //  Cadnium
+  Control.addVariable("CH4FlightSLinerMat2","Cadnium");        //  Cadnium
 
   // Flightline #2 CH4 Moderator:
 
@@ -371,8 +389,8 @@ TS1real(FuncDataBase& Control)
   Control.addVariable("CH4FlightNNLiner",0);           // Number of layers
   Control.addVariable("CH4FlightNLinerThick1",0.5);    // Thickness
   Control.addVariable("CH4FlightNLinerThick2",0.12);   // Thickness
-  Control.addVariable("CH4FlightNLinerMat1",5);        //  Cadnium
-  Control.addVariable("CH4FlightNLinerMat2",7);        //  Cadnium
+  Control.addVariable("CH4FlightNLinerMat1","Aluminium");        //  Cadnium
+  Control.addVariable("CH4FlightNLinerMat2","Cadnium");        //  Cadnium
 
   // Flightline Water Downstream Moderator:
 
@@ -390,8 +408,8 @@ TS1real(FuncDataBase& Control)
   Control.addVariable("MerlinFlightNLiner",0);           // Number of layers
   Control.addVariable("MerlinFlightLinerThick1",0.5);    // Thickness
   Control.addVariable("MerlinFlightLinerThick2",0.12);   // Thickness
-  Control.addVariable("MerlinFlightLinerMat1",5);        //  Cadnium
-  Control.addVariable("MerlinFlightLinerMat2",7);        //  Cadnium
+  Control.addVariable("MerlinFlightLinerMat1","Aluminium");
+  Control.addVariable("MerlinFlightLinerMat2","Cadnium"); 
 
   // Flightline #1 Water Upstream Moderator:
   Control.addVariable("WatNorthFlightXStep",0.0);      // Step from centre
@@ -409,8 +427,8 @@ TS1real(FuncDataBase& Control)
   Control.addVariable("WatNorthFlightNLiner",0);           // Number of layers
   Control.addVariable("WatNorthFlightLinerThick1",0.5);    // Thickness
   Control.addVariable("WatNorthFlightLinerThick2",0.12);   // Thickness
-  Control.addVariable("WatNorthFlightLinerMat1",5);        //  Cadnium
-  Control.addVariable("WatNorthFlightLinerMat2",7);        //  Cadnium
+  Control.addVariable("WatNorthFlightLinerMat1","Aluminium");
+  Control.addVariable("WatNorthFlightLinerMat2","Cadnium");
 
   // Flightline #2 Water Upstream Moderator:
 
@@ -429,8 +447,8 @@ TS1real(FuncDataBase& Control)
   Control.addVariable("WatSouthFlightNLiner",0);           // Number of layers
   Control.addVariable("WatSouthFlightLinerThick1",0.5);    // Thickness
   Control.addVariable("WatSouthFlightLinerThick2",0.12);   // Thickness
-  Control.addVariable("WatSouthFlightLinerMat1",5);        //  Cadnium
-  Control.addVariable("WatSouthFlightLinerMat2",7);        //  Cadnium
+  Control.addVariable("WatSouthFlightLinerMat1","Aluminium");
+  Control.addVariable("WatSouthFlightLinerMat2","Cadnium");
 
   // Beam Window (PROTON FLIGHT PATH)
   Control.addVariable("BWindowRadius",4.0);          
@@ -465,9 +483,9 @@ TS1real(FuncDataBase& Control)
   Control.addVariable("MerlinPipeOutVoidRadius",2.3);            
   Control.addVariable("MerlinPipeOutSteelRadius",2.8);            
 
-  Control.addVariable("MerlinPipeOuterMat",5);        
-  Control.addVariable("MerlinPipeWaterMat",11);
-  Control.addVariable("MerlinPipeSteelMat",3);
+  Control.addVariable("MerlinPipeOuterMat","Aluminium");        
+  Control.addVariable("MerlinPipeWaterMat","H2O");
+  Control.addVariable("MerlinPipeSteelMat","Stainless304");
 
 
   // PIPEWORK
@@ -487,8 +505,8 @@ TS1real(FuncDataBase& Control)
   Control.addVariable("H2PipeClearRadius",2.60);   // Outer        
   Control.addVariable("H2PipeSteelRadius",2.90);   // steel in Reflector       
 
-  Control.addVariable("H2PipeAlMat",5);        
-  Control.addVariable("H2PipeSteelMat",3);                  
+  Control.addVariable("H2PipeAlMat","Aluminium");        
+  Control.addVariable("H2PipeSteelMat","Stainless304");                  
   Control.addVariable("H2PipeH2Mat",16);     
   Control.addVariable("H2PipeH2Temp",20.0);     
 

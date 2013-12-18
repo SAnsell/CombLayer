@@ -48,10 +48,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "Tally.h"
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
@@ -60,7 +56,6 @@
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "surfEqual.h"
-#include "surfDivide.h"
 #include "surfDIter.h"
 #include "Quadratic.h"
 #include "Plane.h"
@@ -73,8 +68,6 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -84,13 +77,14 @@
 #include "LinearComp.h"
 #include "ContainedComp.h"
 #include "t1Reflector.h"
+#include "VanePoison.h"
 #include "MerlinModerator.h"
 
 namespace ts1System
 {
 
 MerlinModerator::MerlinModerator(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
+  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,12),
   merlinIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(merlinIndex+1)
   /*!
@@ -177,6 +171,7 @@ MerlinModerator::populate(const Simulation& System)
   vacThick=Control.EvalVar<double>(keyName+"VacThick");
 
   nPoison=Control.EvalVar<size_t>(keyName+"NPoison");
+  vaneSide=Control.EvalVar<size_t>(keyName+"VaneSide");
   double ys,t;
   for(size_t i=0;i<nPoison;i++)
     {
@@ -187,11 +182,12 @@ MerlinModerator::populate(const Simulation& System)
       poisonYStep.push_back(ys);
       poisonThick.push_back(t);
     } 
-
+  
   // Materials
   alMat=ModelSupport::EvalMat<int>(Control,keyName+"AlMat");
   waterMat=ModelSupport::EvalMat<int>(Control,keyName+"WaterMat");
   poisonMat=ModelSupport::EvalMat<int>(Control,keyName+"PoisonMat");
+
 
   applyModification();
   return;
@@ -329,6 +325,7 @@ MerlinModerator::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,merlinIndex,"1 -2 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out+Exclude));
+  mainCell=cellIndex-1;
   // Inner al
   Out=ModelSupport::getComposite(SMap,merlinIndex,"11 -12 13 -14 15 -16 "
 				 " (-1:2:-3:4:-5:6) ");
@@ -368,6 +365,45 @@ MerlinModerator::createLinks()
   FixedComp::setLinkSurf(4,-SMap.realSurf(merlinIndex+25));
   FixedComp::setLinkSurf(5,SMap.realSurf(merlinIndex+26));
 
+  // -- Inner surface for vanes 
+  // As inner surface needs to be reversed
+  FixedComp::setLinkSurf(6,SMap.realSurf(merlinIndex+1));
+  FixedComp::setLinkSurf(7,-SMap.realSurf(merlinIndex+2));
+  FixedComp::setLinkSurf(8,SMap.realSurf(merlinIndex+3));
+  FixedComp::setLinkSurf(9,-SMap.realSurf(merlinIndex+4));
+  FixedComp::setLinkSurf(10,SMap.realSurf(merlinIndex+5));
+  FixedComp::setLinkSurf(11,-SMap.realSurf(merlinIndex+6));
+
+  FixedComp::setConnect(6,getSurfacePoint(0,0),Y);
+  FixedComp::setConnect(7,getSurfacePoint(0,1),-Y);
+  FixedComp::setConnect(8,getSurfacePoint(0,2),X);
+  FixedComp::setConnect(9,getSurfacePoint(0,3),-X);
+  FixedComp::setConnect(10,getSurfacePoint(0,4),-Z);
+  FixedComp::setConnect(11,getSurfacePoint(0,5),Z);
+
+
+  return;
+}
+
+void
+MerlinModerator::createVanes(Simulation& System)
+  /*!
+    Add vane poisoning if needed
+    \param System :: Simulation for cell addition
+  */
+{
+  ELog::RegMethod RegA("MerlinModerator","createVanes");
+  
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  boost::shared_ptr<moderatorSystem::VanePoison> 
+    VaneObj(new moderatorSystem::VanePoison(keyName+"Vanes"));
+  OR.addObject(VaneObj);
+
+  VaneObj->addInsertCell(mainCell);
+  VaneObj->createAll(System,*this,5+vaneSide);
+
   return;
 }
 
@@ -387,8 +423,9 @@ MerlinModerator::createAll(Simulation& System,
   createSurfaces();
   createObjects(System);
   createLinks();
-  insertObjects(System);       
-
+  insertObjects(System);
+  if (vaneSide)
+    createVanes(System);
   return;
 }
 
