@@ -1,0 +1,45 @@
+\section{ObjectRegister}
+\label{ObjectRegister}
+
+The objectRegister is a singleton object [it should be per
+  simulation], which keeps each and then deletes when at its lifetime
+end, each object registered with it. It only accepts two types of
+object, a dummy name object and a FixedComp object. 
+
+If a dummy object is required, the name (and possibly number) of the object 
+is provided and the objectRegister singleton provides a unique
+range of cell and surface numbers, typically 10,000 units of each, but
+can be user selected. This is its only responsibility and to ensure that the
+name is unique. 
+
+Significantly more complex is the FixedComp registration, in this case
+a \prog{boost::shared\_ptr} of FixedComp must be provided by the
+calling method. Obviously, for a shared\_ptr the object memory must be
+allocated, i.e. an initial \vb{new object(...)} is normally called
+directly or previously. A typical structrue might be:
+
+\begin{verbatim}
+boost::shared_ptr<BeamPipe> A 
+   = new BeamPipe("LongPipe");
+
+ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+OR.addObject(A);
+\end{verbatim}
+
+From this example, the BeamPipe class is inherrited from FixedComp,
+this is manditory. A tempory reference \prog{OR} is created by calling
+the static Instance() method. All singletons in CombLayer provide an
+Instance() method for this purpose. Then the object pointer is referenced
+to the objectRegiste with \prog{addObject}.
+
+However, hidden from view is a call to objectRegister in FixedComp's
+constructor, which must be called as all registered object must derive
+from this class. That occures during the operator new call and results
+in the allocation of the cell/surface numerical range. If it is
+necessary to trap that error, the try/catch block must be around the
+new opertor.
+
+
+

@@ -1,0 +1,64 @@
+The basic program structure is 
+
+\begin{tikzpicture}
+
+  \coordinate (Main) at (0,0);
+  \coordinate (Input) at (3,-2);
+  \coordinate (Var) at (3,-4);
+  \coordinate (Project) at (3,-6);
+  \coordinate (Object) at (6,-8);
+  \coordinate (Tally) at (3,-10);
+
+  \tikzstyle{fbox}=[draw=blue,very thick,
+                    shape=rectangle,rounded corners=0.5em,
+                    inner sep=4pt,
+                    minimum height=2em,text badly centered,
+                    fill=orange!90!white];
+  \tikzstyle{obox}=[draw=blue,very thick,
+                    shape=rectangle,rounded corners=0.5em,
+                    inner sep=4pt,
+                    minimum height=2em,text badly centered,
+                    fill=blue!10];
+
+%  \draw[blue,line width=0.4mm,->] (tally) (tally) -- (weight);
+%  \draw[blue,line width=0.4mm,->] (tally) (geom) -- (weight);
+%  \draw[blue,line width=0.4mm,->] (tally) (var) -- (geom);
+%  \draw[blue,line width=0.4mm,dashed,->] (tally) -- (geom);
+
+
+  \node[fbox] (MainBox) at (Main) { \bf \large Main Program } ;
+
+  \node[obox] (InputBox) at (Input) { \bf \large ProjectInputs };
+  \draw[->,very thick,color=red,>=triangle 60] (MainBox) |- 
+                   node[left]{} (InputBox) ;
+
+  \node[fbox] (VarBox) at (Var) { \bf \large ProjectVariables };
+  \draw[->,very thick,color=red,>=triangle 60] (MainBox) |- 
+                   node[left]{} (VarBox) ;
+
+  \node[fbox] (ProjectBox) at (Project) { \bf \large makeProject };
+  \draw[->,very thick,color=red,>=triangle 60] (MainBox) |- 
+                   node[left]{} (ProjectBox) ;
+
+  \node[obox] (ObjectBox) at (Object) { \parbox{3.0cm}{ \bf \large Object A\\
+ Object B\\ Object C} };
+  \draw[->,very thick,color=red,>=triangle 60] (ProjectBox) |- 
+                   node[left]{} (ObjectBox) ;
+
+  \node[fbox] (TallyBox) at (Tally) { \bf \large Tally/Variance };
+  \draw[->,very thick,color=red,>=triangle 60] (MainBox) |- 
+                   node[left]{} (TallyBox) ;
+
+%  \shade[left color=blue!50,line width=0.5cm] (3,1.5) circle (2.0cm);
+%  \shade[left color=red,line width=0.5cm] (var) circle (1.30cm);
+%  \shade[left color=green,line width=0.5cm] (tally) circle (1.30cm);
+
+%  \node at (weight) { {\bf \large Variance} };
+%  \node at (var) { {\bf \large Variables} };
+%  \node at (tally) { {\bf \large Tallies} };
+
+
+
+%\node
+\end{tikzpicture}
+

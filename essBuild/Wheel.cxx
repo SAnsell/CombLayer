@@ -59,6 +59,7 @@
 #include "Qhull.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "support.h"
 #include "stringCombine.h"
@@ -194,12 +195,12 @@ Wheel::populate(const FuncDataBase& Control)
   shaftCladThick=Control.EvalVar<double>(keyName+"ShaftCladThick");
   shaftVoidThick=Control.EvalVar<double>(keyName+"ShaftVoidThick");
   
-  wMat=Control.EvalVar<int>(keyName+"WMat");  
-  heMat=Control.EvalVar<int>(keyName+"HeMat");  
-  steelMat=Control.EvalVar<int>(keyName+"SteelMat");  
-  innerMat=Control.EvalVar<int>(keyName+"InnerMat");  
-  mainShaftMat=Control.EvalVar<int>(keyName+"MainShaftMat");  
-  cladShaftMat=Control.EvalVar<int>(keyName+"CladShaftMat");  
+  wMat=ModelSupport::EvalMat<int>(Control,keyName+"WMat");  
+  heMat=ModelSupport::EvalMat<int>(Control,keyName+"HeMat");  
+  steelMat=ModelSupport::EvalMat<int>(Control,keyName+"SteelMat");  
+  innerMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerMat");  
+  mainShaftMat=ModelSupport::EvalMat<int>(Control,keyName+"MainShaftMat");  
+  cladShaftMat=ModelSupport::EvalMat<int>(Control,keyName+"CladShaftMat");  
 
   return;
 }

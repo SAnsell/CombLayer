@@ -45,8 +45,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "Quadratic.h"
 #include "Plane.h"

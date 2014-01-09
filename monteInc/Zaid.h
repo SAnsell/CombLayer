@@ -64,6 +64,7 @@ class Zaid
   int getTag() const { return tag; }
   /// Get Element key
   int getKey() const { return type; } 
+  double getAtomicMass() const;
 
   void write(std::ostream&) const;
 

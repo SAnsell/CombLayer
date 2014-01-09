@@ -55,8 +55,8 @@ class PhysicsCards
   std::list<int> printNum;                ///< print numbers
   std::string prdmp;                      ///< prdmp string
   std::vector<PhysImp> ImpCards;          ///< Importance cards
-  std::vector<PhysCard> PhysCards;        ///< Physcis cards
-  LSwitchCard LEA;                         ///< LEA/LCA Card
+  std::vector<PhysCard> PhysCards;        ///< Physics cards
+  LSwitchCard LEA;                        ///< LEA/LCA Card
 
   SDef::Source sdefCard;                  ///< Source term
   SDef::KCode kcodeCard;                  ///< KCode term [if used]

@@ -28,7 +28,7 @@ namespace physicsSystem
 /*!
   \class LSwitchCard 
   \version 1.0
-  \date Jully 2010
+  \date July 2010
   \version 1.0
   \author S. Ansell
   \brief Holds cut cards

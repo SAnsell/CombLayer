@@ -18,7 +18,8 @@ sub new
 
     boostInc => "-I/opt/local/include",
     boostLib => "-L/opt/local/lib -lboost_regex",
-    
+    clangLib => "-lstdc++",
+
     masterProg => [ ],        ## Executables
     nocompile => [ ],         ## Not to be compiled
     libnames => [ ],          ## Lib names 
@@ -310,6 +311,7 @@ sub addFlags
     {
       print STDERR "item == ",$ix,"\n" if ($debug);
       $retString.="\$(BOOSTLIBS) " if ($ix eq "-B");
+      $retString.="\$(CLANGLIBS) " if ($ix eq "-c");
       $retString.="\$(GCOVLIBS) " if ($ix eq "-C");
       $retString.="\$(XLIBS) " if ($ix eq "-X");
       $retString.="\$(PGLIBS) " if ($ix eq "-P");
@@ -1184,6 +1186,11 @@ sub printMainAll
 	  $fakeLine.="libSwig ";
 	  $depLine.="\$(LIBOUTDIR)/libSwig".$libExt." ";
 	}
+      if ($self->{ccomp} eq "clang")
+	{
+	  $compLine.="-lstdc++ ";
+	}
+
       $compLine.= "-lgcov " if ($self->{gcov});
       $compLine.=addFlags($self->{controlflags}[$i]); 
       $fakeLine.=$name;

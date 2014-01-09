@@ -45,6 +45,7 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "regexSupport.h"
+#include "RefCon.h"
 #include "Element.h"
 #include "Zaid.h"
 #include "MXcards.h"
@@ -411,10 +412,38 @@ Material::setDensity(const double D)
 {
   ELog::RegMethod RegA("Material","setDensity");
 
+  std::vector<Zaid>::const_iterator zcc;
   std::vector<Zaid>::iterator zc;
-  for(zc=zaidVec.begin();zc!=zaidVec.end();zc++)
-    zc->setDensity(D*zc->getDensity());
-  atomDensity=D;
+  double FSum(0.0);
+  for(zcc=zaidVec.begin();zcc!=zaidVec.end();zcc++)
+    FSum+=zcc->getDensity();
+
+  //    std::accumulate<double>(zaidVec.begin(),zaidVec.end(),
+  //	       0.0,boost::bind<double>(&Zaid::getDensity,_1));
+
+  if (fabs(FSum)<1e-7)
+    throw ColErr::NumericalAbort("Sum of zaidDensity");
+      
+  if (D>0.0)
+    {
+      for(zc=zaidVec.begin();zc!=zaidVec.end();zc++)
+	zc->setDensity(D*zc->getDensity()/FSum);
+      atomDensity=D;
+    }
+  else if (D<0.0)
+    {
+      double MAW(0.0);   // Mean atomic weight
+
+      for(zcc=zaidVec.begin();zcc!=zaidVec.end();zcc++)
+	MAW+=zcc->getAtomicMass()*zcc->getDensity()/FSum;
+      if (fabs(MAW)<0.5)
+	throw ColErr::NumericalAbort("MAW too low");
+      const double aRho= -D*RefCon::avogadro/MAW;
+
+      for(zc=zaidVec.begin();zc!=zaidVec.end();zc++)
+	zc->setDensity(aRho*zc->getDensity()/FSum);
+      atomDensity=aRho;
+    }
   return;
 }
 

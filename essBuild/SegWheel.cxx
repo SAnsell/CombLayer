@@ -59,6 +59,7 @@
 #include "Qhull.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "support.h"
 #include "stringCombine.h"
@@ -82,13 +83,15 @@ SegWheel::SegWheel(const std::string& Key) :
 {}
 
 SegWheel::SegWheel(const SegWheel& A) : 
-  WheelBase(A),
-  lh2Index(A.lh2Index),mainShaftCell(A.mainShaftCell),
+  WheelBase(A),lh2Index(A.lh2Index),mainShaftCell(A.mainShaftCell),
   xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
   xyAngle(A.xyAngle),zAngle(A.zAngle),targetHeight(A.targetHeight),
-  targetSectorOffsetX(A.targetSectorOffsetX),targetSectorOffsetY(A.targetSectorOffsetY),
-  targetSectorOffsetZ(A.targetSectorOffsetZ),targetSectorAngleXY(A.targetSectorAngleXY),
-  targetSectorAngleZ(A.targetSectorAngleZ),targetSectorApertureXY(A.targetSectorApertureXY),
+  targetSectorOffsetX(A.targetSectorOffsetX),
+  targetSectorOffsetY(A.targetSectorOffsetY), 
+  targetSectorOffsetZ(A.targetSectorOffsetZ),
+  targetSectorAngleXY(A.targetSectorAngleXY),
+  targetSectorAngleZ(A.targetSectorAngleZ),
+  targetSectorApertureXY(A.targetSectorApertureXY),
   targetSectorApertureZ(A.targetSectorApertureZ),
   targetSectorNumber(A.targetSectorNumber),coolantThickOut(A.coolantThickOut),
   coolantThickIn(A.coolantThickIn),caseThickZ(A.caseThickZ),
@@ -218,8 +221,6 @@ SegWheel::populate(const FuncDataBase& Control)
       radius.push_back(R);
       matTYPE.push_back(Control.EvalVar<int>
                         (StrFunc::makeString(keyName+"MatTYPE",i+1)));   
-      //  if (matTYPE.back()<0 || matTYPE.back()>3)
-      //        ELog::EM<<"Unknown material type "<<matTYPE.back()<<ELog::endDebug;
     }
 
   innerRadius=Control.EvalVar<double>(keyName+"InnerRadius");  
@@ -261,14 +262,16 @@ SegWheel::populate(const FuncDataBase& Control)
 
   shaftBaseThick=Control.EvalVar<double>(keyName+"ShaftBaseThick");
   shaftBaseFootThick=Control.EvalVar<double>(keyName+"ShaftBaseFootThick");
-  
-  wMat=Control.EvalVar<int>(keyName+"WMat");  
-  heMat=Control.EvalVar<int>(keyName+"HeMat");  
-  steelMat=Control.EvalVar<int>(keyName+"SteelMat");  
-  innerMat=Control.EvalVar<int>(keyName+"InnerMat");  
-  cladShaftMat=Control.EvalVar<int>(keyName+"CladShaftMat");  
-  coolingShaftMatInt=Control.EvalVar<int>(keyName+"CoolingShaftMatInt");  
-  coolingShaftMatExt=Control.EvalVar<int>(keyName+"CoolingShaftMatExt");  
+
+  wMat=ModelSupport::EvalMat<int>(Control,keyName+"WMat");  
+  heMat=ModelSupport::EvalMat<int>(Control,keyName+"HeMat");  
+  steelMat=ModelSupport::EvalMat<int>(Control,keyName+"SteelMat");  
+  innerMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerMat");  
+  cladShaftMat=ModelSupport::EvalMat<int>(Control,keyName+"CladShaftMat");  
+  coolingShaftMatInt=ModelSupport::EvalMat<int>(Control,
+						keyName+"CoolingShaftMatInt");  
+  coolingShaftMatExt=ModelSupport::EvalMat<int>(Control,
+						keyName+"CoolingShaftMatExt");  
 
   return;
 }

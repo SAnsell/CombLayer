@@ -1,0 +1,37 @@
+
+\section{Model Runtime control}
+
+C++ programs start from the main() function and in CombLayer the
+runtime control has been keep mostly in the main() function. Clearly
+that could be further refactored out but CombLayer lacks the
+sophisticated top level type abstraction that is required to do this
+in a generic way, so copy/pasted structure is used with variance to
+the particular model required. The sole advantage of the abscence of a
+top level abstraction is that the user is the freedom in writing new objects
+which allows other programs to be incorporated by making their main function
+a minor function and directly calling.
+
+The structure of two example main()s will be compared from the units
+that exist with the stanard CombLayer distribution. That is {\it
+bilbau.cxx} and {\it reactor.cxx}. These build the delft reactor model and the
+Biblau low energy spallation source.
+
+First part of the code is along list of \#include's. They are the
+mainly dependency list of the objects {\it Simulation, weightManager,
+and tallySelector.} This can and should be copied at will. Do not
+make an file with them all in [see \ref{Sec:IntroInclude}].
+
+At the end of the include section there is typically, one or two model
+specific includes. These normally include {\it makeXXX.h} file and
+anything that they directly depend on. In the case of bilbau it is just 
+{\it makeBib.h} whilst for reactor it is both {\it makeDelft.h} and \prog{ReactorGrid.h}.
+
+\subsection{makeModel}
+
+The makeModel object is the place that creates, initializes and
+manages inquires for the instances of all the geometric components. 
+Primary objects need to be created and registered with the objectRegister 
+\ref{objectRegister}. The makeModel component is 
+ 
+
+

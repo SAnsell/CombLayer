@@ -128,6 +128,31 @@ SNSVariables(FuncDataBase& Control)
 
   Control.addVariable("sdefEnergy",1400.0);  
 
+  Control.addVariable("RefPlugXStep",0.0);  
+  Control.addVariable("RefPlugYStep",0.0);  
+  Control.addVariable("RefPlugZStep",0.0);
+  Control.addVariable("RefPlugXYangle",0.0); 
+  Control.addVariable("RefPlugZangle",0.0);
+
+  Control.addVariable("RefPlugRadius",32.004);
+  Control.addVariable("RefPlugHeight",8.0);
+  Control.addVariable("RefPlugMat","Be300K");
+  Control.addVariable("RefPlugTemp",20.0);
+  Control.addVariable("RefPlugNLayers",6);
+  // Water
+  Control.addVariable("RefPlugHGap1",1.143);
+  Control.addVariable("RefPlugRadGap1",1.143);
+  Control.addVariable("RefPlugMaterial1","H2O");  
+  Control.addVariable("RefPlugTemp1",20.0);  
+  // Be next
+  Control.addVariable("RefPlugHGap2",13.5382);
+  Control.addVariable("RefPlugRadGap2",13.5382);
+  Control.addVariable("RefPlugMaterial2","Be300K"); 
+  // Water
+  Control.addVariable("RefPlugHGap3",0.9398);
+  Control.addVariable("RefPlugRadGap3",0.9398);
+  Control.addVariable("RefPlugMaterial3","H2O"); 
+
   return;
 }
 

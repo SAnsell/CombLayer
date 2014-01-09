@@ -282,8 +282,7 @@ PipeLine::createUnits(Simulation& System)
       if (layerSurf.find(i-1)!=layerSurf.end())
 	{
 	  PtRule=layerSurf[i-1];
-	  PtRule.addIntersection(commonSurf[i-1]);
-	  ELog::EM<<"ASurf == "<<PtRule.display()<<ELog::endCrit;
+      	  PtRule.addIntersection(commonSurf[i-1]);
 	  PU->setASurf(PtRule);
 	}
       // Complementary object only for modified surface
@@ -292,8 +291,6 @@ PipeLine::createUnits(Simulation& System)
 	  PtRule=layerSurf[i];
 	  PtRule.makeComplement();
 	  PtRule.addIntersection(commonSurf[i]);
-	  ELog::EM<<"LSurf["<<i<<"] == "<<layerSurf[i].display()<<ELog::endCrit;
-	  ELog::EM<<"BSurf == "<<PtRule.display()<<ELog::endCrit;
 	  PU->setBSurf(PtRule);
 	}
       PUnits.push_back(PU);

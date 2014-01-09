@@ -234,7 +234,7 @@ setPhysicsModel(physicsSystem::LSwitchCard& lea,
   else if (PModel=="IA")
     lea.setValues("lca","2 1 0 0023 1 1 2 1 2 0");  // INCL4 - ABLA
   else if (PModel=="BD")
-    lea.setValues("lca","2 1 1 0023 1 1 0 1 0 0");  // Bertini - DrANnnesner   
+    lea.setValues("lca","2 1 1 0023 1 1 0 1 0 0");  // Bertini - DrAnnesner   
   else if (PModel=="BA")
     lea.setValues("lca","2 1 1 0023 1 1 2 1 0 0");  // Bertini - ABLA  
   else
@@ -247,6 +247,7 @@ setPhysicsModel(physicsSystem::LSwitchCard& lea,
       throw ColErr::ExitAbort("No model");
     }
   lea.setValues("lea","1 4 1 0 1 0 0 1");
+
 
   return;
 }

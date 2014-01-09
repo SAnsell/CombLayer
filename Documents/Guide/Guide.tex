@@ -1,0 +1,39 @@
+\documentclass{article}
+\usepackage{relsize}
+\usepackage{tikz} % ,pgf,pgfarrows,pgfnodes,pgfautomata,pgfheaps,pgfshade}
+\usetikzlibrary{shapes,decorations,shadings,positioning,arrows}
+\usepackage{amsmath}
+\usepackage[absolute,overlay]{textpos}
+
+\definecolor{SlateBlue}{rgb}{0.1,0.1,1.00}
+\definecolor{SlateGreen}{rgb}{0.1,0.8,0.3}
+\definecolor{darkred}{rgb}{0.8,0,0}
+\newcommand{\tcg}[1]{
+   \textcolor{green}{#1}}
+\newcommand{\tcr}[1]{
+   \textcolor{red}{#1}}
+\newcommand{\tcb}[1]{
+   \textcolor{blue}{#1}}
+\newcommand{\tcbb}[1]{
+   \textcolor{SlateBlue}{#1}}
+\newcommand{\tcgg}[1]{
+   \textcolor{SlateGreen}{#1}}
+
+\input{Frames/functions}
+
+\begin{document}
+
+
+\input{Frames/Introduction}
+\input{Frames/LinkSystem}
+\input{Frames/ModelInitial}
+
+
+\section{Components}
+
+\input{Components/ObjectRegister}
+
+\end{document}
+
+
+\end{document}

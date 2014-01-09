@@ -40,8 +40,10 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
+#include "Triple.h"
 #include "support.h"
 #include "regexSupport.h"
+#include "IsoTable.h"
 #include "Element.h"
 #include "Zaid.h"
 
@@ -158,5 +160,23 @@ Zaid::write(std::ostream& OX) const
     OX<<" "<<FMTnum % density;
   return;
 }
-    
+
+double
+Zaid::getAtomicMass() const
+  /*!
+    Get the precise atomic mass for 
+    the isotope. If the zaid is a common zaid (X000) 
+    then return the stable mean atomic mass, otherwize
+    return the isotope mass
+   */
+{
+  const int INum=getIso();
+  if (INum) 
+    {
+      const IsoTable& IT=IsoTable::Instance();
+      return IT.getMass(getZ(),INum);
+    }
+  const Element& ET=Element::Instance();
+  return ET.mass(getZ());
+}    
 
