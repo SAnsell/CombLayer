@@ -304,9 +304,6 @@ targetOuter::createSurfaces()
   const double Lift[]={0.0,0.0,0.0,0.0,0.0,outerLift};
 
 
-  const double TA=tan(cutAngle[0]*M_PI/180.0);
-  const double XOrigin=(mainWidth/2.0+(joinLen[0]-cutLen[0])*TA);
-
   Wall=mainHeight/2.0;     // reset wall
   offset=1000+protonIndex;
   XStep=mainWidth/2.0;
@@ -328,7 +325,6 @@ targetOuter::createSurfaces()
       ModelSupport::buildPlane(SMap,offset+6,
 			       Origin+Z*Wall+Y*cutLen[i],ZCutUp);
       ModelSupport::buildPlane(SMap,offset+2,Origin+Y*joinLen[i],Y);
-      ELog::EM<<"YL ="<<offset+2<<":"<<Origin+Y*joinLen[i]<<ELog::endDebug;
       // Cones:
       // To calculate origin of cone, travel along centre of cylinder (17/18) 
       // by -Y*tan(alpha)*Wall  [+/-X*XStep]
@@ -514,8 +510,8 @@ targetOuter::createBeamWindow(Simulation& System)
 
 void
 targetOuter::addProtonLine(Simulation& System,
-			 const attachSystem::FixedComp& refFC,
-			 const long int index)
+			   const attachSystem::FixedComp& refFC,
+			   const long int index)
   /*!
     Add a proton void cell
     \param System :: Simualation

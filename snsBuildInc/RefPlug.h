@@ -3,7 +3,7 @@
  
  * File:   snsBuildInc/RefPlug.h
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,12 +49,13 @@ class RefPlug : public attachSystem::ContainedComp,
   double zStep;                   ///< Z step
   double xyAngle;                 ///< xy rotation angle
   double zAngle;                  ///< z rotation angle
+  double height;                  ///< Be height
+  double depth;                  ///< Be depth
 
   size_t nLayers;                     ///< number of layers
-  std::vector<double> radius;         ///< cylinder radii
-  std::vector<double> height;         ///< Full heights
-  std::vector<int> mat;               ///< Materials
+  std::vector<double> radius;         ///< cylinder radii  
   std::vector<double> temp;           ///< Temperatures
+  std::vector<int> mat;               ///< Materials
 
   // Functions:
 

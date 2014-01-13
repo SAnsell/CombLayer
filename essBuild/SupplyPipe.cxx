@@ -47,10 +47,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "Tally.h"
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
@@ -59,7 +55,6 @@
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "surfEqual.h"
-#include "surfDivide.h"
 #include "surfDIter.h"
 #include "Quadratic.h"
 #include "Plane.h"
@@ -72,14 +67,11 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
-#include "chipDataStore.h"
+#include "MaterialSupport.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "LinearComp.h"
 #include "ContainedComp.h"
 #include "LayerComp.h"
 #include "pipeUnit.h"
@@ -174,11 +166,11 @@ SupplyPipe::populate(const Simulation& System)
   voidRadius=Control.EvalVar<double>(keyName+"VoidRadius"); 
   outAlRadius=Control.EvalVar<double>(keyName+"OutAlRadius"); 
 
-  inMat=Control.EvalVar<int>(keyName+"InMat"); 
-  inAlMat=Control.EvalVar<int>(keyName+"InAlMat"); 
-  midAlMat=Control.EvalVar<int>(keyName+"MidAlMat"); 
-  voidMat=Control.EvalVar<int>(keyName+"VoidMat"); 
-  outAlMat=Control.EvalVar<int>(keyName+"OutAlMat"); 
+  inMat=ModelSupport::EvalMat<int>(Control,keyName+"InMat"); 
+  inAlMat=ModelSupport::EvalMat<int>(Control,keyName+"InAlMat"); 
+  midAlMat=ModelSupport::EvalMat<int>(Control,keyName+"MidAlMat"); 
+  voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat"); 
+  outAlMat=ModelSupport::EvalMat<int>(Control,keyName+"OutAlMat"); 
   
   return;
 }
@@ -203,10 +195,7 @@ SupplyPipe::createUnitVector(const attachSystem::FixedComp& FC,
   if (LC && sideIndex)
     {
       Origin=LC->getSurfacePoint(layerIndex,sideIndex-1);
-      ELog::EM<<"Side = "<<sideIndex-1<<":"
-	      <<FC.getLinkAxis(sideIndex-1)<<ELog::endDebug;
       FC.selectAltAxis(sideIndex-1,X,Y,Z);
-      ELog::EM<<" XYZ == "<<X<<":"<<Y<<":"<<Z<<ELog::endDebug;
     }
   return;
 }

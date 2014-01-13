@@ -33,6 +33,7 @@
 namespace snsSystem
 {
   class targetOuter;
+  class RefPlug;
   /*!
     \class makeSNS
     \version 1.0
@@ -46,6 +47,7 @@ class makeSNS
  private:
   
   boost::shared_ptr<targetOuter> tarOuterObj;  ///< Front target section
+  boost::shared_ptr<RefPlug> refObj;           ///< Reflector 
 
  public:
   

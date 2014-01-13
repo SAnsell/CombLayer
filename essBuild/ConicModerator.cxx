@@ -46,10 +46,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "Tally.h"
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
@@ -58,7 +54,6 @@
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "surfEqual.h"
-#include "surfDivide.h"
 #include "surfDIter.h"
 #include "Quadratic.h"
 #include "Plane.h"
@@ -71,20 +66,16 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "SecondTrack.h"
 #include "TwinComp.h"
 #include "ContainedComp.h"
 #include "LayerComp.h"
-#include "pipeUnit.h"
-#include "PipeLine.h"
 #include "essMod.h"
 #include "ConicModerator.h"
 
@@ -204,9 +195,10 @@ ConicModerator::populate(const Simulation& System)
   voidGap=Control.EvalVar<double>(keyName+"VoidGap");
 
   modTemp=Control.EvalVar<double>(keyName+"ModTemp");
-  modMat=Control.EvalVar<int>(keyName+"ModMat");
-  alMat=Control.EvalVar<int>(keyName+"AlMat");
-  waterMat=Control.EvalVar<int>(keyName+"WaterMat");
+
+  modMat=ModelSupport::EvalMat<int>(Control,keyName+"ModMat");
+  alMat=ModelSupport::EvalMat<int>(Control,keyName+"AlMat");
+  waterMat=ModelSupport::EvalMat<int>(Control,keyName+"WaterMat");
 
   return;
 }

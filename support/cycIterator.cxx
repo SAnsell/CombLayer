@@ -1,24 +1,3 @@
-/********************************************************************* 
-  CombLayer : MNCPX Input builder
- 
- * File:   support/cycIterator.cxx
-*
- * Copyright (c) 2004-2014 by Stuart Ansell
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
- *
- ****************************************************************************/
 #include <iostream>
 #include <cmath>
 #include <complex>
@@ -36,21 +15,41 @@ namespace RMCbox
 template<typename T,typename Iterator> 
 cycIterator<T,Iterator>::cycIterator(const Iterator& A,const Iterator& B) :
   loopIndex(0),beginIter(A),endIter(B),vc(A)
+  /*!
+    constructor
+    \param A :: Iterator [start]
+    \param B :: Iterator [end] 
+  */
 {}
 
 template<typename T,typename Iterator> 
 cycIterator<T,Iterator>::cycIterator(const cycIterator<T,Iterator>& A) : 
   loopIndex(A.loopIndex),beginIter(A.beginIter),
   endIter(A.endIter),vc(A.vc)
-{}
-
-
-template<typename T,typename Iterator> 
-cycIterator<T,Iterator>::~cycIterator()
   /*!
-    Destructor
+    Copy constructor
+    \param A :: Copy object
   */
 {}
+
+template<typename T,typename Iterator> 
+cycIterator<T,Iterator>&
+cycIterator<T,Iterator>::operator=(const cycIterator<T,Iterator>& A) 
+  /*!
+    Assignment operator
+    \param A :: Copy object
+    \return Object
+  */
+{
+  if (this!=&A)
+    {
+      loopIndex=A.loopIndex;
+      beginIter=A.beginIter;
+      endIter=A.endIter;
+      vc=A.vc;
+    }
+  return *this;
+}
 
 template<typename T,typename Iterator> 
 cycIterator<T,Iterator>
