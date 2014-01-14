@@ -47,10 +47,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "Tally.h"
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
@@ -59,7 +55,6 @@
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "surfEqual.h"
-#include "surfDivide.h"
 #include "surfDIter.h"
 #include "Quadratic.h"
 #include "Plane.h"
@@ -69,22 +64,17 @@
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
-#include "inputParam.h"
-#include "ReadFunctions.h"
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "Simulation.h"
 #include "SimProcess.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
-#include "ContainedGroup.h"
 #include "World.h"
 #include "WedgeItem.h"
 
@@ -116,20 +106,25 @@ WedgeItem::populate(const FuncDataBase& Control)
  */
 {
   ELog::RegMethod RegA("WedgeItem","populate");
-  
-  xStep=SimProcess::getIndexVar<double>
-    (Control,keyName,"XStep",beamNumber);
-  yStep=SimProcess::getIndexVar<double>
-    (Control,keyName,"YStep",beamNumber);
-  zStep=SimProcess::getIndexVar<double>
-    (Control,keyName,"ZStep",beamNumber);
-  xyAngle=SimProcess::getIndexVar<double>
-    (Control,keyName,"XYangle",beamNumber);
-  zAngle=SimProcess::getIndexVar<double>
-    (Control,keyName,"Zangle",beamNumber);
 
-  nLayer=SimProcess::getIndexVar<size_t>
-    (Control,keyName,"NLayer",beamNumber);
+  const std::string keyNum=StrFunc::makeString(keyName,beamNumber);
+
+  xStep=Control.EvalPair<double>
+    (keyNum+"XStep",keyName+"XStep");
+  yStep=Control.EvalPair<double>
+    (keyNum+"YStep",keyName+"YStep");
+  zStep=Control.EvalPair<double>
+    (keyNum+"ZStep",keyName+"ZStep");
+  xyAngle=Control.EvalPair<double>
+    (keyNum+"XYangle",keyName+"XYangle");
+  zAngle=Control.EvalPair<double>
+    (keyNum+"Zangle",keyName+"Zangle");
+
+  mat=ModelSupport::EvalMat<int>
+    (Control,keyNum+"NLayer",keyName+"NLayer");				 
+
+  nLayer=Control.EvalPair<size_t>
+    (keyNum+"NLayer",keyName+"NLayer");
 
   if (!nLayer) return;
   
@@ -222,7 +217,6 @@ WedgeItem::createObjects(Simulation& System,
       Out+=(i!=nLayer-1) ? 
 	ModelSupport::getComposite(SMap,RI+10," -7 ") :
 	FC.getLinkString(outerIndex);
-      
       System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
       RI+=10;
     }

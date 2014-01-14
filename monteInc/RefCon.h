@@ -39,7 +39,7 @@ namespace RefCon
   const double reyb(13.60569172);             ///< Reyberg Constant
   const double pi(3.14159265359);             ///< Pi
   const double re(2.817940285e-15);           ///< electron Radius
-  const double avogadro(0.602214);            ///< Avogadro in unis of gram/anstrom
+  const double avogadro(0.60221413);          ///< Avogadro in unis of gram/anstrom
   const double kevExafs(16.200878062623);     ///< Conversion E(KeV) to k [angstrom]
   const double hbar_mn(6.2962236371273e-8);   ///< mass of hbar/neutronmass [m^2/sec] 
   const double h_mn(3.9560339847515e-7) ;     ///< mass of h/neutronmass [m^2/sec] 

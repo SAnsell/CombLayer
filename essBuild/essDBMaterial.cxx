@@ -62,26 +62,30 @@ void addESSMaterial()
 {
   return;
   ELog::RegMethod RegA("essDBMaterial[F]","addESSMaterial");
+
   const std::string MLib="hlib=.70h pnlib=70u";
   ModelSupport::DBMaterial& MDB=
     ModelSupport::DBMaterial::Instance();
 
   MonteCarlo::Material MObj;
-  MObj.setMaterial(75,"EssH2"," 1001.70c 1.000000000 ","",MLib);
+  MObj.setMaterial(75,"EssH2"," 1001.70c 1.000000000 ","para.19t",
+		   MLib);
+  MObj.setDensity(-7.0e-2);
   MDB.resetMaterial(MObj);
 
-    //M 0115 #76
+  //M 0115 #76
   MObj.setMaterial(76,"EssH2O","1001.70c  0.666562842 "
 		   " 1002.70c  0.000103824 8016.70c  0.332540192 "
 		   " 8017.70c  0.000126332 8018.70c  0.000666810 ",
 		   "",MLib);
+  MObj.setDensity(-1.0);
   MDB.resetMaterial(MObj);
  
   // M0200 #77
   MObj.setMaterial(77,"EssHe"," 2003.70c  0.00000134 "
 		   " 2004.70c  0.99999866 " ,
 		   "",MLib);
-  MObj.setDensity(0.0001);
+  MObj.setDensity(-1.74e-4);
   MDB.resetMaterial(MObj);
   
   // M0201 #78 [Copy]
@@ -89,7 +93,7 @@ void addESSMaterial()
 
   // M0400 #80 Be
   MObj.setMaterial(80,"EssM0400","4009.70c  1.0 ","",MLib);
-  MObj.setDensity(0.11);
+  MObj.setDensity(-1.85);
   MDB.resetMaterial(MObj); 
 
   // M1360 #81
@@ -106,7 +110,7 @@ void addESSMaterial()
 		   "26057.70c  0.000036009 26058.70c  0.000004792 "
 		   "29063.70c  0.000811409 29065.70c  0.000361995 "
 		   "30000.70c  0.000518176 ","",MLib);
-  MObj.setDensity(0.07);
+  MObj.setDensity(-2.70);
   MDB.resetMaterial(MObj);
   
   // M1361 #82
@@ -124,17 +128,17 @@ void addESSMaterial()
 		   "26058.70c 0.000004792 9063.70c 0.000811409 "
 		   "29065.70c 0.000361995 0000.70c 0.000518176 ",
 		   "",MLib);
-  MObj.setDensity(0.07);
+  MObj.setDensity(-2.73);
   MDB.resetMaterial(MObj);
   // M2600 #83 
   MObj.setMaterial(83,"M2600","26054.70c  0.058450000 "
 		   "26056.70c 0.917540000 26057.70c 0.021190000 "
 		   "26058.70c 0.002820000 ","",MLib);
-  MObj.setDensity(0.05);
+  MObj.setDensity(-7.85);
   MDB.resetMaterial(MObj);
 
   //M2616 #84   
-  MObj.setMaterial(85,"M2616",
+  MObj.setMaterial(84,"M2616",
 		   "06000.71c  0.001392603 14028.71c  0.007323064 "
 		   "14029.71c  0.000372017 14030.71c  0.000245523 "
 		   "15031.71c  0.000360008 16032.71c  0.000165168 "
@@ -148,8 +152,20 @@ void addESSMaterial()
 		   "28060.71c  0.031137291 28061.71c  0.001353516 "
 		   "28062.71c  0.004315603 28064.71c  0.001099057 ",
 		   "",MLib);
-  MObj.setDensity(0.05);
+  MObj.setDensity(-7.76);
   MDB.resetMaterial(MObj);  
+
+
+  //M74001 #85    (ess tungsten)
+  MObj.setMaterial(85,"M74001",
+		   "74182.70c  0.265000000 "
+		   "74183.70c  0.143100000 "
+		   "74184.70c  0.306400000 "
+		   "74186.70c  0.284300000 ",
+		   "",MLib);
+  MObj.setDensity(-19.20);
+  MDB.resetMaterial(MObj);  
+
   
   return;
 }

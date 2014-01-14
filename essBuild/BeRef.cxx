@@ -108,6 +108,7 @@ BeRef::populate(const FuncDataBase& Control)
   radius=Control.EvalVar<double>(keyName+"Radius");   
   height=Control.EvalVar<double>(keyName+"Height");   
   wallThick=Control.EvalVar<double>(keyName+"WallThick");   
+
   refMat=ModelSupport::EvalMat<int>(Control,keyName+"RefMat");   
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");   
   
@@ -136,8 +137,7 @@ BeRef::createSurfaces()
   */
 {
   ELog::RegMethod RegA("BeRef","createSurfaces");
-  
-    
+      
   ModelSupport::buildCylinder(SMap,refIndex+7,Origin,Z,radius);  
   ModelSupport::buildCylinder(SMap,refIndex+17,Origin,Z,radius+wallThick);  
 
@@ -147,7 +147,6 @@ BeRef::createSurfaces()
 			   Origin-Z*(height/2.0+wallThick),Z);  
   ModelSupport::buildPlane(SMap,refIndex+16,
 			   Origin+Z*(height/2.0+wallThick),Z);  
-
 
   return; 
 }
@@ -179,6 +178,7 @@ BeRef::createObjects(Simulation& System)
   
   Out=ModelSupport::getComposite(SMap,refIndex," -7 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,refMat,0.0,Out));
+
   Out=ModelSupport::getComposite(SMap,refIndex," -17 15 -16 (7:-5:6)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 

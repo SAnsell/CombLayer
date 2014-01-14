@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   essBuild/CylModerator.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * File:   snsBuild/RefPlug.cxx
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,83 +67,90 @@
 #include "FixedComp.h"
 #include "ContainedComp.h"
 #include "LayerComp.h"
-#include "essMod.h"
-#include "CylModerator.h"
+#include "RefPlug.h"
 
-namespace essSystem
+namespace snsSystem
 {
 
-CylModerator::CylModerator(const std::string& Key) :
-  essMod(Key),
-  modIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(modIndex+1)
+RefPlug::RefPlug(const std::string& Key) :
+  attachSystem::ContainedComp(),attachSystem::LayerComp(),
+  attachSystem::FixedComp(Key,6),
+  refIndex(ModelSupport::objectRegister::Instance().cell(Key)),
+  cellIndex(refIndex+1)
   /*!
     Constructor
     \param Key :: Name of construction key
   */
 {}
 
-CylModerator::CylModerator(const CylModerator& A) : 
-  essMod(A),
-  modIndex(A.modIndex),cellIndex(A.cellIndex),xStep(A.xStep),
+RefPlug::RefPlug(const RefPlug& A) : 
+  attachSystem::ContainedComp(A),
+  attachSystem::LayerComp(A),
+  attachSystem::FixedComp(A),
+  refIndex(A.refIndex),cellIndex(A.cellIndex),xStep(A.xStep),
   yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
-  zAngle(A.zAngle),nLayers(A.nLayers),radius(A.radius),
-  height(A.height),mat(A.mat)
+  zAngle(A.zAngle),height(A.height),depth(A.depth),
+  nLayers(A.nLayers),radius(A.radius),temp(A.temp),
+  mat(A.mat)
   /*!
     Copy constructor
-    \param A :: CylModerator to copy
+    \param A :: RefPlug to copy
   */
 {}
 
-CylModerator&
-CylModerator::operator=(const CylModerator& A)
+RefPlug&
+RefPlug::operator=(const RefPlug& A)
   /*!
     Assignment operator
-    \param A :: CylModerator to copy
+    \param A :: RefPlug to copy
     \return *this
   */
 {
   if (this!=&A)
     {
-      essMod::operator=(A),
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::LayerComp::operator=(A);
+      attachSystem::FixedComp::operator=(A);
       cellIndex=A.cellIndex;
       xStep=A.xStep;
       yStep=A.yStep;
       zStep=A.zStep;
       xyAngle=A.xyAngle;
       zAngle=A.zAngle;
+      height=A.height;
+      depth=A.depth;
       nLayers=A.nLayers;
       radius=A.radius;
-      height=A.height;
+      temp=A.temp;
       mat=A.mat;
     }
   return *this;
 }
 
-CylModerator::~CylModerator()
+RefPlug::~RefPlug()
   /*!
     Destructor
   */
 {}
 
-CylModerator*
-CylModerator::clone() const
+RefPlug*
+RefPlug::clone() const
   /*!
-    Clone copy constructor
-    \return copy of this
+    Clone constructor
+    \return new(this)
   */
 {
-  return new CylModerator(*this);
+  return new RefPlug(*this);
 }
 
 void
-CylModerator::populate(const FuncDataBase& Control)
+RefPlug::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: Variable table to use
   */
 {
-  ELog::RegMethod RegA("CylModerator","populate");
+  ELog::RegMethod RegA("RefPlug","populate");
 
     // Master values
   xStep=Control.EvalVar<double>(keyName+"XStep");
@@ -151,32 +158,31 @@ CylModerator::populate(const FuncDataBase& Control)
   zStep=Control.EvalVar<double>(keyName+"ZStep");
   xyAngle=Control.EvalVar<double>(keyName+"XYangle");
   zAngle=Control.EvalVar<double>(keyName+"Zangle");
+  height=Control.EvalVar<double>(keyName+"Height");
+  depth=Control.EvalVar<double>(keyName+"Depth");
 
-  double R,H,T;
+  double R,T(0.0);
   int M;
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");   
   for(size_t i=0;i<=nLayers;i++)
     {
       if (i)
 	{
-	  H+=2.0*Control.EvalVar<double>
-	    (StrFunc::makeString(keyName+"HGap",i));   
 	  R+=Control.EvalVar<double>
 	    (StrFunc::makeString(keyName+"RadGap",i));   
 	  M=ModelSupport::EvalMat<int>(Control,
-	     StrFunc::makeString(keyName+"Material",i));   
+	    StrFunc::makeString(keyName+"Material",i));   
 	  T=(!M) ? 0.0 : 
-	    Control.EvalVar<double>(StrFunc::makeString(keyName+"Temp",i)); 
+	    Control.EvalDefVar<double>
+	    (StrFunc::makeString(keyName+"Temp",i),T);
 	}
       else
 	{
-	  H=Control.EvalVar<double>(keyName+"Height");   
 	  R=Control.EvalVar<double>(keyName+"Radius");   
 	  M=ModelSupport::EvalMat<int>(Control,keyName+"Mat");   
 	  T=Control.EvalVar<double>(keyName+"Temp");   
 	}
       radius.push_back(R);
-      height.push_back(H);
       mat.push_back(M);
       temp.push_back(T);
     }
@@ -185,13 +191,13 @@ CylModerator::populate(const FuncDataBase& Control)
 }
 
 void
-CylModerator::createUnitVector(const attachSystem::FixedComp& FC)
+RefPlug::createUnitVector(const attachSystem::FixedComp& FC)
   /*!
     Create the unit vectors
     \param FC :: Fixed Component
   */
 {
-  ELog::RegMethod RegA("CylModerator","createUnitVector");
+  ELog::RegMethod RegA("RefPlug","createUnitVector");
   attachSystem::FixedComp::createUnitVector(FC);
   applyShift(xStep,yStep,zStep);
   applyAngleRotate(xyAngle,zAngle);
@@ -200,23 +206,24 @@ CylModerator::createUnitVector(const attachSystem::FixedComp& FC)
 }
 
 void
-CylModerator::createSurfaces()
+RefPlug::createSurfaces()
   /*!
     Create planes for the silicon and Polyethene layers
   */
 {
-  ELog::RegMethod RegA("CylModerator","createSurfaces");
+  ELog::RegMethod RegA("RefPlug","createSurfaces");
 
   // Divide plane
-  ModelSupport::buildPlane(SMap,modIndex+1,Origin,X);  
-  ModelSupport::buildPlane(SMap,modIndex+2,Origin,Y);  
+  ModelSupport::buildPlane(SMap,refIndex+1,Origin,X);  
+  ModelSupport::buildPlane(SMap,refIndex+2,Origin,Y);  
 
-  int SI(modIndex);
+  ModelSupport::buildPlane(SMap,refIndex+5,Origin-Z*depth,Z);  
+  ModelSupport::buildPlane(SMap,refIndex+6,Origin+Z*height,Z);  
+
+  int SI(refIndex);
   for(size_t i=0;i<=nLayers;i++)
     {
       ModelSupport::buildCylinder(SMap,SI+7,Origin,Z,radius[i]);  
-      ModelSupport::buildPlane(SMap,SI+5,Origin-Z*height[i]/2.0,Z);  
-      ModelSupport::buildPlane(SMap,SI+6,Origin+Z*height[i]/2.0,Z);  
       SI+=10;
     }
 
@@ -225,23 +232,22 @@ CylModerator::createSurfaces()
 }
 
 void
-CylModerator::createObjects(Simulation& System)
+RefPlug::createObjects(Simulation& System)
   /*!
     Create the vaned moderator
     \param System :: Simulation to add results
   */
 {
-  ELog::RegMethod RegA("CylModerator","createObjects");
+  ELog::RegMethod RegA("RefPlug","createObjects");
 
   std::string Out;
-  int SI(modIndex);
+  int SI(refIndex);
   for(size_t i=0;i<=nLayers;i++)
     {
-      Out=ModelSupport::getComposite(SMap,SI," -7 5 -6 ");
-
+      Out=ModelSupport::getComposite(SMap,SI,refIndex," -7 5M -6M ");
       if (i==nLayers) addOuterSurf(Out);
       if (i)
-	Out+=ModelSupport::getComposite(SMap,SI-10," (7:-5:6) ");
+	Out+=ModelSupport::getComposite(SMap,SI-10," 7 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],Out));
       SI+=10;
     }
@@ -249,48 +255,48 @@ CylModerator::createObjects(Simulation& System)
 }
 
 void
-CylModerator::createLinks()
+RefPlug::createLinks()
   /*!
     Creates a full attachment set
   */
 {  
-  ELog::RegMethod RegA("CylModerator","createLinks");
+  ELog::RegMethod RegA("RefPlug","createLinks");
 
   if (nLayers)
     {
-      const int SI(modIndex+static_cast<int>(nLayers)*10);
+      const int SI(refIndex+static_cast<int>(nLayers)*10);
 
       FixedComp::setConnect(0,Origin-Y*radius[nLayers],-Y);
       FixedComp::setLinkSurf(0,SMap.realSurf(SI+7));
-      FixedComp::addLinkSurf(0,-SMap.realSurf(modIndex+2));
+      FixedComp::addLinkSurf(0,-SMap.realSurf(refIndex+2));
 
       FixedComp::setConnect(1,Origin+Y*radius[nLayers],Y);
       FixedComp::setLinkSurf(1,SMap.realSurf(SI+7));
-      FixedComp::addLinkSurf(1,SMap.realSurf(modIndex+2));
+      FixedComp::addLinkSurf(1,SMap.realSurf(refIndex+2));
 
       FixedComp::setConnect(2,Origin-X*radius[nLayers],-X);
       FixedComp::setLinkSurf(2,SMap.realSurf(SI+7));
-      FixedComp::addLinkSurf(2,-SMap.realSurf(modIndex+1));
+      FixedComp::addLinkSurf(2,-SMap.realSurf(refIndex+1));
 
       FixedComp::setConnect(3,Origin+X*radius[nLayers],X);
       FixedComp::setLinkSurf(3,SMap.realSurf(SI+7));
-      FixedComp::addLinkSurf(3,SMap.realSurf(modIndex+1));
+      FixedComp::addLinkSurf(3,SMap.realSurf(refIndex+1));
       
-      FixedComp::setConnect(4,Origin-Z*(height[nLayers]/2.0),-Z);
-      FixedComp::setLinkSurf(4,-SMap.realSurf(SI+5));
+      FixedComp::setConnect(4,Origin-Z*depth,-Z);
+      FixedComp::setLinkSurf(4,-SMap.realSurf(refIndex+5));
 
-      FixedComp::setConnect(5,Origin+Z*(height[nLayers]/2.0),Z);
-      FixedComp::setLinkSurf(5,SMap.realSurf(SI+6));
+      FixedComp::setConnect(5,Origin+Z*height,Z);
+      FixedComp::setLinkSurf(5,SMap.realSurf(refIndex+6));
     }
   else 
-    ELog::EM<<"NO Layers in CylModerator"<<ELog::endErr;
+    ELog::EM<<"NO Layers in RefPlug"<<ELog::endErr;
   return;
 }
 
 
 
 Geometry::Vec3D
-CylModerator::getSurfacePoint(const size_t layerIndex,
+RefPlug::getSurfacePoint(const size_t layerIndex,
 			      const size_t sideIndex) const
   /*!
     Given a side and a layer calculate the link point
@@ -299,7 +305,7 @@ CylModerator::getSurfacePoint(const size_t layerIndex,
     \return Surface point
   */
 {
-  ELog::RegMethod RegA("CylModerator","getSurfacePoint");
+  ELog::RegMethod RegA("RefPlug","getSurfacePoint");
 
   if (sideIndex>5) 
     throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
@@ -318,15 +324,15 @@ CylModerator::getSurfacePoint(const size_t layerIndex,
     case 3:
       return Origin+X*radius[layerIndex];
     case 4:
-      return Origin-Z*(height[layerIndex]/2.0);
+      return Origin-Z*depth;
     case 5:
-      return Origin+Z*(height[layerIndex]/2.0);
+      return Origin+Z*height;
     }
   throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
 }
 
 std::string
-CylModerator::getLayerString(const size_t layerIndex,
+RefPlug::getLayerString(const size_t layerIndex,
 			     const size_t sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
@@ -335,23 +341,23 @@ CylModerator::getLayerString(const size_t layerIndex,
     \return Surface string
   */
 {
-  ELog::RegMethod RegA("CylModerator","getLayerString");
+  ELog::RegMethod RegA("RefPlug","getLayerString");
 
   if (layerIndex>=nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
 
-  const int SI(modIndex+static_cast<int>(layerIndex)*10);
+  const int SI(refIndex+static_cast<int>(layerIndex)*10);
   std::ostringstream cx;
   switch(sideIndex)
     {
     case 0:
-      return ModelSupport::getComposite(SMap,SI,modIndex," 7 -2M ");
+      return ModelSupport::getComposite(SMap,SI,refIndex," 7 -2M ");
     case 1:
-      return ModelSupport::getComposite(SMap,SI,modIndex," 7 2M ");
+      return ModelSupport::getComposite(SMap,SI,refIndex," 7 2M ");
     case 2:
-      return ModelSupport::getComposite(SMap,SI,modIndex," 7 -1M ");
+      return ModelSupport::getComposite(SMap,SI,refIndex," 7 -1M ");
     case 3:
-      return ModelSupport::getComposite(SMap,SI,modIndex," 7 1M ");
+      return ModelSupport::getComposite(SMap,SI,refIndex," 7 1M ");
     case 4:
       cx<<" "<<-SMap.realSurf(SI+5)<<" ";
       return cx.str();
@@ -363,59 +369,25 @@ CylModerator::getLayerString(const size_t layerIndex,
 }
 
 int
-CylModerator::getLayerSurf(const size_t layerIndex,
-			 const size_t sideIndex) const
-  /*!
-    Given a side and a layer calculate the link surf
-    \param sideIndex :: Side [0-5]
-    \param layerIndex :: layer, 0 is inner moderator [0-4]
-    \return Surface string
-  */
-{
-  ELog::RegMethod RegA("CylModerator","getLayerSurf");
-
-  if (layerIndex>=nLayers) 
-    throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
-  
-  const int SI(modIndex+static_cast<int>(layerIndex)*10);
-  switch(sideIndex)
-    {
-    case 0:
-      return SMap.realSurf(SI+7);
-    case 1:
-      return SMap.realSurf(SI+7);
-    case 2:
-      return SMap.realSurf(SI+7);
-    case 3:
-      return SMap.realSurf(SI+7);
-    case 4:
-      return -SMap.realSurf(SI+5);
-    case 5:
-      return SMap.realSurf(SI+6);
-    }
-  throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
-}
-
-int
-CylModerator::getCommonSurf(const size_t sideIndex) const
+RefPlug::getCommonSurf(const size_t sideIndex) const
   /*!
     Given a side calculate the boundary surface
     \param sideIndex :: Side [0-5]
     \return Common dividing surface [outward pointing]
   */
 {
-  ELog::RegMethod RegA("CylModerator","getCommonSurf");
+  ELog::RegMethod RegA("RefPlug","getCommonSurf");
 
   switch(sideIndex)
     {
     case 0:
-      return -SMap.realSurf(modIndex+2);
+      return -SMap.realSurf(refIndex+2);
     case 1:
-      return SMap.realSurf(modIndex+2);
+      return SMap.realSurf(refIndex+2);
     case 2:
-      return -SMap.realSurf(modIndex+1);
+      return -SMap.realSurf(refIndex+1);
     case 3:
-      return SMap.realSurf(modIndex+1);
+      return SMap.realSurf(refIndex+1);
     case 4:
     case 5:
       return 0;
@@ -423,8 +395,42 @@ CylModerator::getCommonSurf(const size_t sideIndex) const
   throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
 }
 
+int
+RefPlug::getLayerSurf(const size_t layerIndex,
+		      const size_t sideIndex) const
+  /*!
+    Given a side and a layer calculate the link surf
+    \param sideIndex :: Side [0-5]
+    \param layerIndex :: layer, 0 is inner moderator [0-4]
+    \return Surface string
+  */
+{
+  ELog::RegMethod RegA("RefPlug","getLayerSurf");
+
+  if (layerIndex>=nLayers) 
+    throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
+  
+  const int SI(refIndex+static_cast<int>(layerIndex)*10);
+  switch(sideIndex)
+    {
+    case 0:
+      return SMap.realSurf(SI+7);
+    case 1:
+      return SMap.realSurf(SI+7);
+    case 2:
+      return SMap.realSurf(SI+7);
+    case 3:
+      return SMap.realSurf(SI+7);
+    case 4:
+      return -SMap.realSurf(refIndex+5);
+    case 5:
+      return SMap.realSurf(refIndex+6);
+    }
+  throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
+}
+
 void
-CylModerator::createAll(Simulation& System,
+RefPlug::createAll(Simulation& System,
 		     const attachSystem::FixedComp& FC)
   /*!
     Extrenal build everything
@@ -432,7 +438,7 @@ CylModerator::createAll(Simulation& System,
     \param FC :: FixedComponent for origin
    */
 {
-  ELog::RegMethod RegA("CylModerator","createAll");
+  ELog::RegMethod RegA("RefPlug","createAll");
   populate(System.getDataBase());
 
   createUnitVector(FC);

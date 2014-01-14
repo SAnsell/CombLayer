@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   epbBuild/makeSNS.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * File:   snsBuild/makeSNS.cxx
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -84,6 +84,7 @@
 #include "AttachSupport.h"
 #include "TargetBase.h"
 #include "targetOuter.h"
+#include "RefPlug.h"
 
 #include "makeSNS.h"
 
@@ -91,7 +92,8 @@ namespace snsSystem
 {
 
 makeSNS::makeSNS() :
-  tarOuterObj(new targetOuter("tarFront"))
+  tarOuterObj(new targetOuter("tarFront")),
+  refObj(new RefPlug("RefPlug"))
  /*!
     Constructor
   */
@@ -102,6 +104,7 @@ makeSNS::makeSNS() :
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(tarOuterObj);
+  OR.addObject(refObj);
 }
 
 
@@ -128,6 +131,10 @@ makeSNS::build(Simulation* SimPtr,
   tarOuterObj->addInsertCell(voidCell);
   tarOuterObj->createAll(*SimPtr,World::masterOrigin());
 
+  refObj->addInsertCell(voidCell);
+  refObj->createAll(*SimPtr,World::masterOrigin());
+
+  
   // LineVoid->createAll(*SimPtr,World::masterOrigin());
   // attachSystem::addToInsertSurfCtrl(*SimPtr,*Hall,*LineVoid);
 

@@ -422,7 +422,7 @@ class AbsObjMethod : public ExBase
   \author Stuart Ansell
   \date June 2010
   \version 1.0
-  Called when a numerical project develops
+  Called when a numerical problem develops
 */
 class NumericalAbort : public ExBase
 {

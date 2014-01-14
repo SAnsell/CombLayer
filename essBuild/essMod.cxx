@@ -87,7 +87,8 @@ namespace essSystem
 {
 
 essMod::essMod(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6)
+  attachSystem::ContainedComp(),attachSystem::LayerComp(),
+  attachSystem::FixedComp(Key,6)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -95,7 +96,8 @@ essMod::essMod(const std::string& Key)  :
 {}
 
 essMod::essMod(const essMod& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A)
+  attachSystem::ContainedComp(A),attachSystem::LayerComp(A),
+  attachSystem::FixedComp(A)
   /*!
     Copy constructor
     \param A :: essMod to copy
@@ -113,6 +115,7 @@ essMod::operator=(const essMod& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
+      attachSystem::LayerComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
     }
   return *this;

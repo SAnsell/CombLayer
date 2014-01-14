@@ -1,0 +1,28 @@
+
+Tallies are the fundamental reason for running MCNPX. However, the
+manor in which MCNPX specifies tallies is not compatible with a
+vairiable defined model because in most cases the required tally is relative 
+to an object whose position is unknown. 
+
+This problem has been addressed by allowing most tallies to use the 
+FixedComp link system. 
+
+\subsection{Tally System}
+
+The tally system is accessed either by a simple command line menu
+system, or via an XML file. The command line help system is very
+primative but can remind the user of the bais
+
+\subsection{Point Tally}
+\label{PointTally}
+
+Point tallies are fundamentally a 3D vector in space. In CombLayer,
+there are three levels of position available: (a) Real MCNPX output
+position, (b) CombLayer master origin position before master rotation,
+and (c) relative position to an object. Both (a) and (c) are well
+supported, however, to do option (b) there needs to be some real care
+with the layout of the calling sequence in the main() function. The
+fullBuild.cxx example is a suitable option to follow, but checking
+will be needed.
+
+As

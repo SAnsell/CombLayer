@@ -273,7 +273,7 @@ DBMaterial::initMaterial()
 // Material #38 Solid Pure Tungsten (0.063057)
   MObj.setMaterial(38,"Tungsten",
 		   "74182.24c 0.016871 74183.24c 0.00911077 "
-		   "74184.24c 0.019507618 74186.24c 0.018100573","",MLib);
+		   "74184.24c 0.019507618 74186.24c 0.018100573 ","",MLib);
   setMaterial(MObj);
 
   // Material #39: Aluminum 2024
