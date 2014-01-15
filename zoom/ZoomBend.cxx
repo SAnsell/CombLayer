@@ -47,9 +47,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
@@ -69,14 +66,13 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "shutterBlock.h"
 #include "SimProcess.h"
 #include "surfDIter.h"
 #include "SurInter.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "chipDataStore.h"
 #include "LinkUnit.h"
@@ -215,15 +211,15 @@ ZoomBend::populate(const Simulation& System)
     }
 
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
-  innerMat=Control.EvalVar<int>(keyName+"InnerMat");
-  wallMat=Control.EvalVar<int>(keyName+"WallMat");
+  innerMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerMat");
+  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
   // Stuff for the bender
   bendWidth=Control.EvalVar<double>(keyName+"PathWidth");
   bendHeight=Control.EvalVar<double>(keyName+"PathHeight");
   vaneThick=Control.EvalVar<double>(keyName+"VaneThick");
-  vaneMat=Control.EvalVar<int>(keyName+"VaneMat");
-  NVanes=Control.EvalVar<int>(keyName+"NVanes");
+  vaneMat=ModelSupport::EvalMat<int>(Control,keyName+"VaneMat");
+  NVanes=Control.EvalVar<size_t>(keyName+"NVanes");
 
   populated=1;
   return;
@@ -426,13 +422,13 @@ ZoomBend::createVanes(Simulation& System)
       std::vector<int> Mat;
       // first construct fractional gap
       const double SiFrac=vaneThick/bendWidth;
-      const double VacFrac=(1.0-SiFrac*NVanes)/(NVanes+1);
+      const double VacFrac=(1.0-SiFrac*NVanes)/(NVanes+1.0);
       if (VacFrac<=0.0)
 	throw ColErr::RangeError<double>(SiFrac*NVanes,0.0,1.0,"VacFrac");
       // Construct layer process:
       ModelSupport::surfDivide DA;
       double gapSum=0.0;
-      for(int i=0;i<NVanes;i++)
+      for(size_t i=0;i<NVanes;i++)
 	{
 	  gapSum+=VacFrac;
 	  DA.addFrac(gapSum);

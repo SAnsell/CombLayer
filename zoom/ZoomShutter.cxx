@@ -48,9 +48,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
@@ -69,17 +66,15 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "shutterBlock.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "SecondTrack.h"
 #include "TwinComp.h"
-#include "LinearComp.h"
 #include "InsertComp.h"
 #include "ContainedComp.h"
 #include "GeneralShutter.h"
@@ -166,7 +161,7 @@ ZoomShutter::populate(const Simulation& System)
   colletHGap=Control.EvalVar<double>(zoomKey+"ColletHGap");
   colletVGap=Control.EvalVar<double>(zoomKey+"ColletVGap");
   colletFGap=Control.EvalVar<double>(zoomKey+"ColletFGap");
-  colletMat=Control.EvalVar<int>(zoomKey+"ColletMat");
+  colletMat=ModelSupport::EvalMat<int>(Control,zoomKey+"ColletMat");
 
   populated|=2;
   return;

@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   chip/insertBaseInfo.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,13 +46,9 @@
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "InputControl.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Quaternion.h"
 #include "Surface.h"
 #include "surfIndex.h"
@@ -69,9 +65,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "MaterialSupport.h"
 #include "surfFunctors.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "SimProcess.h"
 #include "SurInter.h"
 #include "Simulation.h"
@@ -220,7 +215,8 @@ insertBaseInfo::populate(const std::string& Part)
 	      if ( (lFlag=Control.hasVariable(Part+"L"+dx.str())) )
 		{
 		  const double Lx=Control.EvalVar<double>(Part+"L"+dx.str());
-		  const int MatX=Control.EvalVar<int>(Part+"M"+dx.str());
+		  const int MatX=ModelSupport::EvalMat<int>
+		    (Control,Part+"M"+dx.str());
 		  Components.push_back(insertInfo(Lcnt,Rcnt,MatX,TLength,Rx,Lx));
 		  Components.back().setCoordinates(Pt,Axis);
 		  TLength+=Lx;
@@ -241,7 +237,8 @@ insertBaseInfo::populate(const std::string& Part)
       if ( (lFlag=Control.hasVariable(Part+"LE_"+dx.str())) )
         {
 	  const double Lx=Control.EvalVar<double>(Part+"LE_"+dx.str());
-	  const int MatX=Control.EvalVar<int>(Part+"ME_"+dx.str());
+	  const int MatX=ModelSupport::EvalMat<int>
+	    (Control,Part+"ME_"+dx.str());
 	  Components.push_back(insertInfo(Lcnt,0,MatX,TLength,0.0,Lx));
 	  Components.back().setCoordinates(Pt,Axis);
 	  TLength+=Lx;

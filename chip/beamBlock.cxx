@@ -41,14 +41,12 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NList.h"
-#include "NRange.h"
 #include "Rules.h"
 #include "Code.h"
 #include "FItem.h"
 #include "varList.h"
 #include "FuncDataBase.h"
+#include "MaterialSupport.h"
 #include "beamBlock.h"
 
 namespace hutchSystem
@@ -77,7 +75,7 @@ beamBlock::setVar(const FuncDataBase& Control,
       angle=Control.EvalVar<double>(VarStr);
       return;
     case 2:
-      matN=Control.EvalVar<int>(VarStr);
+      matN=ModelSupport::EvalMat<int>(Control,VarStr);
       return;
     }
   return;

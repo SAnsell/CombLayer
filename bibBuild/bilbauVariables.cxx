@@ -95,12 +95,12 @@ BilbauVariables(FuncDataBase& Control)
   Control.addVariable("RotorWheelPbThick",5.0);      
 
 
-  Control.addVariable("RotorWheelBeMat",77); 	//Be S-200F
-  Control.addVariable("RotorWheelWallMat",78); 	// Al-6061
-  Control.addVariable("RotorWheelWaterMat",11);
-  Control.addVariable("RotorWheelVesselMat",3); 
-  Control.addVariable("RotorWheelPolyMat",52); //shileding for the main drive
-  Control.addVariable("RotorWheelPbMat",23); // gamma shielding 
+  Control.addVariable("RotorWheelBeMat","Berilio"); 	//Be S-200F
+  Control.addVariable("RotorWheelWallMat","Aluminium6061"); 	// Al-6061
+  Control.addVariable("RotorWheelWaterMat","H2O");
+  Control.addVariable("RotorWheelVesselMat","Stainless304"); 
+  Control.addVariable("RotorWheelPolyMat","B-Poly"); //shielding for main drive
+  Control.addVariable("RotorWheelPbMat","Lead"); // gamma shielding 
 
 
   // REFLECTOR
@@ -113,32 +113,32 @@ BilbauVariables(FuncDataBase& Control)
   Control.addVariable("ReflBeHeight",51.0); // Altura total del reflector
   Control.addVariable("ReflBeDepth",51.0);   // Depth total del reflector
   Control.addVariable("ReflBeRadius",60.0); 
-  Control.addVariable("ReflBeMat",37);
+  Control.addVariable("ReflBeMat","Be300K");
 
   Control.addVariable("ReflInnerRadius",62.0);    
   Control.addVariable("ReflInnerHeight",53.0); 
   Control.addVariable("ReflInnerDepth",53.0); 
-  Control.addVariable("ReflInnerMat",3);
+  Control.addVariable("ReflInnerMat","Stainless304");
 
   Control.addVariable("ReflPbRadius",72.0); 	
   Control.addVariable("ReflPbHeight",63.0); 
   Control.addVariable("ReflPbDepth",63.0); 
-  Control.addVariable("ReflPbMat",23);
+  Control.addVariable("ReflPbMat","Lead");
 
   Control.addVariable("ReflMidRadius",152.0); 	
   Control.addVariable("ReflMidHeight",143.0); 
   Control.addVariable("ReflMidDepth",143.0); 
-  Control.addVariable("ReflMidMat",52);   // poly (borated)
+  Control.addVariable("ReflMidMat","B-Poly");   // poly (borated)
 
   Control.addVariable("ReflOuterRadius",157.0); 	
   Control.addVariable("ReflOuterHeight",148.0); 
   Control.addVariable("ReflOuterDepth",148.0); 
-  Control.addVariable("ReflOuterMat",3);   // Steel
+  Control.addVariable("ReflOuterMat","Stainless304");   // Steel
 
   Control.addVariable("ReflOuterPbRadius",162.0); 	
   Control.addVariable("ReflOuterPbHeight",153.0); 
   Control.addVariable("ReflOuterPbDepth",153.0); 
-  Control.addVariable("ReflOuterPbMat",23);   // Pb
+  Control.addVariable("ReflOuterPbMat","Lead");   // Pb
 
   // BLINDAJE EXTERIOR: PAREDES DEL AREA DEL TARGET
 
@@ -151,9 +151,9 @@ BilbauVariables(FuncDataBase& Control)
   Control.addVariable("ConcWallInnerRadius",500.0);
   Control.addVariable("ConcWallBase",200.0);
   Control.addVariable("ConcWallWallHeight",300.0); 
-  Control.addVariable("ConcWallMat",49);
+  Control.addVariable("ConcWallMat","Concrete");
 
-  Control.addVariable("ConcWallWallThick",70);
+  Control.addVariable("ConcWallWallThick",70.0);
 
   // PROTON PIPE
 
@@ -167,9 +167,9 @@ BilbauVariables(FuncDataBase& Control)
   Control.addVariable("ProtonObjWallThick",0.5); // Espesor del la pared
   Control.addVariable("ProtonObjInnerLength",200.0);
   Control.addVariable("ProtonObjLength",700.0);
-  Control.addVariable("ProtonObjVoidMat",0);   	
-  Control.addVariable("ProtonObjInnerWallMat",0);   	
-  Control.addVariable("ProtonObjWallMat",3);
+  Control.addVariable("ProtonObjVoidMat","Void");   	
+  Control.addVariable("ProtonObjInnerWallMat","Void");   	
+  Control.addVariable("ProtonObjWallMat","Stainless304");
 
 
 
@@ -190,16 +190,16 @@ BilbauVariables(FuncDataBase& Control)
   Control.addVariable("WatModSideGap",3.0);      // 
   Control.addVariable("WatModFrontGap",2.0);     // 
   Control.addVariable("WatModBackGap",2.0);      // 
-  Control.addVariable("WatModWaterMat",11);      // water H2O
-  Control.addVariable("WatModWallMat",5);        // aluminium
+  Control.addVariable("WatModWaterMat","H2O");      // water H2O
+  Control.addVariable("WatModWallMat","Aluminium");        // aluminium
   Control.addVariable("WatModWaterTemp",300.0);  // water H2O
   
   // Blindaje de la linea de protones
 
   Control.addVariable("Blindaje_Protones_Espesor_Acero",5);
   Control.addVariable("Blindaje_Protones_Espesor_Polietileno",15);
-  Control.addVariable("Blindaje_Protones_Mat1",52);
-  Control.addVariable("Blindaje_Protones_Mat2",3);
+  Control.addVariable("Blindaje_Protones_Mat1","B-Poly");
+  Control.addVariable("Blindaje_Protones_Mat2","Stainless304");
 
 
   Control.addVariable("Guide1XStep",0.0);      //
@@ -212,7 +212,7 @@ BilbauVariables(FuncDataBase& Control)
   Control.addVariable("Guide1Length",1000.0);      //
   Control.addVariable("Guide1NiRadius",50.0);      //
   Control.addVariable("Guide1NiThickness",1.0);    
-  Control.addVariable("Guide1Mat",33);
+  Control.addVariable("Guide1Mat","Nickel");
 
   Control.addVariable("Guide2XStep",0.0);      //
   Control.addVariable("Guide2YStep",0.0);      //
@@ -224,7 +224,7 @@ BilbauVariables(FuncDataBase& Control)
   Control.addVariable("Guide2Length",1000.0);      //
   Control.addVariable("Guide2NiRadius",50.0);      //
   Control.addVariable("Guide2NiThickness",1.0);    
-  Control.addVariable("Guide2Mat",33);
+  Control.addVariable("Guide2Mat","Nickel");
 
   // COLD 2 guides
   Control.addVariable("Guide3XStep",0.0);      //
@@ -237,7 +237,7 @@ BilbauVariables(FuncDataBase& Control)
   Control.addVariable("Guide3Length",1000.0);      //
   Control.addVariable("Guide3NiRadius",50.0);      //
   Control.addVariable("Guide3NiThickness",1.0);    
-  Control.addVariable("Guide3Mat",33);
+  Control.addVariable("Guide3Mat","Nickel");
 
   Control.addVariable("Guide4XStep",0.0);      //
   Control.addVariable("Guide4YStep",0.0);      //
@@ -249,7 +249,7 @@ BilbauVariables(FuncDataBase& Control)
   Control.addVariable("Guide4Length",1000.0);      //
   Control.addVariable("Guide4NiRadius",50.0);      //
   Control.addVariable("Guide4NiThickness",1.0);    
-  Control.addVariable("Guide4Mat",33);
+  Control.addVariable("Guide4Mat","Nickel");
 
   Control.addVariable("Guide5XStep",0.0);      //
   Control.addVariable("Guide5YStep",0.0);      //
@@ -261,7 +261,7 @@ BilbauVariables(FuncDataBase& Control)
   Control.addVariable("Guide5Length",1000.0);      //
   Control.addVariable("Guide5NiRadius",50.0);      //
   Control.addVariable("Guide5NiThickness",1.0);    
-  Control.addVariable("Guide5Mat",33);
+  Control.addVariable("Guide5Mat","Nickel");
   
   
   
@@ -296,7 +296,7 @@ BilbauVariables(FuncDataBase& Control)
   Control.addVariable("GuideObj_1XYangle",0.0);      //
   Control.addVariable("GuideObj_1Zangle",0.0);      //
   Control.addVariable("GuideObj_1Niquel_Thickness",1);      //Donde empieza de verdad la guia
-  Control.addVariable("GuideObj_1Mat_Guia",33);
+  Control.addVariable("GuideObj_1Mat_Guia","Nickel");
   
   /*
    * BLINDAJE DE LAS GUIAS
@@ -306,7 +306,7 @@ BilbauVariables(FuncDataBase& Control)
   Control.addVariable("Blindaje_guia_Espesor_Acero",5);
   Control.addVariable("Blindaje_guia_Espesor_Polietileno",15);
   Control.addVariable("Blindaje_guia_Mat1",52);
-  Control.addVariable("Blindaje_guia_Mat2",3);
+  Control.addVariable("Blindaje_guia_Mat2","Stainless304");
   
   
   // GUIDE 2
@@ -314,14 +314,14 @@ BilbauVariables(FuncDataBase& Control)
   Control.addVariable("GuideObj_2XYangle",-20.0);      // Tiene que ser menor que -18
   Control.addVariable("GuideObj_2Zangle",0.0);      //
   Control.addVariable("GuideObj_2Niquel_Thickness",1);      //Donde empieza de verdad la guia
-  Control.addVariable("GuideObj_2Mat_Guia",33);
+  Control.addVariable("GuideObj_2Mat_Guia","Nickel");
   
   
   // Blindaje guia 2
   Control.addVariable("Blindaje_guia_2_Espesor_Acero",5);
   Control.addVariable("Blindaje_guia_2_Espesor_Polietileno",15);
-  Control.addVariable("Blindaje_guia_2_Mat1",52);
-  Control.addVariable("Blindaje_guia_2_Mat2",3);
+  Control.addVariable("Blindaje_guia_2_Mat1","B-Poly");
+  Control.addVariable("Blindaje_guia_2_Mat2","Stainless304");
 
       
   // BE FILTER FORWARD
@@ -333,9 +333,9 @@ BilbauVariables(FuncDataBase& Control)
   Control.addVariable("BeFilterForwardWallThick",0.3);      //
   Control.addVariable("BeFilterForwardWallGap",0.2);
   Control.addVariable("BeFilterForwardLength",20.0);
-  Control.addVariable("BeFilterForwardBeMat",84);      // Beryllium solid at RT
+  Control.addVariable("BeFilterForwardBeMat","Be300K"); // Beryllium at RT
   Control.addVariable("BeFilterForwardBeTemp",75.0);      // be temp
-  Control.addVariable("BeFilterForwardWallMat",78);        // aluminium
+  Control.addVariable("BeFilterForwardWallMat","Aluminium6061");   // aluminium
 
   // Dont like this -- could be used off link points more generically?
   Control.Parse("ColdModWidth+2.0");
@@ -379,9 +379,9 @@ BilbauVariables(FuncDataBase& Control)
   Control.addVariable("BeFilterBackwardWallThick",0.3);      //
   Control.addVariable("BeFilterBackwardWallGap",0.2);
   Control.addVariable("BeFilterBackwardLength",20.0);
-  Control.addVariable("BeFilterBackwardBeMat", 84);    // Beryllium solid at RT
+  Control.addVariable("BeFilterBackwardBeMat","Be77K");  // Beryllium 
   Control.addVariable("BeFilterBackwardBeTemp",75.0);      // be temp
-  Control.addVariable("BeFilterBackwardWallMat",78);        // aluminium 6063
+  Control.addVariable("BeFilterBackwardWallMat","Aluminium6061");  // aluminium 6063
   // Dont like this -- could be used off link points more generically?
   Control.Parse("ColdMod2Width+2*ColdMod2PremThick");
   Control.addVariable("BeFilterBackwardWidth");
@@ -392,13 +392,13 @@ BilbauVariables(FuncDataBase& Control)
   Control.addVariable("GShieldWidth1",2.6);      
   Control.addVariable("GShieldWidth1",2.6);      
   Control.addVariable("GShieldHeight1",2.6);     
-  Control.addVariable("GShieldMat1",0);      // Vac
+  Control.addVariable("GShieldMat1","Void");      // Vac
   Control.addVariable("GShieldWidth2",15.0);     
   Control.addVariable("GShieldHeight2",15.0);    
-  Control.addVariable("GShieldMat2",52);      // ??
+  Control.addVariable("GShieldMat2","B-Poly");      // ??
   Control.addVariable("GShieldWidth3",5.0);      
   Control.addVariable("GShieldHeight3",5.0);      
-  Control.addVariable("GShieldMat3",3);      // steel
+  Control.addVariable("GShieldMat3","Stainless304");      // steel
   
   return;
 }

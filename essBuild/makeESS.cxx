@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   essBuild/makeESS.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,9 +49,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "inputParam.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -61,19 +58,6 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
-#include "Object.h"
-#include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
-#include "KCode.h"
-#include "insertInfo.h"
-#include "insertBaseInfo.h"
-#include "InsertComp.h"
-#include "ModeCard.h"
-#include "PhysImp.h"
-#include "PhysCard.h"
-#include "LSwitchCard.h"
-#include "PhysicsCards.h"
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"

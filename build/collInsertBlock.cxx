@@ -158,7 +158,7 @@ collInsertBlock::populate(const Simulation& System,
       else if (sndBlock)
 	setVar(i,sndBlock->getVar(i));	
       else if (sndBase && i<=commonSize)
-	 setVar(i,sndBase->getVar(i));	
+	setVar(i,sndBase->getVar(i));	
       else 
 	{
 	  ELog::EM<<"sndBase == "<<sndBase->typeName()<<ELog::endCrit;
@@ -215,7 +215,8 @@ collInsertBlock::setVar(const int Item,const double V)
 
 void
 collInsertBlock::setVar(const FuncDataBase& Control,
-			const int Item,const std::string& VarStr)
+			const int Item,
+			const std::string& VarStr)
   /*!
     Convert a string into an item value
     \param Control :: DataBase to get value from
@@ -224,7 +225,11 @@ collInsertBlock::setVar(const FuncDataBase& Control,
   */
 {
   ELog::RegMethod RegA("collInsertBlock","setVar<Control>");
-  setVar(Item,Control.EvalVar<double>(VarStr));
+  
+  if (Item==6)
+    matN=ModelSupport::EvalMat<int>(Control,VarStr);
+  else
+    setVar(Item,Control.EvalVar<double>(VarStr));
   return;
 }
 

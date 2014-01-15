@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   chip/InnerWall.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,10 +46,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "Tally.h"
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
@@ -72,10 +68,9 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -166,7 +161,7 @@ InnerWall::populate(const Simulation& System)
   height=Control.EvalVar<double>(keyName+"Height");
   depth=Control.EvalVar<double>(keyName+"Depth");
 
-  defMat=Control.EvalVar<int>(keyName+"Mat");
+  defMat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 
   // Layers
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");

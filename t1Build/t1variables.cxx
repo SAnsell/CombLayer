@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   t1Build/t1variables.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -85,127 +85,127 @@ TS1real(FuncDataBase& Control)
 
   Control.addVariable("t1ReflectBaseZCut",22.4);      // from centre
 
-  Control.addVariable("t1ReflectDefMat",10);      // Be 
+  Control.addVariable("t1ReflectDefMat","Be/10H2O");      // Be 
 
   // Reflector boxes:
   Control.addVariable("RBoxLBaseNLayers",2);
   Control.addVariable("RBoxLBaseLayThick1",1.0); 
-  Control.addVariable("RBoxLBaseLayMat1",3);
+  Control.addVariable("RBoxLBaseLayMat1","Stainless304");
   Control.addVariable("RBoxLBaseLayThick2",0.65);
-  Control.addVariable("RBoxLBaseLayMat2",66);
-  Control.addVariable("RBoxLBaseDefMat",10);      
+  Control.addVariable("RBoxLBaseLayMat2","Boral5");
+  Control.addVariable("RBoxLBaseDefMat","Be/10H2O");      
 
   Control.addVariable("RBoxRBaseNLayers",2);
   Control.addVariable("RBoxRBaseLayThick1",1.0); 
-  Control.addVariable("RBoxRBaseLayMat1",3);
+  Control.addVariable("RBoxRBaseLayMat1","Stainless304");
   Control.addVariable("RBoxRBaseLayThick2",0.65);
-  Control.addVariable("RBoxRBaseLayMat2",66);
-  Control.addVariable("RBoxRBaseDefMat",10);      
+  Control.addVariable("RBoxRBaseLayMat2","Boral5");
+  Control.addVariable("RBoxRBaseDefMat","Be/10H2O");      
 
   Control.addVariable("RBoxWaterNLayers",2);
   Control.addVariable("RBoxWaterLayThick1",1.0); 
-  Control.addVariable("RBoxWaterLayMat1",3);
+  Control.addVariable("RBoxWaterLayMat1","Stainless304");
   Control.addVariable("RBoxWaterLayThick2",0.65);
-  Control.addVariable("RBoxWaterLayMat2",66);
-  Control.addVariable("RBoxWaterDefMat",10); 
+  Control.addVariable("RBoxWaterLayMat2","Boral5");
+  Control.addVariable("RBoxWaterDefMat","Be/10H2O"); 
 
   Control.addVariable("RBoxMerlinNLayers",2);
   Control.addVariable("RBoxMerlinLayThick1",1.0); 
-  Control.addVariable("RBoxMerlinLayMat1",3);
+  Control.addVariable("RBoxMerlinLayMat1","Stainless304");
   Control.addVariable("RBoxMerlinLayThick2",0.65); // check
-  Control.addVariable("RBoxMerlinLayMat2",66);
-  Control.addVariable("RBoxMerlinDefMat",10);
+  Control.addVariable("RBoxMerlinLayMat2","Boral5");
+  Control.addVariable("RBoxMerlinDefMat","Be/10H2O");
 
   Control.addVariable("RBoxMethaneNLayers",2);
   Control.addVariable("RBoxMethaneLayThick1",1.0); 
-  Control.addVariable("RBoxMethaneLayMat1",3);
+  Control.addVariable("RBoxMethaneLayMat1","Stainless304");
   Control.addVariable("RBoxMethaneLayThick2",0.65);
-  Control.addVariable("RBoxMethaneLayMat2",66);
-  Control.addVariable("RBoxMethaneDefMat",10);
+  Control.addVariable("RBoxMethaneLayMat2","Boral5");
+  Control.addVariable("RBoxMethaneDefMat","Be/10H2O");
 
   Control.addVariable("RBoxLH2NLayers",2);
   Control.addVariable("RBoxLH2LayThick1",1.0); 
-  Control.addVariable("RBoxLH2LayMat1",3);
+  Control.addVariable("RBoxLH2LayMat1","Stainless304");
   Control.addVariable("RBoxLH2LayThick2",0.65);
-  Control.addVariable("RBoxLH2LayMat2",66);
-  Control.addVariable("RBoxLH2DefMat",10);                                     
+  Control.addVariable("RBoxLH2LayMat2","Boral5");
+  Control.addVariable("RBoxLH2DefMat","Be/10H2O");                                     
 
   Control.addVariable("RBoxMerlinWrapperNLayers",2);
   Control.addVariable("RBoxMerlinWrapperLayThick1",1.0); 
-  Control.addVariable("RBoxMerlinWrapperLayMat1",3);  
+  Control.addVariable("RBoxMerlinWrapperLayMat1","Stainless304");  
   Control.addVariable("RBoxMerlinWrapperLayThick2",0.65);
-  Control.addVariable("RBoxMerlinWrapperLayMat2",66);
-  Control.addVariable("RBoxMerlinWrapperDefMat",-1);
+  Control.addVariable("RBoxMerlinWrapperLayMat2","Boral5");
+  Control.addVariable("RBoxMerlinWrapperDefMat","InValid");
 
   Control.addVariable("RBoxLH2WrapperNLayers",2);
   Control.addVariable("RBoxLH2WrapperLayThick1",1.0); 
-  Control.addVariable("RBoxLH2WrapperLayMat1",3);
+  Control.addVariable("RBoxLH2WrapperLayMat1","Stainless304");
   Control.addVariable("RBoxLH2WrapperLayThick2",0.65);
-  Control.addVariable("RBoxLH2WrapperLayMat2",66);  
-  Control.addVariable("RBoxLH2WrapperDefMat",-1);
+  Control.addVariable("RBoxLH2WrapperLayMat2","Boral5");  
+  Control.addVariable("RBoxLH2WrapperDefMat","InValid");
 
   Control.addVariable("RBoxMerlinPlateNLayers",2);
   Control.addVariable("RBoxMerlinPlateLayThick1",1.0); 
-  Control.addVariable("RBoxMerlinPlateLayMat1",3);
+  Control.addVariable("RBoxMerlinPlateLayMat1","Stainless304");
   Control.addVariable("RBoxMerlinPlateLayThick2",0.65);
-  Control.addVariable("RBoxMerlinPlateLayMat2",66);  
-  Control.addVariable("RBoxMerlinPlateDefMat",-1);
+  Control.addVariable("RBoxMerlinPlateLayMat2","Boral5");  
+  Control.addVariable("RBoxMerlinPlateDefMat","InValid");
 
   Control.addVariable("RBoxLH2PlateNLayers",2);
   Control.addVariable("RBoxLH2PlateLayThick1",1.0); 
-  Control.addVariable("RBoxLH2PlateLayMat1",3);
+  Control.addVariable("RBoxLH2PlateLayMat1","Stainless304");
   Control.addVariable("RBoxLH2PlateLayThick2",0.65);
-  Control.addVariable("RBoxLH2PlateLayMat2",66);  
-  Control.addVariable("RBoxLH2PlateDefMat",-1);
+  Control.addVariable("RBoxLH2PlateLayMat2","Boral5");  
+  Control.addVariable("RBoxLH2PlateDefMat","InValid");
   
   Control.addVariable("RBoxTopHexNLayers",2);
   Control.addVariable("RBoxTopHexLayThick1",1.0); 
-  Control.addVariable("RBoxTopHexLayMat1",3);
+  Control.addVariable("RBoxTopHexLayMat1","Stainless304");
   Control.addVariable("RBoxTopHexLayThick2",0.65);
-  Control.addVariable("RBoxTopHexLayMat2",66);
-  Control.addVariable("RBoxTopHexDefMat",10);
+  Control.addVariable("RBoxTopHexLayMat2","Boral5");
+  Control.addVariable("RBoxTopHexDefMat","Be/10H2O");
   
   Control.addVariable("RBoxTopPenNLayers",2);
   Control.addVariable("RBoxTopPenLayThick1",1.0); 
-  Control.addVariable("RBoxTopPenLayMat1",3);
+  Control.addVariable("RBoxTopPenLayMat1","Stainless304");
   Control.addVariable("RBoxTopPenLayThick2",0.65);
-  Control.addVariable("RBoxTopPenLayMat2",66);
-  Control.addVariable("RBoxTopPenDefMat",10); 
+  Control.addVariable("RBoxTopPenLayMat2","Boral5");
+  Control.addVariable("RBoxTopPenDefMat","Be/10H2O"); 
   
   Control.addVariable("RBoxBotHexNLayers",2);
   Control.addVariable("RBoxBotHexLayThick1",1.0); 
-  Control.addVariable("RBoxBotHexLayMat1",3);
+  Control.addVariable("RBoxBotHexLayMat1","Stainless304");
   Control.addVariable("RBoxBotHexLayThick2",0.65);
-  Control.addVariable("RBoxBotHexLayMat2",66);
-  Control.addVariable("RBoxBotHexDefMat",10); 
+  Control.addVariable("RBoxBotHexLayMat2","Boral5");
+  Control.addVariable("RBoxBotHexDefMat","Be/10H2O"); 
   
   Control.addVariable("RBoxBotPenNLayers",2);
   Control.addVariable("RBoxBotPenLayThick1",1.0); 
-  Control.addVariable("RBoxBotPenLayMat1",3);
+  Control.addVariable("RBoxBotPenLayMat1","Stainless304");
   Control.addVariable("RBoxBotPenLayThick2",0.65);
-  Control.addVariable("RBoxBotPenLayMat2",66);
-  Control.addVariable("RBoxBotPenDefMat",10);
+  Control.addVariable("RBoxBotPenLayMat2","Boral5");
+  Control.addVariable("RBoxBotPenDefMat","Be/10H2O");
   
   Control.addVariable("RBoxBotQuadNLayers",2);
   Control.addVariable("RBoxBotQuadLayThick1",1.0); 
-  Control.addVariable("RBoxBotQuadLayMat1",3);
+  Control.addVariable("RBoxBotQuadLayMat1","Stainless304");
   Control.addVariable("RBoxBotQuadLayThick2",0.65);
-  Control.addVariable("RBoxBotQuadLayMat2",66);
-  Control.addVariable("RBoxBotQuadDefMat",10); 
+  Control.addVariable("RBoxBotQuadLayMat2","Boral5");
+  Control.addVariable("RBoxBotQuadDefMat","Be/10H2O"); 
   
   Control.addVariable("RBoxTopNLayers",2);
   Control.addVariable("RBoxTopLayThick1",1.0); 
-  Control.addVariable("RBoxTopLayMat1",3);
+  Control.addVariable("RBoxTopLayMat1","Stainless304");
   Control.addVariable("RBoxTopLayThick2",0.65);
-  Control.addVariable("RBoxTopLayMat2",66);
-  Control.addVariable("RBoxTopDefMat",10);          
+  Control.addVariable("RBoxTopLayMat2","Boral5");
+  Control.addVariable("RBoxTopDefMat","Be/10H2O");          
 
   Control.addVariable("RBoxLH2VoidNLayers",0);
   Control.addVariable("RBoxLH2VoidLayThick1",1.0); 
-  Control.addVariable("RBoxLH2VoidLayMat1",3);
+  Control.addVariable("RBoxLH2VoidLayMat1","Stainless304");
   Control.addVariable("RBoxLH2VoidLayThick2",0.65);
-  Control.addVariable("RBoxLH2VoidLayMat2",66);
-  Control.addVariable("RBoxLH2VoidDefMat",0);                                     
+  Control.addVariable("RBoxLH2VoidLayMat2","Boral5");
+  Control.addVariable("RBoxLH2VoidDefMat","Void");                                     
   // LH2 Moderator:
   Control.addVariable("H2ModXStep",0.98);      
 //  Control.addVariable("H2ModYStep",18.37); 
@@ -228,9 +228,9 @@ TS1real(FuncDataBase& Control)
   Control.addVariable("H2ModVacTop",0.1);     // ok
   Control.addVariable("H2ModClearTop",0.05);   // guess
 
-  Control.addVariable("H2ModAlMat",5);        // Al 
-  Control.addVariable("H2ModLh2Mat",16);      // LH2 
-  Control.addVariable("H2ModVoidMat",0);      // void 
+  Control.addVariable("H2ModAlMat","Aluminium");        // Al 
+  Control.addVariable("H2ModLh2Mat","ParaH2");      // LH2 
+  Control.addVariable("H2ModVoidMat","Void");      // void 
 
   Control.addVariable("H2ModLh2Temp",20.0);      // LH2 
 
@@ -265,10 +265,10 @@ TS1real(FuncDataBase& Control)
   Control.addVariable("CH4ModPoisonGdThick",0.005);      //
   Control.addVariable("CH4ModPoisonAlThick",0.1);      //      
 
-  Control.addVariable("CH4ModAlMat",5);        // Al 
-  Control.addVariable("CH4ModCH4Mat",29);      // liquid methane at 100K 
-  Control.addVariable("CH4ModVoidMat",0);      // void 
-  Control.addVariable("CH4ModPoisonMat",6);      // Gadolinium  
+  Control.addVariable("CH4ModAlMat","Aluminium");        // Al 
+  Control.addVariable("CH4ModCH4Mat","CH4Liq");      // liquid methane at 100K 
+  Control.addVariable("CH4ModVoidMat","Void");      // void 
+  Control.addVariable("CH4ModPoisonMat","Gadolinium");      // Gadolinium  
 
   Control.addVariable("CH4ModCH4Temp",100.0);      // liquid methane at 100K 
 
@@ -277,8 +277,7 @@ TS1real(FuncDataBase& Control)
 
   // Water Downstream Moderator:
   Control.addVariable("MerlinModXStep",0.0);      // guess
-//  Control.addVariable("MerlinModYStep",18.9);        // 
-  Control.addVariable("MerlinModYStep",18.9-9.2);       //  relative to VoidVessel    
+  Control.addVariable("MerlinModYStep",18.9-9.2);  //  relative to VoidVessel    
   Control.addVariable("MerlinModZStep",14.6);      // guess
   Control.addVariable("MerlinModXYangle",80.0);      // guess
 
@@ -352,7 +351,7 @@ TS1real(FuncDataBase& Control)
   Control.addVariable("H2FlightLinerThick1",0.5);    // Thickness
   Control.addVariable("H2FlightLinerThick2",0.12);   // Thickness
   Control.addVariable("H2FlightLinerMat1","Aluminium"); 
-  Control.addVariable("H2FlightLinerMat2","Cadnium"); 
+  Control.addVariable("H2FlightLinerMat2","Cadmium"); 
 
   // Flightline #1 CH4 Moderator:
 
@@ -369,8 +368,8 @@ TS1real(FuncDataBase& Control)
   Control.addVariable("CH4FlightSNLiner",0);           // Number of layers
   Control.addVariable("CH4FlightSLinerThick1",0.5);    // Thickness
   Control.addVariable("CH4FlightSLinerThick2",0.12);   // Thickness
-  Control.addVariable("CH4FlightSLinerMat1","Aluminium");        //  Cadnium
-  Control.addVariable("CH4FlightSLinerMat2","Cadnium");        //  Cadnium
+  Control.addVariable("CH4FlightSLinerMat1","Aluminium");        //  Cadmium
+  Control.addVariable("CH4FlightSLinerMat2","Cadmium");        //  Cadmium
 
   // Flightline #2 CH4 Moderator:
 
@@ -389,8 +388,8 @@ TS1real(FuncDataBase& Control)
   Control.addVariable("CH4FlightNNLiner",0);           // Number of layers
   Control.addVariable("CH4FlightNLinerThick1",0.5);    // Thickness
   Control.addVariable("CH4FlightNLinerThick2",0.12);   // Thickness
-  Control.addVariable("CH4FlightNLinerMat1","Aluminium");        //  Cadnium
-  Control.addVariable("CH4FlightNLinerMat2","Cadnium");        //  Cadnium
+  Control.addVariable("CH4FlightNLinerMat1","Aluminium");       
+  Control.addVariable("CH4FlightNLinerMat2","Cadmium");       
 
   // Flightline Water Downstream Moderator:
 
@@ -409,7 +408,7 @@ TS1real(FuncDataBase& Control)
   Control.addVariable("MerlinFlightLinerThick1",0.5);    // Thickness
   Control.addVariable("MerlinFlightLinerThick2",0.12);   // Thickness
   Control.addVariable("MerlinFlightLinerMat1","Aluminium");
-  Control.addVariable("MerlinFlightLinerMat2","Cadnium"); 
+  Control.addVariable("MerlinFlightLinerMat2","Cadmium"); 
 
   // Flightline #1 Water Upstream Moderator:
   Control.addVariable("WatNorthFlightXStep",0.0);      // Step from centre
@@ -428,7 +427,7 @@ TS1real(FuncDataBase& Control)
   Control.addVariable("WatNorthFlightLinerThick1",0.5);    // Thickness
   Control.addVariable("WatNorthFlightLinerThick2",0.12);   // Thickness
   Control.addVariable("WatNorthFlightLinerMat1","Aluminium");
-  Control.addVariable("WatNorthFlightLinerMat2","Cadnium");
+  Control.addVariable("WatNorthFlightLinerMat2","Cadmium");
 
   // Flightline #2 Water Upstream Moderator:
 
@@ -448,7 +447,7 @@ TS1real(FuncDataBase& Control)
   Control.addVariable("WatSouthFlightLinerThick1",0.5);    // Thickness
   Control.addVariable("WatSouthFlightLinerThick2",0.12);   // Thickness
   Control.addVariable("WatSouthFlightLinerMat1","Aluminium");
-  Control.addVariable("WatSouthFlightLinerMat2","Cadnium");
+  Control.addVariable("WatSouthFlightLinerMat2","Cadmium");
 
   // Beam Window (PROTON FLIGHT PATH)
   Control.addVariable("BWindowRadius",4.0);          
@@ -458,8 +457,8 @@ TS1real(FuncDataBase& Control)
   Control.addVariable("BWindowIncThick1",0.3);   // Inconel Thickness 1
   Control.addVariable("BWindowWaterThick",0.1);   // Light water Thickness
   Control.addVariable("BWindowIncThick2",0.3);   // Inconel Thickness 2
-  Control.addVariable("BWindowInconelMat",8);           // Inconel
-  Control.addVariable("BWindowWaterMat",11);           // Light water
+  Control.addVariable("BWindowInconelMat","Inconnel");           // Inconel
+  Control.addVariable("BWindowWaterMat","H2O");           // Light water
 
   
 
@@ -507,7 +506,7 @@ TS1real(FuncDataBase& Control)
 
   Control.addVariable("H2PipeAlMat","Aluminium");        
   Control.addVariable("H2PipeSteelMat","Stainless304");                  
-  Control.addVariable("H2PipeH2Mat",16);     
+  Control.addVariable("H2PipeH2Mat","ParaH2");     
   Control.addVariable("H2PipeH2Temp",20.0);     
 
   // PIPEWORK Water General
@@ -530,9 +529,9 @@ TS1real(FuncDataBase& Control)
   Control.addVariable("WaterPipeOutVoidRadius",2.3);            
   Control.addVariable("WaterPipeOutSteelRadius",2.8);            
 
-  Control.addVariable("WaterPipeOuterMat",5);        
-  Control.addVariable("WaterPipeWaterMat",11);
-  Control.addVariable("WaterPipeSteelMat",3);
+  Control.addVariable("WaterPipeOuterMat","Aluminium");        
+  Control.addVariable("WaterPipeWaterMat","H2O");
+  Control.addVariable("WaterPipeSteelMat","Stainless304");
   
    // PIPEWORK CH4
   Control.addVariable("CH4PipeXOffset",0.0);        
@@ -548,8 +547,8 @@ TS1real(FuncDataBase& Control)
   Control.addVariable("CH4PipeAlTerRadius",1.905);   // Outer        
   Control.addVariable("CH4PipeClearRadius",2.38);   // Outer        
 
-  Control.addVariable("CH4PipeAlMat",5);        
-  Control.addVariable("CH4PipeCH4Mat",29);      // liquid methane at 100K      
+  Control.addVariable("CH4PipeAlMat","Aluminium");        
+  Control.addVariable("CH4PipeCH4Mat","CH4Liq");   // liquid methane at 100K      
   Control.addVariable("CH4PipeCH4Temp",100.0);            
   
   // RODS:
@@ -558,9 +557,9 @@ TS1real(FuncDataBase& Control)
   Control.addVariable("RodsCentSpace",2.8);
   Control.addVariable("RodsRadius",1.0);
   Control.addVariable("RodsLinerThick",0.3);
-  Control.addVariable("RodsDefMat",0);
-  Control.addVariable("RodsInnerMat",29);
-  Control.addVariable("RodsLinerMat",3);
+  Control.addVariable("RodsDefMat","Void");
+  Control.addVariable("RodsInnerMat","Be300K");
+  Control.addVariable("RodsLinerMat","Stainless304");
 
 
   return;

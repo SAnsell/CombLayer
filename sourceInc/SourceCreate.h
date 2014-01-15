@@ -35,6 +35,7 @@ namespace SDef
   void createTS1GaussianNewSource(const FuncDataBase&,Source&);   // Goran
   void createTS1MuonSource(const FuncDataBase&,Source&); // Goran
   void createTS1EpbCollSource(const FuncDataBase&,Source&);   // Goran    
+  void createSinbadSource(const FuncDataBase&,Source&);
   void createTS2Source(Source&);
 }
 

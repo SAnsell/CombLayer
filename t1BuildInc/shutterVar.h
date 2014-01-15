@@ -46,7 +46,7 @@ class shutterVar
   double colletHGap;     ///< Collet gap horrizontal
   double colletVGap;     ///< Collet gap vertial
   double colletFGap;     ///< Collet gap forward
-  int colletMat;         ///< Collet material
+  std::string colletMat;         ///< Collet material
 
   double b4cThick;       ///< Total b4c thick
   double b4cSpace;       ///< Total b4c space
@@ -71,7 +71,7 @@ class shutterVar
   
   double SteelBlock(FuncDataBase&,const int ,const double,
 		    const double,const double,const double,
-		    const double,const double,const int,
+		    const double,const double,const std::string&,
 		    const size_t) const;
 
   void header(FuncDataBase&,const double,const double,

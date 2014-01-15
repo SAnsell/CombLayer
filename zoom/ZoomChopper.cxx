@@ -47,9 +47,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
@@ -77,8 +74,8 @@
 #include "SimProcess.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "chipDataStore.h"
 #include "shutterBlock.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h" 
@@ -90,8 +87,6 @@
 #include "ContainedGroup.h"
 #include "GeneralShutter.h"
 #include "BulkShield.h"
-#include "ScatterPlate.h"
-#include "ChipIRFilter.h"
 #include "bendSection.h"
 #include "ZoomBend.h"
 #include "ZoomChopper.h"
@@ -221,7 +216,7 @@ ZoomChopper::populate(const Simulation& System)
   voidChanUp=Control.EvalVar<double>(keyName+"VoidChanUp");
   voidChanDown=Control.EvalVar<double>(keyName+"VoidChanDown");
 
-  wallMat=Control.EvalVar<int>(keyName+"WallMat");
+  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
   nLayers=Control.EvalVar<int>(keyName+"NLayers");
 

@@ -179,7 +179,7 @@ CoolPad::populate(const Simulation& System)
 
       IWidth=Control.EvalPair<double>(keyIndex,keyName,"IWidth");
       IDepth=Control.EvalPair<double>(keyIndex,keyName,"IDepth");
-      IMat=Control.EvalPair<int>(keyIndex,keyName,"IMat");
+      IMat=ModelSupport::EvalMat<int>(Control,keyIndex+"IMat",keyName+"IMat");
       populated |= 1;
     }
   // Exit and don't report if we are not using this scatter plate

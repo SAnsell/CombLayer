@@ -48,10 +48,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "Tally.h"
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
@@ -74,10 +70,9 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "chipDataStore.h"
 #include "LinkUnit.h"
@@ -175,7 +170,8 @@ ZoomStack::populate(const Simulation& System)
 	      if (j<DSize)
 		Items[i].setVar(sndKey[j],Control.EvalVar<double>(KX));
 	      else
-		Items[i].setVar(sndKey[j],Control.EvalVar<int>(KX));
+		Items[i].setVar(sndKey[j],
+				ModelSupport::EvalMat<int>(Control,KX));
 	    }
 	  else if (!i)
 	    {

@@ -47,9 +47,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Quaternion.h"
 #include "Surface.h"
 #include "surfIndex.h"
@@ -71,6 +68,7 @@
 #include "SimProcess.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -269,8 +267,8 @@ candleStick::populate(const FuncDataBase& Control)
   waterHeight=Control.EvalVar<double>(keyName+"WaterHeight");
   waterAlThick=Control.EvalVar<double>(keyName+"WaterAlThick");
   
-  supportMat=Control.EvalVar<int>(keyName+"Mat");
-  alMat=Control.EvalVar<int>(keyName+"AlMat");
+  supportMat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
+  alMat=ModelSupport::EvalMat<int>(Control,keyName+"AlMat");
   populated=1;
   return;
 }

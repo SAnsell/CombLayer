@@ -65,19 +65,20 @@ EvalMat(const FuncDataBase& Control,const std::string& Key)
   /*!
     Determine the material name based either on the string
     value or the material number
+    \param Control :: Database of variables
+    \param Key :: Name for Material
     \return MatNumber
   */
 {
-  ELog::RegMethod RegA("MaterialSupport[F]","EvalMat");
+  ELog::RegMethod RegA("MaterialSupport[F]","EvalMat<int>");
 
-  const ModelSupport::DBMaterial& DB=
-    ModelSupport::DBMaterial::Instance();
+  ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();
+
   const std::string A=Control.EvalVar<std::string>(Key);
-  int out = DB.hasKey(A);
-  if (out)
-    return out;
-  out=Control.EvalVar<int>(Key);  // throws if cannot make an int
-  if(out && !DB.hasKey(out))
+  if (DB.createMaterial(A))
+    return DB.getIndex(A);
+  const int out=Control.EvalVar<int>(Key);  // throws if cannot make an int
+  if(!DB.hasKey(out))
     throw ColErr::InContainerError<int>(out,"Material not present");
   return out;
 }
@@ -88,22 +89,24 @@ EvalMat(const FuncDataBase& Control,const std::string& Key)
   /*!
     Determine the material name based either on the string
     value or the material number
+    \param Control :: Database of variables
+    \param Key :: Name for Material
     \return MatNumber
   */
 {
-  ELog::RegMethod RegA("MaterialSupport[F]","EvalMat");
+  ELog::RegMethod RegA("MaterialSupport[F]","EvalMat<string>");
 
   const ModelSupport::DBMaterial& DB=
     ModelSupport::DBMaterial::Instance();
   const std::string A=Control.EvalVar<std::string>(Key);
   int out = DB.hasKey(A);
-  if (out) return A;
+  if (out) 
+    return A;
 
   out=Control.EvalVar<int>(Key);  // throws if cannot make an int
   if(!DB.hasKey(out))
     throw ColErr::InContainerError<int>(out,"Material not present");
-  
-  
+
   return DB.getKey(out);
 }
 
@@ -115,6 +118,7 @@ EvalMat(const FuncDataBase& Control,
   /*!
     Determine the material name based either on the string
     value or the material number
+    \param Control :: Database of variables
     \param KeyA :: First string to search    
     \param KeyB :: Second string to search 
     \return MatNumber
@@ -133,8 +137,9 @@ EvalDefMat(const FuncDataBase& Control,
   /*!
     Determine the material name based either on the string
     value or the material number
+    \param Control :: Database of variables
     \param KeyA :: First string to search    
-    \param KeyB :: Second string to search 
+    \param defVal :: Defaul value
     \return MatNumber
   */
 {
@@ -154,7 +159,7 @@ EvalMat(const FuncDataBase&,const std::string&,
 
 template int 
 EvalDefMat(const FuncDataBase&,const std::string&,
-	const int&);
+	   const int&);
 
 
 

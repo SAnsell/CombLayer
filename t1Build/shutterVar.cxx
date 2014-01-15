@@ -55,7 +55,7 @@ namespace ts1System
 
 shutterVar::shutterVar(const std::string& K) :
   keyName(K),NSections(8),steelNumber(4),colletHGap(0.6),
-  colletVGap(0.6),colletFGap(0.6),colletMat(54),
+  colletVGap(0.6),colletFGap(0.6),colletMat("CastIron"),
   b4cThick(0.635),b4cSpace(0.2),steelSize(NSections+1),
   blockVertGap(1.0),blockHorGap(1.0)
   /*!
@@ -71,8 +71,8 @@ shutterVar::shutterVar(const std::string& K) :
 }
 
 shutterVar::shutterVar(const shutterVar& A) : 
-  keyName(A.keyName),steelNumber(A.steelNumber),
-  NSections(A.NSections),
+  keyName(A.keyName),NSections(A.NSections),
+  steelNumber(A.steelNumber),
   colletHGap(A.colletHGap),colletVGap(A.colletVGap),
   colletFGap(A.colletFGap),colletMat(A.colletMat),
   b4cThick(A.b4cThick),b4cSpace(A.b4cSpace),
@@ -130,7 +130,7 @@ shutterVar::setSteelOffsets(const size_t AIndex,const size_t BIndex,
 double
 shutterVar::SteelBlock(FuncDataBase& Control,const int index,const double CX,
 		       const double Len,const double HSize,const double VSize,
-		       const double VG,const double HG,const int mat,
+		       const double VG,const double HG,const std::string& mat,
 		       const size_t extra) const
   /*!
     Construct a steel block for the Zoom beamline
@@ -165,7 +165,7 @@ shutterVar::B4Cspacer(FuncDataBase& Control,const int index,
 		      const double CX,const double CZ,
 		      const double GX,const double GZ) const
 /*!
-    Function to do the populate of the shutter blockxs
+    Function to do the populate of the shutter blocks [SQUARE]
     \param Control :: Func database
     \param index :: index
     \param CX :: Displacement in CX
@@ -176,7 +176,7 @@ shutterVar::B4Cspacer(FuncDataBase& Control,const int index,
   */
 {
   boost::format FMT(keyName+"ShutterBlock%d%s");
-  const int b4cMat(47);
+  const std::string b4cMat("B4C");
 
   // B4C scrapper #1 
   Control.addVariable((FMT % index % "CentX").str(),CX);
@@ -185,7 +185,7 @@ shutterVar::B4Cspacer(FuncDataBase& Control,const int index,
   Control.addVariable((FMT % index % "VGap").str(),GZ+1.0);
   Control.addVariable((FMT % index % "HGap").str(),GX);
   Control.addVariable((FMT % index % "Mat").str(),b4cMat);
-  Control.addVariable((FMT % (index+1) % "Mat").str(),0);
+  Control.addVariable((FMT % (index+1) % "Mat").str(),"Void");
   Control.addVariable((FMT % (index+1) % "Len").str(),b4cSpace);
   Control.addVariable((FMT % (index+2) % "Mat").str(),b4cMat);
   Control.addVariable((FMT % (index+2) % "Len").str(),b4cThick);
@@ -200,7 +200,7 @@ shutterVar::B4Cspacer(FuncDataBase& Control,const int index,
 		      const double CX,const double CZ,
 		      const double GR) const
 /*!
-    Function to do the populate of the shutter blockxs
+    Function to do the populate of the shutter blocks [CIRCLE]
     \param Control :: Func database
     \param index :: index
     \param CX :: Displacement in CX
@@ -210,7 +210,7 @@ shutterVar::B4Cspacer(FuncDataBase& Control,const int index,
   */
 {
   boost::format FMT(keyName+"ShutterBlock%d%s");
-  const int b4cMat(47);
+  const std::string b4cMat("B4C");
   double gapThick((b4cSpace+b4cThick)/2.0);     // normal is two b4c sheets this is one
 
   // B4C scrapper #1 
@@ -220,7 +220,7 @@ shutterVar::B4Cspacer(FuncDataBase& Control,const int index,
   Control.addVariable((FMT % index % "CentZ").str(),CZ);
   Control.addVariable((FMT % index % "Len").str(),gapThick);
   Control.addVariable((FMT % index % "RGap").str(),GR+1.0);
-  Control.addVariable((FMT % index % "Mat").str(),0);
+  Control.addVariable((FMT % index % "Mat").str(),"Void");
 
   Control.addVariable((FMT % (index+1) % "TYPE").str(),1);
   Control.addVariable((FMT % (index+1) % "Mat").str(),b4cMat);
@@ -228,7 +228,7 @@ shutterVar::B4Cspacer(FuncDataBase& Control,const int index,
   Control.addVariable((FMT % (index+1) % "RGap").str(),GR);
 
   Control.addVariable((FMT % (index+2) % "TYPE").str(),1);
-  Control.addVariable((FMT % (index+2) % "Mat").str(),0);
+  Control.addVariable((FMT % (index+2) % "Mat").str(),"Void");
   Control.addVariable((FMT % (index+2) % "Len").str(),gapThick);
   Control.addVariable((FMT % (index+2) % "RGap").str(),GR+1.0);
 
@@ -250,7 +250,7 @@ shutterVar::header(FuncDataBase& Control,const double xAngle,
   Control.addVariable(keyName+"ShutterColletHGap",colletHGap);
   Control.addVariable(keyName+"ShutterColletVGap",colletVGap);
   Control.addVariable(keyName+"ShutterColletFGap",colletFGap);
-  Control.addVariable(keyName+"ShutterColletMat",54);     //   surround material  
+  Control.addVariable(keyName+"ShutterColletMat","CastIron");  //   surround material  
 
   Control.addVariable(keyName+"ShutterXStart",0.0);           // Start Z position
   Control.addVariable(keyName+"ShutterZStart",0.0);           // Start Z position
@@ -266,7 +266,7 @@ shutterVar::header(FuncDataBase& Control,const double xAngle,
   Control.addVariable(keyName+"ShutterBlock1Height",steelSize[0].second); 
   Control.addVariable(keyName+"ShutterBlock1VGap",3.0);     //   Height
   Control.addVariable(keyName+"ShutterBlock1HGap",3.0);     //   Hor. Gap (full)
-  Control.addVariable(keyName+"ShutterBlock1Mat",0);        //   Spacer
+  Control.addVariable(keyName+"ShutterBlock1Mat","Void");        //   Spacer
   return;
 }
 
@@ -293,7 +293,7 @@ shutterVar::buildVar(FuncDataBase& Control,
 
   const int b4cNumber(3);
   int blockIndex(2); 
-  const int steelMat(3);
+  const std::string steelMat("Stainless304");
   const double shutterInnerLen(179.2);
 
   const double steelLen(shutterInnerLen/
@@ -326,12 +326,12 @@ shutterVar::buildVar(FuncDataBase& Control,
     StrFunc::makeString(std::string(keyName+"ShutterBlock"),blockIndex);
   Control.addVariable(keyName+"ShutterNBlocks",blockIndex);     //   Inner blocks
 
-  Control.addVariable(finalBlock+"CentX",0.0);  //   Inner blocks
-  Control.addVariable(finalBlock+"CentZ",0.0);  //   Inner blocks
-  Control.addVariable(finalBlock+"Len",3.4);    //   Inner blocks
-  Control.addVariable(finalBlock+"VGap",4.0);   //   Height
-  Control.addVariable(finalBlock+"HGap",4.0);   //   Hor. Gap (full)
-  Control.addVariable(finalBlock+"Mat",0);      //   Spacer
+  Control.addVariable(finalBlock+"CentX",0.0);    //   Inner blocks
+  Control.addVariable(finalBlock+"CentZ",0.0);    //   Inner blocks
+  Control.addVariable(finalBlock+"Len",3.4);      //   Inner blocks
+  Control.addVariable(finalBlock+"VGap",4.0);     //   Height
+  Control.addVariable(finalBlock+"HGap",4.0);     //   Hor. Gap (full)
+  Control.addVariable(finalBlock+"Mat","Void");   //   Spacer
 
   return;
 }
@@ -356,7 +356,7 @@ shutterVar::buildCylVar(FuncDataBase& Control,
   Control.addVariable(keyName+"ShutterColletHGap",colletHGap);
   Control.addVariable(keyName+"ShutterColletVGap",colletVGap);
   Control.addVariable(keyName+"ShutterColletFGap",colletFGap);
-  Control.addVariable(keyName+"ShutterColletMat",54);     //   surround material  
+  Control.addVariable(keyName+"ShutterColletMat","CastIron"); // surround mat
 
   Control.addVariable(keyName+"ShutterXStart",0.0);           // Start Z position
   Control.addVariable(keyName+"ShutterZStart",0.0);           // Start Z position
@@ -374,10 +374,10 @@ shutterVar::buildCylVar(FuncDataBase& Control,
   Control.addVariable(keyName+"ShutterBlock1Height",steelSize[0].second); 
   Control.addVariable(keyName+"ShutterBlock1VGap",3.0);     //   Height
   Control.addVariable(keyName+"ShutterBlock1HGap",3.0);     //   Hor. Gap (full)
-  Control.addVariable(keyName+"ShutterBlock1Mat",0);        //   Spacer
+  Control.addVariable(keyName+"ShutterBlock1Mat","Void");        //   Spacer
 
   int blockIndex(2); 
-  const int steelMat(3);
+  const std::string steelMat("Stainless304");
 
   const double steelLen(179.2/
 			static_cast<double>(NSections*steelNumber));
@@ -409,7 +409,7 @@ shutterVar::buildCylVar(FuncDataBase& Control,
   Control.addVariable(finalBlock+"Len",3.4);    //   Inner blocks
   Control.addVariable(finalBlock+"VGap",4.0);   //   Height
   Control.addVariable(finalBlock+"HGap",4.0);   //   Hor. Gap (full)
-  Control.addVariable(finalBlock+"Mat",0);      //   Spacer
+  Control.addVariable(finalBlock+"Mat","Void");      //   Spacer
 
   return;
 }

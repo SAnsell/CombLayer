@@ -47,9 +47,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
@@ -77,9 +74,8 @@
 #include "SimProcess.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "chipDataStore.h"
-#include "shutterBlock.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h" 
 #include "SecondTrack.h"
@@ -87,12 +83,8 @@
 #include "LinearComp.h"
 #include "InsertComp.h"
 #include "ContainedComp.h"
-#include "ContainedGroup.h"
-#include "GeneralShutter.h"
 #include "BulkShield.h"
-#include "ScatterPlate.h"
 #include "ChipIRFilter.h"
-#include "ZoomChopper.h"
 #include "ZoomPrimary.h"
 
 namespace zoomSystem
@@ -181,7 +173,7 @@ ZoomPrimary::populate(const Simulation& System)
   cutWidth=Control.EvalVar<double>(keyName+"CutWidth");
   cutHeight=Control.EvalVar<double>(keyName+"CutHeight");
 
-  feMat=Control.EvalVar<int>(keyName+"FeMat");
+  feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
 
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");
 
@@ -242,7 +234,7 @@ ZoomPrimary::createSurfaces(const attachSystem::FixedComp& LC)
 void
 ZoomPrimary::createObjects(Simulation& System)
   /*!
-    Adds the Chip guide components
+    Adds the  guide components
     \param System :: Simulation to create objects in
    */
 {

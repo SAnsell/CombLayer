@@ -82,8 +82,8 @@ D4CModel(FuncDataBase& Control)
   Control.addVariable("cellRadius2",1.1);       //
   Control.addVariable("cellHeight1",3.5);       //
   Control.addVariable("cellHeight2",4.5);       //
-  Control.addVariable("cellMaterial1",5);       //
-  Control.addVariable("cellMaterial2",29);       //
+  Control.addVariable("cellMaterial1","Aluminium");       //
+  Control.addVariable("cellMaterial2","B4C");       //
 
 
 // ------------
@@ -124,7 +124,7 @@ D4CModel(FuncDataBase& Control)
   Control.addVariable("detectorTubeRadius",1.0);       //
   Control.addVariable("detectorHeight",20.0);       //
   Control.addVariable("detectorWallThick",0.4);       //
-  Control.addVariable("detectorWallMat",5);       //
+  Control.addVariable("detectorWallMat","Aluminium");       //
   Control.addVariable("detectorDetMat",0);       //
 
   

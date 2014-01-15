@@ -47,12 +47,8 @@
 #include "support.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
-#include "Tensor.h"
 #include "Vec3D.h"
 #include "PointOperation.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "localRotate.h"
 #include "masterRotate.h"
 #include "Surface.h"
@@ -64,15 +60,12 @@
 #include "Line.h"
 #include "LineIntersectVisit.h"
 #include "Rules.h"
-#include "Convex.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "shutterBlock.h"
 #include "SimProcess.h"
 #include "SurInter.h"
@@ -80,12 +73,12 @@
 #include "insertInfo.h"
 #include "insertBaseInfo.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "SecondTrack.h"
 #include "TwinComp.h"
-#include "LinearComp.h"
 #include "InsertComp.h"
 #include "GeneralShutter.h"
 #include "chipDataStore.h"
@@ -158,7 +151,7 @@ ChipIRShutterFlat::populate(const Simulation& System)
 
   forwardStep=Control.EvalVar<double>(chipKey+"FStep");
   midStep=Control.EvalVar<double>(chipKey+"MFStep");
-  shineMat=Control.EvalVar<int>(chipKey+"ShineMat");
+  shineMat=ModelSupport::EvalMat<int>(Control,chipKey+"ShineMat");
 
   if (shineMat)
     {

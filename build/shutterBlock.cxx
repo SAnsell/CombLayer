@@ -40,19 +40,18 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NList.h"
-#include "NRange.h"
 #include "Rules.h"
 #include "Code.h"
 #include "FItem.h"
 #include "varList.h"
 #include "FuncDataBase.h"
+#include "MaterialSupport.h"
 #include "shutterBlock.h"
 
 namespace shutterSystem
 {
 
+// This is number of variable unit names (len/height etc)
 const int shutterBlock::Size(7);
 
 void
@@ -87,7 +86,7 @@ shutterBlock::setVar(const FuncDataBase& Control,
       edgeHGap=Control.EvalVar<double>(VarStr);
       return;
     case 6:
-      matN=Control.EvalVar<int>(VarStr);
+      matN=ModelSupport::EvalMat<int>(Control,VarStr);
       return;
     }
   return;

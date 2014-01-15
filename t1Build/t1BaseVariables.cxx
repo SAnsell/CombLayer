@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   t1Build/t1BaseVariables.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -154,7 +154,7 @@ TS1PlateTarget(FuncDataBase& Control)
   Control.addVariable("PVesselChannel1InStep",0.83);
   Control.addVariable("PVesselChannel1InDepth",0.75);                             
   Control.addVariable("PVesselChannel1MidGap",0.75);          
-  Control.addVariable("PVesselChannel1Mat",31);  
+  Control.addVariable("PVesselChannel1Mat","D2O");  
 
   Control.addVariable("PVesselChannel2Width",1.23);          
   Control.addVariable("PVesselChannel2Height",0.25);          
@@ -163,7 +163,7 @@ TS1PlateTarget(FuncDataBase& Control)
   Control.addVariable("PVesselChannel2InStep",0.83);
   Control.addVariable("PVesselChannel2InDepth",0.75);                             
   Control.addVariable("PVesselChannel2MidGap",0.75);          
-  Control.addVariable("PVesselChannel2Mat",31);       
+  Control.addVariable("PVesselChannel2Mat","D2O");       
 
   Control.addVariable("PVesselChannel3Width",1.23);          
   Control.addVariable("PVesselChannel3Height",0.25);          
@@ -172,7 +172,7 @@ TS1PlateTarget(FuncDataBase& Control)
   Control.addVariable("PVesselChannel3InStep",0.83);
   Control.addVariable("PVesselChannel3InDepth",0.75);                             
   Control.addVariable("PVesselChannel3MidGap",0.75);          
-  Control.addVariable("PVesselChannel3Mat",31);                 
+  Control.addVariable("PVesselChannel3Mat","D2O");                 
 
   Control.addVariable("PVesselChannel4Width",0.96);          
   Control.addVariable("PVesselChannel4Height",0.25);          
@@ -181,7 +181,7 @@ TS1PlateTarget(FuncDataBase& Control)
   Control.addVariable("PVesselChannel4InStep",0.83);
   Control.addVariable("PVesselChannel4InDepth",0.75);                             
   Control.addVariable("PVesselChannel4MidGap",0.75);          
-  Control.addVariable("PVesselChannel4Mat",31);      
+  Control.addVariable("PVesselChannel4Mat","D2O");      
 
   Control.addVariable("PVesselChannel5Width",0.96);          
   Control.addVariable("PVesselChannel5Height",0.25);          
@@ -190,7 +190,7 @@ TS1PlateTarget(FuncDataBase& Control)
   Control.addVariable("PVesselChannel5InStep",0.83);
   Control.addVariable("PVesselChannel5InDepth",0.75);                             
   Control.addVariable("PVesselChannel5MidGap",0.75);          
-  Control.addVariable("PVesselChannel5Mat",31);  
+  Control.addVariable("PVesselChannel5Mat","D2O");  
 
   Control.addVariable("PVesselChannel6Width",0.96);          
   Control.addVariable("PVesselChannel6Height",0.25);          
@@ -199,7 +199,7 @@ TS1PlateTarget(FuncDataBase& Control)
   Control.addVariable("PVesselChannel6InStep",0.83);
   Control.addVariable("PVesselChannel6InDepth",0.75);                             
   Control.addVariable("PVesselChannel6MidGap",0.75);          
-  Control.addVariable("PVesselChannel6Mat",31);          
+  Control.addVariable("PVesselChannel6Mat","D2O");          
 
   Control.addVariable("PVesselChannel7Width",0.96);          
   Control.addVariable("PVesselChannel7Height",0.25);          
@@ -208,7 +208,7 @@ TS1PlateTarget(FuncDataBase& Control)
   Control.addVariable("PVesselChannel7InStep",0.83);
   Control.addVariable("PVesselChannel7InDepth",0.75);                             
   Control.addVariable("PVesselChannel7MidGap",0.75);          
-  Control.addVariable("PVesselChannel7Mat",31);     
+  Control.addVariable("PVesselChannel7Mat","D2O");     
 
   Control.addVariable("PVesselSideZCenter",5.40);         // check this
   Control.addVariable("PVesselSideXOffset",11.38);         // Offset
@@ -229,10 +229,10 @@ TS1PlateTarget(FuncDataBase& Control)
   Control.addVariable("TPlateBPlateIOffset",2.95);    // Backplate thickness
   Control.addVariable("TPlateBPlatePinRadius",0.4);    // Backplate thickness
   
-  Control.addVariable("TPlateFeMat",3);            // Steel
-  Control.addVariable("TPlateWMat",38);            // Tungsten 
-  Control.addVariable("TPlateWaterMat",31);        // Water [D2O]
-  Control.addVariable("TPlateTaMat",32);           // Ta material 
+  Control.addVariable("TPlateFeMat","Stainless304");            // Steel
+  Control.addVariable("TPlateWMat","Tungsten");            // Tungsten 
+  Control.addVariable("TPlateWaterMat","D2O");        // Water [D2O]
+  Control.addVariable("TPlateTaMat","Tantalum");           // Ta material 
 
   Control.addVariable("TPlateWaterThick",0.2);    // water thick
   Control.addVariable("TPlateTaThick",0.2);       // Ta thickness
@@ -296,8 +296,8 @@ TS1PlateTarget(FuncDataBase& Control)
   Control.addVariable("WDivideInsWidth",4.00);     
   Control.addVariable("WDivideInsHeight",5.00);
   Control.addVariable("WDivideInsRad",1.25);              
-  Control.addVariable("WDivideMat",3);      // Steel
-  Control.addVariable("WDivideInsMat",31);   // Water [D2O]
+  Control.addVariable("WDivideMat","Stainless304");      // Steel
+  Control.addVariable("WDivideInsMat","D2O");   // Water [D2O]
 
   Control.addVariable("WDivideCornerThick",1.60);     
   Control.addVariable("WDivideCornerWidth",9.40);     
@@ -357,9 +357,9 @@ TS1CylTarget(FuncDataBase& Control)
 
   Control.addVariable("t2CapYOffset",4.5);      // Length from flange
 
-  Control.addVariable("t1CylTargetWMat",38);             // Solid Tungsten
-  Control.addVariable("t1CylTargetTaMat",32);            // Solid Ta
-  Control.addVariable("t1CylTargetWaterMat",11);         // Light water
+  Control.addVariable("t1CylTargetWMat","Tungsten");             // Solid Tungsten
+  Control.addVariable("t1CylTargetTaMat","Tantalum");            // Solid Ta
+  Control.addVariable("t1CylTargetWaterMat","H2O");         // Light water
 
   Control.addVariable("t1CylTargetTargetTemp",650);             // Inner core temp
   Control.addVariable("t1CylTargetWaterTemp",350);        // Water temp
@@ -372,8 +372,8 @@ TS1CylTarget(FuncDataBase& Control)
   Control.addVariable("t1CylTargetFlangeLen",8.70);         // Full size 
   Control.addVariable("t1CylTargetFlangeThick",2.5);        // Join size [Guess]
   Control.addVariable("t1CylTargetFlangeClear",0.6);        // Flange clearange
-  Control.addVariable("t1CylTargetFlangeMat",3);            // Flange material
-  Control.addVariable("t1CylTargetNLayers",0);            // Flange material
+  Control.addVariable("t1CylTargetFlangeMat","Stainless304");            // Flange material
+  Control.addVariable("t1CylTargetNLayers",0);
   return;
 }
 
@@ -400,8 +400,8 @@ TS1InnerTarget(FuncDataBase& Control)
   Control.addVariable("t1InnerSphYStep",0.0);          // W Centre
   Control.addVariable("t1InnerSphRadius",4.6);       // W radius 
 
-  Control.addVariable("t1InnerWMat",38);             // Solid Tungsten
-  Control.addVariable("t1InnerTaMat",32);            // Solid Ta
+  Control.addVariable("t1InnerWMat","Tungsten");             // Solid Tungsten
+  Control.addVariable("t1InnerTaMat","Tantalum");            // Solid Ta
   Control.addVariable("t1InnerWaterMat",11);         // Light water
 
   Control.addVariable("t1InnerTargetTemp",650);       // Inner core temp
@@ -437,7 +437,7 @@ TS1CylFluxTrap(FuncDataBase& Control)
   Control.addVariable("t1CylFluxTrapNPlates",8);
   Control.addVariable("t1CylFluxTrapPThick",0.7);
   Control.addVariable("t1CylFluxTrapPMat",11);
-  Control.addVariable("t1CylFluxTrapPLayerMat",32);
+  Control.addVariable("t1CylFluxTrapPLayerMat","Tantalum");
   Control.addVariable("t1CylFluxTrapPLayerThick",0.2);
 
   Control.addVariable("t1CylFluxTrapP1Dist",0.50);       // distance from flat
@@ -463,7 +463,7 @@ TS1CylFluxTrap(FuncDataBase& Control)
   Control.addVariable("t1CylFluxTrapCone1Cent",Geometry::Vec3D(0,12,0));
   Control.addVariable("t1CylFluxTrapCone1Axis",Geometry::Vec3D(0,1,0));
   Control.addVariable("t1CylFluxTrapCone1Mat",11);
-  Control.addVariable("t1CylFluxTrapCone1LayerMat",32);
+  Control.addVariable("t1CylFluxTrapCone1LayerMat","Tantalum");
   Control.addVariable("t1CylFluxTrapCone1LayerThick",0.3);
 
   Control.addVariable("t1CylFluxTrapCone2AngleA",-45.0);
@@ -487,7 +487,7 @@ TS1CylFluxTrapReal(FuncDataBase& Control)
   Control.addVariable("t1CylFluxTrapNPlates",8);
   Control.addVariable("t1CylFluxTrapPThick",0.7);
   Control.addVariable("t1CylFluxTrapPMat",11);
-  Control.addVariable("t1CylFluxTrapPLayerMat",32);
+  Control.addVariable("t1CylFluxTrapPLayerMat","Tantalum");
   Control.addVariable("t1CylFluxTrapPLayerThick",0.2);
 
   Control.addVariable("t1CylFluxTrapP1Dist",0.50);       // distance from flat
@@ -513,7 +513,7 @@ TS1CylFluxTrapReal(FuncDataBase& Control)
   Control.addVariable("t1CylFluxTrapCone1Cent",Geometry::Vec3D(0,12,0));
   Control.addVariable("t1CylFluxTrapCone1Axis",Geometry::Vec3D(0,1,0));
   Control.addVariable("t1CylFluxTrapCone1Mat",11);
-  Control.addVariable("t1CylFluxTrapCone1LayerMat",32);
+  Control.addVariable("t1CylFluxTrapCone1LayerMat","Tantalum");
   Control.addVariable("t1CylFluxTrapCone1LayerThick",0.3);
 
   Control.addVariable("t1CylFluxTrapCone2AngleA",-45.0);
@@ -538,19 +538,19 @@ TS1Cannelloni(FuncDataBase& Control)
   Control.addVariable("t1CannelloniYStep",0.0);           // Offset ref centre
   Control.addVariable("t1CannelloniZStep",0.0);           // Offset ref centre
 
-  Control.addVariable("t1CannelloniMainLength",25.0);       // Length from 
-  Control.addVariable("t1CannelloniCoreRadius",4.30);        // W radius 
-  Control.addVariable("t1CannelloniWallClad",0.30);        // W radius 
-  Control.addVariable("t1CannelloniWallThick",0.50);        // W radius 
-  Control.addVariable("t1CannelloniVoidThick",0.60);        // W radius 
+  Control.addVariable("t1CannelloniMainLength",25.0);     // Length from 
+  Control.addVariable("t1CannelloniCoreRadius",4.30);     // W radius 
+  Control.addVariable("t1CannelloniWallClad",0.30);       // W radius 
+  Control.addVariable("t1CannelloniWallThick",0.50);      // W radius 
+  Control.addVariable("t1CannelloniVoidThick",0.60);      // W radius 
 
   Control.addVariable("t1CannelloniTubeClad",0.20);       // skin layer
   Control.addVariable("t1CannelloniTubeRadius",0.80);     // skin layer
   Control.addVariable("t1CannelloniFrontThick",0.30);     // skin layer
   Control.addVariable("t1CannelloniFrontWater",0.20);     // skin layer
 
-  Control.addVariable("t1CannelloniWMat",38);             // Solid Tungsten
-  Control.addVariable("t1CannelloniTaMat",32);            // Solid Ta
+  Control.addVariable("t1CannelloniWMat","Tungsten");             // Solid Tungsten
+  Control.addVariable("t1CannelloniTaMat","Tantalum");            // Solid Ta
   Control.addVariable("t1CannelloniWaterMat",11);         // Light water
 
   Control.addVariable("t1CannelloniTargetTemp",650);       // Inner core temp
@@ -575,21 +575,21 @@ TS1EllipticCylTarget(FuncDataBase& Control)
   Control.addVariable("t1EllCylTargetXStep",0.0);     // Offset ref centre
   Control.addVariable("t1EllCylTargetYStep",0.0);     // Offset ref centre
   Control.addVariable("t1EllCylTargetZStep",0.0);     // Offset ref centre
-  Control.addVariable("t1EllCylTargetMainLength",33.0);       // Length from 
+  Control.addVariable("t1EllCylTargetMainLength",33.0);   // Length from 
   Control.addVariable("t1EllCylTargetXRadius",4.0);       // W radius 
   Control.addVariable("t1EllCylTargetZRadius",4.9);       // W radius 
-  Control.addVariable("t1EllCylTargetCladThick",0.2);        // skin layer
-  Control.addVariable("t1EllCylTargetWaterThick",0.2);        // Water radius
-  Control.addVariable("t1EllCylTargetPressThick",0.3);     // Presure radius
+  Control.addVariable("t1EllCylTargetCladThick",0.2);     // skin layer
+  Control.addVariable("t1EllCylTargetWaterThick",0.2);    // Water radius
+  Control.addVariable("t1EllCylTargetPressThick",0.3);    // Presure radius
   Control.addVariable("t1EllCylTargetVoidThick",0.5);     // Presure radius
-  Control.addVariable("t1EllCylTargetCutAngle",45);      // Presure radius
+  Control.addVariable("t1EllCylTargetCutAngle",45);       // Presure radius
 
-  Control.addVariable("t1EllCylTargetWMat",38);             // Solid Tungsten
-  Control.addVariable("t1EllCylTargetTaMat",32);            // Solid Ta
+  Control.addVariable("t1EllCylTargetWMat","Tungsten");     // Solid Tungsten
+  Control.addVariable("t1EllCylTargetTaMat","Tantalum");    // Solid Ta
   Control.addVariable("t1EllCylTargetWaterMat",11);         // Light water
   Control.addVariable("t1EllCylTargetTargetTemp",650);      // Inner core temp
-  Control.addVariable("t1EllCylTargetWaterTemp",350);        // Water temp
-  Control.addVariable("t1EllCylTargetExternTemp",330);       // Outer temp
+  Control.addVariable("t1EllCylTargetWaterTemp",350);       // Water temp
+  Control.addVariable("t1EllCylTargetExternTemp",330);      // Outer temp
   
   return;
 }
@@ -624,7 +624,7 @@ TS1base(FuncDataBase& Control)
   Control.addVariable("t1CylVesselBaseRadius",600.0);   
   Control.addVariable("t1CylVesselHeight",205.0);      // Full height minus top  
   Control.addVariable("t1CylVesselWallThick",2.0);    
-  Control.addVariable("t1CylVesselWallMat",54);       // Cast Iron
+  Control.addVariable("t1CylVesselWallMat","CastIron");       // Cast Iron
 
   Control.addVariable("t1CylVesselNPorts",18);       // Number of ports
   Control.addVariable("t1CylVesselPortHeight",14.0);       // Height
@@ -681,7 +681,7 @@ TS1base(FuncDataBase& Control)
   Control.addVariable("t1BulkOuterRadius",600.6);      // Outer Steel
   Control.addVariable("t1BulkFloor",270.5);           // Bulk shield floor  
   Control.addVariable("t1BulkRoof",509.5);            // Bulk shield top
-  Control.addVariable("t1BulkIronMat",54);             // bulk material
+  Control.addVariable("t1BulkIronMat","CastIron");             // bulk material
 
   Control.addVariable("t1BulkInThick",115.0);         // Bulk First compartment
   Control.addVariable("t1BulkOutThick",119.0);        // Bulk Second compartment
@@ -708,7 +708,7 @@ TS1base(FuncDataBase& Control)
   Control.addVariable("shutterVoidWidthOuter",24.00);      // Gap width
   Control.addVariable("shutterVoidDivide",66.00);             // Smaller gap len
   // 
-  Control.addVariable("shutterSteelMat",54);         // Cast iron
+  Control.addVariable("shutterSteelMat","CastIron");         // Cast iron
 
 //  Control.addVariable("shutter1Height",106.0);         // New drawing 8711-300
 //  Control.addVariable("shutter1VoidHeightInner",25.0);       // ChipIR size
@@ -771,9 +771,9 @@ TS1base(FuncDataBase& Control)
 
   //  Control.addVariable("shutterInsertChipGap",25);  // Shutter Insert thickness
   Control.addVariable("shutterHWidth",12.0);       // Shutter Half width
-  Control.addVariable("shutterMat",54);             // shutter Material
-  Control.addVariable("shutterSurMat",54);          // shutter surround mat
-  Control.addVariable("shutterSupportMat",54);      // shutter support mat
+  Control.addVariable("shutterMat","CastIron");        // shutter Material
+  Control.addVariable("shutterSurMat","CastIron");      // shutter surround mat
+  Control.addVariable("shutterSupportMat","CastIron");  // shutter support mat
 
   // Standard shutter:
   Control.addVariable("shutterBlockFlag",3);         // Flag 1:top/ 2 Base
@@ -783,7 +783,7 @@ TS1base(FuncDataBase& Control)
   Control.addVariable("shutterBlockHeight",25.0);
   Control.addVariable("shutterBlockVGap",7.50);
   Control.addVariable("shutterBlockHGap",3.0);
-  Control.addVariable("shutterBlockMat",50);
+  Control.addVariable("shutterBlockMat","Concrete");
   
   // BULK INSERT
   Control.addVariable("bulkInsertIHeight",56.25);
@@ -796,8 +796,8 @@ TS1base(FuncDataBase& Control)
   Control.addVariable("MonoTopNPlugs",3);
   Control.addVariable("MonoTopPlugClearance",3.0);
   Control.addVariable("MonoTopDivideLen",3.0);
-  Control.addVariable("MonoTopSteelMat",3);
-  Control.addVariable("MonoTopConcMat",29);
+  Control.addVariable("MonoTopSteelMat","Stainless304");
+  Control.addVariable("MonoTopConcMat","Stainless304");
   Control.addVariable("MonoTopPlugRadius1",50.0);  
   Control.addVariable("MonoTopPlugRadius2",62.0);  
   Control.addVariable("MonoTopPlugRadius3",75.0);  
@@ -808,8 +808,8 @@ TS1base(FuncDataBase& Control)
   Control.addVariable("MonoBaseNPlugs",1);
   Control.addVariable("MonoBasePlugClearance",1.0);
   Control.addVariable("MonoBaseDivideLen",3.0);
-  Control.addVariable("MonoBaseSteelMat",3);
-  Control.addVariable("MonoBaseConcMat",29);
+  Control.addVariable("MonoBaseSteelMat","Stainless304");
+  Control.addVariable("MonoBaseConcMat","Stainless304");
   Control.addVariable("MonoBasePlugRadius1",90.0);
   Control.addVariable("MonoBasePlugZLen1",50.0);
   

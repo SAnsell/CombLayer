@@ -48,9 +48,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
@@ -69,17 +66,15 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "shutterBlock.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "SecondTrack.h"
 #include "TwinComp.h"
-#include "LinearComp.h"
 #include "InsertComp.h"
 #include "ContainedComp.h"
 #include "GeneralShutter.h"
@@ -184,9 +179,9 @@ IMatShutter::populate(const Simulation& System)
   maskHeight=Control.EvalVar<double>(imatKey+"MaskHeight"); 
   maskThick=Control.EvalVar<double>(imatKey+"MaskThick"); 
 
-  innerMat=Control.EvalVar<int>(imatKey+"InnerMat"); 
-  supportMat=Control.EvalVar<int>(imatKey+"SupportMat"); 
-  maskMat=Control.EvalVar<int>(imatKey+"MaskMat"); 
+  innerMat=ModelSupport::EvalMat<int>(Control,imatKey+"InnerMat"); 
+  supportMat=ModelSupport::EvalMat<int>(Control,imatKey+"SupportMat"); 
+  maskMat=ModelSupport::EvalMat<int>(Control,imatKey+"MaskMat"); 
   
   return;
 }

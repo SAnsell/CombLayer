@@ -60,6 +60,7 @@
 #include "Qhull.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "support.h"
 #include "stringCombine.h"
@@ -181,9 +182,10 @@ BlockAddition::populate(const FuncDataBase& Control)
   width=Control.EvalVar<double>(keyName+"Width");   
   height=Control.EvalVar<double>(keyName+"Height");   
   wallThick=Control.EvalVar<double>(keyName+"WallThick");   
-  gap=Control.EvalVar<double>(keyName+"Gap");   
-  wallMat=Control.EvalVar<int>(keyName+"WallMat");   
-  waterMat=Control.EvalVar<int>(keyName+"WaterMat");   
+  gap=Control.EvalVar<double>(keyName+"Gap");  
+ 
+  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");   
+  waterMat=ModelSupport::EvalMat<int>(Control,keyName+"WaterMat");   
   
   return;
 }

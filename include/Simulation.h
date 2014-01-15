@@ -51,7 +51,7 @@ namespace ModelSupport
 
 namespace MonteCarlo
 {
-	class Object;
+  class Object;
   class Material;
   class Qhull;
 }

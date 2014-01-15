@@ -47,9 +47,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
@@ -77,6 +74,7 @@
 #include "SimProcess.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "chipDataStore.h"
 #include "shutterBlock.h"
@@ -187,7 +185,7 @@ ZoomCollimator::populate(const Simulation& System)
 
   stackFullWidth=Control.EvalVar<double>(keyName+"StackFullWidth");
 
-  feMat=Control.EvalVar<int>(keyName+"FeMat");
+  feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
 
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");
 
