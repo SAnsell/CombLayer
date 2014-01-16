@@ -64,6 +64,9 @@ class Material
   Material* clone() const { return new Material(*this); }
   virtual ~Material();
 
+  Material& operator*=(const double);
+  Material& operator+=(const Material&);
+
   /// Effective TYPENAME 
   static std::string classType() { return "Material"; }
   /// Effective typeid

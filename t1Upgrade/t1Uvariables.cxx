@@ -335,7 +335,7 @@ TS1upgrade(FuncDataBase& Control)
   Control.addVariable("CH4ModLayer6",0.2);    // Outer Al
   Control.addVariable("CH4ModLayer7",0.5);       // outer vac
 
-  Control.addVariable("CH4ModMat1","LiqCH4");      
+  Control.addVariable("CH4ModMat1","CH4Liq");      
   Control.addVariable("CH4ModMat2","Aluminium");  
   Control.addVariable("CH4ModMat3","Void");       
   Control.addVariable("CH4ModMat4","Aluminium");   
