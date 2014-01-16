@@ -814,20 +814,11 @@ DBMaterial::createMaterial(const std::string& MName)
     \return 0 if not possible / 1 on material existing or created
   */
 {
-  static int STOP(0);
   ELog::RegMethod RegA("DBMaterial","createMaterial");
   if (hasKey(MName)) return 1;
 
   // Now key found
   const std::string::size_type pos=MName.find('%');
-  int testInt;
-  if (StrFunc::convert(MName,testInt) && testInt==0)
-    {
-      if (STOP++ == 12)
-	ELog::EM<<"Material == "<<MName<<ELog::endErr;
-    }
-
-  ELog::EM<<"Material = "<<MName<<ELog::endDebug;
   if (pos!=std::string::npos)
     {
       double PFrac;

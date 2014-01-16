@@ -301,7 +301,7 @@ TS1real(FuncDataBase& Control)
 //  Control.addVariable("WaterModYStep",0.9);        // guess
   Control.addVariable("WaterModYStep",0.9-9.2);       //  relative to VoidVessel  
   Control.addVariable("WaterModZStep",14.6);      // guess
-  Control.addVariable("WaterModXYangle",-90+32.0);      // guess
+  Control.addVariable("WaterModXYangle",-90.0+32.0);      // guess
 
   Control.addVariable("WaterModWidth",12.5);    // guess
   Control.addVariable("WaterModDepth",4.5);    // guess
@@ -311,7 +311,7 @@ TS1real(FuncDataBase& Control)
 
   Control.addVariable("WaterModVaneSide",1);      // far side
   
-  Control.addVariable("WaterModVanesNBlades",12);       // Number of blades
+  Control.addVariable("WaterModVanesNBlades",0);        // Number of blades
   Control.addVariable("WaterModVanesBladeWidth",0.3);   // Thickness [total]
   Control.addVariable("WaterModVanesBladeGap",0.2);     // Space of blade
   Control.addVariable("WaterModVanesAbsThick",0.05);    // Space in blade

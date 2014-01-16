@@ -209,7 +209,7 @@ FlightLine::createUnitVector(const attachSystem::FixedComp& FC,
     \param sideIndex :: Index on fixed unit
   */
 {
-  ELog::RegMethod RegA("FlightLine","createUnitVector");
+  ELog::RegMethod RegA("FlightLine","createUnitVector<FC,side>");
 
   // PROCESS Origin of a point
   const attachSystem::LinkUnit& LU=FC.getLU(sideIndex);
@@ -231,7 +231,7 @@ FlightLine::createRotatedUnitVector(const attachSystem::FixedComp& FC,
     \param sideIndex :: Index on fixed unit
   */
 {
-  ELog::RegMethod RegA("FlightLine","createUnitVector(FC,orig,side)");
+  ELog::RegMethod RegA("FlightLine","createRotatedUnitVector");
   const Geometry::Vec3D CentPt=
     (!origIndex) ? FC.getCentre() : FC.getLinkPt(origIndex-1);
 
@@ -247,6 +247,7 @@ FlightLine::createRotatedUnitVector(const attachSystem::FixedComp& FC,
   Origin+= X*xStep + Z*zStep;
   return;
 }
+
 void
 FlightLine::createUnitVector(const attachSystem::FixedComp& FC,
 			     const size_t origIndex,
@@ -290,7 +291,12 @@ FlightLine::createUnitVector(const Geometry::Vec3D& Og,
   X= Y*Z;
 
   applyAngleRotate(masterXY,masterZ);
+  ELog::EM<<"Flight "<<keyName<<" : "<<ELog::endDebug;
+
   Origin=Og+X*xStep+Z*zStep;
+  ELog::EM<<"ORIGIN "<<Og<<" : "<<Origin<<ELog::endDebug;
+  ELog::EM<<"AXIs "<<X<<" : "<<Y<<" : " <<Z<<ELog::endDebug;
+
   return;
 }
 
@@ -318,6 +324,15 @@ FlightLine::createSurfaces()
   ModelSupport::buildPlane(SMap,flightIndex+4,Origin+X*(width/2.0),xDircB);
   ModelSupport::buildPlane(SMap,flightIndex+5,Origin-Z*(height/2.0),zDircA);
   ModelSupport::buildPlane(SMap,flightIndex+6,Origin+Z*(height/2.0),zDircB);
+
+  ELog::EM<<"Flight "<<keyName<<" : "<<ELog::endDebug;
+  ELog::EM<<"PT "<<Origin-X*(width/2.0)<<" : "<<ELog::endDebug;
+  ELog::EM<<"PT "<<Origin+X*(width/2.0)<<" : "<<ELog::endDebug;
+  ELog::EM<<"PT "<<Origin-Z*(height/2.0)<<" : "<<ELog::endDebug;
+  ELog::EM<<"PT "<<Origin+Z*(height/2.0)<<" : "<<ELog::endDebug;
+
+  ELog::EM<<"XDIRA "<<xDircA<<" : "<<ELog::endDebug;
+  ELog::EM<<"XDIRB "<<xDircB<<" : "<<ELog::endDebug;
 
   double layT(0.0);
   if (nLayer)
