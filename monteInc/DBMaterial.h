@@ -3,7 +3,7 @@
  
  * File:   monteInc/DBMaterial.h
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,6 +65,9 @@ class DBMaterial
   void initMaterial();
   void initMXUnits();
   void checkNameIndex(const int,const std::string&) const;
+  int getFreeNumber() const;
+
+  int createOrthoParaMix(const std::string&,const double);
 
  public:
   
@@ -74,6 +77,7 @@ class DBMaterial
   
   /// get data store
   const MTYPE& getStore() const { return MStore; }
+  /// Get neutron s
   const NTYPE& getNeutMat() const { return NStore; }
   const MonteCarlo::Material& getMaterial(const int) const;
   const MonteCarlo::Material& getMaterial(const std::string&) const;
@@ -83,9 +87,12 @@ class DBMaterial
   void setNeutMaterial(const int,const scatterSystem::neutMaterial&);
   void setNeutMaterial(const int,const scatterSystem::neutMaterial*);
 
-  int hasKey(const std::string&) const;
-  int hasKey(const int) const;
+  bool createMaterial(const std::string&);
+
+  bool hasKey(const std::string&) const;
+  bool hasKey(const int) const;
   const std::string& getKey(const int) const;
+  int getIndex(const std::string&) const;
 
   void resetActive();
   void setActive(const int);

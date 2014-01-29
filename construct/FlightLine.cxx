@@ -191,7 +191,7 @@ FlightLine::populate(const Simulation& System)
     }
   
   if (Control.hasVariable(keyName+"SideIndex"))
-    plateIndex=ModelSupport::EvalMat<int>(Control,keyName+"SideIndex");
+    plateIndex=Control.EvalVar<int>(keyName+"SideIndex");
   
   return;
 }

@@ -123,6 +123,7 @@
 #include "testFunc.h"
 #include "testFunction.h"
 #include "testInputParam.h"
+#include "testMaterial.h"
 #include "testMatrix.h"
 #include "testMergeRule.h"
 #include "testInsertComp.h"
@@ -762,8 +763,9 @@ montecarloTest(const int type,const int extra)
       std::cout<<"testAlgebra          (1)"<<std::endl;
       std::cout<<"testContained        (2)"<<std::endl;
       std::cout<<"testElement          (3)"<<std::endl;
-      std::cout<<"testNeutron          (4)"<<std::endl;
-      std::cout<<"testObject           (5)"<<std::endl;
+      std::cout<<"testMaterial         (4)"<<std::endl;
+      std::cout<<"testNeutron          (5)"<<std::endl;
+      std::cout<<"testObject           (6)"<<std::endl;
     }
 
   if(type==1 || type<0)
@@ -789,12 +791,18 @@ montecarloTest(const int type,const int extra)
 
   if(type==4 || type<0)
     {
+      testMaterial A;
+      const int X=A.applyTest(extra);
+      if (X) return X;
+    }
+  if(type==5 || type<0)
+    {
       testNeutron A;
       const int X=A.applyTest(extra);
       if (X) return X;
     }
 
-  if(type==5 || type<0)
+  if(type==6 || type<0)
     {
       testObject A;
       const int X=A.applyTest(extra);

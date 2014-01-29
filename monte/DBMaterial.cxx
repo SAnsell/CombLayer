@@ -3,7 +3,7 @@
  
  * File:   monte/DBMaterial.cxx
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,6 +43,7 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "support.h"
+#include "stringCombine.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "Element.h"
@@ -88,6 +89,23 @@ DBMaterial::checkNameIndex(const int MIndex,const std::string& MName) const
   if ( IndexMap.find(MName)!=IndexMap.end() )
     throw ColErr::InContainerError<std::string>(MName,"MName");
   return;
+}
+
+int
+DBMaterial::getFreeNumber() const
+  /*!
+    Get the first available free number
+   */
+{
+  ELog::RegMethod RegA("DBMaterial","getFreeNumber");
+  int FNum(static_cast<int>(MStore.size()));  
+  FNum++;               // Avoid possible zero
+  while(MStore.find(FNum)!=MStore.end())
+    {
+      FNum++;
+    }
+  return FNum;
+  
 }
 
 void
@@ -788,6 +806,84 @@ DBMaterial::setMaterial(const MonteCarlo::Material& MO)
   return;
 }
 
+bool
+DBMaterial::createMaterial(const std::string& MName)
+  /*!
+    Creates a material based on the name fraction
+    \param MName :: Material name based on fraction load
+    \return 0 if not possible / 1 on material existing or created
+  */
+{
+  static int STOP(0);
+  ELog::RegMethod RegA("DBMaterial","createMaterial");
+  if (hasKey(MName)) return 1;
+
+  // Now key found
+  const std::string::size_type pos=MName.find('%');
+  int testInt;
+  if (StrFunc::convert(MName,testInt) && testInt==0)
+    {
+      if (STOP++ == 12)
+	ELog::EM<<"Material == "<<MName<<ELog::endErr;
+    }
+
+  ELog::EM<<"Material = "<<MName<<ELog::endDebug;
+  if (pos!=std::string::npos)
+    {
+      double PFrac;
+      const std::string AKey=MName.substr(0,pos);
+      const std::string BKey=MName.substr(pos+1);
+      if (StrFunc::convert(BKey,PFrac))
+	{
+	  if (AKey=="ParaOrtho")
+	    {
+	      createOrthoParaMix(MName,PFrac/100.0);
+	      return 1;
+	    }
+	}
+    }
+  return 0;
+}
+
+
+int
+DBMaterial::createOrthoParaMix(const std::string& Name,
+			       const double PFrac)
+  /*!
+    Creates an ortho/Para Mixture
+    \param Name :: Name of object
+    \param PFrac :: fraction of Para
+    \return current number
+   */
+{
+  ELog::RegMethod RegA("DBMaterial","createOrthoParaMix");
+
+  const int matNum(getFreeNumber());
+  const double H2density(0.041975);
+  if (PFrac<-1e-5 || PFrac>1.00001)
+    throw ColErr::RangeError<double>(PFrac,0.0,1.0,"Para fraction");
+
+  MonteCarlo::Material MObj;
+  std::string Unit;
+  std::string SQW;
+  const std::string MLib="hlib=.70h pnlib=70u";
+  if (PFrac>1e-5)
+    {
+      Unit+=" 1001.70c "+StrFunc::makeString(H2density*PFrac);
+      SQW+="parah.20t ";
+    }
+  if (1.0-PFrac>1e-5)
+    {
+      Unit+=" 1004.70c "+StrFunc::makeString(H2density*(1.0-PFrac));
+      SQW+="orthh.99t ";
+    }
+  
+  MObj.setMaterial(matNum,Name,Unit,SQW,MLib);
+  setMaterial(MObj);
+  return matNum;
+}
+
+
 void
 DBMaterial::resetMaterial(const MonteCarlo::Material& MO)
   /*!
@@ -885,32 +981,32 @@ DBMaterial::getMaterial(const std::string& MName) const
   return getMaterial(mc->second);
 }
 
-int
+bool
 DBMaterial::hasKey(const std::string& Key) const
   /*!
     Determine if the string exists in the data base
     \param Key :: KeyName
-    \return matNumber / 0 on fail
+    \return 1 / 0 on fail
   */
 {
   ELog::RegMethod RegA("DBMaterial","hasKey<string>");
   
   SCTYPE::const_iterator sc=IndexMap.find(Key);
-  return (sc==IndexMap.end()) ? 0 : sc->second;
+  return (sc==IndexMap.end()) ? 0 : 1;
 }
 
-int
+bool
 DBMaterial::hasKey(const int KeyNum) const
   /*!
     Determine if the index exists in the data base
     \param KeyNum :: key number
-    \return matNumber / 0 on fail
+    \return 1 / 0 on fail
   */
 {
   ELog::RegMethod RegA("DBMaterial","hasKey<int>");
   
   MTYPE::const_iterator mc=MStore.find(KeyNum);
-  return (mc==MStore.end()) ? 0 : KeyNum;
+  return (mc==MStore.end()) ? 0 : 1;
 }
 
 const std::string&
@@ -935,6 +1031,23 @@ DBMaterial::getKey(const int KeyNum) const
     throw ColErr::MisMatch<int>(KeyNum,sc->second,"KeyNum/IndexMap");
   
   return OutStr;
+}
+
+int
+DBMaterial::getIndex(const std::string& Key) const
+  /*!
+    Determine if the index exists in the data base
+    \param Key :: key name
+    \return matNumber 
+  */
+{
+  ELog::RegMethod RegA("DBMaterial","getIndex");
+  
+  SCTYPE::const_iterator sc=IndexMap.find(Key);
+  if (sc==IndexMap.end())
+    throw ColErr::InContainerError<std::string>(Key,"Key");
+
+  return sc->second;
 }
 
 

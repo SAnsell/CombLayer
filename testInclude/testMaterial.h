@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   sourceInc/SourceCreate.h
+ * File:   testInclude/testMaterial.h
 *
  * Copyright (c) 2004-2013 by Stuart Ansell
  *
@@ -19,26 +19,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef SourceCreate_h
-#define SourceCreate_h
+#ifndef testMaterial_h
+#define testMaterial_h 
 
-namespace SDef
+/*!
+  \class testMaterial
+  \brief Tests the Material class
+  \author S. Ansell
+  \date January 2014
+  \version 1.0
+*/
+
+class testMaterial 
 {
-  class Source;
-  void createGaussianSource(Source&,const double,const double,const double);  
+private:
 
-  void createSimpleSource(Source&,const double,const double);
-  void createBilbaoSource(const FuncDataBase&,Source&);
-  void createESSSource(const FuncDataBase&,Source&);
-  void createTS1Source(const FuncDataBase&,Source&);
-  void createTS1GaussianSource(const FuncDataBase&,Source&);
-  void createTS1GaussianNewSource(const FuncDataBase&,Source&);   // Goran
-  void createTS1MuonSource(const FuncDataBase&,Source&); // Goran
-  void createTS1EpbCollSource(const FuncDataBase&,Source&);   // Goran    
-  void createSinbadSource(const FuncDataBase&,Source&);
-  void createTS2Source(Source&);
-}
+  //Tests 
+  int testPlus();
+ 
+public:
 
+  testMaterial();
+  ~testMaterial();
+
+  int applyTest(const int);     
+};
 
 #endif
- 

@@ -34,6 +34,7 @@ namespace ModelSupport
   void setPhysicsModel(physicsSystem::LSwitchCard&,const std::string&);
   void setDefaultPhysics(Simulation&,const mainSystem::inputParam&); 
   void setReactorPhysics(Simulation&,const mainSystem::inputParam&); 
+  void setUFissionPhysics(Simulation&,const mainSystem::inputParam&); 
   std::string setDefRotation(const mainSystem::inputParam&);
   void setItemRotate(const attachSystem::FixedComp&,const std::string&);
 }

@@ -48,7 +48,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
@@ -235,7 +234,8 @@ ChipIRGuide::populate(const Simulation& System)
       LThick.push_back
 	(Control.EvalPair<double>(keyIndex,keyName+"Liner","Thick"));
       LMat.push_back
-	(Control.EvalPair<int>(keyIndex,keyName+"Liner","Mat"));
+	(ModelSupport::EvalMat<int>(Control,keyIndex+"Mat",keyName+"LinerMat"));
+
     }
 
   steelMat=ModelSupport::EvalMat<int>(Control,keyName+"SteelMat");

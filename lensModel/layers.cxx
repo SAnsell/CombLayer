@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   lensModel/layers.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,7 +50,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
 #include "Quaternion.h"
 #include "Surface.h"
 #include "surfIndex.h"
@@ -72,6 +71,7 @@
 #include "SurInter.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -229,13 +229,13 @@ layers::populate(const FuncDataBase& Control)
   epoxyDepth=Control.EvalVar<double>(keyName+"EpoxyDepth");
   outPolyDepth=Control.EvalVar<double>(keyName+"OutPolyDepth");
 
-  waterMat=Control.EvalVar<int>(keyName+"WaterMat");
-  DCMat=Control.EvalVar<int>(keyName+"DCMat");
-  leadMat=Control.EvalVar<int>(keyName+"LeadMat");
-  bPolyMat=Control.EvalVar<int>(keyName+"BPolyMat");
-  epoxyMat=Control.EvalVar<int>(keyName+"EpoxyMat");
-  outPolyMat=Control.EvalVar<int>(keyName+"OutPolyMat");
-  alMat=Control.EvalVar<int>(keyName+"AlMat");
+  waterMat=ModelSupport::EvalMat<int>(Control,keyName+"WaterMat");
+  DCMat=ModelSupport::EvalMat<int>(Control,keyName+"DCMat");
+  leadMat=ModelSupport::EvalMat<int>(Control,keyName+"LeadMat");
+  bPolyMat=ModelSupport::EvalMat<int>(Control,keyName+"BPolyMat");
+  epoxyMat=ModelSupport::EvalMat<int>(Control,keyName+"EpoxyMat");
+  outPolyMat=ModelSupport::EvalMat<int>(Control,keyName+"OutPolyMat");
+  alMat=ModelSupport::EvalMat<int>(Control,keyName+"AlMat");
   
   waterAlThick=Control.EvalVar<double>(keyName+"WaterAlThick");
 

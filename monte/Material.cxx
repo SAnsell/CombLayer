@@ -99,6 +99,48 @@ Material::~Material()
   */
 { }
 
+Material&
+Material::operator*=(const double V) 
+  /*!
+    Scale the material by V
+    \param V :: Scale value
+    \return this * V
+   */
+{
+  ELog::RegMethod RegA("Material","operator*");
+  
+  std::vector<Zaid>::iterator vc;
+  for(vc=zaidVec.begin();vc!=zaidVec.end();vc++)
+    vc->setDensity(vc->getDensity()*V);
+  
+  return *this;
+}
+
+Material&
+Material::operator+=(const Material& A) 
+  /*!
+    Material to add
+    \param A :: Object to add
+    \return this + A
+   */
+{
+  ELog::RegMethod RegA("Material","operator*");
+  
+  // Need to match off Zaids:
+  std::vector<Zaid>::const_iterator vc;
+  std::vector<Zaid>::iterator lc;
+  for(vc=A.zaidVec.begin();vc!=A.zaidVec.end();vc++)
+    {
+      lc=std::find(zaidVec.begin(),zaidVec.end(),*vc);
+      if (lc!=zaidVec.end())
+	lc->setDensity(vc->getDensity()+lc->getDensity());
+      else
+	zaidVec.push_back(*vc);
+    }
+  
+  return *this;
+}
+
 void
 Material::setENDF7()
   /*!

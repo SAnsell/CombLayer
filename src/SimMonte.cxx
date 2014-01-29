@@ -103,7 +103,7 @@
 
 extern MTRand RNG;
 
-SimMonte::SimMonte() : 
+SimMonte::SimMonte() : Simulation(),
   TCount(0),B(0),DUnit()
   /*!
     Start of simulation Object
@@ -112,6 +112,7 @@ SimMonte::SimMonte() :
 {}
 
 SimMonte::SimMonte(const SimMonte& A)  :
+  Simulation(A),
   TCount(A.TCount),B((A.B) ? A.B->clone() : 0),
   DUnit(A.DUnit)
   /*!

@@ -217,6 +217,7 @@ H2Section::createUnitVector(const attachSystem::FixedComp& FC)
 
   applyShift(xStep,yStep,zStep);
   applyAngleRotate(xyAngle,0);
+  ELog::EM<<"Z == "<<Z<<ELog::endDebug;
   return;
 }
 

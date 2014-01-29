@@ -46,6 +46,8 @@ class Zaid
   Zaid& operator=(const Zaid&);
   ~Zaid() { }     ///< Destructor
 
+  bool operator==(const Zaid&) const;
+
   bool isEquavilent(const int,const int,const char) const;
   int setZaid(const std::string&);
   void setDensity(const double); 

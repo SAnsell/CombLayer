@@ -82,9 +82,9 @@ LensModel(FuncDataBase& Control)
   Control.addVariable("siModSideAlThick",0.5);   // Side thickness
   Control.addVariable("siModTopAlThick",1.0);    // Base thickness
   Control.addVariable("siModBaseAlThick",1.0);   // Base thickness
-  Control.addVariable("siModSiMat",55);          // Material for Silicon
-  Control.addVariable("siModSurroundMat",5);     // Material for surround Al
-  Control.addVariable("siModPolyMat",48);        // Material for polyethene
+  Control.addVariable("siModSiMat","SiCrystal"); // Material for Silicon
+  Control.addVariable("siModSurroundMat","Aluminium"); // Surround Al
+  Control.addVariable("siModPolyMat","Poly");    // Material for polyethene
   Control.addVariable("siModTemp",20.0);         // Temperature
 
   // CANDLESTICK Support
@@ -136,7 +136,7 @@ LensModel(FuncDataBase& Control)
   Control.addVariable("layersWHeight",12.0);    
   Control.addVariable("layersWWidth",12.0);    
   Control.addVariable("layersNWedgeLayers",1);    
-  Control.addVariable("layersWLinerMat0",5);    
+  Control.addVariable("layersWLinerMat0","Aluminium");    
   Control.addVariable("layersWLiner0",0.3);    
 
   Control.addVariable("flightNumber",3);   // forward [away from beam]
@@ -179,9 +179,9 @@ LensModel(FuncDataBase& Control)
   Control.addVariable("protonYOffset",-12.02694); // Offset of centre [-10.02]
   Control.addVariable("protonHeight",5.08);             
   Control.addVariable("protonWidth",5.08); 
-  Control.addVariable("protonAngle",135); 
+  Control.addVariable("protonAngle",135.0); 
   Control.addVariable("protonWallThick",0.5); 
-  Control.addVariable("protonWallMat",5); 
+  Control.addVariable("protonWallMat","Aluminium"); 
   
   Control.addVariable("protonTargetBeThick",0.4); 
   Control.addVariable("protonTargetBeWidth",11.58); 
@@ -193,9 +193,9 @@ LensModel(FuncDataBase& Control)
   Control.addVariable("protonTargetWidth",16.64); 
   Control.addVariable("protonTargetHeight",20.32); 
 
-  Control.addVariable("protonTargetMat",37); 
-  Control.addVariable("protonTargetCoolant",11); 
-  Control.addVariable("protonTargetSurround",5); 
+  Control.addVariable("protonTargetMat","Be300K"); 
+  Control.addVariable("protonTargetCoolant","H2O"); 
+  Control.addVariable("protonTargetSurround","Aluminium"); 
 
   Control.addVariable("layersWaterRadius",25.0);    // Inner radius of the water
   Control.addVariable("layersDCRadius",26.95);
@@ -228,15 +228,15 @@ LensModel(FuncDataBase& Control)
   // Control.addVariable("epoxyRadius",110.0);
   // Control.addVariable("outPolyRadius",135.0);
 
-  Control.addVariable("layersWaterMat",11);            // Full == 25cm
-  Control.addVariable("layersDCMat",9);                // Borated Poly
-  Control.addVariable("layersLeadMat",23);             // 41.95
-  Control.addVariable("layersBPolyMat",48);            // 61.95
-  Control.addVariable("layersEpoxyMat",47);            // epoxy+lead+boron
-  Control.addVariable("layersOutPolyMat",48);          // 106.95
+  Control.addVariable("layersWaterMat","H2O");            // Full == 25cm
+  Control.addVariable("layersDCMat","B-Poly");                // Borated Poly
+  Control.addVariable("layersLeadMat","Lead");             // 41.95
+  Control.addVariable("layersBPolyMat","B-Poly");            // 61.95
+  Control.addVariable("layersEpoxyMat","B-Poly");            // epoxy+lead+boron
+  Control.addVariable("layersOutPolyMat","Poly");          // 106.95
 
-  Control.addVariable("candleMat",8);              // Support material
-  Control.addVariable("layersAlMat",5);            // Al Material
+  Control.addVariable("candleMat","Aluminium");         // Support material
+  Control.addVariable("layersAlMat","Aluminium");       // Al Material
   Control.addVariable("lensSourceRadial",4.0);     // Radial spread
 
 

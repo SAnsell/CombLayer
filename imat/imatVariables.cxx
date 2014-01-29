@@ -77,9 +77,9 @@ IMatVariables(FuncDataBase& Control)
   Control.addVariable("imatShutterMaskWidth",11.5);  // Guess
   Control.addVariable("imatShutterMaskThick",0.6);  // 6mm GUESS
 
-  Control.addVariable("imatShutterInnerMat",70);   // Float glass
-  Control.addVariable("imatShutterSupportMat",3); 
-  Control.addVariable("imatShutterMaskMat",34); 
+  Control.addVariable("imatShutterInnerMat","Glass");   // Float glass
+  Control.addVariable("imatShutterSupportMat","Stainless304"); 
+  Control.addVariable("imatShutterMaskMat","Boron"); 
 
   
   Control.addVariable("imatInsertXStep",0.0);
@@ -122,10 +122,10 @@ IMatVariables(FuncDataBase& Control)
   Control.addVariable("imatGuideWallTop",60.0);   
   Control.addVariable("imatGuideWallBase",60.0);  
 
-  Control.addVariable("imatGuideGlassMat",70); 
-  Control.addVariable("imatGuideBoxMat",5); 
-  Control.addVariable("imatGuideFeMat",3); 
-  Control.addVariable("imatGuideWallMat",48);  // Poly/wax
+  Control.addVariable("imatGuideGlassMat","Glass"); 
+  Control.addVariable("imatGuideBoxMat","Aluminium"); 
+  Control.addVariable("imatGuideFeMat","CastIron"); 
+  Control.addVariable("imatGuideWallMat","Poly");  // Poly/wax
   
   return;
 }

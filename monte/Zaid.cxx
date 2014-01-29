@@ -96,6 +96,19 @@ Zaid::operator=(const Zaid& A)
 }
 
 bool
+Zaid::operator==(const Zaid& A) const
+  /*!
+    Determine if the zaids [excluding density] are equal
+    \param A :: Object to check
+    \return true if matched
+   */
+{
+  return (A.index==index && 
+	  A.tag==tag &&
+	  A.type==type) ? 1  : 0;
+}
+
+bool
 Zaid::isEquavilent(const int Z,const int T,const char C) const
   /*!
     Determine if the numbers are equivilent

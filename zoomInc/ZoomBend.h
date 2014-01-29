@@ -61,7 +61,7 @@ class ZoomBend : public attachSystem::ContainedGroup,
   double bendRadius;            ///< Radius of bend
   double bendLength;            ///< Full length
 
-  int NVanes;                   ///< Number of vanes  
+  size_t NVanes;                   ///< Number of vanes  
   double bendWidth;             ///< neutron width
   double bendHeight;            ///< neutron height
   double vaneThick;             ///< Thickness of vane

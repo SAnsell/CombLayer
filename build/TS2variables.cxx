@@ -99,7 +99,7 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("reflectXYSize",35);    // half width (xy direction)
   Control.addVariable("reflectZSize",35);     // half height
   Control.addVariable("reflectCutSize",30*sqrt(2.0));     // End cut
-  Control.addVariable("reflectMat",37);     // End cut
+  Control.addVariable("reflectMat","Be300K");     // End cut
 
 
 // NEW COUPLED STUFF:
@@ -130,8 +130,8 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("grooveMethDepth",7.00);      // Depth of the CH4
   Control.addVariable("grooveMethWidth",19.60);     // Width of the CH4
   Control.addVariable("grooveMethHeight",12.0);     // Full Height
-  Control.addVariable("grooveModMat",4);            // CH4 + 10% Al
-  Control.addVariable("grooveAlMat",5);             // Aluminium mat
+  Control.addVariable("grooveModMat","CH4inFoam");  // CH4 + 10% Al
+  Control.addVariable("grooveAlMat","Aluminium");   // Aluminium mat
   Control.addVariable("grooveModTemp",26.0);        // Moderator temperature
 
   Control.addVariable("grooveFlightXStep",0.0);      // Step from centre
@@ -147,9 +147,9 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("groovePMDepth",10.2);     // Full Depth 
   Control.addVariable("groovePMHeight",1.95);    // Full Height
   Control.addVariable("groovePMAlThick",0.3);    // Al skin thickness
-  Control.addVariable("groovePMAlMat",5);        // Aluminium Material
-  Control.addVariable("groovePMModMat",11);        // Aluminium Material
-  Control.addVariable("groovePMModTemp",333.0);        // Aluminium Material
+  Control.addVariable("groovePMAlMat","Aluminium");        // Aluminium Material
+  Control.addVariable("groovePMModMat","H2O");        // pre-mod Material
+  Control.addVariable("groovePMModTemp",333.0);        // Temp of water
 
   // HYDROGEN MODERATOR
 
@@ -167,16 +167,16 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("hydrogenInnerSurfDist",2.8);    // Displacement 
 
   Control.addVariable("hydrogenModTemp",20.0);         // Temperature of H2 
-  Control.addVariable("hydrogenModMat",25);            // Liquid H2
-  Control.addVariable("hydrogenAlMat",5);              // Aluminium
-  Control.addVariable("hydrogenSurfMat",62);           // Aluminium
+  Control.addVariable("hydrogenModMat","ParaH2");            // Liquid H2
+  Control.addVariable("hydrogenAlMat","Aluminium");              // Aluminium
+  Control.addVariable("hydrogenSurfMat","ParaOrtho");        // 50/50 mix
 
   // ORTHOH Section [ if used flag : -orthoH ]
   Control.addVariable("orthoGrooveThick",0.2);       // 2mm on the groove side
   Control.addVariable("orthoGrooveWidth",9.0);       // Section on H2 side
   Control.addVariable("orthoGrooveHeight",3.0);      // Section on H2 side
   Control.addVariable("orthoHydroThick",0.2);        // 2mm on the hydrogen side
-  Control.addVariable("orthoMat",62);        // 2mm on the hydrogen side
+  Control.addVariable("orthoMat","ParaOrtho");       // 2mm on the hydrogen side
 
   // PIPES FOR COUPLED
   Control.addVariable("cplPipeXOffset",0.0);         // Pipe offset 
@@ -189,11 +189,11 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("cplPipeOutAlRad",4.445);        // Outer Al layer
   Control.addVariable("cplPipeOutRad",5.045);          // Pipe outer radius
 
-  Control.addVariable("cplPipeInnerMat",0);        // Inner 
-  Control.addVariable("cplPipeInnerAlMat",5);      // Inner al
-  Control.addVariable("cplPipeOutVacMat",0);       // Outer vac 
-  Control.addVariable("cplPipeOutAlMat",5);        // Outer Al layer
-  Control.addVariable("cplPipeOutMat",0);          // Pipe outer radius
+  Control.addVariable("cplPipeInnerMat","Void");        // Inner 
+  Control.addVariable("cplPipeInnerAlMat","Aluminium"); // Inner al
+  Control.addVariable("cplPipeOutVacMat","Void");       // Outer vac 
+  Control.addVariable("cplPipeOutAlMat","Aluminium");   // Outer Al layer
+  Control.addVariable("cplPipeOutMat","Void");          // Pipe outer radius
 
   Control.addVariable("cplPipeHydXOff",0.0);         // Pipe offset 
   Control.addVariable("cplPipeHydYOff",2.7);         // Pipe offset [from divide]
@@ -214,8 +214,8 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("hydroPMDepth",10.2);     // Full Depth 
   Control.addVariable("hydroPMHeight",1.95);    // Full Height
   Control.addVariable("hydroPMAlThick",0.3);    // Al skin thickness
-  Control.addVariable("hydroPMAlMat",5);        // Aluminium Material
-  Control.addVariable("hydroPMModMat",11);        // Water
+  Control.addVariable("hydroPMAlMat","Aluminium");        // Aluminium Material
+  Control.addVariable("hydroPMModMat","H2O");        // Water
   Control.addVariable("hydroPMModTemp",333.0);    // 60C
 
   Control.addVariable("hornPMSideExt",3.2);     // Full width
@@ -227,8 +227,8 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("hornPMAlInner",0.35);    // Al skin thickness [inner]
   Control.addVariable("hornPMAlOuter",0.41);    // Al skin thickness [outer]
   Control.addVariable("hornPMWingLen",15.0);    // Al skin thickness [outer]
-  Control.addVariable("hornPMAlMat",5);        // Aluminium Material
-  Control.addVariable("hornPMModMat",11);        // Water
+  Control.addVariable("hornPMAlMat","Aluminium");        // Aluminium Material
+  Control.addVariable("hornPMModMat","H2O");        // Water
   Control.addVariable("hornPMModTemp",333.0);    // 60C
 
   // VACUUM LAYER
@@ -268,8 +268,8 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("cvacClearTop",0.30);        // Clearance on top
   Control.addVariable("cvacClearBase",0.30);       // Clearance on Base
 
-  Control.addVariable("cvacAlMat",5);           // Inner Material
-  Control.addVariable("cvacOutMat",5);          // Outer Material 
+  Control.addVariable("cvacAlMat","Aluminium");           // Inner Material
+  Control.addVariable("cvacOutMat","Aluminium");          // Outer Material 
 
 //  NEW DECOUPLED MODERATOR
 
@@ -290,21 +290,21 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("decoupledAlSides",0.3);    // Sides of view
   Control.addVariable("decoupledAlUpDown",0.3);   // up/down
 
-  Control.addVariable("decLayerCentMat",29);   // liquid methane
+  Control.addVariable("decLayerCentMat","CH4Liq");   // liquid methane
   Control.addVariable("decLayerCentTemp",90.0);   // Central temperature
   Control.addVariable("decLayerNLayers",4);   // up/down
   Control.addVariable("decLayer1Thick",0.3);   // He layer
   Control.addVariable("decLayer1Temp",20.0);   // He layer
-  Control.addVariable("decLayer1Mat",9);       // First layer
+  Control.addVariable("decLayer1Mat","helium");       // First layer
   Control.addVariable("decLayer2Thick",0.15);   // Al layer
   Control.addVariable("decLayer2Temp",20.0);   
-  Control.addVariable("decLayer2Mat",5);   
+  Control.addVariable("decLayer2Mat","Aluminium");   
   Control.addVariable("decLayer3Thick",0.5);   // Type 2 Methane
   Control.addVariable("decLayer3Temp",20.0);   
-  Control.addVariable("decLayer3Mat",64);   
+  Control.addVariable("decLayer3Mat","CH4AlTypeII");   
   Control.addVariable("decLayer4Thick",1.0);   // Type 2 Methane
   Control.addVariable("decLayer4Temp",20.0);   
-  Control.addVariable("decLayer4Mat",28);   
+  Control.addVariable("decLayer4Mat","CH4+Al26K");   
 
   Control.addVariable("dvacVacPosRadius",30.2);   //  First Vac layer
   Control.addVariable("dvacVacNegRadius",30.2);   // 
@@ -338,11 +338,11 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("dvacClearSide",0.6);    // Sides of view
   Control.addVariable("dvacClearBase",0.6);   // up/down
   Control.addVariable("dvacClearTop",0.6);   // up/down
-  Control.addVariable("dvacAlMat",5);             // Aluminium mat
-  Control.addVariable("dvacOutMat",5);             // Aluminium mat
+  Control.addVariable("dvacAlMat","Aluminium");             // Aluminium mat
+  Control.addVariable("dvacOutMat","Aluminium");             // Aluminium mat
 
-  Control.addVariable("decoupledModMat",4);           // CH4 + 10% Al 
-  Control.addVariable("decoupledAlMat",5);             // Aluminium mat
+  Control.addVariable("decoupledModMat","CH4inFoam");           // CH4 + 10% Al 
+  Control.addVariable("decoupledAlMat","Aluminium");             // Aluminium mat
   Control.addVariable("decoupledModTemp",26.0);        // Moderator temperature
   
   // Poisoning:
@@ -358,9 +358,9 @@ TS2layout(FuncDataBase& Control)
 
   Control.addVariable("decPoisonModTemp",26.0);           // CH4 + 10% Al [+Ar]
 
-  Control.addVariable("decPoisonModMat",72);           // CH4 + 10% Al [+Ar]
-  Control.addVariable("decPoisonBladeMat",55);           // Silicon
-  Control.addVariable("decPoisonAbsMat",6);           // GD
+  Control.addVariable("decPoisonModMat","CH4Al+Argon");  // CH4 + 10% Al [+Ar]
+  Control.addVariable("decPoisonBladeMat","SiCrystal");  // Silicon
+  Control.addVariable("decPoisonAbsMat","Gadolinium");   // GD
 
 
   
@@ -376,8 +376,8 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("wishFlightNLiner",2);           // Number of layers
   Control.addVariable("wishFlightLinerThick1",0.5);    // Thickness
   Control.addVariable("wishFlightLinerThick2",0.12);   // Thickness
-  Control.addVariable("wishFlightLinerMat1",5);        //  Cadnium
-  Control.addVariable("wishFlightLinerMat2",7);        //  Cadnium
+  Control.addVariable("wishFlightLinerMat1","Aluminium");  
+  Control.addVariable("wishFlightLinerMat2","Cadmium");
 
   Control.addVariable("narrowFlightXStep",0.0);       // Step from centre
   Control.addVariable("narrowFlightZStep",0.0);       // Step from centre
@@ -392,8 +392,8 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("decPMDepth",10.2);     // Full Depth 
   Control.addVariable("decPMHeight",0.75);    // Full Height
   Control.addVariable("decPMAlThick",0.1);    // Al skin thickness
-  Control.addVariable("decPMAlMat",5);        // Aluminium Material
-  Control.addVariable("decPMModMat",11);      // Aluminium Material
+  Control.addVariable("decPMAlMat","Aluminium");        // Aluminium Material
+  Control.addVariable("decPMModMat","H2O");      // Aluminium Material
   Control.addVariable("decPMModTemp",333.0);  // Aluminium Material
   
   // DECOUPLED PIPE
@@ -426,13 +426,13 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("decPipeHeRad",0.3);        
   Control.addVariable("decPipeHeAlRad",0.45);        
 
-  Control.addVariable("decPipeInnerMat",0);        // Inner 
-  Control.addVariable("decPipeInnerAlMat",5);      // Inner al
-  Control.addVariable("decPipeOutVacMat",0);       // Outer vac 
-  Control.addVariable("decPipeOutAlMat",5);        // Outer Al layer
-  Control.addVariable("decPipeOutMat",0);          // Pipe outer radius
-  Control.addVariable("decPipeHeMat",0);          // Pipe outer radius
-  Control.addVariable("decPipeHeAlMat",5);          // Pipe outer radius
+  Control.addVariable("decPipeInnerMat","Void");        // Inner 
+  Control.addVariable("decPipeInnerAlMat","Aluminium");      // Inner al
+  Control.addVariable("decPipeOutVacMat","Void");       // Outer vac 
+  Control.addVariable("decPipeOutAlMat","Aluminium");        // Outer Al layer
+  Control.addVariable("decPipeOutMat","Void");          // Pipe outer radius
+  Control.addVariable("decPipeHeMat","Void");          // Pipe outer radius
+  Control.addVariable("decPipeHeAlMat","Aluminium");          // Pipe outer radius
   
 
   // CD BUCKET:
@@ -442,7 +442,7 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("cdBucketThick",0.12);     // Rotation angle  
   Control.addVariable("cdBucketOpenZ",5.0);      // Rotation angle  
   Control.addVariable("cdBucketTopZ",28.0);      // Top of bucket
-  Control.addVariable("cdBucketMat",7);          // Top of bucket
+  Control.addVariable("cdBucketMat","Cadmium");  // Material
 
   // REFLECTOR COOL PADS:
   Control.addVariable("reflectNPads",1);      // Number of cooling pads
@@ -463,8 +463,8 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("coolPadCent8",Geometry::Vec3D(-17,1.87,8));
   Control.addVariable("coolPadIWidth",2.0);   // 
   Control.addVariable("coolPadIDepth",0.5);   // 
-  Control.addVariable("coolPadIMat",11);   // Inner material (light water)
-  Control.addVariable("coolPadMat",5);   
+  Control.addVariable("coolPadIMat","H2O");   // Inner material (light water)
+  Control.addVariable("coolPadMat","Aluminium");   
 
   // REFLECTOR CUT SYSTEM
   Control.addVariable("chipIRCutXYAngle",46.0);      // Rotation angle
@@ -472,7 +472,7 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("chipIRCutTargetDepth",4.55);  // Depth down target
   Control.addVariable("chipIRCutTargetOut",12.0);    // Rotation angle
   Control.addVariable("chipIRCutRadius",2.55);       // Radius [outer]
-  Control.addVariable("chipIRCutMat",0);             // Material [void]
+  Control.addVariable("chipIRCutMat","Void");             // Material [void]
 
   // VOID VESSEL:
   // NEED To move 168 and 169 out by : 4.2cm on BOTH:
@@ -515,8 +515,8 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("voidWindowAngleROffset",-6.0); // Right offset
   Control.addVariable("voidWindowAngleLOffset",-6.0); // Left offset
   Control.addVariable("voidWindowThick",0.50);  // Void vessel window thickness
-  Control.addVariable("voidWindowMat",5);       // Void vessel window material
-  Control.addVariable("voidMat",3);       // Void vessel window material
+  Control.addVariable("voidWindowMat","Aluminium");       // Void vessel window material
+  Control.addVariable("voidMat","Stainless304");       // Void vessel window material
   Control.addVariable("voidXoffset",4.475);     // Shutter offset to target centre
 
   Control.addVariable("portSize",9.0);           // viewport size
@@ -563,21 +563,21 @@ TS2layout(FuncDataBase& Control)
 
   Control.addVariable("t2CapYOffset",4.5);      // Length from flange
 
-  Control.addVariable("t2TargetWMat",38);             // Solid Tungsten
-  Control.addVariable("t2TargetTaMat",32);            // Solid Ta
-  Control.addVariable("t2TargetWaterMat",11);         // Light water
+  Control.addVariable("t2TargetWMat","Tungsten");             // Solid Tungsten
+  Control.addVariable("t2TargetTaMat","Tantalum");            // Solid Ta
+  Control.addVariable("t2TargetWaterMat","H2O");         // Light water
 
-  Control.addVariable("t2TargetTargetTemp",650);             // Inner core temp
-  Control.addVariable("t2TargetWaterTemp",350);        // Water temp
-  Control.addVariable("t2TargetExternTemp",330);       // Outer temp
+  Control.addVariable("t2TargetTargetTemp",650.0);     // Inner core temp
+  Control.addVariable("t2TargetWaterTemp",350.0);      // Water temp
+  Control.addVariable("t2TargetExternTemp",330.0);     // Outer temp
   
-  Control.addVariable("t2TargetFlangeYDist",60.20);      // Start distance from front
-  Control.addVariable("t2TargetFlangeYStep",0.3);        // Start distance from front
+  Control.addVariable("t2TargetFlangeYDist",60.20);    // Start distance from front
+  Control.addVariable("t2TargetFlangeYStep",0.3);      // Start distance from front
   Control.addVariable("t2TargetFlangeRadius",5.750);     // Radius outer
   Control.addVariable("t2TargetFlangeLen",8.70);         // Full size 
   Control.addVariable("t2TargetFlangeThick",2.5);        // Join size [Guess]
   Control.addVariable("t2TargetFlangeClear",0.6);        // Flange clearange
-  Control.addVariable("t2TargetFlangeMat",3);            // Flange material
+  Control.addVariable("t2TargetFlangeMat","Stainless304");   // Flange material
   Control.addVariable("t2TargetNLayers",0);            // Flange material
 
   // MOLY SECTION:
@@ -587,14 +587,14 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("tMolyP2YDist",16.50);       // distance from flat
   Control.addVariable("tMolyP3YDist",4.50);       // distance from flat
   Control.addVariable("tMolyP4YDist",5.50);       // distance from flat
-  Control.addVariable("tMolyPMat",61);
+  Control.addVariable("tMolyPMat","Molybdimum");
 
   Control.addVariable("tMolyNCutSph",1);
   Control.addVariable("tMolyCutSph1Radius",4.8);
   Control.addVariable("tMolyCutSph1Dist",0.4);
   Control.addVariable("tMolyCutSph1Cent",Geometry::Vec3D(0,4.5,0));
   Control.addVariable("tMolyCutSph1Axis",Geometry::Vec3D(0,1,0));
-  Control.addVariable("tMolyCutSphMat",61);
+  Control.addVariable("tMolyCutSphMat","Molybdimum");
 
   Control.addVariable("tMolyNCone",1);
   Control.addVariable("tMolyCone1AngleA",45.0);
@@ -602,7 +602,7 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("tMolyCone1Dist",1.0);
   Control.addVariable("tMolyCone1Cent",Geometry::Vec3D(0,8,0));
   Control.addVariable("tMolyCone1Axis",Geometry::Vec3D(0,1,0));
-  Control.addVariable("tMolyCone1Mat",61);
+  Control.addVariable("tMolyCone1Mat","Molydbimum");
 
   // SHUTTER VESSEL:
   Control.addVariable("voidXoffset",4.475);       // Shutter offset to target centre
@@ -621,7 +621,7 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("shutterVoidWidthOuter",24.00);      // Gap width
   Control.addVariable("shutterVoidDivide",66.00);             // Smaller gap len
   // 
-  Control.addVariable("shutterSteelMat",54);         // Cast iron
+  Control.addVariable("shutterSteelMat","CastIron");         // Cast iron
 
   Control.addVariable("shutter1Height",106.0);         // New drawing 8711-300
   Control.addVariable("shutter1VoidHeightInner",25.0);       // ChipIR size
@@ -684,9 +684,9 @@ TS2layout(FuncDataBase& Control)
 
   //  Control.addVariable("shutterInsertChipGap",25);  // Shutter Insert thickness
   Control.addVariable("shutterHWidth",12.0);       // Shutter Half width
-  Control.addVariable("shutterMat",54);             // shutter Material
-  Control.addVariable("shutterSurMat",54);          // shutter surround mat
-  Control.addVariable("shutterSupportMat",54);      // shutter support mat
+  Control.addVariable("shutterMat","CastIron");    // shutter Material
+  Control.addVariable("shutterSurMat","CastIron"); // shutter surround mat
+  Control.addVariable("shutterSupportMat","CastIron");  // shutter support mat
 
   // Standard shutter:
   Control.addVariable("shutterBlockFlag",3);         // Flag 1:top/ 2 Base
@@ -696,7 +696,7 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("shutterBlockHeight",25.0);
   Control.addVariable("shutterBlockVGap",7.50);
   Control.addVariable("shutterBlockHGap",3.0);
-  Control.addVariable("shutterBlockMat",50);
+  Control.addVariable("shutterBlockMat","Concrete");
   // ChipIR shutter:
   
   Control.addVariable("shutterBlock1Flag",1);  // only top
@@ -709,9 +709,9 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("shutterBlock1Height",30.0);
   Control.addVariable("shutterBlock1VGap",8.0);
   Control.addVariable("shutterBlock1HGap",1.5);
-  Control.addVariable("shutterBlock1Mat1",5); 
-  Control.addVariable("shutterBlock1Mat2",5);
-  Control.addVariable("shutterBlock1Mat3",49);
+  Control.addVariable("shutterBlock1Mat1","Aluminium"); 
+  Control.addVariable("shutterBlock1Mat2","Aluminium");
+  Control.addVariable("shutterBlock1Mat3","Concrete");
 
   // BULK INSERT
   Control.addVariable("bulkInsertIHeight",56.25);
@@ -749,7 +749,7 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("bulkOuterRadius",600.6);      // Outer Steel
   Control.addVariable("bulkFloor",1004.6);           // Bulk shield floor
   Control.addVariable("bulkRoof",1171.1);            // Bulk shield top
-  Control.addVariable("bulkIronMat",54);             // bulk material
+  Control.addVariable("bulkIronMat","CastIron");     // bulk material
 
   Control.addVariable("bulkInThick",115.0);         // Bulk First compartment
   Control.addVariable("bulkOutThick",119.0);        // Bulk Second compartment
@@ -769,8 +769,8 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("BWindowIncThick1",0.3);  // Inconel Thickness 1
   Control.addVariable("BWindowWaterThick",0.1); // Light water Thickness
   Control.addVariable("BWindowIncThick2",0.3); // Inconel Thickness 2
-  Control.addVariable("BWindowInconelMat",8);  // Inconel
-  Control.addVariable("BWindowWaterMat",11);   // Light water
+  Control.addVariable("BWindowInconelMat","Inconnel");  // Inconel
+  Control.addVariable("BWindowWaterMat","H2O");   // Light water
 
 
   return;

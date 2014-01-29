@@ -66,79 +66,79 @@ void TS1CylMod(FuncDataBase& Control)
   Control.addVariable("H2CylModZangle",0.0);
   Control.addVariable("H2CylModRadius",6.0);
   Control.addVariable("H2CylModHeight",12.0);
-  Control.addVariable("H2CylModMat",25);
+  Control.addVariable("H2CylModMat","ParaH2");
   Control.addVariable("H2CylModTemp",20.0);
-  Control.addVariable("H2CylModNLayers",6);
+  Control.addVariable("H2CylModNLayers","Gadolinium");
   // al layer
   Control.addVariable("H2CylModHGap1",0.3);
   Control.addVariable("H2CylModRadGap1",0.3);
-  Control.addVariable("H2CylModMaterial1",5);  // Al materk
+  Control.addVariable("H2CylModMaterial1","Aluminium");  // Al materk
   Control.addVariable("H2CylModTemp1",20.0);  
   // Vac gap
   Control.addVariable("H2CylModHGap2",0.5);
   Control.addVariable("H2CylModRadGap2",0.5);
-  Control.addVariable("H2CylModMaterial2",0); 
+  Control.addVariable("H2CylModMaterial2","Void"); 
   // Next Al layer
   Control.addVariable("H2CylModHGap3",0.2);
   Control.addVariable("H2CylModRadGap3",0.2);
-  Control.addVariable("H2CylModMaterial3",5); 
+  Control.addVariable("H2CylModMaterial3","Aluminium"); 
   Control.addVariable("H2CylModTemp3",77.0);  
   // He Layer
   Control.addVariable("H2CylModHGap4",0.2);
   Control.addVariable("H2CylModRadGap4",0.2);
-  Control.addVariable("H2CylModMaterial4",0); 
+  Control.addVariable("H2CylModMaterial4","Void"); 
   // Outer Layer
   Control.addVariable("H2CylModHGap5",0.2);
   Control.addVariable("H2CylModRadGap5",0.2);
-  Control.addVariable("H2CylModMaterial5",5); 
+  Control.addVariable("H2CylModMaterial5","Aluminium"); 
   Control.addVariable("H2CylModTemp5",300.0); 
   // Clearance
   Control.addVariable("H2CylModHGap6",0.2);
   Control.addVariable("H2CylModRadGap6",0.2);
-  Control.addVariable("H2CylModMaterial6",0); 
+  Control.addVariable("H2CylModMaterial6","Void"); 
 
   Control.addVariable("H2CylModNConic",4);
   Control.addVariable("H2CylModConic1Cent",Geometry::Vec3D(0,1,0));
   Control.addVariable("H2CylModConic1Axis",Geometry::Vec3D(0,1,0));
   Control.addVariable("H2CylModConic1Angle",35.0);
-  Control.addVariable("H2CylModConic1WallMat",5);
+  Control.addVariable("H2CylModConic1WallMat","Aluminium");
   Control.addVariable("H2CylModConic1Wall",0.2);
 
   Control.addVariable("H2CylModConic2Cent",Geometry::Vec3D(1,0,0));
   Control.addVariable("H2CylModConic2Axis",Geometry::Vec3D(1,0,0));
   Control.addVariable("H2CylModConic2Angle",35.0);
-  Control.addVariable("H2CylModConic2WallMat",5);
+  Control.addVariable("H2CylModConic2WallMat","Aluminium");
   Control.addVariable("H2CylModConic2Wall",0.2);
 
   Control.addVariable("H2CylModConic3Cent",Geometry::Vec3D(-1,0,0));
   Control.addVariable("H2CylModConic3Axis",Geometry::Vec3D(-1,0,0));
   Control.addVariable("H2CylModConic3Angle",35.0);
-  Control.addVariable("H2CylModConic3WallMat",5);
+  Control.addVariable("H2CylModConic3WallMat","Aluminium");
   Control.addVariable("H2CylModConic3Wall",0.2);
 
   Control.addVariable("H2CylModConic4Cent",Geometry::Vec3D(0,-1,0));
   Control.addVariable("H2CylModConic4Axis",Geometry::Vec3D(0,-1,0));
   Control.addVariable("H2CylModConic4Angle",35.0);
-  Control.addVariable("H2CylModConic4WallMat",5);
+  Control.addVariable("H2CylModConic4WallMat","Aluminium");
   Control.addVariable("H2CylModConic4Wall",0.2);
 
   Control.addVariable("H2CylPreNLayers",4);  
   Control.addVariable("H2CylPreHeight1",0.2);  
   Control.addVariable("H2CylPreDepth1",0.2);  
   Control.addVariable("H2CylPreThick1",0.2);  
-  Control.addVariable("H2CylPreMaterial1",5);  
+  Control.addVariable("H2CylPreMaterial1","Aluminium");  
   Control.addVariable("H2CylPreHeight2",1.0);  
   Control.addVariable("H2CylPreDepth2",2.0);  
   Control.addVariable("H2CylPreThick2",2.0);  
-  Control.addVariable("H2CylPreMaterial2",11);  
+  Control.addVariable("H2CylPreMaterial2","H2O");  
   Control.addVariable("H2CylPreHeight3",0.2);  
   Control.addVariable("H2CylPreDepth3",0.2);  
   Control.addVariable("H2CylPreThick3",0.2);  
-  Control.addVariable("H2CylPreMaterial3",5);  
+  Control.addVariable("H2CylPreMaterial3","Aluminium");  
   Control.addVariable("H2CylPreHeight4",0.2);  
   Control.addVariable("H2CylPreDepth4",0.2);  
   Control.addVariable("H2CylPreThick4",0.2);  
-  Control.addVariable("H2CylPreMaterial4",0); 
+  Control.addVariable("H2CylPreMaterial4","Void"); 
 
   return;
 }
@@ -181,15 +181,15 @@ TS1upgrade(FuncDataBase& Control)
   Control.addVariable("CylReflHeight1",35.0);    
   Control.addVariable("CylReflDepth1",35.0);    
   Control.addVariable("CylReflRadius1",45.0);    
-  Control.addVariable("CylReflMat1",37);    
+  Control.addVariable("CylReflMat1","Be300K");    
   Control.addVariable("CylReflHeight2",35.0);    
   Control.addVariable("CylReflDepth2",35.0);    
   Control.addVariable("CylReflRadius2",45.0);    
-  Control.addVariable("CylReflMat2",23);
+  Control.addVariable("CylReflMat2","Lead");
   Control.addVariable("CylReflHeight3",35.0);    
   Control.addVariable("CylReflDepth3",35.0);    
   Control.addVariable("CylReflRadius3",45.0);    
-  Control.addVariable("CylReflMat3",37);          
+  Control.addVariable("CylReflMat3","Be300K");          
 
   // Beam Window (PROTON FLIGHT PATH)
   Control.addVariable("ProtonVoidViewRadius",4.0);          
@@ -200,7 +200,7 @@ TS1upgrade(FuncDataBase& Control)
   Control.addVariable("BWindowIncThick2",0.3); // Inconel Thickness 2
   Control.addVariable("BWindowHeMat",9);       // Helium at atmospheric pressure
   Control.addVariable("BWindowInconelMat",8);  // Inconel
-  Control.addVariable("BWindowWaterMat",11);   // Light water
+  Control.addVariable("BWindowWaterMat","H2O");   // Light water
 
 
   // WATER MODERATOR
@@ -225,11 +225,11 @@ TS1upgrade(FuncDataBase& Control)
   Control.addVariable("TriModPoisonThick",0.005);
   Control.addVariable("TriModPCladThick",0.1);    
 
-  Control.addVariable("TriModPCladMat",5);        // Al 
-  Control.addVariable("TriModPoisonMat",6);      // Gadolinium  
-  Control.addVariable("TriModInnerMat",11);
-  Control.addVariable("TriModModMat",11);
-  Control.addVariable("TriModWallMat",5);
+  Control.addVariable("TriModPCladMat","Aluminium");        // Al 
+  Control.addVariable("TriModPoisonMat","Gadolinium");      // Gadolinium  
+  Control.addVariable("TriModInnerMat","H2O");
+  Control.addVariable("TriModModMat","H2O");
+  Control.addVariable("TriModWallMat","Aluminium");
   Control.addVariable("TriModModTemp",300.0);
   
   // FLIGHTLINES : 
@@ -245,8 +245,8 @@ TS1upgrade(FuncDataBase& Control)
   Control.addVariable("TriFlightANLiner",2);           // Number of layers
   Control.addVariable("TriFlightALinerThick1",0.5);    // Thickness
   Control.addVariable("TriFlightALinerThick2",0.12);   // Thickness
-  Control.addVariable("TriFlightALinerMat1",5);        //  Cadnium
-  Control.addVariable("TriFlightALinerMat2",7);        //  Cadnium
+  Control.addVariable("TriFlightALinerMat1","Aluminium");
+  Control.addVariable("TriFlightALinerMat2","Cadmium");  
 
   Control.addVariable("TriFlightBSideIndex",-3);     // Full width
   Control.addVariable("TriFlightBXStep",8.0);        // Step from centre  
@@ -260,8 +260,8 @@ TS1upgrade(FuncDataBase& Control)
   Control.addVariable("TriFlightBNLiner",2);           // Number of layers
   Control.addVariable("TriFlightBLinerThick1",0.5);    // Thickness
   Control.addVariable("TriFlightBLinerThick2",0.12);    // Thickness
-  Control.addVariable("TriFlightBLinerMat1",5);        //  Alluminut 
-  Control.addVariable("TriFlightBLinerMat2",7);        //  Cadnium
+  Control.addVariable("TriFlightBLinerMat1","Aluminium");        //  Alluminut 
+  Control.addVariable("TriFlightBLinerMat2","Cadmium");        //  Cadmium
 
   // COLD CENTRAL OBJECT
   Control.addVariable("ColdCentXStep",3.0);  
@@ -295,9 +295,9 @@ TS1upgrade(FuncDataBase& Control)
   Control.addVariable("H2ModNSiLayers",1);         // Poison 
 //  Control.addVariable("H2ModSiThick",0.3);         // Silicon     
 //  Control.addVariable("H2ModNSiLayers",8);         // Silicon
-  Control.addVariable("H2ModAlMat",5);           // Al 
-  Control.addVariable("H2ModLh2Mat",25);         // LH2 
-  Control.addVariable("H2ModSiMat",6);         // Poison; Gadolinium
+  Control.addVariable("H2ModAlMat","Aluminium");           // Al 
+  Control.addVariable("H2ModLh2Mat","ParaH2");         // LH2 
+  Control.addVariable("H2ModSiMat","Gadolinium");         // Poison; Gadolinium
 //  Control.addVariable("H2ModSiMat",41);         // Silicon  
   Control.addVariable("H2ModLh2Temp",20.0);      // LH2  Temp
 
@@ -309,9 +309,8 @@ TS1upgrade(FuncDataBase& Control)
   Control.addVariable("HPreModAlThick",0.3);     
   Control.addVariable("HPreModVacThick",0.31);     
   Control.addVariable("HPreModModTemp",300.0);     
-  Control.addVariable("HPreModModMat",11);     
-  Control.addVariable("HPreModAlMat",5);     
-
+  Control.addVariable("HPreModModMat","H2O");     
+  Control.addVariable("HPreModAlMat","Aluminium");     
   //
   // METHANE
   // 
@@ -336,16 +335,16 @@ TS1upgrade(FuncDataBase& Control)
   Control.addVariable("CH4ModLayer6",0.2);    // Outer Al
   Control.addVariable("CH4ModLayer7",0.5);       // outer vac
 
-  Control.addVariable("CH4ModMat1",29);            // liquid CH4
-  Control.addVariable("CH4ModMat2",5);            // Al 
-  Control.addVariable("CH4ModMat3",0);            // vac void
-  Control.addVariable("CH4ModMat4",5);            // Al 
-  Control.addVariable("CH4ModMat5",0);            // vac void
-  Control.addVariable("CH4ModMat6",5);            // Al 
-  Control.addVariable("CH4ModMat7",0);            // outer
+  Control.addVariable("CH4ModMat1","CH4Liq");      
+  Control.addVariable("CH4ModMat2","Aluminium");  
+  Control.addVariable("CH4ModMat3","Void");       
+  Control.addVariable("CH4ModMat4","Aluminium");   
+  Control.addVariable("CH4ModMat5","Void");        
+  Control.addVariable("CH4ModMat6","Aluminium");   
+  Control.addVariable("CH4ModMat7","Void");        
 
-  Control.addVariable("CH4ModTemp1",100);            // liquid CH4
-  Control.addVariable("CH4ModTemp2",100);            // liquid CH4
+  Control.addVariable("CH4ModTemp1",100.0);            // liquid CH4
+  Control.addVariable("CH4ModTemp2",100.0);            // liquid CH4
 
 
   // Poison !!!!  
@@ -355,8 +354,8 @@ TS1upgrade(FuncDataBase& Control)
   Control.addVariable("CH4ModPGdThick",0.005);      //
   Control.addVariable("CH4ModPCladThick",0.1);      //      
      
-  Control.addVariable("CH4ModPoisonMat",6);      // Gadolinium
-  Control.addVariable("CH4ModPCladMat",5);   // Al    
+  Control.addVariable("CH4ModPoisonMat","Gadolinium");      // Gadolinium
+  Control.addVariable("CH4ModPCladMat","Aluminium");   // Al    
 
   Control.addVariable("CH4PreFlatXStep",0.0);      
   Control.addVariable("CH4PreFlatYStep",0.0);  
@@ -369,8 +368,8 @@ TS1upgrade(FuncDataBase& Control)
   Control.addVariable("CH4PreFlatHeight",1.0);   
   Control.addVariable("CH4PreFlatAlThick",0.3);   
   Control.addVariable("CH4PreFlatVacThick",0.5);   
-  Control.addVariable("CH4PreFlatAlMat",5);            // Al 
-  Control.addVariable("CH4PreFlatModMat",11);            // Al 
+  Control.addVariable("CH4PreFlatAlMat","Aluminium");            // Al 
+  Control.addVariable("CH4PreFlatModMat","H2O");            // Al 
   Control.addVariable("CH4PreFlatModTemp",300);            // Al 
 
   // WRAPPER
@@ -383,8 +382,8 @@ TS1upgrade(FuncDataBase& Control)
   Control.addVariable("CH4PreModVacThick",0.6);     
 
   Control.addVariable("CH4PreModModTemp",300.0);     
-  Control.addVariable("CH4PreModModMat",11);     
-  Control.addVariable("CH4PreModAlMat",5);     
+  Control.addVariable("CH4PreModModMat","H2O");     
+  Control.addVariable("CH4PreModAlMat","Aluminium");     
 
   // FLIGHTLINES : 
   Control.addVariable("H2FlightSideIndex",2);      // Full width
@@ -399,8 +398,8 @@ TS1upgrade(FuncDataBase& Control)
   Control.addVariable("H2FlightNLiner",2);         // Number of layers
   Control.addVariable("H2FlightLinerThick1",0.5);  // Thickness
   Control.addVariable("H2FlightLinerThick2",0.12); // Thickness
-  Control.addVariable("H2FlightLinerMat1",5);       //  Cadnium
-  Control.addVariable("H2FlightLinerMat2",7);       //  Cadnium
+  Control.addVariable("H2FlightLinerMat1","Aluminium");    
+  Control.addVariable("H2FlightLinerMat2","Cadmium");      
 
   // FLIGHTLINES : 
   Control.addVariable("CH4FlightASideIndex",1);      // Full width
@@ -415,8 +414,8 @@ TS1upgrade(FuncDataBase& Control)
   Control.addVariable("CH4FlightANLiner",2);         // Number of layers
   Control.addVariable("CH4FlightALinerThick1",0.5);  // Thickness
   Control.addVariable("CH4FlightALinerThick2",0.12); // Thickness
-  Control.addVariable("CH4FlightALinerMat1",5);       //  Cadnium
-  Control.addVariable("CH4FlightALinerMat2",7);       //  Cadnium
+  Control.addVariable("CH4FlightALinerMat1","Aluminium");
+  Control.addVariable("CH4FlightALinerMat2","Cadmium");  
 // FLIGHTLINES : 
   Control.addVariable("CH4FlightBSideIndex",2);      // Full width
   Control.addVariable("CH4FlightBXStep",0.0);       // Step from centre
@@ -430,8 +429,8 @@ TS1upgrade(FuncDataBase& Control)
   Control.addVariable("CH4FlightBNLiner",2);         // Number of layers
   Control.addVariable("CH4FlightBLinerThick1",0.5);  // Thickness
   Control.addVariable("CH4FlightBLinerThick2",0.12); // Thickness
-  Control.addVariable("CH4FlightBLinerMat1",5);       //  Cadnium
-  Control.addVariable("CH4FlightBLinerMat2",7);       //  Cadnium
+  Control.addVariable("CH4FlightBLinerMat1","Aluminium");
+  Control.addVariable("CH4FlightBLinerMat2","Cadmium");  
 
   //
   // METHANE LAYER TEST
@@ -444,10 +443,10 @@ TS1upgrade(FuncDataBase& Control)
 
   
   Control.addVariable("CH4LayerNPoison",0);      
-  Control.addVariable("CH4LayerPoisonMat",0);      
+  Control.addVariable("CH4LayerPoisonMat","Gadolinium");      
   
-  Control.addVariable("CH4LayerPCladMat",6);      
-  Control.addVariable("CH4LayerPoisonMat",0);      
+  Control.addVariable("CH4LayerPCladMat","Aluminium");      
+  Control.addVariable("CH4LayerPoisonMat","Gadolinium");      
 
 
   Control.addVariable("CH4LayerNLayer",8);   
@@ -456,15 +455,15 @@ TS1upgrade(FuncDataBase& Control)
   Control.addVariable("CH4LayerWidth1",8.0);   
   Control.addVariable("CH4LayerFront1",1.5);   
   Control.addVariable("CH4LayerBack1",1.5);   
-  Control.addVariable("CH4LayerMat1",11);   
+  Control.addVariable("CH4LayerMat1","H2O");   
 
   // al inner
   Control.addVariable("CH4LayerLayer2",0.3);   
-  Control.addVariable("CH4LayerMat2",5);   
+  Control.addVariable("CH4LayerMat2","Aluminium");   
 
   // vac
   Control.addVariable("CH4LayerLayer3",0.5);   
-  Control.addVariable("CH4LayerMat3",0);   
+  Control.addVariable("CH4LayerMat3","Void");   
 
   // Carbon - Al layer
   Control.addVariable("CH4LayerLayer4",0.6);   
@@ -473,21 +472,21 @@ TS1upgrade(FuncDataBase& Control)
 
   // H2 - Al layer
   Control.addVariable("CH4LayerLayer5",0.3);   
-  Control.addVariable("CH4LayerMat5",5);     
+  Control.addVariable("CH4LayerMat5","Aluminium");     
 
   // H2 
   Control.addVariable("CH4LayerLayer6",1.2);   
   Control.addVariable("CH4LayerFront6",0.8);   
   Control.addVariable("CH4LayerBack6",1.0);   
-  Control.addVariable("CH4LayerMat6",25);      // H2 
+  Control.addVariable("CH4LayerMat6","ParaH2");      // H2 
   
   // outer Al layer 
   Control.addVariable("CH4LayerLayer7",0.3);   
-  Control.addVariable("CH4LayerMat7",5);     
+  Control.addVariable("CH4LayerMat7","Aluminium");     
 
   // Outer vac layer 
   Control.addVariable("CH4LayerLayer8",0.6);   
-  Control.addVariable("CH4LayerMat8",0);     
+  Control.addVariable("CH4LayerMat8","Void");     
 
 
   return;

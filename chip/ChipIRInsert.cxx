@@ -47,12 +47,8 @@
 #include "support.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
-#include "Tensor.h"
 #include "Vec3D.h"
 #include "PointOperation.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
@@ -69,15 +65,12 @@
 #include "Line.h"
 #include "LineIntersectVisit.h"
 #include "Rules.h"
-#include "Convex.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "shutterBlock.h"
 #include "SimProcess.h"
 #include "SurInter.h"
@@ -85,6 +78,7 @@
 #include "insertInfo.h"
 #include "insertBaseInfo.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -191,10 +185,11 @@ ChipIRInsert::populate(const Simulation& System)
       rXDisp=Control.EvalDefVar<double>(keyName+"RXDisp",0.0);
       rZDisp=Control.EvalDefVar<double>(keyName+"RZDisp",0.0);
 
-      frontMat=Control.EvalVar<int>(keyName+"FrontMat");
-      backMat=Control.EvalVar<int>(keyName+"BackMat");
-      defMat=Control.EvalVar<int>(keyName+"DefMat");
-      
+
+      frontMat=ModelSupport::EvalMat<int>(Control,keyName+"FrontMat");
+      backMat=ModelSupport::EvalMat<int>(Control,keyName+"BackMat");
+      defMat=ModelSupport::EvalMat<int>(Control,keyName+"DefMat");
+
       // Layers
       nLayers=Control.EvalDefVar<size_t>(keyName+"NLayers",0);
       ModelSupport::populateDivide(Control,nLayers,

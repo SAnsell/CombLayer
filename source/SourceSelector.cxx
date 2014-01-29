@@ -179,6 +179,8 @@ sourceSelection(Simulation& System,const mainSystem::inputParam& IParam)
     SDef::createBilbaoSource(Control,sourceCard);
   else if (sdefType=="ess")
     SDef::createESSSource(Control,sourceCard);
+  else if (sdefType=="Sinbad")
+    SDef::createSinbadSource(Control,sourceCard);
   else if (sdefType=="TS2")
     {
   // Basic TS2 source

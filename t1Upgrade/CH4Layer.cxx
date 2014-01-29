@@ -215,8 +215,8 @@ CH4Layer::populate(const Simulation& System)
       Front=checkUnit(Control,i+1,"Front",1.0,"Depth",0.5,"Layer",1.0);
       Back=checkUnit(Control,i+1,"Back",1.0,"Depth",0.5,"Layer",1.0);
 
-      mat=ModelSupport::EvalMat<int>(Control,
-				     keyName+StrFunc::makeString("Mat",i+1));
+      mat=ModelSupport::EvalMat<int>
+	(Control,keyName+StrFunc::makeString("Mat",i+1));
       temp=Control.EvalDefVar<double>
 	(keyName+StrFunc::makeString("Temp",i+1),0.0);
       
@@ -242,8 +242,8 @@ CH4Layer::populate(const Simulation& System)
       pCladThick=Control.EvalVar<double>(keyName+"PCladThick");
 
       // Materials
-      poisonMat=Control.EvalVar<int>(keyName+"PoisonMat");
-      pCladMat=Control.EvalVar<int>(keyName+"PCladMat");
+      poisonMat=ModelSupport::EvalMat<int>(Control,keyName+"PoisonMat");
+      pCladMat=ModelSupport::EvalMat<int>(Control,keyName+"PCladMat");
     }
 
   return;

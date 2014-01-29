@@ -68,7 +68,7 @@ ChipVariables(FuncDataBase& Control)
   Control.addVariable("chipShutterFStep",8.0);     // Forward step off insert.
   Control.addVariable("chipShutterMFStep",16.0);   // Second step off insert
 
-  Control.addVariable("chipShutterShineMat",24);      // shine material [lead]
+  Control.addVariable("chipShutterShineMat","Lead+Sb");      // shine material [lead+sb]
   Control.addVariable("chipShutterShineFrontLeft",5.0); // Front left
   Control.addVariable("chipShutterShineFrontRight",5.0); // Front left
   Control.addVariable("chipShutterShineFrontDown",12.0); // Front left
@@ -91,13 +91,13 @@ ChipVariables(FuncDataBase& Control)
   Control.addVariable("chipShutterIL1_2",1.0);     // Length of cylinder
   Control.addVariable("chipShutterIL2_1",1.0);     // Length of cylinder
   Control.addVariable("chipShutterIL2_2",1.0);     // Length of cylinder
-  Control.addVariable("chipShutterIM1_1",3);       // Material of cylinder
-  Control.addVariable("chipShutterIM1_2",0);       // Material of cylinder
-  Control.addVariable("chipShutterIM2_1",3);       // Material of cylinder
-  Control.addVariable("chipShutterIM2_2",0);       // Material of cylinder
+  Control.addVariable("chipShutterIM1_1","Stainless304");       // Material of cylinder
+  Control.addVariable("chipShutterIM1_2","Void");       // Material of cylinder
+  Control.addVariable("chipShutterIM2_1","Stainless304");       // Material of cylinder
+  Control.addVariable("chipShutterIM2_2","Void");       // Material of cylinder
 
-  Control.addVariable("chipShutterIME_1",3);       // Material of external
-  Control.addVariable("chipShutterIME_2",0);       // Material of external
+  Control.addVariable("chipShutterIME_1","Stainless304");       // Material of external
+  Control.addVariable("chipShutterIME_2","Void");       // Material of external
   Control.addVariable("chipShutterILE_1",1.0);     // length of external
   Control.addVariable("chipShutterILE_2",1.0);     // length of external
 
@@ -110,17 +110,17 @@ ChipVariables(FuncDataBase& Control)
   Control.addVariable("chipInsertBStep",31.0);    // Back step [up beam]
   Control.addVariable("chipInsertRadius",20.0);    // Radius
   Control.addVariable("chipInsertLowCut",10.0);    // Low cut from the base
-  Control.addVariable("chipInsertFrontMat",0);      // Material
-  Control.addVariable("chipInsertBackMat",0);      // Material
-  Control.addVariable("chipInsertDefMat",54);      // Material
+  Control.addVariable("chipInsertFrontMat","Void");      // Material
+  Control.addVariable("chipInsertBackMat","Void");      // Material
+  Control.addVariable("chipInsertDefMat","CastIron");      // Material
   Control.addVariable("chipInsertNLayers",0);     // Number of layers
-  Control.addVariable("chipInsertMat_2",54);      // Cast steel
+  Control.addVariable("chipInsertMat_2","CastIron");      // Cast steel
 
   // Insert Cylinders:
   Control.addVariable("chipCylInsertNCylinder",1);      // 
   Control.addVariable("chipCylInsertRadius1",8.0);      // 
   Control.addVariable("chipCylInsertThick1",1.0);      // 
-  Control.addVariable("chipCylInsertMat1",3);      // 
+  Control.addVariable("chipCylInsertMat1","Stainless304");      // 
   Control.addVariable("chipCylInsertAOffVec1",
 		      Geometry::Vec3D(0,0,0)); 
   Control.addVariable("chipCylInsertBOffVec1",
@@ -132,8 +132,8 @@ ChipVariables(FuncDataBase& Control)
   Control.addVariable("chipPb1XYAngle",0.0);      // 
   Control.addVariable("chipPb1FStep",10.0);      // 
   Control.addVariable("chipPb1Thick",9.0);      // 
-  Control.addVariable("chipPb1DefMat",29);      // 
-  Control.addVariable("chipPb1SupportMat",3);      //  304 stainless
+  Control.addVariable("chipPb1DefMat","Lead");      // 
+  Control.addVariable("chipPb1SupportMat","Stainless304");      //  304 stainless
   Control.addVariable("chipPb1CentSpace",1.7);      // 
   Control.addVariable("chipPb1Radius",0.75);      // 
   Control.addVariable("chipPb1LinerThick",0.0);      // 
@@ -143,8 +143,8 @@ ChipVariables(FuncDataBase& Control)
   Control.addVariable("chipPb2XYAngle",0.0);      // 
   Control.addVariable("chipPb2FStep",-50.0);      // 
   Control.addVariable("chipPb2Thick",9.0);      // 
-  Control.addVariable("chipPb2DefMat",29);      // 
-  Control.addVariable("chipPb2SupportMat",3);      //  304 stainless
+  Control.addVariable("chipPb2DefMat","Lead");      // 
+  Control.addVariable("chipPb2SupportMat","Stainless304");      //  304 stainless
   Control.addVariable("chipPb2CentSpace",4.0);      // 
   Control.addVariable("chipPb2Radius",1.5);      // 
   Control.addVariable("chipPb2LinerThick",0.0);      // 
@@ -187,8 +187,8 @@ ChipVariables(FuncDataBase& Control)
   Control.addVariable("chipGuideNLiner",2);  
   Control.addVariable("chipGuideLiner1Thick",0.5);  
   Control.addVariable("chipGuideLiner2Thick",2.0);  
-  Control.addVariable("chipGuideLiner1Mat",3);  
-  Control.addVariable("chipGuideLiner2Mat",29);  
+  Control.addVariable("chipGuideLiner1Mat","Stainless304");  
+  Control.addVariable("chipGuideLiner2Mat","Lead");  
 
   Control.addVariable("chipGuideRoofSteel",54.0);  
   Control.addVariable("chipGuideFloorSteel",56.0);
@@ -230,10 +230,10 @@ ChipVariables(FuncDataBase& Control)
 //  Control.addVariable("chipGuideLeftWedgeAngle",20.0);
 //  Control.addVariable("chipGuideLeftWedgeHeight",240.0);
 
-  Control.addVariable("chipGuideLinerMat",29);  // lead
-  Control.addVariable("chipGuideSteelMat",74);  // chipIR steel
-  Control.addVariable("chipGuideConcMat",67);  // nelco concrete
-  Control.addVariable("chipGuideWallMat",67);  // nelco concrete
+  Control.addVariable("chipGuideLinerMat","Lead");  // lead
+  Control.addVariable("chipGuideSteelMat","ChipIRSteel");  // chipIR steel
+  Control.addVariable("chipGuideConcMat","NELCOConcrete");  // nelco concrete
+  Control.addVariable("chipGuideWallMat","NELCOConcrete");  // nelco concrete
 
 
   Control.addVariable("chipGPlateZAngle",0.0);    // Angle relative to beam
@@ -242,7 +242,7 @@ ChipVariables(FuncDataBase& Control)
   Control.addVariable("chipGPlateWidth",-1.0);    // Negative [all]
   Control.addVariable("chipGPlateHeight",-1.0);   // Negative [all]
   Control.addVariable("chipGPlateDepth",0.2);     // thinkness
-  Control.addVariable("chipGPlateDefMat",5);      // Material
+  Control.addVariable("chipGPlateDefMat","Aluminium");      // Material
   Control.addVariable("chipGPlateNLayers",0);     // Number of layers
 
   Control.addVariable("chipGuideNLayers",3);    // Number of layers
@@ -254,9 +254,9 @@ ChipVariables(FuncDataBase& Control)
   Control.addVariable("chipGuideFrac_6",0.6);   // Concrete inner
   Control.addVariable("chipGuideFrac_7",0.7);   // Concrete outer
 
-  Control.addVariable("chipGuideMat_0",38);   // Tungsten inner
-  Control.addVariable("chipGuideMat_1",54);    // Steel
-  Control.addVariable("chipGuideMat_4",49);    // concrete [normal]
+  Control.addVariable("chipGuideMat_0","Tungsten");   // Tungsten inner
+  Control.addVariable("chipGuideMat_1","CastIron");    // Steel
+  Control.addVariable("chipGuideMat_4","Concrete");    // concrete [normal]
  
   Control.addVariable("chipHutYStart",1253.1);    // Y start position
   Control.addVariable("chipHutXStep",35.46);      // X-shift
@@ -303,7 +303,7 @@ ChipVariables(FuncDataBase& Control)
   // Positions from left corner  : W2 wall/Floor/door
   Control.addVariable("chipHutFBNFeed",5);   // Nfeed
   Control.addVariable("chipHutFBLen",50.0);   // Length
-  Control.addVariable("chipHutFBmat",49);   // Block on beam stop
+  Control.addVariable("chipHutFBmat","Concrete");   // Block on beam stop
   Control.addVariable("chipHutFBCent0",Geometry::Vec3D(49.0,0,29.5));  
   Control.addVariable("chipHutFBCent1",Geometry::Vec3D(24.5,0,73.0));  
   Control.addVariable("chipHutFBCent2",Geometry::Vec3D(45.1,0,70.0));  
@@ -317,7 +317,7 @@ ChipVariables(FuncDataBase& Control)
 
   // Sample
   Control.addVariable("chipHutNSamples",8);
-  Control.addVariable("chipSampleDefMat",5);   // Aluminium
+  Control.addVariable("chipSampleDefMat","Aluminium");   // Aluminium
   Control.addVariable("chipSampleWidth",40.0);   
   Control.addVariable("chipSampleHeight",40.0);  
   Control.addVariable("chipSampleTableNum",2);    // Table 2
@@ -383,80 +383,64 @@ ChipVariables(FuncDataBase& Control)
   Control.addVariable("chipBSConcDepth",30.0);      
   Control.addVariable("chipBSConcLength",30.0);     
 
-  Control.addVariable("chipBSConcMat",49);      // Concrete
-  Control.addVariable("chipBSSteelMat",3);     // Steel
-  Control.addVariable("chipBSInnerMat",3);   // Inner material
-
-
-  // Control.addVariable("chipBSDepth",280.0);      // (full length)
-  // Control.addVariable("chipBSHeight",220.0);     // Full Height
-  // Control.addVariable("chipBSWidth",299.8);      // Beam Stop width 
-  // Control.addVariable("chipBSDepth",280.0);      // (full length)
-  // Control.addVariable("chipBSHeight",220.0);     // Full Height
-  // Control.addVariable("chipBSSideThick",56.60);   // Side Thickness [composite]
-  // Control.addVariable("chipBSRoofThick",30.0);    // Roof Thickness
-  // Control.addVariable("chipBSFloorThick",0.0);   // Floor Thickness
-  // Control.addVariable("chipBSRearThick",30.0);   // Back Thickness
-  // Control.addVariable("chipBSSideMat",8);    // Side Material
-  // Control.addVariable("chipBSRoofMat",8);    // Roof Material
-  // Control.addVariable("chipBSFloorMat",8);   // Side Material
-  // Control.addVariable("chipBSRearMat",8);    // Back Material
-  // Control.addVariable("chipBSMaterial",11);    // Default
+  Control.addVariable("chipBSConcMat","Concrete");      // Concrete
+  Control.addVariable("chipBSSteelMat","Stainless304");     // Steel
+  Control.addVariable("chipBSInnerMat","Stainless304");   // Inner material
 
   Control.addVariable("chipBSInnerAngle1",0);       // Angle of plates
-  Control.addVariable("chipBSInnerMat1",5);         // Al
+  Control.addVariable("chipBSInnerMat1","Aluminium");         // Al
   Control.addVariable("chipBSInnerThick1",0.5);     // 2cm : 
 
   Control.addVariable("chipBSInnerAngle2",0);       // Angle of plates
-  Control.addVariable("chipBSInnerMat2",0);         // Al
+  Control.addVariable("chipBSInnerMat2","Void");         // Al
   Control.addVariable("chipBSInnerThick2",22.5);     // 2cm : 
 
   Control.addVariable("chipBSInnerAngle3",0);
-  Control.addVariable("chipBSInnerMat3",23);         // Lead layer
+  Control.addVariable("chipBSInnerMat3","Lead");         // Lead layer
   Control.addVariable("chipBSInnerThick3",2.0);     // Thickness 2.0cm
 
   Control.addVariable("chipBSInnerAngle4",0);
-  Control.addVariable("chipBSInnerMat4",0);         // void layer
+  Control.addVariable("chipBSInnerMat4","Void");         // void layer
   Control.addVariable("chipBSInnerThick4",2.5);     // Thickness 2.5cm
 
   Control.addVariable("chipBSInnerAngle5",0);
-  Control.addVariable("chipBSInnerMat5",57);         // LiCO3
+  Control.addVariable("chipBSInnerMat5","LithiumCarbonate");         // LiCO3
   Control.addVariable("chipBSInnerThick5",15.0);     // Thickness 5cm
 
   Control.addVariable("chipBSInnerAngle6",0);
-  Control.addVariable("chipBSInnerMat6",5);           // Al 
+  Control.addVariable("chipBSInnerMat6","Aluminium");           // Al 
   Control.addVariable("chipBSInnerThick6",5.0);       // Thickness 5cm
 
   Control.addVariable("chipBSInnerAngle7",0.0);
-  Control.addVariable("chipBSInnerMat7",3);          // Steel
+  Control.addVariable("chipBSInnerMat7","Stainless304");          // Steel
   Control.addVariable("chipBSInnerThick7",25.0);
 
   Control.addVariable("chipBSInnerAngle8",0);
-  Control.addVariable("chipBSInnerMat8",5);           // Al layer
+  Control.addVariable("chipBSInnerMat8","Aluminium");           // Al layer
   Control.addVariable("chipBSInnerThick8",5.0);        // Thickness 15cm
 
   Control.addVariable("chipBSInnerAngle9",0);
-  Control.addVariable("chipBSInnerMat9",3);             // Steel 
+  Control.addVariable("chipBSInnerMat9","Stainless304");             // Steel 
   Control.addVariable("chipBSInnerThick9",25.0);        // Thickness 30cm
 
   Control.addVariable("chipBSInnerAngle10",0);
-  Control.addVariable("chipBSInnerMat10",48);            // Poly
+  Control.addVariable("chipBSInnerMat10","Poly");            // Poly
   Control.addVariable("chipBSInnerThick10",30.0);        // 
 
   Control.addVariable("chipBSInnerAngle11",0);
-  Control.addVariable("chipBSInnerMat11",49);          //  Concrete
+  Control.addVariable("chipBSInnerMat11","Concrete");          //  Concrete
   Control.addVariable("chipBSInnerThick11",30.0);       // 3cm
 
   Control.addVariable("chipBSInnerAngle12",0);
-  Control.addVariable("chipBSInnerMat12",0);          // 
+  Control.addVariable("chipBSInnerMat12","Void");          // 
   Control.addVariable("chipBSInnerThick12",2.5);       // 25mm void
 
   Control.addVariable("chipBSInnerAngle13",0);
-  Control.addVariable("chipBSInnerMat13",23);          // High density lead
+  Control.addVariable("chipBSInnerMat13","Lead");          // High density lead
   Control.addVariable("chipBSInnerThick13",3.0);       // 3cm
 
   Control.addVariable("chipBSInnerAngle14",0);
-  Control.addVariable("chipBSInnerMat14",0);          // Void
+  Control.addVariable("chipBSInnerMat14","Void");          // Void
   Control.addVariable("chipBSInnerThick14",2.5);       // 
 
 
@@ -469,15 +453,15 @@ ChipVariables(FuncDataBase& Control)
 
   //  Does this do anything ????
   Control.addVariable("chipHutZshift",10.0);     // Shift upwards of Z
-  Control.addVariable("chipHutRoofMat",54);        // Steel
-  Control.addVariable("chipHutWallMat",54);        // Steel
-  Control.addVariable("chipHutInnerWallMat",49);   // Concrete 
-  Control.addVariable("chipHutRearVoidMat",49);    // concrete at back
-  Control.addVariable("chipHutFalseFloorMat",5);   // Aluminium
-  Control.addVariable("chipHutFloorMat",49);       // Concrete
+  Control.addVariable("chipHutRoofMat","CastIron");        // Steel
+  Control.addVariable("chipHutWallMat","CastIron");        // Steel
+  Control.addVariable("chipHutInnerWallMat","Concrete");   // Concrete 
+  Control.addVariable("chipHutRearVoidMat","Concrete");    // concrete at back
+  Control.addVariable("chipHutFalseFloorMat","Aluminium");   // Aluminium
+  Control.addVariable("chipHutFloorMat","Concrete");       // Concrete
 
   // Hutch inner stuff:
-  Control.addVariable("chipHutTrimMat",38);        // Steel
+  Control.addVariable("chipHutTrimMat","Stainless304");        // Steel
   Control.addVariable("chipHutTrimXStep",12.0);   // Shift of the x positoin
   Control.addVariable("chipHutTrimZStep",19.0);   // up shift of the hole
   Control.addVariable("chipHutTrimFStep",231.1);  // Distance from hutch start [Y]
@@ -492,13 +476,13 @@ ChipVariables(FuncDataBase& Control)
   Control.addVariable("chipHutTrimFrac_4",-29.0);          
   Control.addVariable("chipHutTrimFrac_5",-29.0);   
        
-  Control.addVariable("chipHutTrimMat_0",5);      // Al
-  Control.addVariable("chipHutTrimMat_1",34);     // Boron
-  Control.addVariable("chipHutTrimMat_2",5);      // Al
-  Control.addVariable("chipHutTrimMat_3",54);     // Steel
-  Control.addVariable("chipHutTrimMat_4",5);      // Al
+  Control.addVariable("chipHutTrimMat_0","Aluminium");      // Al
+  Control.addVariable("chipHutTrimMat_1","Boron");     // Boron
+  Control.addVariable("chipHutTrimMat_2","Aluminium");      // Al
+  Control.addVariable("chipHutTrimMat_3","CastIron");     // Steel
+  Control.addVariable("chipHutTrimMat_4","Aluminium");      // Al
 
-  Control.addVariable("chipHutScreenMat",46);         // Screen mat
+  Control.addVariable("chipHutScreenMat","B4C");         // Screen mat
 
   Control.addVariable("chipHutTable1XYAngle",0.0);     // XY Rotation [relative to beam]
   Control.addVariable("chipHutTable1ZAngle",0.0);      // Z Rotation [relative to beam]
@@ -509,8 +493,8 @@ ChipVariables(FuncDataBase& Control)
   Control.addVariable("chipHutTable1Length",96.5);    // Length
   Control.addVariable("chipHutTable1SurThick",5.0);    // Surface Thickness
   Control.addVariable("chipHutTable1SideThick",15.0);  // Side thickness
-  Control.addVariable("chipHutTable1TopMat",5);        // Aluminium
-  Control.addVariable("chipHutTable1Mat",3);        // Steel
+  Control.addVariable("chipHutTable1TopMat","Aluminium");        // Aluminium
+  Control.addVariable("chipHutTable1Mat","Stainless304");        // Steel
 
   Control.addVariable("chipHutTable2XYAngle",0.0);     // XY Rotation
   Control.addVariable("chipHutTable2ZAngle",0.0);      // Z Rotation 
@@ -521,8 +505,8 @@ ChipVariables(FuncDataBase& Control)
   Control.addVariable("chipHutTable2Length",196.0);    // Length
   Control.addVariable("chipHutTable2SurThick",5.0);    // Surface Thickness
   Control.addVariable("chipHutTable2SideThick",15.0);  // Side thickness
-  Control.addVariable("chipHutTable2TopMat",5);        // Aluminium
-  Control.addVariable("chipHutTable2Mat",3);        // Steel
+  Control.addVariable("chipHutTable2TopMat","Aluminium");        // Aluminium
+  Control.addVariable("chipHutTable2Mat","Stainless304");        // Steel
 
   // Hutch beamstop
   Control.addVariable("chipHutWalkY",635.0);           // Walk extension length
@@ -538,12 +522,12 @@ ChipVariables(FuncDataBase& Control)
   // Control.addVariable("chipHutWallFrac_3",-7.2);   // Layers of Steel
   // Control.addVariable("chipHutWallFrac_4",-7.2);   // Layers of Steel
   // Control.addVariable("chipHutWallFrac_5",-7.2);   // Layers of Steel
-  Control.addVariable("chipHutLWallMat_0",5);    // Aluminium       
-  Control.addVariable("chipHutLWallMat_1",54);   // Cast steel     
-  Control.addVariable("chipHutLWallMat_6",49);   // Concrete
-  Control.addVariable("chipHutRWallMat_0",5);    // Aluminium       
-  Control.addVariable("chipHutRWallMat_1",54);   // Cast steel     
-  Control.addVariable("chipHutRWallMat_6",49);   // Concrete
+  Control.addVariable("chipHutLWallMat_0","Aluminium");    // Aluminium       
+  Control.addVariable("chipHutLWallMat_1","CastIron");   // Cast steel     
+  Control.addVariable("chipHutLWallMat_6","Concrete");   // Concrete
+  Control.addVariable("chipHutRWallMat_0","Aluminium");    // Aluminium       
+  Control.addVariable("chipHutRWallMat_1","CastIron");   // Cast steel     
+  Control.addVariable("chipHutRWallMat_6","Concrete");   // Concrete
   Control.addVariable("chipHutLWallFrac_1",-0.5);   // Al inner [5cm]
   Control.addVariable("chipHutLWallFrac_2",-7.20);   // Al inner [5cm]
   Control.addVariable("chipHutLWallFrac_3",-7.20);   // Al inner [5cm]
@@ -566,17 +550,17 @@ ChipVariables(FuncDataBase& Control)
   Control.addVariable("chipHutRoofFrac_4",-7.20);   // 
   Control.addVariable("chipHutRoofFrac_5",-7.20);   // Steel section
   Control.addVariable("chipHutRoofFrac_6",-7.20);   // Steel section
-  Control.addVariable("chipHutRoofMat_0",5);     
-  Control.addVariable("chipHutRoofMat_1",54); 
-  Control.addVariable("chipHutRoofMat_6",49);   // Concrete       
+  Control.addVariable("chipHutRoofMat_0","Aluminium");     
+  Control.addVariable("chipHutRoofMat_1","CastIron"); 
+  Control.addVariable("chipHutRoofMat_6","Concrete");   // Concrete       
 
   Control.addVariable("chipHutFloorNDivide",1);        //
   // Control.addVariable("chipHutFloorFrac_1",-2.0);          
   // Control.addVariable("chipHutFloorFrac_2",-56.0);      
   // Control.addVariable("chipHutFloorFrac_3",-20.0);      
-  // Control.addVariable("chipHutFloorMat_0",5);      // Al
-  // Control.addVariable("chipHutFloorMat_1",0);     // Void
-  // Control.addVariable("chipHutFloorMat_2",49);     // Concrete
+  // Control.addVariable("chipHutFloorMat_0","Aluminium");      // Al
+  // Control.addVariable("chipHutFloorMat_1","Void");     // Void
+  // Control.addVariable("chipHutFloorMat_2","Concrete");     // Concrete
   
   Control.addVariable("chipPreXYAngle",0.0);           // XY rotation
   Control.addVariable("chipPreZAngle",0.0);            // Z rotation
@@ -585,7 +569,7 @@ ChipVariables(FuncDataBase& Control)
   Control.addVariable("chipPreZStep",16.0);             // Up step 
   Control.addVariable("chipPreRadius",80.0);           // Full Radius
   Control.addVariable("chipPreDepth",68.0);            // Full thickness (?)
-  Control.addVariable("chipPreDefMat",3);              // Steel
+  Control.addVariable("chipPreDefMat","Stainless304");              // Steel
   Control.addVariable("chipPreHoleIndex",6);           // Index [0 for angle]
   Control.addVariable("chipPreHoleAngOff",0.0);        // Angle
   Control.addVariable("chipPreNHole",7);               // Number of holes
@@ -626,19 +610,19 @@ ChipVariables(FuncDataBase& Control)
   Control.addVariable("chipPreHole7Angle",310.0);       // Angle [in degree]
   
   Control.addVariable("chipPreInnerWall",1.0);
-  Control.addVariable("chipPreInnerWallMat",0);        // void
+  Control.addVariable("chipPreInnerWallMat","Void");        // void
   Control.addVariable("chipPreNLayers",6);       
   Control.addVariable("chipPreFrac_1",-5.0);           // 5cm Al
   Control.addVariable("chipPreFrac_2",-10.0);          // 10cm PB
   Control.addVariable("chipPreFrac_3",-25.0);          // 25cm Steel 
   Control.addVariable("chipPreFrac_4",-3.0);           // 3cm Ni
   Control.addVariable("chipPreFrac_5",-20.0);          // 20cm Steel
-  Control.addVariable("chipPreMat_0",5);    // Al
-  Control.addVariable("chipPreMat_1",38);   // Pb
-  Control.addVariable("chipPreMat_2",54);   // Fe
-  Control.addVariable("chipPreMat_3",33);   // Ni
-  Control.addVariable("chipPreMat_4",54);   // Fe
-  Control.addVariable("chipPreMat_5",5);    // Al
+  Control.addVariable("chipPreMat_0","Aluminium");    // Al
+  Control.addVariable("chipPreMat_1","Lead");   // Pb
+  Control.addVariable("chipPreMat_2","CastIron");   // Fe
+  Control.addVariable("chipPreMat_3","Nickel");   // Ni
+  Control.addVariable("chipPreMat_4","CastIron");   // Fe
+  Control.addVariable("chipPreMat_5","Aluminium");    // Al
 
   Control.addVariable("chipColBoxXStep",26.0);
   Control.addVariable("chipColBoxFStep",100.0);
@@ -649,8 +633,8 @@ ChipVariables(FuncDataBase& Control)
   Control.addVariable("chipColBoxWidth",90.0);
   Control.addVariable("chipColBoxDepth",112.0);
 
-  Control.addVariable("chipColBoxDefMat",3);
-  Control.addVariable("chipColBoxOutMat",3);
+  Control.addVariable("chipColBoxDefMat","Stainless304");
+  Control.addVariable("chipColBoxOutMat","Stainless304");
   Control.addVariable("chipColBoxRoofThick",12.8);
   Control.addVariable("chipColBoxFloorThick",12.8);
   Control.addVariable("chipColBoxFrontThick",12.8);
@@ -668,17 +652,17 @@ ChipVariables(FuncDataBase& Control)
   Control.addVariable("chipColVWidth",200.0);           // width
   Control.addVariable("chipColVHeight",220.0);            
   Control.addVariable("chipColVDepth",50.0);            // [thickness]
-  Control.addVariable("chipColVDefMat",3);              // Steel
+  Control.addVariable("chipColVDefMat","Stainless304");              // Steel
 
   Control.addVariable("chipColVInnerWall",0.5);         // lead thickness
-  Control.addVariable("chipColVInnerWallMat",23);       // lead
+  Control.addVariable("chipColVInnerWallMat","Lead");       // lead
   Control.addVariable("chipColVNLayers",3);          
   Control.addVariable("chipColVFrac_1",-10.0);      // Fe
   Control.addVariable("chipColVFrac_2",-30.0);      // W
  
-  Control.addVariable("chipColVMat_0",3);           // Fe
-  Control.addVariable("chipColVMat_1",38);          // W
-  Control.addVariable("chipColVMat_2",5);           // Al
+  Control.addVariable("chipColVMat_0","Stainless304");           // Fe
+  Control.addVariable("chipColVMat_1","Tungsten");          // W
+  Control.addVariable("chipColVMat_2","Aluminium");           // Al
 
   Control.addVariable("chipColHGap",20.0);          // Gap
   Control.addVariable("chipColHOffset",0.0);        // Centre offset 
@@ -690,16 +674,16 @@ ChipVariables(FuncDataBase& Control)
   Control.addVariable("chipColHWidth",120.0);
   Control.addVariable("chipColHHeight",180.0);
   Control.addVariable("chipColHDepth",50.0); 
-  Control.addVariable("chipColHDefMat",3);              // Steel
+  Control.addVariable("chipColHDefMat","Stainless304");              // Steel
 
   Control.addVariable("chipColHInnerWall",0.5);        // lead thickness
-  Control.addVariable("chipColHInnerWallMat",23);       // lead
+  Control.addVariable("chipColHInnerWallMat","Lead");       // lead
   Control.addVariable("chipColHNLayers",3);       
   Control.addVariable("chipColHFrac_1",-10.0);  
   Control.addVariable("chipColHFrac_2",-30.0);       
-  Control.addVariable("chipColHMat_0",3);     // Fe
-  Control.addVariable("chipColHMat_1",38);    // W
-  Control.addVariable("chipColHMat_2",5);     // AL
+  Control.addVariable("chipColHMat_0","Stainless304");     // Fe
+  Control.addVariable("chipColHMat_1","Tungsten");    // W
+  Control.addVariable("chipColHMat_2","Aluminium");     // AL
 
   Control.addVariable("chipSourceAngle",35.0);         // Angle on the source
   Control.addVariable("chipSourceRadial",12.0);        // Width

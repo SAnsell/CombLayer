@@ -78,10 +78,10 @@ ZoomVariables(const mainSystem::inputParam& IParam,
   
   // E1/ZOOM BEAMLINE
 
-  Control.addVariable("zoomBendInnerMat",54);     // Zoom Inner
-  Control.addVariable("zoomBendWallMat",5);       // Zoom Box
-  Control.addVariable("zoomBendVertAngle",90);     // Rotation about centre
-  Control.addVariable("zoomBendAngle",24);        // bend angle [mRad]
+  Control.addVariable("zoomBendInnerMat","CastIron");     // Zoom Inner
+  Control.addVariable("zoomBendWallMat","Aluminium");     // Zoom Box
+  Control.addVariable("zoomBendVertAngle",90.0);  // Rotation about centre
+  Control.addVariable("zoomBendAngle",24.0);      // bend angle [mRad]
   Control.addVariable("zoomBendXStep",0.0);     // Master Step
   Control.addVariable("zoomBendYStep",3.3);     // Master Step
   Control.addVariable("zoomBendZStep",0.0);     // Master Step
@@ -89,7 +89,7 @@ ZoomVariables(const mainSystem::inputParam& IParam,
   Control.addVariable("zoomBendPathWidth",2.0);     // Width of guide
   Control.addVariable("zoomBendPathHeight",3.0);    // Heigh of guide
   Control.addVariable("zoomBendNVanes",5);          // Silicon vanes
-  Control.addVariable("zoomBendVaneMat",41);        // Silicon
+  Control.addVariable("zoomBendVaneMat","SiCrystal");        // Silicon
   Control.addVariable("zoomBendVaneThick",0.03);    // Silicon thickness
   
   Control.addVariable("zoomBendWallThick",1.0);     // Wall thickness
@@ -156,12 +156,12 @@ ZoomVariables(const mainSystem::inputParam& IParam,
   Control.addVariable("zoomBendAttn17YPos",295.0);
   Control.addVariable("zoomBendAttn17Dist",4.0);
 
-  Control.addVariable("zoomBendShieldMat",54);     // Zoom outer shield
+  Control.addVariable("zoomBendShieldMat","CastIron");     // Zoom outer shield
   Control.addVariable("zoomBendNLayers",8);       // Zoom outer layers
-  Control.addVariable("zoomBendMat_3",54); 
-  Control.addVariable("zoomBendMat_4",54); 
-  Control.addVariable("zoomBendMat_6",54); 
-  Control.addVariable("zoomBendMat_7",54); 
+  Control.addVariable("zoomBendMat_3","CastIron"); 
+  Control.addVariable("zoomBendMat_4","CastIron"); 
+  Control.addVariable("zoomBendMat_6","CastIron"); 
+  Control.addVariable("zoomBendMat_7","CastIron"); 
 
   Control.addVariable("zoomChopperXStep",-14.2);   
   Control.addVariable("zoomChopperYStep",0.0);   
@@ -202,8 +202,8 @@ ZoomVariables(const mainSystem::inputParam& IParam,
   Control.addVariable("zoomRoofEHeight5",-23.2+59.1);
   Control.addVariable("zoomRoofEHeight6",-47.2+59.1);
 
-  Control.addVariable("zoomRoofMat",54);          // cast steel
-  Control.addVariable("zoomRoofExtraMat",52);     // borated poly
+  Control.addVariable("zoomRoofMat","CastIron");          // cast steel
+  Control.addVariable("zoomRoofExtraMat","B-Poly");     // borated poly
 
   Control.addVariable("zoomChopperVoidLeftWidth",67.3);   // bulk:Coll 468+940
   Control.addVariable("zoomChopperVoidRightWidth",12.2);  
@@ -215,7 +215,7 @@ ZoomVariables(const mainSystem::inputParam& IParam,
   Control.addVariable("zoomChopperVoidChanUp",12.0);    // GUESS
   Control.addVariable("zoomChopperVoidChanDown",20.0);  // GUESS
 
-  Control.addVariable("zoomChopperWallMat",54);         // Cast Steel
+  Control.addVariable("zoomChopperWallMat","CastIron");         // Cast Steel
 
 
   Control.addVariable("zoomCollimatorXStep",25.0);   
@@ -225,7 +225,7 @@ ZoomVariables(const mainSystem::inputParam& IParam,
   Control.addVariable("zoomCollimatorHeight",102.0); 
   Control.addVariable("zoomCollimatorLeftWidth",92.05); 
   Control.addVariable("zoomCollimatorRightWidth",58.2); 
-  Control.addVariable("zoomCollimatorFeMat",54);         // Cast steel
+  Control.addVariable("zoomCollimatorFeMat","CastIron");         // Cast steel
   Control.addVariable("zoomCollimatorStackFullWidth",25.6);  // GUESS
   Control.addVariable("zoomCollimatorNLayers",0); 
 
@@ -240,7 +240,7 @@ ZoomVariables(const mainSystem::inputParam& IParam,
   Control.addVariable("zoomColStackClear0",0.5);       // GUESS
   Control.addVariable("zoomColStackPathWidth0",3.0);       // GUESS
   Control.addVariable("zoomColStackPathHeight0",3.0);       // GUESS
-  Control.addVariable("zoomColStackMat0",3);          // 
+  Control.addVariable("zoomColStackMat0","Stainless304");          // 
 
   Control.addVariable("zoomColStackHeight1",11.5);    // GUESS
 
@@ -249,7 +249,7 @@ ZoomVariables(const mainSystem::inputParam& IParam,
   Control.addVariable("zoomPrimaryHeight",102.0); 
   Control.addVariable("zoomPrimaryLeftWidth",90.3); 
   Control.addVariable("zoomPrimaryRightWidth",90.3); 
-  Control.addVariable("zoomPrimaryFeMat",54); 
+  Control.addVariable("zoomPrimaryFeMat","CastIron"); 
   Control.addVariable("zoomPrimaryCutX",0.0);
   Control.addVariable("zoomPrimaryCutZ",-2.0);
   Control.addVariable("zoomPrimaryCutWidth",25.0); 
@@ -257,8 +257,8 @@ ZoomVariables(const mainSystem::inputParam& IParam,
   Control.addVariable("zoomPrimaryNLayers",3); 
   Control.addVariable("zoomPrimaryFrac_1",-5.0); 
   Control.addVariable("zoomPrimaryFrac_2",-15.0); 
-  Control.addVariable("zoomPrimaryMat_1",54); 
-  Control.addVariable("zoomPrimaryMat_2",49);   /// Concrete
+  Control.addVariable("zoomPrimaryMat_1","CastIron"); 
+  Control.addVariable("zoomPrimaryMat_2","Concrete");   /// Concrete
 
   Control.addVariable("zoomGuideLength",400.0);     // Zoom box length
   Control.addVariable("zoomGuideAUp",1.5);          // Zoom box inner 
@@ -277,22 +277,22 @@ ZoomVariables(const mainSystem::inputParam& IParam,
   Control.addVariable("zoomGuideFloor",90.0);       
   Control.addVariable("zoomGuideWallLeft",90.0);    
   Control.addVariable("zoomGuideWallRight",90.0);  
-  Control.addVariable("zoomGuideInnerCollMat",54);    
-  Control.addVariable("zoomGuideShieldMat",54);    
+  Control.addVariable("zoomGuideInnerCollMat","CastIron");    
+  Control.addVariable("zoomGuideShieldMat","CastIron");    
   Control.addVariable("zoomGuideNInsert",-1);      // Guide inner layers
   Control.addVariable("zoomGuideICutterLen",13.5); // Inner guide unit
   Control.addVariable("zoomGuideIFocusLen",2.5);   // Inner focus unit
-  Control.addVariable("zoomGuideInnerMat_8",46);   // Guide inner second
-  Control.addVariable("zoomGuideInnerMat_24",47);  // Guide inner sector
+  Control.addVariable("zoomGuideInnerMat_8","B4C");   // Guide inner second
+  Control.addVariable("zoomGuideInnerMat_24","B4C");  // Guide inner sector
 
   Control.addVariable("zoomGuideNLayers",2);          // Guide outer layers
   Control.addVariable("zoomGuideShieldFrac_1",(0.475/0.775)); 
-  Control.addVariable("zoomGuideShieldMat_1",49);  // Concrete
+  Control.addVariable("zoomGuideShieldMat_1","Concrete");  // Concrete
 
   Control.addVariable("zoomShutterColletHGap",0.6);   //   clearance gap
   Control.addVariable("zoomShutterColletVGap",0.6);   //   clearance gap
   Control.addVariable("zoomShutterColletFGap",0.6);   //   clearance gap
-  Control.addVariable("zoomShutterColletMat",54);      //   surround material  
+  Control.addVariable("zoomShutterColletMat","CastIron");      //   surround material  
 
 
   Control.addVariable("zoomShutterXStart",0.0);        // Start Z position
@@ -315,7 +315,7 @@ ZoomVariables(const mainSystem::inputParam& IParam,
   Control.addVariable("zoomShutterBlock1Height",steelHeightA); //   Height
   Control.addVariable("zoomShutterBlock1VGap",3.0);     //   Height
   Control.addVariable("zoomShutterBlock1HGap",3.0);     //   Hor. Gap (full)
-  Control.addVariable("zoomShutterBlock1Mat",0);        //   Spacer
+  Control.addVariable("zoomShutterBlock1Mat","Void");        //   Spacer
 
 
   // ts1System::shutterVar zoomBlock("zoom");
@@ -387,7 +387,7 @@ ZoomVariables(const mainSystem::inputParam& IParam,
   Control.addVariable(finalBlock+"Len",3.4);    //   Inner blocks
   Control.addVariable(finalBlock+"VGap",4.0);   //   Height
   Control.addVariable(finalBlock+"HGap",4.0);   //   Hor. Gap (full)
-  Control.addVariable(finalBlock+"Mat",0);      //   Spacer
+  Control.addVariable(finalBlock+"Mat","Void");      //   Spacer
 
   Control.addVariable("zoomSampleLength",200.0);     // Zoom box length
   Control.addVariable("zoomSampleUp",50.0);          // Zoom box inner 
@@ -398,7 +398,7 @@ ZoomVariables(const mainSystem::inputParam& IParam,
   Control.addVariable("zoomSampleFloor",75.0);       
   Control.addVariable("zoomSampleWallLeft",75.0);    
   Control.addVariable("zoomSampleWallRight",75.0);  
-  Control.addVariable("zoomSampleShieldMat",49);    
+  Control.addVariable("zoomSampleShieldMat","Concrete");    
   Control.addVariable("zoomSampleNLayers",10);        // Box inner layers
 
 
@@ -428,8 +428,8 @@ ZoomVariables(const mainSystem::inputParam& IParam,
   Control.addVariable("zoomTankWidth",193.0);
   Control.addVariable("zoomTankLength",1100.0);
   Control.addVariable("zoomTankHeight",273.0);
-  Control.addVariable("zoomTankWallMat",3);
-  Control.addVariable("zoomTankWindowMat",41);
+  Control.addVariable("zoomTankWallMat","Stainless304");
+  Control.addVariable("zoomTankWindowMat","SiCrystal");
 
   Control.addVariable("zoomHutchXStep",-25.0);          ///< Step accross beam
   Control.addVariable("zoomHutchYStep",0.0);
@@ -453,9 +453,9 @@ ZoomVariables(const mainSystem::inputParam& IParam,
   Control.addVariable("zoomHutchWallThick",30.5);      // Wall thickness 
   Control.addVariable("zoomHutchRoofThick",50.0);      // Roof thickness 
   Control.addVariable("zoomHutchFloorThick",30.5);      // Floor thickness 
-  Control.addVariable("zoomHutchWallMat",49);          // Concrete
-  Control.addVariable("zoomHutchRoofMat",49);          // Concrete
-  Control.addVariable("zoomHutchFloorMat",49);          // Concrete
+  Control.addVariable("zoomHutchWallMat","Concrete");          // Concrete
+  Control.addVariable("zoomHutchRoofMat","Concrete");          // Concrete
+  Control.addVariable("zoomHutchFloorMat","Concrete");          // Concrete
 
   Control.addVariable("zoomHutchPortRadius",4.5);      // radius
   
@@ -475,7 +475,7 @@ B4Cspacer(FuncDataBase& Control,const int index,
   */
 {
   boost::format FMT("zoomShutterBlock%d%s");
-  const int b4cMat(47);
+  const std::string b4cMat("B4C");
 
   // B4C scrapper #1 
   Control.addVariable((FMT % index % "CentX").str(),CX);
@@ -484,7 +484,7 @@ B4Cspacer(FuncDataBase& Control,const int index,
   Control.addVariable((FMT % index % "VGap").str(),5.0);
   Control.addVariable((FMT % index % "HGap").str(),3.5);
   Control.addVariable((FMT % index % "Mat").str(),b4cMat);
-  Control.addVariable((FMT % (index+1) % "Mat").str(),0);
+  Control.addVariable((FMT % (index+1) % "Mat").str(),"Void");
   Control.addVariable((FMT % (index+1) % "Len").str(),0.2);
   Control.addVariable((FMT % (index+2) % "Mat").str(),b4cMat);
   Control.addVariable((FMT % (index+2) % "Len").str(),0.635);
@@ -518,9 +518,9 @@ SteelBlock(FuncDataBase& Control,const int index,const double CX,
   Control.addVariable((FMT % index % "Height").str(),VSize);
   Control.addVariable((FMT % index % "VGap").str(),VG);
   Control.addVariable((FMT % index % "HGap").str(),HG);
-  Control.addVariable((FMT % index % "Mat").str(),3);
+  Control.addVariable((FMT % index % "Mat").str(),"Stainless304");
   for(int i=0;i<extra;i++)
-    Control.addVariable((FMT % (index+i) % "Mat").str(),3);
+    Control.addVariable((FMT % (index+i) % "Mat").str(),"Stainless304");
   return Len*extra;
 }
 

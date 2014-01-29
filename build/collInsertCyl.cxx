@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   build/collInsertCyl.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -223,7 +223,10 @@ collInsertCyl::setVar(const FuncDataBase& Control,
   */
 {
   ELog::RegMethod RegA("collInsertCyl","setVar<Control>");
-  setVar(Item,Control.EvalVar<double>(VarStr));
+  if (Item==6)
+    matN=ModelSupport::EvalMat<int>(Control,VarStr);
+  else
+    setVar(Item,Control.EvalVar<double>(VarStr));
   return;
 }
 

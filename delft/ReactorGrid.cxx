@@ -48,12 +48,7 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfDIter.h"
@@ -79,6 +74,10 @@
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
+#include "Zaid.h"
+#include "MXcards.h"
+#include "Material.h"
+#include "DBMaterial.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h" 
@@ -96,6 +95,36 @@
 
 namespace delftSystem
 {
+
+int
+ReactorGrid::getMatElement(const FuncDataBase& Control,
+			   const std::string& Name,
+			   const size_t I, 
+			   const size_t J) 
+ /*!
+   Check to convert a Name + a number string into a variable state:
+   \param Control :: Function base to search
+   \param Name :: Master name
+   \param I :: Index (A-Z) type [A on viewed face]
+   \param J :: Index (Number) type
+   \return variable value
+ */
+
+{
+  ELog::RegMethod RegA("ReactorGrid","getMatElement");
+
+  ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();
+  const std::string EMat=getElement<std::string>(Control,Name,I,J);
+
+  if (DB.createMaterial(EMat))
+    return DB.getIndex(EMat);
+  int ENumber;
+  if (StrFunc::convert(EMat,ENumber) && DB.hasKey(ENumber))
+    return ENumber;
+    
+  throw ColErr::InContainerError<std::string>
+    (EMat,"Material not present:"+Name);
+}
 
 template<typename T>
 T 
@@ -137,44 +166,6 @@ ReactorGrid::getElement(const FuncDataBase& Control,
   throw ColErr::InContainerError<std::string>(Name,"Variable name");
 }
 
-int
-ReactorGrid::getMatElement(const FuncDataBase& Control,
-			   const std::string& Name,const size_t I,
-			   const size_t J) 
- /*!
-   Check to convert a Name + a number string into a material number
-   \param Control :: Function base to search
-   \param Name :: Master name
-   \param I :: Index (A-Z) type [A on viewed face]
-   \param J :: Index (Number) type
-   \return variable value
- */
-{
-  ELog::RegMethod RegA("ReactorGrid","getMatElement");
-
-  const std::string Key[2]=
-    { 
-      std::string(1,static_cast<char>(I)+'A'),
-      StrFunc::makeString(J),
-    };
-  // Completely specified:
-  if (Control.hasVariable(Name+Key[0]+Key[1]))
-    return ModelSupport::EvalMat<int>(Control,Name+Key[0]+Key[1]);
-
-  // One Missing
-  for(size_t i=0;i<2;i++)
-    {
-      const std::string KN(Name+Key[i]);
-      if (Control.hasVariable(KN))
-	return ModelSupport::EvalMat<int>(Control,KN);
-    }
-  // Finally All missing 
-  if (Control.hasVariable(Name))
-    return ModelSupport::EvalMat<int>(Control,Name);
-  
-  ELog::EM<<"NO variable:"<<Name<<ELog::endTrace;
-  throw ColErr::InContainerError<std::string>(Name,"Variable name");
-}
 
 std::string
 ReactorGrid::getElementName(const std::string& Name,const size_t I,
@@ -412,7 +403,7 @@ ReactorGrid::createObjects(Simulation& System)
 	  
 	  const size_t si=static_cast<size_t>(i);
 	  const size_t sj=static_cast<size_t>(j);
-	  const int MatN=getElement<int>(Control,keyName+"Mat",si,sj);
+	  const int MatN=getMatElement(Control,keyName+"Mat",si,sj);
 	  System.addCell(MonteCarlo::Qhull(getCellNumber(i,j),MatN,0.0,
 					   XPart+YPart+ZPart));
 

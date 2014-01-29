@@ -42,12 +42,14 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
+#include "stringCombine.h"
 #include "InputControl.h"
 #include "Element.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "SimProcess.h"
+#include "MaterialSupport.h"
 #include "surfDIter.h"
 
 namespace ModelSupport
@@ -135,13 +137,11 @@ populateDivide(const FuncDataBase& Control,const size_t N,
 {
   Vec.clear();
   int defV=defValue;
-  if (N>0)
+  for(size_t i=0;i<N;i++)
     {
-      for(int i=0;i<static_cast<int>(N);i++)
-	{
-	  defV=SimProcess::getDefIndexVar<int>(Control,Name,"",i,defV);
-	  Vec.push_back(defV);
-	}
+      defV=ModelSupport::EvalDefMat<int>
+	(Control,Name+StrFunc::makeString(i),defV);
+      Vec.push_back(defV);
     }
   return;
 }
