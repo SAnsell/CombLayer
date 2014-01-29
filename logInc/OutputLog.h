@@ -70,8 +70,9 @@ class OutputLog
   std::ostringstream cx;            ///< Stream for processing
 
   int colourFlag;                   ///< Activate colour
-  unsigned int activeBits;          ///< Activity bits
-  unsigned int actionBits;          ///< Action bits [exit on text]
+  size_t activeBits;                ///< Activity bits
+  size_t actionBits;                ///< Action bits [exit on text]
+  size_t debugBits;                 ///< Debug bits
   int typeFlag;                     ///< Give type information
   int locFlag;                      ///< Write Location
   int storeFlag;                    ///< Wait to process
@@ -82,7 +83,7 @@ class OutputLog
   std::vector<std::string> EText;   ///< Storage buffer (text)
   std::vector<int> EType;           ///< Storage buffer (type)
 
-  int isActive(const int) const;
+  bool isActive(const int) const;
   std::string getColour(const int) const;
   void makeAction(const int);
   std::string locString() const;
@@ -132,9 +133,11 @@ class OutputLog
   /// Set Colour
   void setColour() { colourFlag=1; }
   /// set the active bits:
-  void setActive(const unsigned int F) { activeBits=F; }
+  void setActive(const size_t F) { activeBits=F; }
   /// set the action bits:
-  void setAction(const unsigned int F) { actionBits=F; }
+  void setAction(const size_t F) { actionBits=F; }
+  /// set the debug bits:
+  void setDebug(const size_t F ) { debugBits=F; }
 
   RepClass& getReport() { return FOut; }   ///< Get report class
 

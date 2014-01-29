@@ -747,7 +747,7 @@ PressVessel::createAll(Simulation& System,
   createObjects(System);
   createLinks();
   insertObjects(System);       
-  //  buildChannels(System);
+  buildChannels(System);
 //  insertObjects(System);       
 
   return;

@@ -145,7 +145,7 @@ TS1PlateTarget(FuncDataBase& Control)
   Control.addVariable("PVesselChannel0InStep",0.83);
   Control.addVariable("PVesselChannel0InDepth",0.75);                   
   Control.addVariable("PVesselChannel0MidGap",0.75);          
-  Control.addVariable("PVesselChannel0Mat",31);      
+  Control.addVariable("PVesselChannel0Mat","D2O");      
 
   Control.addVariable("PVesselChannel1Width",1.23);          
   Control.addVariable("PVesselChannel1Height",0.25);          
@@ -242,9 +242,9 @@ TS1PlateTarget(FuncDataBase& Control)
   Control.addVariable("TPlateThick2",1.2);         // Tungsten 
   Control.addVariable("TPlateThick3",1.35);         // Tungsten 
   Control.addVariable("TPlateThick4",1.5);         // Tungsten 
-  Control.addVariable("TPlateBlockType5",0);         // Void
-  Control.addVariable("TPlateThick5",5.0);         // Tungsten 
-  //  Control.addVariable("TPlateThick5",1.8);         // Tungsten 
+  Control.addVariable("TPlateBlockType5",1);         // Void if zero
+  //  Control.addVariable("TPlateThick5",5.0);         // Tungsten 
+  Control.addVariable("TPlateThick5",1.8);         // Tungsten 
   Control.addVariable("TPlateThick6",2.1);         // Tungsten 
   Control.addVariable("TPlateThick7",2.6);         // Tungsten 
   Control.addVariable("TPlateThick8",3.4);         // Tungsten 

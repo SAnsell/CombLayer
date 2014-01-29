@@ -19,7 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef constrcutSystem_Window_h
+#ifndef constructSystem_Window_h
 #define constructSystem_Window_h
 
 class Simulation;

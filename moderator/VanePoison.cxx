@@ -326,10 +326,13 @@ VanePoison::createAll(Simulation& System,
   populate(System);
 
   createUnitVector(FC,linkIndex);
-  createSurfaces();
-  createObjects(System,FC,linkIndex);
-  createLinks();
-  insertObjects(System);       
+  if (nBlades)
+    {
+      createSurfaces();
+      createObjects(System,FC,linkIndex);
+      createLinks();
+      insertObjects(System);       
+    }
 
 
   return;

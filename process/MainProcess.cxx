@@ -74,6 +74,7 @@ activateLogging(ELog::RegMethod& RControl)
   ELog::EM.setTypeFlag(0);
   //  ELog::EM.setActive(255 ^ ELog::debug); // No debug
   ELog::EM.setActive(255);
+  ELog::EM.setDebug(ELog::debug);
   ELog::EM.setAction(ELog::error);       // Exit on Error
   ELog::EM.setColour();
 

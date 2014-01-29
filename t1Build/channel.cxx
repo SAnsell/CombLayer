@@ -43,9 +43,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
@@ -63,15 +60,13 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "shutterBlock.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "LinearComp.h"
 #include "ContainedComp.h"
 
 #include "channel.h"
@@ -132,7 +127,7 @@ channel::operator=(const channel& A)
 
 
 double
-channel::getVar(const int Item) const
+channel::getVar(const size_t Item) const
   /*!
     Get the value based on an index reference
     \param Item :: Index value to variable
@@ -160,13 +155,13 @@ channel::getVar(const int Item) const
     case 7:
       return matN;
     }
-  throw ColErr::IndexError<int>(Item,8,"Index out of range");
+  throw ColErr::IndexError<size_t>(Item,8,"Index out of range");
 }
 
 
 void
 channel::setVar(const FuncDataBase& Control,
-		const int Item,
+		const size_t Item,
 		const std::string& VarStr)
   /*!
     Convert a string into an item value
@@ -176,47 +171,37 @@ channel::setVar(const FuncDataBase& Control,
   */
 {
   ELog::RegMethod RegA("channel","setVar<Control>");
-  setVar(Item,Control.EvalVar<double>(VarStr));
+
+  double* DArray[]={&centX,&centZ,&width,&height,
+			  &midGap,&inStep,&inDepth};
+  if (Item<7)
+    *DArray[Item]=Control.EvalVar<double>(VarStr);
+  else if (Item==7)
+    matN=ModelSupport::EvalMat<int>(Control,VarStr);    
+  else 
+    throw ColErr::IndexError<size_t>(Item,8,"Var Index unknown");
   return;
 }
 
 void
-channel::setVar(const int Item,const double V)
+channel::setVar(const size_t Item,const channel& CRef)
   /*!
     Given a value set the item
     \param Item :: Index value to variable
     \param V :: Value
   */
 {
-  switch(Item)
-    {
-    case 0:
-      centX=V;
-      return;
-    case 1:
-      centZ=V;
-      return;
-    case 2:
-      width=V;
-      return;
-    case 3:
-      height=V;
-      return;
-    case 4:
-      midGap=V;
-      return;
-    case 5:
-      inStep=V;
-      return;
-    case 6:
-      inDepth=V;
-      return;
-    case 7:
-      matN=static_cast<int>(V);
-      return;
-    default:
-      throw ColErr::IndexError<int>(Item,8,"Var Index unknown");
-    }
+  double* DArray[]={&centX,&centZ,&width,&height,
+			  &midGap,&inStep,&inDepth};
+  const double* CRefArray[]={&CRef.centX,&CRef.centZ,&CRef.width,
+			     &CRef.height,&CRef.midGap,
+			     &CRef.inStep,&CRef.inDepth};
+  if (Item<7)
+    *DArray[Item] = *CRefArray[Item];
+  else if (Item==7)
+    matN=CRef.matN;
+  else 
+    throw ColErr::IndexError<size_t>(Item,8,"Var Index unknown");
   return;
 }
 
@@ -239,14 +224,14 @@ channel::populate(const Simulation& System,
     {"XOffset","ZOffset","Width","Height",
      "MidGap","InStep","InDepth","Mat"};
     
-  for(int i=0;i<Size;i++)
+  for(size_t i=0;i<Size;i++)
     {
       std::ostringstream cx;
       cx<<keyName<<blockIndex<<sndKey[i];
       if (Control.hasVariable(cx.str()))
 	setVar(Control,i,cx.str());
       else if (defChannel)
-	setVar(i,defChannel->getVar(i));
+	setVar(i,*defChannel);
       else
 	{
 	  ELog::EM<<"Failed to connect on first component:"

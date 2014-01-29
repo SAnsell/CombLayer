@@ -64,10 +64,10 @@ class channel  : public attachSystem::ContainedComp,
   void createSurfaces();
   void createObjects(Simulation&);
 
-  void setVar(const FuncDataBase&,const int,
+  void setVar(const FuncDataBase&,const size_t,
 	      const std::string&);
-  void setVar(const int,const double);
-  double getVar(const int) const;
+  void setVar(const size_t,const channel&);
+  double getVar(const size_t) const;
 
  public:
 

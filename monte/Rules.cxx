@@ -878,6 +878,23 @@ Rule::populateSurf()
   return;
 }
 
+std::vector<const Geometry::Surface*>
+Rule::getConstSurfVector() const
+  /*!
+    Create a rules list for the cells
+    \return Surface Vector
+  */
+{
+  ELog::RegMethod RegA("Rule","getSurfVector");
+  std::vector<const Geometry::Surface*> Out;
+  std::vector<Geometry::Surface*> NonConstOut=
+    this->getSurfVector();
+  std::vector<Geometry::Surface*>::const_iterator vc;
+  for(vc=NonConstOut.begin();vc!=NonConstOut.end();vc++)
+    Out.push_back(*vc);
+  return Out;
+}
+
 std::vector<Geometry::Surface*>
 Rule::getSurfVector() const
   /*!

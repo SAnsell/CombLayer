@@ -196,7 +196,6 @@ RuleCheck::checkString(const Rule* TR,
 
   MapSupport::mapIterator MI(SurfSet);
   std::ostringstream cx;
-  int N(1);
   do
     {
       cx<<((TR->isValid(MI.getM())) ? '1' : '0');

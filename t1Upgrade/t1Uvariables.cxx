@@ -233,30 +233,30 @@ TS1upgrade(FuncDataBase& Control)
   Control.addVariable("TriModModTemp",300.0);
   
   // FLIGHTLINES : 
-  Control.addVariable("TriFlightASideIndex",-1);     // Full width
-  Control.addVariable("TriFlightAXStep",-6.0);      // Step from centre  
+  Control.addVariable("TriFlightASideIndex",3);     // Full width
+  Control.addVariable("TriFlightAXStep",-5.0);      // Step from centre  
   Control.addVariable("TriFlightAZStep",0.5);      // Step from centre  
-  Control.addVariable("TriFlightAAngleXY1",-40.0);  // Angle out
-  Control.addVariable("TriFlightAAngleXY2",0.0);  // Angle out
+  Control.addVariable("TriFlightAAngleXY1",72.0);  // Angle out
+  Control.addVariable("TriFlightAAngleXY2",-27.0);  // Angle out
   Control.addVariable("TriFlightAAngleZTop",0.0);  // Step down angle
   Control.addVariable("TriFlightAAngleZBase",0.0); // Step up angle
   Control.addVariable("TriFlightAHeight",10.0);     // Full height
-  Control.addVariable("TriFlightAWidth",10.5);     // Full width
+  Control.addVariable("TriFlightAWidth",28.0);     // Full width
   Control.addVariable("TriFlightANLiner",2);           // Number of layers
   Control.addVariable("TriFlightALinerThick1",0.5);    // Thickness
   Control.addVariable("TriFlightALinerThick2",0.12);   // Thickness
   Control.addVariable("TriFlightALinerMat1","Aluminium");
   Control.addVariable("TriFlightALinerMat2","Cadmium");  
 
-  Control.addVariable("TriFlightBSideIndex",-3);     // Full width
-  Control.addVariable("TriFlightBXStep",8.0);        // Step from centre  
+  Control.addVariable("TriFlightBSideIndex",1);      // Surface
+  Control.addVariable("TriFlightBXStep",5.3);        // Step from centre  
   Control.addVariable("TriFlightBZStep",0.5);        // Step from centre  
   Control.addVariable("TriFlightBAngleXY1",10.0);     // Angle out [lower]
-  Control.addVariable("TriFlightBAngleXY2",-85.0);   // Angle out [top]
+  Control.addVariable("TriFlightBAngleXY2",65.0);   // Angle out [top]
   Control.addVariable("TriFlightBAngleZTop",0.0);    // Step down angle
   Control.addVariable("TriFlightBAngleZBase",0.0);   // Step up angle
   Control.addVariable("TriFlightBHeight",10.0);      // Full height
-  Control.addVariable("TriFlightBWidth",20.0);       // Full width  
+  Control.addVariable("TriFlightBWidth",22.0);       // Full width  
   Control.addVariable("TriFlightBNLiner",2);           // Number of layers
   Control.addVariable("TriFlightBLinerThick1",0.5);    // Thickness
   Control.addVariable("TriFlightBLinerThick2",0.12);    // Thickness
