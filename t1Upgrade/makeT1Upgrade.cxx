@@ -48,9 +48,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "inputParam.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -62,17 +59,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
-#include "KCode.h"
 #include "insertInfo.h"
 #include "insertBaseInfo.h"
-#include "InsertComp.h"
-#include "ModeCard.h"
-#include "PhysImp.h"
-#include "PhysCard.h"
-#include "LSwitchCard.h"
-#include "PhysicsCards.h"
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -114,6 +102,8 @@
 #include "AttachSupport.h"
 
 #include "makeT1Upgrade.h"
+
+#include "Debug.h"
 
 namespace ts1System
 {
@@ -562,12 +552,15 @@ makeT1Upgrade::build(Simulation* SimPtr,
   TriFLA->addBoundarySurf("inner",Out);  
   TriFLA->addBoundarySurf("outer",Out);  
   RefObj->addToInsertChain(TriFLA->getKey("outer"));
+  debugStatus::Instance().setFlag(1);
   TriFLA->createAll(*SimPtr,*TriMod,*TriMod);
+  debugStatus::Instance().setFlag(0);
+
 
   TriFLB->addBoundarySurf("inner",Out);  
   TriFLB->addBoundarySurf("outer",Out);  
-  RefObj->addToInsertChain(TriFLB->getKey("outer"));
   TriFLB->createAll(*SimPtr,*TriMod,*TriMod);
+  attachSystem::addToInsertSurfCtrl(*SimPtr,*RefObj,TriFLB->getKey("outer"));  
 
   H2FL->addBoundarySurf("inner",Out);  
   H2FL->addBoundarySurf("outer",Out);  

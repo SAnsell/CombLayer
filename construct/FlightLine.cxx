@@ -411,7 +411,6 @@ FlightLine::getRotatedLink(const attachSystem::FixedComp& FC,
 
   if (fabs(masterXY)<45.0) 
     return attachRule;
-
   const int primary=FC.getLinkSurf(sideIndex);
   int SN;
   std::ostringstream cx;
@@ -459,11 +458,11 @@ FlightLine::createObjects(Simulation& System,
   const int outIndex=flightIndex+static_cast<int>(nLayer)*10;
 
   attachRule=getRotatedLink(FC,sideIndex);
+
   std::string Out;
   Out=ModelSupport::getComposite(SMap,outIndex," 3 -4 5 -6 ");
   Out+=attachRule;         // forward boundary of object
   addOuterSurf("outer",Out);
-
   // Inner Void
   Out=ModelSupport::getComposite(SMap,flightIndex," 3 -4 5 -6 ");
   Out+=attachRule;
@@ -516,6 +515,10 @@ FlightLine::createObjects(Simulation& System,
   addOuterSurf("inner",Out);
   const std::string attachRule=StrFunc::makeString(baseSurf)
     +" "+CC.getExclude();
+  ELog::EM<<"ATT == "<<baseSurf<<" ::: "<<attachRule
+	  <<" ::  "<<CC.getExclude()<<ELog::endDebug;
+
+
   Out=ModelSupport::getComposite(SMap,flightIndex," 3 -4 5 -6 ");
   Out+=attachRule;         // forward boundary of object
   Out+=" "+ContainedGroup::getContainer("outer");      // Be outer surface

@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef AttachSupport_h
-#define AttachSupport_h
+#ifndef attachSystem_AttachSupport_h
+#define attachSystem_AttachSupport_h
 
 class Rule;
 class Simulation;
@@ -52,6 +52,11 @@ void addToInsertSurfCtrl(Simulation&,const FixedComp&,
 			ContainedComp&);
 void addToInsertSurfCtrl(Simulation&,const int,const int,
 			ContainedComp&);
+void addToInsertOuterSurfCtrl(Simulation&,const FixedComp&,
+			ContainedComp&);
+void addToInsertOuterSurfCtrl(Simulation&,
+			      const int,const int,
+			      const ContainedComp&,ContainedComp&);
 
 // Brutal forced option!!
 void addToInsertForced(Simulation&,const FixedComp&,

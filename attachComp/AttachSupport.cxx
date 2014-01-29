@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   attachComp/AttachSupport.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,7 +74,10 @@
 namespace attachSystem
 {
 
+bool checkIntersect(const ContainedComp&,const MonteCarlo::Qhull&,
+		    const std::vector<const Geometry::Surface*>&);
 void createAddition(const int,Rule*,Rule*&);
+
 
 void
 addUnion(const MonteCarlo::Object& Obj,Rule*& outRule)
@@ -311,6 +314,36 @@ addToInsertSurfCtrl(Simulation& System,
 }
 
 void
+addToInsertOuterSurfCtrl(Simulation& System,
+			 const attachSystem::FixedComp& BaseFC,
+			 attachSystem::ContainedComp& CC)
+  /*!
+    Adds this object to the containedComp to be inserted.
+    FC is the fixed object that is to be inserted -- linkpoints
+    must be set. It is tested against all the ojbect with
+    this object .
+    \param System :: Simulation to use
+    \param BaseFC :: FixedComp for name / and CC
+    \param CC :: ContainedComp object to add to this
+  */
+{
+  ELog::RegMethod RegA("AttachSupport","addToInsertSurfCtrl(FC,CC)");
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+  const attachSystem::ContainedComp* BaseCC=
+    OR.getObject<attachSystem::ContainedComp>(BaseFC.getKeyName());
+  if (!BaseCC)
+    throw ColErr::InContainerError<std::string>
+      (BaseFC.getKeyName(),"getObject from base");
+  
+  const int cellN=OR.getCell(BaseFC.getKeyName());
+  const int cellR=OR.getRange(BaseFC.getKeyName());
+  addToInsertOuterSurfCtrl(System,cellN,cellN+cellR,*BaseCC,CC);
+
+  return;
+}
+
+void
 addToInsertSurfCtrl(Simulation& System,
 		    const int cellA,const int cellB,
 		    attachSystem::ContainedComp& CC)
@@ -344,72 +377,121 @@ addToInsertSurfCtrl(Simulation& System,
       CRPtr->createSurfaceList();
       const std::vector<const Geometry::Surface*>&
 	CellSVec=CRPtr->getSurList();
-      // LOOP OVER ALL SURFACE SETS:
 
-      bool insertFlag(1);
-      for(size_t iA=0;insertFlag && iA<SVec.size();iA++)
-	for(size_t iB=0;insertFlag && iB<CellSVec.size();iB++)
-	  for(size_t iC=iB+1;insertFlag && iC<CellSVec.size();iC++)
-	    {
-	      Out=SurInter::processPoint(SVec[iA],CellSVec[iB],CellSVec[iC]);
-	      for(vc=Out.begin();vc!=Out.end();vc++)
-		{
-		  std::set<int> boundarySet;
-		  boundarySet.insert(CellSVec[iB]->getName());
-		  boundarySet.insert(CellSVec[iC]->getName());
-		  if (CRPtr->isValid(*vc,boundarySet) &&
-		      !CC.isOuterValid(*vc,SVec[iA]->getName()))
-		    {
-		      CC.addInsertCell(i);
-		      insertFlag=0;
-		      break;
-		    }
-		}
-	    }
-      if (insertFlag)  // No match found check link points:
-	{
-	  for(size_t iA=0;insertFlag && iA<SVec.size();iA++)
-	    for(size_t iB=iA+1;insertFlag && iB<SVec.size();iB++)
-	      for(size_t iC=iB+1;insertFlag && iC<SVec.size();iC++)
-		{
-		  Out=SurInter::processPoint(SVec[iA],SVec[iB],SVec[iC]);
-		  for(vc=Out.begin();vc!=Out.end();vc++)
-		    {
-		      if (CRPtr->isValid(*vc))
-			{
-			  CC.addInsertCell(i);
-			  insertFlag=0;
-			  break;
-			}
-		    }
-		}
-	}
-      if (insertFlag)  // No match found Now inter chekc
-	{
-	  for(size_t iA=0;insertFlag && iA<SVec.size();iA++)
-	    for(size_t iB=iA+1;insertFlag && iB<SVec.size();iB++)
-	      for(size_t iC=0;insertFlag && iC<CellSVec.size();iC++)
-		{
-		  Out=SurInter::processPoint(SVec[iA],SVec[iB],CellSVec[iC]);
-		  for(vc=Out.begin();vc!=Out.end();vc++)
-		    {
-		      std::set<int> boundarySet;
-		      boundarySet.insert(SVec[iA]->getName());
-		      boundarySet.insert(SVec[iB]->getName());
-		      if (CRPtr->isValid(*vc,CellSVec[iC]->getName()) &&
-			  !CC.isOuterValid(*vc,boundarySet))
-			{
-			  CC.addInsertCell(i);
-			  insertFlag=0;
-			  break;
-			}
-		    }
-		}
-	}
-    }
       
+      if (checkIntersect(CC,*CRPtr,CellSVec))
+	CC.addInsertCell(i);
+    }
+
   CC.insertObjects(System);
   return;
+}
+
+void
+addToInsertOuterSurfCtrl(Simulation& System,
+			 const int cellA,const int cellB,
+			 const attachSystem::ContainedComp& BaseCC,
+			 attachSystem::ContainedComp& CC)
+ /*!
+   Adds this object to the containedComp to be inserted.
+   FC is the fixed object that is to be inserted -- linkpoints
+   must be set. It is tested against all the ojbect with
+   this object .
+   \param System :: Simulation to use
+   \param BaseCC :: Only search using the base Contained Comp
+   \param CellA :: First cell number [to test]
+   \param CellB :: Last cell number  [to test]
+   \param CC :: ContainedComp object to add to this
+  */
+{
+  ELog::RegMethod RegA("AttachSupport","addToInsertSurfCtrl(int,int,CC)");
+
+  const std::vector<Geometry::Surface*> SVec=CC.getSurfaces();
+
+  std::vector<Geometry::Vec3D> Out;		
+  std::vector<Geometry::Vec3D>::const_iterator vc;
+
+  // Populate and createSurface list MUST have been called      
+  const std::vector<const Geometry::Surface*>
+    CellSVec=BaseCC.getConstSurfaces();
+
+  for(int i=cellA+1;i<=cellB;i++)
+    {
+      MonteCarlo::Qhull* CRPtr=System.findQhull(i);
+      if (i==cellA+1 && !CRPtr)
+	throw ColErr::InContainerError<int>(i,"Object not build");
+      else if (!CRPtr)
+	break;
+
+
+      if (checkIntersect(CC,*CRPtr,CellSVec))
+	CC.addInsertCell(i);
+    }
+
+  CC.insertObjects(System);
+  return;
+}
+
+bool
+checkIntersect(const ContainedComp& CC,const MonteCarlo::Qhull& CellObj,
+	       const std::vector<const Geometry::Surface*>& CellSVec)
+   /*
+     Determine if the surface group is in the Contained Component
+     \param CC :: Contained Component
+     \param CellObj :: Cell Object
+     \param CellSVec :: Cell vector
+     \return true/false
+   */
+{
+  ELog::RegMethod RegA("AttachSupport","checkInsert");
+
+  const std::vector<Geometry::Surface*>& SVec=CC.getSurfaces(); 
+  std::vector<Geometry::Vec3D> Out;
+  std::vector<Geometry::Vec3D>::const_iterator vc;
+
+  for(size_t iA=0;iA<SVec.size();iA++)
+    for(size_t iB=0;iB<CellSVec.size();iB++)
+      for(size_t iC=iB+1;iC<CellSVec.size();iC++)
+	{	      
+	  Out=SurInter::processPoint(SVec[iA],CellSVec[iB],CellSVec[iC]);
+	  for(vc=Out.begin();vc!=Out.end();vc++)
+	    {
+	      std::set<int> boundarySet;
+	      boundarySet.insert(CellSVec[iB]->getName());
+	      boundarySet.insert(CellSVec[iC]->getName());
+	      if (CellObj.isValid(*vc,boundarySet) &&
+		  !CC.isOuterValid(*vc,SVec[iA]->getName()))
+		return 1;
+	    }
+	}
+  for(size_t iA=0;iA<SVec.size();iA++)
+    for(size_t iB=iA+1;iB<SVec.size();iB++)
+      for(size_t iC=iB+1;iC<SVec.size();iC++)
+	{
+	  Out=SurInter::processPoint(SVec[iA],SVec[iB],SVec[iC]);
+	  for(vc=Out.begin();vc!=Out.end();vc++)
+	    {
+	      if (CellObj.isValid(*vc))
+		return 1;
+	    }
+	}
+  for(size_t iA=0;iA<SVec.size();iA++)
+    for(size_t iB=iA+1;iB<SVec.size();iB++)
+      for(size_t iC=0;iC<CellSVec.size();iC++)
+	{
+	  Out=SurInter::processPoint(SVec[iA],SVec[iB],CellSVec[iC]);
+	  for(vc=Out.begin();vc!=Out.end();vc++)
+	    {
+	      std::set<int> boundarySet;
+	      boundarySet.insert(SVec[iA]->getName());
+	      boundarySet.insert(SVec[iB]->getName());
+	      if (CellObj.isValid(*vc,CellSVec[iC]->getName()) &&
+		  !CC.isOuterValid(*vc,boundarySet))
+		return 1;
+	    }
+	}
+  // All failed:
+  return 0;
 }
 
 void

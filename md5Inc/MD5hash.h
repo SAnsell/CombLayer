@@ -48,7 +48,7 @@ class MD5hash
 
   // Stuff for string
   Unit Item;                  ///< Item data
-  long int cNum;              ///< Position in string  
+  size_t cNum;              ///< Position in string  
 
   void init();
 

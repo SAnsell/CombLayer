@@ -137,10 +137,10 @@ MD5hash::getNextUnit(const std::string& A)
   */
 {
   ELog::RegMethod RegA("MD5hash","getNextUnit");
-  const long int AS=static_cast<long int>(A.size());
-  const long int N=(AS-cNum>64) ? 64 : AS-cNum;
+  const size_t AS=A.size();
+  const size_t N=(AS-cNum>64) ? 64UL : AS-cNum;
 
-  long int i;
+  size_t i;
   for(i=0;i<N;i++)
     Item.Cell[i]=A[i+cNum];
   if (i<64)

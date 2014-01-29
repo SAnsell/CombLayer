@@ -76,6 +76,7 @@ class TriangleMod : public attachSystem::ContainedComp,
 
   Geometry::Vec3D corner(const size_t,const double) const;
   Geometry::Vec3D midNorm(const size_t) const;
+  Geometry::Vec3D sideNorm(const size_t,const size_t) const;
 
   void populate(const Simulation&);
   void createUnitVector(const attachSystem::FixedComp&);

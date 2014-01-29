@@ -108,6 +108,7 @@ class ContainedComp
 
   /// Accessor to surface [ugly]
   std::vector<Geometry::Surface*> getSurfaces() const;
+  std::vector<const Geometry::Surface*> getConstSurfaces() const;
     
   /// Accessor [ugly]
   const std::vector<int>& getInsertCells() const 

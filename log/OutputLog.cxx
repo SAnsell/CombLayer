@@ -31,6 +31,7 @@
 #include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
+#include "Debug.h"
 #include "OutputLog.h"
 
 namespace ELog
@@ -39,7 +40,7 @@ namespace ELog
 template<typename RepClass>
 OutputLog<RepClass>::OutputLog() :
   activeBits(255),actionBits(0),
-  typeFlag(1),locFlag(1),
+  debugBits(0),typeFlag(1),locFlag(1),
   storeFlag(0),NBasePtr(0)
   /*!
     Constructor
@@ -48,7 +49,7 @@ OutputLog<RepClass>::OutputLog() :
 
 template<typename RepClass>
 OutputLog<RepClass>::OutputLog(const std::string&) :
-  activeBits(255),actionBits(0),
+  activeBits(255),actionBits(0),debugBits(0),
   typeFlag(1),locFlag(1),
   storeFlag(0),NBasePtr(0)
   /*!
@@ -58,7 +59,7 @@ OutputLog<RepClass>::OutputLog(const std::string&) :
 
 template<>
 OutputLog<ELog::FileReport>::OutputLog(const std::string& Fname) :
-  activeBits(255),actionBits(0),typeFlag(1),
+  activeBits(255),actionBits(0),debugBits(0),typeFlag(1),
   locFlag(1),storeFlag(0),NBasePtr(0),
   FOut(Fname)
   /*!
@@ -71,7 +72,7 @@ OutputLog<ELog::FileReport>::OutputLog(const std::string& Fname) :
 template<typename RepClass>
 OutputLog<RepClass>::OutputLog(const OutputLog<RepClass>& A)  :
   activeBits(A.activeBits),actionBits(A.actionBits),
-  typeFlag(A.typeFlag),locFlag(A.locFlag),
+  debugBits(A.debugBits),typeFlag(A.typeFlag),locFlag(A.locFlag),
   storeFlag(A.storeFlag),NBasePtr(A.NBasePtr),
   FOut(A.FOut),EText(A.EText),EType(A.EType)
   /*!
@@ -95,6 +96,7 @@ OutputLog<RepClass>::operator=(const OutputLog<RepClass>& A)
     {
       activeBits=A.activeBits;
       actionBits=A.actionBits;
+      debugBits=A.debugBits;
       typeFlag=A.typeFlag;
       locFlag=A.locFlag;
       storeFlag=A.storeFlag;
@@ -114,7 +116,7 @@ OutputLog<RepClass>::~OutputLog()
 {}
 
 template<typename RepClass>
-int
+bool
 OutputLog<RepClass>::isActive(const int Flag) const
   /*!
     Check for activity. Note that 0 is considered 
@@ -123,9 +125,18 @@ OutputLog<RepClass>::isActive(const int Flag) const
     \return true is flags has appropiate bit set
   */
 {
-  const unsigned int part=
-    (Flag<=0) ? 1 : static_cast<unsigned int>(2*Flag);
-  return (part & activeBits) ? 1 : 0;
+  const int debugFlag=debugStatus::Instance().getFlag();
+
+  const size_t part=
+    (Flag<=0) ? 1 : static_cast<size_t>(2*Flag);
+  
+
+  // if (part & debugBits)
+  //   std::cout<<"Debug == "<<debugFlag<<":"<<(part & debugBits)<<" "<<
+  //     part<<std::endl;
+  // return (part & activeBits) ? 1 : 0;
+  return ((part & activeBits) && 
+	  (debugFlag || !(part & debugBits))) ? 1 : 0;
 }
 
 template<typename RepClass>
@@ -186,9 +197,9 @@ OutputLog<RepClass>::makeAction(const int Flag)
     \return true is flags has appropiate bit set
   */
 {
-  const unsigned int part=(Flag<0) ? 
-    static_cast<unsigned int>(-Flag*2+1) : 
-    static_cast<unsigned int>(Flag*2+1);
+  const size_t part=(Flag<0) ? 
+    static_cast<size_t>(-Flag*2+1) : 
+    static_cast<size_t>(Flag*2+1);
   if (part & actionBits) 
     {
       locFlag=2;
@@ -319,7 +330,8 @@ template<typename RepClass>
 std::string 
 OutputLog<RepClass>::eType(const int T) const
   /*!
-    Returns the most server error status
+    Returns the most server error status.
+    [Note that we start from zero so offset by *2]
     \param T :: report type		      
     \return string of error type
   */
@@ -364,6 +376,7 @@ OutputLog<RepClass>::locString() const
     }
   return "";
 }
+
 
 template<typename RepClass>
 void 

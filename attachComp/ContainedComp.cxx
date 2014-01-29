@@ -173,6 +173,23 @@ ContainedComp::getSurfaces() const
   return  outerSurf.getTopRule()->getSurfVector();
 }
 
+std::vector<const Geometry::Surface*>
+ContainedComp::getConstSurfaces() const
+  /*!
+    Stupidly inefficient method to get the surface cells 
+    from the contained boundary
+    \return vector of surfaces
+  */
+{
+  ELog::RegMethod RegA("ContainedComp","getSurfaces");
+  if (!outerSurf.hasRule())
+    {
+      std::vector<const Geometry::Surface*> Empty;
+      return Empty;   // can this be done simpler?
+    }
+  return outerSurf.getTopRule()->getConstSurfVector();
+}
+
 void
 ContainedComp::addOuterSurf(const int SN) 
   /*!

@@ -236,7 +236,7 @@ TriangleMod::createLinks()
     {
       FixedComp::setConnect(i,
 	 (corner(i,OSize)+corner(i+1,OSize))/2.0,
-			    -midNorm(i+2));
+			    sideNorm(i,i+1));
     }
   FixedComp::setConnect(3,Origin-Z*(height/2.0+OSize),-Z);
   FixedComp::setConnect(4,Origin+Z*(height/2.0+OSize),Z);
@@ -270,7 +270,7 @@ TriangleMod::corner(const size_t Index,
 Geometry::Vec3D 
 TriangleMod::midNorm(const size_t Index) const
   /*!
-    Calculate the normal going from teh centre of the triangle
+    Calculate the normal going from the centre of the triangle
     to the corner
     \param Index :: Corner to calculate normal through
     \return Normal
@@ -281,6 +281,28 @@ TriangleMod::midNorm(const size_t Index) const
     Mid += ((Index%3)==i) ? corner(i,0.0) : -corner(i,0.0)/2.0;
 
   return Mid.unit();
+}
+
+Geometry::Vec3D 
+TriangleMod::sideNorm(const size_t IndexA,const size_t IndexB) const
+  /*!
+    Calculate the normal leaving the side of the triangle
+    \param IndexA :: First Corner to calculate normal through
+    \param IndexB :: Second Corner to calculate normal through
+    \return Normal
+  */
+{
+  ELog::RegMethod RegA("TriangleMod","sideNorm");
+
+  Geometry::Vec3D Pts[3];
+  Pts[0]=corner(IndexA,0.0);
+  Pts[1]=corner(IndexB,0.0);
+  Pts[2]=corner(3-(IndexB%3+IndexA%3),0.0);
+  // Now get cross vector
+  const Geometry::Vec3D ASide=(Pts[1]-Pts[0]).unit();
+  const Geometry::Vec3D BSide=(Pts[2]-Pts[0]).unit();
+  const Geometry::Vec3D Zvec=ASide * BSide;
+  return ASide*Zvec;
 }
 
 void

@@ -122,6 +122,7 @@ class Rule
   void populateSurf();
   
   std::vector<Geometry::Surface*> getSurfVector() const;
+  std::vector<const Geometry::Surface*> getConstSurfVector() const;
 
   ///\cond ABSTRACT
   virtual std::string display() const=0;
