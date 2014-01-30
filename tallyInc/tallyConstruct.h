@@ -78,12 +78,12 @@ class tallyConstruct  : public basicConstruct
   tallyConstruct(const tallyConstructFactory&);
   tallyConstruct(const tallyConstruct&);
   tallyConstruct& operator=(const tallyConstruct&);
-  ~tallyConstruct();
+  virtual ~tallyConstruct();
 
-  void setPoint(pointConstruct*);
+  virtual void setPoint(pointConstruct*);
   
-  int tallySelection(Simulation&,const mainSystem::inputParam&) const;
-  int tallyRenumber(Simulation&,const mainSystem::inputParam&) const;
+  virtual int tallySelection(Simulation&,const mainSystem::inputParam&) const;
+  virtual int tallyRenumber(Simulation&,const mainSystem::inputParam&) const;
 
 };
 
