@@ -50,6 +50,7 @@ class FixedComp
   
   void createUnitVector();
   void createUnitVector(const FixedComp&);
+  void createUnitVector(const FixedComp&,const long int);
   void createUnitVector(const Geometry::Vec3D&,const Geometry::Vec3D&,
 			const Geometry::Vec3D&);
   void applyShift(const double,const double,const double);
@@ -105,6 +106,7 @@ class FixedComp
   /// How many connections
   size_t NConnect() const { return LU.size(); }
   const LinkUnit& getLU(const size_t)  const; 
+  void setNConnect(const size_t);
 
   virtual int getLinkSurf(const size_t) const;
   virtual const Geometry::Vec3D& getLinkPt(const size_t) const;

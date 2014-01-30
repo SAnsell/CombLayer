@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   test/testAttachSupport.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,10 +51,6 @@
 #include "Surface.h"
 #include "Rules.h"
 #include "surfRegister.h"
-#include "Debug.h"
-#include "BnId.h"
-#include "Acomp.h"
-#include "Algebra.h"
 #include "surfIndex.h"
 #include "HeadRule.h"
 #include "Object.h"
@@ -69,6 +65,8 @@
 #include "simpleObj.h"
 #include "Simulation.h"
 #include "World.h"
+
+#include "Debug.h"
 
 #include "testFunc.h"
 #include "testAttachSupport.h"
@@ -164,24 +162,38 @@ testAttachSupport::testBoundaryValid()
 {
   ELog::RegMethod RegA("testAttachSupport","testBoundaryValid");
 
-  // SObj.push_back(SOTYPE(new testSystem::simpleObj("A")));
-  // SObj.back()->createAll(ASim,World::masterOrigin());
+  
+  typedef boost::tuple<size_t,Geometry::Vec3D,int> TTYPE;
+  std::vector<TTYPE> Tests;
+  Tests.push_back(TTYPE(0,Geometry::Vec3D(0,0,0),0));
+  Tests.push_back(TTYPE(0,Geometry::Vec3D(1000,0,0),1));
+  Tests.push_back(TTYPE(1,Geometry::Vec3D(0,0,0),0));
+  Tests.push_back(TTYPE(1,Geometry::Vec3D(1000,0,0),1));
+  
+  typedef int (attachSystem::ContainedComp::* MPtr)
+    (const Geometry::Vec3D&) const;
+  MPtr TPtr[]=
+    {
+      &ContainedComp::isBoundaryValid,
+      &ContainedComp::isOuterValid
+    };
 
-  //  boost::shared_ptr<attachSystem::ContainedComp*> 
   boost::shared_ptr<testSystem::simpleObj> 
     CC(new testSystem::simpleObj("A"));
   CC->createAll(ASim,World::masterOrigin());
 
-  ELog::EM<<"Valid == "<<CC->isBoundaryValid(Geometry::Vec3D(0,0,0))<<
-    ELog::endDebug;
-  ELog::EM<<"Valid == "<<CC->isBoundaryValid(Geometry::Vec3D(1000,0,0))<<
-    ELog::endDebug;
-  ELog::EM<<"Outer == "<<CC->getCompExclude()<<ELog::endDebug;
-  ASim.write("test.x");
-  ELog::EM<<"Valid == "<<CC->isOuterValid(Geometry::Vec3D(0,0,0))<<
-    ELog::endDebug;
-  ELog::EM<<"Valid == "<<CC->isOuterValid(Geometry::Vec3D(1000,0,0))<<
-    ELog::endDebug;
+  std::vector<TTYPE>::const_iterator tc;
+  for(tc=Tests.begin();tc!=Tests.end();tc++)
+    {
+      const int R=((*CC).*TPtr[tc->get<0>()])(tc->get<1>());
+      if (R!=tc->get<2>())
+	{
+	  ELog::EM<<"Failed Test "<<(tc-Tests.begin())+1<<ELog::endTrace;
+	  ELog::EM<<"Result["<< tc->get<2>()<<"] == "<<R<<ELog::endTrace;
+	  ELog::EM<<"Point["<< tc->get<1>()<<"] == "<<R<<ELog::endTrace;
+	  return -1;
+	}
+    }
   return 0;
 }
 
@@ -195,6 +207,7 @@ testAttachSupport::testInsertComponent()
 {
   ELog::RegMethod RegA("testAttachSupport","testInsertComponent");
 
+  initSim();
   SObj.push_back(SOTYPE(new testSystem::simpleObj("A")));
   SObj.back()->addInsertCell(5001);
   SObj.back()->createAll(ASim,World::masterOrigin());

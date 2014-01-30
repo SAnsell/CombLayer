@@ -761,7 +761,6 @@ montecarloTest(const int type,const int extra)
   if (type==0)
     {
       std::cout<<"testAlgebra          (1)"<<std::endl;
-      std::cout<<"testContained        (2)"<<std::endl;
       std::cout<<"testElement          (3)"<<std::endl;
       std::cout<<"testMaterial         (4)"<<std::endl;
       std::cout<<"testNeutron          (5)"<<std::endl;
@@ -777,32 +776,25 @@ montecarloTest(const int type,const int extra)
 
   if(type==2 || type<0)
     {
-      testContained A;
+      testElement A;
       const int X=A.applyTest(extra);
       if (X) return X;
     }
 
   if(type==3 || type<0)
     {
-      testElement A;
-      const int X=A.applyTest(extra);
-      if (X) return X;
-    }
-
-  if(type==4 || type<0)
-    {
       testMaterial A;
       const int X=A.applyTest(extra);
       if (X) return X;
     }
-  if(type==5 || type<0)
+  if(type==4 || type<0)
     {
       testNeutron A;
       const int X=A.applyTest(extra);
       if (X) return X;
     }
 
-  if(type==6 || type<0)
+  if(type==5 || type<0)
     {
       testObject A;
       const int X=A.applyTest(extra);
@@ -824,10 +816,17 @@ attachCompTest(const int type,const int extra)
   if (type==0)
     {
       std::cout<<"testAttachSupport          (1)"<<std::endl;
+      std::cout<<"testContained              (2)"<<std::endl;
     }
   if(type==1 || type<0)
     {
       testAttachSupport A;
+      const int X=A.applyTest(extra);
+      if (X) return X;
+    }
+  if(type==2 || type<0)
+    {
+      testContained A;
       const int X=A.applyTest(extra);
       if (X) return X;
     }

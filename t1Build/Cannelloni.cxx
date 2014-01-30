@@ -47,18 +47,12 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Quaternion.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "surfEqual.h"
-#include "localRotate.h"
-#include "masterRotate.h"
-#include "surfDivide.h"
 #include "surfDIter.h"
 #include "Quadratic.h"
 #include "Plane.h"
@@ -73,10 +67,6 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "SrcData.h"
-#include "SrcItem.h"
-#include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -186,6 +176,7 @@ Cannelloni::populate(const Simulation& System)
     \param System :: Simulation to use
   */
 {
+  ELog::RegMethod RegA("Cannelloni","populate");
   const FuncDataBase& Control=System.getDataBase();
 
   xStep=Control.EvalVar<double>(keyName+"XStep");

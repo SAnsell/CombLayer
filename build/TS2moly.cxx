@@ -47,9 +47,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Quaternion.h"
 #include "Surface.h"
 #include "surfIndex.h"
@@ -58,7 +55,6 @@
 #include "surfEqual.h"
 #include "localRotate.h"
 #include "masterRotate.h"
-#include "surfDivide.h"
 #include "surfDIter.h"
 #include "Quadratic.h"
 #include "Plane.h"
@@ -72,12 +68,9 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "SrcData.h"
-#include "SrcItem.h"
-#include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -170,8 +163,10 @@ TS2moly::populate(const Simulation& System)
       Item.thick=
 	Control.EvalPair<double>(keyIndex,molyKey+"P","Thick");
       
-      Item.mat=Control.EvalPair<int>(keyIndex,molyKey+"P","Mat");
-      Item.layerMat=Control.EvalPair<int>(keyIndex,molyKey+"P","LayerMat");
+      Item.mat=ModelSupport::EvalMat<int>
+	(Control,keyIndex+"Mat",molyKey+"PMat");
+      Item.layerMat=ModelSupport::EvalMat<int>
+	(Control,keyIndex+"LayreMat",molyKey+"PLayerMat");
       if (Item.layerMat>=0)
 	Item.layerThick=Control.EvalPair<double>
 	  (keyIndex,molyKey+"P","LayerThick");
@@ -191,7 +186,8 @@ TS2moly::populate(const Simulation& System)
       Item.axis.makeUnit();
       Item.radius=Control.EvalPair<double>(keyIndex,molyKey+"CutSph","Radius");
       Item.dist=Control.EvalPair<double>(keyIndex,molyKey+"CutSph","Dist");
-      Item.mat=Control.EvalPair<int>(keyIndex,molyKey+"CutSph","Mat");
+      Item.mat=ModelSupport::EvalMat<int>
+	(Control,keyIndex+"Mat",molyKey+"CutSphMat");
       Item.defCutPlane();
       SCut.push_back(Item);
     }
@@ -211,8 +207,10 @@ TS2moly::populate(const Simulation& System)
       Item.angleA=Control.EvalPair<double>(keyIndex,molyKey+"Cone","AngleA");
       Item.angleB=Control.EvalPair<double>(keyIndex,molyKey+"Cone","AngleB");
       Item.dist=Control.EvalPair<double>(keyIndex,molyKey+"Cone","Dist");
-      Item.mat=Control.EvalPair<int>(keyIndex,molyKey+"Cone","Mat");
-      Item.layerMat=Control.EvalPair<int>(keyIndex,molyKey+"Cone","LayerMat");
+      Item.mat=ModelSupport::EvalMat<int>
+	(Control,keyIndex+"Mat",molyKey+"ConeMat");
+      Item.layerMat=ModelSupport::EvalMat<int>
+	(Control,keyIndex+"LayerMat",molyKey+"ConeLayerMat");
       Item.layerThick=
 	Control.EvalPair<double>(keyIndex,molyKey+"Cone","LayerThick");
       Item.layerThick*=cos(M_PI*fabs(Item.angleA)/180.0);

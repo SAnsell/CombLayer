@@ -35,14 +35,12 @@
 class testContained
 {
 private:
-  
-  /// Type of storage
-  typedef std::map<int,MonteCarlo::Qhull*> OTYPE;
 
   void createSurfaces();
 
   //Tests 
   int testAddSurfString();
+  int testIsOuterLine();
 
 public:
   

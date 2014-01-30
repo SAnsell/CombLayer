@@ -6,7 +6,7 @@ use getMake;
 use strict;
 
 ## EXECUTABLES
-my @masterprog=("fullBuild","ess","muBeam",
+my @masterprog=("fullBuild","ess","muBeam","bnct",
 		"sns","t1Real","t1MarkII","testMain"); 
 
 my @noncompile=("bilbau","clayer","cuBuild","d4c","detectSim",
@@ -15,18 +15,18 @@ my @noncompile=("bilbau","clayer","cuBuild","d4c","detectSim",
 
 
 ## CXX Directory
-my @sublibdir=("src","attachComp","bibBuild","build",                    # 0
-	       "chip","construct","crystal","cuBlock",                   # 4
-	       "d4cModel","delft","endf","epbBuild",                     # 8
-               "essBuild","funcBase","geometry","global",                # 12
-	       "imat","input","instrument","lensModel",                  # 16
-               "log","md5","moderator","mersenne",                       # 20 
-	       "monte","muon","physics","poly",                          # 24
-	       "process","scatMat","snsBuild","source",                  # 28
-	       "support", "tally","t1Build","t1Upgrade",                 # 32
-	       "transport","visit","weights","world",                    # 36
-	       "work","xml","zoom","special",                            # 40
-	       "test");                            
+my @sublibdir=("src","attachComp","bibBuild","bnctBuild",
+                "build","chip","construct","crystal",
+    	       "cuBlock","d4cModel","delft","endf",
+	       "epbBuild","essBuild","funcBase","geometry",
+	       "global","imat","input","instrument",
+	       "lensModel","log","md5","moderator",
+	       "mersenne","monte","muon","physics",
+	       "poly","process","scatMat","snsBuild",
+	       "source","support", "tally","t1Build",
+	       "t1Upgrade", "transport","visit","weights",
+	       "world","work","xml","zoom",
+	       "special","test");                            
 
 my @core=qw( src attachComp construct crystal endf funcBase
              geometry global input instrument log md5 monte 
@@ -44,7 +44,8 @@ my @coreInc=qw( include  attachCompInc constructInc crystalInc
 my @libnames=@sublibdir;
 
 ## INCLUDES
-my @incdir=("include","attachCompInc","bibBuildInc","buildInc","chipInc",
+my @incdir=("include","attachCompInc","bibBuildInc",
+	    "bnctBuildInc","buildInc","chipInc",
 	    "constructInc","crystalInc","cuBlockInc","d4cModelInc",
 	    "delftInc","endfInc","epbBuildInc","essBuildInc",
             "funcBaseInc","geomInc","globalInc","imatInc",
@@ -69,7 +70,7 @@ my @libflags=("","","","","",
 	      "","","","",
 	      "","","","",
 	      "","","","",
-	      "","","","","","");
+	      "","","","","",""."");
 
 my $gM=new getMake;
 
@@ -83,26 +84,27 @@ $gM->addIncDir(\@incdir);
 #	      "process","support","test","lensModel");                  
 
 
-$gM->addDepUnit("bilbau",   [2,9,37,0,26,17,31,24,13,20,33,5,6,36,29,21,10,28,39,40,24,14,23,0,41,27,32,38,15,1,37,3]);
+$gM->addDepUnit("bilbau",   [2,10,38,0,27,18,32,25,14,21,34,6,7,37,30,22,11,29,40,41,25,15,24,0,42,28,33,39,16,1,38,4]);
 
-$gM->addDepUnit("pressure", [37,42,0,24,15,13,20,4,24,23,26,14,33,40,41,27,17,28,37,38,21,1,37]);
-$gM->addDepUnit("divide",   [43,37,4,3,42,0,26,24,13,20,24,23,0,14,17,28,40,41,27,32,38,21,15,1,37]);
-$gM->addDepUnit("fullBuild",[3,37,4,22,3,42,16,0,26,5,36,29,6,10,17,31,24,13,20,33,28,33,39,24,14,23,0,40,41,27,32,38,21,15,1,37]);
-$gM->addDepUnit("d4c",      [8,19,37,0,26,17,18,31,24,13,20,5,6,36,29,10,36,29,33,28,33,39,5,24,14,23,0,41,27,32,38,40,21,15,1,37]);
-$gM->addDepUnit("lens",     [19,37,0,26,17,31,24,13,20,5,6,36,29,10,36,29,33,28,33,39,5,24,14,23,0,41,27,32,38,21,15,1,37]);
-$gM->addDepUnit("simple",   [37,26,0,17,31,24,13,20,6,36,29,10,28,33,39,24,14,23,0,41,27,32,38,21,15,1,28,40,33,37]);
-$gM->addDepUnit("t1MarkII", [35,34,16,4,3,37,22,42,0,5,6,36,29,10,26,17,28,31,24,13,20,24,33,14,23,0,39,40,41,27,32,38,21,15,1,37,27]);
-$gM->addDepUnit("ts1layer", [3,37,4,22,3,42,0,26,17,28,24,13,20,24,33,14,23,0,40,41,27,32,38,21,15,1,37,27]);
-$gM->addDepUnit("t1Real",   [34,16,4,3,37,22,42,0,5,6,36,29,10,26,17,28,31,24,13,20,24,33,14,23,0,39,40,41,27,32,38,21,15,1,37,27]);
-$gM->addDepUnit("reactor",  [9,37,0,26,17,31,24,13,20,5,36,29,6,10,33,28,33,39,24,14,23,0,41,27,32,38,21,40,15,1,37]);
-$gM->addDepUnit("siMod",    [37,0,26,17,31,24,13,20,33,5,6,36,29,10,28,39,24,14,23,0,41,27,32,38,15,1,37]);
-$gM->addDepUnit("cuBuild",  [7,9,37,0,26,17,31,24,13,20,33,5,6,36,29,21,10,28,39,40,24,14,23,0,41,27,32,38,15,1,37]);
-$gM->addDepUnit("ess",      [12,37,0,26,17,31,24,13,20,33,5,6,36,29,21,10,28,39,40,24,14,23,0,41,27,32,38,15,1,37]);
-$gM->addDepUnit("sns",      [30,37,0,26,17,31,24,13,20,33,5,6,36,29,21,10,28,39,40,24,14,23,0,41,27,32,38,15,1,37]);
-$gM->addDepUnit("epb",      [11,9,37,0,26,17,31,24,13,20,33,5,6,36,29,21,10,28,39,40,24,14,23,0,41,27,32,38,15,1,37]);
-$gM->addDepUnit("muBeam",   [25,34,16,4,3,37,22,42,0,5,6,36,29,10,26,17,28,31,24,13,20,24,33,14,23,0,39,40,41,27,32,38,21,15,1,37,27]);
+$gM->addDepUnit("pressure", [38,43,0,25,16,14,21,5,25,24,27,15,34,41,42,28,18,29,38,39,22,1,38]);
+$gM->addDepUnit("divide",   [44,38,5,4,43,0,27,25,14,21,25,24,0,15,18,29,41,42,28,33,39,22,16,1,38]);
+$gM->addDepUnit("fullBuild",[4,38,5,23,4,43,17,0,27,6,37,30,7,11,18,32,25,14,21,34,29,34,40,25,15,24,0,41,42,28,33,39,22,16,1,38]);
+$gM->addDepUnit("d4c",      [9,20,38,0,27,18,19,32,25,14,21,6,7,37,30,11,37,30,34,29,34,40,6,25,15,24,0,42,28,33,39,41,22,16,1,38]);
+$gM->addDepUnit("lens",     [20,38,0,27,18,32,25,14,21,6,7,37,30,11,37,30,34,29,34,40,6,25,15,24,0,42,28,33,39,22,16,1,38]);
+$gM->addDepUnit("simple",   [38,27,0,18,32,25,14,21,7,37,30,11,29,34,40,25,15,24,0,42,28,33,39,22,16,1,29,41,34,38]);
+$gM->addDepUnit("t1MarkII", [36,35,17,5,4,38,23,43,0,6,7,37,30,11,27,18,29,32,25,14,21,25,34,15,24,0,40,41,42,28,33,39,22,16,1,38,28]);
+$gM->addDepUnit("ts1layer", [4,38,5,23,4,43,0,27,18,29,25,14,21,25,34,15,24,0,41,42,28,33,39,22,16,1,38,28]);
+$gM->addDepUnit("t1Real",   [35,17,5,4,38,23,43,0,6,7,37,30,11,27,18,29,32,25,14,21,25,34,15,24,0,40,41,42,28,33,39,22,16,1,38,28]);
+$gM->addDepUnit("reactor",  [10,38,0,27,18,32,25,14,21,6,37,30,7,11,34,29,34,40,25,15,24,0,42,28,33,39,22,41,16,1,38]);
+$gM->addDepUnit("siMod",    [38,0,27,18,32,25,14,21,34,6,7,37,30,11,29,40,25,15,24,0,42,28,33,39,16,1,38]);
+$gM->addDepUnit("cuBuild",  [8,10,38,0,27,18,32,25,14,21,34,6,7,37,30,22,11,29,40,41,25,15,24,0,42,28,33,39,16,1,38]);
+$gM->addDepUnit("ess",      [13,38,0,27,18,32,25,14,21,34,6,7,37,30,22,11,29,40,41,25,15,24,0,42,28,33,39,16,1,38]);
+$gM->addDepUnit("sns",      [31,38,0,27,18,32,25,14,21,34,6,7,37,30,22,11,29,40,41,25,15,24,0,42,28,33,39,16,1,38]);
+$gM->addDepUnit("epb",      [12,10,38,0,27,18,32,25,14,21,34,6,7,37,30,22,11,29,40,41,25,15,24,0,42,28,33,39,16,1,38]);
+$gM->addDepUnit("muBeam",   [26,35,17,5,4,38,23,43,0,6,7,37,30,11,27,18,29,32,25,14,21,25,34,15,24,0,40,41,42,28,33,39,22,16,1,38,28]);
+$gM->addDepUnit("bnct",     [3,35,17,5,4,38,23,43,0,6,7,37,30,11,27,18,29,32,25,14,21,25,34,15,24,0,40,41,42,28,33,39,22,16,1,38,28]);
 
-$gM->addDepUnit("testMain", [44,3,37,4,35,16,22,3,42,5,6,36,29,10,34,0,26,17,28,31,24,13,20,14,33,23,0,40,41,27,32,39,38,21,15,1,37,27]);
+$gM->addDepUnit("testMain", [45,4,38,5,36,17,23,4,43,6,7,37,30,11,35,0,27,18,29,32,25,14,21,15,34,24,0,41,42,28,33,40,39,22,16,1,38,28]);
 
 ##
 ## START OF MAIN:::

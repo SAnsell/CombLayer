@@ -58,6 +58,7 @@
 #include "Object.h"
 #include "Qhull.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
 
 #include "testFunc.h"
 #include "testContained.h"
@@ -68,7 +69,9 @@ testContained::testContained()
   /*!
     Constructor
   */
-{}
+{
+  createSurfaces();
+}
 
 testContained::~testContained() 
   /*!
@@ -86,7 +89,7 @@ testContained::createSurfaces()
   ELog::RegMethod RegA("testContained","createSurfaces");
 
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
-  
+
   // First box :
   SurI.createSurface(1,"px -1");
   SurI.createSurface(2,"px 1");
@@ -109,6 +112,11 @@ testContained::createSurfaces()
 
   // Sphere :
   SurI.createSurface(100,"so 25");
+
+
+  // Sphere :
+  SurI.createSurface(107,"cy 10");
+
   
   return;
 }
@@ -129,11 +137,13 @@ testContained::applyTest(const int extra)
   typedef int (testContained::*testPtr)();
   testPtr TPtr[]=
     {
-      &testContained::testAddSurfString
+      &testContained::testAddSurfString,
+      &testContained::testIsOuterLine
     };
   const std::string TestName[]=
     {
-      "AddSurfString"
+      "AddSurfString",
+      "IsOuterLine"
     };
   
   const int TSize(sizeof(TPtr)/sizeof(testPtr));
@@ -186,6 +196,47 @@ testContained::testAddSurfString()
 	{
 	  ELog::EM<<"Exclude == "<<C.getExclude()<<ELog::endTrace;
 	  ELog::EM<<"Expect  == "<<tc->get<1>()<<ELog::endTrace;
+	  return -1;
+	}
+    }
+  return 0;
+}
+
+int
+testContained::testIsOuterLine()
+  /*!
+    Test the line tracking through a cell 
+    \retval 0 :: success / -ve on failure
+  */
+{
+  ELog::RegMethod RegA("testContained","testAddSurfString");
+
+  typedef boost::tuple<std::string,Geometry::Vec3D,Geometry::Vec3D,bool> TTYPE;
+  std::vector<TTYPE> Tests;
+  Tests.push_back(TTYPE("1 -2 3 -4 5 -6",
+			Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0),1));
+
+  Tests.push_back(TTYPE("1 -2 3 -4 5 -6",
+			Geometry::Vec3D(-2,0,0),Geometry::Vec3D(-1.2,0,0),0));
+
+  Tests.push_back(TTYPE("3 -4 -107",
+			Geometry::Vec3D(-2,0,0),Geometry::Vec3D(-1.2,0,0),0));
+
+  Tests.push_back(TTYPE("3 -4 -107",
+			Geometry::Vec3D(-1,0,0),Geometry::Vec3D(1,4,0),1));
+  
+
+  std::vector<TTYPE>::const_iterator tc;
+  for(tc=Tests.begin();tc!=Tests.end();tc++)
+    {
+      ContainedComp C;
+      C.addOuterSurf(tc->get<0>());
+      bool Res=C.isOuterLine(tc->get<1>(),tc->get<2>());
+      if (Res!=tc->get<3>())
+	{
+	  ELog::EM<<"Surface  == "<<tc->get<0>()<<ELog::endTrace;
+	  ELog::EM<<"Line == "<<tc->get<1>()<<" "<<tc->get<2>()<<ELog::endTrace;
+	  ELog::EM<<"Expect  == "<<tc->get<3>()<<ELog::endTrace;
 	  return -1;
 	}
     }

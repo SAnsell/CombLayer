@@ -31,6 +31,7 @@ namespace mainSystem
 namespace setVariable
 {
 
+  void BNCTVariables(FuncDataBase&);
   void BilbauVariables(FuncDataBase&);
   void ChipVariables(FuncDataBase&);
   void CuVariables(FuncDataBase&);

@@ -872,6 +872,7 @@ FuncDataBase::processXML(const std::string& FName)
   double V;
   Geometry::Vec3D VUnit;
   std::string VStr;
+  int VInt;
   while(AR)
     {
       const std::string Name=AR->getItem<std::string>("name");
@@ -888,6 +889,22 @@ FuncDataBase::processXML(const std::string& FName)
 	  else
 	    VUnit=AR->getItem<Geometry::Vec3D>();
 	  addVariable(Name,VUnit);
+	}
+      else if (Type=="std::string") 
+	{
+	  if ( (AG=dynamic_cast<XML::XMLgroup*>(AR)) )
+	    VStr=AG->getItem<std::string>("value");
+	  else
+	    VStr=AR->getItem<std::string>();
+	  addVariable(Name,VStr);
+	}
+      else if (Type=="int") 
+	{
+	  if ( (AG=dynamic_cast<XML::XMLgroup*>(AR)) )
+	    VInt=AG->getItem<int>("value");
+	  else
+	    VInt=AR->getItem<int>();
+	  addVariable(Name,VInt);
 	}
       else
         {

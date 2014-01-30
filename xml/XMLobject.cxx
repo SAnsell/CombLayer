@@ -398,7 +398,7 @@ XMLobject::getItem() const
 	  
 	}
       throw ColErr::InContainerError<std::string>("baseValue",
-						  "Failed to find baseIem");
+						  "Failed to find baseItem");
     }
   return CPobj->getValue();
 }

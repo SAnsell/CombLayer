@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   snsBuild/makeSNS.cxx
+ * File:   bnctBuild/makeBNCT.cxx
  *
  * Copyright (c) 2004-2014 by Stuart Ansell
  *
@@ -49,9 +49,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "inputParam.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -63,17 +60,10 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
-#include "KCode.h"
 #include "insertInfo.h"
 #include "insertBaseInfo.h"
 #include "InsertComp.h"
 #include "ModeCard.h"
-#include "PhysImp.h"
-#include "PhysCard.h"
-#include "LSwitchCard.h"
-#include "PhysicsCards.h"
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -82,33 +72,28 @@
 #include "LayerComp.h"
 #include "World.h"
 #include "AttachSupport.h"
-#include "TargetBase.h"
-#include "targetOuter.h"
-#include "RefPlug.h"
 
-#include "makeSNS.h"
+#include "DiscTarget.h"
+#include "makeBNCT.h"
 
-namespace snsSystem
+namespace bnctSystem
 {
 
-makeSNS::makeSNS() :
-  tarOuterObj(new targetOuter("tarFront")),
-  refObj(new RefPlug("RefPlug"))
+makeBNCT::makeBNCT() :
+  targetObj(new DiscTarget("Disk"))    
  /*!
     Constructor
   */
 {
-  ELog::RegMethod RegA("makeSNS","makeSNS");
+  ELog::RegMethod RegA("makeBNCT","makeBNCT");
 
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-
-  OR.addObject(tarOuterObj);
-  OR.addObject(refObj);
+  OR.addObject(targetObj);
 }
 
 
-makeSNS::~makeSNS()
+makeBNCT::~makeBNCT()
   /*!
     Destructor
   */
@@ -116,7 +101,7 @@ makeSNS::~makeSNS()
 
 
 void 
-makeSNS::build(Simulation* SimPtr,
+makeBNCT::build(Simulation* SimPtr,
 	       const mainSystem::inputParam& IParam)
   /*!
     Carry out the full build
@@ -125,16 +110,17 @@ makeSNS::build(Simulation* SimPtr,
    */
 {
   // For output stream
-  ELog::RegMethod RegA("makeSNS","build");
+  ELog::RegMethod RegA("makeBNCT","build");
 
   int voidCell(74123);
-  tarOuterObj->addInsertCell(voidCell);
-  tarOuterObj->createAll(*SimPtr,World::masterOrigin());
+  
+  targetObj->addInsertCell(voidCell);
+  targetObj->createAll(*SimPtr,World::masterOrigin());
 
-  refObj->addInsertCell(voidCell);
-  refObj->createAll(*SimPtr,World::masterOrigin());
+  // refObj->addInsertCell(voidCell);
+  // refObj->createAll(*SimPtr,World::masterOrigin());
 
-  attachSystem::addToInsertSurfCtrl(*SimPtr,*refObj,*tarOuterObj);
+  // attachSystem::addToInsertSurfCtrl(*SimPtr,*refObj,*tarOuterObj);
 
   // LineVoid->createAll(*SimPtr,World::masterOrigin());
   // attachSystem::addToInsertSurfCtrl(*SimPtr,*Hall,*LineVoid);

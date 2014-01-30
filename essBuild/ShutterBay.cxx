@@ -82,7 +82,7 @@ namespace essSystem
 {
 
 ShutterBay::ShutterBay(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,3),
+  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
   bulkIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(bulkIndex+1)
   /*!
@@ -186,6 +186,10 @@ ShutterBay::createSurfaces()
 
   // rotation of axis:
 
+  // Dividing planes:
+  ModelSupport::buildPlane(SMap,bulkIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,bulkIndex+2,Origin,X);
+
   ModelSupport::buildPlane(SMap,bulkIndex+5,Origin-Z*depth,Z);
   ModelSupport::buildPlane(SMap,bulkIndex+6,Origin+Z*height,Z);
   ModelSupport::buildCylinder(SMap,bulkIndex+7,Origin,Z,radius);
@@ -222,12 +226,25 @@ ShutterBay::createLinks()
 {
   ELog::RegMethod RegA("ShutterBay","createLinks");
 
-  FixedComp::setConnect(0,Origin-Z*depth,-Z);  // base
-  FixedComp::setConnect(1,Origin+Z*height,Z);  // 
-  FixedComp::setConnect(2,Origin+Y*radius,Y);   // outer point
-  FixedComp::setLinkSurf(0,-SMap.realSurf(bulkIndex+5));
-  FixedComp::setLinkSurf(1,SMap.realSurf(bulkIndex+6));
+  FixedComp::setConnect(0,Origin-Y*radius,-Y);   // outer point
+  FixedComp::setConnect(1,Origin+Y*radius,Y);   // outer point
+  FixedComp::setConnect(2,Origin-X*radius,-X);   // outer point
+  FixedComp::setConnect(3,Origin+X*radius,X);   // outer point
+  FixedComp::setConnect(4,Origin-Z*depth,-Z);  // base
+  FixedComp::setConnect(5,Origin+Z*height,Z);  // 
+
+  FixedComp::setLinkSurf(0,SMap.realSurf(bulkIndex+7));
+  FixedComp::setLinkSurf(1,SMap.realSurf(bulkIndex+7));
   FixedComp::setLinkSurf(2,SMap.realSurf(bulkIndex+7));
+  FixedComp::setLinkSurf(3,SMap.realSurf(bulkIndex+7));
+
+  FixedComp::addLinkSurf(0,-SMap.realSurf(bulkIndex+1));
+  FixedComp::addLinkSurf(1,SMap.realSurf(bulkIndex+1));
+  FixedComp::addLinkSurf(2,-SMap.realSurf(bulkIndex+2));
+  FixedComp::addLinkSurf(3,SMap.realSurf(bulkIndex+2));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(bulkIndex+5));
+  FixedComp::setLinkSurf(5,SMap.realSurf(bulkIndex+6));
+
 
   return;
 }

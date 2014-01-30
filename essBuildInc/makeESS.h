@@ -54,6 +54,7 @@ namespace essSystem
   class CylPreMod;
   class BulkModule;
   class ShutterBay;
+  class ProtonTube;
   class GuideBay;
 
   /*!
@@ -70,7 +71,7 @@ class makeESS
   
   boost::shared_ptr<WheelBase> Target;   ///< target object
   boost::shared_ptr<BeRef> Reflector;   ///< reflector object
-  boost::shared_ptr<ts1System::ProtonVoid> PBeam;  ///< Proton Void
+  boost::shared_ptr<ProtonTube> PBeam;  ///< Proton Void
 
   // ASSEMBLY 1:
   boost::shared_ptr<essMod> LowMod;  ///< Lower Mod

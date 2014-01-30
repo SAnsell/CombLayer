@@ -291,11 +291,7 @@ FlightLine::createUnitVector(const Geometry::Vec3D& Og,
   X= Y*Z;
 
   applyAngleRotate(masterXY,masterZ);
-  ELog::EM<<"Flight "<<keyName<<" : "<<ELog::endDebug;
-
   Origin=Og+X*xStep+Z*zStep;
-  ELog::EM<<"ORIGIN "<<Og<<" : "<<Origin<<ELog::endDebug;
-  ELog::EM<<"AXIs "<<X<<" : "<<Y<<" : " <<Z<<ELog::endDebug;
 
   return;
 }
@@ -324,15 +320,6 @@ FlightLine::createSurfaces()
   ModelSupport::buildPlane(SMap,flightIndex+4,Origin+X*(width/2.0),xDircB);
   ModelSupport::buildPlane(SMap,flightIndex+5,Origin-Z*(height/2.0),zDircA);
   ModelSupport::buildPlane(SMap,flightIndex+6,Origin+Z*(height/2.0),zDircB);
-
-  ELog::EM<<"Flight "<<keyName<<" : "<<ELog::endDebug;
-  ELog::EM<<"PT "<<Origin-X*(width/2.0)<<" : "<<ELog::endDebug;
-  ELog::EM<<"PT "<<Origin+X*(width/2.0)<<" : "<<ELog::endDebug;
-  ELog::EM<<"PT "<<Origin-Z*(height/2.0)<<" : "<<ELog::endDebug;
-  ELog::EM<<"PT "<<Origin+Z*(height/2.0)<<" : "<<ELog::endDebug;
-
-  ELog::EM<<"XDIRA "<<xDircA<<" : "<<ELog::endDebug;
-  ELog::EM<<"XDIRB "<<xDircB<<" : "<<ELog::endDebug;
 
   double layT(0.0);
   if (nLayer)
@@ -515,9 +502,6 @@ FlightLine::createObjects(Simulation& System,
   addOuterSurf("inner",Out);
   const std::string attachRule=StrFunc::makeString(baseSurf)
     +" "+CC.getExclude();
-  ELog::EM<<"ATT == "<<baseSurf<<" ::: "<<attachRule
-	  <<" ::  "<<CC.getExclude()<<ELog::endDebug;
-
 
   Out=ModelSupport::getComposite(SMap,flightIndex," 3 -4 5 -6 ");
   Out+=attachRule;         // forward boundary of object

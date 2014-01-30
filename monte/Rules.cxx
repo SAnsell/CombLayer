@@ -885,7 +885,8 @@ Rule::getConstSurfVector() const
     \return Surface Vector
   */
 {
-  ELog::RegMethod RegA("Rule","getSurfVector");
+  ELog::RegMethod RegA("Rule","getConstSurfVector");
+
   std::vector<const Geometry::Surface*> Out;
   std::vector<Geometry::Surface*> NonConstOut=
     this->getSurfVector();

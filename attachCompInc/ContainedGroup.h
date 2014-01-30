@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef ZoomSystem_ContainedGroup_h
-#define ZoomSystem_ContainedGroup_h
+#ifndef attachSystem_ContainedGroup_h
+#define attachSystem_ContainedGroup_h
 
 class Simulation;
 
@@ -54,6 +54,7 @@ class ContainedGroup
 
  public:
 
+  ContainedGroup();
   ContainedGroup(const std::string&,const std::string&);
   ContainedGroup(const std::string&,const std::string&,
 		 const std::string&);
@@ -93,6 +94,7 @@ class ContainedGroup
 
   void insertObjects(Simulation&);
 
+  ContainedComp& addKey(const std::string&);
   ContainedComp& getKey(const std::string&);
   const ContainedComp& getKey(const std::string&) const;
 

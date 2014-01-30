@@ -51,35 +51,42 @@ namespace ts1System
 {
 
 ConicInfo::ConicInfo(const Geometry::Vec3D& C,const Geometry::Vec3D& A,
-		     const double ang,const double WT,const int WM) :
-  cylFlag(0),Cent(C),Axis(A),angle(ang),wall(WT),wallMat(WM)
+		     const double ang,const int M,const double WT,
+		     const int WM) :
+  cylFlag(0),Cent(C),Axis(A),angle(ang),wall(WT),
+  mat(M),wallMat(WM)
 /*!
   Ugly constructor for Cent / Axis
   \param C :: Centre
   \param A :: Axis 
   \param ang :: Angle
+  \param M :: Material in conic
   \param WT :: wall thickness
   \param WM :: wall Material
 */
 {} 
 
 ConicInfo::ConicInfo(const Geometry::Vec3D& C,const Geometry::Vec3D& A,
-		     const double R,const double WT,const int WM,
+		     const double R,const int M,
+		     const double WT,const int WM,
 		     const int CF) :
-  cylFlag(CF),Cent(C),Axis(A),angle(R),wall(WT),wallMat(WM)
-/*!
-  Ugly constructor for Cent / Axis
+  cylFlag(CF),Cent(C),Axis(A),angle(R),wall(WT),
+  mat(M),wallMat(WM)
+ /*!
+   Ugly constructor for Cent / Axis
   \param C :: Centre
   \param A :: Axis 
   \param Radius :: Angle
+  \param M :: Fill Material
   \param WT :: wall thickness
   \param WM :: wall Material
+  \param CF :: cylinder flag 
 */
 {} 
 
 ConicInfo::ConicInfo(const ConicInfo& A) : 
   cylFlag(A.cylFlag),Cent(A.Cent),Axis(A.Axis),angle(A.angle),
-  wall(A.wall),wallMat(A.wallMat)
+  wall(A.wall),mat(A.mat),wallMat(A.wallMat)
   /*!
     Copy constructor
     \param A :: ConicInfo to copy
@@ -101,6 +108,7 @@ ConicInfo::operator=(const ConicInfo& A)
       Axis=A.Axis;
       angle=A.angle;
       wall=A.wall;
+      mat=A.mat;
       wallMat=A.wallMat;
     }
   return *this;

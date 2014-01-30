@@ -785,6 +785,7 @@ DBMaterial::initMaterial()
 		   "",MLib);
   setMaterial(MObj);
 
+
   return;
 }
 

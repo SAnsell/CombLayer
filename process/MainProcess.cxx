@@ -74,7 +74,6 @@ activateLogging(ELog::RegMethod& RControl)
   ELog::EM.setTypeFlag(0);
   //  ELog::EM.setActive(255 ^ ELog::debug); // No debug
   ELog::EM.setActive(255);
-  ELog::EM.setDebug(ELog::debug);
   ELog::EM.setAction(ELog::error);       // Exit on Error
   ELog::EM.setColour();
 
@@ -143,7 +142,6 @@ setRunTimeVariable(FuncDataBase& Control,
   std::map<std::string,std::string>::const_iterator mc;
   for(mc=VMap.begin();mc!=VMap.end();mc++)
     {
-      ELog::EM<<"Processing "<<mc->first<<ELog::endTrace;
       if (!Control.hasVariable(mc->first))
         {
 	  ELog::EM<<"Failure to find variable name "<<mc->first<<ELog::endCrit;
@@ -164,7 +162,6 @@ setRunTimeVariable(FuncDataBase& Control,
 	  Control.setVariable(mc->first,mc->second);
 	}
     }
-
   return;
 }
 
@@ -461,6 +458,19 @@ void createBilbauInputs(inputParam& IParam)
   return;
 }
 
+void createBNCTInputs(inputParam& IParam)
+  /*!
+    Set the specialise inputs for Boron capture beamline
+    \param IParam :: Input Parameters
+  */
+{
+  ELog::RegMethod RegA("MainProcess::","createSNSInputs");
+  createInputs(IParam);
+  
+  IParam.setValue("sdefType",std::string("ess"));  
+  return;
+}
+
 void createCuInputs(inputParam& IParam)
   /*!
     Set the specialise inputs for TS2
@@ -636,7 +646,6 @@ setVariables(Simulation& System,const inputParam& IParam,
   std::map<std::string,std::string> AddValues;  
   std::map<std::string,double> IterVal;  
 
-  mainSystem::getVariables(Names,AddValues,Values,IterVal);
 
   for(size_t i=0;i<IParam.grpCnt("xml");i++)
     {
@@ -644,7 +653,9 @@ setVariables(Simulation& System,const inputParam& IParam,
       System.getDataBase().processXML(FileName);
     }
 
+  mainSystem::getVariables(Names,AddValues,Values,IterVal);
   mainSystem::setRunTimeVariable(System.getDataBase(),Values,AddValues);
+
 
   if (IParam.flag("xmlout")) 
     {
@@ -652,6 +663,7 @@ setVariables(Simulation& System,const inputParam& IParam,
 	      <<ELog::endCrit;
       System.getDataBase().writeXML(IParam.getValue<std::string>("xmlout"));
     }
+
 
   return;
 }

@@ -161,6 +161,36 @@ FixedComp::createUnitVector(const FixedComp& FC)
 
   return;
 }
+
+void
+FixedComp::createUnitVector(const FixedComp& FC,
+			    const long int sideIndex)
+  /*!
+    Create the unit vectors
+    \param FC :: Fixed unit for link points
+    \param sideIndex :: SIGNED +1 side index
+  */
+{
+  ELog::RegMethod RegA("FixedComp","createUnitVector(FixedComp,side)");
+  
+  
+  if (sideIndex==0)
+    {
+      createUnitVector(FC);
+      return;
+    }
+
+  const size_t linkIndex=
+    (sideIndex>0) ? static_cast<size_t>(sideIndex-1) :
+    static_cast<size_t>(-sideIndex-1) ;
+    
+  const LinkUnit& LU=FC.getLU(linkIndex);
+  const double signV((sideIndex>0) ? 1.0 : -1.0);
+
+  createUnitVector(LU.getConnectPt(),
+		   LU.getAxis()*signV,FC.getZ());
+  return;
+}
   
 void
 FixedComp::createUnitVector(const Geometry::Vec3D& OG,
@@ -274,6 +304,17 @@ FixedComp::applyFullRotate(const double xyAngle,
   Qxy.rotate(Origin);
   Origin+=RotCent;
 
+  return;
+}
+
+void
+FixedComp::setNConnect(const size_t N) 
+  /*!
+    Create/Remove new links point
+    \param N :: New size of link points
+  */
+{
+  LU.resize(N);
   return;
 }
 

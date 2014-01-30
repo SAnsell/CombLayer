@@ -136,6 +136,7 @@ beamTallyConstruct::processPoint(Simulation& System,
 
 
   const std::string PType(IParam.getCompValue<std::string>("tally",Index,1)); 
+
   if (PType=="help")  // 
     {
       ELog::EM<<

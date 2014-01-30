@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   t1Upgrade/CylMod.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -183,10 +183,12 @@ CylMod::populate(const FuncDataBase& Control)
       const double W=
 	Control.EvalVar<double>(KN+"Wall");
       const int WM=
-	Control.EvalVar<int>(KN+"WallMat");
+	ModelSupport::EvalMat<int>(Control,KN+"WallMat");
+      const int M=
+	ModelSupport::EvalMat<int>(Control,KN+"Mat");
       const double ang=
 	Control.EvalVar<double>(KN+"Angle");
-      Conics.push_back(ConicInfo(C,A,ang,W,WM));
+      Conics.push_back(ConicInfo(C,A,ang,M,W,WM));
     }
   
   return;
@@ -277,6 +279,7 @@ CylMod::createObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("CylMod","createObjects");
+
   const FuncDataBase& Control =System.getDataBase();
   const int cylFlag=Control.EvalDefVar<int>(keyName+"CylFlag",0);
   ELog::EM<<"cylFlag = "<<cylFlag<<ELog::endDebug;
@@ -287,13 +290,13 @@ CylMod::createObjects(Simulation& System)
   for(size_t i=0;i<nConic;i++)
     {
       Out=ModelSupport::getComposite(SMap,modIndex,CI," -7 5 -6 -7M 1M");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      System.addCell(MonteCarlo::Qhull(cellIndex++,Conics[i].getMat(),temp[0],Out));
       if (Conics[i].getWall()>Geometry::zeroTol)
 	{
 	  Out=ModelSupport::getComposite(SMap,modIndex,CI,
 					 " -7 5 -6 (7M:-1M) -17M 11M");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,
-					   Conics[i].getMat(),
+					   Conics[i].getWallMat(),
 					   temp[0],Out));
 	  Out=ModelSupport::getComposite(SMap,modIndex,CI," -7 5 -6 -17M 11M ");
 	}

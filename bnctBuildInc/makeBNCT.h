@@ -1,8 +1,8 @@
 /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   testInclude/testAttachSupport.h
- *
+ * File:   epbBuildInc/makeEPB.h
+*
  * Copyright (c) 2004-2013 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,42 +19,45 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef testAttachSupport_h
-#define testAttachSupport_h 
+#ifndef bnctSystem_makeBNCT_h
+#define bnctSystem_makeBNCT_h
 
 /*!
-  \class testAttachSupport
-  \brief Tests the class Object
-  \author S. Ansell
-  \date March 2013
+  \namespace bnctSystem
+  \brief General BNCT stuff
   \version 1.0
-
-  Test the processing of object component
+  \date September 2013
+  \author S. Ansell
 */
 
-class testAttachSupport
+namespace bnctSystem
 {
-private:
-
-  typedef boost::shared_ptr<testSystem::simpleObj> SOTYPE;
-
-  Simulation ASim;           ///< Simulation model [local for testing]
-  std::vector<SOTYPE>  SObj;  ///<< Stack of object
+  class DiscTarget;
+  /*!
+    \class makeBNCT
+    \version 1.0
+    \author S. Ansell
+    \date December 2013
+    \brief Top level builder for the whole BNCT model
+  */
   
-  void initSim();
-  void createSurfaces();
+class makeBNCT
+{
+ private:
 
-  //Tests 
-  int testBoundaryValid();
-  int testInsertComponent();
-
-public:
+  boost::shared_ptr<DiscTarget> targetObj;///< target object
   
-  testAttachSupport();
-  ~testAttachSupport();
+ public:
   
-  int applyTest(const int);       
+  makeBNCT();
+  makeBNCT(const makeBNCT&);
+  makeBNCT& operator=(const makeBNCT&);
+  ~makeBNCT();
+  
+  void build(Simulation*,const mainSystem::inputParam&);
 
 };
+
+}
 
 #endif

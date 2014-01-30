@@ -197,21 +197,19 @@ NiGuide::createUnitVector(const attachSystem::FixedComp& FC,
 }
 
 void
-/// NiGuide::createSurfaces()
 NiGuide::createSurfaces(const attachSystem::FixedComp& FCA,
 		     const size_t sideIndexA,
 		     const attachSystem::FixedComp& FCB,
 		     const size_t sideIndexB)
   /*!
     Create planes for the silicon and Polyethene layers
+    \param FCA : surface 
   */
   
   /** Creamos las superficies de cada cuerpo*/
 {
   ELog::RegMethod RegA("NiGuide","createSurfaces");
 
-//   ModelSupport::buildPlane(SMap,niguideindex+1,Origin,Y);  
-//   ModelSupport::buildCylinder(SMap,niguideindex+2,Origin,Z,length); /** Superficie cilindrica. Hay que indicar le eje normal*/
   ModelSupport::buildPlane(SMap,niguideindex+2,Origin+Y*length,Y);    
   ModelSupport::buildPlane(SMap,niguideindex+3,Origin-X*width/2.0,X);  
   ModelSupport::buildPlane(SMap,niguideindex+4,Origin+X*width/2.0,X);  

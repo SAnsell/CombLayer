@@ -294,6 +294,10 @@ Wheel::createSurfaces()
 {
   ELog::RegMethod RegA("Wheel","createSurfaces");
 
+  // Dividing surface
+  ModelSupport::buildPlane(SMap,wheelIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,wheelIndex+2,Origin,X);
+
   double H(targetHeight/2.0);
   ModelSupport::buildPlane(SMap,wheelIndex+5,Origin-Z*H,Z);  
   ModelSupport::buildPlane(SMap,wheelIndex+6,Origin+Z*H,Z);  
@@ -310,17 +314,20 @@ Wheel::createSurfaces()
   ModelSupport::buildPlane(SMap,wheelIndex+35,Origin-Z*H,Z);  
   ModelSupport::buildPlane(SMap,wheelIndex+36,Origin+Z*H,Z);  
 
-  ModelSupport::buildCylinder(SMap,wheelIndex+7,Origin,Z,innerRadius);  
-  ModelSupport::buildCylinder(SMap,wheelIndex+8,Origin,Z,coolantRadius);  
-  ModelSupport::buildCylinder(SMap,wheelIndex+9,Origin,Z,caseRadius);  
-  ModelSupport::buildCylinder(SMap,wheelIndex+10,Origin,Z,voidRadius);  
+
 
   int SI(wheelIndex+10);
+  ModelSupport::buildCylinder(SMap,wheelIndex+7,Origin,Z,innerRadius);  
   for(size_t i=0;i<nLayers;i++)
     {
       ModelSupport::buildCylinder(SMap,SI+7,Origin,Z,radius[i]);  
       SI+=10;
     }
+
+  ModelSupport::buildCylinder(SMap,wheelIndex+517,Origin,Z,coolantRadius);  
+  ModelSupport::buildCylinder(SMap,wheelIndex+527,Origin,Z,caseRadius);  
+  ModelSupport::buildCylinder(SMap,wheelIndex+537,Origin,Z,voidRadius);  
+
   return; 
 }
 
@@ -340,6 +347,7 @@ Wheel::createObjects(Simulation& System)
   // 
   // Loop through each item and build inner section
   // 
+
   int SI(wheelIndex);
   for(size_t i=0;i<nLayers;i++)
     {
@@ -351,7 +359,6 @@ Wheel::createObjects(Simulation& System)
 				       matNum[matTYPE[i]],0.0,Out));  
       SI+=10;
     }
-
   // Now make sections for the coolant
   int frontIndex(wheelIndex);
   int backIndex(wheelIndex);
@@ -373,23 +380,22 @@ Wheel::createObjects(Simulation& System)
       backIndex+=10;
     }
   // Final coolant section
-  Out=ModelSupport::getComposite(SMap,wheelIndex,frontIndex," 7M -8 ");
+  Out=ModelSupport::getComposite(SMap,wheelIndex,frontIndex," 7M -517 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,0.0,Out+TopBase));
 
   // Back coolant:
-  Out=ModelSupport::getComposite(SMap,wheelIndex,SI,
-				 " 7M -8 5 -6");	
+  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -517 5 -6");	
   System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,0.0,Out));
 
   // Metal surround
-  Out=ModelSupport::getComposite(SMap,wheelIndex,"7 -9 (8:-15:16) 25 -26");	
+  Out=ModelSupport::getComposite(SMap,wheelIndex,"7 -527 (517:-15:16) 25 -26");	
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
 
   // Void surround
-  Out=ModelSupport::getComposite(SMap,wheelIndex,"7 -10 (9:-25:26) 35 -36");	
+  Out=ModelSupport::getComposite(SMap,wheelIndex,"7 -537 (527:-25:26) 35 -36");	
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,wheelIndex,"-10 35 -36");	
+  Out=ModelSupport::getComposite(SMap,wheelIndex,"-537 35 -36");	
   addOuterSurf("Wheel",Out);
 
   return; 
@@ -402,21 +408,31 @@ Wheel::createLinks()
     Surfaces pointing outwards
   */
 {
-  ELog::RegMethod RegA("PressVessel","createLinks");
+  ELog::RegMethod RegA("Wheel","createLinks");
   // set Links :: Inner links:
 
-  FixedComp::setConnect(0,Origin+Y*innerRadius,-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(wheelIndex+7));
+  FixedComp::setConnect(0,Origin-Y*innerRadius,-Y);
+  FixedComp::setLinkSurf(0,SMap.realSurf(wheelIndex+537));
+  FixedComp::addLinkSurf(0,-SMap.realSurf(wheelIndex+1));
 
-  FixedComp::setConnect(1,Origin+Y*voidRadius,Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(wheelIndex+10));
+  FixedComp::setConnect(1,Origin+Y*innerRadius,Y);
+  FixedComp::setLinkSurf(1,SMap.realSurf(wheelIndex+537));
+  FixedComp::addLinkSurf(1,SMap.realSurf(wheelIndex+1));
+
+  FixedComp::setConnect(2,Origin-Y*voidRadius,-Y);
+  FixedComp::setLinkSurf(2,SMap.realSurf(wheelIndex+1037));
+  FixedComp::addLinkSurf(2,-SMap.realSurf(wheelIndex+1));
+
+  FixedComp::setConnect(3,Origin+Y*voidRadius,Y);
+  FixedComp::setLinkSurf(3,SMap.realSurf(wheelIndex+1037));
+  FixedComp::addLinkSurf(3,SMap.realSurf(wheelIndex+1));
 
   const double H=(targetHeight/2.0)+coolantThick+caseThick+voidThick;
-  FixedComp::setConnect(2,Origin-Z*H,-Z);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(wheelIndex+35));
+  FixedComp::setConnect(4,Origin-Z*H,-Z);
+  FixedComp::setLinkSurf(4,-SMap.realSurf(wheelIndex+35));
 
-  FixedComp::setConnect(3,Origin+Z*H,Z);
-  FixedComp::setLinkSurf(3,SMap.realSurf(wheelIndex+36));
+  FixedComp::setConnect(5,Origin+Z*H,Z);
+  FixedComp::setLinkSurf(5,SMap.realSurf(wheelIndex+36));
 
   
   return;

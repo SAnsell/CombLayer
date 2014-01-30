@@ -1,8 +1,8 @@
 /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   Main/t1Real.cxx
-*
+ * File:   Main/sns.cxx
+ *
  * Copyright (c) 2004-2013 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
@@ -93,7 +93,6 @@
 #include "ContainedGroup.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "LinearComp.h"
 #include "mainJobs.h"
 #include "Volumes.h"
 #include "DefPhysics.h"
@@ -103,9 +102,7 @@
 #include "SourceSelector.h"
 #include "TallySelector.h"
 #include "World.h"
-#include "SimValid.h"
-
-#include "makeT1Real.h"
+#include "makeBNCT.h"
 
 MTRand RNG(12345UL);
 
@@ -132,27 +129,22 @@ main(int argc,char* argv[])
   std::map<std::string,std::string> AddValues;  
   std::map<std::string,double> IterVal;           // Variable to iterate 
 
-
   // PROCESS INPUT:
   InputControl::mainVector(argc,argv,Names);
   mainSystem::inputParam IParam;
-  createTS1Inputs(IParam);
+  createBNCTInputs(IParam);
 
   const int iteractive(IterVal.empty() ? 0 : 1);   
   Simulation* SimPtr=createSimulation(IParam,Names,Oname);
   if (!SimPtr) return -1;
 
   // The big variable setting
-  setVariable::TS1real(SimPtr->getDataBase());
+  setVariable::BNCTVariables(SimPtr->getDataBase());
   InputModifications(SimPtr,IParam,Names);
-
+  
   // Definitions section 
   int MCIndex(0);
   const int multi=IParam.getValue<int>("multi");
-  ELog::EM<<"T1REAL : variable hash:"
-	  <<SimPtr->getDataBase().variableHash()
-	  <<ELog::endBasic;
-
   try
     {
       while(MCIndex<multi)
@@ -162,17 +154,13 @@ main(int argc,char* argv[])
 	      ELog::EM.setActive(4);    // write error only
 	      ELog::FM.setActive(4);    
 	      ELog::RN.setActive(0);    
-	      
-	      // if (iteractive)
-	      // 	mainSystem::incRunTimeVariable
-	      // 	  (SimPtr->getDataBase(),IterVal);
 	    }
 
 	  SimPtr->resetAll();
 
-	  ts1System::makeT1Real T1Obj;
+	  bnctSystem::makeBNCT BNCTObj;
 	  World::createOuterObjects(*SimPtr);
-	  T1Obj.build(SimPtr,IParam);
+	  BNCTObj.build(SimPtr,IParam);
 
 	  SDef::sourceSelection(*SimPtr,IParam);
 
@@ -180,26 +168,31 @@ main(int argc,char* argv[])
 	  SimPtr->removeDeadSurfaces(0);         
 
 	  ModelSupport::setDefaultPhysics(*SimPtr,IParam);
-	  const int renumCellWork=beamTallySelection(*SimPtr,IParam);
+	  const int renumCellWork=tallySelection(*SimPtr,IParam);
 	  SimPtr->masterRotation();
 	  if (createVTK(IParam,SimPtr,Oname))
 	    {
 	      delete SimPtr;
 	      ModelSupport::objectRegister::Instance().reset();
-	      ModelSupport::surfIndex::Instance().reset();
 	      return 0;
 	    }
-
 	  if (IParam.flag("endf"))
 	    SimPtr->setENDF7();
 	  createMeshTally(IParam,SimPtr);
 
 	  SimProcess::importanceSim(*SimPtr,IParam);
-	  SimProcess::inputPatternSim(*SimPtr,IParam); // eneryg
+	  SimProcess::inputPatternSim(*SimPtr,IParam); // energy cut etc
 
 	  if (renumCellWork)
 	    tallyRenumberWork(*SimPtr,IParam);
 	  tallyModification(*SimPtr,IParam);
+
+	  if (IParam.flag("cinder"))
+	    SimPtr->setForCinder();
+
+	  // // Cut energy tallies:
+	  // if (IParam.flag("ECut"))
+	  //   SimPtr->setEnergy(IParam.getValue<double>("ECut"));
 
 	  // Ensure we done loop
 	  do

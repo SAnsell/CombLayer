@@ -88,6 +88,9 @@ class ContainedComp
   int isOuterValid(const Geometry::Vec3D&,const std::set<int>&) const;
   int isOuterValid(const Geometry::Vec3D&,const int) const;
 
+  // line in
+  bool isOuterLine(const Geometry::Vec3D&,const Geometry::Vec3D&) const;
+
   void addOuterSurf(const int);
   void addOuterSurf(const std::string&);
   void addOuterUnionSurf(const std::string&);

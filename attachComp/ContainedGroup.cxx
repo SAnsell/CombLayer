@@ -71,6 +71,12 @@
 namespace attachSystem
 {
 
+ContainedGroup::ContainedGroup()
+  /*!
+    Constructor 
+  */
+{}
+
 ContainedGroup::ContainedGroup(const std::string& A,const std::string& B)
   /*!
     Constructor 
@@ -154,6 +160,25 @@ ContainedGroup::clearRules()
     mc->second.clearRules();
   
   return;
+}
+
+ContainedComp&
+ContainedGroup::addKey(const std::string& Key)
+  /*!
+    Add a component to the group
+    \param Key :: Key to add
+    \return ContainedComp 
+  */
+{
+  ELog::RegMethod RegA("ContainedGroup","addKey");
+  
+  CTYPE::iterator mc=CMap.find(Key);
+  if (mc!=CMap.end())
+    throw ColErr::InContainerError<std::string>(Key,"Key in CMap");
+
+  CMap.insert(CTYPE::value_type(Key,ContainedComp()));  
+  mc=CMap.find(Key);
+  return mc->second;
 }
 
 ContainedComp&

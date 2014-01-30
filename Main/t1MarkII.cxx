@@ -144,7 +144,6 @@ main(int argc,char* argv[])
   // The big variable setting
   setVariable::TS1upgrade(SimPtr->getDataBase());
   InputModifications(SimPtr,IParam,Names);
-  mainSystem::setVariables(*SimPtr,IParam,Names);
 
   // Definitions section 
   int MCIndex(0);

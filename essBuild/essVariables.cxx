@@ -541,6 +541,92 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("TopBFlightLinerMat1","Aluminium");      
 
 
+  
+  Control.addVariable("ProtonTubeXStep",0.0);  
+  Control.addVariable("ProtonTubeYStep",0.0);  
+  Control.addVariable("ProtonTubeZStep",0.0);
+  Control.addVariable("ProtonTubeXYangle",0.0); 
+  Control.addVariable("ProtonTubeZangle",0.0);
+
+  Control.addVariable("ProtonTubeNSection",4);
+
+  Control.addVariable("ProtonTubeRadius1",11.5);
+  Control.addVariable("ProtonTubeLength1",120.0); //from mod centre leftside
+  Control.addVariable("ProtonTubeZcut1",5.35); //cut Z planes
+  Control.addVariable("ProtonTubeWallThick1",0.0);
+  Control.addVariable("ProtonTubeInnerMat1","helium");  // mat : 2000
+  Control.addVariable("ProtonTubeWallMat1","CastIron"); // mat : 26316
+
+  Control.addVariable("ProtonTubeRadius2",10.5);
+  Control.addVariable("ProtonTubeLength2",200.0);
+  Control.addVariable("ProtonTubeZcut2",0.0); 
+  Control.addVariable("ProtonTubeWallThick2",1.0);
+  Control.addVariable("ProtonTubeInnerMat2","helium");  // mat : 2000
+  Control.addVariable("ProtonTubeWallMat2","CastIron"); // mat : 26316
+
+  Control.addVariable("ProtonTubeRadius3",10.5);
+  Control.addVariable("ProtonTubeLength3",127.5);
+  Control.addVariable("ProtonTubeZcut3",0.0);
+  Control.addVariable("ProtonTubeWallThick3",1.0);
+  Control.addVariable("ProtonTubeInnerMat3","helium");   // mat : 2000
+  Control.addVariable("ProtonTubeWallMat3","CastIron");  // mat : 26316
+
+  Control.addVariable("ProtonTubeRadius4",10.5);
+  // Control.addVariable("ProtonTubeLength4",147.5);
+  Control.addVariable("ProtonTubeLength4",152.5);
+  Control.addVariable("ProtonTubeZcut4",0.0);
+  Control.addVariable("ProtonTubeWallThick4",1.0);
+  Control.addVariable("ProtonTubeInnerMat4","Void");
+  Control.addVariable("ProtonTubeWallMat4","CastIron");  // mat: 26316
+
+
+  Control.addVariable("BeamMonitorXStep",0.0);
+  Control.addVariable("BeamMonitorYStep",-450.0);
+  Control.addVariable("BeamMonitorZStep",0.0);
+  
+  Control.addVariable("BeamMonitorBoxSide",70.0);
+  Control.addVariable("BeamMonitorBoxSectionsN",5); //other are symmetric
+
+  Control.addVariable("BeamMonitorBoxRadius1",11.5);
+  Control.addVariable("BeamMonitorBoxThick1",2.5);
+  Control.addVariable("BeamMonitorBoxMat1","helium");  // mat:2000
+  Control.addVariable("BeamMonitorBoxRadius2",32.5);
+  Control.addVariable("BeamMonitorBoxThick2",10.0);
+  Control.addVariable("BeamMonitorBoxMat2","CastIron");  // mat: 26000
+  Control.addVariable("BeamMonitorBoxRadius3",20.0);
+  Control.addVariable("BeamMonitorBoxThick3",2.5);
+  Control.addVariable("BeamMonitorBoxMat3","CastIron");  // mat 26316
+  Control.addVariable("BeamMonitorBoxRadius4",17.5);
+  Control.addVariable("BeamMonitorBoxThick4",17.5);
+  Control.addVariable("BeamMonitorBoxMat4","CastIron");  // mat 26316
+  Control.addVariable("BeamMonitorBoxRadius5",25.0);
+  Control.addVariable("BeamMonitorBoxThick5",5.0);
+  Control.addVariable("BeamMonitorBoxMat5","Aluminium");  // mat 13060
+
+  Control.addVariable("BeamMonitorBoxSide5",50.0);
+  Control.addVariable("BeamMonitorBoxHeightA5",14.60);
+  Control.addVariable("BeamMonitorBoxHeightB5",8.60);
+  Control.addVariable("BeamMonitorBoxHeightC5",7.5);
+  Control.addVariable("BeamMonitorBoxHeightD5",7.0);
+
+  Control.addVariable("BeamMonitorBoxWidthA5",21.40);
+  Control.addVariable("BeamMonitorBoxWidthB5",20.30);
+  Control.addVariable("BeamMonitorBoxWidthC5",19.80);
+
+  Control.addVariable("BeamMonitorBoxThickA5",3.2);
+  Control.addVariable("BeamMonitorBoxThickB5",0.5);
+  Control.addVariable("BeamMonitorBoxThickC5",0.2);
+
+  Control.addVariable("BeamMonitorBoxTubeN",33);
+  Control.addVariable("BeamMonitorBoxTubeRadius",0.27);
+  Control.addVariable("BeamMonitorBoxTubeThick",0.03);
+
+  // Control.addVariable("BeamMonitorBoxTubeThick",0.03);
+  Control.addVariable("BeamMonitorBoxTubeHeMat","helium");
+  Control.addVariable("BeamMonitorBoxTubeAlMat","Aluminium");
+  Control.addVariable("BeamMonitorBoxExtHeMat","helium");
+
+
   Control.addVariable("ProtonBeamViewRadius",4.0);  
  
   Control.addVariable("WheelShaftNLayers",3);

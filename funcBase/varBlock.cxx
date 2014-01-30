@@ -280,7 +280,7 @@ varBlock::setVar(const std::string& Item,const T& Value)
     \param Value :: Value to set
   */
 {
-  ELog::RegMethod RegA("varBlock","setVar(string)");
+  ELog::RegMethod RegA("varBlock","setVar<T>(string,T)");
 
   std::map<std::string,size_t>::const_iterator mc=
     dataMap.find(Item);
@@ -292,7 +292,7 @@ varBlock::setVar(const std::string& Item,const T& Value)
   if (vItem.first!=getTypeNum<T>())
     throw ColErr::TypeMatch(getTypeString<T>(),
 			    getIndexString(vItem.first),
-			    RegA.getFull());
+			    "varItem");
   flag[mc->second]=1;
   getItem<T>(vItem.second)=Value;
   return;

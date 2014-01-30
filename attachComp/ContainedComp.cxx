@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   attachComp/ContainedComp.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,7 +45,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "stringCombine.h"
-#include "Triple.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -58,11 +57,8 @@
 #include "Acomp.h"
 #include "Algebra.h"
 #include "Line.h"
+#include "LineIntersectVisit.h"
 #include "Qhull.h"
-#include "NRange.h"
-#include "NList.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -453,6 +449,46 @@ ContainedComp::isBoundaryValid(const Geometry::Vec3D& V) const
   ELog::RegMethod RegA("ContainedComp","isBoundaryValid"); 
 
   return (boundary.isValid(V)) ? 0 : 1;
+}
+
+bool
+ContainedComp::isOuterLine(const Geometry::Vec3D& APt,
+			   const Geometry::Vec3D& BPt) const
+  /*!
+    Given a line defined by O,Dir find if the line intersect
+    the object and has a valid region within the system
+    \param APt :: Origin of line
+    \param BPt :: End of line
+    \return true if the line intersect the component.
+  */
+{
+  ELog::RegMethod RegA("ContainedComp","isOuterLine");
+
+  // First get surfaces of object:
+  if (!outerSurf.hasRule()) return 0;
+
+  std::vector<Geometry::Surface*> SVec=
+    outerSurf.getTopRule()->getSurfVector();
+
+  const double ABDist=APt.Distance(BPt);
+  MonteCarlo::LineIntersectVisit LI(APt,BPt-APt);
+  std::vector<Geometry::Surface*>::const_iterator vc;
+  for(vc=SVec.begin();vc!=SVec.end();vc++)
+    {
+      LI.clearTrack();
+      const std::vector<Geometry::Vec3D>& PVec=
+	LI.getPoints(*vc);
+      std::vector<Geometry::Vec3D>::const_iterator pc;
+      for(pc=PVec.begin();pc!=PVec.end();pc++)
+	{
+	  const double ADist=APt.Distance(*pc);
+	  const double BDist=BPt.Distance(*pc);
+	  if (fabs(ADist+BDist-ABDist)<Geometry::zeroTol &&
+	      outerSurf.isValid(*pc,(*vc)->getName()))
+	    return 1;
+	}
+    }
+  return 0;
 }
 
 int

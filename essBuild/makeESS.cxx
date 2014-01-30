@@ -70,12 +70,12 @@
 #include "pipeUnit.h"
 #include "PipeLine.h"
 
-#include "ProtonVoid.h"
 #include "WheelBase.h"
 #include "Wheel.h"
 #include "SegWheel.h"
 #include "BeRef.h"
 #include "ProtonVoid.h"
+#include "ProtonTube.h"
 #include "essMod.h"
 #include "CylModerator.h"
 #include "BlockAddition.h"
@@ -95,7 +95,7 @@ namespace essSystem
 
 makeESS::makeESS() :
   Reflector(new BeRef("BeRef")),
-  PBeam(new ts1System::ProtonVoid("ProtonBeam")),
+  PBeam(new ProtonTube("ProtonTube")),
   LowAFL(new moderatorSystem::FlightLine("LowAFlight")),
   LowBFL(new moderatorSystem::FlightLine("LowBFlight")),
   LowPre(new CylPreMod("LowPre")),
@@ -353,12 +353,10 @@ makeESS::build(Simulation* SimPtr,
   Reflector->createAll(*SimPtr,World::masterOrigin());
   Reflector->addToInsertChain(Target->getKey("Wheel")); 
 
-  Reflector->addToInsertChain(*PBeam);
-  PBeam->createAll(*SimPtr,*Target,1,*Reflector,-1);
-
   Bulk->createAll(*SimPtr,*Reflector,*Reflector);
   attachSystem::addToInsertSurfCtrl(*SimPtr,*Bulk,Target->getKey("Wheel"));
   attachSystem::addToInsertForced(*SimPtr,*Bulk,Target->getKey("Shaft"));
+
 
   const std::string lowModType=IParam.getValue<std::string>("lowMod");
   const std::string topModType=IParam.getValue<std::string>("topMod");
@@ -400,6 +398,18 @@ makeESS::build(Simulation* SimPtr,
 				  Target->getKey("Shaft"));
 
   createGuides(*SimPtr);  
+  
+  // PROTON BEAMLINE
+  
+  
+  PBeam->createAll(*SimPtr,*Target,1,*ShutterBayObj,-1);
+  attachSystem::addToInsertSurfCtrl(*SimPtr,*Reflector,
+				    PBeam->getKey("Sector0"));
+
+  attachSystem::addToInsertSurfCtrl(*SimPtr,*ShutterBayObj,
+				    PBeam->getKey("Full"));
+  attachSystem::addToInsertSurfCtrl(*SimPtr,*Bulk,
+				    PBeam->getKey("Full"));
 
   LowSupplyPipe->createAll(*SimPtr,*LowMod,0,6,4);
   LowReturnPipe->createAll(*SimPtr,*LowMod,0,3,2);
