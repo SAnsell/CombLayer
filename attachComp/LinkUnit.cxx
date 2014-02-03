@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   attachComp/LinkUnit.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,11 +42,11 @@
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "Triple.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "support.h"
+#include "stringCombine.h"
 #include "Surface.h"
 #include "Rules.h"
 #include "HeadRule.h"
@@ -88,6 +88,7 @@ LinkUnit::operator=(const LinkUnit& A)
       populated=A.populated;
       Axis=A.Axis;
       ConnectPt=A.ConnectPt;
+      mainSurf=A.mainSurf;
       bridgeSurf=A.bridgeSurf;
     }
   return *this;
@@ -167,6 +168,65 @@ LinkUnit::setConnectPt(const Geometry::Vec3D& C)
 }
 
 void
+LinkUnit::setLinkSurf(const int SN) 
+  /*!
+    Add a surface to the output
+    \param SN :: Surface number [inward looking]
+  */
+{
+  ELog::RegMethod RegA("LinkUnit","setLinkSurf");
+  mainSurf.reset();
+  linkSurf=SN;
+  mainSurf.addIntersection(SN);
+  return;
+}
+
+void
+LinkUnit::setLinkSurf(const std::string& SList) 
+  /*!
+    Add a surface to the output
+    \param SList :: String set to add
+  */
+{
+  ELog::RegMethod RegA("LinkUnit","setLinkSurf");
+  mainSurf.reset();
+  linkSurf=0;
+  addLinkSurf(SList);
+  return;
+}
+
+void
+LinkUnit::addLinkSurf(const int SN) 
+  /*!
+    Add a surface to the output
+    \param SN :: Surface number [inward looking]
+  */
+{
+  ELog::RegMethod RegA("LinkUnit","addLinkSurf");
+  if (!linkSurf) 
+    linkSurf=SN;
+  mainSurf.addIntersection(SN);
+  return;
+}
+
+void
+LinkUnit::addLinkSurf(const std::string& SList) 
+  /*!
+    Add a set of surfaces to the output
+    \param SList ::  Surface string [fully decomposed]
+  */
+{
+  ELog::RegMethod RegA("LinkUnit","addInterSurf(std::string)");
+  if (!mainSurf.hasRule()) 
+    StrFunc::convert(SList,linkSurf); 
+
+  mainSurf.addIntersection(SList);
+  return;
+}
+
+
+
+void
 LinkUnit::setBridgeSurf(const int SN) 
   /*!
     Add a surface to the output
@@ -175,7 +235,6 @@ LinkUnit::setBridgeSurf(const int SN)
 {
   ELog::RegMethod RegA("LinkUnit","setBridgeSurf");
   bridgeSurf.reset();
-  linkSurf=SN;
   bridgeSurf.addIntersection(SN);
   return;
 }
@@ -189,7 +248,7 @@ LinkUnit::setBridgeSurf(const std::string& SList)
 {
   ELog::RegMethod RegA("LinkUnit","setBridgeSurf");
   bridgeSurf.reset();
-  linkSurf=0;
+  //  linkSurf=0;
   addBridgeSurf(SList);
   return;
 }
@@ -202,8 +261,8 @@ LinkUnit::addBridgeSurf(const int SN)
   */
 {
   ELog::RegMethod RegA("LinkUnit","addBridgeSurf");
-  if (!bridgeSurf.hasRule()) 
-    linkSurf=SN;
+  // if (!bridgeSurf.hasRule()) 
+  //   linkSurf=SN;
   bridgeSurf.addIntersection(SN);
   return;
 }
@@ -216,25 +275,11 @@ LinkUnit::addBridgeSurf(const std::string& SList)
   */
 {
   ELog::RegMethod RegA("LinkUnit","addInterSurf(std::string)");
-  if (!bridgeSurf.hasRule()) 
-    StrFunc::convert(SList,linkSurf); 
 
   bridgeSurf.addIntersection(SList);
   return;
 }
 
-
-std::string
-LinkUnit::getCommon() const
-  /*!
-    Calculate the write out the excluded surface
-    \return Exclude string [union]
-  */
-{
-  ELog::RegMethod RegA("LinkUnit","getCommon");
-
-  return bridgeSurf.display();
-}
 
 int 
 LinkUnit::getLinkSurf() const 
@@ -259,13 +304,35 @@ LinkUnit::getLinkString() const
   */
 {
   ELog::RegMethod RegA("LinkUnit","getLinkSurf");
+  std::string Out;
   if (bridgeSurf.hasRule())
-    return " "+bridgeSurf.display()+" ";
+    Out=" "+bridgeSurf.display();
+  if (mainSurf.hasRule())
+    Out+=" "+mainSurf.display();
+  return Out;
+}
 
-  std::ostringstream cx;
-  cx<<" "<<linkSurf<<" ";
 
-  return cx.str();
+std::string
+LinkUnit::getCommon() const
+  /*!
+    Calculate the write out the dividers (bridge)
+    \return Exclude string [union]
+  */
+{
+  ELog::RegMethod RegA("LinkUnit","getCommon");
+
+  return bridgeSurf.display();
+}
+
+std::string
+LinkUnit::getMain() const
+  /*!
+    Get main string
+    \return Main string
+  */
+{
+  return mainSurf.display();
 }
 
 }  // NAMESPACE attachSystem

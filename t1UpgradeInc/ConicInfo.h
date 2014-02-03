@@ -39,14 +39,15 @@ class ConicInfo
   Geometry::Vec3D Axis;     ///< Axis
   double angle;             ///< Angle [deg] / Radius
   double wall;              ///< Wall thickness
+  int mat;                  ///< Main Material
   int wallMat;              ///< Material
 
  public:
 
   ConicInfo(const Geometry::Vec3D&,const Geometry::Vec3D&,
-	    const double,const double,const int);
+	    const double,const int,const double,const int);
   ConicInfo(const Geometry::Vec3D&,const Geometry::Vec3D&,
-	    const double,const double,const int,const int);
+	    const double,const int,const double,const int,const int);
   ConicInfo(const ConicInfo&);
   ConicInfo& operator=(const ConicInfo&);
   ~ConicInfo() {}  ///< Destructor
@@ -60,8 +61,10 @@ class ConicInfo
 
   /// Is cylinder
   int isCyl() const { return cylFlag; }
+  /// material
+  int getMat() const { return mat; } 
   /// Wall material
-  int getMat() const { return wallMat; } 
+  int getWallMat() const { return wallMat; } 
   /// Wall thicknes
   double getWall() const { return wall; }  
   /// Angle

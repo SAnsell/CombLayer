@@ -162,6 +162,18 @@ ContainedGroup::clearRules()
   return;
 }
 
+bool
+ContainedGroup::hasKey(const std::string& Key) const
+  /*!
+    Check a component to the group
+    \param Key :: Key to check
+    \return true if key exists
+  */
+{
+  CTYPE::const_iterator mc=CMap.find(Key);
+  return (mc!=CMap.end()) ? 1 : 0;
+}
+
 ContainedComp&
 ContainedGroup::addKey(const std::string& Key)
   /*!

@@ -48,7 +48,6 @@ class CylModerator : public essMod
   double xyAngle;                 ///< xy rotation angle
   double zAngle;                  ///< z rotation angle
 
-  size_t nLayers;                     ///< number of layers
   std::vector<double> radius;         ///< cylinder radii
   std::vector<double> height;         ///< Full heights
   std::vector<int> mat;               ///< Materials

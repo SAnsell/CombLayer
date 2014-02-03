@@ -470,6 +470,10 @@ ContainedComp::isOuterLine(const Geometry::Vec3D& APt,
   std::vector<Geometry::Surface*> SVec=
     outerSurf.getTopRule()->getSurfVector();
 
+  // First if either point within the object return true!
+  if (outerSurf.isValid(APt) || outerSurf.isValid(BPt) )
+    return 1;
+
   const double ABDist=APt.Distance(BPt);
   MonteCarlo::LineIntersectVisit LI(APt,BPt-APt);
   std::vector<Geometry::Surface*>::const_iterator vc;

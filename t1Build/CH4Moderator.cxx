@@ -89,7 +89,7 @@ namespace ts1System
 {
 
 CH4Moderator::CH4Moderator(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::LayerComp(),
+  attachSystem::ContainedComp(),attachSystem::LayerComp(4),
   attachSystem::FixedComp(Key,6),
   ch4Index(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(ch4Index+1)
@@ -344,17 +344,17 @@ CH4Moderator::createSurfaces()
   return;
 }
 
-void
-CH4Moderator::addToInsertChain(attachSystem::ContainedComp& CC) const
-  /*!
-    Adds this object to the containedComp to be inserted.
-    \param CC :: ContainedComp object to add to this
-  */
-{
-  for(int i=ch4Index+1;i<cellIndex;i++)
-    CC.addInsertCell(i);
-  return;
-}
+// void
+// CH4Moderator::addToInsertChain(attachSystem::ContainedComp& CC) const
+//   /*!
+//     Adds this object to the containedComp to be inserted.
+//     \param CC :: ContainedComp object to add to this
+//   */
+// {
+//   for(int i=ch4Index+1;i<cellIndex;i++)
+//     CC.addInsertCell(i);
+//   return;
+// }
 
 void
 CH4Moderator::createObjects(Simulation& System)
@@ -458,8 +458,8 @@ CH4Moderator::getSurfacePoint(const size_t layerIndex,
 
   if (sideIndex>5) 
     throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
-  if (layerIndex>4) 
-    throw ColErr::IndexError<size_t>(layerIndex,4,"layer");
+  if (layerIndex>=nLayers) 
+    throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
 
   // Modification map:
   std::map<size_t,double> modLayer;
@@ -472,8 +472,6 @@ CH4Moderator::getSurfacePoint(const size_t layerIndex,
       mc=modLayer.find(i*10+sideIndex+1);
       T+=(mc!=modLayer.end()) ? mc->second : layer[i];
     }
-//            ELog::EM<<"T = "<<T<<ELog::endDebug;
-//                        ELog::EM<<"Origin = "<<Origin<<ELog::endDebug;
             
   switch(sideIndex)
     {

@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   t1Upgrade/ModBase.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,20 +47,11 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "Tally.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "surfEqual.h"
-#include "surfDivide.h"
-#include "surfDIter.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
@@ -72,11 +63,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
-#include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "LayerComp.h"
@@ -87,7 +75,8 @@ namespace ts1System
 {
 
 ModBase::ModBase(const std::string& Key,const size_t nLinks)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,nLinks),
+  attachSystem::ContainedComp(),attachSystem::LayerComp(0),
+  attachSystem::FixedComp(Key,nLinks),
   modIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(modIndex+1)
   /*!
@@ -98,10 +87,11 @@ ModBase::ModBase(const std::string& Key,const size_t nLinks)  :
 {}
 
 ModBase::ModBase(const ModBase& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  modIndex(A.modIndex),cellIndex(A.cellIndex),
-  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  xyAngle(A.xyAngle),zAngle(A.zAngle)
+  attachSystem::ContainedComp(A),
+  attachSystem::LayerComp(A),attachSystem::FixedComp(A),
+  modIndex(A.modIndex),cellIndex(A.cellIndex),xStep(A.xStep),
+  yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
+  zAngle(A.zAngle)
   /*!
     Copy constructor
     \param A :: ModBase to copy
@@ -119,6 +109,7 @@ ModBase::operator=(const ModBase& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
+      attachSystem::LayerComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
       cellIndex=A.cellIndex;
       xStep=A.xStep;
@@ -129,6 +120,7 @@ ModBase::operator=(const ModBase& A)
     }
   return *this;
 }
+
 
 ModBase::~ModBase() 
  /*!

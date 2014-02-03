@@ -34,19 +34,28 @@ namespace attachSystem
 
 class LayerComp  
 {
- private:
+ protected:
   
-
+  size_t nLayers;         ///< Number of layers
+  
  public:
 
-  LayerComp() {}
+  LayerComp(size_t NL) : nLayers(NL) {}
+  /// Basic copy constructor
+  LayerComp(const LayerComp& A) : nLayers(A.nLayers) {}
+  /// Basic assignment operator
+  LayerComp& operator=(const LayerComp& A)  
+    { nLayers=A.nLayers; return *this; }
   virtual ~LayerComp() { }  ///< Simple destructor
+
 
   virtual Geometry::Vec3D getSurfacePoint(const size_t,const size_t) const =0;
   virtual int getLayerSurf(const size_t,const size_t) const =0;
   virtual std::string getLayerString(const size_t,const size_t) const =0;
   /// Access to common divider surface
   virtual int getCommonSurf(const size_t) const { return 0; }
+
+  size_t getNLayers() const { return nLayers; }
 
 };
 

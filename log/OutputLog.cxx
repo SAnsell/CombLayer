@@ -130,11 +130,6 @@ OutputLog<RepClass>::isActive(const int Flag) const
   const size_t part=
     (Flag<=0) ? 1 : static_cast<size_t>(2*Flag);
   
-
-  // if (part & debugBits)
-  //   std::cout<<"Debug == "<<debugFlag<<":"<<(part & debugBits)<<" "<<
-  //     part<<std::endl;
-  // return (part & activeBits) ? 1 : 0;
   return ((part & activeBits) && 
 	  (debugFlag || !(part & debugBits))) ? 1 : 0;
 }

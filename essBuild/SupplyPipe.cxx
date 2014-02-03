@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   essBuild/SupplyPipe.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -95,12 +95,8 @@ SupplyPipe::SupplyPipe(const std::string& Key)  :
 SupplyPipe::SupplyPipe(const SupplyPipe& A) : 
   attachSystem::FixedComp(A),
   pipeIndex(A.pipeIndex),cellIndex(A.cellIndex),
-  NSegIn(A.NSegIn),inRadius(A.inRadius),
-  inAlRadius(A.inAlRadius),midAlRadius(A.midAlRadius),
-  voidRadius(A.voidRadius),outAlRadius(A.outAlRadius),
-  inMat(A.inMat),inAlMat(A.inAlMat),midAlMat(A.midAlMat),
-  voidMat(A.voidMat),outAlMat(A.outAlMat),
-  Coaxial(A.Coaxial),PPts(A.PPts)
+  NSegIn(A.NSegIn),Radii(A.Radii),Mat(A.Mat),Temp(A.Temp),
+  ActiveFlag(A.ActiveFlag),Coaxial(A.Coaxial),PPts(A.PPts)
   /*!
     Copy constructor
     \param A :: SupplyPipe to copy
@@ -120,21 +116,16 @@ SupplyPipe::operator=(const SupplyPipe& A)
       attachSystem::FixedComp::operator=(A);
       cellIndex=A.cellIndex;
       NSegIn=A.NSegIn;
-      inRadius=A.inRadius;
-      inAlRadius=A.inAlRadius;
-      midAlRadius=A.midAlRadius;
-      voidRadius=A.voidRadius;
-      outAlRadius=A.outAlRadius;
-      inMat=A.inMat;
-      inAlMat=A.inAlMat;
-      midAlMat=A.midAlMat;
-      voidMat=A.voidMat;
-      outAlMat=A.outAlMat;
+      Radii=A.Radii;
+      Mat=A.Mat;
+      Temp=A.Temp;
+      ActiveFlag=A.ActiveFlag;
       Coaxial=A.Coaxial;
       PPts=A.PPts;
     }
   return *this;
 }
+
 
 SupplyPipe::~SupplyPipe() 
   /*!
@@ -154,24 +145,33 @@ SupplyPipe::populate(const Simulation& System)
   const FuncDataBase& Control=System.getDataBase();
   
   
+  std::string numStr;
   NSegIn=Control.EvalVar<size_t>(keyName+"NSegIn");
   for(size_t i=0;i<=NSegIn;i++)
     {
+      numStr=StrFunc::makeString(i);
       PPts.push_back(Control.EvalVar<Geometry::Vec3D>
-		     (StrFunc::makeString(keyName+"PPt",i)));
+		     (keyName+"PPt"+numStr));
     }
-  inRadius=Control.EvalVar<double>(keyName+"InRadius"); 
-  inAlRadius=Control.EvalVar<double>(keyName+"InAlRadius"); 
-  midAlRadius=Control.EvalVar<double>(keyName+"MidAlRadius"); 
-  voidRadius=Control.EvalVar<double>(keyName+"VoidRadius"); 
-  outAlRadius=Control.EvalVar<double>(keyName+"OutAlRadius"); 
 
-  inMat=ModelSupport::EvalMat<int>(Control,keyName+"InMat"); 
-  inAlMat=ModelSupport::EvalMat<int>(Control,keyName+"InAlMat"); 
-  midAlMat=ModelSupport::EvalMat<int>(Control,keyName+"MidAlMat"); 
-  voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat"); 
-  outAlMat=ModelSupport::EvalMat<int>(Control,keyName+"OutAlMat"); 
-  
+  size_t aN(0);
+  numStr=StrFunc::makeString(aN);
+  while(Control.hasVariable(keyName+"Active"+numStr))
+    {
+      ActiveFlag.push_back
+	(Control.EvalVar<size_t>(keyName+"Active"+numStr)); 
+      numStr=StrFunc::makeString(++aN);
+    }
+
+  const size_t NRadii=Control.EvalVar<size_t>(keyName+"NRadii"); 
+  for(size_t i=0;i<NRadii;i++)
+    {
+      const std::string numStr=StrFunc::makeString(i);
+      Radii.push_back(Control.EvalVar<double>(keyName+"Radius"+numStr)); 
+      Mat.push_back
+	(ModelSupport::EvalMat<int>(Control,keyName+"Mat"+numStr)); 
+      Temp.push_back(Control.EvalDefVar<double>(keyName+"Temp"+numStr,0.0)); 
+    }  
   return;
 }
   
@@ -201,14 +201,12 @@ SupplyPipe::createUnitVector(const attachSystem::FixedComp& FC,
 }
 
 void 
-SupplyPipe::insertInlet(Simulation& System,
-			const attachSystem::FixedComp& FC,
+SupplyPipe::insertInlet(const attachSystem::FixedComp& FC,
 			const size_t lSideIndex)
   /*!
     Add a pipe to the hydrogen system:
     \remark This should be called after the moderator has
     been constructed and all objects inserted.
-    \param System :: Simulation to add pipe to
     \param FC :: layer values
     \param lSideIndex :: point for side of moderator
   */
@@ -228,38 +226,78 @@ SupplyPipe::insertInlet(Simulation& System,
   const int commonSurf=LC->getCommonSurf(lSideIndex);
   const std::string commonStr=(commonSurf) ? 		       
     StrFunc::makeString(commonSurf) : "";
+
   if (PtZ!=Pt)
     Coaxial.addPoint(Pt);
+  
+  const size_t NL(LC->getNLayers());
+  Coaxial.addSurfPoint
+    (PtZ,LC->getLayerString(0,lSideIndex),commonStr);
 
-  Coaxial.addSurfPoint(PtZ,
-		       LC->getLayerString(0,lSideIndex),
-		       commonStr);
+  for(size_t index=2;index<NL;index+=2)
+    {
+      PtZ=LC->getSurfacePoint(index,lSideIndex);
+      if (PtZ!=Pt)
+	Coaxial.addSurfPoint
+	  (PtZ,LC->getLayerString(index,lSideIndex),commonStr);
+    }
 
+  for(size_t i=0;i<Radii.size();i++)
+    Coaxial.addRadius(Radii[i],Mat[i],Temp[i]);
 
-  PtZ=LC->getSurfacePoint(2,lSideIndex);
-  if (PtZ!=Pt)
-    Coaxial.addSurfPoint(PtZ,LC->getLayerString(2,lSideIndex),
-			 commonStr);
+  return;
+}
 
-  // Inner Points
+void
+SupplyPipe::addExtraLayer(const attachSystem::LayerComp& LC,
+			  const size_t lSideIndex)
+  /*!
+    Add extra Layer for a pre-mod or such
+    \param LC :: LayerComp Point [pre-mod for example]
+    \parma lSideIndex :: Layer to track through
+   */
+{
+  ELog::RegMethod RegA("SupplyPipe","addExtraLayer");
+  
+  const int commonSurf=LC.getCommonSurf(lSideIndex);
+  const size_t NL(LC.getNLayers());
+
+  const std::string commonStr=(commonSurf) ? 		       
+    StrFunc::makeString(commonSurf) : "";
+  const Geometry::Vec3D PtZ=LC.getSurfacePoint(NL-1,lSideIndex);
+  Coaxial.addSurfPoint
+    (PtZ,LC.getLayerString(NL-1,lSideIndex),commonStr);
+
+  return;
+}
+
+void
+SupplyPipe::addOuterPoints()
+  /*!
+    Add outside point to the pipework
+   */
+{
+  ELog::RegMethod RegA("SupplyPipe","addOuterPoints");
+
+  Geometry::Vec3D Pt;
+  // Outer Points
   for(size_t i=1;i<=NSegIn;i++)
     {
        Pt=Origin+X*PPts[i].X()+Y*PPts[i].Y()+Z*PPts[i].Z();
        Coaxial.addPoint(Pt);
-    }  
-  
-  Coaxial.addRadius(inRadius,inMat,0.0);
-  Coaxial.addRadius(inAlRadius,inAlMat,0.0);
-  Coaxial.addRadius(midAlRadius,midAlMat,0.0);
-  Coaxial.addRadius(voidRadius,voidMat,0.0);
-  Coaxial.addRadius(outAlRadius,outAlMat,0.0);
+    } 
+  return;
+}
 
-  Coaxial.setActive(0,1);  
-  // Coaxial.setActive(1,5);
-  // Coaxial.setActive(2,29);
-  // Coaxial.setActive(3,29);
-  
-  Coaxial.createAll(System);
+void
+SupplyPipe::setActive()
+  /*!
+    Simple set the active units
+  */
+{
+  ELog::RegMethod RegA("SupplyPipe","setActive");
+  for(size_t i=0;i<ActiveFlag.size();i++)
+    Coaxial.setActive(i,ActiveFlag[i]);  
   return;
 }
   
@@ -282,8 +320,45 @@ SupplyPipe::createAll(Simulation& System,
   populate(System);
 
   createUnitVector(FC,orgLayerIndex,orgSideIndex);
-  insertInlet(System,FC,exitSideIndex);
-    
+  insertInlet(FC,exitSideIndex);
+  addOuterPoints();
+  setActive();
+  Coaxial.createAll(System);
+
+  return;
+}
+
+
+
+void
+SupplyPipe::createAll(Simulation& System,
+		      const attachSystem::FixedComp& FC,
+		      const size_t orgLayerIndex,
+		      const size_t orgSideIndex,
+		      const size_t exitSideIndex,
+		      const attachSystem::LayerComp& LC,
+		      const size_t extraSide)
+  /*!
+    Generic function to create everything
+    \param System :: Simulation to create objects in
+    \param FC :: Fixed Base unit
+    \param orgLayerIndex :: Link point for origin 
+    \param orgSideIndex :: Link point for start point
+    \param exitSideIndex :: layer to pass pipe out via
+    \param ExtraLC :: Point to extra Layer Object if exist [pre-mod]
+    \param extraSide :: Side to track through object
+  */
+{
+  ELog::RegMethod RegA("SupplyPipe","createAll");
+  populate(System);
+
+  createUnitVector(FC,orgLayerIndex,orgSideIndex);
+  insertInlet(FC,exitSideIndex);
+  addExtraLayer(LC,extraSide);
+  addOuterPoints();
+  setActive();
+
+  Coaxial.createAll(System);    
   return;
 }
   

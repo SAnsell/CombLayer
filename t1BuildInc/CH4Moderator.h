@@ -95,8 +95,7 @@ class CH4Moderator : public attachSystem::ContainedComp,
   virtual ~CH4Moderator();
 //
   std::string getComposite(const std::string&) const;
-  virtual void addToInsertChain(attachSystem::ContainedComp&) const;
-//  void createAll(Simulation&,const attachSystem::FixedComp&);
+
   virtual Geometry::Vec3D getSurfacePoint(const size_t,const size_t) const;
   virtual int getLayerSurf(const size_t,const size_t) const;
   virtual std::string getLayerString(const size_t,const size_t) const;

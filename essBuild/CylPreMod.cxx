@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   essBuild/CylPreMod.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -77,7 +77,7 @@ namespace essSystem
 
 CylPreMod::CylPreMod(const std::string& Key) :
   attachSystem::ContainedGroup("Main","BlockA","BlockB"),
-  attachSystem::LayerComp(),
+  attachSystem::LayerComp(0),
   attachSystem::FixedComp(Key,6),
   modIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(modIndex+1),ExtAObj(new BlockAddition(Key+"ABlock")),
@@ -101,7 +101,7 @@ CylPreMod::CylPreMod(const CylPreMod& A) :
   modIndex(A.modIndex),cellIndex(A.cellIndex),ExtAObj(A.ExtAObj),
   ExtBObj(A.ExtBObj),innerRadius(A.innerRadius),
   innerHeight(A.innerHeight),innerDepth(A.innerDepth),
-  nLayers(A.nLayers),radius(A.radius),height(A.height),
+  radius(A.radius),height(A.height),
   depth(A.depth),mat(A.mat),temp(A.temp),viewY(A.viewY),
   viewAngle(A.viewAngle),viewOpenAngle(A.viewOpenAngle),
   viewHeight(A.viewHeight),viewWidth(A.viewWidth),
@@ -131,7 +131,6 @@ CylPreMod::operator=(const CylPreMod& A)
       innerRadius=A.innerRadius;
       innerHeight=A.innerHeight;
       innerDepth=A.innerDepth;
-      nLayers=A.nLayers;
       radius=A.radius;
       height=A.height;
       depth=A.depth;
@@ -291,6 +290,7 @@ CylPreMod::populate(const FuncDataBase& Control)
       mat.push_back(M);
       temp.push_back(T);
     }
+
 
   const size_t nView=Control.EvalVar<size_t>(keyName+"NView");   
   double vH,vW,vA,vO;
@@ -473,25 +473,25 @@ CylPreMod::createLinks()
       const int SI(modIndex+static_cast<int>(nLayers-1)*10);
       FixedComp::setConnect(0,Origin-Y*radius[nLayers-1],-Y);
       FixedComp::setLinkSurf(0,SMap.realSurf(SI+7));
-      FixedComp::addLinkSurf(0,-SMap.realSurf(modIndex+2));
+      FixedComp::addBridgeSurf(0,-SMap.realSurf(modIndex+2));
 
       FixedComp::setConnect(1,Origin+Y*radius[nLayers-1],Y);
       FixedComp::setLinkSurf(1,SMap.realSurf(SI+7));
-      FixedComp::addLinkSurf(1,SMap.realSurf(modIndex+2));
+      FixedComp::addBridgeSurf(1,SMap.realSurf(modIndex+2));
       
       FixedComp::setConnect(2,Origin-Z*(height[nLayers-1]/2.0),-Z);
-      FixedComp::setLinkSurf(2,-SMap.realSurf(SI+5));
+      FixedComp::setBridgeSurf(2,-SMap.realSurf(SI+5));
 
       FixedComp::setConnect(3,Origin+Z*(height[nLayers-1]/2.0),Z);
       FixedComp::setLinkSurf(3,SMap.realSurf(SI+6));
 
       FixedComp::setConnect(4,Origin-X*radius[nLayers-1],-X);
       FixedComp::setLinkSurf(4,SMap.realSurf(SI+7));
-      FixedComp::addLinkSurf(4,-SMap.realSurf(modIndex+1));
+      FixedComp::addBridgeSurf(4,-SMap.realSurf(modIndex+1));
 
       FixedComp::setConnect(5,Origin+X*radius[nLayers-1],X);
       FixedComp::setLinkSurf(5,SMap.realSurf(SI+7));
-      FixedComp::addLinkSurf(5,SMap.realSurf(modIndex+1));
+      FixedComp::addBridgeSurf(5,SMap.realSurf(modIndex+1));
 
     }
   else 

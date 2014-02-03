@@ -19,7 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef hutechSystem_FeedThrough_h
+#ifndef hutchSystem_FeedThrough_h
 #define hutchSystem_FeedThrough_h
 
 class Simulation;

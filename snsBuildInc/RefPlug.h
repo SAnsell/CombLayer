@@ -52,7 +52,6 @@ class RefPlug : public attachSystem::ContainedComp,
   double height;                  ///< Be height
   double depth;                  ///< Be depth
 
-  size_t nLayers;                     ///< number of layers
   std::vector<double> radius;         ///< cylinder radii  
   std::vector<double> temp;           ///< Temperatures
   std::vector<int> mat;               ///< Materials

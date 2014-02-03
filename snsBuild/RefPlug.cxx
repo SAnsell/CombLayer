@@ -73,7 +73,7 @@ namespace snsSystem
 {
 
 RefPlug::RefPlug(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::LayerComp(),
+  attachSystem::ContainedComp(),attachSystem::LayerComp(0),
   attachSystem::FixedComp(Key,6),
   refIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(refIndex+1)
@@ -90,8 +90,7 @@ RefPlug::RefPlug(const RefPlug& A) :
   refIndex(A.refIndex),cellIndex(A.cellIndex),xStep(A.xStep),
   yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
   zAngle(A.zAngle),height(A.height),depth(A.depth),
-  nLayers(A.nLayers),radius(A.radius),temp(A.temp),
-  mat(A.mat)
+  radius(A.radius),temp(A.temp),mat(A.mat)
   /*!
     Copy constructor
     \param A :: RefPlug to copy
@@ -119,7 +118,6 @@ RefPlug::operator=(const RefPlug& A)
       zAngle=A.zAngle;
       height=A.height;
       depth=A.depth;
-      nLayers=A.nLayers;
       radius=A.radius;
       temp=A.temp;
       mat=A.mat;

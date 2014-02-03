@@ -350,7 +350,7 @@ FixedComp::addLinkSurf(const size_t Index,const int SN)
   if (Index>=LU.size())
     throw ColErr::IndexError<size_t>(Index,LU.size(),"LU size/Index");
   
-  LU[Index].addBridgeSurf(SN);
+  LU[Index].addLinkSurf(SN);
   return;
 }
 
@@ -368,7 +368,7 @@ FixedComp::addLinkSurf(const size_t Index,
   if (Index>=LU.size())
     throw ColErr::IndexError<size_t>(Index,LU.size(),"LU size/Index");
 
-  LU[Index].addBridgeSurf(SList);
+  LU[Index].addLinkSurf(SList);
   return;
 }
 
@@ -384,7 +384,7 @@ FixedComp::setLinkSurf(const size_t Index,const int SN)
   if (Index>=LU.size())
     throw ColErr::IndexError<size_t>(Index,LU.size(),"LU size/index");
 
-  LU[Index].setBridgeSurf(SN);
+  LU[Index].setLinkSurf(SN);
   return;
 }
 
@@ -409,6 +409,76 @@ FixedComp::setLinkSurf(const size_t Index,
 }
 
 void
+FixedComp::setBridgeSurf(const size_t Index,const int SN) 
+  /*!
+    Set a surface to bridge outpu
+    \param Index :: Link number
+    \param SN :: Surface number [inward looking]
+  */
+{
+  ELog::RegMethod RegA("FixedComp","setBridgeSurf");
+  if (Index>=LU.size())
+    throw ColErr::IndexError<size_t>(Index,LU.size(),"LU size/index");
+
+  LU[Index].setBridgeSurf(SN);
+  return;
+}
+
+void
+FixedComp::setBridgeSurf(const size_t Index,
+		       const attachSystem::FixedComp& FC,
+		       const size_t otherIndex) 
+  /*!
+    Set  a surface to bridge
+    \param Index :: Link number
+    \param FC :: Fixed component to use as connection
+    \param otherIndex :: Connecting surface on the FC
+  */
+{
+  ELog::RegMethod RegA("FixedComp","setBridgeSurf<FC>");
+  if (otherIndex>=FC.LU.size())
+    throw ColErr::IndexError<size_t>(otherIndex,FC.LU.size(),
+				  "otherIndex/LU.size");
+
+  setBridgeSurf(Index,-FC.getLinkSurf(otherIndex));
+  return;
+}
+void
+FixedComp::addBridgeSurf(const size_t Index,const int SN) 
+  /*!
+    Add a surface to output
+    \param Index :: Link number
+    \param SN :: Surface number [inward looking]
+  */
+{
+  ELog::RegMethod RegA("FixedComp","addBridgeSurf");
+  if (Index>=LU.size())
+    throw ColErr::IndexError<size_t>(Index,LU.size(),"LU size/Index");
+  
+  LU[Index].addBridgeSurf(SN);
+  return;
+}
+
+
+
+void
+FixedComp::addBridgeSurf(const size_t Index,
+			 const std::string& SList) 
+  /*!
+    Add a surface to output
+    \param Index :: Link number
+    \param SList :: String to process
+  */
+{
+  ELog::RegMethod RegA("FixedComp","addBridgeSurf");
+  if (Index>=LU.size())
+    throw ColErr::IndexError<size_t>(Index,LU.size(),"LU size/Index");
+
+  LU[Index].addBridgeSurf(SList);
+  return;
+}
+
+void
 FixedComp::setConnect(const size_t Index,const Geometry::Vec3D& C,
 		      const Geometry::Vec3D& A)
  /*!
@@ -429,7 +499,8 @@ FixedComp::setConnect(const size_t Index,const Geometry::Vec3D& C,
 
 void
 FixedComp::setLinkComponent(const size_t Index,
-			    const FixedComp& FC,const size_t sideIndex)
+			    const FixedComp& FC,
+			    const size_t sideIndex)
   /*!
     Copy the opposite (as if joined) link surface 
     Note that the surfaces are complemented
@@ -438,7 +509,8 @@ FixedComp::setLinkComponent(const size_t Index,
     \param sideIndex :: link unit of other object
   */
 {
-  ELog::RegMethod RegA("FixedComp","setLinkSurf");
+  ELog::RegMethod RegA("FixedComp","setLinkComplement");
+
   if (Index>=LU.size())
     throw ColErr::IndexError<size_t>(Index,LU.size(),"LU size/index");
   if (sideIndex>=FC.LU.size())
@@ -607,6 +679,27 @@ FixedComp::getLinkComplement(const size_t Index) const
   HeadRule RP;
   RP.procString(LU[Index].getLinkString());
   RP.makeComplement();
+  return RP.display();
+}
+
+std::string
+FixedComp::getBridgeComplement(const size_t Index) const
+  /*!
+    Accessor to the link surface string [negative]
+    \param Index :: Link number
+    \return String of link
+  */
+{
+  ELog::RegMethod RegA("FixedComp","getBridgeComplement");
+  if (Index>=LU.size())
+    throw ColErr::IndexError<size_t>(Index,LU.size(),"Index/LU.size");
+
+  HeadRule RP;
+  RP.procString(LU[Index].getMain());
+  RP.makeComplement();
+  if (LU[Index].hasCommon())
+    RP.addIntersection(LU[Index].getCommon());
+
   return RP.display();
 }
 

@@ -67,7 +67,7 @@ namespace essSystem
 {
 
 essMod::essMod(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::LayerComp(),
+  attachSystem::ContainedComp(),attachSystem::LayerComp(0),
   attachSystem::FixedComp(Key,6)
   /*!
     Constructor BUT ALL variable are left unpopulated.

@@ -221,7 +221,7 @@ PipeLine::addSurfPoint(const Geometry::Vec3D& Pt,
 }
 
 void
-PipeLine::setActive(const size_t uIndex,const int flag)
+PipeLine::setActive(const size_t uIndex,const size_t flag)
   /*!
     Set the activity flag: 
     Goes from inner to outer 
@@ -303,9 +303,9 @@ PipeLine::createUnits(Simulation& System)
 	PUnits[i]->connectTo(PUnits[i+1]);
     }
   // Actually build the units
+  
   for(size_t i=0;i<PUnits.size();i++)
     PUnits[i]->createAll(System,activeFlags[i],CV);
-
   return 0;
 }
 

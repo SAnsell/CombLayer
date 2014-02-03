@@ -56,6 +56,7 @@ namespace essSystem
   class ShutterBay;
   class ProtonTube;
   class GuideBay;
+  class BeamMonitor;
 
   /*!
     \class makeESS
@@ -70,15 +71,16 @@ class makeESS
  private:
   
   boost::shared_ptr<WheelBase> Target;   ///< target object
-  boost::shared_ptr<BeRef> Reflector;   ///< reflector object
-  boost::shared_ptr<ProtonTube> PBeam;  ///< Proton Void
+  boost::shared_ptr<BeRef> Reflector;    ///< reflector object
+  boost::shared_ptr<ProtonTube> PBeam;   ///< Proton Void
+  boost::shared_ptr<BeamMonitor> BMon;   ///< Beam Monitor
 
   // ASSEMBLY 1:
   boost::shared_ptr<essMod> LowMod;  ///< Lower Mod
   boost::shared_ptr<essMod> LowModB;  ///< Lower Mod [if needed]
   boost::shared_ptr<moderatorSystem::FlightLine> LowAFL;  ///< Lower Mode FL
   boost::shared_ptr<moderatorSystem::FlightLine> LowBFL;  ///< Lower Mode FL
-  boost::shared_ptr<CylPreMod> LowPre;  ///< Upper Mod (Pre)
+  boost::shared_ptr<CylPreMod> LowPre;          ///< Upper Mod (Pre)
   boost::shared_ptr<SupplyPipe> LowSupplyPipe;  ///< Lower supply 
   boost::shared_ptr<SupplyPipe> LowReturnPipe;  ///< Lower supply 
 

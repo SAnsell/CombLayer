@@ -238,10 +238,10 @@ ShutterBay::createLinks()
   FixedComp::setLinkSurf(2,SMap.realSurf(bulkIndex+7));
   FixedComp::setLinkSurf(3,SMap.realSurf(bulkIndex+7));
 
-  FixedComp::addLinkSurf(0,-SMap.realSurf(bulkIndex+1));
-  FixedComp::addLinkSurf(1,SMap.realSurf(bulkIndex+1));
-  FixedComp::addLinkSurf(2,-SMap.realSurf(bulkIndex+2));
-  FixedComp::addLinkSurf(3,SMap.realSurf(bulkIndex+2));
+  FixedComp::addBridgeSurf(0,-SMap.realSurf(bulkIndex+1));
+  FixedComp::addBridgeSurf(1,SMap.realSurf(bulkIndex+1));
+  FixedComp::addBridgeSurf(2,-SMap.realSurf(bulkIndex+2));
+  FixedComp::addBridgeSurf(3,SMap.realSurf(bulkIndex+2));
   FixedComp::setLinkSurf(4,-SMap.realSurf(bulkIndex+5));
   FixedComp::setLinkSurf(5,SMap.realSurf(bulkIndex+6));
 

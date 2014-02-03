@@ -87,7 +87,7 @@ CylModerator::CylModerator(const CylModerator& A) :
   essMod(A),
   modIndex(A.modIndex),cellIndex(A.cellIndex),xStep(A.xStep),
   yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
-  zAngle(A.zAngle),nLayers(A.nLayers),radius(A.radius),
+  zAngle(A.zAngle),radius(A.radius),
   height(A.height),mat(A.mat)
   /*!
     Copy constructor
@@ -112,7 +112,6 @@ CylModerator::operator=(const CylModerator& A)
       zStep=A.zStep;
       xyAngle=A.xyAngle;
       zAngle=A.zAngle;
-      nLayers=A.nLayers;
       radius=A.radius;
       height=A.height;
       mat=A.mat;
@@ -155,7 +154,7 @@ CylModerator::populate(const FuncDataBase& Control)
   double R,H,T;
   int M;
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");   
-  for(size_t i=0;i<=nLayers;i++)
+  for(size_t i=0;i<nLayers;i++)
     {
       if (i)
 	{
@@ -212,7 +211,7 @@ CylModerator::createSurfaces()
   ModelSupport::buildPlane(SMap,modIndex+2,Origin,Y);  
 
   int SI(modIndex);
-  for(size_t i=0;i<=nLayers;i++)
+  for(size_t i=0;i<nLayers;i++)
     {
       ModelSupport::buildCylinder(SMap,SI+7,Origin,Z,radius[i]);  
       ModelSupport::buildPlane(SMap,SI+5,Origin-Z*height[i]/2.0,Z);  
@@ -235,11 +234,11 @@ CylModerator::createObjects(Simulation& System)
 
   std::string Out;
   int SI(modIndex);
-  for(size_t i=0;i<=nLayers;i++)
+  for(size_t i=0;i<nLayers;i++)
     {
       Out=ModelSupport::getComposite(SMap,SI," -7 5 -6 ");
 
-      if (i==nLayers) addOuterSurf(Out);
+      if ((i+1)==nLayers) addOuterSurf(Out);
       if (i)
 	Out+=ModelSupport::getComposite(SMap,SI-10," (7:-5:6) ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],Out));
@@ -255,31 +254,31 @@ CylModerator::createLinks()
   */
 {  
   ELog::RegMethod RegA("CylModerator","createLinks");
-
+  const size_t NL= nLayers-1;
   if (nLayers)
     {
-      const int SI(modIndex+static_cast<int>(nLayers)*10);
+      const int SI(modIndex+static_cast<int>(NL)*10);
 
-      FixedComp::setConnect(0,Origin-Y*radius[nLayers],-Y);
+      FixedComp::setConnect(0,Origin-Y*radius[NL],-Y);
       FixedComp::setLinkSurf(0,SMap.realSurf(SI+7));
       FixedComp::addLinkSurf(0,-SMap.realSurf(modIndex+2));
 
-      FixedComp::setConnect(1,Origin+Y*radius[nLayers],Y);
+      FixedComp::setConnect(1,Origin+Y*radius[NL],Y);
       FixedComp::setLinkSurf(1,SMap.realSurf(SI+7));
       FixedComp::addLinkSurf(1,SMap.realSurf(modIndex+2));
 
-      FixedComp::setConnect(2,Origin-X*radius[nLayers],-X);
+      FixedComp::setConnect(2,Origin-X*radius[NL],-X);
       FixedComp::setLinkSurf(2,SMap.realSurf(SI+7));
       FixedComp::addLinkSurf(2,-SMap.realSurf(modIndex+1));
 
-      FixedComp::setConnect(3,Origin+X*radius[nLayers],X);
+      FixedComp::setConnect(3,Origin+X*radius[NL],X);
       FixedComp::setLinkSurf(3,SMap.realSurf(SI+7));
       FixedComp::addLinkSurf(3,SMap.realSurf(modIndex+1));
       
-      FixedComp::setConnect(4,Origin-Z*(height[nLayers]/2.0),-Z);
+      FixedComp::setConnect(4,Origin-Z*(height[NL]/2.0),-Z);
       FixedComp::setLinkSurf(4,-SMap.realSurf(SI+5));
 
-      FixedComp::setConnect(5,Origin+Z*(height[nLayers]/2.0),Z);
+      FixedComp::setConnect(5,Origin+Z*(height[NL]/2.0),Z);
       FixedComp::setLinkSurf(5,SMap.realSurf(SI+6));
     }
   else 
@@ -303,7 +302,7 @@ CylModerator::getSurfacePoint(const size_t layerIndex,
 
   if (sideIndex>5) 
     throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
-  if (layerIndex>=nLayers) 
+  if (layerIndex>nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
 
   // Modification map:
@@ -337,7 +336,7 @@ CylModerator::getLayerString(const size_t layerIndex,
 {
   ELog::RegMethod RegA("CylModerator","getLayerString");
 
-  if (layerIndex>=nLayers) 
+  if (layerIndex>nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
 
   const int SI(modIndex+static_cast<int>(layerIndex)*10);
@@ -364,7 +363,7 @@ CylModerator::getLayerString(const size_t layerIndex,
 
 int
 CylModerator::getLayerSurf(const size_t layerIndex,
-			 const size_t sideIndex) const
+			   const size_t sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
     \param sideIndex :: Side [0-5]
@@ -374,7 +373,7 @@ CylModerator::getLayerSurf(const size_t layerIndex,
 {
   ELog::RegMethod RegA("CylModerator","getLayerSurf");
 
-  if (layerIndex>=nLayers) 
+  if (layerIndex>nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
   
   const int SI(modIndex+static_cast<int>(layerIndex)*10);

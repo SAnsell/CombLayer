@@ -49,7 +49,8 @@ class LinkUnit
   Geometry::Vec3D ConnectPt;    ///< Connection point
   
   int linkSurf;                 ///< Link surface [0 ==> Rule]
-  HeadRule bridgeSurf;             ///< Common surface unit
+  HeadRule mainSurf;             ///< Common surface unit
+  HeadRule bridgeSurf;           ///< Bridging surface unit
   
  public:
 
@@ -60,12 +61,17 @@ class LinkUnit
 
   void complement();
 
+  std::string getMain() const;
   std::string getCommon() const;
 
   /// Check Axis 
   bool hasAxis() const { return (populated & 1); }
   /// Check Connection
   bool hasConnectPt() const { return (populated & 2); }
+  /// Check Main
+  bool hasLink() const { return mainSurf.hasRule(); }
+  /// Check Common
+  bool hasCommon() const { return bridgeSurf.hasRule(); }
 
   const Geometry::Vec3D& getConnectPt() const;
   const Geometry::Vec3D& getAxis() const;
@@ -75,6 +81,11 @@ class LinkUnit
 
   void setAxis(const Geometry::Vec3D&);
   void setConnectPt(const Geometry::Vec3D&);
+
+  void setLinkSurf(const int);
+  void setLinkSurf(const std::string&);
+  void addLinkSurf(const int);
+  void addLinkSurf(const std::string&);
 
   void setBridgeSurf(const int);
   void setBridgeSurf(const std::string&);

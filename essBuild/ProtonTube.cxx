@@ -134,8 +134,7 @@ ProtonTube::createUnitVector(const attachSystem::FixedComp& FC,
   ELog::RegMethod RegA("ProtonTube","createUnitVector");
 
   attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-  ELog::EM<<"Y == "<<Y<<ELog::endDebug;
-  ELog::EM<<"Orging == "<<Origin<<ELog::endDebug;
+
   applyAngleRotate(xyAngle,zAngle);
   applyShift(xStep,yStep,zStep);
 
@@ -219,7 +218,7 @@ ProtonTube::createLinks()
     {
       FixedComp::setConnect(i+2,Origin+Y*length[i]/2.0,-X);
       FixedComp::setLinkSurf(i+2,-SMap.realSurf(PT+7));
-      PT+100;
+      PT+=100;
     } 
   return;
 }
@@ -251,23 +250,20 @@ ProtonTube::createAll(Simulation& System,
     {
       TSurf=(tIndex>0) ? 
 	TargetFC.getLinkString(static_cast<size_t>(tIndex-1)) : 
-	TargetFC.getLinkComplement(static_cast<size_t>(-(tIndex+1)));
+	TargetFC.getBridgeComplement(static_cast<size_t>(-(tIndex+1)));
       if (tIndex<0)
-	FixedComp::setLinkComponent(0,TargetFC,static_cast<size_t>(-(tIndex-1)));
+	FixedComp::setLinkComponent(0,TargetFC,
+				    static_cast<size_t>(-(tIndex-1)));
       else
 	FixedComp::setLinkComponent(0,TargetFC,static_cast<size_t>(tIndex-1));	
     }
   if (bIndex)
     {
-      BSurf=(bIndex<0) ?
-	BulkFC.getLinkComplement(static_cast<size_t>(-(bIndex+1))) :
-	BulkFC.getLinkString(static_cast<size_t>(bIndex-1));
-      if (bIndex<0)
-	FixedComp::setLinkComponent(0,BulkFC,static_cast<size_t>(-(bIndex-1)));
-      else
-	FixedComp::setLinkComponent(0,BulkFC,static_cast<size_t>(bIndex-1));
+      const size_t lIndex(static_cast<size_t>(abs(bIndex))-1);
+      BSurf=(bIndex>0) ?
+	BulkFC.getLinkString(lIndex) : BulkFC.getBridgeComplement(lIndex) ;
+      FixedComp::setLinkComponent(0,BulkFC,lIndex);
     }
-
   createObjects(System,TSurf,BSurf);
   createLinks();
   insertObjects(System); 

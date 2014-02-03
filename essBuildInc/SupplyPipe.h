@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   essBuildInc/SupplyPipe.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,29 +45,27 @@ class SupplyPipe : public attachSystem::FixedComp
    
   size_t NSegIn;                      ///< Number of segments  
 
-  double inRadius;                   ///< H2 material
-  double inAlRadius;                 ///< Al material
-  double midAlRadius;                   ///< H2 material
-  double voidRadius;                 ///< Al material
-  double outAlRadius;                 ///< Al material
+  std::vector<double> Radii;          ///< Inner to outer radii
+  std::vector<int> Mat;               ///< Material 
+  std::vector<double> Temp;           ///< Temperature
 
-  int inMat;                       ///< inner H2 
-  int inAlMat;                       ///< inner Al layer
-  int midAlMat;                       ///< mid vacuum
-  int voidMat;                     ///< mid Al layer
-  int outAlMat;                     ///< mid Al layer
-
+  std::vector<size_t> ActiveFlag;     ///< Active flag
 
   ModelSupport::PipeLine Coaxial;      ///< Global outer
-
   std::vector<Geometry::Vec3D> PPts;  ///< Pipe points
 
   
   void populate(const Simulation&);
   void createUnitVector(const attachSystem::FixedComp&,const size_t,
 			const size_t);
-  void insertInlet(Simulation&,const attachSystem::FixedComp&,
+  void insertInlet(const attachSystem::FixedComp&,
 		   const size_t);
+  void addExtra(const attachSystem::LayerComp&,
+		const size_t,const size_t);
+  void addOuterPoints();
+  void addExtraLayer(const attachSystem::LayerComp&,const size_t);
+
+  void setActive();
 
  public:
 
@@ -79,6 +77,10 @@ class SupplyPipe : public attachSystem::FixedComp
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const size_t,const size_t,const size_t);
+
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const size_t,const size_t,const size_t,
+		 const attachSystem::LayerComp&,const size_t);
 
 };
 

@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   processInc/PipeLine.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,8 +26,6 @@ namespace ModelSupport
 {
  
 class surfRegister;
-
-
   
 /*!
   \class PipeLine
@@ -43,7 +41,7 @@ class PipeLine
 
   const std::string keyName;       ///< KeyName
   
-  int nCylinder;                   ///< Number of pre-cylinders
+  size_t nCylinder;                   ///< Number of pre-cylinders
   std::vector<cylValues> CV;       ///< Cylinder Values [ one for each radius]
 
   std::vector<Geometry::Vec3D> Pts;      ///< Points in pipe
@@ -51,7 +49,7 @@ class PipeLine
   std::map<size_t,HeadRule> layerSurf;  ///< Outgoing surface
   std::map<size_t,HeadRule> commonSurf;  ///< common surface
 
-  std::vector<int> activeFlags;          ///< Activity flags : one for each PUnit
+  std::vector<size_t> activeFlags;          ///< Activity flags : one for each PUnit
  
   std::vector<pipeUnit*> PUnits;     ///< pipeUnits (1 less than Pts)
 
@@ -76,7 +74,7 @@ class PipeLine
   void addSurfPoint(const Geometry::Vec3D&,const std::string&,
 		    const std::string&);
   void addRadius(const double,const int,const double);
-  void setActive(const size_t,const int);
+  void setActive(const size_t,const size_t);
 
   void createAll(Simulation&);
     

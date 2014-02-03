@@ -75,7 +75,7 @@ namespace ts1System
 
 CylPreSimple::CylPreSimple(const std::string& Key) :
   attachSystem::ContainedComp(),
-  attachSystem::LayerComp(),
+  attachSystem::LayerComp(0),
   attachSystem::FixedComp(Key,6),
   modIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(modIndex+1),nView(0)
@@ -84,6 +84,50 @@ CylPreSimple::CylPreSimple(const std::string& Key) :
     \param Key :: Name of construction key
   */
 {}
+
+CylPreSimple::CylPreSimple(const CylPreSimple& A) : 
+  attachSystem::ContainedComp(A),attachSystem::LayerComp(A),
+  attachSystem::FixedComp(A),
+  modIndex(A.modIndex),cellIndex(A.cellIndex),innerRadius(A.innerRadius),
+  innerHeight(A.innerHeight),innerDepth(A.innerDepth),
+  radius(A.radius),height(A.height),depth(A.depth),
+  mat(A.mat),temp(A.temp),nView(A.nView),viewY(A.viewY),
+  FLpts(A.FLpts),FLunit(A.FLunit)
+  /*!
+    Copy constructor
+    \param A :: CylPreSimple to copy
+  */
+{}
+
+CylPreSimple&
+CylPreSimple::operator=(const CylPreSimple& A)
+  /*!
+    Assignment operator
+    \param A :: CylPreSimple to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::LayerComp::operator=(A);
+      attachSystem::FixedComp::operator=(A);
+      cellIndex=A.cellIndex;
+      innerRadius=A.innerRadius;
+      innerHeight=A.innerHeight;
+      innerDepth=A.innerDepth;
+      radius=A.radius;
+      height=A.height;
+      depth=A.depth;
+      mat=A.mat;
+      temp=A.temp;
+      nView=A.nView;
+      viewY=A.viewY;
+      FLpts=A.FLpts;
+      FLunit=A.FLunit;
+    }
+  return *this;
+}
 
 CylPreSimple::~CylPreSimple()
   /*!

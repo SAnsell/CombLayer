@@ -224,6 +224,9 @@ testContained::testIsOuterLine()
 
   Tests.push_back(TTYPE("3 -4 -107",
 			Geometry::Vec3D(-1,0,0),Geometry::Vec3D(1,4,0),1));
+
+  Tests.push_back(TTYPE("3 -4 -107",
+			Geometry::Vec3D(1,4,0),Geometry::Vec3D(-1,0,0),1));
   
 
   std::vector<TTYPE>::const_iterator tc;

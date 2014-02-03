@@ -56,7 +56,6 @@ class CylPreMod : public attachSystem::ContainedGroup,
   double innerHeight;             ///< height from inner cell
   double innerDepth;              ///< Depth from inner cell
 
-  size_t nLayers;                     ///< number of layers
   std::vector<double> radius;         ///< cylinder radii
   std::vector<double> height;         ///< Full heights
   std::vector<double> depth;          ///< full depths

@@ -74,8 +74,8 @@
 #include "Wheel.h"
 #include "SegWheel.h"
 #include "BeRef.h"
-#include "ProtonVoid.h"
 #include "ProtonTube.h"
+#include "BeamMonitor.h"
 #include "essMod.h"
 #include "CylModerator.h"
 #include "BlockAddition.h"
@@ -96,6 +96,7 @@ namespace essSystem
 makeESS::makeESS() :
   Reflector(new BeRef("BeRef")),
   PBeam(new ProtonTube("ProtonTube")),
+  BMon(new BeamMonitor("BeamMonitor")),
   LowAFL(new moderatorSystem::FlightLine("LowAFlight")),
   LowBFL(new moderatorSystem::FlightLine("LowBFlight")),
   LowPre(new CylPreMod("LowPre")),
@@ -119,6 +120,7 @@ makeESS::makeESS() :
 
   OR.addObject(Reflector);
   OR.addObject(PBeam);
+  OR.addObject(BMon);
   OR.addObject(LowAFL);
   OR.addObject(LowBFL);
   OR.addObject(LowPre);
@@ -364,18 +366,14 @@ makeESS::build(Simulation* SimPtr,
   if (lowModType=="Cone")
     {
       buildConicMod(*SimPtr);
-      Bulk->addFlightUnit(*SimPtr,*LowAFL);
-      Bulk->addFlightUnit(*SimPtr,*LowBFL);
     }
   else
     {
       buildLowMod(*SimPtr);
       lowFlightLines(*SimPtr);
-      Bulk->addFlightUnit(*SimPtr,*LowAFL);
-      Bulk->addFlightUnit(*SimPtr,*LowBFL);  
     }
-
-
+  Bulk->addFlightUnit(*SimPtr,*LowAFL);
+  Bulk->addFlightUnit(*SimPtr,*LowBFL);  
 
   TopMod->addInsertCell(Reflector->getMainCell());
   TopMod->createAll(*SimPtr,*Reflector);
@@ -405,14 +403,18 @@ makeESS::build(Simulation* SimPtr,
   PBeam->createAll(*SimPtr,*Target,1,*ShutterBayObj,-1);
   attachSystem::addToInsertSurfCtrl(*SimPtr,*Reflector,
 				    PBeam->getKey("Sector0"));
+  
 
   attachSystem::addToInsertSurfCtrl(*SimPtr,*ShutterBayObj,
 				    PBeam->getKey("Full"));
   attachSystem::addToInsertSurfCtrl(*SimPtr,*Bulk,
 				    PBeam->getKey("Full"));
+  //  BMon->createAll(*SimPtr,*Target,1,*PBeam,"Sector");
+  //  attachSystem::addToInsertForced(*SimPtr,*Reflector,*BMon);
 
-  LowSupplyPipe->createAll(*SimPtr,*LowMod,0,6,4);
-  LowReturnPipe->createAll(*SimPtr,*LowMod,0,3,2);
+
+  LowSupplyPipe->createAll(*SimPtr,*LowMod,0,6,4,*LowPre,2);
+  LowReturnPipe->createAll(*SimPtr,*LowMod,0,3,2,*LowPre,4);
   
   return;
 }

@@ -67,6 +67,11 @@ class FixedComp
   void addLinkSurf(const size_t,const int);
   void addLinkSurf(const size_t,const std::string&);
 
+  void setBridgeSurf(const size_t,const FixedComp&,const size_t);
+  void setBridgeSurf(const size_t,const int);
+  void addBridgeSurf(const size_t,const int);
+  void addBridgeSurf(const size_t,const std::string&);
+
   void setLinkComponent(const size_t,const FixedComp&,const size_t);
   void setLinkCopy(const size_t,const FixedComp&,const size_t);
 
@@ -113,6 +118,7 @@ class FixedComp
   virtual const Geometry::Vec3D& getLinkAxis(const size_t) const;
   virtual std::string getLinkString(const size_t) const;
   virtual std::string getLinkComplement(const size_t) const;
+  virtual std::string getBridgeComplement(const size_t) const;
 
   size_t findLinkAxis(const Geometry::Vec3D&) const;
 

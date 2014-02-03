@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   t1UpgradeInc/CylPreSimple.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef essSystem_CylPreSimple_h
-#define essSystem_CylPreSimple_h
+#ifndef ts1System_CylPreSimple_h
+#define ts1System_CylPreSimple_h
 
 class Simulation;
 
@@ -47,7 +47,6 @@ class CylPreSimple : public attachSystem::ContainedComp,
   double innerHeight;             ///< height from inner cell
   double innerDepth;              ///< Depth from inner cell
 
-  size_t nLayers;                     ///< number of layers
   std::vector<double> radius;         ///< cylinder radii
   std::vector<double> height;         ///< Full heights
   std::vector<double> depth;          ///< full depths

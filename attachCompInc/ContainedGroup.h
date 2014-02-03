@@ -94,6 +94,9 @@ class ContainedGroup
 
   void insertObjects(Simulation&);
 
+  /// Size accessor
+  size_t nGroups() const { return CMap.size(); } 
+  bool hasKey(const std::string&) const;
   ContainedComp& addKey(const std::string&);
   ContainedComp& getKey(const std::string&);
   const ContainedComp& getKey(const std::string&) const;

@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   t1Build/H2Moderator.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,10 +47,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "Tally.h"
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
@@ -59,8 +55,6 @@
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "surfEqual.h"
-#include "surfDivide.h"
-#include "surfDIter.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
@@ -72,8 +66,6 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -89,7 +81,7 @@ namespace ts1System
 {
 
 H2Moderator::H2Moderator(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::LayerComp(),
+  attachSystem::ContainedComp(),attachSystem::LayerComp(6),
   attachSystem::FixedComp(Key,6),
   h2Index(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(h2Index+1)
@@ -404,8 +396,8 @@ H2Moderator::getSurfacePoint(const size_t layerIndex,
 
   if (sideIndex>5) 
     throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
-  if (layerIndex>5) 
-    throw ColErr::IndexError<size_t>(layerIndex,5,"layer");
+  if (layerIndex>=nLayers) 
+    throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
 
   // Modification map:
   std::map<size_t,double>::const_iterator mc;

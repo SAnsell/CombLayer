@@ -123,7 +123,6 @@ main(int argc,char* argv[])
   int exitFlag(0);                // Value on exit
   ELog::RegMethod RControl("","main");
   mainSystem::activateLogging(RControl);
-
   std::string Oname;
   std::vector<std::string> Names;  
   std::map<std::string,std::string> Values;  
