@@ -28,6 +28,10 @@ namespace mainSystem
   class inputParam;
 }
 
+namespace physicsSystem
+{
+  class LSwitchCard;
+}
 
 namespace ModelSupport
 {

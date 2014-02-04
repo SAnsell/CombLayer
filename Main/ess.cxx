@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   Main/ess.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,20 +51,12 @@
 #include "Tensor.h"
 #include "Vec3D.h"
 #include "inputParam.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "Tally.h"
-#include "TallyCreate.h"
 #include "Transform.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
-#include "Line.h"
 #include "Rules.h"
 #include "surfIndex.h"
 #include "Code.h"
@@ -77,10 +69,6 @@
 #include "PhysCard.h"
 #include "LSwitchCard.h"
 #include "PhysImp.h"
-#include "KGroup.h"
-#include "Source.h"
-#include "KCode.h"
-#include "PhysicsCards.h"
 #include "BasicWWE.h"
 #include "MainProcess.h"
 #include "SimProcess.h"
