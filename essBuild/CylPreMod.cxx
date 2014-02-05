@@ -743,7 +743,7 @@ CylPreMod::createAll(Simulation& System,
   // CREATE BLOCK ADDITION
   IPt=calcViewIntercept(1,1-bSide);   // view : side
   ExtBObj->setActive(blockActiveB);
-  ExtBObj->setEdgeSurf(SMap.realSurf(modIndex+205-
+  ExtBObj->setEdgeSurf(SMap.realSurf(modIndex+204-
 				     static_cast<int>(bSide)));  // 204
   ExtBObj->setCentRotate(Origin);
   ExtBObj->copyInterObj(this->getKey("Main"));

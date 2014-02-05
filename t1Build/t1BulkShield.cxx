@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   t1Build/t1BulkShield.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,16 +48,10 @@
 #include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
-#include "Tensor.h"
 #include "Vec3D.h"
 #include "inputParam.h"
 #include "PointOperation.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfDIter.h"
@@ -78,15 +72,12 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "shutterBlock.h"
 #include "SimProcess.h"
 #include "SurInter.h"
 #include "Simulation.h"
 #include "insertInfo.h"
 #include "insertBaseInfo.h"
-#include "chipDataStore.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
@@ -330,14 +321,12 @@ t1BulkShield::createShutters(Simulation& System,
       else if (i==gemShutter)
 	GData.push_back(boost::shared_ptr<GeneralShutter>
 			(new BlockShutter(i,"shutter","gemShutter")));
-      /*
       else if (i==hrpdShutter)
 	GData.push_back(boost::shared_ptr<GeneralShutter>
 			(new BlockShutter(i,"shutter","hrpdShutter")));
       else if (i==pearlShutter)
 	GData.push_back(boost::shared_ptr<GeneralShutter>
 	(new BlockShutter(i,"shutter","pearlShutter")));		
-      */
       else
 	GData.push_back(boost::shared_ptr<GeneralShutter>
 			(new GeneralShutter(i,"shutter")));

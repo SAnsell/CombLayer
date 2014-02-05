@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   attachComp/FixedComp.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,8 +46,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -651,6 +649,39 @@ FixedComp::getLinkAxis(const size_t Index) const
 }
 
 std::string
+FixedComp::getMasterString(const size_t Index) const
+  /*!
+    Accessor to the master link surface string
+    \param Index :: Link number
+    \return String of link
+  */
+{
+  ELog::RegMethod RegA("FixedComp","getMasterString");
+  if (Index>=LU.size())
+    throw ColErr::IndexError<size_t>(Index,LU.size(),"Index/LU.size");
+  
+  return LU[Index].getLinkString();
+}
+
+std::string
+FixedComp::getMasterComplement(const size_t Index) const
+  /*!
+    Accessor to the master link surface string
+    \param Index :: Link number
+    \return String of link
+  */
+{
+  ELog::RegMethod RegA("FixedComp","getMasterString");
+  if (Index>=LU.size())
+    throw ColErr::IndexError<size_t>(Index,LU.size(),"Index/LU.size");
+
+  HeadRule RP;
+  RP.procString(LU[Index].getMain());
+  RP.makeComplement();
+  return RP.display();
+}
+
+std::string
 FixedComp::getLinkString(const size_t Index) const
   /*!
     Accessor to the link surface string
@@ -676,10 +707,48 @@ FixedComp::getLinkComplement(const size_t Index) const
   ELog::RegMethod RegA("FixedComp","getLinkComplement");
   if (Index>=LU.size())
     throw ColErr::IndexError<size_t>(Index,LU.size(),"Index/LU.size");
+
   HeadRule RP;
   RP.procString(LU[Index].getLinkString());
   RP.makeComplement();
   return RP.display();
+}
+
+std::string
+FixedComp::getCommonString(const size_t Index) const
+  /*!
+    Accessor to the link surface string [negative]
+    \param Index :: Link number
+    \return String of link
+  */
+{
+  ELog::RegMethod RegA("FixedComp","getBridgeString");
+  if (Index>=LU.size())
+    throw ColErr::IndexError<size_t>(Index,LU.size(),"Index/LU.size");
+
+  return (LU[Index].hasCommon()) ? LU[Index].getCommon() : ""; 
+}
+
+std::string
+FixedComp::getCommonComplement(const size_t Index) const
+  /*!
+    Accessor to the common surfaces [in complement]
+    \param Index :: Link number
+    \return String of common link
+  */
+{
+  ELog::RegMethod RegA("FixedComp","getBridgeString");
+  if (Index>=LU.size())
+    throw ColErr::IndexError<size_t>(Index,LU.size(),"Index/LU.size");
+
+  if (LU[Index].hasCommon())
+    {
+      HeadRule RP;
+      RP.procString(LU[Index].getCommon());
+      RP.makeComplement();
+      return RP.display();
+    }
+  return "";
 }
 
 std::string
@@ -796,8 +865,6 @@ FixedComp::selectAltAxis(const size_t Index,Geometry::Vec3D& XOut,
   return;
 }
 
-
-			 
 void
 FixedComp::applyRotation(const Geometry::Vec3D& Axis,
 			 const double Angle)
@@ -817,6 +884,38 @@ FixedComp::applyRotation(const Geometry::Vec3D& Axis,
   Qrot.rotate(beamAxis);
   Qrot.rotate(Z);
   return;
+}
+
+const HeadRule&
+FixedComp::getMainRule(const size_t Index) const
+  /*!
+    Get the main rule.
+    \param Index :: Index for LinkUnit
+    \return Main HeadRule
+   */
+{
+  ELog::RegMethod RegA("FixedComp","getMainRule"); 
+
+  if (Index>=LU.size())
+    throw ColErr::IndexError<size_t>(Index,LU.size(),"Index/LU.size");
+  
+  return LU[Index].getMainRule();
+}
+
+const HeadRule&
+FixedComp::getCommonRule(const size_t Index) const
+  /*!
+    Get the common rule.
+    \param Index :: Index for link unit
+    \return Common Headrule 
+   */
+{
+  ELog::RegMethod RegA("FixedComp","getMainRule"); 
+
+  if (Index>=LU.size())
+    throw ColErr::IndexError<size_t>(Index,LU.size(),"Index/LU.size");
+  
+  return LU[Index].getCommonRule();
 }
 
 int

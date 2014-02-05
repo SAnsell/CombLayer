@@ -335,4 +335,24 @@ LinkUnit::getMain() const
   return mainSurf.display();
 }
 
+const HeadRule&
+LinkUnit::getMainRule() const
+  /*!
+    Output main rule
+    \return Main rule
+   */
+{
+  return mainSurf;
+}
+
+const HeadRule&
+LinkUnit::getCommonRule() const
+  /*!
+    Output common rule
+    \return Common rule
+   */
+{
+  return bridgeSurf;
+}
+
 }  // NAMESPACE attachSystem

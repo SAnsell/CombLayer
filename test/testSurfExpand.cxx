@@ -47,7 +47,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
 #include "Surface.h"
 #include "Quadratic.h"
 #include "Plane.h"

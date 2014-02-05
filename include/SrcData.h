@@ -45,7 +45,7 @@ class SrcData
 {
  private:
 
-  int Index;                      ///< Index number
+  size_t Index;                      ///< Index number
   SrcInfo* SI;                    ///< SI card if present
   SrcBias* SB;                    ///< SB card if present
   SrcProb* SP;                    ///< SP card if present
@@ -54,7 +54,7 @@ class SrcData
 
  public:
   
-  explicit SrcData(const int);
+  explicit SrcData(const size_t);
   SrcData(const SrcData&);
   SrcData& operator=(const SrcData&);
   virtual ~SrcData();
@@ -62,7 +62,7 @@ class SrcData
   /// Is active
   virtual bool isActive() const { return 1; }
   /// Access Index
-  int getIndex() const { return Index; }
+  size_t getIndex() const { return Index; }
   /// Is dependent
   int isDependent() const { return (DS) ? 1 : 0; }
   std::string getDep() const;
@@ -120,7 +120,7 @@ class SrcInfo
   /// Access option
   char getOption() const { return option; }
 
-  void write(const int,std::ostream&) const;
+  void write(const size_t,std::ostream&) const;
 
 };
 
@@ -159,7 +159,7 @@ class SrcProb
   /// Access the data values
   std::vector<double>& getData() { return Values; }
 
-  void write(const int,std::ostream&) const;
+  void write(const size_t,std::ostream&) const;
 
 };
 
@@ -197,7 +197,7 @@ class SrcBias
   int getFMinus() const { return minusF; }
   
   void setFminus(const int,const double,const double);
-  void write(const int,std::ostream&) const;
+  void write(const size_t,std::ostream&) const;
 
 };
 

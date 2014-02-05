@@ -80,6 +80,8 @@ class HeadRule
   bool isDirectionValid(const Geometry::Vec3D&,const int) const; 
 
   std::set<const Geometry::Surface*> getOppositeSurfaces() const;
+  std::vector<const Geometry::Surface*> getSurfaces() const;
+  std::vector<int> getSurfaceNumbers() const;
   std::vector<int> getTopSurfaces() const;
 
   int removeItems(const int);

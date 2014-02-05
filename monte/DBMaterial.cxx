@@ -2,7 +2,7 @@
   CombLayer : MNCPX Input builder
  
  * File:   monte/DBMaterial.cxx
-*
+ *
  * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
@@ -700,7 +700,7 @@ DBMaterial::initMaterial()
   //  (by VOLUME)
   // Total atom density 0.1212102
   MObj.setMaterial(86,"Be90/8D20/2H2O",
-		   "80196.24c 6.094517e-05 4009.80c 1.112839e-01 "
+		   "4009.80c 1.112839e-01 "
 		   "1001.70c 1.323088e-03 1002.24c 5.277874e-03 "
 		   "8016.24c 0.0033253","be.01t lwtr.01t hwtr.01t",
 		   MLib);
@@ -785,6 +785,29 @@ DBMaterial::initMaterial()
 		   "",MLib);
   setMaterial(MObj);
 
+  // Material #97 is liquid methane at 110K (based on kernel T) - this is new TS1 default!!!
+  MObj.setMaterial(97,"CH4Liq110K",
+		   "1001.70c 0.066183 6000.70c 0.016546",
+		   "lmeth.11t",MLib);
+  setMaterial(MObj);
+
+    // Material #98 Boral (this is TS1 Boral = Alloy 1100 + B) ->>> 94.7% Al, 5.3% Boron (B-10 enrichment: 98.2%)
+    // Density 2.7 g/cm^3
+    // Total atom density 0.06566     
+  MObj.setMaterial(98,"TS1Boral","5010.70c 8.436522e-03 "
+		   "5011.70c 1.546409e-04 13027.24c 5.706872e-02",
+		   "al.20t",MLib);
+  setMaterial(MObj);
+
+  // Material #99: 90% Be + 10% D2O + H2O mixture (50% D2O & 50% H2O) 
+  //  (by VOLUME)
+  // Total atom density 0.1212533
+  MObj.setMaterial(99,"Be90/5D20/5H2O",
+		   "4009.80c 1.112839e-01 "
+		   "1001.70c 3.347044e-03 1002.24c 3.337337e-03 "
+		   "8016.24c 0.0033681","be.01t lwtr.01t hwtr.01t",
+		   MLib);
+  setMaterial(MObj);
 
   return;
 }

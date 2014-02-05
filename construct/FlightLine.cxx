@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   construct/FlightLine.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@
 #include <complex>
 #include <list>
 #include <vector>
+#include <stack>
 #include <set>
 #include <map>
 #include <string>
@@ -49,8 +50,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -77,6 +76,7 @@
 #include "FixedComp.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+#include "surfExpand.h"
 #include "FlightLine.h"
 
 namespace moderatorSystem
@@ -93,15 +93,14 @@ FlightLine::FlightLine(const std::string& Key)  :
   */
 {}
 
-
 FlightLine::FlightLine(const FlightLine& A) : 
   attachSystem::ContainedGroup(A),attachSystem::FixedComp(A),
   flightIndex(A.flightIndex),cellIndex(A.cellIndex),
-  xStep(A.xStep),zStep(A.zStep),
-  masterXY(A.masterXY),masterZ(A.masterZ),
-  height(A.height),width(A.width),
-  plateIndex(A.plateIndex),nLayer(A.nLayer),
-  lThick(A.lThick),lMat(A.lMat)
+  xStep(A.xStep),zStep(A.zStep),masterXY(A.masterXY),
+  masterZ(A.masterZ),height(A.height),width(A.width),
+  plateIndex(A.plateIndex),nLayer(A.nLayer),lThick(A.lThick),
+  lMat(A.lMat),capActive(A.capActive),capLayer(A.capLayer),
+  capRule(A.capRule),attachRule(A.attachRule)
   /*!
     Copy constructor
     \param A :: FlightLine to copy
@@ -140,6 +139,10 @@ FlightLine::operator=(const FlightLine& A)
       nLayer=A.nLayer;
       lThick=A.lThick;
       lMat=A.lMat;
+      capActive=A.capActive;
+      capLayer=A.capLayer;
+      capRule=A.capRule;
+      attachRule=A.attachRule;
     }
   return *this;
 }
@@ -180,14 +183,13 @@ FlightLine::populate(const Simulation& System)
   nLayer=Control.EvalDefVar<size_t>(keyName+"NLiner",0);
   lThick.clear();
   lMat.clear();
-  std::ostringstream cx;
   for(size_t i=0;i<nLayer;i++)
     {
-      cx.str("");
-      cx<<i+1;
-      lThick.push_back(Control.EvalVar<double>(keyName+"LinerThick"+cx.str()));
+      const std::string idxStr=StrFunc::makeString(i+1);
+      lThick.push_back(Control.EvalVar<double>(keyName+"LinerThick"+idxStr));
       lMat.push_back(ModelSupport::EvalMat<int>
-		     (Control,keyName+"LinerMat"+cx.str()));
+		     (Control,keyName+"LinerMat"+idxStr));
+      capLayer.push_back(Control.EvalDefVar<int>(keyName+"LinerCap"+idxStr,0));
     }
   
   if (Control.hasVariable(keyName+"SideIndex"))
@@ -322,20 +324,19 @@ FlightLine::createSurfaces()
   ModelSupport::buildPlane(SMap,flightIndex+6,Origin+Z*(height/2.0),zDircB);
 
   double layT(0.0);
-  if (nLayer)
+  for(size_t i=0;i<nLayer;i++)
     {
-      for(int i=0;i<static_cast<int>(nLayer);i++)
-	{
-	  layT+=lThick[static_cast<size_t>(i)];
-	  ModelSupport::buildPlane(SMap,flightIndex+i*10+13,
-				   Origin-X*(width/2.0)-xDircA*layT,xDircA);
-	  ModelSupport::buildPlane(SMap,flightIndex+i*10+14,
-				   Origin+X*(width/2.0)+xDircB*layT,xDircB);
-	  ModelSupport::buildPlane(SMap,flightIndex+i*10+15,
-				   Origin-Z*(height/2.0)-zDircA*layT,zDircA);
-	  ModelSupport::buildPlane(SMap,flightIndex+i*10+16,
-				   Origin+Z*(height/2.0)+zDircB*layT,zDircB);
-	}
+      const int II(static_cast<int>(i));
+      layT+=lThick[i];
+	  
+      ModelSupport::buildPlane(SMap,flightIndex+II*10+13,
+			       Origin-X*(width/2.0)-xDircA*layT,xDircA);
+      ModelSupport::buildPlane(SMap,flightIndex+II*10+14,
+			       Origin+X*(width/2.0)+xDircB*layT,xDircB);
+      ModelSupport::buildPlane(SMap,flightIndex+II*10+15,
+			       Origin-Z*(height/2.0)-zDircA*layT,zDircA);
+      ModelSupport::buildPlane(SMap,flightIndex+II*10+16,
+			       Origin+Z*(height/2.0)+zDircB*layT,zDircB);
     }
 
   // CREATE LINKS
@@ -385,48 +386,116 @@ FlightLine::removeObjects(Simulation& System)
 }
 
 std::string
-FlightLine::getRotatedLink(const attachSystem::FixedComp& FC,
-			   const size_t sideIndex)
+FlightLine::getRotatedDivider(const attachSystem::FixedComp& FC,
+			      const size_t sideIndex)
   /*!
     Control divider planes if a masterXY / Z rotation has happened.
     \param FC :: FixedComp
+    \param sideIndex :: initial size of link surface to 
+    \return Rotated new string 
+    \todo Use new bridge surface to isolate primary
   */
 {
-  ELog::RegMethod RegA("FlightLine","getRotatedLink");
+  ELog::RegMethod RegA("FlightLine","getRotatedDivider");
   static int offset(750);
-  std::string attachRule=FC.getLinkString(sideIndex);
+  std::string attachRule=FC.getCommonString(sideIndex);
 
   if (fabs(masterXY)<45.0) 
-    return attachRule;
-  const int primary=FC.getLinkSurf(sideIndex);
+    return " "+attachRule+" ";
+
+  const std::string primary=FC.getMasterString(sideIndex);
+
+
+  HeadRule rotHead;
+  if (!rotHead.procString(attachRule))
+    return primary;
+
   int SN;
-  std::ostringstream cx;
   while(StrFunc::section(attachRule,SN))
     {
-      if (SN!=primary)
+      const Geometry::Plane* PN=
+	SMap.realPtr<Geometry::Plane>(abs(SN));
+      const int signV((SN>0)? 1 : -1);
+      if (PN)
 	{
-	  const Geometry::Plane* PN=
-	    SMap.realPtr<Geometry::Plane>(abs(SN));
-	  if (PN)
+	  const Geometry::Quaternion QrotXY=
+	    Geometry::Quaternion::calcQRotDeg(masterXY,Z);
+	  const Geometry::Quaternion QrotZ=
+	    Geometry::Quaternion::calcQRotDeg(masterZ,X);
+	  Geometry::Vec3D PAxis=PN->getNormal();
+	  QrotZ.rotate(PAxis);
+	  QrotXY.rotate(PAxis);
+	  const Geometry::Plane* PX=
+	    ModelSupport::buildPlane(SMap,flightIndex+offset,
+				     FC.getCentre(),PAxis);
+	  const int PXNum=PX->getName();
+	  
+	  rotHead.substituteSurf(abs(SN),signV*PXNum,PX);
+	}
+    }
+  return " "+primary+" "+rotHead.display()+" ";
+}
+
+void
+FlightLine::createCapSurfaces(const attachSystem::FixedComp& FC,
+			      const size_t sideIndex)
+  /*!
+    Create the surfaces needed for the capping object
+    \param FC :: FixedComp 
+    \param sideIndex :: side to expand
+   */
+{
+  ELog::RegMethod RegA("FlightLine","createCapSurfaces");
+
+  const HeadRule& MainUnit=FC.getMainRule(sideIndex);
+  const std::vector<int> SurNum(MainUnit.getSurfaceNumbers());
+  
+  int surfN(501+flightIndex);
+  std::stack<double> capThickStack;
+  capThickStack.push(0.0);
+  double capThick(0.0);
+  for(size_t i=0;i<nLayer;i++)
+    {
+      capRule.push_back(MainUnit);      // for cases were not needed
+      if (capLayer[i])
+	{
+	  // Create a stack of each layers thickness
+	  if (!i || capLayer[i]>capLayer[i-1])
 	    {
-	      const Geometry::Quaternion QrotXY=
-		Geometry::Quaternion::calcQRotDeg(masterXY,Z);
-	      const Geometry::Quaternion QrotZ=
-		Geometry::Quaternion::calcQRotDeg(masterZ,X);
-	      Geometry::Vec3D PAxis=PN->getNormal();
-	      QrotZ.rotate(PAxis);
-	      QrotXY.rotate(PAxis);
-	      const Geometry::Plane* PX=
-		ModelSupport::buildPlane(SMap,flightIndex+offset,
-					 FC.getCentre(),PAxis);
-	      const int PXNum=PX->getName();
-	      cx<<primary<<" "<<((SN>0) ? PXNum : -PXNum)<<" ";
-	      offset++;
-	      return cx.str();
+	      capThick=capThickStack.top();
+	      capThickStack.push(capThick+lThick[i]);
+	    }
+	  else
+	    {
+	      capThickStack.pop();
+	      capThick=capThickStack.top();
+	    }
+	  if (capLayer[i]>1)
+	    {
+	      HeadRule CRule(MainUnit);
+	      std::vector<int>::const_iterator vc;
+	      for(vc=SurNum.begin();vc!=SurNum.end();vc++)
+		{
+		  // Get surface and expand:
+		  const Geometry::Surface* SPtr=
+		    SMap.realSurfPtr(*vc);
+		  const double signV((*vc>0) ? 1.0 : -1.0);
+		  Geometry::Surface* ExpSurf=
+		    ModelSupport::surfaceCreateExpand(SPtr,signV*capThick);
+		  // Find a new number for surface
+		  while(SMap.hasSurf(surfN))
+		    surfN++;
+		  // register surface
+		  ExpSurf->setName(surfN);
+		  SMap.registerSurf(ExpSurf);
+		  // Substitute rule with new surface:
+		  CRule.substituteSurf(abs(*vc),surfN,ExpSurf);
+		}
+	      capRule[i]=CRule;
 	    }
 	}
     }
-  return FC.getLinkString(sideIndex);
+  return;
 }
 
 void
@@ -444,7 +513,8 @@ FlightLine::createObjects(Simulation& System,
   
   const int outIndex=flightIndex+static_cast<int>(nLayer)*10;
 
-  attachRule=getRotatedLink(FC,sideIndex);
+  const std::string divider=getRotatedDivider(FC,sideIndex);
+  attachRule+=divider+FC.getMasterString(sideIndex);
 
   std::string Out;
   Out=ModelSupport::getComposite(SMap,outIndex," 3 -4 5 -6 ");
@@ -459,12 +529,28 @@ FlightLine::createObjects(Simulation& System,
   Out+=attachRule;         // forward boundary of object
   Out+=" "+ContainedGroup::getContainer("outer");      // Be outer surface
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+
   //Flight layers:
   for(size_t i=0;i<nLayer;i++)
     {
-      Out=ModelSupport::getComposite(SMap,flightIndex+10*static_cast<int>(i),
+      const int II(static_cast<int>(i));
+      if (i && capLayer[i]>1)        // only object to be capped 
+	{
+	  Out=ModelSupport::getComposite(SMap,flightIndex+10*II,
+				     "13 -14 15 -16 (-3:4:-5:6) ");
+	  HeadRule ICut=capRule[i];
+	  ICut.makeComplement();
+	  const std::string IOut=Out+ICut.display()+" "+
+	    capRule[i-1].display()+divider;
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,lMat[i-1],0.0,IOut));
+	  Out+=capRule[i].display()+divider;
+	}
+      else
+	{
+	  Out=ModelSupport::getComposite(SMap,flightIndex+10*II,
 				     " 13 -14 15 -16 (-3:4:-5:6) ");
-      Out+=attachRule;         // forward boundary of object
+	  Out+=attachRule;         // forward boundary of object
+	}
       Out+=" "+ContainedGroup::getContainer("outer");      // Be outer surface
       System.addCell(MonteCarlo::Qhull(cellIndex++,lMat[i],0.0,Out));
     }      
@@ -614,6 +700,8 @@ FlightLine::createAll(Simulation& System,const size_t sideIndex,
 
   createUnitVector(FC,sideIndex);
   createSurfaces();
+  createCapSurfaces(FC,sideIndex);
+
   FixedComp::setLinkSurf(0,FC,sideIndex);
   FixedComp::setLinkSurf(6,FC,sideIndex);
   createObjects(System,FC,sideIndex);

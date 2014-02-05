@@ -59,6 +59,10 @@ class FlightLine : public attachSystem::ContainedGroup,
   std::vector<double> lThick;   ///< Linear Thickness 
   std::vector<int> lMat;        ///< Layer Material
 
+  bool capActive;
+  std::vector<int> capLayer;    ///< End cap layers
+  std::vector<HeadRule> capRule;   ///< Rule for each cap
+
   std::string attachRule;       ///< Attached rule
   
   void populate(const Simulation&);
@@ -71,6 +75,7 @@ class FlightLine : public attachSystem::ContainedGroup,
 			       const size_t);
 
   void createSurfaces();
+  void createCapSurfaces(const attachSystem::FixedComp&,const size_t);
   void createObjects(Simulation&,const attachSystem::FixedComp&,
 		     const size_t);
   void createObjects(Simulation&,const attachSystem::FixedComp&,
@@ -78,7 +83,8 @@ class FlightLine : public attachSystem::ContainedGroup,
 		     const attachSystem::ContainedComp&);
 
   void removeObjects(Simulation&);
-  std::string getRotatedLink(const attachSystem::FixedComp&,const size_t);
+  std::string getRotatedDivider(const attachSystem::FixedComp&,
+				const size_t);
 
  public:
 

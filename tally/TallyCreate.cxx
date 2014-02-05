@@ -1013,15 +1013,15 @@ setEnergy(Simulation& Sim,const int tNumber,
 
 int
 setTime(Simulation& Sim,const int tNumber,
-	     const std::string& ePart)
+	     const std::string& tPart)
   /*!
     Set the energy of a tally
     \param Sim :: Simulation
     \param tNumber :: tally nubmer
-    \param ePart :: string
+    \param tPart :: time segment string [MCNPX format]
    */
 {
-  ELog::RegMethod RegA("TallyCreate","setEnergy");
+  ELog::RegMethod RegA("TallyCreate","setTime");
 
   Simulation::TallyTYPE& tmap=Sim.getTallyMap();
   int fnum(0);
@@ -1030,7 +1030,7 @@ setTime(Simulation& Sim,const int tNumber,
     {
       if (tNumber==0 || mc->first==tNumber)
 	{
-	  if (mc->second->setEnergy(ePart))
+	  if (mc->second->setTime(tPart))
 	    fnum++;
 	}
     }

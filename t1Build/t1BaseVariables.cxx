@@ -849,19 +849,19 @@ TS1base(FuncDataBase& Control)
   Surf.buildVar(Control,2.0,2.2,-1.5,6.74,4.8,0.05,0.44); // (xstep; zang = estimated) 
   Crisp.buildVar(Control,2.0,2.2,-1.5,7.91,4.57,0.22,0.275); // (xstep; zang = estimated)
   Loq.buildVar(Control,0.0,2.2,0.0,7.9,7.9,0.395,0.395); // xstep
-  Iris.buildVar(Control,0.0,2.0,0.0,7.0,7.0,0.0,0.0); // DRAWINGS* (default beam size = 7 x 7 cm)
+  Iris.buildVar(Control,0.0,2.0,0.0,6.79,6.79,0.0,0.0); // xstep; from new incomplete drawings
   PolarisII.buildVar(Control,0.0,-1.7,0.0,8.22,7.93,0.35,0.22); // xstep
   Tosca.buildVar(Control,0.0,-1.5,0.0,8.4,8.0,0.16,0.088); // from Instr. Techical. Spec. ver1 (xstep) 
   Het.buildVar(Control,-0.6,-1.3,0.0,7.90,7.90,0.63,0.63);    
   Maps.buildVar(Control,0.0,1.3,0.0,7.34,7.34,0.22,0.22); // xstep 
   Vesuvio.buildVar(Control,0.0,1.7,0.0,7.38,7.38,0.58,0.58);
   Sxd.buildVar(Control,2.0,2.0,0.0,8.88,8.88,0.58,0.58); // (xstep = estimate)
-  Merlin.buildVar(Control,-2.0,-2.2,0.0,9.4,9.4,0.0,0.0); // DRAWINGS* (beam size = 9.4 x 9.4 cm - from Rob Bewley)
+  Merlin.buildVar(Control,-2.0,-2.2,0.0,9.4,9.4,0.0,0.0); // (beam size = 9.4 x 9.4 cm - from Rob Bewley)
   S5.buildVar(Control,0.0,-2.2,0.0,7.0,7.0,0.0,0.0); // CLOSED
   Mari.buildVar(Control,0.0,2.0,0.0,7.74,7.74,0.48,0.48); // xstep 
-  Gem.buildVar(Control,0.0,1.4,0.0,7.0,7.0,0.0,0.0);  // DRAWINGS* (default beam size = 7 x 7 cm)
-  Hrpd.buildVar(Control,0.0,1.5,0.0,7.0,7.0,0.0,0.0);  // DRAWINGS* (default beam size = 7 x 7 cm)
-  Pearl.buildVar(Control,0.0,1.3,0.0,7.0,7.0,0.0,0.0);  // DRAWINGS* (default beam size = 7 x 7 cm)
+  Gem.buildVar(Control,0.0,1.4,0.0,7.4,8.6,0.115,0.172);  // xstep; from new incomplete drawings
+  Hrpd.buildVar(Control,0.0,1.5,0.0,8.0,6.0,0.143,0.0);  // xstep; from new incomplete drawings
+  Pearl.buildVar(Control,0.0,1.3,0.0,8.23,8.23,0.215,0.215);  // xstep; from new incomplete drawings
     
   return;
 }  

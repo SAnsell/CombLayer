@@ -256,6 +256,86 @@ HeadRule::getOppositeSurfaces() const
 }
 
 
+std::vector<const Geometry::Surface*>
+HeadRule::getSurfaces() const
+  /*!
+    Calculate the surfaces that are within the top level
+    \return Set of surface
+  */
+{
+  ELog::RegMethod RegA("HeadRule","getOppositeSurfaces");
+  std::vector<const Geometry::Surface*> Out;
+  const SurfPoint* SP;
+  if (!HeadNode) return Out;
+
+  const Rule *headPtr,*leafA,*leafB;       
+  // Parent : left/right : Child
+
+  // Tree stack of rules
+  std::stack<const Rule*> TreeLine;   
+  TreeLine.push(HeadNode);
+  while (!TreeLine.empty())        // need to exit on active
+    {
+      headPtr=TreeLine.top();
+      TreeLine.pop();	  
+      if (headPtr->type())             // MUST BE INTERSECTION/Union
+	{
+	  leafA=headPtr->leaf(0);        // get leaves (two of) 
+	  leafB=headPtr->leaf(1);
+	  if (leafA)
+	    TreeLine.push(leafA);
+	  if (leafB)
+	    TreeLine.push(leafB);
+	}
+      else if (headPtr->type()==0)        // MIGHT BE SURF
+	{
+	  SP=dynamic_cast<const SurfPoint*>(HeadNode);
+	  Out.push_back(SP->getKey());
+	}
+    }
+  return Out;
+}
+
+std::vector<int>
+HeadRule::getSurfaceNumbers() const
+  /*!
+    Calculate the surfaces that are within the object
+    \return Set of surface
+  */
+{
+  ELog::RegMethod RegA("HeadRule","getOppositeSurfaces");
+  std::vector<int> Out;
+  const SurfPoint* SP;
+  if (!HeadNode) return Out;
+
+  const Rule *headPtr,*leafA,*leafB;       
+  // Parent : left/right : Child
+
+  // Tree stack of rules
+  std::stack<const Rule*> TreeLine;   
+  TreeLine.push(HeadNode);
+  while (!TreeLine.empty())        // need to exit on active
+    {
+      headPtr=TreeLine.top();
+      TreeLine.pop();	  
+      if (headPtr->type())             // MUST BE INTERSECTION/Union
+	{
+	  leafA=headPtr->leaf(0);        // get leaves (two of) 
+	  leafB=headPtr->leaf(1);
+	  if (leafA)
+	    TreeLine.push(leafA);
+	  if (leafB)
+	    TreeLine.push(leafB);
+	}
+      else if (headPtr->type()==0)        // MIGHT BE SURF
+	{
+	  SP=dynamic_cast<const SurfPoint*>(HeadNode);
+	  Out.push_back(SP->getKeyN());
+	}
+    }
+  return Out;
+}
+
 std::vector<int>
 HeadRule::getTopSurfaces() const
   /*!
@@ -440,10 +520,10 @@ HeadRule::removeItem(Rule* Target)
 
 int
 HeadRule::substituteSurf(const int SurfN,const int newSurfN,
-		     const Geometry::Surface* SPtr)
+			 const Geometry::Surface* SPtr)
   /*!
     Substitues a surface item if within a rule
-    \param SurfN :: Number number to change
+    \param SurfN :: Number number to change [+ve]
     \param newSurfN :: New surface number (if -ve then the key is reversed)
     \param SPtr :: New surface Pointer
     \returns number of substitutions
@@ -453,13 +533,13 @@ HeadRule::substituteSurf(const int SurfN,const int newSurfN,
 
   int cnt(0);
 
-  SurfPoint* Ptr=dynamic_cast<SurfPoint*>(HeadNode->findKey(SurfN));
+  SurfPoint* Ptr=dynamic_cast<SurfPoint*>(HeadNode->findKey(abs(SurfN)));
   while(Ptr)
     {
       Ptr->setKeyN(Ptr->getSign()*newSurfN);
       Ptr->setKey(SPtr);
       cnt++;
-      Ptr=dynamic_cast<SurfPoint*>(HeadNode->findKey(SurfN));
+      Ptr=dynamic_cast<SurfPoint*>(HeadNode->findKey(abs(SurfN)));
     }
   return cnt;
 }

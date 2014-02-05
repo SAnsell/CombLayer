@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   src/SrcData.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,7 +51,7 @@
 namespace SDef
 {
 
-SrcData::SrcData(const int I) :
+SrcData::SrcData(const size_t I) :
   Index(I),SI(0),SB(0),SP(0),DS(0)
  /*!
    Constructor 
@@ -409,7 +409,7 @@ SrcInfo::addData(const std::string& V)
 }
 
 void
-SrcInfo::write(const int Index,std::ostream& OX) const
+SrcInfo::write(const size_t Index,std::ostream& OX) const
   /*!
     Write SI line to an MCNPX output
     \param Index :: Index number
@@ -576,7 +576,7 @@ SrcProb::addData(const double& V)
 }
 
 void
-SrcProb::write(const int Index,std::ostream& OX) const
+SrcProb::write(const size_t Index,std::ostream& OX) const
   /*!
     Write SI line to an MCNPX output
     \param Index :: Index number
@@ -695,7 +695,7 @@ SrcBias::setFminus(const int F,const double a,const double b)
 }
 
 void
-SrcBias::write(const int Index,std::ostream& OX) const
+SrcBias::write(const size_t Index,std::ostream& OX) const
   /*!
     Write SI line to an MCNPX output
     \param Index :: Index of the D number

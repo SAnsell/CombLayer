@@ -199,7 +199,7 @@ DSTerm<T>::addData(const T& V)
 
 template<>
 void
-DSTerm<double>::write(const int Index,std::ostream& OX) const
+DSTerm<double>::write(const size_t Index,std::ostream& OX) const
   /*!
     Write DS line to an MCNPX output
     \param Index :: Index number
@@ -221,7 +221,7 @@ DSTerm<double>::write(const int Index,std::ostream& OX) const
 
 template<>
 void
-DSTerm<int>::write(const int Index,std::ostream& OX) const
+DSTerm<int>::write(const size_t Index,std::ostream& OX) const
   /*!
     Write DS line to an MCNPX output
     \param Index :: Index number
@@ -242,7 +242,7 @@ DSTerm<int>::write(const int Index,std::ostream& OX) const
 
 template<>
 void
-DSTerm<std::string>::write(const int Index,std::ostream& OX) const
+DSTerm<std::string>::write(const size_t Index,std::ostream& OX) const
   /*!
     Write DS line to an MCNPX output
     \param Index :: Index number
@@ -324,7 +324,7 @@ DSIndex::~DSIndex()
 
 
 void
-DSIndex::addData(const int I,const SrcInfo* SI,
+DSIndex::addData(const size_t I,const SrcInfo* SI,
 		 const SrcBias* SB,const SrcProb* SP) 
   /*!
     Adds a data set the data as values
@@ -346,7 +346,7 @@ DSIndex::addData(const int I,const SrcInfo* SI,
 }
 
 void
-DSIndex::write(const int Index,std::ostream& OX) const
+DSIndex::write(const size_t Index,std::ostream& OX) const
   /*!
     Write DS line to an MCNPX output
     \param Index :: Index number

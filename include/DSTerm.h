@@ -58,7 +58,7 @@ public:
   virtual void setType(const std::string&,const char);
 
   ///\cond TEMPLATE
-  virtual void write(const int,std::ostream&) const =0;
+  virtual void write(const size_t,std::ostream&) const =0;
   ///\endcond TEMPLATE
 
 };
@@ -96,7 +96,7 @@ class DSTerm : public DSBase
   std::vector<T>& getData() { return Values; }
 
   /// Specialized versions only
-  void write(const int,std::ostream&) const;
+  void write(const size_t,std::ostream&) const;
 
 };
 
@@ -122,9 +122,9 @@ class DSIndex : public DSBase
   DSIndex& operator=(const DSIndex&);
   virtual ~DSIndex();
   
-  void addData(const int,const SrcInfo*,const SrcBias*,const SrcProb*);
+  void addData(const size_t,const SrcInfo*,const SrcBias*,const SrcProb*);
 
-  void write(const int,std::ostream&) const;
+  void write(const size_t,std::ostream&) const;
 };
 
 }

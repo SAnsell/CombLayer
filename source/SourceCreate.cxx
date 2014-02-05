@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   source/SourceCreate.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -343,7 +343,7 @@ createTS1GaussianNewSource(const FuncDataBase& Control,
   const double E=Control.EvalDefVar<double>("sdefEnergy",800.0);
   const double yStart=Control.EvalDefVar<double>("sdefYPos",-20.0);
 
-  createGaussianSource(sourceCard,E,yStart,3.5322);
+  createGaussianSource(sourceCard,E,yStart,4.23868);
   return;
 }
 
@@ -495,7 +495,7 @@ createSinbadSource(const FuncDataBase& Control,Source& sourceCard)
   SDef::DSTerm<int>* DS3=D3.getDS<int>(); 
   DS3->setType("z",'s');
   for (size_t is=3;is<NX+2;is++) 
-    DS3->addData(is);
+    DS3->addData(static_cast<int>(is));
  
   SDef::DSIndex DI4(std::string("z"));
   SDef::SrcInfo SI4;
@@ -585,7 +585,7 @@ createSinbadSource(const FuncDataBase& Control,Source& sourceCard)
   std::vector<double> Xerg7;
   Xerg7.push_back(0.0);
   const size_t XBaseSize=sizeof(XBase)/sizeof(double);
-  double addFactor(0.0);
+
   double scaleFactor(1e-5);
   for(size_t i=0;i<5;i++)
     {
@@ -819,7 +819,7 @@ createSinbadSource(const FuncDataBase& Control,Source& sourceCard)
 
   SDef::SrcData D99(99);
   SDef::SrcInfo SI99('A');
-  SDef::SrcProb SP99('  ');
+  SDef::SrcProb SP99(' ');
 
  for(size_t ii=1;ii<YSize;ii++) 
    {  
