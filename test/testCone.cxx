@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   test/testCone.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -223,6 +223,10 @@ testCone::testSurfaceNormal()
 
 int
 testCone::testSide()
+  /*!
+    Test the side of the point relative to the cone:
+    \return -ve on error
+   */
 {
   ELog::RegMethod RegA("testCone","testSide");
 
@@ -230,8 +234,8 @@ testCone::testSide()
   typedef boost::tuple<std::string,Geometry::Vec3D,int> TTYPE;
   std::vector<TTYPE> Tests;
   
-  Tests.push_back(TTYPE("ky 1 1 1",Geometry::Vec3D(0,3,0),1));
-  Tests.push_back(TTYPE("ky 1 1 1",Geometry::Vec3D(0,-3,0),-1));
+  Tests.push_back(TTYPE("ky 1 0.8 1",Geometry::Vec3D(0,3,0),-1));
+  Tests.push_back(TTYPE("ky 1 0.7 1",Geometry::Vec3D(0,-3,0),1));
   
   std::vector<TTYPE>::const_iterator tc;
   for(tc=Tests.begin();tc!=Tests.end();tc++)
@@ -241,15 +245,16 @@ testCone::testSide()
       if (retVal)
         {
 	  ELog::EM<<"Failed to build "<<tc->get<0>()
-		  <<" Ecode == "<<retVal<<ELog::endErr;
+		  <<" Ecode == "<<retVal<<ELog::endCrit;
 	  return -1;
 	}
       const int RSide=A.side(tc->get<1>());
       if (RSide!=tc->get<2>())
 	{
-	  ELog::EM<<"Failure for test "<<tc-Tests.begin()<<ELog::endCrit;
-	  ELog::EM<<"Side "<<RSide<<" :: ["<<
-	    tc->get<2>()<<"]"<<ELog::endCrit;
+	  ELog::EM<<"Failure for test "<<(tc-Tests.begin())+1<<ELog::endCrit;
+	  ELog::EM<<"Side ["<<tc->get<2>()<<"] ::"
+		  <<RSide<<ELog::endCrit;
+	  ELog::EM<<"Point "<<tc->get<1>()<<ELog::endCrit;
 	  return -1;
 	}
     }

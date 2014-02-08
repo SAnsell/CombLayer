@@ -450,8 +450,8 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("LowPreViewAngle2",180.0);  
   Control.addVariable("LowPreViewOpenAngle2",30.0);  
 
-  Control.addVariable("LowPreABlockSide",1);  
-  Control.addVariable("LowPreABlockActive",0);  
+  Control.addVariable("LowPreABlockSide",0);  
+  Control.addVariable("LowPreABlockActive",1);  
   Control.addVariable("LowPreABlockWidth",4.0);  
   Control.addVariable("LowPreABlockHeight",10.0);  
   Control.addVariable("LowPreABlockLength",11.80);  

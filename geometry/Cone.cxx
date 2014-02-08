@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   geometry/Cone.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,6 @@
 #include <stack>
 #include <string>
 #include <algorithm>
-#include <boost/regex.hpp>
 #include <boost/multi_array.hpp>
 
 #include "Exception.h"
@@ -41,7 +40,6 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "support.h"
-#include "regexSupport.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -206,9 +204,9 @@ Cone::setSurface(const std::string& Pstr)
   if (!StrFunc::section(Line,tanAng))
     return -5;
 
+
   cutFlag=0;
-  StrFunc::section(Line,cutFlag);      // doesn't set on failure
-    
+  StrFunc::section(Line,cutFlag);      // doesn't set on failure    
 
   Centre=Geometry::Vec3D(cent);
   Normal=Geometry::Vec3D(norm);
@@ -378,22 +376,24 @@ Cone::surfaceNormal(const Geometry::Vec3D& Pt) const
 int
 Cone::side(const Geometry::Vec3D& Pt) const
   /*!
-    Calculate if the point R is within
-    the cone (return 1) or outside, 
-    (return -1)
+    Calculate if the point R is within the cone 
     \param Pt :: Point to determine if in/out of cone
-    \return Side of Pt (waiting for a point to cone distance function)
+    \retval -1  :: within the cone
+    \retval 0 :: on teh cone
+    \retval 1 :: outside the cone
   */
 {
   const Geometry::Vec3D cR = (Pt-Centre).unit();
   double rptAngle=Normal.dotProd(cR);
+  // exit if on wrong side:
+  
   if (cutFlag>0 && rptAngle< -Geometry::zeroTol )
     return 1;
   if (cutFlag<0 && rptAngle>Geometry::zeroTol )
-    return 1;
+    return 11;
   if (rptAngle<0.0) 
     rptAngle*=-1.0;
-
+  // touch test
   if (fabs(rptAngle-cangle)<Geometry::zeroTol) return 0;
   return (rptAngle>cangle) ? -1 : 1;  
 }
