@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   test/testRefPlate.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,7 +48,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Transform.h"
 #include "Surface.h"
 #include "Rules.h"
 #include "surfRegister.h"
@@ -61,6 +60,7 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+
 #include "varList.h"
 #include "Code.h"
 #include "FItem.h"
@@ -78,14 +78,11 @@
 
 using namespace testSystem;
 
-testRefPlate::testRefPlate() :
-  SObj(new simpleObj("testSimple"))
+testRefPlate::testRefPlate() 
   /*!
     Constructor
   */
-{
-  initSim();
-}
+{}
 
 testRefPlate::~testRefPlate() 
   /*!
@@ -101,8 +98,14 @@ testRefPlate::initSim()
 {
   ELog::RegMethod RegA("testRefPlate","initSim");
 
-  ASim.resetAll();
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
+  ModelSupport::objectRegister& OR=ModelSupport::objectRegister::Instance();
+
+  SObj=boost::shared_ptr<testSystem::simpleObj>(new simpleObj("testSimple"));
+  OR.reset();
+  ASim.resetAll();
+
+
   // Work Sphere :
   SurI.createSurface(100,"so 500");
   ASim.addCell(MonteCarlo::Qhull(1,0,0.0,"100"));  // Outside void 
@@ -155,6 +158,7 @@ testRefPlate::applyTest(const int extra)
       if (extra<0 || extra==i+1)
         {
 	  TestFunc::regTest(TestName[i]);
+	  initSim();
 	  const int retValue= (this->*TPtr[i])();
 	  if (retValue || extra>0)
 	    return retValue;

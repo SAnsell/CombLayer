@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   build/beamTallyConstruct.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -105,14 +105,21 @@ beamTallyConstruct::beamTallyConstruct() :
   /// Constructor
 {}
 
-beamTallyConstruct::beamTallyConstruct(const beamTallyConstruct&) 
-  /// Copy Constructor
+beamTallyConstruct::beamTallyConstruct(const beamTallyConstruct& A) :
+  pointConstruct(A)
+  /*!
+    Copy Constructor
+  */
 {}
 
 beamTallyConstruct&
-beamTallyConstruct::operator=(const beamTallyConstruct&) 
+beamTallyConstruct::operator=(const beamTallyConstruct& A) 
   /// Assignment operator
 {
+  if (this!=&A)
+    {
+      pointConstruct::operator=(A);
+    }
   return *this;
 }
 

@@ -77,7 +77,6 @@
 #include "pipeUnit.h"
 #include "PipeLine.h"
 #include "SupplyPipe.h"
-#include "Debug.h"
 
 namespace essSystem
 {
@@ -85,7 +84,7 @@ namespace essSystem
 SupplyPipe::SupplyPipe(const std::string& Key)  :
   attachSystem::FixedComp(Key,0),
   pipeIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(pipeIndex+1),Coaxial(Key+"CoAx")
+  cellIndex(pipeIndex+1),Coaxial(Key+"CoAx"),nAngle(6)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -96,7 +95,8 @@ SupplyPipe::SupplyPipe(const SupplyPipe& A) :
   attachSystem::FixedComp(A),
   pipeIndex(A.pipeIndex),cellIndex(A.cellIndex),
   NSegIn(A.NSegIn),Radii(A.Radii),Mat(A.Mat),Temp(A.Temp),
-  ActiveFlag(A.ActiveFlag),Coaxial(A.Coaxial),PPts(A.PPts)
+  ActiveFlag(A.ActiveFlag),Coaxial(A.Coaxial),PPts(A.PPts),
+  nAngle(A.nAngle)
   /*!
     Copy constructor
     \param A :: SupplyPipe to copy
@@ -122,6 +122,7 @@ SupplyPipe::operator=(const SupplyPipe& A)
       ActiveFlag=A.ActiveFlag;
       Coaxial=A.Coaxial;
       PPts=A.PPts;
+      nAngle=A.nAngle;
     }
   return *this;
 }
@@ -323,6 +324,8 @@ SupplyPipe::createAll(Simulation& System,
   insertInlet(FC,exitSideIndex);
   addOuterPoints();
   setActive();
+
+  Coaxial.setNAngle(nAngle);
   Coaxial.createAll(System);
 
   return;
@@ -349,7 +352,7 @@ SupplyPipe::createAll(Simulation& System,
     \param extraSide :: Side to track through object
   */
 {
-  ELog::RegMethod RegA("SupplyPipe","createAll");
+  ELog::RegMethod RegA("SupplyPipe","createAll<LC>");
   populate(System);
 
   createUnitVector(FC,orgLayerIndex,orgSideIndex);
@@ -358,6 +361,7 @@ SupplyPipe::createAll(Simulation& System,
   addOuterPoints();
   setActive();
 
+  Coaxial.setNAngle(nAngle);
   Coaxial.createAll(System);    
   return;
 }

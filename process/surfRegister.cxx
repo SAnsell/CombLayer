@@ -86,6 +86,16 @@ surfRegister::operator=(const surfRegister& A)
   return *this;
 }
 
+void
+surfRegister::reset()
+  /*!
+    Reset of system 
+  */
+{
+  Index.erase(Index.begin(),Index.end());
+  return;
+}
+
 void 
 surfRegister::addMatch(const int phantomS,const int realS)
   /*!

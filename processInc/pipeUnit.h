@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   processInc/pipeUnit.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ struct cylValues
   double CRadius;   ///< Radius 
   int MatN;         ///< Material number
   double Temp;      ///< Radius 
-  
+
   /// Basic constructor
   cylValues(const double& R,const int& M,const double& T) :
     CRadius(R),MatN(M),Temp(T) {}  
@@ -59,8 +59,9 @@ class pipeUnit : public attachSystem::FixedComp,
 {
  private:
 
-  const int surfIndex;           ///< surface number 
-  int cellIndex;                  ///< Cell index
+  const int surfIndex;      ///< surface number 
+  int cellIndex;            ///< Cell index
+  size_t nAngle;            ///< Angles to approximate for edge finding
 
   pipeUnit* prev;           ///< Previous pipe unit
   pipeUnit* next;           ///< Next pipe unit
@@ -100,6 +101,8 @@ class pipeUnit : public attachSystem::FixedComp,
   pipeUnit& operator=(const pipeUnit&);
   virtual ~pipeUnit();
 
+  // Set Number of angles
+  void setNAngle(const size_t A) { nAngle=(A) ? A : 6; }
   /// Access Axis
   const Geometry::Vec3D& getAxis() const { return Axis; }
   const Geometry::Vec3D& getPt(const int) const;

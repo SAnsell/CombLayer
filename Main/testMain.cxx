@@ -211,7 +211,7 @@ main(int argc,char* argv[])
 ///  ELog::FMessages.getReport().setFile("Fred");  
   ELog::RegMethod RControl("","main");
   mainSystem::activateLogging(RControl);
-
+  ELog::EM.setDebug(0);
 
   int retVal(0);
   if(argc>1)

@@ -125,81 +125,85 @@ testSingleObject::cylModVariables(FuncDataBase& Control)
   Control.addVariable("H2CylModZangle",0.0);
   Control.addVariable("H2CylModRadius",6.0);
   Control.addVariable("H2CylModHeight",12.0);
-  Control.addVariable("H2CylModMat",25);
+  Control.addVariable("H2CylModMat","ParaH2");
   Control.addVariable("H2CylModTemp",20.0);
   Control.addVariable("H2CylModNLayers",0);
   // al layer
   Control.addVariable("H2CylModHGap1",0.3);
   Control.addVariable("H2CylModRadGap1",0.3);
-  Control.addVariable("H2CylModMaterial1",5);  // Al materk
+  Control.addVariable("H2CylModMaterial1","Aluminium");  // Al materk
   Control.addVariable("H2CylModTemp1",20.0);  
   
   // Vac gap
   Control.addVariable("H2CylModHGap2",0.5);
   Control.addVariable("H2CylModRadGap2",0.5);
-  Control.addVariable("H2CylModMaterial2",0); 
+  Control.addVariable("H2CylModMaterial2","Void"); 
   // Next Al layer
   Control.addVariable("H2CylModHGap3",0.2);
   Control.addVariable("H2CylModRadGap3",0.2);
-  Control.addVariable("H2CylModMaterial3",5); 
+  Control.addVariable("H2CylModMaterial3","Aluminium"); 
   Control.addVariable("H2CylModTemp3",77.0);  
   // He Layer
   Control.addVariable("H2CylModHGap4",0.2);
   Control.addVariable("H2CylModRadGap4",0.2);
-  Control.addVariable("H2CylModMaterial4",0); 
+  Control.addVariable("H2CylModMaterial4","Void"); 
   // Outer Layer
   Control.addVariable("H2CylModHGap5",0.2);
   Control.addVariable("H2CylModRadGap5",0.2);
-  Control.addVariable("H2CylModMaterial5",5); 
+  Control.addVariable("H2CylModMaterial5","Aluminium"); 
   Control.addVariable("H2CylModTemp5",300.0); 
   // Clearance
   Control.addVariable("H2CylModHGap6",0.2);
   Control.addVariable("H2CylModRadGap6",0.2);
-  Control.addVariable("H2CylModMaterial6",0); 
+  Control.addVariable("H2CylModMaterial6","Void"); 
 
   Control.addVariable("H2CylModNConic",1);
 
   Control.addVariable("H2CylModConic1Cent",Geometry::Vec3D(0,1,0));
   Control.addVariable("H2CylModConic1Axis",Geometry::Vec3D(0,1,0));
   Control.addVariable("H2CylModConic1Angle",35.0);
-  Control.addVariable("H2CylModConic1WallMat",5);
+  Control.addVariable("H2CylModConic1Mat","Void");
+  Control.addVariable("H2CylModConic1WallMat","Aluminium");
   Control.addVariable("H2CylModConic1Wall",0.0);
 
   Control.addVariable("H2CylModConic2Cent",Geometry::Vec3D(1,0,0));
   Control.addVariable("H2CylModConic2Axis",Geometry::Vec3D(1,0,0));
   Control.addVariable("H2CylModConic2Angle",35.0);
-  Control.addVariable("H2CylModConic2WallMat",5);
+  Control.addVariable("H2CylModConic2Mat","Void");
+  Control.addVariable("H2CylModConic2WallMat","Aluminium");
   Control.addVariable("H2CylModConic2Wall",0.2);
 
   Control.addVariable("H2CylModConic3Cent",Geometry::Vec3D(-1,0,0));
   Control.addVariable("H2CylModConic3Axis",Geometry::Vec3D(-1,0,0));
   Control.addVariable("H2CylModConic3Angle",35.0);
-  Control.addVariable("H2CylModConic3WallMat",5);
+  Control.addVariable("H2CylModConic3Mat","Void");
+  Control.addVariable("H2CylModConic3WallMat","Aluminium");
   Control.addVariable("H2CylModConic3Wall",0.2);
 
   Control.addVariable("H2CylModConic4Cent",Geometry::Vec3D(0,-1,0));
   Control.addVariable("H2CylModConic4Axis",Geometry::Vec3D(0,-1,0));
   Control.addVariable("H2CylModConic4Angle",35.0);
-  Control.addVariable("H2CylModConic4WallMat",5);
+  Control.addVariable("H2CylModConic4Mat","Void");
+  Control.addVariable("H2CylModConic4WallMat","Aluminium");
   Control.addVariable("H2CylModConic4Wall",0.2);
 
   Control.addVariable("H2CylPreNLayers",4);  
   Control.addVariable("H2CylPreHeight1",0.2);  
   Control.addVariable("H2CylPreDepth1",0.2);  
   Control.addVariable("H2CylPreThick1",0.2);  
-  Control.addVariable("H2CylPreMaterial1",5);  
+  Control.addVariable("H2CylPreMaterial1","Aluminium");  
   Control.addVariable("H2CylPreHeight2",1.0);  
   Control.addVariable("H2CylPreDepth2",2.0);  
   Control.addVariable("H2CylPreThick2",2.0);  
-  Control.addVariable("H2CylPreMaterial2",11);  
+  Control.addVariable("H2CylPreMaterial2","H2O");  
   Control.addVariable("H2CylPreHeight3",0.2);  
   Control.addVariable("H2CylPreDepth3",0.2);  
   Control.addVariable("H2CylPreThick3",0.2);  
-  Control.addVariable("H2CylPreMaterial3",5);  
+  Control.addVariable("H2CylPreMaterial3","Aluminium");  
   Control.addVariable("H2CylPreHeight4",0.2);  
   Control.addVariable("H2CylPreDepth4",0.2);  
   Control.addVariable("H2CylPreThick4",0.2);  
-  Control.addVariable("H2CylPreMaterial4",0); 
+  Control.addVariable("H2CylPreMaterial4","Void"); 
 
   return;
 }
@@ -324,11 +328,12 @@ testSingleObject::testLineTrack()
   // 24 : 
   Tests.push_back(TTYPE(Geometry::Vec3D(0,2,30),
 			Geometry::Vec3D(0,2,-30),
-			9,2*48.0+5*12.0));
-
+			15,4*24.0 + 3.0*2*tan(M_PI*35.0/180.0)+
+			4*2*(6.0-tan(M_PI*35.0/180.0))));
+  // second test:
   Tests.push_back(TTYPE(Geometry::Vec3D(0.1,0.1,30),
 			Geometry::Vec3D(0.1,0.1,-30),
-			9,2*48.0+5*12.0));
+			8,2*48.0+4*12.0));
   
   std::vector<TTYPE>::const_iterator tc;
   int flag(0);
@@ -371,7 +376,11 @@ testSingleObject::checkResult(const ModelSupport::LineTrack& LT,
       cValue+=cells[i];
       tValue+=tLen[i]*cells[i];
     }  
-  ELog::EM<<"cvalu == "<<cValue<<" "<<tValue<<ELog::endDebug;
-  ELog::EM<<"X == "<<CSum<<" "<<TSum<<ELog::endDebug;
-  return (cValue!=CSum || fabs(TSum-tValue)>1e-3) ? 0 : 1;
+  if (cValue==CSum && fabs(TSum-tValue)<1e-3)
+    return 1;
+  ELog::EM<<"cvalue["<<CSum<<"] == "<<cValue<<ELog::endDiag;
+  ELog::EM<<"tvalue["<<TSum<<"] == "<<tValue<<ELog::endDiag;
+  ELog::EM<<"Cellsize "<<cells[0]<<ELog::endDiag;
+  ELog::EM<<"Cellsize "<<cells[1]<<ELog::endDiag;
+  return 0;
 }

@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   test/testObject.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -529,19 +529,23 @@ testObject::testTrackCell()
       A.setObject(tc->get<0>());
       A.populate();
       A.createSurfaceList();
+      ELog::EM<<"Test "<<tc-Tests.begin()<<ELog::endDiag;
+
       neutron TNeut(1,tc->get<2>(),tc->get<3>());
 
       const int outFaceSurf(tc->get<1>());
+      ELog::EM<<"HASDFASDF"<<ELog::endDiag;
+
       const int SN= -A.trackOutCell(TNeut,aDist,SPtr,outFaceSurf);
       TNeut.moveForward(aDist);
       if (TNeut.Pos!=tc->get<4>())
 	{
-	  ELog::EM<<"Failed on test "<<(tc-Tests.begin())+1<<ELog::endDebug;
+	  ELog::EM<<"Failed on test "<<(tc-Tests.begin())+1<<ELog::endDiag;
 	  ELog::EM<<"Result= "<<TNeut.Pos<<" ["<<tc->get<4>()<<"]"<<ELog::endDebug;
-	  ELog::EM<<"SN= "<<SN<<" "<<outFaceSurf<<ELog::endDebug;
+	  ELog::EM<<"SN= "<<SN<<" "<<outFaceSurf<<ELog::endDiag;
 
 	  const Rule* TR=A.topRule();
-	  ELog::EM<<"Display= "<<TR->display(TNeut.Pos)<<ELog::endDebug;
+	  ELog::EM<<"Display= "<<TR->display(TNeut.Pos)<<ELog::endDiag;
 	}
     }
   return 0;
@@ -552,7 +556,7 @@ testObject::testMakeComplement()
   /*!
     Test the making of a given object complementary
     \return 0 on success
-   */
+  */
 {
   ELog::RegMethod RegA("testObject","testMakeComplement");
 
@@ -561,16 +565,19 @@ testObject::testMakeComplement()
   typedef boost::tuple<int,std::string> TTYPE;
   std::vector<TTYPE> Tests;
 
-  Tests.push_back(TTYPE(2,"2 12 0.099 #( -63 62 -61 60 5 -4 )"));
+  Tests.push_back(TTYPE(2,"2 12 0.099 (-5 : -60 : -62 : 63 : 61 : 4)"));
   std::vector<TTYPE>::const_iterator vc;
   for(vc=Tests.begin();vc!=Tests.end();vc++)
     {
+      std::ostringstream ocx;
       std::ostringstream cx;
       const int index(vc->get<0>());
+      MObj[index]->write(ocx);
       MObj[index]->makeComplement();
       MObj[index]->write(cx);
       if (StrFunc::fullBlock(cx.str())!=vc->get<1>())
 	{
+	  ELog::EM<<"Original "<<ocx.str()<<":"<<ELog::endDebug;
 	  ELog::EM<<"Expected "<<vc->get<1>()<<":"<<ELog::endDebug;
 	  ELog::EM<<"Aquired  "<<cx.str()<<":"<<ELog::endDebug;
 	  return -1;
@@ -592,21 +599,24 @@ testObject::testRemoveComplement()
   std::vector<TTYPE> Tests;
   Tests.push_back(TTYPE("3 0 5 ","3 0 -5"));
   Tests.push_back(TTYPE("4 0 5 ((1 -2 ) : (13 -14))",
-			"4 0 -5 : ( ( -1 : 2 ) ( -13 : 14 ) )"));
+			"4 0 (-5 : ( ( -1 : 2 ) ( -13 : 14 ) ))"));
 
   // quick way to make a long long list:
   std::ostringstream cx;
   std::ostringstream ox;
   const int N(73);
   for(int i=1;i<N;i++)
+    cx<<(i+10)<<" ";
+  for(int i=N-1;i>0;i--)
     {
-      if (i!=1)
+      if (i!=N-1)
 	ox<<" : ";
-      cx<<(i+10)<<" ";
       ox<<-(i+10);
+
     }
+
   Tests.push_back(TTYPE("5 0 "+cx.str(),
-			"5 0 "+ox.str()));
+			"5 0 ("+ox.str()+")"));
 
   // Null list since we are not using #CellNum
   std::map<int,MonteCarlo::Qhull*> OList;
@@ -624,6 +634,7 @@ testObject::testRemoveComplement()
       cx<<A;
       if (StrFunc::singleLine(cx.str())!=tc->get<1>())
 	{
+	  ELog::EM<<"Failed on test "<<(tc-Tests.begin()+1)<<ELog::endTrace;
 	  ELog::EM<<"Ax == "<<AX<<ELog::endTrace;	  
 	  ELog::EM<<"Amc == "<<AX.writeMCNPX()<<ELog::endTrace;	  
 	  ELog::EM<<"A == "<<A.cellStr(OList)<<ELog::endTrace;

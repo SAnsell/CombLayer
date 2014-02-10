@@ -56,7 +56,8 @@ class surfRegister
   surfRegister(const surfRegister&);
   surfRegister& operator=(const surfRegister&);
   ~surfRegister() {} ///< Destructor
-  
+
+  void reset();      
   void addMatch(const int,const int);
   int registerSurf(const int,Geometry::Surface*);
   int registerSurf(Geometry::Surface*);

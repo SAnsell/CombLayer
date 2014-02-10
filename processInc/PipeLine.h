@@ -75,6 +75,7 @@ class PipeLine
 		    const std::string&);
   void addRadius(const double,const int,const double);
   void setActive(const size_t,const size_t);
+  void setNAngle(const size_t);
 
   void createAll(Simulation&);
     
