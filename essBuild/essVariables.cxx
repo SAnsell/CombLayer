@@ -415,7 +415,7 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("LowBFlightAngleZTop",0.0);  // Step down angle
   Control.addVariable("LowBFlightAngleZBase",0.0); // Step up angle
   Control.addVariable("LowBFlightHeight",10.0);     // Full height
-  Control.addVariable("LowBFlightWidth",25.0);     // Full width
+  Control.addVariable("LowBFlightWidth",20.0);     // Full width
   Control.addVariable("LowBFlightNLiner",1);      // Liner
   Control.addVariable("LowBFlightLinerThick1",0.5);   
   Control.addVariable("LowBFlightLinerMat1","Aluminium");      
@@ -452,7 +452,7 @@ EssVariables(FuncDataBase& Control)
 
   Control.addVariable("LowPreABlockSide",0);  
   Control.addVariable("LowPreABlockActive",1);  
-  Control.addVariable("LowPreABlockWidth",4.0);  
+  Control.addVariable("LowPreABlockWidth",3.8);  
   Control.addVariable("LowPreABlockHeight",10.0);  
   Control.addVariable("LowPreABlockLength",11.80);  
   Control.addVariable("LowPreABlockWallThick",0.2);  
@@ -463,7 +463,7 @@ EssVariables(FuncDataBase& Control)
   // Other block
   Control.addVariable("LowPreBBlockSide",1);  
   Control.addVariable("LowPreBBlockActive",1);  
-  Control.addVariable("LowPreBBlockWidth",4.0);  
+  Control.addVariable("LowPreBBlockWidth",3.8);  
   Control.addVariable("LowPreBBlockHeight",10.0);  
   Control.addVariable("LowPreBBlockLength",10.8);  
   Control.addVariable("LowPreBBlockWallThick",0.2);  
@@ -506,7 +506,7 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("TopPreViewOpenAngle2",30.0);  
 
   Control.addVariable("TopPreABlockSide",1);  
-  Control.addVariable("TopPreABlockActive",1);  
+  Control.addVariable("TopPreABlockActive",0);  
   Control.addVariable("TopPreABlockWidth",4.0);  
   Control.addVariable("TopPreABlockHeight",10.0);  
   Control.addVariable("TopPreABlockLength",10.80);  
@@ -517,7 +517,7 @@ EssVariables(FuncDataBase& Control)
 
   // Other block
   Control.addVariable("TopPreBBlockActive",1);  
-  Control.addVariable("TopPreBBlockSide",1);  
+  Control.addVariable("TopPreBBlockSide",0);  
   Control.addVariable("TopPreBBlockWidth",4.0);  
   Control.addVariable("TopPreBBlockHeight",10.0);  
   Control.addVariable("TopPreBBlockLength",10.8);  

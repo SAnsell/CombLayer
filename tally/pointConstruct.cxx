@@ -196,8 +196,12 @@ pointConstruct::processPoint(Simulation& System,
 	inputItem<std::string>(IParam,Index,3,"front/back/side not give");
       const double D=
 	inputItem<double>(IParam,Index,4,"Distance not given");
+      double timeStep(0.0);
+      double windowOffset(0.0);
+      checkItem<double>(IParam,Index,5,timeStep);
+      checkItem<double>(IParam,Index,6,windowOffset);
       const int linkNumber=getLinkIndex(snd);
-      processPointWindow(System,place,linkNumber,D);
+      processPointWindow(System,place,linkNumber,D,timeStep,windowOffset);
 
       return;
     }
@@ -222,14 +226,18 @@ pointConstruct::processPoint(Simulation& System,
 void
 pointConstruct::processPointWindow(Simulation& System,
 				   const std::string& FObject,
-				   const int linkPt,const double OD) const
+				   const int linkPt,const double beamDist,
+				   const double timeStep,
+				   const double windowOffset) const
   /*!
     Process a point tally in a registered object
     \param System :: Simulation to add tallies
     \param FObject :: Fixed/Twin name
     \param linkPt :: Link point [-ve for beam object]
-    \param OD :: Out distance Distance
-   */
+    \param beamDist :: Out distance Distance
+    \param timeStep ::  Forward step [view type modification]
+    \param windowOffset :: Distance to move window towards tally point
+  */
 {
   ELog::RegMethod RegA("pointConstruct","processPointWindow");
 
@@ -239,6 +247,8 @@ pointConstruct::processPointWindow(Simulation& System,
   std::vector<int> Planes;
   const int tNum=System.nextTallyNum(5);
   Geometry::Vec3D TPoint;
+  Geometry::Vec3D orgPoint;
+  Geometry::Vec3D BAxis;
   int masterPlane(0);
   if (linkPt>0)
     {
@@ -249,19 +259,32 @@ pointConstruct::processPointWindow(Simulation& System,
 	throw ColErr::InContainerError<std::string>
 	  (FObject,"Fixed Object not found");
       const size_t iLP=static_cast<size_t>(linkPt-1);
-      masterPlane=
-	TPtr->getExitWindow(iLP,Planes);
-      ELog::EM<<"Link point == "<<TPtr->getLinkPt(iLP)<<ELog::endDebug;
-      ELog::EM<<"Link Axis  == "<<TPtr->getLinkAxis(iLP)<<ELog::endDebug;
-      TPoint=TPtr->getLinkPt(iLP)+TPtr->getLinkAxis(iLP)*OD;
+
+      masterPlane=TPtr->getExitWindow(iLP,Planes);
+      orgPoint= TPtr->getLinkPt(iLP); 
+      BAxis= -TPtr->getLinkAxis(iLP);
+      TPoint=orgPoint-BAxis*(beamDist+timeStep);
+      ELog::EM<<"Link point == "<<orgPoint<<ELog::endDiag;
+      ELog::EM<<"Link Axis  == "<<BAxis<<ELog::endDiag;
+      ELog::EM<<"TP  == "<<TPoint<<ELog::endDiag;
+
     }
   // Add tally:
-  if (Planes.size()>=4 && masterPlane)
+  if (Planes.size()<=4 || !masterPlane)
     {
-      addF5Tally(System,tNum,TPoint,masterPlane,
-		 Planes[0],Planes[1],Planes[2],Planes[3],
-		 Planes[4]);
+      ELog::EM<<"Failed to set tally : Object "<<FObject<<ELog::endErr;
+      return;
     }
+
+
+  // CALC Intercept between Moderator boundary
+  std::vector<Geometry::Vec3D> Window=
+    calcWindowIntercept(masterPlane,Planes,orgPoint);
+
+  std::transform(Window.begin(),Window.end(),Window.begin(),
+        boost::bind(std::minus<Geometry::Vec3D>(),_1,BAxis*windowOffset));
+
+  addF5Tally(System,tNum,TPoint,Window,timeStep);
   return;
 }
 

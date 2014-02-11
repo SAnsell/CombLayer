@@ -729,6 +729,7 @@ Object::createSurfaceList()
   if (sc!=SurList.end())
     SurList.erase(sc,SurList.end());
 
+  // sorted list will have zeros at front
   if (*SurList.begin()==0)
     {
       ELog::EM<<"CX == "<<debugCX.str()<<ELog::endCrit;
@@ -1260,6 +1261,11 @@ Object::writePHITS(std::ostream& OX) const
 
 void
 Object::checkPointers() const
+  /*!
+    Test the surface pointers.
+    Does not return but shows an output string
+    Debug function only
+   */
 {
   ELog::RegMethod RegA("Object","checkPointers");
   int flag(0);
@@ -1288,7 +1294,7 @@ Object::checkPointers() const
 		{
 		  if (SurX->getKey()==0)
 		    {
-		      debugCX<<" "<<SurX->getKey()<<" "<<SurX->getKeyN();
+		      debugCX<<" "<<SurX->getKey()<<"->"<<SurX->getKeyN();
 		      flag=1;
 		    }
 		}

@@ -52,8 +52,8 @@ class SupplyPipe : public attachSystem::FixedComp
   std::vector<size_t> ActiveFlag;     ///< Active flag
 
   ModelSupport::PipeLine Coaxial;      ///< Global outer
-  std::vector<Geometry::Vec3D> PPts;  ///< Pipe points
-
+  std::vector<Geometry::Vec3D> PPts;   ///< Pipe points
+  size_t nAngle;                       ///< Number of angle segments
   
   void populate(const Simulation&);
   void createUnitVector(const attachSystem::FixedComp&,const size_t,
@@ -74,6 +74,8 @@ class SupplyPipe : public attachSystem::FixedComp
   SupplyPipe& operator=(const SupplyPipe&);
   ~SupplyPipe();
 
+  /// Set angle segments
+  void setAngleSeg(const size_t N) { nAngle=N; }
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const size_t,const size_t,const size_t);

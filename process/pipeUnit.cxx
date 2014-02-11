@@ -57,9 +57,6 @@
 #include "Rules.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "BnId.h"
-#include "Acomp.h"
-#include "Algebra.h"
 #include "Line.h"
 #include "Qhull.h"
 #include "varList.h"
@@ -75,8 +72,6 @@
 #include "LineTrack.h"
 #include "pipeUnit.h"
 
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Debug.h"
 
 namespace ModelSupport
@@ -86,16 +81,18 @@ pipeUnit::pipeUnit(const std::string& Key,const size_t Index) :
   attachSystem::FixedComp(StrFunc::makeString(Key,Index),3),
   attachSystem::ContainedComp(),
   surfIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
-  cellIndex(surfIndex+1),prev(0),next(0)
+  cellIndex(surfIndex+1),nAngle(6),prev(0),next(0)
  /*!
    Constructor
+   \param Key :: KeyName for full pipe
+   \param Index :: Index that specialize the keyname
   */
 {}
 
 pipeUnit::pipeUnit(const pipeUnit& A) : 
   attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
-  surfIndex(A.surfIndex),cellIndex(A.cellIndex),prev(A.prev),
-  next(A.next),APt(A.APt),BPt(A.BPt),Axis(A.Axis),
+  surfIndex(A.surfIndex),cellIndex(A.cellIndex),nAngle(A.nAngle),
+  prev(A.prev),next(A.next),APt(A.APt),BPt(A.BPt),Axis(A.Axis),
   ANorm(A.ANorm),BNorm(A.BNorm),ASurf(A.ASurf),BSurf(A.BSurf),
   activeFlag(A.activeFlag),cylVar(A.cylVar)
   /*!
@@ -117,6 +114,7 @@ pipeUnit::operator=(const pipeUnit& A)
       attachSystem::FixedComp::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       cellIndex=A.cellIndex;
+      nAngle=A.nAngle;
       APt=A.APt;
       BPt=A.BPt;
       Axis=A.Axis;
@@ -138,6 +136,10 @@ pipeUnit::~pipeUnit()
 
 void
 pipeUnit::setASurf(const HeadRule& AR)
+  /*!
+    Set the initial surface
+    \param AR :: Initial surface rule
+  */
 {
   ASurf=AR;
   return;
@@ -145,6 +147,10 @@ pipeUnit::setASurf(const HeadRule& AR)
 
 void
 pipeUnit::setBSurf(const HeadRule& BR)
+  /*!
+    Set the final surface
+    \param BR :: Final surface rule
+  */
 {
   BSurf=BR;
   return;
@@ -407,7 +413,6 @@ pipeUnit::insertObjects(Simulation& System)
   const Geometry::Vec3D AY(AX*Axis);
   const double radius=getOuterRadius();
 
-  const int nAngle(6);
   const double angleStep(2*M_PI/nAngle);
   double angle(0.0);
   Geometry::Vec3D addVec;

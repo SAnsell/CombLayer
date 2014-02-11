@@ -61,7 +61,8 @@ class pointConstruct : virtual public basicConstruct
   void processPointFree(Simulation&,const std::string&,
 			  const int,const double) const;
   void processPointWindow(Simulation&,const std::string&,
-			  const int,const double) const;
+			  const int,const double,
+			  const double,const double) const;
 
   void addBasicPointTally(Simulation&,const attachSystem::FixedComp&,
 			  const size_t,const double) const;

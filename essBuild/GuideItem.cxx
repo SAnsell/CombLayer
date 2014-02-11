@@ -420,8 +420,9 @@ GuideItem::createLinks()
 {
   ELog::RegMethod RegA("GuideItem","createLinks");
   // Beamline :: 
-  FixedComp::setConnect(0,bEnter,-bY);
+  FixedComp::setConnect(0,bEnter+bY*RInner,-bY);
   FixedComp::setLinkSurf(0,-SMap.realSurf(guideIndex+7));
+
   const int GI=10*static_cast<int>(nSegment);
   FixedComp::setConnect(1,bExit,bY);
   FixedComp::setLinkSurf(1,SMap.realSurf(GI+7));

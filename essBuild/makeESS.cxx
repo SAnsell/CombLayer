@@ -412,7 +412,7 @@ makeESS::build(Simulation* SimPtr,
   //  BMon->createAll(*SimPtr,*Target,1,*PBeam,"Sector");
   //  attachSystem::addToInsertForced(*SimPtr,*Reflector,*BMon);
 
-
+  LowReturnPipe->setAngleSeg(12);
   LowSupplyPipe->createAll(*SimPtr,*LowMod,0,6,4,*LowPre,2);
   LowReturnPipe->createAll(*SimPtr,*LowMod,0,3,2,*LowPre,4);
   
