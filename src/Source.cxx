@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   src/Source.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * File:   src/Source.cxx 
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -209,10 +209,10 @@ Source::setData(const std::string& Key,const SrcData& DObj)
   if (DObj.isDependent())
     {
       ELog::EM<<"Setting dependent type "<<DObj.getDep()<<ELog::endWarn;
-      SPtr->setDepType(DObj.getDep(),DObj.getIndex());
+      SPtr->setDepType(DObj.getDep(),static_cast<int>(DObj.getIndex()));
     }
   else
-    SPtr->setDataType(DObj.getIndex());
+    SPtr->setDataType(static_cast<int>(DObj.getIndex()));
 
   DVec.push_back(SDataPtr(new SrcData(DObj)));
   // Sort ??

@@ -761,10 +761,10 @@ montecarloTest(const int type,const int extra)
   if (type==0)
     {
       std::cout<<"testAlgebra          (1)"<<std::endl;
-      std::cout<<"testElement          (3)"<<std::endl;
-      std::cout<<"testMaterial         (4)"<<std::endl;
-      std::cout<<"testNeutron          (5)"<<std::endl;
-      std::cout<<"testObject           (6)"<<std::endl;
+      std::cout<<"testElement          (2)"<<std::endl;
+      std::cout<<"testMaterial         (3)"<<std::endl;
+      std::cout<<"testNeutron          (4)"<<std::endl;
+      std::cout<<"testObject           (5)"<<std::endl;
     }
 
   if(type==1 || type<0)

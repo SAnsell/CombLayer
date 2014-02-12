@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   process/LineTrack.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,6 @@
 #include <string>
 #include <algorithm>
 #include <boost/format.hpp>
-#include <boost/array.hpp>
 #include <boost/bind.hpp>
 
 #include "Exception.h"
@@ -48,22 +47,9 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
-#include "Triple.h"
-#include "NList.h"
-#include "NRange.h"
-#include "Tally.h"
-#include "cellFluxTally.h"
-#include "pointTally.h"
-#include "heatTally.h"
-#include "tallyFactory.h"
-#include "Transform.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "Quadratic.h"
-#include "surfaceFactory.h"
 #include "Rules.h"
 #include "varList.h"
 #include "Code.h"
@@ -77,24 +63,13 @@
 #include "Object.h"
 #include "Qhull.h"
 #include "RemoveCell.h"
-#include "WForm.h"
-#include "weightManager.h"
 #include "ObjSurfMap.h"
 #include "ObjTrackItem.h"
-#include "SrcData.h"
-#include "SrcItem.h"
-#include "Source.h"
 #include "ReadFunctions.h"
-#include "surfRegister.h"
-#include "ModelSupport.h"
 #include "neutron.h"
 #include "Simulation.h"
 #include "LineTrack.h"
 
-#include "Cylinder.h"
-#include "Cone.h"
-
-#include "Debug.h"
 
 namespace ModelSupport
 {
@@ -174,8 +149,6 @@ LineTrack::calculate(const Simulation& ASim)
   const Geometry::Surface* SPtr;           // Surface
   const ModelSupport::ObjSurfMap* OSMPtr =ASim.getOSM();
 
-  const int flagDebug(debugStatus::Instance().getFlag());
-
   MonteCarlo::neutron nOut(1.0,InitPt,EndPt-InitPt);
   // Find Initial cell [no default]
   MonteCarlo::Object* OPtr=ASim.findCell(InitPt+
@@ -200,27 +173,26 @@ LineTrack::calculate(const Simulation& ASim)
 	  if (OPtr==0)
 	    {
 	      // ALL FAILURE CODE:
-	      const masterRotate& MR=masterRotate::Instance();
 	      const MonteCarlo::Object* OPtr=ASim.findCell(nOut.Pos,0);
-	      ELog::EM<<"Common surf "<<SN<<ELog::endDebug;
+	      ELog::EM<<"Common surf "<<SN<<ELog::endDiag;
 	      OPtr=OSMPtr->findNextObject(SN,nOut.Pos,prevOPtr->getName());
 	      if (OPtr)
 		{
 		  nOut.moveForward(-1e-5);
-		  ELog::EM<<"Object = "<<*OPtr<<ELog::endDebug;
+		  ELog::EM<<"Object = "<<*OPtr<<ELog::endDiag;
 		  const std::vector<const Geometry::Surface*>& SV=
 		    OPtr->getSurList();
 		  for(size_t i=0;i<SV.size();i++)
 		    if (SV[i]->onSurface(nOut.Pos))
-		      ELog::EM<<"Surf == "<<*SV[i]<<ELog::endDebug;
+		      ELog::EM<<"Surf == "<<*SV[i]<<ELog::endDiag;
 
 		}
 	      if (prevOPtr)
-		ELog::EM<<"PrevObject = "<<*prevOPtr<<ELog::endDebug;
-	      ELog::EM<<"Point = "<<nOut.Pos<<ELog::endDebug;
-	      ELog::EM<<"DIR = "<<nOut.uVec<<ELog::endDebug;
-	      ELog::EM<<"Init = "<<InitPt<<ELog::endDebug;
-	      ELog::EM<<"Final = "<<EndPt<<ELog::endDebug;
+		ELog::EM<<"PrevObject = "<<*prevOPtr<<ELog::endDiag;
+	      ELog::EM<<"Point = "<<nOut.Pos<<ELog::endDiag;
+	      ELog::EM<<"DIR = "<<nOut.uVec<<ELog::endDiag;
+	      ELog::EM<<"Init = "<<InitPt<<ELog::endDiag;
+	      ELog::EM<<"Final = "<<EndPt<<ELog::endDiag;
 	      ELog::EM<<ELog::endErr;
 	    }
 

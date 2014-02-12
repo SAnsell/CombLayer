@@ -363,7 +363,8 @@ Object::setObject(std::string Ln)
       ELog::EM<<"Junk letters in cell definition:"<<Ln<<ELog::endErr;
       return 0;
     }
-  
+
+  populated=0;
   if (HRule.procString(Ln))     // this currently does not fail:
     {
       SurList.clear();
@@ -439,6 +440,7 @@ Object::populate()
 
   if (!populated) 
     {
+      ELog::EM<<"Populating "<<ELog::endDiag;
       HRule.populateSurf();
       populated=1;
     }
@@ -692,6 +694,7 @@ Object::createSurfaceList()
 
   SurList.clear();
   SurSet.erase(SurSet.begin(),SurSet.end());
+
   std::stack<const Rule*> TreeLine;
   TreeLine.push(HRule.getTopRule());
   while(!TreeLine.empty())
@@ -732,6 +735,7 @@ Object::createSurfaceList()
   // sorted list will have zeros at front
   if (*SurList.begin()==0)
     {
+      ELog::EM<<"SurList Failure "<<ELog::endCrit;
       ELog::EM<<"CX == "<<debugCX.str()<<ELog::endCrit;
       ELog::EM<<"Found zero Item "<<this->getName()<<" "
 	      <<" "<<populated<<" :: "<<ELog::endCrit;
@@ -1025,14 +1029,16 @@ Object::trackCell(const MonteCarlo::neutron& N,double& D,
   ELog::RegMethod RegA("Object","trackCell[D,dir]");
   MonteCarlo::LineIntersectVisit LI(N);
   std::vector<const Geometry::Surface*>::const_iterator vc;
+  ELog::EM<<"SList size "<<SurList.size()<<ELog::endDebug;
   for(vc=SurList.begin();vc!=SurList.end();vc++)
-    (*vc)->acceptVisitor(LI);
+    {
+      (*vc)->acceptVisitor(LI);
 
+    }
 
   const std::vector<Geometry::Vec3D>& IPts(LI.getPoints());
   const std::vector<double>& dPts(LI.getDistance());
   const std::vector<const Geometry::Surface*>& surfIndex(LI.getSurfIndex());
-
   D=1e38;
   surfPtr=0;
   // NOTE: we only check for and exiting surface by going
@@ -1043,8 +1049,7 @@ Object::trackCell(const MonteCarlo::neutron& N,double& D,
       if ( (!bestPairValid && dPts[i]>-Geometry::zeroTol) ||
 	   (dPts[i]>0.0 && dPts[i]<D) )
 	{
-	  const int NS=surfIndex[i]->getName();
-		       
+	  const int NS=surfIndex[i]->getName();	  
 	  const int pAB=pairValid(NS,IPts[i]);
 	  if (pAB==1 || pAB==2)        // in / out
 	    {

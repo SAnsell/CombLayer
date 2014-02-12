@@ -138,9 +138,8 @@ SrcItem<OutType>::setDepType(const std::string& dK,const int I)
   depKey=dK;
   dtype=(I>0) ? -I : I;
   if (dtype==0) 
-    {
-      ELog::EM<<"Setting dtype = 0 in a non-data object"<<ELog::endErr;
-    }
+    ELog::EM<<"Setting dtype = 0 in a non-data object"<<ELog::endErr;
+
   return;
 }
 

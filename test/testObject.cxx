@@ -59,6 +59,8 @@
 #include "Qhull.h"
 #include "neutron.h"
 
+#include "Debug.h"
+
 #include "testFunc.h"
 #include "testObject.h"
 
@@ -404,8 +406,6 @@ testObject::testIsValid()
 			-100,Geometry::Vec3D(0,0,24.01),1));
   Tests.push_back(TTYPE("5 10 0.05524655 -100",
 			100,Geometry::Vec3D(0,0,26.01),0));
-
-
   
   int res;
 
@@ -502,7 +502,6 @@ testObject::testTrackCell()
   ELog::RegMethod RegA("testObject","testTrackCell");
 
   createSurfaces();
-  Qhull A;
 
   // Object : startSurf : Neut : ResultPos
   typedef boost::tuple<std::string,int,Geometry::Vec3D,
@@ -524,28 +523,30 @@ testObject::testTrackCell()
   double aDist;
   const Geometry::Surface* SPtr;          // Output surface
   std::vector<TTYPE>::const_iterator tc;
+  Qhull A;
+
   for(tc=Tests.begin();tc!=Tests.end();tc++)
     {
       A.setObject(tc->get<0>());
-      A.populate();
       A.createSurfaceList();
-      ELog::EM<<"Test "<<tc-Tests.begin()<<ELog::endDiag;
 
       neutron TNeut(1,tc->get<2>(),tc->get<3>());
 
       const int outFaceSurf(tc->get<1>());
-      ELog::EM<<"HASDFASDF"<<ELog::endDiag;
-
+      debugStatus::Instance().setFlag(1);
       const int SN= -A.trackOutCell(TNeut,aDist,SPtr,outFaceSurf);
+      debugStatus::Instance().setFlag(0);
       TNeut.moveForward(aDist);
       if (TNeut.Pos!=tc->get<4>())
 	{
 	  ELog::EM<<"Failed on test "<<(tc-Tests.begin())+1<<ELog::endDiag;
-	  ELog::EM<<"Result= "<<TNeut.Pos<<" ["<<tc->get<4>()<<"]"<<ELog::endDebug;
+	  ELog::EM<<"Result= "<<TNeut.Pos<<" ["<<tc->get<4>()<<"]"
+		  <<ELog::endDiag;
 	  ELog::EM<<"SN= "<<SN<<" "<<outFaceSurf<<ELog::endDiag;
 
 	  const Rule* TR=A.topRule();
 	  ELog::EM<<"Display= "<<TR->display(TNeut.Pos)<<ELog::endDiag;
+	  return -1;
 	}
     }
   return 0;
