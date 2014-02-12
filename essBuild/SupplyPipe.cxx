@@ -297,7 +297,7 @@ SupplyPipe::setActive()
   */
 {
   ELog::RegMethod RegA("SupplyPipe","setActive");
-  ELog::EM<<"Active size = "<<ActiveFlag.size()<<ELog::endDiag;
+
   for(size_t i=0;i<ActiveFlag.size();i++)
     Coaxial.setActive(i,ActiveFlag[i]);  
   return;

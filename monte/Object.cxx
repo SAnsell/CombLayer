@@ -440,7 +440,6 @@ Object::populate()
 
   if (!populated) 
     {
-      ELog::EM<<"Populating "<<ELog::endDiag;
       HRule.populateSurf();
       populated=1;
     }
@@ -1029,7 +1028,6 @@ Object::trackCell(const MonteCarlo::neutron& N,double& D,
   ELog::RegMethod RegA("Object","trackCell[D,dir]");
   MonteCarlo::LineIntersectVisit LI(N);
   std::vector<const Geometry::Surface*>::const_iterator vc;
-  ELog::EM<<"SList size "<<SurList.size()<<ELog::endDebug;
   for(vc=SurList.begin();vc!=SurList.end();vc++)
     {
       (*vc)->acceptVisitor(LI);
