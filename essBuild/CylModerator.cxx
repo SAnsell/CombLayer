@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   essBuild/CylModerator.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,16 +67,14 @@
 #include "FixedComp.h"
 #include "ContainedComp.h"
 #include "LayerComp.h"
-#include "essMod.h"
+#include "ModBase.h"
 #include "CylModerator.h"
 
 namespace essSystem
 {
 
 CylModerator::CylModerator(const std::string& Key) :
-  essMod(Key),
-  modIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(modIndex+1)
+  constructSystem::ModBase(Key,6)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -84,10 +82,7 @@ CylModerator::CylModerator(const std::string& Key) :
 {}
 
 CylModerator::CylModerator(const CylModerator& A) : 
-  essMod(A),
-  modIndex(A.modIndex),cellIndex(A.cellIndex),xStep(A.xStep),
-  yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
-  zAngle(A.zAngle),radius(A.radius),
+  ModBase(A),radius(A.radius),
   height(A.height),mat(A.mat)
   /*!
     Copy constructor
@@ -105,13 +100,7 @@ CylModerator::operator=(const CylModerator& A)
 {
   if (this!=&A)
     {
-      essMod::operator=(A),
-      cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
+      constructSystem::ModBase::operator=(A),
       radius=A.radius;
       height=A.height;
       mat=A.mat;

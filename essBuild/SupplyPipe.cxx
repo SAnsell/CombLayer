@@ -227,14 +227,13 @@ SupplyPipe::insertInlet(const attachSystem::FixedComp& FC,
   const int commonSurf=LC->getCommonSurf(lSideIndex);
   const std::string commonStr=(commonSurf) ? 		       
     StrFunc::makeString(commonSurf) : "";
-
   if (PtZ!=Pt)
     Coaxial.addPoint(Pt);
   
   const size_t NL(LC->getNLayers());
   Coaxial.addSurfPoint
     (PtZ,LC->getLayerString(0,lSideIndex),commonStr);
-
+  
   for(size_t index=2;index<NL;index+=2)
     {
       PtZ=LC->getSurfacePoint(index,lSideIndex);
@@ -245,6 +244,7 @@ SupplyPipe::insertInlet(const attachSystem::FixedComp& FC,
 
   for(size_t i=0;i<Radii.size();i++)
     Coaxial.addRadius(Radii[i],Mat[i],Temp[i]);
+
 
   return;
 }
@@ -297,6 +297,7 @@ SupplyPipe::setActive()
   */
 {
   ELog::RegMethod RegA("SupplyPipe","setActive");
+  ELog::EM<<"Active size = "<<ActiveFlag.size()<<ELog::endDiag;
   for(size_t i=0;i<ActiveFlag.size();i++)
     Coaxial.setActive(i,ActiveFlag[i]);  
   return;

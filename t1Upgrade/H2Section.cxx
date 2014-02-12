@@ -47,10 +47,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "Tally.h"
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
@@ -72,8 +68,6 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -91,7 +85,7 @@ namespace ts1System
 {
 
 H2Section::H2Section(const std::string& Key)  :
-  ModBase(Key,6)
+ constructSystem::ModBase(Key,6)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -99,7 +93,7 @@ H2Section::H2Section(const std::string& Key)  :
 {}
 
 H2Section::H2Section(const H2Section& A) : 
-  ModBase(A),
+  constructSystem::ModBase(A),
   height(A.height),width(A.width),
   depth(A.depth),frontWall(A.frontWall),backWall(A.backWall),
   mainWall(A.mainWall),vacGap(A.vacGap),heGap(A.heGap),

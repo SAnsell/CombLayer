@@ -19,12 +19,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef ts1System_ModBase_h
-#define ts1System_ModBase_h
+#ifndef constructSystem_ModBase_h
+#define constructSystem_ModBase_h
 
 class Simulation;
 
-namespace ts1System
+namespace constructSystem
 {
 
 /*!
@@ -32,7 +32,7 @@ namespace ts1System
   \version 1.0
   \author S. Ansell
   \date July 2013
-  \brief TS1 ModBase upgrade
+  \brief General ModBase unit
 */
 
 class ModBase : public attachSystem::ContainedComp,
@@ -59,7 +59,6 @@ class ModBase : public attachSystem::ContainedComp,
   virtual ~ModBase();
 
   std::string getComposite(const std::string&) const;
-  //  virtual void addToInsertChain(attachSystem::ContainedComp&) const =0;
 
   virtual void createAll(Simulation&,const attachSystem::FixedComp&) =0;
 

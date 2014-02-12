@@ -154,13 +154,13 @@ makeT1Upgrade::makeT1Upgrade(const makeT1Upgrade& A) :
   TriMod(new moderatorSystem::TriangleMod(*A.TriMod)),
   ColdCentObj(new constructSystem::GroupOrigin(*A.ColdCentObj)),
   H2Mod((A.H2Mod) ? 
-	 boost::shared_ptr<ts1System::ModBase>
+	 boost::shared_ptr<constructSystem::ModBase>
 	  (A.H2Mod->clone()) : A.H2Mod),  
   H2PMod((A.H2PMod) ? 
 	 boost::shared_ptr<ts1System::HPreMod>
 	 (A.H2PMod->clone()) : A.H2PMod),  
   CH4Mod((A.CH4Mod) ? 
-	 boost::shared_ptr<ts1System::ModBase>
+	 boost::shared_ptr<constructSystem::ModBase>
 	  (A.CH4Mod->clone()) : A.CH4Mod),  
   CH4PMod((A.CH4PMod) ? 
 	 boost::shared_ptr<ts1System::CH4PreModBase>
@@ -196,11 +196,11 @@ makeT1Upgrade::operator=(const makeT1Upgrade& A)
       *TriMod = *A.TriMod;
       *ColdCentObj = *A.ColdCentObj;
       H2Mod=((A.H2Mod) ? 
-	     boost::shared_ptr<ts1System::ModBase>
+	     boost::shared_ptr<constructSystem::ModBase>
 	     (A.H2Mod->clone()) : A.H2Mod);  
       *H2PMod = *A.H2PMod;
       CH4Mod=((A.CH4Mod) ? 
-	     boost::shared_ptr<ts1System::ModBase>
+	     boost::shared_ptr<constructSystem::ModBase>
 	     (A.CH4Mod->clone()) : A.CH4Mod);  
       *CH4PMod = *A.CH4PMod;
       *VoidObj = *A.VoidObj;
@@ -385,7 +385,7 @@ makeT1Upgrade::buildCH4Mod(Simulation& System,
 
   if (MType=="Basic")
     {
-      CH4Mod=boost::shared_ptr<ts1System::ModBase>
+      CH4Mod=boost::shared_ptr<constructSystem::ModBase>
 	(new CH4Layer("CH4Mod"));
       OR.addObject(CH4Mod);
       CH4Mod->createAll(System,FC);
@@ -393,7 +393,7 @@ makeT1Upgrade::buildCH4Mod(Simulation& System,
     }
   else if (MType=="Layer")
     {
-      CH4Mod=boost::shared_ptr<ts1System::ModBase>
+      CH4Mod=boost::shared_ptr<constructSystem::ModBase>
 	(new CH4Layer("CH4Layer"));
       OR.addObject(CH4Mod);
       CH4Mod->createAll(System,FC);
@@ -431,7 +431,7 @@ makeT1Upgrade::buildH2Mod(Simulation& System,
 
   if (MType=="Basic")
     {
-      H2Mod=boost::shared_ptr<ts1System::ModBase>
+      H2Mod=boost::shared_ptr<constructSystem::ModBase>
 	(new H2Section("H2Mod"));
       OR.addObject(H2Mod);
       H2Mod->createAll(System,FC);
@@ -445,8 +445,8 @@ makeT1Upgrade::buildH2Mod(Simulation& System,
     }
   if (MType=="CylMod")
     {
-      H2Mod=boost::shared_ptr<ts1System::ModBase>
-	(new CylMod("H2CylMod"));
+      H2Mod=boost::shared_ptr<constructSystem::ModBase>
+	(new constructSystem::CylMod("H2CylMod"));
       OR.addObject(H2Mod);
       H2Mod->createAll(System,FC);
       H2PCylMod=boost::shared_ptr<ts1System::CylPreSimple>

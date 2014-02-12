@@ -24,6 +24,7 @@
 
 namespace constructSystem
 {
+  class ModBase;
   class GroupOrigin;
   class TargetBase;
 }
@@ -89,10 +90,10 @@ class makeT1Upgrade
   /// General offset
   boost::shared_ptr<constructSystem::GroupOrigin> ColdCentObj; 
 
-  boost::shared_ptr<ts1System::ModBase> H2Mod;             ///< H2 moderator
+  boost::shared_ptr<constructSystem::ModBase> H2Mod;       ///< H2 moderator
   boost::shared_ptr<ts1System::HPreMod> H2PMod;            ///< H2 premoderator
   boost::shared_ptr<ts1System::CylPreSimple> H2PCylMod;    ///< H2 premoderator
-  boost::shared_ptr<ts1System::ModBase> CH4Mod;            ///< CH4 moderator
+  boost::shared_ptr<constructSystem::ModBase> CH4Mod;      ///< CH4 moderator
   boost::shared_ptr<ts1System::CH4PreModBase> CH4PMod;     ///< CH4 premoderator
 
   boost::shared_ptr<shutterSystem::t1CylVessel> VoidObj;   ///< Void vessel

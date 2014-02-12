@@ -36,7 +36,7 @@ namespace ts1System
   \brief TS1 CH4Layer upgrade
 */
 
-class CH4Layer : public ModBase
+class CH4Layer : public constructSystem::ModBase
 {
  private:
     

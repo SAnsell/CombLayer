@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   t1UpgradeInc/H2Section.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ namespace ts1System
   \brief TS1 H2Section upgrade
 */
 
-class H2Section : public ModBase
+class H2Section : public constructSystem::ModBase
 {
  private:
 

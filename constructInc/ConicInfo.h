@@ -19,12 +19,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef ts1System_ConicInfo_h
-#define ts1System_ConicInfo_h
+#ifndef constructSystem_ConicInfo_h
+#define constructSystem_ConicInfo_h
 
 class Simulation;
 
-namespace ts1System
+namespace constructSystem
 {
 
   /*!

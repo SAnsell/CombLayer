@@ -68,7 +68,7 @@ void TS1CylMod(FuncDataBase& Control)
   Control.addVariable("H2CylModHeight",12.0);
   Control.addVariable("H2CylModMat","ParaH2");
   Control.addVariable("H2CylModTemp",20.0);
-  Control.addVariable("H2CylModNLayers","Gadolinium");
+  Control.addVariable("H2CylModNLayers",6);
   // al layer
   Control.addVariable("H2CylModHGap1",0.3);
   Control.addVariable("H2CylModRadGap1",0.3);
@@ -101,24 +101,28 @@ void TS1CylMod(FuncDataBase& Control)
   Control.addVariable("H2CylModConic1Cent",Geometry::Vec3D(0,1,0));
   Control.addVariable("H2CylModConic1Axis",Geometry::Vec3D(0,1,0));
   Control.addVariable("H2CylModConic1Angle",35.0);
+  Control.addVariable("H2CylModConic1Mat","Void");
   Control.addVariable("H2CylModConic1WallMat","Aluminium");
   Control.addVariable("H2CylModConic1Wall",0.2);
 
   Control.addVariable("H2CylModConic2Cent",Geometry::Vec3D(1,0,0));
   Control.addVariable("H2CylModConic2Axis",Geometry::Vec3D(1,0,0));
   Control.addVariable("H2CylModConic2Angle",35.0);
+  Control.addVariable("H2CylModConic2Mat","Void");
   Control.addVariable("H2CylModConic2WallMat","Aluminium");
   Control.addVariable("H2CylModConic2Wall",0.2);
 
   Control.addVariable("H2CylModConic3Cent",Geometry::Vec3D(-1,0,0));
   Control.addVariable("H2CylModConic3Axis",Geometry::Vec3D(-1,0,0));
   Control.addVariable("H2CylModConic3Angle",35.0);
+  Control.addVariable("H2CylModConic3Mat","Void");
   Control.addVariable("H2CylModConic3WallMat","Aluminium");
   Control.addVariable("H2CylModConic3Wall",0.2);
 
   Control.addVariable("H2CylModConic4Cent",Geometry::Vec3D(0,-1,0));
   Control.addVariable("H2CylModConic4Axis",Geometry::Vec3D(0,-1,0));
   Control.addVariable("H2CylModConic4Angle",35.0);
+  Control.addVariable("H2CylModConic4Mat","Void");
   Control.addVariable("H2CylModConic4WallMat","Aluminium");
   Control.addVariable("H2CylModConic4Wall",0.2);
 

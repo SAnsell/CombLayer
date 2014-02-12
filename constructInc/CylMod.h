@@ -19,12 +19,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef ts1System_CylMod_h
-#define ts1System_CylMod_h
+#ifndef constructSystem_CylMod_h
+#define constructSystem_CylMod_h
 
 class Simulation;
 
-namespace ts1System
+namespace constructSystem
 {
 
 /*!
@@ -35,11 +35,10 @@ namespace ts1System
   \brief Specialized for a cylinder moderator
 */
 
-class CylMod : public ModBase
+class CylMod : public constructSystem::ModBase
 {
  private:
   
-  size_t nLayers;                     ///< number of layers
   std::vector<double> radius;         ///< cylinder radii
   std::vector<double> height;         ///< Full heights
   std::vector<int> mat;               ///< Materials
@@ -70,6 +69,7 @@ class CylMod : public ModBase
 
   virtual Geometry::Vec3D getSurfacePoint(const size_t,const size_t) const;
   virtual int getLayerSurf(const size_t,const size_t) const;
+  virtual int getCommonSurf(const size_t) const;
   virtual std::string getLayerString(const size_t,const size_t) const;
 
   void createAll(Simulation&,const attachSystem::FixedComp&);

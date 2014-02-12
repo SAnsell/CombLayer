@@ -71,7 +71,7 @@
 #include "ContainedComp.h"
 #include "ModBase.h"
 
-namespace ts1System
+namespace constructSystem
 {
 
 ModBase::ModBase(const std::string& Key,const size_t nLinks)  :
@@ -140,4 +140,4 @@ ModBase::getComposite(const std::string& surfList) const
 }
 
   
-}  // NAMESPACE ts1System
+}  // NAMESPACE constructSystem

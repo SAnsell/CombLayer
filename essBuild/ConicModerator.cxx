@@ -72,16 +72,14 @@
 #include "TwinComp.h"
 #include "ContainedComp.h"
 #include "LayerComp.h"
-#include "essMod.h"
+#include "ModBase.h"
 #include "ConicModerator.h"
 
 namespace essSystem
 {
 
 ConicModerator::ConicModerator(const std::string& Key)  :
-  essMod(Key),
-  conicIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(conicIndex+1)
+  constructSystem::ModBase(Key,6)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -90,10 +88,7 @@ ConicModerator::ConicModerator(const std::string& Key)  :
 
 
 ConicModerator::ConicModerator(const ConicModerator& A) : 
-  essMod(A),
-  conicIndex(A.conicIndex),cellIndex(A.cellIndex),
-  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  xyAngle(A.xyAngle),zAngle(A.zAngle),IWidth(A.IWidth),
+  ModBase(A),IWidth(A.IWidth),
   IHeight(A.IHeight),OWidth(A.OWidth),OHeight(A.OHeight),
   length(A.length),innerAngle(A.innerAngle),
   topAngle(A.topAngle),baseAngle(A.baseAngle),thick(A.thick),
@@ -116,13 +111,7 @@ ConicModerator::operator=(const ConicModerator& A)
 {
   if (this!=&A)
     {
-      essMod::operator=(A);
-      cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
+      constructSystem::ModBase::operator=(A);
       IWidth=A.IWidth;
       IHeight=A.IHeight;
       OWidth=A.OWidth;
@@ -251,7 +240,7 @@ ConicModerator::createSurfaces()
      alThick+thick+vacGap+2*waterAlThick+waterThick+voidGap
     };
   // Inner AL Planes:
-  int CI(conicIndex);
+  int CI(modIndex);
   ModelSupport::buildPlane(SMap,CI+2,Origin+Y*length,Y);  
   ModelSupport::buildPlane(SMap,CI+22,Origin+Y*(length-alThick),Y);  
   for(int i=0;i<9;i++)
@@ -297,15 +286,15 @@ ConicModerator::createLinks()
 
   const double TT(alThick+thick);
   FixedComp::setConnect(0,Origin-Y*TT,-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(conicIndex+81));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(modIndex+81));
 
   FixedComp::setConnect(1,Origin+Y*length,Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(conicIndex+2));
+  FixedComp::setLinkSurf(1,SMap.realSurf(modIndex+2));
 
-  FixedComp::setLinkSurf(2,-SMap.realSurf(conicIndex+83));
-  FixedComp::setLinkSurf(3,SMap.realSurf(conicIndex+84));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(conicIndex+85));
-  FixedComp::setLinkSurf(5,SMap.realSurf(conicIndex+86));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(modIndex+83));
+  FixedComp::setLinkSurf(3,SMap.realSurf(modIndex+84));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(modIndex+85));
+  FixedComp::setLinkSurf(5,SMap.realSurf(modIndex+86));
 
   return;
 }
@@ -320,50 +309,50 @@ ConicModerator::createObjects(Simulation& System)
   ELog::RegMethod RegA("ConicModerator","createObjects");
 
   std::string Out;  
-  Out=ModelSupport::getComposite(SMap,conicIndex," 81 -2 83 -84 85 -86 ");
+  Out=ModelSupport::getComposite(SMap,modIndex," 81 -2 83 -84 85 -86 ");
   addOuterSurf(Out);
 
-  Out=ModelSupport::getComposite(SMap,conicIndex," 1 -2 3 -4 5 -6");
+  Out=ModelSupport::getComposite(SMap,modIndex," 1 -2 3 -4 5 -6");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,conicIndex,
+  Out=ModelSupport::getComposite(SMap,modIndex,
 				 "-2 11 13 -14 15 -16 (-1:-3:4:-5:6 )");
   System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
 
-  Out=ModelSupport::getComposite(SMap,conicIndex,
+  Out=ModelSupport::getComposite(SMap,modIndex,
 				 "-22 21 23 -24 25 -26 (-11:-13:14:-15:16 )");
   System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
 
-  Out=ModelSupport::getComposite(SMap,conicIndex,
+  Out=ModelSupport::getComposite(SMap,modIndex,
 				 "-2 31 33 -34 35 -36 (-21:-23:24:-25:26 )");
   System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
 
   // Head piece
-  Out=ModelSupport::getComposite(SMap,conicIndex,
+  Out=ModelSupport::getComposite(SMap,modIndex,
 				 "-2 22 23 -24 25 -26 (-13:14:-15:16)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
 
   // Vac layer:
-  Out=ModelSupport::getComposite(SMap,conicIndex,
+  Out=ModelSupport::getComposite(SMap,modIndex,
 				 "-2 41 43 -44 45 -46 (-31:-33:34:-35:36 )");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
   // Water Inner Al
-  Out=ModelSupport::getComposite(SMap,conicIndex,
+  Out=ModelSupport::getComposite(SMap,modIndex,
 				 "-2 51 53 -54 55 -56 (-41:-43:44:-45:46 )");
   System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
   // Water Inner
-  Out=ModelSupport::getComposite(SMap,conicIndex,
+  Out=ModelSupport::getComposite(SMap,modIndex,
 				 "-2 61 63 -64 65 -66 (-51:-53:54:-55:56 )");
   System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));
 
   // Water Inner
-  Out=ModelSupport::getComposite(SMap,conicIndex,
+  Out=ModelSupport::getComposite(SMap,modIndex,
 				 "-2 71 73 -74 75 -76 (-61:-63:64:-65:66 )");
   System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
 
   // Final void
-  Out=ModelSupport::getComposite(SMap,conicIndex,
+  Out=ModelSupport::getComposite(SMap,modIndex,
 				 "-2 81 83 -84 85 -86 (-71:-73:74:-75:76 )");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
@@ -409,7 +398,7 @@ ConicModerator::getLayerString(const size_t sideIndex,
   if (layerIndex>=4) 
     throw ColErr::IndexError<size_t>(layerIndex,4,"layer");
 
-  const int SI(conicIndex+static_cast<int>(layerIndex)*10);
+  const int SI(modIndex+static_cast<int>(layerIndex)*10);
   std::ostringstream cx;
   switch(sideIndex)
     {
@@ -432,7 +421,7 @@ ConicModerator::getLayerSurf(const size_t layerIndex,
   if (layerIndex>=4) 
     throw ColErr::IndexError<size_t>(layerIndex,4,"layer");
   
-  const int SI(conicIndex+static_cast<int>(layerIndex)*10);
+  const int SI(modIndex+static_cast<int>(layerIndex)*10);
   switch(sideIndex)
     {
     }

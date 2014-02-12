@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   essBuildInc/makeESS.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,14 +23,14 @@
 #define essSystem_makeESS_h
 
 
+namespace constructSystem
+{
+  class ModBase;
+}
+
 namespace moderatorSystem
 {
   class FlightLine;
-}
-
-namespace ts1System 
-{
-  class ProtonVoid;
 }
 
 /*!
@@ -49,7 +49,6 @@ namespace essSystem
   class BeRef;
   class essMod;
   class ConicModerator;
-  class CylModerator;
   class SupplyPipe;
   class CylPreMod;
   class BulkModule;
@@ -76,15 +75,17 @@ class makeESS
   boost::shared_ptr<BeamMonitor> BMon;   ///< Beam Monitor
 
   // ASSEMBLY 1:
-  boost::shared_ptr<essMod> LowMod;  ///< Lower Mod
-  boost::shared_ptr<essMod> LowModB;  ///< Lower Mod [if needed]
+  /// Primary Lower Mod
+  boost::shared_ptr<constructSystem::ModBase> LowMod;  
+  /// Secondary  Lower Mod [if needed]
+  boost::shared_ptr<constructSystem::ModBase> LowModB; 
   boost::shared_ptr<moderatorSystem::FlightLine> LowAFL;  ///< Lower Mode FL
   boost::shared_ptr<moderatorSystem::FlightLine> LowBFL;  ///< Lower Mode FL
   boost::shared_ptr<CylPreMod> LowPre;          ///< Upper Mod (Pre)
   boost::shared_ptr<SupplyPipe> LowSupplyPipe;  ///< Lower supply 
   boost::shared_ptr<SupplyPipe> LowReturnPipe;  ///< Lower supply 
 
-  boost::shared_ptr<CylModerator> TopMod;   ///< Upper Mod
+  boost::shared_ptr<constructSystem::ModBase> TopMod;   ///< Upper Mod
   boost::shared_ptr<moderatorSystem::FlightLine> TopAFL;  ///< Upper Mode FL
   boost::shared_ptr<moderatorSystem::FlightLine> TopBFL;  ///< Upper Mode FL
   boost::shared_ptr<CylPreMod> TopPre;  ///< Upper Mod (Pre)
@@ -100,9 +101,14 @@ class makeESS
   void topFlightLines(Simulation&);
   void lowFlightLines(Simulation&);
   void createGuides(Simulation&);
-  void buildLowMod(Simulation&);
-  void buildConicMod(Simulation&);
+
+  void buildLowMod(Simulation&,const std::string&);
+  void buildLowCylMod(Simulation&);
+  void buildLowConicMod(Simulation&);
   void buildLayerMod(Simulation&);
+
+  void buildTopCylMod(Simulation&);
+
   void makeTarget(Simulation&,const mainSystem::inputParam&);
 
  public:

@@ -76,8 +76,9 @@
 #include "BeRef.h"
 #include "ProtonTube.h"
 #include "BeamMonitor.h"
-#include "essMod.h"
-#include "CylModerator.h"
+#include "ModBase.h"
+#include "ConicInfo.h"
+#include "CylMod.h"
 #include "BlockAddition.h"
 #include "CylPreMod.h"
 #include "SupplyPipe.h"
@@ -103,7 +104,6 @@ makeESS::makeESS() :
   LowSupplyPipe(new SupplyPipe("LSupply")),
   LowReturnPipe(new SupplyPipe("LReturn")),
 
-  TopMod(new CylModerator("TopMod")),
   TopAFL(new moderatorSystem::FlightLine("TopAFlight")),
   TopBFL(new moderatorSystem::FlightLine("TopBFlight")),
   TopPre(new CylPreMod("TopPre")),
@@ -124,7 +124,6 @@ makeESS::makeESS() :
   OR.addObject(LowAFL);
   OR.addObject(LowBFL);
   OR.addObject(LowPre);
-  OR.addObject(TopMod);
   OR.addObject(TopAFL);
   OR.addObject(TopBFL);
   OR.addObject(TopPre);
@@ -245,45 +244,6 @@ makeESS::makeTarget(Simulation& System,
   return;
 }
 
-void
-makeESS::buildConicMod(Simulation& System)
-  /*!
-    Builds the conic moderator
-    \param System :: simulation to add
-  */
-{
-  ELog::RegMethod RegA("makeESS","buildConicMod");
-
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
-  LowMod=boost::shared_ptr<essMod>(new ConicModerator("LowConeMod"));
-  OR.addObject(LowMod);
-    
-  LowMod->addInsertCell(Reflector->getMainCell());
-  LowMod->createAll(System,*Reflector);
-
-  std::string Out=Reflector->getLinkComplement(0);
-  LowAFL->addBoundarySurf("inner",Out);  
-  LowAFL->addBoundarySurf("outer",Out);  
-  LowAFL->createAll(System,1,*LowMod);
-  attachSystem::addToInsertSurfCtrl(System,*Reflector,
-  				    LowAFL->getKey("outer"));
-    
-  LowModB=boost::shared_ptr<essMod>(new ConicModerator("LowConeModB"));
-  OR.addObject(LowModB);
-  LowModB->addInsertCell(Reflector->getMainCell());
-  LowModB->createAll(System,*Reflector);
-  attachSystem::addToInsertSurfCtrl(System,*LowModB,*LowMod);
-  Out=Reflector->getLinkComplement(0);
-  LowBFL->addBoundarySurf("inner",Out);  
-  LowBFL->addBoundarySurf("outer",Out);  
-  LowBFL->createAll(System,1,*LowModB);
-  attachSystem::addToInsertSurfCtrl(System,*Reflector,
-  				    LowBFL->getKey("outer"));
-  return;
-}
-
 void 
 makeESS::createGuides(Simulation& System)
   /*!
@@ -310,17 +270,41 @@ makeESS::createGuides(Simulation& System)
 }
 
 void
-makeESS::buildLowMod(Simulation& System)
+makeESS::buildLowMod(Simulation& System,
+		     const std::string& ModType)
   /*!
     Build the lower moderators
     \param System :: Simulation to build
+    \param ModType :: Moderator Type
   */
 {
   ELog::RegMethod RegA("makeESS","buildLowMod");
 
+  if (ModType=="Cone")
+    {
+      buildLowConicMod(System);
+    }
+  else 
+    {
+      buildLowCylMod(System);
+      lowFlightLines(System);
+    }
+  return;
+}
+
+void
+makeESS::buildLowCylMod(Simulation& System)
+  /*!
+    Build the standard moderators
+    \param System :: Stardard simulation
+  */
+{
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-  LowMod=boost::shared_ptr<essMod>(new CylModerator("LowMod"));
+
+  LowMod=boost::shared_ptr<constructSystem::ModBase>
+    (new constructSystem::CylMod("LowMod"));
+
   OR.addObject(LowMod);
 
   LowMod->addInsertCell(Reflector->getMainCell());
@@ -330,6 +314,76 @@ makeESS::buildLowMod(Simulation& System)
   LowPre->addInsertCell("BlockA",Reflector->getMainCell());
   LowPre->addInsertCell("BlockB",Reflector->getMainCell());
   LowPre->createAll(System,*LowMod);
+  return;
+}
+
+
+void
+makeESS::buildLowConicMod(Simulation& System)
+  /*!
+    Builds the lower conic moderator
+    \param System :: simulation to add
+  */
+{
+  ELog::RegMethod RegA("makeESS","buildLowConicMod");
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+  
+  LowMod=boost::shared_ptr<constructSystem::ModBase>
+    (new ConicModerator("LowConeMod"));
+  OR.addObject(LowMod);
+    
+  LowMod->addInsertCell(Reflector->getMainCell());
+  LowMod->createAll(System,*Reflector);
+
+  std::string Out=Reflector->getLinkComplement(0);
+  LowAFL->addBoundarySurf("inner",Out);  
+  LowAFL->addBoundarySurf("outer",Out);  
+  LowAFL->createAll(System,1,*LowMod);
+  attachSystem::addToInsertSurfCtrl(System,*Reflector,
+  				    LowAFL->getKey("outer"));
+    
+  LowModB=boost::shared_ptr<constructSystem::ModBase>
+    (new ConicModerator("LowConeModB"));
+  OR.addObject(LowModB);
+  LowModB->addInsertCell(Reflector->getMainCell());
+  LowModB->createAll(System,*Reflector);
+  attachSystem::addToInsertSurfCtrl(System,*LowModB,*LowMod);
+  Out=Reflector->getLinkComplement(0);
+  LowBFL->addBoundarySurf("inner",Out);  
+  LowBFL->addBoundarySurf("outer",Out);  
+  LowBFL->createAll(System,1,*LowModB);
+  attachSystem::addToInsertSurfCtrl(System,*Reflector,
+  				    LowBFL->getKey("outer"));
+  return;
+}
+
+void
+makeESS::buildTopCylMod(Simulation& System)
+  /*!
+    Build the standard moderators
+    \param System :: Stardard simulation
+  */
+{
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  TopMod=boost::shared_ptr<constructSystem::ModBase>
+    (new constructSystem::CylMod("TopMod"));
+
+  OR.addObject(TopMod);
+
+  TopMod->addInsertCell(Reflector->getMainCell());
+  TopMod->createAll(System,*Reflector);
+
+  TopPre->addInsertCell("Main",Reflector->getMainCell());
+  TopPre->addInsertCell("BlockA",Reflector->getMainCell());
+  TopPre->addInsertCell("BlockB",Reflector->getMainCell());
+  TopPre->createAll(System,*TopMod);
+
+  topFlightLines(System);
+
   return;
 }
 
@@ -363,26 +417,12 @@ makeESS::build(Simulation* SimPtr,
   const std::string lowModType=IParam.getValue<std::string>("lowMod");
   const std::string topModType=IParam.getValue<std::string>("topMod");
 
-  if (lowModType=="Cone")
-    {
-      buildConicMod(*SimPtr);
-    }
-  else
-    {
-      buildLowMod(*SimPtr);
-      lowFlightLines(*SimPtr);
-    }
+  buildLowMod(*SimPtr,lowModType);
+
   Bulk->addFlightUnit(*SimPtr,*LowAFL);
   Bulk->addFlightUnit(*SimPtr,*LowBFL);  
 
-  TopMod->addInsertCell(Reflector->getMainCell());
-  TopMod->createAll(*SimPtr,*Reflector);
-
-  TopPre->addInsertCell("Main",Reflector->getMainCell());
-  TopPre->addInsertCell("BlockA",Reflector->getMainCell());
-  TopPre->addInsertCell("BlockB",Reflector->getMainCell());
-  TopPre->createAll(*SimPtr,*TopMod);
-  topFlightLines(*SimPtr);
+  buildTopCylMod(*SimPtr);
 
   Bulk->addFlightUnit(*SimPtr,*TopAFL);
   Bulk->addFlightUnit(*SimPtr,*TopBFL);
@@ -420,5 +460,5 @@ makeESS::build(Simulation* SimPtr,
 }
 
 
-}   // NAMESPACE ts1System
+}   // NAMESPACE essSystem
 

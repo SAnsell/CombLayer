@@ -35,18 +35,10 @@ namespace essSystem
   \brief ConicModerator [insert object]
 */
 
-class ConicModerator : public essMod
+class ConicModerator : public constructSystem::ModBase
 {
  private:
   
-  const int conicIndex;      ///< Index of surface offset
-  int cellIndex;            ///< Cell index
-
-  double xStep;             ///< X Step
-  double yStep;             ///< Y Step
-  double zStep;             ///< Z Step
-  double xyAngle;           ///< xy rotation angle
-  double zAngle;            ///< z rotation angle
 
   double IWidth;             ///< Horrizontal [small dist]
   double IHeight;            ///< Vertical [small dist]

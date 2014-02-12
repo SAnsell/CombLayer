@@ -47,7 +47,7 @@
 
 #include "ConicInfo.h"
 
-namespace ts1System
+namespace constructSystem
 {
 
 ConicInfo::ConicInfo(const Geometry::Vec3D& C,const Geometry::Vec3D& A,

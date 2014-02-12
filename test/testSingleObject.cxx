@@ -270,7 +270,7 @@ testSingleObject::createObj()
 
   World::createOuterObjects(ASim);
   
-  ts1System::CylMod A("H2CylMod");
+  constructSystem::CylMod A("H2CylMod");
   A.addInsertCell(74123);
   A.createAll(ASim,World::masterOrigin());
 

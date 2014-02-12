@@ -35,19 +35,10 @@ namespace essSystem
   \brief Specialized for a cylinder moderator
 */
 
-class CylModerator : public essMod
+class CylModerator : public constructSystem::ModBase
 {
  protected:
   
-  const int modIndex;             ///< Index of surface offset
-  int cellIndex;                  ///< Cell index
-
-  double xStep;                   ///< X step
-  double yStep;                   ///< Y step
-  double zStep;                   ///< Z step
-  double xyAngle;                 ///< xy rotation angle
-  double zAngle;                  ///< z rotation angle
-
   std::vector<double> radius;         ///< cylinder radii
   std::vector<double> height;         ///< Full heights
   std::vector<int> mat;               ///< Materials
