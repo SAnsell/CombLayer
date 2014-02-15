@@ -95,7 +95,8 @@ SupplyPipe::SupplyPipe(const SupplyPipe& A) :
   attachSystem::FixedComp(A),
   pipeIndex(A.pipeIndex),cellIndex(A.cellIndex),
   NSegIn(A.NSegIn),Radii(A.Radii),Mat(A.Mat),Temp(A.Temp),
-  ActiveFlag(A.ActiveFlag),Coaxial(A.Coaxial),PPts(A.PPts),
+  ActiveFlag(A.ActiveFlag),Coaxial(A.Coaxial),
+  layerOffset(A.layerOffset),PPts(A.PPts),
   nAngle(A.nAngle)
   /*!
     Copy constructor
@@ -121,6 +122,7 @@ SupplyPipe::operator=(const SupplyPipe& A)
       Temp=A.Temp;
       ActiveFlag=A.ActiveFlag;
       Coaxial=A.Coaxial;
+      layerOffset=A.layerOffset;
       PPts=A.PPts;
       nAngle=A.nAngle;
     }
@@ -218,18 +220,18 @@ SupplyPipe::insertInlet(const attachSystem::FixedComp& FC,
  
   if (!LC)
     throw ColErr::CastError<void>(0,"FixedComp to LayerComp");
-
-  Geometry::Vec3D Pt= Origin+X*PPts[0].X()+
-    Y*PPts[0].Y()+Z*PPts[0].Z();
+  layerOffset=X*PPts[0].X()+Z*PPts[0].Z();
+  Geometry::Vec3D Pt= Origin+layerOffset+Y*PPts[0].Y();
 
   // GET Z Point from layer
   Geometry::Vec3D PtZ=LC->getSurfacePoint(0,lSideIndex);
+  PtZ+=layerOffset;
   const int commonSurf=LC->getCommonSurf(lSideIndex);
   const std::string commonStr=(commonSurf) ? 		       
     StrFunc::makeString(commonSurf) : "";
   if (PtZ!=Pt)
     Coaxial.addPoint(Pt);
-  
+
   const size_t NL(LC->getNLayers());
   Coaxial.addSurfPoint
     (PtZ,LC->getLayerString(0,lSideIndex),commonStr);
@@ -237,14 +239,14 @@ SupplyPipe::insertInlet(const attachSystem::FixedComp& FC,
   for(size_t index=2;index<NL;index+=2)
     {
       PtZ=LC->getSurfacePoint(index,lSideIndex);
-      if (PtZ!=Pt)
-	Coaxial.addSurfPoint
-	  (PtZ,LC->getLayerString(index,lSideIndex),commonStr);
+      PtZ+=layerOffset;
+      Coaxial.addSurfPoint
+	(PtZ,LC->getLayerString(index,lSideIndex),commonStr);
+
     }
 
   for(size_t i=0;i<Radii.size();i++)
     Coaxial.addRadius(Radii[i],Mat[i],Temp[i]);
-
 
   return;
 }
@@ -265,7 +267,9 @@ SupplyPipe::addExtraLayer(const attachSystem::LayerComp& LC,
 
   const std::string commonStr=(commonSurf) ? 		       
     StrFunc::makeString(commonSurf) : "";
-  const Geometry::Vec3D PtZ=LC.getSurfacePoint(NL-1,lSideIndex);
+  const Geometry::Vec3D PtZ=
+    LC.getSurfacePoint(NL-1,lSideIndex)+
+    layerOffset;
   Coaxial.addSurfPoint
     (PtZ,LC.getLayerString(NL-1,lSideIndex),commonStr);
 

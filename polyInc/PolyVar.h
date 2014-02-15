@@ -2,7 +2,7 @@
   CombLayer : MNCPX Input builder
  
  * File:   polyInc/PolyVar.h
-*
+ *
  * Copyright (c) 2004-2013 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify

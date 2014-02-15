@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   test/testSingleObject.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -90,8 +90,7 @@ testSingleObject::testSingleObject()
   /*!
     Constructor
   */
-{
-}
+{}
 
 testSingleObject::~testSingleObject() 
   /*!
@@ -268,9 +267,9 @@ testSingleObject::createObj()
 
   cylModVariables(ASim.getDataBase());
 
-  World::createOuterObjects(ASim);
-  
+  World::createOuterObjects(ASim);  
   constructSystem::CylMod A("H2CylMod");
+
   A.addInsertCell(74123);
   A.createAll(ASim,World::masterOrigin());
 
@@ -318,10 +317,9 @@ testSingleObject::testLineTrack()
    */
 {
   ELog::RegMethod RegA("testSingleObject","testLineTrack");
-
   initSim();
   createObj();
-  
+ 
   typedef boost::tuple<Geometry::Vec3D,Geometry::Vec3D,int,double> TTYPE;
   std::vector<TTYPE> Tests;
   // First test:

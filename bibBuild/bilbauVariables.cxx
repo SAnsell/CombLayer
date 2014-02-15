@@ -96,7 +96,7 @@ BilbauVariables(FuncDataBase& Control)
 
 
   Control.addVariable("RotorWheelBeMat","Berilio"); 	//Be S-200F
-  Control.addVariable("RotorWheelWallMat","Aluminium6061"); 	// Al-6061
+  Control.addVariable("RotorWheelWallMat","Aluminium"); 	// Al-6061
   Control.addVariable("RotorWheelWaterMat","H2O");
   Control.addVariable("RotorWheelVesselMat","Stainless304"); 
   Control.addVariable("RotorWheelPolyMat","B-Poly"); //shielding for main drive
@@ -281,9 +281,9 @@ BilbauVariables(FuncDataBase& Control)
   Control.addVariable("ColdModFrontGap",4.0);     //
   Control.addVariable("ColdModBackGap",2.0);      //
   Control.addVariable("ColdModWaterMat",11);      // water H2O
-  Control.addVariable("ColdModModMat",79);        // Metano a 20 k
+  Control.addVariable("ColdModModMat","CH4inFoam");        // Metano a 20 k
   Control.addVariable("ColdModModTemp",20.0);        // Metano a 20 k
-  Control.addVariable("ColdModWallMat",78);        // aluminium 6061
+  Control.addVariable("ColdModWallMat","Aluminium");        // aluminium 6061
   Control.addVariable("ColdModPremThick",1.5);      // Premoderator
   Control.addVariable("ColdModWallPremThick",0.2);  //
   Control.addVariable("ColdModWaterTemp",300.0);     // water H2O
@@ -335,7 +335,7 @@ BilbauVariables(FuncDataBase& Control)
   Control.addVariable("BeFilterForwardLength",20.0);
   Control.addVariable("BeFilterForwardBeMat","Be300K"); // Beryllium at RT
   Control.addVariable("BeFilterForwardBeTemp",75.0);      // be temp
-  Control.addVariable("BeFilterForwardWallMat","Aluminium6061");   // aluminium
+  Control.addVariable("BeFilterForwardWallMat","Aluminium");   // aluminium
 
   // Dont like this -- could be used off link points more generically?
   Control.Parse("ColdModWidth+2.0");
@@ -360,8 +360,8 @@ BilbauVariables(FuncDataBase& Control)
   Control.addVariable("ColdMod2FrontGap",4.0);     //
   Control.addVariable("ColdMod2BackGap",2.0);      //
   Control.addVariable("ColdMod2WaterMat",11);      // water H2O
-  Control.addVariable("ColdMod2ModMat",79);      // Methane at 20I
-  Control.addVariable("ColdMod2WallMat",78);        // aluminium 6061
+  Control.addVariable("ColdMod2ModMat","CH4inFoam");      // Methane at 20I
+  Control.addVariable("ColdMod2WallMat","Aluminium");        // aluminium 6061
   Control.addVariable("ColdMod2WaterTemp",20.0);      // water H2O
   Control.addVariable("ColdMod2PremThick",1.5);      // Premoderator
   Control.addVariable("ColdMod2WallPremThick",0.2);        //
@@ -381,7 +381,7 @@ BilbauVariables(FuncDataBase& Control)
   Control.addVariable("BeFilterBackwardLength",20.0);
   Control.addVariable("BeFilterBackwardBeMat","Be77K");  // Beryllium 
   Control.addVariable("BeFilterBackwardBeTemp",75.0);      // be temp
-  Control.addVariable("BeFilterBackwardWallMat","Aluminium6061");  // aluminium 6063
+  Control.addVariable("BeFilterBackwardWallMat","Aluminium");  // aluminium 6063
   // Dont like this -- could be used off link points more generically?
   Control.Parse("ColdMod2Width+2*ColdMod2PremThick");
   Control.addVariable("BeFilterBackwardWidth");

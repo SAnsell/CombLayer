@@ -52,6 +52,7 @@ class SupplyPipe : public attachSystem::FixedComp
   std::vector<size_t> ActiveFlag;     ///< Active flag
 
   ModelSupport::PipeLine Coaxial;      ///< Global outer
+  Geometry::Vec3D layerOffset;         ///< Offset of layer
   std::vector<Geometry::Vec3D> PPts;   ///< Pipe points
   size_t nAngle;                       ///< Number of angle segments
   

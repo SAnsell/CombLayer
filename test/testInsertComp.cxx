@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   test/testInsertComp.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,11 +41,9 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "BnId.h"
-#include "Triple.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Transform.h"
 #include "Surface.h"
 #include "Rules.h"
 #include "InsertComp.h"
@@ -122,7 +120,7 @@ testInsertComp::testAddition()
   A.addInterSurf(-7);
   A.addInterSurf(23);
   A.addInterSurf(33);
-  ELog::EM<<"Surf == "<<A.getExclude()<<ELog::endDiag;
+
   return 0;
 }
 

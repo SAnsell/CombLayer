@@ -54,17 +54,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
-#include "Triple.h"
-#include "NList.h"
-#include "NRange.h"
-#include "Tally.h"
-#include "cellFluxTally.h"
-#include "pointTally.h"
-#include "heatTally.h"
-#include "tallyFactory.h"
-#include "Transform.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "Quadratic.h"
@@ -75,26 +64,11 @@
 #include "FItem.h"
 #include "FuncDataBase.h"
 #include "SurInter.h"
-#include "BnId.h"
-#include "Acomp.h"
-#include "Algebra.h"
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
 #include "RemoveCell.h"
-#include "WForm.h"
-#include "weightManager.h"
 #include "ObjSurfMap.h"
-#include "ModeCard.h"
-#include "PhysCard.h"
-#include "PhysImp.h"
-#include "LSwitchCard.h"
-#include "KGroup.h"
-#include "SrcData.h"
-#include "SrcItem.h"
-#include "Source.h"
-#include "KCode.h"
-#include "PhysicsCards.h"
 #include "ReadFunctions.h"
 #include "surfRegister.h"
 #include "ModelSupport.h"
@@ -102,7 +76,6 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "LinearComp.h"
 #include "ContainedComp.h"
 #include "World.h"
 
@@ -192,6 +165,7 @@ testSimpleObj::testCreateObj()
 {
   ELog::RegMethod RegA("testSimpleObj","testCreateObj");
 
+  initSim();
   World::createOuterObjects(ASim);
   
   testSystem::simpleObj A("simple");
@@ -223,6 +197,7 @@ testSimpleObj::testRotateAngle()
 {
   ELog::RegMethod RegA("testSimpleObj","testAngleRotate");
 
+  initSim();
   World::createOuterObjects(ASim);
   
   testSystem::simpleObj A("simpleBase");

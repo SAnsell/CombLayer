@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   t1Build/refPlate.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,16 +43,10 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
-#include "surfDIter.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
@@ -63,16 +57,12 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
-#include "shutterBlock.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "generateSurf.h"
 #include "objectRegister.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "LinearComp.h"
 #include "ContainedComp.h"
 
 #include "refPlate.h"
@@ -161,13 +151,10 @@ refPlate::setOrigin(const attachSystem::FixedComp& FC,
   */
 {
   ELog::RegMethod RegA("refPlate","setOrigin(FC,size_t)");
-  const masterRotate& MR=masterRotate::Instance();
   
   Origin=FC.getLinkPt(Index);
   Y= -FC.getLinkAxis(Index);
   SN[2]= -FC.getLinkSurf(Index);
-  ELog::EM<<"Origin "<<Index<<" "<<SN[2]<<ELog::endDebug;
-  ELog::EM<<"Org == "<<MR.calcRotate(Origin)<<ELog::endDebug;
 
   FixedComp::setLinkSurf(2,-SN[2]);
   FixedComp::setConnect(2,Origin,-Y);
@@ -223,8 +210,7 @@ refPlate::setPlane(const std::string& dirName,
     \param LIndex :: Link surface index 
   */
 {
-  ELog::RegMethod RegA("refPlate","setPlane(string,index)");
-
+  ELog::RegMethod RegA("refPlate","setPlane(string,FC)");
 
   // Calculate the sense of the surface:
   const size_t DIndex=dirType(dirName);
@@ -235,8 +221,6 @@ refPlate::setPlane(const std::string& dirName,
   FixedComp::setConnect(DIndex,FC.getLinkPt(LIndex),
 			-FC.getLinkAxis(LIndex)*surfSwap);
   FixedComp::setLinkSurf(DIndex,-SN[DIndex]);
-
-  ELog::EM<<"Surface number["<<dirName<<" == "<<SN[DIndex]<<ELog::endDebug;
 
   planeFlag |= (DIndex) ? 2 << (DIndex-1) : 1;            
     
@@ -296,7 +280,7 @@ refPlate::setPlane(const std::string& dirName,
   FixedComp::setConnect(DIndex,Pt-Axis*D,-Axis);
   ModelSupport::buildPlane(SMap,pIndex+static_cast<int>(DIndex),
 			   Pt-Axis*D,-Axis);
-  ELog::EM<<"Connect point == "<<Pt-Axis*D<<ELog::endDebug;
+
   SN[DIndex]= -(pIndex+static_cast<int>(DIndex));
   FixedComp::setLinkSurf(DIndex,pIndex+static_cast<int>(DIndex));
   planeFlag |= (DIndex) ? 2 << (DIndex-1) : 1;            
@@ -315,7 +299,6 @@ refPlate::createObjects(Simulation& System)
   std::ostringstream cx;
   for(size_t i=0;i<6;i++)
     cx<<SN[i]<<" ";
-  ELog::EM<<"Cx -- = "<<cx.str()<<ELog::endDebug;
 
   std::string Out=cx.str();
   addOuterSurf(Out);

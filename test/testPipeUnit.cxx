@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   test/testPipeUnit.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,7 +45,6 @@
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "Triple.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -63,10 +62,6 @@
 #include "Algebra.h"
 #include "Line.h"
 #include "Qhull.h"
-#include "NRange.h"
-#include "NList.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -105,13 +100,45 @@ testPipeUnit::initSim()
   */
 {
   ASim.resetAll();
-  // createSurfaces();
-  // createObjects();
-  // ASim.createObjSurfMap();
+  createSurfaces();
+  createObjects();
+  ASim.createObjSurfMap();
   return;
 }
 
+void 
+testPipeUnit::createSurfaces()
+  /*!
+    Create the surface list
+   */
+{
+  ELog::RegMethod RegA("testPipeUnit","createSurfaces");
 
+  ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
+  
+  // Outer sphere
+  SurI.createSurface(100,"so 50");
+  
+  return;
+}
+
+void
+testPipeUnit::createObjects()
+  /*!
+    Create Object for test
+  */
+{
+  ELog::RegMethod RegA("testPipeUnit","createObjects");
+
+  std::string Out;
+  int cellIndex(1);
+  const int surIndex(0);
+
+  Out=ModelSupport::getComposite(surIndex,"100");
+  ASim.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+
+  return;
+}
 
 int 
 testPipeUnit::applyTest(const int extra)

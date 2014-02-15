@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   test/testObjectRegister.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,13 +47,8 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Transform.h"
 #include "Surface.h"
 #include "Rules.h"
-#include "Debug.h"
-#include "BnId.h"
-#include "Acomp.h"
-#include "Algebra.h"
 #include "surfIndex.h"
 #include "HeadRule.h"
 #include "Object.h"
@@ -62,10 +57,6 @@
 #include "AttachSupport.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "ContainedComp.h"
-#include "ContainedGroup.h"
-#include "ExcludedComp.h"
-#include "simpleObj.h"
 #include "objectRegister.h"
 
 #include "testFunc.h"
@@ -167,6 +158,7 @@ testObjectRegister::testGetObject()
 
   boost::shared_ptr<attachSystem::FixedComp> 
     A(new attachSystem::FixedComp("A",3));
+  OR.cell("A");
   OR.addObject(A);
 
 

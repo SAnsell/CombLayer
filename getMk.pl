@@ -6,7 +6,7 @@ use getMake;
 use strict;
 
 ## EXECUTABLES
-my @masterprog=("fullBuild","ess","muBeam","bnct",
+my @masterprog=("fullBuild","ess","muBeam","bnct","bilbau",
 		"sns","t1Real","t1MarkII","testMain"); 
 
 my @noncompile=("bilbau","clayer","cuBuild","d4c","detectSim",
@@ -84,7 +84,10 @@ $gM->addIncDir(\@incdir);
 #	      "process","support","test","lensModel");                  
 
 
-$gM->addDepUnit("bilbau",   [2,10,38,0,27,18,32,25,14,21,34,6,7,37,30,22,11,29,40,41,25,15,24,0,42,28,33,39,16,1,38,4]);
+# $gM->addDepUnit("bilbau",   [2,10,38,0,27,18,32,25,14,21,34,6,7,37,30,22,11,29,40,41,25,15,24,0,42,28,33,39,16,1,38,4]);
+
+
+$gM->addDepUnit("bilbau", [2,4,38,5,36,17,23,4,43,6,7,37,30,11,35,0,27,18,29,32,25,14,21,15,34,24,0,41,42,28,33,40,39,22,16,1,38,28]);
 
 $gM->addDepUnit("pressure", [38,43,0,25,16,14,21,5,25,24,27,15,34,41,42,28,18,29,38,39,22,1,38]);
 $gM->addDepUnit("divide",   [44,38,5,4,43,0,27,25,14,21,25,24,0,15,18,29,41,42,28,33,39,22,16,1,38]);

@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   test/testSolveValues.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -123,12 +123,11 @@ testSolveValues::testGetSolutions()
   
   // Poly A/B/C number of solutions : Sum of solutions
   typedef boost::tuple<std::string,std::string,
-		      std::string,int,Geometry::Vec3D> TTYPE;
+		       std::string,size_t,double> TTYPE;
 
   std::vector<TTYPE> Tests;
 
-  Tests.push_back(TTYPE(
-			"-0.69465837z-0.7193398y-379.108596",
+  Tests.push_back(TTYPE("-0.69465837z-0.7193398y-379.108596",
 
 			"0.517449748z^2+(-0.999390827y+21.8953305)z+"
 			"0.482550252y^2-21.1440748y+x^2+52.575x+920.402005",
@@ -136,59 +135,79 @@ testSolveValues::testGetSolutions()
 			"0.517780408z^2+(-0.998706012y-0.0363556101x+"
 			"4.60265241)z+0.482904825y^2+"
 			"(-0.0376473363x-4.50181022)y+"
-			"0.999314767x^2+1.5680273x-389.022646",
-			
-			2,
-			Geometry::Vec3D(0,0,0)));
+			"0.999314767x^2+1.5680273x-389.022646",			
+			2,1e-2));
 
-  Tests.push_back(TTYPE("x-23","y-10","z-30",1,Geometry::Vec3D(23,10,30)));
 
-   Tests.push_back(TTYPE("x-23","y-10","z^2+y^2-1108.89",2,
-			Geometry::Vec3D(46,20,0.0)));
+  Tests.push_back(TTYPE("x-23","y-10","z-30",1,1e-2));
+
+  Tests.push_back(TTYPE("x-23","y-10","z^2+y^2-1108.89",2,1e-2));
 
   Tests.push_back(TTYPE("z^2+y^2+10y+x^2","z^2+y^2-10y+x^2","z^2+y^2+x^2-10x",1,
-			Geometry::Vec3D(0,0,0)));
+			1e-2));
 
   Tests.push_back(TTYPE("-0.71934z+0.694658y+5.78095",
    			"-0.694658z-0.71934y-177.109",
    			"0.51745z^2+(-0.999391y+4.63118)z+0.48255y^2-4.47227y+x^2-95.7277",
-   			2,
-   			Geometry::Vec3D(0,-2*131.417,-2*118.872)));
+   			2,1e-2));
+
   
 
 
   PolyVar<3> FXYZ,GXYZ,HXYZ;
-  std::vector<TTYPE>::const_iterator vc;
+  std::vector<TTYPE>::const_iterator tc;
 
-  for(vc=Tests.begin();vc!=Tests.end();vc++)
+  for(tc=Tests.begin();tc!=Tests.end();tc++)
     {
-      FXYZ.read(vc->get<0>());
-      GXYZ.read(vc->get<1>());
-      HXYZ.read(vc->get<2>());
+      FXYZ.read(tc->get<0>());
+      GXYZ.read(tc->get<1>());
+      HXYZ.read(tc->get<2>());
       solveValues SV;
       SV.setEquations(FXYZ,GXYZ,HXYZ);
       SV.getSolution();      
 
       // Add up solutions: 
       const std::vector<Geometry::Vec3D>& Res=SV.getAnswers();
-      Geometry::Vec3D SumPt=
-	std::accumulate(Res.begin(),Res.end(),Geometry::Vec3D());
-  
-      Geometry::Vec3D Diff=SumPt - vc->get<4>();
-      if (static_cast<int>(Res.size())!=vc->get<3>() || 
-	  Diff.abs() > 1e-3 ) 
+
+
+      double sumResult(0.0);
+      for(size_t j=0;j<Res.size();j++)
 	{
-	  ELog::EM<<"Failed on test"<<(vc-Tests.begin())+1<<ELog::endCrit;
-	  ELog::EM<<"FXYZ =="<<FXYZ<<ELog::endDebug;
-	  ELog::EM<<"GXYZ =="<<GXYZ<<ELog::endDebug;
-	  ELog::EM<<"HXYZ =="<<HXYZ<<ELog::endDebug;
-	  ELog::EM<<"SumPT == "<<SumPt<<" ABS="<<Diff<<ELog::endDebug;
-	  ELog::EM<<" ABS="<<Diff.abs()<<" "<<vc->get<4>()<<ELog::endDebug;
-	  
+	  const Geometry::Vec3D& Item=Res[j];
+	  double sum(0.0);
+	  sum+=fabs(FXYZ.substitute(Item.X(),Item.Y(),Item.Z()));
+	  sum+=fabs(GXYZ.substitute(Item.X(),Item.Y(),Item.Z()));
+	  sum+=fabs(HXYZ.substitute(Item.X(),Item.Y(),Item.Z()));
+	  if (sum>sumResult)
+	    sumResult=sum;
+	}
+  
+      if (Res.size()!=tc->get<3>() || sumResult > tc->get<4>() ) 
+	{
+	  ELog::EM<<"Failed on test"<<(tc-Tests.begin())+1<<ELog::endCrit;
+	  ELog::EM<<"FXYZ =="<<FXYZ<<ELog::endDiag;
+	  ELog::EM<<"GXYZ =="<<GXYZ<<ELog::endDiag;
+	  ELog::EM<<"HXYZ =="<<HXYZ<<ELog::endDiag;
+	  ELog::EM<<"SumPT == "<<sumResult<<" Exp=="<<tc->get<4>()<<ELog::endDiag;
+
 	  ELog::EM<<"Results == ";
 	  copy(Res.begin(),Res.end(),
 	       std::ostream_iterator<Geometry::Vec3D>(ELog::EM.Estream()," : "));
 	  ELog::EM<<ELog::endDiag;
+
+	  for(size_t j=0;j<Res.size();j++)
+	    {
+	      const Geometry::Vec3D& Item=Res[j];
+	      ELog::EM<<"Solution "<<j+1<<ELog::endDiag;
+	      ELog::EM<<"FXYZ == "<<FXYZ.substitute(Item.X(),Item.Y(),Item.Z())
+		      <<ELog::endDiag;
+	      ELog::EM<<"GXYZ == "<<GXYZ.substitute(Item.X(),Item.Y(),Item.Z())
+		      <<ELog::endDiag;
+	      ELog::EM<<"HXYZ == "<<HXYZ.substitute(Item.X(),Item.Y(),Item.Z())
+		      <<ELog::endDiag;
+	      ELog::EM<<"----------------------"<<ELog::endDiag;
+
+	    }
 	  
 	  return -1;
 	}

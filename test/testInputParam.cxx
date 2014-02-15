@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   test/testInputParam.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -645,7 +645,7 @@ testInputParam::testWrite()
 			  " -f       flag       not-set :: \n"
 			  " -i       int        not-set ::  -- \n"
 			  " -x       xobj       not-set ::  --  -- (4.5) \n"
-			  " -y       yobj       not-set ::  --  -- (4.5) \n");
+			  " -y       yobj       set ::  10  20 (4.5) \n");
   
   inputParam A;
   A.regItem<double>("d","dbl");               // single double item
@@ -657,9 +657,9 @@ testInputParam::testWrite()
   std::vector<std::string> Names;
   Names.push_back("-y");
   Names.push_back("10.0");
-  
-  A.processMainInput(Names);
+  Names.push_back("20.0");
 
+  A.processMainInput(Names);
   std::ostringstream cx;
   A.write(cx);
   std::string Out=StrFunc::stripMultSpc(cx.str());

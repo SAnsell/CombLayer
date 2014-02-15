@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   test/testContained.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,10 +46,8 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Transform.h"
 #include "Surface.h"
 #include "Rules.h"
-#include "Debug.h"
 #include "BnId.h"
 #include "Acomp.h"
 #include "Algebra.h"
@@ -59,6 +57,8 @@
 #include "Qhull.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+
+#include "Debug.h"
 
 #include "testFunc.h"
 #include "testContained.h"
@@ -205,7 +205,8 @@ testContained::testAddSurfString()
 int
 testContained::testIsOuterLine()
   /*!
-    Test the line tracking through a cell 
+    Test the line tracking through a cell .
+    Determine if a line tracks the out cell component
     \retval 0 :: success / -ve on failure
   */
 {
@@ -220,7 +221,10 @@ testContained::testIsOuterLine()
 			Geometry::Vec3D(-2,0,0),Geometry::Vec3D(-1.2,0,0),0));
 
   Tests.push_back(TTYPE("3 -4 -107",
-			Geometry::Vec3D(-2,0,0),Geometry::Vec3D(-1.2,0,0),0));
+			Geometry::Vec3D(-2,0,0),Geometry::Vec3D(-1.2,0,0),1));
+
+  Tests.push_back(TTYPE("3 -4 -107",
+			Geometry::Vec3D(-0,-2,0),Geometry::Vec3D(0,-1.2,0),0));
 
   Tests.push_back(TTYPE("3 -4 -107",
 			Geometry::Vec3D(-1,0,0),Geometry::Vec3D(1,4,0),1));
@@ -238,7 +242,8 @@ testContained::testIsOuterLine()
       if (Res!=tc->get<3>())
 	{
 	  ELog::EM<<"Surface  == "<<tc->get<0>()<<ELog::endTrace;
-	  ELog::EM<<"Line == "<<tc->get<1>()<<" "<<tc->get<2>()<<ELog::endTrace;
+	  ELog::EM<<"Line == "<<tc->get<1>()<<" :: "
+		  <<tc->get<2>()<<ELog::endTrace;
 	  ELog::EM<<"Expect  == "<<tc->get<3>()<<ELog::endTrace;
 	  return -1;
 	}

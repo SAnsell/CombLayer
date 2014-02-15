@@ -144,7 +144,9 @@ CylMod::populate(const FuncDataBase& Control)
 
   double R,H,T;
   int M;
-  nLayers=Control.EvalVar<size_t>(keyName+"NLayers");   
+  nLayers=Control.EvalVar<size_t>(keyName+"NLayers");
+  if (nLayers==0) nLayers=1;  // Layers include midle
+
   for(size_t i=0;i<nLayers;i++)
     {
       if (i)
@@ -280,15 +282,17 @@ CylMod::createObjects(Simulation& System)
 
   const FuncDataBase& Control =System.getDataBase();
   const int cylFlag=Control.EvalDefVar<int>(keyName+"CylFlag",0);
-  ELog::EM<<"cylFlag = "<<cylFlag<<ELog::endDebug;
+
   std::string Out;
   // First make conics:
   int CI(modIndex+500);
   HeadRule OutUnit;
+
   for(size_t i=0;i<nConic;i++)
     {
       Out=ModelSupport::getComposite(SMap,modIndex,CI," -7 5 -6 -7M 1M");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,Conics[i].getMat(),temp[0],Out));
+      System.addCell(MonteCarlo::Qhull(cellIndex++,
+				       Conics[i].getMat(),temp[0],Out));
       if (Conics[i].getWall()>Geometry::zeroTol)
 	{
 	  Out=ModelSupport::getComposite(SMap,modIndex,CI,

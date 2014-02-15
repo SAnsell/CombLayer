@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   test/testSurfRegister.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
 #include "Surface.h"
 #include "Quadratic.h"
 #include "Plane.h"
@@ -193,7 +192,7 @@ testSurfRegister::testPlaneReflection()
 
   std::vector<TTYPE> Tests;
   Tests.push_back(TTYPE(3,"px 1",3));
-  Tests.push_back(TTYPE(4,"p -1 0 0 -1",3));
+  Tests.push_back(TTYPE(4,"p -1 0 0 -1",-3));
 
     
   std::vector<TTYPE>::const_iterator tc;
@@ -215,18 +214,20 @@ testSurfRegister::testPlaneReflection()
 
       if (SMap.registerSurf(SN,PX)!=tc->get<2>())
 	{
+	  ELog::EM<<"Test == "<<(tc-Tests.begin())+1<<ELog::endDiag;
 	  ELog::EM<<"Surface number == "<<SMap.realSurf(SN)<<ELog::endCrit;
 	  Geometry::Plane* PY=SMap.realPtr<Geometry::Plane>(tc->get<2>());
 	  if (PY)
-	    ELog::EM<<"Plane[Expected] == "<<*PY<<ELog::endDebug;
-	  ELog::EM<<"Plane == "<<*PX<<ELog::endDebug;
+	    ELog::EM<<"Plane[Expected] == "<<*PY<<ELog::endDiag;
+
+	  ELog::EM<<"Plane == "<<*PX<<ELog::endDiag;
 	  ELog::EM<<"Surf == "<<PX->side(Geometry::Vec3D(1,0,0))
-		  <<ELog::endDebug;
+		  <<ELog::endDiag;
 	  ELog::EM<<"Surf == "<<PY->side(Geometry::Vec3D(1,0,0))
-		  <<ELog::endDebug;
+		  <<ELog::endDiag;
 	  PX->mirrorSelf();
 	  ELog::EM<<"Rev Surf == "<<PX->side(Geometry::Vec3D(1,0,0))
-		  <<ELog::endDebug;
+		  <<ELog::endDiag;
 	  flag=-2;
 	}
     }
@@ -256,7 +257,7 @@ testSurfRegister::testUnique()
   Tests.push_back(TTYPE(4,"px 35",4));
   Tests.push_back(TTYPE(5,"px 36",5));
   Tests.push_back(TTYPE(6,"px 34",3));
-  Tests.push_back(TTYPE(6,"px 34",3));
+  Tests.push_back(TTYPE(7,"px 34",3));
   // Result check
   std::vector<RTYPE> ResTest;
   ResTest.push_back(RTYPE(3,34));
@@ -287,6 +288,7 @@ testSurfRegister::testUnique()
 	  return -2;
 	}
     }
+
   std::vector<RTYPE>::const_iterator rc;
   for(rc=ResTest.begin();rc!=ResTest.end();rc++)
     {

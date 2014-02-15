@@ -225,8 +225,8 @@ EssVariables(FuncDataBase& Control)
 
   Control.addVariable("LSupplyNSegIn",2);
   // Central point:
-  Control.addVariable("LSupplyPPt0",Geometry::Vec3D(0,-4.0,0.0));
-  Control.addVariable("LSupplyPPt1",Geometry::Vec3D(0,-19.25,0));
+  Control.addVariable("LSupplyPPt0",Geometry::Vec3D(0,-1.0,5.0));
+  Control.addVariable("LSupplyPPt1",Geometry::Vec3D(0,-19.25,5.0));
   Control.addVariable("LSupplyPPt2",Geometry::Vec3D(3.005,-19.25,64.930));
 
   Control.addVariable("LSupplyNRadii",9);
@@ -334,7 +334,7 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("LowModHGap6",0.2);
   Control.addVariable("LowModRadGap6",0.2);
   Control.addVariable("LowModMaterial6","Void"); 
-  Control.addVariable("LowModNConic",2);
+  Control.addVariable("LowModNConic",0);
 
   Control.addVariable("LowModConic1Cent",Geometry::Vec3D(0,0,1));
   Control.addVariable("LowModConic1Axis",Geometry::Vec3D(0,0,1));
@@ -349,6 +349,20 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("LowModConic2Mat","Void");
   Control.addVariable("LowModConic2WallMat","Aluminium");
   Control.addVariable("LowModConic2Wall",0.2);
+
+  Control.addVariable("LowModConic4Cent",Geometry::Vec3D(-1,0,0));
+  Control.addVariable("LowModConic4Axis",Geometry::Vec3D(-1,0,0));
+  Control.addVariable("LowModConic4Angle",25.0);
+  Control.addVariable("LowModConic4Mat","Void");
+  Control.addVariable("LowModConic4WallMat","Aluminium");
+  Control.addVariable("LowModConic4Wall",0.2);
+
+  Control.addVariable("LowModConic3Cent",Geometry::Vec3D(1,0,0));
+  Control.addVariable("LowModConic3Axis",Geometry::Vec3D(1,0,0));
+  Control.addVariable("LowModConic3Angle",25.0);
+  Control.addVariable("LowModConic3Mat","Void");
+  Control.addVariable("LowModConic3WallMat","Aluminium");
+  Control.addVariable("LowModConic3Wall",0.2);
 
   
 
