@@ -182,7 +182,7 @@ DBMaterial::initMaterial()
   // Total atom density 0.1187475
   MObj.setMaterial(10,"BeInD2O",
 		   "4009.80c 0.0988968 1001.70c 3.31e-5 1002.24c 0.0132007 "
-		   "8016.24c 0.0066169","hwtr.01t be.01t",MLib);
+		   "8016.24c 0.0066169","hwtr.01t be.61t",MLib);
   setMaterial(MObj);
 
   // Material #11: Light water
@@ -286,7 +286,7 @@ DBMaterial::initMaterial()
 
   // Material #37: Beryllium solid at RT
   // Total atom density 0.1187475
-  MObj.setMaterial(37,"Be300K","4009.80c 0.1234855","be.01t",MLib);
+  MObj.setMaterial(37,"Be300K","4009.80c 0.1234855","be.61t",MLib);
   setMaterial(MObj);
 // Material #38 Solid Pure Tungsten (0.063057)
   MObj.setMaterial(38,"Tungsten",
@@ -702,7 +702,7 @@ DBMaterial::initMaterial()
   MObj.setMaterial(86,"Be90/8D20/2H2O",
 		   "4009.80c 1.112839e-01 "
 		   "1001.70c 1.323088e-03 1002.24c 5.277874e-03 "
-		   "8016.24c 0.0033253","be.01t lwtr.01t hwtr.01t",
+		   "8016.24c 0.0033253","be.61t lwtr.01t hwtr.01t",
 		   MLib);
   setMaterial(MObj);
   
@@ -741,14 +741,14 @@ DBMaterial::initMaterial()
   // Total atom density 0.121202
   MObj.setMaterial(92,"Be/10D2O","4009.80c 1.112996e-01 1001.70c 1.651935e-05 "
 		   "1002.24c 6.568682e-03 8016.24c 0.003316877",
-		   "hwtr.01t be.01t",MLib);
+		   "hwtr.01t be.61t",MLib);
   setMaterial(MObj);
 
   // Material #93: 90% Beryllium + 10% light water
   // Total atom density 0.121264
   MObj.setMaterial(93,"Be/10H2O","4009.80c 1.112186e-01 "
 		   "1001.70c 6.677949e-03 1002.24c 7.680525e-07 "
-		   "8016.24c 3.366946e-03","lwtr.01t be.01t",MLib);  
+		   "8016.24c 3.366946e-03","lwtr.01t be.61t",MLib);  
   setMaterial(MObj);
 
   // Material #94 Stainless 316L
@@ -805,7 +805,7 @@ DBMaterial::initMaterial()
   MObj.setMaterial(99,"Be90/5D20/5H2O",
 		   "4009.80c 1.112839e-01 "
 		   "1001.70c 3.347044e-03 1002.24c 3.337337e-03 "
-		   "8016.24c 0.0033681","be.01t lwtr.01t hwtr.01t",
+		   "8016.24c 0.0033681","be.61t lwtr.01t hwtr.01t",
 		   MLib);
   setMaterial(MObj);
 

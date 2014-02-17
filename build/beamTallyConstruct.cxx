@@ -158,8 +158,6 @@ beamTallyConstruct::processPoint(Simulation& System,
       return;
     }
   
-  const masterRotate& MR=masterRotate::Instance();
-
   if (PType=="beamline" || PType=="shutterline")
     {
       std::string modName;

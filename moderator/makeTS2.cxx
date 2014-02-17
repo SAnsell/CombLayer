@@ -48,9 +48,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "inputParam.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -62,17 +59,7 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
-#include "KCode.h"
-#include "insertInfo.h"
-#include "insertBaseInfo.h"
 #include "InsertComp.h"
-#include "ModeCard.h"
-#include "PhysImp.h"
-#include "PhysCard.h"
-#include "LSwitchCard.h"
-#include "PhysicsCards.h"
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -81,48 +68,14 @@
 #include "TwinComp.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
-#include "LinearComp.h"
-#include "AttachSupport.h"
-#include "FlightLine.h"
-#include "pipeUnit.h"
-#include "PipeLine.h"
 
 #include "shutterBlock.h"
 #include "GeneralShutter.h"
 #include "BulkInsert.h"
-#include "ChipIRFilter.h"
-#include "ChipIRGuide.h"
-#include "ChipIRInsert.h"
-#include "ChipIRSource.h"
-#include "InnerWall.h"
-#include "HoleUnit.h"
-#include "PreCollimator.h"
-#include "Collimator.h"
-#include "ColBox.h"
-#include "beamBlock.h"
-#include "BeamStop.h"
-#include "Table.h"
-#include "Hutch.h"
-#include "collInsertBase.h"
-#include "collInsertBlock.h"
-#include "PointWeights.h"
 #include "FBBlock.h"
 #include "makeChipIR.h"
 #include "makeZoom.h"
 
-#include "VoidVessel.h"
-#include "BulkShield.h"
-#include "Groove.h"
-#include "Hydrogen.h"
-#include "VacVessel.h"
-#include "FlightLine.h"
-#include "PreMod.h"
-#include "HWrapper.h"
-#include "Decoupled.h"
-#include "RefCutOut.h"
-#include "Bucket.h"
-#include "CoolPad.h"
-#include "Reflector.h"
 #include "makeIMat.h"
 #include "makeTS2Bulk.h"
 
@@ -135,10 +88,7 @@ makeTS2::makeTS2()
 /*!
   Constructor
  */
-{
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-}
+{}
 
 makeTS2::~makeTS2()
 /*!
@@ -148,7 +98,7 @@ makeTS2::~makeTS2()
 
 void 
 makeTS2::build(Simulation* SimPtr,
-		  const mainSystem::inputParam& IParam)
+	       const mainSystem::inputParam& IParam)
   
   /*!
     Carry out the full build

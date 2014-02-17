@@ -119,7 +119,7 @@ class FileError : public ExBase
 {
  private:
 
-  const std::string fileName;   ///< File causing the problme
+  const std::string fileName;   ///< File causing the problem
 
   void setOutLine();
 

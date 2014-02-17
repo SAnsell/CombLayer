@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   endf/ENDFreaction.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,8 +54,8 @@ namespace ENDF
 {
 
 ENDFreaction::ENDFreaction() :
-  mat(0),tmpIndex(0),tempActual(300.0),
-  ZA(0)
+  mat(0),mf(0),mt(0),tmpIndex(0),tempActual(300.0),
+  ZA(0),AWR(0.0),LAT(0),LLN(0)
   /*!
     Constructor
   */
@@ -65,8 +65,8 @@ ENDFreaction::ENDFreaction(const std::string& FName,
 			   const int matNum,
 			   const int mfNum,
 			   const int mtNum) :
-  mat(matNum),mf(mfNum),mt(mtNum),tmpIndex(0),tempActual(300),
-  ZA(0)
+  mat(matNum),mf(mfNum),mt(mtNum),tmpIndex(0),tempActual(300.0),
+  ZA(0),AWR(0.0),LAT(0),LLN(0)
   /*!
     Constructor for values
     \param FName :: Endf file
@@ -76,9 +76,9 @@ ENDFreaction::ENDFreaction(const std::string& FName,
 }
 
 ENDFreaction::ENDFreaction(const ENDFreaction& A) : 
-  mat(A.mat),tmpIndex(A.tmpIndex),tempActual(A.tempActual),
-  ZA(A.ZA),AWR(A.AWR),LAT(A.LAT),LLN(A.LLN),XData(A.XData),
-  YData(A.YData)
+  mat(A.mat),mf(A.mf),mt(A.mt),tmpIndex(A.tmpIndex),
+  tempActual(A.tempActual),ZA(A.ZA),AWR(A.AWR),
+  LAT(A.LAT),LLN(A.LLN),XData(A.XData),YData(A.YData)
   /*!
     Copy constructor
     \param A :: ENDFreaction to copy
@@ -96,6 +96,8 @@ ENDFreaction::operator=(const ENDFreaction& A)
   if (this!=&A)
     {
       mat=A.mat;
+      mf=A.mf;
+      mt=A.mt;
       tmpIndex=A.tmpIndex;
       tempActual=A.tempActual;
       ZA=A.ZA;
@@ -107,8 +109,6 @@ ENDFreaction::operator=(const ENDFreaction& A)
     }
   return *this;
 }
-
-
 
 ENDFreaction*
 ENDFreaction::clone() const
@@ -186,7 +186,7 @@ ENDFreaction::ENDFfile(const std::string& FName,
 	  Index=getMatIndex(IA.second);
 	} while(IX.good() && !Index.second && mat!=Index.first);
       if (!IX.good())
-	ELog::EM<<"Error with file"<<ELog::endErr;
+	throw ColErr::FileError(mat,FName,"File failed to read matIndex");
 
       // Get Zaid + Symmetry
       std::string Line=findMatMfMt(IX,matNum,mfNum,mtNum);

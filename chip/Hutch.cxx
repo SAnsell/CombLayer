@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   chip/Hutch.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,9 +48,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
@@ -850,8 +847,6 @@ ChipIRHutch::writeMasterPoints() const
   Geometry::Vec3D ApexPt=Inter.back();
   // remove Z : 
   ApexPt-= Z*ApexPt.dotProd(Z);
-  // ELog::EM<<"Apex point == "<<MR.calcRotate(ApexPt)<<ELog::endTrace;
-  // ELog::EM<<"Apex distance == "<<LX.distance(ApexPt)<<ELog::endTrace;
 
   return;
   // Calculate the points that the beamstop holds:
@@ -876,17 +871,14 @@ ChipIRHutch::writeMasterPoints() const
 
   ModelSupport::calcVertex(aPln,sPln[1],sPln[3],Inter,0);
   CS.setDNum(chipIRDatum::flood4,MR.calcRotate(Inter.back()));
-  Inter.clear();
-
-
-  // Calculate DPoints etc:
   
   return;
 }
 
 int
 ChipIRHutch::isObjectContained(Simulation& System,
-			       const int PrimaryObj,const int SecondaryObj)
+			       const int PrimaryObj,
+			       const int SecondaryObj)
   /*!
     Compare two object to find if they intersect.
     \param System :: Simulation to use

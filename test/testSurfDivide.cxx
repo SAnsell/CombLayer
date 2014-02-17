@@ -202,7 +202,7 @@ testSurfDivide::applyTest(const int extra)
   /*!
     Applies all the tests and returns 
     the error number
-    \param extra :: Index of test
+    \param extra :: Index of test [-ve for all]
     \returns -ve on error 0 on success.
   */
 {
@@ -221,7 +221,7 @@ testSurfDivide::applyTest(const int extra)
       "Static"
     };
 
-  const int TSize(sizeof(TPtr)/sizeof(testPtr));
+  const size_t TSize(sizeof(TPtr)/sizeof(testPtr));
   if (!extra)
     {
       std::ios::fmtflags flagIO=std::cout.setf(std::ios::left);
@@ -232,9 +232,9 @@ testSurfDivide::applyTest(const int extra)
       std::cout.flags(flagIO);
       return 0;
     }
-  for(int i=0;i<TSize;i++)
+  for(size_t i=0;i<TSize;i++)
     {
-      if (extra<0 || extra==i+1)
+      if (extra<0 || static_cast<size_t>(extra)==i+1)
         {
 	  TestFunc::regTest(TestName[i]);
 	  const int retValue= (this->*TPtr[i])();

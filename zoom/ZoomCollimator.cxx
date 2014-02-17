@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   zoom/ZoomCollimator.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -76,20 +76,12 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "chipDataStore.h"
-#include "shutterBlock.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h" 
 #include "SecondTrack.h"
 #include "TwinComp.h"
-#include "LinearComp.h"
-#include "InsertComp.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
-#include "GeneralShutter.h"
-#include "BulkShield.h"
-#include "ScatterPlate.h"
-#include "ChipIRFilter.h"
 #include "ZoomChopper.h"
 #include "ZoomStack.h"
 #include "ZoomCollimator.h"
@@ -110,9 +102,9 @@ ZoomCollimator::ZoomCollimator(const std::string& Key) :
 
 ZoomCollimator::ZoomCollimator(const ZoomCollimator& A) : 
   attachSystem::TwinComp(A),attachSystem::ContainedComp(A),
-  colIndex(A.colIndex),
-  cellIndex(A.cellIndex),populated(A.populated),
-  cStack(A.cStack),length(A.length),height(A.height),
+  colIndex(A.colIndex),cellIndex(A.cellIndex),
+  populated(A.populated),cStack(A.cStack),xStep(A.xStep),
+  zStep(A.zStep),length(A.length),height(A.height),
   depth(A.depth),leftWidth(A.leftWidth),
   rightWidth(A.rightWidth),stackFullWidth(A.stackFullWidth),
   stackLength(A.stackLength),nLayers(A.nLayers),
@@ -139,6 +131,8 @@ ZoomCollimator::operator=(const ZoomCollimator& A)
       cellIndex=A.cellIndex;
       populated=A.populated;
       cStack=A.cStack;
+      xStep=A.xStep;
+      zStep=A.zStep;
       length=A.length;
       height=A.height;
       depth=A.depth;
@@ -155,7 +149,6 @@ ZoomCollimator::operator=(const ZoomCollimator& A)
     }
   return *this;
 }
-
 
 ZoomCollimator::~ZoomCollimator() 
   /*!

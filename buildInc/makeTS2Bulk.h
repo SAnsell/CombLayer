@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   buildInc/makeTS2Bulk.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,9 +22,15 @@
 #ifndef moderatorSystem_makeTS2Bulk_h
 #define moderatorSystem_makeTS2Bulk_h
 
+namespace shutterSystem
+{
+  class BulkShield;
+  class VoidVessel;
+}
 
 namespace moderatorSystem
 {
+  class Reflector;
 
   /*!
     \class makeTS2Bulk

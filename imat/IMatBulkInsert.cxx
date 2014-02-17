@@ -47,12 +47,8 @@
 #include "support.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
-#include "Tensor.h"
 #include "Vec3D.h"
 #include "PointOperation.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
@@ -76,8 +72,6 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "shutterBlock.h"
 #include "SimProcess.h"
 #include "SurInter.h"
@@ -193,9 +187,6 @@ IMatBulkInsert::createUnitVector()
   */
 {
   ELog::RegMethod RegA("IMatBulkInsert","createUnitVector");
-
-  const masterRotate& MR=masterRotate::Instance();
-  //  chipIRDatum::chipDataStore& CS=chipIRDatum::chipDataStore::Instance();
 
   bEnter+=bX*xStep+bY*yStep+bZ*zStep;
   if (fabs(xyAngle)>Geometry::zeroTol ||

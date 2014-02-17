@@ -106,10 +106,11 @@ class makeESS
   void buildLowCylMod(Simulation&);
   void buildLowConicMod(Simulation&);
   void buildLayerMod(Simulation&);
-
   void buildTopCylMod(Simulation&);
+  void buildLowerPipe(Simulation&,const std::string&);
 
-  void makeTarget(Simulation&,const mainSystem::inputParam&);
+  void makeTarget(Simulation&,const std::string&);
+  void optionSummary() const;
 
  public:
   

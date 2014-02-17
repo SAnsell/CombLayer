@@ -83,8 +83,9 @@ CylMod::CylMod(const std::string& Key) :
 {}
 
 CylMod::CylMod(const CylMod& A) : 
-  ModBase(A),radius(A.radius),
-  height(A.height),mat(A.mat)
+  constructSystem::ModBase(A),
+  radius(A.radius),height(A.height),mat(A.mat),temp(A.temp),
+  nConic(A.nConic),Conics(A.Conics)
   /*!
     Copy constructor
     \param A :: CylMod to copy
@@ -101,11 +102,13 @@ CylMod::operator=(const CylMod& A)
 {
   if (this!=&A)
     {
-      ModBase::operator=(A),
-      cellIndex=A.cellIndex;
+      constructSystem::ModBase::operator=(A);
       radius=A.radius;
       height=A.height;
       mat=A.mat;
+      temp=A.temp;
+      nConic=A.nConic;
+      Conics=A.Conics;
     }
   return *this;
 }

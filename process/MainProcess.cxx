@@ -502,8 +502,10 @@ void createESSInputs(inputParam& IParam)
 
   IParam.regDefItem<std::string>("lowMod","lowModType",1,std::string("lowMod"));
   IParam.regDefItem<std::string>("topMod","topModType",1,std::string("topMod"));
+  IParam.regDefItem<std::string>("lowPipe","lowPipeType",1,std::string("side"));
   IParam.setDesc("lowMod","Type of low moderator to be built");
   IParam.setDesc("topMod","Type of top moderator to be built");
+  IParam.setDesc("lowPipe","Type of low moderator pipework");
   return;
 }
 

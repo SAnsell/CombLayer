@@ -71,7 +71,6 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "SecondTrack.h"
@@ -95,12 +94,14 @@ ZoomTank::ZoomTank(const std::string& Key)  :
 ZoomTank::ZoomTank(const ZoomTank& A) : 
   attachSystem::ContainedComp(A),attachSystem::TwinComp(A),
   tankIndex(A.tankIndex),cellIndex(A.cellIndex),
-  populated(A.populated),xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  xyAngle(A.xyAngle),zAngle(A.zAngle),nCylinder(A.nCylinder),
-  cylThickness(A.cylThickness),CRadius(A.CRadius),CylDepth(A.CylDepth),
-  CylX(A.CylX),CylZ(A.CylZ),cylTotalDepth(A.cylTotalDepth),
-  windowThick(A.windowThick),width(A.width),height(A.height),
-  length(A.length),wallThick(A.wallThick),wallMat(A.wallMat),
+  populated(A.populated),xStep(A.xStep),yStep(A.yStep),
+  zStep(A.zStep),xyAngle(A.xyAngle),zAngle(A.zAngle),
+  nCylinder(A.nCylinder),cylThickness(A.cylThickness),
+  CRadius(A.CRadius),CylDepth(A.CylDepth),CylX(A.CylX),
+  CylZ(A.CylZ),cylTotalDepth(A.cylTotalDepth),
+  windowThick(A.windowThick),windowRadius(A.windowRadius),
+  width(A.width),height(A.height),length(A.length),
+  wallThick(A.wallThick),wallMat(A.wallMat),
   windowMat(A.windowMat)
   /*!
     Copy constructor

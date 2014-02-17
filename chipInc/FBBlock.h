@@ -27,6 +27,8 @@ class Simulation;
 namespace hutchSystem
 {
 
+  class ChipIRHutch;
+
 /*!
   \class FBBlock
   \version 1.0

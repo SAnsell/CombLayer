@@ -413,7 +413,7 @@ RuleBinary::group()
 int
 RuleBinary::makeEPI(std::vector<BnId>& PIform)
   /*!
-    Takes a PI list and converts into a Essential prim implicate
+    Takes a PI list and converts into a Essential prime implicate
     list.
     \param PIform :: List of rules in Prime Implicant form
          It is set on exit.
@@ -422,16 +422,13 @@ RuleBinary::makeEPI(std::vector<BnId>& PIform)
 {
   ELog::RegMethod RegA("RuleBinary","makeEPI");
 
-  const int debug(1);
+  const int debug(0);
   if (PIform.empty()) return 0;
   EPI.clear(); 
   std::vector<int> EPIvalue;
   // Make zeroed matrix.
   Geometry::MatrixBase<int> 
     Grid(PIform.size(),DNFobj.size());   // Map (efficient??
-
-  ELog::EM<<"Size == "<<PIform.size()<<" "<<DNFobj.size()<<ELog::endDiag;
-
 
   
   std::vector<size_t> DNFactive(DNFobj.size());       // DNF that active

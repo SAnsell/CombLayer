@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   delft/ControlElement.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,9 +44,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
@@ -65,15 +62,11 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
-#include "shutterBlock.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "LinearComp.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 
@@ -98,15 +91,17 @@ ControlElement::ControlElement(const size_t XI,const size_t YI,
   */
 {}
 
+
 ControlElement::ControlElement(const ControlElement& A) : 
   FuelElement(A),attachSystem::ContainedGroup(A),
   cntlKey(A.cntlKey),controlIndex(A.controlIndex),
   cStartIndex(A.cStartIndex),cEndIndex(A.cEndIndex),
-  lift(A.lift),voidRadius(A.voidRadius),voidOffset(A.voidOffset),
-  absThick(A.absThick),caseThick(A.caseThick),waterThick(A.waterThick),
+  lift(A.lift),voidRadius(A.voidRadius),
+  voidOffset(A.voidOffset),absThick(A.absThick),
+  caseThick(A.caseThick),waterThick(A.waterThick),
   plateThick(A.plateThick),innerLength(A.innerLength),
-  outerLength(A.outerLength),endCap(A.endCap),
-  absMat(A.absMat),cladMat(A.cladMat)
+  outerLength(A.outerLength),outerCapLen(A.outerCapLen),
+  endCap(A.endCap),absMat(A.absMat),cladMat(A.cladMat)
   /*!
     Copy constructor
     \param A :: ControlElement to copy
@@ -136,6 +131,7 @@ ControlElement::operator=(const ControlElement& A)
       plateThick=A.plateThick;
       innerLength=A.innerLength;
       outerLength=A.outerLength;
+      outerCapLen=A.outerCapLen;
       endCap=A.endCap;
       absMat=A.absMat;
       cladMat=A.cladMat;

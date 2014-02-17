@@ -82,17 +82,18 @@ namespace essSystem
 {
 
 SupplyPipe::SupplyPipe(const std::string& Key)  :
-  attachSystem::FixedComp(Key,0),
+  attachSystem::FixedComp(Key,0),optName(""),
   pipeIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(pipeIndex+1),Coaxial(Key+"CoAx"),nAngle(6)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
+    \param Opt :: optName
   */
 {}
 
 SupplyPipe::SupplyPipe(const SupplyPipe& A) : 
-  attachSystem::FixedComp(A),
+  attachSystem::FixedComp(A),optName(A.optName),
   pipeIndex(A.pipeIndex),cellIndex(A.cellIndex),
   NSegIn(A.NSegIn),Radii(A.Radii),Mat(A.Mat),Temp(A.Temp),
   ActiveFlag(A.ActiveFlag),Coaxial(A.Coaxial),
@@ -149,12 +150,12 @@ SupplyPipe::populate(const Simulation& System)
   
   
   std::string numStr;
-  NSegIn=Control.EvalVar<size_t>(keyName+"NSegIn");
+  NSegIn=Control.EvalPair<size_t>(optName+"NSegIn",keyName+"NSegIn");
   for(size_t i=0;i<=NSegIn;i++)
     {
       numStr=StrFunc::makeString(i);
-      PPts.push_back(Control.EvalVar<Geometry::Vec3D>
-		     (keyName+"PPt"+numStr));
+      PPts.push_back(Control.EvalPair<Geometry::Vec3D>
+		     (optName+"PPt"+numStr,keyName+"PPt"+numStr));
     }
 
   size_t aN(0);

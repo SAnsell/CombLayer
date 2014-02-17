@@ -303,7 +303,7 @@ HeadRule::getSurfaceNumbers() const
     \return Set of surface
   */
 {
-  ELog::RegMethod RegA("HeadRule","getOppositeSurfaces");
+  ELog::RegMethod RegA("HeadRule","getSurfacesNumbers");
   std::vector<int> Out;
   const SurfPoint* SP;
   if (!HeadNode) return Out;
@@ -329,8 +329,9 @@ HeadRule::getSurfaceNumbers() const
 	}
       else if (headPtr->type()==0)        // MIGHT BE SURF
 	{
-	  SP=dynamic_cast<const SurfPoint*>(HeadNode);
-	  Out.push_back(SP->getKeyN());
+	  SP=dynamic_cast<const SurfPoint*>(headPtr);
+	  if (SP)
+	    Out.push_back(SP->getKeyN());
 	}
     }
   return Out;

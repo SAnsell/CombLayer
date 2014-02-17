@@ -46,10 +46,7 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -195,12 +192,12 @@ ColBox::createUnitVector(const attachSystem::TwinComp& TC)
 {
   ELog::RegMethod RegA("ColBox","createUnitVector");
 
-  const masterRotate& MR=masterRotate::Instance();
-
   X=TC.getBX();  
   Y=TC.getBY();
   Z=TC.getBZ();
   Origin=Centre+Y*fStep+X*xStep+Z*zStep;
+
+  
 
   // Handle Angles [AFTER ORIGIN]:
   const Geometry::Quaternion Qz=
@@ -229,7 +226,6 @@ ColBox::createSurfaces()
   ELog::RegMethod RegA("ColBox","createSurface");
   // Back
 
-  ELog::EM<<"Axis == "<<XAxis<<ELog::endDebug;
   ModelSupport::buildPlane(SMap,colIndex+1,Origin,YAxis);
   ModelSupport::buildPlane(SMap,colIndex+2,Origin+YAxis*depth,YAxis);
   ModelSupport::buildPlane(SMap,colIndex+3,Origin-XAxis*(width/2.0),XAxis);

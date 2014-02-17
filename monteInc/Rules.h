@@ -444,10 +444,12 @@ class BoolValue : public Rule
  private:
 
   int status;          ///< Three values 0 False : 1 True : -1 doesn't matter
-  
+
+  static int procStatus(const int);
+
  public:
   
-  BoolValue();
+  explicit BoolValue(const int);
   BoolValue(const BoolValue&);
   BoolValue* clone() const;                        
   BoolValue& operator=(const BoolValue&);

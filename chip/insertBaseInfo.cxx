@@ -392,10 +392,11 @@ insertBaseInfo::createObjects(const int initSurf,int& initCell)
         {
 	  if (vc->rNum)              // Is internal:
 	    {
-	      Geometry::Cylinder* CPtr=SurI.createUniqSurf<Geometry::Cylinder>(surfNum);
+	      Geometry::Cylinder* CPtr=
+		SurI.createUniqSurf<Geometry::Cylinder>(surfNum);
 	      CPtr->setCylinder(vc->CPt+Z*ZOffset,vc->Axis,vc->ORad);
 	      vc->outerRID=SMapRef.registerSurf(surfNum++,CPtr);
-	      CPtr=SMapRef.realPtr<Geometry::Cylinder>(vc->outerRID);
+	      // CPtr=SMapRef.realPtr<Geometry::Cylinder>(vc->outerRID);
 	    }
 	  // This is always executed
 	  innerPlane=outerPlane;
@@ -424,7 +425,7 @@ insertBaseInfo::createObjects(const int initSurf,int& initCell)
 	  PPtr=SurI.createUniqSurf<Geometry::Plane>(surfNum++);	  
 	  PPtr->setPlane(vc->calcFrontPoint()+Z*ZOffset,vc->Axis);
 	  vc->fPlane=SMapRef.registerSurf(PPtr);  
-	  PPtr=dynamic_cast<Geometry::Plane*>(SMapRef.realSurfPtr(surfNum));
+	  // PPtr=dynamic_cast<Geometry::Plane*>(SMapRef.realSurfPtr(surfNum));
 	}
       else  // special case of no offset:
        {

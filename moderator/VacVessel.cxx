@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   moderator/VacVessel.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -405,6 +405,8 @@ VacVessel::createLinks()
     Creates a full attachment set
   */
 {
+  ELog::RegMethod RegA("VacVessel","createLinks");
+
 
   FixedComp::setConnect(0,BVec[0]+Y*(vacPosGap+alPos+terPos+
                                     outPos+clearNeg),Y);
@@ -423,10 +425,10 @@ VacVessel::createLinks()
   // For Cylindrical surface must also have a divider:
   // -- Groove:
   FixedComp::setLinkSurf(0,SMap.realSurf(vacIndex+41));
-  FixedComp::addLinkSurf(0,SMap.realSurf(divideSurf));
+  FixedComp::setBridgeSurf(0,SMap.realSurf(divideSurf));
 
   FixedComp::setLinkSurf(1,SMap.realSurf(vacIndex+42));
-  FixedComp::addLinkSurf(1,-SMap.realSurf(divideSurf));
+  FixedComp::setBridgeSurf(1,-SMap.realSurf(divideSurf));
 
   return;
 }

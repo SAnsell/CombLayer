@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   chip/ChipIRGuide.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -107,25 +107,31 @@ ChipIRGuide::ChipIRGuide(const std::string& Key) :
 
 ChipIRGuide::ChipIRGuide(const ChipIRGuide& A) : 
   attachSystem::TwinComp(A),attachSystem::ContainedGroup(A),
-  guideIndex(A.guideIndex),
-  cellIndex(A.cellIndex),populated(A.populated),
-  Filter(A.Filter),beamAngle(A.beamAngle),
+  guideIndex(A.guideIndex),cellIndex(A.cellIndex),
+  populated(A.populated),Filter(A.Filter),beamAngle(A.beamAngle),
   sideBeamAngle(A.sideBeamAngle),shutterAngle(A.shutterAngle),
-  gLen(A.gLen),hYStart(A.hYStart),xShift(A.xShift),
-  zShift(A.zShift),xBeamShift(A.xBeamShift),
+  gLen(A.gLen),hYStart(A.hYStart),hFWallThick(A.hFWallThick),
+  xShift(A.xShift),zShift(A.zShift),xBeamShift(A.xBeamShift),
   zBeamShift(A.zBeamShift),innerARoofZ(A.innerARoofZ),
   innerAFloorZ(A.innerAFloorZ),innerBRoofZ(A.innerBRoofZ),
   innerBFloorZ(A.innerBFloorZ),innerALWall(A.innerALWall),
   innerARWall(A.innerARWall),innerBLWall(A.innerBLWall),
-  innerBRWall(A.innerBRWall),roofSteel(A.roofSteel),
-  floorSteel(A.floorSteel),leftSteelInner(A.leftSteelInner),
-  leftSteelFlat(A.leftSteelFlat),
-  rightSteelInner(A.rightSteelInner),
-  rightSteelFlat(A.rightSteelFlat),
-  leftSteelAngle(A.leftSteelAngle),
-  rightSteelAngle(A.rightSteelAngle),nLayers(A.nLayers),
-  guideFrac(A.guideFrac),guideMat(A.guideMat),
-  steelMat(A.steelMat),monoWallSurf(A.monoWallSurf),
+  innerBRWall(A.innerBRWall),LThick(A.LThick),LMat(A.LMat),
+  roofSteel(A.roofSteel),floorSteel(A.floorSteel),
+  leftSteelInner(A.leftSteelInner),leftSteelFlat(A.leftSteelFlat),
+  rightSteelInner(A.rightSteelInner),rightSteelFlat(A.rightSteelFlat),
+  leftSteelAngle(A.leftSteelAngle),rightSteelAngle(A.rightSteelAngle),
+  roofConc(A.roofConc),floorConc(A.floorConc),leftConcInner(A.leftConcInner),
+  rightConcInner(A.rightConcInner),rightConcFlat(A.rightConcFlat),
+  leftConcAngle(A.leftConcAngle),rightConcAngle(A.rightConcAngle),
+  blockWallThick(A.blockWallThick),blockWallHeight(A.blockWallHeight),
+  blockWallLen(A.blockWallLen),extraWallThick(A.extraWallThick),
+  extraWallHeight(A.extraWallHeight),extraWallLen(A.extraWallLen),
+  extraWallSideAngle(A.extraWallSideAngle),extraWallEndAngle(A.extraWallEndAngle),
+  rightWallThick(A.rightWallThick),rightWallHeight(A.rightWallHeight),
+  rightWallLen(A.rightWallLen),nLayers(A.nLayers),
+  guideFrac(A.guideFrac),guideMat(A.guideMat),steelMat(A.steelMat),
+  concMat(A.concMat),wallMat(A.wallMat),monoWallSurf(A.monoWallSurf),
   voidCells(A.voidCells),layerCells(A.layerCells)
   /*!
     Copy constructor
@@ -153,6 +159,7 @@ ChipIRGuide::operator=(const ChipIRGuide& A)
       shutterAngle=A.shutterAngle;
       gLen=A.gLen;
       hYStart=A.hYStart;
+      hFWallThick=A.hFWallThick;
       xShift=A.xShift;
       zShift=A.zShift;
       xBeamShift=A.xBeamShift;
@@ -165,6 +172,8 @@ ChipIRGuide::operator=(const ChipIRGuide& A)
       innerARWall=A.innerARWall;
       innerBLWall=A.innerBLWall;
       innerBRWall=A.innerBRWall;
+      LThick=A.LThick;
+      LMat=A.LMat;
       roofSteel=A.roofSteel;
       floorSteel=A.floorSteel;
       leftSteelInner=A.leftSteelInner;
@@ -173,10 +182,30 @@ ChipIRGuide::operator=(const ChipIRGuide& A)
       rightSteelFlat=A.rightSteelFlat;
       leftSteelAngle=A.leftSteelAngle;
       rightSteelAngle=A.rightSteelAngle;
+      roofConc=A.roofConc;
+      floorConc=A.floorConc;
+      leftConcInner=A.leftConcInner;
+      rightConcInner=A.rightConcInner;
+      rightConcFlat=A.rightConcFlat;
+      leftConcAngle=A.leftConcAngle;
+      rightConcAngle=A.rightConcAngle;
+      blockWallThick=A.blockWallThick;
+      blockWallHeight=A.blockWallHeight;
+      blockWallLen=A.blockWallLen;
+      extraWallThick=A.extraWallThick;
+      extraWallHeight=A.extraWallHeight;
+      extraWallLen=A.extraWallLen;
+      extraWallSideAngle=A.extraWallSideAngle;
+      extraWallEndAngle=A.extraWallEndAngle;
+      rightWallThick=A.rightWallThick;
+      rightWallHeight=A.rightWallHeight;
+      rightWallLen=A.rightWallLen;
       nLayers=A.nLayers;
       guideFrac=A.guideFrac;
       guideMat=A.guideMat;
       steelMat=A.steelMat;
+      concMat=A.concMat;
+      wallMat=A.wallMat;
       monoWallSurf=A.monoWallSurf;
       voidCells=A.voidCells;
       layerCells=A.layerCells;

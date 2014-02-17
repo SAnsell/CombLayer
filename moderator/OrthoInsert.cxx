@@ -47,8 +47,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -67,10 +65,8 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "LinearComp.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "pipeUnit.h"
@@ -86,7 +82,7 @@ OrthoInsert::OrthoInsert(const std::string& Key)  :
   attachSystem::ContainedGroup("GSide","HSide"),
   attachSystem::FixedComp(Key,0),
   hydIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(hydIndex+1),populated(0)
+  cellIndex(hydIndex+1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -96,8 +92,7 @@ OrthoInsert::OrthoInsert(const std::string& Key)  :
 OrthoInsert::OrthoInsert(const OrthoInsert& A) : 
   attachSystem::ContainedGroup(A),attachSystem::FixedComp(A),
   hydIndex(A.hydIndex),cellIndex(A.cellIndex),
-  populated(A.populated),GCent(A.GCent),
-  grooveThick(A.grooveThick),grooveWidth(A.grooveWidth),
+  GCent(A.GCent),grooveThick(A.grooveThick),grooveWidth(A.grooveWidth),
   grooveHeight(A.grooveHeight),HCent(A.HCent),
   HRadius(A.HRadius),hydroThick(A.hydroThick),
   orthoTemp(A.orthoTemp),orthoMat(A.orthoMat)
@@ -120,7 +115,6 @@ OrthoInsert::operator=(const OrthoInsert& A)
       attachSystem::ContainedGroup::operator=(A);
       attachSystem::FixedComp::operator=(A);
       cellIndex=A.cellIndex;
-      populated=A.populated;
       GCent=A.GCent;
       grooveThick=A.grooveThick;
       grooveWidth=A.grooveWidth;
@@ -160,7 +154,6 @@ OrthoInsert::populate(const Simulation& System)
   orthoTemp=Control.EvalDefVar<double>(keyName+"OrthoTemp",-1.0);
   orthoMat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 
-  populated |= 1;
   return;
 }
   
@@ -178,12 +171,12 @@ OrthoInsert::createUnitVector(const Hydrogen& HUnit,
   */
 {
   ELog::RegMethod RegA("OrthoInsert","createUnitVector");
-  const masterRotate& MR=masterRotate::Instance();
+
   FixedComp::createUnitVector(HUnit);
   GCent=GUnit.getBackGroove()+Y*HUnit.getAlDivide();
   HCent=HUnit.getHCentre();
   HRadius=HUnit.getRadius();
-  ELog::EM<<"GCent == "<<MR.calcRotate(GCent)<<ELog::endTrace;
+
   return;
 }
   

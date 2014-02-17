@@ -106,7 +106,7 @@ pairRange::~pairRange()
 {}
 
 const std::pair<double,double>&
-pairRange::operator[](const int Index) const
+pairRange::operator[](const size_t Index) const
   /*!
     Gets an individual value
     \param Index :: Index value 
@@ -115,10 +115,10 @@ pairRange::operator[](const int Index) const
 {
   ELog::RegMethod RegA("pairRange","operator[]");
 
-  if (Index<0 || Index>=static_cast<int>(Items.size()))
-    throw ColErr::IndexError<int>(Index,static_cast<int>(Items.size())
-				  ,RegA.getBase());
-  return Items[static_cast<size_t>(Index)];
+  if (Index>=Items.size())
+    throw ColErr::IndexError<size_t>(Index,Items.size(),"Index");
+
+  return Items[Index];
 }
 
 
@@ -222,17 +222,17 @@ pairRange::condense(const double Tol)
   return;
 }
 
-int
+size_t
 pairRange::count() const
   /*!
     Determine the number of points in a range
     \return Number of data points in range
   */
 {
-  return static_cast<int>(Items.size());
+  return Items.size();
 }
 
-int
+size_t
 pairRange::writeVector(PTYPE& Vec) const
   /*!
     Sets the values into a vector
@@ -244,7 +244,7 @@ pairRange::writeVector(PTYPE& Vec) const
 
   Vec.resize(Items.size());  
   copy(Items.begin(),Items.end(),Vec.begin());
-  return static_cast<int>(Vec.size());
+  return Vec.size();
 }
 
 

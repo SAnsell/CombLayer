@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   build/KCodeSelector.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -108,10 +108,12 @@ kcodeSelection(Simulation& System,const mainSystem::inputParam& IParam)
     Build the source based on the input parameter table
     \param System :: Simulation to use
     \param IParam :: Input parameter
+    \todo Finish...
   */
 {
   ELog::RegMethod RegA("KCodeSelector","kcodeSelection");
 
+  // NOT FINISHED CODE:
   const FuncDataBase& Control=System.getDataBase();
   SDef::KCode& KCard=System.getPC().getKCodeCard();
 

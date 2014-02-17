@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   monte/Rules.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -207,7 +207,7 @@ Rule::removeComplementary(Rule*& TopRule)
 	        {
 		  active=1;
 		}
-	      else if (tcount== -1)  //replacement simplificationnn
+	      else if (tcount== -1)  //replacement simplification
 	        {
 		  if (TreeComp.first)
 		    {
@@ -290,7 +290,6 @@ Rule::makeCNFcopy(Rule* &TopRule)
 	  // Ok get and remvoe the top item from the stack.
 	  TreeComp=TreeLine.top();  
 	  TreeLine.pop();           
-
 	  
 	  // Get the item. (not its parent)
 	  tmpA=TreeComp.third;       // get base item
@@ -356,7 +355,7 @@ Rule::makeCNFcopy(Rule* &TopRule)
 		    // It is the top rule therefore, replace the toprule
 		    TopRule=partReplace;  
 
-		  // Clear up the mess and delete the rule that we have changes
+		  // Clear up the mess and delete the rule that we have changed
 		  delete tmpA;          
 		  // Now we have to go back to the begining again and start again.
 		  active=1;            // Exit loop

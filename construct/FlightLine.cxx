@@ -451,6 +451,7 @@ FlightLine::createCapSurfaces(const attachSystem::FixedComp& FC,
   const std::vector<int> SurNum(MainUnit.getSurfaceNumbers());
   
   int surfN(501+flightIndex);
+  int newSurfN;
   std::stack<double> capThickStack;
   capThickStack.push(0.0);
   double capThick(0.0);
@@ -487,9 +488,11 @@ FlightLine::createCapSurfaces(const attachSystem::FixedComp& FC,
 		    surfN++;
 		  // register surface
 		  ExpSurf->setName(surfN);
-		  SMap.registerSurf(ExpSurf);
+		  // This can remove the surfeaces:
+		  newSurfN=SMap.registerSurf(ExpSurf);
+		  ExpSurf=SMap.realSurfPtr(newSurfN);
 		  // Substitute rule with new surface:
-		  CRule.substituteSurf(abs(*vc),surfN,ExpSurf);
+		  CRule.substituteSurf(abs(*vc),newSurfN,ExpSurf);
 		}
 	      capRule[i]=CRule;
 	    }
@@ -697,13 +700,14 @@ FlightLine::createAll(Simulation& System,const size_t sideIndex,
 {
   ELog::RegMethod RegA("FlightLine","createAll");
   populate(System);
-
   createUnitVector(FC,sideIndex);
   createSurfaces();
+
   createCapSurfaces(FC,sideIndex);
 
   FixedComp::setLinkSurf(0,FC,sideIndex);
   FixedComp::setLinkSurf(6,FC,sideIndex);
+
   createObjects(System,FC,sideIndex);
   insertObjects(System);       
 
@@ -737,7 +741,8 @@ FlightLine::createAll(Simulation& System,
 }
 
 void
-FlightLine::reBoundary(Simulation& System,const size_t sideIndex,
+FlightLine::reBoundary(Simulation& System,
+		       const size_t sideIndex,
 		       const attachSystem::FixedComp& FC)
   /*!
     Reposition a flightline after initial construction

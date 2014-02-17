@@ -49,13 +49,13 @@ class pairRange
   pairRange& operator=(const pairRange&);
   ~pairRange();
 
-  const std::pair<double,double>& operator[](const int) const;
+  const std::pair<double,double>& operator[](const size_t) const;
   pairRange& operator+=(const pairRange&);
 
-  int empty() const { return Items.empty(); }  ///< Range is stored
+  bool empty() const { return Items.empty(); }  ///< Range is stored
   size_t size() const { return Items.size(); }    ///< Size 
   void clear() { Items.clear(); }                  ///< Clear range
-  int count() const;
+  size_t count() const;
 
   int processString(const std::string&);       ///< process string
   void condense(const double = 1e-6);     
@@ -63,7 +63,7 @@ class pairRange
   void setVector(const std::vector<double>&,
 		 const std::vector<double>&);
 
-  int writeVector(std::vector<std::pair<double,double> >&) const;
+  size_t writeVector(std::vector<std::pair<double,double> >&) const;
   void write(std::ostream&) const;             ///< Write out the range 
 
 };

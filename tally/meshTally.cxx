@@ -59,7 +59,8 @@ namespace tallySystem
 {
 
 meshTally::meshTally(const int ID) :
-  Tally(ID),typeID(1),keyWords("flux")
+  Tally(ID),typeID(1),keyWords("flux"),
+  requireRotation(0)
   /*!
     Constructor
     \param ID :: Identity number of tally

@@ -22,11 +22,18 @@
 #ifndef hutchSystem_makeChipIR_h
 #define hutchSystem_makeChipIR_h
 
+namespace shutterSystem
+{
+  class BulkShield;
+}
+
 namespace hutchSystem
 {
 
   class FeedThrough;
   class FBBlock;
+  class ChipIRGuide;
+  class ChipIRHutch;
 
   /*!
     \class makeChipIR 

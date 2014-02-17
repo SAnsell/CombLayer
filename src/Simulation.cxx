@@ -1052,9 +1052,8 @@ Simulation::populateCells()
       catch (ColErr::InContainerError<int>& A)
         {
 	  ELog::EM<<"Cell "<<workObj.getName()<<" failed on surface :"
-		  <<A.getItem()<<ELog::endWarn;
-	  throw ColErr::ExitAbort(RegA.getFull());
-	  retVal++;
+		  <<A.getItem()<<ELog::endCrit;
+	  throw;
 	}
     }
   return -retVal;

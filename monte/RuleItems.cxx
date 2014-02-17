@@ -964,7 +964,6 @@ SurfPoint::setLeaf(Rule* nR,const int)
     \param  :: ignored
   */
 {
-  std::cerr<<"Calling SurfPoint setLeaf"<<std::endl;
   SurfPoint* newX = dynamic_cast<SurfPoint*>(nR);
   if (newX)
     *this = *newX;
@@ -979,7 +978,6 @@ SurfPoint::setLeaves(Rule* aR,Rule*)
     \param aR :: new rule
   */
 {
-  std::cerr<<"Calling SurfPoint setLeaf"<<std::endl;
   SurfPoint* newX = dynamic_cast<SurfPoint*>(aR);
   if (newX)
     *this = *newX;
@@ -1482,7 +1480,8 @@ CompObj::displayAddress() const
 // -----------------------------------------------
 
 
-BoolValue::BoolValue() : Rule()
+BoolValue::BoolValue(const int S) : 
+  Rule(),status(BoolValue::procStatus(S))
   /*!
     Constructor
   */
@@ -1529,6 +1528,22 @@ BoolValue::~BoolValue()
   */
 {}
 
+
+int
+BoolValue::procStatus(const int S)
+  /*!
+    Proc the status
+    \param S :: Value
+    \return +/- or 0
+   */
+{
+  if (S)
+    return (S>0) ? 1 : -1;
+  return 0;
+}
+  
+
+
 void
 BoolValue::setLeaf(Rule* aR,const int)
   /*!
@@ -1538,7 +1553,6 @@ BoolValue::setLeaf(Rule* aR,const int)
     \param  :: Null side point
   */
 {
-  std::cerr<<"Calling BoolValue setLeaf"<<std::endl;
   BoolValue* newX = dynamic_cast<BoolValue*>(aR);
   if (newX)
     *this = *newX;
@@ -1554,7 +1568,6 @@ BoolValue::setLeaves(Rule* aR,Rule*)
     \param :: Null other rule
   */
 {
-  std::cerr<<"Calling BoolValue setLeaves"<<std::endl;
   BoolValue* newX = dynamic_cast<BoolValue*>(aR);
   if (newX)
     *this = *newX;

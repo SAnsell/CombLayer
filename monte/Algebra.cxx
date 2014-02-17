@@ -283,9 +283,10 @@ Algebra::writeMCNPX() const
 	  if (vc==SurfMap.end())
             {
 	      for_each(SurfMap.begin(),SurfMap.end(),
-		       MapSupport::mapWrite<std::map<int,std::string> >());
+		       MapSupport::mapWrite<std::map<int,std::string> >
+		       (ELog::EM.Estream()));
 	      throw ColErr::InContainerError<std::string>(std::string(1,Out[i]),
-							  RegA.getFull());
+							  "surfMap");
 	    }
 
 	  if (Out[i+1]=='\'')

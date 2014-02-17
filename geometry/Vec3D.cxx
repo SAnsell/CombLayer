@@ -182,10 +182,8 @@ Vec3D::operator[](const IT A)
       return y;
     case 2:
       return z;
-    default:
-      throw ColErr::IndexError<IT>(A,2,"Vec3D::operator[]");
     }
-  return z;
+  throw ColErr::IndexError<IT>(A,2,"Vec3D::operator[]");
 }
 
 template<typename IT>
@@ -206,10 +204,8 @@ Vec3D::operator[](const IT A) const
       return y;
     case 2:
       return z;
-    default:
-      throw ColErr::IndexError<IT>(A,2,"Vec3D::operator[] const");
     }
-  return z;
+  throw ColErr::IndexError<IT>(A,2,"Vec3D::operator[] const");
 }
 
 bool

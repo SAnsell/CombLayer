@@ -49,8 +49,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -194,7 +192,6 @@ IMatShutter::createUnitVector()
 {
   ELog::RegMethod RegA("IMatShutter","createUnitVector");
 
-  const masterRotate& MR=masterRotate::Instance();
 
   frontPt+=X*xStep+Z*zStep;
   bEnter+=X*xStep+Z*zStep;

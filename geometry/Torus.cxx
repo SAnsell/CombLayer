@@ -234,9 +234,6 @@ Torus::setSurface(const std::string& Pstr)
     return errCent;
   if (!StrFunc::section(Line,PtVec))
     return errCent;
-
-  for(int i=0;i<3;i++)
-    return errCent;
   
   Iradius=PtVec[1];
   Oradius=PtVec[2];

@@ -323,7 +323,6 @@ ObjSurfMap::write(std::ostream& OX) const
    */
 {
   ELog::RegMethod RegA("ObjSurfMap","write");
-  ModelSupport::surfIndex& SI=ModelSupport::surfIndex::Instance();
 
   OX<<"# Object Map"<<std::endl;
   OMTYPE::const_iterator mc;

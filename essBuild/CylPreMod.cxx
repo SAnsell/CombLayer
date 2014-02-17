@@ -99,9 +99,10 @@ CylPreMod::CylPreMod(const CylPreMod& A) :
   attachSystem::ContainedGroup(A),attachSystem::LayerComp(A),
   attachSystem::FixedComp(A),
   modIndex(A.modIndex),cellIndex(A.cellIndex),ExtAObj(A.ExtAObj),
-  ExtBObj(A.ExtBObj),innerRadius(A.innerRadius),
-  innerHeight(A.innerHeight),innerDepth(A.innerDepth),
-  radius(A.radius),height(A.height),
+  ExtBObj(A.ExtBObj),blockActiveA(A.blockActiveA),
+  blockActiveB(A.blockActiveB),aSide(A.aSide),bSide(A.bSide),
+  innerRadius(A.innerRadius),innerHeight(A.innerHeight),
+  innerDepth(A.innerDepth),radius(A.radius),height(A.height),
   depth(A.depth),mat(A.mat),temp(A.temp),viewY(A.viewY),
   viewAngle(A.viewAngle),viewOpenAngle(A.viewOpenAngle),
   viewHeight(A.viewHeight),viewWidth(A.viewWidth),
@@ -128,6 +129,10 @@ CylPreMod::operator=(const CylPreMod& A)
       cellIndex=A.cellIndex;
       ExtAObj=A.ExtAObj;
       ExtBObj=A.ExtBObj;
+      blockActiveA=A.blockActiveA;
+      blockActiveB=A.blockActiveB;
+      aSide=A.aSide;
+      bSide=A.bSide;
       innerRadius=A.innerRadius;
       innerHeight=A.innerHeight;
       innerDepth=A.innerDepth;
@@ -147,6 +152,7 @@ CylPreMod::operator=(const CylPreMod& A)
     }
   return *this;
 }
+
 
 CylPreMod::~CylPreMod()
   /*!

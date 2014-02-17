@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   test/testMapSupport.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -179,7 +179,7 @@ testMapSupport::testSndValue()
   
   transform(Kvec.begin(),Kvec.end(),Out.begin(),
 	    MapSupport::sndValue<std::map<std::string,int> >(MX));
-  std::cerr<<"Out =="<<Out[0]<<" "<<Out[1]<<" "<<Out[2]<<" "<<Out[3]<<std::endl;
+
   if (Out[0]!=1 || Out[1]!=3 || Out[2]!=2 || Out[3]!=1)
     return -1;
   
@@ -228,10 +228,16 @@ testMapSupport::testMapWrite()
   MX["c"]=3;
   MX["d"]=4;
   MX["e"]=5;
-  
-  for_each(MX.begin(),MX.end(),
-	   MapSupport::mapWrite<std::map<std::string,int> >());
 
+  std::ostringstream CX;
+  for_each(MX.begin(),MX.end(),
+	   MapSupport::mapWrite<std::map<std::string,int> >(CX));
+  if (StrFunc::removeSpace(CX.str())!="a1b2c3d4e5")
+    {
+      ELog::EM<<"Out == "<<ELog::endDiag;
+      ELog::EM<<StrFunc::removeSpace(CX.str())<<ELog::endDiag;      
+      return -1;
+    }
   return 0;
 }
 

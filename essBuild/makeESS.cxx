@@ -210,26 +210,18 @@ makeESS::topFlightLines(Simulation& System)
 
 
 void
-makeESS::makeTarget(Simulation& System,	       
-		    const mainSystem::inputParam& IParam)
+makeESS::makeTarget(Simulation& System,
+		    const std::string& targetType)
   /*!
     Build the different ESS targets
     \param System :: Simulation
-    \param IParam :: Parameters
+    \param targetType :: Type of target
   */
 {
   ELog::RegMethod RegA("makeESS","makeTarget");
 
   const int voidCell(74123);  
-  const std::string targetType=
-    IParam.getValue<std::string>("targetType");
-  if (targetType=="help")
-    {
-      ELog::EM<<"Target Type : "<<ELog::endBasic;
-      ELog::EM<<"Wheel       : Simple wheel form"<<ELog::endBasic;
-      ELog::EM<<"SegWheel    : Segmented wheel"<<ELog::endBasic;
-      throw ColErr::ExitAbort("help exit");
-    }
+
   if (targetType=="Wheel")
     Target=boost::shared_ptr<WheelBase>(new Wheel("Wheel"));
   else if (targetType=="SegWheel")
@@ -388,6 +380,48 @@ makeESS::buildTopCylMod(Simulation& System)
 }
 
 void 
+makeESS::buildLowerPipe(Simulation& System,
+			const std::string& pipeType)
+  /*!
+    Process the lower moderator pipe
+    \param System :: Simulation 
+    \param pipeType :: pipeType 
+  */
+{
+  ELog::RegMethod RegA("makeESS","processLowPipe");
+
+  LowReturnPipe->setAngleSeg(12);
+  if (pipeType=="Top")
+    {
+      LowSupplyPipe->setOption("Top");
+      LowReturnPipe->setOption("Top");
+      LowSupplyPipe->createAll(System,*LowMod,0,6,4,*LowPre,2);
+      LowReturnPipe->createAll(System,*LowMod,0,5,4,*LowPre,2);
+    }
+  else
+    {
+      LowSupplyPipe->createAll(System,*LowMod,0,6,4,*LowPre,2);
+      LowReturnPipe->createAll(System,*LowMod,0,3,2,*LowPre,4);
+    }
+  return;
+}
+
+
+void
+makeESS::optionSummary() const
+  /*!
+    write summary of options
+   */
+{
+  ELog::RegMethod RegA("makeESS","optionSummary");
+
+  ELog::EM<<"Target Type [targetT: "<<ELog::endBasic;
+  ELog::EM<<"  -- Wheel       : Simple wheel form"<<ELog::endBasic;
+  ELog::EM<<"  -- SegWheel    : Segmented wheel"<<ELog::endBasic;
+  return;
+}
+
+void 
 makeESS::build(Simulation* SimPtr,
 	       const mainSystem::inputParam& IParam)
   /*!
@@ -403,7 +437,12 @@ makeESS::build(Simulation* SimPtr,
   // Add extra materials to the DBdatabase
   ModelSupport::addESSMaterial();
 
-  makeTarget(*SimPtr,IParam);
+  const std::string lowPipeType=IParam.getValue<std::string>("lowPipe");
+  const std::string lowModType=IParam.getValue<std::string>("lowMod");
+  const std::string topModType=IParam.getValue<std::string>("topMod");
+  const std::string targetType=IParam.getValue<std::string>("targetType");
+
+  makeTarget(*SimPtr,targetType);
   
   Reflector->addInsertCell(voidCell);
   Reflector->createAll(*SimPtr,World::masterOrigin());
@@ -412,10 +451,6 @@ makeESS::build(Simulation* SimPtr,
   Bulk->createAll(*SimPtr,*Reflector,*Reflector);
   attachSystem::addToInsertSurfCtrl(*SimPtr,*Bulk,Target->getKey("Wheel"));
   attachSystem::addToInsertForced(*SimPtr,*Bulk,Target->getKey("Shaft"));
-
-
-  const std::string lowModType=IParam.getValue<std::string>("lowMod");
-  const std::string topModType=IParam.getValue<std::string>("topMod");
 
   buildLowMod(*SimPtr,lowModType);
 
@@ -444,17 +479,15 @@ makeESS::build(Simulation* SimPtr,
   attachSystem::addToInsertSurfCtrl(*SimPtr,*Reflector,
 				    PBeam->getKey("Sector0"));
   
-
   attachSystem::addToInsertSurfCtrl(*SimPtr,*ShutterBayObj,
 				    PBeam->getKey("Full"));
   attachSystem::addToInsertSurfCtrl(*SimPtr,*Bulk,
 				    PBeam->getKey("Full"));
-  //  BMon->createAll(*SimPtr,*Target,1,*PBeam,"Sector");
-  //  attachSystem::addToInsertForced(*SimPtr,*Reflector,*BMon);
 
-  LowReturnPipe->setAngleSeg(12);
-  LowSupplyPipe->createAll(*SimPtr,*LowMod,0,6,4,*LowPre,2);
-  LowReturnPipe->createAll(*SimPtr,*LowMod,0,3,2,*LowPre,4);
+  // BMon->createAll(*SimPtr,*Target,1,*PBeam,"Sector");
+  // attachSystem::addToInsertForced(*SimPtr,*Reflector,*BMon);
+
+  buildLowerPipe(*SimPtr,lowPipeType);
   
   return;
 }

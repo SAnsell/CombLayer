@@ -39,7 +39,7 @@ class SupplyPipe : public attachSystem::FixedComp
 {
  private:
   
-  // const int pipeIndex; 
+  std::string optName;    ///< Option value
   const int pipeIndex;          ///< Index of surface offset
   int cellIndex;                ///< Cell index
    
@@ -75,6 +75,9 @@ class SupplyPipe : public attachSystem::FixedComp
   SupplyPipe& operator=(const SupplyPipe&);
   ~SupplyPipe();
 
+  /// Set the option name
+  void setOption(const std::string& ON) 
+  {  optName=keyName+ON; }
   /// Set angle segments
   void setAngleSeg(const size_t N) { nAngle=N; }
 

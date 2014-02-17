@@ -48,12 +48,7 @@
 #include "Matrix.h"
 #include "Tensor.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -68,8 +63,6 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "SimProcess.h"
 #include "SurInter.h"
 #include "Simulation.h"
@@ -98,18 +91,23 @@ t1Vessel::t1Vessel(const t1Vessel& A) :
   attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
   voidIndex(A.voidIndex),cellIndex(A.cellIndex),
   populated(A.populated),voidOrigin(A.voidOrigin),
-  Thick(A.Thick),Gap(A.Gap),Side(A.Side),Base(A.Base),
-  Top(A.Top),Back(A.Back),Front(A.Front),FDepth(A.FDepth),
-  ForwardAngle(A.ForwardAngle),WindowThick(A.WindowThick),
-  WindowView(A.WindowView),WindowWTopLen(A.WindowWTopLen),
-  WindowETopLen(A.WindowETopLen),WindowWLowLen(A.WindowWLowLen),
-  WindowELowLen(A.WindowELowLen),WindowWTopOff(A.WindowWTopOff),
-  WindowETopOff(A.WindowETopOff),WindowWLowOff(A.WindowWLowOff),
+  vXoffset(A.vXoffset),Thick(A.Thick),Gap(A.Gap),Side(A.Side),
+  Base(A.Base),Top(A.Top),Back(A.Back),Front(A.Front),
+  FDepth(A.FDepth),ForwardAngle(A.ForwardAngle),
+  WindowThick(A.WindowThick),WindowView(A.WindowView),
+  WindowWTopLen(A.WindowWTopLen),
+  WindowETopLen(A.WindowETopLen),
+  WindowWLowLen(A.WindowWLowLen),
+  WindowELowLen(A.WindowELowLen),
+  WindowWTopOff(A.WindowWTopOff),
+  WindowETopOff(A.WindowETopOff),
+  WindowWLowOff(A.WindowWLowOff),
   WindowELowOff(A.WindowELowOff),WindowWTopZ(A.WindowWTopZ),
   WindowETopZ(A.WindowETopZ),WindowWLowZ(A.WindowWLowZ),
   WindowELowZ(A.WindowELowZ),WindowAngleLen(A.WindowAngleLen),
-  WindowAngleROff(A.WindowAngleROff),WindowAngleLOff(A.WindowAngleLOff),
-  WindowMat(A.WindowMat),Mat(A.Mat),steelCell(A.steelCell)
+  WindowAngleROff(A.WindowAngleROff),
+  WindowAngleLOff(A.WindowAngleLOff),WindowMat(A.WindowMat),
+  Mat(A.Mat),steelCell(A.steelCell),voidCell(A.voidCell)
   /*!
     Copy constructor
     \param A :: t1Vessel to copy
@@ -131,6 +129,7 @@ t1Vessel::operator=(const t1Vessel& A)
       cellIndex=A.cellIndex;
       populated=A.populated;
       voidOrigin=A.voidOrigin;
+      vXoffset=A.vXoffset;
       Thick=A.Thick;
       Gap=A.Gap;
       Side=A.Side;
@@ -160,10 +159,10 @@ t1Vessel::operator=(const t1Vessel& A)
       WindowMat=A.WindowMat;
       Mat=A.Mat;
       steelCell=A.steelCell;
+      voidCell=A.voidCell;
     }
   return *this;
 }
-
 
 t1Vessel::~t1Vessel() 
   /*!

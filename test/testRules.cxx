@@ -193,6 +193,8 @@ testRules::testCreateDNF()
 	{
 	  ELog::EM<<"Original == "<<TRule->display()<<ELog::endTrace;
 	  ELog::EM<<"D == "<<Dlist<<ELog::endTrace;
+	  ELog::EM<<ELog::endDiag;
+	  ELog::EM<<"Out Rule == "<<tc->get<2>()<<ELog::endDiag;
 	  if (OutRule)
 	    ELog::EM<<"Rule == "<<OutRule->display()<<ELog::endTrace;
 	  else

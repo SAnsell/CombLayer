@@ -22,6 +22,11 @@
 #ifndef t1System_makeT1Real_h
 #define t1System_makeT1Real_h
 
+namespace hutchSystem
+{
+  class ChipIRHutch;
+}
+
 namespace constructSystem
 {
   class TargetBase;
@@ -36,6 +41,7 @@ namespace TMRSystem
 namespace moderatorSystem
 {
   class FlightLine;
+  class Reflector;
 }
 
 namespace shutterSystem

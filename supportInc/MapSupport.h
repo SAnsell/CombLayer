@@ -190,22 +190,29 @@ namespace MapSupport
     \class mapWrite
     \brief Functor quick write out of a map
     \author S. Ansell
-    \date 2/9/05
-    \version 1.0
+    \date February 2014
+    \version 2.0
 
     This functor takes a map of key,value and write the 
-    key,value to the std::cout
+    key,value to the stream
   */
   template<typename MapTYPE>
   class mapWrite
     {
+      private:
+
+      std::ostream& OX;
+
       public:
+      
+       mapWrite(std::ostream& OutStream) : OX(OutStream) {}
+
 
         /// Write both the key and object 
         void 
-	operator()(const typename MapTYPE::value_type& A) const
+	  operator()(const typename MapTYPE::value_type& A) const
 	  {
-	    std::cout<<A.first<<" "<<A.second<<std::endl;
+	    OX<<A.first<<" "<<A.second<<std::endl;
 	  }
     };
   /*!

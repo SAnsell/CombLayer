@@ -184,8 +184,6 @@ BeamWindow::createUnitVector(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("BeamWindow","createUnitVector");
 
-  const masterRotate& MR=masterRotate::Instance();
-
   attachSystem::FixedComp::createUnitVector(FC);
   // Origin is in the wrong place as it is at the EXIT:
   FixedComp::createUnitVector(FC);
