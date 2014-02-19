@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   process/DefPhysics.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -114,7 +114,7 @@ setItemRotate(const attachSystem::FixedComp& WMaster,
 
   const attachSystem::SecondTrack*
     TwinPtr=OR.getObject<attachSystem::SecondTrack>(ItemName);  
-  if (!TwinPtr || TwinPtr)
+  if (!TwinPtr)
     {
       const attachSystem::FixedComp* 
 	ItemPtr=OR.getObject<attachSystem::FixedComp>(ItemName);  

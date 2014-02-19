@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   t1Build/t1CylVessel.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,15 +47,9 @@
 #include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
-#include "Tensor.h"
 #include "Vec3D.h"
 #include "PointOperation.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfDIter.h"
@@ -66,8 +60,6 @@
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
-#include "Line.h"
-#include "LineIntersectVisit.h"
 #include "Rules.h"
 #include "varList.h"
 #include "Code.h"
@@ -102,10 +94,11 @@ t1CylVessel::t1CylVessel(const std::string& Key)  :
 t1CylVessel::t1CylVessel(const t1CylVessel& A) : 
   attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
   voidIndex(A.voidIndex),cellIndex(A.cellIndex),
-  populated(A.populated),radius(A.radius),
-  baseRadius(A.baseRadius),topRadius(A.topRadius),
-  wallThick(A.wallThick),height(A.height),wallMat(A.wallMat),
-  ports(A.ports),steelCell(A.steelCell),voidCell(A.voidCell)
+  populated(A.populated),voidYoffset(A.voidYoffset),
+  radius(A.radius),clearance(A.clearance),baseRadius(A.baseRadius),
+  topRadius(A.topRadius),wallThick(A.wallThick),
+  height(A.height),wallMat(A.wallMat),ports(A.ports),
+  steelCell(A.steelCell),voidCell(A.voidCell)
   /*!
     Copy constructor
     \param A :: t1CylVessel to copy
@@ -126,7 +119,9 @@ t1CylVessel::operator=(const t1CylVessel& A)
       attachSystem::ContainedComp::operator=(A);
       cellIndex=A.cellIndex;
       populated=A.populated;
+      voidYoffset=A.voidYoffset;
       radius=A.radius;
+      clearance=A.clearance;
       baseRadius=A.baseRadius;
       topRadius=A.topRadius;
       wallThick=A.wallThick;

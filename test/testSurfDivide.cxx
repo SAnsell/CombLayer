@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   test/testSurfDivide.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -368,6 +368,8 @@ testSurfDivide::checkSurfaceEqual
     \return -ve on error / 0 on success
   */
 {
+  ELog::RegMethod RegA("testSurfDivide","checkSurfaceEqual");
+
   const ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
   const Geometry::Surface* SPtr=
     Geometry::surfaceFactory::Instance().processLine(surfStr);
@@ -378,20 +380,20 @@ testSurfDivide::checkSurfaceEqual
     }
   const Geometry::Surface* TPtr=SurI.getSurf(SN);
   
+  int retval(-1);
   if (!TPtr)
-    {
-      ELog::EM<<"Failed to find surface number:"<<SN<<ELog::endCrit;
-      return -1;
-    }
-  if (!ModelSupport::equalSurface(SPtr,TPtr))
+    ELog::EM<<"Failed to find surface number:"<<SN<<ELog::endCrit;
+  else if (!ModelSupport::equalSurface(SPtr,TPtr))
     {
       ELog::EM<<"Surfaces not equal:"<<ELog::endCrit;
       ELog::EM<<"SPtr :"<<*SPtr<<ELog::endCrit;
       ELog::EM<<"TPtr :"<<*TPtr<<ELog::endCrit;
-      return -1;
     }
-    
-  return 0;
+  else
+    retval=0;
+  
+  delete SPtr;
+  return retval;
 }
 
 int

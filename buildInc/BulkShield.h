@@ -51,7 +51,7 @@ class BulkShield : public attachSystem::FixedComp,
   const int bulkIndex;            ///< Index of surface offset
   int cellIndex;                  ///< Cell index
   int populated;                  ///< 1:var
-  const int numberBeamLines;      ///< Number of beamlines
+  const size_t numberBeamLines;      ///< Number of beamlines
 
   /// Data for Torpdeo
   std::vector<boost::shared_ptr<shutterSystem::Torpedo> > TData;
@@ -97,9 +97,9 @@ class BulkShield : public attachSystem::FixedComp,
   virtual ~BulkShield();
 
   
-  static const int chipShutter;   ///< Chip shutter number
-  static const int imatShutter;   ///< Imat shutter number
-  static const int zoomShutter;   ///< zoom shutter number
+  static const size_t chipShutter;   ///< Chip shutter number
+  static const size_t imatShutter;   ///< Imat shutter number
+  static const size_t zoomShutter;   ///< zoom shutter number
 
 
   /// Access outer limit

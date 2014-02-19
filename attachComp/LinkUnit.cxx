@@ -205,6 +205,7 @@ LinkUnit::addLinkSurf(const int SN)
   ELog::RegMethod RegA("LinkUnit","addLinkSurf");
   if (!linkSurf) 
     linkSurf=SN;
+
   mainSurf.addIntersection(SN);
   return;
 }

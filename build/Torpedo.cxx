@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   build/Torpedo.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
- #include <fstream>
+#include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
@@ -44,15 +44,13 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
+#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Tensor.h"
 #include "Vec3D.h"
 #include "localRotate.h"
 #include "masterRotate.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Quaternion.h"
 #include "Surface.h"
 #include "surfIndex.h"
@@ -73,8 +71,6 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "shutterBlock.h"
 #include "SimProcess.h"
 #include "Simulation.h"
@@ -95,9 +91,10 @@
 namespace shutterSystem
 {
 
-Torpedo::Torpedo(const int ID,const std::string& Key) : 
+Torpedo::Torpedo(const size_t ID,const std::string& Key) : 
   FixedComp(Key,6),shutterNumber(ID),
-  surfIndex(ModelSupport::objectRegister::Instance().cell(Key,ID)),
+  surfIndex(ModelSupport::objectRegister::Instance().
+	    cell(Key+StrFunc::makeString(ID))),
   cellIndex(surfIndex+1),populated(0)
   /*!\
     Constructor BUT ALL variable are left unpopulated.

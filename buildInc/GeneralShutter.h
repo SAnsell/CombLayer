@@ -51,7 +51,7 @@ class GeneralShutter : public attachSystem::TwinComp,
 {
  protected:
 
-  const int shutterNumber;            ///< number of the shutter
+  const size_t shutterNumber;         ///< number of the shutter
   const int surfIndex;                ///< Index of the surface
   int cellIndex;                      ///< Index of the cells
 
@@ -122,13 +122,13 @@ class GeneralShutter : public attachSystem::TwinComp,
   
  public:
 
-  GeneralShutter(const int,const std::string&);
+  GeneralShutter(const size_t,const std::string&);
   GeneralShutter(const GeneralShutter&);
   GeneralShutter& operator=(const GeneralShutter&);
   virtual ~GeneralShutter();
 
   /// Access shutter number
-  int getShutterNumber() const { return shutterNumber; }
+  size_t getShutterNumber() const { return shutterNumber; }
   /// Set closed/open
   void setClosed(const int C) { closed=C; }
 

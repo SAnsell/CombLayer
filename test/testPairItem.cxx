@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   test/testPairItem.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -177,7 +177,7 @@ testPairItem::applyTest(const int extra)
   typedef int (testPairItem::*testPtr)();
   testPtr TPtr[]=
     {
-      &testPairItem::testBasicPair,
+      &testPairItem::testBasicPair
     };
 
   const std::string TestName[]=
@@ -237,6 +237,7 @@ testPairItem::testBasicPair()
 
       boost::shared_ptr<PTYPE> pBase=boost::shared_ptr<PTYPE>(new PTYPE(PA,PB));
       const int sFound=pBase->createSurface(tc->get<3>(),surfOut);
+
       if (surfOut!=sFound || checkSurfaceEqual(surfOut,tc->get<4>()))
 	{
 	  ELog::EM<<"Surf out ["<<surfOut<<"] == "<<sFound<<ELog::endDiag;
@@ -260,6 +261,8 @@ testPairItem::checkSurfaceEqual
     \return -ve on error / 0 on success
   */
 {
+  ELog::RegMethod RegA("testPair","checkSurfaceEqual");
+
   const ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
   const Geometry::Surface* SPtr=
     Geometry::surfaceFactory::Instance().processLine(surfStr);

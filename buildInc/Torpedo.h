@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   buildInc/Torpedo.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ class Torpedo : public attachSystem::FixedComp,
 {
  protected:
 
-  const int shutterNumber;            ///< number of the shutter
+  const size_t shutterNumber;         ///< number of the shutter
   const int surfIndex;                ///< Index of the surface
   int cellIndex;                      ///< Index of the cells
   Geometry::Convex vBox;              ///< Convex box of torpedo
@@ -78,7 +78,7 @@ class Torpedo : public attachSystem::FixedComp,
   
  public:
 
-  Torpedo(const int,const std::string&);
+  Torpedo(const size_t,const std::string&);
   Torpedo(const Torpedo&);
   Torpedo& operator=(const Torpedo&);
   virtual ~Torpedo();

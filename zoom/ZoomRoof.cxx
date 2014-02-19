@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   zoom/ZoomRoof.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,8 +48,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfDIter.h"
@@ -60,8 +58,6 @@
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
-#include "Line.h"
-#include "LineIntersectVisit.h"
 #include "Rules.h"
 #include "surfFunctors.h"
 #include "SurInter.h"
@@ -76,20 +72,16 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "chipDataStore.h"
 #include "shutterBlock.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h" 
 #include "SecondTrack.h"
 #include "TwinComp.h"
-#include "LinearComp.h"
 #include "InsertComp.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "GeneralShutter.h"
 #include "BulkShield.h"
-#include "ScatterPlate.h"
-#include "ChipIRFilter.h"
 #include "bendSection.h"
 #include "varBlock.h"
 #include "ZoomBend.h"
@@ -172,7 +164,8 @@ ZoomRoof::populate(const Simulation& System)
   
   for(size_t i=0;i<nSteel;i++)
     {
-      Steel.push_back(varBlock(DSize,sndKey,0,sndKey+DSize));
+      // note : zero int item 
+      Steel.push_back(varBlock(DSize,sndKey,0,0));
       for(size_t j=0;j<DSize;j++)
 	{
 	  std::ostringstream cx;

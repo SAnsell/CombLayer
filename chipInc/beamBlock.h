@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   chipInc/beamBlock.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,15 +37,15 @@ namespace hutchSystem
 
 struct beamBlock
 {
-  static const int Size;   ///< Size of a beamstop group
+  static const size_t Size;   ///< Size of a beamstop group
 
   double thickness;        ///< length of unit 
   double angle;            ///< angle of unit
   int matN;                ///< Material number  
 
   int setFromControl(const FuncDataBase&,const std::string&,
-		     const int,const int);
-  void setVar(const FuncDataBase&,const int,const std::string&);
+		     const size_t,const size_t);
+  void setVar(const FuncDataBase&,const size_t,const std::string&);
 
 };
 

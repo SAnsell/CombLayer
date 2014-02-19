@@ -714,46 +714,38 @@ FuncDataBase::extractComponents(const std::string& Line,
   int bracket(0);
   while(i<maxLine)
     {
-      // Process in a quote [highest precidence:
-      if (quote)
-        {
-	  if (!escape)
-	    {
-	      if (Line[i]=='\'' || Line[i]=='\"')
-		quote=0;
-	    }
-	  else if (Line[i]=='\\')
-	    escape=1;
-	  else
-	    escape=0;
-	}
-      else 
-        {
-	  // Always add quote
-	  if (Line[i]=='\'' || Line[i]=='\"')
-	    quote=1;
-	  
-	  // If in bracket ignore all others
+      // Process in a quote [highest precidence]:
+      
+      if (!escape && (Line[i]=='\'' || Line[i]=='\"'))
+	quote=1-quote;
+      // If in bracket ignore all others
+      if (!quote)
+	{
 	  if (bracket)
-            {
-	      if (i && Line[i]=='(')
-		bracket++;
-	      else if (Line[i]==')')
-		bracket--;
+	    {
+	      if (!escape)
+		{
+		  if (Line[i]=='(')
+		    bracket++;
+		  else if (Line[i]==')')
+		    bracket--;
+		}
 	    } 
-	  else if (Line[i]==',')      // separate
+	  else if (!escape && Line[i]==',')      // separate
 	    {
 	      Comp.push_back(Line.substr(secStart,i-secStart));
 	      secStart=i+1;
 	    }
-	  else if (Line[i]=='(')      // start of new bracket
+	  else if (!escape && Line[i]=='(')      // start of new bracket
 	    bracket++;
-	  else if (Line[i]==')')       // last bracket
+	  else if (!escape && Line[i]==')')       // last bracket
 	    {
 	      Comp.push_back(Line.substr(secStart,i-secStart));
 	      return i;
 	    }
 	}
+      if (Line[i]=='\\')
+	escape=1-escape;
       i++;
     }
   throw ColErr::InvalidLine(Line,"failure at point",i);

@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   chip/makeChipIR.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,9 +49,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "inputParam.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -63,8 +60,6 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "insertInfo.h"
 #include "insertBaseInfo.h"
 #include "InsertComp.h"
@@ -195,6 +190,7 @@ makeChipIR::build(Simulation* SimPtr,
   if (isoFlag)
     {
       MonteCarlo::Qhull* Ob=SimPtr->findQhull(74123);
+      // This is insanity :: USE A NAME  / USE OUTER OBJECTS
       Ob->procString("-1 #100000");
       SimPtr->removeCells(2,74122);
       SimPtr->removeCells(74174,110000-1);

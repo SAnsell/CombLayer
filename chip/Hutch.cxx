@@ -458,7 +458,7 @@ ChipIRHutch::createUnitVector(const shutterSystem::GeneralShutter& GI,
 void 
 ChipIRHutch::createWallObjects(Simulation& System,
 			       const attachSystem::ContainedComp& IC)
-  /*!
+/*!
     Create the walls for the chipIR hutch
     \param System :: Simulation
     \param IC :: Inner Insert object of Wall from the guide
@@ -640,6 +640,7 @@ ChipIRHutch::createWallSurfaces(const attachSystem::FixedComp& Guide)
   // OUTER WALLS:
   // ---------------------------------------------------
   SMap.addMatch(hutchIndex+1,Guide.getLinkSurf(1));
+
   // CENTRE LINE [normal on x axis]:
   ModelSupport::buildPlane(SMap,hutchIndex+100,Origin,X); 
   
@@ -797,7 +798,8 @@ ChipIRHutch::createWallSurfaces(const attachSystem::FixedComp& Guide)
 
   // Use trimmers attached objects
   SMap.addMatch(hutchIndex+101,Trimmer->getLU(0).getLinkSurf());
-  SMap.addMatch(hutchIndex+102,Trimmer->getLU(1).getLinkSurf());
+  SMap.addMatch(hutchIndex+102,-Trimmer->getLU(1).getLinkSurf());
+
   // Attach back containment:
   Trimmer->addBoundarySurf(SMap.realSurf(hutchIndex+33));
   Trimmer->addBoundarySurf(-SMap.realSurf(hutchIndex+34));

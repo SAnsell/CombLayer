@@ -59,7 +59,7 @@ OutputLog<RepClass>::OutputLog(const std::string&) :
 
 template<>
 OutputLog<ELog::FileReport>::OutputLog(const std::string& Fname) :
-  activeBits(255),actionBits(0),debugBits(0),typeFlag(1),
+  colourFlag(1),activeBits(255),actionBits(0),debugBits(0),typeFlag(1),
   locFlag(1),storeFlag(0),NBasePtr(0),
   FOut(Fname)
   /*!
@@ -71,6 +71,7 @@ OutputLog<ELog::FileReport>::OutputLog(const std::string& Fname) :
 
 template<typename RepClass>
 OutputLog<RepClass>::OutputLog(const OutputLog<RepClass>& A)  :
+  colourFlag(A.colourFlag),
   activeBits(A.activeBits),actionBits(A.actionBits),
   debugBits(A.debugBits),typeFlag(A.typeFlag),locFlag(A.locFlag),
   storeFlag(A.storeFlag),NBasePtr(A.NBasePtr),
@@ -94,6 +95,7 @@ OutputLog<RepClass>::operator=(const OutputLog<RepClass>& A)
 {
   if (this!=&A)
     {
+      colourFlag=1;
       activeBits=A.activeBits;
       actionBits=A.actionBits;
       debugBits=A.debugBits;

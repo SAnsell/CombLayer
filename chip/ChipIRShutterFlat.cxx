@@ -88,7 +88,7 @@
 namespace shutterSystem
 {
 
-ChipIRShutterFlat::ChipIRShutterFlat(const int ID,const std::string& K,
+ChipIRShutterFlat::ChipIRShutterFlat(const size_t ID,const std::string& K,
 			     const std::string& CKey)  : 
   GeneralShutter(ID,K),chipKey(CKey)
   /*!

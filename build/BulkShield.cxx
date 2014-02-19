@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   build/BulkShield.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -115,9 +115,9 @@ namespace shutterSystem
 {
 
 
-const int BulkShield::chipShutter(0);
-const int BulkShield::imatShutter(3);
-const int BulkShield::zoomShutter(9);
+const size_t BulkShield::chipShutter(0);
+const size_t BulkShield::imatShutter(3);
+const size_t BulkShield::zoomShutter(9);
 
 BulkShield::BulkShield(const std::string& Key)  : 
   attachSystem::FixedComp(Key,0),attachSystem::ContainedComp(),
@@ -270,7 +270,7 @@ BulkShield::createTorpedoes(Simulation& System,
     ModelSupport::objectRegister::Instance();
 
   TData.clear();
-  for(int i=0;i<numberBeamLines;i++)
+  for(size_t i=0;i<numberBeamLines;i++)
     {
       // Needs specialization to include with/without topedo
       TData.push_back(boost::shared_ptr<Torpedo>
@@ -322,7 +322,7 @@ BulkShield::createShutters(Simulation& System,
    		      !IParam.compValue("E",std::string("Zoom")));
 
   GData.clear();
-  for(int i=0;i<numberBeamLines;i++)
+  for(size_t i=0;i<numberBeamLines;i++)
     {
       if (i==chipShutter && chipFlag)
 	GData.push_back(boost::shared_ptr<GeneralShutter>
@@ -374,7 +374,7 @@ BulkShield::createBulkInserts(Simulation& System,
    		      (!IParam.compValue("E",std::string("Imat")) &&
 		       !IParam.compValue("E",std::string("IMat"))) );
 
-  for(int i=0;i<numberBeamLines;i++)
+  for(size_t i=0;i<numberBeamLines;i++)
     {
       if (i==chipShutter && chipFlag)
 	BData.push_back(boost::shared_ptr<ChipIRInsert>

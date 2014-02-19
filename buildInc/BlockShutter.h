@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   buildInc/BlockShutter.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -90,7 +90,7 @@ class BlockShutter : public GeneralShutter
 
  public:
 
-  BlockShutter(const int,const std::string&,const std::string&);
+  BlockShutter(const size_t,const std::string&,const std::string&);
   BlockShutter(const BlockShutter&);
   BlockShutter& operator=(const BlockShutter&);
   virtual ~BlockShutter();

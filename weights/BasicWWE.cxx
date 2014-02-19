@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   weights/BasicWWE.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,9 +45,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Rules.h"
 #include "varList.h"
 #include "Code.h"
@@ -60,9 +57,6 @@
 #include "WItem.h"
 #include "WCells.h"
 #include "WeightModification.h"
-#include "KGroup.h"
-#include "Source.h"
-#include "SimProcess.h"
 #include "Simulation.h"
 #include "objectRegister.h"
 #include "inputParam.h"
@@ -142,8 +136,6 @@ setWeights(Simulation& System,const std::string& Type)
   return;
 }
 
-
-
 void
 setWeights(Simulation& System,const std::vector<double>& Eval,
 	   const std::vector<double>& WT,
@@ -159,8 +151,6 @@ setWeights(Simulation& System,const std::vector<double>& Eval,
 {
   ELog::RegMethod RegA("BasicWWE","setWeights(Simulation,vec,vec)");
 
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
 
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();  

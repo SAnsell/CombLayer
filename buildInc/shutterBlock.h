@@ -37,7 +37,7 @@ namespace shutterSystem
 
 struct shutterBlock
 {
-  static const int Size; ///< Size of a shutter group
+  static const size_t Size; ///< Size of a shutter group
 
   int flag;             ///< Flag [1: Top / 2: Base]
   double centY;         ///< Centre position down the shutter
@@ -49,8 +49,8 @@ struct shutterBlock
   int matN;             ///< Material number  
 
   int setFromControl(const FuncDataBase&,const std::string&,
-		     const int,const int,const int);
-  void setVar(const FuncDataBase&,const int,const std::string&);
+		     const size_t,const size_t,const size_t);
+  void setVar(const FuncDataBase&,const size_t,const std::string&);
 
 };
 

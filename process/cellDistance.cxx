@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   process/cellDistance.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -119,16 +119,16 @@ cellDistance::calcPoint(const Geometry::Vec3D& Pt,
   MonteCarlo::Object* OPtr=initObj;
 
   int flag(0);
+  int SN(0);      // if on a surface boundary : surf not to be used
   while(OPtr)
     {
-      const int SN= -OPtr->trackOutCell(TNeut,aDist,SPtr,-SN);
+      SN= -OPtr->trackOutCell(TNeut,aDist,SPtr,-SN);
       TNeut.moveForward(aDist);
       flag = (SN>=aRange && SN<bRange) ? 0 : 1;
 
       OPtr=OSMPtr->findNextObject(SN,TNeut.Pos,OPtr->getName());
       if (OPtr->getName()>aRange && OPtr->getName()<bRange)
 	return TNeut.Pos;
-      ELog::EM<<"Object == "<<OPtr->getName()<<" "<<TNeut.Pos<<ELog::endDebug;
     }
 
   ELog::EM<<"Failed to find hit "<<ELog::endErr;

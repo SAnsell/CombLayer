@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef ChipShutterFlat_h
-#define ChipShutterFlat_h
+#ifndef shutterSystem_ChipShutterFlat_h
+#define shutterSystem_ChipShutterFlat_h
 
 class Simulation;
 
@@ -64,7 +64,7 @@ class ChipIRShutterFlat : public GeneralShutter
 
  public:
 
-  ChipIRShutterFlat(const int,const std::string&,
+  ChipIRShutterFlat(const size_t,const std::string&,
 		const std::string&);
   ChipIRShutterFlat(const ChipIRShutterFlat&);
   ChipIRShutterFlat& operator=(const ChipIRShutterFlat&);

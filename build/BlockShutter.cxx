@@ -93,7 +93,7 @@
 namespace shutterSystem
 {
 
-BlockShutter::BlockShutter(const int ID,const std::string& K,
+BlockShutter::BlockShutter(const size_t ID,const std::string& K,
 			 const std::string& ZK) :
   GeneralShutter(ID,K),b4cMat(47),
   blockKey(ZK)

@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   chip/beamBlock.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,11 +53,11 @@ namespace hutchSystem
 {
 
 /// Number of active names
-const int beamBlock::Size(3);
+const size_t beamBlock::Size(3);
 
 void
 beamBlock::setVar(const FuncDataBase& Control,
-		     const int Item,
+		     const size_t Item,
 		     const std::string& VarStr)
 /*!
   Given a value set the item
@@ -84,8 +84,8 @@ beamBlock::setVar(const FuncDataBase& Control,
 int
 beamBlock::setFromControl(const FuncDataBase& Control,
 			  const std::string& primName,
-			  const int Index,
-			  const int Item)
+			  const size_t Index,
+			  const size_t Item)
   /*!
     Set the value in the structure from control
     \param Control :: Data Base to get variables from
@@ -98,16 +98,14 @@ beamBlock::setFromControl(const FuncDataBase& Control,
   ELog::RegMethod RegA("beamBlock","setFromControl");
   static const char* sndKey[Size]={"Thick","Angle","Mat"};
 
-  if (Item<0 || Item>beamBlock::Size)
-    {
-      ELog::EM<<"Item out of range "<<ELog::endErr;
-      return 0;
-    }
+  if (Item>=beamBlock::Size)
+    throw ColErr::IndexError<size_t>(Item,beamBlock::Size,
+				     "beamBlock::size/Item");
 
   const std::string AKey=
     StrFunc::makeString(primName+sndKey[Item],Index+1);
   const std::string BKey=
-    StrFunc::makeString(primName+sndKey[Item],Index+1);
+    StrFunc::makeString(primName+sndKey[Item]);
 
   if (Control.hasVariable(AKey))
     setVar(Control,Item,AKey);

@@ -391,7 +391,7 @@ CH4Layer::getSurfacePoint(const size_t layerIndex,
 
 std::string
 CH4Layer::getLayerString(const size_t sideIndex,
-			     const size_t layerIndex) const
+			 const size_t layerIndex) const
   /*!
     Given a side and a layer calculate the link surf
     \param sideIndex :: Side [0-5]
@@ -408,7 +408,7 @@ CH4Layer::getLayerString(const size_t sideIndex,
 
   const int SI(modIndex+static_cast<int>(layerIndex*10+sideIndex+1));
   std::ostringstream cx;
-  const int signValue((sideIndex % 1) ? 1 : -1);
+  const int signValue((sideIndex % 2) ? 1 : -1);
   cx<<" "<<signValue*SMap.realSurf(SI)<<" ";
   return cx.str();
 }

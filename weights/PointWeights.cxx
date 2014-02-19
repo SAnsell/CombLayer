@@ -94,7 +94,9 @@ setPointWeights(Simulation& System,
   WM.addParticle<WeightSystem::WCells>('n');
   WeightSystem::WCells* WF=
     dynamic_cast<WeightSystem::WCells*>(WM.getParticle('n'));
-  
+  if (!WF)
+    throw ColErr::InContainerError<std::string>("n","WCell - WM");
+
 
   ELog::EM<<"Number of cells "<<WF->getEnergy().size()<<ELog::endDebug;
   const std::vector<double>& EngBin=WF->getEnergy();

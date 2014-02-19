@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   t1Build/t1Reflector.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,10 +47,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "Tally.h"
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
@@ -72,8 +68,6 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -105,12 +99,12 @@ t1Reflector::t1Reflector(const std::string& Key)  :
 
 t1Reflector::t1Reflector(const t1Reflector& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  refIndex(A.refIndex),
-  cellIndex(A.cellIndex),populated(A.populated),
+  refIndex(A.refIndex),cellIndex(A.cellIndex),populated(A.populated),
   xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  xyAngle(A.xyAngle),xSize(A.xSize),ySize(A.ySize),ySizeColdCut(A.ySizeColdCut),     
-  zSize(A.zSize),cutLen(A.cutLen),defMat(A.defMat),
-  Boxes(A.Boxes)
+  xyAngle(A.xyAngle),xSize(A.xSize),ySize(A.ySize),
+  ySizeColdCut(A.ySizeColdCut),zSize(A.zSize),cutLen(A.cutLen),
+  defMat(A.defMat),Boxes(A.Boxes),Rods(A.Rods),
+  Plates(A.Plates),baseZCut(A.baseZCut)
   /*!
     Copy constructor
     \param A :: t1Reflector to copy
@@ -137,11 +131,14 @@ t1Reflector::operator=(const t1Reflector& A)
       xyAngle=A.xyAngle;
       xSize=A.xSize;
       ySize=A.ySize;
-      ySizeColdCut=A.ySizeColdCut;      
+      ySizeColdCut=A.ySizeColdCut;
       zSize=A.zSize;
       cutLen=A.cutLen;
       defMat=A.defMat;
       Boxes=A.Boxes;
+      Rods=A.Rods;
+      Plates=A.Plates;
+      baseZCut=A.baseZCut;
     }
   return *this;
 }

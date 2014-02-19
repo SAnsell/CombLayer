@@ -263,7 +263,7 @@ HeadRule::getSurfaces() const
     \return Set of surface
   */
 {
-  ELog::RegMethod RegA("HeadRule","getOppositeSurfaces");
+  ELog::RegMethod RegA("HeadRule","getSurfaces");
   std::vector<const Geometry::Surface*> Out;
   const SurfPoint* SP;
   if (!HeadNode) return Out;
@@ -289,8 +289,9 @@ HeadRule::getSurfaces() const
 	}
       else if (headPtr->type()==0)        // MIGHT BE SURF
 	{
-	  SP=dynamic_cast<const SurfPoint*>(HeadNode);
-	  Out.push_back(SP->getKey());
+	  SP=dynamic_cast<const SurfPoint*>(headPtr);
+	  if (SP)
+	    Out.push_back(SP->getKey());
 	}
     }
   return Out;
@@ -303,7 +304,7 @@ HeadRule::getSurfaceNumbers() const
     \return Set of surface
   */
 {
-  ELog::RegMethod RegA("HeadRule","getSurfacesNumbers");
+  ELog::RegMethod RegA("HeadRule","getSurfaceNumbers");
   std::vector<int> Out;
   const SurfPoint* SP;
   if (!HeadNode) return Out;
@@ -371,7 +372,7 @@ HeadRule::getTopSurfaces() const
 	}
       else if (headPtr->type()==0)        // MIGHT BE SURF
 	{
-	  SP=dynamic_cast<const SurfPoint*>(HeadNode);
+	  SP=dynamic_cast<const SurfPoint*>(headPtr);
 	  if (SP)
 	    Out.push_back(SP->getSign()*SP->getKeyN());
 	}
@@ -414,7 +415,7 @@ HeadRule::removeTopItem(const int SN)
       else if (headPtr->type()==0)        // MIGHT BE SURF
 	{
 	  const SurfPoint* SP=
-	    dynamic_cast<const SurfPoint*>(HeadNode);
+	    dynamic_cast<const SurfPoint*>(headPtr);
 	  if (SP)
 	    {
 	      const int SNtest=SP->getSign()*SP->getKeyN();

@@ -211,6 +211,7 @@ InnerWall::createSurfaces()
   // Back
   ModelSupport::buildPlane(SMap,innerIndex+2,Centre+Y*depth/2.0,Y);
   setExitSurf(SMap.realSurf(innerIndex+2));
+  addLinkSurf(1,-SMap.realSurf(innerIndex+2));
 
   // Hole Inner:
   ModelSupport::buildPlane(SMap,innerIndex+3,Centre-X*width,X);

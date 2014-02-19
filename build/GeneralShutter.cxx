@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   build/GeneralShutter.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014x by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -90,7 +90,7 @@
 namespace shutterSystem
 {
 
-GeneralShutter::GeneralShutter(const int ID,const std::string& Key) : 
+GeneralShutter::GeneralShutter(const size_t ID,const std::string& Key) : 
   TwinComp(Key,8),InsertComp(),shutterNumber(ID),
   surfIndex(ModelSupport::objectRegister::Instance().cell(Key,ID,20000)),
   cellIndex(surfIndex+1),populated(0),divideSurf(0),
@@ -276,8 +276,8 @@ GeneralShutter::populate(const Simulation& System)
   // They require that each unit is fully defined and 
   // that requires 6 items
   shutterBlock Item;
-  int flag(0);
-  int itemNum(0);
+  size_t flag(0);
+  size_t itemNum(0);
   SBlock.clear();
   do 
     {

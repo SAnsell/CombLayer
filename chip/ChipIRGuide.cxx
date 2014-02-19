@@ -861,16 +861,12 @@ ChipIRGuide::createLinks()
   FixedComp::setConnect(1,Origin+Y*gLen,Y);
   FixedComp::setConnect(6,Origin+Y*(gLen-hFWallThick),Y);
   
-  
-  
-
   FixedComp::setLinkSurf(1,SMap.realSurf(guideIndex+2));  
   FixedComp::setLinkSurf(2,-SMap.realSurf(guideIndex+3));  
   FixedComp::setLinkSurf(3,SMap.realSurf(guideIndex+4));  
   FixedComp::setLinkSurf(4,-SMap.realSurf(guideIndex+5));
   FixedComp::setLinkSurf(5,SMap.realSurf(guideIndex+6));  
   FixedComp::setLinkSurf(6,SMap.realSurf(guideIndex+1002));
-
 
   return;
 }

@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   test/testMergeRule.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,15 +54,6 @@
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
-#include "Triple.h"
-#include "NList.h"
-#include "NRange.h"
-#include "Tally.h"
-#include "cellFluxTally.h"
-#include "pointTally.h"
-#include "heatTally.h"
-#include "tallyFactory.h"
-#include "Transform.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "Quadratic.h"
@@ -85,9 +76,6 @@
 #include "weightManager.h"
 #include "ObjSurfMap.h"
 #include "ObjTrackItem.h"
-#include "SrcData.h"
-#include "SrcItem.h"
-#include "Source.h"
 #include "ReadFunctions.h"
 #include "surfRegister.h"
 #include "ModelSupport.h"

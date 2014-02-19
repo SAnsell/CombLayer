@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   test/testSupport.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -174,12 +174,12 @@ testSupport::testConvert()
 	  resultFlag=convert(TLine,outI);
 	  checkFlag= (tc->get<3>()!=outI);
 	}
-      if (typeFlag==1)        // double
+      else if (typeFlag==1)        // double
 	{
 	  resultFlag=convert(TLine,outD);
 	  checkFlag= (fabs(tc->get<4>()-outD)>1e-15);
 	}
-      if (typeFlag==2)        // String
+      else                          // String
 	{
 	  resultFlag=convert(TLine,outS);
 	  checkFlag= (tc->get<5>()!=outS);
@@ -215,8 +215,8 @@ testSupport::testConvPartNum()
   typedef boost::tuple<int,std::string,size_t,int,double> TTYPE;
   std::vector<TTYPE> Tests;
   
-  size_t resultFlag;       // Section return
-  bool checkFlag;       // Output matches
+  size_t resultFlag(1);       // Section return
+  bool checkFlag(1);       // Output matches
   
   Tests.push_back(TTYPE(0,"1 tth ",1,1,0.0));
   Tests.push_back(TTYPE(0,"tth ",0,1,0.0));
@@ -241,7 +241,7 @@ testSupport::testConvPartNum()
 	  resultFlag=convPartNum(TLine,outI);
 	  checkFlag= (tc->get<3>()!=outI);
 	}
-      if (typeFlag==1)        // double
+      else if (typeFlag==1)        // double
 	{
 	  resultFlag=convPartNum(TLine,outD);
 	  checkFlag= (fabs(tc->get<4>()-outD)>1e-15);

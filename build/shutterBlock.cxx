@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   build/shutterBlock.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,6 +37,7 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "support.h"
+#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -52,11 +53,11 @@ namespace shutterSystem
 {
 
 // This is number of variable unit names (len/height etc)
-const int shutterBlock::Size(7);
+const size_t shutterBlock::Size(7);
 
 void
 shutterBlock::setVar(const FuncDataBase& Control,
-		     const int Item,
+		     const size_t Item,
 		     const std::string& VarStr)
 /*!
   Given a value set the item
@@ -95,9 +96,9 @@ shutterBlock::setVar(const FuncDataBase& Control,
 int
 shutterBlock::setFromControl(const FuncDataBase& Control,
 			     const std::string& primName,
-			     const int shutterID,
-			     const int Index,
-			     const int Item)
+			     const size_t shutterID,
+			     const size_t Index,
+			     const size_t Item)
   /*!
     Set the value in the structure from control
     \param Control :: Data Base to get variables from
@@ -113,25 +114,28 @@ shutterBlock::setFromControl(const FuncDataBase& Control,
   static const char* sndKey[Size]=
     {"Flag","Cent","Len","Height","VGap","HGap","Mat"};
 
-  if (Item<0 || Item>shutterBlock::Size)
-    {
-      ELog::EM<<"Item out of range "<<ELog::endErr;
-      return 0;
-    }
-  std::ostringstream cx,dx,ex,fx;
+  if (Item>=shutterBlock::Size)
+    throw ColErr::IndexError<size_t>(Item,shutterBlock::Size,
+				     "shutterBlock::size/Item");
 
-  cx<<primName<<shutterID<<sndKey[Item]<<Index+1;
-  dx<<primName<<shutterID<<sndKey[Item];
-  ex<<primName<<sndKey[Item]<<Index+1;
-  fx<<primName<<sndKey[Item];
-  if (Control.hasVariable(cx.str()))
-    setVar(Control,Item,cx.str());
-  else if (Control.hasVariable(dx.str()))
-    setVar(Control,Item,dx.str());
-  else if (Control.hasVariable(ex.str()))
-    setVar(Control,Item,ex.str());
-  else if (Control.hasVariable(fx.str()))
-    setVar(Control,Item,fx.str());
+  const std::string PName
+    (StrFunc::makeString(primName,shutterID));
+  const std::string INum
+    (StrFunc::makeString(sndKey[Item],Index+1));
+  
+  const std::string cx(PName+INum);
+  const std::string dx(PName+sndKey[Item]);
+  const std::string ex(primName+INum);
+  const std::string fx(primName+sndKey[Item]);
+
+  if (Control.hasVariable(cx))
+    setVar(Control,Item,cx);
+  else if (Control.hasVariable(dx))
+    setVar(Control,Item,dx);
+  else if (Control.hasVariable(ex))
+    setVar(Control,Item,ex);
+  else if (Control.hasVariable(fx))
+    setVar(Control,Item,fx);
   else 
     return 0;
   
