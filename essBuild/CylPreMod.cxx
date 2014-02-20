@@ -95,9 +95,10 @@ CylPreMod::CylPreMod(const std::string& Key) :
   OR.addObject(ExtBObj);
 }
 
+
 CylPreMod::CylPreMod(const CylPreMod& A) : 
   attachSystem::ContainedGroup(A),attachSystem::LayerComp(A),
-  attachSystem::FixedComp(A),
+  attachSystem::FixedComp(A),  
   modIndex(A.modIndex),cellIndex(A.cellIndex),ExtAObj(A.ExtAObj),
   ExtBObj(A.ExtBObj),blockActiveA(A.blockActiveA),
   blockActiveB(A.blockActiveB),aSide(A.aSide),bSide(A.bSide),
@@ -152,7 +153,6 @@ CylPreMod::operator=(const CylPreMod& A)
     }
   return *this;
 }
-
 
 CylPreMod::~CylPreMod()
   /*!

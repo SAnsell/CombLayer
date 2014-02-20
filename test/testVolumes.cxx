@@ -202,9 +202,6 @@ testVolumes::createObjects()
   Out=ModelSupport::getComposite(surIndex,"-100 101");
   ASim.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));      // steel object
 
-  ASim.populateCells();
-  return;
-
   Out=ModelSupport::getComposite(surIndex,"11 -12 13 -14 15 -16"
 				 " (-1:2:-3:4:-5:6) ");
   ASim.addCell(MonteCarlo::Qhull(cellIndex++,5,0.0,Out));      // Al container
@@ -218,6 +215,7 @@ testVolumes::createObjects()
   
   ASim.removeComplements();
 
+  ASim.populateCells();
   return;
 }
   
@@ -299,19 +297,6 @@ testVolumes::testVolume()
   ELog::EM<<"CalcValue(4) == "<<V<<ELog::endTrace;
   ELog::EM<<" ========= "<<V<<ELog::endTrace<<
     ELog::endTrace;
-
-
-
-
-  return 0;
-  VTally.run(ASim,20000);
-  ELog::EM<<"CalcValue(4) == "<<VTally.calcVolume(4)<<ELog::endTrace;
-  VTally.run(ASim,200000);
-  ELog::EM<<"CalcValue(4) == " <<VTally.calcVolume(4)<<ELog::endTrace;
-  //  VTally.run(ASim,2000000);
-  //  ELog::EM<<"CalcValue(4) == "<<VTally.calcVolume(4)<<ELog::endTrace;
-
-  //  ELog::EM<<"CalcValue(14) == "<<VTally.calcVolume(14)<<ELog::endTrace;
   
   return 0;
 }

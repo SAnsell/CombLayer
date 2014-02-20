@@ -126,23 +126,27 @@ void TS1CylMod(FuncDataBase& Control)
   Control.addVariable("H2CylModConic4WallMat","Aluminium");
   Control.addVariable("H2CylModConic4Wall",0.2);
 
-  Control.addVariable("H2CylPreNLayers",4);  
-  Control.addVariable("H2CylPreHeight1",0.2);  
-  Control.addVariable("H2CylPreDepth1",0.2);  
-  Control.addVariable("H2CylPreThick1",0.2);  
-  Control.addVariable("H2CylPreMaterial1","Aluminium");  
-  Control.addVariable("H2CylPreHeight2",1.0);  
-  Control.addVariable("H2CylPreDepth2",2.0);  
-  Control.addVariable("H2CylPreThick2",2.0);  
-  Control.addVariable("H2CylPreMaterial2","H2O");  
-  Control.addVariable("H2CylPreHeight3",0.2);  
-  Control.addVariable("H2CylPreDepth3",0.2);  
-  Control.addVariable("H2CylPreThick3",0.2);  
-  Control.addVariable("H2CylPreMaterial3","Aluminium");  
+  Control.addVariable("H2CylPreNLayers",5);  
+  Control.addVariable("H2CylPreHeight1",0.3);  
+  Control.addVariable("H2CylPreDepth1",0.3);  
+  Control.addVariable("H2CylPreThick1",0.3);  
+  Control.addVariable("H2CylPreMaterial1","Void");  
+  Control.addVariable("H2CylPreHeight2",0.2);  
+  Control.addVariable("H2CylPreDepth2",0.2);  
+  Control.addVariable("H2CylPreThick2",0.2);  
+  Control.addVariable("H2CylPreMaterial2","Aluminium");  
+  Control.addVariable("H2CylPreHeight3",1.0);  
+  Control.addVariable("H2CylPreDepth3",2.0);  
+  Control.addVariable("H2CylPreThick3",2.0);  
+  Control.addVariable("H2CylPreMaterial3","H2O");  
   Control.addVariable("H2CylPreHeight4",0.2);  
   Control.addVariable("H2CylPreDepth4",0.2);  
   Control.addVariable("H2CylPreThick4",0.2);  
-  Control.addVariable("H2CylPreMaterial4","Void"); 
+  Control.addVariable("H2CylPreMaterial4","Aluminium");  
+  Control.addVariable("H2CylPreHeight5",0.2);  
+  Control.addVariable("H2CylPreDepth5",0.2);  
+  Control.addVariable("H2CylPreThick5",0.2);  
+  Control.addVariable("H2CylPreMaterial5","Void"); 
 
   return;
 }

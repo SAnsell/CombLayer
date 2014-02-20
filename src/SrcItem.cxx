@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   src/SrcItem.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,7 +49,8 @@ namespace SDef
 
 template<typename OutType>
 SrcItem<OutType>::SrcItem(const std::string& K) : 
-  SrcBase(),KeyType(K),active(0),dtype(9999)
+  SrcBase(),KeyType(K),active(0),dtype(9999),
+  Data()
   /*!
     Constructor
     - note dtype must hold a value : but in this

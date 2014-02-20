@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   crystalInc/SymUnit.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,7 +50,7 @@ class SymUnit
   SymUnit(const SymUnit&);
   ~SymUnit();
 
-  void setComponent(const int,const Geometry::Vec3D&);
+  void setComponent(const size_t,const Geometry::Vec3D&);
   int setLine(const std::string&);
 
   Geometry::Vec3D unitPoint(const Geometry::Vec3D&) const;

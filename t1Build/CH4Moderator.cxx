@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   t1Build/CH4Moderator.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,20 +47,12 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "Tally.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "surfEqual.h"
-#include "surfDivide.h"
-#include "surfDIter.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
@@ -72,8 +64,6 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -98,7 +88,6 @@ CH4Moderator::CH4Moderator(const std::string& Key)  :
     \param Key :: Name for item in search
   */
 {}
-
 
 CH4Moderator::CH4Moderator(const CH4Moderator& A) : 
   attachSystem::ContainedComp(A),attachSystem::LayerComp(A),
@@ -181,6 +170,7 @@ CH4Moderator::populate(const Simulation& System)
   
   const FuncDataBase& Control=System.getDataBase();
 
+  nLayers=4;  
   // Master values
   xStep=Control.EvalVar<double>(keyName+"XStep");
   yStep=Control.EvalVar<double>(keyName+"YStep");
@@ -282,7 +272,7 @@ CH4Moderator::createSurfaces()
 
   std::vector<double> T(6);  // Zero size
   int HI(ch4Index+10);
-  for(size_t i=0;i<4;i++)
+  for(size_t i=0;i<nLayers;i++)
     {
       // Add the new layer +/- the modification
       for(size_t surfIndex=0;surfIndex<6;surfIndex++)
@@ -458,21 +448,21 @@ CH4Moderator::getSurfacePoint(const size_t layerIndex,
 
   if (sideIndex>5) 
     throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
-  if (layerIndex>=nLayers) 
+  if (layerIndex>nLayers || nLayers!=4)           // system only build for 4 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
+
 
   // Modification map:
   std::map<size_t,double> modLayer;
   applyModification(modLayer);
   std::map<size_t,double>::const_iterator mc;
-  const double layer[]={innerThick,vacThick,outerThick,clearThick};
+  const double layer[]={0.0,innerThick,vacThick,outerThick,clearThick};
   double T(0.0);
   for(size_t i=0;i<layerIndex;i++)
     {
       mc=modLayer.find(i*10+sideIndex+1);
       T+=(mc!=modLayer.end()) ? mc->second : layer[i];
-    }
-            
+    }            
   switch(sideIndex)
     {
     case 0:

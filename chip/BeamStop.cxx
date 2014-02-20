@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   chip/BeamStop.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -171,17 +171,19 @@ BeamStop::populate(const Simulation& System)
   const FuncDataBase& Control=System.getDataBase();
 
   beamBlock Item;
-  int flag(0);
-  int itemNum(0);
+  size_t flag(0);
+  size_t itemNum(0);
   do 
     {
       if (flag==beamBlock::Size)
 	{
 	  BBlock.push_back(Item);
 	  itemNum++;
-	  if (itemNum>100)
-	    ELog::EM<<"Error with all variables in a block totally generic"
-		    <<ELog::endErr;
+	  if (itemNum>20)
+	    {
+	      throw ColErr::IndexError<size_t>
+		(itemNum,20,"All variables in a block totally generic");
+	    }
 	}
       for(flag=0;flag<beamBlock::Size && 
 	    Item.setFromControl(Control,keyName+"Inner",itemNum,flag);

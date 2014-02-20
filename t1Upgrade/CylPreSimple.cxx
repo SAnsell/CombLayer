@@ -151,21 +151,38 @@ CylPreSimple::checkItems(const attachSystem::FixedComp& Mod)
   FLpts.clear();
   FLunit.clear();
 
-  if (Mod.NConnect()<4)
-    throw ColErr::IndexError<size_t>(4,Mod.NConnect(),"Moderator LU size");
+  const size_t modLink(Mod.NConnect());
+  if (modLink<4)
+    throw ColErr::IndexError<size_t>(4,modLink,"Moderator LU size");
   
-  Geometry::Vec3D OutPt=Mod.getLinkPt(0);
+  Geometry::Vec3D OutPt=Mod.getLinkPt(0);  // 0 origin : ?
   innerRadius=OutPt.Distance(Origin);
+  ELog::EM<<"Inner radius == "<<innerRadius<<ELog::endDiag;
+
   // Never figure out if we are +/- Z so decided to test
-  for(size_t i=2;i<4;i++)
+  Geometry::Vec3D ZUpPt;
+  Geometry::Vec3D ZDownPt;
+  double ZUpCos(-1.0);
+  double ZDownCos(1.0);
+  for(size_t i=1;i<modLink;i++)
     {
+      const Geometry::Vec3D OutAxis=Mod.getLinkAxis(i);
+      const double DP=OutAxis.dotProd(Z);
       OutPt=Mod.getLinkPt(i)-Origin;
-      const Geometry::Vec3D TP=Mod.getLinkPt(i);
-      if (OutPt.dotProd(Z)>0.0)
-	innerHeight=OutPt.abs();
-      else
-	innerDepth=OutPt.abs();
+      if (DP>ZUpCos)
+	{
+	  ZUpCos=DP;
+	  ZUpPt=OutPt;
+	}
+      if (DP<ZDownCos)
+	{
+	  ZDownCos=DP;
+	  ZDownPt=OutPt;
+	}
     }
+  innerHeight=ZUpPt.abs();
+  innerDepth=ZDownPt.abs();
+
   for(size_t i=0;i<nLayers;i++)
     {
       radius[i]+=innerRadius;
@@ -343,6 +360,7 @@ CylPreSimple::createObjects(Simulation& System,
     }
   
   // Finally the void cell:
+  ELog::EM<<"DEBUG AVOID OF VIEW MODIFICATION"<<ELog::endCrit;
   return;
   Out=ModelSupport::getComposite(SMap,modIndex,
 				 modIndex+10*static_cast<int>(nLayers-1),"9 -7M ");
@@ -373,11 +391,11 @@ CylPreSimple::createLinks()
       const int SI(modIndex+static_cast<int>(nLayers-1)*10);
       FixedComp::setConnect(0,Origin-Y*radius[nLayers-1],-Y);
       FixedComp::setLinkSurf(0,SMap.realSurf(SI+7));
-      FixedComp::addLinkSurf(0,-SMap.realSurf(modIndex+2));
+      FixedComp::setBridgeSurf(0,-SMap.realSurf(modIndex+2));
 
       FixedComp::setConnect(1,Origin+Y*radius[nLayers-1],Y);
       FixedComp::setLinkSurf(1,SMap.realSurf(SI+7));
-      FixedComp::addLinkSurf(1,SMap.realSurf(modIndex+2));
+      FixedComp::setBridgeSurf(1,SMap.realSurf(modIndex+2));
       
       FixedComp::setConnect(2,Origin-Z*(height[nLayers-1]/2.0),-Z);
       FixedComp::setLinkSurf(2,-SMap.realSurf(SI+5));
@@ -560,7 +578,6 @@ CylPreSimple::createFlightPoint(const attachSystem::FixedComp& FLine)
     {
       const Geometry::Vec3D Pt=FLine.getLinkPt(i);
       const Geometry::Vec3D Ax=FLine.getLinkAxis(i);
-      ELog::EM<<"Pt == "<<Pt<<" "<<Ax<<ELog::endDebug;
       FLpts.push_back(Pt);
       FLunit.push_back(Ax);
     }

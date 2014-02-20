@@ -172,7 +172,6 @@ void createWallsChipIR(Simulation&,const shutterSystem::GeneralShutter&);
   int rightBWallCell;   ///< Back wall [right] Cell
   int backWallCell;     ///< Cell to divide from the back-wall
   int roofCell;         ///< Cell to divide from the roof
-  int trimCell;         ///< Cell to divide from the trimmer
   int blockCell;        ///< Cell to divide from the block
   int floorCell;        ///< Cell to divide from the floor 
   int walkWallCell;     ///< Cell  on walkway wall

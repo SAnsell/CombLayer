@@ -3,7 +3,7 @@
  
  * File:   build/GeneralShutter.cxx
  *
- * Copyright (c) 2004-2014x by Stuart Ansell
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -92,7 +92,8 @@ namespace shutterSystem
 
 GeneralShutter::GeneralShutter(const size_t ID,const std::string& Key) : 
   TwinComp(Key,8),InsertComp(),shutterNumber(ID),
-  surfIndex(ModelSupport::objectRegister::Instance().cell(Key,ID,20000)),
+  surfIndex(ModelSupport::objectRegister::Instance().
+	    cell(Key,static_cast<int>(ID),20000)),
   cellIndex(surfIndex+1),populated(0),divideSurf(0),
   DPlane(0),closed(0),upperCell(0),lowerCell(0),innerVoidCell(0)
   /*!

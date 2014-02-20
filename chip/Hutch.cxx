@@ -181,7 +181,7 @@ ChipIRHutch::ChipIRHutch(const ChipIRHutch& A) :
   rightFWallCell(A.rightFWallCell),
   rightBWallCell(A.rightBWallCell),
   backWallCell(A.backWallCell),roofCell(A.roofCell),
-  trimCell(A.trimCell),blockCell(A.blockCell),
+  blockCell(A.blockCell),
   floorCell(A.floorCell),walkWallCell(A.walkWallCell),
   collActiveFlag(A.collActiveFlag)
   /*!
@@ -288,7 +288,6 @@ ChipIRHutch::operator=(const ChipIRHutch& A)
       rightBWallCell=A.rightBWallCell;
       backWallCell=A.backWallCell;
       roofCell=A.roofCell;
-      trimCell=A.trimCell;
       blockCell=A.blockCell;
       floorCell=A.floorCell;
       walkWallCell=A.walkWallCell;

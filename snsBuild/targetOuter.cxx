@@ -499,7 +499,6 @@ targetOuter::createBeamWindow(Simulation& System)
 	  (new ts1System::BeamWindow("BWindow"));
 	  OR.addObject(BWPtr);
 	}      
-      return;
       BWPtr->addBoundarySurf(PLine->getCompContainer());
       BWPtr->setInsertCell(PLine->getVoidCell());
       BWPtr->createAll(System,*this,0);  // 0 => front face of target

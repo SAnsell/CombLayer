@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   zoom/ZoomShutter.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -98,10 +98,11 @@ ZoomShutter::ZoomShutter(const int ID,const std::string& K,
 
 ZoomShutter::ZoomShutter(const ZoomShutter& A) : 
   GeneralShutter(A),
-  zoomKey(A.zoomKey),nBlock(A.nBlock),colletHGap(A.colletHGap),
-  colletVGap(A.colletVGap),colletFGap(A.colletFGap),
-  colletMat(A.colletMat),iBlock(A.iBlock),
-  colletInnerCell(A.colletInnerCell),
+  zoomKey(A.zoomKey),nBlock(A.nBlock),xStart(A.xStart),
+  xAngle(A.xAngle),zStart(A.zStart),zAngle(A.zAngle),
+  colletHGap(A.colletHGap),colletVGap(A.colletVGap),
+  colletFGap(A.colletFGap),colletMat(A.colletMat),
+  iBlock(A.iBlock),colletInnerCell(A.colletInnerCell),
   colletOuterCell(A.colletOuterCell)
   /*!
     Copy constructor
@@ -122,6 +123,10 @@ ZoomShutter::operator=(const ZoomShutter& A)
       GeneralShutter::operator=(A);
       zoomKey=A.zoomKey;
       nBlock=A.nBlock;
+      xStart=A.xStart;
+      xAngle=A.xAngle;
+      zStart=A.zStart;
+      zAngle=A.zAngle;
       colletHGap=A.colletHGap;
       colletVGap=A.colletVGap;
       colletFGap=A.colletFGap;

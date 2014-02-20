@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   xml/XMLcomp.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@ namespace XML
 
 template<typename T>
 XMLcomp<T>::XMLcomp(XMLobject* B,const std::string& K) :
-  XMLobject(B,K)
+  XMLobject(B,K),Value()
   /*!
     Constructor with junk key (value is NOT set)
     \param B :: Parent object

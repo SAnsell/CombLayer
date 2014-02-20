@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   test/testConvex2D.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -348,12 +348,12 @@ testConvex2D::testHull()
   int errFlag(0);
   for(size_t i=0;i<Out.size() && !errFlag;i++)
     {
-      if ( (fabs(Out[i].dotProd(Vec3D(1,0,0)))>Geometry::zeroTol))
+      if (fabs(Out[i].dotProd(Vec3D(1,0,0)))  >Geometry::zeroTol) 
 	errFlag=1;
     }
   if (errFlag)
     {
-      for(size_t i=0;i<Out.size() && !errFlag;i++)
+      for(size_t i=0;i<Out.size();i++)
 	ELog::EM<<Out[i]<<" == "<<Out[i].abs()<<ELog::endWarn;
       return -1;
     }

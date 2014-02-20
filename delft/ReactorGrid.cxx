@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   delft/ReactorGrid.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -200,8 +200,12 @@ ReactorGrid::ReactorGrid(const std::string& Key) :
 ReactorGrid::ReactorGrid(const ReactorGrid& A) : 
   attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
   gridIndex(A.gridIndex),cellIndex(A.cellIndex),
-  NX(A.NX),NY(A.NY),Width(A.Width),Depth(A.Depth),
-  Base(A.Base),Top(A.Top),Grid(A.Grid)
+  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
+  xyAngle(A.xyAngle),zAngle(A.zAngle),NX(A.NX),
+  NY(A.NY),Width(A.Width),Depth(A.Depth),Base(A.Base),
+  Top(A.Top),plateThick(A.plateThick),plateRadius(A.plateRadius),
+  plateMat(A.plateMat),waterMat(A.waterMat),GType(A.GType),
+  Grid(A.Grid)
   /*!
     Copy constructor
     \param A :: ReactorGrid to copy
@@ -221,12 +225,22 @@ ReactorGrid::operator=(const ReactorGrid& A)
       attachSystem::FixedComp::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       cellIndex=A.cellIndex;
+      xStep=A.xStep;
+      yStep=A.yStep;
+      zStep=A.zStep;
+      xyAngle=A.xyAngle;
+      zAngle=A.zAngle;
       NX=A.NX;
       NY=A.NY;
       Width=A.Width;
       Depth=A.Depth;
       Base=A.Base;
       Top=A.Top;
+      plateThick=A.plateThick;
+      plateRadius=A.plateRadius;
+      plateMat=A.plateMat;
+      waterMat=A.waterMat;
+      GType=A.GType;
       Grid=A.Grid;
     }
   return *this;

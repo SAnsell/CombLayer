@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   src/Triple.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -195,11 +195,8 @@ Triple<T>::operator[](const size_t A)
       return second;
     case 2:
       return third;
-    default:
-      throw ColErr::IndexError<size_t>(A,3,"Triple::operator[]");
     }
-  // Never gets here
-  return first;
+  throw ColErr::IndexError<size_t>(A,3,"Triple::operator[]");
 }
 
 template<typename T>
@@ -219,11 +216,8 @@ Triple<T>::operator[](const size_t A) const
       return second;
     case 2:
       return third;
-    default:
-      throw ColErr::IndexError<size_t>(A,3,"Triple::operator[] const");
     }
-  // Never gets here
-  return first;
+  throw ColErr::IndexError<size_t>(A,3,"Triple::operator[] const");
 }
 
 

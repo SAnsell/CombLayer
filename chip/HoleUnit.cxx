@@ -88,7 +88,8 @@ HoleUnit::HoleUnit(ModelSupport::surfRegister& SR,
 		   const int HIndex) :
   attachSystem::ContainedComp(),attachSystem::FixedComp(Key,2),
   HMap(SR),holeIndex(HIndex),shapeType(0),
-  AngleOffset(0),radialOffset(0.0),radius(0.0)
+  AngleOffset(0),radialOffset(0.0),radius(0.0),
+  depth(0.0),frontFace(0),backFace(0)
   /*!
     Default constructor
     \param SR :: Register to use

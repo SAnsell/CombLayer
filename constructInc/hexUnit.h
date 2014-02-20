@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   constructInc/hexUnit.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef constructSystem_hexUnith_
+#ifndef constructSystem_hexUnit_h
 #define constructSystem_hexUnit_h
 
 namespace constructSystem

@@ -62,6 +62,7 @@ Tensor<T>::~Tensor()
       delete U[0];
       delete U;
     }
+
 }
 
 template<typename T>
@@ -140,13 +141,16 @@ Tensor<T>::copyMem(const Tensor<T>& A)
   if (&A!=this)
     {
       setMem(A.nx,A.ny,A.nz);
-      T* Wu=U[0][0];           //Write point 
-      T* Ru=A.U[0][0];           //Read point
-      for(ITYPE i=0;i<nx*ny*nz;i++)
-        {
-	  *Wu = *Ru;
-	  Ru++;
-	  Wu++;
+      if (U)
+	{
+	  T* Wu=U[0][0];           //Write point 
+	  T* Ru=A.U[0][0];           //Read point
+	  for(ITYPE i=0;i<nx*ny*nz;i++)
+	    {
+	      *Wu = *Ru;
+	      Ru++;
+	      Wu++;
+	    }
 	}
     }
   return;
@@ -160,13 +164,16 @@ Tensor<T>::copyMem(T*** const  AU)
     \param AU :: Pointer object to copy from
   */
 {
-  T* Wu=U[0][0];           //Write point 
-  const T* Ru=AU[0][0];           //Read point
-  for(ITYPE i=0;i<nx*ny*nz;i++)
+  if (U && AU)
     {
-      *Wu = *Ru;
-      Ru++;
-      Wu++;
+      T* Wu=U[0][0];           //Write point 
+      const T* Ru=AU[0][0];           //Read point
+      for(ITYPE i=0;i<nx*ny*nz;i++)
+	{
+	  *Wu = *Ru;
+	  Ru++;
+	  Wu++;
+	}
     }
   return;
 }
@@ -186,8 +193,9 @@ Tensor<T>::deleteMem()
       delete [] U[0][0];
       delete [] U[0];
       delete [] U;
+      U=0;
     }
-  U=0;
+  return;
 }
 
 

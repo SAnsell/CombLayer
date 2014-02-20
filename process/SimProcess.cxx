@@ -162,12 +162,12 @@ getIndexVar(const FuncDataBase& Control,
   return Control.EvalVar<T>(FName+BName);
 }
 
-template<typename T>
+template<typename T,typename U>
 T
 getDefIndexVar(const FuncDataBase& Control,
 	       const std::string& FName,
 	       const std::string& BName,
-	       const int index,
+	       const U& index,
 	       const T& defVal)
   /*!
     Get an item based on the FName+[index]+BName 
@@ -328,11 +328,19 @@ getIndexVar(const FuncDataBase&,const std::string&,
 template 
 int
 getDefIndexVar(const FuncDataBase&,const std::string&,
-	       const std::string&,const int,const int&);
+	       const std::string&,const int&,const int&);
 template 
 double
 getDefIndexVar(const FuncDataBase&,const std::string&,
-	       const std::string&,const int,const double&);
+	       const std::string&,const int&,const double&);
+template 
+int
+getDefIndexVar(const FuncDataBase&,const std::string&,
+	       const std::string&,const size_t&,const int&);
+template 
+double
+getDefIndexVar(const FuncDataBase&,const std::string&,
+	       const std::string&,const size_t&,const double&);
 
 
 template 

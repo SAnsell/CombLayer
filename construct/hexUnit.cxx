@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   construct/hexUnit.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -77,7 +77,7 @@ int
 hexUnit::hexIndex(const size_t index)
   /*!
     Convert Index[0-5] into an modification of the base index
-    \param index :: vale between 0 and 5
+    \param index :: value between 0 and 5 
     \return 1000 point offset index
    */
 {
@@ -96,9 +96,10 @@ hexUnit::hexIndex(const size_t index)
     case 5:
       return 1;      //  0,1
     }
+  // return to avoid compiler warning
   return 0;
 }
-
+ 
 bool
 hexUnit::isComplete() const 
   /*!

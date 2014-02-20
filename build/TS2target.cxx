@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   build/TS2target.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -714,7 +714,7 @@ TS2target::createBeamWindow(Simulation& System)
 	  (new ts1System::BeamWindow("BWindow"));
 	  OR.addObject(BWPtr);
 	}      
-      return;
+
       BWPtr->addBoundarySurf(PLine->getCompContainer());
       BWPtr->setInsertCell(PLine->getVoidCell());
       BWPtr->createAll(System,*this,2);  // 2 => front face of target

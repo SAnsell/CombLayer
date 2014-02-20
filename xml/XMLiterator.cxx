@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   xml/XMLiterator.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,14 +44,14 @@ namespace XML
 {
 
 XMLiterator::XMLiterator(const XMLgroup* Bptr)  :
-  markNum(0),hold(0)
+  markNum(0),count(0),hold(0),
+  GPtr(0),CPtr(0),Master(Bptr)
   /*!
     Constructor :
     \param Bptr :: Base pointer 
   */
 { 
-  Master=Bptr;
-  if (Master && Master->getObject(0))         // Maybe we are not initialised yet
+  if (Master && Master->getObject(0))   // Maybe we are not initialised yet
     init();
 }
 
@@ -98,6 +98,7 @@ XMLiterator::init()
     Take the current position in the XMLgroup 
   */
 {
+  markNum=0;
   count=0;
   hold=0;
   CPtr=Master;

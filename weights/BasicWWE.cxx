@@ -116,6 +116,7 @@ setWeights(Simulation& System,const std::string& Type)
   */
 {
   ELog::RegMethod RegA("BasicWWE","setWeights");
+
   if (Type=="basic")
     setWeightsBasic(System);
   else if (Type=="high")
@@ -158,6 +159,8 @@ setWeights(Simulation& System,const std::vector<double>& Eval,
   WM.addParticle<WeightSystem::WCells>('n');
   WeightSystem::WCells* WF=
     dynamic_cast<WeightSystem::WCells*>(WM.getParticle('n'));
+  if (!WF)
+    throw ColErr::InContainerError<std::string>("n","WCell - WM");
 
   WF->setEnergy(Eval);
   System.populateWCells();

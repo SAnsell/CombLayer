@@ -92,7 +92,7 @@ SymUnit::operator=(const SymUnit& A)
 {
   if (this!=&A)
     {
-      for(int i=0;i<3;i++)
+      for(size_t i=0;i<3;i++)
 	OpSet[i]=A.OpSet[i];
       ShiftVec=A.ShiftVec;
     }
@@ -104,7 +104,7 @@ SymUnit::~SymUnit()
 {}
 
 void
-SymUnit::setComponent(const int index,
+SymUnit::setComponent(const size_t index,
 		      const Geometry::Vec3D& Unit)
   /*!
     Unchecked assignment to atom type
@@ -112,8 +112,8 @@ SymUnit::setComponent(const int index,
     \param Unit :: Vector to translater
   */
 {
-  if (index<0 || index>2)
-    throw ColErr::IndexError<int>(index,2,"SymUnit::setComponent");
+  if (index>3)
+    throw ColErr::IndexError<int>(index,3,"SymUnit::setComponent");
   if (index==3)
     ShiftVec=Unit;
   OpSet[index]=Unit;

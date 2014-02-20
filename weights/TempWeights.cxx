@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   weights/TempWeights.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,9 +49,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Surface.h"
 #include "Rules.h"
 #include "varList.h"
@@ -64,8 +61,6 @@
 #include "WForm.h"
 #include "WItem.h"
 #include "WCells.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "SimProcess.h"
 #include "SurInter.h"
 #include "Simulation.h"
@@ -83,7 +78,7 @@ scaleTempWeights(Simulation& System,double factor)
     \param factor :: Weighting scale
   */
 {
-  ELog::RegMethod RegA("F:TempWeights","setPointWeights");
+  ELog::RegMethod RegA("F:TempWeights","scaleTempWeights");
 
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();  
@@ -91,8 +86,13 @@ scaleTempWeights(Simulation& System,double factor)
   WM.addParticle<WeightSystem::WCells>('n');
   WeightSystem::WCells* WF=
     dynamic_cast<WeightSystem::WCells*>(WM.getParticle('n'));
-
-  ELog::EM<<"Number of energy bins: "<<WF->getEnergy().size()<<ELog::endDebug;
+  if (!WF)
+    {
+      ELog::EM<<"Temp weight applied to non cell neutron particles"
+	      <<ELog::endWarn;
+      ELog::EM<<"NO WEIGHTS APPLIED"<<ELog::endWarn;
+      return;
+    }
 
   
   const Simulation::OTYPE& Cells=System.getCells();

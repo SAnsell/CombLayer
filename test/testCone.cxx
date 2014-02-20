@@ -161,16 +161,6 @@ testCone::testSideDirection()
 	}
     }
   return 0;
-
-  Geometry::Cone CX(5,0);
-
-  
-  Geometry::Vec3D SN=CX.surfaceNormal(Geometry::Vec3D(0,1,1));
-  ELog::EM<<"Side direction "<<SN<<":"
-	  <<CX.sideDirection(Geometry::Vec3D(0,1,1),SN)
-	  <<ELog::endDebug;;
-
-  return 0;
 }
 
 int

@@ -414,7 +414,7 @@ makeT1Upgrade::buildCH4Mod(Simulation& System,
 
 std::string
 makeT1Upgrade::buildH2Mod(Simulation& System,
-			   const attachSystem::FixedComp& FC,
+			  const attachSystem::FixedComp& FC,
 			  const std::string& MType)
   /*!
     Create a H2 moderator based on the input param

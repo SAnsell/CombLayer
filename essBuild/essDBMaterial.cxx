@@ -60,9 +60,11 @@ void addESSMaterial()
      Initialize the database of materials
    */
 {
-  return;
-  ELog::RegMethod RegA("essDBMaterial[F]","addESSMaterial");
 
+  ELog::RegMethod RegA("essDBMaterial[F]","addESSMaterial");
+  ELog::EM<<"ESS Materials NOT LOADED "<<ELog::endWarn;
+
+  return;
   const std::string MLib="hlib=.70h pnlib=70u";
   ModelSupport::DBMaterial& MDB=
     ModelSupport::DBMaterial::Instance();

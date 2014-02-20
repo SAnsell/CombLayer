@@ -534,7 +534,6 @@ Reflector::createInternalObjects(Simulation& System,
   for(vc=Pads.begin();vc!=Pads.end();vc++)
     vc->createAll(System,*this);
 
-
   return;
 }
 
@@ -550,13 +549,9 @@ Reflector::insertPipeObjects(Simulation& System,
 {
   ELog::RegMethod RegA("Reflector","insertPipeObjects");
 
-
   CouplePipe CP("cplPipe");
   System.createObjSurfMap();
   CP.createAll(System,*HydObj,4,*VacObj);
-
-  ELog::EM<<"DEBUG RETURN"<<ELog::endDebug;
-  return;
 
   DecouplePipe DP("decPipe");
   DP.createAll(System,*DMod,5,*DVacObj,DMod->needsHePipe());
