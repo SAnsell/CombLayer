@@ -238,7 +238,16 @@ sub incDirName
   my $incType=shift;        ## Number
   return "NULL" if ($incType<0);
   return "SRCDIR" if ($incType==0);
-  my $outString="INCDIR".chr(ord('A')+$incType-1);
+  my $outString="INCDIR";
+  if ($incType<27) 
+    {
+      $outString.= chr(ord('A')+$incType-1);
+    }
+  else
+    {
+      $outString.= chr(ord('a')+$incType-27);
+    }
+  
   return $outString;
 }
 
@@ -1144,7 +1153,6 @@ sub printMainAll
     {
       my $name=$self->{masterProg}[$i];
       my $depLine = $name." : Main/".$name.".o ";
-      my $fakeLine = ucfirst($name)." : ";
       my $compLine;
       my $fileExt=getFileExt("Main/".$name);
       if ($fileExt eq "cxx")
@@ -1169,21 +1177,19 @@ sub printMainAll
 
       for(my $j=0;$j<$NLib;$j++)
 	{
-	  $depLine.="\$(LIBOUTDIR)/lib".ucfirst($self->{libnames}[$self->{depList}[$i][$j]]).$libExt." ";
-	  $fakeLine.= "lib".ucfirst($self->{libnames}[$self->{depList}[$i][$j]])." "; 
+#	  $depLine.="\$(LIBOUTDIR)/lib".ucfirst($self->{libnames}[$self->{depList}[$i][$j]]).$libExt." ";
+	  $depLine.= "lib".ucfirst($self->{libnames}[$self->{depList}[$i][$j]])." "; 
 	  $compLine.="\$(LIBOUTDIR)/lib".ucfirst($self->{libnames}[$self->{depList}[$i][$j]]).$libExt." ";
 	}
       if ($self->{lua})
 	{
 	  $compLine.="\$(LIBOUTDIR)/libScript".$libExt." ";
-	  $fakeLine.="libScript ";
 	  $depLine.="\$(LIBOUTDIR)/libScript".$libExt." ";
 	}
 
       if ($self->{swig})
 	{
 	  $compLine.="\$(LIBOUTDIR)/libSwig".$libExt." ";
-	  $fakeLine.="libSwig ";
 	  $depLine.="\$(LIBOUTDIR)/libSwig".$libExt." ";
 	}
       if ($self->{ccomp} eq "clang")
@@ -1193,9 +1199,6 @@ sub printMainAll
 
       $compLine.= "-lgcov " if ($self->{gcov});
       $compLine.=addFlags($self->{controlflags}[$i]); 
-      $fakeLine.=$name;
-      printString($fakeLine,55,10);
-      print "\n";
       printString($depLine,66,10);
       printString($compLine,66,12);
       print "\n";
