@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   src/SimTrack.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,6 +38,7 @@
 #include "GTKreport.h"
 #include "OutputLog.h"
 #include "SimTrack.h"
+
 
 namespace ModelSupport
 {
@@ -96,13 +97,14 @@ SimTrack::setCell(const Simulation* SimPtr,MonteCarlo::Object* OPtr)
     \param OPtr :: Object Pointer
   */
 {
+  ELog::RegMethod RegA("SimTrack","setCell");
+
   fcTYPE::key_type sInt=reinterpret_cast<fcTYPE::key_type>(SimPtr);
   fcTYPE::iterator mc=findCell.find(sInt);
   if (mc==findCell.end())
     {
-      if (OPtr)
-	throw ColErr::InContainerError<fcTYPE::key_type>
-	  (sInt,"SimTrack::setCell"+ELog::RegMethod::getFull());
+      throw ColErr::InContainerError<fcTYPE::key_type>
+	(sInt,"sInt not fould in findCell");
     }
   mc->second=OPtr;
   return;
@@ -121,7 +123,8 @@ SimTrack::curCell(const Simulation* SimPtr) const
   fcTYPE::key_type sInt=reinterpret_cast<fcTYPE::key_type>(SimPtr);
   fcTYPE::const_iterator mc=findCell.find(sInt);
   if (mc==findCell.end())
-    throw ColErr::InContainerError<fcTYPE::key_type>(sInt,"sInt");
+    throw ColErr::InContainerError<fcTYPE::key_type>
+      (sInt,"simluation<long Int>");
   return mc->second;
 }
 

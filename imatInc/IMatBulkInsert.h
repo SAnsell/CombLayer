@@ -42,7 +42,7 @@ class IMatBulkInsert : public BulkInsert
  private:
   
   const std::string keyName;  ///< KeyName
-  const int insIndex;         ///< Insert elemetn
+  const int insIndex;         ///< Insert element
   int cellIndex;              ///< Cell index
 
   double xStep;              ///< X-Step
@@ -55,7 +55,7 @@ class IMatBulkInsert : public BulkInsert
   double width;              ///< Main width
   double height;             ///< Main height
 
-  int defMat;                 ///< Default material
+  int defMat;                ///< Default material
   
   // Function:
 
@@ -68,7 +68,7 @@ class IMatBulkInsert : public BulkInsert
 
  public:
 
-  IMatBulkInsert(const int,const std::string&,const std::string&);
+  IMatBulkInsert(const size_t,const std::string&,const std::string&);
   IMatBulkInsert(const IMatBulkInsert&);
   IMatBulkInsert& operator=(const IMatBulkInsert&);
   virtual ~IMatBulkInsert();

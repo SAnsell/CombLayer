@@ -630,6 +630,9 @@ FlightLine::processIntersectMajor(Simulation& System,
   for(size_t i=0;i<nLayer;i++)
     {
       MonteCarlo::Object* Obj=System.findQhull(metalCell++);
+      if (!Obj)
+	throw ColErr::InContainerError<int>
+	  (metalCell-1,"Cell no found at layer"+StrFunc::makeString(i+1));
       const std::string ObjStr=Obj->cellCompStr()+CC.getExclude(iKey);
       Obj->procString(ObjStr);
     }
@@ -666,6 +669,9 @@ FlightLine::processIntersectMinor(Simulation& System,
   for(size_t i=0;i<=nLayer;i++)
     {
       MonteCarlo::Object* Obj=System.findQhull(changeCell++);
+      if (!Obj)
+	throw ColErr::InContainerError<int>
+	  (changeCell-1,"Cell no found at layer"+StrFunc::makeString(i+1));
       const std::string ObjStr=Obj->cellCompStr()+CC.getExclude(oKey);
       Obj->procString(ObjStr);
     }

@@ -136,12 +136,12 @@ writeIndexSimPHITS(Simulation& System,const std::string& FName,const int Number)
   return;
 }
 
-template<typename T>
+template<typename T,typename U>
 T
 getIndexVar(const FuncDataBase& Control,
 	    const std::string& FName,
 	    const std::string& BName,
-	    const int index)
+	    const U& index)
 /*!
   Get an value item based on the FName+BName 
   with interal index
@@ -315,15 +315,27 @@ getVarVec(const FuncDataBase& Control,
 template 
 double
 getIndexVar(const FuncDataBase&,const std::string&,
-	    const std::string&,const int);
+	    const std::string&,const int&);
 template 
 int
 getIndexVar(const FuncDataBase&,const std::string&,
-	    const std::string&,const int);
+	    const std::string&,const int&);
 template 
 size_t
 getIndexVar(const FuncDataBase&,const std::string&,
-	    const std::string&,const int);
+	    const std::string&,const int&);
+template 
+double
+getIndexVar(const FuncDataBase&,const std::string&,
+	    const std::string&,const size_t&);
+template 
+int
+getIndexVar(const FuncDataBase&,const std::string&,
+	    const std::string&,const size_t&);
+template 
+size_t
+getIndexVar(const FuncDataBase&,const std::string&,
+	    const std::string&,const size_t&);
 
 template 
 int

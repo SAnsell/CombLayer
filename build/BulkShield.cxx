@@ -449,7 +449,7 @@ BulkShield::processVoid(Simulation& System)
 
 
 const shutterSystem::Torpedo* 
-BulkShield::getTorpedo(const int Index) const
+BulkShield::getTorpedo(const size_t Index) const
   /*!
     Get a torpedo pointer
     \param Index :: Index of shutter/torpedo to get
@@ -457,14 +457,14 @@ BulkShield::getTorpedo(const int Index) const
    */
 {
   ELog::RegMethod RegA("BulkShield","getTorpedo");
-  if (Index<0 || Index>=static_cast<int>(TData.size()))
-    throw ColErr::IndexError<int>(Index,static_cast<int>(TData.size()),
-				  RegA.getBase());
-  return TData[static_cast<size_t>(Index)].get();
+
+  if (Index>=TData.size())
+    throw ColErr::IndexError<size_t>(Index,TData.size(),"Index/TData.size()");
+  return TData[Index].get();
 }
 
 const shutterSystem::GeneralShutter* 
-BulkShield::getShutter(const int Index) const
+BulkShield::getShutter(const size_t Index) const
   /*!
     Get a shutter pointer
     \param Index :: Index of shutter to get
@@ -472,15 +472,14 @@ BulkShield::getShutter(const int Index) const
    */
 {
   ELog::RegMethod RegA("BulkShield","getShutter");
-  if (Index<0 || Index>=static_cast<int>(GData.size()))
-    throw ColErr::IndexError<int>(Index,static_cast<int>(GData.size()),
-				  RegA.getBase());
+  if (Index>=GData.size())
+    throw ColErr::IndexError<size_t>(Index,GData.size(),"Index/GData.size()");
 
-  return GData[static_cast<size_t>(Index)].get();
+  return GData[Index].get();
 }
 
 const shutterSystem::BulkInsert* 
-BulkShield::getInsert(const int Index) const
+BulkShield::getInsert(const size_t Index) const
   /*!
     Get an insert pointer
     \param Index :: Index of insert to get
@@ -488,10 +487,11 @@ BulkShield::getInsert(const int Index) const
    */
 {
   ELog::RegMethod RegA("BulkShield","getInsert");
-  if (Index<0 || Index>=static_cast<int>(BData.size()))
-    throw ColErr::IndexError<int>(Index,static_cast<int>(BData.size()),
-				  RegA.getBase());
-  return BData[static_cast<size_t>(Index)].get();
+
+  if (Index>=BData.size())
+    throw ColErr::IndexError<size_t>(Index,BData.size(),"Index/BData.size()");
+
+  return BData[Index].get();
 }
 
 

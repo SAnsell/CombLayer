@@ -135,7 +135,7 @@ struct EqualSurface
 	  typedef typename 
 	    boost::mpl::if_<boost::is_convertible<RetType,Geometry::Surface*>,
 	    ObjectType*,const ObjectType*>::type TX;
-
+	  
 	  TX ObjPtr=dynamic_cast<TX>(SPtr);
 	  return EqualSurf<TX,RetType>(ObjPtr,SMap);
 	}

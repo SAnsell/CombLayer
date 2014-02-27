@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   buildInc/collInsertCyl.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,9 +43,9 @@ class collInsertCyl  : public collInsertBase
 
   double radGap;          ///< rad gap
 
-  void setVar(const int,const double);
+  void setVar(const size_t,const double);
   void setVar(const FuncDataBase&,
-	      const int,const std::string&);
+	      const size_t,const std::string&);
 
   virtual void populate(const Simulation&,const collInsertBase*);
 
@@ -64,7 +64,7 @@ class collInsertCyl  : public collInsertBase
   /// Accessor to type
   virtual std::string typeName() const { return "collInsertCyl"; }
 
-  virtual double getVar(const int) const;
+  virtual double getVar(const size_t) const;
   virtual int exitWindow(const double,
 			 std::vector<int>&,Geometry::Vec3D&) const;
   virtual std::vector<Geometry::Vec3D> 

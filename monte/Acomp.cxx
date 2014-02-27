@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   monte/Acomp.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,7 +49,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "RotCounter.h"
-#include "Triple.h"
 #include "BnId.h"
 #include "Acomp.h"
 
@@ -1116,14 +1115,16 @@ Acomp::makeEPI(std::vector<BnId>& DNFobj,
 	{
 	  for(px=PIactive.begin();
 	      px!=PIactive.end() && !Grid[*px][*dx];px++) ;
-	  
-	  EPI.push_back(PIform[*px]);
-	  // remove all minterm that the EPI covered
-	  for(ddx=DNFactive.begin();ddx!=DNFactive.end();ddx++)
-	    if (*ddx!=ULONG_MAX && Grid[*px][*ddx])
-	      *ddx= ULONG_MAX;      //mark for deletion (later)
-	  // Can remove PIactive now.
-	  PIactive.erase(px,px+1);
+	  if (px!=PIactive.end())
+	    {
+	      EPI.push_back(PIform[*px]);
+	      // remove all minterm that the EPI covered
+	      for(ddx=DNFactive.begin();ddx!=DNFactive.end();ddx++)
+		if (*ddx!=ULONG_MAX && Grid[*px][*ddx])
+		  *ddx= ULONG_MAX;      //mark for deletion (later)
+	      // Can remove PIactive now.
+	      PIactive.erase(px,px+1);
+	    }
 	}
     }
   // Remove dead items from active list
@@ -1138,12 +1139,12 @@ Acomp::makeEPI(std::vector<BnId>& DNFobj,
     {
       for(px=PIactive.begin();px!=PIactive.end();px++)
 	{
-	  std::cerr<<PIform[*px]<<":";
+	  ELog::EM<<PIform[*px]<<":";
 	  for(ddx=DNFactive.begin();ddx!=DNFactive.end();ddx++)
-	    std::cerr<<((Grid[*px][*ddx]) ? " 1" : " 0");
-	  std::cerr<<std::endl;
+	    ELog::EM<<((Grid[*px][*ddx]) ? " 1" : " 0");
+	  ELog::EM<<ELog::endDebug;
 	}
-      std::cerr<<"END OF TABLE "<<std::endl;
+      ELog::EM<<"END OF TABLE "<<ELog::endDebug;
     }
 
   // Ok -- now the hard work...

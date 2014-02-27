@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   geometry/Face.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -295,6 +295,7 @@ Face::calcTriGrp(const Face& A,TriGrp& GA) const
    */
 {
   ELog::RegMethod RegA("Face","calcTriGrp");
+
   const Vec3D& p = FPts[0]->getV();
   const Vec3D& q = FPts[1]->getV();
   const Vec3D& r = FPts[2]->getV();
@@ -458,10 +459,9 @@ Face::calcTriGrpCase(const Face& A,TriGrp& GA) const
       GA(q,r,r,p);
     case 0:        // 000     [ ALL COPLANAR]
       return 0;
-    default:
-      throw ColErr::ExitAbort(RegA.getBase());
+
     }  
-  return 1;          // INTERTANGLED
+  throw ColErr::InContainerError<int>(flag,"Flag");
 }
 
 int

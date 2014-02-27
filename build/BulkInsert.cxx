@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   build/BulkInsert.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,13 +45,9 @@
 #include "support.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
-#include "Tensor.h"
 #include "Vec3D.h"
 #include "localRotate.h"
 #include "masterRotate.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Quaternion.h"
 #include "Surface.h"
 #include "surfIndex.h"
@@ -63,15 +59,12 @@
 #include "Line.h"
 #include "LineIntersectVisit.h"
 #include "Rules.h"
-#include "Convex.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "shutterBlock.h"
 #include "SimProcess.h"
 #include "Simulation.h"
@@ -91,11 +84,12 @@
 namespace shutterSystem
 {
 
-BulkInsert::BulkInsert(const int ID,const std::string& Key) : 
+BulkInsert::BulkInsert(const size_t ID,const std::string& Key) : 
   TwinComp(Key,6),attachSystem::ContainedGroup("inner","outer"),
   shutterNumber(ID),
-  surfIndex(ModelSupport::objectRegister::Instance().cell(Key,ID)),
-  cellIndex(surfIndex+1),
+  surfIndex(ModelSupport::objectRegister::Instance().cell
+	    (Key,static_cast<int>(ID))),
+  cellIndex(surfIndex+1), 
   populated(0),divideSurf(0),DPlane(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.

@@ -48,9 +48,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "inputParam.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -62,8 +59,6 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "insertInfo.h"
 #include "insertBaseInfo.h"
 #include "InsertComp.h"
@@ -74,7 +69,6 @@
 #include "TwinComp.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
-#include "LinearComp.h"
 #include "shutterBlock.h"
 #include "GeneralShutter.h"
 #include "collInsertBase.h"
@@ -180,7 +174,7 @@ makeZoom::build(Simulation* SimPtr,
   if (IParam.flag("isolate") && IParam.compValue("I",std::string("zoom")))
     isoFlag=1;
 
-  const int zsNumber(shutterSystem::BulkShield::zoomShutter);
+  const size_t zsNumber(shutterSystem::BulkShield::zoomShutter);
 
   const shutterSystem::ZoomShutter* ZS=
     dynamic_cast<const shutterSystem::ZoomShutter*>

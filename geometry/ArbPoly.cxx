@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   geometry/ArbPoly.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,10 +43,10 @@
 #include "RegMethod.h"
 #include "support.h"
 #include "mathSupport.h"
-#include "Triple.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
+#include "Triple.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "Transform.h"
@@ -58,7 +58,6 @@
 
 namespace Geometry
 {
-
  
 ArbPoly::ArbPoly() : Surface(),
 		     nSurface(0)
@@ -198,6 +197,9 @@ ArbPoly::setSurface(const std::string& Pstr)
     \return 0 on success, -ve of failure
   */
 {
+  ELog::RegMethod RegA("ArbPoly","setSurface");
+
+  const size_t maxSurfaces(100);
   std::string Line=this->stripID(Pstr);
 
   int nx;
@@ -211,9 +213,10 @@ ArbPoly::setSurface(const std::string& Pstr)
   std::string Key=Btype.substr(0,3);
   if (Key!="arb" && Key!="ARB")       // Wrong type
     return -3;
+
   size_t NC(8);                          // Number of expected corners ==8 
   StrFunc::convert(Btype.substr(3),NC);
-  if (NC<=3)
+  if (NC<=3 | NC>maxSurfaces)
     return -4;
 
   std::vector<Geometry::Vec3D> Corners(NC);

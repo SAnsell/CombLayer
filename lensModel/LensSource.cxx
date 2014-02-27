@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   lensModel/LensSource.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,7 +71,8 @@ namespace SDef
 {
 
 LensSource::LensSource(const std::string& Key) : 
-  keyName(Key),populated(0),cutEnergy(0.0),weight(1.0)
+  keyName(Key),populated(0),cutEnergy(0.0),weight(1.0),
+  radialSpread(0.0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName

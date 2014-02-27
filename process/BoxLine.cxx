@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   process/BoxLine.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -219,7 +219,7 @@ BoxLine::addPoint(const Geometry::Vec3D& Pt)
 }
 
 void
-BoxLine::setActive(const size_t uIndex,const int flag)
+BoxLine::setActive(const size_t uIndex,const size_t flag)
   /*!
     Set the activity flag: 
     Goes from inner to outer 
@@ -231,7 +231,7 @@ BoxLine::setActive(const size_t uIndex,const int flag)
 
   if (uIndex>=activeFlags.size())
     throw ColErr::IndexError<size_t>(uIndex,activeFlags.size(),
-				     RegA.getFull());
+				     "uIndex/activeFlags.size()");
   activeFlags[uIndex]=flag;
   return;
 }

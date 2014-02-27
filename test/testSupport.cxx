@@ -404,18 +404,18 @@ testSupport::testSection()
 	  checkFlag= (tc->get<4>()!=outI || 
 		      tc->get<2>()!=TLine);
 	}
-      if (typeFlag==1)        // double
+      else if (typeFlag==1)        // double
 	{
 	  resultFlag=section(TLine,outD);
 	  checkFlag= (fabs(tc->get<5>()-outD)>1e-15 || 
 		      tc->get<2>()!=TLine);
 	}
-      if (typeFlag==2)        // String
+      else if (typeFlag==2)        // String
 	{
 	  resultFlag=section(TLine,outS);
 	  checkFlag= (tc->get<6>()!=outS || tc->get<2>()!=TLine);
 	}
-      if (typeFlag==3)        // Size_t
+      else         // Size_t
 	{
 	  resultFlag=section(TLine,outUI);
 	  checkFlag= (static_cast<size_t>(tc->get<4>())!=outUI 

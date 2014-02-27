@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   process/boxValues.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,7 +44,6 @@
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "Triple.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -65,7 +64,8 @@ boxValues::boxValues(const size_t NS,const int& M,
    */
 {
   if (NS>10)
-    ELog::EM<<"Failed on Sides "<<ELog::endErr;
+    throw ColErr::RangeError<size_t>
+      (NS,0,10,"boxValues::Too many sides specified");
 }
 
 boxValues::boxValues(const boxValues& A) : 
@@ -110,7 +110,7 @@ boxValues::symPlanes(const double& XD,const double& ZD)
   const Geometry::Vec3D XUnit(1,0,0);
   const Geometry::Vec3D ZUnit(0,0,1);
 
-  const double angleStep(2.0*M_PI/NSides);
+  const double angleStep(2.0*M_PI/static_cast<double>(NSides));
   double Angle=0.0;
   for(size_t i=0;i<NSides;i++)
     {

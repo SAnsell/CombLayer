@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   zoomInc/ZoomShutter.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef ZoomShutter_h
-#define ZoomShutter_h
+#ifndef shutterSystem_ZoomShutter_h
+#define shutterSystem_ZoomShutter_h
 
 class Simulation;
 
@@ -83,7 +83,7 @@ class ZoomShutter : public GeneralShutter
 
  public:
 
-  ZoomShutter(const int,const std::string&,const std::string&);
+  ZoomShutter(const size_t,const std::string&,const std::string&);
   ZoomShutter(const ZoomShutter&);
   ZoomShutter& operator=(const ZoomShutter&);
   virtual ~ZoomShutter();

@@ -40,15 +40,11 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
+#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -63,8 +59,6 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "shutterBlock.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
@@ -141,29 +135,24 @@ collInsertBlock::populate(const Simulation& System,
   ELog::RegMethod RegA("collInsertBlock","populate");
   const FuncDataBase& Control=System.getDataBase();
 
-  const int Size(9);
-  const int commonSize(7);
+  const size_t Size(9);
+  const size_t commonSize(7);
   const char* sndKey[Size]=
     {"FStep","CentX","CentZ","Len","Width","Height","Mat","HGap","VGap"};
   
-  const collInsertBlock* sndBlock=
-    dynamic_cast<const collInsertBlock*>(sndBase);
-
-  for(int i=0;i<Size;i++)
+  for(size_t i=0;i<Size;i++)
     {
-      std::ostringstream cx;
-      cx<<keyName<<blockIndex+1<<sndKey[i];
-      if (Control.hasVariable(cx.str()))
-	setVar(Control,i,cx.str());
-      else if (sndBlock)
-	setVar(i,sndBlock->getVar(i));	
+      const std::string KN=keyName+
+	StrFunc::makeString(blockIndex+1)+sndKey[i];
+      if (Control.hasVariable(KN))
+	setVar(Control,i,KN);
       else if (sndBase && i<=commonSize)
 	setVar(i,sndBase->getVar(i));	
       else 
 	{
 	  ELog::EM<<"sndBase == "<<sndBase->typeName()<<ELog::endCrit;
 	  ELog::EM<<"Failed to connect on first component:"
-		  <<blockIndex+1<<" :: "<<cx.str()<<ELog::endErr;
+		  <<KN<<ELog::endErr;
 	}
     }
   populated|=1;
@@ -171,13 +160,15 @@ collInsertBlock::populate(const Simulation& System,
 }
 
 void
-collInsertBlock::setVar(const int Item,const double V)
+collInsertBlock::setVar(const size_t Item,const double V)
   /*!
     Given a value set the item
     \param Item :: Index value to variable
     \param V :: Value
   */
 {
+  ELog::RegMethod RegA("colInsertBlock","setVar<double>");
+
   switch(Item)
     {
     case 0:
@@ -207,15 +198,13 @@ collInsertBlock::setVar(const int Item,const double V)
     case 8:
       vGap=V;
       return;
-    default:
-      throw ColErr::IndexError<int>(Item,8,"Item");
     }
-  return;
+  throw ColErr::IndexError<size_t>(Item,8,"Item");
 }
 
 void
 collInsertBlock::setVar(const FuncDataBase& Control,
-			const int Item,
+			const size_t Item,
 			const std::string& VarStr)
   /*!
     Convert a string into an item value
@@ -234,7 +223,7 @@ collInsertBlock::setVar(const FuncDataBase& Control,
 }
 
 double
-collInsertBlock::getVar(const int Item) const
+collInsertBlock::getVar(const size_t Item) const
   /*!
     Get the value based on an index reference
     \param Item :: Index value to variable
@@ -264,7 +253,7 @@ collInsertBlock::getVar(const int Item) const
     case 8:
       return vGap;
     }
-  throw ColErr::IndexError<int>(Item,8,"Item");
+  throw ColErr::IndexError<size_t>(Item,8,"Item");
 }
 
 void

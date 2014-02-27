@@ -40,19 +40,13 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
+#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
-#include "surfDIter.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
@@ -63,16 +57,12 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
-#include "shutterBlock.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "LinearComp.h"
 #include "ContainedComp.h"
 #include "collInsertBase.h"
 #include "collInsertCyl.h"
@@ -145,41 +135,34 @@ collInsertCyl::populate(const Simulation& System,
   const char* sndKey[Size]=
     {"FStep","CentX","CentZ","Len","Width","Height","Mat","RGap"};
   
-  const collInsertCyl* sndBlock=
-    dynamic_cast<const collInsertCyl*>(sndBase);
-
-  for(int i=0;i<Size;i++)
+  for(size_t i=0;i<Size;i++)
     {
-      std::ostringstream cx;
-      cx<<keyName<<blockIndex+1<<sndKey[i];
-      if (Control.hasVariable(cx.str()))
-	setVar(Control,i,cx.str());
-      else if (sndBlock)
-	setVar(i,sndBlock->getVar(i));	
+      const std::string KN=keyName+
+	StrFunc::makeString(blockIndex+1)+sndKey[i];
+      if (Control.hasVariable(KN))
+	setVar(Control,i,KN);
       else if (sndBase && i<=commonSize)
-	 setVar(i,sndBase->getVar(i));	
+	setVar(i,sndBase->getVar(i));	
       else 
 	{
 	  ELog::EM<<"sndBase == "<<sndBase->typeName()<<ELog::endCrit;
 	  ELog::EM<<"Failed to connect on first component:"
-		  <<blockIndex+1<<" :: "<<cx.str()<<ELog::endCrit;
+		  <<KN<<ELog::endErr;
 	}
-      
-
-
-    }  
+    }
   populated|=1;
   return;
 }
 
 void
-collInsertCyl::setVar(const int Item,const double V)
+collInsertCyl::setVar(const size_t Item,const double V)
   /*!
     Given a value set the item
     \param Item :: Index value to variable
     \param V :: Value
   */
 {
+  ELog::RegMethod RegA("collInsertCyl","setVar");
   switch(Item)
     {
     case 0:
@@ -206,15 +189,13 @@ collInsertCyl::setVar(const int Item,const double V)
     case 7:
       radGap=V;
       return;
-    default:
-      throw ColErr::IndexError<int>(Item,7,"Item");
     }
-  return;
+  throw ColErr::IndexError<size_t>(Item,7,"Item");
 }
 
 void
 collInsertCyl::setVar(const FuncDataBase& Control,
-			const int Item,const std::string& VarStr)
+		      const size_t Item,const std::string& VarStr)
   /*!
     Convert a string into an item value
     \param Control :: DataBase to get value from
@@ -231,7 +212,7 @@ collInsertCyl::setVar(const FuncDataBase& Control,
 }
 
 double
-collInsertCyl::getVar(const int Item) const
+collInsertCyl::getVar(const size_t Item) const
   /*!
     Get the value based on an index reference
     \param Item :: Index value to variable
@@ -258,7 +239,7 @@ collInsertCyl::getVar(const int Item) const
     case 7:
       return radGap;
     }
-  throw ColErr::IndexError<int>(Item,8,"Item");
+  throw ColErr::IndexError<size_t>(Item,8,"Item");
 }
 
 void

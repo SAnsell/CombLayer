@@ -51,7 +51,7 @@ class t1BulkShield : public attachSystem::FixedComp,
   const int bulkIndex;            ///< Index of surface offset
   int cellIndex;                  ///< Cell index
   int populated;                  ///< 1:var
-  const int numberBeamLines;      ///< Number of beamlines
+  const size_t numberBeamLines;      ///< Number of beamlines
 
   /// Data for shutter
   std::vector<boost::shared_ptr<shutterSystem::GeneralShutter> > GData;
@@ -93,24 +93,24 @@ class t1BulkShield : public attachSystem::FixedComp,
   t1BulkShield& operator=(const t1BulkShield&);
   virtual ~t1BulkShield();
 
-  static const int sandalsShutter;  // North 1
-  static const int prismaShutter;  // North 2
-  static const int surfShutter;  // North 3
-  static const int crispShutter;  // North 4
-  static const int loqShutter;  // North 5
-  static const int irisShutter;  // North 6
-  static const int polarisIIShutter;  // North 7
-  static const int toscaShutter;  // North 8
-  static const int hetShutter;  // North 9
-  static const int mapsShutter;  // South 1
-  static const int vesuvioShutter;  // South 2
-  static const int sxdShutter;  // South 3
-  static const int merlinShutter;  // South 4
-  static const int s5Shutter;  // South 5
-  static const int mariShutter;  // South 6
-  static const int gemShutter;  // South 7
-  static const int hrpdShutter;  // South 8
-  static const int pearlShutter;  // South 9
+  static const size_t sandalsShutter;  // North 1
+  static const size_t prismaShutter;  // North 2
+  static const size_t surfShutter;  // North 3
+  static const size_t crispShutter;  // North 4
+  static const size_t loqShutter;  // North 5
+  static const size_t irisShutter;  // North 6
+  static const size_t polarisIIShutter;  // North 7
+  static const size_t toscaShutter;  // North 8
+  static const size_t hetShutter;  // North 9
+  static const size_t mapsShutter;  // South 1
+  static const size_t vesuvioShutter;  // South 2
+  static const size_t sxdShutter;  // South 3
+  static const size_t merlinShutter;  // South 4
+  static const size_t s5Shutter;  // South 5
+  static const size_t mariShutter;  // South 6
+  static const size_t gemShutter;  // South 7
+  static const size_t hrpdShutter;  // South 8
+  static const size_t pearlShutter;  // South 9
 
   /// Access outer limit
   double getORadius() const { return outerRadius; }

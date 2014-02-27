@@ -482,14 +482,16 @@ RuleBinary::makeEPI(std::vector<BnId>& PIform)
 	{
 	  for(px=PIactive.begin();
 	      px!=PIactive.end() && !Grid[*px][*dx];px++) ;
-	  
-	  EPI.push_back(PIform[*px]);
-	  // remove all minterm that the EPI covered
-	  for(ddx=DNFactive.begin();ddx!=DNFactive.end();ddx++)
-	    if (*ddx!=ULONG_MAX && Grid[*px][*ddx])
-	      *ddx = ULONG_MAX;      //mark for deletion (later)
+	  if (px!=PIactive.end())
+	    {
+	      EPI.push_back(PIform[*px]);
+	      // remove all minterm that the EPI covered
+	      for(ddx=DNFactive.begin();ddx!=DNFactive.end();ddx++)
+		if (*ddx!=ULONG_MAX && Grid[*px][*ddx])
+		  *ddx = ULONG_MAX;      //mark for deletion (later)
 	  // Can remove PIactive now.
-	  PIactive.erase(px,px+1);
+	      PIactive.erase(px,px+1);
+	    }
 	}
     }
   // Remove dead items from active list

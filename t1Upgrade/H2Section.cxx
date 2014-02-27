@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   t1Upgrade/H2Section.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,8 +48,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -502,7 +500,7 @@ H2Section::getLayerString(const size_t sideIndex,
     \return Surface string
   */
 {
-  ELog::RegMethod RegA("H2Setion","getLayerString");
+  ELog::RegMethod RegA("H2Section","getLayerString");
 
   if (layerIndex>6) 
     throw ColErr::IndexError<size_t>(layerIndex,6,"layerIndex");
@@ -510,7 +508,7 @@ H2Section::getLayerString(const size_t sideIndex,
     throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex");
 
   const int SI(modIndex+static_cast<int>(layerIndex*10+sideIndex+1));
-  const int signValue((sideIndex % 1) ? 1 : -1);
+  const int signValue((sideIndex % 2) ? 1 : -1);
   std::ostringstream cx;
   cx<<" "<<signValue*SMap.realSurf(SI)<<" ";
   return cx.str();

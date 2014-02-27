@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   monte/Object.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -221,12 +221,14 @@ Object::complementaryObject(const int Cnum,std::string& Ln)
   std::string::size_type posB;
   posB=Ln.find_first_of("()",posA);
   if (posB==std::string::npos)
-    throw ColErr::InvalidLine(Ln,RegA.getFull(),posA);
+    throw ColErr::InvalidLine(Ln,"Bracket find",posA);
 
   brackCnt=(Ln[posB] == '(') ? 1 : 0;
   while (posB!=std::string::npos && brackCnt)
     {
       posB=Ln.find_first_of("()",posB);
+      if (posB==std::string::npos)
+	throw ColErr::InvalidLine(Ln,"Bracket closure",posA);
       brackCnt+=(Ln[posB] == '(') ? 1 : -1;
       posB++;
     }

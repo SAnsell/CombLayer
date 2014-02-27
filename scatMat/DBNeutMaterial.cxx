@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   scatMat/DBNeutMaterial.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -92,6 +92,8 @@ DBNeutMaterial::initMaterial()
      Initialize the database of materials
    */
 {
+  ELog::RegMethod RegA("DBNeutMaterial","initMaterial");
+
   CryMat Silicon("Silicon",28.09,0.0499,4.1491,2.16,0.01,0.171);
   Silicon.setTemperatures(420,420/6);
 
@@ -160,8 +162,8 @@ DBNeutMaterial::getMat(const int ID) const
   if (!ID) return 0;
   
   MTYPE::const_iterator mc=MStore.find(ID);
-  if (mc!=MStore.end())
-    throw ColErr::InContainerError<int>(ID,RegA.getFull());
+  if (mc==MStore.end())
+    throw ColErr::InContainerError<int>(ID,"MStore");
 
   return &mc->second;
 }

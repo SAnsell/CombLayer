@@ -121,14 +121,16 @@ MatrixBase<T>::MatrixBase(const MatrixBase<T>& A,const size_t nrow,
     throw ColErr::IndexError<size_t>(ncol,A.ny,
 			     "MatrixBase::Constructor without col");
   
-  // A.nx is >= 1
+  if (A.nx<2 || A.ny<2) return;
+
+  // A.nx is >= 2
   setMem(A.nx-1,A.ny-1);
-  int iR(0);
+  size_t iR(0);
   for(size_t i=0;i<A.nx;i++)
     {
       if (i!=nrow)
         {
-	  int jR(0);
+	  size_t jR(0);
 	  for(size_t j=0;j<A.ny;j++)
 	    if (j!=ncol)
 	      {

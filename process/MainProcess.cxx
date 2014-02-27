@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   process/MainProcess.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -363,7 +363,22 @@ createSiliconInputs(inputParam& IParam)
   return;
 }
 
-void createDelftInputs(inputParam& IParam)
+void 
+createSinbadInputs(inputParam& IParam)
+  /*!
+    Set the specialise inputs for sinbad
+    \param IParam :: Input Parameters
+  */
+{
+  ELog::RegMethod RegA("MainProcess::","createSinbadInputs");
+
+  createInputs(IParam);
+  IParam.setValue("sdefType",std::string("sinbad"));    
+  return;
+}
+
+void 
+createDelftInputs(inputParam& IParam)
   /*!
     Set the specialise inputs
     \param IParam :: Input Parameters

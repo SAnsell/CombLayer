@@ -85,9 +85,10 @@
 namespace shutterSystem
 {
 
-ZoomShutter::ZoomShutter(const int ID,const std::string& K,
+ZoomShutter::ZoomShutter(const size_t ID,const std::string& K,
 			 const std::string& ZK) :
-  GeneralShutter(ID,K),zoomKey(ZK)
+  GeneralShutter(ID,K),zoomKey(ZK),
+  colletInnerCell(0),colletOuterCell(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param ID :: Index number of shutter

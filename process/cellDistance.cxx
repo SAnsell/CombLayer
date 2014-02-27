@@ -63,12 +63,38 @@ namespace ModelSupport
 {
 
 cellDistance::cellDistance(const Simulation& System) :
-    ASim(&System),initObj(0)
+  ASim(&System),initObj(0),aRange(0),bRange(0)
  /*!
    Constructor
    \param System :: simulation
  */
 {}
+
+cellDistance::cellDistance(const cellDistance& A) : 
+  ASim(A.ASim),initObj(A.initObj),aRange(A.aRange),
+  bRange(A.bRange)
+  /*!
+    Copy constructor
+    \param A :: cellDistance to copy
+  */
+{}
+
+cellDistance&
+cellDistance::operator=(const cellDistance& A)
+  /*!
+    Assignment operator
+    \param A :: cellDistance to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      initObj=A.initObj;
+      aRange=A.aRange;
+      bRange=A.bRange;
+    }
+  return *this;
+}
 
 void
 cellDistance::setRange(const std::string& Item)
@@ -89,7 +115,7 @@ cellDistance::setRange(const std::string& Item)
       
   aRange=A;
   bRange=A+R;
-  ELog::EM<<"Range == "<<aRange<<" "<<bRange<<ELog::endDebug;
+
   return;
 }
 

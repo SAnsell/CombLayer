@@ -1145,6 +1145,8 @@ DBMaterial::writeMCNPX(std::ostream& OX) const
     \param OX :: Output stream
   */
 {
+  ELog::RegMethod RegA("DBMaterial","writeMCNPX");
+
   std::set<int>::const_iterator sc;
   for(sc=active.begin();sc!=active.end();sc++)
     {
@@ -1152,8 +1154,8 @@ DBMaterial::writeMCNPX(std::ostream& OX) const
 	{
 	  MTYPE::const_iterator mp=MStore.find(*sc);
 	  if (mp==MStore.end())
-	    throw ColErr::InContainerError<int>(mp->first,
-						"DBMaterial::writeMCNPX");
+	    throw ColErr::InContainerError<int>
+	      (*sc,"MStore find(active item)");
 	  if (mp->first)
 	    mp->second.write(OX);
 	}

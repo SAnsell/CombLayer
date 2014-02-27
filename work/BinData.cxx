@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   work/BinData.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -653,6 +653,7 @@ BinData::selectColumn(std::istream& IX,const int xcolA,
 		cnt++;
 	      if (index==ycol)
 	        {
+		  // reads y as doubleErr (y,E)
 		  if (ecol<0 && extraFlag && 
 		      StrFunc::convert(Part+" "+PartExtra,YE))
 		    {

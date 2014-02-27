@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   imat/IMatBulkInsert.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,48 +48,34 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "PointOperation.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
-#include "surfDIter.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "surfEqual.h"
-#include "surfDivide.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
-#include "Line.h"
-#include "LineIntersectVisit.h"
 #include "Rules.h"
-#include "Convex.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "shutterBlock.h"
 #include "SimProcess.h"
 #include "SurInter.h"
 #include "Simulation.h"
-#include "insertInfo.h"
-#include "insertBaseInfo.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "LinearComp.h"
 #include "SecondTrack.h"
 #include "TwinComp.h"
-#include "InsertComp.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
-#include "GeneralShutter.h"
-#include "chipDataStore.h"
 #include "BulkInsert.h"
 #include "IMatBulkInsert.h"
 
@@ -97,7 +83,7 @@
 namespace shutterSystem
 {
 
-IMatBulkInsert::IMatBulkInsert(const int ID,const std::string& BKey,
+IMatBulkInsert::IMatBulkInsert(const size_t ID,const std::string& BKey,
 			       const std::string& IKey)  : 
   BulkInsert(ID,BKey),keyName(IKey),
   insIndex(ModelSupport::objectRegister::Instance().cell(IKey)),
@@ -175,7 +161,7 @@ IMatBulkInsert::populate(const Simulation& System)
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
   
-  defMat=Control.EvalVar<int>(keyName+"DefMat");
+  defMat=ModelSupport::EvalMat<int>(Control,keyName+"DefMat");
     
   return;
 }

@@ -538,6 +538,7 @@ Rule::removeItem(Rule* &TRule,const int SurfN)
   */
 {
   ELog::RegMethod RegA("Rules","removeItem");
+  ELog::EM<<"THIS CODE IS BRIOKEN DONT USE UNLESS DEBUGGING IT"<<ELog::endErr;
   int cnt(0);
   Rule* Ptr=TRule->findKey(SurfN);
   while(Ptr)
@@ -569,6 +570,7 @@ Rule::removeItem(Rule* &TRule,const int SurfN)
       else  // Basic surf object
         {
 	  SurfPoint* SX=dynamic_cast<SurfPoint*>(Ptr);
+	  
 	  SX->setKeyN(0);
 	  SX->setKey(0);
 	  return cnt+1;

@@ -114,9 +114,9 @@ class BulkShield : public attachSystem::FixedComp,
   /// Get Torpedo surface
   int getTorpedoSurf() const { return SMap.realSurf(bulkIndex+7); }
 
-  const shutterSystem::Torpedo* getTorpedo(const int) const;
-  const shutterSystem::GeneralShutter* getShutter(const int) const;
-  const shutterSystem::BulkInsert* getInsert(const int) const;
+  const shutterSystem::Torpedo* getTorpedo(const size_t) const;
+  const shutterSystem::GeneralShutter* getShutter(const size_t) const;
+  const shutterSystem::BulkInsert* getInsert(const size_t) const;
   void processVoid(Simulation&);
 
   // This three functions should die:

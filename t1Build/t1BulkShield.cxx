@@ -102,24 +102,24 @@
 namespace shutterSystem
 {
 
-const int t1BulkShield::sandalsShutter(0);  // North 1
-const int t1BulkShield::prismaShutter(1);  // North 2
-const int t1BulkShield::surfShutter(2);  // North 3
-const int t1BulkShield::crispShutter(3);  // North 4
-const int t1BulkShield::loqShutter(4);  // North 5
-const int t1BulkShield::irisShutter(5);  // North 6
-const int t1BulkShield::polarisIIShutter(6);  // North 7
-const int t1BulkShield::toscaShutter(7);  // North 8
-const int t1BulkShield::hetShutter(8);  // North 9
-const int t1BulkShield::mapsShutter(9);  // South 1
-const int t1BulkShield::vesuvioShutter(10);  // South 2
-const int t1BulkShield::sxdShutter(11);  // South 3
-const int t1BulkShield::merlinShutter(12);  // South 4
-const int t1BulkShield::s5Shutter(13);  // South 5
-const int t1BulkShield::mariShutter(14);  // South 6
-const int t1BulkShield::gemShutter(15);  // South 7
-const int t1BulkShield::hrpdShutter(16);  // South 8
-const int t1BulkShield::pearlShutter(17);  // South 9
+const size_t t1BulkShield::sandalsShutter(0);  // North 1
+const size_t t1BulkShield::prismaShutter(1);  // North 2
+const size_t t1BulkShield::surfShutter(2);  // North 3
+const size_t t1BulkShield::crispShutter(3);  // North 4
+const size_t t1BulkShield::loqShutter(4);  // North 5
+const size_t t1BulkShield::irisShutter(5);  // North 6
+const size_t t1BulkShield::polarisIIShutter(6);  // North 7
+const size_t t1BulkShield::toscaShutter(7);  // North 8
+const size_t t1BulkShield::hetShutter(8);  // North 9
+const size_t t1BulkShield::mapsShutter(9);  // South 1
+const size_t t1BulkShield::vesuvioShutter(10);  // South 2
+const size_t t1BulkShield::sxdShutter(11);  // South 3
+const size_t t1BulkShield::merlinShutter(12);  // South 4
+const size_t t1BulkShield::s5Shutter(13);  // South 5
+const size_t t1BulkShield::mariShutter(14);  // South 6
+const size_t t1BulkShield::gemShutter(15);  // South 7
+const size_t t1BulkShield::hrpdShutter(16);  // South 8
+const size_t t1BulkShield::pearlShutter(17);  // South 9
 
 t1BulkShield::t1BulkShield(const std::string& Key)  : 
   attachSystem::FixedComp(Key,3),attachSystem::ContainedComp(),
@@ -268,7 +268,7 @@ t1BulkShield::createShutters(Simulation& System,
 			IParam.compValue("E",std::string("Insert")));
 
   GData.clear();
-  for(int i=0;i<numberBeamLines;i++)
+  for(size_t i=0;i<numberBeamLines;i++)
     {
       if (insertVoid)
 	GData.push_back(boost::shared_ptr<GeneralShutter>
@@ -367,7 +367,7 @@ t1BulkShield::createBulkInserts(Simulation& System,
 {
   ELog::RegMethod RegA("t1BulkShield","createBulkInserts");
 
-  for(int i=0;i<numberBeamLines;i++)
+  for(size_t i=0;i<numberBeamLines;i++)
     {
       BData.push_back(boost::shared_ptr<BulkInsert>
 		      (new BulkInsert(i,"bulkInsert")));

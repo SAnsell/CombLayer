@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   include/SimTrack.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,13 @@ namespace ModelSupport
   \version 1.0
   \author S. Ansell
   \date April 2011
-  \brief Keys track optimization units
+  \brief Keeps track of the last utilized object pointer
+
+  In a given simulation tracks or isValid operations based on points
+  typically start from the last used cell : This keeps a track of the 
+  last used cell as an optimization point.
 */
+
 
 class SimTrack
 {

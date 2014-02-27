@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   buildInc/collInsertBase.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -84,7 +84,7 @@ class collInsertBase  : public attachSystem::ContainedComp,
   virtual ~collInsertBase() {}   ///< Destructor
 
   virtual std::string typeName() const =0;
-  virtual double getVar(const int) const =0;
+  virtual double getVar(const size_t) const =0;
 
   /// Get materials
   int getMat() const { return matN; }

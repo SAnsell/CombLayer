@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   imat/IMatShutter.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -83,7 +83,7 @@
 namespace shutterSystem
 {
 
-IMatShutter::IMatShutter(const int ID,const std::string& K,
+IMatShutter::IMatShutter(const size_t ID,const std::string& K,
 			 const std::string& ZK) :
   GeneralShutter(ID,K),imatKey(ZK),
   insIndex(ModelSupport::objectRegister::Instance().cell(ZK)),

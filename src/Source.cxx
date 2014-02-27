@@ -417,7 +417,7 @@ Source::rotateMaster()
 	{
 	  SrcItem<Geometry::Vec3D>* Mptr=
 	    dynamic_cast<SrcItem<Geometry::Vec3D>* >(mc->second.get());
-	  if (Mptr->isData())
+	  if (Mptr && Mptr->isData())
 	    {
 	      Geometry::Vec3D Pt=Mptr->getData();
 	      MR.applyFull(Pt);

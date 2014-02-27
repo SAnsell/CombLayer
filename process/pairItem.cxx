@@ -294,7 +294,6 @@ createSurface(const double fraction,const int newItem)
   ModelSupport::surfIndex& SurI= ModelSupport::surfIndex::Instance();
 
   const Geometry::Vec3D NormA=surfB->getNormal();
-  const double DA=surfB->getDistance();  
 
   Geometry::Vec3D CentB=surfA->getCentre();
   Geometry::Vec3D NormB=surfA->getNormal();

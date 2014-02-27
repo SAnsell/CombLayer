@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   t1Build/MerlinModerator.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,8 +49,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -74,7 +72,6 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "LinearComp.h"
 #include "ContainedComp.h"
 #include "t1Reflector.h"
 #include "VanePoison.h"
@@ -99,9 +96,9 @@ MerlinModerator::MerlinModerator(const MerlinModerator& A) :
   xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
   xyAngle(A.xyAngle),width(A.width),depth(A.depth),
   height(A.height),innerThick(A.innerThick),vacThick(A.vacThick),
-  poisonYStep(A.poisonYStep),poisonThick(A.poisonThick),
-  alMat(A.alMat),waterMat(A.waterMat),poisonMat(A.poisonMat),
-  modLayer(A.modLayer)
+  nPoison(A.nPoison),vaneSide(A.vaneSide),poisonYStep(A.poisonYStep),
+  poisonThick(A.poisonThick),alMat(A.alMat),waterMat(A.waterMat),
+  poisonMat(A.poisonMat),modLayer(A.modLayer),mainCell(A.mainCell)
   /*!
     Copy constructor
     \param A :: MerlinModerator to copy
@@ -130,12 +127,15 @@ MerlinModerator::operator=(const MerlinModerator& A)
       height=A.height;
       innerThick=A.innerThick;
       vacThick=A.vacThick;
+      nPoison=A.nPoison;
+      vaneSide=A.vaneSide;
       poisonYStep=A.poisonYStep;
       poisonThick=A.poisonThick;
       alMat=A.alMat;
       waterMat=A.waterMat;
       poisonMat=A.poisonMat;
       modLayer=A.modLayer;
+      mainCell=A.mainCell;
     }
   return *this;
 }

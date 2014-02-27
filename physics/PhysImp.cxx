@@ -358,8 +358,8 @@ PhysImp::write(std::ostream& OX,
 	  vc=impNum.find(*cvec);
 	  if (vc==impNum.end())
 	    {
-	      ELog::EM<<"Unable to find cell "<<*cvec<<ELog::endErr;
-	      //	      throw ColErr::InContainerError<int>(*cvec,RegA.getFull());
+	      ELog::EM<<"Unable to find cell "<<*cvec<<ELog::endCrit;
+	      throw ColErr::InContainerError<int>(*cvec,"Cellnumber in i,pNum");
 	    }
 	  Index.push_back(vc->second);
 	}

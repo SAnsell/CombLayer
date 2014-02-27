@@ -185,7 +185,7 @@ public:
 
   /// functional
   std::pair<T,size_t> operator()(const T& A) 
-  {  return std::pair<T,int>(A,count++); }
+  {  return std::pair<T,size_t>(A,count++); }
 
 };
 

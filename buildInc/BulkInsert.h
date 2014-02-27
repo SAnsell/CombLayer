@@ -45,7 +45,7 @@ class BulkInsert : public attachSystem::TwinComp,
 {
  protected:
 
-  const int shutterNumber;            ///< number of the shutter
+  const size_t shutterNumber;         ///< number of the shutter
   const int surfIndex;                ///< Index of the surface
   int cellIndex;                      ///< Index of the cells
 
@@ -90,13 +90,13 @@ class BulkInsert : public attachSystem::TwinComp,
 
  public:
 
-  BulkInsert(const int,const std::string&);
+  BulkInsert(const size_t,const std::string&);
   BulkInsert(const BulkInsert&);
   BulkInsert& operator=(const BulkInsert&);
   virtual ~BulkInsert();
 
   /// Access shutter number
-  int getShutterNumber() const { return shutterNumber; }
+  size_t getShutterNumber() const { return shutterNumber; }
 
   /// Access plane
   const Geometry::Plane* getDPlane() const { return DPlane; }

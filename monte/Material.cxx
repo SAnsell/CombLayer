@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   monte/Material.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -464,7 +464,7 @@ Material::setDensity(const double D)
   //	       0.0,boost::bind<double>(&Zaid::getDensity,_1));
 
   if (fabs(FSum)<1e-7)
-    throw ColErr::NumericalAbort("Sum of zaidDensity");
+    throw ColErr::NumericalAbort("Sum of zaidDensity: zero");
       
   if (D>0.0)
     {
@@ -479,7 +479,7 @@ Material::setDensity(const double D)
       for(zcc=zaidVec.begin();zcc!=zaidVec.end();zcc++)
 	MAW+=zcc->getAtomicMass()*zcc->getDensity()/FSum;
       if (fabs(MAW)<0.5)
-	throw ColErr::NumericalAbort("MAW too low");
+	throw ColErr::NumericalAbort("MAW too low: <0.5 ");
       const double aRho= -D*RefCon::avogadro/MAW;
 
       for(zc=zaidVec.begin();zc!=zaidVec.end();zc++)

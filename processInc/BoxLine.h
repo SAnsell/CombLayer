@@ -77,7 +77,7 @@ class BoxLine
   void addPoint(const Geometry::Vec3D&);
   void addSection(const double,const double,
 		  const int,const double);
-  void setActive(const size_t,const int);
+  void setActive(const size_t,const size_t);
   void setInitZAxis(const Geometry::Vec3D&);
   void setInitSurfaces(const std::string&);
 

@@ -322,8 +322,14 @@ TS2moly::createObjects(Simulation& System)
   MonteCarlo::Qhull* QPtrA=System.findQhull(this->getMainBody());
   MonteCarlo::Qhull* QPtrB=System.findQhull(this->getSkinBody());
   if (!QPtrA || !QPtrB)
-    ELog::EM<<"Failed on QHull for main body "<<
-      this->getMainBody()<<":"<<this->getSkinBody()<<ELog::endErr;
+    {
+      ELog::EM<<"Failed on QHull for main/skin body "<<
+	this->getMainBody()<<":"<<this->getSkinBody()<<ELog::endCrit;
+      if (!QPtrA)
+	throw ColErr::InContainerError<int>(this->getMainBody(),"MainBody");
+      else
+	throw ColErr::InContainerError<int>(this->getSkinBody(),"SkinBody");
+    }
 
   if (!PCut.empty())
     {

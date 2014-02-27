@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   src/Simulation.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -154,6 +154,8 @@ Simulation::operator=(const Simulation& A)
     \return *this
   */
 {
+  ELog::RegMethod RegA("Simulation","operator=");
+
   if (this!=&A)
     {
       inputFile=A.inputFile;
@@ -190,11 +192,14 @@ Simulation::~Simulation()
     list
   */
 {
-  ModelSupport::SimTrack::Instance().clearSim(this);
+  ELog::RegMethod RegA("Simulation","delete operator");
+
   delete PhysPtr;
   delete OSMPtr;
   deleteObjects();
   deleteTally();
+  ModelSupport::SimTrack::Instance().clearSim(this);
+
 }
 
 void
@@ -222,6 +227,7 @@ Simulation::deleteObjects()
     Delete all the Objects 
   */
 {
+  ELog::RegMethod RegA("","del");
   ModelSupport::SimTrack::Instance().setCell(this,0);
   OTYPE::iterator mc;
   for(mc=OList.begin();mc!=OList.end();mc++)
@@ -590,20 +596,19 @@ Simulation::readMaster(const std::string& Fname)
   IX.close();
 
   if (applyTransforms())
-    {
-      ELog::EM<<"Error applying transform for surfaces"<<ELog::endErr;
-      throw ColErr::ExitAbort(RegA.getFull());
-    }
-
-  if (populateCells())        //error getting surfaces 
+    ELog::EM<<"Error applying transform for surfaces"<<ELog::endErr;
+  else if (populateCells())        //error getting surfaces 
     ELog::EM<<"There is an error getting surface for cells"<<ELog::endErr;
   else if (removeComplements())
-    ELog::EM<<"There is an error getting surface for cells"<<ELog::endErr;
+    ELog::EM<<"Removing complements failed"<<ELog::endErr;
   else if (setMaterialDensity(OList))
     ELog::EM<<"Materials and cells do not balance"<<ELog::endErr;
-  
-  ELog::EM<<"Cells are populated "<<ELog::endBasic;
-  return;
+  else
+    {
+      ELog::EM<<"Cells are populated "<<ELog::endBasic;
+      return;
+    }
+  throw ColErr::ExBase("Build object error");
 }
 
 void
