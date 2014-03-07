@@ -91,6 +91,8 @@ class TriangleMod : public attachSystem::ContainedComp,
   std::string getOuterString() const;
   std::string getInnerString(const std::string&) const;
 
+  std::string createInnerObject(Simulation&);
+  
   void populate(const Simulation&);
   void createUnitVector(const attachSystem::FixedComp&);
 

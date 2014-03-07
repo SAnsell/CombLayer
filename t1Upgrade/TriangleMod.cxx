@@ -488,10 +488,10 @@ TriangleMod::createInnerObject(Simulation& System)
 {
   ELog::RegMethod RegA("TriangleMod","createInnerObject");
 
-  if (!nInnerCorners)
+  if (!nInnerCorner)
     return "";
-
-  return ""
+  
+  return "";
 }
 
 void
