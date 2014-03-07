@@ -31,6 +31,8 @@
 #include <map>
 #include <string>
 #include <algorithm>
+#include <numeric>
+#include <functional>
 #include <boost/shared_ptr.hpp>
 
 #include "Exception.h"
@@ -416,7 +418,7 @@ createTS2Source(Source& sourceCard)
 void
 createSinbadSource(const FuncDataBase& Control,Source& sourceCard)
   /*!
-    Create a fisson souce for a cylinder/rectangular unit 
+    Create a fisson source for a cylinder/rectangular unit 
     \param Control :: Funcdat data base for values
     \param sourceCard :: Source system
    */
@@ -424,32 +426,52 @@ createSinbadSource(const FuncDataBase& Control,Source& sourceCard)
   ELog::RegMethod RegA("SourceCreate","createSource");
  
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-     
-  // This data is horizontal : X [cm] and vertical : Z[cm]
-  const double XPts[]= 
-    { -49.75, -46.58, -43.32, -37.08, -33.92, -27.58, -11.75, -2.25,  7.25, 16.75, 32.58, 38.92, 42.08, 48.42, 51.58, 54.75 };
-  const double ZPts[]= 
-    {   51.44, 47.63, 40.64, 35.56, 31.75, 19.69, 15.88, 5.29, -5.29, -15.88,-19.69,-31.75, -35.56,-40.64, -47.63, -51.44};
 
-  const size_t NX(15),NZ(16);
-  const double sinbadSource[NZ][NX] = {
-    {    0  ,    0  ,    0  ,    0  ,    0  ,    0  , 2.935, 2.967, 2.861,   0  ,   0  ,   0  ,   0  ,   0  ,   0   },
-    {    0  ,    0  ,    0  ,    0  ,    0  ,  3.222, 3.529, 3.567, 3.446, 3.023,   0  ,   0  ,   0  ,   0  ,   0   },
-    {    0  ,    0  ,    0  ,    0  ,  3.228,  3.782, 4.152, 4.208, 4.082, 3.615, 2.959,   0  ,   0  ,   0  ,   0   },
-    {    0  ,    0  ,    0  ,  3.234,  3.566,  4.164, 4.575, 4.648, 4.523, 4.025, 3.317, 2.915,   0  ,   0  ,   0   },
-    {    0  ,    0  ,  3.350,  3.745,  4.099,  4.750, 5.220, 5.325, 5.205, 4.658, 3.867, 3.423, 2.916,   0  ,   0   },
-    {    0  ,  3.300,  3.756,  4.168,  4.538,  5.226, 5.743, 5.874, 5.760, 5.174, 4.315, 3.838, 3.305, 2.738,   0   },
-    {  3.172,  3.522,  3.990,  4.412,  4.790,  5.499, 6.042, 6.186, 6.076, 5.466, 4.569, 4.073, 3.526, 2.951, 2.558 },
-    {  3.281,  3.641,  4.119,  4.546,  4.928,  5.645, 6.199, 6.350, 6.239, 5.613, 4.690, 4.184, 3.631, 3.056, 2.670 },
-    {  3.145,  3.500,  3.967,  4.382,  4.750,  5.440, 5.972, 6.117, 6.003, 5.379, 4.466, 3.970, 3.433, 2.883, 2.519 },
-    {    0  ,  3.275,  3.721,  4.114,  4.461,  5.109, 5.611, 5.746, 5.632, 5.021, 4.132, 3.654, 3.142, 2.625,   0   },
-    {    0  ,    0  ,  3.294,  3.645,  3.954,  4.535, 4.990, 5.113, 5.003, 4.421, 3.583, 3.139, 2.674,   0  ,   0   },
-    {    0  ,    0  ,    0  ,  3.052,  3.317,  3.824, 4.229, 4.340, 4.236, 3.699, 2.937, 2.541,   0  ,   0  ,   0   },
-    {    0  ,    0  ,    0  ,    0  ,  2.888,  3.359, 3.739, 3.841, 3.742, 3.244, 2.545,   0  ,   0  ,   0  ,   0   },
-    {    0  ,    0  ,    0  ,    0  ,    0  ,  2.681, 3.036, 3.124, 3.032, 2.607,   0  ,   0  ,   0  ,   0  ,   0   },
-    {    0  ,    0  ,    0  ,    0  ,    0  ,    0  , 2.399, 2.470, 2.382,   0  ,   0  ,   0  ,   0  ,   0  ,   0   },
-    {    0  ,    0  ,    0  ,    0  ,    0  ,    0  , 0    , 0    , 0    ,   0  ,   0  ,   0  ,   0  ,   0  ,   0   } 
- } ; 
+  const size_t NX(15),NZ(15);     
+  // This data is horizontal : X [cm] and vertical : Z[cm]
+  const double XPts[NX+1]= 
+    { -49.75, -46.58, -43.32, -37.08, -33.92, 
+      -27.58, -11.75, -2.25,  7.25, 16.75, 
+      32.58, 38.92, 42.08, 48.42, 51.58, 54.75 };
+  const double ZRev[NZ+1]= 
+    {   51.44, 47.63, 40.64, 35.56, 31.75, 
+	19.69, 15.88, 5.29, -5.29, -15.88,
+	-19.69,-31.75, -35.56, -40.64, -47.63, 
+	-51.44};
+  std::vector<double> ZPts(ZRev,ZRev+NZ+1);
+  std::reverse(ZPts.begin(),ZPts.end());
+
+   // Horrizontal is X
+   double sinbadSource[NZ][NX] = {
+     {    0  ,    0  ,    0  ,    0  ,    0  ,    0  , 2.935, 2.967, 2.861,   0  ,   0  ,   0  ,   0  ,   0  ,   0   },
+     {    0  ,    0  ,    0  ,    0  ,    0  ,  3.222, 3.529, 3.567, 3.446, 3.023,   0  ,   0  ,   0  ,   0  ,   0   },
+     {    0  ,    0  ,    0  ,    0  ,  3.228,  3.782, 4.152, 4.208, 4.082, 3.615, 2.959,   0  ,   0  ,   0  ,   0   },
+     {    0  ,    0  ,    0  ,  3.234,  3.566,  4.164, 4.575, 4.648, 4.523, 4.025, 3.317, 2.915,   0  ,   0  ,   0   },
+     {    0  ,    0  ,  3.350,  3.745,  4.099,  4.750, 5.220, 5.325, 5.205, 4.658, 3.867, 3.423, 2.916,   0  ,   0   },
+     {    0  ,  3.300,  3.756,  4.168,  4.538,  5.226, 5.743, 5.874, 5.760, 5.174, 4.315, 3.838, 3.305, 2.738,   0   },
+     {  3.172,  3.522,  3.990,  4.412,  4.790,  5.499, 6.042, 6.186, 6.076, 5.466, 4.569, 4.073, 3.526, 2.951, 2.558 },
+     {  3.281,  3.641,  4.119,  4.546,  4.928,  5.645, 6.199, 6.350, 6.239, 5.613, 4.690, 4.184, 3.631, 3.056, 2.670 },
+     {  3.145,  3.500,  3.967,  4.382,  4.750,  5.440, 5.972, 6.117, 6.003, 5.379, 4.466, 3.970, 3.433, 2.883, 2.519 },
+     {    0  ,  3.275,  3.721,  4.114,  4.461,  5.109, 5.611, 5.746, 5.632, 5.021, 4.132, 3.654, 3.142, 2.625,   0   },
+     {    0  ,    0  ,  3.294,  3.645,  3.954,  4.535, 4.990, 5.113, 5.003, 4.421, 3.583, 3.139, 2.674,   0  ,   0   },
+     {    0  ,    0  ,    0  ,  3.052,  3.317,  3.824, 4.229, 4.340, 4.236, 3.699, 2.937, 2.541,   0  ,   0  ,   0   },
+     {    0  ,    0  ,    0  ,    0  ,  2.888,  3.359, 3.739, 3.841, 3.742, 3.244, 2.545,   0  ,   0  ,   0  ,   0   },
+     {    0  ,    0  ,    0  ,    0  ,    0  ,  2.681, 3.036, 3.124, 3.032, 2.607,   0  ,   0  ,   0  ,   0  ,   0   },
+     {    0  ,    0  ,    0  ,    0  ,    0  ,    0  , 2.399, 2.470, 2.382,   0  ,   0  ,   0  ,   0  ,   0  ,   0   },
+  } ; 
+
+  // REVERST ALL THE VALUES:
+  double tmpX;
+  for(size_t i=0;i<NZ/2;i++)
+    {
+      for(size_t j=0;j<NX;j++)
+	{
+	  tmpX=sinbadSource[i][j];
+	  sinbadSource[i][j]=sinbadSource[i][NZ-j];
+	  sinbadSource[i][NZ-j]=tmpX;
+	}
+    }	  
+
 
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -458,6 +480,7 @@ createSinbadSource(const FuncDataBase& Control,Source& sourceCard)
   SDef::SrcData D1(1);
   SDef::SrcInfo SI1;
   SDef::SrcProb SP1;
+
   SI1.addData(-0.05);
   SI1.addData(0.15);
   SP1.addData(0);
@@ -466,54 +489,59 @@ createSinbadSource(const FuncDataBase& Control,Source& sourceCard)
   D1.addUnit(SP1);  
   sourceCard.setData("y",D1);  
 
+  // CARD 2 :: Z  card
   SDef::SrcData D2(2);
   SDef::SrcInfo SI2;
   SDef::SrcProb SP2;
 
-
+  std::vector<int> zeroFlag(NZ,0);
+  // Check 
   SP2.addData(0.0);  
-  for(size_t iz=0;iz<NZ;iz++) 
+  SI2.addData(ZPts[0]);   
+  for(size_t iz=0;iz<NZ;iz++)   
     {
+      SI2.addData(ZPts[iz+1]);   
       double hVal(0.0);
-      SI2.addData(sinbadSource[NZ-iz][0]);   // missing [0][0] deliberately
-
-      for(size_t ix=1;ix<NX;ix++)
-	hVal+=sinbadSource[iz+1][ix]*(XPts[ix]-XPts[ix-1]);
-      if(iz!=NZ-1)
-	SP2.addData(hVal);   
-   }  
-
+      for(size_t ix=0;ix<NX;ix++)
+	hVal+=sinbadSource[iz][ix]*(XPts[ix+1]-XPts[ix]);
+      if (hVal<1e-5) zeroFlag[iz]=1;
+      SP2.addData(hVal*(ZPts[iz+1]-ZPts[iz]));   
+    }  
   D2.addUnit(SI2);  
   D2.addUnit(SP2);  
   sourceCard.setData("z",D2);  
-
-  // Mid point
-  const double xMid((XPts[NX/2-1]+XPts[NX/2])/2.0);
+  
   SDef::SrcData D3(3);
-  SDef::SrcInfo SI3;
-  for(size_t ix=0;ix<NX;ix++) 
-    SI3.addData(XPts[ix]-xMid); 
 
   SDef::DSTerm<int>* DS3=D3.getDS<int>(); 
   DS3->setType("z",'s');
-  for (size_t is=3;is<NX+2;is++) 
-    DS3->addData(static_cast<int>(is));
- 
-  SDef::DSIndex DI4(std::string("z"));
-  SDef::SrcInfo SI4;
-  for(size_t ix=0;ix<NX-1;ix++) 
-    SI4.addData(sinbadSource[0][ix]-xMid); 
+  for (size_t is=0;is<NX;is++) 
+    DS3->addData(static_cast<int>(is+3));
 
-  for (size_t is=1;is<NZ-2;is++) 
+  SDef::DSIndex DIZ(std::string("z"));
+
+   for(size_t iz=0;iz<NZ;iz++)
     {
-      SDef::SrcProb SP4;
-      SP4.addData(0.0);
-      for (size_t ix=1;ix<NX-1;ix++)
-	SP4.addData(sinbadSource[NZ-is][ix+1]*(XPts[ix+1]-XPts[ix]));
-      DI4.addData(is+3,&SI4,0,&SP4);
+      SDef::SrcInfo SIX;
+      SDef::SrcProb SPX;
+      SPX.addData(0.0);
+      SIX.addData(XPts[0]); 
+      for(size_t ix=0;ix<NX-1;ix++) 
+	{
+	  SIX.addData(XPts[ix+1]); 
+	  if (zeroFlag[iz])
+	    SPX.addData(1e-5);
+	  else
+	    SPX.addData(sinbadSource[iz][ix]*(XPts[ix+1]-XPts[ix]));
+	}
+      DIZ.addData(iz+4,&SIX,0,&SPX);
     }
-  D3.addUnit(&DI4);
+   
+  D3.addUnit(&DIZ);
   sourceCard.setData("x",D3); 
+
+
+
   const double XBase[]=  
     { 1.000000,  1.100000, 
       1.200000,   1.300000,  1.400000, 

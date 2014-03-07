@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   source/SourceSelector.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,7 +82,8 @@ namespace SDef
 {
 
 void 
-sourceSelection(Simulation& System,const mainSystem::inputParam& IParam)
+sourceSelection(Simulation& System,
+		const mainSystem::inputParam& IParam)
   /*!
     Build the source based on the input parameter table
     \param System :: Simulation to use
@@ -179,7 +180,7 @@ sourceSelection(Simulation& System,const mainSystem::inputParam& IParam)
     SDef::createBilbaoSource(Control,sourceCard);
   else if (sdefType=="ess")
     SDef::createESSSource(Control,sourceCard);
-  else if (sdefType=="Sinbad")
+  else if (sdefType=="Sinbad" || sdefType=="sinbad")
     SDef::createSinbadSource(Control,sourceCard);
   else if (sdefType=="TS2")
     {
