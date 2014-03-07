@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   muon/muonTube.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell/Goran Skoro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,24 +44,11 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
-#include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "surfEqual.h"
-#include "surfDivide.h"
-#include "Quadratic.h"
-#include "Plane.h"
-#include "Cylinder.h"
-#include "Line.h"
-#include "LineIntersectVisit.h"
 #include "Rules.h"
 #include "varList.h"
 #include "Code.h"
@@ -69,8 +56,6 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "SimProcess.h"
-#include "SurInter.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -78,14 +63,13 @@
 #include "ContainedComp.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "World.h"
 #include "muonTube.h"
 
 namespace muSystem
 {
 
 muonTube::muonTube(const std::string& Key)  : 
-  attachSystem::FixedComp(Key,3),attachSystem::ContainedComp(),
+  attachSystem::FixedComp(Key,6),attachSystem::ContainedComp(),
   tubeIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(tubeIndex+1)
   /*!
@@ -93,6 +77,42 @@ muonTube::muonTube(const std::string& Key)  :
     \param Key :: Key to use
   */
 {}
+
+muonTube::muonTube(const muonTube& A) : 
+  attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
+  tubeIndex(A.tubeIndex),cellIndex(A.cellIndex),
+  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
+  radius(A.radius),thick(A.thick),length(A.length),
+  mat(A.mat)
+  /*!
+    Copy constructor
+    \param A :: muonTube to copy
+  */
+{}
+
+muonTube&
+muonTube::operator=(const muonTube& A)
+  /*!
+    Assignment operator
+    \param A :: muonTube to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedComp::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
+      cellIndex=A.cellIndex;
+      xStep=A.xStep;
+      yStep=A.yStep;
+      zStep=A.zStep;
+      radius=A.radius;
+      thick=A.thick;
+      length=A.length;
+      mat=A.mat;
+    }
+  return *this;
+}
 
 
 muonTube::~muonTube() 
@@ -102,15 +122,13 @@ muonTube::~muonTube()
 {}
 
 void
-muonTube::populate(const Simulation& System)
+muonTube::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: Data base for variables
   */
 {
   ELog::RegMethod RegA("muonTube","populate");
-
-  const FuncDataBase& Control=System.getDataBase();
 
   xStep=Control.EvalVar<double>(keyName+"XStep");
   yStep=Control.EvalVar<double>(keyName+"YStep");
@@ -126,14 +144,15 @@ muonTube::populate(const Simulation& System)
 }
 
 void
-muonTube::createUnitVector()
+muonTube::createUnitVector(const attachSystem::FixedComp& FC)
   /*!
     Create the unit vectors
+    \param FC :: FixedComp for unit vectors
   */
 {
   ELog::RegMethod RegA("muonTube","createUnitVector");
 
-  attachSystem::FixedComp::createUnitVector(World::masterOrigin());
+  attachSystem::FixedComp::createUnitVector(FC);
   applyShift(xStep,yStep,zStep);
   
   return;
@@ -160,25 +179,25 @@ muonTube::createSurfaces()
 void
 muonTube::createObjects(Simulation& System)
   /*!
-    Adds the Chip guide components
+    Adds the real objects and processes outer boundary
     \param System :: Simulation to create objects in
    */
 {
   ELog::RegMethod RegA("muonTube","createObjects");
   
   std::string Out;
-  std::string Out1;  
 
-     // Steel
-  Out=ModelSupport::getComposite(SMap,tubeIndex,"1 -2 -7 ");
-  addOuterSurf(Out);
-  addBoundarySurf(Out);
-  Out1=ModelSupport::getComposite(SMap,tubeIndex,"17 ");  
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out+Out1));
+  // Steel
+  Out=ModelSupport::getComposite(SMap,tubeIndex,"1 -2 -7 17 ");  
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
 
     // hole
   Out=ModelSupport::getComposite(SMap,tubeIndex,"1 -2 -17 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  addBoundarySurf(Out);   // Inner part
+
+  Out=ModelSupport::getComposite(SMap,tubeIndex,"1 -2 -7 ");
+  addOuterSurf(Out);
   
   return;
 }
@@ -193,25 +212,34 @@ muonTube::createLinks()
   ELog::RegMethod RegA("muonTube","createLinks");
 
   FixedComp::setConnect(0,Origin,-Y);
-  FixedComp::setConnect(1,Origin+
-			Y*length,Y);
+  FixedComp::setConnect(1,Origin+Y*length,Y);
+  FixedComp::setConnect(2,Origin-X*radius,-X);
+  FixedComp::setConnect(3,Origin+X*radius,X);
+  FixedComp::setConnect(4,Origin-Z*radius,-Z);
+  FixedComp::setConnect(5,Origin+Z*radius,Z);
 
   FixedComp::setLinkSurf(0,-SMap.realSurf(tubeIndex+1));
   FixedComp::setLinkSurf(1,SMap.realSurf(tubeIndex+2));  
+  FixedComp::setLinkSurf(2,SMap.realSurf(tubeIndex+17));
+  FixedComp::setLinkSurf(3,SMap.realSurf(tubeIndex+17));
+  FixedComp::setLinkSurf(4,SMap.realSurf(tubeIndex+17));
+  FixedComp::setLinkSurf(5,SMap.realSurf(tubeIndex+17));
 
   return;
 }
 
 void
-muonTube::createAll(Simulation& System)
+muonTube::createAll(Simulation& System,
+		    const attachSystem::FixedComp& FC)
   /*!
     Create the shutter
     \param System :: Simulation to process
+    \param FC :: Fixed Compent for origin/axis
   */
 {
   ELog::RegMethod RegA("muonTube","createAll");
-  populate(System);
-  createUnitVector();
+  populate(System.getDataBase());
+  createUnitVector(FC);
   createSurfaces();
   createObjects(System);
   createLinks();

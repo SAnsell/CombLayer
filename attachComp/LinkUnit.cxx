@@ -262,8 +262,6 @@ LinkUnit::addBridgeSurf(const int SN)
   */
 {
   ELog::RegMethod RegA("LinkUnit","addBridgeSurf");
-  // if (!bridgeSurf.hasRule()) 
-  //   linkSurf=SN;
   bridgeSurf.addIntersection(SN);
   return;
 }

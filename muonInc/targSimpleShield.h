@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   muonInc/targSimpleShield.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell/Goran Skoro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,8 +61,8 @@ class targSimpleShield : public attachSystem::FixedComp,
   int mat;                   ///Material: shield
 
 
-  void populate(const Simulation&);
-  void createUnitVector();
+  void populate(const FuncDataBase&);
+  void createUnitVector(const attachSystem::FixedComp&);
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -76,7 +76,7 @@ class targSimpleShield : public attachSystem::FixedComp,
   virtual ~targSimpleShield();
   
   virtual void addToInsertChain(attachSystem::ContainedComp&) const;
-  void createAll(Simulation&);  
+  void createAll(Simulation&,const attachSystem::FixedComp&);  
 };
 
 }

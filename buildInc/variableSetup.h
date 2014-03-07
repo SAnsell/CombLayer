@@ -49,6 +49,7 @@ namespace setVariable
 
 
   void TS1base(FuncDataBase&);
+  void TS1BlockTarget(FuncDataBase&);
   void TS1CylTarget(FuncDataBase&);
   void TS1PlateTarget(FuncDataBase&);
   void TS1InnerTarget(FuncDataBase&);

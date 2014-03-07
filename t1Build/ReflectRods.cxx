@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   t1Build/ReflectRods.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,13 +46,7 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "Tally.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -73,8 +67,6 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -232,9 +224,13 @@ ReflectRods::getZSurf()
     }
 
   if (!topSurf || !baseSurf)
-    ELog::EM<<"Failed to find top/Base surface " <<ELog::endErr;  
-  ELog::EM<<"Found base == "<<*baseSurf<<ELog::endDebug;
-  ELog::EM<<"Found top == "<<*topSurf<<ELog::endDebug;
+    {
+      ELog::EM<<"Failed to find top/Base surface " <<ELog::endCrit;  
+      throw ColErr::NumericalAbort("Plane not found in Z intersect");
+    }
+
+  ELog::EM<<"Found base == "<<*baseSurf<<ELog::endDiag;
+  ELog::EM<<"Found top == "<<*topSurf<<ELog::endDiag;
 
   return;
 }

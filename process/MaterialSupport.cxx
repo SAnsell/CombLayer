@@ -148,6 +148,31 @@ EvalDefMat(const FuncDataBase& Control,
     EvalMat<T>(Control,KeyA) : defVal;
 }
 
+int
+EvalMatName(const std::string& matName)
+  /*!
+    Convert material name into a number
+    \param matName :: Material to change
+    \return index 
+  */
+{
+  ELog::RegMethod RegA("MaterialSupport[F]","EvalMatName");
+
+  ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();
+
+  if (DB.createMaterial(matName))
+    return DB.getIndex(matName);
+  
+  int index;
+  if (StrFunc::convert(matName,index))
+    {
+      if(!DB.hasKey(index))
+	throw ColErr::InContainerError<int>(index,"Material not present");
+      return index;
+    }
+  throw ColErr::InContainerError<std::string>(matName,"Material not present");
+}
+
 
 template int 
 EvalMat(const FuncDataBase&,const std::string&,
@@ -160,6 +185,7 @@ EvalMat(const FuncDataBase&,const std::string&,
 template int 
 EvalDefMat(const FuncDataBase&,const std::string&,
 	   const int&);
+
 
 
 

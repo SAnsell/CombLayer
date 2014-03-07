@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   bibBuild/BeFilter.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -86,11 +86,11 @@ BeFilter::BeFilter(const std::string& Key) :
 
 BeFilter::BeFilter(const BeFilter& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  befilterindex(A.befilterindex),cellIndex(A.cellIndex),xStep(A.xStep),
-  yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
-  zAngle(A.zAngle),width(A.width),height(A.height),
-  length(A.length)
-  
+  befilterindex(A.befilterindex),cellIndex(A.cellIndex),
+  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
+  xyAngle(A.xyAngle),zAngle(A.zAngle),width(A.width),
+  height(A.height),length(A.length),wallThick(A.wallThick),
+  wallMat(A.wallMat),beMat(A.beMat),beTemp(A.beTemp)
   /*!
     Copy constructor
     \param A :: BeFilter to copy
@@ -104,8 +104,6 @@ BeFilter::operator=(const BeFilter& A)
     \param A :: BeFilter to copy
     \return *this
   */
-  
-  /** Incluimos aqui las variables*/
 {
   if (this!=&A)
     {
@@ -121,15 +119,9 @@ BeFilter::operator=(const BeFilter& A)
       height=A.height;
       length=A.length;
       wallThick=A.wallThick;
-      
-//       depth=A.depth;
-//       wallThick=A.wallThick;
-//       waterMat=A.waterMat;
-//       wallMat=A.wallMat;
-//       premThick=A.premThick;           
-//       wallPremThick=A.wallPremThick;   
-//       premTemp=A.premTemp;
-//       premGap=A.premGap;
+      wallMat=A.wallMat;
+      beMat=A.beMat;
+      beTemp=A.beTemp;
     }
   return *this;
 }
@@ -156,8 +148,6 @@ BeFilter::populate(const FuncDataBase& Control)
   zStep=Control.EvalVar<double>(keyName+"ZStep");
   xyAngle=Control.EvalVar<double>(keyName+"XYangle");
   zAngle=Control.EvalVar<double>(keyName+"Zangle");
-  zAngle=Control.EvalVar<double>(keyName+"Zangle");
-
 
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
@@ -168,9 +158,7 @@ BeFilter::populate(const FuncDataBase& Control)
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");  
   beMat=ModelSupport::EvalMat<int>(Control,keyName+"BeMat");  
   beTemp=Control.EvalVar<double>(keyName+"BeTemp");
-  
-  
-    
+      
   return;
 }
 
@@ -186,10 +174,9 @@ BeFilter::createUnitVector(const attachSystem::FixedComp& FC,
   ELog::RegMethod RegA("BeFilter","createUnitVector");
   attachSystem::FixedComp::createUnitVector(FC);
   Origin=FC.getLinkPt(sideIndex); /** Aqui pide el punto*/
-
-  const double yShift=wallThick; /** De este modo, aplicamos el desplazamiento al origen para situarlo en  la superficie que queremos*/
   
-  applyShift(xStep,yShift,zStep);
+  // Note shift by wall thickness to allow wall creation
+  applyShift(xStep,wallThick,zStep);
   applyAngleRotate(xyAngle,zAngle);
 
   return;
@@ -231,6 +218,7 @@ BeFilter::createObjects(Simulation& System,
   /*!
     Create the simple moderator
     \param System :: Simulation to add results
+    \param CC :: Moderator for containement [overkill]
    */
 {
   ELog::RegMethod RegA("BeFilter","createObjects");
@@ -240,14 +228,15 @@ BeFilter::createObjects(Simulation& System,
   // BeFilter
   Out=ModelSupport::getComposite(SMap,befilterindex,"1 -2 3 -4 5 -6");
   System.addCell(MonteCarlo::Qhull(cellIndex++,beMat,beTemp,Out));
-//   Out+=CC.getExclude();  /** Esta es una de las cuatro operaciones. Realiza la operacion de exclusion de lo que viene en el "Out" inmediatamente anterior. */
 
-  Out=ModelSupport::getComposite(SMap,befilterindex,"11 -12 13 -14 15 -16  (-1:2:-3:4:-5:6)");
+  Out=ModelSupport::getComposite(SMap,befilterindex,
+				 "11 -12 13 -14 15 -16  (-1:2:-3:4:-5:6)");
   Out+=CC.getContainer();
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,beTemp,Out));
   
   
-  Out=ModelSupport::getComposite(SMap,befilterindex,"11 -12 13 -14 15 -16" ); /** Hay que añadir una superficie externa*/
+  // Hay que añadir una superficie externa
+  Out=ModelSupport::getComposite(SMap,befilterindex,"11 -12 13 -14 15 -16" );
   addOuterSurf(Out);
 
   return; 
@@ -271,7 +260,6 @@ BeFilter::createLinks()
   FixedComp::setConnect(4,Origin-Z*(height/2.0+wallThick),-Z);  
   FixedComp::setConnect(5,Origin+Z*(height/2.0+wallThick),Z);  
 
-  // WHY HAVENT I WRITTEN AutoLinkSurf()
   FixedComp::setLinkSurf(0,-SMap.realSurf(befilterindex+11)); /**Hay que respetar el numero de superficie a la que se liga el punto de vinculado (linking point)*/
   FixedComp::setLinkSurf(1,SMap.realSurf(befilterindex+12));
   FixedComp::setLinkSurf(2,-SMap.realSurf(befilterindex+13));
@@ -292,6 +280,7 @@ BeFilter::createAll(Simulation& System,
     \param System :: Simulation
     \param FC :: FixedComponent for origin
     \param sideIndex :: Side index
+    \param CC :: Moderator for containement [overkill]
    */
 {
   ELog::RegMethod RegA("BeFilter","createAll");

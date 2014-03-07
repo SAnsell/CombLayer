@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   essBuildInc/BeRef.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,8 +53,11 @@ class BeRef : public attachSystem::ContainedComp,
   double height;                  ///< Height
   double wallThick;               ///< Wall thickness
 
+  double targSepThick;            ///< Steel seperator at target level
+
   int refMat;                     ///< reflector material
   int wallMat;                    ///< wall Material
+  int targSepMat;                 ///< Separator Mat
 
   // Functions:
 
@@ -72,8 +75,6 @@ class BeRef : public attachSystem::ContainedComp,
   BeRef& operator=(const BeRef&);
   virtual ~BeRef();
 
-  int getMainCell() const { return refIndex+1; }
-  virtual void addToInsertChain(attachSystem::ContainedComp&) const; 
   void createAll(Simulation&,const attachSystem::FixedComp&);
   
 };

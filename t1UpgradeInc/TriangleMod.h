@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   t1UpgradeInc/TriangleMod.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,11 @@
 
 class Simulation;
 
+namespace Geometry
+{
+  class Convex2D;
+}
+
 namespace moderatorSystem
 {
 
@@ -38,12 +43,11 @@ namespace moderatorSystem
 class TriangleMod : public attachSystem::ContainedComp,
   public attachSystem::FixedComp
 {
-  private:
+ private:
   
   const int triIndex;      ///< Index of surface offset
   int cellIndex;            ///< Cell index
 
-  
   double xStep;           ///< Offset relative to origin 
   double yStep;           ///< Offset relative to origin 
   double zStep;           ///< Offset relative to origin 
@@ -51,8 +55,14 @@ class TriangleMod : public attachSystem::ContainedComp,
   double xyAngle;         ///< Offset relative to origin 
   double zAngle;          ///< Offset relative to origin 
 
-  /// Points of triange relative to origin
-  std::vector<Geometry::Vec3D> CornerPts; 
+  size_t nCorner;         ///< number of corner points
+  
+  Geometry::Vec3D centroid;          ///< Centre point for external/interal
+  std::vector<Geometry::Vec3D> CornerPts;  ///< Points of trianlge/shape 
+  std::vector<int> nonConvex;      ///< Points are non-convex
+
+  size_t nInnerCorner;         ///< number of inner-corner points
+  std::vector<Geometry::Vec3D> InnerPts;    ///< Points of inner shape
 
   double height;           ///< Height/depth
   double wallThick;        ///< Wall thickness
@@ -60,23 +70,26 @@ class TriangleMod : public attachSystem::ContainedComp,
   double topClearance;     ///< Top clearance
   double baseClearance;    ///< Base clearance
 
-  double innerStep;        ///< Inner triangle material
+  double innerStep;        ///< Distance to inner triangle wall
+  double innerWall;        ///< Inner wall thickness
   int innerMat;            ///< Inner material
 
-  double poisonStep;        ///< Poison Offset
-  double poisonThick;       ///< Poison (Gadolinium) thickness
-  double pCladThick;        ///< Poison cladding thickness
+  double modTemp;          ///< Moderator temperature
 
-  double modTemp;           ///< Moderator temperature
-
-  int modMat;               ///< Moderator material
-  int wallMat;              ///< Wall material
-  int pCladMat;             ///< Al poison support
-  int poisonMat;            ///< Poison (Gadolinium)
+  int modMat;              ///< Moderator material
+  int wallMat;             ///< Wall material
+  int pCladMat;            ///< Al poison support
+  int poisonMat;           ///< Poison (Gadolinium)
 
   Geometry::Vec3D corner(const size_t,const double) const;
   Geometry::Vec3D midNorm(const size_t) const;
-  Geometry::Vec3D sideNorm(const size_t,const size_t) const;
+  Geometry::Vec3D sideNorm(const std::pair<Geometry::Vec3D,
+			   Geometry::Vec3D>&) const;
+  std::pair<Geometry::Vec3D,Geometry::Vec3D>
+    cornerPair(const std::vector<Geometry::Vec3D>&,
+	       const size_t,const size_t,const double) const;
+  std::string getOuterString() const;
+  std::string getInnerString(const std::string&) const;
 
   void populate(const Simulation&);
   void createUnitVector(const attachSystem::FixedComp&);
@@ -84,6 +97,8 @@ class TriangleMod : public attachSystem::ContainedComp,
   void createLinks();
   void createSurfaces();
   void createObjects(Simulation&);
+  
+  void createConvex();
 
  public:
 

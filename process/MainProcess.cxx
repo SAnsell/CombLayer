@@ -213,6 +213,7 @@ createInputs(inputParam& IParam)
   IParam.regFlag("e","endf");
   IParam.regMulti<std::string>("E","exclude",1);
   IParam.regDefItem<double>("electron","electron",1,-1.0);
+  IParam.regFlag("help","helf");
   IParam.regMulti<std::string>("i","iterate",1);
   IParam.regItem<std::string>("I","isolate");
   IParam.regDefItemList<std::string>("imp","importance",10,RItems);
@@ -280,6 +281,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("e","Convert materials to ENDF-VII");
   IParam.setDesc("electron","Add electron physics at Energy");
   IParam.setDesc("E","exclude part of the simualtion [chipir/zoom]");
+  IParam.setDesc("help","Help on the diff options for building [only TS1] ");
   IParam.setDesc("i","iterate on variables");
   IParam.setDesc("I","Isolate component");
   IParam.setDesc("imp","Importance regions");
@@ -374,6 +376,10 @@ createSinbadInputs(inputParam& IParam)
 
   createInputs(IParam);
   IParam.setValue("sdefType",std::string("sinbad"));    
+
+  IParam.regDefItem<std::string>("preName","preName",1,"49");
+
+  IParam.setDesc("preName","Experiment type for sinbad configuration");
   return;
 }
 
@@ -438,7 +444,7 @@ void createFullInputs(inputParam& IParam)
 
 void createTS1Inputs(inputParam& IParam)
   /*!
-    Set the specialise inputs for TS2
+    Set the specialise inputs for TS1
     \param IParam :: Input Parameters
   */
 {

@@ -184,6 +184,7 @@ makeESS::topFlightLines(Simulation& System)
   */
 {
   ELog::RegMethod RegA("makeESS","topFlightLines");
+  return;
   std::string Out;
 
   Out=Reflector->getLinkComplement(0)+TopPre->getBoxCut('A');
@@ -254,8 +255,8 @@ makeESS::createGuides(Simulation& System)
 			 ShutterBayObj->getLinkSurf(2));
       if(i<2)
 	GB->createAll(System,*LowMod);  
-      else
-	GB->createAll(System,*TopMod);  
+      //      else
+	//	GB->createAll(System,*TopMod);  
       GBArray.push_back(GB);
     }
   return;
@@ -299,13 +300,15 @@ makeESS::buildLowCylMod(Simulation& System)
 
   OR.addObject(LowMod);
 
-  LowMod->addInsertCell(Reflector->getMainCell());
   LowMod->createAll(System,*Reflector);
+  attachSystem::addToInsertControl(System,*Reflector,*LowMod);
 
-  LowPre->addInsertCell("Main",Reflector->getMainCell());
-  LowPre->addInsertCell("BlockA",Reflector->getMainCell());
-  LowPre->addInsertCell("BlockB",Reflector->getMainCell());
   LowPre->createAll(System,*LowMod);
+  attachSystem::addToInsertControl(System,*Reflector,*LowPre,"Main");
+  attachSystem::addToInsertControl(System,*Reflector,*LowPre,"BlockA");
+  attachSystem::addToInsertControl(System,*Reflector,*LowPre,"BlockB");
+
+
   return;
 }
 
@@ -326,8 +329,8 @@ makeESS::buildLowConicMod(Simulation& System)
     (new ConicModerator("LowConeMod"));
   OR.addObject(LowMod);
     
-  LowMod->addInsertCell(Reflector->getMainCell());
   LowMod->createAll(System,*Reflector);
+  attachSystem::addToInsertControl(System,*Reflector,*LowMod);
 
   std::string Out=Reflector->getLinkComplement(0);
   LowAFL->addBoundarySurf("inner",Out);  
@@ -339,8 +342,9 @@ makeESS::buildLowConicMod(Simulation& System)
   LowModB=boost::shared_ptr<constructSystem::ModBase>
     (new ConicModerator("LowConeModB"));
   OR.addObject(LowModB);
-  LowModB->addInsertCell(Reflector->getMainCell());
+
   LowModB->createAll(System,*Reflector);
+  attachSystem::addToInsertControl(System,*Reflector,*LowModB);
   attachSystem::addToInsertSurfCtrl(System,*LowModB,*LowMod);
   Out=Reflector->getLinkComplement(0);
   LowBFL->addBoundarySurf("inner",Out);  
@@ -358,6 +362,8 @@ makeESS::buildTopCylMod(Simulation& System)
     \param System :: Stardard simulation
   */
 {
+  ELog::RegMethod RegA("makeESS","buildTopCylMod");
+
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
@@ -366,14 +372,14 @@ makeESS::buildTopCylMod(Simulation& System)
 
   OR.addObject(TopMod);
 
-  TopMod->addInsertCell(Reflector->getMainCell());
   TopMod->createAll(System,*Reflector);
+  attachSystem::addToInsertControl(System,*Reflector,*TopMod);
 
-  TopPre->addInsertCell("Main",Reflector->getMainCell());
-  TopPre->addInsertCell("BlockA",Reflector->getMainCell());
-  TopPre->addInsertCell("BlockB",Reflector->getMainCell());
   TopPre->createAll(System,*TopMod);
-
+  attachSystem::addToInsertControl(System,*Reflector,*TopPre,"Main");
+  attachSystem::addToInsertControl(System,*Reflector,*TopPre,"BlockA");
+  attachSystem::addToInsertControl(System,*Reflector,*TopPre,"BlockB");
+  
   topFlightLines(System);
 
   return;
@@ -431,7 +437,7 @@ makeESS::build(Simulation* SimPtr,
    */
 {
   // For output stream
-  ELog::RegMethod RControl("makeESS","build");
+  ELog::RegMethod RegA("makeESS","build");
 
   int voidCell(74123);
   // Add extra materials to the DBdatabase
@@ -444,9 +450,8 @@ makeESS::build(Simulation* SimPtr,
 
   makeTarget(*SimPtr,targetType);
   
-  Reflector->addInsertCell(voidCell);
   Reflector->createAll(*SimPtr,World::masterOrigin());
-  Reflector->addToInsertChain(Target->getKey("Wheel")); 
+  attachSystem::addToInsertForced(*SimPtr,*Reflector,Target->getKey("Wheel"));
 
   Bulk->createAll(*SimPtr,*Reflector,*Reflector);
   attachSystem::addToInsertSurfCtrl(*SimPtr,*Bulk,Target->getKey("Wheel"));
@@ -459,8 +464,8 @@ makeESS::build(Simulation* SimPtr,
 
   buildTopCylMod(*SimPtr);
 
-  Bulk->addFlightUnit(*SimPtr,*TopAFL);
-  Bulk->addFlightUnit(*SimPtr,*TopBFL);
+  // Bulk->addFlightUnit(*SimPtr,*TopAFL);
+  // Bulk->addFlightUnit(*SimPtr,*TopBFL);
 
   // Full surround object
   ShutterBayObj->addInsertCell(voidCell);

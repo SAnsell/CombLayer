@@ -140,17 +140,24 @@ collInsertBlock::populate(const Simulation& System,
   const char* sndKey[Size]=
     {"FStep","CentX","CentZ","Len","Width","Height","Mat","HGap","VGap"};
   
+  const collInsertBlock* blkPtr=
+    dynamic_cast<const collInsertBlock*>(sndBase);
+
+
   for(size_t i=0;i<Size;i++)
     {
       const std::string KN=keyName+
 	StrFunc::makeString(blockIndex+1)+sndKey[i];
       if (Control.hasVariable(KN))
 	setVar(Control,i,KN);
+      else if (blkPtr)
+	setVar(i,blkPtr->getVar(i));
       else if (sndBase && i<=commonSize)
 	setVar(i,sndBase->getVar(i));	
       else 
 	{
 	  ELog::EM<<"sndBase == "<<sndBase->typeName()<<ELog::endCrit;
+	  ELog::EM<<"i == "<<i<<ELog::endCrit;
 	  ELog::EM<<"Failed to connect on first component:"
 		  <<KN<<ELog::endErr;
 	}
@@ -169,37 +176,23 @@ collInsertBlock::setVar(const size_t Item,const double V)
 {
   ELog::RegMethod RegA("colInsertBlock","setVar<double>");
 
-  switch(Item)
-    {
-    case 0:
-      fStep=V;
-      return;
-    case 1:
-      centX=V;
-      return;
-    case 2:
-      centZ=V;
-      return;
-    case 3:
-      length=V;
-      return;
-    case 4:
-      width=V;
-      return;
-    case 5:
-      height=V;
-      return;
-    case 6:
-      matN=static_cast<int>(V);
-      return;
-    case 7:
-      hGap=V;
-      return;
-    case 8:
-      vGap=V;
-      return;
-    }
-  throw ColErr::IndexError<size_t>(Item,8,"Item");
+  const size_t IMax(9);
+  double* VDPtr[IMax]={&fStep,&centX,&centZ,&length,
+		       &width,&height,0,&hGap,
+                       &vGap};
+  int* VIPtr[IMax]={0,0,0,0,
+		    0,0,&matN,0,
+		    0};
+  if (Item>=IMax)
+    throw ColErr::IndexError<size_t>(Item,IMax-1,"Item");
+  if (VDPtr[Item])
+    *VDPtr[Item]=V;
+  else if (VIPtr[Item])
+    *VIPtr[Item]=static_cast<int>(V);
+  else
+    throw ColErr::InContainerError<size_t>(Item,"Item Index has no type");
+
+  return;
 }
 
 void

@@ -84,6 +84,7 @@
 #include "Cannelloni.h"
 #include "t1PlateTarget.h"
 #include "SideCoolTarget.h"
+#include "OpenBlockTarget.h"
 #include "CylReflector.h"
 #include "TriangleMod.h"
 #include "ModBase.h"
@@ -291,6 +292,16 @@ makeT1Upgrade::buildTarget(Simulation& System,
       TarObj->createAll(System,World::masterOrigin());
       return "t1EllCylTarget";
     }    
+  else if (TType=="t1Block" || TType=="t1BlockTarget")
+    {
+      TarObj=boost::shared_ptr<constructSystem::TargetBase>
+	(new ts1System::OpenBlockTarget("t1BlockTarget"));
+      OR.addObject(TarObj);
+      RefObj->addToInsertChain(*TarObj);
+      TarObj->setRefPlates(-RefObj->getLinkSurf(2),0);
+      TarObj->createAll(System,World::masterOrigin());
+      return "t1BlockTarget";
+    }    
   else if (TType=="t1Cannelloni" || TType=="t1CannelloniTarget")
     {
       TarObj=boost::shared_ptr<constructSystem::TargetBase>
@@ -304,13 +315,14 @@ makeT1Upgrade::buildTarget(Simulation& System,
   else if (TType=="Help" || TType=="help")
     {
       ELog::EM<<"Options = "<<ELog::endBasic;
+      ELog::EM<<"    t1Block :: Open void blocks"<<ELog::endBasic;
       ELog::EM<<"    t1Cannelloni :: Inner cannolloni target"<<ELog::endBasic;
       ELog::EM<<"    t1Cyl   :: TS2 style cylindrical target"<<ELog::endBasic;
       ELog::EM<<"    t1CylFluxTrap :: Flux Trap target"<<ELog::endBasic;
       ELog::EM<<"    t1Inner :: Inner triple core target"<<ELog::endBasic;
       ELog::EM<<"    t1Plate :: Plate target [current]"<<ELog::endBasic;
       ELog::EM<<"    t1Side :: SideCoolded target"<<ELog::endBasic;
-      throw ColErr::ExitAbort("help exit");
+      return "";
     }    
 
   ELog::EM<<"Failed to understand target type :"
@@ -356,9 +368,11 @@ makeT1Upgrade::buildCH4Pre(Simulation& System,
     }
   else if (TType=="Help" || TType=="help")
     {
-      ELog::EM<<"Options = "<<ELog::endBasic;
+      ELog::EM<<"Options = [CH4PreType] "<<ELog::endBasic;
+      ELog::EM<<"    Flat :: Full wrapped pre-moderator"<<ELog::endBasic;
       ELog::EM<<"    Wrapper :: Full wrapped pre-moderator"<<ELog::endBasic;
-      throw ColErr::ExitAbort("help exit");
+      ELog::EM<<"    None :: No Premoderator "<<ELog::endBasic;
+      return "";
     }    
 
   ELog::EM<<"Failed to understand CH4Pre type :"
@@ -401,11 +415,11 @@ makeT1Upgrade::buildCH4Mod(Simulation& System,
     }
   else if (MType=="Help" || MType=="help")
     {
-      ELog::EM<<"Options = "<<ELog::endBasic;
+      ELog::EM<<"Options [CH4ModType]  "<<ELog::endBasic;
       ELog::EM<<"    Basic :: Standard TS1 Style"<<ELog::endBasic;
       ELog::EM<<"    Layer :: Layered Style"<<ELog::endBasic;
-      throw ColErr::ExitAbort("help exit");
-    }    
+      return "";
+    }     
 
   ELog::EM<<"Failed to understand CH4Mod type :"
 	  <<MType<<ELog::endErr;
@@ -452,21 +466,38 @@ makeT1Upgrade::buildH2Mod(Simulation& System,
       H2PCylMod=boost::shared_ptr<ts1System::CylPreSimple>
 	(new CylPreSimple("H2CylPre"));      
       OR.addObject(H2PCylMod);
-      
       return "CylMod";
     }
   else if (MType=="Help" || MType=="help")
     {
-      ELog::EM<<"Options = "<<ELog::endBasic;
+      ELog::EM<<"Options = [H2ModType]"<<ELog::endBasic;
       ELog::EM<<"    Basic :: Standard TS1 Style"<<ELog::endBasic;
-      throw ColErr::ExitAbort("help exit");
+      ELog::EM<<"    CylMod :: Cylinder Moderator"<<ELog::endBasic;
+      return "";
     }    
-
 
   ELog::EM<<"Failed to understand CH4Mod type :"
 	  <<MType<<ELog::endErr;
   return "";
 }
+
+void
+makeT1Upgrade::buildHelp(Simulation& System) 
+  /*!
+    Build a simple help schema if help is required
+    \param System :: 
+  */
+{
+  ELog::RegMethod RegA("makeT1Upgrade","buildHelp");
+
+  buildTarget(System,"help",0);  
+  buildH2Mod(System,*ColdCentObj,"help");
+  buildCH4Mod(System,*ColdCentObj,"help");  
+  buildCH4Pre(System,"help");
+
+  return;
+}
+
 
 void 
 makeT1Upgrade::build(Simulation* SimPtr,
@@ -479,6 +510,9 @@ makeT1Upgrade::build(Simulation* SimPtr,
 {
   // For output stream
   ELog::RegMethod RControl("makeT1Upgrade","build");
+
+  if (IParam.flag("help"))
+    buildHelp(*SimPtr);
 
   const std::string TarName=
     IParam.getValue<std::string>("targetType",0);
@@ -551,16 +585,13 @@ makeT1Upgrade::build(Simulation* SimPtr,
   const std::string Out=RefObj->getLinkComplement(2);
   TriFLA->addBoundarySurf("inner",Out);  
   TriFLA->addBoundarySurf("outer",Out);  
-  RefObj->addToInsertChain(TriFLA->getKey("outer"));
-  debugStatus::Instance().setFlag(1);
-  TriFLA->createAll(*SimPtr,*TriMod,*TriMod);
-  debugStatus::Instance().setFlag(0);
-
+  //  RefObj->addToInsertChain(TriFLA->getKey("outer"));
+  //  TriFLA->createAll(*SimPtr,*TriMod,*TriMod);
 
   TriFLB->addBoundarySurf("inner",Out);  
   TriFLB->addBoundarySurf("outer",Out);  
-  TriFLB->createAll(*SimPtr,*TriMod,*TriMod);
-  attachSystem::addToInsertSurfCtrl(*SimPtr,*RefObj,TriFLB->getKey("outer"));  
+  //  TriFLB->createAll(*SimPtr,*TriMod,*TriMod);
+  // attachSystem::addToInsertSurfCtrl(*SimPtr,*RefObj,TriFLB->getKey("outer"));  
 
   H2FL->addBoundarySurf("inner",Out);  
   H2FL->addBoundarySurf("outer",Out);  

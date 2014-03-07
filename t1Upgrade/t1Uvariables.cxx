@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   t1Upgrade/t1Uvariables.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -167,6 +167,7 @@ TS1upgrade(FuncDataBase& Control)
   TS1PlateTarget(Control);
   TS1InnerTarget(Control);
   TS1Cannelloni(Control);
+  TS1BlockTarget(Control);
   TS1EllipticCylTarget(Control);
   
   TS1CylMod(Control);
@@ -206,8 +207,8 @@ TS1upgrade(FuncDataBase& Control)
   Control.addVariable("BWindowIncThick1",0.3);  // Inconel Thickness 1
   Control.addVariable("BWindowWaterThick",0.1); // Light water Thickness
   Control.addVariable("BWindowIncThick2",0.3); // Inconel Thickness 2
-  Control.addVariable("BWindowHeMat",9);       // Helium at atmospheric pressure
-  Control.addVariable("BWindowInconelMat",8);  // Inconel
+  Control.addVariable("BWindowHeMat","helium");  // Helium at atmospheric pressure
+  Control.addVariable("BWindowInconelMat","Inconnel");  
   Control.addVariable("BWindowWaterMat","H2O");   // Light water
 
 
@@ -218,17 +219,28 @@ TS1upgrade(FuncDataBase& Control)
   Control.addVariable("TriModXYangle",75.0);
   Control.addVariable("TriModZangle",0.0);
 
+  Control.addVariable("TriModNCorner",4); 
   Control.addVariable("TriModCorner1",Geometry::Vec3D(12.8,12.8,0.0)); 
+  Control.addVariable("TriModCorner4",Geometry::Vec3D(-8.0,8.0,0.0)); 
   Control.addVariable("TriModCorner2",Geometry::Vec3D(-12.8,-12.8,0.0)); 
   Control.addVariable("TriModCorner3",Geometry::Vec3D(-24.0,0.0,0.0)); 
 
+  /*
+  Control.addVariable("TriModNCorner",4); 
+  Control.addVariable("TriModCorner1",Geometry::Vec3D(8.0,8.0,0.0)); 
+  Control.addVariable("TriModCorner2",Geometry::Vec3D(8.0,-8.0,0.0)); 
+  Control.addVariable("TriModCorner3",Geometry::Vec3D(-8.0,-8.0,0.0)); 
+  Control.addVariable("TriModCorner4",Geometry::Vec3D(-8.0,8.0,0.0)); 
+  */
   Control.addVariable("TriModHeight",12.0);
   Control.addVariable("TriModWallThick",0.5);
+  Control.addVariable("TriModInnerWall",0.5);
   Control.addVariable("TriModFlatClearance",0.6);
   Control.addVariable("TriModBaseClearance",0.3);
   Control.addVariable("TriModTopClearance",0.6);
-  Control.addVariable("TriModInnerStep",1.2);
+  Control.addVariable("TriModInnerStep",-1.2);  // from 1.2
   // Poison !!!!  
+  Control.addVariable("TriModPoisonFlag",1);      // Activate poison layer
   Control.addVariable("TriModPoisonStep",7.0);  
   Control.addVariable("TriModPoisonThick",0.005);
   Control.addVariable("TriModPCladThick",0.1);    
@@ -306,7 +318,7 @@ TS1upgrade(FuncDataBase& Control)
   Control.addVariable("H2ModAlMat","Aluminium");           // Al 
   Control.addVariable("H2ModLh2Mat","ParaH2");         // LH2 
   Control.addVariable("H2ModSiMat","Gadolinium");         // Poison; Gadolinium
-//  Control.addVariable("H2ModSiMat",41);         // Silicon  
+//  Control.addVariable("H2ModSiMat","Silicon);         // Silicon  
   Control.addVariable("H2ModLh2Temp",20.0);      // LH2  Temp
 
   Control.addVariable("HPreModRSideThick",1.0);     
@@ -476,7 +488,7 @@ TS1upgrade(FuncDataBase& Control)
   // Carbon - Al layer
   Control.addVariable("CH4LayerLayer4",0.6);   
   Control.addVariable("CH4LayerWidth4",0.0);   
-  Control.addVariable("CH4LayerMat4",68);     
+  Control.addVariable("CH4LayerMat4","Graphite");     
 
   // H2 - Al layer
   Control.addVariable("CH4LayerLayer5",0.3);   

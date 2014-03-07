@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   crystal/SymUnit.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -116,7 +116,8 @@ SymUnit::setComponent(const size_t index,
     throw ColErr::IndexError<int>(index,3,"SymUnit::setComponent");
   if (index==3)
     ShiftVec=Unit;
-  OpSet[index]=Unit;
+  else
+    OpSet[index]=Unit;
   return;
 }
 

@@ -59,6 +59,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "objectRegister.h"
 #include "Qhull.h"
 #include "Simulation.h"
@@ -191,25 +192,67 @@ createAddition(const int InterFlag,Rule* NRptr,
 
 void
 addToInsertControl(Simulation& System,
-		   const attachSystem::FixedComp& BaseFC,
-		   const attachSystem::FixedComp& FC,
-		   attachSystem::ContainedComp& CC)
+		   const attachSystem::FixedComp& OuterFC,
+		   const attachSystem::FixedComp& InsertFC,
+		   const std::string& groupName)
 /*!
   Adds this object to the containedComp to be inserted.
   FC is the fixed object that is to be inserted -- linkpoints
   must be set. It is tested against all the ojbect with
   this object .
   \param System :: Simulation to use
-  \param FC :: FixedComp with the points
-  \param CC :: ContainedComp object to add to this
+  \param OuterFC :: Object into which we are going to insert
+  \param InsertFC :: FixedComp with the points
+  \param groupName :: Contained Group to use
 */
 {
   ELog::RegMethod RegA("AttachSupport","addToInsertControl");
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-  const int cellN=OR.getCell(BaseFC.getKeyName());
-  const int cellR=OR.getRange(BaseFC.getKeyName());
-  addToInsertControl(System,cellN,cellN+cellR,FC,CC);
+
+  const std::string outerName=OuterFC.getKeyName();
+  const int cellN=OR.getCell(outerName);
+  const int cellR=OR.getRange(outerName);
+  attachSystem::ContainedGroup* CGPtr=
+    OR.getObject<attachSystem::ContainedGroup>(InsertFC.getKeyName());
+  
+  if (!CGPtr)
+    throw ColErr::CastError<void>(0,"Cannot convert "+
+				  InsertFC.getKeyName()+"to containedGroup");
+
+  addToInsertControl(System,cellN,cellN+cellR,InsertFC,
+		     CGPtr->getKey(groupName));
+
+  return;
+}
+
+void
+addToInsertControl(Simulation& System,
+		   const attachSystem::FixedComp& OuterFC,
+		   const attachSystem::FixedComp& InsertFC)
+/*!
+  Adds this object to the containedComp to be inserted.
+  FC is the fixed object that is to be inserted -- linkpoints
+  must be set. It is tested against all the ojbect with
+  this object .
+  \param System :: Simulation to use
+  \param OuterFC :: Object into which we are going to insert
+  \param InsertFC :: FixedComp with the points
+*/
+{
+  ELog::RegMethod RegA("AttachSupport","addToInsertControl");
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  const std::string outerName=OuterFC.getKeyName();
+  const int cellN=OR.getCell(outerName);
+  const int cellR=OR.getRange(outerName);
+  attachSystem::ContainedComp* CCPtr=
+    OR.getObject<attachSystem::ContainedComp>(InsertFC.getKeyName());
+  if (!CCPtr)
+    throw ColErr::CastError<void>(0,"Cannot convert "+
+				  InsertFC.getKeyName()+"to contained Comp");
+  addToInsertControl(System,cellN,cellN+cellR,InsertFC,*CCPtr);
 
   return;
 }
@@ -225,8 +268,7 @@ addToInsertControl(Simulation& System,
   must be set. It is tested against all the ojbect with
   this object .
   \param System :: Simulation to use
-  \param CellA :: First cell number
-  \param CellB :: Last cell number
+  \param OName :: Name of object to insert
   \param FC :: FixedComp with the points
   \param CC :: ContainedComp object to add to this
 */
@@ -244,7 +286,7 @@ void
 addToInsertControl(Simulation& System,
 		   const int cellA,const int cellB,
 		   const attachSystem::FixedComp& FC,
-		   attachSystem::ContainedComp& CC)
+		   const attachSystem::ContainedComp& CC)
 /*!
     Adds this object to the containedComp to be inserted.
     FC is the fixed object that is to be inserted -- linkpoints
@@ -260,6 +302,7 @@ addToInsertControl(Simulation& System,
   ELog::RegMethod RegA("AttachSupport","addToInsertControl");
 
   const size_t NPoint=FC.NConnect();
+  const std::string excludeStr=CC.getExclude();
   for(int i=cellA+1;i<=cellB;i++)
     {
       MonteCarlo::Qhull* CRPtr=System.findQhull(i);
@@ -274,12 +317,11 @@ addToInsertControl(Simulation& System,
 	  const Geometry::Vec3D& Pt=FC.getLinkPt(j);
 	  if (CRPtr->isValid(Pt))
 	    {
-	      CC.addInsertCell(i);
+	      CRPtr->addSurfString(excludeStr);
 	      break;
 	    }
 	}
     }
-  CC.insertObjects(System);
   return;
 }
 

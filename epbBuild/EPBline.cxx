@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   epbBuild/EPBline.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,8 +50,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -95,6 +93,49 @@ EPBline::EPBline(const std::string& Key)  :
     \param Key :: Name for item in search
   */
 {}
+
+EPBline::EPBline(const EPBline& A) : 
+  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  epbIndex(A.epbIndex),cellIndex(A.cellIndex),xStep(A.xStep),
+  yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
+  zAngle(A.zAngle),innerRad(A.innerRad),wallThick(A.wallThick),
+  wallMat(A.wallMat),nSeg(A.nSeg),Pts(A.Pts),YVec(A.YVec),
+  Cent(A.Cent)
+  /*!
+    Copy constructor
+    \param A :: EPBline to copy
+  */
+{}
+
+EPBline&
+EPBline::operator=(const EPBline& A)
+  /*!
+    Assignment operator
+    \param A :: EPBline to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::FixedComp::operator=(A);
+      cellIndex=A.cellIndex;
+      xStep=A.xStep;
+      yStep=A.yStep;
+      zStep=A.zStep;
+      xyAngle=A.xyAngle;
+      zAngle=A.zAngle;
+      innerRad=A.innerRad;
+      wallThick=A.wallThick;
+      wallMat=A.wallMat;
+      nSeg=A.nSeg;
+      Pts=A.Pts;
+      YVec=A.YVec;
+      Cent=A.Cent;
+    }
+  return *this;
+}
+
 
 EPBline::~EPBline() 
  /*!

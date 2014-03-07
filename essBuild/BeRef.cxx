@@ -112,6 +112,10 @@ BeRef::populate(const FuncDataBase& Control)
   refMat=ModelSupport::EvalMat<int>(Control,keyName+"RefMat");   
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");   
   
+  targSepThick=Control.EvalVar<double>(keyName+"TargSepThick");   
+  targSepMat=ModelSupport::EvalMat<int>
+    (Control,StrFunc::makeString(keyName+"TargSepMat"));   
+
   return;
 }
 
@@ -148,22 +152,18 @@ BeRef::createSurfaces()
   ModelSupport::buildPlane(SMap,refIndex+16,
 			   Origin+Z*(height/2.0+wallThick),Z);  
 
+  //define planes where the Be is substituted by Fe
+
+  ModelSupport::buildPlane(SMap,refIndex+25,Origin-
+			   Z*(targSepThick/2.0+wallThick),Z);  
+  ModelSupport::buildPlane(SMap,refIndex+26,Origin+
+			   Z*(targSepThick/2.0+wallThick),Z);  
+
+  ModelSupport::buildPlane(SMap,refIndex+35,Origin-Z*(targSepThick/2.0),Z);  
+  ModelSupport::buildPlane(SMap,refIndex+36,Origin+Z*(targSepThick/2.0),Z);  
+
   return; 
 }
-
-void
-BeRef::addToInsertChain(attachSystem::ContainedComp& CC) const
-  /*!
-    Adds this object to the containedComp to be inserted.
-    \param CC :: ContainedComp object to add to this
-  */
-{
-  for(int i=refIndex+1;i<cellIndex;i++)
-    CC.addInsertCell(i);
-    
-  return;
-}
-
 
 void
 BeRef::createObjects(Simulation& System)
@@ -176,13 +176,38 @@ BeRef::createObjects(Simulation& System)
 
   std::string Out;
   
-  Out=ModelSupport::getComposite(SMap,refIndex," -7 5 -6 ");
+  // low segment
+  Out=ModelSupport::getComposite(SMap,refIndex," -7 5 -35 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,refMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,refIndex," -17 15 -16 (7:-5:6)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,refIndex," -17 35 -36");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,targSepMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,refIndex," -17 15 -16 ");
+  Out=ModelSupport::getComposite(SMap,refIndex," -7 36 -6 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,refMat,0.0,Out));
+  
+  Out=ModelSupport::getComposite(SMap,refIndex," -7 5 -6 ");
+
+  if (wallThick>Geometry::zeroTol)
+    {
+      Out=ModelSupport::getComposite(SMap,refIndex," -17 15 -35 (7:-5)");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+
+      // divide layer
+      Out=ModelSupport::getComposite(SMap,refIndex," -17 -25 35 ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+
+      // divide layer
+      Out=ModelSupport::getComposite(SMap,refIndex," -17 26 -36 ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+
+
+      Out=ModelSupport::getComposite(SMap,refIndex," -17 -16 36 (7:6)");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+
+      Out=ModelSupport::getComposite(SMap,refIndex," -17 15 -16 ");
+    }
+      
   addOuterSurf(Out);
   return; 
 

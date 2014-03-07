@@ -398,20 +398,19 @@ FlightLine::getRotatedDivider(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("FlightLine","getRotatedDivider");
   static int offset(750);
-  std::string attachRule=FC.getCommonString(sideIndex);
-
-  if (fabs(masterXY)<45.0) 
-    return " "+attachRule+" ";
-
+  std::string commonRule=FC.getCommonString(sideIndex);
   const std::string primary=FC.getMasterString(sideIndex);
 
+  attachRule=" "+primary+" ";
+  if (fabs(masterXY)<45.0) 
+    return attachRule;
 
   HeadRule rotHead;
-  if (!rotHead.procString(attachRule))
-    return primary;
+  if (!rotHead.procString(commonRule))
+    return attachRule;
 
   int SN;
-  while(StrFunc::section(attachRule,SN))
+  while(StrFunc::section(commonRule,SN))
     {
       const Geometry::Plane* PN=
 	SMap.realPtr<Geometry::Plane>(abs(SN));
@@ -433,7 +432,8 @@ FlightLine::getRotatedDivider(const attachSystem::FixedComp& FC,
 	  rotHead.substituteSurf(abs(SN),signV*PXNum,PX);
 	}
     }
-  return " "+primary+" "+rotHead.display()+" ";
+  attachRule=" "+primary+" "+rotHead.display()+" ";
+  return attachRule;
 }
 
 void
@@ -516,6 +516,7 @@ FlightLine::createObjects(Simulation& System,
   
   const int outIndex=flightIndex+static_cast<int>(nLayer)*10;
 
+  // attachRule SET in getRotatedDivider
   const std::string divider=getRotatedDivider(FC,sideIndex);
   attachRule+=divider+FC.getMasterString(sideIndex);
 
@@ -568,10 +569,12 @@ FlightLine::createObjects(Simulation& System,
 			  const size_t sideIndex,
 			  const attachSystem::ContainedComp& CC)
   /*!
-    Adds the Chip guide components
+    Creates the objects for a flightline signed relative to the 
+    surface FC and exluding the object give by CC.
     \param System :: Simulation to create objects in
-    \param FC :: SUrface linked plane 
-    \param sideInde :: side index
+    \param FC :: Surface linked object
+    \param surfSing :: Sign of the surface
+    \param sideIndex :: side index
     \param CC :: Inner Object
     \param sideIndex :: Side index
   */
@@ -579,6 +582,11 @@ FlightLine::createObjects(Simulation& System,
   ELog::RegMethod RegA("FlightLine","createObjects");
   
   const int outIndex=flightIndex+static_cast<int>(nLayer)*10;
+
+  const std::string divider=getRotatedDivider(FC,sideIndex);
+  attachRule+=divider+FC.getMasterString(sideIndex);
+
+
 
   // Note this is negative
   const int baseSurf( (surfSign>0) ? FC.getLinkSurf(sideIndex) : 

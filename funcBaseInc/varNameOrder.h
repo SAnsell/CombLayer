@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   funcBaseInc/varNameOrder.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,6 +30,7 @@ class varNameOrder
 
  public:
 
+  /// Construct to build expression : Name Number 
   varNameOrder() : Re("^(\\D*)(\\d*)(.*)") {} 
 
   template<typename T> bool
@@ -57,9 +58,9 @@ class varNameOrder
 	 {
 	   if (AOutVec[2]!=BOutVec[2])
 	     return AOutVec[2]<BOutVec[2];
-	   StrFunc::convert(AOutVec[1],ANum);
-	   StrFunc::convert(BOutVec[1],BNum);
-	   return ANum<BNum;
+	   if (StrFunc::convert(AOutVec[1],ANum) &&
+	       StrFunc::convert(BOutVec[1],BNum))
+	     return ANum<BNum;
 	}							  
       return (A<B);
     }

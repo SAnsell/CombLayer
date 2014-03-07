@@ -402,7 +402,7 @@ TS1InnerTarget(FuncDataBase& Control)
 
   Control.addVariable("t1InnerWMat","Tungsten");             // Solid Tungsten
   Control.addVariable("t1InnerTaMat","Tantalum");            // Solid Ta
-  Control.addVariable("t1InnerWaterMat",11);         // Light water
+  Control.addVariable("t1InnerWaterMat","H2O");         // Light water
 
   Control.addVariable("t1InnerTargetTemp",650);       // Inner core temp
   Control.addVariable("t1InnerWaterTemp",350);        // Water temp
@@ -436,7 +436,7 @@ TS1CylFluxTrap(FuncDataBase& Control)
   // MOLY SECTION:
   Control.addVariable("t1CylFluxTrapNPlates",8);
   Control.addVariable("t1CylFluxTrapPThick",0.7);
-  Control.addVariable("t1CylFluxTrapPMat",11);
+  Control.addVariable("t1CylFluxTrapPMat","H2O");
   Control.addVariable("t1CylFluxTrapPLayerMat","Tantalum");
   Control.addVariable("t1CylFluxTrapPLayerThick",0.2);
 
@@ -454,7 +454,7 @@ TS1CylFluxTrap(FuncDataBase& Control)
   Control.addVariable("t1CylFluxTrapCutSph1Dist",0.4);
   Control.addVariable("t1CylFluxTrapCutSph1Cent",Geometry::Vec3D(0,4.5,0));
   Control.addVariable("t1CylFluxTrapCutSph1Axis",Geometry::Vec3D(0,1,0));
-  Control.addVariable("t1CylFluxTrapCutSphMat",61);
+  Control.addVariable("t1CylFluxTrapCutSphMat","Molybdimum");
 
   Control.addVariable("t1CylFluxTrapNCone",0);
   Control.addVariable("t1CylFluxTrapCone1AngleA",-45.0);
@@ -462,7 +462,7 @@ TS1CylFluxTrap(FuncDataBase& Control)
   Control.addVariable("t1CylFluxTrapCone1Dist",-4.0);
   Control.addVariable("t1CylFluxTrapCone1Cent",Geometry::Vec3D(0,12,0));
   Control.addVariable("t1CylFluxTrapCone1Axis",Geometry::Vec3D(0,1,0));
-  Control.addVariable("t1CylFluxTrapCone1Mat",11);
+  Control.addVariable("t1CylFluxTrapCone1Mat","H2O");
   Control.addVariable("t1CylFluxTrapCone1LayerMat","Tantalum");
   Control.addVariable("t1CylFluxTrapCone1LayerThick",0.3);
 
@@ -471,7 +471,7 @@ TS1CylFluxTrap(FuncDataBase& Control)
   Control.addVariable("t1CylFluxTrapCone2Dist",2.0);
   Control.addVariable("t1CylFluxTrapCone2Cent",Geometry::Vec3D(0,18,0));
   Control.addVariable("t1CylFluxTrapCone2Axis",Geometry::Vec3D(0,1,0));
-  Control.addVariable("t1CylFluxTrapCone2Mat",11);
+  Control.addVariable("t1CylFluxTrapCone2Mat","H2O");
   return;
 }
 
@@ -486,7 +486,7 @@ TS1CylFluxTrapReal(FuncDataBase& Control)
   // MOLY SECTION:
   Control.addVariable("t1CylFluxTrapNPlates",8);
   Control.addVariable("t1CylFluxTrapPThick",0.7);
-  Control.addVariable("t1CylFluxTrapPMat",11);
+  Control.addVariable("t1CylFluxTrapPMat","H2O");
   Control.addVariable("t1CylFluxTrapPLayerMat","Tantalum");
   Control.addVariable("t1CylFluxTrapPLayerThick",0.2);
 
@@ -504,7 +504,7 @@ TS1CylFluxTrapReal(FuncDataBase& Control)
   Control.addVariable("t1CylFluxTrapCutSph1Dist",0.4);
   Control.addVariable("t1CylFluxTrapCutSph1Cent",Geometry::Vec3D(0,4.5,0));
   Control.addVariable("t1CylFluxTrapCutSph1Axis",Geometry::Vec3D(0,1,0));
-  Control.addVariable("t1CylFluxTrapCutSphMat",61);
+  Control.addVariable("t1CylFluxTrapCutSphMat","Molybdimum");
 
   Control.addVariable("t1CylFluxTrapNCone",0);
   Control.addVariable("t1CylFluxTrapCone1AngleA",-45.0);
@@ -512,7 +512,7 @@ TS1CylFluxTrapReal(FuncDataBase& Control)
   Control.addVariable("t1CylFluxTrapCone1Dist",-4.0);
   Control.addVariable("t1CylFluxTrapCone1Cent",Geometry::Vec3D(0,12,0));
   Control.addVariable("t1CylFluxTrapCone1Axis",Geometry::Vec3D(0,1,0));
-  Control.addVariable("t1CylFluxTrapCone1Mat",11);
+  Control.addVariable("t1CylFluxTrapCone1Mat","H2O");
   Control.addVariable("t1CylFluxTrapCone1LayerMat","Tantalum");
   Control.addVariable("t1CylFluxTrapCone1LayerThick",0.3);
 
@@ -521,7 +521,7 @@ TS1CylFluxTrapReal(FuncDataBase& Control)
   Control.addVariable("t1CylFluxTrapCone2Dist",2.0);
   Control.addVariable("t1CylFluxTrapCone2Cent",Geometry::Vec3D(0,18,0));
   Control.addVariable("t1CylFluxTrapCone2Axis",Geometry::Vec3D(0,1,0));
-  Control.addVariable("t1CylFluxTrapCone2Mat",11);
+  Control.addVariable("t1CylFluxTrapCone2Mat","H2O");
   return;
 }
 
@@ -532,7 +532,7 @@ TS1Cannelloni(FuncDataBase& Control)
     \param Control :: DataBase
   */
 {
-  ELog::RegMethod RegA("t1BaseVariables[F]","TS1InnerTarget");
+  ELog::RegMethod RegA("t1BaseVariables[F]","TS1CannelloniTarget");
 
   Control.addVariable("t1CannelloniXStep",0.0);           // Offset ref centre
   Control.addVariable("t1CannelloniYStep",0.0);           // Offset ref centre
@@ -551,11 +551,73 @@ TS1Cannelloni(FuncDataBase& Control)
 
   Control.addVariable("t1CannelloniWMat","Tungsten");             // Solid Tungsten
   Control.addVariable("t1CannelloniTaMat","Tantalum");            // Solid Ta
-  Control.addVariable("t1CannelloniWaterMat",11);         // Light water
+  Control.addVariable("t1CannelloniWaterMat","H2O");         // Light water
 
   Control.addVariable("t1CannelloniTargetTemp",650);       // Inner core temp
   Control.addVariable("t1CannelloniWaterTemp",350);        // Water temp
   Control.addVariable("t1CannelloniExternTemp",330);       // Outer temp
+
+  return;
+}
+
+void
+TS1BlockTarget(FuncDataBase& Control)
+  /*!
+    Set up a open block target
+    \param Control :: DataBase
+  */
+{
+  ELog::RegMethod RegA("t1BaseVariables[F]","TS1BlockTarget");
+
+  Control.addVariable("t1BlockTargetXStep",0.0);           // Offset ref centre
+  Control.addVariable("t1BlockTargetYStep",0.0);           // Offset ref centre
+  Control.addVariable("t1BlockTargetZStep",0.0);           // Offset ref centre
+
+  Control.addVariable("t1BlockTargetHeight",13.0);        // To press vessel 
+  Control.addVariable("t1BlockTargetWidth",13.0);     
+
+  Control.addVariable("t1BlockTargetTaThick",0.30);      
+  Control.addVariable("t1BlockTargetWaterThick",0.20);      
+
+  Control.addVariable("t1BlockTargetWWidth",10.8);         // Width 
+  Control.addVariable("t1BlockTargetWHeight",10.8);        // Height 
+
+  Control.Parse("0.45*t1BlockTargetWWidth"); 
+  Control.addVariable("t1BlockTargetWVoidWidth"); 
+  Control.Parse("0.45*t1BlockTargetWHeight"); 
+  Control.addVariable("t1BlockTargetWVoidHeight"); 
+
+  Control.addVariable("t1BlockTargetPressThick",0.60);      
+
+  Control.addVariable("t1BlockTargetNBlocks",12);         // Number of plates:
+
+  Control.addVariable("t1BlockTargetThick0",1.1);         
+  Control.addVariable("t1BlockTargetThick1",1.1);         
+  Control.addVariable("t1BlockTargetThick2",1.2);         
+  Control.addVariable("t1BlockTargetThick3",1.35);         
+  Control.addVariable("t1BlockTargetThick4",1.5);         
+  Control.addVariable("t1BlockTargetThick5",1.8);         
+  Control.addVariable("t1BlockTargetThick6",2.1);         
+  Control.addVariable("t1BlockTargetThick7",2.6);         
+  Control.addVariable("t1BlockTargetThick8",3.4);         
+  Control.addVariable("t1BlockTargetThick9",4.0);         
+  Control.addVariable("t1BlockTargetThick10",4.6);         
+  Control.addVariable("t1BlockTargetThick11",4.6);         
+  for(size_t i=0;i<12;i++)
+    {
+      const std::string Num=StrFunc::makeString(i);
+      Control.Parse("0.75*t1BlockTargetThick"+Num);
+      Control.addVariable("t1BlockTargetVoid"+Num);
+    }         
+
+  Control.addVariable("t1BlockTargetWMat","Tungsten");        
+  Control.addVariable("t1BlockTargetTaMat","Tantalum");       
+  Control.addVariable("t1BlockTargetPressMat","Stainless304");     
+  Control.addVariable("t1BlockTargetWaterMat","H2O");         
+
+  Control.addVariable("t1BlockTargetTargetTemp",650);       // Inner core temp
+  Control.addVariable("t1BlockTargetWaterTemp",350);        // Water temp
+  Control.addVariable("t1BlockTargetExternTemp",330);       // Outer temp
 
   return;
 }
@@ -586,10 +648,10 @@ TS1EllipticCylTarget(FuncDataBase& Control)
 
   Control.addVariable("t1EllCylTargetWMat","Tungsten");     // Solid Tungsten
   Control.addVariable("t1EllCylTargetTaMat","Tantalum");    // Solid Ta
-  Control.addVariable("t1EllCylTargetWaterMat",11);         // Light water
-  Control.addVariable("t1EllCylTargetTargetTemp",650);      // Inner core temp
-  Control.addVariable("t1EllCylTargetWaterTemp",350);       // Water temp
-  Control.addVariable("t1EllCylTargetExternTemp",330);      // Outer temp
+  Control.addVariable("t1EllCylTargetWaterMat","H2O");         // Light water
+  Control.addVariable("t1EllCylTargetTargetTemp",650.0);      // Inner core temp
+  Control.addVariable("t1EllCylTargetWaterTemp",350.0);       // Water temp
+  Control.addVariable("t1EllCylTargetExternTemp",330.0);      // Outer temp
   
   return;
 }

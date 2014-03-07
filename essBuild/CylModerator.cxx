@@ -250,19 +250,19 @@ CylModerator::createLinks()
 
       FixedComp::setConnect(0,Origin-Y*radius[NL],-Y);
       FixedComp::setLinkSurf(0,SMap.realSurf(SI+7));
-      FixedComp::addLinkSurf(0,-SMap.realSurf(modIndex+2));
+      FixedComp::addBridgeSurf(0,-SMap.realSurf(modIndex+2));
 
       FixedComp::setConnect(1,Origin+Y*radius[NL],Y);
       FixedComp::setLinkSurf(1,SMap.realSurf(SI+7));
-      FixedComp::addLinkSurf(1,SMap.realSurf(modIndex+2));
+      FixedComp::addBridgeSurf(1,SMap.realSurf(modIndex+2));
 
       FixedComp::setConnect(2,Origin-X*radius[NL],-X);
       FixedComp::setLinkSurf(2,SMap.realSurf(SI+7));
-      FixedComp::addLinkSurf(2,-SMap.realSurf(modIndex+1));
+      FixedComp::addBridgeSurf(2,-SMap.realSurf(modIndex+1));
 
       FixedComp::setConnect(3,Origin+X*radius[NL],X);
       FixedComp::setLinkSurf(3,SMap.realSurf(SI+7));
-      FixedComp::addLinkSurf(3,SMap.realSurf(modIndex+1));
+      FixedComp::addBridgeSurf(3,SMap.realSurf(modIndex+1));
       
       FixedComp::setConnect(4,Origin-Z*(height[NL]/2.0),-Z);
       FixedComp::setLinkSurf(4,-SMap.realSurf(SI+5));

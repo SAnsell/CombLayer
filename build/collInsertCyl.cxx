@@ -130,24 +130,31 @@ collInsertCyl::populate(const Simulation& System,
   ELog::RegMethod RegA("collInsertCyl","populate");
   const FuncDataBase& Control=System.getDataBase();
 
-  const int Size(8);
-  const int commonSize(7);
+  const size_t Size(8);
+  const size_t commonSize(7);
   const char* sndKey[Size]=
     {"FStep","CentX","CentZ","Len","Width","Height","Mat","RGap"};
   
+  const collInsertCyl* cylPtr=
+    dynamic_cast<const collInsertCyl*>(sndBase);
+
   for(size_t i=0;i<Size;i++)
     {
       const std::string KN=keyName+
 	StrFunc::makeString(blockIndex+1)+sndKey[i];
       if (Control.hasVariable(KN))
 	setVar(Control,i,KN);
+      else if (cylPtr)
+	setVar(i,cylPtr->getVar(i));	
       else if (sndBase && i<=commonSize)
-	setVar(i,sndBase->getVar(i));	
-      else 
+	  setVar(i,sndBase->getVar(i));	
+      else
 	{
-	  ELog::EM<<"sndBase == "<<sndBase->typeName()<<ELog::endCrit;
-	  ELog::EM<<"Failed to connect on first component:"
-		  <<KN<<ELog::endErr;
+	  ELog::EM<<"sndBase == "<<
+	    ((sndBase) ? sndBase->typeName() : "NULL")<<
+	    ELog::endCrit;
+	  throw ColErr::InContainerError<std::string>
+	    (KN,"Failed to connect on first component");
 	}
     }
   populated|=1;
@@ -163,34 +170,21 @@ collInsertCyl::setVar(const size_t Item,const double V)
   */
 {
   ELog::RegMethod RegA("collInsertCyl","setVar");
-  switch(Item)
-    {
-    case 0:
-      fStep=V;
-      return;
-    case 1:
-      centX=V;
-      return;
-    case 2:
-      centZ=V;
-      return;
-    case 3:
-      length=V;
-      return;
-    case 4:
-      width=V;
-      return;
-    case 5:
-      height=V;
-      return;
-    case 6:
-      matN=static_cast<int>(V);
-      return;
-    case 7:
-      radGap=V;
-      return;
-    }
-  throw ColErr::IndexError<size_t>(Item,7,"Item");
+  double* VDPtr[8]={&fStep,&centX,&centZ,&length,
+		   &width,&height,0,&radGap};
+  int* VIPtr[8]={0,0,0,0,
+		 0,0,&matN,0};
+  if (Item>7)
+    throw ColErr::IndexError<size_t>(Item,7,"Item");
+  if (VDPtr[Item])
+    *VDPtr[Item]=V;
+  else if (VIPtr[Item])
+    *VIPtr[Item]=static_cast<int>(V);
+  else
+    throw ColErr::InContainerError<size_t>(Item,"Item Index has no type");
+  
+  return;
+
 }
 
 void

@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   delft/SpaceBlock.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,13 +48,7 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "Tally.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -73,8 +67,6 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -100,6 +92,44 @@ SpaceBlock::SpaceBlock(const std::string& Key,const size_t Index)  :
   */
 {}
 
+SpaceBlock::SpaceBlock(const SpaceBlock& A) : 
+  attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
+  baseName(A.baseName),boxIndex(A.boxIndex),cellIndex(A.cellIndex),
+  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
+  xyAngle(A.xyAngle),zAngle(A.zAngle),length(A.length),
+  width(A.width),height(A.height),mat(A.mat)
+  /*!
+    Copy constructor
+    \param A :: SpaceBlock to copy
+  */
+{}
+
+SpaceBlock&
+SpaceBlock::operator=(const SpaceBlock& A)
+  /*!
+    Assignment operator
+    \param A :: SpaceBlock to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedComp::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
+      cellIndex=A.cellIndex;
+      xStep=A.xStep;
+      yStep=A.yStep;
+      zStep=A.zStep;
+      xyAngle=A.xyAngle;
+      zAngle=A.zAngle;
+      length=A.length;
+      width=A.width;
+      height=A.height;
+      mat=A.mat;
+    }
+  return *this;
+}
+
 SpaceBlock::~SpaceBlock() 
  /*!
    Destructor
@@ -107,16 +137,15 @@ SpaceBlock::~SpaceBlock()
 {}
 
 int
-SpaceBlock::populate(const Simulation& System)
+SpaceBlock::populate(const FuncDataBase& Control)
  /*!
    Populate all the variables
-   \param System :: Simulation to use
+   \param Control :: FuncDatabase
    \return build status [false on failure]
  */
 {
   ELog::RegMethod RegA("SpaceBlock","populate");
   
-  const FuncDataBase& Control=System.getDataBase();
 
   const int flag=Control.EvalDefVar<int>(keyName+"Flag",-1);
   if (flag<1)  return flag;
@@ -242,7 +271,7 @@ SpaceBlock::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("SpaceBlock","createAll");
 
-  const int flag=populate(System);
+  const int flag=populate(System.getDataBase());
   if (flag>0)
     {
       createUnitVector(FC,sideIndex);

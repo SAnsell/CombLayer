@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   essBuildInc/WheelShaft.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ namespace essSystem
   \author S. Ansell
   \version 1.0
   \date October 2012
-  \brief Specialized for a cylinder object
+  \brief The wheel shaft of the ESS target
 */
 
 class WheelShaft : public attachSystem::ContainedComp,

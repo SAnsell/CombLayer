@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   delft/IrradElement.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,8 +46,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -84,6 +82,59 @@ IrradElement::IrradElement(const size_t XI,const size_t YI,
     Constructor BUT ALL variable are left unpopulated.
   */
 {}
+
+IrradElement::IrradElement(const IrradElement& A) : 
+  RElement(A),
+  Width(A.Width),Depth(A.Depth),beLen(A.beLen),
+  topPlug(A.topPlug),topLocator(A.topLocator),endStop(A.endStop),
+  plugThick(A.plugThick),plugZOffset(A.plugZOffset),
+  locThick(A.locThick),sampleRadius(A.sampleRadius),
+  sampleXOff(A.sampleXOff),sampleZOff(A.sampleZOff),
+  vacRadius(A.vacRadius),caseRadius(A.caseRadius),
+  coreRadius(A.coreRadius),outerRadius(A.outerRadius),
+  waterRadius(A.waterRadius),beMat(A.beMat),pipeMat(A.pipeMat),
+  sampleMat(A.sampleMat),waterMat(A.waterMat)
+  /*!
+    Copy constructor
+    \param A :: IrradElement to copy
+  */
+{}
+
+IrradElement&
+IrradElement::operator=(const IrradElement& A)
+  /*!
+    Assignment operator
+    \param A :: IrradElement to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      RElement::operator=(A);
+      Width=A.Width;
+      Depth=A.Depth;
+      beLen=A.beLen;
+      topPlug=A.topPlug;
+      topLocator=A.topLocator;
+      endStop=A.endStop;
+      plugThick=A.plugThick;
+      plugZOffset=A.plugZOffset;
+      locThick=A.locThick;
+      sampleRadius=A.sampleRadius;
+      sampleXOff=A.sampleXOff;
+      sampleZOff=A.sampleZOff;
+      vacRadius=A.vacRadius;
+      caseRadius=A.caseRadius;
+      coreRadius=A.coreRadius;
+      outerRadius=A.outerRadius;
+      waterRadius=A.waterRadius;
+      beMat=A.beMat;
+      pipeMat=A.pipeMat;
+      sampleMat=A.sampleMat;
+      waterMat=A.waterMat;
+    }
+  return *this;
+}
 
 void
 IrradElement::populate(const Simulation& System)

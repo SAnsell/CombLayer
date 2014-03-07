@@ -95,6 +95,7 @@ int
 DBMaterial::getFreeNumber() const
   /*!
     Get the first available free number
+    \return unallocated material number
    */
 {
   ELog::RegMethod RegA("DBMaterial","getFreeNumber");

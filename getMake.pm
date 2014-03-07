@@ -1152,7 +1152,7 @@ sub printMainAll
   for(my $i=0;$i<scalar(@{$self->{masterProg}});$i++)
     {
       my $name=$self->{masterProg}[$i];
-      my $depLine = $name." : Main/".$name.".o ";
+      my $depLine = $name." : mainProg Main/".$name.".o ";
       my $compLine;
       my $fileExt=getFileExt("Main/".$name);
       if ($fileExt eq "cxx")

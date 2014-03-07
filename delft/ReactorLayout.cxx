@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   delft/ReactorLayout.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,6 +56,7 @@ namespace setVariable
 
   void DelftStandardModel(FuncDataBase&);
   void DelftXCoreModel(FuncDataBase&);
+  void DelftYCoreModel(FuncDataBase&);
   void DelftTestModel(FuncDataBase&);
 
 void
@@ -77,6 +78,11 @@ DelftCoreType(const mainSystem::inputParam& IParam,
   if (CoreName=="XCore")
     {
       DelftXCoreModel(Control);
+      return;
+    }
+  if (CoreName=="YCore")
+    {
+      DelftYCoreModel(Control);
       return;
     }
   if (CoreName=="Test")
@@ -206,6 +212,71 @@ DelftXCoreModel(FuncDataBase& Control)
   Control.addVariable("delftGridTypeF1",5);      
   Control.addVariable("delftGridTypeF2",5);      
   Control.addVariable("delftGridTypeF3",0);      
+  Control.addVariable("delftGridTypeF4",5);      
+  Control.addVariable("delftGridTypeF5",5);      
+  Control.addVariable("delftGridTypeF6",5);      
+  return;
+}
+
+void
+DelftYCoreModel(FuncDataBase& Control)
+  /*!
+    Function to set system for a given form of reactor.
+    \param Control :: Function data base to add constants too
+  */
+{
+  ELog::RegMethod Rega("delftReactorLayout[f]","DelftYCoreModel");
+
+  Control.addVariable("delftGridXSize",5);        // All void
+  Control.addVariable("delftGridYSize",5);        // All void
+
+  Control.addVariable("delftGridType",0);        // All void
+  Control.addVariable("delftGridTypeA0",5);      
+  Control.addVariable("delftGridTypeA1",5);      
+  Control.addVariable("delftGridTypeA2",5);      
+  Control.addVariable("delftGridTypeA3",5);      
+  Control.addVariable("delftGridTypeA4",5);      
+  Control.addVariable("delftGridTypeA5",5);      
+  Control.addVariable("delftGridTypeA6",5);      
+  // Second stack
+  Control.addVariable("delftGridTypeB0",5);      
+  Control.addVariable("delftGridTypeB1",1);      
+  Control.addVariable("delftGridTypeB2",3);      
+  Control.addVariable("delftGridTypeB3",1);      
+  Control.addVariable("delftGridTypeB4",5);      
+  Control.addVariable("delftGridTypeB5",5);      
+  Control.addVariable("delftGridTypeB6",5);      
+  // Third stack
+  Control.addVariable("delftGridTypeC0",1);      
+  Control.addVariable("delftGridTypeC1",4);      
+  Control.addVariable("delftGridTypeC2",1);      
+  Control.addVariable("delftGridTypeC3",4);      
+  Control.addVariable("delftGridTypeC4",1);      
+  Control.addVariable("delftGridTypeC5",5);      
+  Control.addVariable("delftGridTypeC6",5);      
+  // Fourth stack
+  Control.addVariable("delftGridTypeD0",1);      
+  Control.addVariable("delftGridTypeD1",1);      
+  Control.addVariable("delftGridTypeD2",3);      
+  Control.addVariable("delftGridTypeD3",1);      
+  Control.addVariable("delftGridTypeD4",1);      
+  Control.addVariable("delftGridTypeD5",5);      
+  Control.addVariable("delftGridTypeD6",5);      
+
+  // Fifth stack
+  Control.addVariable("delftGridTypeE0",1);      
+  Control.addVariable("delftGridTypeE1",4);      
+  Control.addVariable("delftGridTypeE2",1);      
+  Control.addVariable("delftGridTypeE3",4);      
+  Control.addVariable("delftGridTypeE4",1);      
+  Control.addVariable("delftGridTypeE5",5);      
+  Control.addVariable("delftGridTypeE6",5);      
+
+  // Sixth stack
+  Control.addVariable("delftGridTypeF0",5);      
+  Control.addVariable("delftGridTypeF1",1);      
+  Control.addVariable("delftGridTypeF2",3);      
+  Control.addVariable("delftGridTypeF3",1);      
   Control.addVariable("delftGridTypeF4",5);      
   Control.addVariable("delftGridTypeF5",5);      
   Control.addVariable("delftGridTypeF6",5);      

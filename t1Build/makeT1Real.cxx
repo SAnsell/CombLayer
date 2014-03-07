@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   t1Build/makeT1Real.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,9 +48,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "inputParam.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -62,17 +59,9 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
-#include "KCode.h"
 #include "insertInfo.h"
 #include "insertBaseInfo.h"
 #include "InsertComp.h"
-#include "ModeCard.h"
-#include "PhysImp.h"
-#include "PhysCard.h"
-#include "LSwitchCard.h"
-#include "PhysicsCards.h"
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -107,6 +96,7 @@
 #include "Cannelloni.h"
 #include "InnerTarget.h"
 #include "SideCoolTarget.h"
+#include "OpenBlockTarget.h"
 #include "MonoPlug.h"
 #include "World.h"
 
@@ -359,9 +349,21 @@ makeT1Real::buildTarget(Simulation& System,const std::string& TType,
       TarObj->createAll(System,World::masterOrigin());
       return "t1Cannelloni";
     }    
+  else if (TType=="t1Block" || TType=="t1BlockTarget")
+    {
+      TarObj=boost::shared_ptr<constructSystem::TargetBase>
+	(new ts1System::OpenBlockTarget("t1BlockTarget"));
+      OR.addObject(TarObj);
+      RefObj->addToInsertChain(*TarObj);
+      TarObj->setRefPlates(-RefObj->getLinkSurf(2),0);
+      TarObj->createAll(System,World::masterOrigin());
+      return "t1BlockTarget";
+    }    
+
   else if (TType=="Help" || TType=="help")
     {
       ELog::EM<<"Options = "<<ELog::endBasic;
+      ELog::EM<<"    t1Block :: Open void blocks"<<ELog::endBasic;
       ELog::EM<<"    t1CylFluxTrap :: Flux Trap target"<<ELog::endBasic;
       ELog::EM<<"    t1Cannelloni :: Inner cannolloni target"<<ELog::endBasic;
       ELog::EM<<"    t1Inner :: Inner triple core target"<<ELog::endBasic;

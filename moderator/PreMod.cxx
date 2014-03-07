@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   moderator/PreMod.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,8 +47,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -89,8 +87,8 @@ PreMod::PreMod(const std::string& Key)  :
 
 PreMod::PreMod(const PreMod& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  preIndex(A.preIndex),cellIndex(A.cellIndex),
-  populated(A.populated),width(A.width),height(A.height),
+  preIndex(A.preIndex),cellIndex(A.cellIndex),populated(A.populated),
+  centOrgFlag(A.centOrgFlag),width(A.width),height(A.height),
   depth(A.depth),alThickness(A.alThickness),modTemp(A.modTemp),
   modMat(A.modMat),alMat(A.alMat),divideSurf(A.divideSurf),
   targetSurf(A.targetSurf)
@@ -246,7 +244,8 @@ PreMod::createSurfaces(const size_t baseIndex,
       SX=ModelSupport::surfaceCreateExpand
 	(SMap.realSurfPtr(preIndex+1),-alThickness);
       PX=dynamic_cast<Geometry::Plane*>(SX);
-      PX->mirrorSelf();
+      if (PX)
+	PX->mirrorSelf();
     }
   else
     SX=ModelSupport::surfaceCreateExpand
@@ -261,7 +260,7 @@ PreMod::createSurfaces(const size_t baseIndex,
 void
 PreMod::createObjects(Simulation& System)
   /*!
-    Adds the Chip guide components
+    Adds the main components
     \param System :: Simulation to create objects in
   */
 {

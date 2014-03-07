@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   muon/muonCarbonTarget.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell/Goron Skoro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,8 +49,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -59,10 +57,7 @@
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
-#include "Line.h"
-#include "LineIntersectVisit.h"
 #include "Rules.h"
-#include "Convex.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -70,7 +65,6 @@
 #include "Object.h"
 #include "Qhull.h"
 #include "SimProcess.h"
-#include "SurInter.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -102,15 +96,14 @@ muonCarbonTarget::~muonCarbonTarget()
 {}
 
 void
-muonCarbonTarget::populate(const Simulation& System)
+muonCarbonTarget::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: Data base unit
   */
 {
   ELog::RegMethod RegA("muonCarbonTarget","populate");
 
-  const FuncDataBase& Control=System.getDataBase();
 
   xStep=Control.EvalVar<double>(keyName+"XStep");
   yStep=Control.EvalVar<double>(keyName+"YStep");
@@ -127,16 +120,16 @@ muonCarbonTarget::populate(const Simulation& System)
 }
 
 void
-muonCarbonTarget::createUnitVector()
+muonCarbonTarget::createUnitVector(const attachSystem::FixedComp& FC)
   /*!
     Create the unit vectors
   */
 {
   ELog::RegMethod RegA("muonCarbonTarget","createUnitVector");
 
-  attachSystem::FixedComp::createUnitVector(World::masterOrigin());
+  attachSystem::FixedComp::createUnitVector(FC);
   applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,0);  
+  applyAngleRotate(xyAngle,0.0);  
   
   return;
 }
@@ -195,19 +188,30 @@ muonCarbonTarget::createLinks()
   FixedComp::setLinkSurf(4,-SMap.realSurf(muCtIndex+5));
   FixedComp::setLinkSurf(5,SMap.realSurf(muCtIndex+6));
 
+
+  FixedComp::setConnect(0,Origin-Y*(depth/2.0),-Y);
+  FixedComp::setConnect(1,Origin+Y*(depth/2.0),Y);
+  FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
+  FixedComp::setConnect(3,Origin+X*(width/2.0),X);
+  FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
+  FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
+
   return;
 }
 
 void
-muonCarbonTarget::createAll(Simulation& System)
+muonCarbonTarget::createAll(Simulation& System,
+			    const attachSystem::FixedComp& FC)
   /*!
     Create the shutter
     \param System :: Simulation to process
+    \param FC :: Fixed unit to use
   */
 {
   ELog::RegMethod RegA("muonCarbonTarget","createAll");
-  populate(System);
-  createUnitVector();
+  populate(System.getDataBase());
+
+  createUnitVector(FC);
   createSurfaces();
   createObjects(System);
   createLinks();

@@ -41,11 +41,13 @@ void createAddition(const int,Rule*,Rule*&);
 
 // On FC link points
 void addToInsertControl(Simulation&,const FixedComp&,
-			 const FixedComp&,ContainedComp&);
+			 const FixedComp&);
+void addToInsertControl(Simulation&,const FixedComp&,
+			const FixedComp&,const std::string&);
 void addToInsertControl(Simulation&,const std::string&,
 			 const FixedComp&,ContainedComp&);
 void addToInsertControl(Simulation&,const int,const int,
-			 const FixedComp&,ContainedComp&);
+			 const FixedComp&,const ContainedComp&);
 
 // On surface intersects
 void addToInsertSurfCtrl(Simulation&,const FixedComp&,

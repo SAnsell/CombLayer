@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   epbBuild/Magnet.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,19 +46,13 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfDIter.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "surfEqual.h"
-#include "surfDivide.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
@@ -75,8 +69,8 @@
 #include "SimProcess.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "chipDataStore.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h" 
 #include "ContainedComp.h"
@@ -96,6 +90,47 @@ Magnet::Magnet(const std::string& Key,const size_t Index) :
     \param Key :: KeyName
   */
 {}
+
+Magnet::Magnet(const Magnet& A) : 
+  attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
+  baseName(A.baseName),magIndex(A.magIndex),cellIndex(A.cellIndex),
+  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
+  xyAngle(A.xyAngle),zAngle(A.zAngle),segIndex(A.segIndex),
+  segLen(A.segLen),length(A.length),height(A.height),
+  width(A.width),feMat(A.feMat)
+  /*!
+    Copy constructor
+    \param A :: Magnet to copy
+  */
+{}
+
+Magnet&
+Magnet::operator=(const Magnet& A)
+  /*!
+    Assignment operator
+    \param A :: Magnet to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedComp::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
+      cellIndex=A.cellIndex;
+      xStep=A.xStep;
+      yStep=A.yStep;
+      zStep=A.zStep;
+      xyAngle=A.xyAngle;
+      zAngle=A.zAngle;
+      segIndex=A.segIndex;
+      segLen=A.segLen;
+      length=A.length;
+      height=A.height;
+      width=A.width;
+      feMat=A.feMat;
+    }
+  return *this;
+}
 
 Magnet::~Magnet() 
   /*!
@@ -127,7 +162,8 @@ Magnet::populate(const Simulation& System)
   height=Control.EvalPair<double>(keyName,baseName,"Height");
   width=Control.EvalPair<double>(keyName,baseName,"Width");
 
-  feMat=Control.EvalPair<int>(keyName,baseName,"FeMat");
+  feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat",
+				   baseName+"FeMat");
 
   return;
 }

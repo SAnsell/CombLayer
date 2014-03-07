@@ -89,7 +89,7 @@ class ChipIRInsert : public BulkInsert
 
  public:
 
-  ChipIRInsert(const int,const std::string&,const std::string&);
+  ChipIRInsert(const size_t,const std::string&,const std::string&);
   ChipIRInsert(const ChipIRInsert&);
   ChipIRInsert& operator=(const ChipIRInsert&);
   virtual ~ChipIRInsert();

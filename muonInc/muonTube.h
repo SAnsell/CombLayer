@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   muonInc/muonTube.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell/Goran Skoro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,8 +40,8 @@ class muonTube : public attachSystem::FixedComp,
 {
  private:
   
-  const int tubeIndex;            ///< Index of surface offset
-  int cellIndex;                  ///< Cell index
+  const int tubeIndex;          ///< Index of surface offset
+  int cellIndex;                ///< Cell index
 
   double xStep;                 ///< X-Step
   double yStep;                 ///< Y-Step
@@ -49,11 +49,11 @@ class muonTube : public attachSystem::FixedComp,
 
   double radius;                ///< radius
   double thick;                 ///< thickness
-  double length;                 ///< length  
+  double length;                ///< length  
   int mat;                      ///< material
 
-  void populate(const Simulation&);
-  void createUnitVector();
+  void populate(const FuncDataBase&);
+  void createUnitVector(const attachSystem::FixedComp&);
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -66,7 +66,7 @@ class muonTube : public attachSystem::FixedComp,
   muonTube& operator=(const muonTube&);
   virtual ~muonTube();
 
-  void createAll(Simulation&);  
+  void createAll(Simulation&,const attachSystem::FixedComp&);  
 };
 
 }

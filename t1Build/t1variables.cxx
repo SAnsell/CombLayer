@@ -62,6 +62,7 @@ TS1real(FuncDataBase& Control)
   */
 {
   TS1base(Control);
+  TS1BlockTarget(Control);
   TS1CylTarget(Control);
   TS1PlateTarget(Control);
   TS1InnerTarget(Control);

@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   bibBuild/makeBib.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -243,7 +243,7 @@ makeBib::build(Simulation* SimPtr,
   // first moderator
   ColdMod->createAll(*SimPtr,*Rotor,12,1);
 
-  attachSystem::addToInsertControl(*SimPtr,*RefObj,*ColdMod,*ColdMod);
+  attachSystem::addToInsertControl(*SimPtr,*RefObj,*ColdMod);
 
   BeFilterForward->createAll(*SimPtr,*ColdMod,1);
   attachSystem::addToInsertSurfCtrl(*SimPtr,*RefObj,*BeFilterForward);
@@ -255,7 +255,7 @@ makeBib::build(Simulation* SimPtr,
 
   // Second moderator
   ColdMod2->createAll(*SimPtr,*Rotor,12,11);
-  attachSystem::addToInsertControl(*SimPtr,*RefObj,*ColdMod2,*ColdMod2);
+  attachSystem::addToInsertControl(*SimPtr,*RefObj,*ColdMod2);
   attachSystem::addToInsertSurfCtrl(*SimPtr,*ColdMod2,Rotor->getKey("Target"));
   attachSystem::addToInsertForced(*SimPtr,*ProtonObj,*ColdMod2);
   attachSystem::addToInsertForced(*SimPtr,*CWall,*ProtonObj);

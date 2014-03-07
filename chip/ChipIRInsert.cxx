@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   chip/ChipIRInsert.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,7 +48,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "PointOperation.h"
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
@@ -75,14 +74,11 @@
 #include "SimProcess.h"
 #include "SurInter.h"
 #include "Simulation.h"
-#include "insertInfo.h"
-#include "insertBaseInfo.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "LinearComp.h"
 #include "SecondTrack.h"
 #include "TwinComp.h"
 #include "InsertComp.h"
@@ -99,7 +95,7 @@
 namespace shutterSystem
 {
 
-ChipIRInsert::ChipIRInsert(const int ID,const std::string& BKey,
+ChipIRInsert::ChipIRInsert(const size_t ID,const std::string& BKey,
 			   const std::string& IKey)  : 
   BulkInsert(ID,BKey),keyName(IKey),nLayers(0)
   /*!
@@ -110,15 +106,17 @@ ChipIRInsert::ChipIRInsert(const int ID,const std::string& BKey,
   */
 {}
 
+
 ChipIRInsert::ChipIRInsert(const ChipIRInsert& A) : 
   BulkInsert(A),
   keyName(A.keyName),voidOrigin(A.voidOrigin),Axis(A.Axis),
-  zModAngle(A.zModAngle),xyModAngle(A.xyModAngle),fStep(A.fStep),
-  bStep(A.bStep),radius(A.radius),lowCut(A.lowCut),
-  rXDisp(A.rXDisp),rZDisp(A.rZDisp),
+  zModAngle(A.zModAngle),xyModAngle(A.xyModAngle),
+  fStep(A.fStep),bStep(A.bStep),radius(A.radius),
+  lowCut(A.lowCut),rXDisp(A.rXDisp),rZDisp(A.rZDisp),
   frontMat(A.frontMat),backMat(A.backMat),defMat(A.defMat),
-  nLayers(A.nLayers),cFrac(A.cFrac),cMat(A.cMat),
-  CDivideList(A.CDivideList)
+  chipInnerVoid(A.chipInnerVoid),chipOuterVoid(A.chipOuterVoid),
+  CCol(A.CCol),PbA(A.PbA),PbB(A.PbB),nLayers(A.nLayers),
+  cFrac(A.cFrac),cMat(A.cMat),CDivideList(A.CDivideList)
   /*!
     Copy constructor
     \param A :: ChipIRInsert to copy
@@ -149,6 +147,11 @@ ChipIRInsert::operator=(const ChipIRInsert& A)
       frontMat=A.frontMat;
       backMat=A.backMat;
       defMat=A.defMat;
+      chipInnerVoid=A.chipInnerVoid;
+      chipOuterVoid=A.chipOuterVoid;
+      CCol=A.CCol;
+      PbA=A.PbA;
+      PbB=A.PbB;
       nLayers=A.nLayers;
       cFrac=A.cFrac;
       cMat=A.cMat;

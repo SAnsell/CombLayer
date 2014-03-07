@@ -108,14 +108,14 @@ DelftModel(FuncDataBase& Control)
   Control.addVariable("delftElementWaterDepthC2",0.22);      
 
   Control.addVariable("delftHfCutSize",3);      
-  Control.addVariable("delftHfLiftC2",0.0);      
-  Control.addVariable("delftHfAbsHeightC2",100.0);      
-  Control.addVariable("delftHfAbsMatC2","Hafnium");      
-  Control.addVariable("delftHfBladeMatC2","Aluminium");      
-  Control.addVariable("delftHfAbsThickC2",0.3);      
-  Control.addVariable("delftHfBladeThickC2",0.15);      
-  Control.addVariable("delftHfAbsWidthC2",6.275);   
-  Control.addVariable("delftHfBladeWidthC2",0.2);   
+  Control.addVariable("delftHfLift",0.0);      
+  Control.addVariable("delftHfAbsHeight",100.0);      
+  Control.addVariable("delftHfAbsMat","Hafnium");      
+  Control.addVariable("delftHfBladeMat","Aluminium");      
+  Control.addVariable("delftHfAbsThick",0.3);      
+  Control.addVariable("delftHfBladeThick",0.15);      
+  Control.addVariable("delftHfAbsWidth",6.275);   
+  Control.addVariable("delftHfBladeWidth",0.2);   
   
   // FUEL ELEMENT
   Control.addVariable("delftElementNFuelDivide",1);   

@@ -75,6 +75,8 @@ class objectRegister
   void addObject(const CTYPE&);
   template<typename T> const T*
     getObject(const std::string&) const;
+  template<typename T>  T*
+    getObject(const std::string&);
   bool hasObject(const std::string&) const;
 
   void reset();

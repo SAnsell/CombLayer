@@ -289,10 +289,8 @@ Convex2D::createVertex()
       else
         {
 	  if (listSize==2)
-	    {
-	      ELog::EM<<"List Size not correct"<<ELog::endErr;
-	      return;
-	    }
+	    throw ColErr::IndexError<int>(listSize,2,"listSize == 2");
+	  
 	  cList.pop_front();
 	  listSize--;
 	}

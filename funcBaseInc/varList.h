@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   funcBaseInc/varList.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -79,7 +79,7 @@ class varList
   varStore::const_iterator end() const { return varName.end(); }
 
   template<typename T>
-  FItem* createFType(const int I,const T& V);
+  FItem* createFType(const int,const T&);
   
   void writeAll(std::ostream&) const;
 

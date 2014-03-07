@@ -455,7 +455,7 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("LowPreABlockWaterMat","H2O");  
 
   // Other block
-  Control.addVariable("LowPreBBlockSide",1);  
+  Control.addVariable("LowPreBBlockSide",0);  
   Control.addVariable("LowPreBBlockActive",1);  
   Control.addVariable("LowPreBBlockWidth",3.8);  
   Control.addVariable("LowPreBBlockHeight",10.0);  
@@ -801,8 +801,11 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("BeRefRadius",29.9);
   Control.addVariable("BeRefHeight",89.8);
   Control.addVariable("BeRefWallThick",0.1);
+  Control.addVariable("BeRefTargSepThick",12.30);
   Control.addVariable("BeRefRefMat","Be300K");
   Control.addVariable("BeRefWallMat","Aluminium");
+  Control.addVariable("BeRefTargSepMat","Stainless304");
+
   
 
   Control.addVariable("BulkXStep",0.0);
@@ -883,13 +886,14 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("sdefEnergy",2500.0);  
 
    // STUFF FOR 90 angle:
-  /*  Control.addVariable("LowPreABlockSide",0);  
+  /*
+  Control.addVariable("LowPreABlockSide",0);  
   Control.addVariable("LowPreBBlockSide",0);  
-  Control.addVariable("LowPreABlockActive",1);  
-  Control.addVariable("LowPreBBlockActive",1);  
+  Control.addVariable("LowPreABlockActive",0);  
+  Control.addVariable("LowPreBBlockActive",0);  
   Control.addVariable("TopPreABlockActive",0);  
   Control.addVariable("TopPreBBlockActive",0);  
-  */
+  // */
   /*
   Control.addVariable("GuideBay2XYangle",90.0); 
   Control.addVariable("GuideBay4XYangle",-90.0); 

@@ -172,7 +172,7 @@ FuncDataBase::EvalPair(const std::string& KeyA,
     FI=findItem(KeyB);
   if (!FI)
     throw ColErr::InContainerError<std::string>
-      (KeyB+":"+KeyA,"FuncDataBase::EvalDefVarPair no variables found");
+      (KeyB+":"+KeyA,"FuncDataBase::EvalPair no variables found");
   
   T Out;
   FI->getValue(Out);

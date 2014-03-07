@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   muon/targSimpleShield.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell/Goran Skoro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,8 +49,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -60,7 +58,6 @@
 #include "Plane.h"
 #include "Cylinder.h"
 #include "Rules.h"
-#include "Convex.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -68,7 +65,6 @@
 #include "Object.h"
 #include "Qhull.h"
 #include "SimProcess.h"
-#include "SurInter.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -76,7 +72,6 @@
 #include "ContainedComp.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "World.h"
 #include "targSimpleShield.h"
 
 namespace muSystem
@@ -92,6 +87,50 @@ targSimpleShield::targSimpleShield(const std::string& Key)  :
   */
 {}
 
+targSimpleShield::targSimpleShield(const targSimpleShield& A) : 
+  attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
+  targShieldIndex(A.targShieldIndex),cellIndex(A.cellIndex),
+  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
+  xyAngle(A.xyAngle),height(A.height),depth(A.depth),
+  width(A.width),baseThick(A.baseThick),forwThick(A.forwThick),
+  backThick(A.backThick),muonThick(A.muonThick),
+  japThick(A.japThick),mat(A.mat)
+  /*!
+    Copy constructor
+    \param A :: targSimpleShield to copy
+  */
+{}
+
+targSimpleShield&
+targSimpleShield::operator=(const targSimpleShield& A)
+  /*!
+    Assignment operator
+    \param A :: targSimpleShield to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedComp::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
+      cellIndex=A.cellIndex;
+      xStep=A.xStep;
+      yStep=A.yStep;
+      zStep=A.zStep;
+      xyAngle=A.xyAngle;
+      height=A.height;
+      depth=A.depth;
+      width=A.width;
+      baseThick=A.baseThick;
+      forwThick=A.forwThick;
+      backThick=A.backThick;
+      muonThick=A.muonThick;
+      japThick=A.japThick;
+      mat=A.mat;
+    }
+  return *this;
+}
+
 
 targSimpleShield::~targSimpleShield() 
   /*!
@@ -100,15 +139,13 @@ targSimpleShield::~targSimpleShield()
 {}
 
 void
-targSimpleShield::populate(const Simulation& System)
+targSimpleShield::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param System :: Simulation to use
   */
 {
   ELog::RegMethod RegA("targSimpleShield","populate");
-
-  const FuncDataBase& Control=System.getDataBase();
 
   xStep=Control.EvalVar<double>(keyName+"XStep");
   yStep=Control.EvalVar<double>(keyName+"YStep");
@@ -131,18 +168,17 @@ targSimpleShield::populate(const Simulation& System)
 }
 
 void
-targSimpleShield::createUnitVector()
+targSimpleShield::createUnitVector(const attachSystem::FixedComp& FC)
   /*!
     Create the unit vectors
+    \param FC :: Fixed Unit for origin						
   */
 {
   ELog::RegMethod RegA("targSimpleShield","createUnitVector");
 
-  attachSystem::FixedComp::createUnitVector(World::masterOrigin());
+  attachSystem::FixedComp::createUnitVector(FC);
   applyShift(xStep,yStep,zStep);
   applyAngleRotate(xyAngle,0);    
-
-
   
   return;
 }
@@ -233,7 +269,8 @@ targSimpleShield::createLinks()
 }
 
 void
-targSimpleShield::createAll(Simulation& System)
+targSimpleShield::createAll(Simulation& System,
+			    const attachSystem::FixedComp& FC)
 
   /*!
     Global creation of the hutch
@@ -242,8 +279,8 @@ targSimpleShield::createAll(Simulation& System)
   */
 {
   ELog::RegMethod RegA("targSimpleShield","createAll");
-  populate(System);
-  createUnitVector();
+  populate(System.getDataBase());
+  createUnitVector(FC);
   createSurfaces();
   createObjects(System);
   createLinks();

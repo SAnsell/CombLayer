@@ -409,7 +409,7 @@ FixedComp::setLinkSurf(const size_t Index,
 void
 FixedComp::setBridgeSurf(const size_t Index,const int SN) 
   /*!
-    Set a surface to bridge outpu
+    Set a surface to bridge output
     \param Index :: Link number
     \param SN :: Surface number [inward looking]
   */
@@ -660,7 +660,7 @@ FixedComp::getMasterString(const size_t Index) const
   if (Index>=LU.size())
     throw ColErr::IndexError<size_t>(Index,LU.size(),"Index/LU.size");
   
-  return LU[Index].getLinkString();
+  return LU[Index].getMain();
 }
 
 std::string

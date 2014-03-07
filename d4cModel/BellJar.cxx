@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   d4cModel/BellJar.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -272,6 +272,9 @@ BellJar::createObjects(Simulation& System)
       // Now add collimator blades
       
       MonteCarlo::Qhull* voidObj=System.findQhull(midVoid);
+      if (!voidObj)
+	throw ColErr::InContainerError<int>(midVoid,
+					    "midVoid in System:Objects");
       int SI(bellIndex+100);
       for(size_t i=0;i<colAngle.size();i++)
 	{

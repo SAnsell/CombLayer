@@ -262,11 +262,27 @@ objectRegister::getObject(const std::string& Name) const
     \return ObjectPtr / 0 
   */
 {
-  ELog::RegMethod RegA("objectRegister","getObject");
+  ELog::RegMethod RegA("objectRegister","getObject(const)");
 
   cMapTYPE::const_iterator mc=Components.find(Name);
   return (mc!=Components.end()) 
     ? dynamic_cast<const T*>(mc->second.get()) : 0;
+}
+
+template<typename T>
+T*
+objectRegister::getObject(const std::string& Name) 
+  /*!
+    Find a FixedComp [if it exists]
+    \param Name :: Name
+    \return ObjectPtr / 0 
+  */
+{
+  ELog::RegMethod RegA("objectRegister","getObject");
+
+  cMapTYPE::iterator mc=Components.find(Name);
+  return (mc!=Components.end()) 
+    ? dynamic_cast<T*>(mc->second.get()) : 0;
 }
 
 
@@ -342,6 +358,21 @@ template const attachSystem::TwinComp*
 
 template const attachSystem::SecondTrack* 
   objectRegister::getObject(const std::string&) const;
+
+template attachSystem::FixedComp* 
+  objectRegister::getObject(const std::string&);
+
+template attachSystem::ContainedComp* 
+  objectRegister::getObject(const std::string&);
+
+template attachSystem::ContainedGroup* 
+  objectRegister::getObject(const std::string&);
+
+template attachSystem::TwinComp* 
+  objectRegister::getObject(const std::string&);
+
+template attachSystem::SecondTrack* 
+  objectRegister::getObject(const std::string&);
 
 
   

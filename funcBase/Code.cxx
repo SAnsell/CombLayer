@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   funcBase/Code.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -482,6 +482,10 @@ Code::printByteCode(std::ostream& OFS) const
     \param OFS :: output stream to write data too
   */
 {  
+  // Copy state:
+  std::ios state(0);
+  state.copyfmt(OFS);
+
   size_t DP(0);
   for(size_t IP=0;IP<ByteCode.size();IP++)
     {
@@ -498,6 +502,7 @@ Code::printByteCode(std::ostream& OFS) const
               break;
           case Opcodes::cNeg:
               OFS << "neg "<< std::endl;
+	      break;
           case Opcodes::cAdd:
               OFS << " + "<< std::endl;
               break;
@@ -563,5 +568,6 @@ Code::printByteCode(std::ostream& OFS) const
 	      }
         }
     }
+  OFS.copyfmt(state);
   return;
 }

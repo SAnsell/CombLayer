@@ -237,7 +237,7 @@ Object::complementaryObject(const int Cnum,std::string& Ln)
 
   ObjName=Cnum;
   MatN=0;
-  density=0;
+  density=0.0;
   if (!HRule.procString(Part))
     throw ColErr::ExBase(0,RegA.getFull()+"\n"+Part);
 
@@ -294,20 +294,18 @@ Object::setObject(std::string Ln)
   if (MatN>0)
     {
       if (!StrFunc::section(Ln,density))
-        {
-	  ELog::EM<<"Material Density not valid:"<<Ln<<ELog::endErr;
-	  return 0;
-	}
+        throw ColErr::InvalidLine("density read",Ln,0);
     }
+
   else
     {
+      // Check is we can strip and remove [allows a density to be
+      // set with a variable material that can go to zero]
       if (StrFunc::convert(Ln,density) && 
-	  (density<1.0) && (density>0.0))
-        {
-	  StrFunc::section(Ln,density);  // dump. phantom density
-	}
+	  density<1.0 && density>0.0)
+	StrFunc::section(Ln,density);  // dump. phantom density
       density=0.0;          // Vacuum
-    }  
+    }
 
   // Temperature
   const boost::regex TmpSea("[Tt][Mm][Pp]\\s*=\\s*(\\S+)(\\s|$)");
