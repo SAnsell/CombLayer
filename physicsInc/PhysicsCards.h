@@ -113,6 +113,7 @@ class PhysicsCards
   void setMode(std::string);
   void setVoidCard(const bool V) { voidCard=V; }   ///< Set the void card
   void setPrintNum(std::string);
+  void setPrdmp(std::string p) { prdmp = p; } //< Set the prdmp card
   
   long int getRND() const { return rndSeed; }   ///< Get Random number seed
 
