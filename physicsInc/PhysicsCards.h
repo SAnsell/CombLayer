@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   physicsInc/PhysicsCards.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -113,7 +113,9 @@ class PhysicsCards
   void setMode(std::string);
   void setVoidCard(const bool V) { voidCard=V; }   ///< Set the void card
   void setPrintNum(std::string);
-  void setPrdmp(std::string p) { prdmp = p; } //< Set the prdmp card
+  /// Set the prdmp card
+  void setPrdmp(const std::string& P) 
+    { prdmp = P; } 
   
   long int getRND() const { return rndSeed; }   ///< Get Random number seed
 
