@@ -81,7 +81,8 @@
 #include "SourceSelector.h"
 #include "TallySelector.h"
 #include "World.h"
-#include "sinbadMake.h"
+:
+#include "makeSinbad.h"
 
 MTRand RNG(12345UL);
 
