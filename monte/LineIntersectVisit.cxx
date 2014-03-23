@@ -58,6 +58,7 @@
 #include "CylCan.h"
 #include "Cylinder.h"
 #include "Cone.h"
+#include "EllipticCyl.h"
 #include "MBrect.h"
 #include "Sphere.h"
 #include "General.h"
@@ -202,6 +203,18 @@ LineIntersectVisit::Accept(const Geometry::CylCan& Surf)
 
 void
 LineIntersectVisit::Accept(const Geometry::Cylinder& Surf)
+  /*!
+    Process an intersect track
+    \param Surf :: Surface to use int line Interesect
+  */
+{
+  ATrack.intersect(PtOut,Surf);
+  procTrack(&Surf);
+  return;
+}
+
+void
+LineIntersectVisit::Accept(const Geometry::EllipticCyl& Surf)
   /*!
     Process an intersect track
     \param Surf :: Surface to use int line Interesect

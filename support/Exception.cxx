@@ -27,6 +27,7 @@
 #include <stdexcept>
 #include <vector>
 #include <map>
+#include <cmath>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -34,6 +35,9 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
+#include "MatrixBase.h"
+#include "Matrix.h"
+#include "Vec3D.h"
 
 namespace ColErr
 {
@@ -942,6 +946,7 @@ template class ColErr::IndexError<int>;
 template class ColErr::IndexError<unsigned int>;
 template class ColErr::IndexError<long int>;
 template class ColErr::IndexError<size_t>;
+template class ColErr::InContainerError<Geometry::Vec3D>;
 template class ColErr::InContainerError<std::string>;
 template class ColErr::InContainerError<int>;
 template class ColErr::InContainerError<long int>;

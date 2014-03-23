@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   test/testLine.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,6 +52,7 @@
 #include "Plane.h"
 #include "Cylinder.h"
 #include "Cone.h"
+#include "EllipticCyl.h"
 #include "Sphere.h"
 #include "General.h"
 #include "Line.h"
@@ -63,7 +64,6 @@
 
 using namespace Geometry;
 
-const double LTolerance(1e-8);
 
 testLine::testLine() 
   /// Constructor
@@ -89,12 +89,14 @@ testLine::applyTest(const int extra)
   typedef int (testLine::*testPtr)();
   testPtr TPtr[]=
     {
-      &testLine::testIntersection,
+      &testLine::testConeIntersect,
+      &testLine::testEllipticCylIntersect,
       &testLine::testInterDistance
     };
   const std::string TestName[]=
     {
-      "Intersection",
+      "ConeIntersect",
+      "EllipticCylIntersect",
       "InterDistance"
     };
   
@@ -193,15 +195,81 @@ testLine::testConeIntersect()
 }
 
 int
-testLine::testIntersection()
+testLine::testEllipticCylIntersect()
   /*!
-    Tests the Creation of Line and stuff
-    \return 0 sucess / -ve on failure
+    Test the intersection of EllipticCylinder
+    \return -ve on error
   */
 {
-  ELog::RegMethod RegA("testLine","testIntersection");
-  if (testConeIntersect())
-    return -1;
+  ELog::RegMethod RegA("testLine","testEllipticCyl");
+
+  // EllipCyl : Start Point : Normal : NResults : distance A : distance B 
+  typedef boost::tuple<std::string,Geometry::Vec3D,Geometry::Vec3D,
+		       size_t,double,double> TTYPE;
+  std::vector<TTYPE> Tests;
+  
+  Tests.push_back(TTYPE("ey 1.0 1.0",
+			Geometry::Vec3D(-3,0,0),Geometry::Vec3D(1,0,0),
+			2,2.0,4.0));
+
+  Tests.push_back(TTYPE("ey 1.0 1.0",
+			Geometry::Vec3D(-3,-3.0,0),Geometry::Vec3D(1,0,0),
+			2,2.0,4.0));
+
+  Tests.push_back(TTYPE("e/y 1.0 0.0 1.0 1.0",
+			Geometry::Vec3D(-3,-3.0,0),Geometry::Vec3D(1,0,0),
+			2,3.0,5.0));
+
+  Tests.push_back(TTYPE("e/y 1.0 0.0 3.0 1.0",
+			Geometry::Vec3D(-6,-3.0,0),Geometry::Vec3D(1,0,0),
+			2,4.0,10.0));
+  
+  std::vector<TTYPE>::const_iterator tc;
+  for(tc=Tests.begin()+3;tc!=Tests.end();tc++)
+    {
+      ELog::EM<<"----------------------------"<<ELog::endDiag;
+      ELog::EM<<"----------------------------"<<ELog::endDiag;
+      EllipticCyl A;
+      Line LX;
+      LX.setLine(tc->get<1>(),tc->get<2>());
+      
+      const int retVal=A.setSurface(tc->get<0>());
+      if (retVal)
+        {
+	  ELog::EM<<"Failed to build "<<tc->get<0>()
+		  <<" Ecode == "<<retVal<<ELog::endCrit;
+	  return -1;
+	}
+      std::vector<Geometry::Vec3D> OutPt;
+      const size_t NR=LX.intersect(OutPt,A);
+
+      if (NR!=tc->get<3>())
+	{
+	  ELog::EM<<"Failure for test "<<(tc-Tests.begin())+1<<ELog::endCrit;
+	  ELog::EM<<"Solution Count:"<<NR<<" ["<<
+	    tc->get<3>()<<"] "<<ELog::endCrit;
+	  return -1;
+	}
+      const double DA=(NR>0) ? OutPt[0].Distance(tc->get<1>()) : 0.0;
+      const double DB=(NR>1) ? OutPt[1].Distance(tc->get<1>()) : 0.0;
+      if (NR>0 && fabs(DA-tc->get<4>())> 1e-5) 
+	{
+	  ELog::EM<<"Failure for test "<<(tc-Tests.begin())+1<<ELog::endCrit;
+	  ELog::EM<<"Point A "<<OutPt[0]<<" :: expect =="<<
+	    tc->get<1>()+tc->get<2>()*tc->get<4>()<<ELog::endDebug;
+	  ELog::EM<<"DA "<<DA<<ELog::endCrit;
+	  ELog::EM<<"Surface "<<A<<ELog::endCrit;
+	  return -1;
+	}
+      if (NR>1 && fabs(DB-tc->get<5>())> 1e-5) 
+	{
+	  ELog::EM<<"Failure for test "<<tc-Tests.begin()<<ELog::endCrit;
+	  ELog::EM<<"Point B "<<OutPt[1]<<" :: "<<
+	    tc->get<1>()+tc->get<2>()*tc->get<5>()<<ELog::endCrit;
+	  ELog::EM<<"DB "<<DB<<ELog::endCrit;
+	  return -1;
+	}
+    }
   return 0;
 }
 

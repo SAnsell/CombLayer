@@ -39,7 +39,7 @@ class SupplyPipe : public attachSystem::FixedComp
 {
  private:
   
-  std::string optName;    ///< Option value
+  std::string optName;          ///< Option value
   const int pipeIndex;          ///< Index of surface offset
   int cellIndex;                ///< Cell index
    

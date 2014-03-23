@@ -99,6 +99,7 @@ class Line
   size_t intersect(std::vector<Geometry::Vec3D>&,const Cone&) const;
   size_t intersect(std::vector<Geometry::Vec3D>&,const CylCan&) const;
   size_t intersect(std::vector<Geometry::Vec3D>&,const Cylinder&) const;
+  size_t intersect(std::vector<Geometry::Vec3D>&,const EllipticCyl&) const;
   size_t intersect(std::vector<Geometry::Vec3D>&,const MBrect&) const;
   size_t intersect(std::vector<Geometry::Vec3D>&,const Plane&) const;
   size_t intersect(std::vector<Geometry::Vec3D>&,const Sphere&) const;

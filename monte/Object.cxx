@@ -680,8 +680,7 @@ int
 Object::createSurfaceList()
   /*! 
     Uses the topRule* to create a surface list
-    by iterating throught the tree.
-    
+    by iterating throught the tree.    
     \return 1 (should be number of surfaces)
   */
 { 
@@ -1011,6 +1010,61 @@ Object::calcInOut(const int pAB,const int N) const
 
 int
 Object::trackCell(const MonteCarlo::neutron& N,double& D,
+		  const int direction,
+		  const Geometry::Surface*& surfPtr,
+		  const int startSurf) const
+  /*!
+    Track to a neutron into/out of a cell. 
+    \param N :: Neutron 
+    \param D :: Distance traveled to the cell [get added too]
+    \param direction :: direction to track [+1/-1 : in/out ] 
+    \param surfPtr :: Surface at exit
+    \param startSurf :: Start surface [to be ignored]
+    \return surface number of intercept
+   */
+{
+  ELog::RegMethod RegA("Object","trackCell[D,dir]");
+  MonteCarlo::LineIntersectVisit LI(N);
+  std::vector<const Geometry::Surface*>::const_iterator vc;
+  for(vc=SurList.begin();vc!=SurList.end();vc++)
+    (*vc)->acceptVisitor(LI);
+
+  const std::vector<Geometry::Vec3D>& IPts(LI.getPoints());
+  const std::vector<double>& dPts(LI.getDistance());
+  const std::vector<const Geometry::Surface*>& surfIndex(LI.getSurfIndex());
+  D=1e38;
+  surfPtr=0;
+  // NOTE: we only check for and exiting surface by going
+  // along the line.
+  int bestPairValid(0);
+  for(size_t i=0;i<dPts.size();i++)
+    {
+      // Is point possible closter
+      if ( ( surfIndex[i]->getName()!=startSurf || 
+	     dPts[i]>10.0*Geometry::zeroTol) &&
+	   (dPts[i]>0.0 && dPts[i]<D) )
+	{
+	  const int NS=surfIndex[i]->getName();	    // NOT SIGNED
+	  const int pAB=isDirectionValid(IPts[i],NS);
+	  const int mAB=isDirectionValid(IPts[i],-NS);
+	  const int normD=surfIndex[i]->sideDirection(IPts[i],N.uVec);
+	  if (direction<0)
+	    {
+	      if (pAB!=mAB)  // out going positive surface
+		{
+		  bestPairValid=normD;
+		  D=dPts[i];
+		  surfPtr=surfIndex[i];
+		}
+	    }
+	}
+    }
+
+  return (!surfPtr) ? 0 : bestPairValid*surfPtr->getName();
+}
+
+int
+Object::trackCellX(const MonteCarlo::neutron& N,double& D,
 		  const int direction,
 		  const Geometry::Surface*& surfPtr,
 		  const int startSurf) const

@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   geomInc/Vec3D.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -103,6 +103,8 @@ class Vec3D
   double Distance(const Vec3D&) const;    ///< Calculate scale distance
   double makeUnit();                      ///< Convert into unit vector
   Geometry::Vec3D unit() const; 
+  Geometry::Vec3D component(const Geometry::Vec3D&) const; 
+  Geometry::Vec3D cutComponent(const Geometry::Vec3D&) const; 
   double volume() const { return fabs(x*y*z); }      ///< Calculate the volmue of a cube X*Y*Z
 
   double dotProd(const Vec3D&) const;

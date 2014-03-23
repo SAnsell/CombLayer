@@ -36,7 +36,7 @@ namespace moderatorSystem
   \class TriangleMod
   \version 1.0
   \author S. Ansell
-  \date January 2011
+  \date January 2014
   \brief TriangleMod [insert object]
 */
 
@@ -55,14 +55,10 @@ class TriangleMod : public attachSystem::ContainedComp,
   double xyAngle;         ///< Offset relative to origin 
   double zAngle;          ///< Offset relative to origin 
 
-  size_t nCorner;         ///< number of corner points
-  
-  Geometry::Vec3D centroid;          ///< Centre point for external/interal
-  std::vector<Geometry::Vec3D> CornerPts;  ///< Points of trianlge/shape 
-  std::vector<int> nonConvex;      ///< Points are non-convex
+  TriUnit Outer;          ///< Outer points 
 
-  size_t nInnerCorner;         ///< number of inner-corner points
-  std::vector<Geometry::Vec3D> InnerPts;    ///< Points of inner shape
+  size_t nIUnits;               ///< number of inner units
+  std::vector<TriUnit> IUnits;  ///< Inner unit data
 
   double height;           ///< Height/depth
   double wallThick;        ///< Wall thickness
@@ -70,7 +66,6 @@ class TriangleMod : public attachSystem::ContainedComp,
   double topClearance;     ///< Top clearance
   double baseClearance;    ///< Base clearance
 
-  double innerStep;        ///< Distance to inner triangle wall
   double innerWall;        ///< Inner wall thickness
   int innerMat;            ///< Inner material
 
@@ -81,17 +76,18 @@ class TriangleMod : public attachSystem::ContainedComp,
   int pCladMat;            ///< Al poison support
   int poisonMat;           ///< Poison (Gadolinium)
 
-  Geometry::Vec3D corner(const size_t,const double) const;
-  Geometry::Vec3D midNorm(const size_t) const;
+  Geometry::Vec3D realPt(const Geometry::Vec3D&) const;
+  Geometry::Vec3D realAxis(const Geometry::Vec3D&) const;
   Geometry::Vec3D sideNorm(const std::pair<Geometry::Vec3D,
 			   Geometry::Vec3D>&) const;
   std::pair<Geometry::Vec3D,Geometry::Vec3D>
     cornerPair(const std::vector<Geometry::Vec3D>&,
 	       const size_t,const size_t,const double) const;
-  std::string getOuterString() const;
-  std::string getInnerString(const std::string&) const;
+  std::string getExcludeShape(const std::string&) const;
 
   std::string createInnerObject(Simulation&);
+  void cutInnerObj(Simulation&,const TriUnit&);
+  void cutOuterObj(Simulation&,const TriUnit&,const TriUnit&);
   
   void populate(const Simulation&);
   void createUnitVector(const attachSystem::FixedComp&);
@@ -101,6 +97,10 @@ class TriangleMod : public attachSystem::ContainedComp,
   void createObjects(Simulation&);
   
   void createConvex();
+  void createConvexUnit(std::vector<Geometry::Vec3D>&,
+			std::vector<int>&) const;
+  void calcOverlaps(Simulation& System);
+
 
  public:
 

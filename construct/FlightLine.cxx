@@ -399,6 +399,7 @@ FlightLine::getRotatedDivider(const attachSystem::FixedComp& FC,
   ELog::RegMethod RegA("FlightLine","getRotatedDivider");
   static int offset(750);
   std::string commonRule=FC.getCommonString(sideIndex);
+
   const std::string primary=FC.getMasterString(sideIndex);
 
   attachRule=" "+primary+" ";
@@ -512,7 +513,7 @@ FlightLine::createObjects(Simulation& System,
     \param sideIndex :: Side index
   */
 {
-  ELog::RegMethod RegA("FlightLine","createObjects");
+  ELog::RegMethod RegA("FlightLine","createObjects(FC,sideIndex)");
   
   const int outIndex=flightIndex+static_cast<int>(nLayer)*10;
 
@@ -579,18 +580,16 @@ FlightLine::createObjects(Simulation& System,
     \param sideIndex :: Side index
   */
 {
-  ELog::RegMethod RegA("FlightLine","createObjects");
+  ELog::RegMethod RegA("FlightLine","createObjects(FC,sign,sideIndex,CC)");
   
   const int outIndex=flightIndex+static_cast<int>(nLayer)*10;
 
   const std::string divider=getRotatedDivider(FC,sideIndex);
   attachRule+=divider+FC.getMasterString(sideIndex);
-
-
-
   // Note this is negative
-  const int baseSurf( (surfSign>0) ? FC.getLinkSurf(sideIndex) : 
-		      -FC.getLinkSurf(sideIndex) );
+  const std::string baseSurf( (surfSign>0) ? 
+			      FC.getMasterString(sideIndex) : 
+			      FC.getMasterComplement(sideIndex) );
 
   std::string Out;
   Out=ModelSupport::getComposite(SMap,outIndex," 3 -4 5 -6 ");
@@ -786,18 +785,19 @@ FlightLine::createAll(Simulation& System,
     \param CC :: Full Object
   */
 {
-  ELog::RegMethod RegA("FlightLine","createAll");
+  ELog::RegMethod RegA("FlightLine","createAll(FC,CC)");
   populate(System);
 
   if (plateIndex==0)
     ELog::EM<<"Plate Index for Fligthline not set "<<ELog::endErr;
+
   const size_t sideIndex=static_cast<size_t>(abs(plateIndex))-1;
   const int sideSign=(plateIndex>0) ? 1 : -1;
 
   createUnitVector(FC,sideIndex);
   createSurfaces();
-  FixedComp::setLinkSurf(0,FC,sideIndex);
-  FixedComp::setLinkSurf(6,FC,sideIndex);
+  //  FixedComp::setLinkSurf(0,FC,sideIndex);
+  //  FixedComp::setLinkSurf(6,FC,sideIndex);
   createObjects(System,FC,sideSign,sideIndex,CC);
   insertObjects(System);       
 

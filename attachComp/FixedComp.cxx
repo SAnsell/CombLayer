@@ -371,6 +371,23 @@ FixedComp::addLinkSurf(const size_t Index,
 }
 
 void
+FixedComp::setLinkSurf(const size_t Index,
+		       const std::string& SList) 
+  /*!
+    Set a surface to output
+    \param Index :: Link number
+    \param SList :: String to process
+  */
+{
+  ELog::RegMethod RegA("FixedComp","setLinkSurf");
+  if (Index>=LU.size())
+    throw ColErr::IndexError<size_t>(Index,LU.size(),"LU size/Index");
+
+  LU[Index].setLinkSurf(SList);
+  return;
+}
+
+void
 FixedComp::setLinkSurf(const size_t Index,const int SN) 
   /*!
     Set  a surface to output

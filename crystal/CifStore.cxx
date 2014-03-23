@@ -755,7 +755,7 @@ CifStore::inCube(const Geometry::Vec3D& Pt,const double R) const
     \param R :: Radius
   */
 {
-  for(int i=0;i<3;i++)
+  for(size_t i=0;i<3;i++)
     if (fabs(Pt[i])>R)
       return 0;
   // success

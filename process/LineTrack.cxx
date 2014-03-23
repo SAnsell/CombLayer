@@ -162,7 +162,7 @@ LineTrack::calculate(const Simulation& ASim)
   while(OPtr)
     {
       // Note: Need OPPOSITE Sign on exiting surface
-      SN= -OPtr->trackOutCell(nOut,aDist,SPtr,-SN);
+      SN= OPtr->trackOutCell(nOut,aDist,SPtr,abs(SN));
       // Update Track : returns 1 on excess of distance
       if (SN && updateDistance(OPtr,aDist))
 	{

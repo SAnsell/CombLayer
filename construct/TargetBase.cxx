@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   construct/TargetBase.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -166,5 +166,16 @@ TargetBase::addProtonLineInsertCell(const std::vector<int>& cellVec)
 		      PLine,_1));
   return;
 }
-  
-}  // NAMESPACE ts1System
+
+std::vector<int>  
+TargetBase::getInnerCells() const
+  /*!
+    Return those cells that consititue the inner cells
+    and can be modified
+    \return vector of cell numbers
+  */
+{
+  return std::vector<int>();
+}
+
+}  // NAMESPACE constructSystem

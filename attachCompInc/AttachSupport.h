@@ -66,6 +66,20 @@ void addToInsertForced(Simulation&,const FixedComp&,
 void addToInsertForced(Simulation&,const int,const int,
 		       ContainedComp&);
 
+// External check system
+bool checkIntersect(const ContainedComp&,const MonteCarlo::Object&,
+		    const std::vector<const Geometry::Surface*>&);
+
+bool checkPlaneIntersect(const Geometry::Plane&,
+			 const MonteCarlo::Object&,
+			 const MonteCarlo::Object&);
+
+bool findPlaneIntersect(const Geometry::Plane&,
+			const MonteCarlo::Object&,
+			const MonteCarlo::Object&,
+			std::vector<int>&,
+			std::vector<int>&);
+
 }
 
 #endif

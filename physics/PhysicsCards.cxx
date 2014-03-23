@@ -48,6 +48,7 @@
 #include "SrcItem.h"
 #include "DSTerm.h"
 #include "Source.h"
+
 #include "KCode.h"
 #include "ModeCard.h"
 #include "PhysImp.h"
@@ -175,6 +176,7 @@ PhysicsCards::processCard(const std::string& Line)
   */
 {
   ELog::RegMethod RegA("PhysicsCards","processCard");
+
   if(Line.empty())
     return 0;  
 
@@ -637,6 +639,7 @@ PhysicsCards::setMode(std::string Particles)
   */
 {
   ELog::RegMethod RegA("PhysicsCards","setMode");
+
   if (!mode.isSet())
     {
       std::string item;
@@ -709,8 +712,7 @@ PhysicsCards::write(std::ostream& OX,
 
   sdefCard.write(OX);
   kcodeCard.write(OX);
-  if (!prdmp.empty())
-    StrFunc::writeMCNPX("prdmp "+prdmp,OX);
+  StrFunc::writeMCNPX("prdmp "+prdmp,OX);
   
   if (!printNum.empty())
     {

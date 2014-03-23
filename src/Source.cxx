@@ -67,9 +67,11 @@ namespace SDef
 void
 Source::populate()
   /*!
-    Populate
+    Populate of possibl items in a source card and appropiate value
   */
 {
+  ELog::RegMethod RegA("Source","populate");
+
   sdMap.insert(sdMapTYPE::value_type("cel",SBasePtr(new SrcItem<int>("cel"))));
   sdMap.insert(sdMapTYPE::value_type("sur",SBasePtr(new SrcItem<int>("sur"))));
   sdMap.insert(sdMapTYPE::value_type("erg",SBasePtr(new SrcItem<double>("erg"))));
@@ -265,6 +267,7 @@ Source::cleanGroups()
   /*!
     Find pairs/triples and clean up the SP/SI/SB groups
     remove initial z    
+    \todo TO BE DONE
   */
 {
   return;
@@ -277,6 +280,8 @@ Source::cutEnergy(const double Ecut)
     \param Ecut :: Energy
    */
 {
+  ELog::RegMethod RegA("Source","cutEnergy");
+
   sdMapTYPE::iterator mc=sdMap.find("erg");
   if (mc!=sdMap.end())
     {

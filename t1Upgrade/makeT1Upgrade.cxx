@@ -80,12 +80,14 @@
 #include "TargetBase.h"
 #include "TS2target.h"
 #include "TS2moly.h"
+#include "targCoolant.h"
 #include "InnerTarget.h"
 #include "Cannelloni.h"
 #include "t1PlateTarget.h"
 #include "SideCoolTarget.h"
 #include "OpenBlockTarget.h"
 #include "CylReflector.h"
+#include "TriUnit.h"
 #include "TriangleMod.h"
 #include "ModBase.h"
 #include "H2Section.h"
@@ -226,8 +228,8 @@ makeT1Upgrade::~makeT1Upgrade()
 
 std::string
 makeT1Upgrade::buildTarget(Simulation& System,
-			const std::string& TType,
-			const int voidCell)
+			   const std::string& TType,
+			   const int voidCell)
   /*!
     Create a target based on the 
     \param System :: Simulation for target
@@ -287,9 +289,18 @@ makeT1Upgrade::buildTarget(Simulation& System,
       TarObj=boost::shared_ptr<constructSystem::TargetBase>
 	(new ts1System::SideCoolTarget("t1EllCylTarget"));
       OR.addObject(TarObj);
+      /// Target
+
       RefObj->addToInsertChain(*TarObj);
       TarObj->setRefPlates(-RefObj->getLinkSurf(2),0);
       TarObj->createAll(System,World::masterOrigin());
+
+      boost::shared_ptr<constructSystem::targCoolant> 
+	TarCool(new constructSystem::targCoolant("t1EllCylCool"));
+      OR.addObject(TarCool);
+      TarCool->addCells(TarObj->getInnerCells());
+      TarCool->setContainer(TarObj->getContainer());
+      TarCool->createAll(System,*TarObj);
       return "t1EllCylTarget";
     }    
   else if (TType=="t1Block" || TType=="t1BlockTarget")
@@ -314,7 +325,7 @@ makeT1Upgrade::buildTarget(Simulation& System,
     }    
   else if (TType=="Help" || TType=="help")
     {
-      ELog::EM<<"Options = "<<ELog::endBasic;
+      ELog::EM<<"Options [targetType] "<<ELog::endBasic;
       ELog::EM<<"    t1Block :: Open void blocks"<<ELog::endBasic;
       ELog::EM<<"    t1Cannelloni :: Inner cannolloni target"<<ELog::endBasic;
       ELog::EM<<"    t1Cyl   :: TS2 style cylindrical target"<<ELog::endBasic;
@@ -585,13 +596,13 @@ makeT1Upgrade::build(Simulation* SimPtr,
   const std::string Out=RefObj->getLinkComplement(2);
   TriFLA->addBoundarySurf("inner",Out);  
   TriFLA->addBoundarySurf("outer",Out);  
-  //  RefObj->addToInsertChain(TriFLA->getKey("outer"));
-  //  TriFLA->createAll(*SimPtr,*TriMod,*TriMod);
+  RefObj->addToInsertChain(TriFLA->getKey("outer"));
+  TriFLA->createAll(*SimPtr,*TriMod,*TriMod);
 
   TriFLB->addBoundarySurf("inner",Out);  
   TriFLB->addBoundarySurf("outer",Out);  
-  //  TriFLB->createAll(*SimPtr,*TriMod,*TriMod);
-  // attachSystem::addToInsertSurfCtrl(*SimPtr,*RefObj,TriFLB->getKey("outer"));  
+  TriFLB->createAll(*SimPtr,*TriMod,*TriMod);
+  attachSystem::addToInsertSurfCtrl(*SimPtr,*RefObj,TriFLB->getKey("outer"));  
 
   H2FL->addBoundarySurf("inner",Out);  
   H2FL->addBoundarySurf("outer",Out);  

@@ -36,11 +36,9 @@ class testLine
 {
 private:
 
-  // Support tests
-  int testConeIntersect();
-
   //Tests 
-  int testIntersection();
+  int testConeIntersect();
+  int testEllipticCylIntersect();
   int testInterDistance();
  
 public:

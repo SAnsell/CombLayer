@@ -273,16 +273,20 @@ SideCoolTarget::createSurfaces()
   ModelSupport::buildPlane(SMap,tarIndex+35,Origin+ZRotA*LThick,ZRotA);
   ModelSupport::buildPlane(SMap,tarIndex+36,Origin-ZRotB*LThick,ZRotB);
 
-  // void
-  // Void is special since we have a "new" ellipse/cylinder shape
+  // Clearance
   TThick+=voidThick;
   LThick+=voidThick;
-  const double zR=zRadius-(pressThick+waterThick);
   ModelSupport::buildEllipticCyl(SMap,tarIndex+47,Origin,Y,X,
-				 xRadius+TThick,zR+TThick);
+				 xRadius+TThick,zRadius+TThick);
   ModelSupport::buildPlane(SMap,tarIndex+41,Origin-Y*(TThick),Y);
   ModelSupport::buildPlane(SMap,tarIndex+42,
-	   Origin+Y*(mainLength+TThick),Y);
+		   Origin+Y*(mainLength+TThick),Y);
+
+  ModelSupport::buildPlane(SMap,tarIndex+43,Origin-ZRotA*LThick,ZRotA);
+  ModelSupport::buildPlane(SMap,tarIndex+44,Origin+ZRotB*LThick,ZRotB);
+  ModelSupport::buildPlane(SMap,tarIndex+45,Origin+ZRotA*LThick,ZRotA);
+  ModelSupport::buildPlane(SMap,tarIndex+46,Origin-ZRotB*LThick,ZRotB);
+
 
 
   return;
@@ -302,6 +306,7 @@ SideCoolTarget::createObjects(Simulation& System)
   std::string Out;
   Out=ModelSupport::getComposite(SMap,tarIndex,"1 -2 -7");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wMat,targetTemp,Out));
+  addBoundarySurf(-SMap.realSurf(tarIndex+17));
 
   // Cladding
   Out=ModelSupport::getComposite(SMap,tarIndex,"11 -12 -17 (-1:2:7)");
@@ -420,7 +425,19 @@ SideCoolTarget::addProtonLine(Simulation& System,
   return;
 }
 
-  
+std::vector<int>  
+SideCoolTarget::getInnerCells() const
+  /*!
+    Get the main inner cells
+    \return Inner W and Ta cladding vector
+  */
+{
+  std::vector<int> Out;
+  Out.push_back(getMainBody());
+  Out.push_back(tarIndex+2);
+  return Out;
+}
+
 void
 SideCoolTarget::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC)

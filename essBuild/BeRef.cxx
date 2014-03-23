@@ -98,7 +98,6 @@ BeRef::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("BeRef","populate");
 
-
     // Master values
   xStep=Control.EvalVar<double>(keyName+"XStep");
   yStep=Control.EvalVar<double>(keyName+"YStep");

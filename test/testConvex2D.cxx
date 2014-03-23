@@ -32,6 +32,7 @@
 #include <functional>
 #include <iterator>
 #include <boost/bind.hpp>
+#include <boost/tuple/tuple.hpp>
 #include <boost/format.hpp>
 
 #include "Exception.h"
@@ -162,19 +163,22 @@ testConvex2D::applyTest(const int extra)
   testPtr TPtr[]=
     { 
       &testConvex2D::testArea,
-      &testConvex2D::testSimplePlane,
-      &testConvex2D::testRandomPlane,
+      &testConvex2D::testHull,
+      &testConvex2D::testInHull,
       &testConvex2D::testMaxElement,
-      &testConvex2D::testHull
+      &testConvex2D::testRandomPlane,
+      &testConvex2D::testSimplePlane
     };
 
   std::string TestName[] = 
     {
       "Area",
-      "SimplePlane",
-      "RandomPlane",
+      "Hull",
+      "InHull",
       "MaxElement",
-      "Hull"
+      "RandomPlane",
+      "SimplePlane"
+
     };
   const int TSize(sizeof(TPtr)/sizeof(testPtr));
 
@@ -240,7 +244,7 @@ testConvex2D::testRandomPlane()
     \retval 0 :: All passed
   */
 {
-  ELog::RegMethod RegItem("testConvex2D","testSimplePlane");
+  ELog::RegMethod RegItem("testConvex2D","testRandomPlane");
 
   // Consider a plane 
   //   -3x-4y+5z-4=0
@@ -270,6 +274,7 @@ testConvex2D::testMaxElement()
     \return 0 on succes -ve on failure
   */
 {
+  ELog::RegMethod RegA("testConvex2D","testMaxElement");
   Convex2D A;
   
   const Geometry::Vec3D Normal(3,4,5);
@@ -372,8 +377,8 @@ testConvex2D::testArea()
 
 
   Convex2D A;
-  //  Geometry::Vec3D Centre(3,4,5);          // Centre
-  const Geometry::Vec3D Centre(0,0,0);          // Centre
+  //  Geometry::Vec3D Centre(3,4,5);       
+  const Geometry::Vec3D Centre(0,0,0);     // Centre
   const Geometry::Vec3D X(1,0,0);          // X coordinate
   const Geometry::Vec3D Y(0,1,0);          // Y coordinate
   
@@ -393,6 +398,56 @@ testConvex2D::testArea()
       ELog::EM<<"Area = "<<fabs(A.calcArea()-32.0)<<ELog::endTrace;
       return -1;
     }
+
+  return 0;
+}
+
+int
+testConvex2D::testInHull()
+  /*!
+    Test to determine if point in hull
+    \return -ve on error
+  */
+{
+  ELog::RegMethod RegA("testConvex2D","testInHull");
+
+  Convex2D A;
+  //  Geometry::Vec3D Centre(3,4,5);       
+  const Geometry::Vec3D Centre(0,0,0);     // Centre
+  const Geometry::Vec3D X(1,0,0);          // X coordinate
+  const Geometry::Vec3D Y(0,1,0);          // Y coordinate
+  
+  std::vector<Geometry::Vec3D> Pts;
+
+  Pts.push_back(Centre-X*4.0-Y*4.0);
+  Pts.push_back(Centre-X*4.0+Y*4.0);
+  Pts.push_back(Centre+X*4.0+Y*4.0);
+  Pts.push_back(Centre+X*4.0-Y*4.0);
+
+  A.setPoints(Pts);
+  A.constructHull();
+
+  // TESTS: Point / Results
+  typedef boost::tuple<Geometry::Vec3D,int> TTYPE;
+  std::vector<TTYPE> Tests;
+  Tests.push_back(TTYPE(Geometry::Vec3D(0,0,0),1));        
+  Tests.push_back(TTYPE(Geometry::Vec3D(0,6,0),-1));
+  Tests.push_back(TTYPE(Geometry::Vec3D(3,3,0),1));
+  Tests.push_back(TTYPE(Geometry::Vec3D(3,3,-6),1));
+  Tests.push_back(TTYPE(Geometry::Vec3D(2,4,-6),0));
+
+  std::vector<TTYPE>::const_iterator tc;
+  for(tc=Tests.begin();tc!=Tests.end();tc++)
+    {
+      const int res=A.inHull(tc->get<0>());
+      if (res!=tc->get<1>())
+        {
+	  ELog::EM<<"Test["<<static_cast<int>(tc-Tests.begin())<<ELog::endDiag;
+	  ELog::EM<<"Point = "<<tc->get<0>()<<ELog::endDiag;
+	  ELog::EM<<"Res[ "<<tc->get<1>()<<" ] == "<<res<<ELog::endDiag;
+	  return -1;
+	}
+    } 
 
   return 0;
 }

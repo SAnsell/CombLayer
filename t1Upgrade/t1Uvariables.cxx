@@ -219,19 +219,48 @@ TS1upgrade(FuncDataBase& Control)
   Control.addVariable("TriModXYangle",75.0);
   Control.addVariable("TriModZangle",0.0);
 
-  Control.addVariable("TriModNCorner",4); 
+  Control.addVariable("TriModNCorner",3); 
   Control.addVariable("TriModCorner1",Geometry::Vec3D(12.8,12.8,0.0)); 
-  Control.addVariable("TriModCorner4",Geometry::Vec3D(-8.0,8.0,0.0)); 
-  Control.addVariable("TriModCorner2",Geometry::Vec3D(-12.8,-12.8,0.0)); 
-  Control.addVariable("TriModCorner3",Geometry::Vec3D(-24.0,0.0,0.0)); 
+  Control.addVariable("TriModCorner3",Geometry::Vec3D(-12.8,-12.8,0.0)); 
+  Control.addVariable("TriModCorner2",Geometry::Vec3D(-24.0,0.0,0.0)); 
 
-  /*
-  Control.addVariable("TriModNCorner",4); 
-  Control.addVariable("TriModCorner1",Geometry::Vec3D(8.0,8.0,0.0)); 
-  Control.addVariable("TriModCorner2",Geometry::Vec3D(8.0,-8.0,0.0)); 
-  Control.addVariable("TriModCorner3",Geometry::Vec3D(-8.0,-8.0,0.0)); 
-  Control.addVariable("TriModCorner4",Geometry::Vec3D(-8.0,8.0,0.0)); 
-  */
+  Control.addVariable("TriModNCorner",6);  
+  Control.addVariable("TriModCorner1",Geometry::Vec3D(12.8,12.8,0.0)); 
+  Control.addVariable("TriModCorner2",Geometry::Vec3D(1.37,15.12,0)); 
+  Control.addVariable("TriModAbsolute2",1);
+  Control.addVariable("TriModCorner3",Geometry::Vec3D(-12.8,-12.8,0.0)); 
+  Control.addVariable("TriModCorner4",Geometry::Vec3D(-24.8,-0.8,0.0)); 
+  Control.addVariable("TriModCorner5",Geometry::Vec3D(-3.4,11.5,0.0)); 
+  Control.addVariable("TriModAbsolute5",1);
+  Control.addVariable("TriModCorner6",Geometry::Vec3D(0.8,24.8,0.0)); 
+ 
+
+  Control.addVariable("TriModNInnerUnits",2); 
+  Control.addVariable("TriModInner1NCorner",3); 
+  Control.addVariable("TriModInner1Corner1",Geometry::Vec3D(-14.37,23.4,0.0)); 
+  Control.addVariable("TriModInner1Corner2",Geometry::Vec3D(-5,28.11,0.0)); 
+  Control.addVariable("TriModInner1Corner3",Geometry::Vec3D(-3.2,15.8,0.0)); 
+  Control.addVariable("TriModInner1Absolute1",1); 
+  Control.addVariable("TriModInner1Absolute2",1); 
+  Control.addVariable("TriModInner1Absolute3",1); 
+
+  Control.addVariable("TriModInner2NCorner",3); 
+  Control.addVariable("TriModInner2Corner1",Geometry::Vec3D(8.9,1.3,0.0)); 
+  Control.addVariable("TriModInner2Corner2",Geometry::Vec3D(1.78,-2.67,0.0)); 
+  Control.addVariable("TriModInner2Corner3",Geometry::Vec3D(0.1,11.73,0.0)); 
+  Control.addVariable("TriModInner2Absolute1",1); 
+  Control.addVariable("TriModInner2Absolute2",1); 
+  Control.addVariable("TriModInner2Absolute3",1); 
+
+  // TEST
+  Control.addVariable("TriModInner2NCorner",3); 
+  Control.addVariable("TriModInner2Corner1",Geometry::Vec3D(8.9,1.3,0.0)); 
+  Control.addVariable("TriModInner2Corner2",Geometry::Vec3D(5.19,-10.95,0.0)); 
+  Control.addVariable("TriModInner2Corner3",Geometry::Vec3D(0.1,11.73,0.0)); 
+  Control.addVariable("TriModInner2Absolute1",1); 
+  Control.addVariable("TriModInner2Absolute2",1); 
+  Control.addVariable("TriModInner2Absolute3",1); 
+
   Control.addVariable("TriModHeight",12.0);
   Control.addVariable("TriModWallThick",0.5);
   Control.addVariable("TriModInnerWall",0.5);
@@ -247,14 +276,14 @@ TS1upgrade(FuncDataBase& Control)
 
   Control.addVariable("TriModPCladMat","Aluminium");        // Al 
   Control.addVariable("TriModPoisonMat","Gadolinium");      // Gadolinium  
-  Control.addVariable("TriModInnerMat","H2O");
+  Control.addVariable("TriModInnerMat","Void");
   Control.addVariable("TriModModMat","H2O");
   Control.addVariable("TriModWallMat","Aluminium");
   Control.addVariable("TriModModTemp",300.0);
   
   // FLIGHTLINES : 
-  Control.addVariable("TriFlightASideIndex",3);     // Full width
-  Control.addVariable("TriFlightAXStep",-5.0);      // Step from centre  
+  Control.addVariable("TriFlightASideIndex",5);     
+  Control.addVariable("TriFlightAXStep",5.0);      // Step from centre  
   Control.addVariable("TriFlightAZStep",0.5);      // Step from centre  
   Control.addVariable("TriFlightAAngleXY1",72.0);  // Angle out
   Control.addVariable("TriFlightAAngleXY2",-27.0);  // Angle out
@@ -272,7 +301,7 @@ TS1upgrade(FuncDataBase& Control)
   Control.addVariable("TriFlightBXStep",5.3);        // Step from centre  
   Control.addVariable("TriFlightBZStep",0.5);        // Step from centre  
   Control.addVariable("TriFlightBAngleXY1",10.0);     // Angle out [lower]
-  Control.addVariable("TriFlightBAngleXY2",65.0);   // Angle out [top]
+  Control.addVariable("TriFlightBAngleXY2",35.0);   // Angle out [top]
   Control.addVariable("TriFlightBAngleZTop",0.0);    // Step down angle
   Control.addVariable("TriFlightBAngleZBase",0.0);   // Step up angle
   Control.addVariable("TriFlightBHeight",10.0);      // Full height
@@ -394,8 +423,8 @@ TS1upgrade(FuncDataBase& Control)
 
   // WRAPPER
   Control.addVariable("CH4PreModSideThick",1.8);     
-  Control.addVariable("CH4PreModTopThick",2.0);     
-  Control.addVariable("CH4PreModBaseThick",1.5);
+  Control.addVariable("CH4PreModTopThick",1.5);     
+  Control.addVariable("CH4PreModBaseThick",1.3);
   Control.addVariable("CH4PreModFrontExt",0.7);
   Control.addVariable("CH4PreModBackExt",0.7);
   Control.addVariable("CH4PreModAlThick",0.31);     

@@ -45,7 +45,7 @@ class EllipticCyl : public Quadratic
   Geometry::Vec3D Centre;        ///< Geometry::Vec3D for centre
   Geometry::Vec3D Normal;        ///< Direction of centre line
   Geometry::Vec3D LAxis;         ///< Direction of Long axis
-  Geometry::Vec3D CAxis;         ///< Direction of Long axis
+  Geometry::Vec3D CAxis;         ///< Direction of Short axis
 
   double ARadius;       ///< Radius of Long 
   double BRadius;       ///< Radius of Short
@@ -86,8 +86,20 @@ class EllipticCyl : public Quadratic
   int setNorm(const Geometry::Vec3D&,const Geometry::Vec3D&);
   void setRadius(const double,const double);
 
-  const Geometry::Vec3D& getCentre() const { return Centre; }   ///< Return centre point       
-  const Geometry::Vec3D& getNormal() const { return Normal; }   ///< Return Central line
+  /// Return centre point       
+  const Geometry::Vec3D& getCentre() const { return Centre; }   
+  /// Return Normal
+  const Geometry::Vec3D& getNormal() const { return Normal; }   
+  double getARadius() const { return ARadius; }  ///< Get A radius
+  double getBRadius() const { return BRadius; }  ///< Get B radius
+  ///< Long axis
+  const Geometry::Vec3D& getAAxis() const 
+    { return LAxis; }       
+  ///< Short axis
+  const Geometry::Vec3D& getBAxis() const 
+    { return CAxis; }       
+
+
   void setBaseEqn();
 
   void mirror(const Geometry::Plane&);

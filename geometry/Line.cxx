@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   geometry/Line.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,6 +57,7 @@
 #include "CylCan.h"
 #include "Cylinder.h"
 #include "Cone.h"
+#include "EllipticCyl.h"
 #include "MBrect.h"
 #include "Plane.h"
 #include "Sphere.h"
@@ -196,16 +197,10 @@ Line::setDirect(const Geometry::Vec3D& Pt)
   */
 {
   if (Pt.abs()>Geometry::zeroTol)
-    {
-      Direct=Pt;
-      Direct.makeUnit();
-    }
+    Direct=Pt.unit();
   else
-    {
-      ELog::EM.Estream()
-	<<"Line::setDirect : Normal near zero:"<<Pt;
-      ELog::EM.error();
-    }
+    ELog::EM<<"Line::setDirect : Normal near zero:"
+	  <<Pt<<ELog::endErr;
   return;
 }
 
@@ -256,33 +251,34 @@ Line::lambdaPair(const size_t ix,
 
   int nCnt(0);          // number of good points
   
-  Geometry::Vec3D Ans;
+  double lambdaA,lambdaB;
   if (SQ.first.imag()==0.0)
     {
-      const double lambda=SQ.first.real();
-      Geometry::Vec3D Ans=getPoint(lambda);
-      PntOut.push_back(Ans);
-      if (ix<2)        // only one unique root.
-	return 1;
+      lambdaA=SQ.first.real();
       nCnt=1;
     }
-  if (SQ.second.imag()==0.0)
+  if (ix==2 && SQ.second.imag()==0.0)
     {
-      const double lambda=SQ.second.real();
-      if (!nCnt)   // first point wasn't good.
-	{
-	  PntOut.push_back(getPoint(lambda));
-	  return 1;
-	}
-      Geometry::Vec3D Ans2=getPoint(lambda);
-      // If points too close return only 1 item.
-      if (Ans.Distance(Ans2)<Geometry::zeroTol)
-	return 1;
-
-      PntOut.push_back(Ans2);
-      return 2;
+      lambdaB=SQ.second.real();
+      nCnt+=2;
     }
-  return 0; //both point imaginary
+  if (!nCnt) return 0;
+
+  if (nCnt==1)
+    {
+      PntOut.push_back(getPoint(lambdaA));
+      return 1;
+    }
+  if (nCnt==2)
+    {
+      PntOut.push_back(getPoint(lambdaB));
+      return 1;
+    }
+  if (lambdaA>lambdaB)
+    std::swap(lambdaA,lambdaB);
+  PntOut.push_back(getPoint(lambdaA));
+  PntOut.push_back(getPoint(lambdaB));
+  return 2;
 }
 
 
@@ -398,7 +394,7 @@ Line::intersect(std::vector<Geometry::Vec3D>& PntOut,
      This follows the Intersection-cone from geometrymagic
 
      \param PntOut :: Vector of points found by the line/cylinder intersection
-     \param CObj :: Cylinder to intersect line with
+     \param CObj :: Cone to intersect line with
      \return Number of points found by intersection
   */
 {
@@ -492,7 +488,8 @@ Line::intersect(std::vector<Geometry::Vec3D>& PntOut,const CylCan& CCan) const
 }
 
 size_t 
-Line::intersect(std::vector<Geometry::Vec3D>& PntOut,const Cylinder& Cyl) const
+Line::intersect(std::vector<Geometry::Vec3D>& PntOut,
+		const Cylinder& Cyl) const
   /*! 
      For the line that intersects the cylinder generate 
      add the point to the VecOut, return number of points
@@ -516,6 +513,55 @@ Line::intersect(std::vector<Geometry::Vec3D>& PntOut,const Cylinder& Cyl) const
   C[2]= Ax.dotProd(Ax)-(R*R+vDA*vDA);
   std::pair<std::complex<double>,std::complex<double> > SQ;
   const size_t ix = solveQuadratic(C,SQ);
+  // This takes the centre displacement into account:
+  return lambdaPair(ix,SQ,PntOut);  
+}
+
+size_t 
+Line::intersect(std::vector<Geometry::Vec3D>& PntOut,
+		const EllipticCyl& Cyl) const
+  /*! 
+    Solve for a line intersection in an elliptic cylinder
+    -- This is solved by noting that R= u*cos(theta) + v*sin(theta) 
+      and r = O + mu D  resolve in the u / v directions 
+     \param PntOut :: Vector of points found by the line/cylinder intersection
+     \param Cyl :: EllipticCylinder to intersect line with
+     \return Number of points found by intersection
+  */
+{
+  ELog::RegMethod RegA("Line","intersect<EllipticCyl>");
+
+  const Geometry::Vec3D Cent=Cyl.getCentre();
+  const Geometry::Vec3D Ax=Origin-Cent;
+  const Geometry::Vec3D N= Cyl.getNormal();
+  const double AR=Cyl.getARadius();
+  const double BR=Cyl.getBRadius();
+  // First remove the component in the normal direction of the 
+  // cylinder
+  const double vDn = N.dotProd(Direct);
+  // Line intersect
+  if (fabs(vDn)>1.0-Geometry::zeroTol)
+    return 0;
+  // Cut normal
+  const Geometry::Vec3D lineN=Direct.cutComponent(N);
+
+  // Projection of vector into plane is : n * (X * n)
+  const Geometry::Vec3D lineOrig=N*( Ax * N);
+
+  // Now solve simultaneous equ.
+  // Divide since cos(theta) has AR^2 term / sin(theta) has BR^2 term
+  const double Oa= lineOrig.dotProd(Cyl.getAAxis())/AR;
+  const double Ob= lineOrig.dotProd(Cyl.getBAxis())/BR;
+  const double Na= lineN.dotProd(Cyl.getAAxis())/AR;
+  const double Nb= lineN.dotProd(Cyl.getBAxis())/BR;
+
+  // Solve the equation of intersection  
+  const double cA=Nb*Nb+Na*Na;        // x^2 comp
+  const double cB=2.0*(Na*Oa+Nb*Ob);
+  const double cC=Oa*Oa+Ob*Ob-1.0;
+
+  std::pair<std::complex<double>,std::complex<double> > SQ;
+  const size_t ix = solveQuadratic(cA,cB,cC,SQ);
   // This takes the centre displacement into account:
   return lambdaPair(ix,SQ,PntOut);  
 }

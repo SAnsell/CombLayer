@@ -529,6 +529,34 @@ Vec3D::unit() const
   return Out;
 }
 
+Geometry::Vec3D
+Vec3D::component(const Geometry::Vec3D& A) const
+  /*!
+    Make a component vector along the dirction
+    of A.
+    \param A :: Vector to give principle direction 
+    \return :: the vector as a unit form
+  */
+{
+  const Geometry::Vec3D N=A.unit();    // Need to use A in unit form
+  return N*N.dotProd(*this);
+}
+
+Geometry::Vec3D
+Vec3D::cutComponent(const Geometry::Vec3D& A) const
+  /*!
+    Remove the component of A from the vector
+    \param A :: Vector to give principle direction 
+    \return :: the vector as a unit form
+  */
+{
+  
+  Geometry::Vec3D Out(*this);
+  const Geometry::Vec3D N=A.unit();    // Need to use A in unit form
+  Out -= N*Out.dotProd(N);
+  return Out;
+}
+
 double
 Vec3D::dotProd(const Vec3D& A) const
   /*!

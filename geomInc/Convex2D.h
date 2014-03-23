@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   geomInc/Convex2D.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,11 +43,11 @@ class Convex2D
   typedef std::vector<Vert2D> VTYPE;     ///< Vertex Type
 
   std::vector<Vec3D> Pts;           ///< Points
-  VTYPE VList;       ///< VList
+  VTYPE VList;                      ///< 
 
   Geometry::Vec3D centroid;    ///< Centroid to points
   Geometry::Vec3D normal;      ///< Normal to points
-  size_t distIndex;          ///< Most distant from centre
+  size_t distIndex;            ///< Most distant from centre
 
   void createVertex();
 
@@ -67,6 +67,8 @@ class Convex2D
   double calcArea() const;
   size_t calcMaxIndex();
 
+  int inHull(const Geometry::Vec3D&) const;
+  
   /// Access points
   const std::vector<Geometry::Vec3D>& getPoints() const
     { return Pts; }

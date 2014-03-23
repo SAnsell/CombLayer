@@ -22,66 +22,30 @@
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "surfRegister.h"
 #include "objectRegister.h"
 #include "InputControl.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
-#include "Tensor.h"
 #include "Vec3D.h"
 #include "inputParam.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "Tally.h"
-#include "TallyCreate.h"
-#include "Transform.h"
-#include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
-#include "Surface.h"
-#include "Quadratic.h"
-#include "Plane.h"
-#include "Cylinder.h"
-#include "Line.h"
-#include "Rules.h"
 #include "surfIndex.h"
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
-#include "HeadRule.h"
-#include "Object.h"
-#include "Qhull.h"
-#include "ModeCard.h"
-#include "PhysCard.h"
-#include "LSwitchCard.h"
-#include "PhysImp.h"
-#include "KGroup.h"
-#include "Source.h"
-#include "KCode.h"
-#include "PhysicsCards.h"
-#include "BasicWWE.h"
 #include "MainProcess.h"
 #include "SimProcess.h"
-#include "SurInter.h"
+#include "SimInput.h"
 #include "Simulation.h"
 #include "SimPHITS.h"
-#include "PointWeights.h"
-#include "ContainedComp.h"
-#include "ContainedGroup.h"
-#include "LinkUnit.h"
-#include "FixedComp.h"
-#include "LinearComp.h"
 #include "mainJobs.h"
 #include "Volumes.h"
 #include "DefPhysics.h"
 #include "variableSetup.h"
 #include "ImportControl.h"
-#include "SourceCreate.h"
 #include "SourceSelector.h"
 #include "TallySelector.h"
 #include "World.h"
-:
+
 #include "makeSinbad.h"
 
 MTRand RNG(12345UL);
@@ -119,7 +83,7 @@ main(int argc,char* argv[])
   if (!SimPtr) return -1;
 
   // The big variable setting
-  setVariable::sinbadVariables(SimPtr->getDataBase());
+  setVariable::SinbadVariables(SimPtr->getDataBase());
   InputModifications(SimPtr,IParam,Names);
   mainSystem::setVariables(*SimPtr,IParam,Names);
 
@@ -135,22 +99,22 @@ main(int argc,char* argv[])
 	      ELog::EM.setActive(4);    // write error only
 	      ELog::FM.setActive(4);    
 	      ELog::RN.setActive(0);    
-	      
-	      // if (iteractive)
-	      // 	mainSystem::incRunTimeVariable
-	      // 	  (SimPtr->getDataBase(),IterVal);
 	    }
 
 	  SimPtr->resetAll();
 
-	  sinbadSystem::sinbadMake SinbadObj;
+	  const std::string preName=
+	    IParam.getValue<std::string>("preName");
+
+	  sinbadSystem::makeSinbad SinbadObj(preName);
 	  World::createOuterObjects(*SimPtr);
+
 	  SinbadObj.build(SimPtr,IParam);
 
 	  SDef::sourceSelection(*SimPtr,IParam);
 
 	  SimPtr->removeComplements();
-	  //	  SimPtr->removeDeadCells();            // Generic
+	  //  SimPtr->removeDeadCells();            // Generic
 	  SimPtr->removeDeadSurfaces(0);         
 
 	  //ALB SimPtr->removeOppositeSurfaces();
@@ -168,18 +132,15 @@ main(int argc,char* argv[])
 	    SimPtr->setENDF7();
 	  createMeshTally(IParam,SimPtr);
 
-	  // outer void to zero
-	  // RENUMBER:
-	  // outer void to zero
-	  WeightSystem::simulationImp(*SimPtr,IParam);
-	  mainSystem::renumberCells(*SimPtr,IParam);
-	  WeightSystem::simulationWeights(*SimPtr,IParam);
+	  SimProcess::importanceSim(*SimPtr,IParam);
+	  SimProcess::inputPatternSim(*SimPtr,IParam); // energy cut etc
+
+	  if (renumCellWork)
+	    tallyRenumberWork(*SimPtr,IParam);
+	  tallyModification(*SimPtr,IParam);
+
 	  if (IParam.flag("cinder"))
 	    SimPtr->setForCinder();
-
-	  // Cut energy tallies:
-	  if (IParam.flag("ECut"))
-	    SimPtr->setEnergy(IParam.getValue<double>("ECut"));
 
 	  // Ensure we done loop
 	  do

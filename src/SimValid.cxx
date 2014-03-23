@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   src/SimValid.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,9 +50,6 @@
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Rules.h"
 #include "varList.h"
 #include "Code.h"
@@ -60,12 +57,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "SimProcess.h"
 #include "SurInter.h"
-#include "Tally.h"
-#include "cellFluxTally.h"
 #include "ObjSurfMap.h"
 #include "neutron.h"
 #include "Simulation.h"
@@ -77,7 +70,7 @@ namespace ModelSupport
 {
 
 SimValid::SimValid() :
-  Centre(Geometry::Vec3D(0.1,0.1,0.1))
+  Centre(Geometry::Vec3D(0.15,-0.45,0.15))
   /*!
     Constructor
   */
@@ -127,18 +120,14 @@ SimValid::run(const Simulation& System,const size_t N) const
   double phi,theta;
 
   // Find Initial cell [Store for next time]
+  //  Centre+=Geometry::Vec3D(0.001,0.001,0.001);
   InitObj=System.findCell(Centre,InitObj);  
   const int initSurfNum=InitObj->isOnSide(Centre);
 
-  ELog::EM<<"C == "<<Centre<<ELog::endDebug;      
-  ELog::EM<<"InitOb == "<<InitObj->getName()<<ELog::endDebug;      
-  ELog::EM<<"Init == "<<initSurfNum<<ELog::endDebug; 
+  ELog::EM<<"C == "<<Centre<<ELog::endDiag;      
+  ELog::EM<<"InitOb == "<<InitObj->getName()<<ELog::endDiag;      
+  ELog::EM<<"Init == "<<initSurfNum<<ELog::endDiag; 
      
-  if (InitObj->getName()==118)
-    {
-      ELog::EM<<InitObj->topRule()->display(Centre);
-      ELog::EM<<ELog::endErr;
-    }
   // check surfaces
   for(size_t i=0;i<N;i++)
     {
@@ -158,12 +147,14 @@ SimValid::run(const Simulation& System,const size_t N) const
       while(OPtr && OPtr->getImp())
 	{
 	  // Note: Need OPPOSITE Sign on exiting surface
-	  SN= -OPtr->trackOutCell(TNeut,aDist,SPtr,-SN);
-	  if (aDist>1e30 && Pts.size()==1)
+	  SN= OPtr->trackOutCell(TNeut,aDist,SPtr,abs(SN));
+
+	  if (aDist>1e30 && Pts.size()<=1)
 	    {
-	      ELog::EM<<"Index == "<<Pts.size()-2<<ELog::endDebug;
-	      ELog::EM<<"D == "<<Pts[0].Pt<<ELog::endDebug;
-	      ELog::EM<<"D == "<<SN<<ELog::endDebug;
+	      ELog::EM<<"Fail on Pts==1 and aDist inf"<<ELog::endDiag;
+	      ELog::EM<<"Index == "<<Pts.size()-2<<ELog::endDiag;
+	      ELog::EM<<"Pts[0] == "<<Pts[0].Pt<<ELog::endDiag;
+	      ELog::EM<<"SN == "<<SN<<ELog::endDiag;
 	      aDist=1e-5;
 	    }
 
@@ -171,24 +162,23 @@ SimValid::run(const Simulation& System,const size_t N) const
 	  Pts.push_back(simPoint(TNeut.Pos,OPtr->getName(),SN,OPtr));
 	  OPtr=(SN) ?
 	    OSMPtr->findNextObject(SN,TNeut.Pos,OPtr->getName()) : 0;	    
-
 	}
 
       if (!OPtr)
 	{
 	  ELog::EM<<"------------"<<ELog::endCrit;
-	  ELog::EM<<"I == "<<i<<" "<<SN<<ELog::endCrit;
+	  ELog::EM<<"I/SN == "<<i<<" "<<SN<<ELog::endCrit;
 	  for(size_t j=0;j<Pts.size();j++)
 	    {
 	      ELog::EM<<"Pos["<<j<<"]=="<<Pts[j].Pt<<" :: "
-		      <<Pts[j].objN<<" "<<Pts[j].surfN<<ELog::endDebug;
+		      <<Pts[j].objN<<" "<<Pts[j].surfN<<ELog::endDiag;
 	    }
 
 	  const size_t index(Pts.size()-2);
 	  ELog::EM<<"Base Obj == "<<*Pts[index].OPtr
-		  <<ELog::endDebug;
+		  <<ELog::endDiag;
 	  ELog::EM<<"Next Obj == "<<*Pts[index+1].OPtr
-		  <<ELog::endDebug;
+		  <<ELog::endDiag;
 	  OPtr=Pts[index].OPtr;
 	  // RESET:
 	  TNeut.Pos=Pts[index].Pt;  // Reset point
@@ -199,19 +189,19 @@ SimValid::run(const Simulation& System,const size_t N) const
 	  if (OPtr)
 	    {
 	      ELog::EM<<"Found Obj == "<<*OPtr<<" :: "<<Pts[index].Pt<<" "
-		      <<OPtr->pointStr(Pts[index].Pt)<<ELog::endDebug;
-	      ELog::EM<<OPtr->isValid(Pts[index].Pt)<<ELog::endDebug;
+		      <<OPtr->pointStr(Pts[index].Pt)<<ELog::endDiag;
+	      ELog::EM<<OPtr->isValid(Pts[index].Pt)<<ELog::endDiag;
 	    }
 	  else
-	    ELog::EM<<"No object "<<ELog::endDebug;
+	    ELog::EM<<"No object "<<ELog::endDiag;
 	  TNeut.Pos+=D*0.00001;
 
 	  MonteCarlo::Object* NOPtr=System.findCell(TNeut.Pos,0);
 	  if (NOPtr)
 	    {
-	      ELog::EM<<"NEutron == "<<TNeut<<ELog::endDebug;
-	      ELog::EM<<"Actual object == "<<*NOPtr<<ELog::endDebug;
-	      ELog::EM<<" IMP == "<<NOPtr->getImp()<<ELog::endDebug;
+	      ELog::EM<<"Neutron == "<<TNeut<<ELog::endDiag;
+	      ELog::EM<<"Actual object == "<<*NOPtr<<ELog::endDiag;
+	      ELog::EM<<" IMP == "<<NOPtr->getImp()<<ELog::endDiag;
 	    }
 	  ELog::EM<<"Failed to calculate cell correctly: "<<i<<ELog::endCrit;
 	  return 0;

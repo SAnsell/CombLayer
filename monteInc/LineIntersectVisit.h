@@ -68,6 +68,7 @@ class LineIntersectVisit : public Global::BaseVisit
     void Accept(const Geometry::Cone&);
     void Accept(const Geometry::CylCan&);
     void Accept(const Geometry::Cylinder&);
+    void Accept(const Geometry::EllipticCyl&);
     void Accept(const Geometry::General&);
     void Accept(const Geometry::MBrect&);
     void Accept(const Geometry::Plane&);

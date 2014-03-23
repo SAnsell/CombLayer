@@ -64,6 +64,7 @@ class FixedComp
 
   void setLinkSurf(const size_t,const FixedComp&,const size_t);
   void setLinkSurf(const size_t,const int);
+  void setLinkSurf(const size_t,const std::string&);
   void addLinkSurf(const size_t,const int);
   void addLinkSurf(const size_t,const std::string&);
 

@@ -47,6 +47,8 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Surface.h"
+#include "Quadratic.h"
+#include "Plane.h"
 #include "Rules.h"
 #include "HeadRule.h"
 #include "Object.h"
@@ -66,13 +68,9 @@
 #include "SurInter.h"
 #include "AttachSupport.h"
 
-#include "Debug.h"
-
 namespace attachSystem
 {
 
-bool checkIntersect(const ContainedComp&,const MonteCarlo::Qhull&,
-		    const std::vector<const Geometry::Surface*>&);
 void createAddition(const int,Rule*,Rule*&);
 
 
@@ -461,7 +459,6 @@ addToInsertOuterSurfCtrl(Simulation& System,
       else if (!CRPtr)
 	break;
 
-
       if (checkIntersect(CC,*CRPtr,CellSVec))
 	CC.addInsertCell(i);
     }
@@ -471,7 +468,7 @@ addToInsertOuterSurfCtrl(Simulation& System,
 }
 
 bool
-checkIntersect(const ContainedComp& CC,const MonteCarlo::Qhull& CellObj,
+checkIntersect(const ContainedComp& CC,const MonteCarlo::Object& CellObj,
 	       const std::vector<const Geometry::Surface*>& CellSVec)
    /*
      Determine if the surface group is in the Contained Component
@@ -530,6 +527,92 @@ checkIntersect(const ContainedComp& CC,const MonteCarlo::Qhull& CellObj,
 	}
   // All failed:
   return 0;
+}
+
+bool
+checkPlaneIntersect(const Geometry::Plane& BPlane,
+		    const MonteCarlo::Object& AObj,
+		    const MonteCarlo::Object& BObj)
+/*!
+  Determine if the surface group intersects the CellObj based
+  on the base. 
+  The test is (a) interesection point valid in both object
+  (b) the intersection point is on the surface of both object.
+  \param BPlane :: Base plane
+  \param AObj :: First object
+  \param BObj :: Second object
+  \return true/false
+*/
+{
+  ELog::RegMethod RegA("AttachSupport","checkPlaneIntersect");
+
+  const std::vector<const Geometry::Surface*>& ASVec=AObj.getSurList(); 
+  const std::vector<const Geometry::Surface*>& BSVec=BObj.getSurList(); 
+
+  std::vector<Geometry::Vec3D> Out;
+  std::vector<Geometry::Vec3D>::const_iterator vc;
+
+  for(size_t iA=0;iA<ASVec.size();iA++)
+    for(size_t iB=0;iB<BSVec.size();iB++)
+      {	      
+	Out=SurInter::processPoint(&BPlane,ASVec[iA],BSVec[iB]);
+	  for(vc=Out.begin();vc!=Out.end();vc++)
+	    {
+	      if (BObj.isValid(*vc,BSVec[iB]->getName()) &&
+		  AObj.isValid(*vc,ASVec[iA]->getName()) )
+		{
+		  if (BObj.isDirectionValid(*vc,BSVec[iB]->getName()) !=
+		      BObj.isDirectionValid(*vc,-BSVec[iB]->getName()) && 
+		      AObj.isDirectionValid(*vc,ASVec[iB]->getName()) !=
+		      AObj.isDirectionValid(*vc,-ASVec[iB]->getName()) ) 
+		    return 1;
+		}
+	    }
+	}
+  return 0;
+}
+
+bool
+findPlaneIntersect(const Geometry::Plane& BPlane,
+		   const MonteCarlo::Object& AObj,
+		   const MonteCarlo::Object& BObj,
+		   std::vector<int>& ASurf,
+		   std::vector<int>& BSurf)
+/*!
+  Determine if the surface group intersects the CellObj based
+  on the base
+  \param BPlane :: Base plane
+  \param AObj :: First object
+  \param BObj :: Second object
+  \param ASurf :: AObj surf intersect pair
+  \param BSurf :: BObj surf intersect pair
+  \return true/false
+*/
+{
+  ELog::RegMethod RegA("AttachSupport","findPlaneIntersect");
+
+  const std::vector<const Geometry::Surface*>& ASVec=AObj.getSurList(); 
+  const std::vector<const Geometry::Surface*>& BSVec=BObj.getSurList(); 
+
+  std::vector<Geometry::Vec3D> Out;
+  std::vector<Geometry::Vec3D>::const_iterator vc;
+
+  for(size_t iA=0;iA<ASVec.size();iA++)
+    for(size_t iB=0;iB<BSVec.size();iB++)
+      {	      
+	Out=SurInter::processPoint(&BPlane,ASVec[iA],BSVec[iB]);
+	  for(vc=Out.begin();vc!=Out.end();vc++)
+	    {
+	      if (BObj.isValid(*vc,BSVec[iB]->getName()) &&
+		  AObj.isValid(*vc,ASVec[iA]->getName()) )
+		{
+		  ASurf.push_back(ASVec[iA]->getName());
+		  BSurf.push_back(BSVec[iB]->getName());
+		}
+	    }
+      }
+  
+  return (ASurf.empty()) ? 0 : 1;
 }
 
 void

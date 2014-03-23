@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   geometry/Convex2D.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,8 +48,6 @@
 
 namespace Geometry
 {
-
-const double PTolerance(1e-8);   ///< Tolerance for a point
 
 Convex2D::Convex2D() : normal(1,0,0),
 		       distIndex(0)
@@ -185,8 +183,6 @@ Convex2D::calcNormal()
 	      <<"plane normal"<<ELog::endErr;
       return -1.0;
     }
-
-
   centroid=Geometry::Vec3D(0,0,0);
 
   std::vector<Vec3D>::const_iterator vc;
@@ -210,6 +206,7 @@ Convex2D::calcNormal()
   // Get Normal
   const Matrix<double>& V=solA.getV();
   normal = Geometry::Vec3D(V[0][2],V[1][2],V[2][2]);
+
   return solA.getS()[2][2];  
 }
 
@@ -301,6 +298,40 @@ Convex2D::createVertex()
     VList.push_back(*lc);
   
   return;
+}
+
+int
+Convex2D::inHull(const Geometry::Vec3D& testPt) const
+  /*!
+    Check the point is within/out of the hull
+    \param testPt :: Test point
+    \return 1 : in  / -1 out and 0 on the edge
+   */
+{
+  ELog::RegMethod RegA("Convex2D","inHull");
+  // First remove from Z comonents"
+  const double alpha=testPt.dotProd(normal);
+  Geometry::Vec3D Pt= testPt-normal*alpha;
+ 
+  const size_t nP=Pts.size();
+  double tD(0.0),tX;
+  int onLine(0);
+  Geometry::Vec3D PtZero=Pts[0]-normal*(Pts[0].dotProd(normal));
+  for(size_t i=0;i<nP;i++)
+    {
+      const size_t iPlus=(i+1) % nP;
+      Geometry::Vec3D PtPlus=Pts[iPlus]-normal*(Pts[iPlus].dotProd(normal));
+      const Geometry::Vec3D dVec=PtPlus-PtZero;
+      tX=dVec.dotProd(testPt-PtZero);
+      if (!i) tD=tX;
+      if (fabs(tX)<Geometry::zeroTol)
+	onLine=1;
+      else if ( tX * tD < 0.0 )
+	return -1;
+      PtZero=PtPlus;
+    }
+  return (onLine) ? 0 : 1;
+
 }
 
 std::vector<Geometry::Vec3D>

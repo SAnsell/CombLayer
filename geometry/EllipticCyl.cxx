@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   geometry/EllipticCyl.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -165,7 +165,7 @@ int
 EllipticCyl::setSurface(const std::string& Pstr)
   /*! 
     Processes a standard MCNPX cone string    
-    Recall that cones can only be specified on an axis
+    Recall that elliptic cyls can only be specified on an axis
      Valid input is: 
      - e/x cen_y cen_z radiusY radiusZ
      - ex radiusY radiusZ
@@ -175,7 +175,7 @@ EllipticCyl::setSurface(const std::string& Pstr)
     \retval : -2 :: Axis (Hard fail)
     \retval : -3 :: Centre (Hard fail)
     \retval : -4 :: Radius (Hard fail)
-    \retval : -101 :: Radius (Hard fail)
+    \retval : -101/2 :: radius negative/zero (Hard fail)
   */
 {
   ELog::RegMethod RegA("EllipticCyl","setSurface");
@@ -201,7 +201,10 @@ EllipticCyl::setSurface(const std::string& Pstr)
   double cross[3]={0.0,0.0,0.0};
   double cent[3]={0.0,0.0,0.0};
   norm[ptype]=1.0;
-  cross[(ptype+1) % 3]=1.0;
+  if (ptype)
+    cross[0]=1.0;
+  else
+    cross[1]=1.0; 
 
   if (itemPt!=1)
     {

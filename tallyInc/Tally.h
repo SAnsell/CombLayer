@@ -67,8 +67,8 @@ class Tally
   Tally& operator=(const Tally&);
   virtual Tally* clone() const; 
   virtual ~Tally();
-  /// ClassName
 
+  /// ClassName
   virtual std::string className() const 
       { return "BaseTally"; }
 

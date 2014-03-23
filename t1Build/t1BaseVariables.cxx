@@ -632,16 +632,16 @@ TS1EllipticCylTarget(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("t1BaseVariables[F]","TS1EllCylTarget");
 
-  Control.addVariable("t1EllCylTargetBoreRadius",5.70);  // Master bore  
+  //  Control.addVariable("t1EllCylTargetBoreRadius",5.70);  // Master bore  
 
   Control.addVariable("t1EllCylTargetXStep",0.0);     // Offset ref centre
   Control.addVariable("t1EllCylTargetYStep",0.0);     // Offset ref centre
   Control.addVariable("t1EllCylTargetZStep",0.0);     // Offset ref centre
   Control.addVariable("t1EllCylTargetMainLength",33.0);   // Length from 
-  Control.addVariable("t1EllCylTargetXRadius",4.0);       // W radius 
-  Control.addVariable("t1EllCylTargetZRadius",4.9);       // W radius 
+  Control.addVariable("t1EllCylTargetXRadius",4.9);       // W radius 
+  Control.addVariable("t1EllCylTargetZRadius",3.9);       // W radius 
   Control.addVariable("t1EllCylTargetCladThick",0.2);     // skin layer
-  Control.addVariable("t1EllCylTargetWaterThick",0.2);    // Water radius
+  Control.addVariable("t1EllCylTargetWaterThick",0.6);    // Water radius
   Control.addVariable("t1EllCylTargetPressThick",0.3);    // Presure radius
   Control.addVariable("t1EllCylTargetVoidThick",0.5);     // Presure radius
   Control.addVariable("t1EllCylTargetCutAngle",45);       // Presure radius
@@ -653,6 +653,47 @@ TS1EllipticCylTarget(FuncDataBase& Control)
   Control.addVariable("t1EllCylTargetWaterTemp",350.0);       // Water temp
   Control.addVariable("t1EllCylTargetExternTemp",330.0);      // Outer temp
   
+  // PLATES:
+  Control.addVariable("t1EllCylCoolNPlates",0);
+  Control.addVariable("t1EllCylCoolPThick",0.7);
+  Control.addVariable("t1EllCylCoolPMat","H2O");
+  Control.addVariable("t1EllCylCoolPLayerMat","Tantalum");
+  Control.addVariable("t1EllCylCoolPLayerThick",0.2);
+
+  Control.addVariable("t1EllCylCoolP1Dist",0.50);       // distance from flat
+  Control.addVariable("t1EllCylCoolP2Dist",1.50);       // distance from flat
+  Control.addVariable("t1EllCylCoolP3Dist",3.00);       // distance from flat
+  Control.addVariable("t1EllCylCoolP4Dist",5.00);       // distance from flat
+  Control.addVariable("t1EllCylCoolP5Dist",7.50);       // distance from flat
+  Control.addVariable("t1EllCylCoolP6Dist",9.50);       // distance from flat
+  Control.addVariable("t1EllCylCoolP7Dist",12.50);       // distance from flat
+  Control.addVariable("t1EllCylCoolP8Dist",15.50);       // distance from flat
+
+  Control.addVariable("t1EllCylCoolNCutSph",0);
+  Control.addVariable("t1EllCylCoolCutSph1Radius",4.8);
+  Control.addVariable("t1EllCylCoolCutSph1Dist",0.4);
+  Control.addVariable("t1EllCylCoolCutSph1Cent",Geometry::Vec3D(0,4.5,0));
+  Control.addVariable("t1EllCylCoolCutSph1Axis",Geometry::Vec3D(0,1,0));
+  Control.addVariable("t1EllCylCoolCutSphMat","Molybdimum");
+
+  Control.addVariable("t1EllCylCoolNCone",0);
+  Control.addVariable("t1EllCylCoolCone1AngleA",-45.0);
+  Control.addVariable("t1EllCylCoolCone1AngleB",30.0);
+  Control.addVariable("t1EllCylCoolCone1Dist",-4.0);
+  Control.addVariable("t1EllCylCoolCone1Cent",Geometry::Vec3D(0,12,0));
+  Control.addVariable("t1EllCylCoolCone1Axis",Geometry::Vec3D(0,1,0));
+  Control.addVariable("t1EllCylCoolCone1Mat","H2O");
+  Control.addVariable("t1EllCylCoolCone1LayerMat","Tantalum");
+  Control.addVariable("t1EllCylCoolCone1LayerThick",0.3);
+
+  Control.addVariable("t1EllCylCoolCone2AngleA",-45.0);
+  Control.addVariable("t1EllCylCoolCone2AngleB",-45.0);
+  Control.addVariable("t1EllCylCoolCone2Dist",2.0);
+  Control.addVariable("t1EllCylCoolCone2Cent",Geometry::Vec3D(0,18,0));
+  Control.addVariable("t1EllCylCoolCone2Axis",Geometry::Vec3D(0,1,0));
+  Control.addVariable("t1EllCylCoolCone2Mat","H2O");
+
+
   return;
 }
 

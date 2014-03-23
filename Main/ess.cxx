@@ -48,15 +48,8 @@
 #include "InputControl.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
-#include "Tensor.h"
 #include "Vec3D.h"
 #include "inputParam.h"
-#include "Transform.h"
-#include "Quaternion.h"
-#include "Surface.h"
-#include "Quadratic.h"
-#include "Plane.h"
-#include "Cylinder.h"
 #include "Rules.h"
 #include "surfIndex.h"
 #include "Code.h"
@@ -65,18 +58,12 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "ModeCard.h"
-#include "PhysCard.h"
-#include "LSwitchCard.h"
-#include "PhysImp.h"
-#include "BasicWWE.h"
 #include "MainProcess.h"
 #include "SimProcess.h"
 #include "SimInput.h"
 #include "SurInter.h"
 #include "Simulation.h"
 #include "SimPHITS.h"
-#include "PointWeights.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "LinkUnit.h"
@@ -84,7 +71,6 @@
 #include "LinearComp.h"
 #include "mainJobs.h"
 #include "Volumes.h"
-#include "DefPhysics.h"
 #include "variableSetup.h"
 #include "ImportControl.h"
 #include "SourceCreate.h"
@@ -152,13 +138,11 @@ main(int argc,char* argv[])
 	  essSystem::makeESS ESSObj;
 	  World::createOuterObjects(*SimPtr);
 	  ESSObj.build(SimPtr,IParam);
-
 	  SDef::sourceSelection(*SimPtr,IParam);
 
 	  SimPtr->removeComplements();
 	  SimPtr->removeDeadSurfaces(0);         
 
-	  ModelSupport::setDefaultPhysics(*SimPtr,IParam);
 	  const int renumCellWork=tallySelection(*SimPtr,IParam);
 	  SimPtr->masterRotation();
 	  if (createVTK(IParam,SimPtr,Oname))

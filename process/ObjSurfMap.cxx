@@ -226,7 +226,7 @@ ObjSurfMap::findNextObject(const int SN,
 {
   ELog::RegMethod RegA("ObjSurfMap","findNextObject");
 
-  const int flagDebug(debugStatus::Instance().getFlag());
+
   const STYPE& MVec=getObjects(SN);
   STYPE::const_iterator mc;
 
@@ -240,7 +240,6 @@ ObjSurfMap::findNextObject(const int SN,
   // DEBUG CODE FOR FAILURE:
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
   const masterRotate& MR=masterRotate::Instance();
-  //  const STYPE& BVec=getObjects(2350401);
   
   ELog::EM<<"Failure to find surface on "<<SN<<" "
 	  <<MR.calcRotate(Pos)<<ELog::endWarn;
@@ -251,7 +250,7 @@ ObjSurfMap::findNextObject(const int SN,
     ELog::EM<<"Failed to get == "<<SN<<ELog::endErr;
   for(mc=MVec.begin();mc!=MVec.end();mc++)
     {
-      ELog::EM<<"Common surf Cell  == "<<(*mc)->getName()<<ELog::endDebug;
+      ELog::EM<<"Common surf Cell  == "<<(*mc)->getName()<<ELog::endDiag;
       // ELog::EM<<"Point == "<<MR.calcRotate(Pos)<<ELog::endDebug;
       // ELog::EM<<"Test for point invalid == "
       // 	      <<(*mc)->isValid(Pos-Geometry::Vec3D(0.001,0.001,0.001))

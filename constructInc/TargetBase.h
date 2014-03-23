@@ -68,7 +68,7 @@ class TargetBase :
   /// Null op function [for overload]
   virtual void setRefPlates(const int,const int) {}
   virtual void createAll(Simulation&,const attachSystem::FixedComp&) =0;
-
+  virtual std::vector<int> getInnerCells() const;
   /// Proton line    
   boost::shared_ptr<ts1System::ProtonVoid> getProton() const { return PLine; }
 };

@@ -169,6 +169,9 @@ class Object
   int trackCell(const MonteCarlo::neutron&,double&,
 		const int,const Geometry::Surface*&,
 		const int) const;
+  int trackCellX(const MonteCarlo::neutron&,double&,
+		const int,const Geometry::Surface*&,
+		const int) const;
   int trackIntoCell(const MonteCarlo::neutron&,double&,
 		    const Geometry::Surface*&,const int =0) const;
   int trackOutCell(const MonteCarlo::neutron&,double&,
