@@ -940,6 +940,8 @@ Rule::getSurfVector() const
 	    }
 	}
     }
+  std::sort(Out.begin(),Out.end());
+  Out.erase(std::unique(Out.begin(),Out.end()),Out.end());
   return Out;
 }
 
@@ -1005,11 +1007,6 @@ Rule::Eliminate()
       if (keyChange==0)     // Success !!!!!
 	deadKeys.push_back(targetKey);
     }
-
-  // NOW REMOVE DEAD KEYS
-//  std::vector<int>::const_iterator vc;
-//  for(vc=deadKeys.begin();vc!=deadKeys.end();vc++)
-//    removeItem(*vc);
 
   return static_cast<int>(deadKeys.size());
 }

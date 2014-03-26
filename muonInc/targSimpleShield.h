@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   muonInc/targSimpleShield.h
- *
- * Copyright (c) 2004-2014 by Stuart Ansell/Goran Skoro
+*
+ * Copyright (c) 2004-2013 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,17 +46,20 @@ class targSimpleShield : public attachSystem::FixedComp,
   double xStep;                 ///< X-Step
   double yStep;                 ///< Y-Step
   double zStep;                 ///< Z-Step
-  double xyAngle;               ///< Angle (rotation)
-
+  double xAngle;               ///< Angle (rotation)
+  double yAngle;               ///< Angle (rotation)
+  double zAngle;               ///< Angle (rotation)
+    
   double height;                ///< Height
   double depth;                 ///< Depth
   double width;                 ///< Width
 
-  double baseThick;                 ///< shield thickness
-  double forwThick;                 ///< shield thickness
   double backThick;                 ///< shield thickness
-  double muonThick;                 ///< shield thickness
-  double japThick;                 ///< shield thickness
+  double forwThick;                 ///< shield thickness
+  double leftThick;                 ///< shield thickness  
+  double rightThick;                 ///< shield thickness
+  double baseThick;                 ///< shield thickness
+  double topThick;                 ///< shield thickness
   
   int mat;                   ///Material: shield
 

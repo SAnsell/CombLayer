@@ -297,8 +297,6 @@ solveValues::getSolution()
 {
   ELog::RegMethod RegA("solveValues","getSolution()");
 
-  const int flagDebug(debugStatus::Instance().getFlag());
-
   size_t flag=Array[0].getVarFlag();
   // SOLUTION ZYX with single value:
   if (countBits(flag)==1)

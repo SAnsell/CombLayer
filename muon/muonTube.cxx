@@ -133,6 +133,9 @@ muonTube::populate(const FuncDataBase& Control)
   xStep=Control.EvalVar<double>(keyName+"XStep");
   yStep=Control.EvalVar<double>(keyName+"YStep");
   zStep=Control.EvalVar<double>(keyName+"ZStep");   
+  xAngle=Control.EvalVar<double>(keyName+"Xangle");
+  yAngle=Control.EvalVar<double>(keyName+"Yangle");  
+  zAngle=Control.EvalVar<double>(keyName+"Zangle");
 
   radius=Control.EvalVar<double>(keyName+"Radius");   
   thick=Control.EvalVar<double>(keyName+"Thick");
@@ -154,7 +157,9 @@ muonTube::createUnitVector(const attachSystem::FixedComp& FC)
 
   attachSystem::FixedComp::createUnitVector(FC);
   applyShift(xStep,yStep,zStep);
-  
+  applyAngleRotate(0,0,zAngle);  
+  applyAngleRotate(0,yAngle,0);  
+    
   return;
 }
 

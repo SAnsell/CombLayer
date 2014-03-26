@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   muon/coneColl.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,6 @@
 #include <algorithm>
 #include <iterator>
 #include <boost/shared_ptr.hpp>
-#include <boost/array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -47,25 +46,18 @@
 #include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
-#include "Tensor.h"
 #include "Vec3D.h"
-#include "PointOperation.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "surfEqual.h"
-#include "surfDivide.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
 #include "Line.h"
-#include "LineIntersectVisit.h"
 #include "Rules.h"
-#include "Convex.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -81,7 +73,6 @@
 #include "ContainedComp.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "World.h"
 #include "coneColl.h"
 
 namespace muSystem
@@ -105,15 +96,13 @@ coneColl::~coneColl()
 {}
 
 void
-coneColl::populate(const Simulation& System)
+coneColl::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: DataBase
   */
 {
   ELog::RegMethod RegA("coneColl","populate");
-
-  const FuncDataBase& Control=System.getDataBase();
 
   xStep=Control.EvalVar<double>(keyName+"XStep");
   yStep=Control.EvalVar<double>(keyName+"YStep");
@@ -132,14 +121,15 @@ coneColl::populate(const Simulation& System)
 }
 
 void
-coneColl::createUnitVector()
+coneColl::createUnitVector(const attachSystem::FixedComp& FC)
   /*!
     Create the unit vectors
+    \param FC :: Fixed Component
   */
 {
   ELog::RegMethod RegA("coneColl","createUnitVector");
 
-  attachSystem::FixedComp::createUnitVector(World::masterOrigin());
+  attachSystem::FixedComp::createUnitVector(FC);
   applyShift(xStep,yStep,zStep);
   
   return;
@@ -215,15 +205,17 @@ coneColl::createLinks()
 }
 
 void
-coneColl::createAll(Simulation& System)
+coneColl::createAll(Simulation& System,
+		    const attachSystem::FixedComp& FC)
   /*!
     Create the shutter
     \param System :: Simulation to process
+    \param FC :: Origin for system
   */
 {
   ELog::RegMethod RegA("coneColl","createAll");
-  populate(System);
-  createUnitVector();
+  populate(System.getDataBase());
+  createUnitVector(FC);
   createSurfaces();
   createObjects(System);
   createLinks();

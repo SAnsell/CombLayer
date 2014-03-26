@@ -66,7 +66,12 @@
 #include "Qhull.h"
 #include "Simulation.h"
 #include "SurInter.h"
+#include "Line.h"
+#include "LineIntersectVisit.h"
 #include "AttachSupport.h"
+
+#include "Debug.h"
+#include "debugMethod.h"
 
 namespace attachSystem
 {
@@ -204,7 +209,7 @@ addToInsertControl(Simulation& System,
   \param groupName :: Contained Group to use
 */
 {
-  ELog::RegMethod RegA("AttachSupport","addToInsertControl");
+  ELog::RegMethod RegA("AttachSupport","addToInsertControl(FC,FC,string)");
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
@@ -323,6 +328,111 @@ addToInsertControl(Simulation& System,
   return;
 }
 
+void
+addToInsertLineCtrl(Simulation& System,
+		    const attachSystem::FixedComp& OuterFC,
+		    const attachSystem::FixedComp& InsertFC)
+  /*!
+    Adds this object to the containedComp to be inserted.
+    CC is the fixed object that is to be inserted -- linkpoints
+    must be set. It is tested by tracking lines from each link point
+    to another link point and seeing if they intersect the 
+    surfaces within the BaseFC object. Then the validity of
+    the point is tested REGARDLESS of being in the CC, to 
+    being in the BaseFC. If it is an insert is made
+    \param System :: Simulation to use
+    \param OuterFC :: FixedComp for name
+    \param InsertFC :: FixedComp with a ContainedComp/containedGroup
+    dynamics cast
+  */
+{
+  ELog::RegMethod RegA("AttachSupport[F]","addtoInsectLineCtrl(FC,FC)");
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  // Determin cells to scan
+  const int cellN=OR.getCell(OuterFC.getKeyName());
+  const int cellR=OR.getRange(OuterFC.getKeyName());
+  const attachSystem::ContainedComp* CCPtr=
+    dynamic_cast<const attachSystem::ContainedComp*>(&InsertFC);
+  if (!CCPtr)
+    {
+      ELog::EM<<InsertFC.getKeyName()<<" does not have CC component"
+	      <<ELog::endErr;
+      return;
+    }
+
+  // Calc and insert objects
+  const size_t NPoint=InsertFC.NConnect();
+  ELog::EM<<"NPoint == "<<InsertFC.getKeyName()<<" "
+	  <<NPoint<<ELog::endDiag;
+  const std::string excludeStr=CCPtr->getExclude();
+
+  for(int i=cellN+1;i<=cellN+cellR;i++)
+    {
+      MonteCarlo::Qhull* CRPtr=System.findQhull(i);
+      if (i==cellN+1 && !CRPtr)
+	throw ColErr::InContainerError<int>(i,"Object not build");
+      else if (!CRPtr)
+	break;
+            
+      CRPtr->populate();
+      CRPtr->createSurfaceList();
+      const std::vector<const Geometry::Surface*>& SurList=
+	CRPtr->getSurList();
+
+      // Check link points first:
+      int cellInter(0);
+      for(size_t j=0;!cellInter && j<NPoint;j++)
+	{
+	  const Geometry::Vec3D& IP=InsertFC.getLinkPt(j);
+	  ELog::EM<<"Link "<<j<<":"<<IP<<ELog::endDebug;
+	  if (CRPtr->isValid(IP))
+	    cellInter=1;
+	}
+      // Check line intersection:
+      for(size_t j=0;!cellInter && j<NPoint;j++)
+	{
+	  const Geometry::Vec3D& IP=InsertFC.getLinkPt(j);
+	  for(size_t k=j+1;!cellInter && k<NPoint;k++)
+	    {
+	      Geometry::Vec3D UV=InsertFC.getLinkPt(k)-IP;
+	      const double LLen=UV.makeUnit();
+	      if (LLen>Geometry::zeroTol)
+		{
+		  MonteCarlo::LineIntersectVisit LI(IP,UV);
+		  std::vector<const Geometry::Surface*>::const_iterator vc;
+		  for(vc=SurList.begin();vc!=SurList.end();vc++)
+		    (*vc)->acceptVisitor(LI);
+		  
+		  const std::vector<double>& distVec(LI.getDistance());
+		  const std::vector<Geometry::Vec3D>& dPts(LI.getPoints());
+		  const std::vector<const Geometry::Surface*>& 
+		    surfPts=LI.getSurfIndex();
+		  
+		  for(size_t dI=0;dI<dPts.size();dI++)
+		    {
+		      if ((distVec[dI]>0.0 && distVec[dI]<LLen) &&
+			  CRPtr->isValid(dPts[dI],surfPts[dI]->getName()))
+			{
+			  ELog::EM<<"Cell valid at "<<dPts[dI]<<ELog::endDebug;
+			  cellInter=1;
+			  break;
+			}
+		    }
+		}
+	    }
+	}
+      if (cellInter)
+	{
+	  ELog::EM<<"Adding "<<CRPtr->getName()<<ELog::endDebug;
+	  CRPtr->addSurfString(excludeStr);
+	}
+    }
+
+  return;
+}
 
 // SURFACE INTERSECT
 void
@@ -363,7 +473,7 @@ addToInsertOuterSurfCtrl(Simulation& System,
     \param CC :: ContainedComp object to add to this
   */
 {
-  ELog::RegMethod RegA("AttachSupport","addToInsertSurfCtrl(FC,CC)");
+  ELog::RegMethod RegA("AttachSupport","addToInsertOuterSurfCtrl(FC,CC)");
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
   const attachSystem::ContainedComp* BaseCC=
@@ -416,9 +526,11 @@ addToInsertSurfCtrl(Simulation& System,
 
       
       if (checkIntersect(CC,*CRPtr,CellSVec))
-	CC.addInsertCell(i);
+	{
+	  CC.addInsertCell(i);
+	  ELog::EM<<"Add to cell "<<i<<ELog::endDiag; 
+	}
     }
-
   CC.insertObjects(System);
   return;
 }
@@ -479,7 +591,7 @@ checkIntersect(const ContainedComp& CC,const MonteCarlo::Object& CellObj,
    */
 {
   ELog::RegMethod RegA("AttachSupport","checkInsert");
-
+  ELog::debugMethod DegA;
   const std::vector<Geometry::Surface*>& SVec=CC.getSurfaces(); 
   std::vector<Geometry::Vec3D> Out;
   std::vector<Geometry::Vec3D>::const_iterator vc;
@@ -493,7 +605,8 @@ checkIntersect(const ContainedComp& CC,const MonteCarlo::Object& CellObj,
 	    {
 	      std::set<int> boundarySet;
 	      boundarySet.insert(CellSVec[iB]->getName());
-	      boundarySet.insert(CellSVec[iC]->getName());
+	      boundarySet.insert(CellSVec[iC]->getName());		  
+	      // Outer valid returns true if out of object
 	      if (CellObj.isValid(*vc,boundarySet) &&
 		  !CC.isOuterValid(*vc,SVec[iA]->getName()))
 		return 1;
@@ -522,7 +635,10 @@ checkIntersect(const ContainedComp& CC,const MonteCarlo::Object& CellObj,
 	      boundarySet.insert(SVec[iB]->getName());
 	      if (CellObj.isValid(*vc,CellSVec[iC]->getName()) &&
 		  !CC.isOuterValid(*vc,boundarySet))
-		return 1;
+		{
+		  ELog::EM<<"FOUND point == "<<*vc<<ELog::endDebug;
+		  return 1;
+		}
 	    }
 	}
   // All failed:

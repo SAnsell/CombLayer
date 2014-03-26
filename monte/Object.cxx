@@ -1314,8 +1314,6 @@ Object::writePHITS(std::ostream& OX) const
   return;
 }
 
-
-
 void
 Object::checkPointers() const
   /*!

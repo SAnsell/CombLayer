@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   src/Debug.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * File:   log/Debug.cxx
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,9 @@
 #include <iomanip>
 #include <iostream>
 #include "Debug.h"
+
+namespace ELog
+{
 
 debugStatus::debugStatus() : 
   status(0),counter(0)
@@ -67,3 +70,5 @@ ClassCounter::~ClassCounter()
 }
 
 int ClassCounter::classN(0);
+
+}

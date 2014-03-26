@@ -48,9 +48,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "inputParam.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -62,24 +59,16 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
-#include "KCode.h"
 #include "insertInfo.h"
 #include "insertBaseInfo.h"
 #include "InsertComp.h"
-#include "ModeCard.h"
-#include "PhysImp.h"
-#include "PhysCard.h"
-#include "LSwitchCard.h"
-#include "PhysicsCards.h"
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
-#include "LinearComp.h"
 #include "World.h"
+#include "AttachSupport.h"
 #include "targSimpleShield.h"
 #include "targetVesselBox.h"
 #include "muonCarbonTarget.h"
@@ -88,7 +77,10 @@
 #include "cShieldLayer.h"
 #include "profileMon.h"
 #include "muonQ1.h"
+#include "muBeamWindow.h"
 #include "makeMuon.h"
+
+#include "Debug.h"
 
 namespace muSystem
 {
@@ -110,9 +102,24 @@ makeMuon::makeMuon() :
   Q44Obj(new muSystem::muonQ1("Q44quad")),
   FinalTubeObj(new muSystem::muonTube("FinalTube")), 
 // muon                   
+  MuRoomObj(new muSystem::targSimpleShield("MuRoom")), 
   Q1Obj(new muSystem::muonQ1("Q1quad")),
-  Q2Obj(new muSystem::muonQ1("Q2quad")) 
-  
+  Q2Obj(new muSystem::muonQ1("Q2quad")),
+  CernFront(new muSystem::targSimpleShield("CernFront")), 
+  CernBack(new muSystem::targSimpleShield("CernBack")),
+  BWin1Obj(new muSystem::muBeamWindow("BWin1")), 
+  BWin2Obj(new muSystem::muBeamWindow("BWin2")),
+  PosRing1Obj(new muSystem::muonTube("PosRing1")),
+  MuTube1Obj(new muSystem::muonTube("MuTube1")),     
+  MuTube2Obj(new muSystem::muonTube("MuTube2")),       
+  PosRing2Obj(new muSystem::muonTube("PosRing2")),
+  MuTube3Obj(new muSystem::muonTube("MuTube3")),       
+  PosRing3Obj(new muSystem::muonTube("PosRing3")),    
+  MuTube4Obj(new muSystem::muonTube("MuTube4")),   
+  MuTube5Obj(new muSystem::muonTube("MuTube5")),   
+  PosRing4Obj(new muSystem::muonTube("PosRing4")),
+  ShieldPlugObj(new muSystem::cShieldLayer("ShieldPlug"))
+         
 //  Muon & EPB beamline 
   /*!
     Constructor
@@ -135,55 +142,26 @@ makeMuon::makeMuon() :
   OR.addObject(ProfMonObj);        
   OR.addObject(Q44Obj);
   OR.addObject(FinalTubeObj);     
+  OR.addObject(MuRoomObj); 
   OR.addObject(Q1Obj); 
   OR.addObject(Q2Obj);
-
+  OR.addObject(CernFront);
+  OR.addObject(CernBack);    
+  OR.addObject(BWin1Obj);  
+  OR.addObject(BWin2Obj);  
+  OR.addObject(PosRing1Obj);
+  OR.addObject(MuTube1Obj);     
+  OR.addObject(MuTube2Obj);       
+  OR.addObject(PosRing2Obj);
+  OR.addObject(MuTube3Obj);       
+  OR.addObject(PosRing3Obj);    
+  OR.addObject(MuTube4Obj);   
+  OR.addObject(MuTube5Obj);   
+  OR.addObject(PosRing4Obj);
+  OR.addObject(ShieldPlugObj);  
+  
 }
 
-makeMuon::makeMuon(const makeMuon& A) : 
-  TargShieldObj(A.TargShieldObj),VessBoxObj(A.VessBoxObj),
-  TargetObj(A.TargetObj),EpbInTubeObj(A.EpbInTubeObj),
-  EpbOutTubeObj(A.EpbOutTubeObj),FirstCollObj(A.FirstCollObj),
-  ThirdCollObj(A.ThirdCollObj),FirstShieldObj(A.FirstShieldObj),
-  FirstTubeObj(A.FirstTubeObj),ThirdShieldObj(A.ThirdShieldObj),
-  ThirdTubeObj(A.ThirdTubeObj),ProfMonObj(A.ProfMonObj),
-  Q44Obj(A.Q44Obj),FinalTubeObj(A.FinalTubeObj),
-  Q1Obj(A.Q1Obj),Q2Obj(A.Q2Obj)
-  /*!
-    Copy constructor
-    \param A :: makeMuon to copy
-  */
-{}
-
-makeMuon&
-makeMuon::operator=(const makeMuon& A)
-  /*!
-    Assignment operator
-    \param A :: makeMuon to copy
-    \return *this
-  */
-{
-  if (this!=&A)
-    {
-      TargShieldObj=A.TargShieldObj;
-      VessBoxObj=A.VessBoxObj;
-      TargetObj=A.TargetObj;
-      EpbInTubeObj=A.EpbInTubeObj;
-      EpbOutTubeObj=A.EpbOutTubeObj;
-      FirstCollObj=A.FirstCollObj;
-      ThirdCollObj=A.ThirdCollObj;
-      FirstShieldObj=A.FirstShieldObj;
-      FirstTubeObj=A.FirstTubeObj;
-      ThirdShieldObj=A.ThirdShieldObj;
-      ThirdTubeObj=A.ThirdTubeObj;
-      ProfMonObj=A.ProfMonObj;
-      Q44Obj=A.Q44Obj;
-      FinalTubeObj=A.FinalTubeObj;
-      Q1Obj=A.Q1Obj;
-      Q2Obj=A.Q2Obj;
-    }
-  return *this;
-}
 
 makeMuon::~makeMuon()
   /*!
@@ -204,74 +182,151 @@ makeMuon::build(Simulation* SimPtr,
 {
   // For output stream
   ELog::RegMethod RControl("makeMuon","build"); 
-  
+
   TargShieldObj->addInsertCell(74123);
   TargShieldObj->createAll(*SimPtr,World::masterOrigin());
-//  
-  FirstShieldObj->addInsertCell(74123);
-  FirstShieldObj->createAll(*SimPtr);
-  ThirdShieldObj->addInsertCell(74123);
-  ThirdShieldObj->createAll(*SimPtr);
-  ProfMonObj->addInsertCell(74123);
-  ProfMonObj->createAll(*SimPtr); 
+
 // target vessel    
   VessBoxObj->addInsertCell(74123);
-  TargShieldObj->addToInsertChain(*VessBoxObj);  
-  VessBoxObj->createAll(*SimPtr);
+  VessBoxObj->createAll(*SimPtr,World::masterOrigin());
+  attachSystem::addToInsertSurfCtrl(*SimPtr,*TargShieldObj,*VessBoxObj);
+  
 // target     
-//  TargShieldObj->addToInsertChain(*TargetObj);  
-  VessBoxObj->addToInsertChain(*TargetObj);
   TargetObj->createAll(*SimPtr,World::masterOrigin());
+  attachSystem::addToInsertSurfCtrl(*SimPtr,*VessBoxObj,*TargetObj);
+
 // epb tubes  
   EpbInTubeObj->addInsertCell(74123);
-  TargShieldObj->addToInsertChain(*EpbInTubeObj);
-  VessBoxObj->addToInsertChain(*EpbInTubeObj);
   EpbInTubeObj->createAll(*SimPtr,World::masterOrigin()); 
+  attachSystem::addToInsertLineCtrl(*SimPtr,*TargShieldObj,*EpbInTubeObj);
+  attachSystem::addToInsertLineCtrl(*SimPtr,*VessBoxObj,*EpbInTubeObj);
 //  
   EpbOutTubeObj->addInsertCell(74123);
-  TargShieldObj->addToInsertChain(*EpbOutTubeObj);
-  VessBoxObj->addToInsertChain(*EpbOutTubeObj);
   EpbOutTubeObj->createAll(*SimPtr,World::masterOrigin()); 
-// 1st collimator  
-  FirstCollObj->addInsertCell(74123);
-  TargShieldObj->addToInsertChain(*FirstCollObj);
-  FirstShieldObj->addToInsertChain(*FirstCollObj);
-  FirstCollObj->createAll(*SimPtr); 
-  ThirdCollObj->addInsertCell(74123);
+  attachSystem::addToInsertLineCtrl(*SimPtr,*TargShieldObj,*EpbOutTubeObj);
+  attachSystem::addToInsertLineCtrl(*SimPtr,*VessBoxObj,*EpbOutTubeObj);
 
-// 1st tube  
-  FirstTubeObj->addInsertCell(74123);
-  FirstShieldObj->addToInsertChain(*FirstTubeObj);  
-  ProfMonObj->addToInsertChain(*ThirdTubeObj);  
-  FirstTubeObj->createAll(*SimPtr,World::masterOrigin());    
-  FirstShieldObj->addToInsertChain(*ThirdCollObj);
-  ThirdShieldObj->addToInsertChain(*ThirdCollObj); 
-  ThirdCollObj->createAll(*SimPtr); 
-// 3rd tube  
-  ThirdTubeObj->addInsertCell(74123);
-  ThirdShieldObj->addToInsertChain(*ThirdTubeObj);  
-  ProfMonObj->addToInsertChain(*ThirdTubeObj);  
-  ThirdTubeObj->createAll(*SimPtr,World::masterOrigin());     
-// Q44 quadropole and final tube      
-  Q44Obj->addInsertCell(74123);
-  Q44Obj->createAll(*SimPtr);  
-  FinalTubeObj->addInsertCell(74123);
-  ProfMonObj->addToInsertChain(*FinalTubeObj);
-  Q44Obj->addToInsertChain(*FinalTubeObj);      
-  FinalTubeObj->createAll(*SimPtr,World::masterOrigin());     
-//
+// 1st collimator  
+  FirstShieldObj->addInsertCell(74123);
+  FirstShieldObj->createAll(*SimPtr,World::masterOrigin());
+
+  FirstCollObj->addInsertCell(74123);
+  FirstCollObj->createAll(*SimPtr,World::masterOrigin());     
+  attachSystem::addToInsertLineCtrl(*SimPtr,*FirstShieldObj,*FirstCollObj);
+  attachSystem::addToInsertLineCtrl(*SimPtr,*TargShieldObj,*FirstCollObj);
+
+// muon beam window 1    
+  BWin1Obj->createAll(*SimPtr,World::masterOrigin());    
+  attachSystem::addToInsertLineCtrl(*SimPtr,*TargShieldObj,*BWin1Obj);
+  attachSystem::addToInsertLineCtrl(*SimPtr,*VessBoxObj,*BWin1Obj);
+
+// muon beam window 2    
+  BWin2Obj->createAll(*SimPtr,World::masterOrigin());    
+  attachSystem::addToInsertLineCtrl(*SimPtr,*TargShieldObj,*BWin2Obj);
+  attachSystem::addToInsertLineCtrl(*SimPtr,*VessBoxObj,*BWin2Obj);
+// room
+  MuRoomObj->addInsertCell(74123);
+  MuRoomObj->createAll(*SimPtr,World::masterOrigin());    
+
+  // position ring 1    
+  PosRing1Obj->createAll(*SimPtr,World::masterOrigin());  
+  attachSystem::addToInsertLineCtrl(*SimPtr,*TargShieldObj,*PosRing1Obj);
+  attachSystem::addToInsertLineCtrl(*SimPtr,*MuRoomObj,*PosRing1Obj);
+//  
+  if (!IParam.flag("exclude") || 
+      !IParam.compValue("E",std::string("EPBBeamline")))
+    {
+      ThirdShieldObj->addInsertCell(74123);
+      ThirdShieldObj->createAll(*SimPtr,World::masterOrigin());
+
+      ProfMonObj->addInsertCell(74123);
+      ProfMonObj->createAll(*SimPtr,World::masterOrigin());
+      ThirdCollObj->addInsertCell(74123);
+
+
+      // 1st tube  
+      FirstTubeObj->addInsertCell(74123);
+      FirstShieldObj->addToInsertChain(*FirstTubeObj);  
+      FirstTubeObj->createAll(*SimPtr,World::masterOrigin());    
+
+      ThirdCollObj->createAll(*SimPtr,World::masterOrigin()); 
+      attachSystem::addToInsertLineCtrl(*SimPtr,*ThirdShieldObj,*ThirdCollObj);
+      attachSystem::addToInsertLineCtrl(*SimPtr,*ProfMonObj,*ThirdCollObj);
+      attachSystem::addToInsertLineCtrl(*SimPtr,*FirstShieldObj,*ThirdCollObj);
+
+      // 3rd tube  
+      ThirdTubeObj->addInsertCell(74123);
+      ThirdTubeObj->createAll(*SimPtr,World::masterOrigin());     
+      attachSystem::addToInsertLineCtrl(*SimPtr,*ThirdShieldObj,*ThirdTubeObj);
+      attachSystem::addToInsertLineCtrl(*SimPtr,*ProfMonObj,*ThirdTubeObj);
+
+      // Q44 quadropole and final tube      
+      Q44Obj->addInsertCell(74123);
+      Q44Obj->createAll(*SimPtr,World::masterOrigin());  
+      FinalTubeObj->addInsertCell(74123);
+      ProfMonObj->addToInsertChain(*FinalTubeObj);
+      Q44Obj->addToInsertChain(*FinalTubeObj);      
+      FinalTubeObj->createAll(*SimPtr,World::masterOrigin());     
+    }
+  //
   if (!IParam.flag("exclude") || 
       !IParam.compValue("E",std::string("MuonBeamline")))
-  {
-    // muon beamline  
-    Q1Obj->addInsertCell(74123);
-    Q1Obj->createAll(*SimPtr); 
-    Q2Obj->addInsertCell(74123);
-    Q2Obj->createAll(*SimPtr); 
-  }
-    return;
+    {
+      // +++++++++++++++++++++++++++++++++++  muon beamline  
+      Q1Obj->addInsertCell(74123);
+      MuRoomObj->addToInsertChain(*Q1Obj);    
+      Q1Obj->createAll(*SimPtr,World::masterOrigin());
+      // Muon vacuum tube 1    
+      MuTube1Obj->addInsertCell(74123);
+      Q1Obj->addToInsertChain(*MuTube1Obj); 
+      MuRoomObj->addToInsertChain(*MuTube1Obj);    
+      MuTube1Obj->createAll(*SimPtr,World::masterOrigin());         
+      Q2Obj->addInsertCell(74123);
+      MuRoomObj->addToInsertChain(*Q2Obj);   
+      Q2Obj->createAll(*SimPtr,World::masterOrigin());
+      CernFront->addInsertCell(74123);
+      MuRoomObj->addToInsertChain(*CernFront);    
+      CernFront->createAll(*SimPtr,World::masterOrigin());
+      CernBack->addInsertCell(74123);
+      MuRoomObj->addToInsertChain(*CernBack);     
+      CernBack->createAll(*SimPtr,World::masterOrigin());     
+      // Muon vacuum tube 2    
+      MuTube2Obj->addInsertCell(74123);
+      Q1Obj->addToInsertChain(*MuTube2Obj); 
+      Q2Obj->addToInsertChain(*MuTube2Obj);
+      MuRoomObj->addToInsertChain(*MuTube2Obj);    
+      CernFront->addToInsertChain(*MuTube2Obj);       
+      CernBack->addToInsertChain(*MuTube2Obj);
+      MuTube2Obj->createAll(*SimPtr,World::masterOrigin());  
+      // position ring 2    
+      PosRing2Obj->addInsertCell(74123);
+      MuRoomObj->addToInsertChain(*PosRing2Obj);      
+      PosRing2Obj->createAll(*SimPtr,World::masterOrigin());      
+      // Muon vacuum tube 3    
+      MuTube3Obj->addInsertCell(74123);
+      MuRoomObj->addToInsertChain(*MuTube3Obj);  
+      MuTube3Obj->createAll(*SimPtr,World::masterOrigin());  
+      // position ring 3    
+      PosRing3Obj->addInsertCell(74123);
+      MuRoomObj->addToInsertChain(*PosRing3Obj);  
+      PosRing3Obj->createAll(*SimPtr,World::masterOrigin());
+      // Shield plug 
+      ShieldPlugObj->addInsertCell(74123);
+      ShieldPlugObj->createAll(*SimPtr,World::masterOrigin());
+      // Muon vacuum tube 4 & 5    
+      MuTube4Obj->addInsertCell(74123);
+      ShieldPlugObj->addToInsertChain(*MuTube4Obj);    
+      MuTube4Obj->createAll(*SimPtr,World::masterOrigin());
+      MuTube5Obj->addInsertCell(74123);
+      ShieldPlugObj->addToInsertChain(*MuTube5Obj);    
+      MuTube5Obj->createAll(*SimPtr,World::masterOrigin());      
+      // position ring 4    
+      PosRing4Obj->addInsertCell(74123);  
+      PosRing4Obj->createAll(*SimPtr,World::masterOrigin());        
+    }
+  return;
 }
 
 
-}   // NAMESPACE ts1System
+}   // NAMESPACE muSystem
 

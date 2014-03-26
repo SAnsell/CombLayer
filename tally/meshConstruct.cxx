@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   tally/meshConstruct.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -114,14 +114,15 @@ meshConstruct::processMesh(Simulation& System,
   if (PType=="help")  // 
     {
       ELog::EM<<
-	"free Vec3D Vec3D Nx Ny Nz \n"
+	"free dosetype Vec3D Vec3D Nx Ny Nz \n"
+	"heat Vec3D Vec3D Nx Ny Nz \n"
 	<<ELog::endBasic;
 
       return;
     }
   const masterRotate& MR=masterRotate::Instance();
   
-  if (PType=="free")
+  if (PType=="free" || PType=="heat")
     {
       const std::string doseType=
 	inputItem<std::string>(IParam,Index,2,"Dose type");
@@ -145,8 +146,10 @@ meshConstruct::processMesh(Simulation& System,
       Nxyz[0]=inputItem<int>(IParam,Index,nxyzIndex++,"NXpts");
       Nxyz[1]=inputItem<int>(IParam,Index,nxyzIndex++,"NYpts");
       Nxyz[2]=inputItem<int>(IParam,Index,nxyzIndex++,"NZpts");
-
-      rectangleMesh(System,1,doseType,APt,BPt,Nxyz);
+      if (PType=="heat")
+	rectangleMesh(System,3,"void",APt,BPt,Nxyz);
+      else
+	rectangleMesh(System,1,doseType,APt,BPt,Nxyz);
       return;
     }
   ELog::EM<<"Unknown Mesh type :"<<PType<<ELog::endWarn;
@@ -179,7 +182,8 @@ meshConstruct::rectangleMesh(Simulation& System,const int type,
 
   // Create tally:
   meshTally MT(tallyN);
-  MT.setParticles("n");
+  if (type==1)
+    MT.setParticles("n");
   MT.setCoordinates(APt,BPt);
   MT.setIndex(MPts);
   MT.setActive(1);

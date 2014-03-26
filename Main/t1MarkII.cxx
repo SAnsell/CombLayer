@@ -162,7 +162,6 @@ main(int argc,char* argv[])
 	    SimPtr->setENDF7();
 	  createMeshTally(IParam,SimPtr);
 
-
 	  SimProcess::importanceSim(*SimPtr,IParam);
 	  SimProcess::inputPatternSim(*SimPtr,IParam); // energy cut etc
 	  if (renumCellWork)

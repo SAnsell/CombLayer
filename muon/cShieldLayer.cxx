@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   muon/cShieldLayer.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell/Goran Skoro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,13 +48,10 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "surfEqual.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Rules.h"
@@ -64,8 +61,6 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "SimProcess.h"
-#include "SurInter.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -73,7 +68,6 @@
 #include "ContainedComp.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "World.h"
 #include "cShieldLayer.h"
 
 namespace muSystem
@@ -89,6 +83,46 @@ cShieldLayer::cShieldLayer(const std::string& Key)  :
   */
 {}
 
+cShieldLayer::cShieldLayer(const cShieldLayer& A) : 
+  attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
+  csLayerIndex(A.csLayerIndex),cellIndex(A.cellIndex),
+  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
+  xAngle(A.xAngle),yAngle(A.yAngle),zAngle(A.zAngle),
+  height(A.height),depth(A.depth),width(A.width),
+  steelMat(A.steelMat),nLay(A.nLay)
+  /*!
+    Copy constructor
+    \param A :: cShieldLayer to copy
+  */
+{}
+
+cShieldLayer&
+cShieldLayer::operator=(const cShieldLayer& A)
+  /*!
+    Assignment operator
+    \param A :: cShieldLayer to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedComp::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
+      cellIndex=A.cellIndex;
+      xStep=A.xStep;
+      yStep=A.yStep;
+      zStep=A.zStep;
+      xAngle=A.xAngle;
+      yAngle=A.yAngle;
+      zAngle=A.zAngle;
+      height=A.height;
+      depth=A.depth;
+      width=A.width;
+      steelMat=A.steelMat;
+      nLay=A.nLay;
+    }
+  return *this;
+}
 
 cShieldLayer::~cShieldLayer() 
   /*!
@@ -97,20 +131,20 @@ cShieldLayer::~cShieldLayer()
 {}
 
 void
-cShieldLayer::populate(const Simulation& System)
+cShieldLayer::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: Database to used
   */
 {
   ELog::RegMethod RegA("cShieldLayer","populate");
 
-  const FuncDataBase& Control=System.getDataBase();
-
   xStep=Control.EvalVar<double>(keyName+"XStep");
   yStep=Control.EvalVar<double>(keyName+"YStep");
   zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYAngle");
+  xAngle=Control.EvalVar<double>(keyName+"Xangle");
+  yAngle=Control.EvalVar<double>(keyName+"Yangle");  
+  zAngle=Control.EvalVar<double>(keyName+"Zangle");
 
   height=Control.EvalVar<double>(keyName+"Height");
   depth=Control.EvalVar<double>(keyName+"Depth");
@@ -118,24 +152,24 @@ cShieldLayer::populate(const Simulation& System)
   
   steelMat=ModelSupport::EvalMat<int>(Control,keyName+"SteelMat");    
 
-  nLay=Control.EvalVar<int>(keyName+"NLayers");
+  nLay=Control.EvalVar<size_t>(keyName+"NLayers");
        
   return;
 }
 
 void
-cShieldLayer::createUnitVector()
+cShieldLayer::createUnitVector(const attachSystem::FixedComp& FC)
   /*!
     Create the unit vectors
+    \param FC :: Object for origin
   */
 {
   ELog::RegMethod RegA("cShieldLayer","createUnitVector");
 
-  attachSystem::FixedComp::createUnitVector(World::masterOrigin());
+  attachSystem::FixedComp::createUnitVector(FC);
   applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,0);    
-
-
+  applyAngleRotate(0,0,zAngle);  
+  applyAngleRotate(0,yAngle,0);
   
   return;
 }
@@ -153,16 +187,13 @@ cShieldLayer::createSurfaces()
       const double layThick(depth/nLay);
       double yPos(-depth/2.0);
       int plateIndex(csLayerIndex+100);
-      for(int i=0;i<nLay-1;i++)
+      for(size_t i=0;i<nLay-1;i++)
 	{
 	  yPos+=layThick;
 	  ModelSupport::buildPlane(SMap,plateIndex+1,Origin+Y*yPos,Y);
-//	  yPos+=layThick;
-//	  ModelSupport::buildPlane(SMap,plateIndex+2,Origin+Y*yPos,Y);
 	  plateIndex+=10;
 	}
     }
-
 
   // outer layer
   ModelSupport::buildPlane(SMap,csLayerIndex+1,Origin-Y*depth/2.0,Y);
@@ -172,8 +203,6 @@ cShieldLayer::createSurfaces()
   ModelSupport::buildPlane(SMap,csLayerIndex+5,Origin-Z*height/2.0,Z);
   ModelSupport::buildPlane(SMap,csLayerIndex+6,Origin+Z*height/2.0,Z);
   
-
-
   return;
 }
 
@@ -206,23 +235,17 @@ cShieldLayer::createObjects(Simulation& System)
   addOuterSurf(Out);
   addBoundarySurf(Out);
 
-  if (nLay>0)
+  if (nLay>1)
     {
       int plateIndex(csLayerIndex+100);
       // inital
       Out=ModelSupport::getComposite(SMap,csLayerIndex,"1 -101 3 -4 5 -6");
       System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
-      for(int i=0;i<nLay-2;i++)
+      for(size_t i=1;i<nLay-1;i++)
 	{
 	  Out=ModelSupport::getComposite(SMap,csLayerIndex,
 					 plateIndex,"1M -11M 3 -4 5 -6");					 
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
-//	  if (i=nLay-5)
-//	    {
-//	  Out=ModelSupport::getComposite(SMap,csLayerIndex,
-//					 plateIndex,"1M -11M 3 -4 5 -6");					 
-//	  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-//	    }
 	  plateIndex+=10;
 	}
       // final
@@ -253,12 +276,20 @@ cShieldLayer::createLinks()
   FixedComp::setLinkSurf(3,SMap.realSurf(csLayerIndex+4));
   FixedComp::setLinkSurf(4,-SMap.realSurf(csLayerIndex+5));
   FixedComp::setLinkSurf(5,SMap.realSurf(csLayerIndex+6));
+  
+  FixedComp::setConnect(0,Origin-Y*depth/2.0,-Y);
+  FixedComp::setConnect(1,Origin+Y*depth/2.0,Y);
+  FixedComp::setConnect(2,Origin-X*width/2.0,-X);
+  FixedComp::setConnect(3,Origin+X*width/2.0,X);
+  FixedComp::setConnect(4,Origin-Z*height/2.0,-Z);
+  FixedComp::setConnect(5,Origin+Z*height/2.0,Z);
 
   return;
 }
 
 void
-cShieldLayer::createAll(Simulation& System)
+cShieldLayer::createAll(Simulation& System,
+			const attachSystem::FixedComp& FC)
 
   /*!
     Global creation of the hutch
@@ -267,8 +298,9 @@ cShieldLayer::createAll(Simulation& System)
   */
 {
   ELog::RegMethod RegA("cShieldLayer","createAll");
-  populate(System);
-  createUnitVector();
+
+  populate(System.getDataBase());
+  createUnitVector(FC);
   createSurfaces();
   createObjects(System);
   createLinks();

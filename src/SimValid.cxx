@@ -124,9 +124,8 @@ SimValid::run(const Simulation& System,const size_t N) const
   InitObj=System.findCell(Centre,InitObj);  
   const int initSurfNum=InitObj->isOnSide(Centre);
 
-  ELog::EM<<"C == "<<Centre<<ELog::endDiag;      
-  ELog::EM<<"InitOb == "<<InitObj->getName()<<ELog::endDiag;      
-  ELog::EM<<"Init == "<<initSurfNum<<ELog::endDiag; 
+  ELog::EM<<"Init Object nubmer == "<<InitObj->getName()<<ELog::endDiag;      
+  ELog::EM<<"Initial surface [if on surf] == "<<initSurfNum<<ELog::endDiag; 
      
   // check surfaces
   for(size_t i=0;i<N;i++)
@@ -207,6 +206,7 @@ SimValid::run(const Simulation& System,const size_t N) const
 	  return 0;
 	}
     }
+  ELog::EM<<"Finished Validation check"<<ELog::endDiag;
   return 1;
 }
 

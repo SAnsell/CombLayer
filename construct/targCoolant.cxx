@@ -317,10 +317,9 @@ targCoolant::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("targCoolant","createObjects");
 
-  ELog::EM<<"Active cells " <<activeCells.size()<<ELog::endDiag;
   if (activeCells.empty())
     return;
-  ELog::EM<<"Container " <<container<<ELog::endDiag;
+
   std::string Out;
   int offset;
   

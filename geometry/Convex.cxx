@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   geometry/Convex.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,7 +53,6 @@
 #include "Face.h"
 #include "Convex.h"
 
-#include "Debug.h"
 
 namespace Geometry
 {
@@ -188,8 +187,7 @@ Convex::setPoints(const std::vector<Geometry::Vec3D>& PVec)
       Vertex* NV=new Vertex(static_cast<int>(VList.size()),*vc);
       VList.push_back(NV);
     }
-  if (debugStatus::Instance().getFlag())
-    ELog::EM<<"Number of points == "<<PVec.size()<<ELog::endTrace;
+  ELog::EM<<"Number of points == "<<PVec.size()<<ELog::endDebug;
 
   return;
 }

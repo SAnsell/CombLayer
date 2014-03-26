@@ -46,7 +46,10 @@ class muonTube : public attachSystem::FixedComp,
   double xStep;                 ///< X-Step
   double yStep;                 ///< Y-Step
   double zStep;                 ///< Z-Step
-
+  double xAngle;
+  double yAngle;  
+  double zAngle;
+  
   double radius;                ///< radius
   double thick;                 ///< thickness
   double length;                ///< length  

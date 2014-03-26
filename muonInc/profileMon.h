@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   muonInc/profileMon.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell/Goran Skoro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,9 +54,8 @@ class profileMon : public attachSystem::FixedComp,
 
   int steelMat;                   ///Material: Steel
 
-
-  void populate(const Simulation&);
-  void createUnitVector();
+  void populate(const FuncDataBase&);
+  void createUnitVector(const attachSystem::FixedComp&);
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -70,7 +69,7 @@ class profileMon : public attachSystem::FixedComp,
   virtual ~profileMon();
   
   virtual void addToInsertChain(attachSystem::ContainedComp&) const;
-  void createAll(Simulation&);  
+  void createAll(Simulation&,const attachSystem::FixedComp&);  
 };
 
 }

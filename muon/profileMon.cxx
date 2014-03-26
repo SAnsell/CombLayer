@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   muon/profileMon.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell/Goran Skoro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,13 +49,10 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "surfEqual.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
@@ -75,7 +72,6 @@
 #include "ContainedComp.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "World.h"
 #include "profileMon.h"
 
 namespace muSystem
@@ -91,6 +87,42 @@ profileMon::profileMon(const std::string& Key)  :
   */
 {}
 
+profileMon::profileMon(const profileMon& A) : 
+  attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
+  profMonIndex(A.profMonIndex),cellIndex(A.cellIndex),
+  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
+  xyAngle(A.xyAngle),height(A.height),depth(A.depth),
+  width(A.width),steelMat(A.steelMat)
+  /*!
+    Copy constructor
+    \param A :: profileMon to copy
+  */
+{}
+
+profileMon&
+profileMon::operator=(const profileMon& A)
+  /*!
+    Assignment operator
+    \param A :: profileMon to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedComp::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
+      cellIndex=A.cellIndex;
+      xStep=A.xStep;
+      yStep=A.yStep;
+      zStep=A.zStep;
+      xyAngle=A.xyAngle;
+      height=A.height;
+      depth=A.depth;
+      width=A.width;
+      steelMat=A.steelMat;
+    }
+  return *this;
+}
 
 profileMon::~profileMon() 
   /*!
@@ -99,15 +131,13 @@ profileMon::~profileMon()
 {}
 
 void
-profileMon::populate(const Simulation& System)
+profileMon::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: database for variables
   */
 {
   ELog::RegMethod RegA("profileMon","populate");
-
-  const FuncDataBase& Control=System.getDataBase();
 
   xStep=Control.EvalVar<double>(keyName+"XStep");
   yStep=Control.EvalVar<double>(keyName+"YStep");
@@ -124,18 +154,16 @@ profileMon::populate(const Simulation& System)
 }
 
 void
-profileMon::createUnitVector()
+profileMon::createUnitVector(const attachSystem::FixedComp& FC)
   /*!
     Create the unit vectors
   */
 {
   ELog::RegMethod RegA("profileMon","createUnitVector");
 
-  attachSystem::FixedComp::createUnitVector(World::masterOrigin());
+  attachSystem::FixedComp::createUnitVector(FC);
   applyShift(xStep,yStep,zStep);
   applyAngleRotate(xyAngle,0);    
-
-
   
   return;
 }
@@ -156,8 +184,6 @@ profileMon::createSurfaces()
   ModelSupport::buildPlane(SMap,profMonIndex+5,Origin-Z*height/2.0,Z);
   ModelSupport::buildPlane(SMap,profMonIndex+6,Origin+Z*height/2.0,Z);
   
-
-
   return;
 }
 
@@ -183,14 +209,13 @@ profileMon::createObjects(Simulation& System)
   ELog::RegMethod RegA("profileMon","createObjects");
   
   std::string Out;
-  std::string Out1;
 
     // Steel
   Out=ModelSupport::getComposite(SMap,profMonIndex,"1 -2 3 -4 5 -6 ");
-  addOuterSurf(Out);
-  addBoundarySurf(Out);
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
 
+  addOuterSurf(Out);
+  addBoundarySurf(Out);
   
   return;
 }
@@ -211,11 +236,19 @@ profileMon::createLinks()
   FixedComp::setLinkSurf(4,-SMap.realSurf(profMonIndex+5));
   FixedComp::setLinkSurf(5,SMap.realSurf(profMonIndex+6));
 
+  FixedComp::setConnect(0,Origin-Y*depth/2.0,-Y);
+  FixedComp::setConnect(1,Origin+Y*depth/2.0,Y);
+  FixedComp::setConnect(2,Origin-X*width/2.0,-X);
+  FixedComp::setConnect(3,Origin+X*width/2.0,X);
+  FixedComp::setConnect(4,Origin-Z*height/2.0,-Z);
+  FixedComp::setConnect(5,Origin+Z*height/2.0,Z);
+
   return;
 }
 
 void
-profileMon::createAll(Simulation& System)
+profileMon::createAll(Simulation& System,
+		      const attachSystem::FixedComp& FC)
 
   /*!
     Global creation of the hutch
@@ -224,8 +257,9 @@ profileMon::createAll(Simulation& System)
   */
 {
   ELog::RegMethod RegA("profileMon","createAll");
-  populate(System);
-  createUnitVector();
+
+  populate(System.getDataBase());
+  createUnitVector(FC);
   createSurfaces();
   createObjects(System);
   createLinks();
@@ -233,4 +267,4 @@ profileMon::createAll(Simulation& System)
   return;
 }
   
-}  // NAMESPACE shutterSystem
+}  // NAMESPACE muSystem

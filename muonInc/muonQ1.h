@@ -3,7 +3,7 @@
  
  * File:   muonInc/muonQ1.h
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2014 by Stuart Ansell/Goran Skoro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,8 +66,8 @@ class muonQ1 : public attachSystem::FixedComp,
   int copperMat;                   ///Material: Copper 
   int insertMat;                   ///Material: Insert 
 
-  void populate(const Simulation&);
-  void createUnitVector();
+  void populate(const FuncDataBase&);
+  void createUnitVector(const attachSystem::FixedComp&);
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -81,7 +81,7 @@ class muonQ1 : public attachSystem::FixedComp,
   virtual ~muonQ1();
   
   virtual void addToInsertChain(attachSystem::ContainedComp&) const;
-  void createAll(Simulation&);  
+  void createAll(Simulation&,const attachSystem::FixedComp&);  
 };
 
 }

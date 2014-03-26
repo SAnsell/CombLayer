@@ -22,6 +22,7 @@
 #ifndef muSystem_makeMuon_h
 #define muSystem_makeMuon_h
 
+
 /*!
   \namespace muSystem
   \brief Muon beamline model
@@ -41,6 +42,7 @@ namespace muSystem
   class cShieldLayer; 
   class profileMon;                 
   class muonQ1;
+  class muBeamWindow;  
 
   /*!
     \class makeMuon
@@ -68,11 +70,24 @@ class makeMuon
   boost::shared_ptr<profileMon> ProfMonObj;   // Profile monitor   
   boost::shared_ptr<muonQ1> Q44Obj;   // quadropoles 
   boost::shared_ptr<muonTube> FinalTubeObj;   // final tube            
+  boost::shared_ptr<targSimpleShield> MuRoomObj;   // room
   boost::shared_ptr<muonQ1> Q1Obj;   // quadropoles 
-  boost::shared_ptr<muonQ1> Q2Obj;   // quadropoles 
-
-
-        
+  boost::shared_ptr<muonQ1> Q2Obj;   // quadropoles
+  boost::shared_ptr<targSimpleShield> CernFront;   // cern quad magnet front "plate"    
+  boost::shared_ptr<targSimpleShield> CernBack;   // cern quad magnet back "plate"
+  boost::shared_ptr<muBeamWindow> BWin1Obj;   // beam window 
+  boost::shared_ptr<muBeamWindow> BWin2Obj;   // beam window 
+  boost::shared_ptr<muonTube> PosRing1Obj;   // position ring 1
+  boost::shared_ptr<muonTube> MuTube1Obj;   // muon vacuum tube 1
+  boost::shared_ptr<muonTube> MuTube2Obj;   // muon vacuum tube 2      
+  boost::shared_ptr<muonTube> PosRing2Obj;   // position ring 2
+  boost::shared_ptr<muonTube> MuTube3Obj;   // muon vacuum tube 3       
+  boost::shared_ptr<muonTube> PosRing3Obj;   // position ring 3    
+  boost::shared_ptr<muonTube> MuTube4Obj;   // muon vacuum tube 4   
+  boost::shared_ptr<muonTube> MuTube5Obj;   // muon vacuum tube 5   
+  boost::shared_ptr<muonTube> PosRing4Obj;   // position ring 4
+  boost::shared_ptr<cShieldLayer> ShieldPlugObj;   // Shield plug layered 
+            
  public:
   
   makeMuon();

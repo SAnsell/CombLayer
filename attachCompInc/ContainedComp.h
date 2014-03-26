@@ -117,7 +117,12 @@ class ContainedComp
   const std::vector<int>& getInsertCells() const 
     { return insertCells; }
 
+  void write(std::ostream&) const;
+
 };
+
+std::ostream&
+operator<<(std::ostream&,const ContainedComp&);
 
 }
 

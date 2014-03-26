@@ -360,7 +360,6 @@ CylPreSimple::createObjects(Simulation& System,
     }
   
   // Finally the void cell:
-  ELog::EM<<"DEBUG AVOID OF VIEW MODIFICATION"<<ELog::endCrit;
   return;
   Out=ModelSupport::getComposite(SMap,modIndex,
 				 modIndex+10*static_cast<int>(nLayers-1),"9 -7M ");

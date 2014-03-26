@@ -2,7 +2,7 @@
   CombLayer : MNCPX Input builder
  
  * File:   muon/targSimpleShield.cxx
- *
+*
  * Copyright (c) 2004-2014 by Stuart Ansell/Goran Skoro
  *
  * This program is free software: you can redistribute it and/or modify
@@ -33,7 +33,6 @@
 #include <algorithm>
 #include <iterator>
 #include <boost/shared_ptr.hpp>
-#include <boost/array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -65,6 +64,7 @@
 #include "Object.h"
 #include "Qhull.h"
 #include "SimProcess.h"
+#include "SurInter.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -87,50 +87,6 @@ targSimpleShield::targSimpleShield(const std::string& Key)  :
   */
 {}
 
-targSimpleShield::targSimpleShield(const targSimpleShield& A) : 
-  attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
-  targShieldIndex(A.targShieldIndex),cellIndex(A.cellIndex),
-  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  xyAngle(A.xyAngle),height(A.height),depth(A.depth),
-  width(A.width),baseThick(A.baseThick),forwThick(A.forwThick),
-  backThick(A.backThick),muonThick(A.muonThick),
-  japThick(A.japThick),mat(A.mat)
-  /*!
-    Copy constructor
-    \param A :: targSimpleShield to copy
-  */
-{}
-
-targSimpleShield&
-targSimpleShield::operator=(const targSimpleShield& A)
-  /*!
-    Assignment operator
-    \param A :: targSimpleShield to copy
-    \return *this
-  */
-{
-  if (this!=&A)
-    {
-      attachSystem::FixedComp::operator=(A);
-      attachSystem::ContainedComp::operator=(A);
-      cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      height=A.height;
-      depth=A.depth;
-      width=A.width;
-      baseThick=A.baseThick;
-      forwThick=A.forwThick;
-      backThick=A.backThick;
-      muonThick=A.muonThick;
-      japThick=A.japThick;
-      mat=A.mat;
-    }
-  return *this;
-}
-
 
 targSimpleShield::~targSimpleShield() 
   /*!
@@ -139,10 +95,10 @@ targSimpleShield::~targSimpleShield()
 {}
 
 void
-targSimpleShield::populate(const FuncDataBase& Control)
+targSimpleShield::populate(const FuncDataBase& Control)  
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: DataBase
   */
 {
   ELog::RegMethod RegA("targSimpleShield","populate");
@@ -150,18 +106,21 @@ targSimpleShield::populate(const FuncDataBase& Control)
   xStep=Control.EvalVar<double>(keyName+"XStep");
   yStep=Control.EvalVar<double>(keyName+"YStep");
   zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYAngle");
+  xAngle=Control.EvalVar<double>(keyName+"Xangle");
+  yAngle=Control.EvalVar<double>(keyName+"Yangle");  
+  zAngle=Control.EvalVar<double>(keyName+"Zangle");
 
   height=Control.EvalVar<double>(keyName+"Height");
   depth=Control.EvalVar<double>(keyName+"Depth");
   width=Control.EvalVar<double>(keyName+"Width");
   
-  baseThick=Control.EvalVar<double>(keyName+"BaseThick");
+  backThick=Control.EvalVar<double>(keyName+"BackThick");  
   forwThick=Control.EvalVar<double>(keyName+"ForwThick"); 
-  backThick=Control.EvalVar<double>(keyName+"BackThick");
-  muonThick=Control.EvalVar<double>(keyName+"MuonThick");
-  japThick=Control.EvalVar<double>(keyName+"JapThick");    
-     
+  leftThick=Control.EvalVar<double>(keyName+"LeftThick");    
+  rightThick=Control.EvalVar<double>(keyName+"RightThick");
+  baseThick=Control.EvalVar<double>(keyName+"BaseThick");
+  topThick=Control.EvalVar<double>(keyName+"TopThick");
+       
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");    
        
   return;
@@ -171,14 +130,15 @@ void
 targSimpleShield::createUnitVector(const attachSystem::FixedComp& FC)
   /*!
     Create the unit vectors
-    \param FC :: Fixed Unit for origin						
+    \param FC :: Origin 
   */
 {
   ELog::RegMethod RegA("targSimpleShield","createUnitVector");
 
   attachSystem::FixedComp::createUnitVector(FC);
   applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,0);    
+  applyAngleRotate(0,0,zAngle);  
+  applyAngleRotate(0,yAngle,0);
   
   return;
 }
@@ -202,10 +162,10 @@ targSimpleShield::createSurfaces()
   // shield layer
   ModelSupport::buildPlane(SMap,targShieldIndex+11,Origin-Y*(depth/2.0-backThick),Y);
   ModelSupport::buildPlane(SMap,targShieldIndex+12,Origin+Y*(depth/2.0-forwThick),Y);
-  ModelSupport::buildPlane(SMap,targShieldIndex+13,Origin-X*(width/2.0-japThick),X);
-  ModelSupport::buildPlane(SMap,targShieldIndex+14,Origin+X*(width/2.0-muonThick),X);
+  ModelSupport::buildPlane(SMap,targShieldIndex+13,Origin-X*(width/2.0-leftThick),X);
+  ModelSupport::buildPlane(SMap,targShieldIndex+14,Origin+X*(width/2.0-rightThick),X);
   ModelSupport::buildPlane(SMap,targShieldIndex+15,Origin-Z*(height/2.0-baseThick),Z);
-//  ModelSupport::buildPlane(SMap,targShieldIndex+16,Origin+Z*(height/2.0-shieldThick),Z);  
+  ModelSupport::buildPlane(SMap,targShieldIndex+16,Origin+Z*(height/2.0-topThick),Z);  
 
 
   return;
@@ -239,11 +199,11 @@ targSimpleShield::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,targShieldIndex,"1 -2 3 -4 5 -6 ");
   addOuterSurf(Out);
   addBoundarySurf(Out);
-  Out1=ModelSupport::getComposite(SMap,targShieldIndex,"(-11:12:-13:14:-15) ");  
+  Out1=ModelSupport::getComposite(SMap,targShieldIndex,"(-11:12:-13:14:-15:16) ");  
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out+Out1));
 
     // hole
-  Out=ModelSupport::getComposite(SMap,targShieldIndex,"11 -12 13 -14 15 -6 ");
+  Out=ModelSupport::getComposite(SMap,targShieldIndex,"11 -12 13 -14 15 -16 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   
   return;

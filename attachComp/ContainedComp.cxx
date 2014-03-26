@@ -44,6 +44,7 @@
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
+#include "support.h"
 #include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
@@ -65,13 +66,22 @@
 #include "Simulation.h"
 #include "AttachSupport.h"
 #include "ContainedComp.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 
-#include "Debug.h"
 
 namespace attachSystem
 {
+
+std::ostream&
+operator<<(std::ostream& OX,const ContainedComp& A)
+  /*!
+    Standard write
+    \param OX :: Output stream
+    \param A :: ContainedComp to write
+   */
+{
+  A.write(OX);
+  return OX;
+}
 
 ContainedComp::ContainedComp() 
   /*!
@@ -608,5 +618,20 @@ ContainedComp::insertObjects(Simulation& System)
   return;
 }
 
+void
+ContainedComp::write(std::ostream& OX) const
+  /*!
+    Write out the boundar/outer rules
+    \param OX :: Output stream
+  */
+{
+  OX<<"\nboundary:";
+  StrFunc::writeMCNPX(boundary.display(),OX);
+  OX<<std::endl;
+  OX<<"outerSurf:";
+  StrFunc::writeMCNPX(outerSurf.display(),OX);
+  OX<<std::endl;
+  return;
+}
 
 }  // NAMESPACE attachSystem

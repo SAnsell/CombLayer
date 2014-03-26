@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   muon/targetVesselBox.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell/Goran Skoro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,8 +49,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -77,7 +75,6 @@
 #include "ContainedComp.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "World.h"
 #include "targetVesselBox.h"
 
 namespace muSystem
@@ -101,15 +98,13 @@ targetVesselBox::~targetVesselBox()
 {}
 
 void
-targetVesselBox::populate(const Simulation& System)
+targetVesselBox::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: Data Base
   */
 {
   ELog::RegMethod RegA("targetVesselBox","populate");
-
-  const FuncDataBase& Control=System.getDataBase();
 
   xStep=Control.EvalVar<double>(keyName+"XStep");
   yStep=Control.EvalVar<double>(keyName+"YStep");
@@ -127,19 +122,18 @@ targetVesselBox::populate(const Simulation& System)
 }
 
 void
-targetVesselBox::createUnitVector()
+targetVesselBox::createUnitVector(const attachSystem::FixedComp& FC)
   /*!
     Create the unit vectors
+    \param FC :: Master Origin
   */
 {
   ELog::RegMethod RegA("targetVesselBox","createUnitVector");
 
-  attachSystem::FixedComp::createUnitVector(World::masterOrigin());
+  attachSystem::FixedComp::createUnitVector(FC);
   applyShift(xStep,yStep,zStep);
   applyAngleRotate(xyAngle,0);    
 
-
-  
   return;
 }
 
@@ -229,7 +223,8 @@ targetVesselBox::createLinks()
 }
 
 void
-targetVesselBox::createAll(Simulation& System)
+targetVesselBox::createAll(Simulation& System,
+			   const attachSystem::FixedComp& FC)
 
   /*!
     Global creation of the hutch
@@ -238,8 +233,8 @@ targetVesselBox::createAll(Simulation& System)
   */
 {
   ELog::RegMethod RegA("targetVesselBox","createAll");
-  populate(System);
-  createUnitVector();
+  populate(System.getDataBase());
+  createUnitVector(FC);
   createSurfaces();
   createObjects(System);
   createLinks();

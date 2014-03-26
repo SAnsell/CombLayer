@@ -159,7 +159,7 @@ setRunTimeVariable(FuncDataBase& Control,
 	}
       else
 	{
-	  ELog::EM<<"Setting undefined variable "<<mc->second<<ELog::endErr;
+	  ELog::EM<<"Setting pre-defined variable "<<mc->second<<ELog::endDiag;
 	  Control.setVariable(mc->first,mc->second);
 	}
     }

@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   geometry/SurInter.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -352,8 +352,6 @@ makePoint(const Geometry::Quadratic* A,const Geometry::Quadratic* B,
 {
   ELog::RegMethod RegA("SurInter","makePoint(Q,Q,Q)");
   
-  const int flagDebug(debugStatus::Instance().getFlag());
-  
   std::vector<Geometry::Vec3D> Out;
   if (!A || !B || !C || A==B || C==B || A==C)
     {
@@ -369,12 +367,6 @@ makePoint(const Geometry::Quadratic* A,const Geometry::Quadratic* B,
   GXYZ.makeTriplet(B->copyBaseEqn());
   HXYZ.makeTriplet(C->copyBaseEqn());
 
-  if (flagDebug)
-    {
-      ELog::EM<<"Solv == "<<FXYZ<<ELog::endDebug;
-      ELog::EM<<"Solv == "<<GXYZ<<ELog::endDebug;
-      ELog::EM<<"Solv == "<<HXYZ<<ELog::endDebug;
-    }
   mathLevel::solveValues SV;
   SV.setEquations(FXYZ,GXYZ,HXYZ);
   SV.getSolution();

@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   include/Debug.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * File:   logInc/Debug.h
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef Debug_h
-#define Debug_h
+#ifndef ELog_Debug_h
+#define ELog_Debug_h
+
+namespace ELog
+{
 
 /*!
   \class debugStatus
@@ -86,5 +89,7 @@ class ClassCounter
 
   int Ncount() const { return classN; } ///< Return the number of instances
 };
+
+}
 
 #endif

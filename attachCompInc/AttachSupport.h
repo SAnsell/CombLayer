@@ -40,6 +40,9 @@ void addIntersection(const int,const Geometry::Surface*,Rule*&);
 void createAddition(const int,Rule*,Rule*&);
 
 // On FC link points
+void addToInsertLineCtrl(Simulation&,const FixedComp&,
+			 const FixedComp&);
+
 void addToInsertControl(Simulation&,const FixedComp&,
 			 const FixedComp&);
 void addToInsertControl(Simulation&,const FixedComp&,

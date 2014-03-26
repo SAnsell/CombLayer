@@ -188,7 +188,6 @@ muonCarbonTarget::createLinks()
   FixedComp::setLinkSurf(4,-SMap.realSurf(muCtIndex+5));
   FixedComp::setLinkSurf(5,SMap.realSurf(muCtIndex+6));
 
-
   FixedComp::setConnect(0,Origin-Y*(depth/2.0),-Y);
   FixedComp::setConnect(1,Origin+Y*(depth/2.0),Y);
   FixedComp::setConnect(2,Origin-X*(width/2.0),-X);

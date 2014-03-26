@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   muonInc/cShieldLayer.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell/Goran Skoro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ namespace muSystem
   \author G. Skoro
   \version 1.0
   \date October 2013
-  \brief mu target vessel box
+  \brief Shield object
 */
 
 class cShieldLayer : public attachSystem::FixedComp,
@@ -40,23 +40,24 @@ class cShieldLayer : public attachSystem::FixedComp,
 {
  private:
   
-  const int csLayerIndex;            ///< Index of surface offset
-  int cellIndex;                  ///< Cell index
+  const int csLayerIndex;       ///< Index of surface offset
+  int cellIndex;                ///< Cell index
 
   double xStep;                 ///< X-Step
   double yStep;                 ///< Y-Step
   double zStep;                 ///< Z-Step
-  double xyAngle;               ///< Angle (rotation)
-
+  double xAngle;                ///< Angle (rotation)
+  double yAngle;                ///< Angle (rotation)
+  double zAngle;                ///< Angle (rotation)  
   double height;                ///< Height
   double depth;                 ///< Depth
   double width;                 ///< Width
 
-  int steelMat;                   ///Material: Steel
-  int nLay;                   ///Number of layers
+  int steelMat;                  ///<Material: Steel
+  size_t nLay;                   ///< Number of layers
 
-  void populate(const Simulation&);
-  void createUnitVector();
+  void populate(const FuncDataBase&);
+  void createUnitVector(const attachSystem::FixedComp&);
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -70,7 +71,7 @@ class cShieldLayer : public attachSystem::FixedComp,
   virtual ~cShieldLayer();
   
   virtual void addToInsertChain(attachSystem::ContainedComp&) const;
-  void createAll(Simulation&);  
+  void createAll(Simulation&,const attachSystem::FixedComp&);  
 };
 
 }

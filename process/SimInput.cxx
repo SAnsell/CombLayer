@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   process/SimInput.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,9 +47,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "inputParam.h"
-#include "Triple.h"
-#include "NList.h"
-#include "NRange.h"
 #include "Rules.h"
 #include "Code.h"
 #include "FItem.h"
@@ -58,14 +55,6 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "ModeCard.h"
-#include "PhysCard.h"
-#include "PhysImp.h"
-#include "LSwitchCard.h"
-#include "KGroup.h"
-#include "Source.h"
-#include "KCode.h"
-#include "PhysicsCards.h"
 #include "Simulation.h"
 #include "ImportControl.h"
 #include "SimValid.h"
@@ -107,7 +96,8 @@ inputPatternSim(Simulation& System,const mainSystem::inputParam& IParam)
   ELog::RegMethod RegA("SimInput","inputPatterSim");
   if (IParam.flag("validCheck"))
     {
-      ELog::EM<<"TRACK "<<ELog::endDebug;
+      ELog::EM<<"SIMVALID TRACK "<<ELog::endDiag;
+      ELog::EM<<"-------------- "<<ELog::endDiag;
       ModelSupport::SimValid SValidCheck;
       SValidCheck.run(System,IParam.getValue<size_t>("validCheck"));
     }

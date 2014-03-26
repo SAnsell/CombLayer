@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   muon/muonQ1.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell/Goran Skoro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,8 +49,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -75,7 +73,6 @@
 #include "ContainedComp.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "World.h"
 #include "muonQ1.h"
 
 namespace muSystem
@@ -99,15 +96,13 @@ muonQ1::~muonQ1()
 {}
 
 void
-muonQ1::populate(const Simulation& System)
+muonQ1::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: DataBase for variables
   */
 {
   ELog::RegMethod RegA("muonQ1","populate");
-
-  const FuncDataBase& Control=System.getDataBase();
 
   xStep=Control.EvalVar<double>(keyName+"XStep");
   yStep=Control.EvalVar<double>(keyName+"YStep");
@@ -137,14 +132,15 @@ muonQ1::populate(const Simulation& System)
 }
 
 void
-muonQ1::createUnitVector()
+muonQ1::createUnitVector(const attachSystem::FixedComp& FC)
   /*!
     Create the unit vectors
+    \param FC :: Master origin 
   */
 {
   ELog::RegMethod RegA("muonQ1","createUnitVector");
 
-  attachSystem::FixedComp::createUnitVector(World::masterOrigin());
+  attachSystem::FixedComp::createUnitVector(FC);
   applyShift(xStep,yStep,zStep);
   applyAngleRotate(0,0,zAngle);  
   applyAngleRotate(0,yAngle,0);  
@@ -323,7 +319,7 @@ muonQ1::createLinks()
 }
 
 void
-muonQ1::createAll(Simulation& System)
+muonQ1::createAll(Simulation& System,const attachSystem::FixedComp& FC)
 
   /*!
     Global creation of the hutch
@@ -332,8 +328,8 @@ muonQ1::createAll(Simulation& System)
   */
 {
   ELog::RegMethod RegA("muonQ1","createAll");
-  populate(System);
-  createUnitVector();
+  populate(System.getDataBase());
+  createUnitVector(FC);
   createSurfaces();
   createObjects(System);
   createLinks();

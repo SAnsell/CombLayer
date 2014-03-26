@@ -654,7 +654,7 @@ TS1EllipticCylTarget(FuncDataBase& Control)
   Control.addVariable("t1EllCylTargetExternTemp",330.0);      // Outer temp
   
   // PLATES:
-  Control.addVariable("t1EllCylCoolNPlates",0);
+  Control.addVariable("t1EllCylCoolNPlates",8);
   Control.addVariable("t1EllCylCoolPThick",0.7);
   Control.addVariable("t1EllCylCoolPMat","H2O");
   Control.addVariable("t1EllCylCoolPLayerMat","Tantalum");
