@@ -54,7 +54,7 @@ class targetVesselBox : public attachSystem::FixedComp,
 
   double steelThick;            ///< Steel thickness
 
-  int steelMat;                ///< Material: Steel
+  int steelMat;                 ///< Material: Steel
 
 
   void populate(const FuncDataBase&);
@@ -71,7 +71,6 @@ class targetVesselBox : public attachSystem::FixedComp,
   targetVesselBox& operator=(const targetVesselBox&);
   virtual ~targetVesselBox();
   
-  virtual void addToInsertChain(attachSystem::ContainedComp&) const;
   void createAll(Simulation&,const attachSystem::FixedComp&);  
 };
 

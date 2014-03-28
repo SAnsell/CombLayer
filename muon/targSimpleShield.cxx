@@ -87,6 +87,53 @@ targSimpleShield::targSimpleShield(const std::string& Key)  :
   */
 {}
 
+targSimpleShield::targSimpleShield(const targSimpleShield& A) : 
+  attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
+  targShieldIndex(A.targShieldIndex),cellIndex(A.cellIndex),
+  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
+  xAngle(A.xAngle),yAngle(A.yAngle),zAngle(A.zAngle),
+  height(A.height),depth(A.depth),width(A.width),
+  backThick(A.backThick),forwThick(A.forwThick),
+  leftThick(A.leftThick),rightThick(A.rightThick),
+  baseThick(A.baseThick),topThick(A.topThick),mat(A.mat)
+  /*!
+    Copy constructor
+    \param A :: targSimpleShield to copy
+  */
+{}
+
+targSimpleShield&
+targSimpleShield::operator=(const targSimpleShield& A)
+  /*!
+    Assignment operator
+    \param A :: targSimpleShield to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedComp::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
+      cellIndex=A.cellIndex;
+      xStep=A.xStep;
+      yStep=A.yStep;
+      zStep=A.zStep;
+      xAngle=A.xAngle;
+      yAngle=A.yAngle;
+      zAngle=A.zAngle;
+      height=A.height;
+      depth=A.depth;
+      width=A.width;
+      backThick=A.backThick;
+      forwThick=A.forwThick;
+      leftThick=A.leftThick;
+      rightThick=A.rightThick;
+      baseThick=A.baseThick;
+      topThick=A.topThick;
+      mat=A.mat;
+    }
+  return *this;
+}
 
 targSimpleShield::~targSimpleShield() 
   /*!
@@ -160,33 +207,27 @@ targSimpleShield::createSurfaces()
   ModelSupport::buildPlane(SMap,targShieldIndex+6,Origin+Z*height/2.0,Z);
   
   // shield layer
-  ModelSupport::buildPlane(SMap,targShieldIndex+11,Origin-Y*(depth/2.0-backThick),Y);
-  ModelSupport::buildPlane(SMap,targShieldIndex+12,Origin+Y*(depth/2.0-forwThick),Y);
-  ModelSupport::buildPlane(SMap,targShieldIndex+13,Origin-X*(width/2.0-leftThick),X);
-  ModelSupport::buildPlane(SMap,targShieldIndex+14,Origin+X*(width/2.0-rightThick),X);
-  ModelSupport::buildPlane(SMap,targShieldIndex+15,Origin-Z*(height/2.0-baseThick),Z);
-  ModelSupport::buildPlane(SMap,targShieldIndex+16,Origin+Z*(height/2.0-topThick),Z);  
+  ModelSupport::buildPlane(SMap,targShieldIndex+11,
+			   Origin-Y*(depth/2.0-backThick),Y);
+  ModelSupport::buildPlane(SMap,targShieldIndex+12,
+			   Origin+Y*(depth/2.0-forwThick),Y);
+  ModelSupport::buildPlane(SMap,targShieldIndex+13,
+			   Origin-X*(width/2.0-leftThick),X);
+  ModelSupport::buildPlane(SMap,targShieldIndex+14,
+			   Origin+X*(width/2.0-rightThick),X);
+  ModelSupport::buildPlane(SMap,targShieldIndex+15,
+			   Origin-Z*(height/2.0-baseThick),Z);
+  ModelSupport::buildPlane(SMap,targShieldIndex+16,
+			   Origin+Z*(height/2.0-topThick),Z);  
 
 
-  return;
-}
-
-void
-targSimpleShield::addToInsertChain(attachSystem::ContainedComp& CC) const
-  /*!
-    Adds this object to the containedComp to be inserted.
-    \param CC :: ContainedComp object to add to this
-  */
-{
-  for(int i=targShieldIndex+1;i<cellIndex;i++)
-    CC.addInsertCell(i);
   return;
 }
 
 void
 targSimpleShield::createObjects(Simulation& System)
   /*!
-    Adds the Chip guide components
+    Create the basic object
     \param System :: Simulation to create objects in
    */
 {
@@ -199,7 +240,8 @@ targSimpleShield::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,targShieldIndex,"1 -2 3 -4 5 -6 ");
   addOuterSurf(Out);
   addBoundarySurf(Out);
-  Out1=ModelSupport::getComposite(SMap,targShieldIndex,"(-11:12:-13:14:-15:16) ");  
+  Out1=ModelSupport::getComposite(SMap,targShieldIndex,
+				  "(-11:12:-13:14:-15:16) ");  
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out+Out1));
 
     // hole
@@ -208,7 +250,6 @@ targSimpleShield::createObjects(Simulation& System)
   
   return;
 }
-
 
 void
 targSimpleShield::createLinks()
@@ -224,6 +265,14 @@ targSimpleShield::createLinks()
   FixedComp::setLinkSurf(3,SMap.realSurf(targShieldIndex+4));
   FixedComp::setLinkSurf(4,-SMap.realSurf(targShieldIndex+5));
   FixedComp::setLinkSurf(5,SMap.realSurf(targShieldIndex+6));
+
+  // shield layer
+  FixedComp::setConnect(0,Origin-Y*(depth/2.0-backThick),-Y);
+  FixedComp::setConnect(1,Origin+Y*(depth/2.0-forwThick),Y);
+  FixedComp::setConnect(2,Origin-X*(width/2.0-leftThick),-X);
+  FixedComp::setConnect(3,Origin+X*(width/2.0-rightThick),X);
+  FixedComp::setConnect(4,Origin-Z*(height/2.0-baseThick),-Z);
+  FixedComp::setConnect(5,Origin+Z*(height/2.0-topThick),Z);  
 
   return;
 }

@@ -78,7 +78,6 @@ class targSimpleShield : public attachSystem::FixedComp,
   targSimpleShield& operator=(const targSimpleShield&);
   virtual ~targSimpleShield();
   
-  virtual void addToInsertChain(attachSystem::ContainedComp&) const;
   void createAll(Simulation&,const attachSystem::FixedComp&);  
 };
 

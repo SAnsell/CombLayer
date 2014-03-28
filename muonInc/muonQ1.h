@@ -80,7 +80,6 @@ class muonQ1 : public attachSystem::FixedComp,
   muonQ1& operator=(const muonQ1&);
   virtual ~muonQ1();
   
-  virtual void addToInsertChain(attachSystem::ContainedComp&) const;
   void createAll(Simulation&,const attachSystem::FixedComp&);  
 };
 

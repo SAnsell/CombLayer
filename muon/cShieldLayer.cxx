@@ -206,17 +206,6 @@ cShieldLayer::createSurfaces()
   return;
 }
 
-void
-cShieldLayer::addToInsertChain(attachSystem::ContainedComp& CC) const
-  /*!
-    Adds this object to the containedComp to be inserted.
-    \param CC :: ContainedComp object to add to this
-  */
-{
-  for(int i=csLayerIndex+1;i<cellIndex;i++)
-    CC.addInsertCell(i);
-  return;
-}
 
 void
 cShieldLayer::createObjects(Simulation& System)

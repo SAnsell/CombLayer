@@ -171,12 +171,10 @@ muonTube::createSurfaces()
 {
   ELog::RegMethod RegA("muonTube","createSurface");
 
-  //  :
   ModelSupport::buildPlane(SMap,tubeIndex+1,Origin,Y);
   ModelSupport::buildPlane(SMap,tubeIndex+2,Origin+Y*length,Y);
   ModelSupport::buildCylinder(SMap,tubeIndex+7,Origin,Y,radius);
   ModelSupport::buildCylinder(SMap,tubeIndex+17,Origin,Y,radius-thick);      
-
 
   return;
 }

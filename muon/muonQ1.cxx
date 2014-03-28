@@ -50,22 +50,15 @@
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "Surface.h"
-#include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "surfEqual.h"
-#include "Quadratic.h"
-#include "Plane.h"
-#include "Cylinder.h"
 #include "Rules.h"
-#include "Convex.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "SimProcess.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -87,6 +80,59 @@ muonQ1::muonQ1(const std::string& Key)  :
     \param Key :: Key to use
   */
 {}
+
+muonQ1::muonQ1(const muonQ1& A) : 
+  attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
+  muQ1Index(A.muQ1Index),cellIndex(A.cellIndex),
+  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
+  xAngle(A.xAngle),yAngle(A.yAngle),zAngle(A.zAngle),
+  xSize(A.xSize),ySize(A.ySize),zSize(A.zSize),
+  cutLenOut(A.cutLenOut),cutLenMid(A.cutLenMid),
+  steelThick(A.steelThick),copperThick(A.copperThick),
+  copperYSize(A.copperYSize),insertSize(A.insertSize),
+  insertThick(A.insertThick),steelMat(A.steelMat),
+  copperMat(A.copperMat),insertMat(A.insertMat)
+  /*!
+    Copy constructor
+    \param A :: muonQ1 to copy
+  */
+{}
+
+muonQ1&
+muonQ1::operator=(const muonQ1& A)
+  /*!
+    Assignment operator
+    \param A :: muonQ1 to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedComp::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
+      cellIndex=A.cellIndex;
+      xStep=A.xStep;
+      yStep=A.yStep;
+      zStep=A.zStep;
+      xAngle=A.xAngle;
+      yAngle=A.yAngle;
+      zAngle=A.zAngle;
+      xSize=A.xSize;
+      ySize=A.ySize;
+      zSize=A.zSize;
+      cutLenOut=A.cutLenOut;
+      cutLenMid=A.cutLenMid;
+      steelThick=A.steelThick;
+      copperThick=A.copperThick;
+      copperYSize=A.copperYSize;
+      insertSize=A.insertSize;
+      insertThick=A.insertThick;
+      steelMat=A.steelMat;
+      copperMat=A.copperMat;
+      insertMat=A.insertMat;
+    }
+  return *this;
+}
 
 
 muonQ1::~muonQ1() 
@@ -221,18 +267,6 @@ muonQ1::createSurfaces()
 }
 
 void
-muonQ1::addToInsertChain(attachSystem::ContainedComp& CC) const
-  /*!
-    Adds this object to the containedComp to be inserted.
-    \param CC :: ContainedComp object to add to this
-  */
-{
-  for(int i=muQ1Index+1;i<cellIndex;i++)
-    CC.addInsertCell(i);
-  return;
-}
-
-void
 muonQ1::createObjects(Simulation& System)
   /*!
     Adds the Chip guide components
@@ -271,8 +305,11 @@ muonQ1::createObjects(Simulation& System)
   Out4=ModelSupport::getComposite(SMap,muQ1Index,
 				 "(-31:32:-13:43:-45:46)"); 
   Out5=ModelSupport::getComposite(SMap,muQ1Index,
-				 "(-31:32:-44:14:-45:46)");  					  					   				   
-  System.addCell(MonteCarlo::Qhull(cellIndex++,copperMat,0.0,Out+Out1+Out2+Out3+Out4+Out5));  
+				 "(-31:32:-44:14:-45:46)");
+  
+  // This is junk!!
+  System.addCell(MonteCarlo::Qhull(cellIndex++,copperMat,
+				   0.0,Out+Out1+Out2+Out3+Out4+Out5));  
 
 
     // Inserts
@@ -295,7 +332,9 @@ muonQ1::createObjects(Simulation& System)
     // Void
   Out=ModelSupport::getComposite(SMap,muQ1Index,"11 -12 23 -24 25 -26 ");
   
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+Out2+Out3+Out4+Out5));    
+  // This is junk!!
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,
+				   Out+Out2+Out3+Out4+Out5));    
   return;
 }
 
@@ -314,6 +353,13 @@ muonQ1::createLinks()
   FixedComp::setLinkSurf(3,SMap.realSurf(muQ1Index+4));
   FixedComp::setLinkSurf(4,-SMap.realSurf(muQ1Index+5));
   FixedComp::setLinkSurf(5,SMap.realSurf(muQ1Index+6));
+
+  FixedComp::setConnect(0,Origin-Y*ySize/2.0,-Y);
+  FixedComp::setConnect(1,Origin+Y*ySize/2.0,Y);
+  FixedComp::setConnect(2,Origin-X*xSize/2.0,-X);
+  FixedComp::setConnect(3,Origin+X*xSize/2.0,X);
+  FixedComp::setConnect(4,Origin-Z*zSize/2.0,-Z);
+  FixedComp::setConnect(5,Origin+Z*zSize/2.0,Z);
 
   return;
 }

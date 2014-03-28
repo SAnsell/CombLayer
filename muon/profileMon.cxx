@@ -188,18 +188,6 @@ profileMon::createSurfaces()
 }
 
 void
-profileMon::addToInsertChain(attachSystem::ContainedComp& CC) const
-  /*!
-    Adds this object to the containedComp to be inserted.
-    \param CC :: ContainedComp object to add to this
-  */
-{
-  for(int i=profMonIndex+1;i<cellIndex;i++)
-    CC.addInsertCell(i);
-  return;
-}
-
-void
 profileMon::createObjects(Simulation& System)
   /*!
     Adds the Chip guide components

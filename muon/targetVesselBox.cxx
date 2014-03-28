@@ -154,26 +154,19 @@ targetVesselBox::createSurfaces()
   ModelSupport::buildPlane(SMap,tvBoxIndex+6,Origin+Z*height/2.0,Z);
   
   // steel layer
-  ModelSupport::buildPlane(SMap,tvBoxIndex+11,Origin-Y*(depth/2.0-steelThick),Y);
-  ModelSupport::buildPlane(SMap,tvBoxIndex+12,Origin+Y*(depth/2.0-steelThick),Y);
-  ModelSupport::buildPlane(SMap,tvBoxIndex+13,Origin-X*(width/2.0-steelThick),X);
-  ModelSupport::buildPlane(SMap,tvBoxIndex+14,Origin+X*(width/2.0-steelThick),X);
-  ModelSupport::buildPlane(SMap,tvBoxIndex+15,Origin-Z*(height/2.0-steelThick),Z);
-  ModelSupport::buildPlane(SMap,tvBoxIndex+16,Origin+Z*(height/2.0-steelThick),Z);  
+  ModelSupport::buildPlane(SMap,tvBoxIndex+11,
+			   Origin-Y*(depth/2.0-steelThick),Y);
+  ModelSupport::buildPlane(SMap,tvBoxIndex+12,
+			   Origin+Y*(depth/2.0-steelThick),Y);
+  ModelSupport::buildPlane(SMap,tvBoxIndex+13,
+			   Origin-X*(width/2.0-steelThick),X);
+  ModelSupport::buildPlane(SMap,tvBoxIndex+14,
+			   Origin+X*(width/2.0-steelThick),X);
+  ModelSupport::buildPlane(SMap,tvBoxIndex+15,
+			   Origin-Z*(height/2.0-steelThick),Z);
+  ModelSupport::buildPlane(SMap,tvBoxIndex+16,
+			   Origin+Z*(height/2.0-steelThick),Z);  
 
-
-  return;
-}
-
-void
-targetVesselBox::addToInsertChain(attachSystem::ContainedComp& CC) const
-  /*!
-    Adds this object to the containedComp to be inserted.
-    \param CC :: ContainedComp object to add to this
-  */
-{
-  for(int i=tvBoxIndex+1;i<cellIndex;i++)
-    CC.addInsertCell(i);
   return;
 }
 

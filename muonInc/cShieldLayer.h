@@ -70,7 +70,6 @@ class cShieldLayer : public attachSystem::FixedComp,
   cShieldLayer& operator=(const cShieldLayer&);
   virtual ~cShieldLayer();
   
-  virtual void addToInsertChain(attachSystem::ContainedComp&) const;
   void createAll(Simulation&,const attachSystem::FixedComp&);  
 };
 
