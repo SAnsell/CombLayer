@@ -58,6 +58,8 @@
 #include "DetGroup.h"
 #include "SimMonte.h"
 #include "variableSetup.h"
+#include "defaultConfig.h"
+#include "DefUnits.h"
 #include "MainProcess.h"
 
 namespace mainSystem
@@ -209,6 +211,7 @@ createInputs(inputParam& IParam)
   IParam.regItem<double>("C","ECut");
   IParam.regFlag("cinder","cinder");
   IParam.regItem<int>("d","debug");
+  IParam.regItem<std::string>("defaultConfig","defaultConfig");
   IParam.regDefItem<std::string>("dc","doseCalc",1,"InternalDOSE");
   IParam.regFlag("e","endf");
   IParam.regMulti<std::string>("E","exclude",1);
@@ -278,6 +281,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("cinder","Outer Cinder files");
   IParam.setDesc("d","debug flag");
   IParam.setDesc("dc","Dose flag (internalDOSE/DOSE)");
+  IParam.setDesc("defaultConfig","Set up a default configuration");
   IParam.setDesc("e","Convert materials to ENDF-VII");
   IParam.setDesc("electron","Add electron physics at Energy");
   IParam.setDesc("E","exclude part of the simualtion [chipir/zoom]");
@@ -768,6 +772,7 @@ InputModifications(Simulation* SimPtr,inputParam& IParam,
    */
 {
   ELog::RegMethod RegA("MainProcess","InputModifications");
+  mainSystem::setDefUnits(SimPtr->getDataBase(),IParam);
 
   mainSystem::setVariables(*SimPtr,IParam,Names);
   if (!Names.empty()) 

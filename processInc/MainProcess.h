@@ -78,7 +78,8 @@ namespace mainSystem
 			       std::string&);
 
   void TS2InputModifications(Simulation*,inputParam&,std::vector<std::string>&);
-  void InputModifications(Simulation*,inputParam&,std::vector<std::string>&);
+  void InputModifications(Simulation*,inputParam&,
+			  std::vector<std::string>&);
 
 }
 

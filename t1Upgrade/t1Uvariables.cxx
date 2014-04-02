@@ -219,11 +219,6 @@ TS1upgrade(FuncDataBase& Control)
   Control.addVariable("TriModXYangle",75.0);
   Control.addVariable("TriModZangle",0.0);
 
-  Control.addVariable("TriModNCorner",3); 
-  Control.addVariable("TriModCorner1",Geometry::Vec3D(12.8,12.8,0.0)); 
-  Control.addVariable("TriModCorner3",Geometry::Vec3D(-12.8,-12.8,0.0)); 
-  Control.addVariable("TriModCorner2",Geometry::Vec3D(-24.0,0.0,0.0)); 
-
   Control.addVariable("TriModNCorner",6);  
   Control.addVariable("TriModCorner1",Geometry::Vec3D(12.8,12.8,0.0)); 
   Control.addVariable("TriModCorner2",Geometry::Vec3D(1.37,15.12,0)); 
@@ -234,6 +229,10 @@ TS1upgrade(FuncDataBase& Control)
   Control.addVariable("TriModAbsolute5",1);
   Control.addVariable("TriModCorner6",Geometry::Vec3D(0.8,24.8,0.0)); 
  
+  Control.addVariable("TriModNInnerLayers",2); 
+  Control.addVariable("TriModInnerThick0",0.5); 
+  Control.addVariable("TriModInnerMat0","Aluminium");
+  Control.addVariable("TriModInnerMat1","Void");
 
   Control.addVariable("TriModNInnerUnits",2); 
   Control.addVariable("TriModInner1NCorner",3); 
@@ -252,22 +251,11 @@ TS1upgrade(FuncDataBase& Control)
   Control.addVariable("TriModInner2Absolute2",1); 
   Control.addVariable("TriModInner2Absolute3",1); 
 
-  // TEST
-  Control.addVariable("TriModInner2NCorner",3); 
-  Control.addVariable("TriModInner2Corner1",Geometry::Vec3D(8.9,1.3,0.0)); 
-  Control.addVariable("TriModInner2Corner2",Geometry::Vec3D(5.19,-10.95,0.0)); 
-  Control.addVariable("TriModInner2Corner3",Geometry::Vec3D(0.1,11.73,0.0)); 
-  Control.addVariable("TriModInner2Absolute1",1); 
-  Control.addVariable("TriModInner2Absolute2",1); 
-  Control.addVariable("TriModInner2Absolute3",1); 
-
   Control.addVariable("TriModHeight",12.0);
   Control.addVariable("TriModWallThick",0.5);
-  Control.addVariable("TriModInnerWall",0.5);
   Control.addVariable("TriModFlatClearance",0.6);
   Control.addVariable("TriModBaseClearance",0.3);
   Control.addVariable("TriModTopClearance",0.6);
-  Control.addVariable("TriModInnerStep",-1.2);  // from 1.2
   // Poison !!!!  
   Control.addVariable("TriModPoisonFlag",1);      // Activate poison layer
   Control.addVariable("TriModPoisonStep",7.0);  

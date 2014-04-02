@@ -796,8 +796,6 @@ FlightLine::createAll(Simulation& System,
 
   createUnitVector(FC,sideIndex);
   createSurfaces();
-  //  FixedComp::setLinkSurf(0,FC,sideIndex);
-  //  FixedComp::setLinkSurf(6,FC,sideIndex);
   createObjects(System,FC,sideSign,sideIndex,CC);
   insertObjects(System);       
 

@@ -113,7 +113,7 @@ makeESS::makeESS() :
   ShutterBayObj(new ShutterBay("ShutterBay"))
  /*!
     Constructor
-  */
+ */
 {
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();

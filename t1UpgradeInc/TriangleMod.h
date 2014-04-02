@@ -66,15 +66,14 @@ class TriangleMod : public attachSystem::ContainedComp,
   double topClearance;     ///< Top clearance
   double baseClearance;    ///< Base clearance
 
-  double innerWall;        ///< Inner wall thickness
-  int innerMat;            ///< Inner material
+  size_t nInnerLayers;             ///< Number of inner layers
+  std::vector<double> innerThick;   ///< Inner wall thickness [out-to-in]
+  std::vector<int> innerMat;       ///< Inner wall mat
 
   double modTemp;          ///< Moderator temperature
 
   int modMat;              ///< Moderator material
   int wallMat;             ///< Wall material
-  int pCladMat;            ///< Al poison support
-  int poisonMat;           ///< Poison (Gadolinium)
 
   Geometry::Vec3D realPt(const Geometry::Vec3D&) const;
   Geometry::Vec3D realAxis(const Geometry::Vec3D&) const;

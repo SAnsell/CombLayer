@@ -100,9 +100,9 @@ TriangleMod::TriangleMod(const TriangleMod& A) :
   zAngle(A.zAngle),Outer(A.Outer),nIUnits(A.nIUnits),
   IUnits(A.IUnits),height(A.height),wallThick(A.wallThick),
   flatClearance(A.flatClearance),topClearance(A.topClearance),
-  baseClearance(A.baseClearance),innerWall(A.innerWall),
-  innerMat(A.innerMat),modTemp(A.modTemp),modMat(A.modMat),
-  wallMat(A.wallMat),pCladMat(A.pCladMat),poisonMat(A.poisonMat)
+  baseClearance(A.baseClearance),nInnerLayers(A.nInnerLayers),
+  innerThick(A.innerThick),innerMat(A.innerMat),
+  modTemp(A.modTemp),modMat(A.modMat),wallMat(A.wallMat)
   /*!
     Copy constructor
     \param A :: TriangleMod to copy
@@ -135,17 +135,15 @@ TriangleMod::operator=(const TriangleMod& A)
       flatClearance=A.flatClearance;
       topClearance=A.topClearance;
       baseClearance=A.baseClearance;
-      innerWall=A.innerWall;
+      nInnerLayers=A.nInnerLayers;
+      innerThick=A.innerThick;
       innerMat=A.innerMat;
       modTemp=A.modTemp;
       modMat=A.modMat;
       wallMat=A.wallMat;
-      pCladMat=A.pCladMat;
-      poisonMat=A.poisonMat;
     }
   return *this;
 }
-
 
 TriangleMod::~TriangleMod() 
   /*!
@@ -212,8 +210,26 @@ TriangleMod::populate(const Simulation& System)
 
   if (nIUnits)
     {
-      innerWall=Control.EvalVar<double>(keyName+"InnerWall");
-      innerMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerMat");
+      nInnerLayers=Control.EvalVar<size_t>(keyName+"NInnerLayers");
+      if (nInnerLayers<1)
+	{
+	  ELog::EM<<"Unable to build inner section with zero layers"
+		  <<ELog::endCrit;
+	  throw ColErr::RangeError<size_t>(0,1,1000,"nInnerLayers");
+	}
+      int M;
+      double D;
+      for(size_t i=0;i<nInnerLayers;i++)
+	{
+	  const std::string NStr=StrFunc::makeString(i);
+	  if ((i+1)!=nInnerLayers)
+	    {
+	      D=Control.EvalVar<double>(keyName+"InnerThick"+NStr);
+	      innerThick.push_back(D);
+	    }
+	  M=ModelSupport::EvalMat<int>(Control,keyName+"InnerMat"+NStr);
+	  innerMat.push_back(M);
+	}
     }
 
   modTemp=Control.EvalVar<double>(keyName+"ModTemp");
@@ -480,7 +496,7 @@ TriangleMod::createSurfaces()
 	  int triOffset(IUnits[i].getOffset()+1);
 	  const int ii(static_cast<int>(j));
 	  double PDepth(0.0);  // + from origin
-	  for(size_t k=0;k<2;k++)
+	  for(size_t k=0;k<nInnerLayers;k++)
 	    {
 	      const std::pair<Geometry::Vec3D,Geometry::Vec3D>
 		CPts(cornerPair(IUnits[i].Pts,j,j+1,PDepth));
@@ -489,7 +505,7 @@ TriangleMod::createSurfaces()
 				       CPts.first,CPts.second,
 				       CPts.second+Z,
 				       -sideNorm(CPts));
-	      PDepth-=innerWall;
+	      PDepth-=innerThick[k];
 	      triOffset+=100;
 	    }
 
@@ -529,20 +545,20 @@ TriangleMod::createInnerObject(Simulation& System)
   const std::string vertUnit=
     ModelSupport::getComposite(SMap,triIndex," 5 -6");
 
-  std::string outUnit,inUnit;
+
   for(size_t i=0;i<nIUnits;i++)
     {
-      // Full inside unit:
-      outUnit=IUnits[i].getString(1);
-      System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,modTemp,
-				       outUnit+vertUnit));
-      IUnits[i].addCell(cellIndex-1);
-      // WALL
-      inUnit=IUnits[i].getExclude(1);
-      outUnit=IUnits[i].getString(0);
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,
-				       outUnit+inUnit+vertUnit));
-      IUnits[i].addCell(cellIndex-1);
+      std::string outUnit,inUnit;
+      for(size_t k=0;k<nInnerLayers;k++)
+	{
+	  const size_t iK(nInnerLayers-(k+1));
+	  // Full inside unit:
+	  outUnit=IUnits[i].getString(iK);
+	  IUnits[i].addCell(cellIndex);
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat[iK],modTemp,
+					   inUnit+outUnit+vertUnit));
+	  inUnit=IUnits[i].getExclude(iK);
+	}
       InnerExclude.addUnion(outUnit);
     }
 

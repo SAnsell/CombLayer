@@ -42,7 +42,6 @@
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "Triple.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -365,8 +364,6 @@ addToInsertLineCtrl(Simulation& System,
 
   // Calc and insert objects
   const size_t NPoint=InsertFC.NConnect();
-  ELog::EM<<"NPoint == "<<InsertFC.getKeyName()<<" "
-	  <<NPoint<<ELog::endDiag;
   const std::string excludeStr=CCPtr->getExclude();
 
   for(int i=cellN+1;i<=cellN+cellR;i++)
@@ -523,13 +520,9 @@ addToInsertSurfCtrl(Simulation& System,
       CRPtr->createSurfaceList();
       const std::vector<const Geometry::Surface*>&
 	CellSVec=CRPtr->getSurList();
-
       
       if (checkIntersect(CC,*CRPtr,CellSVec))
-	{
-	  CC.addInsertCell(i);
-	  ELog::EM<<"Add to cell "<<i<<ELog::endDiag; 
-	}
+	CC.addInsertCell(i);
     }
   CC.insertObjects(System);
   return;

@@ -31,7 +31,6 @@
 #include <map>
 #include <string>
 #include <algorithm>
-#include <boost/array.hpp>
 #include <boost/shared_ptr.hpp>
 
 #include "Exception.h"
@@ -61,14 +60,8 @@
 #include "MainProcess.h"
 #include "SimProcess.h"
 #include "SimInput.h"
-#include "SurInter.h"
 #include "Simulation.h"
-#include "SimPHITS.h"
-#include "ContainedComp.h"
-#include "ContainedGroup.h"
-#include "LinkUnit.h"
-#include "FixedComp.h"
-#include "LinearComp.h"
+#include "DefPhysics.h"
 #include "mainJobs.h"
 #include "Volumes.h"
 #include "variableSetup.h"
@@ -132,10 +125,6 @@ main(int argc,char* argv[])
 	      ELog::EM.setActive(4);    // write error only
 	      ELog::FM.setActive(4);    
 	      ELog::RN.setActive(0);    
-	      
-	      // if (iteractive)
-	      // 	mainSystem::incRunTimeVariable
-	      // 	  (SimPtr->getDataBase(),IterVal);
 	    }
 
 	  SimPtr->resetAll();
@@ -148,7 +137,7 @@ main(int argc,char* argv[])
 
 	  SimPtr->removeComplements();
 	  SimPtr->removeDeadSurfaces(0);         
-	  //	  ModelSupport::setDefaultPhysics(*SimPtr,IParam);
+	  ModelSupport::setDefaultPhysics(*SimPtr,IParam);
 
 	  const int renumCellWork=tallySelection(*SimPtr,IParam);
 	  SimPtr->masterRotation();
@@ -164,9 +153,6 @@ main(int argc,char* argv[])
 
 	  SimProcess::importanceSim(*SimPtr,IParam);
 	  SimProcess::inputPatternSim(*SimPtr,IParam); // energy cut etc
-
-	  //	  if (IParam.flag("cinder"))  
-	  //	    SimPtr->setForCinder();
 
 	  // Ensure we done loop
 	  do

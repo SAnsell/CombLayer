@@ -243,6 +243,8 @@ makeT1Upgrade::buildTarget(Simulation& System,
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
+  ELog::EM<<"Target = "<<TType<<ELog::endDiag;
+
   if (TType=="t1PlateTarget" || TType=="t1Plate")
     {
       TarObj=boost::shared_ptr<constructSystem::TargetBase>

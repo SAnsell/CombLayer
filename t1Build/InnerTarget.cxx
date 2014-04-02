@@ -516,7 +516,7 @@ InnerTarget::addProtonLine(Simulation& System,
     \param index :: Index of the proton cutting surface [6 typically (-7)]
    */
 {
-  ELog::RegMethod RegA("t1PlateTarget","addProtonLine");
+  ELog::RegMethod RegA("InnerTarget","addProtonLine");
 
   // 0 ::  front fact of target
   PLine->createAll(System,*this,0,refFC,index);

@@ -68,8 +68,8 @@
 #include "ContainedGroup.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "LinearComp.h"
 #include "mainJobs.h"
+#include "DefPhysics.h"
 #include "Volumes.h"
 #include "variableSetup.h"
 #include "ImportControl.h"
@@ -128,9 +128,6 @@ main(int argc,char* argv[])
 	      ELog::EM.setActive(4);    // write error only
 	      ELog::FM.setActive(4);    
 	      ELog::RN.setActive(0);    
-	      // if (iteractive)
-	      // 	mainSystem::incRunTimeVariable
-	      // 	  (SimPtr->getDataBase(),IterVal);
 	    }
 
 	  SimPtr->resetAll();
@@ -142,6 +139,7 @@ main(int argc,char* argv[])
 
 	  SimPtr->removeComplements();
 	  SimPtr->removeDeadSurfaces(0);         
+	  ModelSupport::setDefaultPhysics(*SimPtr,IParam);
 
 	  const int renumCellWork=tallySelection(*SimPtr,IParam);
 	  SimPtr->masterRotation();
