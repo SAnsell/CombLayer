@@ -49,6 +49,7 @@
 #include "FixedComp.h"
 #include "SecondTrack.h"
 #include "TwinComp.h"
+#include "FixedGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "objectRegister.h"
@@ -210,7 +211,7 @@ objectRegister::addObject(const CTYPE& Ptr)
   ELog::RegMethod RegA("objectRegister","addObject(Obj)");
   if (Ptr)
     addObject(Ptr->getKeyName(),Ptr);
-   else
+  else
     throw ColErr::EmptyValue<void>("Ptr Shared_ptr");
   return;
 }
@@ -360,6 +361,9 @@ template const attachSystem::SecondTrack*
   objectRegister::getObject(const std::string&) const;
 
 template attachSystem::FixedComp* 
+  objectRegister::getObject(const std::string&);
+
+template attachSystem::FixedGroup* 
   objectRegister::getObject(const std::string&);
 
 template attachSystem::ContainedComp* 

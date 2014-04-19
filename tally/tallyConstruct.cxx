@@ -289,8 +289,8 @@ tallyConstruct::processGridHelp() const
     "  Variables : gridTallyOrigin\n"
     "            : gridTallyXVec\n"
     "            : gridTallyZVec\n"
-    "zoomShutter [front/back]\n"
-    "zoomBend [offset_dist]"<<ELog::endBasic;
+    "Object [front/back] offsetDist"
+	  <<ELog::endBasic;
   return;
 }
 
@@ -313,9 +313,9 @@ tallyConstruct::processGridObject(Simulation& System,
 
   const double HSize=Control.EvalVar<double>("gridTallyHSize");      
   const double VSize=Control.EvalVar<double>("gridTallyVSize");      
-  const double aOffset=Control.EvalVar<double>("gridTallyAOffset");      
-  const double hOffset=Control.EvalVar<double>("gridTallyHOffset");      
-  const double vOffset=Control.EvalVar<double>("gridTallyVOffset");      
+  const double aOffset=Control.EvalDefVar<double>("gridTallyAOffset",0.0);      
+  const double hOffset=Control.EvalDefVar<double>("gridTallyHOffset",0.0);      
+  const double vOffset=Control.EvalDefVar<double>("gridTallyVOffset",0.0);      
 
   const ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();

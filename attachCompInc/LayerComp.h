@@ -55,6 +55,7 @@ class LayerComp
   /// Access to common divider surface
   virtual int getCommonSurf(const size_t) const { return 0; }
 
+  /// Access to number of layers:
   size_t getNLayers() const { return nLayers; }
 
 };

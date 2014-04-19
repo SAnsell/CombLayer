@@ -74,7 +74,8 @@ namespace essSystem
 {
 
 BlockAddition::BlockAddition(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
+  attachSystem::ContainedComp(),attachSystem::LayerComp(0),
+  attachSystem::FixedComp(Key,6),
   blockIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(blockIndex+1),active(0),edgeSurf(0)
   /*!
@@ -84,7 +85,8 @@ BlockAddition::BlockAddition(const std::string& Key) :
 {}
 
 BlockAddition::BlockAddition(const BlockAddition& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),attachSystem::LayerComp(A),
+  attachSystem::FixedComp(A),
   blockIndex(A.blockIndex),cellIndex(A.cellIndex),
   active(A.active),xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
   xyAngle(A.xyAngle),zAngle(A.zAngle),length(A.length),
@@ -108,6 +110,7 @@ BlockAddition::operator=(const BlockAddition& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
+      attachSystem::LayerComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
       cellIndex=A.cellIndex;
       active=A.active;
@@ -128,13 +131,11 @@ BlockAddition::operator=(const BlockAddition& A)
   return *this;
 }
 
-
 BlockAddition::~BlockAddition()
   /*!
     Destructor
   */
 {}
-
 
 std::string
 BlockAddition::getLinkComplement(const size_t sideIndex) const
@@ -273,8 +274,9 @@ std::string
 BlockAddition::rotateItem(std::string LString)
   /*!
     Given a string convert to an angle rotate form
+    \param LString :: Link string
     \return string
-   */
+  */
 {
   ELog::RegMethod RegA("BlockAddtion","rotateItem");
 
@@ -333,22 +335,22 @@ BlockAddition::createObjects(Simulation& System,
   if (active)
     {
       Out=PMod.getLayerString(layerIndex,sideIndex);
-      const std::string layOut=rotateItem(Out);
+      preModInner=rotateItem(Out);
       Out=PMod.getLayerString(layerIndex+2,sideIndex);
-      const std::string layOut2=rotateItem(Out);
+      preModOuter=rotateItem(Out);
 
       Out=ModelSupport::getComposite(SMap,blockIndex,"1 -2 3 -4 5 -6 ");
-      Out+=layOut;
+      Out+=preModInner;
       System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));
   
       Out=ModelSupport::getComposite(SMap,blockIndex,
 				     "1 -12 13 -14 15 -16 (2:-3:4:-5:6)");
-      Out+=layOut;
+      Out+=preModInner;
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
       
       Out=ModelSupport::getComposite(SMap,blockIndex,
 				     "1 -22 23 -24 25 -26 (12:-13:14:-15:16)");
-      Out+=layOut2;
+      Out+=preModOuter;
       System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
       
       
@@ -375,7 +377,6 @@ BlockAddition::createCut(const size_t layerIndex) const
   if (active)
     {
       const int SI(10*static_cast<int>(layerIndex)+blockIndex);
-      
       Out=ModelSupport::getComposite(SMap,SI,blockIndex,
 				   " (-1M:-3:4:-5:6) ");
     }
@@ -411,6 +412,100 @@ BlockAddition::createLinks()
   return;
 }
 
+Geometry::Vec3D
+BlockAddition::getSurfacePoint(const size_t layerIndex,
+			      const size_t sideIndex) const
+  /*!
+    Given a side and a layer calculate the link point
+    \param sideIndex  :: Side [0-5]
+    \param layerIndex :: Layer, 0 is inner moderator [0-6]
+    \return Surface point
+  */
+{
+  ELog::RegMethod RegA("BlockAddition","getSurfacePoint");
+
+  if (layerIndex>2) 
+    throw ColErr::IndexError<size_t>(layerIndex,2,"layer");
+
+  double outDist(0.0);
+  if (layerIndex>0) outDist+=wallThick;
+  if (layerIndex>1) outDist+=gap;
+  switch(sideIndex)
+    {
+    case 0:
+      return Origin;
+    case 1:
+      return Origin+Y*(outDist+length);
+    case 2:
+      return Origin-Z*(outDist+height/2.0);
+    case 3:
+      return Origin+Z*(outDist+height/2.0);
+    case 4:
+      return Origin-X*(outDist+width/2.0);
+    case 5:
+      return Origin+X*(outDist+width/2.0);
+    }
+  throw ColErr::IndexError<size_t>(sideIndex,6,"sideIndex ");
+}
+
+int
+BlockAddition::getLayerSurf(const size_t layerIndex,
+			    const size_t sideIndex) const
+  /*!
+    Given a side and a layer calculate the layerSurface
+    \param sideIndex :: Side [0-5]
+    \param layerIndex :: layer, 0 is inner moderator [0-4]
+    \return Surface string
+  */
+{
+  ELog::RegMethod RegA("BlockAddition","getLayerSurf");
+
+  if (layerIndex>2) 
+    throw ColErr::IndexError<size_t>(layerIndex,2,"layer");
+
+  if (sideIndex>5)
+    throw ColErr::IndexError<size_t>(sideIndex,6,"sideIndex");
+  const int SI(blockIndex+10*static_cast<int>(layerIndex));
+  const int SN(static_cast<int>(sideIndex+1));
+
+  if (sideIndex)
+    return (sideIndex % 2) ? SMap.realSurf(SN+SI) :
+      -SMap.realSurf(SN+SI);
+  
+  return -SMap.realSurf(blockIndex+1);
+}
+
+std::string
+BlockAddition::getLayerString(const size_t layerIndex,
+			     const size_t sideIndex) const
+  /*!
+    Given a side and a layer calculate the layerSurface
+    \param sideIndex :: Side [0-5]
+    \param layerIndex :: layer, 0 is inner moderator [0-4]
+    \return Surface string
+  */
+{
+  ELog::RegMethod RegA("BlockAddition","getLayerString");
+
+  if (layerIndex>2) 
+    throw ColErr::IndexError<size_t>(layerIndex,2,"layer");
+
+  if (sideIndex>5)
+    throw ColErr::IndexError<size_t>(sideIndex,6,"sideIndex");
+
+  // NEED To get conditional surface [IFF sideIndex==0]
+
+  const int SI(blockIndex+10*static_cast<int>(layerIndex));
+  const int SN(static_cast<int>(sideIndex+1));
+
+  if (sideIndex>0)
+    {
+      const int SurfN=(sideIndex % 2) ? 
+	SMap.realSurf(SN+SI) : -SMap.realSurf(SN+SI);
+      return StrFunc::makeString(SurfN);
+    }
+  return preModInner+" "+StrFunc::makeString(-SMap.realSurf(blockIndex+1));
+}
 
 void
 BlockAddition::createAll(Simulation& System,

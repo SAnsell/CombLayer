@@ -64,6 +64,7 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "RuleSupport.h"
 #include "Object.h"
 #include "Qhull.h"
 #include "Simulation.h"
@@ -514,21 +515,6 @@ TriangleMod::createSurfaces()
   return;
 }
 
-std::string
-TriangleMod::getExcludeShape(const std::string& innerUnit) const
-  /*!
-    Process inner string [to be updated for non-convex]
-    \param extraUnion :: inner part
-    \return string of outer part
-   */
-{
-  ELog::RegMethod RegA("TriangleMod","getExcludeShape");
-  HeadRule A;
-  A.procString(innerUnit);
-  A.makeComplement();
-  return A.display();
-}
-
 
 std::string
 TriangleMod::createInnerObject(Simulation& System)
@@ -685,13 +671,13 @@ TriangleMod::createObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,outUnit+Out));
 
   // Wall       
-  inUnit=getExcludeShape(outUnit);
+  inUnit=MonteCarlo::getComplementShape(outUnit);
   outUnit=ModelSupport::getComposite(SMap,triIndex," 15 -16 ")+
     Outer.getString(1);
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,outUnit+inUnit));
 
   // Clearance
-  inUnit=getExcludeShape(outUnit);
+  inUnit=MonteCarlo::getComplementShape(outUnit);
   outUnit=ModelSupport::getComposite(SMap,triIndex," 25 -26 ")+
     Outer.getString(2);
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,outUnit+inUnit));

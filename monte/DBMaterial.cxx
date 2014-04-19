@@ -810,6 +810,36 @@ DBMaterial::initMaterial()
 		   MLib);
   setMaterial(MObj);
 
+  // Material #68 U3SI2 in Al for reactor New Fuel [delft] 
+  // U density at 4.8g/cc
+  MObj.setMaterial(100,"U3Si2",
+		   "13027.24c 3.491000e-02 "
+		   "14028.24c 8.576400e-03 "
+		   "92234.70c 1.729600e-05 "
+		   "92235.70c 2.429500e-03 "
+		   "92236.70c 1.714800e-05 "
+		   "92238.70c 9.712900e-03 ","",MLib);
+  setMaterial(MObj);
+  
+  MObj.setMaterial(101,"U3Si2Burnt",
+		   "13027.24c 3.491000e-02 14000.24c 8.576372e-03 "
+		   "58141.70c 4.584777e-06 58142.70c 1.205632e-04 "
+		   "58144.70c 3.764883e-05 59143.70c 1.810723e-06 "
+		   "60143.70c 9.061769e-05 60144.70c 1.045201e-04 "
+		   "60145.70c 7.710946e-05 60146.70c 6.621698e-05 "
+		   "60147.70c 5.521043e-07 60148.70c 3.544721e-05 "
+		   "61147.70c 2.418047e-05 61148.70c 9.827225e-08 "
+		   "92234.70c 1.096144e-05 92236.70c 3.702187e-04 "
+		   "92237.70c 1.732356e-07 92238.70c 9.137796e-03 "
+		   "93237.70c 9.680188e-06 93239.70c 5.136849e-07 "
+		   "94238.70c 1.305033e-06 94239.70c 8.317623e-05 "
+		   "94240.70c 2.302631e-05 94241.70c 8.767253e-06 "
+		   "94242.70c 2.025269e-06 95241.70c 2.730729e-07 "
+		   "95243.70c 8.851011e-08 96242.70c 1.124027e-07 "
+		   "96243.70c 8.827472e-10 96244.70c 6.823268e-09 "
+		   "96245.70c 7.870824e-11 ","",MLib);
+  setMaterial(MObj);
+
   return;
 }
 
@@ -856,6 +886,11 @@ DBMaterial::createMaterial(const std::string& MName)
 	      createOrthoParaMix(MName,PFrac/100.0);
 	      return 1;
 	    }
+	  if (AKey=="UBurn")
+	    {
+	      createMix(MName,"U2Si3","U2Si3_Burnt",PFrac/100.0);
+	      return 1;
+	    }
 	}
     }
   return 0;
@@ -896,6 +931,40 @@ DBMaterial::createOrthoParaMix(const std::string& Name,
   
   MObj.setMaterial(matNum,Name,Unit,SQW,MLib);
   setMaterial(MObj);
+  return matNum;
+}
+
+int
+DBMaterial::createMix(const std::string& Name,
+		      const std::string& MatA,
+		      const std::string& MatB,
+		      const double PFrac)
+  /*!
+    Creates an ortho/Para Mixture
+    \param Name :: Name of object
+    \param MatA :: Material A [PFrac]
+    \param MatA :: Material B [1-PFrac]
+    \param PFrac :: fraction of MatA
+    \return current number
+   */
+{
+  ELog::RegMethod RegA("DBMaterial","createMix");
+
+  const int matNum(getFreeNumber());
+
+  MonteCarlo::Material MA=getMaterial(MatA);
+  MonteCarlo::Material MB=getMaterial(MatB);
+
+  if (PFrac<-1e-5 || PFrac>1.00001)
+    throw ColErr::RangeError<double>(PFrac,0.0,1.0,"Mix fraction [PFrac]");
+  
+  MA*=PFrac;
+  MB*=(1.0-PFrac);
+  
+  MA+=MB;
+  MA.setNumber(matNum);
+  MA.setName(Name);
+  setMaterial(MA);
   return matNum;
 }
 

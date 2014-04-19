@@ -566,7 +566,7 @@ CylPreMod::getLayerSurf(const size_t layerIndex,
 			const size_t sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
-    \param sideIndex :: Side [0-3]
+    \param sideIndex :: Side [0-5]
     \param layerIndex :: layer, 0 is inner moderator [0-4]
     \return Surface string
   */
@@ -600,13 +600,13 @@ std::string
 CylPreMod::getLayerString(const size_t layerIndex,
 			 const size_t sideIndex) const
   /*!
-    Given a side and a layer calculate the link surf
+    Given a side and a layer calculate the layerstring [outlooking]
     \param layerIndex :: layer, 0 is inner moderator [0-4]
-    \param sideIndex :: Side [0-3]
+    \param sideIndex :: Side [0-5]
     \return Surface string
   */
 {
-  ELog::RegMethod RegA("H2Moderator","getLinkString");
+  ELog::RegMethod RegA("CylPreMod","getLayerString");
 
   if (layerIndex>nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");

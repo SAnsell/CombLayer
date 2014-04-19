@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   essBuild/GuideItem.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -266,7 +266,7 @@ GuideItem::calcBeamLineTrack(const attachSystem::FixedComp& FC)
 
   const Geometry::Cylinder* DPtr=
     SMap.realPtr<Geometry::Cylinder>(outerCyl);
-  bExit=LI.getPoint(DPtr,bEnter);
+  bExit=LI.getPoint(DPtr,bEnter+bY*length.back());
   return;
 }
   
@@ -423,11 +423,10 @@ GuideItem::createLinks()
   FixedComp::setConnect(0,bEnter+bY*RInner,-bY);
   FixedComp::setLinkSurf(0,-SMap.realSurf(guideIndex+7));
 
-  const int GI=10*static_cast<int>(nSegment);
+  const int GI=10*static_cast<int>(nSegment)+guideIndex;
   FixedComp::setConnect(1,bExit,bY);
   FixedComp::setLinkSurf(1,SMap.realSurf(GI+7));
-  FixedComp::addLinkSurf(1,SMap.realSurf(GI+1));
-
+  FixedComp::addBridgeSurf(1,SMap.realSurf(guideIndex+1));
   FixedComp::setConnect(2,bEnter-bX*(beamWidth/2.0)+
 			bY*((RInner+ROuter)/2.0),-bX);
   FixedComp::setLinkSurf(2,-SMap.realSurf(guideIndex+103));

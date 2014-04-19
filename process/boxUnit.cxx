@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   process/boxUnit.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,7 +46,6 @@
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "Triple.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -67,10 +66,6 @@
 #include "Algebra.h"
 #include "Line.h"
 #include "Qhull.h"
-#include "NRange.h"
-#include "NList.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -86,9 +81,6 @@
 #include "boxValues.h"
 #include "boxUnit.h"
 
-#include "localRotate.h"
-#include "masterRotate.h"
-#include "Debug.h"
 
 namespace ModelSupport
 {

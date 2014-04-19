@@ -815,7 +815,7 @@ inputParam::writeDescription(std::ostream& OX) const
     \param OX :: Output stream
    */
 {
-  boost::format FMTstr(" -%1$s%|10t|%2$s%|30t|%3$s");
+  boost::format FMTstr(" -%1$s%|20t|%2$s%|50t|%3$s");
   std::vector<std::string> K,N,L;
 
   MTYPE::const_iterator mc;

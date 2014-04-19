@@ -48,6 +48,7 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
+#include "stringCombine.h"
 #include "inputParam.h"
 #include "Surface.h"
 #include "surfIndex.h"
@@ -70,6 +71,7 @@
 #include "pipeUnit.h"
 #include "PipeLine.h"
 
+#include "beamlineConstructor.h"
 #include "WheelBase.h"
 #include "Wheel.h"
 #include "SegWheel.h"
@@ -88,6 +90,7 @@
 
 #include "ConicModerator.h"
 #include "essDBMaterial.h"
+#include "makeESSBL.h"
 
 #include "makeESS.h"
 
@@ -223,6 +226,16 @@ makeESS::makeTarget(Simulation& System,
 
   const int voidCell(74123);  
 
+  // Best place to put this to allow simple call
+  if (targetType=="help")
+    {
+      ELog::EM<<"Target Type [Target]:"<<ELog::endBasic;
+      ELog::EM<<"  -- Wheel       : Simple wheel form"<<ELog::endBasic;
+      ELog::EM<<"  -- SegWheel    : Segmented wheel"<<ELog::endBasic;
+      return;
+    }
+
+
   if (targetType=="Wheel")
     Target=boost::shared_ptr<WheelBase>(new Wheel("Wheel"));
   else if (targetType=="SegWheel")
@@ -272,6 +285,16 @@ makeESS::buildLowMod(Simulation& System,
   */
 {
   ELog::RegMethod RegA("makeESS","buildLowMod");
+
+  if (ModType=="help")
+    {
+      ELog::EM<<"Low Moderator type [LowMod]:"<<ELog::endBasic;
+      ELog::EM<<"  -- {Any}       : Basic cylindrical moderator"
+	      <<ELog::endBasic;
+      ELog::EM<<"  -- Cone    : Cone/Double cone moderator"
+	      <<ELog::endBasic;
+      return;
+    }
 
   if (ModType=="Cone")
     {
@@ -395,6 +418,13 @@ makeESS::buildLowerPipe(Simulation& System,
   */
 {
   ELog::RegMethod RegA("makeESS","processLowPipe");
+  if (pipeType=="help")
+    {
+      ELog::EM<<"Lower Pipe Configuration [lowPipe]"<<ELog::endBasic;
+      ELog::EM<<"-- {Any} : Standard TDR edge and centre"<<ELog::endBasic;
+      ELog::EM<<"-- Top : Two pipes from the top"<<ELog::endBasic;
+      return;
+    }
 
   LowReturnPipe->setAngleSeg(12);
   if (pipeType=="Top")
@@ -414,18 +444,45 @@ makeESS::buildLowerPipe(Simulation& System,
 
 
 void
-makeESS::optionSummary() const
+makeESS::optionSummary(Simulation& System)
   /*!
-    write summary of options
+    Write summary of options
+    \param System :: Dummy call variable 						
    */
 {
   ELog::RegMethod RegA("makeESS","optionSummary");
-
-  ELog::EM<<"Target Type [targetT: "<<ELog::endBasic;
-  ELog::EM<<"  -- Wheel       : Simple wheel form"<<ELog::endBasic;
-  ELog::EM<<"  -- SegWheel    : Segmented wheel"<<ELog::endBasic;
+  
+  makeTarget(System,"help");
+  buildLowMod(System,"help");
+  buildLowerPipe(System,"help");
+  
   return;
 }
+
+void
+makeESS::makeBeamLine(Simulation& System,
+		      const mainSystem::inputParam& IParam)
+  /*!
+    Build a beamline based on LineType
+    \param System :: Simulation 
+    \param IParam :: Input paramters
+  */
+{
+  ELog::RegMethod RegA("makeESS","makeBeamLine");
+
+  const std::string lineType=
+    IParam.getValue<std::string>("beamlines");
+  if (lineType=="Ref")
+    {
+      ELog::EM<<"Making beamline "<<ELog::endDiag;
+      makeESSBL BLfactory("G1BLine1");
+      BLfactory.build(System,IParam);
+    }
+  
+
+  return;
+}
+
 
 void 
 makeESS::build(Simulation* SimPtr,
@@ -447,6 +504,14 @@ makeESS::build(Simulation* SimPtr,
   const std::string lowModType=IParam.getValue<std::string>("lowMod");
   const std::string topModType=IParam.getValue<std::string>("topMod");
   const std::string targetType=IParam.getValue<std::string>("targetType");
+  const std::string beamLine=IParam.getValue<std::string>("beamlines");
+  const std::string iradLine=IParam.getValue<std::string>("iradLineType");
+  if (StrFunc::checkKey("help",lowPipeType,lowModType,targetType) ||
+      StrFunc::checkKey("help",iradLine,beamLine,topModType))
+    {
+      optionSummary(*SimPtr);
+      throw ColErr::ExitAbort("Help system exit");
+    }
 
   makeTarget(*SimPtr,targetType);
   
@@ -493,7 +558,8 @@ makeESS::build(Simulation* SimPtr,
   // attachSystem::addToInsertForced(*SimPtr,*Reflector,*BMon);
 
   buildLowerPipe(*SimPtr,lowPipeType);
-  
+
+  makeBeamLine(*SimPtr,IParam);
   return;
 }
 

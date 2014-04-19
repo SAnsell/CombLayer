@@ -47,9 +47,25 @@ class FixedComp
   Geometry::Vec3D beamAxis;     ///< Neutron direction [if different]
 
   std::vector<LinkUnit> LU;     ///< Linked unit items
+
   
+ public:
+
+  FixedComp(const std::string&,const size_t);
+  FixedComp(const std::string&,const size_t,const Geometry::Vec3D&);
+  FixedComp(const std::string&,const size_t,
+	    const Geometry::Vec3D&,const Geometry::Vec3D&,
+	    const Geometry::Vec3D&,const Geometry::Vec3D&);
+  FixedComp(const FixedComp&);
+  FixedComp& operator=(const FixedComp&);
+  virtual ~FixedComp() {}     ///< Destructor
+
+  const LinkUnit& operator[](const size_t) const; 
+
+  // Operator Set:
   void createUnitVector();
   void createUnitVector(const FixedComp&);
+  void createUnitVector(const FixedComp&,const Geometry::Vec3D&);
   void createUnitVector(const FixedComp&,const long int);
   void createUnitVector(const Geometry::Vec3D&,const Geometry::Vec3D&,
 			const Geometry::Vec3D&);
@@ -77,22 +93,9 @@ class FixedComp
   void setLinkCopy(const size_t,const FixedComp&,const size_t);
 
 
- public:
-
-  FixedComp(const std::string&,const size_t);
-  FixedComp(const std::string&,const size_t,const Geometry::Vec3D&);
-  FixedComp(const std::string&,const size_t,
-	    const Geometry::Vec3D&,const Geometry::Vec3D&,
-	    const Geometry::Vec3D&,const Geometry::Vec3D&);
-  FixedComp(const FixedComp&);
-  FixedComp& operator=(const FixedComp&);
-  virtual ~FixedComp() {}     ///< Destructor
-
-  const LinkUnit& operator[](const size_t) const; 
-
-
   /// Get keyname
-  const std::string& getKeyName() const { return keyName; }
+  const std::string& getKeyName() const 
+    { return keyName; }
   /// Access X
   const Geometry::Vec3D& getX() const 
     { return X; }  

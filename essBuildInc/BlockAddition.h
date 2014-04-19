@@ -36,19 +36,20 @@ namespace essSystem
 */
 
 class BlockAddition :  public attachSystem::ContainedComp,
+    public attachSystem::LayerComp,
     public attachSystem::FixedComp
 {
  private:
   
-  const int blockIndex;           ///< Index of surface offset
-  int cellIndex;                  ///< Cell index
-  int active;                     ///< Box active
+  const int blockIndex;          ///< Index of surface offset
+  int cellIndex;                 ///< Cell index
+  int active;                    ///< Box active
 
-  double xStep;                   ///< xStep direction
-  double yStep;                   ///< yStep direction
-  double zStep;                   ///< zStep direction
-  double xyAngle;                 ///< Rotation angle
-  double zAngle;                  ///< up/down angle
+  double xStep;                  ///< xStep direction
+  double yStep;                  ///< yStep direction
+  double zStep;                  ///< zStep direction
+  double xyAngle;                ///< Rotation angle
+  double zAngle;                 ///< up/down angle
 
   double length;                 ///< Length
   double height;                 ///< height
@@ -61,6 +62,8 @@ class BlockAddition :  public attachSystem::ContainedComp,
 
   int edgeSurf;                  ///< Surface to join too
   Geometry::Vec3D rotCent;       ///< General rotation centre
+  std::string preModInner;       ///< Inner preMod surface
+  std::string preModOuter;       ///< Outer preMod surface
 
   void populate(const FuncDataBase&);
   void createUnitVector(const Geometry::Vec3D&,
@@ -94,6 +97,11 @@ class BlockAddition :  public attachSystem::ContainedComp,
   void createAll(Simulation&,const Geometry::Vec3D&,
 		 const attachSystem::LayerComp&,
 		 const size_t,const size_t);
+
+  virtual Geometry::Vec3D getSurfacePoint(const size_t,const size_t) const;
+  virtual int getLayerSurf(const size_t,const size_t) const;
+  virtual std::string getLayerString(const size_t,const size_t) const;
+
 };
 
 }

@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   supportInc/stringCombine.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * File:   processInc/DefUnits.h
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,24 +19,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef StrFunc_stringCombine_h
-#define StrFunc_stringCombine_h
+#ifndef mainSystem_DefUnits_h
+#define mainSystem_DefUnits_h
 
-namespace StrFunc
+class Simulation;
+class FuncDataBase;
+
+namespace mainSystem
 {
+  class inputParam;
 
-  template<typename T> 
-    std::string makeString(const T&);
+  void setDefUnits(FuncDataBase&,inputParam&);
 
-  template<typename T,typename U> 
-    std::string makeString(const T&,const U&);
+  void setTS1MarkIV(defaultConfig&); 
 
-  template<typename U> 
-    std::string makeString(const char*,const U&);
+}
 
-  size_t checkKey(const std::string&,const std::string&,
-		  const std::string&,const std::string&);
-}  // NAMESPACE StrFunc
 
 #endif
-
+ 

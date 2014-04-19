@@ -162,6 +162,26 @@ FixedComp::createUnitVector(const FixedComp& FC)
 
 void
 FixedComp::createUnitVector(const FixedComp& FC,
+			    const Geometry::Vec3D& POrigin)
+  /*!
+    Create the unit vectors
+    \param FC :: Relative to another FC
+    \param POrigin :: New Origin
+  */
+{
+  ELog::RegMethod RegA("FixedComp","createUnitVector(FixedComp,Vec3D)");
+
+  Z=FC.Z;
+  Y=FC.Y;
+  X=FC.X;
+  Origin=POrigin;
+  beamAxis=FC.beamAxis;
+
+  return;
+}
+
+void
+FixedComp::createUnitVector(const FixedComp& FC,
 			    const long int sideIndex)
   /*!
     Create the unit vectors

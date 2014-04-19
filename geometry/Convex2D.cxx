@@ -286,7 +286,8 @@ Convex2D::createVertex()
       else
         {
 	  if (listSize==2)
-	    throw ColErr::IndexError<int>(listSize,2,"listSize == 2");
+	    throw ColErr::IndexError<int>
+	      (listSize,2,"Convex wrong direction listSize == 2");
 	  
 	  cList.pop_front();
 	  listSize--;

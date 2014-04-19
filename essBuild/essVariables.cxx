@@ -54,6 +54,7 @@
 namespace setVariable
 {
   void EssBeamLinesVariables(FuncDataBase&);
+  void EssReflectorVariables(FuncDataBase&);
   void EssConicModerator(FuncDataBase&);
   void ESSWheel(FuncDataBase&);
 
@@ -879,6 +880,7 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("GuideBay4NItems",12);  
 
   EssBeamLinesVariables(Control);
+  EssReflectorVariables(Control);
   EssConicModerator(Control);
   EssWheel(Control);
 
@@ -977,6 +979,54 @@ EssConicModerator(FuncDataBase& Control)
 
 }
 
+void
+EssReflectorVariables(FuncDataBase& Control)
+{
+  ELog::RegMethod RegA("essVariables[F]","EssReflectorVariables");
+
+  Control.addVariable("JReflXStep",0.0);       
+  Control.addVariable("JReflYStep",0.0);       
+  Control.addVariable("JReflZStep",0.0);       
+  Control.addVariable("JReflXYAngle",0.0);       
+  Control.addVariable("JReflZAngle",0.0);       
+  Control.addVariable("JReflLength",3190.0);       
+  Control.addVariable("JReflHeight",100.0);       
+  Control.addVariable("JReflDepth",100.0);       
+  Control.addVariable("JReflLeftWidth",30.0);       
+  Control.addVariable("JReflRightWidth",30.0);       
+  Control.addVariable("JReflFeMat","Stainless304");       
+  Control.addVariable("JReflNShapes",3);       
+  Control.addVariable("JReflNShapeLayers",3);       
+
+  Control.addVariable("JRefl0TypeID","Tapper");
+  Control.addVariable("JRefl0HeightStart",2.0);
+  Control.addVariable("JRefl0HeightEnd",2.0);
+  Control.addVariable("JRefl0WidthStart",10.0);
+  Control.addVariable("JRefl0WidthEnd",25.0);
+  Control.addVariable("JRefl0Length",1070.0);       
+
+  Control.addVariable("JRefl1TypeID","Rectangle");
+  Control.addVariable("JRefl1Height",2.0);
+  Control.addVariable("JRefl1Width",25.0);
+  Control.addVariable("JRefl1Length",1120.0);
+  Control.addVariable("JRefl1ZAngle",0.25);       
+
+  Control.addVariable("JRefl2TypeID","Tapper");
+  Control.addVariable("JRefl2HeightStart",3.0);
+  Control.addVariable("JRefl2HeightEnd",3.0);
+  Control.addVariable("JRefl2WidthStart",25.0);
+  Control.addVariable("JRefl2WidthEnd",10.0);
+  Control.addVariable("JRefl2Length",1310.0);
+  Control.addVariable("JRefl2ZAngle",-0.25);       
+
+
+  Control.addVariable("JReflLayerMat0","Void");
+  Control.addVariable("JReflLayerThick1",0.4);
+  Control.addVariable("JReflLayerMat1","Glass");
+  Control.addVariable("JReflLayerThick2",1.5);
+  Control.addVariable("JReflLayerMat2","Void");
+  return;
+}
 
 void
 EssBeamLinesVariables(FuncDataBase& Control)

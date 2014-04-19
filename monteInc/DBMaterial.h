@@ -68,6 +68,8 @@ class DBMaterial
   int getFreeNumber() const;
 
   int createOrthoParaMix(const std::string&,const double);
+  int createMix(const std::string&,const std::string&,
+		const std::string&,const double);
 
  public:
   

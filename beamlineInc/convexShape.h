@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   t1UpgradeInc/TriUnit.h
+ * File:   t1UpgradeInc/convexShape.h
  *
  * Copyright (c) 2004-2014 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef moderatorSystem_TriUnit_h
-#define moderatorSystem_TriUnit_h
+#ifndef moderatorSystem_convexShape_h
+#define moderatorSystem_convexShape_h
 
 namespace Geometry
 {
@@ -32,14 +32,14 @@ namespace moderatorSystem
 {
 
 /*!
-  \class TriUnit
+  \class convexShape
   \version 1.0
   \author S. Ansell
   \date February 2014
   \brief Points associated with triangle spaces
 */
 
-class TriUnit 
+class convexShape 
 {
 
   const int offset;            ///< Offset number
@@ -54,13 +54,12 @@ class TriUnit
 
   size_t nCorner;         ///< number of corner points  
   std::vector<Geometry::Vec3D> Pts;  ///< Points of trianlge/shape 
-  std::vector<int> absolute;         ///< Points are absolue
   std::vector<int> nonConvex;        ///< Points are non-convex
 
-  TriUnit(const int);
-  TriUnit(const TriUnit&);
-  TriUnit& operator=(const TriUnit&);
-  ~TriUnit() {}
+  convexShape(const int);
+  convexShape(const convexShape&);
+  convexShape& operator=(const convexShape&);
+  ~convexShape() {}
 
   void constructConvex(const Geometry::Vec3D&);
 

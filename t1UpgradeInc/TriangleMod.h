@@ -52,8 +52,8 @@ class TriangleMod : public attachSystem::ContainedComp,
   double yStep;           ///< Offset relative to origin 
   double zStep;           ///< Offset relative to origin 
 
-  double xyAngle;         ///< Offset relative to origin 
-  double zAngle;          ///< Offset relative to origin 
+  double xyAngle;         ///< Rotation xy plane
+  double zAngle;          ///< Rotation z plane 
 
   TriUnit Outer;          ///< Outer points 
 
@@ -82,7 +82,6 @@ class TriangleMod : public attachSystem::ContainedComp,
   std::pair<Geometry::Vec3D,Geometry::Vec3D>
     cornerPair(const std::vector<Geometry::Vec3D>&,
 	       const size_t,const size_t,const double) const;
-  std::string getExcludeShape(const std::string&) const;
 
   std::string createInnerObject(Simulation&);
   void cutInnerObj(Simulation&,const TriUnit&);

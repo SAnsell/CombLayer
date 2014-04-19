@@ -23,6 +23,11 @@
 #define essSystem_makeESS_h
 
 
+namespace beamlineSystem
+{
+  class beamlineConstructor;
+}
+
 namespace constructSystem
 {
   class ModBase;
@@ -93,10 +98,14 @@ class makeESS
   boost::shared_ptr<BulkModule> Bulk;      ///< Main bulk module
   boost::shared_ptr<moderatorSystem::FlightLine> BulkLowAFL;  ///< Lower Mode FL
 
-  /// Shutterbay object
+  /// Shutterbay objects
   boost::shared_ptr<ShutterBay> ShutterBayObj;  
+  /// Array of Guidies
   std::vector<boost::shared_ptr<GuideBay> > GBArray;  
 
+  /// Array of beamlines constructors:
+  std::vector<boost::shared_ptr<beamlineSystem::beamlineConstructor> > 
+    BLArray;  
 
   void topFlightLines(Simulation&);
   void lowFlightLines(Simulation&);
@@ -110,7 +119,10 @@ class makeESS
   void buildLowerPipe(Simulation&,const std::string&);
 
   void makeTarget(Simulation&,const std::string&);
-  void optionSummary() const;
+
+  void makeBeamLine(Simulation&,
+		    const mainSystem::inputParam&);
+  void optionSummary(Simulation&);
 
  public:
   

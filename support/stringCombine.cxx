@@ -105,6 +105,24 @@ makeString(const char* A,const U& B)
   return cx.str();
 }
 
+size_t
+checkKey(const std::string& M,const std::string& X,
+	 const std::string& Y,const std::string& Z)
+  /*!
+    Check match and return match point+1
+    \param M :: Key to match
+    \param X :: Key to check
+    \param Y :: Key to check
+    \param Z :: Key to check
+    \return 0 on failure / 1,2,3 on success
+  */
+{
+  if (M==X) return 1;
+  if (M==Y) return 2;
+  if (M==Z) return 3;
+  return 0;
+}
+
 ///\cond TEMPLATE
 template std::string makeString(const int&);
 template std::string makeString(const size_t&);
