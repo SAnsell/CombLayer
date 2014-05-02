@@ -105,6 +105,8 @@ class Tally
   virtual void renumberCell(const int,const int) {}
   /// Renumber [not normally required]
   virtual void renumberSurf(const int,const int) {}
+  /// make a group sum into single units
+  virtual int makeSingle() { return 0; }
 
   virtual void write(std::ostream&) const;
   

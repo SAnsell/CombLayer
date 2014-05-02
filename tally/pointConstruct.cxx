@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   tally/pointConstruct.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -76,11 +76,9 @@
 #include "FixedComp.h"
 #include "SecondTrack.h"
 #include "TwinComp.h"
-#include "LinearComp.h"
 #include "PositionSupport.h"
 #include "Simulation.h"
 #include "inputParam.h"
-#include "cellDistance.h"
 #include "Line.h"
 #include "LineIntersectVisit.h"
 #include "SurfLine.h"
@@ -194,10 +192,15 @@ pointConstruct::processPoint(Simulation& System,
 	inputItem<std::string>(IParam,Index,2,"position not given");
       const std::string snd=
 	inputItem<std::string>(IParam,Index,3,"front/back/side not give");
+      ELog::EM<<"ahsdfasfd "<<ELog::endDiag;
+
       const double D=
 	inputItem<double>(IParam,Index,4,"Distance not given");
+      ELog::EM<<"ahsdfasfd "<<ELog::endDiag;
+
       double timeStep(0.0);
       double windowOffset(0.0);
+
       checkItem<double>(IParam,Index,5,timeStep);
       checkItem<double>(IParam,Index,6,windowOffset);
       const int linkNumber=getLinkIndex(snd);
@@ -243,7 +246,7 @@ pointConstruct::processPointWindow(Simulation& System,
 
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-
+  ELog::EM<<"Window == "<<FObject<<ELog::endDiag;
   std::vector<int> Planes;
   const int tNum=System.nextTallyNum(5);
   Geometry::Vec3D TPoint;

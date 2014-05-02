@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   src/NList.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -235,6 +235,22 @@ NList<Unit>::count() const
   return count;
 }
 
+
+template<typename Unit>
+void
+NList<Unit>::addUnits(const std::vector<Unit>& Obj) 
+  /*!
+    Adds units to the list of type vector<Unit>
+    to but not included as fullcomponent
+    \param Obj :: vecotr object to add to the list
+  */
+{
+  typename std::vector<Unit>::const_iterator vc;
+  for(vc=Obj.begin();vc!=Obj.end();vc++)
+    Items.push_back(CompUnit(0,*vc,""));
+
+  return;
+}
 
 template<typename Unit>
 void

@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   poly/solveValues.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "Triple.h"
 #include "support.h"
 #include "mathSupport.h"
 #include "MatrixBase.h"
@@ -47,7 +46,6 @@
 #include "PolyVar.h"
 #include "solveValues.h"
 
-#include "Debug.h"
  
 namespace mathLevel   
 {

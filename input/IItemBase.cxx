@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   input/IItemBase.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,7 +58,7 @@ namespace mainSystem
 std::ostream&
 operator<<(std::ostream& OX,const IItemBase& A)
   /*!
-    Output stream writter
+    Output stream writer
     \param OX :: Output stream
     \param A :: ItemBase Object to write
     \return Stream Obj
@@ -489,10 +489,11 @@ void
 IItemObj<T>::write(std::ostream& OX) const
   /*!
     Complex functiion to convert the system into a string
-    \return String of values
+    \param OX :: Output stream
   */
 {
   ELog::RegMethod RegA("IItemObj<T>","write");
+
   size_t index(2);
   for(size_t i=0;i<N;i++,index <<= 1)
     {
@@ -620,7 +621,7 @@ bool
 IItemMulti<T>::flag() const
   /*!
     Is everything set/default value
-     \return if fully set [with def]
+    \return if fully set [with def]
   */
 {
   return active;
@@ -667,7 +668,7 @@ IItemMulti<T>::setObj(const T& A)
     \param A :: Object
   */
 { 
-  ELog::RegMethod RegA("IItemMulti","setObj");
+  ELog::RegMethod RegA("IItemMulti","setObj(IMulti)");
   
   if (ObjVec.empty() || ObjVec.back().back())
     {
@@ -769,13 +770,14 @@ IItemMulti<T>::convert(const size_t ,
 		       const std::vector<std::string>& Units)
   /*!
     Convert the Unit into the appropiate item.
-    \param Index :: Object index
+    \param :: Object index
     \param UIndex :: position in input
     \param Units :: Vector of inputs
     \retval 1 on success and 0 on failure
   */
 {
   ELog::RegMethod RegA("IItemMulti<T>","convert");
+
   T Obj;
   if (!Units[UIndex].empty() &&
       StrFunc::convert(Units[UIndex],Obj))
@@ -793,7 +795,7 @@ IItemMulti<std::string>::convert(const size_t,
 				 const std::vector<std::string>& Units)
   /*!
     Convert the Unit into the appropiate item.
-    \param Index :: Object index
+    \param  :: Object index
     \param UIndex :: position in input
     \param Units :: Vector of inputs
     \retval 1 on success and 0 on failure
@@ -826,7 +828,7 @@ IItemMulti<Geometry::Vec3D>::convert(const size_t,
     Convert the Unit into the appropiate item.
     Note, if Index < 0 then it is part of the flag checking
     sequence.
-    \param Index :: Object index
+    \param :: Object index
     \param UIndex :: Position in vector
     \param Units :: Vector of input items
     \return 1 on success and 0 on failure
@@ -851,8 +853,8 @@ template<typename T>
 void
 IItemMulti<T>::write(std::ostream& OX) const
   /*!
-    Complex functiion to convert the system into a string
-    \return String of values
+    Complex functiion to convert the system into a stream
+    \param OX :: Out put stream
   */
 {
   ELog::RegMethod RegA("IItemMulti<T>","write");
@@ -861,7 +863,7 @@ IItemMulti<T>::write(std::ostream& OX) const
       for(size_t j=0;j<nRead;j++)
 	if (ObjVec[i][j])
 	  OX<<*ObjVec[i][j]<<" ";
-	else
+	else if (j<nReq)
 	  OX<<"NULL ";
       OX<<":: ";
     }

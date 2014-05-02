@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   Main/testMain.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -116,6 +116,7 @@
 #include "testConvex.h"
 #include "testConvex2D.h"
 #include "testCylinder.h"
+#include "testDBMaterial.h"
 #include "testDoubleErr.h"
 #include "testElement.h"
 #include "testEllipticCyl.h"
@@ -761,10 +762,11 @@ montecarloTest(const int type,const int extra)
   if (type==0)
     {
       std::cout<<"testAlgebra          (1)"<<std::endl;
-      std::cout<<"testElement          (2)"<<std::endl;
-      std::cout<<"testMaterial         (3)"<<std::endl;
-      std::cout<<"testNeutron          (4)"<<std::endl;
-      std::cout<<"testObject           (5)"<<std::endl;
+      std::cout<<"testDBMaterial       (2)"<<std::endl;
+      std::cout<<"testElement          (3)"<<std::endl;
+      std::cout<<"testMaterial         (4)"<<std::endl;
+      std::cout<<"testNeutron          (5)"<<std::endl;
+      std::cout<<"testObject           (6)"<<std::endl;
     }
 
   if(type==1 || type<0)
@@ -773,28 +775,36 @@ montecarloTest(const int type,const int extra)
       const int X=A.applyTest(extra);
       if (X) return X;
     }
-
   if(type==2 || type<0)
     {
-      testElement A;
+      testDBMaterial A;
       const int X=A.applyTest(extra);
       if (X) return X;
     }
 
   if(type==3 || type<0)
     {
+      testElement A;
+      const int X=A.applyTest(extra);
+      if (X) return X;
+    }
+
+
+  if(type==4 || type<0)
+    {
       testMaterial A;
       const int X=A.applyTest(extra);
       if (X) return X;
     }
-  if(type==4 || type<0)
+
+  if(type==5 || type<0)
     {
       testNeutron A;
       const int X=A.applyTest(extra);
       if (X) return X;
     }
 
-  if(type==5 || type<0)
+  if(type==6 || type<0)
     {
       testObject A;
       const int X=A.applyTest(extra);

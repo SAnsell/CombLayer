@@ -72,14 +72,13 @@
 #include "FixedComp.h"
 #include "SecondTrack.h"
 #include "TwinComp.h"
-#include "ContainedComp.h"
-#include "ContainedGroup.h"
 
 #include "TallySelector.h" 
 #include "basicConstruct.h" 
 #include "pointConstruct.h" 
 #include "meshConstruct.h" 
 #include "fluxConstruct.h" 
+#include "fissionConstruct.h" 
 #include "heatConstruct.h" 
 #include "itemConstruct.h" 
 #include "surfaceConstruct.h" 
@@ -114,7 +113,7 @@ tallyConstruct::tallyConstruct(const tallyConstructFactory& FC) :
   basicConstruct(),pointPtr(FC.makePoint()),
   meshPtr(FC.makeMesh()),fluxPtr(FC.makeFlux()),
   heatPtr(FC.makeHeat()),itemPtr(FC.makeItem()),
-  surfPtr(FC.makeSurf())
+  surfPtr(FC.makeSurf()),fissionPtr(FC.makeFission())
   /*!
     Constructor
     \param FC :: Factory object to specialize constructors
@@ -152,6 +151,21 @@ tallyConstruct::setPoint(pointConstruct* PPtr)
   return;
 }
 
+void
+tallyConstruct::setFission(fissionConstruct* PPtr) 
+  /*!
+    Modify/assign the pointConstructor 
+    \param PPtr :: New point Ptr [MANGAGED]
+  */
+{
+  if (PPtr)
+    {
+      delete fissionPtr;
+      fissionPtr=PPtr;
+    }
+  return;
+}
+
 int
 tallyConstruct::tallySelection(Simulation& System,
 			       const mainSystem::inputParam& IParam) const
@@ -182,6 +196,8 @@ tallyConstruct::tallySelection(Simulation& System,
 	meshPtr->processMesh(System,IParam,i);
       else if (TType=="flux")
 	workFlag+=fluxPtr->processFlux(System,IParam,i,0);
+      else if (TType=="fission")
+	workFlag+=fissionPtr->processPower(System,IParam,i,0);
       else if (TType=="heat")
 	heatPtr->processHeat(System,IParam,i);
       else if (TType=="item")

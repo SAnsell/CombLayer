@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   tally/fluxConstruct.cxx
+ * File:   tally/fissionConstruct.cxx
  *
  * Copyright (c) 2004-2014 by Stuart Ansell
  *
@@ -73,119 +73,33 @@
 
 #include "TallySelector.h" 
 #include "basicConstruct.h" 
-#include "fluxConstruct.h" 
+#include "fissionConstruct.h" 
 
 namespace tallySystem
 {
 
-fluxConstruct::fluxConstruct() 
+fissionConstruct::fissionConstruct() 
   /// Constructor
 {}
 
-fluxConstruct::fluxConstruct(const fluxConstruct&) 
+fissionConstruct::fissionConstruct(const fissionConstruct&) 
   /// Copy Constructor
 {}
 
-fluxConstruct&
-fluxConstruct::operator=(const fluxConstruct&) 
+fissionConstruct&
+fissionConstruct::operator=(const fissionConstruct&) 
   /// Assignment operator
 {
   return *this;
 }
 
 int
-fluxConstruct::processFlux(Simulation& System,
-			   const mainSystem::inputParam& IParam,
-			   const size_t Index,
-			   const bool renumberFlag) const
-  /*!
-    Add heat tally (s) as needed
-    \param System :: Simulation to add tallies
-    \param IParam :: Main input parameters
-    \param Index :: index of the -T card
-    \param renumberFlag :: Is this a renumber call
-  */
-{
-  ELog::RegMethod RegA("fluxConstruct","processFlux");
-
-  const size_t NItems=IParam.itemCnt("tally",Index);
-  if (NItems<2)
-    throw ColErr::IndexError<size_t>(NItems,2,
-				     "Insufficient items for tally");
-
-  // PARTICLE TYPE
-  const std::string PType(IParam.getCompValue<std::string>("tally",Index,1)); 
-  
-  if (PType=="help")  // 
-    {
-      if (!renumberFlag)
-	{
-	  ELog::EM<<ELog::endBasic;
-	  ELog::EM<<
-	    "Flux tally :\n"
-	    "particles material(int) objects \n"
-	    "particles material(int) Range(low-high)\n"
-	    "particles cell object offsets \n"
-	    " -- material can be: \n"
-            "      zaid number \n"
-            "      material name \n"
-            "      material number \n"
-            "      -1 :: [all] \n"
-	    "  -- cell [keyword] \n"
-            "     object name [list of int for individuals]"
-		  <<ELog::endBasic;
-	}
-      return 0;
-    }
-
-  if (NItems<3)
-    throw ColErr::IndexError<size_t>(NItems,3,
-				     "Insufficient items for tally");
-
-  const std::string MType(IParam.getCompValue<std::string>("tally",Index,2)); 
-  if (MType=="cell")
-    return processFluxCell(System,IParam,Index,renumberFlag);
-  // Process a Ranged Heat:
- 
-  boost::format Cmt("tally: %d Mat %d Range(%d,%d)");
-  int matN(0);
-
-  // Get Material number:
-  if (!StrFunc::convert(MType,matN))
-    {
-      // Failed to convert to a number :: Must convert
-      // the string to a material number [else throws]
-      matN=ModelSupport::DBMaterial::Instance().getIndex(MType);
-    }
-
-  int RA,RB;
-  // if flag true : then valid range
-  const int flag=
-    convertRegion(IParam,"tally",Index,3,RA,RB);
-  // work for later:
-
-  if (flag<0 && !renumberFlag) return 1;
-
-  ELog::EM<<"Cells == "<<RA<<" "<<RB<<ELog::endDebug;
-  const int nTally=System.nextTallyNum(4);
-  // Find cells  [ Must handle -ve / 0 ]
-  const std::vector<int> cells=getCellSelection(System,matN,RA,RB);
-
-  tallySystem::addF4Tally(System,nTally,PType,cells);
-  tallySystem::Tally* TX=System.getTally(nTally); 
-  TX->setPrintField("e f");
-  const std::string Comment=(Cmt % nTally % matN % RA % RB ).str();
-  TX->setComment(Comment);
-  return 0;
-}
-
-int
-fluxConstruct::processFluxCell(Simulation& System,
+fissionConstruct::processPower(Simulation& System,
 			       const mainSystem::inputParam& IParam,
 			       const size_t Index,
 			       const bool renumberFlag) const
   /*!
-    Process a flux on a cell
+    Process a fission power on a cell
     \param System :: Simulation to use
     \param IParam :: Input system
     \param Index :: index of the -T card
@@ -193,30 +107,26 @@ fluxConstruct::processFluxCell(Simulation& System,
     \return renumber required status [1 for true]
   */
 {
-  ELog::RegMethod RegA("fluxConstruct","processFluxCell");
+  ELog::RegMethod RegA("fissionConstruct","processPower");
 
   const ModelSupport::objectRegister& OR= 
     ModelSupport::objectRegister::Instance();
 
   const size_t NItems=IParam.itemCnt("tally",Index);
-  if (NItems<5)
-    throw ColErr::IndexError<size_t>(NItems,5,
+  if (NItems<4)
+    throw ColErr::IndexError<size_t>(NItems,4,
 				     "Insufficient items for tally");
-
-  // Particles
-  const std::string PType(IParam.getCompValue<std::string>("tally",Index,1)); 
 
   // CellRegion can be object name or number:
   const std::string CellRegion
-    (IParam.getCompValue<std::string>("tally",Index,3)); 
+    (IParam.getCompValue<std::string>("tally",Index,2)); 
 
   // returns 0 if failed to find
   const int cellOffset=OR.getCell(CellRegion);
   const int cellRange=(cellOffset) ? 
     OR.getRange(CellRegion) : 1000000;
   
-  size_t nCount((cellOffset) ? 4 : 3);
-
+  size_t nCount((cellOffset) ? 3 : 2);
   
   std::vector<int> cellVec;
   int cellNum,RA,RB;
@@ -242,9 +152,9 @@ fluxConstruct::processFluxCell(Simulation& System,
       nCount++;
     }  
 
-  const int nTally=System.nextTallyNum(4);
+  const int nTally=System.nextTallyNum(7);
 
-  tallySystem::addF4Tally(System,nTally,PType,cellVec);
+  tallySystem::addF7Tally(System,nTally,cellVec);
   tallySystem::Tally* TX=System.getTally(nTally); 
   TX->setPrintField("e f");
   boost::format Cmt("tally: %d Cell %s ");

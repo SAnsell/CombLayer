@@ -96,7 +96,7 @@ calcIntersect(const Geometry::Sphere& SphA,const Geometry::Sphere& SphB)
     Calculate the intersection object between two planes
     \param SphA :: First Sphere object
     \param SphB :: Second Sphere object 
-    \return Intersect object [Circle/0]
+    \return Intersect object [ Circle/0 ]
   */
 {
   ELog::RegMethod RegA("SurInter","calcIntersect<Sphere,Sphere>");

@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   include/NList.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef TallySystem_NList_h
-#define TallySystem_NList_h
+#ifndef tallySystem_NList_h
+#define tallySystem_NList_h
 
 namespace tallySystem
 {
@@ -69,6 +69,8 @@ class NList
   void addComp(const std::vector<Unit>&);
   void addComp(const Unit&);
   void addComp(const std::string&);
+  
+  void addUnits(const std::vector<Unit>&);
 
   int changeItem(const Unit&,const Unit&);
   

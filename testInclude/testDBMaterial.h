@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   tallyInc/tallyConstructFactory.h
+ * File:   testInclude/testDBMaterial.h
  *
  * Copyright (c) 2004-2014 by Stuart Ansell
  *
@@ -19,51 +19,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef tallySystem_tallyConstructFactory_h
-#define tallySystem_tallyConstructFactory_h
+#ifndef testDBMaterial_h
+#define testDBMaterial_h 
 
-
-namespace tallySystem
-{
-
-  class pointConstruct;
-  class meshConstruct;
-  class fluxConstruct;
-  class heatConstruct;
-  class itemConstruct;
-  class surfaceConstruct;
-  class fissionConstruct;
 /*!
-  \class tallyConstructFactory
-  \brief Creates a 
-  \version 1.0
-  \date October 2013
+  \class testDBMaterial
+  \brief Tests the DBMaterial class
   \author S. Ansell
-
-  Class to determine to what complexity the tally constructors can
-  have.
+  \date April 2014
+  \version 1.0
 */
 
-class tallyConstructFactory
+class testDBMaterial 
 {
- private:
+private:
 
- public:
+  //Tests 
+  int testCombine();
+ 
+public:
 
-  tallyConstructFactory() {}                       ///<  constructor
-  ~tallyConstructFactory() {}
-  
-  static pointConstruct* makePoint();
-  static meshConstruct* makeMesh();
-  static fluxConstruct* makeFlux();
-  static heatConstruct* makeHeat();
-  static itemConstruct* makeItem();
-  static surfaceConstruct* makeSurf();
-  static fissionConstruct* makeFission();
+  testDBMaterial();
+  ~testDBMaterial();
+
+  int applyTest(const int);     
 
 };
 
-}
-
 #endif
-

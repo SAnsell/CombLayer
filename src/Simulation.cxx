@@ -74,6 +74,7 @@
 #include "surfEqual.h"
 #include "Quadratic.h"
 #include "surfaceFactory.h"
+#include "objectRegister.h"
 #include "Rules.h"
 #include "varList.h"
 #include "Code.h"
@@ -1910,6 +1911,7 @@ Simulation::getCellWithMaterial(const int Mnumber) const
     \todo Make this with a transform, not a loop.
   */
 {
+  ELog::RegMethod RegA("Simulation","getCellWithMaterial");
   std::vector<int> cellOrder;
   OTYPE::const_iterator mc;
   for(mc=OList.begin();mc!=OList.end();mc++)
@@ -1917,6 +1919,50 @@ Simulation::getCellWithMaterial(const int Mnumber) const
       if (mc->second->getMat()==Mnumber && 
 	  !mc->second->isPlaceHold())
 	cellOrder.push_back(mc->first);
+    }
+
+  sort(cellOrder.begin(),cellOrder.end());
+  return cellOrder;
+}
+
+std::vector<int>
+Simulation::getCellWithZaid(const int zaidNum) const
+  /*!
+    Ugly function to return the current
+    vector of cells with a particular zaid type
+    \param zaidNumber :: Material zaid number
+    \return vector of cell numbers (ordered)
+    \todo Make this with a transform, not a loop.
+  */
+{
+  ELog::RegMethod RegA("Simulation","getCellWithZaid");
+
+  const ModelSupport::DBMaterial& DB=
+    ModelSupport::DBMaterial::Instance();
+
+  std::vector<int> cellOrder;
+  std::map<int,int> matZaidCache;
+
+  OTYPE::const_iterator mc;
+  std::map<int,int>::const_iterator mz;
+
+  for(mc=OList.begin();mc!=OList.end();mc++)
+    {
+      if (!mc->second->isPlaceHold())
+	{
+	  const int matN=mc->second->getMat();
+	  mz=matZaidCache.find(matN);
+	  if (mz==matZaidCache.end())
+	    {
+	      // does this return a valid iterator?
+	      matZaidCache.insert
+		(std::map<int,int>::value_type
+		 (matN,DB.getMaterial(matN).hasZaid(zaidNum,0,0)));
+	      mz=matZaidCache.find(matN);
+	    }
+	  if (mz->second)
+	    cellOrder.push_back(mc->first);
+	}
     }
 
   sort(cellOrder.begin(),cellOrder.end());
@@ -1952,6 +1998,9 @@ Simulation::renumberCells(const std::vector<int>& cOffset,
   */
 {
   ELog::RegMethod RegA("Simulation","renumberCells");
+
+  const ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
 
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();
@@ -1997,7 +2046,9 @@ Simulation::renumberCells(const std::vector<int>& cOffset,
 			       boost::bind(&TallyTYPE::value_type::second,_1),
 			       cNum,nNum));
 	}
-      ELog::RN<<"Cell Changed :"<<cNum<<" "<<nNum<<ELog::endBasic;
+      
+      ELog::RN<<"Cell Changed :"<<cNum<<" "<<nNum
+	      <<" Object:"<<OR.inRange(cNum)<<ELog::endBasic;
     }
 
   OList=newMap;

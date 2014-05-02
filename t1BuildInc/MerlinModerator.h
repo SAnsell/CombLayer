@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   t1BuildInc/MerlinModerator.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,9 +29,9 @@ namespace ts1System
 {
 
 /*!
-  \class t1MerlinModerator
+  \class MerlinModerator
   \version 1.0
-  \author G Skoro
+  \author G Skoro/S. Ansell
   \date September 2012
   \brief TS1 t1MerlinModerator [insert object]
 */

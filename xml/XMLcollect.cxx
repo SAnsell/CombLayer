@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   xml/XMLcollect.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -709,7 +709,7 @@ XMLcollect::findObj(const std::string& KeyName,
     return &Master;
   if (KeyName==Master.getKey())
     return (IdNum) ? Master.findObj(KeyName,IdNum-1) : &Master;
-      
+
   return Master.findObj(KeyName,IdNum);
 }
 
@@ -959,6 +959,8 @@ template void XML::XMLcollect::addObjAttribute(const std::string&,
 template void XML::XMLcollect::addObjAttribute(const std::string&,
 					       const double&);
 template void XML::XMLcollect::addObjAttribute(const std::string&,const int&);
+template void XML::XMLcollect::addObjAttribute(const std::string&,
+					       const size_t&);
 
 
 template int XML::XMLcollect::addComp(const std::string&,const XML::nullObj&);

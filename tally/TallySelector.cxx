@@ -110,15 +110,18 @@ tallyModification(Simulation& System,
       if(key=="help")
 	{
 	  ELog::EM<<"TMod Help "<<ELog::endBasic;
-	  ELog::EM<<" -- particle {tallyNumber} [oldtype] [newtype] \n"
-		  <<"    Change the particle on a tally to the new type\n";
-	  ELog::EM<<" -- nowindow [tallyNum]\n"
-		  <<"    Remove the window on an f5 tally\n";
-	  ELog::EM<<" -- energy {tallyNumber} [string] \n";
-	  ELog::EM<<" -- time {tallyNumber} [string] ";
-	  ELog::EM<<" -- divide {tallyNumber} [xPts,yPts] : Split tally into "
-	            " multiple pieces"
-		  <<ELog::endBasic;
+	  ELog::EM<<
+	    " -- particle {tallyNumber} [oldtype] [newtype] \n"
+	    "    Change the particle on a tally to the new type\n"
+	    " -- nowindow [tallyNum]\n"
+	    "    Remove the window on an f5 tally\n"
+	    " -- energy {tallyNumber} [string] \n"
+	    " -- time {tallyNumber} [string] \n"
+	    " -- divide {tallyNumber} [xPts,yPts] : Split tally into "
+	    " multiple pieces \n"
+	    " -- single {tallyNumber} : Split cell/surface tally into "
+	    " individual sum [rather than total] \n";
+	  ELog::EM<<ELog::endBasic;
 	  ELog::EM<<ELog::endErr;
 	  errFlag=0;
 	}
@@ -153,6 +156,21 @@ tallyModification(Simulation& System,
 			StrItem[1]<<ELog::endErr;
 		    }
 		  errFlag=0;
+		}
+	    }
+	}
+      else if (key=="single")
+	{
+	  int tNumber(0);
+	  if (nV>=2)
+	    {
+	      errFlag=0;
+	      for(size_t j=1;j<nV && !errFlag;j++)
+		{
+		  if (!StrFunc::convert(StrItem[j-1],tNumber))
+		    ELog::EM<<"Failed to understand TNumber :"	      
+			    <<StrItem[j-1]<<ELog::endErr;
+		  errFlag=(tallySystem::setSingle(System,tNumber)) ? 0 : 1;
 		}
 	    }
 	}

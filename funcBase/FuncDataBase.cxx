@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   funcBase/FuncDataBase.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -916,7 +916,7 @@ void
 FuncDataBase::writeXML(const std::string& FName) const
   /*!
     Write out the variables 
-    \param FName :; filename
+    \param FName :: filename
   */
 {
   ELog::RegMethod RegA("FuncDataBase","writeXML");
@@ -966,6 +966,8 @@ FuncDataBase::EvalDefVar(const std::string&,const size_t&) const;
 
 template Geometry::Vec3D 
 FuncDataBase::EvalDefVar(const std::string&,const Geometry::Vec3D&) const;
+template std::string
+FuncDataBase::EvalDefVar(const std::string&,const std::string&) const;
 
 template double FuncDataBase::EvalPair(const std::string&,
 				       const std::string&) const;

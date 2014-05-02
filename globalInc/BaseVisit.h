@@ -2,7 +2,7 @@
   CombLayer : MNCPX Input builder
  
  * File:   globalInc/BaseVisit.h
-*
+ *
  * Copyright (c) 2004-2013 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
@@ -21,6 +21,7 @@
  ****************************************************************************/
 #ifndef BaseVisit_h
 #define BaseVisit_h
+
 
 namespace Geometry
 {
@@ -96,6 +97,7 @@ public:
   virtual ~BaseVisit() {}   ///< Destructor
 
   /// \cond TABLE
+
   virtual void Accept(const Geometry::Surface&) {} 
   virtual void Accept(const Geometry::Quadratic&) {} 
   virtual void Accept(const Geometry::ArbPoly&) {} 

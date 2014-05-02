@@ -33,6 +33,7 @@ namespace constructSystem
   \brief Parameters for a cone cut cut
   \author S. Ansell
   \date February 2012
+  \version 1.0
 */
 struct plateCut
 {
@@ -77,13 +78,12 @@ struct coneCut
 };
 
 /*!
-  \struct spherCut
+  \struct sphereCut
   \brief Parameters for a back-to-back sphere cut
   \author S. Ansell
   \date February 2012
-  \
+  \version 1.0
 */
-
 struct sphereCut
 {
   Geometry::Vec3D centre;       ///< Centre

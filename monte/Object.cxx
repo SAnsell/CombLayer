@@ -1024,6 +1024,7 @@ Object::trackCell(const MonteCarlo::neutron& N,double& D,
    */
 {
   ELog::RegMethod RegA("Object","trackCell[D,dir]");
+
   MonteCarlo::LineIntersectVisit LI(N);
   std::vector<const Geometry::Surface*>::const_iterator vc;
   for(vc=SurList.begin();vc!=SurList.end();vc++)
@@ -1034,6 +1035,7 @@ Object::trackCell(const MonteCarlo::neutron& N,double& D,
   const std::vector<const Geometry::Surface*>& surfIndex(LI.getSurfIndex());
   D=1e38;
   surfPtr=0;
+  int touchUnit(0);
   // NOTE: we only check for and exiting surface by going
   // along the line.
   int bestPairValid(0);
@@ -1048,18 +1050,24 @@ Object::trackCell(const MonteCarlo::neutron& N,double& D,
 	  const int pAB=isDirectionValid(IPts[i],NS);
 	  const int mAB=isDirectionValid(IPts[i],-NS);
 	  const int normD=surfIndex[i]->sideDirection(IPts[i],N.uVec);
+
 	  if (direction<0)
 	    {
 	      if (pAB!=mAB)  // out going positive surface
 		{
 		  bestPairValid=normD;
-		  D=dPts[i];
+		  if (dPts[i]>Geometry::zeroTol)
+		    D=dPts[i];
+		  else
+		    touchUnit=1;
 		  surfPtr=surfIndex[i];
 		}
 	    }
 	}
     }
-
+  if (touchUnit && D>1e37)
+    D=Geometry::zeroTol;
+    
   return (!surfPtr) ? 0 : bestPairValid*surfPtr->getName();
 }
 

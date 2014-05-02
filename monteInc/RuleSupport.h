@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   constructInc/LWInner.h
- *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * File:   monteInc/RuleSupport.h
+*
+ * Copyright (c) 2004-2013 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,39 +19,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef constructSystem_LWInner_h
-#define constructSystem_LWInner_h
+#ifndef RuleSupport_h
+#define RuleSupport_h
 
-class Simulation;
-
-
-namespace constructSystem
+namespace MonteCarlo
 {
-
-/*!
-  \class LWInner
-  \version 1.0
-  \author S. Ansell
-  \date October 2012
-  \brief Specific instances of inner wrapper
-*/
-
-
-class LWInner : public LinkWrapper
-{
-
- public:
-
-  LWInner(const std::string&);
-  LWInner(const LWInner&);
-  LWInner& operator=(const LWInner&);
-  virtual ~LWInner();
-
-  virtual void createSurfaces();
-  virtual void createObjects(Simulation&);
-};
-
+  std::string getComplementShape(const std::string&);
 }
 
 #endif
- 

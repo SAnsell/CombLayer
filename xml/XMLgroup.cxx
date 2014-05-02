@@ -427,6 +427,8 @@ XMLgroup::findObj(const std::string& KeyName,const int IdNum) const
     \return 0 :: failed to find
   */
 {
+  ELog::RegMethod RegA("XMLgroup","findObj");
+
   if (KeyName.empty()) 
     return 0;
 
@@ -440,7 +442,7 @@ XMLgroup::findObj(const std::string& KeyName,const int IdNum) const
   holdType::const_iterator vc;
   for(vc=Index.begin();vc!=Index.end();vc++)
     {
-      if (matchPath(vc->first,head))
+      if (matchPath(vc->first,head)==1)
         {
 	  if (tail.empty())
 	    {
@@ -463,6 +465,7 @@ XMLgroup::findObj(const std::string& KeyName,const int IdNum) const
         {
 	  XMLgroup* Gptr=dynamic_cast<XMLgroup*>
 	    (Grp[vc->second]);
+
 	  XMLobject* Optr= 
 	    (!Gptr) ? 0 : Gptr->findObj(KeyName);   // get first item
 	  int cnt(0);
@@ -661,6 +664,7 @@ XMLgroup::findParent(const XMLobject* Optr) const
 
 template double XMLgroup::getItem(const std::string&,const size_t) const;
 template int XMLgroup::getItem(const std::string&,const size_t) const;
+template size_t XMLgroup::getItem(const std::string&,const size_t) const;
 template std::string XMLgroup::getItem(const std::string&,const size_t) const;
 template Geometry::Vec3D XMLgroup::getItem(const std::string&,
 					   const size_t) const;

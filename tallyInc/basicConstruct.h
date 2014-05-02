@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   tallyInc/basicConstruct.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,6 +44,7 @@ namespace tallySystem
 class basicConstruct 
 {
  protected:
+
   
   int convertRegion(const mainSystem::inputParam&,
 		    const std::string&,const size_t,
@@ -64,7 +65,8 @@ class basicConstruct
 		   const size_t) const;
 
   std::vector<int> getCellSelection(const Simulation&,
-				    const int,const int,const int) const;
+				    const int,const int,
+				    const int) const;
 
  public:
 
@@ -73,7 +75,8 @@ class basicConstruct
   basicConstruct& operator=(const basicConstruct&);
   ~basicConstruct() {}  ///< Destructor
   
-
+  static int convertRange(const std::string&,int&,int&);
+  
 };
 
 }

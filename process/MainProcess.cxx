@@ -87,6 +87,7 @@ activateLogging(ELog::RegMethod& RControl)
   ELog::RN.setNBasePtr(0);
   ELog::RN.setActive(255);
   ELog::RN.setTypeFlag(0);
+  ELog::RN.setLocFlag(0);
 
   masterWrite::Instance().setSigFig(9);
   masterWrite::Instance().setZero(1e-14);
@@ -396,19 +397,28 @@ createDelftInputs(inputParam& IParam)
 {
   ELog::RegMethod RegA("MainProcess::","createDelftInputs");
 
+  createInputs(IParam);
+
   IParam.regItem<std::string>("coreType","coreType",1);
   IParam.regDefItem<std::string>("modType","modType",1,"Sphere");
+  IParam.regDefItem<std::string>("refExtra","refExtra",1,"None");
   IParam.regMulti<std::string>("kcode","kcode",15,0);
   IParam.regMulti<int>("ksrcMat","ksrcMat",15,0);
   IParam.regMulti<Geometry::Vec3D>("ksrcVec","ksrcVec",15,0);
 
+  IParam.regItem<std::string>("FuelXML","FuelXML",1);
+  IParam.regItem<std::string>("fuelXML","fuelXML",1);
+
+
+  IParam.setDesc("coreType","Selection of Delft cores");
   IParam.setDesc("kcode","MatN nsourcePart keff skip realRuns");
   IParam.setDesc("ksrcMat","Acceptable material number for ksrc");
   IParam.setDesc("ksrcVec","Positions for ksrc [after matN check]");
-
   IParam.setDesc("modType","Type of moderator (sphere/tunnel)");
+  IParam.setDesc("refExtra","Type of extra Be around moderators");
+  IParam.setDesc("FuelXML","Write Fuel config to XMLfile");
 
-  createInputs(IParam);
+
   return;
 }
 

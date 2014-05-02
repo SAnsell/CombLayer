@@ -215,6 +215,7 @@ CH4PreFlat::createSurfaces(const attachSystem::FixedComp& FC,
   ELog::RegMethod RegA("CH4PreFlat","createSurface");
 
   // NOTE Origin is moved from moderator base:
+
   const int LN=FC.getLinkSurf(linkPt);
   
   ModelSupport::buildPlane(SMap,preIndex+1,Origin-Y*(depth/2.0),Y);
@@ -331,7 +332,6 @@ CH4PreFlat::createAll(Simulation& System,
   populate(System);
 
   createUnitVector(FC,linkPt);
-  ELog::EM<<"Origin == "<<Origin<<" X "<<X<<" Z ="<<Z<<ELog::endDebug;
   createSurfaces(FC,linkPt);
   createObjects(System);
   createLinks();

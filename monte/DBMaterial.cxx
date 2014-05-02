@@ -206,7 +206,7 @@ DBMaterial::initMaterial()
   // Material #17 Magnox
   // Total atom density 0.04424 - 1.74 gm/cc
   MObj.setMaterial(17,"Magnox","12000.60c 0.03915 13027.24c "
-		   "3.32e-3 4009.80c 1.77e-3","",MLib);
+		   "3.32e-3 4009.70c 1.77e-3","",MLib);
   setMaterial(MObj);
 
   //Material #22  Cooled Be9 [nat 100%]
@@ -287,7 +287,7 @@ DBMaterial::initMaterial()
 
   // Material #37: Beryllium solid at RT
   // Total atom density 0.1187475
-  MObj.setMaterial(37,"Be300K","4009.80c 0.1234855","be.61t",MLib);
+  MObj.setMaterial(37,"Be300K","4009.70c 0.1234855","be.61t",MLib);
   setMaterial(MObj);
 // Material #38 Solid Pure Tungsten (0.063057)
   MObj.setMaterial(38,"Tungsten",
@@ -350,8 +350,7 @@ DBMaterial::initMaterial()
 		   "5011.70c 0.1098957","",MLib);
   setMaterial(MObj);
 
-      // Material #47 B4C 
-
+  // Material #47 B4C 
   MObj.setMaterial(47,"B4C","5010.70c 0.021741 "
 		   "5011.70c 0.087512 6000.70c 0.027313","",MLib);
   setMaterial(MObj);
@@ -810,19 +809,20 @@ DBMaterial::initMaterial()
 		   MLib);
   setMaterial(MObj);
 
-  // Material #68 U3SI2 in Al for reactor New Fuel [delft] 
+  // Material #100 U3SI2 in Al for reactor New Fuel [delft] 
   // U density at 4.8g/cc
   MObj.setMaterial(100,"U3Si2",
-		   "13027.24c 3.491000e-02 "
-		   "14028.24c 8.576400e-03 "
-		   "92234.70c 1.729600e-05 "
-		   "92235.70c 2.429500e-03 "
-		   "92236.70c 1.714800e-05 "
-		   "92238.70c 9.712900e-03 ","",MLib);
+		   "13027.24c 3.491000e-02 14028.24c 8.576400e-03 "
+		   "92234.70c 1.729600e-05 92235.70c 2.429500e-03 "
+		   "92236.70c 1.714800e-05 92238.70c 9.712900e-03 "
+		   ,"",MLib);
   setMaterial(MObj);
   
+  // Material #101 Highly burnt U3Si2 - projected to 100% burn 
+  // which is impossible but allows linear fitting with U3SI2
+  // Constructed at 4.8g/cc
   MObj.setMaterial(101,"U3Si2Burnt",
-		   "13027.24c 3.491000e-02 14000.24c 8.576372e-03 "
+		   "13027.24c 3.491000e-02 14028.24c 8.576372e-03 "
 		   "58141.70c 4.584777e-06 58142.70c 1.205632e-04 "
 		   "58144.70c 3.764883e-05 59143.70c 1.810723e-06 "
 		   "60143.70c 9.061769e-05 60144.70c 1.045201e-04 "
@@ -838,6 +838,48 @@ DBMaterial::initMaterial()
 		   "95243.70c 8.851011e-08 96242.70c 1.124027e-07 "
 		   "96243.70c 8.827472e-10 96244.70c 6.823268e-09 "
 		   "96245.70c 7.870824e-11 ","",MLib);
+  setMaterial(MObj);
+
+  // Material #102 B4C with 97% B-10
+  MObj.setMaterial(102,"10B4C","5010.70c 0.10925 "
+		   "5011.70c 0.0032776 6000.70c 0.027313","",MLib);
+  setMaterial(MObj);
+
+  // Material #103 BeO 
+  MObj.setMaterial(103,"BeO",
+		   "4009.70c 0.0988968 8016.24c 0.0988968",
+		   "beo.60t",MLib);
+  MObj.setDensity(0.072276);
+  setMaterial(MObj);
+
+  // Material #104 U3SI2 in Al for reactor Original Fuel [delft] 
+  // U density at 4.3//cc
+  MObj.setMaterial(104,"U3Si2Low",
+		   "13027.24c 3.491000e-02 14028.24c 8.576400e-03 "
+		   "92234.70c 1.549433e-05 92235.70c 2.176427e-03 "
+		   "92236.70c 1.536175e-05 92238.70c 8.701140e-03 "
+		   ,"",MLib);
+  setMaterial(MObj);
+
+  // Material #105 U3SI2 in Al for reactor Original Fuel [delft] 
+  // U density at 4.3//cc Full 100% burnt for linar interpolationx
+  MObj.setMaterial(105,"U3Si2LowBurnt",
+		   "13027.24c 3.491000e-02 14028.24c 8.576400e-03 "
+		   "58141.70c 4.107196e-06 58142.70c 1.080045e-04 "
+		   "58144.70c 3.372708e-05 59143.70c 1.622106e-06 "
+		   "60143.70c 8.117835e-05 60144.70c 9.363259e-05 "
+		   "60145.70c 6.907722e-05 60146.70c 5.931938e-05 "
+		   "60147.70c 4.945934e-07 60148.70c 3.175479e-05 "
+		   "61147.70c 2.166167e-05 61148.70c 8.803556e-08 "
+		   "92234.70c 9.819623e-06 92236.70c 3.316543e-04 "
+		   "92237.70c 1.551902e-07 92238.70c 8.185942e-03 "
+		   "93237.70c 8.671835e-06 93239.70c 4.601761e-07 "
+		   "94238.70c 1.169092e-06 94239.70c 7.451204e-05 "
+		   "94240.70c 2.062774e-05 94241.70c 7.853997e-06 "
+		   "94242.70c 1.814303e-06 95241.70c 2.446278e-07 "
+		   "95243.70c 7.929031e-08 96242.70c 1.006941e-07 "
+		   "96243.70c 7.907944e-10 96244.70c 6.112511e-09 "
+		   "96245.70c 7.050947e-11","",MLib);
   setMaterial(MObj);
 
   return;
@@ -873,7 +915,7 @@ DBMaterial::createMaterial(const std::string& MName)
   if (hasKey(MName)) return 1;
 
   // Now key found
-  const std::string::size_type pos=MName.find('%');
+  std::string::size_type pos=MName.find('%');
   if (pos!=std::string::npos)
     {
       double PFrac;
@@ -888,7 +930,24 @@ DBMaterial::createMaterial(const std::string& MName)
 	    }
 	  if (AKey=="UBurn")
 	    {
-	      createMix(MName,"U2Si3","U2Si3_Burnt",PFrac/100.0);
+	      createMix(MName,"U3Si2","U3Si2Burnt",PFrac/100.0);
+	      return 1;
+	    }
+	  if (AKey=="ULowBurn")
+	    {
+	      createMix(MName,"U3Si2Low","U3Si2LowBurnt",PFrac/100.0);
+	      return 1;
+	    }
+	}
+      // SECOND %
+      pos=BKey.find('%');
+      if (pos!=std::string::npos)
+	{
+	  const std::string XKey=BKey.substr(0,pos);
+	  const std::string YKey=BKey.substr(pos+1);
+	  if (StrFunc::convert(YKey,PFrac))
+	    {
+	      createMix(MName,AKey,XKey,PFrac/100.0);
 	      return 1;
 	    }
 	}

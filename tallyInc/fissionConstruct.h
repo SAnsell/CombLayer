@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   tallyInc/tallyConstructFactory.h
+ * File:   tallyInc/fissionConstruct.h
  *
  * Copyright (c) 2004-2014 by Stuart Ansell
  *
@@ -19,51 +19,48 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef tallySystem_tallyConstructFactory_h
-#define tallySystem_tallyConstructFactory_h
+#ifndef tallySystem_fissionConstruct_h
+#define tallySystem_fissionConstruct_h
 
+namespace attachSystem
+{
+  class FixedComp;
+}
+
+
+class Simulation;
 
 namespace tallySystem
 {
 
-  class pointConstruct;
-  class meshConstruct;
-  class fluxConstruct;
-  class heatConstruct;
-  class itemConstruct;
-  class surfaceConstruct;
-  class fissionConstruct;
 /*!
-  \class tallyConstructFactory
-  \brief Creates a 
+  \class fissionConstruct
   \version 1.0
-  \date October 2013
   \author S. Ansell
+  \date April 2014
+  \brief Fission cell tally 
 
-  Class to determine to what complexity the tally constructors can
-  have.
+  Similar to flux tally
 */
 
-class tallyConstructFactory
+class fissionConstruct : virtual public basicConstruct
 {
  private:
+  
 
  public:
 
-  tallyConstructFactory() {}                       ///<  constructor
-  ~tallyConstructFactory() {}
-  
-  static pointConstruct* makePoint();
-  static meshConstruct* makeMesh();
-  static fluxConstruct* makeFlux();
-  static heatConstruct* makeHeat();
-  static itemConstruct* makeItem();
-  static surfaceConstruct* makeSurf();
-  static fissionConstruct* makeFission();
+  fissionConstruct();
+  fissionConstruct(const fissionConstruct&);
+  fissionConstruct& operator=(const fissionConstruct&);
+  virtual ~fissionConstruct() {}  ///< Destructor
 
+  virtual int processPower(Simulation&,const mainSystem::inputParam&,
+			   const size_t,const bool) const;
+  
 };
 
 }
 
 #endif
-
+ 

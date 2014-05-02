@@ -312,8 +312,7 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("LowModXYangle",125.15); 
   Control.addVariable("LowModZangle",0.0);
   Control.addVariable("LowModRadius",8.0);
-  Control.addVariable("LowModHeight",8.0);
-  Control.addVariable("LowModMat","ParaH2");
+  Control.addVariable("LowModHeight",10.0);
   Control.addVariable("LowModMat","ParaH2");
   Control.addVariable("LowModTemp",20.0);
   Control.addVariable("LowModNLayers",7);   // Inner counts as 1 + 6

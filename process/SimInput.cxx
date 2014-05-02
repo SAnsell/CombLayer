@@ -85,6 +85,32 @@ importanceSim(Simulation& System,const mainSystem::inputParam& IParam)
   return;
 }
 
+int
+processExitChecks(Simulation& System,const mainSystem::inputParam& IParam)
+  /*!
+    Check the validity of the simulation
+    \param System :: Simuation object 
+    \param IParam :: Inpute parameters
+    \return error code for exit
+  */
+{
+  ELog::RegMethod RegA("SimInput[F]","processExitChecks");
+  int errFlag(0);
+  if (IParam.flag("validCheck"))
+    {
+      ELog::EM<<"SIMVALID TRACK "<<ELog::endDiag;
+      ELog::EM<<"-------------- "<<ELog::endDiag;
+      ModelSupport::SimValid SValidCheck;
+      if (!SValidCheck.run(System,IParam.getValue<size_t>("validCheck")))
+	errFlag += -1;
+    }
+  if (IParam.flag("cinder"))
+    System.writeCinder();
+  
+  return errFlag;
+}
+
+
 void
 inputPatternSim(Simulation& System,const mainSystem::inputParam& IParam)
   /*!
@@ -93,14 +119,7 @@ inputPatternSim(Simulation& System,const mainSystem::inputParam& IParam)
     \param IParam :: Inpute parameters
   */
 {
-  ELog::RegMethod RegA("SimInput","inputPatterSim");
-  if (IParam.flag("validCheck"))
-    {
-      ELog::EM<<"SIMVALID TRACK "<<ELog::endDiag;
-      ELog::EM<<"-------------- "<<ELog::endDiag;
-      ModelSupport::SimValid SValidCheck;
-      SValidCheck.run(System,IParam.getValue<size_t>("validCheck"));
-    }
+  ELog::RegMethod RegA("SimInput[F]","inputPatterSim");
   
   // RENUMBER:
   if (IParam.flag("cinder"))

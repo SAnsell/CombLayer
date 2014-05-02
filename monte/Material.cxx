@@ -54,6 +54,18 @@
 namespace MonteCarlo
 {
 
+std::ostream&
+operator<<(std::ostream& OX,const Material& MT)
+  /*!
+    Write out the material 
+    \param OX :: Outstream
+    \param MT :: Material 
+   */
+{
+  MT.write(OX);
+  return OX;
+}
+
 Material::Material() :
   Mnum(-1),Name("Unnamed"),
   atomDensity(0.0)
@@ -137,7 +149,26 @@ Material::operator+=(const Material& A)
       else
 	zaidVec.push_back(*vc);
     }
+
+  // SQW:
+  std::vector<std::string>::const_iterator sqc;
+  std::set<std::string> sqSet;
+  for(sqc=SQW.begin();sqc!=SQW.end();sqc++)
+    sqSet.insert(*sqc);
   
+  for(sqc=A.SQW.begin();sqc!=A.SQW.end();sqc++)
+    if (sqSet.find(*sqc)==sqSet.end())
+      SQW.push_back(*sqc);
+
+  // LIBS:
+  sqSet.clear();
+  for(sqc=Libs.begin();sqc!=Libs.end();sqc++)
+    sqSet.insert(*sqc);
+  
+  for(sqc=A.Libs.begin();sqc!=A.Libs.end();sqc++)
+    if (sqSet.find(*sqc)==sqSet.end())
+      Libs.push_back(*sqc);
+
   return *this;
 }
 
@@ -171,6 +202,20 @@ Material::getZaidIndex(const int ZNum,const int TNum,const char C) const
       return i;
   
   return ULONG_MAX;
+}
+
+bool
+Material::hasZaid(const int ZNum,const int TNum,const char C) const
+  /*!
+    Determine if a Zaid exists
+    \param ZNum :: Zaid number [ignored if ZNum==0;]
+    \param TNum :: Tag number [ignored if TNum==0;]
+    \param C :: Character  [Ignored if C==0 ]
+    \return ULONG_MAX on no match / otherwize Index
+  */
+{
+  return 
+    (getZaidIndex(ZNum,TNum,C)==ULONG_MAX) ? 0 : 1;
 }
 
 void

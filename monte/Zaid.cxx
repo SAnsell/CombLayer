@@ -112,14 +112,17 @@ bool
 Zaid::isEquavilent(const int Z,const int T,const char C) const
   /*!
     Determine if the numbers are equivilent
-    \param Z :: Zaid number
-    \param T :: Tag number
-    \param C :: Type
+    \param Z :: Zaid number [0 to ignore]
+    \param T :: Tag number  [0 to ignore]
+    \param C :: Type        [0 to ignore] 
     \return true if equal
   */
 {
-  return (Z==index && T==tag && type==C);
+  return ((!Z || Z==index)  &&
+	  (!T || T==tag) &&
+	  (!C || C==type));
 }
+
 
 int
 Zaid::setZaid(const std::string& A)

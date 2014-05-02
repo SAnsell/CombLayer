@@ -35,12 +35,20 @@ namespace MonteCarlo
 namespace ModelSupport
 {
 
+  /*!
+    \class cellDistance
+    \author S. Ansell
+    \date January 2013
+    \version 1.0
+    \brief Distance from cell to point tally 
+  */
+
 class cellDistance
 {
  private:
   
   const Simulation* ASim;              ///< Simulation
-  MonteCarlo::Object* initObj;   ///< Initial object
+  MonteCarlo::Object* initObj;         ///< Initial object
   int aRange;                          ///< Cells that constitute a hit
   int bRange;                          ///< Cells that constistute a hit
   
@@ -53,7 +61,7 @@ class cellDistance
   cellDistance(const Simulation&);
   cellDistance(const cellDistance&);
   cellDistance& operator=(const cellDistance&);
-  ~cellDistance() {}  ///< Destrcutro
+  ~cellDistance() {}             ///< Destructor
 
   Geometry::Vec3D calcPoint(const Geometry::Vec3D&,
 			    const Geometry::Vec3D&,

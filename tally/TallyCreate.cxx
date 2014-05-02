@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   tally/TallyCreate.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,6 +60,7 @@
 #include "meshTally.h"
 #include "heatTally.h"
 #include "cellFluxTally.h"
+#include "fissionTally.h"
 #include "surfaceTally.h"
 #include "tallyFactory.h"
 #include "Surface.h"
@@ -237,6 +238,27 @@ addF4Tally(Simulation& System,const int tallyNum,
   System.addTally(TX);
 
   System.getPC().addHistpCells(Units);
+
+  return;
+}
+
+void
+addF7Tally(Simulation& System,const int tallyNum,
+	   const std::vector<int>& Units)
+  /*!
+    Addition of a tally to the mcnpx deck
+    \param System :: Simulation class
+    \param tallyNum :: Cell number to tally 
+    \param pType :: particle to tally over
+    \param Units :: List of cells to add
+  */
+{
+  tallySystem::fissionTally TX(tallyNum);
+  TX.setParticles("n");                  /// F4 tally on neutrons
+  TX.setSD(1.0);                           /// Weight to 1.0
+  TX.setActive(1);                         /// Turn it on
+  TX.addCells(Units);
+  System.addTally(TX);
 
   return;
 }
@@ -853,7 +875,7 @@ modF5TallyCells(Simulation& System,const int tNumber,
 
 void
 addF6Tally(Simulation& System,const int tNumber,
-	   const std::string& pType,
+	   const std::string&,
 	   const std::vector<int>& cellList)
   /*!
     Creates a +f6 type tally
@@ -896,7 +918,7 @@ deleteTallyType(Simulation& Sim,const int TType)
   /*!
     Delete a tally based on the number-type
     \param Sim :: Simulation system to remove tallies from
-    \param TType :: Type number to delete 
+    \param TType :: Type number to delete  [0 for all]
   */
 {
   ELog::RegMethod RegA("TallyCreate","deleteTallyType");
@@ -905,7 +927,7 @@ deleteTallyType(Simulation& Sim,const int TType)
   Simulation::TallyTYPE::iterator mc;
   for(mc=TM.begin();mc!=TM.end();)
     {
-      if (!(mc->second->getKey() % TType))
+      if (!TType || (mc->second->getKey() % 10) == TType )
 	{
 	  ELog::EM<<"Deleting Tally "<<mc->second->getKey()<<ELog::endDiag;
 	  delete mc->second;
@@ -1012,6 +1034,32 @@ setEnergy(Simulation& Sim,const int tNumber,
 }
 
 int
+setSingle(Simulation& Sim,const int tNumber)
+  /*!
+    Split all the tallies into single cells
+    \param Sim :: Simulation
+    \param tNumber :: tally nubmer
+    \return number of tallies split
+   */
+{
+  ELog::RegMethod RegA("TallyCreate","setSingle");
+
+  Simulation::TallyTYPE& tmap=Sim.getTallyMap();
+  int fnum(0);
+  Simulation::TallyTYPE::iterator mc;
+  for(mc=tmap.begin();mc!=tmap.end();mc++)
+    {
+      if ( ((mc->first % 10)==4  || (mc->first % 10)==2) &&
+	   (tNumber==0 || mc->first==tNumber))
+	{
+	  if (mc->second->makeSingle())
+	    fnum++;
+	}
+    }
+  return fnum;  
+}
+
+int
 setTime(Simulation& Sim,const int tNumber,
 	     const std::string& tPart)
   /*!
@@ -1019,6 +1067,7 @@ setTime(Simulation& Sim,const int tNumber,
     \param Sim :: Simulation
     \param tNumber :: tally nubmer
     \param tPart :: time segment string [MCNPX format]
+    \return number of tallies split
    */
 {
   ELog::RegMethod RegA("TallyCreate","setTime");
@@ -1119,7 +1168,7 @@ getLastTallyNumber(const Simulation& ASim,const int type)
   for(mc=tmap.begin();mc!=tmap.end();mc++)
     {
       if (mc->first>outN && 
-	  (!type || (mc->first %10)==type))
+	  (!type || (mc->first % 10)==type))
 	outN=mc->first;
     }
   return outN;

@@ -103,7 +103,8 @@ class Material
   double getAtomDensity() const { return atomDensity; }
   void setENDF7();
   void setDensity(const double);
-  
+  bool hasZaid(const int,const int,const char) const;
+
   void changeLibrary(const int,const char);
 
   void listComponent() const;
@@ -112,6 +113,9 @@ class Material
   void writeCinder(std::ostream&) const;               
   
 };
+
+std::ostream&
+operator<<(std::ostream&,const Material&);
 
 }
 

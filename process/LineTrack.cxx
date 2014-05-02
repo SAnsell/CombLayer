@@ -229,6 +229,7 @@ LineTrack::updateDistance(MonteCarlo::Object* OPtr,const double D)
   Track.push_back(D);
   return 1;
 }
+
 Geometry::Vec3D 
 LineTrack::getPoint(const size_t Index) const
   /*!

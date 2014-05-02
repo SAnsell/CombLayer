@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   include/Simulation.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -188,6 +188,7 @@ class Simulation
   std::vector<int> getCellInputVector() const;
   std::vector<int> getNonVoidCellVector() const;
   std::vector<int> getCellWithMaterial(const int) const;
+  std::vector<int> getCellWithZaid(const int) const;
 
   void processCellsImp();           
   int makeVirtual(const int);

@@ -54,13 +54,14 @@ getLine(std::istream& IX)
     Return split string because need to split
     from first 66 char of data and the last ide numbes
     \param IX :: File stream
-    \return (string[0,65],string[66..80])
+    \return  string[0..65] :: string[66..80] 
  */
 {
   ELog::RegMethod RegA("ENDF","getLine");
   
   const std::string FullLine=StrFunc::getAllLine(IX,255);
-  if (IX.fail()) throw ColErr::FileError(0,"ENDF","getLine from:"+
+  if (IX.fail()) 
+    throw ColErr::FileError(0,"ENDF","getLine from:"+
 					 RegA.getItem(-1));
   ENDF::lineCnt++;
   return std::pair<std::string,std::string>

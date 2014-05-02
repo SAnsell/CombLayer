@@ -232,18 +232,16 @@ SupplyPipe::insertInlet(const attachSystem::FixedComp& FC,
     StrFunc::makeString(commonSurf) : "";
   if (PtZ!=Pt)
     Coaxial.addPoint(Pt);
-
+  
   const size_t NL(LC->getNLayers());
   Coaxial.addSurfPoint
     (PtZ,LC->getLayerString(0,lSideIndex),commonStr);
-  
   for(size_t index=2;index<NL;index+=2)
     {
       PtZ=LC->getSurfacePoint(index,lSideIndex);
       PtZ+=layerOffset;
       Coaxial.addSurfPoint
 	(PtZ,LC->getLayerString(index,lSideIndex),commonStr);
-
     }
 
   for(size_t i=0;i<Radii.size();i++)
@@ -368,6 +366,7 @@ SupplyPipe::createAll(Simulation& System,
   setActive();
 
   Coaxial.setNAngle(nAngle);
+  Coaxial.setNAngle(12);
   Coaxial.createAll(System);    
   return;
 }

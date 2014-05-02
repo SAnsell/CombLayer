@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   process/pointDetOpt.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,6 +74,8 @@
 #include "ObjectTrackAct.h"
 #include "pointDetOpt.h"
 
+#include "debugMethod.h"
+
 namespace ModelSupport
 {
 
@@ -124,7 +126,10 @@ pointDetOpt::createObjAct(const Simulation& ASim)
   for(vc=Cells.begin();vc!=Cells.end();vc++)
     {
       if (!vc->second->isPlaceHold())
-	OA.addUnit(ASim,vc->first,vc->second->getCofM());
+	{
+	  OA.addUnit(ASim,vc->first,vc->second->getCofM());
+	}
+
     }
   return;
 }

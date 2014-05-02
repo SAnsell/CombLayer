@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   xml/XMLobject.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -456,6 +456,24 @@ XMLobject::getItem(const std::string& KeyName) const
   throw ColErr::InContainerError<std::string>(KeyName,"XMLobject::getItem");
 }
 
+template<typename T>
+T
+XMLobject::getNamedItem(const std::string& KeyName) const
+  /*!
+    Given an object convert into a value based on a default
+    value or the attribut name
+    \param KeyName :: name of attribuite
+    \return value
+  */
+{
+  if (Key.empty() || KeyName==Key)
+    return getItem<T>();
+  const XMLgroup* AG=dynamic_cast<const XML::XMLgroup*>(this);
+  return (AG) ? 
+    AG->getItem<T>(KeyName) : getItem<T>();
+}
+
+
 int
 XMLobject::hasComponent(const std::string& KeyName) const
   /*!
@@ -582,9 +600,12 @@ const double& XMLobject::getValue(const double&) const;
 
 template void XMLobject::addAttribute(const std::string&,const double&);
 template void XMLobject::addAttribute(const std::string&,const int&);
+template void XMLobject::addAttribute(const std::string&,const size_t&);
+
 
 template double XMLobject::getAttribute(const std::string&,const double&) const;
 template int XMLobject::getAttribute(const std::string&,const int&) const;
+template size_t XMLobject::getAttribute(const std::string&,const size_t&) const;
 
 template double XMLobject::getItem(const std::string&) const;
 template int XMLobject::getItem(const std::string&) const;
@@ -593,13 +614,20 @@ template Geometry::Vec3D XMLobject::getItem(const std::string&) const;
 
 template double XMLobject::getDefItem(const std::string&,const double&) const;
 template int XMLobject::getDefItem(const std::string&,const int&) const;
+template size_t XMLobject::getDefItem(const std::string&,const size_t&) const;
 template std::string XMLobject::getDefItem(const std::string&,
 					   const std::string&) const;
 
 template int XMLobject::getItem() const;
+template size_t XMLobject::getItem() const;
 template Geometry::Vec3D XMLobject::getItem() const;
 template double XMLobject::getItem() const;
-// template std::string XMLobject::getItem() const;
+
+template int XMLobject::getNamedItem(const std::string&) const;
+template size_t XMLobject::getNamedItem(const std::string&) const;
+template Geometry::Vec3D XMLobject::getNamedItem(const std::string&) const;
+template double XMLobject::getNamedItem(const std::string&) const;
+template std::string XMLobject::getNamedItem(const std::string&) const;
 
 /// \endcond TEMPLATE
 

@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   tallyInc/tallyConstruct.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +32,7 @@ class Simulation;
 
 namespace tallySystem
 {
+  class fissionConstruct;
 
 /*!
   \class tallyConstruct
@@ -49,12 +50,13 @@ class tallyConstruct  : public basicConstruct
   /// Positions in the chipGrid  
   static std::map<std::string,int> chipGridPos; 
 
-  pointConstruct* pointPtr;
-  meshConstruct* meshPtr;
-  fluxConstruct* fluxPtr;
-  heatConstruct* heatPtr;
-  itemConstruct* itemPtr;
-  surfaceConstruct* surfPtr;
+  pointConstruct* pointPtr;           ///< Point construct
+  meshConstruct* meshPtr;             ///< Mesh point 
+  fluxConstruct* fluxPtr;             ///< Flux [f4] 
+  heatConstruct* heatPtr;             ///< Heat [f6]
+  itemConstruct* itemPtr;             ///< Items : Beamline/named system
+  surfaceConstruct* surfPtr;          ///< Surface [f1]
+  fissionConstruct* fissionPtr;        ///< Fission f7
 
   void helpTallyType() const;
 
@@ -81,6 +83,7 @@ class tallyConstruct  : public basicConstruct
   virtual ~tallyConstruct();
 
   virtual void setPoint(pointConstruct*);
+  virtual void setFission(fissionConstruct*);
   
   virtual int tallySelection(Simulation&,const mainSystem::inputParam&) const;
   virtual int tallyRenumber(Simulation&,const mainSystem::inputParam&) const;

@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   tallyInc/TallySelector.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,6 +30,9 @@ void tallyRenumberWork(Simulation&,const mainSystem::inputParam&);
 
 int beamTallySelection(Simulation&,const mainSystem::inputParam&);
 void beamTallyRenumberWork(Simulation&,const mainSystem::inputParam&);
+
+int reactorTallySelection(Simulation&,const mainSystem::inputParam&);
+void reactorTallyRenumberWork(Simulation&,const mainSystem::inputParam&);
 
 #endif
  

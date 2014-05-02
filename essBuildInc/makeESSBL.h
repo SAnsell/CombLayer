@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   tallyInc/tallyConstructFactory.h
+ * File:   essBuildInc/makeESSBL.h
  *
  * Copyright (c) 2004-2014 by Stuart Ansell
  *
@@ -19,51 +19,48 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef tallySystem_tallyConstructFactory_h
-#define tallySystem_tallyConstructFactory_h
+#ifndef essSystem_makeESSBL_h
+#define essSystem_makeESSBL_h
 
-
-namespace tallySystem
+namespace beamlineSystem
 {
+  class GuideLine;
+}
 
-  class pointConstruct;
-  class meshConstruct;
-  class fluxConstruct;
-  class heatConstruct;
-  class itemConstruct;
-  class surfaceConstruct;
-  class fissionConstruct;
-/*!
-  \class tallyConstructFactory
-  \brief Creates a 
-  \version 1.0
-  \date October 2013
-  \author S. Ansell
+namespace essSystem
+{
+  class GuideBay;
 
-  Class to determine to what complexity the tally constructors can
-  have.
-*/
-
-class tallyConstructFactory
+  /*!
+    \class makeESSBL
+    \version 1.0
+    \author S. Ansell
+    \date April 2014
+    \brief Simple beamline constructor for ESS
+  */
+  
+class makeESSBL : 
+  public  beamlineSystem::beamlineConstructor
 {
  private:
 
- public:
+  const std::string shutterName;              ///< Shutter name
 
-  tallyConstructFactory() {}                       ///<  constructor
-  ~tallyConstructFactory() {}
+  boost::shared_ptr<beamlineSystem::GuideLine> RefA;   ///< Guide line
+
+ public:
   
-  static pointConstruct* makePoint();
-  static meshConstruct* makeMesh();
-  static fluxConstruct* makeFlux();
-  static heatConstruct* makeHeat();
-  static itemConstruct* makeItem();
-  static surfaceConstruct* makeSurf();
-  static fissionConstruct* makeFission();
+  makeESSBL(const std::string&);
+  makeESSBL(const makeESSBL&);
+  makeESSBL& operator=(const makeESSBL&);
+  virtual ~makeESSBL();
+  
+  
+  virtual void build(Simulation&,
+		     const mainSystem::inputParam& IParam);
 
 };
 
 }
 
 #endif
-

@@ -115,6 +115,7 @@ class XMLobject
   template<typename T> T getItem() const;
   template<typename T> T getItem(const std::string&) const;
   template<typename T> T getDefItem(const std::string&,const T&) const;
+  template<typename T> T getNamedItem(const std::string&) const;
 
   /// WriteXML (Null)      
   virtual void writeXML(std::ostream&) const {}      

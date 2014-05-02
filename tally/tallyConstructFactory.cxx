@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   tally/tallyConstructFactory.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,11 +61,11 @@
 #include "heatConstruct.h" 
 #include "itemConstruct.h" 
 #include "surfaceConstruct.h" 
+#include "fissionConstruct.h" 
 #include "tallyConstructFactory.h"
 
 namespace tallySystem
 {
-
 
 pointConstruct*
 tallyConstructFactory::makePoint()
@@ -125,6 +125,16 @@ tallyConstructFactory::makeSurf()
   */
 {
   return new surfaceConstruct();
+}
+
+fissionConstruct*
+tallyConstructFactory::makeFission()
+  /*!
+    Return flux tally
+    \return fluxConstruct
+  */
+{
+  return new fissionConstruct();
 }
  
 

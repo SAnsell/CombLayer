@@ -175,6 +175,8 @@ main(int argc,char* argv[])
 	    }
 	  while(!iteractive && MCIndex<multi);
 	}
+      SimProcess::processExitChecks(*SimPtr,IParam);
+
       if (IParam.flag("cinder"))
 	SimPtr->writeCinder();
       ModelSupport::calcVolumes(SimPtr,IParam);

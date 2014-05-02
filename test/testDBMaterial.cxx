@@ -1,7 +1,7 @@
-/********************************************************************* 
+ /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   test/testMaterial.cxx
+ * File:   test/testDBMaterial.cxx
  *
  * Copyright (c) 2004-2014 by Stuart Ansell
  *
@@ -19,16 +19,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
+
 #include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
-#include <math.h>
+#include <cmath>
 #include <list>
 #include <vector>
 #include <map>
+#include <set>
 #include <string>
 #include <algorithm>
+
 #include <boost/tuple/tuple.hpp>
 
 #include "Exception.h"
@@ -46,26 +49,28 @@
 #include "Zaid.h"
 #include "MXcards.h"
 #include "Material.h"
+#include "DBMaterial.h"
 
 #include "testFunc.h"
-#include "testMaterial.h"
+#include "testDBMaterial.h"
 
-using namespace MonteCarlo;
 
-testMaterial::testMaterial() 
+using namespace ModelSupport;
+
+testDBMaterial::testDBMaterial() 
   /*!
     Constructor
   */
 {}
 
-testMaterial::~testMaterial() 
+testDBMaterial::~testDBMaterial() 
   /*!
     Destructor
   */
 {}
 
 int 
-testMaterial::applyTest(const int extra)
+testDBMaterial::applyTest(const int extra)
   /*!
     Applies all the tests and returns 
     the error number
@@ -74,16 +79,17 @@ testMaterial::applyTest(const int extra)
     \retval 0 All succeeded
   */
 {
-  ELog::RegMethod RegA("testMaterial","applyTest");
-  TestFunc::regSector("testMaterial");
-  typedef int (testMaterial::*testPtr)();
+  ELog::RegMethod RegA("testDBMaterial","applyTest");
+
+  TestFunc::regSector("testDBMaterial");
+  typedef int (testDBMaterial::*testPtr)();
   testPtr TPtr[]=
     {
-      &testMaterial::testPlus,
+      &testDBMaterial::testCombine
     };
   const std::string TestName[]=
     {
-      "Plus",
+      "Combine"
     };
   const int TSize(sizeof(TPtr)/sizeof(testPtr));
   if (!extra)
@@ -102,7 +108,7 @@ testMaterial::applyTest(const int extra)
         {
 	  TestFunc::regTest(TestName[i]);
 	  const int retValue= (this->*TPtr[i])();
-	  if (retValue || extra>0)
+          if (retValue || extra>0)
 	    return retValue;
 	}
     }
@@ -110,53 +116,51 @@ testMaterial::applyTest(const int extra)
 }
 
 int
-testMaterial::testPlus()
+testDBMaterial::testCombine()
   /*!
     Test the addition function of two materials
     \retval -1 :: failed build a cone
     \retval 0 :: All passed
   */
 {
-  ELog::RegMethod RegA("testMaterial","testSideDirection");
+  ELog::RegMethod RegA("testDBMaterial","testSideDirection");
 
 
   // "MatLine" : MTLine : MibLine
-  typedef boost::tuple<std::string,std::string,std::string> ZTYPE;
-  std::vector<ZTYPE> MatStr;
-  typedef boost::tuple<size_t,size_t,size_t> TTYPE;
+  typedef boost::tuple<std::string,int,std::string> TTYPE;
   std::vector<TTYPE> Tests;
 
-  MatStr.push_back(ZTYPE("82204.70c 0.1 ","",""));
+  Tests.push_back(TTYPE("H2O%D2O%50",1,"1002.24c 0.0330067"));
 
-  std::vector<Material> MatVec;
-
-  std::vector<ZTYPE>::const_iterator zc;
-  for(zc=MatStr.begin();zc!=MatStr.end();zc++)
-    {
-      const int N(static_cast<int>(zc-MatStr.begin()));
-      const std::string Name="Mat"+StrFunc::makeString(N);
-      Material MObj;
-      MObj.setMaterial(N,Name,zc->get<0>(),zc->get<1>(),zc->get<2>());
-      MatVec.push_back(MObj);
-    }
-
+  DBMaterial& DB=DBMaterial::Instance();
+  
   std::vector<TTYPE>::const_iterator tc;
   for(tc=Tests.begin();tc!=Tests.end();tc++)
     {
-      Material A(MatVec[tc->get<0>()]);
-      const Material B(MatVec[tc->get<1>()]);
-      const Material C(MatVec[tc->get<2>()]);
-      A+=B;
-      std::ostringstream AX;
-      std::ostringstream CX;
-      A.write(AX);
-      C.write(CX);
-      
-      if (CX.str()!=AX.str())
+      const int res=DB.createMaterial(tc->get<0>());
+      if (res && res==tc->get<1>())
 	{
-	  ELog::EM<<"A == "<<AX.str()<<ELog::endDebug;
-	  ELog::EM<<"C == "<<CX.str()<<ELog::endDebug;
+	  const MonteCarlo::Material& MT=
+	    DB.getMaterial(tc->get<0>());
+
+	  std::ostringstream cx;
+	  cx<<MT;
+	  const std::string SLine=StrFunc::singleLine(cx.str());
+	  if (SLine.find(tc->get<2>())==std::string::npos)
+	    {
+	      ELog::EM<<"Test "<<(tc-Tests.begin())+1<<ELog::endDiag;
+	      ELog::EM<<"String "<<tc->get<2>()<<ELog::endDiag;
+	      ELog::EM<<"Material --: \n"<<MT<<ELog::endDiag;
+	    }
 	}
+      else if (res!=tc->get<1>())
+	{
+	  ELog::EM<<"Test "<<(tc-Tests.begin())+1<<ELog::endDiag;
+	  ELog::EM<<"String "<<tc->get<0>()<<ELog::endDiag;
+	  ELog::EM<<"Failed RES "<<res<<" "<<ELog::endDiag;
+	  return -1;
+	}
+
 
     }
   return 0;

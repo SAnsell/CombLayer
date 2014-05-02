@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   log/OutputLog.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,7 +39,7 @@ namespace ELog
 
 template<typename RepClass>
 OutputLog<RepClass>::OutputLog() :
-  activeBits(255),actionBits(0),
+  colourFlag(0),activeBits(255),actionBits(0),
   debugBits(0),typeFlag(1),locFlag(1),
   storeFlag(0),NBasePtr(0)
   /*!
@@ -49,9 +49,8 @@ OutputLog<RepClass>::OutputLog() :
 
 template<typename RepClass>
 OutputLog<RepClass>::OutputLog(const std::string&) :
-  activeBits(255),actionBits(0),debugBits(0),
-  typeFlag(1),locFlag(1),
-  storeFlag(0),NBasePtr(0)
+  colourFlag(0),activeBits(255),actionBits(0),debugBits(0),
+  typeFlag(1),locFlag(1),storeFlag(0),NBasePtr(0)
   /*!
     Constructor with string
   */
@@ -59,7 +58,7 @@ OutputLog<RepClass>::OutputLog(const std::string&) :
 
 template<>
 OutputLog<ELog::FileReport>::OutputLog(const std::string& Fname) :
-  colourFlag(1),activeBits(255),actionBits(0),debugBits(0),typeFlag(1),
+  colourFlag(0),activeBits(255),actionBits(0),debugBits(0),typeFlag(1),
   locFlag(1),storeFlag(0),NBasePtr(0),
   FOut(Fname)
   /*!
@@ -430,7 +429,7 @@ OutputLog<RepClass>::diagnostic(const std::string& M)
   /*!
     Prints out the diagnostic message
     \param M :: String to write
-   */
+  */
 {
   report(M,8);
   return;

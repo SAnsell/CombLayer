@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   tallyInc/cellFluxTally.h
+ * File:   tallyInc/fissionTally.h
  *
  * Copyright (c) 2004-2014 by Stuart Ansell
  *
@@ -19,38 +19,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef tallySystem_cellFluxTally_h
-#define tallySystem_cellFluxTally_h
+#ifndef tallySystem_fissionTally_h
+#define tallySystem_fissionTally_h
 
 namespace tallySystem
 {
   /*!
-    \class cellFluxTally
+    \class fissionTally
     \version 1.0
-    \date July 2006
+    \date April 2014
     \author S. Ansell
-    \brief Hold a cell flux tally (type 4)
+    \brief Hold a fission tally (type 7)
    */
 
-class cellFluxTally : public Tally
+class fissionTally : public Tally
 {
  private:
   
-  NList<int>  cellList;                  ///< List of cells
+  NList<int>  cellList;                  ///< List of surfaces
   NList<double> FSfield;                 ///< fs card 
-  NList<double> SDfield;                 ///< sd card [scalar division]
+  NList<double> SDfield;                 ///< sd card 
 
  public:
   
-  explicit cellFluxTally(const int);
-  cellFluxTally(const cellFluxTally&);
-  virtual cellFluxTally* clone() const; 
-  cellFluxTally& operator=(const cellFluxTally&);
-  virtual ~cellFluxTally();
+  explicit fissionTally(const int);
+  fissionTally(const fissionTally&);
+  virtual fissionTally* clone() const; 
+  fissionTally& operator=(const fissionTally&);
+  virtual ~fissionTally();
   /// ClassName
   virtual std::string className() const 
-      { return "cellFluxTally"; }
-
+      { return "fissionTally"; }
       
   void setSD(const double);
   void addCells(const std::vector<int>&);   
@@ -61,9 +60,7 @@ class cellFluxTally : public Tally
   virtual int addLine(const std::string&); 
   virtual void renumberCell(const int,const int);
   virtual int makeSingle();
-  void writeHTape(const std::string&,const std::string&) const;
   virtual void write(std::ostream&) const;
-
   
 };
 

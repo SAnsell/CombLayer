@@ -359,6 +359,32 @@ inputParam::getFlagDef(const std::string& InpKey,
   return Control.EvalVar<T>(VarKey);
 }
 
+
+std::string
+inputParam::getFull(const std::string& K,const size_t I) const
+  /*!
+    Get the full string of all options for a given index
+    \param K :: Key to seach
+    \param I :: Index value
+    \return Values in spc separated list
+   */
+{
+  ELog::RegMethod RegA("inputParam","getFull");
+
+  const IItemBase* IPtr=getIndex(K);
+  if (!IPtr)
+    throw ColErr::EmptyValue<void>("Key : "+K);
+
+  if (I>=IPtr->dataCnt())
+    throw ColErr::IndexError<size_t>(I,IPtr->dataCnt(),
+				     "key failed : "+K);
+
+  // Output streamx
+  std::ostringstream OX;
+  IPtr->write(OX);
+  return OX.str();
+}
+
 template<typename T>
 const T&
 inputParam::getValue(const std::string& K,const size_t I) const

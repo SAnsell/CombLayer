@@ -46,12 +46,12 @@
 #include "NList.h"
 #include "NRange.h"
 #include "Tally.h"
-#include "cellFluxTally.h"
+#include "fissionTally.h"
 
 namespace tallySystem
 { 
 
-cellFluxTally::cellFluxTally(const int ID) :
+fissionTally::fissionTally(const int ID) :
   Tally(ID)
   /*!
     Constructor
@@ -59,30 +59,30 @@ cellFluxTally::cellFluxTally(const int ID) :
   */
 {}
 
-cellFluxTally::cellFluxTally(const cellFluxTally& A) :
+fissionTally::fissionTally(const fissionTally& A) :
   Tally(A),cellList(A.cellList),FSfield(A.FSfield),
   SDfield(A.SDfield)
   /*!
     Copy Constructore
-    \param A :: cellFluxTally object to copy
+    \param A :: fissionTally object to copy
   */
 { }
 
-cellFluxTally*
-cellFluxTally::clone() const
+fissionTally*
+fissionTally::clone() const
   /*!
     Clone object
     \return new (this)
   */
 {
-  return new cellFluxTally(*this);
+  return new fissionTally(*this);
 }
 
-cellFluxTally&
-cellFluxTally::operator=(const cellFluxTally& A) 
+fissionTally&
+fissionTally::operator=(const fissionTally& A) 
   /*!
     Assignment operator =
-    \param A :: cellFluxTally object to copy
+    \param A :: fissionTally object to copy
     \return *this
   */
 {
@@ -96,14 +96,14 @@ cellFluxTally::operator=(const cellFluxTally& A)
   return *this;
 }
 
-cellFluxTally::~cellFluxTally()
+fissionTally::~fissionTally()
   /*!
     Destructor
   */
 {}
 
 void
-cellFluxTally::setSD(const double V)
+fissionTally::setSD(const double V)
   /*!
     Sets a constant value for all FS fields.
     \param V :: Item to add
@@ -117,7 +117,7 @@ cellFluxTally::setSD(const double V)
 }
 
 std::vector<int>
-cellFluxTally::getCells() const
+fissionTally::getCells() const
   /*!
     Get a list of the cells
     \return Cell vector
@@ -127,7 +127,7 @@ cellFluxTally::getCells() const
 }
 
 int
-cellFluxTally::addLine(const std::string& LX)
+fissionTally::addLine(const std::string& LX)
   /*!
     Adds a string, if this fails
     it return Tally::addLine.
@@ -170,7 +170,7 @@ cellFluxTally::addLine(const std::string& LX)
 }
 
 void
-cellFluxTally::clearCells() 
+fissionTally::clearCells() 
   /*!
     Clears the cellList 
   */
@@ -180,7 +180,7 @@ cellFluxTally::clearCells()
 }
 
 void
-cellFluxTally::addCells(const std::vector<int>& AVec)
+fissionTally::addCells(const std::vector<int>& AVec)
   /*!
     Add cells 
     \param AVec :: List of cells
@@ -191,7 +191,7 @@ cellFluxTally::addCells(const std::vector<int>& AVec)
 }
 
 void
-cellFluxTally::addIndividualCells(const std::vector<int>& AVec)
+fissionTally::addIndividualCells(const std::vector<int>& AVec)
   /*!
     Add cells 
     \param AVec :: List of cells
@@ -202,7 +202,7 @@ cellFluxTally::addIndividualCells(const std::vector<int>& AVec)
 }
 
 void
-cellFluxTally::renumberCell(const int oldCell,const int newCell)
+fissionTally::renumberCell(const int oldCell,const int newCell)
   /*!
     Renumbers a cell from the active list
     \param oldCell :: Old cell numb
@@ -214,13 +214,13 @@ cellFluxTally::renumberCell(const int oldCell,const int newCell)
 }
 
 int
-cellFluxTally::makeSingle()
+fissionTally::makeSingle()
   /*!
     Convert the cell flux into a set of single calculation
     \return 1 on success / 0 on failure [cell empty]
   */
 {
-  ELog::RegMethod RegA("cellFluxTally","makeSingle");
+  ELog::RegMethod RegA("fissionTally","makeSingle");
   const std::vector<int> cells=cellList.actualItems();
   std::vector<double> sd=SDfield.actualItems();
   cellList.clear();
@@ -244,56 +244,9 @@ cellFluxTally::makeSingle()
   return (!cells.empty()) ? 1 : 0;
 }
 
-void
-cellFluxTally::writeHTape(const std::string& Name,
-			  const std::string& tail) const
-  /*!
-    Write the HTapes : 
-    Note this has to be called after 
-    \param Name :: PrePart name
-    \param tail :: Tail part of the output
-  */
-{
-  boost::format FMT("%6d");
-  boost::format FMT4("%4d");
-  std::ofstream T08;
-  std::ofstream T14;
-  std::ofstream T15;
-
-  const std::vector<int> cells=cellList.actualItems();
-
-  T08.open((Name+"08"+tail).c_str());
-  T14.open((Name+"14"+tail).c_str());
-  T15.open((Name+"15"+tail).c_str());
-  
-  T08<<"HTAPE int deck: nuclide depletion for CINDER90 "<<std::endl;
-  T14<<"HTAPE int deck: nuclide depletion for CINDER90 "<<std::endl;
-  T15<<"HTAPE int deck: nuclide depletion for CINDER90 "<<std::endl;
-
-  T08<<"nuclide depletion: tally:"<<IDnum<<" "<<getComment()<<std::endl;
-  T14<<"nuclide depletion: tally:"<<IDnum<<" "<<getComment()<<std::endl;
-  T15<<"nuclide depletion: tally:"<<IDnum<<" "<<getComment()<<std::endl;
-
-  T08<<"108,,,,,"<<(FMT4 % cells.size())<<",,,,1/"<<std::endl;
-  T14<<"114,,,,,"<<(FMT4 % cells.size())<<",,,,1/"<<std::endl;
-  T15<<"115,,,,,"<<(FMT4 % cells.size())<<",,,,1/"<<std::endl;
-
-
-  std::vector<int>::const_iterator vc;
-  for(vc=cells.begin();vc!=cells.end();vc++)
-    {
-      T08<<(FMT % *vc);
-      T14<<(FMT % *vc);      
-      T15<<(FMT % *vc);
-    }
-  T08<<"/"<<std::endl;
-  T14<<"/"<<std::endl;
-  T15<<"/"<<std::endl;
-  return;
-}
 
 void
-cellFluxTally::write(std::ostream& OX)  const
+fissionTally::write(std::ostream& OX)  const
   /*!
     Writes out the flux tally depending on the 
     fields that have been set.
@@ -306,15 +259,9 @@ cellFluxTally::write(std::ostream& OX)  const
   std::stringstream cx;
   if (IDnum)                   // maybe default 
     {
+      // PARTICLES ARE FORBIDDEN
       cx<<"f"<<IDnum;
-      if (!Particles.empty())
-        {
-	  cx<<":";
-	  copy(Particles.begin(),Particles.end()-1,
-	       std::ostream_iterator<std::string>(cx,","));
-	  cx<<Particles.back();
-	}
-      cx<<" ";
+      cx<<":n ";
       cx<<cellList;
       StrFunc::writeMCNPX(cx.str(),OX);
       cx.str("");

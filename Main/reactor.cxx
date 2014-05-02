@@ -135,12 +135,12 @@ main(int argc,char* argv[])
 
 	  delftSystem::makeDelft RObj(IParam.getValue<std::string>("modType"));
 	  World::createOuterObjects(*SimPtr);
-	  RObj.build(SimPtr);
+	  RObj.build(SimPtr,IParam);
 	  ModelSupport::setDefaultPhysics(*SimPtr,IParam);
 	  RObj.setSource(SimPtr,IParam);
 
 	  const int renumCellWork=
-	    tallySelection(*SimPtr,IParam);
+	    reactorTallySelection(*SimPtr,IParam);
 
 	  SimPtr->removeComplements();
 	  SimPtr->removeDeadSurfaces(0);         

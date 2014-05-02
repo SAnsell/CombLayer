@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   process/ObjSurfMap.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,7 +57,7 @@
 #include "Qhull.h"
 #include "ObjSurfMap.h"
 
-#include "Debug.h"
+#include "debugMethod.h"
 
 namespace ModelSupport
 {
@@ -242,12 +242,13 @@ ObjSurfMap::findNextObject(const int SN,
   const masterRotate& MR=masterRotate::Instance();
   
   ELog::EM<<"Failure to find surface on "<<SN<<" "
-	  <<MR.calcRotate(Pos)<<ELog::endWarn;
+	  <<MR.calcRotate(Pos)<<" "<<SN<<ELog::endCrit;
 
   if (SurI.getSurf(abs(SN)))
     ELog::EM<<"Surface == "<<*SurI.getSurf(abs(SN))<<ELog::endWarn;
   else 
-    ELog::EM<<"Failed to get == "<<SN<<ELog::endErr;
+    ELog::EM<<"Failed to get == "<<SN<<ELog::endWarn;
+
   for(mc=MVec.begin();mc!=MVec.end();mc++)
     {
       ELog::EM<<"Common surf Cell  == "<<(*mc)->getName()<<ELog::endDiag;

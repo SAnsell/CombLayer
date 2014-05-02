@@ -137,13 +137,14 @@ basicConstruct::inputItem(const mainSystem::inputParam& IParam,
 
   if (INum>=NItems)
     throw ColErr::IndexError<size_t>(NItems,INum+1,
-				     "Insufficient items for tally");
+				     "Insufficient items for tally: "
+				     +ErrMessage);
 
   T Out;
   const std::string& OutItem=
     IParam.getCompValue<std::string>("tally",Index,INum);
   if (!StrFunc::convert(OutItem,Out))
-    ELog::EM<<ErrMessage<<ELog::endErr;
+    ELog::EM<<"Convert error:"<<ErrMessage<<ELog::endErr;
 
   return Out;
 }
@@ -227,6 +228,32 @@ basicConstruct::getLinkIndex(const std::string& Snd) const
   return linkPt;
 }
 
+int
+basicConstruct::convertRange(const std::string& Word,int& RA,int &RB)
+  /*!
+    Convert a pair range into two numbers:
+    Range given as X - Y
+    \param Word :: Unit to convert
+    \param RA :: First nubmer
+    \param RB :: Second number
+    \return true/false
+  */
+{
+  ELog::RegMethod RegA("basicConstruct","convertRange");
+
+  int A,B;
+  size_t ALen=StrFunc::convPartNum(Word,A);
+  if (!ALen) return 0;
+  for(;ALen<Word.size() && Word[ALen]!='-';ALen++) ;
+  if (ALen==Word.size()) return 0;
+  
+  if (!StrFunc::convert(Word.substr(ALen),B))
+    return 0;
+  RA=A;
+  RB=B;
+  return 1;
+}
+
 
 int
 basicConstruct::convertRegion(const mainSystem::inputParam& IParam,
@@ -254,7 +281,7 @@ basicConstruct::convertRegion(const mainSystem::inputParam& IParam,
   const size_t NItems=IParam.itemCnt(keyName,Index);
   if (Offset >= NItems)
     throw ColErr::IndexError<size_t>
-      (NItems,Offset,"Insufficient items for key:"+
+      (NItems,Offset+1,"Insufficient items for key:"+
        keyName+"["+StrFunc::makeString(Index)+"]");
 
   RA=0;
@@ -309,10 +336,12 @@ basicConstruct::getCellSelection(const Simulation& System,
   /*!
     Extract all the cells with a material between RA and RB
     \param System :: Simulation for build [needed for nonVoidcells ] 
-    \param matN :: Material number or -1 : all materials : -2 all non zero 
-    materials
+    \param matN :: Material number or -1 
+           : all materials 
+	   : -2 all non zero materials
+	   : > 1000 materials containing zaid
     \param RA :: First number
-    \param RB :: Laste number
+    \param RB :: Last number
    */
 {
   ELog::RegMethod RegA("basicConstruct","getCellSelection");
@@ -322,6 +351,8 @@ basicConstruct::getCellSelection(const Simulation& System,
     cells=System.getNonVoidCellVector();
   else if (matN<0)
     cells=System.getCellVector();
+  else if (matN>1000)
+    cells=System.getCellWithZaid(matN);
   else
     cells=System.getCellWithMaterial(matN);
 
@@ -336,9 +367,6 @@ basicConstruct::getCellSelection(const Simulation& System,
   
   return cells;
 }
-
-
-
 
   // TEMPLATE INSTANCES:
 template int 
