@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   delftInc/SphereModerator.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,11 +28,11 @@ namespace delftSystem
 {
 
 /*!
-  \class H2Moderator
+  \class SphereModerator
   \version 1.0
   \author S. Ansell
   \date June 2012
-  \brief H2Moderator [insert object]
+  \brief Spherical moderator for Delft [old FRM-1 mod]
 */
 
 class SphereModerator : public virtualMod

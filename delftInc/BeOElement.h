@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   delftInc/AirBoxElement.h
+ * File:   delftInc/BeOElement.h
  *
  * Copyright (c) 2004-2014 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef delftSystem_AirBoxElement_h
-#define delftSystem_AirBoxElement_h
+#ifndef delftSystem_BeOElement_h
+#define delftSystem_BeOElement_h
 
 class FuncDataBase;
 
@@ -28,29 +28,29 @@ namespace delftSystem
 {
 
 /*!
-  \class AirBoxElement
+  \class BeOElement
   \version 1.0
-  \author S. Ansell/A. Winklman 
-  \date October 2013
-  \brief Creates an airbox element
+  \author S. Ansell
+  \date April 2014
+  \brief Creates an irradiation element
 */
 
-class AirBoxElement  : public RElement
+class BeOElement  : public RElement
 {
  private:
 
   double Width;           ///< Width of outer
   double Depth;           ///< Depth of outer
-  double Height;          ///< Height of outer
+  double TopHeight;       ///< Top height (from origin)
 
-  double wallThick;       ///< Wall thickness
-  double edgeGap;        ///< loc thickness
+  double wallThick;       ///< Wall thickness [outer]
+  double coolThick;       ///< Coolant thickness 
 
-  int innerMat;           ///< inner material
-  int wallMat;            ///< Wall material 
-  int waterMat;           ///< Water coolant 
+  int beMat;              ///< Default [be material]
+  int coolMat;              ///< Default [be material]
+  int wallMat;              ///< Default [be material]
 
-  void populate(const Simulation&,const FixedComp&);
+  void populate(const Simulation&);
   void createUnitVector(const FixedComp&,const Geometry::Vec3D&);
   
   void createSurfaces(const attachSystem::FixedComp&);
@@ -59,13 +59,14 @@ class AirBoxElement  : public RElement
 
  public:
 
-  AirBoxElement(const size_t,const size_t,const std::string&);
-  AirBoxElement(const AirBoxElement&);
-  AirBoxElement& operator=(const AirBoxElement&);
-  virtual ~AirBoxElement() {}   ///< Destructor
+  BeOElement(const size_t,const size_t,const std::string&);
+  BeOElement(const BeOElement&);
+  BeOElement& operator=(const BeOElement&);
+  virtual ~BeOElement() {}   ///< Destructor
 
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const Geometry::Vec3D&,const FuelLoad&);
+			 const Geometry::Vec3D&,
+			 const FuelLoad&);
 
 };
 

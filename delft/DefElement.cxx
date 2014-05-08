@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   delft/DefElement.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,12 +44,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -64,17 +58,14 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
-#include "shutterBlock.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "LinearComp.h"
 #include "ContainedComp.h"
 
+#include "FuelLoad.h"
 #include "ReactorGrid.h"
 #include "RElement.h"
 #include "DefElement.h"
@@ -93,11 +84,11 @@ DefElement::DefElement(const size_t XI,const size_t YI,
 
 
 void
-DefElement::populate(const Simulation& System)
+DefElement::populate(const FuncDataBase&)
   /*!
     Populate all the variables
     Requires that unset values are copied from previous block
-    \param System :: Simulation to use
+    \param  :: FuncDatabase
   */
 {
   ELog::RegMethod RegA("DefElement","populate");
@@ -129,14 +120,14 @@ DefElement::createSurfaces()
     \param startSurf :: First surface to use
   */
 {  
-  ELog::RegMethod RegA("ZoomInsertBlock","createSurface");
+  ELog::RegMethod RegA("DefElement","createSurface");
 
 
   return;
 }
 
 void
-DefElement::createObjects(Simulation& System)
+DefElement::createObjects(Simulation&)
   /*!
     Create the objects
     \param System :: Simulation
@@ -163,7 +154,8 @@ DefElement::createLinks()
 
 void
 DefElement::createAll(Simulation& System,const FixedComp& FC,
-		       const Geometry::Vec3D& OG)
+		      const Geometry::Vec3D& OG,
+		      const FuelLoad&)
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to
@@ -172,7 +164,7 @@ DefElement::createAll(Simulation& System,const FixedComp& FC,
   */
 {
   ELog::RegMethod RegA("DefElement","createAll(DefElement)");
-  populate(System);
+  populate(System.getDataBase());
 
   createUnitVector(FC,OG);
   createSurfaces();

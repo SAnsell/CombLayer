@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   delftInc/HfElement.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,19 +44,19 @@ class HfElement : public FuelElement,
   const int controlIndex;             ///< Local control number 
 
   size_t cutSize;               /// Cut edge
-  std::set<size_t> Exclude;     ///< Exclude set
 
   int absMat;                   ///< control material
   int bladeMat;                 ///< Blade material
 
   double absThick;              ///< Hf thickness
   double absWidth;              ///< Hf thickness
-  double bladeThick;            ///< cladding thickness on the Hf thickness
-  double bladeWidth;            ///< Hf thickness
+  double bladeThick;            ///< blade separate thickness
+  double coolThick;             ///< coolant thickness
+
   double absHeight;             ///< Hf bar height
   double lift;                  ///< Lift on the hf blades.
 
-  void populate(const Simulation&);
+  void populate(const FuncDataBase&);
   
   void createSurfaces(const attachSystem::FixedComp&);
   void createObjects(Simulation&);
@@ -70,7 +70,8 @@ class HfElement : public FuelElement,
   HfElement& operator=(const HfElement&);
   virtual ~HfElement() {}   ///< Destructor
 
-  virtual void createAll(Simulation&,const FixedComp&,const Geometry::Vec3D&);
+  virtual void createAll(Simulation&,const FixedComp&,
+			 const Geometry::Vec3D&,const FuelLoad&);
 
 };
 

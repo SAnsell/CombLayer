@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   delftInc/FuelElement.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,6 +40,7 @@ class FuelElement  : public RElement
  protected:
 
   size_t nElement;           ///< Number of elements
+  std::set<size_t> Exclude;     ///< Exclude set
 
   double depth;              ///< Total depth of the cell
   double width;              ///< Total width of the cell
@@ -58,34 +59,37 @@ class FuelElement  : public RElement
   double barOffset;          ///< Handle vertical offset
 
   int alMat;                 ///< al material
-  int watMat;                 ///< al material
-  int fuelMat;                 ///< al material
+  int watMat;                ///< coollant material
+  int fuelMat;               ///< default fuel material
 
-  // THIS MUST BE IN A CLASS
-  size_t nFuel;
-  std::vector<int> fuelCells;   ///< Cells with U for division
+  size_t nFuel;              ///< Number of fuel sub-cells in a strip
+  std::vector<int> fuelCells;    ///< Cells with U for division
+  std::vector<Geometry::Vec3D> fuelCentre;    ///< Centre with U 
+  std::vector<int> waterCells;   ///< Cells with H2O coolant [for insertion]
   std::vector<double> fuelFrac;  ///< divider of fuel
-  std::vector<int> fMat;
 
   std::vector<int> midCell;                  ///< Mid cell if needed
   std::vector<Geometry::Vec3D> midCentre;    ///< Mid centre
   int topCell;                  ///< Mid cell if needed
 
-  void populate(const Simulation&);
+  void populate(const FuncDataBase&);
   void createUnitVector(const FixedComp&,const Geometry::Vec3D&);
   
   void createSurfaces(const attachSystem::FixedComp&,
 		      const size_t,const size_t);
-  void createSurfaces(const attachSystem::FixedComp&,
-		      const std::set<size_t>&);
+  void createSurfaces(const attachSystem::FixedComp&);
   void createObjects(Simulation&,const size_t,const size_t);
-  void createObjects(Simulation&,const std::set<size_t>&);;
+  void createObjects(Simulation&);;
   void createLinks();
 
  
-  void layerProcess(Simulation&); 
+  void layerProcess(Simulation&,const FuelLoad&); 
   
   Geometry::Vec3D plateCentre(const size_t) const;
+
+  void makeFuelDivider();
+  void addWaterExclude(Simulation&,const Geometry::Vec3D&,
+		       const std::string&);
 
  public:
 
@@ -94,7 +98,23 @@ class FuelElement  : public RElement
   FuelElement& operator=(const FuelElement&);
   virtual ~FuelElement() {}   ///< Destructor
 
-  virtual void createAll(Simulation&,const FixedComp&,const Geometry::Vec3D&);
+  bool isFuel(const size_t) const;
+  int getDefMat() const { return fuelMat; } 
+  /// Accessor to number blades
+  size_t getNElements() const { return nElement; }
+  /// Accessor to number cells in a blade
+  size_t getNSections() const { return nFuel; }
+  int getMat(const size_t,const size_t) const;
+  /// Exclude set
+  const std::set<size_t>& getRemovedSet() const { return Exclude; } 
+  /// Fuel Vector
+  const std::vector<int>& getFuel() { return fuelCells; } 
+  /// Access centres [for source]
+  const std::vector<Geometry::Vec3D>& getFuelCentre() const 
+     { return fuelCentre; } 
+  virtual void createAll(Simulation&,const FixedComp&,
+			 const Geometry::Vec3D&,
+			 const FuelLoad&);
 
 };
 

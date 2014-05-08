@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   delft/HfElement.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,12 +44,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -64,7 +58,6 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "generateSurf.h"
@@ -73,6 +66,7 @@
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 
+#include "FuelLoad.h"
 #include "ReactorGrid.h"
 #include "RElement.h"
 #include "FuelElement.h"
@@ -91,26 +85,75 @@ HfElement::HfElement(const size_t XI,const size_t YI,
 	       cell(ReactorGrid::getElementName(CKey,XI,YI)))
   /*!
     Constructor BUT ALL variable are left unpopulated.
+    \parma XI :: Grid position
+    \parma YI :: Grid position 
+    \parma Key :: Keyname for basic cell
+    \parma cKey :: Keyname for control
   */
 {}
 
+HfElement::HfElement(const HfElement& A) : 
+  FuelElement(A),attachSystem::ContainedGroup(A),
+  cntlKey(A.cntlKey),controlIndex(A.controlIndex),
+  cutSize(A.cutSize),absMat(A.absMat),
+  bladeMat(A.bladeMat),absThick(A.absThick),absWidth(A.absWidth),
+  bladeThick(A.bladeThick),
+  absHeight(A.absHeight),lift(A.lift)
+  /*!
+    Copy constructor
+    \param A :: HfElement to copy
+  */
+{}
+
+HfElement&
+HfElement::operator=(const HfElement& A)
+  /*!
+    Assignment operator
+    \param A :: HfElement to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      FuelElement::operator=(A);
+      attachSystem::ContainedGroup::operator=(A);
+      cutSize=A.cutSize;
+      absMat=A.absMat;
+      bladeMat=A.bladeMat;
+      absThick=A.absThick;
+      absWidth=A.absWidth;
+      bladeThick=A.bladeThick;
+      absHeight=A.absHeight;
+      lift=A.lift;
+    }
+  return *this;
+}
+
 
 void
-HfElement::populate(const Simulation& System)
+HfElement::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     Requires that unset values are copied from previous block
-    \param System :: Simulation to use
+    \param Control :: Database system
   */
 {
   ELog::RegMethod RegA("HfElement","populate");
-  const FuncDataBase& Control=System.getDataBase();
 
-  FuelElement::populate(System);
+  FuelElement::populate(Control);
+  
+  cladDepth=ReactorGrid::getDefElement<double>
+    (Control,keyName+"CladDepth",XIndex,YIndex,cntlKey+"CladDepth");
+  fuelDepth=ReactorGrid::getDefElement<double>
+    (Control,keyName+"FuelDepth",XIndex,YIndex,cntlKey+"FuelDepth");
+  waterDepth=ReactorGrid::getDefElement<double>
+    (Control,keyName+"WaterDepth",XIndex,YIndex,cntlKey+"WaterDepth");
+
   // Create the exclude items
   cutSize=ReactorGrid::getElement<size_t>
     (Control,cntlKey+"CutSize",XIndex,YIndex);
 
+  Exclude.clear();
   for(size_t i=0;i<cutSize;i++)
     {
       Exclude.insert(i);
@@ -133,9 +176,9 @@ HfElement::populate(const Simulation& System)
     (Control,cntlKey+"AbsHeight",XIndex,YIndex);
   bladeThick=ReactorGrid::getElement<double>
     (Control,cntlKey+"BladeThick",XIndex,YIndex);
-  bladeWidth=ReactorGrid::getElement<double>
-    (Control,cntlKey+"BladeWidth",XIndex,YIndex);
 
+  coolThick=ReactorGrid::getElement<double>
+    (Control,cntlKey+"CoolThick",XIndex,YIndex);
 
   return;
 }
@@ -149,38 +192,48 @@ HfElement::createSurfaces(const attachSystem::FixedComp& RG)
 {  
   ELog::RegMethod RegA("HfElement","createSurface");
 
-  FuelElement::createSurfaces(RG,Exclude);
-
-  int cIndex(controlIndex);
-  for(int i=0;i<static_cast<int>(midCentre.size());i++)
-    {
-        Geometry::Vec3D midPt=midCentre[static_cast<size_t>(i)];
+  FuelElement::createSurfaces(RG);
+  if (!cutSize) return;
   
-      // Front 
-      ModelSupport::buildPlane(SMap,cIndex+1,
-			       midPt-Y*absThick/2.0,Y);
-      ModelSupport::buildPlane(SMap,cIndex+2,
-			       midPt+Y*absThick/2.0,Y);
-      ModelSupport::buildPlane(SMap,cIndex+3,
-			       midPt-X*absWidth/2.0,X);
-      ModelSupport::buildPlane(SMap,cIndex+4,
-			       midPt+X*absWidth/2.0,X);
+  int cIndex(controlIndex);
 
-      ModelSupport::buildPlane(SMap,cIndex+5,
-			       midPt+Z*(-absHeight/2.0+lift),Z); 
-      ModelSupport::buildPlane(SMap,cIndex+6,
-			       midPt+Z*(absHeight/2.0+lift),Z);
-     
-      ModelSupport::buildPlane(SMap,cIndex+11,
-			       midPt-Y*(absThick/2.0+bladeThick),Y);
-      ModelSupport::buildPlane(SMap,cIndex+12,
-			       midPt+Y*(absThick/2.0+bladeThick),Y);
-      ModelSupport::buildPlane(SMap,cIndex+13,
-			       midPt-X*(absWidth/2.0+bladeWidth),X);
-      ModelSupport::buildPlane(SMap,cIndex+14,
-			       midPt+X*(absWidth/2.0+bladeWidth),X);
-      cIndex+=50;
-    }
+  //
+  // Work away from cut element:
+  //
+  Geometry::Vec3D OP=plateCentre(cutSize-1);
+  // Blade
+  ModelSupport::buildPlane(SMap,cIndex+1,OP-Y*bladeThick/2.0,Y);
+  ModelSupport::buildPlane(SMap,cIndex+2,OP+Y*bladeThick/2.0,Y);
+  OP-=Y*(coolThick+(bladeThick+absThick)/2.0);
+  
+  ModelSupport::buildPlane(SMap,cIndex+11,OP-Y*(absThick/2.0),Y);
+  ModelSupport::buildPlane(SMap,cIndex+12,OP+Y*(absThick/2.0),Y);
+  OP-=Y*(coolThick+(bladeThick+absThick)/2.0);
+  
+  ModelSupport::buildPlane(SMap,cIndex+21,OP-Y*bladeThick/2.0,Y);
+  ModelSupport::buildPlane(SMap,cIndex+22,OP+Y*bladeThick/2.0,Y);
+  cIndex+=50;
+
+  OP=plateCentre(nElement-cutSize);
+  // Blade
+  ModelSupport::buildPlane(SMap,cIndex+1,OP-Y*bladeThick/2.0,Y);
+  ModelSupport::buildPlane(SMap,cIndex+2,OP+Y*bladeThick/2.0,Y);
+  OP+=Y*(coolThick+(bladeThick+absThick)/2.0);
+  
+  ModelSupport::buildPlane(SMap,cIndex+11,OP-Y*(absThick/2.0),Y);
+  ModelSupport::buildPlane(SMap,cIndex+12,OP+Y*(absThick/2.0),Y);
+  OP+=Y*(coolThick+(bladeThick+absThick)/2.0);
+  
+  ModelSupport::buildPlane(SMap,cIndex+21,OP-Y*bladeThick/2.0,Y);
+  ModelSupport::buildPlane(SMap,cIndex+22,OP+Y*bladeThick/2.0,Y);
+
+  ModelSupport::buildPlane(SMap,controlIndex+3,OP-X*absWidth/2.0,X);
+  ModelSupport::buildPlane(SMap,controlIndex+4,OP+X*absWidth/2.0,X);
+  ModelSupport::buildPlane(SMap,controlIndex+5,
+			   OP+Z*(-fuelHeight/2.0+lift),Z); 
+  ModelSupport::buildPlane(SMap,controlIndex+6,
+			   OP+Z*(absHeight-fuelHeight/2.0+lift),Z); 
+
   return;
 }
 
@@ -193,15 +246,34 @@ HfElement::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("HfElement","createObjects");
 
-  FuelElement::createObjects(System,Exclude);
+  FuelElement::createObjects(System);
+
+  if (!cutSize) return;
 
   std::string Out;
   int cIndex(controlIndex);
-  for(size_t i=0;i<midCentre.size();i++)
+  const Geometry::Vec3D cutPos[]=
+    { plateCentre((cutSize+1)/2),
+      plateCentre(nElement-(cutSize+1)/2) };
+
+  for(size_t i=0;i<2;i++)  // front / back
     {
-      Out=ModelSupport::getComposite(SMap,cIndex," 1 -2 3 -4 5 -6 ");
+      Out=ModelSupport::getComposite(SMap,cIndex,surfIndex,
+				     " 1 -2 23M -24M 25M -26M ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,bladeMat,0.0,Out));
+      
+      Out=ModelSupport::getComposite(SMap,cIndex,controlIndex,
+				     " 11 -12 3M -4M 5M -6M ");
       ContainedGroup::addOuterUnionSurf("Rod",Out);      
       System.addCell(MonteCarlo::Qhull(cellIndex++,absMat,0.0,Out));
+
+      Out=ModelSupport::getComposite(SMap,cIndex,surfIndex,
+				     " 21 -22 23M -24M 25M -26M ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,bladeMat,0.0,Out));
+
+      Out=ModelSupport::getComposite(SMap,cIndex,"(-1:2) (-21:22)");
+      addWaterExclude(System,cutPos[i],Out);
+
       cIndex+=50;
     }	  
 
@@ -224,21 +296,25 @@ HfElement::createLinks()
 
 void
 HfElement::createAll(Simulation& System,const FixedComp& FC,
-		       const Geometry::Vec3D& OG)
+		     const Geometry::Vec3D& OG,
+		     const FuelLoad& FuelSystem)
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to
     \param FC :: Fixed Unit
     \param OG :: Origin
+    \param FuelSystem :: Fuelfor main elements
   */
 {
   ELog::RegMethod RegA("HfElement","createAll(HfElement)");
 
-  populate(System);
+  populate(System.getDataBase());
   createUnitVector(FC,OG);
   createSurfaces(FC);
   createObjects(System);
   createLinks();
+
+  FuelElement::layerProcess(System,FuelSystem);
 
   const std::vector<int>& IC=getInsertCells();
   if (!IC.empty())

@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   delft/RElement.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,12 +44,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -65,16 +59,14 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "LinearComp.h"
 #include "ContainedComp.h"
 
+#include "FuelLoad.h"
 #include "ReactorGrid.h"
 #include "RElement.h"
 
@@ -91,6 +83,8 @@ RElement::RElement(const size_t XI,const size_t YI,
   cellIndex(surfIndex+1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
+    \param XI :: Grid element index
+    \param YI :: Grid element index
     \param Key :: KeyName
   */
 {}
@@ -131,15 +125,14 @@ RElement::operator=(const RElement& A)
 }
 
 void
-RElement::populate(const Simulation& System)
+RElement::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     Requires that unset values are copied from previous block
-    \param System :: Simulation to use
+    \param Control :: DataBase to use
   */
 {
   ELog::RegMethod RegA("RElement","populate");
-  const FuncDataBase& Control=System.getDataBase();
 
   xStep=ReactorGrid::getElement<double>(Control,keyName+"XStep",
 					XIndex,YIndex);
@@ -155,6 +148,17 @@ RElement::populate(const Simulation& System)
 
   return;
 }
+
+std::string
+RElement::getItemKeyName() const
+  /*!
+    Return the specific item name
+    \return full keyname
+   */
+{
+  return ReactorGrid::getElementName(keyName,XIndex,YIndex);
+}
+
 
 
 } // NAMESPACE shutterSystem

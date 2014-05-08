@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   delftInc/RElement.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@ class RElement  : public attachSystem::FixedComp,
   double xyAngle;       ///< Rotation xy
   double zAngle;        ///< Rotation z
 
-  void populate(const Simulation&);
+  void populate(const FuncDataBase&);
 
  public:
 
@@ -65,8 +65,10 @@ class RElement  : public attachSystem::FixedComp,
   RElement& operator=(const RElement&);
   virtual ~RElement() {}   ///< Destructor
 
+  virtual std::string getItemKeyName() const;
   virtual void createAll(Simulation&,const FixedComp&,
-		 const Geometry::Vec3D&)=0;
+			 const Geometry::Vec3D&,
+			 const FuelLoad&)=0;
 
 };
 

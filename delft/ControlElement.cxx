@@ -45,8 +45,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -70,10 +68,13 @@
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 
+#include "FuelLoad.h"
 #include "ReactorGrid.h"
 #include "RElement.h"
 #include "FuelElement.h"
 #include "ControlElement.h"
+
+#include "debugMethod.h"
 
 namespace delftSystem
 {
@@ -88,6 +89,10 @@ ControlElement::ControlElement(const size_t XI,const size_t YI,
 	       cell(ReactorGrid::getElementName(CKey,XI,YI)))
   /*!
     Constructor BUT ALL variable are left unpopulated.
+    \param XI :: Grid position
+    \param YI :: Grid position
+    \param Key :: Keyname for fuel part of cell
+    \param CKey :: Keyname for control part of cell
   */
 {}
 
@@ -140,17 +145,16 @@ ControlElement::operator=(const ControlElement& A)
 }
 
 void
-ControlElement::populate(const Simulation& System)
+ControlElement::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     Requires that unset values are copied from previous block
-    \param System :: Simulation to use
+    \param Control :: Database of variables
   */
 {
   ELog::RegMethod RegA("ControlElement","populate");
-  const FuncDataBase& Control=System.getDataBase();
   
-  FuelElement::populate(System);
+  FuelElement::populate(Control);
   cStartIndex=ReactorGrid::getElement<size_t>(Control,cntlKey+"CStartIndex",
 					   XIndex,YIndex);
   cEndIndex=ReactorGrid::getElement<size_t>(Control,cntlKey+"CEndIndex",
@@ -262,7 +266,7 @@ ControlElement::createSurfaces(const attachSystem::FixedComp& RG)
 
   // Top / bottom : Outer Plates:
   ModelSupport::buildPlane(SMap,controlIndex+16,
-	   midPt+Z*(outerLength-(fuelHeight/2.0+cladHeight)),Z);
+			   midPt+Z*(outerLength-(fuelHeight/2.0+cladHeight)),Z);
   // Lift Part
   ModelSupport::buildPlane(SMap,controlIndex+25,
 			   midPt+Z*(lift-innerLength/2.0),Z);
@@ -284,7 +288,7 @@ ControlElement::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("ControlElement","createObjects");
 
-  FuelElement::createObjects(System,cStartIndex,cEndIndex);
+  FuelElement::createObjects(System);
 
   std::string Out;
 
@@ -372,16 +376,19 @@ ControlElement::createLinks()
 
 void
 ControlElement::createAll(Simulation& System,const FixedComp& FC,
-		       const Geometry::Vec3D& OG)
+			  const Geometry::Vec3D& OG,
+			  const FuelLoad& FuelSystem)
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to
     \param FC :: Fixed Unit
     \param OG :: Origin
+    \param FuelSystem :: Fuel load for plates
   */
 {
   ELog::RegMethod RegA("ControlElement","createAll(ControlElement)");
-  populate(System);
+
+  populate(System.getDataBase());
 
   createUnitVector(FC,OG);
   createSurfaces(FC);
@@ -398,6 +405,7 @@ ControlElement::createAll(Simulation& System,const FixedComp& FC,
   ContainedGroup::addInsertCell("Track",topCell);
   ContainedGroup::addInsertCell("Cap",topCell);
 
+  FuelElement::layerProcess(System,FuelSystem);
   FuelElement::insertObjects(System);       
   ContainedGroup::insertObjects(System);
 

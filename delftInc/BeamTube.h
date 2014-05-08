@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   delftInc/BeamTube.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,6 +54,7 @@ class BeamTube : public attachSystem::ContainedComp,
   double zAngle;                ///< zRotation angle
 
   double length;                ///< Total length
+  double capRadius;             ///< Radius of cap [zero for flat]
   double innerRadius;           ///< Outer radius [minus wall]
   double innerWall;             ///< Wall thickness
   double outerRadius;           ///< Outer radius [minus wall]
@@ -68,18 +69,26 @@ class BeamTube : public attachSystem::ContainedComp,
   double interWallThick;        ///< shield thickness (container)
   double interYOffset;          ///< Distance from centre
 
+  double portalRadius;          ///< Portal radius
+  double portalThick;           ///< Portal thickness
+
   int interMat;                 ///< Inter Material number
   int wallMat;                  ///< Wall Material number
   int gapMat;                   ///< Material in the gap
 
+  std::vector<double> portalOffset;     ///< Portal Offset 
+  std::vector<int> portalMat;           ///< Portal material [if present]
+
   int innerVoid;                ///< Inner void cell
 
-  void populate(const Simulation&);
+  void populate(const FuncDataBase&);
+  void populatePortals(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const Geometry::Vec3D&);
 
   void createSurfaces();
   void createObjects(Simulation&);
+  void createCapEndObjects(Simulation&);
   void createLinks();
 
  public:

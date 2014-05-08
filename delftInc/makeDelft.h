@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   delftInc/makeDelft.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@
 namespace delftSystem
 {
   class ReactorGrid;
+  class BeamInsert;
   class BeamTube;
   class SwimingPool;
   class virtualMod;
@@ -41,6 +42,7 @@ namespace delftSystem
   class H2Vac;
   class H2Groove;
   class BeSurround;
+  class BeFullBlock;
   class SpaceBlock;
 
   /*!
@@ -75,6 +77,7 @@ class makeDelft
 
   // Reflector additional
   boost::shared_ptr<BeSurround> R2Be;      ///< R2 tube refle
+  boost::shared_ptr<BeFullBlock> RFull;      ///< R Full block
 
 
   /// Boxed units
@@ -92,7 +95,7 @@ class makeDelft
   makeDelft& operator=(const makeDelft&);
   ~makeDelft();
   
-  void build(Simulation*);
+  void build(Simulation*,const mainSystem::inputParam&);
   void setSource(Simulation*,const mainSystem::inputParam&);
 
 };

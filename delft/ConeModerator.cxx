@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   delft/ConeModerator.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,10 +46,7 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -68,7 +65,6 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "SecondTrack.h"
@@ -81,7 +77,6 @@
 
 namespace delftSystem
 {
-
 
 ConeModerator::ConeModerator(const std::string& Key)  :
   virtualMod(Key),
@@ -180,7 +175,7 @@ ConeModerator::populate(const Simulation& System)
 
   alView=Control.EvalVar<double>(keyName+"AlView");
   alBack=Control.EvalVar<double>(keyName+"AlBack");
-  faceThick=Control.EvalVar<double>(keyName+"Fa<ceThick");
+  faceThick=Control.EvalVar<double>(keyName+"FaceThick");
 
   modTemp=Control.EvalVar<double>(keyName+"ModTemp");
 

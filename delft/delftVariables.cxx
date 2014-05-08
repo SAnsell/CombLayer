@@ -78,8 +78,6 @@ DelftModel(FuncDataBase& Control)
   Control.addVariable("delftGridXYangle",0.0); // Z step
   Control.addVariable("delftGridZangle",0.0); // Z step
 
-  Control.addVariable("delftGridYSize",7); // port side
-
   Control.addVariable("delftGridWidth",46.254);  
   Control.addVariable("delftGridDepth",56.70); 
 
@@ -95,32 +93,33 @@ DelftModel(FuncDataBase& Control)
   Control.addVariable("delftGridMat","H2O");  // Water !!
 
   Control.addVariable("delftElementNFuel",19);  // Number of elements
-  Control.addVariable("delftElementXStep",0.0);  
+  Control.addVariable("delftElementXStep",0);  
   Control.addVariable("delftElementYStep",0.0);  
   Control.addVariable("delftElementZStep",0.0);  
   Control.addVariable("delftElementXYAngle",0.0);  
   Control.addVariable("delftElementZAngle",0.0);  
 
   // Special for Hf Element
-  Control.addVariable("delftElementNFuelC2",23);   // Number of elements  
-  Control.addVariable("delftElementCladDepthC2",0.039);   
-  Control.addVariable("delftElementFuelDepthC2",0.051);
-  Control.addVariable("delftElementWaterDepthC2",0.22);      
 
   Control.addVariable("delftHfCutSize",3);      
-  Control.addVariable("delftHfLift",0.0);      
-  Control.addVariable("delftHfAbsHeight",100.0);      
+  Control.addVariable("delftHfLift",30.0);      
+  Control.addVariable("delftHfAbsHeight",75.0);      
   Control.addVariable("delftHfAbsMat","Hafnium");      
   Control.addVariable("delftHfBladeMat","Aluminium");      
   Control.addVariable("delftHfAbsThick",0.3);      
+  Control.addVariable("delftHfCoolThick",0.2);      
   Control.addVariable("delftHfBladeThick",0.15);      
   Control.addVariable("delftHfAbsWidth",6.275);   
-  Control.addVariable("delftHfBladeWidth",0.2);   
+  Control.addVariable("delftHfBladeWidth",0.15);   
+  Control.addVariable("delftHfNFuel",23);   // Number of elements  
+  Control.addVariable("delftHfCladDepth",0.039);   
+  Control.addVariable("delftHfFuelDepth",0.051);
+  Control.addVariable("delftHfWaterDepth",0.25);      
   
   // FUEL ELEMENT
-  Control.addVariable("delftElementNFuelDivide",1);   
-  Control.addVariable("delftElementDepth",7.94);   
-  Control.addVariable("delftElementWidth",7.56);   
+  Control.addVariable("delftElementNFuelDivide",15);   
+  Control.addVariable("delftElementDepth",8.00);   
+  Control.addVariable("delftElementWidth",7.60);   
 
   Control.addVariable("delftElementFuelWidth",6.2);   
   Control.addVariable("delftElementFuelHeight",60.0);   
@@ -130,7 +129,7 @@ DelftModel(FuncDataBase& Control)
   Control.addVariable("delftElementCladHeight",1.0);   
   Control.addVariable("delftElementCladDepth",0.035);   
 
-  Control.addVariable("delftElementWaterDepth",0.3);   
+  Control.addVariable("delftElementWaterDepth",0.300);   
 
   Control.addVariable("delftElementTopHeight",5.0);   
   Control.addVariable("delftElementBaseHeight",5.0);   
@@ -139,7 +138,7 @@ DelftModel(FuncDataBase& Control)
   Control.addVariable("delftElementBarRadius",0.425);   
   Control.addVariable("delftElementBarOffset",1.575);     // distance down
 
-  Control.addVariable("delftElementFuelMat","Uranium");       // approximate U
+  Control.addVariable("delftElementFuelMat","U3Si2");      // approximate U
   Control.addVariable("delftElementAlMat","Aluminium");       
   Control.addVariable("delftElementWaterMat","H2O");   
 
@@ -147,7 +146,7 @@ DelftModel(FuncDataBase& Control)
   Control.addVariable("delftControlAbsMat","B4C");    
   Control.addVariable("delftControlCladMat","Aluminium");    
   Control.addVariable("delftControlCStartIndex",5);    
-  Control.addVariable("delftControlCEndIndex",14);    
+  Control.addVariable("delftControlCEndIndex",13);    
   Control.addVariable("delftControlVoidRadius",0.625);    
   Control.addVariable("delftControlVoidOffset",1.75);    
   Control.addVariable("delftControlAbsThick",1.72);    // Radius * 2
@@ -162,12 +161,21 @@ DelftModel(FuncDataBase& Control)
   Control.addVariable("delftControlEndCap",2.5);   // Al from base-top
   Control.addVariable("delftControlLift",46.39);    
 
+  // BeO Blocks
+  Control.addVariable("delftBeOWidth",7.6);    
+  Control.addVariable("delftBeODepth",8.0);    
+  Control.addVariable("delftBeOTopHeight",34.15); 
+  Control.addVariable("delftBeOWallThick",0.2); 
+  Control.addVariable("delftBeOCoolThick",0.1); 
+  Control.addVariable("delftBeOMat","BeO"); 
+  Control.addVariable("delftBeOCoolMat","H2O"); 
+  Control.addVariable("delftBeOWallMat","Aluminium"); 
+
   // Be Blocks
   Control.addVariable("delftBeWidth",7.6);    
   Control.addVariable("delftBeDepth",8.0);    
   Control.addVariable("delftBeTopHeight",34.15); 
   Control.addVariable("delftBeMat","Be300K"); 
-
 
   // Be plugelement:
   Control.addVariable("delftBePlugWidth",7.6);    
@@ -214,7 +222,7 @@ DelftModel(FuncDataBase& Control)
    
   Control.addVariable("delftIrradSampleRad",0.62);    
   Control.addVariable("delftIrradSampleXOffset",1.0);    
-  Control.addVariable("delftIrradSampleZOffset",0.0);    
+  Control.addVariable("delftIrradSampleZOffset",-6.0);    
   Control.addVariable("delftIrradVacRadius",0.80);    
   Control.addVariable("delftIrradCaseRadius",0.95);    
   Control.addVariable("delftIrradCoreRadius",2.0);    
@@ -230,7 +238,7 @@ DelftModel(FuncDataBase& Control)
   Control.addVariable("delftIrradPlugThick",1.5);    
   Control.addVariable("delftIrradPlugZOffset",-8.74);    
 
-  Control.addVariable("delftIrradSampleMat","Gadolinium");    
+  Control.addVariable("delftIrradSampleMat","Void");    
   Control.addVariable("delftIrradPipeMat","Aluminium");    
   Control.addVariable("delftIrradBeMat","Be300K");    
   Control.addVariable("delftIrradWaterMat","H2O");    
@@ -256,160 +264,208 @@ DelftModel(FuncDataBase& Control)
   
   // FlightLines
   
-  Control.addVariable("delftFlight1XStep",23.127+1.8);
-  Control.addVariable("delftFlight1YStep",0.0);
-  Control.addVariable("delftFlight1ZStep",0.0);
-  Control.addVariable("delftFlight1XYAngle",0.0);
-  Control.addVariable("delftFlight1ZAngle",0.0);
+  Control.addVariable("delftFlightR2XStep",23.127+1.8);
+  Control.addVariable("delftFlightR2YStep",0.0);
+  Control.addVariable("delftFlightR2ZStep",0.0);
+  Control.addVariable("delftFlightR2XYAngle",0.0);
+  Control.addVariable("delftFlightR2ZAngle",0.0);
 
-  Control.addVariable("delftFlight1Length",1000.0);
-  Control.addVariable("delftFlight1InnerRadius",10.3);
-  Control.addVariable("delftFlight1InnerWall",0.4);
-  Control.addVariable("delftFlight1OuterRadius",11.75);
-  Control.addVariable("delftFlight1OuterWall",0.5);
+  Control.addVariable("delftFlightR2Length",1000.0);
+  Control.addVariable("delftFlightR2InnerRadius",10.3);
+  Control.addVariable("delftFlightR2InnerWall",0.4);
+  Control.addVariable("delftFlightR2OuterRadius",11.75);
+  Control.addVariable("delftFlightR2OuterWall",0.5);
 
-  Control.addVariable("delftFlight1FrontWall",0.7);
-  Control.addVariable("delftFlight1FrontGap",0.1);
-  Control.addVariable("delftFlight1FrontIWall",0.5);
+  Control.addVariable("delftFlightR2FrontWall",0.7);
+  Control.addVariable("delftFlightR2FrontGap",0.1);
+  Control.addVariable("delftFlightR2FrontIWall",0.5);
 
-  Control.addVariable("delftFlight1InterThick",0.2);
-  Control.addVariable("delftFlight1InterWallThick",0.3);
-  Control.addVariable("delftFlight1InterFrontWall",0.333);
-  Control.addVariable("delftFlight1InterYOffset",77.2);
-  Control.addVariable("delftFlight1InterMat","B4C");
+  Control.addVariable("delftFlightR2InterThick",0.2);
+  Control.addVariable("delftFlightR2InterWallThick",0.3);
+  Control.addVariable("delftFlightR2InterFrontWall",0.333);
+  Control.addVariable("delftFlightR2InterYOffset",77.2);
+  Control.addVariable("delftFlightR2InterMat","B4C");
 
-  Control.addVariable("delftFlight1WallMat","Aluminium");
-  Control.addVariable("delftFlight1GapMat","Void");
+  Control.addVariable("delftFlightR2WallMat","Aluminium");
+  Control.addVariable("delftFlightR2GapMat","Void");
+
+  Control.addVariable("delftFlightR2PortalRadius",5.0);
+  Control.addVariable("delftFlightR2PortalThick",0.6);
+  Control.addVariable("delftFlightR2Portal1Dist",0.0);
+  Control.addVariable("delftFlightR2Portal1Mat","Aluminium");
+  Control.addVariable("delftFlightR2Portal2Dist",50.0);
+  Control.addVariable("delftFlightR2Portal2Mat","Void");
 
   // FLIGHT 2:
-  Control.addVariable("delftFlight2XStep",23.127+1.8);
-  Control.addVariable("delftFlight2YStep",0);
-  Control.addVariable("delftFlight2ZStep",-24.5);
-  Control.addVariable("delftFlight2XYAngle",21.0);
-  Control.addVariable("delftFlight2ZAngle",0.0);
+  Control.addVariable("delftFlightR1XStep",23.127+1.8);
+  Control.addVariable("delftFlightR1YStep",0);
+  Control.addVariable("delftFlightR1ZStep",-24.5);
+  Control.addVariable("delftFlightR1XYAngle",21.0);
+  Control.addVariable("delftFlightR1ZAngle",0.0);
 
-  Control.addVariable("delftFlight2Length",1000.0);
-  Control.addVariable("delftFlight2InnerRadius",7.5);
-  Control.addVariable("delftFlight2InnerWall",0.5);
-  Control.addVariable("delftFlight2OuterRadius",9.25);
-  Control.addVariable("delftFlight2OuterWall",0.5);
+  Control.addVariable("delftFlightR1Length",1000.0);
+  Control.addVariable("delftFlightR1InnerRadius",7.5);
+  Control.addVariable("delftFlightR1InnerWall",0.5);
+  Control.addVariable("delftFlightR1OuterRadius",9.25);
+  Control.addVariable("delftFlightR1OuterWall",0.5);
 
-  Control.addVariable("delftFlight2FrontWall",0.7);
-  Control.addVariable("delftFlight2FrontGap",4.4);
-  Control.addVariable("delftFlight2FrontIWall",0.5);
+  Control.addVariable("delftFlightR1FrontWall",0.7);
+  Control.addVariable("delftFlightR1FrontGap",4.4);
+  Control.addVariable("delftFlightR1FrontIWall",0.5);
 
-  Control.addVariable("delftFlight2InterThick",0.2);
-  Control.addVariable("delftFlight2InterWallThick",0.3);
-  Control.addVariable("delftFlight2InterFrontWall",0.333);
-  Control.addVariable("delftFlight2InterYOffset",77.2);
-  Control.addVariable("delftFlight2InterMat","B4C");
+  Control.addVariable("delftFlightR1InterThick",0.2);
+  Control.addVariable("delftFlightR1InterWallThick",0.3);
+  Control.addVariable("delftFlightR1InterFrontWall",0.333);
+  Control.addVariable("delftFlightR1InterYOffset",77.2);
 
-  Control.addVariable("delftFlight2WallMat","Aluminium");
-  Control.addVariable("delftFlight2GapMat","Void");
+  Control.addVariable("delftFlightR1PortalRadius",5.0);
+  Control.addVariable("delftFlightR1PortalThick",0.6);
+
+  Control.addVariable("delftFlightR1InterMat","B4C");
+
+  Control.addVariable("delftFlightR1WallMat","Aluminium");
+  Control.addVariable("delftFlightR1GapMat","Void");
+
+  Control.addVariable("delftFlightR1PortalRadius",5.0);
+  Control.addVariable("delftFlightR1PortalThick",0.6);
+  Control.addVariable("delftFlightR1Portal1Dist",0.0);
+  Control.addVariable("delftFlightR1Portal1Mat","Aluminium");
+  Control.addVariable("delftFlightR1Portal2Dist",50.0);
+  Control.addVariable("delftFlightR1Portal2Mat","Void");
 
   // FLIGHT 3:
-  Control.addVariable("delftFlight3XStep",23.127+1.8);
-  Control.addVariable("delftFlight3YStep",0.0);
-  Control.addVariable("delftFlight3ZStep",24.5);
-  Control.addVariable("delftFlight3XYAngle",-26.0);
-  Control.addVariable("delftFlight3ZAngle",0.0);
+  Control.addVariable("delftFlightR3XStep",23.127+1.8);
+  Control.addVariable("delftFlightR3YStep",0.0);
+  Control.addVariable("delftFlightR3ZStep",24.5);
+  Control.addVariable("delftFlightR3XYAngle",-26.0);
+  Control.addVariable("delftFlightR3ZAngle",0.0);
 
-  Control.addVariable("delftFlight3Length",1000.0);
-  Control.addVariable("delftFlight3InnerRadius",7.5);
-  Control.addVariable("delftFlight3InnerWall",0.5);
-  Control.addVariable("delftFlight3OuterRadius",9.25);
-  Control.addVariable("delftFlight3OuterWall",0.5);
+  Control.addVariable("delftFlightR3Length",1000.0);
+  Control.addVariable("delftFlightR3InnerRadius",7.5);
+  Control.addVariable("delftFlightR3InnerWall",0.5);
+  Control.addVariable("delftFlightR3OuterRadius",9.25);
+  Control.addVariable("delftFlightR3OuterWall",0.5);
 
-  Control.addVariable("delftFlight3FrontWall",0.7);
-  Control.addVariable("delftFlight3FrontGap",4.4);
-  Control.addVariable("delftFlight3FrontIWall",0.5);
+  Control.addVariable("delftFlightR3FrontWall",0.7);
+  Control.addVariable("delftFlightR3FrontGap",4.4);
+  Control.addVariable("delftFlightR3FrontIWall",0.5);
 
-  Control.addVariable("delftFlight3InterThick",0.2);
-  Control.addVariable("delftFlight3InterWallThick",0.3);
-  Control.addVariable("delftFlight3InterFrontWall",0.333);
-  Control.addVariable("delftFlight3InterYOffset",77.2);
-  Control.addVariable("delftFlight3InterMat","B4C");
+  Control.addVariable("delftFlightR3InterThick",0.2);
+  Control.addVariable("delftFlightR3InterWallThick",0.3);
+  Control.addVariable("delftFlightR3InterFrontWall",0.333);
+  Control.addVariable("delftFlightR3InterYOffset",77.2);
+  Control.addVariable("delftFlightR3InterMat","B4C");
 
-  Control.addVariable("delftFlight3WallMat","Aluminium");
-  Control.addVariable("delftFlight3GapMat","Void");
+  Control.addVariable("delftFlightR3WallMat","Aluminium");
+  Control.addVariable("delftFlightR3GapMat","Void");
+
+  Control.addVariable("delftFlightR3PortalRadius",5.0);
+  Control.addVariable("delftFlightR3PortalThick",0.6);
+  Control.addVariable("delftFlightR3Portal1Dist",0.0);
+  Control.addVariable("delftFlightR3Portal1Mat","Aluminium");
+  Control.addVariable("delftFlightR3Portal2Dist",50.0);
+  Control.addVariable("delftFlightR3Portal2Mat","Void");
+
 
   // FLIGHT 4:  Lower 
-  Control.addVariable("delftFlight4XStep",-(23.127+1.8));
-  Control.addVariable("delftFlight4YStep",0.00);
-  Control.addVariable("delftFlight4ZStep",24.5);
-  Control.addVariable("delftFlight4XYAngle",26.0);
-  Control.addVariable("delftFlight4ZAngle",0.0);
+  Control.addVariable("delftFlightL3XStep",-(23.127+1.8));
+  Control.addVariable("delftFlightL3YStep",0.00);
+  Control.addVariable("delftFlightL3ZStep",24.5);
+  Control.addVariable("delftFlightL3XYAngle",26.0);
+  Control.addVariable("delftFlightL3ZAngle",0.0);
 
-  Control.addVariable("delftFlight4Length",1000.0);
-  Control.addVariable("delftFlight4InnerRadius",7.5);
-  Control.addVariable("delftFlight4InnerWall",0.5);
-  Control.addVariable("delftFlight4OuterRadius",9.25);
-  Control.addVariable("delftFlight4OuterWall",0.7);
+  Control.addVariable("delftFlightL3Length",1000.0);
+  Control.addVariable("delftFlightL3InnerRadius",7.5);
+  Control.addVariable("delftFlightL3InnerWall",0.5);
+  Control.addVariable("delftFlightL3OuterRadius",9.25);
+  Control.addVariable("delftFlightL3OuterWall",0.7);
 
-  Control.addVariable("delftFlight4FrontWall",0.7);
-  Control.addVariable("delftFlight4FrontGap",4.4);
-  Control.addVariable("delftFlight4FrontIWall",0.5);
+  Control.addVariable("delftFlightL3FrontWall",0.7);
+  Control.addVariable("delftFlightL3FrontGap",4.4);
+  Control.addVariable("delftFlightL3FrontIWall",0.5);
 
-  Control.addVariable("delftFlight4InterThick",0.2);
-  Control.addVariable("delftFlight4InterWallThick",0.3);
-  Control.addVariable("delftFlight4InterFrontWall",0.333);
-  Control.addVariable("delftFlight4InterYOffset",77.2);
-  Control.addVariable("delftFlight4InterMat","B4C");
+  Control.addVariable("delftFlightL3InterThick",0.2);
+  Control.addVariable("delftFlightL3InterWallThick",0.3);
+  Control.addVariable("delftFlightL3InterFrontWall",0.333);
+  Control.addVariable("delftFlightL3InterYOffset",77.2);
+  Control.addVariable("delftFlightL3InterMat","B4C");
 
-  Control.addVariable("delftFlight4WallMat","Aluminium");
-  Control.addVariable("delftFlight4GapMat","H2O");
+  Control.addVariable("delftFlightL3WallMat","Aluminium");
+  Control.addVariable("delftFlightL3GapMat","H2O");
 
-  // Centre flight 5 
-  Control.addVariable("delftFlight5XStep",-(23.127+1.8));
-  Control.addVariable("delftFlight5YStep",0.0);
-  Control.addVariable("delftFlight5ZStep",0.0);
-  Control.addVariable("delftFlight5XYAngle",0.0);
-  Control.addVariable("delftFlight5ZAngle",0.0);
+  Control.addVariable("delftFlightL3PortalRadius",5.0);
+  Control.addVariable("delftFlightL3PortalThick",0.6);
 
-  Control.addVariable("delftFlight5Length",1000.0);
-  Control.addVariable("delftFlight5InnerRadius",10.3);
-  Control.addVariable("delftFlight5InnerWall",0.4);
-  Control.addVariable("delftFlight5OuterRadius",11.75);
-  Control.addVariable("delftFlight5OuterWall",0.5);
+  Control.addVariable("delftFlightL3Portal1Dist",0.0);
+  Control.addVariable("delftFlightL3Portal1Mat","Aluminium");
+  Control.addVariable("delftFlightL3Portal2Dist",50.0);
+  Control.addVariable("delftFlightL3Portal2Mat","Void");
 
-  Control.addVariable("delftFlight5FrontWall",0.7);
-  Control.addVariable("delftFlight5FrontGap",0.1);
-  Control.addVariable("delftFlight5FrontIWall",0.5);
+  // Centre flight 5 :
+  Control.addVariable("delftFlightL2XStep",-(23.127+1.8));
+  Control.addVariable("delftFlightL2YStep",0.0);
+  Control.addVariable("delftFlightL2ZStep",0.0);
+  Control.addVariable("delftFlightL2XYAngle",0.0);
+  Control.addVariable("delftFlightL2ZAngle",0.0);
 
-  Control.addVariable("delftFlight5InterThick",0.2);
-  Control.addVariable("delftFlight5InterWallThick",0.3);
-  Control.addVariable("delftFlight5InterFrontWall",0.333);
-  Control.addVariable("delftFlight5InterYOffset",77.2);
-  Control.addVariable("delftFlight5InterMat","B4C");
+  Control.addVariable("delftFlightL2Length",1000.0);
+  Control.addVariable("delftFlightL2InnerRadius",10.3);
+  Control.addVariable("delftFlightL2InnerWall",0.4);
+  Control.addVariable("delftFlightL2OuterRadius",11.75);
+  Control.addVariable("delftFlightL2OuterWall",0.5);
 
-  Control.addVariable("delftFlight5WallMat","Aluminium");
-  Control.addVariable("delftFlight5GapMat","Void");
+  Control.addVariable("delftFlightL2FrontWall",0.7);
+  Control.addVariable("delftFlightL2FrontGap",0.1);
+  Control.addVariable("delftFlightL2FrontIWall",0.5);
+
+  Control.addVariable("delftFlightL2InterThick",0.2);
+  Control.addVariable("delftFlightL2InterWallThick",0.3);
+  Control.addVariable("delftFlightL2InterFrontWall",0.333);
+  Control.addVariable("delftFlightL2InterYOffset",77.2);
+  Control.addVariable("delftFlightL2InterMat","B4C");
+
+  Control.addVariable("delftFlightL2WallMat","Aluminium");
+  Control.addVariable("delftFlightL2GapMat","Void");
+
+  Control.addVariable("delftFlightL2PortalRadius",5.0);
+  Control.addVariable("delftFlightL2PortalThick",0.6);
+  Control.addVariable("delftFlightL2Portal1Dist",0.0);
+  Control.addVariable("delftFlightL2Portal1Mat","Aluminium");
+  Control.addVariable("delftFlightL2Portal2Dist",50.0);
+  Control.addVariable("delftFlightL2Portal2Mat","Void");
 
   // FLIGHT 6:  Lower 
-  Control.addVariable("delftFlight6XStep",-(23.127+1.8));
-  Control.addVariable("delftFlight6YStep",0.0);
-  Control.addVariable("delftFlight6ZStep",-24.5);
-  Control.addVariable("delftFlight6XYAngle",21.0);
-  Control.addVariable("delftFlight6ZAngle",0.0);
+  Control.addVariable("delftFlightL1XStep",-(23.127+1.8));
+  Control.addVariable("delftFlightL1YStep",0.0);
+  Control.addVariable("delftFlightL1ZStep",-24.5);
+  Control.addVariable("delftFlightL1XYAngle",21.0);
+  Control.addVariable("delftFlightL1ZAngle",0.0);
 
-  Control.addVariable("delftFlight6Length",1000.0);
-  Control.addVariable("delftFlight6InnerRadius",4.5);
-  Control.addVariable("delftFlight6InnerWall",0.5);
-  Control.addVariable("delftFlight6OuterRadius",9.25);
-  Control.addVariable("delftFlight6OuterWall",0.7);
+  Control.addVariable("delftFlightL1Length",1000.0);
+  Control.addVariable("delftFlightL1InnerRadius",4.5);
+  Control.addVariable("delftFlightL1InnerWall",0.5);
+  Control.addVariable("delftFlightL1OuterRadius",9.25);
+  Control.addVariable("delftFlightL1OuterWall",0.7);
 
-  Control.addVariable("delftFlight6FrontWall",0.7);
-  Control.addVariable("delftFlight6FrontGap",4.4);
-  Control.addVariable("delftFlight6FrontIWall",0.5);
+  Control.addVariable("delftFlightL1FrontWall",0.7);
+  Control.addVariable("delftFlightL1FrontGap",4.4);
+  Control.addVariable("delftFlightL1FrontIWall",0.5);
 
-  Control.addVariable("delftFlight6InterThick",0.2);
-  Control.addVariable("delftFlight6InterWallThick",0.3);
-  Control.addVariable("delftFlight6InterFrontWall",0.333);
-  Control.addVariable("delftFlight6InterYOffset",77.2);
-  Control.addVariable("delftFlight6InterMat","B4C");
+  Control.addVariable("delftFlightL1InterThick",0.2);
+  Control.addVariable("delftFlightL1InterWallThick",0.3);
+  Control.addVariable("delftFlightL1InterFrontWall",0.333);
+  Control.addVariable("delftFlightL1InterYOffset",77.2);
+  Control.addVariable("delftFlightL1InterMat","B4C");
 
-  Control.addVariable("delftFlight6WallMat","Aluminium");
-  Control.addVariable("delftFlight6GapMat","H2O");
+  Control.addVariable("delftFlightL1WallMat","Aluminium");
+  Control.addVariable("delftFlightL1GapMat","H2O");
+
+  Control.addVariable("delftFlightL1PortalRadius",5.0);
+  Control.addVariable("delftFlightL1PortalThick",0.6);
+  Control.addVariable("delftFlightL1Portal1Dist",0.0);
+  Control.addVariable("delftFlightL1Portal1Mat","Aluminium");
+  Control.addVariable("delftFlightL1Portal2Dist",50.0);
+  Control.addVariable("delftFlightL1Portal2Mat","Void");
 
   // HYDROGEN MODERATOR
 
@@ -431,7 +487,7 @@ DelftModel(FuncDataBase& Control)
   Control.addVariable("delftH2InnerSurfDist",2.8);    // Displacement 
 
   Control.addVariable("delftH2ModTemp",20.0);         // Temperature of H2 
-  Control.addVariable("delftH2ModMat","ParaH2");            // Liquid H2
+  Control.addVariable("delftH2ModMat","ParaOrtho%50");        // Liquid H2
   Control.addVariable("delftH2AlMat","Aluminium");              // Aluminium
   Control.addVariable("delftH2SurfMat","Aluminium");           // Aluminium
 
@@ -582,6 +638,15 @@ DelftModel(FuncDataBase& Control)
   Control.addVariable("R2RefInnerRadius",13.25);  
   Control.addVariable("R2RefOuterRadius",18.25);  
   Control.addVariable("R2RefMat","Be300K");  
+
+  // BE Full SURROUND: [someone ?]
+  Control.addVariable("RFullXStep",0.0);
+  Control.addVariable("RFullYStep",0.0);
+  Control.addVariable("RFullZStep",0.0);
+  Control.addVariable("RFullLength",40.0);  
+  Control.addVariable("RFullHeight",60.0);  
+  Control.addVariable("RFullWidth",60.0);  
+  Control.addVariable("RFullMat","Be300K");  
 
   return;
 }

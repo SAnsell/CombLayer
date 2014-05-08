@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   delft/FuelElement.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,12 +45,7 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfDivide.h"
@@ -58,7 +53,6 @@
 #include "surfDIter.h"
 #include "Quadratic.h"
 #include "Plane.h"
-#include "Cylinder.h"
 #include "Rules.h"
 #include "varList.h"
 #include "Code.h"
@@ -66,20 +60,18 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
-#include "shutterBlock.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "LinearComp.h"
 #include "ContainedComp.h"
 
+#include "FuelLoad.h"
 #include "ReactorGrid.h"
 #include "RElement.h"
 #include "FuelElement.h"
+
 
 namespace delftSystem
 {
@@ -92,12 +84,14 @@ FuelElement::FuelElement(const size_t XI,const size_t YI,
     Constructor BUT ALL variable are left unpopulated.
     \param XI :: X coordinate
     \param YI :: Y coordinate
+    \param Key :: Name of unit
   */
 {}
 
 FuelElement::FuelElement(const FuelElement& A) : 
   RElement(A),
-  nElement(A.nElement),depth(A.depth),width(A.width),
+  nElement(A.nElement),Exclude(A.Exclude),
+  depth(A.depth),width(A.width),
   topHeight(A.topHeight),baseHeight(A.baseHeight),
   baseRadius(A.baseRadius),fuelHeight(A.fuelHeight),
   fuelWidth(A.fuelWidth),fuelDepth(A.fuelDepth),
@@ -125,6 +119,7 @@ FuelElement::operator=(const FuelElement& A)
     {
       RElement::operator=(A);
       nElement=A.nElement;
+      Exclude=A.Exclude;
       depth=A.depth;
       width=A.width;
       topHeight=A.topHeight;
@@ -162,7 +157,7 @@ FuelElement::plateCentre(const size_t Index) const
 }
 
 void
-FuelElement::populate(const Simulation& System)
+FuelElement::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     Requires that unset values are copied from previous block
@@ -170,7 +165,6 @@ FuelElement::populate(const Simulation& System)
   */
 {
   ELog::RegMethod RegA("FuelElement","populate");
-  const FuncDataBase& Control=System.getDataBase();
 
   nElement=ReactorGrid::getElement<size_t>(Control,keyName+"NFuel",
 					   XIndex,YIndex);
@@ -214,20 +208,44 @@ FuelElement::populate(const Simulation& System)
   watMat=ReactorGrid::getMatElement(Control,keyName+"WaterMat",
 				    XIndex,YIndex);
   
-
-  /// JUNK
   nFuel=ReactorGrid::getElement<size_t>(Control,keyName+"NFuelDivide",
 					XIndex,YIndex);
-  const int fM[]={fuelMat,watMat};
+  makeFuelDivider();
+  return;
+}
+
+void
+FuelElement::makeFuelDivider()
+  /*!
+    Populate the fuel divider fraction 
+  */
+{
+  ELog::RegMethod RegA("FuelElement","makeFuelDivider");
+  
+  fuelFrac.clear();
+  
   for(size_t i=1;i<nFuel;i++)
     {
       fuelFrac.push_back(static_cast<double>(i+1)/
 			 static_cast<double>(nFuel));
-      fMat.push_back(fM[i%2]);
     }
-  fMat.push_back(watMat);
 
   return;
+}
+
+
+bool
+FuelElement::isFuel(const size_t nE) const
+  /*!
+    Test ot see if nE element is a fuel cell
+    \param nE :: Fuel elment number
+    \return 1 on success
+   */
+{
+  
+  if (nE>=nElement) return 0;
+  return (Exclude.find(nE)==Exclude.end()) 
+    ? 1 : 0;
 }
 
 void
@@ -248,12 +266,10 @@ FuelElement::createUnitVector(const FixedComp& FC,
 }
 
 void
-FuelElement::createSurfaces(const attachSystem::FixedComp& RG,
-			    const std::set<size_t>& Exclude)
+FuelElement::createSurfaces(const attachSystem::FixedComp& RG)
   /*!
     Creates/duplicates the surfaces for this block
     \param RG :: Reactor grid
-    \param Exclude :: Exclude surface
   */
 {  
   ELog::RegMethod RegA("FuelElement","createSurface(exclude)");
@@ -291,7 +307,6 @@ FuelElement::createSurfaces(const attachSystem::FixedComp& RG,
   ModelSupport::buildPlane(SMap,surfIndex+26,
 			   Origin+Z*(fuelHeight/2.0+cladHeight),Z);
 
-
   int surfOffset(surfIndex+100);
   size_t excFlag(0);
   for(size_t i=0;i<nElement;i++)
@@ -321,8 +336,10 @@ FuelElement::createSurfaces(const attachSystem::FixedComp& RG,
 
   // Special for the end point
   if (excFlag)
-    midCentre.push_back((plateCentre(excFlag-1)+
-			 plateCentre(nElement-1))/2.0);      
+    {
+      midCentre.push_back((plateCentre(excFlag-1)+
+			   plateCentre(nElement-1))/2.0);      
+    }
 
   // TOP HOLDER:
   ModelSupport::buildCylinder(SMap,surfIndex+37,
@@ -347,113 +364,19 @@ FuelElement::createSurfaces(const attachSystem::FixedComp& RG,
 {  
   ELog::RegMethod RegA("FuelElement","createSurface");
 
-  std::set<size_t> Exclude;
-  if (cEnd<nElement)
-    for(size_t i=cStart;i<=cEnd;i++)
-      Exclude.insert(i);
+  Exclude.clear();
+  for(size_t i=cStart;i<=cEnd && i<nElement;i++)
+    Exclude.insert(i);
 
-  createSurfaces(RG,Exclude);
+  createSurfaces(RG);
   return;
 }
 
 void
-FuelElement::createObjects(Simulation& System,
-			   const std::set<size_t>& Exclude)
+FuelElement::createObjects(Simulation& System)
   /*!
     Create the objects
     \param System :: Simulation
-  */
-{
-  ELog::RegMethod RegA("FuelElement","createObjects(exclude)");
-
-  std::string Out;
-  // Outer Layers
-  Out=ModelSupport::getComposite(SMap,surfIndex,"1 -2 3 -4 5 -6 ");
-  addOuterSurf(Out);      
-
-  // Outer plates:
-  Out=ModelSupport::getComposite(SMap,surfIndex,"1 -2 3 -23 25 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
-
-  Out=ModelSupport::getComposite(SMap,surfIndex,"1 -2 24 -4 25 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
-
-  int surfOffset(surfIndex+100);
-  // Front water plate
-  Out=ModelSupport::getComposite(SMap,surfIndex,surfOffset,
-				 " 1 -21M 23 -24 25 -26 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,watMat,0.0,Out));
-
-  //  const double plateDepth(fuelDepth+cladDepth*2.0+waterDepth);
-  // First Point
-
-  for(size_t i=0;i<nElement;i++)
-    {
-      if (Exclude.find(i)==Exclude.end())
-	{
-	  // Fuel
-	  Out=ModelSupport::getComposite(SMap,surfIndex,surfOffset,
-					 " 11M -12M 13 -14 15 -16 ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,fuelMat,0.0,Out));
-	  fuelCells.push_back(cellIndex-1);
-	  // Cladding
-	  Out=ModelSupport::getComposite(SMap,surfIndex,surfOffset,
-					 " 21M -22M 23 -24 25 -26 "
-					 " (-11M:12M:-13:14:-15:16) ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
-	  
-	  // Water (def material) [ one + 
-	  if (i!=nElement-1 && Exclude.find(i+1)==Exclude.end())
-	    Out=ModelSupport::getComposite(SMap,surfIndex,surfOffset,
-					   " 22M -121M 23 -24 25 -26 ");
-	  else
-	    Out=ModelSupport::getComposite(SMap,surfIndex,surfOffset,
-					     " 22M -2 23 -24 25 -26 ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,watMat,0.0,Out));
-	  surfOffset+=100;      
-	}	  
-      else if (midCell.empty() || midCell.back()!=cellIndex-1)
-	midCell.push_back(cellIndex-1);
-    }
-  
-
-  // -----  TOP  ----
-  if (midCell.empty())
-    {
-      // Holder:
-      Out=ModelSupport::getComposite(SMap,surfIndex,"23 -24 -37 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
-      // Water in space
-      Out=ModelSupport::getComposite(SMap,surfIndex,"1 -2 23 -24 26 -6 37 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,watMat,0.0,Out));
-    }
-  else
-    {
-      // ONLY Water in space
-      Out=ModelSupport::getComposite(SMap,surfIndex,"1 -2 23 -24 26 -6 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,watMat,0.0,Out));
-    }
-  topCell=cellIndex-1;
-
-  // -------- BASE -----------------
-  Out=ModelSupport::getComposite(SMap,surfIndex,"5 -25 -47 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,watMat,0.0,Out));
-
-  Out=ModelSupport::getComposite(SMap,surfIndex,"5 -25 47 3 -4 1 -2");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
-  
-
-  return;
-}
-
-void
-FuelElement::createObjects(Simulation& System,
-			   const size_t cStart,const size_t cEnd)
-  /*!
-    Create the objects
-    \param System :: Simulation
-    \param cStart :: Exclude start for control object [inclusive]
-    \param cEnd :: Exclude end for control object [inclusive]
   */
 {
   ELog::RegMethod RegA("FuelElement","createObjects");
@@ -475,45 +398,57 @@ FuelElement::createObjects(Simulation& System,
   Out=ModelSupport::getComposite(SMap,surfIndex,surfOffset,
 				 " 1 -21M 23 -24 25 -26 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,watMat,0.0,Out));
+  waterCells.push_back(cellIndex-1);
+  //  const double plateDepth(fuelDepth+cladDepth*2.0+waterDepth);
+  // First Point
 
-  const size_t nLimit((cEnd>=nElement-1 && cStart<nElement) 
-		      ? cStart : nElement);
+  // Mid point of surfaces 13,14,15,16:
 
-  for(size_t i=0;i<nLimit;i++)
-    {
-      if (i==cStart) 
-	{
-	  i=cEnd+1;
-	  if (midCell.empty() || midCell.back()!=cellIndex-1)
-	    {
-	      midCell.push_back(cellIndex-1);
-	      midCentre.push_back((plateCentre(cEnd)+
-				   plateCentre(cStart))/2.0);
-	    }
-	}
-      // Fuel
-      Out=ModelSupport::getComposite(SMap,surfIndex,surfOffset,
-				     " 11M -12M 13 -14 15 -16 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,fuelMat,0.0,Out));
-      fuelCells.push_back(cellIndex-1);
+  // FIND MAX Item
+  size_t nElmMax(0);
+  for(size_t i=nElement-1;!nElmMax && i>0;i--)
+    if (Exclude.find(i)==Exclude.end())
+      nElmMax=i;
 
-      // Cladding
-      Out=ModelSupport::getComposite(SMap,surfIndex,surfOffset,
-					 " 21M -22M 23 -24 25 -26 "
-				     " (-11M:12M:-13:14:-15:16) ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
-      // Water (def material) [ one + 
-      if (i+1!=nElement)
-	Out=ModelSupport::getComposite(SMap,surfIndex,surfOffset,
-				       " 22M -121M 23 -24 25 -26 ");
-      else
-	Out=ModelSupport::getComposite(SMap,surfIndex,surfOffset,
-				       " 22M -2 23 -24 25 -26 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,watMat,0.0,Out));
-      
-      surfOffset+=100;      
-    }
   
+  for(size_t i=0;i<nElement;i++)
+    {
+      if (Exclude.find(i)==Exclude.end())
+	{
+	  // Fuel
+	  Out=ModelSupport::getComposite(SMap,surfIndex,surfOffset,
+					 " 11M -12M 13 -14 15 -16 ");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,fuelMat,0.0,Out));
+	  fuelCells.push_back(cellIndex-1);
+	  fuelCentre.push_back(plateCentre(i));
+	  // Cladding
+	  Out=ModelSupport::getComposite(SMap,surfIndex,surfOffset,
+					 " 21M -22M 23 -24 25 -26 "
+					 " (-11M:12M:-13:14:-15:16) ");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
+	  
+	  // Water (def material) [ one + 
+
+	  if (i!=nElement-1 && Exclude.find(i+1)==Exclude.end())
+	    Out=ModelSupport::getComposite(SMap,surfIndex,surfOffset,
+					   " 22M -121M 23 -24 25 -26 ");
+	  else if (i==nElmMax)
+	    Out=ModelSupport::getComposite(SMap,surfIndex,surfOffset,
+					     " 22M -2 23 -24 25 -26 ");
+	  else 
+	    {
+	      Out=ModelSupport::getComposite(SMap,surfIndex,surfOffset,
+					     " 22M -121M 23 -24 25 -26 ");
+	    }
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,watMat,0.0,Out));
+	  waterCells.push_back(cellIndex-1);
+
+	  surfOffset+=100;      
+	}	  
+      else if (midCell.empty() || midCell.back()!=cellIndex-1)
+	midCell.push_back(cellIndex-1);
+    }
+
   // -----  TOP  ----
   if (midCell.empty())
     {
@@ -538,8 +473,23 @@ FuelElement::createObjects(Simulation& System,
 
   Out=ModelSupport::getComposite(SMap,surfIndex,"5 -25 47 3 -4 1 -2");
   System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
-  
 
+  return;
+}
+
+void
+FuelElement::createObjects(Simulation& System,
+			   const size_t cStart,const size_t cEnd)
+  /*!
+    Create the objects
+    \param System :: Simulation
+    \param cStart :: Exclude start for control object [inclusive]
+    \param cEnd :: Exclude end for control object [inclusive]
+  */
+{
+  ELog::RegMethod RegA("FuelElement","createObjects(cut)");
+
+  createObjects(System);
   return;
 }
 
@@ -557,16 +507,45 @@ FuelElement::createLinks()
 }
 
 void
-FuelElement::layerProcess(Simulation& System)
+FuelElement::addWaterExclude(Simulation& System,
+			     const Geometry::Vec3D& Pt,
+			     const std::string& ExcStr)
   /*!
-    Layer all the fuel elements
+    Find water cells that contain the given point
+    \param System :: Simulation to get cells from
+    \param Pt :: Point to search for
+    \param ExcStr :: Exclude String
+   */
+{
+  ELog::RegMethod RegA("FuelElement","addWaterExclude");
+
+  std::vector<int>::const_iterator vc;
+  for(vc=waterCells.begin();vc!=waterCells.end();vc++)
+    {
+      MonteCarlo::Qhull* OPtr=System.findQhull(*vc);
+      if (OPtr && OPtr->isValid(Pt))
+	{
+	  OPtr->addSurfString(ExcStr);
+	  return;
+	}
+    }
+  return;
+
+}
+     
+void
+FuelElement::layerProcess(Simulation& System,const FuelLoad& FuelSystem)
+  /*!
+    Layer all the fuel elements.
+    Note all calls go to FuelSystem.getMaterial
+
     \param System :: Simulation
+    \param FuelSystem :: Fuel Load system for materials
   */
 {
   ELog::RegMethod RegA("FuelElement","layerProcess");
   
   if (nFuel<2) return;
-
   // All fuel cells
   int SI(surfIndex+4001);
   for(size_t i=0;i<fuelCells.size();i++)
@@ -575,15 +554,16 @@ FuelElement::layerProcess(Simulation& System)
       for(size_t j=0;j<nFuel-1;j++)
 	{
 	  DA.addFrac(fuelFrac[j]);
-	  DA.addMaterial(fMat[j]);
+	  DA.addMaterial
+	    (FuelSystem.getMaterial(XIndex+1,YIndex+1,i+1,j+1,fuelMat));
 	}
-      DA.addMaterial(fMat[nFuel-1]);
-
+      DA.addMaterial(FuelSystem.getMaterial(XIndex+1,YIndex+1,i+1,
+					    nFuel,fuelMat));
       DA.init();
       DA.setCellN(fuelCells[i]);
       DA.setOutNum(cellIndex,SI);
-      DA.makePair<Geometry::Plane>(SMap.realSurf(surfIndex+11),
-				   SMap.realSurf(surfIndex+12));
+      DA.makePair<Geometry::Plane>(SMap.realSurf(surfIndex+15),
+				   SMap.realSurf(surfIndex+16));
       DA.activeDivide(System);
       cellIndex=DA.getCellNum();
       SI+=100;
@@ -593,22 +573,25 @@ FuelElement::layerProcess(Simulation& System)
 
 void
 FuelElement::createAll(Simulation& System,const FixedComp& FC,
-		       const Geometry::Vec3D& OG)
+		       const Geometry::Vec3D& OG,
+		       const FuelLoad& FuelSystem)
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to
     \param FC :: Fixed Unit
     \param OG :: Orgin
+    \param FuelSystem :: Default fuel load
   */
 {
   ELog::RegMethod RegA("FuelElement","createAll(FuelElement)");
-  populate(System);
+
+  populate(System.getDataBase());
 
   createUnitVector(FC,OG);
   createSurfaces(FC,ULONG_MAX,ULONG_MAX);
-  createObjects(System,ULONG_MAX,ULONG_MAX);
+  createObjects(System); //,ULONG_MAX,ULONG_MAX);
   createLinks();
-  layerProcess(System);
+  layerProcess(System,FuelSystem);
   insertObjects(System);       
 
   return;

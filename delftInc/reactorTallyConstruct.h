@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   delftInc/DefElement.h
+ * File:   buildInc/reactorTallyConstruct.h
  *
  * Copyright (c) 2004-2014 by Stuart Ansell
  *
@@ -19,47 +19,46 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef delftSystem_DefElement_h
-#define delftSystem_DefElement_h
+#ifndef tallySystem_reactorTallyConstruct_h
+#define tallySystem_reactorTallyConstruct_h
 
-class FuncDataBase;
+namespace attachSystem
+{
+  class FixedComp;
+}
 
-namespace delftSystem
+
+class Simulation;
+
+namespace tallySystem
 {
 
 /*!
-  \class DefElement
+  \class reactorTallyConstruct
   \version 1.0
   \author S. Ansell
-  \date September 2010
-  \brief Blocks in shutter
-  
-  Holds the edge/centre 
+  \date April 2014
+  \brief Holds everthing for tallies
+
+  Provides linkage to its outside on FixedComp[0]
 */
 
-class DefElement  : public RElement
+class reactorTallyConstruct : virtual public fissionConstruct
 {
- private:
-
-  void populate(const FuncDataBase&);
-  void createUnitVector(const FixedComp&,const Geometry::Vec3D&);
-  
-  void createSurfaces();
-  void createObjects(Simulation&);
-  void createLinks();
-
  public:
 
-  DefElement(const size_t,const size_t,const std::string&);
-  DefElement(const DefElement&);
-  DefElement& operator=(const DefElement&);
-  virtual ~DefElement() {}   ///< Destructor
+  reactorTallyConstruct();
+  reactorTallyConstruct(const reactorTallyConstruct&);
+  reactorTallyConstruct& operator=(const reactorTallyConstruct&);
+  virtual ~reactorTallyConstruct() {}  ///< Destructor
 
-  void createAll(Simulation&,const FixedComp&,
-		 const Geometry::Vec3D&,const FuelLoad&);
+  virtual int processPower(Simulation&,const mainSystem::inputParam&,
+			    const size_t,const bool) const;
+
 
 };
 
-}  
+}
 
 #endif
+ 

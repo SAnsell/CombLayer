@@ -79,7 +79,7 @@ class IrradElement  : public RElement
   virtual ~IrradElement() {}   ///< Destructor
 
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const Geometry::Vec3D&);
+			 const Geometry::Vec3D&,const FuelLoad&);
 
 };
 

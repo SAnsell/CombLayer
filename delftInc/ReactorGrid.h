@@ -30,6 +30,7 @@ namespace delftSystem
   class beamSlot;
   class BeamInsert;
   class BeamTube;
+  class FuelLoad;
 
 /*!
   \class ReactorGrid
@@ -69,10 +70,11 @@ class ReactorGrid : public attachSystem::FixedComp,
   int plateMat;                 ///< plate material
   int waterMat;                 ///< Water material in plate
 
-  boost::multi_array<int,2> GType;      ///< Grid type
+  FuelLoad FuelSystem;          ///< System of fuel layout
+  boost::multi_array<std::string,2> GType;      ///< Grid type
   boost::multi_array<RTYPE,2> Grid;     ///< Storage of the grid [size 3]
 
-  void populate(const Simulation&);
+  void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
   void createSurfaces();
   void createObjects(Simulation&);
@@ -90,7 +92,6 @@ class ReactorGrid : public attachSystem::FixedComp,
   void createAll(Simulation&,const attachSystem::FixedComp&);
   void createElements(Simulation&);
 
-
   /// Size accessor
   std::pair<size_t,size_t> getSize() const 
     { return std::pair<size_t,size_t>(NX,NY); }
@@ -99,6 +100,9 @@ class ReactorGrid : public attachSystem::FixedComp,
   template<typename T> 
   static T getElement(const FuncDataBase&,const std::string&,
 		      const size_t,const size_t);
+  template<typename T> 
+  static T getDefElement(const FuncDataBase&,const std::string&,
+			 const size_t,const size_t,const std::string&);
 
   static int getMatElement(const FuncDataBase&,const std::string&,
 			   const size_t,const size_t);
@@ -107,6 +111,13 @@ class ReactorGrid : public attachSystem::FixedComp,
 				    const size_t,const size_t);
   /// Access water material for inner objects
   int getWaterMat() const { return waterMat; }
+
+  std::vector<Geometry::Vec3D> fuelCentres() const;
+  std::vector<int> getAllCells(const Simulation&) const;
+  
+
+  void loadFuelXML(const std::string&);
+  void writeFuelXML(const std::string&);
 };
 
 }

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   delft/BeElement.cxx
+ * File:   delft/BeOElement.cxx
  *
  * Copyright (c) 2004-2014 by Stuart Ansell
  *
@@ -70,13 +70,13 @@
 #include "FuelLoad.h"
 #include "ReactorGrid.h"
 #include "RElement.h"
-#include "BeElement.h"
+#include "BeOElement.h"
 
 namespace delftSystem
 {
 
 
-BeElement::BeElement(const size_t XI,const size_t YI,
+BeOElement::BeOElement(const size_t XI,const size_t YI,
 			 const std::string& Key) :
   RElement(XI,YI,Key)
   /*!
@@ -85,14 +85,14 @@ BeElement::BeElement(const size_t XI,const size_t YI,
 {}
 
 void
-BeElement::populate(const Simulation& System)
+BeOElement::populate(const Simulation& System)
   /*!
     Populate all the variables
     Requires that unset values are copied from previous block
     \param System :: Simulation to use
   */
 {
-  ELog::RegMethod RegA("BeElement","populate");
+  ELog::RegMethod RegA("BeOElement","populate");
   const FuncDataBase& Control=System.getDataBase();
 
   Width=ReactorGrid::getElement<double>
@@ -102,14 +102,23 @@ BeElement::populate(const Simulation& System)
   TopHeight=ReactorGrid::getElement<double>
     (Control,keyName+"TopHeight",XIndex,YIndex);
 
+  wallThick=ReactorGrid::getElement<double>
+    (Control,keyName+"WallThick",XIndex,YIndex);
+  coolThick=ReactorGrid::getElement<double>
+    (Control,keyName+"CoolThick",XIndex,YIndex);
+
   beMat=ReactorGrid::getMatElement
     (Control,keyName+"Mat",XIndex,YIndex);
+  coolMat=ReactorGrid::getMatElement
+    (Control,keyName+"CoolMat",XIndex,YIndex);
+  wallMat=ReactorGrid::getMatElement
+    (Control,keyName+"WallMat",XIndex,YIndex);
   
   return;
 }
 
 void
-BeElement::createUnitVector(const FixedComp& FC,
+BeOElement::createUnitVector(const FixedComp& FC,
 			      const Geometry::Vec3D& OG)
   /*!
     Create the unit vectors
@@ -118,7 +127,7 @@ BeElement::createUnitVector(const FixedComp& FC,
     \param OG :: Orgin
   */
 {
-  ELog::RegMethod RegA("BeElement","createUnitVector");
+  ELog::RegMethod RegA("BeOElement","createUnitVector");
 
   attachSystem::FixedComp::createUnitVector(FC);
   Origin=OG;
@@ -126,13 +135,13 @@ BeElement::createUnitVector(const FixedComp& FC,
 }
 
 void
-BeElement::createSurfaces(const attachSystem::FixedComp& RG)
+BeOElement::createSurfaces(const attachSystem::FixedComp& RG)
   /*!
     Creates/duplicates the surfaces for this block
     \param RG :: Reactor grid
   */
 {  
-  ELog::RegMethod RegA("BeElement","createSurface");
+  ELog::RegMethod RegA("BeOElement","createSurface");
 
   // Planes [OUTER]:
   
@@ -142,24 +151,48 @@ BeElement::createSurfaces(const attachSystem::FixedComp& RG)
   ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*Width/2.0,X);
   ModelSupport::buildPlane(SMap,surfIndex+6,Z*TopHeight,Z);
 
+  double T(wallThick);
+  ELog::EM<<"Wall thick === "<<wallThick<<ELog::endDiag;
+  ModelSupport::buildPlane(SMap,surfIndex+11,Origin-Y*(Depth/2.0-T),Y);
+  ModelSupport::buildPlane(SMap,surfIndex+12,Origin+Y*(Depth/2.0-T),Y); 
+  ModelSupport::buildPlane(SMap,surfIndex+13,Origin-X*(Width/2.0-T),X);
+  ModelSupport::buildPlane(SMap,surfIndex+14,Origin+X*(Width/2.0-T),X);
+  ModelSupport::buildPlane(SMap,surfIndex+15,RG.getLinkPt(4)+Z*T,Z);
+
+  T+=coolThick;
+  ModelSupport::buildPlane(SMap,surfIndex+21,Origin-Y*(Depth/2.0-T),Y);
+  ModelSupport::buildPlane(SMap,surfIndex+22,Origin+Y*(Depth/2.0-T),Y); 
+  ModelSupport::buildPlane(SMap,surfIndex+23,Origin-X*(Width/2.0-T),X);
+  ModelSupport::buildPlane(SMap,surfIndex+24,Origin+X*(Width/2.0-T),X);
+  ModelSupport::buildPlane(SMap,surfIndex+25,RG.getLinkPt(4)+Z*T,Z);
+
   SMap.addMatch(surfIndex+5,RG.getLinkSurf(4));
 
   return;
 }
 
 void
-BeElement::createObjects(Simulation& System)
+BeOElement::createObjects(Simulation& System)
   /*!
     Create the objects
     \param System :: Simulation
   */
 {
-  ELog::RegMethod RegA("BeElement","createObjects");
+  ELog::RegMethod RegA("BeOElement","createObjects");
 
   std::string Out;
   // Outer Layers
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -6 ");
   addOuterSurf(Out);      
+
+  Out+=ModelSupport::getComposite(SMap,surfIndex,"(-11:12:-13:14:-15)");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 13 -14 15 -6 "
+				  " (-21 : 22 : -23 : 24 : -25)");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,coolMat,0.0,Out));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," 21 -22 23 -24 25 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,beMat,0.0,Out));
 
   return;
@@ -167,7 +200,7 @@ BeElement::createObjects(Simulation& System)
 
 
 void
-BeElement::createLinks()
+BeOElement::createLinks()
   /*!
     Creates a full attachment set
     0 - 1 standard points
@@ -179,7 +212,7 @@ BeElement::createLinks()
 }
 
 void
-BeElement::createAll(Simulation& System,const FixedComp& RG,
+BeOElement::createAll(Simulation& System,const FixedComp& RG,
 		     const Geometry::Vec3D& OG,
 		     const FuelLoad&)
   /*!
@@ -189,7 +222,7 @@ BeElement::createAll(Simulation& System,const FixedComp& RG,
     \param OG :: Orgin
   */
 {
-  ELog::RegMethod RegA("BeElement","createAll");
+  ELog::RegMethod RegA("BeOElement","createAll");
   populate(System);
 
   createUnitVector(RG,OG);

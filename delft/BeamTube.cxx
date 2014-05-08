@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   delft/BeamTube.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,6 +44,7 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
+#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -67,7 +68,6 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "SecondTrack.h"
@@ -151,15 +151,13 @@ BeamTube::~BeamTube()
 {}
 
 void
-BeamTube::populate(const Simulation& System)
+BeamTube::populate(const FuncDataBase& Control)
  /*!
    Populate all the variables
    \param System :: Simulation to use
  */
 {
   ELog::RegMethod RegA("BeamTube","populate");
-  
-  const FuncDataBase& Control=System.getDataBase();
 
   // First get inner widths:
   xStep=Control.EvalVar<double>(keyName+"XStep");
@@ -170,6 +168,7 @@ BeamTube::populate(const Simulation& System)
   zAngle=Control.EvalVar<double>(keyName+"ZAngle");
 
   length=Control.EvalVar<double>(keyName+"Length");
+  capRadius=Control.EvalDefVar<double>(keyName+"CapRadius",0.0);
   innerRadius=Control.EvalVar<double>(keyName+"InnerRadius");
   innerWall=Control.EvalVar<double>(keyName+"InnerWall");
   outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
@@ -188,9 +187,45 @@ BeamTube::populate(const Simulation& System)
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   gapMat=ModelSupport::EvalMat<int>(Control,keyName+"GapMat");
 
+  populatePortals(Control);
+
   return;
 }
   
+void
+BeamTube::populatePortals(const FuncDataBase& Control)
+  /*!
+    Populate the tally potals [if needed]
+    \param Control :: FuncDataBase
+   */
+{
+  ELog::RegMethod RegA("BeamTube","populatePortals");
+
+  portalOffset.clear();
+  portalMat.clear();
+
+  portalRadius=Control.EvalDefVar<double>(keyName+"PortalRadius",0.0);
+  portalThick=Control.EvalDefVar<double>(keyName+"PortalThick",100.0);
+
+  double pD;
+  int pM;
+  int index(1);
+  do
+    {
+      const std::string PKey=keyName+"Portal"+StrFunc::makeString(index);
+      pM=ModelSupport::EvalDefMat<int>(Control,PKey+"Mat",-1);
+      pD=Control.EvalDefVar<double>(PKey+"Dist",0.0);
+      if (pM>=0)
+	{
+	  portalOffset.push_back(pD);
+	  portalMat.push_back(pM);
+	}
+      index++;
+    } while(pM>=0);
+  
+  return;
+}
+
 void
 BeamTube::createUnitVector(const attachSystem::FixedComp& FC,
 			   const Geometry::Vec3D& PAxis)
@@ -241,43 +276,142 @@ BeamTube::createSurfaces()
   ELog::RegMethod RegA("BeamTube","createSurfaces");
 
   // Outer layers
-  ModelSupport::buildPlane(SMap,flightIndex+1,Origin,Y);
+
+
+  if (capRadius>Geometry::zeroTol)
+    {
+      
+      ModelSupport::buildPlane(SMap,flightIndex+1,Origin+bY*capRadius,Y);
+      ModelSupport::buildSphere(SMap,flightIndex+8,
+				Origin+bY*capRadius,capRadius);
+      ModelSupport::buildSphere(SMap,flightIndex+18,
+				Origin+bY*(capRadius+frontWall),
+				capRadius);
+      // gap layer
+      ModelSupport::buildSphere(SMap,flightIndex+28,
+				Origin+bY*(capRadius+frontWall+frontGap),
+				capRadius);
+      ModelSupport::buildSphere(SMap,flightIndex+38,Origin+
+				bY*(capRadius+frontWall+frontGap+frontIWall),
+				capRadius);
+    }
+  else
+    {
+      ModelSupport::buildPlane(SMap,flightIndex+1,Origin,Y);
+      ModelSupport::buildPlane(SMap,flightIndex+11,Origin+Y*frontWall,Y);
+      ModelSupport::buildPlane(SMap,flightIndex+21,
+			       Origin+Y*frontWall+bY*frontGap,bY);
+      ModelSupport::buildPlane(SMap,flightIndex+31,Origin+Y*frontWall+
+			       bY*(frontGap+frontIWall),bY);
+    }
+
   ModelSupport::buildCylinder(SMap,flightIndex+7,
 			      Origin+Y*frontWall,bY,outerRadius+outerWall);
   ModelSupport::buildPlane(SMap,flightIndex+2,Origin+bY*length,bY);
+
+
   // Outer Wall
-  ModelSupport::buildPlane(SMap,flightIndex+11,Origin+Y*frontWall,Y);
+
   ModelSupport::buildCylinder(SMap,flightIndex+17,Origin+Y*frontWall,
 			      bY,outerRadius);
+
+  // PORTALTS RELATIVE TO FRONT WALL CENTRE:
+  int PN(flightIndex+100);
+  for(size_t i=0;i<portalMat.size();i++)
+    {
+      ModelSupport::buildCylinder(SMap,PN+17,Origin+Y*frontWall,
+				  bY,portalRadius);
+      const Geometry::Vec3D YVec((i) ? bY : Y);
+      ModelSupport::buildPlane(SMap,PN+11,
+			       Origin+Y*(frontWall-portalThick)/2.0+
+			       bY*portalOffset[i],YVec);
+      ModelSupport::buildPlane(SMap,PN+12,
+			       Origin+Y*(frontWall+portalThick)/2.0+
+			       bY*portalOffset[i],YVec);
+      PN+=100;
+    }
+
   // Gap layer
-  ModelSupport::buildPlane(SMap,flightIndex+21,
-			   Origin+Y*frontWall+bY*frontGap,bY);
   ModelSupport::buildCylinder(SMap,flightIndex+27,
 			      Origin+Y*frontWall,
 			      bY,innerRadius+innerWall);
 
   // Gap layer
-  ModelSupport::buildPlane(SMap,flightIndex+31,Origin+Y*frontWall+
-			   bY*(frontGap+frontIWall),bY);
   ModelSupport::buildCylinder(SMap,flightIndex+37,
 			      Origin+Y*frontWall,
 			      bY,innerRadius);
 
-  // Inter layer
   ModelSupport::buildPlane(SMap,flightIndex+41,
 			   Origin+bY*interYOffset,bY);
   ModelSupport::buildPlane(SMap,flightIndex+51,
 			   Origin+bY*(interYOffset+interFrontWall),bY);
+
+  // Inter layer
   // Layers [wall : Mid : Outer ]
   ModelSupport::buildCylinder(SMap,flightIndex+47,
 			      Origin+Y*frontWall,bY,
 			      outerRadius-interWallThick);
-  ModelSupport::buildCylinder(SMap,flightIndex+48,
+  ModelSupport::buildCylinder(SMap,flightIndex+57,
 			      Origin+Y*frontWall,bY,
 			      outerRadius-(interWallThick+interThick));
-  ModelSupport::buildCylinder(SMap,flightIndex+49,
+  ModelSupport::buildCylinder(SMap,flightIndex+67,
 			      Origin+Y*frontWall,bY,
 			      outerRadius-(2.0*interWallThick+interThick));
+
+  return;
+}
+
+void
+BeamTube::createCapEndObjects(Simulation& System)
+  /*!
+    Adds the BeamLne components with a cap end
+    \param System :: Simulation to add beamline to
+  */
+{
+  ELog::RegMethod RegA("BeamTube","createCapEndObjects");
+
+  std::string Out;
+  Out=ModelSupport::getComposite(SMap,flightIndex," (-8:1) -2 -7 ");
+  addOuterSurf(Out);
+
+  Out+=ModelSupport::getComposite(SMap,flightIndex," ((18 -1) : 17)");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+
+  // Void (exclude inter wall)
+  Out=ModelSupport::getComposite(SMap,flightIndex,
+				 " (-18:1) -2 -17  ((28 -1) : 27) (-41:-67)");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,gapMat,0.0,Out));
+
+  // Inner wall
+  Out=ModelSupport::getComposite(SMap,flightIndex,
+				 " (-28:1) ((38 -1) : 37) -2 -27 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  
+  // Inner Void
+  Out=ModelSupport::getComposite(SMap,flightIndex," (-38:1)  -2 -37 ");
+
+  // Second portal:
+  // Remaining portals in inner vioid
+  std::string OutComposite;
+  int PN(flightIndex+100);
+  for(size_t i=1;i<portalMat.size();i++)
+    {
+      PN+=100;
+      const std::string OutP=
+	ModelSupport::getComposite(SMap,PN," -17 11 -12");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,portalMat[i],0.0,OutP));
+      OutComposite +=ModelSupport::getComposite(SMap,PN," (17:-11:12)"); 
+    }
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+OutComposite));
+  innerVoid=cellIndex-1;
+
+  // Inter wall
+  Out=ModelSupport::getComposite(SMap,flightIndex," -47 57 51 -2 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,interMat,0.0,Out));
+
+  Out=ModelSupport::getComposite(SMap,flightIndex,
+				 "41 -17 67 (47:-57:-51) -2 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
   return;
 }
@@ -296,11 +430,21 @@ BeamTube::createObjects(Simulation& System)
   addOuterSurf(Out);
 
   Out=ModelSupport::getComposite(SMap,flightIndex," 1 -2 -7 (-11:17)");
+  // PORTALTS RELATIVE TO FRONT WALL CENTRE:
+  // First one can be in the wall that makes things difficult
+  int PN(flightIndex+100);
+  if (!portalMat.empty())
+    {
+      const std::string OutP=
+	ModelSupport::getComposite(SMap,PN," -17 11 -12");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,portalMat[0],0.0,OutP));
+      Out+=ModelSupport::getComposite(SMap,PN," (17:-11:12)"); 
+    }
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
   // Void (exclude inter wall)
   Out=ModelSupport::getComposite(SMap,flightIndex,
-				 "11 -2 -17 (-21:27) (-41:-49)");
+				 "11 -2 -17 (-21:27) (-41:-67)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,gapMat,0.0,Out));
 
   // Inner wall
@@ -309,18 +453,27 @@ BeamTube::createObjects(Simulation& System)
   
   // Inner Void
   Out=ModelSupport::getComposite(SMap,flightIndex," 31 -2 -37 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  
+  // Second portal:
+  // Remaining portals in inner vioid
+  std::string OutComposite;
+  for(size_t i=1;i<portalMat.size();i++)
+    {
+      PN+=100;
+      const std::string OutP=
+	ModelSupport::getComposite(SMap,PN," -17 11 -12");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,portalMat[i],0.0,OutP));
+      OutComposite +=ModelSupport::getComposite(SMap,PN," (17:-11:12)"); 
+    }
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+OutComposite));
   innerVoid=cellIndex-1;
-
   // Inter wall
-  Out=ModelSupport::getComposite(SMap,flightIndex," -47 48 51 -2 ");
+  Out=ModelSupport::getComposite(SMap,flightIndex," -47 57 51 -2 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,interMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,flightIndex,
-				 "41 -17 49 (47:-48:-51) -2 ");
+				 "41 -17 67 (47:-57:-51) -2 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
-
-
   
   return;
 }
@@ -334,13 +487,24 @@ BeamTube::createLinks()
     - 2 : Inner face
   */
 {
+  ELog::RegMethod RegA("BeamTube","createLinks");
+
+
   SecondTrack::setBeamExit(Origin+bY*length,bY);
   setExit(Origin+bY*length,bY);
 
   FixedComp::setConnect(0,Origin,-Y);      // Note always to the reactor
+  FixedComp::setConnect(1,Origin+Y*frontWall,Y);
   FixedComp::setConnect(2,Origin+Y*frontWall+bY*frontGap,bY);
 
-  FixedComp::setLinkSurf(0,SMap.realSurf(flightIndex+1));
+  if (capRadius>Geometry::zeroTol)
+    {
+      FixedComp::setLinkSurf(0,SMap.realSurf(flightIndex+8));
+      FixedComp::addBridgeSurf(0,-SMap.realSurf(flightIndex+1));
+    }
+  else
+    FixedComp::setLinkSurf(0,SMap.realSurf(flightIndex+1));
+
   FixedComp::setLinkSurf(1,SMap.realSurf(flightIndex+2));
   FixedComp::setLinkSurf(2,SMap.realSurf(flightIndex+21));
 
@@ -358,11 +522,15 @@ BeamTube::createAll(Simulation& System,const attachSystem::FixedComp& FC,
   */
 {
   ELog::RegMethod RegA("BeamTube","createAll");
-  populate(System);
+  populate(System.getDataBase());
 
   createUnitVector(FC,PAxis);
   createSurfaces();
-  createObjects(System);
+  if (capRadius>Geometry::zeroTol)
+    createCapEndObjects(System);
+  else
+    createObjects(System);
+  createLinks();
   insertObjects(System);       
 
   return;

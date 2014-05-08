@@ -45,7 +45,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Quaternion.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -59,7 +58,6 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "shutterBlock.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "generateSurf.h"
@@ -67,6 +65,7 @@
 #include "FixedComp.h"
 #include "ContainedComp.h"
 
+#include "FuelLoad.h"
 #include "ReactorGrid.h"
 #include "RElement.h"
 #include "IrradElement.h"
@@ -313,6 +312,7 @@ IrradElement::createObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,pipeMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,surfIndex,"125 -45 18 -28");
   System.addCell(MonteCarlo::Qhull(cellIndex++,pipeMat,0.0,Out));
+    
   // -- Change to full bore:
   Out=ModelSupport::getComposite(SMap,surfIndex,"125 -45 -37 27 28 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));
@@ -362,12 +362,13 @@ IrradElement::createLinks()
 
 void
 IrradElement::createAll(Simulation& System,const FixedComp& RG,
-		       const Geometry::Vec3D& OG)
+			const Geometry::Vec3D& OG,
+			const FuelLoad&)
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to
     \param RG :: Fixed Unit
-    \param OG :: Orgin
+    \param OG :: Origin
   */
 {
   ELog::RegMethod RegA("IrradElement","createAll");

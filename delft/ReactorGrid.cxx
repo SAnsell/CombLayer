@@ -29,6 +29,7 @@
 #include <vector>
 #include <set>
 #include <map>
+
 #include <string>
 #include <algorithm>
 #include <boost/shared_ptr.hpp>
@@ -48,7 +49,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Quaternion.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfDIter.h"
@@ -83,6 +83,8 @@
 #include "FixedComp.h" 
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+
+#include "FuelLoad.h"
 #include "RElement.h"
 #include "DefElement.h"
 #include "FuelElement.h"
@@ -91,6 +93,7 @@
 #include "BeElement.h"
 #include "IrradElement.h"
 #include "AirBoxElement.h"
+#include "BeOElement.h"
 #include "ReactorGrid.h"
 
 namespace delftSystem
@@ -109,7 +112,6 @@ ReactorGrid::getMatElement(const FuncDataBase& Control,
    \param J :: Index (Number) type
    \return variable value
  */
-
 {
   ELog::RegMethod RegA("ReactorGrid","getMatElement");
 
@@ -162,7 +164,49 @@ ReactorGrid::getElement(const FuncDataBase& Control,
   if (Control.hasVariable(Name))
     return Control.EvalVar<T>(Name);
   
-  ELog::EM<<"NO variable:"<<Name<<ELog::endTrace;
+  throw ColErr::InContainerError<std::string>(Name,"Variable name");
+}
+
+template<typename T>
+T 
+ReactorGrid::getDefElement(const FuncDataBase& Control,
+			   const std::string& Name,const size_t I,
+			   const size_t J,const std::string& defName) 
+ /*!
+   Check to convert a Name + a number string into a variable state:
+   \param Control :: Function base to search
+   \param Name :: Master name
+   \param I :: Index (A-Z) type [A on viewed face]
+   \param J :: Index (Number) type
+   \return variable value
+ */
+{
+  ELog::RegMethod RegA("ReactorGrid","getElement");
+
+  const std::string Key[2]=
+    { 
+      std::string(1,static_cast<char>(I)+'A'),
+      StrFunc::makeString(J),
+    };
+  // Completely specified:
+  if (Control.hasVariable(Name+Key[0]+Key[1]))
+    return Control.EvalVar<T>(Name+Key[0]+Key[1]);
+
+  // One Missing
+  for(size_t i=0;i<2;i++)
+    {
+      const std::string KN(Name+Key[i]);
+      if (Control.hasVariable(KN))
+	return Control.EvalVar<T>(KN);
+    }
+  // Check defkey
+  if (Control.hasVariable(defName))
+    return Control.EvalVar<T>(defName);
+
+  // Finally All missing 
+  if (Control.hasVariable(Name))
+    return Control.EvalVar<T>(Name);
+
   throw ColErr::InContainerError<std::string>(Name,"Variable name");
 }
 
@@ -192,7 +236,7 @@ ReactorGrid::ReactorGrid(const std::string& Key) :
   gridIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(gridIndex+1)
   /*!
-    Constructor BUT ALL variable are left unpopulated.
+    Constructor BUT ALL variable are left unpopulateed.
     \param Key :: KeyName
   */
 {}
@@ -253,16 +297,14 @@ ReactorGrid::~ReactorGrid()
 {}
 
 void
-ReactorGrid::populate(const Simulation& System)
+ReactorGrid::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: Function
   */
 {
   ELog::RegMethod RegA("ReactorGrid","populate");
 
-  const FuncDataBase& Control=System.getDataBase();
-  
   NX=Control.EvalVar<size_t>(keyName+"XSize");
   NY=Control.EvalVar<size_t>(keyName+"YSize");
 
@@ -281,12 +323,11 @@ ReactorGrid::populate(const Simulation& System)
   plateRadius=Control.EvalVar<double>(keyName+"PlateRadius");
   plateMat=ModelSupport::EvalMat<int>(Control,keyName+"PlateMat");
   waterMat=ModelSupport::EvalMat<int>(Control,keyName+"WaterMat");
-
+  
   if (!(NX*NY) || (NX*NY)>4000)
     throw ColErr::IndexError<size_t>(NX*NY,4000,
 				     "NXYZ array size");
 
-  
   GType.resize(boost::extents[static_cast<long int>(NX)]
 	      [static_cast<long int>(NY)]);
   Grid.resize(boost::extents[static_cast<long int>(NX)]
@@ -298,7 +339,7 @@ ReactorGrid::populate(const Simulation& System)
       {
 	const long int li(static_cast<long int>(i));
 	const long int lj(static_cast<long int>(j));
-	GType[li][lj]=getElement<int>(Control,keyName+"Type",i,j);
+	GType[li][lj]=getElement<std::string>(Control,keyName+"Type",i,j);
       }
 
   return;
@@ -482,41 +523,44 @@ ReactorGrid::createElements(Simulation& System)
       {
 	const long int li(static_cast<long int>(i));
 	const long int lj(static_cast<long int>(j));
-	switch (GType[li][lj])
-	  {
-	  case 0:   // NULL
-	    Grid[li][lj]=RTYPE(new DefElement(i,j,"delftElement"));
-	    break;
-	  case 1:   // FUEL
-	    Grid[li][lj]=RTYPE(new FuelElement(i,j,"delftElement"));
-	    break;
-	  case 2:   // CONTROL
-	    Grid[li][lj]=
-	      RTYPE(new ControlElement(i,j,"delftElement","delftControl"));
-	    break;
-	  case 3:   // IRAD
+	if (GType[li][lj]=="Null")
+	  Grid[li][lj]=RTYPE(new DefElement(i,j,"delftElement"));
+
+	else if (GType[li][lj]=="Fuel")
+	  Grid[li][lj]=RTYPE(new FuelElement(i,j,"delftElement"));
+
+	else if (GType[li][lj]=="Control")
+	  Grid[li][lj]=
+	    RTYPE(new ControlElement(i,j,"delftElement","delftControl"));
+
+	else if (GType[li][lj]=="IRad")
 	    Grid[li][lj]=
 	      RTYPE(new IrradElement(i,j,"delftIrrad"));
-	    break;
-	  case 4:   // HF Element
+
+	else if (GType[li][lj]=="HfControl")
 	    Grid[li][lj]=
 	      RTYPE(new HfElement(i,j,"delftElement","delftHf"));
-	    break;
-	  case 5:   // Be Element
+
+	else if (GType[li][lj]=="Be")
 	    Grid[li][lj]=
 	      RTYPE(new BeElement(i,j,"delftBe"));
-	    break;
-	  case 7:   // air box
+
+	else if (GType[li][lj]=="BeO")
+	    Grid[li][lj]=
+	      RTYPE(new BeOElement(i,j,"delftBeO"));
+
+	else if (GType[li][lj]=="Air")
 	    Grid[li][lj]=
 	      RTYPE(new AirBoxElement(i,j,"delftAirBox"));
-	    break;
-	  default:
-	    ELog::EM<<"Unknown reactor element "<<GType[li][lj]<<ELog::endErr;
-	    throw ColErr::InContainerError<int>(GType[li][lj],"GType");
+
+	else
+	  {
+	    throw ColErr::InContainerError<std::string>(GType[li][lj],"GType");
 	  }
 
 	Grid[li][lj]->addInsertCell(getCellNumber(li,lj));
-	Grid[li][lj]->createAll(System,*this,getCellOrigin(i,j));
+	Grid[li][lj]->createAll(System,*this,getCellOrigin(i,j),
+				FuelSystem);
       }
   return;
 }
@@ -544,6 +588,120 @@ ReactorGrid::createLinks()
   return;
 }
 
+std::vector<Geometry::Vec3D>
+ReactorGrid::fuelCentres() const 
+  /*!
+    Get the fuel centers 
+    \return Centre vector
+   */
+{
+  ELog::RegMethod RegA("ReactorGrid","FuelCentres");
+
+  std::vector<Geometry::Vec3D> CPos;
+  for(long int i=0;i<static_cast<long int>(NX);i++)
+    for(long int j=0;j<static_cast<long int>(NY);j++)
+       {
+	 const FuelElement* FPtr=
+	   dynamic_cast<FuelElement*>(Grid[i][j].get());
+	 if (FPtr)
+	   {
+	     const std::vector<Geometry::Vec3D>& CV=
+	       FPtr->getFuelCentre();
+	     CPos.insert(CPos.end(),CV.begin(),CV.end());
+	   }
+       }
+  return CPos;
+}
+
+std::vector<int>
+ReactorGrid::getAllCells(const Simulation& System) const
+  /*!
+    Get a comprehensive list of all cells
+    \param System :: Simualation to check cell existance
+    \return All cell numbers
+   */
+{
+  ELog::RegMethod RegA("ReactorGrid","getAllCells");
+  const ModelSupport::objectRegister& OR= 
+    ModelSupport::objectRegister::Instance();
+
+  std::vector<int> cellOut;
+  for(long int i=0;i<static_cast<long int>(NX);i++)
+    {
+      for(long int j=0;j<static_cast<long int>(NY);j++)
+	{
+	  const int EOff=OR.getCell(Grid[i][j]->getItemKeyName());
+	  for(int index=EOff;index<EOff+10000;index++)
+	    {
+	      if (System.existCell(index))
+		cellOut.push_back(index);
+	    }
+	}
+    }
+  return cellOut;
+}
+
+void
+ReactorGrid::loadFuelXML(const std::string& FName) 
+  /*!
+    Load the fuel Elements
+    \param FName :: Output name
+  */
+{
+   ELog::RegMethod RegA("ReactorGrid","loadFuelXML");
+
+   FuelSystem.loadXML(FName);
+   return;
+  
+}
+
+void
+ReactorGrid::writeFuelXML(const std::string& FName)  
+  /*!
+    Write out the fuel Elements
+    \param FName :: Output name
+  */
+{
+   ELog::RegMethod RegA("ReactorGrid","writeFuelXML");
+   if (FName.empty())
+     return;
+
+   const ModelSupport::DBMaterial& DB=
+     ModelSupport::DBMaterial::Instance();   
+   FuelLoad OutSystem;
+   for(size_t i=0;i<NX;i++)
+     for(size_t j=0;j<NY;j++)
+       {
+	 const long int li(static_cast<long int>(i));
+	 const long int lj(static_cast<long int>(j));
+	 const FuelElement* FPtr=
+	   dynamic_cast<FuelElement*>(Grid[li][lj].get());
+	 if (FPtr)
+	   {
+	     for(size_t nE=0;nE<FPtr->getNElements();nE++)
+	       {
+		 if (FPtr->isFuel(nE))
+		   {
+		     const int defMat=FPtr->getDefMat();
+		     for(size_t nIndex=0;nIndex<FPtr->getNSections();nIndex++)
+		       {
+			 const int NF=
+			   FuelSystem.getMaterial(i+1,j+1,nE+1,nIndex+1,defMat);
+			 const std::string& MName=DB.getKey(NF);
+			 OutSystem.setMaterial(i+1,j+1,nE+1,nIndex+1,MName);
+		       }
+		   }
+	       }
+	     OutSystem.addXML(i,j,FPtr->getNElements(),
+			      FPtr->getNSections(),
+			      FPtr->getRemovedSet());
+	   }
+       }
+   OutSystem.writeXML(FName);
+   return;
+  
+}
+
 void
 ReactorGrid::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC)
@@ -555,7 +713,7 @@ ReactorGrid::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("ReactorGrid","createAll");
   
-  populate(System);
+  populate(System.getDataBase());
   createUnitVector(FC);
   createSurfaces();
   createObjects(System);
@@ -577,5 +735,16 @@ ReactorGrid::getElement(const FuncDataBase&,const std::string&,
 template size_t
 ReactorGrid::getElement(const FuncDataBase&,const std::string&,
 			const size_t,const size_t);
+
+template double 
+ReactorGrid::getDefElement(const FuncDataBase&,const std::string&,
+			const size_t,const size_t,const std::string&);
+
+template int
+ReactorGrid::getDefElement(const FuncDataBase&,const std::string&,
+			const size_t,const size_t,const std::string&);
+template size_t
+ReactorGrid::getDefElement(const FuncDataBase&,const std::string&,
+			const size_t,const size_t,const std::string&);
   
 }  // NAMESPACE shutterSystem

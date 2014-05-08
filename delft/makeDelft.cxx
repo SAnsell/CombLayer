@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   delft/makeDelft.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,9 +68,6 @@
 #include "KGroup.h"
 #include "Source.h"
 #include "KCode.h"
-#include "insertInfo.h"
-#include "insertBaseInfo.h"
-#include "InsertComp.h"
 #include "ModeCard.h"
 #include "PhysImp.h"
 #include "PhysCard.h"
@@ -86,6 +83,9 @@
 #include "pipeUnit.h"
 #include "PipeLine.h"
 #include "World.h"
+#include "AttachSupport.h"
+
+#include "FuelLoad.h"
 #include "ReactorGrid.h"
 #include "BeamTube.h"
 #include "SwimingPool.h"
@@ -98,6 +98,7 @@
 #include "beamSlot.h"
 #include "BeamInsert.h"
 #include "BeSurround.h"
+#include "BeFullBlock.h"
 #include "SpaceBlock.h"
 #include "makeDelft.h"
 
@@ -125,6 +126,16 @@ makeDelft::createColdMod(const std::string& modType)
     return new ConeModerator("cone");
   if (modType=="Void")
     return 0;
+  if (modType=="help")
+    {
+      ELog::EM<<"Options "<<ELog::endDiag;
+      ELog::EM<<"-- Sphere     :: Spherical moderator from FRM-1\n";
+      ELog::EM<<"-- DoubleMoon :: Modified twin curve modreator\n";
+      ELog::EM<<"-- Moon       :: Single cylindrical cut out moderator\n";
+      ELog::EM<<"-- Cone        :: Cone moderator"<<ELog::endDiag;
+      ELog::EM<<"-- Void        :: No moderator"<<ELog::endDiag;
+      return 0;
+    }
 
   throw ColErr::InContainerError<std::string>
     (modType,"Moderator type unknown");
@@ -134,16 +145,17 @@ makeDelft::makeDelft(const std::string& modType) :
   vacReq((modType=="Cone" || modType=="Sphere") ? 0 : 1),
   GridPlate(new ReactorGrid("delftGrid")),
   Pool(new SwimingPool("delftPool")),
-  FlightA(new BeamTube("delftFlight1")),
-  FlightB(new BeamTube("delftFlight2")),
-  FlightC(new BeamTube("delftFlight3")),
-  FlightD(new BeamTube("delftFlight4")),
-  FlightE(new BeamTube("delftFlight5")),
-  FlightF(new BeamTube("delftFlight6")),
+  FlightA(new BeamTube("delftFlightR2")),
+  FlightB(new BeamTube("delftFlightR3")),
+  FlightC(new BeamTube("delftFlightR1")),
+  FlightD(new BeamTube("delftFlightL2")),
+  FlightE(new BeamTube("delftFlightL1")),
+  FlightF(new BeamTube("delftFlightL3")),
   ColdMod(createColdMod(modType)),
   CSurround(new H2Vac("delftH2Cont")),
   R2Insert(new BeamInsert("R2Insert")),
-  R2Be(new BeSurround("R2Ref"))
+  R2Be(new BeSurround("R2Ref")),
+  RFull(new BeFullBlock("RFull"))
   /*!
     Constructor
     \param modType :: Cold moderator type
@@ -257,6 +269,7 @@ void
 makeDelft::makeBlocks(Simulation& System)
   /*!
     Create the extra blocks within the swiming pool
+    \param System :: Simulation system
   */
 {  
   ELog::RegMethod RegA("makeDelft","makeBlock");
@@ -311,24 +324,11 @@ makeDelft::setSource(Simulation* SimPtr,
 
       if (IParam.flag("ksrcMat"))
 	{
-	  const size_t NMat=IParam.itemCnt("ksrcMat",0);
-	  std::set<int> MSet; 
-	  for(size_t ii=0;ii<NMat;ii++)
-	    MSet.insert(IParam.getValue<int>("ksrcMat",ii));
-
-	  std::vector<Geometry::Vec3D> FissionVec;
-	  std::pair<size_t,size_t> NXY=GridPlate->getSize();
-	  for(size_t i=0;i<NXY.first;i++)
-	    for(size_t j=0;j<NXY.second;j++)
-	      { 
-		const Geometry::Vec3D Pt=GridPlate->getCellOrigin(i,j);
-		MonteCarlo::Object* OPtr=SimPtr->findCell(Pt,0);
-		if (OPtr && MSet.find(OPtr->getMat())!=MSet.end())
-		  {
-		    FissionVec.push_back(Pt);
-		    KCard.setKSRC(FissionVec);
-		  }
-	      }
+	  std::vector<Geometry::Vec3D> FissionVec=
+	    GridPlate->fuelCentres();
+	  ELog::EM<<"Kmat vector size :"
+		  <<FissionVec.size()<<ELog::endDiag;
+	  KCard.setKSRC(FissionVec);
 	}
     }
 
@@ -336,10 +336,12 @@ makeDelft::setSource(Simulation* SimPtr,
 }
 
 void 
-makeDelft::build(Simulation* SimPtr)
+makeDelft::build(Simulation* SimPtr,
+		 const mainSystem::inputParam& IParam)
   /*!
     Carry out the full build
     \param SimPtr :: Simulation system
+    \param IParam :: Input paratmers					       
    */
 {
   // For output stream
@@ -349,8 +351,14 @@ makeDelft::build(Simulation* SimPtr)
 
   const attachSystem::FixedComp& WC=
     World::masterOrigin();
-  
+
+  const std::string refExtra=IParam.getValue<std::string>("refExtra");
+
+  if (IParam.flag("fuelXML"))
+    GridPlate->loadFuelXML(IParam.getValue<std::string>("fuelXML"));
   GridPlate->createAll(*SimPtr,WC);
+  if (IParam.flag("FuelXML"))
+    GridPlate->writeFuelXML(IParam.getValue<std::string>("FuelXML"));
 
   Pool->addInsertCell(74123);
   Pool->createAll(*SimPtr,WC,*GridPlate);
@@ -382,9 +390,21 @@ makeDelft::build(Simulation* SimPtr)
   R2Insert->addInsertCell(FlightA->getInnerVoid());
   R2Insert->createAll(*SimPtr,*FlightA);
 
-  R2Be->addInsertCell(Pool->getPoolCell());
-  R2Be->createAll(*SimPtr,*FlightA,
-		  FlightB->getExclude()+FlightC->getExclude());
+  if (refExtra=="R2Surround")
+    {
+      R2Be->addInsertCell(Pool->getPoolCell());
+      R2Be->createAll(*SimPtr,*FlightA,
+		      FlightB->getExclude()+FlightC->getExclude());
+    }
+  else if (refExtra=="FullBlock")
+    {
+      RFull->addInsertCell(Pool->getPoolCell());
+      RFull->createAll(*SimPtr,*FlightA,-1);
+      attachSystem::addToInsertLineCtrl(*SimPtr,*RFull,*FlightA);
+      attachSystem::addToInsertLineCtrl(*SimPtr,*RFull,*FlightB);
+      attachSystem::addToInsertLineCtrl(*SimPtr,*RFull,*FlightC);
+    }
+  
 
   makeBlocks(*SimPtr);
 
