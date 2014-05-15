@@ -481,11 +481,20 @@ makeT1Upgrade::buildH2Mod(Simulation& System,
       OR.addObject(H2PCylMod);
       return "CylMod";
     }
+  else if (MType=="Layer")
+    {
+      H2Mod=boost::shared_ptr<constructSystem::ModBase>
+	(new CH4Layer("H2Layer"));
+      OR.addObject(H2Mod);
+      H2Mod->createAll(System,FC);
+      return "H2Layer";
+    }
   else if (MType=="Help" || MType=="help")
     {
       ELog::EM<<"Options = [H2ModType]"<<ELog::endBasic;
       ELog::EM<<"    Basic :: Standard TS1 Style"<<ELog::endBasic;
       ELog::EM<<"    CylMod :: Cylinder Moderator"<<ELog::endBasic;
+      ELog::EM<<"    Layer :: Basic layer moderator"<<ELog::endBasic;
       return "";
     }    
 
@@ -575,7 +584,6 @@ makeT1Upgrade::build(Simulation* SimPtr,
 
   // Cold centre
   ColdCentObj->createAll(*SimPtr,World::masterOrigin());
-
   const std::string H2ModExclude=
     buildH2Mod(*SimPtr,*ColdCentObj,H2ModName);
 

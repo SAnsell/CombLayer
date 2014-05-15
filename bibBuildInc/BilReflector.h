@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   bibBuildInc/BilReflector.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,11 +28,11 @@ namespace bibSystem
 {
 
 /*!
-  \class Reflector
+  \class BilReflector
   \version 1.0
   \author S. Ansell
   \date November 2012
-  \brief Reflector Cylindrical
+  \brief Reflector Cylindrical for Bilbau
 */
 
 class BilReflector : public attachSystem::ContainedComp,
@@ -45,19 +45,19 @@ class BilReflector : public attachSystem::ContainedComp,
  
   double xStep;                 ///< X Step
   double yStep;                 ///< Y Step
-  double zStep;
-  double xyAngle;
-  double zAngle;
+  double zStep;                 ///< Z step
+  double xyAngle;               ///< XY Rotation [deg]
+  double zAngle;                ///< Z Rotation [deg]
 
   double BeHeight;              ///< Be Height
   double BeDepth;               ///< Be Depth
   double BeRadius;              ///< Be radius
   int BeMat;                    ///< Be Material
 
-  double InnerHeight;              ///< Inner Height
-  double InnerDepth;               ///< Inner Depth
-  double InnerRadius;              ///< Inner radius
-  int InnerMat;                    ///< Inner Material
+  double InnerHeight;           ///< Inner Height
+  double InnerDepth;            ///< Inner Depth
+  double InnerRadius;           ///< Inner radius
+  int InnerMat;                 ///< Inner Material
 
 
   double PbHeight;              ///< Pb Height
@@ -92,18 +92,17 @@ class BilReflector : public attachSystem::ContainedComp,
   BilReflector(const std::string&);
   BilReflector(const BilReflector&);
   BilReflector& operator=(const BilReflector&);
-  virtual ~BilReflector
-();
+  virtual ~BilReflector();
 
   std::string getComposite(const std::string&) const;
-  void addToInsertChain(attachSystem::ContainedComp& CC) const;
+  void addToInsertChain(attachSystem::ContainedComp&) const;
   void addToInsertControl(Simulation&,
 			  const attachSystem::FixedComp&,
-			  attachSystem::ContainedComp& CC) const;
-  // Main cell
+			  attachSystem::ContainedComp&) const;
+  /// Main cell
   int getInnerCell() const { return refIndex+1; }
   std::vector<int> getCells() const;
-  void createAll(Simulation&,const attachSystem::FixedComp&,const size_t );
+  void createAll(Simulation&,const attachSystem::FixedComp&,const size_t);
 
 };
 

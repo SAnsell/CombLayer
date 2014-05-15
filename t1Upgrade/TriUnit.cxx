@@ -111,6 +111,14 @@ TriUnit::clear()
   return;
 }
 
+TriUnit::~TriUnit()
+  /*!
+    Destructor
+  */
+{
+  delete CHPtr;
+}
+
 void
 TriUnit::renormalize(const Geometry::Vec3D& Origin,
 		     const Geometry::Vec3D& X,const Geometry::Vec3D& Y,

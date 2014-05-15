@@ -220,14 +220,18 @@ TS1upgrade(FuncDataBase& Control)
   Control.addVariable("TriModZangle",0.0);
 
   Control.addVariable("TriModNCorner",6);  
-  Control.addVariable("TriModCorner1",Geometry::Vec3D(12.8,12.8,0.0)); 
-  Control.addVariable("TriModCorner2",Geometry::Vec3D(1.37,15.12,0)); 
+  Control.addVariable("TriModAbsolute1",1);
   Control.addVariable("TriModAbsolute2",1);
-  Control.addVariable("TriModCorner3",Geometry::Vec3D(-12.8,-12.8,0.0)); 
-  Control.addVariable("TriModCorner4",Geometry::Vec3D(-24.8,-0.8,0.0)); 
-  Control.addVariable("TriModCorner5",Geometry::Vec3D(-3.4,11.5,0.0)); 
+  Control.addVariable("TriModAbsolute3",1);
+  Control.addVariable("TriModAbsolute4",1);
   Control.addVariable("TriModAbsolute5",1);
-  Control.addVariable("TriModCorner6",Geometry::Vec3D(0.8,24.8,0.0)); 
+  Control.addVariable("TriModAbsolute6",1);
+  Control.addVariable("TriModCorner1",Geometry::Vec3D(-9.50,31.14,0.0)); 
+  Control.addVariable("TriModCorner2",Geometry::Vec3D(-0.22,13.92,0)); 
+  Control.addVariable("TriModCorner3",Geometry::Vec3D(12.5,2.75,0.0)); 
+  Control.addVariable("TriModCorner4",Geometry::Vec3D(-0.63,-2.88,0.0)); 
+  Control.addVariable("TriModCorner5",Geometry::Vec3D(-2.49,12.96,0.0)); 
+  Control.addVariable("TriModCorner6",Geometry::Vec3D(-15.97,26.70,0.0)); 
  
   Control.addVariable("TriModNInnerLayers",2); 
   Control.addVariable("TriModInnerThick0",0.5); 
@@ -236,17 +240,17 @@ TS1upgrade(FuncDataBase& Control)
 
   Control.addVariable("TriModNInnerUnits",2); 
   Control.addVariable("TriModInner1NCorner",3); 
-  Control.addVariable("TriModInner1Corner1",Geometry::Vec3D(-14.37,23.4,0.0)); 
-  Control.addVariable("TriModInner1Corner2",Geometry::Vec3D(-5,28.11,0.0)); 
-  Control.addVariable("TriModInner1Corner3",Geometry::Vec3D(-3.2,15.8,0.0)); 
+  Control.addVariable("TriModInner1Corner1",Geometry::Vec3D(-13.22,25.44,0.0)); 
+  Control.addVariable("TriModInner1Corner2",Geometry::Vec3D(-8.53,28.67,0.0)); 
+  Control.addVariable("TriModInner1Corner3",Geometry::Vec3D(-2.08,14.0,0.0)); 
   Control.addVariable("TriModInner1Absolute1",1); 
   Control.addVariable("TriModInner1Absolute2",1); 
   Control.addVariable("TriModInner1Absolute3",1); 
 
   Control.addVariable("TriModInner2NCorner",3); 
-  Control.addVariable("TriModInner2Corner1",Geometry::Vec3D(8.9,1.3,0.0)); 
-  Control.addVariable("TriModInner2Corner2",Geometry::Vec3D(1.78,-2.67,0.0)); 
-  Control.addVariable("TriModInner2Corner3",Geometry::Vec3D(0.1,11.73,0.0)); 
+  Control.addVariable("TriModInner2Corner1",Geometry::Vec3D(12.31,0.65,0.0)); 
+  Control.addVariable("TriModInner2Corner2",Geometry::Vec3D(0.79,-4.32,0.0)); 
+  Control.addVariable("TriModInner2Corner3",Geometry::Vec3D(-1.41,13.97,0.0)); 
   Control.addVariable("TriModInner2Absolute1",1); 
   Control.addVariable("TriModInner2Absolute2",1); 
   Control.addVariable("TriModInner2Absolute3",1); 
@@ -525,6 +529,73 @@ TS1upgrade(FuncDataBase& Control)
   Control.addVariable("CH4LayerLayer8",0.6);   
   Control.addVariable("CH4LayerMat8","Void");     
 
+  //
+  // HYDROGEN LAYER
+  //
+  Control.addVariable("H2LayerXStep",6.7);
+  Control.addVariable("H2LayerYStep",20.1);  // +9.8
+  Control.addVariable("H2LayerZStep",-16.1);
+  Control.addVariable("H2LayerXYangle",100.0);
+  Control.addVariable("H2LayerZangle",0.0);
+
+
+  Control.addVariable("H2LayerNPoison",0);
+  Control.addVariable("H2LayerPYStep1",0.0);       // for 1 poison layer
+  Control.addVariable("H2LayerPYStep2",0.8);       // for 2 poison layer
+  Control.addVariable("H2LayerPGdThick",0.005);      //
+  Control.addVariable("H2LayerPCladThick",0.1);      //
+  Control.addVariable("H2LayerPoisonMat","Gadolinium");
+
+  Control.addVariable("H2LayerPCladMat","Aluminium");
+  Control.addVariable("H2LayerPoisonMat","Gadolinium");
+
+
+  Control.addVariable("H2LayerNLayer",8);
+
+  Control.addVariable("H2LayerHeight1",16.8);
+  Control.addVariable("H2LayerWidth1",10.2);
+  Control.addVariable("H2LayerFront1",3.5);
+  Control.addVariable("H2LayerBack1",3.5);
+  Control.addVariable("H2LayerMat1","H2O");
+
+  // al inner
+  Control.addVariable("H2LayerLayer2",0.3);
+  Control.addVariable("H2LayerHeight2",0.0);
+  Control.addVariable("H2LayerMat2","Aluminium");
+
+  // vac
+  Control.addVariable("H2LayerLayer3",0.5);
+  Control.addVariable("H2LayerHeight3",0.0);
+  Control.addVariable("H2LayerWidth3",1.0);
+  Control.addVariable("H2LayerFront3",0.5);
+  Control.addVariable("H2LayerBack3",0.5);
+  Control.addVariable("H2LayerMat3","Void");
+
+
+  // Carbon - Al layer
+  Control.addVariable("H2LayerLayer4",0.0);
+  Control.addVariable("H2LayerWidth4",0.0);
+  Control.addVariable("H2LayerMat4",68);
+
+  // H2 - Al layer
+  Control.addVariable("H2LayerLayer5",0.3);
+  Control.addVariable("H2LayerHeight5",0.0);
+  Control.addVariable("H2LayerMat5","Aluminium");
+
+  // H2
+  Control.addVariable("H2LayerLayer6",1.5);
+  Control.addVariable("H2LayerHeight6",0.0);
+  Control.addVariable("H2LayerFront6",0.8);
+  Control.addVariable("H2LayerBack6",1.0);
+  Control.addVariable("H2LayerMat6","ParaOrtho%80");      // H2
+
+  // outer Al layer
+  Control.addVariable("H2LayerLayer7",0.3);
+  Control.addVariable("H2LayerMat7","Aluminium");
+
+  // Outer vac layer
+  Control.addVariable("H2LayerLayer8",0.6);
+  Control.addVariable("H2LayerMat8","Void");
 
   return;
 }

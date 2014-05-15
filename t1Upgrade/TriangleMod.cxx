@@ -231,6 +231,7 @@ TriangleMod::populate(const Simulation& System)
 	  M=ModelSupport::EvalMat<int>(Control,keyName+"InnerMat"+NStr);
 	  innerMat.push_back(M);
 	}
+      innerThick.push_back(0.0);  // Null terminator
     }
 
   modTemp=Control.EvalVar<double>(keyName+"ModTemp");
@@ -521,6 +522,7 @@ TriangleMod::createInnerObject(Simulation& System)
   /*!
     Create the inner void space if required
     \param System :: Simulation 
+    \return Full Exluding string
   */
 {
   ELog::RegMethod RegA("TriangleMod","createInnerObject");
@@ -621,6 +623,7 @@ TriangleMod::calcOverlaps(Simulation& System)
 
   MonteCarlo::Qhull OHull(cellIndex++,0,0.0,Outer.getString(0));
   OHull.createSurfaceList();
+
   
   Geometry::Plane PZ(triIndex+5000,0);
   PZ.setPlane(Geometry::Vec3D(0,0,0),Z);
@@ -632,11 +635,10 @@ TriangleMod::calcOverlaps(Simulation& System)
       IQH.push_back(MonteCarlo::Qhull(cellIndex++,0,0.0,OLayer));
       IQH.back().createSurfaceList();
     }
-
   for(size_t i=0;i<nIUnits;i++)
     {      
       if (attachSystem::checkPlaneIntersect(PZ,IQH[i],OHull))
-	  cutInnerObj(System,IUnits[i]);
+	cutInnerObj(System,IUnits[i]);
 
       for(size_t k=i+1;k<nIUnits;k++)
 	{
@@ -645,7 +647,7 @@ TriangleMod::calcOverlaps(Simulation& System)
 	      ELog::EM<<"Cut inner "<<i<<" "<<k<<ELog::endDiag;
 	      cutOuterObj(System,IUnits[i],IUnits[k]);
 	    }
-	}
+	}      
     }
   return;
 }
@@ -723,16 +725,19 @@ TriangleMod::createAll(Simulation& System,
   /*!
     Generic function to create everything
     \param System :: Simulation item
+    \param FC :: Fixed object just for origin/axis
   */
 {
   ELog::RegMethod RegA("TriangleMod","createAll");
   populate(System);
   createUnitVector(FC);
   
+
   createConvex();
   createSurfaces();
   createObjects(System);
   calcOverlaps(System);
+
   createLinks();
   insertObjects(System);       
   return;

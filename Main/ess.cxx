@@ -175,10 +175,7 @@ main(int argc,char* argv[])
 	    }
 	  while(!iteractive && MCIndex<multi);
 	}
-      SimProcess::processExitChecks(*SimPtr,IParam);
-
-      if (IParam.flag("cinder"))
-	SimPtr->writeCinder();
+      exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
       ModelSupport::calcVolumes(SimPtr,IParam);
       ModelSupport::objectRegister::Instance().write("ObjectRegister.txt");
     }

@@ -65,9 +65,9 @@ class Vec3D
   Vec3D(const Vec3D&);
   virtual ~Vec3D();
 
-  double X() const { return x; }   ///< Accessor function (X)
-  double Y() const { return y; }   ///< Accessor function (Y)
-  double Z() const { return z; }   ///< Accessor function (Z)
+  const double& X() const { return x; }   ///< Accessor function (X)
+  const double& Y() const { return y; }   ///< Accessor function (Y)
+  const double& Z() const { return z; }   ///< Accessor function (Z)
 
   Vec3D& operator=(const Vec3D&);
   Vec3D& operator()(const double,const double,const double);
@@ -75,7 +75,8 @@ class Vec3D
   template<typename IT> double& operator[](const IT);
   template<typename IT> double operator[](const IT) const;
 
-  template<typename T> Vec3D operator()(const Matrix<T>&) const;  ///< Convert matrix to a point (3x1 or 1x3)
+  // Convert matrix to a point (3x1 or 1x3)
+  template<typename T> Vec3D operator()(const Matrix<T>&) const; 
   
   bool operator<(const Vec3D&) const;
   bool operator>(const Vec3D&) const;

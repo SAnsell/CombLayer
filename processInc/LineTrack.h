@@ -71,6 +71,7 @@ class LineTrack
   bool isCompelete() const { return (aimDist-TDist) < -Geometry::zeroTol; }
 
   void calculate(const Simulation&);
+  void calculateError(const Simulation&);
   /// Access Cells
   const std::vector<int>& getCells() const
     { return Cells; }

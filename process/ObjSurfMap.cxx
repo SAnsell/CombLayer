@@ -226,7 +226,6 @@ ObjSurfMap::findNextObject(const int SN,
 {
   ELog::RegMethod RegA("ObjSurfMap","findNextObject");
 
-
   const STYPE& MVec=getObjects(SN);
   STYPE::const_iterator mc;
 
@@ -240,55 +239,40 @@ ObjSurfMap::findNextObject(const int SN,
   // DEBUG CODE FOR FAILURE:
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
   const masterRotate& MR=masterRotate::Instance();
-  
+
   ELog::EM<<"Failure to find surface on "<<SN<<" "
 	  <<MR.calcRotate(Pos)<<" "<<SN<<ELog::endCrit;
-
+  return 0;
   if (SurI.getSurf(abs(SN)))
     ELog::EM<<"Surface == "<<*SurI.getSurf(abs(SN))<<ELog::endWarn;
   else 
     ELog::EM<<"Failed to get == "<<SN<<ELog::endWarn;
 
   for(mc=MVec.begin();mc!=MVec.end();mc++)
-    {
-      ELog::EM<<"Common surf Cell  == "<<(*mc)->getName()<<ELog::endDiag;
-      // ELog::EM<<"Point == "<<MR.calcRotate(Pos)<<ELog::endDebug;
-      // ELog::EM<<"Test for point invalid == "
-      // 	      <<(*mc)->isValid(Pos-Geometry::Vec3D(0.001,0.001,0.001))
-      // 	      <<" + " 
-      // 	      <<(*mc)->isValid(Pos+Geometry::Vec3D(0.001,0.001,0.001))
-      // 	      <<ELog::endDebug;
-      // ELog::EM<<"Test 2 == "
-      // 	      <<(*mc)->pointStr(Pos)<<ELog::endDebug;
-    }
-  // ELog::EM<<"B size == "<<BVec.size()<<ELog::endDebug;
-  // for(mc=BVec.begin();mc!=BVec.end();mc++)
-  //   ELog::EM<<"Common surf Cell [B] == "<<(*mc)->getName()<<ELog::endDebug;
-
-  //  ELog::EM<<ELog::endErr;
+    ELog::EM<<"Common surf Cell  == "<<(*mc)->getName()<<ELog::endDiag;
 
   return 0;
 }
 
-void
-ObjSurfMap::removeReverseSurf(const int primSurf,const int revSurf)
+  void
+  ObjSurfMap::removeReverseSurf(const int primSurf,const int revSurf)
   /*!
     Find those surfaces which are listed as rev and exchange them
     for those that are listed as seconadary
     \param primSurf :: Kept surface [added in case of reverse surf]
     \param revSurf :: Surf that is removed
   */
-{
-  ELog::RegMethod RegA("ObjSurfMap","removeReverseSurf");
+  {
+    ELog::RegMethod RegA("ObjSurfMap","removeReverseSurf");
   
-  // Remove reverse surface from maps: [+ve]
+    // Remove reverse surface from maps: [+ve]
 
-  for(int sign_index=-1;sign_index<2;sign_index+=2)
-    {
-      OMTYPE::iterator ac=SMap.find(sign_index*revSurf);
-      if (ac!=SMap.end())
-	{
-	  STYPE& OVec=ac->second;
+    for(int sign_index=-1;sign_index<2;sign_index+=2)
+      {
+	OMTYPE::iterator ac=SMap.find(sign_index*revSurf);
+	if (ac!=SMap.end())
+	  {
+	    STYPE& OVec=ac->second;
 	  STYPE::iterator oc;
 	  // add to reverse list of opposite signed prim surf
 	  for(oc=OVec.begin();oc!=OVec.end();oc++)

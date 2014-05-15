@@ -61,6 +61,7 @@ setDefUnits(FuncDataBase& Control,
   /*!
     Based on the defaultConf set up the model
     \param Control :: FuncDataBase
+    \param IParam :: input system
   */
 {
   ELog::RegMethod RegA("DefUnits","setDefUints");
@@ -71,6 +72,9 @@ setDefUnits(FuncDataBase& Control,
       const std::string Key=IParam.getValue<std::string>("defaultConfig");
       if (Key=="TS1MarkIV")
 	setTS1MarkIV(A);
+      else if (Key=="TS1MarkV")
+	setTS1MarkV(A);
+      else if (Key=="");
       else 
 	{
 	  ELog::EM<<"Unknown Default Key ::"<<Key<<ELog::endDiag;
@@ -139,5 +143,64 @@ setTS1MarkIV(defaultConfig& A)
   return;
 }
 
+void
+setTS1MarkV(defaultConfig& A)
+  /*!
+    Default configureation for MarkIV
+    \param A :: Paramter for default config
+   */
+{
+  ELog::RegMethod RegA("DefUnits[F]","setTS1MarkII");
+
+  A.setOption("targetType","t1CylFluxTrap");
+  A.setOption("CH4ModType","Layer");
+  A.setOption("H2ModType","Layer");
+  A.setOption("CH4PreType","Flat");
+
+  A.setVar("sdefZOffset",0.0);
+
+  A.setVar("TriModPoisonThick",0.005);
+  A.setVar("TriModPCladThick",0.3);
+  A.setVar("TriModPoisonMat","Gadolinium");
+  A.setVar("TriModXYangle",-95.0); 
+  A.setVar("TriModXStep",0.0);
+  A.setVar("TriModYStep",0.0);
+  A.setVar("TriFlightAAngleXY1",30.0);
+  A.setVar("TriFlightAAngleXY2",0.0);
+  A.setVar("TriFlightAXStep",-2.0);
+  A.setVar("TriFlightAWidth",33.0);
+  A.setVar("TriFlightBAngleXY2",5.0);
+  A.setVar("TriFlightBWidth",23.0);
+
+  A.setVar("TriModNCorner",3);  
+  A.setVar("TriModCorner1",Geometry::Vec3D(2.1,23.88,0)); 
+  A.setVar("TriModCorner2",Geometry::Vec3D(11.63,-13.82,0)); 
+  A.setVar("TriModCorner3",Geometry::Vec3D(-11.61,13.79,0.0)); 
+  A.setVar("TriModAbsolute1",1);
+  A.setVar("TriModAbsolute2",1);
+  A.setVar("TriModAbsolute3",1);
+
+  A.setVar("TriModNInnerUnits",1); 
+  A.setVar("TriModInner1Corner1",Geometry::Vec3D(-5.86,10.95,0.0)); 
+  A.setVar("TriModInner1Corner2",Geometry::Vec3D(1.41,16.12,0.0)); 
+  A.setVar("TriModInner1Corner3",Geometry::Vec3D(9.04,-8.4,0)); 
+  A.setVar("TriModInner1Absolute1",1);
+  A.setVar("TriModInner1Absolute2",1);
+  A.setVar("TriModInner1Absolute3",1);
+
+  A.setVar("TriFlightASideIndex",1);
+  A.setVar("TriFlightBSideIndex",2);
+
+  A.setVar("TriModNInnerLayers",4); 
+  A.setVar("TriModInnerThick0",0.3); 
+  A.setVar("TriModInnerThick1",0.005); 
+  A.setVar("TriModInnerThick2",0.3); 
+  A.setVar("TriModInnerMat0","Aluminium");
+  A.setVar("TriModInnerMat1","Gadolinium");
+  A.setVar("TriModInnerMat2","Aluminium");
+  A.setVar("TriModInnerMat3","Void");
+
+  return;
+}
 
 }

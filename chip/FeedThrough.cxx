@@ -99,7 +99,7 @@
 #include "Hutch.h"
 #include "FeedThrough.h"
 
-#include "Debug.h"
+#include "debugMethod.h"
 
 namespace hutchSystem
 {
@@ -210,6 +210,8 @@ FeedThrough::insertColl(Simulation& System,
   */
 {
   ELog::RegMethod RegA("FeedThrough","insertColl");
+  ELog::debugMethod DegA;
+
 
   Geometry::Vec3D LineOrg=Origin+
     X*Offset[0]+Y*Offset[1]+Z*Offset[2];
@@ -232,6 +234,7 @@ FeedThrough::insertColl(Simulation& System,
   // make void
   CollTrack.addSection(width,height,0,0.0);
   CollTrack.setInitZAxis(Z);
+  DegA.activate();
   CollTrack.createAll(System);
 
   return;

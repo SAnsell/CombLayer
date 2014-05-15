@@ -476,7 +476,7 @@ Object::isOnSide(const Geometry::Vec3D& Pt) const
   /*!
     Determine if the point is in/out on the object
     \param Pt :: Point to check
-    \returns SurfNumber if the point is on the surface
+    \returns SurfNumber if the point is on the surface [signed]
   */
 {
   ELog::RegMethod RegA("Object","isOnSide");

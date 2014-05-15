@@ -286,7 +286,10 @@ BoxLine::createUnits(Simulation& System)
     PUnits.front()->setInitSurf(InitSurf);
 
   for(size_t i=0;i<PUnits.size();i++)
-    PUnits[i]->createAll(System,activeFlags[i],CV);
+    {
+      ELog::EM<<"Units "<<i<<ELog::endDebug;
+      PUnits[i]->createAll(System,activeFlags[i],CV);
+    }
 
   return 0;
 }

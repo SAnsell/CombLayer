@@ -68,7 +68,7 @@ namespace tallySystem
 {
 
 pointConstruct*
-tallyConstructFactory::makePoint()
+tallyConstructFactory::makePoint() const
   /*!
     Return point tally
     \return pointConstruct
@@ -78,7 +78,7 @@ tallyConstructFactory::makePoint()
 }
 
 meshConstruct*
-tallyConstructFactory::makeMesh()
+tallyConstructFactory::makeMesh() const
   /*!
     Return mesh tally
     \return meshConstruct
@@ -88,7 +88,7 @@ tallyConstructFactory::makeMesh()
 }
 
 fluxConstruct*
-tallyConstructFactory::makeFlux()
+tallyConstructFactory::makeFlux() const
   /*!
     Return flux tally
     \return fluxConstruct
@@ -98,7 +98,7 @@ tallyConstructFactory::makeFlux()
 }
 
 heatConstruct*
-tallyConstructFactory::makeHeat()
+tallyConstructFactory::makeHeat() const
   /*!
     Return Heat tally
     \return HeatConstruct
@@ -108,7 +108,7 @@ tallyConstructFactory::makeHeat()
 }
 
 itemConstruct*
-tallyConstructFactory::makeItem()
+tallyConstructFactory::makeItem() const
   /*!
     Return item tally
     \return itemConstruct
@@ -118,7 +118,7 @@ tallyConstructFactory::makeItem()
 }
 
 surfaceConstruct*
-tallyConstructFactory::makeSurf()
+tallyConstructFactory::makeSurf() const
   /*!
     Return surf tally
     \return surfConstruct
@@ -128,7 +128,7 @@ tallyConstructFactory::makeSurf()
 }
 
 fissionConstruct*
-tallyConstructFactory::makeFission()
+tallyConstructFactory::makeFission() const
   /*!
     Return flux tally
     \return fluxConstruct

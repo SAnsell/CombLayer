@@ -32,6 +32,7 @@ namespace mainSystem
   void setDefUnits(FuncDataBase&,inputParam&);
 
   void setTS1MarkIV(defaultConfig&); 
+  void setTS1MarkV(defaultConfig&); 
 
 }
 

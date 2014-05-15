@@ -81,6 +81,8 @@
 #include "boxValues.h"
 #include "boxUnit.h"
 
+#include "localRotate.h"
+#include "masterRotate.h"
 
 namespace ModelSupport
 {

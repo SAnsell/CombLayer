@@ -27,6 +27,7 @@
 #include <list>
 #include <vector>
 #include <string>
+#include <set>
 #include <algorithm>
 #include <functional>
 #include <iterator>

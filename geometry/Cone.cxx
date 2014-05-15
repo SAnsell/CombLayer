@@ -390,7 +390,7 @@ Cone::side(const Geometry::Vec3D& Pt) const
   if (cutFlag>0 && rptAngle< -Geometry::zeroTol )
     return 1;
   if (cutFlag<0 && rptAngle>Geometry::zeroTol )
-    return 11;
+    return 1;
   if (rptAngle<0.0) 
     rptAngle*=-1.0;
   // touch test

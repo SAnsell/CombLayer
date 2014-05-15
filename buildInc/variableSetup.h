@@ -59,6 +59,7 @@ namespace setVariable
   void TS1EllipticCylTarget(FuncDataBase&);
   void TS1CylMod(FuncDataBase&);
 
+
   void TS1layout(FuncDataBase&);
   void TS2layout(FuncDataBase&);
   void TS1real(FuncDataBase&);
@@ -68,10 +69,10 @@ namespace setVariable
   void ZoomVariables(const mainSystem::inputParam&,FuncDataBase&);
 
   void DelftCoreType(const mainSystem::inputParam&,FuncDataBase&);
-  void DelftStandardModel(FuncDataBase&);
 
   void siSimulation(FuncDataBase&);
 
+  
 }
 
 #endif

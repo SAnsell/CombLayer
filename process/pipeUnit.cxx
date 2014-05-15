@@ -416,7 +416,7 @@ pipeUnit::insertObjects(Simulation& System)
   const double angleStep(2*M_PI/nAngle);
   double angle(0.0);
   Geometry::Vec3D addVec;
-  for(int i=0;i<=nAngle;angle+=angleStep,i++)
+  for(size_t i=0;i<=nAngle;angle+=angleStep,i++)
     {
       addVec=(i<nAngle) 
 	? AX*cos(angle)*radius+AY*sin(angle)*radius 

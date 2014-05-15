@@ -134,6 +134,7 @@ tallyConstruct::~tallyConstruct()
   delete heatPtr;
   delete itemPtr;
   delete surfPtr;
+  delete fissionPtr;
 }
 
 void

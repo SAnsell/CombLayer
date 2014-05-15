@@ -51,6 +51,8 @@
 #include "surfIndex.h"
 #include "Quadratic.h"
 #include "Rules.h"
+#include "localRotate.h"
+#include "masterRotate.h"
 #include "varList.h"
 #include "Code.h"
 #include "FItem.h"
@@ -70,6 +72,7 @@
 #include "Simulation.h"
 #include "LineTrack.h"
 
+#include "debugMethod.h"
 
 namespace ModelSupport
 {
@@ -145,6 +148,7 @@ LineTrack::calculate(const Simulation& ASim)
   */
 {
   ELog::RegMethod RegA("LineTrack","calculate");
+
   double aDist(0);                         // Length of track
   const Geometry::Surface* SPtr;           // Surface
   const ModelSupport::ObjSurfMap* OSMPtr =ASim.getOSM();
@@ -156,9 +160,9 @@ LineTrack::calculate(const Simulation& ASim)
 
   if (!OPtr)
     ELog::EM<<"Initial point not in model:"<<InitPt<<ELog::endErr;
+  int SN=OPtr->isOnSide(InitPt);
   
   const MonteCarlo::Object* prevOPtr(0);
-  int SN(0);
   while(OPtr)
     {
       // Note: Need OPPOSITE Sign on exiting surface
@@ -170,11 +174,79 @@ LineTrack::calculate(const Simulation& ASim)
 	  nOut.moveForward(aDist);
 	  
 	  OPtr=OSMPtr->findNextObject(SN,nOut.Pos,OPtr->getName());
+	  //	  if (OPtr==0)
+	  //	    calculateError(ASim);
+	  if (OPtr && aDist<Geometry::zeroTol)
+	    OPtr=ASim.findCell(nOut.Pos,0);
+	}
+      else
+	OPtr=0;
+	
+    }
+  return;
+}
+
+void
+LineTrack::calculateError(const Simulation& ASim)
+  /*!
+    Calculate the track
+    \param ASim :: Simulation to use						
+  */
+{
+  ELog::RegMethod RegA("LineTrack","calculate");
+  ELog::debugMethod DegA;
+  ELog::EM<<"START OF ERROR CODE"<<ELog::endDiag;
+  ELog::EM<<"START OF ERROR CODE"<<ELog::endDiag;
+  ELog::EM<<"-------------------"<<ELog::endDiag;
+  
+  double aDist(0);                         // Length of track
+  const Geometry::Surface* SPtr;           // Surface
+  const ModelSupport::ObjSurfMap* OSMPtr =ASim.getOSM();
+
+  MonteCarlo::neutron nOut(1.0,InitPt,EndPt-InitPt);
+  // Find Initial cell [no default]
+  MonteCarlo::Object* OPtr=ASim.findCell(InitPt+
+					 (EndPt-InitPt).unit()*1e-5,0);
+
+  if (!OPtr)
+    ELog::EM<<"Initial point not in model:"<<InitPt<<ELog::endErr;
+  const MonteCarlo::Object* prevOPtr(0);
+  int SN=OPtr->isOnSide(InitPt);
+  
+  while(OPtr)
+    {
+      ELog::EM<<"== Tracking cell == "<<*OPtr;
+      ELog::EM<<"Neutron == "<<nOut<<" "<<aDist<<ELog::endDiag;
+      ELog::EM<<"SN == "<<SN<<ELog::endDiag;
+
+      // Note: Need OPPOSITE Sign on exiting surface
+      SN= OPtr->trackOutCell(nOut,aDist,SPtr,abs(SN));
+      ELog::EM<<"Found Surf == "<<SN<<" "<<aDist<<ELog::endDiag;
+
+      // Update Track : returns 1 on excess of distance
+      if (SN && updateDistance(OPtr,aDist))
+	{
+	  prevOPtr=OPtr;
+	  nOut.moveForward(aDist);
+	  
+	  OPtr=OSMPtr->findNextObject(SN,nOut.Pos,OPtr->getName());
+
+	  if (OPtr)
+	    ELog::EM<<"Tracking cell == "<<*OPtr<<ELog::endDiag;
+	  else
+	    ELog::EM<<"void cell"<<ELog::endDiag;
+	  ELog::EM<<"Neutron == "<<nOut<<" "<<ELog::endDiag;
+	  ELog::EM<<" ============== "<<ELog::endDiag;
+
+
 	  if (OPtr==0)
 	    {
+	      const masterRotate& MR=masterRotate::Instance();
 	      // ALL FAILURE CODE:
 	      const MonteCarlo::Object* OPtr=ASim.findCell(nOut.Pos,0);
 	      ELog::EM<<"Common surf "<<SN<<ELog::endDiag;
+	      if (OPtr)
+		ELog::EM<<"Found CEll: "<<*OPtr<<ELog::endDiag;
 	      OPtr=OSMPtr->findNextObject(SN,nOut.Pos,prevOPtr->getName());
 	      if (OPtr)
 		{
@@ -189,10 +261,10 @@ LineTrack::calculate(const Simulation& ASim)
 		}
 	      if (prevOPtr)
 		ELog::EM<<"PrevObject = "<<*prevOPtr<<ELog::endDiag;
-	      ELog::EM<<"Point = "<<nOut.Pos<<ELog::endDiag;
+	      ELog::EM<<"Point = "<<MR.calcRotate(nOut.Pos)<<ELog::endDiag;
 	      ELog::EM<<"DIR = "<<nOut.uVec<<ELog::endDiag;
-	      ELog::EM<<"Init = "<<InitPt<<ELog::endDiag;
-	      ELog::EM<<"Final = "<<EndPt<<ELog::endDiag;
+	      ELog::EM<<"Init = "<<MR.calcRotate(InitPt)<<ELog::endDiag;
+	      ELog::EM<<"Final = "<<MR.calcRotate(EndPt)<<ELog::endDiag;
 	      ELog::EM<<ELog::endErr;
 	    }
 

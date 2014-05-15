@@ -103,56 +103,56 @@ DelftStandardModel(FuncDataBase& Control)
 {
   ELog::RegMethod Rega("delftReactorLayout[f]","DelftStandardModel");
 
-  Control.addVariable("delftGridType",0);        // All void
-  Control.addVariable("delftGridTypeA0",5);      
-  Control.addVariable("delftGridTypeA1",5);      
-  Control.addVariable("delftGridTypeA2",5);      
-  Control.addVariable("delftGridTypeA3",5);      
-  Control.addVariable("delftGridTypeA4",5);      
-  Control.addVariable("delftGridTypeA5",5);      
-  Control.addVariable("delftGridTypeA6",5);      
+  Control.addVariable("delftGridType","Null");        // All void
+  Control.addVariable("delftGridTypeA0","BeO");      
+  Control.addVariable("delftGridTypeA1","Be");      
+  Control.addVariable("delftGridTypeA2","Be");      
+  Control.addVariable("delftGridTypeA3","Be");      
+  Control.addVariable("delftGridTypeA4","Be");      
+  Control.addVariable("delftGridTypeA5","Be");      
+  Control.addVariable("delftGridTypeA6","Be");      
   // Second stack
-  Control.addVariable("delftGridTypeB0",5);      
-  Control.addVariable("delftGridTypeB1",5);      
-  Control.addVariable("delftGridTypeB2",1);      
-  Control.addVariable("delftGridTypeB3",1);      
-  Control.addVariable("delftGridTypeB4",1);      
-  Control.addVariable("delftGridTypeB5",5);      
-  Control.addVariable("delftGridTypeB6",5);      
+  Control.addVariable("delftGridTypeB0","Be");      
+  Control.addVariable("delftGridTypeB1","Be");      
+  Control.addVariable("delftGridTypeB2","Fuel");      
+  Control.addVariable("delftGridTypeB3","Fuel");      
+  Control.addVariable("delftGridTypeB4","Fuel");      
+  Control.addVariable("delftGridTypeB5","IRad");      
+  Control.addVariable("delftGridTypeB6","Be");      
   // Third stack
-  Control.addVariable("delftGridTypeC0",5);      
-  Control.addVariable("delftGridTypeC1",1);      
-  Control.addVariable("delftGridTypeC2",2);      
-  Control.addVariable("delftGridTypeC3",1);      
-  Control.addVariable("delftGridTypeC4",2);      
-  Control.addVariable("delftGridTypeC5",1);      
-  Control.addVariable("delftGridTypeC6",5);      
+  Control.addVariable("delftGridTypeC0","Be");      
+  Control.addVariable("delftGridTypeC1","Fuel");      
+  Control.addVariable("delftGridTypeC2","Control");      
+  Control.addVariable("delftGridTypeC3","Fuel");      
+  Control.addVariable("delftGridTypeC4","Control");      
+  Control.addVariable("delftGridTypeC5","Fuel");      
+  Control.addVariable("delftGridTypeC6","Be");      
   // Fourth stack
-  Control.addVariable("delftGridTypeD0",5);      
-  Control.addVariable("delftGridTypeD1",1);      
-  Control.addVariable("delftGridTypeD2",1);      
-  Control.addVariable("delftGridTypeD3",3);      
-  Control.addVariable("delftGridTypeD4",1);      
-  Control.addVariable("delftGridTypeD5",1);      
-  Control.addVariable("delftGridTypeD6",5);      
+  Control.addVariable("delftGridTypeD0","Be");      
+  Control.addVariable("delftGridTypeD1","Fuel");      
+  Control.addVariable("delftGridTypeD2","Fuel");      
+  Control.addVariable("delftGridTypeD3","IRad");      
+  Control.addVariable("delftGridTypeD4","Fuel");      
+  Control.addVariable("delftGridTypeD5","Fuel");      
+  Control.addVariable("delftGridTypeD6","Be");      
 
   // Fifth stack
-  Control.addVariable("delftGridTypeE0",5);      
-  Control.addVariable("delftGridTypeE1",1);      
-  Control.addVariable("delftGridTypeE2",2);      
-  Control.addVariable("delftGridTypeE3",1);      
-  Control.addVariable("delftGridTypeE4",2);      
-  Control.addVariable("delftGridTypeE5",1);      
-  Control.addVariable("delftGridTypeE6",5);      
+  Control.addVariable("delftGridTypeE0","Be");      
+  Control.addVariable("delftGridTypeE1","Fuel");      
+  Control.addVariable("delftGridTypeE2","Control");      
+  Control.addVariable("delftGridTypeE3","Fuel");      
+  Control.addVariable("delftGridTypeE4","Control");      
+  Control.addVariable("delftGridTypeE5","Fuel");      
+  Control.addVariable("delftGridTypeE6","Be");      
 
   // Sixth stack
-  Control.addVariable("delftGridTypeF0",5);      
-  Control.addVariable("delftGridTypeF1",5);      
-  Control.addVariable("delftGridTypeF2",1);      
-  Control.addVariable("delftGridTypeF3",1);      
-  Control.addVariable("delftGridTypeF4",1);      
-  Control.addVariable("delftGridTypeF5",5);      
-  Control.addVariable("delftGridTypeF6",5);      
+  Control.addVariable("delftGridTypeF0","Be");      
+  Control.addVariable("delftGridTypeF1","Be");      
+  Control.addVariable("delftGridTypeF2","Fuel");      
+  Control.addVariable("delftGridTypeF3","Fuel");      
+  Control.addVariable("delftGridTypeF4","Fuel");      
+  Control.addVariable("delftGridTypeF5","Be");      
+  Control.addVariable("delftGridTypeF6","Be");      
   return;
 }
 
@@ -165,56 +165,56 @@ DelftXCoreModel(FuncDataBase& Control)
 {
   ELog::RegMethod Rega("delftReactorLayout[f]","DelftXCoreModel");
 
-  Control.addVariable("delftGridType",0);        // All void
-  Control.addVariable("delftGridTypeA0",5);      
-  Control.addVariable("delftGridTypeA1",5);      
-  Control.addVariable("delftGridTypeA2",5);      
-  Control.addVariable("delftGridTypeA3",5);      
-  Control.addVariable("delftGridTypeA4",5);      
-  Control.addVariable("delftGridTypeA5",5);      
-  Control.addVariable("delftGridTypeA6",5);      
+  Control.addVariable("delftGridType","Null");        // All void
+  Control.addVariable("delftGridTypeA0","Be");      
+  Control.addVariable("delftGridTypeA1","Be");      
+  Control.addVariable("delftGridTypeA2","Be");      
+  Control.addVariable("delftGridTypeA3","Be");      
+  Control.addVariable("delftGridTypeA4","Be");      
+  Control.addVariable("delftGridTypeA5","Be");      
+  Control.addVariable("delftGridTypeA6","Be");      
   // Second stack
-  Control.addVariable("delftGridTypeB0",5);      
-  Control.addVariable("delftGridTypeB1",2);      
-  Control.addVariable("delftGridTypeB2",1);      
-  Control.addVariable("delftGridTypeB3",1);      
-  Control.addVariable("delftGridTypeB4",2);      
-  Control.addVariable("delftGridTypeB5",5);      
-  Control.addVariable("delftGridTypeB6",5);      
+  Control.addVariable("delftGridTypeB0","Be");      
+  Control.addVariable("delftGridTypeB1","Control");      
+  Control.addVariable("delftGridTypeB2","Fuel");      
+  Control.addVariable("delftGridTypeB3","Fuel");      
+  Control.addVariable("delftGridTypeB4","Control");      
+  Control.addVariable("delftGridTypeB5","Be");      
+  Control.addVariable("delftGridTypeB6","Be");      
   // Third stack
-  Control.addVariable("delftGridTypeC0",5);      
-  Control.addVariable("delftGridTypeC1",1);      
-  Control.addVariable("delftGridTypeC2",1);      
-  Control.addVariable("delftGridTypeC3",1);      
-  Control.addVariable("delftGridTypeC4",1);      
-  Control.addVariable("delftGridTypeC5",5);      
-  Control.addVariable("delftGridTypeC6",5);      
+  Control.addVariable("delftGridTypeC0","Be");      
+  Control.addVariable("delftGridTypeC1","Fuel");      
+  Control.addVariable("delftGridTypeC2","Fuel");      
+  Control.addVariable("delftGridTypeC3","Fuel");      
+  Control.addVariable("delftGridTypeC4","Fuel");      
+  Control.addVariable("delftGridTypeC5","Be");      
+  Control.addVariable("delftGridTypeC6","Be");      
   // Fourth stack
-  Control.addVariable("delftGridTypeD0",5);      
-  Control.addVariable("delftGridTypeD1",1);      
-  Control.addVariable("delftGridTypeD2",1);      
-  Control.addVariable("delftGridTypeD3",1);      
-  Control.addVariable("delftGridTypeD4",1);      
-  Control.addVariable("delftGridTypeD5",5);      
-  Control.addVariable("delftGridTypeD6",5);      
+  Control.addVariable("delftGridTypeD0","Be");      
+  Control.addVariable("delftGridTypeD1","Fuel");      
+  Control.addVariable("delftGridTypeD2","Fuel");      
+  Control.addVariable("delftGridTypeD3","Fuel");      
+  Control.addVariable("delftGridTypeD4","Fuel");      
+  Control.addVariable("delftGridTypeD5","Be");      
+  Control.addVariable("delftGridTypeD6","Be");      
 
   // Fifth stack
-  Control.addVariable("delftGridTypeE0",5);      
-  Control.addVariable("delftGridTypeE1",2);      
-  Control.addVariable("delftGridTypeE2",1);      
-  Control.addVariable("delftGridTypeE3",1);      
-  Control.addVariable("delftGridTypeE4",2);      
-  Control.addVariable("delftGridTypeE5",5);      
-  Control.addVariable("delftGridTypeE6",5);      
+  Control.addVariable("delftGridTypeE0","Be");      
+  Control.addVariable("delftGridTypeE1","Control");      
+  Control.addVariable("delftGridTypeE2","Fuel");      
+  Control.addVariable("delftGridTypeE3","Fuel");      
+  Control.addVariable("delftGridTypeE4","Control");      
+  Control.addVariable("delftGridTypeE5","Be");      
+  Control.addVariable("delftGridTypeE6","Be");      
 
   // Sixth stack
-  Control.addVariable("delftGridTypeF0",5);      
-  Control.addVariable("delftGridTypeF1",5);      
-  Control.addVariable("delftGridTypeF2",5);      
-  Control.addVariable("delftGridTypeF3",0);      
-  Control.addVariable("delftGridTypeF4",5);      
-  Control.addVariable("delftGridTypeF5",5);      
-  Control.addVariable("delftGridTypeF6",5);      
+  Control.addVariable("delftGridTypeF0","Be");      
+  Control.addVariable("delftGridTypeF1","Be");      
+  Control.addVariable("delftGridTypeF2","Be");      
+  Control.addVariable("delftGridTypeF3","Null");      
+  Control.addVariable("delftGridTypeF4","Be");      
+  Control.addVariable("delftGridTypeF5","Be");      
+  Control.addVariable("delftGridTypeF6","Be");      
   return;
 }
 
@@ -230,56 +230,56 @@ DelftYCoreModel(FuncDataBase& Control)
   Control.addVariable("delftGridXSize",5);        // All void
   Control.addVariable("delftGridYSize",5);        // All void
 
-  Control.addVariable("delftGridType",0);        // All void
-  Control.addVariable("delftGridTypeA0",5);      
-  Control.addVariable("delftGridTypeA1",5);      
-  Control.addVariable("delftGridTypeA2",5);      
-  Control.addVariable("delftGridTypeA3",5);      
-  Control.addVariable("delftGridTypeA4",5);      
-  Control.addVariable("delftGridTypeA5",5);      
-  Control.addVariable("delftGridTypeA6",5);      
+  Control.addVariable("delftGridType","Null");        // All void
+  Control.addVariable("delftGridTypeA0","Be");      
+  Control.addVariable("delftGridTypeA1","Be");      
+  Control.addVariable("delftGridTypeA2","Be");      
+  Control.addVariable("delftGridTypeA3","Be");      
+  Control.addVariable("delftGridTypeA4","Be");      
+  Control.addVariable("delftGridTypeA5","Be");      
+  Control.addVariable("delftGridTypeA6","Be");      
   // Second stack
-  Control.addVariable("delftGridTypeB0",5);      
-  Control.addVariable("delftGridTypeB1",1);      
-  Control.addVariable("delftGridTypeB2",3);      
-  Control.addVariable("delftGridTypeB3",1);      
-  Control.addVariable("delftGridTypeB4",5);      
-  Control.addVariable("delftGridTypeB5",5);      
-  Control.addVariable("delftGridTypeB6",5);      
+  Control.addVariable("delftGridTypeB0","Be");      
+  Control.addVariable("delftGridTypeB1","Fuel");      
+  Control.addVariable("delftGridTypeB2","IRad");      
+  Control.addVariable("delftGridTypeB3","Fuel");      
+  Control.addVariable("delftGridTypeB4","Be");      
+  Control.addVariable("delftGridTypeB5","Be");      
+  Control.addVariable("delftGridTypeB6","Be");      
   // Third stack
-  Control.addVariable("delftGridTypeC0",1);      
+  Control.addVariable("delftGridTypeC0","Fuel");      
   Control.addVariable("delftGridTypeC1",4);      
-  Control.addVariable("delftGridTypeC2",1);      
+  Control.addVariable("delftGridTypeC2","Fuel");      
   Control.addVariable("delftGridTypeC3",4);      
-  Control.addVariable("delftGridTypeC4",1);      
-  Control.addVariable("delftGridTypeC5",5);      
-  Control.addVariable("delftGridTypeC6",5);      
+  Control.addVariable("delftGridTypeC4","Fuel");      
+  Control.addVariable("delftGridTypeC5","Be");      
+  Control.addVariable("delftGridTypeC6","Be");      
   // Fourth stack
-  Control.addVariable("delftGridTypeD0",1);      
-  Control.addVariable("delftGridTypeD1",1);      
-  Control.addVariable("delftGridTypeD2",3);      
-  Control.addVariable("delftGridTypeD3",1);      
-  Control.addVariable("delftGridTypeD4",1);      
-  Control.addVariable("delftGridTypeD5",5);      
-  Control.addVariable("delftGridTypeD6",5);      
+  Control.addVariable("delftGridTypeD0","Fuel");      
+  Control.addVariable("delftGridTypeD1","Fuel");      
+  Control.addVariable("delftGridTypeD2","IRad");      
+  Control.addVariable("delftGridTypeD3","Fuel");      
+  Control.addVariable("delftGridTypeD4","Fuel");      
+  Control.addVariable("delftGridTypeD5","Be");      
+  Control.addVariable("delftGridTypeD6","Be");      
 
   // Fifth stack
-  Control.addVariable("delftGridTypeE0",1);      
+  Control.addVariable("delftGridTypeE0","Fuel");      
   Control.addVariable("delftGridTypeE1",4);      
-  Control.addVariable("delftGridTypeE2",1);      
+  Control.addVariable("delftGridTypeE2","Fuel");      
   Control.addVariable("delftGridTypeE3",4);      
-  Control.addVariable("delftGridTypeE4",1);      
-  Control.addVariable("delftGridTypeE5",5);      
-  Control.addVariable("delftGridTypeE6",5);      
+  Control.addVariable("delftGridTypeE4","Fuel");      
+  Control.addVariable("delftGridTypeE5","Be");      
+  Control.addVariable("delftGridTypeE6","Be");      
 
   // Sixth stack
-  Control.addVariable("delftGridTypeF0",5);      
-  Control.addVariable("delftGridTypeF1",1);      
-  Control.addVariable("delftGridTypeF2",3);      
-  Control.addVariable("delftGridTypeF3",1);      
-  Control.addVariable("delftGridTypeF4",5);      
-  Control.addVariable("delftGridTypeF5",5);      
-  Control.addVariable("delftGridTypeF6",5);      
+  Control.addVariable("delftGridTypeF0","Be");      
+  Control.addVariable("delftGridTypeF1","Fuel");      
+  Control.addVariable("delftGridTypeF2","IRad");      
+  Control.addVariable("delftGridTypeF3","Fuel");      
+  Control.addVariable("delftGridTypeF4","Be");      
+  Control.addVariable("delftGridTypeF5","Be");      
+  Control.addVariable("delftGridTypeF6","Be");      
   return;
 }
 
@@ -296,13 +296,12 @@ DelftTestModel(FuncDataBase& Control)
   Control.addVariable("delftGridYSize",7);
   Control.addVariable("delftGridWidth",5*46.254/6);  
   Control.addVariable("delftGridDepth",56.70); 
-  Control.addVariable("delftGridXStep",0); 
-
+  Control.addVariable("delftGridXStep",0.0); 
 
   // Second stack
-  Control.addVariable("delftGridType",0);      
-  Control.addVariable("delftGridTypeC3",1);      
-  Control.addVariable("delftGridNFuelDivideC3",10);      
+  Control.addVariable("delftGridType","Null");      
+  Control.addVariable("delftGridTypeC3","Fuel");      
+  Control.addVariable("delftGridNFuelDivideC3",11);      
 
   // blocks filling space
   Control.addVariable("Box1Flag",1);      
@@ -315,7 +314,7 @@ DelftTestModel(FuncDataBase& Control)
   Control.addVariable("Box1Length",5);   
   Control.addVariable("Box1Width",60.0);   
   Control.addVariable("Box1Height",60.0);   
-  Control.addVariable("Box1Mat",3);   
+  Control.addVariable("Box1Mat","Stainless304");   
   
   Control.addVariable("Box2Flag",1);      
   Control.addVariable("Box2XStep",0.0);      
@@ -327,11 +326,8 @@ DelftTestModel(FuncDataBase& Control)
   Control.addVariable("Box2Length",5);   
   Control.addVariable("Box2Width",60.0);   
   Control.addVariable("Box2Height",60.0);   
-  Control.addVariable("Box2Mat",3);   
+  Control.addVariable("Box2Mat","Stainless304");   
   
-  
-  
-
   return;
 }
 

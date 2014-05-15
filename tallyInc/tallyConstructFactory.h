@@ -50,16 +50,16 @@ class tallyConstructFactory
 
  public:
 
-  tallyConstructFactory() {}                       ///<  constructor
-  ~tallyConstructFactory() {}
+  tallyConstructFactory() {}       ///<  constructor
+  ~tallyConstructFactory() {}      ///<  destructor
   
-  static pointConstruct* makePoint();
-  static meshConstruct* makeMesh();
-  static fluxConstruct* makeFlux();
-  static heatConstruct* makeHeat();
-  static itemConstruct* makeItem();
-  static surfaceConstruct* makeSurf();
-  static fissionConstruct* makeFission();
+  pointConstruct* makePoint() const;
+  meshConstruct* makeMesh() const;
+  fluxConstruct* makeFlux() const;
+  heatConstruct* makeHeat() const;
+  itemConstruct* makeItem() const;
+  surfaceConstruct* makeSurf() const;
+  fissionConstruct* makeFission() const;
 
 };
 

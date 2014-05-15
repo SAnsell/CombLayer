@@ -672,8 +672,8 @@ checkPlaneIntersect(const Geometry::Plane& BPlane,
 		{
 		  if (BObj.isDirectionValid(*vc,BSVec[iB]->getName()) !=
 		      BObj.isDirectionValid(*vc,-BSVec[iB]->getName()) && 
-		      AObj.isDirectionValid(*vc,ASVec[iB]->getName()) !=
-		      AObj.isDirectionValid(*vc,-ASVec[iB]->getName()) ) 
+		      AObj.isDirectionValid(*vc,ASVec[iA]->getName()) !=
+		      AObj.isDirectionValid(*vc,-ASVec[iA]->getName()) ) 
 		    return 1;
 		}
 	    }

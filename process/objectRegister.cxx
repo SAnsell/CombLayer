@@ -52,6 +52,7 @@
 #include "FixedGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+#include "LayerComp.h"
 #include "objectRegister.h"
 
 namespace ModelSupport
@@ -308,8 +309,6 @@ objectRegister::getObject(const std::string& Name) const
     }
   const std::string PreItem=Name.substr(0,pos);
   const std::string PostItem=Name.substr(pos);
-  ELog::EM<<"Sub item == "<<PreItem<<ELog::endDebug;
-  ELog::EM<<"Post item == "<<PostItem<<ELog::endDebug;
   return 0;
 }
 
@@ -358,6 +357,9 @@ template const attachSystem::TwinComp*
   objectRegister::getObject(const std::string&) const;
 
 template const attachSystem::SecondTrack* 
+  objectRegister::getObject(const std::string&) const;
+
+template const attachSystem::LayerComp* 
   objectRegister::getObject(const std::string&) const;
 
 template attachSystem::FixedComp* 

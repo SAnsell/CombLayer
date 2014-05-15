@@ -71,6 +71,8 @@ createSimpleSource(Source& sourceCard,
     \param Eend :: Energy [MeV]
   */
 {
+  ELog::RegMethod RegA("SourceCreate[F]","createSimpleSource");
+
   sourceCard.setActive();
 
   SDef::SrcData E1(1);
@@ -421,12 +423,10 @@ createSinbadSource(const FuncDataBase& Control,Source& sourceCard)
     Create a fisson source for a cylinder/rectangular unit 
     \param Control :: Funcdat data base for values
     \param sourceCard :: Source system
-   */
+  */
 {  
-  ELog::RegMethod RegA("SourceCreate","createSource");
+  ELog::RegMethod RegA("SourceCreate","createSinbadSource");
  
-// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
   const size_t NX(15),NZ(15);     
   // This data is horizontal : X [cm] and vertical : Z[cm]
   const double XPts[NX+1]= 

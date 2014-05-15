@@ -135,7 +135,7 @@ getMatIndex(const std::string& NStr)
   if (!StrFunc::convert(NStr.substr(0,4),Out.first) ||
       !StrFunc::convert(NStr.substr(4,2),Out.second) ||
       !StrFunc::convert(NStr.substr(6,3),Out.third))  
-    throw ColErr::InvalidLine(NStr,"ENDF::getMatIndex");
+    throw ColErr::InvalidLine(NStr,"NStr fail to convert [Mat,MF,MT]");
 
   return Out;
 }

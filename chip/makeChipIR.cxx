@@ -90,6 +90,8 @@
 #include "FBBlock.h"
 #include "makeChipIR.h"
 
+#include "debugMethod.h"
+
 namespace hutchSystem
 {
 
@@ -156,7 +158,8 @@ makeChipIR::build(Simulation* SimPtr,
    */
 {
   // For output stream
-  ELog::RegMethod RControl("makeChipIR","build");
+  ELog::RegMethod RegA("makeChipIR","build");
+  ELog::debugMethod DegA;
   const FuncDataBase& Control=SimPtr->getDataBase();  
 
   int isoFlag(0);

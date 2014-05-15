@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   essBuildInc/GuideItem.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,11 +28,11 @@ namespace essSystem
 {
 
 /*!
-  \class Reflector
+  \class GuideItem
   \version 1.0
   \author S. Ansell
-  \date November 2012
-  \brief Reflector Cylindrical
+  \date November 2013
+  \brief Simple Guide element Housing + void
 */
 
 class GuideItem : public attachSystem::ContainedGroup,

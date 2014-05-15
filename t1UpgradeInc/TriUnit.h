@@ -60,7 +60,7 @@ class TriUnit
   TriUnit(const int);
   TriUnit(const TriUnit&);
   TriUnit& operator=(const TriUnit&);
-  ~TriUnit() {}
+  ~TriUnit();
 
   void constructConvex(const Geometry::Vec3D&);
 

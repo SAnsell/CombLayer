@@ -27,8 +27,8 @@ namespace Transport
 {
 
 /*!  
-  \class Detector
-  \brief Defines a detector
+  \class DetGroup
+  \brief Defines a detector collection
   \version 1.0
   \author S. Ansell
   \date October 2012
