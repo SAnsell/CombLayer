@@ -103,6 +103,7 @@ createMeshTally(const mainSystem::inputParam& IParam,
 				     IParam.getValue<Geometry::Vec3D>("meshB"),
 				     MPTS);
 	}
+
       return 1;
     }	  
   return 0;

@@ -176,16 +176,15 @@ CH4Layer::checkUnit(const FuncDataBase& Control,
 }
 
 void
-CH4Layer::populate(const Simulation& System)
+CH4Layer::populate(const FuncDataBase& Control)
  /*!
    Populate all the variables
-   \param System :: Simulation to use
+   \param Control :: DataBase 
  */
 {
   ELog::RegMethod RegA("CH4Layer","populate");
   
-  const FuncDataBase& Control=System.getDataBase();
-
+  ModBase::populate(Control);
   // Master values
   xStep=Control.EvalVar<double>(keyName+"XStep");
   yStep=Control.EvalVar<double>(keyName+"YStep");
@@ -193,12 +192,12 @@ CH4Layer::populate(const Simulation& System)
   xyAngle=Control.EvalVar<double>(keyName+"XYangle");
   zAngle=Control.EvalVar<double>(keyName+"Zangle");
 
-  const size_t nLayer=Control.EvalVar<size_t>(keyName+"NLayer");
-  if (nLayer<1)
+  nLayers=Control.EvalVar<size_t>(keyName+"NLayer");
+  if (!nLayers)
     throw ColErr::IndexError<size_t>(0,1,"nLayer");
   double Front,Back,Left,Right,Top,Base,temp;
   int mat;
-  for(size_t i=0;i<nLayer;i++)
+  for(size_t i=0;i<nLayers;i++)
     {
       Top=checkUnit(Control,i+1,"Top",1.0,"Height",0.5,"Layer",1.0);
       Base=checkUnit(Control,i+1,"Base",1.0,"Height",0.5,"Layer",1.0);
@@ -273,7 +272,7 @@ CH4Layer::createSurfaces()
       // 1+j+j%2 gives 1,1,3,3,5,5 as j iterates
       for(size_t j=0;j<6;j++)
 	ModelSupport::buildPlane(SMap,ch4Layer+static_cast<int>(j),
-				 Origin+XYZ[j]*LVec[i].Item(j),XYZ[1+j-j%2]);
+				   Origin+XYZ[j]*LVec[i].Item(j),XYZ[1+j-j%2]);
 
       ch4Layer+=10;
     }
@@ -390,8 +389,8 @@ CH4Layer::getSurfacePoint(const size_t layerIndex,
 }
 
 std::string
-CH4Layer::getLayerString(const size_t sideIndex,
-			 const size_t layerIndex) const
+CH4Layer::getLayerString(const size_t layerIndex,
+			 const size_t sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
     \param sideIndex :: Side [0-5]
@@ -400,17 +399,7 @@ CH4Layer::getLayerString(const size_t sideIndex,
   */
 {
   ELog::RegMethod RegA("CH4Layer","getLayerString");
-
-  if (layerIndex>=LVec.size()) 
-    throw ColErr::IndexError<size_t>(layerIndex,LVec.size(),"layerIndex");
-  if (sideIndex>5)
-    throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
-
-  const int SI(modIndex+static_cast<int>(layerIndex*10+sideIndex+1));
-  std::ostringstream cx;
-  const int signValue((sideIndex % 2) ? 1 : -1);
-  cx<<" "<<signValue*SMap.realSurf(SI)<<" ";
-  return cx.str();
+  return StrFunc::makeString(getLayerSurf(layerIndex,sideIndex));
 }
 
 int
@@ -423,7 +412,7 @@ CH4Layer::getLayerSurf(const size_t layerIndex,
     \return Surface string
   */
 {
-  ELog::RegMethod RegA("H2Moderator","getLayerSurf");
+  ELog::RegMethod RegA("CH4Layer","getLayerSurf");
 
   if (layerIndex>=LVec.size()) 
     throw ColErr::IndexError<size_t>(layerIndex,LVec.size(),"layerIndex");
@@ -431,7 +420,8 @@ CH4Layer::getLayerSurf(const size_t layerIndex,
     throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
 
   const int SI(modIndex+static_cast<int>(layerIndex*10+sideIndex+1));
-  return SMap.realSurf(SI);
+  const int signValue((sideIndex % 2) ? 1 : -1);
+  return signValue*SMap.realSurf(SI);
 }
 
 
@@ -466,7 +456,7 @@ CH4Layer::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("CH4Layer","createAll");
-  populate(System);
+  populate(System.getDataBase());
 
 
   createUnitVector(FC);

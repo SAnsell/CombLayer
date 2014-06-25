@@ -52,6 +52,10 @@ class ChipIRShutterFlat : public GeneralShutter
 
   double insertStep;            ///< Insert step at end of shine path
   int shineMat;                 ///< Material for shine system
+  
+  double backScrapThick;        ///< Backscraper thickness
+  double backScrapExtra;        ///< Backscraper outer
+  int backScrapMat;             ///< Backscapper mat
 
   //--------------
   // FUNCTIONS:

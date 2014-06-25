@@ -192,11 +192,9 @@ pointConstruct::processPoint(Simulation& System,
 	inputItem<std::string>(IParam,Index,2,"position not given");
       const std::string snd=
 	inputItem<std::string>(IParam,Index,3,"front/back/side not give");
-      ELog::EM<<"ahsdfasfd "<<ELog::endDiag;
 
       const double D=
 	inputItem<double>(IParam,Index,4,"Distance not given");
-      ELog::EM<<"ahsdfasfd "<<ELog::endDiag;
 
       double timeStep(0.0);
       double windowOffset(0.0);
@@ -246,7 +244,7 @@ pointConstruct::processPointWindow(Simulation& System,
 
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-  ELog::EM<<"Window == "<<FObject<<ELog::endDiag;
+
   std::vector<int> Planes;
   const int tNum=System.nextTallyNum(5);
   Geometry::Vec3D TPoint;
@@ -267,9 +265,9 @@ pointConstruct::processPointWindow(Simulation& System,
       orgPoint= TPtr->getLinkPt(iLP); 
       BAxis= -TPtr->getLinkAxis(iLP);
       TPoint=orgPoint-BAxis*(beamDist+timeStep);
-      ELog::EM<<"Link point == "<<orgPoint<<ELog::endDiag;
-      ELog::EM<<"Link Axis  == "<<BAxis<<ELog::endDiag;
-      ELog::EM<<"TP  == "<<TPoint<<ELog::endDiag;
+      ELog::EM<<"Link point   == "<<orgPoint<<ELog::endDiag;
+      ELog::EM<<"Link Axis    == "<<BAxis<<ELog::endDiag;
+      ELog::EM<<"Tally Point  == "<<TPoint<<ELog::endDiag;
 
     }
   // Add tally:

@@ -106,7 +106,7 @@
 #include "Simulation.h"
 
 Simulation::Simulation()  :
-  CNum(100000),OSMPtr(new ModelSupport::ObjSurfMap),
+  mcnpType(0),CNum(100000),OSMPtr(new ModelSupport::ObjSurfMap),
   PhysPtr(new physicsSystem::PhysicsCards)
   /*!
     Start of simulation Object
@@ -1508,7 +1508,7 @@ Simulation::writeTally(std::ostream& OX) const
   // _1 refers back to the TItem pair<int,tally*>
   for_each(TItem.begin(),TItem.end(),
 	   boost::bind(&tallySystem::Tally::write,
-	  boost::bind(MapSupport::PSecond<TallyTYPE>(),_1),
+		       boost::bind(MapSupport::PSecond<TallyTYPE>(),_1),
 		       boost::ref(OX)));
   return;
 }
@@ -1644,33 +1644,35 @@ Simulation::writePhysics(std::ostream& OX) const
   OX<<"c --------------- PHYSICS CARDS --------------------------"<<std::endl;
   OX<<"c -------------------------------------------------------"<<std::endl;
 
-  // Processing for point tallies
-  std::map<int,tallySystem::Tally*>::const_iterator mc;
-  std::vector<int> Idum;
-  std::vector<Geometry::Vec3D> Rdum;
-  for(mc=TItem.begin();mc!=TItem.end();mc++)
+  if (mcnpType!=1)
     {
-      const tallySystem::pointTally* Ptr=
-	dynamic_cast<const tallySystem::pointTally*>(mc->second);
-      if(Ptr && Ptr->hasRdum())
-        {
-	  Idum.push_back(Ptr->getKey());
-	  for(size_t i=0;i<4;i++)
-	    Rdum.push_back(Ptr->getWindowPt(i));
-	  Rdum.push_back(Geometry::Vec3D(Ptr->getSecondDist(),0,0));
+      // Processing for point tallies
+      std::map<int,tallySystem::Tally*>::const_iterator mc;
+      std::vector<int> Idum;
+      std::vector<Geometry::Vec3D> Rdum;
+      for(mc=TItem.begin();mc!=TItem.end();mc++)
+	{
+	  const tallySystem::pointTally* Ptr=
+	    dynamic_cast<const tallySystem::pointTally*>(mc->second);
+	  if(Ptr && Ptr->hasRdum())
+	    {
+	      Idum.push_back(Ptr->getKey());
+	      for(size_t i=0;i<4;i++)
+		Rdum.push_back(Ptr->getWindowPt(i));
+	      Rdum.push_back(Geometry::Vec3D(Ptr->getSecondDist(),0,0));
+	    }
+	}
+      if (!Idum.empty())
+	{
+	  OX<<"idum "<<Idum.size()<<" ";
+	  copy(Idum.begin(),Idum.end(),std::ostream_iterator<int>(OX," "));
+	  OX<<std::endl;
+	  OX<<"rdum       "<<Rdum.front()<<std::endl;
+	  std::vector<Geometry::Vec3D>::const_iterator vc;
+	  for(vc=Rdum.begin()+1;vc!=Rdum.end();vc++)
+	    OX<<"           "<< *vc<<std::endl;
 	}
     }
-  if (!Idum.empty())
-    {
-      OX<<"idum "<<Idum.size()<<" ";
-      copy(Idum.begin(),Idum.end(),std::ostream_iterator<int>(OX," "));
-      OX<<std::endl;
-      OX<<"rdum       "<<Rdum.front()<<std::endl;
-      std::vector<Geometry::Vec3D>::const_iterator vc;
-      for(vc=Rdum.begin()+1;vc!=Rdum.end();vc++)
-	OX<<"           "<< *vc<<std::endl;
-    }
-
   // Remaining Physics cards
   PhysPtr->write(OX,cellOutOrder);
   OX<<"c ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
@@ -2093,6 +2095,33 @@ Simulation::renumberSurfaces(const std::vector<int>& rLow,
 	  SI.renumber(dc->first,dc->second);
 	  substituteAllSurface(dc->first,dc->second);		    
 	}
+    }
+  return;
+}
+
+void
+Simulation::voidObject(const std::string& ObjName)
+  /*!
+    Given an object set remove it from system 
+    \param ObjName :: Object to void
+  */
+{
+  ELog::RegMethod RegA("Simulation","voidObject");
+
+  const ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  const int cellN=OR.getCell(ObjName);
+  const int cellRange=OR.getRange(ObjName);
+  if (!cellN)
+    throw ColErr::InContainerError<std::string>(ObjName,"ObjName");
+
+  for(int i=1;i<=cellRange;i++)
+    {
+      MonteCarlo::Qhull* QH=findQhull(cellN+i);
+      if (!QH)
+	return;
+      QH->setMaterial(0);
     }
   return;
 }

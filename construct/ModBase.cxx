@@ -44,6 +44,7 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
+#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -75,7 +76,7 @@ namespace constructSystem
 {
 
 ModBase::ModBase(const std::string& Key,const size_t nLinks)  :
-  attachSystem::ContainedComp(),attachSystem::LayerComp(0),
+  attachSystem::ContainedComp(),attachSystem::LayerComp(0,0),
   attachSystem::FixedComp(Key,nLinks),
   modIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(modIndex+1)
@@ -128,6 +129,29 @@ ModBase::~ModBase()
  */
 {}
 
+
+void
+ModBase::populate(const FuncDataBase& Control)
+  /*!
+    Local populations
+    \param Control :: FuncDAtabase to use
+   */
+{
+  ELog::RegMethod RegA("ModBase","populate");
+
+  const size_t NFlight=Control.EvalDefVar<size_t>(keyName+"NFlight",0);  
+  flightSides.clear();
+  for(size_t i=0;i<NFlight;i++)
+    {
+      const std::string kName=keyName+"FlightSide"+
+	StrFunc::makeString(i);
+      const long int I=Control.EvalVar<long int>(kName);  
+      flightSides.push_back(I);
+    }
+
+  return;
+}
+
 std::string
 ModBase::getComposite(const std::string& surfList) const
   /*!
@@ -137,6 +161,17 @@ ModBase::getComposite(const std::string& surfList) const
   */
 {
   return ModelSupport::getComposite(SMap,modIndex,surfList);
+}
+
+
+long int 
+ModBase::getSideIndex(const size_t I) const
+  /*!
+    Accessor to flight sides
+    \param I :: Index for side
+   */
+{
+  return (I>=flightSides.size()) ? 0 : flightSides[I];
 }
 
   

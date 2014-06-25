@@ -50,9 +50,9 @@ class SideCoolTarget : public constructSystem::TargetBase
 
   int cellIndex;                ///< Cell index
 
-  double xStep;               ///< Master offset distance 
-  double yStep;               ///< Master offset distance 
-  double zStep;               ///< Master offset distance 
+  double xStep;                 ///< Master offset distance 
+  double yStep;                 ///< Master offset distance 
+  double zStep;                 ///< Master offset distance 
   
   double mainLength;            ///< Straight length
   

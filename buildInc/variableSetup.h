@@ -68,7 +68,7 @@ namespace setVariable
   void TS2model(FuncDataBase&);
   void ZoomVariables(const mainSystem::inputParam&,FuncDataBase&);
 
-  void DelftCoreType(const mainSystem::inputParam&,FuncDataBase&);
+  void DelftCoreType(mainSystem::inputParam&,FuncDataBase&);
 
   void siSimulation(FuncDataBase&);
 

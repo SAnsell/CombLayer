@@ -69,6 +69,11 @@ class TargetBase :
   virtual void setRefPlates(const int,const int) {}
   virtual void createAll(Simulation&,const attachSystem::FixedComp&) =0;
   virtual std::vector<int> getInnerCells() const;
+  /// Main cell body
+  virtual int getMainBody() const  { return 0; }
+  /// Ta cell body
+  virtual int getSkinBody() const { return 0; }
+
   /// Proton line    
   boost::shared_ptr<ts1System::ProtonVoid> getProton() const { return PLine; }
 };

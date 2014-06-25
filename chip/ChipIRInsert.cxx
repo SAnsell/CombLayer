@@ -188,6 +188,13 @@ ChipIRInsert::populate(const Simulation& System)
       rXDisp=Control.EvalDefVar<double>(keyName+"RXDisp",0.0);
       rZDisp=Control.EvalDefVar<double>(keyName+"RZDisp",0.0);
 
+      clearTopGap=Control.EvalVar<double>(keyName+"ClearTopGap");
+      clearSideGap=Control.EvalVar<double>(keyName+"ClearSideGap");
+      clearBaseGap=Control.EvalVar<double>(keyName+"ClearBaseGap");
+      clearTopOff=Control.EvalVar<double>(keyName+"ClearTopOff");
+      clearSideOff=Control.EvalVar<double>(keyName+"ClearSideOff");
+      clearBaseOff=Control.EvalVar<double>(keyName+"ClearBaseOff");
+
 
       frontMat=ModelSupport::EvalMat<int>(Control,keyName+"FrontMat");
       backMat=ModelSupport::EvalMat<int>(Control,keyName+"BackMat");
@@ -200,14 +207,12 @@ ChipIRInsert::populate(const Simulation& System)
       ModelSupport::populateDivide(Control,nLayers,
 				   keyName+"Mat_",defMat,cMat);
       
-      populated = 1;
     }
   // Exit and don't report if we are not using this scatter plate
   catch (ColErr::InContainerError<std::string>& EType)
     {
       ELog::EM<<"ChipIRInsert "<<keyName<<" not in use Var:"
 	      <<EType.getItem()<<ELog::endWarn;
-      populated=0;   
     }
   return;
 }
@@ -279,6 +284,8 @@ ChipIRInsert::createSurfaces()
       ModelSupport::buildPlane(SMap,surfIndex+115,
 			       Origin+X*rXDisp+Z*(lowCut+rZDisp-radius),Z);
     }
+  
+  
   return;
 }
 

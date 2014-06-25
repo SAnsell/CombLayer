@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   chipInc/ChipIRInsert.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,6 +57,14 @@ class ChipIRInsert : public BulkInsert
   double rXDisp;              ///< X dispacement of hole
   double rZDisp;              ///< Z dispacement of hole
 
+  double clearTopGap;         ///< Top clear gap
+  double clearSideGap;        ///< Side clear gap
+  double clearBaseGap;        ///< Base clear gap
+  double clearTopOff;         ///< Top clear dist
+  double clearSideOff;        ///< Side clear dist
+  double clearBaseOff;        ///< Base clear dist
+
+
   int frontMat;               ///< Front plate material
   int backMat;                ///< Back plate material
   int defMat;                 ///< Default material
@@ -72,8 +80,7 @@ class ChipIRInsert : public BulkInsert
   std::vector<double> cFrac;      ///< Plate Layer thicknesss (fractions)
   std::vector<int> cMat;          ///< Plate Layer materials
   std::vector<int> CDivideList;   ///< Cell divide List for 
-  
-  
+    
   // Function:
 
   void populate(const Simulation&);

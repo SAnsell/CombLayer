@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   funcBaseInc/Code.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,11 +42,11 @@ namespace Opcodes
       cAbs,cAcos,cAcosh,cAsin,cAsinh,
       cAtan,cAtan2,cAtanh,cCeil,cCos,
       cCosd,cCosh,cCot,cCotd,cCsc,cCscd,
-      cExp,cFloor,cInt,cInv,cLog,cLog10,cMax,cMin,cSec,
-      cSecd,cSin,cSind,cSinh,cSqrt,cTan,
-      cTand,cTanh,
+      cDot,cExp,cFloor,cInt,cInv,cLog,cLog10,cMax,
+      cMin,cSec,cSecd,cSin,cSind,cSinh,cSqrt,cTan,
+      cTand,cTanh,cVec3D,
       cNeg,cAdd,cSub,cMul,cDiv,cMod,
-      cPow,cDeg,cRad,cEqual,cImmed,
+      cPow,cDeg,cRad,cEqual,cImmed,cImmedVec,
       varBegin
     };
 };
@@ -67,12 +67,18 @@ class Code
  private:
   
   int valid;                           ///< Good code build
-  size_t StackPtr;                        ///< Current point in an evaluation
+  size_t StackPtr;                     ///< Current point in an evaluation
+  size_t StackSize;                    ///< Stack size [max]
 
-  std::vector<int> ByteCode;           ///< Code for operations
-  std::map<std::string,int> Labels;    ///< Labels
-  std::vector<double> Immed;           ///< Immediate numbers 
-  std::vector<double> Stack;           ///< Stack (dynamic object)
+  std::vector<int> ByteCode;                ///< Code for operations
+  std::map<std::string,int> Labels;         ///< Labels
+  std::vector<double> Immed;                ///< Immediate numbers 
+  std::vector<Geometry::Vec3D> ImmedVec;    ///< Immediate Vector
+
+  template<typename T,typename U>
+    static T typeConvert(const U&);
+  template<typename T>
+    static T zeroType();
 
  public:
 
@@ -81,13 +87,17 @@ class Code
   Code& operator=(const Code&);
   ~Code();
 
-  double Eval(varList*);
+  template<typename T>
+  T Eval(varList*);
 
   void clear();
   int popByte();
   void addByte(const int);
   /// Add a avalue
   void addImmediate(const double V) { Immed.push_back(V); }
+  /// Add a Vector
+  void addImmediate(const Geometry::Vec3D& V) 
+      { ImmedVec.push_back(V); }
   void addFunctionOpcode(const int);
 
   int isValid() const { return valid; }  ///< return validity

@@ -123,8 +123,6 @@ class inputParam
   void writeDescription(std::ostream&) const;
   void write(std::ostream&) const;
 
-
-
 };
 
 }

@@ -166,6 +166,7 @@ BeamTube::populate(const FuncDataBase& Control)
 
   xyAngle=Control.EvalVar<double>(keyName+"XYAngle");
   zAngle=Control.EvalVar<double>(keyName+"ZAngle");
+  waterStep=Control.EvalVar<double>(keyName+"WaterStep");
 
   length=Control.EvalVar<double>(keyName+"Length");
   capRadius=Control.EvalDefVar<double>(keyName+"CapRadius",0.0);
@@ -200,6 +201,9 @@ BeamTube::populatePortals(const FuncDataBase& Control)
    */
 {
   ELog::RegMethod RegA("BeamTube","populatePortals");
+
+  const int portalActive=Control.EvalDefVar<int>(keyName+"PortalActive",0);
+  if (!portalActive) return;
 
   portalOffset.clear();
   portalMat.clear();
@@ -242,7 +246,7 @@ BeamTube::createUnitVector(const attachSystem::FixedComp& FC,
   
   // PROCESS Origin of a point
   attachSystem::FixedComp::createUnitVector(FC);
-  attachSystem::FixedComp::applyShift(xStep,yStep,zStep);
+  attachSystem::FixedComp::applyShift(xStep+waterStep,yStep,zStep);
 
 
   bZ=Z= FC.getZ();
@@ -393,14 +397,17 @@ BeamTube::createCapEndObjects(Simulation& System)
   // Second portal:
   // Remaining portals in inner vioid
   std::string OutComposite;
-  int PN(flightIndex+100);
-  for(size_t i=1;i<portalMat.size();i++)
+  int PN(flightIndex);
+  for(size_t i=0;i<portalMat.size();i++)
     {
       PN+=100;
-      const std::string OutP=
-	ModelSupport::getComposite(SMap,PN," -17 11 -12");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,portalMat[i],0.0,OutP));
-      OutComposite +=ModelSupport::getComposite(SMap,PN," (17:-11:12)"); 
+      if (portalOffset[i]>Geometry::zeroTol)
+	{
+	  const std::string OutP=
+	    ModelSupport::getComposite(SMap,PN," -17 11 -12");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,portalMat[i],0.0,OutP));
+	  OutComposite +=ModelSupport::getComposite(SMap,PN," (17:-11:12)"); 
+	}
     }
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+OutComposite));
   innerVoid=cellIndex-1;
@@ -432,13 +439,12 @@ BeamTube::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,flightIndex," 1 -2 -7 (-11:17)");
   // PORTALTS RELATIVE TO FRONT WALL CENTRE:
   // First one can be in the wall that makes things difficult
-  int PN(flightIndex+100);
-  if (!portalMat.empty())
+  if (!portalMat.empty() && portalOffset[0]<Geometry::zeroTol)
     {
       const std::string OutP=
-	ModelSupport::getComposite(SMap,PN," -17 11 -12");
+	ModelSupport::getComposite(SMap,flightIndex," -117 111 -112");
       System.addCell(MonteCarlo::Qhull(cellIndex++,portalMat[0],0.0,OutP));
-      Out+=ModelSupport::getComposite(SMap,PN," (17:-11:12)"); 
+      Out+=ModelSupport::getComposite(SMap,flightIndex," (117:-111:112)"); 
     }
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
@@ -457,13 +463,17 @@ BeamTube::createObjects(Simulation& System)
   // Second portal:
   // Remaining portals in inner vioid
   std::string OutComposite;
-  for(size_t i=1;i<portalMat.size();i++)
+  int PN(flightIndex);
+  for(size_t i=0;i<portalMat.size();i++)
     {
       PN+=100;
-      const std::string OutP=
-	ModelSupport::getComposite(SMap,PN," -17 11 -12");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,portalMat[i],0.0,OutP));
-      OutComposite +=ModelSupport::getComposite(SMap,PN," (17:-11:12)"); 
+      if (portalOffset[i]>Geometry::zeroTol)
+	{
+	  const std::string OutP=
+	    ModelSupport::getComposite(SMap,PN," -17 11 -12");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,portalMat[i],0.0,OutP));
+	  OutComposite +=ModelSupport::getComposite(SMap,PN," (17:-11:12)"); 
+	}
     }
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+OutComposite));
   innerVoid=cellIndex-1;

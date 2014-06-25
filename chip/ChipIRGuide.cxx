@@ -897,7 +897,7 @@ ChipIRGuide::exitWindow(const double Dist,std::vector<int>& window,
 void
 ChipIRGuide::createAll(Simulation& System,
 		       const shutterSystem::BulkShield& BS,
-		       const int GIndex)
+		       const size_t GIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item

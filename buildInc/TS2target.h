@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   buildInc/TS2target.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -133,9 +133,9 @@ class TS2target : public constructSystem::TargetBase
   virtual ~TS2target();
 
   /// Main cell body
-  int getMainBody() const  { return mainCell; }
+  virtual int getMainBody() const  { return mainCell; }
   /// Ta cell body
-  int getSkinBody() const { return skinCell; }
+  virtual int getSkinBody() const { return skinCell; }
 
   void addInnerBoundary(attachSystem::ContainedComp&) const;
   /// Set the extext of the reflector

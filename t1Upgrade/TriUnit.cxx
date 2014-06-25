@@ -241,6 +241,29 @@ TriUnit::constructConvex(const Geometry::Vec3D& Z)
 }
 
 void
+TriUnit::applyAbsShift(const double xStep,const double yStep,
+		       const double zStep)
+  /*!
+    Apply a shift to the absolute points
+    \param xStep :: Xstep
+    \param yStep :: Ystep
+    \param zStep :: Zstep
+  */
+{
+  ELog::RegMethod RegA("TriUnit","applyAbsShift");
+
+  const Geometry::Vec3D Shift(xStep,yStep,zStep);
+  for(size_t i=0;i<nCorner;i++)
+    {
+      if (absolute[i])
+	Pts[i]+=Shift;
+    }
+  return;
+
+}
+
+
+void
 TriUnit::addObject(const Geometry::Vec3D& P,const int A)
   /*!
     Add extra point

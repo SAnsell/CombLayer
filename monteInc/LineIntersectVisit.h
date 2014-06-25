@@ -76,7 +76,8 @@ class LineIntersectVisit : public Global::BaseVisit
     void Accept(const Geometry::Torus&);
 
     /// Clear track
-    void clearTrack() { PtOut.clear(); DOut.clear(); SurfIndex.clear(); } 
+    void clearTrack() 
+      { PtOut.clear(); DOut.clear(); SurfIndex.clear(); } 
 
     /// Distance Accessor
     const std::vector<double>& getDistance() const 

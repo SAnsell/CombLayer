@@ -821,6 +821,7 @@ convPartNum(const std::string& A,T& out)
     A.size() : static_cast<size_t>(xpt); 
 }
 
+
 template<typename T>
 int
 convert(const std::string& A,T& out)

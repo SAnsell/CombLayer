@@ -221,14 +221,15 @@ fluxConstruct::processFluxCell(Simulation& System,
   std::vector<int> cellVec;
   int cellNum,RA,RB;
   int initTally(1);
+
   while(nCount<NItems)
     {
-      std::string CVal=
+      const std::string CVal=
 	IParam.getCompValue<std::string>("tally",Index,nCount);
       if (StrFunc::convert(CVal,cellNum) &&
 	  System.existCell(cellNum+cellOffset))
 	cellVec.push_back(cellNum+cellOffset);
-      else if (basicConstruct::convertRange(CVal,RA,RB))
+      else if (basicConstruct::convertRange(CVal,RA,RB)) // X-Y
 	{
 	  RB=std::max<int>(cellRange,RB);
 	  for(;RA<=RB;RA++)
@@ -236,8 +237,11 @@ fluxConstruct::processFluxCell(Simulation& System,
 	      cellVec.push_back(RA+cellOffset);
 	}
       else if (initTally)
-	ELog::EM<<"Failed to build flux tally ::"
-		<<IParam.getFull("tally",Index)<<ELog::endErr;
+	{
+	  ELog::EM<<"Failed to build flux tally ::"<<ELog::endCrit;
+	  ELog::EM<<"CVale = "<<CVal<<ELog::endCrit;
+	  ELog::EM<<"Line == "<<IParam.getFull("tally",Index)<<ELog::endErr;
+	}
       initTally=0;
       nCount++;
     }  

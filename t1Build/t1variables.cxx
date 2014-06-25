@@ -545,7 +545,7 @@ TS1real(FuncDataBase& Control)
   Control.addVariable("CH4PipeCH4OuterRadius",1.43);       
   Control.addVariable("CH4PipeAlOuterRadius",1.59);   // Outer        
   Control.addVariable("CH4PipeVacRadius",1.865);   // Outer        
-  Control.addVariable("CH4PipeAlTerRadius",1.905);   // Outer        
+  Control.addVariable("CH4PipeAlTerRadius",2.05);   // Outer        
   Control.addVariable("CH4PipeClearRadius",2.38);   // Outer        
 
   Control.addVariable("CH4PipeAlMat","Aluminium");        

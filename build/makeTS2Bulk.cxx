@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   build/makeTS2Bulk.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,9 +50,6 @@
 #include "Vec3D.h"
 #include "support.h"
 #include "inputParam.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -64,17 +61,9 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
-#include "KCode.h"
 #include "insertInfo.h"
 #include "insertBaseInfo.h"
 #include "InsertComp.h"
-#include "ModeCard.h"
-#include "PhysImp.h"
-#include "PhysCard.h"
-#include "LSwitchCard.h"
-#include "PhysicsCards.h"
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -192,21 +181,6 @@ makeTS2Bulk::build(Simulation* SimPtr,
   return;
 }
 
-void 
-makeTS2Bulk::setSource(Simulation* SimPtr,
-		     const mainSystem::inputParam& IParam)
-  /*!
-    Carry out the full build
-    \param SimPtr :: Simulation system
-    \param IParam :: Input from command line
-  */
-{
-  // For output stream
-  ELog::RegMethod RControl("makeTS2Bulk","build");
-
-  return;
-}
-
 void
 makeTS2Bulk::insertPipeObjects(Simulation* SimPtr,
 			       const mainSystem::inputParam& IParam)
@@ -222,4 +196,4 @@ makeTS2Bulk::insertPipeObjects(Simulation* SimPtr,
 }
 
 
-}   // NAMESPACE ts1System
+}   // NAMESPACE moderatorSystem

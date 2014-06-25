@@ -3,7 +3,7 @@
  
  * File:   funcBase/varList.cxx
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -182,6 +182,26 @@ varList::findVar(const std::string& Key)
   if (vc!=varName.end())
     return vc->second;
 
+  return 0;
+}
+
+int 
+varList::selectValue(const int Key,Geometry::Vec3D& oVec,
+		     double& oDbl) const
+  /*!
+    Simple selector
+						
+    \param oVec :: output vector
+    \param oDouble :: output vector
+    \return 1 :: Vector / 0 :: double
+  */
+{
+  const FItem* FPtr=findVar(Key);
+  if (!FPtr) return -1;
+  
+  if (FPtr->getValue(oVec))
+    return 1;
+  FPtr->getValue(oDbl);
   return 0;
 }
 
@@ -364,6 +384,7 @@ template void varList::addVar(const std::string&,const std::string&);
 template void varList::addVar(const std::string&,const Geometry::Vec3D&);
 template void varList::addVar(const std::string&,const double&);
 template void varList::addVar(const std::string&,const int&);
+template void varList::addVar(const std::string&,const long int&);
 template void varList::addVar(const std::string&,const size_t&);
 template void varList::addVar(const std::string&,const Code&);
 
@@ -371,6 +392,7 @@ template void varList::setVar(const std::string&,const Geometry::Vec3D&);
 template void varList::setVar(const std::string&,const std::string&);
 template void varList::setVar(const std::string&,const double&);
 template void varList::setVar(const std::string&,const int&);
+template void varList::setVar(const std::string&,const long int&);
 template void varList::setVar(const std::string&,const size_t&);
 template void varList::setVar(const std::string&,const Code&);
 
@@ -378,6 +400,7 @@ template FItem* varList::createFType(const int,const Geometry::Vec3D&);
 template FItem* varList::createFType(const int,const double&);
 template FItem* varList::createFType(const int,const std::string&);
 template FItem* varList::createFType(const int,const int&);
+template FItem* varList::createFType(const int,const long int&);
 template FItem* varList::createFType(const int,const size_t&);
 
 ///\endcond TEMPLATE

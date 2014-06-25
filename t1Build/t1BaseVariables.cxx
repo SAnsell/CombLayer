@@ -231,6 +231,7 @@ TS1PlateTarget(FuncDataBase& Control)
   
   Control.addVariable("TPlateFeMat","Stainless304");            // Steel
   Control.addVariable("TPlateWMat","Tungsten");            // Tungsten 
+  Control.addVariable("TPlateWTemp",600.0);            // Tungsten Temp
   Control.addVariable("TPlateWaterMat","D2O");        // Water [D2O]
   Control.addVariable("TPlateTaMat","Tantalum");           // Ta material 
 
@@ -315,9 +316,10 @@ TS1CylTarget(FuncDataBase& Control)
   ELog::RegMethod RegA("t1BaseVariables[F]","TS1CylTarget");
 
   Control.addVariable("t1CylTargetBoreRadius",5.70);  // Master bore  
+  Control.addVariable("t1CylTargetVoidFront",0.3);  // Master gap
   // TARGET of TS2
   Control.addVariable("t1CylTargetXOffset",0.0);           // Offset ref centre
-  Control.addVariable("t1CylTargetYOffset",3.0);           // Offset ref centre
+  Control.addVariable("t1CylTargetYOffset",-2.95);         // Offset ref centre
   Control.addVariable("t1CylTargetZOffset",0.0);           // Offset ref centre
   Control.addVariable("t1CylTargetMainLength",33.0);       // Length from 
   Control.addVariable("t1CylTargetCoreRadius",4.9);       // W radius 
@@ -328,8 +330,11 @@ TS1CylTarget(FuncDataBase& Control)
   Control.addVariable("t1CylTargetwPlaneAngle",45.0);      // W plane angle rot
 
   Control.addVariable("t1CylTargetCladThick",0.086);           // Ta thickness
+  Control.addVariable("t1CylTargetCladFront",0.20);            // Ta thickness
   Control.addVariable("t1CylTargetWaterThick",0.2);        // Water radius
-  Control.addVariable("t1CylTargetPressureThick",0.3);     // Presure radius
+  Control.addVariable("t1CylTargetWaterFront",0.2);        // Water front
+  Control.addVariable("t1CylTargetPressureThick",0.3);     // pressure thicness
+  Control.addVariable("t1CylTargetPressureFront",0.3);     // Presure thickens
 
 
   // Front cladding
@@ -359,7 +364,7 @@ TS1CylTarget(FuncDataBase& Control)
 
   Control.addVariable("t1CylTargetWMat","Tungsten");             // Solid Tungsten
   Control.addVariable("t1CylTargetTaMat","Tantalum");            // Solid Ta
-  Control.addVariable("t1CylTargetWaterMat","H2O");         // Light water
+  Control.addVariable("t1CylTargetWaterMat","D2O");         // Light water
 
   Control.addVariable("t1CylTargetTargetTemp",650);             // Inner core temp
   Control.addVariable("t1CylTargetWaterTemp",350);        // Water temp
@@ -434,20 +439,19 @@ TS1CylFluxTrap(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("t1BaseVariables[F]","TS1CylFluxTrap");
   // MOLY SECTION:
-  Control.addVariable("t1CylFluxTrapNPlates",8);
-  Control.addVariable("t1CylFluxTrapPThick",0.7);
-  Control.addVariable("t1CylFluxTrapPMat","H2O");
+  Control.addVariable("t1CylFluxTrapNPlates",7);
+  Control.addVariable("t1CylFluxTrapPThick",0.6);
+  Control.addVariable("t1CylFluxTrapPMat","D2O");
   Control.addVariable("t1CylFluxTrapPLayerMat","Tantalum");
   Control.addVariable("t1CylFluxTrapPLayerThick",0.2);
 
-  Control.addVariable("t1CylFluxTrapP1Dist",0.50);       // distance from flat
-  Control.addVariable("t1CylFluxTrapP2Dist",1.50);       // distance from flat
-  Control.addVariable("t1CylFluxTrapP3Dist",3.00);       // distance from flat
-  Control.addVariable("t1CylFluxTrapP4Dist",5.00);       // distance from flat
-  Control.addVariable("t1CylFluxTrapP5Dist",7.50);       // distance from flat
-  Control.addVariable("t1CylFluxTrapP6Dist",9.50);       // distance from flat
-  Control.addVariable("t1CylFluxTrapP7Dist",12.50);       // distance from flat
-  Control.addVariable("t1CylFluxTrapP8Dist",15.50);       // distance from flat
+  Control.addVariable("t1CylFluxTrapP1Dist",1.00);       // distance from flat
+  Control.addVariable("t1CylFluxTrapP2Dist",2.70);       // distance from flat
+  Control.addVariable("t1CylFluxTrapP3Dist",4.60);       // distance from flat
+  Control.addVariable("t1CylFluxTrapP4Dist",6.80);       // distance from flat
+  Control.addVariable("t1CylFluxTrapP5Dist",9.50);       // distance from flat
+  Control.addVariable("t1CylFluxTrapP6Dist",12.90);       // distance from flat
+  Control.addVariable("t1CylFluxTrapP7Dist",18.20);       // distance from flat
 
   Control.addVariable("t1CylFluxTrapNCutSph",0);
   Control.addVariable("t1CylFluxTrapCutSph1Radius",4.8);
@@ -799,7 +803,8 @@ TS1base(FuncDataBase& Control)
   // SHUTTERS
   Control.addVariable("shutterUpperSteel",190.5);     // top thickness
   Control.addVariable("shutterLowerSteel",265.90);    // base thickness
-  Control.addVariable("shutterHeight",262.8);         // Total shutter height
+  Control.addVariable("shutterHeight",131.4);         // Total shutter height
+  Control.addVariable("shutterDepth",131.4);          // Total shutter height
   Control.addVariable("shutterWidth",28.00);          // Full width
 
   Control.addVariable("shutterVoidZOffset",0.0);        // centre of steel hole
@@ -813,24 +818,13 @@ TS1base(FuncDataBase& Control)
   // 
   Control.addVariable("shutterSteelMat","CastIron");         // Cast iron
 
-//  Control.addVariable("shutter1Height",106.0);         // New drawing 8711-300
-//  Control.addVariable("shutter1VoidHeightInner",25.0);       // ChipIR size
-//  Control.addVariable("shutter1VoidHeightOuter",25.0);       // ChipIR size
-//  Control.addVariable("shutter1VoidDivide",-1.0);          // ChipIR no divide
-//  Control.addVariable("shutter10VoidWidthInner",21.00);      // Gap width
-  
-//  Control.addVariable("shutter1VoidZOffset",-30.0);
-//  Control.addVariable("shutter2VoidZOffset",0.0);
-
-//  Control.addVariable("shutter1GapSize",25);        // ChipIR size
+  Control.addVariable("shutterClearGap",0.6);      // Gap out step
+  Control.addVariable("shutterClearBoxStep",2.0);      // Gap out step
+  Control.addVariable("shutterClearBoxLen",25.0);      // Gap length of block
+  Control.addVariable("shutterClearNStep",2);      // Gap length of block
+  Control.addVariable("shutterClearCent0",50.0);      
+  Control.addVariable("shutterClearCent1",150.0);     
   Control.addVariable("shutterGapSize",22.30);      // Gap size
-//  Control.addVariable("shutter1ZAngle",0.0);        // shutter slope/ up/down
-  //  Control.addVariable("shutter1centreZoffset",7.0); // Central shutter
-//  Control.addVariable("shutter1Closed",0);          // Open shutter (false)
-//  Control.addVariable("shutter2Closed",1);          // closed shutter (true)
-//  Control.addVariable("shutterClosed",0);           // Open shutter [imp:0]
-//  Control.addVariable("shutter1ClosedZOffset",35.0);   // Closed distance
-//  Control.addVariable("shutter2ClosedZOffset",28.0);   // Closed distance
   Control.addVariable("shutterClosedZOffset",28.0);    // Closed distance
   
   // ALL SHUTTERS HAVE DIFFERENT POSITIONS:

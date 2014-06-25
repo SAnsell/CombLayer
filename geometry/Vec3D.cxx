@@ -772,11 +772,17 @@ void
 Vec3D::read(std::istream& IX)
   /*!
     Read data from a stream.
-    \todo Check Error handling 
     \param IX :: Input stream
   */
 {
-  IX>>x>>y>>z;
+  IX>>x;
+  if (IX.peek()==',')
+    IX.get();
+  IX>>y;
+  if (IX.peek()==',')
+    IX.get();
+  IX>>z;
+
   return;
 }
 

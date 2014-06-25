@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   build/TS2moly.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * File:   build/TS2ModifyTarget.cxx
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -76,45 +76,43 @@
 #include "FixedComp.h"
 #include "ContainedComp.h"
 #include "TargetBase.h"
-#include "TS2target.h"
-#include "TS2moly.h"
+#include "TS2ModifyTarget.h"
 
 namespace TMRSystem
 {
 
-TS2moly::TS2moly(const std::string& MKey,const std::string& TKey) : 
-  TS2target(TKey),
+TS2ModifyTarget::TS2ModifyTarget(const std::string& MKey) :
+  attachSystem::FixedComp(MKey,0),attachSystem::ContainedComp(),
   molyIndex(ModelSupport::objectRegister::Instance().cell(MKey)),
-  molyKey(MKey),cellIndex(molyIndex+1)
+  cellIndex(molyIndex+1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param MKey :: Name for Moly changers
-    \param TKey :: Name for Target
   */
 {}
 
-TS2moly::TS2moly(const TS2moly& A) :  
-  TS2target(A),
-  molyIndex(A.molyIndex),molyKey(A.molyKey),cellIndex(A.cellIndex),
+TS2ModifyTarget::TS2ModifyTarget(const TS2ModifyTarget& A) :  
+  attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
+  molyIndex(A.molyIndex),cellIndex(A.cellIndex),
   PCut(A.PCut),SCent(A.SCent),Radius(A.Radius),
   SCut(A.SCut),CCut(A.CCut)
   /*!
     Copy constructor
-    \param A :: TS2moly to copy
+    \param A :: TS2ModifyTarget to copy
   */
 {}
 
-TS2moly&
-TS2moly::operator=(const TS2moly& A)
+TS2ModifyTarget&
+TS2ModifyTarget::operator=(const TS2ModifyTarget& A)
   /*!
     Assignment operator
-    \param A :: TS2moly to copy
+    \param A :: TS2ModifyTarget to copy
     \return *this
   */
 {
   if (this!=&A)
     {
-      TS2target::operator=(A);
+      attachSystem::FixedComp::operator=(A);
       cellIndex=A.cellIndex;
       PCut=A.PCut;
       SCent=A.SCent;
@@ -124,95 +122,86 @@ TS2moly::operator=(const TS2moly& A)
     }
   return *this;
 }
-
-
-TS2moly*
-TS2moly::clone() const
-  /*!
-    Clone funciton
-    \return new(this)
-  */
-{
-  return new TS2moly(*this);
-}
   
-TS2moly::~TS2moly() 
+TS2ModifyTarget::~TS2ModifyTarget() 
   /*!
     Destructor
   */
 {}
 
 void
-TS2moly::populate(const Simulation& System)
+TS2ModifyTarget::populate(const Simulation& System)
   /*!
     Populate all the variables
     \param System :: Simulation to use
   */
 {
+  ELog::RegMethod RegA("TS2ModifyTarget","populate");
+
   const FuncDataBase& Control=System.getDataBase();
 
-  const size_t nPlates=Control.EvalVar<size_t>(molyKey+"NPlates");
+  const size_t nPlates=Control.EvalVar<size_t>(keyName+"NPlates");
   for(size_t i=0;i<nPlates;i++)
     {
       plateCut Item;
-      const std::string keyIndex(StrFunc::makeString(molyKey+"P",i+1));
+      const std::string keyIndex(StrFunc::makeString(keyName+"P",i+1));
       const double PY=
-	Control.EvalPair<double>(keyIndex,molyKey+"P","Dist");
+	Control.EvalPair<double>(keyIndex,keyName+"P","Dist");
       Item.centre=Y*PY;
       Item.axis=Y;
       Item.thick=
-	Control.EvalPair<double>(keyIndex,molyKey+"P","Thick");
+	Control.EvalPair<double>(keyIndex,keyName+"P","Thick");
       
       Item.mat=ModelSupport::EvalMat<int>
-	(Control,keyIndex+"Mat",molyKey+"PMat");
+	(Control,keyIndex+"Mat",keyName+"PMat");
       Item.layerMat=ModelSupport::EvalMat<int>
-	(Control,keyIndex+"LayreMat",molyKey+"PLayerMat");
+	(Control,keyIndex+"LayreMat",keyName+"PLayerMat");
       if (Item.layerMat>=0)
 	Item.layerThick=Control.EvalPair<double>
-	  (keyIndex,molyKey+"P","LayerThick");
+	  (keyIndex,keyName+"P","LayerThick");
       PCut.push_back(Item);
     }
   // Sphere:
-  const size_t nSphere=Control.EvalVar<size_t>(molyKey+"NCutSph");
+  const size_t nSphere=Control.EvalVar<size_t>(keyName+"NCutSph");
   for(size_t i=0;i<nSphere;i++)
     {
       sphereCut Item;
       
-      const std::string keyIndex(StrFunc::makeString(molyKey+"CutSph",i+1));
+      const std::string keyIndex(StrFunc::makeString(keyName+"CutSph",i+1));
       Item.centre=Control.EvalPair<Geometry::Vec3D>
-	(keyIndex,molyKey+"CutSph","Cent");
+	(keyIndex,keyName+"CutSph","Cent");
       Item.axis=Control.EvalPair<Geometry::Vec3D>
-	(keyIndex,molyKey+"CutSph","Axis");
+	(keyIndex,keyName+"CutSph","Axis");
       Item.axis.makeUnit();
-      Item.radius=Control.EvalPair<double>(keyIndex,molyKey+"CutSph","Radius");
-      Item.dist=Control.EvalPair<double>(keyIndex,molyKey+"CutSph","Dist");
+      Item.radius=Control.EvalPair<double>(keyIndex,keyName+"CutSph","Radius");
+      Item.dist=Control.EvalPair<double>(keyIndex,keyName+"CutSph","Dist");
       Item.mat=ModelSupport::EvalMat<int>
-	(Control,keyIndex+"Mat",molyKey+"CutSphMat");
+	(Control,keyIndex+"Mat",keyName+"CutSphMat");
       Item.defCutPlane();
       SCut.push_back(Item);
     }
 
   // Cones:
-  const int nCone=Control.EvalVar<int>(molyKey+"NCone");
+  const int nCone=Control.EvalVar<int>(keyName+"NCone");
   for(int i=0;i<nCone;i++)
     {
       coneCut Item;
       
-      const std::string keyIndex(StrFunc::makeString(molyKey+"Cone",i+1));
+      const std::string keyIndex(StrFunc::makeString(keyName+"Cone",i+1));
       Item.centre=Control.EvalPair<Geometry::Vec3D>
-	(keyIndex,molyKey+"Cone","Cent");
+	(keyIndex,keyName+"Cone","Cent");
       Item.axis=Control.EvalPair<Geometry::Vec3D>
-	(keyIndex,molyKey+"Cone","Axis");
+	(keyIndex,keyName+"Cone","Axis");
       Item.axis.makeUnit();
-      Item.angleA=Control.EvalPair<double>(keyIndex,molyKey+"Cone","AngleA");
-      Item.angleB=Control.EvalPair<double>(keyIndex,molyKey+"Cone","AngleB");
-      Item.dist=Control.EvalPair<double>(keyIndex,molyKey+"Cone","Dist");
+      Item.angleA=Control.EvalPair<double>(keyIndex,keyName+"Cone","AngleA");
+      Item.angleB=Control.EvalPair<double>(keyIndex,keyName+"Cone","AngleB");
+      Item.dist=Control.EvalPair<double>(keyIndex,keyName+"Cone","Dist");
       Item.mat=ModelSupport::EvalMat<int>
-	(Control,keyIndex+"Mat",molyKey+"ConeMat");
+	(Control,keyIndex+"Mat",keyName+"ConeMat");
       Item.layerMat=ModelSupport::EvalMat<int>
-	(Control,keyIndex+"LayerMat",molyKey+"ConeLayerMat");
+	(Control,keyIndex+"LayerMat",keyName+"ConeLayerMat");
       Item.layerThick=
-	Control.EvalPair<double>(keyIndex,molyKey+"Cone","LayerThick");
+	Control.EvalPair<double>(keyIndex,keyName+"Cone","LayerThick");
       Item.layerThick*=cos(M_PI*fabs(Item.angleA)/180.0);
       //      Item.defCutPlane();
       CCut.push_back(Item);
@@ -221,25 +210,25 @@ TS2moly::populate(const Simulation& System)
 }
 
 void
-TS2moly::createUnitVector(const attachSystem::FixedComp& FC)
+TS2ModifyTarget::createUnitVector(const attachSystem::FixedComp& FC)
   /*!
     Create the unit vectors
     \param FC :: Target component
   */
 {
-  ELog::RegMethod RegA("TS2moly","createUnitVector");
+  ELog::RegMethod RegA("TS2ModifyTarget","createUnitVector");
 
   FixedComp::createUnitVector(FC);
   return;
 }
 
 void
-TS2moly::createSurfaces()
+TS2ModifyTarget::createSurfaces()
   /*!
     Create All the surfaces
    */
 {
-  ELog::RegMethod RegA("TS2moly","createSurface");
+  ELog::RegMethod RegA("TS2ModifyTarget","createSurface");
 
   // Plates at 0 index offset:
   int offset(molyIndex);
@@ -308,27 +297,28 @@ TS2moly::createSurfaces()
 }
 
 void
-TS2moly::createObjects(Simulation& System)
+TS2ModifyTarget::createObjects(Simulation& System,
+			       const int mainBody,const int skinBody)
   /*!
     Adds the Chip guide components
     \param System :: Simulation to create objects in
   */
 {
-  ELog::RegMethod RegA("TS2moly","createObjects");
+  ELog::RegMethod RegA("TS2ModifyTarget","createObjects");
 
   std::string Out;
   int offset;
 
-  MonteCarlo::Qhull* QPtrA=System.findQhull(this->getMainBody());
-  MonteCarlo::Qhull* QPtrB=System.findQhull(this->getSkinBody());
+  MonteCarlo::Qhull* QPtrA=System.findQhull(mainBody);
+  MonteCarlo::Qhull* QPtrB=System.findQhull(skinBody);
   if (!QPtrA || !QPtrB)
     {
       ELog::EM<<"Failed on QHull for main/skin body "<<
-	this->getMainBody()<<":"<<this->getSkinBody()<<ELog::endCrit;
+	mainBody<<":"<<skinBody<<ELog::endCrit;
       if (!QPtrA)
-	throw ColErr::InContainerError<int>(this->getMainBody(),"MainBody");
+	throw ColErr::InContainerError<int>(mainBody,"MainBody");
       else
-	throw ColErr::InContainerError<int>(this->getSkinBody(),"SkinBody");
+	throw ColErr::InContainerError<int>(skinBody,"SkinBody");
     }
 
   if (!PCut.empty())
@@ -349,7 +339,6 @@ TS2moly::createObjects(Simulation& System)
 	    {
 	      Out=ModelSupport::getComposite(SMap,offset,"1 -11 ");    
 	      Out+=getContainer();
-	      
 	      System.addCell(MonteCarlo::Qhull(cellIndex++,
 					       PCut[i].layerMat,0.0,Out));
 	      Out=ModelSupport::getComposite(SMap,offset,"12 -2 ");    
@@ -429,23 +418,21 @@ TS2moly::createObjects(Simulation& System)
 }
   
 void
-TS2moly::createAll(Simulation& System,
-		   const attachSystem::FixedComp& FC)
-  /*!
+TS2ModifyTarget::createAll(Simulation& System,
+			   const constructSystem::TargetBase& TB)
+/*!
     Generic function to create everything
     \param System :: Simulation item
-    \param FC :: Target reference object to build relative to
+    \param TB :: Target Base
   */
 {
-  ELog::RegMethod RegA("TS2moly","createAll");
-
-  TS2target::createAll(System,FC);
-  addInnerBoundary(*this);
-  
+  ELog::RegMethod RegA("TS2ModifyTarget","createAll");
   populate(System);
-  createUnitVector(*this);
+  createUnitVector(TB);
   createSurfaces();
-  createObjects(System);
+  addBoundarySurf(TB.getContainer());
+  createObjects(System,TB.getMainBody(),TB.getSkinBody());
+
   return;
 }
   

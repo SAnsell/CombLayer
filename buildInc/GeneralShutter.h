@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   buildInc/GeneralShutter.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * 
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,6 +71,7 @@ class GeneralShutter : public attachSystem::TwinComp,
   double lowerSteel;                  ///< length of base material
   
   double shutterHeight;               ///< Full shutter height
+  double shutterDepth;                ///< Full shutter depth
   double voidZOffset;                 ///< Offset of centre shutter [fixed]
   double centZOffset;                 ///< Offset of central line
 
@@ -83,14 +84,20 @@ class GeneralShutter : public attachSystem::TwinComp,
   double voidWidthInner;              ///< Void width [inner]
   double voidHeightOuter;             ///< Void height [inner]
   double voidWidthOuter;              ///< Void width [inner]
+
+  double clearGap;                    ///< Clearance gap after 
+  double clearBoxStep;                ///< Step of the boxes
+  double clearBoxLen;                 ///< length of step
+  std::vector<double> clearCent;      ///< Centres
   
   double xyAngle;                     ///< floor angle
   double zAngle;                      ///< Angle on the shutter
   int shutterMat;                     ///< Support material
 
   int closed;                         ///< Is shutter closed
+  int reversed;                       ///< Is shutter reversed
 
-  std::vector<shutterBlock> SBlock; ///< Data for  shutter inserts
+  std::vector<shutterBlock> SBlock; ///< Data for shutter inserts
 
   Geometry::Vec3D XYAxis;       ///< Beam axis [NOT rotated by zAngle]
   Geometry::Vec3D BeamAxis;     ///< Beam axis
@@ -116,9 +123,11 @@ class GeneralShutter : public attachSystem::TwinComp,
   std::string divideStr() const;
   
   void createStopBlocks(Simulation&,const size_t);
+  void createCutUnit(Simulation&,const std::string&);
   void createBlocks(Simulation&);
   void createLinks();
   void applyRotations(const double);
+
   
  public:
 

@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   support/Exception.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -700,6 +700,67 @@ CastError<Ptr>::setOutLine()
   return;
 }
 
+//--------------------
+// TypeConvError
+//--------------------
+
+template<typename T,typename U>
+TypeConvError<T,U>::TypeConvError(const T& B,
+				  const std::string& Place)  :
+  ExBase(0,Place),ABase(B)
+  /*!
+    Constructor of an invalid line
+    \param B :: Point of base object
+    \param Place :: Reason/Code item for error
+  */
+{
+  setOutLine();
+}
+
+template<typename T,typename U>
+TypeConvError<T,U>::TypeConvError(const TypeConvError<T,U>& A) :
+  ExBase(A),ABase(A.ABase)
+  /*!
+    Copy constructor 
+    \param A :: TypeConvError to copy
+  */
+{}
+
+template<typename T,typename U>
+TypeConvError<T,U>&
+TypeConvError<T,U>::operator=(const TypeConvError<T,U>& A) 
+  /*!
+    Assignment operator
+    \param A :: TypeConvError to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      ExBase::operator=(A);
+      ABase=A.ABase;
+    }
+  return *this;
+}
+
+template<typename T,typename U>
+void
+TypeConvError<T,U>::setOutLine()
+  /*!
+    Writes out the line and positions of the error
+    to the OutLine
+  */
+{
+  std::stringstream cx;
+  cx<<"TypeConvError:"<<typeid(T).name()
+    <<" -> "<<typeid(U).name()<<"\n";
+  cx<<"\nCast Obj: "<<ABase;
+  cx<<"\n";
+  cx<<"Reason :: "<<getErr()<<std::endl;
+  OutLine=cx.str();
+  return;
+}
+
 // ----------------------------------------------
 //           CommandError
 // ----------------------------------------------
@@ -967,5 +1028,7 @@ template class ColErr::RangeError<double>;
 template class ColErr::RangeError<int>;
 template class ColErr::RangeError<long int>;
 template class ColErr::RangeError<size_t>;
+template class ColErr::TypeConvError<Geometry::Vec3D,double>;
+template class ColErr::TypeConvError<double,Geometry::Vec3D>;
 
 ///\endcond TEMPLATE

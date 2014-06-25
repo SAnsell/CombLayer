@@ -68,6 +68,7 @@
 #include "ContainedComp.h"
 #include "LayerComp.h"
 #include "ConicInfo.h"
+#include "WedgeInsert.h"
 #include "ModBase.h"
 #include "CylMod.h"
 
@@ -75,7 +76,8 @@ namespace constructSystem
 {
 
 CylMod::CylMod(const std::string& Key) :
-  constructSystem::ModBase(Key,6)
+  constructSystem::ModBase(Key,6),
+  mainCell(0)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -85,7 +87,8 @@ CylMod::CylMod(const std::string& Key) :
 CylMod::CylMod(const CylMod& A) : 
   constructSystem::ModBase(A),
   radius(A.radius),height(A.height),mat(A.mat),temp(A.temp),
-  nConic(A.nConic),Conics(A.Conics)
+  nConic(A.nConic),Conics(A.Conics),nWedge(A.nWedge),
+  Wedges(A.Wedges),mainCell(A.mainCell)
   /*!
     Copy constructor
     \param A :: CylMod to copy
@@ -109,6 +112,9 @@ CylMod::operator=(const CylMod& A)
       temp=A.temp;
       nConic=A.nConic;
       Conics=A.Conics;
+      nWedge=A.nWedge;
+      Wedges=A.Wedges;
+      mainCell=A.mainCell;
     }
   return *this;
 }
@@ -175,6 +181,7 @@ CylMod::populate(const FuncDataBase& Control)
       mat.push_back(M);
       temp.push_back(T);
     }
+
   nConic=Control.EvalVar<size_t>(keyName+"NConic");
   for(size_t i=0;i<nConic;i++)
     {
@@ -193,7 +200,8 @@ CylMod::populate(const FuncDataBase& Control)
 	Control.EvalVar<double>(KN+"Angle");
       Conics.push_back(ConicInfo(C,A,ang,M,W,WM));
     }
-  
+
+  nWedge=Control.EvalVar<size_t>(keyName+"NWedge");  
   return;
 }
 
@@ -283,9 +291,6 @@ CylMod::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("CylMod","createObjects");
 
-  const FuncDataBase& Control =System.getDataBase();
-  const int cylFlag=Control.EvalDefVar<int>(keyName+"CylFlag",0);
-
   std::string Out;
   // First make conics:
   int CI(modIndex+500);
@@ -308,9 +313,9 @@ CylMod::createObjects(Simulation& System)
       OutUnit.addUnion(Out);
       CI+=100;
     }
-
   OutUnit.makeComplement();
 
+  mainCell=cellIndex;
   int SI(modIndex);
   for(size_t i=0;i<nLayers;i++)
     {
@@ -468,10 +473,10 @@ int
 CylMod::getLayerSurf(const size_t layerIndex,
 		     const size_t sideIndex) const
   /*!
-    Given a side and a layer calculate the link surf
+    Given a side and a layer calculate the link surf. Surf points out
     \param sideIndex :: Side [0-5]
     \param layerIndex :: layer, 0 is inner moderator [0-4]
-    \return Surface string
+    \return Surface number [outgoing]
   */
 {
   ELog::RegMethod RegA("CylMod","getLayerSurf");
@@ -496,6 +501,27 @@ CylMod::getLayerSurf(const size_t layerIndex,
 }
 
 void
+CylMod::createWedges(Simulation& System)
+  /*!
+    Create Wedges
+    \param System :: Simulation
+   */
+{
+  ELog::RegMethod RegA("CylMod","createWedges");
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  for(size_t i=0;i<nWedge;i++)
+    {
+      WTYPE WPtr(new WedgeInsert(keyName+"Wedge",i+1));
+      OR.addObject(WPtr);
+      WPtr->createAll(System,mainCell,*this,1);   // +ve Y direction [cylinder]
+      Wedges.push_back(WPtr);
+    }
+  return;
+}
+
+void
 CylMod::createAll(Simulation& System,
 		     const attachSystem::FixedComp& FC)
   /*!
@@ -513,6 +539,7 @@ CylMod::createAll(Simulation& System,
   createLinks();
   insertObjects(System);       
 
+  createWedges(System);
   return;
 }
 

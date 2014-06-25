@@ -31,6 +31,8 @@ namespace beamlineSystem
 namespace constructSystem
 {
   class ModBase;
+  class SupplyPipe;
+
 }
 
 namespace moderatorSystem
@@ -54,7 +56,6 @@ namespace essSystem
   class BeRef;
   class essMod;
   class ConicModerator;
-  class SupplyPipe;
   class CylPreMod;
   class BulkModule;
   class ShutterBay;
@@ -87,8 +88,9 @@ class makeESS
   boost::shared_ptr<moderatorSystem::FlightLine> LowAFL;  ///< Lower Mode FL
   boost::shared_ptr<moderatorSystem::FlightLine> LowBFL;  ///< Lower Mode FL
   boost::shared_ptr<CylPreMod> LowPre;          ///< Upper Mod (Pre)
-  boost::shared_ptr<SupplyPipe> LowSupplyPipe;  ///< Lower supply 
-  boost::shared_ptr<SupplyPipe> LowReturnPipe;  ///< Lower supply 
+  /// Lower supply 
+  boost::shared_ptr<constructSystem::SupplyPipe> LowSupplyPipe; 
+  boost::shared_ptr<constructSystem::SupplyPipe> LowReturnPipe;  ///< Lower supply 
 
   boost::shared_ptr<constructSystem::ModBase> TopMod;   ///< Upper Mod
   boost::shared_ptr<moderatorSystem::FlightLine> TopAFL;  ///< Upper Mode FL

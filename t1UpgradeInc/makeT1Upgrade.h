@@ -26,10 +26,11 @@ namespace constructSystem
 {
   class ModBase;
   class GroupOrigin;
+  class SupplyPipe;
   class TargetBase;
 }
 
-namespace TMRSystem
+namespace TMRSystem 
 {
   class TS2target;
 }  
@@ -86,7 +87,7 @@ class makeT1Upgrade
   boost::shared_ptr<constructSystem::TargetBase> TarObj;   ///< Target
   boost::shared_ptr<ts1System::BeamWindow> BWindowObj;     ///< Beam window
   boost::shared_ptr<CylReflector> RefObj;                  ///< Relfector
-  boost::shared_ptr<moderatorSystem::TriangleMod> TriMod;  ///< Water moderator
+  boost::shared_ptr<constructSystem::ModBase> TriMod;  ///< Water moderator
   /// General offset
   boost::shared_ptr<constructSystem::GroupOrigin> ColdCentObj; 
 
@@ -100,6 +101,17 @@ class makeT1Upgrade
   boost::shared_ptr<shutterSystem::t1BulkShield> BulkObj;  ///< Bulk shield
   boost::shared_ptr<shutterSystem::MonoPlug> MonoTopObj;   ///< Top mono plug
   boost::shared_ptr<shutterSystem::MonoPlug> MonoBaseObj;  ///< Base mono plug
+
+  // pipes:
+
+  /// CH4 Pipe
+  boost::shared_ptr<constructSystem::SupplyPipe> CH4PipeObj;
+  /// H2 Pipe
+  boost::shared_ptr<constructSystem::SupplyPipe> H2PipeObj;
+  /// Water Pipe
+  boost::shared_ptr<constructSystem::SupplyPipe> WaterPipeObj;
+  /// Water Return
+  boost::shared_ptr<constructSystem::SupplyPipe> WaterReturnObj;
 
   // Array of flightlines
   
@@ -116,7 +128,12 @@ class makeT1Upgrade
 			  const std::string&);
   std::string buildH2Mod(Simulation&,const attachSystem::FixedComp&,
 			 const std::string&);
+  std::string buildWaterMod(Simulation&,const attachSystem::FixedComp&,
+			    const std::string&);
 
+  void buildCH4Pipe(Simulation&,const std::string&);
+  void buildH2Pipe(Simulation&,const std::string&);
+  void buildWaterPipe(Simulation&,const std::string&);
   void buildHelp(Simulation&);
 
  public:

@@ -197,7 +197,7 @@ setDefRotation(const mainSystem::inputParam& IParam)
       if (AItem=="chipIR")
 	MR.addRotation(Geometry::Vec3D(0,0,1),
 		       Geometry::Vec3D(0,0,0),
-		       42.85);
+		       45.85);
       else if (AItem=="zoom")
 	{
 	  MR.addRotation(Geometry::Vec3D(0,0,1),

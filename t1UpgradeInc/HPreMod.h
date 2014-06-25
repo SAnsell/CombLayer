@@ -36,7 +36,7 @@ namespace ts1System
 */
 
 class HPreMod : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+  public attachSystem::FixedComp
 {
  private:
   

@@ -91,7 +91,7 @@
 #include "t1BulkShield.h"
 #include "TargetBase.h"
 #include "TS2target.h"
-#include "TS2moly.h"
+#include "TS2ModifyTarget.h"
 #include "t1PlateTarget.h"
 #include "Cannelloni.h"
 #include "InnerTarget.h"
@@ -325,11 +325,16 @@ makeT1Real::buildTarget(Simulation& System,const std::string& TType,
   else if (TType=="t1CylFluxTrap" || TType=="t1CylFluxTrapTarget")
     {
       TarObj=boost::shared_ptr<constructSystem::TargetBase>
-	(new TMRSystem::TS2moly("t1CylFluxTrap","t1CylTarget"));
-      OR.addObject("t1CylTarget",TarObj);
-      OR.addObject("t1CylFluxTrap",TarObj);
+	(new TMRSystem::TS2target("t1CylTarget"));
+      OR.addObject(TarObj);
       TarObj->setRefPlates(-RefObj->getLinkSurf(4),0);
       TarObj->createAll(System,World::masterOrigin());
+
+      boost::shared_ptr<TMRSystem::TS2ModifyTarget> TarObjModify
+	(new TMRSystem::TS2ModifyTarget("t1CylFluxTrap"));
+      TarObjModify->createAll(System,*TarObj);
+      OR.addObject(TarObjModify);
+
       return "t1CylTarget";
     }    
   else if (TType=="t1Side" || TType=="t1SideTarget")

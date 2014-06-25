@@ -193,7 +193,7 @@ FlightLine::populate(const Simulation& System)
     }
   
   if (Control.hasVariable(keyName+"SideIndex"))
-    plateIndex=Control.EvalVar<int>(keyName+"SideIndex");
+    plateIndex=Control.EvalVar<long int>(keyName+"SideIndex");
   
   return;
 }
@@ -777,19 +777,24 @@ FlightLine::reBoundary(Simulation& System,
 void
 FlightLine::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,
-		      const attachSystem::ContainedComp& CC)
+		      const attachSystem::ContainedComp& CC,
+		      const long int modSideIndex)
   /*!
     Global creation of the vac-vessel
     \param System :: Simulation to add vessel to
     \param FC :: Moderator Object
     \param CC :: Full Object
+    \param modSideIndex :: Use side index from moderator
   */
 {
   ELog::RegMethod RegA("FlightLine","createAll(FC,CC)");
   populate(System);
 
+  if (modSideIndex)
+    plateIndex=modSideIndex;
+
   if (plateIndex==0)
-    ELog::EM<<"Plate Index for Fligthline not set "<<ELog::endErr;
+    ELog::EM<<"Plate Index for FlightLine not set "<<ELog::endErr;
 
   const size_t sideIndex=static_cast<size_t>(abs(plateIndex))-1;
   const int sideSign=(plateIndex>0) ? 1 : -1;
@@ -801,6 +806,7 @@ FlightLine::createAll(Simulation& System,
 
   return;
 }
+
 
 
   

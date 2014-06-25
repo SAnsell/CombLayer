@@ -67,6 +67,7 @@ class TriUnit
   void clear();
   void renormalize(const Geometry::Vec3D&,const Geometry::Vec3D&,
 		   const Geometry::Vec3D&,const Geometry::Vec3D&);
+  void applyAbsShift(const double,const double,const double);
 
   int inHull(const Geometry::Vec3D&) const;
   void addCell(const int);

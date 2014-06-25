@@ -176,7 +176,10 @@ defaultConfig::process(FuncDataBase& Control,
     Control.addVariable(vc->first,vc->second);
 
   for(mc=flagName.begin();mc!=flagName.end();mc++)
-    IParam.setValue(mc->first,mc->second);
+    {
+      if(!IParam.flag(mc->first))
+	IParam.setValue(mc->first,mc->second);
+    }
   return;
 }
 

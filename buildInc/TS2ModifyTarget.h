@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   buildInc/TS2moly.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * File:   buildInc/TS2ModifyTarget.h
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,15 +19,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef TMRSystem_TS2moly_h
-#define TMRSystem_TS2moly_h
+#ifndef TMRSystem_TS2ModifyTarget_h
+#define TMRSystem_TS2ModifyTarget_h
 
 class Simulation;
 
 
 namespace TMRSystem
 {
-
 /*!
   \struct plateCut 
   \brief Parameters for a cone cut cut
@@ -106,20 +105,21 @@ struct sphereCut
   }
 };
 
+
 /*!
-  \class TS2moly
+  \class TS2ModifyTarget
   \version 1.0
   \author S. Ansell
   \date February 2012
   \brief Modification to the Target with Mo.
 */
 
-class TS2moly :  public TS2target
+class TS2ModifyTarget : public attachSystem::FixedComp,
+    public attachSystem::ContainedComp
 {
  private:
   
   const int molyIndex;          ///< Index of surface offset
-  const std::string molyKey;    ///< moly key name
   int cellIndex;                ///< Cell index
 
   // PLATES:
@@ -138,17 +138,16 @@ class TS2moly :  public TS2target
   void populate(const Simulation&);
   void createUnitVector(const attachSystem::FixedComp&);
   void createSurfaces();
-  void createObjects(Simulation&);
+  void createObjects(Simulation&,const int,const int);
 
  public:
 
-  TS2moly(const std::string&,const std::string&);
-  TS2moly(const TS2moly&);
-  TS2moly& operator=(const TS2moly&);
-  TS2moly* clone() const;
-  virtual ~TS2moly();
+  TS2ModifyTarget(const std::string&);
+  TS2ModifyTarget(const TS2ModifyTarget&);
+  TS2ModifyTarget& operator=(const TS2ModifyTarget&);
+  ~TS2ModifyTarget();
 
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&);
+  void createAll(Simulation&,const constructSystem::TargetBase&);
 };
 
 }

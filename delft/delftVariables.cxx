@@ -222,7 +222,7 @@ DelftModel(FuncDataBase& Control)
    
   Control.addVariable("delftIrradSampleRad",0.62);    
   Control.addVariable("delftIrradSampleXOffset",1.0);    
-  Control.addVariable("delftIrradSampleZOffset",-6.0);    
+  Control.addVariable("delftIrradSampleZOffset",-6.5);    
   Control.addVariable("delftIrradVacRadius",0.80);    
   Control.addVariable("delftIrradCaseRadius",0.95);    
   Control.addVariable("delftIrradCoreRadius",2.0);    
@@ -261,10 +261,44 @@ DelftModel(FuncDataBase& Control)
   Control.addVariable("delftPoolBase",200.0);    
   Control.addVariable("delftPoolSurface",600.0);    
   Control.addVariable("delftPoolWaterMat","H2O");    
+
+  // Rabbit sytem [general]
+  Control.addVariable("RabbitXStep",0.0);      
+  Control.addVariable("RabbitYStep",0.0);      
+  Control.addVariable("RabbitZStep",0.0);      
+  Control.addVariable("RabbitXYAngle",0.0);      
+  Control.addVariable("RabbitZAngle",0.0);      
+
+  Control.addVariable("RabbitLength",60.0);      
+  Control.addVariable("RabbitCapThick",3.0);      
+  Control.addVariable("RabbitCapMat","Aluminium");      
+  Control.addVariable("RabbitNLayer",6);      
+  Control.addVariable("RabbitRadius0",1.8);      
+  Control.addVariable("RabbitRadius1",2.0);      
+  Control.addVariable("RabbitRadius2",2.7);      
+  Control.addVariable("RabbitRadius3",3.0);      
+  Control.addVariable("RabbitRadius4",3.25);      
+  Control.addVariable("RabbitRadius5",3.5);      
+
+  Control.addVariable("RabbitMat0","Void");      
+  Control.addVariable("RabbitMat1","Aluminium");      
+  Control.addVariable("RabbitMat2","Void");      
+  Control.addVariable("RabbitMat3","Aluminium");      
+  Control.addVariable("RabbitMat4","H2O");      
+  Control.addVariable("RabbitMat5","Aluminium"); 
+
+  Control.addVariable("RabbitSampleRadius",1.0);      
+  Control.addVariable("RabbitSampleMat","Void");      
+  Control.addVariable("RabbitCapsuleRadius",1.2);      
+  Control.addVariable("RabbitCapsuleWall",0.2);      
+  Control.addVariable("RabbitCapsuleMat","Poly");      
+  Control.addVariable("RabbitCapsuleLen",3.0);      
+  Control.addVariable("RabbitCapsuleZShift",3.0);      
   
   // FlightLines
   
-  Control.addVariable("delftFlightR2XStep",23.127+1.8);
+  Control.addVariable("delftFlightR2WaterStep",1.8);
+  Control.addVariable("delftFlightR2XStep",23.127);
   Control.addVariable("delftFlightR2YStep",0.0);
   Control.addVariable("delftFlightR2ZStep",0.0);
   Control.addVariable("delftFlightR2XYAngle",0.0);
@@ -289,6 +323,7 @@ DelftModel(FuncDataBase& Control)
   Control.addVariable("delftFlightR2WallMat","Aluminium");
   Control.addVariable("delftFlightR2GapMat","Void");
 
+  Control.addVariable("delftFlightR2PortalActive",0);
   Control.addVariable("delftFlightR2PortalRadius",5.0);
   Control.addVariable("delftFlightR2PortalThick",0.6);
   Control.addVariable("delftFlightR2Portal1Dist",0.0);
@@ -297,7 +332,8 @@ DelftModel(FuncDataBase& Control)
   Control.addVariable("delftFlightR2Portal2Mat","Void");
 
   // FLIGHT 2:
-  Control.addVariable("delftFlightR1XStep",23.127+1.8);
+  Control.addVariable("delftFlightR1WaterStep",1.8);
+  Control.addVariable("delftFlightR1XStep",23.127);
   Control.addVariable("delftFlightR1YStep",0);
   Control.addVariable("delftFlightR1ZStep",-24.5);
   Control.addVariable("delftFlightR1XYAngle",21.0);
@@ -318,14 +354,12 @@ DelftModel(FuncDataBase& Control)
   Control.addVariable("delftFlightR1InterFrontWall",0.333);
   Control.addVariable("delftFlightR1InterYOffset",77.2);
 
-  Control.addVariable("delftFlightR1PortalRadius",5.0);
-  Control.addVariable("delftFlightR1PortalThick",0.6);
-
   Control.addVariable("delftFlightR1InterMat","B4C");
 
   Control.addVariable("delftFlightR1WallMat","Aluminium");
   Control.addVariable("delftFlightR1GapMat","Void");
 
+  Control.addVariable("delftFlightR1PortalActive",1);
   Control.addVariable("delftFlightR1PortalRadius",5.0);
   Control.addVariable("delftFlightR1PortalThick",0.6);
   Control.addVariable("delftFlightR1Portal1Dist",0.0);
@@ -334,7 +368,8 @@ DelftModel(FuncDataBase& Control)
   Control.addVariable("delftFlightR1Portal2Mat","Void");
 
   // FLIGHT 3:
-  Control.addVariable("delftFlightR3XStep",23.127+1.8);
+  Control.addVariable("delftFlightR3WaterStep",1.8);
+  Control.addVariable("delftFlightR3XStep",23.127);
   Control.addVariable("delftFlightR3YStep",0.0);
   Control.addVariable("delftFlightR3ZStep",24.5);
   Control.addVariable("delftFlightR3XYAngle",-26.0);
@@ -359,7 +394,8 @@ DelftModel(FuncDataBase& Control)
   Control.addVariable("delftFlightR3WallMat","Aluminium");
   Control.addVariable("delftFlightR3GapMat","Void");
 
-  Control.addVariable("delftFlightR3PortalRadius",5.0);
+  Control.addVariable("delftFlightR3PortalActive",1);
+  Control.addVariable("delftFlightR3PortalRadius",4.0);
   Control.addVariable("delftFlightR3PortalThick",0.6);
   Control.addVariable("delftFlightR3Portal1Dist",0.0);
   Control.addVariable("delftFlightR3Portal1Mat","Aluminium");
@@ -368,7 +404,8 @@ DelftModel(FuncDataBase& Control)
 
 
   // FLIGHT 4:  Lower 
-  Control.addVariable("delftFlightL3XStep",-(23.127+1.8));
+  Control.addVariable("delftFlightL3WaterStep",-1.8);
+  Control.addVariable("delftFlightL3XStep",-23.127);
   Control.addVariable("delftFlightL3YStep",0.00);
   Control.addVariable("delftFlightL3ZStep",24.5);
   Control.addVariable("delftFlightL3XYAngle",26.0);
@@ -393,7 +430,8 @@ DelftModel(FuncDataBase& Control)
   Control.addVariable("delftFlightL3WallMat","Aluminium");
   Control.addVariable("delftFlightL3GapMat","H2O");
 
-  Control.addVariable("delftFlightL3PortalRadius",5.0);
+  Control.addVariable("delftFlightL3PortalActive",1);
+  Control.addVariable("delftFlightL3PortalRadius",4.0);
   Control.addVariable("delftFlightL3PortalThick",0.6);
 
   Control.addVariable("delftFlightL3Portal1Dist",0.0);
@@ -402,7 +440,8 @@ DelftModel(FuncDataBase& Control)
   Control.addVariable("delftFlightL3Portal2Mat","Void");
 
   // Centre flight 5 :
-  Control.addVariable("delftFlightL2XStep",-(23.127+1.8));
+  Control.addVariable("delftFlightL2WaterStep",-1.8);
+  Control.addVariable("delftFlightL2XStep",-23.127);
   Control.addVariable("delftFlightL2YStep",0.0);
   Control.addVariable("delftFlightL2ZStep",0.0);
   Control.addVariable("delftFlightL2XYAngle",0.0);
@@ -427,6 +466,7 @@ DelftModel(FuncDataBase& Control)
   Control.addVariable("delftFlightL2WallMat","Aluminium");
   Control.addVariable("delftFlightL2GapMat","Void");
 
+  Control.addVariable("delftFlightL2PortalActive",1);
   Control.addVariable("delftFlightL2PortalRadius",5.0);
   Control.addVariable("delftFlightL2PortalThick",0.6);
   Control.addVariable("delftFlightL2Portal1Dist",0.0);
@@ -435,7 +475,8 @@ DelftModel(FuncDataBase& Control)
   Control.addVariable("delftFlightL2Portal2Mat","Void");
 
   // FLIGHT 6:  Lower 
-  Control.addVariable("delftFlightL1XStep",-(23.127+1.8));
+  Control.addVariable("delftFlightL1WaterStep",-1.8);
+  Control.addVariable("delftFlightL1XStep",-23.127);
   Control.addVariable("delftFlightL1YStep",0.0);
   Control.addVariable("delftFlightL1ZStep",-24.5);
   Control.addVariable("delftFlightL1XYAngle",21.0);
@@ -460,7 +501,8 @@ DelftModel(FuncDataBase& Control)
   Control.addVariable("delftFlightL1WallMat","Aluminium");
   Control.addVariable("delftFlightL1GapMat","H2O");
 
-  Control.addVariable("delftFlightL1PortalRadius",5.0);
+  Control.addVariable("delftFlightL1PortalActive",1);
+  Control.addVariable("delftFlightL1PortalRadius",4.0);
   Control.addVariable("delftFlightL1PortalThick",0.6);
   Control.addVariable("delftFlightL1Portal1Dist",0.0);
   Control.addVariable("delftFlightL1Portal1Mat","Aluminium");
@@ -508,7 +550,7 @@ DelftModel(FuncDataBase& Control)
   Control.addVariable("coneAlBack",1.0);      
 
   Control.addVariable("coneModTemp",20.0);         // Temperature of H2 
-  Control.addVariable("coneModMat","ParaH2");            // Liquid H2
+  Control.addVariable("coneModMat","ParaOrtho");            // Liquid H2
   Control.addVariable("coneAlMat","Aluminium");              // Aluminium
 
   // CONTAINER
@@ -573,8 +615,33 @@ DelftModel(FuncDataBase& Control)
   Control.addVariable("sphereH2PipeAlRadius",1.2);      
 
   Control.addVariable("sphereH2ModTemp",20.0);         // Temperature of H2 
-  Control.addVariable("sphereH2ModMat","ParaH2");            // Liquid H2
+  Control.addVariable("sphereH2ModMat","ParaOrtho");            // Liquid H2
   Control.addVariable("sphereH2AlMat","Aluminium");              // Aluminium
+
+  // Default Spherica model
+  Control.addVariable("sphereLongXStep",0.0);      
+  Control.addVariable("sphereLongYStep",14.0);      
+  Control.addVariable("sphereLongZStep",0.0);      
+
+  Control.addVariable("sphereLongInnerRadius",9.0);   // Radius of inner H2
+  Control.addVariable("sphereLongInnerAl",0.1);      // Radius of iner Al  H2
+  Control.addVariable("sphereLongOuterRadius",10.0);      // Radius of outer H2
+  Control.addVariable("sphereLongOuterAl",0.1);      
+  Control.addVariable("sphereLongOutYShift",0.0);   // Shift of centre
+
+  Control.addVariable("sphereLongForwardStep",20.0);   // Shift of centre
+  Control.addVariable("sphereLongCapThick",1.75);      // Shift of centre
+
+  Control.addVariable("sphereLongPipeLen",10.0);      
+  Control.addVariable("sphereLongPipeRadius",0.3);      
+  Control.addVariable("sphereLongPipeAlRadius",0.5);      
+
+  Control.addVariable("sphereLongModTemp",20.0);         // Temperature of H2 
+  Control.addVariable("sphereLongModMat","ParaOrtho");            // Liquid H2
+  Control.addVariable("sphereLongAlMat","Aluminium");              // Aluminium
+
+
+
 
   Control.addVariable("R2InsertXStep",0.0);
   Control.addVariable("R2InsertYStep",100.0);
@@ -630,6 +697,12 @@ DelftModel(FuncDataBase& Control)
   Control.addVariable("R2Slot4ZSize",2.65);
 
   // BE SURROUND:
+  Control.addVariable("R2CubeXStep",0.0);
+  Control.addVariable("R2CubeYStep",0.0);
+  Control.addVariable("R2CubeZStep",0.0);
+  Control.addVariable("R2CubeActive",0);
+  Control.addVariable("R2CubeMat","Be300K");  
+
   Control.addVariable("R2RefXStep",0.0);
   Control.addVariable("R2RefYStep",0.0);
   Control.addVariable("R2RefZStep",0.0);
@@ -643,10 +716,19 @@ DelftModel(FuncDataBase& Control)
   Control.addVariable("RFullXStep",0.0);
   Control.addVariable("RFullYStep",0.0);
   Control.addVariable("RFullZStep",0.0);
-  Control.addVariable("RFullLength",40.0);  
+  Control.addVariable("RFullLength",30.0);  
   Control.addVariable("RFullHeight",60.0);  
-  Control.addVariable("RFullWidth",60.0);  
+  Control.addVariable("RFullWidth",55.0);  
   Control.addVariable("RFullMat","Be300K");  
+
+  // BE Full SURROUND: [someone ?]
+  Control.addVariable("LFullXStep",0.0);
+  Control.addVariable("LFullYStep",0.0);
+  Control.addVariable("LFullZStep",0.0);
+  Control.addVariable("LFullLength",30.0);  
+  Control.addVariable("LFullHeight",60.0);  
+  Control.addVariable("LFullWidth",55.0);  
+  Control.addVariable("LFullMat","Be300K");  
 
   return;
 }

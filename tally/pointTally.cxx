@@ -44,6 +44,7 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
+#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -67,7 +68,8 @@ namespace tallySystem
 
 pointTally::pointTally(const int ID) :
   Tally(ID),Radius(0.0),fuFlag(0),
-  ddFlag(0,0,0),secondDFlag(0),secondDist(0.0)
+  ddFlag(0,0,0),secondDFlag(0),secondDist(0.0),
+  mcnp6Out(0)
   /*!
     Constructor
     \param ID :: Identity number of tally
@@ -76,10 +78,11 @@ pointTally::pointTally(const int ID) :
 
 
 pointTally::pointTally(const pointTally& A) : 
-  Tally(A),
-  Centre(A.Centre),Radius(A.Radius),fuFlag(A.fuFlag),
+  Tally(A),Centre(A.Centre),Radius(A.Radius),
+  fuFlag(A.fuFlag),
   fuCard(A.fuCard),ddFlag(A.ddFlag),Window(A.Window),
-  secondDFlag(A.secondDFlag),secondDist(A.secondDist)
+  secondDFlag(A.secondDFlag),secondDist(A.secondDist),
+  mcnp6Out(A.mcnp6Out)
   /*!
     Copy constructor
     \param A :: pointTally to copy
@@ -105,6 +108,7 @@ pointTally::operator=(const pointTally& A)
       Window=A.Window;
       secondDFlag=A.secondDFlag;
       secondDist=A.secondDist;
+      mcnp6Out=A.mcnp6Out;
     }
   return *this;
 }
@@ -334,7 +338,6 @@ pointTally::setWindow(const std::vector<Geometry::Vec3D>& Wvec)
   ELog::RegMethod RegA("pointTally","setWindow");
 
   Window=Wvec;
-  fuFlag= (Window.size()==4) ? 1 : 0;
   orderWindow();
   return;
 }
@@ -550,7 +553,6 @@ pointTally::removeWindow()
    */
 {
   Window.clear();
-  fuFlag=0;
   return;
 }
 
@@ -628,6 +630,40 @@ pointTally::rotateMaster()
 }
 
 void
+pointTally::writeMCNP6(std::ostream& OX) const
+  /*!
+    Write out the window system in MCNP6 format
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("pointTally","writeMCNP6");
+  
+  if (Window.size()==4)   // anything else no supported yet
+    {
+      std::ostringstream cx;
+      cx.str("");
+      cx<<"ft"<<IDnum;
+      cx<< ((secondDFlag) ? " wdo " : " win ");
+      
+      cx<<Window[0];
+      StrFunc::writeMCNPX(cx.str(),OX);
+      for(size_t i=1;i<4;i++)
+	{
+	  cx.str("");
+	  cx<<Window[i];
+	  StrFunc::writeMCNPXcont(cx.str(),OX);
+	}
+      if (secondDFlag)
+	{
+	  cx.str("");
+	  cx<<secondDist;
+	  StrFunc::writeMCNPXcont(cx.str(),OX);
+	} 
+    }
+  return;
+}
+
+void
 pointTally::write(std::ostream& OX) const
   /*!
     Writes out the point tally depending on the 
@@ -635,6 +671,8 @@ pointTally::write(std::ostream& OX) const
     \param OX :: Output Stream
   */
 {
+  ELog::RegMethod RegA("pointTally","write");
+
   if (!isActive())
     return;
   
@@ -645,14 +683,18 @@ pointTally::write(std::ostream& OX) const
       writeParticles(cx);
       cx<<Centre<<" "<<Radius;
       StrFunc::writeMCNPX(cx.str(),OX);
-
-      if (!fuCard.empty() || fuFlag)
-	{
-	  cx.str("");
-	  cx<<"fu"<<IDnum<<" "<<fuCard;
-	  StrFunc::writeMCNPX(cx.str(),OX);
-	}
+      if (mcnp6Out)
+	writeMCNP6(OX);
     }
+  if (!fuCard.empty() || fuFlag)
+    {
+      cx.str("");
+      cx<<"fu"<<IDnum<<" "<<fuCard;
+      StrFunc::writeMCNPX(cx.str(),OX);
+    }
+  else if (!mcnp6Out && !Window.empty())
+    StrFunc::writeMCNPX(StrFunc::makeString("fu",IDnum),OX);
+
   writeFields(OX);
   return;
 }

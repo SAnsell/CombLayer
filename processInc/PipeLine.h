@@ -50,7 +50,8 @@ class PipeLine
   std::map<size_t,HeadRule> commonSurf;  ///< common surface
 
   std::vector<size_t> activeFlags;          ///< Activity flags : one for each PUnit
- 
+
+  size_t nAngle;                     ///< NAngle
   std::vector<pipeUnit*> PUnits;     ///< pipeUnits (1 less than Pts)
 
   void clearPUnits();

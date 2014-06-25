@@ -78,6 +78,8 @@ class HeadRule
   int pairValid(const int,const Geometry::Vec3D&) const;           
   bool isValid(const std::map<int,int>&) const; 
   bool isDirectionValid(const Geometry::Vec3D&,const int) const; 
+  int trackSurf(const Geometry::Vec3D&,const Geometry::Vec3D&,
+		double&) const;
 
   std::set<const Geometry::Surface*> getOppositeSurfaces() const;
   std::vector<const Geometry::Surface*> getSurfaces() const;

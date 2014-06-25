@@ -79,7 +79,8 @@
 #include "t1BulkShield.h"
 #include "TargetBase.h"
 #include "TS2target.h"
-#include "TS2moly.h"
+#include "TS2FlatTarget.h"
+#include "TS2ModifyTarget.h"
 #include "targCoolant.h"
 #include "InnerTarget.h"
 #include "Cannelloni.h"
@@ -87,9 +88,9 @@
 #include "SideCoolTarget.h"
 #include "OpenBlockTarget.h"
 #include "CylReflector.h"
+#include "ModBase.h"
 #include "TriUnit.h"
 #include "TriangleMod.h"
-#include "ModBase.h"
 #include "H2Section.h"
 #include "LayerInfo.h"
 #include "CH4Layer.h"
@@ -101,6 +102,7 @@
 #include "CylMod.h"
 #include "CylPreSimple.h"
 #include "MonoPlug.h"
+#include "SupplyPipe.h"
 #include "World.h"
 #include "AttachSupport.h"
 
@@ -113,18 +115,22 @@ namespace ts1System
 
 makeT1Upgrade::makeT1Upgrade() :
   RefObj(new ts1System::CylReflector("CylRefl")),
-  TriMod(new moderatorSystem::TriangleMod("TriMod")),
   ColdCentObj(new constructSystem::GroupOrigin("ColdCent")),
   VoidObj(new shutterSystem::t1CylVessel("t1CylVessel")),
   BulkObj(new shutterSystem::t1BulkShield("t1Bulk")),
   MonoTopObj(new shutterSystem::MonoPlug("MonoTop")),
   MonoBaseObj(new shutterSystem::MonoPlug("MonoBase")),
+  CH4PipeObj(new constructSystem::SupplyPipe("CH4Pipe")),
+  H2PipeObj(new constructSystem::SupplyPipe("H2Pipe")),
+  WaterPipeObj(new constructSystem::SupplyPipe("WaterPipe")),
+  WaterReturnObj(new constructSystem::SupplyPipe("WaterReturn")),
 
   TriFLA(new moderatorSystem::FlightLine("TriFlightA")),
   TriFLB(new moderatorSystem::FlightLine("TriFlightB")),
   H2FL(new moderatorSystem::FlightLine("H2Flight")),
   CH4FLA(new moderatorSystem::FlightLine("CH4FlightA")),
   CH4FLB(new moderatorSystem::FlightLine("CH4FlightB"))
+
   /*!
     Constructor
   */
@@ -138,13 +144,17 @@ makeT1Upgrade::makeT1Upgrade() :
   OR.addObject(MonoBaseObj);
 
   OR.addObject(RefObj);
-  OR.addObject(TriMod);
   OR.addObject(TriFLA);
   OR.addObject(TriFLB);
 
   OR.addObject(H2FL);
   OR.addObject(CH4FLA);
   OR.addObject(CH4FLB);
+
+  OR.addObject(CH4PipeObj);
+  OR.addObject(H2PipeObj);
+  OR.addObject(WaterPipeObj);
+  OR.addObject(WaterReturnObj);
 
 }
 
@@ -154,7 +164,9 @@ makeT1Upgrade::makeT1Upgrade(const makeT1Upgrade& A) :
 	 (A.TarObj->clone()) : A.TarObj),  
   BWindowObj(new ts1System::BeamWindow(*A.BWindowObj)),
   RefObj(new CylReflector(*A.RefObj)),
-  TriMod(new moderatorSystem::TriangleMod(*A.TriMod)),
+  TriMod((A.TriMod) ? 
+	 boost::shared_ptr<constructSystem::ModBase>
+	  (A.TriMod->clone()) : A.TriMod),  
   ColdCentObj(new constructSystem::GroupOrigin(*A.ColdCentObj)),
   H2Mod((A.H2Mod) ? 
 	 boost::shared_ptr<constructSystem::ModBase>
@@ -172,11 +184,15 @@ makeT1Upgrade::makeT1Upgrade(const makeT1Upgrade& A) :
   BulkObj(new shutterSystem::t1BulkShield(*A.BulkObj)),
   MonoTopObj(new shutterSystem::MonoPlug(*A.MonoTopObj)),
   MonoBaseObj(new shutterSystem::MonoPlug(*A.MonoBaseObj)),
+  H2PipeObj(new constructSystem::SupplyPipe(*A.H2PipeObj)),
+  WaterPipeObj(new constructSystem::SupplyPipe(*A.WaterPipeObj)),
+  WaterReturnObj(new constructSystem::SupplyPipe(*A.WaterReturnObj)),
   TriFLA(new moderatorSystem::FlightLine(*A.TriFLA)),
   TriFLB(new moderatorSystem::FlightLine(*A.TriFLB)),
   H2FL(new moderatorSystem::FlightLine(*A.H2FL)),
   CH4FLA(new moderatorSystem::FlightLine(*A.CH4FLA)),
   CH4FLB(new moderatorSystem::FlightLine(*A.CH4FLB))
+
   /*!
     Copy constructor
     \param A :: makeT1Upgrade to copy
@@ -196,7 +212,9 @@ makeT1Upgrade::operator=(const makeT1Upgrade& A)
       *TarObj = *A.TarObj;
       *BWindowObj = *A.BWindowObj;
       *RefObj = *A.RefObj;
-      *TriMod = *A.TriMod;
+      TriMod=((A.TriMod) ? 
+	     boost::shared_ptr<constructSystem::ModBase>
+	     (A.TriMod->clone()) : A.TriMod);  
       *ColdCentObj = *A.ColdCentObj;
       H2Mod=((A.H2Mod) ? 
 	     boost::shared_ptr<constructSystem::ModBase>
@@ -210,6 +228,9 @@ makeT1Upgrade::operator=(const makeT1Upgrade& A)
       *BulkObj = *A.BulkObj;
       *MonoTopObj = *A.MonoTopObj;
       *MonoBaseObj = *A.MonoBaseObj;
+      *H2PipeObj=*A.H2PipeObj;
+      *WaterPipeObj=*A.WaterPipeObj;
+      *WaterReturnObj=*A.WaterReturnObj;
       *TriFLA = *A.TriFLA;
       *TriFLB = *A.TriFLB;
       *H2FL = *A.H2FL;
@@ -268,12 +289,17 @@ makeT1Upgrade::buildTarget(Simulation& System,
   else if (TType=="t1CylFluxTrap" || TType=="t1CylFluxTrapTarget")
     {
       TarObj=boost::shared_ptr<constructSystem::TargetBase>
-	(new TMRSystem::TS2moly("t1CylFluxTrap","t1CylTarget"));
+	(new TMRSystem::TS2FlatTarget("t1CylTarget"));
+      
       OR.addObject("t1CylTarget",TarObj);
-      OR.addObject("t1CylFluxTrap",TarObj);
       RefObj->addToInsertChain(*TarObj);
       TarObj->setRefPlates(-RefObj->getLinkSurf(2),0);
       TarObj->createAll(System,World::masterOrigin());
+
+      boost::shared_ptr<TMRSystem::TS2ModifyTarget> TarObjModify
+	(new TMRSystem::TS2ModifyTarget("t1CylFluxTrap"));
+      TarObjModify->createAll(System,*TarObj);
+      
       return "t1CylTarget";
     }    
   else if (TType=="t1InnerTarget" || TType=="t1Inner")
@@ -439,6 +465,148 @@ makeT1Upgrade::buildCH4Mod(Simulation& System,
   return "";
 }
 
+void
+makeT1Upgrade::buildH2Pipe(Simulation& System,
+			   const std::string& MType)
+  /*!
+    Build the H2 Pipe
+    \param System :: Simualtion to use
+    \param MType :: Moderator type to connect to    
+   */
+{
+  ELog::RegMethod RegA("makeT1Upgrade","buildH2Pipe");
+
+  H2PipeObj->setAngleSeg(12);
+  H2PipeObj->setOption("");   // no modifiecation to the variable name
+  if (MType=="Layer")
+    {
+      H2PipeObj->setWallOffset(6);
+      H2PipeObj->createAll(System,*H2Mod,0,5,4);  
+    }    
+
+  // Moderator : [measure from origin]
+
+  //  H2PipeObj->createAll(System,*H2Mod,0,5,5);  //,*H2PMod,2);
+
+  return;
+}
+
+void
+makeT1Upgrade::buildCH4Pipe(Simulation& System,
+			    const std::string& MType)
+  /*!
+    Build the CH4 Pipe
+    \param System :: Simualtion to use
+    \param MType :: Moderator type to connect to    
+   */
+{
+  ELog::RegMethod RegA("makeT1Upgrade","buildCH4Pipe");
+
+  CH4PipeObj->setAngleSeg(12);
+  CH4PipeObj->setOption("");   // no modifiecation to the variable name
+  if (MType=="Layer")
+    {
+      CH4PipeObj->setWallOffset(1);
+      std::vector<size_t> LS;
+      LS.push_back(1);
+      LS.push_back(2);
+      LS.push_back(3);
+      LS.push_back(4);
+      LS.push_back(5);
+      CH4PipeObj->setLayerSeq(LS);
+      CH4PipeObj->createAll(System,*CH4Mod,1,6,4);  
+    }    
+
+  // Moderator : [measure from origin]
+
+  //  H2PipeObj->createAll(System,*H2Mod,0,5,5);  //,*H2PMod,2);
+
+  return;
+}
+
+void
+makeT1Upgrade::buildWaterPipe(Simulation& System,
+			      const std::string& MType)
+  /*!
+    Build the Water Pipe
+    \param System :: Simualtion sytem
+    \param MType :: Moderator type to connect to
+   */
+{
+  ELog::RegMethod RegA("makeT1Upgrade","buildWaterPipe");
+
+  WaterPipeObj->setAngleSeg(12);
+  WaterPipeObj->setOption("");   // no modifiecation to the variable name
+  WaterReturnObj->setAngleSeg(12);
+  WaterReturnObj->setOption("");   // no modifiecation to the variable name
+
+  if (MType=="Layer")
+    {
+      WaterPipeObj->setWallOffset(4);
+      WaterPipeObj->createAll(System,*TriMod,0,6,5);  
+      
+      WaterReturnObj->setWallOffset(4);
+      WaterReturnObj->createAll(System,*TriMod,0,6,5);  
+    }
+  else if (MType=="Triangle")
+    {
+      WaterPipeObj->setWallOffset(1);
+      WaterPipeObj->createAll(System,*TriMod,0,2,1);  
+      
+      WaterReturnObj->setWallOffset(1);
+      WaterReturnObj->createAll(System,*TriMod,0,2,1);  
+    }
+  return;
+}
+
+std::string
+makeT1Upgrade::buildWaterMod(Simulation& System,
+			     const attachSystem::FixedComp& FC,
+			     const std::string& MType)
+  /*!
+    Create a Water moderator based on the input param
+    \param System :: Simulation for target
+    \param FC :: Fixed component for coldMod center
+    \param MType :: Moderator Name
+    \return Container for reflector
+  */
+{
+  ELog::RegMethod RegA("makeT1Upgrade","buildWaterMod");
+  
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+
+  if (MType=="Triangle")
+    {
+      TriMod=boost::shared_ptr<constructSystem::ModBase>
+	(new moderatorSystem::TriangleMod("TriMod"));
+      OR.addObject(TriMod);
+      TriMod->createAll(System,FC);
+      return "TriMod";
+    }
+  else if (MType=="Layer")
+    {
+      TriMod=boost::shared_ptr<constructSystem::ModBase>
+	(new CH4Layer("TriModLayer"));
+      OR.addObject(TriMod);
+      TriMod->createAll(System,FC);
+
+      return "TriModLayer";
+    }
+  else if (MType=="Help" || MType=="help")
+    {
+      ELog::EM<<"Options = [WaterModType]"<<ELog::endBasic;
+      ELog::EM<<"    Triangle :: Complex Triangle Moderator"<<ELog::endBasic;
+      ELog::EM<<"    Layer :: Basic layer moderator"<<ELog::endBasic;
+      return "";
+    }    
+
+  ELog::EM<<"Failed to understand CH4Mod type :"
+	  <<MType<<ELog::endErr;
+  return "";
+}
+
 std::string
 makeT1Upgrade::buildH2Mod(Simulation& System,
 			  const attachSystem::FixedComp& FC,
@@ -544,6 +712,8 @@ makeT1Upgrade::build(Simulation* SimPtr,
     IParam.getValue<std::string>("CH4ModType",0);
   const std::string H2ModName=
     IParam.getValue<std::string>("H2ModType",0);
+  const std::string WaterModName=
+    IParam.getValue<std::string>("WaterModType",0);
 
   int voidCell(74123);
   if (!IParam.flag("exclude") ||
@@ -573,13 +743,20 @@ makeT1Upgrade::build(Simulation* SimPtr,
 
   if (IParam.flag("exclude") &&
       IParam.compValue("E",std::string("Reflector")))
-    return;
+    {
+      SimPtr->voidObject(RefObj->getKeyName());
+      return;
+    }
 
+  const std::string WaterModExclude=
+    buildWaterMod(*SimPtr,World::masterOrigin(),WaterModName);
+  RefObj->addToInsertControl(*SimPtr,*TriMod,*TriMod);
+  
   TarObj->addProtonLineInsertCell(RefObj->getCells());
   TarObj->addProtonLine(*SimPtr,*RefObj,-3);
 
-  TriMod->createAll(*SimPtr,World::masterOrigin());
-  RefObj->addToInsertControl(*SimPtr,*TriMod,*TriMod);
+  //  TriMod->createAll(*SimPtr,World::masterOrigin());
+
   //  attachSystem::addToInsertControl(*SimPtr,*TriMod,*TriMod);
 
   // Cold centre
@@ -607,11 +784,11 @@ makeT1Upgrade::build(Simulation* SimPtr,
   TriFLA->addBoundarySurf("inner",Out);  
   TriFLA->addBoundarySurf("outer",Out);  
   RefObj->addToInsertChain(TriFLA->getKey("outer"));
-  TriFLA->createAll(*SimPtr,*TriMod,*TriMod);
+  TriFLA->createAll(*SimPtr,*TriMod,*TriMod,TriMod->getSideIndex(0));
 
   TriFLB->addBoundarySurf("inner",Out);  
   TriFLB->addBoundarySurf("outer",Out);  
-  TriFLB->createAll(*SimPtr,*TriMod,*TriMod);
+  TriFLB->createAll(*SimPtr,*TriMod,*TriMod,TriMod->getSideIndex(1));
   attachSystem::addToInsertSurfCtrl(*SimPtr,*RefObj,TriFLB->getKey("outer"));  
 
   H2FL->addBoundarySurf("inner",Out);  
@@ -629,6 +806,9 @@ makeT1Upgrade::build(Simulation* SimPtr,
   RefObj->addToInsertChain(CH4FLB->getKey("outer"));
 
   CH4FLB->createAll(*SimPtr,*CH4Mod,*CH4Mod);
+
+  if (H2Mod && CH4Mod)
+    attachSystem::addToInsertSurfCtrl(*SimPtr,*CH4Mod,*H2Mod);
 
   if (H2PCylMod)
     {
@@ -657,6 +837,10 @@ makeT1Upgrade::build(Simulation* SimPtr,
 
   H2FL->processIntersectMajor(*SimPtr,*CH4FLB,"inner","outer");
   CH4FLB->processIntersectMinor(*SimPtr,*H2FL,"inner","outer");
+
+  buildCH4Pipe(*SimPtr,CH4ModName);
+  //  buildH2Pipe(*SimPtr,H2ModName);
+  buildWaterPipe(*SimPtr,WaterModName);
 
   return;
 }

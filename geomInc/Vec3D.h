@@ -75,8 +75,7 @@ class Vec3D
   template<typename IT> double& operator[](const IT);
   template<typename IT> double operator[](const IT) const;
 
-  // Convert matrix to a point (3x1 or 1x3)
-  template<typename T> Vec3D operator()(const Matrix<T>&) const; 
+  template<typename T> Vec3D operator()(const Matrix<T>&) const;  ///< Convert matrix to a point (3x1 or 1x3)
   
   bool operator<(const Vec3D&) const;
   bool operator>(const Vec3D&) const;

@@ -62,7 +62,7 @@ class H2Section : public constructSystem::ModBase
   int lh2Mat;                   ///< LH2
   double lh2Temp;               ///< LH2 temperature [K]
 
-  void populate(const Simulation&);
+  void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
 
   void createSurfaces();

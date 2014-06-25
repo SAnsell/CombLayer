@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   src/ReadFunctions.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,16 +55,9 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Triple.h"
 #include "NList.h"
 #include "NRange.h"
-#include "Tally.h"
-#include "cellFluxTally.h"
-#include "pointTally.h"
-#include "heatTally.h"
-#include "tallyFactory.h"
 #include "Transform.h"
 #include "Surface.h"
 #include "surfIndex.h"
@@ -162,7 +155,7 @@ processDollarString(FuncDataBase& DB,std::string& Line)
 	    throw ColErr::InvalidLine(RegA.getBase(),Part,0);
 	  if (!first)
 	    cx<<" ";
-	  cx<<DB.Eval();
+	  cx<<DB.Eval<double>();
 	  first=0;
 	}
       else

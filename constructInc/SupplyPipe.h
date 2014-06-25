@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   essBuildInc/SupplyPipe.h
+ * File:   constructInc/SupplyPipe.h
  *
  * Copyright (c) 2004-2014 by Stuart Ansell
  *
@@ -19,12 +19,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef essSystem_SupplyPipe_h
-#define essSystem_SupplyPipe_h
+#ifndef constructSystem_SupplyPipe_h
+#define constructSystem_SupplyPipe_h
 
 class Simulation;
 
-namespace essSystem
+namespace constructSystem
 {
 
 /*!
@@ -44,12 +44,14 @@ class SupplyPipe : public attachSystem::FixedComp
   int cellIndex;                ///< Cell index
    
   size_t NSegIn;                      ///< Number of segments  
+  size_t wallOffset;                  ///< Segments for inital wall
 
   std::vector<double> Radii;          ///< Inner to outer radii
   std::vector<int> Mat;               ///< Material 
   std::vector<double> Temp;           ///< Temperature
 
   std::vector<size_t> ActiveFlag;     ///< Active flag
+  std::vector<size_t> layerSeq;       ///< Layer Sequence
 
   ModelSupport::PipeLine Coaxial;      ///< Global outer
   Geometry::Vec3D layerOffset;         ///< Offset of layer
@@ -80,6 +82,11 @@ class SupplyPipe : public attachSystem::FixedComp
   {  optName=keyName+ON; }
   /// Set angle segments
   void setAngleSeg(const size_t N) { nAngle=N; }
+  /// Set wallOffset
+  void setWallOffset(const size_t N) { wallOffset=N; }
+  /// SEt Layer sequ
+  void setLayerSeq(const std::vector<size_t>& LS)
+     { layerSeq=LS; }
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const size_t,const size_t,const size_t);

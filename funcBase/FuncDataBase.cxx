@@ -31,6 +31,7 @@
 #include <algorithm>
 #include <functional>
 #include <iterator>
+#include <boost/regex.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -42,6 +43,7 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "support.h"
+#include "regexSupport.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "XMLwriteVisitor.h"
@@ -196,14 +198,15 @@ FuncDataBase::EvalPair(const std::string& KeyA,
   return EvalPair<T>(KeyA+Tail,KeyB+Tail);
 }
 
-double
+template<typename T>
+T
 FuncDataBase::Eval()
   /*!
     Evaluate the function (after pasrsing)
     \return F(var1,var2...)
   */
 {
-  return Build.Eval(&VList);
+  return Build.Eval<T>(&VList);
 }
 
 std::string
@@ -246,7 +249,7 @@ FuncDataBase::Parse(const std::string& Function)
 	      <<FunStrip.substr(0,Result.second-1)<<ELog::endCrit;
       ELog::EM<<"           "
 	      <<FunStrip.substr(Result.second-1)<<ELog::endCrit;
-      ELog::EM<<"    Error Type "<<Result.first<<ELog::endErr;
+      ELog::EM<<"    Error Type: "<<Result.first<<ELog::endErr;
       return -1;
     }
   // First make Code invalid
@@ -331,8 +334,8 @@ FuncDataBase::CheckSyntax(const std::string& FString) const
   int parenthCnt(0);    // Parenthesis
 
   // Check that the last ) exists  
-  char cc=FString[FString.length()-1];
-  if (!isalnum(cc) && cc!=')')
+  const char cc=FString[FString.length()-1];
+  if (!isalnum(cc) && cc!=')' && cc!=']')
     return retTYPE("Symbol ends expression:",Ind+1);
 
   int foundFunc(0),foundVar(0);
@@ -390,13 +393,6 @@ FuncDataBase::CheckSyntax(const std::string& FString) const
 		  if (cIndex=='(')
 		    return retTYPE("Variable used as a function",Ind+1);
 		}
-	      // Commands do not need to be maths object, but components 
-	      // of commands do:
-//	      else if (!cmdPDepth.empty() && parenthCnt!=cmdPDepth.back() &&
-//		       !StrFunc::convert(Fpart,num))
-//	        {
-//		  return retTYPE("Unable to convert expression to number",Ind+1);
-//		}
 	    }
 	}
       else 
@@ -445,7 +441,7 @@ FuncDataBase::Compile(const std::string& FString)
       ELog::EM<<"Compile error:"<<Error.what()<<ELog::endErr;
       return 0;
     }
-  // Do the work here (a lot!)
+
   return 1;
 }
 
@@ -648,6 +644,7 @@ FuncDataBase::compileElement(const std::string& FString,const size_t Ind)
      \returns Index point (place that processing finished)
   */
 {
+  ELog::RegMethod RegA("FuncDataBase","compileElement");
   const char c = FString[Ind];
   if(c == '(')
     {
@@ -658,7 +655,9 @@ FuncDataBase::compileElement(const std::string& FString,const size_t Ind)
 
   const funcList& FList(*funcList::Instance());
   double num;
-  size_t numflag=StrFunc::convPartNum(FString.substr(Ind),num);
+  Geometry::Vec3D numV;
+
+  const size_t numflag=StrFunc::convPartNum(FString.substr(Ind),num);
   if(numflag)
     {
       Build.addImmediate(num);
@@ -666,6 +665,7 @@ FuncDataBase::compileElement(const std::string& FString,const size_t Ind)
       Build.addStackPtr(2);
       return Ind+numflag;
     }
+
 
   std::string FPart=getItem(FString.substr(Ind));
   if(!FPart.empty())     // Function, variable or constant
@@ -934,6 +934,39 @@ FuncDataBase::writeXML(const std::string& FName) const
   return;
 }
 
+
+size_t
+FuncDataBase::convPartVec(const std::string& A,
+			  Geometry::Vec3D& out)
+/*!
+  Takes a character string and evaluates 
+  the first vector obejct
+  Format Vec[3,4,5]
+  
+  it allows trailing characters after the number. 
+  \param A :: string to process
+  \param out :: place for output
+  \retval number of char read on success
+  \retval 0 on failure
+*/ 
+{
+  if (A.size()<10) return 0;
+
+  std::string APart(A);
+  boost::regex Re("^\\s*Vec3D\\s*\\[(.*?)\\]");
+  std::string OutVec;
+  Geometry::Vec3D AVec;
+  if (StrFunc::StrFullCut(APart,Re,OutVec,0) &&
+      StrFunc::section(OutVec,AVec))
+    {
+      out=AVec;
+      ELog::EM<<"AVec == "<<AVec<<ELog::endDiag;
+      return 1+A.size()-APart.size();
+    }
+
+  return 0;
+}
+
 /// \cond TEMPLATE
 
 template void FuncDataBase::addVariable(const std::string&,const Geometry::Vec3D&);
@@ -941,17 +974,24 @@ template void FuncDataBase::addVariable(const std::string&,const double&);
 template void FuncDataBase::addVariable(const std::string&,const std::string&);
 template void FuncDataBase::addVariable(const std::string&,const Code&);
 template void FuncDataBase::addVariable(const std::string&,const int&);
+template void FuncDataBase::addVariable(const std::string&,const long int&);
 template void FuncDataBase::addVariable(const std::string&,const size_t&);
 
 
-template void FuncDataBase::setVariable(const std::string&,const Geometry::Vec3D&);
+template void FuncDataBase::setVariable(const std::string&,
+					const Geometry::Vec3D&);
 template void FuncDataBase::setVariable(const std::string&,const double&);
 template void FuncDataBase::setVariable(const std::string&,const std::string&);
 template void FuncDataBase::setVariable(const std::string&,const Code&);
 template void FuncDataBase::setVariable(const std::string&,const int&);
+template void FuncDataBase::setVariable(const std::string&,const long int&);
 template void FuncDataBase::setVariable(const std::string&,const size_t&);
 
+template double FuncDataBase::Eval();
+template Geometry::Vec3D FuncDataBase::Eval();
+
 template double FuncDataBase::EvalVar(const std::string&) const;
+template long int FuncDataBase::EvalVar(const std::string&) const;
 template Geometry::Vec3D FuncDataBase::EvalVar(const std::string&) const;
 template int FuncDataBase::EvalVar(const std::string&) const;
 template size_t FuncDataBase::EvalVar(const std::string&) const;
@@ -996,3 +1036,4 @@ template Geometry::Vec3D FuncDataBase::EvalPair(const std::string&,
 
 /// \endcond TEMPLATE
  
+

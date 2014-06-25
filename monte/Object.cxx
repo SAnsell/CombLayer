@@ -1041,7 +1041,7 @@ Object::trackCell(const MonteCarlo::neutron& N,double& D,
   int bestPairValid(0);
   for(size_t i=0;i<dPts.size();i++)
     {
-      // Is point possible closter
+      // Is point possible closer
       if ( ( surfIndex[i]->getName()!=startSurf || 
 	     dPts[i]>10.0*Geometry::zeroTol) &&
 	   (dPts[i]>0.0 && dPts[i]<D) )

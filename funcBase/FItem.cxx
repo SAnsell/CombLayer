@@ -95,6 +95,18 @@ FItem::setValue(const size_t&)
 }
 
 void 
+FItem::setValue(const long int&)
+  /*!
+    Default setValue throws 
+    ExBase error 
+  */
+{
+  ELog::RegMethod RegA("FItem","setValue(long int)");
+  throw ColErr::ExBase(0,"Incorrect Type");
+  return;
+}
+
+void 
 FItem::setValue(const Geometry::Vec3D&)
   /*!
     Default setValue throws 

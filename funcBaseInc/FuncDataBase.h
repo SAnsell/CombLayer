@@ -22,6 +22,7 @@
 #ifndef FuncDataBase_h
 #define FuncDataBase_h
 
+
 class FItem;
 
 /*!
@@ -62,6 +63,8 @@ class FuncDataBase
   int stripEqual(std::string&);
   std::string subProcVar(std::string&) const;
 
+  static size_t convPartVec(const std::string&,Geometry::Vec3D&);
+
  public:
 
   FuncDataBase();
@@ -77,7 +80,8 @@ class FuncDataBase
   //  void setFuncParser(const std::string&,const FuncDataBase&);
   
   int Parse(const std::string&);
-  double Eval();
+  template<typename T>
+  T Eval();
   template<typename T>
   T EvalVar(const std::string&) const;      
   template<typename T>

@@ -222,11 +222,30 @@ ReactorGrid::getElementName(const std::string& Name,const size_t I,
    \return Full resolved anme
  */
 {
-  ELog::RegMethod RegA("ReactorGrid","getElement");
+  ELog::RegMethod RegA("ReactorGrid","getElementName");
   
   std::string Out(Name);
   Out+=std::string(1,static_cast<char>(I)+'A');
   Out+=StrFunc::makeString(J);
+  return Out;
+}
+
+std::pair<size_t,size_t>
+ReactorGrid::getElementNumber(const std::string& Name)
+ /*!
+   Check to convert a Name + a number string into a variable state:
+   \param Name :: Master name
+   \return Index numbers [A1 ==> 0 0]
+ */
+{
+  ELog::RegMethod RegA("ReactorGrid","getElementNumber");
+
+  if (Name.size()!=2 && Name.size()!=3)
+    throw ColErr::InvalidLine(Name,"Name wrong size",Name.size());
+  std::pair<size_t,size_t> Out;
+  Out.first=toupper(Name[0])-static_cast<size_t>('A');
+  if (!StrFunc::convert(Name.substr(1),Out.second))
+    throw ColErr::InvalidLine(Name,"Name number not understood");
   return Out;
 }
 

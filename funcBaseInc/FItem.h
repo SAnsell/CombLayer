@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   funcBaseInc/FItem.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,19 +61,20 @@ class FItem
   virtual void setValue(const double&);
   virtual void setValue(const int&);
   virtual void setValue(const size_t&);
+  virtual void setValue(const long int&);
   virtual void setValue(const std::string&);
   virtual void setValue(const Code&);
 
   /// Accessor to active
   int isActive() const { return active; }
-
   ///\cond ABSTRACT
 
-  virtual void getValue(Geometry::Vec3D&) const= 0;
-  virtual void getValue(size_t&) const= 0;
-  virtual void getValue(int&) const= 0; 
-  virtual void getValue(double&) const= 0;
-  virtual void getValue(std::string&) const= 0; 
+  virtual int getValue(Geometry::Vec3D&) const= 0;
+  virtual int getValue(size_t&) const= 0;
+  virtual int getValue(int&) const= 0; 
+  virtual int getValue(long int&) const= 0; 
+  virtual int getValue(double&) const= 0;
+  virtual int getValue(std::string&) const= 0; 
 
   virtual std::string typeKey() const =0;
   virtual void write(std::ostream&) const=0;  
@@ -108,13 +109,15 @@ class FValue : public FItem
   virtual void setValue(const double&);
   virtual void setValue(const size_t&); 
   virtual void setValue(const int&);
+  virtual void setValue(const long int&);
   virtual void setValue(const std::string&);
   
-  virtual void getValue(Geometry::Vec3D&) const;
-  virtual void getValue(int&) const;     
-  virtual void getValue(size_t&) const;     
-  virtual void getValue(double&) const;     
-  virtual void getValue(std::string&) const;
+  virtual int getValue(Geometry::Vec3D&) const;
+  virtual int getValue(int&) const;     
+  virtual int getValue(long int&) const;     
+  virtual int getValue(size_t&) const;     
+  virtual int getValue(double&) const;     
+  virtual int getValue(std::string&) const;
 
   virtual std::string typeKey() const;
   void write(std::ostream&) const;  
@@ -147,11 +150,12 @@ class FFunc : public FItem
 
   void setValue(const Code&);
 
-  virtual void getValue(Geometry::Vec3D&) const;  
-  virtual void getValue(int&) const;     
-  virtual void getValue(size_t&) const;     
-  virtual void getValue(double&) const;     
-  virtual void getValue(std::string&) const;
+  virtual int getValue(Geometry::Vec3D&) const;  
+  virtual int getValue(int&) const;     
+  virtual int getValue(long int&) const;     
+  virtual int getValue(size_t&) const;     
+  virtual int getValue(double&) const;     
+  virtual int getValue(std::string&) const;
 
   virtual std::string typeKey() const;
   void write(std::ostream&) const;

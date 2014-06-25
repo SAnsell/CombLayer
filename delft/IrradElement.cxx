@@ -79,6 +79,8 @@ IrradElement::IrradElement(const size_t XI,const size_t YI,
   RElement(XI,YI,Key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
+    \param XI :: Grid index  [A-F]
+    \param YI :: Grid index 
   */
 {}
 

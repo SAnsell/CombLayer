@@ -109,6 +109,8 @@ class ReactorGrid : public attachSystem::FixedComp,
   // Helper for the fuel element  
   static std::string getElementName(const std::string&,
 				    const size_t,const size_t);
+  static std::pair<size_t,size_t> getElementNumber(const std::string&);
+
   /// Access water material for inner objects
   int getWaterMat() const { return waterMat; }
 

@@ -77,7 +77,8 @@ BlockAddition::BlockAddition(const std::string& Key) :
   attachSystem::ContainedComp(),attachSystem::LayerComp(0),
   attachSystem::FixedComp(Key,6),
   blockIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(blockIndex+1),active(0),edgeSurf(0)
+  cellIndex(blockIndex+1),active(0),nLayers(0),
+  edgeSurf(0)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -90,8 +91,8 @@ BlockAddition::BlockAddition(const BlockAddition& A) :
   blockIndex(A.blockIndex),cellIndex(A.cellIndex),
   active(A.active),xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
   xyAngle(A.xyAngle),zAngle(A.zAngle),length(A.length),
-  height(A.height),width(A.width),wallThick(A.wallThick),
-  gap(A.gap),waterMat(A.waterMat),wallMat(A.wallMat),
+  height(A.height),width(A.width),nLayers(A.nLayers),
+  wallThick(A.wallThick),waterMat(A.waterMat),
   edgeSurf(A.edgeSurf)
   /*!
     Copy constructor
@@ -122,10 +123,9 @@ BlockAddition::operator=(const BlockAddition& A)
       length=A.length;
       height=A.height;
       width=A.width;
+      nLayers=A.nLayers;
       wallThick=A.wallThick;
-      gap=A.gap;
       waterMat=A.waterMat;
-      wallMat=A.wallMat;
       edgeSurf=A.edgeSurf;
     }
   return *this;
@@ -182,11 +182,31 @@ BlockAddition::populate(const FuncDataBase& Control)
   length=Control.EvalVar<double>(keyName+"Length");   
   width=Control.EvalVar<double>(keyName+"Width");   
   height=Control.EvalVar<double>(keyName+"Height");   
-  wallThick=Control.EvalVar<double>(keyName+"WallThick");   
-  gap=Control.EvalVar<double>(keyName+"Gap");  
- 
-  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");   
+
   waterMat=ModelSupport::EvalMat<int>(Control,keyName+"WaterMat");   
+  
+  nLayers=Control.EvalVar<size_t>(keyName+"NLayers");   
+  double WT(0.0),T(0.0);
+  int M(waterMat);
+  
+  wallThick.push_back(WT);
+  wallTemp.push_back(T);
+  wallMat.push_back(M);
+  
+  for(size_t i=1;i<nLayers;i++)
+    {
+      WT+=Control.EvalVar<double>
+	(StrFunc::makeString(keyName+"WallThick",i));   
+      M=ModelSupport::EvalMat<int>
+	(Control,StrFunc::makeString(keyName+"WallMat",i));   
+
+      T=Control.EvalDefVar<double>
+	(StrFunc::makeString(keyName+"WallTemp",i),0.0);   
+            
+      wallThick.push_back(WT);
+      wallTemp.push_back(T);
+      wallMat.push_back(M);
+    }
   
   return;
 }
@@ -211,7 +231,7 @@ BlockAddition::createUnitVector(const Geometry::Vec3D& O,
   Y=YAxis;
   X=Z*Y;
   
-  applyShift(xStep+wallThick,yStep,zStep);
+  applyShift(xStep+wallThick.back(),yStep,zStep);
   applyAngleRotate(xyAngle,zAngle);
   if (PPtr && PPtr->getNormal().dotProd(X)<0.0)
     X*=-1.0;
@@ -236,35 +256,22 @@ BlockAddition::createSurfaces()
 				      SMap.realPtr<Geometry::Plane>(edgeSurf),
 				      xyAngle,Z,rotCent);
     }
-  ModelSupport::buildPlane(SMap,blockIndex+2,Origin+Y*length,Y);  
-  ModelSupport::buildPlane(SMap,blockIndex+3,Origin,X);  
-  ModelSupport::buildPlane(SMap,blockIndex+4,Origin+X*width,X);  
-  ModelSupport::buildPlane(SMap,blockIndex+5,Origin-Z*height/2.0,Z);  
-  ModelSupport::buildPlane(SMap,blockIndex+6,Origin+Z*height/2.0,Z);  
 
-  // Walls planes
-  ModelSupport::buildPlane(SMap,blockIndex+12,
-			   Origin+Y*(length+wallThick),Y);  
-  ModelSupport::buildPlane(SMap,blockIndex+13,
-			   Origin-X*wallThick,X);  
-  ModelSupport::buildPlane(SMap,blockIndex+14,
-			   Origin+X*(width+wallThick),X);  
-  ModelSupport::buildPlane(SMap,blockIndex+15,
-			   Origin-Z*(height/2.0+wallThick),Z);  
-  ModelSupport::buildPlane(SMap,blockIndex+16,  
-			   Origin+Z*(height/2.0+wallThick),Z);  
-		       
-  // Gap planes
-  ModelSupport::buildPlane(SMap,blockIndex+22,
-			   Origin+Y*(length+wallThick+gap),Y);  
-  ModelSupport::buildPlane(SMap,blockIndex+23,
-			   Origin-X*(wallThick+gap),X);  
-  ModelSupport::buildPlane(SMap,blockIndex+24,
-			   Origin+X*(width+wallThick+gap),X);  
-  ModelSupport::buildPlane(SMap,blockIndex+25,
-			   Origin-Z*(height/2.0+wallThick+gap),Z);  
-  ModelSupport::buildPlane(SMap,blockIndex+26,  
-			   Origin+Z*(height/2.0+wallThick+gap),Z);  
+  int BI(blockIndex);
+  for(size_t i=0;i<nLayers;i++)
+    {
+      ModelSupport::buildPlane(SMap,BI+2,
+			       Origin+Y*(length+wallThick[i]),Y);
+      ModelSupport::buildPlane(SMap,BI+3,
+			       Origin-X*wallThick[i],X);
+      ModelSupport::buildPlane(SMap,BI+4,
+			       Origin+X*(width+wallThick[i]),X);
+      ModelSupport::buildPlane(SMap,BI+5,
+			       Origin-Z*(height/2.0+wallThick[i]),Z);
+      ModelSupport::buildPlane(SMap,BI+6,
+			       Origin+Z*(height/2.0+wallThick[i]),Z);
+      BI+=10;
+    }
 		       
 
   return; 
@@ -323,7 +330,7 @@ BlockAddition::createObjects(Simulation& System,
   /*!
     Create the block object
     \param System :: Simulation to add results
-    \param CMod :: Moderator fixed unit
+    \param PMod :: Moderator fixed unit
     \param layerIndex :: Layer number
     \param sideIndex :: surface number
   */
@@ -343,21 +350,24 @@ BlockAddition::createObjects(Simulation& System,
       Out+=preModInner;
       System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));
   
-      Out=ModelSupport::getComposite(SMap,blockIndex,
-				     "1 -12 13 -14 15 -16 (2:-3:4:-5:6)");
-      Out+=preModInner;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
-      
-      Out=ModelSupport::getComposite(SMap,blockIndex,
-				     "1 -22 23 -24 25 -26 (12:-13:14:-15:16)");
-      Out+=preModOuter;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-      
-      
-      Out=ModelSupport::getComposite(SMap,blockIndex,"1 -22 23 -24 25 -26 ");
-      //  Out+=PMod.getLinkString(layerIndex+2,sideIndex);
+
+      int SI(blockIndex);
+      for(size_t i=1;i<nLayers;i++)
+	{ 
+	  Out=ModelSupport::getComposite(SMap,SI,blockIndex,
+					 "1M -12 13 -14 15 -16 (2:-3:4:-5:6)");
+	  if(i==1)
+	    Out+=preModInner;
+	  else
+	    Out+=preModOuter;
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat[i],0.0,Out));
+	  SI+=10;
+	}
+
+      Out=ModelSupport::getComposite(SMap,SI,blockIndex,"1M -2 3 -4 5 -6 ");
       addOuterSurf(Out);
     }
+
   return; 
 }
 
@@ -370,8 +380,8 @@ BlockAddition::createCut(const size_t layerIndex) const
    */
 {
   ELog::RegMethod RegA("BlockAddition","createCut");
-  if (layerIndex>=3)
-    throw ColErr::IndexError<size_t>(layerIndex,3,"layerIndex");
+  if (layerIndex>=nLayers)
+    throw ColErr::IndexError<size_t>(layerIndex,nLayers,keyName+":layerIndex");
   
   std::string Out;
   if (active)
@@ -394,20 +404,27 @@ BlockAddition::createLinks()
   FixedComp::setConnect(0,Origin,-Y);
   FixedComp::setLinkSurf(0,SMap.realSurf(blockIndex+1));
 
-  FixedComp::setConnect(1,Origin+Y*(length+wallThick+gap),Y);  
-  FixedComp::setLinkSurf(1,SMap.realSurf(blockIndex+22));
+  if (nLayers)
+    {
+      const int BI(blockIndex+10*static_cast<int>(nLayers-1));
+      
+      FixedComp::setConnect(1,Origin+Y*(length+wallThick.back()),Y);
+      FixedComp::setLinkSurf(1,SMap.realSurf(BI+2));
+      
+      FixedComp::setConnect(2,Origin-X*wallThick.back(),-X);
+      FixedComp::setLinkSurf(2,SMap.realSurf(BI+3));
+      
+      FixedComp::setConnect(3,Origin+X*(width+wallThick.back()),X);
+      FixedComp::setLinkSurf(3,SMap.realSurf(BI+4));
 
-  FixedComp::setConnect(2,Origin-X*(wallThick+gap),-X);  
-  FixedComp::setLinkSurf(2,SMap.realSurf(blockIndex+23));
-
-  FixedComp::setConnect(3,Origin+X*(wallThick+gap),X);  
-  FixedComp::setLinkSurf(3,SMap.realSurf(blockIndex+24));
-
-  FixedComp::setConnect(4,Origin-Z*(height/2.0+wallThick+gap),-Z);  
-  FixedComp::setLinkSurf(4,SMap.realSurf(blockIndex+25));
-
-  FixedComp::setConnect(5,Origin+Z*(height/2.0+wallThick+gap),Z);  
-  FixedComp::setLinkSurf(5,SMap.realSurf(blockIndex+26));
+      FixedComp::setConnect(4,Origin-Z*(height/2.0+wallThick.back()),-Z);
+      FixedComp::setLinkSurf(4,SMap.realSurf(BI+5));
+      
+      FixedComp::setConnect(5,Origin+Z*(height/2.0+wallThick.back()),Z);
+      FixedComp::setLinkSurf(5,SMap.realSurf(BI+6));
+    }
+  else 
+    ELog::EM<<"NO Layers in BlockAddition"<<ELog::endErr;
   
   return;
 }
@@ -418,18 +435,17 @@ BlockAddition::getSurfacePoint(const size_t layerIndex,
   /*!
     Given a side and a layer calculate the link point
     \param sideIndex  :: Side [0-5]
-    \param layerIndex :: Layer, 0 is inner moderator [0-6]
+    \param layerIndex :: Layer, 0 is inner moderator 
     \return Surface point
   */
 {
   ELog::RegMethod RegA("BlockAddition","getSurfacePoint");
 
-  if (layerIndex>2) 
-    throw ColErr::IndexError<size_t>(layerIndex,2,"layer");
+  if (layerIndex>=nLayers) 
+    throw ColErr::IndexError<size_t>(layerIndex,nLayers,"nLayer/layerIndex");
 
-  double outDist(0.0);
-  if (layerIndex>0) outDist+=wallThick;
-  if (layerIndex>1) outDist+=gap;
+  const double outDist=wallThick[layerIndex];
+
   switch(sideIndex)
     {
     case 0:
@@ -437,13 +453,13 @@ BlockAddition::getSurfacePoint(const size_t layerIndex,
     case 1:
       return Origin+Y*(outDist+length);
     case 2:
-      return Origin-Z*(outDist+height/2.0);
+      return Origin-X*outDist;
     case 3:
-      return Origin+Z*(outDist+height/2.0);
+      return Origin+X*(outDist+width);
     case 4:
-      return Origin-X*(outDist+width/2.0);
+      return Origin-Z*(outDist+height/2.0);
     case 5:
-      return Origin+X*(outDist+width/2.0);
+      return Origin+Z*(outDist+height/2.0);
     }
   throw ColErr::IndexError<size_t>(sideIndex,6,"sideIndex ");
 }
@@ -454,17 +470,18 @@ BlockAddition::getLayerSurf(const size_t layerIndex,
   /*!
     Given a side and a layer calculate the layerSurface
     \param sideIndex :: Side [0-5]
-    \param layerIndex :: layer, 0 is inner moderator [0-4]
-    \return Surface string
+    \param layerIndex :: layer, 0 is inner
+    \return Surface number [signed]
   */
 {
   ELog::RegMethod RegA("BlockAddition","getLayerSurf");
 
-  if (layerIndex>2) 
-    throw ColErr::IndexError<size_t>(layerIndex,2,"layer");
+  if (layerIndex>=nLayers) 
+    throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer/layerIndex");
 
   if (sideIndex>5)
     throw ColErr::IndexError<size_t>(sideIndex,6,"sideIndex");
+
   const int SI(blockIndex+10*static_cast<int>(layerIndex));
   const int SN(static_cast<int>(sideIndex+1));
 
@@ -477,7 +494,7 @@ BlockAddition::getLayerSurf(const size_t layerIndex,
 
 std::string
 BlockAddition::getLayerString(const size_t layerIndex,
-			     const size_t sideIndex) const
+			      const size_t sideIndex) const
   /*!
     Given a side and a layer calculate the layerSurface
     \param sideIndex :: Side [0-5]
@@ -487,8 +504,8 @@ BlockAddition::getLayerString(const size_t layerIndex,
 {
   ELog::RegMethod RegA("BlockAddition","getLayerString");
 
-  if (layerIndex>2) 
-    throw ColErr::IndexError<size_t>(layerIndex,2,"layer");
+  if (layerIndex>=nLayers) 
+    throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
 
   if (sideIndex>5)
     throw ColErr::IndexError<size_t>(sideIndex,6,"sideIndex");

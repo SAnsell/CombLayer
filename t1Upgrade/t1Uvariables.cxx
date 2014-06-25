@@ -126,6 +126,8 @@ void TS1CylMod(FuncDataBase& Control)
   Control.addVariable("H2CylModConic4WallMat","Aluminium");
   Control.addVariable("H2CylModConic4Wall",0.2);
 
+  Control.addVariable("H2CylModNWedge",0);
+
   Control.addVariable("H2CylPreNLayers",5);  
   Control.addVariable("H2CylPreHeight1",0.3);  
   Control.addVariable("H2CylPreDepth1",0.3);  
@@ -175,7 +177,7 @@ TS1upgrade(FuncDataBase& Control)
   Control.addVariable("t1CylFluxTrapZOffset",0.0);    // Offset ref centre
   Control.addVariable("t1CylTargetZOffset",0.0);    // Offset ref centre  
   Control.addVariable("t1EllCylTargetZStep",0.0);    // Offset ref centre
-  Control.addVariable("t1CylTargetMainLength",42.5);    // Offset ref centre
+  Control.addVariable("t1CylTargetMainLength",35.2);    // Offset ref centre
   Control.addVariable("t1InnerZStep",1.85);    // Offset ref centre
   Control.addVariable("t1CannelloniZStep",1.85);    // Offset ref centre
   Control.addVariable("sdefZOffset",1.85);            //Offset of source
@@ -211,7 +213,6 @@ TS1upgrade(FuncDataBase& Control)
   Control.addVariable("BWindowInconelMat","Inconnel");  
   Control.addVariable("BWindowWaterMat","H2O");   // Light water
 
-
   // WATER MODERATOR
   Control.addVariable("TriModXStep",5.0);
   Control.addVariable("TriModYStep",17.0);
@@ -226,6 +227,9 @@ TS1upgrade(FuncDataBase& Control)
   Control.addVariable("TriModAbsolute4",1);
   Control.addVariable("TriModAbsolute5",1);
   Control.addVariable("TriModAbsolute6",1);
+  Control.addVariable("TriModAbsXStep",0.0);
+  Control.addVariable("TriModAbsYStep",0.0);
+  Control.addVariable("TriModAbsZStep",0.0);
   Control.addVariable("TriModCorner1",Geometry::Vec3D(-9.50,31.14,0.0)); 
   Control.addVariable("TriModCorner2",Geometry::Vec3D(-0.22,13.92,0)); 
   Control.addVariable("TriModCorner3",Geometry::Vec3D(12.5,2.75,0.0)); 
@@ -272,32 +276,141 @@ TS1upgrade(FuncDataBase& Control)
   Control.addVariable("TriModModMat","H2O");
   Control.addVariable("TriModWallMat","Aluminium");
   Control.addVariable("TriModModTemp",300.0);
+
+  Control.addVariable("TriModNFlight",2);
+  Control.addVariable("TriModFlightSide0",3);
+  Control.addVariable("TriModFlightSide1",5);
+
+  //
+  // TRIMOD LAYER
+  //
+  Control.addVariable("TriModLayerXStep",3.0);
+  Control.addVariable("TriModLayerYStep",6.0);
+  Control.addVariable("TriModLayerZStep",13.0);
+  Control.addVariable("TriModLayerXYangle",-60.0);
+  Control.addVariable("TriModLayerZangle",0.0);
+
+  Control.addVariable("TriModLayerNPoison",0); 
+  Control.addVariable("TriModLayerPYStep1",0.0);       // for 1 poison layer
+  Control.addVariable("TriModLayerPYStep2",0.8);       // for 2 poison layer
+  Control.addVariable("TriModLayerPGdThick",0.005);      //
+  Control.addVariable("TriModLayerPCladThick",0.1);      //             
+  Control.addVariable("TriModLayerPoisonMat","Gadolinium");      
+  
+  Control.addVariable("TriModLayerNLayer",6);   
+  Control.addVariable("TriModLayerNPoison",0);   
+
+  Control.addVariable("TriModLayerHeight1",12.6);   
+  Control.addVariable("TriModLayerWidth1",30.0);   
+  Control.addVariable("TriModLayerFront1",2.5);   
+  Control.addVariable("TriModLayerBack1",-0.5);   
+
+  // Void
+  Control.addVariable("TriModLayerHeight1",12.6);   
+  Control.addVariable("TriModLayerWidth1",30.0);   
+  Control.addVariable("TriModLayerFront1",2.5);   
+  Control.addVariable("TriModLayerBack1",-0.5);   
+  Control.addVariable("TriModLayerMat1","Void");   
+
+  // Al inner
+  Control.addVariable("TriModLayerLayer2",0.3); 
+  Control.addVariable("TriModLayerHeight2",0.0);        
+  Control.addVariable("TriModLayerWidth2",0.6);
+  Control.addVariable("TriModLayerFront2",0.3);   
+  Control.addVariable("TriModLayerBack2",0.3);  
+  Control.addVariable("TriModLayerTop2",0.0);   
+  Control.addVariable("TriModLayerBase2",0.0);
+  Control.addVariable("TriModLayerLeft2",0.3);   
+  Control.addVariable("TriModLayerRight2",0.3);  
+  Control.addVariable("TriModLayerMat2","Aluminium");   
+
+  // Water
+  Control.addVariable("TriModLayerLayer3",0.005);
+  Control.addVariable("TriModLayerHeight3",0.0);   
+  Control.addVariable("TriModLayerWidth3",0.0);    
+  Control.addVariable("TriModLayerFront3",0.005);   
+  Control.addVariable("TriModLayerBack3",0.0);   
+  Control.addVariable("TriModLayerMat3","Gadolinium");   
+
+
+  // Al layer
+  Control.addVariable("TriModLayerLayer4",2.6);   
+  Control.addVariable("TriModLayerHeight4",0.0);   
+  Control.addVariable("TriModLayerWidth4",4.0);
+  Control.addVariable("TriModLayerFront4",1.495);   
+  Control.addVariable("TriModLayerBack4",4.5);        
+  Control.addVariable("TriModLayerMat4","H2O");     
+
+  // Void
+  Control.addVariable("TriModLayerLayer5",0.3);
+  Control.addVariable("TriModLayerHeight5",0.6);   
+  Control.addVariable("TriModLayerWidth5",0.6);
+  Control.addVariable("TriModLayerFront5",0.3);   
+  Control.addVariable("TriModLayerBack5",0.3);  
+  Control.addVariable("TriModLayerTop5",0.3);   
+  Control.addVariable("TriModLayerBase5",0.3);
+  Control.addVariable("TriModLayerLeft5",0.3);   
+  Control.addVariable("TriModLayerRight5",0.3);  
+  Control.addVariable("TriModLayerMat5","Aluminium");     
+
+  // Decoupler Al
+  Control.addVariable("TriModLayerLayer6",0.6);
+  Control.addVariable("TriModLayerHeight6",1.2);   
+  Control.addVariable("TriModLayerWidth6",1.2);     
+  Control.addVariable("TriModLayerFront6",0.6);   
+  Control.addVariable("TriModLayerBack6",0.6);
+  Control.addVariable("TriModLayerTop6",0.6);   
+  Control.addVariable("TriModLayerBase6",0.6);
+  Control.addVariable("TriModLayerLeft6",0.6);   
+  Control.addVariable("TriModLayerRight6",0.6);       
+  Control.addVariable("TriModLayerMat6","Void");    
+  
+  // Decoupler Cd 
+  Control.addVariable("TriModLayerLayer7",0.12);
+  Control.addVariable("TriModLayerHeight7",0.24);   
+  Control.addVariable("TriModLayerWidth7",0.24);     
+  Control.addVariable("TriModLayerFront7",0.0);   
+  Control.addVariable("TriModLayerBack7",0.0);
+  Control.addVariable("TriModLayerTop7",0.12);   
+  Control.addVariable("TriModLayerBase7",0.0);
+  Control.addVariable("TriModLayerLeft7",0.12);   
+  Control.addVariable("TriModLayerRight7",0.12);          
+  Control.addVariable("TriModLayerMat7","Cadmium");     
+
+  // Outer vac layer 
+  Control.addVariable("TriModLayerLayer8",0.6);   
+  Control.addVariable("TriModLayerMat8","Void");     
+
+  Control.addVariable("TriModLayerNFlight",2);
+  Control.addVariable("TriModLayerFlightSide0",1);
+  Control.addVariable("TriModLayerFlightSide1",2);
+
   
   // FLIGHTLINES : 
-  Control.addVariable("TriFlightASideIndex",5);     
-  Control.addVariable("TriFlightAXStep",5.0);      // Step from centre  
-  Control.addVariable("TriFlightAZStep",0.5);      // Step from centre  
-  Control.addVariable("TriFlightAAngleXY1",72.0);  // Angle out
-  Control.addVariable("TriFlightAAngleXY2",-27.0);  // Angle out
+  Control.addVariable("TriFlightASideIndex",7);     
+  Control.addVariable("TriFlightAXStep",0.0);      // Step from centre  
+  Control.addVariable("TriFlightAZStep",0.7);      // Step from centre  
+  Control.addVariable("TriFlightAAngleXY1",25.0);  // Angle out
+  Control.addVariable("TriFlightAAngleXY2",0.0);  // Angle out
   Control.addVariable("TriFlightAAngleZTop",0.0);  // Step down angle
   Control.addVariable("TriFlightAAngleZBase",0.0); // Step up angle
   Control.addVariable("TriFlightAHeight",10.0);     // Full height
-  Control.addVariable("TriFlightAWidth",28.0);     // Full width
+  Control.addVariable("TriFlightAWidth",33.5);     // Full width
   Control.addVariable("TriFlightANLiner",2);           // Number of layers
   Control.addVariable("TriFlightALinerThick1",0.5);    // Thickness
   Control.addVariable("TriFlightALinerThick2",0.12);   // Thickness
   Control.addVariable("TriFlightALinerMat1","Aluminium");
   Control.addVariable("TriFlightALinerMat2","Cadmium");  
 
-  Control.addVariable("TriFlightBSideIndex",1);      // Surface
-  Control.addVariable("TriFlightBXStep",5.3);        // Step from centre  
+  Control.addVariable("TriFlightBSideIndex",3);      // Surface
+  Control.addVariable("TriFlightBXStep",0.0);        // Step from centre  
   Control.addVariable("TriFlightBZStep",0.5);        // Step from centre  
   Control.addVariable("TriFlightBAngleXY1",10.0);     // Angle out [lower]
   Control.addVariable("TriFlightBAngleXY2",35.0);   // Angle out [top]
   Control.addVariable("TriFlightBAngleZTop",0.0);    // Step down angle
   Control.addVariable("TriFlightBAngleZBase",0.0);   // Step up angle
   Control.addVariable("TriFlightBHeight",10.0);      // Full height
-  Control.addVariable("TriFlightBWidth",22.0);       // Full width  
+  Control.addVariable("TriFlightBWidth",33.5);       // Full width  
   Control.addVariable("TriFlightBNLiner",2);           // Number of layers
   Control.addVariable("TriFlightBLinerThick1",0.5);    // Thickness
   Control.addVariable("TriFlightBLinerThick2",0.12);    // Thickness
@@ -318,9 +431,11 @@ TS1upgrade(FuncDataBase& Control)
   Control.addVariable("H2ModZStep",-13.2);     
   Control.addVariable("H2ModXYangle",91.5);  
   Control.addVariable("H2ModZangle",0.0);  
+  Control.addVariable("H2ModNLayers",3);  
   Control.addVariable("H2ModDepth",10.0);      
   Control.addVariable("H2ModWidth",12.0);   
-  Control.addVariable("H2ModHeight",12.0);   
+  Control.addVariable("H2ModHeight",12.0); 
+  
 
   Control.addVariable("H2ModVacGap",0.4);     
   Control.addVariable("H2ModHeGap",0.2);     
@@ -376,7 +491,7 @@ TS1upgrade(FuncDataBase& Control)
   Control.addVariable("CH4ModLayer6",0.2);    // Outer Al
   Control.addVariable("CH4ModLayer7",0.5);       // outer vac
 
-  Control.addVariable("CH4ModMat1","CH4Liq");      
+  Control.addVariable("CH4ModMat1","CH4Liq110K");      
   Control.addVariable("CH4ModMat2","Aluminium");  
   Control.addVariable("CH4ModMat3","Void");       
   Control.addVariable("CH4ModMat4","Aluminium");   
@@ -384,8 +499,8 @@ TS1upgrade(FuncDataBase& Control)
   Control.addVariable("CH4ModMat6","Aluminium");   
   Control.addVariable("CH4ModMat7","Void");        
 
-  Control.addVariable("CH4ModTemp1",100.0);            // liquid CH4
-  Control.addVariable("CH4ModTemp2",100.0);            // liquid CH4
+  Control.addVariable("CH4ModTemp1",110.0);            // liquid CH4
+  Control.addVariable("CH4ModTemp2",110.0);            // liquid CH4
 
 
   // Poison !!!!  
@@ -408,7 +523,7 @@ TS1upgrade(FuncDataBase& Control)
   Control.addVariable("CH4PreFlatWidth",12.0);   
   Control.addVariable("CH4PreFlatHeight",1.0);   
   Control.addVariable("CH4PreFlatAlThick",0.3);   
-  Control.addVariable("CH4PreFlatVacThick",0.5);   
+  Control.addVariable("CH4PreFlatVacThick",0.3);   
   Control.addVariable("CH4PreFlatAlMat","Aluminium");            // Al 
   Control.addVariable("CH4PreFlatModMat","H2O");            // Al 
   Control.addVariable("CH4PreFlatModTemp",300);            // Al 
@@ -429,8 +544,8 @@ TS1upgrade(FuncDataBase& Control)
   // FLIGHTLINES : 
   Control.addVariable("H2FlightSideIndex",2);      // Full width
   Control.addVariable("H2FlightXStep",0.0);       // Step from centre
-  Control.addVariable("H2FlightZStep",-0.15);        // Step from centre  
-  Control.addVariable("H2FlightAngleXY1",28.0);   // Angle out  
+  Control.addVariable("H2FlightZStep",-0.65);        // Step from centre  
+  Control.addVariable("H2FlightAngleXY1",20.0);   // Angle out  
   Control.addVariable("H2FlightAngleXY2",23.0);     // Angle out
   Control.addVariable("H2FlightAngleZTop",0.0);    // Step down angle
   Control.addVariable("H2FlightAngleZBase",0.0);   // Step up angle
@@ -444,14 +559,14 @@ TS1upgrade(FuncDataBase& Control)
 
   // FLIGHTLINES : 
   Control.addVariable("CH4FlightASideIndex",1);      // Full width
-  Control.addVariable("CH4FlightAXStep",-1.0);       // Step from centre  
-  Control.addVariable("CH4FlightAZStep",0.85);        // Step from centre  
+  Control.addVariable("CH4FlightAXStep",0.0);       // Step from centre  
+  Control.addVariable("CH4FlightAZStep",0.55);        // Step from centre  
   Control.addVariable("CH4FlightAAngleXY1",23.0);   // Angle out
-  Control.addVariable("CH4FlightAAngleXY2",28.0);     // Angle out
+  Control.addVariable("CH4FlightAAngleXY2",40.0);     // Angle out
   Control.addVariable("CH4FlightAAngleZTop",0.0);    // Step down angle
   Control.addVariable("CH4FlightAAngleZBase",0.0);   // Step up angle
   Control.addVariable("CH4FlightAHeight",10.0);      // Full height
-  Control.addVariable("CH4FlightAWidth",13.5);        // Full width
+  Control.addVariable("CH4FlightAWidth",15.5);        // Full width
   Control.addVariable("CH4FlightANLiner",2);         // Number of layers
   Control.addVariable("CH4FlightALinerThick1",0.5);  // Thickness
   Control.addVariable("CH4FlightALinerThick2",0.12); // Thickness
@@ -459,14 +574,14 @@ TS1upgrade(FuncDataBase& Control)
   Control.addVariable("CH4FlightALinerMat2","Cadmium");  
 // FLIGHTLINES : 
   Control.addVariable("CH4FlightBSideIndex",2);      // Full width
-  Control.addVariable("CH4FlightBXStep",0.0);       // Step from centre
-  Control.addVariable("CH4FlightBZStep",0.85);        // Step from centre  
+  Control.addVariable("CH4FlightBXStep",-1.0);       // Step from centre
+  Control.addVariable("CH4FlightBZStep",0.55);        // Step from centre  
   Control.addVariable("CH4FlightBAngleXY1",23.0);   // Angle out
-  Control.addVariable("CH4FlightBAngleXY2",23.0);     // Angle out
+  Control.addVariable("CH4FlightBAngleXY2",20.0);     // Angle out
   Control.addVariable("CH4FlightBAngleZTop",0.0);    // Step down angle
   Control.addVariable("CH4FlightBAngleZBase",0.0);   // Step up angle
   Control.addVariable("CH4FlightBHeight",10.0);      // Full height
-  Control.addVariable("CH4FlightBWidth",11.5);        // Full width  
+  Control.addVariable("CH4FlightBWidth",13.5);        // Full width  
   Control.addVariable("CH4FlightBNLiner",2);         // Number of layers
   Control.addVariable("CH4FlightBLinerThick1",0.5);  // Thickness
   Control.addVariable("CH4FlightBLinerThick2",0.12); // Thickness
@@ -476,14 +591,18 @@ TS1upgrade(FuncDataBase& Control)
   //
   // METHANE LAYER TEST
   // 
-  Control.addVariable("CH4LayerXStep",0.0);      
-  Control.addVariable("CH4LayerYStep",0.90);  // +9.8    
-  Control.addVariable("CH4LayerZStep",-15.2);     
-  Control.addVariable("CH4LayerXYangle",57.0);  
+  Control.addVariable("CH4LayerXStep",1.7);      
+  Control.addVariable("CH4LayerYStep",2.3);  // +9.8    
+  Control.addVariable("CH4LayerZStep",-13.4);     
+  Control.addVariable("CH4LayerXYangle",60.0);  
   Control.addVariable("CH4LayerZangle",0.0);  
 
   
-  Control.addVariable("CH4LayerNPoison",0);      
+  Control.addVariable("CH4LayerNPoison",0);    
+  Control.addVariable("CH4LayerPYStep1",0.0);       // for 1 poison layer
+  Control.addVariable("CH4LayerPYStep2",0.8);       // for 2 poison layer
+  Control.addVariable("CH4LayerPGdThick",0.005);      //
+  Control.addVariable("CH4LayerPCladThick",0.1);      //               
   Control.addVariable("CH4LayerPoisonMat","Gadolinium");      
   
   Control.addVariable("CH4LayerPCladMat","Aluminium");      
@@ -596,6 +715,132 @@ TS1upgrade(FuncDataBase& Control)
   // Outer vac layer
   Control.addVariable("H2LayerLayer8",0.6);
   Control.addVariable("H2LayerMat8","Void");
+
+  Control.addVariable("H2PipeNSegIn",1);
+  // Central point:
+  Control.addVariable("H2PipePPt0",Geometry::Vec3D(0,-4.0,2.8));
+  Control.addVariable("H2PipePPt1",Geometry::Vec3D(0,19.25,2.8));
+  // Central point [Top]:
+
+  Control.addVariable("H2PipeNRadii",4);
+  Control.addVariable("H2PipeRadius0",1.2);
+  Control.addVariable("H2PipeRadius1",1.3);
+  Control.addVariable("H2PipeRadius2",1.6);
+  Control.addVariable("H2PipeRadius3",2.3);
+  Control.addVariable("H2PipeRadius4",2.5);
+  Control.addVariable("H2PipeRadius5",2.7);
+  Control.addVariable("H2PipeRadius6",2.9);
+  Control.addVariable("H2PipeRadius7",3.5);
+  Control.addVariable("H2PipeRadius8",3.7);
+
+  Control.addVariable("H2PipeMat0","ParaH2");
+  Control.addVariable("H2PipeMat1","Aluminium");
+  Control.addVariable("H2PipeMat2","Aluminium");
+  Control.addVariable("H2PipeMat3","Void");
+  Control.addVariable("H2PipeMat4","Aluminium");
+  Control.addVariable("H2PipeMat5","Void");
+  Control.addVariable("H2PipeMat6","Aluminium");
+  Control.addVariable("H2PipeMat7","Void");
+  Control.addVariable("H2PipeMat8","Aluminium");
+
+  Control.addVariable("H2PipeTemp0",25.0);
+  Control.addVariable("H2PipeTemp1",25.0);
+  Control.addVariable("H2PipeTemp2",25.0);
+  Control.addVariable("H2PipeTemp3",0.0);
+
+  Control.addVariable("H2PipeActive0",3);
+  // Control.addVariable("H2PipeActive1",7);
+  // Control.addVariable("H2PipeActive2",31);
+  //  Control.addVariable("H2PipeActive3",127);
+  // Control.addVariable("H2PipeActive4",511);
+  // Control.addVariable("H2PipeActive5",255);
+  // Control.addVariable("H2PipeActive6",255);
+
+  Control.addVariable("WaterPipeNSegIn",1);
+  // Central point:
+  Control.addVariable("WaterPipePPt0",Geometry::Vec3D(0.0,-1.0,0.0));
+  Control.addVariable("WaterPipePPt1",Geometry::Vec3D(0.0,9.25,0.0));
+  // Central point [Top]:
+
+  Control.addVariable("WaterPipeNRadii",1);
+  Control.addVariable("WaterPipeRadius0",1.5);
+  Control.addVariable("WaterPipeRadius1",1.7);
+  Control.addVariable("WaterPipeRadius2",1.8);
+
+  Control.addVariable("WaterPipeMat0","H2O");
+  Control.addVariable("WaterPipeMat1","Aluminium");
+  Control.addVariable("WaterPipeMat2","Void");
+
+  Control.addVariable("WaterPipeTemp0",0.0);
+  Control.addVariable("WaterPipeTemp1",0.0);
+  Control.addVariable("WaterPipeTemp2",0.0);
+  
+
+  Control.addVariable("WaterReturnNSegIn",1);
+  // Central point:
+  Control.addVariable("WaterReturnPPt0",Geometry::Vec3D(-12.0,-1.0,-4.0));
+  Control.addVariable("WaterReturnPPt1",Geometry::Vec3D(-12.0,29.25,-4.0));
+  // Central point [Top]:
+
+  Control.addVariable("WaterReturnNRadii",3);
+  Control.addVariable("WaterReturnRadius0",1.5);
+  Control.addVariable("WaterReturnRadius1",1.7);
+  Control.addVariable("WaterReturnRadius2",2.0);
+
+  Control.addVariable("WaterReturnMat0","H2O");
+  Control.addVariable("WaterReturnMat1","Aluminium");
+  Control.addVariable("WaterReturnMat2","Void");
+
+  Control.addVariable("WaterReturnTemp0",0.0);
+  Control.addVariable("WaterReturnTemp1",0.0);
+  Control.addVariable("WaterReturnTemp2",0.0);
+
+  Control.addVariable("WaterReturnActive0",3);
+  Control.addVariable("WaterReturnActive1",3);
+
+
+
+  Control.addVariable("CH4PipeNSegIn",1);
+  // Central point:
+  Control.addVariable("CH4PipePPt0",Geometry::Vec3D(-0.346,0.0,0.2));
+  Control.addVariable("CH4PipePPt1",Geometry::Vec3D(-0.346,-30.0,0.2));
+  // Central point [Top]:
+
+  // NUMBER FROM TS1 baseline model
+  Control.addVariable("CH4PipeNRadii",7);
+  Control.addVariable("CH4PipeRadius0",0.6);     // inner
+  Control.addVariable("CH4PipeRadius1",0.7);     // sep al
+  Control.addVariable("CH4PipeRadius2",1.43);     // return
+  Control.addVariable("CH4PipeRadius3",1.59);     // Al outer
+  Control.addVariable("CH4PipeRadius4",1.865);     // vac
+  Control.addVariable("CH4PipeRadius5",2.005);     // vac al [1.905 orig]
+  Control.addVariable("CH4PipeRadius6",2.38);     // clearacne
+
+  Control.addVariable("CH4PipeMat0","CH4Liq110K");
+  Control.addVariable("CH4PipeMat1","Aluminium");
+  Control.addVariable("CH4PipeMat2","CH4Liq110K");
+  Control.addVariable("CH4PipeMat3","Aluminium");
+  Control.addVariable("CH4PipeMat4","Void");
+  Control.addVariable("CH4PipeMat5","Aluminium");
+  Control.addVariable("CH4PipeMat6","Void");
+
+  Control.addVariable("CH4PipeTemp0",110.0);
+  Control.addVariable("CH4PipeTemp1",110.0);
+  Control.addVariable("CH4PipeTemp2",110.0);
+  Control.addVariable("CH4PipeTemp3",110.0);
+
+  Control.addVariable("CH4PipeActive0",3);
+  Control.addVariable("CH4PipeActive1",3);
+  Control.addVariable("CH4PipeActive2",7);
+  Control.addVariable("CH4PipeActive3",15);
+  Control.addVariable("CH4PipeActive4",31);
+  Control.addVariable("CH4PipeActive5",63);
+  // Control.addVariable("CH4PipeActive1",7);
+  // Control.addVariable("CH4PipeActive2",31);
+  //  Control.addVariable("CH4PipeActive3",127);
+  // Control.addVariable("CH4PipeActive4",511);
+  // Control.addVariable("CH4PipeActive5",255);
+  // Control.addVariable("CH4PipeActive6",255);
 
   return;
 }

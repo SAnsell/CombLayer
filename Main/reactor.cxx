@@ -141,7 +141,6 @@ main(int argc,char* argv[])
 
 	  const int renumCellWork=
 	    reactorTallySelection(*SimPtr,IParam);
-
 	  SimPtr->removeComplements();
 	  SimPtr->removeDeadSurfaces(0);         
 

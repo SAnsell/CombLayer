@@ -45,7 +45,7 @@ class makeTS2Bulk
  private:
 
   boost::shared_ptr<moderatorSystem::Reflector> RefObj;  ///< Reflector object  
-  boost::shared_ptr<shutterSystem::VoidVessel> VObj;     ///< Viod vessel
+  boost::shared_ptr<shutterSystem::VoidVessel> VObj;     ///< Void vessel
   boost::shared_ptr<shutterSystem::BulkShield> BulkObj;  ///< Bulk shield
   
  public:

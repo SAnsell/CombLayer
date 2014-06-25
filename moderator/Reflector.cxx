@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   moderator/Reflector.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -76,7 +76,7 @@
 #include "ContainedGroup.h"
 #include "TargetBase.h"
 #include "TS2target.h"
-#include "TS2moly.h"
+#include "TS2ModifyTarget.h"
 #include "Groove.h"
 #include "Hydrogen.h"
 #include "OrthoInsert.h"
@@ -104,7 +104,8 @@ namespace moderatorSystem
 Reflector::Reflector(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::FixedComp(Key,10),
   refIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(refIndex+1),TarObj(0),
+  cellIndex(refIndex+1),
+  TarObj(new TMRSystem::TS2target("t2Target")),
   GrooveObj(new Groove("groove")),
   HydObj(new Hydrogen("hydrogen")),
   VacObj(new VacVessel("cvac")),
@@ -127,6 +128,7 @@ Reflector::Reflector(const std::string& Key)  :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
+  OR.addObject(TarObj);
   OR.addObject(GrooveObj);
   OR.addObject(HydObj);
   OR.addObject(VacObj);
@@ -135,6 +137,7 @@ Reflector::Reflector(const std::string& Key)  :
   OR.addObject(PMgroove);
   OR.addObject(PMhydro);
   OR.addObject(Horn);
+
 
   OR.addObject(DVacObj);
   OR.addObject(FLwish);
@@ -150,8 +153,9 @@ Reflector::Reflector(const Reflector& A) :
   refIndex(A.refIndex),cellIndex(A.cellIndex),xStep(A.xStep),
   yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
   xySize(A.xySize),zSize(A.zSize),cutSize(A.cutSize),
-  defMat(A.defMat),TarObj((A.TarObj) ? A.TarObj->clone() : 0),
-   GrooveObj(new Groove(*A.GrooveObj)),
+  defMat(A.defMat),
+  TarObj(new TMRSystem::TS2target(*A.TarObj)),
+  GrooveObj(new Groove(*A.GrooveObj)),
   HydObj(new Hydrogen(*A.HydObj)),
   VacObj(new VacVessel(*A.VacObj)),
   FLgroove(new FlightLine(*A.FLgroove)),
@@ -192,6 +196,7 @@ Reflector::operator=(const Reflector& A)
       zSize=A.zSize;
       cutSize=A.cutSize;
       defMat=A.defMat;
+      *TarObj=*A.TarObj;
       *GrooveObj = *A.GrooveObj;
       *HydObj = *A.HydObj;
       *VacObj = *A.VacObj;
@@ -219,9 +224,7 @@ Reflector::~Reflector()
   /*!
     Destructor
   */
-{
-  delete TarObj;
-}
+{}
 
 void
 Reflector::populate(const Simulation& System)
@@ -430,26 +433,6 @@ Reflector::processDecoupled(Simulation& System,
 }
 
 void
-Reflector::setTarget(const mainSystem::inputParam& IParam)
-  /*!
-    Sets the target point based on the parameters in IParam
-    \param IParam :: Input for target type
-  */
-{
-  ELog::RegMethod RegA("Reflector","setTarget");
-
-  const std::string TarName=
-    IParam.getValue<std::string>("targetType",0);
-
-  if (TarName=="tMoly")
-    TarObj=new TMRSystem::TS2moly("tMoly","t2Target");
-  else
-    TarObj=new TMRSystem::TS2target("t2Target");
-  return;
-}
-
-
-void
 Reflector::createInternalObjects(Simulation& System,
 				 const mainSystem::inputParam& IParam)
   /*!
@@ -459,16 +442,26 @@ Reflector::createInternalObjects(Simulation& System,
   */
 {
   ELog::RegMethod RegA("Reflector","createInternalObjects");
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  const std::string TarName=
+    IParam.getValue<std::string>("targetType",0);
+
 
   TarObj->setRefPlates(-SMap.realSurf(refIndex+12),
 		       -SMap.realSurf(refIndex+11));
   TarObj->createAll(System,World::masterTS2Origin());
-  // if (MolObj)
-  //   {
-  //     TarObj->addInnerBoundary(*MolObj);
-  //     MolObj->addInsertCell(TarObj->getMainBody());
-  //     MolObj->createAll(System,*TarObj);
-  //   }
+
+
+  if (TarName=="tMoly")
+    {
+      boost::shared_ptr<TMRSystem::TS2ModifyTarget> TarObjModify
+	(new TMRSystem::TS2ModifyTarget("tMoly"));
+      TarObjModify->createAll(System,*TarObj);
+      OR.addObject(TarObjModify);
+    }
+
   TarObj->addProtonLineInsertCell(cellIndex-1);
   TarObj->addProtonLine(System,*this,6);
 
@@ -669,7 +662,6 @@ Reflector::createAll(Simulation& System,
   populate(System);
 
   createUnitVector();
-  if (!TarObj) setTarget(IParam);
   createSurfaces();
   createObjects(System);
   createInternalObjects(System,IParam);

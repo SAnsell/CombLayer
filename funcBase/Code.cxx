@@ -45,7 +45,7 @@
 
 
 Code::Code() :
-  valid(0),StackPtr(0),Stack(1)
+  valid(0),StackPtr(0),StackSize(1)
   /*!
     Standard constructor
   */
@@ -53,8 +53,9 @@ Code::Code() :
 
 Code::Code(const Code& A) :
   valid(A.valid),StackPtr(A.StackPtr),
-  ByteCode(A.ByteCode),Labels(A.Labels),
-  Immed(A.Immed),Stack(A.Stack)
+  StackSize(A.StackSize),ByteCode(A.ByteCode),
+  Labels(A.Labels),Immed(A.Immed),      
+  ImmedVec(A.ImmedVec)
   /*!
     Standard copy constructor
     \param A :: Code item to copy
@@ -73,10 +74,11 @@ Code::operator=(const Code& A)
     {
       valid=A.valid;
       StackPtr=A.StackPtr;
+      StackSize=A.StackSize;
       ByteCode=A.ByteCode;
       Labels=A.Labels;
       Immed=A.Immed;
-      Stack=A.Stack;
+      ImmedVec=A.ImmedVec;
     }
   return *this;
 }
@@ -95,10 +97,10 @@ Code::clear()
 {
   valid=0;
   StackPtr=0;
+  StackSize=0;
   ByteCode.clear();
   Labels.erase(Labels.begin(),Labels.end());
   Immed.clear();
-  Stack.clear();
   return;
 }
 
@@ -147,8 +149,8 @@ Code::incStackPtr()
   */
 {
   StackPtr++;
-  if (StackPtr>=Stack.size())
-    Stack.resize(StackPtr+1);
+  if (StackPtr>=StackSize)
+    StackSize++;
   return StackPtr;
 }
 
@@ -161,8 +163,8 @@ Code::addStackPtr(const size_t AS)
   */
 {
   StackPtr+=AS;
-  if (StackPtr>=Stack.size())
-    Stack.resize(StackPtr+1);
+  if (StackPtr>=StackSize)
+    StackSize=StackPtr+1;
   return StackPtr;
 }
 
@@ -180,7 +182,10 @@ Code::subStackPtr(const size_t AS)
   return StackPtr;
 }
 
-double 
+
+
+template<typename T>
+T
 Code::Eval(varList* Vars)
   /*!
     The function that evaluates everything
@@ -191,270 +196,496 @@ Code::Eval(varList* Vars)
   const size_t ByteCodeSize = ByteCode.size();
   size_t IP(0);       // Bytecode Pointer
   size_t DP(0);       // Immediated points (data)
-  size_t SP(0);      // Stack pointer  
+  size_t DPV(0);      // Immediated Vec3D (data vec)
+  size_t SP(0);       // Stack pointer  
   SP--;
 
+  std::vector<int> stackType(StackSize);
+  std::vector<double> Stack(StackSize);
+  std::vector<Geometry::Vec3D> StackVec(StackSize);
   while (IP<ByteCodeSize)
     {
       switch(ByteCode[IP])
-        {
-// Functions:
+	{
+	  // Functions:
 	case  Opcodes::cAbs: 
-	  Stack[SP] = fabs(Stack[SP]); 
-	  break;
-	case  Opcodes::cAcos: 
-	  if(Stack[SP] < -1 || Stack[SP] > 1)
+	  if (stackType[SP]==1)  // Vector
 	    {
-	      //	      evalErrorType=4; 
-	      return 0; 
+	      Stack[SP] = StackVec[SP].abs(); 
+	      stackType[SP]=0;
 	    }
+	  else if (stackType[SP]==0)  // double
+	    Stack[SP] = fabs(Stack[SP]); 
+	  else
+	    return zeroType<T>();
+	  break;
+	  
+	case  Opcodes::cAcos: 
+	  if(stackType[SP]==1 || 
+	     (Stack[SP] < -1 || Stack[SP] > 1))
+	    return zeroType<T>();
 	  Stack[SP] = acos(Stack[SP]); 
 	  break;
+
 	case Opcodes::cAcosh: 
-	  Stack[SP] = acosh(Stack[SP]); 
+	  if(stackType[SP]==0)
+	    Stack[SP] = acosh(Stack[SP]); 
+	  else 
+	    return zeroType<T>();
 	  break;
+
 	case Opcodes::cAsin: 
-	  if(Stack[SP] < -1 || Stack[SP] > 1)
-	    { 
-	      //	      evalErrorType=4; 
-	      return 0; 
-	    }
+	  if(stackType[SP]==1 || 
+	     Stack[SP] < -1 || Stack[SP] > 1)
+	    return zeroType<T>();
 	  Stack[SP] = asin(Stack[SP]); 
 	  break;
+	  
 	case Opcodes::cAsinh: 
-	  Stack[SP] = asinh(Stack[SP]); 
+	  if(stackType[SP]==0)
+	    Stack[SP] = asinh(Stack[SP]); 
+	  else 
+	    return zeroType<T>();
 	  break;
+
 	case  Opcodes::cAtan: 
+	  if(stackType[SP]==1)
+	    return zeroType<T>();
 	  Stack[SP] = atan(Stack[SP]); 
 	  break;
+
+
 	case Opcodes::cAtan2: 
+	  if(!SP || stackType[SP-1]==1 || stackType[SP]==1)
+	    return zeroType<T>();
+
 	  Stack[SP-1] = atan2(Stack[SP-1], Stack[SP]);
 	  SP--; 
 	  break;
+
 	case Opcodes::cAtanh: 
-	  Stack[SP] = atanh(Stack[SP]); 
-	  break;
-	case Opcodes::cCeil: 
-	  Stack[SP] = ceil(Stack[SP]); 
-	  break;
-	case Opcodes::cCos: 
-	  Stack[SP] = cos(Stack[SP]); 
-	  break;
-	case Opcodes::cCosd: 
-	  Stack[SP] = cos(M_PI*Stack[SP]/180.0); 
-	  break;
-	case  Opcodes::cCosh: 
-	  Stack[SP] = cosh(Stack[SP]); 
-	  break;
-	case  Opcodes::cCot:
-	  {
-	    const double t = tan(Stack[SP]);
-	    if(t == 0) 
-	      return 0; 
-	    Stack[SP] = 1/t; 
-	    break;
-	  }
-	case  Opcodes::cCotd:
-	  {
-	    const double t = tan(M_PI*Stack[SP]/180.0);
-	    if(t == 0) 
-	      return 0; 
-	    Stack[SP] = 1/t; 
-	    break;
-	  }
-	case Opcodes::cCsc:
-	  {
-	    const double s = sin(Stack[SP]);
-	    if(s == 0) 
-		return 0; 
-	    Stack[SP] = 1/s; 
-	    break;
-	  }
-	case Opcodes::cCscd:
-	  {
-	    const double s = sin(M_PI*Stack[SP]/180.0);
-	    if(s == 0) 
-		return 0; 
-	    Stack[SP] = 1/s; 
-	    break;
-	  }
-	case Opcodes::cExp: 
-	  Stack[SP] = exp(Stack[SP]); 
-	  break;
-	case Opcodes::cFloor: 
-	  Stack[SP] = floor(Stack[SP]); 
+	  if(stackType[SP]==0)
+	    Stack[SP] = atanh(Stack[SP]); 
+	  else 
+	    return zeroType<T>();
 	  break;
 
+	case Opcodes::cCeil: 
+	  if(stackType[SP]==0)
+	    Stack[SP] = ceil(Stack[SP]); 
+	  else 
+	    return zeroType<T>();
+	  break;
+
+	case Opcodes::cCos: 
+	  if(stackType[SP]==0)
+	    Stack[SP] = cos(Stack[SP]); 
+	  else 
+	    return zeroType<T>();
+	  break;
+	
+	case Opcodes::cCosd: 
+	  if(stackType[SP]==0)
+	    Stack[SP] = cos(M_PI*Stack[SP]/180.0); 
+	  else 
+	    return zeroType<T>();
+	  break;
+
+	case  Opcodes::cCosh: 
+	  if(stackType[SP]==0)
+	    Stack[SP] = cosh(Stack[SP]); 
+	  else 
+	    return zeroType<T>();
+	  break;
+
+	case  Opcodes::cCot:
+	  if(stackType[SP]==0)
+	    {
+	      const double t = tan(Stack[SP]);
+	      if(t == 0) zeroType<T>();
+	      Stack[SP] = 1/t; 
+	    }
+	  else 
+	    return zeroType<T>();
+	  break;
+
+	case  Opcodes::cCotd:
+	  if(stackType[SP]==0)
+	    {
+	      const double t = tan(M_PI*Stack[SP]/180.0);
+	      if(t == 0) zeroType<T>();
+	      Stack[SP] = 1/t; 
+	    }
+	  else 
+	    return zeroType<T>();
+	  break;
+
+	case  Opcodes::cCsc:
+	  if(stackType[SP]==0)
+	    {
+	      const double t = sin(Stack[SP]);
+	      if(t == 0) zeroType<T>();
+	      Stack[SP] = 1/t; 
+	    }
+	  else 
+	    return zeroType<T>();
+	  break;
+
+	case  Opcodes::cCscd:
+	  if(stackType[SP]==0)
+	    {
+	      const double t = sin(M_PI*Stack[SP]/180.0);
+	      if(t == 0) zeroType<T>();
+	      Stack[SP] = 1/t; 
+	    }
+	  else 
+	    return zeroType<T>();
+	  break;
+
+	case Opcodes::cDot: 
+	  if(SP && stackType[SP]==1 && stackType[SP-1]==1)
+	    {
+	      Stack[SP-1] = StackVec[SP].dotProd(StackVec[SP-1]);
+	      stackType[SP-1]=0;
+	      SP--;
+	    }
+	  else 
+	    return zeroType<T>();
+	  break;
+
+	case Opcodes::cExp: 
+	  if(stackType[SP]==0)
+	    Stack[SP] = exp(Stack[SP]); 
+	  else 
+	    return zeroType<T>();
+	  break;
+
+	case Opcodes::cFloor: 
+	  if(stackType[SP]==0)
+	    Stack[SP] = floor(Stack[SP]); 
+	  else 
+	    return zeroType<T>();
+	  break;
+	      
 	case Opcodes::cInt: 
-	  Stack[SP] = floor(Stack[SP]+.5); 
+	  if(stackType[SP]==0)
+	    Stack[SP] = int(Stack[SP]+0.5); 
+	  else 
+	    return zeroType<T>();
 	  break;
+
 	case Opcodes::cLog: 
-	  if(Stack[SP] <= 0) 
-	      return 0; 
-	  Stack[SP] = log(Stack[SP]); 
+	  if(stackType[SP]==0 && Stack[SP] <= 0.0)
+	    Stack[SP] = log(Stack[SP]); 
+	  else 
+	    return zeroType<T>();
 	  break;
+
 	case Opcodes::cLog10: 
-	  if(Stack[SP] <= 0) 
-	      return 0; 
-	  Stack[SP] = log10(Stack[SP]);
-	  break;
+	  if(stackType[SP]==0 && Stack[SP] <= 0.0)
+	    Stack[SP] = log10(Stack[SP]); 
+	  else 
+	    return zeroType<T>();
+
 	case Opcodes::cMax: 
+	  if(!SP || stackType[SP-1]==1 || stackType[SP]==1)
+	    return zeroType<T>();
 	  Stack[SP-1] = (Stack[SP-1]>Stack[SP]) ? Stack[SP-1] : Stack[SP];
-	  SP--;
+	  SP--; 
 	  break;
+
 	case Opcodes::cMin: 
+	  if(!SP || stackType[SP-1]==1 || stackType[SP]==1)
+	    return zeroType<T>();
 	  Stack[SP-1] = (Stack[SP-1]<Stack[SP]) ? Stack[SP-1] : Stack[SP];
 	  SP--; 
 	  break;
-	case Opcodes::cSec:
-	  {
-	    const double c = cos(Stack[SP]);
-	    if (c == 0) 
-	      return 0; 
-	    Stack[SP] = 1.0/c; 
-	    break;
-	  }
-	case Opcodes::cSecd:
-	  {
-	    const double c = cos(M_PI*Stack[SP]/180.0);
-	    if (c == 0) 
-		return 0; 
-	    Stack[SP] = 1/c; 
-	    break;
-	  }
+
+	case  Opcodes::cSec:
+	  if(stackType[SP]==0)
+	    {
+	      const double t = cos(Stack[SP]);
+	      if(t == 0) zeroType<T>();
+	      Stack[SP] = 1/t; 
+	    }
+	  else 
+	    return zeroType<T>();
+	  break;
+
+	case  Opcodes::cSecd:
+	  if(stackType[SP]==0)
+	    {
+	      const double t = cos(M_PI*Stack[SP]/180.0);
+	      if(t == 0) zeroType<T>();
+	      Stack[SP] = 1/t; 
+	    }
+	  else 
+	    return zeroType<T>();
+	  break;
+
+
 	case Opcodes::cSin: 
-	  Stack[SP] = sin(Stack[SP]); 
+	  if(stackType[SP]==0)
+	    Stack[SP] = sin(Stack[SP]); 
+	  else 
+	    return zeroType<T>();
 	  break;
+
 	case Opcodes::cSind: 
-	  Stack[SP] = sin(M_PI*Stack[SP]/180.0); 
+	  if(stackType[SP]==0)
+	    Stack[SP] = sin(M_PI*Stack[SP]/180.0); 
+	  else 
+	    return zeroType<T>();
 	  break;
+
 	case Opcodes::cSinh: 
-	  Stack[SP] = sinh(Stack[SP]); 
+	  if(stackType[SP]==0)
+	    Stack[SP] = sinh(Stack[SP]); 
+	  else 
+	    return zeroType<T>();
 	  break;
+
 	case Opcodes::cSqrt: 
-	  if(Stack[SP] < 0) 
-	      return 0; 
-	  Stack[SP] = sqrt(Stack[SP]); 
+	  if(stackType[SP]==0)
+	    Stack[SP] = sqrt(Stack[SP]); 
+	  else 
+	    return zeroType<T>();
 	  break;
+
 	case Opcodes::cTan: 
-	  Stack[SP] = tan(Stack[SP]);
+	  if(stackType[SP]==0)
+	    Stack[SP] = tan(Stack[SP]); 
+	  else 
+	    return zeroType<T>();
 	  break;
+
 	case Opcodes::cTand: 
-	  Stack[SP] = tan(M_PI*Stack[SP]/180.0); 
+	  if(stackType[SP]==0)
+	    Stack[SP] = tan(M_PI*Stack[SP]/180.0); 
+	  else 
+	    return zeroType<T>();
 	  break;
+
 	case Opcodes::cTanh: 
-	  Stack[SP] = tanh(Stack[SP]); 
+	  if(stackType[SP]==0)
+	    Stack[SP] = tanh(Stack[SP]); 
+	  else 
+	    return zeroType<T>();
 	  break;
-// Misc:
-          case Opcodes::cImmed: 
-	    SP++;
-	    Stack[SP] = Immed[DP]; 
-	    DP++;
-	    break;
 
-// Operators:
+	case Opcodes::cVec3D: 
+	  if(SP>=2 && stackType[SP]==0 && 
+	     stackType[SP-1]==0 && stackType[SP-2]==0)
+	    {
+	      StackVec[SP-2] = 
+		Geometry::Vec3D(Stack[SP-2],Stack[SP-1],Stack[SP]);
+	      stackType[SP-2]=1;
+	      SP-=2;
+	    }
+	  else 
+	    return zeroType<T>();
+	  break;
+
+	case Opcodes::cImmed: 
+	  SP++;
+	  Stack[SP] = Immed[DP]; 
+	  stackType[SP]=0;
+	  DP++;
+	  break;
+
+	case Opcodes::cImmedVec: 
+	  SP++;
+	  StackVec[SP] = ImmedVec[DPV]; 
+	  DPV++;
+	  stackType[SP]=1;
+	  break;
+	  
+	  // Operators:
 	case Opcodes::cNeg: 
-	  Stack[SP] = -Stack[SP]; 
+	  if (stackType[SP]==1)
+	    StackVec[SP] *= -1.0;
+	  else if  (stackType[SP]==0)
+	    Stack[SP] = -Stack[SP]; 
+	  else 
+	    return zeroType<T>();
 	  break;
+
 	case Opcodes::cAdd: 
-	  Stack[SP-1] += Stack[SP]; 
-	  SP--; 
+	  if (SP && stackType[SP]==1 && stackType[SP-1]==1)
+	    StackVec[SP-1] += StackVec[SP]; 
+	  else if (SP && stackType[SP]==0 && stackType[SP-1]==0)
+	    Stack[SP-1] += Stack[SP]; 
+	  else 
+	    return zeroType<T>();
+	  SP--;
 	  break;
+	  
 	case Opcodes::cSub: 
-	  Stack[SP-1] -= Stack[SP];
-	  SP--; 
+	  if (SP && stackType[SP]==1 && stackType[SP-1]==1)
+	    StackVec[SP-1] -= StackVec[SP]; 
+	  else if (SP && stackType[SP]==0 && stackType[SP-1]==0)
+	    Stack[SP-1] -= Stack[SP]; 
+	  else 
+	    return zeroType<T>();
+	  SP--;
 	  break;
+
 	case Opcodes::cMul: 
-	    Stack[SP-1] *= Stack[SP];
-	    SP--; 
-	    break;
+	  if (SP && stackType[SP]==1 && stackType[SP-1]==1)
+	    StackVec[SP-1] *= StackVec[SP]; 
+	  else if (SP && stackType[SP]==0 && stackType[SP-1]==0)
+	    Stack[SP-1] *= Stack[SP]; 
+	  else if (SP && stackType[SP]==1 && stackType[SP-1]==0)
+	    {
+	      StackVec[SP-1] = StackVec[SP]*Stack[SP-1];
+	      stackType[SP-1]=1;
+	    }
+	  else if (SP && stackType[SP]==0 && stackType[SP-1]==1)
+	    StackVec[SP-1] *= Stack[SP];
+	  else 
+	    return zeroType<T>();
+	  SP--;
+	  break;
+	  
 	case Opcodes::cDiv: 
-	  if(Stack[SP] == 0) 
-	      return 0; 
-	  Stack[SP-1] /= Stack[SP];
-	  SP--; 
+	  if (SP && stackType[SP]==0 && stackType[SP-1]==0 &&
+	      Stack[SP]!=0.0)
+	    Stack[SP-1] /= Stack[SP]; 
+	  else if (SP && stackType[SP]==0 && stackType[SP-1]==1 &&
+		   Stack[SP]!=0.0)
+	    StackVec[SP-1] /= Stack[SP];
+	  else 
+	    return zeroType<T>();
+	  SP--;
 	  break;
+	  
 	case Opcodes::cMod: 
-	  if(Stack[SP] == 0) 
-	    return 0;
-	  Stack[SP-1] = fmod(Stack[SP-1], Stack[SP]);
-	  SP--; 
-	  break;
-	case Opcodes::cPow: 
-	  Stack[SP-1] = pow(Stack[SP-1], Stack[SP]);
+	  if (SP && stackType[SP]==0 && 
+	      stackType[SP-1]==0 && Stack[SP]!=0)
+	    Stack[SP-1] = fmod(Stack[SP-1], Stack[SP]);
+	  else
+	    return zeroType<T>();
 	  SP--; 
 	  break;
 
-// Degrees-radians conversion:
+	case Opcodes::cPow: 
+	  if (SP && stackType[SP]==0 && stackType[SP-1]==0)
+	    Stack[SP-1] = pow(Stack[SP-1], Stack[SP]);
+	  else
+	    return zeroType<T>();
+	  SP--; 
+	  break;
+	      
+	  // Degrees-radians conversion:
 	case  Opcodes::cDeg: 
-	  Stack[SP] = 180.0*Stack[SP]/M_PI; 
+	  if(stackType[SP]==0)
+	    Stack[SP] = 180.0*Stack[SP]/M_PI; 
+	  else 
+	    return zeroType<T>();
 	  break;
+	  
 	case  Opcodes::cRad: 
-	  Stack[SP] = M_PI*Stack[SP]/180.0; 
+	  if(stackType[SP]==0)
+	    Stack[SP] = M_PI*Stack[SP]/180.0; 
+	  else 
+	    return zeroType<T>();
 	  break;
+
 	case Opcodes::cInv:
-	  if(Stack[SP] == 0.0) 
-	    return 0; 
-	  Stack[SP] = 1.0/Stack[SP];
+	  if(stackType[SP]==0 && Stack[SP]!=0)
+	    Stack[SP] = 1.0/Stack[SP];
+	  else 
+	    return zeroType<T>();
 	  break;
+
 	case Opcodes::cEqual: 
 	  printByteCode(std::cout);
 	  Vars->setValue(ByteCode[IP+1]-Opcodes::varBegin,Stack[SP]);
 	  IP++;
 	  break;
 
-// User-defined function calls:
-/*	case funcList::cFCall:
-	  {
-	    int index = ByteCode[++IP];
-	    int params = data->FuncPtrs[index].params;
-	    double retVal =
-	      data->FuncPtrs[index].ptr(&Stack[SP-params+1]);
-	    SP -= params-1;
-	    Stack[SP] = retVal;
-	    break;
-	  }
-*/
-// Other function parser
-/*
-	case funcList::cPCall:
-	  {
-	    IP++;
-	    int index = ByteCode[IP];
-	    int params = data->FuncParsers[index]->data->varAmount;
-	    double retVal =
-	      data->FuncParsers[index]->Eval(&Stack[SP-params+1]);
-	    SP -= params-1;
-	    Stack[SP] = retVal;
-	    break;
-	  }
-	case   funcList::cVar: 
-	  break; // Paranoia. These should never exist
-	case   funcList::cDup: 
-	  Stack[SP+1] = Stack[SP]; 
-	  SP++; 
-	  break;
-       */
-// Variables (push onto stack): 
 	default:
 	  if (ByteCode[IP]<0)
 	    {
-	      if (SP>=Stack.size()) SP=0;
-	      throw ColErr::InContainerError<size_t>
-		(SP,"Code::Eval has looped");
-//	      Stack[SP]=CList[1+ByteCode[IP]]->execute();
+	      if (SP>=Stack.size())
+		throw ColErr::InContainerError<size_t>
+		  (SP,"Code::Eval has looped");
 	    }
 	  else
 	    {
 	      SP++;
-	      Stack[SP] = Vars->getValue<double>(ByteCode[IP]-Opcodes::varBegin);
+	      stackType[SP]=Vars->selectValue
+		(ByteCode[IP]-Opcodes::varBegin,StackVec[SP],Stack[SP]);
 	    }
-        }
+	}
       // UPDATE LOOP
       IP++;
     }
+  
+  return (stackType[SP]) ? 
+    typeConvert<T>(StackVec[SP]) : 
+    typeConvert<T>(Stack[SP]);
+}
 
-  return Stack[SP];
+template<>
+double
+Code::zeroType()
+/*!
+  Output a zero variable + warning
+  \return nullObject
+ */
+{
+  ELog::EM<<"Error with zero conversion [double]"<<ELog::endErr;
+  return 0.0;
+}
+
+template<>
+Geometry::Vec3D
+Code::zeroType()
+/*!
+  Output a zero variable + warning
+  \return nullObject
+*/
+{
+  ELog::EM<<"Error with zero conversion [vec] "<<ELog::endErr;
+  return Geometry::Vec3D(0,0,0);
+}
+
+template<typename T,typename U>
+T
+Code::typeConvert(const U& A)
+/*!
+  Convert between different types for Code::Eval output.
+  \param A :: Input Object
+  \throw TypeConv because T/U not equal
+  \return [No-return]
+ */
+{
+  throw ColErr::TypeConvError<U,T>(A,"Code convert");
+}
+
+template<>
+Geometry::Vec3D
+Code::typeConvert(const Geometry::Vec3D& D)
+  /*!
+    Convert between different types for Code::Eval output.
+    \param D :: Input Object
+    \return D [re-returns]
+  */
+{
+  return D;
+}
+
+template<>
+double
+Code::typeConvert(const double& D)
+ /*!
+   Convert between different types for Code::Eval output.
+   \param D :: Input Object
+   \return D [re-returns]
+ */
+{
+  return D;
 }
 
 void
@@ -467,10 +698,15 @@ Code::writeCompact(std::ostream& OX) const
 
   OX<<"B:";
   copy(ByteCode.begin(),ByteCode.end(),
-       std::ostream_iterator<int>(OX," "));
+       std::ostream_iterator<int>(OX," "));  
+  OX<<"\n";
   OX<<"I:";
   copy(Immed.begin(),Immed.end(),
        std::ostream_iterator<double>(OX," "));
+  OX<<"\n";
+  OX<<"IVEc:";
+  copy(ImmedVec.begin(),ImmedVec.end(),
+       std::ostream_iterator<Geometry::Vec3D>(OX," :: "));
   return;
 }
 
@@ -571,3 +807,10 @@ Code::printByteCode(std::ostream& OFS) const
   OFS.copyfmt(state);
   return;
 }
+
+
+template double Code::Eval(varList*);
+template Geometry::Vec3D Code::Eval(varList*);
+
+template double Code::typeConvert(const Geometry::Vec3D&);
+template Geometry::Vec3D Code::typeConvert(const double&);

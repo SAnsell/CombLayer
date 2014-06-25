@@ -107,7 +107,7 @@ FFunc::setValue(const Code& AC)
   return;
 }
 
-void
+int
 FFunc::getValue(Geometry::Vec3D&) const
   /*!
     Get the values. Note that this
@@ -116,11 +116,10 @@ FFunc::getValue(Geometry::Vec3D&) const
   */
 {
   ELog::RegMethod RegA("FFunc","getValue(Vec3D)");
-  throw ColErr::ExBase(0,"Incorrect Type"+RegA.getFull());
-  return;
+  return 0;
 }
 
-void
+int
 FFunc::getValue(double& V) const
   /*!
     Get the values. Note that this
@@ -129,12 +128,12 @@ FFunc::getValue(double& V) const
   */
 {
   Code BC(BaseUnit);
-  V=static_cast<double>(BC.Eval(FItem::VListPtr));
+  V=static_cast<double>(BC.Eval<double>(FItem::VListPtr));
   const_cast<int&>(active)++;
-  return;
+  return 1;
 }
 
-void
+int
 FFunc::getValue(int& V) const
   /*!
     Get the values. Note that this
@@ -143,13 +142,27 @@ FFunc::getValue(int& V) const
   */
 {
   Code BC(BaseUnit);
-  V=static_cast<int>(BC.Eval(VListPtr));
+  V=static_cast<int>(BC.Eval<double>(VListPtr));
   const_cast<int&>(active)++;
-  return;
+  return 1;
+}
+
+int
+FFunc::getValue(long int& V) const
+  /*!
+    Get the values. Note that this
+    uses varlist
+    \return Code expression 
+  */
+{
+  Code BC(BaseUnit);
+  V=static_cast<long int>(BC.Eval<double>(VListPtr));
+  const_cast<int&>(active)++;
+  return 1;
 }
 
 
-void
+int
 FFunc::getValue(size_t& V) const
   /*!
     Get the values. Note that this
@@ -158,12 +171,12 @@ FFunc::getValue(size_t& V) const
   */
 {
   Code BC(BaseUnit);
-  V=static_cast<size_t>(BC.Eval(VListPtr));
+  V=static_cast<size_t>(BC.Eval<double>(VListPtr));
   const_cast<int&>(active)++;
-  return;
+  return 1;
 }
 
-void
+int 
 FFunc::getValue(std::string& V) const
   /*!
     Get the values. Note that this
@@ -172,12 +185,12 @@ FFunc::getValue(std::string& V) const
   */
 {
   Code BC(BaseUnit);
-  double Val=BC.Eval(VListPtr);
+  double Val=BC.Eval<double>(VListPtr);
   std::stringstream cx;
   cx<<Val;
   V=cx.str();
   const_cast<int&>(active)++;
-  return;
+  return 1;
 }
 
 std::string 

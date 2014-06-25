@@ -113,6 +113,7 @@ funcList::funcList() :
        FTYPE( "cotd",  1 ,Opcodes::cCotd),
        FTYPE( "csc",   1 ,Opcodes::cCsc),
        FTYPE( "cscd",  1 ,Opcodes::cCscd),
+       FTYPE( "dot",   2 ,Opcodes::cDot),
        FTYPE( "exp",   1 ,Opcodes::cExp),
        FTYPE( "floor", 1 ,Opcodes::cFloor),
        FTYPE( "int",   1 ,Opcodes::cInt),
@@ -129,7 +130,8 @@ funcList::funcList() :
        FTYPE( "sqrt",  1 ,Opcodes::cSqrt),
        FTYPE( "tan",   1 ,Opcodes::cTan),
        FTYPE( "tand",  1 ,Opcodes::cTand),
-       FTYPE( "tanh",  1 ,Opcodes::cTanh)
+       FTYPE( "tanh",  1 ,Opcodes::cTanh),
+       FTYPE( "vec3d", 3 ,Opcodes::cVec3D)
      };
 
     const size_t FuncAmount = sizeof(Functions)/sizeof(Functions[0]);

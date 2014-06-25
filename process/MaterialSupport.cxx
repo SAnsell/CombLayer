@@ -42,6 +42,7 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
+#include "Vec3D.h"
 #include "support.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"

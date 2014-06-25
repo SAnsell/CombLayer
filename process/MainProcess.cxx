@@ -31,7 +31,6 @@
 #include <map>
 #include <string>
 #include <boost/format.hpp>
-#include <boost/array.hpp>
 #include <boost/multi_array.hpp>
 
 #include "Exception.h"
@@ -42,11 +41,11 @@
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
+#include "Vec3D.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "InputControl.h"
-#include "Vec3D.h"
 #include "inputParam.h"
 #include "support.h"
 #include "masterWrite.h"
@@ -230,9 +229,9 @@ createInputs(inputParam& IParam)
   IParam.regItem<int>("memStack","memStack");
   IParam.regDefItem<int>("n","nps",1,10000);
   IParam.regFlag("p","PHITS");
+  IParam.regFlag("mcnp6","MCNP6");
   IParam.regFlag("Monte","Monte");
   IParam.regDefItem<double>("photon","photon",1,0.001);
-
   IParam.regDefItemList<std::string>("r","renum",10,RItems);
   IParam.regFlag("sdefVoid","sdefVoid");
   IParam.regDefItem("sdefEnergy","sdefEnergy",1,800.0);
@@ -298,6 +297,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("md5","MD5 track of cells");
   IParam.setDesc("memStack","Memstack verbrosity value");
   IParam.setDesc("n","Number of starting particles");
+  IParam.setDesc("MCNP6","MCNP6 output");
   IParam.setDesc("p","PHITS output");
   IParam.setDesc("Monte","MonteCarlo capable simulation");
   IParam.setDesc("photon","Photon Cut energy");
@@ -469,6 +469,8 @@ void createTS1Inputs(inputParam& IParam)
   IParam.setDesc("CH4PreType","Name of CH4 Premoderator");
   IParam.regDefItem<std::string>("CH4ModType","CH4ModType",1,"Basic");  
   IParam.setDesc("CH4ModType","Name of CH4 Moderator");
+  IParam.regDefItem<std::string>("WaterModType","WaterModType",1,"Triangle");  
+  IParam.setDesc("WaterModType","Name of Water [top] Moderator");
   IParam.regDefItem<std::string>("H2ModType","H2ModType",1,"Basic");  
   IParam.setDesc("H2ModType","Name of H2 Moderator");
 
@@ -772,6 +774,8 @@ createSimulation(inputParam& IParam,
   else 
     SimPtr=new Simulation;
 
+  if (IParam.flag("mcnp6"))
+    SimPtr->setMcnpType(1);
 
   SimPtr->setCmdLine(cmdLine.str());        // set full command line
 

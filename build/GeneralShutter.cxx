@@ -46,13 +46,9 @@
 #include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
-#include "Tensor.h"
 #include "Vec3D.h"
 #include "localRotate.h"
 #include "masterRotate.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Quaternion.h"
 #include "Surface.h"
 #include "surfIndex.h"
@@ -71,8 +67,6 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "shutterBlock.h"
 #include "SimProcess.h"
 #include "Simulation.h"
@@ -95,7 +89,8 @@ GeneralShutter::GeneralShutter(const size_t ID,const std::string& Key) :
   surfIndex(ModelSupport::objectRegister::Instance().
 	    cell(Key,static_cast<int>(ID),20000)),
   cellIndex(surfIndex+1),populated(0),divideSurf(0),
-  DPlane(0),closed(0),upperCell(0),lowerCell(0),innerVoidCell(0)
+  DPlane(0),closed(0),reversed(0),upperCell(0),
+  lowerCell(0),innerVoidCell(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param ID :: Shutter number
@@ -117,7 +112,8 @@ GeneralShutter::GeneralShutter(const GeneralShutter& A) :
   voidHeightInner(A.voidHeightInner),voidWidthInner(A.voidWidthInner),
   voidHeightOuter(A.voidHeightOuter),voidWidthOuter(A.voidWidthOuter),
   xyAngle(A.xyAngle),zAngle(A.zAngle),shutterMat(A.shutterMat),
-  closed(A.closed),SBlock(A.SBlock),XYAxis(A.XYAxis),BeamAxis(A.BeamAxis),
+  closed(A.closed),reversed(A.reversed),
+  SBlock(A.SBlock),XYAxis(A.XYAxis),BeamAxis(A.BeamAxis),
   zSlope(A.zSlope),frontPt(A.frontPt),endPt(A.endPt),upperCell(A.upperCell),
   lowerCell(A.lowerCell),innerVoidCell(A.innerVoidCell)
   /*!
@@ -164,6 +160,7 @@ GeneralShutter::operator=(const GeneralShutter& A)
       zAngle=A.zAngle;
       shutterMat=A.shutterMat;
       closed=A.closed;
+      reversed=A.reversed;
       SBlock=A.SBlock;
       XYAxis=A.XYAxis;
       BeamAxis=A.BeamAxis;
@@ -230,6 +227,8 @@ GeneralShutter::populate(const Simulation& System)
 
   closed=SimProcess::getDefIndexVar<int>(Control,keyName,
 					 "Closed",shutterNumber+1,0);
+  reversed=SimProcess::getDefIndexVar<int>(Control,keyName,
+					 "Reversed",shutterNumber+1,0);
 
   const std::string keyNum=
     StrFunc::makeString(keyName,shutterNumber+1);
@@ -244,6 +243,8 @@ GeneralShutter::populate(const Simulation& System)
 
   shutterHeight=Control.EvalPair<double>
     (keyNum+"Height",keyName+"Height");
+  shutterDepth=Control.EvalPair<double>
+    (keyNum+"Depth",keyName+"Depth");
   voidZOffset=SimProcess::getDefIndexVar<double>
     (Control,keyName,"VoidZOffset",shutterNumber+1,0.0);
   centZOffset=SimProcess::getDefIndexVar<double>
@@ -272,6 +273,27 @@ GeneralShutter::populate(const Simulation& System)
 
   shutterMat=ModelSupport::EvalMat<int>
     (Control,keyNum+"SteelMat",keyName+"SteelMat");
+
+  // Construct the clearance gaps
+  clearGap=Control.EvalPair<double>
+    (keyNum+"ClearGap",keyName+"ClearGap");
+  clearBoxStep=Control.EvalPair<double>
+    (keyNum+"ClearBoxStep",keyName+"ClearBoxStep");
+  clearBoxLen=Control.EvalPair<double>
+    (keyNum+"ClearBoxLen",keyName+"ClearBoxLen");
+  const size_t NStep= Control.EvalPair<size_t>
+    (keyNum+"ClearNStep",keyName+"ClearNStep");
+  clearCent.clear();
+  for(size_t i=0;i<NStep;i++)
+    {
+      const std::string SCent="ClearCent"+
+	StrFunc::makeString(i);
+      const double CD=Control.EvalPair<double>
+	(keyNum+SCent,keyName+SCent);
+      clearCent.push_back(CD);
+    }
+    
+
   
   // This sets group of objects within the shutter
   // They require that each unit is fully defined and 
@@ -411,18 +433,13 @@ GeneralShutter::createSurfaces()
 {
   ELog::RegMethod RegA("GeneralShutter","createSurfaces");
 
-  //  const double zShift=(closed % 2) ? closedZShift : openZShift;
-  // ELog::EM<<"Shutter :"<<shutterNumber+1<<" ("<<surfIndex
-  // 	  <<" "<<cellIndex<<") "<<((closed % 2) ? "closed" : "open ")
-  // 	  <<"Cent="<<zShift<<ELog::endDiag;
-
   // Fixed Steel  
   ModelSupport::buildPlane(SMap,surfIndex+5,
 			   Origin+Z*(totalHeight-upperSteel),Z);
 
   // Top blade [NOTE : BeamAxis]
   ModelSupport::buildPlane(SMap,surfIndex+15,
-			   frontPt+Z*(shutterHeight/2.0),Z);
+			   frontPt+Z*shutterHeight,Z);
 
   // Inner cut [on flightline]
   ModelSupport::buildPlane(SMap,surfIndex+25,
@@ -433,7 +450,7 @@ GeneralShutter::createSurfaces()
 
   // Lower Blade
   ModelSupport::buildPlane(SMap,surfIndex+16,
-			   frontPt-Z*(shutterHeight/2.0),Z);
+			   frontPt-Z*shutterDepth,Z);
 
   // Fixed Steel
   ModelSupport::buildPlane(SMap,surfIndex+6,
@@ -463,6 +480,43 @@ GeneralShutter::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*(totalWidth/2.0),X);
   ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*(totalWidth/2.0),X);
 
+  // Clearance zone 
+  ModelSupport::buildPlane(SMap,surfIndex+2003,
+			   Origin-X*(clearGap+totalWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,surfIndex+2004,
+			   Origin+X*(clearGap+totalWidth/2.0),X);
+
+  ModelSupport::buildPlane(SMap,surfIndex+2013,
+			   Origin-X*(clearBoxStep+totalWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,surfIndex+2014,
+			   Origin+X*(clearBoxStep+totalWidth/2.0),X);
+
+  ModelSupport::buildPlane(SMap,surfIndex+2023,
+			   Origin-X*(clearBoxStep+clearGap+totalWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,surfIndex+2024,
+			   Origin+X*(clearBoxStep+clearGap+totalWidth/2.0),X);
+  /// BOXES
+  ModelSupport::buildPlane(SMap,surfIndex+2103,
+			   Origin-X*(clearBoxStep+totalWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,surfIndex+2104,
+			   Origin+X*(clearBoxStep+totalWidth/2.0),X);
+
+  // boxes : Front/back planes
+  int SN(surfIndex+2100);
+  std::vector<double>::const_iterator vc;
+  for(vc=clearCent.begin();vc!=clearCent.end();vc++)
+    {
+      ModelSupport::buildPlane(SMap,SN+1,
+			       frontPt+Y*(*vc-clearBoxLen/2.0),Y);
+      ModelSupport::buildPlane(SMap,SN+2,
+			       frontPt+Y*(*vc+clearBoxLen/2.0),Y);
+      ModelSupport::buildPlane(SMap,SN+11,
+			       frontPt+Y*(*vc-clearGap-clearBoxLen/2.0),Y);
+      ModelSupport::buildPlane(SMap,SN+12,
+			       frontPt+Y*(*vc+clearBoxLen/2.0+clearGap),Y);
+      SN+=100;
+    }
+
   ModelSupport::buildPlane(SMap,surfIndex+13,
 			   Origin-X*(voidWidthInner/2.0),X);
   ModelSupport::buildPlane(SMap,surfIndex+14,
@@ -489,6 +543,63 @@ GeneralShutter::divideStr() const
   return cx.str();
 }
   
+void
+GeneralShutter::createCutUnit(Simulation& System,const std::string& ZUnit)
+  /*!
+    Create the cutouts for teh shutter clearance
+    \param System :: Simulation part
+    \param ZUnit :: Unit for +/- Z section
+  */
+{
+  ELog::RegMethod RegA("GeneralShutter","createCutUnit");
+
+  // CLEARANCE GAPS [Bulk Steel]:
+  const std::string addUnit(ZUnit+" "+divideStr());
+  std::string OutA,OutB;
+  int SN(surfIndex+2000);
+  for(size_t i=0;i<clearCent.size();i++)
+    {
+      if (!i)
+	{
+	  OutA=ModelSupport::getComposite(SMap,surfIndex,SN,
+					  " (-3:4) 2003 -2004 7 -111M ")+addUnit;
+	  OutB=ModelSupport::getComposite(SMap,surfIndex,SN,
+					  " (-2003:2004) 2023 -2024 7 -111M ")+addUnit;
+	}
+      else
+	{
+	  OutA=ModelSupport::getComposite(SMap,surfIndex,SN,
+					  "(-3:4) 2003 -2004 12M -111M")+addUnit;
+	  OutB=ModelSupport::getComposite(SMap,surfIndex,SN,
+					  "(-2003:2004) 2023 -2024 12M -111M ")+addUnit;
+	}
+      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,OutA));
+      System.addCell(MonteCarlo::Qhull(cellIndex++,shutterMat,0.0,OutB));
+
+      // Insert blocks:
+      OutA=ModelSupport::getComposite(SMap,surfIndex,SN,
+				      "(-3:4) 2013 -2014 101M -102M ")+addUnit;
+      System.addCell(MonteCarlo::Qhull(cellIndex++,shutterMat,0.0,OutA));
+
+      OutA=ModelSupport::getComposite(SMap,surfIndex,SN,
+				      "(-101M:102M:-2013) 2023 -3 111M -112M ")+addUnit;
+      OutB=ModelSupport::getComposite(SMap,surfIndex,SN,
+				      "(-101M:102M:2014) -2024 4 111M -112M ")+addUnit;
+      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,OutA));
+      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,OutB));
+
+      SN+=100;
+      
+    }
+  // END 
+  OutA=ModelSupport::getComposite(SMap,surfIndex,SN,
+				  "(-3:4) 2003 -2004 12M -17")+addUnit;
+  OutB=ModelSupport::getComposite(SMap,surfIndex,SN,
+				  "(-2003:2004) 2023 -2024 12M -17 ")+addUnit;
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,OutA));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,shutterMat,0.0,OutB));
+  return;
+}
 
 void
 GeneralShutter::createObjects(Simulation& System)
@@ -497,24 +608,27 @@ GeneralShutter::createObjects(Simulation& System)
     \param System :: Simulation to use
   */
 {
-  ELog::RegMethod RegA("GeneralShutter","constructObjects");
+  ELog::RegMethod RegA("GeneralShutter","createObjects");
 
   std::string Out;
   // Create divide string
   
   const std::string dSurf=divideStr();
   // top
-  Out=ModelSupport::getComposite(SMap,surfIndex,"-10 5 3 -4 7 -17 ")+dSurf;
+  Out=ModelSupport::getComposite(SMap,surfIndex,"-10 5 2023 -2024 7 -17 ")+dSurf;
   System.addCell(MonteCarlo::Qhull(cellIndex++,shutterMat,0.0,Out));
 
   // void 
-  Out=ModelSupport::getComposite(SMap,surfIndex,"-5 15 3 -4 7 -17 ")+dSurf;
+  Out=ModelSupport::getComposite(SMap,surfIndex,"-5 15 2023 -2024 7 -17 ")+dSurf;
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
   // Bulk Steel
   Out=ModelSupport::getComposite(SMap,surfIndex,"-15 25 3 -4 7 -17 ")+dSurf;
   System.addCell(MonteCarlo::Qhull(cellIndex++,shutterMat,0.0,Out));
   upperCell=cellIndex-1;
+
+  Out=ModelSupport::getComposite(SMap,surfIndex,"-15 25");
+  createCutUnit(System,Out);
 
   // Flightline
   if (voidDivide>0.0)
@@ -553,22 +667,27 @@ GeneralShutter::createObjects(Simulation& System)
 				     " -25 26 (125 : -126 : -13 : 14) 3 -4 7 -17 ")+dSurf;
       System.addCell(MonteCarlo::Qhull(cellIndex++,shutterMat,0.0,Out));
     }  
-  
+
+  // Insert Clearance Gap
+  Out=ModelSupport::getComposite(SMap,surfIndex,"-25 16");
+  createCutUnit(System,Out);
+
   // Bulk Steel
   Out=ModelSupport::getComposite(SMap,surfIndex,"-26 16 3 -4 7 -17 ")+dSurf;
   System.addCell(MonteCarlo::Qhull(cellIndex++,shutterMat,0.0,Out));
   lowerCell=cellIndex-1;
 
   // Base void
-  Out=ModelSupport::getComposite(SMap,surfIndex,"-16 6 3 -4 7 -17 ")+dSurf;
+  Out=ModelSupport::getComposite(SMap,surfIndex,"-16 6 2023 -2024 7 -17 ")
+    +dSurf;
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
   // Base Steel
-  Out=ModelSupport::getComposite(SMap,surfIndex,"-6 20 3 -4 7 -17 ")+dSurf;
+  Out=ModelSupport::getComposite(SMap,surfIndex,"-6 20 2023 -2024 7 -17 ")+dSurf;
   System.addCell(MonteCarlo::Qhull(cellIndex++,shutterMat,0.0,Out));
 
   // Add exclude
-  Out=ModelSupport::getComposite(SMap,surfIndex,"3 -4 ")+dSurf;
+  Out=ModelSupport::getComposite(SMap,surfIndex,"2023 -2024 ")+dSurf;
   addInterSurf(Out);
   return;
 }

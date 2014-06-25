@@ -53,6 +53,7 @@ class BeamTube : public attachSystem::ContainedComp,
   double xyAngle;               ///< xyRotation angle
   double zAngle;                ///< zRotation angle
 
+  double waterStep;             ///< Forward water step
   double length;                ///< Total length
   double capRadius;             ///< Radius of cap [zero for flat]
   double innerRadius;           ///< Outer radius [minus wall]

@@ -144,6 +144,18 @@ FValue<T>::setValue(const int& V)
 
 template<typename T>
 void
+FValue<T>::setValue(const long int& V)
+  /*!
+    Sets the values 
+    \param V :: New value 
+  */
+{
+  Value=static_cast<T>(V);
+  return;
+}
+
+template<typename T>
+void
 FValue<T>::setValue(const size_t& V)
   /*!
     Sets the values 
@@ -198,6 +210,20 @@ FValue<std::string>::setValue(const int& V)
 
 template<>
 void
+FValue<std::string>::setValue(const long int& V)
+  /*!
+    Sets the values 
+    \param V :: New value 
+  */
+{
+  std::stringstream cx;
+  cx<<V;
+  Value=cx.str();
+  return;
+}
+
+template<>
+void
 FValue<std::string>::setValue(const size_t& V)
   /*!
     Sets the values 
@@ -230,7 +256,7 @@ FValue<Geometry::Vec3D>::setValue(const double&)
   */
 {
   ELog::RegMethod RegA("FValue<Vec3D>","setValue(double)");
-  throw ColErr::ExBase(0,"Incorrect Type"+RegA.getFull());
+  throw ColErr::ExBase(0,"Incorrect Type");
   return;
 }
 
@@ -242,7 +268,19 @@ FValue<Geometry::Vec3D>::setValue(const int&)
   */
 {
   ELog::RegMethod RegA("FValue<Vec3D>","setValue(int)");
-  throw ColErr::ExBase(0,"Incorrect Type"+RegA.getFull());
+  throw ColErr::ExBase(0,"Incorrect Type");
+  return;
+}
+
+template<>
+void
+FValue<Geometry::Vec3D>::setValue(const long int&)
+  /*!
+    Sets the value 
+  */
+{
+  ELog::RegMethod RegA("FValue<Vec3D>","setValue(int)");
+  throw ColErr::ExBase(0,"Incorrect Type");
   return;
 }
 
@@ -298,19 +336,17 @@ FValue<Geometry::Vec3D>::setValue(const Geometry::Vec3D& V)
 
 
 template<typename T>
-void
+int
 FValue<T>::getValue(Geometry::Vec3D&) const
   /*!
     Sets the value
   */
 {
-  ELog::RegMethod RegA("FItem","getValue(Vec3D)");
-  throw ColErr::ExBase(0,"Incorrect Type");
-  return;
+  return 0;
 }
 
 template<typename T>
-void
+int
 FValue<T>::getValue(double& V) const
   /*!
     Sets the values 
@@ -319,11 +355,11 @@ FValue<T>::getValue(double& V) const
 {
   V=static_cast<double>(Value);
   const_cast<int&>(active)++;
-  return;
+  return 1;
 }
 
 template<typename T>
-void
+int
 FValue<T>::getValue(int& V) const
   /*!
     Sets the values 
@@ -332,12 +368,25 @@ FValue<T>::getValue(int& V) const
 {
   V=static_cast<int>(Value);
   const_cast<int&>(active)++;
-  return;
+  return 1;
 }
 
 
 template<typename T>
-void
+int
+FValue<T>::getValue(long int& V) const
+  /*!
+    Sets the values 
+    \param V :: New value 
+  */
+{
+  V=static_cast<long int>(Value);
+  const_cast<int&>(active)++;
+  return 1;
+}
+
+template<typename T>
+int
 FValue<T>::getValue(size_t& V) const
   /*!
     Sets the values 
@@ -349,11 +398,11 @@ FValue<T>::getValue(size_t& V) const
   else
     V=static_cast<size_t>(Value);
   const_cast<int&>(active)++;
-  return;
+  return 1;
 }
 
 template<typename T>
-void
+int
 FValue<T>::getValue(std::string& V) const
   /*!
     Puts the value into V
@@ -364,11 +413,11 @@ FValue<T>::getValue(std::string& V) const
   cx<<Value;
   V=cx.str();
   const_cast<int&>(active)++;
-  return;
+  return 1;
 }
 
 template<>
-void
+int
 FValue<std::string>::getValue(Geometry::Vec3D& V) const
   /*!
     Puts the value into V
@@ -378,13 +427,13 @@ FValue<std::string>::getValue(Geometry::Vec3D& V) const
   ELog::RegMethod RegA("FValue","getValue(Vec3D)");
 
   if (!StrFunc::convert(Value,V))
-    throw ColErr::InvalidLine(Value,"convert fail",0);
+    return 0;
   const_cast<int&>(active)++;
-  return;
+  return 1;
 }
 
 template<>
-void
+int
 FValue<std::string>::getValue(double& V) const
   /*!
     Puts the value into V
@@ -393,28 +442,43 @@ FValue<std::string>::getValue(double& V) const
 {
   ELog::RegMethod RegA("FValue","getValue(double)");
   if (!StrFunc::convert(Value,V))
-    throw ColErr::InvalidLine(Value,"convert fail",0);
+    return 0;
   const_cast<int&>(active)++;
-  return;
+  return 1;
 }
 
 template<>
-void
+int
+FValue<std::string>::getValue(long int& V) const
+  /*!
+    Puts the value into V
+    \param V :: Output variable
+  */
+{
+  ELog::RegMethod RegA("FValue","getValue(long int )");
+  if (!StrFunc::convert(Value,V))
+    return 0;
+  const_cast<int&>(active)++;
+  return 1;
+}
+
+template<>
+int
 FValue<std::string>::getValue(size_t& V) const
   /*!
     Puts the value into V
     \param V :: Output variable
   */
 {
-  ELog::RegMethod RegA("FValue","getValue(double)");
+  ELog::RegMethod RegA("FValue","getValue(size_t)");
   if (!StrFunc::convert(Value,V))
-    throw ColErr::InvalidLine(Value,"convert fail",0);
+    return 0;
   const_cast<int&>(active)++;
-  return;
+  return 1;
 }
 
 template<>
-void
+int
 FValue<std::string>::getValue(int& V) const
   /*!
     Puts the value into V
@@ -423,14 +487,14 @@ FValue<std::string>::getValue(int& V) const
 {
   ELog::RegMethod RegA("FValue","getValue(int)");
   if (!StrFunc::convert(Value,V))
-    throw ColErr::InvalidLine(Value,"convert fail",0);
+    return 0;
   const_cast<int&>(active)++;
-  return;
+  return 1;
 }
 
 
 template<>
-void
+int
 FValue<std::string>::getValue(std::string& V) const
   /*!
     Puts the value into V
@@ -439,12 +503,12 @@ FValue<std::string>::getValue(std::string& V) const
 {
   V=Value;
   const_cast<int&>(active)++;
-  return;
+  return 1;
 }
 
 
 template<>
-void
+int
 FValue<Geometry::Vec3D>::getValue(Geometry::Vec3D& V) const
   /*!
     Puts the value into V
@@ -453,42 +517,54 @@ FValue<Geometry::Vec3D>::getValue(Geometry::Vec3D& V) const
 {
   V=Value;
   const_cast<int&>(active)++;
-  return;
+  return 1;
 }
 
 template<>
-void
+int 
 FValue<Geometry::Vec3D>::getValue(double&) const
   /*!
     Puts the value into V
   */
 {
-  return;
+  return 0; 
 }
 
 template<>
-void
+int
+FValue<Geometry::Vec3D>::getValue(long int&) const
+  /*!
+    Puts the value into V
+    \return  false [not possible]
+  */
+{
+  return 0;
+}
+
+template<>
+int
 FValue<Geometry::Vec3D>::getValue(size_t&) const
   /*!
     Puts the value into V
+    \return  false [not possible]
   */
 {
-  return;
+  return 0;
 }
 
 template<>
-void
+int
 FValue<Geometry::Vec3D>::getValue(int&) const
   /*!
     Puts the value into V
   */
 {
-  return;
+  return 0;
 }
 
 
 template<>
-void
+int
 FValue<Geometry::Vec3D>::getValue(std::string& V) const
   /*!
     Puts the value into V
@@ -499,7 +575,7 @@ FValue<Geometry::Vec3D>::getValue(std::string& V) const
   cx<<Value;
   V=cx.str();
   const_cast<int&>(active)++;
-  return;
+  return 1;
 }
 
 template<typename T>
@@ -531,6 +607,10 @@ std::string FValue<size_t>::typeKey()  const
 {  return "size_t"; }
 
 template<>
+std::string FValue<long int>::typeKey()  const
+{  return "long int"; }
+
+template<>
 std::string FValue<std::string>::typeKey()  const
 {  return "std::string"; }
 
@@ -540,6 +620,7 @@ std::string FValue<std::string>::typeKey()  const
 template class FValue<Geometry::Vec3D>;
 template class FValue<double>;
 template class FValue<int>;
+template class FValue<long int>;
 template class FValue<size_t>;
 template class FValue<std::string>;
 

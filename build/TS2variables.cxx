@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   build/TS2variables.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -609,7 +609,8 @@ TS2layout(FuncDataBase& Control)
 
   Control.addVariable("shutterUpperSteel",852.1);     // top thickness
   Control.addVariable("shutterLowerSteel",1000.0);    // base thickness
-  Control.addVariable("shutterHeight",262.8);         // Total shutter height
+  Control.addVariable("shutterHeight",131.4);         // Total shutter height
+  Control.addVariable("shutterDepth",131.4);         // Total shutter height
   Control.addVariable("shutterWidth",28.00);          // Full width
 
   Control.addVariable("shutterVoidZOffset",0.0);        // centre of steel hole
@@ -623,11 +624,19 @@ TS2layout(FuncDataBase& Control)
   // 
   Control.addVariable("shutterSteelMat","CastIron");         // Cast iron
 
-  Control.addVariable("shutter1Height",106.0);         // New drawing 8711-300
+  Control.addVariable("shutter1Height",120.0);         // New drawing 8711-300
+  Control.addVariable("shutter1Depth",120.0);         // New drawing 8711-300
   Control.addVariable("shutter1VoidHeightInner",25.0);       // ChipIR size
   Control.addVariable("shutter1VoidHeightOuter",25.0);       // ChipIR size
   Control.addVariable("shutter1VoidDivide",-1.0);          // ChipIR no divide
-  Control.addVariable("shutter10VoidWidthInner",21.00);      // Gap width
+  Control.addVariable("shutter1VoidWidthInner",21.00);      // Gap width
+
+  Control.addVariable("shutterClearGap",0.6);      // Gap out step
+  Control.addVariable("shutterClearBoxStep",2.0);      // Gap out step
+  Control.addVariable("shutterClearBoxLen",25.0);      // Gap length of block
+  Control.addVariable("shutterClearNStep",2);      // Gap length of block
+  Control.addVariable("shutterClearCent0",50.0);      
+  Control.addVariable("shutterClearCent1",150.0);     
   
   Control.addVariable("shutter1VoidZOffset",-30.0);
   Control.addVariable("shutter2VoidZOffset",0.0);
@@ -636,10 +645,10 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("shutterGapSize",22.30);      // Gap size
   Control.addVariable("shutter1ZAngle",0.0);        // shutter slope/ up/down
   //  Control.addVariable("shutter1centreZoffset",7.0); // Central shutter
-  Control.addVariable("shutter1Closed",0);          // Open shutter (false)
+  Control.addVariable("shutter1Closed",1);          // Open shutter (false)
   Control.addVariable("shutter2Closed",1);          // closed shutter (true)
   Control.addVariable("shutterClosed",0);           // Open shutter [imp:0]
-  Control.addVariable("shutter1ClosedZOffset",35.0);   // Closed distance
+  Control.addVariable("shutter1ClosedZOffset",42.0);   // Closed distance
   Control.addVariable("shutter2ClosedZOffset",28.0);   // Closed distance
   Control.addVariable("shutterClosedZOffset",28.0);    // Closed distance
   
@@ -700,18 +709,18 @@ TS2layout(FuncDataBase& Control)
   // ChipIR shutter:
   
   Control.addVariable("shutterBlock1Flag",1);  // only top
-  Control.addVariable("shutterBlock1Cent1",22.5);
-  Control.addVariable("shutterBlock1Cent2",155.5);
-  Control.addVariable("shutterBlock1Cent3",178.0);
+  Control.addVariable("shutterBlock1Cent1",32.5);
+  Control.addVariable("shutterBlock1Cent2",175.0);
+  Control.addVariable("shutterBlock1Cent3",190.0);
   Control.addVariable("shutterBlock1Len1",15.0);
-  Control.addVariable("shutterBlock1Len2",15.0);
-  Control.addVariable("shutterBlock1Len3",30.0);
-  Control.addVariable("shutterBlock1Height",30.0);
+  Control.addVariable("shutterBlock1Len2",10.0);
+  Control.addVariable("shutterBlock1Len3",20.0);
+  Control.addVariable("shutterBlock1Height",36.0);
   Control.addVariable("shutterBlock1VGap",8.0);
   Control.addVariable("shutterBlock1HGap",1.5);
   Control.addVariable("shutterBlock1Mat1","Aluminium"); 
   Control.addVariable("shutterBlock1Mat2","Aluminium");
-  Control.addVariable("shutterBlock1Mat3","Concrete");
+  Control.addVariable("shutterBlock1Mat3","B-Poly");
 
   // BULK INSERT
   Control.addVariable("bulkInsertIHeight",56.25);

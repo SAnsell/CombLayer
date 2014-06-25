@@ -121,6 +121,7 @@ main(int argc,char* argv[])
 
   // The big variable setting
   setVariable::TS1upgrade(SimPtr->getDataBase());
+  // Check for model type
   InputModifications(SimPtr,IParam,Names);
 
   // Definitions section 

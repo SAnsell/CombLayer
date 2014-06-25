@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   test/testFunction.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,7 +82,8 @@ testFunction::applyTest(const int extra)
       &testFunction::testBuiltIn,
       &testFunction::testEval,
       &testFunction::testString, 
-      &testFunction::testVec3D
+      &testFunction::testVec3D,
+      &testFunction::testVec3DFunctions
     };
 
   const std::string TestName[]=
@@ -91,7 +92,8 @@ testFunction::applyTest(const int extra)
       "BuiltIn",
       "Eval",
       "String",
-      "Vec3D"
+      "Vec3D",
+      "Vec3DFunctions"
     };
 
   const int TSize(sizeof(TPtr)/sizeof(testPtr));
@@ -151,9 +153,9 @@ testFunction::testAnalyse()
 	  ELog::EM<<"Compile error:"<<flag<<ELog::endWarn;
 	  return -cnt;
 	}
-      if (fabs(XX.Eval()-tc->get<1>())>1e-5)
+      if (fabs(XX.Eval<double>()-tc->get<1>())>1e-5)
 	{
-	  ELog::EM<<"Eval error:"<<XX.Eval()<<ELog::endWarn;
+	  ELog::EM<<"Eval error:"<<XX.Eval<double>()<<ELog::endWarn;
 	  return -cnt;
 	}
       cnt++;
@@ -186,7 +188,7 @@ testFunction::testBuiltIn()
   std::vector<double>::const_iterator rc=Results.begin();
   for(sc=TestString.begin();sc!=TestString.end();sc++,rc++)
     {
-      if (XX.Parse(*sc) || fabs(XX.Eval()-(*rc))>1e-6)
+      if (XX.Parse(*sc) || fabs(XX.Eval<double>()-(*rc))>1e-6)
         {
 	  ELog::EM<<"Failed to Parse"<<*sc<<ELog::endErr;
 	  return static_cast<int>(sc-TestString.begin())-1;
@@ -243,6 +245,30 @@ testFunction::testEval()
   return 0;
 }
 
+
+int
+testFunction::testString()
+  /*!
+    Test a function of a string
+    \return -ve on error 
+  */
+{
+  ELog::RegMethod RegA("testFucntion","testString");
+  FuncDataBase XX;   
+  XX.addVariable("test",std::string("AA"));
+  XX.addVariable("testB","BB");
+  const std::string A=XX.EvalVar<std::string>("test");
+  const std::string B=XX.EvalVar<std::string>("testB");
+  if (A!="AA" || B!="BB")
+    {
+        ELog::EM<<"A == "<<A<<ELog::endDebug;
+	return -1;
+    }
+
+  return 0;
+}
+  
+
 int
 testFunction::testVec3D()
   /*!
@@ -272,33 +298,84 @@ testFunction::testVec3D()
 	  ELog::EM<<"Parse == "<<XX.Parse("V1+V2")<<ELog::endTrace;
 	  XX.printByteCode(ELog::EM.Estream());
 	  ELog::EM<<ELog::endTrace;
-	  ELog::EM<<"Eval == "<<XX.Eval()<<ELog::endTrace;
+	  ELog::EM<<"Eval == "<<XX.Eval<double>()<<ELog::endTrace;
 	  return -1;
+	}
+    }
+
+
+  //  XX.Parse("3 + 4.0");
+
+
+  return 0;
+}
+
+int
+testFunction::testVec3DFunctions()
+  /*!
+    Test builtin commands
+    \retval 0 :: success
+  */
+{
+  ELog::RegMethod RegA("testFunction","testVec3D");
+
+  FuncDataBase XX;   
+
+  typedef boost::tuple<std::string,Geometry::Vec3D> VTYPE;
+  std::vector<VTYPE> TestVar;
+  TestVar.push_back(VTYPE("V1",Geometry::Vec3D(3,4,5)));
+  TestVar.push_back(VTYPE("V2",Geometry::Vec3D(10,-14,12)));
+  
+  // String : output type  : double / Vec out
+  typedef boost::tuple<std::string,int,Geometry::Vec3D,double> TTYPE;
+  std::vector<TTYPE> Tests;
+  
+  Tests.push_back(TTYPE("vec3d(1,2,3)",1,Geometry::Vec3D(1,2,3),0));
+  Tests.push_back(TTYPE("V1",1,Geometry::Vec3D(3,4,5),0));
+  Tests.push_back(TTYPE("V1+vec3d(1,2,3)",1,Geometry::Vec3D(4,6,8),0));
+  Tests.push_back(TTYPE("abs(V1+vec3d(1,2,3))",0,Geometry::Vec3D(0,0,0),
+			sqrt(16+36+64)));
+  Tests.push_back(TTYPE("dot(V1,vec3d(1,2,3))",0,Geometry::Vec3D(0,0,0),
+			sqrt(16+36+64)));
+
+  std::vector<VTYPE>::const_iterator vc;
+  for(vc=TestVar.begin();vc!=TestVar.end();vc++)
+    XX.addVariable(vc->get<0>(),vc->get<1>());
+  
+  std::vector<TTYPE>::const_iterator tc;
+  for(tc=Tests.begin();tc!=Tests.end();tc++)
+    {
+      if (XX.Parse(tc->get<0>()))
+	{
+	  ELog::EM<<"PARSE Failure:  "<<tc-Tests.begin()+1<<ELog::endDiag;
+	  ELog::EM<<"Test :"<<tc->get<0>()<<ELog::endDiag;
+	  return -1;
+	}
+      if (tc->get<1>()==1)   // Vector
+	{
+	  const Geometry::Vec3D Res=
+	    XX.Eval<Geometry::Vec3D>();
+	  if (tc->get<2>()!=Res)
+	    {
+	      ELog::EM<<"EVAL[Vec] Failure:  "
+		      <<tc-Tests.begin()+1<<ELog::endDiag;
+	      ELog::EM<<"TC == "<<Res<<" != "<<tc->get<2>()<<ELog::endDiag;
+	      return -1;
+	    }
+	}
+      else   // Double 
+	{
+	  const double Res=XX.Eval<double>();
+	  if (fabs(tc->get<3>()-Res)>Geometry::zeroTol)
+	    {
+	      ELog::EM<<"EVAL[double] Failure:  "
+		      <<tc-Tests.begin()+1<<ELog::endDiag;
+	      ELog::EM<<std::setprecision(9)<<"TC == "<<Res<<" != "
+		      <<tc->get<3>()<<ELog::endDiag;
+	      return -1;
+	    }
+
 	}
     }
   return 0;
 }
-
-
-int
-testFunction::testString()
-  /*!
-    Test a function of a string
-    \return -ve on error 
-  */
-{
-  ELog::RegMethod RegA("testFucntion","testString");
-  FuncDataBase XX;   
-  XX.addVariable("test",std::string("AA"));
-  XX.addVariable("testB","BB");
-  const std::string A=XX.EvalVar<std::string>("test");
-  const std::string B=XX.EvalVar<std::string>("testB");
-  if (A!="AA" || B!="BB")
-    {
-        ELog::EM<<"A == "<<A<<ELog::endDebug;
-	return -1;
-    }
-
-  return 0;
-}
-  

@@ -33,10 +33,7 @@ namespace shutterSystem
     \version 1.0
     \author S. Ansell
     \date February 2011
-    \brief Holds a simple basic ISIS shutter
-    
-    Can be specialized to ChipIR shutter or other
-    Improved to not require shutter system
+    \brief Simple void after the ISIS shutter
 */
 
 

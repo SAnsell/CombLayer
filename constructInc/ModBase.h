@@ -50,6 +50,10 @@ class ModBase : public attachSystem::ContainedComp,
   double xyAngle;                 ///< xy rotation angle
   double zAngle;                  ///< z rotation angle
   
+  std::vector<long int> flightSides;  ///< Sides for flight inde
+
+  virtual void populate(const FuncDataBase&);
+
  public:
 
   ModBase(const std::string&,const size_t);
@@ -58,8 +62,11 @@ class ModBase : public attachSystem::ContainedComp,
   virtual ModBase* clone() const =0;
   virtual ~ModBase();
 
+
+
   std::string getComposite(const std::string&) const;
 
+  long int getSideIndex(const size_t) const;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&) =0;
 
 };

@@ -48,13 +48,9 @@
 #include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
-#include "Tensor.h"
 #include "Vec3D.h"
 #include "inputParam.h"
 #include "PointOperation.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
@@ -78,8 +74,6 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "shutterBlock.h"
 #include "SimProcess.h"
 #include "SurInter.h"
@@ -113,7 +107,6 @@
 
 namespace shutterSystem
 {
-
 
 const size_t BulkShield::chipShutter(0);
 const size_t BulkShield::imatShutter(3);
@@ -368,6 +361,9 @@ BulkShield::createBulkInserts(Simulation& System,
   */
 {
   ELog::RegMethod RegA("BulkShield","createBulkInserts");
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+  
   const bool chipFlag(!IParam.flag("exclude") || 
 		      !IParam.compValue("E",std::string("chipIR")));
   const bool imatFlag(!IParam.flag("exclude") || 
@@ -376,21 +372,24 @@ BulkShield::createBulkInserts(Simulation& System,
 
   for(size_t i=0;i<numberBeamLines;i++)
     {
+      boost::shared_ptr<BulkInsert> BItem;
+      
       if (i==chipShutter && chipFlag)
-	BData.push_back(boost::shared_ptr<ChipIRInsert>
-			(new ChipIRInsert(i,"bulkInsert","chipInsert")));
+	BItem=boost::shared_ptr<BulkInsert>
+	       (new ChipIRInsert(i,"bulkInsert","chipInsert"));
       else if (i==imatShutter && imatFlag)
-	BData.push_back(boost::shared_ptr<IMatBulkInsert>
-			(new IMatBulkInsert(i,"bulkInsert","imatInsert")));
+	BItem=boost::shared_ptr<BulkInsert>
+	  (new IMatBulkInsert(i,"bulkInsert","imatInsert"));
       else
-	BData.push_back(boost::shared_ptr<BulkInsert>
-			(new BulkInsert(i,"bulkInsert")));
+	BItem=boost::shared_ptr<BulkInsert>(new BulkInsert(i,"bulkInsert"));
 
-      BData.back()->setLayers(innerCell,outerCell);
-      BData.back()->setExternal(SMap.realSurf(bulkIndex+17),
-			    SMap.realSurf(bulkIndex+27),
-				SMap.realSurf(bulkIndex+37) );
-      BData.back()->createAll(System,*GData[static_cast<size_t>(i)]);    
+      BItem->setLayers(innerCell,outerCell);
+      BItem->setExternal(SMap.realSurf(bulkIndex+17),
+			 SMap.realSurf(bulkIndex+27),
+			 SMap.realSurf(bulkIndex+37) );
+      BItem->createAll(System,*GData[static_cast<size_t>(i)]);    
+      OR.addObject(BItem->getKeyName()+StrFunc::makeString(i),BItem);
+      BData.push_back(BItem);
     }
   return;
 }

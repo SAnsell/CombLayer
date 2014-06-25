@@ -50,7 +50,7 @@ class CH4Layer : public constructSystem::ModBase
   int pCladMat;                    ///< Poison Cladding (Al)  
 
 
-  void populate(const Simulation&);
+  virtual void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
 
   void createSurfaces();

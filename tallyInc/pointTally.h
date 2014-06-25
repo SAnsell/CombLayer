@@ -39,14 +39,16 @@ class pointTally : public Tally
   double Radius;                 ///< Effective radius
   int fuFlag;                    ///< Special active
   NRange fuCard;                 ///< Fu card
-  
+
   DTriple<int,double,int> ddFlag; ///< ddFlag
   std::vector<Geometry::Vec3D> Window;     ///< Window (if applied)
   int secondDFlag;               ///< Use the second distance number
   double secondDist;             ///< setcond distancd
-  
+  bool mcnp6Out;                 ///< MCNP6 output 
+
   void orderWindow();
-  
+  void writeMCNP6(std::ostream&) const;
+
  public:
   
   explicit pointTally(const int);
@@ -57,6 +59,9 @@ class pointTally : public Tally
   /// ClassName
   virtual std::string className() const 
       { return "pointTally"; }
+
+  /// Set MCNP6 output flag
+  void setMCNP6(const bool B) { mcnp6Out=B; }
 
   void setWindow(const std::vector<Geometry::Vec3D>&);
   void setDDFlag(const double,const int);
@@ -83,7 +88,7 @@ class pointTally : public Tally
   Geometry::Plane calcPlane() const;
   void setProjectionCentre(const Geometry::Vec3D&,const Geometry::Vec3D&,
 				      const double);
-  
+
   void widenWindow(const int,const double);
   void slideWindow(const int,const double);
   void shiftWindow(const double);

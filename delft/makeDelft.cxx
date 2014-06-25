@@ -98,8 +98,10 @@
 #include "beamSlot.h"
 #include "BeamInsert.h"
 #include "BeSurround.h"
+#include "BeCube.h"
 #include "BeFullBlock.h"
 #include "SpaceBlock.h"
+#include "Rabbit.h"
 #include "makeDelft.h"
 
 
@@ -118,6 +120,8 @@ makeDelft::createColdMod(const std::string& modType)
 
   if (modType=="Sphere")
     return new SphereModerator("sphereH2");
+  if (modType=="SphereLong")
+    return new SphereModerator("sphereLong");
   if (modType=="DoubleMoon")
     return new SphereModerator("sphereH2");
   if (modType=="Moon")
@@ -130,6 +134,7 @@ makeDelft::createColdMod(const std::string& modType)
     {
       ELog::EM<<"Options "<<ELog::endDiag;
       ELog::EM<<"-- Sphere     :: Spherical moderator from FRM-1\n";
+      ELog::EM<<"-- SphereLong :: Spherical moderator long extension\n";
       ELog::EM<<"-- DoubleMoon :: Modified twin curve modreator\n";
       ELog::EM<<"-- Moon       :: Single cylindrical cut out moderator\n";
       ELog::EM<<"-- Cone        :: Cone moderator"<<ELog::endDiag;
@@ -142,7 +147,8 @@ makeDelft::createColdMod(const std::string& modType)
 }
 
 makeDelft::makeDelft(const std::string& modType) :
-  vacReq((modType=="Cone" || modType=="Sphere") ? 0 : 1),
+  vacReq((modType=="Cone" || modType=="Sphere" 
+	  || modType=="SphereLong") ? 0 : 1),
   GridPlate(new ReactorGrid("delftGrid")),
   Pool(new SwimingPool("delftPool")),
   FlightA(new BeamTube("delftFlightR2")),
@@ -155,7 +161,9 @@ makeDelft::makeDelft(const std::string& modType) :
   CSurround(new H2Vac("delftH2Cont")),
   R2Insert(new BeamInsert("R2Insert")),
   R2Be(new BeSurround("R2Ref")),
-  RFull(new BeFullBlock("RFull"))
+  R2Cube(new BeCube("R2Cube")),
+  RFull(new BeFullBlock("RFull")),
+  LFull(new BeFullBlock("LFull"))
   /*!
     Constructor
     \param modType :: Cold moderator type
@@ -179,6 +187,7 @@ makeDelft::makeDelft(const std::string& modType) :
   OR.addObject(CSurround);
   OR.addObject(R2Insert);
   OR.addObject(R2Be);
+  OR.addObject(R2Cube);
 
 }
 
@@ -301,6 +310,39 @@ makeDelft::makeBlocks(Simulation& System)
   return;
 }
 
+void
+makeDelft::makeRabbit(Simulation& System)
+  /*!
+    Make the rabbits
+    \param System :: System to build them in
+  */
+{
+  ELog::RegMethod RegA("makeDelft","makeRabbit");
+
+  typedef boost::shared_ptr<Rabbit> RPType;  
+  
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  int index(1);
+  int flag(1);
+  do
+    {
+      RPType RB(new Rabbit("Rabbit",index));  
+      flag=RB->createAll(System,*GridPlate);  
+      if (flag) 
+	{
+	  OR.addObject(RB); 
+	  RSet.push_back(RB);
+	  attachSystem::addToInsertSurfCtrl(System,*Pool,*RB);
+	}
+      index++;
+    } while (flag);  
+
+  
+  return;
+}
+
 void 
 makeDelft::setSource(Simulation* SimPtr,
 		     const mainSystem::inputParam& IParam)
@@ -396,6 +438,12 @@ makeDelft::build(Simulation* SimPtr,
       R2Be->createAll(*SimPtr,*FlightA,
 		      FlightB->getExclude()+FlightC->getExclude());
     }
+  else if (refExtra=="R2Cube")
+    {
+      R2Cube->addInsertCell(Pool->getPoolCell());
+      R2Cube->createAll(*SimPtr,*FlightA,
+		      FlightA->getExclude());
+    }
   else if (refExtra=="FullBlock")
     {
       RFull->addInsertCell(Pool->getPoolCell());
@@ -403,10 +451,16 @@ makeDelft::build(Simulation* SimPtr,
       attachSystem::addToInsertLineCtrl(*SimPtr,*RFull,*FlightA);
       attachSystem::addToInsertLineCtrl(*SimPtr,*RFull,*FlightB);
       attachSystem::addToInsertLineCtrl(*SimPtr,*RFull,*FlightC);
+      LFull->addInsertCell(Pool->getPoolCell());
+      LFull->createAll(*SimPtr,*FlightD,-1);
+      attachSystem::addToInsertLineCtrl(*SimPtr,*LFull,*FlightD);
+      attachSystem::addToInsertLineCtrl(*SimPtr,*LFull,*FlightE);
+      attachSystem::addToInsertLineCtrl(*SimPtr,*LFull,*FlightF);
     }
   
 
   makeBlocks(*SimPtr);
+  makeRabbit(*SimPtr);
 
   // ELog::EM<<"Insert to be removed "<<ELog::endWarn;
   if (ColdMod)

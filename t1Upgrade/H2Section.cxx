@@ -44,6 +44,7 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
+#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -153,22 +154,24 @@ H2Section::clone() const
 }
 
 void
-H2Section::populate(const Simulation& System)
+H2Section::populate(const FuncDataBase& Control)
  /*!
    Populate all the variables
-   \param System :: Simulation to use
+   \param Control :: DataBase to use
  */
 {
   ELog::RegMethod RegA("H2Section","populate");
   
-  const FuncDataBase& Control=System.getDataBase();
-
+  ModBase::populate(Control);
   // Master values
   xStep=Control.EvalVar<double>(keyName+"XStep");
   yStep=Control.EvalVar<double>(keyName+"YStep");
   zStep=Control.EvalVar<double>(keyName+"ZStep");
   xyAngle=Control.EvalVar<double>(keyName+"XYangle");
   zAngle=Control.EvalVar<double>(keyName+"Zangle");
+
+  nLayers=Control.EvalVar<size_t>(keyName+"NLayers");
+  if (nLayers==0) nLayers=1;  // Layers include middle
 
   height=Control.EvalVar<double>(keyName+"Height");
   depth=Control.EvalVar<double>(keyName+"Depth");
@@ -209,7 +212,6 @@ H2Section::createUnitVector(const attachSystem::FixedComp& FC)
 
   applyShift(xStep,yStep,zStep);
   applyAngleRotate(xyAngle,0);
-  ELog::EM<<"Z == "<<Z<<ELog::endDebug;
   return;
 }
 
@@ -477,7 +479,7 @@ H2Section::getSurfacePoint(const size_t layerIndex,
   const Geometry::Vec3D XYZ[6]={-Y,Y,-X,X,-Z,Z};
   LayerInfo LA(height,width,depth);
 
-  if (!layerIndex)
+  if (layerIndex)
     {
       const LayerInfo LX(frontWall,backWall,mainWall,
 			 mainWall,mainWall,mainWall);
@@ -491,8 +493,8 @@ H2Section::getSurfacePoint(const size_t layerIndex,
 }
 
 std::string
-H2Section::getLayerString(const size_t sideIndex,
-			  const size_t layerIndex) const
+H2Section::getLayerString(const size_t layerIndex,
+			  const size_t sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
     \param sideIndex :: Side [0-5]
@@ -501,17 +503,7 @@ H2Section::getLayerString(const size_t sideIndex,
   */
 {
   ELog::RegMethod RegA("H2Section","getLayerString");
-
-  if (layerIndex>6) 
-    throw ColErr::IndexError<size_t>(layerIndex,6,"layerIndex");
-  if (sideIndex>5) 
-    throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex");
-
-  const int SI(modIndex+static_cast<int>(layerIndex*10+sideIndex+1));
-  const int signValue((sideIndex % 2) ? 1 : -1);
-  std::ostringstream cx;
-  cx<<" "<<signValue*SMap.realSurf(SI)<<" ";
-  return cx.str();
+  return StrFunc::makeString(getLayerSurf(layerIndex,sideIndex));
 }
 
 int
@@ -521,7 +513,7 @@ H2Section::getLayerSurf(const size_t layerIndex,
     Given a side and a layer calculate the link surf
     \param sideIndex :: Side [0-5]
     \param layerIndex :: layer, 0 is inner moderator [0-4]
-    \return Surface string
+    \return Surface indexxs
   */
 {
   ELog::RegMethod RegA("H2Section","getLayerSurf");
@@ -532,7 +524,8 @@ H2Section::getLayerSurf(const size_t layerIndex,
     throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
 
   const int SI(modIndex+static_cast<int>(layerIndex*10+sideIndex+1));
-  return SMap.realSurf(SI);
+  const int signValue((sideIndex % 2) ? 1 : -1);
+  return signValue*SMap.realSurf(SI);
 }
 
 void
@@ -546,7 +539,7 @@ H2Section::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("H2Section","createAll");
-  populate(System);
+  populate(System.getDataBase());
 
   createUnitVector(FC);
   createSurfaces();

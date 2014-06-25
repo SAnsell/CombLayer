@@ -40,20 +40,15 @@ namespace moderatorSystem
   \brief TriangleMod [insert object]
 */
 
-class TriangleMod : public attachSystem::ContainedComp,
-  public attachSystem::FixedComp
+class TriangleMod : public constructSystem::ModBase
 {
  private:
-  
-  const int triIndex;      ///< Index of surface offset
-  int cellIndex;            ///< Cell index
 
-  double xStep;           ///< Offset relative to origin 
-  double yStep;           ///< Offset relative to origin 
-  double zStep;           ///< Offset relative to origin 
-
-  double xyAngle;         ///< Rotation xy plane
-  double zAngle;          ///< Rotation z plane 
+  double absXStep;           ///< Offset relative to absolute
+  double absYStep;           ///< Offset relative to absolute
+  double absZStep;           ///< Offset relative to absolute
+  double absXYAngle;         ///< Rotation xy plane
+  double absZAngle;          ///< Rotation z plane 
 
   TriUnit Outer;          ///< Outer points 
 
@@ -87,7 +82,7 @@ class TriangleMod : public attachSystem::ContainedComp,
   void cutInnerObj(Simulation&,const TriUnit&);
   void cutOuterObj(Simulation&,const TriUnit&,const TriUnit&);
   
-  void populate(const Simulation&);
+  virtual void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
 
   void createLinks();
@@ -113,7 +108,9 @@ class TriangleMod : public attachSystem::ContainedComp,
   virtual int getExitWindow(const size_t,std::vector<int>&) const;
 
   virtual void createAll(Simulation&,const attachSystem::FixedComp&);
-
+  virtual Geometry::Vec3D getSurfacePoint(const size_t,const size_t) const;
+  virtual int getLayerSurf(const size_t,const size_t) const;
+  virtual std::string getLayerString(const size_t,const size_t) const;
 };
 
 }

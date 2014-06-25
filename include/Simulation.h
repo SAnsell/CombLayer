@@ -78,6 +78,8 @@ class Simulation
 
  protected:
 
+  int mcnpType;                         ///< MCNP(X) type
+
   std::string inputFile;                ///< Input file
   std::string cmdLine;                  ///< Command line : historical recall 
   int CNum;                             ///< Number of complementary components
@@ -198,14 +200,19 @@ class Simulation
   int removeCell(const int);
   int removeAllSurface(const int);
   int substituteAllSurface(const int,const int);
+  void voidObject(const std::string&);
+
 
   void createObjSurfMap();
   void validateObjSurfMap();
   /// Access surface map
   const ModelSupport::ObjSurfMap* getOSM() const;
 
+
   // Tally processing
 
+  bool isMCNP6() { return (mcnpType==1) ? 1 : 0; }  ///< get a state
+  void setMcnpType(const int T) { mcnpType=T; }  ///< Set type
   void removeAllTally();
   int removeTally(const int);
   int addTally(tallySystem::Tally*);

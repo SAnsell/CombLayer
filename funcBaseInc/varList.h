@@ -62,6 +62,8 @@ class varList
   FItem* findVar(const std::string&);
   FItem* findVar(const int);
 
+  int selectValue(const int,Geometry::Vec3D&,double&) const;
+
   template<typename T>
   T getValue(const int) const;
 

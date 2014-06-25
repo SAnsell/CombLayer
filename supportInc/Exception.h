@@ -364,6 +364,33 @@ class CastError : public ExBase
   virtual ~CastError() throw() {}    ///< Destructor
 
 };
+/*!
+  \class CastError
+  \brief Dynamic Cast problems
+  \author Stuart Ansell
+  \date October 2006
+  \version 1.0
+
+  When a pointer cant by case
+*/
+
+template<typename T,typename U>
+class TypeConvError : public ExBase
+{
+ private:
+
+  T ABase;
+  void setOutLine();
+
+ public:
+
+  TypeConvError(const T&,const std::string&);
+
+  TypeConvError(const TypeConvError<T,U>&);
+  TypeConvError<T,U>& operator=(const TypeConvError<T,U>&);
+  virtual ~TypeConvError() throw() {}    ///< Destructor
+
+};
 
 /*!
   \class CommandError

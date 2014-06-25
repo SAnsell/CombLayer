@@ -622,7 +622,8 @@ TS2target::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,protonIndex,
 				 "(59 :-91) -207 (-101 : (201 -202))");
   addOuterSurf(Out);
-  addBoundarySurf(-SMap.realSurf(protonIndex+101));    
+  // Inner boundary
+  addBoundarySurf(-SMap.realSurf(protonIndex+27));    
   return;
 }
 
@@ -763,8 +764,7 @@ TS2target::createAll(Simulation& System,const attachSystem::FixedComp& FC)
   createLinks();
   createBeamWindow(System);
   insertObjects(System);
-
-  ELog::EM<<"z == "<<Origin<<ELog::endDebug;
+  //  addInnerBoundary()
 
   return;
 }

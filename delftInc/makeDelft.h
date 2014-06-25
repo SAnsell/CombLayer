@@ -42,7 +42,9 @@ namespace delftSystem
   class H2Vac;
   class H2Groove;
   class BeSurround;
+  class BeCube;
   class BeFullBlock;
+  class Rabbit;
   class SpaceBlock;
 
   /*!
@@ -77,16 +79,21 @@ class makeDelft
 
   // Reflector additional
   boost::shared_ptr<BeSurround> R2Be;      ///< R2 tube refle
+  boost::shared_ptr<BeCube> R2Cube;      ///< R2 tube refle
   boost::shared_ptr<BeFullBlock> RFull;      ///< R Full block
+  boost::shared_ptr<BeFullBlock> LFull;      ///< L Full block
 
 
   /// Boxed units
   std::vector<boost::shared_ptr<SpaceBlock> > SBox;  
+  /// RABBITS
+  std::vector<boost::shared_ptr<Rabbit> > RSet;  
 
   static virtualMod* createColdMod(const std::string&);
 
   void variableObjects(const FuncDataBase&);
   void makeBlocks(Simulation&);
+  void makeRabbit(Simulation&);
 
  public:
   

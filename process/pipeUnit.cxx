@@ -416,6 +416,7 @@ pipeUnit::insertObjects(Simulation& System)
   const double angleStep(2*M_PI/nAngle);
   double angle(0.0);
   Geometry::Vec3D addVec;
+
   for(size_t i=0;i<=nAngle;angle+=angleStep,i++)
     {
       addVec=(i<nAngle) 
@@ -428,8 +429,9 @@ pipeUnit::insertObjects(Simulation& System)
 
       const std::vector<MonteCarlo::Object*>& OVec=LT.getObjVec();
       std::vector<MonteCarlo::Object*>::const_iterator oc;
+      
       for(oc=OVec.begin();oc!=OVec.end();oc++)
-	{
+	{	  
 	  const int ONum=(*oc)->getName();
 	  if (OMap.find(ONum)==OMap.end())
 	    OMap.insert(MTYPE::value_type(ONum,(*oc)));

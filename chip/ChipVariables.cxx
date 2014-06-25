@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   chip/ChipVariables.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -85,6 +85,11 @@ ChipVariables(FuncDataBase& Control)
   Control.addVariable("chipShutterShineHoffset",0.0);    // shine horrizonal
   Control.addVariable("chipShutterShineInsertStep",3.5); // Inset at far end
    
+  Control.addVariable("chipShutterBackScrapThick",1.5); 
+  Control.addVariable("chipShutterBackScrapExtra",0.5); 
+  Control.addVariable("chipShutterBackScrapMat","Aluminium"); 
+
+
   Control.addVariable("chipShutterIR1",8.2);        // Radius of cylinder
   Control.addVariable("chipShutterIR2",10.3);       // Radius of cylinder 
   Control.addVariable("chipShutterIL1_1",1.0);     // Length of cylinder
@@ -115,6 +120,14 @@ ChipVariables(FuncDataBase& Control)
   Control.addVariable("chipInsertDefMat","CastIron");      // Material
   Control.addVariable("chipInsertNLayers",0);     // Number of layers
   Control.addVariable("chipInsertMat_2","CastIron");      // Cast steel
+
+  Control.addVariable("chipInsertClearSideGap",0.6);      
+  Control.addVariable("chipInsertClearBaseGap",1.71);    
+  Control.addVariable("chipInsertClearTopGap",2.0);      
+
+  Control.addVariable("chipInsertClearSideOff",3.0);     
+  Control.addVariable("chipInsertClearBaseOff",3.0);    
+  Control.addVariable("chipInsertClearTopOff",3.0);      
 
   // Insert Cylinders:
   Control.addVariable("chipCylInsertNCylinder",1);      // 
@@ -324,7 +337,7 @@ ChipVariables(FuncDataBase& Control)
   Control.addVariable("chipSampleXYAngle",0.0); 
   Control.addVariable("chipSampleZAngle",0.0); 
   Control.addVariable("chipSampleXStep",0.0);  
-  Control.addVariable("chipSampleDepth",0.5);   // thickness 5mm
+  Control.addVariable("chipSampleDepth",0.5);    // thickness 5mm
   Control.addVariable("chipSampleZLift",40.0);   // From table top
 
   Control.addVariable("chipSample1YStep",-10.0);   // Relative to table centre  

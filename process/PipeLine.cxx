@@ -76,11 +76,13 @@
 #include "pipeUnit.h"
 #include "PipeLine.h"
 
+#include "debugMethod.h"
+
 namespace ModelSupport
 {
 
 PipeLine::PipeLine(const std::string& Key)  :
-  keyName(Key),nCylinder(0)
+  keyName(Key),nCylinder(0),nAngle(6)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -259,7 +261,7 @@ PipeLine::createUnits(Simulation& System)
    */
 {
   ELog::RegMethod RegA("PipeLine","createUnits");
-  
+
   if (Pts.size()<2)
     {
       ELog::EM<<"No points to create pipeLine"<<ELog::endCrit;
@@ -298,7 +300,10 @@ PipeLine::createUnits(Simulation& System)
   // Actually build the units
   
   for(size_t i=0;i<PUnits.size();i++)
-    PUnits[i]->createAll(System,activeFlags[i],CV);
+    {
+      PUnits[i]->setNAngle(nAngle);
+      PUnits[i]->createAll(System,activeFlags[i],CV);
+    }
   return 0;
 }
 
@@ -309,8 +314,7 @@ PipeLine::setNAngle(const size_t NA)
     \parma NA :: Number of angle segments
    */
 {
-  for(size_t i=0;i<PUnits.size();i++)
-    PUnits[i]->setNAngle(NA);
+  nAngle=NA;
   return;
 }
 

@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   t1UpgradeInc/CylMod.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,8 @@ class Simulation;
 namespace constructSystem
 {
 
+  class WedgeInsert;
+
 /*!
   \class CylMod
   \author S. Ansell
@@ -39,6 +41,8 @@ class CylMod : public constructSystem::ModBase
 {
  private:
   
+  typedef boost::shared_ptr<WedgeInsert> WTYPE;
+
   std::vector<double> radius;         ///< cylinder radii
   std::vector<double> height;         ///< Full heights
   std::vector<int> mat;               ///< Materials
@@ -46,7 +50,10 @@ class CylMod : public constructSystem::ModBase
 
   size_t nConic;                     ///< Number of conic segments
   std::vector<ConicInfo> Conics;     ///< Conics [non-intersecting]
+  size_t nWedge;                     ///< Number of Wedge segments
+  std::vector<WTYPE> Wedges;         ///< Wedges [non-intersecting]
 
+  int mainCell;                      ///< Main cell
   // Functions:
 
   void populate(const FuncDataBase&);
@@ -55,7 +62,8 @@ class CylMod : public constructSystem::ModBase
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
-
+  void createWedges(Simulation&);
+  
  public:
 
   CylMod(const std::string&);

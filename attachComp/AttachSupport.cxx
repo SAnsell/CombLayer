@@ -384,7 +384,6 @@ addToInsertLineCtrl(Simulation& System,
       for(size_t j=0;!cellInter && j<NPoint;j++)
 	{
 	  const Geometry::Vec3D& IP=InsertFC.getLinkPt(j);
-	  ELog::EM<<"Link "<<j<<":"<<IP<<ELog::endDebug;
 	  if (CRPtr->isValid(IP))
 	    cellInter=1;
 	}
@@ -413,7 +412,6 @@ addToInsertLineCtrl(Simulation& System,
 		      if ((distVec[dI]>0.0 && distVec[dI]<LLen) &&
 			  CRPtr->isValid(dPts[dI],surfPts[dI]->getName()))
 			{
-			  ELog::EM<<"Cell valid at "<<dPts[dI]<<ELog::endDebug;
 			  cellInter=1;
 			  break;
 			}
@@ -423,7 +421,6 @@ addToInsertLineCtrl(Simulation& System,
 	}
       if (cellInter)
 	{
-	  ELog::EM<<"Adding "<<CRPtr->getName()<<ELog::endDebug;
 	  CRPtr->addSurfString(excludeStr);
 	}
     }
@@ -536,7 +533,7 @@ addToInsertOuterSurfCtrl(Simulation& System,
  /*!
    Adds this object to the containedComp to be inserted.
    FC is the fixed object that is to be inserted -- linkpoints
-   must be set. It is tested against all the ojbect with
+   must be set. It is tested against all the object with
    this object .
    \param System :: Simulation to use
    \param BaseCC :: Only search using the base Contained Comp

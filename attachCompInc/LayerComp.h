@@ -37,17 +37,18 @@ class LayerComp
  protected:
   
   size_t nLayers;         ///< Number of layers
-  
- public:
+  size_t nInnerLayers;    ///< Number of inner layers
 
-  LayerComp(size_t NL) : nLayers(NL) {}
-  /// Basic copy constructor
-  LayerComp(const LayerComp& A) : nLayers(A.nLayers) {}
-  /// Basic assignment operator
-  LayerComp& operator=(const LayerComp& A)  
-    { nLayers=A.nLayers; return *this; }
+ public:
+    
+  LayerComp(const size_t,const size_t =0);
+  LayerComp(const LayerComp&);
+  LayerComp& operator=(const LayerComp&);
   virtual ~LayerComp() { }  ///< Simple destructor
 
+  virtual double intersectDist(const size_t,const size_t,
+			       const Geometry::Vec3D&,
+			       const Geometry::Vec3D&) const;
 
   virtual Geometry::Vec3D getSurfacePoint(const size_t,const size_t) const =0;
   virtual int getLayerSurf(const size_t,const size_t) const =0;
@@ -57,6 +58,8 @@ class LayerComp
 
   /// Access to number of layers:
   size_t getNLayers() const { return nLayers; }
+  /// Access to number of layers:
+  size_t getNInnerLayers() const { return nInnerLayers; }
 
 };
 

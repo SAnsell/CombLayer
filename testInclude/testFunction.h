@@ -41,6 +41,7 @@ private:
   int testEval();
   int testString();
   int testVec3D();
+  int testVec3DFunctions();
  
 public:
 

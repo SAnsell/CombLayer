@@ -76,7 +76,9 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
+#include "LayerComp.h"
 #include "AttachSupport.h"
+#include "ModBase.h"
 #include "TriUnit.h"
 #include "TriangleMod.h"
 
@@ -84,21 +86,22 @@ namespace moderatorSystem
 {
 
 TriangleMod::TriangleMod(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,5),
-  triIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(triIndex+1),Outer(triIndex+100)
-
+  constructSystem::ModBase(Key,5),
+  Outer(modIndex+100)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
   */
-{}
+{
+  nLayers=3;
+  nInnerLayers=0;
+}
 
 TriangleMod::TriangleMod(const TriangleMod& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  triIndex(A.triIndex),cellIndex(A.cellIndex),xStep(A.xStep),
-  yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
-  zAngle(A.zAngle),Outer(A.Outer),nIUnits(A.nIUnits),
+  constructSystem::ModBase(A),
+  absXStep(A.absXStep),absYStep(A.absYStep),
+  absZStep(A.absZStep),absXYAngle(A.absXYAngle),
+  absZAngle(A.absZAngle),Outer(A.Outer),nIUnits(A.nIUnits),
   IUnits(A.IUnits),height(A.height),wallThick(A.wallThick),
   flatClearance(A.flatClearance),topClearance(A.topClearance),
   baseClearance(A.baseClearance),nInnerLayers(A.nInnerLayers),
@@ -120,14 +123,12 @@ TriangleMod::operator=(const TriangleMod& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
-      cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
+      constructSystem::ModBase::operator=(A);
+      absXStep=A.absXStep;
+      absYStep=A.absYStep;
+      absZStep=A.absZStep;
+      absXYAngle=A.absXYAngle;
+      absZAngle=A.absZAngle;
       Outer=A.Outer;
       nIUnits=A.nIUnits;
       IUnits=A.IUnits;
@@ -153,21 +154,27 @@ TriangleMod::~TriangleMod()
 {}
 
 void
-TriangleMod::populate(const Simulation& System)
+TriangleMod::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: DAtaBase for variables
   */
 {
   ELog::RegMethod RegA("TriangleMod","populate");
   
-  const FuncDataBase& Control=System.getDataBase();
+  ModBase::populate(Control);
   
   xStep=Control.EvalVar<double>(keyName+"XStep");
   yStep=Control.EvalVar<double>(keyName+"YStep");
   zStep=Control.EvalVar<double>(keyName+"ZStep");
   xyAngle=Control.EvalVar<double>(keyName+"XYangle");
   zAngle=Control.EvalVar<double>(keyName+"Zangle");
+
+  absXStep=Control.EvalDefVar<double>(keyName+"AbsXStep",0.0);
+  absYStep=Control.EvalDefVar<double>(keyName+"AbsYStep",0.0);
+  absZStep=Control.EvalDefVar<double>(keyName+"AbsZStep",0.0);
+  absXYAngle=Control.EvalDefVar<double>(keyName+"AbsXYangle",0.0);
+  absZAngle=Control.EvalDefVar<double>(keyName+"BasZangle",0.0);
 
 
   Outer.clear();
@@ -189,7 +196,7 @@ TriangleMod::populate(const Simulation& System)
   IUnits.clear();
   for(size_t i=0;i<nIUnits;i++)
     {
-      TriUnit tU(triIndex+3000+1000*static_cast<int>(i));
+      TriUnit tU(modIndex+3000+1000*static_cast<int>(i));
       const std::string IUStr=keyName+"Inner"+StrFunc::makeString(i+1);
       const size_t INC=Control.EvalVar<size_t>(IUStr+"NCorner");
       for(size_t j=0;j<INC;j++)
@@ -237,7 +244,9 @@ TriangleMod::populate(const Simulation& System)
   modTemp=Control.EvalVar<double>(keyName+"ModTemp");
   modMat=ModelSupport::EvalMat<int>(Control,keyName+"ModMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
-  
+
+
+
   return;
 }
   
@@ -268,6 +277,7 @@ TriangleMod::createConvex()
 {
   ELog::RegMethod RegA("TriangleMod","createConvex");
   
+  Outer.applyAbsShift(absXStep,absYStep,absZStep);
   Outer.renormalize(Origin,X,Y,Z);
   Outer.constructConvex(Z);
   std::vector<TriUnit>::iterator vc;
@@ -275,6 +285,7 @@ TriangleMod::createConvex()
     {
       if (vc->nCorner)
 	{
+	  vc->applyAbsShift(absXStep,absYStep,absZStep);
 	  vc->renormalize(Origin,X,Y,Z);
 	  vc->constructConvex(Z);
 	}
@@ -294,7 +305,18 @@ TriangleMod::createLinks()
   // Loop over corners that are bound by convex
 
   FixedComp::setNConnect(Outer.nCorner+2);
+
   const double OSize=wallThick+flatClearance;
+
+  // Top / Base 
+  FixedComp::setConnect(0,Origin-Z*(height/2.0+OSize),-Z);
+  FixedComp::setConnect(1,Origin+Z*(height/2.0+OSize),Z);
+
+  
+  FixedComp::setLinkSurf(0,-SMap.realSurf(modIndex+25));
+  FixedComp::setLinkSurf(1,SMap.realSurf(modIndex+26));
+
+
   for(size_t i=0;i<Outer.nCorner;i++)
     {
       const int ii(static_cast<int>(i));
@@ -302,9 +324,9 @@ TriangleMod::createLinks()
 	{
 	  std::pair<Geometry::Vec3D,Geometry::Vec3D> CP=
 	    cornerPair(Outer.Pts,i,i+1,OSize);
-	  FixedComp::setConnect(i,(CP.first+CP.second)/2.0,
+	  FixedComp::setConnect(i+2,(CP.first+CP.second)/2.0,
 				sideNorm(CP));
-	  FixedComp::setLinkSurf(i,-SMap.realSurf(triIndex+101+ii));
+	  FixedComp::setLinkSurf(i+2,-SMap.realSurf(modIndex+101+ii));
 	}
       else 
 	{
@@ -329,11 +351,11 @@ TriangleMod::createLinks()
 	  cx<<ii+1<<" )";
 
 	  const std::string Out=ModelSupport::getComposite
-	    (SMap,triIndex+300,cx.str());
+	    (SMap,modIndex+300,cx.str());
 	  HeadRule AX;
 	  AX.procString(Out);
 	  AX.makeComplement();
-	  FixedComp::setLinkSurf(i,AX.display());
+	  FixedComp::setLinkSurf(i+2,AX.display());
 	  // Get Normal
 	  jB= (jB) ? jB-1 : Outer.nCorner-1;
 	  int nAve(0);
@@ -348,16 +370,10 @@ TriangleMod::createLinks()
 	    }
 	  AveDir/=nAve;
 	  Geometry::Vec3D CP(realPt(Outer.Pts[i]));
-	  FixedComp::setConnect(i,CP,AveDir);
+	  FixedComp::setConnect(i+2,CP,AveDir);
 	}
     }
   
-  FixedComp::setConnect(Outer.nCorner,Origin-Z*(height/2.0+OSize),-Z);
-  FixedComp::setConnect(Outer.nCorner+1,Origin+Z*(height/2.0+OSize),Z);
-
-  
-  FixedComp::setLinkSurf(Outer.nCorner,-SMap.realSurf(triIndex+25));
-  FixedComp::setLinkSurf(Outer.nCorner+1,SMap.realSurf(triIndex+26));
 
   return;
 }
@@ -366,9 +382,9 @@ TriangleMod::createLinks()
 Geometry::Vec3D
 TriangleMod::realPt(const Geometry::Vec3D& CPt) const
   /*!
-    Given a point put it into the origin framce
+    Given a point put it into the origin frame
     \param CPt :: Point to convert
-    \return Cnverted point
+    \return Converted point
   */
 {
   ELog::RegMethod RegA("TriangleMod","realPt");
@@ -453,14 +469,13 @@ TriangleMod::createSurfaces()
   // Surfaces 1-6 are the FC container
   // Surfaces 11-16 are the outer blades etc
 
-  const size_t nLayers(3);
-  const double PSteps[nLayers]={wallThick,flatClearance,0.0};  
+  const double PSteps[]={wallThick,flatClearance,0.0};  
 
   for(size_t i=0;i<Outer.nCorner;i++)
     {
       const int ii(static_cast<int>(i));
       double PDepth(0.0);  // + from origin
-      int triOffset(triIndex+101);
+      int triOffset(modIndex+101);
       for(size_t j=0;j<nLayers;j++)
 	{
 	  const std::pair<Geometry::Vec3D,Geometry::Vec3D>
@@ -475,17 +490,17 @@ TriangleMod::createSurfaces()
 	}
     }
 
-  ModelSupport::buildPlane(SMap,triIndex+5,Origin-Z*height/2.0,Z);
-  ModelSupport::buildPlane(SMap,triIndex+6,Origin+Z*height/2.0,Z);
+  ModelSupport::buildPlane(SMap,modIndex+5,Origin-Z*height/2.0,Z);
+  ModelSupport::buildPlane(SMap,modIndex+6,Origin+Z*height/2.0,Z);
 
-  ModelSupport::buildPlane(SMap,triIndex+15,
+  ModelSupport::buildPlane(SMap,modIndex+15,
 			   Origin-Z*(height/2.0+wallThick),Z);
-  ModelSupport::buildPlane(SMap,triIndex+16,
+  ModelSupport::buildPlane(SMap,modIndex+16,
 			   Origin+Z*(height/2.0+wallThick),Z);
 
-  ModelSupport::buildPlane(SMap,triIndex+25,
+  ModelSupport::buildPlane(SMap,modIndex+25,
 			   Origin-Z*(height/2.0+wallThick+baseClearance),Z);
-  ModelSupport::buildPlane(SMap,triIndex+26,
+  ModelSupport::buildPlane(SMap,modIndex+26,
 			   Origin+Z*(height/2.0+wallThick+topClearance),Z);
 
 
@@ -531,7 +546,7 @@ TriangleMod::createInnerObject(Simulation& System)
 
   HeadRule InnerExclude;
   const std::string vertUnit=
-    ModelSupport::getComposite(SMap,triIndex," 5 -6");
+    ModelSupport::getComposite(SMap,modIndex," 5 -6");
 
 
   for(size_t i=0;i<nIUnits;i++)
@@ -625,7 +640,7 @@ TriangleMod::calcOverlaps(Simulation& System)
   OHull.createSurfaceList();
 
   
-  Geometry::Plane PZ(triIndex+5000,0);
+  Geometry::Plane PZ(modIndex+5000,0);
   PZ.setPlane(Geometry::Vec3D(0,0,0),Z);
 
   std::vector<MonteCarlo::Qhull> IQH;
@@ -666,7 +681,7 @@ TriangleMod::createObjects(Simulation& System)
   std::string Out;
 
   // Full moderator
-  outUnit=ModelSupport::getComposite(SMap,triIndex," 5 -6 ")+
+  outUnit=ModelSupport::getComposite(SMap,modIndex," 5 -6 ")+
     Outer.getString(0);
   
   Out=createInnerObject(System);
@@ -674,13 +689,13 @@ TriangleMod::createObjects(Simulation& System)
 
   // Wall       
   inUnit=MonteCarlo::getComplementShape(outUnit);
-  outUnit=ModelSupport::getComposite(SMap,triIndex," 15 -16 ")+
+  outUnit=ModelSupport::getComposite(SMap,modIndex," 15 -16 ")+
     Outer.getString(1);
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,outUnit+inUnit));
 
   // Clearance
   inUnit=MonteCarlo::getComplementShape(outUnit);
-  outUnit=ModelSupport::getComposite(SMap,triIndex," 25 -26 ")+
+  outUnit=ModelSupport::getComposite(SMap,modIndex," 25 -26 ")+
     Outer.getString(2);
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,outUnit+inUnit));
   
@@ -718,6 +733,92 @@ TriangleMod::getExitWindow(const size_t outIndex,
   return std::abs(SMap.realSurf(getLinkSurf(outIndex)));
 }
 
+Geometry::Vec3D
+TriangleMod::getSurfacePoint(const size_t layerIndex,
+			     const size_t sideIndex) const
+  /*!
+    Simplified layer system only for top/bottom
+    \param layerIndex :: layer
+    \param sideIndex :: 0 base / 1 top : index by wall nubmer
+    \return Point in middle of surface
+  */
+{
+  ELog::RegMethod RegA("TriangleMod","getSurfacePoint");
+
+  double LT[3];  
+  if (sideIndex>=Outer.Pts.size()+2) 
+    throw ColErr::IndexError<size_t>(sideIndex,Outer.Pts.size()+2,
+				     "sideIndex");
+  if (layerIndex>=nLayers) 
+    throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
+  
+
+  if (sideIndex>1)   // Main sized
+    {
+      LT[0]=0.0; LT[1]=LT[0]+wallThick; LT[2]=LT[1]+flatClearance;
+      std::pair<Geometry::Vec3D,Geometry::Vec3D> CP=
+	cornerPair(Outer.Pts,sideIndex-2,sideIndex-1,LT[layerIndex]);
+      return (CP.first+CP.second)/2.0;
+    }
+  else if (sideIndex)  // TOP
+    {
+      LT[0]=height/2.0; LT[1]=LT[0]+wallThick; LT[2]=LT[1]+topClearance;
+      return Origin+Z*LT[layerIndex];
+    }
+  // BASE
+  LT[0]=height/2.0; LT[1]=LT[0]+wallThick; LT[2]=LT[1]+baseClearance;
+  return Origin-Z*LT[layerIndex];
+
+} 
+
+int
+TriangleMod::getLayerSurf(const size_t layerIndex,
+			  const size_t sideIndex) const
+  /*!
+    Given a side and a layer calculate the link surf
+    \param sideIndex :: Side [0:Base/1:Top : side+2] 
+    \param layerIndex :: layer, 0 is inner moderator [0-4]
+    \return Surface number 
+  */
+{
+  ELog::RegMethod RegA("TriangleMod","getLayerSurf");
+
+  if (layerIndex>=nLayers) 
+    throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layerIndex");
+  if (sideIndex>=Outer.Pts.size()+2) 
+    throw ColErr::IndexError<size_t>(sideIndex,Outer.Pts.size()+2,
+				     "sideIndex");
+
+  if (sideIndex>1)   // SIDES
+    {
+      const int lIndex=static_cast<int>(layerIndex);
+      const int SN=modIndex+100*lIndex+static_cast<int>(sideIndex-2)+101;
+      return -SMap.realSurf(SN);
+    }
+  const int addNumber=modIndex+
+    static_cast<int>(layerIndex)*10;
+
+  if (sideIndex==1)  // TOP
+    return SMap.realSurf(addNumber+6);
+  // BASE
+  return -SMap.realSurf(addNumber+5);
+  
+}
+
+std::string
+TriangleMod::getLayerString(const size_t layerIndex,
+			    const size_t sideIndex) const
+  /*!
+    Given a side and a layer calculate the link surf
+    \param sideIndex :: Side [0:Base/1:Top : side+2] 
+    \param layerIndex :: layer, 0 is inner moderator [0-4]
+    \return Surface number 
+  */
+{
+  ELog::RegMethod RegA("TriangleMod","getLayerString");
+  return StrFunc::makeString(getLayerSurf(layerIndex,sideIndex));
+}
+
   
 void
 TriangleMod::createAll(Simulation& System,
@@ -729,10 +830,9 @@ TriangleMod::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("TriangleMod","createAll");
-  populate(System);
+  populate(System.getDataBase());
   createUnitVector(FC);
   
-
   createConvex();
   createSurfaces();
   createObjects(System);

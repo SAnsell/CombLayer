@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   essBuildInc/BlockAddition.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,11 +54,12 @@ class BlockAddition :  public attachSystem::ContainedComp,
   double length;                 ///< Length
   double height;                 ///< height
   double width;                  ///< width
-  double wallThick;              ///< Wall Thick
-  double gap;                    ///< clearance gap
+  size_t nLayers;                ///< Number of layers
+  std::vector<double> wallThick; ///< Wall Thick
+  std::vector<double> wallTemp;  ///< Wall Temp
+  std::vector<int> wallMat;      ///< Wall Mat
 
   int waterMat;                  ///< Water material
-  int wallMat;                   ///< Wall material
 
   int edgeSurf;                  ///< Surface to join too
   Geometry::Vec3D rotCent;       ///< General rotation centre

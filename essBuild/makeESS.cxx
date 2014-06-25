@@ -104,8 +104,8 @@ makeESS::makeESS() :
   LowAFL(new moderatorSystem::FlightLine("LowAFlight")),
   LowBFL(new moderatorSystem::FlightLine("LowBFlight")),
   LowPre(new CylPreMod("LowPre")),
-  LowSupplyPipe(new SupplyPipe("LSupply")),
-  LowReturnPipe(new SupplyPipe("LReturn")),
+  LowSupplyPipe(new constructSystem::SupplyPipe("LSupply")),
+  LowReturnPipe(new constructSystem::SupplyPipe("LReturn")),
 
   TopAFL(new moderatorSystem::FlightLine("TopAFlight")),
   TopBFL(new moderatorSystem::FlightLine("TopBFlight")),
@@ -483,6 +483,43 @@ makeESS::makeBeamLine(Simulation& System,
   return;
 }
 
+/*
+void
+makeESS::buildF5Collimator(Simulation& System)
+{
+  ELog::RegMethod RegA("makeESS","buildf5Collimator");
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  boost::shared_ptr<F5Collimator> F5Coll(new F5Collimator("F5Col"));
+  OR.addObject(F5Coll);
+  F5Coll->createAll(System);
+
+  // Find objects by group name 
+  std::set<int> Oset;
+  for(size_t i=0;i<F5Coll.NConnect();i++)
+    {
+      const Geometry::Vec3D TestPt=F5Coll.getLinkPt(i);
+      MonteCarlo::Object* OPtr=System.findCell(TestPt,0);
+      Oset.insert(OPtr->getName());
+    }
+  std::set<std::string> ONameSet;
+  std::set<MonteCarlo::Object*>::const_iterator ac;
+  for(ac=Oset.begin();ac!=Oset.end();ac++)
+    ONameSet.insert(OR.inRange(*ac));
+      
+  std::set<std::string>::const_iterator nc;
+  for(nc=ONameSet.begin();nc!=ONameSet.end();nc++)
+    {
+      const attachSystem::FixedComp* foundObj=
+	OR.getObject<attachSystem::FixedComp>(*nc);
+      attachSystem::addToInsertLineCtrl(System,*foundObj,*F5Coll);
+    }
+
+  return;
+    
+}
+*/
 
 void 
 makeESS::build(Simulation* SimPtr,
@@ -560,6 +597,9 @@ makeESS::build(Simulation* SimPtr,
   buildLowerPipe(*SimPtr,lowPipeType);
 
   makeBeamLine(*SimPtr,IParam);
+
+
+
   return;
 }
 

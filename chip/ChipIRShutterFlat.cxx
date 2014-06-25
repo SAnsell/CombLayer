@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   chip/ChipIRShutterFlat.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -166,8 +166,11 @@ ChipIRShutterFlat::populate(const Simulation& System)
       linerEndXZ[3]=Control.EvalVar<double>(chipKey+"ShineEndUp");
 
       insertStep=Control.EvalVar<double>(chipKey+"ShineInsertStep");
-    }
 
+      backScrapThick=Control.EvalVar<double>(chipKey+"BackScrapThick");
+      backScrapExtra=Control.EvalVar<double>(chipKey+"BackScrapExtra");
+      backScrapMat=ModelSupport::EvalMat<int>(Control,chipKey+"BackScrapMat");
+    }
   
   populated=1;
   return;
@@ -266,14 +269,27 @@ ChipIRShutterFlat::createShinePipe(Simulation& System)
   const std::string dSurf=divideStr();
   const int bPlane=ASection.getBPlane();
   const int outCyl=SMap.realSurf(surfIndex+17);
+  
   // Check Centre Point:
   
   std::ostringstream cx;
   cx<<" "<<bPlane<<" "<<-outCyl<<" "<<dSurf;
+  const std::string fullLength=cx.str();
 
+  cx.str("");
+  cx<<" "<<bPlane<<" "<<dSurf;
+  const std::string leadLength=cx.str();
   // ADD SHINE PIPE IF active:
   if (shineMat)
     {
+      // Create BackScrap
+      const Geometry::Cylinder* BPtr=
+	SMap.realPtr<Geometry::Cylinder>(outCyl);
+      ModelSupport::buildCylinder(SMap,surfIndex+2007,
+				  BPtr->getCentre(),BPtr->getNormal(),
+				  BPtr->getRadius()-backScrapThick);
+      
+	
       std::string Out;
       // Centre of void : along beam axis 
       const Geometry::Vec3D Cp(ASection.getLastPt());
@@ -301,12 +317,17 @@ ChipIRShutterFlat::createShinePipe(Simulation& System)
 			       -Z);
       // Inner void
       Out=ModelSupport::getComposite(SMap,surfIndex,"1503 1504 1505 1506");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+cx.str()));
+      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+fullLength));
       // Lead
       Out=ModelSupport::getComposite(SMap,surfIndex,
-				     "(-1503:-1504:-1505:-1506)");
-      Out+=ASection.getFullSides()+cx.str();
+				     "(-1503:-1504:-1505:-1506) -2007 ");
+      Out+=ASection.getFullSides()+leadLength;
       System.addCell(MonteCarlo::Qhull(cellIndex++,shineMat,0.0,Out));
+      // Aluminium
+      Out=ModelSupport::getComposite(SMap,surfIndex,
+				     "(-1503:-1504:-1505:-1506) 2007 ");
+      Out+=ASection.getFullSides()+fullLength;
+      System.addCell(MonteCarlo::Qhull(cellIndex++,backScrapMat,0.0,Out));
 
       
       // ADD SHINE POINTS TO CHIPDATUM:
@@ -342,7 +363,7 @@ ChipIRShutterFlat::createShinePipe(Simulation& System)
     }
   else
     {
-      System.addCell(cellIndex++,0,ASection.getFullSides()+cx.str());  
+      System.addCell(cellIndex++,0,ASection.getFullSides()+fullLength);  
     }
   
   return;
@@ -357,8 +378,7 @@ ChipIRShutterFlat::getLastItem() const
   */
 {
   if (CInfo.empty())
-    throw ColErr::EmptyValue<std::string>("ChipIRShutterFlat::getLastItem"+
-					  ELog::RegMethod::getFull());
+    throw ColErr::EmptyValue<std::string>("ChipIRShutterFlat::getLastItem");
   return CInfo.back();
 }
 

@@ -307,6 +307,9 @@ addF5Tally(Simulation& System,const int tNumber,
     }
   else
     TX.setTime("1.0 179log 1e8");
+  if (System.isMCNP6())
+    TX.setMCNP6(1);
+
   System.addTally(TX);
 
   return;
@@ -429,6 +432,9 @@ addF5Tally(Simulation& System,const int tNumber,
   TX.setParticles("n");                    /// F5 :: tally on neutrons
   TX.setEnergy("1.0e-11 251log 1e3");
   TX.setTime("1.0 179log 1e8");
+  if (System.isMCNP6())
+    TX.setMCNP6(1);
+
   System.addTally(TX);
   return;
 }
@@ -487,6 +493,9 @@ addF5Tally(Simulation& System,const int tNumber,
   TX.setParticles("n");                    /// F5 :: tally on neutrons
   TX.setEnergy("1.0e-11 251log 1e3");
   TX.setTime("1.0 179log 1e8");
+  if (System.isMCNP6())
+    TX.setMCNP6(1);
+
   System.addTally(TX);
   return;
 }
@@ -537,6 +546,9 @@ addF5Tally(Simulation& System,const int tNumber,
   TX.setParticles("n");                    /// F5 :: tally on neutrons
   TX.setEnergy("1.0e-11 251log 1e3");
   TX.setTime("1.0 179log 1e8");
+  if (System.isMCNP6())
+    TX.setMCNP6(1);
+
   System.addTally(TX);
   return;
 }
@@ -561,6 +573,9 @@ addSimpleF5Tally(Simulation& System,const int TNum,
   TX.setParticles(Particle);
   TX.setEnergy(Energy);
   TX.setTime(Time);
+  if (System.isMCNP6())
+    TX.setMCNP6(1);
+
   System.addTally(TX);
   return;
 } 

@@ -54,7 +54,7 @@ class FlightLine : public attachSystem::ContainedGroup,
   double height;                ///< Height of flight line
   double width;                 ///< Width of flight line
 
-  int plateIndex;               ///< Index of the side [+1] with sign 
+  long int plateIndex;          ///< Index of the side [+1] with sign 
   size_t nLayer;                ///< Number of layers
   std::vector<double> lThick;   ///< Linear Thickness 
   std::vector<int> lMat;        ///< Layer Material
@@ -100,7 +100,7 @@ class FlightLine : public attachSystem::ContainedGroup,
   void createAll(Simulation&,const size_t,const size_t,
 		 const attachSystem::FixedComp&);
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const attachSystem::ContainedComp&);
+		 const attachSystem::ContainedComp&,const long int =0);
 
   void reBoundary(Simulation&,const size_t,
 		  const attachSystem::FixedComp&);
