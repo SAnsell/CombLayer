@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   testInclude/testFunction.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,6 +40,7 @@ private:
   int testBuiltIn();
   int testEval();
   int testString();
+  int testVariable();
   int testVec3D();
   int testVec3DFunctions();
  

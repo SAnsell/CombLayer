@@ -68,7 +68,7 @@ testFunction::applyTest(const int extra)
   /*!
     Applies all the tests and returns 
     the error number
-    \param extra :: index of test to app;y
+    \param extra :: index of test to apply
     \retval 0 :: Success
   */
 {
@@ -82,6 +82,7 @@ testFunction::applyTest(const int extra)
       &testFunction::testBuiltIn,
       &testFunction::testEval,
       &testFunction::testString, 
+      &testFunction::testVariable,
       &testFunction::testVec3D,
       &testFunction::testVec3DFunctions
     };
@@ -92,6 +93,7 @@ testFunction::applyTest(const int extra)
       "BuiltIn",
       "Eval",
       "String",
+      "Variable",
       "Vec3D",
       "Vec3DFunctions"
     };
@@ -282,10 +284,10 @@ testFunction::testVec3D()
 
   typedef boost::tuple<std::string,Geometry::Vec3D> TTYPE;
   std::vector<TTYPE> Tests;
-  
+   
   Tests.push_back(TTYPE("V1",Geometry::Vec3D(3,4,5)));
   Tests.push_back(TTYPE("V2",Geometry::Vec3D(10,-14,12)));
-  
+ 
   std::vector<TTYPE>::const_iterator tc;
   for(tc=Tests.begin();tc!=Tests.end();tc++)
     XX.addVariable(tc->get<0>(),tc->get<1>());
@@ -311,6 +313,74 @@ testFunction::testVec3D()
 }
 
 int
+testFunction::testVariable()
+  /*!
+    Test the setting/ getting of a variable
+    \retval 0 :: success
+  */
+{
+  ELog::RegMethod RegA("testFunction","testVariable");
+
+  FuncDataBase XX;   
+
+  typedef boost::tuple<std::string,Geometry::Vec3D> VTYPE;
+  std::vector<VTYPE> TestVar=
+    {
+      VTYPE("V1",Geometry::Vec3D(3,4,5)),
+      VTYPE("V2",Geometry::Vec3D(10,-14,12))
+    };
+  for(const VTYPE& V : TestVar)
+    XX.addVariable(V.get<0>(),V.get<1>());      
+
+  // String : output type  : double / Vec out
+  typedef boost::tuple<std::string,int,Geometry::Vec3D,double> TTYPE;
+  std::vector<TTYPE> Tests;
+   
+  Tests.push_back(TTYPE("1+4.0",0,Geometry::Vec3D(3,2,3),5));
+  Tests.push_back(TTYPE("vec3d(1,2,3)+vec3d(2,3,4)",1,Geometry::Vec3D(3,5,7),0));
+  Tests.push_back(TTYPE("V1+vec3d(1,1,1)",1,Geometry::Vec3D(4,5,6),0));
+  
+  std::string VName("A");
+  std::vector<TTYPE>::const_iterator tc;
+  for(tc=Tests.begin();tc!=Tests.end();tc++)
+    {
+      if (XX.Parse(tc->get<0>()))
+	{
+	  ELog::EM<<"PARSE Failure:  "<<tc-Tests.begin()+1<<ELog::endDiag;
+	  ELog::EM<<"Test :"<<tc->get<0>()<<ELog::endDiag;
+	  return -1;
+	}
+      XX.addVariable(VName);
+      if (tc->get<1>()==1)   // Vector
+	{
+	  const Geometry::Vec3D Res=
+	    XX.EvalVar<Geometry::Vec3D>(VName);
+	  if (tc->get<2>()!=Res)
+	    {
+	      ELog::EM<<"EVAL[Vec] Failure:  "
+		      <<tc-Tests.begin()+1<<ELog::endDiag;
+	      ELog::EM<<"TC == "<<Res<<" != "<<tc->get<2>()<<ELog::endDiag;
+	      return -1;
+	    }
+	}
+      else   // Double 
+	{
+	  const double Res=XX.EvalVar<double>(VName);
+	  if (fabs(tc->get<3>()-Res)>Geometry::zeroTol)
+	    {
+	      ELog::EM<<"EVAL[double] Failure:  "
+		      <<tc-Tests.begin()+1<<ELog::endDiag;
+	      ELog::EM<<std::setprecision(9)<<"TC == "<<Res<<" != "
+		      <<tc->get<3>()<<ELog::endDiag;
+	      return -1;
+	    }
+	}
+      VName[0]++;
+    }
+  return 0;
+}
+
+int
 testFunction::testVec3DFunctions()
   /*!
     Test builtin commands
@@ -320,12 +390,12 @@ testFunction::testVec3DFunctions()
   ELog::RegMethod RegA("testFunction","testVec3D");
 
   FuncDataBase XX;   
-
+ 
   typedef boost::tuple<std::string,Geometry::Vec3D> VTYPE;
   std::vector<VTYPE> TestVar;
   TestVar.push_back(VTYPE("V1",Geometry::Vec3D(3,4,5)));
   TestVar.push_back(VTYPE("V2",Geometry::Vec3D(10,-14,12)));
-  
+ 
   // String : output type  : double / Vec out
   typedef boost::tuple<std::string,int,Geometry::Vec3D,double> TTYPE;
   std::vector<TTYPE> Tests;

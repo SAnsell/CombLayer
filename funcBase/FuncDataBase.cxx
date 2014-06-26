@@ -870,11 +870,24 @@ FuncDataBase::processXML(const std::string& FName)
       const std::string Name=AR->getItem<std::string>("name");
       const std::string Type=AR->getDefItem<std::string>("type","double");
 
+
       if (!hasVariable(Name))
 	ELog::EM<<"Adding variable "<<Name<<ELog::endWarn;
 
+      
       // Only vector type 
-      if (Type=="Geometry::Vec3D") 
+      if (Type=="function")
+	{
+	  if ( (AG=dynamic_cast<XML::XMLgroup*>(AR)) )
+	    VStr=AG->getItem<std::string>("value");
+	  else
+	    VStr=AR->getItem<std::string>();
+	  if (Parse(VStr))
+	    ELog::EM<<"Failed to parse  == "<<VStr<<ELog::endErr;
+	  else
+	    addVariable(Name);
+	}
+      else if (Type=="Geometry::Vec3D") 
 	{
 	  if ( (AG=dynamic_cast<XML::XMLgroup*>(AR)) )
 	    VUnit=AG->getItem<Geometry::Vec3D>("value");

@@ -108,15 +108,20 @@ FFunc::setValue(const Code& AC)
 }
 
 int
-FFunc::getValue(Geometry::Vec3D&) const
+FFunc::getValue(Geometry::Vec3D& V) const
   /*!
     Get the values. Note that this
     uses varlist
-    \return Code expression 
+    \param V :: Outsyste m
+    \return 1 if appropiate eval / 0 otherwise
   */
 {
   ELog::RegMethod RegA("FFunc","getValue(Vec3D)");
-  return 0;
+
+  Code BC(BaseUnit);
+  V=BC.Eval<Geometry::Vec3D>(FItem::VListPtr);
+  const_cast<int&>(active)++;
+  return 1;
 }
 
 int
@@ -124,11 +129,11 @@ FFunc::getValue(double& V) const
   /*!
     Get the values. Note that this
     uses varlist
-    \return Code expression 
+    \return 1 if appropiate eval / 0 otherwise
   */
 {
   Code BC(BaseUnit);
-  V=static_cast<double>(BC.Eval<double>(FItem::VListPtr));
+  V=BC.Eval<double>(FItem::VListPtr);
   const_cast<int&>(active)++;
   return 1;
 }
