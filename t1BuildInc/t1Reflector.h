@@ -68,11 +68,11 @@ class t1Reflector : public attachSystem::ContainedComp,
   int defMat;                   ///< Default material
   
   /// Boxes in the reflector
-  std::vector< boost::shared_ptr<constructSystem::LinkWrapper> > Boxes;
+  std::vector< std::shared_ptr<constructSystem::LinkWrapper> > Boxes;
   /// Rods in the reflector
-  std::vector< boost::shared_ptr<ReflectRods> > Rods;
+  std::vector< std::shared_ptr<ReflectRods> > Rods;
   /// Extra plates
-  std::vector< boost::shared_ptr<refPlate> > Plates;
+  std::vector< std::shared_ptr<refPlate> > Plates;
   double baseZCut;              ///< Distance down to base cut
 
 
@@ -95,6 +95,8 @@ class t1Reflector : public attachSystem::ContainedComp,
   void createAll(Simulation&,const attachSystem::FixedComp&);
 
   void createBoxes(Simulation&,const std::string&);
+  void createRods(Simulation&);
+
 };
 
 }

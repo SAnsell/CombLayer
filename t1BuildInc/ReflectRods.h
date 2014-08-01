@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   t1BuildInc/ReflectRods.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ class Simulation;
 
 namespace constructSystem
 {
-  class tubeUnit;
+  class hexUnit;
 }
 
 namespace ts1System
@@ -36,25 +36,36 @@ namespace ts1System
   \version 1.0
   \author S. Ansell
   \date November 2012
-  \brief Plate inserted in object 
+  \brief Mesh of rod inserted into an object
 */
 
 class ReflectRods : public attachSystem::ContainedComp,
     public attachSystem::FixedComp
 {
  private:
+
+  typedef std::map<int,constructSystem::hexUnit*> MTYPE;
   
-  const int rodIndex;      ///< Index of surface offset
-  int cellIndex;            ///< Cell index
-  int populated;            ///< Variables populated
+  const int rodIndex;          ///< Index of surface offset
+  const std::string baseName;  ///< Base keyname
+  int cellIndex;               ///< Cell index
+  int populated;               ///< Cells populated
+
 
   double zAngle;            ///< Z angle rotation
   double xyAngle;           ///< XY angle rotation
 
-  int defMat;               ///< Material outer 
-  int innerMat;               ///< Material inner rod
-  int linerMat;               ///< Material liner
-  Geometry::Vec3D Centre;   ///< Centre of block
+  int outerMat;             ///< Material outer 
+  int innerMat;             ///< Material inner rod
+  int linerMat;             ///< Material liner
+  
+  Geometry::Vec3D HexHA;   ///< Hexagon axis [unit vec]
+  Geometry::Vec3D HexHB;   ///< Hexagon axis [unit vec]
+  Geometry::Vec3D HexHC;   ///< Hexagon axis [unit vec]
+
+  Geometry::Vec3D topCentre;    ///< Centre of Top layer
+  Geometry::Vec3D baseCentre;   ///< Centre of base layer
+
   double radius;            ///< Hole radius
   double linerThick;        ///< Hole liner radius [if any]
   double centSpc;           ///< Hole-Hole centre spacing
@@ -63,20 +74,30 @@ class ReflectRods : public attachSystem::ContainedComp,
   const Geometry::Plane* baseSurf;   ///< Base Plane in refObj
 
   MonteCarlo::Qhull* RefObj;              ///< Reflector object to replace
+  std::vector<const Rule*> RefItems;      ///< Reflector items
   std::vector<Geometry::Plane*> OPSurf;   ///< Planes in the Reflector Object
-  std::vector<constructSystem::tubeUnit*> HoleCentre;      ///< Tubes
+  MTYPE HVec;               ///< Tubes
 
-  void clearHoleCentre();
-  void copyHoleCentre(const std::vector<constructSystem::tubeUnit*>&);
-  int checkCorners(const Geometry::Plane*,
-		   const Geometry::Vec3D&) const;
+  void clearHVec();
+  const Geometry::Vec3D& getHexAxis(const size_t) const;
+  const Geometry::Vec3D getHexPoint(const size_t) const;
+
+  void copyHoleCentre(const MTYPE&);
+  int checkCorners(const int,const Geometry::Vec3D&) const;
+  int checkCorners(const int,const Geometry::Vec3D&,
+		   Geometry::Vec3D&,
+		   std::vector<Geometry::Vec3D>&) const;
+  std::string calcCornerCut(const Geometry::Vec3D&,
+			    const std::vector<Geometry::Vec3D>&) const;
   std::string plateString() const;
+  void splitRefObj();
 
   void populate(const Simulation&);
   void createUnitVector(const attachSystem::FixedComp&);
   void getZSurf();
 
   void createSurfaces();
+  void createLinkSurf();
   void createObjects(Simulation&);
   void layerProcess(Simulation&);
 
@@ -86,7 +107,7 @@ class ReflectRods : public attachSystem::ContainedComp,
 
  public:
 
-  ReflectRods(const std::string&);
+  ReflectRods(const std::string&,const size_t);
   ReflectRods(const ReflectRods&);
   ReflectRods& operator=(const ReflectRods&);
   ~ReflectRods();
@@ -95,7 +116,9 @@ class ReflectRods : public attachSystem::ContainedComp,
 
   void printHoles() const;
   /// Ugly set centre
-  void setCentre(const Geometry::Vec3D& C) { Centre=C; }
+  void setCentre(const Geometry::Vec3D& TC,
+		 const Geometry::Vec3D& BC) 
+  { topCentre=TC; baseCentre=BC; }
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const size_t);
 

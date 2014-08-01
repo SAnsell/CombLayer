@@ -32,9 +32,7 @@
 #include <string>
 #include <algorithm>
 #include <numeric>
-#include <boost/shared_ptr.hpp>
-#include <boost/array.hpp>
-#include <boost/multi_array.hpp>
+#include <memory>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -54,8 +52,6 @@
 #include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "surfEqual.h"
-#include "surfDIter.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
@@ -472,7 +468,7 @@ OpenBlockTarget::createBeamWindow(Simulation& System)
       
       if (!BWPtr)
 	{
-	  BWPtr=boost::shared_ptr<ts1System::BeamWindow>
+	  BWPtr=std::shared_ptr<ts1System::BeamWindow>
 	  (new ts1System::BeamWindow("BWindow"));
 	  OR.addObject(BWPtr);
 	}      

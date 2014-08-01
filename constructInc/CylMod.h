@@ -41,7 +41,7 @@ class CylMod : public constructSystem::ModBase
 {
  private:
   
-  typedef boost::shared_ptr<WedgeInsert> WTYPE;
+  typedef std::shared_ptr<WedgeInsert> WTYPE;
 
   std::vector<double> radius;         ///< cylinder radii
   std::vector<double> height;         ///< Full heights

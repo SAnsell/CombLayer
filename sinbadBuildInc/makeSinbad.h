@@ -32,14 +32,14 @@ class makeSinbad
 
   const std::string preName;          ///< Initializtion tag
 
-  boost::shared_ptr<Cave> Surround;   
+  std::shared_ptr<Cave> Surround;   
 
-  boost::shared_ptr<LayerPlate> Primary;     ///< Initial beam control
-  boost::shared_ptr<LayerPlate> Secondary;   ///< Stopping volume
+  std::shared_ptr<LayerPlate> Primary;     ///< Initial beam control
+  std::shared_ptr<LayerPlate> Secondary;   ///< Stopping volume
 
-  boost::shared_ptr<FissionPlate> fPlate;   ///< Fission Plate object
+  std::shared_ptr<FissionPlate> fPlate;   ///< Fission Plate object
 
-  std::vector<boost::shared_ptr<sbadDetector> > detArray;
+  std::vector<std::shared_ptr<sbadDetector> > detArray;
 
   void buildDetectors(Simulation&);
 

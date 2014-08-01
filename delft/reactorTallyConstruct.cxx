@@ -32,8 +32,8 @@
 #include <string>
 #include <algorithm>
 #include <iterator>
+#include <memory>
 #include <boost/multi_array.hpp>
-#include <boost/shared_ptr.hpp>
 #include <boost/bind.hpp>
 #include <boost/format.hpp>
 

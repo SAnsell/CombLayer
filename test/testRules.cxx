@@ -31,8 +31,8 @@
 #include <sstream>
 #include <algorithm>
 #include <iterator>
+#include <memory>
 #include <boost/tuple/tuple.hpp>
-#include <boost/shared_ptr.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -115,7 +115,6 @@ testRules::applyTest(const int extra)
     {
       &testRules::testCreateDNF,
       &testRules::testExclude,
-      &testRules::testHeadRule,
       &testRules::testIsValid,
       &testRules::testMakeCNF,
       &testRules::testRemoveComplement,
@@ -125,7 +124,6 @@ testRules::applyTest(const int extra)
     {
       "CreateDNF",
       "Exclude",
-      "HeadRule",
       "IsValid",
       "MakeCNF",
       "RemoveComplement",
@@ -315,44 +313,6 @@ testRules::testExclude()
 }
 
 int
-testRules::testHeadRule()
-  /*!
-    Check the validity of a head rule
-    \return 0 :: success / -ve on error
-   */
-{
-  ELog::RegMethod RegA("testRules","testHeadRule");
-
-  createSurfaces();
-
-
-  typedef boost::tuple<std::string,std::string> TTYPE;
-  std::vector<TTYPE> Tests;
-  Tests.push_back(TTYPE("1 -2 ","1 -2"));
-  Tests.push_back(TTYPE("3 -4 ","1 -2 3 4"));
-  Tests.push_back(TTYPE("5 -6 ","1 -2 3 4"));
-  Tests.push_back(TTYPE("5 -6 ","1 -2 3 4"));
-  
-  std::vector<TTYPE>::const_iterator tc;
-  HeadRule A;
-  HeadRule B;
-		  
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
-    {
-      HeadRule tmp;
-      if (!tmp.procString(tc->get<0>()))
-	{
-	  ELog::EM<<"Failed to set tmp :"<<tc->get<0>()<<ELog::endDebug;
-	  return -1;
-	}
-      A.addIntersection(tmp.getTopRule());
-      B.addUnion(tmp.getTopRule());
-      ELog::EM<<"A == "<<A.display()<<ELog::endDebug;
-    }
-  return 0;
-}
-
-int
 testRules::testMakeCNF()
   /*!
     Check the production of a Normal Form
@@ -404,7 +364,7 @@ testRules::testRemoveComplement()
   std::vector<TTYPE>::const_iterator tc;
   for(tc=Tests.begin();tc!=Tests.end();tc++)
     {
-      boost::shared_ptr<Rule> RP(Rule::procCompString(tc->get<0>()));
+      std::shared_ptr<Rule> RP(Rule::procCompString(tc->get<0>()));
 	
       if (!RP || RP->display()!=tc->get<1>() )
 	{

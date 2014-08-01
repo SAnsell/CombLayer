@@ -32,9 +32,7 @@
 #include <string>
 #include <algorithm>
 #include <numeric>
-#include <boost/shared_ptr.hpp>
-#include <boost/array.hpp>
-#include <boost/multi_array.hpp>
+#include <memory>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -105,7 +103,7 @@ t1PlateTarget::t1PlateTarget(const t1PlateTarget& A) :
   */
 {
   // if (A.BWPtr)
-  //   BWPtr=boost::shared_ptr<ts1System::BeamWindow>
+  //   BWPtr=std::shared_ptr<ts1System::BeamWindow>
   //     (new ts1System::BeamWindow(*A.BWPtr));
 }
 
@@ -157,7 +155,7 @@ t1PlateTarget::createBeamWindow(Simulation& System)
 	ModelSupport::objectRegister::Instance();     
       if (!BWPtr)
 	{
-	  BWPtr=boost::shared_ptr<ts1System::BeamWindow>
+	  BWPtr=std::shared_ptr<ts1System::BeamWindow>
 	    (new ts1System::BeamWindow("BWindow"));
 	  OR.addObject(BWPtr);
 	}      

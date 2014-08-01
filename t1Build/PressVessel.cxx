@@ -32,7 +32,7 @@
 #include <string>
 #include <algorithm>
 #include <numeric>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/array.hpp>
 #include <boost/multi_array.hpp>
 
@@ -513,7 +513,7 @@ PressVessel::createObjects(Simulation& System)
   Out+=ModelSupport::getComposite(SMap,pvIndex,"(-11:12:-13:14:-15:16:18:19)"
 				  " (11:28) (11:-61:67:-28) ");
   Out+=ModelSupport::getComposite(SMap,pvIndex, "(-12:71:77) ");                       				  
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat+1,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
   outerWallCell=cellIndex-1;
 
   // Inner Volume

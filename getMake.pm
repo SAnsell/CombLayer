@@ -12,6 +12,7 @@ sub new
     
     bcomp => "gcc",
     ccomp => "g++",
+    cxx11 => " -std=c++11",
     fcomp => "gfortran",
     cflag => "-fPIC -Wconversion -W -Wall -Wextra ".
 	"-Wno-comment -fexceptions",
@@ -674,6 +675,7 @@ sub setParameters
 	  $self->{swig}=1 if ($Ostr eq "-w");
 	  $self->{bcomp}=$1 if ($Ostr=~/-gcc=(.*)/);
 	  $self->{ccomp}=$1 if ($Ostr=~/-g\+\+=(.*)/);
+	  $self->{cxx11}="" if ($Ostr=~/-std/);
 	}
     }
   $self->{gsl}*=$nogsl;
@@ -681,7 +683,7 @@ sub setParameters
   print STDERR "INIT Opt=",$self->{optimise},"\n";
   print STDERR "INIT Deb=",$self->{debug},"\n";
   print STDERR "GSL == ",$self->{gsl},"\n";
-  print STDERR "G++ == ",$self->{ccomp},"\n";
+  print STDERR "G++ == ",$self->{ccomp},$self->{cxx11},"\n";
   print STDERR "GCC == ",$self->{bcomp},"\n";
   return;
 }
@@ -806,7 +808,7 @@ sub printHeaders
   print "         -Wall \n";
   print "#CCOMPL=/usr/local/bin/g++\n";
   print "BCOMPL=".$self->{bcomp}."\n";
-  print "CCOMPL=".$self->{ccomp}."\n";
+  print "CCOMPL=".$self->{ccomp}.$self->{cxx11}."\n";
 
   
   print "CFLAGC=".$OFlag.$GcovFlag.$self->{cflag}."\n";

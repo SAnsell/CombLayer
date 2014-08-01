@@ -61,23 +61,23 @@ class makeBib
 {
  private:
 
-  boost::shared_ptr<RotorWheel> Rotor;             ///< Main wheel
-  boost::shared_ptr<ProtonPipe> ProtonObj;        ///< Main wheel
-  boost::shared_ptr<BilReflector> RefObj;          ///< Reflector
-  boost::shared_ptr<WaterMod> WatMod;              ///< Water moderator
-  boost::shared_ptr<ColdH2Mod> ColdMod;            ///< Cold-H2 moderator fordward
-  boost::shared_ptr<FilterBox> BeFilterForward;    ///< Berylium Filter 
-  boost::shared_ptr<FilterBox> BeFilterBackward;   ///< Berylium Filter
+  std::shared_ptr<RotorWheel> Rotor;             ///< Main wheel
+  std::shared_ptr<ProtonPipe> ProtonObj;        ///< Main wheel
+  std::shared_ptr<BilReflector> RefObj;          ///< Reflector
+  std::shared_ptr<WaterMod> WatMod;              ///< Water moderator
+  std::shared_ptr<ColdH2Mod> ColdMod;            ///< Cold-H2 moderator fordward
+  std::shared_ptr<FilterBox> BeFilterForward;    ///< Berylium Filter 
+  std::shared_ptr<FilterBox> BeFilterBackward;   ///< Berylium Filter
 
 
-  boost::shared_ptr<ColdH2Mod> ColdMod2;           ///< Second ColdH2 moderator
-  boost::shared_ptr<FilterBox> FBox;        ///< Filter box
+  std::shared_ptr<ColdH2Mod> ColdMod2;           ///< Second ColdH2 moderator
+  std::shared_ptr<FilterBox> FBox;        ///< Filter box
 
   /// Array to replace the horrible list:
-  std::vector<boost::shared_ptr<GuideBox> > GuideArray;   ///< Guides
-  std::vector<boost::shared_ptr<GuideShield> > ShieldArray;   ///< Protection around guides
+  std::vector<std::shared_ptr<GuideBox> > GuideArray;   ///< Guides
+  std::vector<std::shared_ptr<GuideShield> > ShieldArray;   ///< Protection around guides
 
-  boost::shared_ptr<ConcreteWall> CWall;        ///< Concreate wall
+  std::shared_ptr<ConcreteWall> CWall;        ///< Concreate wall
 
   void buildGuideArray(Simulation&,const int);
   void buildShieldArray(Simulation&);

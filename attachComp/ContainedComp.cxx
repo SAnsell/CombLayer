@@ -33,7 +33,7 @@
 #include <string>
 #include <algorithm>
 #include <iterator>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/bind.hpp>
 
 #include "Exception.h"

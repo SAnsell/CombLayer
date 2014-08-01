@@ -31,7 +31,7 @@
 #include <map>
 #include <string>
 #include <algorithm>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/array.hpp>
 
 #include "Exception.h"
@@ -52,23 +52,18 @@
 #include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "surfEqual.h"
-#include "surfDivide.h"
-#include "surfDIter.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
-#include "Line.h"
-#include "LineIntersectVisit.h"
 #include "Rules.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "inputParam.h"
-#include "ReadFunctions.h"
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
+#include "ReadFunctions.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -314,7 +309,7 @@ GuideBay::createGuideItems(Simulation& System)
   const int dPlane=SMap.realSurf(bayIndex+1);
   for(size_t i=0;i<nItems;i++)
     {
-      boost::shared_ptr<GuideItem> GA(new GuideItem(BL,i+1));
+      std::shared_ptr<GuideItem> GA(new GuideItem(BL,i+1));
       GA->setCylBoundary(dPlane,innerCyl,outerCyl);
       GA->addInsertCell("Inner",bayIndex+1);
       GA->addInsertCell("Outer",bayIndex+2);

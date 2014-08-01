@@ -60,25 +60,25 @@ class Reflector : public attachSystem::ContainedComp,
 
   int defMat;                   ///< Default material
 
-  boost::shared_ptr<TMRSystem::TS2target> TarObj;  ///< Target object
+  std::shared_ptr<TMRSystem::TS2target> TarObj;  ///< Target object
 
   // TO BE MOVED INTO COUPLED OBJECT:
-  boost::shared_ptr<Groove> GrooveObj;        ///< Groove Moderator
-  boost::shared_ptr<Hydrogen> HydObj;         ///< Hydrogen moderator
-  boost::shared_ptr<VacVessel> VacObj;        ///< Vac Vessel round G/H
-  boost::shared_ptr<FlightLine> FLgroove;     ///< Groove flight line 
-  boost::shared_ptr<FlightLine> FLhydro;      ///< Hydrogen flight line
-  boost::shared_ptr<PreMod> PMgroove;         ///< Groove Pre mod
-  boost::shared_ptr<PreMod> PMhydro;          ///< Hydro Pre mod
-  boost::shared_ptr<HWrapper> Horn;           ///< Hydro Horn wrapper
+  std::shared_ptr<Groove> GrooveObj;        ///< Groove Moderator
+  std::shared_ptr<Hydrogen> HydObj;         ///< Hydrogen moderator
+  std::shared_ptr<VacVessel> VacObj;        ///< Vac Vessel round G/H
+  std::shared_ptr<FlightLine> FLgroove;     ///< Groove flight line 
+  std::shared_ptr<FlightLine> FLhydro;      ///< Hydrogen flight line
+  std::shared_ptr<PreMod> PMgroove;         ///< Groove Pre mod
+  std::shared_ptr<PreMod> PMhydro;          ///< Hydro Pre mod
+  std::shared_ptr<HWrapper> Horn;           ///< Hydro Horn wrapper
 
-  boost::shared_ptr<Decoupled> DMod;         ///< Decoupled moderator
-  boost::shared_ptr<VacVessel> DVacObj;       ///< Vac Vessel round 
-  boost::shared_ptr<FlightLine> FLwish;       ///< Wish [broad] flight line
-  boost::shared_ptr<FlightLine> FLnarrow;     ///< Narrow flight line
-  boost::shared_ptr<PreMod> PMdec;            ///< Pre-moderator for decoupled
-  boost::shared_ptr<RefCutOut> IRcut;         ///< Reflector cut out for chipIR
-  boost::shared_ptr<Bucket> CdBucket;         ///< Cd Bucket
+  std::shared_ptr<Decoupled> DMod;         ///< Decoupled moderator
+  std::shared_ptr<VacVessel> DVacObj;       ///< Vac Vessel round 
+  std::shared_ptr<FlightLine> FLwish;       ///< Wish [broad] flight line
+  std::shared_ptr<FlightLine> FLnarrow;     ///< Narrow flight line
+  std::shared_ptr<PreMod> PMdec;            ///< Pre-moderator for decoupled
+  std::shared_ptr<RefCutOut> IRcut;         ///< Reflector cut out for chipIR
+  std::shared_ptr<Bucket> CdBucket;         ///< Cd Bucket
 
   // The pads
   std::vector<moderatorSystem::CoolPad> Pads;

@@ -33,7 +33,7 @@
 #include <algorithm>
 #include <numeric>
 #include <iterator>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/array.hpp>
 
 #include "Exception.h"
@@ -464,7 +464,7 @@ ChipIRInsert::createCollimator(Simulation& System)
 {
   ELog::RegMethod RegA("ChipIRInsert","createCollimator");
   if (!CCol)
-    CCol=boost::shared_ptr<CylinderColl>(new CylinderColl("chipCylInsert"));
+    CCol=std::shared_ptr<CylinderColl>(new CylinderColl("chipCylInsert"));
 
   CCol->createAll(System,*this);
   return;
@@ -483,7 +483,7 @@ ChipIRInsert::createLeadPlate(Simulation& System)
 
 
   if (!PbA)
-    PbA=boost::shared_ptr<LeadPlate>(new LeadPlate("chipPb1"));
+    PbA=std::shared_ptr<LeadPlate>(new LeadPlate("chipPb1"));
 
   PbA->addBoundarySurf(this->getCompContainer("inner"));
   PbA->setInsertCell(chipInnerVoid);
@@ -492,7 +492,7 @@ ChipIRInsert::createLeadPlate(Simulation& System)
 
   // Outer
   if (!PbB)
-    PbB=boost::shared_ptr<LeadPlate>(new LeadPlate("chipPb2"));
+    PbB=std::shared_ptr<LeadPlate>(new LeadPlate("chipPb2"));
 
   PbB->addBoundarySurf(this->getCompContainer("outer"));
   PbB->setInsertCell(chipOuterVoid);

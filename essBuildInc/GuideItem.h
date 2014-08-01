@@ -69,7 +69,7 @@ class GuideItem : public attachSystem::ContainedGroup,
   double RInner;       ///< Inner cylinder radius 
   double ROuter;       ///< Outer cylinder radius 
 
-  void populate(const Simulation&);
+  void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const size_t);
   void calcBeamLineTrack(const attachSystem::FixedComp&);

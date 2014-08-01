@@ -31,8 +31,8 @@
 #include <map>
 #include <string>
 #include <algorithm>
+#include <memory>
 #include <boost/array.hpp>
-#include <boost/shared_ptr.hpp>
 
 #include "Exception.h"
 #include "MersenneTwister.h"
@@ -176,8 +176,7 @@ main(int argc,char* argv[])
 	    }
 	  while(!iteractive && MCIndex<multi);
 	}
-      if (IParam.flag("cinder"))
-	SimPtr->writeCinder();
+      exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
       ModelSupport::calcVolumes(SimPtr,IParam);
       ModelSupport::objectRegister::Instance().write("ObjectRegister.txt");
     }

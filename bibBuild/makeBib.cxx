@@ -33,9 +33,9 @@
 #include <string>
 #include <algorithm>
 #include <iterator>
+#include <memory>
 #include <boost/array.hpp>
 #include <boost/format.hpp>
-#include <boost/shared_ptr.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -147,7 +147,7 @@ makeBib::buildGuideArray(Simulation& System,const int voidCell)
   // First two are on Cold side:
   for(size_t i=0;i<2;i++)
     {
-      boost::shared_ptr<GuideBox> GA
+      std::shared_ptr<GuideBox> GA
 	(new GuideBox(StrFunc::makeString("Guide",i+1)));
       GA->addInsertCell(voidCell);
       GA->createAll(System,*ColdMod,1,*BeFilterForward,1);      
@@ -162,7 +162,7 @@ makeBib::buildGuideArray(Simulation& System,const int voidCell)
   // COLD2 guides
   for(size_t i=0;i<3;i++)
     {
-      boost::shared_ptr<GuideBox> GA
+      std::shared_ptr<GuideBox> GA
 	(new GuideBox(StrFunc::makeString("Guide",i+3)));
       GA->addInsertCell(voidCell);
       GA->createAll(System,*ColdMod2,1,*BeFilterBackward,1);      
@@ -191,7 +191,7 @@ makeBib::buildShieldArray(Simulation& System)
 
   for(size_t i=0;i<5;i++)
     {
-      boost::shared_ptr<GuideShield> GS
+      std::shared_ptr<GuideShield> GS
 	(new GuideShield("GShield",i+1));
       GS->addInsertCell(CWall->getInnerCell());
       GS->createAll(System,*GuideArray[i],*RefObj,2,*CWall,0);      

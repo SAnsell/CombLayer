@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   t1BuildInc/t1BulkShield.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,9 +54,9 @@ class t1BulkShield : public attachSystem::FixedComp,
   const size_t numberBeamLines;      ///< Number of beamlines
 
   /// Data for shutter
-  std::vector<boost::shared_ptr<shutterSystem::GeneralShutter> > GData;
+  std::vector<std::shared_ptr<shutterSystem::GeneralShutter> > GData;
   /// Data for Inerts
-  std::vector<boost::shared_ptr<shutterSystem::BulkInsert> > BData;
+  std::vector<std::shared_ptr<shutterSystem::BulkInsert> > BData;
 
   double vYoffset;                ///< Offset of the void vessel centre
 

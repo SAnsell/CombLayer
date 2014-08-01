@@ -41,12 +41,12 @@ class Torpedo : public attachSystem::FixedComp,
 {
  protected:
 
+  const std::string baseName;         ///< Base Keyname 
   const size_t shutterNumber;         ///< number of the shutter
+
   const int surfIndex;                ///< Index of the surface
   int cellIndex;                      ///< Index of the cells
   Geometry::Convex vBox;              ///< Convex box of torpedo
-
-  int populated;                      ///< populated / not
 
   double voidXoffset;                 ///< Main void vessel offset 
   double xyAngle;                     ///< Angle of beamline
@@ -65,7 +65,7 @@ class Torpedo : public attachSystem::FixedComp,
   // FUNCTIONS:
   //--------------
 
-  void populate(const Simulation&,const shutterSystem::GeneralShutter&);
+  void populate(const FuncDataBase&,const shutterSystem::GeneralShutter&);
   void createUnitVector(const shutterSystem::GeneralShutter&);
   void createSurfaces();
   void createObjects(Simulation&);

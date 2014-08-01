@@ -32,9 +32,7 @@
 #include <string>
 #include <algorithm>
 #include <numeric>
-#include <boost/shared_ptr.hpp>
-#include <boost/bind.hpp>
-
+#include <memory>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -48,10 +46,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "Tally.h"
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
@@ -73,8 +67,6 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "generateSurf.h"
@@ -162,8 +154,10 @@ TargetBase::addProtonLineInsertCell(const std::vector<int>& cellVec)
   ELog::RegMethod RegA("TargetBase","addProtonLineInsertCell(vec)");
 
   std::for_each(cellVec.begin(),cellVec.end(),
-	  boost::bind(&ts1System::ProtonVoid::addInsertCell,
-		      PLine,_1));
+		[this](int cv)
+		{
+		  this->PLine->addInsertCell(cv);
+		});
   return;
 }
 

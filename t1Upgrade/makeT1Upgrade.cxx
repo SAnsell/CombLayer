@@ -32,9 +32,10 @@
 #include <string>
 #include <algorithm>
 #include <iterator>
-#include <boost/array.hpp>
+#include <memory>
+
 #include <boost/format.hpp>
-#include <boost/shared_ptr.hpp>
+
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -160,25 +161,25 @@ makeT1Upgrade::makeT1Upgrade() :
 
 makeT1Upgrade::makeT1Upgrade(const makeT1Upgrade& A) : 
   TarObj((A.TarObj) ? 
-	 boost::shared_ptr<constructSystem::TargetBase>
+	 std::shared_ptr<constructSystem::TargetBase>
 	 (A.TarObj->clone()) : A.TarObj),  
   BWindowObj(new ts1System::BeamWindow(*A.BWindowObj)),
   RefObj(new CylReflector(*A.RefObj)),
   TriMod((A.TriMod) ? 
-	 boost::shared_ptr<constructSystem::ModBase>
+	 std::shared_ptr<constructSystem::ModBase>
 	  (A.TriMod->clone()) : A.TriMod),  
   ColdCentObj(new constructSystem::GroupOrigin(*A.ColdCentObj)),
   H2Mod((A.H2Mod) ? 
-	 boost::shared_ptr<constructSystem::ModBase>
+	 std::shared_ptr<constructSystem::ModBase>
 	  (A.H2Mod->clone()) : A.H2Mod),  
   H2PMod((A.H2PMod) ? 
-	 boost::shared_ptr<ts1System::HPreMod>
+	 std::shared_ptr<ts1System::HPreMod>
 	 (A.H2PMod->clone()) : A.H2PMod),  
   CH4Mod((A.CH4Mod) ? 
-	 boost::shared_ptr<constructSystem::ModBase>
+	 std::shared_ptr<constructSystem::ModBase>
 	  (A.CH4Mod->clone()) : A.CH4Mod),  
   CH4PMod((A.CH4PMod) ? 
-	 boost::shared_ptr<ts1System::CH4PreModBase>
+	 std::shared_ptr<ts1System::CH4PreModBase>
 	  (A.CH4PMod->clone()) : A.CH4PMod),  
   VoidObj(new shutterSystem::t1CylVessel(*A.VoidObj)),
   BulkObj(new shutterSystem::t1BulkShield(*A.BulkObj)),
@@ -213,15 +214,15 @@ makeT1Upgrade::operator=(const makeT1Upgrade& A)
       *BWindowObj = *A.BWindowObj;
       *RefObj = *A.RefObj;
       TriMod=((A.TriMod) ? 
-	     boost::shared_ptr<constructSystem::ModBase>
+	     std::shared_ptr<constructSystem::ModBase>
 	     (A.TriMod->clone()) : A.TriMod);  
       *ColdCentObj = *A.ColdCentObj;
       H2Mod=((A.H2Mod) ? 
-	     boost::shared_ptr<constructSystem::ModBase>
+	     std::shared_ptr<constructSystem::ModBase>
 	     (A.H2Mod->clone()) : A.H2Mod);  
       *H2PMod = *A.H2PMod;
       CH4Mod=((A.CH4Mod) ? 
-	     boost::shared_ptr<constructSystem::ModBase>
+	     std::shared_ptr<constructSystem::ModBase>
 	     (A.CH4Mod->clone()) : A.CH4Mod);  
       *CH4PMod = *A.CH4PMod;
       *VoidObj = *A.VoidObj;
@@ -268,7 +269,7 @@ makeT1Upgrade::buildTarget(Simulation& System,
 
   if (TType=="t1PlateTarget" || TType=="t1Plate")
     {
-      TarObj=boost::shared_ptr<constructSystem::TargetBase>
+      TarObj=std::shared_ptr<constructSystem::TargetBase>
 	(new t1PlateTarget("t1PlateTarget"));
       OR.addObject(TarObj);
       TarObj->addInsertCell(voidCell);
@@ -278,7 +279,7 @@ makeT1Upgrade::buildTarget(Simulation& System,
     }
   else if (TType=="t1CylTarget" || TType=="t1Cyl")
     {
-      TarObj=boost::shared_ptr<constructSystem::TargetBase>
+      TarObj=std::shared_ptr<constructSystem::TargetBase>
 	(new TMRSystem::TS2target("t1CylTarget"));
       OR.addObject(TarObj);
       RefObj->addToInsertChain(*TarObj);
@@ -288,7 +289,7 @@ makeT1Upgrade::buildTarget(Simulation& System,
     }    
   else if (TType=="t1CylFluxTrap" || TType=="t1CylFluxTrapTarget")
     {
-      TarObj=boost::shared_ptr<constructSystem::TargetBase>
+      TarObj=std::shared_ptr<constructSystem::TargetBase>
 	(new TMRSystem::TS2FlatTarget("t1CylTarget"));
       
       OR.addObject("t1CylTarget",TarObj);
@@ -296,7 +297,7 @@ makeT1Upgrade::buildTarget(Simulation& System,
       TarObj->setRefPlates(-RefObj->getLinkSurf(2),0);
       TarObj->createAll(System,World::masterOrigin());
 
-      boost::shared_ptr<TMRSystem::TS2ModifyTarget> TarObjModify
+      std::shared_ptr<TMRSystem::TS2ModifyTarget> TarObjModify
 	(new TMRSystem::TS2ModifyTarget("t1CylFluxTrap"));
       TarObjModify->createAll(System,*TarObj);
       
@@ -304,7 +305,7 @@ makeT1Upgrade::buildTarget(Simulation& System,
     }    
   else if (TType=="t1InnerTarget" || TType=="t1Inner")
     {
-      TarObj=boost::shared_ptr<constructSystem::TargetBase>
+      TarObj=std::shared_ptr<constructSystem::TargetBase>
 	(new ts1System::InnerTarget("t1Inner"));
       OR.addObject(TarObj);
       RefObj->addToInsertChain(*TarObj);
@@ -314,7 +315,7 @@ makeT1Upgrade::buildTarget(Simulation& System,
     }    
   else if (TType=="t1Side" || TType=="t1SideTarget")
     {
-      TarObj=boost::shared_ptr<constructSystem::TargetBase>
+      TarObj=std::shared_ptr<constructSystem::TargetBase>
 	(new ts1System::SideCoolTarget("t1EllCylTarget"));
       OR.addObject(TarObj);
       /// Target
@@ -323,7 +324,7 @@ makeT1Upgrade::buildTarget(Simulation& System,
       TarObj->setRefPlates(-RefObj->getLinkSurf(2),0);
       TarObj->createAll(System,World::masterOrigin());
 
-      boost::shared_ptr<constructSystem::targCoolant> 
+      std::shared_ptr<constructSystem::targCoolant> 
 	TarCool(new constructSystem::targCoolant("t1EllCylCool"));
       OR.addObject(TarCool);
       TarCool->addCells(TarObj->getInnerCells());
@@ -333,7 +334,7 @@ makeT1Upgrade::buildTarget(Simulation& System,
     }    
   else if (TType=="t1Block" || TType=="t1BlockTarget")
     {
-      TarObj=boost::shared_ptr<constructSystem::TargetBase>
+      TarObj=std::shared_ptr<constructSystem::TargetBase>
 	(new ts1System::OpenBlockTarget("t1BlockTarget"));
       OR.addObject(TarObj);
       RefObj->addToInsertChain(*TarObj);
@@ -343,7 +344,7 @@ makeT1Upgrade::buildTarget(Simulation& System,
     }    
   else if (TType=="t1Cannelloni" || TType=="t1CannelloniTarget")
     {
-      TarObj=boost::shared_ptr<constructSystem::TargetBase>
+      TarObj=std::shared_ptr<constructSystem::TargetBase>
 	(new ts1System::Cannelloni("t1Cannelloni"));
       OR.addObject(TarObj);
       RefObj->addToInsertChain(*TarObj);
@@ -386,7 +387,7 @@ makeT1Upgrade::buildCH4Pre(Simulation& System,
 
   if (TType=="Wrapper")
     {
-      CH4PMod=boost::shared_ptr<ts1System::CH4PreModBase>
+      CH4PMod=std::shared_ptr<ts1System::CH4PreModBase>
 	(new CH4PreMod("CH4PreMod"));
       OR.addObject(CH4PMod);
       CH4PMod->createAll(System,*CH4Mod,0,3);
@@ -394,7 +395,7 @@ makeT1Upgrade::buildCH4Pre(Simulation& System,
     }
   else if (TType=="Flat")
     {
-      CH4PMod=boost::shared_ptr<ts1System::CH4PreModBase>
+      CH4PMod=std::shared_ptr<ts1System::CH4PreModBase>
 	(new CH4PreFlat("CH4PreFlat"));
       OR.addObject(CH4PMod);
       CH4PMod->createAll(System,*CH4Mod,5,0);
@@ -438,7 +439,7 @@ makeT1Upgrade::buildCH4Mod(Simulation& System,
 
   if (MType=="Basic")
     {
-      CH4Mod=boost::shared_ptr<constructSystem::ModBase>
+      CH4Mod=std::shared_ptr<constructSystem::ModBase>
 	(new CH4Layer("CH4Mod"));
       OR.addObject(CH4Mod);
       CH4Mod->createAll(System,FC);
@@ -446,7 +447,7 @@ makeT1Upgrade::buildCH4Mod(Simulation& System,
     }
   else if (MType=="Layer")
     {
-      CH4Mod=boost::shared_ptr<constructSystem::ModBase>
+      CH4Mod=std::shared_ptr<constructSystem::ModBase>
 	(new CH4Layer("CH4Layer"));
       OR.addObject(CH4Mod);
       CH4Mod->createAll(System,FC);
@@ -579,7 +580,7 @@ makeT1Upgrade::buildWaterMod(Simulation& System,
 
   if (MType=="Triangle")
     {
-      TriMod=boost::shared_ptr<constructSystem::ModBase>
+      TriMod=std::shared_ptr<constructSystem::ModBase>
 	(new moderatorSystem::TriangleMod("TriMod"));
       OR.addObject(TriMod);
       TriMod->createAll(System,FC);
@@ -587,7 +588,7 @@ makeT1Upgrade::buildWaterMod(Simulation& System,
     }
   else if (MType=="Layer")
     {
-      TriMod=boost::shared_ptr<constructSystem::ModBase>
+      TriMod=std::shared_ptr<constructSystem::ModBase>
 	(new CH4Layer("TriModLayer"));
       OR.addObject(TriMod);
       TriMod->createAll(System,FC);
@@ -626,12 +627,12 @@ makeT1Upgrade::buildH2Mod(Simulation& System,
 
   if (MType=="Basic")
     {
-      H2Mod=boost::shared_ptr<constructSystem::ModBase>
+      H2Mod=std::shared_ptr<constructSystem::ModBase>
 	(new H2Section("H2Mod"));
       OR.addObject(H2Mod);
       H2Mod->createAll(System,FC);
 
-      H2PMod=boost::shared_ptr<ts1System::HPreMod>
+      H2PMod=std::shared_ptr<ts1System::HPreMod>
 	(new HPreMod("HPreMod"));      
       H2PMod->createAll(System,*H2Mod,1);
       RefObj->addToInsertControl(System,*H2PMod,*H2PMod);
@@ -640,18 +641,18 @@ makeT1Upgrade::buildH2Mod(Simulation& System,
     }
   if (MType=="CylMod")
     {
-      H2Mod=boost::shared_ptr<constructSystem::ModBase>
+      H2Mod=std::shared_ptr<constructSystem::ModBase>
 	(new constructSystem::CylMod("H2CylMod"));
       OR.addObject(H2Mod);
       H2Mod->createAll(System,FC);
-      H2PCylMod=boost::shared_ptr<ts1System::CylPreSimple>
+      H2PCylMod=std::shared_ptr<ts1System::CylPreSimple>
 	(new CylPreSimple("H2CylPre"));      
       OR.addObject(H2PCylMod);
       return "CylMod";
     }
   else if (MType=="Layer")
     {
-      H2Mod=boost::shared_ptr<constructSystem::ModBase>
+      H2Mod=std::shared_ptr<constructSystem::ModBase>
 	(new CH4Layer("H2Layer"));
       OR.addObject(H2Mod);
       H2Mod->createAll(System,FC);

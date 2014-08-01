@@ -33,7 +33,7 @@
 #include <algorithm>
 #include <numeric>
 #include <functional>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 #include "Exception.h"
 #include "FileReport.h"

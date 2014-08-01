@@ -32,8 +32,8 @@
 #include <string>
 #include <algorithm>
 #include <iterator>
+#include <memory>
 #include <boost/array.hpp>
-#include <boost/shared_ptr.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -119,6 +119,8 @@ tallyModification(Simulation& System,
 	    " -- time {tallyNumber} [string] \n"
 	    " -- divide {tallyNumber} [xPts,yPts] : Split tally into "
 	    " multiple pieces \n"
+	    " -- scaleWindow[X/Y] {tallyNumber scale} : Scale the window"
+            " by the factor \n"
 	    " -- single {tallyNumber} : Split cell/surface tally into "
 	    " individual sum [rather than total] \n";
 	  ELog::EM<<ELog::endBasic;
@@ -174,6 +176,30 @@ tallyModification(Simulation& System,
 		}
 	    }
 	}
+
+      else if ((key=="scaleWindow" ||
+		key=="scaleXWindow" ||
+		key=="scaleYWindow")
+	       && nV==3)
+	{
+	  int tNumber(0);
+	  double scale(1.0);
+	  if (!StrFunc::convert(StrItem[0],tNumber))
+	    ELog::EM<<"Failed to understand TNumber :"	     
+		    <<StrItem[0]<<ELog::endErr;
+	  else if (!StrFunc::convert(StrItem[1],scale))
+	    ELog::EM<<"Failed to understand Scale :"	     
+		    <<StrItem[1]<<ELog::endErr;
+	  else
+	    {
+	      if (key[5]!='Y') 
+		tallySystem::widenF5Tally(System,tNumber,0,scale);
+	      if (key[5]!='X') 
+		tallySystem::widenF5Tally(System,tNumber,1,scale);
+	      errFlag=0;
+	    }
+	}
+
       else if (key=="time")
 	{
 	  int tNumber(0);

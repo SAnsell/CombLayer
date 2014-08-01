@@ -32,8 +32,8 @@
 #include <string>
 #include <algorithm>
 #include <iterator>
+#include <memory>
 #include <boost/array.hpp>
-#include <boost/shared_ptr.hpp>
 #include <boost/bind.hpp>
 #include <boost/format.hpp>
 
@@ -149,16 +149,16 @@ beamTallyConstruct::processPoint(Simulation& System,
       ELog::EM<<
 	"beamline [number] {modName,viewindex,beamDist,windowOffset,ZRotAngle} "
         "1000 cm from the moderator surface \n"
-	"shutterline [number] {modName,viewindex,beamDist,windowOffset,ZRotAngle} "
+	"shutterLine [number] {modName,viewindex,beamDist,windowOffset,ZRotAngle} "
         "Uses shutter insert to build window \n"
-	"viewline [number] {beamDist,timeOffset,windowOffset,ZRotAngle} "
+	"viewLine [number] {beamDist,timeOffset,windowOffset,ZRotAngle} "
         "Uses shutter insert to build time offset window \n"
 	<<ELog::endBasic;
       pointConstruct::processPoint(System,IParam,Index);
       return;
     }
   
-  if (PType=="beamline" || PType=="shutterline")
+  if (PType=="beamline" || PType=="shutterLine")
     {
       std::string modName;
       int viewIndex(0);
@@ -184,7 +184,7 @@ beamTallyConstruct::processPoint(Simulation& System,
       
       return;
     }
-  if (PType=="viewline")  // beamline
+  if (PType=="viewLine")  // beamline
     {
       const int beamNum=inputItem<int>(IParam,Index,2,
 				       "beamline number not given");
@@ -198,7 +198,8 @@ beamTallyConstruct::processPoint(Simulation& System,
       checkItem<double>(IParam,Index,5,windowOffset);
       checkItem<double>(IParam,Index,6,pointZRot);
 
-      addViewLineTally(System,beamNum-1,beamDist,timeOffset,
+      addViewLineTally(System,beamNum-1,
+		       beamDist,timeOffset,
 		       windowOffset,pointZRot);
       return;
     }
@@ -387,7 +388,7 @@ beamTallyConstruct::addShutterTally(Simulation& System,
 
   size_t iLP((viewSurface>=0) ? static_cast<size_t>(viewSurface) : 
 	     static_cast<size_t>(-viewSurface-1));
-  int VSign((viewSurface<0) ? -1 : 1);
+  //  int VSign((viewSurface<0) ? -1 : 1);
 
   const attachSystem::FixedComp* ModPtr;
   const attachSystem::FixedComp* ShutterPtr;
@@ -454,15 +455,16 @@ beamTallyConstruct::addShutterTally(Simulation& System,
 
 void 
 beamTallyConstruct::addViewLineTally(Simulation& System,
-				 const int beamNum,
-				 const double beamDist,
-				 const double timeOffset,
-				 const double windowOffset,
-				 const double pointZRot) const
+				     const int beamNum,
+				     const double beamDist,
+				     const double timeOffset,
+				     const double windowOffset,
+				     const double pointZRot) const
   /*!
     Adds a beamline tally to the system
     \param System :: Simulation to add tallies
     \param beamNum :: Beamline to use [1-18]
+    \param faceFlag :: Face -- Front/Back
     \param beamDist :: Distance from moderator face
     \param timeOffset :: Time back step for tally
     \param windowOffset :: Distance to move window towards tally point
@@ -490,6 +492,7 @@ beamTallyConstruct::addViewLineTally(Simulation& System,
 
   // MODERATOR PLANE
   masterPlane=ShutterPtr->getExitWindow(0,Planes);
+
 
   const attachSystem::TwinComp* TwinPtr=
     dynamic_cast<const attachSystem::TwinComp*>(ShutterPtr);

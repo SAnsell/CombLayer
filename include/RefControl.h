@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   include/RefControl.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ class RefControl
  private:
 
   /// typedef for a point to data
-  typedef boost::shared_ptr<dataTYPE> ptrTYPE;   
+  typedef std::shared_ptr<dataTYPE> ptrTYPE;   
   ptrTYPE Data;                                  ///< Real object Ptr
 
  public:

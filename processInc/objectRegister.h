@@ -45,7 +45,7 @@ class objectRegister
   /// Storage type : name : startPt : size 
   typedef std::map<std::string,std::pair<int,int> > MTYPE;
   /// Storage of component pointers
-  typedef boost::shared_ptr<attachSystem::FixedComp> CTYPE;
+  typedef std::shared_ptr<attachSystem::FixedComp> CTYPE;
   /// Index of them
   typedef std::map<std::string,CTYPE > cMapTYPE;
 

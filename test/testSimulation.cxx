@@ -33,9 +33,9 @@
 #include <functional>
 #include <numeric>
 #include <iterator>
+#include <memory>
 #include <boost/functional.hpp>
 #include <boost/bind.hpp>
-#include <boost/shared_ptr.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <boost/array.hpp>
 

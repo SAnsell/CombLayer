@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   epbBuild/makeEPB.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,9 +33,10 @@
 #include <string>
 #include <algorithm>
 #include <iterator>
+#include <memory>
+
 #include <boost/array.hpp>
 #include <boost/format.hpp>
-#include <boost/shared_ptr.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -49,9 +50,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "inputParam.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -63,17 +61,6 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
-#include "KCode.h"
-#include "insertInfo.h"
-#include "insertBaseInfo.h"
-#include "InsertComp.h"
-#include "ModeCard.h"
-#include "PhysImp.h"
-#include "PhysCard.h"
-#include "LSwitchCard.h"
-#include "PhysicsCards.h"
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -130,7 +117,7 @@ makeEPB::makeMagnets(Simulation& System)
   const size_t nItems=Control.EvalVar<size_t>("EPBNMagnets");
   for(size_t i=0;i<nItems;i++)
     {
-      boost::shared_ptr<Magnet> GA(new Magnet("Magnet",i+1));
+      std::shared_ptr<Magnet> GA(new Magnet("Magnet",i+1));
       GA->createAll(System,*LineVoid);
       attachSystem::addToInsertSurfCtrl(System,*Hall,*GA);
       OR.addObject(GA);
@@ -140,7 +127,7 @@ makeEPB::makeMagnets(Simulation& System)
   const size_t nFocus=Control.EvalVar<size_t>("EPBNFocus");
   for(size_t i=0;i<nFocus;i++)
     {
-      boost::shared_ptr<Magnet> GA(new Magnet("Focus",i+1));
+      std::shared_ptr<Magnet> GA(new Magnet("Focus",i+1));
       GA->createAll(System,*LineVoid);
       attachSystem::addToInsertSurfCtrl(System,*Hall,*GA);
       OR.addObject(GA);

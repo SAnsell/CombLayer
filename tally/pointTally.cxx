@@ -33,8 +33,9 @@
 #include <iterator>
 #include <algorithm>
 #include <numeric>
+#include <memory>
 #include <boost/bind.hpp>
-#include <boost/shared_ptr.hpp>
+
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -461,14 +462,18 @@ pointTally::widenWindow(const int index,const double scale)
 
   const std::pair<Geometry::Vec3D,Geometry::Vec3D> D=calcDirection();
   Geometry::Vec3D N=(!index) ? D.first : D.second;
+  ELog::EM<<"N = "<<D.first<<":"<<D.second<<ELog::endDiag;
+  ELog::EM<<"OLDWIN == "<<Window[0]<<
+    "\n          "<<Window[1]<<
+    "\n          "<<Window[2]<<
+    "\n          "<<Window[3]<<ELog::endBasic;
+
   if (!index)
     {
       Window[0]-=N*scale;
       Window[1]+=N*scale;
       Window[2]+=N*scale;
       Window[3]-=N*scale;
-      ELog::EM<<"Window == "<<Window[0]<<" : "<<Window[1]<<" : "<<
-	Window[2]<<" : "<<Window[3]<<ELog::endBasic;
     }
   else
     {
@@ -476,9 +481,12 @@ pointTally::widenWindow(const int index,const double scale)
       Window[1]-=N*scale;
       Window[2]+=N*scale;
       Window[3]+=N*scale;
-      ELog::EM<<"Window == "<<Window[0]<<" : "<<Window[1]<<" : "<<
-	Window[2]<<" : "<<Window[3]<<ELog::endBasic;
     }
+  ELog::EM<<"Window == "<<Window[0]<<
+    "\n          "<<Window[1]<<
+    "\n          "<<Window[2]<<
+    "\n          "<<Window[3]<<ELog::endBasic;
+  
   return;
 }
 
@@ -619,13 +627,11 @@ pointTally::rotateMaster()
   ELog::RegMethod RegA("pointTally","rotateMaster");
 
   const masterRotate& MR=masterRotate::Instance();
-  
+  ELog::EM<<"Point tally "<<Centre<<ELog::endDiag;
   MR.applyFull(Centre);
-  // for_each(Window.begin(),Window.end(),
-  // 	   [&MR](Geometry::Vec3D& v){MR.applyFull(v);});
-  std::vector<Geometry::Vec3D>::iterator vc;
-  for(vc=Window.begin();vc!=Window.end();vc++)
-    MR.applyFull(*vc);
+  ELog::EM<<"XX Point tally "<<Centre<<ELog::endDiag;
+  for_each(Window.begin(),Window.end(),
+   	   [&MR](Geometry::Vec3D& v){MR.applyFull(v);});
   return;
 }
 

@@ -46,7 +46,7 @@ class makeESSBL :
 
   const std::string shutterName;              ///< Shutter name
 
-  boost::shared_ptr<beamlineSystem::GuideLine> RefA;   ///< Guide line
+  std::shared_ptr<beamlineSystem::GuideLine> RefA;   ///< Guide line
 
  public:
   

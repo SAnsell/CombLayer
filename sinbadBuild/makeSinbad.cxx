@@ -12,8 +12,9 @@
 #include <string>
 #include <algorithm>
 #include <iterator>
+#include <memory>
+
 #include <boost/array.hpp>
-#include <boost/shared_ptr.hpp>
 #include <boost/multi_array.hpp>
 
 #include "Exception.h"
@@ -131,7 +132,7 @@ makeSinbad::buildDetectors(Simulation& System)
   const size_t detN=Control.EvalVar<size_t>(detKey+"PositionN");
   for(size_t i=0;i<detN;i++)
     { 
-      boost::shared_ptr<sbadDetector> detPtr
+      std::shared_ptr<sbadDetector> detPtr
 	(new sbadDetector(preName+"Detector",i));
       
       detArray.push_back(detPtr);   

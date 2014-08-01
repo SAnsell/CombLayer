@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   monteInc/HeadRule.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@
 class Token;
 class Rule;
 class CompGrp;
+class SurfPoint;
 
 namespace Geometry
 {
@@ -53,6 +54,7 @@ class HeadRule
   static CompGrp* procComp(Rule*);
 
   void createAddition(const int,const Rule*);
+  const SurfPoint* findSurf(const int) const;
 
  public:
 
@@ -86,6 +88,9 @@ class HeadRule
   std::vector<int> getSurfaceNumbers() const;
   std::vector<int> getTopSurfaces() const;
 
+  const Rule* findNode(const size_t,const size_t) const;
+  HeadRule getComponent(const size_t,const size_t) const;
+
   int removeItems(const int);
   int removeTopItem(const int);
   int substituteSurf(const int,const int,const Geometry::Surface*);
@@ -102,6 +107,9 @@ class HeadRule
   void addUnion(const HeadRule&);
   void addIntersection(const Rule*);
   void addUnion(const Rule*);
+
+  int level(const int) const;
+  size_t countNLevel(const size_t) const;
 
   std::string display() const;
   std::string display(const Geometry::Vec3D&) const;

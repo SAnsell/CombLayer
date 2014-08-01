@@ -31,7 +31,7 @@
 #include <map>
 #include <string>
 #include <algorithm>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/array.hpp>
 
 #include "Exception.h"
@@ -266,6 +266,7 @@ H2Pipe::insertOuter(Simulation& System,const attachSystem::FixedComp& FC,
   Central.addRadius(clearRadius,0,0.0);
   Central.addRadius(steelRadius,steelMat,0.0);
  
+  Central.setNAngle(18);
   Central.createAll(System);
   return;
 }

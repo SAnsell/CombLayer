@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   t1Upgrade/CH4PreModBase.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,9 +32,8 @@
 #include <string>
 #include <algorithm>
 #include <numeric>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/bind.hpp>
-
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -48,42 +47,17 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "Tally.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "surfEqual.h"
-#include "surfDivide.h"
-#include "surfDIter.h"
-#include "Quadratic.h"
-#include "Plane.h"
-#include "Cylinder.h"
-#include "Line.h"
 #include "Rules.h"
-#include "varList.h"
-#include "Code.h"
-#include "FuncDataBase.h"
 #include "HeadRule.h"
-#include "Object.h"
-#include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
-#include "Simulation.h"
-#include "ModelSupport.h"
-#include "generateSurf.h"
-#include "SimProcess.h"
-#include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
-#include "World.h"
+#include "LayerComp.h"
 #include "CH4PreModBase.h"
 
 
@@ -91,9 +65,9 @@ namespace ts1System
 {
   
 CH4PreModBase::CH4PreModBase(const std::string& Key,const size_t NLink)  : 
-  ContainedComp(),FixedComp(Key,NLink),
+  ContainedComp(),FixedComp(Key,NLink),LayerComp(0,0),
   preIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(preIndex+1),voidCell(0)
+  cellIndex(preIndex+1)
   /*!
     Constructor
     \param Key :: Keyname 
@@ -102,9 +76,8 @@ CH4PreModBase::CH4PreModBase(const std::string& Key,const size_t NLink)  :
 {}
 
 CH4PreModBase::CH4PreModBase(const CH4PreModBase& A) : 
-  ContainedComp(A),FixedComp(A),
-  preIndex(A.preIndex),cellIndex(A.cellIndex),
-  voidCell(A.voidCell)
+  ContainedComp(A),FixedComp(A),LayerComp(A),
+  preIndex(A.preIndex),cellIndex(A.cellIndex)
   /*!
     Copy constructor
     \param A :: CH4PreModBase to copy
@@ -119,13 +92,11 @@ CH4PreModBase::operator=(const CH4PreModBase& A)
     \return *this
   */
 {
-
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
       cellIndex=A.cellIndex;
-      voidCell=A.voidCell;
     }
   return *this;
 }

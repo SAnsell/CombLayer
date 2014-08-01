@@ -31,7 +31,7 @@
 #include <map>
 #include <string>
 #include <algorithm>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/array.hpp>
 
 #include "Exception.h"
@@ -182,15 +182,13 @@ GuideItem::setCylBoundary(const int dPlane,const int A,const int B)
 }
 
 void
-GuideItem::populate(const Simulation& System)
+GuideItem::populate(const FuncDataBase& Control)
  /*!
    Populate all the variables
-   \param System :: Simulation to use
+   \param Control :: Func Data Base to use
  */
 {
   ELog::RegMethod RegA("GuideItem","populate");
-  
-  const FuncDataBase& Control=System.getDataBase();
   
   xStep=Control.EvalPair<double>(keyName,baseName,"XStep");
   yStep=Control.EvalPair<double>(keyName,baseName,"YStep");
@@ -458,7 +456,7 @@ GuideItem::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("GuideItem","createAll");
 
-  populate(System);
+  populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
   calcBeamLineTrack(FC);
   createSurfaces();

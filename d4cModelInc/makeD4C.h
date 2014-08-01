@@ -44,11 +44,11 @@ class makeD4C
  private:
 
   /// Outer bell jar
-  boost::shared_ptr<BellJar> BellObj;
+  std::shared_ptr<BellJar> BellObj;
   /// Cell object
-  boost::shared_ptr<instrumentSystem::CylSample> CellObj;
+  std::shared_ptr<instrumentSystem::CylSample> CellObj;
   /// Detector array object
-  boost::shared_ptr<DetectorArray> DetObj;
+  std::shared_ptr<DetectorArray> DetObj;
 
   void setMaterials(const mainSystem::inputParam& IParam);
 

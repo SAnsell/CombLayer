@@ -32,7 +32,7 @@
 #include <vector>
 #include <algorithm>
 #include <functional>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/tuple/tuple.hpp>
 
 #include "Exception.h"

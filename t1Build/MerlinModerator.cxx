@@ -32,8 +32,7 @@
 #include <string>
 #include <algorithm>
 #include <numeric>
-#include <boost/shared_ptr.hpp>
-#include <boost/array.hpp>
+#include <memory>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -53,8 +52,6 @@
 #include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "surfEqual.h"
-#include "surfDIter.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
@@ -397,7 +394,7 @@ MerlinModerator::createVanes(Simulation& System)
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  boost::shared_ptr<moderatorSystem::VanePoison> 
+  std::shared_ptr<moderatorSystem::VanePoison> 
     VaneObj(new moderatorSystem::VanePoison(keyName+"Vanes"));
   OR.addObject(VaneObj);
 

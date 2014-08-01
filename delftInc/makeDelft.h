@@ -60,34 +60,34 @@ class makeDelft
 
   int vacReq;                            ///< Vac vessel required
 
-  boost::shared_ptr<ReactorGrid> GridPlate;    ///< Grid 
-  boost::shared_ptr<SwimingPool> Pool;         ///< Pool
-  boost::shared_ptr<BeamTube> FlightA;         ///< Direct beamline 
-  boost::shared_ptr<BeamTube> FlightB;         ///< Close [top]
-  boost::shared_ptr<BeamTube> FlightC;         ///< Close [base]
-  boost::shared_ptr<BeamTube> FlightD;         ///< Opposite direct
-  boost::shared_ptr<BeamTube> FlightE;         ///< Opposite [top]
-  boost::shared_ptr<BeamTube> FlightF;         ///< Opposition [base]
-  boost::shared_ptr<virtualMod> ColdMod;      ///< H2 Moderator
+  std::shared_ptr<ReactorGrid> GridPlate;    ///< Grid 
+  std::shared_ptr<SwimingPool> Pool;         ///< Pool
+  std::shared_ptr<BeamTube> FlightA;         ///< Direct beamline 
+  std::shared_ptr<BeamTube> FlightB;         ///< Close [top]
+  std::shared_ptr<BeamTube> FlightC;         ///< Close [base]
+  std::shared_ptr<BeamTube> FlightD;         ///< Opposite direct
+  std::shared_ptr<BeamTube> FlightE;         ///< Opposite [top]
+  std::shared_ptr<BeamTube> FlightF;         ///< Opposition [base]
+  std::shared_ptr<virtualMod> ColdMod;      ///< H2 Moderator
   /// H2 Moderator groove
-  std::vector<boost::shared_ptr<H2Groove> > ColdGroove;      
+  std::vector<std::shared_ptr<H2Groove> > ColdGroove;      
   /// H2 Moderator surround
-  boost::shared_ptr<H2Vac> CSurround;  
+  std::shared_ptr<H2Vac> CSurround;  
 
   // --  Inserts for flightline  --
-  boost::shared_ptr<BeamInsert> R2Insert;      ///< FlightA/R2 inset
+  std::shared_ptr<BeamInsert> R2Insert;      ///< FlightA/R2 inset
 
   // Reflector additional
-  boost::shared_ptr<BeSurround> R2Be;      ///< R2 tube refle
-  boost::shared_ptr<BeCube> R2Cube;      ///< R2 tube refle
-  boost::shared_ptr<BeFullBlock> RFull;      ///< R Full block
-  boost::shared_ptr<BeFullBlock> LFull;      ///< L Full block
+  std::shared_ptr<BeSurround> R2Be;      ///< R2 tube refle
+  std::shared_ptr<BeCube> R2Cube;      ///< R2 tube refle
+  std::shared_ptr<BeFullBlock> RFull;      ///< R Full block
+  std::shared_ptr<BeFullBlock> LFull;      ///< L Full block
 
 
   /// Boxed units
-  std::vector<boost::shared_ptr<SpaceBlock> > SBox;  
+  std::vector<std::shared_ptr<SpaceBlock> > SBox;  
   /// RABBITS
-  std::vector<boost::shared_ptr<Rabbit> > RSet;  
+  std::vector<std::shared_ptr<Rabbit> > RSet;  
 
   static virtualMod* createColdMod(const std::string&);
 

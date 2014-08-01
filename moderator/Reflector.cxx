@@ -31,7 +31,7 @@
 #include <map>
 #include <string>
 #include <algorithm>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/array.hpp>
 
 #include "Exception.h"
@@ -163,7 +163,7 @@ Reflector::Reflector(const Reflector& A) :
   PMgroove(new PreMod(*A.PMgroove)),
   PMhydro(new PreMod(*A.PMhydro)),
   Horn(new HWrapper(*A.Horn)),
-  DMod((A.DMod) ? boost::shared_ptr<Decoupled>(A.DMod->clone()) : A.DMod),
+  DMod((A.DMod) ? std::shared_ptr<Decoupled>(A.DMod->clone()) : A.DMod),
   DVacObj(new VacVessel(*A.DVacObj)),
   FLwish(new FlightLine(*A.FLwish)),
   FLnarrow(new FlightLine(*A.FLnarrow)),
@@ -206,7 +206,7 @@ Reflector::operator=(const Reflector& A)
       *PMhydro = *A.PMhydro;
       *Horn = *A.Horn;
       if (A.DMod)
-	DMod = boost::shared_ptr<Decoupled>(A.DMod->clone());
+	DMod = std::shared_ptr<Decoupled>(A.DMod->clone());
       else
 	DMod=A.DMod;       
       *DVacObj = *A.DVacObj;
@@ -406,20 +406,20 @@ Reflector::processDecoupled(Simulation& System,
       DecFileMod* DFPtr=new DecFileMod("decoupled");
       DFPtr->createAllFromFile(System,*this,
 	    IParam.getValue<std::string>("decFile"));
-      DMod=boost::shared_ptr<Decoupled>(DFPtr);  
+      DMod=std::shared_ptr<Decoupled>(DFPtr);  
       OR.addObject(DMod);
       return;
     }
   const std::string DT=IParam.getValue<std::string>("decType");
   if (DT=="standard")  // Standard one
     {
-      DMod=boost::shared_ptr<Decoupled>(new Decoupled("decoupled"));  
+      DMod=std::shared_ptr<Decoupled>(new Decoupled("decoupled"));  
       OR.addObject(DMod);
       DMod->createAll(System,World::masterTS2Origin());
     }
   else if (DT=="layer")  // layer
     {
-      DMod=boost::shared_ptr<Decoupled>(new DecLayer("decoupled","decLayer"));  
+      DMod=std::shared_ptr<Decoupled>(new DecLayer("decoupled","decLayer"));  
       OR.addObject(DMod);
       DMod->createAll(System,World::masterTS2Origin());
     }
@@ -456,7 +456,7 @@ Reflector::createInternalObjects(Simulation& System,
 
   if (TarName=="tMoly")
     {
-      boost::shared_ptr<TMRSystem::TS2ModifyTarget> TarObjModify
+      std::shared_ptr<TMRSystem::TS2ModifyTarget> TarObjModify
 	(new TMRSystem::TS2ModifyTarget("tMoly"));
       TarObjModify->createAll(System,*TarObj);
       OR.addObject(TarObjModify);

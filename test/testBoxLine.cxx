@@ -33,7 +33,7 @@
 #include <vector>
 #include <algorithm>
 #include <functional>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/multi_array.hpp>
 #include <boost/tuple/tuple.hpp>
 

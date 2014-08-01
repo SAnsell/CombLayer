@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   geomInc/SurInter.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,10 +52,12 @@ nearPoint(const std::vector<Geometry::Vec3D>&,
 
 // Generic point intersection
 std::vector<Geometry::Vec3D> 
-processPoint(const Geometry::Surface*,const Geometry::Surface*,const Geometry::Surface*);
+processPoint(const Geometry::Surface*,const Geometry::Surface*,
+	     const Geometry::Surface*);
 
 Geometry::Vec3D
-getPoint(const Geometry::Surface*,const Geometry::Surface*,const Geometry::Surface*);
+getPoint(const Geometry::Surface*,const Geometry::Surface*,
+	 const Geometry::Surface*);
 
 Geometry::Vec3D
 getPoint(const Geometry::Surface*,const Geometry::Surface*,

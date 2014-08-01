@@ -47,8 +47,8 @@ class TargetBase :
 {
  protected:
 
-  boost::shared_ptr<ts1System::BeamWindow> BWPtr;    ///< Beam window object
-  boost::shared_ptr<ts1System::ProtonVoid> PLine;    ///< Proton line  
+  std::shared_ptr<ts1System::BeamWindow> BWPtr;    ///< Beam window object
+  std::shared_ptr<ts1System::ProtonVoid> PLine;    ///< Proton line  
 
   virtual void createBeamWindow(Simulation&) =0;
   
@@ -75,7 +75,7 @@ class TargetBase :
   virtual int getSkinBody() const { return 0; }
 
   /// Proton line    
-  boost::shared_ptr<ts1System::ProtonVoid> getProton() const { return PLine; }
+  std::shared_ptr<ts1System::ProtonVoid> getProton() const { return PLine; }
 };
 
 }

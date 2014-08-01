@@ -32,8 +32,9 @@
 #include <string>
 #include <sstream>
 #include <algorithm>
+#include <memory>
 #include <boost/tuple/tuple.hpp>
-#include <boost/shared_ptr.hpp>
+
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -101,7 +102,7 @@ testRefPlate::initSim()
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
   ModelSupport::objectRegister& OR=ModelSupport::objectRegister::Instance();
 
-  SObj=boost::shared_ptr<testSystem::simpleObj>(new simpleObj("testSimple"));
+  SObj=std::shared_ptr<testSystem::simpleObj>(new simpleObj("testSimple"));
   OR.reset();
   ASim.resetAll();
 
@@ -205,7 +206,7 @@ testRefPlate::testAddTwoBlocks()
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  boost::shared_ptr<ts1System::refPlate> 
+  std::shared_ptr<ts1System::refPlate> 
     RA(new ts1System::refPlate("testPlate1"));  
   OR.addObject(RA);
 
@@ -221,7 +222,7 @@ testRefPlate::testAddTwoBlocks()
   
   // SECOND BLOCK:
   
-  boost::shared_ptr<ts1System::refPlate> 
+  std::shared_ptr<ts1System::refPlate> 
     RB(new ts1System::refPlate("testPlate2"));  
   OR.addObject(RB);
   
@@ -237,7 +238,7 @@ testRefPlate::testAddTwoBlocks()
 
   // THIRD BLOCK:
   
-  boost::shared_ptr<ts1System::refPlate> 
+  std::shared_ptr<ts1System::refPlate> 
     RC(new ts1System::refPlate("testPlate3"));  
   OR.addObject(RC);
   
@@ -268,7 +269,7 @@ testRefPlate::testArrayBlocks()
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  typedef boost::shared_ptr<ts1System::refPlate> PTYPE;
+  typedef std::shared_ptr<ts1System::refPlate> PTYPE;
   std::vector<PTYPE> RVec;
   
   const std::string rpName("testPlate");

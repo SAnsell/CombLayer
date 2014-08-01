@@ -32,9 +32,9 @@
 #include <string>
 #include <algorithm>
 #include <iterator>
+#include <memory>
 #include <boost/array.hpp>
 #include <boost/format.hpp>
-#include <boost/shared_ptr.hpp>
 
 #include "Exception.h"
 #include "MersenneTwister.h"
@@ -93,7 +93,6 @@
 #include "World.h"
 #include "Volumes.h"
 
-#include "SimValid.h"
 #include "MemStack.h"
 
 // Random number
@@ -155,7 +154,7 @@ main(int argc,char* argv[])
       int MCIndex(0);
       const int multi=IParam.getValue<int>("multi");
 
-      ELog::EM<<"FULLBUILD : variable hash:"
+      ELog::EM<<"FULLBUILD : variable hash: "
 	      <<SimPtr->getDataBase().variableHash()
 	      <<ELog::endBasic;
 	
@@ -186,8 +185,7 @@ main(int argc,char* argv[])
 
 	  // Sets a line of tallies at different angles
 	  //	  TMRSystem::setAllTally(Sim,SInfo);
-	  const int renumCellWork=tallySelection(*SimPtr,IParam);
-
+	  const int renumCellWork=beamTallySelection(*SimPtr,IParam);
 	  if (!rotFlag.empty())
 	    {
 	      ModelSupport::setItemRotate(World::masterTS2Origin(),rotFlag);

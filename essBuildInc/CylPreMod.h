@@ -45,8 +45,8 @@ class CylPreMod : public attachSystem::ContainedGroup,
   int cellIndex;                  ///< Cell index
 
   /// Extension object
-  boost::shared_ptr<BlockAddition> ExtAObj; 
-  boost::shared_ptr<BlockAddition> ExtBObj; 
+  std::shared_ptr<BlockAddition> ExtAObj; 
+  std::shared_ptr<BlockAddition> ExtBObj; 
   int blockActiveA;
   int blockActiveB;
   size_t aSide;  
@@ -96,7 +96,7 @@ class CylPreMod : public attachSystem::ContainedGroup,
 
   void createAll(Simulation&,const attachSystem::FixedComp&);
 
-  const boost::shared_ptr<BlockAddition>& getBox(const char) const;
+  const std::shared_ptr<BlockAddition>& getBox(const char) const;
   std::string getBoxCut(const char) const;
   virtual Geometry::Vec3D getSurfacePoint(const size_t,const size_t) const;
   virtual int getLayerSurf(const size_t,const size_t) const;

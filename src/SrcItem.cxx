@@ -137,7 +137,7 @@ SrcItem<OutType>::setDepType(const std::string& dK,const int I)
   ELog::RegMethod RegA("StrItem","setDepType");
   active=1;
   depKey=dK;
-  dtype=(I>0) ? -I : I;
+  dtype=(I>0) ? -I : I;   // negative always
   if (dtype==0) 
     ELog::EM<<"Setting dtype = 0 in a non-data object"<<ELog::endErr;
 

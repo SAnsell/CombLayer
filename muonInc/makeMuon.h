@@ -56,37 +56,37 @@ class makeMuon
 {
  private:
 
-  boost::shared_ptr<targSimpleShield> TargShieldObj;   // Target vessel 
-  boost::shared_ptr<targetVesselBox> VessBoxObj;   // Target vessel 
-  boost::shared_ptr<muonCarbonTarget> TargetObj;   // Target 
-  boost::shared_ptr<muonTube> EpbInTubeObj;   // Tube in - epb
-  boost::shared_ptr<muonTube> EpbOutTubeObj;   // Tube out - epb
-  boost::shared_ptr<coneColl> FirstCollObj;   // 1st Collimator        
-  boost::shared_ptr<coneColl> ThirdCollObj;   // 3rd Collimator        
-  boost::shared_ptr<cShieldLayer> FirstShieldObj;   // Muon collimator
-  boost::shared_ptr<muonTube> FirstTubeObj;   // Tube in 1st shield  
-  boost::shared_ptr<cShieldLayer> ThirdShieldObj;   // Shield layered 
-  boost::shared_ptr<muonTube> ThirdTubeObj;   // Tube in 3rd layered shield  
-  boost::shared_ptr<profileMon> ProfMonObj;   // Profile monitor   
-  boost::shared_ptr<muonQ1> Q44Obj;   // quadropoles 
-  boost::shared_ptr<muonTube> FinalTubeObj;   // final tube            
-  boost::shared_ptr<targSimpleShield> MuRoomObj;   // room
-  boost::shared_ptr<muonQ1> Q1Obj;   // quadropoles 
-  boost::shared_ptr<muonQ1> Q2Obj;   // quadropoles
-  boost::shared_ptr<targSimpleShield> CernFront;   // cern quad magnet front "plate"    
-  boost::shared_ptr<targSimpleShield> CernBack;   // cern quad magnet back "plate"
-  boost::shared_ptr<muBeamWindow> BWin1Obj;   // beam window 
-  boost::shared_ptr<muBeamWindow> BWin2Obj;   // beam window 
-  boost::shared_ptr<muonTube> PosRing1Obj;   // position ring 1
-  boost::shared_ptr<muonTube> MuTube1Obj;   // muon vacuum tube 1
-  boost::shared_ptr<muonTube> MuTube2Obj;   // muon vacuum tube 2      
-  boost::shared_ptr<muonTube> PosRing2Obj;   // position ring 2
-  boost::shared_ptr<muonTube> MuTube3Obj;   // muon vacuum tube 3       
-  boost::shared_ptr<muonTube> PosRing3Obj;   // position ring 3    
-  boost::shared_ptr<muonTube> MuTube4Obj;   // muon vacuum tube 4   
-  boost::shared_ptr<muonTube> MuTube5Obj;   // muon vacuum tube 5   
-  boost::shared_ptr<muonTube> PosRing4Obj;   // position ring 4
-  boost::shared_ptr<cShieldLayer> ShieldPlugObj;   // Shield plug layered 
+  std::shared_ptr<targSimpleShield> TargShieldObj;   // Target vessel 
+  std::shared_ptr<targetVesselBox> VessBoxObj;   // Target vessel 
+  std::shared_ptr<muonCarbonTarget> TargetObj;   // Target 
+  std::shared_ptr<muonTube> EpbInTubeObj;   // Tube in - epb
+  std::shared_ptr<muonTube> EpbOutTubeObj;   // Tube out - epb
+  std::shared_ptr<coneColl> FirstCollObj;   // 1st Collimator        
+  std::shared_ptr<coneColl> ThirdCollObj;   // 3rd Collimator        
+  std::shared_ptr<cShieldLayer> FirstShieldObj;   // Muon collimator
+  std::shared_ptr<muonTube> FirstTubeObj;   // Tube in 1st shield  
+  std::shared_ptr<cShieldLayer> ThirdShieldObj;   // Shield layered 
+  std::shared_ptr<muonTube> ThirdTubeObj;   // Tube in 3rd layered shield  
+  std::shared_ptr<profileMon> ProfMonObj;   // Profile monitor   
+  std::shared_ptr<muonQ1> Q44Obj;   // quadropoles 
+  std::shared_ptr<muonTube> FinalTubeObj;   // final tube            
+  std::shared_ptr<targSimpleShield> MuRoomObj;   // room
+  std::shared_ptr<muonQ1> Q1Obj;   // quadropoles 
+  std::shared_ptr<muonQ1> Q2Obj;   // quadropoles
+  std::shared_ptr<targSimpleShield> CernFront;   // cern quad magnet front "plate"    
+  std::shared_ptr<targSimpleShield> CernBack;   // cern quad magnet back "plate"
+  std::shared_ptr<muBeamWindow> BWin1Obj;   // beam window 
+  std::shared_ptr<muBeamWindow> BWin2Obj;   // beam window 
+  std::shared_ptr<muonTube> PosRing1Obj;   // position ring 1
+  std::shared_ptr<muonTube> MuTube1Obj;   // muon vacuum tube 1
+  std::shared_ptr<muonTube> MuTube2Obj;   // muon vacuum tube 2      
+  std::shared_ptr<muonTube> PosRing2Obj;   // position ring 2
+  std::shared_ptr<muonTube> MuTube3Obj;   // muon vacuum tube 3       
+  std::shared_ptr<muonTube> PosRing3Obj;   // position ring 3    
+  std::shared_ptr<muonTube> MuTube4Obj;   // muon vacuum tube 4   
+  std::shared_ptr<muonTube> MuTube5Obj;   // muon vacuum tube 5   
+  std::shared_ptr<muonTube> PosRing4Obj;   // position ring 4
+  std::shared_ptr<cShieldLayer> ShieldPlugObj;   // Shield plug layered 
             
  public:
   

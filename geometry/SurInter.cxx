@@ -30,7 +30,7 @@
 #include <map>
 #include <string>
 #include <algorithm>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -268,7 +268,8 @@ processPoint(const Geometry::Surface* ASPtr,
 
 std::vector<Geometry::Vec3D>
 makePoint(const Geometry::Plane* A,
-	  const Geometry::Plane* B,const Geometry::Plane* C)
+	  const Geometry::Plane* B,
+	  const Geometry::Plane* C)
   /*!
     Calculate the intersection between three planes
     \param A :: Plane pointer 
@@ -427,7 +428,7 @@ getMidPoint(const Geometry::Surface* ASPtr,const Geometry::Surface* BSPtr,
 	cylN++;
     }
   
-  typedef boost::shared_ptr<const Geometry::Intersect> ipTYPE;
+  typedef std::shared_ptr<const Geometry::Intersect> ipTYPE;
   if (planeN==2 && sphereN==1)        // Make line + intersect:
     {
       ipTYPE CpA(calcIntersect(*SpVec[0],*PVec[0]));

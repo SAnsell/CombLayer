@@ -34,7 +34,7 @@
 #include <functional>
 #include <numeric>
 #include <iterator>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/bind.hpp>
 #include <boost/multi_array.hpp>
  

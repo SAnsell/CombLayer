@@ -31,8 +31,7 @@
 #include <map>
 #include <string>
 #include <algorithm>
-#include <boost/array.hpp>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -392,7 +391,7 @@ SideCoolTarget::createBeamWindow(Simulation& System)
       
       if (!BWPtr)
 	{
-	  BWPtr=boost::shared_ptr<ts1System::BeamWindow>
+	  BWPtr=std::shared_ptr<ts1System::BeamWindow>
 	  (new ts1System::BeamWindow("BWindow"));
 	  OR.addObject(BWPtr);
 	}      

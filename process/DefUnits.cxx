@@ -74,8 +74,15 @@ setDefUnits(FuncDataBase& Control,
 	setTS1MarkV(A);
       else if (Key=="TS1MarkVI")
 	setTS1MarkVI(A);
-      else if (Key=="")
-	{}
+      else if (Key=="help")
+	{
+	  ELog::EM<<"Options : "<<ELog::endDiag;
+	  ELog::EM<<"  TS1MarkIV  "<<ELog::endDiag;
+	  ELog::EM<<"  TS1MarkV  "<<ELog::endDiag;
+	  ELog::EM<<"  TS1MarkVI  "<<ELog::endDiag;
+	  throw ColErr::InContainerError<std::string>
+	    (Key,"Iparam.defaultConfig");	  
+	}
       else 
 	{
 	  ELog::EM<<"Unknown Default Key ::"<<Key<<ELog::endDiag;
@@ -396,6 +403,10 @@ setTS1MarkVI(defaultConfig& A)
 
   // al inner
   A.setVar("CH4LayerLayer2",0.3); 
+  A.setVar("CH4LayerLeft2",0.3);    
+  A.setVar("CH4LayerRight2",0.3);    
+  A.setVar("CH4LayerFront2",0.3);   
+  A.setVar("CH4LayerBack2",0.3);   
   A.setVar("CH4LayerHeight2",0.3);        
   A.setVar("CH4LayerMat2","Aluminium");   
   A.setVar("CH4LayerTemp2",110.0); 

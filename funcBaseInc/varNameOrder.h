@@ -22,16 +22,17 @@
 #ifndef varNameOrder_h
 #define varNameOrder_h
 
-class varNameOrder
+class varNameOrder 
 {
  private:
 
-  boost::regex Re;          /// Regular expression
+  boost::regex* RePtr;          /// Regular expression
 
  public:
 
-  /// Construct to build expression : Name Number 
-  varNameOrder() : Re("^(\\D*)(\\d*)(.*)") {} 
+  varNameOrder();
+  varNameOrder(const varNameOrder&);
+  ~varNameOrder() { delete RePtr; }
 
   template<typename T> bool
     operator()(const std::pair<std::string,T>& A,
@@ -40,30 +41,8 @@ class varNameOrder
       return operator()(A.first,B.first);
     }
 
-    
-   
   bool operator()(const std::string& A,
-		  const std::string& B) const
-    /*!
-      Sort function that splits a name into (A number B)
-      then sotrs of A B number 
-     */
-    {
-      std::vector<std::string> AOutVec;
-      std::vector<std::string> BOutVec;
-      int ANum,BNum;
-      if (StrFunc::StrFullSplit(A,Re,AOutVec) &&
-	  StrFunc::StrFullSplit(B,Re,BOutVec) &&
-	   AOutVec[0]==BOutVec[0])
-	 {
-	   if (AOutVec[2]!=BOutVec[2])
-	     return AOutVec[2]<BOutVec[2];
-	   if (StrFunc::convert(AOutVec[1],ANum) &&
-	       StrFunc::convert(BOutVec[1],BNum))
-	     return ANum<BNum;
-	}							  
-      return (A<B);
-    }
+		  const std::string& B) const;
 };
 
 #endif

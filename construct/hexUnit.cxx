@@ -31,7 +31,7 @@
 #include <map>
 #include <string>
 #include <algorithm>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/bind.hpp>
 
 #include "Exception.h"
@@ -63,7 +63,7 @@ operator<<(std::ostream& OX,const hexUnit& A)
 
 hexUnit::hexUnit(const int aI,const int bI,
 		   const Geometry::Vec3D& C) : 
-  iA(aI),iB(bI),Centre(C),hexLink(6),surfKey(6),
+  empty(0),cut(0),iA(aI),iB(bI),Centre(C),hexLink(6),surfKey(6),
   cellNumber(0)
   /*!
     Constructor
@@ -71,7 +71,58 @@ hexUnit::hexUnit(const int aI,const int bI,
     \param bI :: Index B
     \param C :: Centre point
   */
+{
+  clearLinks();
+}
+
+hexUnit::hexUnit(const int aI,const int bI,const bool cF,
+		   const Geometry::Vec3D& C) : 
+  empty(0),cut(cF),iA(aI),iB(bI),Centre(C),hexLink(6),surfKey(6),
+  cellNumber(0)
+  /*!
+    Constructor
+    \param aI :: Index A
+    \param bI :: Index B
+    \param cF :: Cut flag
+    \param C :: Centre point
+  */
+{
+  clearLinks();
+}
+
+hexUnit::hexUnit(const hexUnit& A) : 
+  empty(A.empty),cut(A.cut),iA(A.iA),iB(A.iB),
+  Centre(A.Centre),hexLink(A.hexLink),cylSurf(A.cylSurf),
+  surfKey(A.surfKey),cellNumber(A.cellNumber),
+  cutStr(A.cutStr)
+  /*!
+    Copy constructor
+    \param A :: hexUnit to copy
+  */
 {}
+
+hexUnit&
+hexUnit::operator=(const hexUnit& A)
+  /*!
+    Assignment operator
+    \param A :: hexUnit to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      empty=A.empty;
+      cut=A.cut;
+      iA=A.iA;
+      iB=A.iB;
+      Centre=A.Centre;
+      cylSurf=A.cylSurf;
+      surfKey=A.surfKey;
+      cellNumber=A.cellNumber;
+      cutStr=A.cutStr;
+    }
+  return *this;
+}
 
 int
 hexUnit::hexIndex(const size_t index)
@@ -86,20 +137,55 @@ hexUnit::hexIndex(const size_t index)
     case 0:
       return 1000;   // 1,0
     case 1:
-      return 999;    // 1,-1
+      return 1;    // 0,1
     case 2:
-      return -1;     // 0,-1
+      return -999;     // -1,1
     case 3:
       return -1000;  // -1,0 
     case 4:
-      return -999;   // -1,1
+      return -1;   // -1,1
     case 5:
-      return 1;      //  0,1
+      return 999;      //  1,-1
     }
   // return to avoid compiler warning
   return 0;
 }
- 
+
+void
+hexUnit::clearLinks()
+  /*!
+    Clear all the links
+   */
+{
+  for(hexUnit*& vc : hexLink)
+    vc=0;
+
+  return;
+}
+
+void
+hexUnit::setCyl(const int surfN)
+  /*!
+    Set a central cylinder
+    \param surfN :: Cylinder number
+   */
+{
+  cylSurf.clear();
+  cylSurf.push_back(surfN);
+  return;
+}
+
+void
+hexUnit::addCyl(const int surfN)
+  /*!
+    Add a central cylinder
+    \param surfN :: Cylinder number
+   */
+{
+  cylSurf.push_back(surfN);
+  return;
+}
+
 bool
 hexUnit::isComplete() const 
   /*!
@@ -131,6 +217,10 @@ hexUnit::isConnected(const hexUnit& TU) const
 
 bool
 hexUnit::hasLink(const size_t index) const
+/*!
+  Determine if the surface has an key
+  \param index :: HEx surface index
+*/
 {
   ELog::RegMethod RegA("hexUnit","hasLink");
   if (index>5)

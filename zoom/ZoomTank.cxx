@@ -32,8 +32,7 @@
 #include <string>
 #include <algorithm>
 #include <numeric>
-#include <boost/shared_ptr.hpp>
-#include <boost/array.hpp>
+#include <memory>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -48,8 +47,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -214,7 +211,6 @@ ZoomTank::createUnitVector(const attachSystem::TwinComp& TC)
   ELog::RegMethod RegA("ZoomTank","createUnitVector");
   TwinComp::createUnitVector(TC);
 
-  //  const masterRotate& MR=masterRotate::Instance();
   // // Reverse X
   // X*=-1;
   Origin=bEnter;

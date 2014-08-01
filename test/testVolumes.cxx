@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   test/testVolumes.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,11 +33,7 @@
 #include <functional>
 #include <numeric>
 #include <iterator>
-#include <boost/functional.hpp>
-#include <boost/bind.hpp>
-#include <boost/shared_ptr.hpp>
-#include <boost/tuple/tuple.hpp>
-#include <boost/array.hpp>
+#include <memory>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -49,49 +45,23 @@
 #include "BaseModVisit.h"
 #include "mathSupport.h"
 #include "support.h"
-#include "version.h"
-#include "Element.h"
 #include "MapSupport.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
-#include "Triple.h"
-#include "NList.h"
-#include "NRange.h"
-#include "Tally.h"
-#include "cellFluxTally.h"
-#include "pointTally.h"
-#include "heatTally.h"
-#include "tallyFactory.h"
-#include "Transform.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "Quadratic.h"
-#include "surfaceFactory.h"
 #include "Rules.h"
 #include "varList.h"
 #include "Code.h"
-#include "FItem.h"
 #include "FuncDataBase.h"
-#include "SurInter.h"
-#include "BnId.h"
-#include "Acomp.h"
-#include "Algebra.h"
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "RemoveCell.h"
-#include "WForm.h"
-#include "weightManager.h"
 #include "ObjSurfMap.h"
 #include "ObjTrackItem.h"
-#include "SrcData.h"
-#include "SrcItem.h"
-#include "Source.h"
-#include "ReadFunctions.h"
 #include "surfRegister.h"
 #include "ModelSupport.h"
 #include "neutron.h"

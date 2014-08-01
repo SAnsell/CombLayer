@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   t1BuildInc/Cannelloni.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,10 +41,8 @@ namespace ts1System
   \class Cannelloni
   \version 1.0
   \author S. Ansell
-  \date December 2010
-  \brief Creates the TS2 target [with nose cone]
-
-  Provides linkage to its outside on FixedComp[0]
+  \date December 2013
+  \brief Creates the Canneloni target system
 */
 
 class Cannelloni : public constructSystem::TargetBase
@@ -90,6 +88,7 @@ class Cannelloni : public constructSystem::TargetBase
   //  std::vector<thexUnit> 
   int mainCell;                 ///< Main tungsten cylinder
 
+  void clearHVec();
   const Geometry::Vec3D& getHexAxis(const size_t) const;
   void createCentres(const Geometry::Plane*);
 

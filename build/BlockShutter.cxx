@@ -33,7 +33,7 @@
 #include <algorithm>
 #include <numeric>
 #include <iterator>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/bind.hpp>
 
 #include "Exception.h"
@@ -404,13 +404,16 @@ BlockShutter::getExitTrack() const
 
   std::vector<zbTYPE>::const_iterator ac=
     find_if(iBlock.begin(),iBlock.end(),
-	    boost::bind(std::equal_to<int>(),
-			boost::bind<int>(&collInsertBase::getMat,_1),b4cMat));
+	    std::bind(std::equal_to<int>(),
+			std::bind<int>(&collInsertBase::getMat,
+				       std::placeholders::_1),b4cMat));
 
+  
   std::vector<zbTYPE>::const_reverse_iterator bc=
     find_if(iBlock.rbegin(),iBlock.rend(),
-	    boost::bind(std::equal_to<int>(),
-			boost::bind<int>(&collInsertBase::getMat,_1),b4cMat));
+	    std::bind(std::equal_to<int>(),
+			std::bind<int>(&collInsertBase::getMat,
+				       std::placeholders::_1),b4cMat));
 
   if (ac==iBlock.end() || bc==iBlock.rend())
     {
@@ -440,8 +443,9 @@ BlockShutter::getExitPoint() const
   
   std::vector<zbTYPE>::const_reverse_iterator bc=
     find_if(iBlock.rbegin(),iBlock.rend(),
-	    boost::bind(std::equal_to<int>(),
-			boost::bind<int>(&collInsertBase::getMat,_1),b4cMat));
+	    std::bind(std::equal_to<int>(),
+			std::bind<int>(&collInsertBase::getMat,
+				       std::placeholders::_1),b4cMat));
   if (bc==iBlock.rend())
     {
       ELog::EM<<"Problem finding B4C blocks"<<ELog::endCrit;
@@ -480,13 +484,15 @@ BlockShutter::setTwinComp()
     
   std::vector<zbTYPE>::const_iterator ac=
     find_if(iBlock.begin(),iBlock.end(),
-	    boost::bind(std::equal_to<int>(),
-			boost::bind<int>(&collInsertBase::getMat,_1),b4cMat));
+	    std::bind(std::equal_to<int>(),
+			std::bind<int>(&collInsertBase::getMat,
+				       std::placeholders::_1),b4cMat));
 
   std::vector<zbTYPE>::const_reverse_iterator bc=
     find_if(iBlock.rbegin(),iBlock.rend(),
-	    boost::bind(std::equal_to<int>(),
-			boost::bind<int>(&collInsertBase::getMat,_1),b4cMat));
+	    std::bind(std::equal_to<int>(),
+			std::bind<int>(&collInsertBase::getMat,
+				       std::placeholders::_1),b4cMat));
 
   if (ac==iBlock.end() || bc==iBlock.rend())
     {
@@ -527,14 +533,16 @@ BlockShutter::createFrontViewPoints() const
 
   std::vector<zbTYPE>::const_iterator ba=
     find_if(iBlock.begin(),iBlock.end(),
-	    boost::bind(std::equal_to<int>(),
-			boost::bind<int>(&collInsertBase::getMat,_1),b4cMat));
+	    std::bind(std::equal_to<int>(),
+			std::bind<int>(&collInsertBase::getMat,
+				       std::placeholders::_1),b4cMat));
   if (ba!=iBlock.end())
     {
       std::vector<zbTYPE>::const_iterator bb=
 	find_if(ba+1,iBlock.end(),
-		boost::bind(std::equal_to<int>(),
-		    boost::bind<int>(&collInsertBase::getMat,_1),b4cMat));
+		std::bind(std::equal_to<int>(),
+		    std::bind<int>(&collInsertBase::getMat,
+				   std::placeholders::_1),b4cMat));
       if (bb!=iBlock.end())
 	Opts=(*ba)->viewWindow(bb->get());
       ELog::EM<<"Front window "<<ELog::endDebug;
@@ -558,14 +566,16 @@ BlockShutter::createBackViewPoints() const
 
   std::vector<zbTYPE>::const_reverse_iterator ba=
     find_if(iBlock.rbegin(),iBlock.rend(),
-	    boost::bind(std::equal_to<int>(),
-			boost::bind<int>(&collInsertBase::getMat,_1),b4cMat));
+	    std::bind(std::equal_to<int>(),
+			std::bind<int>(&collInsertBase::getMat,
+				       std::placeholders::_1),b4cMat));
   if (ba!=iBlock.rend())
     {
       std::vector<zbTYPE>::const_reverse_iterator bb=
 	find_if(ba+1,iBlock.rend(),
-		boost::bind(std::equal_to<int>(),
-		    boost::bind<int>(&collInsertBase::getMat,_1),b4cMat));
+		std::bind(std::equal_to<int>(),
+		    std::bind<int>(&collInsertBase::getMat,
+				   std::placeholders::_1),b4cMat));
       if (bb!=iBlock.rend())
 	Opts=(*ba)->viewWindow(bb->get());
       ELog::EM<<"Back window "<<ELog::endDebug;

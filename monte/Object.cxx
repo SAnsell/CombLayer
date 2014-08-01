@@ -925,6 +925,7 @@ Object::forwardIntercept(const Geometry::Vec3D& IP,
 {
   ELog::RegMethod RegA("Object","forwardIntercept");
   
+
   MonteCarlo::LineIntersectVisit LI(IP,UV);
   std::vector<const Geometry::Surface*>::const_iterator vc;
   for(vc=SurList.begin();vc!=SurList.end();vc++)

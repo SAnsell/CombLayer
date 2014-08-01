@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   zoom/makeZoom.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,9 +32,10 @@
 #include <string>
 #include <algorithm>
 #include <iterator>
+#include <memory>
+
 #include <boost/array.hpp>
 #include <boost/format.hpp>
-#include <boost/shared_ptr.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"

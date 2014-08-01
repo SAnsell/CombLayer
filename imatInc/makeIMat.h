@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   imatInc/makeIMat.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,9 +40,9 @@ class makeIMat
 {
  private:
   
-  boost::shared_ptr<IMatGuide> G1Obj;    ///< First Guide section
-  //  boost::shared_ptr<IMatChopper> TZero;  ///< Chopper pit
-  //  boost::shared_ptr<IMatGuide> G2Ibj;    ///< Second Guide section
+  std::shared_ptr<IMatGuide> G1Obj;    ///< First Guide section
+  //  std::shared_ptr<IMatChopper> TZero;  ///< Chopper pit
+  //  std::shared_ptr<IMatGuide> G2Ibj;    ///< Second Guide section
 
  public:
   

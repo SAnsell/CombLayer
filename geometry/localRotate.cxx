@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   geometry/localRotate.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,8 +31,8 @@
 #include <map>
 #include <string>
 #include <algorithm>
-#include <boost/bind.hpp>
-#include <boost/shared_ptr.hpp>
+#include <memory>
+
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -121,8 +121,11 @@ localRotate::reverseRotate(const Geometry::Vec3D& V) const
   // Helper func ptr for boost since can't resolve type as overloaded:
   void (transComp::*fn)(Geometry::Vec3D&) const =  
     &transComp::reverse;
+
   for_each(Transforms.rbegin(),Transforms.rend(),
-	   boost::bind<void>(fn,_1,boost::ref(Vpt)));
+	   std::bind<void>(fn,std::placeholders::_1,std::ref(Vpt)));
+	   //	   [&Vpt,fn](const TPtr& transCompPtr)
+	   //	   { ( (*transCompPtr).*fn)(Vpt); });
   return Vpt;
 }
 
@@ -138,7 +141,8 @@ localRotate::calcRotate(const Geometry::Vec3D& V) const
   // Helper func ptr for boost since can't resolve type as overloaded:
   void (transComp::*fn)(Geometry::Vec3D&) const =  &transComp::apply;
   for_each(Transforms.begin(),Transforms.end(),
-	   boost::bind<void>(fn,_1,boost::ref(Vpt)));
+	     std::bind<void>(fn,std::placeholders::_1,
+			       std::ref(Vpt)));
   return Vpt;
 }
 
@@ -150,7 +154,8 @@ localRotate::axisRotate(Geometry::Vec3D& V) const
   */
 {
   for_each(Transforms.begin(),Transforms.end(),
-	   boost::bind<void>(&transComp::applyAxis,_1,boost::ref(V)));
+	     std::bind<void>(&transComp::applyAxis,std::placeholders::_1,
+			       std::ref(V)));
   return;
 }
 
@@ -162,7 +167,8 @@ localRotate::axisRotateReverse(Geometry::Vec3D& V) const
   */
 {
   for_each(Transforms.rbegin(),Transforms.rend(),
-	   boost::bind<void>(&transComp::reverseAxis,_1,boost::ref(V)));
+	     std::bind<void>(&transComp::reverseAxis,
+			       std::placeholders::_1,std::ref(V)));
   return;
 }
 
@@ -201,7 +207,7 @@ localRotate::applyFull(Geometry::Surface* SPtr) const
 {
   void (transComp::*fn)(Geometry::Surface*) const =  &transComp::apply;
   for_each(Transforms.begin(),Transforms.end(),
-	   boost::bind<void>(fn,_1,SPtr));
+	   std::bind<void>(fn,std::placeholders::_1,SPtr));
   return;
 }
 
@@ -214,7 +220,7 @@ localRotate::applyFull(MonteCarlo::Object* OPtr) const
 {
   void (transComp::*fn)(MonteCarlo::Object*) const =  &transComp::apply;
   for_each(Transforms.begin(),Transforms.end(),
-	   boost::bind<void>(fn,_1,OPtr));
+	   std::bind<void>(fn,std::placeholders::_1,OPtr));
   return;
 }
 
@@ -227,7 +233,8 @@ localRotate::applyFull(Geometry::Vec3D& Pt) const
 {
   void (transComp::*fn)(Geometry::Vec3D&) const =  &transComp::apply;
   for_each(Transforms.begin(),Transforms.end(),
-	   boost::bind<void>(fn,_1,boost::ref(Pt)));
+	   std::bind<void>(fn,std::placeholders::_1,
+			     std::ref(Pt)));
   return;
 }
 

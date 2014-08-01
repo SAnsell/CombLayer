@@ -33,10 +33,7 @@
 #include <iterator>
 #include <functional>
 #include <algorithm>
-#include <boost/bind.hpp>
-#include <boost/array.hpp>
-#include <boost/shared_ptr.hpp>
-#include <boost/multi_array.hpp>
+#include <memory>
 
 #include "Exception.h"
 #include "FileReport.h"

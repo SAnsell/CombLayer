@@ -33,7 +33,7 @@
 #include <functional>
 #include <numeric>
 #include <iterator>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/functional.hpp>
 #include <boost/bind.hpp>
  

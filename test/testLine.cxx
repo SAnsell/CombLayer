@@ -30,7 +30,7 @@
 #include <complex>
 #include <string>
 #include <algorithm>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/tuple/tuple.hpp>
 
 #include "Exception.h"
@@ -46,7 +46,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Transform.h"
 #include "Surface.h"
 #include "Quadratic.h"
 #include "Plane.h"
@@ -90,12 +89,14 @@ testLine::applyTest(const int extra)
   testPtr TPtr[]=
     {
       &testLine::testConeIntersect,
+      &testLine::testCylinderIntersect,
       &testLine::testEllipticCylIntersect,
       &testLine::testInterDistance
     };
   const std::string TestName[]=
     {
       "ConeIntersect",
+      "CylinderIntersect",
       "EllipticCylIntersect",
       "InterDistance"
     };
@@ -195,6 +196,74 @@ testLine::testConeIntersect()
 }
 
 int
+testLine::testCylinderIntersect()
+  /*!
+    Test the intersection of cylinders
+    \return -ve on error
+  */
+{
+  ELog::RegMethod RegA("testLine","testCylinderIntersect");
+
+  // Cylinder : Start Point : Normal : NResults : distance A : distance B 
+  typedef boost::tuple<std::string,Geometry::Vec3D,Geometry::Vec3D,
+		       size_t,double,double> TTYPE;
+  std::vector<TTYPE> Tests = {
+    TTYPE("c/z 0.0 0.0 100.0",
+	  Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0),
+	  2,100.0,100.0) ,
+    TTYPE("c/z 0.0 0.0 100.0",
+	  Geometry::Vec3D(0,0,17),Geometry::Vec3D(1,0,0),
+	  2,100.0,100.0) ,
+
+  };
+  
+  size_t nTest(1);
+  for(const TTYPE& tc : Tests)
+    {
+      Cylinder A;
+      Line LX;
+      LX.setLine(tc.get<1>(),tc.get<2>());
+      
+      const int retVal=A.setSurface(tc.get<0>());
+      if (retVal)
+        {
+	  ELog::EM<<"Failed to build "<<tc.get<0>()
+		  <<" Ecode == "<<retVal<<ELog::endErr;
+	  return -1;
+	}
+      std::vector<Geometry::Vec3D> OutPt;
+      const size_t NR=LX.intersect(OutPt,A);
+      const double DA=(NR>0) ? OutPt[0].Distance(tc.get<1>()) : 0.0;
+      const double DB=(NR>1) ? OutPt[1].Distance(tc.get<1>()) : 0.0;
+      
+      if (NR!=tc.get<3>() || 
+	  (NR>0 && fabs(DA-tc.get<4>())> 1e-5) ||
+	  (NR>1 && fabs(DB-tc.get<5>())> 1e-5) )
+	{
+	  ELog::EM<<"Test num "<<nTest<<ELog::endDiag;
+	  ELog::EM<<"Solution Count:"<<NR<<" ["<<tc.get<3>()<<"] "<<ELog::endDiag;
+	  if (NR>0)
+	    {
+	      ELog::EM<<"Point A "<<OutPt[0]<<" :: "<<
+		tc.get<1>()+tc.get<2>()*tc.get<4>()<<ELog::endDiag;
+	      ELog::EM<<"DA "<<DA<<ELog::endDiag;
+	    }
+	  if (NR>1)
+	    {
+	      ELog::EM<<"Point B "<<OutPt[1]<<" :: "<<
+		tc.get<1>()+tc.get<2>()*tc.get<5>()<<ELog::endDiag;
+	      ELog::EM<<"DB "<<DB<<ELog::endDiag;
+	    }
+	  return -1;
+	}
+
+      nTest++;
+
+    }
+  return 0;
+}
+
+int
 testLine::testEllipticCylIntersect()
   /*!
     Test the intersection of EllipticCylinder
@@ -283,10 +352,10 @@ testLine::testInterDistance()
   ELog::RegMethod RegItem("testLine","testInterDistance");
 
 
-  std::vector<boost::shared_ptr<Geometry::Surface> > SurList;
-  SurList.push_back(boost::shared_ptr<Geometry::Surface>(new Geometry::Plane(1,0)));
+  std::vector<std::shared_ptr<Geometry::Surface> > SurList;
+  SurList.push_back(std::shared_ptr<Geometry::Surface>(new Geometry::Plane(1,0)));
   SurList.back()->setSurface("px 80");
-  SurList.push_back(boost::shared_ptr<Geometry::Surface>(new Geometry::Cylinder(2,0)));
+  SurList.push_back(std::shared_ptr<Geometry::Surface>(new Geometry::Cylinder(2,0)));
   SurList.back()->setSurface("c/z 3 5 50");
 
   // surfN : Origin : Axis : results 
@@ -323,5 +392,10 @@ testLine::testInterDistance()
 
   return 0;
 }
-  
+
+int
+testLine::testRuleLineIntersect()
+{
+  return 0;
+}
   

@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   testInclude/testRefPlate.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@ private:
 
   Simulation ASim;           ///< Simulation model [local for testing]
   /// Base object for testing additions too
-  boost::shared_ptr<testSystem::simpleObj> SObj;
+  std::shared_ptr<testSystem::simpleObj> SObj;
 
   void initSim();
 

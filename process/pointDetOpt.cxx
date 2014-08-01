@@ -30,8 +30,8 @@
 #include <map> 
 #include <string>
 #include <algorithm>
+#include <memory>
 #include <boost/bind.hpp>
-#include <boost/shared_ptr.hpp>
 #include <boost/array.hpp>
 
 #include "Exception.h"

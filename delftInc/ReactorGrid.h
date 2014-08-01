@@ -47,7 +47,7 @@ class ReactorGrid : public attachSystem::FixedComp,
  private:
   
   /// reactor element storeage type
-  typedef boost::shared_ptr<RElement> RTYPE;
+  typedef std::shared_ptr<RElement> RTYPE;
 
   const int gridIndex;          ///< Index of surface offset
   int cellIndex;                ///< Cell index

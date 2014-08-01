@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   chipInc/Hutch.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,14 +67,14 @@ void createWallsChipIR(Simulation&,const shutterSystem::GeneralShutter&);
   int cellIndex;                ///< Index of cells
   int populated;                ///< populated or not
 
-  boost::shared_ptr<PreCollimator> PreColObj;      ///< PreCollimator
-  boost::shared_ptr<Collimator> ColObjV;           ///< Vertial collimator
-  boost::shared_ptr<Collimator> ColObjH;           ///< Horrizontal collimator
-  boost::shared_ptr<ColBox> ColB;                  ///< Collimator box
-  boost::shared_ptr<InnerWall> Trimmer;            ///< Inner Trimmer
-  boost::shared_ptr<Table> FTable;                 ///< Front table
-  boost::shared_ptr<Table> BTable;                 ///< Back table
-  boost::shared_ptr<BeamStop> BStop;               ///< BeamStop object
+  std::shared_ptr<PreCollimator> PreColObj;      ///< PreCollimator
+  std::shared_ptr<Collimator> ColObjV;           ///< Vertial collimator
+  std::shared_ptr<Collimator> ColObjH;           ///< Horrizontal collimator
+  std::shared_ptr<ColBox> ColB;                  ///< Collimator box
+  std::shared_ptr<InnerWall> Trimmer;            ///< Inner Trimmer
+  std::shared_ptr<Table> FTable;                 ///< Front table
+  std::shared_ptr<Table> BTable;                 ///< Back table
+  std::shared_ptr<BeamStop> BStop;               ///< BeamStop object
   std::vector<ChipSample> SampleItems;    ///< BeamStop objects
 
   Geometry::Vec3D BeamCentPoint;  ///< Centre point for origin

@@ -31,7 +31,7 @@
 #include <map>
 #include <string>
 #include <algorithm>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/bind.hpp>
 
 #include "Exception.h"
@@ -255,6 +255,10 @@ tubeUnit::getMapIndex(const size_t I)
       return 100;
     case 3:               // right
       return 1;
+    case 4:               // right
+      return 200;
+    case 5:               // right
+      return 300;
     }
   ELog::RegMethod RegA("tubeUnit","getMapIndex");
   throw ColErr::InContainerError<size_t>(I,"I");
@@ -263,7 +267,7 @@ tubeUnit::getMapIndex(const size_t I)
 	
 bool
 tubeUnit::midPlane(const size_t index,Geometry::Vec3D& Pt,
-		      Geometry::Vec3D& Axis) const
+		   Geometry::Vec3D& Axis) const
   /*!
     Create the mid point between each of the objects
     \param index :: Index of point
@@ -272,10 +276,11 @@ tubeUnit::midPlane(const size_t index,Geometry::Vec3D& Pt,
     \return 1 if valid / 0 if no link
   */
 {
-  ELog::RegMethod RegA("tubeUnit","getMidPoint");
+  ELog::RegMethod RegA("tubeUnit","midPlane");
+
   const int mapIndex=getMapIndex(index);
   MTYPE::const_iterator mc=linkPts.find(mapIndex);
-  if (mc==linkPts.end())  return 0;
+  if (mc==linkPts.end()) return 0;
   
   const tubeUnit* A=mc->second;
   Pt=(A->Centre+Centre)/2.0;
@@ -339,7 +344,6 @@ tubeUnit::getCell(const ModelSupport::surfRegister& SMap,
 
   if (cylIndex>cylSurf.size())
     return "";
-  
   std::ostringstream cx;
   cx<<" ";
   // Outer cell is bound by planes:

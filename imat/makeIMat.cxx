@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   imat/makeIMat.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,9 +32,10 @@
 #include <string>
 #include <algorithm>
 #include <iterator>
+#include <memory>
 #include <boost/array.hpp>
 #include <boost/format.hpp>
-#include <boost/shared_ptr.hpp>
+
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -48,9 +49,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "inputParam.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -62,8 +60,6 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "insertInfo.h"
 #include "insertBaseInfo.h"
 #include "InsertComp.h"

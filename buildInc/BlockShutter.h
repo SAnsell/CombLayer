@@ -51,7 +51,7 @@ class BlockShutter : public GeneralShutter
  private:
 
   /// Storage for iBlock
-  typedef boost::shared_ptr<collInsertBase> zbTYPE;
+  typedef std::shared_ptr<collInsertBase> zbTYPE;
 
   const int b4cMat;                  ///< Search material for B4C
 

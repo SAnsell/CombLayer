@@ -66,12 +66,14 @@
 #include "Line.h"
 #include "SurInter.h"
 #include "neutron.h"
+#include "Rules.h"
+#include "HeadRule.h"
 #include "LineIntersectVisit.h"
 
 namespace MonteCarlo
 {
 
-std::ostream&
+std::ostream& 
 operator<<(std::ostream& OX,const LineIntersectVisit& A)
   /*!
     Write to a strandard stream
@@ -343,6 +345,38 @@ LineIntersectVisit::getPoint(const Geometry::Surface* SPtr,
   if (PtOut.empty())
     throw ColErr::EmptyValue<void>("LineIntersecVisit::getPoint<"+
 				   SPtr->className()+">(near)");
+  return SurInter::nearPoint(PtOut,nearPt);
+}
+
+Geometry::Vec3D
+LineIntersectVisit::getPoint(const std::string& RuleStr,
+			     const Geometry::Vec3D& nearPt) 
+  /*!
+    Calculate the point at the closest point along the line
+    to the surface SPtr
+    \param SPtr :: surface to intersect
+    \return Points
+  */
+{
+  ELog::RegMethod RegA("LineIntersect","getPoint(String,Near)");
+
+  clearTrack();
+  HeadRule HRule;
+  if (!HRule.procString(RuleStr))
+    ELog::EM<<"Invalid String "<<RuleStr<<ELog::endErr;
+  HRule.populateSurf();
+  const bool cFlag=HRule.isValid(ATrack.getOrigin());
+  const std::vector<const Geometry::Surface*> SVec=
+    HRule.getSurfaces();
+
+  // Check all surfaces
+  for(const Geometry::Surface* SPtr : SVec)
+    SPtr->acceptVisitor(*this);
+  // remove if bit
+  //  remove_if(
+
+  if (PtOut.empty())
+    throw ColErr::EmptyValue<void>("Intersect with "+RuleStr);
   return SurInter::nearPoint(PtOut,nearPt);
 }
 

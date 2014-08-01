@@ -31,7 +31,7 @@
 #include <map>
 #include <string>
 #include <algorithm>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/array.hpp>
 
 #include "Exception.h"
@@ -239,19 +239,15 @@ SupplyPipe::insertInlet(const attachSystem::FixedComp& FC,
   if (PtZ!=Pt)
     Coaxial.addPoint(Pt);
   
-  const size_t NL(LC->getNLayers());
+  const size_t NL(LC->getNLayers(lSideIndex));
   // First find start point in layer set: [avoid inner layer]
   size_t index;
-  for(index=LC->getNInnerLayers();index<NL;index++)
-    {
-      //      PtZ=LC->getSurfacePoint(index,lSideIndex);
-
-    }
   Coaxial.addSurfPoint
     (PtZ,LC->getLayerString(0,lSideIndex),commonStr);
   if (layerSeq.empty())
     {
-      for(size_t index=LC->getNInnerLayers()+wallOffset;index<NL;index+=2)
+      for(size_t index=LC->getNInnerLayers(lSideIndex)+
+	    wallOffset;index<NL;index+=2)
 	layerSeq.push_back(index);
     }
 
@@ -283,7 +279,7 @@ SupplyPipe::addExtraLayer(const attachSystem::LayerComp& LC,
   ELog::RegMethod RegA("SupplyPipe","addExtraLayer");
   
   const int commonSurf=LC.getCommonSurf(lSideIndex);
-  const size_t NL(LC.getNLayers());
+  const size_t NL(LC.getNLayers(lSideIndex));
 
   const std::string commonStr=(commonSurf) ? 		       
     StrFunc::makeString(commonSurf) : "";

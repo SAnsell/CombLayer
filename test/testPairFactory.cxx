@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   test/testPairFactory.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@
 #include <stack>
 #include <string>
 #include <algorithm>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/tuple/tuple.hpp>
 
 #include "Exception.h"
@@ -45,51 +45,17 @@
 #include "BaseModVisit.h"
 #include "mathSupport.h"
 #include "support.h"
-#include "version.h"
-#include "MapSupport.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
-#include "Triple.h"
-#include "NList.h"
-#include "NRange.h"
-#include "Tally.h"
-#include "cellFluxTally.h"
-#include "pointTally.h"
-#include "heatTally.h"
-#include "tallyFactory.h"
-#include "Transform.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "surfaceFactory.h"
 #include "Rules.h"
-#include "varList.h"
-#include "Code.h"
-#include "FItem.h"
-#include "FuncDataBase.h"
-#include "SurInter.h"
-#include "BnId.h"
-#include "Acomp.h"
-#include "Algebra.h"
 #include "HeadRule.h"
-#include "Object.h"
-#include "Qhull.h"
-#include "RemoveCell.h"
-#include "WForm.h"
-#include "weightManager.h"
-#include "ObjSurfMap.h"
-#include "ObjTrackItem.h"
-#include "SrcData.h"
-#include "SrcItem.h"
-#include "Source.h"
-#include "ReadFunctions.h"
-#include "surfRegister.h"
-#include "ModelSupport.h"
 #include "pairBase.h"
 #include "pairItem.h"
 #include "pairFactory.h"
@@ -224,8 +190,8 @@ testPairFactory::testConstructPair()
       const Geometry::Surface* SA=SurI.getSurf(surfA);
       const Geometry::Surface* SB=SurI.getSurf(surfB);
 
-      boost::shared_ptr<pairBase> pBase=
-	boost::shared_ptr<pairBase>(pairFactory::createPair(SA,SB));
+      std::shared_ptr<pairBase> pBase=
+	std::shared_ptr<pairBase>(pairFactory::createPair(SA,SB));
 
       const std::string typeName=(pBase) ? pBase->typeINFO() : "No Pointer";
       if (typeName!=tc->get<2>())

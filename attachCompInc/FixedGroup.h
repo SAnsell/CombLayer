@@ -37,7 +37,7 @@ class FixedGroup : public FixedComp
  private:
 
   /// Fixed Storage
-  typedef boost::shared_ptr<attachSystem::FixedComp> CompTYPE;
+  typedef std::shared_ptr<attachSystem::FixedComp> CompTYPE;
   /// Map storage
   typedef std::map<std::string,CompTYPE > FTYPE;
   /// Named Container

@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   xml/XMLvector.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,8 +26,6 @@
 #include <map>
 #include <string>
 #include <sstream>
-//#include <boost/shared_ptr.hpp>
-// #include <boost/traittypes.hpp>
 
 #include "Exception.h"
 #include "support.h"

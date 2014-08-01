@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   test/testBoost.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@
 #include <vector>
 #include <algorithm>
 #include <functional>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -456,7 +456,7 @@ testBoost::testSharePtr()
 {
   ELog::RegMethod RegA("testBoost","testSharPtr");
 
-  typedef boost::shared_ptr<Report> RPtr;
+  typedef std::shared_ptr<Report> RPtr;
   std::vector<RPtr> vec;
   for(int i=0;i<10;i++)
     vec.push_back(RPtr(new Report(i)));
@@ -488,7 +488,7 @@ testBoost::testSharePtrMap()
 {
   ELog::RegMethod RegA("testBoost","testSharePtrMap");
 
-  typedef boost::shared_ptr<Report> RPtr;
+  typedef std::shared_ptr<Report> RPtr;
   typedef std::map<std::string,RPtr> tmapTYPE;
   tmapTYPE TMap;
   tmapTYPE CMap;
@@ -501,8 +501,8 @@ testBoost::testSharePtrMap()
 
   CMap=TMap;
   TMap["C"]=RPtr(new ReportRef(21.0,21));
-  const double TD = boost::static_pointer_cast<ReportRef>(TMap["C"])->getParam();
-  const double CD = boost::static_pointer_cast<ReportRef>(CMap["C"])->getParam();
+  const double TD = std::static_pointer_cast<ReportRef>(TMap["C"])->getParam();
+  const double CD = std::static_pointer_cast<ReportRef>(CMap["C"])->getParam();
   if (TMap["C"]->getNum()!=21 || CMap["C"]->getNum()!=3 ||
       fabs(TD-21.0)>1e-4 || 
       fabs(CD-13.3)>1e-4)

@@ -31,10 +31,10 @@
 #include <map>
 #include <string>
 #include <algorithm>
+#include <memory>
 #include <boost/format.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <boost/array.hpp>
-#include <boost/shared_ptr.hpp>
 #include <boost/multi_array.hpp>
 
 #include "Exception.h"
@@ -123,19 +123,19 @@
 #include "testFace.h"
 #include "testFunc.h"
 #include "testFunction.h"
+#include "testHeadRule.h"
 #include "testInputParam.h"
-#include "testMaterial.h"
-#include "testMatrix.h"
-#include "testMergeRule.h"
 #include "testInsertComp.h"
 #include "testLine.h"
 #include "testLineTrack.h"
 #include "testLog.h"
 #include "testMapSupport.h"
 #include "testMasterRotate.h"
+#include "testMaterial.h"
 #include "testMathSupport.h"
 #include "testMatrix.h"
 #include "testMD5.h"
+#include "testMergeRule.h"
 #include "testMersenne.h"
 #include "testNeutron.h"
 #include "testNList.h"
@@ -398,6 +398,7 @@ globalTest(const int type,const int extra)
     {
       "testBnId",
       "testBoost",
+      "testHeadRule",
       "testInsertComp",
       "testMapSupport",
       "testMersenne",
@@ -409,7 +410,7 @@ globalTest(const int type,const int extra)
       "testSource",
       "testTally"
     };
-  const int TSize(12);
+  const int TSize(13);
 
   if (type==0)
     {
@@ -434,6 +435,12 @@ globalTest(const int type,const int extra)
       if (index==cnt)
 	{
 	  testBoost A;
+	  X=A.applyTest(extra);
+	}
+      cnt++;
+      if (index==cnt)
+	{
+	  testHeadRule A;
 	  X=A.applyTest(extra);
 	}
       cnt++;

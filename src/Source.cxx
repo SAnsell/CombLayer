@@ -29,11 +29,9 @@
 #include <vector>
 #include <set>
 #include <map>
+#include <memory>
 #include <algorithm>
 #include <functional>
-#include <numeric>
-#include <boost/shared_ptr.hpp>
-#include <boost/bind.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -257,7 +255,7 @@ Source::write(std::ostream& OX) const
       StrFunc::writeMCNPX(out,OX);
       
       for_each(DVec.begin(),DVec.end(),
-	       boost::bind(&SrcData::write,_1,boost::ref(OX)));
+	       std::bind(&SrcData::write,std::placeholders::_1,std::ref(OX)));
     }
   return;
 }
@@ -286,10 +284,11 @@ Source::cutEnergy(const double Ecut)
   if (mc!=sdMap.end())
     {
       const int dtype=mc->second->getDataType();
+      // dvecTYPE ==> shared_ptr<SrcData>
       dvecTYPE::iterator vc=
 	find_if(DVec.begin(),DVec.end(),
-		boost::bind(std::equal_to<int>(),
-			    boost::bind(&SrcData::getIndex,_1),dtype)); 
+		[dtype](dvecTYPE::value_type& SD) -> bool 
+		{ return (static_cast<int>(SD->getIndex())==dtype);  } );
       if (vc!=DVec.end())
 	vc->get()->cutValue(Ecut);
     }

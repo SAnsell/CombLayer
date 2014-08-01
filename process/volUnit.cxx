@@ -30,7 +30,7 @@
 #include <map>
 #include <set>
 #include <vector>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/format.hpp>
 #include <boost/multi_array.hpp>
 

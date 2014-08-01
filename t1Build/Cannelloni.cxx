@@ -31,8 +31,9 @@
 #include <map>
 #include <string>
 #include <algorithm>
+#include <memory>
 #include <boost/array.hpp>
-#include <boost/shared_ptr.hpp>
+
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -428,6 +429,22 @@ Cannelloni::createInnerObjects(Simulation& System)
   return;
 }
 
+void
+Cannelloni::clearHVec()
+  /*!
+    Clear the HVector
+   */
+{
+  ELog::RegMethod RegA("Cannelloni","clearHVec");
+
+  for(MTYPE::value_type& mv : HVec)
+    delete mv.second;
+  
+  HVec.clear();
+  return;
+}
+
+
 void 
 Cannelloni::createCentres(const Geometry::Plane* PX)
   /*!
@@ -440,7 +457,7 @@ Cannelloni::createCentres(const Geometry::Plane* PX)
   int acceptFlag(1);
   int step(0);
 
-  HVec.clear();
+  clearHVec();
 
   while(acceptFlag)
     {
@@ -486,6 +503,7 @@ Cannelloni::createInnerCells(Simulation& System)
   createCentres(PPtr);
   createLinkSurf();
   createInnerObjects(System);
+
   return;
 }
 
@@ -504,7 +522,7 @@ Cannelloni::createBeamWindow(Simulation& System)
       
       if (!BWPtr)
 	{
-	  BWPtr=boost::shared_ptr<ts1System::BeamWindow>
+	  BWPtr=std::shared_ptr<ts1System::BeamWindow>
 	  (new ts1System::BeamWindow("BWindow"));
 	  OR.addObject(BWPtr);
 	}      

@@ -31,9 +31,9 @@
 #include <map>
 #include <string>
 #include <algorithm>
+#include <memory>
 #include <boost/bind.hpp>
 #include <boost/array.hpp>
-#include <boost/shared_ptr.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -47,7 +47,6 @@
 #include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
-#include "Tensor.h"
 #include "Vec3D.h"
 #include "localRotate.h"
 #include "masterRotate.h"
@@ -92,10 +91,10 @@ namespace shutterSystem
 {
 
 Torpedo::Torpedo(const size_t ID,const std::string& Key) : 
-  FixedComp(Key,6),shutterNumber(ID),
-  surfIndex(ModelSupport::objectRegister::Instance().
-	    cell(Key+StrFunc::makeString(ID))),
-  cellIndex(surfIndex+1),populated(0)
+  FixedComp(Key+StrFunc::makeString(ID),6),
+  baseName(Key),shutterNumber(ID),
+  surfIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
+  cellIndex(surfIndex+1)
   /*!\
     Constructor BUT ALL variable are left unpopulated.
     \param ID :: Shutter number
@@ -105,9 +104,9 @@ Torpedo::Torpedo(const size_t ID,const std::string& Key) :
 
 Torpedo::Torpedo(const Torpedo& A) : 
   attachSystem::FixedComp(A),attachSystem::InsertComp(A),
-  shutterNumber(A.shutterNumber),surfIndex(A.surfIndex),
-  cellIndex(A.cellIndex),vBox(A.vBox),
-  populated(A.populated),voidXoffset(A.voidXoffset),
+  baseName(A.baseName),shutterNumber(A.shutterNumber),
+  surfIndex(A.surfIndex),cellIndex(A.cellIndex),vBox(A.vBox),
+  voidXoffset(A.voidXoffset),
   xyAngle(A.xyAngle),innerRadius(A.innerRadius),zOffset(A.zOffset),
   Height(A.Height),Width(A.Width),innerSurf(A.innerSurf),
   voidCell(A.voidCell)
@@ -131,7 +130,6 @@ Torpedo::operator=(const Torpedo& A)
       attachSystem::InsertComp::operator=(A);
       cellIndex=A.cellIndex;
       vBox=A.vBox;
-      populated=A.populated;
       voidXoffset=A.voidXoffset;
       xyAngle=A.xyAngle;
       innerRadius=A.innerRadius;
@@ -151,7 +149,7 @@ Torpedo::~Torpedo()
 {}
 				
 void
-Torpedo::populate(const Simulation& System,
+Torpedo::populate(const FuncDataBase& Control,
 		     const shutterSystem::GeneralShutter& GS)
   /*!
     Populate all the variables
@@ -160,7 +158,7 @@ Torpedo::populate(const Simulation& System,
   */
 {
   ELog::RegMethod RegA("Torpedo","populate");
-  const FuncDataBase& Control=System.getDataBase();
+
 
   // Global from shutter size:
 
@@ -168,14 +166,10 @@ Torpedo::populate(const Simulation& System,
   innerRadius=Control.EvalVar<double>("bulkShutterRadius");
   xyAngle=GS.getAngle();
   
-  zOffset=SimProcess::getIndexVar<double>
-    (Control,keyName,"ZOffset",shutterNumber+1);
-  Width=SimProcess::getIndexVar<double>
-    (Control,keyName,"Width",shutterNumber+1);
-  Height=SimProcess::getIndexVar<double>
-    (Control,keyName,"Height",shutterNumber+1);
+  zOffset=Control.EvalPair<double>(keyName,baseName,"ZOffset");
+  Width=Control.EvalPair<double>(keyName,baseName,"Width");
+  Height=Control.EvalPair<double>(keyName,baseName,"Width");
   
-  populated|=1;
   return;
 }
 
@@ -217,7 +211,8 @@ Torpedo::calcVoidIntercept(const attachSystem::ContainedComp& CC)
       const double xScale( (i / 2) ? -Width/2.0 : Width/2.0);
       // Advance origin from voidVessel middle to end point
       // and then look back
-      const Geometry::Vec3D OP=Origin+Y*1000.0+Z*zScale+X*xScale;
+      const Geometry::Vec3D OP=Origin+Y*1000.0+Z*(zScale+zOffset)+
+	X*xScale;
       const Geometry::Line LA(OP,-Y);
       const int surfN=CC.surfOuterIntersect(LA);
       if (surfN)
@@ -351,36 +346,19 @@ Torpedo::createLinks()
   FixedComp::setLinkSurf(4,SMap.realSurf(surfIndex+5));
   FixedComp::setLinkSurf(5,-SMap.realSurf(surfIndex+6));
 
-  // set Links [WRONG Zero POINT ]:
-  FixedComp::setConnect(0,Origin,Y);
-  FixedComp::setConnect(1,Origin+Y*innerRadius+Z*zOffset,-Y); 
+  // set Links
+  // First point is center line intersect
+  const Geometry::Vec3D OP=Origin+Y*innerRadius+Z*zOffset;
+  MonteCarlo::LineIntersectVisit LI(OP,Y);
+  
+  //  ELog::EM<<"Inner Surf "<<getInnerSurf()<<ELog::endDiag;
+  //  ELog::EM<<"INNER POINT == "<<to<<LI.getPoint(getInnerSurf(),OP)<<ELog::endDiag;
+  FixedComp::setConnect(0,LI.getPoint(getInnerSurf(),OP),-Y);
+  FixedComp::setConnect(1,LI.getPoint(SMap.realSurfPtr(surfIndex+7),OP),Y);
   FixedComp::setConnect(2,Origin-X*(Width/2.0),-X);
   FixedComp::setConnect(3,Origin+X*(Width/2.0),X);
   FixedComp::setConnect(4,Origin+Z*(zOffset-Height/2.0),-Z);
   FixedComp::setConnect(5,Origin+Z*(zOffset+Height/2.0),Z);
-  return;
-}
-
-void
-Torpedo::createAll(Simulation& System,
-		   const shutterSystem::GeneralShutter& GS,
-		   const attachSystem::ContainedComp& CC)
-  /*!
-    Create the shutter
-    \param System :: Simulation to process
-    \param GS :: GeneralShutter to use
-    \param CC :: Void Vessel containment
-   */
-{
-  ELog::RegMethod RegA("Torpedo","createAll");
-
-  populate(System,GS);
-  createUnitVector(GS);
-  createSurfaces();
-  calcVoidIntercept(CC);
-  createObjects(System);
-  calcConvex(System);
-  createLinks();
   return;
 }
 
@@ -436,6 +414,32 @@ Torpedo::findPlane(const Geometry::Face& FC) const
     }
   return 0;
 }
+
+
+
+void
+Torpedo::createAll(Simulation& System,
+		   const shutterSystem::GeneralShutter& GS,
+		   const attachSystem::ContainedComp& CC)
+  /*!
+    Create the shutter
+    \param System :: Simulation to process
+    \param GS :: GeneralShutter to use
+    \param CC :: Void Vessel containment
+   */
+{
+  ELog::RegMethod RegA("Torpedo","createAll");
+
+  populate(System.getDataBase(),GS);
+  createUnitVector(GS);
+  createSurfaces();
+  calcVoidIntercept(CC);
+  createObjects(System);
+  calcConvex(System);
+  createLinks();
+  return;
+}
+
 
 }  // NAMESPACE shutterSystem
 

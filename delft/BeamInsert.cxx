@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   delft/BeamInsert.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@
 #include <string>
 #include <algorithm>
 #include <numeric>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/array.hpp>
 
 #include "Exception.h"
@@ -167,7 +167,7 @@ BeamInsert::populate(const Simulation& System)
   const std::string BIStr(keyName.substr(0,pos));
   for(size_t i=0;i<nSlots;i++)
     {
-      Holes.push_back(boost::shared_ptr<beamSlot>
+      Holes.push_back(std::shared_ptr<beamSlot>
 		      (new beamSlot(BIStr+"Slot",static_cast<int>(i+1))));
       OR.addObject(StrFunc::makeString(BIStr+"Slot",i+1),Holes.back());
 

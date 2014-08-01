@@ -41,7 +41,7 @@ class CH4PreMod : public CH4PreModBase
   
   double sideThick;             ///< Side of water thickness
   double topThick;              ///< Total height
-  double baseThick;             ///< Total height
+  double baseThick;             ///< top extra
   double frontExt;              ///< +ve beyond moderator
   double backExt;               ///< +ve beyond moderator
   
@@ -54,9 +54,9 @@ class CH4PreMod : public CH4PreModBase
   int modMat;               ///< Moderator material
   int alMat;                ///< Al material
 
-  /// Points to connect to
+  /// Points to connect to [inner]
   std::vector<Geometry::Vec3D> sidePts;
-  /// Axis of connection
+  /// Axis of connection [inner=>outer]
   std::vector<Geometry::Vec3D> sideAxis;
   
   void getConnectPoints(const attachSystem::FixedComp&,
@@ -76,6 +76,14 @@ class CH4PreMod : public CH4PreModBase
   CH4PreMod& operator=(const CH4PreMod&);
   virtual ~CH4PreMod();
   virtual CH4PreMod* clone() const;
+
+  virtual size_t getNLayers(const size_t) const;
+  virtual Geometry::Vec3D 
+    getSurfacePoint(const size_t,const size_t) const;
+  virtual int 
+    getLayerSurf(const size_t,const size_t) const;
+  virtual std::string 
+    getLayerString(const size_t,const size_t) const;
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const size_t,const size_t);

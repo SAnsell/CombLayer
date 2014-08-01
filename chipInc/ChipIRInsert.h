@@ -72,9 +72,9 @@ class ChipIRInsert : public BulkInsert
   int chipInnerVoid;              ///< Inner void cell 
   int chipOuterVoid;              ///< Outer void cell 
 
-  boost::shared_ptr<CylinderColl> CCol;     ///< Cylinder interlayer
-  boost::shared_ptr<LeadPlate> PbA;     ///< Lead Plate 1
-  boost::shared_ptr<LeadPlate> PbB;     ///< Lead Plate 2
+  std::shared_ptr<CylinderColl> CCol;     ///< Cylinder interlayer
+  std::shared_ptr<LeadPlate> PbA;     ///< Lead Plate 1
+  std::shared_ptr<LeadPlate> PbB;     ///< Lead Plate 2
 
   size_t nLayers;           ///< Number of layers
   std::vector<double> cFrac;      ///< Plate Layer thicknesss (fractions)

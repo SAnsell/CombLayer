@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   epbBuildInc/makeEPB.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,8 +46,8 @@ class makeSNS
 {
  private:
   
-  boost::shared_ptr<targetOuter> tarOuterObj;  ///< Front target section
-  boost::shared_ptr<RefPlug> refObj;           ///< Reflector 
+  std::shared_ptr<targetOuter> tarOuterObj;  ///< Front target section
+  std::shared_ptr<RefPlug> refObj;           ///< Reflector 
 
  public:
   

@@ -32,8 +32,9 @@
 #include <string>
 #include <sstream>
 #include <algorithm>
+#include <memory>
+
 #include <boost/tuple/tuple.hpp>
-#include <boost/shared_ptr.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -156,7 +157,7 @@ testObjectRegister::testGetObject()
     ModelSupport::objectRegister::Instance();
   OR.reset();
 
-  boost::shared_ptr<attachSystem::FixedComp> 
+  std::shared_ptr<attachSystem::FixedComp> 
     A(new attachSystem::FixedComp("A",3));
   OR.cell("A");
   OR.addObject(A);

@@ -32,9 +32,8 @@
 #include <string>
 #include <algorithm>
 #include <iterator>
+#include <memory>
 #include <boost/array.hpp>
-#include <boost/shared_ptr.hpp>
-#include <boost/bind.hpp>
 #include <boost/format.hpp>
 
 #include "Exception.h"
@@ -160,8 +159,8 @@ pointConstruct::processPoint(Simulation& System,
       if (!flag || revStr!="r")
 	PPoint=MR.reverseRotate(PPoint);
       processPointFree(System,PPoint,EmptyVec);
-      return;
     }
+
   if (PType=="freeWindow")
     {
       size_t windowIndex(6);
@@ -184,15 +183,14 @@ pointConstruct::processPoint(Simulation& System,
 	PPoint=MR.reverseRotate(PPoint);
       
       processPointFree(System,PPoint,WindowPts);
-      return;
     }
+
   if (PType=="window")
     {
       const std::string place=
 	inputItem<std::string>(IParam,Index,2,"position not given");
       const std::string snd=
 	inputItem<std::string>(IParam,Index,3,"front/back/side not give");
-
       const double D=
 	inputItem<double>(IParam,Index,4,"Distance not given");
 
@@ -203,8 +201,6 @@ pointConstruct::processPoint(Simulation& System,
       checkItem<double>(IParam,Index,6,windowOffset);
       const int linkNumber=getLinkIndex(snd);
       processPointWindow(System,place,linkNumber,D,timeStep,windowOffset);
-
-      return;
     }
 
   if (PType=="object")
@@ -217,9 +213,9 @@ pointConstruct::processPoint(Simulation& System,
 	inputItem<double>(IParam,Index,4,"Distance not given");
       const int linkNumber=getLinkIndex(snd);
       processPointFree(System,place,linkNumber,D);
-
-      return;
     }
+  
+  
 
   return;
 }
@@ -282,8 +278,9 @@ pointConstruct::processPointWindow(Simulation& System,
   std::vector<Geometry::Vec3D> Window=
     calcWindowIntercept(masterPlane,Planes,orgPoint);
 
-  std::transform(Window.begin(),Window.end(),Window.begin(),
-        boost::bind(std::minus<Geometry::Vec3D>(),_1,BAxis*windowOffset));
+  std::for_each(begin(Window),end(Window),
+		[&,windowOffset,BAxis](Geometry::Vec3D& WVec)
+		{ WVec-=BAxis*windowOffset; });
 
   addF5Tally(System,tNum,TPoint,Window,timeStep);
   return;
@@ -314,7 +311,6 @@ pointConstruct::processPointFree(Simulation& System,
     {
       const attachSystem::FixedComp* TPtr=
 	OR.getObject<attachSystem::FixedComp>(FObject);
-
       if (!TPtr)
 	throw ColErr::InContainerError<std::string>
 	  (FObject,"Fixed Object not found");
@@ -326,6 +322,7 @@ pointConstruct::processPointFree(Simulation& System,
       TPoint=TPtr->getLinkPt(iLP)+TPtr->getLinkAxis(iLP)*OD;
       std::vector<Geometry::Vec3D> EmptyVec;
       addF5Tally(System,tNum,TPoint,EmptyVec);
+      
     }
 
   return;

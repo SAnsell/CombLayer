@@ -32,7 +32,7 @@
 #include <stack>
 #include <string>
 #include <algorithm>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/bind.hpp>
 #include <boost/format.hpp>
 

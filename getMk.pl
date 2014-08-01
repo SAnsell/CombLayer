@@ -12,7 +12,7 @@ my @masterprog=("fullBuild","ess","muBeam","sinbad","t1Real",
 
 my @noncompile=("bilbau","clayer","cuBuild","d4c","detectSim",
 		"epb","ess","fussion","lens",
-                "pressure","reactor","vcn","power");
+                "pressure","vcn","power");
 
 
 ## CXX Directory

@@ -32,7 +32,7 @@
 #include <stack>
 #include <string>
 #include <algorithm>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/tuple/tuple.hpp>
 
 #include "Exception.h"
@@ -45,51 +45,16 @@
 #include "BaseModVisit.h"
 #include "mathSupport.h"
 #include "support.h"
-#include "version.h"
-#include "MapSupport.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
-#include "Triple.h"
-#include "NList.h"
-#include "NRange.h"
-#include "Tally.h"
-#include "cellFluxTally.h"
-#include "pointTally.h"
-#include "heatTally.h"
-#include "tallyFactory.h"
-#include "Transform.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "surfaceFactory.h"
 #include "Rules.h"
-#include "varList.h"
-#include "Code.h"
-#include "FItem.h"
-#include "FuncDataBase.h"
-#include "SurInter.h"
-#include "BnId.h"
-#include "Acomp.h"
-#include "Algebra.h"
-#include "HeadRule.h"
-#include "Object.h"
-#include "Qhull.h"
-#include "RemoveCell.h"
-#include "WForm.h"
-#include "weightManager.h"
-#include "ObjSurfMap.h"
-#include "ObjTrackItem.h"
-#include "SrcData.h"
-#include "SrcItem.h"
-#include "Source.h"
-#include "ReadFunctions.h"
-#include "surfRegister.h"
-#include "ModelSupport.h"
 #include "pairBase.h"
 #include "pairItem.h"
 #include "surfCompare.h"
@@ -235,7 +200,7 @@ testPairItem::testBasicPair()
       const Geometry::Plane* PB=
 	dynamic_cast<Geometry::Plane*>(SurI.getSurf(tc->get<1>()));
 
-      boost::shared_ptr<PTYPE> pBase=boost::shared_ptr<PTYPE>(new PTYPE(PA,PB));
+      std::shared_ptr<PTYPE> pBase=std::shared_ptr<PTYPE>(new PTYPE(PA,PB));
       const int sFound=pBase->createSurface(tc->get<3>(),surfOut);
 
       if (surfOut!=sFound || checkSurfaceEqual(surfOut,tc->get<4>()))

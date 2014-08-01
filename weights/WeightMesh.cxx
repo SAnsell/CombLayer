@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   weights/WeightMesh.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,8 +32,7 @@
 #include <iterator>
 #include <functional>
 #include <algorithm>
-#include <boost/bind.hpp>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/multi_array.hpp>
 
 #include "Exception.h"

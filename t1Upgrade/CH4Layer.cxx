@@ -32,7 +32,7 @@
 #include <string>
 #include <algorithm>
 #include <numeric>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/array.hpp>
 
 #include "Exception.h"
@@ -53,12 +53,8 @@
 #include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "surfEqual.h"
-#include "surfDivide.h"
-#include "surfDIter.h"
 #include "Quadratic.h"
 #include "Plane.h"
-#include "Cylinder.h"
 #include "Line.h"
 #include "Rules.h"
 #include "varList.h"
@@ -377,7 +373,7 @@ CH4Layer::getSurfacePoint(const size_t layerIndex,
     \return Surface point
   */
 {
-  ELog::RegMethod RegA("CylModerator","getSurfacePoint");
+  ELog::RegMethod RegA("CH4Layer","getSurfacePoint");
 
   if (sideIndex>5) 
     throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");

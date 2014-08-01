@@ -31,9 +31,9 @@
 #include <list>
 #include <string>
 #include <algorithm>
+#include <memory>
 #include <boost/array.hpp>
 #include <boost/format.hpp>
-#include <boost/shared_ptr.hpp>
 
 #include "Exception.h"
 #include "MersenneTwister.h"

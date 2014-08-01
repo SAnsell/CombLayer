@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   construct/Window.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@
 #include <string>
 #include <algorithm>
 #include <numeric>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/array.hpp>
 
 #include "Exception.h"
@@ -67,6 +67,7 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "neutron.h"
 #include "Object.h"
 #include "Qhull.h"
 #include "Simulation.h"
@@ -188,8 +189,9 @@ Window::createCentre(Simulation& System)
       return;
     }
   FSurf=IPt.first;
+  const MonteCarlo::neutron N(1,Origin,WAxis);
   fSign=-FSurf->side(Centre);
-  
+   
   Origin=Centre+WAxis*IPt.second;
   Y=WAxis;
   X=Y*Z;
@@ -199,7 +201,10 @@ Window::createCentre(Simulation& System)
   if (!IPt.first)
     {
       ELog::EM<<"Unable to find second intercept track with line:"
-	      <<baseCell<<ELog::endErr;
+	      <<baseCell<<ELog::endDiag;
+      ELog::EM<<"Cell = "<<*QHptr<<ELog::endDiag;
+      ELog::EM<<"B = "<<Origin<<":"<<WAxis<<ELog::endDiag;
+      ELog::EM<<ELog::endErr;
       return;
     }
   BSurf=IPt.first;

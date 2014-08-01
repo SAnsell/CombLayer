@@ -474,6 +474,9 @@ void createTS1Inputs(inputParam& IParam)
   IParam.regDefItem<std::string>("H2ModType","H2ModType",1,"Basic");  
   IParam.setDesc("H2ModType","Name of H2 Moderator");
 
+  IParam.regFlag("BeRods","BeRods");  
+  IParam.setDesc("BeRods","Divide the Be into rods");
+
   IParam.setValue("sdefType",std::string("TS1"));  
   IParam.setValue("targetType",std::string("t1PlateTarget"));  
 

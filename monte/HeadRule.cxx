@@ -479,13 +479,219 @@ HeadRule::removeItems(const int SN)
   return cnt;
 }
 
+const SurfPoint*
+HeadRule::findSurf(const int SN) const
+  /*!
+    Find a surface
+    \param SN :: Surface number
+    \return 0 if no pointer / first point found
+  */
+{
+  ELog::RegMethod RegA("HeadRule","findSurf");
+
+  if (!HeadNode) 
+    return 0;
+
+  std::stack<Rule*> TreeLine;
+  TreeLine.push(HeadNode);
+  while(!TreeLine.empty())
+    {
+      Rule* tmpA=TreeLine.top();
+      TreeLine.pop();
+      if (tmpA)
+	{
+	  Rule* tmpB=tmpA->leaf(0);
+	  Rule* tmpC=tmpA->leaf(1);
+	  if (tmpB || tmpC)
+	    {
+	      if (tmpB)
+		TreeLine.push(tmpB);
+	      if (tmpC)
+		TreeLine.push(tmpC);
+	    }
+	  else
+	    {
+	      const SurfPoint* SurX=dynamic_cast<const SurfPoint*>(tmpA);
+	      if (SurX && SurX->getKeyN()==SN)
+		return SurX;
+	    }
+	}
+    }
+  return 0;
+}
+
+const Rule*
+HeadRule::findNode(const size_t LN,const size_t Index) const
+  /*!
+    Return a head rule based on level and Index
+    \param LN :: Level Number
+    \param Index :: Index Number [1-> NL]
+    \return HeaRule item [this/pointer?]
+  */
+{
+  ELog::RegMethod RegA("HeadRule","findNode");
+
+  if (!HeadNode) 
+    return 0;
+  // SPECIAL CASE : 0 - 0
+  if (!LN && !Index)
+    return HeadNode;
+
+  size_t nLevel(0);
+  std::stack<Rule*> TreeLine;
+  std::stack<size_t> TreeLevel;
+  TreeLine.push(HeadNode);
+  TreeLevel.push(0);
+  while(!TreeLine.empty())
+    {
+      Rule* tmpA=TreeLine.top();
+      size_t activeLevel=TreeLevel.top();
+      TreeLine.pop();
+      TreeLevel.pop();
+      
+      if (tmpA->getParent() && 
+	  tmpA->getParent()->type()!=tmpA->type())
+	{
+	  if (activeLevel==LN)
+	    {
+	      nLevel++;
+	      if (nLevel==Index) 
+		return tmpA;
+	    }
+	  activeLevel++;
+	}
+      
+      Rule* tmpB=tmpA->leaf(0);
+      Rule* tmpC=tmpA->leaf(1);
+      if (tmpB || tmpC)
+	{
+	  if (tmpB)
+	    {
+	      TreeLevel.push(activeLevel);
+	      TreeLine.push(tmpB);
+	    }
+	  if (tmpC)
+	    {
+	      TreeLevel.push(activeLevel);
+	      TreeLine.push(tmpC);
+	    }
+	}
+    }
+  return 0; 
+}
+
+HeadRule
+HeadRule::getComponent(const size_t LN,const size_t Index) const 
+  /*!
+    Return a head rule based on level and Index
+    \param LN :: Level Number
+    \param Index :: Index Number
+    \return HeaRule item [this/pointer?]
+  */
+{
+  ELog::RegMethod RegA("HeadRule","getComponent");
+  HeadRule Out;
+
+  const Rule* tmpA=findNode(LN,Index);
+
+  if (tmpA)
+    Out.addIntersection(tmpA);
+  return Out;
+}
+
+size_t
+HeadRule::countNLevel(const size_t LN) const
+  /*!
+    Determine the number of rules at level LN
+    \param LN :: level to determine
+    \return number at level
+  */
+{
+  ELog::RegMethod RegA("HeadRule","countNLevel");
+
+  if (!HeadNode) 
+    return 0;
+
+  size_t nLevel(0);
+  std::stack<Rule*> TreeLine;
+  std::stack<size_t> TreeLevel;
+  TreeLine.push(HeadNode);
+  TreeLevel.push(0);
+
+  size_t activeLevel(0);
+  int statePoint(HeadNode->type());
+  
+  while(!TreeLine.empty())
+    {
+      Rule* tmpA=TreeLine.top();
+      activeLevel=TreeLevel.top();
+      TreeLine.pop();
+      TreeLevel.pop();
+      
+      if (tmpA->getParent() && 
+	  tmpA->getParent()->type()!=tmpA->type())
+	{
+	  if (activeLevel==LN)
+	    nLevel++;
+	  activeLevel++;
+	}
+      
+      Rule* tmpB=tmpA->leaf(0);
+      Rule* tmpC=tmpA->leaf(1);
+      if (tmpB || tmpC)
+	{
+	  if (tmpB)
+	    {
+	      TreeLevel.push(activeLevel);
+	      TreeLine.push(tmpB);
+	    }
+	  if (tmpC)
+	    {
+	      TreeLevel.push(activeLevel);
+	      TreeLine.push(tmpC);
+	    }
+	}
+    }
+  return nLevel;
+}
+
+int
+HeadRule::level(const int SN) const
+  /*!
+    Given a signed surface SN finds the level [number of union/inter]
+    sections 
+    \param SN :: Signed surface to remove
+    \return -ve on no find / level [0 offset]
+  */
+{
+  ELog::RegMethod RegA("HeadRule","level");
+
+  const Rule* SPtr=findSurf(SN);  // Don't care that it is a surf pointer
+  if (!SPtr) return -1;
+  
+  int level(0);
+  const Rule* Tmp=SPtr->getParent();
+  if (!Tmp) return 0;
+  int statePoint(Tmp->type());
+  do
+    {
+      if (statePoint!=Tmp->type())
+	{
+	  statePoint=Tmp->type();
+	  level++;
+	}
+      Tmp = Tmp->getParent();
+    } while (Tmp);
+  return level;
+}
+
 void
 HeadRule::removeItem(Rule* Target) 
   /*!
     Objective is to remove Target rule -
     the returned rule is either 0 if the structure 
     has been maintained or the new rule if needed
-    \return Replace headRule : 
+    \return Replace headRule 
   */
 {
   ELog::RegMethod RegA("HeadRule","remveIte");

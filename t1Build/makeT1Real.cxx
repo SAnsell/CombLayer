@@ -32,9 +32,10 @@
 #include <string>
 #include <algorithm>
 #include <iterator>
-#include <boost/array.hpp>
+#include <memory>
+
 #include <boost/format.hpp>
-#include <boost/shared_ptr.hpp>
+
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -162,7 +163,7 @@ makeT1Real::makeT1Real() :
 
 makeT1Real::makeT1Real(const makeT1Real& A) : 
   TarObj((A.TarObj) ? 
-	 boost::shared_ptr<constructSystem::TargetBase>
+	 std::shared_ptr<constructSystem::TargetBase>
 	 (A.TarObj->clone()) : A.TarObj),  
   RefObj(new t1Reflector(*A.RefObj)),
   Lh2ModObj(new H2Moderator(*A.Lh2ModObj)),
@@ -296,7 +297,7 @@ makeT1Real::buildTarget(Simulation& System,const std::string& TType,
 
   if (TType=="t1PlateTarget" || TType=="t1Plate")
     {
-      TarObj=boost::shared_ptr<constructSystem::TargetBase>
+      TarObj=std::shared_ptr<constructSystem::TargetBase>
 	(new t1PlateTarget("T1PlateTarget"));
       OR.addObject(TarObj);
       TarObj->addInsertCell(voidCell);
@@ -306,7 +307,7 @@ makeT1Real::buildTarget(Simulation& System,const std::string& TType,
     }
   else if (TType=="t1CylTarget" || TType=="t1Cyl")
     {
-      TarObj=boost::shared_ptr<constructSystem::TargetBase>
+      TarObj=std::shared_ptr<constructSystem::TargetBase>
 	(new TMRSystem::TS2target("t1CylTarget"));
       OR.addObject(TarObj);
       TarObj->setRefPlates(-RefObj->getLinkSurf(4),0);
@@ -315,7 +316,7 @@ makeT1Real::buildTarget(Simulation& System,const std::string& TType,
     }    
   else if (TType=="t1InnerTarget" || TType=="t1Inner")
     {
-      TarObj=boost::shared_ptr<constructSystem::TargetBase>
+      TarObj=std::shared_ptr<constructSystem::TargetBase>
 	(new ts1System::InnerTarget("t1Inner"));
       OR.addObject(TarObj);
       TarObj->setRefPlates(-RefObj->getLinkSurf(4),0);
@@ -324,13 +325,13 @@ makeT1Real::buildTarget(Simulation& System,const std::string& TType,
     }    
   else if (TType=="t1CylFluxTrap" || TType=="t1CylFluxTrapTarget")
     {
-      TarObj=boost::shared_ptr<constructSystem::TargetBase>
+      TarObj=std::shared_ptr<constructSystem::TargetBase>
 	(new TMRSystem::TS2target("t1CylTarget"));
       OR.addObject(TarObj);
       TarObj->setRefPlates(-RefObj->getLinkSurf(4),0);
       TarObj->createAll(System,World::masterOrigin());
 
-      boost::shared_ptr<TMRSystem::TS2ModifyTarget> TarObjModify
+      std::shared_ptr<TMRSystem::TS2ModifyTarget> TarObjModify
 	(new TMRSystem::TS2ModifyTarget("t1CylFluxTrap"));
       TarObjModify->createAll(System,*TarObj);
       OR.addObject(TarObjModify);
@@ -339,7 +340,7 @@ makeT1Real::buildTarget(Simulation& System,const std::string& TType,
     }    
   else if (TType=="t1Side" || TType=="t1SideTarget")
     {
-      TarObj=boost::shared_ptr<constructSystem::TargetBase>
+      TarObj=std::shared_ptr<constructSystem::TargetBase>
 	(new ts1System::SideCoolTarget("t1EllCylTarget"));
       OR.addObject(TarObj);
       TarObj->createAll(System,World::masterOrigin());
@@ -347,7 +348,7 @@ makeT1Real::buildTarget(Simulation& System,const std::string& TType,
     }    
   else if (TType=="t1CannelloniTarget" || TType=="t1Cannelloni")
     {
-      TarObj=boost::shared_ptr<constructSystem::TargetBase>
+      TarObj=std::shared_ptr<constructSystem::TargetBase>
 	(new ts1System::Cannelloni("t1Cannelloni"));
       OR.addObject(TarObj);
       TarObj->setRefPlates(-RefObj->getLinkSurf(4),0);
@@ -356,7 +357,7 @@ makeT1Real::buildTarget(Simulation& System,const std::string& TType,
     }    
   else if (TType=="t1Block" || TType=="t1BlockTarget")
     {
-      TarObj=boost::shared_ptr<constructSystem::TargetBase>
+      TarObj=std::shared_ptr<constructSystem::TargetBase>
 	(new ts1System::OpenBlockTarget("t1BlockTarget"));
       OR.addObject(TarObj);
       RefObj->addToInsertChain(*TarObj);
@@ -444,12 +445,16 @@ makeT1Real::build(Simulation* SimPtr,
   flightLines(SimPtr);
 
   RefObj->createBoxes(*SimPtr,TarExcludeName);
-  
+
   WaterPipeObj->createAll(*SimPtr,*WaterModObj,5,*RefObj,6);
   MPipeObj->createAll(*SimPtr,*MerlinMod,5,*RefObj,6);
   H2PipeObj->createAll(*SimPtr,*Lh2ModObj,4);
   CH4PipeObj->createAll(*SimPtr,*CH4ModObj,4);
+
+  if (IParam.flag("BeRods"))
+    RefObj->createRods(*SimPtr);  
   
+
   return;
 }
 

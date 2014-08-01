@@ -32,9 +32,9 @@
 #include <string>
 #include <algorithm>
 #include <iterator>
+#include <memory>
 #include <boost/array.hpp>
 #include <boost/format.hpp>
-#include <boost/shared_ptr.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -732,24 +732,24 @@ TS2layout(FuncDataBase& Control)
   // TORPEDO
   Control.addVariable("torpedoHeight",18.00);
   Control.addVariable("torpedoWidth",18.00);
-  Control.addVariable("torpedo1ZOffset",11.86);    // ChipIR
-  Control.addVariable("torpedo2ZOffset",11.86);    // W2 : 
-  Control.addVariable("torpedo3ZOffset",11.86);    // W3
-  Control.addVariable("torpedo4ZOffset",11.86);    // W4
-  Control.addVariable("torpedo5ZOffset",-12.90);    // W5 [Hydrogen]
-  Control.addVariable("torpedo6ZOffset",-12.90);    // W6
-  Control.addVariable("torpedo7ZOffset",-12.90);    // W7
-  Control.addVariable("torpedo8ZOffset",-12.90);    // W8
-  Control.addVariable("torpedo9ZOffset",-12.90);    // W9
-  Control.addVariable("torpedo10ZOffset",-9.90);   // E1 Zoom [Groove]
-  Control.addVariable("torpedo11ZOffset",-9.90);   // E2 
-  Control.addVariable("torpedo12ZOffset",-9.90);   // E3
-  Control.addVariable("torpedo13ZOffset",-9.90);   // E4 
-  Control.addVariable("torpedo14ZOffset",-9.90);   // E5
-  Control.addVariable("torpedo15ZOffset",11.86);   // E6  [Optional]
+  Control.addVariable("torpedo0ZOffset",11.86);    // ChipIR
+  Control.addVariable("torpedo1ZOffset",11.86);    // W2 : 
+  Control.addVariable("torpedo2ZOffset",11.86);    // W3
+  Control.addVariable("torpedo3ZOffset",11.86);    // W4
+  Control.addVariable("torpedo4ZOffset",-12.90);    // W5 [Hydrogen]
+  Control.addVariable("torpedo5ZOffset",-12.90);    // W6
+  Control.addVariable("torpedo6ZOffset",-12.90);    // W7
+  Control.addVariable("torpedo7ZOffset",-12.90);    // W8
+  Control.addVariable("torpedo8ZOffset",-12.90);    // W9
+  Control.addVariable("torpedo9ZOffset",-9.90);   // E1 Zoom [Groove]
+  Control.addVariable("torpedo10ZOffset",-9.90);   // E2 
+  Control.addVariable("torpedo11ZOffset",-9.90);   // E3
+  Control.addVariable("torpedo12ZOffset",-9.90);   // E4 
+  Control.addVariable("torpedo13ZOffset",-9.90);   // E5
+  Control.addVariable("torpedo14ZOffset",11.86);   // E6  [Optional]
+  Control.addVariable("torpedo15ZOffset",11.86);
   Control.addVariable("torpedo16ZOffset",11.86);
   Control.addVariable("torpedo17ZOffset",11.86);
-  Control.addVariable("torpedo18ZOffset",11.86);
   
   // BULK VESSEL:
   Control.addVariable("bulkTorpedoRadius",166.0);    // Torpedo level

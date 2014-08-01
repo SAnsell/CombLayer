@@ -32,9 +32,9 @@
 #include <string>
 #include <algorithm>
 #include <iterator>
+#include <memory>
 #include <boost/array.hpp>
 #include <boost/format.hpp>
-#include <boost/shared_ptr.hpp>
 #include <boost/multi_array.hpp>
 
 #include "Exception.h"
@@ -209,9 +209,9 @@ makeDelft::makeDelft(const makeDelft& A) :
     \param A :: makeDelft to copy
   */
 {
-  std::vector<boost::shared_ptr<H2Groove> >::const_iterator vc;
+  std::vector<std::shared_ptr<H2Groove> >::const_iterator vc;
   for(vc=A.ColdGroove.begin();vc!=A.ColdGroove.end();vc++)
-    ColdGroove.push_back(boost::shared_ptr<H2Groove>(new H2Groove(**vc)));
+    ColdGroove.push_back(std::shared_ptr<H2Groove>(new H2Groove(**vc)));
 }
 
 makeDelft&
@@ -234,9 +234,9 @@ makeDelft::operator=(const makeDelft& A)
       *FlightF=*A.FlightF;
       *ColdMod=*A.ColdMod;
       ColdGroove.clear();
-      std::vector<boost::shared_ptr<H2Groove> >::const_iterator vc;
+      std::vector<std::shared_ptr<H2Groove> >::const_iterator vc;
       for(vc=A.ColdGroove.begin();vc!=A.ColdGroove.end();vc++)
-	ColdGroove.push_back(boost::shared_ptr<H2Groove>(new H2Groove(**vc)));
+	ColdGroove.push_back(std::shared_ptr<H2Groove>(new H2Groove(**vc)));
       *CSurround=*A.CSurround;
       *R2Insert=*A.R2Insert;
       *R2Be=*A.R2Be;
@@ -265,7 +265,7 @@ makeDelft::variableObjects(const FuncDataBase& Control)
   for(int i=0;i<NGroove;i++)
     {
       ColdGroove.push_back
-	(boost::shared_ptr<H2Groove>
+	(std::shared_ptr<H2Groove>
 	 (new H2Groove("delftH2Groove",i+1)));
       OR.addObject
 	(StrFunc::makeString(std::string("delftH2Groove"),i+1),
@@ -282,7 +282,7 @@ makeDelft::makeBlocks(Simulation& System)
   */
 {  
   ELog::RegMethod RegA("makeDelft","makeBlock");
-  typedef boost::shared_ptr<SpaceBlock> SPType;
+  typedef std::shared_ptr<SpaceBlock> SPType;
 
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
@@ -319,7 +319,7 @@ makeDelft::makeRabbit(Simulation& System)
 {
   ELog::RegMethod RegA("makeDelft","makeRabbit");
 
-  typedef boost::shared_ptr<Rabbit> RPType;  
+  typedef std::shared_ptr<Rabbit> RPType;  
   
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
@@ -472,7 +472,7 @@ makeDelft::build(Simulation* SimPtr,
       const int MB=ColdMod->getMainBody();
       if (MB)
 	{
-	  std::vector<boost::shared_ptr<H2Groove> >::iterator vc;
+	  std::vector<std::shared_ptr<H2Groove> >::iterator vc;
 	  int gprev(0);
 	  for(vc=ColdGroove.begin();vc!=ColdGroove.end();vc++)
 	    {

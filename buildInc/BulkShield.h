@@ -54,11 +54,11 @@ class BulkShield : public attachSystem::FixedComp,
   const size_t numberBeamLines;      ///< Number of beamlines
 
   /// Data for Torpdeo
-  std::vector<boost::shared_ptr<shutterSystem::Torpedo> > TData;
+  std::vector<std::shared_ptr<shutterSystem::Torpedo> > TData;
   /// Data for shutter
-  std::vector<boost::shared_ptr<shutterSystem::GeneralShutter> > GData;
+  std::vector<std::shared_ptr<shutterSystem::GeneralShutter> > GData;
   /// Data for Inerts
-  std::vector<boost::shared_ptr<shutterSystem::BulkInsert> > BData;
+  std::vector<std::shared_ptr<shutterSystem::BulkInsert> > BData;
 
   double vXoffset;                ///< Offset of the void vessel centre
 

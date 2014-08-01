@@ -30,10 +30,10 @@
 #include <string>
 #include <algorithm>
 #include <functional>
+#include <memory>
 #include <boost/algorithm/string.hpp>
 #include <boost/functional.hpp>
 #include <boost/bind.hpp>
-#include <boost/shared_ptr.hpp>
 #include <boost/array.hpp>
 
 #include "Exception.h"

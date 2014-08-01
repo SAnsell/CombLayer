@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   test/testSurIntersect.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@
 #include <string>
 #include <algorithm>
 #include <iterator>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/tuple/tuple.hpp>
 
 #include "Exception.h"
@@ -47,7 +47,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Transform.h"
 #include "Surface.h"
 #include "Quadratic.h"
 #include "Plane.h"
@@ -416,7 +415,7 @@ testSurIntersect::testCylPlaneIntersect()
   //  ELog::EM<<CX<<ELog::endDiag;
 
   // Void test:
-  boost::shared_ptr<Geometry::Intersect> IPtr(SurInter::calcIntersect(CA,TA));
+  std::shared_ptr<Geometry::Intersect> IPtr(SurInter::calcIntersect(CA,TA));
   if (IPtr)
     {
       ELog::EM<<"Error : Intersect non zero (Void) "<<*IPtr<<ELog::endCrit;
@@ -429,8 +428,8 @@ testSurIntersect::testCylPlaneIntersect()
       ELog::EM<<"Intersect zero [SngLine]"<<*IPtr<<ELog::endCrit;
       return -2;
     }
-  boost::shared_ptr<Geometry::SglLine> SPtr=
-    boost::dynamic_pointer_cast<Geometry::SglLine,Geometry::Intersect>(IPtr);
+  std::shared_ptr<Geometry::SglLine> SPtr=
+    std::dynamic_pointer_cast<Geometry::SglLine,Geometry::Intersect>(IPtr);
   // Care in the test as Z can be anything
   Geometry::Vec3D tPt=SPtr->getPt();
   tPt[2]=0.0;
@@ -450,8 +449,8 @@ testSurIntersect::testCylPlaneIntersect()
       ELog::EM<<"Intersect zero [DblLine]"<<*IPtr<<ELog::endCrit;
       return -3;
     }
-  boost::shared_ptr<Geometry::DblLine> DPtr=
-    boost::dynamic_pointer_cast<Geometry::DblLine,Geometry::Intersect>(IPtr);
+  std::shared_ptr<Geometry::DblLine> DPtr=
+    std::dynamic_pointer_cast<Geometry::DblLine,Geometry::Intersect>(IPtr);
 
   // Test to see if the y value is 3, and the distance from 
   // the centre of the cylinder is R.
@@ -479,8 +478,8 @@ testSurIntersect::testCylPlaneIntersect()
       ELog::EM<<"Intersect zero [Circle]"<<*IPtr<<ELog::endCrit;
       return -4;
     }
-  boost::shared_ptr<Geometry::Circle> CPtr=
-    boost::dynamic_pointer_cast<Geometry::Circle,Geometry::Intersect>(IPtr);
+  std::shared_ptr<Geometry::Circle> CPtr=
+    std::dynamic_pointer_cast<Geometry::Circle,Geometry::Intersect>(IPtr);
   if (!CPtr || 
       CPtr->getNorm()!=Geometry::Vec3D(0,0,1) || 
       fabs(CPtr->getRadius()-r)>Geometry::zeroTol ||
@@ -496,8 +495,8 @@ testSurIntersect::testCylPlaneIntersect()
       ELog::EM<<"Intersect zero [Ellipse]"<<*IPtr<<ELog::endCrit;
       return -5;
     }
-  boost::shared_ptr<Geometry::Ellipse> EPtr=
-    boost::dynamic_pointer_cast<Geometry::Ellipse,Geometry::Intersect>(IPtr);
+  std::shared_ptr<Geometry::Ellipse> EPtr=
+    std::dynamic_pointer_cast<Geometry::Ellipse,Geometry::Intersect>(IPtr);
   if (!EPtr ||
       !CA.onSurface(EPtr->ParamPt(0.822)) ||
       !TE.onSurface(EPtr->ParamPt(0.763)) )

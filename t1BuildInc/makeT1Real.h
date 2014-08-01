@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   t1BuildInc/makeT1Real.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -83,31 +83,32 @@ class makeT1Real
 {
  private:
 
-//  boost::shared_ptr<t1PlateTarget> TarObj;            ///< Pressure vessel
-  boost::shared_ptr<constructSystem::TargetBase> TarObj;  
-  boost::shared_ptr<t1Reflector> RefObj;               ///< Reflector 
-  boost::shared_ptr<H2Moderator> Lh2ModObj;            ///< LH2 Moderator 
-  boost::shared_ptr<CH4Moderator> CH4ModObj;           ///< CH4 liquid
-  boost::shared_ptr<MerlinModerator> MerlinMod;        ///< Merlin
-  boost::shared_ptr<MerlinModerator> WaterModObj;       ///< Water Moderator
-  boost::shared_ptr<WaterPipe> WaterPipeObj;           ///< Water pipe
-  boost::shared_ptr<WaterPipe> MPipeObj;               ///< Merlin pipe
-  boost::shared_ptr<H2Pipe> H2PipeObj;                 ///< H2 pipe
-  boost::shared_ptr<CH4Pipe> CH4PipeObj;                 ///< CH4 pipe    
 
-  boost::shared_ptr<shutterSystem::t1CylVessel> VoidObj;   ///< Void vessel
-  boost::shared_ptr<shutterSystem::t1BulkShield> BulkObj;  ///< Bulk shield
-  boost::shared_ptr<shutterSystem::MonoPlug> MonoTopObj;  ///< Top mono plug
-  boost::shared_ptr<shutterSystem::MonoPlug> MonoBaseObj; ///< Base mono plug
+  /// Target object
+  std::shared_ptr<constructSystem::TargetBase> TarObj;  
+  std::shared_ptr<t1Reflector> RefObj;               ///< Reflector 
+  std::shared_ptr<H2Moderator> Lh2ModObj;            ///< LH2 Moderator 
+  std::shared_ptr<CH4Moderator> CH4ModObj;           ///< CH4 liquid
+  std::shared_ptr<MerlinModerator> MerlinMod;        ///< Merlin
+  std::shared_ptr<MerlinModerator> WaterModObj;       ///< Water Moderator
+  std::shared_ptr<WaterPipe> WaterPipeObj;           ///< Water pipe
+  std::shared_ptr<WaterPipe> MPipeObj;               ///< Merlin pipe
+  std::shared_ptr<H2Pipe> H2PipeObj;                 ///< H2 pipe
+  std::shared_ptr<CH4Pipe> CH4PipeObj;                 ///< CH4 pipe    
+
+  std::shared_ptr<shutterSystem::t1CylVessel> VoidObj;   ///< Void vessel
+  std::shared_ptr<shutterSystem::t1BulkShield> BulkObj;  ///< Bulk shield
+  std::shared_ptr<shutterSystem::MonoPlug> MonoTopObj;  ///< Top mono plug
+  std::shared_ptr<shutterSystem::MonoPlug> MonoBaseObj; ///< Base mono plug
 
   /// Array of flightlines
 
-  boost::shared_ptr<moderatorSystem::FlightLine> H2FL; 
-  boost::shared_ptr<moderatorSystem::FlightLine> CH4NorthFL;
-  boost::shared_ptr<moderatorSystem::FlightLine> CH4SouthFL; 
-  boost::shared_ptr<moderatorSystem::FlightLine> MerlinFL; 
-  boost::shared_ptr<moderatorSystem::FlightLine> WaterNorthFL; 
-  boost::shared_ptr<moderatorSystem::FlightLine> WaterSouthFL; 
+  std::shared_ptr<moderatorSystem::FlightLine> H2FL; 
+  std::shared_ptr<moderatorSystem::FlightLine> CH4NorthFL;
+  std::shared_ptr<moderatorSystem::FlightLine> CH4SouthFL; 
+  std::shared_ptr<moderatorSystem::FlightLine> MerlinFL; 
+  std::shared_ptr<moderatorSystem::FlightLine> WaterNorthFL; 
+  std::shared_ptr<moderatorSystem::FlightLine> WaterSouthFL; 
 
   void flightLines(Simulation*);
 

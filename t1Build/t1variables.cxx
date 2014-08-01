@@ -32,8 +32,8 @@
 #include <string>
 #include <algorithm>
 #include <iterator>
+#include <memory>
 #include <boost/array.hpp>
-#include <boost/shared_ptr.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -206,7 +206,36 @@ TS1real(FuncDataBase& Control)
   Control.addVariable("RBoxLH2VoidLayMat1","Stainless304");
   Control.addVariable("RBoxLH2VoidLayThick2",0.673);
   Control.addVariable("RBoxLH2VoidLayMat2","TS1Boral");
-  Control.addVariable("RBoxLH2VoidDefMat","Void");                                     
+  Control.addVariable("RBoxLH2VoidDefMat","Void");
+  
+  Control.addVariable("RBoxCH4SouthNLayers",2);
+  Control.addVariable("RBoxCH4SouthLayThick1",0.8); 
+  Control.addVariable("RBoxCH4SouthLayMat1","Stainless304");
+  Control.addVariable("RBoxCH4SouthLayThick2",0.673);
+  Control.addVariable("RBoxCH4SouthLayMat2","TS1Boral");  
+  Control.addVariable("RBoxCH4SouthDefMat","InValid");  
+
+  Control.addVariable("RBoxWatNorthNLayers",2);
+  Control.addVariable("RBoxWatNorthLayThick1",0.8); 
+  Control.addVariable("RBoxWatNorthLayMat1","Stainless304");
+  Control.addVariable("RBoxWatNorthLayThick2",0.673);
+  Control.addVariable("RBoxWatNorthLayMat2","TS1Boral");  
+  Control.addVariable("RBoxWatNorthDefMat","InValid");  
+                                
+  Control.addVariable("RBoxWatSouthNLayers",2);
+  Control.addVariable("RBoxWatSouthLayThick1",0.8); 
+  Control.addVariable("RBoxWatSouthLayMat1","Stainless304");
+  Control.addVariable("RBoxWatSouthLayThick2",0.673);
+  Control.addVariable("RBoxWatSouthLayMat2","TS1Boral");  
+  Control.addVariable("RBoxWatSouthDefMat","InValid");  
+
+  Control.addVariable("RBoxCH4NorthNLayers",2);
+  Control.addVariable("RBoxCH4NorthLayThick1",0.8); 
+  Control.addVariable("RBoxCH4NorthLayMat1","Stainless304");
+  Control.addVariable("RBoxCH4NorthLayThick2",0.673);
+  Control.addVariable("RBoxCH4NorthLayMat2","TS1Boral");  
+  Control.addVariable("RBoxCH4NorthDefMat","InValid");  
+
   // LH2 Moderator:
   Control.addVariable("H2ModXStep",0.98);      
 //  Control.addVariable("H2ModYStep",18.37); 
@@ -230,7 +259,8 @@ TS1real(FuncDataBase& Control)
   Control.addVariable("H2ModClearTop",0.05);   // guess
 
   Control.addVariable("H2ModAlMat","Aluminium");        // Al 
-  Control.addVariable("H2ModLh2Mat","ParaH2");      // LH2 
+//  Control.addVariable("H2ModLh2Mat","ParaH2");      // LH2 
+  Control.addVariable("H2ModLh2Mat","ParaOrtho%80");      // LH2 - 80% para / 20% ortho
   Control.addVariable("H2ModVoidMat","Void");      // void 
 
   Control.addVariable("H2ModLh2Temp",20.0);      // LH2 
@@ -367,11 +397,12 @@ TS1real(FuncDataBase& Control)
   Control.addVariable("CH4FlightSWidth",14.3);     // Full width
   
   Control.addVariable("CH4FlightSNLiner",0);           // Number of layers
-  Control.addVariable("CH4FlightSLinerThick1",0.5);    // Thickness
-  Control.addVariable("CH4FlightSLinerThick2",0.12);   // Thickness
-  Control.addVariable("CH4FlightSLinerMat1","Aluminium");        //  Cadmium
-  Control.addVariable("CH4FlightSLinerMat2","Cadmium");        //  Cadmium
-
+  Control.addVariable("CH4FlightSLinerThick1",0.8);    // Thickness
+  Control.addVariable("CH4FlightSLinerThick2",0.673);   // Thickness
+  Control.addVariable("CH4FlightSLinerMat1","Stainless304");        //  
+  Control.addVariable("CH4FlightSLinerMat2","TS1Boral");        //  
+  
+  
   // Flightline #2 CH4 Moderator:
 
   Control.addVariable("CH4FlightNXStep",0.0);      // Step from centre
@@ -507,7 +538,7 @@ TS1real(FuncDataBase& Control)
 
   Control.addVariable("H2PipeAlMat","Aluminium");        
   Control.addVariable("H2PipeSteelMat","Stainless304");                  
-  Control.addVariable("H2PipeH2Mat","ParaH2");     
+  Control.addVariable("H2PipeH2Mat","ParaOrtho%80");     
   Control.addVariable("H2PipeH2Temp",20.0);     
 
   // PIPEWORK Water General
@@ -545,7 +576,7 @@ TS1real(FuncDataBase& Control)
   Control.addVariable("CH4PipeCH4OuterRadius",1.43);       
   Control.addVariable("CH4PipeAlOuterRadius",1.59);   // Outer        
   Control.addVariable("CH4PipeVacRadius",1.865);   // Outer        
-  Control.addVariable("CH4PipeAlTerRadius",2.05);   // Outer        
+  Control.addVariable("CH4PipeAlTerRadius",1.905);   // Outer        
   Control.addVariable("CH4PipeClearRadius",2.38);   // Outer        
 
   Control.addVariable("CH4PipeAlMat","Aluminium");        
@@ -555,11 +586,11 @@ TS1real(FuncDataBase& Control)
   // RODS:
   Control.addVariable("RodsZAngle",0.0);
   Control.addVariable("RodsXYAngle",0.0);
-  Control.addVariable("RodsCentSpace",2.8);
-  Control.addVariable("RodsRadius",1.0);
-  Control.addVariable("RodsLinerThick",0.3);
-  Control.addVariable("RodsDefMat","Void");
-  Control.addVariable("RodsInnerMat","Be300K");
+  Control.addVariable("RodsCentSpace",3.0);
+  Control.addVariable("RodsRadius",1.35);
+  Control.addVariable("RodsLinerThick",0.15);
+  Control.addVariable("RodsOuterMat","D2O%H2O%80.0");
+  Control.addVariable("RodsInnerMat","Nickel");
   Control.addVariable("RodsLinerMat","Stainless304");
 
 

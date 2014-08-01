@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   t1BuildInc/t1PlateTarget.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,9 +45,9 @@ class t1PlateTarget :
  private:
 
   const int tIndex;                                    ///< Base number
-  boost::shared_ptr<PressVessel> PressVObj;            ///< Pressure vessel
-  boost::shared_ptr<PlateTarget> PlateTarObj;          ///< Plate Target
-  boost::shared_ptr<WaterDividers> DivObj;             ///< Internal divider
+  std::shared_ptr<PressVessel> PressVObj;            ///< Pressure vessel
+  std::shared_ptr<PlateTarget> PlateTarObj;          ///< Plate Target
+  std::shared_ptr<WaterDividers> DivObj;             ///< Internal divider
 
   void createBeamWindow(Simulation&);
 

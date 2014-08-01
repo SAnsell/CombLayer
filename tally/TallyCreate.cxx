@@ -33,10 +33,10 @@
 #include <functional>
 #include <numeric>
 #include <iterator>
+#include <memory>
 #include <boost/functional.hpp>
 #include <boost/bind.hpp>
 #include <boost/array.hpp>
-#include <boost/shared_ptr.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -309,7 +309,6 @@ addF5Tally(Simulation& System,const int tNumber,
     TX.setTime("1.0 179log 1e8");
   if (System.isMCNP6())
     TX.setMCNP6(1);
-
   System.addTally(TX);
 
   return;
@@ -567,6 +566,7 @@ addSimpleF5Tally(Simulation& System,const int TNum,
     \param Time :: Time string
   */
 {
+  ELog::RegMethod RegA("TallyCreate[F]","addSimpleF5Tally");
   tallySystem::pointTally TX(TNum);
   TX.setActive(1);
   TX.setCentre(Pt);
@@ -771,7 +771,7 @@ void
 shiftF5Tally(Simulation& System,const int tNumber,
 	     const double scale)
   /*!
-    Shift the tally forward
+    Shift the tally window forward
     \param System :: Simulation to deal with
     \param tNumber :: tally number
     \param scale :: distance to move (-ve to reduce)
@@ -864,7 +864,7 @@ void
 modF5TallyCells(Simulation& System,const int tNumber,
 	   const std::vector<int>& cells)
   /*!
-    Adds Tally cell to a existing tally
+    Sets the cells for a particular F5 tally [using icd]
     \param System :: Simulation item
     \param tNumber :: Tally Number
     \param cells :: List of cells to used

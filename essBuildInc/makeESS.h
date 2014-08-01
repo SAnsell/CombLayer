@@ -75,38 +75,38 @@ class makeESS
 {
  private:
   
-  boost::shared_ptr<WheelBase> Target;   ///< target object
-  boost::shared_ptr<BeRef> Reflector;    ///< reflector object
-  boost::shared_ptr<ProtonTube> PBeam;   ///< Proton Void
-  boost::shared_ptr<BeamMonitor> BMon;   ///< Beam Monitor
+  std::shared_ptr<WheelBase> Target;   ///< target object
+  std::shared_ptr<BeRef> Reflector;    ///< reflector object
+  std::shared_ptr<ProtonTube> PBeam;   ///< Proton Void
+  std::shared_ptr<BeamMonitor> BMon;   ///< Beam Monitor
 
   // ASSEMBLY 1:
   /// Primary Lower Mod
-  boost::shared_ptr<constructSystem::ModBase> LowMod;  
+  std::shared_ptr<constructSystem::ModBase> LowMod;  
   /// Secondary  Lower Mod [if needed]
-  boost::shared_ptr<constructSystem::ModBase> LowModB; 
-  boost::shared_ptr<moderatorSystem::FlightLine> LowAFL;  ///< Lower Mode FL
-  boost::shared_ptr<moderatorSystem::FlightLine> LowBFL;  ///< Lower Mode FL
-  boost::shared_ptr<CylPreMod> LowPre;          ///< Upper Mod (Pre)
+  std::shared_ptr<constructSystem::ModBase> LowModB; 
+  std::shared_ptr<moderatorSystem::FlightLine> LowAFL;  ///< Lower Mode FL
+  std::shared_ptr<moderatorSystem::FlightLine> LowBFL;  ///< Lower Mode FL
+  std::shared_ptr<CylPreMod> LowPre;          ///< Upper Mod (Pre)
   /// Lower supply 
-  boost::shared_ptr<constructSystem::SupplyPipe> LowSupplyPipe; 
-  boost::shared_ptr<constructSystem::SupplyPipe> LowReturnPipe;  ///< Lower supply 
+  std::shared_ptr<constructSystem::SupplyPipe> LowSupplyPipe; 
+  std::shared_ptr<constructSystem::SupplyPipe> LowReturnPipe;  ///< Lower supply 
 
-  boost::shared_ptr<constructSystem::ModBase> TopMod;   ///< Upper Mod
-  boost::shared_ptr<moderatorSystem::FlightLine> TopAFL;  ///< Upper Mode FL
-  boost::shared_ptr<moderatorSystem::FlightLine> TopBFL;  ///< Upper Mode FL
-  boost::shared_ptr<CylPreMod> TopPre;  ///< Upper Mod (Pre)
+  std::shared_ptr<constructSystem::ModBase> TopMod;   ///< Upper Mod
+  std::shared_ptr<moderatorSystem::FlightLine> TopAFL;  ///< Upper Mode FL
+  std::shared_ptr<moderatorSystem::FlightLine> TopBFL;  ///< Upper Mode FL
+  std::shared_ptr<CylPreMod> TopPre;  ///< Upper Mod (Pre)
 
-  boost::shared_ptr<BulkModule> Bulk;      ///< Main bulk module
-  boost::shared_ptr<moderatorSystem::FlightLine> BulkLowAFL;  ///< Lower Mode FL
+  std::shared_ptr<BulkModule> Bulk;      ///< Main bulk module
+  std::shared_ptr<moderatorSystem::FlightLine> BulkLowAFL;  ///< Lower Mode FL
 
   /// Shutterbay objects
-  boost::shared_ptr<ShutterBay> ShutterBayObj;  
+  std::shared_ptr<ShutterBay> ShutterBayObj;  
   /// Array of Guidies
-  std::vector<boost::shared_ptr<GuideBay> > GBArray;  
+  std::vector<std::shared_ptr<GuideBay> > GBArray;  
 
   /// Array of beamlines constructors:
-  std::vector<boost::shared_ptr<beamlineSystem::beamlineConstructor> > 
+  std::vector<std::shared_ptr<beamlineSystem::beamlineConstructor> > 
     BLArray;  
 
   void topFlightLines(Simulation&);

@@ -31,7 +31,7 @@
 #include <map>
 #include <string>
 #include <algorithm>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -160,7 +160,7 @@ CylPreMod::~CylPreMod()
   */
 {}
 
-const boost::shared_ptr<BlockAddition>& 
+const std::shared_ptr<BlockAddition>& 
 CylPreMod::getBox(const char F) const
   /*!
     Simple accessor 

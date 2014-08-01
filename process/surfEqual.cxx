@@ -32,8 +32,8 @@
 #include <stack>
 #include <string>
 #include <algorithm>
+#include <memory>
 #include <boost/any.hpp>
-#include <boost/shared_ptr.hpp>
 #include <boost/type_traits.hpp>
 #include <boost/multi_array.hpp>
 #include <boost/mpl/if.hpp>

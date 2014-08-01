@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   testInclude/testLine.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,10 @@ private:
 
   //Tests 
   int testConeIntersect();
+  int testCylinderIntersect();
   int testEllipticCylIntersect();
   int testInterDistance();
+  int testRuleLineIntersect();
  
 public:
 

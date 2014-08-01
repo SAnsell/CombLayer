@@ -32,8 +32,8 @@
 #include <string>
 #include <sstream>
 #include <algorithm>
+#include <memory>
 #include <boost/tuple/tuple.hpp>
-#include <boost/shared_ptr.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -178,7 +178,7 @@ testAttachSupport::testBoundaryValid()
       &ContainedComp::isOuterValid
     };
 
-  boost::shared_ptr<testSystem::simpleObj> 
+  std::shared_ptr<testSystem::simpleObj> 
     CC(new testSystem::simpleObj("A"));
   CC->createAll(ASim,World::masterOrigin());
 

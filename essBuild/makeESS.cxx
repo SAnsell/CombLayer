@@ -33,9 +33,9 @@
 #include <string>
 #include <algorithm>
 #include <iterator>
+#include <memory>
 #include <boost/array.hpp>
 #include <boost/format.hpp>
-#include <boost/shared_ptr.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -237,9 +237,9 @@ makeESS::makeTarget(Simulation& System,
 
 
   if (targetType=="Wheel")
-    Target=boost::shared_ptr<WheelBase>(new Wheel("Wheel"));
+    Target=std::shared_ptr<WheelBase>(new Wheel("Wheel"));
   else if (targetType=="SegWheel")
-    Target=boost::shared_ptr<WheelBase>(new SegWheel("SegWheel"));
+    Target=std::shared_ptr<WheelBase>(new SegWheel("SegWheel"));
   else
     throw ColErr::InContainerError<std::string>(targetType,"Unknown target type");
 
@@ -261,7 +261,7 @@ makeESS::createGuides(Simulation& System)
 
   for(size_t i=0;i<4;i++)
     {
-      boost::shared_ptr<GuideBay> GB(new GuideBay("GuideBay",i+1));
+      std::shared_ptr<GuideBay> GB(new GuideBay("GuideBay",i+1));
       GB->addInsertCell("Inner",ShutterBayObj->getMainCell());
       GB->addInsertCell("Outer",ShutterBayObj->getMainCell());
       GB->setCylBoundary(Bulk->getLinkSurf(2),
@@ -318,7 +318,7 @@ makeESS::buildLowCylMod(Simulation& System)
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  LowMod=boost::shared_ptr<constructSystem::ModBase>
+  LowMod=std::shared_ptr<constructSystem::ModBase>
     (new constructSystem::CylMod("LowMod"));
 
   OR.addObject(LowMod);
@@ -348,7 +348,7 @@ makeESS::buildLowConicMod(Simulation& System)
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
   
-  LowMod=boost::shared_ptr<constructSystem::ModBase>
+  LowMod=std::shared_ptr<constructSystem::ModBase>
     (new ConicModerator("LowConeMod"));
   OR.addObject(LowMod);
     
@@ -362,7 +362,7 @@ makeESS::buildLowConicMod(Simulation& System)
   attachSystem::addToInsertSurfCtrl(System,*Reflector,
   				    LowAFL->getKey("outer"));
     
-  LowModB=boost::shared_ptr<constructSystem::ModBase>
+  LowModB=std::shared_ptr<constructSystem::ModBase>
     (new ConicModerator("LowConeModB"));
   OR.addObject(LowModB);
 
@@ -390,7 +390,7 @@ makeESS::buildTopCylMod(Simulation& System)
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  TopMod=boost::shared_ptr<constructSystem::ModBase>
+  TopMod=std::shared_ptr<constructSystem::ModBase>
     (new constructSystem::CylMod("TopMod"));
 
   OR.addObject(TopMod);
@@ -491,7 +491,7 @@ makeESS::buildF5Collimator(Simulation& System)
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  boost::shared_ptr<F5Collimator> F5Coll(new F5Collimator("F5Col"));
+  std::shared_ptr<F5Collimator> F5Coll(new F5Collimator("F5Col"));
   OR.addObject(F5Coll);
   F5Coll->createAll(System);
 

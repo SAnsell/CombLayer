@@ -852,12 +852,7 @@ FuncDataBase::processXML(const std::string& FName)
   ELog::RegMethod RegA("FuncDataBase","processXML");
   XML::XMLcollect CO;
   if (FName.empty() || CO.loadXML(FName))
-    {
-      ELog::EM<<"Failed to load  == "<<CO.loadXML(FName)<<ELog::endErr;
-      ELog::EM<<"Failed to load  == "<<FName<<ELog::endErr;
-
-      return;
-    }
+    throw ColErr::FileError(0,FName,"XMLcollect file");
   // Parse for variables:
   XML::XMLobject* AR=CO.findObj("variable");
   XML::XMLgroup* AG;
@@ -870,10 +865,8 @@ FuncDataBase::processXML(const std::string& FName)
       const std::string Name=AR->getItem<std::string>("name");
       const std::string Type=AR->getDefItem<std::string>("type","double");
 
-
       if (!hasVariable(Name))
 	ELog::EM<<"Adding variable "<<Name<<ELog::endWarn;
-
       
       // Only vector type 
       if (Type=="function")

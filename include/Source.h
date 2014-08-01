@@ -56,8 +56,8 @@ class Source
 {
  private:
 
-  typedef boost::shared_ptr<SrcBase> SBasePtr;            ///< Source items
-  typedef boost::shared_ptr<SrcData> SDataPtr;            ///< Source data
+  typedef std::shared_ptr<SrcBase> SBasePtr;            ///< Source items
+  typedef std::shared_ptr<SrcData> SDataPtr;            ///< Source data
   typedef std::map<std::string,SBasePtr> sdMapTYPE;       ///< Storage for main line
   typedef std::vector<SDataPtr> dvecTYPE;                 ///< Storage for extra-data
 

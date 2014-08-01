@@ -33,7 +33,7 @@
 #include <algorithm>
 #include <numeric>
 #include <iterator>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/array.hpp>
 
 #include "Exception.h"
@@ -63,7 +63,6 @@
 #include "Plane.h"
 #include "Cylinder.h"
 #include "Line.h"
-#include "LineIntersectVisit.h"
 #include "Rules.h"
 #include "Convex.h"
 #include "varList.h"
@@ -271,64 +270,64 @@ t1BulkShield::createShutters(Simulation& System,
   for(size_t i=0;i<numberBeamLines;i++)
     {
       if (insertVoid)
-	GData.push_back(boost::shared_ptr<GeneralShutter>
+	GData.push_back(std::shared_ptr<GeneralShutter>
 			(new GeneralShutter(i,"shutter")));
       else if (i==sandalsShutter)
-	GData.push_back(boost::shared_ptr<GeneralShutter>
+	GData.push_back(std::shared_ptr<GeneralShutter>
 			(new BlockShutter(i,"shutter","sandalsShutter")));
       else if (i==prismaShutter)
-	GData.push_back(boost::shared_ptr<GeneralShutter>
+	GData.push_back(std::shared_ptr<GeneralShutter>
 			(new BlockShutter(i,"shutter","prismaShutter")));
       else if (i==surfShutter)
-	GData.push_back(boost::shared_ptr<GeneralShutter>
+	GData.push_back(std::shared_ptr<GeneralShutter>
 			(new BlockShutter(i,"shutter","surfShutter")));
       else if (i==crispShutter)
-	GData.push_back(boost::shared_ptr<GeneralShutter>
+	GData.push_back(std::shared_ptr<GeneralShutter>
 			(new BlockShutter(i,"shutter","crispShutter")));
       else if (i==loqShutter)
-	GData.push_back(boost::shared_ptr<GeneralShutter>
+	GData.push_back(std::shared_ptr<GeneralShutter>
 			(new BlockShutter(i,"shutter","loqShutter")));
       else if (i==irisShutter)
-	GData.push_back(boost::shared_ptr<GeneralShutter>
+	GData.push_back(std::shared_ptr<GeneralShutter>
 			(new BlockShutter(i,"shutter","irisShutter")));
       else if (i==polarisIIShutter)
-	GData.push_back(boost::shared_ptr<GeneralShutter>
+	GData.push_back(std::shared_ptr<GeneralShutter>
 			(new BlockShutter(i,"shutter","polarisIIShutter")));
       else if (i==toscaShutter)
-	GData.push_back(boost::shared_ptr<GeneralShutter>
+	GData.push_back(std::shared_ptr<GeneralShutter>
 			(new BlockShutter(i,"shutter","toscaShutter")));
       else if (i==hetShutter)
-	GData.push_back(boost::shared_ptr<GeneralShutter>
+	GData.push_back(std::shared_ptr<GeneralShutter>
 			(new BlockShutter(i,"shutter","hetShutter")));
       else if (i==mapsShutter)
-	GData.push_back(boost::shared_ptr<GeneralShutter>
+	GData.push_back(std::shared_ptr<GeneralShutter>
 			(new BlockShutter(i,"shutter","mapsShutter")));
       else if (i==vesuvioShutter)
-	GData.push_back(boost::shared_ptr<GeneralShutter>
+	GData.push_back(std::shared_ptr<GeneralShutter>
 			(new BlockShutter(i,"shutter","vesuvioShutter")));
       else if (i==sxdShutter)
-	GData.push_back(boost::shared_ptr<GeneralShutter>
+	GData.push_back(std::shared_ptr<GeneralShutter>
 			(new BlockShutter(i,"shutter","sxdShutter")));
       else if (i==merlinShutter)
-	GData.push_back(boost::shared_ptr<GeneralShutter>
+	GData.push_back(std::shared_ptr<GeneralShutter>
 			(new BlockShutter(i,"shutter","merlinShutter")));
 //      else if (i==s5Shutter)
-//	GData.push_back(boost::shared_ptr<GeneralShutter>
+//	GData.push_back(std::shared_ptr<GeneralShutter>
 //			(new BlockShutter(i,"shutter","s5Shutter")));
       else if (i==mariShutter)
-	GData.push_back(boost::shared_ptr<GeneralShutter>
+	GData.push_back(std::shared_ptr<GeneralShutter>
 			(new BlockShutter(i,"shutter","mariShutter")));
       else if (i==gemShutter)
-	GData.push_back(boost::shared_ptr<GeneralShutter>
+	GData.push_back(std::shared_ptr<GeneralShutter>
 			(new BlockShutter(i,"shutter","gemShutter")));
       else if (i==hrpdShutter)
-	GData.push_back(boost::shared_ptr<GeneralShutter>
+	GData.push_back(std::shared_ptr<GeneralShutter>
 			(new BlockShutter(i,"shutter","hrpdShutter")));
       else if (i==pearlShutter)
-	GData.push_back(boost::shared_ptr<GeneralShutter>
+	GData.push_back(std::shared_ptr<GeneralShutter>
 	(new BlockShutter(i,"shutter","pearlShutter")));		
       else
-	GData.push_back(boost::shared_ptr<GeneralShutter>
+	GData.push_back(std::shared_ptr<GeneralShutter>
 			(new GeneralShutter(i,"shutter")));
       // Not registered under KeyName 
       OR.addObject(StrFunc::makeString(std::string("shutter"),i),GData.back());
@@ -369,7 +368,7 @@ t1BulkShield::createBulkInserts(Simulation& System,
 
   for(size_t i=0;i<numberBeamLines;i++)
     {
-      BData.push_back(boost::shared_ptr<BulkInsert>
+      BData.push_back(std::shared_ptr<BulkInsert>
 		      (new BulkInsert(i,"bulkInsert")));
 
       BData.back()->setLayers(innerCell,outerCell);

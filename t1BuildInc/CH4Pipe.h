@@ -47,12 +47,12 @@ class CH4Pipe : public attachSystem::FixedComp
   double Xoffset;              ///< Pipe offset [x]
   double Yoffset;              ///< Pipe offset [y]
 
-  int ch4Mat;                  ///< Hydrogen material
+  int ch4Mat;                 ///< Hydrogen material
   int alMat;                  ///< Al material
 
-  double ch4Temp;              ///< CH4 Temperature
+  double ch4Temp;             ///< CH4 Temperature
 
-  double ch4InnerRadius;       ///< Inner radius [all centralized]
+  double ch4InnerRadius;      ///< Inner radius [all centralized]
   double alInnerRadius;       ///< Al on inner
   double ch4OuterRadius;
   double alOuterRadius;       ///< Al on outer

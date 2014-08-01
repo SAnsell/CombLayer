@@ -32,8 +32,7 @@
 #include <string>
 #include <algorithm>
 #include <numeric>
-#include <boost/shared_ptr.hpp>
-#include <boost/array.hpp>
+#include <memory>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -48,8 +47,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -323,7 +320,7 @@ t1Reflector::createBoxes(Simulation& System,const std::string& TName)
   
   // ---------------- LEFT BASE --------------------------------
   Boxes.push_back
-    (boost::shared_ptr<constructSystem::LinkWrapper>
+    (std::shared_ptr<constructSystem::LinkWrapper>
      (new constructSystem::LWInner("RBoxLBase")));
   
   Boxes[0]->addSurface(*this,"8,0,1,2,3,4");  // base
@@ -336,7 +333,7 @@ t1Reflector::createBoxes(Simulation& System,const std::string& TName)
   
   // ---------------- RIGHT BASE --------------------------------
   Boxes.push_back
-    (boost::shared_ptr<constructSystem::LinkWrapper>
+    (std::shared_ptr<constructSystem::LinkWrapper>
      (new constructSystem::LWInner("RBoxRBase")));
   Boxes[1]->addSurface(*this,"8,0,7,6,5,4"); 
   Boxes[1]->addSurface(*Boxes[0],"6,-7"); 
@@ -344,7 +341,7 @@ t1Reflector::createBoxes(Simulation& System,const std::string& TName)
 
   // ---------------- WATER CORNER --------------------------------
   Boxes.push_back
-    (boost::shared_ptr<constructSystem::LinkWrapper>
+    (std::shared_ptr<constructSystem::LinkWrapper>
      (new constructSystem::LWInner("RBoxWater")));
 
   Boxes[2]->addSurface(*this,"0,7,6"); 
@@ -361,7 +358,7 @@ t1Reflector::createBoxes(Simulation& System,const std::string& TName)
   
   // ---------------- Merlin CORNER --------------------------------
   Boxes.push_back
-    (boost::shared_ptr<constructSystem::LinkWrapper>
+    (std::shared_ptr<constructSystem::LinkWrapper>
      (new constructSystem::LWInner("RBoxMerlin")));
 
   Boxes[3]->addSurface(*this,"5,4,3,2"); 
@@ -378,7 +375,7 @@ t1Reflector::createBoxes(Simulation& System,const std::string& TName)
 
   // ---------------- Methane CORNER --------------------------------
   Boxes.push_back
-    (boost::shared_ptr<constructSystem::LinkWrapper>
+    (std::shared_ptr<constructSystem::LinkWrapper>
      (new constructSystem::LWInner("RBoxMethane")));
 
   Boxes[4]->addSurface(*this,1,2);  // sides 
@@ -397,7 +394,7 @@ t1Reflector::createBoxes(Simulation& System,const std::string& TName)
   Boxes[4]->createAll(System,*this);
   // ---------------- LH2 CORNER --------------------------------
   Boxes.push_back
-    (boost::shared_ptr<constructSystem::LinkWrapper>
+    (std::shared_ptr<constructSystem::LinkWrapper>
      (new constructSystem::LWInner("RBoxLH2")));
 
 //  Boxes[5]->addSurface(*this,"3,4,5,6");  // sides
@@ -417,7 +414,7 @@ t1Reflector::createBoxes(Simulation& System,const std::string& TName)
 
   // ---------------- Merlin Wrapper --------------------------------
   Boxes.push_back
-    (boost::shared_ptr<constructSystem::LinkWrapper>
+    (std::shared_ptr<constructSystem::LinkWrapper>
      (new constructSystem::LWOuter("RBoxMerlinWrapper")));
 
   Boxes[6]->addSurface("MerlinMod","0,1,2,3,4,5");  
@@ -432,7 +429,7 @@ t1Reflector::createBoxes(Simulation& System,const std::string& TName)
 
   // ---------------- LH2 Wrapper --------------------------------
   Boxes.push_back
-    (boost::shared_ptr<constructSystem::LinkWrapper>
+    (std::shared_ptr<constructSystem::LinkWrapper>
      (new constructSystem::LWOuter("RBoxLH2Wrapper")));
 
   Boxes[7]->addSurface("H2Mod","0,1,2,3");
@@ -453,14 +450,14 @@ t1Reflector::createBoxes(Simulation& System,const std::string& TName)
 
   // Flightline wrapper for MERLIN:
   Boxes.push_back
-    (boost::shared_ptr<constructSystem::LinkWrapper>
+    (std::shared_ptr<constructSystem::LinkWrapper>
      (new constructSystem::LWOuter("RBoxMerlinPlate")));
   Boxes[8]->addSurface(*Boxes[3],-1,26);
   Boxes[8]->addSurface("MerlinFlight","2,3,4,5");
   Boxes[8]->addSurface("MerlinMod",-1,0);
   Boxes[8]->maskSection(0);
   Boxes[8]->maskSection(2);
-  Boxes[8]->maskSection(3);
+//  Boxes[8]->maskSection(3);
   Boxes[8]->maskSection(4);
   Boxes[8]->maskSection(5); 
   Boxes[8]->addInsertCell(Boxes[3]->centralCell());
@@ -469,7 +466,7 @@ t1Reflector::createBoxes(Simulation& System,const std::string& TName)
 
   // Flightline wrapper for LH2:
   Boxes.push_back
-    (boost::shared_ptr<constructSystem::LinkWrapper>
+    (std::shared_ptr<constructSystem::LinkWrapper>
      (new constructSystem::LWOuter("RBoxLH2Plate")));
   Boxes[9]->addSurface(*Boxes[5],-1,26);
   Boxes[9]->addSurface("H2Flight","2,3,4,5");
@@ -478,8 +475,8 @@ t1Reflector::createBoxes(Simulation& System,const std::string& TName)
   Boxes[9]->addBoundarySurf(-Boxes[5]->getLinkSurf(20));
   Boxes[9]->maskSection(0);
   Boxes[9]->maskSection(1);
-  Boxes[9]->maskSection(3);
-  Boxes[9]->maskSection(4);
+//  Boxes[9]->maskSection(3);
+//  Boxes[9]->maskSection(4);
   Boxes[9]->maskSection(5); 
   Boxes[9]->addInsertCell(Boxes[5]->centralCell());
   Boxes[9]->createAll(System,*this);
@@ -487,7 +484,7 @@ t1Reflector::createBoxes(Simulation& System,const std::string& TName)
 
   // ---------------- Top CORNER Hexagon --------------------------------
   Boxes.push_back
-    (boost::shared_ptr<constructSystem::LinkWrapper>
+    (std::shared_ptr<constructSystem::LinkWrapper>
      (new constructSystem::LWInner("RBoxTopHex")));
 
 //  Boxes[10]->addSurface(*this,"2,1,0,7,6,5");
@@ -509,7 +506,7 @@ t1Reflector::createBoxes(Simulation& System,const std::string& TName)
 
   // ---------------- Top CORNER Pentagon --------------------------------
   Boxes.push_back
-    (boost::shared_ptr<constructSystem::LinkWrapper>
+    (std::shared_ptr<constructSystem::LinkWrapper>
      (new constructSystem::LWInner("RBoxTopPen")));
 
   Boxes[11]->addSurface(*this,"7,6,5");
@@ -531,7 +528,7 @@ t1Reflector::createBoxes(Simulation& System,const std::string& TName)
   
   // ---------------- Bottom Hexagon --------------------------------
   Boxes.push_back
-    (boost::shared_ptr<constructSystem::LinkWrapper>
+    (std::shared_ptr<constructSystem::LinkWrapper>
      (new constructSystem::LWInner("RBoxBotHex")));
 
   Boxes[12]->addSurface(*this,"6,7,0");
@@ -553,7 +550,7 @@ t1Reflector::createBoxes(Simulation& System,const std::string& TName)
   
   // ---------------- Bottom Pentagon --------------------------------
   Boxes.push_back
-    (boost::shared_ptr<constructSystem::LinkWrapper>
+    (std::shared_ptr<constructSystem::LinkWrapper>
      (new constructSystem::LWInner("RBoxBotPen")));
 
   Boxes[13]->addSurface(*this,"3,2");
@@ -574,7 +571,7 @@ t1Reflector::createBoxes(Simulation& System,const std::string& TName)
   
   // ---------------- Bottom Quad --------------------------------
   Boxes.push_back
-    (boost::shared_ptr<constructSystem::LinkWrapper>
+    (std::shared_ptr<constructSystem::LinkWrapper>
      (new constructSystem::LWInner("RBoxBotQuad")));
 
   Boxes[14]->addSurface("CH4Mod","0,1,2,3");  
@@ -590,7 +587,7 @@ t1Reflector::createBoxes(Simulation& System,const std::string& TName)
 
   // ---------------- Top --------------------------------
   Boxes.push_back
-    (boost::shared_ptr<constructSystem::LinkWrapper>
+    (std::shared_ptr<constructSystem::LinkWrapper>
      (new constructSystem::LWInner("RBoxTop")));
 
   Boxes[15]->addSurface(*this,"5,4,3,2,1,0,7,6"); 
@@ -601,7 +598,7 @@ t1Reflector::createBoxes(Simulation& System,const std::string& TName)
 
   // ---------------- LH2 Void --------------------------------
   Boxes.push_back
-    (boost::shared_ptr<constructSystem::LinkWrapper>
+    (std::shared_ptr<constructSystem::LinkWrapper>
      (new constructSystem::LWInner("RBoxLH2Void")));
 
   Boxes[16]->addSurface(*this,"3,4,5,-10");  // sides
@@ -611,23 +608,125 @@ t1Reflector::createBoxes(Simulation& System,const std::string& TName)
 
   Boxes[16]->createAll(System,*this);
   
-  for(size_t i=0;i<17;i++)
+
+  // Flightline wrapper for CH4 South:
+  Boxes.push_back
+    (std::shared_ptr<constructSystem::LinkWrapper>
+     (new constructSystem::LWOuter("RBoxCH4South")));
+  Boxes[17]->addSurface("CH4FlightS","2,3,4,5");
+  Boxes[17]->addSurface("CH4Mod",-1,1);
+  Boxes[17]->addSurface(*Boxes[1],-1,21); 
+  Boxes[17]->addSurface(*Boxes[1],-1,22);  
+  Boxes[17]->addSurface(*Boxes[1],-1,23); 
+  Boxes[17]->maskSection(0);
+  Boxes[17]->maskSection(1);  
+//  Boxes[17]->maskSection(2);
+//  Boxes[17]->maskSection(3);
+  Boxes[17]->maskSection(4);
+  Boxes[17]->maskSection(5);
+  Boxes[17]->maskSection(6);
+  Boxes[17]->maskSection(7);    
+  Boxes[17]->addInsertCell(Boxes[12]->centralCell());
+  Boxes[17]->addInsertCell(Boxes[13]->centralCell());
+
+  Boxes[17]->createAll(System,*this);
+
+  // Flightline wrapper for Water North:
+  Boxes.push_back
+    (std::shared_ptr<constructSystem::LinkWrapper>
+     (new constructSystem::LWOuter("RBoxWatNorth")));
+  Boxes[18]->addSurface("WatNorthFlight","2");
+  Boxes[18]->addSurface(*Boxes[10],-1,25);   
+  Boxes[18]->addSurface("WatNorthFlight","4,5");  
+  Boxes[18]->addSurface("WaterMod",-1,0);
+  Boxes[18]->addSurface(*Boxes[0],-1,21); 
+  Boxes[18]->addSurface(*Boxes[0],-1,22);  
+  Boxes[18]->addSurface(*Boxes[0],-1,23); 
+  Boxes[18]->maskSection(0);
+  Boxes[18]->maskSection(1);  
+//  Boxes[18]->maskSection(2);
+  Boxes[18]->maskSection(3);
+  Boxes[18]->maskSection(4);
+  Boxes[18]->maskSection(5);
+  Boxes[18]->maskSection(6);
+  Boxes[18]->maskSection(7);    
+  Boxes[18]->addInsertCell(Boxes[10]->centralCell());
+  Boxes[18]->addInsertCell(Boxes[11]->centralCell());
+
+  Boxes[18]->createAll(System,*this);
+
+  // Flightline wrapper for WaterSouth:
+  Boxes.push_back
+    (std::shared_ptr<constructSystem::LinkWrapper>
+     (new constructSystem::LWOuter("RBoxWatSouth")));
+  Boxes[19]->addSurface("WatSouthFlight","3");
+  Boxes[19]->addSurface(*Boxes[11],-1,24);      
+  Boxes[19]->addSurface("WatSouthFlight","4,5");  
+  Boxes[19]->addSurface("WaterMod",-1,1);
+  Boxes[19]->addSurface(*Boxes[11],-1,21); 
+  Boxes[19]->addSurface(*Boxes[11],-1,22);  
+  Boxes[19]->maskSection(0);
+  Boxes[19]->maskSection(1);  
+//  Boxes[19]->maskSection(2);
+  Boxes[19]->maskSection(3);
+  Boxes[19]->maskSection(4);
+  Boxes[19]->maskSection(5);
+  Boxes[19]->maskSection(6);
+  Boxes[19]->addInsertCell(Boxes[10]->centralCell());
+  Boxes[19]->addInsertCell(Boxes[11]->centralCell());
+
+  Boxes[19]->createAll(System,*this);
+
+  // Flightline wrapper for CH4 North:
+  Boxes.push_back
+    (std::shared_ptr<constructSystem::LinkWrapper>
+     (new constructSystem::LWOuter("RBoxCH4North")));
+  Boxes[20]->addSurface(*Boxes[13],-1,22);
+  Boxes[20]->addSurface(*Boxes[13],-1,24);  
+  Boxes[20]->addSurface("CH4FlightN","4,5");
+  Boxes[20]->addSurface("CH4Mod",-1,0);
+  Boxes[20]->addSurface(*Boxes[0],-1,23); 
+
+  Boxes[20]->addExcludeObj("H2Mod");
+  Boxes[20]->maskSection(0);
+  Boxes[20]->maskSection(1);  
+  Boxes[20]->maskSection(4);
+  Boxes[20]->maskSection(5);
+  
+  Boxes[20]->addInsertCell(Boxes[12]->centralCell());
+  Boxes[20]->addInsertCell(Boxes[13]->centralCell());
+
+  Boxes[20]->createAll(System,*this);
+
+  for(size_t i=0;i<21;i++)
     OR.addObject(Boxes[i]);
  
-  // REFLECTOR RODS:
-  // Rods.push_back
-  //   (boost::shared_ptr<ReflectRods>(new ReflectRods("Rods")));
-  // Rods[0]->setObject(System.findQhull(Boxes[1]->centralCell()));
-  // Rods[0]->createAll(System,*this,0);
-  
-
-  // foreach(Boxes.begin(),Boxes.end(),
-  // 	  boost::bind(ModelSupport::objectRegister::addObject,
-  // 		      boost::ref(OR),_1));
-
   return;
 }
 
+void
+t1Reflector::createRods(Simulation& System)
+  /*!
+    Add the rods as done AFTER pipework
+    \param System :: Simulation fo raddin rods
+  */
+{
+  ELog::RegMethod RegA("t1Rflector","createRods");
+
+  //  const std::vector<size_t> active={0,1,2,4,5,15};
+  //  const std::vector<size_t> active={5,6};
+  const std::vector<size_t> active={0,1,2,4,5,15};
+  for(const size_t i : active) 
+    {
+      // REFLECTOR RODS:
+      Rods.push_back
+	(std::shared_ptr<ReflectRods>(new ReflectRods("Rods",i)));
+      Rods.back()->setObject(System.findQhull(Boxes[i]->centralCell()));
+      Rods.back()->createAll(System,*this,0);   // 0 not used
+    }
+  return;
+}
+		     
 void
 t1Reflector::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC)

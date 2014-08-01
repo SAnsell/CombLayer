@@ -33,7 +33,7 @@
 #include <algorithm>
 #include <numeric>
 #include <iterator>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/array.hpp>
 
 #include "Exception.h"
@@ -266,8 +266,9 @@ BulkShield::createTorpedoes(Simulation& System,
   for(size_t i=0;i<numberBeamLines;i++)
     {
       // Needs specialization to include with/without topedo
-      TData.push_back(boost::shared_ptr<Torpedo>
+      TData.push_back(std::shared_ptr<Torpedo>
 		      (new Torpedo(i,"torpedo")));
+      OR.addObject(TData.back());
     }
 
   MonteCarlo::Qhull* torpedoObj=System.findQhull(torpedoCell);
@@ -283,8 +284,6 @@ BulkShield::createTorpedoes(Simulation& System,
       // Now Torpedos might intersect with there neighbours
       if (i) TData[i]->addCrossingIntersect(System,*TData[i-1]);
 
-      OR.addObject(StrFunc::makeString(std::string("torpedo"),i),
-		   TData.back());
     }  
 
   return;
@@ -318,16 +317,16 @@ BulkShield::createShutters(Simulation& System,
   for(size_t i=0;i<numberBeamLines;i++)
     {
       if (i==chipShutter && chipFlag)
-	GData.push_back(boost::shared_ptr<GeneralShutter>
+	GData.push_back(std::shared_ptr<GeneralShutter>
 			(new ChipIRShutterFlat(i,"shutter","chipShutter")));
       else if (i==imatShutter && imatFlag)
-	GData.push_back(boost::shared_ptr<GeneralShutter>
+	GData.push_back(std::shared_ptr<GeneralShutter>
 			(new IMatShutter(i,"shutter","imatShutter")));
       else if (i==zoomShutter && zoomFlag)
-	GData.push_back(boost::shared_ptr<GeneralShutter>
+	GData.push_back(std::shared_ptr<GeneralShutter>
 			(new ZoomShutter(i,"shutter","zoomShutter")));
       else
-	GData.push_back(boost::shared_ptr<GeneralShutter>
+	GData.push_back(std::shared_ptr<GeneralShutter>
 			(new GeneralShutter(i,"shutter")));
       // Not registered under KeyName 
       OR.addObject(StrFunc::makeString(std::string("shutter"),i),GData.back());
@@ -372,16 +371,16 @@ BulkShield::createBulkInserts(Simulation& System,
 
   for(size_t i=0;i<numberBeamLines;i++)
     {
-      boost::shared_ptr<BulkInsert> BItem;
+      std::shared_ptr<BulkInsert> BItem;
       
       if (i==chipShutter && chipFlag)
-	BItem=boost::shared_ptr<BulkInsert>
+	BItem=std::shared_ptr<BulkInsert>
 	       (new ChipIRInsert(i,"bulkInsert","chipInsert"));
       else if (i==imatShutter && imatFlag)
-	BItem=boost::shared_ptr<BulkInsert>
+	BItem=std::shared_ptr<BulkInsert>
 	  (new IMatBulkInsert(i,"bulkInsert","imatInsert"));
       else
-	BItem=boost::shared_ptr<BulkInsert>(new BulkInsert(i,"bulkInsert"));
+	BItem=std::shared_ptr<BulkInsert>(new BulkInsert(i,"bulkInsert"));
 
       BItem->setLayers(innerCell,outerCell);
       BItem->setExternal(SMap.realSurf(bulkIndex+17),

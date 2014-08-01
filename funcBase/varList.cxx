@@ -2,7 +2,7 @@
   CombLayer : MNCPX Input builder
  
  * File:   funcBase/varList.cxx
-*
+ *
  * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
@@ -37,7 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "Triple.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -190,7 +189,7 @@ varList::selectValue(const int Key,Geometry::Vec3D& oVec,
 		     double& oDbl) const
   /*!
     Simple selector
-						
+    \param Key :: Variable name
     \param oVec :: output vector
     \param oDouble :: output vector
     \return 1 :: Vector / 0 :: double

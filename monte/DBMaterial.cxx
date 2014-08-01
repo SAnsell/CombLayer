@@ -940,6 +940,7 @@ DBMaterial::createMaterial(const std::string& MName)
 	    }
 	}
       // SECOND %
+      // Example : D2O%H2O%80.0   D2O at 80% atomic fraction
       pos=BKey.find('%');
       if (pos!=std::string::npos)
 	{

@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   zoomInc/makeZoom.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,12 +42,12 @@ class makeZoom
 {
  private:
 
-  boost::shared_ptr<ZoomBend> ZBend;              ///< Bend Object
-  boost::shared_ptr<ZoomChopper> ZChopper;        ///< Chopper object
-  boost::shared_ptr<ZoomCollimator> ZCollimator;  ///< Collimator object
-  boost::shared_ptr<ZoomRoof> ZRoof;              ///< Zoom Roof
-  boost::shared_ptr<ZoomPrimary> ZPrim;           ///< Zoom Primary
-  boost::shared_ptr<ZoomHutch> ZHut;              ///< Hut object
+  std::shared_ptr<ZoomBend> ZBend;              ///< Bend Object
+  std::shared_ptr<ZoomChopper> ZChopper;        ///< Chopper object
+  std::shared_ptr<ZoomCollimator> ZCollimator;  ///< Collimator object
+  std::shared_ptr<ZoomRoof> ZRoof;              ///< Zoom Roof
+  std::shared_ptr<ZoomPrimary> ZPrim;           ///< Zoom Primary
+  std::shared_ptr<ZoomHutch> ZHut;              ///< Hut object
 
  public:
   

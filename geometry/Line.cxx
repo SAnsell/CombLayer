@@ -250,19 +250,20 @@ Line::lambdaPair(const size_t ix,
     return 0;
 
   int nCnt(0);          // number of good points
-  
   double lambdaA,lambdaB;
-  if (SQ.first.imag()==0.0)
+  if (fabs(SQ.first.imag())<1e-38)
     {
       lambdaA=SQ.first.real();
       nCnt=1;
     }
-  if (ix==2 && SQ.second.imag()==0.0)
+  if (ix==2 && fabs(SQ.second.imag())<1e-38)
     {
       lambdaB=SQ.second.real();
-      nCnt+=2;
+      nCnt+=2;   // This is a bin flag [1+2 ==11]
     }
-  if (!nCnt) return 0;
+  
+  if (!nCnt) 
+    return 0;
 
   if (nCnt==1)
     {
@@ -359,10 +360,10 @@ Line::intersect(std::vector<Geometry::Vec3D>& PntOut,
 size_t 
 Line::intersect(std::vector<Geometry::Vec3D>& PntOut,const ArbPoly& APoly) const
  /*!
-   Calculate all the interections in the surfaces of the 
+   Calculate all the intersections in the surfaces of the 
    general polyhedron
    \param PntOut :: Vector of points found by the line/cylinder intersection
-   \param APoly :: Right Cylinder to intersect line with
+   \param APoly :: Poly-surface shape to intersect line with
    \return Number of points found
  */
 {
@@ -500,12 +501,15 @@ Line::intersect(std::vector<Geometry::Vec3D>& PntOut,
      \return Number of points found by intersection
   */
 {
+  ELog::RegMethod RegA("Line","intersect(Cyl)");
+
   const Geometry::Vec3D Cent=Cyl.getCentre();
   const Geometry::Vec3D Ax=Origin-Cent;
   const Geometry::Vec3D N= Cyl.getNormal();
   const double R=Cyl.getRadius();
   const double vDn = N.dotProd(Direct);
   const double vDA = N.dotProd(Ax);
+
   // First solve the equation of intersection
   double C[3];
   C[0]= 1.0-(vDn*vDn);

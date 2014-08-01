@@ -29,10 +29,10 @@
 #include <vector>
 #include <set>
 #include <map>
+#include <memory>
 
 #include <string>
 #include <algorithm>
-#include <boost/shared_ptr.hpp>
 #include <boost/bind.hpp>
 #include <boost/multi_array.hpp>
 

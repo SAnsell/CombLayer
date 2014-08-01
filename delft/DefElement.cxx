@@ -29,7 +29,7 @@
 #include <list>
 #include <vector>
 #include <string>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/multi_array.hpp>
 
 #include "Exception.h"

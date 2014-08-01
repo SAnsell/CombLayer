@@ -84,43 +84,43 @@ class makeT1Upgrade
 {
  private:
 
-  boost::shared_ptr<constructSystem::TargetBase> TarObj;   ///< Target
-  boost::shared_ptr<ts1System::BeamWindow> BWindowObj;     ///< Beam window
-  boost::shared_ptr<CylReflector> RefObj;                  ///< Relfector
-  boost::shared_ptr<constructSystem::ModBase> TriMod;  ///< Water moderator
+  std::shared_ptr<constructSystem::TargetBase> TarObj;   ///< Target
+  std::shared_ptr<ts1System::BeamWindow> BWindowObj;     ///< Beam window
+  std::shared_ptr<CylReflector> RefObj;                  ///< Relfector
+  std::shared_ptr<constructSystem::ModBase> TriMod;  ///< Water moderator
   /// General offset
-  boost::shared_ptr<constructSystem::GroupOrigin> ColdCentObj; 
+  std::shared_ptr<constructSystem::GroupOrigin> ColdCentObj; 
 
-  boost::shared_ptr<constructSystem::ModBase> H2Mod;       ///< H2 moderator
-  boost::shared_ptr<ts1System::HPreMod> H2PMod;            ///< H2 premoderator
-  boost::shared_ptr<ts1System::CylPreSimple> H2PCylMod;    ///< H2 premoderator
-  boost::shared_ptr<constructSystem::ModBase> CH4Mod;      ///< CH4 moderator
-  boost::shared_ptr<ts1System::CH4PreModBase> CH4PMod;     ///< CH4 premoderator
+  std::shared_ptr<constructSystem::ModBase> H2Mod;       ///< H2 moderator
+  std::shared_ptr<ts1System::HPreMod> H2PMod;            ///< H2 premoderator
+  std::shared_ptr<ts1System::CylPreSimple> H2PCylMod;    ///< H2 premoderator
+  std::shared_ptr<constructSystem::ModBase> CH4Mod;      ///< CH4 moderator
+  std::shared_ptr<ts1System::CH4PreModBase> CH4PMod;     ///< CH4 premoderator
 
-  boost::shared_ptr<shutterSystem::t1CylVessel> VoidObj;   ///< Void vessel
-  boost::shared_ptr<shutterSystem::t1BulkShield> BulkObj;  ///< Bulk shield
-  boost::shared_ptr<shutterSystem::MonoPlug> MonoTopObj;   ///< Top mono plug
-  boost::shared_ptr<shutterSystem::MonoPlug> MonoBaseObj;  ///< Base mono plug
+  std::shared_ptr<shutterSystem::t1CylVessel> VoidObj;   ///< Void vessel
+  std::shared_ptr<shutterSystem::t1BulkShield> BulkObj;  ///< Bulk shield
+  std::shared_ptr<shutterSystem::MonoPlug> MonoTopObj;   ///< Top mono plug
+  std::shared_ptr<shutterSystem::MonoPlug> MonoBaseObj;  ///< Base mono plug
 
   // pipes:
 
   /// CH4 Pipe
-  boost::shared_ptr<constructSystem::SupplyPipe> CH4PipeObj;
+  std::shared_ptr<constructSystem::SupplyPipe> CH4PipeObj;
   /// H2 Pipe
-  boost::shared_ptr<constructSystem::SupplyPipe> H2PipeObj;
+  std::shared_ptr<constructSystem::SupplyPipe> H2PipeObj;
   /// Water Pipe
-  boost::shared_ptr<constructSystem::SupplyPipe> WaterPipeObj;
+  std::shared_ptr<constructSystem::SupplyPipe> WaterPipeObj;
   /// Water Return
-  boost::shared_ptr<constructSystem::SupplyPipe> WaterReturnObj;
+  std::shared_ptr<constructSystem::SupplyPipe> WaterReturnObj;
 
   // Array of flightlines
   
   // TriModerator flight line 
-  boost::shared_ptr<moderatorSystem::FlightLine> TriFLA;
-  boost::shared_ptr<moderatorSystem::FlightLine> TriFLB;
-  boost::shared_ptr<moderatorSystem::FlightLine> H2FL;
-  boost::shared_ptr<moderatorSystem::FlightLine> CH4FLA;
-  boost::shared_ptr<moderatorSystem::FlightLine> CH4FLB;
+  std::shared_ptr<moderatorSystem::FlightLine> TriFLA;
+  std::shared_ptr<moderatorSystem::FlightLine> TriFLB;
+  std::shared_ptr<moderatorSystem::FlightLine> H2FL;
+  std::shared_ptr<moderatorSystem::FlightLine> CH4FLA;
+  std::shared_ptr<moderatorSystem::FlightLine> CH4FLB;
 
   std::string buildTarget(Simulation&,const std::string&,const int);
   std::string buildCH4Pre(Simulation&,const std::string&);

@@ -47,10 +47,10 @@ class makeEPB
 {
  private:
   
-  boost::shared_ptr<Building> Hall;                 ///< Main proton line
-  boost::shared_ptr<EPBline> LineVoid;                 ///< Main proton line
-  std::vector<boost::shared_ptr<Magnet> > BendMags;    ///< Bending magnets
-  std::vector<boost::shared_ptr<Magnet> > FocusMags;   ///< Focus hexapoles
+  std::shared_ptr<Building> Hall;                 ///< Main proton line
+  std::shared_ptr<EPBline> LineVoid;                 ///< Main proton line
+  std::vector<std::shared_ptr<Magnet> > BendMags;    ///< Bending magnets
+  std::vector<std::shared_ptr<Magnet> > FocusMags;   ///< Focus hexapoles
 
   void makeMagnets(Simulation&);
 

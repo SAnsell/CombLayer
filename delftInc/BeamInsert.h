@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   delftInc/BeamInsert.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,7 +57,7 @@ class BeamInsert : public attachSystem::ContainedComp,
   double radius;                ///< Outer radius [minus wall]
 
   size_t nSlots;          ///< Number of holes
-  std::vector<boost::shared_ptr<beamSlot> > Holes;  ///< Hole Radius
+  std::vector<std::shared_ptr<beamSlot> > Holes;  ///< Hole Radius
 
   int mat;                      ///< Inter Material number
 

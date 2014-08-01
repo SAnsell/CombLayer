@@ -33,9 +33,11 @@
 #include <string>
 #include <algorithm>
 #include <iterator>
+#include <memory>
+
 #include <boost/array.hpp>
 #include <boost/format.hpp>
-#include <boost/shared_ptr.hpp>
+
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -49,9 +51,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "inputParam.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -63,17 +62,6 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
-#include "KCode.h"
-#include "insertInfo.h"
-#include "insertBaseInfo.h"
-#include "InsertComp.h"
-#include "ModeCard.h"
-#include "PhysImp.h"
-#include "PhysCard.h"
-#include "LSwitchCard.h"
-#include "PhysicsCards.h"
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"

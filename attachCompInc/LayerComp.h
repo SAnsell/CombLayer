@@ -57,9 +57,11 @@ class LayerComp
   virtual int getCommonSurf(const size_t) const { return 0; }
 
   /// Access to number of layers:
-  size_t getNLayers() const { return nLayers; }
+  virtual size_t getNLayers(const size_t =0) const 
+     { return nLayers; }
   /// Access to number of layers:
-  size_t getNInnerLayers() const { return nInnerLayers; }
+  virtual size_t getNInnerLayers(const size_t =0) const 
+     { return nInnerLayers; }
 
 };
 

@@ -33,9 +33,9 @@
 #include <functional>
 #include <numeric>
 #include <iterator>
+#include <memory>
 #include <boost/functional.hpp>
 #include <boost/bind.hpp>
-#include <boost/shared_ptr.hpp>
 #include <boost/array.hpp>
 
 #include "Exception.h"
@@ -2179,7 +2179,7 @@ Simulation::masterRotation()
 	    ELog::EM<<"Failed on setting source term rotate"<<ELog::endErr;
 	  }
       }
-  // This is masterRotation aware:
+  // Applyotations to tallies
   std::map<int,tallySystem::Tally*>::iterator mc;
   for(mc=TItem.begin();mc!=TItem.end();mc++)
     mc->second->rotateMaster();

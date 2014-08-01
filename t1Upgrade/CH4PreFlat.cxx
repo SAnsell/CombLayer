@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   t1Upgrade/CH4PreFlat.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,8 +31,7 @@
 #include <map>
 #include <string>
 #include <algorithm>
-#include <boost/shared_ptr.hpp>
-#include <boost/array.hpp>
+#include <memory>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -43,27 +42,16 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
+#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "Tally.h"
-#include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "surfEqual.h"
-#include "surfDivide.h"
-#include "surfDIter.h"
 #include "Quadratic.h"
 #include "Plane.h"
-#include "Cylinder.h"
-#include "Line.h"
 #include "Rules.h"
 #include "varList.h"
 #include "Code.h"
@@ -71,17 +59,14 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "surfExpand.h"
-#include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
+#include "LayerComp.h"
 #include "CH4PreModBase.h"
 #include "CH4PreFlat.h"
 
@@ -204,8 +189,8 @@ CH4PreFlat::createUnitVector(const attachSystem::FixedComp& FC,
 }
   
 void
-CH4PreFlat::createSurfaces(const attachSystem::FixedComp& FC,
-			   const size_t linkPt)
+CH4PreFlat::createSurfaces(const attachSystem::FixedComp&,
+			   const size_t )
   /*!
     Create All the surfaces
     \param FC :: Fixed unit that connects to this moderator
@@ -216,7 +201,7 @@ CH4PreFlat::createSurfaces(const attachSystem::FixedComp& FC,
 
   // NOTE Origin is moved from moderator base:
 
-  const int LN=FC.getLinkSurf(linkPt);
+  //  const int LN=FC.getLinkSurf(linkPt);
   
   ModelSupport::buildPlane(SMap,preIndex+1,Origin-Y*(depth/2.0),Y);
   ModelSupport::buildPlane(SMap,preIndex+2,Origin+Y*(depth/2.0),Y);
@@ -235,11 +220,8 @@ CH4PreFlat::createSurfaces(const attachSystem::FixedComp& FC,
 			   Origin-X*(width/2.0+alThick),X);
   ModelSupport::buildPlane(SMap,preIndex+14,
 			   Origin+X*(width/2.0+alThick),X);
-
   ModelSupport::buildPlane(SMap,preIndex+15,
 			   Origin-Z*(height/2.0+alThick),Z);
-  ModelSupport::buildPlane(SMap,preIndex+25,
-			   Origin-Z*(height/2.0+alThick+vacThick),Z);
   ModelSupport::buildPlane(SMap,preIndex+16,
 			   Origin+Z*(height/2.0+alThick),Z);
 
@@ -253,6 +235,8 @@ CH4PreFlat::createSurfaces(const attachSystem::FixedComp& FC,
 			   Origin-X*(width/2.0+alThick+vacThick),X);
   ModelSupport::buildPlane(SMap,preIndex+24,
 			   Origin+X*(width/2.0+alThick+vacThick),X);
+  ModelSupport::buildPlane(SMap,preIndex+25,
+			   Origin-Z*(height/2.0+alThick+vacThick),Z);
   ModelSupport::buildPlane(SMap,preIndex+26,
 			   Origin+Z*(height/2.0+alThick+vacThick),Z);
 
@@ -281,12 +265,74 @@ CH4PreFlat::createObjects(Simulation& System)
 		       " 21 -22 23 -24 25 -26 (-11:12:-13:14:-15:16) ");
 
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-  voidCell=cellIndex-1;
+  //  voidCell=cellIndex-1;
   
   Out=ModelSupport::getSetComposite(SMap,preIndex," 21 -22 23 -24 25 -26 ");
 
   addOuterSurf(Out);
   return;
+}
+
+Geometry::Vec3D
+CH4PreFlat::getSurfacePoint(const size_t layerIndex,
+			    const size_t sideIndex) const
+  /*!
+    Given a side and a layer calculate the link point
+    \param sideIndex :: Side [0-5]
+    \param layerIndex :: layer, 0 is inner moderator 
+    \return Surface point
+  */
+{
+  ELog::RegMethod RegA("CH4PreFlat","getSurfacePoint");
+
+  if (sideIndex>5) 
+    throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
+  if (layerIndex>=nLayers) 
+    throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layerIndex");
+
+  const double LVec[]={depth/2.0,depth/2.0,width/2.0,
+		       width/2.0,height/2.0,height/2.0};
+  const double TVec[]={0.0,alThick,alThick+vacThick};
+
+  const Geometry::Vec3D XYZ[6]={-Y,Y,-X,X,-Z,Z};
+  return Origin+XYZ[sideIndex]*(LVec[sideIndex]+TVec[layerIndex]);
+}
+
+
+std::string
+CH4PreFlat::getLayerString(const size_t layerIndex,
+			   const size_t sideIndex) const
+  /*!
+    Given a side and a layer calculate the link surf
+    \param sideIndex :: Side [0-5]
+    \param layerIndex :: layer, 0 is inner moderator [0-LVec]
+    \return Surface string
+  */
+{
+  ELog::RegMethod RegA("CH4PreFlat","getLayerString");
+  return StrFunc::makeString(getLayerSurf(layerIndex,sideIndex));
+}
+
+int
+CH4PreFlat::getLayerSurf(const size_t layerIndex,
+			 const size_t sideIndex) const
+  /*!
+    Given a side and a layer calculate the link surf
+    \param sideIndex :: Side [0-5]
+    \param layerIndex :: layer, 0 is inner moderator [0-4]
+    \return Surface string
+  */
+{
+  ELog::RegMethod RegA("CH4PreFlat","getLayerSurf");
+
+  if (layerIndex>=nLayers) 
+    throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layerIndex");
+  if (sideIndex>5)
+    throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
+
+  const int SI(preIndex+static_cast<int>(layerIndex*10+sideIndex+1));
+  const int signValue((sideIndex % 2) ? 1 : -1);
+  return signValue*SMap.realSurf(SI);
 }
 
 void 
@@ -315,6 +361,7 @@ CH4PreFlat::createLinks()
   FixedComp::setLinkSurf(5,SMap.realSurf(preIndex+26));
   return;
 }
+
 
 void
 CH4PreFlat::createAll(Simulation& System,

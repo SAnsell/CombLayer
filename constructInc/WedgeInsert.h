@@ -31,8 +31,10 @@ namespace constructSystem
   \class WedgeInsert
   \author S. Ansell
   \version 1.0
-  \date October 2012
-  \brief Specialized for a unit within an object
+  \date May 2014
+  \brief Places a bound  unit within an object
+
+	It adds a component within any object, e.g. a moderator
 */
 
 class WedgeInsert : public attachSystem::FixedComp,

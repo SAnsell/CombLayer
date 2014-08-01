@@ -119,6 +119,8 @@ class Object
 
   /// Return the top rule
   const Rule* topRule() const { return HRule.getTopRule(); }
+  /// get head rule 
+  const HeadRule& getHeadRule() const { return HRule; }
   
   int populate();
   int createSurfaceList();

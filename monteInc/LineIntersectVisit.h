@@ -97,6 +97,8 @@ class LineIntersectVisit : public Global::BaseVisit
 			     const Geometry::Surface*,const int);
     Geometry::Vec3D getPoint(const Geometry::Surface*,
 			     const Geometry::Vec3D&);
+    Geometry::Vec3D getPoint(const std::string&,
+			     const Geometry::Vec3D&);
     /// Get number in intersection
     int getNPoints() const { return static_cast<int>(PtOut.size()); }
 
