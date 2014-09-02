@@ -142,7 +142,8 @@ CH4Layer::checkUnit(const FuncDataBase& Control,
 		    const size_t Index,const std::string& A,
 		    const double AScale,const std::string& B,
 		    const double BScale,const std::string& C,
-		    const double CScale) const
+		    const double CScale,const bool defFlag,
+		    const double defVal) const
   /*!
     Checks a given value exists in the data base
     and returns the scaled component
@@ -154,12 +155,14 @@ CH4Layer::checkUnit(const FuncDataBase& Control,
     \param BScale :: Scale factor for [if found]
     \param C :: Primary string
     \param CScale :: Scale factor for [if found]
-    \return Var(A/B)*Scale
+    \param defFlag :: trap later 
+    \param defVal :: Default value [if defFlag]
+    \return Var(A/B/C)*Scale
    */
 {
   ELog::RegMethod RegA("CH4Layer","checkUnit");
-
   const std::string keyA=keyName+StrFunc::makeString(A,Index);
+
   if (Control.hasVariable(keyA))
     return Control.EvalVar<double>(keyA)*AScale;
   const std::string keyB=keyName+StrFunc::makeString(B,Index);
@@ -167,8 +170,10 @@ CH4Layer::checkUnit(const FuncDataBase& Control,
     return Control.EvalVar<double>(keyB)*BScale;
   const std::string keyC=keyName+StrFunc::makeString(C,Index);
   // Allow this to throw
-  return Control.EvalVar<double>(keyC)*CScale;
+  if (!defFlag)
+    return Control.EvalVar<double>(keyC)*CScale;
 
+  return Control.EvalDefVar<double>(keyC,defVal);
 }
 
 void
@@ -190,9 +195,11 @@ CH4Layer::populate(const FuncDataBase& Control)
 
   nLayers=Control.EvalVar<size_t>(keyName+"NLayer");
   if (!nLayers)
-    throw ColErr::IndexError<size_t>(0,1,"nLayer");
-  double Front,Back,Left,Right,Top,Base,temp;
+    throw ColErr::IndexError<size_t>(0,1,"nLayers");
+  double Front,Back,Left,Right,Top,
+    Base,frontRad,backRad,round,temp;
   int mat;
+
   for(size_t i=0;i<nLayers;i++)
     {
       Top=checkUnit(Control,i+1,"Top",1.0,"Height",0.5,"Layer",1.0);
@@ -201,6 +208,11 @@ CH4Layer::populate(const FuncDataBase& Control)
       Right=checkUnit(Control,i+1,"Right",1.0,"Width",0.5,"Layer",1.0);
       Front=checkUnit(Control,i+1,"Front",1.0,"Depth",0.5,"Layer",1.0);
       Back=checkUnit(Control,i+1,"Back",1.0,"Depth",0.5,"Layer",1.0);
+      frontRad=checkUnit(Control,i+1,"FrontRad",1.0,
+			"Radius",1.0,"Radius",1.0,1,0.0);
+      backRad=checkUnit(Control,i+1,"BackRad",1.0,
+			"Radius",1.0,"Radius",1.0,1,0.0);
+      round=checkUnit(Control,i+1,"Round",1.0,"Round",0.5,"Round",1.0,1,0.0);
 
       mat=ModelSupport::EvalMat<int>
 	(Control,keyName+StrFunc::makeString("Mat",i+1));
@@ -208,6 +220,7 @@ CH4Layer::populate(const FuncDataBase& Control)
 	(keyName+StrFunc::makeString("Temp",i+1),0.0);
       
       LayerInfo IDX(Front,Back,Left,Right,Base,Top);
+      IDX.setRounds(frontRad,backRad,round);
       IDX.setMat(mat,temp);
       if (i)
 	IDX+=LVec.back();
@@ -265,20 +278,66 @@ CH4Layer::createSurfaces()
 
   for(size_t i=0;i<LVec.size();i++)
     {
-      // 1+j+j%2 gives 1,1,3,3,5,5 as j iterates
-      for(size_t j=0;j<6;j++)
-	ModelSupport::buildPlane(SMap,ch4Layer+static_cast<int>(j),
-				   Origin+XYZ[j]*LVec[i].Item(j),XYZ[1+j-j%2]);
+      const double LWidth=LVec[i].Item(2);
+      const double RWidth=LVec[i].Item(3);
+      const double MWidth=(LWidth+RWidth)/2.0;
+      const double radF=LVec[i].frontRadius();
+      const double radB=LVec[i].backRadius();
+      const double FD=LVec[i].Item(0);	  
+      const double BD=LVec[i].Item(1);	  
+      // Front surface 
+      if (fabs(radF)>Geometry::zeroTol)
+	{
+	  double Yshift=radF*radF-MWidth*MWidth;
+	  if (Yshift<Geometry::zeroTol)
+	    throw ColErr::RangeError<double>(radF,MWidth,1e10,
+					     "RadF too low of surface:"+
+					     StrFunc::makeString(i+1));
+	  
+	  Yshift=sqrt(Yshift);
+	  ELog::EM<<"YShift == "<<Yshift<<ELog::endDiag;
+	  const Geometry::Vec3D RCent=Origin-Y*(FD-Yshift)+
+	    X*(LWidth-RWidth);
+	  ELog::EM<<"YShift == "<<Origin<<":"<<RCent<<ELog::endDiag;
+	  ModelSupport::buildCylinder(SMap,ch4Layer,RCent,Z,radF);
+	}
+      else
+	ModelSupport::buildPlane(SMap,ch4Layer,Origin-Y*FD,Y);
 
+      // Back surface 
+      if (fabs(radB)>Geometry::zeroTol)
+	{
+	  double Yshift=radB*radB-MWidth*MWidth;
+	  if (Yshift<Geometry::zeroTol)
+	    throw ColErr::RangeError<double>(radB,MWidth,1e10,
+					     "RadB too low of surface:"+
+					     StrFunc::makeString(i+1));
+	  
+	  Yshift=sqrt(Yshift);
+	  const Geometry::Vec3D RCent=Origin+Y*(BD-Yshift)+
+	    X*(LWidth-RWidth);
+	  ModelSupport::buildCylinder(SMap,ch4Layer+1,RCent,Z,radB);
+	}
+      else
+	ModelSupport::buildPlane(SMap,ch4Layer+1,Origin+Y*BD,Y);
+
+      // 1+j-j%2 gives 1,1,3,3,5,5 as j iterates
+      for(size_t j=2;j<6;j++)
+	{
+	  ModelSupport::buildPlane(SMap,ch4Layer+static_cast<int>(j),
+				   Origin+XYZ[j]*LVec[i].Item(j),XYZ[1+j-j%2]);
+	}
       ch4Layer+=10;
     }
 
+  // NOT CORRECT?
   for(size_t j=0;j<6;j++)
     {
       FixedComp::setConnect(j,Origin+XYZ[j]*LVec.back().Item(j),
 			    XYZ[j]);
     }
   ch4Layer=modIndex+500;
+
   for(size_t i=0;i<nPoison;i++)
     {
       ModelSupport::buildPlane(SMap,ch4Layer+1,
@@ -296,6 +355,34 @@ CH4Layer::createSurfaces()
 }
 
 void
+CH4Layer::createRule(const size_t lIndex,
+		     HeadRule& FX,HeadRule& BX) const
+  /*!
+    Populates the head rules for front/back depending on 
+    radius status
+    \param lIndex :: layerIndex
+    \param FX :: Front head rule
+    \param BX :: Back head rule
+  */
+{
+  ELog::RegMethod RegA("CH4Layer","createRule");
+
+  const double radF=LVec[lIndex].frontRadius();
+  const double radB=LVec[lIndex].backRadius();
+  std::string Out;
+  const int ch4Layer(modIndex+10*static_cast<int>(lIndex));
+  Out= (radF>Geometry::zeroTol) ?
+    ModelSupport::getComposite(SMap,ch4Layer," -1 ") :
+    ModelSupport::getComposite(SMap,ch4Layer," 1 ");
+  FX.procString(Out);
+  Out= (radB>Geometry::zeroTol) ?
+    ModelSupport::getComposite(SMap,ch4Layer," -2 ") :
+    ModelSupport::getComposite(SMap,ch4Layer," -2 ");
+  BX.procString(Out);
+  return;
+}
+
+void
 CH4Layer::createObjects(Simulation& System)
   /*!
     Adds the Chip guide components
@@ -308,20 +395,29 @@ CH4Layer::createObjects(Simulation& System)
 
   int ch4Layer(modIndex);
   // Poison layers [negative side first]:
-  const std::string 
-    Edge=ModelSupport::getComposite(SMap,ch4Layer," 3 -4 5 -6 ");
+  std::string Edge=ModelSupport::getComposite(SMap,ch4Layer," 3 -4 5 -6 ");
   const double ch4Temp=LVec[0].getTemp();
   const int ch4Mat=LVec[0].getMat();
   int prevPLayer(modIndex-1);        // deal with the 2M effect
   int nextPLayer(modIndex+500);
 
+  // front / back:
+  HeadRule frontX,backX;
+  createRule(0,frontX,backX);
+  HeadRule pFrontX(frontX),pBackX(backX);
+  pFrontX.makeComplement();
+  pBackX.makeComplement();
   for(size_t i=0;i<nPoison;i++)
     {
-      Out=ModelSupport::getComposite
-	(SMap,prevPLayer,nextPLayer," 2 -11M ");
+      if (i)
+	Out=ModelSupport::getComposite(SMap,prevPLayer,
+				       nextPLayer," 2 -11M ");
+      else
+	Out=ModelSupport::getComposite
+	  (SMap,nextPLayer," -11M ")+frontX.display();
+
       System.addCell(MonteCarlo::Qhull(cellIndex++,ch4Mat,
 				       ch4Temp,Out+Edge));
-
       // Al 
       Out=ModelSupport::getComposite(SMap,nextPLayer," 11 -1 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,pCladMat,
@@ -339,24 +435,45 @@ CH4Layer::createObjects(Simulation& System)
       nextPLayer+=20;
     }
   // Final (or total segment)
-  Out=ModelSupport::getComposite(SMap,prevPLayer,modIndex," 2 -2M ");
+  //  Out=ModelSupport::getComposite(SMap,prevPLayer,modIndex," 2 -2M ");
+  if (nPoison)
+    Out=ModelSupport::getComposite
+      (SMap,prevPLayer," 2 ")+backX.display();
+  else
+    Out=backX.display()+" "+frontX.display();
+  
   System.addCell(MonteCarlo::Qhull(cellIndex++,ch4Mat,
 				   ch4Temp,Out+Edge));
 
-  std::string Exclude=
-    ModelSupport::getComposite(SMap,modIndex," (-1:2:-3:4:-5:6) ");
+  
+  Out=ModelSupport::getComposite(SMap,ch4Layer," 3 -4 5 -6 ");
   // Outer layers:
   ch4Layer+=10;
   for(size_t i=1;i<LVec.size();i++)
     {
-      Out=ModelSupport::getComposite(SMap,ch4Layer," 1 -2 3 -4 5 -6 ");
+      HeadRule Exclude;
+      Exclude.procString(Out);
+      Exclude.addIntersection(frontX);
+      Exclude.addIntersection(backX);
+      ELog::EM<<"EXCLUDE == "<<Exclude.display()<<ELog::endDiag;
+      Exclude.makeComplement();
+      createRule(i,frontX,backX);
+      HeadRule Main;
+      Out=ModelSupport::getComposite(SMap,ch4Layer," 3 -4 5 -6 ");
+      Main.procString(Out);
+      Main.addIntersection(Exclude);
+      Main.addIntersection(frontX);
+      Main.addIntersection(backX);
+      ELog::EM<<"Out == "<<Main.display()<<ELog::endDiag;
+
       System.addCell(MonteCarlo::Qhull
 		     (cellIndex++,LVec[i].getMat(),
-		      LVec[i].getTemp(),Out+Exclude));
-      Exclude=ModelSupport::getComposite(SMap,ch4Layer," (-1:2:-3:4:-5:6) ");
+		      LVec[i].getTemp(),Main.display()));
       ch4Layer+=10;
     }
-  
+  Out=ModelSupport::getComposite(SMap,ch4Layer-10," 3 -4 5 -6 ");
+  Out+=frontX.display()+" "+backX.display();
+  ELog::EM<<"Boundary Out == "<<Out<<ELog::endDiag;
   addOuterSurf(Out);
   addBoundarySurf(Out);
 

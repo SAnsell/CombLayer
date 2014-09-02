@@ -175,6 +175,7 @@ WedgeInsert::populate(const FuncDataBase& Control)
   viewHeight=Control.EvalPair<double>(keyName,baseName,"ViewHeight");   
   viewXY=Control.EvalPair<double>(keyName,baseName,"ViewXY");   
   viewZ=Control.EvalPair<double>(keyName,baseName,"ViewZ");   
+  mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat",baseName+"Mat");   
 
   wall=Control.EvalPair<double>(keyName,baseName,"Wall");   
   wallMat=(wall>Geometry::zeroTol) ? 

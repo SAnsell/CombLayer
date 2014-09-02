@@ -126,9 +126,9 @@ Visit::setIndex(const size_t A,const size_t B,const size_t C)
     \param C :: Zcoordinate division
   */
 {
-  nPts=Triple<long int>(static_cast<long int>(A)+1,
-			static_cast<long int>(B)+1,
-			static_cast<long int>(C)+1);
+  nPts=Triple<long int>(static_cast<long int>(A),
+			static_cast<long int>(B),
+			static_cast<long int>(C));
   mesh.resize(boost::extents[nPts[0]][nPts[1]][nPts[2]]);
   return;
 }
@@ -149,7 +149,7 @@ Visit::getResult(const MonteCarlo::Object* ObjPtr) const
   /*!
     Determine what to calculate for an object 
     based on the mesh form
-    \param ObjPtr
+    \param ObjPtr :: object to calculate for
     \return result
   */
 {
@@ -186,19 +186,20 @@ Visit::populate(const Simulation* SimPtr,
   
   const bool aEmptyFlag=Active.empty();
 
+  size_t beCnt(0);
   double stepXYZ[3];
   for(size_t i=0;i<3;i++)
-    stepXYZ[i]=(nPts[i]>1) ? XYZ[i]/(nPts[i]-1.0) : XYZ[i];
+    stepXYZ[i]=XYZ[i]/nPts[i];
 
   for(long int i=0;i<nPts[0];i++)
     {
-      aVec[0]=stepXYZ[0]*i;
+      aVec[0]=stepXYZ[0]*(i+0.5);
       for(long int j=0;j<nPts[1];j++)
         {
-	  aVec[1]=stepXYZ[1]*j;
+	  aVec[1]=stepXYZ[1]*(0.5+j);
 	  for(long int k=0;k<nPts[2];k++)
 	    {
-	      aVec[2]=stepXYZ[2]*k;
+	      aVec[2]=stepXYZ[2]*(0.5+k);
 	      const Geometry::Vec3D Pt=Origin+aVec;
 	      ObjPtr=SimPtr->findCell(Pt,ObjPtr);
 	      // Active Set Code:
@@ -206,16 +207,25 @@ Visit::populate(const Simulation* SimPtr,
 		{
 		  const std::string rangeStr=OR.inRange(ObjPtr->getName());
 		  if (Active.find(rangeStr)!=Active.end())
-		    mesh[i][j][k]=getResult(ObjPtr);
+		    {
+		      mesh[i][j][k]=getResult(ObjPtr);
+		    }
 		  else
 		    mesh[i][j][k]=0.0;
 		}
 	      // OLD Code:
 	      else
-		mesh[i][j][k]=getResult(ObjPtr);
+		{
+		  mesh[i][j][k]=getResult(ObjPtr);
+		  if (outType==material && 
+		      fabs(mesh[i][j][k]-37)<1e-4)
+		    beCnt++;
+		}
+
 	    }
 	}
     }
+  ELog::EM<<"BE == "<<beCnt<<ELog::endDiag;
   return;
 }
 
@@ -244,11 +254,9 @@ Visit::writeVTK(const std::string& FName) const
   std::ostringstream cx;
   boost::format fFMT("%1$11.6g%|14t|");
 
-  // Calculate steps
   double stepXYZ[3];
   for(size_t i=0;i<3;i++)
-    stepXYZ[i]=(nPts[i]>1) ? XYZ[i]/(nPts[i]-1.0) : XYZ[i];
-
+    stepXYZ[i]=XYZ[i]/nPts[i];
 
   OX<<"# vtk DataFile Version 2.0"<<std::endl;
   OX<<"chipIR Data"<<std::endl;
@@ -257,17 +265,17 @@ Visit::writeVTK(const std::string& FName) const
   OX<<"DIMENSIONS "<<nPts[0]<<" "<<nPts[1]<<" "<<nPts[2]<<std::endl;
   OX<<"X_COORDINATES "<<nPts[0]<<" float"<<std::endl;
   for(int i=0;i<nPts[0];i++)
-    OX<<(fFMT % (Origin[0]+stepXYZ[0]*i));
+    OX<<(fFMT % (Origin[0]+stepXYZ[0]*(i+0.5)));
   OX<<std::endl;
 
   OX<<"Y_COORDINATES "<<nPts[1]<<" float"<<std::endl;
   for(int i=0;i<nPts[1];i++)
-    OX<<(fFMT % (Origin[1]+stepXYZ[1]*i));
+    OX<<(fFMT % (Origin[1]+stepXYZ[1]*(i+0.5)));
   OX<<std::endl;
 
   OX<<"Z_COORDINATES "<<nPts[2]<<" float"<<std::endl;
   for(int i=0;i<nPts[2];i++) 
-    OX<<(fFMT % (Origin[2]+stepXYZ[2]*i));
+    OX<<(fFMT % (Origin[2]+stepXYZ[2]*(i*0.5)));
   OX<<std::endl;
 
   OX<<"POINT_DATA "<<nPts[0]*nPts[1]*nPts[2]<<std::endl;

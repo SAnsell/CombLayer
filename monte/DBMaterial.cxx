@@ -860,7 +860,6 @@ DBMaterial::initMaterial()
 		   "92236.70c 1.536175e-05 92238.70c 8.701140e-03 "
 		   ,"",MLib);
   setMaterial(MObj);
-
   // Material #105 U3SI2 in Al for reactor Original Fuel [delft] 
   // U density at 4.3//cc Full 100% burnt for linar interpolationx
   MObj.setMaterial(105,"U3Si2LowBurnt",
@@ -882,6 +881,17 @@ DBMaterial::initMaterial()
 		   "96245.70c 7.050947e-11","",MLib);
   setMaterial(MObj);
 
+  // Material #106 Dy2O3 - New material form from Bath Unvirsity
+  MObj.setMaterial(106,"Dy2O3",
+		   "66160.70c 0.000374013 66161.70c 0.00302247 "
+		   "66162.70c 0.00407738 66163.70c 0.00397988 "
+		   "66164.70c 0.00450414 8016.70c 0.0398947 "
+		   "22046.70c 0.000658263 22047.70c 0.000593634 "
+		   "22048.70c 0.00588208 22049.70c 0.000431661 "
+		   "22050.70c 0.000413309","",MLib);
+  //  setMaterial(MObj);
+
+
   return;
 }
 
@@ -896,7 +906,6 @@ DBMaterial::setMaterial(const MonteCarlo::Material& MO)
 
   const std::string& MName=MO.getName();
   const int MIndex=MO.getNumber();
-
   checkNameIndex(MIndex,MName);
   MStore.insert(MTYPE::value_type(MIndex,MO));
   IndexMap.insert(SCTYPE::value_type(MName,MIndex));

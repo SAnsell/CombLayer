@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   t1UpgradeInc/LayerInfo.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ class LayerInfo
 {
  private:
  
-  double V[6];     ///< Values
+  double V[9];     ///< Values
   int mat;         ///< Material
   double Temp;     ///< Temperature
 
@@ -48,9 +48,8 @@ class LayerInfo
   LayerInfo& operator+=(const double);
 
   double Item(const size_t) const;
-
-
   void setMat(const int,const double);
+  void setRounds(const double,const double,const double);
 
   double front() const { return V[0]; }
   double back() const { return V[1]; }
@@ -58,6 +57,10 @@ class LayerInfo
   double right() const { return V[3]; }  
   double top() const { return V[4]; }    
   double base() const { return V[5]; }    
+  double frontRadius() const { return V[6]; }
+  double backRadius() const { return V[7]; }  
+  double cornerRad() const { return V[8]; }
+  
   int getMat() const { return mat; }
   double getTemp() const { return Temp; }
   

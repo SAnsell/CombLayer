@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   lensModel/ProtonFlight.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,6 @@
 #include <string>
 #include <algorithm>
 #include <memory>
-#include <boost/array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -46,9 +45,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Quaternion.h"
 #include "Surface.h"
 #include "surfIndex.h"
@@ -67,12 +63,9 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "SrcData.h"
-#include "SrcItem.h"
-#include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -102,7 +95,8 @@ ProtonFlight::ProtonFlight(const ProtonFlight& A) :
   protonIndex(A.protonIndex),cellIndex(A.cellIndex),
   populated(A.populated),boxX(A.boxX),boxY(A.boxY),boxZ(A.boxZ),
   backSurf(A.backSurf),targetCell(A.targetCell),Angle(A.Angle),
-  YOffset(A.YOffset),width(A.width),height(A.height),targetBeThick(A.targetBeThick),
+  YOffset(A.YOffset),width(A.width),
+  height(A.height),targetBeThick(A.targetBeThick),
   targetBeWidth(A.targetBeWidth),targetBeHeight(A.targetBeHeight),
   targetWaterThick(A.targetWaterThick),targetWaterWidth(A.targetWaterWidth),
   targetWaterHeight(A.targetWaterHeight),targetHeight(A.targetHeight),
@@ -191,12 +185,12 @@ ProtonFlight::populate(const Simulation& System)
   targetWaterWidth=Control.EvalVar<double>(keyName+"TargetWaterWidth");
   targetWaterHeight=Control.EvalVar<double>(keyName+"TargetWaterHeight");
 
-  targetMat=Control.EvalVar<int>(keyName+"TargetMat");
-  targetCoolant=Control.EvalVar<int>(keyName+"TargetCoolant");
-  targetSurround=Control.EvalVar<int>(keyName+"TargetSurround");
+  targetMat=ModelSupport::EvalMat<int>(Control,keyName+"TargetMat");
+  targetCoolant=ModelSupport::EvalMat<int>(Control,keyName+"TargetCoolant");
+  targetSurround=ModelSupport::EvalMat<int>(Control,keyName+"TargetSurround");
 
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
-  wallMat=Control.EvalVar<int>(keyName+"WallMat");
+  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
   protonEnergy=Control.EvalVar<double>(keyName+"Energy");
 

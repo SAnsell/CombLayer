@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   test/testObjSurfMap.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -162,18 +162,18 @@ testObjSurfMap::testMap()
   ELog::RegMethod RegA("testObjSurfMap","testMap");
   
   // Create Objects:
-  std::vector<boost::shared_ptr<MonteCarlo::Object> > OVec;
-  OVec.push_back(boost::shared_ptr<MonteCarlo::Object>
+  std::vector<std::shared_ptr<MonteCarlo::Object> > OVec;
+  OVec.push_back(std::shared_ptr<MonteCarlo::Object>
 		 (new MonteCarlo::Object(1,1,0.1,"1 -2 3 4")));
-  OVec.push_back(boost::shared_ptr<MonteCarlo::Object>
+  OVec.push_back(std::shared_ptr<MonteCarlo::Object>
 		 (new MonteCarlo::Object(1,1,0.1,"1 2 3 4")));
-  OVec.push_back(boost::shared_ptr<MonteCarlo::Object>
+  OVec.push_back(std::shared_ptr<MonteCarlo::Object>
 		 (new MonteCarlo::Object(2,1,0.1,"1 2 3 4")));
-  OVec.push_back(boost::shared_ptr<MonteCarlo::Object>
+  OVec.push_back(std::shared_ptr<MonteCarlo::Object>
 		 (new MonteCarlo::Object(3,1,0.1,"1 2 3 4")));
 
-  std::for_each(OVec.begin(),OVec.end(),
-	  boost::bind(&MonteCarlo::Object::createSurfaceList,_1));
+  for(std::shared_ptr<MonteCarlo::Object>& OPtr : OVec)
+    OPtr->createSurfaceList();
 
   ObjSurfMap OM;
 

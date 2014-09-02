@@ -140,6 +140,8 @@ meshTally::setKeyWords(const std::string& K)
 {
   if (!K.empty())
     keyWords=StrFunc::fullBlock(K);
+  else
+    keyWords="";
   return;
 }
 

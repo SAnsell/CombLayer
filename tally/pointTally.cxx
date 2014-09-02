@@ -462,11 +462,6 @@ pointTally::widenWindow(const int index,const double scale)
 
   const std::pair<Geometry::Vec3D,Geometry::Vec3D> D=calcDirection();
   Geometry::Vec3D N=(!index) ? D.first : D.second;
-  ELog::EM<<"N = "<<D.first<<":"<<D.second<<ELog::endDiag;
-  ELog::EM<<"OLDWIN == "<<Window[0]<<
-    "\n          "<<Window[1]<<
-    "\n          "<<Window[2]<<
-    "\n          "<<Window[3]<<ELog::endBasic;
 
   if (!index)
     {
@@ -482,10 +477,6 @@ pointTally::widenWindow(const int index,const double scale)
       Window[2]+=N*scale;
       Window[3]+=N*scale;
     }
-  ELog::EM<<"Window == "<<Window[0]<<
-    "\n          "<<Window[1]<<
-    "\n          "<<Window[2]<<
-    "\n          "<<Window[3]<<ELog::endBasic;
   
   return;
 }

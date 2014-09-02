@@ -480,6 +480,9 @@ TS1upgrade(FuncDataBase& Control)
   Control.addVariable("CH4ModDepth1",6.0);     
   Control.addVariable("CH4ModWidth1",12.0);   
   Control.addVariable("CH4ModHeight1",12.0);   
+  Control.addVariable("CH4ModFrontRad1",30.0);  
+  Control.addVariable("CH4ModFrontRad2",30.0);  
+  Control.addVariable("CH4ModFrontRad3",30.0);  
 
   Control.addVariable("CH4ModFront2",0.5);       // FRont wall
   Control.addVariable("CH4ModBack2",0.5);       // Back wall
@@ -595,6 +598,8 @@ TS1upgrade(FuncDataBase& Control)
   Control.addVariable("CH4LayerYStep",2.3);  // +9.8    
   Control.addVariable("CH4LayerZStep",-13.4);     
   Control.addVariable("CH4LayerXYangle",60.0);  
+  Control.addVariable("CH4LayerZangle",0.0);  
+
   Control.addVariable("CH4LayerZangle",0.0);  
 
   

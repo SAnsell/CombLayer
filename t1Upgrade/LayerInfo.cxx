@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   t1Upgrade/LayerInfo.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,6 +65,9 @@ LayerInfo::LayerInfo(const double A,const double B,
   V[3]=D;
   V[4]=E;
   V[5]=F;
+  V[6]=0.0;
+  V[7]=0.0;
+  V[8]=0.0;
 }
 
 LayerInfo::LayerInfo(const double A,const double B,
@@ -79,6 +82,9 @@ LayerInfo::LayerInfo(const double A,const double B,
   V[0]=V[1]=A/2.0;
   V[2]=V[3]=B/2.0;  
   V[4]=V[5]=C/2.0;
+  V[6]=0.0;
+  V[7]=0.0;
+  V[8]=0.0;
 }
 
 LayerInfo::LayerInfo(const LayerInfo& A) : 
@@ -88,7 +94,7 @@ LayerInfo::LayerInfo(const LayerInfo& A) :
     \param A :: LayerInfo to copy
   */
 {
-  for(size_t j=0;j<6;j++)
+  for(size_t j=0;j<9;j++)
     V[j]=A.V[j];
 }
 
@@ -102,7 +108,7 @@ LayerInfo::operator=(const LayerInfo& A)
 {
   if (this!=&A)
     {
-      for(size_t j=0;j<6;j++)
+      for(size_t j=0;j<9;j++)
 	V[j]=A.V[j];
       mat=A.mat;
       Temp=A.Temp;
@@ -119,6 +125,7 @@ LayerInfo::operator+=(const double Value)
     \return this + A
   */
 {
+  // Only add non round values
   for(size_t i=0;i<6;i++)
     V[i]+=Value;
   return *this;
@@ -138,6 +145,21 @@ LayerInfo::operator+=(const LayerInfo& A)
 }
 
 void
+LayerInfo::setRounds(const double FR,const double BR,const double T)
+  /*!
+    Set the material 
+    \param FR :: front round
+    \param BR :: Back round
+    \param T :: Tube rounds
+   */
+{
+  V[6]=FR;
+  V[7]=BR;
+  V[8]=T;
+  return;
+}
+
+void
 LayerInfo::setMat(const int M,const double T)
   /*!
     Set the material 
@@ -154,13 +176,13 @@ double
 LayerInfo::Item(const size_t Index) const
   /*!
     Accessor 
-    \param Index :: Index value [0-5]
+    \param Index :: Index value [0-8]
    */
 {
-  if (Index>5)
+  if (Index>8)
     {
       ELog::RegMethod RegA("LayerInfo","getValue");
-      throw ColErr::IndexError<size_t>(Index,6,"Index");
+      throw ColErr::IndexError<size_t>(Index,9,"Index");
     }
   return V[Index];
 }

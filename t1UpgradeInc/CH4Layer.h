@@ -41,7 +41,6 @@ class CH4Layer : public constructSystem::ModBase
  private:
     
   std::vector<LayerInfo> LVec;  ///< Layer Info vector [walls]
-
   size_t nPoison;                  ///< Number of poison
   std::vector<double> poisonYStep; ///< Y centre of poison layer
   double poisonThick;              ///< Poison thickness
@@ -49,6 +48,8 @@ class CH4Layer : public constructSystem::ModBase
   double pCladThick;               ///< Poison thickness
   int pCladMat;                    ///< Poison Cladding (Al)  
 
+  
+  void createRule(const size_t,HeadRule&,HeadRule&) const;
 
   virtual void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
@@ -61,7 +62,8 @@ class CH4Layer : public constructSystem::ModBase
   double checkUnit(const FuncDataBase&,const size_t,
 		   const std::string&,const double,
 		   const std::string&,const double,
-		   const std::string&,const double) const;
+		   const std::string&,const double,
+		   const bool =0,const double =0.0) const;
 
  public:
 

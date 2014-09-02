@@ -197,7 +197,11 @@ meshConstruct::rectangleMesh(Simulation& System,const int type,
       MT.setKeyWords("DOSE");
       MT.setIndexLine("40 1 2 1e6");
     }
-  else if (KeyWords!="void")
+  else if (KeyWords=="void")
+    {
+      MT.setKeyWords("");
+    }
+  else 
     {
       ELog::EM<<"Mesh keyword options:\n"
 	      <<"  DOSE :: SNS Flux to Dose conversion (mrem/hour)\n"

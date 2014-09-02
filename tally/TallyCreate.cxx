@@ -97,6 +97,7 @@ addFullHeatBlock(Simulation& System)
   */
 {
   ELog::RegMethod RegA("tallySystem","addFullHeatBlock");
+
   const std::vector<int> Units=System.getNonVoidCellVector();
   const std::vector<int> CL=System.getCellVector();
   System.getPC().setVolume(CL,1.0);

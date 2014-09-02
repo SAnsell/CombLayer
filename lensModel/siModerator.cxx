@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   lensModel/siModerator.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,6 +71,7 @@
 #include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -150,9 +151,9 @@ siModerator::populate(const FuncDataBase& Control)
   topThick=Control.EvalVar<double>(keyName+"TopAlThick");
   sideThick=Control.EvalVar<double>(keyName+"SideAlThick");
   temp=Control.EvalVar<double>(keyName+"Temp"); 
-  siMat=Control.EvalVar<int>(keyName+"SiMat");
-  polyMat=Control.EvalVar<int>(keyName+"PolyMat"); 
-  surroundMat=Control.EvalVar<int>(keyName+"SurroundMat"); 
+  siMat=ModelSupport::EvalMat<int>(Control,keyName+"SiMat");
+  polyMat=ModelSupport::EvalMat<int>(Control,keyName+"PolyMat"); 
+  surroundMat=ModelSupport::EvalMat<int>(Control,keyName+"SurroundMat"); 
 
   return;
 }
