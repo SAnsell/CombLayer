@@ -103,6 +103,7 @@
 #include "collInsertBlock.h"
 #include "ZoomShutter.h"
 #include "IMatShutter.h"
+#include "BlockShutter.h"
 #include "BulkShield.h"
 
 namespace shutterSystem
@@ -111,6 +112,7 @@ namespace shutterSystem
 const size_t BulkShield::chipShutter(0);
 const size_t BulkShield::imatShutter(3);
 const size_t BulkShield::zoomShutter(9);
+const size_t BulkShield::letShutter(6);
 
 BulkShield::BulkShield(const std::string& Key)  : 
   attachSystem::FixedComp(Key,0),attachSystem::ContainedComp(),
@@ -312,6 +314,8 @@ BulkShield::createShutters(Simulation& System,
 		       !IParam.compValue("E",std::string("IMat"))) );
   const bool zoomFlag(!IParam.flag("exclude") || 
    		      !IParam.compValue("E",std::string("Zoom")));
+  const bool letFlag(!IParam.flag("exclude") || 
+   		      !IParam.compValue("E",std::string("LET")));
 
   GData.clear();
   for(size_t i=0;i<numberBeamLines;i++)
@@ -325,6 +329,9 @@ BulkShield::createShutters(Simulation& System,
       else if (i==zoomShutter && zoomFlag)
 	GData.push_back(std::shared_ptr<GeneralShutter>
 			(new ZoomShutter(i,"shutter","zoomShutter")));
+      else if (i==letShutter && letFlag)
+	GData.push_back(std::shared_ptr<GeneralShutter>
+			(new BlockShutter(i,"shutter","letShutter")));
       else
 	GData.push_back(std::shared_ptr<GeneralShutter>
 			(new GeneralShutter(i,"shutter")));

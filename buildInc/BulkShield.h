@@ -99,6 +99,7 @@ class BulkShield : public attachSystem::FixedComp,
   
   static const size_t chipShutter;   ///< Chip shutter number
   static const size_t imatShutter;   ///< Imat shutter number
+  static const size_t letShutter;    ///< LET shutter number
   static const size_t zoomShutter;   ///< zoom shutter number
 
 

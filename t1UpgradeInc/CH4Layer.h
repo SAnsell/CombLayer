@@ -49,7 +49,8 @@ class CH4Layer : public constructSystem::ModBase
   int pCladMat;                    ///< Poison Cladding (Al)  
 
   
-  void createRule(const size_t,HeadRule&,HeadRule&) const;
+  void createFrontRule(const size_t,HeadRule&) const;
+  void createBackRule(const size_t,HeadRule&) const;
 
   virtual void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);

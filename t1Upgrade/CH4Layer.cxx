@@ -209,9 +209,9 @@ CH4Layer::populate(const FuncDataBase& Control)
       Front=checkUnit(Control,i+1,"Front",1.0,"Depth",0.5,"Layer",1.0);
       Back=checkUnit(Control,i+1,"Back",1.0,"Depth",0.5,"Layer",1.0);
       frontRad=checkUnit(Control,i+1,"FrontRad",1.0,
-			"Radius",1.0,"Radius",1.0,1,0.0);
+			"FrontRadius",1.0,"Radius",1.0,1,0.0);
       backRad=checkUnit(Control,i+1,"BackRad",1.0,
-			"Radius",1.0,"Radius",1.0,1,0.0);
+			"BackRadius",1.0,"Radius",1.0,1,0.0);
       round=checkUnit(Control,i+1,"Round",1.0,"Round",0.5,"Round",1.0,1,0.0);
 
       mat=ModelSupport::EvalMat<int>
@@ -274,7 +274,7 @@ CH4Layer::createSurfaces()
   ELog::RegMethod RegA("CH4Layer","createSurface");
 
   const Geometry::Vec3D XYZ[6]={-Y,Y,-X,X,-Z,Z};
-  int ch4Layer(modIndex+1);
+  int ch4Layer(modIndex);
 
   for(size_t i=0;i<LVec.size();i++)
     {
@@ -295,14 +295,36 @@ CH4Layer::createSurfaces()
 					     StrFunc::makeString(i+1));
 	  
 	  Yshift=sqrt(Yshift);
-	  ELog::EM<<"YShift == "<<Yshift<<ELog::endDiag;
 	  const Geometry::Vec3D RCent=Origin-Y*(FD-Yshift)+
 	    X*(LWidth-RWidth);
-	  ELog::EM<<"YShift == "<<Origin<<":"<<RCent<<ELog::endDiag;
-	  ModelSupport::buildCylinder(SMap,ch4Layer,RCent,Z,radF);
+	  ModelSupport::buildCylinder(SMap,ch4Layer+1,RCent,Z,radF);
+
+	  // Now build corner rad Calc centre
+	  // Point connects RCentre and side surface at normals
+	  const double cRad=LVec[i].cornerRad();
+	  if (fabs(cRad)>Geometry::zeroTol)
+	    {
+	      const double lX=(2.0*LWidth-RWidth)-cRad;
+	      const double lY=sqrt((radF-cRad)*(radF-cRad)-lX*lX);
+	      const Geometry::Vec3D LC=RCent-Y*lY-X*lX;
+	      Geometry::Vec3D DUnit=(LC-RCent)*Z;
+	      // front curve / cylinder impact point
+	      ModelSupport::buildCylinder(SMap,ch4Layer+13,LC,Z,cRad);
+	      ModelSupport::buildPlane(SMap,ch4Layer+1011,LC,Y);
+	      ModelSupport::buildPlane(SMap,ch4Layer+1012,LC,DUnit);
+
+	      const double rX=(2.0*RWidth-LWidth)-cRad;
+	      const double rY=sqrt((radF-cRad)*(radF-cRad)-rX*rX);
+	      const Geometry::Vec3D RC=RCent-Y*rY+X*rX;
+	      DUnit=(RC-RCent)*Z;
+	      ModelSupport::buildCylinder(SMap,ch4Layer+14,RC,Z,cRad);
+	      ModelSupport::buildPlane(SMap,ch4Layer+1013,RC,Y);
+	      ModelSupport::buildPlane(SMap,ch4Layer+1014,RC,DUnit);
+	      
+	    }
 	}
       else
-	ModelSupport::buildPlane(SMap,ch4Layer,Origin-Y*FD,Y);
+	ModelSupport::buildPlane(SMap,ch4Layer+1,Origin-Y*FD,Y);
 
       // Back surface 
       if (fabs(radB)>Geometry::zeroTol)
@@ -312,22 +334,43 @@ CH4Layer::createSurfaces()
 	    throw ColErr::RangeError<double>(radB,MWidth,1e10,
 					     "RadB too low of surface:"+
 					     StrFunc::makeString(i+1));
-	  
 	  Yshift=sqrt(Yshift);
 	  const Geometry::Vec3D RCent=Origin+Y*(BD-Yshift)+
 	    X*(LWidth-RWidth);
-	  ModelSupport::buildCylinder(SMap,ch4Layer+1,RCent,Z,radB);
+	  ModelSupport::buildCylinder(SMap,ch4Layer+2,RCent,Z,radB);
+
+	  const double cRad=LVec[i].cornerRad();
+	  if (fabs(cRad)>Geometry::zeroTol)
+	    {
+	      const double lX=(2.0*LWidth-RWidth)-cRad;
+	      const double lY=sqrt((radF-cRad)*(radF-cRad)-lX*lX);
+	      const Geometry::Vec3D LC=RCent+Y*lY-X*lX;
+	      Geometry::Vec3D DUnit=(LC-RCent)*Z;
+	      // front curve / cylinder impact point
+	      ModelSupport::buildCylinder(SMap,ch4Layer+23,LC,Z,cRad);
+	      ModelSupport::buildPlane(SMap,ch4Layer+1021,LC,Y);
+	      ModelSupport::buildPlane(SMap,ch4Layer+1022,LC,DUnit);
+
+	      const double rX=(2.0*RWidth-LWidth)-cRad;
+	      const double rY=sqrt((radF-cRad)*(radF-cRad)-rX*rX);
+	      const Geometry::Vec3D RC=RCent-Y*rY+X*rX;
+	      DUnit=(RC-RCent)*Z;
+	      ModelSupport::buildCylinder(SMap,ch4Layer+24,RC,Z,cRad);
+	      ModelSupport::buildPlane(SMap,ch4Layer+1023,RC,Y);
+	      ModelSupport::buildPlane(SMap,ch4Layer+1024,RC,DUnit);
+	    }
+
 	}
       else
-	ModelSupport::buildPlane(SMap,ch4Layer+1,Origin+Y*BD,Y);
+	ModelSupport::buildPlane(SMap,ch4Layer+2,Origin+Y*BD,Y);
 
       // 1+j-j%2 gives 1,1,3,3,5,5 as j iterates
       for(size_t j=2;j<6;j++)
 	{
-	  ModelSupport::buildPlane(SMap,ch4Layer+static_cast<int>(j),
+	  ModelSupport::buildPlane(SMap,ch4Layer+static_cast<int>(j+1),
 				   Origin+XYZ[j]*LVec[i].Item(j),XYZ[1+j-j%2]);
 	}
-      ch4Layer+=10;
+      ch4Layer+=30;
     }
 
   // NOT CORRECT?
@@ -355,8 +398,8 @@ CH4Layer::createSurfaces()
 }
 
 void
-CH4Layer::createRule(const size_t lIndex,
-		     HeadRule& FX,HeadRule& BX) const
+CH4Layer::createFrontRule(const size_t lIndex,
+			  HeadRule& FX) const
   /*!
     Populates the head rules for front/back depending on 
     radius status
@@ -365,22 +408,60 @@ CH4Layer::createRule(const size_t lIndex,
     \param BX :: Back head rule
   */
 {
-  ELog::RegMethod RegA("CH4Layer","createRule");
+  ELog::RegMethod RegA("CH4Layer","createFrontRule");
 
   const double radF=LVec[lIndex].frontRadius();
-  const double radB=LVec[lIndex].backRadius();
+  const double cRad=LVec[lIndex].cornerRad();
+
   std::string Out;
-  const int ch4Layer(modIndex+10*static_cast<int>(lIndex));
-  Out= (radF>Geometry::zeroTol) ?
-    ModelSupport::getComposite(SMap,ch4Layer," -1 ") :
-    ModelSupport::getComposite(SMap,ch4Layer," 1 ");
-  FX.procString(Out);
-  Out= (radB>Geometry::zeroTol) ?
-    ModelSupport::getComposite(SMap,ch4Layer," -2 ") :
-    ModelSupport::getComposite(SMap,ch4Layer," -2 ");
-  BX.procString(Out);
+  const int ch4Layer(modIndex+30*static_cast<int>(lIndex));
+  if (radF<Geometry::zeroTol) 
+    Out=ModelSupport::getComposite(SMap,ch4Layer," 1 ");
+  else
+    {
+      if (cRad>Geometry::zeroTol)
+	Out=ModelSupport::getComposite
+	  (SMap,ch4Layer,"-1 (-13:1011:-1012) (-14:1013:1014)" );
+      else
+	Out=ModelSupport::getComposite(SMap,ch4Layer," -1 ");
+    }
+  FX.procString(Out);      
   return;
 }
+
+void
+CH4Layer::createBackRule(const size_t lIndex,
+			  HeadRule& BX) const
+  /*!
+    Populates the head rules for front/back depending on 
+    radius status
+    \param lIndex :: layerIndex
+    \param BX :: Back head rule
+  */
+{
+  ELog::RegMethod RegA("CH4Layer","createBackRule");
+
+  const double radB=LVec[lIndex].backRadius();
+  const double cRad=LVec[lIndex].cornerRad();
+
+  std::string Out;
+  const int ch4Layer(modIndex+30*static_cast<int>(lIndex));
+
+  if (radB<Geometry::zeroTol) 
+    Out=ModelSupport::getComposite(SMap,ch4Layer," -2 ");
+  else
+    {
+      if (cRad>Geometry::zeroTol)
+	Out=ModelSupport::getComposite
+	  (SMap,ch4Layer,"-2 (-23:1021:-1022) (-24:1023:1024)" );
+      else
+	Out=ModelSupport::getComposite(SMap,ch4Layer," -2 ");
+    }
+  BX.procString(Out);      
+
+  return;
+}
+
 
 void
 CH4Layer::createObjects(Simulation& System)
@@ -398,47 +479,45 @@ CH4Layer::createObjects(Simulation& System)
   std::string Edge=ModelSupport::getComposite(SMap,ch4Layer," 3 -4 5 -6 ");
   const double ch4Temp=LVec[0].getTemp();
   const int ch4Mat=LVec[0].getMat();
-  int prevPLayer(modIndex-1);        // deal with the 2M effect
-  int nextPLayer(modIndex+500);
+  int nextPoisLayer(modIndex+500);
 
   // front / back:
   HeadRule frontX,backX;
-  createRule(0,frontX,backX);
-  HeadRule pFrontX(frontX),pBackX(backX);
-  pFrontX.makeComplement();
-  pBackX.makeComplement();
+  createFrontRule(0,frontX);
+  createBackRule(0,backX);
+
   for(size_t i=0;i<nPoison;i++)
     {
       if (i)
-	Out=ModelSupport::getComposite(SMap,prevPLayer,
-				       nextPLayer," 2 -11M ");
+	Out=ModelSupport::getComposite(SMap,nextPoisLayer-10," 2 -21 ");
       else
-	Out=ModelSupport::getComposite
-	  (SMap,nextPLayer," -11M ")+frontX.display();
-
+	{
+	  Out=ModelSupport::getComposite(SMap,nextPoisLayer," -11 ")
+	    +frontX.display();
+	}
       System.addCell(MonteCarlo::Qhull(cellIndex++,ch4Mat,
 				       ch4Temp,Out+Edge));
+
       // Al 
-      Out=ModelSupport::getComposite(SMap,nextPLayer," 11 -1 ");
+      Out=ModelSupport::getComposite(SMap,nextPoisLayer," 11 -1 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,pCladMat,
 				       ch4Temp,Out+Edge));
 
       // Poisoning 
-      Out=ModelSupport::getComposite(SMap,nextPLayer," 1 -2");
+      Out=ModelSupport::getComposite(SMap,nextPoisLayer," 1 -2");
       System.addCell(MonteCarlo::Qhull(cellIndex++,poisonMat,
 				       ch4Temp,Out+Edge));
       // Al 
-      Out=ModelSupport::getComposite(SMap,nextPLayer," 2 -12 ");
+      Out=ModelSupport::getComposite(SMap,nextPoisLayer," 2 -12 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,pCladMat,
 				       ch4Temp,Out+Edge));
-      prevPLayer=nextPLayer+10;   // outer layer is +10
-      nextPLayer+=20;
+      nextPoisLayer+=20;
     }
   // Final (or total segment)
   //  Out=ModelSupport::getComposite(SMap,prevPLayer,modIndex," 2 -2M ");
   if (nPoison)
     Out=ModelSupport::getComposite
-      (SMap,prevPLayer," 2 ")+backX.display();
+      (SMap,nextPoisLayer-10," 2 ")+backX.display();
   else
     Out=backX.display()+" "+frontX.display();
   
@@ -448,37 +527,37 @@ CH4Layer::createObjects(Simulation& System)
   
   Out=ModelSupport::getComposite(SMap,ch4Layer," 3 -4 5 -6 ");
   // Outer layers:
-  ch4Layer+=10;
+  ch4Layer+=30;
   for(size_t i=1;i<LVec.size();i++)
     {
       HeadRule Exclude;
       Exclude.procString(Out);
       Exclude.addIntersection(frontX);
       Exclude.addIntersection(backX);
-      ELog::EM<<"EXCLUDE == "<<Exclude.display()<<ELog::endDiag;
       Exclude.makeComplement();
-      createRule(i,frontX,backX);
+      createFrontRule(i,frontX);
+      createBackRule(i,backX);
       HeadRule Main;
       Out=ModelSupport::getComposite(SMap,ch4Layer," 3 -4 5 -6 ");
       Main.procString(Out);
       Main.addIntersection(Exclude);
       Main.addIntersection(frontX);
       Main.addIntersection(backX);
-      ELog::EM<<"Out == "<<Main.display()<<ELog::endDiag;
 
       System.addCell(MonteCarlo::Qhull
 		     (cellIndex++,LVec[i].getMat(),
 		      LVec[i].getTemp(),Main.display()));
-      ch4Layer+=10;
+      ch4Layer+=30;
     }
-  Out=ModelSupport::getComposite(SMap,ch4Layer-10," 3 -4 5 -6 ");
+  ch4Layer-=30;
+  Out=ModelSupport::getComposite(SMap,ch4Layer," 3 -4 5 -6 ");
   Out+=frontX.display()+" "+backX.display();
-  ELog::EM<<"Boundary Out == "<<Out<<ELog::endDiag;
   addOuterSurf(Out);
   addBoundarySurf(Out);
 
   return;
 }
+
 
 Geometry::Vec3D
 CH4Layer::getSurfacePoint(const size_t layerIndex,
@@ -512,6 +591,18 @@ CH4Layer::getLayerString(const size_t layerIndex,
   */
 {
   ELog::RegMethod RegA("CH4Layer","getLayerString");
+  HeadRule RX;
+
+  if (sideIndex<2)  // Front/back
+    {
+      HeadRule RX;
+      if (!sideIndex)
+	createFrontRule(layerIndex,RX);
+      else
+	createBackRule(layerIndex,RX);
+      
+      return RX.display();
+    }
   return StrFunc::makeString(getLayerSurf(layerIndex,sideIndex));
 }
 
@@ -522,7 +613,7 @@ CH4Layer::getLayerSurf(const size_t layerIndex,
     Given a side and a layer calculate the link surf
     \param sideIndex :: Side [0-5]
     \param layerIndex :: layer, 0 is inner moderator [0-4]
-    \return Surface string
+    \return Surface size
   */
 {
   ELog::RegMethod RegA("CH4Layer","getLayerSurf");
@@ -532,7 +623,11 @@ CH4Layer::getLayerSurf(const size_t layerIndex,
   if (sideIndex>5)
     throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
 
-  const int SI(modIndex+static_cast<int>(layerIndex*10+sideIndex+1));
+  const int SI(modIndex+static_cast<int>(layerIndex*30+sideIndex+1));
+  if ((sideIndex==1 || sideIndex==0) && 
+      LVec[sideIndex].Item(sideIndex+6)>Geometry::zeroTol)
+    return SMap.realSurf(SI);
+
   const int signValue((sideIndex % 2) ? 1 : -1);
   return signValue*SMap.realSurf(SI);
 }
@@ -547,14 +642,9 @@ CH4Layer::createLinks()
   // set Links:
   ELog::RegMethod RegA("CH4Layer","createLinks");
 
-  const int ch4Layer(modIndex+
-		     (static_cast<int>(LVec.size())-1)*10);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(ch4Layer+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(ch4Layer+2));
-  FixedComp::setLinkSurf(2,-SMap.realSurf(ch4Layer+3));
-  FixedComp::setLinkSurf(3,SMap.realSurf(ch4Layer+4));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(ch4Layer+5));
-  FixedComp::setLinkSurf(5,SMap.realSurf(ch4Layer+6));
+  const size_t lIndex(LVec.size()-1);
+  for(size_t i=0;i<6;i++)
+    FixedComp::setLinkSurf(i,getLayerSurf(lIndex,i));
 
   return;
 }

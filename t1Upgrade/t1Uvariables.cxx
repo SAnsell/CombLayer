@@ -480,12 +480,19 @@ TS1upgrade(FuncDataBase& Control)
   Control.addVariable("CH4ModDepth1",6.0);     
   Control.addVariable("CH4ModWidth1",12.0);   
   Control.addVariable("CH4ModHeight1",12.0);   
-  Control.addVariable("CH4ModFrontRad1",30.0);  
-  Control.addVariable("CH4ModFrontRad2",30.0);  
-  Control.addVariable("CH4ModFrontRad3",30.0);  
+  Control.addVariable("CH4ModFrontRadius1",30.0);  
+  Control.addVariable("CH4ModFrontRadius2",30.0);  
+  Control.addVariable("CH4ModFrontRadius3",30.0);  
+  Control.addVariable("CH4ModFrontRadius4",30.0);  
+  Control.addVariable("CH4ModFrontRadius5",30.0);  
+  Control.addVariable("CH4ModFrontRadius6",30.0);  
+  Control.addVariable("CH4ModFrontRadius7",30.0);  
+  Control.addVariable("CH4ModRound1",0.3);    
+  Control.addVariable("CH4ModRound2",0.4);  
+  Control.addVariable("CH4ModRound3",0.7);  
 
-  Control.addVariable("CH4ModFront2",0.5);       // FRont wall
-  Control.addVariable("CH4ModBack2",0.5);       // Back wall
+  Control.addVariable("CH4ModFront2",0.5);       // Front wall
+  Control.addVariable("CH4ModBack2",0.5);        // Back wall
   Control.addVariable("CH4ModLayer2",0.5);       // Other wall
 
   Control.addVariable("CH4ModLayer3",0.4);       // VacGap

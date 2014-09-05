@@ -49,6 +49,7 @@
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
+#include "shutterVar.h"
 #include "variableSetup.h"
 
 namespace setVariable
@@ -780,6 +781,11 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("BWindowIncThick2",0.3); // Inconel Thickness 2
   Control.addVariable("BWindowInconelMat","Inconnel");  // Inconel
   Control.addVariable("BWindowWaterMat","H2O");   // Light water
+
+
+  ts1System::shutterVar let("let"); // LET shutter number [west 7]
+  // LET shutter
+  let.buildVar(Control,2.0,2.2,-1.5,7.91,4.57,0.22,0.275); 
 
 
   return;
