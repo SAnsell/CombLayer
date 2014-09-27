@@ -194,15 +194,15 @@ setDefRotation(const mainSystem::inputParam& IParam)
     {
       const std::string AItem=
 	IParam.getValue<std::string>("angle");
-      if (AItem=="chipIR")
+      if (AItem=="chipIR" || AItem=="ChipIR")
 	MR.addRotation(Geometry::Vec3D(0,0,1),
 		       Geometry::Vec3D(0,0,0),
-		       45.85);
-      else if (AItem=="zoom")
+		       -45.85);
+      else if (AItem=="zoom" || AItem=="Zoom")
 	{
 	  MR.addRotation(Geometry::Vec3D(0,0,1),
 			 Geometry::Vec3D(0,0,0),
-			 -44.00);
+			 45.00-180.0);
 	}
       else 
 	retFlag=AItem;

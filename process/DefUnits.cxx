@@ -74,12 +74,15 @@ setDefUnits(FuncDataBase& Control,
 	setTS1MarkV(A);
       else if (Key=="TS1MarkVI")
 	setTS1MarkVI(A);
+      else if (Key=="TS1MarkVIb")
+	setTS1MarkVIb(A);
       else if (Key=="help")
 	{
 	  ELog::EM<<"Options : "<<ELog::endDiag;
 	  ELog::EM<<"  TS1MarkIV  "<<ELog::endDiag;
 	  ELog::EM<<"  TS1MarkV  "<<ELog::endDiag;
 	  ELog::EM<<"  TS1MarkVI  "<<ELog::endDiag;
+	  ELog::EM<<"  TS1MarkVIb  "<<ELog::endDiag;
 	  throw ColErr::InContainerError<std::string>
 	    (Key,"Iparam.defaultConfig");	  
 	}
@@ -324,29 +327,44 @@ setTS1MarkVI(defaultConfig& A)
   A.setVar("WaterReturnActive1",3);
 
   A.setVar("H2LayerXStep",5.2);      
+
+
+  A.setVar("H2LayerXStep",5.2);      
   A.setVar("H2LayerYStep",20.25);  // +9.8    
   A.setVar("H2LayerZStep",-12.20);     
   A.setVar("H2LayerXYangle",100.0);  
   A.setVar("H2LayerZangle",0.0);  
 
+  
+  A.setVar("H2LayerNPoison",0); 
+  A.setVar("H2LayerPYStep1",0.0);       // for 1 poison layer
+  A.setVar("H2LayerPYStep2",0.8);       // for 2 poison layer
+  A.setVar("H2LayerPGdThick",0.005);      //
+  A.setVar("H2LayerPCladThick",0.1);      //             
+  A.setVar("H2LayerPoisonMat","Gadolinium");      
+  
+  A.setVar("H2LayerPCladMat","Aluminium");      
+  A.setVar("H2LayerPoisonMat","Gadolinium");      
+
+
   A.setVar("H2LayerNLayer",9);   
 
-  A.setVar("H2LayerHeight1",13.5);   
-  A.setVar("H2LayerWidth1",13.9);   
+  A.setVar("H2LayerHeight1",13.8);   
+  A.setVar("H2LayerWidth1",14.2);   
   A.setVar("H2LayerFront1",2.0);   
   A.setVar("H2LayerBack1",0.0);   
   A.setVar("H2LayerMat1","H2O");   
-  
+
   // al inner
   A.setVar("H2LayerLayer2",0.3); 
   A.setVar("H2LayerHeight2",0.0);
   A.setVar("H2LayerWidth2",0.0);   
   A.setVar("H2LayerFront2",0.0);   
-  A.setVar("H2LayerBack2",0.0);             
+  A.setVar("H2LayerBack2",0.3);             
   A.setVar("H2LayerMat2","Aluminium");   
   
   // void
-  A.setVar("H2LayerLayer3",0.3);
+  A.setVar("H2LayerLayer3",0.4);
   A.setVar("H2LayerHeight3",0.0);      
   A.setVar("H2LayerWidth3",0.0);    
   A.setVar("H2LayerFront3",0.0);   
@@ -359,7 +377,7 @@ setTS1MarkVI(defaultConfig& A)
   A.setVar("H2LayerWidth4",0.0);   
   A.setVar("H2LayerFront4",0.0);   
   A.setVar("H2LayerBack4",0.3);   
-  A.setVar("H2LayerMat4","Lead");  
+  A.setVar("H2LayerMat4","Aluminium");  
   A.setVar("H2LayerTemp4",20.0);   
       
   // H2 
@@ -372,14 +390,17 @@ setTS1MarkVI(defaultConfig& A)
 
   // al
   A.setVar("H2LayerLayer6",0.3); 
-  A.setVar("H2LayerHeight6",0.0);        
+  A.setVar("H2LayerFront6",0.3); 
+  A.setVar("H2LayerBack6",0.3); 
+  A.setVar("H2LayerHeight6",0.3); 
+  //  A.setVar("H2LayerHeight6",0.3);        
   A.setVar("H2LayerMat6","Aluminium");   
   A.setVar("H2LayerTemp6",20.0); 
 
   // Outer vac layer 
   A.setVar("H2LayerLayer7",0.5);
   A.setVar("H2LayerFront7",0.0);   
-  A.setVar("H2LayerBack7",0.5);        
+  A.setVar("H2LayerBack7",0.2);        
   A.setVar("H2LayerMat7","Void");     
 
   // al
@@ -448,6 +469,20 @@ setTS1MarkVI(defaultConfig& A)
   A.setVar("CH4LayerLayer7",0.3);   
   A.setVar("CH4LayerMat7","Void");     
 
+  return;
+}
+
+void
+setTS1MarkVIb(defaultConfig& A)
+  /*!
+    Default configuration for MarkVIb
+    \param A :: Paramter for default config
+   */
+{
+  ELog::RegMethod RegA("DefUnits[F]","setTS1MarkVIb");
+
+  setTS1MarkVI(A);
+  A.setOption("CH4ModType","Basic");
   return;
 }
 

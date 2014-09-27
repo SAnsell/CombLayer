@@ -363,9 +363,10 @@ LineIntersectVisit::getPoint(const std::string& RuleStr,
   clearTrack();
   HeadRule HRule;
   if (!HRule.procString(RuleStr))
-    ELog::EM<<"Invalid String "<<RuleStr<<ELog::endErr;
+    throw ColErr::InvalidLine("RuleStr:",RuleStr,0);
+
   HRule.populateSurf();
-  const bool cFlag=HRule.isValid(ATrack.getOrigin());
+  //  const bool cFlag=HRule.isValid(ATrack.getOrigin());
   const std::vector<const Geometry::Surface*> SVec=
     HRule.getSurfaces();
 

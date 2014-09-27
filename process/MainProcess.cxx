@@ -201,7 +201,7 @@ createInputs(inputParam& IParam)
     \param IParam :: Input Parameters
   */
 {
-  ELog::RegMethod RegA("MainProcess::","createInputs");
+  ELog::RegMethod RegA("MainProcess[F]","createInputs");
 
   std::vector<std::string> RItems(10,"");
 

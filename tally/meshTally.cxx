@@ -317,7 +317,7 @@ meshTally::write(std::ostream& OX) const
 	}
       for(size_t i=0;i<3;i++)
 	OX<<"cor"<<abc[i]<<IDnum<<" "<<minCoord[i]<<" "
-	  <<Pts[i]<<"i "<<maxCoord[i]<<std::endl;
+	  <<(Pts[i]-1)<<"i "<<maxCoord[i]<<std::endl;
       OX<<"endmd"<<std::endl;
     }
   return;

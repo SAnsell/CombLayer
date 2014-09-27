@@ -663,7 +663,7 @@ FixedComp::getLinkPt(const size_t Index) const
     \return Link point
   */
 {
-  ELog::RegMethod RegA("FixedComp","getLinkPt");
+  ELog::RegMethod RegA("FixedComp","getLinkPt:"+keyName);
   if (Index>=LU.size())
     throw ColErr::IndexError<size_t>(Index,LU.size(),"Index/LU.size");
 

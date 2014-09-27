@@ -257,7 +257,7 @@ Visit::writeVTK(const std::string& FName) const
   double stepXYZ[3];
   for(size_t i=0;i<3;i++)
     stepXYZ[i]=XYZ[i]/nPts[i];
-
+  
   OX<<"# vtk DataFile Version 2.0"<<std::endl;
   OX<<"chipIR Data"<<std::endl;
   OX<<"ASCII"<<std::endl;
@@ -275,7 +275,7 @@ Visit::writeVTK(const std::string& FName) const
 
   OX<<"Z_COORDINATES "<<nPts[2]<<" float"<<std::endl;
   for(int i=0;i<nPts[2];i++) 
-    OX<<(fFMT % (Origin[2]+stepXYZ[2]*(i*0.5)));
+    OX<<(fFMT % (Origin[2]+stepXYZ[2]*(i+0.5)));
   OX<<std::endl;
 
   OX<<"POINT_DATA "<<nPts[0]*nPts[1]*nPts[2]<<std::endl;

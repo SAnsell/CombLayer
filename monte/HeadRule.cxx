@@ -59,6 +59,7 @@
 #include "LineIntersectVisit.h"
 #include "HeadRule.h"
 
+#include "SurInter.h"
 
 HeadRule::HeadRule() :
   HeadNode(0)
@@ -619,7 +620,7 @@ HeadRule::countNLevel(const size_t LN) const
   TreeLevel.push(0);
 
   size_t activeLevel(0);
-  int statePoint(HeadNode->type());
+  //  int statePoint(HeadNode->type());
   
   while(!TreeLine.empty())
     {
@@ -1290,4 +1291,54 @@ HeadRule::procComp(Rule* RItem)
       Pptr->setLeaf(CG,Ln);
     }
   return CG;
+}
+
+bool
+HeadRule::Intersects(const HeadRule& A) const
+   /*!
+     Determine if two objects intersect
+     Done by line intersection along planes
+     and by point intersection.
+     \param A :: HeadRule to use
+   */
+{
+  ELog::RegMethod RegA("HeadRule","Intersects");
+  
+  
+  const std::vector<const Geometry::Surface*> 
+    AVec(this->getSurfaces());
+  const std::vector<const Geometry::Surface*> 
+    BVec(A.getSurfaces());
+
+  // Surf/Surf/Surf intersection
+  std::vector<Geometry::Vec3D> Out;
+  std::vector<const Geometry::Surface*>::const_iterator ac,bc;
+
+  for(ac=AVec.begin();ac!=AVec.end();ac++)
+    {
+      for(bc=ac+1;bc!=AVec.end();bc++)
+	{
+	  const Geometry::Surface* ASurf(*ac);
+	  const Geometry::Surface* BSurf(*bc);
+	  std::set<int> boundarySet;
+	  boundarySet.insert(ASurf->getName());
+	  boundarySet.insert(BSurf->getName());		  
+	  for(const Geometry::Surface* CSurf : BVec)
+	    {
+	      ELog::EM<<"A == "<<*ASurf;
+	      ELog::EM<<"B == "<<*BSurf;
+	      ELog::EM<<"C == "<<*CSurf<<ELog::endDiag;
+	      Out=SurInter::processPoint(ASurf,BSurf,CSurf);
+	      for(const Geometry::Vec3D& vc : Out)
+		{
+		  ELog::EM<<"Testing "<<vc<<ELog::endDiag;
+		  // Outer valid returns true if out of object
+		  if (this->isValid(vc,boundarySet) &&
+		      A.isValid(vc,CSurf->getName()))
+		    return 1;
+		}
+	    }
+	}
+    }
+  return 0;
 }

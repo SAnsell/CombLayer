@@ -784,8 +784,7 @@ TS2layout(FuncDataBase& Control)
 
 
   ts1System::shutterVar let("let"); // LET shutter number [west 7]
-  // LET shutter
-  let.buildVar(Control,2.0,2.2,-1.5,7.91,4.57,0.22,0.275); 
+  let.buildVar(Control,0.0,0.0,0.0,9.0,4.0,0.0,0.0); 
 
 
   return;

@@ -96,8 +96,7 @@ namespace zoomSystem
 ZoomChopper::ZoomChopper(const std::string& Key) : 
   attachSystem::TwinComp(Key,6),attachSystem::ContainedComp(),
   chpIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(chpIndex+1),populated(0),
-  nLayers(0)
+  cellIndex(chpIndex+1),nLayers(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -107,7 +106,6 @@ ZoomChopper::ZoomChopper(const std::string& Key) :
 ZoomChopper::ZoomChopper(const ZoomChopper& A) : 
   attachSystem::TwinComp(A),attachSystem::ContainedComp(A),
   chpIndex(A.chpIndex), cellIndex(A.cellIndex),
-  populated(A.populated),
   xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
   length(A.length),depth(A.depth),height(A.height),
   leftWidth(A.leftWidth),rightWidth(A.rightWidth),
@@ -141,7 +139,6 @@ ZoomChopper::operator=(const ZoomChopper& A)
       attachSystem::TwinComp::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       cellIndex=A.cellIndex;
-      populated=A.populated;
       xStep=A.xStep;
       yStep=A.yStep;
       zStep=A.zStep;
@@ -182,15 +179,13 @@ ZoomChopper::~ZoomChopper()
 
 
 void
-ZoomChopper::populate(const Simulation& System)
+ZoomChopper::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: DataBase of variables
   */
 {
   ELog::RegMethod RegA("ZoomChopper","populate");
-
-  const FuncDataBase& Control=System.getDataBase();
 
   xStep=Control.EvalVar<double>(keyName+"XStep");
   yStep=Control.EvalVar<double>(keyName+"YStep");
@@ -225,7 +220,6 @@ ZoomChopper::populate(const Simulation& System)
   // ModelSupport::populateDivide(Control,nLayers,
   // 			       keyName+"ShieldFrac_",guideFrac);
 
-  populated=1;
   return;
 }
 
@@ -280,8 +274,12 @@ ZoomChopper::createSurfaces(const shutterSystem::GeneralShutter& GS)
   Geometry::Vec3D RNorm(-X);
   Geometry::Quaternion::calcQRotDeg(rightAngle,Z).rotate(RNorm);  
 
-  ModelSupport::buildPlane(SMap,chpIndex+3,
-			   Origin+Y*length+X*leftWidth,LNorm);     
+  ModelSupport::buildPlaneRotAxis(SMap,chpIndex+3,
+				  Origin+Y*length+X*leftWidth,-X,
+				  Z,-leftAngle);     
+  ModelSupport::buildPlaneRotAxis(SMap,chpIndex+4,
+				  Origin+Y*length+X*leftWidth,-X,
+				  Z,-rightAngle);     
   ModelSupport::buildPlane(SMap,chpIndex+4,
   			   Origin+Y*length-X*rightWidth,RNorm);     
 
@@ -323,7 +321,7 @@ void
 ZoomChopper::createObjects(Simulation& System,
 			   const attachSystem::ContainedGroup& CObj)
   /*!
-    Adds the Chip guide components
+    Adds the zoom chopper box
     \param System :: Simulation to create objects in
     \param CObj :: Contained object
    */
@@ -370,7 +368,7 @@ ZoomChopper::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("ZoomChopper","createAll");
   
-  populate(System);
+  populate(System.getDataBase());
   createUnitVector(ZB);
   createSurfaces(GShutter);
   createObjects(System,ZB);

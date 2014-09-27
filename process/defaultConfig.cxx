@@ -109,7 +109,7 @@ defaultConfig::setVar(const std::string& K,const Geometry::Vec3D& V)
   */
 {
   if (!K.empty())
-    varVec.insert(std::pair<std::string,Geometry::Vec3D>(K,V));
+    varVec[K]=V;
   return;
 }
 
@@ -122,7 +122,7 @@ defaultConfig::setVar(const std::string& K,const double V)
   */
 {
   if (!K.empty())
-    varVal.insert(std::pair<std::string,double>(K,V));
+    varVal[K]=V;
   return;
 }
 
@@ -136,7 +136,7 @@ defaultConfig::setVar(const std::string& K,const std::string& V)
   */
 {
   if (!K.empty() && !V.empty())
-    varName.insert(std::pair<std::string,std::string>(K,V));
+    varName[K]=V;
   return;
 }
 
@@ -149,7 +149,7 @@ defaultConfig::setOption(const std::string& K,const std::string& V)
   */
 {
   if (!K.empty() && !V.empty())
-    flagName.insert(std::pair<std::string,std::string>(K,V));
+    flagName[K]=V;
   return;
 }
 

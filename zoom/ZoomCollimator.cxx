@@ -90,8 +90,7 @@ namespace zoomSystem
 ZoomCollimator::ZoomCollimator(const std::string& Key) : 
   attachSystem::TwinComp(Key,6),attachSystem::ContainedComp(),
   colIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(colIndex+1),populated(0),
-  cStack("zoomColStack"),nLayers(0)
+  cellIndex(colIndex+1),cStack("zoomColStack"),nLayers(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -101,7 +100,7 @@ ZoomCollimator::ZoomCollimator(const std::string& Key) :
 ZoomCollimator::ZoomCollimator(const ZoomCollimator& A) : 
   attachSystem::TwinComp(A),attachSystem::ContainedComp(A),
   colIndex(A.colIndex),cellIndex(A.cellIndex),
-  populated(A.populated),cStack(A.cStack),xStep(A.xStep),
+  cStack(A.cStack),xStep(A.xStep),
   zStep(A.zStep),length(A.length),height(A.height),
   depth(A.depth),leftWidth(A.leftWidth),
   rightWidth(A.rightWidth),stackFullWidth(A.stackFullWidth),
@@ -127,7 +126,6 @@ ZoomCollimator::operator=(const ZoomCollimator& A)
       attachSystem::TwinComp::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       cellIndex=A.cellIndex;
-      populated=A.populated;
       cStack=A.cStack;
       xStep=A.xStep;
       zStep=A.zStep;
@@ -187,7 +185,6 @@ ZoomCollimator::populate(const Simulation& System)
   ModelSupport::populateDivideLen(Control,nLayers,
 				  keyName+"Frac_",minDist,cFrac);
 
-  populated=1;
   return;
 }
 

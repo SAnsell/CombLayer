@@ -34,6 +34,7 @@ namespace mainSystem
   void setTS1MarkIV(defaultConfig&); 
   void setTS1MarkV(defaultConfig&); 
   void setTS1MarkVI(defaultConfig&); 
+  void setTS1MarkVIb(defaultConfig&); 
 
 }
 

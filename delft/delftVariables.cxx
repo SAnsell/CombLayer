@@ -553,6 +553,26 @@ DelftModel(FuncDataBase& Control)
   Control.addVariable("coneModMat","ParaOrtho");            // Liquid H2
   Control.addVariable("coneAlMat","Aluminium");              // Aluminium
 
+  // FLAT MODERATOR
+
+  Control.addVariable("flatXStep",0.0);      
+  Control.addVariable("flatYStep",3.0);      
+  Control.addVariable("flatZStep",0.0);      
+  Control.addVariable("flatDepth",2.0);      
+  Control.addVariable("flatLength",30.0);      
+  Control.addVariable("flatFrontRad",100.0);      
+  Control.addVariable("flatBackRad",100.0);      
+  Control.addVariable("flatRadius",10.0);      
+  Control.addVariable("flatWallThick",0.2);      
+  Control.addVariable("flatSideThick",1.0);      
+
+
+  Control.addVariable("flatModTemp",20.0);         // Temperature of H2 
+  Control.addVariable("flatGasTemp",25.0);         // Temperature of H2 
+  Control.addVariable("flatModMat","ParaOrtho");            // Liquid H2
+  Control.addVariable("flatGasMat","ParaOrtho%65");            // Liquid H2
+  Control.addVariable("flatAlMat","Aluminium");              // Aluminium
+
   // CONTAINER
 
   Control.addVariable("delftH2ContVacPosRadius",30.2);   //  First Vac layer

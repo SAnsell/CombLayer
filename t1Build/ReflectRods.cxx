@@ -723,7 +723,6 @@ ReflectRods::splitRefObj()
     {
       RefItems.clear();
       const HeadRule& HR=RefObj->getHeadRule();
-      ELog::EM<<"HR == "<<HR.display()<<ELog::endDiag;
       const size_t NL=HR.countNLevel(0);
       for(size_t i=1;i<=NL;i++)
 	RefItems.push_back(HR.findNode(0,i));

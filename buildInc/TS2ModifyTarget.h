@@ -111,7 +111,7 @@ struct sphereCut
   \version 1.0
   \author S. Ansell
   \date February 2012
-  \brief Modification to the Target with Mo.
+  \brief Modification to the Target with Mo/gaps etc.
 */
 
 class TS2ModifyTarget : public attachSystem::FixedComp,
@@ -139,6 +139,9 @@ class TS2ModifyTarget : public attachSystem::FixedComp,
   void createUnitVector(const attachSystem::FixedComp&);
   void createSurfaces();
   void createObjects(Simulation&,const int,const int);
+
+  size_t calcConeIntersect(const std::vector<HeadRule>&,
+			   const size_t) const;
 
  public:
 

@@ -61,6 +61,8 @@
 #include "Cylinder.h"
 #include "Cone.h"
 #include "Sphere.h"
+#include "Line.h"
+#include "LineIntersectVisit.h"
 #include "Rules.h"
 #include "varList.h"
 #include "Code.h"
@@ -302,6 +304,8 @@ TS2ModifyTarget::createObjects(Simulation& System,
   /*!
     Adds the Chip guide components
     \param System :: Simulation to create objects in
+    \param mainBody :: Main target surface
+    \param skinBody :: Sub-layer activation study
   */
 {
   ELog::RegMethod RegA("TS2ModifyTarget","createObjects");
@@ -320,42 +324,8 @@ TS2ModifyTarget::createObjects(Simulation& System,
       else
 	throw ColErr::InContainerError<int>(skinBody,"SkinBody");
     }
-
-  if (!PCut.empty())
-    {
-      offset=molyIndex;
-      HeadRule ExPlate;
-      for(size_t i=0;i<PCut.size();i++)
-	{
-	  Out=ModelSupport::getComposite(SMap,offset,"1 -2 ");    
-	  ExPlate.addUnion(Out);
-	  if (PCut[i].layerMat<0)
-	    {
-	      Out+=getContainer();
-	      System.addCell(MonteCarlo::Qhull
-			     (cellIndex++,PCut[i].mat,0.0,Out));
-	    }
-	  else
-	    {
-	      Out=ModelSupport::getComposite(SMap,offset,"1 -11 ");    
-	      Out+=getContainer();
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,
-					       PCut[i].layerMat,0.0,Out));
-	      Out=ModelSupport::getComposite(SMap,offset,"12 -2 ");    
-	      Out+=getContainer();
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,
-					       PCut[i].layerMat,0.0,Out));
-	      Out=ModelSupport::getComposite(SMap,offset,"11 -12 ");    ;
-	      Out+=getContainer();
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,
-					       PCut[i].mat,0.0,Out));
-	    }
-	  offset+=100;
-	}
-      ExPlate.makeComplement();
-      QPtrA->addSurfString(ExPlate.display());
-      QPtrB->addSurfString(ExPlate.display());
-    }
+  std::vector<HeadRule> PlateUnits;
+  std::vector<HeadRule> ConeUnits;
 
   if (!SCut.empty())
     {
@@ -375,6 +345,7 @@ TS2ModifyTarget::createObjects(Simulation& System,
   if (!CCut.empty())
     {
       HeadRule ExCone;
+      HeadRule ConeItem;
       offset=molyIndex+3000;
       for(size_t i=0;i<CCut.size();i++)
 	{
@@ -407,6 +378,9 @@ TS2ModifyTarget::createObjects(Simulation& System,
 	  cx<<" "<< -CCut[i].cutFlagA()*SMap.realSurf(offset+7)
 	    <<" "<< CCut[i].cutFlagB()*SMap.realSurf(offset+8)<<" ";
 	  ExCone.addUnion(cx.str());      
+	  ConeItem.procString(cx.str()+getContainer());
+	  ConeItem.populateSurf();
+	  ConeUnits.push_back(ConeItem);
 	  offset+=100;
 	}
       ExCone.makeComplement();
@@ -414,8 +388,91 @@ TS2ModifyTarget::createObjects(Simulation& System,
       QPtrB->addSurfString(ExCone.display());
     }
 
+  if (!PCut.empty())
+    {
+      HeadRule ExPlate;
+      std::string cutConeStr;
+      offset=molyIndex;
+      for(size_t i=0;i<PCut.size();i++)
+	{
+	  Out=ModelSupport::getComposite(SMap,offset,"1 -2 ");    
+	  ExPlate.addUnion(Out);
+	  const size_t cUnit=calcConeIntersect(ConeUnits,i);
+	  if (cUnit)
+	    {
+	      HeadRule cCut=ConeUnits[cUnit-1];
+	      cCut.makeComplement();
+	      cutConeStr=cCut.display();
+	    }
+	  if (PCut[i].layerMat<0)
+	    {
+	      Out+=getContainer()+cutConeStr;
+	      System.addCell(MonteCarlo::Qhull
+			     (cellIndex++,PCut[i].mat,0.0,Out));
+	    }
+	  else
+	    {
+	      Out=ModelSupport::getComposite(SMap,offset,"1 -11 ");    
+	      Out+=getContainer()+cutConeStr;
+	      System.addCell(MonteCarlo::Qhull(cellIndex++,
+					       PCut[i].layerMat,0.0,Out));
+	      Out=ModelSupport::getComposite(SMap,offset,"12 -2 ");    
+	      Out+=getContainer()+cutConeStr;
+	      System.addCell(MonteCarlo::Qhull(cellIndex++,
+					       PCut[i].layerMat,0.0,Out));
+	      Out=ModelSupport::getComposite(SMap,offset,"11 -12 ");    ;
+	      Out+=getContainer()+cutConeStr;
+	      System.addCell(MonteCarlo::Qhull(cellIndex++,
+					       PCut[i].mat,0.0,Out));
+	    }
+	  offset+=100;
+	}
+      ExPlate.makeComplement();
+      QPtrA->addSurfString(ExPlate.display());
+      QPtrB->addSurfString(ExPlate.display());
+    }
+
   return;
 }
+
+size_t
+TS2ModifyTarget::calcConeIntersect(const std::vector<HeadRule>& ConeUnits,
+				   const size_t Index) const
+  /*!
+    Determine the cone/plane cut intersect
+    \param ConeUnits :: Cone units to use
+    \param Index :: Plate to test
+    \retval coneUnits index -1 / 0 on no intersect
+  */
+{
+  ELog::RegMethod RegA("TS2ModifyTarget","calcConeIntersect");
+  // Now check cones dont intersect plates:
+  const plateCut& Item=PCut[Index];
+  const Geometry::Vec3D Pt=Origin+Item.centre;
+  const Geometry::Vec3D AxisX(Item.axis.crossNormal());
+  // Construct Simple line:
+  MonteCarlo::LineIntersectVisit LI(Pt,AxisX);
+  for(size_t cIndex=0;cIndex<ConeUnits.size();cIndex++)
+    {
+      const HeadRule& CItem(ConeUnits[cIndex]);
+      const std::vector<const Geometry::Surface*> 
+	SVec=CItem.getSurfaces();
+      for(const Geometry::Surface* SPtr : SVec)
+	{
+	  const std::vector<Geometry::Vec3D> Out=
+	    LI.getPoints(SPtr);
+
+	  for(const Geometry::Vec3D ImpactPt : Out)
+	    {
+	      if (CItem.isValid(ImpactPt,SPtr->getName()))
+		return 1+cIndex;
+	    }
+	}
+    }
+  return 0;
+}
+ 
+
   
 void
 TS2ModifyTarget::createAll(Simulation& System,

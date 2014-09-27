@@ -39,36 +39,37 @@ namespace ts1System
 class CH4Layer : public constructSystem::ModBase
 {
  private:
-    
-  std::vector<LayerInfo> LVec;  ///< Layer Info vector [walls]
-  size_t nPoison;                  ///< Number of poison
-  std::vector<double> poisonYStep; ///< Y centre of poison layer
-  double poisonThick;              ///< Poison thickness
-  int poisonMat;                   ///< Poison (Gadolinium) 
-  double pCladThick;               ///< Poison thickness
-  int pCladMat;                    ///< Poison Cladding (Al)  
 
+ protected:
+    
+  std::vector<LayerInfo> LVec;     ///< Layer Info vector [walls]
   
-  void createFrontRule(const size_t,HeadRule&) const;
-  void createBackRule(const size_t,HeadRule&) const;
+  void createFrontRule(const LayerInfo&,const int,
+		       const size_t,HeadRule&) const;
+  void createBackRule(const LayerInfo&,const int,
+		       const size_t,HeadRule&) const;
+
 
   virtual void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
-
   void createSurfaces();
 //  void createObjects(Simulation&);
   void createObjects(Simulation&);
   void createLinks();
 
-  double checkUnit(const FuncDataBase&,const size_t,
+  double checkUnit(const FuncDataBase&,const std::string&,
+		   const size_t,
 		   const std::string&,const double,
 		   const std::string&,const double,
 		   const std::string&,const double,
 		   const bool =0,const double =0.0) const;
+  void createLayerSurf(const std::vector<LayerInfo>&,
+		       const int);
 
  public:
 
   CH4Layer(const std::string&);
+
   CH4Layer(const CH4Layer&);
   CH4Layer& operator=(const CH4Layer&);
   virtual CH4Layer* clone() const;

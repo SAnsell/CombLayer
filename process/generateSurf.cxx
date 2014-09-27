@@ -162,6 +162,35 @@ buildPlane(surfRegister& SMap,const int N,
   return SMap.realPtr<Geometry::Plane>(NFound);
 }
 
+Geometry::Plane*
+buildPlaneRotAxis(surfRegister& SMap,const int N,
+		  const Geometry::Vec3D& O,const Geometry::Vec3D& D,
+		  const Geometry::Vec3D& Axis,const double degAngle) 
+  /*!
+    Simple constructor to build a surface [type plane]
+    The normal of the plane is rotated about the axis
+    \param SMap :: Surface Map
+    \param N :: Surface number
+    \param O :: Origin
+    \param D :: Direction
+    \param Axis :: Axis to rotate about 
+    \param degAngle :: Angle to rotate about [deg]
+    \return New Plane Pointer
+   */
+{
+  ELog::RegMethod("generateSurf","buildPlaneRotAxis");
+
+  ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
+
+  Geometry::Plane* PX=SurI.createUniqSurf<Geometry::Plane>(N);  
+  Geometry::Vec3D RotNorm(D);
+  Geometry::Quaternion::calcQRotDeg(degAngle,Axis).rotate(RotNorm);  
+  PX->setPlane(O,RotNorm);
+  const int NFound=SMap.registerSurf(N,PX);
+
+  return SMap.realPtr<Geometry::Plane>(NFound);
+}
+
 Geometry::Cylinder*
 buildCylinder(surfRegister& SMap,const int N,
 	      const Geometry::Vec3D& O,const Geometry::Vec3D& D,

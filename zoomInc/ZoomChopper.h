@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   zoomInc/ZoomChopper.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,7 +49,6 @@ class ZoomChopper : public attachSystem::TwinComp,
   
   const int chpIndex;           ///< Index of surface offset
   int cellIndex;                ///< Cell index
-  int populated;                ///< populated or not
 
   double xStep;                 ///< Origin step
   double yStep;                 ///< Origin step
@@ -87,7 +86,7 @@ class ZoomChopper : public attachSystem::TwinComp,
   int monoWallSurf;      ///< Montolith Exit surface
   int voidCell;          ///< Inner void
   
-  void populate(const Simulation&);
+  void populate(const FuncDataBase&);
   void createUnitVector(const zoomSystem::ZoomBend&);
   
   void createSurfaces(const shutterSystem::GeneralShutter&);

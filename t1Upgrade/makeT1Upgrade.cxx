@@ -95,6 +95,7 @@
 #include "H2Section.h"
 #include "LayerInfo.h"
 #include "CH4Layer.h"
+#include "InnerLayer.h"
 #include "HPreMod.h"
 #include "CH4PreModBase.h"
 #include "CH4PreMod.h"
@@ -291,7 +292,6 @@ makeT1Upgrade::buildTarget(Simulation& System,
     {
       TarObj=std::shared_ptr<constructSystem::TargetBase>
 	(new TMRSystem::TS2FlatTarget("t1CylTarget"));
-      
       OR.addObject("t1CylTarget",TarObj);
       RefObj->addToInsertChain(*TarObj);
       TarObj->setRefPlates(-RefObj->getLinkSurf(2),0);
@@ -440,7 +440,7 @@ makeT1Upgrade::buildCH4Mod(Simulation& System,
   if (MType=="Basic")
     {
       CH4Mod=std::shared_ptr<constructSystem::ModBase>
-	(new CH4Layer("CH4Mod"));
+	(new InnerLayer("CH4ModInner","CH4Mod"));
       OR.addObject(CH4Mod);
       CH4Mod->createAll(System,FC);
       return "CH4Mod";

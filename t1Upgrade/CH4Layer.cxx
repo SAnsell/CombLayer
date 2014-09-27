@@ -80,7 +80,7 @@ namespace ts1System
 {
 
 CH4Layer::CH4Layer(const std::string& Key)  :
-  constructSystem::ModBase(Key,6),nPoison(0)
+  constructSystem::ModBase(Key,6)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -88,10 +88,8 @@ CH4Layer::CH4Layer(const std::string& Key)  :
 {}
 
 CH4Layer::CH4Layer(const CH4Layer& A) : 
-  ModBase(A),
-  LVec(A.LVec),nPoison(A.nPoison),poisonYStep(A.poisonYStep),
-  poisonThick(A.poisonThick),poisonMat(A.poisonMat),
-  pCladThick(A.pCladThick),pCladMat(A.pCladMat)
+  constructSystem::ModBase(A),
+  LVec(A.LVec)
   /*!
     Copy constructor
     \param A :: CH4Layer to copy
@@ -108,14 +106,8 @@ CH4Layer::operator=(const CH4Layer& A)
 {
   if (this!=&A)
     {
-      ModBase::operator=(A);
+      constructSystem::ModBase::operator=(A);
       LVec=A.LVec;
-      nPoison=A.nPoison;
-      poisonYStep=A.poisonYStep;
-      poisonThick=A.poisonThick;
-      poisonMat=A.poisonMat;
-      pCladThick=A.pCladThick;
-      pCladMat=A.pCladMat;
     }
   return *this;
 }
@@ -138,7 +130,7 @@ CH4Layer::~CH4Layer()
 {}
 
 double
-CH4Layer::checkUnit(const FuncDataBase& Control,
+CH4Layer::checkUnit(const FuncDataBase& Control,const std::string& KN,
 		    const size_t Index,const std::string& A,
 		    const double AScale,const std::string& B,
 		    const double BScale,const std::string& C,
@@ -148,6 +140,7 @@ CH4Layer::checkUnit(const FuncDataBase& Control,
     Checks a given value exists in the data base
     and returns the scaled component
     \param Control :: DataBase
+    \param KN :: Key name 
     \param Index :: Index value
     \param A :: Primary string
     \param AScale :: Scale factor for [if found]
@@ -161,14 +154,14 @@ CH4Layer::checkUnit(const FuncDataBase& Control,
    */
 {
   ELog::RegMethod RegA("CH4Layer","checkUnit");
-  const std::string keyA=keyName+StrFunc::makeString(A,Index);
+  const std::string keyA=KN+StrFunc::makeString(A,Index);
 
   if (Control.hasVariable(keyA))
     return Control.EvalVar<double>(keyA)*AScale;
-  const std::string keyB=keyName+StrFunc::makeString(B,Index);
+  const std::string keyB=KN+StrFunc::makeString(B,Index);
   if (Control.hasVariable(keyB))
     return Control.EvalVar<double>(keyB)*BScale;
-  const std::string keyC=keyName+StrFunc::makeString(C,Index);
+  const std::string keyC=KN+StrFunc::makeString(C,Index);
   // Allow this to throw
   if (!defFlag)
     return Control.EvalVar<double>(keyC)*CScale;
@@ -202,17 +195,18 @@ CH4Layer::populate(const FuncDataBase& Control)
 
   for(size_t i=0;i<nLayers;i++)
     {
-      Top=checkUnit(Control,i+1,"Top",1.0,"Height",0.5,"Layer",1.0);
-      Base=checkUnit(Control,i+1,"Base",1.0,"Height",0.5,"Layer",1.0);
-      Left=checkUnit(Control,i+1,"Left",1.0,"Width",0.5,"Layer",1.0);
-      Right=checkUnit(Control,i+1,"Right",1.0,"Width",0.5,"Layer",1.0);
-      Front=checkUnit(Control,i+1,"Front",1.0,"Depth",0.5,"Layer",1.0);
-      Back=checkUnit(Control,i+1,"Back",1.0,"Depth",0.5,"Layer",1.0);
-      frontRad=checkUnit(Control,i+1,"FrontRad",1.0,
+      Top=checkUnit(Control,keyName,i+1,"Top",1.0,"Height",0.5,"Layer",1.0);
+      Base=checkUnit(Control,keyName,i+1,"Base",1.0,"Height",0.5,"Layer",1.0);
+      Left=checkUnit(Control,keyName,i+1,"Left",1.0,"Width",0.5,"Layer",1.0);
+      Right=checkUnit(Control,keyName,i+1,"Right",1.0,"Width",0.5,"Layer",1.0);
+      Front=checkUnit(Control,keyName,i+1,"Front",1.0,"Depth",0.5,"Layer",1.0);
+      Back=checkUnit(Control,keyName,i+1,"Back",1.0,"Depth",0.5,"Layer",1.0);
+      frontRad=checkUnit(Control,keyName,i+1,"FrontRad",1.0,
 			"FrontRadius",1.0,"Radius",1.0,1,0.0);
-      backRad=checkUnit(Control,i+1,"BackRad",1.0,
+      backRad=checkUnit(Control,keyName,i+1,"BackRad",1.0,
 			"BackRadius",1.0,"Radius",1.0,1,0.0);
-      round=checkUnit(Control,i+1,"Round",1.0,"Round",0.5,"Round",1.0,1,0.0);
+      round=checkUnit(Control,keyName,i+1,"Round",1.0,
+		      "Round",0.5,"Round",1.0,1,0.0);
 
       mat=ModelSupport::EvalMat<int>
 	(Control,keyName+StrFunc::makeString("Mat",i+1));
@@ -225,25 +219,6 @@ CH4Layer::populate(const FuncDataBase& Control)
       if (i)
 	IDX+=LVec.back();
       LVec.push_back(IDX);
-    }
-
-  double value;
-  nPoison=Control.EvalVar<size_t>(keyName+"NPoison");
-
-  if (nPoison)
-    {
-      for(size_t i=0;i<nPoison;i++)
-	{
-	  value=Control.EvalVar<double>
-	    (keyName+StrFunc::makeString("PYStep",i+1));
-	  poisonYStep.push_back(value);
-	}
-      poisonThick=Control.EvalVar<double>(keyName+"PGdThick");
-      pCladThick=Control.EvalVar<double>(keyName+"PCladThick");
-
-      // Materials
-      poisonMat=ModelSupport::EvalMat<int>(Control,keyName+"PoisonMat");
-      pCladMat=ModelSupport::EvalMat<int>(Control,keyName+"PCladMat");
     }
 
   return;
@@ -266,25 +241,28 @@ CH4Layer::createUnitVector(const attachSystem::FixedComp& FC)
 }
 
 void
-CH4Layer::createSurfaces()
+CH4Layer::createLayerSurf(const std::vector<LayerInfo>& LayVec,
+			  const int index) 
   /*!
-    Create All the surfaces
+    Create Layer surfaces based on the primary field and 
+    the LayerInfo values.
+    \param LayVec 
   */
 {
-  ELog::RegMethod RegA("CH4Layer","createSurface");
+  ELog::RegMethod RegA("CH4Layer","createLayerSurf");
 
   const Geometry::Vec3D XYZ[6]={-Y,Y,-X,X,-Z,Z};
-  int ch4Layer(modIndex);
+  int ch4Layer(index);
 
-  for(size_t i=0;i<LVec.size();i++)
+  for(size_t i=0;i<LayVec.size();i++)
     {
-      const double LWidth=LVec[i].Item(2);
-      const double RWidth=LVec[i].Item(3);
+      const double LWidth=LayVec[i].Item(2);
+      const double RWidth=LayVec[i].Item(3);
       const double MWidth=(LWidth+RWidth)/2.0;
-      const double radF=LVec[i].frontRadius();
-      const double radB=LVec[i].backRadius();
-      const double FD=LVec[i].Item(0);	  
-      const double BD=LVec[i].Item(1);	  
+      const double radF=LayVec[i].frontRadius();
+      const double radB=LayVec[i].backRadius();
+      const double FD=LayVec[i].Item(0);	  
+      const double BD=LayVec[i].Item(1);	  
       // Front surface 
       if (fabs(radF)>Geometry::zeroTol)
 	{
@@ -301,7 +279,7 @@ CH4Layer::createSurfaces()
 
 	  // Now build corner rad Calc centre
 	  // Point connects RCentre and side surface at normals
-	  const double cRad=LVec[i].cornerRad();
+	  const double cRad=LayVec[i].cornerRad();
 	  if (fabs(cRad)>Geometry::zeroTol)
 	    {
 	      const double lX=(2.0*LWidth-RWidth)-cRad;
@@ -339,11 +317,11 @@ CH4Layer::createSurfaces()
 	    X*(LWidth-RWidth);
 	  ModelSupport::buildCylinder(SMap,ch4Layer+2,RCent,Z,radB);
 
-	  const double cRad=LVec[i].cornerRad();
+	  const double cRad=LayVec[i].cornerRad();
 	  if (fabs(cRad)>Geometry::zeroTol)
 	    {
 	      const double lX=(2.0*LWidth-RWidth)-cRad;
-	      const double lY=sqrt((radF-cRad)*(radF-cRad)-lX*lX);
+	      const double lY=sqrt((radB-cRad)*(radB-cRad)-lX*lX);
 	      const Geometry::Vec3D LC=RCent+Y*lY-X*lX;
 	      Geometry::Vec3D DUnit=(LC-RCent)*Z;
 	      // front curve / cylinder impact point
@@ -352,8 +330,8 @@ CH4Layer::createSurfaces()
 	      ModelSupport::buildPlane(SMap,ch4Layer+1022,LC,DUnit);
 
 	      const double rX=(2.0*RWidth-LWidth)-cRad;
-	      const double rY=sqrt((radF-cRad)*(radF-cRad)-rX*rX);
-	      const Geometry::Vec3D RC=RCent-Y*rY+X*rX;
+	      const double rY=sqrt((radB-cRad)*(radB-cRad)-rX*rX);
+	      const Geometry::Vec3D RC=RCent+Y*rY+X*rX;
 	      DUnit=(RC-RCent)*Z;
 	      ModelSupport::buildCylinder(SMap,ch4Layer+24,RC,Z,cRad);
 	      ModelSupport::buildPlane(SMap,ch4Layer+1023,RC,Y);
@@ -365,56 +343,53 @@ CH4Layer::createSurfaces()
 	ModelSupport::buildPlane(SMap,ch4Layer+2,Origin+Y*BD,Y);
 
       // 1+j-j%2 gives 1,1,3,3,5,5 as j iterates
+
       for(size_t j=2;j<6;j++)
 	{
 	  ModelSupport::buildPlane(SMap,ch4Layer+static_cast<int>(j+1),
-				   Origin+XYZ[j]*LVec[i].Item(j),XYZ[1+j-j%2]);
+				   Origin+XYZ[j]*LayVec[i].Item(j),
+				   XYZ[1+j-j%2]);
 	}
       ch4Layer+=30;
     }
-
-  // NOT CORRECT?
-  for(size_t j=0;j<6;j++)
-    {
-      FixedComp::setConnect(j,Origin+XYZ[j]*LVec.back().Item(j),
-			    XYZ[j]);
-    }
-  ch4Layer=modIndex+500;
-
-  for(size_t i=0;i<nPoison;i++)
-    {
-      ModelSupport::buildPlane(SMap,ch4Layer+1,
-			       Origin+Y*(poisonYStep[i]-poisonThick/2.0),Y);
-      ModelSupport::buildPlane(SMap,ch4Layer+2,
-			       Origin+Y*(poisonYStep[i]+poisonThick/2.0),Y);
-      ModelSupport::buildPlane(SMap,ch4Layer+11,
-          Origin+Y*(poisonYStep[i]-pCladThick-poisonThick/2.0),Y);
-      ModelSupport::buildPlane(SMap,ch4Layer+12,
-          Origin+Y*(poisonYStep[i]+pCladThick+poisonThick/2.0),Y);
-      ch4Layer+=20;
-    }
-
+  
   return;
 }
 
 void
-CH4Layer::createFrontRule(const size_t lIndex,
+CH4Layer::createSurfaces()
+  /*!
+    Create All the surfaces
+  */
+{
+  ELog::RegMethod RegA("CH4Layer","createSurface");
+
+  createLayerSurf(LVec,modIndex);
+  return;
+}
+
+void
+CH4Layer::createFrontRule(const LayerInfo& LInfo,
+			  const int offsetIndex,
+			  const size_t lIndex,
 			  HeadRule& FX) const
   /*!
     Populates the head rules for front/back depending on 
     radius status
-    \param lIndex :: layerIndex
+    \param LInfo :: Layer Info for radius etc
+    \param offsetIndex :: Object registered number
+    \param lIndex :: layerIndex normaly : modIndex+30*lIndex
     \param FX :: Front head rule
-    \param BX :: Back head rule
+
   */
 {
   ELog::RegMethod RegA("CH4Layer","createFrontRule");
 
-  const double radF=LVec[lIndex].frontRadius();
-  const double cRad=LVec[lIndex].cornerRad();
+  const double radF=LInfo.frontRadius();
+  const double cRad=LInfo.cornerRad();
 
   std::string Out;
-  const int ch4Layer(modIndex+30*static_cast<int>(lIndex));
+  const int ch4Layer(offsetIndex+30*static_cast<int>(lIndex));
   if (radF<Geometry::zeroTol) 
     Out=ModelSupport::getComposite(SMap,ch4Layer," 1 ");
   else
@@ -430,7 +405,9 @@ CH4Layer::createFrontRule(const size_t lIndex,
 }
 
 void
-CH4Layer::createBackRule(const size_t lIndex,
+CH4Layer::createBackRule(const LayerInfo& LInfo,
+			  const int offsetIndex,
+			  const size_t lIndex,
 			  HeadRule& BX) const
   /*!
     Populates the head rules for front/back depending on 
@@ -440,12 +417,12 @@ CH4Layer::createBackRule(const size_t lIndex,
   */
 {
   ELog::RegMethod RegA("CH4Layer","createBackRule");
-
-  const double radB=LVec[lIndex].backRadius();
-  const double cRad=LVec[lIndex].cornerRad();
+  
+  const double radB=LInfo.backRadius();
+  const double cRad=LInfo.cornerRad();
 
   std::string Out;
-  const int ch4Layer(modIndex+30*static_cast<int>(lIndex));
+  const int ch4Layer(offsetIndex+30*static_cast<int>(lIndex));
 
   if (radB<Geometry::zeroTol) 
     Out=ModelSupport::getComposite(SMap,ch4Layer," -2 ");
@@ -453,12 +430,11 @@ CH4Layer::createBackRule(const size_t lIndex,
     {
       if (cRad>Geometry::zeroTol)
 	Out=ModelSupport::getComposite
-	  (SMap,ch4Layer,"-2 (-23:1021:-1022) (-24:1023:1024)" );
+	  (SMap,ch4Layer,"-2 (-23:-1021:1022) (-24:-1023:-1024)");
       else
 	Out=ModelSupport::getComposite(SMap,ch4Layer," -2 ");
     }
   BX.procString(Out);      
-
   return;
 }
 
@@ -475,56 +451,9 @@ CH4Layer::createObjects(Simulation& System)
   std::string Out;
 
   int ch4Layer(modIndex);
-  // Poison layers [negative side first]:
-  std::string Edge=ModelSupport::getComposite(SMap,ch4Layer," 3 -4 5 -6 ");
-  const double ch4Temp=LVec[0].getTemp();
-  const int ch4Mat=LVec[0].getMat();
-  int nextPoisLayer(modIndex+500);
 
-  // front / back:
   HeadRule frontX,backX;
-  createFrontRule(0,frontX);
-  createBackRule(0,backX);
 
-  for(size_t i=0;i<nPoison;i++)
-    {
-      if (i)
-	Out=ModelSupport::getComposite(SMap,nextPoisLayer-10," 2 -21 ");
-      else
-	{
-	  Out=ModelSupport::getComposite(SMap,nextPoisLayer," -11 ")
-	    +frontX.display();
-	}
-      System.addCell(MonteCarlo::Qhull(cellIndex++,ch4Mat,
-				       ch4Temp,Out+Edge));
-
-      // Al 
-      Out=ModelSupport::getComposite(SMap,nextPoisLayer," 11 -1 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,pCladMat,
-				       ch4Temp,Out+Edge));
-
-      // Poisoning 
-      Out=ModelSupport::getComposite(SMap,nextPoisLayer," 1 -2");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,poisonMat,
-				       ch4Temp,Out+Edge));
-      // Al 
-      Out=ModelSupport::getComposite(SMap,nextPoisLayer," 2 -12 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,pCladMat,
-				       ch4Temp,Out+Edge));
-      nextPoisLayer+=20;
-    }
-  // Final (or total segment)
-  //  Out=ModelSupport::getComposite(SMap,prevPLayer,modIndex," 2 -2M ");
-  if (nPoison)
-    Out=ModelSupport::getComposite
-      (SMap,nextPoisLayer-10," 2 ")+backX.display();
-  else
-    Out=backX.display()+" "+frontX.display();
-  
-  System.addCell(MonteCarlo::Qhull(cellIndex++,ch4Mat,
-				   ch4Temp,Out+Edge));
-
-  
   Out=ModelSupport::getComposite(SMap,ch4Layer," 3 -4 5 -6 ");
   // Outer layers:
   ch4Layer+=30;
@@ -535,8 +464,8 @@ CH4Layer::createObjects(Simulation& System)
       Exclude.addIntersection(frontX);
       Exclude.addIntersection(backX);
       Exclude.makeComplement();
-      createFrontRule(i,frontX);
-      createBackRule(i,backX);
+      createFrontRule(LVec[i],modIndex,i,frontX);
+      createBackRule(LVec[i],modIndex,i,backX);
       HeadRule Main;
       Out=ModelSupport::getComposite(SMap,ch4Layer," 3 -4 5 -6 ");
       Main.procString(Out);
@@ -597,9 +526,9 @@ CH4Layer::getLayerString(const size_t layerIndex,
     {
       HeadRule RX;
       if (!sideIndex)
-	createFrontRule(layerIndex,RX);
+	createFrontRule(LVec[layerIndex],modIndex,layerIndex,RX);
       else
-	createBackRule(layerIndex,RX);
+	createBackRule(LVec[layerIndex],modIndex,layerIndex,RX);
       
       return RX.display();
     }
@@ -641,6 +570,14 @@ CH4Layer::createLinks()
 {
   // set Links:
   ELog::RegMethod RegA("CH4Layer","createLinks");
+
+  const Geometry::Vec3D XYZ[6]={-Y,Y,-X,X,-Z,Z};
+  // NOT CORRECT?
+  for(size_t j=0;j<6;j++)
+    {
+      FixedComp::setConnect(j,Origin+XYZ[j]*
+			    LVec.back().Item(j),XYZ[j]);
+    }
 
   const size_t lIndex(LVec.size()-1);
   for(size_t i=0;i<6;i++)

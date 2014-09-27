@@ -487,6 +487,14 @@ TS1upgrade(FuncDataBase& Control)
   Control.addVariable("CH4ModFrontRadius5",30.0);  
   Control.addVariable("CH4ModFrontRadius6",30.0);  
   Control.addVariable("CH4ModFrontRadius7",30.0);  
+ 
+  Control.addVariable("CH4ModBackRadius1",30.0);  
+  Control.addVariable("CH4ModBackRadius2",30.0);  
+  Control.addVariable("CH4ModBackRadius3",30.0);  
+  Control.addVariable("CH4ModBackRadius4",30.0);  
+  Control.addVariable("CH4ModBackRadius5",30.0);  
+  Control.addVariable("CH4ModBackRadius6",30.0);  
+  Control.addVariable("CH4ModBackRadius7",30.0);  
   Control.addVariable("CH4ModRound1",0.3);    
   Control.addVariable("CH4ModRound2",0.4);  
   Control.addVariable("CH4ModRound3",0.7);  
@@ -853,6 +861,26 @@ TS1upgrade(FuncDataBase& Control)
   // Control.addVariable("CH4PipeActive4",511);
   // Control.addVariable("CH4PipeActive5",255);
   // Control.addVariable("CH4PipeActive6",255);
+
+  Control.addVariable("t1CylFluxTrapNCone",1);
+  Control.addVariable("t1CylFluxTrapCone1AngleA",-45.0);
+  Control.addVariable("t1CylFluxTrapCone1AngleB",30.0);
+  Control.addVariable("t1CylFluxTrapCone1Dist",-4.0);
+  Control.addVariable("t1CylFluxTrapCone1Cent",Geometry::Vec3D(0,12,0));
+  Control.addVariable("t1CylFluxTrapCone1Axis",Geometry::Vec3D(0,1,0));
+  Control.addVariable("t1CylFluxTrapCone1Mat","H2O");
+  Control.addVariable("t1CylFluxTrapCone1LayerMat","Tantalum");
+  Control.addVariable("t1CylFluxTrapCone1LayerThick",0.3);
+
+  Control.addVariable("t1CylFluxTrapCone2AngleA",-45.0);
+  Control.addVariable("t1CylFluxTrapCone2AngleB",-45.0);
+  Control.addVariable("t1CylFluxTrapCone2Dist",2.0);
+  Control.addVariable("t1CylFluxTrapCone2Cent",Geometry::Vec3D(0,18,0));
+  Control.addVariable("t1CylFluxTrapCone2Axis",Geometry::Vec3D(0,1,0));
+  Control.addVariable("t1CylFluxTrapCone2Mat","H2O");
+  Control.addVariable("t1CylFluxTrapCone2LayerMat","Tantalum");
+  Control.addVariable("t1CylFluxTrapCone2LayerThick",0.3);
+
 
   return;
 }

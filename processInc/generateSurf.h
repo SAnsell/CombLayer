@@ -32,6 +32,11 @@ buildRotatedPlane(surfRegister&,const int,
 		  const Geometry::Vec3D&,
 		  const Geometry::Vec3D&);
 
+Geometry::Plane*
+buildPlaneRotAxis(surfRegister&,const int,
+		  const Geometry::Vec3D&,const Geometry::Vec3D&,
+		  const Geometry::Vec3D&,const double);
+
 Geometry::Plane* 
 buildPlane(surfRegister&,const int,const Geometry::Vec3D&,
 	   const Geometry::Vec3D&,const Geometry::Vec3D&,

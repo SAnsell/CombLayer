@@ -446,6 +446,7 @@ TS1CylFluxTrap(FuncDataBase& Control)
   Control.addVariable("t1CylFluxTrapPLayerThick",0.2);
 
   Control.addVariable("t1CylFluxTrapP1Dist",1.00);       // distance from flat
+  //  Control.addVariable("t1CylFluxTrapP1Dist",8.000);       // distance from flat
   Control.addVariable("t1CylFluxTrapP2Dist",2.70);       // distance from flat
   Control.addVariable("t1CylFluxTrapP3Dist",4.60);       // distance from flat
   Control.addVariable("t1CylFluxTrapP4Dist",6.80);       // distance from flat

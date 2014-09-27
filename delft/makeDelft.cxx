@@ -93,6 +93,7 @@
 #include "delftH2Moderator.h"
 #include "SphereModerator.h"
 #include "ConeModerator.h"
+#include "FlatModerator.h"
 #include "H2Vac.h"
 #include "H2Groove.h"
 #include "beamSlot.h"
@@ -128,6 +129,8 @@ makeDelft::createColdMod(const std::string& modType)
     return new delftH2Moderator("delftH2");
   if (modType=="Tunnel" || modType=="Cone")
     return new ConeModerator("cone");
+  if (modType=="Kaeri" || modType=="Flat")
+    return new FlatModerator("flat");
   if (modType=="Void")
     return 0;
   if (modType=="help")
@@ -138,6 +141,7 @@ makeDelft::createColdMod(const std::string& modType)
       ELog::EM<<"-- DoubleMoon :: Modified twin curve modreator\n";
       ELog::EM<<"-- Moon       :: Single cylindrical cut out moderator\n";
       ELog::EM<<"-- Cone        :: Cone moderator"<<ELog::endDiag;
+      ELog::EM<<"-- Flat        :: Simple flat cone"<<ELog::endDiag;
       ELog::EM<<"-- Void        :: No moderator"<<ELog::endDiag;
       return 0;
     }
@@ -147,8 +151,8 @@ makeDelft::createColdMod(const std::string& modType)
 }
 
 makeDelft::makeDelft(const std::string& modType) :
-  vacReq((modType=="Cone" || modType=="Sphere" 
-	  || modType=="SphereLong") ? 0 : 1),
+  vacReq((modType=="Cone" || modType=="Sphere" ||
+	  modType=="Flat" || modType=="SphereLong") ? 0 : 1),
   GridPlate(new ReactorGrid("delftGrid")),
   Pool(new SwimingPool("delftPool")),
   FlightA(new BeamTube("delftFlightR2")),
