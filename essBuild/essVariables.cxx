@@ -55,6 +55,7 @@ namespace setVariable
 {
   void EssBeamLinesVariables(FuncDataBase&);
   void EssReflectorVariables(FuncDataBase&);
+  void EssSANSVariables(FuncDataBase&);
   void EssConicModerator(FuncDataBase&);
   void ESSWheel(FuncDataBase&);
 
@@ -1006,6 +1007,10 @@ EssConicModerator(FuncDataBase& Control)
 
 void
 EssReflectorVariables(FuncDataBase& Control)
+  /*!
+    Add ESS JRefl beamline 
+    \param Control :: Data to add
+   */
 {
   ELog::RegMethod RegA("essVariables[F]","EssReflectorVariables");
 
@@ -1050,6 +1055,59 @@ EssReflectorVariables(FuncDataBase& Control)
   Control.addVariable("JReflLayerMat1","Glass");
   Control.addVariable("JReflLayerThick2",1.5);
   Control.addVariable("JReflLayerMat2","Void");
+  return;
+}
+
+void
+EssSANSVariables(FuncDataBase& Control)
+  /*!
+    Add ESS JRefl beamline 
+    \param Control :: Data to add
+   */
+{
+  ELog::RegMethod RegA("essVariables[F]","EssReflectorVariables");
+
+  Control.addVariable("JSANSXStep",0.0);       
+  Control.addVariable("JSANSYStep",0.0);       
+  Control.addVariable("JSANSZStep",0.0);       
+  Control.addVariable("JSANSXYAngle",0.0);       
+  Control.addVariable("JSANSZAngle",0.0);       
+  Control.addVariable("JSANSLength",3190.0);       
+  Control.addVariable("JSANSHeight",100.0);       
+  Control.addVariable("JSANSDepth",100.0);       
+  Control.addVariable("JSANSLeftWidth",30.0);       
+  Control.addVariable("JSANSRightWidth",30.0);       
+  Control.addVariable("JSANSFeMat","Stainless304");       
+  Control.addVariable("JSANSNShapes",3);       
+  Control.addVariable("JSANSNShapeLayers",3);       
+
+  Control.addVariable("JSANS0TypeID","Tapper");
+  Control.addVariable("JSANS0HeightStart",2.0);
+  Control.addVariable("JSANS0HeightEnd",2.0);
+  Control.addVariable("JSANS0WidthStart",10.0);
+  Control.addVariable("JSANS0WidthEnd",25.0);
+  Control.addVariable("JSANS0Length",1070.0);       
+
+  Control.addVariable("JSANS1TypeID","Rectangle");
+  Control.addVariable("JSANS1Height",2.0);
+  Control.addVariable("JSANS1Width",25.0);
+  Control.addVariable("JSANS1Length",1120.0);
+  Control.addVariable("JSANS1ZAngle",0.25);       
+
+  Control.addVariable("JSANS2TypeID","Tapper");
+  Control.addVariable("JSANS2HeightStart",3.0);
+  Control.addVariable("JSANS2HeightEnd",3.0);
+  Control.addVariable("JSANS2WidthStart",25.0);
+  Control.addVariable("JSANS2WidthEnd",10.0);
+  Control.addVariable("JSANS2Length",1310.0);
+  Control.addVariable("JSANS2ZAngle",-0.25);       
+
+
+  Control.addVariable("JSANSLayerMat0","Void");
+  Control.addVariable("JSANSLayerThick1",0.4);
+  Control.addVariable("JSANSLayerMat1","Glass");
+  Control.addVariable("JSANSLayerThick2",1.5);
+  Control.addVariable("JSANSLayerMat2","Void");
   return;
 }
 

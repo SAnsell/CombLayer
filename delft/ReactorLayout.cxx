@@ -137,10 +137,6 @@ DelftCompactModel(mainSystem::inputParam& IParam,
 {
   ELog::RegMethod RegA("ReactorLayout[f]","DelftCompactModel");
 
-  
-  IParam.setValue("refExtra",std::string("R2Surround"));
-
-
   return;  
 }
 

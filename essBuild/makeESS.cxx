@@ -478,7 +478,6 @@ makeESS::makeBeamLine(Simulation& System,
       makeESSBL BLfactory("G1BLine1");
       BLfactory.build(System,IParam);
     }
-  
 
   return;
 }

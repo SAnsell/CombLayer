@@ -78,7 +78,8 @@ namespace essSystem
 makeESSBL::makeESSBL(const std::string& SN) : 
   beamlineSystem::beamlineConstructor(),
   shutterName(SN),
-  RefA(new beamlineSystem::GuideLine("JRefl"))
+  RefA(new beamlineSystem::GuideLine("JRefl")),
+  RefB(new beamlineSystem::GuideLine("JSANS"))
  /*!
     Constructor
     \param SN :: Shutter name
@@ -88,6 +89,7 @@ makeESSBL::makeESSBL(const std::string& SN) :
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(RefA);
+  OR.addObject(RefB);
 }
 
 makeESSBL::makeESSBL(const makeESSBL& A) : 
@@ -122,7 +124,6 @@ makeESSBL::~makeESSBL()
 
 void 
 makeESSBL::build(Simulation& System,
-
 		 const mainSystem::inputParam& IParam)
   /*!
     Carry out the full build
@@ -133,6 +134,7 @@ makeESSBL::build(Simulation& System,
   // For output stream
   ELog::RegMethod RegA("makeESSBL","build");
 
+  
   const int voidCell(74123);
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();

@@ -81,6 +81,8 @@
 #include "ContainedComp.h"
 #include "FixedGroup.h" 
 #include "ShapeUnit.h"
+#include "PlateUnit.h"
+#include "BenderUnit.h"
 #include "GuideLine.h"
 
 namespace beamlineSystem
@@ -236,7 +238,10 @@ GuideLine::addGuideUnit(const size_t index,
 			const double bX,const double bZ,
 			const double bXYang,const double bZang)
   /*!
-    Set the guide unit
+    Set the guide unit to the fixed system
+    The direction/rotation are applied to previous fixed unit
+    out track.
+
     \param Index :: index for the unit
     \param POrigin :: Previous Origin [link on]
     \param bX :: X shift on origin
@@ -246,6 +251,46 @@ GuideLine::addGuideUnit(const size_t index,
   */
 {
   ELog::RegMethod RegA("GuideLine","addGuideUnit");
+
+  const std::string GKey="Guide"+StrFunc::makeString(index);
+
+  attachSystem::FixedComp& guideFC=FixedGroup::addKey(GKey,2);
+  
+  const std::string PGKey=(index) ? 
+    "Guide"+StrFunc::makeString(index-1) :  "GuideOrigin";
+  attachSystem::FixedComp& prevFC=FixedGroup::getKey(PGKey);
+  guideFC.createUnitVector(prevFC,POrigin);
+  guideFC.applyShift(bX,0.0,bZ);
+  guideFC.applyAngleRotate(bXYang,bZang);
+    
+  return;
+}
+
+void
+GuideLine::addGuideUnit(const size_t index,
+			const Geometry::Vec3D& POrigin,
+			const Geometry::Vec3D& outX,
+			const Geometry::Vec3D& outY,
+			const Geometry::Vec3D& outZ,
+			const double bX,const double bZ,
+			const double bXYang,const double bZang)
+  /*!
+    Set the guide unit to the fixed system
+    The direction/rotation are applied to previous fixed unit
+    out track.
+
+    \param Index :: index for the unit
+    \param POrigin :: Previous Origin [link on]
+    \param outX :: X out outgoing component
+    \param outY :: Y out outgoing component
+    \param outZ :: Z out outgoing component
+    \param bX :: X shift on origin
+    \param bZ :: Z shift on origin
+    \param bXYang :: xy Angle rotation [deg]
+    \param bZang :: z Angle rotation [deg]
+  */
+{
+  ELog::RegMethod RegA("GuideLine","addGuideUnit(outX,outY,outZ)");
 
   const std::string GKey="Guide"+StrFunc::makeString(index);
 
@@ -281,6 +326,8 @@ GuideLine::processShape(const FuncDataBase& Control)
 	Control.EvalVar<std::string>(keyName+NStr+"TypeID");
       // PROCESS NEXT SECTION:
       // Beam position [def original]
+
+      // Initial directions:
       beamX=Control.EvalDefVar<double>(BKey+"XStep",0.0);
       beamZ=Control.EvalDefVar<double>(BKey+"ZStep",0.0);
       bXYang=Control.EvalDefVar<double>(BKey+"XYAngle",0.0);
@@ -299,11 +346,10 @@ GuideLine::processShape(const FuncDataBase& Control)
 
       // Simple rectangle projection:
       // ALL PROJECTIONS IN ROTATED DISTANCE
-      ShapeUnit* SU=
-	new ShapeUnit(SUItem*static_cast<int>(index+1),SULayer);
-
       if (typeID=="Rectangle")   
 	{
+
+	  PlateUnit* SU=new PlateUnit(SUItem*static_cast<int>(index+1),SULayer);
 	  const double H=Control.EvalVar<double>(keyName+NStr+"Height");
 	  const double W=Control.EvalVar<double>(keyName+NStr+"Width");
 
@@ -311,9 +357,16 @@ GuideLine::processShape(const FuncDataBase& Control)
 	  SU->addPrimaryPoint(X*(W/2.0)-Z*(H/2.0));
 	  SU->addPrimaryPoint(X*(W/2.0)+Z*(H/2.0));
 	  SU->addPrimaryPoint(-X*(W/2.0)+Z*(H/2.0));
+
+	  SU->setEndPts(Origin,Origin+Y*L);      	  
+	  SU->setXAxis(X,Z);      
+	  SU->constructConvex();
+	  shapeUnits.push_back(SU);
+	  
 	}
       else if (typeID=="Tapper")   
-	{
+	{	
+	  PlateUnit* SU=new PlateUnit(SUItem*static_cast<int>(index+1),SULayer);
 	  const double HA=Control.EvalVar<double>(keyName+NStr+"HeightStart");
 	  const double WA=Control.EvalVar<double>(keyName+NStr+"WidthStart");
 	  const double HB=Control.EvalVar<double>(keyName+NStr+"HeightEnd");
@@ -323,16 +376,37 @@ GuideLine::processShape(const FuncDataBase& Control)
 	  SU->addPairPoint(X*(WA/2.0)-Z*(HA/2.0),X*(WB/2.0)-Z*(HB/2.0));
 	  SU->addPairPoint(X*(WA/2.0)+Z*(HA/2.0),X*(WB/2.0)+Z*(HB/2.0));
 	  SU->addPairPoint(-X*(WA/2.0)+Z*(HA/2.0),-X*(WB/2.0)+Z*(HB/2.0));
+
+	  SU->setEndPts(Origin,Origin+Y*L);      	  
+	  SU->setXAxis(X,Z);      
+	  SU->constructConvex();
+	  shapeUnits.push_back(SU);
+
 	}
+      else if (typeID=="Bend")
+	{
+	  BenderUnit* BU=
+	    new BenderUnit(SUItem*static_cast<int>(index+1),SULayer);
+
+	  const double H=Control.EvalVar<double>(keyName+NStr+"Height");
+	  const double W=Control.EvalVar<double>(keyName+NStr+"Width");
+	  // angular rotation of bend direciton from +Z
+	  const double bendAngDir=
+	    Control.EvalVar<double>(keyName+NStr+"AngDir");
+	  const double radius=
+	    Control.EvalVar<double>(keyName+NStr+"Radius");
+
+	  BU->setValues(H,W,L,radius);
+	  BU->setOriginAxis(Origin,X,Y,Z);
+	  //	  BU->setEndPts(Origin,Origin+Y*L);      	  
+	  shapeUnits.push_back(BU);
+	}
+
       else
 	{
 	  throw ColErr::InContainerError<std::string>
 	    (typeID,"TypeID no known");
 	}
-      SU->setEndPts(Origin,Origin+Y*L);      	  
-      SU->setXAxis(X,Z);      
-      SU->constructConvex();
-      shapeUnits.push_back(SU);
     }
 
   return;
@@ -527,9 +601,9 @@ GuideLine::createUnitLinks()
 	FixedGroup::getKey(GKey);
       
       guideFC.setConnect(0,shapeUnits[i]->getBegin(),
-			 -shapeUnits[i]->getAxis());     
+			 shapeUnits[i]->getBegAxis());     
       guideFC.setConnect(1,shapeUnits[i]->getEnd(),
-			 shapeUnits[i]->getAxis());     
+			 shapeUnits[i]->getEndAxis());     
       
       if (!i)
 	guideFC.setLinkCopy(0,shieldFC,0);       

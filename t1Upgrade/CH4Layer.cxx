@@ -455,6 +455,9 @@ CH4Layer::createObjects(Simulation& System)
   HeadRule frontX,backX;
 
   Out=ModelSupport::getComposite(SMap,ch4Layer," 3 -4 5 -6 ");
+  createFrontRule(LVec[0],modIndex,0,frontX);
+  createBackRule(LVec[0],modIndex,0,backX);
+  
   // Outer layers:
   ch4Layer+=30;
   for(size_t i=1;i<LVec.size();i++)
@@ -578,7 +581,6 @@ CH4Layer::createLinks()
       FixedComp::setConnect(j,Origin+XYZ[j]*
 			    LVec.back().Item(j),XYZ[j]);
     }
-
   const size_t lIndex(LVec.size()-1);
   for(size_t i=0;i<6;i++)
     FixedComp::setLinkSurf(i,getLayerSurf(lIndex,i));

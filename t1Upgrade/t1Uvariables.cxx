@@ -476,10 +476,12 @@ TS1upgrade(FuncDataBase& Control)
   Control.addVariable("CH4ModXYangle",54.5);     
   Control.addVariable("CH4ModZangle",0.0);     
 
-  Control.addVariable("CH4ModNLayer",6);     
+ 
+  Control.addVariable("CH4ModNLayer",7);     
   Control.addVariable("CH4ModDepth1",6.0);     
   Control.addVariable("CH4ModWidth1",12.0);   
   Control.addVariable("CH4ModHeight1",12.0);   
+
   Control.addVariable("CH4ModFrontRadius1",30.0);  
   Control.addVariable("CH4ModFrontRadius2",30.0);  
   Control.addVariable("CH4ModFrontRadius3",30.0);  
@@ -517,19 +519,21 @@ TS1upgrade(FuncDataBase& Control)
   Control.addVariable("CH4ModMat6","Aluminium");   
   Control.addVariable("CH4ModMat7","Void");        
 
+
   Control.addVariable("CH4ModTemp1",110.0);            // liquid CH4
   Control.addVariable("CH4ModTemp2",110.0);            // liquid CH4
 
 
   // Poison !!!!  
-  Control.addVariable("CH4ModNPoison",2);      // 
-  Control.addVariable("CH4ModPYStep1",0.0);       // for 1 poison layer
-  Control.addVariable("CH4ModPYStep2",0.8);       // for 2 poison layer
-  Control.addVariable("CH4ModPGdThick",0.005);      //
-  Control.addVariable("CH4ModPCladThick",0.1);      //      
+  Control.addVariable("CH4ModInnerNPoison",2);      // 
+  Control.addVariable("CH4ModInnerPYStep1",0.0);       // for 1 poison layer
+  Control.addVariable("CH4ModInnerPYStep2",0.8);       // for 2 poison layer
+  Control.addVariable("CH4ModInnerPGdThick",0.005);      //
+  Control.addVariable("CH4ModInnerPCladThick",0.1);      //      
      
-  Control.addVariable("CH4ModPoisonMat","Gadolinium");      // Gadolinium
-  Control.addVariable("CH4ModPCladMat","Aluminium");   // Al    
+  Control.addVariable("CH4ModInnerPoisonMat","Gadolinium");      // Gadolinium
+  Control.addVariable("CH4ModInnerPCladMat","Aluminium");   // Al    
+
 
   Control.addVariable("CH4PreFlatXStep",0.0);      
   Control.addVariable("CH4PreFlatYStep",0.0);  
@@ -689,7 +693,7 @@ TS1upgrade(FuncDataBase& Control)
   Control.addVariable("H2LayerPoisonMat","Gadolinium");
 
 
-  Control.addVariable("H2LayerNLayer",8);
+  Control.addVariable("H2LayerNLayer",5);
 
   Control.addVariable("H2LayerHeight1",16.8);
   Control.addVariable("H2LayerWidth1",10.2);
@@ -699,42 +703,56 @@ TS1upgrade(FuncDataBase& Control)
 
   // al inner
   Control.addVariable("H2LayerLayer2",0.3);
-  Control.addVariable("H2LayerHeight2",0.0);
   Control.addVariable("H2LayerMat2","Aluminium");
 
   // vac
   Control.addVariable("H2LayerLayer3",0.5);
-  Control.addVariable("H2LayerHeight3",0.0);
-  Control.addVariable("H2LayerWidth3",1.0);
-  Control.addVariable("H2LayerFront3",0.5);
-  Control.addVariable("H2LayerBack3",0.5);
   Control.addVariable("H2LayerMat3","Void");
 
+  // H2 - Al layer
+  Control.addVariable("H2LayerLayer4",0.3);
+  Control.addVariable("H2LayerMat4","Aluminium");
 
-  // Carbon - Al layer
-  Control.addVariable("H2LayerLayer4",0.0);
-  Control.addVariable("H2LayerWidth4",0.0);
-  Control.addVariable("H2LayerMat4",68);
+  // vac
+  Control.addVariable("H2LayerLayer5",0.5);
+  Control.addVariable("H2LayerMat5","Void");
 
   // H2 - Al layer
-  Control.addVariable("H2LayerLayer5",0.3);
-  Control.addVariable("H2LayerHeight5",0.0);
-  Control.addVariable("H2LayerMat5","Aluminium");
+  Control.addVariable("H2LayerLayer4",0.3);
+  Control.addVariable("H2LayerMat4","Aluminium");
 
-  // H2
-  Control.addVariable("H2LayerLayer6",1.5);
-  Control.addVariable("H2LayerHeight6",0.0);
-  Control.addVariable("H2LayerFront6",0.8);
-  Control.addVariable("H2LayerBack6",1.0);
-  Control.addVariable("H2LayerMat6","ParaOrtho%80");      // H2
+  // vac
+  Control.addVariable("H2LayerLayer5",0.5);
+  Control.addVariable("H2LayerMat5","Void");
 
-  // outer Al layer
-  Control.addVariable("H2LayerLayer7",0.3);
-  Control.addVariable("H2LayerMat7","Aluminium");
 
-  // Outer vac layer
-  Control.addVariable("H2LayerLayer8",0.6);
-  Control.addVariable("H2LayerMat8","Void");
+  Control.addVariable("H2InnerNLayers",5);
+  Control.addVariable("H2InnerThick1",2.8);
+  Control.addVariable("H2InnerThick2",0.3);
+  Control.addVariable("H2InnerThick3",0.3);
+  Control.addVariable("H2InnerThick4",0.3);
+
+  Control.addVariable("H2InnerMat1","H2O");
+  Control.addVariable("H2InnerMat2","Aluminium");
+  Control.addVariable("H2InnerMat3","Void");
+  Control.addVariable("H2InnerMat4","Aluminium");
+  Control.addVariable("H2InnerMat5","ParaOrtho%80");
+
+  Control.addVariable("H2InnerTemp1",300.0);
+  Control.addVariable("H2InnerTemp2",300.0);
+  Control.addVariable("H2InnerTemp3",300.0);
+  Control.addVariable("H2InnerTemp4",20.0);
+  Control.addVariable("H2InnerTemp5",20.0);
+  
+  Control.addVariable("H2LayerRadius1",30.0);  
+  Control.addVariable("H2LayerRadius2",30.0);  
+  Control.addVariable("H2LayerRadius3",30.0);  
+  Control.addVariable("H2LayerRadius4",30.0);  
+  Control.addVariable("H2LayerRadius5",30.0);  
+  Control.addVariable("H2LayerRound1",0.3);    
+  Control.addVariable("H2LayerRound2",0.4);  
+  Control.addVariable("H2LayerRound3",0.7);  
+
 
   Control.addVariable("H2PipeNSegIn",1);
   // Central point:

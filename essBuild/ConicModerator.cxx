@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   essBuild/ConicModerator.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -148,16 +148,14 @@ ConicModerator::~ConicModerator()
 {}
 
 void
-ConicModerator::populate(const Simulation& System)
+ConicModerator::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: Data base for variable
   */
 {
   ELog::RegMethod RegA("ConicModerator","populate");
   
-  const FuncDataBase& Control=System.getDataBase();
-
   xStep=Control.EvalVar<double>(keyName+"XStep");
   yStep=Control.EvalVar<double>(keyName+"YStep");
   zStep=Control.EvalVar<double>(keyName+"ZStep");
@@ -424,6 +422,7 @@ ConicModerator::getLayerSurf(const size_t layerIndex,
   const int SI(modIndex+static_cast<int>(layerIndex)*10);
   switch(sideIndex)
     {
+      
     }
   throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
 }
@@ -439,7 +438,7 @@ ConicModerator::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("ConicModerator","createAll");
-  populate(System);
+  populate(System.getDataBase());
 
   createUnitVector(FC);
   createSurfaces();

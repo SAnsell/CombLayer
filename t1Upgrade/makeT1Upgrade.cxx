@@ -96,6 +96,7 @@
 #include "LayerInfo.h"
 #include "CH4Layer.h"
 #include "InnerLayer.h"
+#include "SplitInner.h"
 #include "HPreMod.h"
 #include "CH4PreModBase.h"
 #include "CH4PreMod.h"
@@ -617,7 +618,7 @@ makeT1Upgrade::buildH2Mod(Simulation& System,
     \param System :: Simulation for target
     \param FC :: Fixed component for coldMod center
     \param MType :: Moderator Name
-    \return Container for reflector
+    \return Container name for reflector
   */
 {
   ELog::RegMethod RegA("makeT1Upgrade","buildH2Mod");
@@ -653,7 +654,7 @@ makeT1Upgrade::buildH2Mod(Simulation& System,
   else if (MType=="Layer")
     {
       H2Mod=std::shared_ptr<constructSystem::ModBase>
-	(new CH4Layer("H2Layer"));
+	(new SplitInner("H2Inner","H2Layer"));
       OR.addObject(H2Mod);
       H2Mod->createAll(System,FC);
       return "H2Layer";
@@ -676,7 +677,7 @@ void
 makeT1Upgrade::buildHelp(Simulation& System) 
   /*!
     Build a simple help schema if help is required
-    \param System :: 
+    \param System :: Simulation model
   */
 {
   ELog::RegMethod RegA("makeT1Upgrade","buildHelp");

@@ -82,6 +82,11 @@ class GuideLine : public attachSystem::ContainedComp,
   void addGuideUnit(const size_t,const Geometry::Vec3D&,
 		    const double,const double,
 		    const double,const double);
+  void addGuideUnit(const size_t,const Geometry::Vec3D&,
+		    const Geometry::Vec3D&,const Geometry::Vec3D&,
+		    const Geometry::Vec3D&,
+		    const double,const double,
+		    const double,const double);
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int,
