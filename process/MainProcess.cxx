@@ -325,7 +325,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("void","Adds the void card to the simulation");
   IParam.setDesc("volume","Create volume about point/radius for f4 tally");
   IParam.setDesc("vtk","Write out VTK plot mesh");
-  IParam.setDesc("vmat","sections to be written by vmat");
+  IParam.setDesc("vmat","Material sections to be written by vtk output");
   IParam.setDesc("VN","Number of points in the volume integration");
   IParam.setDesc("validCheck","Run simulation to check for validity");
 
@@ -545,8 +545,7 @@ void createESSInputs(inputParam& IParam)
   IParam.regDefItem<std::string>("lowPipe","lowPipeType",1,std::string("side"));
   IParam.regDefItem<std::string>("iradLine","iradLineType",1,
 				 std::string("void"));
-  IParam.regDefItem<std::string>("beamlines","beamlines",1,
-				 std::string("void"));
+  IParam.regMulti<std::string>("beamlines","beamlines",15,1);
   IParam.setDesc("beamlines","Creates beamlines on the main model");
   IParam.setDesc("lowMod","Type of low moderator to be built");
   IParam.setDesc("topMod","Type of top moderator to be built");

@@ -470,15 +470,16 @@ makeESS::makeBeamLine(Simulation& System,
 {
   ELog::RegMethod RegA("makeESS","makeBeamLine");
 
-  const std::string lineType=
-    IParam.getValue<std::string>("beamlines");
-  if (lineType=="Ref")
+  const size_t NItems=IParam.itemCnt("beamlines",0);
+  for(size_t i=0;i+1<NItems;i+=2)
     {
-      ELog::EM<<"Making beamline "<<ELog::endDiag;
-      makeESSBL BLfactory("G1BLine1");
+      const std::string BL=IParam.getValue<std::string>("beamlines",i);
+      const std::string Btype=IParam.getValue<std::string>("beamlines",i+1);
+      ELog::EM<<"Making beamline "<<BL
+      	      <<" [" <<Btype<< "] "<<ELog::endDiag;
+      makeESSBL BLfactory(BL,Btype);
       BLfactory.build(System,IParam);
     }
-
   return;
 }
 
@@ -540,15 +541,13 @@ makeESS::build(Simulation* SimPtr,
   const std::string lowModType=IParam.getValue<std::string>("lowMod");
   const std::string topModType=IParam.getValue<std::string>("topMod");
   const std::string targetType=IParam.getValue<std::string>("targetType");
-  const std::string beamLine=IParam.getValue<std::string>("beamlines");
   const std::string iradLine=IParam.getValue<std::string>("iradLineType");
   if (StrFunc::checkKey("help",lowPipeType,lowModType,targetType) ||
-      StrFunc::checkKey("help",iradLine,beamLine,topModType))
+      StrFunc::checkKey("help",iradLine,topModType,""))
     {
       optionSummary(*SimPtr);
       throw ColErr::ExitAbort("Help system exit");
     }
-
   makeTarget(*SimPtr,targetType);
   
   Reflector->createAll(*SimPtr,World::masterOrigin());
@@ -577,7 +576,7 @@ makeESS::build(Simulation* SimPtr,
 				  Target->getKey("Shaft"));
 
   createGuides(*SimPtr);  
-  
+
   // PROTON BEAMLINE
   
   

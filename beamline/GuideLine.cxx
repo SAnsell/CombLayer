@@ -396,7 +396,7 @@ GuideLine::processShape(const FuncDataBase& Control)
 	  const double radius=
 	    Control.EvalVar<double>(keyName+NStr+"Radius");
 
-	  BU->setValues(H,W,L,radius);
+	  BU->setValues(H,W,L,radius,bendAngDir);
 	  BU->setOriginAxis(Origin,X,Y,Z);
 	  //	  BU->setEndPts(Origin,Origin+Y*L);      	  
 	  shapeUnits.push_back(BU);

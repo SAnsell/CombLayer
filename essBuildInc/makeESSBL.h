@@ -47,11 +47,10 @@ class makeESSBL :
   const std::string shutterName;              ///< Shutter name
 
   std::shared_ptr<beamlineSystem::GuideLine> RefA;   ///< Guide line [refl]
-  std::shared_ptr<beamlineSystem::GuideLine> RefB;   ///< Guide line [sans]
 
  public:
   
-  makeESSBL(const std::string&);
+  makeESSBL(const std::string&,const std::string&);
   makeESSBL(const makeESSBL&);
   makeESSBL& operator=(const makeESSBL&);
   virtual ~makeESSBL();

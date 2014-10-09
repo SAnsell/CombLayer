@@ -75,21 +75,21 @@
 namespace essSystem
 {
 
-makeESSBL::makeESSBL(const std::string& SN) : 
+makeESSBL::makeESSBL(const std::string& SN,
+		     const std::string& BName) : 
   beamlineSystem::beamlineConstructor(),
   shutterName(SN),
-  RefA(new beamlineSystem::GuideLine("JRefl")),
-  RefB(new beamlineSystem::GuideLine("JSANS"))
+  RefA(new beamlineSystem::GuideLine(BName))
  /*!
     Constructor
     \param SN :: Shutter name
+    \param BName :: Beamline
  */
 {
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(RefA);
-  OR.addObject(RefB);
 }
 
 makeESSBL::makeESSBL(const makeESSBL& A) : 

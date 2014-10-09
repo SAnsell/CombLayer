@@ -907,6 +907,7 @@ EssVariables(FuncDataBase& Control)
 
   EssBeamLinesVariables(Control);
   EssReflectorVariables(Control);
+  EssSANSVariables(Control);
   EssConicModerator(Control);
   EssWheel(Control);
 
@@ -1078,29 +1079,15 @@ EssSANSVariables(FuncDataBase& Control)
   Control.addVariable("JSANSLeftWidth",30.0);       
   Control.addVariable("JSANSRightWidth",30.0);       
   Control.addVariable("JSANSFeMat","Stainless304");       
-  Control.addVariable("JSANSNShapes",3);       
+  Control.addVariable("JSANSNShapes",1);       
   Control.addVariable("JSANSNShapeLayers",3);       
 
-  Control.addVariable("JSANS0TypeID","Tapper");
-  Control.addVariable("JSANS0HeightStart",2.0);
-  Control.addVariable("JSANS0HeightEnd",2.0);
-  Control.addVariable("JSANS0WidthStart",10.0);
-  Control.addVariable("JSANS0WidthEnd",25.0);
-  Control.addVariable("JSANS0Length",1070.0);       
-
-  Control.addVariable("JSANS1TypeID","Rectangle");
-  Control.addVariable("JSANS1Height",2.0);
-  Control.addVariable("JSANS1Width",25.0);
-  Control.addVariable("JSANS1Length",1120.0);
-  Control.addVariable("JSANS1ZAngle",0.25);       
-
-  Control.addVariable("JSANS2TypeID","Tapper");
-  Control.addVariable("JSANS2HeightStart",3.0);
-  Control.addVariable("JSANS2HeightEnd",3.0);
-  Control.addVariable("JSANS2WidthStart",25.0);
-  Control.addVariable("JSANS2WidthEnd",10.0);
-  Control.addVariable("JSANS2Length",1310.0);
-  Control.addVariable("JSANS2ZAngle",-0.25);       
+  Control.addVariable("JSANS0TypeID","Bend");
+  Control.addVariable("JSANS0Height",16.0);
+  Control.addVariable("JSANS0Width",10.0);
+  Control.addVariable("JSANS0AngDir",0.0);
+  Control.addVariable("JSANS0Length",400.0);       
+  Control.addVariable("JSANS0Radius",400.0);       
 
 
   Control.addVariable("JSANSLayerMat0","Void");
