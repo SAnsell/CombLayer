@@ -47,6 +47,7 @@
 #include "Quaternion.h"
 #include "Vert2D.h"
 #include "Convex2D.h"
+#include "polySupport.h"
 #include "surfRegister.h"
 #include "Surface.h"
 #include "generateSurf.h"
@@ -248,25 +249,28 @@ BenderUnit::calcWidthCent() const
   const size_t NAns=solveQuadratic(1.0,2.0*AMid.dotProd(LDir),
 				   AMid.dotProd(AMid)-Radius*Radius,
 				   OutValues);
-  
+  if (!NAns) 
+    {
+      ELog::EM<<"Failed to find quadratic solution for bender"<<ELog::endErr;
+      return RCent;
+    }
+
   double minDist(1e38);
   Geometry::Vec3D OutPt(RCent);
-  for(size_t i=0;i<NAns;i++)
+  Geometry::Vec3D Pt;
+  if (fabs(OutValues.first.imag())<Geometry::zeroTol)
     {
-  const double lambda=(Radius*Radius-ma)/la;
-  const double lambdaX=(Radius*Radius-mb)/lb;
-
-  ELog::EM<<"Mid == "<<midPt<<" :: "
-	  <<nEndPt<<" == "<<endPt<<ELog::endDiag;
-  ELog::EM<<"LA == "<<LDir<<" :: "
-	  <<(midPt-RCent).unit()<<ELog::endDiag;
-  ELog::EM<<"Lx == "<<lambdaX<<" "<<lambda<<ELog::endDiag;
-  ELog::EM<<"Centre == "<<midPt+LDir*lambda<<" :: "
-	  <<RCent<<ELog::endDiag;;
-  ELog::EM<<"CentreX == "<<midPt+LDir*lambdaX<<" :: "
-	  <<RCent<<ELog::endDiag;;
-
-  return midPt+LDir*lambda;
+      OutPt=midPt+LDir*OutValues.first.real();
+      minDist=OutPt.Distance(RCent);
+    }
+  if (NAns>1 && fabs(OutValues.second.imag())<Geometry::zeroTol)
+    {
+      Pt=midPt+LDir*OutValues.second.real();
+      const double D=Pt.Distance(RCent);
+      if (D<minDist)
+	OutPt=Pt;
+    }
+  return Pt;
 }
 
 
