@@ -69,7 +69,7 @@ BenderUnit::BenderUnit(const int ON,const int LS)  :
 
 BenderUnit::BenderUnit(const BenderUnit& A) : 
   ShapeUnit(A),
-  RCent(A.RCent),RAxis(A.RAxis),Radius(A.Radius),
+  RCent(A.RCent),RAxis(A.RAxis),RPlane(A.RPlane),Radius(A.Radius),
   aHeight(A.aHeight),bHeight(A.bHeight),aWidth(A.aWidth),
   bWidth(A.bWidth),Length(A.Length),rotAng(A.rotAng),
   AXVec(A.AXVec),AYVec(A.AYVec),AZVec(A.AZVec),BXVec(A.BXVec),
@@ -93,6 +93,7 @@ BenderUnit::operator=(const BenderUnit& A)
       ShapeUnit::operator=(A);
       RCent=A.RCent;
       RAxis=A.RAxis;
+      RPlane=A.RPlane;
       Radius=A.Radius;
       aHeight=A.aHeight;
       bHeight=A.bHeight;
@@ -212,7 +213,7 @@ BenderUnit::setOriginAxis(const Geometry::Vec3D& O,
   Qz.rotate(RAxis);
 
   
-  const Geometry::Vec3D RPlane=YAxis*RAxis;
+  RPlane=YAxis*RAxis;
   RCent=begPt+RPlane*Radius;
   
   // calc angle and rotation:
@@ -224,24 +225,29 @@ BenderUnit::setOriginAxis(const Geometry::Vec3D& O,
   Qxy.rotate(BXVec);
   Qxy.rotate(BYVec);
   Qxy.rotate(BZVec);
-
+  ELog::EM<<"Beg Pt == "<<begPt<<" :: "<<endPt<<ELog::endDiag;
   return;
 }
 
 Geometry::Vec3D
-BenderUnit::calcWidthCent() const
+BenderUnit::calcWidthCent(const bool plusSide) const
   /*!
     Calculate the shifted centre based on the difference in
-    widths 
+    widths. Keeps the original width point correct (symmetric round
+    origin point) -- then track the exit track + / - round the centre line
+    bend.
+    \param plusSide :: to use the positive / negative side
     \return new centre
   */
 {
   ELog::RegMethod RegA("BenderUnit","calcWidthCent");
 
-  const double DW=bWidth-aWidth;
-  const Geometry::Vec3D nEndPt=endPt+BXVec*DW;
+  const double DW=(bWidth-aWidth)/2.0;
+  const double pSign=(plusSide) ? -1.0 : 1.0;
+
+  const Geometry::Vec3D nEndPt=endPt+BXVec*(pSign*DW);
   const Geometry::Vec3D midPt=(nEndPt+begPt)/2.0;
-  const Geometry::Vec3D LDir=((nEndPt-begPt)*BZVec).unit();
+  const Geometry::Vec3D LDir=((nEndPt-begPt)*RAxis).unit();
     
   const Geometry::Vec3D AMid=(nEndPt-begPt)/2.0;
   std::pair<std::complex<double>,
@@ -255,22 +261,14 @@ BenderUnit::calcWidthCent() const
       return RCent;
     }
 
-  double minDist(1e38);
-  Geometry::Vec3D OutPt(RCent);
-  Geometry::Vec3D Pt;
-  if (fabs(OutValues.first.imag())<Geometry::zeroTol)
-    {
-      OutPt=midPt+LDir*OutValues.first.real();
-      minDist=OutPt.Distance(RCent);
-    }
-  if (NAns>1 && fabs(OutValues.second.imag())<Geometry::zeroTol)
-    {
-      Pt=midPt+LDir*OutValues.second.real();
-      const double D=Pt.Distance(RCent);
-      if (D<minDist)
-	OutPt=Pt;
-    }
-  return Pt;
+  if (fabs(OutValues.first.imag())<Geometry::zeroTol &&
+      OutValues.first.real()>0.0)
+    return midPt+LDir*OutValues.first.real();
+  if (fabs(OutValues.second.imag())<Geometry::zeroTol &&
+      OutValues.second.real()>0.0)
+    return midPt+LDir*OutValues.second.real();
+  
+  return RCent;
 }
 
 
@@ -286,28 +284,36 @@ BenderUnit::createSurfaces(ModelSupport::surfRegister& SMap,
    */
 {
   ELog::RegMethod RegA("BenderUnit","createSurfaces");
-      Geometry::Vec3D WCentre= calcWidthCent();
-
+  Geometry::Vec3D PCentre= calcWidthCent(1);
+  Geometry::Vec3D MCentre= calcWidthCent(0);
+  ELog::EM<<"PCent == "<<PCentre<<":: "<<MCentre<<":: "<<RCent<<ELog::endDiag;
+  // Make divider plane +ve required
+  const double maxThick=Thick.back()+(aWidth+bWidth);
+  ModelSupport::buildPlane(SMap,indexOffset+offset+1,
+			   begPt+RPlane*maxThick,
+			   endPt+RPlane*maxThick,
+			   endPt+RPlane*maxThick+RAxis,
+			   -RPlane);
+  ELog::EM<<"DPlane == "<<begPt+RPlane*maxThick<<" :: "<<begPt<<ELog::endDiag;
   for(size_t j=0;j<Thick.size();j++)
     {
       const int SN(indexOffset+offset+
 		   static_cast<int>(j)*layerSep);
       ModelSupport::buildPlane(SMap,SN+5,
-			       begPt-AZVec*(aHeight/2.0+Thick[j]),
-			       begPt-AZVec*(aHeight/2.0+Thick[j])+AYVec,
-			       endPt-AZVec*(bHeight/2.0+Thick[j]),
+			       begPt-RAxis*(aHeight/2.0+Thick[j]),
+			       begPt-RAxis*(aHeight/2.0+Thick[j])+RPlane,
+			       endPt-RAxis*(bHeight/2.0+Thick[j]),
 			       RAxis);
       ModelSupport::buildPlane(SMap,SN+6,
-			       begPt+AZVec*(aHeight/2.0+Thick[j]),
-			       begPt+AZVec*(aHeight/2.0+Thick[j])+AYVec,
-			       endPt+AZVec*(bHeight/2.0+Thick[j]),
+			       begPt+RAxis*(aHeight/2.0+Thick[j]),
+			       begPt+RAxis*(aHeight/2.0+Thick[j])+RPlane,
+			       endPt+RAxis*(bHeight/2.0+Thick[j]),
 			       RAxis);
 
-
-      ModelSupport::buildCylinder(SMap,SN+7,RCent,
+      ModelSupport::buildCylinder(SMap,SN+7,MCentre,
 				  RAxis,Radius-(Thick[j]+aWidth/2.0));
-      ModelSupport::buildCylinder(SMap,SN+8,RCent,
-				  RAxis,Radius+(Thick[j]+bWidth/2.0));
+      ModelSupport::buildCylinder(SMap,SN+8,PCentre,
+				  RAxis,Radius+(Thick[j]+aWidth/2.0));
     }
   return;
 }
@@ -325,7 +331,7 @@ BenderUnit::getString(const size_t layerN) const
   std::ostringstream cx;
   const int SN(offset+static_cast<int>(layerN)*layerSep);
 
-  cx<<" "<<(SN+5)<<" "<<-(SN+6)<<" "<<(SN+7)<<" "<<-(SN+8)<<" ";
+  cx<<offset+1<<" "<<(SN+5)<<" "<<-(SN+6)<<" "<<(SN+7)<<" "<<-(SN+8)<<" ";
 
   return cx.str();
 }
@@ -344,7 +350,8 @@ BenderUnit::getExclude(const size_t layerN) const
 
   const int SN(offset+static_cast<int>(layerN)*layerSep);
 
-  cx<<" ( "<<-(SN+5)<<":"<<(SN+6)<<":"<<-(SN+7)<<":"<<(SN+8)<<")";
+  cx<<" ( "<<-(SN+5)<<":"<<(SN+6)<<":"
+    <<-(SN+7)<<":"<<(SN+8)<<") ";
   return cx.str();
 }
 

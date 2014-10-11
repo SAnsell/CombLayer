@@ -389,14 +389,16 @@ GuideLine::processShape(const FuncDataBase& Control)
 	    new BenderUnit(SUItem*static_cast<int>(index+1),SULayer);
 
 	  const double H=Control.EvalVar<double>(keyName+NStr+"Height");
+	  const double HB=Control.EvalDefVar<double>(keyName+NStr+"BHeight",H);
 	  const double W=Control.EvalVar<double>(keyName+NStr+"Width");
+	  const double WB=Control.EvalDefVar<double>(keyName+NStr+"BWidth",W);
 	  // angular rotation of bend direciton from +Z
 	  const double bendAngDir=
 	    Control.EvalVar<double>(keyName+NStr+"AngDir");
 	  const double radius=
 	    Control.EvalVar<double>(keyName+NStr+"Radius");
 
-	  BU->setValues(H,W,L,radius,bendAngDir);
+	  BU->setValues(H,HB,W,WB,L,radius,bendAngDir);
 	  BU->setOriginAxis(Origin,X,Y,Z);
 	  //	  BU->setEndPts(Origin,Origin+Y*L);      	  
 	  shapeUnits.push_back(BU);
@@ -465,6 +467,8 @@ GuideLine::createSurfaces(const long int mainLP)
   ModelSupport::buildPlane(SMap,guideIndex+5,Origin-Z*depth,Z);
   ModelSupport::buildPlane(SMap,guideIndex+6,Origin+Z*height,Z);
 
+  // Note we ignore the length component of the last item 
+  // and use the guide closer
   for(size_t i=0;i<nShapes;i++)
     {
       if (i)

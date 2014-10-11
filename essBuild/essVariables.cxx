@@ -1079,16 +1079,22 @@ EssSANSVariables(FuncDataBase& Control)
   Control.addVariable("JSANSLeftWidth",30.0);       
   Control.addVariable("JSANSRightWidth",30.0);       
   Control.addVariable("JSANSFeMat","Stainless304");       
-  Control.addVariable("JSANSNShapes",1);       
+  Control.addVariable("JSANSNShapes",2);       
   Control.addVariable("JSANSNShapeLayers",3);       
 
   Control.addVariable("JSANS0TypeID","Bend");
   Control.addVariable("JSANS0Height",16.0);
-  Control.addVariable("JSANS0Width",10.0);
+  Control.addVariable("JSANS0Width",16.0);
+  Control.addVariable("JSANS0BWidth",16.0);
   Control.addVariable("JSANS0AngDir",0.0);
   Control.addVariable("JSANS0Length",400.0);       
-  Control.addVariable("JSANS0Radius",400.0);       
+  Control.addVariable("JSANS0Radius",4000.0);       
 
+  Control.addVariable("JSANS1TypeID","Rectangle");
+  Control.addVariable("JSANS1Height",16.0);
+  Control.addVariable("JSANS1Width",16.0);
+  Control.addVariable("JSANS1Length",1120.0);
+  Control.addVariable("JSANS1ZAngle",0.0);       
 
   Control.addVariable("JSANSLayerMat0","Void");
   Control.addVariable("JSANSLayerThick1",0.4);

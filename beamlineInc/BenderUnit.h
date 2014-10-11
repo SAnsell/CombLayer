@@ -40,6 +40,7 @@ class BenderUnit : public ShapeUnit
 
   Geometry::Vec3D RCent;      ///< Rotation centre
   Geometry::Vec3D RAxis;      ///< Rotation axis
+  Geometry::Vec3D RPlane;     ///< Rotation Centre direction
 
   double Radius;              ///< Primary rotation ratius
   double aHeight;             ///< Height across rotation plane [start]
@@ -57,7 +58,7 @@ class BenderUnit : public ShapeUnit
   Geometry::Vec3D BYVec;    ///< Current YVector
   Geometry::Vec3D BZVec;    ///< Current ZVector
 
-  Geometry::Vec3D calcWidthCent() const;
+  Geometry::Vec3D calcWidthCent(const bool) const;
   
  public:
 
@@ -83,7 +84,7 @@ class BenderUnit : public ShapeUnit
   std::string getString(const size_t) const;
   std::string getExclude(const size_t) const;
 
-  void createSurfaces(ModelSupport::surfRegister&,const int,
+  virtual void createSurfaces(ModelSupport::surfRegister&,const int,
 		      const std::vector<double>&);
 };
 
