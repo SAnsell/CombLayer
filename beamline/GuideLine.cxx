@@ -353,11 +353,10 @@ GuideLine::processShape(const FuncDataBase& Control)
 	  const double H=Control.EvalVar<double>(keyName+NStr+"Height");
 	  const double W=Control.EvalVar<double>(keyName+NStr+"Width");
 
-	  SU->addPrimaryPoint(-X*(W/2.0)-Z*(H/2.0));
-	  SU->addPrimaryPoint(X*(W/2.0)-Z*(H/2.0));
-	  SU->addPrimaryPoint(X*(W/2.0)+Z*(H/2.0));
-	  SU->addPrimaryPoint(-X*(W/2.0)+Z*(H/2.0));
-
+	  SU->addPrimaryPoint(Geometry::Vec3D(-W/2.0,0,-H/2.0));
+	  SU->addPrimaryPoint(Geometry::Vec3D(W/2.0,0,-H/2.0));
+	  SU->addPrimaryPoint(Geometry::Vec3D(W/2.0,0,H/2.0));
+	  SU->addPrimaryPoint(Geometry::Vec3D(-W/2.0,0,H/2.0));
 	  SU->setEndPts(Origin,Origin+Y*L);      	  
 	  SU->setXAxis(X,Z);      
 	  SU->constructConvex();
@@ -532,6 +531,7 @@ GuideLine::createObjects(Simulation& System,
       
       // Last one add exclude:
       std::string ExOut(shapeLayer);
+      ELog::EM<<"Exclude == "<<ExOut<<ELog::endDiag;
       if (i) ExOut+=front;
       if (i!=nShapes-1) ExOut+=back;
       excludeCell.addUnion(ExOut);
@@ -556,7 +556,7 @@ GuideLine::createMainLinks(const attachSystem::FixedComp& mainFC,
   /*!
     Create the linked units
     \param mainFC :: link object 
-    \param mainLP :: link poitn
+    \param mainLP :: link point
    */
 {
   ELog::RegMethod RegA("GuideLine","createLinks");

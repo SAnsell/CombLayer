@@ -225,7 +225,6 @@ BenderUnit::setOriginAxis(const Geometry::Vec3D& O,
   Qxy.rotate(BXVec);
   Qxy.rotate(BYVec);
   Qxy.rotate(BZVec);
-  ELog::EM<<"Beg Pt == "<<begPt<<" :: "<<endPt<<ELog::endDiag;
   return;
 }
 

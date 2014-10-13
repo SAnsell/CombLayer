@@ -210,7 +210,7 @@ PlateUnit::constructConvex()
       
       if (N.dotProd(Cent)>0)
 	{
-	  // rotate : could you c++11 construct  rotate
+	  // rotate : could you c++11 construct rotate
 	  for(size_t i=1;i<(nCorner+1)/2;i++)
 	    {
 	      std::swap(APts[i],APts[nCorner-i]);
@@ -352,7 +352,7 @@ PlateUnit::backPair(const size_t IndexA,const size_t IndexB,
     \return shifted points
   */
 {
-  ELog::RegMethod RegA("PlateUnit","frontPair");
+  ELog::RegMethod RegA("PlateUnit","backPair");
 
   Geometry::Vec3D APoint=backPt(IndexA);
   Geometry::Vec3D BPoint=backPt(IndexB);
@@ -370,14 +370,16 @@ PlateUnit::scaledPair(const Geometry::Vec3D& APoint,
     \return pair unit
   */
 {
-  ELog::RegMethod RegA("PlateUnit","scalePair");
+  ELog::RegMethod RegA("PlateUnit","scaledPair");
   std::pair<Geometry::Vec3D,Geometry::Vec3D> Out(APoint,BPoint);
   // Note points go inward
+      
   if (fabs(scale)>Geometry::zeroTol)
     {
       Geometry::Vec3D ASide=(BPoint-APoint).unit();
       ASide=YVec*ASide;
       Out.first-=ASide*scale;
+
       Out.second-=ASide*scale;
     }
   return Out;
@@ -420,15 +422,30 @@ PlateUnit::createSurfaces(ModelSupport::surfRegister& SMap,
 
       for(size_t i=0;i<nCorner;i++)
 	{
-	  std::pair<Geometry::Vec3D,Geometry::Vec3D> PX=
+	  const std::pair<Geometry::Vec3D,Geometry::Vec3D> PX=
 	    frontPair(i,i+1,Thick[j]);
 	  ModelSupport::buildPlane(SMap,SN,
 				   PX.first,PX.second,
 				   backPt(i),
 				   sideNorm(PX));
+	  if (j==0)
+	    {
+	      ELog::EM<<"Plane ="<<SN<<" == "<<PX.first<<" :: "
+		      <<PX.second<<ELog::endDiag;
+	      
+	      ELog::EM<<"Dist == "<<(frontPt(0)-frontPt(1)).abs()<<ELog::endDiag;
+	    }
 	  SN++;
 	}
     }
+
+  const std::pair<Geometry::Vec3D,Geometry::Vec3D> PXX=
+    frontPair(0,1,0.0);
+  
+  ELog::EM<<"Front == "<<PXX.first<<" : "<<PXX.second<<ELog::endDiag;
+  ELog::EM<<"CPT == "<<APts[0]<<" : "<<APts[1]<<ELog::endDiag;
+  ELog::EM<<"CPT == "<<APts[2]<<" : "<<APts[3]<<ELog::endDiag;
+  
   return;
 }
 
