@@ -169,6 +169,9 @@ main(int argc,char* argv[])
 	  tallyModification(*SimPtr,IParam);
 
 	  // Ensure we done loop
+	  ELog::EM<<"T1MARKII : variable hash: "
+		  <<SimPtr->getDataBase().variableHash()
+		  <<ELog::endBasic;
 	  do
 	    {
 	      SimProcess::writeIndexSim(*SimPtr,Oname,MCIndex);

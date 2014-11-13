@@ -837,7 +837,7 @@ FuncDataBase::variableHash() const
   */
 {
   std::ostringstream cx;
-  VList.writeAll(cx);
+  VList.writeActive(cx);
   MD5hash sum;
   return sum.processMessage(cx.str());
 }

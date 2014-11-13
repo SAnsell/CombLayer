@@ -349,6 +349,26 @@ varList::createFType<Code>(const int I,const Code& V)
 }
 
 void
+varList::writeActive(std::ostream& OX) const
+  /*!
+    Write out all active the variables.
+    Assumes that varStore is stored alphabetically.
+    \param OX :: Output stream
+  */
+{
+  for(const varStore::value_type& mc : varName)
+    {
+      if (mc.second->isActive())
+	{
+	  OX<<mc.first<<" ";
+	  mc.second->write(OX);
+	  OX<<std::endl;
+	}
+    }
+  return;
+}
+
+void
 varList::writeAll(std::ostream& OX) const
   /*!
     Write out all the variables.
