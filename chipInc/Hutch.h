@@ -182,8 +182,9 @@ void createWallsChipIR(Simulation&,const shutterSystem::GeneralShutter&);
 
   // ----------------------------------------------------------
 
-  void populate(const Simulation&);
-  void createUnitVector(const shutterSystem::GeneralShutter&,
+  void populate(const FuncDataBase&);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const Geometry::Vec3D&,
 			const attachSystem::FixedComp&);
 
   void createWallSurfaces(const attachSystem::FixedComp&);
@@ -204,10 +205,6 @@ void createWallsChipIR(Simulation&,const shutterSystem::GeneralShutter&);
   ChipIRHutch(const ChipIRHutch&);
   ChipIRHutch& operator=(const ChipIRHutch&);
   ~ChipIRHutch();
-
-  void createAll(Simulation&,const shutterSystem::GeneralShutter&,
-		 const attachSystem::TwinComp&,		 
-		 const attachSystem::ContainedComp&);
 
   int isObjectContained(Simulation&,const int,const int);
 
@@ -239,6 +236,18 @@ void createWallsChipIR(Simulation&,const shutterSystem::GeneralShutter&);
 
   int exitWindow(const double,std::vector<int>&,Geometry::Vec3D&) const;
   void writeMasterPoints() const;
+
+  void createAll(Simulation&,const shutterSystem::GeneralShutter&,
+		 const attachSystem::TwinComp&,		 
+		 const attachSystem::ContainedComp&);
+
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const attachSystem::TwinComp&,		 
+		 const attachSystem::ContainedComp&);
+  void createCommonAll(Simulation&,
+		 const attachSystem::TwinComp&,		 
+		 const attachSystem::ContainedComp&);
+
 };
 
 }

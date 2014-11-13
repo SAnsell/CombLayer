@@ -44,6 +44,7 @@
 namespace Geometry
 {
 
+
 SglLine::SglLine(const Geometry::Vec3D& APoint,
 		 const Geometry::Vec3D& NV) :
   Intersect(),index(0),
@@ -94,7 +95,6 @@ SglLine::operator=(const SglLine& A)
     }
   return *this;
 }
-
 
 SglLine&
 SglLine::operator()(const Geometry::Vec3D& APoint,

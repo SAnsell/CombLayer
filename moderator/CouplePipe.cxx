@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   moderator/CouplePipe.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -262,24 +262,22 @@ CouplePipe::insertPipes(Simulation& System,const VacVessel& VC)
 {
   ELog::RegMethod RegA("CouplePipe","insertPipes");
 
-
   const masterRotate& MR=masterRotate::Instance();
   // Hydrogen inner
-  HInner.addPoint(VC.getSurfacePoint(4,4)+X*Xoffset+Y*Yoffset-Z*fullLen);
+  HInner.addPoint(VC.getSurfacePoint(4,3)+
+		  X*(Xoffset+hXoffset)+
+		  Y*(Yoffset+hYoffset)-Z*fullLen);
   // added
-  HInner.addPoint(VC.getSurfacePoint(4,4)+X*Xoffset+Y*Yoffset+Z*20.0);
+  HInner.addPoint(VC.getSurfacePoint(4,3)+
+		  X*(Xoffset+hXoffset)+
+		  Y*(Yoffset+hYoffset)+Z*hLen);
+  
 
-  ELog::EM<<"Point == "
-	  <<MR.calcRotate(VC.getSurfacePoint(4,4)+
-			  X*Xoffset+Y*Yoffset+Z*20.0)<<ELog::endDebug;
-  ELog::EM<<"Point B == "
-	  <<MR.calcRotate(VC.getSurfacePoint(4,4)+
-			  X*Xoffset+Y*Yoffset-Z*fullLen)<<ELog::endDebug;
   //  HInner.addPoint(Origin+X*hXoffset+Y*hYoffset);
   //  HInner.addPoint(Origin+X*hXoffset+Y*hYoffset+Z*hLen);
 
   HInner.addRadius(hRadius-hThick,hydMat,hydTemp);
-  //  HInner.addRadius(hRadius,innerAlMat,hydTemp);
+  HInner.addRadius(hRadius,innerAlMat,hydTemp);
  
   HInner.createAll(System);
   return;

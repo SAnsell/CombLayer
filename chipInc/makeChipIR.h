@@ -58,8 +58,9 @@ class makeChipIR
   makeChipIR& operator=(const makeChipIR&);
   ~makeChipIR();
   
-  void build(Simulation* SimPtr,const mainSystem::inputParam& IParam,
+  void build(Simulation*,const mainSystem::inputParam&,
 	     const shutterSystem::BulkShield&);
+  void buildIsolated(Simulation&,const mainSystem::inputParam&);
 
   /// Guide object accessor
   const ChipIRGuide& getGuide() const { return *GObj; }

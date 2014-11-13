@@ -29,6 +29,7 @@ namespace SDef
 
   void createSimpleSource(Source&,const double,const double);
   void createBilbaoSource(const FuncDataBase&,Source&);
+  void createD4CSource(const FuncDataBase&,Source&);
   void createESSSource(const FuncDataBase&,Source&);
   void createTS1Source(const FuncDataBase&,Source&);
   void createTS1GaussianSource(const FuncDataBase&,Source&);

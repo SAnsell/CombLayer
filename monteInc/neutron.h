@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   monteInc/neutron.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@
 namespace MonteCarlo
 {
 
+  class Object;
 /*!  
   \class neutron
   \brief   Defines single point neutron
@@ -50,7 +51,8 @@ class neutron
   double travel;            ///< Distance travelled
   double time;              ///< Time Travelled
   double nCollision;        ///< Number of collisions
-  
+  const Object* OPtr;             ///< Object for collision [if set]
+
   neutron(const double,const Geometry::Vec3D&,const Geometry::Vec3D&);
   neutron(const neutron&);
   neutron& operator=(const neutron&);
@@ -66,6 +68,7 @@ class neutron
   double Q(const neutron&) const;
   double eLoss(const neutron&) const;
   void addCollision();
+  void setObject(const Object* OP) { OPtr=OP; }
   // Output stuff
   void write(std::ostream&) const;
 

@@ -58,6 +58,11 @@ class BellJar : public attachSystem::ContainedComp,
   double colWidth;              ///< Width of the diamond block
   double colFront;              ///< Front distance
   double colBack;               ///< Back distance
+
+  double subColWidth;              ///< Width of the diamond block
+  double subColFront;              ///< Front distance
+  double subColBack;               ///< Back distance
+
   int colMat;                   ///< Material
 
   std::vector<double> colAngle;  ///< angles 

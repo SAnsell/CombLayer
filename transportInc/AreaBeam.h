@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   transportInc/AreaBeam.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,6 +42,11 @@ class AreaBeam : public Beam
 {
  private:   
 
+  Geometry::Vec3D Cent;     ///< Centre Point
+  Geometry::Vec3D Axis;     ///< AXis vector
+  Geometry::Vec3D WVec;     ///< Width Vector
+  Geometry::Vec3D HVec;     ///< Height Vector
+
   double wavelength;        ///< Wavelength [A]
   double Width;             ///< Width [cm]
   double Height;            ///< Height [cm]
@@ -68,6 +73,7 @@ class AreaBeam : public Beam
   /// Set Wavelength
   virtual void setWavelength(const double W) { wavelength=W; }
 
+  void setCent(const Geometry::Vec3D& C) { Cent=C; }  ///< Set Centre
   void setWidth(const double W) { Width=W; }      ///< Set width
   void setHeight(const double H) { Width=H; }     ///< Set height
   void setStart(const double Y) { startY=Y; }     ///< Set initial position 

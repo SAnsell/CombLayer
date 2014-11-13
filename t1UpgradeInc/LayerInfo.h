@@ -27,6 +27,14 @@ class Simulation;
 namespace ts1System
 {
 
+/*!
+  \class LayerInfo
+  \author S. Ansell
+  \version 1.0
+  \brief Support class to handle reading variables by index
+  \date Noveber 2012
+*/
+
 class LayerInfo
 {
  private:

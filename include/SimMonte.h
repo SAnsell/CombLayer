@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   include/SimMonte.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
+
 #ifndef SimMonte_h
 #define SimMonte_h
 
@@ -41,7 +42,9 @@ class SimMonte : public Simulation
 {
  private:
 
-  long int TCount;                    ///< Total counts 
+  size_t TCount;                    ///< Total counts 
+
+  int MSActive;                      ///< Multi-scattering [0-all, -1 => single]
   Transport::Beam* B;                 ///< Main Beam (init partiles)
   Transport::DetGroup DUnit;          ///< Detector Units
   
@@ -50,14 +53,24 @@ class SimMonte : public Simulation
   SimMonte();
   SimMonte(const SimMonte&);
   SimMonte& operator=(const SimMonte&);
-  ~SimMonte();
+  virtual ~SimMonte();
 
   void clearAll();
   // MAIN RUN:
   void runMonte(const size_t);
   void setBeam(const Transport::Beam&);
   void setDetector(const Transport::Detector&);
-  
+  void setMS(const int M) { MSActive=M; }
+
+  void attenPath(const MonteCarlo::Object*,const double,
+		 MonteCarlo::neutron&) const;
+
+  Transport::Beam* getBeam() const { return B; }
+
+  /// access detector unit
+  Transport::DetGroup& getDU() { return DUnit; }
+
+  void normalizeDetectors();
   void writeDetectors(const std::string&,const double) const;
   void write(const std::string&) const;
 

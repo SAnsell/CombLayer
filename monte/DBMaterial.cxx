@@ -889,8 +889,41 @@ DBMaterial::initMaterial()
 		   "22046.70c 0.000658263 22047.70c 0.000593634 "
 		   "22048.70c 0.00588208 22049.70c 0.000431661 "
 		   "22050.70c 0.000413309","",MLib);
-  //  setMaterial(MObj);
+  setMaterial(MObj);
+  // Material #107 
+  MObj.setMaterial(107,"Li6ClD2O6Mol",
+		   "3006.60c 0.003358 17035.70c 0.0025185 "
+		   "17037.70c 0.00083950 "
+		   "1002.24c 0.062189 8016.24c 0.031095 ",
+                   "hwtr.01t",MLib);
+  setMaterial(MObj);
+  // Material #108 
+  MObj.setMaterial(108,"Li7ClD2O6Mol",
+		   "3007.60c 0.003358 17035.70c 0.0025185 "
+		   "17037.70c 0.00083950 "
+		   "1002.24c 0.062189 8016.24c 0.031095 ",
+                   "hwtr.01t",MLib);
+  setMaterial(MObj);
 
+  // Material #109: Titanium/Zironium Null alloy.
+  // Total atom density 0.057118 - 4.54 g/cc
+  MObj.setMaterial(109,"TiZr","22046.70c 0.00283485 "
+		   "22047.70c 0.00255652 22048.70c 0.0253315 "
+		   "22049.70c 0.00185897 22050.70c 0.00177994 "
+		   "40090.70c 0.00874443 40091.70c 0.00190695 "
+		   "40093.70c 0.00291481 40094.70c 0.0029539 ",
+		   "",MLib);
+  setMaterial(MObj);
+
+  // Material #110 Vanadium
+  // Total atom density 0.72
+  MObj.setMaterial(110,"Vanadium","24051.70c 0.072",
+		   "",MLib);
+  setMaterial(MObj);
+
+
+  // Material #10: Beryllium + heavy water
+  // Total atom density 0.1187475
 
   return;
 }

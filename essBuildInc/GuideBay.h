@@ -29,11 +29,11 @@ namespace essSystem
   class GuideItem;
 
 /*!
-  \class Reflector
+  \class GuideBay
   \version 1.0
   \author S. Ansell
-  \date November 2012
-  \brief Reflector Cylindrical
+  \date November 2013
+  \brief Groupd of guide objects sharing a common sector
 */
 
 

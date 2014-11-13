@@ -40,9 +40,15 @@ private:
   //Tests 
   int testAddInterUnion();
   int testCountLevel();
+  int testEqual();
+  int testFindNodes();
+  int testFindTopNodes();
   int testGetComponent();
   int testLevel();
+  int testPartEqual();
   int testRemoveSurf();
+  int testReplacePart();
+  int testSurfSet();
  
 public:
 

@@ -163,6 +163,9 @@ BellJar::populate(const FuncDataBase& Control)
   colWidth=Control.EvalVar<double>(keyName+"ColWidth");
   colFront=Control.EvalVar<double>(keyName+"ColFront");
   colBack=Control.EvalVar<double>(keyName+"ColBack");
+  subColWidth=Control.EvalVar<double>(keyName+"SubColWidth");
+  subColFront=Control.EvalVar<double>(keyName+"SubColFront");
+  subColBack=Control.EvalVar<double>(keyName+"SubColBack");
   colMat=ModelSupport::EvalMat<int>(Control,keyName+"ColMat");
 
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -205,9 +208,8 @@ BellJar::createSurfaces()
   ModelSupport::buildCylinder(SMap,bellIndex+7,Origin,Z,radius);  
   ModelSupport::buildCylinder(SMap,bellIndex+17,Origin,Z,radius+wallThick);  
   // Inner void
-  if ((colRadius-colFront)>0.0 && !colAngle.empty())
-    ModelSupport::buildCylinder(SMap,bellIndex+27,Origin,Z,
-				colRadius-colFront);  
+  if (!colAngle.empty())
+    ModelSupport::buildCylinder(SMap,bellIndex+27,Origin,Z,colRadius-1.0);  
   
   ModelSupport::buildPlane(SMap,bellIndex+5,Origin-Z*height/2.0,Z);  
   ModelSupport::buildPlane(SMap,bellIndex+6,Origin+Z*height/2.0,Z);  
@@ -224,16 +226,33 @@ BellJar::createSurfaces()
       const Geometry::Vec3D axis(Y*cos(colAngle[i])+X*sin(colAngle[i]));
       const Geometry::Vec3D alt(Y*sin(-colAngle[i])+X*cos(colAngle[i]));
       const Geometry::Vec3D Cent=Origin+axis*colRadius;
+      const Geometry::Vec3D Mid=Cent+axis*colFront;
+
+      const Geometry::Vec3D SubCent=Cent+axis*(colFront+colBack);
+      const Geometry::Vec3D SubMid=SubCent+axis*(subColFront);
       
-      ModelSupport::buildPlane(SMap,SI+3,Cent-axis*colFront,
-			       Cent-(alt*colWidth),Cent-(alt*colWidth)+Z,alt);
-      ModelSupport::buildPlane(SMap,SI+4,Cent-axis*colFront,
-			       Cent+(alt*colWidth),Cent+(alt*colWidth)+Z,alt);
-      ModelSupport::buildPlane(SMap,SI+8,Cent+axis*colBack,
-			       Cent-alt*colWidth,Cent-alt*colWidth+Z,alt);
-      ModelSupport::buildPlane(SMap,SI+9,Cent+axis*colBack,
-			       Cent+alt*colWidth,Cent+alt*colWidth+Z,alt);
-      SI+=10;
+      ModelSupport::buildPlane(SMap,SI+3,Cent,
+			       Mid-(alt*colWidth),Mid-(alt*colWidth)+Z,alt);
+      ModelSupport::buildPlane(SMap,SI+4,Cent,
+			       Mid+(alt*colWidth),Mid+(alt*colWidth)+Z,alt);
+      ModelSupport::buildPlane(SMap,SI+8,Mid+axis*colBack,
+			       Mid-alt*colWidth,Mid-alt*colWidth+Z,alt);
+      ModelSupport::buildPlane(SMap,SI+9,Mid+axis*colBack,
+			       Mid+alt*colWidth,Mid+alt*colWidth+Z,alt);
+
+      ModelSupport::buildPlane(SMap,SI+13,SubCent,
+			       SubMid-(alt*subColWidth),
+			       SubMid-(alt*subColWidth)+Z,alt);
+      ModelSupport::buildPlane(SMap,SI+14,SubCent,
+			       SubMid+(alt*subColWidth),
+			       SubMid+(alt*subColWidth)+Z,alt);
+      ModelSupport::buildPlane(SMap,SI+18,SubMid+axis*subColBack,
+			       SubMid-alt*subColWidth,
+			       SubMid-alt*subColWidth+Z,alt);
+      ModelSupport::buildPlane(SMap,SI+19,SubMid+axis*subColBack,
+			       SubMid+alt*subColWidth,
+			       SubMid+alt*subColWidth+Z,alt);
+      SI+=20;
     }
   return; 
 }
@@ -259,7 +278,7 @@ BellJar::createObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
   // Assuming a mid void boundary:
-  if ((colRadius-colFront)>0.0 && !colAngle.empty())
+  if (!colAngle.empty())
     {
       Out=ModelSupport::getSetComposite(SMap,bellIndex," 5 -6 -27");
       System.addCell(MonteCarlo::Qhull(cellIndex++,0.0,0.0,Out));
@@ -281,9 +300,19 @@ BellJar::createObjects(Simulation& System)
 	  Out=ModelSupport::getComposite(SMap,SI,bellIndex,
 					 " 3 -4 8 -9 5M -6M");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,colMat,0.0,Out));
-	  Out=ModelSupport::getComposite(SMap,SI," (-3:4:-8:9) ");
+	  Out=ModelSupport::getComposite(SMap,SI,bellIndex,
+					 " 13 -14 18 -19 5M -6M");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,colMat,0.0,Out));
+	  if (colMat)
+	    {
+	      ELog::EM<<"CollMat imp =0"<<ELog::endDiag;
+	      System.findQhull(cellIndex-1)->setImp(0);
+	    }
+
+	  Out=ModelSupport::getComposite(SMap,SI,
+					 " (-3:4:-8:9) (-13:14:-18:19)");
 	  voidObj->addSurfString(Out);
-	  SI+=10;
+	  SI+=20;
 	}
     }
   else

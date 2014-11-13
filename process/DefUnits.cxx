@@ -231,6 +231,8 @@ setTS1MarkVI(defaultConfig& A)
   A.setOption("CH4PreType","Flat");
 
   A.setVar("sdefZOffset",0.0);
+  A.setVar("sdefZOffset",0.0);
+  A.setVar("t1CylFluxTrapNCone",0);
 
   A.setVar("TriModPoisonThick",0.005);
   A.setVar("TriModPCladThick",0.3);

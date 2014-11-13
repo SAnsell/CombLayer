@@ -38,7 +38,7 @@ class DBNeutMaterial
  private:
 
   /// Storage type for Materials
-  typedef std::map<int,scatterSystem::neutMaterial> MTYPE;
+  typedef std::map<int,scatterSystem::neutMaterial*> MTYPE;
   /// Store of materials
   MTYPE  MStore;
   /// Active list

@@ -1024,7 +1024,7 @@ getFarPoint(const Simulation& Sim,Geometry::Vec3D& Pt)
 
 int
 setEnergy(Simulation& Sim,const int tNumber,
-	     const std::string& ePart)
+	  const std::string& ePart)
   /*!
     Set the energy of a tally
     \param Sim :: Simulation

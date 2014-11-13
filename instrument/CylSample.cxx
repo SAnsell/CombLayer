@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   instrument/CylSample.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,6 +59,7 @@
 #include "Qhull.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "support.h"
 #include "stringCombine.h"
@@ -148,8 +149,8 @@ CylSample::populate(const FuncDataBase& Control)
 		      (StrFunc::makeString(keyName+"Radius",i+1)));   
       height.push_back(Control.EvalVar<double>
 		       (StrFunc::makeString(keyName+"Height",i+1)));   
-      mat.push_back(Control.EvalVar<int>
-		    (StrFunc::makeString(keyName+"Material",i+1)));   
+      mat.push_back(ModelSupport::EvalMat<int>
+		    (Control,StrFunc::makeString(keyName+"Material",i+1)));   
     }
 
   return;

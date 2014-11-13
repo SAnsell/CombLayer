@@ -55,6 +55,7 @@ namespace mainSystem
   void createBilbauInputs(inputParam&);
   void createBNCTInputs(inputParam&);
   void createCuInputs(inputParam&);
+  void createD4CInputs(inputParam&);
   void createDelftInputs(inputParam&);
   void createEPBInputs(inputParam&);
   void createESSInputs(inputParam&);

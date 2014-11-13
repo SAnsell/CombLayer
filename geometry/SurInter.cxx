@@ -72,7 +72,8 @@ namespace SurInter
 
 template<>
 Geometry::Intersect*
-calcIntersect(const Geometry::Plane& PlnA,const Geometry::Plane& PlnB)
+calcIntersect(const Geometry::Plane& PlnA,
+	      const Geometry::Plane& PlnB)
   /*!
     Calculate the intersection object between two planes
     \param PlnA :: First Plane object
@@ -91,7 +92,8 @@ calcIntersect(const Geometry::Plane& PlnA,const Geometry::Plane& PlnB)
 
 template<>
 Geometry::Intersect*
-calcIntersect(const Geometry::Sphere& SphA,const Geometry::Sphere& SphB)
+calcIntersect(const Geometry::Sphere& SphA,
+	      const Geometry::Sphere& SphB)
   /*!
     Calculate the intersection object between two planes
     \param SphA :: First Sphere object

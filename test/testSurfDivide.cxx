@@ -48,7 +48,6 @@
 #include "BaseModVisit.h"
 #include "mathSupport.h"
 #include "support.h"
-#include "version.h"
 #include "MapSupport.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
@@ -56,14 +55,6 @@
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
-#include "Triple.h"
-#include "NList.h"
-#include "NRange.h"
-#include "Tally.h"
-#include "cellFluxTally.h"
-#include "pointTally.h"
-#include "heatTally.h"
-#include "tallyFactory.h"
 #include "Transform.h"
 #include "Surface.h"
 #include "surfIndex.h"
@@ -97,6 +88,7 @@
 #include "Simulation.h"
 #include "surfDBase.h"
 #include "mergeMulti.h"
+#include "mergeTemplate.h"
 #include "surfDivide.h"
 #include "surfCompare.h"
 
@@ -151,6 +143,10 @@ testSurfDivide::createSurfaces()
   SurI.createSurface(4,"py 1");
   SurI.createSurface(5,"pz -1");
   SurI.createSurface(6,"pz 1");
+  Geometry::Plane Pn(7,0);
+  Pn.setPlane(Geometry::Vec3D(-0.5,1,0),Geometry::Vec3D(-1,0.5,0),
+	      Geometry::Vec3D(-0.5,1,1),Geometry::Vec3D(0,1,0));
+  SurI.insertSurface(Pn.clone());
 
   // Second box  [corner intersect ]:
   SurI.createSurface(11,"px -3");
@@ -159,10 +155,10 @@ testSurfDivide::createSurfaces()
   SurI.createSurface(14,"py 3");
   SurI.createSurface(15,"pz -3");
   SurI.createSurface(16,"pz 3");
-  Geometry::Plane Pn(17,0);
-  Pn.setPlane(Geometry::Vec3D(-3,2,0),Geometry::Vec3D(-2,3,0),
+  Geometry::Plane PnX(17,0);
+  PnX.setPlane(Geometry::Vec3D(-3,2,0),Geometry::Vec3D(-2,3,0),
 	      Geometry::Vec3D(-3,2,1));
-  SurI.insertSurface(Pn.clone());
+  SurI.insertSurface(PnX.clone());
 
   // Far box :
   SurI.createSurface(21,"px 10");
@@ -194,6 +190,12 @@ testSurfDivide::createObjects()
   Out=ModelSupport::getComposite(surIndex,"11 -12 13 -14 15 -16 -17");
   ASim.addCell(MonteCarlo::Qhull(cellIndex++,3,0.0,Out));      // steel object
 
+  Out=ModelSupport::getComposite(surIndex,"1 -2 3 -4 5 -6 -7");
+  ASim.addCell(MonteCarlo::Qhull(cellIndex++,3,0.0,Out));      // steel object
+
+  Out=ModelSupport::getComposite(surIndex,"11 -12 13 -14 15 -16 (-3:4:-5:6)");
+  ASim.addCell(MonteCarlo::Qhull(cellIndex++,3,0.0,Out));      // # 5
+
   return;
 }
 
@@ -211,14 +213,20 @@ testSurfDivide::applyTest(const int extra)
     {
       &testSurfDivide::testBasicPair,
       &testSurfDivide::testMultiOuter,
-      &testSurfDivide::testStatic
+      &testSurfDivide::testStatic,
+      &testSurfDivide::testTemplate,
+      &testSurfDivide::testTemplateInnerPair,
+      &testSurfDivide::testTemplatePair
     };
 
   const std::string TestName[]=
     {
       "BasicPair",
       "MultiOuter",
-      "Static"
+      "Static",
+      "Template",
+      "TemplateInnerPair",
+      "TemplatePair"
     };
 
   const size_t TSize(sizeof(TPtr)/sizeof(testPtr));
@@ -323,7 +331,6 @@ testSurfDivide::testBasicPair()
   DA.addMaterial(5);
   DA.addMaterial(6);
 
-
   // Test Cell 2:
   DA.init(); 
   DA.setCellN(2);   // Cube cell
@@ -397,7 +404,8 @@ testSurfDivide::checkSurfaceEqual
 }
 
 int
-testSurfDivide::checkResults(const int CN,const std::string& strTest) const
+testSurfDivide::checkResults(const int CN,
+			     const std::string& strTest) const
   /*!
     Check a result and determine if it is ok
     \param CN :: Cell number
@@ -405,18 +413,146 @@ testSurfDivide::checkResults(const int CN,const std::string& strTest) const
     \return 0 on success/ -ve on error
   */
 {
+  ELog::RegMethod RegA("testSurfDivide","checkResults");
+
   const MonteCarlo::Object* OP=ASim.findQhull(CN);
   if (!OP)
     {
       ELog::EM<<"No cell for: "<<CN<<ELog::endCrit;
       return -1;
     }
-  if (OP->cellCompStr()!=strTest)
+  HeadRule HR;
+  HR.procString(strTest);
+  if (OP->getHeadRule()!=HR)
     {
       ELog::EM<<"Cell  : "<<OP->cellCompStr()<<" from "<<OP->getName()
 	      <<ELog::endCrit;
       ELog::EM<<"Expect: "<<strTest<<ELog::endCrit;
       return -1;
     }
+  return 0;
+}
+
+int
+testSurfDivide::testTemplate()
+  /*!
+    Placeholder for testing mergeTemplate object.
+    \return 0 
+  */
+{
+  ELog::RegMethod RegA("testSurfDivide","mergeTemplate");
+
+  ModelSupport::surfDivide DA;
+  DA.addFrac(0.2);
+  DA.addFrac(0.6);
+  DA.addMaterial(4);
+  DA.addMaterial(6);
+  DA.addMaterial(5);
+
+  // Test Cell 1:
+  DA.init(); 
+  DA.setCellN(4);   // Cube cell
+  DA.setOutNum(11,8001);
+  
+  mergeTemplate<Geometry::Plane,Geometry::Plane> tempRule;
+  tempRule.setSurfPair(3,4);
+  //  tempRule.setSurfPair(3,7);
+  tempRule.setInnerRule(" 3 ");
+  tempRule.setOuterRule(" -4 ");
+  DA.addRule(&tempRule);
+  DA.activeDivideTemplate(ASim);
+  
+  int resTest=checkResults(11,"1 -2 3 -8001 5 -6 -7");
+  resTest+=checkResults(12,"1 -2 8001 -8002 5 -6 -7");
+  resTest+=checkResults(13,"1 -2 8002 -4 5 -6 -7");
+
+  resTest+=checkSurfaceEqual(8001,"8001 py -0.6");
+  resTest+=checkSurfaceEqual(8002,"8002 py 0.2");
+
+  if (resTest) return -1;
+
+  return 0;
+}
+
+int
+testSurfDivide::testTemplatePair()
+  /*!
+    Placeholder for testing mergeTemplate object.
+    \return 0 
+  */
+{
+  ELog::RegMethod RegA("testSurfDivide","mergeTemplatePair");
+
+  ModelSupport::surfDivide DA;
+  DA.addFrac(0.2);
+  DA.addFrac(0.6);
+  DA.addMaterial(4);
+  DA.addMaterial(6);
+  DA.addMaterial(5);
+
+  // Test Cell 1:
+  DA.init(); 
+  DA.setCellN(4);   // Cube cell
+  DA.setOutNum(11,8001);
+  
+  mergeTemplate<Geometry::Plane,Geometry::Plane> tempRule;
+  tempRule.setSurfPair(3,4);
+  tempRule.setSurfPair(3,7);
+  //  tempRule.setSurfPair(3,7);
+  tempRule.setInnerRule(" 3 ");
+  tempRule.setOuterRule(" -7 -4 ");
+  DA.addRule(&tempRule);
+  DA.activeDivideTemplate(ASim);
+  
+  int resTest=checkResults(11,"1 -2 3 -8001 -8002 5 -6 ");
+  resTest+=checkResults(12,"1 -2 (8001:8002) -8003 -8004 5 -6 ");
+  resTest+=checkResults(13,"1 -2 (8003:8004) -4 5 -6 -7");
+
+  resTest+=checkSurfaceEqual(8001,"8001 py -0.6");
+  resTest+=checkSurfaceEqual(8003,"8003 py 0.2");
+
+  if (resTest) return -1;
+
+  return 0;
+}
+
+int
+testSurfDivide::testTemplateInnerPair()
+  /*!
+    Placeholder for testing mergeTemplate object.
+    \return 0 
+  */
+{
+  ELog::RegMethod RegA("testSurfDivide","mergeInnerPair");
+
+  ModelSupport::surfDivide DA;
+  DA.addFrac(0.2);
+  DA.addFrac(0.6);
+  DA.addMaterial(4);
+  DA.addMaterial(6);
+  DA.addMaterial(5);
+
+  // Test Cell 1:
+  DA.init(); 
+  DA.setCellN(5);   // Cube cell
+  DA.setOutNum(11,8001);
+  
+  mergeTemplate<Geometry::Plane,Geometry::Plane> tempRule;
+  tempRule.setSurfPair(5,15);
+  tempRule.setSurfPair(6,16);
+  //  tempRule.setSurfPair(3,7);
+  tempRule.setInnerRule(" (-5:6) ");
+  tempRule.setOuterRule(" 15 -16");
+  DA.addRule(&tempRule);
+  DA.activeDivideTemplate(ASim);
+  
+  int resTest=checkResults(11,"11 -12 -8002 8001 13 (-3:4:-5:6) -14");
+  resTest+=checkResults
+    (12," 11 13 -12 -14 8003 -8004 ( -8001 : 8002 : -3 : 4 )");
+  resTest+=checkResults
+    (13," 11 15 13 -16 -12 ( -8003 : 8004 : -3 : 4 ) -14");
+
+  if (resTest) return -1;
+
   return 0;
 }

@@ -61,8 +61,29 @@
 
 #include "SurInter.h"
 
+
+std::ostream&
+operator<<(std::ostream& OX,const HeadRule& A)
+  /*!
+    Simple stream output operator
+    \param OX :: Output stream
+    \param A :: HeadRule
+    \return stream state
+  */
+{
+  OX<<A.display();
+  return OX;
+}
+
 HeadRule::HeadRule() :
   HeadNode(0)
+  /*!
+    Creates a new rule
+  */
+{}
+
+HeadRule::HeadRule(const Rule* RPtr) :
+  HeadNode((RPtr) ? RPtr->clone() : 0)
   /*!
     Creates a new rule
   */
@@ -99,6 +120,302 @@ HeadRule::~HeadRule()
 {
   delete HeadNode;
 }
+
+bool
+HeadRule::operator!=(const HeadRule& A) const
+  /*!
+    Determine if a rule is note equal
+    The principle is to test each level 
+    \param A :: Head rule to test
+    \return result (true/false)
+  */
+{
+  ELog::RegMethod RegA("HeadRule","operator!=");
+  return !(this->operator==(A));
+}
+
+bool
+HeadRule::operator==(const HeadRule& A) const
+  /*!
+    Determine if a rule is equal
+    The principle is to test each level 
+    \param A :: Head rule to test
+    \return true is structurally equal
+  */
+{
+  ELog::RegMethod RegA("HeadRule","operator==");
+  if (&A==this) return 1;
+  if (!HeadNode && !A.HeadNode)
+    return 1;
+
+  std::vector<const Rule*> AVec=
+    findTopNodes();
+  std::vector<const Rule*> BVec=
+    A.findTopNodes();
+  
+  if (AVec.size()!=BVec.size()) 
+    return 0;
+  if (HeadNode->type()!=A.HeadNode->type())
+    return 0;
+  // all NON-equals
+  std::vector<HeadRule> ASet;
+  std::vector<HeadRule> BSet;
+  std::set<int> ASurf;
+  // First compare equal signed surface:
+  for(const Rule* APtr : AVec)
+    {
+      const SurfPoint* SurPtr=
+	dynamic_cast<const SurfPoint*>(APtr);
+      if (SurPtr)
+	ASurf.insert(SurPtr->getSignKeyN());
+      else
+	ASet.push_back(HeadRule(APtr));
+    }
+
+  for(const Rule* BPtr : BVec)
+    {
+      const SurfPoint* SurPtr=
+	dynamic_cast<const SurfPoint*>(BPtr);
+      if (SurPtr)
+	{
+	  const int SN(SurPtr->getSignKeyN());
+	  if (ASurf.find(SN)==ASurf.end())
+	    return 0;
+	}
+      else
+	BSet.push_back(HeadRule(BPtr));
+    }
+  // First compare equal signed surface:  
+  // Separate into intersect/union
+  std::vector<HeadRule>::iterator mc;
+  for(const HeadRule& ASub : ASet)
+    {
+      const int unionFlag(ASub.isUnion());
+      bool found(0);
+      for(mc=BSet.begin();mc!=BSet.end();mc++)
+	{
+	  // Same type / match
+	  if (mc->isUnion()==unionFlag &&
+	      ASub==*(mc))
+	    {
+	      BSet.erase(mc);
+	      found=1;
+	      break;
+	    }
+	}
+      if (!found) return 0;
+    }
+  // EVERYTHING MATCHED !!!
+  return 1;
+}
+
+bool
+HeadRule::partMatched(const HeadRule& A) const		      
+  /*!
+    Given two head rule components
+    \param A :: Rule to check
+    \return 0 :: No match / top level / 
+  */
+{
+  ELog::RegMethod RegA("HeadRule","partMatched");
+
+  if (!A.HeadNode || !HeadNode) return 0;
+  std::vector<const Rule*> AVec=
+    findTopNodes();
+  std::vector<const Rule*> BVec=
+    A.findTopNodes();
+ 
+  // all NON-equals
+  std::vector<HeadRule> ASet;
+  HeadRule BSet;
+  std::set<int> ASurf;
+  // First compare equal signed surface:
+  for(const Rule* APtr : AVec)
+    {
+      const SurfPoint* SurPtr=
+	dynamic_cast<const SurfPoint*>(APtr);
+      if (SurPtr)
+	ASurf.insert(SurPtr->getSignKeyN());
+      else
+	ASet.push_back(HeadRule(APtr));
+    }
+
+  int levelActive(1);
+  for(const Rule* BPtr : BVec)         
+    {
+      const SurfPoint* SurPtr=
+	dynamic_cast<const SurfPoint*>(BPtr);
+      if (SurPtr)
+	{
+	  if (levelActive)
+	    {
+	      const int SN(SurPtr->getSignKeyN());
+	      if (ASurf.find(SN)==ASurf.end())
+		{
+		  levelActive=0;
+		  break;
+		}
+	    }
+	}
+      else
+	{
+	  if (A.HeadNode->type()>0)  // intersection
+	    BSet.addIntersection(BPtr);
+	  else
+	    BSet.addUnion(BPtr);
+	}
+    }
+  
+  if (levelActive && !BSet.hasRule()) return 1;
+
+  if (levelActive)
+    {
+      // Sub components MUST be contained in one rule completely:
+      for(const HeadRule AS : ASet)
+	{
+	  if (AS.partMatched(BSet))
+	    return 1;
+	}
+      return 0;
+    }
+  
+  // OK CHECK EACH Minor
+  for(const HeadRule AS : ASet)
+    {
+      if (AS.partMatched(A))
+	return 1;
+    }
+  // EVERYTHING FAILED !!!
+  return 0;
+}  
+
+bool
+HeadRule::subMatched(const HeadRule& A,
+		     const HeadRule& SubUnit) 
+  /*!
+    Sub-a part matched unit into main system
+    \param A :: Rule to check
+    \param SubUnit :: Rule to replace unit with
+    \return 0 :: No match / 1 matched 
+  */
+{
+  ELog::RegMethod RegA("HeadRule","subMatched");
+
+  if (!A.HeadNode || !HeadNode) return 0;
+  std::vector<const Rule*> AVec=
+    findTopNodes();
+  std::vector<const Rule*> BVec=
+    A.findTopNodes();
+ 
+  // NEED In case delete all objects
+  const int typeNum(HeadNode->type());
+
+  // all NON-equals
+  HeadRule ATop;
+  std::vector<HeadRule> ASet;
+  HeadRule BSet;
+  typedef std::map<int,const SurfPoint*> MTYPE;
+  MTYPE ASurf;
+  // First compare equal signed surface:
+  for(const Rule* APtr : AVec)
+    {
+      const SurfPoint* SurPtr=
+	dynamic_cast<const SurfPoint*>(APtr);
+      if (SurPtr)
+	{
+	  ASurf.insert(MTYPE::value_type(SurPtr->getSignKeyN(),SurPtr));
+	  if (typeNum>=0)
+	    ATop.addIntersection(APtr);
+	  else
+	    ATop.addUnion(APtr);
+	}
+      else
+	ASet.push_back(HeadRule(APtr));
+    }
+
+  int levelActive(1);
+  for(const Rule* BPtr : BVec)         
+    {
+      const SurfPoint* SurPtr=
+	dynamic_cast<const SurfPoint*>(BPtr);
+      if (SurPtr)
+	{
+	  if (levelActive)
+	    {
+	      const int SN(SurPtr->getSignKeyN());
+	      if (ASurf.find(SN)==ASurf.end())
+		{
+		  levelActive=0;
+		  break;
+		}
+	    }
+	}
+      else
+	{
+	  if (A.HeadNode->type()>0)  // intersect
+	    BSet.addIntersection(BPtr);
+	  else
+	    BSet.addUnion(BPtr);     // union
+	}
+    }
+  if (levelActive && !BSet.hasRule()) 
+    {
+      // REMOVE TOP LEVEL:
+      for(const Rule* BPtr : BVec)         
+	{
+	  const SurfPoint* SurPtr=
+	    dynamic_cast<const SurfPoint*>(BPtr);
+	  if (SurPtr)
+	    {
+	      const int SN(SurPtr->getSignKeyN());
+	      MTYPE::const_iterator mc=ASurf.find(SN);
+	      removeItem(mc->second);
+	    }
+	}
+      if (typeNum>=0)  // intersect
+	addIntersection(SubUnit);
+      else
+	addUnion(SubUnit);
+      return 1;
+    }
+
+
+  if (levelActive)
+    {
+      // Sub components MUST be contained in one rule completely:
+      for(const HeadRule AS : ASet)
+	{
+	  if (AS.partMatched(BSet))
+	    {
+	      ELog::EM<<"Level HERE"<<ELog::endDiag;
+	      return 1;
+	    }
+	}
+      return 0;
+    }
+  
+  // OK CHECK Minors
+  for(HeadRule& AS : ASet)
+    {
+      // Here all the rule is actually in ASET BUT
+      // only one needs recontructions
+      if (AS.subMatched(A,SubUnit))
+	{
+	  // Concatinate result
+	  for(const HeadRule& AV : ASet)
+	    {
+	      if (typeNum>=0)
+		ATop.addIntersection(AV);
+	      else
+		ATop.addUnion(AV);
+	      *this=ATop;
+	    }
+	  return 1;
+	}
+    }
+  // EVERYTHING FAILED !!!
+  return 0;
+}  
 
 void
 HeadRule::reset() 
@@ -218,6 +535,56 @@ HeadRule::pairValid(const int S,const Geometry::Vec3D& Pt)const
   */
 {
   return (HeadNode) ? HeadNode->pairValid(S,Pt) : 0;
+}
+
+void
+HeadRule::isolateSurfNum(const std::set<int>& SN) 
+  /*!
+    Top down pruning of our rules
+    \param SN :: surface numbers to keep
+   */
+{
+  ELog::RegMethod RegA("HeadRule","isolateSurfNum");
+
+  // FIRST PASS: [Eliminate -- all zero surfaces]
+  std::stack<Rule*> TreeLine;
+  TreeLine.push(HeadNode);
+  while(!TreeLine.empty())
+    {
+      Rule* tmpA=TreeLine.top();
+      TreeLine.pop();
+      if (tmpA)
+	{
+	  Rule* tmpB=tmpA->leaf(0);
+	  Rule* tmpC=tmpA->leaf(1);
+	  if (tmpB || tmpC)
+	    {
+	      if (tmpB)
+		TreeLine.push(tmpB);
+	      if (tmpC)
+		TreeLine.push(tmpC);
+	    }
+	  else
+	    {
+	      SurfPoint* SurX=dynamic_cast<SurfPoint*>(tmpA);
+	      if (SurX && SN.find(SurX->getSignKeyN())!=SN.end())
+		removeItem(SurX);
+	    }
+	}
+    }
+  
+  return;
+}
+
+std::set<int>
+HeadRule::getSurfSet() const
+  /*!
+    Get the set of surfaces  [signed]
+    \return surf set
+  */
+{
+  ELog::RegMethod RegA("HeadRule","getSurfSet");
+  return (HeadNode) ? HeadNode->getSurfSet() : std::set<int>();
 }
 
 std::set<const Geometry::Surface*>
@@ -526,7 +893,7 @@ HeadRule::findNode(const size_t LN,const size_t Index) const
   /*!
     Return a head rule based on level and Index
     \param LN :: Level Number
-    \param Index :: Index Number [1-> NL]
+    \param Index :: Index Number [+1 -- 0 is all]
     \return HeaRule item [this/pointer?]
   */
 {
@@ -578,7 +945,82 @@ HeadRule::findNode(const size_t LN,const size_t Index) const
 	    }
 	}
     }
+  if (!nLevel && Index==1 && 
+      !HeadNode->type())
+    return HeadNode; 
+
   return 0; 
+}
+
+
+std::vector<const Rule*>
+HeadRule::findNodes(const size_t NL) const
+  /*!
+    Return a head rule nodes at NL level
+    \param NL :: Level
+    \return nodex
+  */
+{
+  ELog::RegMethod RegA("HeadRule","findNodes");
+
+  std::vector<const Rule*> Out;
+  if (!HeadNode) return Out;
+  // Special case for single rule:
+  if (NL==0 && !HeadNode->type())
+    {
+      Out.push_back(HeadNode);
+      return Out;
+    }
+
+  std::stack<Rule*> TreeLine;
+  std::stack<size_t> TreeLevel;
+  TreeLine.push(HeadNode);
+  TreeLevel.push(0);
+
+  while(!TreeLine.empty())
+    {
+      Rule* tmpA=TreeLine.top();
+      size_t activeLevel=TreeLevel.top();
+      TreeLine.pop();
+      TreeLevel.pop();
+
+      if (tmpA->getParent() && 
+	  tmpA->getParent()->type()!=tmpA->type())
+	{
+	  if (activeLevel==NL)
+	    Out.push_back(tmpA);
+	  activeLevel++;
+	}
+
+      Rule* tmpB=tmpA->leaf(0);
+      Rule* tmpC=tmpA->leaf(1);
+      if (tmpB || tmpC)
+	{
+	  if (tmpB)
+	    {
+	      TreeLevel.push(activeLevel);
+	      TreeLine.push(tmpB);
+	    }
+	  if (tmpC)
+	    {
+	      TreeLevel.push(activeLevel);
+	      TreeLine.push(tmpC);
+	    }
+	}
+    }
+
+  return Out; 
+}
+
+std::vector<const Rule*>
+HeadRule::findTopNodes() const
+  /*!
+    Return a head rule nodes at first level
+    \return headnotes
+  */
+{
+  ELog::RegMethod RegA("HeadRule","findTopNodes");
+  return findNodes(0);
 }
 
 HeadRule
@@ -653,7 +1095,7 @@ HeadRule::countNLevel(const size_t LN) const
 	    }
 	}
     }
-  return nLevel;
+  return (nLevel) ? nLevel : 1;
 }
 
 int
@@ -687,15 +1129,16 @@ HeadRule::level(const int SN) const
 }
 
 void
-HeadRule::removeItem(Rule* Target) 
+HeadRule::removeItem(const Rule* Target) 
   /*!
     Objective is to remove Target rule -
     the returned rule is either 0 if the structure 
     has been maintained or the new rule if needed
+    \param Target :: Rule to be removed
     \return Replace headRule 
   */
 {
-  ELog::RegMethod RegA("HeadRule","remveIte");
+  ELog::RegMethod RegA("HeadRule","removeItem");
   if (!Target) return;
   Rule* P=Target->getParent();
   if (!P)

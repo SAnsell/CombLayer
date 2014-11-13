@@ -27,9 +27,14 @@ class Simulation;
 namespace constructSystem
 {
 
-  /*!
-    \class ConicInfo
-   */
+/*!
+  \class ConicInfo
+  \author S. Ansell
+  \version 1.0
+  \brief Support class: Describes a single conic item
+  \date Noveber 2012
+*/
+
 class ConicInfo
 {
  private:

@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   d4cModel/d4cVariables.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -78,12 +78,12 @@ D4CModel(FuncDataBase& Control)
   Control.addVariable("cellZangle",0.0);         // Radius the beam
   Control.addVariable("cellXYangle",0.0);         // Radius the beam
   Control.addVariable("cellNLayers",2);         // Radius the beam
-  Control.addVariable("cellRadius1",0.7);       //
-  Control.addVariable("cellRadius2",1.1);       //
+  Control.addVariable("cellRadius1",0.25);       //
+  Control.addVariable("cellRadius2",0.325);       //
   Control.addVariable("cellHeight1",3.5);       //
   Control.addVariable("cellHeight2",4.5);       //
-  Control.addVariable("cellMaterial1","Aluminium");       //
-  Control.addVariable("cellMaterial2","B4C");       //
+  Control.addVariable("cellMaterial1","Li7ClD2O6Mol");       //
+  Control.addVariable("cellMaterial2","TiZr");       //
 
 
 // ------------
@@ -95,22 +95,30 @@ D4CModel(FuncDataBase& Control)
   Control.addVariable("belljarZangle",0.0);         // Radius the beam
   Control.addVariable("belljarXYangle",0.0);         // Radius the beam
   Control.addVariable("belljarHeight",100.0);         // Radius the beam
-  Control.addVariable("belljarRadius",120.0);       //
+  Control.addVariable("belljarRadius",145.0);       //
   Control.addVariable("belljarWallThick",1.0);       //
-  Control.addVariable("belljarWallMat",5);       //
-  Control.addVariable("belljarColRadius",70.0);       //
-  Control.addVariable("belljarColWidth",4.0);       //
-  Control.addVariable("belljarColFront",12.0);       //
-  Control.addVariable("belljarColBack",12.0);       //
-  Control.addVariable("belljarColMat",5);       //
-  Control.addVariable("belljarColAngle1",5);       //
-  Control.addVariable("belljarColAngle2",25);       //
-  Control.addVariable("belljarColAngle3",45);       //
-  Control.addVariable("belljarColAngle4",65);       //
-  Control.addVariable("belljarColAngle5",85);       //
+  Control.addVariable("belljarWallMat","Aluminium");       //
+  Control.addVariable("belljarColRadius",30.0);      // BEGIN OF CELL
+  Control.addVariable("belljarColWidth",3.96);       // Width a max
+  Control.addVariable("belljarColFront",35.0);       // Length of front
+  Control.addVariable("belljarColBack",2.0);        // Back cut
+  Control.addVariable("belljarSubColWidth",1.2);    // Width a max
+  Control.addVariable("belljarSubColFront",65.0);    // Length of front
+  Control.addVariable("belljarSubColBack",2.0);      // Back cut
+  Control.addVariable("belljarColMat","B4C");       //
+  Control.addVariable("belljarColAngle1",0.0);       //
+  Control.addVariable("belljarColAngle2",15.0);       //
+  Control.addVariable("belljarColAngle3",30.0);       //
+  Control.addVariable("belljarColAngle4",45.0);       //
+  Control.addVariable("belljarColAngle5",60.0);       //
+  Control.addVariable("belljarColAngle6",75.0);       //
+  Control.addVariable("belljarColAngle7",90.0);       //
+  Control.addVariable("belljarColAngle8",105.0);       //
+  Control.addVariable("belljarColAngle9",120.0);       //
+  Control.addVariable("belljarColAngle10",135.0);       //
 
   // ------------
-  // DETECTORS
+  // DETECTORS ARRAY [not used currently]
   // -----------
   Control.addVariable("detectorXStep",0.0);         // Radius the beam
   Control.addVariable("detectorYStep",0.0);         // Radius the beam
@@ -120,14 +128,39 @@ D4CModel(FuncDataBase& Control)
   Control.addVariable("detectorNDetector",100);       //
   Control.addVariable("detectorInitAngle",2.0);       //
   Control.addVariable("detectorFinalAngle",165.0);       //
-  Control.addVariable("detectorCentRadius",90.0);       //
+  Control.addVariable("detectorCentRadius",114.6);       //
   Control.addVariable("detectorTubeRadius",1.0);       //
   Control.addVariable("detectorHeight",20.0);       //
-  Control.addVariable("detectorWallThick",0.4);       //
+  Control.addVariable("detectorWallThick",0.2);       //
   Control.addVariable("detectorWallMat","Aluminium");       //
-  Control.addVariable("detectorDetMat",0);       //
+  Control.addVariable("detectorDetMat",0);       //  
 
-  
+  // ------------
+  // DETECTORS
+  // -----------
+  Control.addVariable("DetBankXStep",0.0);         // Radius the beam
+  Control.addVariable("DetBankYStep",0.0);         // Radius the beam
+  Control.addVariable("DetBankZStep",0.0);         // Radius the beam
+  Control.addVariable("DetBankZangle",0.0);         // Radius the beam
+  Control.addVariable("DetBankXYangle",0.0);         // Radius the beam
+  Control.addVariable("DetBankNDet",8);       //
+  Control.addVariable("DetBankCentreOffset",114.6);       //
+  Control.addVariable("DetBankDetHeight",10.0);       //
+  Control.addVariable("DetBankDetDepth",3.0);       //
+  Control.addVariable("DetBankDetLength",15.9);       
+  Control.addVariable("DetBankWallThick",0.2);       //
+  Control.addVariable("DetBankWallMat","Aluminium");       //
+  Control.addVariable("DetBankDetMat","Void");       //  
+
+  Control.addVariable("DetBank0CentreAngle",7.5);       //
+  Control.addVariable("DetBank1CentreAngle",22.5);       //
+  Control.addVariable("DetBank2CentreAngle",37.5);       //
+  Control.addVariable("DetBank3CentreAngle",52.5);       //
+  Control.addVariable("DetBank4CentreAngle",67.5);       //
+  Control.addVariable("DetBank5CentreAngle",82.5);       //
+  Control.addVariable("DetBank6CentreAngle",97.5);       //
+  Control.addVariable("DetBank7CentreAngle",112.5);       //
+  Control.addVariable("DetBank8CentreAngle",127.5);       //
 
   return;
 }

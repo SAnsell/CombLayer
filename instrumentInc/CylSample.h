@@ -72,7 +72,7 @@ class CylSample : public attachSystem::ContainedComp,
   virtual ~CylSample();
 
   void createAll(Simulation&,const attachSystem::FixedComp&);
-  
+
 };
 
 }

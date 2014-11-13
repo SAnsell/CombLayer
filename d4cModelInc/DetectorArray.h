@@ -56,9 +56,9 @@ class DetectorArray : public attachSystem::ContainedComp,
   int wallMat;                  ///< Wall material
   int detMat;                   ///< Detector material
 
-  size_t nDet;
-  double initAngle;
-  double finalAngle;
+  size_t nDet;                  ///< Number of detectors
+  double initAngle;             ///< inital angle [deg]
+  double finalAngle;            ///< final angle [deg]
   std::vector<Geometry::Vec3D> DPoints;  ///< Centre points
 
   // Functions:
@@ -77,6 +77,7 @@ class DetectorArray : public attachSystem::ContainedComp,
   DetectorArray& operator=(const DetectorArray&);
   virtual ~DetectorArray();
 
+  void createTally(Simulation&) const;
   void createAll(Simulation&,const attachSystem::FixedComp&);
   
 };

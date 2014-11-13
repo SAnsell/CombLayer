@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   transport/AreaBeam.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,9 @@ extern MTRand RNG;
 namespace Transport
 {
 
-AreaBeam::AreaBeam() : Beam(),
+AreaBeam::AreaBeam() : 
+  Beam(),Cent(0,0,0),
+  Axis(0,1,0),WVec(1,0,0),HVec(0,0,1),
   wavelength(0.7),Width(0.4),
   Height(5.0),startY(-10)
   /*!
@@ -50,25 +52,32 @@ AreaBeam::AreaBeam() : Beam(),
   */
 {}
 
-AreaBeam::AreaBeam(const AreaBeam& A) : Beam(A),
-  wavelength(A.wavelength),Width(A.Width),
-  Height(A.Height),startY(A.startY)
+AreaBeam::AreaBeam(const AreaBeam& A) : 
+  Beam(A),
+  Cent(A.Cent),Axis(A.Axis),WVec(A.WVec),HVec(A.HVec),
+  wavelength(A.wavelength),Width(A.Width),Height(A.Height),
+  startY(A.startY)
   /*!
-    Copy Constructor
-    \param A :: AreaBeam obect to copy
+    Copy constructor
+    \param A :: AreaBeam to copy
   */
 {}
 
 AreaBeam&
-AreaBeam::operator=(const AreaBeam& A) 
+AreaBeam::operator=(const AreaBeam& A)
   /*!
     Assignment operator
-    \param A :: AreaBeam obect to copy
-    \return *this 
+    \param A :: AreaBeam to copy
+    \return *this
   */
 {
   if (this!=&A)
     {
+      Beam::operator=(A);
+      Cent=A.Cent;
+      Axis=A.Axis;
+      WVec=A.WVec;
+      HVec=A.HVec;
       wavelength=A.wavelength;
       Width=A.Width;
       Height=A.Height;
@@ -91,9 +100,11 @@ AreaBeam::generateNeutron() const
     \return Randomize point
   */
 {
-  return MonteCarlo::neutron(wavelength,
-     Geometry::Vec3D(0.0,startY,(RNG.rand()-0.5)*Height*2.0),
-	 Geometry::Vec3D(1,0,0));
+  const Geometry::Vec3D CP=Cent+
+    WVec*(RNG.rand()-0.5)*Width*2.0+
+    HVec*(RNG.rand()-0.5)*Height*2.0+
+    Axis*startY;
+  return MonteCarlo::neutron(wavelength,CP,Axis);
 }
 
 void 

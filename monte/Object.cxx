@@ -1027,9 +1027,10 @@ Object::trackCell(const MonteCarlo::neutron& N,double& D,
   ELog::RegMethod RegA("Object","trackCell[D,dir]");
 
   MonteCarlo::LineIntersectVisit LI(N);
-  std::vector<const Geometry::Surface*>::const_iterator vc;
-  for(vc=SurList.begin();vc!=SurList.end();vc++)
-    (*vc)->acceptVisitor(LI);
+  for(const Geometry::Surface* isptr : SurList)
+    {
+      isptr->acceptVisitor(LI);
+    }
 
   const std::vector<Geometry::Vec3D>& IPts(LI.getPoints());
   const std::vector<double>& dPts(LI.getDistance());
@@ -1072,66 +1073,6 @@ Object::trackCell(const MonteCarlo::neutron& N,double& D,
   return (!surfPtr) ? 0 : bestPairValid*surfPtr->getName();
 }
 
-int
-Object::trackCellX(const MonteCarlo::neutron& N,double& D,
-		  const int direction,
-		  const Geometry::Surface*& surfPtr,
-		  const int startSurf) const
-  /*!
-    Track to a neutron to a cell. Requires the neutron
-    to come from outside into the cell.
-    \param N :: Neutron 
-    \param D :: Distance traveled to the cell
-    \param direction :: direction to track [+1/-1 : in/out ] 
-    \param surfPtr :: Surface at exit
-    \param startSurf :: Start surface
-    \return surface number of intercept
-   */
-{
-  ELog::RegMethod RegA("Object","trackCell[D,dir]");
-  MonteCarlo::LineIntersectVisit LI(N);
-  std::vector<const Geometry::Surface*>::const_iterator vc;
-  for(vc=SurList.begin();vc!=SurList.end();vc++)
-    {
-      (*vc)->acceptVisitor(LI);
-
-    }
-
-  const std::vector<Geometry::Vec3D>& IPts(LI.getPoints());
-  const std::vector<double>& dPts(LI.getDistance());
-  const std::vector<const Geometry::Surface*>& surfIndex(LI.getSurfIndex());
-  D=1e38;
-  surfPtr=0;
-  // NOTE: we only check for and exiting surface by going
-  // along the line.
-  int bestPairValid(0);
-  for(size_t i=0;i<dPts.size();i++)
-    {
-      if ( (!bestPairValid && dPts[i]>-Geometry::zeroTol) ||
-	   (dPts[i]>0.0 && dPts[i]<D) )
-	{
-	  const int NS=surfIndex[i]->getName();	  
-	  const int pAB=pairValid(NS,IPts[i]);
-	  if (pAB==1 || pAB==2)        // in / out
-	    {
-	      const int normD=surfIndex[i]->sideDirection(IPts[i],N.uVec);
- 	      // in: +ve * direction
-	      const int Flag(calcInOut(pAB,normD));
-
-	      if (Flag==direction &&                  /// Going correct way
-		  surfIndex[i] &&
-		  startSurf!=(2*pAB-3)*surfIndex[i]->getName()) 
-		{
-		  D=dPts[i];
-		  surfPtr=surfIndex[i];
-		  bestPairValid = 2*pAB-3;   
-		}
-	    }
-	}
-    }
-
-  return (!surfPtr) ? 0 : bestPairValid*surfPtr->getName();
-}
 		  
 std::pair<const Geometry::Surface*,double>
 Object::forwardInterceptInit(const Geometry::Vec3D& IP,

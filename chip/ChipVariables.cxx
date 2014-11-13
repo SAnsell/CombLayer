@@ -107,6 +107,9 @@ ChipVariables(FuncDataBase& Control)
   Control.addVariable("chipShutterILE_2",1.0);     // length of external
 
   // Chip Insert Section [In BulkInsert object]
+  Control.addVariable("bulkInsert1IWidth",22.50);
+  Control.addVariable("bulkInsert1OWidth",22.50);
+  Control.addVariable("bulkInsert1Width",37.50);
   Control.addVariable("chipInsertZAngle",1.5);    // Angle relative to beam
   Control.addVariable("chipInsertXYAngle",0.0);   // Angle relative to beam
   Control.addVariable("chipInsertRZDisp",10.45);    // Lift of pipe
@@ -259,13 +262,15 @@ ChipVariables(FuncDataBase& Control)
   Control.addVariable("chipGPlateNLayers",0);     // Number of layers
 
   Control.addVariable("chipGuideNLayers",3);    // Number of layers
-  Control.addVariable("chipGuideFrac_1",0.05);  // Tungsten inner
-  Control.addVariable("chipGuideFrac_2",0.2);   // Steel inner
-  Control.addVariable("chipGuideFrac_3",0.3);   // Steel inner
-  Control.addVariable("chipGuideFrac_4",0.4);   // Contrete inner
-  Control.addVariable("chipGuideFrac_5",0.5);   // Concrete inner
-  Control.addVariable("chipGuideFrac_6",0.6);   // Concrete inner
-  Control.addVariable("chipGuideFrac_7",0.7);   // Concrete outer
+  Control.addVariable("chipGuideNConcLayers",3);    // Number of layers
+
+  Control.addVariable("chipGuideSteelFrac_1",0.05);  // Tungsten inner
+  Control.addVariable("chipGuideSteelFrac_2",0.2);   // Steel inner
+  Control.addVariable("chipGuideSteelFrac_3",0.3);   // Steel inner
+  Control.addVariable("chipGuideSteelFrac_4",0.4);   // Contrete inner
+  Control.addVariable("chipGuideSteelFrac_5",0.5);   // Concrete inner
+  Control.addVariable("chipGuideSteelFrac_6",0.6);   // Concrete inner
+  Control.addVariable("chipGuideSteelFrac_7",0.7);   // Concrete outer
 
   Control.addVariable("chipGuideMat_0","Tungsten");   // Tungsten inner
   Control.addVariable("chipGuideMat_1","CastIron");    // Steel

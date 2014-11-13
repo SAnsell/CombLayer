@@ -176,12 +176,11 @@ LineTrack::calculate(const Simulation& ASim)
 	  OPtr=OSMPtr->findNextObject(SN,nOut.Pos,OPtr->getName());
 	  //	  if (OPtr==0)
 	  //	    calculateError(ASim);
-	  if (OPtr && aDist<Geometry::zeroTol)
+	  if (!OPtr || aDist<Geometry::zeroTol)
 	    OPtr=ASim.findCell(nOut.Pos,0);
 	}
       else
-	OPtr=0;
-	
+	OPtr=0;	
     }
   return;
 }

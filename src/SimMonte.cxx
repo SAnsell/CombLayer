@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   src/SimMonte.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,7 +49,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "XMLwriteVisitor.h"
-// #include "XMLimportVisitor.h"
 #include "mathSupport.h"
 #include "support.h"
 #include "BaseVisit.h"
@@ -85,26 +84,22 @@
 #include "Object.h"
 #include "Qhull.h"
 #include "ObjSurfMap.h"
-// #include "Component.h"
 #include "neutMaterial.h"
+#include "DBNeutMaterial.h"
 #include "ObjComponent.h"
-// #include "CompStore.h"
-// #include "ObjStore.h"
-// #include "InstrumentGeom.h"
 #include "surfaceFactory.h"
 #include "Beam.h"
-// #include "OutZone.h"
 #include "neutron.h"
 #include "Detector.h"
 #include "DetGroup.h"
-#include "NRange.h"
 #include "Simulation.h"
+#include "LineTrack.h"
 #include "SimMonte.h"
 
 extern MTRand RNG;
 
 SimMonte::SimMonte() : Simulation(),
-  TCount(0),B(0),DUnit()
+       TCount(0),MSActive(0),B(0),DUnit()
   /*!
     Start of simulation Object
     Initialise currentSample to Sample 
@@ -113,7 +108,8 @@ SimMonte::SimMonte() : Simulation(),
 
 SimMonte::SimMonte(const SimMonte& A)  :
   Simulation(A),
-  TCount(A.TCount),B((A.B) ? A.B->clone() : 0),
+  TCount(A.TCount),MSActive(A.MSActive),
+  B((A.B) ? A.B->clone() : 0),
   DUnit(A.DUnit)
   /*!
     Copy constructor:: makes a deep copy of the SurMap 
@@ -188,6 +184,43 @@ SimMonte::setDetector(const Transport::Detector& DObj)
   DUnit.addDetector(DObj);
   return;
 }
+
+void
+SimMonte::attenPath(const MonteCarlo::Object* startObj,
+		    const double Dist,
+		    MonteCarlo::neutron& N) const
+  /*!
+    Calculate and update the neutron path staring
+    from N through a distance 
+    \param startObj :: Initial object [for recording track]
+    \param Dist :: Distance to travel
+    \param N :: Neutron
+   */
+{
+  ELog::RegMethod RegA("SimMonte","attenPath");
+  const scatterSystem::DBNeutMaterial& NDB=
+		      scatterSystem::DBNeutMaterial::Instance();
+
+  ModelSupport::LineTrack LT(N.Pos,N.Pos+N.uVec*Dist);
+  LT.calculate(*this);
+
+  const std::vector<double>& tLen=LT.getTrack();
+  const std::vector<MonteCarlo::Object*>& oVec=LT.getObjVec();
+
+  for(size_t i=0;i<oVec.size();i++)
+    {
+      const scatterSystem::neutMaterial* nMatPtr=
+	NDB.getMat(oVec[i]->getMat());
+      if (nMatPtr)
+	N.weight*=nMatPtr->calcAtten(N.wavelength,tLen[i]);
+      else if (oVec[i]->getMat())
+	ELog::EM<<"Failed for mat "<<oVec[i]->getMat()<<ELog::endDiag;
+    }
+  N.setObject(startObj);
+  N.moveForward(Dist);
+  return;
+}
+
  
 void
 SimMonte::runMonte(const size_t Npts)
@@ -196,10 +229,14 @@ SimMonte::runMonte(const size_t Npts)
     \param Npts :: number of points
   */
 {
-  ELog::RegMethod RegA("SimMonte","runMonte");
-
   static MonteCarlo::Object* defObj(0);
 
+  ELog::RegMethod RegA("SimMonte","runMonte");
+
+
+  const scatterSystem::DBNeutMaterial& NDB=
+		      scatterSystem::DBNeutMaterial::Instance();
+    
   //  const int aim((Npts>10) ? Npts/10 : 1);
   const Geometry::Surface* surfPtr;
   MonteCarlo::neutron Nout(0,Geometry::Vec3D(0,0,0),
@@ -209,8 +246,12 @@ SimMonte::runMonte(const size_t Npts)
   //  double tDist;  // Track disnace 
   //  Geometry::Surface* SPtr;  // Exit surface
 
+
+  const size_t Nten((Npts>10) ? Npts/10 : 1);
   for(size_t i=0;i<Npts;i++)
     {
+      if (!(i % Nten))
+	ELog::EM<<"i == "<<i<<ELog::endDiag;
       try
 	{
 	  // No material info at this point:
@@ -223,8 +264,7 @@ SimMonte::runMonte(const size_t Npts)
 	  //    -- B to track to track length point [inner]
 
 	  const MonteCarlo::Object* OPtr=this->findCell(n.Pos,defObj);
-	  
-	  while (OPtr->getImp())
+	  while (OPtr && OPtr->getImp())
 	    {
 	      Transport::ObjComponent Cell(OPtr);
 	      double R=RNG.randExc();
@@ -236,24 +276,31 @@ SimMonte::runMonte(const size_t Npts)
 					    OPtr->getName());
 	      else         // Internal scatter : Get new R
 		{
-		  /*
-		  Cell.selectEnergy(n,Nout);		  
+		  const scatterSystem::neutMaterial* nMat=
+		    NDB.getMat(OPtr->getMat());
+		  if (!nMat)
+		    ELog::EM<<"Null Cell"<<ELog::endErr;
+		  //Cell.selectEnergy(n,Nout);		  
 		  // Internal scatter : process fraction to detector
-		  
-		  // To sample you need : 
-		  // Direction / solid angle / dsigma/domega
-		  DUnit.project(n,Nout);                       // get both
-		  // Object
-		  Nout.weight*=CellS.catTotalRatio(n,Nout);
-		  // ATTENUATE:
-		  Layout.attenPath(Nout,SP.first,SP.second);
-		  DUnit.addEvent(Nout);
-		  // Now scattering neutron
-		  SP.second->scatterNeutron(n);
-		  do
-		    R=RNG.randExc();
-		  while(R-1.0>Geometry::shiftTol);
-		  */  
+		  if (!MSActive || (MSActive<0 && n.nCollision==0)
+		      || (MSActive>0 && n.nCollision!=0))
+		    {
+		      for(size_t i=0;i<DUnit.NDet();i++)
+			{
+			  Transport::Detector* DPtr=DUnit.getDet(i);
+			  // To sample you need : 
+			  // Direction / solid angle / dsigma/domega
+			  const double RDist=
+			    DPtr->project(n,Nout);   
+			  // Object
+			  Nout.weight*=Cell.ScatTotalRatio(n,Nout);
+			  // ATTENUATE:
+			  attenPath(OPtr,RDist,Nout);
+			  DPtr->addEvent(Nout);
+			}
+		    }
+		  n.weight*=Cell.ScatTotalRatio(n,Nout);
+		  nMat->scatterNeutron(n);
 		}
 	    }
 	}
@@ -263,13 +310,24 @@ SimMonte::runMonte(const size_t Npts)
 	  ELog::EM<<"From :"<<A.what()<<ELog::endCrit;
 	}
     }
-  
+  ELog::EM<<"Tcount == "<<TCount<<" "<<Npts<<ELog::endDiag;
+  TCount+=Npts;
+  return;
+}
+
+void
+SimMonte::normalizeDetectors()
+  /*!
+    Normalize the detctors relative to the incident count
+   */
+{
+  DUnit.normalizeDetectors(TCount);
   return;
 }
 
 void
 SimMonte::writeDetectors(const std::string& outName,
-			 const double lambda) const
+			 const double ) const
   /*!
     Write out a summary of the SimMonte
     \param outName :: Output head name
@@ -279,7 +337,7 @@ SimMonte::writeDetectors(const std::string& outName,
   const std::string DetectorFile=outName+".det";
   std::ofstream OX;
   OX.open(DetectorFile.c_str());
-  DUnit.write(OX,lambda);
+  DUnit.write(OX);
   OX.close();
   return;
 }

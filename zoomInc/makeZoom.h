@@ -56,9 +56,6 @@ class makeZoom
   makeZoom& operator=(const makeZoom&);
   ~makeZoom();
   
-  void build(Simulation* SimPtr,
-	     const mainSystem::inputParam& IParam,
-	     const shutterSystem::BulkShield&);
 
   /// Bend Object
   const ZoomBend& getBend() const { return *ZBend; }              
@@ -70,6 +67,11 @@ class makeZoom
   const ZoomPrimary& getPrimary() const { return *ZPrim; }  
   /// Hutch
   const ZoomHutch& getHutch() const { return *ZHut; }
+
+  void buildIsolated(Simulation&,
+		     const mainSystem::inputParam&);
+  void build(Simulation&,const mainSystem::inputParam&,
+	     const shutterSystem::BulkShield&);
 
 };
 

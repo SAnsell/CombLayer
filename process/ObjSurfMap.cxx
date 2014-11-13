@@ -243,6 +243,11 @@ ObjSurfMap::findNextObject(const int SN,
   ELog::EM<<"Failure to find surface on "<<SN<<" "
 	  <<MR.calcRotate(Pos)<<" "<<SN<<ELog::endCrit;
   return 0;
+
+
+  ELog::EM<<"EXCLUDE  "<<objExclude<<" "
+	  <<MR.calcRotate(Pos)<<" "<<SN<<ELog::endErr;
+  return 0;
   if (SurI.getSurf(abs(SN)))
     ELog::EM<<"Surface == "<<*SurI.getSurf(abs(SN))<<ELog::endWarn;
   else 
@@ -254,25 +259,25 @@ ObjSurfMap::findNextObject(const int SN,
   return 0;
 }
 
-  void
-  ObjSurfMap::removeReverseSurf(const int primSurf,const int revSurf)
-  /*!
-    Find those surfaces which are listed as rev and exchange them
-    for those that are listed as seconadary
-    \param primSurf :: Kept surface [added in case of reverse surf]
-    \param revSurf :: Surf that is removed
-  */
-  {
-    ELog::RegMethod RegA("ObjSurfMap","removeReverseSurf");
+void
+ObjSurfMap::removeReverseSurf(const int primSurf,const int revSurf)
+/*!
+  Find those surfaces which are listed as rev and exchange them
+  for those that are listed as seconadary
+  \param primSurf :: Kept surface [added in case of reverse surf]
+  \param revSurf :: Surf that is removed
+*/
+{
+  ELog::RegMethod RegA("ObjSurfMap","removeReverseSurf");
   
-    // Remove reverse surface from maps: [+ve]
-
-    for(int sign_index=-1;sign_index<2;sign_index+=2)
-      {
-	OMTYPE::iterator ac=SMap.find(sign_index*revSurf);
-	if (ac!=SMap.end())
-	  {
-	    STYPE& OVec=ac->second;
+  // Remove reverse surface from maps: [+ve]
+  
+  for(int sign_index=-1;sign_index<2;sign_index+=2)
+    {
+      OMTYPE::iterator ac=SMap.find(sign_index*revSurf);
+      if (ac!=SMap.end())
+	{
+	  STYPE& OVec=ac->second;
 	  STYPE::iterator oc;
 	  // add to reverse list of opposite signed prim surf
 	  for(oc=OVec.begin();oc!=OVec.end();oc++)
@@ -283,7 +288,7 @@ ObjSurfMap::findNextObject(const int SN,
     }
   return;
 }
-
+  
 void
 ObjSurfMap::write(const std::string& FName) const
   /*!

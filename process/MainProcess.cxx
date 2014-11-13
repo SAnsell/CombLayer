@@ -512,6 +512,25 @@ void createBNCTInputs(inputParam& IParam)
   return;
 }
 
+void createD4CInputs(inputParam& IParam)
+  /*!
+    Set the specialise inputs for Boron capture beamline
+    \param IParam :: Input Parameters
+  */
+{
+  ELog::RegMethod RegA("MainProcess::","createD4CInputs");
+  createInputs(IParam);
+
+  IParam.regDefItem<std::string>("df","detFile",1,"test");
+  IParam.setDesc("detFile","Head name of output file");
+  IParam.regDefItem<int>("MS","multiScat",1,0);
+  IParam.setDesc("multiScat","Consider only 1 collision ");
+
+  IParam.setValue("sdefType",std::string("D4C"));  
+  //  IParam.setFlag("Monte");
+  return;
+}
+
 void createCuInputs(inputParam& IParam)
   /*!
     Set the specialise inputs for TS2

@@ -24,13 +24,11 @@
 
 class Simulation;
 
-/*!
-  \namespace GuideSystem
-  \brief Add a guide to the model
-  \author S. Ansell
-  \version 1.0
-  \date January 2010
-*/
+namespace ModelSupport
+{
+  class surfDivide;
+}
+
 namespace shutterSystem
 {
   class GeneralShutter;
@@ -60,7 +58,6 @@ class ChipIRGuide : public attachSystem::TwinComp,
   
   const int guideIndex;         ///< Index of surface offset
   int cellIndex;                ///< Cell index
-  int populated;                ///< populated or not
 
   ChipIRFilter Filter;          ///< Filter component
   
@@ -129,9 +126,15 @@ class ChipIRGuide : public attachSystem::TwinComp,
 //  double leftWedgeHeight;      ///<Wedge height from ground
 //  double leftWedgeAngle;       ///<Angle of sloping face of wedge
 
-  size_t nLayers;              ///< number of layers
+
+  size_t nLayers;                ///< number of layers
   std::vector<double> guideFrac; ///< guide Layer thicknesss (fractions)
-  std::vector<int> guideMat; ///< guide Layer materials
+  std::vector<int> guideMat;     ///< guide Layer materials
+
+
+  size_t nConcLayers;              ///< number of layers
+  std::vector<double> concFrac; ///< concrete Layer thicknesss (fractions)
+  std::vector<int> concLayMat;     ///< Conctrete Layer materials
 
   int steelMat;           ///< Material for steel
   int concMat;           ///< Material for steel
@@ -141,17 +144,27 @@ class ChipIRGuide : public attachSystem::TwinComp,
   std::vector<int> voidCells;    ///< Liners/Steel etc
   std::vector<int> layerCells;   ///< Layered cells
 
-  void populate(const Simulation&);
+  void populate(const FuncDataBase&);
   void createUnitVector(const shutterSystem::BulkShield&,
 			const shutterSystem::GeneralShutter&);
+  void createUnitVector(const attachSystem::FixedComp&);
   
   void createSurfaces(const shutterSystem::GeneralShutter&);
+  void createSurfaces();
+  void createSurfacesCommon();
   void createObjects(Simulation&);
   void createLinks();
   void addInsertPlate(Simulation&);
   void addFilter(Simulation&);
   void layerProcess(Simulation&);
   void createLiner(const int,const double);
+
+  void procSurfDivide(Simulation&,
+		      ModelSupport::surfDivide&,const size_t, 
+		      const std::vector<std::pair<int,int> >&,
+		      const std::string&,
+		      const std::string&);
+
 
  public:
 
@@ -162,8 +175,6 @@ class ChipIRGuide : public attachSystem::TwinComp,
 
   /// Set surface
   void setMonoSurface(const int M) { monoWallSurf=M; }
-  void createAll(Simulation&,const shutterSystem::BulkShield&,
-		 const size_t);
 
   /// Access beam angle
   double getBeamAngle() const { return beamAngle; }
@@ -173,6 +184,10 @@ class ChipIRGuide : public attachSystem::TwinComp,
 
   int calcTallyPlanes(const int,std::vector<int>&) const;
   void writeMasterPoints();
+
+  void createAll(Simulation&,const shutterSystem::BulkShield&,
+		 const size_t);
+  void createAll(Simulation&,const attachSystem::FixedComp&);
 
 };
 

@@ -32,7 +32,7 @@ namespace ModelSupport
   \date September 2012
   \brief Splits a single surface : surface pair.
 
-  This is an abstracr class to allow any pair of surfaces to 
+  This is an abstract class to allow any pair of surfaces to 
   be merged [if a specific merger routine has been written]
 */
 

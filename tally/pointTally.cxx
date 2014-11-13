@@ -618,9 +618,7 @@ pointTally::rotateMaster()
   ELog::RegMethod RegA("pointTally","rotateMaster");
 
   const masterRotate& MR=masterRotate::Instance();
-  ELog::EM<<"Point tally "<<Centre<<ELog::endDiag;
   MR.applyFull(Centre);
-  ELog::EM<<"XX Point tally "<<Centre<<ELog::endDiag;
   for_each(Window.begin(),Window.end(),
    	   [&MR](Geometry::Vec3D& v){MR.applyFull(v);});
   return;

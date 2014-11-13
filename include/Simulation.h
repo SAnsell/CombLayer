@@ -128,7 +128,7 @@ class Simulation
   Simulation();
   Simulation(const Simulation&);
   Simulation& operator=(const Simulation&);
-  ~Simulation();
+  virtual ~Simulation();
   
   /// set the command line
   void setCmdLine(const std::string& S) { cmdLine=S; }

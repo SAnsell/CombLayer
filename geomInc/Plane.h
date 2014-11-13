@@ -80,7 +80,10 @@ class Plane : public Quadratic
   
   int setPlane(const Plane&);
   int setPlane(const Geometry::Vec3D&,const Geometry::Vec3D&);
-  int setPlane(const Geometry::Vec3D&,const Geometry::Vec3D&,const Geometry::Vec3D&);
+  int setPlane(const Geometry::Vec3D&,const Geometry::Vec3D&,
+	       const Geometry::Vec3D&);
+  int setPlane(const Geometry::Vec3D&,const Geometry::Vec3D&,
+	       const Geometry::Vec3D&,const Geometry::Vec3D&);
   int setPlane(const Geometry::Vec3D&,const double);
 
   int side(const Geometry::Vec3D&) const;

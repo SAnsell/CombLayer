@@ -386,6 +386,7 @@ Code::Eval(varList* Vars)
 	    Stack[SP] = log10(Stack[SP]); 
 	  else 
 	    return zeroType<T>();
+	  break;
 
 	case Opcodes::cMax: 
 	  if(!SP || stackType[SP-1]==1 || stackType[SP]==1)
@@ -721,6 +722,8 @@ Code::printByteCode(std::ostream& OFS) const
   // Copy state:
   std::ios state(0);
   state.copyfmt(OFS);
+  const std::streamsize ssPrec=
+    OFS.precision();
 
   size_t DP(0);
   for(size_t IP=0;IP<ByteCode.size();IP++)
@@ -805,6 +808,7 @@ Code::printByteCode(std::ostream& OFS) const
         }
     }
   OFS.copyfmt(state);
+  OFS.precision(ssPrec);
   return;
 }
 

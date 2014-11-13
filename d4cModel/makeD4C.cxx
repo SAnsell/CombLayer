@@ -72,15 +72,18 @@
 #include "CylSample.h"
 #include "BellJar.h"
 #include "DetectorArray.h"
+#include "DetectorBank.h"
+#include "Detector.h"
+#include "DetGroup.h"
+#include "SimMonte.h"
 #include "makeD4C.h"
 
 namespace d4cSystem
 {
 
 makeD4C::makeD4C() :
-  BellObj(new BellJar("belljar")),
-  CellObj(new instrumentSystem::CylSample("cell")),
-  DetObj(new DetectorArray("detector"))
+  NDet(9),BellObj(new BellJar("belljar")),
+  CellObj(new instrumentSystem::CylSample("cell"))
   /*!
     Constructor
   */
@@ -88,9 +91,15 @@ makeD4C::makeD4C() :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
+  for(size_t i=0;i<NDet;i++)
+    {
+      DetObj[i]=std::shared_ptr<DetectorBank> 
+	(new DetectorBank(i,"DetBank"));
+      OR.addObject(DetObj[i]);
+    }
+
   OR.addObject(BellObj);
   OR.addObject(CellObj);
-  OR.addObject(DetObj);
 }
 
 makeD4C::~makeD4C()
@@ -128,13 +137,18 @@ makeD4C::build(Simulation* SimPtr,
 
   BellObj->setInsertCell(74123);
   BellObj->createAll(*SimPtr,World::masterOrigin());
-
   CellObj->setInsertCell(BellObj->innerCell());
   CellObj->createAll(*SimPtr,*BellObj);
-
-  DetObj->setInsertCell(BellObj->outerCell());
-  DetObj->createAll(*SimPtr,*BellObj);
-  
+  SimMonte* SM=dynamic_cast<SimMonte*>(SimPtr);
+  for(size_t i=0;i<NDet;i++)
+    {
+      DetObj[i]->setInsertCell(BellObj->outerCell());
+      DetObj[i]->createAll(*SimPtr,*BellObj);
+      DetObj[i]->createTally(*SimPtr);
+      
+      if (SM)
+	DetObj[i]->createTally(SM->getDU());
+    }
 
   return;
 }

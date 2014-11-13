@@ -183,7 +183,7 @@ ZoomRoof::populate(const Simulation& System)
 
   for(size_t i=0;i<nExtra;i++)
     {
-      Extra.push_back(varBlock(DSize,sndKey,0,sndKey+DSize));
+      Extra.push_back(varBlock(DSize,sndKey,0,sndKey));
       for(size_t j=0;j<DSize;j++)
 	{
 	  std::ostringstream cx;

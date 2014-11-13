@@ -104,8 +104,7 @@ namespace hutchSystem
 ChipIRHutch::ChipIRHutch(const std::string& Key)  : 
   attachSystem::TwinComp(Key,3),attachSystem::ContainedComp(),
   hutchIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(hutchIndex+1),populated(0),
-  PreColObj(new PreCollimator("chipPre")),
+  cellIndex(hutchIndex+1),PreColObj(new PreCollimator("chipPre")),
   ColObjV(new Collimator("chipColV")),
   ColObjH(new Collimator("chipColH")),
   ColB(new ColBox("chipColBox")),
@@ -137,7 +136,6 @@ ChipIRHutch::ChipIRHutch(const std::string& Key)  :
 ChipIRHutch::ChipIRHutch(const ChipIRHutch& A) : 
   attachSystem::TwinComp(A),attachSystem::ContainedComp(A),
   hutchIndex(A.hutchIndex),cellIndex(A.cellIndex),
-  populated(A.populated),
   PreColObj(new PreCollimator(*A.PreColObj)),
   ColObjV(new Collimator(*A.ColObjV)),
   ColObjH(new Collimator(*A.ColObjH)),
@@ -204,7 +202,6 @@ ChipIRHutch::operator=(const ChipIRHutch& A)
       attachSystem::TwinComp::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       cellIndex=A.cellIndex;
-      populated=A.populated;
       *PreColObj = *A.PreColObj;
       *ColObjV = *A.ColObjV;
       *ColObjH = *A.ColObjH;
@@ -304,15 +301,14 @@ ChipIRHutch::~ChipIRHutch()
 {}
 
 void
-ChipIRHutch::populate(const Simulation& System)
+ChipIRHutch::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: Database
   */
 {
   ELog::RegMethod RegA("ChipIRHutch","populate");
 
-  const FuncDataBase& Control=System.getDataBase();
 
   beamAngle=Control.EvalVar<double>("chipSndAngle");
   xStep=Control.EvalVar<double>(keyName+"XStep");
@@ -406,16 +402,17 @@ ChipIRHutch::populate(const Simulation& System)
   ModelSupport::populateDivideLen(Control,nRoofDivide,
 			       keyName+"RoofFrac_",hRoofThick,roofFrac);
   
-  populated=1;
   return;
 }
 
 void
-ChipIRHutch::createUnitVector(const shutterSystem::GeneralShutter& GI,
+ChipIRHutch::createUnitVector(const attachSystem::FixedComp& shutterFC,
+			      const Geometry::Vec3D& xyAxis,
 			      const attachSystem::FixedComp& LC)
   /*!
     Create the unit vectors
-    \param GI :: shutter direction
+    \param shutterFC :: shutter direction 
+    \param xyAxis :: xyAngls
     \param LC :: connectin linear component [ChipIRGuide]
   */
 {
@@ -436,22 +433,21 @@ ChipIRHutch::createUnitVector(const shutterSystem::GeneralShutter& GI,
   bX=X;
   bZ=bY*X;
 
-  ImpactPoint= GI.getFrontPt();
+  ImpactPoint= (shutterFC.NConnect()) ?
+    shutterFC.getLinkPt(0) : shutterFC.getCentre(); 
+  
   setExit(Origin+Y*hMainLen,Y);
   SecondTrack::setBeamExit(BeamCentPoint,bY);
   
-  //  Geometry::Quaternion::calcQRotDeg(beamAngle,X).rotate(Z);
-  //  Geometry::Quaternion::calcQRotDeg(beamAngle,X).rotate(Y);
-
-  const Geometry::Vec3D Saxis=MR.calcAxisRotate(GI.getXYAxis());
+  const Geometry::Vec3D Saxis=MR.calcAxisRotate(xyAxis);
 
   chipIRDatum::chipDataStore::Instance().
     setCNum(chipIRDatum::shutterAxis,Saxis);
 
   chipIRDatum::chipDataStore::Instance().
     setCNum(chipIRDatum::secScatImpact,
-	     MR.calcRotate(GI.getFrontPt()));
-  
+	    MR.calcRotate(ImpactPoint));
+	    
   return;
 }
 
@@ -1275,11 +1271,49 @@ ChipIRHutch::createAll(Simulation& System,
     \param IC :: Internal Component that contains is own external perimeter
   */
 {
-  ELog::RegMethod RegA("ChipIRHutch","createAll");
+  ELog::RegMethod RegA("ChipIRHutch","createAll(ShutterPort)");
 
-  populate(System);
+  populate(System.getDataBase());
+  createUnitVector(ShutterPort,ShutterPort.getXYAxis(),Guide);
+  createCommonAll(System,Guide,IC);
+  return;
+}
+
+void
+ChipIRHutch::createAll(Simulation& System,
+		       const attachSystem::FixedComp& FC,
+		       const attachSystem::TwinComp& Guide,
+		       const attachSystem::ContainedComp& IC)
+  /*!
+    Generic function to create everything
+    \param System :: Simulation item
+    \param FC :: FixedComp
+    \param Guide :: Linear Comp to beam from [chipGuide]
+    \param IC :: Internal Component that contains is own external perimeter
+  */
+{
+  ELog::RegMethod RegA("Hutch","createAll(Fixed)");
+
+  populate(System.getDataBase());
+  createUnitVector(FC,FC.getY(),Guide);
+  createCommonAll(System,Guide,IC);
+  return;
+}
+
+
+void
+ChipIRHutch::createCommonAll(Simulation& System,
+			     const attachSystem::TwinComp& Guide,
+			     const attachSystem::ContainedComp& IC)
+  /*!
+    Generic function to create everything
+    \param System :: Simulation item
+    \param Guide :: Linear Comp to beam from [chipGuide]
+    \param IC :: Internal Component that contains is own external perimeter
+  */
+{
+  ELog::RegMethod RegA("Hutch","createCommonAll");
   Trimmer->createSurf(System,Guide);
-  createUnitVector(ShutterPort,Guide);
   createWallSurfaces(Guide);
 
   //  createBeamStopObjects(System);

@@ -131,6 +131,7 @@ getMatIndex(const std::string& NStr)
    */
 {
   ELog::RegMethod RegA("ENDF","getMatIndex");
+
   Triple<int> Out;
   if (!StrFunc::convert(NStr.substr(0,4),Out.first) ||
       !StrFunc::convert(NStr.substr(4,2),Out.second) ||
@@ -145,7 +146,7 @@ headRead(std::istream& IX,
 	 double& c1,double& c2,
 	 int &l1, int& l2, int& n1, int& n2)
   /*!
-    Processes the list with the parameter
+    Processes the list with the parameter. 
     \param IX :: File to read [at head position]
     \param c1 :: double number 
     \param c2 :: double number

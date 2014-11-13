@@ -62,6 +62,7 @@
 #include "Material.h"
 #include "SQWmaterial.h"
 #include "CryMat.h"
+#include "DBMaterial.h"
 #include "DBNeutMaterial.h"
 
 namespace scatterSystem
@@ -100,19 +101,44 @@ DBNeutMaterial::initMaterial()
   neutMaterial Aluminium("Aluminium",27,0.07,3.449,1.5,0.01,0.23);
 
   SQWmaterial Poly("Poly",4.6767,0.3,-0.27733,4.9054,51.3846,0.22);
-  Poly.setENDF7("tsl-HinCH2.endf");
+  //  Poly.setENDF7("tsl-HinCH2.endf");
   Poly.setExtra("Carbon",0.333333,12.01,6.6484,5.55,0.00,0.0035);
 
   neutMaterial H2O("Water",6.0,0.0992,-0.5589,2.5867,53.2667,0.22);
+
+  neutMaterial D2O("D2O",6.6666,0.0992,-0.5589,2.5867,53.2667,0.22);
+  neutMaterial Li6Cl6DMol("Li6Cl6DMol",7.6064,0.0992,6.3049,1.7056,
+			 1.4382,31.1149);
+  neutMaterial Li7Cl6DMol("Li7Cl6DMol",7.6364,0.0992,6.1810,1.7207,
+			 1.4675,3.4936);
+  neutMaterial TiZr("TiZr",61.9651,0.050,0.050,3.0161,
+		    1.8551,4.1744);
+  neutMaterial Van("Vanadium",50.9420,0.072,-0.3824,0.02,5.1900,5.08);
+  neutMaterial B4C("B4C",11.05,0.07,5.5697,3.9420,1.36,613.6);
   //  scatterSystem::Material Silicon("Silicon",0.1,-0.27733,4.9054,51.3846,0.22);
   SQWmaterial ParaH2("ParaH2",1.0,0.041957,-3.7409,1.79,79.9,0.33);
-  ParaH2.setENDF7("tsl-para-H.endf");
+  //  ParaH2.setENDF7("tsl-para-H.endf");
+  
+  const ModelSupport::DBMaterial& DB=
+    ModelSupport::DBMaterial::Instance();
+  
+  MStore.insert(MTYPE::value_type(DB.getIndex("Aluminium"),Aluminium.clone()));
+  MStore.insert(MTYPE::value_type(DB.getIndex("H2O"),H2O.clone()));
+  MStore.insert(MTYPE::value_type(DB.getIndex("D2O"),D2O.clone()));
+  MStore.insert(MTYPE::value_type(DB.getIndex("ParaH2"),ParaH2.clone()));
+  MStore.insert(MTYPE::value_type(DB.getIndex("SiCrystal"),Silicon.clone()));
+  MStore.insert(MTYPE::value_type(DB.getIndex("Poly"),Poly.clone()));
+  MStore.insert(MTYPE::value_type(DB.getIndex("TiZr"),TiZr.clone()));
+  MStore.insert(MTYPE::value_type(DB.getIndex("Vanadium"),Van.clone()));
+  MStore.insert(MTYPE::value_type
+		(DB.getIndex("Li6ClD2O6Mol"),Li6Cl6DMol.clone()));
+  MStore.insert(MTYPE::value_type
+		(DB.getIndex("Li7ClD2O6Mol"),Li7Cl6DMol.clone()));
+  MStore.insert(MTYPE::value_type(DB.getIndex("B4C"),B4C.clone()));
 
-  MStore.insert(MTYPE::value_type(5,Aluminium));
-  MStore.insert(MTYPE::value_type(11,H2O));
-  MStore.insert(MTYPE::value_type(25,ParaH2));
-  MStore.insert(MTYPE::value_type(41,Silicon));
-  MStore.insert(MTYPE::value_type(48,Poly));
+  // Set MNCPX numbers:
+  for(MTYPE::value_type& MItem : MStore)
+    MItem.second->setNumber(MItem.first);
   
   return;
 }
@@ -165,7 +191,7 @@ DBNeutMaterial::getMat(const int ID) const
   if (mc==MStore.end())
     throw ColErr::InContainerError<int>(ID,"MStore");
 
-  return &mc->second;
+  return mc->second;
 }
     
 

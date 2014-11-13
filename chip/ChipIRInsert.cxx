@@ -521,6 +521,7 @@ ChipIRInsert::createAll(Simulation& System,
   createLeadPlate(System);
   layerProcess(System);
   createDatumPoints();
+  ELog::EM<<"BULK INSERT == "<<innerWidth<<ELog::endDiag;
   return;
 }
   

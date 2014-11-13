@@ -30,8 +30,6 @@
 #include <set>
 #include <map>
 #include <string>
-#include <algorithm>
-#include <memory>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -39,22 +37,23 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "support.h"
 #include "stringCombine.h"
-#include "InputControl.h"
 #include "Element.h"
+
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "SimProcess.h"
+#include "Code.h"
+#include "FItem.h"
+#include "varList.h"
+#include "FuncDataBase.h"
 #include "MaterialSupport.h"
 #include "surfDIter.h"
 
+
 namespace ModelSupport
 {
-
 
 void
 populateDivideLen(const FuncDataBase& Control,const size_t N,
@@ -77,9 +76,9 @@ populateDivideLen(const FuncDataBase& Control,const size_t N,
       double frac=1.0/N;
       for(size_t i=1;i<N;i++)
 	{
-	  Vec.push_back
-	    (SimProcess::getDefIndexVar<double>(Control,Name,"",
-						static_cast<int>(i),frac));
+	  const std::string NName=StrFunc::makeString(i);
+	  const double fA=Control.EvalDefVar<double>(Name+NName,frac);
+	  Vec.push_back(fA);
 	  if (Vec.back()<0)
 	    {
 	      curLen-=Vec.back();    // NOTE: vec.back is negative
@@ -89,7 +88,7 @@ populateDivideLen(const FuncDataBase& Control,const size_t N,
 	    }
 	  curLen=Vec.back()*TLen;
 	  frac=((N-i-1.0)*Vec.back()+1.0)/(N-i);
-	}
+       }
     }
   return;
 }
@@ -112,9 +111,9 @@ populateDivide(const FuncDataBase& Control,const size_t N,
       double frac=1.0/N;
       for(size_t i=1;i<N;i++)
 	{
-	  Vec.push_back
-	    (SimProcess::getDefIndexVar<double>(Control,Name,"",
-						static_cast<int>(i),frac));
+	  const std::string NName=StrFunc::makeString(i);
+	  const double fA=Control.EvalDefVar<double>(Name+NName,frac);
+	  Vec.push_back(fA);
  	  frac=((N-i-1.0)*Vec.back()+1.0)/(N-i);
 	}
     }
@@ -161,14 +160,13 @@ populateDivide(const FuncDataBase& Control,const size_t N,
   */
 {
   Vec.clear();
-  double defV=defValue;
   if (N>0)
     {
       for(size_t i=0;i<N;i++)
 	{
-	  defV=SimProcess::getDefIndexVar<double>(Control,Name,"",
-						  static_cast<int>(i),defValue);
-	  Vec.push_back(defV);
+	  const std::string NName=StrFunc::makeString(i);
+	  const double fA=Control.EvalDefVar<double>(Name+NName,defValue);
+	  Vec.push_back(fA);
 	}
     }
   return;

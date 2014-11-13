@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   process/surfDBase.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,8 +47,19 @@
 #include "BaseModVisit.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
+#include "Vec3D.h"
 #include "Token.h"
+#include "Transform.h"
+#include "Rules.h"
+#include "HeadRule.h"
 #include "Surface.h"
+#include "surfIndex.h"
+#include "surfRegister.h"
+#include "surfExpand.h"
+#include "surfEqual.h"
+#include "Quaternion.h"
+#include "Quadratic.h"
+#include "Plane.h"
 #include "surfDBase.h"
 
 namespace ModelSupport
@@ -57,6 +68,62 @@ namespace ModelSupport
 // ------------------------------------------
 //            STATIC
 // ------------------------------------------
+
+std::ostream&
+operator<<(std::ostream& OX,const surfDBase& A)
+  /*!
+    Output operator
+  */
+{
+  A.write(OX);
+  return OX;
+}
+
+template<>
+Geometry::Surface*
+surfDBase::createSurf<Geometry::Plane,Geometry::Plane>
+(const Geometry::Plane* pSurf,const Geometry::Plane* sSurf,
+   const double fraction,int& newItem)
+  /*!
+    Divides two planes to the required fraction. Care is taken
+    if the two planes have opposite signs.
+    - IMPORTANT: the inner surface is master ie if we have -IN ON 
+    then we get a normal that is opposite to ON.
+    \param pSurf :: primary surface
+    \param sSurf :: secondary surface
+    \param newItem :: Plane number to start with
+    \param fraction :: Weight between the two surface
+    \return plane number created
+   */
+{
+  ELog::RegMethod RegA("surfDBase<Plane>","createSurf");
+
+  ModelSupport::surfIndex& SurI= ModelSupport::surfIndex::Instance();
+
+  const Geometry::Vec3D NormA=pSurf->getNormal();
+  const double DA=pSurf->getDistance();
+
+  Geometry::Vec3D NormB=sSurf->getNormal();
+  double DB=sSurf->getDistance();
+  double dProd=NormA.dotProd(NormB);
+  double normNeg=1.0;
+  if (dProd<0)
+    {
+      normNeg=-1.0;
+      NormB*=-1.0;
+      DB*=-1.0;
+    }
+  NormB*=fraction;
+  NormB+=NormA*(1.0-fraction);
+  NormB.makeUnit();
+  DB*=fraction;
+  DB+=(1.0-fraction)*DA;
+  
+  // This needs to be checked / minimized
+  Geometry::Plane* TP=SurI.createUniqSurf<Geometry::Plane>(newItem++);
+  TP->setPlane(NormB*normNeg,DB*normNeg);
+  return SurI.addSurface(TP);
+}
 
 int
 surfDBase::replaceTokenWithSign(std::vector<Token>& TVec,
@@ -182,5 +249,7 @@ surfDBase::removeToken(std::vector<Token>& TVec,const int SN)
 
   return;
 }
+
+
 
 }  // NAMESPACE ModelSupport

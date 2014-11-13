@@ -207,6 +207,58 @@ createESSSource(const FuncDataBase& Control,Source& sourceCard)
 }
 
 void
+createD4CSource(const FuncDataBase& Control,Source& sourceCard)
+  /*!
+    Creates a neutron beam 
+    \param Control :: Control system
+    \param sourceCard :: Source system
+   */
+{
+  ELog::RegMethod RegA("SourceCreate","createD4CSource");
+
+  const double E=Control.EvalDefVar<double>("sdefEnergy",175e-6);
+  const double yStart=Control.EvalDefVar<double>("sdefYPos",-10.0);
+
+  sourceCard.setActive();
+  sourceCard.setComp("dir",1.0);
+  sourceCard.setComp("vec",Geometry::Vec3D(0,1,0));
+  sourceCard.setComp("par",1);
+  sourceCard.setComp("erg",E);
+  //  sourceCard.setComp("ccc",76);
+  sourceCard.setComp("y",yStart);
+
+  
+
+  const double xRange=Control.EvalDefVar<double>("sdefWidth",2.0);
+  const double zRange=Control.EvalDefVar<double>("sdefHeight",2.5);
+  sourceCard.setComp("ara",xRange*zRange);
+    
+  SrcData D1(1);  
+  SrcData D2(2);
+  std::vector<double> XPts={-xRange/2.0,xRange/2.0};
+  std::vector<double> ZPts={-zRange/2.0,zRange/2.0};
+  std::vector<double> Prob={0,1.0};
+  SrcInfo SI1('H');
+  SrcInfo SI2('H');
+  SI1.setData(XPts);
+  SI2.setData(ZPts);
+
+  SrcProb SP1;
+  SrcProb SP2;
+  SP1.setData(Prob);
+  SP2.setData(Prob);
+
+  D1.addUnit(SI1);
+  D2.addUnit(SI2);
+  D1.addUnit(SP1);
+  D2.addUnit(SP2);
+  sourceCard.setData("x",D1);
+  sourceCard.setData("z",D2);
+
+  return;
+}
+
+void
 createTS1Source(const FuncDataBase& Control,Source& sourceCard)
   /*!
     Creates a target 1 proton source:

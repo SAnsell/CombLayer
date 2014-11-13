@@ -33,7 +33,6 @@
 #include <algorithm>
 #include <numeric>
 #include <memory>
-#include <boost/array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -49,15 +48,11 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "surfEqual.h"
-#include "surfDivide.h"
-#include "surfDIter.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
@@ -89,7 +84,8 @@ Window::Window(const std::string& Key)  :
   attachSystem::ContainedComp(),
   attachSystem::FixedComp(Key,2),
   winIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(winIndex+1),baseCell(0),nLayers(0)
+  cellIndex(winIndex+1),baseCell(0),FSurf(0),BSurf(0),
+  nLayers(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search

@@ -54,13 +54,16 @@ class DetGroup
   void manageDetector(Detector*);
   void addDetector(const Detector&);
   
-  Detector& getDet(const size_t);
-  const Detector& getDet(const size_t) const;
+  /// Number of detector
+  size_t NDet() const { return DetVec.size(); }
+  Detector* getDet(const size_t);
+  const Detector* getDet(const size_t) const;
 
-  void write(std::ostream&,const double) const;
+  void normalizeDetectors(const size_t);
+  void write(std::ostream&) const;
 
 };
 
-}
+} // NAMESPACE Transport
 
 #endif

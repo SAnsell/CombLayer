@@ -85,6 +85,9 @@
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "GeneralShutter.h"
+#include "Token.h"
+#include "surfDBase.h"
+#include "mergeTemplate.h"
 #include "BulkShield.h"
 #include "ScatterPlate.h"
 #include "ChipIRFilter.h"
@@ -97,8 +100,8 @@ ChipIRGuide::ChipIRGuide(const std::string& Key) :
   attachSystem::TwinComp(Key,7),
   attachSystem::ContainedGroup("inner","outer","leftwall","rightwall"),
   guideIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(guideIndex+1),populated(0),
-  Filter("chipFilter"),nLayers(0)
+  cellIndex(guideIndex+1),Filter("chipFilter"),nLayers(0),
+  nConcLayers(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -108,20 +111,20 @@ ChipIRGuide::ChipIRGuide(const std::string& Key) :
 ChipIRGuide::ChipIRGuide(const ChipIRGuide& A) : 
   attachSystem::TwinComp(A),attachSystem::ContainedGroup(A),
   guideIndex(A.guideIndex),cellIndex(A.cellIndex),
-  populated(A.populated),Filter(A.Filter),beamAngle(A.beamAngle),
-  sideBeamAngle(A.sideBeamAngle),shutterAngle(A.shutterAngle),
-  gLen(A.gLen),hYStart(A.hYStart),hFWallThick(A.hFWallThick),
-  xShift(A.xShift),zShift(A.zShift),xBeamShift(A.xBeamShift),
-  zBeamShift(A.zBeamShift),innerARoofZ(A.innerARoofZ),
-  innerAFloorZ(A.innerAFloorZ),innerBRoofZ(A.innerBRoofZ),
-  innerBFloorZ(A.innerBFloorZ),innerALWall(A.innerALWall),
-  innerARWall(A.innerARWall),innerBLWall(A.innerBLWall),
-  innerBRWall(A.innerBRWall),LThick(A.LThick),LMat(A.LMat),
-  roofSteel(A.roofSteel),floorSteel(A.floorSteel),
-  leftSteelInner(A.leftSteelInner),leftSteelFlat(A.leftSteelFlat),
-  rightSteelInner(A.rightSteelInner),rightSteelFlat(A.rightSteelFlat),
-  leftSteelAngle(A.leftSteelAngle),rightSteelAngle(A.rightSteelAngle),
-  roofConc(A.roofConc),floorConc(A.floorConc),leftConcInner(A.leftConcInner),
+  Filter(A.Filter),beamAngle(A.beamAngle),sideBeamAngle(A.sideBeamAngle),
+  shutterAngle(A.shutterAngle),gLen(A.gLen),hYStart(A.hYStart),
+  hFWallThick(A.hFWallThick),xShift(A.xShift),zShift(A.zShift),
+  xBeamShift(A.xBeamShift),zBeamShift(A.zBeamShift),
+  innerARoofZ(A.innerARoofZ),innerAFloorZ(A.innerAFloorZ),
+  innerBRoofZ(A.innerBRoofZ),innerBFloorZ(A.innerBFloorZ),
+  innerALWall(A.innerALWall),innerARWall(A.innerARWall),
+  innerBLWall(A.innerBLWall),innerBRWall(A.innerBRWall),
+  LThick(A.LThick),LMat(A.LMat),roofSteel(A.roofSteel),
+  floorSteel(A.floorSteel),leftSteelInner(A.leftSteelInner),
+  leftSteelFlat(A.leftSteelFlat),rightSteelInner(A.rightSteelInner),
+  rightSteelFlat(A.rightSteelFlat),leftSteelAngle(A.leftSteelAngle),
+  rightSteelAngle(A.rightSteelAngle),roofConc(A.roofConc),
+  floorConc(A.floorConc),leftConcInner(A.leftConcInner),
   rightConcInner(A.rightConcInner),rightConcFlat(A.rightConcFlat),
   leftConcAngle(A.leftConcAngle),rightConcAngle(A.rightConcAngle),
   blockWallThick(A.blockWallThick),blockWallHeight(A.blockWallHeight),
@@ -130,7 +133,8 @@ ChipIRGuide::ChipIRGuide(const ChipIRGuide& A) :
   extraWallSideAngle(A.extraWallSideAngle),extraWallEndAngle(A.extraWallEndAngle),
   rightWallThick(A.rightWallThick),rightWallHeight(A.rightWallHeight),
   rightWallLen(A.rightWallLen),nLayers(A.nLayers),
-  guideFrac(A.guideFrac),guideMat(A.guideMat),steelMat(A.steelMat),
+  guideFrac(A.guideFrac),guideMat(A.guideMat),nConcLayers(A.nConcLayers),
+  concFrac(A.concFrac),concLayMat(A.concLayMat),steelMat(A.steelMat),
   concMat(A.concMat),wallMat(A.wallMat),monoWallSurf(A.monoWallSurf),
   voidCells(A.voidCells),layerCells(A.layerCells)
   /*!
@@ -152,7 +156,6 @@ ChipIRGuide::operator=(const ChipIRGuide& A)
       attachSystem::TwinComp::operator=(A);
       attachSystem::ContainedGroup::operator=(A);
       cellIndex=A.cellIndex;
-      populated=A.populated;
       Filter=A.Filter;
       beamAngle=A.beamAngle;
       sideBeamAngle=A.sideBeamAngle;
@@ -203,6 +206,9 @@ ChipIRGuide::operator=(const ChipIRGuide& A)
       nLayers=A.nLayers;
       guideFrac=A.guideFrac;
       guideMat=A.guideMat;
+      nConcLayers=A.nConcLayers;
+      concFrac=A.concFrac;
+      concLayMat=A.concLayMat;
       steelMat=A.steelMat;
       concMat=A.concMat;
       wallMat=A.wallMat;
@@ -213,6 +219,7 @@ ChipIRGuide::operator=(const ChipIRGuide& A)
   return *this;
 }
 
+
 ChipIRGuide::~ChipIRGuide() 
   /*!
     Destructor
@@ -221,15 +228,13 @@ ChipIRGuide::~ChipIRGuide()
 
 
 void
-ChipIRGuide::populate(const Simulation& System)
+ChipIRGuide::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: DataBase
   */
 {
   ELog::RegMethod RegA("ChipIRGuide","populate");
-
-  const FuncDataBase& Control=System.getDataBase();
 
   beamAngle=Control.EvalVar<double>(keyName+"Angle");
   sideBeamAngle=Control.EvalVar<double>(keyName+"SideAngle");
@@ -312,14 +317,19 @@ ChipIRGuide::populate(const Simulation& System)
 //  leftWedgeAngle=Control.EvalVar<double>(keyName+"LeftWedgeAngle");
 
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");
+  nConcLayers=Control.EvalDefVar<size_t>(keyName+"NConcLayers",0);
 
-  // // SteelLayers IS BASIC:
-  // ModelSupport::populateDivide(Control,nLayers,keyName+"SteelMat_",
-  //  			       wallMat,steelMat);
-  // ModelSupport::populateDivide(Control,nLayers,
-  // 			       keyName+"SteelFrac_",guideFrac);
+  // SteelLayers IS BASIC:
+  ModelSupport::populateDivide(Control,nLayers,keyName+"SteelMat_",
+			       steelMat,guideMat);
+  ModelSupport::populateDivide(Control,nLayers,
+   			       keyName+"SteelFrac_",guideFrac);
 
-  populated=1;
+  // Concreate :
+  ModelSupport::populateDivide(Control,nConcLayers,keyName+"ConcMat_",
+			       concMat,concLayMat);
+  ModelSupport::populateDivide(Control,nLayers,
+   			       keyName+"ConcFrac_",concFrac);
   return;
 }
 
@@ -334,10 +344,10 @@ ChipIRGuide::createUnitVector(const shutterSystem::BulkShield& BS,
 {
   ELog::RegMethod RegA("ChipIRGuide","createUnitVector");
   const masterRotate& MR=masterRotate::Instance();
-
+  
   bZ=Z=Geometry::Vec3D(-1,0,0);         // Gravity axis [up]
-  bY=Y=GS.getXYAxis();                  // forward axis [centre line]  
-  bX=X= Z*GS.getXYAxis();               // horrizontal axis [across]
+  bY=Y=GS.getXYAxis();                 // forward axis [centre line]  
+  bX=X=Z*GS.getXYAxis();               // horrizontal axis [across]
 
   // Change so that not dependent on the angle of the shutter:
 
@@ -367,6 +377,44 @@ ChipIRGuide::createUnitVector(const shutterSystem::BulkShield& BS,
 }
 
 void
+ChipIRGuide::createUnitVector(const attachSystem::FixedComp& WO)
+  /*!
+    Create the unit vectors
+    \param WO :: Fixed Unit (Base origin)
+  */
+{
+  ELog::RegMethod RegA("ChipIRGuide","createUnitVector(Fixed)");
+
+  const masterRotate& MR=masterRotate::Instance();
+
+  FixedComp::createUnitVector(WO);
+  bEnter=Origin;
+  Z*=-1.0;
+  bZ=Z;
+  bY=Y;
+  bX=X;
+  
+  // Rotate beamAxis to the final angle
+  Geometry::Quaternion::calcQRotDeg(beamAngle,-X).rotate(bZ);
+  Geometry::Quaternion::calcQRotDeg(beamAngle,-X).rotate(bY);
+
+  Geometry::Quaternion::calcQRotDeg(sideBeamAngle,Z).rotate(bX);
+  Geometry::Quaternion::calcQRotDeg(sideBeamAngle,Z).rotate(bY);
+
+  // Now calculate Cent
+  gLen=hYStart;
+
+  // Output Datum [beam centre]
+  // Distance to Y Plane [ gLen / (beamAxis . Y )
+  setExit(bEnter+bY*(hYStart/fabs(bY.dotProd(Y))),bY);
+  chipIRDatum::chipDataStore& CS=chipIRDatum::chipDataStore::Instance();
+  CS.setDNum(chipIRDatum::guideExit,MR.calcRotate(getExit()));
+  CS.setDNum(chipIRDatum::floodC,MR.calcRotate(getExit()-bY*210.0));
+  
+  return;
+}
+
+void
 ChipIRGuide::createLiner(const int index,const double offset)
   /*!
     Create an inner section with an offset
@@ -378,7 +426,6 @@ ChipIRGuide::createLiner(const int index,const double offset)
 
   const int GI(guideIndex+index);
   // INNER VOID CORE [+ve X : +ve z]
-
   ModelSupport::buildPlane(SMap,GI+3,
 			   bEnter-bX*(innerALWall+offset),
 			   bEnter-bX*(innerALWall+offset)+bY*gLen,
@@ -408,11 +455,40 @@ ChipIRGuide::createSurfaces(const shutterSystem::GeneralShutter& GS)
     \param GS :: GeneralShutter [for divide]
   */
 {
-  ELog::RegMethod RegA("ChipIRGuide","createSurface");
+  ELog::RegMethod RegA("ChipIRGuide","createSurface(GeneralShutter)");
  
   SMap.addMatch(guideIndex+100,GS.getDivideSurf());
-
   SMap.addMatch(guideIndex+1,monoWallSurf);
+  createSurfacesCommon();
+
+  return;
+}
+
+void
+ChipIRGuide::createSurfaces()
+  /*!
+    Create All the surfaces :
+    \param FC :: FixedComp unit
+  */
+{
+  ELog::RegMethod RegA("ChipIRGuide","createSurface(void)");
+  const double surfRadius(200.0);
+  ModelSupport::buildPlane(SMap,guideIndex+100,Origin-Y*surfRadius,-Y);
+  ModelSupport::buildCylinder(SMap,guideIndex+1,
+			      Origin-Y*surfRadius,Z,surfRadius);
+  createSurfacesCommon();
+
+  return;
+}
+
+void
+ChipIRGuide::createSurfacesCommon()
+  /*!
+    Create All the surfaces :
+  */
+{
+  ELog::RegMethod RegA("ChipIRGuide","createSurfaceCommon");
+ 
   ModelSupport::buildPlane(SMap,guideIndex+2,Origin+Y*gLen,Y);
 
   ModelSupport::buildPlane(SMap,guideIndex+1002,
@@ -421,7 +497,6 @@ ChipIRGuide::createSurfaces(const shutterSystem::GeneralShutter& GS)
   createLiner(0,0.0); // Inner vacuum
   for(size_t i=0;i<LThick.size();i++)
     createLiner(static_cast<int>(i+1)*20,LThick[i]);
-
 
   // Steel Work:
   //  [sides]
@@ -526,6 +601,7 @@ ChipIRGuide::createObjects(Simulation& System)
     \param System :: Simulation to create objects in
   */
 {
+  ELog::RegMethod RegA("ChipIRGuide","createObjects");
   std::string Out;
   // Inner void:
   Out=ModelSupport::getComposite(SMap,guideIndex,"-100 1 -2 3 -4 5 -6");
@@ -589,6 +665,8 @@ ChipIRGuide::createObjects(Simulation& System)
 				 "-100 1 -302 306 -206 -213 303 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
+  ELog::EM<<"BLOCK == "<<cellIndex-1<<" "<<Out<<ELog::endDiag;
+
   // Extra left Wall
   // everything below wall height to limit of wall length
   Out=ModelSupport::getComposite(SMap,guideIndex,
@@ -607,11 +685,11 @@ ChipIRGuide::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,guideIndex,
 				 "-100 1 -502 205 -506 214 -503 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
+
  //above wall height, below roof
   Out=ModelSupport::getComposite(SMap,guideIndex,
 				 "-100 1 -502 506 -206 214 -503 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-
 
  // Wedge shield block [TSA side]
 //   Out=ModelSupport::getComposite(SMap,guideIndex,
@@ -664,6 +742,7 @@ ChipIRGuide::addInsertPlate(Simulation& System)
   return;
 }
 
+
 void 
 ChipIRGuide::layerProcess(Simulation& System)
   /*!
@@ -671,91 +750,128 @@ ChipIRGuide::layerProcess(Simulation& System)
     \param System :: Simulation to work on
   */
 {
-  ELog::RegMethod RegA("ChipIRGuide","LayerProcess");
-  
-
+  ELog::RegMethod RegA("ChipIRGuide","layerProcess");
   // Steel layers
+  //  layerSpecial(System);
+
   if (nLayers>1)
     {
+      std::string OutA,OutB;
       ModelSupport::surfDivide DA;
-      
-      // Generic [uniform fractions]
-      const double frac(1.0/static_cast<double>(nLayers));
-      for(size_t i=0;i<static_cast<size_t>(nLayers-1);i++)
+            
+      for(size_t i=1;i<nLayers;i++)
 	{
-	  DA.addFrac(frac*(static_cast<double>(i)+1.0));
-	  DA.addMaterial(steelMat);
+	  DA.addFrac(guideFrac[i-1]);
+	  DA.addMaterial(guideMat[i-1]);
 	}
-      DA.addMaterial(steelMat);
+      DA.addMaterial(guideMat.back());
       
       // Cell Specific:
       DA.setCellN(layerCells[0]);
       DA.setOutNum(cellIndex,guideIndex+801);
       const int linerOffset(guideIndex
 			    +20*static_cast<int>(LThick.size()));
-      DA.makeMulti<Geometry::Plane>(SMap.realSurf(linerOffset+3),
-				    -SMap.realSurf(guideIndex+113),
-				    -SMap.realSurf(guideIndex+13));
-      DA.makeMulti<Geometry::Plane>(SMap.realSurf(linerOffset+4),
-				    SMap.realSurf(guideIndex+114),
-				    SMap.realSurf(guideIndex+14));
-      DA.makePair<Geometry::Plane>(SMap.realSurf(linerOffset+6),
-				   SMap.realSurf(guideIndex+116));
-      DA.makePair<Geometry::Plane>(SMap.realSurf(linerOffset+5),
-				   -SMap.realSurf(guideIndex+115));
-      
-      DA.activeDivide(System);
+
+      ModelSupport::mergeTemplate<Geometry::Plane,
+				  Geometry::Plane> surroundRule;
+
+      surroundRule.setSurfPair(SMap.realSurf(linerOffset+3),
+			       SMap.realSurf(guideIndex+13));
+      surroundRule.setSurfPair(SMap.realSurf(linerOffset+3),
+			       SMap.realSurf(guideIndex+113));
+      surroundRule.setSurfPair(SMap.realSurf(linerOffset+4),
+			       SMap.realSurf(guideIndex+14));
+      surroundRule.setSurfPair(SMap.realSurf(linerOffset+4),
+			       SMap.realSurf(guideIndex+114));
+      surroundRule.setSurfPair(SMap.realSurf(linerOffset+5),
+			       SMap.realSurf(guideIndex+115));
+      surroundRule.setSurfPair(SMap.realSurf(linerOffset+6),
+			       SMap.realSurf(guideIndex+116));
+      OutA=ModelSupport::getComposite(SMap,linerOffset," (-3:4:-5:6) ");
+      OutB=ModelSupport::getComposite(SMap,guideIndex,
+				      " 13 113 -14 -114 115 -116 ");
+
+      surroundRule.setInnerRule(OutA);
+      surroundRule.setOuterRule(OutB);
+
+      DA.addRule(&surroundRule);
+      DA.activeDivideTemplate(System);
+
       cellIndex=DA.getCellNum();
     }
-
   // ---------------
   // Concrete layers
   // ---------------
-  if (nLayers>1)
+  if (nConcLayers>1)
     {
+      std::string OutA,OutB;
       ModelSupport::surfDivide DA;
-      
-      // Generic [uniform fractions]
-      const double frac(1.0/static_cast<double>(nLayers));
-      for(size_t i=0;i<static_cast<size_t>(nLayers-1);i++)
+            
+      for(size_t i=1;i<nConcLayers;i++)
 	{
-	  DA.addFrac(frac*(static_cast<double>(i)+1.0));
-	  DA.addMaterial(concMat);
+	  DA.addFrac(concFrac[i-1]);
+	  DA.addMaterial(concLayMat[i-1]+1);
 	}
-      DA.addMaterial(concMat);
-      
-      //      Out=ModelSupport::getComposite(SMap,guideIndex,
-      //	 "-100 1 -1002 115 -116 (14:114) -204 -214 ");
+      DA.addMaterial(concLayMat.back());
 
-      // Cell Specific:
-      DA.setCellN(layerCells[1]);
-      DA.setOutNum(cellIndex,guideIndex+1001);
-      DA.makePair<Geometry::Plane>(SMap.realSurf(guideIndex+14),
-				   SMap.realSurf(guideIndex+214));
-      DA.makePair<Geometry::Plane>(SMap.realSurf(guideIndex+114),
-				   SMap.realSurf(guideIndex+204));
-      
-      DA.activeDivide(System);
-
-      // Left Wall [NOT ACTIVE]
-      DA.init();
-      DA.setCellN(layerCells[2]);
-      // DA.makePair<Geometry::Plane>(SMap.realSurf(guideIndex+13),
-      // 				   SMap.realSurf(guideIndex+213));
-      // DA.makePair<Geometry::Plane>(SMap.realSurf(guideIndex+113),
-      // 				   SMap.realSurf(guideIndex+213));
-
-      DA.makeMulti<Geometry::Plane>(SMap.realSurf(guideIndex+213),
-       				    SMap.realSurf(guideIndex+13),
-       				    SMap.realSurf(guideIndex+113));
-      //      DA.activeDivide(System);
-
-      cellIndex=DA.getCellNum();
+      const std::vector<std::pair<int,int> > 
+	AX={{14,214},{114,204}};
+      const std::vector<std::pair<int,int> > 
+	BX={{13,213},{113,213}};
+	
+      //      procSurfDivide(System,DA,1,AX,"(14:114)","-214 -204");
+      procSurfDivide(System,DA,2,BX,"(-13:-113)","213");
     }
-
-
   return;
 }
+
+void
+ChipIRGuide::procSurfDivide(Simulation& System,
+			    ModelSupport::surfDivide& DA,
+			    const size_t offset,
+			    const std::vector<std::pair<int,int>>& VA,
+			    const std::string& OA,
+			    const std::string& OB)
+  /*!
+    Process all the basic dividing layers
+    \param System :: Simuation 
+    \param DA :: Divide system
+    \param VA :: Offset vector
+    \param OA :: Inner string [not composed]
+    \param OA :: Outer string [not composed]
+   */
+{
+  ELog::RegMethod Rega("ChipIRGuide","procSurfDivide");
+  
+  std::string OutA,OutB;
+  // Cell Specific:
+  DA.init();
+  DA.setCellN(layerCells[offset]);
+  DA.setOutNum(cellIndex,guideIndex+
+	       static_cast<int>(offset+1)*800);
+  
+  ModelSupport::mergeTemplate<Geometry::Plane,
+			      Geometry::Plane> surroundRule;
+
+  for(const std::pair<int,int>& VItem : VA)
+    {
+      surroundRule.setSurfPair(SMap.realSurf(guideIndex+VItem.first),
+			       SMap.realSurf(guideIndex+VItem.second));
+    }
+  
+  OutA=ModelSupport::getComposite(SMap,guideIndex,OA);
+  OutB=ModelSupport::getComposite(SMap,guideIndex,OB);
+
+  surroundRule.setInnerRule(OutA);
+  surroundRule.setOuterRule(OutB);
+
+  DA.addRule(&surroundRule);
+  DA.activeDivideTemplate(System);
+  
+  cellIndex=DA.getCellNum();
+  return;
+}
+      
   
 
 void
@@ -795,7 +911,7 @@ ChipIRGuide::writeMasterPoints()
       PtOut.erase(vc,PtOut.end());
       Out.push_back(PtOut.front());
     }  
-  
+
   // Calculate the points at the guides [BackSurf]
   for(size_t i=0;i<4;i++)
     {
@@ -908,7 +1024,7 @@ ChipIRGuide::createAll(Simulation& System,
   ELog::RegMethod RegA("ChipIRGuide","createAll");
   
   const shutterSystem::GeneralShutter* GPtr=BS.getShutter(GIndex);
-  populate(System);
+  populate(System.getDataBase());
   createUnitVector(BS,*GPtr);
   createSurfaces(*GPtr);
   createObjects(System);  
@@ -922,6 +1038,32 @@ ChipIRGuide::createAll(Simulation& System,
   writeMasterPoints();
   return;
 }
+
+void
+ChipIRGuide::createAll(Simulation& System,
+		       const attachSystem::FixedComp& FC)
+  /*!
+    Generic function to create everything
+    \param System :: Simulation item
+    \param FC :: FixedComp for origin
+  */
+{
+  ELog::RegMethod RegA("ChipIRGuide","createAll[FC]");
   
-}  // NAMESPACE shutterSystem
+  populate(System.getDataBase());
+  createUnitVector(FC);
+  createSurfaces();
+  createObjects(System);  
+  createLinks();
+
+  addInsertPlate(System);
+  addFilter(System);
+  layerProcess(System);
+  insertObjects(System);   
+  
+  writeMasterPoints();
+  return;
+}
+  
+}  // NAMESPACE hutchSystem
 

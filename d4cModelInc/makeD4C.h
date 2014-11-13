@@ -31,6 +31,7 @@ namespace d4cSystem
 {
   class BellJar;
   class DetectorArray;
+  class DetectorBank;
   /*!
     \class makeD4C
     \version 1.0
@@ -43,12 +44,15 @@ class makeD4C
 {
  private:
 
+  typedef std::shared_ptr<DetectorBank> DTYPE;
+
+  const size_t NDet;
   /// Outer bell jar
   std::shared_ptr<BellJar> BellObj;
   /// Cell object
   std::shared_ptr<instrumentSystem::CylSample> CellObj;
-  /// Detector array object
-  std::shared_ptr<DetectorArray> DetObj;
+  /// Detector array object [9 objects]
+  DTYPE DetObj[9];
 
   void setMaterials(const mainSystem::inputParam& IParam);
 
@@ -59,8 +63,7 @@ class makeD4C
   makeD4C& operator=(const makeD4C&);
   ~makeD4C();
   
-  void build(Simulation* SimPtr,
-	     const mainSystem::inputParam& IParam);
+  void build(Simulation*,const mainSystem::inputParam&);
   
 };
 

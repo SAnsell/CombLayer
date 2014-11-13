@@ -72,6 +72,7 @@
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "LinearComp.h"
+#include "World.h"
 #include "ChipIRFilter.h"
 #include "ChipIRGuide.h"
 #include "InnerWall.h"
@@ -147,6 +148,36 @@ makeChipIR::~makeChipIR()
    */
 {}
 
+
+void
+makeChipIR::buildIsolated(Simulation& System,
+			  const mainSystem::inputParam& IParam)
+  /*!
+    Carry out the build with no linkage
+    \param SimPtr :: Simulation system
+    \param IParam :: Input parameters
+   */
+{
+  ELog::RegMethod RegA("makeChipIR","buildIsolated");
+
+  HObj->setCollFlag(IParam.getValue<int>("collFlag"));
+  // chipguide/chiphutch
+  GObj->addInsertCell("outer",74123);
+  GObj->addInsertCell("rightwall",74123);
+  GObj->addInsertCell("leftwall",74123);
+  GObj->createAll(System,World::masterOrigin());
+  ELog::EM<<"GObj .origin == "<<GObj->getCentre()<<ELog::endDiag;
+  HObj->addInsertCell(74123);
+
+
+  HObj->createAll(System,World::masterTS2Origin(),*GObj,
+  		  GObj->getKey("inner"));
+	  
+  //  FB.createAll(System,*HObj);
+  
+  return;
+}
+
 void 
 makeChipIR::build(Simulation* SimPtr,
 		  const mainSystem::inputParam& IParam,
@@ -158,7 +189,6 @@ makeChipIR::build(Simulation* SimPtr,
     \param BulkObj :: BulkShield object
    */
 {
-  // For output stream
   ELog::RegMethod RegA("makeChipIR","build");
   ELog::debugMethod DegA;
   const FuncDataBase& Control=SimPtr->getDataBase();  
@@ -167,8 +197,7 @@ makeChipIR::build(Simulation* SimPtr,
   // Exit if no work to do:
   if (IParam.flag("exclude") && IParam.compValue("E",std::string("chipIR")))
     return;
-  if (IParam.flag("isolate") && IParam.compValue("I",std::string("chipIR")))
-    isoFlag=1;
+
 
   HObj->setCollFlag(IParam.getValue<int>("collFlag"));
   // chipguide/chiphutch
@@ -180,27 +209,16 @@ makeChipIR::build(Simulation* SimPtr,
   GObj->createAll(*SimPtr,BulkObj,0);
   HObj->addInsertCell(74123);
   HObj->createAll(*SimPtr,*BulkObj.getShutter(0),*GObj,
-		 GObj->getKey("inner"));
+		  GObj->getKey("inner"));
   
   FB.createAll(*SimPtr,*HObj);
-
-  const int NFeed=Control.EvalVar<int>("chipNWires");
-  for(int i=0;i<NFeed;i++)
+  return;
+  const size_t NFeed=Control.EvalVar<size_t>("chipNWires");
+  for(size_t i=0;i<NFeed;i++)
     {
       FeedVec.push_back(FeedThrough("chipWiresColl",i+1));
       FeedVec.back().createAll(*SimPtr,*HObj);
-    }
-
-  if (isoFlag)
-    {
-      MonteCarlo::Qhull* Ob=SimPtr->findQhull(74123);
-      // This is insanity :: USE A NAME  / USE OUTER OBJECTS
-      Ob->procString("-1 #100000");
-      SimPtr->removeCells(2,74122);
-      SimPtr->removeCells(74174,110000-1);
-      SimPtr->removeCells(240000,-1);
-    }
-  
+    }  
   return;
 }
 

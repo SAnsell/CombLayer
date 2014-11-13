@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   monte/LineIntersectVisit.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,13 +27,12 @@
 #include <list>
 #include <stack>
 #include <vector>
+#include <set>
 #include <map>
 #include <string>
 #include <algorithm>
 #include <complex>
-#include <boost/regex.hpp>
 #include <boost/bind.hpp>
-#include <boost/multi_array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"

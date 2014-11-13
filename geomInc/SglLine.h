@@ -43,13 +43,12 @@ class SglLine : public Intersect
   
  public:
   
-  SglLine();
-  SglLine(const Vec3D&,const Vec3D&);
+  SglLine(const Geometry::Vec3D&,const Geometry::Vec3D&);
   SglLine(const int,const Vec3D&,const Vec3D&);
   SglLine(const SglLine&);
   SglLine& operator=(const SglLine&);
   virtual ~SglLine() {}  ///< Destructor
-  SglLine& operator()(const Vec3D&,const Vec3D&);
+  SglLine& operator()(const Geometry::Vec3D&,const Geometry::Vec3D&);
 
   /// Debug function to get index
   int getIndex() const { return index; }

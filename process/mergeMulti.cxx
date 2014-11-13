@@ -53,6 +53,7 @@
 #include "Triple.h"
 #include "Transform.h"
 #include "Rules.h"
+#include "HeadRule.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -75,7 +76,7 @@ namespace ModelSupport
 template<typename T,typename U>
 mergeMulti<T,U>::mergeMulti() : surfDBase(),
   InOutFlag(1),signSurfReplace(0),
-  InRule(0),OutRule(0),pSurf(0),PB(0),OSPtr(0)
+  pSurf(0),PB(0),OSPtr(0)
   /*!
     Constructor
   */
@@ -86,8 +87,7 @@ template<typename T,typename U>
 mergeMulti<T,U>::mergeMulti(const mergeMulti<T,U>& A) : 
   surfDBase(A),InOutFlag(A.InOutFlag),
   signSurfReplace(A.signSurfReplace),
-  InRule(A.InRule ? A.InRule->clone() : 0),
-  OutRule(A.OutRule ? A.OutRule->clone() : 0),
+  InRule(A.InRule),OutRule(A.OutRule),
   pSurf(A.pSurf),sSurf(A.sSurf),secDir(A.secDir),
   PB(A.PB),PS(A.PS),OSPtr(A.OSPtr)
   /*!
@@ -109,10 +109,8 @@ mergeMulti<T,U>::operator=(const mergeMulti<T,U>& A)
     {
       InOutFlag=A.InOutFlag;
       signSurfReplace=A.signSurfReplace;
-      delete InRule;
-      delete OutRule;
-      InRule=A.InRule ? A.InRule->clone() : 0;
-      OutRule=A.OutRule ? A.OutRule->clone() : 0;
+      InRule=A.InRule;
+      OutRule=A.OutRule;
       pSurf=A.pSurf;
       sSurf=A.sSurf;
       secDir=A.secDir;
@@ -141,10 +139,7 @@ mergeMulti<T,U>::~mergeMulti()
     Delete operator
     \return new(*this);
   */
-{
-  delete InRule;
-  delete OutRule;
-}
+{}
 
 
 
@@ -155,10 +150,8 @@ mergeMulti<T,U>::clearRules()
     Simple helper function to remove old rules
   */
 {
-  delete InRule;
-  delete OutRule;
-  InRule=0;
-  OutRule=0;
+  InRule.reset();
+  OutRule.reset();
   return;
 }
 
@@ -178,8 +171,10 @@ mergeMulti<T,U>::addRules()
     {
       SPtr = OSPtr[i];
       const int dirSign=secDir[i];
-      attachSystem::addUnion(dirSign*SPtr->getName(),SPtr,InRule);
-      attachSystem::addIntersection(-dirSign*SPtr->getName(),SPtr,OutRule);
+      InRule.addUnion(dirSign*SPtr->getName());
+      OutRule.addIntersection(-dirSign*SPtr->getName());
+//      attachSystem::addUnion(dirSign*SPtr->getName(),SPtr,InRule);
+//      attachSystem::addIntersection(-dirSign*SPtr->getName(),SPtr,OutRule);
     }
   return;
 }
@@ -193,10 +188,10 @@ mergeMulti<T,U>::getInner(std::vector<Token>& IVec) const
   */
 {
   ELog::RegMethod RegA("mergeMulti","getInner");
-  if (InRule)
+  if (InRule.getTopRule())
     {
       IVec.push_back(Token('(')); 
-      InRule->displayVec(IVec);
+      InRule.displayVec(IVec);
       IVec.push_back(Token(')')); 
     }
   return;
@@ -211,10 +206,10 @@ mergeMulti<T,U>::getOuter(std::vector<Token>& OVec) const
   */
 {
   ELog::RegMethod RegA("mergeMulti","getOuter");
-  if (OutRule)
+  if (OutRule.getTopRule())
     {
       OVec.push_back(Token('(')); 
-      OutRule->displayVec(OVec);
+      OutRule.displayVec(OVec);
       OVec.push_back(Token(')')); 
     }
   return;
@@ -351,7 +346,7 @@ mergeMulti<Geometry::Plane,Geometry::Plane>::
 createSurf(const double fraction,int& newItem)
   /*!
     Divides two planes to the required fraction. Care is taken
-    if the two planes have opposite.
+    if the two planes have opposite signs.
     - IMPORTANT: the inner surface is master ie if we have -IN ON 
     then we get a normal that is opposite to ON.
     \param newItem :: Plane number to start with
@@ -404,7 +399,7 @@ createSurf(const double fraction,int& newItem)
     if the two planes have opposite.
     - IMPORTANT: the inner surface is master ie if we have -IN ON 
     then we get a normal that is opposite to ON.
-    \param newItem :: Clinder number to start with
+    \param newItem :: Cylinder number to start with
     \param fraction :: Weight between the two surface
     \return plane number created
    */
@@ -553,7 +548,18 @@ mergeMulti<T,U>::processInnerOuter(const int outerFlag,
   return;
 }
 
-
+template<typename T,typename U>
+void
+mergeMulti<T,U>::write(std::ostream& OX) const
+  /*!
+    Write out stuff
+    \param OX :: output stream
+  */
+{
+  OX<<"In Rule == "<<InRule.display()<<std::endl;
+  OX<<"Out Rule == "<<OutRule.display()<<std::endl;
+  return;
+}
 
 ///\cond TEMPLATE
 

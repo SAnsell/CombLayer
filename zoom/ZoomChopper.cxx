@@ -280,8 +280,6 @@ ZoomChopper::createSurfaces(const shutterSystem::GeneralShutter& GS)
   ModelSupport::buildPlaneRotAxis(SMap,chpIndex+4,
 				  Origin+Y*length+X*leftWidth,-X,
 				  Z,-rightAngle);     
-  ModelSupport::buildPlane(SMap,chpIndex+4,
-  			   Origin+Y*length-X*rightWidth,RNorm);     
 
   FixedComp::setConnect(2,Origin+Y*length+X*leftWidth,LNorm);     
   FixedComp::setConnect(3,Origin+Y*length-X*rightWidth,RNorm);

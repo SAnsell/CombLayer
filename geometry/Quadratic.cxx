@@ -190,9 +190,12 @@ Quadratic::surfaceNormal(const Geometry::Vec3D& Pt) const
     \return normal unit vector
   */
 {
-   Geometry::Vec3D N(2*BaseEqn[0]*Pt[0]+BaseEqn[3]*Pt[1]+BaseEqn[4]*Pt[2]+BaseEqn[6],
-	   2*BaseEqn[1]*Pt[1]+BaseEqn[3]*Pt[0]+BaseEqn[5]*Pt[2]+BaseEqn[7],
-	   2*BaseEqn[2]*Pt[2]+BaseEqn[4]*Pt[0]+BaseEqn[5]*Pt[1]+BaseEqn[8]);
+   Geometry::Vec3D N(2*BaseEqn[0]*Pt[0]+BaseEqn[3]*Pt[1]+
+		     BaseEqn[4]*Pt[2]+BaseEqn[6],
+		     2*BaseEqn[1]*Pt[1]+BaseEqn[3]*Pt[0]+
+		     BaseEqn[5]*Pt[2]+BaseEqn[7],
+		     2*BaseEqn[2]*Pt[2]+BaseEqn[4]*Pt[0]+
+		     BaseEqn[5]*Pt[1]+BaseEqn[8]);
    N.makeUnit();
    return N;
 }

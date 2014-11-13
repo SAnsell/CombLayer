@@ -153,9 +153,48 @@ makeZoom::~makeZoom()
    */
 {}
 
+void
+makeZoom::buildIsolated(Simulation& System,
+			const mainSystem::inputParam& IParam)
+  /*!
+    Carry out the build with no linkage
+    \param SimPtr :: Simulation system
+    \param IParam :: Input parameters
+   */
+{
+  ELog::RegMethod RegA("makeZoom","buildIsolated");
+  /*
+  ZBend->addInsertCell("A",BOPtr->getInnerVoid());
+  ZBend->addInsertCell("B",BOPtr->getInnerVoid());
+  ZBend->addInsertCell("A",BOPtr->getOuterVoid());
+  ZBend->addInsertCell("B",BOPtr->getOuterVoid());
+  ZBend->addInsertCell("C",BOPtr->getOuterVoid());
+
+  ZBend->createAll(System,*ZS); 
+
+  ZChopper->addInsertCell(74123);
+  ZChopper->setMonoSurface(BulkObj.getMonoSurf());
+  ZChopper->createAll(System,*ZBend,*ZS);
+  
+  ZCollimator->addInsertCell(74123);
+  ZCollimator->createAll(System,*ZChopper);
+  
+  ZRoof->addInsertCell(74123);
+  ZRoof->setMonoSurface(BulkObj.getMonoSurf());
+  ZRoof->createAll(System,*ZS,*ZChopper,*ZCollimator);
+  
+  ZPrim->addInsertCell(74123);
+  ZPrim->createAll(System,*ZCollimator);
+  
+  ZHut->addInsertCell(74123);
+  ZHut->createAll(System,*ZPrim); 
+  */
+  return;
+}
+
 
 void 
-makeZoom::build(Simulation* SimPtr,
+makeZoom::build(Simulation& System,
 		const mainSystem::inputParam& IParam,
 		const shutterSystem::BulkShield& BulkObj)
   /*!
@@ -191,25 +230,25 @@ makeZoom::build(Simulation* SimPtr,
       ZBend->addInsertCell("A",BOPtr->getOuterVoid());
       ZBend->addInsertCell("B",BOPtr->getOuterVoid());
       ZBend->addInsertCell("C",BOPtr->getOuterVoid());
-      ZBend->createAll(*SimPtr,*ZS); 
+      ZBend->createAll(System,*ZS); 
 
       ZChopper->addInsertCell(74123);
       ZChopper->setMonoSurface(BulkObj.getMonoSurf());
-      ZChopper->createAll(*SimPtr,*ZBend,*ZS);
+      ZChopper->createAll(System,*ZBend,*ZS);
 
       ZCollimator->addInsertCell(74123);
-      ZCollimator->createAll(*SimPtr,*ZChopper);
+      ZCollimator->createAll(System,*ZChopper);
       
       ZRoof->addInsertCell(74123);
       ZRoof->setMonoSurface(BulkObj.getMonoSurf());
-      ZRoof->createAll(*SimPtr,*ZS,*ZChopper,*ZCollimator);
+      ZRoof->createAll(System,*ZS,*ZChopper,*ZCollimator);
 
       ZPrim->addInsertCell(74123);
-      ZPrim->createAll(*SimPtr,*ZCollimator);
+      ZPrim->createAll(System,*ZCollimator);
     }
   
   ZHut->addInsertCell(74123);
-  ZHut->createAll(*SimPtr,*ZPrim); 
+  ZHut->createAll(System,*ZPrim); 
 
   return;
 }

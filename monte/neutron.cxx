@@ -64,7 +64,8 @@ neutron::neutron(const double W,const Geometry::Vec3D& Pt,
 		 const Geometry::Vec3D& D) :
   ID(++masterID),wavelength(W),
   Pos(Pt),uVec(D.unit()),weight(1.0),
-  travel(0.0),time(0.0),nCollision(0)
+  travel(0.0),time(0.0),nCollision(0),
+  OPtr(0)
   /*!
     Constructor 
     \param W :: Wavelength [Angstrom]
@@ -77,7 +78,8 @@ neutron::neutron(const neutron& A) :
   ID(A.ID),wavelength(A.wavelength),
   Pos(A.Pos),uVec(A.uVec),
   weight(A.weight),travel(A.travel),
-  time(A.time),nCollision(A.nCollision)
+  time(A.time),nCollision(A.nCollision),
+  OPtr(A.OPtr)
   /*!
     Copy constructor
     \param A :: neutron to copy

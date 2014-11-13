@@ -570,7 +570,9 @@ Rule::removeItem(Rule* &TRule,const int SurfN)
       else  // Basic surf object
         {
 	  SurfPoint* SX=dynamic_cast<SurfPoint*>(Ptr);
-	  
+	  if (!SX)
+	    throw ColErr::CastError<void>
+	      (0,std::string("Failure to cast surfPtr:")+Ptr->display());
 	  SX->setKeyN(0);
 	  SX->setKey(0);
 	  return cnt+1;
@@ -877,6 +879,47 @@ Rule::populateSurf()
 	}
     }
   return;
+}
+
+std::set<int>
+Rule::getSurfSet() const
+  /*!
+    Create surface ruls list for the cells [signed]
+    \return Surface Vector
+  */
+{
+  ELog::RegMethod RegA("Rule","getSurfSet");
+
+  std::set<int> OutSet;
+
+  std::deque<const Rule*> Rst;
+  Rst.push_back(this);
+  Rule* TA, *TB;      //Tmp. for storage
+  const ModelSupport::surfIndex& SurI=
+    ModelSupport::surfIndex::Instance();
+  while(Rst.size())
+    {
+      const Rule* T1=Rst.front();
+      Rst.pop_front();
+      if (T1)
+        {
+	  // if an actual surface process :
+	  const SurfPoint* KV=dynamic_cast<const SurfPoint*>(T1);
+	  if (KV)
+	    OutSet.insert(KV->getSignKeyN());
+	  // Not a surface : Determine leaves etc and add to stack:
+	  else
+	    {
+	      TA=T1->leaf(0);
+	      TB=T1->leaf(1);
+	      if (TA)
+		Rst.push_back(TA);
+	      if (TB)
+		Rst.push_back(TB);
+	    }
+	}
+    }
+  return OutSet;
 }
 
 std::vector<const Geometry::Surface*>

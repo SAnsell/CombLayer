@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   monteInc/Rules.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -77,6 +77,7 @@ class Rule
   Rule& operator=(const Rule&);
   virtual ~Rule();
   virtual Rule* clone() const=0;  ///< abstract clone object
+  bool operator==(const Rule&) const;
 
   /// No leaf for a base rule
   virtual Rule* leaf(const int =0) const { return 0; }  
@@ -121,6 +122,7 @@ class Rule
   int substituteSurf(const int,const int,const Geometry::Surface*);  
   void populateSurf();
   
+  std::set<int> getSurfSet() const;
   std::vector<Geometry::Surface*> getSurfVector() const;
   std::vector<const Geometry::Surface*> getConstSurfVector() const;
 
@@ -296,12 +298,14 @@ class SurfPoint : public Rule
   virtual bool isValid(const Geometry::Vec3D&,
 		       const std::set<int>&) const;      
 
-  int getSign() const { return sign; }         ///< Get Sign
-  int getKeyN() const { return keyN; }         ///< Get Key
+  int getSign() const { return sign; }           ///< Get Sign
+  int getKeyN() const { return keyN; }           ///< Get Key
+  int getSignKeyN() const { return sign*keyN; }  ///< Get Signed Key
   int simplify();
 
+  /// Get Surface Ptr
   const Geometry::Surface* getKey() const 
-    { return key; }     ///< Get Surface Ptr
+    { return key; }
   virtual std::string display() const;
   virtual std::string display(const Geometry::Vec3D&) const;
   virtual std::string displayAddress() const;  

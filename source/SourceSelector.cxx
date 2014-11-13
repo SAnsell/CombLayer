@@ -180,6 +180,8 @@ sourceSelection(Simulation& System,
     SDef::createBilbaoSource(Control,sourceCard);
   else if (sdefType=="ess")
     SDef::createESSSource(Control,sourceCard);
+  else if (sdefType=="D4C")
+    SDef::createD4CSource(Control,sourceCard);
   else if (sdefType=="Sinbad" || sdefType=="sinbad")
     SDef::createSinbadSource(Control,sourceCard);
   else if (sdefType=="TS2")
@@ -200,8 +202,9 @@ sourceSelection(Simulation& System,
 	"TS1GaussNew :: Target station one [old gaussian beam] sigma = 18 mm \n"	
 	"TS1Muon :: TS1 [proton beam for muon target] \n"
 	"TS1EpbColl :: TS1 [proton beam for 3rd collimator] \n"			
-	"ess :: ESS beam proton"
-	"Bilbao :: Bilbao beam proton"<<ELog::endBasic;
+	"ess :: ESS beam proton\n"
+	"Bilbao :: Bilbao beam proton\n"
+	"D4C :: D4C neutron beam"<<ELog::endBasic;
     }
 	
 

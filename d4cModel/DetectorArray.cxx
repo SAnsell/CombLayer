@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   d4cModel/DetectorArray.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,10 +63,21 @@
 #include "generateSurf.h"
 #include "support.h"
 #include "stringCombine.h"
+#include "Triple.h"
+#include "NRange.h"
+#include "NList.h"
+#include "Tally.h"
+#include "TallyCreate.h"
+#include "inputParam.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
 #include "DetectorArray.h"
+
+#include "TallySelector.h" 
+#include "SpecialSurf.h"
+#include "basicConstruct.h" 
+#include "pointConstruct.h" 
 
 namespace d4cSystem
 {
@@ -212,15 +223,21 @@ DetectorArray::createSurfaces()
       const Geometry::Vec3D CPt=Origin+(X*sin(A)+Y*cos(A))*centRadius;
       const Geometry::Vec3D IDir=X*cos(A)+Y*sin(-A);
       ModelSupport::buildPlane(SMap,detIndex+3,
-		  CPt-IDir*(tubeRadius+wallThick+Geometry::zeroTol),-IDir);
+		  CPt-IDir*(tubeRadius+wallThick+Geometry::zeroTol),IDir);
+
       const double B=finalAngle;
       const Geometry::Vec3D DPt=Origin+(X*sin(B)+Y*cos(B))*centRadius;
       const Geometry::Vec3D FDir=X*cos(B)+Y*sin(-B);
       ModelSupport::buildPlane(SMap,detIndex+4,
 		  DPt+FDir*(tubeRadius+wallThick+Geometry::zeroTol),FDir);
-    }
-  int SI(detIndex);
 
+      ModelSupport::buildCylinder(SMap,detIndex+7,
+	 Origin,Z,centRadius-(tubeRadius+wallThick+Geometry::zeroTol));
+      ModelSupport::buildCylinder(SMap,detIndex+17,
+	 Origin,Z,centRadius+(tubeRadius+wallThick+Geometry::zeroTol));
+    }
+
+  int SI(detIndex+20);
   for(size_t i=0;i<nDet;i++)
     {
       const double A=initAngle+i*angleStep;
@@ -246,16 +263,20 @@ DetectorArray::createObjects(Simulation& System)
   std::string Out;
   // First make inner/outer void/wall and top/base
 
-  int SI(detIndex);
+  std::string Bound=
+    ModelSupport::getComposite(SMap,detIndex,"3 -4 15 -16 7 -17 ");
+  addOuterSurf(Bound);  
+  int SI(detIndex+20);
   for(size_t i=0;i<nDet;i++)
     {
       Out=ModelSupport::getComposite(SMap,detIndex,SI,"-7M 5 -6");
       System.addCell(MonteCarlo::Qhull(cellIndex++,detMat,0.0,Out));
       Out=ModelSupport::getComposite(SMap,detIndex,SI,"-17M 15 -16 (7M:-5:6)");
+      Bound+=ModelSupport::getComposite(SMap,SI," 17 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
       SI+=20;
     }
-
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Bound));
 
   return; 
 }
@@ -269,6 +290,27 @@ DetectorArray::createLinks()
   
   return;
 }
+
+void
+DetectorArray::createTally(Simulation& System) const
+  /*!
+    Extrenal build everything
+    \param System :: Simulation
+   */
+{
+  ELog::RegMethod RegA("DetectorArray","createTally");
+  int tNum=5;
+  for(size_t i=0;i<nDet;i++)
+    {
+      tallySystem::addF5Tally(System,tNum);      
+      tallySystem::setF5Position(System,tNum,DPoints[i]);
+      tallySystem::setTallyTime(System,tNum,"1.0 8log 1e8");
+      tNum+=10;
+    }
+
+  return;
+}
+
 
 
 void

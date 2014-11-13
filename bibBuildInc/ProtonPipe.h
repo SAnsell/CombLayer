@@ -28,11 +28,11 @@ namespace bibSystem
 {
 
 /*!
-  \class protonpipe
+  \class ProtonPipe
   \author S. Ansell
   \version 1.0
   \date April 2013
-  \brief Specialized for wheel
+  \brief Specialized proton input for wheel
 */
 
 class ProtonPipe : public attachSystem::ContainedComp,
@@ -40,7 +40,7 @@ class ProtonPipe : public attachSystem::ContainedComp,
 {
  private:
   
-  const int protonIndex;           ///< Index of surface offset
+  const int protonIndex;          ///< Index of surface offset
   int cellIndex;                  ///< Cell index
 
   double xStep;                   ///< X step

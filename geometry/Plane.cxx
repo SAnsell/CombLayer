@@ -291,10 +291,35 @@ Plane::setPlane(const Geometry::Vec3D& PA,const Geometry::Vec3D& PB,
     \retval 0 :: success
   */
 {
-  ELog::RegMethod RegA("Plane","setPlane");
+  ELog::RegMethod RegA("Plane","setPlane(3 Vec3d)");
   const Geometry::Vec3D LA=PC-PA;
   const Geometry::Vec3D LB=PB-PA;
   NormV=LA*LB;
+  NormV.makeUnit();
+  Dist=PA.dotProd(NormV);
+  setBaseEqn();
+  return 0;
+}
+
+int
+Plane::setPlane(const Geometry::Vec3D& PA,const Geometry::Vec3D& PB,
+		const Geometry::Vec3D& PC,const Geometry::Vec3D& N) 
+  /*!
+    Given three points make the plane pass via the points
+    \param PA :: Point for plane to pass through
+    \param PB :: Point for plane to pass through
+    \param PC :: Point for plane to pass through
+    \param N :: Approximate normal direction 
+    \retval 0 :: success
+  */
+{
+  ELog::RegMethod RegA("Plane","setPlane(4 Vec3d)");
+  const Geometry::Vec3D LA=PC-PA;
+  const Geometry::Vec3D LB=PB-PA;
+  NormV=LA*LB;
+  const double DP=NormV.dotProd(N);
+  if (DP<-Geometry::zeroTol)
+    NormV*=1.0;
   NormV.makeUnit();
   Dist=PA.dotProd(NormV);
   setBaseEqn();

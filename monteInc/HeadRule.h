@@ -32,6 +32,7 @@ namespace Geometry
   class Surface;
 }
 
+
 /*!
   \class HeadRule
   \brief Holds the topRule pointer
@@ -49,7 +50,7 @@ class HeadRule
   Rule* HeadNode;                    ///< Parent object (for tree)
 
   Rule* findKey(const int); 
-  void removeItem(Rule*);
+  void removeItem(const Rule*);
   static int procPair(std::string&,std::map<int,Rule*>&,int&);
   static CompGrp* procComp(Rule*);
 
@@ -58,13 +59,16 @@ class HeadRule
 
  public:
 
-
   HeadRule();
   HeadRule(const HeadRule&);
+  HeadRule(const Rule*);
   HeadRule& operator=(const HeadRule&);
   ~HeadRule();
+  bool operator==(const HeadRule&) const;
+  bool operator!=(const HeadRule&) const;
 
   const Rule* getTopRule() const { return HeadNode; }
+
 
   void populateSurf();
   void reset();
@@ -89,12 +93,20 @@ class HeadRule
   std::vector<int> getTopSurfaces() const;
 
   const Rule* findNode(const size_t,const size_t) const;
+
+  std::vector<const Rule*> findTopNodes() const;
+  std::vector<const Rule*> findNodes(const size_t) const;
   HeadRule getComponent(const size_t,const size_t) const;
+  bool subMatched(const HeadRule&,const HeadRule&);  
+  bool partMatched(const HeadRule&) const;
+
+  std::set<int> getSurfSet() const;
 
   int removeItems(const int);
+  void isolateSurfNum(const std::set<int>&);
   int removeTopItem(const int);
   int substituteSurf(const int,const int,const Geometry::Surface*);
-
+  
   void makeComplement();
 
   int procString(const std::string&);
@@ -119,5 +131,8 @@ class HeadRule
   void displayVec(std::vector<Token>&) const;  
 
 };  
+
+std::ostream&
+operator<<(std::ostream&,const HeadRule&);
 
 #endif

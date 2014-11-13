@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   transport/ObjComponent.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -248,13 +248,13 @@ ObjComponent::trackWeight(MonteCarlo::neutron& N,
   double aDist(0);
       
   const int SN=ObjPtr->trackOutCell(N,aDist,surfPtr);
+  //  ELog::EM<<"Nutron Track"<<N.weight<<ELog::endDiag;
   if (MatPtr)    // not-void
     {
-
       // Material to attenuate beam:
       const double sXsec=MatPtr->ScatCross(N.wavelength);
       const double aXsec=MatPtr->TotalCross(N.wavelength)-sXsec;
-      
+
       const double DV= -log(R)/sXsec;
       // Neutron did not reach other size
       if (DV<aDist-Geometry::shiftTol)
@@ -269,8 +269,8 @@ ObjComponent::trackWeight(MonteCarlo::neutron& N,
     }
   N.moveForward(aDist);
   // Now step over 
-  N.Pos-=surfPtr->surfaceNormal(N.Pos)*(sign(SN)*Geometry::shiftTol);
-
+  Geometry::Vec3D XX(N.Pos);
+  N.Pos+=surfPtr->surfaceNormal(N.Pos)*(sign(SN)*Geometry::shiftTol);
   return SN;
 }
 

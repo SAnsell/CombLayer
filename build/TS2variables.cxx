@@ -197,7 +197,7 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("cplPipeOutMat","Void");          // Pipe outer radius
 
   Control.addVariable("cplPipeHydXOff",0.0);         // Pipe offset 
-  Control.addVariable("cplPipeHydYOff",2.7);         // Pipe offset [from divide]
+  Control.addVariable("cplPipeHydYOff",1.7);         // Pipe offset [from divide]
   Control.addVariable("cplPipeHydLen",10.0);         // Pipe length
   Control.addVariable("cplPipeHydRad",1.065);        // Pipe outer radius
   Control.addVariable("cplPipeHydThick",0.2);        // Pipe Thickness

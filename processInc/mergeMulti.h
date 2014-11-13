@@ -41,8 +41,8 @@ class mergeMulti : public surfDBase
   int InOutFlag;              ///< Swap sense of systems
   int signSurfReplace;        ///< Replace surface as a signed surface
   
-  Rule* InRule;               ///< Inner Rule 
-  Rule* OutRule;              ///< Outer Rule
+  HeadRule InRule;               ///< Inner Rule 
+  HeadRule OutRule;              ///< Outer Rule
 
   int pSurf;                     ///< Primary Surf [signed]
   std::vector<int> sSurf;        ///< Secondary surfaces [signed]
@@ -83,6 +83,8 @@ class mergeMulti : public surfDBase
   virtual void populate();
   virtual int createSurf(const double,int&);
   virtual void processInnerOuter(const int,std::vector<Token>&) const;
+
+  virtual void write(std::ostream&) const;
 
 };
 

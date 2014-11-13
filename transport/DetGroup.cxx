@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   transport/DetGroup.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,9 +67,8 @@ DetGroup::DetGroup(const DetGroup& A)
     \param A :: Group to copy
    */
 {
-  std::vector<Detector*>::const_iterator vc;
-  for(vc=A.DetVec.begin();vc!=A.DetVec.end();vc++)
-    DetVec.push_back((*vc)->clone());
+  for(Detector* DPtr : A.DetVec)
+    DetVec.push_back(DPtr->clone());
   return;
 }
 
@@ -85,9 +84,8 @@ DetGroup::operator=(const DetGroup& A)
   if (this!=&A)
     {
       eraseGrp();
-      std::vector<Detector*>::const_iterator vc;
-      for(vc=A.DetVec.begin();vc!=A.DetVec.end();vc++)
-	DetVec.push_back((*vc)->clone());
+      for(Detector* DPtr : A.DetVec)
+	DetVec.push_back(DPtr->clone());
     }
   return *this;
 }
@@ -148,7 +146,7 @@ DetGroup::addDetector(const Detector& DP)
   return;
 }
 
-Detector& 
+Detector*
 DetGroup::getDet(const size_t Index)
   /*!
     Access to detector element
@@ -161,11 +159,11 @@ DetGroup::getDet(const size_t Index)
       ELog::RegMethod RegA("DetGrp","getDet");
       throw ColErr::IndexError<size_t>(Index,DetVec.size(),"Index");
     }
-  return *DetVec[Index];
+  return DetVec[Index];
 }
 
 
-const Detector& 
+const Detector*
 DetGroup::getDet(const size_t Index) const
   /*!
     Access to detector element
@@ -178,12 +176,37 @@ DetGroup::getDet(const size_t Index) const
       ELog::RegMethod RegA("DetGrp","getDet(const)");
       throw ColErr::IndexError<size_t>(Index,DetVec.size(),"Index");
     }
-  return *DetVec[Index];
+  return DetVec[Index];
 }
 
 void
-DetGroup::write(std::ostream& OX,const double ) const
+DetGroup::normalizeDetectors(const size_t TN) 
+  /*!
+    Make detectors relative to source particles
+    \param TN :: Incident number
+  */
 {
+  ELog::RegMethod RegA("DetGroup","normalizeDetectors");
+
+  for(Detector* DPtr : DetVec)
+    DPtr->normalize(TN);
+  return;
+}
+
+void
+DetGroup::write(std::ostream& OX) const
+  /*!
+    Write out detectors 
+  */
+{
+  ELog::RegMethod RegA("DetGroup","write");
+  
+  if (!DetVec.empty())
+    {
+      DetVec.front()->writeHeader(OX);
+      for(const Detector* DPtr : DetVec)
+	DPtr->write(OX);
+    }
   return;
 }
 
