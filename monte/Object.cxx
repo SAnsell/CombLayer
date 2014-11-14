@@ -33,7 +33,6 @@
 #include <string>
 #include <sstream>
 #include <algorithm>
-#include <boost/regex.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -43,7 +42,6 @@
 #include "OutputLog.h"
 #include "support.h"
 #include "stringCombine.h"
-#include "regexSupport.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "MatrixBase.h"
@@ -80,7 +78,54 @@ operator<<(std::ostream& OX,const Object& A)
   A.write(OX);
   return OX;
 }
+
+bool
+Object::keyUnit(std::string& Ln,std::string& Key,
+		std::string& value)
+/*!
+    Given a string extract the first XXX = YYY parts
+    \param Ln :: Line to extract and cut
+    \param Key :: Key component [left side/xxx]
+    \param value :: Value component [right side/yyy]
+    \return true if unit found.
+   */
+{
+  std::string::size_type posA=Ln.find('=');
+  std::string::size_type posB(posA);
+  if (posA==std::string::npos)
+    return 0;
+
+  Key.clear();
+  int spc(0);
+  for(;posA!=0 && spc!=2;posA--)
+    {
+      if (isspace(Ln[posA-1]))
+	spc=(Key.empty()) ? 1 : 2;
+      else
+	Key+=Ln[posA-1];
+    }
+  if (Key.empty())
+    return 0;
+  std::reverse(Key.begin(),Key.end());
+  std::transform(Key.begin(),Key.end(),
+		 Key.begin(),::tolower);
+  if (spc==2) posA++;
   
+  value.clear();
+  spc=0;
+  for(posB++;posB!=Ln.size() && spc!=2;posB++)
+    {
+      if (isspace(Ln[posB]))
+	spc=(value.empty()) ? 1 : 2;
+      else
+	value+=Ln[posB];
+    }
+  if (value.empty())
+    return 0;
+
+  Ln.erase(posA,posB-posA);  
+  return 1;
+}
 
 int
 Object::startLine(const std::string& Line) 
@@ -274,6 +319,7 @@ Object::setObject(std::string Ln)
  */
 {
   ELog::RegMethod RegA("Object","setObject");
+
   // Split line
   std::string part;  
   if (!StrFunc::section(Ln,ObjName) || ObjName<=0)
@@ -307,58 +353,35 @@ Object::setObject(std::string Ln)
       density=0.0;          // Vacuum
     }
 
-  // Temperature
-  const boost::regex TmpSea("[Tt][Mm][Pp]\\s*=\\s*(\\S+)(\\s|$)");
-  const boost::regex FillSea("[fF][iI][lL][lL]\\s*=\\s*(\\d+)(\\s|$)");
-  const boost::regex TRCLSea("[tT][Rr][Cc][lL]\\s*=\\s*(\\S+)(\\s|$)");
-  const boost::regex UnivSea("[uU]\\s*=\\s*(\\S+)(\\s|$)");
-  const boost::regex ImpSea("[iI][mM][pP]:n\\s*=\\s*(\\d+)(\\s|$)");
   std::string Extract;
-  // Temperature
+  std::string Value;
   double tval;
-  if (StrFunc::StrRemove(Ln,Extract,TmpSea) &&
-      StrFunc::StrFullCut(Extract,TmpSea,tval,0))
-    {
-      if (tval<0.0)
-        {
-	  ELog::EM<<"Negative temp (error) "<<tval<<ELog::endErr;
-	  tval=0.0;
-	}
-      Tmp=tval;
-    }
-  // Fill
-  int fVal;
-  if (StrFunc::StrRemove(Ln,Extract,FillSea) &&
-      StrFunc::StrFullCut(Extract,FillSea,fVal,0))
-    {
-      fill=fVal;
-    }
-
-  // TRCL
-  int trclVal;
-  if (StrFunc::StrRemove(Ln,Extract,TRCLSea) &&
-      StrFunc::StrFullCut(Extract,FillSea,trclVal,0))
-    {
-      trcl=trclVal;
-    }
-
-  // Universe
-  int uVal;
-  if (StrFunc::StrRemove(Ln,Extract,UnivSea) &&
-      StrFunc::StrFullCut(Extract,FillSea,uVal,0))
-    {
-      universe=uVal;
-    }
-  // Importance
   int iVal;
-  if (StrFunc::StrRemove(Ln,Extract,ImpSea) &&
-      StrFunc::StrFullCut(Extract,FillSea,iVal,0))
+  while(keyUnit(Ln,Extract,Value))
     {
-      imp=iVal;
+      if (Extract=="tmp" && 
+	  StrFunc::convert(Value,tval) && tval>=0.0)
+	Tmp=tval;
+      else if (Extract=="fill" && 
+	       StrFunc::convert(Value,iVal))
+	fill=iVal;
+      else if (Extract=="trcl" && 
+	       StrFunc::convert(Value,iVal))
+	trcl=iVal;
+      else if (Extract=="u" && 
+	       StrFunc::convert(Value,iVal))
+	universe=iVal;
+      else if (Extract=="imp:n" && 
+	       StrFunc::convert(Value,iVal))
+	imp=iVal;
+      else
+	{
+	  ELog::EM<<"Failed due to non understood key = value"<<ELog::endErr;
+	  return 0;
+	}
     }
-  
-  const boost::regex letters("[a-zA-Z]");    // Does the string now contain junk...
-  if (StrFunc::StrLook(Ln,letters))
+  if (std::find_if(Ln.begin(), Ln.end(),
+                   [](char c) { return std::isalpha(c); }) != Ln.end())
     {
       ELog::EM<<"Junk letters in cell definition:"<<Ln<<ELog::endErr;
       return 0;

@@ -279,39 +279,6 @@ setValues(const std::string& Line,const std::vector<int>& Index,
   return 0;       
 }
 
-template<template<typename T,typename Alloc> class V,typename T,typename Alloc> 
-int
-sliceVector(V<T,Alloc>& A,const T& indexA,const T& indexB)
-  /*!
-    Given values indexA , indexB : 
-    Find the values in the list and
-    return just that bit. 
-    \param A :: vect/list to slice
-    \param indexA :: Component to find
-    \param indexB :: Component to find
-    \return -ve on error
-    \retval +ve :: length of sliced section 
-   */
-{
-  typename V<T,Alloc>::iterator ac=find(A.begin(),A.end(),indexA);
-  typename V<T,Alloc>::iterator bc=find(A.begin(),A.end(),indexB);
-  if (ac==A.end() || bc==A.end())
-    return (ac==A.end()) ? -1 : -2;
-
-  if (distance(ac,bc)>0)       // Normal direction
-    {
-      A.erase(bc+1,A.end());
-      A.erase(A.begin(),ac);
-    }
-  else                           // reversed direction
-    {
-      A.erase(ac+1,A.end());
-      A.erase(A.begin(),bc);
-    }
-  return 0;
-}
-
-
 template<template<typename T,typename A> class V,typename T,typename A> 
 int
 writeColumn(const std::string& Fname,const V<T,A>& Y,const V<T,A>& E)

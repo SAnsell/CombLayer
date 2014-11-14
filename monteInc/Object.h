@@ -74,6 +74,8 @@ class Object
 
   int trackDirection(const Geometry::Vec3D&,const Geometry::Vec3D&) const;
 
+  bool keyUnit(std::string&,std::string&,std::string&);
+
  public:
   
   static int startLine(const std::string& Line);

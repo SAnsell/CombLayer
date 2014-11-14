@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   xml/XMLnamespace.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,9 @@
 #include <stack>
 #include <sys/stat.h>
 #include <time.h>
+#ifndef NO_REGEX
 #include <boost/regex.hpp>
+#endif
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -44,7 +46,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-//#include "SpecDataHold.h"
 #include "XMLattribute.h"
 #include "XMLobject.h"
 #include "XMLgroup.h"
@@ -53,11 +54,48 @@
 #include "XMLcollect.h"
 #include "XMLnamespace.h"
 #include "XMLiterator.h"
+
 namespace XML
 {
 
 std::vector<std::string>
-getParts(const std::string& KeyList)
+getUnits(std::string Line)
+  /*!
+    Deconvolve out the part of the < > line
+    and return the keys
+    \param Line :: Line to process
+    \return Vector of keys
+  */
+{
+  std::vector<std::string> Out;
+
+  std::string::size_type posA=Line.find('<');
+  std::string::size_type posB=Line.find('>');
+  if (posA==std::string::npos || posB==std::string::npos)
+    return Out;
+
+  while(posA==std::string::npos || posB==std::string::npos)
+    {
+      // Remove > before <
+      if (posB>posA)
+	{
+	  // get unit without space unit
+	  std::string Unit;
+	  for(posA++;posA!=posB && std::isspace(Line[posA]);posA++)
+	    Unit+=Line[posA];
+	  if (!Unit.empty())
+	    Out.push_back(Unit);
+	}	  
+
+      Line.erase(0,posB);
+      posA=Line.find('<');   // update
+      posB=Line.find('>');      
+    }
+  return Out;
+}
+
+std::vector<std::string>
+getParts(std::string KeyList)
   /*!
     Split the string into useful parts.
     The form is KeyA::KeyB::KeyC
@@ -65,9 +103,16 @@ getParts(const std::string& KeyList)
     \return string List
   */
 {
-  boost::regex Sep("(\\S+)::");
   std::vector<std::string> Out;
-  StrFunc::StrFullSplit(KeyList,Sep,Out);
+  std::string CutKey(KeyList);
+  std::string::size_type pos=KeyList.find("::");
+  while(pos!=std::string::npos)
+    {
+      Out.push_back(KeyList.substr(0,pos));
+      KeyList.erase(0,pos+2);
+      pos=KeyList.find("::");
+    }						
+  Out.push_back(KeyList);
   return Out;
 }
 
@@ -87,10 +132,9 @@ procKey(const std::string& Line)
   ELog::RegMethod RegA("XMLnamespace","procKey");
 
   typedef std::pair<int,std::string> retType;
-  boost::regex Re("<(\\S+)\\s*.*>");
+  
+  std::vector<std::string> Out=getUnits(Line);
 
-  std::vector<std::string> Out;
-  StrFunc::StrFullSplit(Line,Re,Out);
   std::vector<std::string>::const_iterator vc;
   if (Out.empty())
     return retType(0,"");
@@ -781,9 +825,11 @@ matchPath(const std::string& A,const std::string& B)
 {
   if (A==B)
     return 1;
+#ifndef NO_REGEX
   boost::regex Re(B);
   if (StrFunc::StrLook(A,Re))
     return 2;
+#endif
   return 0;
 }
 

@@ -186,6 +186,7 @@ testObject::applyTest(const int extra)
       &testObject::testMakeComplement,
       &testObject::testRemoveComplement,
       &testObject::testSetObject,
+      &testObject::testSetObjectExtra,
       &testObject::testTrackCell
     };
   const std::string TestName[]=
@@ -197,6 +198,7 @@ testObject::applyTest(const int extra)
       "MakeComplement",
       "RemoveComplement",
       "SetObject",
+      "SetObjectExtra",
       "TrackCell"
     };
   
@@ -307,6 +309,45 @@ testObject::testSetObject()
 	  ELog::EM<<"Input == "<<tc->get<0>()<<ELog::endTrace;
 	  ELog::EM<<"Expect == "<<tc->get<1>()<<ELog::endTrace;
 	  ELog::EM<<"Result == "<<cx.str()<<ELog::endTrace;
+	  return -1;
+	}
+    }
+
+  return 0;
+}
+
+int
+testObject::testSetObjectExtra() 
+  /*!
+    Test the processing of a line with extra units
+    \retval -1 :: Unable to process line
+    \retval 0 :: success
+  */
+{
+  ELog::RegMethod RegA("testObject","testSetObject");
+
+  typedef boost::tuple<std::string,double> TTYPE;
+  std::vector<TTYPE> Tests;
+  Tests.push_back(TTYPE(" 4 10 0.05524655  -5  8  60  -61  62  -63 tmp=3.4",
+			3.4));
+  Tests.push_back(TTYPE(" 4 10 0.05524655  -5  8  60  -61  62  -63 tmp = 3.4",
+			3.4));
+  Tests.push_back(TTYPE(" 4 10 0.05524655  -5  8  60  imp:n = 45 tmp = 3.4",
+			3.4));
+
+  std::vector<TTYPE>::const_iterator tc;
+  for(tc=Tests.begin();tc!=Tests.end();tc++)
+    {
+      std::ostringstream cx;
+      Qhull A;
+      A.setObject(tc->get<0>());
+      if (fabs(A.getTemp()-tc->get<1>())>1e-5)
+	{
+	  ELog::EM<<"Failed on test "<<(tc-Tests.begin())+1
+		  <<ELog::endTrace;
+	  ELog::EM<<"Input == "<<tc->get<0>()<<ELog::endTrace;
+	  ELog::EM<<"Temp == "<<tc->get<1>()<<ELog::endTrace;
+	  ELog::EM<<"Result == "<<A<<ELog::endTrace;
 	  return -1;
 	}
     }

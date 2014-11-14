@@ -34,7 +34,6 @@
 #include <numeric>
 #include <functional>
 #include <iterator>
-#include <boost/regex.hpp> 
 #include <boost/bind.hpp> 
 #include <boost/multi_array.hpp>
 
@@ -45,7 +44,6 @@
 #include "GTKreport.h"
 #include "OutputLog.h"
 #include "support.h"
-#include "regexSupport.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "RotCounter.h"

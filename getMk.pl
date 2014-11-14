@@ -6,7 +6,7 @@ use getMake;
 use strict;
 
 ## EXECUTABLES
-my @masterprog=("fullBuild","ess","muBeam","sinbad","t1Real",
+my @masterprog=("fullBuild","ess","muBeam","lens","t1Real",
 		"d4c","reactor","t1MarkII","testMain"); 
 
 
@@ -17,11 +17,11 @@ my @noncompile=("bilbau","clayer","cuBuild","d4c","detectSim",
 
 ## CXX Directory
 my @sublibdir=("src","attachComp","beamline","bibBuild",
-               "bnctBuild","build","chip","construct",
-	       "crystal","cuBlock","d4cModel","delft",
-	       "endf","epbBuild","essBuild","funcBase",
+               "bnctBuild","build","chip","construct", 
+	       "crystal","cuBlock","d4cModel","delft",         
+	       "endf","epbBuild","essBuild","funcBase",           # 12
 	       "geometry","global","imat","input",
-	       "instrument","lensModel","log","md5",
+	       "instrument","lensModel","log","md5",              # 20
 	       "moderator","mersenne","monte","muon",
 	       "physics","poly","process","scatMat",
 	       "sinbadBuild","snsBuild","source","support",
@@ -95,7 +95,7 @@ $gM->addDepUnit("pressure", [40,45,0,26,17,15,22,6,26,25,28,16,36,43,44,29,19,30
 $gM->addDepUnit("divide",   [46,40,6,5,45,0,28,26,15,22,26,25,0,16,19,30,43,44,29,35,41,23,17,1,40]);
 $gM->addDepUnit("fullBuild",[5,40,6,24,5,45,18,0,28,7,39,31,8,12,19,34,26,15,22,30,36,42,26,16,25,0,43,44,29,35,41,23,17,1,40]);
 $gM->addDepUnit("d4c",      [10,21,40,0,28,19,20,34,26,15,22,7,8,39,31,12,39,31,36,30,36,42,7,26,16,25,0,44,29,35,41,43,23,17,1,40]);
-$gM->addDepUnit("lens",     [21,40,0,28,19,34,26,15,22,7,8,39,31,12,39,31,36,30,36,42,7,26,16,25,0,44,29,35,41,23,17,1,40]);
+$gM->addDepUnit("lens",     [21,40,0,28,19,34,26,15,22,7,8,39,31,12,39,31,36,30,36,42,7,26,16,25,0,44,43,29,35,41,23,17,1,40]);
 $gM->addDepUnit("simple",   [40,28,0,19,34,26,15,22,8,39,31,12,30,36,42,26,16,25,0,44,29,35,41,23,17,1,30,43,36,40]);
 $gM->addDepUnit("t1MarkII", [38,37,18,6,5,40,24,45,0,7,8,39,31,12,28,19,30,34,26,15,22,26,36,16,25,0,42,43,44,29,35,41,23,17,1,40,29]);
 $gM->addDepUnit("ts1layer", [5,40,6,24,5,45,0,28,19,30,26,15,22,26,36,16,25,0,43,44,29,35,41,23,17,1,40,29]);
@@ -126,6 +126,7 @@ if (@ARGV==0)
     print STDERR "   -K  :: GTK \n";
     print STDERR "   -S  :: GSL \n";
     print STDERR "   -NS :: No GSL \n";
+    print STDERR "   -NR :: No Regex \n";
     print STDERR "   -M  :: GTKmm \n";
     print STDERR "   -L  :: Don't make library\n";
     print STDERR "   -m  :: masterprog : Set master prog\n";

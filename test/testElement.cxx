@@ -120,7 +120,7 @@ testElement::testCinder()
   std::vector<int> cZ;
   const Element& TX=Element::Instance();
   Zaid c31;
-  c31.setZaid("31000.24c");
+  c31.setZaid("31000.24c ");
   c31.setDensity(1.0);
   TX.addZaid(c31,cZ,cFrac);
   

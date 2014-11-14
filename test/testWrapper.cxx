@@ -183,7 +183,8 @@ testWrapper::testBox()
   
   Tests.push_back(TTYPE("1 -2 3 -4 5 -6","101 -102 103 -104 105 -106",
 			1,"101 px -2"));
-  
+
+  HeadRule HOut;
   std::vector<TTYPE>::const_iterator tc;
   for(tc=Tests.begin();tc!=Tests.end();tc++)
     {
@@ -192,11 +193,13 @@ testWrapper::testBox()
       ModelSupport::Wrapper WA;
       WA.setSurfOffset(100);
       const std::string NewObject=WA.createSurfaces(ObjA,1.0);
-      if (StrFunc::stripMultSpc(NewObject) != tc->get<1>())
+      HeadRule HResult;
+      HResult.procString(tc->get<1>());
+      if (!HOut.procString(NewObject) ||
+	  HOut!=HResult)
 	{
 	  ELog::EM<<"Original == "<<ObjA<<ELog::endTrace;
-	  ELog::EM<<"New      == "<<StrFunc::stripMultSpc(NewObject)
-	    <<ELog::endTrace;
+	  ELog::EM<<"New      == "<<HOut<<ELog::endTrace;
 	  ELog::EM<<"Expected == "<<tc->get<1>()<<ELog::endTrace;
 	  return -1;
 	}

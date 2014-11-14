@@ -30,8 +30,6 @@
 #include <stack>
 #include <string>
 #include <algorithm>
-#include <boost/regex.hpp>
-#include <boost/multi_array.hpp>
 
 #include "Exception.h"
 #include "BaseVisit.h"

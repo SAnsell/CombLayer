@@ -30,15 +30,12 @@
 #include <stack>
 #include <string>
 #include <algorithm>
-#include <boost/regex.hpp>
-#include <boost/multi_array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
 #include "GTKreport.h"
 #include "OutputLog.h"
 #include "support.h"
-#include "regexSupport.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"

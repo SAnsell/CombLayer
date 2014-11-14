@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   process/Wrapper.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-204 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,6 @@
 #include <memory>
 #include <boost/array.hpp>
 #include <boost/bind.hpp>
-#include <boost/regex.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -46,11 +45,9 @@
 #include "BaseModVisit.h"
 #include "mathSupport.h"
 #include "support.h"
-#include "regexSupport.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
 #include "Rules.h"
 #include "Code.h"
 #include "FItem.h"
@@ -147,31 +144,26 @@ Wrapper::createSurfaces(const std::string& objStr,const double D)
   ELog::RegMethod RegA("Wrapper","createSurfaces");
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
   Distance=D;
-  
-  std::string cellStr=objStr; //+" )";
-  
-  // Now need outer objects: MUST ensure that - is preserved 
-  std::string Text="([^\\-&^\\d]*)([\\-|\\d|$]*)";
-  boost::regex Re(Text,boost::regex::perl);
-
-  // get cells
-  std::vector<std::string> Out;
-  StrFunc::StrFullSplit(cellStr,Re,Out);
   const double DFlag((interiorFlag) ? 1.0 : -1.0);
+  
+  HeadRule CObj;
+  if (!CObj.procString(objStr))
+    throw ColErr::InvalidLine(objStr,"object string failed",0);
+  HeadRule OutObj;
 
-  std::ostringstream cx;
-  for(size_t i=0;i<Out.size();i++)
+  const std::vector<const Rule*> HRules=CObj.findTopNodes();
+  for(const Rule* RPtr : HRules)
     {
-      int surfN;    // read name [with sign]
-      if (StrFunc::convert(Out[i],surfN))
-        {	  
-	  const int surfNoSign=abs(surfN);                  
+      const SurfPoint* SPtr=dynamic_cast<const SurfPoint*>(RPtr);
+      if (SPtr)
+	{
+	  const int surfNoSign=SPtr->getKeyN();
+	  const int surfN=SPtr->getSignKeyN();
 	  if ( nonActive.find(surfNoSign)==nonActive.end() ) // Surface to indent
 	    {
 	      std::map<int,int>::const_iterator mc=newSurf.find(surfN);
 	      if (mc==newSurf.end())  // To be created
 	        {
-
 		  // find surface:
 		  Geometry::Surface* SPtr=SurI.getSurf(surfNoSign);
 		  // Make new surface: (forget old ptr) [Note: surfN/cn == +/-1]
@@ -188,15 +180,15 @@ Wrapper::createSurfaces(const std::string& objStr,const double D)
 		  newSurf.insert(std::map<int,int>::value_type(surfN,outSurfN));
 		  mc=newSurf.find(surfN);
 		}
-	      // Now have new surface :
-	      cx<<" "<<mc->second*(surfN/surfNoSign);
+	      OutObj.addIntersection(mc->second*(surfN/surfNoSign));
+	    }
+	  else
+	    {
+	      OutObj.addIntersection(surfN);
 	    }
 	}
-      else
-	cx<<" "<<Out[i];
     }
-  CellOut=cx.str();
-  return CellOut;
+  return OutObj.display();
 }
 
 }  /// NAMESPACE ModelSupport

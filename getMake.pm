@@ -19,6 +19,7 @@ sub new
 
     boostInc => "-I/opt/local/include",
     boostLib => "-L/opt/local/lib -lboost_regex",
+    boostLib_noregex => "",
     clangLib => "-lstdc++",
 
     masterProg => [ ],        ## Executables
@@ -48,6 +49,7 @@ sub new
     gtk=>0,
     gcov=>0,          ## Gcov
     gsl=>0,          ## Gnu scietific lib
+    regex=>0,        ## regex
     lua=>0,          ## lua
     xlib=>0,         ## X11 libs
     pglib=>0,        ## PGPlot 
@@ -668,6 +670,7 @@ sub setParameters
 	  $self->{pglib}=1 if ($Ostr eq "-P");
 	  $self->{gsl}=1 if ($Ostr eq "-S");
 	  $nogsl=-1 if ($Ostr eq "-NS");
+	  $self->{regex}=-1 if ($Ostr eq "-NR");
 	  $self->{xlib}=1 if ($Ostr eq "-X");
 	  $self->{shared}=1 if ($Ostr eq "-s");
 	  $self->{fortranlib}=1 if ($Ostr eq "-F");
@@ -683,6 +686,7 @@ sub setParameters
   print STDERR "INIT Opt=",$self->{optimise},"\n";
   print STDERR "INIT Deb=",$self->{debug},"\n";
   print STDERR "GSL == ",$self->{gsl},"\n";
+  print STDERR "REGEX == ",$self->{regex},"\n";
   print STDERR "G++ == ",$self->{ccomp},$self->{cxx11},"\n";
   print STDERR "GCC == ",$self->{bcomp},"\n";
   return;
@@ -848,6 +852,11 @@ sub printHeaders
       my $incL= "INCGSL= -DNO_GSL ";
       printString($incL,66,5);
     }
+  if ($self->{regex}<0)
+    {
+      my $incL= "INCREGEX= -DNO_REGEX ";
+      printString($incL,66,5);
+    }
   if ($self->{lua})
     {
       my $incL="INCLUA="." -I\/usr/local/include/toluaxx5.1";
@@ -868,7 +877,9 @@ sub printHeaders
   if ($self->{boost})
     {
       my $boostlibs;
-      $boostlibs="BOOSTLIBS= ".$self->{boostLib};
+      $boostlibs= ($self->{regex}<0) ?
+	  "BOOSTLIBS= ".$self->{boostLib_noregex} : 
+	  "BOOSTLIBS= ".$self->{boostLib};
       printString($boostlibs,66,5);
     }
   my $gtklibs;
@@ -1102,6 +1113,7 @@ sub processCPP
 	}
       $compLine.="\$(INCGTK) " if ($activeGTK);
       $compLine.="\$(INCBOOST) " if ($activeBOOST);
+      $compLine.="\$(INCREGEX) " if ($activeBOOST && $self->{regex});
       $compLine.="\$(INCGSL) " if ($activeGSL);
       $compLine.="\$(SRCDIR)\/".$namePlusExt."\n";
       printString($compLine,72,15);

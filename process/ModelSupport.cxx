@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   process/ModelSupport.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,15 +31,44 @@
 #include <map>
 #include <string>
 #include <algorithm>
-#include <boost/regex.hpp>
 
 #include "support.h"
-#include "regexSupport.h"
 #include "surfRegister.h"
 #include "ModelSupport.h"
 
 namespace ModelSupport
 {
+
+std::string
+spcDelimString(const std::string& baseString)
+  /*
+    Space delimit the input string to remove : and ( without spaces
+    \param baseString :: input string
+  */
+{
+  std::ostringstream cx;
+  
+  int flag(0);
+  char prevC('A');
+  for(char c : baseString)
+    {
+      if (flag && c!=' ')
+	cx<<' ';
+      flag=0;
+      if (c=='(' || c==')' || c==':')
+	{
+	  if (prevC!=' ')
+	    cx<<' ';
+	  flag=1;
+	}
+      // now write character
+      cx<<c;
+      prevC=c;
+
+    }
+  return cx.str();
+}
+
 
 std::string
 getExclude(const int Offset)
@@ -65,29 +94,28 @@ getComposite(const int Offset,const std::string& BaseString)
     \return String with offset components
    */ 
 {
-  boost::regex Re("(^|\\D+)(\\d*)",boost::regex::perl);
   std::ostringstream cx;
-  std::vector<std::string> Out;
-
-  StrFunc::StrFullSplit(BaseString,Re,Out);
-
+  std::string OutUnit;
   int cellN;
-  for(size_t i=0;i<Out.size();i++)
+  std::string segment=spcDelimString(BaseString);
+  
+  cx<<" ";
+  while(StrFunc::section(segment,OutUnit))
     {
-      if (!Out[i].empty())
+      if (!OutUnit.empty())
         {
-	  if (Out[i][0]=='T')
+	  if (OutUnit[0]=='T')
 	    {
-	      Out[i][0]=' ';
-	      if (StrFunc::convert(Out[i],cellN))
+	      OutUnit[0]=' ';
+	      if (StrFunc::convert(OutUnit,cellN))
 		cx<<cellN;
 	      else
-		cx<<Out[i];
+		cx<<OutUnit;
 	    }
-	  else if (StrFunc::convert(Out[i],cellN))
-	    cx<<((cellN>0) ? cellN+Offset : cellN-Offset);
+	  else if (StrFunc::convert(OutUnit,cellN))
+	    cx<<((cellN>0) ? cellN+Offset : cellN-Offset)<<" ";
 	  else
-	    cx<<Out[i];
+	    cx<<OutUnit<<" ";
 	}
     }
   return cx.str();
@@ -108,43 +136,42 @@ getComposite(const surfRegister& SMap,const int Offset,
     \return String with offset components
    */
 {
-//  boost::regex Re("(^|\\D+)(\\d*)",boost::regex::perl);
-  boost::regex Re("(^|[^-]|[^0-9]*)([M|T|\\d|-]*)",boost::regex::perl);
   std::ostringstream cx;
-  std::vector<std::string> Out;
-
-  StrFunc::StrFullSplit(BaseString,Re,Out);
+  
   int cellN;
   int TrueNum,MinorNum;
-  for(size_t i=0;i<Out.size();i++)
+  std::string segment=spcDelimString(BaseString);
+  std::string OutUnit;
+  cx<<" ";
+  while(StrFunc::section(segment,OutUnit))
     {
-      const size_t oL=Out[i].length();
+      const size_t oL=OutUnit.length();
       if (oL)
 	{
 	  TrueNum=MinorNum=0;
-	  if (Out[i][oL-1]=='T')
+	  if (OutUnit[oL-1]=='T')
 	    {
-	      Out[i][oL-1]=' ';
+	      OutUnit[oL-1]=' ';
 	      TrueNum=1;
 	    }
-	  else if (Out[i][oL-1]=='M')
+	  else if (OutUnit[oL-1]=='M')
 	    {
-	      Out[i][oL-1]=' ';
+	      OutUnit[oL-1]=' ';
 	      MinorNum=1;
 	    }
-	  if (StrFunc::convert(Out[i],cellN))
+	  if (StrFunc::convert(OutUnit,cellN))
 	    {
 	      if (TrueNum)
 		cx<<SMap.realSurf(cellN);
 	      else if (MinorNum)
 		cx<<((cellN>0) ? SMap.realSurf(cellN+MinorOffset) 
-		     : SMap.realSurf(cellN-MinorOffset));
+		     : SMap.realSurf(cellN-MinorOffset))<<" ";
 	      else
 		cx<<((cellN>0) ? SMap.realSurf(cellN+Offset) 
-		     : SMap.realSurf(cellN-Offset));
+		     : SMap.realSurf(cellN-Offset))<<" ";
 	    }
 	  else
-	    cx<<Out[i];
+	    cx<<OutUnit<<" ";
 	}
     }
   return cx.str();
@@ -181,35 +208,35 @@ getSetComposite(const surfRegister& SMap,
     \return String with offset components
    */
 {
-//  boost::regex Re("(^|\\D+)(\\d*)",boost::regex::perl);
-  boost::regex Re("(^|[^-]|[^0-9]*)([T|\\d|-]*)",boost::regex::perl);
   std::ostringstream cx;
-  std::vector<std::string> Out;
-
-  StrFunc::StrFullSplit(BaseString,Re,Out);
+  std::string OutUnit;
   int cellN;
   int TrueNum=0;
-  for(size_t i=0;i<Out.size();i++)
+
+  std::string segment=spcDelimString(BaseString);
+ 
+  cx<<" ";
+  while(StrFunc::section(segment,OutUnit))
     {
-      const size_t oL=Out[i].length();
+      const size_t oL=OutUnit.length();
       if (oL)
 	{
 	  TrueNum=0;
-	  if (Out[i][oL-1]=='T')
+	  if (OutUnit[oL-1]=='T')
 	    {
-	      Out[i][oL-1]=' ';
+	      OutUnit[oL-1]=' ';
 	      TrueNum=1;
 	    }
-	  if (StrFunc::convert(Out[i],cellN))
+	  if (StrFunc::convert(OutUnit,cellN))
 	    {
 	      int CN(cellN);
 	      if (!TrueNum)
 		CN+=(cellN>0) ? Offset : -Offset;
 	      if (SMap.hasSurf(CN))
-		cx<<SMap.realSurf(CN);
+		cx<<SMap.realSurf(CN)<<" ";
 	    }
 	  else
-	    cx<<Out[i];
+	    cx<<OutUnit<<" ";
 	}
     }
   return cx.str();

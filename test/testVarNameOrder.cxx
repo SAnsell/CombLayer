@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   test/testVarNameOrder.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,6 @@
 #include <vector>
 #include <algorithm>
 #include <functional>
-#include <boost/regex.hpp>
 #include <boost/tuple/tuple.hpp>
 
  
@@ -46,7 +45,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "regexSupport.h"
 #include "varNameOrder.h"
 
 #include "testFunc.h"
@@ -159,7 +157,7 @@ testVarNameOrder::testBasic()
     {
       for(i=0;i<Names.size();i++)
 	{
-	  ELog::EM<<"["<<i<<"]=="<<Names[i]<<":"<<Out[i];
+	  ELog::EM<<"["<<i<<"]=="<<Names[i]<<"   expect:   "<<Out[i];
 	  if (Out[i]!=Names[i])
 	    ELog::EM<<ELog::endWarn;
 	  else

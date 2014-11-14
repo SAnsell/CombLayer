@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   supportInc/regexSupport.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,17 +19,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef regexSupport_h
+#ifndef regexSupport_h 
 #define regexSupport_h
+#ifndef NO_REGEX
 
 namespace StrFunc
 {
 /// Find if a pattern matches
-template<typename T> int StrComp(const std::string&,const boost::regex&,T&,const int=0);
+template<typename T> int StrComp(const std::string&,
+				 const boost::regex&,T&,const int=0);
 
-/// Find is a pattern matches
 int StrLook(const char*,const boost::regex&);
-/// Find is a pattern matches
 int StrLook(const std::string&,const boost::regex&);
 
 /// Split  a line into component parts
@@ -38,13 +38,13 @@ StrParts(std::string,const boost::regex&);
 
 /// Split  a line searched parts
 template<typename T> int StrFullSplit(const std::string&,const boost::regex&,std::vector<T>&);
-//template<typename T> int StrFullSplit(const char*,const boost::regex&,std::vector<T>&);
 template<typename T> int StrSingleSplit(const std::string&,const boost::regex&,std::vector<T>&);
-// template<typename T> int StrSingleSplit(const char*,const boost::regex&,std::vector<T>&);
 
 /// Cut out the searched section and returns component
-template<typename T> int StrFullCut(std::string&,const boost::regex&,T&,const int= -1);
-template<typename T> int StrFullCut(std::string&,const boost::regex&,std::vector<T>&);
+template<typename T> 
+int StrFullCut(std::string&,const boost::regex&,T&,const int= -1);
+template<typename T> 
+int StrFullCut(std::string&,const boost::regex&,std::vector<T>&);
 
 /// Extract a section from a string
 int StrRemove(std::string&,std::string&,const boost::regex&);
@@ -57,4 +57,5 @@ int findPattern(std::istream&,const boost::regex&,std::string&);
 
 } // NAMESPACE StrFunc
 
+#endif
 #endif

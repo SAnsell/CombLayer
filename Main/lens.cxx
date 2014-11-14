@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   Main/lens.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -129,30 +129,26 @@ main(int argc,char* argv[])
 {
   ELog::RegMethod RControl("lens[F]","main");
   int exitFlag(0);                // Value on exit
-
   mainSystem::activateLogging(RControl);
 
-  std::vector<std::string> Names;  
-  std::map<std::string,double> IterVal;           // Variable to iterate 
   std::string Oname;
+  std::vector<std::string> Names;  
+  std::map<std::string,std::string> Values;  
+  std::map<std::string,std::string> AddValues;  
+  std::map<std::string,double> IterVal;           // Variable to iterate 
 
   // PROCESS INPUT:
   InputControl::mainVector(argc,argv,Names);
   mainSystem::inputParam IParam;
   createLensInputs(IParam);
-  const int iteractive(IterVal.empty() ? 0 : 1);   
 
-  // Read XML/Variable
+  const int iteractive(IterVal.empty() ? 0 : 1);   
   Simulation* SimPtr=createSimulation(IParam,Names,Oname);
   if (!SimPtr) return -1;
 
   // The big variable setting
   setVariable::LensModel(SimPtr->getDataBase());
   InputModifications(SimPtr,IParam,Names);
-
-  mainSystem::setVariables(*SimPtr,IParam,Names);
-  if (!Names.empty()) 
-    ELog::EM<<"Unable to understand values "<<Names[0]<<ELog::endErr;
 
   int MCIndex(0);
   const int multi=IParam.getValue<int>("multi");
@@ -173,8 +169,6 @@ main(int argc,char* argv[])
 
 	  SimPtr->removeComplements();
 	  SimPtr->removeDeadSurfaces(0);         
-
-	  SimPtr->removeOppositeSurfaces();
 
 	  lensObj.createTally(*SimPtr,IParam);
 	  ModelSupport::setDefaultPhysics(*SimPtr,IParam);

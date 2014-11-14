@@ -79,7 +79,6 @@
 #include "FixedComp.h"
 #include "LinearComp.h"
 #include "siModerator.h"
-#include "Wrapper.h"
 #include "surfDIter.h"
 #include "ProtonFlight.h"
 #include "FlightLine.h"

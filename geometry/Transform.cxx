@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   geometry/Transform.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,8 +26,9 @@
 #include <sstream>
 #include <cmath>
 #include <vector>
+#include <set>
+#include <map>
 #include <algorithm>
-#include <boost/regex.hpp>
 #include <boost/format.hpp>
 
 #include "Exception.h"
@@ -37,7 +38,6 @@
 #include "GTKreport.h"
 #include "OutputLog.h"
 #include "support.h"
-#include "regexSupport.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -114,9 +114,7 @@ Transform::setTransform(const std::string& DisP,const std::string& MatStr)
 {
   ELog::RegMethod RegA("Transform","setTransform(string,string)");
 
-  boost::regex divSea("\\s*(\\S+)");
-  
-  std::vector<std::string> Items=StrFunc::StrParts(DisP,divSea);
+  std::vector<std::string> Items=StrFunc::StrParts(DisP);
   if (Items.size()<4)           //indecyferable line
     {
       ELog::EM<<"Transform Parts == "<<Items.size()<<ELog::endCrit;

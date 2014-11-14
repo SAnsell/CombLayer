@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   scatMat/neutMaterial.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,8 +30,6 @@
 #include <stack>
 #include <string>
 #include <algorithm>
-#include <boost/regex.hpp>
-#include <boost/multi_array.hpp>
 
 #include "MersenneTwister.h"
 #include "Exception.h"

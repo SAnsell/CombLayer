@@ -31,7 +31,9 @@
 #include <algorithm>
 #include <functional>
 #include <iterator>
+#ifndef NO_REGEX
 #include <boost/regex.hpp>
+#endif 
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -947,7 +949,7 @@ FuncDataBase::convPartVec(const std::string& A,
 /*!
   Takes a character string and evaluates 
   the first vector obejct
-  Format Vec[3,4,5]
+  Format Vec3D[3,4,5]
   
   it allows trailing characters after the number. 
   \param A :: string to process
@@ -956,6 +958,9 @@ FuncDataBase::convPartVec(const std::string& A,
   \retval 0 on failure
 */ 
 {
+  ELog::RegMethod RegA("FuncDataBase","convPartVec");
+
+#ifndef NO_REGEX
   if (A.size()<10) return 0;
 
   std::string APart(A);
@@ -966,10 +971,9 @@ FuncDataBase::convPartVec(const std::string& A,
       StrFunc::section(OutVec,AVec))
     {
       out=AVec;
-      ELog::EM<<"AVec == "<<AVec<<ELog::endDiag;
       return 1+A.size()-APart.size();
     }
-
+#endif
   return 0;
 }
 

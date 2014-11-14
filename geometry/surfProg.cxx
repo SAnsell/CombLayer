@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   geometry/surfProg.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,6 @@
 #include <map>
 #include <string>
 #include <algorithm>
-#include <boost/regex.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -38,7 +37,6 @@
 #include "GTKreport.h"
 #include "OutputLog.h"
 #include "support.h"
-#include "regexSupport.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -64,8 +62,7 @@ possibleCone(const std::string& Line)
   */
 {
   // Split line
-  boost::regex divSea("\\s*(\\S+)");
-  std::vector<std::string> Items=StrFunc::StrParts(Line,divSea);
+  std::vector<std::string> Items=StrFunc::StrParts(Line);
   if (Items.size()<3)           //Indecyferable line
     return 0;
 
@@ -108,8 +105,7 @@ possibleCylinder(const std::string& Line)
   */
 {
   // Split line
-  boost::regex divSea("\\s*(\\S+)");
-  std::vector<std::string> Items=StrFunc::StrParts(Line,divSea);
+  std::vector<std::string> Items=StrFunc::StrParts(Line);
   if (Items.size()<3)           //Indecyferable line
     return 0;
 
@@ -144,8 +140,7 @@ possibleGeneral(const std::string& Line)
     \retval -1 if extension possible to Line
   */
 {
-  boost::regex divSea("\\s*(\\S+)");
-  std::vector<std::string> Items=StrFunc::StrParts(Line,divSea);
+  std::vector<std::string> Items=StrFunc::StrParts(Line);
   if (Items.size()<3)           //Indecyferable line
     return 0;
   
@@ -182,9 +177,8 @@ possibleMBrect(const std::string& Line)
   ELog::RegMethod RegA("surfProg","possibleMBrect");
 
   // Split line
-  boost::regex divSea("\\s*(\\S+)");
-  std::vector<std::string> Items=StrFunc::StrParts(Line,divSea);
-  if (Items.size()<3)           // Indecyferable lineSu
+  std::vector<std::string> Items=StrFunc::StrParts(Line);
+  if (Items.size()<3)           // Indecyferable line
     return 0;
 
   size_t ix(0);
@@ -214,8 +208,7 @@ possiblePlane(const std::string& Line)
   */
 {
   // Split line
-  boost::regex divSea("\\s*(\\S+)");
-  std::vector<std::string> Items=StrFunc::StrParts(Line,divSea);
+  std::vector<std::string> Items=StrFunc::StrParts(Line);
   if (Items.size()<2)           //Indecyferable lineSu
     return 0;
 
@@ -249,8 +242,7 @@ possibleSphere(const std::string& Line)
   */
 {
   // Split line
-  boost::regex divSea("\\s*(\\S+)");
-  std::vector<std::string> Items=StrFunc::StrParts(Line,divSea);
+  std::vector<std::string> Items=StrFunc::StrParts(Line);
   if (Items.size()<3)           //Indecypherable line
     return 0;
 
@@ -292,8 +284,7 @@ possibleTorus(const std::string& Line)
   */
 {
   // Split line
-  boost::regex divSea("\\s*(\\S+)");
-  std::vector<std::string> Items=StrFunc::StrParts(Line,divSea);
+  std::vector<std::string> Items=StrFunc::StrParts(Line);
   if (Items.size()<3)           //Indecyferable line
     return 0;
 

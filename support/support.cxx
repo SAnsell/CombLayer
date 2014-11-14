@@ -987,7 +987,7 @@ setValues(const std::string& Line,const std::vector<int>& Index,
       cnt++;         // Add only to cnt [sc/oc in while loop]
     }
   // Success since loop only gets here if sc is exhaused.
-  return 0;       
+  return 0;        
 }
 
 template<template<typename T,typename Alloc> class V,typename T,typename Alloc> 

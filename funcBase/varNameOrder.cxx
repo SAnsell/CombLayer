@@ -32,7 +32,6 @@
 #include <string>
 #include <algorithm>
 #include <functional>
-#include <boost/regex.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -41,24 +40,14 @@
 #include "GTKreport.h"
 #include "OutputLog.h"
 #include "support.h"
-#include "regexSupport.h"
 #include "varNameOrder.h"
 
 
-varNameOrder::varNameOrder() : 
-  RePtr(new boost::regex("^(\\D*)(\\d*)(.*)")) 
+varNameOrder::varNameOrder() 
   /*!
     Constructor
   */
 {} 
-
-varNameOrder::varNameOrder(const varNameOrder&) : 
-  RePtr(new boost::regex("^(\\D*)(\\d*)(.*)")) 
-  /*!
-    Constructor
-  */
-{} 
-
 
 bool 
 varNameOrder::operator()(const std::string& A,
@@ -71,19 +60,24 @@ varNameOrder::operator()(const std::string& A,
     \return A<B
   */
 {
-  std::vector<std::string> AOutVec;
-  std::vector<std::string> BOutVec;
-  int ANum,BNum;
-  // Note regular expression is 3 component
-  if (StrFunc::StrFullSplit(A,*RePtr,AOutVec) &&
-      StrFunc::StrFullSplit(B,*RePtr,BOutVec) &&
-      AOutVec[0]==BOutVec[0])
+  size_t i=0;
+  const size_t ABSize(std::max(A.size(),B.size()));
+  while(i<ABSize && !std::isdigit(A[i]) &&
+	A[i]==B[i])
     {
-      if (AOutVec[2]!=BOutVec[2])
-	return AOutVec[2]<BOutVec[2];
-      if (StrFunc::convert(AOutVec[1],ANum) &&
-	  StrFunc::convert(BOutVec[1],BNum))
-	return ANum<BNum;
-    }							  
-  return (A<B);
+      i++;
+    }
+  if (i==ABSize || !std::isdigit(A[i]) || !std::isdigit(B[i]))
+    return (A<B);
+
+  std::string APart=A.substr(i);
+  std::string BPart=B.substr(i);
+  int aNum(0);
+  int bNum(0);
+  StrFunc::sectPartNum(APart,aNum);
+  StrFunc::sectPartNum(BPart,bNum);
+  if (APart!=BPart)
+    return APart<BPart;
+
+  return aNum<bNum;
 }

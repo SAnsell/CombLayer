@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   xmlInc/XMLnamespace.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,6 +35,7 @@ namespace XML
 
 class XMLobject;
 
+ std::vector<std::string> getUnits(std::string);
 int getGroupContent(XMLload&,std::string&,std::vector<std::string>&,std::string&);
 int getNextGroup(XMLload&,std::string&,std::vector<std::string>&); 
 int collectBuffer(XMLload&,std::string&); 
@@ -55,7 +56,7 @@ template<typename K,typename D>
 long int getNumberIndex(const std::multimap<K,D>&, const K&);
 
 long int cutString(std::string&,std::string&);
-std::vector<std::string> getParts(const std::string& KeyList);
+std::vector<std::string> getParts(std::string);
 std::pair<int,std::string> procKey(const std::string&);
 std::string procString(const std::string&);
 int matchPath(const std::string&,const std::string&);

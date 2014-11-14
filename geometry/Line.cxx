@@ -31,8 +31,6 @@
 #include <string>
 #include <algorithm>
 #include <complex>
-#include <boost/regex.hpp>
-#include <boost/multi_array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"

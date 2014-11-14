@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   monte/Zaid.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,16 +22,14 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
+#include <string>
 #include <sstream>
 #include <cmath>
 #include <list>
 #include <vector>
-#include <string>
+#include <set>
+#include <map>
 #include <algorithm>
-#include <functional>
-#include <iterator>
-#include <numeric>
-#include <boost/regex.hpp>
 #include <boost/format.hpp>
 
 #include "Exception.h"
@@ -42,7 +40,6 @@
 #include "OutputLog.h"
 #include "Triple.h"
 #include "support.h"
-#include "regexSupport.h"
 #include "IsoTable.h"
 #include "Element.h"
 #include "Zaid.h"
@@ -134,19 +131,20 @@ Zaid::setZaid(const std::string& A)
    */
 {
   ELog::RegMethod RegA("Zaid","setZaid");
-  boost::regex Re("(\\d+)\\.(\\d\\d)(\\S)",boost::regex::perl);
-  
-  std::vector<std::string> Out;
-  int Z;
-  int tItem;
-  if (!StrFunc::StrSingleSplit(A,Re,Out) ||
-      !StrFunc::convert(Out[0],Z) ||
-      !StrFunc::convert(Out[1],tItem))
+
+  int Z;  
+  std::string::size_type pos=A.find('.');
+  if ( pos==std::string::npos ||
+       pos+4>A.size() ||
+       !StrFunc::convert(A.substr(0,pos),Z)  ||
+       !isdigit(A[pos+1]) || !isdigit(A[pos+2]) ||
+       isdigit(A[pos+3]) ) 
     return 0;
-  
+
   index=Z;
-  tag=tItem;
-  type=Out[2][0];
+  const std::string Num=A.substr(pos+1,2);
+  StrFunc::convert(Num,tag);
+  type=A[pos+2];
   return 1;
 }
   

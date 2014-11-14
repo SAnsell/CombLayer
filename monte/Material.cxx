@@ -24,16 +24,17 @@
 #include <iostream>
 #include <sstream>
 #include <cmath>
+#include <climits>
 #include <list>
 #include <vector>
 #include <string>
 #include <set>
+#include <map>
 #include <algorithm>
 #include <functional>
 #include <iterator>
 #include <numeric>
 #include <boost/bind.hpp>
-#include <boost/regex.hpp>
 #include <boost/format.hpp>
 
 #include "Exception.h"
@@ -45,7 +46,6 @@
 #include "support.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "regexSupport.h"
 #include "RefCon.h"
 #include "Element.h"
 #include "Zaid.h"
@@ -261,26 +261,26 @@ Material::lineType(std::string& Line)
   // END is in a comment (normally):
   if (Line.find("END")!=std::string::npos)
     return -100;
-
-  boost::regex Re("^\\s{0,5}[mM]\\D*(\\d+)",boost::regex::perl);
-
+  
   StrFunc::stripComment(Line);
   if (Line.size()<1 ||                     // comments blank line, ^c or ^c<spc> 
       (tolower(Line[0])=='c' && 
        (Line.size()==1 || isspace(Line[1]))))
     return -1;
   
-  
+
+  Line=StrFunc::fullBlock(Line);                
   int index;
-  if (StrFunc::StrComp(Line,Re,index,0))
-    {
-      Line=StrFunc::fullBlock(Line);              // remove first+last 
-      return index;
-    }
+  std::string part;
+  if (!StrFunc::convert(Line,part)) return 0;
+  if (part.size()<2 || (part[0]!='m' && part[0]!='M')) 
+    return 0;
+  size_t i(0);
+  while(i<part.size() && !isdigit(part[i]))
+    part[i]=' ';
+  if (StrFunc::convert(part,index))
+    return index;
 
-  Line=StrFunc::fullBlock(Line);              
-
-  // Continuation line
   return 0;
 }
 
@@ -296,23 +296,44 @@ Material::getExtraType(std::string& Line,std::string& particles)
     \retval 0 :: nothing
   */
 {
-  boost::regex Re("(^\\s{0,5}([mM]\\D*)\\d+)",boost::regex::perl);
-  
-  std::string Item;
+  ELog::RegMethod RegA("Material","getExtraType");
 
-  if (StrFunc::StrFullCut(Line,Re,Item,1))
+  std::string FItem;
+  std::string LCopy(Line);
+  if (!StrFunc::section(LCopy,FItem) || FItem.size()<3)
+    return 0;
+  if (FItem[0]!='m' && FItem[0]!='M')
+    return 0;
+  // get key
+  std::string key("m");
+  for(size_t i=0;i<FItem.size() && isalpha(FItem[i]);i++)
     {
-      for(size_t i=0;i<Item.size();i++)
-	Item[i]=static_cast<char>(tolower(Item[i]));
-      if (Item=="mt") return 1;
-      if (Item=="mx") 
-	{
-	  boost::regex ReP("^\\s*:\\s*(\\S)",boost::regex::perl);
-	  if (StrFunc::StrFullCut(Line,ReP,Item))
-	    particles=Item;
-	  return 2;
-	}
+      key+=static_cast<char>(tolower(FItem[i]));
+      FItem[i]=' ';
     }
+ 
+  int index;
+  if (!StrFunc::sectPartNum(FItem,index))
+    return 0;
+  Line=FItem+LCopy;
+  if (key=="mx")
+    {
+      // Put tail back  now ==>   : stuff
+      FItem+=LCopy;
+      std::string unit;
+      if (!StrFunc::section(FItem,unit) || 
+	  unit[0]!=':')
+	return 2;
+
+      if (unit.size()>1)
+	particles=unit.substr(1,std::string::npos);
+      else
+	StrFunc::section(FItem,particles);
+
+      return 2;
+    }
+  if (key=="mt")
+    return 1;
   // Unimportant line:
   return 0;
 }
@@ -365,10 +386,10 @@ Material::setMaterial(const int MIndex,
 
   ELog::RegMethod RegA("Material","setMaterial(i,s,s,s)");
 
-  Mnum=MIndex;
-  // Divide line into zaid / density / extras:
-  const boost::regex divSea("\\s*(\\S+)");
-  std::vector<std::string> Items=StrFunc::StrParts(MLine,divSea);
+  Mnum=MIndex;  
+  std::vector<std::string> Items=
+    StrFunc::StrParts(MLine);
+  
   if (Items.size()<2) 
     {
       ELog::EM<<"MLine is empty: "<<MLine<<ELog::endErr;
@@ -403,12 +424,12 @@ Material::setMaterial(const int MIndex,
 	}
     }
   // PROCESS MT Line:
-  std::vector<std::string> MTItems=StrFunc::StrParts(MTLine,divSea);
+  std::vector<std::string> MTItems=StrFunc::StrParts(MTLine);
   for(vc=MTItems.begin();vc!=MTItems.end();vc++)
     SQW.push_back(StrFunc::fullBlock(*vc));
   
   // PROCESS LIBS
-  std::vector<std::string> LibItems=StrFunc::StrParts(LibLine,divSea);
+  std::vector<std::string> LibItems=StrFunc::StrParts(LibLine);
   Libs.insert(Libs.end(),LibItems.begin(),LibItems.end());
 
   calcAtomicDensity();
@@ -433,14 +454,16 @@ Material::setMaterial(const std::vector<std::string>& PVec)
   std::string Pstr=PVec[0];
 
   // Divide line into zaid / density / extras:
-  const boost::regex divSea("\\s*(\\S+)");
-  std::vector<std::string> Items=StrFunc::StrParts(Pstr,divSea);
+  std::vector<std::string> Items=StrFunc::StrParts(Pstr);
   if (Items.size()<2)
     return -1;
 
-  if (!StrFunc::StrComp(Items[0],boost::regex("^[mM](\\d+)"),Mnum))
+  std::string& FItem(Items[0]);  
+  const char pItem=FItem[0];
+  FItem[0]=' ';
+  if ((pItem!='m' && pItem!='M') || !StrFunc::convert(FItem,Mnum))
     {
-      ELog::EM<<"Non material card at "<<Items[0]<<ELog::endErr;
+      ELog::EM<<"Non material card at "<<pItem<<FItem<<ELog::endErr;
       return -2;
     }
   

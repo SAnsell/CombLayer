@@ -31,8 +31,6 @@
 #include <stack>
 #include <string>
 #include <algorithm>
-#include <boost/regex.hpp>
-#include <boost/multi_array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -41,7 +39,6 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "support.h"
-#include "regexSupport.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "MatrixBase.h"

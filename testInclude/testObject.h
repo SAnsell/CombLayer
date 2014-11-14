@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   testInclude/testObject.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,7 +46,6 @@ private:
   void createSurfaces();
 
   //Tests 
-  int testSetObject();
   int testCellStr();
   int testComplement();
   int testIntersect();
@@ -54,6 +53,8 @@ private:
   int testIsOnSide();
   int testMakeComplement();
   int testRemoveComplement();
+  int testSetObject();
+  int testSetObjectExtra();
   int testTrackCell();
 
 public:

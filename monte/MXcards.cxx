@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   monte/MXcards.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,17 +23,15 @@
 #include <iomanip>
 #include <iostream>
 #include <sstream>
+#include <string>
 #include <cmath>
 #include <list>
 #include <vector>
-#include <string>
+#include <set>
+#include <map>
 #include <algorithm>
 #include <functional>
 #include <iterator>
-#include <numeric>
-#include <boost/bind.hpp>
-#include <boost/regex.hpp>
-#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -44,7 +42,6 @@
 #include "support.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "regexSupport.h"
 #include "Element.h"
 #include "Zaid.h"
 #include "MXcards.h"

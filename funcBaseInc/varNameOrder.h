@@ -24,15 +24,10 @@
 
 class varNameOrder 
 {
- private:
-
-  boost::regex* RePtr;          /// Regular expression
-
  public:
 
   varNameOrder();
-  varNameOrder(const varNameOrder&);
-  ~varNameOrder() { delete RePtr; }
+  ~varNameOrder() {}
 
   template<typename T> bool
     operator()(const std::pair<std::string,T>& A,

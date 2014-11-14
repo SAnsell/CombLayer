@@ -84,7 +84,6 @@
 #include "SimPHITS.h"
 #include "variableSetup.h"
 #include "ImportControl.h"
-#include "SourceCreate.h"
 #include "SourceSelector.h"
 #include "makeTS2.h"
 #include "chipDataStore.h"

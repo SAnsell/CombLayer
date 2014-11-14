@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   support/regexSupport.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,13 +19,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
+#ifndef NO_REGEX
+
 #include <iostream>
 #include <iomanip>
 #include <fstream>
 #include <sstream>
+#include <string>
 #include <vector>
 #include <list>
-#include <string>
+#include <set>
+#include <map>
 #include <algorithm>
 #include <functional>
 #include <boost/regex.hpp>
@@ -489,3 +493,5 @@ template int findComp(std::istream&,const boost::regex&,int&);
 /// \endcond TEMPLATE 
 
 }  // NAMESPACE StrFunc
+
+#endif

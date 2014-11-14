@@ -39,7 +39,6 @@
 #include <boost/bind.hpp>
 #include <boost/any.hpp>
 #include <boost/multi_array.hpp>
-#include <boost/regex.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -63,7 +62,6 @@
 #include "OutputLog.h"
 #include "doubleErr.h"
 #include "support.h"
-#include "regexSupport.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"

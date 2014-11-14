@@ -26,9 +26,15 @@
 #include <cmath>
 #include <complex>
 #include <vector>
+#include <set>
+#include <map>
 #include <string>
 #include <algorithm>
+
+#ifndef NO_REGEX
 #include <boost/regex.hpp>
+#endif
+
 #include <boost/tuple/tuple.hpp>
 
 #include "Exception.h"
@@ -520,6 +526,7 @@ testSupport::testStrComp()
 
   std::string Target ="6log 8.9 90.0";
   std::string searchString="(^|\\s)(\\d+)log(\\s|$)";
+#ifndef NO_REGEX
   boost::regex Re(searchString);
 
   int Out(0);
@@ -532,6 +539,7 @@ testSupport::testStrComp()
       ELog::EM<<"X == "<<Out<< "=="<<ELog::endErr;
       return -1;
     }
+#endif
   return 0;  
 }
 
@@ -546,6 +554,8 @@ testSupport::testStrFullCut()
   */
 {
   ELog::RegMethod RegA("testSupport","testStrFullCut");
+
+#ifndef NO_REGEX
 
   // Input : Search : results : Remainder
   typedef boost::tuple<std::string,std::string,double,
@@ -605,6 +615,7 @@ testSupport::testStrFullCut()
 	  return -1;
 	}
     }
+#endif
   return 0;
 }
 
@@ -618,6 +629,8 @@ testSupport::testStrRemove()
 {
   
   ELog::RegMethod RegA("testSupport","testStrRemove");
+
+#ifndef NO_REGEX
 
   typedef boost::tuple<std::string,std::string,
 		       std::string,std::string> TTYPE;
@@ -643,7 +656,7 @@ testSupport::testStrRemove()
 	  return -1;
 	}
     }
-
+#endif
   return 0;
 }
 
@@ -656,6 +669,8 @@ testSupport::testStrParts()
   */
 {
   ELog::RegMethod RegA("testSupport","testStrParts");
+
+#ifndef NO_REGEX
   
   typedef boost::tuple<std::string,std::string,unsigned int,std::string> TTYPE;
   std::vector<TTYPE> Tests;
@@ -681,6 +696,9 @@ testSupport::testStrParts()
 	  return -1;
 	}
     }
+
+#endif
+
   return 0;
 }
 
@@ -693,6 +711,7 @@ testSupport::testStrSplit()
 {
   ELog::RegMethod RegA("testSupport","testStrSplit");
 
+#ifndef NO_REGEX
   // Start with a <(name)<spc> !> >       
   std::string searchString="<(\\S+)\\s+([^>]*)";
   std::string Target="Pre : <Key Attrib=test> <KeyB Attrib=> KeyC <KeyD A=Y>";
@@ -775,6 +794,8 @@ testSupport::testStrSplit()
       ELog::EM<<ELog::endErr;
       return -4;
     }
+
+#endif
 
   return 0;
 }

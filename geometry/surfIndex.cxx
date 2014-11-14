@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   geometry/surfIndex.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,10 @@
 #include <stack>
 #include <string>
 #include <algorithm>
+
+#ifndef NO_REGEX
 #include <boost/regex.hpp>
+#endif 
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -688,6 +691,10 @@ surfIndex::readOutputSurfaces(const std::string& FName)
 {
   ELog::RegMethod RegA("surfIndex","readOutputSurfaces");
 
+  int Scount(0);
+
+#ifndef NO_REGEX
+
   if (FName.empty()) return -1;
   std::ifstream IX(FName.c_str(),std::ios::in);
   //failed to open
@@ -709,7 +716,6 @@ surfIndex::readOutputSurfaces(const std::string& FName)
       return -2;
     }
   
-  int Scount(0);
   std::string readLine=StrFunc::getLine(IX);
   Line="";
   std::vector<std::string> errLine;
@@ -732,7 +738,7 @@ surfIndex::readOutputSurfaces(const std::string& FName)
 	      ELog::EM<<"Error with line grp:"<<ELog::endCrit;;
 	      for(unsigned int i=0;i<errLine.size();i++)
 		ELog::EM<<"   "<<errLine[i]<<ELog::endCrit;
-	      throw ColErr::ExitAbort(RegA.getFull());
+	      throw ColErr::InvalidLine(Line,"Line",0);
 	    }
 	  else
 	    {
@@ -743,6 +749,9 @@ surfIndex::readOutputSurfaces(const std::string& FName)
     }
   IX.close();
   ELog::EM<<"Read in "<<Scount<<" surfaces"<<ELog::endDiag;
+
+#endif
+
   return (Scount) ? 0 : -3;
 }
 
