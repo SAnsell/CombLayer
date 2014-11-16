@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   test/testMasterRotate.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@
 #include <map>
 #include <iterator>
 #include <memory>
-#include <boost/tuple/tuple.hpp>
+#include <tuple>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -46,7 +46,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "Triple.h"
 #include "Surface.h"
 #include "Quadratic.h"
 #include "Plane.h"
@@ -76,7 +75,7 @@ testMasterRotate::buildRotations(const int angleFlag)
     \param angleFlag :: add an angle system
   */
 {
-  ELog::RegMethod RegA("tstMasterRotate","buildRotations");
+  ELog::RegMethod RegA("testMasterRotate","buildRotations");
 
   masterRotate& MR = masterRotate::Instance();
   // Move X to Z:
@@ -160,7 +159,8 @@ testMasterRotate::testReverse()
   ELog::RegMethod RegA("testMasterRotate","testReverse");
   buildRotations(0);
 
-  typedef boost::tuple<size_t,size_t> TTYPE;
+  typedef std::tuple<size_t,size_t> TTYPE;
+
   std::vector<Geometry::Vec3D> VSet;
   VSet.push_back(Geometry::Vec3D(1,2,0));  
 
@@ -178,17 +178,17 @@ testMasterRotate::testReverse()
   Tests.push_back(TTYPE(0,0));
 
   const masterRotate& MR = masterRotate::Instance();
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
     {
-      const size_t iA(tc->get<0>());
-      const size_t iB(tc->get<1>());
+      const size_t iA(std::get<0>(tc));
+      const size_t iB(std::get<1>(tc));
       const Geometry::Vec3D PtA=MR.reverseRotate(VSet[iA]);
       const Geometry::Vec3D PtB=MR.calcRotate(PtA);
       
       if (PtB!=RSet[iB])
 	{
-	  ELog::EM<<"Test Num   "<<(tc-Tests.begin())+1<<ELog::endTrace;
+	  ELog::EM<<"Test Num   "<<cnt<<ELog::endTrace;
 	  ELog::EM<<"Vectors == "<<VSet[iA]<<ELog::endTrace;
 	  ELog::EM<<"        == "<<RSet[iB]<<ELog::endTrace;
 
@@ -196,6 +196,7 @@ testMasterRotate::testReverse()
 	  ELog::EM<<"            == "<<PtB<<ELog::endTrace;
 	  return -1;
 	}
+      cnt++;
     }
 
   
@@ -213,7 +214,7 @@ testMasterRotate::testReverseAxis()
   ELog::RegMethod RegA("testMasterRotate","testReverseAxis");
   buildRotations(0);
 
-  typedef boost::tuple<size_t,size_t> TTYPE;
+  typedef std::tuple<size_t,size_t> TTYPE;
   std::vector<Geometry::Vec3D> VSet;
   VSet.push_back(Geometry::Vec3D(1,0,0).unit());  
   VSet.push_back(Geometry::Vec3D(1,2,0).unit());  
@@ -233,17 +234,17 @@ testMasterRotate::testReverseAxis()
   Tests.push_back(TTYPE(0,0));
 
   const masterRotate& MR = masterRotate::Instance();
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
     {
-      const size_t iA(tc->get<0>());
-      const size_t iB(tc->get<1>());
+      const size_t iA(std::get<0>(tc));
+      const size_t iB(std::get<1>(tc));
       const Geometry::Vec3D PtA=MR.reverseAxisRotate(VSet[iA]);
       const Geometry::Vec3D PtB=MR.calcAxisRotate(PtA);
       
       if (PtB!=RSet[iB])
 	{
-	  ELog::EM<<"Test Num   "<<(tc-Tests.begin())+1<<ELog::endTrace;
+	  ELog::EM<<"Test Num   "<<cnt<<ELog::endTrace;
 	  ELog::EM<<"Vectors == "<<VSet[iA]<<ELog::endTrace;
 	  ELog::EM<<"        == "<<RSet[iB]<<ELog::endTrace;
 
@@ -251,6 +252,7 @@ testMasterRotate::testReverseAxis()
 	  ELog::EM<<"            == "<<PtB<<ELog::endTrace;
 	  return -1;
 	}
+      cnt++;
     }
 
   

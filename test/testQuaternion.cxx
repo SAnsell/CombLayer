@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   test/testQuaternion.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@
 #include <stack>
 #include <map>
 #include <iterator>
-#include <boost/tuple/tuple.hpp>
+#include <tuple>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -43,7 +43,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "Triple.h"
 
 #include "testFunc.h"
 #include "testQuaternion.h"
@@ -150,22 +149,21 @@ testQuaternion::testMultiplication()
 {
   ELog::RegMethod RegA("testQuaternion","testMultiplication");
   
-  typedef boost::tuple<Quaternion,Quaternion,Quaternion> TTYPE;  
+  typedef std::tuple<Quaternion,Quaternion,Quaternion> TTYPE;  
   std::vector<TTYPE> Tests;
 
   Tests.push_back(TTYPE(Quaternion(1,2,3,4),Quaternion(-3,4,5,6),
 			Quaternion(-50,-4,0,-8)));
 
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  for(const TTYPE& tc : Tests)
     {
-      Quaternion Ans=tc->get<0>()*tc->get<1>();
-      if (Ans!=tc->get<2>())
+      Quaternion Ans=std::get<0>(tc)*std::get<1>(tc);
+      if (Ans!=std::get<2>(tc))
 	{
-	  ELog::EM<<"A       == "<<tc->get<0>()<<ELog::endTrace;
-	  ELog::EM<<"B       == "<<tc->get<1>()<<ELog::endTrace;
+	  ELog::EM<<"A       == "<<std::get<0>(tc)<<ELog::endTrace;
+	  ELog::EM<<"B       == "<<std::get<1>(tc)<<ELog::endTrace;
 	  ELog::EM<<"Answer  == "<<Ans<<ELog::endTrace;
-	  ELog::EM<<"Expect  == "<<tc->get<2>()<<ELog::endTrace;
+	  ELog::EM<<"Expect  == "<<std::get<2>(tc)<<ELog::endTrace;
 	  return -1;
 	}
     }
@@ -182,39 +180,42 @@ testQuaternion::testRotation()
 {
   ELog::RegMethod RegA("testQuaternion","testRotation");
 
-  typedef DTriple<double,Vec3D,Vec3D> TTYPE;
+  typedef std::tuple<double,Vec3D,Vec3D> TTYPE;
+
   std::vector<TTYPE> Test;
   std::vector<TTYPE> TestR;
+
   Test.push_back(TTYPE(45.0,Vec3D(1,0,0),Vec3D(1/sqrt(2),1/sqrt(2),0.0)));
   Test.push_back(TTYPE(90.0,Vec3D(1,0,0),Vec3D(0,1,0)));
 
   TestR.push_back(TTYPE(M_PI/4.0,Vec3D(1,0,0),Vec3D(1/sqrt(2),1/sqrt(2),0.0)));
   TestR.push_back(TTYPE(M_PI/2.0,Vec3D(1,0,0),Vec3D(0,1,0)));
+
   Vec3D Z(0,0,1);
-  for(size_t i=0;i<Test.size();i++)
+  for(const TTYPE& tc : Test)
     {
-      Geometry::Vec3D A(Test[i].second);
-      Quaternion QA(Quaternion::calcQRotDeg(Test[i].first,Z));
+      Geometry::Vec3D A(std::get<1>(tc));
+      Quaternion QA(Quaternion::calcQRotDeg(std::get<0>(tc),Z));
       QA.rotate(A);
-      if (A!=Test[i].third)
+      if (A!=std::get<2>(tc))
 	{
-	  ELog::EM<<"A(expect) == "<<Test[i].third<<ELog::endCrit;
+	  ELog::EM<<"A(expect) == "<<std::get<2>(tc)<<ELog::endCrit;
 	  ELog::EM<<"A == "<<A<<ELog::endCrit;
-	  ELog::EM<<"Rot angle == "<<Test[i].first<<ELog::endCrit;
+	  ELog::EM<<"Rot angle == "<<std::get<0>(tc)<<ELog::endCrit;
 	  return -1;
 	}
     }
   // Test Radian
-  for(size_t i=0;i<TestR.size();i++)
+  for(const TTYPE& tc : TestR)
     {
-      Geometry::Vec3D A(TestR[i].second);
-      Quaternion QA(Quaternion::calcQRot(TestR[i].first,Z));
+      Geometry::Vec3D A(std::get<1>(tc));
+      Quaternion QA(Quaternion::calcQRot(std::get<0>(tc),Z));
       QA.rotate(A);
-      if (A!=TestR[i].third)
+      if (A!=std::get<2>(tc))
 	{
-	  ELog::EM<<"A(expect) == "<<TestR[i].third<<ELog::endCrit;
+	  ELog::EM<<"A(expect) == "<<std::get<2>(tc)<<ELog::endCrit;
 	  ELog::EM<<"A == "<<A<<ELog::endCrit;
-	  ELog::EM<<"Rot angle == "<<TestR[i].first<<ELog::endCrit;
+	  ELog::EM<<"Rot angle == "<<std::get<0>(tc)<<ELog::endCrit;
 	  return -1;
 	}
     }

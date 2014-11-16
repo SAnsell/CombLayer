@@ -31,7 +31,7 @@
 #include <string>
 #include <algorithm>
 #include <iterator>
-#include <boost/tuple/tuple.hpp>
+#include <tuple>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -132,7 +132,7 @@ testFunction::testAnalyse()
 {
   ELog::RegMethod RegA("testFunction","testAnalyse");
 
-  typedef boost::tuple<std::string,double> TTYPE;
+  typedef std::tuple<std::string,double> TTYPE;
   std::vector<TTYPE> Tests;
   
   Tests.push_back(TTYPE("atan(tx*tx)",atan(100.0)));
@@ -146,16 +146,15 @@ testFunction::testAnalyse()
   XX.addVariable("itemB");             // check the expression parse
   
   int cnt(1);
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  for(const TTYPE& tc : Tests)
     {
-      const int flag=XX.Parse(tc->get<0>());
+      const int flag=XX.Parse(std::get<0>(tc));
       if (flag)
 	{
 	  ELog::EM<<"Compile error:"<<flag<<ELog::endWarn;
 	  return -cnt;
 	}
-      if (fabs(XX.Eval<double>()-tc->get<1>())>1e-5)
+      if (fabs(XX.Eval<double>()-std::get<1>(tc))>1e-5)
 	{
 	  ELog::EM<<"Eval error:"<<XX.Eval<double>()<<ELog::endWarn;
 	  return -cnt;
@@ -210,37 +209,36 @@ testFunction::testEval()
 
   FuncDataBase XX;   
 
-  typedef boost::tuple<std::string,double,int,size_t,double> TTYPE;
+  typedef std::tuple<std::string,double,int,size_t,double> TTYPE;
   std::vector<TTYPE> Tests;
   
   Tests.push_back(TTYPE("V1",-1.2,-1,ULONG_MAX,-1.2));
   
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
-    XX.addVariable(tc->get<0>(),tc->get<1>());
+  for(const TTYPE& tc : Tests)
+    XX.addVariable(std::get<0>(tc),std::get<1>(tc));
   
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  for(const TTYPE& tc : Tests)
     {
-      const int A=XX.EvalVar<int>(tc->get<0>());
-      const size_t B=XX.EvalVar<size_t>(tc->get<0>());
-      const double C=XX.EvalVar<double>(tc->get<0>());
+      const int A=XX.EvalVar<int>(std::get<0>(tc));
+      const size_t B=XX.EvalVar<size_t>(std::get<0>(tc));
+      const double C=XX.EvalVar<double>(std::get<0>(tc));
       int failFlag(0);
-      if (A!=tc->get<2>()) failFlag |= 1;
-      if (B!=tc->get<3>()) failFlag |= 2;
-      if (fabs(C-tc->get<4>())>1e-6) failFlag |= 4;
+      if (A!=std::get<2>(tc)) failFlag |= 1;
+      if (B!=std::get<3>(tc)) failFlag |= 2;
+      if (fabs(C-std::get<4>(tc))>1e-6) failFlag |= 4;
       
       if (failFlag)
 	{
-	  ELog::EM<<"Variable "<<tc->get<0>()<<ELog::endTrace;
+	  ELog::EM<<"Variable "<<std::get<0>(tc)<<ELog::endTrace;
 	  if (failFlag & 1)
 	    ELog::EM<<"Failed on int:"<<A<<" ("
-		    <<tc->get<2>()<<")"<<ELog::endTrace;
+		    <<std::get<2>(tc)<<")"<<ELog::endTrace;
 	  if (failFlag & 2)
 	    ELog::EM<<"Failed on size_t:"<<B<<" ("
-		    <<tc->get<3>()<<")"<<ELog::endTrace;
+		    <<std::get<3>(tc)<<")"<<ELog::endTrace;
 	  if (failFlag & 4)
 	    ELog::EM<<"Failed on double:"<<C<<" ("
-		    <<tc->get<4>()<<")"<<ELog::endTrace;
+		    <<std::get<4>(tc)<<")"<<ELog::endTrace;
 	  return -1;
 	}
     }
@@ -263,8 +261,8 @@ testFunction::testString()
   const std::string B=XX.EvalVar<std::string>("testB");
   if (A!="AA" || B!="BB")
     {
-        ELog::EM<<"A == "<<A<<ELog::endDebug;
-	return -1;
+      ELog::EM<<"A == "<<A<<ELog::endDebug;
+      return -1;
     }
 
   return 0;
@@ -282,19 +280,18 @@ testFunction::testVec3D()
 
   FuncDataBase XX;   
 
-  typedef boost::tuple<std::string,Geometry::Vec3D> TTYPE;
+  typedef std::tuple<std::string,Geometry::Vec3D> TTYPE;
   std::vector<TTYPE> Tests;
    
   Tests.push_back(TTYPE("V1",Geometry::Vec3D(3,4,5)));
   Tests.push_back(TTYPE("V2",Geometry::Vec3D(10,-14,12)));
  
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
-    XX.addVariable(tc->get<0>(),tc->get<1>());
-  
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  for(const TTYPE& tc : Tests)
+    XX.addVariable(std::get<0>(tc),std::get<1>(tc));
+
+  for(const TTYPE& tc : Tests)
     {
-      if (XX.EvalVar<Geometry::Vec3D>(tc->get<0>())!=tc->get<1>())
+      if (XX.EvalVar<Geometry::Vec3D>(std::get<0>(tc))!=std::get<1>(tc))
 	{
 	  ELog::EM<<"XX == "<<XX.EvalVar<Geometry::Vec3D>("V1")<<ELog::endTrace;
 	  ELog::EM<<"Parse == "<<XX.Parse("V1+V2")<<ELog::endTrace;
@@ -305,10 +302,7 @@ testFunction::testVec3D()
 	}
     }
 
-
   //  XX.Parse("3 + 4.0");
-
-
   return 0;
 }
 
@@ -323,17 +317,17 @@ testFunction::testVariable()
 
   FuncDataBase XX;   
 
-  typedef boost::tuple<std::string,Geometry::Vec3D> VTYPE;
+  typedef std::tuple<std::string,Geometry::Vec3D> VTYPE;
   std::vector<VTYPE> TestVar=
     {
       VTYPE("V1",Geometry::Vec3D(3,4,5)),
       VTYPE("V2",Geometry::Vec3D(10,-14,12))
     };
   for(const VTYPE& V : TestVar)
-    XX.addVariable(V.get<0>(),V.get<1>());      
+    XX.addVariable(std::get<0>(V),std::get<1>(V));      
 
   // String : output type  : double / Vec out
-  typedef boost::tuple<std::string,int,Geometry::Vec3D,double> TTYPE;
+  typedef std::tuple<std::string,int,Geometry::Vec3D,double> TTYPE;
   std::vector<TTYPE> Tests;
    
   Tests.push_back(TTYPE("1+4.0",0,Geometry::Vec3D(3,2,3),5));
@@ -341,40 +335,41 @@ testFunction::testVariable()
   Tests.push_back(TTYPE("V1+vec3d(1,1,1)",1,Geometry::Vec3D(4,5,6),0));
   
   std::string VName("A");
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
     {
-      if (XX.Parse(tc->get<0>()))
+      if (XX.Parse(std::get<0>(tc)))
 	{
-	  ELog::EM<<"PARSE Failure:  "<<tc-Tests.begin()+1<<ELog::endDiag;
-	  ELog::EM<<"Test :"<<tc->get<0>()<<ELog::endDiag;
+	  ELog::EM<<"PARSE Failure:  "<<cnt<<ELog::endDiag;
+	  ELog::EM<<"Test :"<<std::get<0>(tc)<<ELog::endDiag;
 	  return -1;
 	}
       XX.addVariable(VName);
-      if (tc->get<1>()==1)   // Vector
+      if (std::get<1>(tc)==1)   // Vector
 	{
 	  const Geometry::Vec3D Res=
 	    XX.EvalVar<Geometry::Vec3D>(VName);
-	  if (tc->get<2>()!=Res)
+	  if (std::get<2>(tc)!=Res)
 	    {
 	      ELog::EM<<"EVAL[Vec] Failure:  "
-		      <<tc-Tests.begin()+1<<ELog::endDiag;
-	      ELog::EM<<"TC == "<<Res<<" != "<<tc->get<2>()<<ELog::endDiag;
+		      <<cnt<<ELog::endDiag;
+	      ELog::EM<<"TC == "<<Res<<" != "<<std::get<2>(tc)<<ELog::endDiag;
 	      return -1;
 	    }
 	}
       else   // Double 
 	{
 	  const double Res=XX.EvalVar<double>(VName);
-	  if (fabs(tc->get<3>()-Res)>Geometry::zeroTol)
+	  if (fabs(std::get<3>(tc)-Res)>Geometry::zeroTol)
 	    {
 	      ELog::EM<<"EVAL[double] Failure:  "
-		      <<tc-Tests.begin()+1<<ELog::endDiag;
+		      <<cnt<<ELog::endDiag;
 	      ELog::EM<<std::setprecision(9)<<"TC == "<<Res<<" != "
-		      <<tc->get<3>()<<ELog::endDiag;
+		      <<std::get<3>(tc)<<ELog::endDiag;
 	      return -1;
 	    }
 	}
+      cnt++;
       VName[0]++;
     }
   return 0;
@@ -391,13 +386,13 @@ testFunction::testVec3DFunctions()
 
   FuncDataBase XX;   
  
-  typedef boost::tuple<std::string,Geometry::Vec3D> VTYPE;
+  typedef std::tuple<std::string,Geometry::Vec3D> VTYPE;
   std::vector<VTYPE> TestVar;
   TestVar.push_back(VTYPE("V1",Geometry::Vec3D(3,4,5)));
   TestVar.push_back(VTYPE("V2",Geometry::Vec3D(10,-14,12)));
  
   // String : output type  : double / Vec out
-  typedef boost::tuple<std::string,int,Geometry::Vec3D,double> TTYPE;
+  typedef std::tuple<std::string,int,Geometry::Vec3D,double> TTYPE;
   std::vector<TTYPE> Tests;
   
   Tests.push_back(TTYPE("vec3d(1,2,3)",1,Geometry::Vec3D(1,2,3),0));
@@ -408,44 +403,43 @@ testFunction::testVec3DFunctions()
   Tests.push_back(TTYPE("dot(V1,vec3d(1,2,3))",0,Geometry::Vec3D(0,0,0),
 			sqrt(16+36+64)));
 
-  std::vector<VTYPE>::const_iterator vc;
-  for(vc=TestVar.begin();vc!=TestVar.end();vc++)
-    XX.addVariable(vc->get<0>(),vc->get<1>());
-  
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  for(const VTYPE& vc : TestVar)
+    XX.addVariable(std::get<0>(vc),std::get<1>(vc));
+
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
     {
-      if (XX.Parse(tc->get<0>()))
+      if (XX.Parse(std::get<0>(tc)))
 	{
-	  ELog::EM<<"PARSE Failure:  "<<tc-Tests.begin()+1<<ELog::endDiag;
-	  ELog::EM<<"Test :"<<tc->get<0>()<<ELog::endDiag;
+	  ELog::EM<<"PARSE Failure:  "<<cnt<<ELog::endDiag;
+	  ELog::EM<<"Test :"<<std::get<0>(tc)<<ELog::endDiag;
 	  return -1;
 	}
-      if (tc->get<1>()==1)   // Vector
+      if (std::get<1>(tc)==1)   // Vector
 	{
 	  const Geometry::Vec3D Res=
 	    XX.Eval<Geometry::Vec3D>();
-	  if (tc->get<2>()!=Res)
+	  if (std::get<2>(tc)!=Res)
 	    {
 	      ELog::EM<<"EVAL[Vec] Failure:  "
-		      <<tc-Tests.begin()+1<<ELog::endDiag;
-	      ELog::EM<<"TC == "<<Res<<" != "<<tc->get<2>()<<ELog::endDiag;
+		      <<cnt<<ELog::endDiag;
+	      ELog::EM<<"TC == "<<Res<<" != "<<std::get<2>(tc)<<ELog::endDiag;
 	      return -1;
 	    }
 	}
       else   // Double 
 	{
 	  const double Res=XX.Eval<double>();
-	  if (fabs(tc->get<3>()-Res)>Geometry::zeroTol)
+	  if (fabs(std::get<3>(tc)-Res)>Geometry::zeroTol)
 	    {
 	      ELog::EM<<"EVAL[double] Failure:  "
-		      <<tc-Tests.begin()+1<<ELog::endDiag;
+		      <<cnt<<ELog::endDiag;
 	      ELog::EM<<std::setprecision(9)<<"TC == "<<Res<<" != "
-		      <<tc->get<3>()<<ELog::endDiag;
+		      <<std::get<3>(tc)<<ELog::endDiag;
 	      return -1;
 	    }
-
 	}
+      cnt++;
     }
   return 0;
 }

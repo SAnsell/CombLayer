@@ -31,9 +31,6 @@
 #include <map>
 #include <string>
 #include <algorithm>
-#include <boost/tuple/tuple.hpp>
-#include <boost/bind.hpp>
-#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"

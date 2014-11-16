@@ -33,8 +33,6 @@
 #include <functional>
 #include <iterator>
 #include <numeric>
-#include <boost/bind.hpp>
-#include <boost/tuple/tuple.hpp>
 #include <boost/multi_array.hpp>
 
 #include "Exception.h"

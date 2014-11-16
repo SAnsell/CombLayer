@@ -29,7 +29,7 @@
 #include <map>
 #include <string>
 #include <algorithm>
-#include <boost/tuple/tuple.hpp>
+#include <tuple>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -133,7 +133,7 @@ testPlane::testDistance()
 {
   ELog::RegMethod RegA("testPlane","testDistance");
 
-  typedef boost::tuple<std::string,Geometry::Vec3D,double> TTYPE;
+  typedef std::tuple<std::string,Geometry::Vec3D,double> TTYPE;
   std::vector<TTYPE> Tests;
   
   Tests.push_back(TTYPE("px 1",Geometry::Vec3D(1.2,0.6,0.4),0.2));
@@ -147,24 +147,23 @@ testPlane::testDistance()
 			-sqrt(2*0.16)));
 		  
   
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  for(const TTYPE& tc : Tests)
     {
       Plane A;
-      const int retVal=A.setSurface(tc->get<0>());
+      const int retVal=A.setSurface(std::get<0>(tc));
       if (retVal)
         {
-	  ELog::EM<<"Failed to build "<<tc->get<0>()
+	  ELog::EM<<"Failed to build "<<std::get<0>(tc)
 		  <<" Ecode == "<<retVal<<ELog::endErr;
 	  return -1;
 	}
-      const double R=A.distance(tc->get<1>());
-      if (fabs(R-tc->get<2>())>1e-5)
+      const double R=A.distance(std::get<1>(tc));
+      if (fabs(R-std::get<2>(tc))>1e-5)
 	{
 	  ELog::EM<<"Plane == "<<A<<ELog::endTrace;
-	  ELog::EM<<"TestPoint == "<<tc->get<1>()<<ELog::endTrace;
+	  ELog::EM<<"TestPoint == "<<std::get<1>(tc)<<ELog::endTrace;
 	  ELog::EM<<"Distance [expect]== "<<R
-		  <<" [ "<<tc->get<2>()<<" ]"<<ELog::endTrace;
+		  <<" [ "<<std::get<2>(tc)<<" ]"<<ELog::endTrace;
 	  return -2;
 	}
     }
@@ -182,7 +181,7 @@ testPlane::testMirror()
 {
   ELog::RegMethod RegA("testPlane","testMirror");
 
-  typedef boost::tuple<std::string,Geometry::Vec3D,
+  typedef std::tuple<std::string,Geometry::Vec3D,
 		       Geometry::Vec3D> TTYPE;
   std::vector<TTYPE> Tests;
   
@@ -194,23 +193,22 @@ testPlane::testMirror()
 
   
 
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  for(const TTYPE& tc : Tests)
     {
       Plane A;
-      A.setSurface(tc->get<0>());
+      A.setSurface(std::get<0>(tc));
       
-      Geometry::Vec3D OutA=tc->get<1>();
-      Geometry::Vec3D OutB=tc->get<2>();
+      Geometry::Vec3D OutA=std::get<1>(tc);
+      Geometry::Vec3D OutB=std::get<2>(tc);
       A.mirrorPt(OutA);
       A.mirrorPt(OutB);
-      if (OutA!=tc->get<2>() || OutB!=tc->get<1>())
+      if (OutA!=std::get<2>(tc) || OutB!=std::get<1>(tc))
         {
 	  ELog::EM<<"Plane ==> "<<A<<ELog::endTrace;
-	  ELog::EM<<"Points == "<<tc->get<1>()<<" mirror to: "
-		  <<OutA<<"( "<<tc->get<2>()<<" )"<<ELog::endTrace;
-	  ELog::EM<<"Points == "<<tc->get<2>()<<" mirror to: "
-		  <<OutB<<"( "<<tc->get<1>()<<" )"<<ELog::endTrace;
+	  ELog::EM<<"Points == "<<std::get<1>(tc)<<" mirror to: "
+		  <<OutA<<"( "<<std::get<2>(tc)<<" )"<<ELog::endTrace;
+	  ELog::EM<<"Points == "<<std::get<2>(tc)<<" mirror to: "
+		  <<OutB<<"( "<<std::get<1>(tc)<<" )"<<ELog::endTrace;
 	  return -1;
 	}
     } 
@@ -273,7 +271,7 @@ testPlane::testSet()
   ELog::RegMethod RegA("testPlane","testSet");
 
   // number of vectors : PtA:PtB:PtC: Expected string
-  typedef boost::tuple<int,Vec3D,Vec3D,Vec3D,std::string> TTYPE;
+  typedef std::tuple<int,Vec3D,Vec3D,Vec3D,std::string> TTYPE;
   std::vector<TTYPE> Tests;
   
   Tests.push_back(TTYPE(2,Vec3D(1,2,18),Vec3D(0,0,-1),
@@ -281,23 +279,24 @@ testPlane::testSet()
   Tests.push_back(TTYPE(3,Vec3D(10,0,0),Vec3D(10,0,1),
 			Vec3D(10,5,1),"54 px 10"));
 
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
     {
       Plane A(54,0);
-      if (tc->get<0>()==2)
-	A.setPlane(tc->get<1>(),tc->get<2>());
+      if (std::get<0>(tc)==2)
+	A.setPlane(std::get<1>(tc),std::get<2>(tc));
       else
-	A.setPlane(tc->get<1>(),tc->get<2>(),tc->get<3>());
+	A.setPlane(std::get<1>(tc),std::get<2>(tc),std::get<3>(tc));
       std::ostringstream cx;
       cx<<A;
-      if (StrFunc::fullBlock(cx.str())!=tc->get<4>())
+      if (StrFunc::fullBlock(cx.str())!=std::get<4>(tc))
 	{
-	  ELog::EM<<"Failed on test: "<<(tc-Tests.begin())+1<<ELog::endCrit;
+	  ELog::EM<<"Failed on test: "<<cnt<<ELog::endCrit;
 	  ELog::EM<<"Plane  == "<<A;
-	  ELog::EM<<"Expect == "<<tc->get<4>()<<ELog::endCrit;
+	  ELog::EM<<"Expect == "<<std::get<4>(tc)<<ELog::endCrit;
 	  return -1;
 	}
+      cnt++;
     }
   return 0;
 }
@@ -312,29 +311,28 @@ testPlane::testTransform()
 {
   ELog::RegMethod RegA("testPlane","testTransform");
 
-  typedef boost::tuple<std::string,std::string,std::string> TTYPE;
+  typedef std::tuple<std::string,std::string,std::string> TTYPE;
   std::vector<TTYPE> Tests;
   
   Tests.push_back(TTYPE("px 1","tr2 1 0 1 "
 			"1 0 0 0 1 0 0 0 1 ",
 			"54 px 2"));
 	
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  for(const TTYPE& tc : Tests)
     {
       Plane A(54,2);
-      A.setSurface(tc->get<0>());
+      A.setSurface(std::get<0>(tc));
       Transform X;
-      X.setTransform(tc->get<1>());
+      X.setTransform(std::get<1>(tc));
       std::map<int,Geometry::Transform> TMap;
       TMap.insert(std::pair<int,Transform>(2,X));
       A.applyTransform(TMap);
       std::ostringstream cx;
       cx<<A;
-      if (StrFunc::fullBlock(cx.str())!=tc->get<2>())
+      if (StrFunc::fullBlock(cx.str())!=std::get<2>(tc))
 	{
 	  ELog::EM<<"A == "<<A;
-	  ELog::EM<<"Expected "<<tc->get<2>()<<ELog::endTrace;
+	  ELog::EM<<"Expected "<<std::get<2>(tc)<<ELog::endTrace;
 	  return -1;
 	}
     }
@@ -350,7 +348,7 @@ testPlane::testQuaternion()
 {
   ELog::RegMethod RegA("testPlane","testQuaternion");
 
-  typedef boost::tuple<std::string,Geometry::Vec3D,
+  typedef std::tuple<std::string,Geometry::Vec3D,
 		       Quaternion,int> TTYPE;
 
   std::vector<TTYPE> Tests;
@@ -362,23 +360,22 @@ testPlane::testQuaternion()
 			Quaternion::calcQRotDeg(90.0,Geometry::Vec3D(0,1,0)),
 			1));
   
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  for(const TTYPE& tc : Tests)
     {
       Plane A;
-      A.setSurface(tc->get<0>());
-      A.rotate(tc->get<2>());
-      if (A.side(tc->get<1>())!=tc->get<3>() ||
-	  A.Quadratic::side(tc->get<1>())!=tc->get<3>())
+      A.setSurface(std::get<0>(tc));
+      A.rotate(std::get<2>(tc));
+      if (A.side(std::get<1>(tc))!=std::get<3>(tc) ||
+	  A.Quadratic::side(std::get<1>(tc))!=std::get<3>(tc))
 	{
-	  ELog::EM<<"Org == "<<tc->get<0>()<<ELog::endTrace;
+	  ELog::EM<<"Org == "<<std::get<0>(tc)<<ELog::endTrace;
 	  ELog::EM<<"A == "<<A<<ELog::endTrace;
 	  
-	  ELog::EM<<"Side == "<<A.side(tc->get<1>())
-		  <<" != "<<tc->get<3>()<<ELog::endTrace;
+	  ELog::EM<<"Side == "<<A.side(std::get<1>(tc))
+		  <<" != "<<std::get<3>(tc)<<ELog::endTrace;
 
-	  ELog::EM<<"Quadratic Side == "<<A.Quadratic::side(tc->get<1>())
-		  <<" != "<<tc->get<3>()<<ELog::endTrace;
+	  ELog::EM<<"Quadratic Side == "<<A.Quadratic::side(std::get<1>(tc))
+		  <<" != "<<std::get<3>(tc)<<ELog::endTrace;
 	  return -1;
 	}
     }

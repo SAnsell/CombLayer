@@ -34,7 +34,7 @@
 #include <numeric>
 #include <iterator>
 #include <memory>
-#include <boost/tuple/tuple.hpp>
+#include <tuple>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -178,39 +178,38 @@ testWrapper::testBox()
   createSurfaces();
 
   // Object : OutObject : index  : surf
-  typedef boost::tuple<std::string,std::string,int,std::string> TTYPE;
+  typedef std::tuple<std::string,std::string,int,std::string> TTYPE;
   std::vector<TTYPE> Tests;
   
   Tests.push_back(TTYPE("1 -2 3 -4 5 -6","101 -102 103 -104 105 -106",
 			1,"101 px -2"));
 
   HeadRule HOut;
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  for(const TTYPE& tc : Tests)
     {
-      std::string ObjA=tc->get<0>();
+      std::string ObjA=std::get<0>(tc);
       
       ModelSupport::Wrapper WA;
       WA.setSurfOffset(100);
       const std::string NewObject=WA.createSurfaces(ObjA,1.0);
       HeadRule HResult;
-      HResult.procString(tc->get<1>());
+      HResult.procString(std::get<1>(tc));
       if (!HOut.procString(NewObject) ||
 	  HOut!=HResult)
 	{
 	  ELog::EM<<"Original == "<<ObjA<<ELog::endTrace;
 	  ELog::EM<<"New      == "<<HOut<<ELog::endTrace;
-	  ELog::EM<<"Expected == "<<tc->get<1>()<<ELog::endTrace;
+	  ELog::EM<<"Expected == "<<std::get<1>(tc)<<ELog::endTrace;
 	  return -1;
 	}
-      Geometry::Surface* SPtrN=SurI.getSurf(100+tc->get<2>());
-      Geometry::Surface* SPtrO=SurI.getSurf(tc->get<2>());
+      Geometry::Surface* SPtrN=SurI.getSurf(100+std::get<2>(tc));
+      Geometry::Surface* SPtrO=SurI.getSurf(std::get<2>(tc));
       std::string Out =StrFunc::stringWrite(*SPtrN);
-      if (StrFunc::fullBlock(Out)!=tc->get<3>())
+      if (StrFunc::fullBlock(Out)!=std::get<3>(tc))
 	{
 	  ELog::EM<<"Old   :"<<*SPtrO;
 	  ELog::EM<<"New   :"<<StrFunc::fullBlock(Out)<<std::endl;
-	  ELog::EM<<"Expect:"<<tc->get<3>()<<ELog::endErr;
+	  ELog::EM<<"Expect:"<<std::get<3>(tc)<<ELog::endErr;
 	  return -2;
 	}
     }

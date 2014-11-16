@@ -34,8 +34,6 @@
 #include <algorithm>
 #include <functional>
 #include <memory>
-#include <boost/tuple/tuple.hpp>
-
  
 #include "Exception.h"
 #include "FileReport.h"
@@ -49,26 +47,17 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Surface.h"
-#include "Quadratic.h"
-#include "Plane.h"
-#include "Cylinder.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
 #include "Rules.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "BnId.h"
-#include "Acomp.h"
-#include "Algebra.h"
-#include "Line.h"
 #include "Qhull.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
-#include "generateSurf.h"
-#include "AttachSupport.h"
 #include "ContainedComp.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"

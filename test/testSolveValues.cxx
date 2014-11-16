@@ -29,18 +29,16 @@
 #include <vector>
 #include <map>
 #include <string>
-#include <stack>
 #include <algorithm>
 #include <iterator>
 #include <numeric>
-#include <boost/tuple/tuple.hpp>
+#include <tuple>
 
 #include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "Triple.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -122,7 +120,7 @@ testSolveValues::testGetSolutions()
   ELog::RegMethod RegA("testSolveValues","testGetSolutions");
   
   // Poly A/B/C number of solutions : Sum of solutions
-  typedef boost::tuple<std::string,std::string,
+  typedef std::tuple<std::string,std::string,
 		       std::string,size_t,double> TTYPE;
 
   std::vector<TTYPE> Tests;
@@ -155,13 +153,12 @@ testSolveValues::testGetSolutions()
 
 
   PolyVar<3> FXYZ,GXYZ,HXYZ;
-  std::vector<TTYPE>::const_iterator tc;
-
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
     {
-      FXYZ.read(tc->get<0>());
-      GXYZ.read(tc->get<1>());
-      HXYZ.read(tc->get<2>());
+      FXYZ.read(std::get<0>(tc));
+      GXYZ.read(std::get<1>(tc));
+      HXYZ.read(std::get<2>(tc));
       solveValues SV;
       SV.setEquations(FXYZ,GXYZ,HXYZ);
       SV.getSolution();      
@@ -182,13 +179,13 @@ testSolveValues::testGetSolutions()
 	    sumResult=sum;
 	}
   
-      if (Res.size()!=tc->get<3>() || sumResult > tc->get<4>() ) 
+      if (Res.size()!=std::get<3>(tc) || sumResult > std::get<4>(tc) ) 
 	{
-	  ELog::EM<<"Failed on test"<<(tc-Tests.begin())+1<<ELog::endCrit;
+	  ELog::EM<<"Failed on test"<<cnt<<ELog::endCrit;
 	  ELog::EM<<"FXYZ =="<<FXYZ<<ELog::endDiag;
 	  ELog::EM<<"GXYZ =="<<GXYZ<<ELog::endDiag;
 	  ELog::EM<<"HXYZ =="<<HXYZ<<ELog::endDiag;
-	  ELog::EM<<"SumPT == "<<sumResult<<" Exp=="<<tc->get<4>()<<ELog::endDiag;
+	  ELog::EM<<"SumPT == "<<sumResult<<" Exp=="<<std::get<4>(tc)<<ELog::endDiag;
 
 	  ELog::EM<<"Results == ";
 	  copy(Res.begin(),Res.end(),
@@ -211,6 +208,7 @@ testSolveValues::testGetSolutions()
 	  
 	  return -1;
 	}
+      cnt++;
     }
   
   return 0;

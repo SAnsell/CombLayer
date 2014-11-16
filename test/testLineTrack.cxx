@@ -34,9 +34,7 @@
 #include <numeric>
 #include <iterator>
 #include <memory>
-#include <boost/functional.hpp>
-#include <boost/bind.hpp>
-#include <boost/tuple/tuple.hpp>
+#include <tuple>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -53,7 +51,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "Transform.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "Quadratic.h"
@@ -70,7 +67,6 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "ReadFunctions.h"
 #include "surfRegister.h"
 #include "ModelSupport.h"
 #include "neutron.h"
@@ -245,7 +241,7 @@ testLineTrack::testLine()
   initSim();
 
   // Point A : Point B : Sum of cellIDs 
-  typedef boost::tuple<Geometry::Vec3D,Geometry::Vec3D,int,double> TTYPE;
+  typedef std::tuple<Geometry::Vec3D,Geometry::Vec3D,int,double> TTYPE;
 
   std::vector<TTYPE> Tests;
   // First test:
@@ -262,18 +258,19 @@ testLineTrack::testLine()
   // Accross angle cylinder
   Tests.push_back(TTYPE(Geometry::Vec3D(-10,0,6),Geometry::Vec3D(10,0,6),14,92.0));
 
-  std::vector<TTYPE>::const_iterator tc;
-  int flag(0);
-  for(tc=Tests.begin();tc!=Tests.end() && !flag;tc++)
+
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
     {
-      LineTrack LT(tc->get<0>(),tc->get<1>());
+      LineTrack LT(std::get<0>(tc),std::get<1>(tc));
       LT.calculate(ASim);
-      if (!checkResult(LT,tc->get<2>(),tc->get<3>()))
+      if (!checkResult(LT,std::get<2>(tc),std::get<3>(tc)))
 	{
-	  ELog::EM<<"Failed on test :"<<(tc-Tests.begin())+1<<ELog::endTrace;
+	  ELog::EM<<"Failed on test :"<<cnt<<ELog::endTrace;
 	  ELog::EM<<LT<<ELog::endTrace;
 	  return -1;
 	}
+      cnt++;
     }
   return 0;
 }

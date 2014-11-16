@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   test/testFace.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,8 +29,7 @@
 #include <string>
 #include <algorithm>
 #include <iterator>
-#include <boost/bind.hpp>
-#include <boost/tuple/tuple.hpp>
+#include <tuple>
 #include <boost/format.hpp>
 
 #include "Exception.h"
@@ -200,7 +199,7 @@ testFace::testInTriangle()
   faceObj FB(50,Vec3D(8,0,0),Vec3D(3,0,-1),Vec3D(3,0,1));
   faceObj FC(670,Vec3D(8,0,1),Vec3D(1,1,7),Vec3D(1,0,0));
 
-  typedef boost::tuple<const faceObj*,Geometry::Vec3D,int> RTYPE;
+  typedef std::tuple<const faceObj*,Geometry::Vec3D,int> RTYPE;
 
   std::vector<RTYPE> Results;
 
@@ -211,16 +210,18 @@ testFace::testInTriangle()
   Results.push_back(RTYPE(&FB,Vec3D(1,0,0),-1));  // outside
   Results.push_back(RTYPE(&FC,Vec3D(0.02,0.02,0),-1));  // outside
 
-  for(size_t i=0;i<Results.size();i++)
+  int cnt(0);
+  for(const RTYPE& tc : Results)
     {
-      const faceObj& GA=*Results[i].get<0>();
-      const Geometry::Vec3D& Pt=Results[i].get<1>();
-      if (GA->flatValid(Pt)!=Results[i].get<2>())
+      const faceObj& GA=*std::get<0>(tc);
+      const Geometry::Vec3D& Pt=std::get<1>(tc);
+      if (GA->flatValid(Pt)!=std::get<2>(tc))
 	{
-	  ELog::EM<<"Triangle FA["<<i<<"] "<<Pt<<" == "
+	  ELog::EM<<"Triangle FA["<<cnt<<"] "<<Pt<<" == "
 		  <<GA->flatValid(Pt)<<ELog::endCrit;
 	  return -1;
 	}
+      cnt++;
     }
   return 0;
 }
@@ -249,34 +250,36 @@ testFace::testNonPlanar()
   // Touching case: (fc) [Point:on side]
   faceObj FG(670,Vec3D(8,0,1),Vec3D(1,1,7),Vec3D(1,0,0));
 
-  typedef boost::tuple<const faceObj*,const faceObj*,
+  typedef std::tuple<const faceObj*,const faceObj*,
 		       int,std::string> TTYPE;
-  std::vector<TTYPE> TItems;
-  TItems.push_back(TTYPE(&FA,&FB,-1,std::string("A out of B")));
-  TItems.push_back(TTYPE(&FC,&FD,1,std::string("Inside plane crossing")));
-  TItems.push_back(TTYPE(&FC,&FDprime,-1,std::string("Long cross plane")));
-  TItems.push_back(TTYPE(&FC,&FE,-1,std::string("Touching sides")));
-  TItems.push_back(TTYPE(&FC,&FF,-1,std::string("Part touching sides")));
-  TItems.push_back(TTYPE(&FC,&FG,-1,std::string("Point touching sides")));
+  std::vector<TTYPE> Tests;
+  Tests.push_back(TTYPE(&FA,&FB,-1,std::string("A out of B")));
+  Tests.push_back(TTYPE(&FC,&FD,1,std::string("Inside plane crossing")));
+  Tests.push_back(TTYPE(&FC,&FDprime,-1,std::string("Long cross plane")));
+  Tests.push_back(TTYPE(&FC,&FE,-1,std::string("Touching sides")));
+  Tests.push_back(TTYPE(&FC,&FF,-1,std::string("Part touching sides")));
+  Tests.push_back(TTYPE(&FC,&FG,-1,std::string("Point touching sides")));
 
-  for(size_t i=0;i<TItems.size();i++)
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
     {
-      const faceObj& GA= *(TItems[i].get<0>());
-      const faceObj& GB= *(TItems[i].get<1>());
-      const int res= TItems[i].get<2>();
-      const std::string& Info= TItems[i].get<3>();
+      const faceObj& GA= *(std::get<0>(tc));
+      const faceObj& GB= *(std::get<1>(tc));
+      const int res= std::get<2>(tc);
+      const std::string& Info= std::get<3>(tc);
       
       if (GA->Intersect(*GB)!=res || 
        	  GB->Intersect(*GA)!=res )
        	{
        	  ELog::EM<<Info<<ELog::endCrit;
-       	  ELog::EM<<"Test="<<i+1<<ELog::endCrit;
+       	  ELog::EM<<"Test="<<cnt<<ELog::endCrit;
        	  ELog::EM<<"A/B == "<<GA->Intersect(*GB)<<" ["
        		  <<res<<"]"<<ELog::endCrit;
        	  ELog::EM<<"B/A == "<<GB->Intersect(*GA)<<" ["
        		  <<res<<"]"<<ELog::endCrit;
-       	  return -static_cast<int>(i+1);
+       	  return -cnt;
        	}
+      cnt++;
     }
   return 0;
 }
@@ -308,34 +311,35 @@ testFace::testPlanar()
   faceObj FJ(90,Vec3D(-1,-1,0),Vec3D(0,-1,0),Vec3D(0,-8,0));
 
 
-  typedef boost::tuple<const faceObj*,const faceObj*,
+  typedef std::tuple<const faceObj*,const faceObj*,
 		       int,std::string> TTYPE;
-  std::vector<TTYPE> TItems;
-  TItems.push_back(TTYPE(&FA,&FB,-1,std::string("A not touching B")));
-  TItems.push_back(TTYPE(&FA,&FC,1,std::string("A inside B")));
-  TItems.push_back(TTYPE(&FD,&FE,-1,std::string("A touch point B")));
-  TItems.push_back(TTYPE(&FF,&FG,1,std::string("A star B")));
-  TItems.push_back(TTYPE(&FH,&FJ,-1,std::string("A touch line B")));
+  std::vector<TTYPE> Tests;
+  Tests.push_back(TTYPE(&FA,&FB,-1,std::string("A not touching B")));
+  Tests.push_back(TTYPE(&FA,&FC,1,std::string("A inside B")));
+  Tests.push_back(TTYPE(&FD,&FE,-1,std::string("A touch point B")));
+  Tests.push_back(TTYPE(&FF,&FG,1,std::string("A star B")));
+  Tests.push_back(TTYPE(&FH,&FJ,-1,std::string("A touch line B")));
 
-
-  for(size_t i=0;i<TItems.size();i++)
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
     {
-      const faceObj& GA= *(TItems[i].get<0>());
-      const faceObj& GB= *(TItems[i].get<1>());
-      const int res= TItems[i].get<2>();
-      const std::string& Info= TItems[i].get<3>();
+      const faceObj& GA= *(std::get<0>(tc));
+      const faceObj& GB= *(std::get<1>(tc));
+      const int res= std::get<2>(tc);
+      const std::string& Info= std::get<3>(tc);
       
       if (GA->Intersect(*GB)!=res || 
        	  GB->Intersect(*GA)!=res )
        	{
        	  ELog::EM<<Info<<ELog::endCrit;
-       	  ELog::EM<<"Test="<<i+1<<ELog::endCrit;
+       	  ELog::EM<<"Test="<<cnt<<ELog::endCrit;
        	  ELog::EM<<"A/B == "<<GA->Intersect(*GB)<<" ["
        		  <<res<<"]"<<ELog::endCrit;
        	  ELog::EM<<"B/A == "<<GB->Intersect(*GA)<<" ["
        		  <<res<<"]"<<ELog::endCrit;
-       	  return -static_cast<int>(i+1);
+       	  return -cnt;
        	}
+      cnt++;
     }
    
   return 0;

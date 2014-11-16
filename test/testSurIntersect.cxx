@@ -32,7 +32,7 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
-#include <boost/tuple/tuple.hpp>
+#include <tuple>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -294,26 +294,27 @@ testSurIntersect::testNearPoint()
   
   
   // Target / result
-  typedef boost::tuple<Geometry::Vec3D,size_t> TTYPE;
+  typedef std::tuple<Geometry::Vec3D,size_t> TTYPE;
   std::vector<TTYPE> Tests;
 
   Tests.push_back(TTYPE(Geometry::Vec3D(0,0,0),2));
   Tests.push_back(TTYPE(Geometry::Vec3D(8,8,-8),0));
 
  
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
     {
       Geometry::Vec3D Result=
-	SurInter::nearPoint(Pts,tc->get<0>());
-      if (Result!=Pts[tc->get<1>()])
+	SurInter::nearPoint(Pts,std::get<0>(tc));
+      if (Result!=Pts[std::get<1>(tc)])
 	{
-	  ELog::EM<<"Failed on test "<<tc-Tests.begin()<<ELog::endTrace;
-	  ELog::EM<<"Target "<<tc->get<0>()<<ELog::endTrace;
+	  ELog::EM<<"Failed on test "<<cnt<<ELog::endTrace;
+	  ELog::EM<<"Target "<<std::get<0>(tc)<<ELog::endTrace;
 	  ELog::EM<<"Result "<<Result<<ELog::endTrace;
-	  ELog::EM<<"Expect "<<Pts[tc->get<1>()]<<ELog::endTrace;
+	  ELog::EM<<"Expect "<<Pts[std::get<1>(tc)]<<ELog::endTrace;
 	  return -1;
 	}
+      cnt++;
     }
 
   return 0;
@@ -353,7 +354,7 @@ testSurIntersect::testProcessPoint()
   SList.push_back(&D);
 
   // surf : surf : surf : OutSize / out
-  typedef boost::tuple<size_t,size_t,size_t,unsigned int,Geometry::Vec3D> TTYPE;
+  typedef std::tuple<size_t,size_t,size_t,unsigned int,Geometry::Vec3D> TTYPE;
   std::vector<TTYPE> Tests;
   // Simple plane
   Tests.push_back(TTYPE(0,1,2,1,Geometry::Vec3D(23,10,30))); 
@@ -364,23 +365,21 @@ testSurIntersect::testProcessPoint()
   // Hits to cylinder at angle
   Tests.push_back(TTYPE(3,4,6,0,Geometry::Vec3D(0,0,0)));
 
-  std::vector<TTYPE>::const_iterator tc;
-  
   int cnt(1);
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  for(const TTYPE& tc : Tests)
     {
-      const Geometry::Surface* aPtr=SList[tc->get<0>()];
-      const Geometry::Surface* bPtr=SList[tc->get<1>()];
-      const Geometry::Surface* cPtr=SList[tc->get<2>()];
+      const Geometry::Surface* aPtr=SList[std::get<0>(tc)];
+      const Geometry::Surface* bPtr=SList[std::get<1>(tc)];
+      const Geometry::Surface* cPtr=SList[std::get<2>(tc)];
       std::vector<Geometry::Vec3D> Out=
 	SurInter::processPoint(aPtr,bPtr,cPtr);
-      if (Out.size()!=tc->get<3>() ||
-	  (!Out.empty() && Out[0]!=tc->get<4>()))
+      if (Out.size()!=std::get<3>(tc) ||
+	  (!Out.empty() && Out[0]!=std::get<4>(tc)))
 	{
 	  ELog::EM<<"Out.size == "<<Out.size()<<ELog::endDiag;
 	  for(size_t i=0;i<Out.size();i++)
 	    ELog::EM<<"Out ["<<i<<"] == "<<Out[i]<<ELog::endDiag;
-	  ELog::EM<<"Expected point "<<tc->get<4>()<<ELog::endDiag;
+	  ELog::EM<<"Expected point "<<std::get<4>(tc)<<ELog::endDiag;
 	  ELog::EM<<"Return == "<<cnt<<ELog::endDiag;
 	  return -cnt;
 	}

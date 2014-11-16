@@ -29,7 +29,7 @@
 #include <map>
 #include <string>
 #include <algorithm>
-#include <boost/tuple/tuple.hpp>
+#include <tuple>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -128,7 +128,7 @@ testCone::testSideDirection()
 
 
   // Cylinder : Start Point : path-direction : Side
-  typedef boost::tuple<size_t,Geometry::Vec3D,Geometry::Vec3D,int> TTYPE;
+  typedef std::tuple<size_t,Geometry::Vec3D,Geometry::Vec3D,int> TTYPE;
   std::vector<Geometry::Cone> ConeUnits;
   std::vector<TTYPE> Tests;
   
@@ -144,21 +144,22 @@ testCone::testSideDirection()
   // Outward
   Tests.push_back(TTYPE(0,Geometry::Vec3D(0,0,-1),Geometry::Vec3D(0,0,-1),1));
 
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
     {
-      const Geometry::Cone& CX=ConeUnits[tc->get<0>()];
-      const Geometry::Vec3D& Pt=tc->get<1>();
-      if (CX.sideDirection(Pt,tc->get<2>())!=tc->get<3>())
+      const Geometry::Cone& CX=ConeUnits[std::get<0>(tc)];
+      const Geometry::Vec3D& Pt=std::get<1>(tc);
+      if (CX.sideDirection(Pt,std::get<2>(tc))!=std::get<3>(tc))
 	{
 	  const Geometry::Vec3D SN=CX.surfaceNormal(Pt);
-	  ELog::EM<<"Test == "<<1+(tc-Tests.begin())<<ELog::endDebug;
+	  ELog::EM<<"Test == "<<cnt<<ELog::endDebug;
 	  ELog::EM<<"Distance == "<<CX.distance(Pt)<<ELog::endDebug;
-	  ELog::EM<<"Side direction "<<SN<<":"<<tc->get<2>()<<ELog::endDebug;
-	  ELog::EM<<"DotProd "<<SN.dotProd(tc->get<2>())<<" : "
-		  <<CX.sideDirection(Pt,tc->get<2>())
+	  ELog::EM<<"Side direction "<<SN<<":"<<std::get<2>(tc)<<ELog::endDebug;
+	  ELog::EM<<"DotProd "<<SN.dotProd(std::get<2>(tc))<<" : "
+		  <<CX.sideDirection(Pt,std::get<2>(tc))
 		  <<ELog::endDebug;
 	}
+      cnt++;
     }
   return 0;
 }
@@ -174,7 +175,7 @@ testCone::testSurfaceNormal()
   ELog::RegMethod RegA("testCone","testSurfaceNormal");
 
   // Cone : Start Point : Normal : NResults : distance A : distance B 
-  typedef boost::tuple<std::string,Geometry::Vec3D,Geometry::Vec3D>
+  typedef std::tuple<std::string,Geometry::Vec3D,Geometry::Vec3D>
 		       TTYPE;
   std::vector<TTYPE> Tests;
   
@@ -187,25 +188,26 @@ testCone::testSurfaceNormal()
   Tests.push_back(TTYPE("ky 1 1 1",Geometry::Vec3D(1,2,0),
 			Geometry::Vec3D(1,-1,0).unit()));
   
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
     {
       Cone A;
-      const int retVal=A.setSurface(tc->get<0>());
+      const int retVal=A.setSurface(std::get<0>(tc));
       if (retVal)
         {
-	  ELog::EM<<"Failed to build "<<tc->get<0>()
+	  ELog::EM<<"Failed to build "<<std::get<0>(tc)
 		  <<" Ecode == "<<retVal<<ELog::endErr;
 	  return -1;
 	}
-      const Geometry::Vec3D RNorm=A.surfaceNormal(tc->get<1>());
-      if (RNorm!=tc->get<2>())
+      const Geometry::Vec3D RNorm=A.surfaceNormal(std::get<1>(tc));
+      if (RNorm!=std::get<2>(tc))
 	{
-	  ELog::EM<<"Failure for test "<<tc-Tests.begin()<<ELog::endCrit;
+	  ELog::EM<<"Failure for test "<<cnt<<ELog::endCrit;
 	  ELog::EM<<"Normal "<<RNorm<<" :: "<<
-	    tc->get<2>()<<ELog::endCrit;
+	    std::get<2>(tc)<<ELog::endCrit;
 	  return -1;
 	}
+      cnt++;
     }
   return 0;
 }
@@ -221,32 +223,33 @@ testCone::testSide()
   ELog::RegMethod RegA("testCone","testSide");
 
   // Cone : Start Point : side 
-  typedef boost::tuple<std::string,Geometry::Vec3D,int> TTYPE;
+  typedef std::tuple<std::string,Geometry::Vec3D,int> TTYPE;
   std::vector<TTYPE> Tests;
   
   Tests.push_back(TTYPE("ky 1 0.8 1",Geometry::Vec3D(0,3,0),-1));
   Tests.push_back(TTYPE("ky 1 0.7 1",Geometry::Vec3D(0,-3,0),1));
   
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
     {
       Cone A;
-      const int retVal=A.setSurface(tc->get<0>());
+      const int retVal=A.setSurface(std::get<0>(tc));
       if (retVal)
         {
-	  ELog::EM<<"Failed to build "<<tc->get<0>()
+	  ELog::EM<<"Failed to build "<<std::get<0>(tc)
 		  <<" Ecode == "<<retVal<<ELog::endCrit;
 	  return -1;
 	}
-      const int RSide=A.side(tc->get<1>());
-      if (RSide!=tc->get<2>())
+      const int RSide=A.side(std::get<1>(tc));
+      if (RSide!=std::get<2>(tc))
 	{
-	  ELog::EM<<"Failure for test "<<(tc-Tests.begin())+1<<ELog::endCrit;
-	  ELog::EM<<"Side ["<<tc->get<2>()<<"] ::"
+	  ELog::EM<<"Failure for test "<<cnt<<ELog::endCrit;
+	  ELog::EM<<"Side ["<<std::get<2>(tc)<<"] ::"
 		  <<RSide<<ELog::endCrit;
-	  ELog::EM<<"Point "<<tc->get<1>()<<ELog::endCrit;
+	  ELog::EM<<"Point "<<std::get<1>(tc)<<ELog::endCrit;
 	  return -1;
 	}
+      cnt++;
     }
   return 0;
 }

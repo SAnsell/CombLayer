@@ -32,7 +32,7 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
-#include <boost/tuple/tuple.hpp>
+#include <tuple>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -165,7 +165,7 @@ testRules::testCreateDNF()
 {
   ELog::RegMethod RegA("testRules","testCreateDNF");
 
-  typedef boost::tuple<std::string,int,std::string> TTYPE;
+  typedef std::tuple<std::string,int,std::string> TTYPE;
   std::vector<TTYPE> Tests;
   Tests.push_back(TTYPE("3 0 11  -12  13  -14  15  (-16 : 17 )",1,
 			"( -16 15 -14 13 -12 11 ) : ( 17 15 -14 13 -12 11 )"));
@@ -174,10 +174,9 @@ testRules::testCreateDNF()
 			"-14 : -12 : 11 : 13"));
 
   MonteCarlo::Object Tx;
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  for(const TTYPE& tc : Tests)
     {
-      Tx.setObject(tc->get<0>());
+      Tx.setObject(std::get<0>(tc));
       const Rule* TRule=Tx.topRule();
       Rule* XRule=TRule->clone();
       RuleBinary Dlist(XRule);
@@ -186,13 +185,14 @@ testRules::testCreateDNF()
       Dlist.group();
       
       Rule* OutRule=Dlist.createTree();
-      if ( (tc->get<1>() && (!OutRule || OutRule->display()!=tc->get<2>())) ||
-	   (!tc->get<1>() && OutRule))
+      if ( (std::get<1>(tc) && 
+	    (!OutRule || OutRule->display()!=std::get<2>(tc))) ||
+	   (!std::get<1>(tc) && OutRule))
 	{
 	  ELog::EM<<"Original == "<<TRule->display()<<ELog::endTrace;
 	  ELog::EM<<"D == "<<Dlist<<ELog::endTrace;
 	  ELog::EM<<ELog::endDiag;
-	  ELog::EM<<"Out Rule == "<<tc->get<2>()<<ELog::endDiag;
+	  ELog::EM<<"Out Rule == "<<std::get<2>(tc)<<ELog::endDiag;
 	  if (OutRule)
 	    ELog::EM<<"Rule == "<<OutRule->display()<<ELog::endTrace;
 	  else
@@ -219,17 +219,16 @@ testRules::testIsValid()
 
   createSurfaces();
 
-  typedef boost::tuple<std::string,std::string,size_t,size_t> TTYPE;
+  typedef std::tuple<std::string,std::string,size_t,size_t> TTYPE;
   std::vector<TTYPE> Tests;
   Tests.push_back(TTYPE("3 0 1 -2 3 -4 5 -6","+-+-+-",1,1));
   Tests.push_back(TTYPE("3 0 1 -2 3 -4 5 -6 (11:(12 14))","-+-+-+++",1,1));
     
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  for(const TTYPE& tc : Tests)
     {
       std::ostringstream cx;
       MonteCarlo::Object Tx;
-      Tx.setObject(tc->get<0>());
+      Tx.setObject(std::get<0>(tc));
       Tx.populate();
       Tx.createSurfaceList();
       const Rule* TRule=Tx.topRule();
@@ -243,18 +242,18 @@ testRules::testIsValid()
 	    {
 	      cx<<MI.status()<<"\n";
 	      N++;
-	      if (N==tc->get<2>())
+	      if (N==std::get<2>(tc))
 		out=MI.status();
 	    }
 	} while(++MI);
 
-      if (N!=tc->get<3>() || out!=tc->get<1>())
+      if (N!=std::get<3>(tc) || out!=std::get<1>(tc))
 	{
 	  ELog::EM<<"Rule Finished == "<<TRule->display()<<ELog::endTrace;
 	  ELog::EM<<"N        == "<<N<<ELog::endTrace;
-	  ELog::EM<<"Expected == "<<tc->get<3>()<<ELog::endTrace;
+	  ELog::EM<<"Expected == "<<std::get<3>(tc)<<ELog::endTrace;
 	  ELog::EM<<"Got      == "<<out<<ELog::endTrace;
-	  ELog::EM<<"Expected == "<<tc->get<1>()<<ELog::endTrace;
+	  ELog::EM<<"Expected == "<<std::get<1>(tc)<<ELog::endTrace;
 	  ELog::EM<<"Total      == \n"<<cx.str()<<ELog::endTrace;
 	  return -1;
 	}
@@ -274,36 +273,35 @@ testRules::testExclude()
   createSurfaces();
 
 
-  typedef boost::tuple<std::string,int,int,int> TTYPE;
+  typedef std::tuple<std::string,int,int,int> TTYPE;
   std::vector<TTYPE> Tests;
   Tests.push_back(TTYPE("3 0 1 -2 3 -4 5 -6",1,0,1));
   Tests.push_back(TTYPE("3 0 1 -2 3 -4 5 -6 (-11:12:13:-14)",11,0,11));
   
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  for(const TTYPE& tc : Tests)
     {
       std::ostringstream cx;
       MonteCarlo::Object Tx;
-      Tx.setObject(tc->get<0>());
+      Tx.setObject(std::get<0>(tc));
       Tx.createSurfaceList();
       const Rule* TRule=Tx.topRule();
       MapSupport::mapIterator MI(Tx.getSurfSet());
       std::map<int,int> rmap=MI.getM();
       std::map<int,int>::iterator mc;
       for(mc=rmap.begin();mc!=rmap.end();mc++)
-	if (mc->first!=tc->get<1>())
+	if (mc->first!=std::get<1>(tc))
 	  mc->second=0;
       const int minusRes=TRule->isValid(rmap);
-      rmap[tc->get<1>()]=1;
+      rmap[std::get<1>(tc)]=1;
       const int plusRes=TRule->isValid(rmap);
       
-      if (minusRes!=tc->get<2>() ||
-	  plusRes!=tc->get<3>() )
+      if (minusRes!=std::get<2>(tc) ||
+	  plusRes!=std::get<3>(tc) )
 	{
 	  ELog::EM<<"Rule "<<TRule->display()<<ELog::endDebug;
-	  ELog::EM<<"- == "<<minusRes<<" ("<<tc->get<2>()<<")"
+	  ELog::EM<<"- == "<<minusRes<<" ("<<std::get<2>(tc)<<")"
 		  <<ELog::endDebug;;
-	  ELog::EM<<"+ == "<<plusRes<<" ("<<tc->get<3>()<<")"
+	  ELog::EM<<"+ == "<<plusRes<<" ("<<std::get<3>(tc)<<")"
 		  <<ELog::endDebug;;
 	  return -1;
 	}
@@ -323,22 +321,21 @@ testRules::testMakeCNF()
 
   MonteCarlo::Object Tx;
 
-  typedef boost::tuple<std::string,int,std::string> TTYPE;
+  typedef std::tuple<std::string,int,std::string> TTYPE;
   std::vector<TTYPE> Tests;
   Tests.push_back(TTYPE("3 0 (1 : -2)  3 : (-3 -1 2)",0,
 		       "( 3 1 ) : ( 3 -2 ) : ( 2 -1 -3 )"));
 
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  for(const TTYPE& tc : Tests)
     {
-      Tx.setObject(tc->get<0>());
+      Tx.setObject(std::get<0>(tc));
       const Rule* TRule=Tx.topRule();
       Rule* XRule=TRule->clone();
       const int nCount=Rule::makeCNF(XRule);
-      if (XRule->display()!=tc->get<2>())
+      if (XRule->display()!=std::get<2>(tc))
 	{
 	  ELog::EM<<"Rule Finished == "<<XRule->display()<<ELog::endTrace;
-	  ELog::EM<<"Expected == "<<tc->get<2>()<<ELog::endTrace;
+	  ELog::EM<<"Expected == "<<std::get<2>(tc)<<ELog::endTrace;
 	  ELog::EM<<"Change == "<<nCount<<ELog::endTrace;
 	  delete XRule;
 	  return -1;
@@ -357,26 +354,28 @@ testRules::testRemoveComplement()
 {
   ELog::RegMethod RegA("TestRules","testRemoveComplement");
   
-  typedef boost::tuple<std::string,std::string> TTYPE;
+  typedef std::tuple<std::string,std::string> TTYPE;
   std::vector<TTYPE> Tests;
 
   Tests.push_back(TTYPE("1 -2","-1:2"));
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
     {
-      std::shared_ptr<Rule> RP(Rule::procCompString(tc->get<0>()));
+      std::shared_ptr<Rule> RP(Rule::procCompString(std::get<0>(tc)));
 	
-      if (!RP || RP->display()!=tc->get<1>() )
+      if (!RP || RP->display()!=std::get<1>(tc) )
 	{
-	  ELog::EM<<"Failed test "<<(tc-Tests.begin())+1<<ELog::endTrace;
-	  ELog::EM<<"Input  :"<<tc->get<0>()<<ELog::endTrace;
-	  ELog::EM<<"Expect :"<<tc->get<1>()<<ELog::endTrace;
+	  ELog::EM<<"Failed test "<<cnt<<ELog::endTrace;
+	  ELog::EM<<"Input  :"<<std::get<0>(tc)<<ELog::endTrace;
+	  ELog::EM<<"Expect :"<<std::get<1>(tc)<<ELog::endTrace;
 	  if (RP)
 	    ELog::EM<<"Result :"<<RP->display()<<ELog::endTrace;
 	  else
 	    ELog::EM<<"Result : NULL Ptr"<<ELog::endTrace;
 	  return -1;
 	}
+      cnt++;
     }
   return 0;
 }

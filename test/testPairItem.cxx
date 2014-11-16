@@ -33,7 +33,7 @@
 #include <string>
 #include <algorithm>
 #include <memory>
-#include <boost/tuple/tuple.hpp>
+#include <tuple>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -185,30 +185,28 @@ testPairItem::testBasicPair()
   ELog::RegMethod RegA("testPairItem","testBasicPair");
   ModelSupport::surfIndex& SurI= ModelSupport::surfIndex::Instance();
   
-  typedef boost::tuple<int,int,int,double,std::string> TTYPE;
+  typedef std::tuple<int,int,int,double,std::string> TTYPE;
   typedef pairItem<Geometry::Plane,Geometry::Plane> PTYPE;
   std::vector<TTYPE> Tests;
   Tests.push_back(TTYPE(1,2,101,0.4,"px -0.2"));
 
-
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  for(const TTYPE& tc : Tests)
     {
-      const int surfOut(tc->get<2>());
+      const int surfOut(std::get<2>(tc));
       const Geometry::Plane* PA=
-	dynamic_cast< Geometry::Plane* >(SurI.getSurf(tc->get<0>()));
+	dynamic_cast< Geometry::Plane* >(SurI.getSurf(std::get<0>(tc)));
       const Geometry::Plane* PB=
-	dynamic_cast<Geometry::Plane*>(SurI.getSurf(tc->get<1>()));
+	dynamic_cast<Geometry::Plane*>(SurI.getSurf(std::get<1>(tc)));
 
       std::shared_ptr<PTYPE> pBase=std::shared_ptr<PTYPE>(new PTYPE(PA,PB));
-      const int sFound=pBase->createSurface(tc->get<3>(),surfOut);
+      const int sFound=pBase->createSurface(std::get<3>(tc),surfOut);
 
-      if (surfOut!=sFound || checkSurfaceEqual(surfOut,tc->get<4>()))
+      if (surfOut!=sFound || checkSurfaceEqual(surfOut,std::get<4>(tc)))
 	{
 	  ELog::EM<<"Surf out ["<<surfOut<<"] == "<<sFound<<ELog::endDiag;
 	  ELog::EM<<"Surf out == "<<surfOut<<ELog::endDiag;
 	  ELog::EM<<"Surface  == "<< *SurI.getSurf(sFound) <<ELog::endDiag;
-	  ELog::EM<<"Expected == "<<tc->get<4>()<<ELog::endDiag;
+	  ELog::EM<<"Expected == "<<std::get<4>(tc)<<ELog::endDiag;
 	  return -1;
 	}
       

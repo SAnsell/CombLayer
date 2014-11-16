@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   test/testSimpson.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@
 #include <complex>
 #include <map>
 #include <algorithm>
-#include <boost/tuple/tuple.hpp>
+#include <tuple>
 
 #include "Exception.h"
 #include "BaseVisit.h"
@@ -173,26 +173,27 @@ testSimpson::testExp()
 {
   ELog::RegMethod RegA("testSimpson","testExp");
 
-  typedef boost::tuple<double,double,double> TTYPE;
+  typedef std::tuple<double,double,double> TTYPE;
   std::vector<TTYPE> Items;
 
   Items.push_back(TTYPE(0.0,1.0,exp(1)-1.0));
   Items.push_back(TTYPE(0.0,10.0,exp(10)-1.0));
   Items.push_back(TTYPE(-5.0,10.0,exp(10)-exp(-5.0)));
 
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Items.begin();tc!=Items.end();tc++)
+  int cnt(1);
+  for(const TTYPE& tc : Items)
     {
       const double A=
-	Simpson::integrate<Exp>(20,tc->get<0>(),tc->get<1>());
-      if (fabs((A-tc->get<2>())/tc->get<2>())>1e-3)
+	Simpson::integrate<Exp>(20,std::get<0>(tc),std::get<1>(tc));
+      if (fabs((A-std::get<2>(tc))/std::get<2>(tc))>1e-3)
 	{
-	  ELog::EM<<"Failed on item "<<1+(tc-Items.begin())<<ELog::endCrit;
-	  ELog::EM<<"A="<<A<<" "<<tc->get<2>()<<ELog::endCrit;
-	  ELog::EM<<"Diff="<<(A-tc->get<2>())<<ELog::endCrit;
-	  ELog::EM<<"Ratio="<<(A-tc->get<2>())/tc->get<2>()<<ELog::endCrit;
+	  ELog::EM<<"Failed on item "<<cnt<<ELog::endCrit;
+	  ELog::EM<<"A="<<A<<" "<<std::get<2>(tc)<<ELog::endCrit;
+	  ELog::EM<<"Diff="<<(A-std::get<2>(tc))<<ELog::endCrit;
+	  ELog::EM<<"Ratio="<<(A-std::get<2>(tc))/std::get<2>(tc)<<ELog::endCrit;
 	  return -1;
 	}
+      cnt++;
     }
   return 0;
 }
@@ -206,24 +207,25 @@ testSimpson::testEta()
 {
   ELog::RegMethod RegA("testSimpson","testEta");
 
-  typedef boost::tuple<double,double,double> TTYPE;
+  typedef std::tuple<double,double,double> TTYPE;
   std::vector<TTYPE> Items;
 
   Items.push_back(TTYPE(0.0,20.0,-201.644934023564));
 
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Items.begin();tc!=Items.end();tc++)
+  int cnt(1);
+  for(const TTYPE& tc : Items)
     {
       const double A=
-	Simpson::integrate<etaFunc>(40,tc->get<0>(),tc->get<1>());
-      if (fabs((A-tc->get<2>())/tc->get<2>())>1e-3)
+	Simpson::integrate<etaFunc>(40,std::get<0>(tc),std::get<1>(tc));
+      if (fabs((A-std::get<2>(tc))/std::get<2>(tc))>1e-3)
 	{
-	  ELog::EM<<"Failed on item "<<1+(tc-Items.begin())<<ELog::endCrit;
-	  ELog::EM<<"A="<<A<<" "<<tc->get<2>()<<ELog::endCrit;
-	  ELog::EM<<"Diff="<<(A-tc->get<2>())<<ELog::endCrit;
-	  ELog::EM<<"Ratio="<<(A-tc->get<2>())/tc->get<2>()<<ELog::endCrit;
+	  ELog::EM<<"Failed on item "<<cnt<<ELog::endCrit;
+	  ELog::EM<<"A="<<A<<" "<<std::get<2>(tc)<<ELog::endCrit;
+	  ELog::EM<<"Diff="<<(A-std::get<2>(tc))<<ELog::endCrit;
+	  ELog::EM<<"Ratio="<<(A-std::get<2>(tc))/std::get<2>(tc)<<ELog::endCrit;
 	  return -1;
 	}
+      cnt++;
     }
   return 0;
 }
@@ -238,25 +240,26 @@ testSimpson::testWeibull()
   ELog::RegMethod RegA("testSimpson","testWeibull");
 
   // Integrat from XMaxmima : quad_qags(func,1.5,20)
-  typedef boost::tuple<double,double,double> TTYPE;
+  typedef std::tuple<double,double,double> TTYPE;
   std::vector<TTYPE> Items;
 
   Items.push_back(TTYPE(1.5,20.0,12.6807423));
 
   Weibull WB(1.5,6.3,1.2);
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Items.begin();tc!=Items.end();tc++)
+  int cnt(1);
+  for(const TTYPE& tc : Items)
     {
-      const double A=Simpson::integrate<Weibull>(20,tc->get<0>(),
-						 tc->get<1>(),WB);
-      if (fabs((A-tc->get<2>())/tc->get<2>())>1e-3)
+      const double A=Simpson::integrate<Weibull>(20,std::get<0>(tc),
+						 std::get<1>(tc),WB);
+      if (fabs((A-std::get<2>(tc))/std::get<2>(tc))>1e-3)
 	{
-	  ELog::EM<<"Failed on item "<<1+(tc-Items.begin())<<ELog::endCrit;
-	  ELog::EM<<"A="<<A<<" "<<tc->get<2>()<<ELog::endCrit;
-	  ELog::EM<<"Diff="<<(A-tc->get<2>())<<ELog::endCrit;
-	  ELog::EM<<"Ratio="<<(A-tc->get<2>())/tc->get<2>()<<ELog::endCrit;
+	  ELog::EM<<"Failed on item "<<cnt<<ELog::endCrit;
+	  ELog::EM<<"A="<<A<<" "<<std::get<2>(tc)<<ELog::endCrit;
+	  ELog::EM<<"Diff="<<(A-std::get<2>(tc))<<ELog::endCrit;
+	  ELog::EM<<"Ratio="<<(A-std::get<2>(tc))/std::get<2>(tc)<<ELog::endCrit;
 	  return -1;
 	}
     }
+  cnt++;
   return 0;
 }

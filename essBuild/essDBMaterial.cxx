@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   essBuild/essDBMaterial.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,8 +33,6 @@
 #include <functional>
 #include <iterator>
 #include <numeric>
-#include <boost/bind.hpp>
-#include <boost/tuple/tuple.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"

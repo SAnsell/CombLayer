@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   test/testSurfEqual.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@
 #include <boost/bind.hpp>
 #include <boost/array.hpp>
 #include <boost/format.hpp>
-#include <boost/tuple/tuple.hpp>
+#include <tuple>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -159,28 +159,26 @@ testSurfEqual::testBasicPair()
   ELog::RegMethod RegA("testSurfEqual","testBasicPair");
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
   
-  typedef boost::tuple<int,int,int> TTYPE;
+  typedef std::tuple<int,int,int> TTYPE;
   std::vector<TTYPE> Tests;
   Tests.push_back(TTYPE(1,11,1));
 
-  std::vector<TTYPE>::const_iterator tc;
-  int flag(0);
-  for(tc=Tests.begin();tc!=Tests.end() && !flag;tc++)
+  for(const TTYPE& tc : Tests)
     {
-      const Geometry::Surface* SA=SurI.getSurf(tc->get<0>());
-      const Geometry::Surface* SB=SurI.getSurf(tc->get<1>());
-      if (ModelSupport::oppositeSurfaces(SA,SB)!=tc->get<2>())
+      const Geometry::Surface* SA=SurI.getSurf(std::get<0>(tc));
+      const Geometry::Surface* SB=SurI.getSurf(std::get<1>(tc));
+      if (ModelSupport::oppositeSurfaces(SA,SB)!=std::get<2>(tc))
 	{
-	  ELog::EM<<"Failed :  "<<tc->get<0>()<<" "
-		  <<tc->get<1>()<<ELog::endCrit;
+	  ELog::EM<<"Failed :  "<<std::get<0>(tc)<<" "
+		  <<std::get<1>(tc)<<ELog::endCrit;
 	  ELog::EM<<"Surface :  "<<*SA<<ELog::endCrit;
 	  ELog::EM<<"Surface :  "<<*SB<<ELog::endCrit;
 	  ELog::EM<<"Opppite :  "<<ModelSupport::oppositeSurfaces(SA,SB)
 		  <<ELog::endCrit;
-	  flag=-1;
+	  return -1;
 	}
     }
-  return flag;
+  return 0;
 }
 
 int
@@ -194,24 +192,23 @@ testSurfEqual::testEqualSurfNum()
 
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
   
-  typedef boost::tuple<int,int> TTYPE;
+  typedef std::tuple<int,int> TTYPE;
   std::vector<TTYPE> Tests;
   Tests.push_back(TTYPE(1,1));
   Tests.push_back(TTYPE(11,11));
 
   std::vector<TTYPE>::const_iterator tc;
-  int flag(0);
-  for(tc=Tests.begin();tc!=Tests.end() && !flag;tc++)
+  for(const TTYPE& tc : Tests)
     {
-      const Geometry::Surface* SA=SurI.getSurf(tc->get<0>());
-      if (ModelSupport::equalSurfNum(SA)!=tc->get<1>())
+      const Geometry::Surface* SA=SurI.getSurf(std::get<0>(tc));
+      if (ModelSupport::equalSurfNum(SA)!=std::get<1>(tc))
 	{
-	  ELog::EM<<"Failed :  "<<tc->get<0>()<<" "
-		  <<tc->get<1>()<<ELog::endCrit;
+	  ELog::EM<<"Failed :  "<<std::get<0>(tc)<<" "
+		  <<std::get<1>(tc)<<ELog::endCrit;
 	  ELog::EM<<"Surface :  "<<*SA<<ELog::endCrit;
-	  flag=-1;
+	  return -1;
 	}
     }
-  return flag;
+  return 0;
 }
 

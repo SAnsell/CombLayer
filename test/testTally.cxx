@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   test/testTally.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@
 #include <sstream>
 #include <algorithm>
 #include <iterator>
-#include <boost/tuple/tuple.hpp>
+#include <tuple>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -257,7 +257,7 @@ testTally::testAddParticles()
 {
   ELog::RegMethod RegA("testTally","testAddParticles");
 
-  typedef boost::tuple<std::string,std::string> TTYPE;
+  typedef std::tuple<std::string,std::string> TTYPE;
   std::vector<TTYPE> Tests;
   
   Tests.push_back(TTYPE("n,p","n,p"));
@@ -273,12 +273,11 @@ testTally::testAddParticles()
       return -1;
     }
   
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  for(const TTYPE& tc : Tests)
     {
-      A.setParticles(tc->get<0>());
+      A.setParticles(std::get<0>(tc));
       std::string PP=A.getParticles();
-      if (PP!=tc->get<1>())
+      if (PP!=std::get<1>(tc))
 	{
 	  ELog::EM<<"Tally ="<<A<<ELog::endTrace;
 	  ELog::EM<<"Particle == "<<PP<<ELog::endTrace;
@@ -298,7 +297,7 @@ testTally::testFuCard()
 {
   ELog::RegMethod RegA("testTally","testFuCard");
 
-  typedef boost::tuple<int,int,std::string> TTYPE;
+  typedef std::tuple<int,int,std::string> TTYPE;
 
   std::vector<TTYPE> Tests;
   
@@ -306,11 +305,10 @@ testTally::testFuCard()
   Tests.push_back(TTYPE(3,10,"fu55 3 10 1 28i 30"));
   Tests.push_back(TTYPE(-3,10,"fu55 -3 10"));
 
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  for(const TTYPE& tc : Tests)
     {
       pointTally A(55);
-      A.divideWindow(tc->get<0>(),tc->get<1>());
+      A.divideWindow(std::get<0>(tc),std::get<1>(tc));
       std::stringstream cx;
       cx<<A;
       std::string Line=StrFunc::getLine(cx);
@@ -318,7 +316,7 @@ testTally::testFuCard()
       while(!Line.empty())
 	{
 	  if (Line.find("fu")!=std::string::npos &&
-	      (Line==tc->get<2>()))
+	      (Line==std::get<2>(tc)))
 	    {
 	      testFlag=1;
 	    }
@@ -327,7 +325,7 @@ testTally::testFuCard()
       if (!testFlag)
 	{
 	  ELog::EM<<"Failed on tally "
-		  <<tc->get<0>()<<" "<<tc->get<1>()
+		  <<std::get<0>(tc)<<" "<<std::get<1>(tc)
 		  <<ELog::endTrace;
 	  ELog::EM<<"T=="<<cx.str()<<ELog::endDiag;
 	  return -1;

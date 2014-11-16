@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   test/testBoundary.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-204 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@
 #include <algorithm>
 #include <functional>
 #include <iterator>
-#include <boost/tuple/tuple.hpp>
+#include <tuple>
 
 #include "Exception.h"
 #include "GTKreport.h"
@@ -117,7 +117,7 @@ testBoundary::testCreateBoundary()
   ELog::RegMethod RegA("testBoundary","testCreateBoundary");
 
   // item A / frac A : Item B / frac b
-  typedef boost::tuple<size_t,double,size_t,double> RTYPE;
+  typedef std::tuple<size_t,double,size_t,double> RTYPE;
 
   std::vector<double> X;
   std::vector<double> Xnew;
@@ -179,13 +179,13 @@ testBoundary::testCreateBoundary()
       ELog::EM<<"Failed on getIndex() "<<ELog::endTrace;
       return -1;
     }
-  
+    
   for(vc=BB.begin();vc!=BB.end() && rc!=Results.end();vc++,rc++)
     {
-      const size_t iA=rc->get<0>();
-      const double fA=rc->get<1>();
-      const size_t iB=rc->get<2>();
-      const double fB=rc->get<3>();
+      const size_t iA=std::get<0>(*rc);
+      const double fA=std::get<1>(*rc);
+      const size_t iB=std::get<2>(*rc);
+      const double fB=std::get<3>(*rc);
       std::pair<size_t,double> ItemA=vc->getItem(0);
       if (ItemA.first!=iA || fabs(ItemA.second-fA)>1e-5)
 	{

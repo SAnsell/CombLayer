@@ -29,7 +29,7 @@
 #include <map>
 #include <string>
 #include <algorithm>
-#include <boost/tuple/tuple.hpp>
+#include <tuple>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -121,31 +121,31 @@ testMaterial::testPlus()
 
 
   // "MatLine" : MTLine : MibLine
-  typedef boost::tuple<std::string,std::string,std::string> ZTYPE;
+  typedef std::tuple<std::string,std::string,std::string> ZTYPE;
   std::vector<ZTYPE> MatStr;
-  typedef boost::tuple<size_t,size_t,size_t> TTYPE;
+  typedef std::tuple<size_t,size_t,size_t> TTYPE;
   std::vector<TTYPE> Tests;
 
   MatStr.push_back(ZTYPE("82204.70c 0.1 ","",""));
 
   std::vector<Material> MatVec;
 
-  std::vector<ZTYPE>::const_iterator zc;
-  for(zc=MatStr.begin();zc!=MatStr.end();zc++)
+  int N(0);
+  for(const ZTYPE& zc : MatStr)
     {
-      const int N(static_cast<int>(zc-MatStr.begin()));
       const std::string Name="Mat"+StrFunc::makeString(N);
       Material MObj;
-      MObj.setMaterial(N,Name,zc->get<0>(),zc->get<1>(),zc->get<2>());
+      MObj.setMaterial(N,Name,std::get<0>(zc),
+		       std::get<1>(zc),std::get<2>(zc));
       MatVec.push_back(MObj);
+      N++;
     }
 
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  for(const TTYPE& tc : Tests)
     {
-      Material A(MatVec[tc->get<0>()]);
-      const Material B(MatVec[tc->get<1>()]);
-      const Material C(MatVec[tc->get<2>()]);
+      Material A(MatVec[std::get<0>(tc)]);
+      const Material B(MatVec[std::get<1>(tc)]);
+      const Material C(MatVec[std::get<2>(tc)]);
       A+=B;
       std::ostringstream AX;
       std::ostringstream CX;

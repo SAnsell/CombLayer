@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   test/testMathSupport.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,9 +28,8 @@
 #include <complex>
 #include <map>
 #include <algorithm>
-#include <functional>
+#include <tuple>
 #include <boost/bind.hpp>
-#include <boost/tuple/tuple.hpp>
 
 #include "MersenneTwister.h"
 #include "Exception.h"
@@ -69,7 +68,6 @@ testMathSupport::applyTest(const int extra)
     \returns -ve on error 0 on success.
   */
 {
-
   ELog::RegMethod RegA("testMathSupport","applyTest");
   TestFunc::regSector("testMathSupport");
 
@@ -126,7 +124,7 @@ testMathSupport::applyTest(const int extra)
 	  const int retValue= (this->*TPtr[i])();
 	  if (retValue || extra>0)
 	    return retValue;
-	}
+        }
     }
   return 0;
 }
@@ -543,7 +541,7 @@ testMathSupport::testPolInterp()
   */
 {
   ELog::RegMethod RegA("testMathSupport","testPolInterp");
-
+  
   std::vector<double> X;
   std::vector<std::complex<double> > Y;
   for(int i=0;i<100;i++)
@@ -630,32 +628,31 @@ testMathSupport::testClebschGordan()
   ELog::RegMethod RegA("testMathSupport","testClebschGordan");
 
   //                   j   j1   j2  m1 m2   res
-  typedef boost::tuple<int,int,int,int,int,double> TTYPE;
+  typedef std::tuple<int,int,int,int,int,double> TTYPE;
   std::vector<TTYPE> Tests;
   
   Tests.push_back(TTYPE(2,2,2,0,0,-sqrt(2.0)/sqrt(7.0) ));
   Tests.push_back(TTYPE(1,5,4,0,0,sqrt(5.0/33.0) ));
   Tests.push_back(TTYPE(3,5,4,2,1,-5*sqrt(7.0/858.0) ));
   
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
     {
-      const int j(tc->get<0>());
-      const int j1(tc->get<1>());
-      const int j2(tc->get<2>());
+      const int j(std::get<0>(tc));
+      const int j1(std::get<1>(tc));
+      const int j2(std::get<2>(tc));
 
-      const int m1(tc->get<3>());
-      const int m2(tc->get<4>());
+      const int m1(std::get<3>(tc));
+      const int m2(std::get<4>(tc));
 
       const double R=mathSupport::ClebschGordan::calc(j,j1,j2,m1,m2);
-      if (fabs(R-tc->get<5>())>1e-5 )
+      if (fabs(R-std::get<5>(tc))>1e-5 )
 	{
-	  ELog::EM<<"Failed on item "
-		  <<static_cast<int>(tc-Tests.begin())+1<<ELog::endDebug;
+	  ELog::EM<<"Failed on item "<<cnt<<ELog::endDebug;
 	  ELog::EM<<"C["<<j<<","<<j1<<","<<j2<<","
-		  <<m1<<","<<m2<<"]=="<<R<<" ("<<tc->get<5>()<<")"
+		  <<m1<<","<<m2<<"]=="<<R<<" ("<<std::get<5>(tc)<<")"
 		  <<ELog::endDebug;
-	  ELog::EM<<"Error term == "<<fabs(R-tc->get<5>())<<ELog::endDebug;
+	  ELog::EM<<"Error term == "<<fabs(R-std::get<5>(tc))<<ELog::endDebug;
 	  return -1;
 	}
     }

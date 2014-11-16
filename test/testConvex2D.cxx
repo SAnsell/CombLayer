@@ -31,8 +31,9 @@
 #include <algorithm>
 #include <functional>
 #include <iterator>
+#include <tuple>
 #include <boost/bind.hpp>
-#include <boost/tuple/tuple.hpp>
+
 #include <boost/format.hpp>
 
 #include "Exception.h"
@@ -428,7 +429,7 @@ testConvex2D::testInHull()
   A.constructHull();
 
   // TESTS: Point / Results
-  typedef boost::tuple<Geometry::Vec3D,int> TTYPE;
+  typedef std::tuple<Geometry::Vec3D,int> TTYPE;
   std::vector<TTYPE> Tests;
   Tests.push_back(TTYPE(Geometry::Vec3D(0,0,0),1));        
   Tests.push_back(TTYPE(Geometry::Vec3D(0,6,0),-1));
@@ -436,17 +437,18 @@ testConvex2D::testInHull()
   Tests.push_back(TTYPE(Geometry::Vec3D(3,3,-6),1));
   Tests.push_back(TTYPE(Geometry::Vec3D(2,4,-6),0));
 
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
     {
-      const int res=A.inHull(tc->get<0>());
-      if (res!=tc->get<1>())
+      const int res=A.inHull(std::get<0>(tc));
+      if (res!=std::get<1>(tc))
         {
-	  ELog::EM<<"Test["<<static_cast<int>(tc-Tests.begin())<<ELog::endDiag;
-	  ELog::EM<<"Point = "<<tc->get<0>()<<ELog::endDiag;
-	  ELog::EM<<"Res[ "<<tc->get<1>()<<" ] == "<<res<<ELog::endDiag;
+	  ELog::EM<<"Test["<<cnt<<ELog::endDiag;
+	  ELog::EM<<"Point = "<<std::get<0>(tc)<<ELog::endDiag;
+	  ELog::EM<<"Res[ "<<std::get<1>(tc)<<" ] == "<<res<<ELog::endDiag;
 	  return -1;
 	}
+      cnt++;
     } 
 
   return 0;

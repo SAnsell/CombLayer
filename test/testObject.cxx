@@ -32,7 +32,7 @@
 #include <string>
 #include <sstream>
 #include <algorithm>
-#include <boost/tuple/tuple.hpp>
+#include <tuple>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -239,7 +239,7 @@ testObject::testCellStr()
 
   populateMObj();
 
-  typedef boost::tuple<std::string,std::string> TTYPE;
+  typedef std::tuple<std::string,std::string> TTYPE;
   std::vector<TTYPE> Tests;
 
   Tests.push_back(TTYPE("4 10 0.0552 -5 8 60 (-61:62) -63 #3",
@@ -263,15 +263,14 @@ testObject::testCellStr()
   Tests.push_back(TTYPE("5 0 #("+cx.str()+")",
 			"#( "+ox.str()+")"));
 
-  std::vector<TTYPE>::const_iterator tc;
   Qhull A;  
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  for(const TTYPE& tc : Tests)
     {
-      A.setObject(tc->get<0>());
+      A.setObject(std::get<0>(tc));
       const std::string Xstr =A.cellStr(MObj);
-      if (Xstr!=tc->get<1>())
+      if (Xstr!=std::get<1>(tc))
 	{
-	  ELog::EM<<"Init Obj:"<<tc->get<0>()<<ELog::endDiag;
+	  ELog::EM<<"Init Obj:"<<std::get<0>(tc)<<ELog::endDiag;
 	  ELog::EM<<"Out Obj:"<<Xstr<<ELog::endDiag;
 	  return -1;
 	}
@@ -290,24 +289,23 @@ testObject::testSetObject()
 {
   ELog::RegMethod RegA("testObject","testSetObject");
 
-  typedef boost::tuple<std::string,std::string> TTYPE;
+  typedef std::tuple<std::string,std::string> TTYPE;
   std::vector<TTYPE> Tests;
   Tests.push_back(TTYPE(" 4 10 0.05524655  -5  8  60  -61  62  -63 #3",
 			"4 10 0.0552465 #3 -63 62 -61 60 8 -5"));
 
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
     {
       std::ostringstream cx;
       Qhull A;
-      A.setObject(tc->get<0>());
+      A.setObject(std::get<0>(tc));
       A.write(cx);
-      if (StrFunc::fullBlock(cx.str())!=tc->get<1>())
+      if (StrFunc::fullBlock(cx.str())!=std::get<1>(tc))
 	{
-	  ELog::EM<<"Failed on test "<<(tc-Tests.begin())+1
-		  <<ELog::endTrace;
-	  ELog::EM<<"Input == "<<tc->get<0>()<<ELog::endTrace;
-	  ELog::EM<<"Expect == "<<tc->get<1>()<<ELog::endTrace;
+	  ELog::EM<<"Failed on test "<<cnt<<ELog::endTrace;
+	  ELog::EM<<"Input == "<<std::get<0>(tc)<<ELog::endTrace;
+	  ELog::EM<<"Expect == "<<std::get<1>(tc)<<ELog::endTrace;
 	  ELog::EM<<"Result == "<<cx.str()<<ELog::endTrace;
 	  return -1;
 	}
@@ -326,7 +324,7 @@ testObject::testSetObjectExtra()
 {
   ELog::RegMethod RegA("testObject","testSetObject");
 
-  typedef boost::tuple<std::string,double> TTYPE;
+  typedef std::tuple<std::string,double> TTYPE;
   std::vector<TTYPE> Tests;
   Tests.push_back(TTYPE(" 4 10 0.05524655  -5  8  60  -61  62  -63 tmp=3.4",
 			3.4));
@@ -334,22 +332,21 @@ testObject::testSetObjectExtra()
 			3.4));
   Tests.push_back(TTYPE(" 4 10 0.05524655  -5  8  60  imp:n = 45 tmp = 3.4",
 			3.4));
-
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
     {
       std::ostringstream cx;
       Qhull A;
-      A.setObject(tc->get<0>());
-      if (fabs(A.getTemp()-tc->get<1>())>1e-5)
+      A.setObject(std::get<0>(tc));
+      if (fabs(A.getTemp()-std::get<1>(tc))>1e-5)
 	{
-	  ELog::EM<<"Failed on test "<<(tc-Tests.begin())+1
-		  <<ELog::endTrace;
-	  ELog::EM<<"Input == "<<tc->get<0>()<<ELog::endTrace;
-	  ELog::EM<<"Temp == "<<tc->get<1>()<<ELog::endTrace;
+	  ELog::EM<<"Failed on test "<<cnt<<ELog::endTrace;
+	  ELog::EM<<"Input == "<<std::get<0>(tc)<<ELog::endTrace;
+	  ELog::EM<<"Temp == "<<std::get<1>(tc)<<ELog::endTrace;
 	  ELog::EM<<"Result == "<<A<<ELog::endTrace;
 	  return -1;
 	}
+      cnt++;
     }
 
   return 0;
@@ -367,7 +364,7 @@ testObject::testComplement()
 
   populateMObj();
 
-  typedef boost::tuple<std::string,std::string> TTYPE;
+  typedef std::tuple<std::string,std::string> TTYPE;
   std::vector<TTYPE> Tests;
   Tests.push_back(TTYPE("4 10 0.05524655  1 -2 3 -4 5 -6  #12",
 			"i'g'e'fhj(d'+c'+ab)"));
@@ -377,11 +374,10 @@ testObject::testComplement()
   Tests.push_back(TTYPE("5 10 0.05524655  #(-8 (-9 : 19) 3 -4)",
 			"b'+a+e+d'c"));
   
-  std::vector<TTYPE>::const_iterator vc;
-  for(vc=Tests.begin();vc!=Tests.end();vc++)
+  for(const TTYPE& tc : Tests)
     {
       Qhull A;
-      A.setObject(vc->get<0>());
+      A.setObject(std::get<0>(tc));
       if (!A.hasComplement())
 	{
 	  ELog::EM<<"Has no complements "<<A.hasComplement()<<ELog::endDiag;
@@ -401,11 +397,11 @@ testObject::testComplement()
       AX.setFunctionObjStr(A.cellStr(MObj));
       std::ostringstream cx;
       cx<<AX;
-      if (cx.str()!=vc->get<1>())
+      if (cx.str()!=std::get<1>(tc))
 	{
 	  ELog::EM<<"Obj == :"<<A.cellStr(MObj)<<ELog::endDiag;
 	  ELog::EM<<"AX  == :"<<AX<<ELog::endDiag;
-	  ELog::EM<<"Exp == :"<<vc->get<1>()<<ELog::endDiag;
+	  ELog::EM<<"Exp == :"<<std::get<1>(tc)<<ELog::endDiag;
 	  return -1;
 	}
     }
@@ -427,7 +423,7 @@ testObject::testIsValid()
   Qhull A;
 
   // Object : Point : SN : Result
-  typedef boost::tuple<std::string,int,Geometry::Vec3D,int> TTYPE;
+  typedef std::tuple<std::string,int,Geometry::Vec3D,int> TTYPE;
   std::vector<TTYPE> Tests;
   
   Tests.push_back(TTYPE("4 10 0.05524655  1 -2 3 -4 5 -6",
@@ -450,25 +446,26 @@ testObject::testIsValid()
   
   int res;
 
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
     {
-      A.setObject(tc->get<0>());
+      A.setObject(std::get<0>(tc));
       A.populate();
-      const int SN=tc->get<1>();
+      const int SN=std::get<1>(tc);
       if (SN)
-	res=A.isDirectionValid(tc->get<2>(),SN);
+	res=A.isDirectionValid(std::get<2>(tc),SN);
       else
-	res=A.isValid(tc->get<2>());
-      if (res!=tc->get<3>())
+	res=A.isValid(std::get<2>(tc));
+      if (res!=std::get<3>(tc))
 	{
-	  ELog::EM<<"Failed on test "<<(tc-Tests.begin())+1<<ELog::endDebug;
-	  ELog::EM<<"Result= "<<res<<" ["<<tc->get<3>()<<"]"<<ELog::endDebug;
-	  ELog::EM<<"Point= "<<tc->get<2>()<<ELog::endDebug;
+	  ELog::EM<<"Failed on test "<<cnt<<ELog::endDebug;
+	  ELog::EM<<"Result= "<<res<<" ["<<std::get<3>(tc)<<"]"<<ELog::endDebug;
+	  ELog::EM<<"Point= "<<std::get<2>(tc)<<ELog::endDebug;
 
 	  const Rule* TR=A.topRule();
-	  ELog::EM<<"Display= "<<TR->display(tc->get<2>())<<ELog::endDebug;
+	  ELog::EM<<"Display= "<<TR->display(std::get<2>(tc))<<ELog::endDebug;
 	}
+      cnt++;
     }
 
   return 0;
@@ -488,7 +485,7 @@ testObject::testIsOnSide()
   Qhull A;
 
   // Object : Point : SN : Result
-  typedef boost::tuple<std::string,Geometry::Vec3D,int> TTYPE;
+  typedef std::tuple<std::string,Geometry::Vec3D,int> TTYPE;
   std::vector<TTYPE> Tests;
   
 
@@ -510,23 +507,23 @@ testObject::testIsOnSide()
   Tests.push_back(TTYPE("4 10 0.05 11 -12 13 -14 15 -16 (-1:2:-3:4:-5:6)",
 			Geometry::Vec3D(4,-1,2),0));
   
-  std::vector<TTYPE>::const_iterator tc;
-  //  for(tc=Tests.begin();tc!=Tests.end();tc++)
-  tc=Tests.begin()+5;
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
     {
-      A.setObject(tc->get<0>());
+      A.setObject(std::get<0>(tc));
       A.populate();
       A.createSurfaceList();
-      const int res=A.isOnSide(tc->get<1>());
-      if (res!=tc->get<2>())
+      const int res=A.isOnSide(std::get<1>(tc));
+      if (res!=std::get<2>(tc))
 	{
-	  ELog::EM<<"Failed on test "<<(tc-Tests.begin())+1<<ELog::endDebug;
-	  ELog::EM<<"Result= "<<res<<" ["<<tc->get<2>()<<"]"<<ELog::endDebug;
-	  ELog::EM<<"Point= "<<tc->get<1>()<<ELog::endDebug;
+	  ELog::EM<<"Failed on test "<<cnt<<ELog::endDebug;
+	  ELog::EM<<"Result= "<<res<<" ["<<std::get<2>(tc)<<"]"<<ELog::endDebug;
+	  ELog::EM<<"Point= "<<std::get<1>(tc)<<ELog::endDebug;
 	  const Rule* TR=A.topRule();
-	  ELog::EM<<"Display= "<<TR->display(tc->get<1>())<<ELog::endDebug;
+	  ELog::EM<<"Display= "<<TR->display(std::get<1>(tc))<<ELog::endDebug;
 	  return -1;
 	}
+      cnt++;
     }
 
   return 0;
@@ -545,7 +542,7 @@ testObject::testTrackCell()
   createSurfaces();
 
   // Object : startSurf : Neut : ResultPos
-  typedef boost::tuple<std::string,int,Geometry::Vec3D,
+  typedef std::tuple<std::string,int,Geometry::Vec3D,
 		       Geometry::Vec3D,Geometry::Vec3D> TTYPE;
   std::vector<TTYPE> Tests;
   
@@ -571,24 +568,24 @@ testObject::testTrackCell()
   
   double aDist;
   const Geometry::Surface* SPtr;          // Output surface
-  std::vector<TTYPE>::const_iterator tc;
   Qhull A;
 
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
     {
-      A.setObject(tc->get<0>());
+      A.setObject(std::get<0>(tc));
       A.createSurfaceList();
 
-      neutron TNeut(1,tc->get<2>(),tc->get<3>());
+      neutron TNeut(1,std::get<2>(tc),std::get<3>(tc));
 
-      const int outFaceSurf(tc->get<1>());
+      const int outFaceSurf(std::get<1>(tc));
       const int SN= -A.trackOutCell(TNeut,aDist,SPtr,0);
       TNeut.moveForward(aDist);
-      if (TNeut.Pos!=tc->get<4>() || SN!=outFaceSurf)
+      if (TNeut.Pos!=std::get<4>(tc) || SN!=outFaceSurf)
 	{
 	  ELog::EM<<ELog::endDiag;
-	  ELog::EM<<"Failed on test "<<(tc-Tests.begin())+1<<ELog::endDiag;
-	  ELog::EM<<"Result= "<<TNeut.Pos<<" ["<<tc->get<4>()<<"]"
+	  ELog::EM<<"Failed on test "<<cnt<<ELog::endDiag;
+	  ELog::EM<<"Result= "<<TNeut.Pos<<" ["<<std::get<4>(tc)<<"]"
 		  <<ELog::endDiag;
 	  ELog::EM<<"SN= "<<SN<<" "<<outFaceSurf<<ELog::endDiag;
 
@@ -596,6 +593,7 @@ testObject::testTrackCell()
 	  ELog::EM<<"Display= "<<TR->display(TNeut.Pos)<<ELog::endDiag;
 	  return -1;
 	}
+      cnt++;
     }
   return 0;
 }
@@ -611,23 +609,22 @@ testObject::testMakeComplement()
 
   populateMObj();
 
-  typedef boost::tuple<int,std::string> TTYPE;
+  typedef std::tuple<int,std::string> TTYPE;
   std::vector<TTYPE> Tests;
 
   Tests.push_back(TTYPE(2,"2 12 0.099 (-5 : -60 : -62 : 63 : 61 : 4)"));
-  std::vector<TTYPE>::const_iterator vc;
-  for(vc=Tests.begin();vc!=Tests.end();vc++)
+  for(const TTYPE& tc : Tests)
     {
       std::ostringstream ocx;
       std::ostringstream cx;
-      const int index(vc->get<0>());
+      const int index(std::get<0>(tc));
       MObj[index]->write(ocx);
       MObj[index]->makeComplement();
       MObj[index]->write(cx);
-      if (StrFunc::fullBlock(cx.str())!=vc->get<1>())
+      if (StrFunc::fullBlock(cx.str())!=std::get<1>(tc))
 	{
 	  ELog::EM<<"Original "<<ocx.str()<<":"<<ELog::endDebug;
-	  ELog::EM<<"Expected "<<vc->get<1>()<<":"<<ELog::endDebug;
+	  ELog::EM<<"Expected "<<std::get<1>(tc)<<":"<<ELog::endDebug;
 	  ELog::EM<<"Aquired  "<<cx.str()<<":"<<ELog::endDebug;
 	  return -1;
 	}
@@ -644,7 +641,7 @@ testObject::testRemoveComplement()
 {
   ELog::RegMethod RegA("testObject","removeComplement");
   
-  typedef boost::tuple<std::string,std::string> TTYPE;
+  typedef std::tuple<std::string,std::string> TTYPE;
   std::vector<TTYPE> Tests;
   Tests.push_back(TTYPE("3 0 5 ","3 0 -5"));
   Tests.push_back(TTYPE("4 0 5 ((1 -2 ) : (13 -14))",
@@ -669,32 +666,34 @@ testObject::testRemoveComplement()
 
   // Null list since we are not using #CellNum
   std::map<int,MonteCarlo::Qhull*> OList;
-
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
     {
       std::ostringstream cx;
       Qhull A;
       MonteCarlo::Algebra AX;
-      A.setObject(tc->get<0>());
+      A.setObject(std::get<0>(tc));
       A.makeComplement();
       AX.setFunctionObjStr(A.cellStr(OList));
       A.procString(AX.writeMCNPX());
       cx<<A;
-      if (StrFunc::singleLine(cx.str())!=tc->get<1>())
+      if (StrFunc::singleLine(cx.str())!=std::get<1>(tc))
 	{
-	  ELog::EM<<"Failed on test "<<(tc-Tests.begin()+1)<<ELog::endTrace;
+	  ELog::EM<<"Failed on test "<<cnt<<ELog::endTrace;
 	  ELog::EM<<"Ax == "<<AX<<ELog::endTrace;	  
 	  ELog::EM<<"Amc == "<<AX.writeMCNPX()<<ELog::endTrace;	  
 	  ELog::EM<<"A == "<<A.cellStr(OList)<<ELog::endTrace;
 	  ELog::EM<<"A(complement)  = "<<A;
-	  ELog::EM<<"A(expect)      = "<<tc->get<1>()<<ELog::endTrace;
+	  ELog::EM<<"A(expect)      = "<<std::get<1>(tc)<<ELog::endTrace;
 	  ELog::EM<<"Str compared)  = "<<StrFunc::singleLine(cx.str())
 		  <<ELog::endTrace;
-	  ELog::EM<<"A(original)    = "<<tc->get<0>()<<ELog::endTrace;
+	  ELog::EM<<"A(original)    = "<<std::get<0>(tc)<<ELog::endTrace;
 	  return -1;
 	}
+      cnt++;
     }
+  
   return 0;
 }
 

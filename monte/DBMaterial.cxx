@@ -33,8 +33,7 @@
 #include <functional>
 #include <iterator>
 #include <numeric>
-#include <boost/bind.hpp>
-#include <boost/tuple/tuple.hpp>
+#include <tuple>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -1103,7 +1102,7 @@ DBMaterial::initMXUnits()
 {
   ELog::RegMethod RegA("DBMaterial","initMXUnits");
 
-  typedef boost::tuple<int,int,char,std::string,
+  typedef std::tuple<int,int,char,std::string,
 		       std::string> MXTYPE;
   std::vector<MXTYPE> mxVec;
 
@@ -1125,13 +1124,13 @@ DBMaterial::initMXUnits()
   // NOTE : u is an illegal particle so how does MX work here??
   //  mxVec.push_back(MXTYPE(6000,70,'c',"u","6012.70u"));
   
-  std::vector<MXTYPE>::const_iterator vc;
-  for(vc=mxVec.begin();vc!=mxVec.end();vc++)
+  for(const MXTYPE& vc : mxVec)
     {
       MTYPE::iterator mc;  
       for(mc=MStore.begin();mc!=MStore.end();mc++)
-	mc->second.setMXitem(vc->get<0>(),vc->get<1>(),vc->get<2>(),
-			     vc->get<3>(),vc->get<4>());
+	mc->second.setMXitem(std::get<0>(vc),std::get<1>(vc),
+			     std::get<2>(vc),std::get<3>(vc),
+			     std::get<4>(vc));
     }
   return;
 }

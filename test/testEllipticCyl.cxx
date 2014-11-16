@@ -29,7 +29,7 @@
 #include <map>
 #include <string>
 #include <algorithm>
-#include <boost/tuple/tuple.hpp>
+#include <tuple>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -135,7 +135,7 @@ testEllipticCyl::testDistance()
   ELog::RegMethod RegA("testEllipticCyl","testDistance");
 
 
-  typedef boost::tuple<std::string,Geometry::Vec3D,double> TTYPE;
+  typedef std::tuple<std::string,Geometry::Vec3D,double> TTYPE;
   std::vector<TTYPE> Tests;
   
   // Tests.push_back(TTYPE(Vec3D(0,0,0),Vec3D(0,0,1),Vec3D(1,0,0),4.0,5.0,
@@ -147,26 +147,25 @@ testEllipticCyl::testDistance()
   Tests.push_back(TTYPE("ez 3.0 5.0",Geometry::Vec3D(0,3,0),0.0));
   Tests.push_back(TTYPE("ez 5.0 3.0",Geometry::Vec3D(0,3,0),2.0));
   
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  for(const TTYPE& tc : Tests)
     {
       EllipticCyl A;
-      const int retVal=A.setSurface(tc->get<0>());
+      const int retVal=A.setSurface(std::get<0>(tc));
       if (retVal)
         {
-	  ELog::EM<<"Failed to build "<<tc->get<0>()
+	  ELog::EM<<"Failed to build "<<std::get<0>(tc)
 		  <<" Ecode == "<<retVal<<ELog::endCrit;
 	  return -1;
 	}
-      double R=A.distance(tc->get<1>());
-      if (fabs(R-tc->get<2>())>1e-5)
+      double R=A.distance(std::get<1>(tc));
+      if (fabs(R-std::get<2>(tc))>1e-5)
 	{
 	  ELog::EM<<"elliCylinder == "<<A;
-	  ELog::EM<<"String == "<<tc->get<0>()<<ELog::endDiag;
-	  ELog::EM<<"TestPoint == "<<tc->get<1>()<<ELog::endDiag;
+	  ELog::EM<<"String == "<<std::get<0>(tc)<<ELog::endDiag;
+	  ELog::EM<<"TestPoint == "<<std::get<1>(tc)<<ELog::endDiag;
 
 	  ELog::EM<<"Distance [expect]== "<<R<<" [ "
-		  <<tc->get<2>()<<" ]"<<ELog::endDiag;;
+		  <<std::get<2>(tc)<<" ]"<<ELog::endDiag;;
 	  ELog::EM<<"--------------"<<ELog::endDiag;
 	  return -1;
 	}
@@ -186,7 +185,7 @@ testEllipticCyl::testGeneral()
   ELog::RegMethod RegA("testEllipticCyl","testGeneral");
 
   // Cent:axis::Laxis:dist: String
-  typedef boost::tuple<Geometry::Vec3D,Geometry::Vec3D,Geometry::Vec3D,
+  typedef std::tuple<Geometry::Vec3D,Geometry::Vec3D,Geometry::Vec3D,
 		       double,double,std::string> TTYPE;
   std::vector<TTYPE> Tests;
   
@@ -199,28 +198,29 @@ testEllipticCyl::testGeneral()
   Tests.push_back(TTYPE(Vec3D(0,1,1.0),Vec3D(1,0,0),Vec3D(0,1,0),4.0,5.0,
    			"54 e/x 1.0 1.0 4.0 5.0"));
 
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
     {
       EllipticCyl A(54,0);
       EllipticCyl B(54,0);
 
       // TESTS:
-      A.setEllipticCyl(tc->get<0>(),tc->get<1>(),tc->get<2>(),
-		       tc->get<3>(),tc->get<4>());
+      A.setEllipticCyl(std::get<0>(tc),std::get<1>(tc),std::get<2>(tc),
+		       std::get<3>(tc),std::get<4>(tc));
       A.normalizeGEQ(9);
-      B.setSurface(tc->get<5>());
+      B.setSurface(std::get<5>(tc));
       B.normalizeGEQ(9);
 
       if ((A!=B) || (A.Quadratic::operator!=(B)))
 	{
-	  ELog::EM<<"TEST: "<<(tc-Tests.begin())+1<<ELog::endDebug;
+	  ELog::EM<<"TEST: "<<cnt<<ELog::endDebug;
 
 	  ELog::EM<<"Elliptic[A]        == "<<A;
 	  ELog::EM<<"Elliptic[B]        == "<<B;
 	  ELog::EM<<ELog::endDiag;
 	  return -1;
 	}
+      cnt++;
     }
 
   return 0;
@@ -247,23 +247,25 @@ testEllipticCyl::testMirror()
   A.setCylinder(Point,Axis,4.0);
   Cylinder Atest(A);
 
-  typedef boost::tuple<Cylinder*,Plane*,Vec3D,Vec3D> TTYPE;
-  std::vector<TTYPE> TVec;
-  TVec.push_back(TTYPE(&A,&P,Vec3D(-4,2,18),Vec3D(0,0,-1)));
+  typedef std::tuple<Cylinder*,Plane*,Vec3D,Vec3D> TTYPE;
+  std::vector<TTYPE> Tests;
+  Tests.push_back(TTYPE(&A,&P,Vec3D(-4,2,18),Vec3D(0,0,-1)));
   
-  for(size_t i=0;i<TVec.size();i++)
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
     {
-      Cylinder AT=*(TVec[i].get<0>());  // get a copy
-      AT.mirror(*TVec[i].get<1>());
-      if (AT.getCentre()!=TVec[i].get<2>() ||
-	  AT.getNormal()!=TVec[i].get<3>())
+      Cylinder AT=*(std::get<0>(tc));  // get a copy
+      AT.mirror(*std::get<1>(tc));
+      if (AT.getCentre()!=std::get<2>(tc) ||
+	  AT.getNormal()!=std::get<3>(tc))
 	{
-	  ELog::EM<<"Test "<<i<<ELog::endTrace;
-	  ELog::EM<<"Cylinder = "<<*TVec[i].get<0>();
-	  ELog::EM<<"Plane = "<<*TVec[i].get<1>();
+	  ELog::EM<<"Test "<<cnt<<ELog::endTrace;
+	  ELog::EM<<"Cylinder = "<<*std::get<0>(tc);
+	  ELog::EM<<"Plane = "<<*std::get<1>(tc);
 	  ELog::EM<<"Result "<<AT;
 	  ELog::EM<<ELog::endTrace;
 	}
+      cnt++;
     }
   return 0;
 }
@@ -279,7 +281,7 @@ testEllipticCyl::testSet()
 {
   ELog::RegMethod RegA("testEllipticCyl","testSet");
   // Cent:axis::Laxis:dist: String
-  typedef boost::tuple<Geometry::Vec3D,Geometry::Vec3D,Geometry::Vec3D,
+  typedef std::tuple<Geometry::Vec3D,Geometry::Vec3D,Geometry::Vec3D,
 		       double,double,std::string> TTYPE;
   std::vector<TTYPE> Tests;
   
@@ -290,24 +292,23 @@ testEllipticCyl::testSet()
   Tests.push_back(TTYPE(Vec3D(0,1,1.0),Vec3D(1,0,0),Vec3D(0,0,1),4.0,4.0,
 			"54 c/x 1.0 1.0 4.0"));
 
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  for(const TTYPE& tc : Tests)
     {
       EllipticCyl A(54,0);
 
       Cylinder C(54,0);
       General G(54,0);
-      C.setSurface(tc->get<5>());
+      C.setSurface(std::get<5>(tc));
       C.normalizeGEQ(9);
-      G.setSurface(tc->get<5>());
+      G.setSurface(std::get<5>(tc));
       G.normalizeGEQ(9);
 
       // TESTS:
-      A.setEllipticCyl(tc->get<0>(),tc->get<1>(),tc->get<2>(),
-		       tc->get<3>(),tc->get<4>());
+      A.setEllipticCyl(std::get<0>(tc),std::get<1>(tc),std::get<2>(tc),
+		       std::get<3>(tc),std::get<4>(tc));
       A.normalizeGEQ(9);
       
-      if ((G!=A) && (C.Quadratic::operator!=(A)))  //StrFunc::fullBlock(cx.str())!=tc->get<5>())
+      if ((G!=A) && (C.Quadratic::operator!=(A)))  //StrFunc::fullBlock(cx.str())!=std::get<5>(tc))
 	{
 	  ELog::EM<<"Cylinder        == "<<C;
 	  ELog::EM<<"General         == "<<G;
@@ -339,7 +340,7 @@ testEllipticCyl::testTransform()
   ELog::RegMethod RegA("testEllipticCyl","testTransform");
 
   // Tr / surf / Point / dist / dist+Trans
-  typedef boost::tuple<std::string,std::string,
+  typedef std::tuple<std::string,std::string,
 		       Vec3D,double,double> TTYPE;
 
   std::vector<TTYPE> Tests;  
@@ -349,41 +350,42 @@ testEllipticCyl::testTransform()
 			Vec3D(0,0,0),
 			sqrt(4.15*4.15+9)-0.3,
 			sqrt(4+6.15*6.15)-0.3));
-		  
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
     {
       Cylinder A(54,2);
-      A.setSurface(tc->get<1>());
-      double D=A.distance(tc->get<2>());
+      A.setSurface(std::get<1>(tc));
+      double D=A.distance(std::get<2>(tc));
 
-      if (fabs(D-tc->get<3>())>1e-5)
+      if (fabs(D-std::get<3>(tc))>1e-5)
 	{
 	  ELog::EM<<"Failed on intial distance : "<<
-	    "Test:"<<(tc-Tests.begin())+1<<ELog::endTrace;
+	    "Test:"<<cnt<<ELog::endTrace;
 	  ELog::EM<<"Surface = "<<A;
 	  ELog::EM<<"Distance == "<<D<<" Expected == "
-		  <<tc->get<3>()<<ELog::endTrace;
+		  <<std::get<3>(tc)<<ELog::endTrace;
 	  return -1;
 	}
       Geometry::Transform X;
-      const int result=X.setTransform(tc->get<0>());
+      const int result=X.setTransform(std::get<0>(tc));
       std::map<int,Geometry::Transform> TMap;
       TMap.insert(std::pair<int,Geometry::Transform>(2,X));
       A.applyTransform(TMap);
-      D=A.distance(tc->get<2>());
+      D=A.distance(std::get<2>(tc));
 
-      if (result || fabs(D-tc->get<4>())>1e-5)
+      if (result || fabs(D-std::get<4>(tc))>1e-5)
 	{
 	  ELog::EM<<"Failed on transform distance : "<<
-	    "Test:"<<(tc-Tests.begin())+1<<ELog::endTrace;
+	    "Test:"<<cnt<<ELog::endTrace;
 	  ELog::EM<<"Result = "<<result<<ELog::endTrace;
 	  ELog::EM<<"Surface = "<<A;
 	  ELog::EM<<"Transform = "<<X;
 	  ELog::EM<<"Distance == "<<D<<" Expected == "
-		  <<tc->get<4>()<<ELog::endTrace;
+		  <<std::get<4>(tc)<<ELog::endTrace;
 	  return -2;
 	}
+      cnt++;
     }
   return 0;
 }

@@ -31,7 +31,7 @@
 #include <string>
 #include <algorithm>
 #include <memory>
-#include <boost/tuple/tuple.hpp>
+#include <tuple>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -135,7 +135,7 @@ testLine::testConeIntersect()
   ELog::RegMethod RegA("testLine","testCone");
 
   // Cone : Start Point : Normal : NResults : distance A : distance B 
-  typedef boost::tuple<std::string,Geometry::Vec3D,Geometry::Vec3D,
+  typedef std::tuple<std::string,Geometry::Vec3D,Geometry::Vec3D,
 		       size_t,double,double> TTYPE;
   std::vector<TTYPE> Tests;
   
@@ -149,48 +149,49 @@ testLine::testConeIntersect()
 			Geometry::Vec3D(-7.0,8.90,0),Geometry::Vec3D(1,0,0),
 			2,10.4,3.6));
   
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
     {
       Cone A;
       Line LX;
-      LX.setLine(tc->get<1>(),tc->get<2>());
+      LX.setLine(std::get<1>(tc),std::get<2>(tc));
       
-      const int retVal=A.setSurface(tc->get<0>());
+      const int retVal=A.setSurface(std::get<0>(tc));
       if (retVal)
         {
-	  ELog::EM<<"Failed to build "<<tc->get<0>()
+	  ELog::EM<<"Failed to build "<<std::get<0>(tc)
 		  <<" Ecode == "<<retVal<<ELog::endErr;
 	  return -1;
 	}
       std::vector<Geometry::Vec3D> OutPt;
       const size_t NR=LX.intersect(OutPt,A);
 
-      if (NR!=tc->get<3>())
+      if (NR!=std::get<3>(tc))
 	{
-	  ELog::EM<<"Failure for test "<<tc-Tests.begin()<<ELog::endCrit;
+	  ELog::EM<<"Failure for test "<<cnt<<ELog::endCrit;
 	  ELog::EM<<"Solution Count"<<NR<<" ["<<
-	    tc->get<3>()<<"] "<<ELog::endCrit;
+	    std::get<3>(tc)<<"] "<<ELog::endCrit;
 	  return -1;
 	}
-      const double DA=(NR>0) ? OutPt[0].Distance(tc->get<1>()) : 0.0;
-      const double DB=(NR>1) ? OutPt[1].Distance(tc->get<1>()) : 0.0;
-      if (NR>0 && fabs(DA-tc->get<4>())> 1e-5) 
+      const double DA=(NR>0) ? OutPt[0].Distance(std::get<1>(tc)) : 0.0;
+      const double DB=(NR>1) ? OutPt[1].Distance(std::get<1>(tc)) : 0.0;
+      if (NR>0 && fabs(DA-std::get<4>(tc))> 1e-5) 
 	{
-	  ELog::EM<<"Failure for test "<<tc-Tests.begin()<<ELog::endCrit;
+	  ELog::EM<<"Failure for test "<<cnt<<ELog::endCrit;
 	  ELog::EM<<"Point A "<<OutPt[0]<<" :: "<<
-	    tc->get<1>()+tc->get<2>()*tc->get<4>()<<ELog::endDebug;
+	    std::get<1>(tc)+std::get<2>(tc)*std::get<4>(tc)<<ELog::endDebug;
 	  ELog::EM<<"DA "<<DA<<ELog::endCrit;
 	  return -1;
 	}
-      if (NR>1 && fabs(DB-tc->get<5>())> 1e-5) 
+      if (NR>1 && fabs(DB-std::get<5>(tc))> 1e-5) 
 	{
-	  ELog::EM<<"Failure for test "<<tc-Tests.begin()<<ELog::endCrit;
+	  ELog::EM<<"Failure for test "<<cnt<<ELog::endCrit;
 	  ELog::EM<<"Point B "<<OutPt[1]<<" :: "<<
-	    tc->get<1>()+tc->get<2>()*tc->get<5>()<<ELog::endCrit;
+	    std::get<1>(tc)+std::get<2>(tc)*std::get<5>(tc)<<ELog::endCrit;
 	  ELog::EM<<"DB "<<DB<<ELog::endCrit;
 	  return -1;
 	}
+      cnt++;
     }
   return 0;
 }
@@ -205,7 +206,7 @@ testLine::testCylinderIntersect()
   ELog::RegMethod RegA("testLine","testCylinderIntersect");
 
   // Cylinder : Start Point : Normal : NResults : distance A : distance B 
-  typedef boost::tuple<std::string,Geometry::Vec3D,Geometry::Vec3D,
+  typedef std::tuple<std::string,Geometry::Vec3D,Geometry::Vec3D,
 		       size_t,double,double> TTYPE;
   std::vector<TTYPE> Tests = {
     TTYPE("c/z 0.0 0.0 100.0",
@@ -217,49 +218,49 @@ testLine::testCylinderIntersect()
 
   };
   
-  size_t nTest(1);
+  int cnt(1);
   for(const TTYPE& tc : Tests)
     {
       Cylinder A;
       Line LX;
-      LX.setLine(tc.get<1>(),tc.get<2>());
+      LX.setLine(std::get<1>(tc),std::get<2>(tc));
       
-      const int retVal=A.setSurface(tc.get<0>());
+      const int retVal=A.setSurface(std::get<0>(tc));
       if (retVal)
         {
-	  ELog::EM<<"Failed to build "<<tc.get<0>()
+	  ELog::EM<<"Failed to build "<<std::get<0>(tc)
 		  <<" Ecode == "<<retVal<<ELog::endErr;
 	  return -1;
 	}
       std::vector<Geometry::Vec3D> OutPt;
       const size_t NR=LX.intersect(OutPt,A);
-      const double DA=(NR>0) ? OutPt[0].Distance(tc.get<1>()) : 0.0;
-      const double DB=(NR>1) ? OutPt[1].Distance(tc.get<1>()) : 0.0;
+      const double DA=(NR>0) ? OutPt[0].Distance(std::get<1>(tc)) : 0.0;
+      const double DB=(NR>1) ? OutPt[1].Distance(std::get<1>(tc)) : 0.0;
       
-      if (NR!=tc.get<3>() || 
-	  (NR>0 && fabs(DA-tc.get<4>())> 1e-5) ||
-	  (NR>1 && fabs(DB-tc.get<5>())> 1e-5) )
+      if (NR!=std::get<3>(tc) || 
+	  (NR>0 && fabs(DA-std::get<4>(tc))> 1e-5) ||
+	  (NR>1 && fabs(DB-std::get<5>(tc))> 1e-5) )
 	{
-	  ELog::EM<<"Test num "<<nTest<<ELog::endDiag;
-	  ELog::EM<<"Solution Count:"<<NR<<" ["<<tc.get<3>()<<"] "<<ELog::endDiag;
+	  ELog::EM<<"Test num "<<cnt<<ELog::endDiag;
+	  ELog::EM<<"Solution Count:"<<NR<<" ["<<std::get<3>(tc)<<"] "
+		  <<ELog::endDiag;
 	  if (NR>0)
 	    {
 	      ELog::EM<<"Point A "<<OutPt[0]<<" :: "<<
-		tc.get<1>()+tc.get<2>()*tc.get<4>()<<ELog::endDiag;
+		std::get<1>(tc)+std::get<2>(tc)*std::get<4>(tc)<<ELog::endDiag;
 	      ELog::EM<<"DA "<<DA<<ELog::endDiag;
 	    }
 	  if (NR>1)
 	    {
 	      ELog::EM<<"Point B "<<OutPt[1]<<" :: "<<
-		tc.get<1>()+tc.get<2>()*tc.get<5>()<<ELog::endDiag;
+		std::get<1>(tc)+std::get<2>(tc)*std::get<5>(tc)<<ELog::endDiag;
 	      ELog::EM<<"DB "<<DB<<ELog::endDiag;
 	    }
 	  return -1;
 	}
-
-      nTest++;
-
+      cnt++;
     }
+
   return 0;
 }
 
@@ -273,7 +274,7 @@ testLine::testEllipticCylIntersect()
   ELog::RegMethod RegA("testLine","testEllipticCyl");
 
   // EllipCyl : Start Point : Normal : NResults : distance A : distance B 
-  typedef boost::tuple<std::string,Geometry::Vec3D,Geometry::Vec3D,
+  typedef std::tuple<std::string,Geometry::Vec3D,Geometry::Vec3D,
 		       size_t,double,double> TTYPE;
   std::vector<TTYPE> Tests;
   
@@ -292,52 +293,53 @@ testLine::testEllipticCylIntersect()
   Tests.push_back(TTYPE("e/y 1.0 0.0 3.0 1.0",
 			Geometry::Vec3D(-6,-3.0,0),Geometry::Vec3D(1,0,0),
 			2,4.0,10.0));
-  
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin()+3;tc!=Tests.end();tc++)
+
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
     {
       ELog::EM<<"----------------------------"<<ELog::endDiag;
       ELog::EM<<"----------------------------"<<ELog::endDiag;
       EllipticCyl A;
       Line LX;
-      LX.setLine(tc->get<1>(),tc->get<2>());
+      LX.setLine(std::get<1>(tc),std::get<2>(tc));
       
-      const int retVal=A.setSurface(tc->get<0>());
+      const int retVal=A.setSurface(std::get<0>(tc));
       if (retVal)
         {
-	  ELog::EM<<"Failed to build "<<tc->get<0>()
+	  ELog::EM<<"Failed to build "<<std::get<0>(tc)
 		  <<" Ecode == "<<retVal<<ELog::endCrit;
 	  return -1;
 	}
       std::vector<Geometry::Vec3D> OutPt;
       const size_t NR=LX.intersect(OutPt,A);
 
-      if (NR!=tc->get<3>())
+      if (NR!=std::get<3>(tc))
 	{
-	  ELog::EM<<"Failure for test "<<(tc-Tests.begin())+1<<ELog::endCrit;
+	  ELog::EM<<"Failure for test "<<cnt<<ELog::endCrit;
 	  ELog::EM<<"Solution Count:"<<NR<<" ["<<
-	    tc->get<3>()<<"] "<<ELog::endCrit;
+	    std::get<3>(tc)<<"] "<<ELog::endCrit;
 	  return -1;
 	}
-      const double DA=(NR>0) ? OutPt[0].Distance(tc->get<1>()) : 0.0;
-      const double DB=(NR>1) ? OutPt[1].Distance(tc->get<1>()) : 0.0;
-      if (NR>0 && fabs(DA-tc->get<4>())> 1e-5) 
+      const double DA=(NR>0) ? OutPt[0].Distance(std::get<1>(tc)) : 0.0;
+      const double DB=(NR>1) ? OutPt[1].Distance(std::get<1>(tc)) : 0.0;
+      if (NR>0 && fabs(DA-std::get<4>(tc))> 1e-5) 
 	{
-	  ELog::EM<<"Failure for test "<<(tc-Tests.begin())+1<<ELog::endCrit;
+	  ELog::EM<<"Failure for test "<<cnt<<ELog::endCrit;
 	  ELog::EM<<"Point A "<<OutPt[0]<<" :: expect =="<<
-	    tc->get<1>()+tc->get<2>()*tc->get<4>()<<ELog::endDebug;
+	    std::get<1>(tc)+std::get<2>(tc)*std::get<4>(tc)<<ELog::endDebug;
 	  ELog::EM<<"DA "<<DA<<ELog::endCrit;
 	  ELog::EM<<"Surface "<<A<<ELog::endCrit;
 	  return -1;
 	}
-      if (NR>1 && fabs(DB-tc->get<5>())> 1e-5) 
+      if (NR>1 && fabs(DB-std::get<5>(tc))> 1e-5) 
 	{
-	  ELog::EM<<"Failure for test "<<tc-Tests.begin()<<ELog::endCrit;
+	  ELog::EM<<"Failure for test "<<cnt<<ELog::endCrit;
 	  ELog::EM<<"Point B "<<OutPt[1]<<" :: "<<
-	    tc->get<1>()+tc->get<2>()*tc->get<5>()<<ELog::endCrit;
+	    std::get<1>(tc)+std::get<2>(tc)*std::get<5>(tc)<<ELog::endCrit;
 	  ELog::EM<<"DB "<<DB<<ELog::endCrit;
 	  return -1;
 	}
+      cnt++;
     }
   return 0;
 }
@@ -359,7 +361,7 @@ testLine::testInterDistance()
   SurList.back()->setSurface("c/z 3 5 50");
 
   // surfN : Origin : Axis : results 
-  typedef boost::tuple<const Geometry::Surface*,Geometry::Vec3D,
+  typedef std::tuple<const Geometry::Surface*,Geometry::Vec3D,
 		       Geometry::Vec3D,double> TTYPE;
   std::vector<TTYPE> Tests;
   
@@ -370,20 +372,19 @@ testLine::testInterDistance()
 			Geometry::Vec3D(1,0,0),sqrt(50*50-25)+3.0));
 
   // DO Tests:
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  for(const TTYPE& tc : Tests)
     {
-      MonteCarlo::LineIntersectVisit LI(tc->get<1>(),tc->get<2>());
-      const Geometry::Surface* SPtr=tc->get<0>();
+      MonteCarlo::LineIntersectVisit LI(std::get<1>(tc),std::get<2>(tc));
+      const Geometry::Surface* SPtr=std::get<0>(tc);
       
       LI.clearTrack();
       const double out=LI.getDist(SPtr);
       
-      if (fabs(out-tc->get<3>())>1e-5)
+      if (fabs(out-std::get<3>(tc))>1e-5)
 	{
-	  ELog::EM<<"Line :"<<tc->get<1>()<<" :: "
-		  <<tc->get<2>()<<ELog::endTrace;	      
-	  ELog::EM<<"Out  "<<out<<" != "<<tc->get<3>()<<ELog::endTrace;
+	  ELog::EM<<"Line :"<<std::get<1>(tc)<<" :: "
+		  <<std::get<2>(tc)<<ELog::endTrace;	      
+	  ELog::EM<<"Out  "<<out<<" != "<<std::get<3>(tc)<<ELog::endTrace;
 	  ELog::EM<<"Track "<<LI.getTrack()<<ELog::endTrace;
 	  ELog::EM<<"Surface :"<<*SPtr<<ELog::endTrace;	      
 	  return -1;

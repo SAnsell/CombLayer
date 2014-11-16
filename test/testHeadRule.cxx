@@ -32,7 +32,7 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
-#include <boost/tuple/tuple.hpp>
+#include <tuple>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -176,7 +176,7 @@ testHeadRule::testAddInterUnion()
 
   createSurfaces();
 
-  typedef boost::tuple<std::string,std::string> TTYPE;
+  typedef std::tuple<std::string,std::string> TTYPE;
   std::vector<TTYPE> Tests;
   Tests.push_back(TTYPE("1 -2 ","1 -2"));
   Tests.push_back(TTYPE("3 -4 ","1 -2 3 4"));
@@ -186,13 +186,13 @@ testHeadRule::testAddInterUnion()
   std::vector<TTYPE>::const_iterator tc;
   HeadRule A;
   HeadRule B;
-		  
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+
+  for(const TTYPE& tc : Tests)
     {
       HeadRule tmp;
-      if (!tmp.procString(tc->get<0>()))
+      if (!tmp.procString(std::get<0>(tc)))
 	{
-	  ELog::EM<<"Failed to set tmp :"<<tc->get<0>()<<ELog::endDebug;
+	  ELog::EM<<"Failed to set tmp :"<<std::get<0>(tc)<<ELog::endDebug;
 	  return -1;
 	}
       A.addIntersection(tmp.getTopRule());
@@ -213,7 +213,7 @@ testHeadRule::testCountLevel()
 
   createSurfaces();
 
-  typedef boost::tuple<std::string,size_t,size_t> TTYPE;
+  typedef std::tuple<std::string,size_t,size_t> TTYPE;
   std::vector<TTYPE> Tests;
   Tests.push_back(TTYPE("1 -2 3 -4 (5:-6) ",1,2));
   Tests.push_back(TTYPE("1 -2 3 -4 (5:-6) ",0,5));
@@ -224,21 +224,20 @@ testHeadRule::testCountLevel()
 
 
   
-  std::vector<TTYPE>::const_iterator tc;
-  for(TTYPE& tc : Tests)
+  for(const TTYPE& tc : Tests)
     {
       HeadRule tmp;
-      if (!tmp.procString(tc.get<0>()))
+      if (!tmp.procString(std::get<0>(tc)))
 	{
-	  ELog::EM<<"Failed to set tmp :"<<tc.get<0>()
+	  ELog::EM<<"Failed to set tmp :"<<std::get<0>(tc)
 		  <<ELog::endDebug;
 	  return -1;
 	}
-      const size_t Res=tmp.countNLevel(tc.get<1>());
-      if (Res!=tc.get<2>())
+      const size_t Res=tmp.countNLevel(std::get<1>(tc));
+      if (Res!=std::get<2>(tc))
 	{
 	  ELog::EM<<"A == "<<tmp.display()<<ELog::endDebug;
-	  ELog::EM<<"Res["<<tc.get<2>()<<"] == "<<Res<<ELog::endDebug;
+	  ELog::EM<<"Res["<<std::get<2>(tc)<<"] == "<<Res<<ELog::endDebug;
 	  return -1;
 	}
     }
@@ -257,7 +256,7 @@ testHeadRule::testEqual()
   createSurfaces();
 
   // level : NItems : testItem
-  typedef boost::tuple<std::string,std::string,bool> TTYPE;
+  typedef std::tuple<std::string,std::string,bool> TTYPE;
   std::vector<TTYPE> Tests;
 
   Tests.push_back(TTYPE("1 -2 (8001:8002) -8003 -8004 5 -6",
@@ -268,28 +267,27 @@ testHeadRule::testEqual()
   Tests.push_back(TTYPE("3 4","4",0));
   Tests.push_back(TTYPE("3 4","(3:4)",0));
   
-  std::vector<TTYPE>::const_iterator tc;
-  for(TTYPE& tc : Tests)
+  for(const TTYPE& tc : Tests)
     {
       HeadRule tmpA;
       HeadRule tmpB;
-      if (!tmpA.procString(tc.get<0>()) ||
-	  !tmpB.procString(tc.get<1>()) )
+      if (!tmpA.procString(std::get<0>(tc)) ||
+	  !tmpB.procString(std::get<1>(tc)) )
 	{
-	  ELog::EM<<"Failed to set tmpA/B :"<<tc.get<0>()
+	  ELog::EM<<"Failed to set tmpA/B :"<<std::get<0>(tc)
 		  <<ELog::endDebug;
-	  ELog::EM<<"Failed to set tmpA/B :"<<tc.get<1>()
+	  ELog::EM<<"Failed to set tmpA/B :"<<std::get<1>(tc)
 		  <<ELog::endDebug;
 	  return -1;
 	}
       const bool Res=(tmpA==tmpB);
-      if (Res!=tc.get<2>())
+      if (Res!=std::get<2>(tc))
 	{
 	  ELog::EM<<"Test Failed "<<ELog::endDiag;
 	  ELog::EM<<"A == "<<tmpA.display()<<ELog::endDiag;
 	  ELog::EM<<"B == "<<tmpB.display()<<ELog::endDiag;
 
-	  ELog::EM<<"Res["<<tc.get<2>()<<"] == "
+	  ELog::EM<<"Res["<<std::get<2>(tc)<<"] == "
 		  <<Res<<ELog::endDiag;
 	  return -1;
 	}
@@ -311,7 +309,7 @@ testHeadRule::testFindNodes()
   createSurfaces();
 
   // level : NItems : testItem
-  typedef boost::tuple<std::string,size_t,size_t,size_t,std::string> TTYPE;
+  typedef std::tuple<std::string,size_t,size_t,size_t,std::string> TTYPE;
   std::vector<TTYPE> Tests;
   Tests.push_back(TTYPE("1 -2 3 -4 (5:-6) ",0,5,4,"5 : -6"));
   Tests.push_back(TTYPE("1 -2 3 -4 (5:-6) ",1,2,1,"5"));
@@ -319,27 +317,26 @@ testHeadRule::testFindNodes()
   Tests.push_back(TTYPE("-4",0,1,0,"-4"));
   
 
-  std::vector<TTYPE>::const_iterator tc;
-  for(TTYPE& tc : Tests)
+  for(const TTYPE& tc : Tests)
     {
       HeadRule tmp;
-      if (!tmp.procString(tc.get<0>()))
+      if (!tmp.procString(std::get<0>(tc)))
 	{
-	  ELog::EM<<"Failed to set tmp :"<<tc.get<0>()
+	  ELog::EM<<"Failed to set tmp :"<<std::get<0>(tc)
 		  <<ELog::endDebug;
 	  return -1;
 	}
       std::vector<const Rule*> Res=
-	tmp.findNodes(tc.get<1>());
-      if (Res.size()!=tc.get<2>() ||
-	  Res[tc.get<3>()]->display()!=tc.get<4>())
+	tmp.findNodes(std::get<1>(tc));
+      if (Res.size()!=std::get<2>(tc) ||
+	  Res[std::get<3>(tc)]->display()!=std::get<4>(tc))
 	{
 	  ELog::EM<<"Test Failed "<<ELog::endDiag;
 	  ELog::EM<<"A == "<<tmp.display()<<ELog::endDebug;
 	  ELog::EM<<"N == "<<Res.size()<<ELog::endDebug;
 	  for(const Rule* SPtr : Res)
 	    ELog::EM<<SPtr->display()<<ELog::endDebug;
-	  ELog::EM<<"Res == "<<Res[tc.get<3>()]->display()<<ELog::endDiag;
+	  ELog::EM<<"Res == "<<Res[std::get<3>(tc)]->display()<<ELog::endDiag;
 	  return -1;
 	}
     }
@@ -357,31 +354,30 @@ testHeadRule::testFindTopNodes()
 
   createSurfaces();
 
-  typedef boost::tuple<std::string,size_t,size_t,std::string> TTYPE;
+  typedef std::tuple<std::string,size_t,size_t,std::string> TTYPE;
   std::vector<TTYPE> Tests;
   Tests.push_back(TTYPE("1 -2 3 -4 (5:-6) ",5,4,"5 : -6"));
   
 
-  std::vector<TTYPE>::const_iterator tc;
-  for(TTYPE& tc : Tests)
+  for(const TTYPE& tc : Tests)
     {
       HeadRule tmp;
-      if (!tmp.procString(tc.get<0>()))
+      if (!tmp.procString(std::get<0>(tc)))
 	{
-	  ELog::EM<<"Failed to set tmp :"<<tc.get<0>()
+	  ELog::EM<<"Failed to set tmp :"<<std::get<0>(tc)
 		  <<ELog::endDebug;
 	  return -1;
 	}
       std::vector<const Rule*> Res=
 	tmp.findTopNodes();
-      if (Res.size()!=tc.get<1>() ||
-	  Res[tc.get<2>()]->display()!=tc.get<3>())
+      if (Res.size()!=std::get<1>(tc) ||
+	  Res[std::get<2>(tc)]->display()!=std::get<3>(tc))
 	{
 	  ELog::EM<<"Test Failed "<<ELog::endDiag;
 	  ELog::EM<<"A == "<<tmp.display()<<ELog::endDebug;
 	  ELog::EM<<"N == "<<Res.size()<<ELog::endDebug;
-	  ELog::EM<<"Expected["<<Res[tc.get<2>()]->display()
-		  <<"] == "<<tc.get<3>()
+	  ELog::EM<<"Expected["<<Res[std::get<2>(tc)]->display()
+		  <<"] == "<<std::get<3>(tc)
 		  <<ELog::endDebug;
 	  for(const Rule* SPtr : Res)
 	    ELog::EM<<SPtr->display()<<ELog::endDebug;
@@ -402,7 +398,7 @@ testHeadRule::testGetComponent()
 
   createSurfaces();
 
-  typedef boost::tuple<std::string,size_t,size_t,std::string> TTYPE;
+  typedef std::tuple<std::string,size_t,size_t,std::string> TTYPE;
   std::vector<TTYPE> Tests;
   Tests.push_back(TTYPE("1 -2 3 -4 (5:-6) ",0,5,"(5 : -6)"));
   Tests.push_back(TTYPE("1 -2 3 -4 (5:-6) ",0,4,"-4"));
@@ -412,19 +408,19 @@ testHeadRule::testGetComponent()
   Tests.push_back(TTYPE("(-6 : 7 : 35 ) -208 207 "
 			"-206 -205 204 -203 202 201 ( -16 : -97 : 55 ) ",
 			0,2,"-208"));
-  std::vector<TTYPE>::const_iterator tc;
-  for(TTYPE& tc : Tests)
+
+  for(const TTYPE& tc : Tests)
     {
       HeadRule tmp;
-      if (!tmp.procString(tc.get<0>()))
+      if (!tmp.procString(std::get<0>(tc)))
 	{
-	  ELog::EM<<"Failed to set tmp :"<<tc.get<0>()
+	  ELog::EM<<"Failed to set tmp :"<<std::get<0>(tc)
 		  <<ELog::endDebug;
 	  return -1;
 	}
-      HeadRule ARes=tmp.getComponent(tc.get<1>(),tc.get<2>());
+      HeadRule ARes=tmp.getComponent(std::get<1>(tc),std::get<2>(tc));
       const std::string AStr=ARes.display();
-      if (AStr!=tc.get<3>())
+      if (AStr!=std::get<3>(tc))
 	{
 	  ELog::EM<<"A == "<<ARes.display()<<ELog::endDebug;
 	  return -1;
@@ -444,29 +440,28 @@ testHeadRule::testLevel()
 
   createSurfaces();
 
-  typedef boost::tuple<std::string,int,int> TTYPE;
+  typedef std::tuple<std::string,int,int> TTYPE;
   std::vector<TTYPE> Tests;
   Tests.push_back(TTYPE("1 -2 3 -4 (5:-6) ",5,1));
   Tests.push_back(TTYPE("1 -2 3 -4 (5:-6) ",4,0));
   Tests.push_back(TTYPE("1 -2 3 -4 (5:-6) ",7,-1));
   Tests.push_back(TTYPE("1 -2 3 -4 (5:-6:(7 -8)) ",8,2));
   
-  std::vector<TTYPE>::const_iterator tc;
   HeadRule A;
-  for(TTYPE& tc : Tests)
+  for(const TTYPE& tc : Tests)
     {
       HeadRule tmp;
-      if (!tmp.procString(tc.get<0>()))
+      if (!tmp.procString(std::get<0>(tc)))
 	{
-	  ELog::EM<<"Failed to set tmp :"<<tc.get<0>()
+	  ELog::EM<<"Failed to set tmp :"<<std::get<0>(tc)
 		  <<ELog::endDebug;
 	  return -1;
 	}
-      const int Res=tmp.level(tc.get<1>());
-      if (Res!=tc.get<2>())
+      const int Res=tmp.level(std::get<1>(tc));
+      if (Res!=std::get<2>(tc))
 	{
 	  ELog::EM<<"A == "<<A.display()<<ELog::endDebug;
-	  ELog::EM<<"Res["<<tc.get<2>()<<"] == "<<Res<<ELog::endDebug;
+	  ELog::EM<<"Res["<<std::get<2>(tc)<<"] == "<<Res<<ELog::endDebug;
 	  return -1;
 	}
     }
@@ -485,7 +480,7 @@ testHeadRule::testPartEqual()
   createSurfaces();
 
   // level : NItems : testItem
-  typedef boost::tuple<std::string,std::string,bool> TTYPE;
+  typedef std::tuple<std::string,std::string,bool> TTYPE;
   std::vector<TTYPE> Tests;
 
   Tests.push_back(TTYPE("3 4","4",1));
@@ -496,28 +491,27 @@ testHeadRule::testPartEqual()
   Tests.push_back(TTYPE("3 4 (9:7:-8:(1 2))","(7:-8:(1 2))",1));
   Tests.push_back(TTYPE("3 4 (9:7:-8:(1 2))","(7:-8:(1 -2))",0));
   
-  std::vector<TTYPE>::const_iterator tc;
-  for(TTYPE& tc : Tests)
+  for(const TTYPE& tc : Tests)
     {
       HeadRule tmpA;
       HeadRule tmpB;
-      if (!tmpA.procString(tc.get<0>()) ||
-	  !tmpB.procString(tc.get<1>()) )
+      if (!tmpA.procString(std::get<0>(tc)) ||
+	  !tmpB.procString(std::get<1>(tc)) )
 	{
-	  ELog::EM<<"Failed to set tmpA/B :"<<tc.get<0>()
+	  ELog::EM<<"Failed to set tmpA/B :"<<std::get<0>(tc)
 		  <<ELog::endDebug;
-	  ELog::EM<<"Failed to set tmpA/B :"<<tc.get<1>()
+	  ELog::EM<<"Failed to set tmpA/B :"<<std::get<1>(tc)
 		  <<ELog::endDebug;
 	  return -1;
 	}
       const bool Res=(tmpA.partMatched(tmpB));
-      if (Res!=tc.get<2>())
+      if (Res!=std::get<2>(tc))
 	{
 	  ELog::EM<<"Test Failed "<<ELog::endDiag;
 	  ELog::EM<<"A == "<<tmpA.display()<<ELog::endDiag;
 	  ELog::EM<<"B == "<<tmpB.display()<<ELog::endDiag;
 
-	  ELog::EM<<"Res["<<tc.get<2>()<<"] == "
+	  ELog::EM<<"Res["<<std::get<2>(tc)<<"] == "
 		  <<Res<<ELog::endDiag;
 	  return -1;
 	}
@@ -537,7 +531,7 @@ testHeadRule::testReplacePart()
   createSurfaces();
 
   // level : NItems : testItem
-  typedef boost::tuple<std::string,std::string,std::string,
+  typedef std::tuple<std::string,std::string,std::string,
 		       bool,std::string> TTYPE;
   std::vector<TTYPE> Tests;
 
@@ -545,34 +539,34 @@ testHeadRule::testReplacePart()
   Tests.push_back(TTYPE("3 4","-4","8001",0,"3 4"));
   Tests.push_back(TTYPE("3 4 (9:7:-8)","(7:-8)",
 			"(8001:8002)",1,"3 4 (9:8001:8002)"));
-  std::vector<TTYPE>::const_iterator tc;
-  for(TTYPE& tc : Tests)
+
+  for(const TTYPE& tc : Tests)
     {
       HeadRule tmpA;
       HeadRule tmpB;
       HeadRule tmpC;
       HeadRule resRule;
-      if (!tmpA.procString(tc.get<0>()) ||
-	  !tmpB.procString(tc.get<1>()) ||
-	  !tmpC.procString(tc.get<2>()) ||
-	  !resRule.procString(tc.get<4>()) ) 
+      if (!tmpA.procString(std::get<0>(tc)) ||
+	  !tmpB.procString(std::get<1>(tc)) ||
+	  !tmpC.procString(std::get<2>(tc)) ||
+	  !resRule.procString(std::get<4>(tc)) ) 
 	{
-	  ELog::EM<<"Failed to set tmpA/B :"<<tc.get<0>()
+	  ELog::EM<<"Failed to set tmpA/B :"<<std::get<0>(tc)
 		  <<ELog::endDebug;
-	  ELog::EM<<"Failed to set tmpA/B :"<<tc.get<1>()
+	  ELog::EM<<"Failed to set tmpA/B :"<<std::get<1>(tc)
 		  <<ELog::endDebug;
-	  ELog::EM<<"Failed to set tmpA/B :"<<tc.get<2>()
+	  ELog::EM<<"Failed to set tmpA/B :"<<std::get<2>(tc)
 		  <<ELog::endDebug;
 	  return -1;
 	}
       const bool Res=(tmpA.subMatched(tmpB,tmpC));
-      if (Res!=tc.get<3>() || tmpA!=resRule)
+      if (Res!=std::get<3>(tc) || tmpA!=resRule)
 	{
 	  ELog::EM<<"Test Failed "<<ELog::endDiag;
 	  ELog::EM<<"A == "<<tmpA<<ELog::endDiag;
 	  ELog::EM<<"B == "<<tmpB<<ELog::endDiag;
 	  ELog::EM<<"C == "<<tmpC<<ELog::endDiag;
-	  ELog::EM<<"Res["<<tc.get<3>()<<"] == "
+	  ELog::EM<<"Res["<<std::get<3>(tc)<<"] == "
 		  <<Res<<ELog::endDiag;
 	  ELog::EM<<"ResRULE["<<resRule<<"] != "
 		  <<tmpA<<ELog::endDiag;
@@ -593,23 +587,22 @@ testHeadRule::testRemoveSurf()
 
   createSurfaces();
 
-  typedef boost::tuple<std::string,std::string> TTYPE;
+  typedef std::tuple<std::string,std::string> TTYPE;
   std::vector<TTYPE> Tests;
   Tests.push_back(TTYPE("1 -2 ","1 -2"));
   Tests.push_back(TTYPE("3 -4 ","1 -2 3 4"));
   Tests.push_back(TTYPE("5 -6 ","1 -2 3 4"));
   Tests.push_back(TTYPE("5 -6 ","1 -2 3 4"));
   
-  std::vector<TTYPE>::const_iterator tc;
   HeadRule A;
   HeadRule B;
-		  
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+
+  for(const TTYPE& tc : Tests)
     {
       HeadRule tmp;
-      if (!tmp.procString(tc->get<0>()))
+      if (!tmp.procString(std::get<0>(tc)))
 	{
-	  ELog::EM<<"Failed to set tmp :"<<tc->get<0>()<<ELog::endDebug;
+	  ELog::EM<<"Failed to set tmp :"<<std::get<0>(tc)<<ELog::endDebug;
 	  return -1;
 	}
       A.addIntersection(tmp.getTopRule());
@@ -630,25 +623,26 @@ testHeadRule::testSurfSet()
 
   createSurfaces();
 
-  typedef boost::tuple<std::string,std::string,std::string> TTYPE;
+  typedef std::tuple<std::string,std::string,std::string> TTYPE;
   std::vector<TTYPE> Tests;
   Tests.push_back(TTYPE("1 -2 ","1 -2",""));
   
-  std::vector<TTYPE>::const_iterator tc;
+
   HeadRule A;
   HeadRule B;
   HeadRule C;
-		  
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
     {
-      A.procString(tc->get<0>());
-      B.procString(tc->get<1>());
-      C.procString(tc->get<2>());
+      A.procString(std::get<0>(tc));
+      B.procString(std::get<1>(tc));
+      C.procString(std::get<2>(tc));
       std::set<int> SN=B.getSurfSet();
       A.isolateSurfNum(SN);
       if (A!=C)
 	{
-	  ELog::EM<<"Failed on test "<<tc-Tests.begin()<<ELog::endDiag;
+	  ELog::EM<<"Failed on test "<<cnt<<ELog::endDiag;
 	  ELog::EM<<"SN == ";
 	  for(int SI : SN)
 	    ELog::EM<<SI<<" ";
@@ -658,7 +652,7 @@ testHeadRule::testSurfSet()
 	  ELog::EM<<"C == "<<C<<ELog::endDebug;
 	  return -1;
 	}
-
+      cnt++;
     }
   return 0;
 }

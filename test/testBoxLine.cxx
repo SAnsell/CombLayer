@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   test/testBoxLine.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,8 +34,6 @@
 #include <algorithm>
 #include <functional>
 #include <memory>
-#include <boost/multi_array.hpp>
-#include <boost/tuple/tuple.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -45,35 +43,21 @@
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "Triple.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Surface.h"
-#include "Quadratic.h"
-#include "Plane.h"
-#include "Cylinder.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
 #include "Rules.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "BnId.h"
-#include "Acomp.h"
-#include "Algebra.h"
-#include "Line.h"
 #include "Qhull.h"
-#include "NRange.h"
-#include "NList.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
-#include "generateSurf.h"
-#include "AttachSupport.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"

@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   test/testMD5.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@
 #include <vector>
 #include <map>
 #include <string>
-#include <boost/tuple/tuple.hpp>
+#include <tuple>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -108,7 +108,7 @@ testMD5::testNext()
 {
   ELog::RegMethod("testMD5","testNext");
 
-  typedef boost::tuple<std::string,std::string> TTYPE;
+  typedef std::tuple<std::string,std::string> TTYPE;
   std::vector<TTYPE> Tests;
   Tests.push_back(TTYPE(
 		  "The quick brown fox jumps over the lazy dog.",
@@ -121,16 +121,15 @@ testMD5::testNext()
   
   
   MD5hash sum;
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  for(const TTYPE& tc : Tests)
     {
-      const std::string Hash=sum.processMessage(tc->get<0>());
-      if (Hash!=tc->get<1>())
+      const std::string Hash=sum.processMessage(std::get<0>(tc));
+      if (Hash!=std::get<1>(tc))
 	{
 	  ELog::EM<<"Failed on string :"<<
-	    tc->get<0>()<<":"<<ELog::endTrace;
+	    std::get<0>(tc)<<":"<<ELog::endTrace;
 	  ELog::EM<<"Obtained HASH :"<<Hash<<":"<<ELog::endTrace;
-	  ELog::EM<<"Expected HASH :"<<tc->get<1>()<<":"<<ELog::endTrace;
+	  ELog::EM<<"Expected HASH :"<<std::get<1>(tc)<<":"<<ELog::endTrace;
 	  return -1;
 	}
     }

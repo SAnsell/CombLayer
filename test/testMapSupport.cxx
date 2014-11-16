@@ -28,7 +28,7 @@
 #include <set>
 #include <string>
 #include <algorithm>
-#include <boost/tuple/tuple.hpp>
+#include <tuple>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -119,16 +119,15 @@ testMapSupport::testIterator()
 {
   ELog::RegMethod RegA("testMapSupport","testIterator");
 
-  typedef boost::tuple<std::string> TTYPE;  
+  typedef std::tuple<std::string> TTYPE;  
   
   std::vector<TTYPE> Tests;
   Tests.push_back(TTYPE("1,2,3,4"));
 
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  for(const TTYPE& tc : Tests)
     {
       std::set<int> SI;
-      std::string line=tc->get<0>();
+      std::string line=std::get<0>(tc);
       int value;
       while(StrFunc::section(line,value))
 	{

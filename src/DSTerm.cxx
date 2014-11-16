@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   src/DSTerm.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,6 @@
 #include <iterator>
 #include <numeric>
 #include <boost/format.hpp>
-#include <boost/tuple/tuple.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -115,7 +114,7 @@ template<typename T>
 DSTerm<T>::DSTerm() : DSBase()
  /*!
    Constructor 
- */
+  */
 {}
 
 

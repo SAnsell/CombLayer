@@ -31,7 +31,7 @@
 #include <string>
 #include <stack>
 #include <algorithm>
-#include <boost/tuple/tuple.hpp>
+#include <tuple>
 #include <boost/variant.hpp>
 
 #include "Exception.h"
@@ -41,7 +41,6 @@
 #include "OutputLog.h"
 #include "PolyFunction.h"
 #include "PolyVar.h"
-#include "Triple.h"
 
 #include "testFunc.h"
 #include "testPoly.h"
@@ -151,8 +150,8 @@ testPoly::testAddition()
   ELog::RegMethod RegA("testPoly","testAddition");
 
   // size/
-  typedef boost::tuple<int,std::string,int,
-		       std::string,std::string> TTYPE;
+  typedef std::tuple<int,std::string,int,
+		     std::string,std::string> TTYPE;
   std::vector<TTYPE> Tests;
   
   
@@ -160,28 +159,27 @@ testPoly::testAddition()
 			"3z^2+4z+2.2y^2+5.3y"));
   
   std::ostringstream cx;
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  for(const TTYPE& tc : Tests)
     {
       cx.str("");
-      const int iA=tc->get<0>();
-      const int iB=tc->get<2>();
+      const int iA=std::get<0>(tc);
+      const int iB=std::get<2>(tc);
 
       if (iA==3 && iB==2)
 	{
 	  PolyVar<3> FXYZ;
 	  PolyVar<2> GXY;
 	  PolyVar<3> HXYZ;
-	  FXYZ.read(tc->get<1>());
-	  GXY.read(tc->get<3>());
+	  FXYZ.read(std::get<1>(tc));
+	  GXY.read(std::get<3>(tc));
 	  HXYZ=FXYZ.operator+(GXY);
 	  cx<<HXYZ;
 
 	}
-      if (cx.str()!=tc->get<4>())
+      if (cx.str()!=std::get<4>(tc))
 	{
 	  ELog::EM<<"HXYZ   == "<<cx.str()<<":"<<ELog::endErr;
-	  ELog::EM<<"Expect == "<<tc->get<4>()<<":"<<ELog::endErr;
+	  ELog::EM<<"Expect == "<<std::get<4>(tc)<<":"<<ELog::endErr;
 	  return -1;
 	}
     }
@@ -439,40 +437,41 @@ testPoly::testExpand()
 
   PolyVar<3> FXYZ; 
   PolyVar<3> GXYZ; 
-  typedef std::vector<Triple<std::string> > TTYPE;
-  TTYPE testItem;
+
+  typedef std::tuple<std::string,std::string,std::string> TTYPE;
+  std::vector<TTYPE> Tests;
     
-  testItem.push_back(TTYPE::value_type("x-32","y+10","y+x-22"));
-  testItem.push_back(TTYPE::value_type("x-23","y-10","y+x-33"));
-  testItem.push_back(TTYPE::value_type("-z","z^2+x^2-1","z^2-z+x^2-1"));
-  testItem.push_back(
-    TTYPE::value_type(
+  Tests.push_back(TTYPE("x-32","y+10","y+x-22"));
+  Tests.push_back(TTYPE("x-23","y-10","y+x-33"));
+  Tests.push_back(TTYPE("-z","z^2+x^2-1","z^2-z+x^2-1"));
+  Tests.push_back(TTYPE(
       "-z",
       "z^2+(-y-x+5)z+0.5y^2+(-9x-10)y+0.4x^2+9x+45",
       "z^2+(-y-x+5)z+0.5y^2+(-9x-10)y+0.4x^2+9x+45"));
 
-  TTYPE::const_iterator tc;
-  for(tc=testItem.begin();tc!=testItem.end();tc++)
+  for(const TTYPE& tc : Tests)
     {
-      if (FXYZ.read(tc->first))
+      if (FXYZ.read(std::get<0>(tc)))
         {
 	  ELog::EM<<"Failed to process object :"
-		  <<tc->first<<ELog::endErr;
+		  <<std::get<0>(tc)<<ELog::endErr;
 	  return -1;
 	}
-      if (GXYZ.read(tc->second))
+      if (GXYZ.read(std::get<1>(tc)))
         {
 	  ELog::EM<<"Failed to process object :"
-		  <<tc->second<<ELog::endErr;
+		  <<std::get<1>(tc)<<ELog::endErr;
 	  return -1;
 	}
       FXYZ.expand(GXYZ);
       std::ostringstream cx;
       cx<<FXYZ;
-      if (cx.str()!=tc->third)
+      if (cx.str()!=std::get<2>(tc))
         {
-	  ELog::EM<<"Items: "<<tc->first<<" :: "<<tc->second<<ELog::endErr;
-	  ELog::EM<<"Data: "<<FXYZ<<" :: "<<tc->third<<" :: "<<ELog::endErr;
+	  ELog::EM<<"Items: "<<std::get<0>(tc)<<" :: "
+		  <<std::get<1>(tc)<<ELog::endErr;
+	  ELog::EM<<"Data: "<<FXYZ<<" :: "
+		  <<std::get<2>(tc)<<" :: "<<ELog::endErr;
 	  return -1;
 	}
     }
@@ -667,7 +666,7 @@ testPoly::testRead()
   std::vector<double> Value;
 
   // String : Size : x : y : z : result
-  typedef boost::tuple<int,std::string,
+  typedef std::tuple<int,std::string,
 		       double,double,double,std::string,double> TTYPE;
   std::vector<TTYPE> Tests;
   
@@ -697,72 +696,72 @@ testPoly::testRead()
   const char* outName[]={"SINGLE","DOUBLE","TRIPLE"};
 
   int errFlag(0);
-  std::vector<TTYPE>::const_iterator tc;
   double Values[3];
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+
+  for(const TTYPE& tc : Tests)
     {
-      const int VarNum(tc->get<0>());
-      Values[0]=tc->get<2>();
-      Values[1]=tc->get<3>();
-      Values[2]=tc->get<4>();
+      const int VarNum(std::get<0>(tc));
+      Values[0]=std::get<2>(tc);
+      Values[1]=std::get<3>(tc);
+      Values[2]=std::get<4>(tc);
       cx.str("");
       if (VarNum==1)
 	{
 	  cx.str("");
-	  FX.read(tc->get<1>());
+	  FX.read(std::get<1>(tc));
 	  cx<<FX;
-	  if (cx.str()!=tc->get<5>() || 
-	      fabs(FX(Values)-tc->get<6>())>1e-5)
+	  if (cx.str()!=std::get<5>(tc) || 
+	      fabs(FX(Values)-std::get<6>(tc))>1e-5)
 	    errFlag=1;
 	  }
       if (VarNum==2)
 	{
 	  cx.str("");
-	  GXY.read(tc->get<1>());
+	  GXY.read(std::get<1>(tc));
 	  cx<<GXY;
-	  if (cx.str()!=tc->get<5>() || 
-	      fabs(GXY(Values)-tc->get<6>())>1e-5)
+	  if (cx.str()!=std::get<5>(tc) || 
+	      fabs(GXY(Values)-std::get<6>(tc))>1e-5)
 	    errFlag=2;
 	}
       if (VarNum==3)
 	{
 	  cx.str("");
-	  HXYZ.read(tc->get<5>());
+	  HXYZ.read(std::get<5>(tc));
 	  cx<<HXYZ;
-	  if (cx.str()!=tc->get<5>() || 
-	      fabs(HXYZ(Values)-tc->get<6>())>1e-5)
+	  if (cx.str()!=std::get<5>(tc) || 
+	      fabs(HXYZ(Values)-std::get<6>(tc))>1e-5)
 	    errFlag=3;
 	}
       if (errFlag)
 	{
-	  TestFunc::bracketTest(outName[tc->get<0>()-1],ELog::EM.Estream());
-	  ELog::EM<<"VarCount : "<<tc->get<0>()<<ELog::endErr;	      
-	  ELog::EM<<"Input : "<<tc->get<1>()<<" ::"<<ELog::endErr;
-	  ELog::EM<<"Expect: "<<tc->get<5>()<<" ::"<<ELog::endErr;
+	  TestFunc::bracketTest(outName[std::get<0>(tc)-1],ELog::EM.Estream());
+	  ELog::EM<<"VarCount : "<<std::get<0>(tc)<<ELog::endErr;	      
+	  ELog::EM<<"Input : "<<std::get<1>(tc)<<" ::"<<ELog::endErr;
+	  ELog::EM<<"Expect: "<<std::get<5>(tc)<<" ::"<<ELog::endErr;
 	  ELog::EM<<"String: "<<cx.str()<<" ::"<<ELog::endErr;
-	  if (tc->get<0>()==1)
+	  if (std::get<0>(tc)==1)
 	    {
 	      ELog::EM<<"FX    : "<<FX<<ELog::endErr;
-	      ELog::EM<<"Eval == "<<FX(tc->get<2>())
-		      <<" ("<<tc->get<6>()<<")"<<ELog::endErr;
+	      ELog::EM<<"Eval == "<<FX(std::get<2>(tc))
+		      <<" ("<<std::get<6>(tc)<<")"<<ELog::endErr;
 	    }
-	  else if (tc->get<0>()==2)
+	  else if (std::get<0>(tc)==2)
 	    {
 	      ELog::EM<<"GXY    : "<<GXY<<ELog::endErr;
-	      ELog::EM<<"Eval == "<<GXY(tc->get<2>(),tc->get<3>())
-		      <<" ("<<tc->get<6>()<<")"<<ELog::endErr;
+	      ELog::EM<<"Eval == "<<GXY(std::get<2>(tc),std::get<3>(tc))
+		      <<" ("<<std::get<6>(tc)<<")"<<ELog::endErr;
 	    }
-	  else if (tc->get<0>()==3)
+	  else if (std::get<0>(tc)==3)
 	    {
 	      ELog::EM<<"HXYZ    : "<<HXYZ<<ELog::endErr;
 	      ELog::EM<<"Eval == "
-		      <<HXYZ(tc->get<2>(),tc->get<3>(),tc->get<4>())
-		      <<" ("<<tc->get<6>()<<")"<<ELog::endErr;
+		      <<HXYZ(std::get<2>(tc),std::get<3>(tc),std::get<4>(tc))
+		      <<" ("<<std::get<6>(tc)<<")"<<ELog::endErr;
 	      ELog::EM<<"Value == "
 		      <<HXYZ(Values)
-		      <<" ("<<tc->get<6>()<<")"<<ELog::endErr;
+		      <<" ("<<std::get<6>(tc)<<")"<<ELog::endErr;
 	    }
-	  return -static_cast<int>(tc-Tests.begin());
+	  return -1;
 	}
     }
 
@@ -780,23 +779,22 @@ testPoly::testSetComp()
   
   // size/
   // Comp : value : current value : clear
-  typedef boost::tuple<size_t,double,std::string,bool> TTYPE;
+  typedef std::tuple<size_t,double,std::string,bool> TTYPE;
   std::vector<TTYPE> Tests;
     
   Tests.push_back(TTYPE(1,4.0,"4z",0));
   Tests.push_back(TTYPE(2,3.0,"3z^2+4z",0));
 
   PolyVar<3> GXYZ(3);
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  for(const TTYPE& tc : Tests)
     {
       std::ostringstream cx;
-      GXYZ.setComp(tc->get<0>(),tc->get<1>());
+      GXYZ.setComp(std::get<0>(tc),std::get<1>(tc));
       cx<<GXYZ;
       GXYZ.setComp(2,3.0);
-      if (cx.str()!=tc->get<2>())
+      if (cx.str()!=std::get<2>(tc))
 	{
-	  ELog::EM<<"Expect   :"<<tc->get<2>()<<ELog::endDiag;
+	  ELog::EM<<"Expect   :"<<std::get<2>(tc)<<ELog::endDiag;
 	  ELog::EM<<"Current  :"<<GXYZ<<ELog::endDiag;
 	  return -1;
 	}
@@ -864,7 +862,7 @@ testPoly::testSubVariable()
 {
   ELog::RegMethod RegA("testPoly","testSubVariable");
 
-  typedef boost::tuple<std::string,size_t,double,std::string> TTYPE;
+  typedef std::tuple<std::string,size_t,double,std::string> TTYPE;
   std::vector<TTYPE> Tests;
 
   Tests.push_back(TTYPE("(6xy^2+4x)z^3+(y+x^2+3)z+x-4",2,
@@ -874,19 +872,18 @@ testPoly::testSubVariable()
 			"(-12x^2-8)y^3+(x+7)y-6"));
 
 
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  for(const TTYPE& tc : Tests)
     {
       PolyVar<3> FXYZ;
-      FXYZ.read(tc->get<0>());
-      PolyVar<2> outXY=FXYZ.subVariable(tc->get<1>(),tc->get<2>());
+      FXYZ.read(std::get<0>(tc));
+      PolyVar<2> outXY=FXYZ.subVariable(std::get<1>(tc),std::get<2>(tc));
       std::ostringstream cx;
       cx<<outXY;
-      if (cx.str()!=tc->get<3>())
+      if (cx.str()!=std::get<3>(tc))
 	{
 	  ELog::EM<<"FXYZ == "<<FXYZ<<ELog::endTrace;
-	  ELog::EM<<"Substitution on "<<tc->get<1>()
-		  <<" == "<<tc->get<2>()<<ELog::endTrace;
+	  ELog::EM<<"Substitution on "<<std::get<1>(tc)
+		  <<" == "<<std::get<2>(tc)<<ELog::endTrace;
 	  ELog::EM<<"Out == "<<outXY<<ELog::endTrace;
 	  return -1;
 	}
@@ -906,7 +903,7 @@ testPoly::testTriplet()
   ELog::RegMethod RegA("testPoly","testTriplet");
 
   PolyVar<3> FXYZ;
-  typedef boost::tuple<const double*,double,double,double,double> TTYPE;
+  typedef std::tuple<const double*,double,double,double,double> TTYPE;
 
   std::vector<TTYPE> Tests;
 
@@ -917,23 +914,22 @@ testPoly::testTriplet()
 
   std::vector<double> Pts(10);
 
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  for(const TTYPE& tc : Tests)
     {
-      copy(tc->get<0>(),tc->get<0>()+10,Pts.begin());
+      copy(std::get<0>(tc),std::get<0>(tc)+10,Pts.begin());
 
       PolyVar<3> FXYZ;
       FXYZ.makeTriplet(Pts);
       
       const double result=
-	FXYZ.substitute(tc->get<1>(),tc->get<2>(),tc->get<3>());
-      if (fabs(result-tc->get<4>())>1e-5)
+	FXYZ.substitute(std::get<1>(tc),std::get<2>(tc),std::get<3>(tc));
+      if (fabs(result-std::get<4>(tc))>1e-5)
 	{
 	  ELog::EM<<"FXYZ == "<<FXYZ<<ELog::endTrace;
-	  ELog::EM<<"Result["<<tc->get<1>()<<","
-		  <<tc->get<2>()<<","<<tc->get<3>()
+	  ELog::EM<<"Result["<<std::get<1>(tc)<<","
+		  <<std::get<2>(tc)<<","<<std::get<3>(tc)
 		  <<"] == "<<result<<ELog::endTrace;
-	  ELog::EM<<"Expected == "<<tc->get<4>()<<ELog::endTrace;
+	  ELog::EM<<"Expected == "<<std::get<4>(tc)<<ELog::endTrace;
 	  return -1;
 	}
     }
@@ -948,29 +944,31 @@ testPoly::testVariable()
   */ 
 {
   ELog::RegMethod RegA("testPoly","testVariable");
-  typedef boost::tuple<std::string,size_t,std::string,bool> TTYPE;
+  typedef std::tuple<std::string,size_t,std::string,bool> TTYPE;
   std::vector<TTYPE> Tests;
   Tests.push_back(TTYPE("3.3x^2+2.2x+1.1",1,"(3.3x^2+2.2x+1.1)y",0));
   Tests.push_back(TTYPE("4.4",0,"(3.3x^2+2.2x+1.1)y+4.4",0));
   
   PolyVar<2> GXY(2); 
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
     {
       PolyVar<1> FX;
-      FX.read(tc->get<0>());
-      GXY.setComp(tc->get<1>(),FX);
+      FX.read(std::get<0>(tc));
+      GXY.setComp(std::get<1>(tc),FX);
       std::ostringstream cx;
       cx<<GXY;
-      if (cx.str()!=tc->get<2>())
+      if (cx.str()!=std::get<2>(tc))
 	{
-	  ELog::EM<<"Test "<<(tc-Tests.begin())+1<<ELog::endTrace;
-	  ELog::EM<<"Expected : "<<tc->get<2>()<<ELog::endTrace;
+	  ELog::EM<<"Test "<<cnt<<ELog::endTrace;
+	  ELog::EM<<"Expected : "<<std::get<2>(tc)<<ELog::endTrace;
 	  ELog::EM<<"Obtained : "<<cx.str()<<ELog::endTrace;
 	  return -1;
 	}
-      if (tc->get<3>())
+      if (std::get<3>(tc))
 	GXY.zeroPoly();
+
+      cnt++;
     }
   
   return 0;

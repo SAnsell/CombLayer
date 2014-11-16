@@ -30,12 +30,13 @@
 #include <map>
 #include <string>
 #include <algorithm>
+#include <tuple>
 
 #ifndef NO_REGEX
 #include <boost/regex.hpp>
 #endif
 
-#include <boost/tuple/tuple.hpp>
+
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -147,7 +148,7 @@ testSupport::testConvert()
   ELog::RegMethod RegA("testSupport","testConvert");
 
   // type : Init string : final : results : (outputs)
-  typedef boost::tuple<int,std::string,int,
+  typedef std::tuple<int,std::string,int,
 		       int,double,std::string> TTYPE;
   std::vector<TTYPE> Tests;
 
@@ -166,44 +167,45 @@ testSupport::testConvert()
   Tests.push_back(TTYPE(1," 3e4 ",1,0,30000.0,""));
   Tests.push_back(TTYPE(1," 3",1,0,3,""));
 
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
     {
       std::string outS;
       double outD(0.0);
       int outI(0);
 
-      const int typeFlag=tc->get<0>();
-      const std::string TLine=tc->get<1>();
+      const int typeFlag=std::get<0>(tc);
+      const std::string TLine=std::get<1>(tc);
       if (typeFlag==0)        // Int
 	{
 	  resultFlag=convert(TLine,outI);
-	  checkFlag= (tc->get<3>()!=outI);
+	  checkFlag= (std::get<3>(tc)!=outI);
 	}
       else if (typeFlag==1)        // double
 	{
 	  resultFlag=convert(TLine,outD);
-	  checkFlag= (fabs(tc->get<4>()-outD)>1e-15);
+	  checkFlag= (fabs(std::get<4>(tc)-outD)>1e-15);
 	}
       else                          // String
 	{
 	  resultFlag=convert(TLine,outS);
-	  checkFlag= (tc->get<5>()!=outS);
+	  checkFlag= (std::get<5>(tc)!=outS);
 	}
 
-      if (resultFlag!=tc->get<2>() || (resultFlag && checkFlag))
+      if (resultFlag!=std::get<2>(tc) || (resultFlag && checkFlag))
 	{
-	  ELog::EM<<"TEST :: "<<(tc-Tests.begin())+1<<ELog::endDiag;
+	  ELog::EM<<"TEST :: "<<cnt<<ELog::endDiag;
 	  ELog::EM<<"Result == "<<resultFlag<<" ("
-		  <<tc->get<2>()<<")"<<ELog::endDiag;
-	  ELog::EM<<"Output[Int] == "<<outI<<":"<<tc->get<3>()
+		  <<std::get<2>(tc)<<")"<<ELog::endDiag;
+	  ELog::EM<<"Output[Int] == "<<outI<<":"<<std::get<3>(tc)
 		  <<ELog::endDiag;
-	  ELog::EM<<"Output[double] == "<<outD<<":"<<tc->get<4>()
+	  ELog::EM<<"Output[double] == "<<outD<<":"<<std::get<4>(tc)
 		  <<ELog::endDiag;
-	  ELog::EM<<"Output[String] == "<<outS<<":"<<tc->get<5>()
+	  ELog::EM<<"Output[String] == "<<outS<<":"<<std::get<5>(tc)
 		  <<ELog::endDiag;
 	  return -1;
 	}
+      cnt++;
     }
   return 0;
 }
@@ -218,7 +220,7 @@ testSupport::testConvPartNum()
   ELog::RegMethod RegA("testSupport","testConvPartNum");
 
   // type : Init string : final : results : (outputs)
-  typedef boost::tuple<int,std::string,size_t,int,double> TTYPE;
+  typedef std::tuple<int,std::string,size_t,int,double> TTYPE;
   std::vector<TTYPE> Tests;
   
   size_t resultFlag(1);       // Section return
@@ -234,36 +236,37 @@ testSupport::testConvPartNum()
   Tests.push_back(TTYPE(1," 3e4 ",4,0,30000.0));
   Tests.push_back(TTYPE(1," 3g",2,0,3.0));
 
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
     {
       double outD(0.0);
       int outI(0);
 
-      const int typeFlag=tc->get<0>();
-      const std::string TLine=tc->get<1>();
+      const int typeFlag=std::get<0>(tc);
+      const std::string TLine=std::get<1>(tc);
       if (typeFlag==0)        // Int
 	{
 	  resultFlag=convPartNum(TLine,outI);
-	  checkFlag= (tc->get<3>()!=outI);
+	  checkFlag= (std::get<3>(tc)!=outI);
 	}
       else if (typeFlag==1)        // double
 	{
 	  resultFlag=convPartNum(TLine,outD);
-	  checkFlag= (fabs(tc->get<4>()-outD)>1e-15);
+	  checkFlag= (fabs(std::get<4>(tc)-outD)>1e-15);
 	}
 
-      if (resultFlag!=tc->get<2>() || (resultFlag && checkFlag))
+      if (resultFlag!=std::get<2>(tc) || (resultFlag && checkFlag))
 	{
-	  ELog::EM<<"TEST :: "<<(tc-Tests.begin())+1<<ELog::endDiag;
+	  ELog::EM<<"TEST :: "<<cnt<<ELog::endDiag;
 	  ELog::EM<<"Result == "<<resultFlag<<" ("
-		  <<tc->get<2>()<<")"<<ELog::endDiag;
-	  ELog::EM<<"Output[Int] == "<<outI<<":"<<tc->get<3>()
+		  <<std::get<2>(tc)<<")"<<ELog::endDiag;
+	  ELog::EM<<"Output[Int] == "<<outI<<":"<<std::get<3>(tc)
 		  <<ELog::endDiag;
-	  ELog::EM<<"Output[double] == "<<outD<<":"<<tc->get<4>()
+	  ELog::EM<<"Output[double] == "<<outD<<":"<<std::get<4>(tc)
 		  <<ELog::endDiag;
 	  return -1;
 	}
+      cnt++;
     }
   return 0;
 }
@@ -303,21 +306,20 @@ testSupport::testFullBlock()
 {
   ELog::RegMethod RegA("testSupport","testFullBlock");
 
-  typedef boost::tuple<std::string,std::string> TTYPE;
+  typedef std::tuple<std::string,std::string> TTYPE;
   std::vector<TTYPE> Tests;
   
   Tests.push_back(TTYPE("abcde","abcde"));
   Tests.push_back(TTYPE("abcde)","abcde)"));
   
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  for(const TTYPE& tc : Tests)
     {
-      std::string Out=StrFunc::fullBlock(tc->get<0>());
-      if (Out!=tc->get<1>())
+      std::string Out=StrFunc::fullBlock(std::get<0>(tc));
+      if (Out!=std::get<1>(tc))
 	{
-	  ELog::EM<<"Input  == "<<tc->get<0>()<<" =="<<ELog::endTrace;
+	  ELog::EM<<"Input  == "<<std::get<0>(tc)<<" =="<<ELog::endTrace;
 	  ELog::EM<<"Out    == "<<Out<<" =="<<ELog::endTrace;
-	  ELog::EM<<"Expect == "<<tc->get<1>()<<" =="<<ELog::endTrace;
+	  ELog::EM<<"Expect == "<<std::get<1>(tc)<<" =="<<ELog::endTrace;
 	  return -1;
 	}
     }
@@ -338,30 +340,33 @@ testSupport::testItemize()
   ELog::RegMethod RegA("testSupport","testItemize");
 
   std::string Ln="Name   6Gap  -3.4 next";
-  typedef boost::tuple<int,std::string,double> ResTYPE; 
-  std::vector<ResTYPE> Results;
-  Results.push_back(ResTYPE(-1,"Name",0.0));
-  Results.push_back(ResTYPE(-1,"6Gap",0.0));
-  Results.push_back(ResTYPE(1,"-3.4",-3.4));
-  Results.push_back(ResTYPE(-1,"next",0.0));
-  Results.push_back(ResTYPE(0,"",0.0));
+  typedef std::tuple<int,std::string,double> TTYPE; 
+
+  std::vector<TTYPE> Results;
+  Results.push_back(TTYPE(-1,"Name",0.0));
+  Results.push_back(TTYPE(-1,"6Gap",0.0));
+  Results.push_back(TTYPE(1,"-3.4",-3.4));
+  Results.push_back(TTYPE(-1,"next",0.0));
+  Results.push_back(TTYPE(0,"",0.0));
   
   std::string Out;
   double item(1); 
-  for(size_t i=0;i<Results.size();i++) 
+  int cnt(1);
+  for(const TTYPE& tc : Results)
     {
       const int flag=itemize(Ln,Out,item);
-      if (flag!=Results[i].get<0>() ||
-	  (flag && Results[i].get<1>()!=Out) ||
-	  (flag==1 && fabs(Results[i].get<2>()-item)>1e-7) )
+      if (flag!=std::get<0>(tc) ||
+	  (flag && std::get<1>(tc)!=Out) ||
+	  (flag==1 && fabs(std::get<2>(tc)-item)>1e-7) )
         {
-	  ELog::EM<<"Failed on "<<i+1
+	  ELog::EM<<"Failed on "<<cnt
 		  <<":: flag == "<<flag<<" "<<Out<<" "<<item<<ELog::endErr;
 	  ELog::EM<<"Expected :: flag == "
-		  <<Results[i].get<0>()<<" "<<Results[i].get<1>()<<" "
-		  <<Results[i].get<2>()<<ELog::endErr;
+		  <<std::get<0>(tc)<<" "<<std::get<1>(tc)<<" "
+		  <<std::get<2>(tc)<<ELog::endCrit;
 	  return -1;
 	}
+      cnt++;
     }
   return 0;  
 }
@@ -377,7 +382,7 @@ testSupport::testSection()
   ELog::RegMethod RegA("testSupport","testSection");
 
   // type : Init string : final : results : (outputs)
-  typedef boost::tuple<int,std::string,std::string,int,
+  typedef std::tuple<int,std::string,std::string,int,
 		       int,double,std::string> TTYPE;
   std::vector<TTYPE> Tests;
 
@@ -394,55 +399,56 @@ testSupport::testSection()
   Tests.push_back(TTYPE(1," 3e4 ","",1,0,30000.0,""));
   Tests.push_back(TTYPE(3,"3","",1,3,0.0,""));
   
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
     {
       std::string outS;
       double outD(0.0);
       int outI(0);
       size_t outUI(0);
 
-      const int typeFlag=tc->get<0>();
-      std::string TLine=tc->get<1>();
+      const int typeFlag=std::get<0>(tc);
+      std::string TLine=std::get<1>(tc);
       if (typeFlag==0)        // Int
 	{
 	  resultFlag=section(TLine,outI);
-	  checkFlag= (tc->get<4>()!=outI || 
-		      tc->get<2>()!=TLine);
+	  checkFlag= (std::get<4>(tc)!=outI || 
+		      std::get<2>(tc)!=TLine);
 	}
       else if (typeFlag==1)        // double
 	{
 	  resultFlag=section(TLine,outD);
-	  checkFlag= (fabs(tc->get<5>()-outD)>1e-15 || 
-		      tc->get<2>()!=TLine);
+	  checkFlag= (fabs(std::get<5>(tc)-outD)>1e-15 || 
+		      std::get<2>(tc)!=TLine);
 	}
       else if (typeFlag==2)        // String
 	{
 	  resultFlag=section(TLine,outS);
-	  checkFlag= (tc->get<6>()!=outS || tc->get<2>()!=TLine);
+	  checkFlag= (std::get<6>(tc)!=outS || std::get<2>(tc)!=TLine);
 	}
       else         // Size_t
 	{
 	  resultFlag=section(TLine,outUI);
-	  checkFlag= (static_cast<size_t>(tc->get<4>())!=outUI 
-					 || tc->get<2>()!=TLine);
+	  checkFlag= (static_cast<size_t>(std::get<4>(tc))!=outUI 
+					 || std::get<2>(tc)!=TLine);
 	}
 
-      if (resultFlag!=tc->get<3>() || (resultFlag && checkFlag))
+      if (resultFlag!=std::get<3>(tc) || (resultFlag && checkFlag))
 	{
-	  ELog::EM<<"TEST :: "<<(tc-Tests.begin())+1<<ELog::endDiag;
+	  ELog::EM<<"TEST :: "<<cnt<<ELog::endDiag;
 	  ELog::EM<<"Result == "<<resultFlag<<" ("
-		  <<tc->get<3>()<<")"<<ELog::endDiag;
-	  ELog::EM<<"Output[Int] == "<<outI<<":"<<tc->get<4>()
+		  <<std::get<3>(tc)<<")"<<ELog::endDiag;
+	  ELog::EM<<"Output[Int] == "<<outI<<":"<<std::get<4>(tc)
 		  <<ELog::endDiag;
-	  ELog::EM<<"Output[double] == "<<outD<<":"<<tc->get<5>()
+	  ELog::EM<<"Output[double] == "<<outD<<":"<<std::get<5>(tc)
 		  <<ELog::endDiag;
-	  ELog::EM<<"Output[String] == "<<outS<<":"<<tc->get<6>()
+	  ELog::EM<<"Output[String] == "<<outS<<":"<<std::get<6>(tc)
 		  <<ELog::endDiag;
-	  ELog::EM<<"Final string :"<<tc->get<2>()<<ELog::endDiag;
+	  ELog::EM<<"Final string :"<<std::get<2>(tc)<<ELog::endDiag;
 	  ELog::EM<<"Found string :"<<TLine<<ELog::endDiag;
 	  return -1;
 	}
+      cnt++;
     }
   return 0;
 }
@@ -493,22 +499,23 @@ testSupport::testSingleLine()
   ELog::RegMethod RegA("testSupport","testSingleLine");  
 
   // type : Init string : final : results : (outputs)
-  typedef boost::tuple<std::string,std::string> TTYPE;
+  typedef std::tuple<std::string,std::string> TTYPE;
   std::vector<TTYPE> Tests;
 
   Tests.push_back(TTYPE("2   3","2 3"));
   
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
     {
-      const std::string Res=StrFunc::singleLine(tc->get<0>());
-      if (tc->get<1>()!=Res)
+      const std::string Res=StrFunc::singleLine(std::get<0>(tc));
+      if (std::get<1>(tc)!=Res)
 	{
-	  ELog::EM<<"TEST :: "<<(tc-Tests.begin())+1<<ELog::endDiag;
+	  ELog::EM<<"TEST :: "<<cnt<<ELog::endDiag;
 	  ELog::EM<<"Result == "<<Res<<" == "<<ELog::endDiag;
-	  ELog::EM<<"Expec  == "<<tc->get<1>()<<" == "<<ELog::endDiag;
+	  ELog::EM<<"Expec  == "<<std::get<1>(tc)<<" == "<<ELog::endDiag;
 	  return -1;
 	}
+      cnt++;
     }
   return 0;
 
@@ -558,7 +565,7 @@ testSupport::testStrFullCut()
 #ifndef NO_REGEX
 
   // Input : Search : results : Remainder
-  typedef boost::tuple<std::string,std::string,double,
+  typedef std::tuple<std::string,std::string,double,
 		       std::string,std::string> TTYPE;
   std::vector<TTYPE> Tests;
   
@@ -579,21 +586,20 @@ testSupport::testStrFullCut()
 			0,"mx:",
 			"54:h my"));
 		  
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  for(const TTYPE& tc : Tests)
     {
       double Out=0.0;
       std::vector<std::string> OutVec;
       std::ostringstream cx;
-      std::string Target=tc->get<0>();
-      boost::regex Re(tc->get<1>());
+      std::string Target=std::get<0>(tc);
+      boost::regex Re(std::get<1>(tc));
       int flag(0);
       // Basic test
-      if (tc->get<3>().empty())
+      if (std::get<3>(tc).empty())
 	{
 
 	  flag=StrFullCut(Target,Re,Out,0);
-	  if (Out!=tc->get<2>())
+	  if (Out!=std::get<2>(tc))
 	    flag=0;
 	}
       // Vector test:
@@ -602,13 +608,13 @@ testSupport::testStrFullCut()
 	  flag=StrFullCut(Target,Re,OutVec);
 	  copy(OutVec.begin(),OutVec.end(),
 	       std::ostream_iterator<std::string>(cx,":"));
-	  if (cx.str()!=tc->get<3>())
+	  if (cx.str()!=std::get<3>(tc))
 	    flag=0;
 	}
-      if (!flag || Target!=tc->get<4>())
+      if (!flag || Target!=std::get<4>(tc))
 	{
-	  ELog::EM<<"Init == "<<tc->get<0>()<<ELog::endTrace;
-	  ELog::EM<<"Search == "<<tc->get<1>()<<ELog::endTrace;
+	  ELog::EM<<"Init == "<<std::get<0>(tc)<<ELog::endTrace;
+	  ELog::EM<<"Search == "<<std::get<1>(tc)<<ELog::endTrace;
 	  ELog::EM<<"Target == "<<Target<<" =="<<ELog::endTrace;
 	  ELog::EM<<"Out == "<<Out<<ELog::endTrace;
 	  ELog::EM<<"CX == "<<cx.str()<<" =="<<ELog::endTrace;
@@ -632,7 +638,7 @@ testSupport::testStrRemove()
 
 #ifndef NO_REGEX
 
-  typedef boost::tuple<std::string,std::string,
+  typedef std::tuple<std::string,std::string,
 		       std::string,std::string> TTYPE;
   std::vector<TTYPE> Tests;
 
@@ -640,17 +646,16 @@ testSupport::testStrRemove()
 			"x\\S+","x4.5",
 			" $var     x6.7   8.9 x90.1 7.3 x44.5 theEnd"));
 
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  for(const TTYPE& tc : Tests)
     {
-      std::string Y=tc->get<0>();
-      boost::regex sstr(tc->get<1>());
+      std::string Y=std::get<0>(tc);
+      boost::regex sstr(std::get<1>(tc));
       std::string Out;
       if (!StrRemove(Y,Out,sstr) ||
-	  Out!=tc->get<2>() || Y!=tc->get<3>())
+	  Out!=std::get<2>(tc) || Y!=std::get<3>(tc))
 	{
-	  ELog::EM<<"Init :"<<tc->get<0>()<<ELog::endTrace;
-	  ELog::EM<<"Regex :"<<tc->get<1>()<<ELog::endTrace;
+	  ELog::EM<<"Init :"<<std::get<0>(tc)<<ELog::endTrace;
+	  ELog::EM<<"Regex :"<<std::get<1>(tc)<<ELog::endTrace;
 	  ELog::EM<<"Remain :"<<Y<<ELog::endTrace;
 	  ELog::EM<<"Out :"<<Out<<ELog::endTrace;
 	  return -1;
@@ -672,25 +677,24 @@ testSupport::testStrParts()
 
 #ifndef NO_REGEX
   
-  typedef boost::tuple<std::string,std::string,unsigned int,std::string> TTYPE;
+  typedef std::tuple<std::string,std::string,unsigned int,std::string> TTYPE;
   std::vector<TTYPE> Tests;
   
   // remove space/> at start then split on 
   Tests.push_back(TTYPE("$var s566>s4332 dxx","[\\s>]*([^\\s>]+)",4,"$var:s566:s4332:dxx:"));
 
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  for(const TTYPE& tc : Tests)
     {
-      std::string Y=tc->get<0>();
-      boost::regex sstr(tc->get<1>());
+      std::string Y=std::get<0>(tc);
+      boost::regex sstr(std::get<1>(tc));
       std::vector<std::string> outVec=StrFunc::StrParts(Y,sstr);      
       std::ostringstream cx;
       copy(outVec.begin(),outVec.end(),
 	   std::ostream_iterator<std::string>(cx,":"));
 
-      if (outVec.size()!=tc->get<2>() || cx.str()!=tc->get<3>())
+      if (outVec.size()!=std::get<2>(tc) || cx.str()!=std::get<3>(tc))
 	{
-	  ELog::EM<<"Test of :"<<tc->get<0>()<<ELog::endTrace;
+	  ELog::EM<<"Test of :"<<std::get<0>(tc)<<ELog::endTrace;
 	  ELog::EM<<"Remain[] == "<<Y<< "=="<<ELog::endTrace;
 	  ELog::EM<<"Out == "<<cx.str()<<ELog::endTrace;
 	  return -1;

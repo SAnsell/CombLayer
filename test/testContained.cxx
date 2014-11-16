@@ -32,7 +32,7 @@
 #include <string>
 #include <sstream>
 #include <algorithm>
-#include <boost/tuple/tuple.hpp>
+#include <tuple>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -181,21 +181,20 @@ testContained::testAddSurfString()
 {
   ELog::RegMethod RegA("testContained","testAddSurfString");
 
-  typedef boost::tuple<std::string,std::string> TTYPE;
+  typedef std::tuple<std::string,std::string> TTYPE;
   std::vector<TTYPE> Tests;
   Tests.push_back(TTYPE("1 -2 3 -4","( -1 : -3 : 4 : 2 )"));
   
 
   
   ContainedComp C;
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  for(const TTYPE& tc : Tests)
     {
-      C.addOuterUnionSurf(tc->get<0>());
-      if (StrFunc::fullBlock(C.getExclude())!=tc->get<1>())
+      C.addOuterUnionSurf(std::get<0>(tc));
+      if (StrFunc::fullBlock(C.getExclude())!=std::get<1>(tc))
 	{
 	  ELog::EM<<"Exclude == "<<C.getExclude()<<ELog::endTrace;
-	  ELog::EM<<"Expect  == "<<tc->get<1>()<<ELog::endTrace;
+	  ELog::EM<<"Expect  == "<<std::get<1>(tc)<<ELog::endTrace;
 	  return -1;
 	}
     }
@@ -212,7 +211,7 @@ testContained::testIsOuterLine()
 {
   ELog::RegMethod RegA("testContained","testAddSurfString");
 
-  typedef boost::tuple<std::string,Geometry::Vec3D,Geometry::Vec3D,bool> TTYPE;
+  typedef std::tuple<std::string,Geometry::Vec3D,Geometry::Vec3D,bool> TTYPE;
   std::vector<TTYPE> Tests;
   Tests.push_back(TTYPE("1 -2 3 -4 5 -6",
 			Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0),1));
@@ -233,18 +232,17 @@ testContained::testIsOuterLine()
 			Geometry::Vec3D(1,4,0),Geometry::Vec3D(-1,0,0),1));
   
 
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  for(const TTYPE& tc : Tests)
     {
       ContainedComp C;
-      C.addOuterSurf(tc->get<0>());
-      bool Res=C.isOuterLine(tc->get<1>(),tc->get<2>());
-      if (Res!=tc->get<3>())
+      C.addOuterSurf(std::get<0>(tc));
+      bool Res=C.isOuterLine(std::get<1>(tc),std::get<2>(tc));
+      if (Res!=std::get<3>(tc))
 	{
-	  ELog::EM<<"Surface  == "<<tc->get<0>()<<ELog::endTrace;
-	  ELog::EM<<"Line == "<<tc->get<1>()<<" :: "
-		  <<tc->get<2>()<<ELog::endTrace;
-	  ELog::EM<<"Expect  == "<<tc->get<3>()<<ELog::endTrace;
+	  ELog::EM<<"Surface  == "<<std::get<0>(tc)<<ELog::endTrace;
+	  ELog::EM<<"Line == "<<std::get<1>(tc)<<" :: "
+		  <<std::get<2>(tc)<<ELog::endTrace;
+	  ELog::EM<<"Expect  == "<<std::get<3>(tc)<<ELog::endTrace;
 	  return -1;
 	}
     }

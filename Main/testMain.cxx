@@ -33,8 +33,6 @@
 #include <algorithm>
 #include <memory>
 #include <boost/format.hpp>
-#include <boost/tuple/tuple.hpp>
-#include <boost/array.hpp>
 #include <boost/multi_array.hpp>
 
 #include "Exception.h"

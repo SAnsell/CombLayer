@@ -33,7 +33,7 @@
 #include <string>
 #include <algorithm>
 #include <memory>
-#include <boost/tuple/tuple.hpp>
+#include <tuple>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -173,19 +173,18 @@ testPairFactory::testConstructPair()
   ModelSupport::surfIndex& SurI= ModelSupport::surfIndex::Instance();
   
   // SurfN:SurfN : Type [string]
-  typedef boost::tuple<int,int,std::string> TTYPE;
+  typedef std::tuple<int,int,std::string> TTYPE;
   typedef pairItem<Geometry::Plane,Geometry::Plane> PTYPE;
   std::vector<TTYPE> Tests;
   Tests.push_back(TTYPE(1,11,"Plane Plane"));
   Tests.push_back(TTYPE(3,13,"Cylinder Cylinder"));
   Tests.push_back(TTYPE(2,12,"Sphere Sphere"));
 
-
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
     {
-      const int surfA(tc->get<0>());
-      const int surfB(tc->get<1>());
+      const int surfA(std::get<0>(tc));
+      const int surfB(std::get<1>(tc));
       
       const Geometry::Surface* SA=SurI.getSurf(surfA);
       const Geometry::Surface* SB=SurI.getSurf(surfB);
@@ -194,15 +193,16 @@ testPairFactory::testConstructPair()
 	std::shared_ptr<pairBase>(pairFactory::createPair(SA,SB));
 
       const std::string typeName=(pBase) ? pBase->typeINFO() : "No Pointer";
-      if (typeName!=tc->get<2>())
+      if (typeName!=std::get<2>(tc))
 	{
-	  ELog::EM<<"Test : "<<1+(tc-Tests.begin())<<ELog::endDebug;
+	  ELog::EM<<"Test : "<<cnt<<ELog::endDebug;
 	  ELog::EM<<"Obtained : "<<typeName<<ELog::endDebug;
-	  ELog::EM<<"Expected : "<<tc->get<2>()<<ELog::endDebug;
+	  ELog::EM<<"Expected : "<<std::get<2>(tc)<<ELog::endDebug;
 	  ELog::EM<<"SA == "<<SA->className()<<ELog::endDebug;
 	  ELog::EM<<"SB == "<<SB->className()<<ELog::endDebug;
 	  return -1;
 	}
+      cnt++;
       
     }
   return 0;

@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   test/testSimulation.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,10 +34,7 @@
 #include <numeric>
 #include <iterator>
 #include <memory>
-#include <boost/functional.hpp>
-#include <boost/bind.hpp>
-#include <boost/tuple/tuple.hpp>
-#include <boost/array.hpp>
+#include <tuple>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -54,16 +51,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
-#include "Triple.h"
-#include "NList.h"
-#include "NRange.h"
-#include "Tally.h"
-#include "cellFluxTally.h"
-#include "pointTally.h"
-#include "heatTally.h"
-#include "tallyFactory.h"
 #include "Transform.h"
 #include "Surface.h"
 #include "surfIndex.h"
@@ -81,20 +68,7 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "RemoveCell.h"
-#include "WForm.h"
-#include "weightManager.h"
 #include "ObjSurfMap.h"
-#include "ModeCard.h"
-#include "PhysCard.h"
-#include "PhysImp.h"
-#include "LSwitchCard.h"
-#include "KGroup.h"
-#include "SrcData.h"
-#include "SrcItem.h"
-#include "Source.h"
-#include "KCode.h"
-#include "PhysicsCards.h"
 #include "ReadFunctions.h"
 #include "surfRegister.h"
 #include "ModelSupport.h"
@@ -265,19 +239,20 @@ testSimulation::testTrackNeutron()
 
   
   // InitObj : Neut : dist, surfN
-  typedef boost::tuple<int,size_t,double,int> tTYPE;
-  std::vector<tTYPE> testIndex;
-  testIndex.push_back(tTYPE(2,0,1.0,-2)); 
+  typedef std::tuple<int,size_t,double,int> TTYPE;
+
+  std::vector<TTYPE> Tests;
+  Tests.push_back(TTYPE(2,0,1.0,-2)); 
   
-  for(size_t i=0;i<testIndex.size();i++)
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
     {
-      const tTYPE& TI=testIndex[i];
-      MonteCarlo::neutron nOut(TNeut[TI.get<1>()]);      
+      MonteCarlo::neutron nOut(TNeut[std::get<1>(tc)]);      
 
       // Find Initial cell
       MonteCarlo::Object* OPtr=
 	ASim.findCell(nOut.Pos,0);
-      if (!OPtr || OPtr->getName()!=TI.get<0>())
+      if (!OPtr || OPtr->getName()!=std::get<0>(tc))
 	{
 	  ELog::EM<<"Init cell incorrect"<<ELog::endWarn;
 	  return -1;
@@ -288,18 +263,18 @@ testSimulation::testTrackNeutron()
       const int SN=OPtr->trackOutCell(nOut,aDist,SPtr);
       // Error check result:
   // InitObj : Neut : dist, surfN
-      if (SN!=TI.get<3>() || fabs(TI.get<2>()-aDist)>1e-4)
+      if (SN!=std::get<3>(tc) || fabs(std::get<2>(tc)-aDist)>1e-4)
 	{
-	  ELog::EM<<"Results == "<<i<<ELog::endWarn;
-	  ELog::EM<<"Exit surf("<<TI.get<3>()
+	  ELog::EM<<"Results == "<<cnt<<ELog::endWarn;
+	  ELog::EM<<"Exit surf("<<std::get<3>(tc)
 		  <<") == "<<SN<<ELog::endWarn;
-	  ELog::EM<<"Init neut == "<<TNeut[TI.get<1>()]<<ELog::endWarn;
-	  ELog::EM<<"Distance("<<TI.get<2>()<<") == "
+	  ELog::EM<<"Init neut == "<<TNeut[std::get<1>(tc)]<<ELog::endWarn;
+	  ELog::EM<<"Distance("<<std::get<2>(tc)<<") == "
 		  <<aDist<<ELog::endWarn;
 	  ELog::EM<<"------------------"<<ELog::endDebug;
 	  return -1;
 	}
-
+      cnt++;
     }
   return 0;
             

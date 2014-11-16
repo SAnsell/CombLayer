@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   test/testVec3D.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@
 #include <list>
 #include <stack>
 #include <map>
-#include <boost/tuple/tuple.hpp>
+#include <tuple>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -98,7 +98,7 @@ testVec3D::testDotProd()
 {
   ELog::RegMethod RegA("testVec3D","testDotProd");
 
-  typedef boost::tuple<size_t,size_t,double> TTYPE;
+  typedef std::tuple<size_t,size_t,double> TTYPE;
   std::vector<TTYPE> Tests;
 
   // Set to test between:
@@ -120,20 +120,22 @@ testVec3D::testDotProd()
   Tests.push_back(TTYPE(0,0,5.0));   // test self and two comps
   Tests.push_back(TTYPE(6,7,5.0));   // test self and two comps
 
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
     {
-      const size_t iA(tc->get<0>());
-      const size_t iB(tc->get<1>());
+      const size_t iA(std::get<0>(tc));
+      const size_t iB(std::get<1>(tc));
       const double dp=VSet[iA].dotProd(VSet[iB]);
-      if (fabs(dp-tc->get<2>())>1e-5)
+      if (fabs(dp-std::get<2>(tc))>1e-5)
 	{
-	  ELog::EM<<"Test Num   "<<(tc-Tests.begin())+1<<ELog::endTrace;
+	  ELog::EM<<"Test Num   "<<cnt<<ELog::endTrace;
 	  ELog::EM<<"Vectors == "<<VSet[iA]<<ELog::endTrace;
 	  ELog::EM<<"        == "<<VSet[iB]<<ELog::endTrace;
-	  ELog::EM<<"Dot prod = "<<dp<<" ("<<tc->get<2>()<<")"<<ELog::endTrace;
+	  ELog::EM<<"Dot prod = "<<dp<<" ("<<std::get<2>(tc)<<")"
+		  <<ELog::endTrace;
 	  return -1;
 	}
+      cnt++;
     }
   return 0;
 }

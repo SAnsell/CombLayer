@@ -34,8 +34,6 @@
 #include <algorithm>
 #include <memory>
 
-#include <boost/tuple/tuple.hpp>
-
 #include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
@@ -48,14 +46,10 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Surface.h"
-#include "Rules.h"
 #include "surfIndex.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "surfRegister.h"
-#include "AttachSupport.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "objectRegister.h"

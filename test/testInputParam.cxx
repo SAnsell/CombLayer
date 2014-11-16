@@ -31,7 +31,7 @@
 #include <string>
 #include <sstream>
 #include <algorithm>
-#include <boost/tuple/tuple.hpp>
+#include <tuple>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -246,7 +246,7 @@ testInputParam::testFlagDef()
   A.setValue("x",30.0);
 
   // key : varKey : index : Except flag : result
-  typedef boost::tuple<std::string,std::string,
+  typedef std::tuple<std::string,std::string,
 		       size_t,bool,double> TTYPE;
   std::vector<TTYPE> Tests;
 
@@ -255,28 +255,27 @@ testInputParam::testFlagDef()
   Tests.push_back(TTYPE("x","nothing",0,1,30.0));
   Tests.push_back(TTYPE("y","nothing",0,0,0.0));
   
-  std::vector<TTYPE>::const_iterator tc;  
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  for(const TTYPE& tc : Tests)
     {
       try
 	{
 	  const double D=
-	    A.getFlagDef<double>(tc->get<0>(),Control,
-				 tc->get<1>(),tc->get<2>());
-	  if (!tc->get<3>() || fabs(D-tc->get<4>())>1e-5)
+	    A.getFlagDef<double>(std::get<0>(tc),Control,
+				 std::get<1>(tc),std::get<2>(tc));
+	  if (!std::get<3>(tc) || fabs(D-std::get<4>(tc))>1e-5)
 	    {
-	      ELog::EM<<"Key "<<tc->get<0>()<<" "
-		      <<tc->get<1>()<<ELog::endTrace;
+	      ELog::EM<<"Key "<<std::get<0>(tc)<<" "
+		      <<std::get<1>(tc)<<ELog::endTrace;
 	      ELog::EM<<"D "<<D<<ELog::endTrace;
 	      return -11;
 	    }  
         }
       catch (ColErr::InContainerError<std::string>& EX)
 	{
-	  if (tc->get<3>())
+	  if (std::get<3>(tc))
 	    {
-	      ELog::EM<<"Exception Key "<<tc->get<0>()<<" "
-		      <<tc->get<1>()<<ELog::endTrace;
+	      ELog::EM<<"Exception Key "<<std::get<0>(tc)<<" "
+		      <<std::get<1>(tc)<<ELog::endTrace;
 	      ELog::EM<<"EXc =="<<EX.what()<<ELog::endTrace;
 	      return -2;
 	    }  
@@ -296,9 +295,9 @@ testInputParam::testInput()
   ELog::RegMethod RegA("testInputParam","testInput");
 
   // Test : flag : Npts : d[1] : d[2] : d[3]
-  typedef boost::tuple<std::string,bool,int,int,int,int> ITYPE;
-  typedef boost::tuple<std::string,bool,int,double,double,double> DTYPE;
-  typedef boost::tuple<std::string,bool,int,Geometry::Vec3D> VTYPE;
+  typedef std::tuple<std::string,bool,int,int,int,int> ITYPE;
+  typedef std::tuple<std::string,bool,int,double,double,double> DTYPE;
+  typedef std::tuple<std::string,bool,int,Geometry::Vec3D> VTYPE;
   
   std::vector<ITYPE> ITests;
   std::vector<DTYPE> DTests;
@@ -327,34 +326,35 @@ testInputParam::testInput()
   initInput(Input,Names);
   A.processMainInput(Names);
   
-  std::vector<ITYPE>::const_iterator tc;
-  for(tc=ITests.begin();tc!=ITests.end();tc++)
+
+  int cnt(1);
+  for(const ITYPE& tc : ITests)
     { 
-      const std::string& key=tc->get<0>();
-      const int NP=tc->get<2>();
-      if (A.flag(key)!=tc->get<1>() ||
-	  (NP>0 && A.getValue<int>(key,0)!=tc->get<3>()) ||
-	  (NP>1 && A.getValue<int>(key,1)!=tc->get<4>()) ||
-	  (NP>2 && A.getValue<int>(key,2)!=tc->get<5>()) )
+      const std::string& key=std::get<0>(tc);
+      const int NP=std::get<2>(tc);
+      if (A.flag(key)!=std::get<1>(tc) ||
+	  (NP>0 && A.getValue<int>(key,0)!=std::get<3>(tc)) ||
+	  (NP>1 && A.getValue<int>(key,1)!=std::get<4>(tc)) ||
+	  (NP>2 && A.getValue<int>(key,2)!=std::get<5>(tc)) )
 	{
-	  ELog::EM<<"Process TEST "<<tc-ITests.begin()<<ELog::endTrace;
+	  ELog::EM<<"Process TEST "<<cnt<<ELog::endTrace;
 	  ELog::EM<<"Names.size() == "<<Names.size()<<ELog::endTrace;
 	  ELog::EM<<"Item["<<key<<"] failed:"<<ELog::endTrace;
 	  ELog::EM<<"NP == "<<NP<<ELog::endTrace;
-	  ELog::EM<<"out == "<<tc->get<1>()<<ELog::endTrace;
+	  ELog::EM<<"out == "<<std::get<1>(tc)<<ELog::endTrace;
 	  A.write(ELog::EM.Estream());
 	  ELog::EM<<ELog::endTrace;
 	  return -1;
 	}
+      cnt++;
     }
 
-  std::vector<VTYPE>::const_iterator vc;
-  for(vc=VTests.begin();vc!=VTests.end();vc++)
+  for(const VTYPE& vc : VTests)
     {
-      const std::string& key=vc->get<0>();
-      const int NP=vc->get<2>();
-      if (A.flag(key)!=vc->get<1>() ||
-	  (NP>0 && A.getValue<Geometry::Vec3D>(key,0)!=vc->get<3>()))
+      const std::string& key=std::get<0>(vc);
+      const int NP=std::get<2>(vc);
+      if (A.flag(key)!=std::get<1>(vc) ||
+	  (NP>0 && A.getValue<Geometry::Vec3D>(key,0)!=std::get<3>(vc)))
 	{
 	  ELog::EM<<"Names.size() == "<<Names.size()<<ELog::endTrace;
 	  ELog::EM<<"Item["<<key<<"] failed:"<<ELog::endTrace;
@@ -376,7 +376,7 @@ testInputParam::testMultiExtract()
 {
   ELog::RegMethod RegA("testInputParam","testMultiExtract");
 
-  typedef boost::tuple<std::string,size_t,size_t,size_t,std::string> TTYPE;
+  typedef std::tuple<std::string,size_t,size_t,size_t,std::string> TTYPE;
   std::vector<TTYPE> Tests;
   Tests.push_back(TTYPE("TC",0,0,1,"help"));
   Tests.push_back(TTYPE("TC",1,0,2,"1"));
@@ -401,35 +401,35 @@ testInputParam::testMultiExtract()
 
   int cnt(1);
   std::string Out;
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  for(const TTYPE& tc : Tests)
     {
-      const std::string& key=tc->get<0>();
+      const std::string& key=std::get<0>(tc);
       if (!A.flag(key)) 
 	{
 	  ELog::EM<<"Failed on key "<<key<<ELog::endTrace;
 	  return -cnt;
 	}
 
-      if ( A.grpCnt(key)<=tc->get<1>() ||            // How many TC
-	   A.itemCnt(key,tc->get<1>())<=tc->get<2>() )
+      if ( A.grpCnt(key)<=std::get<1>(tc) ||            // How many TC
+	   A.itemCnt(key,std::get<1>(tc))<=std::get<2>(tc) )
 	{
 	  ELog::EM<<"Grp Cnt =="<<A.grpCnt(key)<<ELog::endTrace;
-	  ELog::EM<<"Item Cnt=="<<A.itemCnt(key,tc->get<1>())<<
-	    ":"<<tc->get<3>()<<ELog::endTrace;
+	  ELog::EM<<"Item Cnt=="<<A.itemCnt(key,std::get<1>(tc))<<
+	    ":"<<std::get<3>(tc)<<ELog::endTrace;
 	  return -cnt;
 	}
 
-      Out=A.getCompValue<std::string>(key,tc->get<1>(),tc->get<2>());
+      Out=A.getCompValue<std::string>(key,std::get<1>(tc),std::get<2>(tc));
 	
       
-      if (A.itemCnt(key,tc->get<1>())!=tc->get<3>() ||
-	  Out!=tc->get<4>())
+      if (A.itemCnt(key,std::get<1>(tc))!=std::get<3>(tc) ||
+	  Out!=std::get<4>(tc))
 	{
 	  ELog::EM<<"Item["<<key<<"] failed:"<<Out<<":"<<ELog::endTrace;
-	  ELog::EM<<"Grp = "<<tc->get<1>()<<" "<<tc->get<2>()<<ELog::endTrace;
-	  ELog::EM<<"Expected ="<<tc->get<4>()<<":"<<ELog::endTrace;
-	  ELog::EM<<"return flag ="<<A.itemCnt(key,tc->get<1>())<<ELog::endTrace;
+	  ELog::EM<<"Grp = "<<std::get<1>(tc)<<" "<<std::get<2>(tc)<<ELog::endTrace;
+	  ELog::EM<<"Expected ="<<std::get<4>(tc)<<":"<<ELog::endTrace;
+	  ELog::EM<<"return flag ="<<A.itemCnt(key,std::get<1>(tc))
+		  <<ELog::endTrace;
 
 	  A.write(ELog::EM.Estream());
 	  ELog::EM<<ELog::endTrace;
@@ -450,7 +450,7 @@ testInputParam::testMultiTail()
 {
   ELog::RegMethod RegA("testInputParam","testMultiExtract");
 
-  typedef boost::tuple<std::string,bool> TTYPE;
+  typedef std::tuple<std::string,bool> TTYPE;
   std::vector<TTYPE> Tests;
   Tests.push_back(TTYPE("r",0));
   Tests.push_back(TTYPE("R",0));
@@ -461,26 +461,19 @@ testInputParam::testMultiTail()
   A.regMulti<std::string>("r","r",3,0);
   std::vector<std::string> RItems(10,"");
   A.regDefItemList<std::string>("i","i",10,RItems);
-  const std::string Input[]=
-    { "-i","",
-      "" };
-
-  std::vector<std::string> Names;
-  for(int i=0;!Input[i].empty();i++)
-    Names.push_back(Input[i]);
-
+  std::vector<std::string> Names=
+    { "-i","","" };
   A.processMainInput(Names);
 
   int cnt(1);
   std::string Out;
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  for(const TTYPE& tc : Tests)
     {
-      const std::string& key=tc->get<0>();
-      if (A.flag(key)!=tc->get<1>()) 
+      const std::string& key=std::get<0>(tc);
+      if (A.flag(key)!=std::get<1>(tc)) 
 	{
 	  ELog::EM<<"Flag["<<key<<"] == "<<A.flag(key)
-		  <<" ("<<tc->get<1>()<<")"<<ELog::endTrace;
+		  <<" ("<<std::get<1>(tc)<<")"<<ELog::endTrace;
 	  return -cnt;
 	}
       cnt++;
@@ -499,7 +492,7 @@ testInputParam::testMulti()
   ELog::RegMethod RegA("testInputParam","testMulti");
 
   // Test : flag : Index : Value
-  typedef boost::tuple<std::string,size_t,std::string> TTYPE;
+  typedef std::tuple<std::string,size_t,std::string> TTYPE;
   
   std::vector<TTYPE> Tests;
 
@@ -529,18 +522,17 @@ testInputParam::testMulti()
   
   A.processMainInput(Names);
   int cnt(1);
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  for(const TTYPE& tc : Tests)
     {
-      const std::string& key=tc->get<0>();
+      const std::string& key=std::get<0>(tc);
       if (A.flag(key))
 	{
-	  std::string Out=A.getValue<std::string>(key,tc->get<1>());
+	  std::string Out=A.getValue<std::string>(key,std::get<1>(tc));
 
-	  if (Out!=tc->get<2>())
+	  if (Out!=std::get<2>(tc))
 	    {
 	      ELog::EM<<"Item["<<key<<"] failed:"<<ELog::endTrace;
-	      ELog::EM<<"Expected ="<<tc->get<2>()<<ELog::endTrace;
+	      ELog::EM<<"Expected ="<<std::get<2>(tc)<<ELog::endTrace;
 	      A.write(ELog::EM.Estream());
 	      ELog::EM<<ELog::endTrace;
 	      return -cnt;

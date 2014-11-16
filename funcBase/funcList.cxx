@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   funcBase/funcList.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@
 #include <map>
 #include <algorithm>
 #include <iterator>
-#include <boost/tuple/tuple.hpp>
+#include <tuple>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -94,7 +94,7 @@ funcList::funcList() :
     Initialise function for the main map
   */
 {
-  typedef boost::tuple<std::string,size_t,int> FTYPE;
+  typedef std::tuple<std::string,size_t,int> FTYPE;
   const FTYPE Functions[]=
      {
        FTYPE( "abs",   1 ,Opcodes::cAbs),
@@ -138,10 +138,10 @@ funcList::funcList() :
     for(size_t i=0;i<FuncAmount;i++)
       {
 	mathFunc.insert(std::pair<std::string,FuncDefinition>
-			(Functions[i].get<0>(),
-			 FuncDefinition(Functions[i].get<0>(),
-					Functions[i].get<2>(),
-					Functions[i].get<1>())));
+			(std::get<0>(Functions[i]),
+			 FuncDefinition(std::get<0>(Functions[i]),
+					std::get<2>(Functions[i]),
+					std::get<1>(Functions[i]))));
       }
 }
 

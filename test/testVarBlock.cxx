@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   test/testVarBlock.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,6 @@
 #include <vector>
 #include <map>
 #include <string>
-#include <boost/tuple/tuple.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"

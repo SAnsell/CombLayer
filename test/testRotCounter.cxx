@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   test/testRotCounter.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@
 #include <map>
 #include <algorithm>
 #include <iterator>
-#include <boost/tuple/tuple.hpp>
+#include <tuple>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -108,35 +108,36 @@ testRotCounter::testAddition()
   ELog::RegMethod RegA("testRotCounter","testAddition");
 
 
-  typedef boost::tuple<size_t,bool,int,int,int> TTYPE;
+  typedef std::tuple<size_t,bool,int,int,int> TTYPE;
   std::vector<TTYPE> Tests;
   
   Tests.push_back(TTYPE(1,1,3,4,5));
   Tests.push_back(TTYPE(7,1,1,3,4));
   Tests.push_back(TTYPE(20,1,0,1,2));
 
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
     {
       RotaryCounter<int> RX(3,6);
-      for(size_t i=0;i<tc->get<0>();i++)
+      for(size_t i=0;i<std::get<0>(tc);i++)
 	{
-	  if (tc->get<1>())
+	  if (std::get<1>(tc))
 	    RX--;
 	  else
 	    RX++;
 	}
 
-      if (RX[0]!=tc->get<2>() ||
-	  RX[1]!=tc->get<3>() ||
-	  RX[2]!=tc->get<4>())
+      if (RX[0]!=std::get<2>(tc) ||
+	  RX[1]!=std::get<3>(tc) ||
+	  RX[2]!=std::get<4>(tc))
 	{
-	  ELog::EM<<"Failed on test "<<tc->get<0>()+1<<ELog::endTrace;
+	  ELog::EM<<"Failed on test "<<cnt<<ELog::endTrace;
 	  ELog::EM<<"RX    = "<<RX<<ELog::endTrace;
-	  ELog::EM<<"Expect= "<<tc->get<2>()<<" "<<tc->get<3>()
-		  <<" "<<tc->get<4>()<<ELog::endTrace;
+	  ELog::EM<<"Expect= "<<std::get<2>(tc)<<" "<<std::get<3>(tc)
+		  <<" "<<std::get<4>(tc)<<ELog::endTrace;
 	  return -1;
 	}
+      cnt++;
     }
 
       

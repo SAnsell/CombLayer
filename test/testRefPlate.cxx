@@ -25,7 +25,6 @@
 #include <cmath>
 #include <vector>
 #include <list>
-#include <deque>
 #include <set>
 #include <map>
 #include <stack>
@@ -33,8 +32,6 @@
 #include <sstream>
 #include <algorithm>
 #include <memory>
-#include <boost/tuple/tuple.hpp>
-
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -49,19 +46,12 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Surface.h"
-#include "Rules.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "Debug.h"
-#include "BnId.h"
-#include "Acomp.h"
-#include "Algebra.h"
 #include "surfIndex.h"
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-
 #include "varList.h"
 #include "Code.h"
 #include "FItem.h"

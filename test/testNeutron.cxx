@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   test/testNeutron.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@
 #include <vector>
 #include <map>
 #include <string>
-#include <boost/tuple/tuple.hpp>
+#include <tuple>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -37,7 +37,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "Triple.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -120,9 +119,9 @@ testNeutron::testRefraction()
 {
   ELog::RegMethod RegA("testNeutron","testRefraction");
 
-  typedef boost::tuple<double,Geometry::Vec3D,Geometry::Vec3D,Geometry::Vec3D> DT;
-  typedef std::vector<DT> AnsTYPE;
-  AnsTYPE NStore;
+  typedef std::tuple<double,Geometry::Vec3D,
+		     Geometry::Vec3D,Geometry::Vec3D> TTYPE;
+  std::vector<TTYPE> Tests;
 
   // this is Ref index (N_o) : Incident Direction : Surface normal
   //  - Incident vector points towards the surface 
@@ -131,57 +130,58 @@ testNeutron::testRefraction()
 
   /// Give B.uVec = ( 0,0.636396 -0.771362) : Wikipedia example [snells law]
 
-  NStore.push_back(DT(1/0.9,
+  Tests.push_back(TTYPE(1/0.9,
 		      Geometry::Vec3D(0,0.707107,-0.707107),
 		      Geometry::Vec3D(0,0,-1),Geometry::Vec3D(0,0.636396,-0.771362) ));
 
   // Reflection from surface:
-  NStore.push_back(DT(1/1.51,
+  Tests.push_back(TTYPE(1/1.51,
 		      Geometry::Vec3D(0,cos(M_PI*40.0/180.0),sin(M_PI*40/180.0)),
 		      Geometry::Vec3D(0,0,1),
 		      Geometry::Vec3D(0,cos(M_PI*40.0/180.0),-sin(M_PI*40/180.0)) ));
 
   // Reflection from surface -ve normal: 
-  NStore.push_back(DT(1/1.51,
+  Tests.push_back(TTYPE(1/1.51,
 		      Geometry::Vec3D(0,cos(M_PI*40.0/180.0),sin(M_PI*40/180.0)),
 		      Geometry::Vec3D(0,0,-1),
 		      Geometry::Vec3D(0,cos(M_PI*40.0/180.0),-sin(M_PI*40/180.0)) ));
 
   // Reflection from surface:
-  NStore.push_back(DT(1/1.51,
+  Tests.push_back(TTYPE(1/1.51,
 		      Geometry::Vec3D(0,cos(M_PI*40.0/180.0),-sin(M_PI*40/180.0)),
 		      Geometry::Vec3D(0,0,1),
 		      Geometry::Vec3D(0,cos(M_PI*40.0/180.0),sin(M_PI*40/180.0)) ));
 
-  // NStore.push_back(DT(1.33,
+  // Tests.push_back(TTYPE(1.33,
   // 		      Geometry::Vec3D(0,cos(M_PI*45.0/180.0),sin(M_PI*45.0/180.0)),
   // 		      Geometry::Vec3D(0,-1,0),Geometry::Vec3D(0,0,0) ));
 
-  // NStore.push_back(DT(1.33,
+  // Tests.push_back(TTYPE(1.33,
   // 		      Geometry::Vec3D(0,cos(M_PI*30.0/180.0),sin(M_PI*30.0/180.0)),
   // 		      Geometry::Vec3D(0,-1,-1),Geometry::Vec3D(0,0,0) ));
 
-
-  AnsTYPE::iterator vc;
-  for(vc=NStore.begin();vc!=NStore.end();vc++)
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
     {
-      vc->get<2>().makeUnit();
-      neutron A(1.0,Geometry::Vec3D(0,0,0),vc->get<1>());
+      const Geometry::Vec3D UDirv=std::get<2>(tc).unit();
+      neutron A(1.0,Geometry::Vec3D(0,0,0),std::get<1>(tc));
       neutron B(A);
-      B.refract(1.0,vc->get<0>(),vc->get<2>());
+      B.refract(1.0,std::get<0>(tc),UDirv);
       // Calc half vector :: This equals normal if and only if A,B obey Snells law
-      if ( (B.uVec - vc->get<3>()).abs()>1e-5)
+      if ( (B.uVec - std::get<3>(tc)).abs()>1e-5)
 	{
-	  ELog::EM<<"Failed on point "<<(vc-NStore.begin())+1<<ELog::endTrace;
+	  ELog::EM<<"Failed on point "<<cnt<<ELog::endTrace;
 	  ELog::EM<<"A == "<<A.uVec<<ELog::endTrace;
 	  ELog::EM<<"B == "<<B.uVec<<ELog::endTrace;
-	  ELog::EM<<"Expect == "<<vc->get<3>()<<ELog::endTrace;
+	  ELog::EM<<"Expect == "<<std::get<3>(tc)<<ELog::endTrace;
 	  ELog::EM<<"B(abs) == "<<B.uVec.abs()<<ELog::endTrace;
 	  ELog::EM<<"cos Angle == "<<A.uVec.dotProd(B.uVec)<<ELog::endTrace;
-	  ELog::EM<<"Angle == "<<(180.0/M_PI)*acos(A.uVec.dotProd(B.uVec))<<ELog::endTrace;
-	  ELog::EM<<"Diff == "<<vc->get<3>()-B.uVec<<ELog::endTrace;
+	  ELog::EM<<"Angle == "<<(180.0/M_PI)*acos(A.uVec.dotProd(B.uVec))
+		  <<ELog::endTrace;
+	  ELog::EM<<"Diff == "<<std::get<3>(tc)-B.uVec<<ELog::endTrace;
 	  return -1;
 	}
+      cnt++;
     }
   return 0;  
 }

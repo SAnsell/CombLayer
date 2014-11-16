@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   test/testDoubleErr.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@
 #include <map>
 #include <string>
 #include <algorithm>
-#include <boost/tuple/tuple.hpp>
+#include <tuple>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -110,18 +110,17 @@ testDoubleErr::testPower()
 {
   ELog::RegMethod RegA("testDoubleErr","testPower");
 
-  typedef boost::tuple<double,DError::doubleErr,DError::doubleErr> TTYPE;  
+  typedef std::tuple<double,DError::doubleErr,DError::doubleErr> TTYPE;  
   std::vector<TTYPE> Tests;
   
   Tests.push_back(TTYPE(2,DError::doubleErr(2,3),
 			DError::doubleErr(4,8.31777)));
 
-  std::vector<TTYPE>::const_iterator tc;  
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  for(const TTYPE& tc : Tests)
     {
-      DError::doubleErr X=DError::pow(tc->get<0>(),tc->get<1>());
-      if (fabs(tc->get<2>().getVal()-X.getVal())>1e-5 ||
-	  fabs(tc->get<2>().getErr()-X.getErr())>1e-5)
+      DError::doubleErr X=DError::pow(std::get<0>(tc),std::get<1>(tc));
+      if (fabs(std::get<2>(tc).getVal()-X.getVal())>1e-5 ||
+	  fabs(std::get<2>(tc).getErr()-X.getErr())>1e-5)
 	{
 	  ELog::EM<<"Failed on "<<X<<ELog::endTrace;
 	  return -1;
@@ -139,27 +138,28 @@ testDoubleErr::testRead()
 {
   ELog::RegMethod("testDoubleErr","testRead");
 
-  typedef boost::tuple<std::string,DError::doubleErr> TTYPE;  
+  typedef std::tuple<std::string,DError::doubleErr> TTYPE;  
   std::vector<TTYPE> Tests;
   Tests.push_back(TTYPE("-78e-3 -1.2",DError::doubleErr(-7.8e-2,1.2)));
   Tests.push_back(TTYPE("7.8e-3 1.0",DError::doubleErr(7.8e-3,1.0)));
 
   DError::doubleErr A;  
-  std::vector<TTYPE>::const_iterator tc;  
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
     {
       std::istringstream cx;
-      cx.str(tc->get<0>());
+      cx.str(std::get<0>(tc));
       A.read(cx);
-      if (fabs(A.getVal()-tc->get<1>().getVal())>1e-10 ||
-	  fabs(A.getErr()-tc->get<1>().getErr())>1e-10 )
+      if (fabs(A.getVal()-std::get<1>(tc).getVal())>1e-10 ||
+	  fabs(A.getErr()-std::get<1>(tc).getErr())>1e-10 )
 	{
-	  ELog::EM<<"Failed on test "<<(tc-Tests.begin())+1<<ELog::endTrace;
+	  ELog::EM<<"Failed on test "<<cnt<<ELog::endTrace;
 	  ELog::EM<<"Read   =="<<A<<ELog::endTrace;
-	  ELog::EM<<"expect =="<<tc->get<1>()<<ELog::endTrace;
-	  ELog::EM<<"input  =="<<tc->get<0>()<<ELog::endTrace;
+	  ELog::EM<<"expect =="<<std::get<1>(tc)<<ELog::endTrace;
+	  ELog::EM<<"input  =="<<std::get<0>(tc)<<ELog::endTrace;
 	  return -1;
 	}
+      cnt++;
     }
   return 0;
 }

@@ -12,8 +12,6 @@
 #include <functional>
 #include <iterator>
 #include <numeric>
-#include <boost/bind.hpp>
-#include <boost/tuple/tuple.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"

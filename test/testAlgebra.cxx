@@ -31,7 +31,7 @@
 #include <sstream>
 #include <algorithm>
 #include <iterator>
-#include <boost/tuple/tuple.hpp>
+#include <tuple>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -212,29 +212,28 @@ testAlgebra::testCNF()
 {
   ELog::RegMethod RegA("testAlgebra","testCNF");
 
-  typedef boost::tuple<std::string,std::string,std::string> TTYPE;
+  typedef std::tuple<std::string,std::string,std::string> TTYPE;
   std::vector<TTYPE> Tests;
   Tests.push_back(TTYPE("(f+x)(x+y+z)","(f+x)(x+y+z)","x+fy+fz"));
   Tests.push_back(TTYPE("aq+acp+ace","a(c+q)(e+p+q)","ace+acp+aq"));
 
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  for(const TTYPE& tc : Tests)
     {
       Algebra A;
-      A.setFunction(tc->get<0>());
+      A.setFunction(std::get<0>(tc));
       A.makeCNF();
       std::string Out=A.display();
-      if (Out!=tc->get<1>())
+      if (Out!=std::get<1>(tc))
 	{
-	  ELog::EM<<"Failed on CNF  :"<<tc->get<0>()<<ELog::endDiag;
+	  ELog::EM<<"Failed on CNF  :"<<std::get<0>(tc)<<ELog::endDiag;
 	  ELog::EM<<"Function in CNF:"<<A<<ELog::endDiag;
 	  return -1;
 	}
       A.makeDNF();
       Out=A.display();
-      if (Out!=tc->get<2>())
+      if (Out!=std::get<2>(tc))
 	{
-	  ELog::EM<<"Failed on DNF  :"<<tc->get<0>()<<ELog::endDiag;
+	  ELog::EM<<"Failed on DNF  :"<<std::get<0>(tc)<<ELog::endDiag;
 	  ELog::EM<<"Function in DNF:"<<A<<ELog::endDiag;
 	  return -2;
 	}
@@ -250,7 +249,7 @@ testAlgebra::testAdditions()
 {
   ELog::RegMethod RegA("testAlgebra","testAdditions");
 
-  typedef boost::tuple<std::string,std::string,std::string> TTYPE;
+  typedef std::tuple<std::string,std::string,std::string> TTYPE;
   std::vector<TTYPE> Tests;
 
   Tests.push_back(TTYPE("a'bcd+a(cd+ff(x+y+z))",
@@ -265,17 +264,16 @@ testAlgebra::testAdditions()
 			"a",
 			"a'+a"));
 
-  std::vector<TTYPE>::const_iterator tc;
   Algebra A,B,C;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  for(const TTYPE& tc : Tests)
     {
-      A.setFunction(tc->get<0>());      
-      B.setFunction(tc->get<1>());      
-      C.setFunction(tc->get<2>());
+      A.setFunction(std::get<0>(tc));      
+      B.setFunction(std::get<1>(tc));      
+      C.setFunction(std::get<2>(tc));
       B+=A;
       if (B!=C)
 	{
-	  ELog::EM<<"B Org = "<<tc->get<1>()<<ELog::endDiag;
+	  ELog::EM<<"B Org = "<<std::get<1>(tc)<<ELog::endDiag;
 	  ELog::EM<<"A    == "<<A<<ELog::endDiag;	  
 	  ELog::EM<<"B    == "<<B<<ELog::endDiag;	  
 	  ELog::EM<<"Res  == "<<C<<ELog::endDiag;	  
@@ -295,7 +293,7 @@ testAlgebra::testMakeString()
 {
   ELog::RegMethod RegA("testAlgebra","testMakeString");
 
-  typedef boost::tuple<std::string,std::string,std::string> TTYPE;
+  typedef std::tuple<std::string,std::string,std::string> TTYPE;
   std::vector<TTYPE> Tests;
   Tests.push_back(TTYPE("(a:b)",
    			"a+b",
@@ -312,24 +310,23 @@ testAlgebra::testMakeString()
   Tests.push_back(TTYPE("(cd+ff)+b","b+f+cd","f'b'(d'+c')"));
 
   Algebra A;
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  for(const TTYPE& tc : Tests)
     {
-      A.setFunction(tc->get<0>());
-      if (A.display()!=tc->get<1>())
+      A.setFunction(std::get<0>(tc));
+      if (A.display()!=std::get<1>(tc))
 	{
-	  ELog::EM<<"Original :"<<tc->get<0>()<<ELog::endDiag;
+	  ELog::EM<<"Original :"<<std::get<0>(tc)<<ELog::endDiag;
 	  ELog::EM<<"A ==     :"<<A.display()<<":"<<ELog::endDiag;
-	  ELog::EM<<"Expected :"<<tc->get<1>()<<":"<<ELog::endDiag;
+	  ELog::EM<<"Expected :"<<std::get<1>(tc)<<":"<<ELog::endDiag;
 	  return -1;
 	}
       A.Complement();
-      if (A.display()!=tc->get<2>())
+      if (A.display()!=std::get<2>(tc))
 	{
-	  ELog::EM<<"Original :"<<tc->get<0>()<<ELog::endDiag;
-	  ELog::EM<<"A ==     :"<<tc->get<1>()<<ELog::endDiag;
+	  ELog::EM<<"Original :"<<std::get<0>(tc)<<ELog::endDiag;
+	  ELog::EM<<"A ==     :"<<std::get<1>(tc)<<ELog::endDiag;
 	  ELog::EM<<"A' ==    :"<<A<<ELog::endDiag;
-	  ELog::EM<<"Expected :"<<tc->get<2>()<<ELog::endDiag;
+	  ELog::EM<<"Expected :"<<std::get<2>(tc)<<ELog::endDiag;
 	  return -2;
 	}
     }
@@ -347,26 +344,25 @@ testAlgebra::testMult()
   ELog::RegMethod RegA("testAlgebra","testMult");
 
   // A * B == C
-  typedef boost::tuple<std::string,std::string,std::string> TTYPE;
+  typedef std::tuple<std::string,std::string,std::string> TTYPE;
   std::vector<TTYPE> Tests;
 
   Tests.push_back(TTYPE("a+b'+(c)","a+b","(b'+a+c)(a+b)"));
 
   Algebra A,B,C,D;
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  for(const TTYPE& tc : Tests)
     {
-      A.setFunction(tc->get<0>());
-      B.setFunction(tc->get<1>());
-      C.setFunction(tc->get<2>());
+      A.setFunction(std::get<0>(tc));
+      B.setFunction(std::get<1>(tc));
+      C.setFunction(std::get<2>(tc));
       A*=B;
-      if (A.display()!=tc->get<2>())
+      if (A.display()!=std::get<2>(tc))
 	{
-	  D.setFunction(tc->get<0>());
+	  D.setFunction(std::get<0>(tc));
 	  ELog::EM<<"A      == "<<D<<ELog::endTrace;
 	  ELog::EM<<"B      == "<<B<<ELog::endTrace;
 	  ELog::EM<<"C      == "<<A<<ELog::endTrace;
-	  ELog::EM<<"expect == "<<tc->get<2>()<<ELog::endTrace;
+	  ELog::EM<<"expect == "<<std::get<2>(tc)<<ELog::endTrace;
 	  ELog::EM<<"C == "<<(C==A)<<ELog::endTrace;
 	  return -1;
 	}
@@ -434,21 +430,21 @@ testAlgebra::testComplementary()
 {
   ELog::RegMethod RegA("testAlgebra","testComplementary");
 
-  typedef boost::tuple<std::string,std::string> TTYPE;
+  typedef std::tuple<std::string,std::string> TTYPE;
   std::vector<TTYPE> Tests;
   Tests.push_back(TTYPE("(a+b)","b'a'"));
   Tests.push_back(TTYPE("ab((c'(d+e+f')g'h'i')+(gj'(k+l')(m+n)))",
 			"b'+a'+(g'+j+n'm'+k'l)(c+g+h+i+e'd'f)"));
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+
+  for(const TTYPE& tc : Tests)
     {
       Algebra A;
-      A.setFunction(tc->get<0>());
+      A.setFunction(std::get<0>(tc));
       A.Complement();
-      if (A.display()!=tc->get<1>())
+      if (A.display()!=std::get<1>(tc))
 	{
 	  ELog::EM<<"A      == "<<A.display()<<ELog::endTrace;
-	  ELog::EM<<"Expect == "<<tc->get<1>()<<ELog::endTrace;
+	  ELog::EM<<"Expect == "<<std::get<1>(tc)<<ELog::endTrace;
 	  return -1;
 	}
     }
@@ -466,20 +462,19 @@ testAlgebra::testSetFunctionObjStr()
   ELog::RegMethod RegA("testAlgebra","testSetFunctionObjStr");
 
 
-  typedef boost::tuple<std::string,std::string> TTYPE;
+  typedef std::tuple<std::string,std::string> TTYPE;
   std::vector<TTYPE> Tests;
   Tests.push_back(TTYPE("(1 : -2 : 3 : -4)","d'+b'+a+c"));
 
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  for(const TTYPE& tc : Tests)
     {
       Algebra A;
-      A.setFunctionObjStr(tc->get<0>());
-      if (A.display()!=tc->get<1>())
+      A.setFunctionObjStr(std::get<0>(tc));
+      if (A.display()!=std::get<1>(tc))
 	{
-	  ELog::EM<<"Input    == "<<tc->get<0>()<<ELog::endTrace;
+	  ELog::EM<<"Input    == "<<std::get<0>(tc)<<ELog::endTrace;
 	  ELog::EM<<"A        == "<<A<<ELog::endTrace;
-	  ELog::EM<<"Expect   == "<<tc->get<1>()<<ELog::endTrace;
+	  ELog::EM<<"Expect   == "<<std::get<1>(tc)<<ELog::endTrace;
 	  return -1;
 	}
     }
@@ -496,20 +491,19 @@ testAlgebra::testSetFunction()
   ELog::RegMethod RegA("testAlgebra","testSetFunctionObjStr");
 
 
-  typedef boost::tuple<std::string,std::string> TTYPE; 
+  typedef std::tuple<std::string,std::string> TTYPE; 
   std::vector<TTYPE> Tests;
   Tests.push_back(TTYPE("#(f+i)(xy)","i'f'xy"));
 
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  for(const TTYPE& tc : Tests)
     {
       Algebra A;
-      A.setFunction(tc->get<0>());
-      if (A.display()!=tc->get<1>())
+      A.setFunction(std::get<0>(tc));
+      if (A.display()!=std::get<1>(tc))
 	{
-	  ELog::EM<<"Input    == "<<tc->get<0>()<<ELog::endTrace;
+	  ELog::EM<<"Input    == "<<std::get<0>(tc)<<ELog::endTrace;
 	  ELog::EM<<"A        == "<<A<<ELog::endTrace;
-	  ELog::EM<<"Expect   == "<<tc->get<1>()<<ELog::endTrace;
+	  ELog::EM<<"Expect   == "<<std::get<1>(tc)<<ELog::endTrace;
 	  return -1;
 	}
     }
@@ -527,20 +521,19 @@ testAlgebra::testSubtract()
 
   Algebra A,B,C;
   
-  typedef boost::tuple<std::string,std::string,std::string> TTYPE;
+  typedef std::tuple<std::string,std::string,std::string> TTYPE;
   std::vector<TTYPE> Tests;
   Tests.push_back(TTYPE("a+b+cd","cd","(d'+c')(a+b+cd)"));
   
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  for(const TTYPE& tc : Tests)
     {
-      A.setFunction(tc->get<0>());
-      B.setFunction(tc->get<1>());
-      C.setFunction(tc->get<2>());
+      A.setFunction(std::get<0>(tc));
+      B.setFunction(std::get<1>(tc));
+      C.setFunction(std::get<2>(tc));
       A-=B;
       if (A!=C)
 	{
-	  ELog::EM<<"Init A :"<<tc->get<0>()<<ELog::endTrace;
+	  ELog::EM<<"Init A :"<<std::get<0>(tc)<<ELog::endTrace;
 	  ELog::EM<<"B      :"<<B<<ELog::endTrace;
 	  ELog::EM<<"A      :"<<A<<ELog::endTrace;
 	  ELog::EM<<"Expect :"<<C<<ELog::endTrace;

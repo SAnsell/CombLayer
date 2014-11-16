@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   test/testXML.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,9 +31,10 @@
 #include <set>
 #include <map>
 #include <iterator>
+#include <tuple>
 #include <boost/array.hpp>
 #include <boost/multi_array.hpp>
-#include <boost/tuple/tuple.hpp>
+
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -370,7 +371,7 @@ testXML::testNextGrp()
   ELog::RegMethod RegA("testXML","testNextGrp");
 
   // key : Number of components : Composite
-  typedef boost::tuple<int,std::string,unsigned int,std::string> TTYPE;
+  typedef std::tuple<int,std::string,unsigned int,std::string> TTYPE;
   std::vector<TTYPE> Tests;
   Tests.push_back(TTYPE(1,"Out",0,""));
   Tests.push_back(TTYPE(1,"test",1,"f=\"54\"::"));
@@ -398,25 +399,24 @@ testXML::testNextGrp()
   std::vector<std::string> Att;
 
   int cnt(1);
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  for(const TTYPE& tc : Tests)
     {
       const int flag=XML::getNextGroup(IFile,Key,Att);
       std::ostringstream cx;
       copy(Att.begin(),Att.end(),
 	   std::ostream_iterator<std::string>(cx,"::"));
-      if (flag!=tc->get<0>() || Key!=tc->get<1>() || 
-	  Att.size()!=tc->get<2>() || 
-	  (!Att.empty() && cx.str()!=tc->get<3>()) )
+      if (flag!=std::get<0>(tc) || Key!=std::get<1>(tc) || 
+	  Att.size()!=std::get<2>(tc) || 
+	  (!Att.empty() && cx.str()!=std::get<3>(tc)) )
 	{
 	  ELog::EM<<"Test ="<<cnt<<ELog::endWarn;
-	  ELog::EM<<"Flag["<<tc->get<0>()<<"] = "<<flag<<ELog::endDiag;
-	  ELog::EM<<"Failed on["<<tc->get<1>()<<"]= "
+	  ELog::EM<<"Flag["<<std::get<0>(tc)<<"] = "<<flag<<ELog::endDiag;
+	  ELog::EM<<"Failed on["<<std::get<1>(tc)<<"]= "
 		  <<Key<<" ="<<ELog::endDiag;
-	  ELog::EM<<"Attn Size["<<tc->get<2>()<<"] ="
+	  ELog::EM<<"Attn Size["<<std::get<2>(tc)<<"] ="
 		  <<Att.size()<<ELog::endDiag;
 	  ELog::EM<<"Attn     ="<<cx.str()<<" ="<<ELog::endDiag;
-	  ELog::EM<<"Exp Attn ="<<tc->get<3>()<<" ="<<ELog::endDiag;
+	  ELog::EM<<"Exp Attn ="<<std::get<3>(tc)<<" ="<<ELog::endDiag;
 
 	  return -cnt;
 	}
@@ -451,7 +451,7 @@ testXML::testGroupContent()
   cx<<"</Out>"<<std::endl;
   cx.close();
   
-  typedef boost::tuple<int,std::string,std::string,std::string> RTYPE;
+  typedef std::tuple<int,std::string,std::string,std::string> RTYPE;
   std::vector<RTYPE> ResA;
   ResA.push_back(RTYPE(1,"Out","",""));
   ResA.push_back(RTYPE(1,"test","f=\"54\"::",""));
@@ -470,8 +470,7 @@ testXML::testGroupContent()
   XML::XMLload Lfile("testXML.xml");
 
   int cnt(1);
-  std::vector<RTYPE>::const_iterator tc;
-  for(tc=ResA.begin();tc!=ResA.end();tc++)
+  for(const RTYPE& tc : ResA)
     {
       std::ostringstream cx;
       std::vector<std::string> Att;
@@ -480,14 +479,14 @@ testXML::testGroupContent()
       copy(Att.begin(),Att.end(),
 	   std::ostream_iterator<std::string>(cx,"::"));
       
-      if (tc->get<0>()!=flag || tc->get<1>()!=Key ||
-	  tc->get<2>()!=cx.str() || tc->get<3>()!=Data)
+      if (std::get<0>(tc)!=flag || std::get<1>(tc)!=Key ||
+	  std::get<2>(tc)!=cx.str() || std::get<3>(tc)!=Data)
 	{
 	  ELog::EM<<"Failed Flag= "<<flag<<" key="<<Key<<ELog::endDiag;
 	  ELog::EM<<"Att=    "<<cx.str()<<ELog::endDiag;
-	  ELog::EM<<"Expect= "<<tc->get<2>()<<ELog::endDiag;
+	  ELog::EM<<"Expect= "<<std::get<2>(tc)<<ELog::endDiag;
 	  ELog::EM<<"Data         :"<<Data<<":"<<ELog::endDiag;
-	  ELog::EM<<"Expected Data:"<<tc->get<3>()<<":"<<ELog::endDiag;
+	  ELog::EM<<"Expected Data:"<<std::get<3>(tc)<<":"<<ELog::endDiag;
 	  return -cnt;
 	}
       cnt++;
@@ -713,7 +712,7 @@ testXML::testXMLiterator()
   XMLcollect CO;
   CO.loadXML("testXML.xml");
   
-  typedef boost::tuple<int,std::string> RTYPE;
+  typedef std::tuple<int,std::string> RTYPE;
   std::vector<RTYPE> ResA;
   ResA.push_back(RTYPE(0,"metadata_entry"));
   ResA.push_back(RTYPE(1,"test"));
@@ -735,7 +734,8 @@ testXML::testXMLiterator()
     {
       if (*SK)
 	{
-	  if (tc->get<1>()!=SK->getKey() || tc->get<0>()!=SK.getLevel())
+	  if (std::get<1>(*tc)!=SK->getKey() || 
+	      std::get<0>(*tc)!=SK.getLevel())
 	    {
 	      ELog::EM<<"Object key == "<<SK->getKey()
 		      <<" at "<<SK.getLevel()<<ELog::endTrace;
@@ -765,12 +765,13 @@ testXML::testXMLiterator()
     {
       if (*SK)
 	{
-	  if (rc->get<1>()!=SK->getKey() || rc->get<0>()!=SK.getLevel())
+	  if (std::get<1>(*rc)!=SK->getKey() || 
+	      std::get<0>(*rc)!=SK.getLevel())
 	    {
 	      ELog::EM<<"Reverse Object key == "<<SK->getKey()
 		      <<" at "<<SK.getLevel()<<ELog::endTrace;
-	      ELog::EM<<"Expect key == "<<rc->get<1>()<<" at "
-		      <<rc->get<0>()<<ELog::endTrace;
+	      ELog::EM<<"Expect key == "<<std::get<1>(*rc)<<" at "
+		      <<std::get<0>(*rc)<<ELog::endTrace;
 	      return -3;
 	    }
 	  rc++;
@@ -851,18 +852,17 @@ testXML::testProcString()
 {
   ELog::RegMethod RegA("testXML","testProcString");
 
-  typedef boost::tuple<std::string,std::string> TTYPE;
+  typedef std::tuple<std::string,std::string> TTYPE;
 
   std::vector<TTYPE> Tests;
   Tests.push_back(TTYPE("Dougherty & White - ANU Canberra",
 			"Dougherty &amp; White - ANU Canberra"));
 
 
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  for(const TTYPE& tc : Tests)
     {
-      const std::string PS=XML::procString(tc->get<0>());
-      if (PS!=tc->get<1>())
+      const std::string PS=XML::procString(std::get<0>(tc));
+      if (PS!=std::get<1>(tc))
 	{
 	  ELog::EM<<"Process string == "<<PS<<ELog::endTrace;
 	  return -1;

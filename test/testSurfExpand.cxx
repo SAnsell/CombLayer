@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   test/testSurfExpand.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@
 #include <algorithm>
 #include <functional>
 #include <memory>
-#include <boost/tuple/tuple.hpp>
+#include <tuple>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -128,7 +128,7 @@ testSurfExpand::testCylinder()
   */
 {
   ELog::RegMethod RegA("testSurfExpand","testCylinder");
-  typedef boost::tuple<std::string,std::string,double> TTYPE;
+  typedef std::tuple<std::string,std::string,double> TTYPE;
 
   std::vector<TTYPE> Tests;
   Tests.push_back(TTYPE("c/x -3.0 -4.0 8.0",
@@ -147,7 +147,7 @@ testSurfExpand::testPlane()
   ELog::RegMethod RegA("testSurfExpand","testPlane");
 
   // Surface : Surface : 
-  typedef boost::tuple<std::string,std::string,double> TTYPE;
+  typedef std::tuple<std::string,std::string,double> TTYPE;
 
   std::vector<TTYPE> Tests;
   Tests.push_back(TTYPE("px -8.0","px -10.5",-2.5));
@@ -156,18 +156,19 @@ testSurfExpand::testPlane()
   
   std::vector<TTYPE>::const_iterator tc;
   int flag(0);
-  for(tc=Tests.begin();tc!=Tests.end() && !flag;tc++)
+
+  for(const TTYPE& tc : Tests)
     {
       Geometry::Plane* PX=new Geometry::Plane(1,0);
       Geometry::Plane* AimX=new Geometry::Plane(2,0);
-      PX->setSurface(tc->get<0>());
-      AimX->setSurface(tc->get<1>());
+      PX->setSurface(std::get<0>(tc));
+      AimX->setSurface(std::get<1>(tc));
       Geometry::Plane* OutX=dynamic_cast<Geometry::Plane*>
-	(surfaceCreateExpand(PX,tc->get<2>()));
+	(surfaceCreateExpand(PX,std::get<2>(tc)));
 
       if (!OutX || (*OutX!=*AimX))
 	{
-	  ELog::EM<<"Failed : mod == "<<tc->get<2>()<<ELog::endCrit;
+	  ELog::EM<<"Failed : mod == "<<std::get<2>(tc)<<ELog::endCrit;
 	  ELog::EM<<"Original surface "<<*PX;
 	  if (OutX)
 	    ELog::EM<<"New surface      "<<*OutX;
@@ -180,8 +181,10 @@ testSurfExpand::testPlane()
       delete PX;
       delete AimX;
       delete OutX;
+      if (flag)
+	return -1;
     }
-  return flag;
+  return 0;
 }
 
 template<typename SurfTYPE>
@@ -195,21 +198,21 @@ testSurfExpand::procSurface(const std::vector<TTYPE>& Tests) const
   */
 {
   ELog::RegMethod RegA("testSurfExpand","procSurface<ST>");
-  
-  std::vector<TTYPE>::const_iterator tc;
+
   int flag(0);
-  for(tc=Tests.begin();tc!=Tests.end() && !flag;tc++)
+  for(const TTYPE& tc : Tests)  
     {
       SurfTYPE* InitPtr=new SurfTYPE(1,0);
       SurfTYPE* AimPtr=new SurfTYPE(2,0);
-      InitPtr->setSurface(tc->get<0>());
-      AimPtr->setSurface(tc->get<1>());
-      SurfTYPE* OutPtr=dynamic_cast<SurfTYPE*>
-	(surfaceCreateExpand(InitPtr,tc->get<2>()));
+      InitPtr->setSurface(std::get<0>(tc));
+      AimPtr->setSurface(std::get<1>(tc));
+      Geometry::Surface* expSPtr=
+	surfaceCreateExpand(InitPtr,std::get<2>(tc));
+      SurfTYPE* OutPtr=dynamic_cast<SurfTYPE*>(expSPtr);
 
       if (!OutPtr || (*OutPtr != *AimPtr))
 	{
-	  ELog::EM<<"Failed : mod == "<<tc->get<2>()<<ELog::endCrit;
+	  ELog::EM<<"Failed : mod == "<<std::get<2>(tc)<<ELog::endCrit;
 	  ELog::EM<<"Original surface "<<*InitPtr;
 	  if (OutPtr)
 	    ELog::EM<<"New surface      "<<*OutPtr;
@@ -217,13 +220,15 @@ testSurfExpand::procSurface(const std::vector<TTYPE>& Tests) const
 	    ELog::EM<<"New surface      NULL"<<ELog::endCrit;
 	  ELog::EM<<"Aim surface      "<<*AimPtr;
 	  ELog::EM<<ELog::endCrit;
-	  flag=-1;
+	  flag = -1;
 	}
       delete InitPtr;
       delete AimPtr;
-      delete OutPtr;
+      delete expSPtr;
+      if (flag)
+	return -1;
     }
-  return flag;
+  return 0;
 }
 
 ///\cond TEMPLATE

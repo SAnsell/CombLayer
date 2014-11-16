@@ -33,7 +33,7 @@
 #include <algorithm>
 #include <functional>
 #include <memory>
-#include <boost/tuple/tuple.hpp>
+#include <tuple>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -138,7 +138,7 @@ testSurfRegister::testIdentical()
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
   SurI.reset();
 
-  typedef boost::tuple<int,std::string,int> TTYPE;
+  typedef std::tuple<int,std::string,int> TTYPE;
 
   std::vector<TTYPE> Tests;
   Tests.push_back(TTYPE(3,"px 34",3));
@@ -147,16 +147,14 @@ testSurfRegister::testIdentical()
   Tests.push_back(TTYPE(6,"px 34",3));
 
     
-  std::vector<TTYPE>::const_iterator tc;
-  int flag(0);
-  for(tc=Tests.begin();tc!=Tests.end() && !flag;tc++)
+  for(const TTYPE& tc : Tests)  
     {
-      const int SN(tc->get<0>());
+      const int SN(std::get<0>(tc));
       Geometry::Plane* PX=SurI.createUniqSurf<Geometry::Plane>(SN);
 
-      if (!PX || PX->setSurface(tc->get<1>()))
+      if (!PX || PX->setSurface(std::get<1>(tc)))
 	{
-	  ELog::EM<<"Failed : surf == "<<tc->get<0>()<<ELog::endCrit;
+	  ELog::EM<<"Failed : surf == "<<std::get<0>(tc)<<ELog::endCrit;
 	  if (PX) 
 	    ELog::EM<<"PX      "<<*PX<<ELog::endCrit;
 	  else
@@ -164,13 +162,13 @@ testSurfRegister::testIdentical()
 	  return -1;
 	}
 
-      if (SMap.registerSurf(SN,PX)!=tc->get<2>())
+      if (SMap.registerSurf(SN,PX)!=std::get<2>(tc))
 	{
 	  ELog::EM<<"Surface number == "<<SMap.realSurf(SN)<<ELog::endCrit;
-	  flag=-2;
+	  return -2;
 	}
     }
-  return flag;
+  return 0;
 }
 
 int
@@ -188,23 +186,22 @@ testSurfRegister::testPlaneReflection()
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
   SurI.reset();
 
-  typedef boost::tuple<int,std::string,int> TTYPE;
+  typedef std::tuple<int,std::string,int> TTYPE;
 
   std::vector<TTYPE> Tests;
   Tests.push_back(TTYPE(3,"px 1",3));
   Tests.push_back(TTYPE(4,"p -1 0 0 -1",-3));
 
     
-  std::vector<TTYPE>::const_iterator tc;
-  int flag(0);
-  for(tc=Tests.begin();tc!=Tests.end() && !flag;tc++)
+  int cnt(1);
+  for(const TTYPE& tc : Tests)  
     {
-      const int SN(tc->get<0>());
+      const int SN(std::get<0>(tc));
       Geometry::Plane* PX=SurI.createUniqSurf<Geometry::Plane>(SN);
 
-      if (!PX || PX->setSurface(tc->get<1>()))
+      if (!PX || PX->setSurface(std::get<1>(tc)))
 	{
-	  ELog::EM<<"Failed : surf == "<<tc->get<0>()<<ELog::endCrit;
+	  ELog::EM<<"Failed : surf == "<<std::get<0>(tc)<<ELog::endCrit;
 	  if (PX) 
 	    ELog::EM<<"PX      "<<*PX<<ELog::endCrit;
 	  else
@@ -212,11 +209,11 @@ testSurfRegister::testPlaneReflection()
 	  return -1;
 	}
 
-      if (SMap.registerSurf(SN,PX)!=tc->get<2>())
+      if (SMap.registerSurf(SN,PX)!=std::get<2>(tc))
 	{
-	  ELog::EM<<"Test == "<<(tc-Tests.begin())+1<<ELog::endDiag;
+	  ELog::EM<<"Test == "<<cnt<<ELog::endDiag;
 	  ELog::EM<<"Surface number == "<<SMap.realSurf(SN)<<ELog::endCrit;
-	  Geometry::Plane* PY=SMap.realPtr<Geometry::Plane>(tc->get<2>());
+	  Geometry::Plane* PY=SMap.realPtr<Geometry::Plane>(std::get<2>(tc));
 	  if (PY)
 	    ELog::EM<<"Plane[Expected] == "<<*PY<<ELog::endDiag;
 
@@ -228,10 +225,11 @@ testSurfRegister::testPlaneReflection()
 	  PX->mirrorSelf();
 	  ELog::EM<<"Rev Surf == "<<PX->side(Geometry::Vec3D(1,0,0))
 		  <<ELog::endDiag;
-	  flag=-2;
+	  return -2;
 	}
+      cnt++;
     }
-  return flag;
+  return 0;
 }
 
 int
@@ -249,8 +247,8 @@ testSurfRegister::testUnique()
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
   SurI.reset();
 
-  typedef boost::tuple<int,std::string,int> TTYPE;
-  typedef boost::tuple<int,double> RTYPE;   // Result checkx
+  typedef std::tuple<int,std::string,int> TTYPE;
+  typedef std::tuple<int,double> RTYPE;   // Result checkx
 
   std::vector<TTYPE> Tests;
   Tests.push_back(TTYPE(3,"px 34",3));
@@ -267,14 +265,13 @@ testSurfRegister::testUnique()
 
     
   std::vector<TTYPE>::const_iterator tc;
-  int flag(0);
-  for(tc=Tests.begin();tc!=Tests.end() && !flag;tc++)
+  for(const TTYPE& tc : Tests)  
     {
-      const int SN(tc->get<0>());
+      const int SN(std::get<0>(tc));
       Geometry::Plane* PX=SurI.createUniqSurf<Geometry::Plane>(SN);
-      if (!PX || PX->setSurface(tc->get<1>()))
+      if (!PX || PX->setSurface(std::get<1>(tc)))
 	{
-	  ELog::EM<<"Failed : surf == "<<tc->get<0>()<<ELog::endCrit;
+	  ELog::EM<<"Failed : surf == "<<std::get<0>(tc)<<ELog::endCrit;
 	  if (PX) 
 	    ELog::EM<<"PX      "<<*PX<<ELog::endCrit;
 	  else
@@ -282,22 +279,21 @@ testSurfRegister::testUnique()
 	  return -1;
 	}
 
-      if (SMap.registerSurf(SN,PX)!=tc->get<2>())
+      if (SMap.registerSurf(SN,PX)!=std::get<2>(tc))
 	{
 	  ELog::EM<<"Surface number == "<<SMap.realSurf(SN)<<ELog::endCrit;
 	  return -2;
 	}
     }
 
-  std::vector<RTYPE>::const_iterator rc;
-  for(rc=ResTest.begin();rc!=ResTest.end();rc++)
+  for(const RTYPE& rc : ResTest)  
     {
       const Geometry::Plane* PN=
-	dynamic_cast<const Geometry::Plane*>(SMap.realSurfPtr(rc->get<0>()));
-      if (!PN || fabs(PN->getDistance()-rc->get<1>())>1e-7)
+	dynamic_cast<const Geometry::Plane*>(SMap.realSurfPtr(std::get<0>(rc)));
+      if (!PN || fabs(PN->getDistance()-std::get<1>(rc))>1e-7)
 	{
-	  ELog::EM<<"Failed Surface number == "<<rc->get<0>()<<ELog::endCrit;
-	  ELog::EM<<"Expect == "<<rc->get<1>()<<ELog::endCrit;
+	  ELog::EM<<"Failed Surface number == "<<std::get<0>(rc)<<ELog::endCrit;
+	  ELog::EM<<"Expect == "<<std::get<1>(rc)<<ELog::endCrit;
 	  if (PN)
 	    ELog::EM<<"PN == "<<*PN<<ELog::endCrit;
 	  return -3;

@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   test/testObjTrackItem.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,10 +34,8 @@
 #include <numeric>
 #include <iterator>
 #include <memory>
-#include <boost/functional.hpp>
-#include <boost/bind.hpp>
-#include <boost/tuple/tuple.hpp>
-#include <boost/array.hpp>
+#include <tuple>
+
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -228,8 +226,8 @@ testObjTrackItem::testTrackNeutron()
   std::vector<MonteCarlo::neutron> TNeut;
   std::vector<Geometry::Vec3D> TPos;
   
-  typedef boost::tuple<size_t,size_t,size_t> TTYPE;
-  typedef boost::tuple<size_t,int,double> RTYPE;
+  typedef std::tuple<size_t,size_t,size_t> TTYPE;
+  typedef std::tuple<size_t,int,double> RTYPE;
 
   std::vector<TTYPE> TestIndex;
   std::vector<RTYPE> Results;
@@ -247,14 +245,14 @@ testObjTrackItem::testTrackNeutron()
   // Tests [ neutron : StartVec3D : EndVec3D ]
   TestIndex.push_back(TTYPE(0,0,1));
   
-
-  size_t index(0);
-  while(index<TestIndex.size())
+  for(size_t index=0;index<TestIndex.size();index++)
     {
-      MonteCarlo::neutron nOut(TNeut[TestIndex[index].get<0>()]);
+      const TTYPE& tc(TestIndex[index]);
+
+      MonteCarlo::neutron nOut(TNeut[std::get<0>(tc)]);
       // Starting neutron
-      ObjTrackItem OA(TPos[TestIndex[index].get<1>()],
-		      TPos[TestIndex[index].get<2>()]);
+      ObjTrackItem OA(TPos[std::get<1>(tc)],
+		      TPos[std::get<2>(tc)]);
 
       const ModelSupport::ObjSurfMap* OSMPtr =ASim.getOSM();
       // Find Initial cell [tested in testSimulation]
@@ -283,9 +281,7 @@ testObjTrackItem::testTrackNeutron()
       const int errFlag=
 	checkResult(OA,Results[index]);
 
-      if (errFlag) return errFlag; 
-      
-      index++;
+      if (errFlag) return errFlag;       
     }
 
   return 0;            
@@ -294,7 +290,7 @@ testObjTrackItem::testTrackNeutron()
 
 int
 testObjTrackItem::checkResult(const ObjTrackItem& OA,
-	      const boost::tuple<size_t,int,double>& Result) const
+	      const std::tuple<size_t,int,double>& Result) const
   /*!
     Checks a result
     \param OA :: Object item to compare
@@ -310,7 +306,7 @@ testObjTrackItem::checkResult(const ObjTrackItem& OA,
   int resFlag(0);
   const std::map<int,double>& MT=OA.getTrack();
   const size_t size=MT.size();
-  if (Result.get<0>()!=size)
+  if (std::get<0>(Result)!=size)
     resFlag=1;
 
   int sumMat(0);
@@ -321,17 +317,20 @@ testObjTrackItem::checkResult(const ObjTrackItem& OA,
       sumMat+=mc->first;
       sumDist+=(mc->first) ? mc->second : 0;
     }
-  if (sumMat!=Result.get<1>()) 
+  if (sumMat!=std::get<1>(Result)) 
     resFlag+=2;
 
-  if (fabs(sumDist-Result.get<2>())>1e-4) 
+  if (fabs(sumDist-std::get<2>(Result))>1e-4) 
     resFlag+=4;
   
   if (resFlag)
     {
-      ELog::EM<<"Size     ["<<Result.get<0>()<<"] == "<<size<<ELog::endWarn;
-      ELog::EM<<"Sum Mat  ["<<Result.get<1>()<<"] == "<<sumMat<<ELog::endWarn;
-      ELog::EM<<"Sum Dist ["<<Result.get<2>()<<"] == "<<sumDist<<ELog::endWarn;
+      ELog::EM<<"Size     ["<<std::get<0>(Result)<<
+	"] == "<<size<<ELog::endWarn;
+      ELog::EM<<"Sum Mat  ["<<std::get<1>(Result)<<
+	"] == "<<sumMat<<ELog::endWarn;
+      ELog::EM<<"Sum Dist ["<<std::get<2>(Result)<<
+	"] == "<<sumDist<<ELog::endWarn;
     }
   return -resFlag;
 }

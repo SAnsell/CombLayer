@@ -33,8 +33,6 @@
 #include <vector>
 #include <algorithm>
 #include <functional>
-#include <boost/tuple/tuple.hpp>
-
  
 #include "Exception.h"
 #include "FileReport.h"

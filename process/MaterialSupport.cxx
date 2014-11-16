@@ -32,9 +32,6 @@
 #include <algorithm>
 #include <functional>
 #include <iterator>
-#include <numeric>
-#include <boost/bind.hpp>
-#include <boost/tuple/tuple.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -92,7 +89,7 @@ EvalMat(const FuncDataBase& Control,const std::string& Key)
     value or the material number
     \param Control :: Database of variables
     \param Key :: Name for Material
-    \return MatNumber
+    \return Material Name 
   */
 {
   ELog::RegMethod RegA("MaterialSupport[F]","EvalMat<string>");
@@ -174,7 +171,7 @@ EvalMatName(const std::string& matName)
   throw ColErr::InContainerError<std::string>(matName,"Material not present");
 }
 
-
+/// \cond TEMPLATE  
 template int 
 EvalMat(const FuncDataBase&,const std::string&,
 	const std::string&);
@@ -187,9 +184,9 @@ template int
 EvalDefMat(const FuncDataBase&,const std::string&,
 	   const int&);
 
+/// \endcond TEMPLATE
 
 
-
-}
+} // NAMESPACE ModelSupport
 
 

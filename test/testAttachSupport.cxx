@@ -33,7 +33,7 @@
 #include <sstream>
 #include <algorithm>
 #include <memory>
-#include <boost/tuple/tuple.hpp>
+#include <tuple>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -163,7 +163,7 @@ testAttachSupport::testBoundaryValid()
   ELog::RegMethod RegA("testAttachSupport","testBoundaryValid");
 
   
-  typedef boost::tuple<size_t,Geometry::Vec3D,int> TTYPE;
+  typedef std::tuple<size_t,Geometry::Vec3D,int> TTYPE;
   std::vector<TTYPE> Tests;
   Tests.push_back(TTYPE(0,Geometry::Vec3D(0,0,0),0));
   Tests.push_back(TTYPE(0,Geometry::Vec3D(1000,0,0),1));
@@ -182,15 +182,16 @@ testAttachSupport::testBoundaryValid()
     CC(new testSystem::simpleObj("A"));
   CC->createAll(ASim,World::masterOrigin());
 
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
     {
-      const int R=((*CC).*TPtr[tc->get<0>()])(tc->get<1>());
-      if (R!=tc->get<2>())
+      const int R=((*CC).*TPtr[std::get<0>(tc)])(std::get<1>(tc));
+      if (R!=std::get<2>(tc))
 	{
-	  ELog::EM<<"Failed Test "<<(tc-Tests.begin())+1<<ELog::endTrace;
-	  ELog::EM<<"Result["<< tc->get<2>()<<"] == "<<R<<ELog::endTrace;
-	  ELog::EM<<"Point["<< tc->get<1>()<<"] == "<<R<<ELog::endTrace;
+	  ELog::EM<<"Failed Test "<<cnt<<ELog::endTrace;
+	  ELog::EM<<"Result["<< std::get<2>(tc)<<"] == "<<R<<ELog::endTrace;
+	  ELog::EM<<"Point["<< std::get<1>(tc)<<"] == "<<R<<ELog::endTrace;
 	  return -1;
 	}
     }

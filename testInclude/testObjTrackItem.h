@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   testInclude/testObjTrackItem.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,7 @@ private:
   void createObjects();
 
   int checkResult(const ModelSupport::ObjTrackItem&,
-		  const boost::tuple<size_t,int,double>&) const;
+		  const std::tuple<size_t,int,double>&) const;
   //Tests 
   int testTrackNeutron();
 

@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   test/testObjectTrackAct.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,10 +34,7 @@
 #include <numeric>
 #include <iterator>
 #include <memory>
-#include <boost/functional.hpp>
-#include <boost/bind.hpp>
-#include <boost/tuple/tuple.hpp>
-#include <boost/array.hpp>
+#include <tuple>
 
 
 #include "Exception.h"
@@ -228,7 +225,7 @@ testObjectTrackAct::testPointDet()
 
   ObjectTrackAct OA(Geometry::Vec3D(20,0,0));
 
-  typedef boost::tuple<int,double>  TTYPE;
+  typedef std::tuple<int,double>  TTYPE;
   std::vector<TTYPE> Tests;
   // Test neutrons
   Tests.push_back(TTYPE(2,8.0));
@@ -245,15 +242,14 @@ testObjectTrackAct::testPointDet()
 	OA.addUnit(ASim,vc->first,vc->second->getCofM());
     }
 
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+  for(const TTYPE& tc : Tests)
     {
-      const double D=OA.getMatSum(tc->get<0>());
-      if (fabs(D-tc->get<1>())>1e-4)
+      const double D=OA.getMatSum(std::get<0>(tc));
+      if (fabs(D-std::get<1>(tc))>1e-4)
 	{
 	  ELog::EM<<"OA == "<<OA<<ELog::endTrace;
-	  ELog::EM<<"Cell["<<tc->get<0>()<<"] "
-		  <<tc->get<1>()<<" == "<<D<<ELog::endCrit;
+	  ELog::EM<<"Cell["<<std::get<0>(tc)<<"] "
+		  <<std::get<1>(tc)<<" == "<<D<<ELog::endCrit;
 	  return -1;
 	}
     }

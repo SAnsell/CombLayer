@@ -31,8 +31,7 @@
 #include <set>
 #include <string>
 #include <algorithm>
-
-#include <boost/tuple/tuple.hpp>
+#include <tuple>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -127,39 +126,40 @@ testDBMaterial::testCombine()
 
 
   // "MatLine" : MTLine : MibLine
-  typedef boost::tuple<std::string,int,std::string> TTYPE;
+  typedef std::tuple<std::string,int,std::string> TTYPE;
   std::vector<TTYPE> Tests;
 
   Tests.push_back(TTYPE("H2O%D2O%50",1,"1002.24c 0.0330067"));
 
   DBMaterial& DB=DBMaterial::Instance();
-  
-  std::vector<TTYPE>::const_iterator tc;
-  for(tc=Tests.begin();tc!=Tests.end();tc++)
+
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
     {
-      const int res=DB.createMaterial(tc->get<0>());
-      if (res && res==tc->get<1>())
+      const int res=DB.createMaterial(std::get<0>(tc));
+      if (res && res==std::get<1>(tc))
 	{
 	  const MonteCarlo::Material& MT=
-	    DB.getMaterial(tc->get<0>());
+	    DB.getMaterial(std::get<0>(tc));
 
 	  std::ostringstream cx;
 	  cx<<MT;
 	  const std::string SLine=StrFunc::singleLine(cx.str());
-	  if (SLine.find(tc->get<2>())==std::string::npos)
+	  if (SLine.find(std::get<2>(tc))==std::string::npos)
 	    {
-	      ELog::EM<<"Test "<<(tc-Tests.begin())+1<<ELog::endDiag;
-	      ELog::EM<<"String "<<tc->get<2>()<<ELog::endDiag;
+	      ELog::EM<<"Test "<<cnt<<ELog::endDiag;
+	      ELog::EM<<"String "<<std::get<2>(tc)<<ELog::endDiag;
 	      ELog::EM<<"Material --: \n"<<MT<<ELog::endDiag;
 	    }
 	}
-      else if (res!=tc->get<1>())
+      else if (res!=std::get<1>(tc))
 	{
-	  ELog::EM<<"Test "<<(tc-Tests.begin())+1<<ELog::endDiag;
-	  ELog::EM<<"String "<<tc->get<0>()<<ELog::endDiag;
+	  ELog::EM<<"Test "<<cnt<<ELog::endDiag;
+	  ELog::EM<<"String "<<std::get<0>(tc)<<ELog::endDiag;
 	  ELog::EM<<"Failed RES "<<res<<" "<<ELog::endDiag;
 	  return -1;
 	}
+      cnt++;
 
 
     }
