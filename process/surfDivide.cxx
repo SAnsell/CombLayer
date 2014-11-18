@@ -374,7 +374,7 @@ surfDivide::activeDivideTemplate(Simulation& System)
       const double fA=(i) ? frac[i-1] : -1.0;
       const double fB=(i!=frac.size()) ? frac[i] : 2.0;
       HeadRule cell(BaseObj->getHeadRule());
-      ELog::EM<<"FRAC == "<<i<<" "<<fA<<" "<<fB<<ELog::endDiag;
+
       for(size_t rN=0;rN<PRules.size();rN++)
 	PRules[rN]->process(fA,fB,cell);
 

@@ -208,10 +208,10 @@ ChipVariables(FuncDataBase& Control)
 
   Control.addVariable("chipGuideRoofSteel",54.0);  
   Control.addVariable("chipGuideFloorSteel",56.0);
-  Control.addVariable("chipGuideLeftSteel",66.0);    // 46
-  Control.addVariable("chipGuideRightSteel",66.0);
-  Control.addVariable("chipGuideLeftSteelInner",50.0);   //30
-  Control.addVariable("chipGuideRightSteelInner",46.0);
+  Control.addVariable("chipGuideLeftSteel",66.0+18.0);    // 46
+  Control.addVariable("chipGuideRightSteel",101.3);
+  Control.addVariable("chipGuideLeftSteelInner",50.1);   //30
+  Control.addVariable("chipGuideRightSteelInner",71.70);
   Control.addVariable("chipGuideLeftSteelAngle",6.50);
   Control.addVariable("chipGuideRightSteelAngle",6.0);
 
@@ -264,6 +264,10 @@ ChipVariables(FuncDataBase& Control)
   Control.addVariable("chipGuideNLayers",3);    // Number of layers
   Control.addVariable("chipGuideNConcLayers",3);    // Number of layers
 
+  Control.addVariable("chipGuideSteelFrac_1",0.3);  // Tungsten inner
+  Control.addVariable("chipGuideSteelFrac_2",0.6);   // Steel inner
+  Control.addVariable("chipGuideSteelFrac_3",0.8);   // Steel inner
+
   Control.addVariable("chipGuideSteelFrac_1",0.05);  // Tungsten inner
   Control.addVariable("chipGuideSteelFrac_2",0.2);   // Steel inner
   Control.addVariable("chipGuideSteelFrac_3",0.3);   // Steel inner
@@ -272,8 +276,9 @@ ChipVariables(FuncDataBase& Control)
   Control.addVariable("chipGuideSteelFrac_6",0.6);   // Concrete inner
   Control.addVariable("chipGuideSteelFrac_7",0.7);   // Concrete outer
 
-  Control.addVariable("chipGuideMat_0","Tungsten");   // Tungsten inner
-  Control.addVariable("chipGuideMat_1","CastIron");    // Steel
+  Control.addVariable("chipGuideMat_0","ChipIRSteel");   // Steel
+  Control.addVariable("chipGuideMat_1","ChipIRSteel");         // lead liner
+  Control.addVariable("chipGuideMat_2","ChipIRSteel");    // Steel
   Control.addVariable("chipGuideMat_4","Concrete");    // concrete [normal]
  
   Control.addVariable("chipHutYStart",1253.1);    // Y start position

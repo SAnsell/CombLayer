@@ -230,7 +230,7 @@ void createWallsChipIR(Simulation&,const shutterSystem::GeneralShutter&);
 
   Geometry::Vec3D calcSideIntercept(const int,const Geometry::Vec3D&,
 				   const Geometry::Vec3D&) const;
-  Geometry::Vec3D calcSurfNormal(const int surfIndex) const;
+  Geometry::Vec3D calcSurfNormal(const int) const;
 
   Geometry::Vec3D calcDoorPoint() const;
 
@@ -244,6 +244,7 @@ void createWallsChipIR(Simulation&,const shutterSystem::GeneralShutter&);
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const attachSystem::TwinComp&,		 
 		 const attachSystem::ContainedComp&);
+
   void createCommonAll(Simulation&,
 		 const attachSystem::TwinComp&,		 
 		 const attachSystem::ContainedComp&);

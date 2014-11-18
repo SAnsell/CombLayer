@@ -182,7 +182,7 @@ BulkShield::~BulkShield()
 {}
 
 void
-BulkShield::populate(const Simulation& System)
+BulkShield::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param System :: Simulation to use
@@ -190,9 +190,7 @@ BulkShield::populate(const Simulation& System)
 {
   ELog::RegMethod RegA("BulkShield","populate");
   chipIRDatum::chipDataStore& CS=chipIRDatum::chipDataStore::Instance();
-
-  const FuncDataBase& Control=System.getDataBase();
-
+  
   vXoffset=Control.EvalVar<double>("voidXoffset");
   
   torpedoRadius=Control.EvalVar<double>(keyName+"TorpedoRadius");
@@ -583,7 +581,7 @@ BulkShield::createAll(Simulation& System,
    */
 {
   ELog::RegMethod RegA("BulkShield","createAll");
-  populate(System);
+  populate(System.getDataBase());
   createUnitVector(FC);
   createSurfaces();
   createObjects(System,CC);

@@ -92,6 +92,8 @@
 #include "FBBlock.h"
 #include "makeChipIR.h"
 
+#include "shutterBlock.h"
+#include "GeneralShutter.h"
 #include "debugMethod.h"
 
 namespace hutchSystem
@@ -166,14 +168,12 @@ makeChipIR::buildIsolated(Simulation& System,
   GObj->addInsertCell("rightwall",74123);
   GObj->addInsertCell("leftwall",74123);
   GObj->createAll(System,World::masterOrigin());
-  ELog::EM<<"GObj .origin == "<<GObj->getCentre()<<ELog::endDiag;
   HObj->addInsertCell(74123);
-
 
   HObj->createAll(System,World::masterTS2Origin(),*GObj,
   		  GObj->getKey("inner"));
-	  
   //  FB.createAll(System,*HObj);
+
   
   return;
 }
@@ -212,6 +212,7 @@ makeChipIR::build(Simulation* SimPtr,
 		  GObj->getKey("inner"));
   
   FB.createAll(*SimPtr,*HObj);
+
   return;
   const size_t NFeed=Control.EvalVar<size_t>("chipNWires");
   for(size_t i=0;i<NFeed;i++)
@@ -219,6 +220,8 @@ makeChipIR::build(Simulation* SimPtr,
       FeedVec.push_back(FeedThrough("chipWiresColl",i+1));
       FeedVec.back().createAll(*SimPtr,*HObj);
     }  
+
+
   return;
 }
 

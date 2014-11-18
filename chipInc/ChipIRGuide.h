@@ -147,7 +147,8 @@ class ChipIRGuide : public attachSystem::TwinComp,
   void populate(const FuncDataBase&);
   void createUnitVector(const shutterSystem::BulkShield&,
 			const shutterSystem::GeneralShutter&);
-  void createUnitVector(const attachSystem::FixedComp&);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const double);
   
   void createSurfaces(const shutterSystem::GeneralShutter&);
   void createSurfaces();

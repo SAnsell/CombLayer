@@ -32,8 +32,7 @@
 #include <string>
 #include <algorithm>
 #include <memory>
-#include <boost/bind.hpp>
-#include <boost/array.hpp>
+//#include <boost/bind.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -85,7 +84,6 @@
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "GeneralShutter.h"
-#include "Token.h"
 #include "surfDBase.h"
 #include "mergeTemplate.h"
 #include "BulkShield.h"
@@ -377,10 +375,12 @@ ChipIRGuide::createUnitVector(const shutterSystem::BulkShield& BS,
 }
 
 void
-ChipIRGuide::createUnitVector(const attachSystem::FixedComp& WO)
+ChipIRGuide::createUnitVector(const attachSystem::FixedComp& WO,
+			      const double ORadius)
   /*!
     Create the unit vectors
     \param WO :: Fixed Unit (Base origin)
+    \param ORadius :: Outer Radius since hlen is fixed to centre coordinates
   */
 {
   ELog::RegMethod RegA("ChipIRGuide","createUnitVector(Fixed)");
@@ -402,7 +402,7 @@ ChipIRGuide::createUnitVector(const attachSystem::FixedComp& WO)
   Geometry::Quaternion::calcQRotDeg(sideBeamAngle,Z).rotate(bY);
 
   // Now calculate Cent
-  gLen=hYStart;
+  gLen=hYStart-ORadius; 
 
   // Output Datum [beam centre]
   // Distance to Y Plane [ gLen / (beamAxis . Y )
@@ -665,8 +665,6 @@ ChipIRGuide::createObjects(Simulation& System)
 				 "-100 1 -302 306 -206 -213 303 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
-  ELog::EM<<"BLOCK == "<<cellIndex-1<<" "<<Out<<ELog::endDiag;
-
   // Extra left Wall
   // everything below wall height to limit of wall length
   Out=ModelSupport::getComposite(SMap,guideIndex,
@@ -817,10 +815,10 @@ ChipIRGuide::layerProcess(Simulation& System)
       const std::vector<std::pair<int,int> > 
 	AX={{14,214},{114,204}};
       const std::vector<std::pair<int,int> > 
-	BX={{13,213},{113,213}};
+	BX={{213,13},{213,113}};
 	
       //      procSurfDivide(System,DA,1,AX,"(14:114)","-214 -204");
-      procSurfDivide(System,DA,2,BX,"(-13:-113)","213");
+      procSurfDivide(System,DA,2,BX,"213","(-13:-113)");
     }
   return;
 }
@@ -907,7 +905,8 @@ ChipIRGuide::writeMasterPoints()
 	SurInter::processPoint(boxSurf[i],boxSurf[(i+1) % 4],FSurf);
       std::vector<Geometry::Vec3D>::iterator vc=
 	remove_if(PtOut.begin(),PtOut.end(),
-		  boost::bind(&Geometry::surfaceCheck,-1,testSurf,_1));
+		  std::bind(&Geometry::surfaceCheck,-1,testSurf,
+			    std::placeholders::_1));
       PtOut.erase(vc,PtOut.end());
       Out.push_back(PtOut.front());
     }  
@@ -919,7 +918,8 @@ ChipIRGuide::writeMasterPoints()
 	SurInter::processPoint(boxSurf[i],boxSurf[(i+1) % 4],BSurf);
       std::vector<Geometry::Vec3D>::iterator vc=
 	remove_if(PtOut.begin(),PtOut.end(),
-		  boost::bind(&Geometry::surfaceCheck,-1,testSurf,_1));
+		  std::bind(&Geometry::surfaceCheck,-1,testSurf,
+			    std::placeholders::_1));
       PtOut.erase(vc,PtOut.end());
       Out.push_back(PtOut.front());
     }  
@@ -958,8 +958,9 @@ ChipIRGuide::addFilter(Simulation& System)
 {
   ELog::RegMethod RegA("ChipIRGuide","addFilter");
 
-  for_each(voidCells.begin(),voidCells.end(),
-	   boost::bind(&ChipIRFilter::addInsertCell,boost::ref(Filter),_1));
+  for(const int& VC : voidCells)
+    Filter.addInsertCell(VC);
+
   Filter.createAll(System,*this);
   return;
 }
@@ -1034,7 +1035,6 @@ ChipIRGuide::createAll(Simulation& System,
   addFilter(System);
   layerProcess(System);
   insertObjects(System);   
-  
   writeMasterPoints();
   return;
 }
@@ -1049,9 +1049,12 @@ ChipIRGuide::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("ChipIRGuide","createAll[FC]");
+
+  const FuncDataBase& Control=System.getDataBase();
+  populate(Control);
   
-  populate(System.getDataBase());
-  createUnitVector(FC);
+  const double ORadius=Control.EvalDefVar<double>("bulkdOuterRadius",600.1);
+  createUnitVector(FC,ORadius);
   createSurfaces();
   createObjects(System);  
   createLinks();

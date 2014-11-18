@@ -412,7 +412,7 @@ ChipIRHutch::createUnitVector(const attachSystem::FixedComp& shutterFC,
   /*!
     Create the unit vectors
     \param shutterFC :: shutter direction 
-    \param xyAxis :: xyAngls
+    \param xyAxis :: xyAngle
     \param LC :: connectin linear component [ChipIRGuide]
   */
 {
@@ -432,6 +432,7 @@ ChipIRHutch::createUnitVector(const attachSystem::FixedComp& shutterFC,
   Geometry::Quaternion::calcQRotDeg(beamAngle,X).rotate(bY);
   bX=X;
   bZ=bY*X;
+  ELog::EM<<"Origin == "<<Origin<<ELog::endDiag;
 
   ImpactPoint= (shutterFC.NConnect()) ?
     shutterFC.getLinkPt(0) : shutterFC.getCentre(); 

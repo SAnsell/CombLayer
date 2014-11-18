@@ -80,7 +80,7 @@ class BulkShield : public attachSystem::FixedComp,
 
   // Functions:
 
-  void populate(const Simulation&);
+  void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
 
   void createSurfaces();
