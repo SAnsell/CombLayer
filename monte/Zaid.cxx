@@ -144,7 +144,7 @@ Zaid::setZaid(const std::string& A)
   index=Z;
   const std::string Num=A.substr(pos+1,2);
   StrFunc::convert(Num,tag);
-  type=A[pos+3];
+  type=A[pos+2];
   return 1;
 }
   
@@ -160,6 +160,20 @@ Zaid::setDensity(const double D)
   return;
 }
 
+void
+Zaid::write(std::ostream& OX) const
+  /*!
+    Write out to an MCNPX zaid with density if (c)
+    \param OX :: Output stream
+   */
+{
+  boost::format FMTstr("%1$d.%2$02d%3$c");
+  boost::format FMTnum("%1$.6g");
+  OX<<FMTstr % index % tag % type;
+  if (type=='c')
+    OX<<" "<<FMTnum % density;
+  return;
+}
 
 double
 Zaid::getAtomicMass() const
@@ -179,19 +193,4 @@ Zaid::getAtomicMass() const
   const Element& ET=Element::Instance();
   return ET.mass(getZ());
 }    
-
-void
-Zaid::write(std::ostream& OX) const
-  /*!
-    Write out to an MCNPX zaid with density if (c)
-    \param OX :: Output stream
-   */
-{
-  boost::format FMTstr("%1$d.%2$02d%3$c");
-  boost::format FMTnum("%1$.6g");
-  OX<<FMTstr % index % tag % type;
-  if (type=='c')
-    OX<<" "<<FMTnum % density;
-  return;
-}
 

@@ -709,13 +709,14 @@ Material::write(std::ostream& OX) const
   cx.precision(10);
   cx<<"m"<<Mnum<<"     ";
   if (Mnum<10) cx<<" ";
+  std::vector<Zaid>::const_iterator zc;
+  std::vector<std::string>::const_iterator vc;
+  for(zc=zaidVec.begin();zc!=zaidVec.end();zc++)
+    cx<<*zc<<" ";
 
-  for(const Zaid& ZC : zaidVec)
-    cx<<ZC<<"  ";
+  for(vc=Libs.begin();vc!=Libs.end();vc++)
+    cx<<*vc<<"  ";
 
-  for(const std::string& lstr : Libs)
-    cx<<lstr<<"  ";
-  
   StrFunc::writeMCNPX(cx.str(),OX);
 
   MXTYPE::const_iterator mc;
@@ -729,8 +730,8 @@ Material::write(std::ostream& OX) const
       rx.str("");
       rx<<"mt"<<Mnum<<"    ";
       if (Mnum<10) rx<<" ";
-      for(const std::string& sqwStr : SQW)
-	rx<<sqwStr<<" ";
+      for(vc=SQW.begin();vc!=SQW.end();vc++)
+	rx<<*vc<<" ";
       StrFunc::writeMCNPX(rx.str(),OX);
     }
   return;
