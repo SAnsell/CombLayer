@@ -144,7 +144,7 @@ Zaid::setZaid(const std::string& A)
   index=Z;
   const std::string Num=A.substr(pos+1,2);
   StrFunc::convert(Num,tag);
-  type=A[pos+2];
+  type=A[pos+3];
   return 1;
 }
   
