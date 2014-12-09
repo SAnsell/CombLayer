@@ -60,6 +60,7 @@ namespace mainSystem
   void createEPBInputs(inputParam&);
   void createESSInputs(inputParam&);
   void createFullInputs(inputParam&);
+  void createGammaInputs(inputParam&);
   void createLensInputs(inputParam&);
   void createMuonInputs(inputParam&);
   void createSiliconInputs(inputParam&);

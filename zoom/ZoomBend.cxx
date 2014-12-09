@@ -32,7 +32,7 @@
 #include <string>
 #include <algorithm>
 #include <memory>
-#include <boost/array.hpp>
+#include <array>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -226,7 +226,7 @@ ZoomBend::populate(const Simulation& System)
 }
 
 void
-ZoomBend::createUnitVector(const shutterSystem::ZoomShutter& ZS)
+ZoomBend::createUnitVector(const attachSystem::FixedComp& ZS)
   /*!
     Create the unit vectors.
     Note the outer core goes down teh beam
@@ -240,7 +240,12 @@ ZoomBend::createUnitVector(const shutterSystem::ZoomShutter& ZS)
   // This must be checked but the EXIT needs to be the GENERAL 
   // exit 
   
-  TwinComp::createUnitVector(ZS);
+  const attachSystem::TwinComp* TCPtr=
+    dynamic_cast<const attachSystem::TwinComp*>(&ZS);
+  if (TCPtr)
+    attachSystem::TwinComp::createUnitVector(*TCPtr);
+  else
+    attachSystem::FixedComp::createUnitVector(ZS);
   // link point 
   //  FixedComp::createUnitVector(ZS.getBackPt(),ZS.getY());  
 
@@ -581,11 +586,11 @@ ZoomBend::createLinks()
 
 void
 ZoomBend::createAll(Simulation& System,
-		    const shutterSystem::ZoomShutter& ZC)
+		    const attachSystem::FixedComp& ZC)
   /*!
     Generic function to create everything
     \param System :: Simulation item
-    \param ZC :: Zoom System
+    \param ZC :: Zoom Shutter / FixedPoint origin
   */
 {
   ELog::RegMethod RegA("ZoomBend","createAll");

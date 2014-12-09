@@ -111,15 +111,18 @@ class ChipIRGuide : public attachSystem::TwinComp,
   double blockWallLen;       ///< Wall length
 
   // extra wall on TSA side (after block wall):
-  double extraWallThick;       ///< Wall thickness
-  double extraWallHeight;      ///< Height [from ground]
-  double extraWallLen;         ///< Wall length
-  double extraWallSideAngle;  ///<angle of side wall
-  double extraWallEndAngle;   ///<angle of end wall  
+  double extraWallThick;         ///< Wall thickness
+  double extraWallHeight;        ///< Height [from ground]
+  double extraWallLen;           ///< Wall length
+  double extraWallSideAngle;     ///<angle of side wall
+  double extraWallEndAngle;      ///<angle of end wall  
 //extra wall on RHS [W2 side]
   double rightWallThick;       ///< Wall thickness
   double rightWallHeight;      ///< Height [from ground]
   double rightWallLen;         ///< Wall length
+
+  double remedialWestWallThick;    ///< Remedial wall
+  double remedialWallHeight;       ///< Remedial wall height
 
   //wedge block on TSA side
 //  double leftWedgeThick;       ///<Wedge max width
@@ -130,6 +133,10 @@ class ChipIRGuide : public attachSystem::TwinComp,
   size_t nLayers;                ///< number of layers
   std::vector<double> guideFrac; ///< guide Layer thicknesss (fractions)
   std::vector<int> guideMat;     ///< guide Layer materials
+
+  size_t nRemdialWestLayers;            ///< number of layers
+  std::vector<double> remedialWestFrac; ///< west Layer thicknesss (fractions)
+  std::vector<int> remedialWestMat;     ///< west Layer materials
 
 
   size_t nConcLayers;              ///< number of layers

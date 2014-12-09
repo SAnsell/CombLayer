@@ -225,7 +225,6 @@ Visit::populate(const Simulation* SimPtr,
 	    }
 	}
     }
-  ELog::EM<<"BE == "<<beCnt<<ELog::endDiag;
   return;
 }
 

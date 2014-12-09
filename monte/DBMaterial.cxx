@@ -1055,7 +1055,6 @@ DBMaterial::createMix(const std::string& Name,
 
   MonteCarlo::Material MA=getMaterial(MatA);
   MonteCarlo::Material MB=getMaterial(MatB);
-
   if (PFrac<-1e-5 || PFrac>1.00001)
     throw ColErr::RangeError<double>(PFrac,0.0,1.0,"Mix fraction [PFrac]");
   

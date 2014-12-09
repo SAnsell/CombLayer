@@ -66,7 +66,6 @@ operator<<(std::ostream& OX,const Detector& A)
 
 {
   A.write(OX);
-  ELog::EM<<"WREEAWRWA "<<ELog::endDiag;
   return OX;
 }
 

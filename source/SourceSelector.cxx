@@ -184,6 +184,8 @@ sourceSelection(Simulation& System,
     SDef::createD4CSource(Control,sourceCard);
   else if (sdefType=="Sinbad" || sdefType=="sinbad")
     SDef::createSinbadSource(Control,sourceCard);
+  else if (sdefType=="Gamma" || sdefType=="gamma")
+    SDef::createGammaSource(Control,sourceCard);
   else if (sdefType=="TS2")
     {
   // Basic TS2 source

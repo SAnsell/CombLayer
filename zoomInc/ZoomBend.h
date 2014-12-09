@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   zoomInc/ZoomBend.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,7 +72,7 @@ class ZoomBend : public attachSystem::ContainedGroup,
   double zStep;                 ///< Offset on Z Shutter exit point
   
   /// sections:
-  boost::array<bendSection,4> BSector;  
+  std::array<bendSection,4> BSector;  
   
   size_t nAttn;                   ///< Number of attenuation points
   double attnZStep;               ///< Attenuation Z step
@@ -90,7 +90,7 @@ class ZoomBend : public attachSystem::ContainedGroup,
 
 
   void populate(const Simulation&);
-  void createUnitVector(const shutterSystem::ZoomShutter&);
+  void createUnitVector(const attachSystem::FixedComp&);
 
   void createSurfaces();
   void createLinks();
@@ -106,8 +106,6 @@ class ZoomBend : public attachSystem::ContainedGroup,
   ZoomBend& operator=(const ZoomBend&);
   virtual ~ZoomBend();
   
-  void createAll(Simulation&,const shutterSystem::ZoomShutter&);
-
   /// Accessor to NormOut
   virtual const Geometry::Vec3D& getExitNorm() const 
     { return normalOut; }
@@ -118,6 +116,8 @@ class ZoomBend : public attachSystem::ContainedGroup,
 		 Geometry::Vec3D&) const;
   
   int getSectionSurf(const int,const int) const;
+  void createAll(Simulation&,const attachSystem::FixedComp&);
+
 };
 
 }

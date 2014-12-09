@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   sourceInc/SourceCreate.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,7 @@ namespace SDef
   void createBilbaoSource(const FuncDataBase&,Source&);
   void createD4CSource(const FuncDataBase&,Source&);
   void createESSSource(const FuncDataBase&,Source&);
+  void createGammaSource(const FuncDataBase&,Source&);
   void createTS1Source(const FuncDataBase&,Source&);
   void createTS1GaussianSource(const FuncDataBase&,Source&);
   void createTS1GaussianNewSource(const FuncDataBase&,Source&);   // Goran

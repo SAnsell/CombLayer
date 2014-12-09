@@ -309,6 +309,10 @@ ChipIRGuide::populate(const FuncDataBase& Control)
   rightWallHeight=Control.EvalVar<double>(keyName+"RightWallHeight");
   rightWallLen=Control.EvalVar<double>(keyName+"RightWallLength");
 
+
+  remedialWestWallThick=Control.EvalVar<double>(keyName+"RemedialWallThick");
+  remedialWallHeight=Control.EvalVar<double>(keyName+"RemedialWallHeight");
+
   // Wedge shielding block on TSA
 //  leftWedgeThick=Control.EvalVar<double>(keyName+"LeftWedgeThick");
 //  leftWedgeHeight=Control.EvalVar<double>(keyName+"LeftWedgeHeight");
@@ -564,6 +568,14 @@ ChipIRGuide::createSurfacesCommon()
   ModelSupport::buildPlane(SMap,guideIndex+502,Origin+
 			   Y*rightWallLen,Y);
 
+  // RemedialWall wall on right [W2 side]:
+  // extended out from 214/204
+  ModelSupport::buildPlane(SMap,guideIndex+604,
+			   Origin+X*(rightConcFlat+remedialWestWallThick),X);
+  ModelSupport::buildPlane(SMap,guideIndex+614,
+			   Origin+X*(rightConcInner+remedialWestWallThick),rX);
+  ModelSupport::buildPlane(SMap,guideIndex+606,
+			   Origin+Z*(remedialWallHeight-floorConc),Z);
   // Wedge shielding piece on TSA side
 //  rX=X;
 //  Geometry::Quaternion::calcQRotDeg(leftWedgeAngle,Z).rotate(rX);  
@@ -675,28 +687,25 @@ ChipIRGuide::createObjects(Simulation& System)
 				 "-100 1 -302 406 -206 -303 403 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   // below wall height beyond end of wall length
-  //Out=ModelSupport::getComposite(SMap,guideIndex,
-//				 "-402 -302 205 -406 -303 403 ");
- // System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
-  // Extra right Wall [W2 size]
+  // Extra right Wall [W2 side]
   Out=ModelSupport::getComposite(SMap,guideIndex,
 				 "-100 1 -502 205 -506 214 -503 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
+
+  // REMEDIAL WALL West [W2 side]
+  Out=ModelSupport::getComposite(SMap,guideIndex,
+				 "-100 1 -1002 (214:204) (502:503:506) "
+				 "205 -606 -604 -614 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
+
+  
+
 
  //above wall height, below roof
   Out=ModelSupport::getComposite(SMap,guideIndex,
 				 "-100 1 -502 506 -206 214 -503 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-
- // Wedge shield block [TSA side]
-//   Out=ModelSupport::getComposite(SMap,guideIndex,
-  //                                "-100 1 603 -403 205 -606");
- //  System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
- //  Out=ModelSupport::getComposite(SMap,guideIndex,
- //                                 "-100 1 603 -403 606 -206");
- //  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-
 
   // Add full outer system
   // Inner 
@@ -707,16 +716,13 @@ ChipIRGuide::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,guideIndex,
 				 "-100 1 -1002 213 -204 -214 205 -206 ");
   addOuterSurf("outer",Out);  
-
-  // Left/Right extension walls 
- // Out=ModelSupport::getComposite(SMap,guideIndex,
- //                                "-100 1 -302 403 -213 205 -206 ");
   
   Out=ModelSupport::getComposite(SMap,guideIndex,
                                  "-100 1 205 -206 -213 -302 403 (402:303)");
   addOuterSurf("leftwall",Out);
+
   Out=ModelSupport::getComposite(SMap,guideIndex,
-                                 "-100 1 -502 -503 214 205 -206 ");
+                                 "-100 1 -614 -604 (214:204) 205 -206 ");
   addOuterSurf("rightwall",Out);
 
   return;
@@ -808,7 +814,7 @@ ChipIRGuide::layerProcess(Simulation& System)
       for(size_t i=1;i<nConcLayers;i++)
 	{
 	  DA.addFrac(concFrac[i-1]);
-	  DA.addMaterial(concLayMat[i-1]+1);
+	  DA.addMaterial(concLayMat[i-1]);
 	}
       DA.addMaterial(concLayMat.back());
 
@@ -989,7 +995,8 @@ ChipIRGuide::createLinks()
 }
 
 int
-ChipIRGuide::exitWindow(const double Dist,std::vector<int>& window,
+ChipIRGuide::exitWindow(const double Dist,
+			std::vector<int>& window,
 			Geometry::Vec3D& Pt) const
   /*!
     Outputs a window
@@ -1053,7 +1060,8 @@ ChipIRGuide::createAll(Simulation& System,
   const FuncDataBase& Control=System.getDataBase();
   populate(Control);
   
-  const double ORadius=Control.EvalDefVar<double>("bulkdOuterRadius",600.1);
+  const double ORadius=
+    Control.EvalDefVar<double>("bulkdOuterRadius",600.1);
   createUnitVector(FC,ORadius);
   createSurfaces();
   createObjects(System);  

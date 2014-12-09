@@ -33,8 +33,7 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
-
-#include <boost/array.hpp>
+#include <array>
 #include <boost/format.hpp>
 
 #include "Exception.h"
@@ -70,6 +69,7 @@
 #include "TwinComp.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+#include "World.h"
 #include "shutterBlock.h"
 #include "GeneralShutter.h"
 #include "collInsertBase.h"
@@ -163,15 +163,13 @@ makeZoom::buildIsolated(Simulation& System,
    */
 {
   ELog::RegMethod RegA("makeZoom","buildIsolated");
+
+  ZBend->addInsertCell("A",74123);
+  ZBend->addInsertCell("B",74123);
+  ZBend->addInsertCell("C",74123);
+
+  ZBend->createAll(System,World::masterOrigin()); 
   /*
-  ZBend->addInsertCell("A",BOPtr->getInnerVoid());
-  ZBend->addInsertCell("B",BOPtr->getInnerVoid());
-  ZBend->addInsertCell("A",BOPtr->getOuterVoid());
-  ZBend->addInsertCell("B",BOPtr->getOuterVoid());
-  ZBend->addInsertCell("C",BOPtr->getOuterVoid());
-
-  ZBend->createAll(System,*ZS); 
-
   ZChopper->addInsertCell(74123);
   ZChopper->setMonoSurface(BulkObj.getMonoSurf());
   ZChopper->createAll(System,*ZBend,*ZS);

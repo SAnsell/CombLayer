@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   tally/surfaceConstruct.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -109,8 +109,9 @@ surfaceConstruct::processSurface(Simulation& System,
   
   if (pType=="help")  // 
     {
-      ELog::EM<<"Surface tally options"<<ELog::endBasic;
-      ELog::EM<<"Object linkName\n"<<ELog::endBasic;
+      ELog::EM<<"Surface tally options:"<<ELog::endBasic;
+      ELog::EM<<"object linkName\n"<<ELog::endBasic;
+      ELog::EM<<"object objectName front/back \n"<<ELog::endBasic;
       return 0;
     }
 
@@ -118,7 +119,7 @@ surfaceConstruct::processSurface(Simulation& System,
     throw ColErr::IndexError<size_t>(NItems,2,
 				     "Insufficient items for tally");
   const std::string MType(IParam.getCompValue<std::string>("tally",Index,2)); 
-  ELog::EM<<"pType == "<<pType<<ELog::endDebug;
+  ELog::EM<<"Surface Tally Type == "<<pType<<ELog::endDiag;
   std::vector<std::string> excludeSurf;
   if (pType=="object")
     {
@@ -127,7 +128,7 @@ surfaceConstruct::processSurface(Simulation& System,
       const std::string snd=
 	inputItem<std::string>(IParam,Index,3,"front/back/side not give");
       const int linkNumber=getLinkIndex(snd);
-      ELog::EM<<"Side == "<<linkNumber<<ELog::endDebug;
+      ELog::EM<<"Side == "<<linkNumber<<ELog::endDiag;
 
       return processSurfObject(System,place,linkNumber,excludeSurf);
     }
@@ -149,7 +150,7 @@ surfaceConstruct::processSurface(Simulation& System,
 	}
       return processSurfObject(System,place,linkNumber,excludeSurf);
     }
-
+  ELog::EM<<"Surface Tally NOT Processed"<<ELog::endWarn;
   return 0;
 }
 

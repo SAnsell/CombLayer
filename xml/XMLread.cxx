@@ -30,7 +30,6 @@
 #include <boost/multi_array.hpp>
 
 #include "Exception.h"
-#include "RefControl.h"
 #include "FileReport.h"
 #include "NameStack.h"
 #include "RegMethod.h"

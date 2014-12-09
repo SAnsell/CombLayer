@@ -56,7 +56,13 @@
 #include "SrcItem.h"
 #include "DSTerm.h"
 #include "Source.h"
+#include "surfRegister.h"
+#include "HeadRule.h"
+#include "LinkUnit.h"
+#include "FixedComp.h"
+#include "GammaSource.h"
 #include "SourceCreate.h"
+
 
 namespace SDef
 {
@@ -329,6 +335,15 @@ createTS1Source(const FuncDataBase& Control,Source& sourceCard)
   return;
 }
 
+
+void
+createGammaSource(const FuncDataBase& Control,Source& Card)
+{
+  GammaSource GX;
+  GX.createAll(Control,Card);
+  return;
+}
+
 void
 createGaussianSource(Source& sourceCard,
 		     const double E,
@@ -468,6 +483,7 @@ createTS2Source(Source& sourceCard)
 
   return;
 }
+
 
 void
 createSinbadSource(const FuncDataBase& Control,Source& sourceCard)

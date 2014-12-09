@@ -166,7 +166,7 @@ fluxConstruct::processFlux(Simulation& System,
 
   if (flag<0 && !renumberFlag) return 1;
 
-  ELog::EM<<"Cells == "<<RA<<" "<<RB<<ELog::endDebug;
+  ELog::EM<<"Cells == "<<RA<<" "<<RB<<ELog::endDiag;
   const int nTally=System.nextTallyNum(4);
   // Find cells  [ Must handle -ve / 0 ]
   const std::vector<int> cells=getCellSelection(System,matN,RA,RB);
@@ -200,8 +200,11 @@ fluxConstruct::processFluxCell(Simulation& System,
 
   const size_t NItems=IParam.itemCnt("tally",Index);
   if (NItems<5)
-    throw ColErr::IndexError<size_t>(NItems,5,
-				     "Insufficient items for tally");
+    {
+      ELog::EM<<"Require : cell : Object matN"<<ELog::endCrit;
+      throw ColErr::IndexError<size_t>(NItems,5,
+				       "Insufficient items for tally");
+    }
 
   // Particles
   const std::string PType(IParam.getCompValue<std::string>("tally",Index,1)); 
@@ -232,6 +235,7 @@ fluxConstruct::processFluxCell(Simulation& System,
       else if (basicConstruct::convertRange(CVal,RA,RB)) // X-Y
 	{
 	  RB=std::max<int>(cellRange,RB);
+	  ELog::EM<<"Cell Range "<<RA<<" "<<RB<<ELog::endDiag;
 	  for(;RA<=RB;RA++)
 	    if (System.existCell(RA+cellOffset))
 	      cellVec.push_back(RA+cellOffset);
@@ -239,6 +243,8 @@ fluxConstruct::processFluxCell(Simulation& System,
       else if (initTally)
 	{
 	  ELog::EM<<"Failed to build flux tally ::"<<ELog::endCrit;
+	  ELog::EM<<"Requires: cell Object [cellNum / cellNum-cellNum]"
+		  <<ELog::endDiag;
 	  ELog::EM<<"CVale = "<<CVal<<ELog::endCrit;
 	  ELog::EM<<"Line == "<<IParam.getFull("tally",Index)<<ELog::endErr;
 	}

@@ -241,6 +241,10 @@ ChipVariables(FuncDataBase& Control)
   Control.addVariable("chipGuideRightWallHeight",410.0);
   Control.addVariable("chipGuideRightWallLength",120.0);
 
+// Remedial wall on right/west [W2 side]
+  Control.addVariable("chipGuideRemedialWallThick",50.0);
+  Control.addVariable("chipGuideRemedialWallHeight",610.0);
+
   // wedge block on left [TSA side]
 //  Control.addVariable("chipGuideLeftWedgeThick",80.0);
 //  Control.addVariable("chipGuideLeftWedgeAngle",20.0);

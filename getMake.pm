@@ -1602,6 +1602,46 @@ sub runSwigDir
   return;
 }
 
+sub isInteger 
+  # Determin if value is an integer
+{
+  my $item=shift;
+  return (defined($item) && $item=~ /^[+-]?\d+$/);
+}
+
+sub calcDepNames 
+  ## Take a list of names + strings, convert the strings
+  ## into names
+{
+  my $self=shift;
+  my $Ar=shift;
+  my @Out;
+  my %kname;
+  for(my $i=0;$i<scalar(@{$self->{libnames}});$i++)
+    {
+      $kname{$self->{libnames}[$i]}=$i;
+    }
+  foreach my $item (@{$Ar})
+    {
+      if (isInteger($item))
+        {
+	  push(@Out,$item);
+	}
+      else
+        {
+	  if (exists($kname{$item}))
+	    {
+	      push(@Out,$kname{$item});
+	    }
+	  else
+	    {
+	      print STDERR "No Item ",$item," in library\n";
+	    }
+	}
+    }
+  return @Out;
+}
+
 
 sub addDepUnit
   ## Ugly function to set dep list.
@@ -1627,8 +1667,10 @@ sub addDepUnit
     {
       push(@{$self->{depList}}, [ ]);
     }
-
-  push(@{$self->{depList}[$index]},@{$Ar});  
+  
+  my @DepNum=$self->calcDepNames($Ar);
+  
+  push(@{$self->{depList}[$index]},@DepNum);  
   return;
 }
 

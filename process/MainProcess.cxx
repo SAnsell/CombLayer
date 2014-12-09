@@ -456,13 +456,23 @@ void createFullInputs(inputParam& IParam)
   return;
 }
 
+void
+createGammaInputs(inputParam& IParam)
+{
+  ELog::RegMethod RegA("MainProcess::","createGammaInputs");
+  createInputs(IParam);
+
+  IParam.setValue("sdefType",std::string("Gamma"));  
+  return;
+}
+
 void createTS1Inputs(inputParam& IParam)
   /*!
     Set the specialise inputs for TS1
     \param IParam :: Input Parameters
   */
 {
-  ELog::RegMethod RegA("MainProcess::","createFullInputs");
+  ELog::RegMethod RegA("MainProcess::","createTS1Inputs");
   createInputs(IParam);
 
   IParam.regDefItem<std::string>("CH4PreType","CH4PreType",1,"Wrapper");  
