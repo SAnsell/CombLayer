@@ -32,7 +32,7 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
-#include <boost/array.hpp>
+#include <array>
 
 #include "Exception.h"
 #include "FileReport.h"

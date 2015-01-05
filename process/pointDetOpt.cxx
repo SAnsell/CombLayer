@@ -31,8 +31,8 @@
 #include <string>
 #include <algorithm>
 #include <memory>
+#include <array>
 #include <boost/bind.hpp>
-#include <boost/array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"

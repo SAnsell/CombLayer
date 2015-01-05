@@ -187,6 +187,9 @@ ZoomChopper::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("ZoomChopper","populate");
 
+  // extract value if needed for isolated case
+  outerRadius=Control.EvalDefVar<double>("bulkOuterRadius",0.0);
+  
   xStep=Control.EvalVar<double>(keyName+"XStep");
   yStep=Control.EvalVar<double>(keyName+"YStep");
   zStep=Control.EvalVar<double>(keyName+"ZStep");
@@ -230,10 +233,13 @@ ZoomChopper::createLinks()
     It must follow the beamline, but exit at the plane
   */
 {
+  ELog::RegMethod RegA("ZoomChopper","createLinks");
+  
   FixedComp::setConnect(1,Origin+bY*length,bY);
   FixedComp::setLinkSurf(1,SMap.realSurf(chpIndex+2));
   // Link point is the join between BeamOrigin+
   // beam exit
+  ELog::EM<<"BEnter == "<<bEnter<<" :: "<<bY<<ELog::endDiag;
   setBeamExit(chpIndex+2,bEnter,bY);
   return;
 }
@@ -262,10 +268,33 @@ ZoomChopper::createSurfaces(const shutterSystem::GeneralShutter& GS)
 {
   ELog::RegMethod RegA("ZoomChopper","createSurface");
   
-
+  
   SMap.addMatch(chpIndex+100,GS.getDivideSurf());
   SMap.addMatch(chpIndex+1,monoWallSurf);
+  createSurfacesCommon();
+  return;
+}
 
+void
+ZoomChopper::createSurfaces()
+  /*!
+    Create an new effective mono-wall
+  */
+{
+  ModelSupport::buildPlane(SMap,chpIndex+100,Origin,-Y);     //
+  ModelSupport::buildCylinder(SMap,chpIndex+1,Origin,Z,outerRadius);     // 
+  createSurfacesCommon();
+  return;
+}
+  
+void
+ZoomChopper::createSurfacesCommon()
+  /*!
+    Create the common surfaces
+  */
+{
+  ELog::RegMethod RegA("ZoomChopper","createSurfacesCommon");
+  
   ModelSupport::buildPlane(SMap,chpIndex+2,Origin+
 			   bY*length,bY);     // back plane
   
@@ -328,11 +357,11 @@ ZoomChopper::createObjects(Simulation& System,
 
   std::string Out;
   // Outer steel
-  Out=ModelSupport::getComposite(SMap,chpIndex,"100 1 -2 3 -4 5 -6");
+  Out=ModelSupport::getComposite(SMap,chpIndex,"1 -2 3 -4 5 -6");
   addOuterSurf(Out);      
 
-  Out+=ModelSupport::getComposite(SMap,chpIndex," (-11:-13:14:-15:16) ");
-  Out+=ModelSupport::getComposite(SMap,chpIndex," (11:-23:24:-25:26) ");
+  //  Out+=ModelSupport::getComposite(SMap,chpIndex," (-11:-13:14:-15:16) ");
+  //  Out+=ModelSupport::getComposite(SMap,chpIndex," (11:-23:24:-25:26) ");
   Out+=CObj.getExclude("B");
   Out+=CObj.getExclude("C");
   Out+=CObj.getExclude("D");
@@ -344,11 +373,34 @@ ZoomChopper::createObjects(Simulation& System,
   Out+=CObj.getExclude("C");
   Out+=CObj.getExclude("D");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+
   Out=ModelSupport::getComposite(SMap,chpIndex,"100 1 -11 23 -24 25 -26");
   Out+=CObj.getExclude("B");
   Out+=CObj.getExclude("C");
   Out+=CObj.getExclude("D");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  //  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  
+  return;
+}
+
+void
+ZoomChopper::createAll(Simulation& System,
+		       const zoomSystem::ZoomBend& ZB)
+  /*!
+    Generic function to create everything
+    \param System :: Simulation item
+    \param ZB :: Zoom Bender
+  */
+{
+  ELog::RegMethod RegA("ZoomChopper","createAll(Iso)");
+  
+  populate(System.getDataBase());
+  createUnitVector(ZB);
+  createSurfaces();
+  createObjects(System,ZB);
+  
+  createLinks();
+  insertObjects(System);   
   
   return;
 }

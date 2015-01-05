@@ -32,6 +32,7 @@
 #include <string>
 #include <algorithm>
 #include <memory>
+#include <array>
 #include <boost/format.hpp>
 #include <boost/multi_array.hpp>
 

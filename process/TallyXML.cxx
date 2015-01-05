@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   process/TallyXML.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,9 +34,10 @@
 #include <numeric>
 #include <iterator>
 #include <memory>
+#include <array>
 #include <boost/functional.hpp>
 #include <boost/bind.hpp>
-#include <boost/array.hpp>
+
 
 #include "Exception.h"
 #include "FileReport.h"

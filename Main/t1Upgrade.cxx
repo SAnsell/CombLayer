@@ -32,7 +32,7 @@
 #include <string>
 #include <algorithm>
 #include <memory>
-#include <boost/array.hpp>
+#include <array>
 
 #include "Exception.h"
 #include "MersenneTwister.h"

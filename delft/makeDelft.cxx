@@ -33,7 +33,7 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
-#include <boost/array.hpp>
+#include <array>
 #include <boost/format.hpp>
 #include <boost/multi_array.hpp>
 

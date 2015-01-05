@@ -45,8 +45,8 @@ class PhysCard
 
   std::string KeyName;                 ///< NameType e.g. cut/phys
   std::list<std::string> particles;    ///< Particle list (if any)
-  boost::array<int,5> defFlag;         ///< Default values
-  boost::array<double,5> vals;         ///< Values
+  std::array<int,5> defFlag;         ///< Default values
+  std::array<double,5> vals;         ///< Values
 
  public:
 

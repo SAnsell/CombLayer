@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   physics/PhysCard.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@
 #include <map>
 #include <algorithm>
 #include <iterator>
-#include <boost/array.hpp>
+#include <array>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -39,7 +39,6 @@
 #include "OutputLog.h"
 #include "support.h"
 #include "mathSupport.h"
-#include "Triple.h"
 #include "PhysCard.h"
 
 namespace physicsSystem

@@ -115,8 +115,8 @@ ZoomVariables(const mainSystem::inputParam& IParam,
   Control.addVariable("zoomBendSec4Length",46.5);
   Control.addVariable("zoomBendSec4Width",14.0);
   Control.addVariable("zoomBendSec4Height",28.0);
-  Control.addVariable("zoomBendSec4XStep",-7.0);
-  Control.addVariable("zoomBendSec4ZStep",-2.0);
+  Control.addVariable("zoomBendSec4XStep",-2.0);
+  Control.addVariable("zoomBendSec4ZStep",-7.0);
 
   // steps in attenuation
   Control.addVariable("zoomBendNAttn",17);
@@ -151,7 +151,7 @@ ZoomVariables(const mainSystem::inputParam& IParam,
   Control.addVariable("zoomBendAttn14Dist",6.5);
   Control.addVariable("zoomBendAttn15YPos",263.0);
   Control.addVariable("zoomBendAttn15Dist",7.0);
-  Control.addVariable("zoomBendAttn16YPos",278.7);
+  Control.addVariable("zoomBendAttn16YPos",284.7);
   Control.addVariable("zoomBendAttn16Dist",4.0);
   Control.addVariable("zoomBendAttn17YPos",295.0);
   Control.addVariable("zoomBendAttn17Dist",4.0);

@@ -245,7 +245,13 @@ ZoomBend::createUnitVector(const attachSystem::FixedComp& ZS)
   if (TCPtr)
     attachSystem::TwinComp::createUnitVector(*TCPtr);
   else
-    attachSystem::FixedComp::createUnitVector(ZS);
+    {
+      attachSystem::FixedComp::createUnitVector(ZS);
+      bX=X;
+      bY=Y;
+      bZ=Z;
+      bEnter=ZS.getCentre();
+    }
   // link point 
   //  FixedComp::createUnitVector(ZS.getBackPt(),ZS.getY());  
 

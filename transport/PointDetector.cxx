@@ -30,7 +30,6 @@
 #include <set>
 #include <map>
 #include <string>
-#include <boost/format.hpp>
 
 #include "MersenneTwister.h"
 #include "RefCon.h"

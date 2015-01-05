@@ -82,6 +82,7 @@ class ZoomChopper : public attachSystem::TwinComp,
   int roofMat;                 ///< Main roof material
   int roofExtraMat;            ///< Roof extra material
 
+  double outerRadius;          ///< Special outer radius [isolated case]
 
   int monoWallSurf;      ///< Montolith Exit surface
   int voidCell;          ///< Inner void
@@ -90,6 +91,8 @@ class ZoomChopper : public attachSystem::TwinComp,
   void createUnitVector(const zoomSystem::ZoomBend&);
   
   void createSurfaces(const shutterSystem::GeneralShutter&);
+  void createSurfaces();
+  void createSurfacesCommon();
 
   void createObjects(Simulation&,const attachSystem::ContainedGroup&);
   void createLinks();
@@ -103,11 +106,13 @@ class ZoomChopper : public attachSystem::TwinComp,
 
   /// Set surface
   void setMonoSurface(const int M) { monoWallSurf=M; }
-  void createAll(Simulation&,const zoomSystem::ZoomBend&,
-		 const shutterSystem::GeneralShutter&);
 
   /// Access central axis
   const Geometry::Vec3D& getBeamAxis() const {  return Y; }
+
+  void createAll(Simulation&,const zoomSystem::ZoomBend&,
+		 const shutterSystem::GeneralShutter&);
+  void createAll(Simulation&,const zoomSystem::ZoomBend&);
 
 };
 

@@ -158,7 +158,7 @@ makeZoom::buildIsolated(Simulation& System,
 			const mainSystem::inputParam& IParam)
   /*!
     Carry out the build with no linkage
-    \param SimPtr :: Simulation system
+    \param System :: Simulation system
     \param IParam :: Input parameters
    */
 {
@@ -167,13 +167,13 @@ makeZoom::buildIsolated(Simulation& System,
   ZBend->addInsertCell("A",74123);
   ZBend->addInsertCell("B",74123);
   ZBend->addInsertCell("C",74123);
+  ZBend->addInsertCell("D",74123);
 
   ZBend->createAll(System,World::masterOrigin()); 
-  /*
+
   ZChopper->addInsertCell(74123);
-  ZChopper->setMonoSurface(BulkObj.getMonoSurf());
-  ZChopper->createAll(System,*ZBend,*ZS);
-  
+  ZChopper->createAll(System,*ZBend);
+  /*
   ZCollimator->addInsertCell(74123);
   ZCollimator->createAll(System,*ZChopper);
   
