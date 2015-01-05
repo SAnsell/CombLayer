@@ -32,9 +32,7 @@
 #include <string>
 #include <algorithm>
 #include <iterator>
-#include <boost/array.hpp>
 #include <boost/format.hpp>
-
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -163,6 +161,7 @@ ZoomVariables(const mainSystem::inputParam& IParam,
   Control.addVariable("zoomBendMat_6","CastIron"); 
   Control.addVariable("zoomBendMat_7","CastIron"); 
 
+  Control.addVariable("zoomChopperOuterOffset",-700);   
   Control.addVariable("zoomChopperXStep",-14.2);   
   Control.addVariable("zoomChopperYStep",0.0);   
   Control.addVariable("zoomChopperZStep",0.0);   

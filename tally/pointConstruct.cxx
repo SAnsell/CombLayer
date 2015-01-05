@@ -33,8 +33,6 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
-#include <boost/array.hpp>
-#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -52,7 +50,6 @@
 #include "support.h"
 #include "stringCombine.h"
 #include "NRange.h"
-#include "NList.h"
 #include "Tally.h"
 #include "TallyCreate.h"
 #include "Transform.h"

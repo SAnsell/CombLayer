@@ -33,7 +33,6 @@
 #include <algorithm>
 #include <numeric>
 #include <memory>
-#include <boost/array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -71,13 +70,12 @@
 #include "FixedComp.h"
 #include "ContainedComp.h"
 #include "LayerComp.h"
-#include "t1Reflector.h"
 #include "ModBase.h"
 #include "LayerInfo.h"
 #include "CH4Layer.h"
 #include "InnerLayer.h"
 
-namespace ts1System
+namespace ts1System 
 {
 
 InnerLayer::InnerLayer(const std::string& Key,const std::string& LKey) :
@@ -232,7 +230,6 @@ InnerLayer::createObjects(Simulation& System)
 
   std::string Out;
 
-  int ch4Layer(innerIndex);
   // Poison layers [negative side first]:
   const std::string Edge=
     ModelSupport::getComposite(SMap,modIndex," 3 -4 5 -6 ");

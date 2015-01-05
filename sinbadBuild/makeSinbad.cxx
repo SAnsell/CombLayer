@@ -14,7 +14,6 @@
 #include <iterator>
 #include <memory>
 
-#include <boost/array.hpp>
 #include <boost/multi_array.hpp>
 
 #include "Exception.h"

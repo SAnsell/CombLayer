@@ -33,7 +33,6 @@
 #include <algorithm>
 #include <numeric>
 #include <memory>
-#include <boost/array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -48,8 +47,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"

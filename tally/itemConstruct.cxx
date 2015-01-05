@@ -33,9 +33,6 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
-#include <boost/array.hpp>
-#include <boost/bind.hpp>
-#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -53,7 +50,6 @@
 #include "support.h"
 #include "stringCombine.h"
 #include "NRange.h"
-#include "NList.h"
 #include "Tally.h"
 #include "TallyCreate.h"
 #include "Transform.h"
@@ -233,14 +229,12 @@ itemConstruct::addBeamLineItem(Simulation& System,
   const Geometry::Vec3D tallyPoint=MidPt-BAxis*beamDist;
   
   const int tNum=System.nextTallyNum(5);
-  std::transform(Window.begin(),Window.end(),Window.begin(),
-        boost::bind(std::minus<Geometry::Vec3D>(),_1,BAxis*windowOffset));
-  std::vector<Geometry::Vec3D>::iterator vc;
-  ELog::EM<<"BEAM START "<<shutterPoint<<ELog::endDebug;
-  for(vc=Window.begin();vc!=Window.end();vc++)
-    ELog::EM<<"Window == "<<*vc<<ELog::endDebug;
 
+  std::transform(Window.begin(),Window.end(),Window.begin(),
+		 std::bind(std::minus<Geometry::Vec3D>(),std::placeholders::_1,
+			   BAxis*windowOffset));
   
+  std::vector<Geometry::Vec3D>::iterator vc;  
   ELog::EM<<"Tally: "<<tNum<<" "<<MidPt-BAxis*beamDist<<ELog::endTrace;
   // (NORMAL VIEW):
   // tallySystem::setF5Position(System,tNum,RefPtr->getViewOrigin(beamNum),

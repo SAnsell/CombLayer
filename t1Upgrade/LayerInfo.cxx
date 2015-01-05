@@ -31,9 +31,6 @@
 #include <map>
 #include <string>
 #include <algorithm>
-#include <numeric>
-#include <memory>
-#include <boost/array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"

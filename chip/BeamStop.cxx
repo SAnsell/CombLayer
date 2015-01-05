@@ -33,7 +33,6 @@
 #include <algorithm>
 #include <functional>
 #include <memory>
-#include <boost/array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"

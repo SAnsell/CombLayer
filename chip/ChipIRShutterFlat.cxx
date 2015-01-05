@@ -34,7 +34,7 @@
 #include <numeric>
 #include <iterator>
 #include <memory>
-#include <boost/array.hpp>
+#include <array>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -71,7 +71,7 @@
 #include "SurInter.h"
 #include "Simulation.h"
 #include "insertInfo.h"
-#include "insertBaseInfo.h"
+#include "insertBaseInfo.h" 
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"

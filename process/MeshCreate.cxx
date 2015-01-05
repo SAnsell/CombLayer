@@ -36,7 +36,6 @@
 #include <memory>
 #include <boost/functional.hpp>
 #include <boost/bind.hpp>
-#include <boost/array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"

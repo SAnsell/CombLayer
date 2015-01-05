@@ -189,6 +189,7 @@ ZoomChopper::populate(const FuncDataBase& Control)
 
   // extract value if needed for isolated case
   outerRadius=Control.EvalDefVar<double>("bulkOuterRadius",0.0);
+  outerOffset=Control.EvalDefVar<double>(keyName+"OuterOffset",0.0);
   
   xStep=Control.EvalVar<double>(keyName+"XStep");
   yStep=Control.EvalVar<double>(keyName+"YStep");
@@ -281,8 +282,10 @@ ZoomChopper::createSurfaces()
     Create an new effective mono-wall
   */
 {
-  ModelSupport::buildPlane(SMap,chpIndex+100,Origin,-Y);     //
-  ModelSupport::buildCylinder(SMap,chpIndex+1,Origin,Z,outerRadius);     // 
+  ModelSupport::buildPlane(SMap,chpIndex+100,Origin+Y*outerOffset,Y);     //
+  ModelSupport::buildCylinder(SMap,chpIndex+1,Origin+Y*outerOffset,
+			      Z,outerRadius);     //
+  ELog::EM<<"Z == "<<Z<<ELog::endDiag;
   createSurfacesCommon();
   return;
 }
@@ -302,13 +305,12 @@ ZoomChopper::createSurfacesCommon()
   Geometry::Quaternion::calcQRotDeg(-leftAngle,Z).rotate(LNorm);  
   Geometry::Vec3D RNorm(-X);
   Geometry::Quaternion::calcQRotDeg(rightAngle,Z).rotate(RNorm);  
-
   ModelSupport::buildPlaneRotAxis(SMap,chpIndex+3,
 				  Origin+Y*length+X*leftWidth,-X,
 				  Z,-leftAngle);     
   ModelSupport::buildPlaneRotAxis(SMap,chpIndex+4,
-				  Origin+Y*length+X*leftWidth,-X,
-				  Z,-rightAngle);     
+				  Origin+Y*length-X*rightWidth,-X,
+				  Z,rightAngle);     
 
   FixedComp::setConnect(2,Origin+Y*length+X*leftWidth,LNorm);     
   FixedComp::setConnect(3,Origin+Y*length-X*rightWidth,RNorm);
@@ -357,11 +359,11 @@ ZoomChopper::createObjects(Simulation& System,
 
   std::string Out;
   // Outer steel
-  Out=ModelSupport::getComposite(SMap,chpIndex,"1 -2 3 -4 5 -6");
+  Out=ModelSupport::getComposite(SMap,chpIndex,"100 1 -2 3 -4 5 -6");
   addOuterSurf(Out);      
 
-  //  Out+=ModelSupport::getComposite(SMap,chpIndex," (-11:-13:14:-15:16) ");
-  //  Out+=ModelSupport::getComposite(SMap,chpIndex," (11:-23:24:-25:26) ");
+  Out+=ModelSupport::getComposite(SMap,chpIndex," (-11:-13:14:-15:16) ");
+  Out+=ModelSupport::getComposite(SMap,chpIndex," (11:-23:24:-25:26) ");
   Out+=CObj.getExclude("B");
   Out+=CObj.getExclude("C");
   Out+=CObj.getExclude("D");
@@ -378,7 +380,7 @@ ZoomChopper::createObjects(Simulation& System,
   Out+=CObj.getExclude("B");
   Out+=CObj.getExclude("C");
   Out+=CObj.getExclude("D");
-  //  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   
   return;
 }

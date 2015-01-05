@@ -297,7 +297,7 @@ ZoomBend::createUnitVector(const attachSystem::FixedComp& ZS)
   CS.setENum(chipIRDatum::zoomBendExit,MR.calcRotate(bExit));  
   CS.setENum(chipIRDatum::zoomBendStartNorm,MR.calcAxisRotate(bY));  
   CS.setENum(chipIRDatum::zoomBendExitNorm,MR.calcAxisRotate(normalOut));  
-
+  ELog::EM<<"Z == "<<Z<<ELog::endDiag;
   return;
 }
 

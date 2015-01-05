@@ -33,7 +33,6 @@
 #include <string>
 #include <algorithm>
 #include <memory>
-#include <boost/array.hpp>
 #include <boost/bind.hpp>
 #include <boost/format.hpp>
 

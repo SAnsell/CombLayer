@@ -27,7 +27,6 @@
 #include <cmath>
 #include <complex>
 #include <vector>
-#include <boost/array.hpp>
 #include <boost/multi_array.hpp> 
 
 #include "Exception.h"

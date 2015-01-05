@@ -83,6 +83,7 @@ class ZoomChopper : public attachSystem::TwinComp,
   int roofExtraMat;            ///< Roof extra material
 
   double outerRadius;          ///< Special outer radius [isolated case]
+  double outerOffset;          ///< Special outer radius [isolated case]
 
   int monoWallSurf;      ///< Montolith Exit surface
   int voidCell;          ///< Inner void

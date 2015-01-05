@@ -34,7 +34,6 @@
 #include <iterator>
 #include <memory>
 #include <array>
-#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -173,20 +172,20 @@ makeZoom::buildIsolated(Simulation& System,
 
   ZChopper->addInsertCell(74123);
   ZChopper->createAll(System,*ZBend);
-  /*
+
   ZCollimator->addInsertCell(74123);
   ZCollimator->createAll(System,*ZChopper);
-  
+  /*
   ZRoof->addInsertCell(74123);
   ZRoof->setMonoSurface(BulkObj.getMonoSurf());
   ZRoof->createAll(System,*ZS,*ZChopper,*ZCollimator);
-  
+  */
   ZPrim->addInsertCell(74123);
   ZPrim->createAll(System,*ZCollimator);
   
   ZHut->addInsertCell(74123);
   ZHut->createAll(System,*ZPrim); 
-  */
+
   return;
 }
 

@@ -33,8 +33,6 @@
 #include <algorithm>
 #include <numeric>
 #include <memory>
-#include <boost/array.hpp>
-#include <boost/multi_array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -57,7 +55,6 @@
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "surfEqual.h"
-#include "surfDIter.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
@@ -74,7 +71,6 @@
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "SimProcess.h"
-#include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"

@@ -32,7 +32,6 @@
 #include <map>
 #include <iterator>
 #include <tuple>
-#include <boost/array.hpp>
 #include <boost/multi_array.hpp>
 
 

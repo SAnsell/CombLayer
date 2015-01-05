@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   chipInc/ChipIRShutterFlat.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,8 +47,8 @@ class ChipIRShutterFlat : public GeneralShutter
   double forwardStep;           ///< Distance to advance down pipe 
   double midStep;               ///< Distance of 2nd component [lead]
 
-  boost::array<double,4> linerStartXZ;   ///< Linear (lead) start +/-x +/-z
-  boost::array<double,4> linerEndXZ;     ///< Linear (lead) start +/-x +/-z
+  std::array<double,4> linerStartXZ;   ///< Linear (lead) start +/-x +/-z
+  std::array<double,4> linerEndXZ;     ///< Linear (lead) start +/-x +/-z
 
   double insertStep;            ///< Insert step at end of shine path
   int shineMat;                 ///< Material for shine system

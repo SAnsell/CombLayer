@@ -34,7 +34,7 @@
 #include <numeric>
 #include <iterator>
 #include <memory>
-#include <boost/array.hpp>
+#include <array>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -52,8 +52,6 @@
 #include "inputParam.h"
 #include "PointOperation.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfDIter.h"
