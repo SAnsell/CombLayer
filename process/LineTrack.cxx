@@ -64,7 +64,6 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "RemoveCell.h"
 #include "ObjSurfMap.h"
 #include "ObjTrackItem.h"
 #include "ReadFunctions.h"

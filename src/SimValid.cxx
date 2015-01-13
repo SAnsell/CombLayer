@@ -31,8 +31,6 @@
 #include <set>
 #include <vector>
 #include <memory>
-#include <boost/format.hpp>
-#include <boost/multi_array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -48,8 +46,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Rules.h"
 #include "varList.h"
 #include "Code.h"
