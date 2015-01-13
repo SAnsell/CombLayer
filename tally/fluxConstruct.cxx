@@ -33,7 +33,6 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
-#include <boost/array.hpp>
 #include <boost/format.hpp>
 
 #include "Exception.h"
@@ -50,7 +49,6 @@
 #include "Triple.h"
 #include "support.h"
 #include "NRange.h"
-#include "NList.h"
 #include "Tally.h"
 #include "TallyCreate.h"
 #include "Quaternion.h"

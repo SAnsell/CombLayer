@@ -32,7 +32,7 @@
 #include <string>
 #include <algorithm>
 #include <memory>
-#include <boost/array.hpp>
+#include <array>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -47,8 +47,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -262,7 +260,6 @@ CouplePipe::insertPipes(Simulation& System,const VacVessel& VC)
 {
   ELog::RegMethod RegA("CouplePipe","insertPipes");
 
-  const masterRotate& MR=masterRotate::Instance();
   // Hydrogen inner
   HInner.addPoint(VC.getSurfacePoint(4,3)+
 		  X*(Xoffset+hXoffset)+

@@ -32,7 +32,6 @@
 #include <algorithm>
 #include <functional>
 #include <memory>
-#include <boost/array.hpp>
 #include <boost/bind.hpp>
 
 #include "Exception.h"

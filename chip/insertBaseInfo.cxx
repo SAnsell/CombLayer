@@ -34,7 +34,6 @@
 #include <functional>
 #include <iterator>
 #include <memory>
-#include <boost/array.hpp>
 #include <boost/bind.hpp>
 #include <boost/functional.hpp>
 

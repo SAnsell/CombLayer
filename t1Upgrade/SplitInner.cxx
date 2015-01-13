@@ -33,7 +33,6 @@
 #include <algorithm>
 #include <numeric>
 #include <memory>
-#include <boost/array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -71,7 +70,6 @@
 #include "FixedComp.h"
 #include "ContainedComp.h"
 #include "LayerComp.h"
-#include "t1Reflector.h"
 #include "ModBase.h"
 #include "LayerInfo.h"
 #include "CH4Layer.h"

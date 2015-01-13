@@ -29,7 +29,6 @@
 #include <map>
 #include <algorithm>
 #include <iterator>
-#include <boost/array.hpp>
 #include <boost/format.hpp>
 
 #include "Exception.h"

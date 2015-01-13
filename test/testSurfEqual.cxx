@@ -34,7 +34,6 @@
 #include <algorithm>
 #include <memory>
 #include <boost/bind.hpp>
-#include <boost/array.hpp>
 #include <boost/format.hpp>
 #include <tuple>
 

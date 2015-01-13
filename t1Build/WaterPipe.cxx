@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   t1Build/WaterPipe.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2014 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,6 @@
 #include <string>
 #include <algorithm>
 #include <memory>
-#include <boost/array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -47,15 +46,11 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "surfEqual.h"
-#include "surfDivide.h"
-#include "surfDIter.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
@@ -74,7 +69,6 @@
 #include "FixedComp.h"
 #include "LinearComp.h"
 #include "ContainedComp.h"
-#include "VacVessel.h"
 #include "pipeUnit.h"
 #include "PipeLine.h"
 #include "WaterPipe.h"

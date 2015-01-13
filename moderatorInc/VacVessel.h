@@ -51,7 +51,7 @@ class VacVessel :
   int cellIndex;                    ///< Cell index
   int populated;                    ///< 1:var
   
-  boost::array<Geometry::Vec3D,6> BVec;     ///< Boundary Points
+  std::array<Geometry::Vec3D,6> BVec;     ///< Boundary Points
   int divideSurf;                           ///< Divide surface
 
   double vacPosGap;         ///< Positive side length [Origin: MaxR]

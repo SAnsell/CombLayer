@@ -12,7 +12,6 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
-#include <boost/array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
