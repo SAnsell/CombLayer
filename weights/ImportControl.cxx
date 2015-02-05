@@ -112,7 +112,12 @@ simulationImp(Simulation& System,
 {
   ELog::RegMethod RegA("ImportControl","simulationImport");
 
-  
+  if (!IParam.flag("voidUnMask") && !IParam.flag("mesh"))
+    {
+      System.findQhull(74123)->setImp(0);
+      System.getPC().setCells("imp",74123,0);  // outer void to z	
+    }
+
   // WEIGHTS:
   if (IParam.flag("imp") )
     {

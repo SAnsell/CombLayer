@@ -3,7 +3,7 @@
  
  * File:   zoom/ZoomCollimator.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,6 +82,7 @@
 #include "ContainedGroup.h"
 #include "ZoomChopper.h"
 #include "ZoomStack.h"
+#include "ZoomOpenStack.h"
 #include "ZoomCollimator.h"
 
 namespace zoomSystem
@@ -100,13 +101,13 @@ ZoomCollimator::ZoomCollimator(const std::string& Key) :
 ZoomCollimator::ZoomCollimator(const ZoomCollimator& A) : 
   attachSystem::TwinComp(A),attachSystem::ContainedComp(A),
   colIndex(A.colIndex),cellIndex(A.cellIndex),
-  cStack(A.cStack),xStep(A.xStep),
-  zStep(A.zStep),length(A.length),height(A.height),
-  depth(A.depth),leftWidth(A.leftWidth),
-  rightWidth(A.rightWidth),stackFullWidth(A.stackFullWidth),
-  stackLength(A.stackLength),nLayers(A.nLayers),
-  feMat(A.feMat),innerVoid(A.innerVoid),cFrac(A.cFrac),
-  cMat(A.cMat),CDivideList(A.CDivideList)
+  cStack(A.cStack),xStep(A.xStep),zStep(A.zStep),
+  length(A.length),height(A.height),depth(A.depth),
+  leftWidth(A.leftWidth),rightWidth(A.rightWidth),
+  stackWidth(A.stackWidth),stackHeight(A.stackHeight),
+  stackXShift(A.stackXShift),stackZShift(A.stackZShift),
+  nLayers(A.nLayers),feMat(A.feMat),innerVoid(A.innerVoid),
+  cFrac(A.cFrac),cMat(A.cMat),CDivideList(A.CDivideList)
   /*!
     Copy constructor
     \param A :: ZoomCollimator to copy
@@ -134,8 +135,10 @@ ZoomCollimator::operator=(const ZoomCollimator& A)
       depth=A.depth;
       leftWidth=A.leftWidth;
       rightWidth=A.rightWidth;
-      stackFullWidth=A.stackFullWidth;
-      stackLength=A.stackLength;
+      stackWidth=A.stackWidth;
+      stackHeight=A.stackHeight;
+      stackXShift=A.stackXShift;
+      stackZShift=A.stackZShift;
       nLayers=A.nLayers;
       feMat=A.feMat;
       innerVoid=A.innerVoid;
@@ -165,16 +168,26 @@ ZoomCollimator::populate(const Simulation& System)
 
   xStep=Control.EvalVar<double>(keyName+"XStep");
   zStep=Control.EvalVar<double>(keyName+"ZStep");
+  stackXShift=Control.EvalVar<double>(keyName+"StackXShift");
+  stackZShift=Control.EvalVar<double>(keyName+"StackZShift");
 
   length=Control.EvalVar<double>(keyName+"Length");
   depth=Control.EvalVar<double>(keyName+"Depth");
   height=Control.EvalVar<double>(keyName+"Height");
   leftWidth=Control.EvalVar<double>(keyName+"LeftWidth");
   rightWidth=Control.EvalVar<double>(keyName+"RightWidth");
+  leftInnerWidth=Control.EvalVar<double>(keyName+"LeftInnerWidth");
+  rightInnerWidth=Control.EvalVar<double>(keyName+"RightInnerWidth");
+  leftInnerAngle=Control.EvalVar<double>(keyName+"LeftInnerAngle");
+  rightInnerAngle=Control.EvalVar<double>(keyName+"RightInnerAngle");
+  leftWaxSkin=Control.EvalVar<double>(keyName+"LeftWaxSkin");
+  rightWaxSkin=Control.EvalVar<double>(keyName+"RightWaxSkin");
 
-  stackFullWidth=Control.EvalVar<double>(keyName+"StackFullWidth");
+  stackHeight=Control.EvalVar<double>(keyName+"StackHeight");
+  stackWidth=Control.EvalVar<double>(keyName+"StackWidth");
 
   feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
+  waxMat=ModelSupport::EvalMat<int>(Control,keyName+"WaxMat");
 
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");
 
@@ -218,15 +231,41 @@ ZoomCollimator::createSurfaces(const attachSystem::FixedComp& LC)
   ModelSupport::buildPlane(SMap,colIndex+3,Origin-X*leftWidth,X);
   ModelSupport::buildPlane(SMap,colIndex+4,Origin+X*rightWidth,X);
   ModelSupport::buildPlane(SMap,colIndex+5,Origin-Z*depth,Z);
-  // Should be the height of the chopper:
-  SMap.addMatch(colIndex+6,LC.getLinkSurf(5));   // right plane
-  //  ModelSupport::buildPlane(SMap,colIndex+6,Origin+Z*height,Z);
+  ModelSupport::buildPlane(SMap,colIndex+6,Origin+Z*height,Z);
 
+
+  ModelSupport::buildPlane(SMap,colIndex+203,
+			   Origin-X*(leftWidth+leftWaxSkin),X);
+  ModelSupport::buildPlane(SMap,colIndex+204,
+			   Origin+X*(rightWidth+rightWaxSkin),X);
+
+  ModelSupport::buildPlaneRotAxis(SMap,colIndex+113,
+				  Origin-X*leftInnerWidth,X,
+				  Z,-leftInnerAngle);     
+  ModelSupport::buildPlaneRotAxis(SMap,colIndex+114,
+				  Origin+X*rightInnerWidth,X,
+				  Z,rightInnerAngle);     
+
+  ModelSupport::buildPlaneRotAxis(SMap,colIndex+213,
+				  Origin-X*(leftInnerWidth+leftWaxSkin),
+				  X,Z,-leftInnerAngle);     
+  ModelSupport::buildPlaneRotAxis(SMap,colIndex+214,
+				  Origin+X*(rightInnerWidth+rightWaxSkin),
+				  X,Z,rightInnerAngle);     
+
+  
+  const Geometry::Vec3D StackCent=Origin+X*stackXShift+Z*stackZShift;
+  ModelSupport::buildPlane(SMap,colIndex+13,StackCent-X*(stackWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,colIndex+14,StackCent+X*(stackWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,colIndex+15,StackCent-Z*(stackHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,colIndex+16,StackCent+Z*(stackHeight/2.0),Z);
+
+    
   // inner void
   ModelSupport::buildPlane(SMap,colIndex+23,
-			   bEnter-X*stackFullWidth/2.0,X);
+			   bEnter-X*stackWidth/2.0,X);
   ModelSupport::buildPlane(SMap,colIndex+24,
-			   bEnter+X*stackFullWidth/2.0,X);
+			   bEnter+X*stackWidth/2.0,X);
     
   return;
 }
@@ -241,14 +280,25 @@ ZoomCollimator::createObjects(Simulation& System)
   ELog::RegMethod RegA("ZoomCollimator","createObjects");
 
   std::string Out;
+  Out=ModelSupport::getComposite(SMap,colIndex,
+				 "1 -2 213 203 -214 -204 5 -6 ");
+  addOuterSurf(Out);
+
   // Outer steel
-  Out=ModelSupport::getComposite(SMap,colIndex,"1 -2 3 -4 5 -6 ");
-  addOuterSurf(Out);      
-  Out+=ModelSupport::getComposite(SMap,colIndex," (-23:24) ");
+  Out=ModelSupport::getComposite(SMap,colIndex,"1 -2 113 3 -114 "
+				 " -4 5 -6  (-13:14:-15:16) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
 
+  // Outer Wax
+  Out=ModelSupport::getComposite(SMap,colIndex,
+				 "1 -2 (-113:-3) 213 203  5 -6 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,waxMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,colIndex,
+				 "1 -2 (114:4) -214 -204  5 -6 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,waxMat,0.0,Out));
+
   // Inner void:
-  Out=ModelSupport::getComposite(SMap,colIndex,"1 -2 23 -24 5 -6");
+  Out=ModelSupport::getComposite(SMap,colIndex,"1 -2 13 -14 15 -16");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   innerVoid=cellIndex-1;
 
@@ -317,31 +367,6 @@ ZoomCollimator::layerProcess(Simulation& System)
   return;
 }
 
-
-int
-ZoomCollimator::exitWindow(const double Dist,
-			   std::vector<int>& window,
-			   Geometry::Vec3D& Pt) const
-  /*!
-    Outputs a window
-    \param Dist :: Distance from window
-    \param window :: window vector of paired planes
-    \param Pt :: Point for 
-    \return Point at exit + Dist
-  */
-{
-  window.clear();
-  // Not valid numbers:
-  window.push_back(SMap.realSurf(colIndex+23));
-  window.push_back(SMap.realSurf(colIndex+24));
-  window.push_back(SMap.realSurf(colIndex+25));
-  window.push_back(SMap.realSurf(colIndex+26));
-  // Note cant rely on exit point because that is the 
-  // virtual 46 degree exit point.
-  Pt=Origin+Y*(length+Dist); 
-  return SMap.realSurf(colIndex+2);
-}
-
 void
 ZoomCollimator::createAll(Simulation& System,
 			  const zoomSystem::ZoomChopper& ZC)
@@ -361,8 +386,8 @@ ZoomCollimator::createAll(Simulation& System,
   layerProcess(System);
   insertObjects(System);   
 
-  cStack.addInsertCell(innerVoid);
-  cStack.createAll(System,ZC);
+  //  cStack.addInsertCell(innerVoid);
+  //  cStack.createAll(System,ZC);
   
   return;
 }

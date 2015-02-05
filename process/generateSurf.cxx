@@ -3,7 +3,7 @@
  
  * File:   process/generateSurf.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,6 +42,7 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
+#include "stringCombine.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfEqual.h"
@@ -81,6 +82,33 @@ buildRotatedPlane(surfRegister& SMap,const int N,
   PX->displace(-Centre);
   PX->rotate(Qxy);
   PX->displace(Centre);
+  const int NFound=SMap.registerSurf(N,PX);
+
+  return SMap.realPtr<Geometry::Plane>(NFound);
+}
+
+Geometry::Plane*
+buildShiftedPlane(surfRegister& SMap,const int N,
+		  const Geometry::Plane* PN,const double Dist)
+  /*!
+    Builds a plane that is rotated about the centre and the axis
+    \param SMap :: Surface Map system
+    \param N :: Initial Number
+    \param PN :: Plane to use as template
+    \param Dist :: Distance along normal to move plane
+    \return New plane ptr [inserted/tested]
+  */
+{
+  ELog::RegMethod("generateSurf","buildShiftedPlane");
+  if (!PN) return 0;
+
+  ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
+
+
+  Geometry::Plane* PX=SurI.createUniqSurf<Geometry::Plane>(N);  
+
+  PX->setPlane(*PN);
+  PX->displace(PN->getNormal()*Dist);
   const int NFound=SMap.registerSurf(N,PX);
 
   return SMap.realPtr<Geometry::Plane>(NFound);
@@ -172,7 +200,7 @@ buildPlaneRotAxis(surfRegister& SMap,const int N,
     \param SMap :: Surface Map
     \param N :: Surface number
     \param O :: Origin
-    \param D :: Direction
+    \param D :: Direction before rotation
     \param Axis :: Axis to rotate about 
     \param degAngle :: Angle to rotate about [deg]
     \return New Plane Pointer
@@ -210,9 +238,13 @@ buildCylinder(surfRegister& SMap,const int N,
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
 
   Geometry::Cylinder* CX=SurI.createUniqSurf<Geometry::Cylinder>(N);  
-  CX->setCylinder(O,D,R);
-
+  if (CX->setCylinder(O,D,R))
+    throw ColErr::ConstructionError("setCylinder","CX",
+				 StrFunc::makeString(O),
+				 StrFunc::makeString(D),
+				 StrFunc::makeString(R));
   const int NFound=SMap.registerSurf(N,CX);
+
   return SMap.realPtr<Geometry::Cylinder>(NFound);
 }
 

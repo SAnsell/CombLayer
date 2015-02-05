@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   work/WorkData.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,8 +32,6 @@
 #include <functional>
 #include <iterator>
 
-#include <boost/multi_array.hpp>
-#include <boost/bind.hpp>
 #include <boost/format.hpp>
 
 #include "Exception.h"
@@ -139,7 +137,8 @@ WorkData::setData(const std::vector<DError::doubleErr>& X,
 
   XCoord.resize(X.size());
   transform(X.begin(),X.end(),XCoord.begin(),
-	    boost::bind(&DError::doubleErr::getVal,_1));
+	    std::bind(&DError::doubleErr::getVal,
+			std::placeholders::_1));
   Yvec=YD;
   return;
 }

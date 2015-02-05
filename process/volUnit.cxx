@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   process/volUnit.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,6 @@
 #include <set>
 #include <vector>
 #include <memory>
-#include <boost/format.hpp>
 #include <boost/multi_array.hpp>
 
 #include "Exception.h"

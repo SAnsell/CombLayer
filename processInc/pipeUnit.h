@@ -3,7 +3,7 @@
  
  * File:   processInc/pipeUnit.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -78,7 +78,8 @@ class pipeUnit : public attachSystem::FixedComp,
 
   size_t activeFlag;           ///< Flag for active layers
   std::vector<cylValues> cylVar;      ///< Cylinder variables
-
+  std::set<int> cellCut;        ///< Cells the pipe 
+  
   void calcNorm(const int,const Geometry::Vec3D&,
 		const Geometry::Vec3D&);
   void checkForward();
@@ -107,12 +108,16 @@ class pipeUnit : public attachSystem::FixedComp,
   const Geometry::Vec3D& getAxis() const { return Axis; }
   const Geometry::Vec3D& getPt(const int) const;
 
+  void clearInsertSet();
+  void addInsertSet(const std::set<int>&);
+  
   /// Set surface number
   void setPoints(const Geometry::Vec3D&,const Geometry::Vec3D&);
   void setASurf(const HeadRule&);
   void setBSurf(const HeadRule&);
   void connectFrom(pipeUnit*);
   void connectTo(pipeUnit*);
+  void addCutCell(const int);  
 
   void createAll(Simulation&,const size_t,const std::vector<cylValues>&);
     

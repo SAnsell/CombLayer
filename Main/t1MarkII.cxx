@@ -75,6 +75,8 @@
 #include "Volumes.h"
 #include "DefPhysics.h"
 #include "variableSetup.h"
+#include "defaultConfig.h"
+#include "DefUnits.h"
 #include "ImportControl.h"
 #include "SourceCreate.h"
 #include "SourceSelector.h"
@@ -122,6 +124,7 @@ main(int argc,char* argv[])
   // The big variable setting
   setVariable::TS1upgrade(SimPtr->getDataBase());
   // Check for model type
+  mainSystem::setDefUnits(SimPtr->getDataBase(),IParam);
   InputModifications(SimPtr,IParam,Names);
 
   // Definitions section 

@@ -3,7 +3,7 @@
  
  * File:   tally/meshTally.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,6 @@
 #include <iterator>
 #include <memory>
 #include <boost/format.hpp>
-#include <boost/bind.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -197,7 +196,7 @@ meshTally::setCoordinates(const Geometry::Vec3D& A,
 void 
 meshTally::setResponse(const std::string& Line)
   /*!
-    Set teh mesh response function based on the input line
+    Set the mesh response function based on the input line
     \param Line :: Line to process
   */
 {
@@ -207,8 +206,6 @@ meshTally::setResponse(const std::string& Line)
       ELog::EM<<"Failed to set response line :"<<ELog::endCrit;
       ELog::EM<<Line<<ELog::endErr;
     }
-  ELog::EM<<mshmf.size()<<ELog::endCrit;
-  
   return;
 }
 

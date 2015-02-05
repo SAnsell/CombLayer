@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   chip/ChipSample.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,7 +46,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
 #include "Quaternion.h"
 #include "Surface.h"
 #include "surfIndex.h"
@@ -73,20 +72,22 @@
 namespace hutchSystem
 {
 
-ChipSample::ChipSample(const std::string& Key,const int Index) :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,2),ID(Index),
-  csIndex(ModelSupport::objectRegister::Instance().
-	  cell(StrFunc::makeString(Key,Index))),
+ChipSample::ChipSample(const std::string& Key,const size_t Index) :
+  attachSystem::ContainedComp(),
+  attachSystem::FixedComp(Key+StrFunc::makeString(Index),2),
+  ID(Index),baseName(Key),
+  csIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
   cellIndex(csIndex+1),populated(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
+    \param Index :: Id number
   */
 {}
 
 ChipSample::ChipSample(const ChipSample& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  ID(A.ID),csIndex(A.csIndex),
+  ID(A.ID),baseName(A.baseName),csIndex(A.csIndex),
   cellIndex(A.cellIndex),populated(A.populated),
   tableNum(A.tableNum),zAngle(A.zAngle),xyAngle(A.xyAngle),
   XStep(A.XStep),YStep(A.YStep),ZLift(A.ZLift),
@@ -143,23 +144,21 @@ ChipSample::populate(const Simulation& System)
 
   const FuncDataBase& Control=System.getDataBase();
 
-  // Two keys : one with a number and the default
-  const std::string keyIndex(StrFunc::makeString(keyName,ID));
   try
     {
-      tableNum=Control.EvalPair<int>(keyIndex,keyName,"TableNum");
-      zAngle=Control.EvalPair<double>(keyIndex,keyName,"ZAngle");
-      xyAngle=Control.EvalPair<double>(keyIndex,keyName,"XYAngle");
+      tableNum=Control.EvalPair<int>(keyName,baseName,"TableNum");
+      zAngle=Control.EvalPair<double>(keyName,baseName,"ZAngle");
+      xyAngle=Control.EvalPair<double>(keyName,baseName,"XYAngle");
 
-      XStep=Control.EvalPair<double>(keyIndex,keyName,"XStep");
-      YStep=Control.EvalPair<double>(keyIndex,keyName,"YStep");
-      ZLift=Control.EvalPair<double>(keyIndex,keyName,"ZLift");
+      XStep=Control.EvalPair<double>(keyName,baseName,"XStep");
+      YStep=Control.EvalPair<double>(keyName,baseName,"YStep");
+      ZLift=Control.EvalPair<double>(keyName,baseName,"ZLift");
       
-      width=Control.EvalPair<double>(keyIndex,keyName,"Width");
-      height=Control.EvalPair<double>(keyIndex,keyName,"Height");
-      length=Control.EvalPair<double>(keyIndex,keyName,"Depth");
-      defMat=ModelSupport::EvalMat<int>(Control,keyIndex+"DefMat",
-					keyName+"DefMat");
+      width=Control.EvalPair<double>(keyName,baseName,"Width");
+      height=Control.EvalPair<double>(keyName,baseName,"Height");
+      length=Control.EvalPair<double>(keyName,baseName,"Depth");
+      defMat=ModelSupport::EvalMat<int>(Control,keyName+"DefMat",
+					baseName+"DefMat");
       
       populated = 1;
     }
@@ -210,10 +209,10 @@ ChipSample::createSurfaces()
 {
   ELog::RegMethod RegA("ChipSample","createSurface");
   // Sides
-  ModelSupport::buildPlane(SMap,csIndex+1,Origin-Y*length/2.0,Y);
-  ModelSupport::buildPlane(SMap,csIndex+2,Origin+Y*length/2.0,Y);
-  ModelSupport::buildPlane(SMap,csIndex+3,Origin-X*width/2.0,X);
-  ModelSupport::buildPlane(SMap,csIndex+4,Origin+X*width/2.0,X);
+  ModelSupport::buildPlane(SMap,csIndex+1,Origin-Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,csIndex+2,Origin+Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,csIndex+3,Origin-X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,csIndex+4,Origin+X*(width/2.0),X);
   ModelSupport::buildPlane(SMap,csIndex+5,Origin,Z);
   ModelSupport::buildPlane(SMap,csIndex+6,Origin+Z*height,Z);
   
@@ -238,6 +237,22 @@ ChipSample::createObjects(Simulation& System)
   return;
 }
 
+void
+ChipSample::createLinks()
+  /*!
+    Create links for the sample
+  */
+{
+  ELog::RegMethod RegA("ChipSample","createLinks");
+  
+  FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
+  FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
+
+  FixedComp::setLinkSurf(0,-SMap.realSurf(csIndex+1));
+  FixedComp::setLinkSurf(1,SMap.realSurf(csIndex+2));
+
+  return;
+}
   
 void
 ChipSample::createAll(Simulation& System,
@@ -261,6 +276,7 @@ ChipSample::createAll(Simulation& System,
 	createUnitVector(TCB);
       createSurfaces();
       createObjects(System);
+      createLinks();
       insertObjects(System);
     }
   return;

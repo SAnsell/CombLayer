@@ -3,7 +3,7 @@
  
  * File:   chip/makeChipIR.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -171,6 +171,15 @@ makeChipIR::buildIsolated(Simulation& System,
   		  GObj->getKey("inner"));
   //  FB.createAll(System,*HObj);
 
+  FB.createAll(System,*HObj);
+  const FuncDataBase& Control=System.getDataBase();  
+  const size_t NFeed=Control.EvalVar<size_t>("chipNWires");
+  for(size_t i=0;i<NFeed;i++)
+    {
+      ELog::EM<<"FeedVec == "<<i<<ELog::endDiag;
+      FeedVec.push_back(FeedThrough("chipWiresColl",i+1));
+      FeedVec.back().createAll(System,*HObj);
+    }  
   
   return;
 }
@@ -210,10 +219,10 @@ makeChipIR::build(Simulation* SimPtr,
   
   FB.createAll(*SimPtr,*HObj);
 
-  return;
   const size_t NFeed=Control.EvalVar<size_t>("chipNWires");
   for(size_t i=0;i<NFeed;i++)
     {
+      ELog::EM<<"FeedVec == "<<i<<ELog::endDiag;
       FeedVec.push_back(FeedThrough("chipWiresColl",i+1));
       FeedVec.back().createAll(*SimPtr,*HObj);
     }  

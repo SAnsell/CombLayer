@@ -3,7 +3,7 @@
  
  * File:   zoomInc/makeZoom.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,11 +22,17 @@
 #ifndef zoomSystem_makeZoom_h
 #define zoomSystem_makeZoom_h
 
+namespace constructSystem
+{
+  class DiskChopper;
+}
+
 namespace zoomSystem
 {
   class ZoomBend;
   class ZoomChopper;
   class ZoomCollimator;
+  class ZoomOpenStack;
   class ZoomRoof;
   class ZoomPrimary;
   class ZoomHutch;
@@ -43,8 +49,11 @@ class makeZoom
  private:
 
   std::shared_ptr<ZoomBend> ZBend;              ///< Bend Object
-  std::shared_ptr<ZoomChopper> ZChopper;        ///< Chopper object
+  std::shared_ptr<ZoomChopper> ZChopper;        ///< Chopper room
+  ///< Chopper disk
+  std::shared_ptr<constructSystem::DiskChopper> ZDisk; 
   std::shared_ptr<ZoomCollimator> ZCollimator;  ///< Collimator object
+  std::shared_ptr<ZoomOpenStack> ZColInsert;    ///< collimator insert pieces
   std::shared_ptr<ZoomRoof> ZRoof;              ///< Zoom Roof
   std::shared_ptr<ZoomPrimary> ZPrim;           ///< Zoom Primary
   std::shared_ptr<ZoomHutch> ZHut;              ///< Hut object

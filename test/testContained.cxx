@@ -3,7 +3,7 @@
  
  * File:   test/testContained.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -137,11 +137,13 @@ testContained::applyTest(const int extra)
   typedef int (testContained::*testPtr)();
   testPtr TPtr[]=
     {
+      &testContained::testAddition,
       &testContained::testAddSurfString,
       &testContained::testIsOuterLine
     };
   const std::string TestName[]=
     {
+      "Addition",
       "AddSurfString",
       "IsOuterLine"
     };
@@ -170,6 +172,33 @@ testContained::applyTest(const int extra)
   return 0;
 }
 
+
+int
+testContained::testAddition()
+  /*!
+    Test adding stuff to the tree.
+    \return 0 on success
+  */
+{
+  ELog::RegMethod RegA("testContainedComp","testAddition");
+  attachSystem::ContainedComp A;
+  A.addOuterSurf(-7);
+  A.addOuterSurf(23);
+  A.addOuterSurf(33);
+  HeadRule OutCheck;
+  OutCheck.procString("-7 23 33");
+  
+  /*  if (HeadRule(A.getExclude())!=OutCheck())
+    {
+      ELog::EM<<"Out = "<<A.getExclude()<<ELog::endDiag;
+      return -1;
+    }
+  */	
+	
+
+  
+  return 0;
+}
 
 int
 testContained::testAddSurfString()

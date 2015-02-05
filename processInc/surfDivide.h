@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   processInc/surfDivide.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ namespace ModelSupport
 
 class MergeSurf;
 class surfDBase;
-
+class surfRegister;
 /*!
   \class surfDivide
   \version 2.0
@@ -110,8 +110,19 @@ class surfDivide
 
   void activeDivide(Simulation&);
   void activeDivideTemplate(Simulation&);
+
+  void addLayers(const size_t,const std::vector<double>&,
+		 const std::vector<int>&);
+  int procSurfDivide(Simulation&,const ModelSupport::surfRegister&,
+		     const int,const int,const int,const int,
+		     const std::vector<std::pair<int,int>>&,
+		     const std::string&,const std::string&);
+  int procSimpleDivide(Simulation&,const ModelSupport::surfRegister&,
+		       const int,const int,const int,const int,
+		       const std::vector<std::pair<int,int>>&);
   
 };
+
 
 }
 

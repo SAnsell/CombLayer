@@ -3,7 +3,7 @@
  
  * File:   process/mergeTemplate.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -150,19 +150,6 @@ mergeTemplate<T,U>::addRules()
   */
 {
   ELog::RegMethod RegA("mergeTemplate","addRules");
-  /*
-  clearRules();
-  std::vector<Geometry::Surface*>::const_iterator ac;  
-  const Geometry::Surface* SPtr(0);
-  for(size_t i=0;i<OSPtr.size();i++)
-    {
-      SPtr = OSPtr[i];
-      const int dirSign=secDir[i];
-      InRule.addUnion(SPtr->getName());
-    }
-  OutRule=InRule;
-  OutRule.makeComplement();
-  */
   return;
 }
 
@@ -298,18 +285,18 @@ mergeTemplate<T,U>::process(const double fA,
   std::vector<const Rule*> RefItems=
     HR.findNodes(0);
 
+
   HeadRule Result(HR);
   // Create Inner/Outer Units:
   if (fA>Geometry::zeroTol)
     { 
       Result.subMatched(InTemplate,makeOuterComp());
-
     }
+
   if ((1.0-fB)>Geometry::zeroTol)
     {
       Result.subMatched(OutTemplate,makeOuter());
     }
-
   HR=Result;
   return;
 }
@@ -377,8 +364,10 @@ mergeTemplate<T,U>::makeOuter() const
 {
   ELog::RegMethod RegA("mergeTempalte","makeOuter");
   HeadRule HR(OutTemplate);
+
   for(size_t i=0;i<sSurf.size();i++)
     HR.substituteSurf(sSurf[i],OSPtr[i]->getName(),OSPtr[i]);
+
   return HR;
 }
 
@@ -416,7 +405,7 @@ mergeTemplate<T,U>::write(std::ostream& OX) const
 ///\cond TEMPLATE
 
 template class mergeTemplate<Geometry::Plane,Geometry::Plane>;
-  //template class mergeTemplate<Geometry::Cylinder,Geometry::Cylinder>;
+template class mergeTemplate<Geometry::Cylinder,Geometry::Cylinder>;
   //template class mergeTemplate<Geometry::Cylinder,Geometry::Plane>;
 
 ///\endcond TEMPLATE

@@ -3,7 +3,7 @@
  
  * File:   sourceInc/GammaSource.h
 *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef GammaSource_h
-#define GammaSource_h
+#ifndef SDef_GammaSource_h
+#define SDef_GammaSource_h
 
 namespace SDef
 {
@@ -47,6 +47,7 @@ class GammaSource :
   double yStep;                 ///< Step in Y
   double zStep;                 ///< Step in Z
 
+  int particleType;             ///< Particle Type
   double cutEnergy;             ///< Energy cut point
   double radius;
   double angleSpread;           ///< Angle spread
@@ -59,13 +60,14 @@ class GammaSource :
   std::vector<double> EWeight;  ///< Weights
   
   void populate(const FuncDataBase& Control);
+  int populateEnergy(std::string,std::string);
   void createUnitVector(const attachSystem::FixedComp&);
   void calcPosition();
   void createSource(SDef::Source&) const;
 
  public:
 
-  GammaSource();
+  GammaSource(const std::string&);
   GammaSource(const GammaSource&);
   GammaSource& operator=(const GammaSource&);
   ~GammaSource();

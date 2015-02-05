@@ -3,7 +3,7 @@
  
  * File:   build/BulkInsert.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,6 +42,7 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
+#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -68,12 +69,12 @@
 #include "SimProcess.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "SecondTrack.h"
 #include "TwinComp.h"
-#include "InsertComp.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "TwinComp.h"
@@ -208,6 +209,18 @@ BulkInsert::populate(const Simulation& System,
     (Control,keyName,"OWidth",shutterNumber+1);
   outerHeight=SimProcess::getIndexVar<double>
     (Control,keyName,"OHeight",shutterNumber+1);
+
+  
+  const std::string KeyNum=StrFunc::makeString(shutterNumber+1);
+  if (Control.hasVariable(keyName+KeyNum+"InnerMat"))
+    innerMat=ModelSupport::EvalMat<int>(Control,keyName+KeyNum+"InnerMat");
+  else
+    innerMat=ModelSupport::EvalDefMat<int>(Control,keyName+"InnerMat",0);
+
+  if (Control.hasVariable(keyName+KeyNum+"OuterMat"))    
+    outerMat=ModelSupport::EvalMat<int>(Control,keyName+KeyNum+"OuterMat");
+  else
+    outerMat=ModelSupport::EvalDefMat<int>(Control,keyName+"OuterMat",0);
   
   populated|=1;
   return;
@@ -315,12 +328,12 @@ BulkInsert::createObjects(Simulation& System)
   const std::string dSurf=divideStr();
   // inner
   Out=ModelSupport::getComposite(SMap,surfIndex,"-5 6 3 -4 7 -17 ")+dSurf;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,0.0,Out));
   innerVoid=cellIndex-1;
 
   // Outer
   Out=ModelSupport::getComposite(SMap,surfIndex,"-15 16 13 -14 17 -27 ")+dSurf;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,outerMat,0.0,Out));
   outerVoid=cellIndex-1;
 
   // ---------------
@@ -328,20 +341,22 @@ BulkInsert::createObjects(Simulation& System)
   // ---------------
   MonteCarlo::Qhull* shutterObj=System.findQhull(innerCell);
   if (!shutterObj)
-    throw ColErr::InContainerError<int>(innerCell,RegA.getBase());
+    throw ColErr::InContainerError<int>(innerCell,"shutterObj");
+
   innerInclude=ModelSupport::getComposite(SMap,surfIndex,"3 -4 -5 6 ")+dSurf;
-
-  attachSystem::InsertComp IA;
-  IA.setInterSurf(innerInclude);
-  shutterObj->addSurfString(IA.getExclude());
-
+  HeadRule ExLiner(innerInclude);
+  ExLiner.makeComplement();
+  shutterObj->addSurfString(ExLiner.display());
+  
   shutterObj=System.findQhull(outerCell);
   if (!shutterObj)
-    throw ColErr::InContainerError<int>(outerCell,RegA.getBase());
+    throw ColErr::InContainerError<int>(outerCell,"shutterObj");
   outerInclude=
     ModelSupport::getComposite(SMap,surfIndex,"13 -14 -15 16 ")+dSurf;
-  IA.setInterSurf(outerInclude);
-  shutterObj->addSurfString(IA.getExclude());
+
+  ExLiner.procString(outerInclude);
+  ExLiner.makeComplement();
+  shutterObj->addSurfString(ExLiner.display());
 
   return;
 }

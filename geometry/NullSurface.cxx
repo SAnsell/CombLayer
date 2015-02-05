@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   geometry/NullSurface.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,8 +32,6 @@
 #include <stack>
 #include <string>
 #include <algorithm>
-#include <boost/bind.hpp>
-#include <boost/multi_array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -41,7 +39,6 @@
 #include "OutputLog.h"
 #include "support.h"
 #include "mathSupport.h"
-#include "Triple.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -189,8 +186,9 @@ NullSurface::print() const
     the NullSurface info.
   */
 {
+  std::cout<<"----- Null Surface -----"<<std::endl;
   Surface::print();
-  std::cout<<"Null Surface"<<std::endl;
+  std::cout<<"----- Null Surface -----"<<std::endl;
   return;
 }
 
@@ -201,12 +199,9 @@ NullSurface::write(std::ostream&) const
     This should not write but puts a warning to EMessage
   */
 {
-  // This shou
-  std::ostringstream cx;
-  Surface::writeHeader(cx);
-  ELog::EM.Estream()<<"Writing Null Surface: "<<
-    cx.str();
-  ELog::EM.warning();
+  ELog::EM<<"Writing Null Surface: ";
+  Surface::writeHeader(ELog::EM.Estream());
+  ELog::EM<<ELog::endWarn;
   return;
 }
 

@@ -3,7 +3,7 @@
  
  * File:   buildInc/beamTallyConstruct.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,7 +63,7 @@ class beamTallyConstruct : virtual public pointConstruct
 			const double,const double) const;
   void addViewLineTally(Simulation&,const int,const double,
 			const double,const double,const double) const;
-  void addViewInnerTally(Simulation&,const int,const int,const double,
+  void addViewInnerTally(Simulation&,const int,const long int,const double,
 			const double,const double,const double) const;
   void addShutterTally(Simulation&,const int,const double,
 			const std::string&,const int,

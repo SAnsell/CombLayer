@@ -3,7 +3,7 @@
  
  * File:   imat/makeIMat.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,8 +33,6 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
-#include <boost/format.hpp>
-
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -61,7 +59,6 @@
 #include "Qhull.h"
 #include "insertInfo.h"
 #include "insertBaseInfo.h"
-#include "InsertComp.h"
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -127,11 +124,9 @@ makeIMat::build(Simulation* SimPtr,
        IParam.compValue("I",std::string("Imat"))) )
     isoFlag=1;
 
-  const int isNumber(shutterSystem::BulkShield::imatShutter);
-
   const shutterSystem::BulkInsert* IS=
     dynamic_cast<const shutterSystem::BulkInsert*>
-    (BulkObj.getInsert(isNumber));
+    (BulkObj.getInsert(shutterSystem::BulkShield::imatShutter));
   if (!IS)
     ELog::EM<<"NO Insert "<<ELog::endErr;
 

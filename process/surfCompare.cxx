@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   process/surfCompare.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,9 +33,6 @@
 #include <string>
 #include <algorithm>
 #include <memory>
-#include <boost/any.hpp>
-#include <boost/type_traits.hpp>
-#include <boost/multi_array.hpp>
 #include <boost/mpl/if.hpp>
 #include <boost/mpl/fold.hpp>
 #include <boost/mpl/range_c.hpp>

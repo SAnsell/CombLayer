@@ -176,7 +176,7 @@ basicConstruct::checkItem(const mainSystem::inputParam& IParam,
   return StrFunc::convert(OutItem,Out);
 }
 
-int
+long int
 basicConstruct::getLinkIndex(const mainSystem::inputParam& IParam,
 			     const size_t Index,const size_t Offset) const
   /*!
@@ -199,7 +199,7 @@ basicConstruct::getLinkIndex(const mainSystem::inputParam& IParam,
   return getLinkIndex(Snd);
 }
 
-int
+long int
 basicConstruct::getLinkIndex(const std::string& Snd) const
   /*!
     Convert a name front back etc into a standard link number
@@ -207,10 +207,12 @@ basicConstruct::getLinkIndex(const std::string& Snd) const
     \return link number [-ve for beamFront/beamBack]
   */
 {
-  int linkPt(0);
+  long int linkPt(0);
   if (!StrFunc::convert(Snd,linkPt))
     {
-      if (Snd=="front") 
+      if (Snd=="origin") 
+	linkPt=0;
+      else if (Snd=="front") 
 	linkPt=1;
       else if (Snd=="back")
 	linkPt=2;

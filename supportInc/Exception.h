@@ -3,7 +3,7 @@
  
  * File:   supportInc/Exception.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -420,13 +420,53 @@ class CommandError : public ExBase
 };
 
 /*!
+  \class ConstructionError
+  \brief Exception for construction of object
+  \author Stuart Ansell
+  \date January 2015
+  \version 1.0
+
+  Called when a construction cannot be executed,
+  e.g. initializing an object from string/input
+
+*/
+class ConstructionError : public ExBase
+{
+ private:
+
+  std::string Name;                  ///< Name of object
+  std::string method;                ///< Name of object method
+  std::vector<std::string> input;    ///< Tokenized inputs
+
+  void setOutLine();
+
+ public:
+
+  ConstructionError(const std::string&,const std::string&);
+  ConstructionError(const std::string&,const std::string&,
+		    const std::string&);
+  ConstructionError(const std::string&,const std::string&,
+		    const std::string&,const std::string&);
+  ConstructionError(const std::string&,const std::string&,
+		    const std::string&,const std::string&,
+		    const std::string&);
+  ConstructionError(const std::string&,const std::string&,
+		    const std::string&,const std::string&,
+		    const std::string&,const std::string&);
+
+  ConstructionError(const ConstructionError&);
+  ConstructionError& operator=(const ConstructionError&);
+  virtual ~ConstructionError() throw() {}    ///< Destructor
+
+};
+
+/*!
   \class AbsObjMethod
   \brief Abstract base class method 
   \author Stuart Ansell
   \date April 2008
   \version 1.0
   Called when an abstract null object is called
-
 */
 class AbsObjMethod : public ExBase
 {

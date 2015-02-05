@@ -136,6 +136,10 @@ DelftCompactModel(mainSystem::inputParam& IParam,
 {
   ELog::RegMethod RegA("ReactorLayout[f]","DelftCompactModel");
 
+  
+  IParam.setValue("refExtra",std::string("R2Surround"));
+
+
   return;  
 }
 
@@ -150,6 +154,90 @@ DelftKaeriModel(mainSystem::inputParam& IParam,
   */
 {
   ELog::RegMethod RegA("ReactorLayout[f]","DelftCompactModel");
+
+  IParam.setValue("refExtra",std::string("R2Cube"));
+
+  Control.addVariable("delftGridXSize",6);        // R1 --> R2
+  Control.addVariable("delftGridYSize",7);        // NonViewed direction
+
+  Control.addVariable("delftGridType","Null");        // All void
+  Control.addVariable("delftGridTypeA0","Be");      
+  Control.addVariable("delftGridTypeA1","Be");      
+  Control.addVariable("delftGridTypeA2","Be");      
+  Control.addVariable("delftGridTypeA3","Be");      
+  Control.addVariable("delftGridTypeA4","Be");      
+  Control.addVariable("delftGridTypeA5","Be");      
+  Control.addVariable("delftGridTypeA6","Be");      
+  // Second stack
+  Control.addVariable("delftGridTypeB0","Be");      
+  Control.addVariable("delftGridTypeB1","Be");      
+  Control.addVariable("delftGridTypeB2","Fuel");      
+  Control.addVariable("delftGridTypeB3","Fuel");      
+  Control.addVariable("delftGridTypeB4","Fuel");      
+  Control.addVariable("delftGridTypeB5","Be");      
+  Control.addVariable("delftGridTypeB6","Be");      
+  // Third stack
+  Control.addVariable("delftGridTypeC0","Be");      
+  Control.addVariable("delftGridTypeC1","Fuel");      
+  Control.addVariable("delftGridTypeC2","Control");      
+  Control.addVariable("delftGridTypeC3","Fuel");      
+  Control.addVariable("delftGridTypeC4","Control");      
+  Control.addVariable("delftGridTypeC5","Fuel");      
+  Control.addVariable("delftGridTypeC6","Be");      
+  // Fourth stack
+  Control.addVariable("delftGridTypeD0","Be");      
+  Control.addVariable("delftGridTypeD1","Be");      
+  Control.addVariable("delftGridTypeD2","Fuel");      
+  Control.addVariable("delftGridTypeD3","IRad");      
+  Control.addVariable("delftGridTypeD4","Fuel");      
+  Control.addVariable("delftGridTypeD5","IRad");      
+  Control.addVariable("delftGridTypeD6","Be");      
+
+  // Fifth stack
+  Control.addVariable("delftGridTypeE0","Be");      
+  Control.addVariable("delftGridTypeE1","Fuel");      
+  Control.addVariable("delftGridTypeE2","Control");      
+  Control.addVariable("delftGridTypeE3","Fuel");      
+  Control.addVariable("delftGridTypeE4","Control");      
+  Control.addVariable("delftGridTypeE5","Fuel");      
+  Control.addVariable("delftGridTypeE6","Be");      
+
+  // Sixth stack
+  Control.addVariable("delftGridTypeF0","Be");      
+  Control.addVariable("delftGridTypeF1","Be");      
+  Control.addVariable("delftGridTypeF2","Fuel");      
+  Control.addVariable("delftGridTypeF3","Fuel");      
+  Control.addVariable("delftGridTypeF4","Fuel");      
+  Control.addVariable("delftGridTypeF5","Be");      
+  Control.addVariable("delftGridTypeF6","Be");      
+
+  Control.addVariable("delftElementCladDepth",0.038);   
+  Control.addVariable("delftElementNFuel",20);
+  Control.addVariable("delftElementWaterDepth",0.278);
+  Control.addVariable("delftElementFuelWidth",6.32);  
+  Control.addVariable("delftElementFuelDepth",0.051);   
+
+  Control.addVariable("delftControlAbsMat","10B4C");    
+
+
+  Control.addVariable("delftFlightR2CapRadius",177.0);
+
+  Control.addVariable("R2CubeLength",30.0);  
+  Control.addVariable("R2CubeYStep",-1.3);  
+  Control.addVariable("R2CubeActive",1);  
+  Control.addVariable("R2CubeInnerRadius",-12.26);  
+  Control.addVariable("R2CubeOuterWidth",34.0);  
+  Control.addVariable("R2CubeOuterHeight",28.0);  
+
+
+  Control.addVariable("Rabbit1GridKey","A5");      
+  Control.addVariable("Rabbit1XStep",-7.8);      
+  Control.addVariable("Rabbit1YStep",0.0);      
+  Control.addVariable("Rabbit1ZStep",-10.0);      
+  Control.addVariable("Rabbit1XYAngle",0.0);      
+  Control.addVariable("Rabbit1ZAngle",0.0);      
+
+
   return;  
 }
 

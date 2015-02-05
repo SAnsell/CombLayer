@@ -3,7 +3,7 @@
  
  * File:   test/testPoly.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,6 @@
 #include <stack>
 #include <algorithm>
 #include <tuple>
-#include <boost/variant.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -75,11 +74,12 @@ testPoly::applyTest(const int extra)
   typedef int (testPoly::*testPtr)();
   testPtr TPtr[]=
     {
-      &testPoly::testAddition,
+      &testPoly::testAddition,             
       &testPoly::testBase,
       &testPoly::testBezout,
       &testPoly::testBezoutFail,
       &testPoly::testCopy,
+      &testPoly::testDurandKernerRoots,
       &testPoly::testEqualTemplate,
       &testPoly::testExpand,
       &testPoly::testGetMaxSize,
@@ -101,6 +101,7 @@ testPoly::applyTest(const int extra)
       "Bezout",
       "BezoutFail",
       "Copy",
+      "DurandKernerRoots",
       "EqualTemplate",
       "Expand",
       "GetMaxSize",
@@ -112,7 +113,7 @@ testPoly::applyTest(const int extra)
       "SingleVar",
       "SubVariable",
       "Triplet",
-      "Variables"
+      "Variables"            
     };
 
   const int TSize(sizeof(TPtr)/sizeof(testPtr));
@@ -336,11 +337,6 @@ testPoly::testBezoutFail()
   // return 0;
 
 
-
-
-
-
-
   // REAL TEST:
 
   // Test of two non-intesecting cylinders
@@ -385,6 +381,59 @@ testPoly::testCopy()
       ELog::EM<<"GXYZ  "<<GXYZ<<ELog::endDebug;
       return -1;
     }
+  return 0;
+}
+
+
+int
+testPoly::testDurandKernerRoots()
+  /*!
+    Test the determination of roots
+    \return error number / 0 on success
+   */
+{
+  ELog::RegMethod RegA("testPoly","testCopy");
+
+  // Function / Nroots / smallest / largest roots 
+  typedef std::tuple<std::string,size_t,std::complex<double>,
+		     std::complex<double> > TTYPE;
+  typedef std::complex<double> CX;
+  std::vector<TTYPE> Tests =
+    {
+      TTYPE("x^2+x-6",2,CX(-3.0,0.0),CX(2.0,0.0)),
+      TTYPE("x^3-9x^2+26x-24",3,CX(2.0,0.0),CX(4.0,0.0)),
+      TTYPE("x^4-14x^3+71x^2-154x+120",4,CX(2.0,0.0),CX(5.0,0.0)),
+      TTYPE("x^4-11x^3+44x^2-76x+48",4,CX(2.0,0.0),CX(4.0,0.0))  // repeat roots
+    };
+
+  PolyVar<1> FX;
+  std::vector<CX> Res;
+  for(const TTYPE& tc : Tests)
+    {
+      FX.read(std::get<0>(tc));
+      Res=FX.calcDurandKernerRoots();
+      std::sort(Res.begin(),Res.end(),
+	   [](const CX& A,const CX& B)
+	   {
+	     return A.real()<B.real();
+	   });
+
+      const size_t nSolution=Res.size();
+      const double dA=(nSolution) ?
+	sqrt(std::norm(Res.front()-std::get<2>(tc))) : 0.0;
+      const double dB=(nSolution>1) ?
+	sqrt(std::norm(Res.back()-std::get<3>(tc))) : 0.0;
+      
+      if (nSolution!=std::get<1>(tc) ||
+	  fabs(dA)>1e-6 || fabs(dB)>1e-6)
+	{
+	  ELog::EM<<"FX == "<<FX<<ELog::endDiag;
+	  for(const CX& ans : Res)
+	    ELog::EM<<"Res == "<<ans<<ELog::endDiag;
+	  return -1;
+	}
+    }
+  
   return 0;
 }
 

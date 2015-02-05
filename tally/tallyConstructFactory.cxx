@@ -43,7 +43,6 @@
 #include "Triple.h"
 #include "NRange.h"
 #include "NList.h"
-#include "Transform.h"
 #include "Surface.h"
 #include "Quadratic.h"
 #include "Plane.h"
@@ -56,6 +55,7 @@
 
 #include "basicConstruct.h" 
 #include "pointConstruct.h" 
+#include "gridConstruct.h"
 #include "meshConstruct.h" 
 #include "fluxConstruct.h" 
 #include "heatConstruct.h" 
@@ -75,6 +75,16 @@ tallyConstructFactory::makePoint() const
   */
 {
   return new pointConstruct();
+}
+
+gridConstruct*
+tallyConstructFactory::makeGrid() const
+  /*!
+    Return grid tally
+    \return gridConstruct
+  */
+{
+  return new gridConstruct();
 }
 
 meshConstruct*

@@ -3,7 +3,7 @@
  
  * File:   constructInc/FlightLine.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,7 +54,10 @@ class FlightLine : public attachSystem::ContainedGroup,
   double height;                ///< Height of flight line
   double width;                 ///< Width of flight line
 
-  long int plateIndex;          ///< Index of the side [+1] with sign 
+  long int plateIndex;          ///< Index of the side [+1] with sign
+
+  int innerMat;                 ///< Inner material
+  
   size_t nLayer;                ///< Number of layers
   std::vector<double> lThick;   ///< Linear Thickness 
   std::vector<int> lMat;        ///< Layer Material

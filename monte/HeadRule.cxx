@@ -3,7 +3,7 @@
  
  * File:   monte/HeadRule.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -81,6 +81,17 @@ HeadRule::HeadRule() :
     Creates a new rule
   */
 {}
+
+HeadRule::HeadRule(const std::string& RuleStr) :
+  HeadNode(0)
+  /*!
+    Creates a new rule
+  */
+{
+  ELog::RegMethod RegA("HeadRule","HeadRule(string)");
+  if (!procString(RuleStr))
+    throw ColErr::InvalidLine(RuleStr,"RuleStr",0);
+}
 
 HeadRule::HeadRule(const Rule* RPtr) :
   HeadNode((RPtr) ? RPtr->clone() : 0)
@@ -1184,6 +1195,8 @@ HeadRule::substituteSurf(const int SurfN,const int newSurfN,
 {
   ELog::RegMethod RegA("HeadRule","substitueSurf");
 
+  // Quick check:
+  if (SurfN==newSurfN) return 0;
   int cnt(0);
 
   SurfPoint* Ptr=dynamic_cast<SurfPoint*>(HeadNode->findKey(abs(SurfN)));
@@ -1550,8 +1563,6 @@ HeadRule::procString(const std::string& Line)
 	      // Contained within code: NOT FINISHED:
 	      ELog::EM<<"In % "<<Ln.substr(hCnt,lbrack-hCnt)<<ELog::endErr;
 	      throw ColErr::ExitAbort("% handler");
-	      //	      RuleList[compUnit]=procComp(RuleList[compUnit]);
-	      //	      Ln.erase(hCnt,lbrack-hCnt);
 	    }
 	}
       else

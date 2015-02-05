@@ -3,7 +3,7 @@
  
  * File:   zoomInc/ZoomCollimator.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,27 +47,34 @@ class ZoomCollimator : public attachSystem::TwinComp,
 {
  private:
   
-  const int colIndex;         ///< Index of surface offset
-  int cellIndex;                ///< Cell index
+  const int colIndex;          ///< Index of surface offset
+  int cellIndex;               ///< Cell index
 
   ZoomStack cStack;            ///< Zoom stack
 
-  double xStep;                ///< Master offset 
-  double zStep;                ///< Master offset 
+  double xStep;                ///< Master X offset 
+  double zStep;                ///< Master Z offset 
 
   double length;               ///< Full length
-  double height;               ///< Full height
-  double depth;                ///< Full height
-  double leftWidth;            ///< Full width
+  double height;               ///< height
+  double depth;                ///< depth
+  double leftWidth;            ///< left width
   double rightWidth;           ///< Right width
+  double leftInnerWidth;       ///< left front width
+  double rightInnerWidth;      ///< Right front width
+  double leftInnerAngle;       ///< left angle [deg]
+  double rightInnerAngle;      ///< Right angle [deg]
+  double leftWaxSkin;          ///< left wax layer
+  double rightWaxSkin;         ///< right wax layer
 
-
-
-  double stackFullWidth;        ///< Inner void width
-  double stackLength;           ///< Stack length
+  double stackWidth;           ///< Inner void width
+  double stackHeight;          ///< Inner void height
+  double stackXShift;          ///< Shift X
+  double stackZShift;          ///< Shift Z
 
   size_t nLayers;               ///< number of layers
-  int feMat;                    ///< Iron material
+  int feMat;                    ///< Iron materil
+  int waxMat;                    ///< Iron material
   int innerVoid;                ///< Inner void cell
 
   std::vector<double> cFrac;      ///< Layer thicknesss (fractions)
@@ -91,8 +98,8 @@ class ZoomCollimator : public attachSystem::TwinComp,
 
   void createAll(Simulation&,const zoomSystem::ZoomChopper&);
 
-  int exitWindow(const double,std::vector<int>&,
-		 Geometry::Vec3D&) const;
+  /// access to void cell
+  int getVoidCell() const { return innerVoid; }
 
 };
 

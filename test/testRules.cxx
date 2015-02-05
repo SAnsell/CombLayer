@@ -3,7 +3,7 @@
  
  * File:   test/testRules.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -357,14 +357,15 @@ testRules::testRemoveComplement()
   typedef std::tuple<std::string,std::string> TTYPE;
   std::vector<TTYPE> Tests;
 
-  Tests.push_back(TTYPE("1 -2","-1:2"));
+  Tests.push_back(TTYPE("1 -2","-1 : 2"));
+  Tests.push_back(TTYPE("-8 : (-7 5 -6) ","( -5 : 7 : 6 ) 8"));
 
   int cnt(1);
   for(const TTYPE& tc : Tests)
     {
       std::shared_ptr<Rule> RP(Rule::procCompString(std::get<0>(tc)));
-	
-      if (!RP || RP->display()!=std::get<1>(tc) )
+      
+      if (!RP || (RP->display()!=std::get<1>(tc)) )
 	{
 	  ELog::EM<<"Failed test "<<cnt<<ELog::endTrace;
 	  ELog::EM<<"Input  :"<<std::get<0>(tc)<<ELog::endTrace;

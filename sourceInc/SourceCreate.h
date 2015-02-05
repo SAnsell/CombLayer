@@ -3,7 +3,7 @@
  
  * File:   sourceInc/SourceCreate.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef SourceCreate_h
-#define SourceCreate_h
+#ifndef SDef_SourceCreate_h
+#define SDef_SourceCreate_h
 
 namespace SDef
 {
@@ -32,13 +32,14 @@ namespace SDef
   void createD4CSource(const FuncDataBase&,Source&);
   void createESSSource(const FuncDataBase&,Source&);
   void createGammaSource(const FuncDataBase&,Source&);
+  void createLaserSource(const FuncDataBase&,Source&);
   void createTS1Source(const FuncDataBase&,Source&);
   void createTS1GaussianSource(const FuncDataBase&,Source&);
   void createTS1GaussianNewSource(const FuncDataBase&,Source&);   // Goran
   void createTS1MuonSource(const FuncDataBase&,Source&); // Goran
   void createTS1EpbCollSource(const FuncDataBase&,Source&);   // Goran    
   void createSinbadSource(const FuncDataBase&,Source&);
-  void createTS2Source(Source&);
+  void createTS2Source(const FuncDataBase&,Source&);
 }
 
 

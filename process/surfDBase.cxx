@@ -34,9 +34,7 @@
 #include <numeric>
 #include <iterator>
 #include <memory>
-#include <boost/functional.hpp>
-#include <boost/bind.hpp>
- 
+# 
 #include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
@@ -60,6 +58,7 @@
 #include "Quaternion.h"
 #include "Quadratic.h"
 #include "Plane.h"
+#include "Cylinder.h"
 #include "surfDBase.h"
 
 namespace ModelSupport
@@ -123,6 +122,49 @@ surfDBase::createSurf<Geometry::Plane,Geometry::Plane>
   Geometry::Plane* TP=SurI.createUniqSurf<Geometry::Plane>(newItem++);
   TP->setPlane(NormB*normNeg,DB*normNeg);
   return SurI.addSurface(TP);
+}
+
+template<>
+Geometry::Surface*
+surfDBase::createSurf<Geometry::Cylinder,Geometry::Cylinder>
+(const Geometry::Cylinder* pSurf,const Geometry::Cylinder* sSurf,
+   const double fraction,int& newItem)
+  /*!
+    Divides two cylinders to the required fraction. Care is taken
+    if the two planes have opposite signs.
+    - IMPORTANT: the inner surface is master ie if we have -IN ON 
+    then we get a normal that is opposite to ON.
+    \param pSurf :: primary surface
+    \param sSurf :: secondary surface
+    \param newItem :: Plane number to start with
+    \param fraction :: Weight between the two surface
+    \return plane number created
+   */
+{
+  ELog::RegMethod RegA("surfDBase<Cylinder,Cylinder>","createSurf");
+
+  ModelSupport::surfIndex& SurI= ModelSupport::surfIndex::Instance();
+
+  const Geometry::Vec3D CentA=pSurf->getCentre();
+  const Geometry::Vec3D NormA=pSurf->getNormal();
+  const double RA=pSurf->getRadius();
+  
+  Geometry::Vec3D CentB=sSurf->getCentre();
+  Geometry::Vec3D NormB=sSurf->getNormal();
+  double RB=sSurf->getRadius();
+  if (NormA.dotProd(NormB)<0)
+    NormB*=-1.0;
+  NormB*=fraction;
+  NormB+=NormA*(1.0-fraction);
+  CentB*=fraction;
+  CentB+=CentA*(1.0-fraction);
+  RB*=fraction;
+  RB+=(1.0-fraction)*RA;
+  
+  Geometry::Cylinder* CPtr=
+    SurI.createUniqSurf<Geometry::Cylinder>(newItem++);
+  CPtr->setCylinder(CentB,NormB,RB);
+  return SurI.addSurface(CPtr);
 }
 
 int

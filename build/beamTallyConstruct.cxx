@@ -3,7 +3,7 @@
  
  * File:   build/beamTallyConstruct.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,8 +33,6 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
-#include <boost/bind.hpp>
-#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -84,7 +82,7 @@
 #include "LineIntersectVisit.h"
 #include "SurfLine.h"
 
-#include "InsertComp.h"
+#include "ContainedComp.h"
 #include "shutterBlock.h"
 #include "GeneralShutter.h"
 #include "BlockShutter.h"
@@ -173,6 +171,8 @@ beamTallyConstruct::processPoint(Simulation& System,
       checkItem<double>(IParam,Index,6,windowOffset);
       checkItem<double>(IParam,Index,7,pointZRot);
 
+      ELog::EM<<"Beamline == "<<beamNum-1<<" "<<beamDist<<" "
+	      <<"Mod name = "<<modName<<" "<<viewIndex<<ELog::endDiag;
       if (PType=="beamline")
 	addBeamLineTally(System,beamNum-1,beamDist,modName,
 			 viewIndex,windowOffset,pointZRot);
@@ -208,7 +208,7 @@ beamTallyConstruct::processPoint(Simulation& System,
 				       "beamline number not given");
       const std::string face=inputItem<std::string>(IParam,Index,3,
 			       "beamline face : front/back not given");
-      const int linkNumber=getLinkIndex(face);
+      const long int linkNumber=getLinkIndex(face);
 
       double beamDist(1000.0);
       double windowOffset(0.0);
@@ -332,11 +332,12 @@ beamTallyConstruct::addBeamLineTally(Simulation& System,
 
   const int tNum=System.nextTallyNum(5);
   std::transform(Window.begin(),Window.end(),Window.begin(),
-        boost::bind(std::minus<Geometry::Vec3D>(),_1,BAxis*windowOffset));
+		 std::bind(std::minus<Geometry::Vec3D>(),
+			   std::placeholders::_1,BAxis*windowOffset));
   std::vector<Geometry::Vec3D>::iterator vc;
-  ELog::EM<<"BEAM START "<<shutterPoint<<ELog::endDebug;
+  ELog::EM<<"BEAM START "<<shutterPoint<<ELog::endDiag;
   for(vc=Window.begin();vc!=Window.end();vc++)
-    ELog::EM<<"Window == "<<*vc<<ELog::endDebug;
+    ELog::EM<<"Window == "<<*vc<<ELog::endDiag;
 
   // Apply rotation
   if (fabs(pointZRot)>Geometry::zeroTol)
@@ -429,7 +430,8 @@ beamTallyConstruct::addShutterTally(Simulation& System,
 
   const int tNum=System.nextTallyNum(5);
   std::transform(Window.begin(),Window.end(),Window.begin(),
-        boost::bind(std::minus<Geometry::Vec3D>(),_1,BAxis*windowOffset));
+        std::bind(std::minus<Geometry::Vec3D>(),
+		  std::placeholders::_1,BAxis*windowOffset));
   std::vector<Geometry::Vec3D>::iterator vc;
   ELog::EM<<"BEAM START "<<shutterPoint<<ELog::endDebug;
   for(vc=Window.begin();vc!=Window.end();vc++)
@@ -463,7 +465,6 @@ beamTallyConstruct::addViewLineTally(Simulation& System,
     Adds a beamline tally to the system
     \param System :: Simulation to add tallies
     \param beamNum :: Beamline to use [1-18]
-    \param faceFlag :: Face -- Front/Back
     \param beamDist :: Distance from moderator face
     \param timeOffset :: Time back step for tally
     \param windowOffset :: Distance to move window towards tally point
@@ -507,17 +508,18 @@ beamTallyConstruct::addViewLineTally(Simulation& System,
  
   const int tNum=System.nextTallyNum(5);
   std::transform(Window.begin(),Window.end(),Window.begin(),
-        boost::bind(std::minus<Geometry::Vec3D>(),_1,BAxis*windowOffset));
+        std::bind(std::minus<Geometry::Vec3D>(),
+		  std::placeholders::_1,BAxis*windowOffset));
 
-  std::vector<Geometry::Vec3D>::iterator vc;
-  for(vc=Window.begin();vc!=Window.end();vc++)
-    ELog::EM<<"Window == "<<*vc<<ELog::endDebug;
+  for(const Geometry::Vec3D& VPt : Window)
+    ELog::EM<<"Window == "<<VPt<<ELog::endDiag;
 
   // Apply rotation
   if (fabs(pointZRot)>Geometry::zeroTol)
     {
       const Geometry::Vec3D Z=ShutterPtr->getZ();
-      const Geometry::Quaternion Qxy=
+      const Geometry::Quaternion
+	Qxy=
 	Geometry::Quaternion::calcQRotDeg(pointZRot,Z);
       Qxy.rotate(BAxis);
     }
@@ -534,7 +536,7 @@ beamTallyConstruct::addViewLineTally(Simulation& System,
 void 
 beamTallyConstruct::addViewInnerTally(Simulation& System,
 				 const int beamNum,
-				 const int faceFlag,     
+				 const long int faceFlag,     
 				 const double beamDist,
 				 const double timeOffset,
 				 const double windowOffset,
@@ -582,7 +584,7 @@ beamTallyConstruct::addViewInnerTally(Simulation& System,
     }
 
   std::vector<Geometry::Vec3D> VOut=
-    (faceFlag!=2) ? BSPtr->createFrontViewPoints() : 
+    (faceFlag!=2 || faceFlag!=-2) ? BSPtr->createFrontViewPoints() : 
     BSPtr->createBackViewPoints();
 
   if (VOut.size()<4)
@@ -607,7 +609,8 @@ beamTallyConstruct::addViewInnerTally(Simulation& System,
 
   const int tNum=System.nextTallyNum(5);
   std::transform(VOut.begin(),VOut.end(),VOut.begin(),
-        boost::bind(std::minus<Geometry::Vec3D>(),_1,BAxis*windowOffset));
+        std::bind(std::minus<Geometry::Vec3D>(),
+		  std::placeholders::_1,BAxis*windowOffset));
 
   addF5Tally(System,tNum,tallyPoint,VOut,timeOffset);
   return;

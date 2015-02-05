@@ -3,7 +3,7 @@
  
  * File:   processInc/MainProcess.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,6 +63,7 @@ namespace mainSystem
   void createGammaInputs(inputParam&);
   void createLensInputs(inputParam&);
   void createMuonInputs(inputParam&);
+  void createPhotonInputs(inputParam&);
   void createSiliconInputs(inputParam&);
   void createSinbadInputs(inputParam&);
   void createSNSInputs(inputParam&);

@@ -35,8 +35,6 @@
 #include <numeric>
 #include <iterator>
 #include <memory>
-#include <boost/bind.hpp>
-#include <boost/multi_array.hpp>
  
 #include "Exception.h"
 #include "FileReport.h"

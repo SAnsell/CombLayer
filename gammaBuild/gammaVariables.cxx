@@ -3,7 +3,7 @@
  
  * File:   t1Upgrade/gammaVariables.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -79,8 +79,6 @@ gammaVariables(FuncDataBase& Control)
 
   Control.addVariable("BrickNConic",0);       
   Control.addVariable("BrickNWedge",0);       
-
-  Control.addVariable("gammaSourceEEnd",80.0);     
 
   Control.addVariable("gammaSourceXStep",0.0);       
   Control.addVariable("gammaSourceYStep",0.0);       

@@ -3,7 +3,7 @@
  
  * File:   build/TS2variables.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,7 +68,9 @@ TS2layout(FuncDataBase& Control)
 
   Control.addVariable("zero",0.0);      // Zero
   Control.addVariable("one",1.0);       // One
-  
+
+// TARGET STUFF
+  Control.addVariable("sdefEnergy",800.0);  
 // ----------
 // TALLY stuff
 // ----------
@@ -130,7 +132,8 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("grooveMethDepth",7.00);      // Depth of the CH4
   Control.addVariable("grooveMethWidth",19.60);     // Width of the CH4
   Control.addVariable("grooveMethHeight",12.0);     // Full Height
-  Control.addVariable("grooveModMat","CH4inFoam");  // CH4 + 10% Al
+  //  Control.addVariable("grooveModMat","CH4inFoam");  // CH4 + 10% Al
+  Control.addVariable("grooveModMat","Void");  // CH4 + 10% Al
   Control.addVariable("grooveAlMat","Aluminium");   // Aluminium mat
   Control.addVariable("grooveModTemp",26.0);        // Moderator temperature
 
@@ -346,7 +349,7 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("decoupledModTemp",26.0);        // Moderator temperature
   
   // Poisoning:
-  Control.addVariable("decPoisonNBlades",12);        // Number of blades
+  Control.addVariable("decPoisonNBlades",0);        // Number of blades
   Control.addVariable("decPoisonBladeWidth",0.3);    // Thickness [total]
   Control.addVariable("decPoisonBladeGap",0.7);       // Space of blade
   Control.addVariable("decPoisonAbsThick",0.05);      // Space in blade
@@ -358,11 +361,9 @@ TS2layout(FuncDataBase& Control)
 
   Control.addVariable("decPoisonModTemp",26.0);           // CH4 + 10% Al [+Ar]
 
-  Control.addVariable("decPoisonModMat","CH4Al+Argon");  // CH4 + 10% Al [+Ar]
+  Control.addVariable("decPoisonModMat","CH4inFoam");  // 
   Control.addVariable("decPoisonBladeMat","SiCrystal");  // Silicon
   Control.addVariable("decPoisonAbsMat","Gadolinium");   // GD
-
-
   
   Control.addVariable("wishFlightXStep",0.0);       // Step from centre
   Control.addVariable("wishFlightZStep",0.0);       // Step from centre
@@ -387,6 +388,7 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("narrowFlightAngleZBase",0.0);  // Step up angle
   Control.addVariable("narrowFlightHeight",11.5);     // Full height
   Control.addVariable("narrowFlightWidth",14.3);      // Full width
+  Control.addVariable("narrowFlightInnerMat","Void");  // Material
 
   Control.addVariable("decPMWidth",25.8);     // Full width
   Control.addVariable("decPMDepth",10.2);     // Full Depth 
@@ -645,7 +647,7 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("shutterGapSize",22.30);      // Gap size
   Control.addVariable("shutter1ZAngle",0.0);        // shutter slope/ up/down
   //  Control.addVariable("shutter1centreZoffset",7.0); // Central shutter
-  Control.addVariable("shutter1Closed",1);          // Open shutter (false)
+  Control.addVariable("shutter1Closed",0);          // Open shutter (false)
   Control.addVariable("shutter2Closed",1);          // closed shutter (true)
   Control.addVariable("shutterClosed",0);           // Open shutter [imp:0]
   Control.addVariable("shutter1ClosedZOffset",42.0);   // Closed distance
@@ -728,6 +730,8 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("bulkInsertOHeight",61.25);
   Control.addVariable("bulkInsertOWidth",37.50);
   Control.addVariable("bulkInsertZOffset",0.00);
+  Control.addVariable("bulkInsert10InnerMat","Stainless304");
+  Control.addVariable("bulkInsert10OuterMat","Stainless304");
 
   // TORPEDO
   Control.addVariable("torpedoHeight",18.00);

@@ -3,7 +3,7 @@
  
  * File:   poly/PolyVarOne.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -308,6 +308,24 @@ PolyVar<1>::operator()(const double X) const
   */
 {
   double Result = PCoeff[iDegree];              
+  for (size_t i=iDegree; i > 0;)
+    {
+      i--;
+      Result *= X;
+      Result += PCoeff[i];
+    }
+  return Result;
+}
+
+std::complex<double>
+PolyVar<1>::evalPoly(const std::complex<double>& X) const
+  /*!
+    Calculate polynomial at x [complex]
+    \param X :: Value to calculate poly [complex]
+    \return polyvalue(x)
+  */
+{
+  std::complex<double> Result = PCoeff[iDegree];              
   for (size_t i=iDegree; i > 0;)
     {
       i--;
@@ -804,7 +822,7 @@ PolyVar<1>::realRoots(const double epsilon)
   ELog::RegMethod RegA("PolyVar<1>","realRoots");
 
   const double eps((epsilon>0.0) ? epsilon : Eaccuracy);
-  std::vector<std::complex<double> > Croots=calcRoots(epsilon);
+  std::vector<std::complex<double> > Croots=calcDurandKernerRoots(epsilon);
   std::vector<double> Out;
   std::vector<std::complex<double> >::const_iterator vc;
   for(vc=Croots.begin();vc!=Croots.end();vc++)
@@ -817,6 +835,88 @@ PolyVar<1>::realRoots(const double epsilon)
 	    std::unique(Out.begin(),Out.end(),mathSupport::tolEqual(eps)),
 	    Out.end());
   return Out;
+}
+
+int
+PolyVar<1>::checkSmallPoly(std::vector<std::complex<double> >& Out) const
+  /*!
+    Check to see if the roots are from a small polynomial [factor 3 or less]
+    and solve. If not return 0 and not solution
+    \param Out :: Output of results if found
+    \return  1 on success / 0 on fail
+ */
+{
+  ELog::RegMethod RegA("PolyVar<1>","checkSmallPoly");
+
+  // Zero State:
+  if (iDegree<=0)
+    return 1;
+
+  Out.resize(iDegree);
+  size_t N(1);
+  switch (iDegree)
+    {
+    case 1:   // x+a_0 =0 
+      Out[0]=std::complex<double>(-PCoeff[0]);
+      break;
+    case 2:  // x^2+a_1 x 
+      N=solveQuadratic(Out[0],Out[1]);
+      break;
+    case 3:  // x^3+a_2 x^2+ a_1 x+c=0
+      N=solveCubic(Out[0],Out[1],Out[2]);
+      break;
+    default:
+      return 0;
+    }
+  Out.resize(N);
+  return 1;
+}
+  
+std::vector<std::complex<double> >
+PolyVar<1>::calcDurandKernerRoots(const double epsilon)
+  /*!
+    Calculate all the roots of the polynominal.
+    Uses the Durand-Kerner method. An approximation 
+    method based on the stability of 
+    \f[ f(x)=(x-P)(x-Q)(x-R) \dots \f]
+    to each root iteration 
+    \f[ x_1 := x_0 - \frac{f(x_0)}{(x_0-Q)(x_0-R)(...)} \f]
+    \param epsilon :: tolerance factor (-ve to use default)
+    \return roots (not sorted/uniqued)
+  */
+{
+  ELog::RegMethod RegA("PolyVar<1>","calcDurandKernerRoots");
+  unitPrimary(epsilon);
+  const double eps((epsilon>0.0) ? epsilon : this->Eaccuracy);
+  
+  std::vector<std::complex<double> > cn;
+  if (checkSmallPoly(cn))
+    return cn;
+  
+  // cn has been correctly sized:
+  // initialize cn coeffients [P,Q,R]
+  cn[0]=std::complex<double>(0.4,0.9);
+  for(size_t i=1;i<iDegree;i++)
+    cn[i]=cn[0]*cn[i-1];
+
+  const size_t maxIter(300);
+  size_t flag(1);
+  for(size_t iter=0;iter<maxIter && flag;iter++)
+    {
+      flag=0;
+      for(size_t i=0;i<iDegree;i++)
+	{
+	  // calc division 
+	  std::complex<double> D(1.0,0);
+	  for(size_t j=0;j<iDegree;j++)
+	    if (j!=i)
+	      D*=(cn[i]-cn[j]);
+	  const std::complex<double> modTerm(evalPoly(cn[i])/D);
+	  flag += (sqrt(std::norm(modTerm))>eps/100.0) ? 1 : 0;
+	  cn[i]=cn[i]- modTerm;
+	}
+    }
+  return cn;
 }
 
 std::vector<std::complex<double> >

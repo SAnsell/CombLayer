@@ -3,7 +3,7 @@
  
  * File:   Main/fullBuild.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,9 +52,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "inputParam.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
@@ -68,14 +65,14 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "ModeCard.h"
-#include "PhysCard.h"
-#include "PhysImp.h"
-#include "KGroup.h"
-#include "LSwitchCard.h"
-#include "Source.h"
-#include "KCode.h"
-#include "PhysicsCards.h"
+// #include "ModeCard.h"
+// #include "PhysCard.h"
+// #include "PhysImp.h"
+// #include "KGroup.h"
+// #include "LSwitchCard.h"
+// #include "Source.h"
+// #include "KCode.h"
+// #include "PhysicsCards.h"
 #include "DefPhysics.h"
 #include "MainProcess.h"
 #include "SimProcess.h"
@@ -207,11 +204,6 @@ main(int argc,char* argv[])
 	  createMeshTally(IParam,SimPtr);
 
 	  // NOTE : This flag must be set in tally== beamline standard
-	  if (!IParam.flag("voidUnMask") && !IParam.flag("mesh"))
-	    {
-	      SimPtr->findQhull(74123)->setImp(0);
-	      SimPtr->getPC().setCells("imp",74123,0);  // outer void to z	
-	    }
 	  
 	  SimProcess::importanceSim(*SimPtr,IParam);
 	  SimProcess::inputPatternSim(*SimPtr,IParam); // energy cut etc
@@ -230,6 +222,8 @@ main(int argc,char* argv[])
 	}
       if (IParam.flag("cinder"))
 	SimPtr->writeCinder();
+
+      exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
       ModelSupport::calcVolumes(SimPtr,IParam);
       chipIRDatum::chipDataStore::Instance().writeMasterTable("chipIR.table");
       ModelSupport::objectRegister::Instance().write("ObjectRegister.txt");

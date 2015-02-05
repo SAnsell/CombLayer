@@ -30,7 +30,6 @@
 #include <list>
 #include <map>
 #include <string>
-#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -230,7 +229,6 @@ setTS1MarkVI(defaultConfig& A)
   A.setOption("WaterModType","Layer");
   A.setOption("CH4PreType","Flat");
 
-  A.setVar("sdefZOffset",0.0);
   A.setVar("sdefZOffset",0.0);
   A.setVar("t1CylFluxTrapNCone",0);
 

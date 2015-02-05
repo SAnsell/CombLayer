@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   buildInc/BulkInsert.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,6 +62,9 @@ class BulkInsert : public attachSystem::TwinComp,
   double innerWidth;                  ///< Total depth
   double outerHeight;                 ///< Total height 
   double outerWidth;                  ///< Outer Width
+
+  int innerMat;                       ///< Fill in material
+  int outerMat;                       ///< Fill in material
   
   // Cells:
   int innerCell;                ///< Inner Steel section [BulkShield]
@@ -69,7 +72,7 @@ class BulkInsert : public attachSystem::TwinComp,
 
   int innerVoid;                ///< Inner void section [Created]
   int outerVoid;                ///< Outer void section [Created]
-
+  
   std::string innerInclude;     ///< Include for the inner layer
   std::string outerInclude;     ///< Include for the outer layer
   //--------------

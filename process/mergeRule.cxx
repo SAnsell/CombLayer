@@ -127,7 +127,6 @@ mergeRule::clone() const
 mergeRule::~mergeRule()
   /*!
     Delete operator
-    \return new(*this);
   */
 {
   std::vector<pairBase*>::iterator vc;

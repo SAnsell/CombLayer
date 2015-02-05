@@ -3,7 +3,7 @@
  
  * File:   attachComp/FixedComp.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -190,8 +190,7 @@ FixedComp::createUnitVector(const FixedComp& FC,
   */
 {
   ELog::RegMethod RegA("FixedComp","createUnitVector(FixedComp,side)");
-  
-  
+    
   if (sideIndex==0)
     {
       createUnitVector(FC);
@@ -205,8 +204,13 @@ FixedComp::createUnitVector(const FixedComp& FC,
   const LinkUnit& LU=FC.getLU(linkIndex);
   const double signV((sideIndex>0) ? 1.0 : -1.0);
 
+  const Geometry::Vec3D yTest=LU.getAxis();
+  Geometry::Vec3D zTest=FC.getZ();
+  if (fabs(zTest.dotProd(yTest))>1.0-Geometry::zeroTol)
+    zTest=FC.getX();
+
   createUnitVector(LU.getConnectPt(),
-		   LU.getAxis()*signV,FC.getZ());
+		   yTest*signV,zTest);
   return;
 }
   
@@ -955,6 +959,47 @@ FixedComp::getCommonRule(const size_t Index) const
   return LU[Index].getCommonRule();
 }
 
+void
+FixedComp::calcLinkAxis(const long int sideIndex,
+			Geometry::Vec3D& XVec,
+			Geometry::Vec3D& YVec,
+			Geometry::Vec3D& ZVec) const
+  /*!
+    Given a linkindex calculate the axes at that point.
+    \param sideIndex :: Signed side+1 (zero for origin of FC)
+    \param XVec :: Output X Vec
+    \param YVec :: Output Y Vec
+    \param ZVec :: Output Z Vec
+  */
+{
+  ELog::RegMethod RegA("FixedComp","calcLinkAxis");
+
+  if (sideIndex==0)
+    {
+      XVec=X;
+      YVec=Y;
+      ZVec=Z;
+      return;
+    }
+  
+  if (sideIndex>0)
+    {
+      const size_t linkIndex=static_cast<size_t>(sideIndex-1);
+      YVec=getLinkAxis(linkIndex);
+    }
+  else 
+    {
+      const size_t linkIndex=static_cast<size_t>(1-sideIndex);
+      YVec= -getLinkAxis(linkIndex);
+    }
+  ZVec=Z;          
+  if (fabs(ZVec.dotProd(YVec))>1.0-Geometry::zeroTol)
+    ZVec=X;
+  XVec=YVec*ZVec;
+  return;
+}
+
+  
 int
 FixedComp::getMasterSurf(const size_t outIndex) const
   /*!

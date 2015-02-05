@@ -3,7 +3,7 @@
  
  * File:   source/GammaSource.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,13 +67,54 @@
 namespace SDef
 {
 
-GammaSource::GammaSource() : 
-  FixedComp("gammaSource",0),
+GammaSource::GammaSource(const std::string& keyName) : 
+  FixedComp(keyName,0),
   cutEnergy(0.0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
+    \param keyName :: main name
   */
 {}
+
+GammaSource::GammaSource(const GammaSource& A) : 
+  attachSystem::FixedComp(A),
+  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
+  particleType(A.particleType),cutEnergy(A.cutEnergy),
+  radius(A.radius),angleSpread(A.angleSpread),
+  FocusPoint(A.FocusPoint),Direction(A.Direction),
+  weight(A.weight),Energy(A.Energy),EWeight(A.EWeight)
+  /*!
+    Copy constructor
+    \param A :: GammaSource to copy
+  */
+{}
+
+GammaSource&
+GammaSource::operator=(const GammaSource& A)
+  /*!
+    Assignment operator
+    \param A :: GammaSource to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedComp::operator=(A);
+      xStep=A.xStep;
+      yStep=A.yStep;
+      zStep=A.zStep;
+      particleType=A.particleType;
+      cutEnergy=A.cutEnergy;
+      radius=A.radius;
+      angleSpread=A.angleSpread;
+      FocusPoint=A.FocusPoint;
+      Direction=A.Direction;
+      weight=A.weight;
+      Energy=A.Energy;
+      EWeight=A.EWeight;
+    }
+  return *this;
+}
 
 
 GammaSource::~GammaSource() 
@@ -133,6 +174,46 @@ GammaSource::loadEnergy(const std::string& FName)
   return;
 }
 
+int
+GammaSource::populateEnergy(std::string EPts,std::string EProb)
+  /*!
+    Read two strings that are the Energy points and the 
+    \param EPts :: Energy Points string 
+    \param EProb :: Energy Prob String
+    \return 1 on success success
+   */
+{
+  ELog::RegMethod RegA("GammaSource","populateEnergy");
+
+  Energy.clear();
+  EWeight.clear();
+
+  double eA,eB,eP;
+  
+  // if (!StrFunc::section(EPts,eA) || eA<0.0)
+  //   return 0;
+  while(StrFunc::section(EPts,eB) &&
+	StrFunc::section(EProb,eP))
+    {
+      if (!Energy.empty() && eB<=Energy.back())
+	throw ColErr::IndexError<double>(eB,Energy.back(),
+					 "Energy point not in sequence");
+      if (eP<0.0)
+	throw ColErr::IndexError<double>(eP,0.0,"Probablity eP negative");
+      Energy.push_back(eB);
+      EWeight.push_back(eP);
+    }
+  if (!StrFunc::isEmpty(EPts) || !StrFunc::isEmpty(EProb))
+    ELog::EM<<"Trailing line info \n"
+	    <<"Energy : "<<EPts<<"\n"
+  	    <<"Energy : "<<EProb<<ELog::endErr;
+
+  // // Normalize 
+  // for(double& prob : EWeight)
+  //   prob/=sum;
+  return (EWeight.empty()) ? 0 : 1;
+}
+  
 void
 GammaSource::populate(const FuncDataBase& Control)
   /*!
@@ -146,19 +227,28 @@ GammaSource::populate(const FuncDataBase& Control)
   yStep=Control.EvalVar<double>(keyName+"YStep"); 
   zStep=Control.EvalVar<double>(keyName+"ZStep"); 
 
+  particleType=Control.EvalDefVar<int>(keyName+"ParticleType",2); 
   radius=Control.EvalVar<double>(keyName+"Radius"); 
   angleSpread=Control.EvalVar<double>(keyName+"ASpread"); 
-  
-  double E=Control.EvalVar<double>(keyName+"EStart"); 
-  const size_t nE=Control.EvalVar<size_t>(keyName+"NE"); 
-  const double EEnd=Control.EvalVar<double>(keyName+"EEnd"); 
-  
-  const double EStep((EEnd-E)/(nE+1));
-  for(size_t i=0;i<nE;i++)
+
+
+  const std::string EList=
+    Control.EvalDefVar<std::string>(keyName+"Energy","");
+  const std::string EPList=
+    Control.EvalDefVar<std::string>(keyName+"EProb","");
+
+  if (!populateEnergy(EList,EPList))
     {
-      Energy.push_back(E);
-      EWeight.push_back(1.0);
-      E+=EStep;
+      double E=Control.EvalVar<double>(keyName+"EStart"); 
+      const size_t nE=Control.EvalVar<size_t>(keyName+"NE"); 
+      const double EEnd=Control.EvalVar<double>(keyName+"EEnd"); 
+      const double EStep((EEnd-E)/(nE+1));
+      for(size_t i=0;i<nE;i++)
+	{
+	  Energy.push_back(E);
+	  EWeight.push_back(1.0);
+	  E+=EStep;
+	}
     }
   return;
 }
@@ -203,7 +293,7 @@ GammaSource::createSource(SDef::Source& sourceCard) const
   
   sourceCard.setActive();
   sourceCard.setComp("vec",Direction);
-  sourceCard.setComp("par",2);            /// photon (2)
+  sourceCard.setComp("par",particleType);            /// photon (2)
   sourceCard.setComp("pos",FocusPoint);
 
   // Direction:

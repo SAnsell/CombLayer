@@ -3,7 +3,7 @@
  
  * File:   buildInc/BlockShutter.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ class Simulation;
 
 /*!
   \namespace BlockShutter System
-  \brief Add hutches to the model
+  \brief Adds Block components in a shutter
   \author S. Ansell
   \version 1.0
   \date September 2009

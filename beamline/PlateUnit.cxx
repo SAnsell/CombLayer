@@ -3,7 +3,7 @@
  
  * File:   beamline/PlateUnit.cxx 
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,6 @@
 #include <map>
 #include <string>
 #include <algorithm>
-#include <boost/bind.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -158,7 +157,8 @@ PlateUnit::findFirstPoint(const Geometry::Vec3D& testPt,
   
   std::vector<Geometry::Vec3D>::const_iterator vc=
     find_if(BVec.begin(),BVec.end(),
-	    boost::bind(std::equal_to<Geometry::Vec3D>(),_1,testPt));
+	    std::bind(std::equal_to<Geometry::Vec3D>(),
+		      std::placeholders::_1,testPt));
 
   return (vc!=BVec.end()) ? 
     static_cast<size_t>(vc-BVec.begin()) :  BVec.size();
@@ -428,24 +428,13 @@ PlateUnit::createSurfaces(ModelSupport::surfRegister& SMap,
 				   PX.first,PX.second,
 				   backPt(i),
 				   sideNorm(PX));
-	  if (j==0)
-	    {
-	      ELog::EM<<"Plane ="<<SN<<" == "<<PX.first<<" :: "
-		      <<PX.second<<ELog::endDiag;
-	      
-	      ELog::EM<<"Dist == "<<(frontPt(0)-frontPt(1)).abs()<<ELog::endDiag;
-	    }
 	  SN++;
 	}
     }
 
   const std::pair<Geometry::Vec3D,Geometry::Vec3D> PXX=
     frontPair(0,1,0.0);
-  
-  ELog::EM<<"Front == "<<PXX.first<<" : "<<PXX.second<<ELog::endDiag;
-  ELog::EM<<"CPT == "<<APts[0]<<" : "<<APts[1]<<ELog::endDiag;
-  ELog::EM<<"CPT == "<<APts[2]<<" : "<<APts[3]<<ELog::endDiag;
-  
+   
   return;
 }
 
@@ -476,6 +465,7 @@ PlateUnit::getString(const size_t layerN) const
 
   std::ostringstream cx;
   bool bFlag(0);
+  const int lValue(offset+static_cast<int>(layerN)*layerSep);
   for(size_t i=0;i<nCorner;i++)
     {
       if (nonConvex[i] || nonConvex[(i+1) % nCorner])
@@ -488,7 +478,7 @@ PlateUnit::getString(const size_t layerN) const
 	  cx<< ((bFlag) ? ") " : " ");
 	  bFlag=0;
 	}
-      cx<<offset+static_cast<int>(layerN*layerSep+i+1);
+      cx<<lValue+static_cast<int>(i+1);
     }
   if (bFlag) cx<<")";
   return cx.str();

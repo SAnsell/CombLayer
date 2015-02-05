@@ -3,7 +3,7 @@
  
  * File:   zoom/makeZoom.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,7 +60,7 @@
 #include "Qhull.h"
 #include "insertInfo.h"
 #include "insertBaseInfo.h"
-#include "InsertComp.h"
+//#include "InsertComp.h"
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -79,7 +79,9 @@
 #include "bendSection.h"
 #include "ZoomBend.h"
 #include "ZoomChopper.h"
+#include "DiskChopper.h"
 #include "ZoomStack.h"
+#include "ZoomOpenStack.h"
 #include "ZoomCollimator.h"
 #include "ZoomTank.h"
 #include "ZoomHutch.h"
@@ -93,7 +95,9 @@ namespace zoomSystem
 makeZoom::makeZoom() :
   ZBend(new ZoomBend("zoomBend")),
   ZChopper(new ZoomChopper("zoomChopper")),
+  ZDisk(new constructSystem::DiskChopper("zoomDisk")),
   ZCollimator(new ZoomCollimator("zoomCollimator")),
+  ZColInsert(new ZoomOpenStack("zoomCollInsert")),
   ZRoof(new ZoomRoof("zoomRoof")),
   ZPrim(new ZoomPrimary("zoomPrimary")),
   ZHut(new ZoomHutch("zoomHutch"))
@@ -108,14 +112,17 @@ makeZoom::makeZoom() :
 
   OR.addObject("zoomBend",ZBend);
   OR.addObject("zoomChopper",ZChopper);
+  OR.addObject(ZDisk);
   OR.addObject("zoomCollimator",ZCollimator);
-  OR.addObject("zoomPrimary",ZPrim);
+  OR.addObject(ZColInsert);
+  OR.addObject(ZPrim);
   OR.addObject("zoomHutch",ZBend);
 }
 
 makeZoom::makeZoom(const makeZoom& A) : 
   ZBend(new ZoomBend(*A.ZBend)),
   ZChopper(new ZoomChopper(*A.ZChopper)),
+  ZDisk(new constructSystem::DiskChopper(*A.ZDisk)),
   ZCollimator(new ZoomCollimator(*A.ZCollimator)),
   ZRoof(new ZoomRoof(*A.ZRoof)),
   ZPrim(new ZoomPrimary(*A.ZPrim)),
@@ -173,8 +180,16 @@ makeZoom::buildIsolated(Simulation& System,
   ZChopper->addInsertCell(74123);
   ZChopper->createAll(System,*ZBend);
 
+  ZDisk->addInsertCell(ZChopper->getVoidCell());
+  ZDisk->createAll(System,*ZChopper,0);
+
   ZCollimator->addInsertCell(74123);
   ZCollimator->createAll(System,*ZChopper);
+
+  ZColInsert->createAll(System,ZCollimator->getVoidCell(),
+			*ZCollimator);
+
+
   /*
   ZRoof->addInsertCell(74123);
   ZRoof->setMonoSurface(BulkObj.getMonoSurf());
@@ -183,8 +198,8 @@ makeZoom::buildIsolated(Simulation& System,
   ZPrim->addInsertCell(74123);
   ZPrim->createAll(System,*ZCollimator);
   
-  ZHut->addInsertCell(74123);
-  ZHut->createAll(System,*ZPrim); 
+  //  ZHut->addInsertCell(74123);
+  //  ZHut->createAll(System,*ZPrim); 
 
   return;
 }
@@ -233,13 +248,16 @@ makeZoom::build(Simulation& System,
       ZChopper->setMonoSurface(BulkObj.getMonoSurf());
       ZChopper->createAll(System,*ZBend,*ZS);
 
+      ELog::EM<<"Void == "<<ZChopper->getVoidCell()<<ELog::endDiag;
+      ZDisk->addInsertCell(ZChopper->getVoidCell());
+      ZDisk->createAll(System,*ZChopper,0);
+      
       ZCollimator->addInsertCell(74123);
       ZCollimator->createAll(System,*ZChopper);
-      
-      ZRoof->addInsertCell(74123);
-      ZRoof->setMonoSurface(BulkObj.getMonoSurf());
-      ZRoof->createAll(System,*ZS,*ZChopper,*ZCollimator);
 
+      ZColInsert->createAll(System,ZCollimator->getVoidCell(),
+			    *ZCollimator);
+      
       ZPrim->addInsertCell(74123);
       ZPrim->createAll(System,*ZCollimator);
     }

@@ -3,7 +3,7 @@
  
  * File:   buildInc/variableSetup.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,6 +43,7 @@ namespace setVariable
   void LensModel(FuncDataBase&);
   void IMatVariables(FuncDataBase&);
   void MuonVariables(FuncDataBase&);
+  void PhotonVariables(FuncDataBase&);
   void SinbadVariables(FuncDataBase&);
   void SNSVariables(FuncDataBase&);
 
@@ -51,6 +52,7 @@ namespace setVariable
 
   void TS1base(FuncDataBase&);
   void TS1BlockTarget(FuncDataBase&);
+  void TS1BulletTarget(FuncDataBase&);
   void TS1CylTarget(FuncDataBase&);
   void TS1PlateTarget(FuncDataBase&);
   void TS1InnerTarget(FuncDataBase&);
@@ -64,6 +66,7 @@ namespace setVariable
   void TS1layout(FuncDataBase&);
   void TS2layout(FuncDataBase&);
   void TS1real(FuncDataBase&);
+  void TS1engineer(FuncDataBase&);
   void TS1upgrade(FuncDataBase&);
 
   void TS2model(FuncDataBase&);

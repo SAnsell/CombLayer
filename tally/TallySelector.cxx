@@ -3,7 +3,7 @@
  
  * File:   tally/TallySelector.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -120,6 +120,7 @@ tallyModification(Simulation& System,
 	    " multiple pieces \n"
 	    " -- scaleWindow[X/Y] {tallyNumber scale} : Scale the window"
             " by the factor \n"
+	    " -- movePoint {tallyNumber Vec3D} : Add Vec3D to tally\n"
 	    " -- single {tallyNumber} : Split cell/surface tally into "
 	    " individual sum [rather than total] \n";
 	  ELog::EM<<ELog::endBasic;
@@ -175,7 +176,36 @@ tallyModification(Simulation& System,
 		}
 	    }
 	}
-
+      else if (key=="movePoint" && nV>=2)
+	{
+	  int tNumber(0);
+	  if (!StrFunc::convert(StrItem[0],tNumber))
+	    ELog::EM<<"Failed to understand TNumber :"	     
+		    <<StrItem[0]<<ELog::endErr;
+	  
+	  Geometry::Vec3D offsetPt;
+	  if (!StrFunc::convert(StrItem[1],offsetPt))
+	    {
+	      size_t ii=0;
+	      if (nV>=4)
+		for(ii=0;ii<3 &&
+		      StrFunc::convert(StrItem[1+ii],offsetPt[ii]);
+		    ii++) ;
+	      if (ii!=3)
+		{
+		  ELog::EM<<"Failed to understand Vector :"   
+			  <<StrItem[1]<<" ";
+		  if (nV>=4)
+		    ELog::EM<<StrItem[2]<<" "
+			    <<StrItem[3]<<" ";
+		  ELog::EM<<ELog::endErr;
+		}
+	    }
+	  errFlag=0;
+	  tallySystem::moveF5Tally(System,tNumber,offsetPt);
+	  ELog::EM<<"Move Point == "<<offsetPt<<ELog::endDiag;
+	  
+	}
       else if ((key=="scaleWindow" ||
 		key=="scaleXWindow" ||
 		key=="scaleYWindow")

@@ -541,7 +541,7 @@ makeT1Upgrade::buildWaterPipe(Simulation& System,
   WaterPipeObj->setOption("");   // no modifiecation to the variable name
   WaterReturnObj->setAngleSeg(12);
   WaterReturnObj->setOption("");   // no modifiecation to the variable name
-
+  ELog::EM<<"MType == "<<MType<<ELog::endDiag;
   if (MType=="Layer")
     {
       WaterPipeObj->setWallOffset(4);
@@ -577,8 +577,8 @@ makeT1Upgrade::buildWaterMod(Simulation& System,
   
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-
-
+  
+  ELog::EM<<"MType - "<<MType<<ELog::endDiag;
   if (MType=="Triangle")
     {
       TriMod=std::shared_ptr<constructSystem::ModBase>
@@ -590,10 +590,10 @@ makeT1Upgrade::buildWaterMod(Simulation& System,
   else if (MType=="Layer")
     {
       TriMod=std::shared_ptr<constructSystem::ModBase>
-	(new CH4Layer("TriModLayer"));
+	  (new CH4Layer("TriModLayer"));
       OR.addObject(TriMod);
       TriMod->createAll(System,FC);
-
+      
       return "TriModLayer";
     }
   else if (MType=="Help" || MType=="help")
@@ -603,82 +603,82 @@ makeT1Upgrade::buildWaterMod(Simulation& System,
       ELog::EM<<"    Layer :: Basic layer moderator"<<ELog::endBasic;
       return "";
     }    
-
+  
   ELog::EM<<"Failed to understand CH4Mod type :"
 	  <<MType<<ELog::endErr;
   return "";
 }
-
+  
 std::string
 makeT1Upgrade::buildH2Mod(Simulation& System,
-			  const attachSystem::FixedComp& FC,
-			  const std::string& MType)
-  /*!
-    Create a H2 moderator based on the input param
-    \param System :: Simulation for target
-    \param FC :: Fixed component for coldMod center
-    \param MType :: Moderator Name
-    \return Container name for reflector
-  */
+			    const attachSystem::FixedComp& FC,
+			    const std::string& MType)
+/*!
+  Create a H2 moderator based on the input param
+  \param System :: Simulation for target
+  \param FC :: Fixed component for coldMod center
+  \param MType :: Moderator Name
+  \return Container name for reflector
+*/
 {
   ELog::RegMethod RegA("makeT1Upgrade","buildH2Mod");
-  
+
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
   if (MType=="Basic")
     {
-      H2Mod=std::shared_ptr<constructSystem::ModBase>
-	(new H2Section("H2Mod"));
-      OR.addObject(H2Mod);
-      H2Mod->createAll(System,FC);
+	H2Mod=std::shared_ptr<constructSystem::ModBase>
+	  (new H2Section("H2Mod"));
+	OR.addObject(H2Mod);
+	H2Mod->createAll(System,FC);
 
-      H2PMod=std::shared_ptr<ts1System::HPreMod>
-	(new HPreMod("HPreMod"));      
-      H2PMod->createAll(System,*H2Mod,1);
-      RefObj->addToInsertControl(System,*H2PMod,*H2PMod);
+	H2PMod=std::shared_ptr<ts1System::HPreMod>
+	  (new HPreMod("HPreMod"));      
+	H2PMod->createAll(System,*H2Mod,1);
+	RefObj->addToInsertControl(System,*H2PMod,*H2PMod);
 
-      return "H2Mod";
+	return "H2Mod";
     }
   if (MType=="CylMod")
     {
-      H2Mod=std::shared_ptr<constructSystem::ModBase>
-	(new constructSystem::CylMod("H2CylMod"));
-      OR.addObject(H2Mod);
-      H2Mod->createAll(System,FC);
-      H2PCylMod=std::shared_ptr<ts1System::CylPreSimple>
-	(new CylPreSimple("H2CylPre"));      
-      OR.addObject(H2PCylMod);
-      return "CylMod";
+	H2Mod=std::shared_ptr<constructSystem::ModBase>
+	  (new constructSystem::CylMod("H2CylMod"));
+	OR.addObject(H2Mod);
+	H2Mod->createAll(System,FC);
+	H2PCylMod=std::shared_ptr<ts1System::CylPreSimple>
+	  (new CylPreSimple("H2CylPre"));      
+	OR.addObject(H2PCylMod);
+	return "CylMod";
     }
   else if (MType=="Layer")
     {
-      H2Mod=std::shared_ptr<constructSystem::ModBase>
-	(new SplitInner("H2Inner","H2Layer"));
-      OR.addObject(H2Mod);
-      H2Mod->createAll(System,FC);
-      return "H2Layer";
+	H2Mod=std::shared_ptr<constructSystem::ModBase>
+	  (new SplitInner("H2Inner","H2Layer"));
+	OR.addObject(H2Mod);
+	H2Mod->createAll(System,FC);
+	return "H2Layer";
     }
   else if (MType=="Help" || MType=="help")
     {
-      ELog::EM<<"Options = [H2ModType]"<<ELog::endBasic;
-      ELog::EM<<"    Basic :: Standard TS1 Style"<<ELog::endBasic;
-      ELog::EM<<"    CylMod :: Cylinder Moderator"<<ELog::endBasic;
-      ELog::EM<<"    Layer :: Basic layer moderator"<<ELog::endBasic;
-      return "";
+	ELog::EM<<"Options = [H2ModType]"<<ELog::endBasic;
+	ELog::EM<<"    Basic :: Standard TS1 Style"<<ELog::endBasic;
+	ELog::EM<<"    CylMod :: Cylinder Moderator"<<ELog::endBasic;
+	ELog::EM<<"    Layer :: Basic layer moderator"<<ELog::endBasic;
+	return "";
     }    
 
   ELog::EM<<"Failed to understand CH4Mod type :"
-	  <<MType<<ELog::endErr;
+	    <<MType<<ELog::endErr;
   return "";
 }
 
 void
 makeT1Upgrade::buildHelp(Simulation& System) 
-  /*!
-    Build a simple help schema if help is required
-    \param System :: Simulation model
-  */
+/*!
+  Build a simple help schema if help is required
+  \param System :: Simulation model
+*/
 {
   ELog::RegMethod RegA("makeT1Upgrade","buildHelp");
 
@@ -693,12 +693,12 @@ makeT1Upgrade::buildHelp(Simulation& System)
 
 void 
 makeT1Upgrade::build(Simulation* SimPtr,
-		     const mainSystem::inputParam& IParam)
-  /*!
-    Carry out the full build
-    \param SimPtr :: Simulation system
-    \param IParam :: Input parameters
-   */
+		       const mainSystem::inputParam& IParam)
+/*!
+  Carry out the full build
+  \param SimPtr :: Simulation system
+  \param IParam :: Input parameters
+*/
 {
   // For output stream
   ELog::RegMethod RControl("makeT1Upgrade","build");
@@ -719,24 +719,24 @@ makeT1Upgrade::build(Simulation* SimPtr,
 
   int voidCell(74123);
   if (!IParam.flag("exclude") ||
-      (!IParam.compValue("E",std::string("Bulk")) && 
-       !IParam.compValue("E",std::string("Reflector")) )) 
+	(!IParam.compValue("E",std::string("Bulk")) && 
+	 !IParam.compValue("E",std::string("Reflector")) )) 
     {
-    //  VoidObj->addInsertCell(74123);  
-      VoidObj->createAll(*SimPtr);
-      
-      BulkObj->addInsertCell(voidCell);  
-      BulkObj->createAll(*SimPtr,IParam,*VoidObj);
+	//  VoidObj->addInsertCell(74123);  
+	VoidObj->createAll(*SimPtr);
+    
+	BulkObj->addInsertCell(voidCell);  
+	BulkObj->createAll(*SimPtr,IParam,*VoidObj);
 
-      MonoTopObj->createAll(*SimPtr,2,*VoidObj,*BulkObj);
-      MonoBaseObj->createAll(*SimPtr,1,*VoidObj,*BulkObj);
-      voidCell=VoidObj->getVoidCell();
+	MonoTopObj->createAll(*SimPtr,2,*VoidObj,*BulkObj);
+	MonoBaseObj->createAll(*SimPtr,1,*VoidObj,*BulkObj);
+	voidCell=VoidObj->getVoidCell();
     }
   else
     {
       VoidObj->createStatus(*SimPtr);
     }
-  
+
   RefObj->addInsertCell(voidCell);
   RefObj->createAll(*SimPtr,World::masterOrigin());
 

@@ -3,7 +3,7 @@
  
  * File:   t1UpgradeInc/InnerLayer.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,7 +50,10 @@ class InnerLayer : public ts1System::CH4Layer
   int poisonMat;                   ///< Poison (Gadolinium) 
   double pCladThick;               ///< Poison thickness
   int pCladMat;                    ///< Poison Cladding (Al)  
-    
+
+  std::vector<int> innerCells;     ///< Cells that need inner reference
+
+  
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
 
@@ -72,6 +75,9 @@ class InnerLayer : public ts1System::CH4Layer
   virtual std::string 
     getLayerString(const size_t,const size_t) const;
 
+  /// Const accessor
+  const std::vector<int>& getInnerCells() const
+    { return innerCells; }
   void createAll(Simulation&,const attachSystem::FixedComp&);
 
 };

@@ -3,7 +3,7 @@
  
  * File:   process/surfRegister.cxx
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,6 @@
 #include <map> 
 #include <string>
 #include <algorithm>
-#include <boost/bind.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -157,7 +156,8 @@ surfRegister::process(std::vector<int>& VecList) const
   */
 {
   transform(VecList.begin(),VecList.end(),
-	    VecList.begin(),boost::bind(&surfRegister::realSurf,this,_1));
+	    VecList.begin(),std::bind(&surfRegister::realSurf,
+				      this,std::placeholders::_1));
   return;
 }
 

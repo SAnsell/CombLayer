@@ -515,10 +515,24 @@ inputParam::setDesc(const std::string& K,const std::string& D)
   \param D :: Description to add
 */
 {
-  ELog::RegMethod RegA("inputParam","setFlag");
+  ELog::RegMethod RegA("inputParam","setDesc");
 
   IItemBase* IPtr=getIndex(K);
-  IPtr->setDesc(D);
+  std::string::size_type pos=D.find('\n');
+  if (pos!=std::string::npos)
+    {
+      std::string Out(D);
+      do
+	{
+	  Out.replace(pos,1,"\n          ");
+	  pos=Out.find('\n',pos+10);
+	}
+      while(pos!=std::string::npos);
+      IPtr->setDesc(Out);
+    }
+  else
+    IPtr->setDesc(D);
+  
   return;
 }
 
@@ -893,6 +907,9 @@ inputParam::regItem<Geometry::Vec3D>(const std::string&,const std::string&,
 // MULTI:
 template void 
 inputParam::regMulti<int>(const std::string&,const std::string&,
+			  const size_t,const long int);
+template void 
+inputParam::regMulti<size_t>(const std::string&,const std::string&,
 			  const size_t,const long int);
 
 template void 

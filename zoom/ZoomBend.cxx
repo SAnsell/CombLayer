@@ -3,7 +3,7 @@
  
  * File:   zoom/ZoomBend.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,6 +70,8 @@
 #include "SimProcess.h"
 #include "surfDIter.h"
 #include "SurInter.h"
+#include "surfDBase.h"
+#include "mergeTemplate.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -79,8 +81,6 @@
 #include "FixedComp.h"
 #include "SecondTrack.h"
 #include "TwinComp.h"
-#include "LinearComp.h"
-#include "InsertComp.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "GeneralShutter.h"
@@ -112,12 +112,12 @@ ZoomBend::ZoomBend(const ZoomBend& A) :
   bendIndex(A.bendIndex),cellIndex(A.cellIndex),
   populated(A.populated),BCentre(A.BCentre),normalOut(A.normalOut),
   bendAngle(A.bendAngle),bendVertAngle(A.bendVertAngle),
-  bendRadius(A.bendRadius),bendLength(A.bendLength),
-  NVanes(A.NVanes),bendWidth(A.bendWidth),bendHeight(A.bendHeight),
-  vaneThick(A.vaneThick),vaneMat(A.vaneMat),xStep(A.xStep),
-  yStep(A.yStep),zStep(A.zStep),BSector(A.BSector),
-  wallThick(A.wallThick),innerMat(A.innerMat),wallMat(A.wallMat),
-  innerCell(A.innerCell)
+  bendXAngle(A.bendXAngle),bendRadius(A.bendRadius),
+  bendLength(A.bendLength),NVanes(A.NVanes),bendWidth(A.bendWidth),
+  bendHeight(A.bendHeight),vaneThick(A.vaneThick),
+  vaneMat(A.vaneMat),xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
+  BSector(A.BSector),wallThick(A.wallThick),innerMat(A.innerMat),
+  wallMat(A.wallMat),innerCell(A.innerCell)
   /*!
     Copy constructor
     \param A :: ZoomBend to copy
@@ -142,6 +142,7 @@ ZoomBend::operator=(const ZoomBend& A)
       normalOut=A.normalOut;
       bendAngle=A.bendAngle;
       bendVertAngle=A.bendVertAngle;
+      bendXAngle=A.bendXAngle;
       bendRadius=A.bendRadius;
       bendLength=A.bendLength;
       NVanes=A.NVanes;
@@ -183,10 +184,14 @@ ZoomBend::populate(const Simulation& System)
   xStep=Control.EvalVar<double>(keyName+"XStep");
   yStep=Control.EvalVar<double>(keyName+"YStep");
   zStep=Control.EvalVar<double>(keyName+"ZStep");
+
+  bxStep=Control.EvalVar<double>(keyName+"EnterXStep");
+  bzStep=Control.EvalVar<double>(keyName+"EnterZStep");
   
   bendAngle=Control.EvalVar<double>(keyName+"Angle");
   bendVertAngle=Control.EvalVar<double>(keyName+"VertAngle");
-
+  bendXAngle=Control.EvalVar<double>(keyName+"XAngle");
+  
   bendLength=0.0;
   for(size_t i=0;i<4;i++)
     {
@@ -247,31 +252,28 @@ ZoomBend::createUnitVector(const attachSystem::FixedComp& ZS)
   else
     {
       attachSystem::FixedComp::createUnitVector(ZS);
+      Z*=-1;
       bX=X;
       bY=Y;
       bZ=Z;
+      const Geometry::Quaternion Qbx=
+	Geometry::Quaternion::calcQRot(bendXAngle/1000.0,X);
+      Qbx.rotate(bZ);
+      Qbx.rotate(bY);
       bEnter=ZS.getCentre();
+      bEnter+= X*bxStep+Z*bzStep;
     }
   // link point 
   //  FixedComp::createUnitVector(ZS.getBackPt(),ZS.getY());  
 
   Origin+=X*xStep+Y*yStep+Z*zStep;
-
+  Geometry::Vec3D Diff=bEnter-Origin;
   // TODO :: 
   // STUFF FOR BEND OCCURS AT DIFFERENT PLACE :
 
   // Calculate the difference between the Y and the bendYAxis
   // to correctly set bend length
   bendLength/=cos(bendAngle/1000.0);
-  normalOut=bY;
-  // Now rotate the Z-bend in the angle
-
-  const Geometry::Quaternion Qy=
-    Geometry::Quaternion::calcQRotDeg(bendVertAngle,bY);
-  Qy.rotate(bZ);
-  Qy.rotate(bX);
-  Geometry::Quaternion::calcQRot(bendAngle/1000.0,bZ).rotate(normalOut);
-
 
   // Rotate beamAxis to the final angle [ bendAngle in mRad]
   // Note : the sign of the angle dertermine which side of
@@ -281,14 +283,25 @@ ZoomBend::createUnitVector(const attachSystem::FixedComp& ZS)
   //    from E2.
 
   bendRadius=1000.0*bendLength/bendAngle;
-  BCentre=bEnter-bX*bendRadius;  // correct: X is tangent at this pt.
-  bExit= bX*bendRadius;
-  Geometry::Quaternion::calcQRot(bendAngle/1000.0,bZ).rotate(bExit);
+  if(bendRadius<0)
+    {
+      bZ*=-1;
+      //      bX=-1;
+      bendRadius*=-1;
+      bendAngle*=-1;
+    }
+  normalOut=bY;
+  zOut=bZ;
+  Geometry::Quaternion::calcQRot(bendAngle/1000.0,bX).rotate(normalOut);
+  Geometry::Quaternion::calcQRot(bendAngle/1000.0,bX).rotate(zOut);
+
+  BCentre=bEnter-bZ*bendRadius;  // correct: X is tangent at this pt.
+  bExit= bZ*bendRadius;
+  Geometry::Quaternion::calcQRot(bendAngle/1000.0,bX).rotate(bExit);
   bExit += BCentre;
-  //  ExitPoint+=BCentre;
+
 
   SecondTrack::setBeamExit(bExit,normalOut);
-    
   CS.setVNum(chipIRDatum::zoomBendLength,bendLength);
   CS.setVNum(chipIRDatum::zoomBendRadius,bendRadius);
   CS.setENum(chipIRDatum::zoomBendShutter,MR.calcRotate(bEnter));  
@@ -297,7 +310,6 @@ ZoomBend::createUnitVector(const attachSystem::FixedComp& ZS)
   CS.setENum(chipIRDatum::zoomBendExit,MR.calcRotate(bExit));  
   CS.setENum(chipIRDatum::zoomBendStartNorm,MR.calcAxisRotate(bY));  
   CS.setENum(chipIRDatum::zoomBendExitNorm,MR.calcAxisRotate(normalOut));  
-  ELog::EM<<"Z == "<<Z<<ELog::endDiag;
   return;
 }
 
@@ -353,15 +365,14 @@ ZoomBend::createSurfaces()
   // Create Bend [Edges]
   
   ModelSupport::buildPlane(SMap,bendIndex+505,
-			   bEnter-bZ*(bendHeight/2.0),bZ);
+			   bEnter-bX*(bendWidth/2.0),bX);
   ModelSupport::buildPlane(SMap,bendIndex+506,
-			   bEnter+bZ*(bendHeight/2.0),bZ);
-
-  ModelSupport::buildCylinder(SMap,bendIndex+503,BCentre+bX*(bendWidth/2.0),
-			      bZ,bendRadius);
-  ModelSupport::buildCylinder(SMap,bendIndex+504,BCentre-bX*(bendWidth/2.0),
-			      bZ,bendRadius);
+			   bEnter+bX*(bendWidth/2.0),bX);
   
+  ModelSupport::buildCylinder(SMap,bendIndex+503,BCentre+bZ*(bendHeight/2.0),
+			      bX,fabs(bendRadius));
+  ModelSupport::buildCylinder(SMap,bendIndex+504,BCentre-bZ*(bendHeight/2.0),
+			      bX,fabs(bendRadius));  
   return;
 }
 
@@ -376,11 +387,11 @@ ZoomBend::createAttenuation(Simulation& System)
 
   // Create +/- insert bend
   ModelSupport::buildCylinder(SMap,bendIndex+1003,
-			      BCentre+bX*(attnZStep+bendWidth/2.0),
-			      bZ,bendRadius);
+			      BCentre+bZ*(attnZStep+bendHeight/2.0),
+			      bX,fabs(bendRadius));
   ModelSupport::buildCylinder(SMap,bendIndex+1004,
-			      BCentre-bX*(attnZStep+bendWidth/2.0),
-			      bZ,bendRadius);
+			      BCentre-bZ*(attnZStep+bendHeight/2.0),
+			      bX,fabs(bendRadius));
   
   std::string Out;
   int ONum(bendIndex+1000);
@@ -427,6 +438,7 @@ ZoomBend::createVanes(Simulation& System)
    */
 {
   ELog::RegMethod RegA("ZoomBend","createVanes");
+
   if (NVanes)
     {
       std::vector<double> VGap;
@@ -439,6 +451,7 @@ ZoomBend::createVanes(Simulation& System)
       // Construct layer process:
       ModelSupport::surfDivide DA;
       double gapSum=0.0;
+
       for(size_t i=0;i<NVanes;i++)
 	{
 	  gapSum+=VacFrac;
@@ -451,12 +464,24 @@ ZoomBend::createVanes(Simulation& System)
       DA.addMaterial(0);
 
       DA.init();
-      
       DA.setCellN(innerCell);
       DA.setOutNum(cellIndex,bendIndex+801);
-      DA.makePair<Geometry::Cylinder>(-SMap.realSurf(bendIndex+503),
-				      SMap.realSurf(bendIndex+504));
-      DA.activeDivide(System);
+
+      // Modern divider system:
+      ModelSupport::mergeTemplate<Geometry::Cylinder,
+				  Geometry::Cylinder> vaneRule;
+      vaneRule.setSurfPair(SMap.realSurf(bendIndex+503),
+			   SMap.realSurf(bendIndex+504));
+      
+      const std::string OutA=
+	ModelSupport::getComposite(SMap,bendIndex," -503 ");
+      const std::string OutB=
+	ModelSupport::getComposite(SMap,bendIndex," 504 ");
+      vaneRule.setInnerRule(OutA);
+      vaneRule.setOuterRule(OutB);
+  
+      DA.addRule(&vaneRule);
+      DA.activeDivideTemplate(System);
       cellIndex=DA.getCellNum();
     }
   return;
@@ -573,16 +598,15 @@ ZoomBend::createLinks()
 
   // Set inner link points:[pointing into the void]
   BCentre=bEnter-bX*bendRadius;  // correct because X is tangent at this point
-  FixedComp::setConnect(2,bEnter-bX*(bendWidth/2.0),bX);
-  FixedComp::setConnect(3,bEnter+bX*(bendWidth/2.0),-bX);
-  FixedComp::setConnect(4,bEnter-bZ*(bendHeight/2.0),bZ);
-  FixedComp::setConnect(5,bEnter+bZ*(bendHeight/2.0),-bZ);
+  FixedComp::setConnect(2,bEnter-bX*(bendHeight/2.0),bX);
+  FixedComp::setConnect(3,bEnter+bX*(bendHeight/2.0),-bX);
+  FixedComp::setConnect(4,bEnter-bZ*(bendWidth/2.0),bZ);
+  FixedComp::setConnect(5,bEnter+bZ*(bendWidth/2.0),-bZ);
 
   FixedComp::setLinkSurf(2,SMap.realSurf(bendIndex+504));
   FixedComp::setLinkSurf(3,-SMap.realSurf(bendIndex+503));
   FixedComp::setLinkSurf(4,SMap.realSurf(bendIndex+505));
   FixedComp::setLinkSurf(5,-SMap.realSurf(bendIndex+506));
-
 
 
   SecondTrack::setBeamExit(MidPt,normalOut);
@@ -601,14 +625,23 @@ ZoomBend::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("ZoomBend","createAll");
 
+
   populate(System);
   createUnitVector(ZC);
   createSurfaces();
   createObjects(System);
   createVanes(System);
+
   createAttenuation(System);
   insertObjects(System);       
   createLinks();
+
+  // Adjust bY for exit
+
+  const masterRotate& MR=masterRotate::Instance();  
+  
+  bY=normalOut;
+  bZ=zOut;
   return;
 }
   

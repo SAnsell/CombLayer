@@ -3,7 +3,7 @@
  
  * File:   chip/ChipIRGuide.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,6 @@
 #include <string>
 #include <algorithm>
 #include <memory>
-//#include <boost/bind.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -80,7 +79,6 @@
 #include "SecondTrack.h"
 #include "TwinComp.h"
 #include "LinearComp.h" 
-#include "InsertComp.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "GeneralShutter.h"
@@ -95,7 +93,7 @@ namespace hutchSystem
 {
 
 ChipIRGuide::ChipIRGuide(const std::string& Key) : 
-  attachSystem::TwinComp(Key,7),
+  attachSystem::TwinComp(Key,12),
   attachSystem::ContainedGroup("inner","outer","leftwall","rightwall"),
   guideIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(guideIndex+1),Filter("chipFilter"),nLayers(0),
@@ -332,6 +330,19 @@ ChipIRGuide::populate(const FuncDataBase& Control)
 			       concMat,concLayMat);
   ModelSupport::populateDivide(Control,nLayers,
    			       keyName+"ConcFrac_",concFrac);
+
+  // Remedial layers
+  nRemedialWestLayers=Control.EvalVar<size_t>(keyName+"RemedialWestNLayers");
+  // Concreate :
+  ModelSupport::populateDivide(Control,nRemedialWestLayers,
+			       keyName+"WRemedMat_",
+			       steelMat,remedialWestMat);
+  ModelSupport::populateDivideLen(Control,nRemedialWestLayers,
+				  keyName+"WRemedLen_",
+				  remedialWestWallThick,
+				  remedialWestFrac);
+
+
   return;
 }
 
@@ -576,6 +587,8 @@ ChipIRGuide::createSurfacesCommon()
 			   Origin+X*(rightConcInner+remedialWestWallThick),rX);
   ModelSupport::buildPlane(SMap,guideIndex+606,
 			   Origin+Z*(remedialWallHeight-floorConc),Z);
+
+
   // Wedge shielding piece on TSA side
 //  rX=X;
 //  Geometry::Quaternion::calcQRotDeg(leftWedgeAngle,Z).rotate(rX);  
@@ -657,9 +670,9 @@ ChipIRGuide::createObjects(Simulation& System)
 
   // Right Wall
   Out=ModelSupport::getComposite(SMap,guideIndex,
-				 "-100 1 -1002 115 -116 (14:114) -204 -214 ");
+				 "-100  1 -1002 115 -116 (14:114) -204 -214 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
-  voidCells.push_back(cellIndex-1);
+  //  voidCells.push_back(cellIndex-1);
   layerCells.push_back(cellIndex-1);
 
   // Left Wall
@@ -698,8 +711,14 @@ ChipIRGuide::createObjects(Simulation& System)
 				 "-100 1 -1002 (214:204) (502:503:506) "
 				 "205 -606 -604 -614 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
+  layerCells.push_back(cellIndex-1);
 
-  
+    // REMEDIAL ROOF to the wall
+  Out=ModelSupport::getComposite(SMap,guideIndex,
+				 "-100 1 -1002 -214 -204 213 206 -606");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
+  layerCells.push_back(cellIndex-1);
+
 
 
  //above wall height, below roof
@@ -714,7 +733,7 @@ ChipIRGuide::createObjects(Simulation& System)
   addOuterSurf("inner",Out);  
 
   Out=ModelSupport::getComposite(SMap,guideIndex,
-				 "-100 1 -1002 213 -204 -214 205 -206 ");
+				 "-100 1 -1002 213 -204 -214 205 -606 ");
   addOuterSurf("outer",Out);  
   
   Out=ModelSupport::getComposite(SMap,guideIndex,
@@ -722,7 +741,7 @@ ChipIRGuide::createObjects(Simulation& System)
   addOuterSurf("leftwall",Out);
 
   Out=ModelSupport::getComposite(SMap,guideIndex,
-                                 "-100 1 -614 -604 (214:204) 205 -206 ");
+                                 "-100 1 -1002 -614 -604 (214:204) 205 -606 ");
   addOuterSurf("rightwall",Out);
 
   return;
@@ -758,6 +777,8 @@ ChipIRGuide::layerProcess(Simulation& System)
   // Steel layers
   //  layerSpecial(System);
 
+  if (1>2)
+    {
   if (nLayers>1)
     {
       std::string OutA,OutB;
@@ -808,7 +829,6 @@ ChipIRGuide::layerProcess(Simulation& System)
   // ---------------
   if (nConcLayers>1)
     {
-      std::string OutA,OutB;
       ModelSupport::surfDivide DA;
             
       for(size_t i=1;i<nConcLayers;i++)
@@ -823,9 +843,31 @@ ChipIRGuide::layerProcess(Simulation& System)
       const std::vector<std::pair<int,int> > 
 	BX={{213,13},{213,113}};
 	
-      //      procSurfDivide(System,DA,1,AX,"(14:114)","-214 -204");
+      procSurfDivide(System,DA,1,AX,"(14:114)","-214 -204");
       procSurfDivide(System,DA,2,BX,"213","(-13:-113)");
     }
+
+    }
+  // ----------------------
+  // REMEDIAL WALL Divider:
+  // ----------------------
+  if (nRemedialWestLayers>1)
+    {
+      ModelSupport::surfDivide DA;
+            
+      for(size_t i=1;i<nRemedialWestLayers;i++)
+	{
+	  DA.addFrac(remedialWestFrac[i-1]);
+	  DA.addMaterial(remedialWestMat[i-1]);
+	}
+      DA.addMaterial(remedialWestMat.back());
+
+      const std::vector<std::pair<int,int> > 
+	AX={{214,614},{204,604}};
+      procSurfDivide(System,DA,3,AX,"(204:214)","-614 -604");
+    }
+  
+  
   return;
 }
 
@@ -840,6 +882,7 @@ ChipIRGuide::procSurfDivide(Simulation& System,
     Process all the basic dividing layers
     \param System :: Simuation 
     \param DA :: Divide system
+    \param offset :: index within layerCell offest vector
     \param VA :: Offset vector
     \param OA :: Inner string [not composed]
     \param OA :: Outer string [not composed]
@@ -851,6 +894,7 @@ ChipIRGuide::procSurfDivide(Simulation& System,
   // Cell Specific:
   DA.init();
   DA.setCellN(layerCells[offset]);
+
   DA.setOutNum(cellIndex,guideIndex+
 	       static_cast<int>(offset+1)*800);
   
@@ -865,7 +909,6 @@ ChipIRGuide::procSurfDivide(Simulation& System,
   
   OutA=ModelSupport::getComposite(SMap,guideIndex,OA);
   OutB=ModelSupport::getComposite(SMap,guideIndex,OB);
-
   surroundRule.setInnerRule(OutA);
   surroundRule.setOuterRule(OutB);
 
@@ -990,6 +1033,13 @@ ChipIRGuide::createLinks()
   FixedComp::setLinkSurf(4,-SMap.realSurf(guideIndex+5));
   FixedComp::setLinkSurf(5,SMap.realSurf(guideIndex+6));  
   FixedComp::setLinkSurf(6,SMap.realSurf(guideIndex+1002));
+
+  // OutersideWalls
+  FixedComp::setLinkSurf(7,-SMap.realSurf(guideIndex+213));
+  FixedComp::setLinkSurf(8,SMap.realSurf(guideIndex+604));
+      
+
+
 
   return;
 }

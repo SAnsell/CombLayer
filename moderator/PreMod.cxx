@@ -3,7 +3,7 @@
  
  * File:   moderator/PreMod.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,7 +74,7 @@ namespace moderatorSystem
 {
 
 PreMod::PreMod(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,0),
+  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
   preIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(preIndex+1),populated(0),centOrgFlag(1),
   divideSurf(0),targetSurf(0)
@@ -279,6 +279,35 @@ PreMod::createObjects(Simulation& System)
 }
 
 void
+PreMod::createLinks()
+  /*!
+    Creates a full attachment set
+  */
+{  
+  ELog::RegMethod RegA("PreMod","createLinks");
+
+  FixedComp::setConnect(0,Origin,-Y);
+  FixedComp::setLinkSurf(0,SMap.realSurf(preIndex+1));
+  
+  FixedComp::setConnect(1,Origin+Y*depth,Y);
+  FixedComp::setLinkSurf(1,SMap.realSurf(preIndex+2));
+
+  FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
+  FixedComp::setLinkSurf(2,SMap.realSurf(preIndex+3));
+
+  FixedComp::setConnect(3,Origin+X*(width/2.0),X);
+  FixedComp::setLinkSurf(3,SMap.realSurf(preIndex+4));
+        
+  FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
+  FixedComp::setLinkSurf(4,-SMap.realSurf(preIndex+5));
+
+  FixedComp::setConnect(4,Origin+Z*(height/2.0),Z);
+  FixedComp::setLinkSurf(4,-SMap.realSurf(preIndex+6));
+  
+  return;
+}
+  
+void
 PreMod::createAll(Simulation& System,const size_t baseIndex,
 		  const attachSystem::FixedComp& FC,
 		  const int rFlag)
@@ -297,6 +326,7 @@ PreMod::createAll(Simulation& System,const size_t baseIndex,
   if (rFlag) FixedComp::applyRotation(Z,180.0);
   createSurfaces(baseIndex,FC);
   createObjects(System);
+  createLinks();
   insertObjects(System);       
   
   return;

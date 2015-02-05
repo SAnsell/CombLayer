@@ -3,7 +3,7 @@
  
  * File:   polyInc/PolyVar.h
  *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,7 +48,7 @@ class PolyVar  : public PolyFunction
 
   size_t iDegree;                                ///< Degree of polynomial  
   std::vector<PolyVar<VCount-1> > PCoeff;     ///< Polynominals [0]=const 
-
+  
  public:
 
   explicit PolyVar(const size_t =0);
@@ -164,6 +164,7 @@ class PolyVar<1> : public PolyFunction
   size_t solveQuadratic(std::complex<double>&,std::complex<double>&) const;
   size_t solveCubic(std::complex<double>&,std::complex<double>&,
 		 std::complex<double>&) const;
+  int checkSmallPoly(std::vector<std::complex<double> >&) const;
 
  public:
 
@@ -194,6 +195,8 @@ class PolyVar<1> : public PolyFunction
   double operator()(const std::vector<double>&) const;
   double operator()(const double*) const;
 
+  std::complex<double> evalPoly(const std::complex<double>&) const;
+  
   // ordering
   bool operator<(const PolyVar<1>&) const;
   // arithmetic updates
@@ -242,6 +245,7 @@ class PolyVar<1> : public PolyFunction
 	      const double =-1.0) const;
 
   std::vector<double> realRoots(const double= -1.0);
+  std::vector<std::complex<double> > calcDurandKernerRoots(const double= -1.0);
   std::vector<std::complex<double> > calcRoots(const double= -1.0);
 
   int isZero(const double) const;

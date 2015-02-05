@@ -45,7 +45,6 @@ class PreMod : public attachSystem::ContainedComp,
   int populated;                ///< 1:var,2:axis,4:cent,8:face,16:cell
   int centOrgFlag;              ///< Origin centred / at a point
 
-
   double width;             ///< Total Width
   double height;            ///< Total height
   double depth;             ///< Total depth
@@ -67,7 +66,8 @@ class PreMod : public attachSystem::ContainedComp,
 
   void createSurfaces(const size_t,const attachSystem::FixedComp&);
   void createObjects(Simulation&);
-
+  void createLinks();
+  
  public:
 
   PreMod(const std::string&);

@@ -3,7 +3,7 @@
  
  * File:   tallyInc/TallyCreate.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,6 +68,7 @@ namespace tallySystem
   void setF5Angle(Simulation&,const int,const Geometry::Vec3D&,   
 		  const double,const double);
   void modF5TallyCells(Simulation&,const int,const std::vector<int>&);
+  void moveF5Tally(Simulation&,const int,const Geometry::Vec3D&);
   void widenF5Tally(Simulation&,const int,const int,const double);
   void slideF5Tally(Simulation&,const int,const int,const double);
   void shiftF5Tally(Simulation&,const int,const double);

@@ -120,7 +120,8 @@ meshConstruct::processMesh(Simulation& System,
     }
   const masterRotate& MR=masterRotate::Instance();
   
-  if (PType=="free" || PType=="heat")
+  if (PType=="free" || PType=="heat" ||
+      PType=="freeRotated" || PType=="heatRotated")
     {
       const std::string doseType=
 	inputItem<std::string>(IParam,Index,2,"Dose type");
@@ -130,14 +131,16 @@ meshConstruct::processMesh(Simulation& System,
 	inputItem<Geometry::Vec3D>(IParam,Index,6,"High Corner");
       
       // Rotation:
-      size_t nxyzIndex(10);
+      size_t nxyzIndex(9);
       std::string revStr;
       const int flag=checkItem<std::string>(IParam,Index,9,revStr);
-      if (!flag || revStr!="r")
+      if (!flag && revStr!="r" &&
+	  PType!="freeRotated" && PType!="heatRotated")
 	{
+	  ELog::EM<<"Reverse rotating"<<ELog::endDiag;
 	  APt=MR.reverseRotate(APt);
 	  BPt=MR.reverseRotate(BPt);
-	  nxyzIndex=9;
+	  nxyzIndex+=(flag && revStr=="r") ? 1 : 0;
 	}
       
       int Nxyz[3];
@@ -171,7 +174,7 @@ meshConstruct::rectangleMesh(Simulation& System,const int type,
     \param MPts :: Points ot use
   */
 {
-  ELog::RegMethod RegA("MeshCreate","meshSection");
+  ELog::RegMethod RegA("meshConstruct","rectangleMesh");
 
   // Find next available number
   int tallyN(type);

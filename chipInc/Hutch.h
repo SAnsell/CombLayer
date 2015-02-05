@@ -3,7 +3,7 @@
  
  * File:   chipInc/Hutch.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef Hutch_h
-#define Hutch_h
+#ifndef hutchSystem_Hutch_h
+#define hutchSystem_Hutch_h
 
 class Simulation;
 
@@ -48,8 +48,6 @@ namespace hutchSystem
 
 class ChipSample;
 
-void createWallsChipIR(Simulation&,const shutterSystem::GeneralShutter&);
-
 /*!
   \class ChipIRHutch
   \version 1.0
@@ -75,7 +73,8 @@ void createWallsChipIR(Simulation&,const shutterSystem::GeneralShutter&);
   std::shared_ptr<Table> FTable;                 ///< Front table
   std::shared_ptr<Table> BTable;                 ///< Back table
   std::shared_ptr<BeamStop> BStop;               ///< BeamStop object
-  std::vector<ChipSample> SampleItems;    ///< BeamStop objects
+  /// Samples [if added]
+  std::vector<std::shared_ptr<ChipSample>> SampleItems; 
 
   Geometry::Vec3D BeamCentPoint;  ///< Centre point for origin
   Geometry::Vec3D ImpactPoint;    ///< Impact point [effective origin]
@@ -144,41 +143,45 @@ void createWallsChipIR(Simulation&,const shutterSystem::GeneralShutter&);
   int collimatorVoid;      ///< Cell number of collimator void
   int tailVoid;            ///< Tail void
 
+  double westExtraThick;    ///< Extra wall thick
+  double westExtraLength;   ///< Extra wall length from hutch front [out]
+  
+  
   Geometry::Vec3D beamStopCent;  ///< centroid of the beamspot
   Geometry::Vec3D serverCent;    ///< centroid of the server room
   // ----------------------------------------------------
   // SURFACE DIVIDERS:
-  // ----------------------------------------------------
+  // --------------------------------------------1--------
+
+  ///< Cells layering
+  std::map<std::string,int> layerCells;  
 
   size_t nLWallDivide;      ///< Left Wall divider
   size_t nRWallDivide;      ///< Right Wall divider
   size_t nRoofDivide;       ///< Roof divider
   size_t nFloorDivide;      ///< Floor divider
   size_t nTrimDivide;       ///< Trim divider
+  size_t nWestDivide;       ///< West extra
 
-  std::vector<double> lWallFrac;  ///< guide Wall thickness (fractions)
-  std::vector<int> lWallMatList;  ///< guide Wall materials
-  std::vector<double> rWallFrac;  ///< guide Wall thickness (fractions)
-  std::vector<int> rWallMatList;  ///< guide Wall materials
+  std::vector<double> lWallFrac; ///< guide Wall thickness (fractions)
+  std::vector<int> lWallMatList; ///< guide Wall materials
+  std::vector<double> rWallFrac; ///< guide Wall thickness (fractions)
+  std::vector<int> rWallMatList; ///< guide Wall materials
   std::vector<double> roofFrac;  ///< guide Roof thickness (fractions)
   std::vector<int> roofMatList;  ///< guide Roof materials
   std::vector<double> floorFrac; ///< guide Floor thickness (fractions)
   std::vector<int> floorMatList; ///< guide Floor materials
+  std::vector<double> westFrac;  ///< guide Floor thickness (fractions)
+  std::vector<int> westMatList;  ///< West extra Floor materials
   std::vector<double> trimFrac;  ///< guide Trim thickness (fractions)
   std::vector<int> trimMatList;  ///< guide Trim materials
-
-  int leftWallCell;     ///< Cell to divide from the left wall
-  int rightFWallCell;   ///< Front wall [right] Cell
-  int rightBWallCell;   ///< Back wall [right] Cell
-  int backWallCell;     ///< Cell to divide from the back-wall
-  int roofCell;         ///< Cell to divide from the roof
-  int blockCell;        ///< Cell to divide from the block
-  int floorCell;        ///< Cell to divide from the floor 
-  int walkWallCell;     ///< Cell  on walkway wall
 
   int collActiveFlag;   ///< Collimator active flag
 
   void layerProcess(Simulation&);
+  void procSurfDivide(Simulation&,ModelSupport::surfDivide&,
+		      const size_t,const std::vector<std::pair<int,int> >&,
+		      const std::string&,const std::string&);
 
   // ----------------------------------------------------------
 
@@ -193,6 +196,7 @@ void createWallsChipIR(Simulation&,const shutterSystem::GeneralShutter&);
 
   void addCollimators(Simulation&,const attachSystem::TwinComp&);
   void addOuterVoid();
+  void addExtraWalls(Simulation&,const attachSystem::FixedComp&);
   Geometry::Vec3D calcCentroid(const int,const int,const int,
 			       const int,const int,const int) const;
   

@@ -56,8 +56,8 @@ namespace zoomSystem
   double leftWidth;            ///< Full width
   double rightWidth;           ///< Right width
 
-  double cutX;                 ///< Cut Z position
-  double cutZ;                 ///< Cut Z position
+  double cutX;                 ///< Cut X position shift
+  double cutZ;                 ///< Cut Z position shift
   double cutWidth;             ///< Inner void width
   double cutHeight;            ///< Cut Height
 

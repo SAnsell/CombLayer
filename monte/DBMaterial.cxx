@@ -3,7 +3,7 @@
  
  * File:   monte/DBMaterial.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -131,6 +131,7 @@ DBMaterial::initMaterial()
 		   "74183.24c 0.0089819772 74184.24c 0.0192722  74186.24c "
 		   " 0.018014274","",MLib);
   setMaterial(MObj);
+  // Density --> 7.65g/cc
   MObj.setMaterial(3,"Stainless304",
 		   "6000.70c 3.18640e-4 14028.24c 1.70336e-3 "
 		   "15031.24c 6.95038e-5 16032.60c 4.47520e-5 "
@@ -182,7 +183,7 @@ DBMaterial::initMaterial()
   // Total atom density 0.1187475
   MObj.setMaterial(10,"BeInD2O",
 		   "4009.80c 0.0988968 1001.70c 3.31e-5 1002.24c 0.0132007 "
-		   "8016.24c 0.0066169","hwtr.01t be.61t",MLib);
+		   "8016.24c 0.0066169","hwtr.01t be.60t",MLib);
   setMaterial(MObj);
 
   // Material #11: Light water
@@ -286,7 +287,7 @@ DBMaterial::initMaterial()
 
   // Material #37: Beryllium solid at RT
   // Total atom density 0.1187475
-  MObj.setMaterial(37,"Be300K","4009.70c 0.1234855","be.61t",MLib);
+  MObj.setMaterial(37,"Be300K","4009.70c 0.1234855","be.60t",MLib);
   setMaterial(MObj);
 // Material #38 Solid Pure Tungsten (0.063057)
   MObj.setMaterial(38,"Tungsten",
@@ -701,7 +702,7 @@ DBMaterial::initMaterial()
   MObj.setMaterial(86,"Be90/8D20/2H2O",
 		   "4009.80c 1.112839e-01 "
 		   "1001.70c 1.323088e-03 1002.24c 5.277874e-03 "
-		   "8016.24c 0.0033253","be.61t lwtr.01t hwtr.01t",
+		   "8016.24c 0.0033253","be.60t lwtr.01t hwtr.01t",
 		   MLib);
   setMaterial(MObj);
   
@@ -740,14 +741,14 @@ DBMaterial::initMaterial()
   // Total atom density 0.121202
   MObj.setMaterial(92,"Be/10D2O","4009.80c 1.112996e-01 1001.70c 1.651935e-05 "
 		   "1002.24c 6.568682e-03 8016.24c 0.003316877",
-		   "hwtr.01t be.61t",MLib);
+		   "hwtr.01t be.60t",MLib);
   setMaterial(MObj);
 
   // Material #93: 90% Beryllium + 10% light water
   // Total atom density 0.121264
   MObj.setMaterial(93,"Be/10H2O","4009.80c 1.112186e-01 "
 		   "1001.70c 6.677949e-03 1002.24c 7.680525e-07 "
-		   "8016.24c 3.366946e-03","lwtr.01t be.61t",MLib);  
+		   "8016.24c 3.366946e-03","lwtr.01t be.60t",MLib);  
   setMaterial(MObj);
 
   // Material #94 Stainless 316L
@@ -804,7 +805,7 @@ DBMaterial::initMaterial()
   MObj.setMaterial(99,"Be90/5D20/5H2O",
 		   "4009.80c 1.112839e-01 "
 		   "1001.70c 3.347044e-03 1002.24c 3.337337e-03 "
-		   "8016.24c 0.0033681","be.61t lwtr.01t hwtr.01t",
+		   "8016.24c 0.0033681","be.60t lwtr.01t hwtr.01t",
 		   MLib);
   setMaterial(MObj);
 
@@ -921,9 +922,57 @@ DBMaterial::initMaterial()
   setMaterial(MObj);
 
 
-  // Material #10: Beryllium + heavy water
-  // Total atom density 0.1187475
+  // Material #111: Beryllium(400K) + heavy water (for test only) 
+  // (90% Be + 10% D2O - by VOLUME)
+  // Total atom density 0.121202
+  MObj.setMaterial(111,"Be400K/10D2O","4009.80c 1.112996e-01 1001.70c 1.651935e-05 "
+		   "1002.24c 6.568682e-03 8016.24c 0.003316877",
+		   "hwtr.01t be.61t",MLib);
+  setMaterial(MObj);
 
+
+  // Material #112: Aluminum 5251
+  // (Dave Bellenger version for WaterMod aluminium)  
+  // Total atom density 0.059693  
+  MObj.setMaterial(112,"Alum5251",
+		   "13027.24c 5.739771e-02 14028.24c 2.307178e-04 "
+                   "24000.50c 4.673301e-05 25055.60c 1.474348e-04 "
+		   "26054.24c 8.477590e-06 26056.24c 1.330800e-04 "
+		   "26057.24c 3.073398e-06 26058.24c 4.090129e-07 "
+		   "22046.70c 4.188076e-06 22047.70c 3.776883e-06 "
+		   "22048.70c 3.742363e-05 22049.70c 2.746363e-06 "
+		   "22050.70c 2.629604e-06 29063.70c 2.644224e-05 "
+		   "29065.70c 1.179672e-05 30000.70c 3.714985e-05 "
+		   "12024.70c 1.263543e-03 12025.70c 1.599624e-04 "  
+		   "12026.70c 1.761186e-04","al.20t",MLib);
+  setMaterial(MObj);
+
+  // Material #113: Au-In-Cd (75%-0.5%-24.5%); density = 16.3 g/cc
+  // J-PARC decoupler  
+  // Total atom density 0.0591989
+  MObj.setMaterial(113,"AuInCd",
+		   "79197.70c 3.737725e-02 49113.70c 1.833815e-05 "
+		   "49115.70c 4.091246e-04 48000.42c 2.139419e-02",
+		   "",MLib);
+  setMaterial(MObj);
+
+  // Material #114: D2O + H2O mixture (20% D2O & 80% H2O)    (by VOLUME)
+  // Total atom density 0.099796 - 1.0214 grams per cc
+  MObj.setMaterial(114,"20D2O/80H2O","1001.70c 5.311190e-02 "
+		   "1002.24c 1.324203e-02 8016.24c 0.033442081",
+		   "lwtr.01t hwtr.01t",MLib);
+  setMaterial(MObj);
+
+  MObj.setMaterial(115,"HalfStainless304",
+		   "6000.70c 3.18640e-4 14028.24c 1.70336e-3 "
+		   "15031.24c 6.95038e-5 16032.60c 4.47520e-5 "
+		   "24000.50c 1.74813e-2 25055.60c 1.74159e-3 "
+		   "26054.24c 3.380e-3 26056.24c 5.3455e-2 "
+		   "26057.24c 1.282177e-3 28000.50c 8.15128e-3",
+		   "",MLib);
+  MObj.setDensity(0.042);
+  setMaterial(MObj);
+    
   return;
 }
 
@@ -1146,7 +1195,7 @@ DBMaterial::getMaterial(const int MIndex) const
 
   MTYPE::const_iterator mc=MStore.find(MIndex);
   if (mc==MStore.end())
-    throw ColErr::InContainerError<int>(MIndex,"MStore");
+    throw ColErr::InContainerError<int>(MIndex,"MIndex in MStore");
   return mc->second;
 }
 

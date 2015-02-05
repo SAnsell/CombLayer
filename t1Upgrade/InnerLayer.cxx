@@ -252,20 +252,24 @@ InnerLayer::createObjects(Simulation& System)
 	}
       System.addCell(MonteCarlo::Qhull(cellIndex++,ch4Mat,
 				       ch4Temp,Out+Edge));
-
+      innerCells.push_back(cellIndex-1);
+      
       // Al 
       Out=ModelSupport::getComposite(SMap,nextPoisLayer," 11 -1 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,pCladMat,
 				       ch4Temp,Out+Edge));
-
+      innerCells.push_back(cellIndex-1);
+      
       // Poisoning 
       Out=ModelSupport::getComposite(SMap,nextPoisLayer," 1 -2");
       System.addCell(MonteCarlo::Qhull(cellIndex++,poisonMat,
 				       ch4Temp,Out+Edge));
+      innerCells.push_back(cellIndex-1);
       // Al 
       Out=ModelSupport::getComposite(SMap,nextPoisLayer," 2 -12 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,pCladMat,
 				       ch4Temp,Out+Edge));
+      innerCells.push_back(cellIndex-1);
       nextPoisLayer+=20;
     }
   // Final (or total segment)
@@ -278,7 +282,7 @@ InnerLayer::createObjects(Simulation& System)
   
   System.addCell(MonteCarlo::Qhull(cellIndex++,ch4Mat,
 				   ch4Temp,Out+Edge));
-
+  innerCells.push_back(cellIndex-1);
   
   CH4Layer::createObjects(System);
   return;

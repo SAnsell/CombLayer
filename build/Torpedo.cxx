@@ -3,7 +3,7 @@
  
  * File:   build/Torpedo.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,6 @@
 #include <string>
 #include <algorithm>
 #include <memory>
-#include <boost/bind.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -47,8 +46,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Quaternion.h"
 #include "Surface.h"
 #include "surfIndex.h"
@@ -78,9 +75,7 @@
 #include "FixedComp.h"
 #include "SecondTrack.h"
 #include "TwinComp.h"
-#include "InsertComp.h"
 #include "ContainedComp.h"
-#include "LinearComp.h"
 #include "GeneralShutter.h"
 #include "Torpedo.h"
 
@@ -102,7 +97,7 @@ Torpedo::Torpedo(const size_t ID,const std::string& Key) :
 {}
 
 Torpedo::Torpedo(const Torpedo& A) : 
-  attachSystem::FixedComp(A),attachSystem::InsertComp(A),
+  attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
   baseName(A.baseName),shutterNumber(A.shutterNumber),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),vBox(A.vBox),
   voidXoffset(A.voidXoffset),
@@ -126,7 +121,7 @@ Torpedo::operator=(const Torpedo& A)
   if (this!=&A)
     {
       attachSystem::FixedComp::operator=(A);
-      attachSystem::InsertComp::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
       cellIndex=A.cellIndex;
       vBox=A.vBox;
       voidXoffset=A.voidXoffset;
@@ -306,7 +301,7 @@ Torpedo::createObjects(Simulation& System)
   voidCell=cellIndex-1;
 
   Out=ModelSupport::getComposite(SMap,surfIndex,"3 -4 5 -6 ")+dSurf;  
-  setInterSurf(Out);
+  addOuterSurf(Out);
 
   return;
 }

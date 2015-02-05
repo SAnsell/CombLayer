@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   attachComp/InsertObject.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,12 +47,7 @@
 #include "Matrix.h"
 #include "Tensor.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -68,7 +63,6 @@
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
-#include "Vertex.h"
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
@@ -221,10 +215,9 @@ InsertObject::createSurfaces()
 }
 
 void
-InsertObject::createObjects(Simulation& System)
+InsertObject::createObjects()
   /*!
     Adds the Chip guide components : only called if 
-    \param System :: Simulation system
   */
 {
   ELog::RegMethod RegA("InsertObject","createObjects");

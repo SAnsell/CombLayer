@@ -3,7 +3,7 @@
  
  * File:   process/surfDivide.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,6 @@
 #include <string>
 #include <algorithm>
 #include <memory>
-#include <boost/bind.hpp>
 #include <boost/format.hpp>
 
 #include "Exception.h"
@@ -45,6 +44,7 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
+#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -67,6 +67,7 @@
 #include "surfDBase.h"
 #include "mergeMulti.h"
 #include "mergeTemplate.h"
+#include "ModelSupport.h"
 #include "surfDivide.h"
 
 namespace ModelSupport
@@ -91,7 +92,8 @@ surfDivide::surfDivide(const surfDivide& A) :
 {
   PRules.resize(A.PRules.size());
   transform(A.PRules.begin(),A.PRules.end(),
-	    PRules.begin(),boost::bind(&surfDBase::clone,_1));
+	    PRules.begin(),std::bind(&surfDBase::clone,
+				     std::placeholders::_1));
 }
 
 surfDivide&
@@ -160,8 +162,10 @@ surfDivide::addRule(const surfDBase* SBase)
     \param SBase :: Main rule.
   */
 {
+  ELog::RegMethod REgA("surfDivide","addRule");
+  
   if (SBase)
-    PRules.push_back(SBase->clone());    
+    PRules.push_back(SBase->clone());
   return;
 }
 
@@ -363,12 +367,11 @@ surfDivide::activeDivideTemplate(Simulation& System)
   for(size_t rN=0;rN<PRules.size();rN++)
     PRules[rN]->setOutSurfNumber
       (outSurfN+100*static_cast<int>(rN));
-  
+
   for(size_t i=0;i<=frac.size();i++)
     {      
       // Create outer object
 
-      
       // Process Rules:
       const double fA=(i) ? frac[i-1] : -1.0;
       const double fB=(i!=frac.size()) ? frac[i] : 2.0;
@@ -383,7 +386,6 @@ surfDivide::activeDivideTemplate(Simulation& System)
       NewObj.setMaterial(material[i]);
       NewObj.procString(cell.display());
       System.addCell(NewObj);
-
     }
   // Remove Original Cell
   System.removeCell(cellNumber);
@@ -437,6 +439,133 @@ surfDivide::activeDivide(Simulation& System)
   // Remove Original Cell
   System.removeCell(cellNumber);
   return;  
+}
+
+void
+surfDivide::addLayers(const size_t N,
+		      const std::vector<double>& fraction,
+		      const std::vector<int>& matNum)
+  /*!
+    Add a double list of layers/materials
+    \param N :: Number of layers
+    \param fraction :: Fractions [N-1]
+    \param matNumber :: Materials
+   */
+{
+  ELog::RegMethod RegA("surfDivide","addLayers");
+  if (N)
+    {
+      for(size_t i=1;i<N;i++)
+	{
+	  addFrac(fraction[i-1]);
+	  addMaterial(matNum[i-1]);
+	}
+      addMaterial(matNum[N-1]);
+    }
+  return;
+}
+
+int
+surfDivide::procSurfDivide(Simulation& System,
+			   const ModelSupport::surfRegister& SMap,
+			   const int cellNumber,
+			   const int moduleIndex,
+			   const int surfCreate,
+			   const int cellCreate,
+			   const std::vector<std::pair<int,int>>& VA,
+			   const std::string& Inner,
+			   const std::string& Outer)
+  /*!
+    Process all the basic dividing layers 
+    [Copied from GhipIRGuide -- make general??]
+    \param System :: Simuation 
+    \param SMap :: Surface registration
+    \param cellNubmer :: cell number to process
+    \param moduleNumber :: offset number
+    \param surfCreate :: first surface number for new surface
+    \param cellCreate :: first cell number for new object [0 no action]
+    \param VA :: Offset vector
+    \param Inner :: Inner string [not composed]
+    \param Outer :: Outer string [not composed]
+    \return cell nubmer
+   */
+{
+  ELog::RegMethod Rega("surfDivide","procSurfDivide");
+  
+  std::string OutA,OutB;
+  // Cell Specific:
+  init();
+  setCellN(cellNumber);
+  if (cellCreate && surfCreate)
+    setOutNum(cellCreate,moduleIndex+surfCreate);
+
+  ModelSupport::mergeTemplate<Geometry::Plane,
+			      Geometry::Plane> surroundRule;
+  for(const std::pair<int,int>& VItem : VA)
+    {
+      surroundRule.setSurfPair(SMap.realSurf(moduleIndex+VItem.first),
+			       SMap.realSurf(moduleIndex+VItem.second));
+    }
+
+  OutA=ModelSupport::getComposite(SMap,moduleIndex,Inner);
+  OutB=ModelSupport::getComposite(SMap,moduleIndex,Outer);
+  surroundRule.setInnerRule(OutA);
+  surroundRule.setOuterRule(OutB);
+
+
+  addRule(&surroundRule);
+  activeDivideTemplate(System);
+  
+  return getCellNum();
+}
+
+int
+surfDivide::procSimpleDivide(Simulation& System,
+			   const ModelSupport::surfRegister& SMap,
+			     const int cellNumber,
+			     const int moduleIndex,
+			     const int surfCreate,
+			     const int cellCreate,
+			     const std::vector<std::pair<int,int>>& VA)
+  /*!
+    Process all the basic dividing layers -- simple split
+    \param System :: Simuation 
+    \param SMap :: Surface registration
+    \param cellNubmer :: cell number to process
+    \param moduleNumber :: offset number
+    \param surfCreate :: first surface number for new surface
+    \param cellCreate :: first cell number for new object [0 no action]
+    \param VA :: Offset vector
+    \return cell nubmer
+   */
+{
+  ELog::RegMethod Rega("surfDivide","procSurfDivide");
+  
+  std::string OutA,OutB;
+  // Cell Specific:
+  init();
+  setCellN(cellNumber);
+  if (cellCreate && surfCreate)
+    setOutNum(cellCreate,moduleIndex+surfCreate);
+
+  for(const std::pair<int,int>& VItem : VA)
+    {
+      ModelSupport::mergeTemplate<Geometry::Plane,
+				  Geometry::Plane> surroundRule;
+      const int RA=SMap.realSurf(moduleIndex+abs(VItem.first));
+      const int RB=SMap.realSurf(moduleIndex+abs(VItem.second));
+      const int ASign=(VItem.first>0) ? 1 : -1;
+      const int BSign=(VItem.second>0) ? 1 : -1;
+      surroundRule.setSurfPair(RA,RB);
+      OutA=StrFunc::makeString(RA*ASign);
+      OutB=StrFunc::makeString(RB*BSign);
+      surroundRule.setInnerRule(OutA);
+      surroundRule.setOuterRule(OutB);
+      addRule(&surroundRule);
+    }
+  
+  activeDivideTemplate(System);  
+  return getCellNum();
 }
 
 

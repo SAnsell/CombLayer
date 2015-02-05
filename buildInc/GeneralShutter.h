@@ -47,7 +47,7 @@ namespace shutterSystem
 */
 
 class GeneralShutter : public attachSystem::TwinComp,
-    public attachSystem::InsertComp
+    public attachSystem::ContainedComp
 {
  protected:
 

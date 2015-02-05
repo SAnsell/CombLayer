@@ -3,7 +3,7 @@
  
  * File:   construct/FlightLine.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -179,6 +179,9 @@ FlightLine::populate(const Simulation& System)
   height=Control.EvalVar<double>(keyName+"Height");
   width=Control.EvalVar<double>(keyName+"Width");
 
+  innerMat=ModelSupport::EvalDefMat<int>(Control,keyName+"InnerMat",0);
+
+  
   nLayer=Control.EvalDefVar<size_t>(keyName+"NLiner",0);
   lThick.clear();
   lMat.clear();
@@ -532,7 +535,7 @@ FlightLine::createObjects(Simulation& System,
   Out=ModelSupport::getComposite(SMap,flightIndex," 3 -4 5 -6 ");
   Out+=attachRule;         // forward boundary of object
   Out+=" "+ContainedGroup::getContainer("outer");      // Be outer surface
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,0.0,Out));
 
   //Flight layers:
   for(size_t i=0;i<nLayer;i++)
@@ -795,10 +798,11 @@ FlightLine::createAll(Simulation& System,
   if (plateIndex==0)
     ELog::EM<<"Plate Index for FlightLine not set "<<ELog::endErr;
 
-  const size_t sideIndex=static_cast<size_t>(abs(plateIndex))-1;
   const int sideSign=(plateIndex>0) ? 1 : -1;
+  const size_t sideIndex=static_cast<size_t>
+    ((plateIndex>0) ? plateIndex-1 : 1-plateIndex);
 
-  createUnitVector(FC,sideIndex);
+  createUnitVector(FC,plateIndex);
   createSurfaces();
   createObjects(System,FC,sideSign,sideIndex,CC);
   insertObjects(System);       

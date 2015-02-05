@@ -3,7 +3,7 @@
  
  * File:   tally/TallyCreate.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,9 +35,6 @@
 #include <iterator>
 #include <memory>
 #include <array>
-#include <boost/functional.hpp>
-#include <boost/bind.hpp>
-
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -655,7 +652,7 @@ void
 setF5Position(Simulation& System,const int tNumber,
 	      const Geometry::Vec3D& TPoint)
   /*!
-    Set the angular offset on a system
+    Set the F5 centre point of a tally
     \param System :: Simulation to run
     \param tNumber :: tally number
     \param TPoint :: Centre point of tally
@@ -671,6 +668,29 @@ setF5Position(Simulation& System,const int tNumber,
       return;
     }
   TX->setCentre(TPoint);
+  return;
+}
+
+void 
+moveF5Tally(Simulation& System,const int tNumber,
+	    const Geometry::Vec3D& moveVec)
+  /*!
+    Move the F5 point of a tally
+    \param System :: Simulation to run
+    \param tNumber :: tally number
+    \param moveVec :: Displacement value
+  */
+{
+  ELog::RegMethod RegA("TallyCreate","moveF5Position");
+
+  tallySystem::pointTally* TX=
+    dynamic_cast<tallySystem::pointTally*>(System.getTally(tNumber)); 
+  if (!TX)
+    {
+      ELog::EM<<"Error finding tally number "<<tNumber<<ELog::endErr;
+      return;
+    }
+  TX->setCentre(TX->getCentre()+moveVec);
   return;
 }
 

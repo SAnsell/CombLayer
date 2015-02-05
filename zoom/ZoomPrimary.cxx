@@ -3,7 +3,7 @@
  
  * File:   zoom/ZoomPrimary.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,18 +58,18 @@
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
-#include "Line.h"
-#include "LineIntersectVisit.h"
 #include "Rules.h"
+#include "HeadRule.h"
 #include "surfFunctors.h"
 #include "SurInter.h"
+#include "surfDBase.h"
+#include "mergeTemplate.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "SimProcess.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
@@ -78,8 +78,6 @@
 #include "FixedComp.h" 
 #include "SecondTrack.h"
 #include "TwinComp.h"
-#include "LinearComp.h"
-#include "InsertComp.h"
 #include "ContainedComp.h"
 #include "BulkShield.h"
 #include "ChipIRFilter.h"
@@ -289,14 +287,15 @@ ZoomPrimary::layerProcess(Simulation& System)
   ELog::RegMethod RegA("ZoomPrimary","LayerProcess");
 
   if (!nLayers) return;
+
   ModelSupport::surfDivide DA;
   // Generic
-  for(size_t i=0;i<nLayers-1;i++)
+  for(size_t i=1;i<nLayers;i++)
     {
-      DA.addFrac(cFrac[i]);
-      DA.addMaterial(cMat[i]);
+      DA.addFrac(cFrac[i-1]);
+      DA.addMaterial(cMat[i-1]);
     }
-  DA.addMaterial(cMat[nLayers-1]);
+  DA.addMaterial(cMat.back());
 
   const size_t CSize=CDivideList.size();
   for(size_t i=0;i<CSize;i++)
@@ -307,15 +306,27 @@ ZoomPrimary::layerProcess(Simulation& System)
       DA.setOutNum(cellIndex,
 		   colIndex+201+100*static_cast<int>(i));
 
-      DA.makePair<Geometry::Plane>(SMap.realSurf(colIndex+13),
-				   -SMap.realSurf(colIndex+3));
-      DA.makePair<Geometry::Plane>(SMap.realSurf(colIndex+14),
-       				   SMap.realSurf(colIndex+4));
-      DA.makePair<Geometry::Plane>(SMap.realSurf(colIndex+15),
-       				   -SMap.realSurf(colIndex+5));
-      DA.makePair<Geometry::Plane>(SMap.realSurf(colIndex+16),
-       				   SMap.realSurf(colIndex+6));
-      DA.activeDivide(System);
+      // Modern divider system:
+      ModelSupport::mergeTemplate<Geometry::Plane,
+				  Geometry::Plane> wallRule;
+      wallRule.setSurfPair(SMap.realSurf(colIndex+3),
+			   SMap.realSurf(colIndex+13));
+      wallRule.setSurfPair(SMap.realSurf(colIndex+4),
+			   SMap.realSurf(colIndex+14));
+      wallRule.setSurfPair(SMap.realSurf(colIndex+5),
+			   SMap.realSurf(colIndex+15));
+      wallRule.setSurfPair(SMap.realSurf(colIndex+6),
+			   SMap.realSurf(colIndex+16));
+
+      const std::string OutA=
+	ModelSupport::getComposite(SMap,colIndex," 3 -4 5 -6 ");
+      const std::string OutB=
+	ModelSupport::getComposite(SMap,colIndex," (-13:14:-15:16) ");
+      wallRule.setInnerRule(OutA);
+      wallRule.setOuterRule(OutB);
+
+      DA.addRule(&wallRule);
+      DA.activeDivideTemplate(System);
       cellIndex=DA.getCellNum();
     }
   return;

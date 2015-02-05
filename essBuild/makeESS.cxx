@@ -3,7 +3,7 @@
  
  * File:   essBuild/makeESS.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -417,6 +417,7 @@ makeESS::buildLowerPipe(Simulation& System,
   */
 {
   ELog::RegMethod RegA("makeESS","processLowPipe");
+  
   if (pipeType=="help")
     {
       ELog::EM<<"Lower Pipe Configuration [lowPipe]"<<ELog::endBasic;
@@ -435,8 +436,9 @@ makeESS::buildLowerPipe(Simulation& System,
     }
   else
     {
-      LowSupplyPipe->createAll(System,*LowMod,0,6,4,*LowPre,2);
-      LowReturnPipe->createAll(System,*LowMod,0,3,2,*LowPre,4);
+      ELog::EM<<"Low supply pipe"<<ELog::endDiag;
+      //      LowSupplyPipe->createAll(System,*LowMod,0,6,4,*LowPre,2);
+      //      LowReturnPipe->createAll(System,*LowMod,0,3,2,*LowPre,4);
     }
   return;
 }
@@ -463,6 +465,8 @@ makeESS::makeBeamLine(Simulation& System,
 		      const mainSystem::inputParam& IParam)
   /*!
     Build a beamline based on LineType
+     -- to construct a beamline the name of the guide Item 
+     and the beamline typename is required
     \param System :: Simulation 
     \param IParam :: Input paramters
   */
@@ -470,6 +474,7 @@ makeESS::makeBeamLine(Simulation& System,
   ELog::RegMethod RegA("makeESS","makeBeamLine");
 
   const size_t NItems=IParam.itemCnt("beamlines",0);
+
   for(size_t i=0;i+1<NItems;i+=2)
     {
       const std::string BL=IParam.getValue<std::string>("beamlines",i);

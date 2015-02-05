@@ -3,7 +3,7 @@
  
  * File:   bibBuild/BeFilter.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -76,8 +76,8 @@ namespace bibSystem
 
 BeFilter::BeFilter(const std::string& Key) :
   attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
-  befilterindex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(befilterindex+1)
+  beFilterIndex(ModelSupport::objectRegister::Instance().cell(Key)),
+  cellIndex(beFilterIndex+1)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -86,7 +86,7 @@ BeFilter::BeFilter(const std::string& Key) :
 
 BeFilter::BeFilter(const BeFilter& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  befilterindex(A.befilterindex),cellIndex(A.cellIndex),
+  beFilterIndex(A.beFilterIndex),cellIndex(A.cellIndex),
   xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
   xyAngle(A.xyAngle),zAngle(A.zAngle),width(A.width),
   height(A.height),length(A.length),wallThick(A.wallThick),
@@ -187,26 +187,27 @@ BeFilter::createSurfaces()
   /*!
     Create planes for the silicon and Polyethene layers
   */
-  
-  /** Creamos las superficies de cada cuerpo*/
 {
   ELog::RegMethod RegA("BeFilter","createSurfaces");
 
-  ModelSupport::buildPlane(SMap,befilterindex+1,Origin,Y);  
-  ModelSupport::buildCylinder(SMap,befilterindex+2,Origin,Z,length); /** Superficie cilindrica. Hay que indicar le eje normal*/
+  ModelSupport::buildPlane(SMap,beFilterIndex+1,Origin,Y);
+  /// Superficie cilindrica. Hay que indicar le eje normal
+  ModelSupport::buildCylinder(SMap,beFilterIndex+2,Origin,Z,length); 
   
-  ModelSupport::buildPlane(SMap,befilterindex+3,Origin-X*width/2.0,X);  
-  ModelSupport::buildPlane(SMap,befilterindex+4,Origin+X*width/2.0,X);  
-  ModelSupport::buildPlane(SMap,befilterindex+5,Origin-Z*height/2.0,Z);  
-  ModelSupport::buildPlane(SMap,befilterindex+6,Origin+Z*height/2.0,Z);  
+  ModelSupport::buildPlane(SMap,beFilterIndex+3,Origin-X*width/2.0,X);  
+  ModelSupport::buildPlane(SMap,beFilterIndex+4,Origin+X*width/2.0,X);  
+  ModelSupport::buildPlane(SMap,beFilterIndex+5,Origin-Z*height/2.0,Z);  
+  ModelSupport::buildPlane(SMap,beFilterIndex+6,Origin+Z*height/2.0,Z);  
   
-  ModelSupport::buildPlane(SMap,befilterindex+11,Origin-Y*wallThick,Y);  
-  ModelSupport::buildCylinder(SMap,befilterindex+12,Origin,Z,(length+wallThick)); /** Superficie cilindrica. Hay que indicar el eje normal*/
+  ModelSupport::buildPlane(SMap,beFilterIndex+11,Origin-Y*wallThick,Y);  
+  ModelSupport::buildCylinder(SMap,beFilterIndex+12,Origin,Z,
+			      length+wallThick);
   
-  ModelSupport::buildPlane(SMap,befilterindex+13,Origin-X*(width/2.0+wallThick),X);  
-  ModelSupport::buildPlane(SMap,befilterindex+14,Origin+X*(width/2.0+wallThick),X);  
-  ModelSupport::buildPlane(SMap,befilterindex+15,Origin-Z*(height/2.0+wallThick),Z);  
-  ModelSupport::buildPlane(SMap,befilterindex+16,Origin+Z*(height/2.0+wallThick),Z);  
+  ModelSupport::buildPlane(SMap,beFilterIndex+13,
+			   Origin-X*(width/2.0+wallThick),X);  
+  ModelSupport::buildPlane(SMap,beFilterIndex+14,Origin+X*(width/2.0+wallThick),X);  
+  ModelSupport::buildPlane(SMap,beFilterIndex+15,Origin-Z*(height/2.0+wallThick),Z);  
+  ModelSupport::buildPlane(SMap,beFilterIndex+16,Origin+Z*(height/2.0+wallThick),Z);  
 
 
   return; 
@@ -226,17 +227,17 @@ BeFilter::createObjects(Simulation& System,
   std::string Out;
 
   // BeFilter
-  Out=ModelSupport::getComposite(SMap,befilterindex,"1 -2 3 -4 5 -6");
+  Out=ModelSupport::getComposite(SMap,beFilterIndex,"1 -2 3 -4 5 -6");
   System.addCell(MonteCarlo::Qhull(cellIndex++,beMat,beTemp,Out));
 
-  Out=ModelSupport::getComposite(SMap,befilterindex,
+  Out=ModelSupport::getComposite(SMap,beFilterIndex,
 				 "11 -12 13 -14 15 -16  (-1:2:-3:4:-5:6)");
   Out+=CC.getContainer();
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,beTemp,Out));
   
   
   // Hay que añadir una superficie externa
-  Out=ModelSupport::getComposite(SMap,befilterindex,"11 -12 13 -14 15 -16" );
+  Out=ModelSupport::getComposite(SMap,beFilterIndex,"11 -12 13 -14 15 -16" );
   addOuterSurf(Out);
 
   return; 
@@ -260,12 +261,12 @@ BeFilter::createLinks()
   FixedComp::setConnect(4,Origin-Z*(height/2.0+wallThick),-Z);  
   FixedComp::setConnect(5,Origin+Z*(height/2.0+wallThick),Z);  
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(befilterindex+11)); /**Hay que respetar el numero de superficie a la que se liga el punto de vinculado (linking point)*/
-  FixedComp::setLinkSurf(1,SMap.realSurf(befilterindex+12));
-  FixedComp::setLinkSurf(2,-SMap.realSurf(befilterindex+13));
-  FixedComp::setLinkSurf(3,SMap.realSurf(befilterindex+14));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(befilterindex+15));
-  FixedComp::setLinkSurf(5,SMap.realSurf(befilterindex+16));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(beFilterIndex+11)); /**Hay que respetar el numero de superficie a la que se liga el punto de vinculado (linking point)*/
+  FixedComp::setLinkSurf(1,SMap.realSurf(beFilterIndex+12));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(beFilterIndex+13));
+  FixedComp::setLinkSurf(3,SMap.realSurf(beFilterIndex+14));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(beFilterIndex+15));
+  FixedComp::setLinkSurf(5,SMap.realSurf(beFilterIndex+16));
   
   return;
 }

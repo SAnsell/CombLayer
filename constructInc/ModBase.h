@@ -62,8 +62,6 @@ class ModBase : public attachSystem::ContainedComp,
   virtual ModBase* clone() const =0;
   virtual ~ModBase();
 
-
-
   std::string getComposite(const std::string&) const;
 
   long int getSideIndex(const size_t) const;

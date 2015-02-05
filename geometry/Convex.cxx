@@ -3,7 +3,7 @@
  
  * File:   geometry/Convex.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -217,8 +217,15 @@ Convex::addPoint(const Geometry::Vec3D& PItem)
   ELog::RegMethod RegItem("Convex","addPoint");
 
   Vertex* NV=new Vertex(static_cast<int>(VList.size()),PItem);
-  Pts.push_back(PItem);
-  VList.push_back(NV);
+  if (Pts.empty() || Pts.back()!=PItem)
+    {
+      Pts.push_back(PItem);
+      VList.push_back(NV);
+    }
+  else
+    {
+      ELog::EM<<"Adding Identical point"<<PItem<<ELog::endWarn;
+    }
   return;
 }
 

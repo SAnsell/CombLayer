@@ -3,7 +3,7 @@
  
  * File:   process/MainProcess.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,8 +30,8 @@
 #include <list>
 #include <map>
 #include <string>
+#include <iterator>
 #include <boost/format.hpp>
-#include <boost/multi_array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -234,7 +234,6 @@ createInputs(inputParam& IParam)
   IParam.regDefItem<double>("photon","photon",1,0.001);
   IParam.regDefItemList<std::string>("r","renum",10,RItems);
   IParam.regFlag("sdefVoid","sdefVoid");
-  IParam.regDefItem("sdefEnergy","sdefEnergy",1,800.0);
   IParam.regDefItem<std::string>("sdefType","sdefType",1,"");
   IParam.regDefItem<std::string>("physModel","physicsModel",1,"CEM03"); 
   IParam.regDefItem<double>("SA","sdefAngle",1,35.0);
@@ -250,8 +249,8 @@ createInputs(inputParam& IParam)
   // IParam.regDefItemList<std::string>("T","tally",15,AItems);
   IParam.regMulti<std::string>("T","tally",25,0);
   IParam.regMulti<std::string>("TC","tallyCells",3,2);
-  IParam.regMulti<int>("TGrid","TGrid",3,2);
-  IParam.regMulti<std::string>("TMod","tallyMod",4,1);
+  IParam.regMulti<size_t>("TGrid","TGrid",3,2);
+  IParam.regMulti<std::string>("TMod","tallyMod",8,1);
   IParam.regFlag("TW","tallyWeight");
   IParam.regItem<std::string>("TX","Txml",1);
   IParam.regItem<std::string>("targetType","targetType",1);
@@ -458,11 +457,30 @@ void createFullInputs(inputParam& IParam)
 
 void
 createGammaInputs(inputParam& IParam)
+  /*!
+    Create Gamma expt model
+    \param IParam :: Initial input
+  */
 {
   ELog::RegMethod RegA("MainProcess::","createGammaInputs");
   createInputs(IParam);
 
   IParam.setValue("sdefType",std::string("Gamma"));  
+  return;
+}
+
+void
+createPhotonInputs(inputParam& IParam)
+  /*!
+    Create Photon-neutron source input
+    \param IParam :: Initial input
+  */
+{
+  ELog::RegMethod RegA("MainProcess::","createPhotonInputs");
+  createInputs(IParam);
+
+  IParam.setValue("sdefType",std::string("Laser"));
+  IParam.setFlag("voidUnMask");  
   return;
 }
 
@@ -499,10 +517,10 @@ void createBilbauInputs(inputParam& IParam)
     \param IParam :: Input Parameters
   */
 {
-  ELog::RegMethod RegA("MainProcess::","createFullInputs");
+  ELog::RegMethod RegA("MainProcess::","createBilbauInputs");
   createInputs(IParam);
 
-  IParam.setValue("sdefEnergy",50.0);    
+  //  IParam.setValue("sdefEnergy",50.0);    
   IParam.setValue("sdefType",std::string("TS1"));  
   
 
@@ -547,7 +565,7 @@ void createCuInputs(inputParam& IParam)
     \param IParam :: Input Parameters
   */
 {
-  ELog::RegMethod RegA("MainProcess::","createFullInputs");
+  ELog::RegMethod RegA("MainProcess::","createCutInputs");
   createInputs(IParam);
   
   IParam.setValue("sdefType",std::string("TS1"));  
@@ -824,7 +842,6 @@ InputModifications(Simulation* SimPtr,inputParam& IParam,
    */
 {
   ELog::RegMethod RegA("MainProcess","InputModifications");
-  mainSystem::setDefUnits(SimPtr->getDataBase(),IParam);
 
   mainSystem::setVariables(*SimPtr,IParam,Names);
   if (!Names.empty()) 

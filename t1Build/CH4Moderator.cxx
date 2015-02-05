@@ -455,13 +455,15 @@ CH4Moderator::getSurfacePoint(const size_t layerIndex,
   std::map<size_t,double> modLayer;
   applyModification(modLayer);
   std::map<size_t,double>::const_iterator mc;
-  const double layer[]={0.0,innerThick,vacThick,outerThick,clearThick};
+//  const double layer[]={0.0,innerThick,vacThick,outerThick,clearThick};
+  const double layer[]={innerThick,vacThick,outerThick,clearThick};
   double T(0.0);
+//  for(size_t i=0;i<=layerIndex;i++)
   for(size_t i=0;i<layerIndex;i++)
     {
       mc=modLayer.find(i*10+sideIndex+1);
       T+=(mc!=modLayer.end()) ? mc->second : layer[i];
-    }            
+    }
   switch(sideIndex)
     {
     case 0:

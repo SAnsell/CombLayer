@@ -3,7 +3,7 @@
  
  * File:   zoom/ZoomStack.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,15 +48,11 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "surfEqual.h"
-#include "surfDivide.h"
-#include "surfDIter.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
@@ -87,7 +83,7 @@ namespace zoomSystem
 ZoomStack::ZoomStack(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::TwinComp(Key,0),
   stackIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(stackIndex+1),populated(0)
+  cellIndex(stackIndex+1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -97,8 +93,8 @@ ZoomStack::ZoomStack(const std::string& Key)  :
 ZoomStack::ZoomStack(const ZoomStack& A) : 
   attachSystem::ContainedComp(A),attachSystem::TwinComp(A),
   stackIndex(A.stackIndex),cellIndex(A.cellIndex),
-  populated(A.populated),nItem(A.nItem),posIndex(A.posIndex),
-  length(A.length),width(A.width),Items(A.Items),voidCell(A.voidCell)
+  nItem(A.nItem),posIndex(A.posIndex),length(A.length),
+  height(A.height),Items(A.Items),voidCell(A.voidCell)
   /*!
     Copy constructor
     \param A :: ZoomStack to copy
@@ -118,16 +114,16 @@ ZoomStack::operator=(const ZoomStack& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::TwinComp::operator=(A);
       cellIndex=A.cellIndex;
-      populated=A.populated;
       nItem=A.nItem;
       posIndex=A.posIndex;
       length=A.length;
-      width=A.width;
+      height=A.height;
       Items=A.Items;
       voidCell=A.voidCell;
     }
   return *this;
 }
+
 
 ZoomStack::~ZoomStack() 
  /*!
@@ -153,7 +149,7 @@ ZoomStack::populate(const Simulation& System)
   const size_t DSize(6);
   const size_t ISize(1);
   const std::string sndKey[DSize+ISize]=
-    {"Height","StepLift","StepDist","Clear","PathWidth","PathHeight",
+    {"Width","StepLift","StepDist","Clear","PathWidth","PathHeight",
      "Mat"};
   
   for(size_t i=0;i<nItem;i++)
@@ -184,9 +180,8 @@ ZoomStack::populate(const Simulation& System)
 
   posIndex=Control.EvalVar<size_t>(keyName+"Index");
   length=Control.EvalVar<double>(keyName+"Length");
-  width=Control.EvalVar<double>(keyName+"Width");
+  height=Control.EvalVar<double>(keyName+"Height");
 
-  populated |= 1;
   return;
 }
   
@@ -203,7 +198,7 @@ ZoomStack::createUnitVector(const attachSystem::TwinComp& TT)
   
   Origin=bEnter+Y*10.0;
   for(size_t i=0;i<posIndex;i++)
-    Origin+=Z*(Items[i].getVar<double>("Height")+
+    Origin+=X*(Items[i].getVar<double>("Width")+
 	       Items[i].getVar<double>("Clear"));
 
   return;
@@ -221,8 +216,8 @@ ZoomStack::createSurfaces()
   // First layer [Bulk]
   ModelSupport::buildPlane(SMap,stackIndex+1,Origin,Y);
   ModelSupport::buildPlane(SMap,stackIndex+2,Origin+Y*length,Y);
-  ModelSupport::buildPlane(SMap,stackIndex+3,Origin-X*width/2.0,X);
-  ModelSupport::buildPlane(SMap,stackIndex+4,Origin+X*width/2.0,X);
+  ModelSupport::buildPlane(SMap,stackIndex+5,Origin-Z*height/2.0,Z);
+  ModelSupport::buildPlane(SMap,stackIndex+6,Origin+Z*height/2.0,Z);
   
   int offset(stackIndex);
   Geometry::Vec3D OE(Origin);
@@ -232,28 +227,28 @@ ZoomStack::createSurfaces()
       // front metal [base]
       if (!i)
 	{
-	  ModelSupport::buildPlane(SMap,offset+5,
-				   OE-Z*LI.getVar<double>("Height"),Z);
-	  ModelSupport::buildPlane(SMap,offset+15,
-				   OE-Z*(LI.getVar<double>("Height")-
-					 LI.getVar<double>("StepLift")),Z);
+	  ModelSupport::buildPlane(SMap,offset+3,
+				   OE-X*LI.getVar<double>("Width"),X);
+	  ModelSupport::buildPlane(SMap,offset+13,
+				   OE-X*(LI.getVar<double>("Width")-
+					 LI.getVar<double>("StepLift")),X);
 	  ModelSupport::buildPlane(SMap,offset+12,OE+
 				   Y*LI.getVar<double>("StepDist"),Y);
 	}
-      ModelSupport::buildPlane(SMap,offset+6,
-			       OE+Z*LI.getVar<double>("Height"),Z);
-      ModelSupport::buildPlane(SMap,offset+26,
-			       OE+Z*(LI.getVar<double>("Height")
-				     +LI.getVar<double>("Clear")),Z);
+      ModelSupport::buildPlane(SMap,offset+4,
+			       OE+X*LI.getVar<double>("Width"),X);
+      ModelSupport::buildPlane(SMap,offset+24,
+			       OE+X*(LI.getVar<double>("Width")
+				     +LI.getVar<double>("Clear")),X);
 			       
-      ModelSupport::buildPlane(SMap,offset+16,
-			       OE+Z*(LI.getVar<double>("Height")+
-				     LI.getVar<double>("StepLift")),Z);
+      ModelSupport::buildPlane(SMap,offset+14,
+			       OE+X*(LI.getVar<double>("Width")+
+				     LI.getVar<double>("StepLift")),X);
 
-      ModelSupport::buildPlane(SMap,offset+36,
-			      OE+Z*(LI.getVar<double>("Height")
+      ModelSupport::buildPlane(SMap,offset+34,
+			      OE+X*(LI.getVar<double>("Width")
 				    +LI.getVar<double>("Clear")
-				    +LI.getVar<double>("StepLift")),Z);
+				    +LI.getVar<double>("StepLift")),X);
 			       
        // DIVIDE:
       ModelSupport::buildPlane(SMap,offset+22,OE+
@@ -272,7 +267,7 @@ ZoomStack::createSurfaces()
 			       Z*LI.getVar<double>("PathHeight")/2.0,Z);
       
       // Increment:
-      OE+=Z*(LI.getVar<double>("Clear")+2.0*LI.getVar<double>("Height"));
+      OE+=X*(LI.getVar<double>("Clear")+2.0*LI.getVar<double>("Width"));
       offset+=50;
     }      
   return;
@@ -290,9 +285,9 @@ ZoomStack::createObjects(Simulation& System)
   std::string Out;
   const std::string FB=ModelSupport::getComposite(SMap,stackIndex,"1 -2 ");
   const std::string Sides=ModelSupport::getComposite(SMap,stackIndex,
-						     "1 -2 3 -4 ");
+						     "1 -2 5 -6 ");
   std::string basePlate=ModelSupport::getComposite(SMap,stackIndex,
-						   "5 (15 : -12) ");
+						   "3 (13 : -12) ");
   int index(stackIndex);
   for(size_t i=0;i<nItem;i++)
     {
@@ -301,16 +296,16 @@ ZoomStack::createObjects(Simulation& System)
       System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
       // Main material
       Out=Sides+basePlate;
-      Out+=ModelSupport::getComposite(SMap,index," -16 (-6 : 22) ");
+      Out+=ModelSupport::getComposite(SMap,index," -14 (-4 : 22) ");
       Out+=ModelSupport::getComposite(SMap,index," (-503:504:-505:506) ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,
 				       Items[i].getVar<int>("Mat"),0.0,Out));
       
       
       // Void on top
-      Out=Sides+ModelSupport::getComposite(SMap,index," 6 (16 : -22) ");
-      Out+=ModelSupport::getComposite(SMap,index," -36 (-26 : 32) ");
-      basePlate=ModelSupport::getComposite(SMap,index," 26 (36 : -32) ");
+      Out=Sides+ModelSupport::getComposite(SMap,index," 4 (14 : -22) ");
+      Out+=ModelSupport::getComposite(SMap,index," -34 (-24 : 32) ");
+      basePlate=ModelSupport::getComposite(SMap,index," 24 (34 : -32) ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
       
       index+=50;
@@ -319,8 +314,8 @@ ZoomStack::createObjects(Simulation& System)
 
   if( nItem)
     {
-      Out=Sides+ModelSupport::getComposite(SMap,stackIndex," 5 (15 : -12) ");
-      Out+=ModelSupport::getComposite(SMap,index-50," -36 (-26 : 32) ");
+      Out=Sides+ModelSupport::getComposite(SMap,stackIndex," 3 (13 : -12) ");
+      Out+=ModelSupport::getComposite(SMap,index-50," -34 (-24 : 32) ");
       addOuterSurf(Out);
     }
 

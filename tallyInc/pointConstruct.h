@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   tallyInc/pointConstruct.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,7 +51,6 @@ class pointConstruct : virtual public basicConstruct
   pointConstruct(const pointConstruct&);
   pointConstruct& operator=(const pointConstruct&);
   virtual ~pointConstruct() {}  ///< Destructor
-
   
   // Point Stuff
   virtual void processPoint(Simulation&,const mainSystem::inputParam&,
@@ -59,7 +58,7 @@ class pointConstruct : virtual public basicConstruct
   void processPointFree(Simulation&,const Geometry::Vec3D&,
 			const std::vector<Geometry::Vec3D>&) const;
   void processPointFree(Simulation&,const std::string&,
-			  const int,const double) const;
+			  const long int,const double) const;
   void processPointWindow(Simulation&,const std::string&,
 			  const int,const double,
 			  const double,const double) const;

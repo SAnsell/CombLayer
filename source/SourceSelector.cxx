@@ -3,7 +3,7 @@
  
  * File:   source/SourceSelector.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -186,6 +186,8 @@ sourceSelection(Simulation& System,
     SDef::createSinbadSource(Control,sourceCard);
   else if (sdefType=="Gamma" || sdefType=="gamma")
     SDef::createGammaSource(Control,sourceCard);
+  else if (sdefType=="Laser" || sdefType=="laser")
+    SDef::createLaserSource(Control,sourceCard);
   else if (sdefType=="TS2")
     {
   // Basic TS2 source
@@ -193,7 +195,7 @@ sourceSelection(Simulation& System,
 	sourceCard.setTransform(System.createSourceTransform());
   
       // Basic TS2 source
-      SDef::createTS2Source(sourceCard);
+      SDef::createTS2Source(Control,sourceCard);
     }
   else
     {

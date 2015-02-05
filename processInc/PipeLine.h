@@ -3,7 +3,7 @@
  
  * File:   processInc/PipeLine.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,11 +49,14 @@ class PipeLine
   std::map<size_t,HeadRule> layerSurf;  ///< Outgoing surface
   std::map<size_t,HeadRule> commonSurf;  ///< common surface
 
-  std::vector<size_t> activeFlags;          ///< Activity flags : one for each PUnit
+  std::map<size_t,std::set<int> > segExtra;  ///< Extra components to add
+  std::vector<size_t> activeFlags;   ///< Activity flags : one for each PUnit
 
   size_t nAngle;                     ///< NAngle
   std::vector<pipeUnit*> PUnits;     ///< pipeUnits (1 less than Pts)
 
+  void forcedInsertCells(const size_t);
+  
   void clearPUnits();
 
   int createUnits(Simulation&);
@@ -78,6 +81,8 @@ class PipeLine
   void setActive(const size_t,const size_t);
   void setNAngle(const size_t);
 
+  void addInsertCell(const size_t,const int);
+  
   void createAll(Simulation&);
     
 };

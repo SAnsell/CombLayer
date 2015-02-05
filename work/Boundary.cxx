@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   work/Boundary.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@
 #include <list>
 #include <map>
 #include <stack>
-#include <boost/multi_array.hpp>
+#include <algorithm>
 
 #include "Exception.h"
 #include "GTKreport.h"
@@ -95,7 +95,7 @@ BItems::addItem(const size_t Index,const double F)
   if (F>0.0)
     {
       std::vector<PTYPE>::iterator vc;
-      vc=lower_bound(FList.begin(),FList.end(),Index,
+      vc=std::lower_bound(FList.begin(),FList.end(),Index,
 		     mathSupport::PairSndLess<size_t,double>());
       if (vc!=FList.end() && vc->first==Index)
 	{

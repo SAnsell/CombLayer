@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   build/ts2VarModify.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@
 #include <list>
 #include <map>
 #include <string>
-#include <boost/format.hpp>
+#include <memory>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -41,7 +41,6 @@
 #include "Vec3D.h"
 #include "inputParam.h"
 #include "support.h"
-#include "masterWrite.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -75,11 +74,11 @@ TS2InputModifications(Simulation* SimPtr,inputParam& IParam,
     setVariable::ChipVariables(SimPtr->getDataBase());
 
   if (!IParam.flag("exclude") ||
-      !IParam.compValue("E",std::string("IMat")))
+      !IParam.compNoCaseValue("E",std::string("imat")))
     setVariable::IMatVariables(SimPtr->getDataBase());
 
   if (!IParam.flag("exclude") ||
-      !IParam.compValue("E",std::string("Zoom")))
+      !IParam.compNoCaseValue("E",std::string("zoom")))
     setVariable::ZoomVariables(IParam,SimPtr->getDataBase());
     
   if (IParam.flag("bolts"))

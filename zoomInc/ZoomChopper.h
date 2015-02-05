@@ -3,7 +3,7 @@
  
  * File:   zoomInc/ZoomChopper.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,19 +61,42 @@ class ZoomChopper : public attachSystem::TwinComp,
   double rightWidth;           ///< Long width
   double leftAngle;            ///< Side angle from bulk vs Centre line
   double rightAngle;           ///< Side angle from bulk vs Centre line
+  double leftWaxAngle;         ///< Side angle from bulk vs Centre line
+  double rightWaxAngle;        ///< Side angle from bulk vs Centre line
 
   double voidLeftWidth;        ///< Void Main hole [left]
   double voidRightWidth;       ///< Void Main hole [right]
   double voidHeight;           ///< Void Main hole [height]
   double voidDepth;            ///< Void Main hole [depth]
+
   double voidCut;              ///< Void Main hole [back cut towards BulkWall]
   double voidChanLeft;         ///< Void Channel [left]
   double voidChanRight;        ///< Void Channel [right]
   double voidChanUp;           ///< Void Channel [up]
   double voidChanDown;         ///< Void Channel [down]
 
-  int nLayers;              ///< number of layers
-  int wallMat;           ///< Material for walls
+  double voidEnd;              ///< Void Main hole [back cut towards BulkWall]
+  double voidEndLeft;          ///< Void Channel [left]
+  double voidEndRight;         ///< Void Channel [right]
+  double voidEndUp;            ///< Void Channel [up]
+  double voidEndDown;          ///< Void Channel [down]
+  int voidEndMat;              ///< Material for void end
+
+  double voidEndBeamLeft;          ///< Void Channel [left]
+  double voidEndBeamRight;         ///< Void Channel [right]
+  double voidEndBeamUp;            ///< Void Channel [up]
+  double voidEndBeamDown;          ///< Void Channel [down]
+
+  double waxLeftSkin;          ///< Thickness of wax layer
+  double waxRightSkin;         ///< Thickness of wax
+
+  size_t nShield;              ///< number of layers
+  int shieldCell;
+  std::vector<double> shieldFrac;
+  std::vector<int> shieldMat;
+  
+  int wallMat;              ///< Material for walls
+  int waxMat;               ///< Material for walls (outer)
 
   // ROOF:
   double roofBStep;            ///< Roof back step
@@ -97,7 +120,8 @@ class ZoomChopper : public attachSystem::TwinComp,
 
   void createObjects(Simulation&,const attachSystem::ContainedGroup&);
   void createLinks();
-
+  void divideMainShield(Simulation&);
+  
  public:
 
   ZoomChopper(const std::string&);
@@ -107,7 +131,8 @@ class ZoomChopper : public attachSystem::TwinComp,
 
   /// Set surface
   void setMonoSurface(const int M) { monoWallSurf=M; }
-
+  /// Get void cell
+  int getVoidCell() const { return voidCell; }  
   /// Access central axis
   const Geometry::Vec3D& getBeamAxis() const {  return Y; }
 

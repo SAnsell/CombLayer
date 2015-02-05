@@ -3,7 +3,7 @@
  
  * File:   chip/ChipVariables.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -241,9 +241,24 @@ ChipVariables(FuncDataBase& Control)
   Control.addVariable("chipGuideRightWallLength",120.0);
 
 // Remedial wall on right/west [W2 side]
-  Control.addVariable("chipGuideRemedialWallThick",50.0);
+  Control.addVariable("chipGuideRemedialWallThick",60.0);
   Control.addVariable("chipGuideRemedialWallHeight",610.0);
 
+  Control.addVariable("chipGuideRemedialWestNLayers",6);
+  Control.addVariable("chipGuideWRemedMat_0","B-Poly");
+  Control.addVariable("chipGuideWRemedMat_1","ChipIRSteel");
+  Control.addVariable("chipGuideWRemedMat_2","ChipIRSteel");
+  Control.addVariable("chipGuideWRemedMat_3","Concrete");
+  Control.addVariable("chipGuideWRemedMat_4","Concrete");   
+  Control.addVariable("chipGuideWRemedMat_5","Concrete");    
+
+  Control.addVariable("chipGuideWRemedLen_1",-5.0);  // Steel
+  Control.addVariable("chipGuideWRemedLen_2",-18.0);  // Steel
+  Control.addVariable("chipGuideWRemedLen_3",-18.0);   // Steel inner
+  Control.addVariable("chipGuideWRemedLen_4",-9.0);   // Concreate
+  Control.addVariable("chipGuideWRemedLen_5",-7.0);   // Contrete inner
+
+  
   // wedge block on left [TSA side]
 //  Control.addVariable("chipGuideLeftWedgeThick",80.0);
 //  Control.addVariable("chipGuideLeftWedgeAngle",20.0);
@@ -365,10 +380,11 @@ ChipVariables(FuncDataBase& Control)
 
   // Feedthrough
   Control.addVariable("chipNWires",4);
-  Control.addVariable("chipWiresColl1Offset",Geometry::Vec3D(-100,110,50));  
-  Control.addVariable("chipWiresColl2Offset",Geometry::Vec3D(-230,240,50));  
-  Control.addVariable("chipWiresColl3Offset",Geometry::Vec3D(-350,360,50));  
-  Control.addVariable("chipWiresColl4Offset",Geometry::Vec3D(-450,460,50));  
+  // Control.addVariable("chipWiresColl1Offset",Geometry::Vec3D(-100,110,50));  
+  Control.addVariable("chipWiresColl1Offset",Geometry::Vec3D(-230,240,50));  
+  Control.addVariable("chipWiresColl2Offset",Geometry::Vec3D(-350,360,50));  
+  Control.addVariable("chipWiresColl3Offset",Geometry::Vec3D(-450,460,50));
+  Control.addVariable("chipWiresColl4Offset",Geometry::Vec3D(-730,740,50));  
 
   Control.addVariable("chipWiresCollHeight",7.50);
   Control.addVariable("chipWiresCollWidth",7.50);
@@ -385,6 +401,24 @@ ChipVariables(FuncDataBase& Control)
   Control.addVariable("chipHutBSOpenZStep",50.0);        // Z offset of Void
   Control.addVariable("chipHutBSOpenWidth",120.0);        // Z offset of Void
   Control.addVariable("chipHutBSOpenHeight",100.0);        // Z offset of Void
+
+  Control.addVariable("chipHutWestExtraThick",60.0);        // Width of extra
+  Control.addVariable("chipHutWestExtraLength",600.0);      // Distance down
+
+
+  Control.addVariable("chipHutWestNDivide",6);   
+  Control.addVariable("chipHutWestMat_0","B-Poly");
+  Control.addVariable("chipHutWestMat_1","ChipIRSteel");
+  Control.addVariable("chipHutWestMat_2","ChipIRSteel");
+  Control.addVariable("chipHutWestMat_3","Concrete");
+  Control.addVariable("chipHutWestMat_4","Concrete");   
+  Control.addVariable("chipHutWestMat_5","Concrete");    
+
+  Control.addVariable("chipHutWestLen_1",-5.0);  // Steel
+  Control.addVariable("chipHutWestLen_2",-18.0);  // Steel
+  Control.addVariable("chipHutWestLen_3",-18.0);   // Steel inner
+  Control.addVariable("chipHutWestLen_4",-9.0);   // Concrete
+  Control.addVariable("chipHutWestLen_5",-7.0);   // Contrete 
 
   Control.addVariable("chipBSFStep",-24.0);      // Stop position [from surf 22]
   Control.addVariable("chipBSXStep",12.50);      // +ve to TSA
@@ -524,10 +558,10 @@ ChipVariables(FuncDataBase& Control)
 
   Control.addVariable("chipHutTable2XYAngle",0.0);     // XY Rotation
   Control.addVariable("chipHutTable2ZAngle",0.0);      // Z Rotation 
-  Control.addVariable("chipHutTable2FStep",590.90);     // Start from hutch wall
-  Control.addVariable("chipHutTable2XStep",0.0);      // Accross beam [+ve towards TSA]
-  Control.addVariable("chipHutTable2Height",-40.0);    // Height relative to beam centre
-  Control.addVariable("chipHutTable2Width",96.0);     // Width
+  Control.addVariable("chipHutTable2FStep",590.90);    // Start from hutch wall
+  Control.addVariable("chipHutTable2XStep",0.0);       // Accross beam [+ve towards TSA]
+  Control.addVariable("chipHutTable2Height",-20.0);    // Height relative to beam centre
+  Control.addVariable("chipHutTable2Width",96.0);      // Width
   Control.addVariable("chipHutTable2Length",196.0);    // Length
   Control.addVariable("chipHutTable2SurThick",5.0);    // Surface Thickness
   Control.addVariable("chipHutTable2SideThick",15.0);  // Side thickness

@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   zoomInc/ZoomStack.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@ namespace zoomSystem
   
   The guide is defined along a line that leads from the centre line
   of the shutter. The origin is the point that the shutter centre 
-  line impacts the 40000 outer surface
+  line impacts the outer surface
 */
 
 class ZoomStack :  public attachSystem::ContainedComp,
@@ -48,13 +48,12 @@ class ZoomStack :  public attachSystem::ContainedComp,
   
   const int stackIndex;         ///< Index of surface offset
   int cellIndex;                ///< Cell index
-  int populated;                ///< populated or not
 
   size_t nItem;                   ///< Number of items
   size_t posIndex;                ///< Position index
   
   double length;                ///< Full length
-  double width;                 ///< Full width
+  double height;                 ///< Full width
 
   std::vector<varBlock> Items;  ///< List of items
   int voidCell;                ///< Cell to insert to.

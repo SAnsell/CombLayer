@@ -3,7 +3,7 @@
  
  * File:   source/SourceCreate.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -338,8 +338,30 @@ createTS1Source(const FuncDataBase& Control,Source& sourceCard)
 
 void
 createGammaSource(const FuncDataBase& Control,Source& Card)
+  /*!
+    Create the photon source for gamma-nuclea spectrum
+    nuclear experiment source
+    \param Control :: Variables data base
+    \param Card :: Source system
+   */
 {
-  GammaSource GX;
+  ELog::RegMethod RegA("SourceCreate","createGammaSource");
+  GammaSource GX("gammaSource");
+  GX.createAll(Control,Card);
+  return;
+}
+
+void
+createLaserSource(const FuncDataBase& Control,Source& Card)
+  /*!
+    Create the laser source -- currently a copy of the photo
+    nuclear experiment source
+    \param Control :: Variables data base
+    \param Card :: Source system
+   */
+{
+  ELog::RegMethod RegA("SourceCreate","createLaserSource");
+  GammaSource GX("laserSource");
   GX.createAll(Control,Card);
   return;
 }
@@ -447,7 +469,6 @@ createTS1EpbCollSource(const FuncDataBase& Control,Source& sourceCard)
 {
   ELog::RegMethod RegA("SourceCreate","createTS1EpbCollSource");
 
-
   const double E=Control.EvalDefVar<double>("sdefEnergy",800.0);
   const double yStart=Control.EvalDefVar<double>("sdefYPos",80.0);
   createGaussianSource(sourceCard,E,yStart,2.35482);
@@ -455,7 +476,7 @@ createTS1EpbCollSource(const FuncDataBase& Control,Source& sourceCard)
 }
 
 void
-createTS2Source(Source& sourceCard)
+createTS2Source(const FuncDataBase& Control,Source& sourceCard)
   /*!
     Creates a target 2 proton source
     \param sourceCard :: Source system
@@ -463,13 +484,17 @@ createTS2Source(Source& sourceCard)
 {
   ELog::RegMethod RegA("SourceCreate","createTS2Source");
 
+
+  const double E=Control.EvalDefVar<double>("sdefEnergy",800.0);
+  const double SOffset=Control.EvalDefVar<double>("sdefOffset",5.0);
+  
   sourceCard.setActive();
   sourceCard.setComp("dir",1.0);
   sourceCard.setComp("vec",Geometry::Vec3D(0,0,-1));
   sourceCard.setComp("par",9);
-  sourceCard.setComp("erg",800.0);
+  sourceCard.setComp("erg",E);
   //  sourceCard.setComp("ccc",76);
-  sourceCard.setComp("z",5.0);
+  sourceCard.setComp("z",SOffset);
 
   SrcData D1(1);
   SrcProb SP1(1);

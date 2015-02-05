@@ -3,7 +3,7 @@
  
  * File:   chipInc/ChipIRGuide.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -123,18 +123,12 @@ class ChipIRGuide : public attachSystem::TwinComp,
 
   double remedialWestWallThick;    ///< Remedial wall
   double remedialWallHeight;       ///< Remedial wall height
-
-  //wedge block on TSA side
-//  double leftWedgeThick;       ///<Wedge max width
-//  double leftWedgeHeight;      ///<Wedge height from ground
-//  double leftWedgeAngle;       ///<Angle of sloping face of wedge
-
-
+  
   size_t nLayers;                ///< number of layers
   std::vector<double> guideFrac; ///< guide Layer thicknesss (fractions)
   std::vector<int> guideMat;     ///< guide Layer materials
 
-  size_t nRemdialWestLayers;            ///< number of layers
+  size_t nRemedialWestLayers;            ///< number of layers
   std::vector<double> remedialWestFrac; ///< west Layer thicknesss (fractions)
   std::vector<int> remedialWestMat;     ///< west Layer materials
 

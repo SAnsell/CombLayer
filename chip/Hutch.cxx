@@ -3,7 +3,7 @@
  
  * File:   chip/Hutch.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -83,7 +83,6 @@
 #include "LinearComp.h"
 #include "SecondTrack.h"
 #include "TwinComp.h"
-#include "InsertComp.h"
 #include "ContainedComp.h"
 #include "GeneralShutter.h"
 #include "HoleUnit.h"
@@ -96,6 +95,9 @@
 #include "BeamStop.h"
 #include "ChipSample.h"
 #include "Hutch.h"
+
+#include "surfDBase.h"
+#include "mergeTemplate.h"
 
 namespace hutchSystem
 {
@@ -111,10 +113,7 @@ ChipIRHutch::ChipIRHutch(const std::string& Key)  :
   FTable(new Table(0,"chipHutTable1")),
   BTable(new Table(1,"chipHutTable2")),
   BStop(new BeamStop("chipBS")),
-  collimatorVoid(0),leftWallCell(0),
-  rightFWallCell(0),rightBWallCell(0),
-  backWallCell(0),roofCell(0),blockCell(0),floorCell(0),
-  walkWallCell(0),collActiveFlag(7)
+  collimatorVoid(0),collActiveFlag(7)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Keyname for variables
@@ -175,12 +174,6 @@ ChipIRHutch::ChipIRHutch(const ChipIRHutch& A) :
   roofFrac(A.roofFrac),roofMatList(A.roofMatList),
   floorFrac(A.floorFrac),floorMatList(A.floorMatList),
   trimFrac(A.trimFrac),trimMatList(A.trimMatList),
-  leftWallCell(A.leftWallCell),
-  rightFWallCell(A.rightFWallCell),
-  rightBWallCell(A.rightBWallCell),
-  backWallCell(A.backWallCell),roofCell(A.roofCell),
-  blockCell(A.blockCell),
-  floorCell(A.floorCell),walkWallCell(A.walkWallCell),
   collActiveFlag(A.collActiveFlag)
   /*!
     Copy constructor
@@ -280,14 +273,6 @@ ChipIRHutch::operator=(const ChipIRHutch& A)
       floorMatList=A.floorMatList;
       trimFrac=A.trimFrac;
       trimMatList=A.trimMatList;
-      leftWallCell=A.leftWallCell;
-      rightFWallCell=A.rightFWallCell;
-      rightBWallCell=A.rightBWallCell;
-      backWallCell=A.backWallCell;
-      roofCell=A.roofCell;
-      blockCell=A.blockCell;
-      floorCell=A.floorCell;
-      walkWallCell=A.walkWallCell;
       collActiveFlag=A.collActiveFlag;
     }
   return *this;
@@ -357,6 +342,10 @@ ChipIRHutch::populate(const FuncDataBase& Control)
   bsWidth=Control.EvalVar<double>(keyName+"BSOpenWidth");
   bsHeight=Control.EvalVar<double>(keyName+"BSOpenHeight");
 
+  // EXTRA WALL
+  westExtraThick=Control.EvalVar<double>(keyName+"WestExtraThick");
+  westExtraLength=Control.EvalVar<double>(keyName+"WestExtraLength");
+  
   roofMat=ModelSupport::EvalMat<int>(Control,keyName+"RoofMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");  
   innerWallMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerWallMat");  
@@ -369,9 +358,16 @@ ChipIRHutch::populate(const FuncDataBase& Control)
   fbMat=ModelSupport::EvalMat<int>(Control,keyName+"FBmat");
 
   // Samples:
-  const int nSamples=Control.EvalVar<int>(keyName+"NSamples");
-  for(int i=0;i<nSamples;i++)
-    SampleItems.push_back(ChipSample("chipSample",i+1));
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  const size_t nSamples=Control.EvalVar<size_t>(keyName+"NSamples");
+  for(size_t i=0;i<nSamples;i++)
+    {
+      SampleItems.push_back(std::shared_ptr<ChipSample>
+			    (new ChipSample("chipSample",i+1)));
+      OR.addObject(SampleItems.back());
+    }
 
 
   // Wall dividers:
@@ -379,16 +375,19 @@ ChipIRHutch::populate(const FuncDataBase& Control)
   nRWallDivide=Control.EvalVar<size_t>(keyName+"RWallNDivide");
   nFloorDivide=Control.EvalVar<size_t>(keyName+"FloorNDivide");
   nRoofDivide=Control.EvalVar<size_t>(keyName+"RoofNDivide");
+  nWestDivide=Control.EvalVar<size_t>(keyName+"WestNDivide");
 
 
   ModelSupport::populateDivide(Control,nLWallDivide,
-			      keyName+"LWallMat_",wallMat,lWallMatList);
+			       keyName+"LWallMat_",wallMat,lWallMatList);
   ModelSupport::populateDivide(Control,nRWallDivide,
-			      keyName+"RWallMat_",wallMat,rWallMatList);
+			       keyName+"RWallMat_",wallMat,rWallMatList);
   ModelSupport::populateDivide(Control,nFloorDivide,
-			      keyName+"FloorMat_",floorMat,floorMatList);
+			       keyName+"FloorMat_",floorMat,floorMatList);
   ModelSupport::populateDivide(Control,nRoofDivide,
-			      keyName+"RoofMat_",roofMat,roofMatList);
+			       keyName+"RoofMat_",roofMat,roofMatList);
+  ModelSupport::populateDivide(Control,nWestDivide,
+			       keyName+"WestMat_",wallMat,westMatList);
   
   ModelSupport::populateDivideLen(Control,nLWallDivide,
 				  keyName+"LWallFrac_",hLWallThick,
@@ -400,6 +399,8 @@ ChipIRHutch::populate(const FuncDataBase& Control)
 				  keyName+"FloorFrac_",hFloorDepth,floorFrac);
   ModelSupport::populateDivideLen(Control,nRoofDivide,
 			       keyName+"RoofFrac_",hRoofThick,roofFrac);
+  ModelSupport::populateDivideLen(Control,nWestDivide,
+			       keyName+"WestLen_",westExtraThick,westFrac);
   
   return;
 }
@@ -486,7 +487,7 @@ ChipIRHutch::createWallObjects(Simulation& System,
 				 "-100 1 -2 3 13 15 -16 "
 				 "(-33 : -43 )");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
-  leftWallCell=cellIndex-1;
+  layerCells["leftWall"]=cellIndex-1;
 
   // Out=ModelSupport::getComposite(SMap,hutchIndex,
   // 				 "1 -2
@@ -496,7 +497,7 @@ ChipIRHutch::createWallObjects(Simulation& System,
 				 " -4 11 3 15 -8 -16 (-1:34) ");
   Out+=IC.getExclude();
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
-  rightFWallCell=cellIndex-1;
+  layerCells["rightFWall"]=cellIndex-1;
 
   // EDGE VOID:
   // Out=ModelSupport::getComposite(SMap,hutchIndex,
@@ -509,12 +510,12 @@ ChipIRHutch::createWallObjects(Simulation& System,
 				 "8 15 -16 84 -14 -2 (-24 : 62) (-82 : 44) ");
   Out+=IC.getExclude();
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
-  rightBWallCell=cellIndex-1;
+  layerCells["rightBWall"]=cellIndex-1;
   
   // Right Extension 
   Out=ModelSupport::getComposite(SMap,hutchIndex,"2 -22 -14 44 15 -16");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
-  walkWallCell=cellIndex-1;
+  layerCells["walkWallCell"]=cellIndex-1;  
 
   // MAIN ROOF: ALL
   Out=ModelSupport::getComposite(SMap,hutchIndex,
@@ -522,15 +523,15 @@ ChipIRHutch::createWallObjects(Simulation& System,
                                  "-14 (-24 : 62) 16 -6");
   Out+=IC.getExclude();
   System.addCell(MonteCarlo::Qhull(cellIndex++,roofMat,0.0,Out));
-  roofCell=cellIndex-1;
-  BStop->addInsertCell(roofCell);
+  layerCells["roof"]=cellIndex-1;  
+  BStop->addInsertCell(cellIndex-1);
 
   // FLOOR: ALL
   Out=ModelSupport::getComposite(SMap,hutchIndex,
 				 "11 -22 3 13 (-4 : 62) -14 (-24 : 62) -15 5");
   Out+=IC.getExclude();
   System.addCell(MonteCarlo::Qhull(cellIndex++,floorMat,0.0,Out));
-  floorCell=cellIndex-1;
+  layerCells["floor"]=cellIndex-1;
   // FALSE FLOOR:
   Out=ModelSupport::getComposite(SMap,hutchIndex,"102 -32 33 "
 				 "(-44 : -82) "
@@ -575,8 +576,8 @@ ChipIRHutch::createWallObjects(Simulation& System,
 				 "32 -54 33 43 -2 15 -16"
 				 " (-503 : 504 : -505 : 506)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
-  backWallCell=cellIndex-1;
-  BStop->addInsertCell(backWallCell);
+  layerCells["backWall"]=cellIndex-1;
+  BStop->addInsertCell(cellIndex-1);
 
   // Void for rear wall
   Out=ModelSupport::getComposite(SMap,hutchIndex,"32 -2 503  -504 505 -506");
@@ -595,7 +596,7 @@ ChipIRHutch::createWallObjects(Simulation& System,
       Out=ModelSupport::getComposite(SMap,hutchIndex,
 				     "402 -412 -14 -44 (-84 : 82) 35 -16 404");
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
-      blockCell=cellIndex-1;
+      layerCells["blockWall"]=cellIndex-1;
 
       // Add to inner void
       MonteCarlo::Qhull* QH=System.findQhull(tailVoid);
@@ -618,10 +619,11 @@ ChipIRHutch::addOuterVoid()
   const std::string Out=
     ModelSupport::getComposite(SMap,hutchIndex,
 			       "11 -22 3 13 -14 (-4 : 62) (-24 : 62) 5 -6 ");
-  addOuterSurf(Out);
+  addOuterUnionSurf(Out);
   return;
 }
 
+  
 void 
 ChipIRHutch::createWallSurfaces(const attachSystem::FixedComp& Guide)
   /*!
@@ -802,7 +804,24 @@ ChipIRHutch::createWallSurfaces(const attachSystem::FixedComp& Guide)
   Trimmer->addBoundarySurf(-SMap.realSurf(hutchIndex+84));
   Trimmer->addBoundarySurf(SMap.realSurf(hutchIndex+15));
   Trimmer->addBoundarySurf(-SMap.realSurf(hutchIndex+16));
-      
+
+  // EXTRA WALL:
+  if (westExtraThick>Geometry::zeroTol)
+    {
+      // Front point is Origin : Extend 11
+      ModelSupport::buildShiftedPlane(SMap,hutchIndex+1011,
+			      SMap.realPtr<Geometry::Plane>(hutchIndex+11),
+				      -westExtraThick);
+      ModelSupport::buildShiftedPlane(SMap,hutchIndex+1004,
+			      SMap.realPtr<Geometry::Plane>(hutchIndex+4),
+			      westExtraThick);
+      ModelSupport::buildShiftedPlane(SMap,hutchIndex+1024,
+      			      SMap.realPtr<Geometry::Plane>(hutchIndex+24),
+				      westExtraThick);
+      ModelSupport::buildPlane(SMap,hutchIndex+1002,
+			       Origin+Y*westExtraLength,Y);
+    }
+  
   return;
 }
 
@@ -959,7 +978,7 @@ ChipIRHutch::layerProcess(Simulation& System)
 
       DA.init();
       
-      DA.setCellN(roofCell);
+      DA.setCellN(layerCells["roof"]);
       DA.setOutNum(cellIndex,hutchIndex+801);
       DA.makePair<Geometry::Plane>(SMap.realSurf(hutchIndex+16),
 				   SMap.realSurf(hutchIndex+6));
@@ -980,14 +999,13 @@ ChipIRHutch::layerProcess(Simulation& System)
 
       DA.init();
       
-      DA.setCellN(floorCell);
+      DA.setCellN(layerCells["floor"]);
       DA.setOutNum(cellIndex,hutchIndex+801);
       DA.makePair<Geometry::Plane>(-SMap.realSurf(hutchIndex+15),
 				   SMap.realSurf(hutchIndex+5));
       DA.activeDivide(System);
       cellIndex=DA.getCellNum();
     }
-
   if (nLWallDivide>1)
     {
       // PROCESS WALLS:
@@ -1001,74 +1019,74 @@ ChipIRHutch::layerProcess(Simulation& System)
 
       // Cell Specific:
       // BACK WALL:
-      DA.setOutNum(cellIndex,hutchIndex+801);	  
-      if (backWallCell)
+      DA.setOutNum(cellIndex,hutchIndex+801);
+      if (layerCells.find("backWall")!=layerCells.end())
         {
-	  DA.setCellN(backWallCell);
+	  DA.setCellN(layerCells["backWall"]);
 	  DA.makePair<Geometry::Plane>(SMap.realSurf(hutchIndex+32),
 				       SMap.realSurf(hutchIndex+2));
 	  DA.activeDivide(System);
 	  cellIndex=DA.getCellNum();
 	}
-      if (leftWallCell)
+      if (layerCells.find("leftWall")!=layerCells.end())
         {
 	  DA.init();
-	  DA.setCellN(leftWallCell);
-	  DA.makePair<Geometry::Plane>(SMap.realSurf(hutchIndex+33),
-				       -SMap.realSurf(hutchIndex+3));
-	  DA.makePair<Geometry::Plane>(SMap.realSurf(hutchIndex+43),
-				       -SMap.realSurf(hutchIndex+13));
-	  DA.activeDivide(System);
-	  cellIndex=DA.getCellNum();
+
+	  cellIndex=DA.procSurfDivide(System,SMap,layerCells["leftWall"],
+			    hutchIndex,cellIndex,0,
+			    {{3,33,},{13,43},},
+			    "3 13","(-33 : -43)");
 	}
     }
+
   if (nRWallDivide>1)
     {
       // PROCESS WALLS:
       ModelSupport::surfDivide DA;
-      for(size_t i=0;i<static_cast<size_t>(nRWallDivide)-1;i++)
-	{
-	  DA.addFrac(rWallFrac[i]);
-	  DA.addMaterial(rWallMatList[i]);
-	}
-      DA.addMaterial(rWallMatList.back());
-      DA.setOutNum(cellIndex,hutchIndex+801);	  
+      DA.addLayers(nRWallDivide,rWallFrac,rWallMatList);
+      DA.setOutNum(cellIndex,hutchIndex+801);
+
       // RIGHT WALL [Front]
-      if (rightFWallCell)
+      if (layerCells.find("rightFWall")!=layerCells.end())
         {
-	  DA.init();
-	  DA.setCellN(rightFWallCell);
-	  DA.makePair<Geometry::Plane>(SMap.realSurf(hutchIndex+34),
-				       SMap.realSurf(hutchIndex+4));
-	  DA.makeSignPair<Geometry::Plane>(SMap.realSurf(hutchIndex+1),
-					   SMap.realSurf(hutchIndex+11),1);
-	  DA.activeDivide(System);
+	  DA.procSurfDivide(System,SMap,layerCells["rightFWall"],
+			    hutchIndex,cellIndex,0,
+			    {{34,4},{1,11}},"(-1:34)","-4 11");
 	}
-      if (walkWallCell)
+      if (layerCells.find("walkWall")!=layerCells.end())
 	{
-	  DA.init();
-	  DA.setCellN(walkWallCell);
-	  DA.makePair<Geometry::Plane>(SMap.realSurf(hutchIndex+44),
-				       SMap.realSurf(hutchIndex+14));
-	  DA.activeDivide(System);
+	  DA.procSurfDivide(System,SMap,layerCells["walkWall"],
+			    hutchIndex,cellIndex,0,
+			    {{44,14}},"-14","44");
 	}
       // RIGHT WALL [Front]
-      if (rightBWallCell)
+      if (layerCells.find("rightBWall")!=layerCells.end())
         {
-	  DA.init();
-	  DA.setCellN(rightBWallCell);
-	  DA.makePair<Geometry::Plane>(SMap.realSurf(hutchIndex+84),
-				       SMap.realSurf(hutchIndex+24)); 
-	  DA.makePair<Geometry::Plane>(SMap.realSurf(hutchIndex+82),
-				       -SMap.realSurf(hutchIndex+62));
-	  DA.makePair<Geometry::Plane>(SMap.realSurf(hutchIndex+44),
-				       SMap.realSurf(hutchIndex+14));
-	  DA.activeDivide(System);
+
+	  DA.procSimpleDivide(System,SMap,layerCells["rightBWall"],
+			      hutchIndex,cellIndex,0,
+			      {{84,-24},{-82,62},{44,-14}});
 	}
     }
+
+  if (westExtraThick>Geometry::zeroTol && nWestDivide>1)
+    {
+      ModelSupport::surfDivide DA;
+      DA.addLayers(nWestDivide,westFrac,westMatList);
+      const std::vector<std::pair<int,int> > AX={{24,1024}};
+      DA.procSurfDivide(System,SMap,layerCells["westOuter"],
+			hutchIndex,cellIndex,1501,
+			{{24,1024}},"24","-1024");
+
+      DA.procSurfDivide(System,SMap,layerCells["westFront"],
+      			hutchIndex,cellIndex,1601,
+      			{{4,1004},{11,1011}}," 4:-11 ","1011 -1004");
+}
+
   return;
 }
 
+ 
 int
 ChipIRHutch::exitWindow(const double,std::vector<int>&,
 			Geometry::Vec3D&) const
@@ -1081,6 +1099,40 @@ ChipIRHutch::exitWindow(const double,std::vector<int>&,
   throw ColErr::AbsObjMethod("ChipIRHutch::exitWindow");
 }
 
+void
+ChipIRHutch::addExtraWalls(Simulation& System,
+			   const attachSystem::FixedComp& Guide)
+  /*!
+    Build the annoying extra walls
+    \param System :: Simulation
+    \param Guide :: for fixed unit
+   */
+{
+  ELog::RegMethod RegA("ChipIRHutch","addExtraWalls");
+
+  if (westExtraThick>Geometry::zeroTol)
+    {
+      std::string Out;
+      
+      Out=ModelSupport::getComposite(SMap,hutchIndex,
+				     "-1004 1011 (4:-11) -8 15 -6 ");
+      Out+=Guide.getLinkString(8);
+      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      addOuterUnionSurf(Out);
+      
+      Out=ModelSupport::getComposite(SMap,hutchIndex,
+				     "-1024 24 -1002 8 15 -6 ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out)); 
+      addOuterUnionSurf(Out);
+
+      layerCells["westFront"]=cellIndex-2;
+      layerCells["westOuter"]=cellIndex-1;
+    }
+
+  return;
+}
+  
+  
 void
 ChipIRHutch::addCollimators(Simulation& System,
 			    const attachSystem::TwinComp& GI)
@@ -1318,7 +1370,8 @@ ChipIRHutch::createCommonAll(Simulation& System,
 
   //  createBeamStopObjects(System);
   createWallObjects(System,IC);
-
+  addExtraWalls(System,Guide);
+    
   Trimmer->createObj(System);
   addOuterVoid();
   addCollimators(System,Guide);
@@ -1331,11 +1384,10 @@ ChipIRHutch::createCommonAll(Simulation& System,
   BTable->addInsertCell(tailVoid);
   BTable->createAll(System,Guide);
 
-  std::vector<ChipSample>::iterator vc;
-  for(vc=SampleItems.begin();vc!=SampleItems.end();vc++)
+  for(std::shared_ptr<ChipSample>& SI : SampleItems)
     {
-      vc->addInsertCell(tailVoid);
-      vc->createAll(System,*FTable,*BTable);
+      SI->addInsertCell(tailVoid);
+      SI->createAll(System,*FTable,*BTable);
     }
   layerProcess(System);
   insertObjects(System);       

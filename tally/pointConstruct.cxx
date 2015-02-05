@@ -3,7 +3,7 @@
  
  * File:   tally/pointConstruct.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,7 +44,6 @@
 #include "BaseModVisit.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
-#include "Tensor.h"
 #include "Vec3D.h"
 #include "Triple.h"
 #include "support.h"
@@ -72,19 +71,11 @@
 #include "FixedComp.h"
 #include "SecondTrack.h"
 #include "TwinComp.h"
-#include "PositionSupport.h"
 #include "Simulation.h"
 #include "inputParam.h"
 #include "Line.h"
-#include "LineIntersectVisit.h"
 #include "SurfLine.h"
 
-#include "InsertComp.h"
-#include "shutterBlock.h"
-#include "GeneralShutter.h"
-#include "BlockShutter.h"
-
-#include "TallySelector.h" 
 #include "SpecialSurf.h"
 #include "basicConstruct.h" 
 #include "pointConstruct.h" 
@@ -143,7 +134,6 @@ pointConstruct::processPoint(Simulation& System,
     }
   
   const masterRotate& MR=masterRotate::Instance();
-
   std::string revStr;
 
   if (PType=="free")
@@ -158,7 +148,7 @@ pointConstruct::processPoint(Simulation& System,
       processPointFree(System,PPoint,EmptyVec);
     }
 
-  if (PType=="freeWindow")
+  else if (PType=="freeWindow")
     {
       size_t windowIndex(6);
       Geometry::Vec3D PPoint=
@@ -182,7 +172,7 @@ pointConstruct::processPoint(Simulation& System,
       processPointFree(System,PPoint,WindowPts);
     }
 
-  if (PType=="window")
+  else if (PType=="window")
     {
       const std::string place=
 	inputItem<std::string>(IParam,Index,2,"position not given");
@@ -200,7 +190,7 @@ pointConstruct::processPoint(Simulation& System,
       processPointWindow(System,place,linkNumber,D,timeStep,windowOffset);
     }
 
-  if (PType=="object")
+  else if (PType=="object")
     {
       const std::string place=
 	inputItem<std::string>(IParam,Index,2,"position not given");
@@ -209,9 +199,15 @@ pointConstruct::processPoint(Simulation& System,
       const double D=
 	inputItem<double>(IParam,Index,4,"Distance not given");
       const int linkNumber=getLinkIndex(snd);
+      ELog::EM<<"LN == "<<linkNumber<<ELog::endDiag;
+	    
       processPointFree(System,place,linkNumber,D);
     }
-  
+
+  else
+    {
+      ELog::EM<<"Point TallyType "<<PType<<" ignored"<<ELog::endWarn;
+    }
   
 
   return;
@@ -258,6 +254,7 @@ pointConstruct::processPointWindow(Simulation& System,
       orgPoint= TPtr->getLinkPt(iLP); 
       BAxis= -TPtr->getLinkAxis(iLP);
       TPoint=orgPoint-BAxis*(beamDist+timeStep);
+      
       ELog::EM<<"Link point   == "<<orgPoint<<ELog::endDiag;
       ELog::EM<<"Link Axis    == "<<BAxis<<ELog::endDiag;
       ELog::EM<<"Tally Point  == "<<TPoint<<ELog::endDiag;
@@ -286,42 +283,48 @@ pointConstruct::processPointWindow(Simulation& System,
 void
 pointConstruct::processPointFree(Simulation& System,
 				 const std::string& FObject,
-				 const int linkPt,const double OD) const
+				 const long int linkPt,
+				 const double OD) const
 /*!
   Process a point tally in a registered object
   \param System :: Simulation to add tallies
-    \param FObject :: Fixed/Twin name
-    \param linkPt :: Link point [-ve for beam object]
-    \param OD :: Out distance Distance
-   */
+  \param FObject :: Fixed/Twin name
+  \param linkPt :: Link point [-ve for beam object]
+  \param OD :: Out distance Distance
+*/
 {
   ELog::RegMethod RegA("pointConstruct","processPointFree(String)");
 
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  std::vector<int> Planes;
+  const attachSystem::FixedComp* TPtr=
+    OR.getObject<attachSystem::FixedComp>(FObject);
+  
+  if (!TPtr)
+    throw ColErr::InContainerError<std::string>
+      (FObject,"Fixed Object not found");
+  
   const int tNum=System.nextTallyNum(5);
   Geometry::Vec3D TPoint;
-  int masterPlane(0);
   if (linkPt>0)
     {
-      const attachSystem::FixedComp* TPtr=
-	OR.getObject<attachSystem::FixedComp>(FObject);
-      if (!TPtr)
-	throw ColErr::InContainerError<std::string>
-	  (FObject,"Fixed Object not found");
-      size_t iLP=static_cast<size_t>(linkPt-1);
-      masterPlane=
-	TPtr->getExitWindow(static_cast<size_t>(iLP),Planes);
-      ELog::EM<<"Link point == "<<TPtr->getLinkPt(iLP)<<ELog::endDebug;
-      ELog::EM<<"Link Axis  == "<<TPtr->getLinkAxis(iLP)<<ELog::endDebug;
+      const size_t iLP=static_cast<size_t>(linkPt-1);
       TPoint=TPtr->getLinkPt(iLP)+TPtr->getLinkAxis(iLP)*OD;
-      std::vector<Geometry::Vec3D> EmptyVec;
-      addF5Tally(System,tNum,TPoint,EmptyVec);
-      
+    }
+  else if (linkPt<0)
+    {
+      const size_t iLP=static_cast<size_t>(1-linkPt);
+      TPoint=TPtr->getLinkPt(iLP)-TPtr->getLinkAxis(iLP)*OD;
+    }
+  else   // origin case
+    {
+      TPoint=TPtr->getCentre()+TPtr->getY()*OD;
     }
 
+  std::vector<Geometry::Vec3D> EmptyVec;
+  addF5Tally(System,tNum,TPoint,EmptyVec);
+  
   return;
 }
 

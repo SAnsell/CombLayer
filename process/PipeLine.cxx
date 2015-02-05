@@ -3,7 +3,7 @@
  
  * File:   process/PipeLine.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -159,9 +159,32 @@ PipeLine::addPoint(const Geometry::Vec3D& Pt)
     \param Pt :: Point to add
    */
 {
-  Pts.push_back(Pt);
-  if (Pts.size()>1)
-    activeFlags.push_back(0);
+  ELog::RegMethod RegA("PipeLine","addPoint");
+  if (Pts.empty() || Pts.back()!=Pt)
+    {
+      const size_t Index(Pts.size());
+      if (Index>1)
+	{
+	  const Geometry::Vec3D AAxis=(Pts[Index-1]-Pts[Index]).unit();
+	  const Geometry::Vec3D BAxis=(Pt-Pts[Index]).unit();
+	  if (AAxis.dotProd(BAxis)>1.0-Geometry::zeroTol)
+	    {
+	      ELog::EM<<"Points reversed at index "<<Index<<ELog::endCrit;
+	      ELog::EM<<"PtA "<<Pts[Index-1]<<ELog::endCrit;
+	      ELog::EM<<"PtB "<<Pts[Index]<<ELog::endCrit;
+	      ELog::EM<<"PtNwe "<<Pt<<ELog::endErr;
+	      return;
+	    }
+	}
+      Pts.push_back(Pt);
+      if (Pts.size()>1)
+	activeFlags.push_back(0);
+    }
+  else
+    {
+      ELog::EM<<"Adding Identical Point "<<Pts.size()<<":"
+	      <<Pt<<ELog::endErr;
+    }
   return;
 }
 
@@ -248,7 +271,57 @@ PipeLine::addRadius(const double R,const int M,const double T)
 
   return;
 }
- 
+
+void
+PipeLine::addInsertCell(const size_t segment,const int CellN)
+  /*!
+    Add a cell number that is definatively going to be cut by the 
+    pipe. This is a method for dealing with ultra-thin cells etc.
+    \param segment :: Index of pipe segment+1 [use 0 for all]
+    \param CellN :: Cell to exclude
+  */
+{
+  ELog::RegMethod RegA("PipeLine","addInsertCell");
+  
+  typedef std::map<size_t,std::set<int> > MTYPE;
+  MTYPE::iterator mc=segExtra.find(segment);
+  if (mc==segExtra.end())
+    {
+      segExtra.insert(MTYPE::value_type(segment,std::set<int>()));
+      mc=segExtra.find(segment);
+    }
+  MTYPE::mapped_type& CSet=mc->second;
+  
+  CSet.insert(CellN);
+  
+  return; 
+}
+
+void
+PipeLine::forcedInsertCells(const size_t Index)
+  /*!
+    Force the segment extra cell numbers to the pipeUnits
+    so that we are guarranteed to insert into those cells
+    \param Index :: PipeUnits [unchecked]
+  */
+{
+  ELog::RegMethod RegA("PipeLine","forcedInsertCells");
+
+  typedef std::map<size_t,std::set<int> > MTYPE;
+  
+  MTYPE::const_iterator mc=segExtra.find(Index+1);
+  if (mc!=segExtra.end())
+    PUnits[Index]->addInsertSet(mc->second);
+  
+  // Universal
+  mc=segExtra.find(0);
+  if (mc!=segExtra.end())
+    PUnits[Index]->addInsertSet(mc->second);
+  
+  return;
+}
+
+  
 int
 PipeLine::createUnits(Simulation& System)
   /*!
@@ -294,10 +367,13 @@ PipeLine::createUnits(Simulation& System)
       if (i<PUnits.size()-1)
 	PUnits[i]->connectTo(PUnits[i+1]);
     }
+
+  
   // Actually build the units
   
   for(size_t i=0;i<PUnits.size();i++)
     {
+      forcedInsertCells(i);
       PUnits[i]->setNAngle(nAngle);
       PUnits[i]->createAll(System,activeFlags[i],CV);
     }
@@ -315,6 +391,7 @@ PipeLine::setNAngle(const size_t NA)
   return;
 }
 
+  
 void
 PipeLine::createAll(Simulation& System)
   /*!

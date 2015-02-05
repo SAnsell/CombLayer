@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   chipInc/ChipSample.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,9 @@ class ChipSample : public attachSystem::ContainedComp,
     public attachSystem::FixedComp
 {
  private:
- 
-  const int ID;                  ///< ID index 
+
+  const size_t ID;               ///< ID index 
+  const std::string baseName;    ///< Base key name
   const int csIndex;             ///< Index of surface offset
   int cellIndex;                 ///< Cell index
   int populated;                 ///< 1:var
@@ -62,10 +63,11 @@ class ChipSample : public attachSystem::ContainedComp,
 
   void createSurfaces();
   void createObjects(Simulation&);
+  void createLinks();
 
  public:
 
-  ChipSample(const std::string&,const int);
+  ChipSample(const std::string&,const size_t);
   ChipSample(const ChipSample&);
   ChipSample& operator=(const ChipSample&);
   ~ChipSample();

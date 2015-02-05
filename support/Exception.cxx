@@ -3,7 +3,7 @@
  
  * File:   support/Exception.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -813,6 +813,143 @@ CommandError::setOutLine()
   return;
 }
 
+// ----------------------------------------------
+//           ConstructionError
+// ----------------------------------------------
+
+ConstructionError::ConstructionError(const std::string& N,
+				     const std::string& Place) :
+  ExBase(0,Place),Name(N)
+  /*!
+    Constructor 
+    \param N :: Name of object/thing that failed
+    \param Place :: Description string
+   */
+{
+  setOutLine();
+}
+
+  
+ConstructionError::ConstructionError(const std::string& N,
+				     const std::string& Place,
+				     const std::string& M) :
+  ExBase(0,Place),Name(N),method(M)
+  /*!
+    Constructor 
+    \param N :: Name of object/thing that failed
+    \param Place :: Description string
+    \param M :: Method
+   */
+{
+  setOutLine();
+}
+
+ConstructionError::ConstructionError(const std::string& N,
+				     const std::string& Place,
+				     const std::string& M,
+				     const std::string& IP1) :
+  ExBase(0,Place),Name(N),method(M),input({IP1})
+  /*!
+    Constructor 
+    \param N :: Name of object/thing that failed
+    \param Place :: Description string
+    \param M :: Method
+    \param IP1 :: Input 1
+   */
+{
+  setOutLine();
+}
+
+ConstructionError::ConstructionError(const std::string& N,
+				     const std::string& Place,
+				     const std::string& M,
+				     const std::string& IP1,
+				     const std::string& IP2) :
+  ExBase(0,Place),Name(N),method(M),input({IP1,IP2})
+  /*!
+    Constructor 
+    \param N :: Name of object/thing that failed
+    \param Place :: Description string
+    \param M :: Method
+    \param IP1 :: Input 1
+    \param IP1 :: Input 2
+   */
+{
+  setOutLine();
+}
+
+ConstructionError::ConstructionError(const std::string& N,
+				     const std::string& Place,
+				     const std::string& M,
+				     const std::string& IP1,
+				     const std::string& IP2,
+				     const std::string& IP3) :
+								     
+  ExBase(0,Place),Name(N),method(M),input({IP1,IP2,IP3})
+  /*!
+    Constructor 
+    \param N :: Name of object/thing that failed
+    \param Place :: Description string
+    \param M :: Method
+    \param IP1 :: Input 1
+    \param IP2 :: Input 2
+    \param IP3 :: Input 3
+   */
+{
+  setOutLine();
+}
+
+  
+ConstructionError::ConstructionError(const ConstructionError& A) :
+  ExBase(A),Name(A.Name),method(A.method),input(A.input)
+  /*!
+    Copy constructor
+    \param A :: Object to copy
+  */
+{}
+
+ConstructionError&
+ConstructionError::operator=(const ConstructionError& A) 
+  /*!
+    Assignment operator
+    \param A :: Object to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      ExBase::operator=(A);
+      Name=A.Name;
+      method=A.method;
+      input=A.input;
+    }
+  return *this;
+}
+
+void
+ConstructionError::setOutLine()
+  /*!
+    Writes out the range and limits
+    to outline
+  */
+{
+  std::stringstream cx;
+  cx<<"ConstructionError:"<<getErr()<<" ::\n"
+    <<"Name:"<<Name<<"\n"
+    <<"Method :"<<method<<"\n";
+  if (input.empty())
+    cx<<"Input Void";
+  else
+    {
+      cx<<"Input :::";
+      for(const std::string& F : input)
+	cx<<F<<":";
+      cx<<"::";
+    }
+  OutLine=cx.str();
+  return;
+}
+
 
 // ----------------------------------------------
 //           Abstract object function
@@ -1003,6 +1140,7 @@ template class ColErr::EmptyValue<std::string>;
 template class ColErr::EmptyValue<Geometry::Vec3D*>;
 template class ColErr::EmptyValue<ModelSupport::ObjSurfMap*>;
 template class ColErr::IndexError<std::string>;
+template class ColErr::IndexError<double>;
 template class ColErr::IndexError<int>;
 template class ColErr::IndexError<unsigned int>;
 template class ColErr::IndexError<long int>;

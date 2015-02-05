@@ -3,7 +3,7 @@
  
  * File:   test/testVarBlock.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -112,8 +112,6 @@ testVarBlock::applyTest(const int extra)
 int
 testVarBlock::testGetValue()
   /*!
-    Test the refraction code. Added code to check that the
-    h vector (eqn 16 of micro: B. Walter 2007 Eurographics) is 
 
     Also test the half angle condition
     \retval 0 :: success / -ve on failure

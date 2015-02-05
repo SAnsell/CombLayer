@@ -3,7 +3,7 @@
  
  * File:   process/pipeUnit.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -390,6 +390,27 @@ pipeUnit::createObjects(Simulation& System)
 }
 
 void
+pipeUnit::addInsertSet(const std::set<int>& S)
+  /*!
+    Insert the extra cell set into cellCut set
+    \param S :: Set of cells to insert
+  */
+{
+  cellCut.insert(S.begin(),S.end());
+  return;
+}
+
+void
+pipeUnit::clearInsertSet()
+  /*!
+    Clear the insert set
+   */
+{
+  cellCut.clear();
+  return;
+}
+  
+void
 pipeUnit::insertObjects(Simulation& System) 
   /*!
     Insert the objects into the main simulation. It is separated
@@ -429,15 +450,25 @@ pipeUnit::insertObjects(Simulation& System)
 
       const std::vector<MonteCarlo::Object*>& OVec=LT.getObjVec();
       std::vector<MonteCarlo::Object*>::const_iterator oc;
-      
-      for(oc=OVec.begin();oc!=OVec.end();oc++)
+
+      for(MonteCarlo::Object* oc : OVec)
 	{	  
-	  const int ONum=(*oc)->getName();
+	  const int ONum=oc->getName();
 	  if (OMap.find(ONum)==OMap.end())
-	    OMap.insert(MTYPE::value_type(ONum,(*oc)));
+	    OMap.insert(MTYPE::value_type(ONum,oc));
 	}
     }
-  
+
+  // add extra cells from insert forced list [cellCut]
+  for(const int forceCellN : cellCut)
+    {
+      if (OMap.find(forceCellN)==OMap.end())
+	{
+	  MonteCarlo::Object* SObj=System.findQhull(forceCellN);
+	  if (SObj)
+	    OMap.insert(MTYPE::value_type(forceCellN,SObj));
+	}
+    }     
   // Add exclude string
   MTYPE::const_iterator ac;
   for(ac=OMap.begin();ac!=OMap.end();ac++)

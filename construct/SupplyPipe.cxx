@@ -3,7 +3,7 @@
  
  * File:   essBuild/SupplyPipe.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,8 +47,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -227,7 +225,6 @@ SupplyPipe::insertInlet(const attachSystem::FixedComp& FC,
     throw ColErr::CastError<void>(0,"FixedComp to LayerComp");
   layerOffset=X*PPts[0].X()+Z*PPts[0].Z();
   Geometry::Vec3D Pt= Origin+layerOffset+Y*PPts[0].Y();
-
   // GET Z Point from layer
   Geometry::Vec3D PtZ=LC->getSurfacePoint(0,lSideIndex);
 
@@ -239,8 +236,8 @@ SupplyPipe::insertInlet(const attachSystem::FixedComp& FC,
     Coaxial.addPoint(Pt);
   
   const size_t NL(LC->getNLayers(lSideIndex));
+
   // First find start point in layer set: [avoid inner layer]
-  size_t index;
   Coaxial.addSurfPoint
     (PtZ,LC->getLayerString(0,lSideIndex),commonStr);
   if (layerSeq.empty())
@@ -250,19 +247,17 @@ SupplyPipe::insertInlet(const attachSystem::FixedComp& FC,
 	layerSeq.push_back(index);
     }
 
-  std::vector<size_t>::const_iterator lindex;
-  for(lindex=layerSeq.begin();lindex!=layerSeq.end();lindex++)
+  for(const size_t lIndex : layerSeq)
     {
-      PtZ=LC->getSurfacePoint(*lindex,lSideIndex);
+      PtZ=LC->getSurfacePoint(lIndex,lSideIndex);
       PtZ+=layerOffset;
       Coaxial.addSurfPoint
-	(PtZ,LC->getLayerString(*lindex,lSideIndex),commonStr);
+	(PtZ,LC->getLayerString(lIndex,lSideIndex),commonStr);
     }
-    
-
+  
   for(size_t i=0;i<Radii.size();i++)
     Coaxial.addRadius(Radii[i],Mat[i],Temp[i]);
-
+  
   return;
 }
 
@@ -310,6 +305,20 @@ SupplyPipe::addOuterPoints()
 }
 
 void
+SupplyPipe::addInsertCell(const size_t segment,const int CellN)
+  /*!
+    Add a cell number that is definatively going to be cut by the 
+    pipe. This is a method for dealing with ultra-thin cells etc.
+    \param segment :: Index of pipe segment+1 [use 0 for all]
+    \param CellN :: Cell to exclude
+  */
+{
+  ELog::RegMethod RegA("SupplyPipe","addInsertCell");
+  Coaxial.addInsertCell(segment,CellN);  
+  return; 
+}
+  
+void
 SupplyPipe::setActive()
   /*!
     Simple set the active units
@@ -346,9 +355,6 @@ SupplyPipe::createAll(Simulation& System,
   setActive();
 
   Coaxial.setNAngle(nAngle);
-  const std::vector<Geometry::Vec3D>& Pts=
-    Coaxial.getPt();
-
   Coaxial.createAll(System);
 
   return;

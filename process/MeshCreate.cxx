@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   process/MeshCreate.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,7 +82,7 @@ rectangleMesh(Simulation& System,const int type,
     \param MPts :: Points ot use
   */
 {
-  ELog::RegMethod RegA("MeshCreate","meshSection");
+  ELog::RegMethod RegA("MeshCreate","rectangleMesh");
 
   // Find next available number
   int tallyN(type);
@@ -119,9 +119,11 @@ const std::string&
 getDoseConversion()
 /*!
   Return the dose string  for a mshtr
+  Thse values are is mrem/cm^3/3600  -- to convert
+  take particle/sec 
   Uses the FCD files values
   \return FCD string
-  */
+*/
 {
   static std::string fcdString=
     " 0.         1.8864E-03  1.0000E-09  1.8864E-03  1.0000E-08  2.3580E-03 "

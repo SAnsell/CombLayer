@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   funcBaseInc/varBlock.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,7 +48,7 @@ private:
   size_t tCnt;                                 ///< Total count
   std::vector<double> dV;                      ///< double items
   std::vector<int> iV;                         ///< integer items
-  std::vector<Geometry::Vec3D> vV;             ///< integer items
+  std::vector<Geometry::Vec3D> vV;             ///< Vec3d items
 
   std::map<std::string,size_t> dataMap;        ///< Data [name : (type/]
   std::vector<VTYPE> indexVec;                 ///< Data [index : (pos/name)]

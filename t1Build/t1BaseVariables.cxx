@@ -302,6 +302,114 @@ TS1PlateTarget(FuncDataBase& Control)
   return;
 }
 
+
+void
+TS1BulletTarget(FuncDataBase& Control)
+  /*!
+    Set up a bullet cylindrical target with wings
+    \param Control :: DataBase
+   */
+{
+  ELog::RegMethod RegA("t1BaseVariables[F]","TS1BulletTarget");
+
+  Control.addVariable("BVesselFrontClear",0.3);
+  Control.addVariable("BVesselFrontThick",0.2);
+  Control.addVariable("BVesselFrontWaterThick",0.4);
+  Control.addVariable("BVesselMainRadius",3.5);
+
+  Control.addVariable("BVesselNRadii",4);
+  Control.addVariable("BVesselRadius0",5.1);
+  Control.addVariable("BVesselRadius1",5.8);
+  Control.addVariable("BVesselRadius2",7.2);
+  Control.addVariable("BVesselRadius3",7.2);
+  Control.addVariable("BVesselLength0",6.50);
+  Control.addVariable("BVesselLength1",14.6);
+  Control.addVariable("BVesselLength2",16.5);
+
+  Control.addVariable("BVesselWaterHeight",5.0);
+  Control.addVariable("BVesselTaVertThick",0.4);
+  Control.addVariable("BVesselClearVertThick",0.3);
+
+  Control.addVariable("BVesselTaRadialThick",0.4);
+  Control.addVariable("BVesselClearRadialThick",0.3);
+
+  Control.addVariable("BVesselWallMat","Tantalum");
+  Control.addVariable("BVesselWaterMat","H2O");
+
+
+  // TARGET PLATES:
+  Control.addVariable("BPlatesXStep",0.0);
+  Control.addVariable("BPlatesYStep",0.5);
+  Control.addVariable("BPlatesZStep",0.0);
+  Control.addVariable("BPlatesXYangle",0.0);
+  Control.addVariable("BPlatesZangle",0.0);
+  
+
+  Control.addVariable("BPlatesBPlateThick",2.2);    // Backplate thickness
+  Control.addVariable("BPlatesBPlateIThick",0.6);    // Backplate thickness
+  Control.addVariable("BPlatesBPlateIWidth",1.1);    // Backplate thickness
+  Control.addVariable("BPlatesBPlateIOffset",2.95);    // Backplate thickness
+  Control.addVariable("BPlatesBPlatePinRadius",0.4);    // Backplate thickness
+  
+  Control.addVariable("BPlatesFeMat","Stainless304");            // Steel
+  Control.addVariable("BPlatesWMat","Tungsten");            // Tungsten 
+  Control.addVariable("BPlatesWTemp",600.0);            // Tungsten Temp
+  Control.addVariable("BPlatesWaterMat","D2O");        // Water [D2O]
+  Control.addVariable("BPlatesTaMat","Tantalum");           // Ta material 
+
+  Control.addVariable("BPlatesRadius",3.0);       // Radius of W inner
+  Control.addVariable("BPlatesTaThick",0.2);       // Ta thickness
+
+  Control.addVariable("BPlatesNBlocks",15);         // Number of plates:
+
+  Control.addVariable("BPlatesBlockType0","Tungsten");      
+  Control.addVariable("BPlatesBlockType1","Water");
+  Control.addVariable("BPlatesBlockType2","Tungsten");      
+  Control.addVariable("BPlatesBlockType3","Water");
+  Control.addVariable("BPlatesBlockType4","Tungsten");      
+  Control.addVariable("BPlatesBlockType5","Water");
+  Control.addVariable("BPlatesBlockType6","Tungsten");      
+  Control.addVariable("BPlatesBlockType7","Water");
+  Control.addVariable("BPlatesBlockType8","Tungsten");      
+  Control.addVariable("BPlatesBlockType9","Water");
+  Control.addVariable("BPlatesBlockType10","Tungsten");      
+  Control.addVariable("BPlatesBlockType11","Water");
+  Control.addVariable("BPlatesBlockType12","Tungsten");      
+  Control.addVariable("BPlatesBlockType13","Water");
+  Control.addVariable("BPlatesBlockType14","Tungsten");      
+
+  
+  Control.addVariable("BPlatesThick0",1.1);         // Tungsten
+  Control.addVariable("BPlatesThick1",0.1);         // Water
+  Control.addVariable("BPlatesThick2",1.2);         // Tungsten
+  Control.addVariable("BPlatesThick3",0.2);         // Water
+  Control.addVariable("BPlatesThick4",1.4);         // Tungsten
+  Control.addVariable("BPlatesThick5",0.2);         // Water
+  Control.addVariable("BPlatesThick6",1.7);         // Tungsten
+  Control.addVariable("BPlatesThick7",0.2);         // Water
+  Control.addVariable("BPlatesThick8",2.2);         // Tungsten
+  Control.addVariable("BPlatesThick9",0.2);         // Water
+  Control.addVariable("BPlatesThick10",2.9);         // Tungsten
+  Control.addVariable("BPlatesThick11",0.2);         // Water
+  Control.addVariable("BPlatesThick12",4.8);         // Tungsten
+  Control.addVariable("BPlatesThick13",0.2);         // Water
+  Control.addVariable("BPlatesThick14",16.5);         // Tungsten
+
+
+  Control.addVariable("BDivYStep",5.0);
+  Control.addVariable("BDivNRadii",1);
+  Control.addVariable("BDivRadius0",5.05);
+  Control.addVariable("BDivLength0",3.0);
+  Control.addVariable("BDivWallThick",0.5);
+  Control.addVariable("BDivWallMat","Tantalum");
+  
+  return;
+}
+
+
+
+
+  
 void
 TS1CylTarget(FuncDataBase& Control)
   /*!
@@ -360,7 +468,7 @@ TS1CylTarget(FuncDataBase& Control)
 
   Control.addVariable("t1CylTargetWMat","Tungsten");             // Solid Tungsten
   Control.addVariable("t1CylTargetTaMat","Tantalum");            // Solid Ta
-  Control.addVariable("t1CylTargetWaterMat","D2O");         // Light water
+  Control.addVariable("t1CylTargetWaterMat","D2O");         // Heavy water
 
   Control.addVariable("t1CylTargetTargetTemp",650);             // Inner core temp
   Control.addVariable("t1CylTargetWaterTemp",350);        // Water temp
@@ -449,7 +557,11 @@ TS1CylFluxTrap(FuncDataBase& Control)
   Control.addVariable("t1CylFluxTrapP5Dist",9.50);       // distance from flat
   Control.addVariable("t1CylFluxTrapP6Dist",12.90);       // distance from flat
   Control.addVariable("t1CylFluxTrapP7Dist",18.20);       // distance from flat
-
+  Control.addVariable("t1CylFluxTrapP8Dist",15.50);       // distance from flat
+  Control.addVariable("t1CylFluxTrapP9Dist",15.50);       // distance from flat
+  Control.addVariable("t1CylFluxTrapP10Dist",15.50);       // distance from flat
+  Control.addVariable("t1CylFluxTrapP11Dist",15.50);       // distance from flat
+  
   Control.addVariable("t1CylFluxTrapNCutSph",0);
   Control.addVariable("t1CylFluxTrapCutSph1Radius",4.8);
   Control.addVariable("t1CylFluxTrapCutSph1Dist",0.4);
@@ -486,7 +598,7 @@ TS1CylFluxTrapReal(FuncDataBase& Control)
   ELog::RegMethod RegA("t1BaseVariables[F]","TS1CylFluxTrap");
   // MOLY SECTION:
   Control.addVariable("t1CylFluxTrapNPlates",8);
-  Control.addVariable("t1CylFluxTrapPThick",0.7);
+  Control.addVariable("t1CylFluxTrapPThick",0.6);
   Control.addVariable("t1CylFluxTrapPMat","H2O");
   Control.addVariable("t1CylFluxTrapPLayerMat","Tantalum");
   Control.addVariable("t1CylFluxTrapPLayerThick",0.2);
@@ -952,7 +1064,9 @@ TS1base(FuncDataBase& Control)
   Sxd.buildVar(Control,2.0,2.0,0.0,8.88,8.88,0.58,0.58); // (xstep = estimate)
   Merlin.buildVar(Control,-2.0,-2.2,0.0,9.4,9.4,0.0,0.0); // (beam size = 9.4 x 9.4 cm - from Rob Bewley)
   S5.buildVar(Control,0.0,-2.2,0.0,7.0,7.0,0.0,0.0); // CLOSED
-  Mari.buildVar(Control,0.0,2.0,0.0,7.74,7.74,0.48,0.48); // xstep 
+  Mari.buildVar(Control,0.7,2.0,0.0,7.74,7.74,0.48,0.48); // xstep 
+//  Mari.buildVar(Control,0.0,2.0,0.0,7.74,7.74,0.192,0.192); // xstep; 0.192 from R. Bewley      TOO MUCH 
+//  Mari.buildVar(Control,0.0,2.0,0.0,7.26,7.26,0.12,0.12); // xstep; from R. Bewley     2ND VERSION
   Gem.buildVar(Control,0.0,1.4,0.0,7.4,8.6,0.115,0.172);  // xstep; from new incomplete drawings
   Hrpd.buildVar(Control,0.0,1.5,0.0,8.0,6.0,0.143,0.0);  // xstep; from new incomplete drawings
   Pearl.buildVar(Control,0.0,1.3,0.0,8.23,8.23,0.215,0.215);  // xstep; from new incomplete drawings

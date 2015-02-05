@@ -3,7 +3,7 @@
  
  * File:   funcBaseInc/FuncDataBase.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -91,6 +91,12 @@ class FuncDataBase
   template<typename T>
   T EvalPair(const std::string&,const std::string&,
 	     const std::string&) const;      
+  template<typename T>
+  T EvalDefPair(const std::string&,const std::string&,
+		const T&) const;      
+  template<typename T>
+  T EvalDefPair(const std::string&,const std::string&,
+		const std::string&,const T&) const;      
 
   /// Add variable
   template<typename T>

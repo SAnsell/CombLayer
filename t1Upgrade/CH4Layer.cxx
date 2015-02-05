@@ -456,7 +456,7 @@ CH4Layer::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,ch4Layer," 3 -4 5 -6 ");
   createFrontRule(LVec[0],modIndex,0,frontX);
   createBackRule(LVec[0],modIndex,0,backX);
-  
+		 
   // Outer layers:
   ch4Layer+=30;
   for(size_t i=1;i<LVec.size();i++)
@@ -468,13 +468,13 @@ CH4Layer::createObjects(Simulation& System)
       Exclude.makeComplement();
       createFrontRule(LVec[i],modIndex,i,frontX);
       createBackRule(LVec[i],modIndex,i,backX);
+
       HeadRule Main;
       Out=ModelSupport::getComposite(SMap,ch4Layer," 3 -4 5 -6 ");
       Main.procString(Out);
       Main.addIntersection(Exclude);
       Main.addIntersection(frontX);
       Main.addIntersection(backX);
-
       System.addCell(MonteCarlo::Qhull
 		     (cellIndex++,LVec[i].getMat(),
 		      LVec[i].getTemp(),Main.display()));

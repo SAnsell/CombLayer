@@ -3,7 +3,7 @@
  
  * File:   t1Build/H2Pipe.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -243,7 +243,7 @@ H2Pipe::insertOuter(Simulation& System,const attachSystem::FixedComp& FC,
   Central.setActive(2,15);
   Central.setActive(3,63);
   Central.setActive(4,63);
-  Central.setActive(5,63);
+  Central.setActive(5,127);
 
   // Smallest to largest radius.
   Central.addRadius(h2InnerRadius,h2Mat,h2Temp);

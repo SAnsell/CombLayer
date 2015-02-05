@@ -3,7 +3,7 @@
  
  * File:   build/BulkShield.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -304,14 +304,14 @@ BulkShield::createShutters(Simulation& System,
     ModelSupport::objectRegister::Instance();
 
   const bool chipFlag(!IParam.flag("exclude") || 
-		      !IParam.compValue("E",std::string("chipIR")));
+		      !IParam.compNoCaseValue("E",std::string("chipir")));
   const bool imatFlag(!IParam.flag("exclude") || 
-   		      (!IParam.compValue("E",std::string("Imat")) &&
-		       !IParam.compValue("E",std::string("IMat"))) );
+   		      !IParam.compNoCaseValue("E",std::string("imat")));
+
   const bool zoomFlag(!IParam.flag("exclude") || 
-   		      !IParam.compValue("E",std::string("Zoom")));
+   		      !IParam.compNoCaseValue("E",std::string("zoom")));
   const bool letFlag(!IParam.flag("exclude") || 
-   		      !IParam.compValue("E",std::string("LET")));
+   		      !IParam.compNoCaseValue("E",std::string("LET")));
 
   GData.clear();
   for(size_t i=0;i<numberBeamLines;i++)

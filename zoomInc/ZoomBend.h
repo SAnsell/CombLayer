@@ -53,11 +53,13 @@ class ZoomBend : public attachSystem::ContainedGroup,
 
   Geometry::Vec3D BCentre;      ///< Rotation centre [centerline]
   Geometry::Vec3D normalOut;    ///< Normal out [To correct angle]
+  Geometry::Vec3D zOut;         ///< Z out [to correct angle]
   Geometry::Vec3D BNormal;      ///< Normal direction to bend
   Geometry::Vec3D BCross;       ///< Cross direction
 
   double bendAngle;             ///< Angle of the beam [mRad]
   double bendVertAngle;         ///< Angle of the vertical direction
+  double bendXAngle;            ///< Rotation of beam relative to entry [mRad]
   double bendRadius;            ///< Radius of bend
   double bendLength;            ///< Full length
 
@@ -70,7 +72,9 @@ class ZoomBend : public attachSystem::ContainedGroup,
   double xStep;                 ///< Offset on X Shutter exit point
   double yStep;                 ///< Offset on Y Shutter exit point
   double zStep;                 ///< Offset on Z Shutter exit point
-  
+
+  double bxStep;                ///< Bend offset relative to shutter point
+  double bzStep;                ///< Bend offset relative to shutter point
   /// sections:
   std::array<bendSection,4> BSector;  
   

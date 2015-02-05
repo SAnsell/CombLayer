@@ -3,7 +3,7 @@
  
  * File:   support/stringCombine.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -128,6 +128,7 @@ template std::string makeString(const int&);
 template std::string makeString(const size_t&);
 template std::string makeString(const double&);
 template std::string makeString(const long int&);
+template std::string makeString(const Geometry::Vec3D&);
 template std::string makeString(const std::string&,const int&);
 template std::string makeString(const std::string&,const double&);
 template std::string makeString(const std::string&,const size_t&);

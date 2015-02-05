@@ -3,7 +3,7 @@
  
  * File:   build/GeneralShutter.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -77,15 +77,14 @@
 #include "FixedComp.h"
 #include "SecondTrack.h"
 #include "TwinComp.h"
-#include "LinearComp.h"
-#include "InsertComp.h"
+#include "ContainedComp.h"
 #include "GeneralShutter.h"
 
 namespace shutterSystem
 {
 
 GeneralShutter::GeneralShutter(const size_t ID,const std::string& Key) : 
-  TwinComp(Key,8),InsertComp(),shutterNumber(ID),
+  TwinComp(Key,8),ContainedComp(),shutterNumber(ID),
   surfIndex(ModelSupport::objectRegister::Instance().
 	    cell(Key,static_cast<int>(ID),20000)),
   cellIndex(surfIndex+1),populated(0),divideSurf(0),
@@ -99,7 +98,7 @@ GeneralShutter::GeneralShutter(const size_t ID,const std::string& Key) :
 {}
 
 GeneralShutter::GeneralShutter(const GeneralShutter& A) : 
-  attachSystem::TwinComp(A),attachSystem::InsertComp(A),
+  attachSystem::TwinComp(A),attachSystem::ContainedComp(A),
   shutterNumber(A.shutterNumber),surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   populated(A.populated),divideSurf(A.divideSurf),DPlane(A.DPlane),
   voidXoffset(A.voidXoffset),innerRadius(A.innerRadius),
@@ -133,7 +132,7 @@ GeneralShutter::operator=(const GeneralShutter& A)
   if (this!=&A)
     {
       attachSystem::TwinComp::operator=(A);
-      attachSystem::InsertComp::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
       cellIndex=A.cellIndex;
       populated=A.populated;
       divideSurf=A.divideSurf;
@@ -446,7 +445,7 @@ GeneralShutter::createSurfaces()
    frontPt+Z*(voidZOffset+voidHeight/2.0+centZOffset),zSlope);
   // Inner cut [on flightline]
   ModelSupport::buildPlane(SMap,surfIndex+26,
-      frontPt-Z*(-voidZOffset+voidHeight/2.0-centZOffset),Z);
+      frontPt-Z*(-voidZOffset+voidHeight/2.0-centZOffset),zSlope);
 
   // Lower Blade
   ModelSupport::buildPlane(SMap,surfIndex+16,
@@ -688,7 +687,7 @@ GeneralShutter::createObjects(Simulation& System)
 
   // Add exclude
   Out=ModelSupport::getComposite(SMap,surfIndex,"2023 -2024 ")+dSurf;
-  addInterSurf(Out);
+  addOuterSurf(Out);
   return;
 }
 

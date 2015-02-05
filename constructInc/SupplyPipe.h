@@ -3,7 +3,7 @@
  
  * File:   constructInc/SupplyPipe.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,7 +57,7 @@ class SupplyPipe : public attachSystem::FixedComp
   Geometry::Vec3D layerOffset;         ///< Offset of layer
   std::vector<Geometry::Vec3D> PPts;   ///< Pipe points
   size_t nAngle;                       ///< Number of angle segments
-  
+
   void populate(const Simulation&);
   void createUnitVector(const attachSystem::FixedComp&,const size_t,
 			const size_t);
@@ -88,6 +88,8 @@ class SupplyPipe : public attachSystem::FixedComp
   void setLayerSeq(const std::vector<size_t>& LS)
      { layerSeq=LS; }
 
+  void addInsertCell(const size_t,const int);
+  
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const size_t,const size_t,const size_t);
 
