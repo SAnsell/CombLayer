@@ -78,7 +78,6 @@
 #include "FixedComp.h" 
 #include "SecondTrack.h"
 #include "TwinComp.h"
-#include "LinearComp.h" 
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "GeneralShutter.h"
@@ -87,6 +86,7 @@
 #include "BulkShield.h"
 #include "ScatterPlate.h"
 #include "ChipIRFilter.h"
+#include "WallCut.h"
 #include "ChipIRGuide.h"
 
 namespace hutchSystem
@@ -122,6 +122,7 @@ ChipIRGuide::ChipIRGuide(const ChipIRGuide& A) :
   rightSteelAngle(A.rightSteelAngle),roofConc(A.roofConc),
   floorConc(A.floorConc),leftConcInner(A.leftConcInner),
   rightConcInner(A.rightConcInner),rightConcFlat(A.rightConcFlat),
+
   leftConcAngle(A.leftConcAngle),rightConcAngle(A.rightConcAngle),
   blockWallThick(A.blockWallThick),blockWallHeight(A.blockWallHeight),
   blockWallLen(A.blockWallLen),extraWallThick(A.extraWallThick),
@@ -224,6 +225,28 @@ ChipIRGuide::~ChipIRGuide()
 
 
 void
+ChipIRGuide::populateWallItems(const FuncDataBase& Control)
+  /*!
+    Populate the wall cut item variables
+    \param Control :: Variable database 
+  */
+{
+  ELog::RegMethod RegA("ChipIRGuide","popualateWallItems");
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+  
+  nCuts=Control.EvalVar<size_t>(keyName+"NCuts");
+  WCObj.clear();
+  for(size_t i=0;i<nCuts;i++)
+    {
+      const std::string KN="CutKey"+StrFunc::makeString(i);
+      WCObj.push_back(std::shared_ptr<WallCut>(new WallCut("CGCut",i)));
+      OR.addObject(WCObj.back());
+    }
+  return;
+}
+  
+void
 ChipIRGuide::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
@@ -311,10 +334,8 @@ ChipIRGuide::populate(const FuncDataBase& Control)
   remedialWestWallThick=Control.EvalVar<double>(keyName+"RemedialWallThick");
   remedialWallHeight=Control.EvalVar<double>(keyName+"RemedialWallHeight");
 
-  // Wedge shielding block on TSA
-//  leftWedgeThick=Control.EvalVar<double>(keyName+"LeftWedgeThick");
-//  leftWedgeHeight=Control.EvalVar<double>(keyName+"LeftWedgeHeight");
-//  leftWedgeAngle=Control.EvalVar<double>(keyName+"LeftWedgeAngle");
+
+  populateWallItems(Control);
 
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");
   nConcLayers=Control.EvalDefVar<size_t>(keyName+"NConcLayers",0);
@@ -653,7 +674,7 @@ ChipIRGuide::createObjects(Simulation& System)
        "-100 1 -2 13 113 -14 -114 115 -116 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
   voidCells.push_back(cellIndex-1);
-  layerCells.push_back(cellIndex-1);
+  layerCells.insert(LCTYPE::value_type("SteelInner",cellIndex-1));
 
   // Concrete:
   // Roof:
@@ -673,14 +694,14 @@ ChipIRGuide::createObjects(Simulation& System)
 				 "-100  1 -1002 115 -116 (14:114) -204 -214 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
   //  voidCells.push_back(cellIndex-1);
-  layerCells.push_back(cellIndex-1);
+  layerCells.insert(LCTYPE::value_type("ConcRight",cellIndex-1));
 
   // Left Wall
   Out=ModelSupport::getComposite(SMap,guideIndex,
 				 "-100 1 -1002 115 -116 (-13:-113) 213 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
   voidCells.push_back(cellIndex-1);
-  layerCells.push_back(cellIndex-1);
+  layerCells.insert(LCTYPE::value_type("ConcLeft",cellIndex-1));
 
   // BlockWall
   Out=ModelSupport::getComposite(SMap,guideIndex,
@@ -711,13 +732,13 @@ ChipIRGuide::createObjects(Simulation& System)
 				 "-100 1 -1002 (214:204) (502:503:506) "
 				 "205 -606 -604 -614 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
-  layerCells.push_back(cellIndex-1);
+  layerCells.insert(LCTYPE::value_type("RWConcW2",cellIndex-1));
 
     // REMEDIAL ROOF to the wall
   Out=ModelSupport::getComposite(SMap,guideIndex,
 				 "-100 1 -1002 -214 -204 213 206 -606");
   System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
-  layerCells.push_back(cellIndex-1);
+  layerCells.insert(LCTYPE::value_type("RWConcRoof",cellIndex-1));
 
 
 
@@ -777,8 +798,6 @@ ChipIRGuide::layerProcess(Simulation& System)
   // Steel layers
   //  layerSpecial(System);
 
-  if (1>2)
-    {
   if (nLayers>1)
     {
       std::string OutA,OutB;
@@ -792,7 +811,7 @@ ChipIRGuide::layerProcess(Simulation& System)
       DA.addMaterial(guideMat.back());
       
       // Cell Specific:
-      DA.setCellN(layerCells[0]);
+      DA.setCellN(layerCells["SteelInner"]);
       DA.setOutNum(cellIndex,guideIndex+801);
       const int linerOffset(guideIndex
 			    +20*static_cast<int>(LThick.size()));
@@ -843,11 +862,12 @@ ChipIRGuide::layerProcess(Simulation& System)
       const std::vector<std::pair<int,int> > 
 	BX={{213,13},{213,113}};
 	
-      procSurfDivide(System,DA,1,AX,"(14:114)","-214 -204");
-      procSurfDivide(System,DA,2,BX,"213","(-13:-113)");
+      cellIndex=DA.procSurfDivide(System,SMap,layerCells["ConcRight"],
+			guideIndex,1600,cellIndex,AX,"(14:114)","-214 -204");
+      cellIndex=DA.procSurfDivide(System,SMap,layerCells["ConcLeft"],
+			guideIndex,2400,cellIndex,BX,"213","(-13:-113)");
     }
 
-    }
   // ----------------------
   // REMEDIAL WALL Divider:
   // ----------------------
@@ -864,63 +884,14 @@ ChipIRGuide::layerProcess(Simulation& System)
 
       const std::vector<std::pair<int,int> > 
 	AX={{214,614},{204,604}};
-      procSurfDivide(System,DA,3,AX,"(204:214)","-614 -604");
+      cellIndex=DA.procSurfDivide(System,SMap,layerCells["RWConcW2"],
+			guideIndex,3000,cellIndex,AX,
+			"(204:214)","-614 -604");
     }
   
-  
-  return;
-}
-
-void
-ChipIRGuide::procSurfDivide(Simulation& System,
-			    ModelSupport::surfDivide& DA,
-			    const size_t offset,
-			    const std::vector<std::pair<int,int>>& VA,
-			    const std::string& OA,
-			    const std::string& OB)
-  /*!
-    Process all the basic dividing layers
-    \param System :: Simuation 
-    \param DA :: Divide system
-    \param offset :: index within layerCell offest vector
-    \param VA :: Offset vector
-    \param OA :: Inner string [not composed]
-    \param OA :: Outer string [not composed]
-   */
-{
-  ELog::RegMethod Rega("ChipIRGuide","procSurfDivide");
-  
-  std::string OutA,OutB;
-  // Cell Specific:
-  DA.init();
-  DA.setCellN(layerCells[offset]);
-
-  DA.setOutNum(cellIndex,guideIndex+
-	       static_cast<int>(offset+1)*800);
-  
-  ModelSupport::mergeTemplate<Geometry::Plane,
-			      Geometry::Plane> surroundRule;
-
-  for(const std::pair<int,int>& VItem : VA)
-    {
-      surroundRule.setSurfPair(SMap.realSurf(guideIndex+VItem.first),
-			       SMap.realSurf(guideIndex+VItem.second));
-    }
-  
-  OutA=ModelSupport::getComposite(SMap,guideIndex,OA);
-  OutB=ModelSupport::getComposite(SMap,guideIndex,OB);
-  surroundRule.setInnerRule(OutA);
-  surroundRule.setOuterRule(OutB);
-
-  DA.addRule(&surroundRule);
-  DA.activeDivideTemplate(System);
-  
-  cellIndex=DA.getCellNum();
   return;
 }
       
-  
-
 void
 ChipIRGuide::writeMasterPoints()
   /*!
@@ -1097,6 +1068,60 @@ ChipIRGuide::createAll(Simulation& System,
 }
 
 void
+ChipIRGuide::addWallCuts(Simulation& System)
+  /*!
+    Add wallcuts if necessary
+   */
+{
+  ELog::RegMethod RegA("ChipIRGuide","makeWallCuts");
+
+  const int GI(guideIndex+static_cast<int>(LMat.size())*20);
+  std::string Out;
+
+  for(std::shared_ptr<WallCut> WC : WCObj)
+    {
+      WC->populateKey(System.getDataBase());
+      const std::string kN=WC->getInsertKey();
+      ELog::EM<<"WC == "<<kN<<ELog::endDiag;
+      if (kN=="SteelInnerRight")
+	{
+	  WC->addInsertCell(layerCells["SteelInner"]);
+	  Out=ModelSupport::getComposite(SMap,guideIndex,GI,"4M -14");
+	}
+      else if (kN=="SteelInnerLeft")
+	{
+	  WC->addInsertCell(layerCells["SteelInner"]);
+	  Out=ModelSupport::getComposite(SMap,guideIndex,GI,"-3M 13");
+	}
+      else if (kN=="SteelOuterLeft")
+	{
+	  WC->addInsertCell(layerCells["SteelInner"]);
+	  Out=ModelSupport::getComposite(SMap,guideIndex,GI,"-3M 113");
+	}
+      else if (kN=="SteelInner")
+	{
+	  WC->addInsertCell(layerCells["SteelInner"]);
+	  Out="";
+	}
+
+      else
+	{
+	  throw ColErr::InContainerError<std::string>(WC->getInsertKey(),
+						    "InsertKey");
+	}
+      if (!Out.empty())
+	WC->createAll(System,*this,0,HeadRule(Out));
+      else
+	{
+	  ELog::EM<<"Creating empty"<<ELog::endDiag;
+	  WC->createAll(System,*this,0,HeadRule());
+	}
+    }
+  
+  return;
+}
+  
+void
 ChipIRGuide::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC)
   /*!
@@ -1119,10 +1144,13 @@ ChipIRGuide::createAll(Simulation& System,
 
   addInsertPlate(System);
   addFilter(System);
+  writeMasterPoints();
+  
+  addWallCuts(System);
   layerProcess(System);
   insertObjects(System);   
   
-  writeMasterPoints();
+
   return;
 }
   

@@ -211,8 +211,8 @@ ChipVariables(FuncDataBase& Control)
   Control.addVariable("chipGuideRightSteel",101.3);
   Control.addVariable("chipGuideLeftSteelInner",50.1);   //30
   Control.addVariable("chipGuideRightSteelInner",71.70);
-  Control.addVariable("chipGuideLeftSteelAngle",6.50);
-  Control.addVariable("chipGuideRightSteelAngle",6.0);
+  Control.addVariable("chipGuideLeftSteelAngle",6.5);  
+  Control.addVariable("chipGuideRightSteelAngle",7.88); // was 6.0
 
   Control.addVariable("chipGuideRoofConc",220.0);  
   Control.addVariable("chipGuideFloorConc",190.0);
@@ -279,6 +279,7 @@ ChipVariables(FuncDataBase& Control)
   Control.addVariable("chipGPlateDefMat","Aluminium");      // Material
   Control.addVariable("chipGPlateNLayers",0);     // Number of layers
 
+  
   Control.addVariable("chipGuideNLayers",3);    // Number of layers
   Control.addVariable("chipGuideNConcLayers",3);    // Number of layers
 
@@ -748,7 +749,73 @@ ChipVariables(FuncDataBase& Control)
   Control.addVariable("chipSourceAngle",35.0);         // Angle on the source
   Control.addVariable("chipSourceRadial",12.0);        // Width
 
+  
+  Control.addVariable("chipGuideNCuts",16);    // Number of cuts
+    
+  Control.addVariable("CGCut0Centre",Geometry::Vec3D(55.0,10.0,50.0));
+  Control.addVariable("CGCut1Centre",Geometry::Vec3D(60.0,126.0,50.0));
+  Control.addVariable("CGCut2Centre",Geometry::Vec3D(60.0,253.0,50.0));
+  Control.addVariable("CGCut3Centre",Geometry::Vec3D(60.0,378.0,50.0));
+  Control.addVariable("CGCut4Centre",Geometry::Vec3D(75.0,558.0,50.0));
 
+  Control.addVariable("CGCut5Centre",Geometry::Vec3D(85.0,276.0,50.0));
+  Control.addVariable("CGCut6Centre",Geometry::Vec3D(85.0,427.0,50.0));
+
+  // left side
+  Control.addVariable("CGCut7Centre",Geometry::Vec3D(-28.0,10.0,50.0));
+  Control.addVariable("CGCut8Centre",Geometry::Vec3D(-40.0,90.0,50.0));
+  Control.addVariable("CGCut9Centre",Geometry::Vec3D(-28.0,129.0,50.0));
+  Control.addVariable("CGCut10Centre",Geometry::Vec3D(-28.0,253.0,50.0));
+  Control.addVariable("CGCut11Centre",Geometry::Vec3D(-60.0,273.0,50.0));
+  Control.addVariable("CGCut12Centre",Geometry::Vec3D(-28.0,378.0,50.0));
+  Control.addVariable("CGCut13Centre",Geometry::Vec3D(-60.0,427.0,50.0));
+  Control.addVariable("CGCut14Centre",Geometry::Vec3D(-70.0,520.0,50.0));
+  Control.addVariable("CGCut15Centre",Geometry::Vec3D(-60.0,535.5,50.0));
+  
+  Control.addVariable("CGCut0Length",30.0);
+  Control.addVariable("CGCut1Length",40.0);
+  Control.addVariable("CGCut2Length",40.0);
+  Control.addVariable("CGCut3Length",40.0);
+  Control.addVariable("CGCut4Length",40.0);
+
+  Control.addVariable("CGCut5Length",30.0);
+  Control.addVariable("CGCut6Length",30.0);
+
+  Control.addVariable("CGCut7Length",30.0);
+  Control.addVariable("CGCut8Length",30.0);
+  Control.addVariable("CGCut9Length",30.0);
+  Control.addVariable("CGCut10Length",40.0);
+  Control.addVariable("CGCut11Length",30.0);
+  Control.addVariable("CGCut12Length",40.0);
+  Control.addVariable("CGCut13Length",40.0);
+  Control.addVariable("CGCut14Length",30.0);
+  Control.addVariable("CGCut15Length",25.0);
+
+
+  Control.addVariable("CGCut0InsertKey","SteelInnerRight");
+  Control.addVariable("CGCut1InsertKey","SteelInnerRight");
+  Control.addVariable("CGCut2InsertKey","SteelInnerRight");
+  Control.addVariable("CGCut3InsertKey","SteelInnerRight");
+  Control.addVariable("CGCut4InsertKey","SteelInnerRight");
+  Control.addVariable("CGCut5InsertKey","SteelInnerRight");
+  Control.addVariable("CGCut6InsertKey","SteelInnerRight");
+  Control.addVariable("CGCut7InsertKey","SteelInnerLeft");
+  Control.addVariable("CGCut8InsertKey","SteelInnerLeft");
+  Control.addVariable("CGCut9InsertKey","SteelInnerLeft");
+  Control.addVariable("CGCut10InsertKey","SteelInner");
+  Control.addVariable("CGCut11InsertKey","SteelInner");
+  Control.addVariable("CGCut12InsertKey","SteelOuterLeft");
+  Control.addVariable("CGCut13InsertKey","SteelOuterLeft");
+  Control.addVariable("CGCut14InsertKey","SteelOuterLeft");
+  Control.addVariable("CGCut15InsertKey","SteelOuterLeft");
+
+  Control.addVariable("CGCutWidth",15.0);
+  Control.addVariable("CGCutHeight",3.5);
+  Control.addVariable("CGCutRotXYangle",90.0);
+
+  
+  
+  
   // Control stuff
   return;
 }

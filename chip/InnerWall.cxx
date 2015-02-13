@@ -3,7 +3,7 @@
  
  * File:   chip/InnerWall.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,10 +70,8 @@
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
-#include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "LinearComp.h"
 #include "ContainedComp.h"
 #include "InnerWall.h"
 
@@ -81,10 +79,9 @@ namespace hutchSystem
 {
 
 InnerWall::InnerWall(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::LinearComp(Key),
+  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,2),
   innerIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(innerIndex+1),
-  populated(0),nLayers(0)
+  cellIndex(innerIndex+1),nLayers(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -92,10 +89,10 @@ InnerWall::InnerWall(const std::string& Key)  :
 {}
 
 InnerWall::InnerWall(const InnerWall& A) : 
-  attachSystem::ContainedComp(A),attachSystem::LinearComp(A),  
+  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),  
   innerIndex(A.innerIndex),cellIndex(A.cellIndex),
-  populated(A.populated),fStep(A.fStep),xStep(A.xStep),
-  zStep(A.zStep),Centre(A.Centre),height(A.height),
+  fStep(A.fStep),xStep(A.xStep),zStep(A.zStep),
+  Centre(A.Centre),height(A.height),
   width(A.width),depth(A.depth),defMat(A.defMat),
   nLayers(A.nLayers),cFrac(A.cFrac),cMat(A.cMat),
   CDivideList(A.CDivideList)
@@ -116,9 +113,8 @@ InnerWall::operator=(const InnerWall& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::LinearComp::operator=(A);
+      attachSystem::FixedComp::operator=(A);
       cellIndex=A.cellIndex;
-      populated=A.populated;
       fStep=A.fStep;
       xStep=A.xStep;
       zStep=A.zStep;
@@ -171,7 +167,6 @@ InnerWall::populate(const Simulation& System)
 			       keyName+"Mat_",defMat,cMat);
 
 
-  populated |= 1;
   return;
 }
 
@@ -184,7 +179,7 @@ InnerWall::createUnitVector(const attachSystem::FixedComp& LC)
 {
   ELog::RegMethod RegA("InnerWall","createUnitVector");
   // Origin is in the wrong place as it is at the EXIT:
-  LinearComp::createUnitVector(LC);
+  FixedComp::createUnitVector(LC);
   Origin=LC.getExit();
 
   Origin+=X*xStep+Y*fStep+Z*zStep;
@@ -209,7 +204,8 @@ InnerWall::createSurfaces()
   addLinkSurf(0,SMap.realSurf(innerIndex+1));
   // Back
   ModelSupport::buildPlane(SMap,innerIndex+2,Centre+Y*depth/2.0,Y);
-  setExitSurf(SMap.realSurf(innerIndex+2));
+
+  setBridgeSurf(1,SMap.realSurf(innerIndex+2));
   addLinkSurf(1,-SMap.realSurf(innerIndex+2));
 
   // Hole Inner:

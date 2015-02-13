@@ -1067,6 +1067,8 @@ template int FuncDataBase::EvalPair(const std::string&,
 				    const std::string&) const;
 template size_t FuncDataBase::EvalPair(const std::string&,
 				       const std::string&) const;
+template std::string FuncDataBase::EvalPair(const std::string&,
+					    const std::string&) const;
 template Geometry::Vec3D FuncDataBase::EvalPair(const std::string&,
 						const std::string&) const;
 
@@ -1080,6 +1082,9 @@ template int FuncDataBase::EvalPair(const std::string&,
 template size_t FuncDataBase::EvalPair(const std::string&,
 				       const std::string&,
 				       const std::string&) const;
+template std::string FuncDataBase::EvalPair(const std::string&,
+					    const std::string&,
+					    const std::string&) const;
 template Geometry::Vec3D FuncDataBase::EvalPair(const std::string&,
 						const std::string&,
 						const std::string&) const;

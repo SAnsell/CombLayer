@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   chipInc/InnerWall.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-205 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,13 +37,12 @@ namespace hutchSystem
 
 class InnerWall : 
   public attachSystem::ContainedComp,
-    public attachSystem::LinearComp
+    public attachSystem::FixedComp
 {
  private:
   
   const int innerIndex;         ///< Index of surface offset
   int cellIndex;                ///< Cell index
-  int populated;                ///< 1:var
   
   double fStep;             ///< origin forward step
   double xStep;             ///< Offset on XAxis of centre

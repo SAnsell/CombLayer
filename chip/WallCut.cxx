@@ -79,6 +79,7 @@ namespace hutchSystem
 
 WallCut::WallCut(const std::string& Key,const size_t ID)  :
   attachSystem::FixedComp(StrFunc::makeString(Key,ID),0),
+  attachSystem::ContainedComp(),
   cutIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
   cellIndex(cutIndex+1),baseName(Key)
   /*!
@@ -94,19 +95,32 @@ WallCut::~WallCut()
 {}
 
 void
+WallCut::populateKey(const FuncDataBase& Control)
+  /*!
+    Populate key
+  */
+{  
+  ELog::RegMethod RegA("WallCut","populateKey");
+  
+  insertKey=Control.EvalPair<std::string>(keyName,baseName,"InsertKey");
+  return;
+}
+  
+void
 WallCut::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: DataBase to copy
   */
 {
+
   ELog::RegMethod RegA("WallCut","populate");
 
 
   // rotation of origin
   xyAngle=Control.EvalDefPair<double>(baseName,keyName,"XYangle",0.0);
   zAngle=Control.EvalDefPair<double>(baseName,keyName,"Zangle",0.0);
-  
+
   CPt=Control.EvalPair<Geometry::Vec3D>(keyName,baseName,"Centre");
 
   height=Control.EvalPair<double>(keyName,baseName,"Height");
@@ -116,24 +130,25 @@ WallCut::populate(const FuncDataBase& Control)
   // rotation of X/Y/Z in the build
   rotXY=Control.EvalDefPair<double>(keyName,baseName,"RotXYangle",0.0);
   rotZ=Control.EvalDefPair<double>(keyName,baseName,"RotZangle",0.0);
-
+  
   return;
 }
   
 void
 WallCut::createUnitVector(const attachSystem::FixedComp& FC,
 			  const long int sideIndex)
-/*!
-  Create the unit vectors
-  \param FC :: Fixed unit that it is connected to 
-  \parma sideIndex :: Index for side
-*/
+  /*!
+    Create the unit vectors
+    \param FC :: Fixed unit that it is connected to 
+    \param sideIndex :: Index for side
+  */
 {
   ELog::RegMethod RegA("WallCut","createUnitVector");
+  
   FixedComp::createUnitVector(FC,sideIndex);
   applyAngleRotate(xyAngle,zAngle);
   CPt=Origin+X*CPt.X()+Y*CPt.Y()+Z*CPt.Z();
-  
+
   return;
 }
 
@@ -152,9 +167,9 @@ WallCut::createSurfaces()
   // TAKEN FROM FixedComp::applyAngleRotate
   // consider transfer to a static method.
   const Geometry::Quaternion Qz=
-    Geometry::Quaternion::calcQRotDeg(zAngle,X);
+    Geometry::Quaternion::calcQRotDeg(rotZ,X);
   const Geometry::Quaternion Qxy=
-    Geometry::Quaternion::calcQRotDeg(xyAngle,Z);
+    Geometry::Quaternion::calcQRotDeg(rotXY,Z);
   Qz.rotate(YPrime);
   Qz.rotate(ZPrime);
   Qxy.rotate(YPrime);
@@ -196,12 +211,13 @@ WallCut::createObjects(Simulation& System,
     \param wallBoundary :: External boundary rule 
   */
 {
-  ELog::RegMethod RegA("PreMod","createObjects");
+  ELog::RegMethod RegA("WallCut","createObjects");
 
   std::string Out;
   Out=ModelSupport::getSetComposite(SMap,cutIndex,"1 -2 3 -4 5 -6 ");
+  addOuterSurf(Out);
   Out+=wallBoundary.display();
-  //  addOuterSurf(Out);
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   
   return;
 }
@@ -224,8 +240,9 @@ WallCut::createAll(Simulation& System,
 
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
-
-  //  insertPipes(System);       
+  createSurfaces();
+  createObjects(System,wallBoundary);
+  insertObjects(System);
   
   return;
 }

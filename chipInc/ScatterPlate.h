@@ -35,7 +35,7 @@ namespace hutchSystem
 */
 
 class ScatterPlate : public attachSystem::ContainedComp,
-    public attachSystem::LinearComp
+    public attachSystem::FixedComp
 {
  private:
   

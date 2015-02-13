@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   chip/FeedThrough.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,10 +48,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "Tally.h"
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
@@ -73,8 +69,6 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "SimProcess.h"
@@ -104,11 +98,11 @@
 namespace hutchSystem
 {
 
-FeedThrough::FeedThrough(const std::string& Key,const int Index)  :
+FeedThrough::FeedThrough(const std::string& Key,const size_t Index)  :
   attachSystem::FixedComp(Key,0),ID(Index),
   pipeIndex(ModelSupport::objectRegister::Instance().
 	    cell(StrFunc::makeString(Key,Index))),
-  cellIndex(pipeIndex+1),populated(0),
+  cellIndex(pipeIndex+1),
   CollTrack(StrFunc::makeString(Key,Index))
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -119,7 +113,7 @@ FeedThrough::FeedThrough(const std::string& Key,const int Index)  :
 FeedThrough::FeedThrough(const FeedThrough& A) : 
   attachSystem::FixedComp(A),ID(A.ID),
   pipeIndex(A.pipeIndex),cellIndex(A.cellIndex),
-  populated(A.populated),CollTrack(A.CollTrack),height(A.height),
+  CollTrack(A.CollTrack),height(A.height),
   width(A.width),Offset(A.Offset),CPts(A.CPts)
   /*!
     Copy constructor
@@ -139,7 +133,6 @@ FeedThrough::operator=(const FeedThrough& A)
     {
       attachSystem::FixedComp::operator=(A);
       cellIndex=A.cellIndex;
-      populated=A.populated;
       CollTrack=A.CollTrack;
       height=A.height;
       width=A.width;
@@ -180,7 +173,6 @@ FeedThrough::populate(const Simulation& System)
   if (CPts.empty())
     ELog::EM<<"Col Track "<<ID<<" empty : "<<ELog::endErr;
   
-  populated |= 1;
   return;
 }
   

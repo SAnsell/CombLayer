@@ -1034,8 +1034,8 @@ ChipIRHutch::layerProcess(Simulation& System)
 
 	  cellIndex=DA.procSurfDivide(System,SMap,layerCells["leftWall"],
 			    hutchIndex,cellIndex,0,
-			    {{3,33,},{13,43},},
-			    "3 13","(-33 : -43)");
+				      {{33,3},{43,13}},
+				      "(-33 : -43)","3 13");
 	}
     }
 

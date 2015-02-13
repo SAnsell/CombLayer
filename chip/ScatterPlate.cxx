@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   chip/ScatterPlate.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,10 +45,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "Tally.h"
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
@@ -78,7 +74,6 @@
 #include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "LinearComp.h"
 #include "ContainedComp.h"
 #include "ScatterPlate.h"
 
@@ -86,10 +81,9 @@ namespace hutchSystem
 {
 
 ScatterPlate::ScatterPlate(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::LinearComp(Key),
+  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,2),
   spIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(spIndex+1),populated(0),
-  nLayers(0)
+  cellIndex(spIndex+1),populated(0),nLayers(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -97,7 +91,7 @@ ScatterPlate::ScatterPlate(const std::string& Key)  :
 {}
 
 ScatterPlate::ScatterPlate(const ScatterPlate& A) : 
-  attachSystem::ContainedComp(A),attachSystem::LinearComp(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
   spIndex(A.spIndex),cellIndex(A.cellIndex),
   populated(A.populated),Axis(A.Axis),
   XAxis(A.XAxis),ZAxis(A.ZAxis),Centre(A.Centre),zAngle(A.zAngle),
@@ -121,7 +115,7 @@ ScatterPlate::operator=(const ScatterPlate& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::LinearComp::operator=(A);
+      attachSystem::FixedComp::operator=(A);
       cellIndex=A.cellIndex;
       populated=A.populated;
       Axis=A.Axis;

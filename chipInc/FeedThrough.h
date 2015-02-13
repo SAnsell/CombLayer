@@ -39,10 +39,9 @@ class FeedThrough : public attachSystem::FixedComp
 {
  private:
   
-  const int ID;                 ///< Identity number
+  const size_t ID;              ///< Identity number
   const int pipeIndex;          ///< Index of surface offset
   int cellIndex;                ///< Cell index
-  int populated;                ///< 1:var,2:axis,4:cent,8:face,16:cell
   
   ModelSupport::BoxLine CollTrack;   ///< Collimator track
   
@@ -59,7 +58,7 @@ class FeedThrough : public attachSystem::FixedComp
 
  public:
 
-  FeedThrough(const std::string&,const int);
+  FeedThrough(const std::string&,const size_t);
   FeedThrough(const FeedThrough&);
   FeedThrough& operator=(const FeedThrough&);
   ~FeedThrough();

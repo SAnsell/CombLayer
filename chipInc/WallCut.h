@@ -35,7 +35,8 @@ namespace hutchSystem
   \brief WallCut [insert object]
 */
 
-class WallCut : public attachSystem::FixedComp
+class WallCut : public attachSystem::FixedComp,
+  public attachSystem::ContainedComp
 {
  private:
   
@@ -43,6 +44,8 @@ class WallCut : public attachSystem::FixedComp
   int cellIndex;                ///< Cell index
   const std::string baseName;   ///< Base name
 
+  std::string insertKey;        ///< Insert cell name
+  
   double xyAngle;
   double zAngle;
   
@@ -67,7 +70,10 @@ class WallCut : public attachSystem::FixedComp
   WallCut(const WallCut&);
   WallCut& operator=(const WallCut&);
   ~WallCut();
-  
+
+  void populateKey(const FuncDataBase&);
+  /// Access to insert key
+  const std::string& getInsertKey() const { return insertKey; }
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int,const HeadRule&);
 

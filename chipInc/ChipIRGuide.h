@@ -37,7 +37,7 @@ namespace shutterSystem
 
 namespace hutchSystem
 {
-
+  class WallCut;
 
 /*!
   \class ChipIRGuide
@@ -55,7 +55,10 @@ class ChipIRGuide : public attachSystem::TwinComp,
     public attachSystem::ContainedGroup
 {
  private:
-  
+
+  /// layer type
+  typedef std::map<std::string,int> LCTYPE;
+
   const int guideIndex;         ///< Index of surface offset
   int cellIndex;                ///< Cell index
 
@@ -123,6 +126,9 @@ class ChipIRGuide : public attachSystem::TwinComp,
 
   double remedialWestWallThick;    ///< Remedial wall
   double remedialWallHeight;       ///< Remedial wall height
+
+  size_t nCuts;                  ///< Number of wall cuts [inner]
+  std::vector<std::shared_ptr<WallCut> > WCObj;  ///< Wall cut objects
   
   size_t nLayers;                ///< number of layers
   std::vector<double> guideFrac; ///< guide Layer thicknesss (fractions)
@@ -143,7 +149,7 @@ class ChipIRGuide : public attachSystem::TwinComp,
 
   int monoWallSurf;              ///< Montolith Exit surface
   std::vector<int> voidCells;    ///< Liners/Steel etc
-  std::vector<int> layerCells;   ///< Layered cells
+  LCTYPE layerCells;   ///< Layered cells
 
   void populate(const FuncDataBase&);
   void createUnitVector(const shutterSystem::BulkShield&,
@@ -161,12 +167,15 @@ class ChipIRGuide : public attachSystem::TwinComp,
   void layerProcess(Simulation&);
   void createLiner(const int,const double);
 
+  void populateWallItems(const FuncDataBase&);
+  
   void procSurfDivide(Simulation&,
 		      ModelSupport::surfDivide&,const size_t, 
 		      const std::vector<std::pair<int,int> >&,
 		      const std::string&,
 		      const std::string&);
 
+  void addWallCuts(Simulation&);
 
  public:
 
