@@ -481,7 +481,7 @@ surfDivide::procSurfDivide(Simulation& System,
     \param System :: Simuation 
     \param SMap :: Surface registration
     \param cellNubmer :: cell number to process
-    \param moduleNumber :: offset number
+    \param moduleNumber :: offset number from objectRegister
     \param surfCreate :: first surface number for new surface
     \param cellCreate :: first cell number for new object [0 no action]
     \param VA :: Offset vector
@@ -490,7 +490,7 @@ surfDivide::procSurfDivide(Simulation& System,
     \return cell nubmer
    */
 {
-  ELog::RegMethod Rega("surfDivide","procSurfDivide");
+  ELog::RegMethod RegA("surfDivide","procSurfDivide");
   
   std::string OutA,OutB;
   // Cell Specific:

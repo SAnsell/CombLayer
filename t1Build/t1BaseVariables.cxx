@@ -331,7 +331,7 @@ TS1BulletTarget(FuncDataBase& Control)
   Control.addVariable("BVesselClearVertThick",0.3);
 
   Control.addVariable("BVesselTaRadialThick",0.4);
-  Control.addVariable("BVesselClearRadialThick",0.3);
+  Control.addVariable("BVesselClearRadialThick",0.6);
 
   Control.addVariable("BVesselWallMat","Tantalum");
   Control.addVariable("BVesselWaterMat","H2O");
@@ -357,7 +357,7 @@ TS1BulletTarget(FuncDataBase& Control)
   Control.addVariable("BPlatesWaterMat","D2O");        // Water [D2O]
   Control.addVariable("BPlatesTaMat","Tantalum");           // Ta material 
 
-  Control.addVariable("BPlatesRadius",3.0);       // Radius of W inner
+  Control.addVariable("BPlatesRadius",4.5);       // Radius of W inner
   Control.addVariable("BPlatesTaThick",0.2);       // Ta thickness
 
   Control.addVariable("BPlatesNBlocks",15);         // Number of plates:
@@ -395,12 +395,15 @@ TS1BulletTarget(FuncDataBase& Control)
   Control.addVariable("BPlatesThick13",0.2);         // Water
   Control.addVariable("BPlatesThick14",16.5);         // Tungsten
 
-
   Control.addVariable("BDivYStep",5.0);
-  Control.addVariable("BDivNRadii",1);
+  Control.addVariable("BDivNRadii",3);
   Control.addVariable("BDivRadius0",5.05);
   Control.addVariable("BDivLength0",3.0);
-  Control.addVariable("BDivWallThick",0.5);
+  Control.addVariable("BDivRadius1",5.15);
+  Control.addVariable("BDivLength1",10.0);
+  Control.addVariable("BDivRadius2",5.15);
+  Control.addVariable("BDivLength2",20.0);
+  Control.addVariable("BDivWallThick",0.2);
   Control.addVariable("BDivWallMat","Tantalum");
   
   return;

@@ -56,12 +56,6 @@ class BulletPlates : public attachSystem::ContainedComp,
   double radius;                ///< Inner W radius
   double taThick;               ///< Ta thickness
 
-  double backPlateThick;        ///< BackPlate thickness
-  double IThick;                ///< BackPlate inset thickness
-  double IWidth;                ///< BackPlate inset width
-  double IOffset;               ///< BackPlate 
-  double pinRadius;             ///< Backplate pin radius
-
   int taMat;                    ///< Ta material
   int wMat;                     ///< W material [def]
   int waterMat;                 ///< Water material
@@ -79,8 +73,8 @@ class BulletPlates : public attachSystem::ContainedComp,
   BulletPlates& operator=(const BulletPlates&);
   ~BulletPlates();
 
-  Geometry::Vec3D plateEdge(const size_t,double&,double&) const;
-
+  /// acessor to main radius
+  double getMainRadius() const { return radius+taThick; }
   void createAll(Simulation&,const attachSystem::FixedComp&);
 
 };

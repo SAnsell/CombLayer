@@ -123,14 +123,6 @@ BulletPlates::populate(const FuncDataBase& Control)
 
   radius=Control.EvalVar<double>(keyName+"Radius");
   taThick=Control.EvalVar<double>(keyName+"TaThick");
-
-  // Back plate:
-  backPlateThick=Control.EvalVar<double>(keyName+"BPlateThick");
-  IThick=Control.EvalVar<double>(keyName+"BPlateIThick");
-  IWidth=Control.EvalVar<double>(keyName+"BPlateIWidth");
-  IOffset=Control.EvalVar<double>(keyName+"BPlateIOffset");
-  pinRadius=Control.EvalVar<double>(keyName+"BPlatePinRadius");
-
   
   taMat=ModelSupport::EvalMat<int>(Control,keyName+"TaMat");
   wMat=ModelSupport::EvalMat<int>(Control,keyName+"WMat");

@@ -200,7 +200,6 @@ BulletDivider::createSurfaces()
 	  ModelSupport::buildCylinder(SMap,DV+7,Origin,Y,radii[i]);
 	  ModelSupport::buildCylinder(SMap,DV+17,Origin,Y,
 				   radii[i]+wallThick);
-	  endPts.push_back(CPt+XDir*(radii[i]+(wallThick/2.0)));
 	}
       else
 	{
@@ -213,8 +212,9 @@ BulletDivider::createSurfaces()
 	  // Wall
 	  ModelSupport::buildCone(SMap,DV+17,
 				  CPt-Y*(x+wallThick/tAngle),Y,theta);
-	  endPts.push_back(CPt+XDir*(radii[i]+(wallThick/tAngle/2.0)));
 	}
+      endPts.push_back(CPt+XDir*(radii[i]+(wallThick/2.0)));
+
       CPt+=Y*length[i];
       ModelSupport::buildPlane(SMap,DV+2,CPt,Y);
       DV+=100;
@@ -247,7 +247,6 @@ BulletDivider::createObjects(Simulation& System,
   const std::string innerRadii=TarObj.getLinkString(radialSide);
   const std::string vertCut=VesselObj.getLinkString(topSide)+
     VesselObj.getLinkString(baseSide);
-
   int DV(divIndex);
 
   // Note special first surface Special for first contact:
@@ -260,7 +259,7 @@ BulletDivider::createObjects(Simulation& System,
       Out=ModelSupport::getComposite(SMap,DV,divIndex,"-2 3M -17 7");
       Out+=frontSurf+vertCut;
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
-
+  
       Out=ModelSupport::getComposite(SMap,DV,divIndex," -2 -17 7 ");
       addOuterUnionSurf(Out+frontSurf+vertCut);
       
@@ -293,7 +292,7 @@ BulletDivider::excludeInsertCells(Simulation& System)
 	  OPtr->populate();
 	  for(const Geometry::Vec3D& testPt : endPts)
 	    {
-	      if( OPtr->isValid(testPt) )
+	      if( OPtr->isValid(testPt))
 		{
 		  active.push_back(CN);
 		  break;

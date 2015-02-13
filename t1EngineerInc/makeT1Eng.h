@@ -79,6 +79,8 @@ namespace ts1System
   class BulletPlates;
   class BulletVessel;
   class BulletTarget;
+  class FishGillVessel;
+  class FishGillTarget;
   
   /*!
     \class makeT1Eng
@@ -92,7 +94,7 @@ class makeT1Eng
 {
  private:
 
-  std::shared_ptr<ts1System::BulletTarget> TarObj;   ///< Target
+  std::shared_ptr<constructSystem::TargetBase> TarObj;   ///< Target
   std::shared_ptr<ts1System::BeamWindow> BWindowObj;     ///< Beam window
   std::shared_ptr<CylReflector> RefObj;                  ///< Relfector
   std::shared_ptr<SplitInner> TriMod;  ///< Water moderator

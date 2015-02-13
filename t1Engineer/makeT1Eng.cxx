@@ -81,6 +81,8 @@
 #include "BulletPlates.h"
 #include "BulletVessel.h"
 #include "BulletTarget.h"
+#include "FishGillVessel.h"
+#include "FishGillTarget.h"
 #include "CylReflector.h"
 #include "ModBase.h"
 #include "TriUnit.h"
@@ -110,7 +112,7 @@ namespace ts1System
 {
 
 makeT1Eng::makeT1Eng() :
-  TarObj(new ts1System::BulletTarget("bulletTarget")),
+  TarObj(new ts1System::FishGillTarget("FishGillTarget")),
   RefObj(new ts1System::CylReflector("CylRefl")),
   TriMod(new SplitInner("TriModInner","TriModLayer")),
   ColdCentObj(new constructSystem::GroupOrigin("ColdCent")),
@@ -171,7 +173,7 @@ makeT1Eng::makeT1Eng() :
 }
 
 makeT1Eng::makeT1Eng(const makeT1Eng& A) : 
-  TarObj(new ts1System::BulletTarget(*A.TarObj)),
+  TarObj(A.TarObj->clone()),
   BWindowObj(new ts1System::BeamWindow(*A.BWindowObj)),
   RefObj(new CylReflector(*A.RefObj)),
   TriMod(new SplitInner(*A.TriMod)),
