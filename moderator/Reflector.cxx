@@ -471,17 +471,17 @@ Reflector::createInternalObjects(Simulation& System,
       OI.createAll(System,*HydObj,*GrooveObj);
     }
   VacObj->createAllPair(System,*GrooveObj,*HydObj);
-    
+
   std::string Out;
   Out=ModelSupport::getComposite(SMap,refIndex,"1 -14 -4");
   FLgroove->addBoundarySurf("inner",Out);  
   FLgroove->addBoundarySurf("outer",Out);  
-  FLgroove->createAll(System,0,*VacObj);
+  FLgroove->createAll(System,*VacObj,1);
 
   Out=ModelSupport::getComposite(SMap,refIndex,"-2 13 3");
   FLhydro->addBoundarySurf("inner",Out);  
   FLhydro->addBoundarySurf("outer",Out);  
-  FLhydro->createAll(System,1,*VacObj);
+  FLhydro->createAll(System,*VacObj,2);
 
   PMgroove->setTargetSurf(TarObj->getLinkSurf(0));
   PMgroove->setDivideSurf(VacObj->getDivideSurf());
@@ -502,12 +502,12 @@ Reflector::createInternalObjects(Simulation& System,
   Out=ModelSupport::getComposite(SMap,refIndex,"-2 13 3");
   FLnarrow->addBoundarySurf("inner",Out);  
   FLnarrow->addBoundarySurf("outer",Out);  
-  FLnarrow->createAll(System,0,*DVacObj);
+  FLnarrow->createAll(System,*DVacObj,1);
 
   Out=ModelSupport::getComposite(SMap,refIndex,"11 1 -14");
   FLwish->addBoundarySurf("inner",Out);  
   FLwish->addBoundarySurf("outer",Out);  
-  FLwish->createAll(System,1,*DVacObj);
+  FLwish->createAll(System,*DVacObj,2);
 
   PMdec->setTargetSurf(TarObj->getLinkSurf(0));
   PMdec->createAll(System,4,*DVacObj,1);

@@ -203,7 +203,7 @@ FlightLine::populate(const Simulation& System)
 
 void
 FlightLine::createUnitVector(const attachSystem::FixedComp& FC,
-			     const size_t sideIndex)
+			     const long int sideIndex)
   /*!
     Create the unit vectors
     - Y Points towards the beamline
@@ -216,8 +216,11 @@ FlightLine::createUnitVector(const attachSystem::FixedComp& FC,
   ELog::RegMethod RegA("FlightLine","createUnitVector<FC,side>");
 
   // PROCESS Origin of a point
-  const attachSystem::LinkUnit& LU=FC.getLU(sideIndex);
-  createUnitVector(LU.getConnectPt(),LU.getAxis(),FC.getZ());
+
+  FixedComp::createUnitVector(FC,sideIndex);
+  //  const attachSystem::LinkUnit& LU=FC.getLU(abs(sideIndex)-1);
+  //  createUnitVector(LU.getConnectPt(),LU.getAxis(),FC.getZ());
+
   return;
 }
 
@@ -248,14 +251,14 @@ FlightLine::createRotatedUnitVector(const attachSystem::FixedComp& FC,
 
   Origin=FC.getLinkPt(sideIndex);
   applyFullRotate(masterXY,masterZ,CentPt);
-  Origin+= X*xStep + Z*zStep;
+  applyShift(xStep,0,zStep);
   return;
 }
 
 void
 FlightLine::createUnitVector(const attachSystem::FixedComp& FC,
 			     const size_t origIndex,
-			     const size_t sideIndex)
+			     const long int sideIndex)
   /*!
     Create the unit vectors
     - Y Points towards the beamline
@@ -267,12 +270,15 @@ FlightLine::createUnitVector(const attachSystem::FixedComp& FC,
   */
 {
   ELog::RegMethod RegA("FlightLine","createUnitVector(FC,orig,side)");
+  createUnitVector(FC,sideIndex);
+
+  
   if (!origIndex)
-    createUnitVector(FC.getCentre(),
-		     FC.getLinkPt(sideIndex),FC.getZ());
+    Origin=FC.getCentre();
   else
-    createUnitVector(FC.getLinkPt(origIndex-1),
-		     FC.getLinkPt(sideIndex),FC.getZ());
+    Origin=FC.getLinkPt(origIndex-1);
+
+  applyShift(xStep,0,zStep);
   return;
 }
 
@@ -289,7 +295,7 @@ FlightLine::createUnitVector(const Geometry::Vec3D& Og,
   */
 {
   ELog::RegMethod RegA("FlightLine","createUnitVector<Vec,Vec>");
-  
+  ELog::EM<<"Junk CALL "<<ELog::endCrit;
   Z= Zunit.unit();
   Y= Ax.unit();
   X= Y*Z;
@@ -458,8 +464,10 @@ FlightLine::createCapSurfaces(const attachSystem::FixedComp& FC,
   std::stack<double> capThickStack;
   capThickStack.push(0.0);
   double capThick(0.0);
+	
   for(size_t i=0;i<nLayer;i++)
     {
+
       capRule.push_back(MainUnit);      // for cases were not needed
       if (capLayer[i])
 	{
@@ -477,15 +485,15 @@ FlightLine::createCapSurfaces(const attachSystem::FixedComp& FC,
 	  if (capLayer[i]>1)
 	    {
 	      HeadRule CRule(MainUnit);
-	      std::vector<int>::const_iterator vc;
-	      for(vc=SurNum.begin();vc!=SurNum.end();vc++)
+	      for(const int SN : SurNum)
 		{
 		  // Get surface and expand:
 		  const Geometry::Surface* SPtr=
-		    SMap.realSurfPtr(*vc);
-		  const double signV((*vc>0) ? 1.0 : -1.0);
+		    SMap.realSurfPtr(SN);
+		  const double signV((SN>0) ? 1.0 : -1.0);
 		  Geometry::Surface* ExpSurf=
 		    ModelSupport::surfaceCreateExpand(SPtr,signV*capThick);
+		  ELog::EM<<"SN == "<<SN<<ELog::endDiag;
 		  // Find a new number for surface
 		  while(SMap.hasSurf(surfN))
 		    surfN++;
@@ -495,7 +503,7 @@ FlightLine::createCapSurfaces(const attachSystem::FixedComp& FC,
 		  newSurfN=SMap.registerSurf(ExpSurf);
 		  ExpSurf=SMap.realSurfPtr(newSurfN);
 		  // Substitute rule with new surface:
-		  CRule.substituteSurf(abs(*vc),newSurfN,ExpSurf);
+		  CRule.substituteSurf(abs(SN),newSurfN,ExpSurf);
 		}
 	      capRule[i]=CRule;
 	    }
@@ -527,14 +535,15 @@ FlightLine::createObjects(Simulation& System,
   Out=ModelSupport::getComposite(SMap,outIndex," 3 -4 5 -6 ");
   Out+=attachRule;         // forward boundary of object
   addOuterSurf("outer",Out);
+
   // Inner Void
   Out=ModelSupport::getComposite(SMap,flightIndex," 3 -4 5 -6 ");
   Out+=attachRule;
   addOuterSurf("inner",Out);
 
-  Out=ModelSupport::getComposite(SMap,flightIndex," 3 -4 5 -6 ");
-  Out+=attachRule;         // forward boundary of object
   Out+=" "+ContainedGroup::getContainer("outer");      // Be outer surface
+  ELog::EM<<"Inner["<<keyName<<"] == "<<Out<<ELog::endDiag;
+
   System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,0.0,Out));
 
   //Flight layers:
@@ -579,15 +588,16 @@ FlightLine::createObjects(Simulation& System,
     \param surfSing :: Sign of the surface
     \param sideIndex :: side index
     \param CC :: Inner Object
-    \param sideIndex :: Side index
   */
 {
   ELog::RegMethod RegA("FlightLine","createObjects(FC,sign,sideIndex,CC)");
   
   const int outIndex=flightIndex+static_cast<int>(nLayer)*10;
 
+  // attachRule SET in getRotatedDivider
   const std::string divider=getRotatedDivider(FC,sideIndex);
   attachRule+=divider+FC.getMasterString(sideIndex);
+  
   // Note this is negative
   const std::string baseSurf( (surfSign>0) ? 
 			      FC.getMasterString(sideIndex) : 
@@ -604,7 +614,7 @@ FlightLine::createObjects(Simulation& System,
   Out=ModelSupport::getComposite(SMap,flightIndex," 3 -4 5 -6 ");
   Out+=attachRule;         // forward boundary of object
   Out+=" "+ContainedGroup::getContainer("outer");      // Be outer surface
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,0.0,Out));
 
   //Flight layers:
   for(size_t i=0;i<nLayer;i++)
@@ -704,8 +714,8 @@ FlightLine::getInnerVec(std::vector<int>& ISurf) const
 }
 
 void
-FlightLine::createAll(Simulation& System,const size_t sideIndex,
-		      const attachSystem::FixedComp& FC)
+FlightLine::createAll(Simulation& System,const attachSystem::FixedComp& FC,
+		      const long int sideIndex)
   /*!
     Global creation of the vac-vessel
     \param System :: Simulation to add vessel to
@@ -718,12 +728,17 @@ FlightLine::createAll(Simulation& System,const size_t sideIndex,
   createUnitVector(FC,sideIndex);
   createSurfaces();
 
-  createCapSurfaces(FC,sideIndex);
+  if (sideIndex==0)
+    throw ColErr::IndexError<long int>(0,0,"sideIndex == 0 no possible");
+  
+  const size_t SI=static_cast<size_t>
+    ((sideIndex>0) ? sideIndex-1 : 1-sideIndex);
+  createCapSurfaces(FC,SI);
 
-  FixedComp::setLinkSurf(0,FC,sideIndex);
-  FixedComp::setLinkSurf(6,FC,sideIndex);
+  FixedComp::setLinkSurf(0,FC,SI);
+  FixedComp::setLinkSurf(6,FC,SI);
 
-  createObjects(System,FC,sideIndex);
+  createObjects(System,FC,SI);
   insertObjects(System);       
 
   return;
@@ -769,6 +784,7 @@ FlightLine::reBoundary(Simulation& System,
   ELog::RegMethod RegA("FlightLine","reboundary");
 
   removeObjects(System);
+  //  createObjects(System,FC,sideSign,sideIndex,CC);
   createObjects(System,FC,sideIndex);
   insertObjects(System);       
 

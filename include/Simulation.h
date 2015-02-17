@@ -215,9 +215,9 @@ class Simulation
   void setMcnpType(const int T) { mcnpType=T; }  ///< Set type
   void removeAllTally();
   int removeTally(const int);
-  int addTally(tallySystem::Tally*);
+
   int addTally(const tallySystem::Tally&);
-  tallySystem::Tally* getTally(const int); 
+  tallySystem::Tally* getTally(const int) const;
   /// Access tally items
   TallyTYPE& getTallyMap() { return TItem; }
   /// Access constant

@@ -88,136 +88,136 @@
 namespace tallySystem
 {
 
-  // static definitions:
+// static definitions:
   std::map<std::string,int> tallyConstruct::chipGridPos;
-
-  void
-  tallyConstruct::initStatic()
+  
+void
+tallyConstruct::initStatic()
+/*!
+  Initialize the static members
+*/
+{
+  typedef std::map<std::string,int> MTYPE;
+  chipGridPos.insert(MTYPE::value_type("chipTable1",0));
+  chipGridPos.insert(MTYPE::value_type("chipTable2",1));
+  chipGridPos.insert(MTYPE::value_type("chipPreCol",2));
+  chipGridPos.insert(MTYPE::value_type("chipVCol",3));
+  chipGridPos.insert(MTYPE::value_type("chipHCol",4));
+  chipGridPos.insert(MTYPE::value_type("chipSeparator",5));
+  
+  return;
+}
+  
+tallyConstruct::tallyConstruct(const tallyConstructFactory& FC) : 
+  basicConstruct(),pointPtr(FC.makePoint()),gridPtr(FC.makeGrid()),
+  meshPtr(FC.makeMesh()),fluxPtr(FC.makeFlux()),
+  heatPtr(FC.makeHeat()),itemPtr(FC.makeItem()),
+  surfPtr(FC.makeSurf()),fissionPtr(FC.makeFission())
   /*!
-    Initialize the static members
+    Constructor
+    \param FC :: Factory object to specialize constructors
   */
-  {
-    typedef std::map<std::string,int> MTYPE;
-    chipGridPos.insert(MTYPE::value_type("chipTable1",0));
-    chipGridPos.insert(MTYPE::value_type("chipTable2",1));
-    chipGridPos.insert(MTYPE::value_type("chipPreCol",2));
-    chipGridPos.insert(MTYPE::value_type("chipVCol",3));
-    chipGridPos.insert(MTYPE::value_type("chipHCol",4));
-    chipGridPos.insert(MTYPE::value_type("chipSeparator",5));
+{
+  initStatic();
+}
+  
+  
+tallyConstruct::~tallyConstruct()
+/*!
+  Delete operator
+*/
+{
+  delete pointPtr;
+  delete gridPtr;
+  delete meshPtr;
+  delete fluxPtr;
+  delete heatPtr;
+  delete itemPtr;
+  delete surfPtr;
+  delete fissionPtr;
+}
+  
+void
+tallyConstruct::setPoint(pointConstruct* PPtr) 
+/*!
+  Modify/assign the pointConstructor 
+  \param PPtr :: New point Ptr [MANGAGED]
+*/
+{
+  if (PPtr)
+    {
+      delete pointPtr;
+      pointPtr=PPtr;
+    }
+  return;
+}
+  
+void
+tallyConstruct::setFission(fissionConstruct* PPtr) 
+/*!
+  Modify/assign the pointConstructor 
+  \param PPtr :: New point Ptr [MANGAGED]
+*/
+{
+  if (PPtr)
+    {
+      delete fissionPtr;
+      fissionPtr=PPtr;
+    }
+  return;
+}
+  
+int
+tallyConstruct::tallySelection(Simulation& System,
+			       const mainSystem::inputParam& IParam) const
+/*!
+  An amalgumation of values to determine what sort of tallies to put
+  in the system.
+  \param System :: Simulation to add tallies
+  \param IParam :: Main input parameters
+  \return flag to indicate that more work is required after renumbering
+*/
+{
+  ELog::RegMethod RegA("tallyConstruct","tallySelection");
 
-    return;
-  }
 
-  tallyConstruct::tallyConstruct(const tallyConstructFactory& FC) : 
-    basicConstruct(),pointPtr(FC.makePoint()),gridPtr(FC.makeGrid()),
-    meshPtr(FC.makeMesh()),fluxPtr(FC.makeFlux()),
-    heatPtr(FC.makeHeat()),itemPtr(FC.makeItem()),
-    surfPtr(FC.makeSurf()),fissionPtr(FC.makeFission())
-    /*!
-      Constructor
-      \param FC :: Factory object to specialize constructors
-    */
-  {
-    initStatic();
-  }
+  int workFlag(0);  
+  for(size_t i=0;i<IParam.grpCnt("tally");i++)
+    {
+      const std::string TType=
+	IParam.getCompValue<std::string>("tally",i,0);
+      if (TType=="help" || TType=="?")
+	helpTallyType();
 
-
-  tallyConstruct::~tallyConstruct()
-  /*!
-    Delete operator
-  */
-  {
-    delete pointPtr;
-    delete gridPtr;
-    delete meshPtr;
-    delete fluxPtr;
-    delete heatPtr;
-    delete itemPtr;
-    delete surfPtr;
-    delete fissionPtr;
-  }
-
-  void
-  tallyConstruct::setPoint(pointConstruct* PPtr) 
-  /*!
-    Modify/assign the pointConstructor 
-    \param PPtr :: New point Ptr [MANGAGED]
-  */
-  {
-    if (PPtr)
-      {
-	delete pointPtr;
-	pointPtr=PPtr;
-      }
-    return;
-  }
-
-  void
-  tallyConstruct::setFission(fissionConstruct* PPtr) 
-  /*!
-    Modify/assign the pointConstructor 
-    \param PPtr :: New point Ptr [MANGAGED]
-  */
-  {
-    if (PPtr)
-      {
-	delete fissionPtr;
-	fissionPtr=PPtr;
-      }
-    return;
-  }
-
-  int
-  tallyConstruct::tallySelection(Simulation& System,
-				 const mainSystem::inputParam& IParam) const
-  /*!
-    An amalgumation of values to determine what sort of tallies to put
-    in the system.
-    \param System :: Simulation to add tallies
-    \param IParam :: Main input parameters
-    \return flag to indicate that more work is required after renumbering
-  */
-  {
-    ELog::RegMethod RegA("tallyConstruct","tallySelection");
-
-    int workFlag(0);  
-    for(size_t i=0;i<IParam.grpCnt("tally");i++)
-      {
-	const std::string TType=
-	  IParam.getCompValue<std::string>("tally",i,0);
-
-	if (TType=="help" || TType=="?")
-	  helpTallyType();
-
-	else if (TType=="grid") 
-	  gridPtr->processGrid(System,IParam,i);
-	else if (TType=="point")
-	  pointPtr->processPoint(System,IParam,i);
-	else if (TType=="mesh")
-	  meshPtr->processMesh(System,IParam,i);
-	else if (TType=="flux")
-	  workFlag+=fluxPtr->processFlux(System,IParam,i,0);
-	else if (TType=="fission")
-	  workFlag+=fissionPtr->processPower(System,IParam,i,0);
-	else if (TType=="heat")
-	  heatPtr->processHeat(System,IParam,i);
-	else if (TType=="item")
-	  itemPtr->processItem(System,IParam,i);
-	else if (TType=="surface")
-	  workFlag+=surfPtr->processSurface(System,IParam,i);
-	else
-	  ELog::EM<<"Unable to understand tally type :"<<TType<<ELog::endErr;
-      }
-    if (IParam.flag("Txml"))
-      tallySystem::addXMLtally(System,IParam.getValue<std::string>("Txml"));
+      else if (TType=="grid") 
+	gridPtr->processGrid(System,IParam,i);
+      else if (TType=="point")
+	pointPtr->processPoint(System,IParam,i);
+      else if (TType=="mesh")
+	meshPtr->processMesh(System,IParam,i);
+      else if (TType=="flux")
+	workFlag+=fluxPtr->processFlux(System,IParam,i,0);
+      else if (TType=="fission")
+	workFlag+=fissionPtr->processPower(System,IParam,i,0);
+      else if (TType=="heat")
+	heatPtr->processHeat(System,IParam,i);
+      else if (TType=="item")
+	itemPtr->processItem(System,IParam,i);
+      else if (TType=="surface")
+	workFlag+=surfPtr->processSurface(System,IParam,i);
+      else
+	ELog::EM<<"Unable to understand tally type :"<<TType<<ELog::endErr;
+    }
+  if (IParam.flag("Txml"))
+    tallySystem::addXMLtally(System,IParam.getValue<std::string>("Txml"));
       
-    return workFlag;
-  }
+  return workFlag;
+}
 
-  int
-  tallyConstruct::tallyRenumber(Simulation& System,
-				const mainSystem::inputParam& IParam) const
- /*!
+int
+tallyConstruct::tallyRenumber(Simulation& System,
+			      const mainSystem::inputParam& IParam) const
+  /*!
     An amalgumation of values to determine what sort of tallies to put
     in the system.
     \param System :: Simulation to add tallies
@@ -301,9 +301,5 @@ tallyConstruct::helpTallyType() const
   ELog::EM<<ELog::endBasic;
   return;
 }
-
-  
-
-
 
 }  // NAMESPACE tallySystem

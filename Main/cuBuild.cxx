@@ -185,7 +185,6 @@ main(int argc,char* argv[])
 	    }
 	  if (IParam.flag("endf"))
 	    SimPtr->setENDF7();
-	  createMeshTally(IParam,SimPtr);
 
 	  // outer void to zero
 	  // RENUMBER:

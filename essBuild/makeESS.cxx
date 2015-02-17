@@ -159,7 +159,7 @@ makeESS::lowFlightLines(Simulation& System)
   LowAFL->addBoundarySurf("inner",Out);  
   LowAFL->addBoundarySurf("outer",Out);  
   LowAFL->addOuterSurf("outer",LowPre->getBoxCut('A'));  
-  LowAFL->createAll(System,1,*LowPre);
+  LowAFL->createAll(System,*LowPre,2);   // was 1 no 1+1
   attachSystem::addToInsertSurfCtrl(System,*LowAFL,*LowPre->getBox('A'));
   attachSystem::addToInsertSurfCtrl(System,*Reflector,
   				    LowAFL->getKey("outer"));
@@ -357,7 +357,7 @@ makeESS::buildLowConicMod(Simulation& System)
   std::string Out=Reflector->getLinkComplement(0);
   LowAFL->addBoundarySurf("inner",Out);  
   LowAFL->addBoundarySurf("outer",Out);  
-  LowAFL->createAll(System,1,*LowMod);
+  LowAFL->createAll(System,*LowMod,2);
   attachSystem::addToInsertSurfCtrl(System,*Reflector,
   				    LowAFL->getKey("outer"));
     
@@ -371,7 +371,7 @@ makeESS::buildLowConicMod(Simulation& System)
   Out=Reflector->getLinkComplement(0);
   LowBFL->addBoundarySurf("inner",Out);  
   LowBFL->addBoundarySurf("outer",Out);  
-  LowBFL->createAll(System,1,*LowModB);
+  LowBFL->createAll(System,*LowModB,2);   // was 1 now 1+1
   attachSystem::addToInsertSurfCtrl(System,*Reflector,
   				    LowBFL->getKey("outer"));
   return;

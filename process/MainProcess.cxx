@@ -50,6 +50,7 @@
 #include "support.h"
 #include "masterWrite.h"
 #include "objectRegister.h"
+#include "surfIndex.h"
 #include "Simulation.h"
 #include "SimPHITS.h"
 #include "neutron.h"
@@ -850,5 +851,16 @@ InputModifications(Simulation* SimPtr,inputParam& IParam,
   return;
 }
 
+void
+exitDelete(Simulation* SimPtr)
+{
+  delete SimPtr;
+  ModelSupport::objectRegister::Instance().reset();
+  ModelSupport::surfIndex::Instance().reset();
+  return;
+}
+
+
+  
 }  // NAMESPACE mainSystem
 

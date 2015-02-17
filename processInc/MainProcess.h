@@ -84,6 +84,7 @@ namespace mainSystem
   void InputModifications(Simulation*,inputParam&,
 			  std::vector<std::string>&);
 
+  void exitDelete(Simulation*);
 }
 
 

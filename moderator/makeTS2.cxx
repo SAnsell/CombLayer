@@ -126,14 +126,16 @@ makeTS2::build(Simulation* SimPtr,
       return;
     }
 
-
   bulkObj.build(SimPtr,IParam);
   if (!IParam.flag("exclude") ||
       (!IParam.compValue("E",std::string("Bulk"))) ) 
     {
-      chipObj.build(SimPtr,IParam,*bulkObj.getBulkShield());
-      zoomObj.build(*SimPtr,IParam,*bulkObj.getBulkShield());
-      imatObj.build(SimPtr,IParam,*bulkObj.getBulkShield());
+      if (!IParam.compValue("E",std::string("chipIR")))  
+	chipObj.build(SimPtr,IParam,*bulkObj.getBulkShield());
+      if (!IParam.compValue("E",std::string("zoom")))  
+	zoomObj.build(*SimPtr,IParam,*bulkObj.getBulkShield());
+      if (!IParam.compValue("E",std::string("imat")))  
+	imatObj.build(SimPtr,IParam,*bulkObj.getBulkShield());
     }
   // Insert pipes [make part of makeTS2Bulk]
   bulkObj.insertPipeObjects(SimPtr,IParam);

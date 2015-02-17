@@ -176,7 +176,6 @@ makeChipIR::buildIsolated(Simulation& System,
   const size_t NFeed=Control.EvalVar<size_t>("chipNWires");
   for(size_t i=0;i<NFeed;i++)
     {
-      ELog::EM<<"FeedVec == "<<i<<ELog::endDiag;
       FeedVec.push_back(FeedThrough("chipWiresColl",i+1));
       FeedVec.back().createAll(System,*HObj);
     }  
@@ -222,7 +221,6 @@ makeChipIR::build(Simulation* SimPtr,
   const size_t NFeed=Control.EvalVar<size_t>("chipNWires");
   for(size_t i=0;i<NFeed;i++)
     {
-      ELog::EM<<"FeedVec == "<<i<<ELog::endDiag;
       FeedVec.push_back(FeedThrough("chipWiresColl",i+1));
       FeedVec.back().createAll(*SimPtr,*HObj);
     }  

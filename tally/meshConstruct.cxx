@@ -3,7 +3,7 @@
  
  * File:   tally/meshConstruct.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -143,10 +143,10 @@ meshConstruct::processMesh(Simulation& System,
 	  nxyzIndex+=(flag && revStr=="r") ? 1 : 0;
 	}
       
-      int Nxyz[3];
-      Nxyz[0]=inputItem<int>(IParam,Index,nxyzIndex++,"NXpts");
-      Nxyz[1]=inputItem<int>(IParam,Index,nxyzIndex++,"NYpts");
-      Nxyz[2]=inputItem<int>(IParam,Index,nxyzIndex++,"NZpts");
+      size_t Nxyz[3];
+      Nxyz[0]=inputItem<size_t>(IParam,Index,nxyzIndex++,"NXpts");
+      Nxyz[1]=inputItem<size_t>(IParam,Index,nxyzIndex++,"NYpts");
+      Nxyz[2]=inputItem<size_t>(IParam,Index,nxyzIndex++,"NZpts");
       if (PType=="heat")
 	rectangleMesh(System,3,"void",APt,BPt,Nxyz);
       else
@@ -162,7 +162,7 @@ meshConstruct::rectangleMesh(Simulation& System,const int type,
 			     const std::string& KeyWords,
 			     const Geometry::Vec3D& APt,
 			     const Geometry::Vec3D& BPt,
-			     const int* MPts) const
+			     const size_t* MPts) const
   /*!
     An amalgamation of values to determine what sort of mesh to put
     in the system.

@@ -3,7 +3,7 @@
  
  * File:   t1Build/makeT1Real.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,7 +69,6 @@
 #include "LayerComp.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
-#include "LinearComp.h"
 #include "AttachSupport.h"
 #include "channel.h"
 #include "PressVessel.h"
@@ -237,38 +236,38 @@ makeT1Real::flightLines(Simulation* SimPtr)
   Out=RefObj->getComposite(" 3 ");
   H2FL->addBoundarySurf("inner",Out);  
   H2FL->addBoundarySurf("outer",Out);  
-  H2FL->createAll(*SimPtr,0,*Lh2ModObj);
+  H2FL->createAll(*SimPtr,*Lh2ModObj,1);
 
   RefObj->addToInsertChain(CH4NorthFL->getKey("outer"));
   Out=RefObj->getComposite(" 3 -12 ");
   Out1=Lh2ModObj->getComposite(" (-61:64)  ");
   CH4NorthFL->addBoundarySurf("inner",Out+Out1);
   CH4NorthFL->addBoundarySurf("outer",Out+Out1);
-  CH4NorthFL->createAll(*SimPtr,0,*CH4ModObj);
+  CH4NorthFL->createAll(*SimPtr,*CH4ModObj,1);
 
   RefObj->addToInsertChain(CH4SouthFL->getKey("outer"));
   Out=RefObj->getComposite(" 1 -4 -13 ");
   CH4SouthFL->addBoundarySurf("inner",Out);
   CH4SouthFL->addBoundarySurf("outer",Out);
-  CH4SouthFL->createAll(*SimPtr,1,*CH4ModObj); 
+  CH4SouthFL->createAll(*SimPtr,*CH4ModObj,2); 
 
   Out=RefObj->getComposite(" -4 ");
   MerlinFL->addBoundarySurf("inner",Out);
   MerlinFL->addBoundarySurf("outer",Out);
   RefObj->addToInsertChain(MerlinFL->getKey("outer"));
-  MerlinFL->createAll(*SimPtr,0,*MerlinMod);
+  MerlinFL->createAll(*SimPtr,*MerlinMod,0);
 
   Out=RefObj->getComposite(" 1 3 -11 ");
   RefObj->addToInsertChain(WaterNorthFL->getKey("outer"));
   WaterNorthFL->addBoundarySurf("inner",Out);
   WaterNorthFL->addBoundarySurf("outer",Out);
-  WaterNorthFL->createAll(*SimPtr,0,*WaterModObj);
+  WaterNorthFL->createAll(*SimPtr,*WaterModObj,1);
 
   Out=RefObj->getComposite(" -14 -4 ");
   RefObj->addToInsertChain(WaterSouthFL->getKey("outer"));
   WaterSouthFL->addBoundarySurf("inner",Out);
   WaterSouthFL->addBoundarySurf("outer",Out);
-  WaterSouthFL->createAll(*SimPtr,1,*WaterModObj); 
+  WaterSouthFL->createAll(*SimPtr,*WaterModObj,2); 
  
   // Flight line intersects:
   MerlinFL->processIntersectMinor(*SimPtr,*WaterSouthFL,"inner","outer");

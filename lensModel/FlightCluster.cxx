@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   lensModel/FlightCluster.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,6 @@
 #include <string>
 #include <algorithm>
 #include <memory>
-#include <boost/bind.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -123,7 +122,7 @@ FlightCluster::populate(const Simulation& System)
   ELog::RegMethod RegA("FlightCluster","populate");
   const FuncDataBase& Control=System.getDataBase();
 
-  const int flightN=Control.EvalVar<int>(keyName+"Number");
+  const size_t flightN=Control.EvalVar<size_t>(keyName+"Number");
   
   for(int i=0;i<flightN;i++)
     {
@@ -169,16 +168,15 @@ FlightCluster::createLines(Simulation& System,
   std::vector<moderatorSystem::FlightLine>::iterator vc;
   for(vc=FL.begin();vc!=FL.end();vc++)
     {
-      for_each(InsertCells.begin(),InsertCells.end(),
-	      boost::bind(&moderatorSystem::FlightLine::addInsertCell,
-			  boost::ref(*vc),boost::ref(Outer),_1));
-      //      const attachSystem::LinkUnit& LU=FC.getLU(1);
+      for(const int IC : InsertCells)
+	vc->addInsertCell(Outer,IC);
+
       if (outerSurf)
 	{
 	  vc->addBoundarySurf("inner",outerSurf);
 	  vc->addBoundarySurf("outer",outerSurf);
 	}
-      vc->createAll(System,1,FC);
+      vc->createAll(System,FC,2);
     }
   return;
 }

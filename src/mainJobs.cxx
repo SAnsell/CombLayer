@@ -58,49 +58,16 @@
 #include "SurInter.h"
 #include "Simulation.h"
 #include "TallyCreate.h"
-#include "MeshCreate.h"
+#include "NList.h"
+#include "NRange.h"
+#include "pairRange.h"
+#include "Tally.h"
+#include "meshTally.h"
 #include "MatMD5.h"
 #include "MD5sum.h"
 #include "Visit.h"
 #include "mainJobs.h"
 
-int
-createMeshTally(const mainSystem::inputParam& IParam,
-		Simulation* SimPtr)
-  /*!
-    Create Mesh tallies
-    \param IParam :: Inpup parameters
-    \param SimPtr :: Simulation
-    \retval +ve : successfull completion 
-    \retval -ve : Error of attempted completion
-    \retval 0 : No action
-  */
-
-{
-
-  // MESH (other tally removal)
-  if (IParam.flag("mesh"))
-    {
-      ELog::EM<<"Removing point tallies:"<<ELog::endDiag;
-      tallySystem::deleteTallyType(*SimPtr,5);
-      if (IParam.flag("MA") && IParam.flag("MB") && IParam.flag("MN"))
-	{
-	  int MPTS[3]={
-	    IParam.getValue<int>("meshNPS",0),
-	    IParam.getValue<int>("meshNPS",1),
-	    IParam.getValue<int>("meshNPS",2) };
-	  
-	  tallySystem::rectangleMesh(*SimPtr,1,
-				     IParam.getValue<std::string>("doseCalc"),
-				     IParam.getValue<Geometry::Vec3D>("meshA"),
-				     IParam.getValue<Geometry::Vec3D>("meshB"),
-				     MPTS);
-	}
-
-      return 1;
-    }	  
-  return 0;
-}
 
 int
 createVTK(const mainSystem::inputParam& IParam,
@@ -120,26 +87,28 @@ createVTK(const mainSystem::inputParam& IParam,
 
   if (IParam.flag("md5") || IParam.flag("vtk"))
     {
-      if (!IParam.flag("meshA") || !IParam.flag("meshB") || !IParam.flag("MN"))
+      const tallySystem::meshTally* MPtr=
+	dynamic_cast<const tallySystem::meshTally*>(SimPtr->getTally(1));
+      if (!MPtr)
+	MPtr=dynamic_cast<const tallySystem::meshTally*>(SimPtr->getTally(3));
+      if (!MPtr)
 	{
-	  ELog::EM<<"Failed to process VTK/MD5 since mesh and nps "
-		  <<"not definded"<<ELog::endErr;
+	  ELog::EM<<"Tally == "<<SimPtr->getTally(1)<<ELog::endCrit;
+	  ELog::EM<<"No mesh tally for Contruction of VTK mesh:"<<ELog::endErr;
+	  
 	  return -1;
 	}
-      size_t meshPts[3]={
-	IParam.getValue<size_t>("meshNPS",0),
-	IParam.getValue<size_t>("meshNPS",1),
-	IParam.getValue<size_t>("meshNPS",2) };
-      Geometry::Vec3D MeshA=IParam.getValue<Geometry::Vec3D>("meshA");
-      Geometry::Vec3D MeshB=IParam.getValue<Geometry::Vec3D>("meshB");
+
+      const Triple<size_t>& MPts=MPtr->getNPt();
+      const Geometry::Vec3D& MeshA=MPtr->getMinPt();
+      const Geometry::Vec3D& MeshB=MPtr->getMaxPt();
       if (IParam.flag("md5"))
 	{
 	  ELog::EM<<"Processing MD5:"<<ELog::endBasic;
 	  MD5sum MM(60);
 	  MM.setBox(MeshA,MeshB);
-	  MM.setIndex(meshPts[0],meshPts[1],meshPts[2]);
+	  MM.setIndex(MPts[0],MPts[1],MPts[2]);
 	  MM.populate(SimPtr);
-	  std::cout<<"MM == "<<MM<<std::endl;
 	  return 1;
 	}
 
@@ -163,7 +132,7 @@ createVTK(const mainSystem::inputParam& IParam,
 
 	  // PROCESS VTK:
 	  VTK.setBox(MeshA,MeshB);
-	  VTK.setIndex(meshPts[0],meshPts[1],meshPts[2]);
+	  VTK.setIndex(MPts[0],MPts[1],MPts[2]);
 	  VTK.populate(SimPtr,Active);
 	  
 	  VTK.writeVTK(Oname);

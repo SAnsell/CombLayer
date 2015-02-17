@@ -93,6 +93,58 @@ TS1engineer(FuncDataBase& Control)
   Control.addVariable("CylReflRadius3",45.0);    
   Control.addVariable("CylReflMat3","Be300K");          
 
+     // Reflector (Eng new)
+  Control.addVariable("EngReflXStep",0.0);    
+  Control.addVariable("EngReflYStep",10.0);    
+  Control.addVariable("EngReflZStep",1.5);      
+  Control.addVariable("EngReflXYAngle",0.0);    
+  Control.addVariable("EngReflZAngle",0.0);    
+  Control.addVariable("EngReflRadius",45.0);
+  Control.addVariable("EngReflWidth",80.0);          
+  Control.addVariable("EngReflHeight",70.0); 
+  Control.addVariable("EngReflTopCutHeight",36.0);         
+  Control.addVariable("EngReflBotCutHeight",36.0);         
+  Control.addVariable("EngReflCutLen",20.555);  
+  Control.addVariable("EngReflCutAngle",50.0);  
+  Control.addVariable("EngReflTopCCHeight",30.0);         
+  Control.addVariable("EngReflCCoff",37.8);
+  Control.addVariable("EngReflCutRadius",15.0);    
+  Control.addVariable("EngReflReflMat","Be300K");         
+  Control.addVariable("EngReflReflTemp",0.0);    
+
+  Control.addVariable("EngReflLiftHeight",2.54);    
+  Control.addVariable("EngReflLiftMat","Aluminium6061");   // - new version in !      
+  Control.addVariable("EngReflLiftTemp",0.0);    
+
+  Control.addVariable("EngReflCoolPadThick",2.5);   // 1.6 (original value) / cos(CutAngle)
+  Control.addVariable("EngReflCoolPadOffset",7.55);  // 4.856 (original value) / cos(CutAngle)       
+  Control.addVariable("EngReflCoolPadWidth",39.2);  // 25.2 (original value) / cos(CutAngle)
+  Control.addVariable("EngReflCoolPadHeight",34.4);    
+  Control.addVariable("EngReflCoolPadMat","Al5083Water");   // - new version in ! 
+  Control.addVariable("EngReflCoolPadTemp",0.0);    
+
+  Control.addVariable("EngReflInCutYOffset",2.00);
+  Control.addVariable("EngReflInCutXOffset",-2.0); 
+  Control.addVariable("EngReflInCutZOffset",-17.00);         
+  Control.addVariable("EngReflInCutThick",30.0); 
+  Control.addVariable("EngReflInCutWidth",5.0);
+  Control.addVariable("EngReflInCutAngle",-8.0);  
+  Control.addVariable("EngReflInCutHeight",14.0);    
+  Control.addVariable("EngReflInCutMat","Void");
+  Control.addVariable("EngReflInCutTemp",0.0);    
+
+  Control.addVariable("EngReflInBWatCutYOffset",-5.00);
+  Control.addVariable("EngReflInBWatCutXOffset",10.3); 
+  Control.addVariable("EngReflInBWatCutZOffset",11.6);         
+  Control.addVariable("EngReflInBWatCutHeight",13.2);    
+  Control.addVariable("EngReflInBWatCutRadius",7.0);    
+  Control.addVariable("EngReflInBWatCutMat","Void");
+  Control.addVariable("EngReflInBWatCutTemp",0.0);      
+
+  Control.addVariable("EngReflInSWatCutYOffset",-12.5);
+  Control.addVariable("EngReflInSWatCutXOffset",17.3); 
+  Control.addVariable("EngReflInSWatCutRadius",3.0);    
+
   // Beam Window (PROTON FLIGHT PATH)
   Control.addVariable("ProtonVoidViewRadius",4.8);          
   Control.addVariable("BWindowRadius",4.0);          
@@ -215,7 +267,7 @@ TS1engineer(FuncDataBase& Control)
   Control.addVariable("TriModLayerFlightSide1",2);
   
   // FLIGHTLINES : 
-  Control.addVariable("TriFlightASideIndex",7);     
+  Control.addVariable("TriFlightASideIndex",8);     
   Control.addVariable("TriFlightAXStep",0.0);      // Step from centre  
   Control.addVariable("TriFlightAZStep",0.7);      // Step from centre  
   Control.addVariable("TriFlightAAngleXY1",25.0);  // Angle out

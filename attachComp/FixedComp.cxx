@@ -200,6 +200,10 @@ FixedComp::createUnitVector(const FixedComp& FC,
   const size_t linkIndex=
     (sideIndex>0) ? static_cast<size_t>(sideIndex-1) :
     static_cast<size_t>(-sideIndex-1) ;
+
+  if (linkIndex>=LU.size())
+    throw ColErr::IndexError<size_t>(linkIndex,LU.size(),
+				     "LU.size()/linkIndex");
     
   const LinkUnit& LU=FC.getLU(linkIndex);
   const double signV((sideIndex>0) ? 1.0 : -1.0);

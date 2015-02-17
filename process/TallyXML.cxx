@@ -3,7 +3,7 @@
  
  * File:   process/TallyXML.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -139,24 +139,19 @@ addXMLtally(Simulation& System,const std::string& FName)
       TX->setActive(1);
 
       for(size_t i=0;i<Keys.size();i++)
-	if (Keys[i]=="line")
+	if (Keys[i]=="line" &&
+	    TX->addLine(Lines[i]))
 	  {
-	    if (TX->addLine(Lines[i]))
-	      {
-		delete TX;
-		TX=0;
-		break;
-	      }
-	  }	
-      if (TX)
-	System.addTally(TX);
+	    delete TX;
+	    TX=0;
+	    break;
+	  }
+      
+      if (TX) System.addTally(*TX);
+      delete TX;
       CO.deleteObj(AR);   
       AR=CO.findObj("tally");
     }
-
-  
-
-
   return;
 }
 

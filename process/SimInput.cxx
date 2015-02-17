@@ -70,10 +70,11 @@ importanceSim(Simulation& System,const mainSystem::inputParam& IParam)
   /*!
     Apply importances/renumber and weights
      \param System :: Simuation object 
-     \param IParam :: Inputer
+     \param IParam :: Input parameters
    */
 {
   ELog::RegMethod RegA("SimInput","importanceSim");
+
 
   System.populateCells();
   System.createObjSurfMap();
@@ -81,6 +82,7 @@ importanceSim(Simulation& System,const mainSystem::inputParam& IParam)
   WeightSystem::simulationImp(System,IParam);
   mainSystem::renumberCells(System,IParam);
   WeightSystem::simulationWeights(System,IParam);
+
   return;
 }
 

@@ -166,7 +166,8 @@ class ChipIRGuide : public attachSystem::TwinComp,
   void addFilter(Simulation&);
   void layerProcess(Simulation&);
   void createLiner(const int,const double);
-
+  void createCommon(Simulation&);
+  
   void populateWallItems(const FuncDataBase&);
   
   void procSurfDivide(Simulation&,

@@ -176,11 +176,11 @@ main(int argc,char* argv[])
 	  if (createVTK(IParam,SimPtr,Oname))
 	    {
 	      delete SimPtr;
+	      ModelSupport::objectRegister::Instance().reset();
 	      return 0;
 	    }
 	  if (IParam.flag("endf"))
 	    SimPtr->setENDF7();
-	  createMeshTally(IParam,SimPtr);
 
 	  // outer void to zero
 	  // RENUMBER:

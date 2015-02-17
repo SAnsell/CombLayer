@@ -69,8 +69,8 @@ meshTally::meshTally(const int ID) :
 meshTally::meshTally(const meshTally& A) : 
   Tally(A),
   typeID(A.typeID),keyWords(A.keyWords),kIndex(A.kIndex),
-  mshmf(A.mshmf),requireRotation(A.requireRotation),Pts(A.Pts),
-  minCoord(A.minCoord),maxCoord(A.maxCoord)
+  mshmf(A.mshmf),requireRotation(A.requireRotation),
+  Pts(A.Pts),minCoord(A.minCoord),maxCoord(A.maxCoord)
   /*!
     Copy constructor
     \param A :: meshTally to copy
@@ -99,7 +99,6 @@ meshTally::operator=(const meshTally& A)
     }
   return *this;
 }
-
 
 meshTally*
 meshTally::clone() const
@@ -160,7 +159,7 @@ meshTally::setIndexLine(std::string K)
 }
 
 void
-meshTally::setIndex(const int* IDX)
+meshTally::setIndex(const size_t* IDX)
   /*!
     Sets the individual index for each x,y,z
     \param IDX :: array of three object

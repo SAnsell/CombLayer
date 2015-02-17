@@ -191,8 +191,6 @@ main(int argc,char* argv[])
 	      ModelSupport::setDefaultPhysics(*SimPtr,IParam);
 	    }
 
-	  createMeshTally(IParam,SimPtr);
-
 	  // outer void to zero
 	  // RENUMBER:
 	  mainSystem::renumberCells(*SimPtr,IParam);

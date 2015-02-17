@@ -65,14 +65,6 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-// #include "ModeCard.h"
-// #include "PhysCard.h"
-// #include "PhysImp.h"
-// #include "KGroup.h"
-// #include "LSwitchCard.h"
-// #include "Source.h"
-// #include "KCode.h"
-// #include "PhysicsCards.h"
 #include "DefPhysics.h"
 #include "MainProcess.h"
 #include "SimProcess.h"
@@ -181,33 +173,31 @@ main(int argc,char* argv[])
 
 	  // Sets a line of tallies at different angles
 	  //	  TMRSystem::setAllTally(Sim,SInfo);
+
 	  const int renumCellWork=beamTallySelection(*SimPtr,IParam);
+
 	  if (!rotFlag.empty())
 	    {
 	      ModelSupport::setItemRotate(World::masterTS2Origin(),rotFlag);
 	      ModelSupport::setDefRotation(IParam);
 	    }
 	  SimPtr->masterRotation();
-	  if (createVTK(IParam,SimPtr,Oname))
-	    {
-	      delete SimPtr;
-	      ModelSupport::objectRegister::Instance().reset();
-	      ModelSupport::surfIndex::Instance().reset();
-	      return 0;
-	    }
-
   //	  tallySystem::addHeatBlock(*SimPtr,heatCells);
+	  
 
 	  if (IParam.flag("endf"))
 	    SimPtr->setENDF7();
 
-	  createMeshTally(IParam,SimPtr);
 
+	  if (createVTK(IParam,SimPtr,Oname))
+	    {
+	      mainSystem::exitDelete(SimPtr);
+	      return 0;
+	    }
 	  // NOTE : This flag must be set in tally== beamline standard
-	  
 	  SimProcess::importanceSim(*SimPtr,IParam);
 	  SimProcess::inputPatternSim(*SimPtr,IParam); // energy cut etc
-	  
+
 	  if (renumCellWork)
 	    tallyRenumberWork(*SimPtr,IParam);
 	  tallyModification(*SimPtr,IParam);
@@ -240,11 +230,7 @@ main(int argc,char* argv[])
 	      <<A.what()<<ELog::endCrit;
       exitFlag= -1;
     }
-  
-  delete SimPtr; 
-  ModelSupport::objectRegister::Instance().reset();
-  ModelSupport::surfIndex::Instance().reset();
-  masterRotate::Instance().reset();
+  mainSystem::exitDelete(SimPtr);
   return exitFlag;
 }
 

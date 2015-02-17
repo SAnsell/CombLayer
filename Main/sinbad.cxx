@@ -129,7 +129,6 @@ main(int argc,char* argv[])
 	    }
 	  if (IParam.flag("endf"))
 	    SimPtr->setENDF7();
-	  createMeshTally(IParam,SimPtr);
 
 	  SimProcess::importanceSim(*SimPtr,IParam);
 	  SimProcess::inputPatternSim(*SimPtr,IParam); // energy cut etc

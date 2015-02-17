@@ -244,9 +244,9 @@ Simulation::deleteTally()
     Delete all the Tallies and clear the maps
   */
 {
-  std::map<int,tallySystem::Tally*>::iterator tc;
-  for(tc=TItem.begin();tc!=TItem.end();tc++)
-    delete tc->second;
+  for(TallyTYPE::value_type& MVal : TItem)
+    delete MVal.second;
+
   TItem.erase(TItem.begin(),TItem.end());
   return;
 }
@@ -388,14 +388,14 @@ Simulation::checkInsert(const MonteCarlo::Qhull& A)
 }
 
 tallySystem::Tally*
-Simulation::getTally(const int Index)
+Simulation::getTally(const int Index) const
   /*!
     Gets a tally from the map
     \param Index :: Tally item to search for
     \return Tally pointer ( or 0 on null)
    */
 {
-  std::map<int,tallySystem::Tally*>::iterator vc; 
+  std::map<int,tallySystem::Tally*>::const_iterator vc; 
   vc=TItem.find(Index);
   if (vc!=TItem.end())
     return vc->second;
@@ -1324,32 +1324,14 @@ Simulation::addTally(const tallySystem::Tally& TRef)
     \return -1 :: Tally already in use
   */
 {
-  tallySystem::Tally* TX=TRef.clone();
-  return addTally(TX);
-}
-
-int
-Simulation::addTally(tallySystem::Tally* TX)
-  /*!
-    Adds a tally to the main TItem 
-    list.
-    \param TX :: Pointer to tally to add (this assumes memory
-    handling)
-    \return 0 :: Successful
-    \return -1 :: Tally already in use
-  */
-{
-
-  if (!TX)
-    return -1;
-
-  const int Key=TX->getKey();
-  TallyTYPE::iterator vc;
-  vc=TItem.find(Key);
-  if (vc!=TItem.end())
-    return -1;
+  ELog::RegMethod RegA("Simlation","addTally");
   
-  TItem[Key]=TX;
+  const int keyNum=TRef.getKey();
+  if (TItem.find(keyNum)!=TItem.end())
+    return -1;
+
+  tallySystem::Tally* TX=TRef.clone();
+  TItem.insert(TallyTYPE::value_type(keyNum,TX));
   return 0;
 }
 

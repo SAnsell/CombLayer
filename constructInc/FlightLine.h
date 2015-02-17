@@ -69,9 +69,9 @@ class FlightLine : public attachSystem::ContainedGroup,
   std::string attachRule;       ///< Attached rule
   
   void populate(const Simulation&);
-  void createUnitVector(const attachSystem::FixedComp&,const size_t);
+  void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createUnitVector(const attachSystem::FixedComp&,const size_t,
-			const size_t);
+			const long int);
   void createUnitVector(const Geometry::Vec3D&,const Geometry::Vec3D&,
 			const Geometry::Vec3D&);
   void createRotatedUnitVector(const attachSystem::FixedComp&,const size_t,
@@ -98,13 +98,15 @@ class FlightLine : public attachSystem::ContainedGroup,
 
   void getInnerVec(std::vector<int>&) const;
 
-  void createAll(Simulation&,const size_t,
-		 const attachSystem::FixedComp&);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
   void createAll(Simulation&,const size_t,const size_t,
 		 const attachSystem::FixedComp&);
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const attachSystem::ContainedComp&,const long int =0);
 
+
+  
   void reBoundary(Simulation&,const size_t,
 		  const attachSystem::FixedComp&);
 

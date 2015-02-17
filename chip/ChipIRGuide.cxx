@@ -1039,33 +1039,7 @@ ChipIRGuide::exitWindow(const double Dist,
   return SMap.realSurf(guideIndex+2);
 }
 
-void
-ChipIRGuide::createAll(Simulation& System,
-		       const shutterSystem::BulkShield& BS,
-		       const size_t GIndex)
-  /*!
-    Generic function to create everything
-    \param System :: Simulation item
-    \param BS :: Bulk shield
-    \param GIndex :: Guide index
-  */
-{
-  ELog::RegMethod RegA("ChipIRGuide","createAll");
-  
-  const shutterSystem::GeneralShutter* GPtr=BS.getShutter(GIndex);
-  populate(System.getDataBase());
-  createUnitVector(BS,*GPtr);
-  createSurfaces(*GPtr);
-  createObjects(System);  
-  createLinks();
 
-  addInsertPlate(System);
-  addFilter(System);
-  layerProcess(System);
-  insertObjects(System);   
-  writeMasterPoints();
-  return;
-}
 
 void
 ChipIRGuide::addWallCuts(Simulation& System)
@@ -1082,7 +1056,6 @@ ChipIRGuide::addWallCuts(Simulation& System)
     {
       WC->populateKey(System.getDataBase());
       const std::string kN=WC->getInsertKey();
-      ELog::EM<<"WC == "<<kN<<ELog::endDiag;
       if (kN=="SteelInnerRight")
 	{
 	  WC->addInsertCell(layerCells["SteelInner"]);
@@ -1112,15 +1085,57 @@ ChipIRGuide::addWallCuts(Simulation& System)
       if (!Out.empty())
 	WC->createAll(System,*this,0,HeadRule(Out));
       else
-	{
-	  ELog::EM<<"Creating empty"<<ELog::endDiag;
-	  WC->createAll(System,*this,0,HeadRule());
-	}
+	WC->createAll(System,*this,0,HeadRule());
     }
   
   return;
 }
+
+void
+ChipIRGuide::createCommon(Simulation& System)
+  /*!
+    Generic function to create common stuff
+    \param System :: Simulation item
+  */
+{
+  ELog::RegMethod RegA("ChipIRGuide","createCommon");
+
+  createObjects(System);  
+  createLinks();
   
+  addInsertPlate(System);
+  addFilter(System);
+  writeMasterPoints();
+
+  addWallCuts(System);
+  layerProcess(System);
+  insertObjects(System);   
+
+  return;
+}
+  
+void
+ChipIRGuide::createAll(Simulation& System,
+		       const shutterSystem::BulkShield& BS,
+		       const size_t GIndex)
+  /*!
+    Generic function to create everything
+    \param System :: Simulation item
+    \param BS :: Bulk shield
+    \param GIndex :: Guide index
+  */
+{
+  ELog::RegMethod RegA("ChipIRGuide","createAll");
+  
+  const shutterSystem::GeneralShutter* GPtr=BS.getShutter(GIndex);
+  populate(System.getDataBase());
+  createUnitVector(BS,*GPtr);
+  createSurfaces(*GPtr);
+
+  createCommon(System);
+  return;
+}
+
 void
 ChipIRGuide::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC)
@@ -1136,21 +1151,11 @@ ChipIRGuide::createAll(Simulation& System,
   populate(Control);
   
   const double ORadius=
-    Control.EvalDefVar<double>("bulkdOuterRadius",600.1);
+    Control.EvalDefVar<double>("bulkOuterRadius",600.1);
   createUnitVector(FC,ORadius);
   createSurfaces();
-  createObjects(System);  
-  createLinks();
 
-  addInsertPlate(System);
-  addFilter(System);
-  writeMasterPoints();
-  
-  addWallCuts(System);
-  layerProcess(System);
-  insertObjects(System);   
-  
-
+  createCommon(System);
   return;
 }
   

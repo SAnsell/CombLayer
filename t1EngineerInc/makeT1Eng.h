@@ -63,6 +63,8 @@ namespace ts1System
 {
   class BeamWindow;
   class CylReflector;
+  class EngReflector;
+  
   class ModBase;
   class H2Section;
   class CH4Section;
@@ -96,7 +98,7 @@ class makeT1Eng
 
   std::shared_ptr<constructSystem::TargetBase> TarObj;   ///< Target
   std::shared_ptr<ts1System::BeamWindow> BWindowObj;     ///< Beam window
-  std::shared_ptr<CylReflector> RefObj;                  ///< Relfector
+  std::shared_ptr<EngReflector> RefObj;                  ///< Relfector
   std::shared_ptr<SplitInner> TriMod;  ///< Water moderator
   /// General offset
   std::shared_ptr<constructSystem::GroupOrigin> ColdCentObj; 

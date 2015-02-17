@@ -84,6 +84,7 @@
 #include "FishGillVessel.h"
 #include "FishGillTarget.h"
 #include "CylReflector.h"
+#include "EngReflector.h"
 #include "ModBase.h"
 #include "TriUnit.h"
 #include "TriangleMod.h"
@@ -113,7 +114,7 @@ namespace ts1System
 
 makeT1Eng::makeT1Eng() :
   TarObj(new ts1System::FishGillTarget("FishGillTarget")),
-  RefObj(new ts1System::CylReflector("CylRefl")),
+  RefObj(new ts1System::EngReflector("EngRefl")),
   TriMod(new SplitInner("TriModInner","TriModLayer")),
   ColdCentObj(new constructSystem::GroupOrigin("ColdCent")),
   H2Mod(new InnerLayer("H2Inner","H2Layer")),
@@ -175,7 +176,7 @@ makeT1Eng::makeT1Eng() :
 makeT1Eng::makeT1Eng(const makeT1Eng& A) : 
   TarObj(A.TarObj->clone()),
   BWindowObj(new ts1System::BeamWindow(*A.BWindowObj)),
-  RefObj(new CylReflector(*A.RefObj)),
+  RefObj(new EngReflector(*A.RefObj)),
   TriMod(new SplitInner(*A.TriMod)),
   ColdCentObj(new constructSystem::GroupOrigin(*A.ColdCentObj)),
   H2Mod(new InnerLayer(*A.H2Mod)),

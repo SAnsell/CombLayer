@@ -3,7 +3,7 @@
  
  * File:   tallyInc/meshTally.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ class meshTally : public Tally
 
   int requireRotation;           ///< rotation to the mesh
   
-  Triple<int> Pts;               ///< Points
+  Triple<size_t> Pts;               ///< Points
   Geometry::Vec3D minCoord;      ///< Min coordinate
   Geometry::Vec3D maxCoord;      ///< Max coordinate
   
@@ -59,13 +59,19 @@ class meshTally : public Tally
   void setKeyWords(const std::string&);
   void setIndexLine(std::string);
   void setRot() { requireRotation=1; }   ///< Set rotations
-  void setIndex(const int*);
+  void setIndex(const size_t*);
   void setCoordinates(const Geometry::Vec3D&,const Geometry::Vec3D&);
   void setResponse(const std::string&);
 
   /// Access the centre
   Geometry::Vec3D getCentre() const { return (minCoord+maxCoord)/2.0; }
-  
+  /// access min/max point
+  const Geometry::Vec3D& getMinPt() const { return minCoord; }
+  /// access min/max point
+  const Geometry::Vec3D& getMaxPt() const { return maxCoord; }
+  /// access min/max point
+  const Triple<size_t>& getNPt() const { return Pts; }
+ 
   virtual void rotateMaster();
   int addLine(const std::string&);
   virtual void write(std::ostream&) const;

@@ -3,7 +3,7 @@
  
  * File:   Main/muBeam.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell/Goran Skoro
+ * Copyright (c) 2004-2015 by Stuart Ansell/Goran Skoro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -149,7 +149,6 @@ main(int argc,char* argv[])
 	    }
 	  if (IParam.flag("endf"))
 	    SimPtr->setENDF7();
-	  createMeshTally(IParam,SimPtr);
 
 	  SimProcess::importanceSim(*SimPtr,IParam);
 	  SimProcess::inputPatternSim(*SimPtr,IParam); // energy cut etc
