@@ -102,7 +102,7 @@ basicConstruct::inputItem<Geometry::Vec3D>
 				     "Insufficient items for tally");
 
   Geometry::Vec3D Out;
-  double V;
+  double V(0.0);
   for(size_t i=0;i<3;i++)
     {
       const std::string& OutItem=

@@ -157,9 +157,9 @@ gridConstruct::processGrid(Simulation& System,
       Geometry::Vec3D TOrigin=
 	inputItem<Geometry::Vec3D>(IParam,Index,2,"Centre point detector");
       Geometry::Vec3D XVec=
-	inputItem<Geometry::Vec3D>(IParam,Index,3,"XVector");
+	inputItem<Geometry::Vec3D>(IParam,Index,5,"XVector");
       Geometry::Vec3D YVec=
-	inputItem<Geometry::Vec3D>(IParam,Index,4,"YVector");
+	inputItem<Geometry::Vec3D>(IParam,Index,8,"YVector");
       TOrigin=MR.reverseRotate(TOrigin);
       XVec=MR.reverseAxisRotate(XVec);
       YVec=MR.reverseAxisRotate(YVec);
@@ -169,15 +169,15 @@ gridConstruct::processGrid(Simulation& System,
   else if (PType=="object")
     {
       const std::string place=
-	inputItem<std::string>(IParam,Index,2,"position not given");
+	inputItem<std::string>(IParam,Index,2,"object name not given");
       const std::string snd=
 	inputItem<std::string>(IParam,Index,3,"front/back/side not give");
       Geometry::Vec3D TOrigin=
-	inputItem<Geometry::Vec3D>(IParam,Index,4,"Centre point detector");
+	inputItem<Geometry::Vec3D>(IParam,Index,4,"Centre point offset");
       Geometry::Vec3D XVec=
-	inputItem<Geometry::Vec3D>(IParam,Index,5,"XVector");
+	inputItem<Geometry::Vec3D>(IParam,Index,7,"XVector scale");
       Geometry::Vec3D YVec=
-	inputItem<Geometry::Vec3D>(IParam,Index,6,"YVector");
+	inputItem<Geometry::Vec3D>(IParam,Index,10,"YVector scale");
 
       const long int linkNumber=getLinkIndex(snd);
       if (!calcGlobalCXY(place,linkNumber,TOrigin,XVec,YVec))
@@ -235,6 +235,9 @@ gridConstruct::calcGlobalCXY(const std::string& Place,
   FC->calcLinkAxis(linkNumber,X,Y,Z);
 
   Centre=O+X*Centre.X()+Y*Centre.Y()+Z*Centre.Z();
+  ELog::EM<<"Centre == "<<XVec<<ELog::endDiag;
+  ELog::EM<<"XVEC == "<<XVec<<ELog::endDiag;
+  ELog::EM<<"YVEC == "<<YVec<<ELog::endDiag;
   XVec=X*XVec.X()+Y*XVec.Y()+Z*XVec.Z();
   YVec=X*YVec.X()+Y*YVec.Y()+Z*YVec.Z();
 
@@ -259,7 +262,7 @@ gridConstruct::applyMultiGrid(Simulation& System,
     \param Yv :: Direction Y [scaled]
    */
 {
-  ELog::RegMethod RegA("tallyConstruct","applyMultiGrid");
+  ELog::RegMethod RegA("gridConstruct","applyMultiGrid");
 
   const masterRotate& MR=masterRotate::Instance();
   Geometry::MeshGrid RT(TOrigin,Xv,Yv);
@@ -270,9 +273,9 @@ gridConstruct::applyMultiGrid(Simulation& System,
   int level(RT.getLevel());
   ELog::EM<<"Tally Centre Point[AFTER OFFSET] == "
 	  <<MR.calcRotate(TOrigin)<<ELog::endTrace;
-  ELog::EM<<"XY == "<<MR.calcAxisRotate(Xv)<<":"
+  ELog::EM<<"XY == "<<MR.calcAxisRotate(Xv)<< "::"
 	  <<MR.calcAxisRotate(Yv)<<ELog::endTrace;
-  ELog::EM<<"Starting at level "<<level<<ELog::endWarn;
+  ELog::EM<<"Starting at level "<<level<<ELog::endTrace;
       
   int tNum(15);
   for(size_t NI=0;NI<NPD;NI++,tNum+=10)
