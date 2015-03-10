@@ -234,13 +234,20 @@ ChipIRGuide::populateWallItems(const FuncDataBase& Control)
   ELog::RegMethod RegA("ChipIRGuide","popualateWallItems");
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-  
-  nCuts=Control.EvalVar<size_t>(keyName+"NCuts");
-  WCObj.clear();
-  for(size_t i=0;i<nCuts;i++)
+
+  const int nActive=Control.EvalDefVar<int>(keyName+"CutsActive",1);
+  if (nActive)
     {
-      const std::string KN="CutKey"+StrFunc::makeString(i);
-      WCObj.push_back(std::shared_ptr<WallCut>(new WallCut("CGCut",i)));
+      nCuts=Control.EvalVar<size_t>(keyName+"NCuts");
+      WCObj.clear();
+      for(size_t i=0;i<nCuts;i++)
+	{
+	  const std::string KN="CutKey"+StrFunc::makeString(i);
+	  WCObj.push_back(std::shared_ptr<WallCut>(new WallCut("CGCut",i)));
+	  OR.addObject(WCObj.back());
+	}
+      // top to base slice
+      WCObj.push_back(std::shared_ptr<WallCut>(new WallCut("CGSlice",0)));
       OR.addObject(WCObj.back());
     }
   return;
@@ -331,6 +338,7 @@ ChipIRGuide::populate(const FuncDataBase& Control)
   rightWallLen=Control.EvalVar<double>(keyName+"RightWallLength");
 
 
+  remedialVoid=Control.EvalVar<int>(keyName+"RemedialVoid");
   remedialWestWallThick=Control.EvalVar<double>(keyName+"RemedialWallThick");
   remedialWallHeight=Control.EvalVar<double>(keyName+"RemedialWallHeight");
 
@@ -648,6 +656,8 @@ ChipIRGuide::createObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("ChipIRGuide","createObjects");
+  const int rConcMat=(remedialVoid) ? 0 : concMat;
+      
   std::string Out;
   // Inner void:
   Out=ModelSupport::getComposite(SMap,guideIndex,"-100 1 -2 3 -4 5 -6");
@@ -731,13 +741,13 @@ ChipIRGuide::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,guideIndex,
 				 "-100 1 -1002 (214:204) (502:503:506) "
 				 "205 -606 -604 -614 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,rConcMat,0.0,Out));
   layerCells.insert(LCTYPE::value_type("RWConcW2",cellIndex-1));
 
     // REMEDIAL ROOF to the wall
   Out=ModelSupport::getComposite(SMap,guideIndex,
 				 "-100 1 -1002 -214 -204 213 206 -606");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,rConcMat,0.0,Out));
   layerCells.insert(LCTYPE::value_type("RWConcRoof",cellIndex-1));
 
 
@@ -871,7 +881,7 @@ ChipIRGuide::layerProcess(Simulation& System)
   // ----------------------
   // REMEDIAL WALL Divider:
   // ----------------------
-  if (nRemedialWestLayers>1)
+  if (nRemedialWestLayers>1 && !remedialVoid)
     {
       ModelSupport::surfDivide DA;
             
@@ -963,9 +973,7 @@ ChipIRGuide::writeMasterPoints()
 	SMap.realPtr<Geometry::Plane>(gIndex[i]+guideIndex);
       FixedComp::setConnect(cNum[i],Cp,PX->getNormal()*signV);      
     }
-
-
-
+  
   return;
 }
 
@@ -1003,6 +1011,7 @@ ChipIRGuide::createLinks()
   FixedComp::setLinkSurf(3,SMap.realSurf(guideIndex+4));  
   FixedComp::setLinkSurf(4,-SMap.realSurf(guideIndex+5));
   FixedComp::setLinkSurf(5,SMap.realSurf(guideIndex+6));  
+
   FixedComp::setLinkSurf(6,SMap.realSurf(guideIndex+1002));
 
   // OutersideWalls
@@ -1075,6 +1084,11 @@ ChipIRGuide::addWallCuts(Simulation& System)
 	{
 	  WC->addInsertCell(layerCells["SteelInner"]);
 	  Out="";
+	}
+      else if (kN=="SteelRightVertical")
+	{
+	  WC->addInsertCell(layerCells["SteelInner"]);
+	  Out=ModelSupport::getComposite(SMap,guideIndex," -14 -114 115 -116");
 	}
 
       else

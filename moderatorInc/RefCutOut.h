@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   moderatorInc/RefCutOut.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,8 @@ class RefCutOut :
   
   const int pipeIndex;          ///< Index of surface offset
   int cellIndex;                ///< Cell index
-  int populated;                ///< 1:var
+
+  int active;                  ///< Is object active
   
   double xyAngle;              ///< Rotation angle
   double zAngle;               ///< Slope angle
@@ -53,7 +54,7 @@ class RefCutOut :
   
   int matN;                    ///< Material Number
   
-  void populate(const Simulation&);
+  void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
 
   void createSurfaces();

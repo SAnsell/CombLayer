@@ -188,6 +188,8 @@ BulkInsert::populate(const Simulation& System,
   ELog::RegMethod RegA("BulkInsert","populate");
   const FuncDataBase& Control=System.getDataBase();
 
+  const std::string numName=keyName+StrFunc::makeString(shutterNumber+1);
+  impZero=Control.EvalDefPair<int>(numName+"ImpZero",keyName+"ImpZero",0);  
   // Global from shutter size:
 
   if (!(populated & 2))
@@ -343,14 +345,16 @@ BulkInsert::createObjects(Simulation& System)
   if (!shutterObj)
     throw ColErr::InContainerError<int>(innerCell,"shutterObj");
 
+  if (impZero) shutterObj->setImp(0);
   innerInclude=ModelSupport::getComposite(SMap,surfIndex,"3 -4 -5 6 ")+dSurf;
   HeadRule ExLiner(innerInclude);
   ExLiner.makeComplement();
   shutterObj->addSurfString(ExLiner.display());
   
-  shutterObj=System.findQhull(outerCell);
+  shutterObj=System.findQhull(outerCell);  
   if (!shutterObj)
     throw ColErr::InContainerError<int>(outerCell,"shutterObj");
+  if (impZero) shutterObj->setImp(0);
   outerInclude=
     ModelSupport::getComposite(SMap,surfIndex,"13 -14 -15 16 ")+dSurf;
 

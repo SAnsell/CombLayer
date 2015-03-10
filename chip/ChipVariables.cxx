@@ -241,7 +241,9 @@ ChipVariables(FuncDataBase& Control)
   Control.addVariable("chipGuideRightWallLength",120.0);
 
 // Remedial wall on right/west [W2 side]
-  Control.addVariable("chipGuideRemedialWallThick",60.0);
+  Control.addVariable("chipGuideRemedialVoid",0);     // MAKE remedial void
+    
+  Control.addVariable("chipGuideRemedialWallThick",78.0);
   Control.addVariable("chipGuideRemedialWallHeight",610.0);
 
   Control.addVariable("chipGuideRemedialWestNLayers",6);
@@ -255,8 +257,8 @@ ChipVariables(FuncDataBase& Control)
   Control.addVariable("chipGuideWRemedLen_1",-5.0);  // Steel
   Control.addVariable("chipGuideWRemedLen_2",-18.0);  // Steel
   Control.addVariable("chipGuideWRemedLen_3",-18.0);   // Steel inner
-  Control.addVariable("chipGuideWRemedLen_4",-9.0);   // Concreate
-  Control.addVariable("chipGuideWRemedLen_5",-7.0);   // Contrete inner
+  Control.addVariable("chipGuideWRemedLen_4",-18.0);   // Concreate
+  Control.addVariable("chipGuideWRemedLen_5",-16.0);   // Contrete inner
 
   
   // wedge block on left [TSA side]
@@ -264,10 +266,12 @@ ChipVariables(FuncDataBase& Control)
 //  Control.addVariable("chipGuideLeftWedgeAngle",20.0);
 //  Control.addVariable("chipGuideLeftWedgeHeight",240.0);
 
-  Control.addVariable("chipGuideLinerMat","Lead");  // lead
-  Control.addVariable("chipGuideSteelMat","ChipIRSteel");  // chipIR steel
-  Control.addVariable("chipGuideConcMat","NELCOConcrete");  // nelco concrete
-  Control.addVariable("chipGuideWallMat","NELCOConcrete");  // nelco concrete
+  Control.addVariable("chipGuideLinerMat","Lead");  
+  Control.addVariable("chipGuideSteelMat","ChipIRSteel");  
+  Control.addVariable("chipGuideConcMat","NELCOConcrete");  
+  Control.addVariable("chipGuideWallMat","NELCOConcrete");  
+  Control.addVariable("chipGuideRemedialSteelMat","ChipIRSteel");
+  Control.addVariable("chipGuideRemedialConcMat","NELCOConcrete"); 
 
 
   Control.addVariable("chipGPlateZAngle",0.0);    // Angle relative to beam
@@ -749,7 +753,15 @@ ChipVariables(FuncDataBase& Control)
   Control.addVariable("chipSourceAngle",35.0);         // Angle on the source
   Control.addVariable("chipSourceRadial",12.0);        // Width
 
+
+  Control.addVariable("CGSlice0Centre",Geometry::Vec3D(95.0,212.5,0.0));
+  Control.addVariable("CGSlice0Length",30.0);
+  Control.addVariable("CGSlice0Height",-1.0);
+  Control.addVariable("CGSlice0InsertKey","SteelRightVertical");
+  Control.addVariable("CGSliceWidth",5.0);
+  Control.addVariable("CGSliceRotXYangle",90.0);
   
+  Control.addVariable("chipGuideCutsActive",1);    // Number of cuts
   Control.addVariable("chipGuideNCuts",16);    // Number of cuts
     
   Control.addVariable("CGCut0Centre",Geometry::Vec3D(55.0,10.0,50.0));
@@ -790,7 +802,6 @@ ChipVariables(FuncDataBase& Control)
   Control.addVariable("CGCut13Length",40.0);
   Control.addVariable("CGCut14Length",30.0);
   Control.addVariable("CGCut15Length",25.0);
-
 
   Control.addVariable("CGCut0InsertKey","SteelInnerRight");
   Control.addVariable("CGCut1InsertKey","SteelInnerRight");

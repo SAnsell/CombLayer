@@ -124,9 +124,10 @@ class ChipIRGuide : public attachSystem::TwinComp,
   double rightWallHeight;      ///< Height [from ground]
   double rightWallLen;         ///< Wall length
 
+  int remedialVoid;             ///< Flag to build
   double remedialWestWallThick;    ///< Remedial wall
   double remedialWallHeight;       ///< Remedial wall height
-
+  
   size_t nCuts;                  ///< Number of wall cuts [inner]
   std::vector<std::shared_ptr<WallCut> > WCObj;  ///< Wall cut objects
   

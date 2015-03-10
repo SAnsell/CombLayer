@@ -189,14 +189,14 @@ main(int argc,char* argv[])
 	    SimPtr->setENDF7();
 
 
+	  // NOTE : This flag must be set in tally== beamline standard
+	  SimProcess::importanceSim(*SimPtr,IParam);
+	  SimProcess::inputPatternSim(*SimPtr,IParam); // energy cut etc
 	  if (createVTK(IParam,SimPtr,Oname))
 	    {
 	      mainSystem::exitDelete(SimPtr);
 	      return 0;
 	    }
-	  // NOTE : This flag must be set in tally== beamline standard
-	  SimProcess::importanceSim(*SimPtr,IParam);
-	  SimProcess::inputPatternSim(*SimPtr,IParam); // energy cut etc
 
 	  if (renumCellWork)
 	    tallyRenumberWork(*SimPtr,IParam);

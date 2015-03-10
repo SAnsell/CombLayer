@@ -147,7 +147,7 @@ meshConstruct::processMesh(Simulation& System,
       Nxyz[0]=inputItem<size_t>(IParam,Index,nxyzIndex++,"NXpts");
       Nxyz[1]=inputItem<size_t>(IParam,Index,nxyzIndex++,"NYpts");
       Nxyz[2]=inputItem<size_t>(IParam,Index,nxyzIndex++,"NZpts");
-      if (PType=="heat")
+      if (PType=="heat" || PType=="heatRotated")
 	rectangleMesh(System,3,"void",APt,BPt,Nxyz);
       else
 	rectangleMesh(System,1,doseType,APt,BPt,Nxyz);
@@ -207,7 +207,8 @@ meshConstruct::rectangleMesh(Simulation& System,const int type,
       ELog::EM<<"Mesh keyword options:\n"
 	      <<"  DOSE :: SNS Flux to Dose conversion (mrem/hour)\n"
 	      <<"  InternalDOSE :: MCNPX Flux to Dose conversion (mrem/hour)\n"
-              <<ELog::endDiag;
+	      <<"  void ::  Flux \n"
+	      <<ELog::endDiag;
       ELog::EM<<"Using unknown keyword :"<<KeyWords<<ELog::endErr;
     }
 

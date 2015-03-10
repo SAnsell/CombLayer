@@ -65,6 +65,8 @@ class BulkInsert : public attachSystem::TwinComp,
 
   int innerMat;                       ///< Fill in material
   int outerMat;                       ///< Fill in material
+
+  int impZero;                        ///< Make importance zero
   
   // Cells:
   int innerCell;                ///< Inner Steel section [BulkShield]

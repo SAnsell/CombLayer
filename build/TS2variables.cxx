@@ -469,12 +469,13 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("coolPadMat","Aluminium");   
 
   // REFLECTOR CUT SYSTEM
+  Control.addVariable("chipIRCutActive",1);          // Flag for building
   Control.addVariable("chipIRCutXYAngle",46.0);      // Rotation angle
   Control.addVariable("chipIRCutZAngle",4.76);       // Rotation angle
   Control.addVariable("chipIRCutTargetDepth",4.55);  // Depth down target
   Control.addVariable("chipIRCutTargetOut",12.0);    // Rotation angle
   Control.addVariable("chipIRCutRadius",2.55);       // Radius [outer]
-  Control.addVariable("chipIRCutMat","Void");             // Material [void]
+  Control.addVariable("chipIRCutMat","Void");        // Material [void]
 
   // VOID VESSEL:
   // NEED To move 168 and 169 out by : 4.2cm on BOTH:
@@ -732,6 +733,12 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("bulkInsertZOffset",0.00);
   Control.addVariable("bulkInsert10InnerMat","Stainless304");
   Control.addVariable("bulkInsert10OuterMat","Stainless304");
+  Control.addVariable("bulkInsert11InnerMat","Stainless304");
+  Control.addVariable("bulkInsert11OuterMat","Stainless304");
+  Control.addVariable("bulkInsert2InnerMat","Stainless304");
+  Control.addVariable("bulkInsert2OuterMat","Stainless304");
+
+  Control.addVariable("bulkInsertImpZero",0);         // All importance 1
 
   // TORPEDO
   Control.addVariable("torpedoHeight",18.00);

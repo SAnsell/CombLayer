@@ -377,9 +377,8 @@ Reflector::createObjects(Simulation& System)
   CdBucket->addInsertCell(cellIndex-1);
   // torpedoCell=cellIndex-1;
 
-  std::vector<CoolPad>::iterator vc;
-  for(vc=Pads.begin();vc!=Pads.end();vc++)
-    vc->addInsertCell(74123);
+  for(CoolPad& PD : Pads)
+    PD.addInsertCell(74123);
   
   return;
 }
@@ -521,9 +520,8 @@ Reflector::createInternalObjects(Simulation& System,
   CdBucket->addBoundarySurf(TarObj->getExclude());
   CdBucket->createAll(System,*this);
 
-  std::vector<CoolPad>::iterator vc;
-  for(vc=Pads.begin();vc!=Pads.end();vc++)
-    vc->createAll(System,*this);
+  for(CoolPad& PD : Pads)
+    PD.createAll(System,*this);
 
   return;
 }
@@ -641,9 +639,8 @@ Reflector::getExclude() const
   ELog::RegMethod RegA("Reflector","getExclude");
 
   std::string Out=ContainedComp::getExclude();
-  std::vector<CoolPad>::const_iterator vc;
-  for(vc=Pads.begin();vc!=Pads.end();vc++)
-    Out+=vc->getExclude();
+  for(const CoolPad& PD : Pads)
+    Out+=PD.getExclude();
   return Out;
 }
 

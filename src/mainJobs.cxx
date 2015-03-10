@@ -117,18 +117,18 @@ createVTK(const mainSystem::inputParam& IParam,
 	  ELog::EM<<"Processing VTK:"<<ELog::endBasic;
 	  Visit VTK;
 
-	  VTK.setType(Visit::material);
+	  if (IParam.flag("vcell"))
+	    VTK.setType(Visit::cellID);
+	  else
+	    VTK.setType(Visit::material);
+	  
 	  std::set<std::string> Active;
 	  for(size_t i=0;i<15;i++)
 	    {
 	      const std::string Item=IParam.getValue<std::string>("vmat",i);
-	      if (!Item.empty())
-		Active.insert(Item);
-	      else
-		i=15;
+	      if (Item.empty()) break;
+	      Active.insert(Item);
 	    }
-	  if (IParam.flag("vcell"))
-	    VTK.setType(Visit::cellID);
 
 	  // PROCESS VTK:
 	  VTK.setBox(MeshA,MeshB);

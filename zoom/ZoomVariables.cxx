@@ -179,14 +179,24 @@ ZoomVariables(const mainSystem::inputParam& IParam,
   Control.addVariable("zoomChopperRightWaxAngle",4.4);
   Control.addVariable("zoomChopperWaxLeftSkin",12.0);
   Control.addVariable("zoomChopperWaxRightSkin",12.0); 
-  Control.addVariable("zoomChopperNShield",4); 
+
+  Control.addVariable("zoomChopperNShield",8); 
   Control.addVariable("zoomChopperShieldMat_0","Tungsten");      // W
-  Control.addVariable("zoomChopperShieldMat_1","B4C");     
-  Control.addVariable("zoomChopperShieldMat_2","Aluminium"); 
-  Control.addVariable("zoomChopperShieldMat_3","H2O");  
-  Control.addVariable("zoomChopperShieldLen_1",-7.0);      //-ve is length
-  Control.addVariable("zoomChopperShieldLen_2",-2.0);      // not frac
-  Control.addVariable("zoomChopperShieldLen_3",-6.0);      // 
+  Control.addVariable("zoomChopperShieldMat_1","Stainless304");
+  Control.addVariable("zoomChopperShieldMat_2","B-Poly");
+  Control.addVariable("zoomChopperShieldMat_3","Aluminium");
+  Control.addVariable("zoomChopperShieldMat_4","Stainless304");
+  Control.addVariable("zoomChopperShieldMat_5","Aluminium");
+  Control.addVariable("zoomChopperShieldMat_6","B-Poly");
+  Control.addVariable("zoomChopperShieldMat_7","Tungsten");      // W
+  Control.addVariable("zoomChopperShieldLen_1",-2.0);      //-ve is length
+  Control.addVariable("zoomChopperShieldLen_2",-7.5);      //-ve is length
+  Control.addVariable("zoomChopperShieldLen_3",-3.0);      //-ve is length
+  Control.addVariable("zoomChopperShieldLen_4",-2.0);      // not frac
+  Control.addVariable("zoomChopperShieldLen_5",-7.5);      //
+  Control.addVariable("zoomChopperShieldLen_6",-3.0);      //-ve is length
+  Control.addVariable("zoomChopperShieldLen_7",-2.0);      //-ve is length
+  Control.addVariable("zoomChopperShieldLen_8",-12.0);      //-ve is length
 
   // First item
   Control.addVariable("zoomChopperVoidChanLeft",35.80);  // from 27
@@ -201,13 +211,13 @@ ZoomVariables(const mainSystem::inputParam& IParam,
   Control.addVariable("zoomChopperVoidCut",32.20);
   
   // third item
-  Control.addVariable("zoomChopperVoidEnd",39.5); 
+  Control.addVariable("zoomChopperVoidEnd",30.5); 
   Control.addVariable("zoomChopperVoidEndLeft",67.30);  
   Control.addVariable("zoomChopperVoidEndRight",12.20+15.0); 
   Control.addVariable("zoomChopperVoidEndUp",21.0);
   Control.addVariable("zoomChopperVoidEndDown",22.0);     // GUESS
 
-  Control.addVariable("zoomChopperVoidEndMat","Tungsten");   //
+  Control.addVariable("zoomChopperVoidEndMat","Stainless304");   //
   //  Control.addVariable("zoomChopperVoidEndMat",0);   // 
   Control.addVariable("zoomChopperVoidEndBeamLeft",3.0);  
   Control.addVariable("zoomChopperVoidEndBeamRight",3.0); 
@@ -234,9 +244,9 @@ ZoomVariables(const mainSystem::inputParam& IParam,
   Control.addVariable("zoomDiskInnerMat","Aluminium");
   Control.addVariable("zoomDiskOuterMat","Inconnel");
 
-  Control.addVariable("zoomDisk0PhaseAngle",0.0);
+  Control.addVariable("zoomDisk0PhaseAngle",95.0);
   Control.addVariable("zoomDisk0OpenAngle",30.0);
-  Control.addVariable("zoomDisk1PhaseAngle",0.0);
+  Control.addVariable("zoomDisk1PhaseAngle",95.0);
   Control.addVariable("zoomDisk1OpenAngle",30.0);
   
   
@@ -308,8 +318,6 @@ ZoomVariables(const mainSystem::inputParam& IParam,
   Control.addVariable("zoomCollInsertGuideHeight",2.0);
   Control.addVariable("zoomCollInsertGuideMat","SiO2"); 
  
-
-  // DEPRECIATED:
   Control.addVariable("zoomCollimatorStackXShift",10.0);  // GUESS
   Control.addVariable("zoomCollimatorStackZShift",0.0);  // GUESS
   Control.addVariable("zoomCollimatorStackHeight",25.6);  // GUESS

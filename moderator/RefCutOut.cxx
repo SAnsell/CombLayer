@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   moderator/RefCutOut.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -81,7 +81,7 @@ namespace moderatorSystem
 RefCutOut::RefCutOut(const std::string& Key)  :
   attachSystem::FixedComp(Key,1),
   pipeIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(pipeIndex+1),populated(0)
+  cellIndex(pipeIndex+1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -91,7 +91,7 @@ RefCutOut::RefCutOut(const std::string& Key)  :
 RefCutOut::RefCutOut(const RefCutOut& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
   pipeIndex(A.pipeIndex),cellIndex(A.cellIndex),
-  populated(A.populated),xyAngle(A.xyAngle),zAngle(A.zAngle),
+  xyAngle(A.xyAngle),zAngle(A.zAngle),
   tarLen(A.tarLen),tarOut(A.tarOut),radius(A.radius),matN(A.matN)
   /*!
     Copy constructor
@@ -112,7 +112,6 @@ RefCutOut::operator=(const RefCutOut& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
       cellIndex=A.cellIndex;
-      populated=A.populated;
       xyAngle=A.xyAngle;
       zAngle=A.zAngle;
       tarLen=A.tarLen;
@@ -130,7 +129,7 @@ RefCutOut::~RefCutOut()
 {}
 
 void
-RefCutOut::populate(const Simulation& System)
+RefCutOut::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param System :: Simulation to use
@@ -138,17 +137,19 @@ RefCutOut::populate(const Simulation& System)
 {
   ELog::RegMethod RegA("RefCutOut","populate");
   
-  const FuncDataBase& Control=System.getDataBase();
 
-  xyAngle=Control.EvalVar<double>(keyName+"XYAngle"); 
-  zAngle=Control.EvalVar<double>(keyName+"ZAngle"); 
-  tarLen=Control.EvalVar<double>(keyName+"TargetDepth");
-  tarOut=Control.EvalVar<double>(keyName+"TargetOut");
-  radius=Control.EvalVar<double>(keyName+"Radius"); 
-
-  matN=ModelSupport::EvalMat<int>(Control,keyName+"Mat"); 
+  active=Control.EvalDefVar<int>(keyName+"Active",1);
+  if (active)
+    {
+      xyAngle=Control.EvalVar<double>(keyName+"XYAngle"); 
+      zAngle=Control.EvalVar<double>(keyName+"ZAngle"); 
+      tarLen=Control.EvalVar<double>(keyName+"TargetDepth");
+      tarOut=Control.EvalVar<double>(keyName+"TargetOut");
+      radius=Control.EvalVar<double>(keyName+"Radius"); 
+      
+      matN=ModelSupport::EvalMat<int>(Control,keyName+"Mat"); 
+    }
   
-  populated |= 1;
   return;
 }
   
@@ -233,13 +234,15 @@ RefCutOut::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("RefCutOut","createAll");
-  populate(System);
+  populate(System.getDataBase());
 
-  createUnitVector(FUnit);
-  createSurfaces();
-  createObjects(System);
-  insertObjects(System);       
-
+  if (active)
+    {
+      createUnitVector(FUnit);
+      createSurfaces();
+      createObjects(System);
+      insertObjects(System);       
+    }
   return;
 }
   

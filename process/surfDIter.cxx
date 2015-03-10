@@ -70,7 +70,7 @@ populateDivideLen(const FuncDataBase& Control,const size_t N,
   */
 {
   ELog::RegMethod RegA("surfDIter","populateDivideLen");
-  if (N)
+  if (N && TLen>Geometry::zeroTol)
     {
       double curLen(0.0);
       double frac=1.0/N;
