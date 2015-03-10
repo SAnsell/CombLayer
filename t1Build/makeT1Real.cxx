@@ -62,7 +62,6 @@
 #include "Qhull.h"
 #include "insertInfo.h"
 #include "insertBaseInfo.h"
-#include "InsertComp.h"
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"

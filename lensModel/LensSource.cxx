@@ -3,7 +3,7 @@
  
  * File:   lensModel/LensSource.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,12 +57,12 @@
 #include "SrcData.h"
 #include "DSTerm.h"
 #include "surfRegister.h"
+#include "objectRegister.h"
 #include "ModelSupport.h"
 #include "WorkData.h"
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "LinearComp.h"
 #include "LensSource.h"
 
 
@@ -130,7 +130,7 @@ LensSource::populate(const FuncDataBase& Control)
 
 
 void
-LensSource::createUnitVector(const attachSystem::LinearComp& pBeam)
+LensSource::createUnitVector(const attachSystem::FixedComp& pBeam)
   /*!
     Create the unit vectors
     \param pBeam :: Linear Component to represent proton beam
@@ -146,18 +146,18 @@ LensSource::createUnitVector(const attachSystem::LinearComp& pBeam)
 
 void
 LensSource::createAll(const FuncDataBase& Control,
-		      const attachSystem::LinearComp& pBeam,
-		      SDef::Source& sourceCard) 
+		      SDef::Source& sourceCard,
+		      const attachSystem::FixedComp& protonComp)
   /*!
     Generic function to create everything
     \param Control :: DataBase resouces
-    \param pBeam :: Proton beam line
     \param sourceCard :: Card to update
+    \param protonComp :: Proton beam line 
   */
 {
   ELog::RegMethod RegA("LensSource","createAll");
   populate(Control);
-  createUnitVector(pBeam);
+  createUnitVector(protonComp);
   createSource(sourceCard);
   return;
 }

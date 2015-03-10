@@ -42,8 +42,7 @@
 #include "FixedComp.h"
 #include "SecondTrack.h"
 #include "TwinComp.h"
-#include "LinearComp.h"
-#include "InsertComp.h"
+//#include "LinearComp.h"
 #include "WorkData.h"
 #include "sinbadSource.h"
 
@@ -774,9 +773,9 @@ sinbadSource::createSourceSinbad(SDef::Source& sourceCard)
        SI21.addData(cellNum++);
        SP21.addData(sinbadSource49[nz49-1-iz-1][ix+1]);
       }
-    if(ix==nx49-3)cellNum++;
+    if(ix==nx49-3)
+      cellNum++;
     cellNum++;
-
    }  
 
   D21.addUnit(SI21);  

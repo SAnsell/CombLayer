@@ -70,7 +70,7 @@ class ChipIRSource
 		 const double,SDef::Source&);
 
   void createAll(const std::string&,
-		 const attachSystem::LinearComp&,
+		 const attachSystem::FixedComp&,
 		 const double,const double,SDef::Source&);
 
   /// Access central point:

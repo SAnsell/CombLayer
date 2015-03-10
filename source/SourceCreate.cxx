@@ -61,6 +61,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "GammaSource.h"
+#include "LensSource.h"
 #include "SourceCreate.h"
 
 
@@ -363,6 +364,23 @@ createLaserSource(const FuncDataBase& Control,Source& Card)
   ELog::RegMethod RegA("SourceCreate","createLaserSource");
   GammaSource GX("laserSource");
   GX.createAll(Control,Card);
+  return;
+}
+
+void
+createLensSource(const FuncDataBase& Control,Source& Card,
+		 const attachSystem::FixedComp& protonComp)
+  /*!
+    Create the laser source -- currently a copy of the photo
+    nuclear experiment source
+    \param Control :: Variables data base
+    \param Card :: Source system
+    \param protonComp :: Proton component
+   */
+{
+  ELog::RegMethod RegA("SourceCreate","createLaserSource");
+  LensSource LS("lensSource");
+  LS.createAll(Control,Card,protonComp);
   return;
 }
 
