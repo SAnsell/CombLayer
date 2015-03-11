@@ -243,11 +243,13 @@ ChipIRGuide::populateWallItems(const FuncDataBase& Control)
       for(size_t i=0;i<nCuts;i++)
 	{
 	  const std::string KN="CutKey"+StrFunc::makeString(i);
-	  WCObj.push_back(std::shared_ptr<WallCut>(new WallCut("CGCut",i)));
+	  WCObj.push_back(std::shared_ptr<constructSystem::WallCut>
+			  (new constructSystem::WallCut("CGCut",i)));
 	  OR.addObject(WCObj.back());
 	}
       // top to base slice
-      WCObj.push_back(std::shared_ptr<WallCut>(new WallCut("CGSlice",0)));
+      WCObj.push_back(std::shared_ptr<constructSystem::WallCut>
+		      (new constructSystem::WallCut("CGSlice",0)));
       OR.addObject(WCObj.back());
     }
   return;
@@ -1061,7 +1063,7 @@ ChipIRGuide::addWallCuts(Simulation& System)
   const int GI(guideIndex+static_cast<int>(LMat.size())*20);
   std::string Out;
 
-  for(std::shared_ptr<WallCut> WC : WCObj)
+  for(std::shared_ptr<constructSystem::WallCut> WC : WCObj)
     {
       WC->populateKey(System.getDataBase());
       const std::string kN=WC->getInsertKey();
