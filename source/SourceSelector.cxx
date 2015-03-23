@@ -188,6 +188,12 @@ sourceSelection(Simulation& System,
     SDef::createGammaSource(Control,sourceCard);
   else if (sdefType=="Laser" || sdefType=="laser")
     SDef::createLaserSource(Control,sourceCard);
+  else if (sdefType=="LENS" || sdefType=="lens")
+    {
+      const attachSystem::FixedComp& PC=
+	OR.getObject<attachSystem::FixedComp>("ProtonBeam");
+      SDef::createLensSource(Control,sourceCard,PC);
+    }
   else if (sdefType=="TS2")
     {
   // Basic TS2 source

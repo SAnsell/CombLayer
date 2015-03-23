@@ -3,7 +3,7 @@
  
  * File:   chip/ChipIRInsert.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -80,7 +80,6 @@
 #include "FixedComp.h"
 #include "SecondTrack.h"
 #include "TwinComp.h"
-#include "InsertComp.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "GeneralShutter.h"

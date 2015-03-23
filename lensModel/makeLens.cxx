@@ -34,7 +34,6 @@
 #include <iterator>
 #include <memory>
 #include <array>
-#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -49,9 +48,9 @@
 #include "Vec3D.h"
 #include "support.h"
 #include "inputParam.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
+// #include "Triple.h"
+// #include "NRange.h"
+// #include "NList.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -62,17 +61,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
-#include "KCode.h"
 #include "insertInfo.h"
 #include "insertBaseInfo.h"
-#include "InsertComp.h"
-#include "ModeCard.h"
-#include "PhysImp.h"
-#include "PhysCard.h"
-#include "LSwitchCard.h"
-#include "PhysicsCards.h"
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -85,7 +75,7 @@
 #include "FlightLine.h"
 #include "FlightCluster.h"
 #include "layers.h"
-#include "LensSource.h"
+
 #include "LensTally.h"
 #include "makeLens.h"
 
@@ -95,8 +85,8 @@ namespace lensSystem
 makeLens::makeLens() :
   SiModObj(new siModerator("siMod")),
   candleObj(new candleStick("candle")),
-  layerObj(new layers("layers")),
-  LS(new SDef::LensSource("lensSource"))
+  layerObj(new layers("layers"))
+
   /*!
     Constructor
   */
@@ -105,8 +95,7 @@ makeLens::makeLens() :
 makeLens::makeLens(const makeLens& A) : 
   SiModObj(new siModerator(*A.SiModObj)),
   candleObj(new candleStick(*A.candleObj)),
-  layerObj(new layers(*A.layerObj)),
-  LS(new SDef::LensSource(*A.LS))
+  layerObj(new layers(*A.layerObj))
   /*!
     Copy constructor
     \param A :: makeLens to copy
@@ -126,7 +115,6 @@ makeLens::operator=(const makeLens& A)
       *SiModObj=*A.SiModObj;
       *candleObj=*A.candleObj;
       *layerObj=*A.layerObj;
-      *LS=*A.LS;
     }
   return *this;
 }
@@ -139,7 +127,6 @@ makeLens::~makeLens()
   delete SiModObj;
   delete candleObj;
   delete layerObj;
-  delete LS;
 }
 
 void
@@ -187,10 +174,7 @@ makeLens::build(Simulation* SimPtr,
       LSource.createAll(SimPtr->getDataBase(),
 			layerObj->getPF(),
 			SD);
-    }
-  //  LS->createAll(SimPtr->getDataBase(),layerObj->getPF(),
-  //		SimPtr->getPC().getSDefCard());
-	  
+    }	  
   return;
 }
 

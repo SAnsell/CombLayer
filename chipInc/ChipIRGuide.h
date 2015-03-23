@@ -35,9 +35,14 @@ namespace shutterSystem
   class BulkShield;
 }
 
-namespace hutchSystem
+namespace constructSystem
 {
   class WallCut;
+}
+
+namespace hutchSystem
+{
+
 
 /*!
   \class ChipIRGuide
@@ -129,7 +134,8 @@ class ChipIRGuide : public attachSystem::TwinComp,
   double remedialWallHeight;       ///< Remedial wall height
   
   size_t nCuts;                  ///< Number of wall cuts [inner]
-  std::vector<std::shared_ptr<WallCut> > WCObj;  ///< Wall cut objects
+  /// Wall cut objects
+  std::vector<std::shared_ptr<constructSystem::WallCut> > WCObj; 
   
   size_t nLayers;                ///< number of layers
   std::vector<double> guideFrac; ///< guide Layer thicknesss (fractions)

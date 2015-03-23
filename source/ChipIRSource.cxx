@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   source/ChipIRSource.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,9 +46,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "doubleErr.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -62,8 +59,6 @@
 #include "FixedComp.h"
 #include "SecondTrack.h"
 #include "TwinComp.h"
-#include "LinearComp.h"
-#include "InsertComp.h"
 #include "WorkData.h"
 #include "ChipIRSource.h"
 
@@ -194,20 +189,20 @@ ChipIRSource::createAll(const std::string& EFile,
 
 void
 ChipIRSource::createAll(const std::string& EFile,
-			const attachSystem::LinearComp& LC,
+			const attachSystem::FixedComp& LC,
 			const double angle,const double radius,
 			SDef::Source& sourceCard) 
   /*!
     Generic function to create everything
     \param EFile :: File to get source data from
-    \param LC :: Linear system to build along
+    \param LC :: FixedComp system to build along
     \param angle :: Angle spread
     \param radius :: radial space
     \param sourceCard :: Card to update
   */
 {
   ELog::RegMethod RegA("ChipIRSource","createAll(LC)");
-  createAll(EFile,LC.getBeamAxis(),LC.getCentre(),
+  createAll(EFile,LC.getExitNorm(),LC.getCentre(),
 	    angle,radius,sourceCard);
   return;
 }

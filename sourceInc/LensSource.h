@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   lensModelInc/LensSource.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,7 +53,7 @@ class LensSource
   double radialSpread;          ///< Radial spread
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::LinearComp&);
+  void createUnitVector(const attachSystem::FixedComp&);
   void createSource(SDef::Source&) const;
 
  public:
@@ -63,16 +63,16 @@ class LensSource
   LensSource& operator=(const LensSource&);
   ~LensSource();
 
-  /// Set cut energy
-  void setCutEnergy(const double E) { cutEnergy=E; }
-  void createAll(const FuncDataBase&,		 
-		 const attachSystem::LinearComp&,
-		 SDef::Source&);
-
-  /// Access central point:
+    /// Access central point:
   const Geometry::Vec3D& getCentPoint() const { return CentPoint; }
   /// Access central axis:
   const Geometry::Vec3D& getDirection() const { return Direction; }
+
+  /// Set cut energy
+  void setCutEnergy(const double E) { cutEnergy=E; }
+  void createAll(const FuncDataBase&,SDef::Source&,
+		 const attachSystem::FixedComp&);
+
   
 };
 

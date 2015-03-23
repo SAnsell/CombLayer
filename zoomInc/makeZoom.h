@@ -54,7 +54,6 @@ class makeZoom
   std::shared_ptr<constructSystem::DiskChopper> ZDisk; 
   std::shared_ptr<ZoomCollimator> ZCollimator;  ///< Collimator object
   std::shared_ptr<ZoomOpenStack> ZColInsert;    ///< collimator insert pieces
-  std::shared_ptr<ZoomRoof> ZRoof;              ///< Zoom Roof
   std::shared_ptr<ZoomPrimary> ZPrim;           ///< Zoom Primary
   std::shared_ptr<ZoomHutch> ZHut;              ///< Hut object
 

@@ -74,7 +74,7 @@
 #include "WallCut.h"
 
 
-namespace hutchSystem
+namespace constructSystem
 {
 
 WallCut::WallCut(const std::string& Key,const size_t ID)  :
@@ -85,8 +85,49 @@ WallCut::WallCut(const std::string& Key,const size_t ID)  :
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
+    \param ID :: Index number
   */
 {}
+
+WallCut::WallCut(const WallCut& A) : 
+  attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
+  cutIndex(A.cutIndex),cellIndex(A.cellIndex),
+  baseName(A.baseName),insertKey(A.insertKey),
+  xyAngle(A.xyAngle),zAngle(A.zAngle),height(A.height),
+  width(A.width),length(A.length),CPt(A.CPt),rotXY(A.rotXY),
+  rotZ(A.rotZ)
+  /*!
+    Copy constructor
+    \param A :: WallCut to copy
+  */
+{}
+
+WallCut&
+WallCut::operator=(const WallCut& A)
+  /*!
+    Assignment operator
+    \param A :: WallCut to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedComp::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
+      cellIndex=A.cellIndex;
+      insertKey=A.insertKey;
+      xyAngle=A.xyAngle;
+      zAngle=A.zAngle;
+      height=A.height;
+      width=A.width;
+      length=A.length;
+      CPt=A.CPt;
+      rotXY=A.rotXY;
+      rotZ=A.rotZ;
+    }
+  return *this;
+}
+
   
 WallCut::~WallCut() 
   /*!
@@ -115,7 +156,6 @@ WallCut::populate(const FuncDataBase& Control)
 {
 
   ELog::RegMethod RegA("WallCut","populate");
-
 
   // rotation of origin
   xyAngle=Control.EvalDefPair<double>(baseName,keyName,"XYangle",0.0);
@@ -247,4 +287,4 @@ WallCut::createAll(Simulation& System,
   return;
 }
   
-}  // NAMESPACE moderatorSystem
+}  // NAMESPACE constructSystem

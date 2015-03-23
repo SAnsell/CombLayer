@@ -60,7 +60,6 @@
 #include "Qhull.h"
 #include "insertInfo.h"
 #include "insertBaseInfo.h"
-//#include "InsertComp.h"
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -85,7 +84,6 @@
 #include "ZoomCollimator.h"
 #include "ZoomTank.h"
 #include "ZoomHutch.h"
-#include "ZoomRoof.h"
 #include "ZoomPrimary.h"
 #include "makeZoom.h"
 
@@ -98,7 +96,6 @@ makeZoom::makeZoom() :
   ZDisk(new constructSystem::DiskChopper("zoomDisk")),
   ZCollimator(new ZoomCollimator("zoomCollimator")),
   ZColInsert(new ZoomOpenStack("zoomCollInsert")),
-  ZRoof(new ZoomRoof("zoomRoof")),
   ZPrim(new ZoomPrimary("zoomPrimary")),
   ZHut(new ZoomHutch("zoomHutch"))
   /*!
@@ -124,7 +121,7 @@ makeZoom::makeZoom(const makeZoom& A) :
   ZChopper(new ZoomChopper(*A.ZChopper)),
   ZDisk(new constructSystem::DiskChopper(*A.ZDisk)),
   ZCollimator(new ZoomCollimator(*A.ZCollimator)),
-  ZRoof(new ZoomRoof(*A.ZRoof)),
+  ZColInsert(new ZoomOpenStack(*A.ZColInsert)),
   ZPrim(new ZoomPrimary(*A.ZPrim)),
   ZHut(new ZoomHutch(*A.ZHut))
   /*!
@@ -145,8 +142,9 @@ makeZoom::operator=(const makeZoom& A)
     {
       *ZBend= *A.ZBend;
       *ZChopper=*A.ZChopper;
+      *ZDisk=*A.ZDisk;
       *ZCollimator=*A.ZCollimator;
-      *ZRoof=*A.ZRoof;
+      *ZColInsert=*A.ZColInsert;
       *ZPrim=*A.ZPrim;
       *ZHut= *A.ZHut;
     }
@@ -190,11 +188,6 @@ makeZoom::buildIsolated(Simulation& System,
 			*ZCollimator);
 
 
-  /*
-  ZRoof->addInsertCell(74123);
-  ZRoof->setMonoSurface(BulkObj.getMonoSurf());
-  ZRoof->createAll(System,*ZS,*ZChopper,*ZCollimator);
-  */
   ZPrim->addInsertCell(74123);
   ZPrim->createAll(System,*ZCollimator);
   

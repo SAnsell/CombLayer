@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   chipInc/WallCut.h
+ * File:   constructInc/WallCut.h
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -19,12 +19,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef hutchSystem_WallCut_h
-#define hutchSystem_WallCut_h
+#ifndef constructSystem_WallCut_h
+#define constructSystem_WallCut_h
 
 class Simulation;
 
-namespace hutchSystem
+namespace constructSystem
 {
 
 /*!

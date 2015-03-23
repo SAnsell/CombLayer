@@ -91,7 +91,6 @@
 #include "MainProcess.h"
 #include "insertInfo.h"
 #include "insertBaseInfo.h"
-#include "InsertComp.h"
 #include "SimProcess.h"
 #include "SurInter.h"
 #include "ReadFunctions.h"
