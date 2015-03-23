@@ -254,8 +254,8 @@ makeT1Real::flightLines(Simulation* SimPtr)
   MerlinFL->addBoundarySurf("inner",Out);
   MerlinFL->addBoundarySurf("outer",Out);
   RefObj->addToInsertChain(MerlinFL->getKey("outer"));
-  MerlinFL->createAll(*SimPtr,*MerlinMod,0);
-
+  MerlinFL->createAll(*SimPtr,*MerlinMod,1);
+  
   Out=RefObj->getComposite(" 1 3 -11 ");
   RefObj->addToInsertChain(WaterNorthFL->getKey("outer"));
   WaterNorthFL->addBoundarySurf("inner",Out);
@@ -267,7 +267,7 @@ makeT1Real::flightLines(Simulation* SimPtr)
   WaterSouthFL->addBoundarySurf("inner",Out);
   WaterSouthFL->addBoundarySurf("outer",Out);
   WaterSouthFL->createAll(*SimPtr,*WaterModObj,2); 
- 
+
   // Flight line intersects:
   MerlinFL->processIntersectMinor(*SimPtr,*WaterSouthFL,"inner","outer");
   WaterSouthFL->processIntersectMajor(*SimPtr,*MerlinFL,"inner","outer");

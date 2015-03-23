@@ -71,7 +71,6 @@
 #include "FixedComp.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
-#include "LinearComp.h"
 #include "ProtonFlight.h"
 
 
@@ -80,7 +79,7 @@ namespace lensSystem
 
 ProtonFlight::ProtonFlight(const std::string& Key)  :
   attachSystem::ContainedGroup("box","line"),
-  attachSystem::LinearComp(Key),
+  attachSystem::FixedComp(Key,2),
   protonIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(protonIndex+1),populated(0)
   /*!
@@ -91,7 +90,7 @@ ProtonFlight::ProtonFlight(const std::string& Key)  :
 {}
 
 ProtonFlight::ProtonFlight(const ProtonFlight& A) : 
-  attachSystem::ContainedGroup(A),attachSystem::LinearComp(A),
+  attachSystem::ContainedGroup(A),attachSystem::FixedComp(A),
   protonIndex(A.protonIndex),cellIndex(A.cellIndex),
   populated(A.populated),boxX(A.boxX),boxY(A.boxY),boxZ(A.boxZ),
   backSurf(A.backSurf),targetCell(A.targetCell),Angle(A.Angle),
@@ -120,7 +119,7 @@ ProtonFlight::operator=(const ProtonFlight& A)
   if (this!=&A)
     {
       attachSystem::ContainedGroup::operator=(A);
-      attachSystem::LinearComp::operator=(A);
+      attachSystem::FixedComp::operator=(A);
       cellIndex=A.cellIndex;
       populated=A.populated;
       boxX=A.boxX;

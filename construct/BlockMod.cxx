@@ -3,7 +3,7 @@
  
  * File:   t1Upgrade/BlockMod.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,6 +66,7 @@
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "CellMap.h"
 #include "ContainedComp.h"
 #include "LayerComp.h"
 #include "ConicInfo.h"
@@ -489,7 +490,7 @@ BlockMod::createWedges(Simulation& System)
     {
       WTYPE WPtr(new WedgeInsert(keyName+"Wedge",i+1));
       OR.addObject(WPtr);
-      WPtr->createAll(System,mainCell,*this,1);   // +ve Y direction [cylinder]
+      WPtr->createAll(System,mainCell,*this,1,1);  // +ve Y direction [cylinder]
       Wedges.push_back(WPtr);
     }
   return;

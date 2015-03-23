@@ -63,6 +63,7 @@
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "LayerComp.h"
+#include "CellMap.h"
 #include "World.h"
 #include "FlightLine.h"
 #include "AttachSupport.h"

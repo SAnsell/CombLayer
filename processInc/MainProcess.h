@@ -68,6 +68,7 @@ namespace mainSystem
   void createSinbadInputs(inputParam&);
   void createSNSInputs(inputParam&);
   void createTS1Inputs(inputParam&);
+  void createTS3ExptInputs(inputParam&);
   void createInputs(inputParam&);
 
   void renumberCells(Simulation&,const inputParam&);

@@ -57,6 +57,9 @@ class WallCut : public attachSystem::FixedComp,
   double rotXY;
   double rotZ;
 
+  int mat;                        ///< Material  [typcially void]
+  double matTemp;                 ///< Material Temp
+  
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);

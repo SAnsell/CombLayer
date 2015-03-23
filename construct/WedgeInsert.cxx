@@ -267,8 +267,9 @@ WedgeInsert::createSurfaces()
 
 void
 WedgeInsert::createObjects(Simulation& System,
-			 const attachSystem::FixedComp& FC,
-			 const size_t sideIndex)
+			   const attachSystem::FixedComp& FC,
+			   const size_t layerIndex,
+			   const size_t sideIndex)
   /*!
     Create the wedge using the surfaces from layer 1/2 of 
     LC
@@ -289,8 +290,8 @@ WedgeInsert::createObjects(Simulation& System,
 
   std::string Out;
   const std::string CShape=
-    MonteCarlo::getComplementShape(LCPtr->getLayerString(1,sideIndex));
-    
+    MonteCarlo::getComplementShape(LCPtr->getLayerString(layerIndex,sideIndex));
+  ELog::EM<<"Wedge == "<<layerIndex<<" "<<CShape<<ELog::endDiag;
   if (wall>Geometry::zeroTol)
     {
 
@@ -343,6 +344,7 @@ void
 WedgeInsert::createAll(Simulation& System,
 		       const int mainCell,
 		       const attachSystem::FixedComp& FC,
+		       const size_t layerIndex,
 		       const size_t layerSide)
 /*!
     Extrenal build everything
@@ -357,9 +359,9 @@ WedgeInsert::createAll(Simulation& System,
 
   createUnitVector(FC);
   createSurfaces();
-  createObjects(System,FC,layerSide);
+  createObjects(System,FC,layerIndex,layerSide);  // layerIndex was 1
   createLinks();
-  // Messy code to add insert cells
+  // Messy code to add insCert cells
   addInsertCell(mainCell);
   if (wall>Geometry::zeroTol)
     addInsertCell(mainCell+1);

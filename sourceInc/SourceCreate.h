@@ -33,13 +33,16 @@ namespace SDef
   void createESSSource(const FuncDataBase&,Source&);
   void createGammaSource(const FuncDataBase&,Source&);
   void createLaserSource(const FuncDataBase&,Source&);
+  void createLensSource(const FuncDataBase&,Source&,
+			const attachSystem::FixedComp&);
+  void createSinbadSource(const FuncDataBase&,Source&);
   void createTS1Source(const FuncDataBase&,Source&);
   void createTS1GaussianSource(const FuncDataBase&,Source&);
   void createTS1GaussianNewSource(const FuncDataBase&,Source&);   // Goran
   void createTS1MuonSource(const FuncDataBase&,Source&); // Goran
   void createTS1EpbCollSource(const FuncDataBase&,Source&);   // Goran    
-  void createSinbadSource(const FuncDataBase&,Source&);
   void createTS2Source(const FuncDataBase&,Source&);
+  void createTS3ExptSource(const FuncDataBase&,Source&);
 }
 
 

@@ -68,6 +68,7 @@
 #include "FixedComp.h"
 #include "ContainedComp.h"
 #include "LayerComp.h"
+#include "CellMap.h"
 #include "ConicInfo.h"
 #include "WedgeInsert.h"
 #include "ModBase.h"
@@ -328,6 +329,7 @@ CylMod::createObjects(Simulation& System)
       else
 	Out+=OutUnit.display();
       System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],Out));
+      CellMap::setCell(keyName,i,cellIndex-1);
       SI+=10;
     }
   return; 
@@ -516,7 +518,8 @@ CylMod::createWedges(Simulation& System)
     {
       WTYPE WPtr(new WedgeInsert(keyName+"Wedge",i+1));
       OR.addObject(WPtr);
-      WPtr->createAll(System,mainCell,*this,1);   // +ve Y direction [cylinder]
+      WPtr->createAll(System,CellMap::getCell(keyName,10),
+		      *this,11,1);   // +ve Y direction [cylinder]
       Wedges.push_back(WPtr);
     }
   return;

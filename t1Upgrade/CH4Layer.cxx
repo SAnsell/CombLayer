@@ -3,7 +3,7 @@
  
  * File:   t1Upgrade/CH4Layer.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,6 +70,7 @@
 #include "FixedComp.h"
 #include "ContainedComp.h"
 #include "LayerComp.h"
+#include "CellMap.h"
 #include "t1Reflector.h"
 #include "ModBase.h"
 #include "LayerInfo.h"

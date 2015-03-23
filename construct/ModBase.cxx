@@ -68,6 +68,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "LayerComp.h"
+#include "CellMap.h"
 #include "ContainedComp.h"
 #include "ModBase.h"
 
@@ -76,7 +77,7 @@ namespace constructSystem
 
 ModBase::ModBase(const std::string& Key,const size_t nLinks)  :
   attachSystem::ContainedComp(),attachSystem::LayerComp(0,0),
-  attachSystem::FixedComp(Key,nLinks),
+  attachSystem::FixedComp(Key,nLinks),attachSystem::CellMap(),
   modIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(modIndex+1)
   /*!

@@ -67,6 +67,7 @@
 #include "Simulation.h"
 #include "generateSurf.h"
 #include "ModelSupport.h"
+#include "MaterialSupport.h"
 #include "SimProcess.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -170,6 +171,11 @@ WallCut::populate(const FuncDataBase& Control)
   // rotation of X/Y/Z in the build
   rotXY=Control.EvalDefPair<double>(keyName,baseName,"RotXYangle",0.0);
   rotZ=Control.EvalDefPair<double>(keyName,baseName,"RotZangle",0.0);
+
+  mat=ModelSupport::EvalDefMat<int>(Control,baseName+"Mat",0);
+  mat=ModelSupport::EvalDefMat<int>(Control,keyName+"Mat",mat);
+
+  matTemp=Control.EvalDefPair<double>(keyName,baseName,"MatTemp",0.0);
   
   return;
 }
@@ -257,7 +263,7 @@ WallCut::createObjects(Simulation& System,
   Out=ModelSupport::getSetComposite(SMap,cutIndex,"1 -2 3 -4 5 -6 ");
   addOuterSurf(Out);
   Out+=wallBoundary.display();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,matTemp,Out));
   
   return;
 }

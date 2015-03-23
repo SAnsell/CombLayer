@@ -70,6 +70,7 @@ namespace setVariable
   void TS1upgrade(FuncDataBase&);
 
   void TS2model(FuncDataBase&);
+  void TS3model(FuncDataBase&);
   void ZoomVariables(const mainSystem::inputParam&,FuncDataBase&);
 
   void DelftCoreType(mainSystem::inputParam&,FuncDataBase&);

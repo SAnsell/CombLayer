@@ -54,8 +54,6 @@
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "surfEqual.h"
-#include "surfDivide.h"
-#include "surfDIter.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
@@ -719,7 +717,7 @@ FlightLine::createAll(Simulation& System,const attachSystem::FixedComp& FC,
   /*!
     Global creation of the vac-vessel
     \param System :: Simulation to add vessel to
-    \param sideIndex :: Side index
+    \param sideIndex :: Side index [ +/- 1:Index]
     \param FC :: Moderator Object
   */
 {
@@ -729,7 +727,9 @@ FlightLine::createAll(Simulation& System,const attachSystem::FixedComp& FC,
   createSurfaces();
 
   if (sideIndex==0)
-    throw ColErr::IndexError<long int>(0,0,"sideIndex == 0 no possible");
+    throw ColErr::IndexError<long int>
+      (0,0,"sideIndex == 0 no long possible"
+       " as flightline cannot current track from centre origin");
   
   const size_t SI=static_cast<size_t>
     ((sideIndex>0) ? sideIndex-1 : 1-sideIndex);

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   Main/epb.cxx
+ * File:   Main/t3Expt.cxx
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -32,6 +32,9 @@
 #include <string>
 #include <algorithm>
 #include <memory>
+#include <boost/format.hpp>
+#include <boost/multi_array.hpp>
+
 
 #include "Exception.h"
 #include "MersenneTwister.h"
@@ -47,23 +50,14 @@
 #include "InputControl.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
-#include "Tensor.h"
 #include "Vec3D.h"
 #include "inputParam.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "Tally.h"
-#include "TallyCreate.h"
 #include "Transform.h"
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
 #include "Surface.h"
 #include "Quadratic.h"
-#include "Plane.h"
-#include "Cylinder.h"
-#include "Line.h"
 #include "Rules.h"
 #include "surfIndex.h"
 #include "Code.h"
@@ -72,24 +66,11 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "ModeCard.h"
-#include "PhysCard.h"
-#include "LSwitchCard.h"
-#include "PhysImp.h"
-#include "KGroup.h"
-#include "Source.h"
-#include "KCode.h"
-#include "PhysicsCards.h"
-#include "BasicWWE.h"
 #include "MainProcess.h"
 #include "SimProcess.h"
-#include "SimInput.h"
-#include "SurInter.h"
-#include "Simulation.h"
+#include "Simulation.h" 
 #include "SimPHITS.h"
-#include "PointWeights.h"
 #include "ContainedComp.h"
-#include "ContainedGroup.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "mainJobs.h"
@@ -100,48 +81,60 @@
 #include "SourceCreate.h"
 #include "SourceSelector.h"
 #include "TallySelector.h"
+#include "tallyConstructFactory.h"
 #include "World.h"
-#include "makeEPB.h"
+#include "SimInput.h"
+#include "neutron.h"
+#include "World.h"
+#include "LayerComp.h"
+// #include "ConicInfo.h"
+// #include "ModBase.h"
+// #include "CylMod.h"
 
-MTRand RNG(12345UL);
+#include "Beam.h"
+#include "AreaBeam.h"
+#include "DetGroup.h"
+#include "SimMonte.h"
 
-///\cond STATIC
+#include "makeTS3.h"
+
+class SimMonte;
 namespace ELog 
 {
-  ELog::OutputLog<EReport> EM;
-  ELog::OutputLog<FileReport> FM("Spectrum.log");
+  ELog::OutputLog<EReport> EM;      
+  ELog::OutputLog<FileReport> FM("Spectrum.log");               
   ELog::OutputLog<FileReport> RN("Renumber.txt");   ///< Renumber
   ELog::OutputLog<StreamReport> CellM;
 }
-///\endcond STATIC
+
+MTRand RNG(12345UL);
 
 int 
 main(int argc,char* argv[])
 {
   int exitFlag(0);                // Value on exit
-  ELog::RegMethod RControl("","main");
+  // For output stream
+  ELog::RegMethod RControl("t3Expt","main");
   mainSystem::activateLogging(RControl);
-
-  std::string Oname;
+  
+  // For output stream
   std::vector<std::string> Names;  
   std::map<std::string,std::string> Values;  
-  std::map<std::string,std::string> AddValues;  
-  std::map<std::string,double> IterVal;           // Variable to iterate 
+  std::string Oname;
 
-  // PROCESS INPUT:
   InputControl::mainVector(argc,argv,Names);
   mainSystem::inputParam IParam;
-  createEPBInputs(IParam);
+  createTS3ExptInputs(IParam);
+  const int iteractive(0);   
 
-  const int iteractive(IterVal.empty() ? 0 : 1);   
   Simulation* SimPtr=createSimulation(IParam,Names,Oname);
+  SimMonte* MSim=dynamic_cast<SimMonte*>(SimPtr);
   if (!SimPtr) return -1;
 
-  // The big variable setting
-  setVariable::EPBVariables(SimPtr->getDataBase());
+  setVariable::TS3model(SimPtr->getDataBase());
+
   InputModifications(SimPtr,IParam,Names);
-  
-  // Definitions section 
+
   int MCIndex(0);
   const int multi=IParam.getValue<int>("multi");
   try
@@ -153,24 +146,20 @@ main(int argc,char* argv[])
 	      ELog::EM.setActive(4);    // write error only
 	      ELog::FM.setActive(4);    
 	      ELog::RN.setActive(0);    
-	      // if (iteractive)
-	      // 	mainSystem::incRunTimeVariable
-	      // 	  (SimPtr->getDataBase(),IterVal);
 	    }
-
 	  SimPtr->resetAll();
 
-	  epbSystem::makeEPB EPBObj;
+	  ts3System::makeTS3 dObj; 
 	  World::createOuterObjects(*SimPtr);
-	  EPBObj.build(SimPtr,IParam);
-
+	  dObj.build(*SimPtr,IParam);
+      
 	  SDef::sourceSelection(*SimPtr,IParam);
 
 	  SimPtr->removeComplements();
 	  SimPtr->removeDeadSurfaces(0);         
-
 	  ModelSupport::setDefaultPhysics(*SimPtr,IParam);
-	  const int renumCellWork=tallySelection(*SimPtr,IParam);
+	  const int renumCellWork(0); // =beamTallySelection(*SimPtr,IParam);
+
 	  SimPtr->masterRotation();
 	  if (createVTK(IParam,SimPtr,Oname))
 	    {
@@ -179,19 +168,17 @@ main(int argc,char* argv[])
 	      return 0;
 	    }
 	  if (IParam.flag("endf"))
-	    SimPtr->setENDF7();
-
+	    SimPtr->setENDF7();	  
+	  
 	  SimProcess::importanceSim(*SimPtr,IParam);
 	  SimProcess::inputPatternSim(*SimPtr,IParam); // energy cut etc
 
 	  if (renumCellWork)
 	    tallyRenumberWork(*SimPtr,IParam);
 	  tallyModification(*SimPtr,IParam);
-
-	  if (IParam.flag("cinder"))
-	    SimPtr->setForCinder();
-
-	  // Ensure we done loop
+	  
+	  // ACTUAL SIM:
+      	  // Ensure we done loop
 	  do
 	    {
 	      SimProcess::writeIndexSim(*SimPtr,Oname,MCIndex);
@@ -199,8 +186,7 @@ main(int argc,char* argv[])
 	    }
 	  while(!iteractive && MCIndex<multi);
 	}
-      if (IParam.flag("cinder"))
-	SimPtr->writeCinder();
+      exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
       ModelSupport::calcVolumes(SimPtr,IParam);
       ModelSupport::objectRegister::Instance().write("ObjectRegister.txt");
     }
@@ -212,12 +198,66 @@ main(int argc,char* argv[])
     }
   catch (ColErr::ExBase& A)
     {
-      ELog::EM<<"EXCEPTION FAILURE :: "
+      ELog::EM<<"\nEXCEPTION FAILURE :: "
 	      <<A.what()<<ELog::endCrit;
       exitFlag= -1;
     }
-  delete SimPtr;
+  //  SimPtr->getBeam()->setBias(yBias);
+
+  if (MSim)
+    {
+      Transport::AreaBeam A;
+      A.setWidth(0.4);
+      A.setHeight(1.0);
+      A.setStart(-5.0);
+      A.setCent(Geometry::Vec3D(0,0,0));
+      A.setWavelength(0.7);
+      
+      const size_t NPS(IParam.getValue<size_t>("nps"));
+      const int MS(IParam.getValue<int>("MS"));
+      MSim->setMS(MS);
+      MSim->setBeam(A);
+      MSim->runMonte(NPS);
+      
+      const std::string DFile=
+	IParam.getValue<std::string>("detFile");
+      
+      MSim->writeDetectors(DFile,NPS);
+    }
+  else
+    {
+      ELog::EM<<"No simulation done : use -Monte to enable"
+	      <<ELog::endDiag;
+    }
+  // EXIT
+
+  delete SimPtr; 
   ModelSupport::objectRegister::Instance().reset();
   ModelSupport::surfIndex::Instance().reset();
+  masterRotate::Instance().reset();
+
+
   return exitFlag;
+  
+  //   System.setDetector(200,200,30,
+  // 		     Geometry::Vec3D(0,875.0,0),
+  // 		     Geometry::Vec3D(detSize,0,0),
+  // 		     Geometry::Vec3D(0,0,detSize),
+  // 		     -0.05,-10.0);
+  // ELog::EM<<"Using Beam Type:"<<System.getBeam()->className()<<ELog::endCrit;
+
+  // // Commented out to select random track:
+  // //  System.setAimZone(&PZ);        
+  // System.runMonte(nps);
+  // //  System.getDet().write(outFile);
+  // // TEST:
+  // System.write(primaryFile,lambda);
+  // System.writeMCNPX(primaryFile+".i");
+  
+  // System.writeXML("test.xml");
+  return 0;
 }
+
+
+
+

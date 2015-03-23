@@ -174,6 +174,8 @@ sourceSelection(Simulation& System,
     SDef::createTS1GaussianNewSource(Control,sourceCard);     
   else if (sdefType=="TS1Muon")
     SDef::createTS1MuonSource(Control,sourceCard); // Goran
+  else if (sdefType=="TS3Expt")
+    SDef::createTS3ExptSource(Control,sourceCard); 
   else if (sdefType=="TS1EpbColl")
     SDef::createTS1EpbCollSource(Control,sourceCard); // Goran
   else if (sdefType=="Bilbao")
@@ -190,9 +192,13 @@ sourceSelection(Simulation& System,
     SDef::createLaserSource(Control,sourceCard);
   else if (sdefType=="LENS" || sdefType=="lens")
     {
-      const attachSystem::FixedComp& PC=
+      const attachSystem::FixedComp* PC=
 	OR.getObject<attachSystem::FixedComp>("ProtonBeam");
-      SDef::createLensSource(Control,sourceCard,PC);
+      if (!PC)
+	throw ColErr::InContainerError<std::string>("ProtonBeam",
+						  "Object container");
+      
+	SDef::createLensSource(Control,sourceCard,*PC);
     }
   else if (sdefType=="TS2")
     {

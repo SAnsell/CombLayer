@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   moderator/CoolPad.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -75,10 +75,8 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "LinearComp.h"
 #include "ContainedComp.h"
 #include "boxValues.h"
 #include "boxUnit.h"
@@ -92,7 +90,7 @@ CoolPad::CoolPad(const std::string& Key,const int Index) :
   attachSystem::ContainedComp(),attachSystem::FixedComp(Key,1),
   ID(Index),padIndex(ModelSupport::objectRegister::Instance().
 		     cell(StrFunc::makeString(Key,Index))),
-  cellIndex(padIndex+1),populated(0),fixIndex(0)
+  cellIndex(padIndex+1),fixIndex(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -102,7 +100,7 @@ CoolPad::CoolPad(const std::string& Key,const int Index) :
 CoolPad::CoolPad(const CoolPad& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
   ID(A.ID),padIndex(A.padIndex),cellIndex(A.cellIndex),
-  populated(A.populated),fixIndex(A.fixIndex),xStep(A.xStep),
+  fixIndex(A.fixIndex),xStep(A.xStep),
   zStep(A.zStep),thick(A.thick),height(A.height),
   width(A.width),Mat(A.Mat)
   /*!
@@ -124,7 +122,6 @@ CoolPad::operator=(const CoolPad& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
       cellIndex=A.cellIndex;
-      populated=A.populated;
       fixIndex=A.fixIndex;
       xStep=A.xStep;
       zStep=A.zStep;
@@ -155,40 +152,27 @@ CoolPad::populate(const Simulation& System)
 
   // Two keys : one with a number and the default
   const std::string keyIndex(StrFunc::makeString(keyName,ID));
-  try
+  fixIndex=Control.EvalPair<size_t>(keyIndex,keyName,"FixIndex");
+  xStep=Control.EvalPair<double>(keyIndex,keyName,"XStep");
+  zStep=Control.EvalPair<double>(keyIndex,keyName,"ZStep");
+  thick=Control.EvalPair<double>(keyIndex,keyName,"Thick");
+  width=Control.EvalPair<double>(keyIndex,keyName,"Width");
+  height=Control.EvalPair<double>(keyIndex,keyName,"Height");
+  Mat=ModelSupport::EvalMat<int>(Control,keyIndex+"Mat",keyName+"Mat");
+  const size_t nZ=Control.EvalPair<size_t>(keyIndex,keyName,"NZigZag");
+  CPts.clear();
+  for(size_t i=0;i<nZ;i++)
     {
-      const int FI=Control.EvalPair<int>(keyIndex,keyName,"FixIndex");
-      if (FI<0)
-	throw ColErr::IndexError<int>(FI,0,RegA.getFull());
-      fixIndex=static_cast<size_t>(FI);
-      xStep=Control.EvalPair<double>(keyIndex,keyName,"XStep");
-      zStep=Control.EvalPair<double>(keyIndex,keyName,"ZStep");
-      thick=Control.EvalPair<double>(keyIndex,keyName,"Thick");
-      width=Control.EvalPair<double>(keyIndex,keyName,"Width");
-      height=Control.EvalPair<double>(keyIndex,keyName,"Height");
-      Mat=ModelSupport::EvalMat<int>(Control,keyIndex+"Mat",keyName+"Mat");
-      const int nZ=Control.EvalPair<int>(keyIndex,keyName,"NZigZag");
-      CPts.clear();
-      for(int i=0;i<nZ;i++)
-	{
-	  const std::string tagIndex=
-	    StrFunc::makeString(std::string("Cent"),i+1);
-	  CPts.push_back(Control.EvalPair<Geometry::Vec3D>
-			 (keyIndex,keyName,tagIndex));
-	}
+      const std::string tagIndex=
+	StrFunc::makeString(std::string("Cent"),i+1);
+      CPts.push_back(Control.EvalPair<Geometry::Vec3D>
+		     (keyIndex,keyName,tagIndex));
+    }
 
-      IWidth=Control.EvalPair<double>(keyIndex,keyName,"IWidth");
-      IDepth=Control.EvalPair<double>(keyIndex,keyName,"IDepth");
-      IMat=ModelSupport::EvalMat<int>(Control,keyIndex+"IMat",keyName+"IMat");
-      populated |= 1;
-    }
-  // Exit and don't report if we are not using this scatter plate
-  catch (ColErr::InContainerError<std::string>& EType)
-    {
-      ELog::EM<<keyIndex<<" not in use Vars:"
-	      <<EType.getItem()<<ELog::endErr;
-      populated=0;   
-    }
+  IWidth=Control.EvalPair<double>(keyIndex,keyName,"IWidth");
+  IDepth=Control.EvalPair<double>(keyIndex,keyName,"IDepth");
+
+  IMat=ModelSupport::EvalMat<int>(Control,keyIndex+"IMat",keyName+"IMat");
   
   return;
 }

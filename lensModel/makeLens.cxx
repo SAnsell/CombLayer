@@ -3,7 +3,7 @@
  
  * File:   lensModel/makeLens.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,12 +48,10 @@
 #include "Vec3D.h"
 #include "support.h"
 #include "inputParam.h"
-// #include "Triple.h"
-// #include "NRange.h"
-// #include "NList.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
+#include "objectRegister.h"
 #include "Rules.h"
 #include "Code.h"
 #include "varList.h"
@@ -68,7 +66,6 @@
 #include "FixedComp.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
-#include "LinearComp.h"
 #include "siModerator.h"
 #include "candleStick.h"
 #include "ProtonFlight.h"
@@ -90,7 +87,16 @@ makeLens::makeLens() :
   /*!
     Constructor
   */
-{}
+{
+  ELog::RegMethod RegA("makeLens","Constructor");
+  
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  OR.addObject(SiModObj);
+  OR.addObject(candleObj);
+  OR.addObject(layerObj);
+}
 
 makeLens::makeLens(const makeLens& A) : 
   SiModObj(new siModerator(*A.SiModObj)),
@@ -123,14 +129,10 @@ makeLens::~makeLens()
   /*!
     Destructor
    */
-{
-  delete SiModObj;
-  delete candleObj;
-  delete layerObj;
-}
+{}
 
 void
-makeLens::setMaterials(const mainSystem::inputParam& IParam)
+makeLens::setMaterials(const mainSystem::inputParam&)
   /*!
     Builds all the materials in the objects 
     \param IParam :: Table of information
@@ -145,12 +147,10 @@ makeLens::setMaterials(const mainSystem::inputParam& IParam)
 
 
 void 
-makeLens::build(Simulation* SimPtr,
-		const mainSystem::inputParam& IParam)
+makeLens::build(Simulation* SimPtr)
   /*!
     Carry out the full build
     \param SimPtr :: Simulation system
-    \param IParam :: Input parameters
    */
 {
   // For output stream
@@ -158,23 +158,11 @@ makeLens::build(Simulation* SimPtr,
 
   layerObj->addInsertCell(74123);  
 
-
   SiModObj->createAll(*SimPtr);
   candleObj->createAll(*SimPtr,*SiModObj);
   //  candleObj->specialExclude(*SimPtr,74123);
   
   layerObj->createAll(*SimPtr,*candleObj);
-
-  setMaterials(IParam);
-
-  if (!IParam.flag("sdefVoid"))
-    {
-      SDef::LensSource LSource("lensSource");
-      SDef::Source& SD=SimPtr->getPC().getSDefCard();
-      LSource.createAll(SimPtr->getDataBase(),
-			layerObj->getPF(),
-			SD);
-    }	  
   return;
 }
 
@@ -205,7 +193,6 @@ makeLens::createTally(Simulation& System,
   
   const size_t NSTally=IParam.grpCnt("surfTally");
   const size_t NEng=IParam.grpCnt("tallyEnergy");
-  //  const size_t NTime=IParam.grpCnt("tallyTime");
   
   int FL;
   double Dist;
@@ -220,7 +207,6 @@ makeLens::createTally(Simulation& System,
 	  ELog::EM<<"Creating tally FL"<<FL+1
 		  <<" at "<<Dist<<" cm "<<ELog::endDiag;
 	  lensSystem::addSurfTally(System,getFC(),FL,Dist);
-
 	}
     }
 

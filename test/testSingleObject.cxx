@@ -3,7 +3,7 @@
  
  * File:   test/testSingleObject.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,7 +35,6 @@
 #include <iterator>
 #include <memory>
 #include <boost/functional.hpp>
-#include <boost/bind.hpp>
 #include <tuple>
 
 #include "Exception.h"
@@ -76,6 +75,7 @@
 #include "FixedComp.h"
 #include "ContainedComp.h"
 #include "LayerComp.h"
+#include "CellMap.h"
 #include "ConicInfo.h"
 #include "ModBase.h"
 #include "World.h"

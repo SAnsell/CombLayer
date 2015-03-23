@@ -70,7 +70,7 @@ class WedgeInsert : public attachSystem::FixedComp,
   void createSurfaces();
   void createObjects(Simulation&,
 		     const attachSystem::FixedComp&,
-		     const size_t);
+		     const size_t,const size_t);
   void createLinks();
 
  public:
@@ -83,7 +83,7 @@ class WedgeInsert : public attachSystem::FixedComp,
 
   void createAll(Simulation&,const int,
 		     const attachSystem::FixedComp&,
-		     const size_t);
+		 const size_t,const size_t);
   
 };
 

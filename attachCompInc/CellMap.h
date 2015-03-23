@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   sourceInc/SourceSelector.h
+ * File:   attachCompInc/CellMap.h
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -19,14 +19,41 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef SourceSelector_h
-#define SourceSelector_h
+#ifndef attachSystem_CellMap_h
+#define attachSystem_CellMap_h
 
-class Simulation;
-
-namespace SDef
+namespace attachSystem
 {
-  void sourceSelection(Simulation&,const mainSystem::inputParam&);
+/*!
+  \class CellMap
+  \version 1.0
+  \author S. Ansell
+  \date March 2015
+  \brief Cell mapping by name [experimental]
+*/
+
+class CellMap  
+{
+ private:
+
+  typedef std::map<std::string,int> LCTYPE;
+  
+  LCTYPE Cells;   ///< Named cells
+    
+ public:
+
+  CellMap();         
+  CellMap(const CellMap&);
+  CellMap& operator=(const CellMap&);
+  virtual ~CellMap() {}     ///< Destructor
+  
+  void setCell(const std::string&,const int);
+  void setCell(const std::string&,const size_t,const int);
+  int getCell(const std::string&) const;
+  int getCell(const std::string&,const size_t) const;
+  
+};
+
 }
 
 #endif

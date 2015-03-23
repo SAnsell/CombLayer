@@ -477,6 +477,38 @@ createTS1MuonSource(const FuncDataBase& Control,Source& sourceCard)
 }
 
 void
+createTS3ExptSource(const FuncDataBase& Control,Source& sourceCard)
+  /*!
+    Creates a field volume source for TS3 testing
+    \param sourceCard :: Source system
+   */
+{
+  ELog::RegMethod RegA("SourceCreate","TS1MuonSource");
+
+  const double E=Control.EvalDefVar<double>("sdefEnergy",2.0);
+  const double radius=Control.EvalDefVar<double>("sdefRadius",20.0);
+  
+  sourceCard.setActive();
+  sourceCard.setComp("par",1);
+  sourceCard.setComp("erg",E);
+  sourceCard.setComp("pos",Geometry::Vec3D(0,0,0));
+  
+
+  SrcData D1(1);
+  SDef::SrcInfo SI1;
+  SrcProb SP1(1);
+  SI1.addData(0.0);
+  SI1.addData(radius);
+  SP1.setFminus(-21,2); // r^2 weighting
+  
+  D1.addUnit(SI1);
+  D1.addUnit(SP1);
+
+  sourceCard.setData("rad",D1);
+  return;
+}
+
+void
 createTS1EpbCollSource(const FuncDataBase& Control,Source& sourceCard)
   /*!
     Creates a proton source [gaussian] for 3rd collimator in TS1 EPB

@@ -3,7 +3,7 @@
  
  * File:   t1UpgradeInc/ModBase.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,8 +36,9 @@ namespace constructSystem
 */
 
 class ModBase : public attachSystem::ContainedComp,
-    public attachSystem::LayerComp,
-    public attachSystem::FixedComp
+  public attachSystem::LayerComp,
+  public attachSystem::FixedComp,
+  public attachSystem::CellMap
 {
  protected:
   

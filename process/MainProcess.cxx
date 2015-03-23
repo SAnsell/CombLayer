@@ -543,7 +543,7 @@ void createBNCTInputs(inputParam& IParam)
 
 void createD4CInputs(inputParam& IParam)
   /*!
-    Set the specialise inputs for Boron capture beamline
+    Set the specialise inputs for D4C beamline
     \param IParam :: Input Parameters
   */
 {
@@ -557,6 +557,19 @@ void createD4CInputs(inputParam& IParam)
 
   IParam.setValue("sdefType",std::string("D4C"));  
   //  IParam.setFlag("Monte");
+  return;
+}
+
+void createTS3ExptInputs(inputParam& IParam)
+  /*!
+    Set the specialise inputs for TS3 Model
+    \param IParam :: Input Parameters
+  */
+{
+  ELog::RegMethod RegA("MainProcess::","createD4CInputs");
+  createInputs(IParam);
+
+  IParam.setValue("sdefType",std::string("TS3Expt"));
   return;
 }
 

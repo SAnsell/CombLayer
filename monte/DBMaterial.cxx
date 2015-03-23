@@ -972,7 +972,12 @@ DBMaterial::initMaterial()
 		   "",MLib);
   MObj.setDensity(0.042);
   setMaterial(MObj);
-    
+
+  // Material #116: helium liquid
+  // Total density 0.125g/cc
+  MObj.setMaterial(116,"LiqHelium","2004.50c 0.01882","",MLib);
+  setMaterial(MObj);
+
   return;
 }
 

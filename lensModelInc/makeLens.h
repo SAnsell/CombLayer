@@ -35,9 +35,9 @@ class makeLens
 {
  private:
 
-  siModerator* SiModObj;            ///< Inner Silicon moderator
-  candleStick* candleObj;           ///< candlestick holder
-  layers* layerObj;                 ///< Layers of shielding
+  std::shared_ptr<siModerator> SiModObj;            ///< Inner Silicon moderator
+  std::shared_ptr<candleStick> candleObj;           ///< candlestick holder
+  std::shared_ptr<layers> layerObj;                 ///< Layers of shielding
 
   void setMaterials(const mainSystem::inputParam& IParam);
 
@@ -48,8 +48,7 @@ class makeLens
   makeLens& operator=(const makeLens&);
   ~makeLens();
   
-  void build(Simulation* SimPtr,
-	     const mainSystem::inputParam& IParam);
+  void build(Simulation* SimPtr);
   void createTally(Simulation&,const mainSystem::inputParam&);
   
   const FlightCluster& getFC() const;
