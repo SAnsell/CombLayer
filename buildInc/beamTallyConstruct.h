@@ -56,6 +56,8 @@ class beamTallyConstruct : virtual public pointConstruct
   virtual void processPoint(Simulation&,const mainSystem::inputParam&,
 		    const size_t) const;
 
+  virtual void writeHelp(std::ostream&) const;
+
   // Additions:
 
   void addBeamLineTally(Simulation&,const int,const double,

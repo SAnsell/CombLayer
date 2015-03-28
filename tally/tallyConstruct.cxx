@@ -186,9 +186,15 @@ tallyConstruct::tallySelection(Simulation& System,
     {
       const std::string TType=
 	IParam.getCompValue<std::string>("tally",i,0);
-      if (TType=="help" || TType=="?")
-	helpTallyType();
 
+      const size_t NItems=IParam.itemCnt("tally",i);
+      const std::string HType=(NItems>1) ?
+	IParam.getCompValue<std::string>("tally",i,1) : "help";
+      
+      if (TType=="help" || TType=="?")
+	helpTallyType(HType);
+      else if (HType=="help" || HType=="?")
+	helpTallyType(TType);
       else if (TType=="grid") 
 	gridPtr->processGrid(System,IParam,i);
       else if (TType=="point")
@@ -245,59 +251,34 @@ tallyConstruct::tallyRenumber(Simulation& System,
   return workFlag;
 }
 
-void
-tallyConstruct::processGridFree(Simulation& System,const int initNPD,
-				const int NPD) const
-  /*!
-    Processes a grid tally : Requires variables and informaton 
-    \param System :: Simulation to add tallies
-    \param initNPD :: Initial index number for tally
-    \param NPD :: Number of point detectors 
-  */
-{
-  ELog::RegMethod RegA("tallyConstruct","processFreeGrid");
-
-  const FuncDataBase& Control=System.getDataBase();
-  const masterRotate& MR=masterRotate::Instance();
-
-  Geometry::Vec3D TOrigin;
-  Geometry::Vec3D XVec;
-  Geometry::Vec3D ZVec;
-
-  const double HSize=Control.EvalVar<double>("gridTallyHSize");      
-  const double VSize=Control.EvalVar<double>("gridTallyVSize");      
-  TOrigin=Control.EvalVar<Geometry::Vec3D>("gridTallyOrigin");      
-  XVec=Control.EvalVar<Geometry::Vec3D>("gridTallyXVec");      
-  ZVec=Control.EvalVar<Geometry::Vec3D>("gridTallyYVec");      
-  XVec.makeUnit();
-  ZVec.makeUnit();
-  XVec*=2.0*HSize;
-  ZVec*=2.0*VSize;
-  
-  // Need to reverse since in output frame:
-  TOrigin=MR.reverseRotate(TOrigin);
-  XVec=MR.reverseAxisRotate(XVec);
-  ZVec=MR.reverseAxisRotate(ZVec);
-  
-  //  applyMultiGrid(System,initNPD,NPD,TOrigin,XVec,ZVec);
-  return;
-}
-
 void  
-tallyConstruct::helpTallyType() const
+tallyConstruct::helpTallyType(const std::string& HType) const
   /*!
     Simple help for types
-   */
+    \param HType :: specialization if present that help is required for
+  */
 {
   ELog::RegMethod("TallyConstructor","helpTallyType");
 
-  ELog::EM<<"Tally Types:\n\n";
-  ELog::EM<<"-- grid : \n";
-  ELog::EM<<"-- mesh : \n";
-  ELog::EM<<"-- point : \n";
-  ELog::EM<<"-- surface : \n";
-  ELog::EM<<"-- flux : \n";
-  ELog::EM<<"-- heat : \n";
+  if (HType=="grid")
+    gridPtr->writeHelp(ELog::EM.Estream());
+  else if (HType=="heat")
+    heatPtr->writeHelp(ELog::EM.Estream());
+  else if (HType=="point")
+    pointPtr->writeHelp(ELog::EM.Estream());
+  else if (HType=="mesh")
+    meshPtr->writeHelp(ELog::EM.Estream());
+  else
+    {
+      ELog::EM<<"Tally Types:\n\n";
+      ELog::EM<<"-- grid : \n";
+      ELog::EM<<"-- mesh : \n";
+      ELog::EM<<"-- point : \n";
+      ELog::EM<<"-- surface : \n";
+      ELog::EM<<"-- flux : \n";
+      ELog::EM<<"-- heat : \n";
+    }
+  
   ELog::EM<<ELog::endBasic;
   return;
 }

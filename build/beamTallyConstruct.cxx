@@ -140,20 +140,6 @@ beamTallyConstruct::processPoint(Simulation& System,
 
 
   const std::string PType(IParam.getCompValue<std::string>("tally",Index,1)); 
-
-  if (PType=="help")  // 
-    {
-      ELog::EM<<
-	"beamline [number] {modName,viewindex,beamDist,windowOffset,ZRotAngle} "
-        "1000 cm from the moderator surface \n"
-	"shutterLine [number] {modName,viewindex,beamDist,windowOffset,ZRotAngle} "
-        "Uses shutter insert to build window \n"
-	"viewLine [number] {beamDist,timeOffset,windowOffset,ZRotAngle} "
-        "Uses shutter insert to build time offset window \n"
-	<<ELog::endBasic;
-      pointConstruct::processPoint(System,IParam,Index);
-      return;
-    }
   
   if (PType=="beamline" || PType=="shutterLine")
     {
@@ -616,5 +602,25 @@ beamTallyConstruct::addViewInnerTally(Simulation& System,
   return;
 }
 
+
+void
+beamTallyConstruct::writeHelp(std::ostream& OX) const
+  /*!
+    Write out help
+    \param Output stream
+  */
+{
+  OX<<
+    "beamline [number] {modName,viewindex,beamDist,windowOffset,ZRotAngle} "
+    "1000 cm from the moderator surface \n"
+    "shutterLine [number] {modName,viewindex,beamDist,windowOffset,ZRotAngle} "
+    "Uses shutter insert to build window \n"
+    "viewLine [number] {beamDist,timeOffset,windowOffset,ZRotAngle} "
+    "Uses shutter insert to build time offset window \n";
+  OX<<"Point ==> \n";
+  
+  pointConstruct::writeHelp(OX);
+  return;
+}
 
 }  // NAMESPACE tallySystem

@@ -912,7 +912,7 @@ modF5TallyCells(Simulation& System,const int tNumber,
 
 void
 addF6Tally(Simulation& System,const int tNumber,
-	   const std::string&,
+	   const std::string& particleType,
 	   const std::vector<int>& cellList)
   /*!
     Creates a +f6 type tally
@@ -925,7 +925,13 @@ addF6Tally(Simulation& System,const int tNumber,
   tallySystem::heatTally TX(tNumber);
   TX.addCells(cellList);
   TX.setActive(1);
-  TX.setPlus(1);
+  if (particleType.empty() || particleType[0]=='+')
+    TX.setPlus(1);
+  else
+    {
+      TX.setPlus(0);
+      TX.setParticles(particleType);
+    }
   System.addTally(TX);
   return;
 }
