@@ -134,18 +134,7 @@ gridConstruct::processGrid(Simulation& System,
 
   //    NItems<<ELog::endDiag;
 
-  const std::string PType(IParam.getCompValue<std::string>("tally",Index,1)); 
-
-  if (PType=="help")  // 
-    {
-      ELog::EM<<
-	"free Vec3D[center] Vec3D[X] Vec3D[Y]-- grid at centre \n"
-	"object ObjName linkUnit Vec3D[center] Vec3D[X] Vec3D[Y] "
-	" using object X/Y/Z \n"
-	<<ELog::endBasic;
-      return;
-    }
-  
+  const std::string PType(IParam.getCompValue<std::string>("tally",Index,1));   
   const masterRotate& MR=masterRotate::Instance();
 
   // First point to used
@@ -300,4 +289,22 @@ gridConstruct::applyMultiGrid(Simulation& System,
   return;
 }
 
+  
+void
+gridConstruct::writeHelp(std::ostream& OX) const
+  /*!
+    Write out help
+    \param Output stream
+  */
+{
+  OX<<
+    "gridTally option:\n"
+    "free Vec3D[center] Vec3D[X] Vec3D[Y]-- grid at centre \n"
+    "object ObjName linkUnit Vec3D[center] Vec3D[X] Vec3D[Y] "
+    " using object X/Y/Z \n";
+  return;
+}
+
+
+  
 }  // NAMESPACE tallySystem

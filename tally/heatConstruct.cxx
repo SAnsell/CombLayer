@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   tally/heatConstruct.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -98,21 +98,13 @@ heatConstruct::processHeat(Simulation& System,
   ELog::RegMethod RegA("heatConstruct","processHeat");
 
   const size_t NItems=IParam.itemCnt("tally",Index);
+  ELog::EM<<"NItem == "<<NItems<<ELog::endDiag;
   if (NItems<3)
     throw ColErr::IndexError<size_t>(NItems,3,
 				     "Insufficient items for tally");
 
   const std::string pType(IParam.getCompValue<std::string>("tally",Index,1)); 
   const std::string MType(IParam.getCompValue<std::string>("tally",Index,2)); 
-  
-  if (pType=="help")  // 
-    {
-      ELog::EM<<
-	"Particle MatN range ANumber BNumber\n"
-	"Particle MatN cellRange"
-	<<ELog::endBasic;
-      return;
-    }
   
   // Process a Ranged Heat:
 
@@ -145,4 +137,19 @@ heatConstruct::processHeat(Simulation& System,
   return;
 }
 
+
+void
+heatConstruct::writeHelp(std::ostream& OX) const
+  /*!
+    Write out help
+    \param Output stream
+  */
+{
+  OX<<"Heat tally options:\n"
+    "Particle MatN range ANumber BNumber\n"
+    "Particle MatN cellRange";
+  return;
+}
+  
+  
 }  // NAMESPACE tallySystem

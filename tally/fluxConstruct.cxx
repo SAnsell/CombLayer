@@ -3,7 +3,7 @@
  
  * File:   tally/fluxConstruct.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -107,39 +107,13 @@ fluxConstruct::processFlux(Simulation& System,
   ELog::RegMethod RegA("fluxConstruct","processFlux");
 
   const size_t NItems=IParam.itemCnt("tally",Index);
-  if (NItems<2)
-    throw ColErr::IndexError<size_t>(NItems,2,
-				     "Insufficient items for tally");
 
-  // PARTICLE TYPE
-  const std::string PType(IParam.getCompValue<std::string>("tally",Index,1)); 
   
-  if (PType=="help")  // 
-    {
-      if (!renumberFlag)
-	{
-	  ELog::EM<<ELog::endBasic;
-	  ELog::EM<<
-	    "Flux tally :\n"
-	    "particles material(int) objects \n"
-	    "particles material(int) Range(low-high)\n"
-	    "particles cell object offsets \n"
-	    " -- material can be: \n"
-            "      zaid number \n"
-            "      material name \n"
-            "      material number \n"
-            "      -1 :: [all] \n"
-	    "  -- cell [keyword] \n"
-            "     object name [list of int for individuals]"
-		  <<ELog::endBasic;
-	}
-      return 0;
-    }
-
   if (NItems<3)
     throw ColErr::IndexError<size_t>(NItems,3,
 				     "Insufficient items for tally");
-
+  // PARTICLE TYPE
+  const std::string PType(IParam.getCompValue<std::string>("tally",Index,1)); 
   const std::string MType(IParam.getCompValue<std::string>("tally",Index,2)); 
   if (MType=="cell")
     return processFluxCell(System,IParam,Index,renumberFlag);
@@ -262,6 +236,26 @@ fluxConstruct::processFluxCell(Simulation& System,
   return 0;
 }
 
-
+void
+fluxConstruct::writeHelp(std::ostream& OX) const
+  /*!
+    Write out help
+    \param OX :: output stream
+  */
+{
+  OX<<"Flux tally :\n"
+    "particles material(int) objects \n"
+    "particles material(int) Range(low-high)\n"
+    "particles cell object offsets \n"
+    " -- material can be: \n"
+    "      zaid number \n"
+    "      material name \n"
+    "      material number \n"
+    "      -1 :: [all] \n"
+    "  -- cell [keyword] \n"
+    "     object name [list of int for individuals]";
+  return;
+}
+  
 
 }  // NAMESPACE tallySystem

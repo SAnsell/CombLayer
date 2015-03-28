@@ -119,19 +119,6 @@ pointConstruct::processPoint(Simulation& System,
 
 
   const std::string PType(IParam.getCompValue<std::string>("tally",Index,1)); 
-
-  if (PType=="help")  // 
-    {
-      ELog::EM<<
-	"free Vec3D -- point detector at point\n"
-	"object ObjName link dist -- point detector at "
-	" point relative to object\n"
-	"freeWindow Vec3D Vec3D Vec3D Vec3D Vec3D -- \n"
-	"   Point + four coordinates of the window\n"
-	"window Item front/back/side distance\n"
-	<<ELog::endBasic;
-      return;
-    }
   
   const masterRotate& MR=masterRotate::Instance();
   std::string revStr;
@@ -438,6 +425,22 @@ pointConstruct::calcBeamDirection(const attachSystem::FixedComp& FC,
   return;
 }
 
+void
+pointConstruct::writeHelp(std::ostream& OX) const
+  /*!
+    Write out help
+    \param Output stream
+  */
+{
+  OX<<
+    "free Vec3D -- point detector at point\n"
+    "object ObjName link dist -- point detector at "
+    " point relative to object\n"
+    "freeWindow Vec3D Vec3D Vec3D Vec3D Vec3D -- \n"
+    "   Point + four coordinates of the window\n"
+    "window Item front/back/side distance\n";
+  return;
+}
 
 
 }  // NAMESPACE tallySystem

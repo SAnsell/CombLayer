@@ -66,6 +66,8 @@ class pointConstruct : virtual public basicConstruct
   void addBasicPointTally(Simulation&,const attachSystem::FixedComp&,
 			  const size_t,const double) const;
 
+  virtual void writeHelp(std::ostream&) const;
+  
   static void 
     calcBeamDirection(const attachSystem::FixedComp&,
 		      Geometry::Vec3D&,Geometry::Vec3D&);

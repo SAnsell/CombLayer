@@ -103,21 +103,12 @@ meshConstruct::processMesh(Simulation& System,
   ELog::RegMethod RegA("meshConstruct","processMesh");
 
   const size_t NItems=IParam.itemCnt("tally",Index);
-  if (NItems<2)
-    throw ColErr::IndexError<size_t>(NItems,2,
+  if (NItems<4)
+    throw ColErr::IndexError<size_t>(NItems,4,
 				     "Insufficient items for tally");
 
   const std::string PType(IParam.getCompValue<std::string>("tally",Index,1)); 
 
-  if (PType=="help")  // 
-    {
-      ELog::EM<<
-	"free dosetype Vec3D Vec3D Nx Ny Nz \n"
-	"heat Vec3D Vec3D Nx Ny Nz \n"
-	<<ELog::endBasic;
-
-      return;
-    }
   const masterRotate& MR=masterRotate::Instance();
   
   if (PType=="free" || PType=="heat" ||
@@ -251,5 +242,17 @@ meshConstruct::getDoseConversion()
   return fcdString;
 }
 
+void
+meshConstruct::writeHelp(std::ostream& OX) const
+  /*!
+    Write out help
+    \param Output stream
+  */
+{
+  OX<<
+    "free dosetype Vec3D Vec3D Nx Ny Nz \n"
+    "heat Vec3D Vec3D Nx Ny Nz";
+  return;
+}
 
 }  // NAMESPACE tallySystem

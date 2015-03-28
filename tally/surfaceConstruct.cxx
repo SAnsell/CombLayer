@@ -101,23 +101,13 @@ surfaceConstruct::processSurface(Simulation& System,
   ELog::RegMethod RegA("surfaceConstruct","processSurface");
 
   const size_t NItems=IParam.itemCnt("tally",Index);
-  if (NItems<2)
-    throw ColErr::IndexError<size_t>(NItems,2,
+  if (NItems<3)
+    throw ColErr::IndexError<size_t>(NItems,3,
 				     "Insufficient items for tally");
-
   const std::string pType(IParam.getCompValue<std::string>("tally",Index,1)); 
   
-  if (pType=="help")  // 
-    {
-      ELog::EM<<"Surface tally options:"<<ELog::endBasic;
-      ELog::EM<<"object linkName\n"<<ELog::endBasic;
-      ELog::EM<<"object objectName front/back \n"<<ELog::endBasic;
-      return 0;
-    }
 
-  if (NItems<3)
-    throw ColErr::IndexError<size_t>(NItems,2,
-				     "Insufficient items for tally");
+
   const std::string MType(IParam.getCompValue<std::string>("tally",Index,2)); 
   ELog::EM<<"Surface Tally Type == "<<pType<<ELog::endDiag;
   std::vector<std::string> excludeSurf;
@@ -200,6 +190,18 @@ surfaceConstruct::processSurfObject(Simulation& System,
   return 0;
 }
 
+void
+surfaceConstruct::writeHelp(std::ostream& OX) const
+  /*!
+    Write out help
+    \param Output stream
+  */
+{
+  OX<<"Surface tally options:\n"
+    <<"object linkName\n"
+    <<"object objectName front/back \n";
+  return;
+}
 
 
 }  // NAMESPACE tallySystem

@@ -67,6 +67,7 @@ class gridConstruct : virtual public basicConstruct
 		    const size_t) const;
 
 
+  virtual void writeHelp(std::ostream&) const;
 
 };
 

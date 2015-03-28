@@ -3,7 +3,7 @@
  
  * File:   tally/itemConstruct.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -118,15 +118,6 @@ itemConstruct::processItem(Simulation& System,
 				     "Insufficient items for tally");
 
   const std::string PType(IParam.getCompValue<std::string>("item",Index,1)); 
-  if (PType=="help")  // 
-    {
-      ELog::EM<<
-	"beamline [number] {modName,viewindex,beamDist,"
-	"windowOffset,ZRotAngle}\n"
-	<<ELog::endBasic;
-
-      return;
-    }
   
   if (PType=="beamline")  // beamline : Number
     {
@@ -243,7 +234,18 @@ itemConstruct::addBeamLineItem(Simulation& System,
 }
 
 
-
+void
+itemConstruct::writeHelp(std::ostream& OX) const
+/*!
+    Write out help
+    \param Output stream
+  */
+{
+  OX<<
+    "beamline [number] {modName,viewindex,beamDist,"
+    "windowOffset,ZRotAngle}\n";
+  return;
+}
 
 
 }  // NAMESPACE tallySystem

@@ -73,7 +73,9 @@ class basicConstruct
   basicConstruct();
   basicConstruct(const basicConstruct&);
   basicConstruct& operator=(const basicConstruct&);
-  ~basicConstruct() {}  ///< Destructor
+  virtual ~basicConstruct() {}  ///< Destructor
+
+  virtual void writeHelp(std::ostream&) const =0;
   
   static int convertRange(const std::string&,int&,int&);
   

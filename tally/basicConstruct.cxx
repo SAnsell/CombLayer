@@ -280,9 +280,9 @@ basicConstruct::convertRegion(const mainSystem::inputParam& IParam,
     ModelSupport::objectRegister::Instance();
 
   const size_t NItems=IParam.itemCnt(keyName,Index);
-  if (Offset >= NItems)
+  if (Offset > NItems)
     throw ColErr::IndexError<size_t>
-      (NItems,Offset+1,"Insufficient items for key:"+
+      (NItems,Offset,"Insufficient items for key:"+
        keyName+"["+StrFunc::makeString(Index)+"]");
 
   RA=0;
@@ -298,9 +298,12 @@ basicConstruct::convertRegion(const mainSystem::inputParam& IParam,
     }
 
   if (Offset+1 >= NItems)
-    throw ColErr::IndexError<size_t>
-      (NItems,Offset,"Items for offset+1 key:"+
-       keyName+"["+StrFunc::makeString(Index)+"]");
+    {
+      ELog::EM<<"Region a == "<<RA<<" [not a named region]"<<ELog::endCrit;
+      throw ColErr::IndexError<size_t>
+	(NItems,Offset,"Items for offset+1 key:"+
+	 keyName+"["+StrFunc::makeString(Index)+"]");
+    }
 
   const std::string regionB
     (IParam.getCompValue<std::string>(keyName,Index,Offset+1));

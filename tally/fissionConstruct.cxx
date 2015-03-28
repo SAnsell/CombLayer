@@ -3,7 +3,7 @@
  
  * File:   tally/fissionConstruct.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -112,7 +112,7 @@ fissionConstruct::processPower(Simulation& System,
 
   const size_t NItems=IParam.itemCnt("tally",Index);
   if (NItems<4)
-    throw ColErr::IndexError<size_t>(NItems,4,
+    throw ColErr::IndexError<size_t>(NItems,3,
 				     "Insufficient items for tally");
 
   // CellRegion can be object name or number:
@@ -162,6 +162,17 @@ fissionConstruct::processPower(Simulation& System,
   return 0;
 }
 
+void
+fissionConstruct::writeHelp(std::ostream& OX) const
+  /*!
+    Write out the help
+    \param OX :: Output stream
+   */
+{
+  OX<<"Fission tally options:\n"
+    <<"object cellrange";
+  return;
+}
 
 
 }  // NAMESPACE tallySystem

@@ -58,12 +58,13 @@ class meshConstruct : virtual public basicConstruct
   meshConstruct();
   meshConstruct(const meshConstruct&);
   meshConstruct& operator=(const meshConstruct&);
-  ~meshConstruct() {}  ///< Destructor
+  virtual ~meshConstruct() {}  ///< Destructor
 
   // Point Stuff
   void processMesh(Simulation&,const mainSystem::inputParam&,
 		   const size_t) const;
   
+  virtual void writeHelp(std::ostream&) const;
 };
 
 }

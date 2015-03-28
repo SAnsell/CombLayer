@@ -59,12 +59,11 @@ class tallyConstruct  : public basicConstruct
   surfaceConstruct* surfPtr;          ///< Surface [f1]
   fissionConstruct* fissionPtr;        ///< Fission f7
 
-  void helpTallyType() const;
+  virtual void helpTallyType(const std::string&) const;
 
   // Grid stuff:
   void processGrid(Simulation&,const mainSystem::inputParam&,
 		   const size_t) const;
-  void processGridFree(Simulation&,const int,const int) const;
   void processGridObject(Simulation&,const std::string&,
 			 const int,const int,const int) const;
   void processGridHelp() const;
@@ -89,6 +88,7 @@ class tallyConstruct  : public basicConstruct
   virtual int tallySelection(Simulation&,const mainSystem::inputParam&) const;
   virtual int tallyRenumber(Simulation&,const mainSystem::inputParam&) const;
 
+  virtual void writeHelp(std::ostream&) const {}
 };
 
 }
