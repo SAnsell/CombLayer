@@ -6,13 +6,13 @@ use getMake;
 use strict;
 
 ## EXECUTABLES
-my @masterprog=("fullBuild","ess","photonMod","sinbad","t1Real",
+my @masterprog=("fullBuild","ess","sinbad","t1Real",
 		"sns","reactor","t1MarkII","t1Eng","testMain"); 
 
 
 my @noncompile=("bilbau","clayer","cuBuild","d4c","detectSim",
 		"epb","ess","fussion","lens","muBeam",
-                "pressure","vcn","power");
+                "pressure","vcn","photonMod","power");
 
 
 ## CXX Directory

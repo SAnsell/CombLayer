@@ -3,7 +3,7 @@
  
  * File:   build/reactorTallyConstruct.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -136,11 +136,6 @@ reactorTallyConstruct::processPower
 
   const std::string PType(IParam.getCompValue<std::string>("tally",Index,1)); 
 
-  if (PType=="help")  // 
-    {
-      ELog::EM<<"-- Reactor Name"<<ELog::endDiag;
-      return 0;
-    }
   const delftSystem::ReactorGrid* GPtr=
     dynamic_cast<const delftSystem::ReactorGrid*>
       (OR.getObject<attachSystem::FixedComp>(PType));
@@ -160,4 +155,16 @@ reactorTallyConstruct::processPower
   return 0;
 }
 
+void
+reactorTallyConstruct::writeHelp(std::ostream& OX) const
+  /*!
+    Write out help
+    \param Output stream
+  */
+{
+  OX<<"-- Reactor Name";
+  return;
+}
+
+  
 }  // NAMESPACE tallySystem

@@ -3,7 +3,7 @@
  
  * File:   buildInc/reactorTallyConstruct.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,7 +55,7 @@ class reactorTallyConstruct : virtual public fissionConstruct
   virtual int processPower(Simulation&,const mainSystem::inputParam&,
 			    const size_t,const bool) const;
 
-
+  virtual void writeHelp(std::ostream&) const;
 };
 
 }
