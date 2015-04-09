@@ -314,12 +314,13 @@ makeESS::buildLowCylMod(Simulation& System)
     \param System :: Stardard simulation
   */
 {
+  ELog::RegMethod RegA("makeESS","buildLowCylMod");
+  
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
   LowMod=std::shared_ptr<constructSystem::ModBase>
     (new constructSystem::CylMod("LowMod"));
-
   OR.addObject(LowMod);
 
   LowMod->createAll(System,*Reflector);

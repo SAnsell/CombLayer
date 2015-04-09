@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   weightsInc/WeightMesh.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef WeightMesh_h
-#define WeightMesh_h
+#ifndef WeightSystem_WeightMesh_h
+#define WeightSystem_WeightMesh_h
 
 
 namespace WeightSystem
@@ -72,7 +72,7 @@ class WeightMesh : public WForm
   void setRefPt(const Geometry::Vec3D& Pt) { RefPoint=Pt; } 
   void setCylinder(const Geometry::Vec3D&,const Geometry::Vec3D&,
 		   const Geometry::Vec3D&,const double,
-		   const int,const int,const int);
+		   const size_t,const size_t,const size_t);
 
   void zeroCell(const int) { }      ///< Non-important return
   void write(std::ostream&) const;

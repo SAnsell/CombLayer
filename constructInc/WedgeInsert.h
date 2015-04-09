@@ -34,7 +34,7 @@ namespace constructSystem
   \date May 2014
   \brief Places a bound  unit within an object
 
-	It adds a component within any object, e.g. a moderator
+  It adds a component within any object, e.g. a moderator
 */
 
 class WedgeInsert : public attachSystem::FixedComp,

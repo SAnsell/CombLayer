@@ -511,6 +511,7 @@ CylMod::createWedges(Simulation& System)
    */
 {
   ELog::RegMethod RegA("CylMod","createWedges");
+  
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
@@ -518,8 +519,8 @@ CylMod::createWedges(Simulation& System)
     {
       WTYPE WPtr(new WedgeInsert(keyName+"Wedge",i+1));
       OR.addObject(WPtr);
-      WPtr->createAll(System,CellMap::getCell(keyName,10),
-		      *this,11,1);   // +ve Y direction [cylinder]
+      WPtr->createAll(System,CellMap::getCell(keyName,0),
+		      *this,1,1);   // +ve Y direction [cylinder]
       Wedges.push_back(WPtr);
     }
   return;

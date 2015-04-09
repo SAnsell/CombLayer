@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   moderator/RefBolts.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,6 @@
 #include <string>
 #include <algorithm>
 #include <memory>
-#include <boost/bind.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -183,9 +182,8 @@ RefBolts::createBoltGrp(Simulation& System,const std::string& subKey)
 	  for(vc=Track.begin();vc!=Track.end();vc++)
 	    TBolt.addPoint(MR.reverseRotate(*vc)+Origin);
 
-	  for_each(Radii.begin(),Radii.end(),
-		   boost::bind(&ModelSupport::PipeLine::addRadius,
-			       boost::ref(TBolt),_1,matN,0.0));
+	  for(const double& R : Radii)
+	    TBolt.addRadius(R,matN,0.0);
 	  // Special case for headed bolt:
 	  if (Radii.size()==2)
 	    {

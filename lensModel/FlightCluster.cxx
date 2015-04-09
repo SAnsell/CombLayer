@@ -113,18 +113,16 @@ FlightCluster::~FlightCluster()
 
 
 void
-FlightCluster::populate(const Simulation& System)
+FlightCluster::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: Func Database
   */
 {
   ELog::RegMethod RegA("FlightCluster","populate");
-  const FuncDataBase& Control=System.getDataBase();
 
   const size_t flightN=Control.EvalVar<size_t>(keyName+"Number");
-  
-  for(int i=0;i<flightN;i++)
+  for(size_t i=0;i<flightN;i++)
     {
       std::ostringstream cx;
       cx<<"FL"<<i+1;
@@ -135,7 +133,7 @@ FlightCluster::populate(const Simulation& System)
 }
 
 const attachSystem::FixedComp& 
-FlightCluster::getLine(const int Port) const
+FlightCluster::getLine(const size_t Port) const
   /*!
     Flight Cluster
     \param Port :: Number
@@ -143,10 +141,10 @@ FlightCluster::getLine(const int Port) const
 {
   ELog::RegMethod RegA("FlightCluster","getLine");
 
-  if (Port<0 || Port>=static_cast<int>(FL.size()))
-    throw ColErr::IndexError<int>(Port,static_cast<int>(FL.size()),
-				  RegA.getFull());
-  return FL[static_cast<size_t>(Port)];
+  if (Port>=FL.size())
+    throw ColErr::IndexError<size_t>(Port,FL.size(),
+				  "Port number");
+  return FL[Port];
 }
   
 
@@ -209,7 +207,7 @@ FlightCluster::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("FlightCluster","createAll");
-  populate(System);
+  populate(System.getDataBase());
   createLines(System,FC,outerSurf);
   return;
 }

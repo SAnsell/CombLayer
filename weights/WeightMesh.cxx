@@ -3,7 +3,7 @@
  
  * File:   weights/WeightMesh.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -108,8 +108,8 @@ void
 WeightMesh::setCylinder(const Geometry::Vec3D& Base,
 			const Geometry::Vec3D& Top,
 			const Geometry::Vec3D& uRVec,
-			const double Radius,const int NR,
-			const int NZ,const int NT)
+			const double Radius,const size_t NR,
+			const size_t NZ,const size_t NT)
   /*!
     Sets up a cyclindrical mesh
     \param Base :: Base point in Cylinder
@@ -122,12 +122,13 @@ WeightMesh::setCylinder(const Geometry::Vec3D& Base,
    */
 {
   ELog::RegMethod RegA("WeightMesh","setCylinder");
+  
   type=Cyl;
   Origin=Base;
   Axis=(Top-Base).unit();
   Vec=uRVec.unit();
 
-  if (NR<1 || NZ<1 || NT<1)
+  if (!(NR*NZ*NT))
     {
       ELog::EM<<"Incorrect values in Input ranges : "
 	      <<NR<<" "<<NZ<<" "<<NT<<ELog::endErr;
@@ -135,15 +136,15 @@ WeightMesh::setCylinder(const Geometry::Vec3D& Base,
     }
 
   const double dR=Radius/NR;
-  for(int i=0;i<=NR;i++)
+  for(size_t i=0;i<=NR;i++)
     X.push_back(dR*i);
 
   const double dL=((Top-Base).abs())/NZ;
-  for(int i=0;i<=NZ;i++)
+  for(size_t i=0;i<=NZ;i++)
     Y.push_back(dL*i);
 
   const double dT=1.0/NT;
-  for(int i=0;i<=NT;i++)
+  for(size_t i=0;i<=NT;i++)
     Z.push_back(dT*i);
   
   return;

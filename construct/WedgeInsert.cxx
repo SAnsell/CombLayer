@@ -3,7 +3,7 @@
  
  * File:   t1Upgrade/WedgeInsert.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -199,7 +199,6 @@ WedgeInsert::createUnitVector(const attachSystem::FixedComp& FC)
   applyShift(xStep,yStep,zStep);
   applyAngleRotate(xyAngle,zAngle);
 
-  ELog::EM<<"Y == "<<Y<<ELog::endDiag;
   return;
 }
 
@@ -291,7 +290,7 @@ WedgeInsert::createObjects(Simulation& System,
   std::string Out;
   const std::string CShape=
     MonteCarlo::getComplementShape(LCPtr->getLayerString(layerIndex,sideIndex));
-  ELog::EM<<"Wedge == "<<layerIndex<<" "<<CShape<<ELog::endDiag;
+
   if (wall>Geometry::zeroTol)
     {
 
@@ -351,6 +350,7 @@ WedgeInsert::createAll(Simulation& System,
     \param System :: Simulation
     \param mainCell :: Main cell
     \param FC :: FixedComponent for origin
+    \param layerIndex :: depth of layer
     \param layerSide :: Layer side to use
    */
 {

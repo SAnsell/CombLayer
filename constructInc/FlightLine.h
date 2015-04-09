@@ -72,8 +72,8 @@ class FlightLine : public attachSystem::ContainedGroup,
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createUnitVector(const attachSystem::FixedComp&,const size_t,
 			const long int);
-  void createUnitVector(const Geometry::Vec3D&,const Geometry::Vec3D&,
-			const Geometry::Vec3D&);
+  //  void createUnitVector(const Geometry::Vec3D&,const Geometry::Vec3D&,
+  //			const Geometry::Vec3D&);
   void createRotatedUnitVector(const attachSystem::FixedComp&,const size_t,
 			       const size_t);
 

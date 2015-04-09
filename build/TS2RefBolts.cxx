@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   build/TS2RefBolts.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,6 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
-#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -107,7 +106,7 @@ RefBolts(FuncDataBase& Control)
   
 
   // Coupled Bucket [EAST]
-  Control.addVariable("refBoltSteel0Mat",3);  
+  Control.addVariable("refBoltSteel0Mat","Stainless304");  
   Control.addVariable("refBoltSteel0Radius0",0.5);  
   Control.addVariable("refBoltSteel0Radius1",0.8);    
 
@@ -141,7 +140,7 @@ RefBolts(FuncDataBase& Control)
   Control.addVariable("refBoltSteel6Track2",Vec3D(31.742,40.447,-8.0));  
 
   // Decoupled Bucket [EAST]
-  Control.addVariable("refBoltBuck0Mat",3);  
+  Control.addVariable("refBoltBuck0Mat","Stainless304");  
   Control.addVariable("refBoltBuck0Radius0",0.8);  
   Control.addVariable("refBoltBuck0Radius1",1.2);    
 

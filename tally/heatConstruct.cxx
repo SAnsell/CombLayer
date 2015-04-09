@@ -57,6 +57,11 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "Simulation.h"
+#include "Element.h"
+#include "Zaid.h"
+#include "MXcards.h"
+#include "Material.h"
+#include "DBMaterial.h"
 #include "inputParam.h"
 #include "NRange.h"
 #include "Tally.h"
@@ -109,13 +114,20 @@ heatConstruct::processHeat(Simulation& System,
   // Process a Ranged Heat:
 
   boost::format Cmt("tally: %d Mat %d Range(%d,%d)");
-  int matN(0);
+
+  const ModelSupport::DBMaterial& DB=
+    ModelSupport::DBMaterial::Instance();
+
   // Get Material number:
-  if (!StrFunc::convert(MType,matN))
+  int matN(0);
+  if (DB.hasKey(MType))
+    matN=DB.getIndex(MType);
+  else if (!StrFunc::convert(MType,matN))
     {
       ELog::EM<<"No material number for :"<<MType<<ELog::endErr;
       return;
     }
+
   if (matN<0) matN=-2;
     
   int RA,RB;

@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   lensModelInc/FlightCluster.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ class FlightCluster
   std::vector<moderatorSystem::FlightLine> FL;
   std::vector<int> InsertCells;     ///< Cells to be inserted
 
-  void populate(const Simulation&);
+  void populate(const FuncDataBase&);
   void createLines(Simulation&,const attachSystem::FixedComp&,
 		   const int);
 
@@ -58,7 +58,7 @@ class FlightCluster
   void clearCells() { InsertCells.clear(); }
   void addInsertCell(const int);
 
-  const attachSystem::FixedComp& getLine(const int) const;
+  const attachSystem::FixedComp& getLine(const size_t) const;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const int);
 };

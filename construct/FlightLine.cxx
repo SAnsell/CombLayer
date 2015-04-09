@@ -216,8 +216,6 @@ FlightLine::createUnitVector(const attachSystem::FixedComp& FC,
   // PROCESS Origin of a point
 
   FixedComp::createUnitVector(FC,sideIndex);
-  //  const attachSystem::LinkUnit& LU=FC.getLU(abs(sideIndex)-1);
-  //  createUnitVector(LU.getConnectPt(),LU.getAxis(),FC.getZ());
 
   return;
 }
@@ -241,7 +239,7 @@ FlightLine::createRotatedUnitVector(const attachSystem::FixedComp& FC,
     (!origIndex) ? FC.getCentre() : FC.getLinkPt(origIndex-1);
 
   const attachSystem::LinkUnit& LU=FC.getLU(sideIndex);
-  createUnitVector(LU.getConnectPt(),LU.getAxis(),FC.getZ());
+  //  createUnitVector(LU.getConnectPt(),LU.getAxis(),FC.getZ());
 
   Z= FC.getZ().unit();
   Y= LU.getAxis().unit();
@@ -277,30 +275,6 @@ FlightLine::createUnitVector(const attachSystem::FixedComp& FC,
     Origin=FC.getLinkPt(origIndex-1);
 
   applyShift(xStep,0,zStep);
-  return;
-}
-
-void
-FlightLine::createUnitVector(const Geometry::Vec3D& Og,
-			     const Geometry::Vec3D& Ax,
-			     const Geometry::Vec3D& Zunit)
-
-  /*!
-    Create the unit vectors
-    \param Og :: Origin
-    \param Ax :: Axis
-    \param Zunit :: Z direction [since AX is Y]
-  */
-{
-  ELog::RegMethod RegA("FlightLine","createUnitVector<Vec,Vec>");
-  ELog::EM<<"Junk CALL "<<ELog::endCrit;
-  Z= Zunit.unit();
-  Y= Ax.unit();
-  X= Y*Z;
-
-  applyAngleRotate(masterXY,masterZ);
-  Origin=Og+X*xStep+Z*zStep;
-
   return;
 }
 
@@ -491,7 +465,6 @@ FlightLine::createCapSurfaces(const attachSystem::FixedComp& FC,
 		  const double signV((SN>0) ? 1.0 : -1.0);
 		  Geometry::Surface* ExpSurf=
 		    ModelSupport::surfaceCreateExpand(SPtr,signV*capThick);
-		  ELog::EM<<"SN == "<<SN<<ELog::endDiag;
 		  // Find a new number for surface
 		  while(SMap.hasSurf(surfN))
 		    surfN++;
