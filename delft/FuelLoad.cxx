@@ -3,7 +3,7 @@
  
  * File:   delft/FuelLoad.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -111,6 +111,7 @@ FuelLoad::gridName(const size_t NX,const size_t NY)
     Calcuate the grid name based on NX / NY
     \param NX :: NX grid position [1-N] 
     \param NY :: NY grid position [1-N]
+    \return GridName
    */
 {
   std::string Out;
@@ -120,7 +121,7 @@ FuelLoad::gridName(const size_t NX,const size_t NY)
 }
 
 FuelLoad::FuelLoad()
-/*!
+  /*!
     Constructor BUT ALL variable are left unpopulated.
   */
 {}
@@ -163,8 +164,10 @@ FuelLoad::loadXML(const std::string& FName)
     Blade number is 1 - NE 
     Index Number if 1 - NI
     Grid Item : A1 - > GN  
-    A
+    
     \param FName :: filename 
+    
+    \return 1 on success / 0 on fail
   */
 {
   ELog::RegMethod RegA("FuelLoad","loadXML");
@@ -203,6 +206,8 @@ FuelLoad::setMaterial(const size_t XGrid,const size_t YGrid,
     Sets a given fuel element
     \param XGrid :: Letter position [as a number]
     \param YGrid :: Number index
+    \param Element ::  Element number [plate in XY grid cell]
+    \param Index :: Index number [grid on element]
    */
 {
   ELog::RegMethod RegA("FuelLoad","setMaterial");

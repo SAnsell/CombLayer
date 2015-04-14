@@ -3,7 +3,7 @@
  
  * File:   Main/testMain.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -116,6 +116,7 @@
 #include "testConvex2D.h"
 #include "testCylinder.h"
 #include "testDBMaterial.h"
+#include "testDBCN.h"
 #include "testDoubleErr.h"
 #include "testElement.h"
 #include "testEllipticCyl.h"
@@ -198,6 +199,7 @@ int lensTest(const int,const int);
 int logTest(const int,const int);
 int moderatorTest(const int,const int);
 int montecarloTest(const int,const int);
+int physicsTest(const int,const int);
 int polyTest(const int,const int);
 int processTest(const int,const int);
 int supportTest(const int,const int);
@@ -275,12 +277,13 @@ startTest(const int section,const int type,const int extra)
 	  std::cout<<"Namespace :: Log          (5)"<<std::endl;
 	  std::cout<<"Namespace :: Moderator    (6)"<<std::endl;
 	  std::cout<<"Namespace :: MonteCarlo   (7)"<<std::endl;
-	  std::cout<<"Namespace :: Poly         (8)"<<std::endl;
-	  std::cout<<"Namespace :: Process      (9)"<<std::endl;
-	  std::cout<<"Namespace :: Support     (10)"<<std::endl;
-	  std::cout<<"Namespace :: Work        (11)"<<std::endl;
-	  std::cout<<"Namespace :: XML         (12)"<<std::endl;
-	  std::cout<<"Namespace :: Global      (13)"<<std::endl;
+	  std::cout<<"Namespace :: Physics      (8)"<<std::endl;
+	  std::cout<<"Namespace :: Poly         (9)"<<std::endl;
+	  std::cout<<"Namespace :: Process     (10)"<<std::endl;
+	  std::cout<<"Namespace :: Support     (11)"<<std::endl;
+	  std::cout<<"Namespace :: Work        (12)"<<std::endl;
+	  std::cout<<"Namespace :: XML         (13)"<<std::endl;
+	  std::cout<<"Namespace :: Global      (14)"<<std::endl;
 
 	  return 0;
 	}
@@ -336,40 +339,46 @@ startTest(const int section,const int type,const int extra)
       // POLY
       if (section==8)
 	{
+	  TestFunc::regGroup("Physics");
+	  return physicsTest(type,extra);
+	}
+      // POLY
+      if (section==9)
+	{
 	  TestFunc::regGroup("Poly");
 	  return polyTest(type,extra);
 	}
 
       // PROCESS
-      if (section==9)
+      if (section==10)
 	{
 	  TestFunc::regGroup("Process");
 	  return processTest(type,extra);
 	}
 
       // SUPPORT:
-      if (section==10)
+      if (section==11)
 	{
 	  TestFunc::regGroup("Support");
 	  return supportTest(type,extra);
 	}
 
       // WORK:
-      if (section==11)
+      if (section==12)
 	{	  
 	  TestFunc::regGroup("Work");
 	  return workTest(type,extra);
 	}
 
       // XML:
-      if (section==12)
+      if (section==13)
 	{
 	  TestFunc::regGroup("XML");
 	  return xmlTest(type,extra);
 	}
       
       // GLOBAL:
-      if (section==13)
+      if (section==14)
 	{
 	  TestFunc::regGroup("Global");
 	  return globalTest(type,extra);
@@ -843,6 +852,28 @@ attachCompTest(const int type,const int extra)
   if(type==2 || type<0)
     {
       testContained A;
+      const int X=A.applyTest(extra);
+      if (X) return X;
+    }
+  return 0;
+
+}
+int
+physicsTest(const int type,const int extra)
+  /*!
+    Test process command
+    \param type :: type of test
+    \param :: extra value
+    \return 0 on success / -ve on failure
+  */
+{
+  if (type==0)
+    {
+      std::cout<<"testDBCN          (1)"<<std::endl;
+    }
+  if(type==1 || type<0)
+    {
+      testDBCN A;
       const int X=A.applyTest(extra);
       if (X) return X;
     }

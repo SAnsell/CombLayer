@@ -3,7 +3,7 @@
  
  * File:   endf/ENDF.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,8 +61,8 @@ getLine(std::istream& IX)
   
   const std::string FullLine=StrFunc::getAllLine(IX,255);
   if (IX.fail()) 
-    throw ColErr::FileError(0,"ENDF","getLine from:"+
-					 RegA.getItem(-1));
+    throw ColErr::FileError(0,"ENDF","ReadLine");
+
   ENDF::lineCnt++;
   return std::pair<std::string,std::string>
     (FullLine.substr(0,66),FullLine.substr(66,80));
@@ -124,10 +124,9 @@ getNumber(std::string& Line,const size_t N,double& DF)
 Triple<int>  
 getMatIndex(const std::string& NStr)
   /*!
-    Extracts the three components:
-    mat, mf, mt
+    Extracts the three components: mat, mf, mt
     \param NStr :: string to process
-    \return [Mat,MF,MT]
+    \return (Mat,MF,MT)
    */
 {
   ELog::RegMethod RegA("ENDF","getMatIndex");

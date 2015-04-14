@@ -46,16 +46,16 @@ class WallCut : public attachSystem::FixedComp,
 
   std::string insertKey;        ///< Insert cell name
   
-  double xyAngle;
-  double zAngle;
+  double xyAngle;               ///< Angle for offset coordinate rotation
+  double zAngle;                ///< Angle for offset coordinate rotation
   
   double height;                  ///< Height of the cut
   double width;                   ///< Width of the basic cut
   double length;                  ///< Length of basic cut
   Geometry::Vec3D CPt;            ///< Centre point
 
-  double rotXY;
-  double rotZ;
+  double rotXY;                   ///< Rotation of cut direction
+  double rotZ;                    ///< Rotation of cut direction
 
   int mat;                        ///< Material  [typcially void]
   double matTemp;                 ///< Material Temp

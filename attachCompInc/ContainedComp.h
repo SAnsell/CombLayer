@@ -82,7 +82,6 @@ class ContainedComp
   /// Test if has boundary rule
   bool hasBoundary() const { return boundary.hasRule(); }
   int isBoundaryValid(const Geometry::Vec3D&) const;
-  int isBoundaryValid(const Geometry::Vec3D&,const int) const;
 
   int isOuterValid(const Geometry::Vec3D&) const;
   int isOuterValid(const Geometry::Vec3D&,const std::set<int>&) const;

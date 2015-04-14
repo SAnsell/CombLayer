@@ -379,12 +379,12 @@ CylContainer::getLayerString(const size_t layerIndex,
       cx<<" "<<SMap.realSurf(SI+6)<<" ";
       return cx.str();
     }
-  throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
+  throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex");
 }
 
 int
 CylContainer::getLayerSurf(const size_t layerIndex,
-		     const size_t sideIndex) const
+			   const size_t sideIndex) const
   /*!
     Given a side and a layer calculate the link surf. Surf points out
     \param sideIndex :: Side [0-5]

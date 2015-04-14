@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   bibBuild/GuideShield.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,8 +47,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -73,7 +71,6 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
@@ -217,7 +214,11 @@ GuideShield::createObjects(Simulation& System,
   /*!
     Adds the all the components
     \param System :: Simulation to create objects in
-    \param InnerFC :: Inner 
+    \param CC :: Container for this object
+    \param InnerFC :: Inner connection
+    \param innerSide :: Index of link point
+    \param OuterFC :: Inner connection
+    \param outerSide :: Index of link point
   */
 {
   ELog::RegMethod RegA("GuideShield","createObjects");
@@ -304,8 +305,8 @@ GuideShield::createAll(Simulation& System,
     \param System :: Simulation
     \param GO :: Guide object to wrap
     \param InnerFC :: Inner boundary layer
-    \param OuterFC :: Outer boundary layer
     \param innerIndex :: Inner Side index
+    \param OuterFC :: Outer boundary layer
     \param outerIndex :: Outer Side index
    */
 {
@@ -329,4 +330,4 @@ GuideShield::createAll(Simulation& System,
   return;
 }
 
-}  // NAMESPACE ts1System
+}  // NAMESPACE bibSystem

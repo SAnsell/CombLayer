@@ -383,7 +383,7 @@ ConicModerator::getSurfacePoint(const size_t layerIndex,
 
 std::string
 ConicModerator::getLayerString(const size_t sideIndex,
-			     const size_t layerIndex) const
+			       const size_t layerIndex) const
   /*!
     Given a side and a layer calculate the link surf
     \param sideIndex :: Side [0-5]
@@ -401,12 +401,12 @@ ConicModerator::getLayerString(const size_t sideIndex,
   switch(sideIndex)
     {
     }
-  throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
+  throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex");
 }
 
 int
 ConicModerator::getLayerSurf(const size_t layerIndex,
-			 const size_t sideIndex) const
+			     const size_t sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
     \param sideIndex :: Side [0-5]
@@ -449,4 +449,4 @@ ConicModerator::createAll(Simulation& System,
   return;
 }
   
-}  // NAMESPACE moderatorSystem
+}  // NAMESPACE essSystem

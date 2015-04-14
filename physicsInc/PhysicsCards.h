@@ -3,7 +3,7 @@
  
  * File:   physicsInc/PhysicsCards.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,12 +19,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef PhysicsCards_h
-#define PhysicsCards_h
+#ifndef PhysicsSystem_PhysicsCards_h
+#define PhysicsSystem_PhysicsCards_h
 
 namespace physicsSystem
 {
-
+  class dbcnCard;
 /*!
   \class PhysicsCards
   \version 1.0
@@ -43,11 +43,11 @@ class PhysicsCards
 {
  private:
   
-  long int rndSeed;                       ///< Random number seed
   int nps;                                ///< number of particles to run
   int histp;                              ///< Add a histp line
   tallySystem::NList<int> histpCells;     ///< cells for the histp list
-
+  std::unique_ptr<dbcnCard> dbCard;       ///< Reference to the dbcnCard
+  
   std::vector<std::string> Basic;         ///< Basic cards (stripped of Variables)
 
   ModeCard mode;                          ///< Mode card
@@ -108,7 +108,7 @@ class PhysicsCards
   void setVolume(const std::vector<int>&,const double =1.0);
   void setVolume(const int,const double);
   void setNPS(const int N) { nps=N; }      ///< Set the Number of particles
-  void setRND(const long int N) { rndSeed=N; }  ///< Set the seed number
+  void setRND(const long int);
   void setEnergyCut(const double);  
   void setMode(std::string);
   void setVoidCard(const bool V) { voidCard=V; }   ///< Set the void card
@@ -116,8 +116,9 @@ class PhysicsCards
   /// Set the prdmp card
   void setPrdmp(const std::string& P) 
     { prdmp = P; } 
-  
-  long int getRND() const { return rndSeed; }   ///< Get Random number seed
+
+  long int getRND() const;
+
 
   void substituteCell(const int,const int);
   void substituteSurface(const int,const int); 

@@ -3,7 +3,7 @@
  
  * File:   construct/Window.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -135,34 +135,33 @@ Window::operator=(const Window& A)
 }
 
 
- Window::~Window() 
+Window::~Window() 
   /*!
     Destructor
   */
- {}
+{}
 
- void
- Window::createUnitVector(const attachSystem::FixedComp& FC)
-   /*!
-     Create the unit vectors
-     - Y Down the beamline
-     \param FC :: Linked object
-   */
- {
-   ELog::RegMethod RegA("Window","createUnitVector");
-   attachSystem::FixedComp::createUnitVector(FC);
-
-
+void
+Window::createUnitVector(const attachSystem::FixedComp& FC)
+  /*!
+    Create the unit vectors
+    - Y Down the beamline
+    \param FC :: Linked object
+  */
+{
+  ELog::RegMethod RegA("Window","createUnitVector");
+  attachSystem::FixedComp::createUnitVector(FC);
 
    return;
  }
 
 void
 Window::createCentre(Simulation& System) 
-  /*!
-    Calculates the window centre position based on line
-    track intercept with object 
-   */
+/*!
+  Calculates the window centre position based on line
+  track intercept with object 
+  \param System :: Simulation to obtain cell from 
+*/
 {
   ELog::RegMethod RegA("Window","createCentre");
   
@@ -213,7 +212,7 @@ void
 Window::createSurfaces()
   /*!
     Create all the surfaces
-    */
+  */
 {
   ELog::RegMethod RegA("Window","createSurfaces");
   

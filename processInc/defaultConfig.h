@@ -3,7 +3,7 @@
  
  * File:   processInc/defaultConfig.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +27,6 @@ class FuncDataBase;
 namespace mainSystem
 {
  
-  
 /*!
   \class defaultConfig
   \version 1.0
@@ -57,6 +56,7 @@ class defaultConfig
   void setVar(const std::string&,const double);
   void setVar(const std::string&,const std::string&);
   void setVar(const std::string&,const Geometry::Vec3D&);
+  
   void setOption(const std::string&,const std::string&);
 
   void process(FuncDataBase&,mainSystem::inputParam&) const;

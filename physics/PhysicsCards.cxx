@@ -3,7 +3,7 @@
  
  * File:   physics/PhysicsCards.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,9 +33,6 @@
 #include <memory>
 #include <array>
 #include <boost/algorithm/string.hpp>
-#include <boost/functional.hpp>
-#include <boost/bind.hpp>
-
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -57,14 +54,15 @@
 #include "NList.h"
 #include "NRange.h"
 #include "KGroup.h"
+#include "dbcnCard.h"
 #include "PhysicsCards.h"
 
 namespace physicsSystem
 {
 
 PhysicsCards::PhysicsCards() :
-  rndSeed(123456781L),nps(10000),
-  histp(0),voidCard(0),prdmp("1e7 1e7 0 2 1e7"),
+  nps(10000),histp(0),dbCard(new dbcnCard),
+  voidCard(0),prdmp("1e7 1e7 0 2 1e7"),
   Volume("vol")
   /*!
     Constructor
@@ -72,8 +70,8 @@ PhysicsCards::PhysicsCards() :
 {}
 
 PhysicsCards::PhysicsCards(const PhysicsCards& A) : 
-  rndSeed(A.rndSeed),nps(A.nps),histp(A.histp),
-  histpCells(A.histpCells),Basic(A.Basic),mode(A.mode),
+  nps(A.nps),histp(A.histp),histpCells(A.histpCells),
+  dbCard(new dbcnCard(*dbCard)),Basic(A.Basic),mode(A.mode),
   voidCard(A.voidCard),printNum(A.printNum),prdmp(A.prdmp),
   ImpCards(A.ImpCards),PhysCards(A.PhysCards),LEA(A.LEA),
   sdefCard(A.sdefCard),Volume(A.Volume)
@@ -93,10 +91,10 @@ PhysicsCards::operator=(const PhysicsCards& A)
 {
   if (this!=&A)
     {
-      rndSeed=A.rndSeed;
       nps=A.nps;
       histp=A.histp;
       histpCells=A.histpCells;
+      *dbCard = *A.dbCard;
       Basic=A.Basic;      
       mode=A.mode;
       voidCard=A.voidCard;
@@ -143,12 +141,8 @@ PhysicsCards::addHistpCells(const std::vector<int>& AL)
    */
 {
   ELog::RegMethod RegA("PhysicsCards","addHistpCells");
-  // Helper func ptr for boost since can't resolve type as overloaded:
-  void (tallySystem::NList<int>::*fn)(const int&) = 
-    &tallySystem::NList<int>::addComp;
-
-  for_each(AL.begin(),AL.end(),
-	   boost::bind<void>(fn,boost::ref(histpCells),_1));
+  for(const int CellN : AL)
+    histpCells.addComp(CellN);
   return;
 }
 
@@ -255,11 +249,27 @@ PhysicsCards::processCard(const std::string& Line)
   pos=Comd.find("dbcn");
   if (pos!=std::string::npos)
     {
+      long int RS;
+      size_t kType;
+      double D;
+      std::string keyName;
       Comd.erase(0,pos+4);
-      if (!StrFunc::convert(Comd,rndSeed))
-        {
-	  ELog::EM<<"DBCN [rnd] overflow  == "<<Comd<<ELog::endErr;
-	  rndSeed=1234567;
+      if (StrFunc::convert(Comd,RS))
+	dbCard->setComp("rndSeed",RS);
+      else if (StrFunc::section(Comd,keyName) &&
+	       (kType=dbCard->keyType(keyName)) )
+	{
+	  if (kType==1 && StrFunc::section(Comd,RS))
+	    dbCard->setComp(keyName,RS);
+	  else if (StrFunc::section(Comd,D))
+	    dbCard->setComp(keyName,RS);
+	  else
+	    ELog::EM<<"DBCN ["<<keyName<<"] error  == "
+		    <<Comd<<ELog::endErr;
+	}
+      else
+	{
+	  ELog::EM<<"DBCN [rnd] error  == "<<Comd<<ELog::endErr;
 	}
       return 1;
     }
@@ -274,15 +284,18 @@ PhysicsCards::processCard(const std::string& Line)
         {
 	  std::vector<std::string> part;
 	  boost::split(part,Item,boost::is_any_of(","));
-	  for_each(part.begin(),part.end(),
-		   boost::bind(&boost::trim<std::string>,_1,std::locale()));
+	  for(std::string& PStr : part)
+	    boost::trim(PStr,std::locale());
 	  // ensure no empty particles
-	  part.erase(remove_if(part.begin(),part.end(),
-			       boost::bind<bool>(&std::string::empty,_1)),
+	  part.erase(
+		     remove_if(part.begin(),part.end(),
+			       std::bind<bool>(&std::string::empty,
+					       std::placeholders::_1)),
 		     part.end());
+	  
 	  PhysCard& PC(PhysCards.back());
-	  for_each(part.begin(),part.end(), 
-		   boost::bind(&PhysCard::addElm,boost::ref(PC),_1));
+	  for(const std::string& PStr : part)
+	    PC.addElm(PStr);
 	  // Strip and process numbers / j
 	  for(size_t i=0;i<5 && !Comd.empty();i++)
 	    {
@@ -310,8 +323,11 @@ PhysicsCards::setEnergyCut(const double E)
     \param E :: Energy [MeV]
   */
 {
-  for_each(PhysCards.begin(),PhysCards.end(),
-	   boost::bind(&PhysCard::setEnergyCut,_1,E));
+  ELog::RegMethod RegA("PhysicsCards","setEnergyCut");
+
+  for(PhysCard& PC : PhysCards)
+    PC.setEnergyCut(E);
+
   sdefCard.cutEnergy(E);
   return;
 }
@@ -361,28 +377,25 @@ PhysicsCards::addPhysCard(const std::string& Key,
   const std::vector<std::string> PList=
     StrFunc::StrParts(Particle);
   
-  std::vector<PhysCard>::iterator vc;
+
   std::vector<std::string>::const_iterator ac;
-  for(vc=PhysCards.begin();vc!=PhysCards.end();vc++)
-    if (vc->getKey()==Key)  	// First determine if any key exists:
-      {
-
-	ac=find_if(PList.begin(),PList.end(),
-		  boost::bind(&PhysCard::hasElm,*vc,_1));
-	// If item , add all additional items to the card
-	if (ac!=PList.end())
-	  {
-	    for(ac=PList.begin();ac!=PList.end();ac++)
-	      if (!vc->hasElm(*ac))
-		vc->addElm(*ac);
-	    return *vc;
-	  }
-      }
-
+  for(PhysCard& PC : PhysCards)
+    {
+      if (PC.getKey()==Key)  	// First determine if any key exists:
+	{
+	  for(const std::string& particle :  PList)
+	    {
+	      if (!PC.hasElm(particle))
+		PC.addElm(particle);
+	    }
+	  return PC;
+	}
+    }
+  // No card found add:
   PhysCards.push_back(PhysCard(Key));
   PhysCard& PC=PhysCards.back();
-  for(ac=PList.begin();ac!=PList.end();ac++)
-    PC.addElm(*ac);
+  for(const std::string& particle :  PList)
+    PC.addElm(particle);
   return PhysCards.back();
 }
 
@@ -402,10 +415,8 @@ PhysicsCards::setCellNumbers(const std::vector<int>& cellInfo,
     throw ColErr::MisMatch<size_t>(cellInfo.size(),
 				   impValue.size(),
 				   "PhysicsCards.setCellNumbers");
-
-  for_each(ImpCards.begin(),ImpCards.end(),
-	   boost::bind<void>(&PhysImp::setAllCells,_1,boost::cref(cellInfo),
-			     boost::cref(impValue)));
+  for(PhysImp& PI : ImpCards)
+    PI.setAllCells(cellInfo,impValue);
 
   Volume.setCells(cellInfo,1.0);
   return;
@@ -425,16 +436,13 @@ PhysicsCards::setCells(const std::string& Type,
   */
 
 {
-  std::vector<PhysImp>::iterator vc;
-  vc=find_if(ImpCards.begin(),ImpCards.end(),
-	     boost::bind(&PhysImp::isType,_1,Type));
-  while(vc!=ImpCards.end())
-    {
-      vc->setCells(cellInfo,defValue);
-      vc++;
-      vc=find_if(vc,ImpCards.end(),
-		 boost::bind(&PhysImp::isType,_1,Type));
-    }
+  ELog::RegMethod RegA("PhysicsCards","setCells");
+  
+  for(PhysImp& PI : ImpCards)
+      {
+	if (PI.isType(Type))
+	  PI.setCells(cellInfo,defValue);
+      }    
   return;
 }
 
@@ -451,16 +459,13 @@ PhysicsCards::setCells(const std::string& Type,
     \param defValue :: default value
   */
 {
-  std::vector<PhysImp>::iterator vc;
-  vc=find_if(ImpCards.begin(),ImpCards.end(),
-	     boost::bind(&PhysImp::isType,_1,Type));
-  while(vc!=ImpCards.end())
+  ELog::RegMethod RegA("PhysicsCards","setCells");
+  
+  for(PhysImp& PI : ImpCards)
     {
-      vc->setValue(cellID,defValue);
-      vc++;
-      vc=find_if(vc,ImpCards.end(),
-		 boost::bind(&PhysImp::isType,_1,Type));
-    }
+      if (PI.isType(Type))
+	PI.setValue(cellID,defValue);
+    }    
   return;
 }
 
@@ -479,22 +484,20 @@ PhysicsCards::setCells(const std::string& Type,
     \param V :: New importance value  
   */
 {
-  std::vector<PhysImp>::iterator vc;
-  vc=find_if(ImpCards.begin(),ImpCards.end(),
-	     boost::bind(&PhysImp::isType,_1,Type));
-  while(vc!=ImpCards.end())
+  ELog::RegMethod RegA("PhysicsCards","setCells(string,string,int,double)");
+
+  for(PhysImp& PI : ImpCards)
     {
-      if (vc->hasElm(Particle))
-        {
-	  vc->setValue(cellID,V);
+      if (PI.isType(Type) &&
+	  PI.hasElm(Particle))
+	{
+	  PI.setValue(cellID,V);
 	  return;
 	}
-      vc++;
-      vc=find_if(vc,ImpCards.end(),
-		 boost::bind(&PhysImp::isType,_1,Type));
-    }
-  throw ColErr::InContainerError<std::string>(Type+"::"+Particle,
-				 "PhysicsCars::setCells:");
+    }    
+
+  throw ColErr::InContainerError<std::string>(Type+"/"+Particle,
+				 "Type/Particle");
   return;
 }
 
@@ -505,14 +508,17 @@ PhysicsCards::removeCell(const int Index)
     \param Index :: Cell id to remove
   */
 {
-  for_each(ImpCards.begin(),ImpCards.end(),
-	   boost::bind(&PhysImp::removeCell,_1,Index));
+  ELog::RegMethod RegA("PhysicsCards","removeCell");
+  
+  for(PhysImp& PI : ImpCards)
+    PI.removeCell(Index);
   return;
 }
 
 double
 PhysicsCards::getValue(const std::string& Type,
-		       const std::string& Particle,const int cellID) const
+		       const std::string& Particle,
+		       const int cellID) const
   /*!
     Return the importance of a given cell
     \param Type :: importance identifier
@@ -527,7 +533,8 @@ PhysicsCards::getValue(const std::string& Type,
 }
 
 PhysImp&
-PhysicsCards::getPhysImp(const std::string& type,const std::string& particle)
+PhysicsCards::getPhysImp(const std::string& type,
+			 const std::string& particle)
   /*!
     Return the PhysImp for a particle type
     \param type :: Importance type
@@ -539,22 +546,20 @@ PhysicsCards::getPhysImp(const std::string& type,const std::string& particle)
   ELog::RegMethod RegA("PhysicsCards","getPhysImp");
 
   std::vector<PhysImp>::iterator vc;
-  vc=find_if(ImpCards.begin(),ImpCards.end(),
-	     boost::bind(&PhysImp::isType,_1,type));
-  while(vc!=ImpCards.end())
+  for(PhysImp& PI : ImpCards)
     {
-      if (vc->hasElm(particle))
-	return *vc;
-      vc++;
-      vc=find_if(vc,ImpCards.end(),
-		 boost::bind(&PhysImp::isType,_1,type));
+      if (PI.isType(type) &&
+	  PI.hasElm(particle))
+	return PI;
     }
-  throw ColErr::InContainerError<std::string>(particle,RegA.getFull());
+  throw ColErr::InContainerError<std::string>
+        (type+"/"+particle,"type/particle not found");
 }
 
 
 const PhysImp&
-PhysicsCards::getPhysImp(const std::string& type,const std::string& particle) const
+PhysicsCards::getPhysImp(const std::string& type,
+			 const std::string& particle) const
   /*!
     Return the PhysImp for a particle type
     \param type :: type of importance
@@ -563,18 +568,18 @@ PhysicsCards::getPhysImp(const std::string& type,const std::string& particle) co
     \return importance of the cell
   */
 {
+  ELog::RegMethod RegA("PhysicsCards","getPhysImp(const)");
+    
   std::vector<PhysImp>::const_iterator vc;
-  vc=find_if(ImpCards.begin(),ImpCards.end(),
-	     boost::bind(&PhysImp::isType,_1,type));
-  while(vc!=ImpCards.end())
+  for(const PhysImp& PI : ImpCards)
     {
-      if (vc->hasElm(particle))
-	return *vc;
-      vc++;
-      vc=find_if(vc,ImpCards.end(),
-		 boost::bind(&PhysImp::isType,_1,type));
+      if (PI.isType(type) &&
+	  PI.hasElm(particle))
+	return PI;
     }
-  throw ColErr::InContainerError<std::string>(type+particle,"PhysicsCards::getImp const");
+  
+  throw ColErr::InContainerError<std::string>
+    (type+"/"+particle,"type/particle not found");
 }
   
 void
@@ -603,6 +608,22 @@ PhysicsCards::setVolume(const int cellID,const double V)
 }
 
 void
+PhysicsCards::setRND(const long int N)
+{
+  dbCard->setComp("rndSeed",N);
+  return;
+}
+
+long int
+PhysicsCards::getRND() const
+  /*!
+    
+   */
+{
+  return dbCard->getComp<long int>("rndSeed");
+}
+  
+void
 PhysicsCards::substituteCell(const int oldCell,const int newCell)
   /*!
     Substitute all cells in all physics cards that use cells
@@ -612,8 +633,9 @@ PhysicsCards::substituteCell(const int oldCell,const int newCell)
 {
   sdefCard.substituteCell(oldCell,newCell);
   histpCells.changeItem(oldCell,newCell);
-  for_each(ImpCards.begin(),ImpCards.end(),
-	  boost::bind(&PhysImp::renumberCell,_1,oldCell,newCell));
+  for(PhysImp& PI : ImpCards)
+    PI.renumberCell(oldCell,newCell);
+  
   Volume.renumberCell(oldCell,newCell);
   return;
 }
@@ -680,7 +702,7 @@ PhysicsCards::write(std::ostream& OX,
 {
   ELog::RegMethod RegA("PhyiscsCards","write");
 
-  OX<<"dbcn "<<rndSeed<<std::endl;
+  dbCard->write(OX);
   OX<<"nps "<<nps<<std::endl;
   if (voidCard)
     OX<<"void"<<std::endl;
@@ -695,19 +717,16 @@ PhysicsCards::write(std::ostream& OX,
     }
   mode.write(OX);
   Volume.write(OX,cellOutOrder);
-  
-  for_each(ImpCards.begin(),ImpCards.end(),
-	   boost::bind<void>(&PhysImp::write,_1,boost::ref(OX),
-			     boost::ref(cellOutOrder)));
+  for(const PhysImp& PI : ImpCards)
+    PI.write(OX,cellOutOrder);
 
-  for_each(PhysCards.begin(),PhysCards.end(),
-	   boost::bind<void>(&PhysCard::write,_1,boost::ref(OX)));
-  
-  for_each(Basic.begin(),Basic.end(),
-	   boost::bind2nd(&StrFunc::writeMCNPX,OX));
+  for(const PhysCard& PC : PhysCards)
+    PC.write(OX);
 
+  for(const std::string& PC : Basic)
+    StrFunc::writeMCNPX(PC,OX);
+  
   LEA.write(OX);
-
   sdefCard.write(OX);
   kcodeCard.write(OX);
   if (!prdmp.empty())

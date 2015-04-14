@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   process/MainProcess.cxx
+ * File:   process/DefUnits.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -486,4 +486,4 @@ setTS1MarkVIb(defaultConfig& A)
   return;
 }
 
-}
+} // NAMESPACE mainSystem
