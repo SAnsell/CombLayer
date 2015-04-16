@@ -384,7 +384,7 @@ void
 PipeLine::setNAngle(const size_t NA)
   /*!
     Set the angles in the pipeline
-    \parma NA :: Number of angle segments
+    \param NA :: Number of angle segments
    */
 {
   nAngle=NA;

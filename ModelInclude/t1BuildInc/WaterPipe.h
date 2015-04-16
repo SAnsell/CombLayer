@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   t1BuildInc/WaterPipe.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,8 +66,7 @@ class WaterPipe : public attachSystem::FixedComp
   void populate(const Simulation&);
   void createUnitVector(const attachSystem::FixedComp&,const size_t);
 
-  void insertPipes(Simulation&,const attachSystem::FixedComp&,
-		   const size_t);
+  void insertPipes(Simulation&);
 
  public:
 
@@ -78,7 +77,6 @@ class WaterPipe : public attachSystem::FixedComp
 
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const size_t,const attachSystem::FixedComp&,
 		 const size_t);
 
 };

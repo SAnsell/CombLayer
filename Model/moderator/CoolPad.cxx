@@ -86,7 +86,7 @@
 namespace moderatorSystem
 {
 
-CoolPad::CoolPad(const std::string& Key,const int Index) :
+CoolPad::CoolPad(const std::string& Key,const size_t Index) :
   attachSystem::ContainedComp(),attachSystem::FixedComp(Key,1),
   ID(Index),padIndex(ModelSupport::objectRegister::Instance().
 		     cell(StrFunc::makeString(Key,Index))),
@@ -141,14 +141,13 @@ CoolPad::~CoolPad()
 {}
   
 void
-CoolPad::populate(const Simulation& System)
+CoolPad::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param System :: Simulation to use
   */
 {
   ELog::RegMethod RegA("CoolPad","populate");
-  const FuncDataBase& Control=System.getDataBase();
 
   // Two keys : one with a number and the default
   const std::string keyIndex(StrFunc::makeString(keyName,ID));
@@ -273,7 +272,7 @@ CoolPad::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("CoolPad","createAll");
-  populate(System);
+  populate(System.getDataBase());
 
   createUnitVector(FUnit);
   createSurfaces(FUnit);

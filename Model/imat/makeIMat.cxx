@@ -57,8 +57,6 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "insertInfo.h"
-#include "insertBaseInfo.h"
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"

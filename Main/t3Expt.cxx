@@ -87,9 +87,6 @@
 #include "neutron.h"
 #include "World.h"
 #include "LayerComp.h"
-// #include "ConicInfo.h"
-// #include "ModBase.h"
-// #include "CylMod.h"
 
 #include "Beam.h"
 #include "AreaBeam.h"

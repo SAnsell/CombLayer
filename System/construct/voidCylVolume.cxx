@@ -171,11 +171,8 @@ voidCylVolume::createObjects(Simulation& System)
   ELog::RegMethod RegA("voidCylVolume","createObjects");
 
   std::string Out;
-
   
   int SI(voidIndex+10);
-  double angle(0.0);
-  const double angleStep(2.0*M_PI/voidIndex);
   for(size_t i=1;i<nSegment;i++)
     {
       Out=ModelSupport::getComposite(SMap,voidIndex,SI,

@@ -196,15 +196,11 @@ WaterPipe::createUnitVector(const attachSystem::FixedComp& CUnit,
 }
 
 void 
-WaterPipe::insertPipes(Simulation& System,
-		       const attachSystem::FixedComp& Ref,
-		       const size_t rTopIndex)
+WaterPipe::insertPipes(Simulation& System)
 		       
   /*!
     Add a pipe to the water systems
     \param System :: Simulation to add pipe to
-    \param Ref :: Reflector component 
-    \param rTopIndex :: Exit surface on reflector
   */
 {
   ELog::RegMethod RegA("WaterPipe","insertPipes");
@@ -236,9 +232,7 @@ WaterPipe::insertPipes(Simulation& System,
 void
 WaterPipe::createAll(Simulation& System,
 		     const attachSystem::FixedComp& FUnit,
-		     const size_t sideIndex,
-		     const attachSystem::FixedComp& RefUnit,
-		     const size_t refIndex)
+		     const size_t sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation to create objects in
@@ -253,7 +247,7 @@ WaterPipe::createAll(Simulation& System,
 
   populate(System);
   createUnitVector(FUnit,sideIndex);
-  insertPipes(System,RefUnit,refIndex);
+  insertPipes(System);
   
   return;
 }

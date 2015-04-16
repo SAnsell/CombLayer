@@ -76,8 +76,7 @@ class makeZoom
   /// Hutch
   const ZoomHutch& getHutch() const { return *ZHut; }
 
-  void buildIsolated(Simulation&,
-		     const mainSystem::inputParam&);
+  void buildIsolated(Simulation&);
   void build(Simulation&,const mainSystem::inputParam&,
 	     const shutterSystem::BulkShield&);
 

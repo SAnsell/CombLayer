@@ -3,7 +3,7 @@
  
  * File:   Main/lens.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,18 +48,8 @@
 #include "InputControl.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
-#include "Tensor.h"
 #include "Vec3D.h"
 #include "inputParam.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "Tally.h"
-#include "TallyCreate.h"
-#include "Transform.h"
-#include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "Quadratic.h"
 #include "Plane.h"
@@ -73,38 +63,22 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "ModeCard.h"
-#include "PhysCard.h"
-#include "LSwitchCard.h"
-#include "PhysImp.h"
-#include "KGroup.h"
-#include "Source.h"
-#include "KCode.h"
-#include "PhysicsCards.h"
-#include "BasicWWE.h"
 #include "MainProcess.h"
 #include "SimProcess.h"
-#include "SurInter.h"
+#include "SimInput.h"
 #include "Simulation.h"
-#include "SimPHITS.h"
-#include "PointWeights.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "LinearComp.h"
 #include "mainJobs.h"
 #include "Volumes.h"
 #include "DefPhysics.h"
+#include "TallySelector.h"
 
-#include "siModerator.h"
-#include "candleStick.h"
 #include "LensSource.h"
 #include "FlightLine.h"
 #include "FlightCluster.h"
-#include "ProtonFlight.h"
-#include "layers.h"
-#include "outerConstruct.h"
 #include "World.h"
 #include "LensTally.h"
 #include "makeLens.h"
@@ -133,16 +107,16 @@ main(int argc,char* argv[])
 
   std::string Oname;
   std::vector<std::string> Names;  
-  std::map<std::string,std::string> Values;  
   std::map<std::string,std::string> AddValues;  
-  std::map<std::string,double> IterVal;           // Variable to iterate 
-
+  std::map<std::string,double> IterVal;           // Variable to iterate
+  
   // PROCESS INPUT:
   InputControl::mainVector(argc,argv,Names);
   mainSystem::inputParam IParam;
   createLensInputs(IParam);
 
   const int iteractive(IterVal.empty() ? 0 : 1);   
+
   Simulation* SimPtr=createSimulation(IParam,Names,Oname);
   if (!SimPtr) return -1;
 
@@ -163,24 +137,38 @@ main(int argc,char* argv[])
 	      ELog::RN.setActive(0);    
 	    }
 	  SimPtr->resetAll();
+	  
 	  lensSystem::makeLens lensObj;
 	  World::createOuterObjects(*SimPtr);
-	  lensObj.build(SimPtr,IParam);
+	  lensObj.build(SimPtr);
 
 	  SimPtr->removeComplements();
 	  SimPtr->removeDeadSurfaces(0);         
 
-	  lensObj.createTally(*SimPtr,IParam);
 	  ModelSupport::setDefaultPhysics(*SimPtr,IParam);
+	  lensObj.createTally(*SimPtr,IParam);
 
 	  if (createVTK(IParam,SimPtr,Oname))
 	    {
 	      delete SimPtr;
 	      ModelSupport::objectRegister::Instance().reset();
+	      ModelSupport::surfIndex::Instance().reset();
 	      return 0;
 	    }
 	  if (IParam.flag("endf"))
 	    SimPtr->setENDF7();
+
+	  SimProcess::importanceSim(*SimPtr,IParam);
+	  SimProcess::inputPatternSim(*SimPtr,IParam); // eneryg
+
+	  tallyModification(*SimPtr,IParam);
+	  // Ensure we done loop
+	  do
+	    {
+	      SimProcess::writeIndexSim(*SimPtr,Oname,MCIndex);
+	      MCIndex++;
+	    }
+	  while(!iteractive && MCIndex<multi);
 
 	  // outer void to zero
 	  // RENUMBER:
@@ -190,31 +178,7 @@ main(int argc,char* argv[])
 	  if (IParam.flag("weight") || IParam.flag("tallyWeight"))
 	    SimPtr->calcAllVertex();
 
-	  if (IParam.flag("weight"))
-	    {
-	      Geometry::Vec3D AimPoint;
-	      if (IParam.flag("weightPt"))
-		AimPoint=IParam.getValue<Geometry::Vec3D>("weightPt");
-	      else 
-		tallySystem::getFarPoint(*SimPtr,AimPoint);
 
-	      WeightSystem::setPointWeights(*SimPtr,AimPoint,
-					  IParam.getValue<double>("weight"));
-	    }
-
-	  if (IParam.flag("tallyWeight"))
-	    {
-	      tallySystem::addPointPD(*SimPtr);
-	    }
-
-	  if (IParam.flag("cinder"))
-	    SimPtr->setForCinder();
-
-	  // Cut energy tallies:
-	  if (IParam.flag("ECut"))
-	    SimPtr->setEnergy(IParam.getValue<double>("ECut"));
-
-	  // Ensure we done loop
 	  do
 	    {
 	      SimProcess::writeIndexSim(*SimPtr,Oname,MCIndex);
@@ -222,8 +186,7 @@ main(int argc,char* argv[])
 	    }
 	  while(!iteractive && MCIndex<multi);
 	}
-      if (IParam.flag("cinder"))
-	SimPtr->writeCinder();
+      exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
       ModelSupport::calcVolumes(SimPtr,IParam);
       ModelSupport::objectRegister::Instance().write("ObjectRegister.txt");
     }
@@ -243,7 +206,6 @@ main(int argc,char* argv[])
   delete SimPtr; 
   ModelSupport::objectRegister::Instance().reset();
   ModelSupport::surfIndex::Instance().reset();
-  masterRotate::Instance().reset();
   return exitFlag;
 
 }

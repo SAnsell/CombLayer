@@ -3,7 +3,7 @@
  
  * File:   support/support.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -459,7 +459,7 @@ int
 itemize(std::string& A,std::string& Unit,T& Item) 
   /*!
     Splits a string into tokens and units depending
-    on ability to parse type
+    on ability to parse type.
     \param A :: string to split
     \param Unit :: String item 
     \param Item :: Type item
@@ -1031,6 +1031,7 @@ template int section(std::string&,double&);
 template int section(std::string&,Geometry::Vec3D&);
 template int section(std::string&,float&);
 template int section(std::string&,int&);
+template int section(std::string&,long int&);
 template int section(std::string&,size_t&);
 template int section(std::string&,unsigned int&);
 template int section(std::string&,std::string&);

@@ -64,30 +64,29 @@ lowBitIndex(const unsigned int& x)
 
 size_t
 countBits(const unsigned int& u)
-/*!
-  Clever trick from MIT. 
-  Note: 3 bits are 4a+2b+c. Shift right 2a+b and double shift a
-        Add all together == a+b+c  . number of bits set
-  \param u :: Number to test
-  \return number of bits
-*/
+  /*!
+    Clever trick from MIT. 
+    Note: 3 bits are 4a+2b+c. Shift right 2a+b and double shift a
+    Add all together == a+b+c  . number of bits set
+    \param u :: Number to test
+    \return number of bits
+  */
 {
   // This is a nice way of getting (a0+a1+a2) in little groups of three
-  unsigned int uCount = u
+  const unsigned int uCount = u
     - ((u >> 1) & 033333333333)
     - ((u >> 2) & 011111111111);
-  return
-    static_cast<size_t>(((uCount + (uCount >> 3))
-			 & 030707070707) % 63);
+  return static_cast<size_t>(((uCount + (uCount >> 3))
+			      & 030707070707) % 63);
 }
 
 size_t
 countBits(const size_t& u)
-/*!
-  Clever trick from MIT. 
-  \param u :: Number to test
-  \return number of bits
-*/
+  /*!
+    Clever trick from MIT to obtain number of bits 
+    \param u :: Number to test
+    \return number of bits
+  */
 {
   // This is a nice way of getting (a0+a1+a2) in little groups of three
   size_t uCount = u

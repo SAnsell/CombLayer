@@ -3,7 +3,7 @@
  
  * File:   process/defaultConfig.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -157,6 +157,7 @@ defaultConfig::process(FuncDataBase& Control,
   /*!
     Process the cards
     \param Control :: FuncDataBase to update
+    \param IParam :: Input arguments
    */
 {
   ELog::RegMethod RegA("defaultConfig","process");
@@ -181,6 +182,5 @@ defaultConfig::process(FuncDataBase& Control,
   return;
 }
 
-
   
-}  // NAMESPACE ModeSupport
+}  // NAMESPACE mainSystem

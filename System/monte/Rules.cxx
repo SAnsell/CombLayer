@@ -3,7 +3,7 @@
  
  * File:   monte/Rules.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -895,8 +895,6 @@ Rule::getSurfSet() const
   std::deque<const Rule*> Rst;
   Rst.push_back(this);
   Rule* TA, *TB;      //Tmp. for storage
-  const ModelSupport::surfIndex& SurI=
-    ModelSupport::surfIndex::Instance();
   while(Rst.size())
     {
       const Rule* T1=Rst.front();

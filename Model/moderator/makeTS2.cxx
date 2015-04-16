@@ -121,7 +121,7 @@ makeTS2::build(Simulation* SimPtr,
 
   if (IParam.flag("isolate") && IParam.compValue("I",std::string("zoom")))
     {
-      zoomObj.buildIsolated(*SimPtr,IParam);
+      zoomObj.buildIsolated(*SimPtr);
       return;
     }
 

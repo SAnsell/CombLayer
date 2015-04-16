@@ -444,8 +444,8 @@ makeT1Real::build(Simulation* SimPtr,
 
   RefObj->createBoxes(*SimPtr,TarExcludeName);
 
-  WaterPipeObj->createAll(*SimPtr,*WaterModObj,5,*RefObj,6);
-  MPipeObj->createAll(*SimPtr,*MerlinMod,5,*RefObj,6);
+  WaterPipeObj->createAll(*SimPtr,*WaterModObj,5);
+  MPipeObj->createAll(*SimPtr,*MerlinMod,5);
   H2PipeObj->createAll(*SimPtr,*Lh2ModObj,4);
   CH4PipeObj->createAll(*SimPtr,*CH4ModObj,4);
 

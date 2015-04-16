@@ -24,11 +24,16 @@
 
 namespace lensSystem
 {
+  class siModerator;
+  class candleStick;
+  class layers;
+  
   /*!
     \class makeLens
     \version 1.0
     \author S. Ansell
     \date September 2011
+    \brief Contains and builds the lens primary model
   */
 
 class makeLens

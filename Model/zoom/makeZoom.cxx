@@ -58,8 +58,6 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "insertInfo.h"
-#include "insertBaseInfo.h"
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -158,12 +156,10 @@ makeZoom::~makeZoom()
 {}
 
 void
-makeZoom::buildIsolated(Simulation& System,
-			const mainSystem::inputParam& IParam)
+makeZoom::buildIsolated(Simulation& System)
   /*!
     Carry out the build with no linkage
     \param System :: Simulation system
-    \param IParam :: Input parameters
    */
 {
   ELog::RegMethod RegA("makeZoom","buildIsolated");
@@ -191,9 +187,6 @@ makeZoom::buildIsolated(Simulation& System,
   ZPrim->addInsertCell(74123);
   ZPrim->createAll(System,*ZCollimator);
   
-  //  ZHut->addInsertCell(74123);
-  //  ZHut->createAll(System,*ZPrim); 
-
   return;
 }
 
