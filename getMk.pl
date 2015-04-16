@@ -6,37 +6,48 @@ use getMake;
 use strict;
 
 ## EXECUTABLES
-my @masterprog=("fullBuild","ess","sinbad","t1Real",
-		"sns","reactor","t1MarkII","t1Eng","testMain"); 
+my @masterprog=("fullBuild","ess","photonMod","sinbad","t1Real",
+		"sns","reactor","t1MarkII","t1Eng","t3Expt",
+		"testMain"); 
 
 
 my @noncompile=("bilbau","clayer","cuBuild","d4c","detectSim",
 		"epb","ess","fussion","lens","muBeam",
-                "pressure","vcn","photonMod","power");
+                "pressure","vcn","power");
+
+## SYSTEM Directory
+my @systemLibDir=qw( attachComp construct compWeights crystal 
+                     endf funcBase geometry input log md5 
+                     mersenne monte physics poly process 
+                     simMC source support tally  visit weights 
+                     world work xml 
+                     );
+
+my @systemNames= @systemLibDir;
+
+## Model Directory
+my @modelLibDir=qw( bibBuild bnctBuild build chip 
+                    cuBlock d4cModel delft epbBuild essBuild
+                    gammaBuild imat lensModel moderator 
+                    muon photon sinbadBuild snsBuild t1Build 
+                    t1Engineer t1Upgrade t3Model zoom );
+my @modelNames= @modelLibDir;
 
 
-## CXX Directory
-my @sublibdir=("src","attachComp","beamline","bibBuild",
-               "bnctBuild","build","chip","construct", 
-	       "crystal","cuBlock","d4cModel","delft",         
-	       "endf","epbBuild","essBuild","funcBase",           # 12
-	       "gammaBuild","geometry","global","imat",
-	       "input","instrument","lensModel","log",
-	       "md5","moderator","mersenne","monte",
-	       "muon","photon","physics","poly","process",
-	       "scatMat","simMC","sinbadBuild","snsBuild","source",
-	       "support","tally","t1Build","t1Engineer",
-               "t1Upgrade","transport","visit","weights",
-	       "world","work","xml","zoom","special",
+## GENERAL Directory 
+my @sublibdir=("src","beamline","global",
+	       "instrument","scatMat","transport","special",
 	       "test");                            
 
-my @core=qw( src attachComp beamline construct crystal endf funcBase
+my @core=qw( src attachComp beamline compWeights
+             construct crystal endf funcBase
              geometry global input instrument log md5 monte 
              mersenne physics poly process scatMat source 
              support tally transport visit weights
              world work xml special test);
 
-my @coreInc=qw( include  attachCompInc beamlineInc constructInc crystalInc 
+my @coreInc=qw( include  attachCompInc beamlineInc 
+             compWeightsInc constructInc crystalInc 
              endfInc funcBaseInc geomInc globalInc inputInc
              instrumentInc logInc md5Inc  mersenneInc
              monteInc muonInc physicsInc polyInc processInc scatMatInc
@@ -46,19 +57,28 @@ my @coreInc=qw( include  attachCompInc beamlineInc constructInc crystalInc
 my @libnames=@sublibdir;
 
 ## INCLUDES
-my @incdir=("include","attachCompInc","beamlineInc","bibBuildInc",
-	    "bnctBuildInc","buildInc","chipInc",
-	    "constructInc","crystalInc","cuBlockInc","d4cModelInc",
-	    "delftInc","endfInc","epbBuildInc","essBuildInc",
-            "funcBaseInc","gammaBuildInc","geomInc","globalInc",
-	    "imatInc","inputInc","instrumentInc","lensModelInc",
-	    "logInc","md5Inc","mersenneInc","moderatorInc",
-	    "monteInc","muonInc","photonInc","physicsInc","polyInc",
-	    "processInc","scatMatInc","simMCInc","sinbadBuildInc",
-	    "snsBuildInc","sourceInc","specialInc","supportInc","tallyInc",
-	    "t1BuildInc","t1EngineerInc","t1UpgradeInc","transportInc",
-	    "visitInc","weightsInc","workInc","worldInc","xmlInc",
-	    "zoomInc","testInclude");   ## Includes
+
+## MODEL Directory
+my @modelInclude = qw( bibBuildInc bnctBuildInc buildInc chipInc 
+                       cuBlockInc d4cModelInc delftInc epbBuildInc 
+                       essBuildInc gammaBuildInc imatInc lensModelInc 
+                       moderatorInc muonInc photonInc
+                       sinbadBuildInc snsBuildInc t1BuildInc t1EngineerInc 
+                       t1UpgradeInc t3ModelInc zoomInc );
+
+## SYSTEM Directory
+my @systemInclude = qw(
+                     attachCompInc constructInc compWeightsInc crystalInc 
+                     endfInc funcBaseInc geomInc inputInc logInc md5Inc 
+                     mersenneInc monteInc physicsInc polyInc processInc 
+                     simMCInc sourceInc supportInc tallyInc 
+                     visitInc weightsInc 
+                     worldInc workInc xmlInc 
+                     );
+
+my @incdir=qw( include beamlineInc  chipInc  globalInc  
+               instrumentInc polyInc  scatMatInc  
+               specialInc  transportInc  worldInc testInclude );
 
 ## Flags on executables
 my @controlflags=("-S -B","-S -B","-S -B","-S -B",
@@ -80,7 +100,13 @@ my $gM=new getMake;
 $gM->addMasterProgs(\@masterprog,\@controlflags);
 $gM->addCoreItems(\@core,\@coreInc);
 $gM->addLibs(\@libnames,\@sublibdir,\@libflags);
+
+$gM->addDirLibs("Model",\@modelNames,\@modelLibDir,\@libflags);
+$gM->addDirLibs("System",\@systemNames,\@systemLibDir,\@libflags);
+
 $gM->addIncDir(\@incdir);
+$gM->addIncSubDir("SystemInclude",\@systemInclude);
+$gM->addIncSubDir("ModelInclude",\@modelInclude);
 
 # my @libnames=("mcnpx","build","funcBase","geometry",  0,1,2,3
 #	      "log","monte","mersenne","poly",          4,5,6,7,
@@ -128,12 +154,22 @@ $gM->addDepUnit("d4c",      ["d4cModel","lensModel","visit","src","physics",
 			     "support","weights","work","md5","global",
 			     "attachComp","visit"]);
 
+$gM->addDepUnit("t3Expt",    ["t3Model","visit","src","physics",
+			     "input","instrument","source","simMC","monte",
+			     "funcBase","log","construct","crystal","transport",
+			     "scatMat","endf","transport","scatMat","tally",
+			     "process","tally","world","construct","monte",
+			     "geometry","mersenne","src","xml","poly",
+			     "support","weights","work","md5","global",
+			     "attachComp","visit"]);
+
 $gM->addDepUnit("lens",     ["lensModel","visit","src","physics","input",
-			     "source","monte","funcBase","log","construct",
-			     "crystal","transport","scatMat","endf",
-			     "transport","scatMat","tally","process","tally",
-			     "world","construct","monte","geometry",
-			     "mersenne","src","xml","work","poly","support",
+			     "source","simMC","monte","funcBase","log",
+			     "construct","crystal","transport","scatMat",
+			     "endf","transport","scatMat","tally",
+			     "process","tally","world","construct",
+			     "monte","geometry","mersenne","src",
+			     "xml","work","poly","support",
 			     "weights","md5","global","attachComp","visit"]);
 
 $gM->addDepUnit("simple",   ["visit","physics","src","input","source",
@@ -208,7 +244,8 @@ $gM->addDepUnit("cuBuild",  ["cuBlock","delft","visit","src","physics",
 			     "xml","poly","support","weights","global",
 			     "attachComp","visit"]);
 
-$gM->addDepUnit("ess",      ["essBuild","visit","src","simMC","beamline","physics",
+$gM->addDepUnit("ess",      ["essBuild","visit","src","simMC",
+			     "beamline","physics",
 			     "input","source","monte","funcBase","log",
 			     "tally","construct","crystal","transport",
 			     "scatMat","md5","endf","process","world","work",

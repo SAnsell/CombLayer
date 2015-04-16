@@ -31,6 +31,7 @@ sub new
     incdir => undef,          ## Include Directories
     controlflags => [ ],      ## Executable control flags
     depList => [ ],           ## Executable dependence lists
+    masterDirList => [ ],     ## Master directories
 
     incCppFiles => undef,     ## Include files in each C++
     incForFiles => undef,     ## Include files in each for
@@ -242,15 +243,11 @@ sub incDirName
   return "NULL" if ($incType<0);
   return "SRCDIR" if ($incType==0);
   my $outString="INCDIR";
-  if ($incType<27) 
-    {
-      $outString.= chr(ord('A')+$incType-1);
-    }
-  else
-    {
-      $outString.= chr(ord('a')+$incType-27);
-    }
-  
+  $incType--;
+  my $aIndex=int($incType / 26);
+  my $bIndex=$incType % 26;
+  $outString.= chr(ord('A')+$aIndex);
+  $outString.= chr(ord('A')+$bIndex);
   return $outString;
 }
 
@@ -609,6 +606,41 @@ sub addLibs
   return;
 }
 
+sub addDirLibs
+  ##
+  ## Add an array of libraries
+  ## and their subdirectories
+  ##
+{
+  my $self=shift;
+  my $dirName=shift; ## Directory tree name
+  my $Lr=shift;  ## Libraries
+  my $Dr=shift;  ## Directories
+  my $Fr=shift;  ## Libflags
+
+  my @fullLibs;
+  my @fullNames;
+  foreach my $item (@{$Lr})
+    {
+      push(@fullNames,$dirName."/".$item);
+    }
+  foreach my $item (@{$Dr})
+    {
+      push(@fullLibs,$dirName."/".$item);
+    }
+  
+  my $index=scalar($self->{LibName});
+  for(my $i=0;$i< scalar(@fullLibs);$i++)
+    {
+      $self->{LibName}{$Lr->[$i]}=$i+$index;
+    }		   
+  push(@{$self->{libnames}},@fullNames);
+  push(@{$self->{sublibdir}},@fullLibs);
+  push(@{$self->{libflags}},@{$Fr});
+  push(@{$self->{masterDirList}},$dirName);
+  return;
+}
+
 sub addIncDir
   ## 
   ## Set the include directory 
@@ -620,6 +652,22 @@ sub addIncDir
   foreach my $name (@{$Ar})
    {
      push(@{$self->{incdir}},$name);
+   }
+  return;
+}
+
+sub addIncSubDir
+  ## 
+  ## Set the include directory 
+  ##
+{
+  my $self=shift;
+  my $SubName=shift;
+  my $Ar=shift;
+
+  foreach my $name (@{$Ar})
+   {
+     push(@{$self->{incdir}},$SubName."/".$name);
    }
   return;
 }
@@ -699,7 +747,6 @@ sub setPrintFile
 {
   my $self=shift;
   my $FName=shift;
-  
   if ($FName)
     {
       open($self->{OFLE},'>',$FName) or die("Unable to open file :".$FName);
@@ -828,6 +875,7 @@ sub printHeaders
   my $pwd=`pwd`;
   chomp $pwd;
   print "LIBOUTDIR= ".$pwd."\/".$self->{output}."\n";
+  print "MAINDIR= ".$pwd."\n";
   
   if ($self->{boost})
     {
@@ -859,14 +907,14 @@ sub printHeaders
     }
   if ($self->{lua})
     {
-      my $incL="INCLUA="." -I\/usr/local/include/toluaxx5.1";
+      my $incL="INCLUA="." -I/usr/local/include/toluaxx5.1";
       printString($incL,66,5);
     }      
   print "\n";
   
   for(my $i=1;$i<=scalar(@{$self->{incdir}});$i++)
     {
-      print incDirName($i)."=../".$self->{incdir}[$i-1]."\n";
+      print incDirName($i)."=\$(MAINDIR)/".$self->{incdir}[$i-1]."\n";
     }
   print "\n";
 
@@ -1134,6 +1182,7 @@ sub printMainAll
   my $Phony=".PHONY : ";
   foreach my $name (@{$self->{libnames}})
     {
+      $name=~s/\//-/g;
       $Target.="lib".ucfirst($name)." ";
       $Phony.="lib".ucfirst($name)." ";
     }
@@ -1190,10 +1239,13 @@ sub printMainAll
 	  if ($self->{shared});
 
       for(my $j=0;$j<$NLib;$j++)
-	{
-#	  $depLine.="\$(LIBOUTDIR)/lib".ucfirst($self->{libnames}[$self->{depList}[$i][$j]]).$libExt." ";
-	  $depLine.= "lib".ucfirst($self->{libnames}[$self->{depList}[$i][$j]])." "; 
-	  $compLine.="\$(LIBOUTDIR)/lib".ucfirst($self->{libnames}[$self->{depList}[$i][$j]]).$libExt." ";
+        {
+	  my $libX=$self->{depList}[$i][$j];
+	  my $libName=$self->{libnames}[$self->{depList}[$i][$j]];
+	  $libName=~s/\//-/g;
+	  
+	  $depLine.= "lib".ucfirst($libName)." "; 
+	  $compLine.="\$(LIBOUTDIR)/lib".ucfirst($libName).$libExt." ";
 	}
       if ($self->{lua})
 	{
@@ -1222,6 +1274,7 @@ sub printMainAll
   for(my $i=0;$i<scalar(@{$self->{libnames}});$i++)
     {
       my $name=$self->{libnames}[$i];
+      $name=~s/\//-/g;
       print "lib".ucfirst($name)." : \n";
       print "\t\@\${MAKE} -C ./".$self->{sublibdir}[$i]." all\n";
       print "\n";
@@ -1347,7 +1400,8 @@ sub printLibDep
 {
   my $self=shift;
   my $libname=shift;
-
+  $libname=~s/\//-/g;
+  
   my $compName=($self->{fortranlib}) ? "FCOMPL" : "CCOMPL";
   if (!$self->{shared})
     {
@@ -1627,16 +1681,30 @@ sub calcDepNames
         {
 	  push(@Out,$item);
 	}
+      elsif (exists($kname{$item}))
+        {
+	  push(@Out,$kname{$item});
+	}
       else
         {
-	  if (exists($kname{$item}))
+	  my $outName="";
+	  foreach my $preName (@{$self->{masterDirList}})
+	  {
+	    if (exists($kname{$preName."/".$item}))
 	    {
-	      push(@Out,$kname{$item});
+	      $outName=$preName;
+	      last;
+	    }
+	  }
+	  if (exists($kname{$outName."/".$item}))
+	    { 
+	      push(@Out,$kname{$outName."/".$item});
 	    }
 	  else
-	    {
-	      print STDERR "No Item ",$item," in library\n";
-	    }
+	  {
+	    print STDERR "No item: ",$item," in library\n";
+	    exit(1);
+	  }
 	}
     }
   return @Out;
