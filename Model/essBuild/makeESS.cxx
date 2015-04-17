@@ -547,12 +547,14 @@ makeESS::build(Simulation* SimPtr,
   const std::string topModType=IParam.getValue<std::string>("topMod");
   const std::string targetType=IParam.getValue<std::string>("targetType");
   const std::string iradLine=IParam.getValue<std::string>("iradLineType");
+
   if (StrFunc::checkKey("help",lowPipeType,lowModType,targetType) ||
       StrFunc::checkKey("help",iradLine,topModType,""))
     {
       optionSummary(*SimPtr);
       throw ColErr::ExitAbort("Help system exit");
     }
+
   makeTarget(*SimPtr,targetType);
   
   Reflector->createAll(*SimPtr,World::masterOrigin());

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   physicsInc/dbcnCard.h
+ * File:   physicsInc/ExpControl.h
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -19,14 +19,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef physicsSystem_dbcnCard_h
-#define physicsSystem_dbcnCard_h
+#ifndef physicsSystem_ExpControl_h
+#define physicsSystem_ExpControl_h
 
 namespace physicsSystem
 {
 
 /*!
-  \class dbcnCard
+  \class ExpControl
   \version 1.0
   \date April 2015
   \author S.Ansell
@@ -36,28 +36,19 @@ namespace physicsSystem
   
 */
 
-class dbcnCard 
+class ExpControl 
 {
  private:
 
-  /// index : type : data1 : data2 
-  typedef std::tuple<size_t,size_t,long int,double> TTYPE;
-  
-  std::vector<int> activeFlag;         ///< [0 = j , 1 active]
-  std::vector<std::string> nameOrder;   ///< Ordered list of names
-  std::map<std::string,TTYPE> Comp;      ///< names for each unit
+  std::map<int,EUnit> MapItem;
+  std::vector<Geometry::Vec3D> VecUnits
     
-  template<typename T> T& getItem(const std::string&);
-  template<typename T> const T& getItem(const std::string&) const;
-  std::string itemString(const std::string&) const;
-  void populate();
-  
  public:
    
-  dbcnCard();
-  dbcnCard(const dbcnCard&);
-  dbcnCard& operator=(const dbcnCard&);
-  virtual ~dbcnCard();
+  ExpControl();
+  ExpControl(const ExpControl&);
+  ExpControl& operator=(const ExpControl&);
+  virtual ~ExpControl();
 
   size_t keyType(const std::string&) const;
     

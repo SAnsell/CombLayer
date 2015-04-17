@@ -121,6 +121,7 @@
 #include "testElement.h"
 #include "testEllipticCyl.h"
 #include "testFace.h"
+#include "testFortranWrite.h"
 #include "testFunc.h"
 #include "testFunction.h"
 #include "testHeadRule.h"
@@ -1085,10 +1086,11 @@ supportTest(const int type,const int extra)
   if (type==0)
     {
       std::cout<<"testDoubleErr           (1)"<<std::endl;
-      std::cout<<"testMathSupport         (2)"<<std::endl;
-      std::cout<<"testMatrix              (3)"<<std::endl;
-      std::cout<<"testSimpson             (4)"<<std::endl;
-      std::cout<<"testSupport             (5)"<<std::endl;
+      std::cout<<"testFortranWrite        (2)"<<std::endl;
+      std::cout<<"testMathSupport         (3)"<<std::endl;
+      std::cout<<"testMatrix              (4)"<<std::endl;
+      std::cout<<"testSimpson             (5)"<<std::endl;
+      std::cout<<"testSupport             (6)"<<std::endl;
       return 0;
     }
 
@@ -1101,24 +1103,31 @@ supportTest(const int type,const int extra)
 
   if(type==2 || type<0)
     {
-      testMathSupport A;
+      testFortranWrite A;
       int X=A.applyTest(extra);
       if (X) return X;
     }
 
   if(type==3 || type<0)
     {
+      testMathSupport A;
+      int X=A.applyTest(extra);
+      if (X) return X;
+    }
+
+  if(type==4 || type<0)
+    {
       testMatrix A;
       int X=A.applyTest(extra);
       if (X) return X;
     }
-  if(type==4 || type<0)
+  if(type==5 || type<0)
     {
       testSimpson A;
       int X=A.applyTest(extra);
       if (X) return X;
     }
-  if(type==5 || type<0)
+  if(type==6 || type<0)
     {
       testSupport A;
       int X=A.applyTest(extra);

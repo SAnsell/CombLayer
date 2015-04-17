@@ -55,6 +55,7 @@
 #include "NRange.h"
 #include "KGroup.h"
 #include "dbcnCard.h"
+#include "ExpControl.h"
 #include "PhysicsCards.h"
 
 namespace physicsSystem
@@ -62,8 +63,8 @@ namespace physicsSystem
 
 PhysicsCards::PhysicsCards() :
   nps(10000),histp(0),dbCard(new dbcnCard),
-  voidCard(0),prdmp("1e7 1e7 0 2 1e7"),
-  Volume("vol")
+  voidCard(0),nImpOut(0),prdmp("1e7 1e7 0 2 1e7"),
+  Volume("vol"),ExpCard(new ExpControl)
   /*!
     Constructor
   */
@@ -72,9 +73,10 @@ PhysicsCards::PhysicsCards() :
 PhysicsCards::PhysicsCards(const PhysicsCards& A) : 
   nps(A.nps),histp(A.histp),histpCells(A.histpCells),
   dbCard(new dbcnCard(*dbCard)),Basic(A.Basic),mode(A.mode),
-  voidCard(A.voidCard),printNum(A.printNum),prdmp(A.prdmp),
-  ImpCards(A.ImpCards),PhysCards(A.PhysCards),LEA(A.LEA),
-  sdefCard(A.sdefCard),Volume(A.Volume)
+  voidCard(A.voidCard),nImpOut(A.nImpOut),printNum(A.printNum),
+  prdmp(A.prdmp),ImpCards(A.ImpCards),
+  PhysCards(A.PhysCards),LEA(A.LEA),sdefCard(A.sdefCard),
+  Volume(A.Volume),ExpCard(new ExpControl(*A.ExpCard))
   /*!
     Copy constructor
     \param A :: PhysicsCards to copy
@@ -105,6 +107,7 @@ PhysicsCards::operator=(const PhysicsCards& A)
       LEA=A.LEA;
       sdefCard=A.sdefCard;
       Volume=A.Volume;
+      *ExpCard= *A.ExpCard;
     }
   return *this;
 }
@@ -130,6 +133,8 @@ PhysicsCards::clearAll()
   PhysCards.clear();
   Volume.clear();
   sdefCard.clear();
+  dbCard->clear();
+  ExpCard->clear();
   return;
 }
 
@@ -498,7 +503,6 @@ PhysicsCards::setCells(const std::string& Type,
 
   throw ColErr::InContainerError<std::string>(Type+"/"+Particle,
 				 "Type/Particle");
-  return;
 }
 
 void

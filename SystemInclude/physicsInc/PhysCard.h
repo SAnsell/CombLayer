@@ -3,7 +3,7 @@
  
  * File:   physicsInc/PhysCard.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,8 +43,8 @@ class PhysCard
 {
  private:
 
-  std::string KeyName;                 ///< NameType e.g. cut/phys
-  std::list<std::string> particles;    ///< Particle list (if any)
+  std::string KeyName;               ///< NameType e.g. cut/phys
+  std::list<std::string> particles;  ///< Particle list (if any)
   std::array<int,5> defFlag;         ///< Default values
   std::array<double,5> vals;         ///< Values
 
@@ -66,8 +66,8 @@ class PhysCard
 
   double getValue(const size_t) const;
   void setValue(const size_t,const double);
-  void setValues(const size_t,const double =0,const double =0,
-		 const double =0,const double =0,const double =0);
+  void setValues(const size_t,const double =0.0,const double =0.0,
+		 const double =0.0,const double =0.0,const double =0.0);
   void setValues(const std::string&);
   void setDef(const size_t);
   void setEnergyCut(const double);

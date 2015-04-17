@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   physics/dbcnCard.cxx
+ * File:   physics/ExpControl.cxx
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -39,12 +39,12 @@
 #include "OutputLog.h"
 #include "support.h"
 #include "stringCombine.h"
-#include "dbcnCard.h"
+#include "ExpControl.h"
 
 namespace physicsSystem
 {
   
-dbcnCard::dbcnCard() :
+ExpControl::ExpControl() :
   activeFlag(72,0),nameOrder(72,std::string())
   /*!
     Constructor
@@ -53,20 +53,20 @@ dbcnCard::dbcnCard() :
   populate();
 }
 
-dbcnCard::dbcnCard(const dbcnCard& A) : 
+ExpControl::ExpControl(const ExpControl& A) : 
   activeFlag(A.activeFlag),nameOrder(A.nameOrder),
   Comp(A.Comp)
   /*!
     Copy constructor
-    \param A :: dbcnCard to copy
+    \param A :: ExpControl to copy
   */
 {}
 
-dbcnCard&
-dbcnCard::operator=(const dbcnCard& A)
+ExpControl&
+ExpControl::operator=(const ExpControl& A)
   /*!
     Assignment operator
-    \param A :: dbcnCard to copy
+    \param A :: ExpControl to copy
     \return *this
   */
 {
@@ -79,19 +79,19 @@ dbcnCard::operator=(const dbcnCard& A)
   return *this;
 }
   
-dbcnCard::~dbcnCard()
+ExpControl::~ExpControl()
   /*!
     Destructor
   */
 {}
 
 void
-dbcnCard::populate()
+ExpControl::populate()
   /*!
     Populate the Comp map
   */
 {
-  ELog::RegMethod RegA("dbcnCard","populate");
+  ELog::RegMethod RegA("ExpControl","populate");
   
   // TTYPE : index : type [1=int,2=double,0=not-set]; long int : double
   typedef std::map<std::string,TTYPE>::value_type MVAL;
@@ -129,14 +129,14 @@ dbcnCard::populate()
   
 template<>
 const double&
-dbcnCard::getItem(const std::string& keyName) const
+ExpControl::getItem(const std::string& keyName) const
   /*!
     Get an item based on the type
     \param keyName :: Index number to return
     \return value 
    */
 {
-  ELog::RegMethod RegA("dbcnCard","getItem<double> const");
+  ELog::RegMethod RegA("ExpControl","getItem<double> const");
 
   std::map<std::string,TTYPE>::const_iterator mc=Comp.find(keyName);
   if (mc!=Comp.end() && std::get<1>(mc->second)==2)
@@ -148,14 +148,14 @@ dbcnCard::getItem(const std::string& keyName) const
 
 template<>
 const long int&
-dbcnCard::getItem(const std::string& keyName) const
+ExpControl::getItem(const std::string& keyName) const
   /*!
     Get an item based on the type
     \param keyName :: Index number to return
     \return long int result
    */
 {
-  ELog::RegMethod RegA("dbcnCard","getItem<int> const");
+  ELog::RegMethod RegA("ExpControl","getItem<int> const");
   
   std::map<std::string,TTYPE>::const_iterator mc;
   mc=Comp.find(keyName);
@@ -168,14 +168,14 @@ dbcnCard::getItem(const std::string& keyName) const
   
 template<>
 double&
-dbcnCard::getItem(const std::string& keyName) 
+ExpControl::getItem(const std::string& keyName) 
   /*!
     Get an item based on the type
     \param keyName :: Index number to return
     \return reference name 
    */
 {
-  ELog::RegMethod RegA("dbcnCard","getItem<double>");
+  ELog::RegMethod RegA("ExpControl","getItem<double>");
   std::map<std::string,TTYPE>::iterator mc;
   mc=Comp.find(keyName);
   if (mc!=Comp.end() && std::get<1>(mc->second)==2)
@@ -187,14 +187,14 @@ dbcnCard::getItem(const std::string& keyName)
 
 template<>
 long int&
-dbcnCard::getItem(const std::string& keyName) 
+ExpControl::getItem(const std::string& keyName) 
   /*!
     Get an item based on the type
     \param keyName :: Index number to return
     \return long int result
    */
 {
-  ELog::RegMethod RegA("dbcnCard","getItem<int>");
+  ELog::RegMethod RegA("ExpControl","getItem<int>");
   
   std::map<std::string,TTYPE>::iterator mc;
   mc=Comp.find(keyName);
@@ -206,14 +206,14 @@ dbcnCard::getItem(const std::string& keyName)
 }
   
 void
-dbcnCard::setActive(const std::string& key,const int flag)
+ExpControl::setActive(const std::string& key,const int flag)
   /*!
     Activate a card
     \param key :: name for index
     \param flag :: flag for index
    */
 {
-  ELog::RegMethod RegA("dbcnCard","setActive");
+  ELog::RegMethod RegA("ExpControl","setActive");
   std::map<std::string,TTYPE>::const_iterator mc=
     Comp.find(key);
 
@@ -227,14 +227,14 @@ dbcnCard::setActive(const std::string& key,const int flag)
 
 template<typename T>
 void
-dbcnCard::setComp(const std::string& Key,const T& Value)
+ExpControl::setComp(const std::string& Key,const T& Value)
   /*!
     Set component value [and activate]
     \param Key :: Key value for item
     \param Value :: value to set
    */
 {
-  ELog::RegMethod RegA("dbcnCard","setComp");
+  ELog::RegMethod RegA("ExpControl","setComp");
 
   getItem<T>(Key)=Value;
   setActive(Key,1);
@@ -244,19 +244,19 @@ dbcnCard::setComp(const std::string& Key,const T& Value)
 
 template<typename T>
 const T&
-dbcnCard::getComp(const std::string& Key) const
+ExpControl::getComp(const std::string& Key) const
   /*!
     Get component value 
     \param Key :: Key value for item
     \param Value :: value to set
    */
 {
-  ELog::RegMethod RegA("dbcnCard","setComp(double)");
+  ELog::RegMethod RegA("ExpControl","setComp(double)");
   return getItem<T>(Key);
 }
 
 size_t
-dbcnCard::keyType(const std::string& keyName) const
+ExpControl::keyType(const std::string& keyName) const
   /*!
     Determine typenumber of the keyType 
     \param keyName :: Key name to look up
@@ -272,14 +272,14 @@ dbcnCard::keyType(const std::string& keyName) const
   
         
 std::string
-dbcnCard::itemString(const std::string& keyName) const
+ExpControl::itemString(const std::string& keyName) const
   /*!
     Process an item in to a string
     \param keyName :: Kye name
     \return string
    */
 {
-  ELog::RegMethod RegA("dbcnCard","itemString");
+  ELog::RegMethod RegA("ExpControl","itemString");
 
   const size_t kTYPE=keyType(keyName);
   if (kTYPE==1)
@@ -291,13 +291,13 @@ dbcnCard::itemString(const std::string& keyName) const
 }
   
 void
-dbcnCard::write(std::ostream& OX) const
+ExpControl::write(std::ostream& OX) const
   /*!
     Write out the card
     \param OX :: Output stream
   */
 {
-  ELog::RegMethod RegA("dbcnCard","write");
+  ELog::RegMethod RegA("ExpControl","write");
 
   size_t lastValid;
   for(lastValid=activeFlag.size();lastValid &&
@@ -326,19 +326,6 @@ dbcnCard::write(std::ostream& OX) const
   return;
 }
 
-///\cond TEMPLATE
-  
-template
-void dbcnCard::setComp(const std::string&,const double&);
-template
-void dbcnCard::setComp(const std::string&,const long int&);
-
-template
-const double& dbcnCard::getComp(const std::string&) const; 
-template
-const long int& dbcnCard::getComp(const std::string&) const;
-
-///\endcond TEMPLATE
 
 } // NAMESPACE physicsCardss
       

@@ -137,8 +137,9 @@ StrParts(std::string Sdx,const boost::regex& Re)
 
 template<typename T>
 int
-StrFullCut(std::string& Text,const boost::regex& Re,T& Aout,
-       const int compNum)
+StrFullCut(std::string& Text,
+	   const boost::regex& Re,T& Aout,
+	   const int compNum)
   /*! 
     Find the match, return the disected items:
     Then remove the whole of the match

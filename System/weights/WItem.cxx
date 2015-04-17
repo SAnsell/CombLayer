@@ -189,12 +189,14 @@ void
 WItem::rescale(const double Tscale,const double SF)
   /*!
     Sets all the cells to a specific weight.
-    Divides the weight by 10 if temperature below Tscale
+    Divides the weight by SF if temperature below Tscale
     \param Tscale :: Temperature to scale 
     \param SF :: Scale factor
   */
 {
-  if ((Tscale<293 && Tmp<1) || Tmp>Tscale)
+  // Most cell Tmp == 0 [assume 293.0K]
+  
+  if (Tmp<Tscale && (Tscale>293.0 || Tmp>1.0))
     transform(Val.begin(),Val.end(),Val.begin(),
 	      std::bind2nd(std::divides<double>(),SF));
   return;

@@ -3,7 +3,7 @@
  
  * File:   supportInc/support.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -92,6 +92,8 @@ void writeMCNPXcont(const std::string&,std::ostream&);
 void writeMCNPXcomment(const std::string&,std::ostream&);
 
 std::vector<std::string> StrParts(std::string);
+std::vector<std::string>
+splitParts(const std::string&,const std::string delim);
 
 template<template<typename T,typename Alloc> class V,typename T,typename Alloc> 
 int sliceVector(V<T,Alloc>&,const T&,const T&);

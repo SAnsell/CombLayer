@@ -1022,6 +1022,48 @@ sliceVector(V<T,Alloc>& A,const T& indexA,const T& indexB)
   return 0;
 }
 
+std::vector<std::string>
+splitParts(const std::string& Line,const char delim)
+  /*!
+    Split a string based on a a delimiter and avoiding quotes
+    \param Line :: Line to split 
+    \param delim :: deliminator
+  */
+{
+  std::vector<std::string> Out;
+  int hardQuote(0);
+  int softQuote(0);
+  std::string Unit;
+
+  for(size_t index=0;index<Line.length();index++)
+    {
+      if (Line[index]=='\'' &&
+	  (index==0 || Line[index]!='\\'))
+        {
+	  hardQuote=1-hardQuote;
+	}
+      else if (!hardQuote && Line[index]=='\"' &&
+	  (index==0 || Line[index]!='\\'))
+        {
+	  softQuote=1-softQuote;
+	}
+
+      if ((!softQuote || !hardQuote) && Line[index]==delim)
+	{
+	  if (Unit.empty())
+	    {
+	      Out.push_back(Unit);
+	      Unit="";
+	    }
+	}
+      else if (hardQuote || softQuote || !isspace(Line[index]))
+	Unit+=Line[index];
+    }
+
+  return Out;
+
+}
+  
 /// \cond TEMPLATE 
 
 template int itemize(std::string&,std::string&,double&);

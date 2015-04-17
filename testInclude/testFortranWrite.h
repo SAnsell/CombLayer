@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   tallyInc/surfaceConstruct.h
+ * File:   testInclude/testFortranWrite.h
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -19,52 +19,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef tallySystem_surfaceConstruct_h
-#define tallySystem_surfaceConstruct_h
-
-namespace attachSystem
-{
-  class FixedComp;
-}
-
-
-class Simulation;
-
-namespace tallySystem
-{
+#ifndef testFortranWrite_h
+#define testFortranWrite_h 
 
 /*!
-  \class surfaceConstruct
-  \version 1.0
+  \class testFortranWrite
+  \brief Tests the class FortranWrite
   \author S. Ansell
-  \date April 2012
-  \brief Holds everthing for tallies
-
-  Provides linkage to its outside on FixedComp[0]
+  \date April 2015
+  \version 1.0
 */
 
-class surfaceConstruct : virtual public basicConstruct
+class testFortranWrite
 {
- private:
+private:
+
+  //Tests 
+  int testParse();
+
+public:
   
-  int processSurfObject(Simulation&,const std::string&,
-			const long int,
-			const std::vector<std::string>&) const;
+  testFortranWrite();
+  ~testFortranWrite();
+  
+  int applyTest(const int);       
 
- public:
-
-  surfaceConstruct();
-  surfaceConstruct(const surfaceConstruct&);
-  surfaceConstruct& operator=(const surfaceConstruct&);
-  virtual ~surfaceConstruct() {}  ///< Destructor
-
-  int processSurface(Simulation&,const mainSystem::inputParam&,
-		    const size_t) const;
-
-  virtual void writeHelp(std::ostream&) const;
 };
 
-}
-
 #endif
- 

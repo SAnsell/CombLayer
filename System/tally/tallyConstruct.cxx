@@ -268,6 +268,8 @@ tallyConstruct::helpTallyType(const std::string& HType) const
     pointPtr->writeHelp(ELog::EM.Estream());
   else if (HType=="mesh")
     meshPtr->writeHelp(ELog::EM.Estream());
+  else if (HType=="surface")
+    surfPtr->writeHelp(ELog::EM.Estream());
   else
     {
       ELog::EM<<"Tally Types:\n\n";

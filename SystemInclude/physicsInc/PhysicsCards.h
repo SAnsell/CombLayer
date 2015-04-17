@@ -25,6 +25,8 @@
 namespace physicsSystem
 {
   class dbcnCard;
+  class ExpControl;
+  
 /*!
   \class PhysicsCards
   \version 1.0
@@ -52,6 +54,7 @@ class PhysicsCards
 
   ModeCard mode;                          ///< Mode card
   bool voidCard;                          ///< Void card
+  bool nImpOut;                           ///< are neutron imp needed
   std::list<int> printNum;                ///< print numbers
   std::string prdmp;                      ///< prdmp string
   std::vector<PhysImp> ImpCards;          ///< Importance cards
@@ -61,7 +64,8 @@ class PhysicsCards
   SDef::Source sdefCard;                  ///< Source term
   SDef::KCode kcodeCard;                  ///< KCode term [if used]
   PhysImp Volume;                         ///< Volume stack
-  
+  std::unique_ptr<ExpControl> ExpCard;    ///< Exponent control system
+    
  public:
    
   PhysicsCards();

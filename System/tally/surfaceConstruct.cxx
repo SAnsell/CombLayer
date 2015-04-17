@@ -73,16 +73,22 @@ namespace tallySystem
 {
 
 surfaceConstruct::surfaceConstruct() 
-  /// Constructor
+  /*!
+    Constructor
+  */
 {}
 
 surfaceConstruct::surfaceConstruct(const surfaceConstruct&) 
-  /// Copy Constructor
+  /*! 
+    Copy Constructor
+  */
 {}
 
 surfaceConstruct&
 surfaceConstruct::operator=(const surfaceConstruct&) 
-  /// Assignment operator
+  /*! 
+    Assignment operator
+  */
 {
   return *this;
 }
@@ -117,9 +123,7 @@ surfaceConstruct::processSurface(Simulation& System,
 	inputItem<std::string>(IParam,Index,2,"position not given");
       const std::string snd=
 	inputItem<std::string>(IParam,Index,3,"front/back/side not give");
-      const int linkNumber=getLinkIndex(snd);
-      ELog::EM<<"Side == "<<linkNumber<<ELog::endDiag;
-
+      const long int linkNumber=getLinkIndex(snd);
       return processSurfObject(System,place,linkNumber,excludeSurf);
     }
 
@@ -135,12 +139,13 @@ surfaceConstruct::processSurface(Simulation& System,
       for(size_t i=4;i<maxIndex;i++)
 	{
 	  // Check for surface by S/R designator at end [to do]
-	  const std::string ST=IParam.getCompValue<std::string>("tally",Index,i);
+	  const std::string ST=
+	    IParam.getCompValue<std::string>("tally",Index,i);
 	  excludeSurf.push_back(ST);
 	}
       return processSurfObject(System,place,linkNumber,excludeSurf);
     }
-  ELog::EM<<"Surface Tally NOT Processed"<<ELog::endWarn;
+  ELog::EM<<"Surface Tally NOT Processed"<<ELog::endErr;
   return 0;
 }
 
@@ -148,7 +153,7 @@ surfaceConstruct::processSurface(Simulation& System,
 int
 surfaceConstruct::processSurfObject(Simulation& System,
 				    const std::string& FObject,
-				    const int linkPt,
+				    const long int linkPt,
 				    const std::vector<std::string>& linkN) const
   /*!
     Process a surface tally on a registered object
@@ -177,7 +182,7 @@ surfaceConstruct::processSurfObject(Simulation& System,
       std::vector<int> surfN;
       for(size_t i=0;i<linkN.size();i++)
 	{
-	  const int LIndex=getLinkIndex(linkN[i]);
+	  const long int LIndex=getLinkIndex(linkN[i]);
 	  if (LIndex>0)
 	    surfN.push_back(TPtr->getLinkSurf(static_cast<size_t>(LIndex-1)));
 	  else
