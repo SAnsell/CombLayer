@@ -105,8 +105,8 @@ $gM->addDirLibs("Model",\@modelNames,\@modelLibDir,\@libflags);
 $gM->addDirLibs("System",\@systemNames,\@systemLibDir,\@libflags);
 
 $gM->addIncDir(\@incdir);
-$gM->addIncSubDir("SystemInclude",\@systemInclude);
-$gM->addIncSubDir("ModelInclude",\@modelInclude);
+$gM->addIncSubDir("System",\@systemInclude);
+$gM->addIncSubDir("Model",\@modelInclude);
 
 # my @libnames=("mcnpx","build","funcBase","geometry",  0,1,2,3
 #	      "log","monte","mersenne","poly",          4,5,6,7,
