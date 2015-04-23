@@ -1037,20 +1037,20 @@ splitParts(const std::string& Line,const char delim)
 
   for(size_t index=0;index<Line.length();index++)
     {
-      if (Line[index]=='\'' &&
-	  (index==0 || Line[index]!='\\'))
+      if (Line[index]=='\'' && index &&
+	  Line[index]!='\\')
         {
 	  hardQuote=1-hardQuote;
 	}
       else if (!hardQuote && Line[index]=='\"' &&
-	  (index==0 || Line[index]!='\\'))
+	       index && Line[index]!='\\')
         {
 	  softQuote=1-softQuote;
 	}
 
       if ((!softQuote || !hardQuote) && Line[index]==delim)
 	{
-	  if (Unit.empty())
+	  if (!Unit.empty())
 	    {
 	      Out.push_back(Unit);
 	      Unit="";
@@ -1060,6 +1060,9 @@ splitParts(const std::string& Line,const char delim)
 	Unit+=Line[index];
     }
 
+  if (!Unit.empty())
+    Out.push_back(Unit);
+	      
   return Out;
 
 }
