@@ -72,7 +72,8 @@ testWorkData::applyTest(const int extra)
   */
 {
   ELog::RegMethod RegA("testWorkData","applyTest");
-
+  TestFunc::regSector("testWorkData");
+  
   typedef int (testWorkData::*testPtr)();
   testPtr TPtr[]=
     {
@@ -87,6 +88,7 @@ testWorkData::applyTest(const int extra)
   const int TSize(sizeof(TPtr)/sizeof(testPtr));
   if (!extra)
     {
+      TestFunc::Instance().reportTest(std::cout);
       std::ios::fmtflags flagIO=std::cout.setf(std::ios::left);
       for(int i=0;i<TSize;i++)
         {

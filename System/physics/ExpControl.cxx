@@ -25,6 +25,7 @@
 #include <sstream>
 #include <vector>
 #include <list>
+#include <set>
 #include <map>
 #include <string>
 #include <algorithm>
@@ -39,23 +40,25 @@
 #include "OutputLog.h"
 #include "support.h"
 #include "stringCombine.h"
+#include "MatrixBase.h"
+#include "Matrix.h"
+#include "Vec3D.h"
+#include "EUnit.h"
 #include "ExpControl.h"
 
 namespace physicsSystem
 {
   
-ExpControl::ExpControl() :
-  activeFlag(72,0),nameOrder(72,std::string())
+ExpControl::ExpControl()
   /*!
     Constructor
   */
-{
-  populate();
-}
+{}
 
-ExpControl::ExpControl(const ExpControl& A) : 
-  activeFlag(A.activeFlag),nameOrder(A.nameOrder),
-  Comp(A.Comp)
+ExpControl::ExpControl(const ExpControl& A) :
+  particles(A.particles),
+  MapItem(A.MapItem),
+  CentMap(A.CentMap)
   /*!
     Copy constructor
     \param A :: ExpControl to copy
@@ -72,13 +75,13 @@ ExpControl::operator=(const ExpControl& A)
 {
   if (this!=&A)
     {
-      activeFlag=A.activeFlag;
-      nameOrder=A.nameOrder;
-      Comp=A.Comp;
+      particles=A.particles;
+      MapItem=A.MapItem;
+      CentMap=A.CentMap;
     }
   return *this;
 }
-  
+
 ExpControl::~ExpControl()
   /*!
     Destructor
@@ -86,247 +89,196 @@ ExpControl::~ExpControl()
 {}
 
 void
-ExpControl::populate()
+ExpControl::clear()
   /*!
-    Populate the Comp map
+    Clear control
   */
 {
-  ELog::RegMethod RegA("ExpControl","populate");
-  
-  // TTYPE : index : type [1=int,2=double,0=not-set]; long int : double
-  typedef std::map<std::string,TTYPE>::value_type MVAL;
-
-  std::fill(activeFlag.begin(),activeFlag.end(),0);
-  
-  Comp.erase(Comp.begin(),Comp.end());
-  Comp.insert(MVAL("rndSeed",TTYPE(0,1,123456781L,0.0)));
-  Comp.insert(MVAL("debugPrint",TTYPE(1,1,0,0.0)));                  
-  Comp.insert(MVAL("eventStart",TTYPE(2,1,0,0.0)));            
-  Comp.insert(MVAL("eventEnd",TTYPE(3,1,0,0.0)));              
-  Comp.insert(MVAL("maxEvents",TTYPE(4,1,600,0.0)));              
-  Comp.insert(MVAL("detUnderFlowLimit",TTYPE(5,2,0,80.0)));
-  Comp.insert(MVAL("printSurfCalcFlag",TTYPE(6,1,0,0.0)));  
-  Comp.insert(MVAL("histStart",TTYPE(7,1,1,0.0)));   
-  Comp.insert(MVAL("surfTol",TTYPE(8,2,0,1e-4)));        
-  Comp.insert(MVAL("printCollision",TTYPE(10,1,0,0.0)));
-  Comp.insert(MVAL("stride",TTYPE(12,1,152917,0.0)));       
-  Comp.insert(MVAL("gen",TTYPE(13,1,1,0.0))); 
-  Comp.insert(MVAL("printVOV",TTYPE(14,1,0,0.0)));
-  Comp.insert(MVAL("histScale",TTYPE(15,2,0,1.0)));         
-  Comp.insert(MVAL("eleAngDefMethod",TTYPE(16,1,0,0.0)));
-  Comp.insert(MVAL("electronStragglingType",TTYPE(17,1,2,0.0)));
-  Comp.insert(MVAL("forcePHTVRtree",TTYPE(22,1,0,0.0)));    
-  Comp.insert(MVAL("bankSize",TTYPE(27,1,2048,0.0)));         
-  Comp.insert(MVAL("genxsType",TTYPE(31,1,0,0.0)));                  
-  Comp.insert(MVAL("ionSmooth",TTYPE(32,1,0,0.0)));                 
-  Comp.insert(MVAL("sqwMethod",TTYPE(38,1,1,0.0)));                 
-
-  nameOrder.erase(nameOrder.begin(),nameOrder.end());
-  for(const MVAL& mc : Comp)
-    nameOrder[std::get<0>(mc.second)]=mc.first;
-  return;
-}
-  
-template<>
-const double&
-ExpControl::getItem(const std::string& keyName) const
-  /*!
-    Get an item based on the type
-    \param keyName :: Index number to return
-    \return value 
-   */
-{
-  ELog::RegMethod RegA("ExpControl","getItem<double> const");
-
-  std::map<std::string,TTYPE>::const_iterator mc=Comp.find(keyName);
-  if (mc!=Comp.end() && std::get<1>(mc->second)==2)
-    return std::get<3>(mc->second);
-
-  throw ColErr::InContainerError<std::string>
-    (keyName,"Unknown Index value");
-}
-
-template<>
-const long int&
-ExpControl::getItem(const std::string& keyName) const
-  /*!
-    Get an item based on the type
-    \param keyName :: Index number to return
-    \return long int result
-   */
-{
-  ELog::RegMethod RegA("ExpControl","getItem<int> const");
-  
-  std::map<std::string,TTYPE>::const_iterator mc;
-  mc=Comp.find(keyName);
-  if (mc!=Comp.end() && std::get<1>(mc->second)==1)
-    return std::get<2>(mc->second);
-
-  throw ColErr::InContainerError<std::string>
-    (keyName,"Unknown Index value");
-}
-  
-template<>
-double&
-ExpControl::getItem(const std::string& keyName) 
-  /*!
-    Get an item based on the type
-    \param keyName :: Index number to return
-    \return reference name 
-   */
-{
-  ELog::RegMethod RegA("ExpControl","getItem<double>");
-  std::map<std::string,TTYPE>::iterator mc;
-  mc=Comp.find(keyName);
-  if (mc!=Comp.end() && std::get<1>(mc->second)==2)
-    return std::get<3>(mc->second);
-
-  throw ColErr::InContainerError<std::string>
-    (keyName,"Unknown Index value");
-}
-
-template<>
-long int&
-ExpControl::getItem(const std::string& keyName) 
-  /*!
-    Get an item based on the type
-    \param keyName :: Index number to return
-    \return long int result
-   */
-{
-  ELog::RegMethod RegA("ExpControl","getItem<int>");
-  
-  std::map<std::string,TTYPE>::iterator mc;
-  mc=Comp.find(keyName);
-  if (mc!=Comp.end() && std::get<1>(mc->second)==1)
-    return std::get<2>(mc->second);
-
-  throw ColErr::InContainerError<std::string>
-    (keyName,"Unknown Index value");
-}
-  
-void
-ExpControl::setActive(const std::string& key,const int flag)
-  /*!
-    Activate a card
-    \param key :: name for index
-    \param flag :: flag for index
-   */
-{
-  ELog::RegMethod RegA("ExpControl","setActive");
-  std::map<std::string,TTYPE>::const_iterator mc=
-    Comp.find(key);
-
-  if (mc==Comp.end())
-    throw ColErr::InContainerError<std::string>(key,"key not found");
-
-  const size_t index=std::get<0>(mc->second);
-  activeFlag[index]=flag;
+  particles.clear();
+  MapItem.erase(MapItem.begin(),MapItem.end());
+  CentMap.erase(CentMap.begin(),CentMap.end());
   return;
 }
 
-template<typename T>
 void
-ExpControl::setComp(const std::string& Key,const T& Value)
+ExpControl::addElm(const std::string& EN) 
   /*!
-    Set component value [and activate]
-    \param Key :: Key value for item
-    \param Value :: value to set
-   */
+    Adds an element to the particles list
+    (note it also checks the element)
+    \param EN :: element identifier
+  */
 {
-  ELog::RegMethod RegA("ExpControl","setComp");
-
-  getItem<T>(Key)=Value;
-  setActive(Key,1);
-
+  particles.insert(EN);
   return;
 }
 
-template<typename T>
-const T&
-ExpControl::getComp(const std::string& Key) const
+void
+ExpControl::addVect(const size_t index,const Geometry::Vec3D& V)
   /*!
-    Get component value 
-    \param Key :: Key value for item
-    \param Value :: value to set
-   */
+    Add a vector to the centre list
+    \param index :: vector index
+    \param V :: Vector to add
+  */
 {
-  ELog::RegMethod RegA("ExpControl","setComp(double)");
-  return getItem<T>(Key);
-}
-
-size_t
-ExpControl::keyType(const std::string& keyName) const
-  /*!
-    Determine typenumber of the keyType 
-    \param keyName :: Key name to look up
-    \retval 1 : long int 
-    \retval 2 : double
-    \retval 0 : Fail / Not used
-   */
-{
-  std::map<std::string,TTYPE>::const_iterator mc=
-    Comp.find(keyName);
-  return (mc!=Comp.end()) ? std::get<1>(mc->second) : 0;
+  if (index<=0)
+    CentMap[index]=V;
+  return;
 }
   
-        
-std::string
-ExpControl::itemString(const std::string& keyName) const
+int
+ExpControl::addUnit(const int cellN,const std::string& unitStr)
   /*!
-    Process an item in to a string
-    \param keyName :: Kye name
-    \return string
+    Add a exp component
+    \param cellN :: Cell number
+    \param unitStr :: String of MCNP form
+    \return 1 on success / 0 on fail
+  */
+{
+  ELog::RegMethod RegA("ExpControl","addComp");
+
+  typedef std::map<int,EUnit>::value_type VTYPE;
+  
+  if (unitStr.empty())
+    return 0;
+
+  std::string Unit(unitStr);  //strip space?
+  const size_t uSize(Unit.size());
+  size_t index(0);
+  int mFound(1);
+  int sFound(0);
+  
+  // Starts with -ve :
+  if (Unit[0]=='-')
+    {
+      Unit[0]=' ';
+      mFound=-1;
+      index++;
+    }
+  double D(2.0);         // Note over 1.0
+  if (StrFunc::sectPartNum(Unit,D))
+    {
+      if (fabs(D) < Geometry::zeroTol)
+	mFound=0;
+      // Option 0 / 1 [no letters]
+      if (Unit.empty())
+	{
+	  MapItem.insert(VTYPE(cellN,EUnit(mFound*2,0,D,0)));
+	  return 1;
+	}
+    }
+  else if (index<uSize &&
+	   (Unit[index]=='s' || Unit[index]=='S'))
+    {
+      Unit[index]=' ';
+      sFound=1;
+      index++;
+      if (index==uSize)
+	{
+	  MapItem.insert(VTYPE(cellN,EUnit(mFound,0,0.0,0)));
+	  return 1;
+	}
+    }
+  // Now check for X/Y/Z and V
+  if (index<uSize &&   
+      (Unit[index]=='V' || Unit[index]=='v'))
+    {
+      size_t VNum;
+      Unit[index]=' ';
+      if (StrFunc::section(Unit,VNum) && VNum)
+	{
+	  if (sFound)
+	    MapItem.insert(VTYPE(cellN,EUnit(mFound,0,D,VNum)));
+	  else
+	    MapItem.insert(VTYPE(cellN,EUnit(2*mFound,0,D,VNum)));
+	  return 1;
+	}
+      ELog::EM<<"Failed to understand V Cell :"<<Unit<<ELog::endErr;
+      return 0;
+    }
+  
+  if (index<uSize &&   
+      ((Unit[index]=='X' || Unit[index]=='x') ||
+       (Unit[index]=='Y' || Unit[index]=='y') ||
+       (Unit[index]=='Z' || Unit[index]=='z')) )
+    {
+      const size_t dirType=static_cast<size_t>
+	((std::toupper(Unit[index])-'X')+1);
+      if (sFound)
+	MapItem.insert(VTYPE(cellN,EUnit(mFound,dirType,D,0)));
+      else if (D>1.1)
+	MapItem.insert(VTYPE(cellN,EUnit(3*mFound,dirType,0.0,0)));
+      else 
+	MapItem.insert(VTYPE(cellN,EUnit(2*mFound,dirType,D,0)));
+      return 1;
+    }
+  // MUST BE invalid :
+  ELog::EM<<"Failed to understand : "<<Unit<<ELog::endErr;
+  return 0;
+}
+
+void
+ExpControl::writeHeader(std::ostream& OX) const
+  /*!
+    Write the particle header set
+    \param OX :: Output stream
    */
 {
-  ELog::RegMethod RegA("ExpControl","itemString");
-
-  const size_t kTYPE=keyType(keyName);
-  if (kTYPE==1)
-    return StrFunc::makeString(getItem<long int>(keyName));
-  else if (kTYPE==2)
-    return StrFunc::makeString(getItem<double>(keyName));
-
-  throw ColErr::InContainerError<std::string>(keyName,"Unknow keyName value");
+  OX<<"exp:";
+  bool first(1);
+  for(const std::string& P : particles)
+    {
+      if (!first)
+	OX<<",";
+      OX<<P;
+      first=0;
+    }
+  if (first) OX<<"n";         // default particle is neutron
+  OX<<" ";
+  return;
 }
   
 void
-ExpControl::write(std::ostream& OX) const
+ExpControl::write(std::ostream& OX,
+		  const std::vector<int>& cellOutOrder) const
   /*!
     Write out the card
     \param OX :: Output stream
+    \param cellOutOrder :: Cell List
   */
 {
   ELog::RegMethod RegA("ExpControl","write");
 
-  size_t lastValid;
-  for(lastValid=activeFlag.size();lastValid &&
-	!activeFlag[lastValid-1];lastValid--) ;
-  if (!lastValid) return;
-
-  std::ostringstream cx;
-  cx<<"dbcn ";
-  size_t jcnt(0);
-  for(size_t i=0;i<lastValid;i++)
+  if (!MapItem.empty())
     {
-      if (activeFlag[i])
+      std::ostringstream cx;
+      writeHeader(cx);
+      for(const int CN : cellOutOrder)
 	{
-	  if (jcnt)  // write old j cnt;
-	    {
-	      if (jcnt>1) cx<<jcnt;
-	      cx<<"j ";
-	      jcnt=0;
-	    }
-	  cx<<itemString(nameOrder[i])<<" ";
+	  std::map<int,EUnit>::const_iterator mc=MapItem.find(CN);
+	  if (mc!=MapItem.end())
+	    mc->second.write(cx);
+	  else
+	    cx<<"0 ";
 	}
-      else
-	jcnt++;
+      StrFunc::writeMCNPX(cx.str(),OX);
+
+      if (!CentMap.empty())
+	{
+	  // Write ordered list of CentMap:
+	  cx.str("");
+	  cx<<"vect  ";
+	  typedef std::map<size_t,Geometry::Vec3D>::value_type CMVAL;
+	  for(const CMVAL& mc : CentMap)
+	    cx<<" V"<<mc.first<<" "<<mc.second;
+
+	  StrFunc::writeMCNPX(cx.str(),OX);
+	}
     }
-  StrFunc::writeMCNPX(cx.str(),OX);
+   
   return;
 }
 
 
-} // NAMESPACE physicsCardss
+} // NAMESPACE physicsCards
       
    

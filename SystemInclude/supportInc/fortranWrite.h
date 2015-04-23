@@ -7,8 +7,12 @@ namespace StrFunc
 struct FmtID
 {
   size_t type;        ///< Type [0 X, 1 I, 2F]
-  size_t lenA;        ///< Primary length 
-  size_t lenB;        ///< Secondary lenght
+  int lenA;        ///< Primary length 
+  int lenB;        ///< Secondary length
+
+  /// Constructor
+  FmtID(const size_t T,const int A,const int B) :
+    type(T),lenA(A),lenB(B) {}
 };
  
 /*!
@@ -24,10 +28,11 @@ class fortranWrite
 {
  private:
 
-  std::vector<FmtID> FmtInfo;
+  std::deque<FmtID> FmtInfo;
   std::ostringstream outStr;
 
   void parse(const std::string&);
+  void consumeZeroType();
   
  public:
 

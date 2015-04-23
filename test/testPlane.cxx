@@ -101,12 +101,7 @@ testPlane::applyTest(const int extra)
   const int TSize(sizeof(TPtr)/sizeof(testPtr));
   if (!extra)
     {
-      std::ios::fmtflags flagIO=std::cout.setf(std::ios::left);
-      for(int i=0;i<TSize;i++)
-        {
-	  std::cout<<std::setw(30)<<TestName[i]<<"("<<i+1<<")"<<std::endl;
-	}
-      std::cout.flags(flagIO);
+      TestFunc::Instance().writeList(std::cout,TSize,TestName);
       return 0;
     }
   for(int i=0;i<TSize;i++)

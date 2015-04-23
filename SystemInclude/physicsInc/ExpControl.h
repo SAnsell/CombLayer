@@ -24,25 +24,25 @@
 
 namespace physicsSystem
 {
-
+ 
 /*!
   \class ExpControl
   \version 1.0
   \date April 2015
   \author S.Ansell
-  \brief Process the dbnc options
-  
-  Taken from document la-ur-13-23395
-  
+  \brief Process Exponential Transform card [EXT]
 */
 
 class ExpControl 
 {
  private:
 
-  std::map<int,EUnit> MapItem;
-  std::vector<Geometry::Vec3D> VecUnits
-    
+  std::set<std::string> particles;           ///< Particle list 
+  std::map<int,EUnit> MapItem;               ///< Map items
+  std::map<size_t,Geometry::Vec3D> CentMap;  ///< Centre list of point
+
+  void writeHeader(std::ostream&) const;
+  
  public:
    
   ExpControl();
@@ -50,18 +50,13 @@ class ExpControl
   ExpControl& operator=(const ExpControl&);
   virtual ~ExpControl();
 
-  size_t keyType(const std::string&) const;
-    
-  void setActive(const std::string&,const int);
-
-  template<typename T>
-  void setComp(const std::string&,const T&);
-
-  template<typename T>
-  const T& getComp(const std::string&) const;
-
   void clear();
-  void write(std::ostream&) const;   
+
+  void addElm(const std::string&);
+  int addUnit(const int,const std::string&);
+  void addVect(const size_t,const Geometry::Vec3D&);
+  
+  void write(std::ostream&,const std::vector<int>&) const;   
 };
 
 }

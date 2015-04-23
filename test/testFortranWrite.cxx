@@ -26,15 +26,12 @@
 #include <cmath>
 #include <complex>
 #include <vector>
+#include <deque>
 #include <set>
 #include <map>
 #include <string>
 #include <algorithm>
 #include <tuple>
-
-#ifndef NO_REGEX
-#include <boost/regex.hpp>
-#endif
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -44,7 +41,6 @@
 #include "OutputLog.h"
 #include "mathSupport.h"
 #include "support.h"
-#include "regexSupport.h"
 #include "fortranWrite.h"
 
 #include "testFunc.h"
@@ -114,31 +110,33 @@ int
 testFortranWrite::testParse()
   /*!
     Applies a test to convert
-    \retval -1 :: failed to convert a good double
-    \retval -2 :: converted a number with leading stuff
-    \retval -3 :: converted a number with trailing stuff
-    \retval 0 on success
+    \return -ve on error
   */
 {
-  ELog::RegMethod RegA("testFortranWrite","testConvert");
+  ELog::RegMethod RegA("testFortranWrite","testParse");
 
-  // type : Init string : final : results : (outputs)
-  typedef std::tuple<std::string,size_t,size_t,
-		     size_t,size_t> TTYPE;
+  // type : Init string : final
+  typedef std::tuple<std::string,std::string> TTYPE;
   std::vector<TTYPE> Tests;
 
-  int resultFlag;       // Section return
-  bool checkFlag;       // Output matches
-
   // Test of the split
-  Tests.push_back(TTYPE("I3,I4 ",2,1,1,4));
-
-  int cnt(1);
+  Tests.push_back(TTYPE("I3,I4 ","345 567"));
+  size_t index(0);
   for(const TTYPE& tc : Tests)
     {
-      std::string outS;
-      fortranWrite(std::get<0>(tc));
-      cnt++;
+      std::ostringstream cx;
+      fortranWrite DX(std::get<0>(tc));
+      if (index==0)
+	cx<<(DX % 345 % 567);
+
+      if (std::get<1>(tc)!=cx.str())
+	{
+	  ELog::EM<<"Failed on test "<<index<<ELog::endDiag;
+	  ELog::EM<<"Expected "<<std::get<1>(tc)<<"::"<<ELog::endDiag;
+	  ELog::EM<<"Result   "<<cx.str()<<"::"<<ELog::endDiag;
+	  return -1;
+	}
+      index++;
     }
   return 0;
 }

@@ -71,7 +71,6 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
-#include "ContainedGroup.h"
 #include "ShutterBay.h"
 
 namespace essSystem
@@ -132,15 +131,13 @@ ShutterBay::~ShutterBay()
 {}
 
 void
-ShutterBay::populate(const Simulation& System)
+ShutterBay::populate(const FuncDataBase& Control)
  /*!
    Populate all the variables
-   \param System :: Simulation to use
+   \param Control :: Variable data base
  */
 {
   ELog::RegMethod RegA("ShutterBay","populate");
-  
-  const FuncDataBase& Control=System.getDataBase();
   
   xStep=Control.EvalVar<double>(keyName+"XStep");
   yStep=Control.EvalVar<double>(keyName+"YStep");
@@ -258,7 +255,7 @@ ShutterBay::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("ShutterBay","createAll");
 
-  populate(System);
+  populate(System.getDataBase());
   createUnitVector(FC);
   createSurfaces();
   createLinks();

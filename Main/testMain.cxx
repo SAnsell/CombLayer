@@ -120,6 +120,7 @@
 #include "testDoubleErr.h"
 #include "testElement.h"
 #include "testEllipticCyl.h"
+#include "testExpControl.h"
 #include "testFace.h"
 #include "testFortranWrite.h"
 #include "testFunc.h"
@@ -423,6 +424,7 @@ globalTest(const int type,const int extra)
 
   if (type==0)
     {
+      TestFunc::Instance().reportTest(std::cout);
       boost::format FMT("%1$s%|20t|(%2$d)");
       for(int i=0;i<TSize;i++)
 	std::cout<<FMT % TestName[i] % (i+1)<<std::endl;
@@ -533,6 +535,7 @@ funcbaseTest(const int type,const int extra)
 {
   if (type==0)
     {
+      TestFunc::Instance().reportTest(std::cout);
       std::cout<<"testFunction             (1)"<<std::endl;
       std::cout<<"testMD5                  (2)"<<std::endl;
       std::cout<<"testVarNameOrder         (3)"<<std::endl;
@@ -589,6 +592,7 @@ geometryTest(const int type,const int extra)
   const int TSize(14);
   if (type==0)
     {
+      TestFunc::Instance().reportTest(std::cout);
       boost::format FMT("%1$s%|20t|(%2$d)");
       for(int i=0;i<TSize;i++)
 	std::cout<<FMT % TestName[i] % (i+1)<<std::endl;
@@ -719,6 +723,7 @@ logTest(const int type,const int extra)
 {
   if (type==0)
     {
+      TestFunc::Instance().reportTest(std::cout);
       std::cout<<"testOutputLog             (1)"<<std::endl;
     }
   if (type==1 || type<0)
@@ -744,6 +749,7 @@ moderatorTest(const int type,const int extra)
 
   if (type==0)
     {
+      TestFunc::Instance().reportTest(std::cout);
       std::cout<<"testRefPlate         (1)"<<std::endl;
       std::cout<<"testSingleObject     (2)"<<std::endl;
     }
@@ -777,6 +783,7 @@ montecarloTest(const int type,const int extra)
 
   if (type==0)
     {
+      TestFunc::Instance().reportTest(std::cout);
       std::cout<<"testAlgebra          (1)"<<std::endl;
       std::cout<<"testDBMaterial       (2)"<<std::endl;
       std::cout<<"testElement          (3)"<<std::endl;
@@ -841,6 +848,7 @@ attachCompTest(const int type,const int extra)
 {
   if (type==0)
     {
+      TestFunc::Instance().reportTest(std::cout);
       std::cout<<"testAttachSupport          (1)"<<std::endl;
       std::cout<<"testContained              (2)"<<std::endl;
     }
@@ -870,11 +878,19 @@ physicsTest(const int type,const int extra)
 {
   if (type==0)
     {
+      TestFunc::Instance().reportTest(std::cout);
       std::cout<<"testDBCN          (1)"<<std::endl;
+      std::cout<<"testExpControl    (2)"<<std::endl;
     }
   if(type==1 || type<0)
     {
       testDBCN A;
+      const int X=A.applyTest(extra);
+      if (X) return X;
+    }
+  if(type==2 || type<0)
+    {
+      testExpControl A;
       const int X=A.applyTest(extra);
       if (X) return X;
     }
@@ -893,6 +909,7 @@ processTest(const int type,const int extra)
 {
   if (type==0)
     {
+      TestFunc::Instance().reportTest(std::cout);
       std::cout<<"testBoxLine          (1)"<<std::endl;
       std::cout<<"testInputParam       (2)"<<std::endl;
       std::cout<<"testLineTrack        (3)"<<std::endl;
@@ -1053,6 +1070,7 @@ polyTest(const int type,const int extra)
 {
   if (type==0)
     {
+      TestFunc::Instance().reportTest(std::cout);
       std::cout<<"Poly             (1)"<<std::endl;
       std::cout<<"SolveValues      (2)"<<std::endl;
     }
@@ -1085,6 +1103,7 @@ supportTest(const int type,const int extra)
 {
   if (type==0)
     {
+      TestFunc::Instance().reportTest(std::cout);
       std::cout<<"testDoubleErr           (1)"<<std::endl;
       std::cout<<"testFortranWrite        (2)"<<std::endl;
       std::cout<<"testMathSupport         (3)"<<std::endl;
@@ -1147,6 +1166,7 @@ workTest(const int type,const int extra)
 {
   if (type==0)
     {
+      TestFunc::Instance().reportTest(std::cout);
       std::cout<<"testBinData          (1)"<<std::endl;
       std::cout<<"testBoundary         (2)"<<std::endl;
       std::cout<<"testWorkData         (3)"<<std::endl;
@@ -1187,6 +1207,7 @@ xmlTest(const int type,const int extra)
 {
   if (type==0)
     {
+      TestFunc::Instance().reportTest(std::cout);
       std::cout<<"testXML         (1)"<<std::endl;
     }
 

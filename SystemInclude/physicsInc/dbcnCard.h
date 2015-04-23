@@ -30,7 +30,7 @@ namespace physicsSystem
   \version 1.0
   \date April 2015
   \author S.Ansell
-  \brief Process the dbnc options
+  \brief Process the dbcn options
   
   Taken from document la-ur-13-23395
   
@@ -50,7 +50,6 @@ class dbcnCard
   template<typename T> T& getItem(const std::string&);
   template<typename T> const T& getItem(const std::string&) const;
   std::string itemString(const std::string&) const;
-  void populate();
   
  public:
    
@@ -69,7 +68,7 @@ class dbcnCard
   template<typename T>
   const T& getComp(const std::string&) const;
 
-  void clear();
+  void reset();
   void write(std::ostream&) const;   
 };
 

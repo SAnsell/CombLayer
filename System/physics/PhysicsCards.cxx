@@ -26,6 +26,7 @@
 #include <sstream>
 #include <vector>
 #include <list>
+#include <set>
 #include <map>
 #include <string>
 #include <algorithm>
@@ -55,6 +56,7 @@
 #include "NRange.h"
 #include "KGroup.h"
 #include "dbcnCard.h"
+#include "EUnit.h"
 #include "ExpControl.h"
 #include "PhysicsCards.h"
 
@@ -133,7 +135,7 @@ PhysicsCards::clearAll()
   PhysCards.clear();
   Volume.clear();
   sdefCard.clear();
-  dbCard->clear();
+  dbCard->reset();
   ExpCard->clear();
   return;
 }

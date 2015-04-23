@@ -50,7 +50,7 @@ dbcnCard::dbcnCard() :
     Constructor
   */
 {
-  populate();
+  reset();
 }
 
 dbcnCard::dbcnCard(const dbcnCard& A) : 
@@ -86,7 +86,7 @@ dbcnCard::~dbcnCard()
 {}
 
 void
-dbcnCard::populate()
+dbcnCard::reset()
   /*!
     Populate the Comp map
   */
@@ -289,6 +289,7 @@ dbcnCard::itemString(const std::string& keyName) const
 
   throw ColErr::InContainerError<std::string>(keyName,"Unknow keyName value");
 }
+
   
 void
 dbcnCard::write(std::ostream& OX) const
@@ -340,6 +341,6 @@ const long int& dbcnCard::getComp(const std::string&) const;
 
 ///\endcond TEMPLATE
 
-} // NAMESPACE physicsCardss
+} // NAMESPACE physicsCards
       
    

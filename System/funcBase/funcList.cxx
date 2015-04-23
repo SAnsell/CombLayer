@@ -113,6 +113,7 @@ funcList::funcList() :
        FTYPE( "cotd",  1 ,Opcodes::cCotd),
        FTYPE( "csc",   1 ,Opcodes::cCsc),
        FTYPE( "cscd",  1 ,Opcodes::cCscd),
+       FTYPE( "deg2rad", 1 ,Opcodes::cDeg),
        FTYPE( "dot",   2 ,Opcodes::cDot),
        FTYPE( "exp",   1 ,Opcodes::cExp),
        FTYPE( "floor", 1 ,Opcodes::cFloor),

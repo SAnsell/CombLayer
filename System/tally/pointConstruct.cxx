@@ -173,7 +173,7 @@ pointConstruct::processPoint(Simulation& System,
 
       checkItem<double>(IParam,Index,5,timeStep);
       checkItem<double>(IParam,Index,6,windowOffset);
-      const int linkNumber=getLinkIndex(snd);
+      const long int linkNumber=getLinkIndex(snd);
       processPointWindow(System,place,linkNumber,D,timeStep,windowOffset);
     }
 
@@ -185,7 +185,7 @@ pointConstruct::processPoint(Simulation& System,
 	inputItem<std::string>(IParam,Index,3,"front/back/side not give");
       const double D=
 	inputItem<double>(IParam,Index,4,"Distance not given");
-      const int linkNumber=getLinkIndex(snd);
+      const long int linkNumber=getLinkIndex(snd);
       ELog::EM<<"LN == "<<linkNumber<<ELog::endDiag;
 	    
       processPointFree(System,place,linkNumber,D);
@@ -203,7 +203,7 @@ pointConstruct::processPoint(Simulation& System,
 void
 pointConstruct::processPointWindow(Simulation& System,
 				   const std::string& FObject,
-				   const int linkPt,const double beamDist,
+				   const long int linkPt,const double beamDist,
 				   const double timeStep,
 				   const double windowOffset) const
   /*!

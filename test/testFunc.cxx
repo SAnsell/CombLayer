@@ -193,6 +193,26 @@ TestFunc::summary() const
 }
 
 void
+TestFunc::writeList(std::ostream& OX,const size_t TSize,
+		    const std::string TestName[]) const
+  /*!
+    Write out the list
+    \param OX :: Output stream
+    \param NS :: Number of entries
+    \param TName :: String
+   */
+{
+  reportTest(std::cout);
+  std::ios::fmtflags flagIO=OX.setf(std::ios::left);
+  for(size_t i=0;i<TSize;i++)
+    {
+      OX<<std::setw(30)<<TestName[i]<<"("<<i+1<<")"<<std::endl;
+    }
+  OX.flags(flagIO);
+  return;
+}
+
+void
 TestFunc::bracketTest(const std::string& Fname,std::ostream& OX)
   /*!
     Given a function name write out a nice

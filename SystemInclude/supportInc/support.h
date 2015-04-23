@@ -93,7 +93,7 @@ void writeMCNPXcomment(const std::string&,std::ostream&);
 
 std::vector<std::string> StrParts(std::string);
 std::vector<std::string>
-splitParts(const std::string&,const std::string delim);
+splitParts(const std::string&,const char delim);
 
 template<template<typename T,typename Alloc> class V,typename T,typename Alloc> 
 int sliceVector(V<T,Alloc>&,const T&,const T&);
