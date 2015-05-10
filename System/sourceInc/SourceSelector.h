@@ -26,6 +26,7 @@ class Simulation;
 
 namespace SDef
 {
+  long int getLinkIndex(const std::string&);
   void sourceSelection(Simulation&,const mainSystem::inputParam&);
 }
 

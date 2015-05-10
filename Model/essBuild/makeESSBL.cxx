@@ -143,6 +143,7 @@ makeESSBL::build(Simulation& System,
 
   if (!mainFCPtr)
     throw ColErr::InContainerError<std::string>(shutterName,"shutterObject");
+
   RefA->addInsertCell(voidCell);
   RefA->createAll(System,*mainFCPtr,2,*mainFCPtr,2);
   

@@ -35,6 +35,7 @@ namespace WeightSystem
 { 
   void zeroImp(Simulation&,const int,const int);
   void simulationImp(Simulation&,const mainSystem::inputParam&);
+  void ExpField(Simulation&,const mainSystem::inputParam&);
 }
 
 

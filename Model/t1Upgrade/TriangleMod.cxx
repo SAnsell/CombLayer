@@ -164,12 +164,6 @@ TriangleMod::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("TriangleMod","populate");
   
   ModBase::populate(Control);
-  
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
-  zAngle=Control.EvalVar<double>(keyName+"Zangle");
 
   absXStep=Control.EvalDefVar<double>(keyName+"AbsXStep",0.0);
   absYStep=Control.EvalDefVar<double>(keyName+"AbsYStep",0.0);
@@ -251,25 +245,6 @@ TriangleMod::populate(const FuncDataBase& Control)
   return;
 }
   
-void
-TriangleMod::createUnitVector(const attachSystem::FixedComp& FC)
-  /*!
-    Create the unit vectors
-    - Y Points down the TriangleMod direction
-    - X Across the TriangleMod
-    - Z up (towards the target)
-    \param FC :: fixed Comp [and link comp]
-  */
-{
-  ELog::RegMethod RegA("TriangleMod","createUnitVector");
-
-  FixedComp::createUnitVector(FC);
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
-
-  return;
-}
-
 void
 TriangleMod::createConvex()
   /*!
@@ -832,7 +807,7 @@ TriangleMod::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("TriangleMod","createAll");
   populate(System.getDataBase());
-  createUnitVector(FC);
+  ModBase::createUnitVector(FC);
   
   createConvex();
   createSurfaces();

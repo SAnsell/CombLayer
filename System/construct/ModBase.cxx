@@ -134,11 +134,18 @@ void
 ModBase::populate(const FuncDataBase& Control)
   /*!
     Local populations
-    \param Control :: FuncDAtabase to use
+    \param Control :: FuncDatabase to use
    */
 {
   ELog::RegMethod RegA("ModBase","populate");
 
+  // Master values
+  xStep=Control.EvalVar<double>(keyName+"XStep");
+  yStep=Control.EvalVar<double>(keyName+"YStep");
+  zStep=Control.EvalVar<double>(keyName+"ZStep");
+  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
+  zAngle=Control.EvalVar<double>(keyName+"Zangle");
+  
   const size_t NFlight=Control.EvalDefVar<size_t>(keyName+"NFlight",0);  
   flightSides.clear();
   for(size_t i=0;i<NFlight;i++)
@@ -152,6 +159,22 @@ ModBase::populate(const FuncDataBase& Control)
   return;
 }
 
+void
+ModBase::createUnitVector(const attachSystem::FixedComp& FC)
+  /*!
+    Local create unit for central Base.
+    \param FC :: FixedComp for origin
+  */
+{
+  ELog::RegMethod RegA("ModBase","createUnitVector");
+  attachSystem::FixedComp::createUnitVector(FC);
+
+  applyShift(xStep,yStep,zStep);
+  applyAngleRotate(xyAngle,zAngle);
+  return; 
+}
+
+  
 std::string
 ModBase::getComposite(const std::string& surfList) const
   /*!

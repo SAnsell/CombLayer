@@ -179,12 +179,6 @@ CH4Layer::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("CH4Layer","populate");
   
   ModBase::populate(Control);
-  // Master values
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
-  zAngle=Control.EvalVar<double>(keyName+"Zangle");
 
   nLayers=Control.EvalVar<size_t>(keyName+"NLayer");
   if (!nLayers)
@@ -225,28 +219,13 @@ CH4Layer::populate(const FuncDataBase& Control)
 }
   
 void
-CH4Layer::createUnitVector(const attachSystem::FixedComp& FC)
-  /*!
-    Create the unit vectors
-    - Y Down the beamline
-    \param FC :: Linked object
-  */
-{
-  ELog::RegMethod RegA("CH4Layer","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC);
-
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,0);
-  return;
-}
-
-void
 CH4Layer::createLayerSurf(const std::vector<LayerInfo>& LayVec,
 			  const int index) 
   /*!
     Create Layer surfaces based on the primary field and 
     the LayerInfo values.
-    \param LayVec 
+    \param LayVec :: Info on each layer 
+    \param index  :: Index to layer nubmer
   */
 {
   ELog::RegMethod RegA("CH4Layer","createLayerSurf");

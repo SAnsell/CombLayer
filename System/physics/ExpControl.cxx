@@ -217,6 +217,36 @@ ExpControl::addUnit(const int cellN,const std::string& unitStr)
 }
 
 void
+ExpControl::renumberCell(const int originalCell,const int newCell)
+  /*!
+    Renumber cell
+    \param originalCell :: original cell number
+    \param newCell :: new cell number
+  */
+{
+  ELog::RegMethod RegA("ExpControl","renumberCell");
+  if (originalCell!=newCell)
+    {
+      std::map<int,EUnit>::iterator mc=
+	MapItem.find(originalCell);
+      if (mc!=MapItem.end())
+	{
+	  std::map<int,EUnit>::iterator mcN=
+	    MapItem.find(newCell);
+	  if (mcN!=MapItem.end())
+	    {
+	      throw ColErr::InContainerError<int>
+		(newCell,"newCell is already in mapItem (from"+
+		 StrFunc::makeString(originalCell)+")");
+	    }
+	  MapItem.insert(std::map<int,EUnit>::value_type(newCell,mc->second));
+	  MapItem.erase(mc);
+	}
+    }
+  return;
+}
+  
+void
 ExpControl::writeHeader(std::ostream& OX) const
   /*!
     Write the particle header set

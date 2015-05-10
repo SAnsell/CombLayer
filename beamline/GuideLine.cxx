@@ -432,8 +432,14 @@ GuideLine::createUnitVector(const attachSystem::FixedComp& mainFC,
   shieldFC.applyShift(xStep,yStep,zStep);
   shieldFC.applyAngleRotate(xyAngle,zAngle);
 
+
   attachSystem::FixedComp& guideFC=FixedGroup::getKey("GuideOrigin");
-  guideFC.createUnitVector(beamFC,beamLP);
+  ELog::EM<<"Creating guide origin with:"<<beamFC.getKeyName()<<" "
+	  <<beamLP<<" == "<<beamFC.NConnect()<<ELog::endDiag;  
+  //  guideFC.createUnitVector(beamFC,beamLP);
+  guideFC.createUnitVector(beamFC,0);
+  ELog::EM<<"Creating guide origin with:"<<beamFC.getKeyName()<<" "
+	  <<beamLP<<ELog::endDiag;  
   guideFC.applyShift(beamXStep,beamYStep,beamZStep);
   guideFC.applyAngleRotate(beamXYAngle,beamZAngle);
 

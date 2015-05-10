@@ -373,8 +373,9 @@ PhysicsCards::addPhysCard(const std::string& Key,
 			  const std::string& Particle)
   /*!
     Adds a particular card [if not already present].
-    If a particle is found in the current cards, then it
-    is added, if not then a new card is created
+    If ANY particle is found in the current cards, then 
+    all remaining particles are added and the 
+    card returned. If not then a new card is created
     \param Key :: KeyName
     \param Particle :: Particle to add [n,p,e] etc
     \return PhysCard
@@ -384,18 +385,26 @@ PhysicsCards::addPhysCard(const std::string& Key,
   const std::vector<std::string> PList=
     StrFunc::StrParts(Particle);
   
-
-  std::vector<std::string>::const_iterator ac;
   for(PhysCard& PC : PhysCards)
     {
+      int found(0);
       if (PC.getKey()==Key)  	// First determine if any key exists:
 	{
-	  for(const std::string& particle :  PList)
+	  for(size_t i=0;i<PList.size();i++)
 	    {
-	      if (!PC.hasElm(particle))
+	      const std::string particle=PList[i];
+	      if (!found && PC.hasElm(particle))
+		{
+		  // Add old non-found particles
+		  for(size_t j=0;j<i;j++)
+		    PC.addElm(PList[i]);
+		  found=1;
+		}
+	      else if (found && !PC.hasElm(particle))
 		PC.addElm(particle);
 	    }
-	  return PC;
+	  if (found)
+	    return PC;
 	}
     }
   // No card found add:
@@ -404,6 +413,29 @@ PhysicsCards::addPhysCard(const std::string& Key,
   for(const std::string& particle :  PList)
     PC.addElm(particle);
   return PhysCards.back();
+}
+
+const PhysCard&
+PhysicsCards::getPhysCard(const std::string& Key,
+			  const std::string& particle) const
+  /*!
+    Gets a particular card with Key and 
+    particle [if empty first card with key]
+    \param Key :: KeyName
+    \param particle :: Particle to find [n,p,e] etc [empty for any]
+    \return PhysCard
+  */
+{
+  ELog::RegMethod RegA("PhysicsCards","getPhysCard");
+
+  
+  for(const PhysCard& PC : PhysCards)
+    if (PC.getKey()==Key &&
+	(particle.empty() || PC.hasElm(particle)))  
+      return PC;
+
+  throw ColErr::InContainerError<std::string>
+    (Key+":"+particle,"PhysCard search");
 }
 
 // General All Importance
@@ -637,12 +669,15 @@ PhysicsCards::substituteCell(const int oldCell,const int newCell)
     \param newCell :: new cell number
    */
 {
+  ELog::RegMethod RegA("PhysicsCards","substituteCell");
   sdefCard.substituteCell(oldCell,newCell);
   histpCells.changeItem(oldCell,newCell);
   for(PhysImp& PI : ImpCards)
     PI.renumberCell(oldCell,newCell);
   
   Volume.renumberCell(oldCell,newCell);
+  ExpCard->renumberCell(oldCell,newCell);
+
   return;
 }
 
@@ -731,10 +766,13 @@ PhysicsCards::write(std::ostream& OX,
 
   for(const std::string& PC : Basic)
     StrFunc::writeMCNPX(PC,OX);
+
+  ExpCard->write(OX,cellOutOrder);
   
   LEA.write(OX);
   sdefCard.write(OX);
   kcodeCard.write(OX);
+  
   if (!prdmp.empty())
     StrFunc::writeMCNPX("prdmp "+prdmp,OX);
   

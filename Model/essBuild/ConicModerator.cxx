@@ -156,12 +156,8 @@ ConicModerator::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("ConicModerator","populate");
   
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYAngle");
-  zAngle=Control.EvalVar<double>(keyName+"ZAngle");
-
+  ModBase::populate(Control);
+  
   IWidth=Control.EvalVar<double>(keyName+"IWidth");
   IHeight=Control.EvalVar<double>(keyName+"IHeight");
   OWidth=Control.EvalVar<double>(keyName+"OWidth");
@@ -186,26 +182,7 @@ ConicModerator::populate(const FuncDataBase& Control)
   nLayers=4;     // set for LayerComp
   return;
 }
-  
-
-void
-ConicModerator::createUnitVector(const attachSystem::FixedComp& FC)
-  /*!
-    Create the unit vectors
-    - Y Points down the ConicModerator direction
-    - X Across the ConicModerator
-    - Z up (towards the target)
-    \param FC :: Fixed unit that it is connected to 
-  */
-{
-  ELog::RegMethod RegA("ConicModerator","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC);
-  applyAngleRotate(xyAngle,zAngle);
-  applyShift(xStep,yStep,zStep);
-
-  return;
-}
-
+ 
 void
 ConicModerator::createSurfaces()
   /*!
@@ -440,7 +417,7 @@ ConicModerator::createAll(Simulation& System,
   ELog::RegMethod RegA("ConicModerator","createAll");
   populate(System.getDataBase());
 
-  createUnitVector(FC);
+  ModBase::createUnitVector(FC);
   createSurfaces();
   createObjects(System);
   createLinks();

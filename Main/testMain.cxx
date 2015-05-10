@@ -125,6 +125,7 @@
 #include "testFortranWrite.h"
 #include "testFunc.h"
 #include "testFunction.h"
+#include "testGeomSupport.h"
 #include "testHeadRule.h"
 #include "testInputParam.h"
 #include "testInsertComp.h"
@@ -572,7 +573,7 @@ geometryTest(const int type,const int extra)
     \return 0 on success / -ve on failure
   */
 {
-  const std::string TestName[]=
+  const std::vector<std::string> TestName=
     {
       "testCone",
       "testConvex",
@@ -580,6 +581,7 @@ geometryTest(const int type,const int extra)
       "testCylinder",
       "testEllipticCyl",
       "testFace",
+      "testGeomSupport",
       "testLine",
       "testMasterRotate",
       "testQuaternion",
@@ -589,102 +591,109 @@ geometryTest(const int type,const int extra)
       "testSVD",
       "testVec3D"
     };
-  const int TSize(14);
+
   if (type==0)
     {
       TestFunc::Instance().reportTest(std::cout);
       boost::format FMT("%1$s%|20t|(%2$d)");
-      for(int i=0;i<TSize;i++)
+      for(size_t i=0;i<TestName.size();i++)
 	std::cout<<FMT % TestName[i] % (i+1)<<std::endl;
       return 0;
     }
 
   int index((type<0) ? 0 : type-1);
   int X(0);
+  int testNum;
   do
     {
       index++;
-      if (index==1)
+      testNum=1;
+      if (index==testNum++)
 	{
 	  testCone A;
 	  X=A.applyTest(extra);
 	}
 
-      if (index==2)
+      if (index==testNum++)
 	{
 	  testConvex A;
 	  X=A.applyTest(extra);
 	}
       
-      if(index==3)
+      if(index==testNum++)
 	{
 	  testConvex2D A;
 	  X=A.applyTest(extra);
 	}
-      if(index==4)
+      if(index==testNum++)
 	{
 	  testCylinder A;
 	  X=A.applyTest(extra);
 	}
-      if(index==5)
+      if(index==testNum++)
 	{
 	  testEllipticCyl A;
 	  X=A.applyTest(extra);
 	}
-      if(index==6)
+      if(index==testNum++)
 	{
 	  testFace A;
 	  X=A.applyTest(extra);
-	}
-      
-      if(index==7)
+	}      
+      if(index==testNum++)
+	{
+	  testGeomSupport A;
+	  X=A.applyTest(extra);
+	}      
+      if(index==testNum++)
 	{
 	  testLine A;
 	  X=A.applyTest(extra);
 	}
       
-      if(index==8)
+      if(index==testNum++)
 	{
 	  testMasterRotate A;
 	  X=A.applyTest(extra);
 	}
-      if(index==9)
+      if(index==testNum++)
 	{
 	  testQuaternion A;
 	  X=A.applyTest(extra);
 	}
       
-      if(index==10)
+      if(index==testNum++)
 	{
 	  testPlane A;
 	  X=A.applyTest(extra);
 	}
       
-      if(index==11)
+      if(index==testNum++)
 	{
 	  testRecTriangle A;
 	  X=A.applyTest(extra);
 	}
 
-      if(index==12)
+      if(index==testNum++)
 	{
 	  testSurIntersect A;
 	  X=A.applyTest(extra);
 	}
       
-      if(index==13)
+      if(index==testNum++)
 	{
 	  testSVD A;
 	  X=A.applyTest(extra);
 	}
       
-      if(index==14)
+      if(index==testNum++)
 	{
 	  testVec3D A;
 	  X=A.applyTest(extra);
 	}
       
-    } while (!X && type!=index && index<TSize);
+    } while (!X && type!=index &&
+	     index<testNum-1);
     
   return X;
 }

@@ -80,6 +80,8 @@
 #include "ModBase.h"
 #include "ConicInfo.h"
 #include "CylMod.h"
+#include "H2Wing.h"
+#include "ButterflyModerator.h"
 #include "BlockAddition.h"
 #include "CylPreMod.h"
 #include "SupplyPipe.h"
@@ -290,6 +292,8 @@ makeESS::buildLowMod(Simulation& System,
       ELog::EM<<"Low Moderator type [LowMod]:"<<ELog::endBasic;
       ELog::EM<<"  -- {Any}       : Basic cylindrical moderator"
 	      <<ELog::endBasic;
+      ELog::EM<<"  -- Butterfly    :  Butterfly moderator"
+	      <<ELog::endBasic;
       ELog::EM<<"  -- Cone    : Cone/Double cone moderator"
 	      <<ELog::endBasic;
       return;
@@ -299,14 +303,45 @@ makeESS::buildLowMod(Simulation& System,
     {
       buildLowConicMod(System);
     }
+  else if (ModType=="Butterfly")
+    {
+      buildLowButterfly(System);
+    }
   else 
     {
       buildLowCylMod(System);
       lowFlightLines(System);
+      Bulk->addFlightUnit(System,*LowAFL);
+      Bulk->addFlightUnit(System,*LowBFL);  
     }
   return;
 }
 
+
+void
+makeESS::buildLowButterfly(Simulation& System)
+  /*!
+    Build the butterfly moderators
+    \param System :: Stardard simulation
+  */
+{
+  ELog::RegMethod RegA("makeESS","buildLowButteflyMod");
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  LowMod=std::shared_ptr<constructSystem::ModBase>
+    (new essSystem::ButterflyModerator("LowFly"));
+  OR.addObject(LowMod);
+
+  LowMod->createAll(System,*Reflector);
+  attachSystem::addToInsertForced(System,*Reflector,*LowMod);
+
+  return;
+}
+  
+  
+  
 void
 makeESS::buildLowCylMod(Simulation& System)
   /*!
@@ -566,8 +601,6 @@ makeESS::build(Simulation* SimPtr,
 
   buildLowMod(*SimPtr,lowModType);
 
-  Bulk->addFlightUnit(*SimPtr,*LowAFL);
-  Bulk->addFlightUnit(*SimPtr,*LowBFL);  
 
   buildTopCylMod(*SimPtr);
 
@@ -587,7 +620,7 @@ makeESS::build(Simulation* SimPtr,
   // PROTON BEAMLINE
   
   
-  PBeam->createAll(*SimPtr,*Target,1,*ShutterBayObj,-1);
+  PBeam->createAll(*SimPtr,*Target,2,*ShutterBayObj,-1);
   attachSystem::addToInsertSurfCtrl(*SimPtr,*Reflector,
 				    PBeam->getKey("Sector0"));
   
@@ -599,7 +632,7 @@ makeESS::build(Simulation* SimPtr,
   // BMon->createAll(*SimPtr,*Target,1,*PBeam,"Sector");
   // attachSystem::addToInsertForced(*SimPtr,*Reflector,*BMon);
 
-  buildLowerPipe(*SimPtr,lowPipeType);
+  //  buildLowerPipe(*SimPtr,lowPipeType);
 
   makeBeamLine(*SimPtr,IParam);
 

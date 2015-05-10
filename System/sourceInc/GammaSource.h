@@ -47,6 +47,9 @@ class GammaSource :
   double yStep;                 ///< Step in Y
   double zStep;                 ///< Step in Z
 
+  double xyAngle;               ///< Rotate XY angle
+  double zAngle;                ///< Rotate XY angle
+  
   int particleType;             ///< Particle Type
   double cutEnergy;             ///< Energy cut point
   double radius;
@@ -61,7 +64,8 @@ class GammaSource :
   
   void populate(const FuncDataBase& Control);
   int populateEnergy(std::string,std::string);
-  void createUnitVector(const attachSystem::FixedComp&);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const long int);
   void calcPosition();
   void createSource(SDef::Source&) const;
 
@@ -77,6 +81,8 @@ class GammaSource :
   void loadEnergy(const std::string&);
 
   void createAll(const FuncDataBase&,SDef::Source&);
+  void createAll(const FuncDataBase&,const attachSystem::FixedComp&,
+		 const long int,SDef::Source&);
   
 };
 

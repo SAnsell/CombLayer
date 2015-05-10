@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/BeRef.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,8 @@ namespace essSystem
 */
 
 class BeRef : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+  public attachSystem::FixedComp,
+  public attachSystem::CellMap
 {
  private:
 
@@ -52,6 +53,9 @@ class BeRef : public attachSystem::ContainedComp,
   double radius;                  ///< Radius
   double height;                  ///< Height
   double wallThick;               ///< Wall thickness
+
+  double lowVoidThick;            ///< Low void segment
+  double topVoidThick;            ///< Top void segment
 
   double targSepThick;            ///< Steel seperator at target level
 

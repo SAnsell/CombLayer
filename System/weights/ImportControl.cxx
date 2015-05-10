@@ -110,7 +110,7 @@ simulationImp(Simulation& System,
     \param IParam :: input stream
    */
 {
-  ELog::RegMethod RegA("ImportControl","simulationImport");
+  ELog::RegMethod RegA("ImportControl[F]","simulationImport");
 
   if (!IParam.flag("voidUnMask") && !IParam.flag("mesh"))
     {
@@ -165,4 +165,45 @@ simulationImp(Simulation& System,
   return;
 }
 
+void
+ExpField(Simulation& System,
+	 const mainSystem::inputParam& IParam)
+  /*!
+    Control Exp card on the in individual cells
+    \param System :: Simulation
+    \param IParam :: input stream
+  */
+{
+  ELog::RegMethod RegA("ImportControl","ExpField");
+
+  // currently only first item / get all
+  std::vector<std::string> StrItem;
+  const size_t NGrp=IParam.grpCnt("wExp");
+  const size_t NParam=IParam.itemCnt("wExp",0);
+  for(size_t j=0;j<NParam;j++)
+    StrItem.push_back
+      (IParam.getCompValue<std::string>("wExp",0,j));
+
+  double a,b,c;
+  Geometry::Vec3D PointVec;
+  
+  size_t index(0);
+  size_t remain(NParam-1);
+  while(index<NParam)
+    {
+      if (remain>4 && StrItem[index]=="Vec3D" &&
+	  StrFunc::convert(StrItem[index+1],a) &&
+	  StrFunc::convert(StrItem[index+1],b) &&
+	  StrFunc::convert(StrItem[index+1],c) )
+	{
+
+	}
+      index++;
+      remain--;
+    }
+  return;
+}
+
+
+  
 }  // NAMESPACE weightSytem

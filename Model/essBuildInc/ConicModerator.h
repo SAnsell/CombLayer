@@ -66,7 +66,6 @@ class ConicModerator : public constructSystem::ModBase
   int HCell;                ///< Main H2 cell
   
   virtual void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
 
   void createSurfaces();
   void createObjects(Simulation&);

@@ -75,14 +75,14 @@ importanceSim(Simulation& System,const mainSystem::inputParam& IParam)
 {
   ELog::RegMethod RegA("SimInput","importanceSim");
 
-
   System.populateCells();
   System.createObjSurfMap();
 
   WeightSystem::simulationImp(System,IParam);
   mainSystem::renumberCells(System,IParam);
   WeightSystem::simulationWeights(System,IParam);
-
+  WeightSystem::ExpField(System,IParam);
+  
   return;
 }
 

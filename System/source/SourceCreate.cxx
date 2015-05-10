@@ -336,34 +336,41 @@ createTS1Source(const FuncDataBase& Control,Source& sourceCard)
   return;
 }
 
-
 void
-createGammaSource(const FuncDataBase& Control,Source& Card)
+createGammaSource(const FuncDataBase& Control,
+		  const std::string& keyName,Source& Card)
   /*!
     Create the photon source for gamma-nuclea spectrum
     nuclear experiment source
     \param Control :: Variables data base
+    \param keyName :: keyname for Gamma source
     \param Card :: Source system
    */
 {
   ELog::RegMethod RegA("SourceCreate","createGammaSource");
-  GammaSource GX("gammaSource");
+  GammaSource GX(keyName);
   GX.createAll(Control,Card);
   return;
 }
 
+
 void
-createLaserSource(const FuncDataBase& Control,Source& Card)
+createGammaSource(const FuncDataBase& Control,
+		  const std::string& keyName,
+		  const attachSystem::FixedComp& FC,
+		  const long int linkIndex,
+		  Source& Card)
   /*!
-    Create the laser source -- currently a copy of the photo
+    Create the point source -- currently a copy of the photo
     nuclear experiment source
     \param Control :: Variables data base
     \param Card :: Source system
    */
 {
-  ELog::RegMethod RegA("SourceCreate","createLaserSource");
-  GammaSource GX("laserSource");
-  GX.createAll(Control,Card);
+  ELog::RegMethod RegA("SourceCreate","createGammaSource(FC,link)");
+  GammaSource GX(keyName);
+
+  GX.createAll(Control,FC,linkIndex,Card);
   return;
 }
 

@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   essBuild/BeRef.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,6 +66,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
+#include "CellMap.h"
 #include "BeRef.h"
 
 
@@ -74,6 +75,7 @@ namespace essSystem
 
 BeRef::BeRef(const std::string& Key) :
   attachSystem::ContainedComp(),attachSystem::FixedComp(Key,3),
+  attachSystem::CellMap(),
   refIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(refIndex+1)
   /*!
@@ -81,6 +83,54 @@ BeRef::BeRef(const std::string& Key) :
     \param Key :: Name of construction key
   */
 {}
+
+BeRef::BeRef(const BeRef& A) : 
+  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  attachSystem::CellMap(A),  
+  refIndex(A.refIndex),cellIndex(A.cellIndex),xStep(A.xStep),
+  yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
+  zAngle(A.zAngle),radius(A.radius),height(A.height),
+  wallThick(A.wallThick),lowVoidThick(A.lowVoidThick),
+  topVoidThick(A.topVoidThick),
+  refMat(A.refMat),wallMat(A.wallMat),
+  targSepMat(A.targSepMat)
+  /*!
+    Copy constructor
+    \param A :: BeRef to copy
+  */
+{}
+
+BeRef&
+BeRef::operator=(const BeRef& A)
+  /*!
+    Assignment operator
+    \param A :: BeRef to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::FixedComp::operator=(A);
+      CellMap::operator=(A);
+      cellIndex=A.cellIndex;
+      xStep=A.xStep;
+      yStep=A.yStep;
+      zStep=A.zStep;
+      xyAngle=A.xyAngle;
+      zAngle=A.zAngle;
+      radius=A.radius;
+      height=A.height;
+      wallThick=A.wallThick;
+      lowVoidThick=A.lowVoidThick;
+      topVoidThick=A.topVoidThick;
+      refMat=A.refMat;
+      wallMat=A.wallMat;
+      targSepMat=A.targSepMat;
+    }
+  return *this;
+}
+  
 
 
 BeRef::~BeRef()
@@ -111,10 +161,12 @@ BeRef::populate(const FuncDataBase& Control)
   refMat=ModelSupport::EvalMat<int>(Control,keyName+"RefMat");   
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");   
   
-  targSepThick=Control.EvalVar<double>(keyName+"TargSepThick");   
   targSepMat=ModelSupport::EvalMat<int>
-    (Control,StrFunc::makeString(keyName+"TargSepMat"));   
-
+    (Control,StrFunc::makeString(keyName+"TargSepMat"));
+  
+  lowVoidThick=Control.EvalVar<double>(keyName+"LowVoidThick");
+  topVoidThick=Control.EvalVar<double>(keyName+"TopVoidThick");
+  
   return;
 }
 
@@ -153,13 +205,13 @@ BeRef::createSurfaces()
 
   //define planes where the Be is substituted by Fe
 
-  ModelSupport::buildPlane(SMap,refIndex+25,Origin-
-			   Z*(targSepThick/2.0+wallThick),Z);  
-  ModelSupport::buildPlane(SMap,refIndex+26,Origin+
-			   Z*(targSepThick/2.0+wallThick),Z);  
+  ModelSupport::buildPlane(SMap,refIndex+105,Origin-
+			   Z*(lowVoidThick/2.0+wallThick),Z);  
+  ModelSupport::buildPlane(SMap,refIndex+106,Origin+
+			   Z*(topVoidThick/2.0+wallThick),Z);  
 
-  ModelSupport::buildPlane(SMap,refIndex+35,Origin-Z*(targSepThick/2.0),Z);  
-  ModelSupport::buildPlane(SMap,refIndex+36,Origin+Z*(targSepThick/2.0),Z);  
+  ModelSupport::buildPlane(SMap,refIndex+115,Origin-Z*(lowVoidThick/2.0),Z);  
+  ModelSupport::buildPlane(SMap,refIndex+116,Origin+Z*(topVoidThick/2.0),Z);  
 
   return; 
 }
@@ -174,34 +226,33 @@ BeRef::createObjects(Simulation& System)
   ELog::RegMethod RegA("BeRef","createObjects");
 
   std::string Out;
-  
   // low segment
-  Out=ModelSupport::getComposite(SMap,refIndex," -7 5 -35 ");
+  Out=ModelSupport::getComposite(SMap,refIndex," -7 5 -105 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,refMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,refIndex," -17 35 -36");
+  Out=ModelSupport::getComposite(SMap,refIndex," -17 115 -116");
   System.addCell(MonteCarlo::Qhull(cellIndex++,targSepMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,refIndex," -7 36 -6 ");
+  Out=ModelSupport::getComposite(SMap,refIndex," -7 106 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,refMat,0.0,Out));
   
   Out=ModelSupport::getComposite(SMap,refIndex," -7 5 -6 ");
 
   if (wallThick>Geometry::zeroTol)
     {
-      Out=ModelSupport::getComposite(SMap,refIndex," -17 15 -35 (7:-5)");
+      Out=ModelSupport::getComposite(SMap,refIndex," -17 15 -105 (7:-5)");
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
       // divide layer
-      Out=ModelSupport::getComposite(SMap,refIndex," -17 -25 35 ");
+      Out=ModelSupport::getComposite(SMap,refIndex," -17 105 -115 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
       // divide layer
-      Out=ModelSupport::getComposite(SMap,refIndex," -17 26 -36 ");
+      Out=ModelSupport::getComposite(SMap,refIndex," -17 -106 116 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
 
-      Out=ModelSupport::getComposite(SMap,refIndex," -17 -16 36 (7:6)");
+      Out=ModelSupport::getComposite(SMap,refIndex," -17 -16 106 (7:6)");
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
       Out=ModelSupport::getComposite(SMap,refIndex," -17 15 -16 ");

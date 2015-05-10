@@ -71,6 +71,8 @@
 #include "DefPhysics.h"
 #include "Volumes.h"
 #include "variableSetup.h"
+#include "defaultConfig.h"
+#include "DefUnitsESS.h"
 #include "ImportControl.h"
 #include "SourceCreate.h"
 #include "SourceSelector.h"
@@ -113,6 +115,7 @@ main(int argc,char* argv[])
 
   // The big variable setting
   setVariable::EssVariables(SimPtr->getDataBase());
+  mainSystem::setDefUnits(SimPtr->getDataBase(),IParam);
   InputModifications(SimPtr,IParam,Names);
   
   // Definitions section 

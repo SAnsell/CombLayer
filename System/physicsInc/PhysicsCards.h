@@ -99,11 +99,15 @@ class PhysicsCards
 
   PhysImp& addPhysImp(const std::string&,const std::string&);
   PhysCard& addPhysCard(const std::string&,const std::string&);
+  const PhysCard& getPhysCard(const std::string&,const std::string&) const;
   /// Access source card
   SDef::Source& getSDefCard() { return sdefCard; }
   /// Access kcode card
   SDef::KCode& getKCodeCard() { return kcodeCard; }
 
+  // Access ExpControl card
+  ExpControl& getExpCard() { return *ExpCard; }
+  
   // ALL Particle/Type
   int processCard(const std::string&);
   void removeCell(const int);

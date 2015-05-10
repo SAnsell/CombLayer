@@ -38,8 +38,8 @@ class ExpControl
  private:
 
   std::set<std::string> particles;           ///< Particle list 
-  std::map<int,EUnit> MapItem;               ///< Map items
-  std::map<size_t,Geometry::Vec3D> CentMap;  ///< Centre list of point
+  std::map<int,EUnit> MapItem;               ///< cells : Exp card values
+  std::map<size_t,Geometry::Vec3D> CentMap;  ///< Location vectors 
 
   void writeHeader(std::ostream&) const;
   
@@ -55,6 +55,7 @@ class ExpControl
   void addElm(const std::string&);
   int addUnit(const int,const std::string&);
   void addVect(const size_t,const Geometry::Vec3D&);
+  void renumberCell(const int,const int);
   
   void write(std::ostream&,const std::vector<int>&) const;   
 };

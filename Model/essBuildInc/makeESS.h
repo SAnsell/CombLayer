@@ -114,6 +114,7 @@ class makeESS
   void createGuides(Simulation&);
 
   void buildLowMod(Simulation&,const std::string&);
+  void buildLowButterfly(Simulation&);
   void buildLowCylMod(Simulation&);
   void buildLowConicMod(Simulation&);
   void buildLayerMod(Simulation&);
