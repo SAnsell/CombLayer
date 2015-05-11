@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   physicsInc/ExpControl.h
  *
@@ -53,6 +53,7 @@ class ExpControl
   void clear();
 
   void addElm(const std::string&);
+  int addUnitList(int&,const std::string&);
   int addUnit(const int,const std::string&);
   void addVect(const size_t,const Geometry::Vec3D&);
   void renumberCell(const int,const int);

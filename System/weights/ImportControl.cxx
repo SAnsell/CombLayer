@@ -193,11 +193,15 @@ ExpField(Simulation& System,
     {
       if (remain>4 && StrItem[index]=="Vec3D" &&
 	  StrFunc::convert(StrItem[index+1],a) &&
-	  StrFunc::convert(StrItem[index+1],b) &&
-	  StrFunc::convert(StrItem[index+1],c) )
+	  StrFunc::convert(StrItem[index+2],b) &&
+	  StrFunc::convert(StrItem[index+3],c) )
 	{
-
+	  PointVec(a,b,c);
+	  ELog::EM<<"Vector == "<<PointVec<<ELog::endDiag;
 	}
+      if (remain>1 && StrFunc::convert(StrItem[index],PointVec))
+	ELog::EM<<"Vector == "<<PointVec<<ELog::endDiag;	  
+      
       index++;
       remain--;
     }

@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   physics/PhysicsCards.cxx
  *
@@ -180,6 +180,7 @@ PhysicsCards::processCard(const std::string& Line)
   if(Line.empty())
     return 0;  
 
+  int expCell(0);
   std::string Comd=Line;
   StrFunc::stripComment(Comd);
   Comd=StrFunc::fullBlock(Comd);
@@ -207,6 +208,7 @@ PhysicsCards::processCard(const std::string& Line)
       while(StrFunc::section(Item,pNum))
 	printNum.push_back(pNum);
     }
+
   
   pos=Comd.find("imp:");
   if (pos!=std::string::npos)
@@ -318,6 +320,32 @@ PhysicsCards::processCard(const std::string& Line)
 	}
       return 1;
     }
+  // ext card
+  pos=Comd.find("exp:");
+  if (pos!=std::string::npos)
+    {
+      Comd.erase(0,pos+4);
+      // Ugly hack to get all the a,b,c,d items 
+      // since I can't think of the regular expression
+      size_t index;
+      for(index=0;index<Comd.length() && !isspace(Comd[index]);index++)
+	if (Comd[index]!=',')
+	  ExpCard->addElm(std::string(1,Comd[index]));
+      // NOW HAVE PROBLEM BECAUSE MULTI-LINE
+      expCell=1;
+      if (ExpCard->addUnitList(expCell,Comd))
+	return 1;
+      // drops through to further processing
+      expCell=0;
+    }
+
+  if (expCell)
+    {
+      if (ExpCard->addUnitList(expCell,Comd))
+	return 1;
+      expCell=0;
+    }
+	
   // Component:
   Basic.push_back(Line);
   return 1;

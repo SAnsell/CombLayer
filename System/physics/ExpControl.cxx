@@ -124,6 +124,27 @@ ExpControl::addVect(const size_t index,const Geometry::Vec3D& V)
     CentMap[index]=V;
   return;
 }
+
+int
+ExpControl::addUnitList(int& cellN,const std::string& unitStr)
+  /*!
+    Process a controlled string [no var/comments etc]
+    \param cellN :: Starting cell nubmer
+    \param unitStr :: string to process
+    \return 1/0 on success failure
+  */
+{
+  ELog::RegMethod RegA("ExpControl","addUnitList");
+
+  std::vector<std::string> UOut=
+    StrFunc::splitParts(unitStr,' ');
+  for(const std::string& Unit : UOut)
+    {
+      if (!addUnit(cellN,Unit))
+	return 0;
+    }
+  return 1;
+}
   
 int
 ExpControl::addUnit(const int cellN,const std::string& unitStr)

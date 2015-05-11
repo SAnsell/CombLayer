@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testExpControl.cxx
  *
@@ -31,10 +31,6 @@
 #include <string>
 #include <algorithm>
 #include <tuple>
-
-#ifndef NO_REGEX
-#include <boost/regex.hpp>
-#endif
 
 #include "Exception.h"
 #include "FileReport.h"
