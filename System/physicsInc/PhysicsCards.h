@@ -37,8 +37,7 @@ namespace physicsSystem
   Reads/Writes the physics cards. At the moment does
   not process the special cards. 
   It holds all types of "all cell" cards (imp,vol,fcl etc.)
-  in ImpCards.
-  
+  in ImpCards.  
 */
 
 class PhysicsCards 
@@ -99,11 +98,15 @@ class PhysicsCards
 
   PhysImp& addPhysImp(const std::string&,const std::string&);
   PhysCard& addPhysCard(const std::string&,const std::string&);
+  const PhysCard& getPhysCard(const std::string&,const std::string&) const;
   /// Access source card
   SDef::Source& getSDefCard() { return sdefCard; }
   /// Access kcode card
   SDef::KCode& getKCodeCard() { return kcodeCard; }
 
+  // Access ExpControl card
+  ExpControl& getExpCard() { return *ExpCard; }
+  
   // ALL Particle/Type
   int processCard(const std::string&);
   void removeCell(const int);
