@@ -25,7 +25,7 @@
 namespace physicsSystem
 {
   class dbcnCard;
-  class ExpControl;
+  class ExtControl;
   
 /*!
   \class PhysicsCards
@@ -63,7 +63,7 @@ class PhysicsCards
   SDef::Source sdefCard;                  ///< Source term
   SDef::KCode kcodeCard;                  ///< KCode term [if used]
   PhysImp Volume;                         ///< Volume stack
-  std::unique_ptr<ExpControl> ExpCard;    ///< Exponent control system
+  std::unique_ptr<ExtControl> ExtCard;    ///< Exponent control system
     
  public:
    
@@ -105,7 +105,7 @@ class PhysicsCards
   SDef::KCode& getKCodeCard() { return kcodeCard; }
 
   // Access ExpControl card
-  ExpControl& getExpCard() { return *ExpCard; }
+  ExtControl& getExtCard() { return *ExtCard; }
   
   // ALL Particle/Type
   int processCard(const std::string&);

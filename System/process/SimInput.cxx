@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   process/SimInput.cxx
  *
@@ -81,7 +81,7 @@ importanceSim(Simulation& System,const mainSystem::inputParam& IParam)
   WeightSystem::simulationImp(System,IParam);
   mainSystem::renumberCells(System,IParam);
   WeightSystem::simulationWeights(System,IParam);
-  WeightSystem::ExpField(System,IParam);
+  WeightSystem::ExtField(System,IParam);
   
   return;
 }

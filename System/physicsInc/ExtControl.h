@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   physicsInc/ExpControl.h
+ * File:   physicsInc/ExtControl.h
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -19,42 +19,56 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef physicsSystem_ExpControl_h
-#define physicsSystem_ExpControl_h
+#ifndef physicsSystem_ExtControl_h
+#define physicsSystem_ExtControl_h
 
 namespace physicsSystem
 {
  
 /*!
-  \class ExpControl
-  \version 1.0
+  \class ExtControl
+  \version 2.0
   \date April 2015
   \author S.Ansell
   \brief Process Exponential Transform card [EXT]
+  
 */
 
-class ExpControl 
+class ExtControl 
 {
  private:
 
-  std::set<std::string> particles;           ///< Particle list 
-  std::map<int,EUnit> MapItem;               ///< cells : Exp card values
+  typedef MapSupport::Range<int> RTYPE;             ///< Range type
+  typedef std::map<RTYPE,EUnit> MTYPE;              ///< Master type
+
+  std::set<std::string> particles;           ///< Particle list
+  
+  /// cells : Exp card values
+  std::map<MapSupport::Range<int>,EUnit> MapItem; 
   std::map<size_t,Geometry::Vec3D> CentMap;  ///< Location vectors 
 
+  /// maps NEW -> OLD
+  std::map<int,int> renumberMap;
+  
+  
   void writeHeader(std::ostream&) const;
   
  public:
    
-  ExpControl();
-  ExpControl(const ExpControl&);
-  ExpControl& operator=(const ExpControl&);
-  virtual ~ExpControl();
+  ExtControl();
+  ExtControl(const ExtControl&);
+  ExtControl& operator=(const ExtControl&);
+  virtual ~ExtControl();
 
   void clear();
 
   void addElm(const std::string&);
   int addUnitList(int&,const std::string&);
-  int addUnit(const int,const std::string&);
+
+  int addUnit(const MapSupport::Range<int>&,
+	      const std::string&);
+  int addUnit(const int&,const std::string&);
+
   void addVect(const size_t,const Geometry::Vec3D&);
   void renumberCell(const int,const int);
   

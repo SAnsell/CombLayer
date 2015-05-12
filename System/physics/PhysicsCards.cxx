@@ -42,6 +42,7 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "support.h"
+#include "MapRange.h"
 #include "Triple.h"
 #include "SrcData.h"
 #include "SrcItem.h"
@@ -57,7 +58,7 @@
 #include "KGroup.h"
 #include "dbcnCard.h"
 #include "EUnit.h"
-#include "ExpControl.h"
+#include "ExtControl.h"
 #include "PhysicsCards.h"
 
 namespace physicsSystem
@@ -66,7 +67,7 @@ namespace physicsSystem
 PhysicsCards::PhysicsCards() :
   nps(10000),histp(0),dbCard(new dbcnCard),
   voidCard(0),nImpOut(0),prdmp("1e7 1e7 0 2 1e7"),
-  Volume("vol"),ExpCard(new ExpControl)
+  Volume("vol"),ExtCard(new ExtControl)
   /*!
     Constructor
   */
@@ -78,7 +79,7 @@ PhysicsCards::PhysicsCards(const PhysicsCards& A) :
   voidCard(A.voidCard),nImpOut(A.nImpOut),printNum(A.printNum),
   prdmp(A.prdmp),ImpCards(A.ImpCards),
   PhysCards(A.PhysCards),LEA(A.LEA),sdefCard(A.sdefCard),
-  Volume(A.Volume),ExpCard(new ExpControl(*A.ExpCard))
+  Volume(A.Volume),ExtCard(new ExtControl(*A.ExtCard))
   /*!
     Copy constructor
     \param A :: PhysicsCards to copy
@@ -109,7 +110,7 @@ PhysicsCards::operator=(const PhysicsCards& A)
       LEA=A.LEA;
       sdefCard=A.sdefCard;
       Volume=A.Volume;
-      *ExpCard= *A.ExpCard;
+      *ExtCard= *A.ExtCard;
     }
   return *this;
 }
@@ -136,7 +137,7 @@ PhysicsCards::clearAll()
   Volume.clear();
   sdefCard.clear();
   dbCard->reset();
-  ExpCard->clear();
+  ExtCard->clear();
   return;
 }
 
@@ -330,10 +331,10 @@ PhysicsCards::processCard(const std::string& Line)
       size_t index;
       for(index=0;index<Comd.length() && !isspace(Comd[index]);index++)
 	if (Comd[index]!=',')
-	  ExpCard->addElm(std::string(1,Comd[index]));
+	  ExtCard->addElm(std::string(1,Comd[index]));
       // NOW HAVE PROBLEM BECAUSE MULTI-LINE
       expCell=1;
-      if (ExpCard->addUnitList(expCell,Comd))
+      if (ExtCard->addUnitList(expCell,Comd))
 	return 1;
       // drops through to further processing
       expCell=0;
@@ -341,7 +342,7 @@ PhysicsCards::processCard(const std::string& Line)
 
   if (expCell)
     {
-      if (ExpCard->addUnitList(expCell,Comd))
+      if (ExtCard->addUnitList(expCell,Comd))
 	return 1;
       expCell=0;
     }
@@ -704,7 +705,7 @@ PhysicsCards::substituteCell(const int oldCell,const int newCell)
     PI.renumberCell(oldCell,newCell);
   
   Volume.renumberCell(oldCell,newCell);
-  ExpCard->renumberCell(oldCell,newCell);
+  ExtCard->renumberCell(oldCell,newCell);
 
   return;
 }
@@ -795,7 +796,7 @@ PhysicsCards::write(std::ostream& OX,
   for(const std::string& PC : Basic)
     StrFunc::writeMCNPX(PC,OX);
 
-  ExpCard->write(OX,cellOutOrder);
+  ExtCard->write(OX,cellOutOrder);
   
   LEA.write(OX);
   sdefCard.write(OX);

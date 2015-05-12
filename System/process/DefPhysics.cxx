@@ -332,9 +332,6 @@ setDefaultPhysics(Simulation& System,
   // LEA ipht icc nobalc nobale ifbrk ilvden ievap nofis
   physicsSystem::LSwitchCard& lea=PC.getLEA();
 
-  const physicsSystem::PhysCard& AO
-    =PC.getPhysCard("cut","n");
-  ELog::EM<<"Clled DefPhys"<<AO<<ELog::endDiag;  
   const std::string PModel=IParam.getValue<std::string>("physModel");
   setPhysicsModel(lea,PModel);
 

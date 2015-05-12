@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   test/testExpControl.cxx
+ * File:   test/testExtControl.cxx
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -43,28 +43,29 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
+#include "MapRange.h"
 #include "EUnit.h"
-#include "ExpControl.h"
+#include "ExtControl.h"
 
 #include "testFunc.h"
-#include "testExpControl.h"
+#include "testExtControl.h"
 
 using namespace StrFunc;
 
-testExpControl::testExpControl()
+testExtControl::testExtControl()
   /*!
     Constructor
    */
 {}
 
-testExpControl::~testExpControl()
+testExtControl::~testExtControl()
   /*!
     Destructor
   */
 {}
 
 int 
-testExpControl::applyTest(const int extra)
+testExtControl::applyTest(const int extra)
   /*!
     Applies all the tests and returns 
     the error number
@@ -72,12 +73,12 @@ testExpControl::applyTest(const int extra)
     \returns -ve on error 0 on success.
   */
 {
-  ELog::RegMethod RegA("testExpControl","applyTest");
+  ELog::RegMethod RegA("testExtControl","applyTest");
 
-  typedef int (testExpControl::*testPtr)();
+  typedef int (testExtControl::*testPtr)();
   testPtr TPtr[]=
     {
-      &testExpControl::testParse
+      &testExtControl::testParse
     };
 
   const std::string TestName[]=
@@ -110,7 +111,7 @@ testExpControl::applyTest(const int extra)
 }
 
 int
-testExpControl::testParse()
+testExtControl::testParse()
   /*!
     Applies a test to convert
     \retval -1 :: failed to convert a good double
@@ -119,7 +120,7 @@ testExpControl::testParse()
     \retval 0 on success
   */
 {
-  ELog::RegMethod RegA("testExpControl","testParse");
+  ELog::RegMethod RegA("testExtControl","testParse");
 
   // type : Init string : final : results : (outputs)
   typedef std::tuple<std::string,std::string> TTYPE;
@@ -132,7 +133,7 @@ testExpControl::testParse()
   Tests.push_back(TTYPE("-SX","exp:n 0.4V1 SV1 0.988 -SX"));
 
   int cnt(1);
-  physicsSystem::ExpControl EX;
+  physicsSystem::ExtControl EX;
   std::vector<int> cellOutOrder;
 
   for(const TTYPE& tc : Tests)

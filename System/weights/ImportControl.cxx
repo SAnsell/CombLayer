@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   weights/ImportControl.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,6 +69,7 @@
 #include "Simulation.h"
 #include "objectRegister.h"
 #include "inputParam.h"
+#include "ExtConstructor.h"
 #include "ImportControl.h"
 
 namespace WeightSystem
@@ -99,7 +100,6 @@ zeroImp(Simulation& System,const int initCell,
     }
   return;
 }
-
 
 void
 simulationImp(Simulation& System,
@@ -165,46 +165,57 @@ simulationImp(Simulation& System,
   return;
 }
 
+  
 void
-ExpField(Simulation& System,
+ExtField(Simulation& System,
 	 const mainSystem::inputParam& IParam)
   /*!
-    Control Exp card on the in individual cells
+    Control Ext card on the in individual cells
     \param System :: Simulation
     \param IParam :: input stream
   */
 {
-  ELog::RegMethod RegA("ImportControl","ExpField");
+  ELog::RegMethod RegA("ImportControl","ExtField");
 
   // currently only first item / get all
   std::vector<std::string> StrItem;
-  const size_t NGrp=IParam.grpCnt("wExp");
-  const size_t NParam=IParam.itemCnt("wExp",0);
-  for(size_t j=0;j<NParam;j++)
-    StrItem.push_back
-      (IParam.getCompValue<std::string>("wExp",0,j));
+  const size_t NGrp=IParam.grpCnt("wExt");
 
-  double a,b,c;
-  Geometry::Vec3D PointVec;
-  
-  size_t index(0);
-  size_t remain(NParam-1);
-  while(index<NParam)
+  for(size_t grpIndex=0;grpIndex<NGrp;grpIndex++)
     {
-      if (remain>4 && StrItem[index]=="Vec3D" &&
-	  StrFunc::convert(StrItem[index+1],a) &&
-	  StrFunc::convert(StrItem[index+2],b) &&
-	  StrFunc::convert(StrItem[index+3],c) )
-	{
-	  PointVec(a,b,c);
-	  ELog::EM<<"Vector == "<<PointVec<<ELog::endDiag;
-	}
-      if (remain>1 && StrFunc::convert(StrItem[index],PointVec))
-	ELog::EM<<"Vector == "<<PointVec<<ELog::endDiag;	  
-      
-      index++;
-      remain--;
+      physicsSystem::ExtConstructor A;
+      A.processUnit(System,IParam,grpIndex);
     }
+    //   // PROCESS ZONE:
+      
+      
+    //   double a,b,c;
+    //   Geometry::Vec3D PointVec;
+      
+    //   size_t index(0);
+    //   size_t remain(NParam);
+    //   while(index<NParam)
+    // 	{
+    // 	  ELog::EM<<"Cell == "<<StrItem[index]<<ELog::endDiag;
+    // 	  if (remain>=1 && StrFunc::convert(StrItem[index],PointVec))
+    // 	    {
+    // 	      ELog::EM<<"Vector[1] == "<<PointVec<<ELog::endDiag;
+    // 	      index++;
+    // 	    }
+	  
+    // 	  if (remain>=4 && StrItem[index]=="Vec3D" &&
+    // 	      StrFunc::convert(StrItem[index+1],a) &&
+    // 	      StrFunc::convert(StrItem[index+2],b) &&
+    // 	      StrFunc::convert(StrItem[index+3],c) )
+    // 	    {
+    // 	      PointVec(a,b,c);
+    // 	      index+=3;
+    // 	    }
+	  
+    // 	  index++;
+    // 	  remain--;
+    // 	}
+    // }
   return;
 }
 

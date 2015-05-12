@@ -1,7 +1,7 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  Comb-Layer : MCNP(X) Input builder
  
- * File:   weightsInc/ExpManager.h
+ * File:   physicsInc/ExtConstructor.h
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -19,39 +19,47 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef WeightSystem_ExpManager_h
-#define WeightSystem_ExpManager_h
+#ifndef physicsSystem_ExtConstructor_h
+#define physicsSystem_ExtConstructor_h
+
+namespace attachSystem
+{
+  class FixedComp;
+}
+
+
+class Simulation;
 
 namespace physicsSystem
 {
 
 /*!
-  \class ExpManager
+  \class ExtConstructor
   \version 1.0
   \author S. Ansell
-  \date April 2015
-  \brief Controls the addition of weights to the system
+  \date May 2015
+  \brief Processes and method of producing Ext card input
+
 */
 
-class ExpManager 
+class ExtConstructor 
 {
- private:  
+ private:
 
-  std::map<std::string,ExpControl> EVec;
+  std::vector<int> cellNumbers;         ///< Cell number to apply to
 
+  void procZone(std::vector<std::string>&);
+  void writeHelp(std::ostream&) const;
+    
  public:
 
-  ExpManager();
-  ExpManager(const ExpManager&);
-  ExpManager& operator=(const ExpManager&);
-  ~ExpManager();
-  
-  ExpControl& particleFind(const std::string&);
-  void renumberCell(const int,const int);  
-  void maskCell(const int);
+  ExtConstructor();
+  ExtConstructor(const ExtConstructor&);
+  ExtConstructor& operator=(const ExtConstructor&);
+  ~ExtConstructor() {}  ///< Destructor
 
-  void write(std::ostream&) const;
-
+  void processUnit(Simulation&,const mainSystem::inputParam&,
+		   const size_t);
 };
 
 }

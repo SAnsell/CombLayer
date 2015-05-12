@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   testInclude/testExpControl.h
+ * File:   testInclude/testExtControl.h
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -19,18 +19,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef testExpControl_h
-#define testExpControl_h 
+#ifndef testExtControl_h
+#define testExtControl_h 
 
 /*!
-  \class testExpControl
-  \brief Tests the class ExpControl
+  \class testExtControl
+  \brief Tests the class ExtControl
   \author S. Ansell
   \date April 2015
   \version 1.0
 */
 
-class testExpControl
+class testExtControl
 {
 private:
 
@@ -39,8 +39,8 @@ private:
 
 public:
   
-  testExpControl();
-  ~testExpControl();
+  testExtControl();
+  ~testExtControl();
   
   int applyTest(const int);       
 

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testVec3D.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,22 +70,43 @@ testVec3D::applyTest(const int extra)
     \retval -1 :: Fail on angle
   */
 {
-  int retValue(0);
+  ELog::RegMethod RegA("testVec3D","applyTest");
+  TestFunc::regSector("testVec3D");
+
+  typedef int (testVec3D::*testPtr)();
+  testPtr TPtr[]=
+    {
+      &testVec3D::testDotProd,
+      &testVec3D::testRead
+    };
+  const std::string TestName[]=
+    {
+      "DotProd",
+      "Read"
+    };
+  
+  const int TSize(sizeof(TPtr)/sizeof(testPtr));
   if (!extra)
     {
-      std::cout<<"TestDotProd            (1)"<<std::endl;
+      std::ios::fmtflags flagIO=std::cout.setf(std::ios::left);
+      for(int i=0;i<TSize;i++)
+        {
+	  std::cout<<std::setw(30)<<TestName[i]<<"("<<i+1<<")"<<std::endl;
+	}
+      std::cout.flags(flagIO);
       return 0;
     }
-
-  if (extra<0 || extra==1)
+  for(int i=0;i<TSize;i++)
     {
-      TestFunc::regTest("testDotProd");
-      retValue+=testDotProd();
-      if (retValue || extra>0)
-	return retValue;
+      if (extra<0 || extra==i+1)
+        {
+	  TestFunc::regTest(TestName[i]);
+	  const int retValue= (this->*TPtr[i])();
+	  if (retValue || extra>0)
+	    return retValue;
+	}
     }
- 
-  return retValue;
+  return 0;
 }
 
 int
@@ -140,4 +161,42 @@ testVec3D::testDotProd()
   return 0;
 }
 
+int
+testVec3D::testRead()
+  /*!
+    Tests the Vec3D read of a Vec3D 
+    \retval -1 on failure
+    \retval 0 :: success 
+  */
+{
+  ELog::RegMethod RegA("testVec3D","testReadVec3D");
+
+  typedef std::tuple<std::string,Vec3D> TTYPE;
+  std::vector<TTYPE> Tests;
+  Tests={
+    TTYPE("3,4 8",Vec3D(3,4,8)),
+    TTYPE("Vec3D(3,4 8)",Vec3D(3,4,8))
+  };
+
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
+    {
+      Geometry::Vec3D A(-1,-1,-1);
+      std::istringstream cx(std::get<0>(tc));
+      cx>>A;
+      
+      if (std::get<1>(tc)!=A)
+	{
+	  ELog::EM<<"Test Num   "<<cnt<<ELog::endDiag;
+	  ELog::EM<<"String == "<<std::get<0>(tc)<<ELog::endDiag;
+	  ELog::EM<<"Vec3D  == "<<A<<ELog::endDiag;
+	  ELog::EM<<"Expect == "<<std::get<1>(tc)<<ELog::endDiag;
+	  return -1;
+	}
+      cnt++;
+    }
+  return 0;
+}
+
   
+

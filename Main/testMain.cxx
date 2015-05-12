@@ -120,7 +120,7 @@
 #include "testDoubleErr.h"
 #include "testElement.h"
 #include "testEllipticCyl.h"
-#include "testExpControl.h"
+#include "testExtControl.h"
 #include "testFace.h"
 #include "testFortranWrite.h"
 #include "testFunc.h"
@@ -889,7 +889,7 @@ physicsTest(const int type,const int extra)
     {
       TestFunc::Instance().reportTest(std::cout);
       std::cout<<"testDBCN          (1)"<<std::endl;
-      std::cout<<"testExpControl    (2)"<<std::endl;
+      std::cout<<"testExtControl    (2)"<<std::endl;
     }
   if(type==1 || type<0)
     {
@@ -899,7 +899,7 @@ physicsTest(const int type,const int extra)
     }
   if(type==2 || type<0)
     {
-      testExpControl A;
+      testExtControl A;
       const int X=A.applyTest(extra);
       if (X) return X;
     }

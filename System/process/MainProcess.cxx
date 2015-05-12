@@ -270,7 +270,7 @@ createInputs(inputParam& IParam)
 
   IParam.regItem<double>("w","weight");
   IParam.regItem<Geometry::Vec3D>("WP","weightPt");
-  IParam.regMulti<std::string>("wExp","wExp",25,0);    
+  IParam.regMulti<std::string>("wExt","wExt",25,0);    
   IParam.regItem<double>("WTemp","weightTemp",1);
   IParam.regDefItem<std::string>("WType","weightType",1,"basic");
 
@@ -333,7 +333,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("validCheck","Run simulation to check for validity");
 
   IParam.setDesc("w","weightBias");
-  IParam.setDesc("wExp","Exp biasisng [see: -wExp help]");
+  IParam.setDesc("wExt","Extraction biasisng [see: -wExt help]");
   IParam.setDesc("WType","Initial model for weights [help for info]");
   IParam.setDesc("WTemp","Temperature correction for weights");
   IParam.setDesc("WP","Weight bias Point");

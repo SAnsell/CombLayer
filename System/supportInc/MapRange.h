@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   processInc/DefUnits.h
+ * File:   supportInc/MapRange.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,25 +19,44 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef mainSystem_DefUnits_h
-#define mainSystem_DefUnits_h
+#ifndef MapSupport_MapRange_h
+#define MapSupport_MapRange_h
 
-class Simulation;
-class FuncDataBase;
-
-namespace mainSystem
+namespace MapSupport
 {
-  class inputParam;
+/*!
+  \class Range
+  \author S. Ansell
+  \date May 2015
+  \version 1.0
+  \brief Range object to allow non-overlapping ranged maps
+  \todo update to have an inserter and amalgomator
+*/
 
-  void setDefUnits(FuncDataBase&,inputParam&);
+template<typename T>
+class Range
+{
+ private:
 
-  void setTS1MarkIV(defaultConfig&); 
-  void setTS1MarkV(defaultConfig&); 
-  void setTS1MarkVI(defaultConfig&); 
-  void setTS1MarkVIb(defaultConfig&); 
+  const T low;           ///< Low value
+  const T high;          ///< High value
 
-}
+public:
+
+  /// constructor
+  explicit Range(const T& V) : low(V),high(V) 
+  {}
+  /// constructor
+  Range(const T& LV,const T& HV) :
+  low(LV),high(HV) {}
+  
+  bool
+  operator<(const Range<T>& A) const
+    { return  (high < A.low) ? 1 : 0; }
+}; 
+
+
+} // NAMESPACE MapSupport
 
 
 #endif
- 

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   physics/ExpControl.cxx
+ * File:   physics/ExtControl.cxx
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -40,36 +40,37 @@
 #include "OutputLog.h"
 #include "support.h"
 #include "stringCombine.h"
+#include "MapRange.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "EUnit.h"
-#include "ExpControl.h"
+#include "ExtControl.h"
 
 namespace physicsSystem
 {
   
-ExpControl::ExpControl()
+ExtControl::ExtControl()
   /*!
     Constructor
   */
 {}
 
-ExpControl::ExpControl(const ExpControl& A) :
+ExtControl::ExtControl(const ExtControl& A) :
   particles(A.particles),
   MapItem(A.MapItem),
   CentMap(A.CentMap)
   /*!
     Copy constructor
-    \param A :: ExpControl to copy
+    \param A :: ExtControl to copy
   */
 {}
 
-ExpControl&
-ExpControl::operator=(const ExpControl& A)
+ExtControl&
+ExtControl::operator=(const ExtControl& A)
   /*!
     Assignment operator
-    \param A :: ExpControl to copy
+    \param A :: ExtControl to copy
     \return *this
   */
 {
@@ -82,14 +83,14 @@ ExpControl::operator=(const ExpControl& A)
   return *this;
 }
 
-ExpControl::~ExpControl()
+ExtControl::~ExtControl()
   /*!
     Destructor
   */
 {}
 
 void
-ExpControl::clear()
+ExtControl::clear()
   /*!
     Clear control
   */
@@ -101,7 +102,7 @@ ExpControl::clear()
 }
 
 void
-ExpControl::addElm(const std::string& EN) 
+ExtControl::addElm(const std::string& EN) 
   /*!
     Adds an element to the particles list
     (note it also checks the element)
@@ -113,7 +114,7 @@ ExpControl::addElm(const std::string& EN)
 }
 
 void
-ExpControl::addVect(const size_t index,const Geometry::Vec3D& V)
+ExtControl::addVect(const size_t index,const Geometry::Vec3D& V)
   /*!
     Add a vector to the centre list
     \param index :: vector index
@@ -126,7 +127,7 @@ ExpControl::addVect(const size_t index,const Geometry::Vec3D& V)
 }
 
 int
-ExpControl::addUnitList(int& cellN,const std::string& unitStr)
+ExtControl::addUnitList(int& cellN,const std::string& unitStr)
   /*!
     Process a controlled string [no var/comments etc]
     \param cellN :: Starting cell nubmer
@@ -134,7 +135,7 @@ ExpControl::addUnitList(int& cellN,const std::string& unitStr)
     \return 1/0 on success failure
   */
 {
-  ELog::RegMethod RegA("ExpControl","addUnitList");
+  ELog::RegMethod RegA("ExtControl","addUnitList");
 
   std::vector<std::string> UOut=
     StrFunc::splitParts(unitStr,' ');
@@ -145,19 +146,31 @@ ExpControl::addUnitList(int& cellN,const std::string& unitStr)
     }
   return 1;
 }
-  
+
 int
-ExpControl::addUnit(const int cellN,const std::string& unitStr)
+ExtControl::addUnit(const int& cellN,const std::string& unitStr)
   /*!
-    Add a exp component
+    Add a ext component
     \param cellN :: Cell number
     \param unitStr :: String of MCNP form
     \return 1 on success / 0 on fail
   */
 {
-  ELog::RegMethod RegA("ExpControl","addComp");
+  return addUnit(MapSupport::Range<int>(cellN),unitStr);
+}
 
-  typedef std::map<int,EUnit>::value_type VTYPE;
+  
+int
+ExtControl::addUnit(const MapSupport::Range<int>& cellN,
+		    const std::string& unitStr)
+  /*!
+    Add a exp component
+    \param cellN :: Cell number(s)
+    \param unitStr :: String of MCNP form
+    \return 1 on success / 0 on fail
+  */
+{
+  ELog::RegMethod RegA("ExtControl","addComp");
   
   if (unitStr.empty())
     return 0;
@@ -183,7 +196,8 @@ ExpControl::addUnit(const int cellN,const std::string& unitStr)
       // Option 0 / 1 [no letters]
       if (Unit.empty())
 	{
-	  MapItem.insert(VTYPE(cellN,EUnit(mFound*2,0,D,0)));
+	  MapItem.insert(MTYPE::value_type(RTYPE(cellN),
+					   EUnit(mFound*2,0,D,0)));
 	  return 1;
 	}
     }
@@ -195,7 +209,8 @@ ExpControl::addUnit(const int cellN,const std::string& unitStr)
       index++;
       if (index==uSize)
 	{
-	  MapItem.insert(VTYPE(cellN,EUnit(mFound,0,0.0,0)));
+	  MapItem.insert(MTYPE::value_type(RTYPE(cellN),
+					   EUnit(mFound,0,0.0,0)));
 	  return 1;
 	}
     }
@@ -208,9 +223,11 @@ ExpControl::addUnit(const int cellN,const std::string& unitStr)
       if (StrFunc::section(Unit,VNum) && VNum)
 	{
 	  if (sFound)
-	    MapItem.insert(VTYPE(cellN,EUnit(mFound,0,D,VNum)));
+	    MapItem.insert(MTYPE::value_type(RTYPE(cellN),
+					     EUnit(mFound,0,D,VNum)));
 	  else
-	    MapItem.insert(VTYPE(cellN,EUnit(2*mFound,0,D,VNum)));
+	    MapItem.insert(MTYPE::value_type(RTYPE(cellN),
+					     EUnit(2*mFound,0,D,VNum)));
 	  return 1;
 	}
       ELog::EM<<"Failed to understand V Cell :"<<Unit<<ELog::endErr;
@@ -225,11 +242,14 @@ ExpControl::addUnit(const int cellN,const std::string& unitStr)
       const size_t dirType=static_cast<size_t>
 	((std::toupper(Unit[index])-'X')+1);
       if (sFound)
-	MapItem.insert(VTYPE(cellN,EUnit(mFound,dirType,D,0)));
+	MapItem.insert(MTYPE::value_type(RTYPE(cellN),
+					 EUnit(mFound,dirType,D,0)));
       else if (D>1.1)
-	MapItem.insert(VTYPE(cellN,EUnit(3*mFound,dirType,0.0,0)));
+	MapItem.insert(MTYPE::value_type(RTYPE(cellN),
+					 EUnit(3*mFound,dirType,0.0,0)));
       else 
-	MapItem.insert(VTYPE(cellN,EUnit(2*mFound,dirType,D,0)));
+	MapItem.insert(MTYPE::value_type(RTYPE(cellN),
+					 EUnit(2*mFound,dirType,D,0)));
       return 1;
     }
   // MUST BE invalid :
@@ -238,37 +258,39 @@ ExpControl::addUnit(const int cellN,const std::string& unitStr)
 }
 
 void
-ExpControl::renumberCell(const int originalCell,const int newCell)
+ExtControl::renumberCell(const int originalCell,const int newCell)
   /*!
     Renumber cell
     \param originalCell :: original cell number
     \param newCell :: new cell number
   */
 {
-  ELog::RegMethod RegA("ExpControl","renumberCell");
+  ELog::RegMethod RegA("ExtControl","renumberCell");
   if (originalCell!=newCell)
     {
-      std::map<int,EUnit>::iterator mc=
-	MapItem.find(originalCell);
-      if (mc!=MapItem.end())
+      // first check if any work is required:
+      std::map<MapSupport::Range<int>,EUnit>::const_iterator mc=
+	MapItem.find(MapSupport::Range<int>(originalCell));
+      if (mc==MapItem.end()) return;
+      
+      // second check if in renumbered list (either way?)
+      std::map<int,int>::const_iterator mcN=
+	renumberMap.find(newCell);
+      
+      if (mcN!=renumberMap.end())
 	{
-	  std::map<int,EUnit>::iterator mcN=
-	    MapItem.find(newCell);
-	  if (mcN!=MapItem.end())
-	    {
-	      throw ColErr::InContainerError<int>
-		(newCell,"newCell is already in mapItem (from"+
-		 StrFunc::makeString(originalCell)+")");
-	    }
-	  MapItem.insert(std::map<int,EUnit>::value_type(newCell,mc->second));
-	  MapItem.erase(mc);
+	  if (mcN->second==originalCell) return;   // work already done
+	  throw ColErr::InContainerError<int>
+	    (newCell,"Cell is already remapped:" +
+	     StrFunc::makeString(mcN->second)+")");
 	}
+      renumberMap.insert(std::map<int,int>::value_type(newCell,originalCell));
     }
   return;
 }
   
 void
-ExpControl::writeHeader(std::ostream& OX) const
+ExtControl::writeHeader(std::ostream& OX) const
   /*!
     Write the particle header set
     \param OX :: Output stream
@@ -289,7 +311,7 @@ ExpControl::writeHeader(std::ostream& OX) const
 }
   
 void
-ExpControl::write(std::ostream& OX,
+ExtControl::write(std::ostream& OX,
 		  const std::vector<int>& cellOutOrder) const
   /*!
     Write out the card
@@ -297,7 +319,7 @@ ExpControl::write(std::ostream& OX,
     \param cellOutOrder :: Cell List
   */
 {
-  ELog::RegMethod RegA("ExpControl","write");
+  ELog::RegMethod RegA("ExtControl","write");
 
   if (!MapItem.empty())
     {
@@ -305,7 +327,12 @@ ExpControl::write(std::ostream& OX,
       writeHeader(cx);
       for(const int CN : cellOutOrder)
 	{
-	  std::map<int,EUnit>::const_iterator mc=MapItem.find(CN);
+	  int CNActive(CN);
+	  std::map<int,int>::const_iterator rmc=renumberMap.find(CN);
+	  if (rmc!=renumberMap.end())
+	    CNActive=rmc->second;
+	    
+	  MTYPE::const_iterator mc=MapItem.find(RTYPE(CN));
 	  if (mc!=MapItem.end())
 	    mc->second.write(cx);
 	  else
