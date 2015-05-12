@@ -46,7 +46,7 @@ class ExtConstructor
 {
  private:
 
-  std::vector<int> cellNumbers;         ///< Cell number to apply to
+  std::vector<MapSupport::Range<int>> Zones;
 
   void procZone(std::vector<std::string>&);
   void writeHelp(std::ostream&) const;

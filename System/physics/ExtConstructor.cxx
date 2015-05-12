@@ -97,11 +97,24 @@ void
 ExtConstructor::procZone(std::vector<std::string>& StrItem)
   /*!
     Process the zone information
-    \param StrItem :: List of item from the input
+    \param StrItem :: List of item from the input 
   */
 {
   ELog::RegMethod RegA("ExtConstuctor","procZone");
 
+  const size_t NS
+  if (StrItem[0]=="all")
+    Zone.push_back(Range<int>(0,100000000));
+  else if (StrItem[0]=="object" && StrItem.size()>1)
+    {
+      const ModelSupport::objectRegister& OR= 
+	ModelSupport::objectRegister::Instance();
+      const int cellN=OR.getCell(StrItem[1]);
+      const int rangeN=OR.getRange(StrItem[1]);
+      if (cellN==0)
+	throw ColErr:InContainerError<std::string>(StrItem[1],"Object name");
+      Zone.push_back(Range<int>(cellN,rangeN));
+    }
   return;
 }
   
