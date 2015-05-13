@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testMapSupport.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,6 +38,7 @@
 #include "OutputLog.h"
 #include "support.h"
 #include "MapSupport.h"
+#include "MapRange.h"
 #include "mapIterator.h"
 
 #include "testFunc.h"
@@ -72,6 +73,7 @@ testMapSupport::applyTest(const int extra)
     {
       &testMapSupport::testIterator,
       &testMapSupport::testMapDelete,
+      &testMapSupport::testMapRange,
       &testMapSupport::testMapWrite,
       &testMapSupport::testSndValue,
       &testMapSupport::testValEqual
@@ -213,6 +215,53 @@ testMapSupport::testValEqual()
   return 0;
 }
   
+int
+testMapSupport::testMapRange()
+  /*!
+    Test of the valEqual functor.
+    \returns -ve on error 0 on success.
+  */
+{
+  ELog::RegMethod RegA("testMapSupport","testRange");
+
+  using namespace MapSupport;
+  typedef std::map<Range<int>,std::string> MapTYPE;
+  
+  MapTYPE MUnit;
+  MUnit.insert(MapTYPE::value_type(Range<int>(1,3),"a"));
+  MUnit.insert(MapTYPE::value_type(Range<int>(17,18),"b"));
+  MUnit.insert(MapTYPE::value_type(Range<int>(14,14),"c"));
+
+  // test number : Found : key
+  typedef std::tuple<int,bool,std::string> TTYPE;
+  std::vector<TTYPE> Tests=
+    {
+      TTYPE(1,1,"a")
+    };
+
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
+    {
+      const int testNum(std::get<0>(tc));
+      MapTYPE::const_iterator mc=MUnit.find(Range<int>(testNum));
+      const bool resultFind(mc!=MUnit.end());
+
+      if (resultFind!=std::get<1>(tc) ||
+	  (resultFind && mc->second!=std::get<2>(tc)))
+	{
+	  ELog::EM<<"Test == "<<cnt<<ELog::endDiag;
+	  ELog::EM<<"Result["<<std::get<1>(tc)<<
+	    "] == "<<resultFind<<ELog::endDiag;
+	  if (resultFind)
+	    ELog::EM<<"Found["<<std::get<2>(tc)
+		    <<"]== "<<mc->second<<ELog::endDiag;
+	  return -1;
+	}
+      cnt++;
+    }
+
+  return 0;
+}
 
 int
 testMapSupport::testMapWrite()

@@ -46,6 +46,7 @@ class ExtConstructor
 {
  private:
 
+  /// Ranges to build
   std::vector<MapSupport::Range<int>> Zones;
 
   void procZone(std::vector<std::string>&);

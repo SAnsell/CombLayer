@@ -46,6 +46,7 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "support.h"
+#include "MapRange.h"
 #include "Triple.h"
 #include "NRange.h"
 #include "NList.h"

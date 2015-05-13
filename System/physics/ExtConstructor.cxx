@@ -45,6 +45,7 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
+#include "MapRange.h"
 #include "Triple.h"
 #include "support.h"
 #include "stringCombine.h"
@@ -102,18 +103,19 @@ ExtConstructor::procZone(std::vector<std::string>& StrItem)
 {
   ELog::RegMethod RegA("ExtConstuctor","procZone");
 
-  const size_t NS
+  const size_t NS(StrItem.size());
+  
   if (StrItem[0]=="all")
-    Zone.push_back(Range<int>(0,100000000));
-  else if (StrItem[0]=="object" && StrItem.size()>1)
+    Zones.push_back(MapSupport::Range<int>(0,100000000));
+  else if (StrItem[0]=="object" && NS>1)
     {
       const ModelSupport::objectRegister& OR= 
 	ModelSupport::objectRegister::Instance();
       const int cellN=OR.getCell(StrItem[1]);
       const int rangeN=OR.getRange(StrItem[1]);
       if (cellN==0)
-	throw ColErr:InContainerError<std::string>(StrItem[1],"Object name");
-      Zone.push_back(Range<int>(cellN,rangeN));
+	throw ColErr::InContainerError<std::string>(StrItem[1],"Object name");
+      Zones.push_back(MapSupport::Range<int>(cellN,rangeN));
     }
   return;
 }
