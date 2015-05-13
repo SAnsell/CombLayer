@@ -1,7 +1,7 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
- * File:   supportInc/MapRange.h
+ * File:   testInclude/testMapRange.h
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -19,44 +19,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef MapSupport_MapRange_h
-#define MapSupport_MapRange_h
+#ifndef testMapRange_h
+#define testMapRange_h 
 
-namespace MapSupport
-{
 /*!
-  \class Range
-  \author S. Ansell
-  \date May 2015
+  \class testMapRange 
+  \brief test of Map funtionals 
   \version 1.0
-  \brief Range object to allow non-overlapping ranged maps
-  \todo update to have an inserter and amalgomator
+  \date September 2005
+  \author S.Ansell
+  
+  This class currently only checks that 
+  a command can be initialised, filled 
+  and that results can be obtained.
 */
 
-template<typename T>
-class Range
+class testMapRange 
 {
- private:
+private:
 
-  T low;           ///< Low value
-  T high;          ///< High value
+  //Tests 
+  int testFind();
 
 public:
 
-  /// constructor
-  explicit Range(const T&);
-  Range(const T&,const T&);
+  testMapRange();
+  ~testMapRange();
 
-  bool
-  operator<(const Range<T>& A) const
-    { return  (high < A.low) ? 1 : 0; }
-
-  bool overlap(const Range<T>&,const T& =T(0)) const;
-  Range<T>& combine(const Range<T>&);
-}; 
-
-
-} // NAMESPACE MapSupport
-
+  int applyTest(const int =0);     
+};
 
 #endif

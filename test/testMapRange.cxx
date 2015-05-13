@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   test/testExtControl.cxx
+ * File:   test/testMapRange.cxx
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -19,15 +19,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#include <cstdlib>
-#include <fstream>
-#include <iomanip>
 #include <iostream>
-#include <cmath>
-#include <complex>
+#include <iomanip>
+#include <fstream>
+#include <sstream>
 #include <vector>
-#include <set>
 #include <map>
+#include <set>
 #include <string>
 #include <algorithm>
 #include <tuple>
@@ -38,52 +36,49 @@
 #include "RegMethod.h"
 #include "GTKreport.h"
 #include "OutputLog.h"
-#include "mathSupport.h"
 #include "support.h"
-#include "MatrixBase.h"
-#include "Matrix.h"
-#include "Vec3D.h"
+#include "MapSupport.h"
 #include "MapRange.h"
-#include "EUnit.h"
-#include "ExtControl.h"
+#include "mapIterator.h"
 
 #include "testFunc.h"
-#include "testExtControl.h"
+#include "testMapRange.h"
 
-using namespace StrFunc;
+using namespace MapSupport;
 
-testExtControl::testExtControl()
+testMapRange::testMapRange() 
   /*!
-    Constructor
-   */
+    Constructor 
+  */
 {}
 
-testExtControl::~testExtControl()
+testMapRange::~testMapRange() 
   /*!
     Destructor
   */
 {}
 
 int 
-testExtControl::applyTest(const int extra)
+testMapRange::applyTest(const int extra)
   /*!
     Applies all the tests and returns 
     the error number
-    \param extra :: Index of test
+    \param extra :: test number to use
     \returns -ve on error 0 on success.
   */
 {
-  ELog::RegMethod RegA("testExtControl","applyTest");
+  ELog::RegMethod RegA("testMapRange","applyTest");
+  TestFunc::regSector("testMapRange");
 
-  typedef int (testExtControl::*testPtr)();
+  typedef int (testMapRange::*testPtr)();
   testPtr TPtr[]=
     {
-      &testExtControl::testParse
+      &testMapRange::testFind
     };
 
   const std::string TestName[]=
     {
-      "Parse"
+      "Find"
     };
 
   const int TSize(sizeof(TPtr)/sizeof(testPtr));
@@ -110,45 +105,55 @@ testExtControl::applyTest(const int extra)
   return 0;
 }
 
+
 int
-testExtControl::testParse()
+testMapRange::testFind()
   /*!
-    Applies a test to convert
-    \retval -1 :: failed to convert a good double
-    \retval -2 :: converted a number with leading stuff
-    \retval -3 :: converted a number with trailing stuff
-    \retval 0 on success
+    Test of the range<int> class
+    \returns -ve on error 0 on success.
   */
 {
-  ELog::RegMethod RegA("testExtControl","testParse");
+  ELog::RegMethod RegA("testMapRange","testFind");
 
-  // type : Init string : final : results : (outputs)
-  typedef std::tuple<std::string,std::string> TTYPE;
-  std::vector<TTYPE> Tests;
+  typedef std::map<Range<int>,std::string> MapTYPE;
+  
+  MapTYPE MUnit;
+  MUnit.insert(MapTYPE::value_type(Range<int>(1,3),"a"));
+  MUnit.insert(MapTYPE::value_type(Range<int>(17,18),"b"));
+  MUnit.insert(MapTYPE::value_type(Range<int>(14,14),"c"));
 
-  // Test of the split
-  Tests.push_back(TTYPE("0.4V1","ext:n 0.4V1"));
-  Tests.push_back(TTYPE("SV1","ext:n 0.4V1 SV1"));
-  Tests.push_back(TTYPE("0.987654321","ext:n 0.4V1 SV1 0.988"));
-  Tests.push_back(TTYPE("-SX","ext:n 0.4V1 SV1 0.988 -SX"));
+  // test number : Found : key
+  typedef std::tuple<int,bool,std::string> TTYPE;
+  std::vector<TTYPE> Tests=
+    {
+      TTYPE(1,1,"a"),
+      TTYPE(0,0,""),
+      TTYPE(3,1,"a"),
+      TTYPE(4,0,""),
+      TTYPE(14,1,"c"),
+      TTYPE(18,1,"b"),
+      TTYPE(19,0,""),
+      TTYPE(13,0,""),
+      TTYPE(15,0,""),
+    };
 
   int cnt(1);
-  physicsSystem::ExtControl EX;
-  std::vector<int> cellOutOrder;
-
   for(const TTYPE& tc : Tests)
     {
-      std::ostringstream cx;
-      cellOutOrder.push_back(cnt);
-      EX.addUnit(cnt,std::get<0>(tc));
+      const int testNum(std::get<0>(tc));
+      MapTYPE::const_iterator mc=MUnit.find(Range<int>(testNum));
+      const bool resultFind(mc!=MUnit.end());
 
-      EX.write(cx,cellOutOrder);
-      const std::string Res=StrFunc::singleLine(cx.str());
-      if (std::get<1>(tc)!=Res)
+      if (resultFind!=std::get<1>(tc) ||
+	  (resultFind && mc->second!=std::get<2>(tc)))
 	{
-	  ELog::EM<<"Failed on test "<<cnt<<ELog::endDiag;
-	  ELog::EM<<"Expected :"<<std::get<1>(tc)<<":"<<ELog::endDiag;
-	  ELog::EM<<"Obtained :"<<Res<<":"<<ELog::endDiag;
+	  ELog::EM<<"Test   == "<<cnt<<ELog::endDiag;
+	  ELog::EM<<"Search == "<<std::get<0>(tc)<<ELog::endDiag;
+	  ELog::EM<<"Result["<<std::get<1>(tc)<<
+	    "] == "<<resultFind<<ELog::endDiag;
+	  if (resultFind)
+	    ELog::EM<<"Found["<<std::get<2>(tc)
+		    <<"]== "<<mc->second<<ELog::endDiag;
 	  return -1;
 	}
       cnt++;

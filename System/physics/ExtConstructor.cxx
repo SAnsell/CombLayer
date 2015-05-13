@@ -72,7 +72,23 @@
 #include "FixedComp.h"
 #include "Simulation.h"
 #include "inputParam.h"
+#include "SrcData.h"
+#include "SrcItem.h"
+#include "DSTerm.h"
+#include "Source.h"
+#include "KCode.h"
+#include "ModeCard.h"
 
+#include "PhysImp.h"
+#include "PhysCard.h"
+#include "LSwitchCard.h"
+#include "NList.h"
+#include "NRange.h"
+#include "KGroup.h"
+#include "PhysicsCards.h"
+
+#include "EUnit.h"
+#include "ExtControl.h"
 #include "ExtConstructor.h" 
 
 
@@ -83,31 +99,25 @@ ExtConstructor::ExtConstructor()
   /// Constructor
 {}
 
-ExtConstructor::ExtConstructor(const ExtConstructor&) 
-  /// Copy Constructor
-{}
-
-ExtConstructor&
-ExtConstructor::operator=(const ExtConstructor&) 
-  /// Assignment operator
-{
-  return *this;
-}
-
-void
+bool
 ExtConstructor::procZone(std::vector<std::string>& StrItem)
   /*!
     Process the zone information
-    \param StrItem :: List of item from the input 
+    \param StrItem :: List of item from the input [Used items erased]
+    \return true on success 
   */
 {
   ELog::RegMethod RegA("ExtConstuctor","procZone");
 
   const size_t NS(StrItem.size());
-  
-  if (StrItem[0]=="all")
-    Zones.push_back(MapSupport::Range<int>(0,100000000));
-  else if (StrItem[0]=="object" && NS>1)
+  long int cut(0);
+  int cNum,dNum;
+  if (NS>=1 && StrItem[0]=="All" )
+    {
+      Zones.push_back(MapSupport::Range<int>(0,100000000));
+      cut=1;
+    }
+  else if (NS>=2 && StrItem[0]=="Object")
     {
       const ModelSupport::objectRegister& OR= 
 	ModelSupport::objectRegister::Instance();
@@ -115,11 +125,75 @@ ExtConstructor::procZone(std::vector<std::string>& StrItem)
       const int rangeN=OR.getRange(StrItem[1]);
       if (cellN==0)
 	throw ColErr::InContainerError<std::string>(StrItem[1],"Object name");
-      Zones.push_back(MapSupport::Range<int>(cellN,rangeN));
+      Zones.push_back(MapSupport::Range<int>(cellN,cellN+rangeN));
+      cut=2;
     }
+  else if (NS>=2 && StrItem[0]=="Cells")
+    {
+      size_t index(1);
+      while(index<NS &&
+	    StrFunc::convert(StrItem[index],cNum))
+	{
+	  Zones.push_back(MapSupport::Range<int>(cNum,cNum));
+	  index++;
+	}
+      if (index!=1) cut=static_cast<long int>(index);
+    }
+  else if (NS>=3 && StrItem[0]=="Range")
+    {
+      if (StrFunc::convert(StrItem[1],cNum) &&
+	  StrFunc::convert(StrItem[2],dNum) )
+	{
+	  Zones.push_back(MapSupport::Range<int>(cNum,dNum));	
+	  cut=3;
+	}
+    }
+  
+  if (!cut)
+    return 0;
+      
+  StrItem.erase(StrItem.begin(),StrItem.begin()+cut);
+  return 1;
+}
+
+bool
+ExtConstructor::procType(std::vector<std::string>& StrItem,
+			 ExtControl& EX)
+  /*!
+    Process the Type information
+    \param StrItem :: List of item from the input [Used items erased]
+    \param EX :: Control card to place data [and zone]
+    \return true on success 
+  */
+{
+  ELog::RegMethod RegA("ExtConstuctor","procType");
+
+  const size_t NS(StrItem.size());
+
+  if (NS>=1 && StrItem[0]=="simple" )
+    {
+      for(const MapSupport::Range<int>& RUnit : Zones)
+	EX.addUnit(RUnit,"S");
+    }
+
+
+  return 1;
+}
+
+  
+void
+ExtConstructor::sortZone()
+  /*!
+    This is going to sort and concaternate the zones
+  */
+{
+  ELog::RegMethod RegA("ExtConstructor","sortZone");
+  
+  std::sort(Zones.begin(),Zones.end());
   return;
 }
-  
+
+
 void
 ExtConstructor::processUnit(Simulation& System,
 			    const mainSystem::inputParam& IParam,
@@ -149,91 +223,28 @@ ExtConstructor::processUnit(Simulation& System,
       ELog::EM<<ELog::endBasic;
       return;
     }
-  procZone(StrItem);
-
-  /*  
-  const std::string PType(IParam.getCompValue<std::string>("tally",Index,1)); 
   
-  const masterRotate& MR=masterRotate::Instance();
-  std::string revStr;
-
-  if (PType=="free")
-    {
-      std::vector<Geometry::Vec3D> EmptyVec;
-      Geometry::Vec3D PPoint=
-	inputItem<Geometry::Vec3D>(IParam,Index,2,"Point for point detector");
-
-      const int flag=checkItem<std::string>(IParam,Index,5,revStr);
-      if (!flag || revStr!="r")
-	PPoint=MR.reverseRotate(PPoint);
-      processPointFree(System,PPoint,EmptyVec);
-    }
-
-  else if (PType=="freeWindow")
-    {
-      size_t windowIndex(6);
-      Geometry::Vec3D PPoint=
-	inputItem<Geometry::Vec3D>(IParam,Index,2,"Point for point detector");
-      int flag=checkItem<std::string>(IParam,Index,5,revStr);
-      if (!flag || revStr!="r")
-	{
-	  PPoint=MR.reverseRotate(PPoint);
-	  windowIndex--;
-	}
-      
-      std::vector<Geometry::Vec3D> WindowPts(4);
-      for(size_t i=0;i<4;windowIndex+=3,i++)
-	WindowPts[i]=
-	  inputItem<Geometry::Vec3D>(IParam,Index,windowIndex,"Window point");
-      
-      flag=checkItem<std::string>(IParam,Index,5,revStr);
-      if (!flag || revStr!="r")
-	PPoint=MR.reverseRotate(PPoint);
-      
-      processPointFree(System,PPoint,WindowPts);
-    }
-
-  else if (PType=="window")
-    {
-      const std::string place=
-	inputItem<std::string>(IParam,Index,2,"position not given");
-      const std::string snd=
-	inputItem<std::string>(IParam,Index,3,"front/back/side not give");
-      const double D=
-	inputItem<double>(IParam,Index,4,"Distance not given");
-
-      double timeStep(0.0);
-      double windowOffset(0.0);
-
-      checkItem<double>(IParam,Index,5,timeStep);
-      checkItem<double>(IParam,Index,6,windowOffset);
-      const long int linkNumber=getLinkIndex(snd);
-      processPointWindow(System,place,linkNumber,D,timeStep,windowOffset);
-    }
-
-  else if (PType=="object")
-    {
-      const std::string place=
-	inputItem<std::string>(IParam,Index,2,"position not given");
-      const std::string snd=
-	inputItem<std::string>(IParam,Index,3,"front/back/side not give");
-      const double D=
-	inputItem<double>(IParam,Index,4,"Distance not given");
-      const long int linkNumber=getLinkIndex(snd);
-      ELog::EM<<"LN == "<<linkNumber<<ELog::endDiag;
-	    
-      processPointFree(System,place,linkNumber,D);
-    }
-
-  else
-    {
-      ELog::EM<<"Point TallyType "<<PType<<" ignored"<<ELog::endWarn;
-    }
-  */  
+  if (!procZone(StrItem))
+    throw ColErr::InvalidLine
+      ("procZone ==> StrItems",				
+       std::accumulate(StrItem.begin(),StrItem.end(),std::string("")),0);
+  
+  sortZone();
+  ExtControl& EC=System.getPC().getExtCard();
+  
+  
+  
+  if (!procType(StrItem,EC))
+    throw ColErr::InvalidLine
+      ("procZone ==> StrItems",				
+       std::accumulate(StrItem.begin(),StrItem.end(),std::string("")),0);
 
   return;
 }
 
+  
+
+  
 void
 ExtConstructor::writeHelp(std::ostream& OX) const
   /*!
@@ -244,7 +255,7 @@ ExtConstructor::writeHelp(std::ostream& OX) const
 
     OX<<"-wExt ZONE : TYPE \n"
       "ZONE :: \n"
-      "   All / objectName / CellNumber(s) \n"
+      "   All / object [objectName] / Cells {numbers}(s) / [cellNumber] \n"
       "TYPE :: \n"
       "   simple :: implicit capture \n"
       "   simpleVec [Vec3D] :: implicit capture along a direction\n"

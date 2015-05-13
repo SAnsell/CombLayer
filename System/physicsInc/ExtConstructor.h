@@ -32,7 +32,8 @@ class Simulation;
 
 namespace physicsSystem
 {
-
+  class ExtControl;
+  
 /*!
   \class ExtConstructor
   \version 1.0
@@ -49,7 +50,10 @@ class ExtConstructor
   /// Ranges to build
   std::vector<MapSupport::Range<int>> Zones;
 
-  void procZone(std::vector<std::string>&);
+  void sortZone();
+  bool procZone(std::vector<std::string>&);
+  bool procType(std::vector<std::string>&,ExtControl&);
+  
   void writeHelp(std::ostream&) const;
     
  public:

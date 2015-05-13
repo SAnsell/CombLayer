@@ -132,6 +132,7 @@
 #include "testLine.h"
 #include "testLineTrack.h"
 #include "testLog.h"
+#include "testMapRange.h"
 #include "testMapSupport.h"
 #include "testMasterRotate.h"
 #include "testMaterial.h"
@@ -405,12 +406,13 @@ globalTest(const int type,const int extra)
     \return failed test number [number of tests if type<0]
   */
 {
-  const std::string TestName[]=
+  const std::vector<std::string> TestName=
     {
       "testBnId",
       "testBoost",
       "testHeadRule",
       "testInsertComp",
+      "testMapRange",
       "testMapSupport",
       "testMersenne",
       "testNList",
@@ -421,7 +423,7 @@ globalTest(const int type,const int extra)
       "testSource",
       "testTally"
     };
-  const int TSize(13);
+  const int TSize(TestName.size());
 
   if (type==0)
     {
@@ -459,6 +461,12 @@ globalTest(const int type,const int extra)
       if (index==cnt)
 	{
 	  testInsertComp A;
+	  X=A.applyTest(extra);
+	}
+      cnt++;
+      if(index==cnt)
+	{
+	  testMapRange A;
 	  X=A.applyTest(extra);
 	}
       cnt++;
