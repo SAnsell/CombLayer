@@ -7,21 +7,20 @@ use strict;
 
 ## EXECUTABLES
 my @masterprog=("fullBuild","ess","sinbad","t1Real",
-		"sns","reactor","t1MarkII","t1Eng","t3Expt",
+		"pipe","reactor","t1MarkII","t1Eng","t3Expt",
 		"testMain"); 
 
 
 my @noncompile=("bilbau","clayer","cuBuild","d4c","detectSim",
 		"epb","ess","fussion","lens","muBeam",
-                "pressure","vcn","power");
+                "sns","pressure","photonMod","vcn","power");
 
 ## SYSTEM Directory
 my @systemLibDir=qw( attachComp construct compWeights crystal 
                      endf funcBase geometry input log md5 
                      mersenne monte physics poly process 
                      simMC source support tally  visit weights 
-                     world work xml 
-                     );
+                     world work xml );
 
 my @systemNames= @systemLibDir;
 
@@ -29,8 +28,8 @@ my @systemNames= @systemLibDir;
 my @modelLibDir=qw( bibBuild bnctBuild build chip 
                     cuBlock d4cModel delft epbBuild essBuild
                     gammaBuild imat lensModel moderator 
-                    muon photon sinbadBuild snsBuild t1Build 
-                    t1Engineer t1Upgrade t3Model zoom );
+                    muon photon pipeBuild sinbadBuild snsBuild 
+                    t1Build t1Engineer t1Upgrade t3Model zoom );
 my @modelNames= @modelLibDir;
 
 
@@ -50,7 +49,7 @@ my @coreInc=qw( include  attachCompInc beamlineInc
              compWeightsInc constructInc crystalInc 
              endfInc funcBaseInc geomInc globalInc inputInc
              instrumentInc logInc md5Inc  mersenneInc
-             monteInc muonInc physicsInc polyInc processInc scatMatInc
+             monteInc muonInc physicsInc  polyInc processInc scatMatInc
              sourceInc supportInc tallyInc transportInc visitInc
              weightsInc worldInc workInc xmlInc specialInc testInclude);
 
@@ -62,7 +61,7 @@ my @libnames=@sublibdir;
 my @modelInclude = qw( bibBuildInc bnctBuildInc buildInc chipInc 
                        cuBlockInc d4cModelInc delftInc epbBuildInc 
                        essBuildInc gammaBuildInc imatInc lensModelInc 
-                       moderatorInc muonInc photonInc
+                       moderatorInc muonInc photonInc pipeBuildInc 
                        sinbadBuildInc snsBuildInc t1BuildInc t1EngineerInc 
                        t1UpgradeInc t3ModelInc zoomInc );
 
@@ -72,8 +71,7 @@ my @systemInclude = qw(
                      endfInc funcBaseInc geomInc inputInc logInc md5Inc 
                      mersenneInc monteInc physicsInc polyInc processInc 
                      simMCInc sourceInc supportInc tallyInc 
-                     visitInc weightsInc 
-                     worldInc workInc xmlInc 
+                     visitInc weightsInc worldInc workInc xmlInc 
                      );
 
 my @incdir=qw( include beamlineInc  chipInc  globalInc  
@@ -243,6 +241,15 @@ $gM->addDepUnit("cuBuild",  ["cuBlock","delft","visit","src","physics",
 			     "work","monte","geometry","mersenne","src",
 			     "xml","poly","support","weights","global",
 			     "attachComp","visit"]);
+
+$gM->addDepUnit("pipe",      ["pipeBuild","visit","src","simMC",
+			      "beamline","physics",
+			      "input","source","monte","funcBase","log",
+			      "tally","construct","crystal","transport",
+			     "scatMat","md5","endf","process","world","work",
+			      "monte","geometry","mersenne","src","xml","poly",
+			      "support","weights","global","attachComp",
+			      "visit"]);
 
 $gM->addDepUnit("ess",      ["essBuild","visit","src","simMC",
 			     "beamline","physics",
