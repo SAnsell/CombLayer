@@ -69,7 +69,8 @@ class ExtControl
 	      const std::string&);
   int addUnit(const int&,const std::string&);
 
-  void addVect(const size_t,const Geometry::Vec3D&);
+  void setVect(const size_t,const Geometry::Vec3D&);
+  size_t addVect(const Geometry::Vec3D&);
   void renumberCell(const int,const int);
   
   void write(std::ostream&,const std::vector<int>&) const;   

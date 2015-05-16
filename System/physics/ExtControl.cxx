@@ -114,16 +114,31 @@ ExtControl::addElm(const std::string& EN)
 }
 
 void
-ExtControl::addVect(const size_t index,const Geometry::Vec3D& V)
+ExtControl::setVect(const size_t index,const Geometry::Vec3D& V)
   /*!
     Add a vector to the centre list
     \param index :: vector index
     \param V :: Vector to add
   */
 {
-  if (index<=0)
-    CentMap[index]=V;
+  CentMap[index]=V;
   return;
+}
+
+size_t
+ExtControl::addVect(const Geometry::Vec3D& V)
+  /*!
+    Add a vector to the centre list 
+    \param V :: Vector to add
+    \return number 
+  */
+{
+  size_t index(1);
+  while(CentMap.find(index)!=CentMap.end())
+    index++;
+  
+  CentMap.insert(std::map<size_t,Geometry::Vec3D>::value_type(index,V));
+  return index;
 }
 
 int
@@ -164,7 +179,7 @@ int
 ExtControl::addUnit(const MapSupport::Range<int>& cellN,
 		    const std::string& unitStr)
   /*!
-    Add a exp component
+    Add a ext component
     \param cellN :: Cell number(s)
     \param unitStr :: String of MCNP form
     \return 1 on success / 0 on fail
@@ -191,8 +206,10 @@ ExtControl::addUnit(const MapSupport::Range<int>& cellN,
   double D(2.0);         // Note over 1.0
   if (StrFunc::sectPartNum(Unit,D))
     {
+      index=0;
       if (fabs(D) < Geometry::zeroTol)
 	mFound=0;
+
       // Option 0 / 1 [no letters]
       if (Unit.empty())
 	{
@@ -257,6 +274,8 @@ ExtControl::addUnit(const MapSupport::Range<int>& cellN,
   return 0;
 }
 
+
+ 
 void
 ExtControl::renumberCell(const int originalCell,const int newCell)
   /*!
@@ -296,7 +315,7 @@ ExtControl::writeHeader(std::ostream& OX) const
     \param OX :: Output stream
    */
 {
-  OX<<"exp:";
+  OX<<"ext:";
   bool first(1);
   for(const std::string& P : particles)
     {

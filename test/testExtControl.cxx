@@ -131,7 +131,8 @@ testExtControl::testParse()
   Tests.push_back(TTYPE("SV1","ext:n 0.4V1 SV1"));
   Tests.push_back(TTYPE("0.987654321","ext:n 0.4V1 SV1 0.988"));
   Tests.push_back(TTYPE("-SX","ext:n 0.4V1 SV1 0.988 -SX"));
-
+  Tests.push_back(TTYPE("-0.4V2","ext:n 0.4V1 SV1 0.988 -SX -0.4V2"));
+  
   int cnt(1);
   physicsSystem::ExtControl EX;
   std::vector<int> cellOutOrder;

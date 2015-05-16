@@ -112,7 +112,7 @@ ExtConstructor::procZone(std::vector<std::string>& StrItem)
   const size_t NS(StrItem.size());
   long int cut(0);
   int cNum,dNum;
-  if (NS>=1 && StrItem[0]=="All" )
+  if (NS>=1 && (StrItem[0]=="All" || StrItem[0]=="all"))
     {
       Zones.push_back(MapSupport::Range<int>(0,100000000));
       cut=1;
@@ -169,15 +169,78 @@ ExtConstructor::procType(std::vector<std::string>& StrItem,
   ELog::RegMethod RegA("ExtConstuctor","procType");
 
   const size_t NS(StrItem.size());
+  if (!NS) return 0;
+  // Thick to handle - at end to indicate negative direction
+  std::string minus;
+  if (StrItem[0].size()>1 && StrItem[0].back()=='-')
+    {
+      minus="-";
+      StrItem[0].pop_back();
+    }
+  
+  Geometry::Vec3D Pt;
+  double a,b,c;
+  int linkPt;
 
-  if (NS>=1 && StrItem[0]=="simple" )
+  if (NS>=1 && (StrItem[0]=="simple"))
     {
       for(const MapSupport::Range<int>& RUnit : Zones)
-	EX.addUnit(RUnit,"S");
+	EX.addUnit(RUnit,minus+"S");
+      return 1;
+    }
+  else if (NS>=2 && StrItem[0]=="simpleVec" &&
+	   StrFunc::convert(StrItem[1],Pt))
+    {
+      ELog::EM<<"Pt == "<<Pt<<ELog::endDiag;
+      const size_t VNum=EX.addVect(Pt);
+      const std::string EStr=minus+"SV"+StrFunc::makeString(VNum);
+      for(const MapSupport::Range<int>& RUnit : Zones)
+	EX.addUnit(RUnit,EStr);
+      return 1;
+    }
+  else if (NS>=4 && StrItem[0]=="simpleVec" &&
+	   StrFunc::convert(StrItem[1],a) &&
+	   StrFunc::convert(StrItem[2],b) &&
+	   StrFunc::convert(StrItem[3],c))
+    {
+      Pt=Geometry::Vec3D(a,b,c);
+      ELog::EM<<"Pt == "<<Pt<<ELog::endDiag;
+      const size_t VNum=EX.addVect(Pt);
+      const std::string EStr=minus+"SV"+StrFunc::makeString(VNum);
+      for(const MapSupport::Range<int>& RUnit : Zones)
+	EX.addUnit(RUnit,EStr);
+      return 1;
+    }
+  
+   else if (NS>=2 && StrItem[0]=="scale" &&
+	   StrFunc::convert(StrItem[1],a))
+    {
+      if (a<0.0) minus="-";
+      const std::string EStr=minus+StrFunc::makeString(fabs(a));
+      for(const MapSupport::Range<int>& RUnit : Zones)
+	EX.addUnit(RUnit,EStr);
+      return 1;
+    }
+  
+   else if (NS>=3 && StrItem[0]=="scaleVec" &&
+	    StrFunc::convert(StrItem[1],a) &&
+	    (StrFunc::convert(StrItem[1],Pt) ||
+	     (NS>=5 && StrFunc::convert(StrItem[2],Pt[0])
+	      && StrFunc::convert(StrItem[3],Pt[1])
+	      && StrFunc::convert(StrItem[4],Pt[2]))) )
+    {
+      ELog::EM<<"V == "<<Pt<<ELog::endDiag;
+      if (a<0.0) minus="-";
+      const size_t VNum=EX.addVect(Pt);
+      const std::string EStr=minus+
+	StrFunc::makeString(fabs(a))+"V"+StrFunc::makeString(VNum);
+      ELog::EM<<"XX == "<<EStr<<ELog::endDiag;
+      for(const MapSupport::Range<int>& RUnit : Zones)
+	EX.addUnit(RUnit,EStr);
+      return 1;
     }
 
-
-  return 1;
+  return 0;
 }
 
   
@@ -208,7 +271,7 @@ ExtConstructor::processUnit(Simulation& System,
   ELog::RegMethod RegA("ExtConstructor","processPoint");
 
   const size_t NParam=IParam.itemCnt("wExt",Index);
-  if (NParam<2)
+  if (NParam<1)
     throw ColErr::IndexError<size_t>(NParam,2,"Insufficient items wExt");
   std::vector<std::string> StrItem;
   
@@ -226,9 +289,8 @@ ExtConstructor::processUnit(Simulation& System,
   
   if (!procZone(StrItem))
     throw ColErr::InvalidLine
-      ("procZone ==> StrItems",				
-       std::accumulate(StrItem.begin(),StrItem.end(),std::string("")),0);
-  
+      ("procZone ==> StrItems","-wExt "+IParam.getFull("wExt",Index),0);	
+
   sortZone();
   ExtControl& EC=System.getPC().getExtCard();
   
@@ -236,8 +298,7 @@ ExtConstructor::processUnit(Simulation& System,
   
   if (!procType(StrItem,EC))
     throw ColErr::InvalidLine
-      ("procZone ==> StrItems",				
-       std::accumulate(StrItem.begin(),StrItem.end(),std::string("")),0);
+      ("procType ==> StrItems","-wExt "+IParam.getFull("wExt",Index),0);	
 
   return;
 }
