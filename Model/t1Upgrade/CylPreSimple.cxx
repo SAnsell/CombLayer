@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   t1Upgrade/CylPreSimple.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -532,13 +532,13 @@ CylPreSimple::getLayerString(const size_t layerIndex,
       cx<<" "<<((layerIndex) ? 
 		SMap.realSurf(SI+7) :
 		SMap.realSurf(modIndex+9)) <<" "
-	<< -SMap.realSurf(modIndex+1)<<" ";
+	<< -SMap.realSurf(modIndex+2)<<" ";
       return cx.str();
     case 1:
       cx<<" "<<((layerIndex) ? 
 		SMap.realSurf(SI+7) :
 		SMap.realSurf(modIndex+9)) <<" "
-	<<SMap.realSurf(modIndex+1)<<" ";
+	<<SMap.realSurf(modIndex+2)<<" ";
       return cx.str();
     case 2:
       cx<<" "<<-SMap.realSurf(SI+5)<<" ";

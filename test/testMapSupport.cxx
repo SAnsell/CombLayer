@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testMapSupport.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,6 +38,7 @@
 #include "OutputLog.h"
 #include "support.h"
 #include "MapSupport.h"
+#include "MapRange.h"
 #include "mapIterator.h"
 
 #include "testFunc.h"
@@ -72,6 +73,7 @@ testMapSupport::applyTest(const int extra)
     {
       &testMapSupport::testIterator,
       &testMapSupport::testMapDelete,
+      &testMapSupport::testMapRange,
       &testMapSupport::testMapWrite,
       &testMapSupport::testSndValue,
       &testMapSupport::testValEqual
@@ -81,6 +83,7 @@ testMapSupport::applyTest(const int extra)
     {
       "Iterator",
       "MapDelete",
+      "MapRange",
       "MapWrite",
       "SndValue",
       "ValEqual"
@@ -186,6 +189,113 @@ testMapSupport::testSndValue()
 }
 
 int
+testMapSupport::testMapDelete()
+  /*!
+    Simple test of map delete 
+    \retval 0 :: success
+  */
+{
+  ELog::RegMethod RegA("testMapSupport","testMapDelete");
+  
+  std::map<std::string,int*> MX;
+  MX["a"]=new int[5];
+  MX["b"]=new int[2];
+  MX["c"]=new int[3];
+  MX["d"]=new int[4];
+  MX["e"]=new int[2];
+  
+  for_each(MX.begin(),MX.end(),
+	   MapSupport::mapDelete<std::map<std::string,int*> >());
+
+  return 0;
+}
+
+
+int
+testMapSupport::testMapRange()
+  /*!
+    Test of the range<int> class
+    \returns -ve on error 0 on success.
+  */
+{
+  ELog::RegMethod RegA("testMapSupport","testRange");
+
+  using namespace MapSupport;
+  typedef std::map<Range<int>,std::string> MapTYPE;
+  
+  MapTYPE MUnit;
+  MUnit.insert(MapTYPE::value_type(Range<int>(1,3),"a"));
+  MUnit.insert(MapTYPE::value_type(Range<int>(17,18),"b"));
+  MUnit.insert(MapTYPE::value_type(Range<int>(14,14),"c"));
+
+  // test number : Found : key
+  typedef std::tuple<int,bool,std::string> TTYPE;
+  std::vector<TTYPE> Tests=
+    {
+      TTYPE(1,1,"a"),
+      TTYPE(0,0,""),
+      TTYPE(3,1,"a"),
+      TTYPE(4,0,""),
+      TTYPE(14,1,"c"),
+      TTYPE(18,1,"b"),
+      TTYPE(19,0,""),
+      TTYPE(13,0,""),
+      TTYPE(15,0,""),
+    };
+
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
+    {
+      const int testNum(std::get<0>(tc));
+      MapTYPE::const_iterator mc=MUnit.find(Range<int>(testNum));
+      const bool resultFind(mc!=MUnit.end());
+
+      if (resultFind!=std::get<1>(tc) ||
+	  (resultFind && mc->second!=std::get<2>(tc)))
+	{
+	  ELog::EM<<"Test   == "<<cnt<<ELog::endDiag;
+	  ELog::EM<<"Search == "<<std::get<0>(tc)<<ELog::endDiag;
+	  ELog::EM<<"Result["<<std::get<1>(tc)<<
+	    "] == "<<resultFind<<ELog::endDiag;
+	  if (resultFind)
+	    ELog::EM<<"Found["<<std::get<2>(tc)
+		    <<"]== "<<mc->second<<ELog::endDiag;
+	  return -1;
+	}
+      cnt++;
+    }
+  return 0;
+}
+
+int
+testMapSupport::testMapWrite()
+  /*!
+    Simple test of map write
+    \retval 0 :: success
+  */
+{
+  ELog::RegMethod RegA("testMapSupport","testMapWrite");
+  
+  std::map<std::string,int> MX;
+  MX["a"]=1;
+  MX["b"]=2;
+  MX["c"]=3;
+  MX["d"]=4;
+  MX["e"]=5;
+
+  std::ostringstream CX;
+  for_each(MX.begin(),MX.end(),
+	   MapSupport::mapWrite<std::map<std::string,int> >(CX));
+  if (StrFunc::removeSpace(CX.str())!="a1b2c3d4e5")
+    {
+      ELog::EM<<"Out == "<<ELog::endDiag;
+      ELog::EM<<StrFunc::removeSpace(CX.str())<<ELog::endDiag;      
+      return -1;
+    }
+  return 0;
+}
+
+int
 testMapSupport::testValEqual()
   /*!
     Test of the valEqual functor.
@@ -213,49 +323,3 @@ testMapSupport::testValEqual()
   return 0;
 }
   
-
-int
-testMapSupport::testMapWrite()
-  /*!
-    Simple test of map write
-    \retval 0 :: success
-  */
-{
-  std::map<std::string,int> MX;
-  MX["a"]=1;
-  MX["b"]=2;
-  MX["c"]=3;
-  MX["d"]=4;
-  MX["e"]=5;
-
-  std::ostringstream CX;
-  for_each(MX.begin(),MX.end(),
-	   MapSupport::mapWrite<std::map<std::string,int> >(CX));
-  if (StrFunc::removeSpace(CX.str())!="a1b2c3d4e5")
-    {
-      ELog::EM<<"Out == "<<ELog::endDiag;
-      ELog::EM<<StrFunc::removeSpace(CX.str())<<ELog::endDiag;      
-      return -1;
-    }
-  return 0;
-}
-
-int
-testMapSupport::testMapDelete()
-  /*!
-    Simple test of map delete 
-    \retval 0 :: success
-  */
-{
-  std::map<std::string,int*> MX;
-  MX["a"]=new int[5];
-  MX["b"]=new int[2];
-  MX["c"]=new int[3];
-  MX["d"]=new int[4];
-  MX["e"]=new int[2];
-  
-  for_each(MX.begin(),MX.end(),
-	   MapSupport::mapDelete<std::map<std::string,int*> >());
-
-  return 0;
-}

@@ -1,7 +1,7 @@
 /********************************************************************* 
-  CombLayer : MCNP(X) Input builder
+  CombLayer : MNCPX Input builder
  
- * File:   testInclude/testVec3D.h
+ * File:   testInclude/testGeomSupport.h
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -19,34 +19,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef testVec3D_h
-#define testVec3D_h 
+#ifndef testGeomSupport_h
+#define testGeomSupport_h 
 
 /*!
-  \class testVec3D 
-  \brief Test class for the Vec3D class
+  \class testGeomSupport
+  \brief Tests the class GeomSupport
+  \author S. Ansell
+  \date April 2015
   \version 1.0
-  \date October 2007
-  \author S.Ansell
-  
 
+  Test the processing of object component
 */
 
-class testVec3D 
+class testGeomSupport
 {
 private:
 
-  //Tests 
-  int testDotProd();
-  int testRead();
-  
+  int testCornerCircle();
+  int testCornerCircleTouch();
+
 public:
-
-  testVec3D();
-  ~testVec3D();
-
-  int applyTest(const int extra);
   
+  testGeomSupport();
+  ~testGeomSupport();
+  
+  int applyTest(const int);       
+
 };
 
 #endif

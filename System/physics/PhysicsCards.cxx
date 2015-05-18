@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   physics/PhysicsCards.cxx
  *
@@ -42,6 +42,7 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "support.h"
+#include "MapRange.h"
 #include "Triple.h"
 #include "SrcData.h"
 #include "SrcItem.h"
@@ -57,7 +58,7 @@
 #include "KGroup.h"
 #include "dbcnCard.h"
 #include "EUnit.h"
-#include "ExpControl.h"
+#include "ExtControl.h"
 #include "PhysicsCards.h"
 
 namespace physicsSystem
@@ -66,7 +67,7 @@ namespace physicsSystem
 PhysicsCards::PhysicsCards() :
   nps(10000),histp(0),dbCard(new dbcnCard),
   voidCard(0),nImpOut(0),prdmp("1e7 1e7 0 2 1e7"),
-  Volume("vol"),ExpCard(new ExpControl)
+  Volume("vol"),ExtCard(new ExtControl)
   /*!
     Constructor
   */
@@ -78,7 +79,7 @@ PhysicsCards::PhysicsCards(const PhysicsCards& A) :
   voidCard(A.voidCard),nImpOut(A.nImpOut),printNum(A.printNum),
   prdmp(A.prdmp),ImpCards(A.ImpCards),
   PhysCards(A.PhysCards),LEA(A.LEA),sdefCard(A.sdefCard),
-  Volume(A.Volume),ExpCard(new ExpControl(*A.ExpCard))
+  Volume(A.Volume),ExtCard(new ExtControl(*A.ExtCard))
   /*!
     Copy constructor
     \param A :: PhysicsCards to copy
@@ -109,7 +110,7 @@ PhysicsCards::operator=(const PhysicsCards& A)
       LEA=A.LEA;
       sdefCard=A.sdefCard;
       Volume=A.Volume;
-      *ExpCard= *A.ExpCard;
+      *ExtCard= *A.ExtCard;
     }
   return *this;
 }
@@ -136,7 +137,7 @@ PhysicsCards::clearAll()
   Volume.clear();
   sdefCard.clear();
   dbCard->reset();
-  ExpCard->clear();
+  ExtCard->clear();
   return;
 }
 
@@ -180,6 +181,7 @@ PhysicsCards::processCard(const std::string& Line)
   if(Line.empty())
     return 0;  
 
+  int expCell(0);
   std::string Comd=Line;
   StrFunc::stripComment(Comd);
   Comd=StrFunc::fullBlock(Comd);
@@ -207,6 +209,7 @@ PhysicsCards::processCard(const std::string& Line)
       while(StrFunc::section(Item,pNum))
 	printNum.push_back(pNum);
     }
+
   
   pos=Comd.find("imp:");
   if (pos!=std::string::npos)
@@ -318,6 +321,32 @@ PhysicsCards::processCard(const std::string& Line)
 	}
       return 1;
     }
+  // ext card
+  pos=Comd.find("exp:");
+  if (pos!=std::string::npos)
+    {
+      Comd.erase(0,pos+4);
+      // Ugly hack to get all the a,b,c,d items 
+      // since I can't think of the regular expression
+      size_t index;
+      for(index=0;index<Comd.length() && !isspace(Comd[index]);index++)
+	if (Comd[index]!=',')
+	  ExtCard->addElm(std::string(1,Comd[index]));
+      // NOW HAVE PROBLEM BECAUSE MULTI-LINE
+      expCell=1;
+      if (ExtCard->addUnitList(expCell,Comd))
+	return 1;
+      // drops through to further processing
+      expCell=0;
+    }
+
+  if (expCell)
+    {
+      if (ExtCard->addUnitList(expCell,Comd))
+	return 1;
+      expCell=0;
+    }
+	
   // Component:
   Basic.push_back(Line);
   return 1;
@@ -373,8 +402,9 @@ PhysicsCards::addPhysCard(const std::string& Key,
 			  const std::string& Particle)
   /*!
     Adds a particular card [if not already present].
-    If a particle is found in the current cards, then it
-    is added, if not then a new card is created
+    If ANY particle is found in the current cards, then 
+    all remaining particles are added and the 
+    card returned. If not then a new card is created
     \param Key :: KeyName
     \param Particle :: Particle to add [n,p,e] etc
     \return PhysCard
@@ -384,18 +414,26 @@ PhysicsCards::addPhysCard(const std::string& Key,
   const std::vector<std::string> PList=
     StrFunc::StrParts(Particle);
   
-
-  std::vector<std::string>::const_iterator ac;
   for(PhysCard& PC : PhysCards)
     {
+      int found(0);
       if (PC.getKey()==Key)  	// First determine if any key exists:
 	{
-	  for(const std::string& particle :  PList)
+	  for(size_t i=0;i<PList.size();i++)
 	    {
-	      if (!PC.hasElm(particle))
+	      const std::string particle=PList[i];
+	      if (!found && PC.hasElm(particle))
+		{
+		  // Add old non-found particles
+		  for(size_t j=0;j<i;j++)
+		    PC.addElm(PList[i]);
+		  found=1;
+		}
+	      else if (found && !PC.hasElm(particle))
 		PC.addElm(particle);
 	    }
-	  return PC;
+	  if (found)
+	    return PC;
 	}
     }
   // No card found add:
@@ -404,6 +442,29 @@ PhysicsCards::addPhysCard(const std::string& Key,
   for(const std::string& particle :  PList)
     PC.addElm(particle);
   return PhysCards.back();
+}
+
+const PhysCard&
+PhysicsCards::getPhysCard(const std::string& Key,
+			  const std::string& particle) const
+  /*!
+    Gets a particular card with Key and 
+    particle [if empty first card with key]
+    \param Key :: KeyName
+    \param particle :: Particle to find [n,p,e] etc [empty for any]
+    \return PhysCard
+  */
+{
+  ELog::RegMethod RegA("PhysicsCards","getPhysCard");
+
+  
+  for(const PhysCard& PC : PhysCards)
+    if (PC.getKey()==Key &&
+	(particle.empty() || PC.hasElm(particle)))  
+      return PC;
+
+  throw ColErr::InContainerError<std::string>
+    (Key+":"+particle,"PhysCard search");
 }
 
 // General All Importance
@@ -637,12 +698,15 @@ PhysicsCards::substituteCell(const int oldCell,const int newCell)
     \param newCell :: new cell number
    */
 {
+  ELog::RegMethod RegA("PhysicsCards","substituteCell");
   sdefCard.substituteCell(oldCell,newCell);
   histpCells.changeItem(oldCell,newCell);
   for(PhysImp& PI : ImpCards)
     PI.renumberCell(oldCell,newCell);
   
   Volume.renumberCell(oldCell,newCell);
+  ExtCard->renumberCell(oldCell,newCell);
+
   return;
 }
 
@@ -731,10 +795,13 @@ PhysicsCards::write(std::ostream& OX,
 
   for(const std::string& PC : Basic)
     StrFunc::writeMCNPX(PC,OX);
+
+  ExtCard->write(OX,cellOutOrder);
   
   LEA.write(OX);
   sdefCard.write(OX);
   kcodeCard.write(OX);
+  
   if (!prdmp.empty())
     StrFunc::writeMCNPX("prdmp "+prdmp,OX);
   

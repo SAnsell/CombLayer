@@ -190,7 +190,7 @@ FixedComp::createUnitVector(const FixedComp& FC,
   */
 {
   ELog::RegMethod RegA("FixedComp","createUnitVector(FixedComp,side)");
-    
+
   if (sideIndex==0)
     {
       createUnitVector(FC);
@@ -200,11 +200,10 @@ FixedComp::createUnitVector(const FixedComp& FC,
   const size_t linkIndex=
     (sideIndex>0) ? static_cast<size_t>(sideIndex-1) :
     static_cast<size_t>(-sideIndex-1) ;
-
-  if (linkIndex>=LU.size())
-    throw ColErr::IndexError<size_t>(linkIndex,LU.size(),
-				     "LU.size()/linkIndex");
-    
+  if (linkIndex>=FC.LU.size())
+    throw ColErr::IndexError<size_t>(linkIndex,FC.LU.size(),
+				     "LU.size()/linkIndex in object:"+keyName);
+     
   const LinkUnit& LU=FC.getLU(linkIndex);
   const double signV((sideIndex>0) ? 1.0 : -1.0);
 

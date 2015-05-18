@@ -1,7 +1,7 @@
 /********************************************************************* 
-  CombLayer : MCNP(X) Input builder
+  CombLayer : MNCPX Input builder
  
- * File:   testInclude/testVec3D.h
+ * File:   supportInc/MapRange.h
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -19,34 +19,44 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef testVec3D_h
-#define testVec3D_h 
+#ifndef MapSupport_MapRange_h
+#define MapSupport_MapRange_h
 
+namespace MapSupport
+{
 /*!
-  \class testVec3D 
-  \brief Test class for the Vec3D class
+  \class Range
+  \author S. Ansell
+  \date May 2015
   \version 1.0
-  \date October 2007
-  \author S.Ansell
-  
-
+  \brief Range object to allow non-overlapping ranged maps
+  \todo update to have an inserter and amalgomator
 */
 
-class testVec3D 
+template<typename T>
+class Range
 {
-private:
+ private:
 
-  //Tests 
-  int testDotProd();
-  int testRead();
-  
+  T low;           ///< Low value
+  T high;          ///< High value
+
 public:
 
-  testVec3D();
-  ~testVec3D();
+  /// constructor
+  explicit Range(const T&);
+  Range(const T&,const T&);
 
-  int applyTest(const int extra);
-  
-};
+  bool
+  operator<(const Range<T>& A) const
+    { return  (high < A.low) ? 1 : 0; }
+
+  bool overlap(const Range<T>&,const T& =T(0)) const;
+  Range<T>& combine(const Range<T>&);
+}; 
+
+
+} // NAMESPACE MapSupport
+
 
 #endif

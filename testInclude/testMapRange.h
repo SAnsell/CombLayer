@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   testInclude/testVec3D.h
+ * File:   testInclude/testMapRange.h
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -19,34 +19,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef testVec3D_h
-#define testVec3D_h 
+#ifndef testMapRange_h
+#define testMapRange_h 
 
 /*!
-  \class testVec3D 
-  \brief Test class for the Vec3D class
+  \class testMapRange 
+  \brief test of Map funtionals 
   \version 1.0
-  \date October 2007
+  \date September 2005
   \author S.Ansell
   
-
+  This class currently only checks that 
+  a command can be initialised, filled 
+  and that results can be obtained.
 */
 
-class testVec3D 
+class testMapRange 
 {
 private:
 
   //Tests 
-  int testDotProd();
-  int testRead();
-  
+  int testFind();
+
 public:
 
-  testVec3D();
-  ~testVec3D();
+  testMapRange();
+  ~testMapRange();
 
-  int applyTest(const int extra);
-  
+  int applyTest(const int =0);     
 };
 
 #endif

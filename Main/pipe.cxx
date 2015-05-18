@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   Main/t1MarkII.cxx
+ * File:   Main/pipe.cxx
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -32,7 +32,6 @@
 #include <string>
 #include <algorithm>
 #include <memory>
-#include <array>
 
 #include "Exception.h"
 #include "MersenneTwister.h"
@@ -50,12 +49,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "inputParam.h"
-#include "Transform.h"
-#include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
-#include "Surface.h"
-#include "Quadratic.h"
 #include "Rules.h"
 #include "surfIndex.h"
 #include "Code.h"
@@ -66,26 +59,26 @@
 #include "Qhull.h"
 #include "MainProcess.h"
 #include "SimProcess.h"
-#include "Simulation.h" 
+#include "SimInput.h"
+#include "SurInter.h"
+#include "Simulation.h"
 #include "SimPHITS.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "mainJobs.h"
-#include "Volumes.h"
 #include "DefPhysics.h"
-#include "variableSetup.h"
+#include "Volumes.h"
 #include "defaultConfig.h"
-#include "DefUnitsTS1Mark.h"
+#include "DefUnitsPipe.h"
+#include "variableSetup.h"
 #include "ImportControl.h"
 #include "SourceCreate.h"
 #include "SourceSelector.h"
 #include "TallySelector.h"
-#include "tallyConstructFactory.h"
 #include "World.h"
-#include "SimInput.h"
-
-#include "makeT1Upgrade.h"
+#include "makePipe.h"
 
 MTRand RNG(12345UL);
 
@@ -105,7 +98,6 @@ main(int argc,char* argv[])
   int exitFlag(0);                // Value on exit
   ELog::RegMethod RControl("","main");
   mainSystem::activateLogging(RControl);
-
   std::string Oname;
   std::vector<std::string> Names;  
   std::map<std::string,std::string> Values;  
@@ -115,18 +107,16 @@ main(int argc,char* argv[])
   // PROCESS INPUT:
   InputControl::mainVector(argc,argv,Names);
   mainSystem::inputParam IParam;
-  createTS1Inputs(IParam);
+  createPipeInputs(IParam);
 
   const int iteractive(IterVal.empty() ? 0 : 1);   
   Simulation* SimPtr=createSimulation(IParam,Names,Oname);
   if (!SimPtr) return -1;
 
   // The big variable setting
-  setVariable::TS1upgrade(SimPtr->getDataBase());
-  // Check for model type
-  mainSystem::setDefUnits(SimPtr->getDataBase(),IParam);
+  setVariable::PipeVariables(SimPtr->getDataBase());
   InputModifications(SimPtr,IParam,Names);
-
+  
   // Definitions section 
   int MCIndex(0);
   const int multi=IParam.getValue<int>("multi");
@@ -143,17 +133,16 @@ main(int argc,char* argv[])
 
 	  SimPtr->resetAll();
 
-	  ts1System::makeT1Upgrade T1Obj;
+	  pipeSystem::makePipe pipeObj;
 	  World::createOuterObjects(*SimPtr);
-	  T1Obj.build(SimPtr,IParam);
-
+	  pipeObj.build(SimPtr,IParam);
 	  SDef::sourceSelection(*SimPtr,IParam);
 
 	  SimPtr->removeComplements();
 	  SimPtr->removeDeadSurfaces(0);         
 	  ModelSupport::setDefaultPhysics(*SimPtr,IParam);
 
-	  const int renumCellWork=beamTallySelection(*SimPtr,IParam);
+	  const int renumCellWork=tallySelection(*SimPtr,IParam);
 	  SimPtr->masterRotation();
 	  if (createVTK(IParam,SimPtr,Oname))
 	    {
@@ -166,14 +155,19 @@ main(int argc,char* argv[])
 
 	  SimProcess::importanceSim(*SimPtr,IParam);
 	  SimProcess::inputPatternSim(*SimPtr,IParam); // energy cut etc
+
 	  if (renumCellWork)
 	    tallyRenumberWork(*SimPtr,IParam);
 	  tallyModification(*SimPtr,IParam);
 
+	  if (IParam.flag("cinder"))
+	    SimPtr->setForCinder();
+
+	  // // Cut energy tallies:
+	  // if (IParam.flag("ECut"))
+	  //   SimPtr->setEnergy(IParam.getValue<double>("ECut"));
+
 	  // Ensure we done loop
-	  ELog::EM<<"T1MARKII : variable hash: "
-		  <<SimPtr->getDataBase().variableHash()
-		  <<ELog::endBasic;
 	  do
 	    {
 	      SimProcess::writeIndexSim(*SimPtr,Oname,MCIndex);

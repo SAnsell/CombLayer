@@ -3,7 +3,7 @@
  
  * File:   t1UpgradeInc/TriangleMod.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -83,7 +83,6 @@ class TriangleMod : public constructSystem::ModBase
   void cutOuterObj(Simulation&,const TriUnit&,const TriUnit&);
   
   virtual void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
 
   void createLinks();
   void createSurfaces();

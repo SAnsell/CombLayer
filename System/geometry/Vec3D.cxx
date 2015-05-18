@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   geometry/Vec3D.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <sstream>
 #include <cmath>
 #include <vector>
 #include <string>
@@ -776,6 +777,31 @@ Vec3D::read(std::istream& IX)
   */
 {
   IX>>x;
+  if (!IX.good())  // Failed on first read! -- check for Vec3D
+    {
+      std::string Name;
+      IX.clear();
+      std::getline(IX,Name,')');
+      std::ios::off_type LNum=
+	static_cast<std::ios::off_type>(Name.size());
+      if (Name.substr(0,5)=="Vec3D" )
+	{
+	  Name+=")";
+	  std::string::size_type pos(5);
+	  while(Name[pos]!='(')
+	    pos++;
+	  Name.erase(0,pos+1);
+	  std::istringstream cx(Name);
+	  this->read(cx);
+	  if (cx.good())
+	    return;
+	}
+      IX.seekg(LNum,std::ios::cur);
+      IX.setstate(std::ios::failbit);
+
+      return;
+    }
+    
   if (IX.peek()==',')
     IX.get();
   IX>>y;

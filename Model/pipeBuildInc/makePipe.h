@@ -1,7 +1,7 @@
 /********************************************************************* 
-  CombLayer : MCNP(X) Input builder
+  CombLayer : MNCPX Input builder
  
- * File:   testInclude/testVec3D.h
+ * File:   pipeInc/makePipe.h
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -19,34 +19,46 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef testVec3D_h
-#define testVec3D_h 
+#ifndef pipeSystem_makePipe_h
+#define pipeSystem_makePipe_h
+
 
 /*!
-  \class testVec3D 
-  \brief Test class for the Vec3D class
+  \namespace pipeSystem
+  \brief simple pipemodl
   \version 1.0
-  \date October 2007
-  \author S.Ansell
-  
-
+  \date May 2015
+  \author S. Ansell
 */
 
-class testVec3D 
+namespace pipeSystem
 {
-private:
+  class pipeTube;
+  /*!
+    \class makePipe
+    \version 1.0
+    \author S. Ansell
+    \date May 2015
+    \brief General pipe building system
+  */
 
-  //Tests 
-  int testDotProd();
-  int testRead();
+class makePipe
+{
+ private:
+
+  std::shared_ptr<pipeSystem::pipeTube> TubeObj;   ///< Main tube
+
+ public:
   
-public:
-
-  testVec3D();
-  ~testVec3D();
-
-  int applyTest(const int extra);
+  makePipe();
+  makePipe(const makePipe&);
+  makePipe& operator=(const makePipe&);
+  ~makePipe();
   
+  void build(Simulation*,const mainSystem::inputParam&);
+
 };
+
+}
 
 #endif

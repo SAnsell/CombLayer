@@ -508,7 +508,7 @@ H2Section::getLayerString(const size_t layerIndex,
 
 int
 H2Section::getLayerSurf(const size_t layerIndex,
-		       const size_t sideIndex) const
+			const size_t sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
     \param sideIndex :: Side [0-5]
@@ -518,8 +518,8 @@ H2Section::getLayerSurf(const size_t layerIndex,
 {
   ELog::RegMethod RegA("H2Section","getLayerSurf");
 
-  if (layerIndex>6) 
-    throw ColErr::IndexError<size_t>(layerIndex,6,"layerIndex");
+  if (layerIndex>=nLayers) 
+    throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layerIndex");
   if (sideIndex>5)
     throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
 
@@ -530,7 +530,7 @@ H2Section::getLayerSurf(const size_t layerIndex,
 
 void
 H2Section::createAll(Simulation& System,
-			const attachSystem::FixedComp& FC)
+		     const attachSystem::FixedComp& FC)
 		      
   /*!
     Global creation of the hutch

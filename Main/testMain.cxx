@@ -120,17 +120,19 @@
 #include "testDoubleErr.h"
 #include "testElement.h"
 #include "testEllipticCyl.h"
-#include "testExpControl.h"
+#include "testExtControl.h"
 #include "testFace.h"
 #include "testFortranWrite.h"
 #include "testFunc.h"
 #include "testFunction.h"
+#include "testGeomSupport.h"
 #include "testHeadRule.h"
 #include "testInputParam.h"
 #include "testInsertComp.h"
 #include "testLine.h"
 #include "testLineTrack.h"
 #include "testLog.h"
+#include "testMapRange.h"
 #include "testMapSupport.h"
 #include "testMasterRotate.h"
 #include "testMaterial.h"
@@ -404,12 +406,13 @@ globalTest(const int type,const int extra)
     \return failed test number [number of tests if type<0]
   */
 {
-  const std::string TestName[]=
+  const std::vector<std::string> TestName=
     {
       "testBnId",
       "testBoost",
       "testHeadRule",
       "testInsertComp",
+      "testMapRange",
       "testMapSupport",
       "testMersenne",
       "testNList",
@@ -420,7 +423,7 @@ globalTest(const int type,const int extra)
       "testSource",
       "testTally"
     };
-  const int TSize(13);
+  const int TSize(TestName.size());
 
   if (type==0)
     {
@@ -458,6 +461,12 @@ globalTest(const int type,const int extra)
       if (index==cnt)
 	{
 	  testInsertComp A;
+	  X=A.applyTest(extra);
+	}
+      cnt++;
+      if(index==cnt)
+	{
+	  testMapRange A;
 	  X=A.applyTest(extra);
 	}
       cnt++;
@@ -572,7 +581,7 @@ geometryTest(const int type,const int extra)
     \return 0 on success / -ve on failure
   */
 {
-  const std::string TestName[]=
+  const std::vector<std::string> TestName=
     {
       "testCone",
       "testConvex",
@@ -580,6 +589,7 @@ geometryTest(const int type,const int extra)
       "testCylinder",
       "testEllipticCyl",
       "testFace",
+      "testGeomSupport",
       "testLine",
       "testMasterRotate",
       "testQuaternion",
@@ -589,102 +599,109 @@ geometryTest(const int type,const int extra)
       "testSVD",
       "testVec3D"
     };
-  const int TSize(14);
+
   if (type==0)
     {
       TestFunc::Instance().reportTest(std::cout);
       boost::format FMT("%1$s%|20t|(%2$d)");
-      for(int i=0;i<TSize;i++)
+      for(size_t i=0;i<TestName.size();i++)
 	std::cout<<FMT % TestName[i] % (i+1)<<std::endl;
       return 0;
     }
 
   int index((type<0) ? 0 : type-1);
   int X(0);
+  int testNum;
   do
     {
       index++;
-      if (index==1)
+      testNum=1;
+      if (index==testNum++)
 	{
 	  testCone A;
 	  X=A.applyTest(extra);
 	}
 
-      if (index==2)
+      if (index==testNum++)
 	{
 	  testConvex A;
 	  X=A.applyTest(extra);
 	}
       
-      if(index==3)
+      if(index==testNum++)
 	{
 	  testConvex2D A;
 	  X=A.applyTest(extra);
 	}
-      if(index==4)
+      if(index==testNum++)
 	{
 	  testCylinder A;
 	  X=A.applyTest(extra);
 	}
-      if(index==5)
+      if(index==testNum++)
 	{
 	  testEllipticCyl A;
 	  X=A.applyTest(extra);
 	}
-      if(index==6)
+      if(index==testNum++)
 	{
 	  testFace A;
 	  X=A.applyTest(extra);
-	}
-      
-      if(index==7)
+	}      
+      if(index==testNum++)
+	{
+	  testGeomSupport A;
+	  X=A.applyTest(extra);
+	}      
+      if(index==testNum++)
 	{
 	  testLine A;
 	  X=A.applyTest(extra);
 	}
       
-      if(index==8)
+      if(index==testNum++)
 	{
 	  testMasterRotate A;
 	  X=A.applyTest(extra);
 	}
-      if(index==9)
+      if(index==testNum++)
 	{
 	  testQuaternion A;
 	  X=A.applyTest(extra);
 	}
       
-      if(index==10)
+      if(index==testNum++)
 	{
 	  testPlane A;
 	  X=A.applyTest(extra);
 	}
       
-      if(index==11)
+      if(index==testNum++)
 	{
 	  testRecTriangle A;
 	  X=A.applyTest(extra);
 	}
 
-      if(index==12)
+      if(index==testNum++)
 	{
 	  testSurIntersect A;
 	  X=A.applyTest(extra);
 	}
       
-      if(index==13)
+      if(index==testNum++)
 	{
 	  testSVD A;
 	  X=A.applyTest(extra);
 	}
       
-      if(index==14)
+      if(index==testNum++)
 	{
 	  testVec3D A;
 	  X=A.applyTest(extra);
 	}
       
-    } while (!X && type!=index && index<TSize);
+    } while (!X && type!=index &&
+	     index<testNum-1);
     
   return X;
 }
@@ -880,7 +897,7 @@ physicsTest(const int type,const int extra)
     {
       TestFunc::Instance().reportTest(std::cout);
       std::cout<<"testDBCN          (1)"<<std::endl;
-      std::cout<<"testExpControl    (2)"<<std::endl;
+      std::cout<<"testExtControl    (2)"<<std::endl;
     }
   if(type==1 || type<0)
     {
@@ -890,7 +907,7 @@ physicsTest(const int type,const int extra)
     }
   if(type==2 || type<0)
     {
-      testExpControl A;
+      testExtControl A;
       const int X=A.applyTest(extra);
       if (X) return X;
     }

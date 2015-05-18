@@ -1,7 +1,7 @@
 /********************************************************************* 
-  CombLayer : MCNP(X) Input builder
+  CombLayer : MNCPX Input builder
  
- * File:   testInclude/testVec3D.h
+ * File:   testInclude/testExtControl.h
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -19,34 +19,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef testVec3D_h
-#define testVec3D_h 
+#ifndef testExtControl_h
+#define testExtControl_h 
 
 /*!
-  \class testVec3D 
-  \brief Test class for the Vec3D class
+  \class testExtControl
+  \brief Tests the class ExtControl
+  \author S. Ansell
+  \date April 2015
   \version 1.0
-  \date October 2007
-  \author S.Ansell
-  
-
 */
 
-class testVec3D 
+class testExtControl
 {
 private:
 
   //Tests 
-  int testDotProd();
-  int testRead();
-  
+  int testParse();
+
 public:
-
-  testVec3D();
-  ~testVec3D();
-
-  int applyTest(const int extra);
   
+  testExtControl();
+  ~testExtControl();
+  
+  int applyTest(const int);       
+
 };
 
 #endif

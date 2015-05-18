@@ -1,7 +1,7 @@
 /********************************************************************* 
-  CombLayer : MCNP(X) Input builder
+  CombLayer : MNCPX Input builder
  
- * File:   testInclude/testVec3D.h
+ * File:   t1UpgradeInc/DefUnitsESS.h
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -19,34 +19,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef testVec3D_h
-#define testVec3D_h 
+#ifndef mainSystem_DefUnitsESS_h
+#define mainSystem_DefUnitsESS_h
 
-/*!
-  \class testVec3D 
-  \brief Test class for the Vec3D class
-  \version 1.0
-  \date October 2007
-  \author S.Ansell
-  
+class Simulation;
+class FuncDataBase;
 
-*/
-
-class testVec3D 
+namespace mainSystem
 {
-private:
+  class inputParam;
 
-  //Tests 
-  int testDotProd();
-  int testRead();
-  
-public:
+  void setDefUnits(FuncDataBase&,inputParam&);
 
-  testVec3D();
-  ~testVec3D();
+  void setESS(defaultConfig&); 
 
-  int applyTest(const int extra);
-  
-};
+}
+
 
 #endif
+ 

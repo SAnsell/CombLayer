@@ -1,7 +1,7 @@
 /********************************************************************* 
-  CombLayer : MCNP(X) Input builder
+  CombLayer : MNCPX Input builder
  
- * File:   testInclude/testVec3D.h
+ * File:   attachCompInc/LinkSupport.h
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -19,34 +19,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef testVec3D_h
-#define testVec3D_h 
+#ifndef attachSystem_LinkSupport_h
+#define attachSystem_LinkSupport_h
 
-/*!
-  \class testVec3D 
-  \brief Test class for the Vec3D class
-  \version 1.0
-  \date October 2007
-  \author S.Ansell
-  
 
-*/
-
-class testVec3D 
+namespace attachSystem
 {
-private:
 
-  //Tests 
-  int testDotProd();
-  int testRead();
-  
-public:
+class FixedComp;
 
-  testVec3D();
-  ~testVec3D();
-
-  int applyTest(const int extra);
-  
-};
+long int getLinkIndex(const std::string&);
+int getAttachPoint(const std::string&,const std::string&,
+		    Geometry::Vec3D&,Geometry::Vec3D&);
+ 
+}
 
 #endif
+ 
