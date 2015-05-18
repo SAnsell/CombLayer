@@ -43,6 +43,7 @@ namespace setVariable
   void LensModel(FuncDataBase&);
   void IMatVariables(FuncDataBase&);
   void MuonVariables(FuncDataBase&);
+  void PipeVariables(FuncDataBase&);
   void PhotonVariables(FuncDataBase&);
   void SinbadVariables(FuncDataBase&);
   void SNSVariables(FuncDataBase&);

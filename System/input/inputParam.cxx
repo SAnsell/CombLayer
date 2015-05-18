@@ -353,7 +353,7 @@ inputParam::getFlagDef(const std::string& InpKey,
   if (!Control.hasVariable(VarKey))
     {
       throw ColErr::InContainerError<std::string>(InpKey+":"+VarKey,
-						  RegA.getFull());
+						  "InpKey:VarKey");
     }
   return Control.EvalVar<T>(VarKey);
 }

@@ -31,8 +31,10 @@ namespace SDef
   void createBilbaoSource(const FuncDataBase&,Source&);
   void createD4CSource(const FuncDataBase&,Source&);
   void createESSSource(const FuncDataBase&,Source&);
-  void createGammaSource(const FuncDataBase&,Source&);
-  void createLaserSource(const FuncDataBase&,Source&);
+  void createGammaSource(const FuncDataBase&,const std::string&,Source&);
+  void createGammaSource(const FuncDataBase&,const std::string&,
+			 const attachSystem::FixedComp&,const long int,
+			 Source&);
   void createLensSource(const FuncDataBase&,Source&,
 			const attachSystem::FixedComp&);
   void createSinbadSource(const FuncDataBase&,Source&);

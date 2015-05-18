@@ -29,7 +29,7 @@ my @systemNames= @systemLibDir;
 my @modelLibDir=qw( bibBuild bnctBuild build chip 
                     cuBlock d4cModel delft epbBuild essBuild
                     gammaBuild imat lensModel moderator 
-                    muon photon sinbadBuild snsBuild t1Build 
+                    muon pipeBuild photon sinbadBuild snsBuild t1Build 
                     t1Engineer t1Upgrade t3Model zoom );
 my @modelNames= @modelLibDir;
 
@@ -62,7 +62,7 @@ my @libnames=@sublibdir;
 my @modelInclude = qw( bibBuildInc bnctBuildInc buildInc chipInc 
                        cuBlockInc d4cModelInc delftInc epbBuildInc 
                        essBuildInc gammaBuildInc imatInc lensModelInc 
-                       moderatorInc muonInc photonInc
+                       moderatorInc muonInc pipeBuildInc photonInc
                        sinbadBuildInc snsBuildInc t1BuildInc t1EngineerInc 
                        t1UpgradeInc t3ModelInc zoomInc );
 
@@ -204,6 +204,14 @@ $gM->addDepUnit("photonMod", ["photon","visit","src","simMC",
 			      "tally","geometry","mersenne","src","world",
 			      "work","xml","poly","support","weights",
 			      "md5","global","attachComp","visit","poly"]);
+
+$gM->addDepUnit("pipe", ["pipeBuild","visit","src","simMC",
+			 "construct","physics","input","process",
+			 "transport","scatMat","endf","crystal",
+			 "source","monte","funcBase","log","monte",
+			 "tally","geometry","mersenne","src","world",
+			 "work","xml","poly","support","weights",
+			 "md5","global","attachComp","visit","poly"]);
 
 $gM->addDepUnit("ts1layer", ["build","visit","chip","moderator","build",
 			     "zoom","src","physics","input","process",

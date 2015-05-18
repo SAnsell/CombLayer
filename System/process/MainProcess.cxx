@@ -59,7 +59,6 @@
 #include "SimMonte.h"
 #include "variableSetup.h"
 #include "defaultConfig.h"
-#include "DefUnits.h"
 #include "MainProcess.h"
 
 namespace mainSystem
@@ -240,7 +239,10 @@ createInputs(inputParam& IParam)
   IParam.regDefItem<double>("SA","sdefAngle",1,35.0);
   IParam.regItem<std::string>("SF","sdefFile");
   IParam.regDefItem<int>("SI","sdefIndex",1,1);
-  IParam.regDefItem<std::string>("SObj","sdefObj",1,"chipIRGuide");
+
+  std::vector<std::string> SItems(3,"");
+  IParam.regDefItemList<std::string>("SObj","sdefObj",3,SItems);
+  
   IParam.regItem<Geometry::Vec3D>("SP","sdefPos");
   IParam.regItem<double>("SR","sdefRadius");
   IParam.regItem<Geometry::Vec3D>("SV","sdefVec");
@@ -268,6 +270,7 @@ createInputs(inputParam& IParam)
 
   IParam.regItem<double>("w","weight");
   IParam.regItem<Geometry::Vec3D>("WP","weightPt");
+  IParam.regMulti<std::string>("wExt","wExt",25,0);    
   IParam.regItem<double>("WTemp","weightTemp",1);
   IParam.regDefItem<std::string>("WType","weightType",1,"basic");
 
@@ -330,6 +333,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("validCheck","Run simulation to check for validity");
 
   IParam.setDesc("w","weightBias");
+  IParam.setDesc("wExt","Extraction biasisng [see: -wExt help]");
   IParam.setDesc("WType","Initial model for weights [help for info]");
   IParam.setDesc("WTemp","Temperature correction for weights");
   IParam.setDesc("WP","Weight bias Point");
@@ -582,9 +586,20 @@ void createCuInputs(inputParam& IParam)
   ELog::RegMethod RegA("MainProcess::","createCutInputs");
   createInputs(IParam);
   
-  IParam.setValue("sdefType",std::string("TS1"));  
-  
+  IParam.setValue("sdefType",std::string("TS1"));    
+  return;
+}
 
+void createPipeInputs(inputParam& IParam)
+  /*!
+    Set the specialise inputs for TS2
+    \param IParam :: Input Parameters
+  */
+{
+  ELog::RegMethod RegA("MainProcess::","createPipeInputs");
+  createInputs(IParam);
+  
+  IParam.setValue("sdefType",std::string("Point"));    
   return;
 }
 

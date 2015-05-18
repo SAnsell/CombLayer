@@ -3,7 +3,7 @@
  
  * File:   process/objectRegister.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -344,13 +344,15 @@ objectRegister::write(const std::string& OFile) const
   
 }
 
+///\cond TEMPLATE
+  
 template const attachSystem::FixedComp* 
   objectRegister::getObject(const std::string&) const;
 
 template const attachSystem::ContainedComp* 
   objectRegister::getObject(const std::string&) const;
 
-template const attachSystem::ContainedGroup* 
+  template const attachSystem::ContainedGroup* 
   objectRegister::getObject(const std::string&) const;
 
 template const attachSystem::TwinComp* 
@@ -381,6 +383,6 @@ template attachSystem::SecondTrack*
   objectRegister::getObject(const std::string&);
 
 
-  
+///\endcond TEMPLATE  
 
 } // NAMESPACE ModelSupport

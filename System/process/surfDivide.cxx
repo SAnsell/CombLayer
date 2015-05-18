@@ -392,7 +392,28 @@ surfDivide::activeDivideTemplate(Simulation& System)
   return;  
 }
 
+void
+surfDivide::addFrac(const double F)
+  /*!
+    Add a fraction to the stack
+    \param F :: Fraction to add [0-1]
+    \throw RangeError if F not ordered or between 0/1 limits
+   */
+{
+  ELog::RegMethod RegA("surfDivide","addFrac");
 
+  if (F<Geometry::zeroTol || F>1.0-Geometry::zeroTol)
+    throw ColErr::RangeError<double>(F,0,1.0,"Frac out of range");
+
+  if (!frac.empty() &&
+      (F-frac.back())<Geometry::zeroTol)
+    throw ColErr::RangeError<double>(F,F-frac.back(),1.0,
+				     "Frac misorderd");
+  
+  frac.push_back(F);
+  return;
+}
+  
 void
 surfDivide::activeDivide(Simulation& System)
   /*!

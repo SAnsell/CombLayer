@@ -102,7 +102,7 @@ class surfDivide
   void addOuterSingle(const int);
 
   /// Add a fraction
-  void addFrac(const double F) { frac.push_back(F); } 
+  void addFrac(const double);
   /// Add a Material
   void addMaterial(const int M) { material.push_back(M); }
   

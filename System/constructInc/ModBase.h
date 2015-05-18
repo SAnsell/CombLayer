@@ -54,7 +54,8 @@ class ModBase : public attachSystem::ContainedComp,
   std::vector<long int> flightSides;  ///< Sides for flight inde
 
   virtual void populate(const FuncDataBase&);
-
+  virtual void createUnitVector(const attachSystem::FixedComp&);
+  
  public:
 
   ModBase(const std::string&,const size_t);

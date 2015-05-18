@@ -64,6 +64,7 @@ namespace mainSystem
   void createLensInputs(inputParam&);
   void createMuonInputs(inputParam&);
   void createPhotonInputs(inputParam&);
+  void createPipeInputs(inputParam&);
   void createSiliconInputs(inputParam&);
   void createSinbadInputs(inputParam&);
   void createSNSInputs(inputParam&);

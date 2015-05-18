@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   weights/weightManager.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,8 +31,7 @@
 #include <iterator>
 #include <functional>
 #include <algorithm>
-#include <boost/bind.hpp>
-#include <boost/format.hpp>
+#include <memory>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -121,14 +120,13 @@ weightManager::addParticle(const char c)
 void
 weightManager::maskCell(const int zCell)  
   /*!
-    Zero [-1] the weight of all cells
-    \param zCell :: Original Cell
+    Zero [-1] the weight of the cell
+    \param zCell :: cell to be masked in all weight systems
   */
 {
   ELog::RegMethod RegA("weightManager","zeroCell");
-  for_each(WMap.begin(),WMap.end(),
-	   boost::bind(&WForm::maskCell,
-		       boost::bind(&CtrlTYPE::value_type::second,_1),zCell));
+  for(CtrlTYPE::value_type& wf : WMap)
+    wf.second->maskCell(zCell);
   return;
 }
   
@@ -143,8 +141,9 @@ weightManager::renumberCell(const int OCell,const int NCell)
 {
   ELog::RegMethod RegA("weightManager","renumberCell");
   for_each(WMap.begin(),WMap.end(),
-	   boost::bind(&WForm::renumberCell,
-		       boost::bind(&CtrlTYPE::value_type::second,_1),
+	   std::bind(&WForm::renumberCell,
+		     std::bind(&CtrlTYPE::value_type::second,
+				 std::placeholders::_1),
 		       OCell,NCell));
   return;
 }
@@ -178,10 +177,8 @@ weightManager::write(std::ostream& OX) const
   */
 {
   ELog::RegMethod RegA("weightManager","write");
-  for_each(WMap.begin(),WMap.end(),
-	   boost::bind(&WForm::write,
-		       boost::bind(&CtrlTYPE::value_type::second,_1),
-		       boost::ref(OX)));
+  for(const CtrlTYPE::value_type& wf : WMap)
+    wf.second->write(OX);
   return;
 }
 

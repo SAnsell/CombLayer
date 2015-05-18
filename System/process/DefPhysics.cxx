@@ -331,11 +331,9 @@ setDefaultPhysics(Simulation& System,
   // LCA ielas ipreq iexisa ichoic jcoul nexite npidk noact icem ilaq 
   // LEA ipht icc nobalc nobale ifbrk ilvden ievap nofis
   physicsSystem::LSwitchCard& lea=PC.getLEA();
-  
-  // GORAN
+
   const std::string PModel=IParam.getValue<std::string>("physModel");
   setPhysicsModel(lea,PModel);
-
 
   PC.setNPS(IParam.getValue<int>("nps"));
   PC.setRND(IParam.getValue<long int>("random"));	

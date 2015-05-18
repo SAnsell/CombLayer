@@ -81,6 +81,112 @@
 namespace SDef
 {
 
+long int
+getLinkIndex(const std::string& Snd) 
+  /*!
+    Convert a name front back etc into a standard link number
+    \param Snd :: Snd link work    
+    \return link number [-ve for beamFront/beamBack]
+  */
+{
+  ELog::RegMethod RegA("SourceSelector[F]","getLinkIndex");
+  
+  long int linkPt(0);
+  if (!Snd.empty() && !StrFunc::convert(Snd,linkPt))
+    {
+      if (Snd=="origin") 
+	linkPt=0;
+      else if (Snd=="front") 
+	linkPt=1;
+      else if (Snd=="back")
+	linkPt=2;
+      else if (Snd=="beamFront")
+	linkPt=-1;
+      else if (Snd=="beamBack")
+	linkPt=-2;
+      else 
+	throw ColErr::InContainerError<std::string>(Snd,"String");
+    }
+  return linkPt;
+}
+
+void
+processSDefFile(const mainSystem::inputParam& IParam,
+		const FuncDataBase& Control,
+		const std::string& DObj,
+		SDef::Source& sourceCard)
+  /*!
+    process the case of an sdefFile [spectrum] -- use 
+    the void sdef card
+    \param IParam :: input Parameters
+    \param Control :: dataBase for variables
+    \param DObj :: Name of object
+   */
+{
+  ELog::RegMethod RegA("SourceSelector","processSDefFile");
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+  const masterRotate& MR = masterRotate::Instance();
+  
+  const std::string FName=IParam.getValue<std::string>("sdefFile");
+  
+  const int index=IParam.getValue<int>("sdefIndex")-1;
+
+  const attachSystem::SecondTrack* SPtr(0);
+  const attachSystem::FixedComp* LPtr(0);
+  
+  if (DObj=="shutter" || DObj=="torpedo")
+    {
+      LPtr=OR.getObject<attachSystem::FixedComp>
+	    (StrFunc::makeString(DObj,index));
+    }
+  else
+    LPtr=OR.getObject<attachSystem::FixedComp>(DObj);
+  
+  SPtr=dynamic_cast<const attachSystem::SecondTrack*>(LPtr);
+  
+  if (!LPtr)
+    {
+      ELog::EM<<"Failed to find object for :"<<DObj<<ELog::endErr;
+      return;
+    }
+  
+  // Construct CSDEF :
+  SDef::ChipIRSource CSdef;
+  const double Angle=
+    IParam.getFlagDef<double>("sdefAngle",Control,"chipSourceAngle"); 
+  const double Radius=
+    IParam.getFlagDef<double>("sdefRadius",Control,"chipSourceRadial"); 
+  Geometry::Vec3D SPos;
+  if ( IParam.flag("sdefPos") )
+    {
+      // Care need to invert the position:
+      SPos=IParam.getValue<Geometry::Vec3D>("sdefPos");
+      SPos=MR.reverseRotate(SPos);           // View point	    
+    }
+  else
+    SPos=LPtr->getCentre();
+  
+  // Handle direction
+  Geometry::Vec3D SDir((SPtr) ? SPtr->getBeamAxis() : LPtr->getY());
+  if (IParam.flag("sdefVec"))
+    SDir=IParam.getValue<Geometry::Vec3D>("sdefVec");
+  else if (IParam.flag("sdefZRot"))
+    {
+      const double rotAngle=IParam.getValue<double>("sdefZRot");
+      const Geometry::Quaternion Qz=
+	Geometry::Quaternion::calcQRotDeg(rotAngle,LPtr->getX());
+      Qz.rotate(SDir);
+    }
+  
+  CSdef.createAll(FName,SDir,SPos,Angle,Radius,sourceCard);
+  
+  if (IParam.flag("ECut"))
+    CSdef.setCutEnergy(IParam.getValue<double>("ECut"));
+  return;
+}
+  
 void 
 sourceSelection(Simulation& System,
 		const mainSystem::inputParam& IParam)
@@ -97,6 +203,13 @@ sourceSelection(Simulation& System,
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
+  const std::string DObj=IParam.getValue<std::string>("sdefObj",0);
+  const std::string DSnd=IParam.getValue<std::string>("sdefObj",1);
+  const std::string Dist=IParam.getValue<std::string>("sdefObj",2);
+  const attachSystem::FixedComp* FCPtr=
+    OR.getObject<attachSystem::FixedComp>(DObj);
+  const long int linkIndex=getLinkIndex(DSnd);
+  
   if (IParam.flag("sdefVoid"))
     {
       sourceCard.deactivate();
@@ -106,66 +219,12 @@ sourceSelection(Simulation& System,
   // If a chipIR style directional source
   if (IParam.flag("sdefFile"))
     {
-      const std::string FName=IParam.getValue<std::string>("sdefFile");
-      const std::string DObj=IParam.getValue<std::string>("sdefObj");
-      const int index=IParam.getValue<int>("sdefIndex")-1;
-
-      const attachSystem::SecondTrack* SPtr(0);
-      const attachSystem::FixedComp* LPtr(0);
-  
-      if (DObj=="shutter" || DObj=="torpedo")
-	{
-	  LPtr=OR.getObject<attachSystem::FixedComp>
-	    (StrFunc::makeString(DObj,index));
-	}
-      else
-	LPtr=OR.getObject<attachSystem::FixedComp>(DObj);
-
-      SPtr=dynamic_cast<const attachSystem::SecondTrack*>(LPtr);
-        
-      if (!LPtr)
-	{
-	  ELog::EM<<"Failed to find object for :"<<DObj<<ELog::endErr;
-	  return;
-	}
-      
-      // Construct CSDEF :
-      SDef::ChipIRSource CSdef;
-      const double Angle=
-	IParam.getFlagDef<double>("sdefAngle",Control,"chipSourceAngle"); 
-      const double Radius=
-	IParam.getFlagDef<double>("sdefRadius",Control,"chipSourceRadial"); 
-      Geometry::Vec3D SPos;
-      if ( IParam.flag("sdefPos") )
-	{
-	  // Care need to invert the position:
-	  SPos=IParam.getValue<Geometry::Vec3D>("sdefPos");
-	  SPos=MR.reverseRotate(SPos);           // View point	    
-	}
-      else
-	SPos=LPtr->getCentre();
-      
-      // Handle direction
-      Geometry::Vec3D SDir((SPtr) ? SPtr->getBeamAxis() : LPtr->getY());
-      if (IParam.flag("sdefVec"))
-	SDir=IParam.getValue<Geometry::Vec3D>("sdefVec");
-      else if (IParam.flag("sdefZRot"))
-	{
-	  const double rotAngle=IParam.getValue<double>("sdefZRot");
-	  const Geometry::Quaternion Qz=
-	    Geometry::Quaternion::calcQRotDeg(rotAngle,LPtr->getX());
-	  Qz.rotate(SDir);
-	}
-      
-      CSdef.createAll(FName,SDir,SPos,Angle,Radius,sourceCard);
-
-      if (IParam.flag("ECut"))
-	CSdef.setCutEnergy(IParam.getValue<double>("ECut"));
+      processSDefFile(IParam,Control,DObj,sourceCard);
       return;
     }
+  
   const std::string sdefType=IParam.getValue<std::string>("sdefType");
-  ELog::EM<<"SDEF == "<<IParam.getValue<std::string>("sdefType")<<
-    ELog::endDebug;
+
   if (sdefType=="TS1")
     SDef::createTS1Source(Control,sourceCard);
   else if (sdefType=="TS1Gauss") 
@@ -187,9 +246,18 @@ sourceSelection(Simulation& System,
   else if (sdefType=="Sinbad" || sdefType=="sinbad")
     SDef::createSinbadSource(Control,sourceCard);
   else if (sdefType=="Gamma" || sdefType=="gamma")
-    SDef::createGammaSource(Control,sourceCard);
+    SDef::createGammaSource(Control,"gammaSource",sourceCard);
   else if (sdefType=="Laser" || sdefType=="laser")
-    SDef::createLaserSource(Control,sourceCard);
+    SDef::createGammaSource(Control,"laserSource",sourceCard);
+  else if (sdefType=="Point" || sdefType=="point")
+    {
+      if (FCPtr)
+	SDef::createGammaSource(Control,"pointSource",
+				*FCPtr,linkIndex,sourceCard);
+      else
+	SDef::createGammaSource(Control,"pointSource",
+				sourceCard);
+    }
   else if (sdefType=="LENS" || sdefType=="lens")
     {
       const attachSystem::FixedComp* PC=
@@ -220,6 +288,8 @@ sourceSelection(Simulation& System,
 	"TS1EpbColl :: TS1 [proton beam for 3rd collimator] \n"			
 	"ess :: ESS beam proton\n"
 	"Bilbao :: Bilbao beam proton\n"
+	"Laser :: Laser D/T fussion source\n"
+	"Point :: Test point source\n"
 	"D4C :: D4C neutron beam"<<ELog::endBasic;
     }
 	

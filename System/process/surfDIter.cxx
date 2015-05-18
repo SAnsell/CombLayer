@@ -79,9 +79,9 @@ populateDivideLen(const FuncDataBase& Control,const size_t N,
 	  const std::string NName=StrFunc::makeString(i);
 	  const double fA=Control.EvalDefVar<double>(Name+NName,frac);
 	  Vec.push_back(fA);
-	  if (Vec.back()<0)
+	  if (fA<0 || fA>1.0)
 	    {
-	      curLen-=Vec.back();    // NOTE: vec.back is negative
+	      curLen+=std::fabs(fA);    // NOTE: vec.back is negative
 	      if (curLen>TLen)
 		ELog::EM<<"Warning over length in fractions"<<ELog::endErr;
 	      Vec.back()=curLen/TLen;

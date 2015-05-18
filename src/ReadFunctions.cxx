@@ -489,7 +489,10 @@ readPhysics(FuncDataBase& DB,std::istream& IX,
   /*!
     Read until the end of the physics section
     which is denoted by a blank line or EOF
+    \param DB :: Database for variables
     \param IX :: imput stream to read
+    \param PhysPtr :: Physics card system
+    
     \returns number of successfull reads
   */
 {

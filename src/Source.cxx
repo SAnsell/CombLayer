@@ -299,8 +299,8 @@ void
 Source::substituteCell(const int originalCell,const int newCell)
   /*!
     Substitute Cell
-    \param originalCell :: original surface
-    \param newCell :: new surface
+    \param originalCell :: original cell number
+    \param newCell :: new cell number
   */
 {
   ELog::RegMethod RegA("Source","substituteCell");

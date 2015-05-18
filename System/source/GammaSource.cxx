@@ -188,7 +188,7 @@ GammaSource::populateEnergy(std::string EPts,std::string EProb)
   Energy.clear();
   EWeight.clear();
 
-  double eA,eB,eP;
+  double eB,eP;
   
   // if (!StrFunc::section(EPts,eA) || eA<0.0)
   //   return 0;
@@ -225,12 +225,13 @@ GammaSource::populate(const FuncDataBase& Control)
   
   xStep=Control.EvalVar<double>(keyName+"XStep"); 
   yStep=Control.EvalVar<double>(keyName+"YStep"); 
-  zStep=Control.EvalVar<double>(keyName+"ZStep"); 
+  zStep=Control.EvalVar<double>(keyName+"ZStep");
+  xyAngle=Control.EvalDefVar<double>(keyName+"XYangle",0.0);
+  zAngle=Control.EvalDefVar<double>(keyName+"ZStep",0.0); 
 
   particleType=Control.EvalDefVar<int>(keyName+"ParticleType",2); 
   radius=Control.EvalVar<double>(keyName+"Radius"); 
   angleSpread=Control.EvalVar<double>(keyName+"ASpread"); 
-
 
   const std::string EList=
     Control.EvalDefVar<std::string>(keyName+"Energy","");
@@ -254,27 +255,29 @@ GammaSource::populate(const FuncDataBase& Control)
 }
 
 void
-GammaSource::createUnitVector(const attachSystem::FixedComp& FC)
+GammaSource::createUnitVector(const attachSystem::FixedComp& FC,
+			      const long int linkIndex)
   /*!
     Create the unit vector
+    \param FC :: Fixed Componenet
+    \param linkIndex :: Link index [signed for opposite side]
    */
 {
   ELog::RegMethod RegA("GammaSource","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC);
 
+  attachSystem::FixedComp::createUnitVector(FC,linkIndex);
   applyShift(xStep,yStep,zStep);
+  applyAngleRotate(xyAngle,zAngle);
   Direction=Y;
 
-  //  applyAngleRotate(xyAngle,zAngle);
   return;
 }
   
 void
 GammaSource::calcPosition()
   /*!
-    Calcuate the focus position and other poitns
-  */
-    
+    Calcuate the focus position and other points
+  */    
 {
   ELog::RegMethod RegA("GammaSource","calcPosition");
   FocusPoint=Origin-Direction*(radius/tan(M_PI*angleSpread/180.0));
@@ -312,16 +315,20 @@ GammaSource::createSource(SDef::Source& sourceCard) const
   D1.addUnit(SP1);  
   sourceCard.setData("dir",D1);  
 
-  // Energy:  
-  SDef::SrcData D2(2);
-  SDef::SrcInfo SI2('A');
-  SDef::SrcProb SP2;
-  SP2.setData(EWeight);
-  SI2.setData(Energy);
-  D2.addUnit(SI2);
-  D2.addUnit(SP2);
-  sourceCard.setData("erg",D2);
-
+  // Energy:
+  if (Energy.size()>1)
+    {
+      SDef::SrcData D2(2);
+      SDef::SrcInfo SI2('A');
+      SDef::SrcProb SP2;
+      SP2.setData(EWeight);
+      SI2.setData(Energy);
+      D2.addUnit(SI2);
+      D2.addUnit(SP2);
+      sourceCard.setData("erg",D2);
+    }
+  else if (!Energy.empty())
+    sourceCard.setComp("erg",Energy.front());
 
   return;
 }  
@@ -337,7 +344,27 @@ GammaSource::createAll(const FuncDataBase& Control,
 {
   ELog::RegMethod RegA("GammaSource","createAll");
   populate(Control);
-  createUnitVector(World::masterOrigin());
+  createUnitVector(World::masterOrigin(),0);
+  calcPosition();
+  createSource(sourceCard);
+  return;
+}
+
+void
+GammaSource::createAll(const FuncDataBase& Control,
+		       const attachSystem::FixedComp& FC,
+		       const long int linkIndex,
+		       SDef::Source& sourceCard)
+
+  /*!
+    Create all the source
+    \param Control :: DataBase for variables
+    \param souceCard :: Source Term
+   */
+{
+  ELog::RegMethod RegA("GammaSource","createAll<FC,linkIndex>");
+  populate(Control);
+  createUnitVector(FC,linkIndex);
   calcPosition();
   createSource(sourceCard);
   return;
