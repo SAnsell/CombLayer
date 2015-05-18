@@ -203,7 +203,8 @@ pointConstruct::processPoint(Simulation& System,
 void
 pointConstruct::processPointWindow(Simulation& System,
 				   const std::string& FObject,
-				   const long int linkPt,const double beamDist,
+				   long int linkPt,
+				   const double beamDist,
 				   const double timeStep,
 				   const double windowOffset) const
   /*!
@@ -227,7 +228,9 @@ pointConstruct::processPointWindow(Simulation& System,
   Geometry::Vec3D orgPoint;
   Geometry::Vec3D BAxis;
   int masterPlane(0);
-  if (linkPt>0)
+  const int negAxis= (linkPt<0) ? -1 : 1;
+  linkPt*=negAxis;
+  if (linkPt!=0)
     {
       const attachSystem::FixedComp* TPtr=
 	OR.getObject<attachSystem::FixedComp>(FObject);
@@ -239,7 +242,7 @@ pointConstruct::processPointWindow(Simulation& System,
 
       masterPlane=TPtr->getExitWindow(iLP,Planes);
       orgPoint= TPtr->getLinkPt(iLP); 
-      BAxis= -TPtr->getLinkAxis(iLP);
+      BAxis= TPtr->getLinkAxis(iLP)*negAxis;
       TPoint=orgPoint-BAxis*(beamDist+timeStep);
       
       ELog::EM<<"Link point   == "<<orgPoint<<ELog::endDiag;

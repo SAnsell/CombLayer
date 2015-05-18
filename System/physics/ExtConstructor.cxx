@@ -70,6 +70,7 @@
 #include "MainProcess.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "LinkSupport.h"
 #include "Simulation.h"
 #include "inputParam.h"
 #include "SrcData.h"
@@ -177,11 +178,14 @@ ExtConstructor::procType(std::vector<std::string>& StrItem,
       minus="-";
       StrItem[0].pop_back();
     }
+
+  ELog::EM<<"Str == "<<StrItem[2]<<ELog::endDiag;
   
   Geometry::Vec3D Pt;
   double a,b,c;
   int linkPt;
 
+  int failFlag(0);
   if (NS>=1 && (StrItem[0]=="simple"))
     {
       for(const MapSupport::Range<int>& RUnit : Zones)
@@ -221,23 +225,33 @@ ExtConstructor::procType(std::vector<std::string>& StrItem,
 	EX.addUnit(RUnit,EStr);
       return 1;
     }
-  
    else if (NS>=3 && StrItem[0]=="scaleVec" &&
-	    StrFunc::convert(StrItem[1],a) &&
-	    (StrFunc::convert(StrItem[1],Pt) ||
-	     (NS>=5 && StrFunc::convert(StrItem[2],Pt[0])
-	      && StrFunc::convert(StrItem[3],Pt[1])
-	      && StrFunc::convert(StrItem[4],Pt[2]))) )
-    {
-      ELog::EM<<"V == "<<Pt<<ELog::endDiag;
-      if (a<0.0) minus="-";
-      const size_t VNum=EX.addVect(Pt);
-      const std::string EStr=minus+
-	StrFunc::makeString(fabs(a))+"V"+StrFunc::makeString(VNum);
-      ELog::EM<<"XX == "<<EStr<<ELog::endDiag;
-      for(const MapSupport::Range<int>& RUnit : Zones)
-	EX.addUnit(RUnit,EStr);
-      return 1;
+	    StrFunc::convert(StrItem[1],a))
+     {
+       int failFlag(1);
+       Geometry::Vec3D YAxis;
+       if (StrFunc::convert(StrItem[2],Pt) )
+	 failFlag=0;
+       // Test of FixedPoint link
+       else if (NS>=4 &&
+		attachSystem::getAttachPoint(StrItem[2],StrItem[3],Pt,YAxis))
+	 failFlag=0;
+       // Simple list
+       else if (NS>=5 && StrFunc::convert(StrItem[2],Pt[0])
+		&& StrFunc::convert(StrItem[3],Pt[1])
+		&& StrFunc::convert(StrItem[4],Pt[2]) )
+	 failFlag=0;
+
+       if (!failFlag)
+	 {
+	   if (a<0.0) minus="-";
+	   const size_t VNum=EX.addVect(Pt);
+	   const std::string EStr=minus+
+	     StrFunc::makeString(fabs(a))+"V"+StrFunc::makeString(VNum);
+	   for(const MapSupport::Range<int>& RUnit : Zones)
+	     EX.addUnit(RUnit,EStr);
+	   return 1;
+	 }
     }
 
   return 0;
