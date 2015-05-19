@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   physics/ExtControl.cxx
  *
@@ -285,12 +285,14 @@ ExtControl::renumberCell(const int originalCell,const int newCell)
   */
 {
   ELog::RegMethod RegA("ExtControl","renumberCell");
+
   if (originalCell!=newCell)
     {
       // first check if any work is required:
       std::map<MapSupport::Range<int>,EUnit>::const_iterator mc=
 	MapItem.find(MapSupport::Range<int>(originalCell));
-      if (mc==MapItem.end()) return;
+      if (mc==MapItem.end())
+	return;
       
       // second check if in renumbered list (either way?)
       std::map<int,int>::const_iterator mcN=
@@ -349,9 +351,11 @@ ExtControl::write(std::ostream& OX,
 	  int CNActive(CN);
 	  std::map<int,int>::const_iterator rmc=renumberMap.find(CN);
 	  if (rmc!=renumberMap.end())
-	    CNActive=rmc->second;
-	    
-	  MTYPE::const_iterator mc=MapItem.find(RTYPE(CN));
+	    {
+	      CNActive=rmc->second;
+	    }
+	  
+	  MTYPE::const_iterator mc=MapItem.find(RTYPE(CNActive));
 	  if (mc!=MapItem.end())
 	    mc->second.write(cx);
 	  else
