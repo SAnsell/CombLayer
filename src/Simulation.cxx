@@ -1656,7 +1656,7 @@ Simulation::writePhysics(std::ostream& OX) const
 	}
     }
   // Remaining Physics cards
-  PhysPtr->write(OX,cellOutOrder);
+  PhysPtr->write(OX,cellOutOrder,voidCells);
   OX<<"c ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
   OX<<std::endl;  // MCNPX requires a blank line to terminate
   return;
@@ -2118,11 +2118,16 @@ Simulation::prepareWrite()
   ELog::RegMethod RegA("Simulation","prepareWrite");
   
   cellOutOrder.clear();
-  OTYPE::iterator oc;
-  for(oc=OList.begin();oc!=OList.end();oc++)
+  voidCells.clear();
+
+  for(const std::pair<int,MonteCarlo::Qhull*>& OVal : OList)
     {
-      if (!oc->second->isPlaceHold())
-	cellOutOrder.push_back(oc->first);
+      if (!OVal.second->isPlaceHold())
+	{
+	  cellOutOrder.push_back(OVal.first);
+	  if (!OVal.second->getMat())
+	    voidCells.insert(OVal.first);
+	}
     }
   return;
 }

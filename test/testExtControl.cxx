@@ -136,6 +136,7 @@ testExtControl::testParse()
   int cnt(1);
   physicsSystem::ExtControl EX;
   std::vector<int> cellOutOrder;
+  std::set<int> voidCells;
 
   for(const TTYPE& tc : Tests)
     {
@@ -143,7 +144,7 @@ testExtControl::testParse()
       cellOutOrder.push_back(cnt);
       EX.addUnit(cnt,std::get<0>(tc));
 
-      EX.write(cx,cellOutOrder);
+      EX.write(cx,cellOutOrder,voidCells);
       const std::string Res=StrFunc::singleLine(cx.str());
       if (std::get<1>(tc)!=Res)
 	{

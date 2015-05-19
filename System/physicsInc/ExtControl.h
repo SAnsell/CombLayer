@@ -73,7 +73,9 @@ class ExtControl
   size_t addVect(const Geometry::Vec3D&);
   void renumberCell(const int,const int);
   
-  void write(std::ostream&,const std::vector<int>&) const;   
+  void write(std::ostream&,const std::vector<int>&,
+	     const std::set<int>&) const;
+  
 };
 
 }

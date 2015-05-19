@@ -158,6 +158,45 @@ ExtConstructor::procZone(std::vector<std::string>& StrItem)
 }
 
 bool
+ExtConstructor::getVector(const std::vector<std::string>& StrItem,
+			  const size_t index,
+			  Geometry::Vec3D& Pt)
+  /*!
+    Get a vector based on a StrItem / iether using a
+    a name unit or a value.
+    \param StrItem :: List of strings
+    \param index :: Place to start in list
+    \param Pt :: Point found
+    \return 1 on success / 0 on failure
+   */
+{
+  ELog::RegMethod RegA("ExtConstructor","getVector");
+
+  const size_t NS(StrItem.size());
+  // Simple Vec3D(a,b,c)
+  if (NS>=index && StrFunc::convert(StrItem[index],Pt) )
+    return 1;
+
+  // Test of FixedPoint link
+  if (NS >= index+2)
+    {
+      Geometry::Vec3D YAxis;  
+      if (attachSystem::getAttachPoint
+	  (StrItem[index],StrItem[index+1],Pt,YAxis))
+	return 1;
+    }
+  
+  // Simple vector
+  if (NS >= index+3 && StrFunc::convert(StrItem[index],Pt[0])
+	   && StrFunc::convert(StrItem[index+1],Pt[1])
+	   && StrFunc::convert(StrItem[index+2],Pt[2]) )
+    return 1;
+
+  return 0;
+}
+
+  
+bool
 ExtConstructor::procType(std::vector<std::string>& StrItem,
 			 ExtControl& EX)
   /*!
@@ -179,13 +218,9 @@ ExtConstructor::procType(std::vector<std::string>& StrItem,
       StrItem[0].pop_back();
     }
 
-  ELog::EM<<"Str == "<<StrItem[2]<<ELog::endDiag;
-  
   Geometry::Vec3D Pt;
-  double a,b,c;
-  int linkPt;
+  double scalar;
 
-  int failFlag(0);
   if (NS>=1 && (StrItem[0]=="simple"))
     {
       for(const MapSupport::Range<int>& RUnit : Zones)
@@ -193,67 +228,35 @@ ExtConstructor::procType(std::vector<std::string>& StrItem,
       return 1;
     }
   else if (NS>=2 && StrItem[0]=="simpleVec" &&
-	   StrFunc::convert(StrItem[1],Pt))
+	   ExtConstructor::getVector(StrItem,1,Pt))
     {
-      ELog::EM<<"Pt == "<<Pt<<ELog::endDiag;
       const size_t VNum=EX.addVect(Pt);
       const std::string EStr=minus+"SV"+StrFunc::makeString(VNum);
       for(const MapSupport::Range<int>& RUnit : Zones)
 	EX.addUnit(RUnit,EStr);
       return 1;
     }
-  else if (NS>=4 && StrItem[0]=="simpleVec" &&
-	   StrFunc::convert(StrItem[1],a) &&
-	   StrFunc::convert(StrItem[2],b) &&
-	   StrFunc::convert(StrItem[3],c))
+  else if (NS>=2 && StrItem[0]=="scale" &&
+	   StrFunc::convert(StrItem[1],scalar))
     {
-      Pt=Geometry::Vec3D(a,b,c);
-      ELog::EM<<"Pt == "<<Pt<<ELog::endDiag;
-      const size_t VNum=EX.addVect(Pt);
-      const std::string EStr=minus+"SV"+StrFunc::makeString(VNum);
+      if (scalar<0.0) minus="-";
+      const std::string EStr=minus+StrFunc::makeString(fabs(scalar));
       for(const MapSupport::Range<int>& RUnit : Zones)
 	EX.addUnit(RUnit,EStr);
       return 1;
     }
-  
-   else if (NS>=2 && StrItem[0]=="scale" &&
-	   StrFunc::convert(StrItem[1],a))
-    {
-      if (a<0.0) minus="-";
-      const std::string EStr=minus+StrFunc::makeString(fabs(a));
-      for(const MapSupport::Range<int>& RUnit : Zones)
-	EX.addUnit(RUnit,EStr);
-      return 1;
-    }
-   else if (NS>=3 && StrItem[0]=="scaleVec" &&
-	    StrFunc::convert(StrItem[1],a))
+  else if (NS>=3 && StrItem[0]=="scaleVec" &&
+	    StrFunc::convert(StrItem[1],scalar) &&
+	   ExtConstructor::getVector(StrItem,2,Pt))
      {
-       int failFlag(1);
-       Geometry::Vec3D YAxis;
-       if (StrFunc::convert(StrItem[2],Pt) )
-	 failFlag=0;
-       // Test of FixedPoint link
-       else if (NS>=4 &&
-		attachSystem::getAttachPoint(StrItem[2],StrItem[3],Pt,YAxis))
-	 failFlag=0;
-       // Simple list
-       else if (NS>=5 && StrFunc::convert(StrItem[2],Pt[0])
-		&& StrFunc::convert(StrItem[3],Pt[1])
-		&& StrFunc::convert(StrItem[4],Pt[2]) )
-	 failFlag=0;
-
-       if (!failFlag)
-	 {
-	   if (a<0.0) minus="-";
-	   const size_t VNum=EX.addVect(Pt);
-	   const std::string EStr=minus+
-	     StrFunc::makeString(fabs(a))+"V"+StrFunc::makeString(VNum);
-	   for(const MapSupport::Range<int>& RUnit : Zones)
-	     EX.addUnit(RUnit,EStr);
-	   return 1;
-	 }
+       if (scalar<0.0) minus="-";
+       const size_t VNum=EX.addVect(Pt);
+       const std::string EStr=minus+
+	 StrFunc::makeString(fabs(scalar))+"V"+StrFunc::makeString(VNum);
+       for(const MapSupport::Range<int>& RUnit : Zones)
+	 EX.addUnit(RUnit,EStr);
+       return 1;
     }
-
   return 0;
 }
 
@@ -307,9 +310,7 @@ ExtConstructor::processUnit(Simulation& System,
 
   sortZone();
   ExtControl& EC=System.getPC().getExtCard();
-  
-  
-  
+    
   if (!procType(StrItem,EC))
     throw ColErr::InvalidLine
       ("procType ==> StrItems","-wExt "+IParam.getFull("wExt",Index),0);	

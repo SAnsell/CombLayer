@@ -762,11 +762,13 @@ PhysicsCards::setPrintNum(std::string Numbers)
 
 void 
 PhysicsCards::write(std::ostream& OX,
-		    const std::vector<int>& cellOutOrder) const 
+		    const std::vector<int>& cellOutOrder,
+		    const std::set<int>& voidCells) const 
   /*!
     Write out each of the cards
     \param OX :: Output stream
     \param cellOutOrder :: Cell List
+    \param voidCell :: List of void cells
     \todo Check that histp does not need a line cut.
   */
 {
@@ -796,7 +798,7 @@ PhysicsCards::write(std::ostream& OX,
   for(const std::string& PC : Basic)
     StrFunc::writeMCNPX(PC,OX);
 
-  ExtCard->write(OX,cellOutOrder);
+  ExtCard->write(OX,cellOutOrder,voidCells);
   
   LEA.write(OX);
   sdefCard.write(OX);

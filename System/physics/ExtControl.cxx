@@ -333,11 +333,13 @@ ExtControl::writeHeader(std::ostream& OX) const
   
 void
 ExtControl::write(std::ostream& OX,
-		  const std::vector<int>& cellOutOrder) const
+		  const std::vector<int>& cellOutOrder,
+		  const std::set<int>& voidCells) const
   /*!
     Write out the card
     \param OX :: Output stream
     \param cellOutOrder :: Cell List
+    \param voidCells :: List of void cells
   */
 {
   ELog::RegMethod RegA("ExtControl","write");
@@ -354,9 +356,9 @@ ExtControl::write(std::ostream& OX,
 	    {
 	      CNActive=rmc->second;
 	    }
-	  
 	  MTYPE::const_iterator mc=MapItem.find(RTYPE(CNActive));
-	  if (mc!=MapItem.end())
+	  if (mc!=MapItem.end() &&
+	      voidCells.find(CN)==voidCells.end())
 	    mc->second.write(cx);
 	  else
 	    cx<<"0 ";

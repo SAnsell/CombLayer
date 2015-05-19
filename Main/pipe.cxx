@@ -148,8 +148,10 @@ main(int argc,char* argv[])
 	    {
 	      delete SimPtr;
 	      ModelSupport::objectRegister::Instance().reset();
+	      ModelSupport::surfIndex::Instance().reset();
 	      return 0;
 	    }
+	  
 	  if (IParam.flag("endf"))
 	    SimPtr->setENDF7();
 
@@ -194,5 +196,6 @@ main(int argc,char* argv[])
   delete SimPtr;
   ModelSupport::objectRegister::Instance().reset();
   ModelSupport::surfIndex::Instance().reset();
+
   return exitFlag;
 }

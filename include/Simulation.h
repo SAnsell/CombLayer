@@ -91,6 +91,7 @@ class Simulation
 
   OTYPE OList;   ///< List of objects  (allow to become hulls)
   std::vector<int> cellOutOrder;    ///< List of cells [output order]
+  std::set<int> voidCells;          ///< List of void cells
 
   TallyTYPE TItem;  ///< Tally Items
   physicsSystem::PhysicsCards* PhysPtr;   ///< Physics Cards
