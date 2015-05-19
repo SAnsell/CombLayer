@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   src/Simulation.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -610,23 +610,6 @@ Simulation::readMaster(const std::string& Fname)
       return;
     }
   throw ColErr::ExBase("Build object error");
-}
-
-void
-Simulation::setCutter(const int CellN)
-  /*!
-    Sets a particular cell to be a cutter cell
-    \param CellN :: Cell to move from OList to Cutters.
-  */
-{
-  ELog::RegMethod RegA("Simulation","setCutter");
-  OTYPE::iterator vc;
-  vc=OList.find(CellN);
-  if (vc!=OList.end())
-    {
-      return;
-    }
-  return;
 }
 
 int

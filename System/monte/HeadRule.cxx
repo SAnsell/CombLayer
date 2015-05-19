@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   monte/HeadRule.cxx
  *
@@ -159,6 +159,12 @@ HeadRule::operator==(const HeadRule& A) const
   if (!HeadNode && !A.HeadNode)
     return 1;
 
+  // One != to other 
+  if (!HeadNode || !A.HeadNode)
+    return 0;
+  if (HeadNode->type()!=A.HeadNode->type())
+    return 0;
+  
   std::vector<const Rule*> AVec=
     findTopNodes();
   std::vector<const Rule*> BVec=
@@ -166,8 +172,7 @@ HeadRule::operator==(const HeadRule& A) const
   
   if (AVec.size()!=BVec.size()) 
     return 0;
-  if (HeadNode->type()!=A.HeadNode->type())
-    return 0;
+  
   // all NON-equals
   std::vector<HeadRule> ASet;
   std::vector<HeadRule> BSet;

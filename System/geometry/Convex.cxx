@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   geometry/Convex.cxx
  *
@@ -31,7 +31,6 @@
 #include <iterator>
 #include <memory>
 #include <boost/bind.hpp>
-#include <boost/functional.hpp>
 
 #include "Exception.h"
 #include "BaseVisit.h"

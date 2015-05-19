@@ -163,7 +163,6 @@ class Simulation
   Geometry::Transform* createSourceTransform();
   
 
-  void setCutter(const int); 
   int removeComplements(); 
 
   int populateCells();  // SHOULD BE PROTECTED

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   build/collInsertBlock.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,6 @@
 #include <list>
 #include <vector>
 #include <string>
-#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -66,7 +65,6 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "LinearComp.h"
 #include "ContainedComp.h"
 #include "collInsertBase.h"
 #include "collInsertBlock.h"
@@ -156,7 +154,8 @@ collInsertBlock::populate(const Simulation& System,
 	setVar(i,sndBase->getVar(i));	
       else 
 	{
-	  ELog::EM<<"sndBase == "<<sndBase->typeName()<<ELog::endCrit;
+	  if (sndBase)
+	    ELog::EM<<"sndBase == "<<sndBase->typeName()<<ELog::endCrit;
 	  ELog::EM<<"i == "<<i<<ELog::endCrit;
 	  ELog::EM<<"Failed to connect on first component:"
 		  <<KN<<ELog::endErr;

@@ -131,7 +131,7 @@ meshConstruct::processMesh(Simulation& System,
 	  ELog::EM<<"Reverse rotating"<<ELog::endDiag;
 	  APt=MR.reverseRotate(APt);
 	  BPt=MR.reverseRotate(BPt);
-	  nxyzIndex+=(flag && revStr=="r") ? 1 : 0;
+	  //	  nxyzIndex+=(flag && revStr=="r") ? 1 : 0;
 	}
       
       size_t Nxyz[3];

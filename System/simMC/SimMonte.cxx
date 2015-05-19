@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   src/SimMonte.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,9 +34,6 @@
 #include <functional>
 #include <numeric>
 #include <iterator>
-#include <boost/functional.hpp>
-#include <boost/bind.hpp>
-#include <boost/multi_array.hpp>
 
 #include "MersenneTwister.h"
 #include "Exception.h"
@@ -48,14 +45,9 @@
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "XMLwriteVisitor.h"
 #include "mathSupport.h"
 #include "support.h"
 #include "BaseVisit.h"
-#include "Element.h"
-#include "MapSupport.h"
-#include "MXcards.h"
-#include "Material.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -64,16 +56,7 @@
 #include "Track.h"
 #include "Surface.h"
 #include "Quadratic.h"
-#include "ArbPoly.h"
-#include "Cylinder.h"
-#include "Cone.h"
-#include "CylCan.h"
-#include "General.h"
-#include "MBrect.h"
-#include "NullSurface.h"
 #include "Plane.h"
-#include "Sphere.h"
-#include "Torus.h"
 #include "Rules.h"
 #include "varList.h"
 #include "Code.h"
@@ -87,7 +70,6 @@
 #include "neutMaterial.h"
 #include "DBNeutMaterial.h"
 #include "ObjComponent.h"
-#include "surfaceFactory.h"
 #include "Beam.h"
 #include "neutron.h"
 #include "Detector.h"
@@ -279,7 +261,8 @@ SimMonte::runMonte(const size_t Npts)
 		  const scatterSystem::neutMaterial* nMat=
 		    NDB.getMat(OPtr->getMat());
 		  if (!nMat)
-		    ELog::EM<<"Null Cell"<<ELog::endErr;
+		    throw ColErr::InContainerError<int>
+		      (OPtr->getMat(),"Material not found");
 		  //Cell.selectEnergy(n,Nout);		  
 		  // Internal scatter : process fraction to detector
 		  if (!MSActive || (MSActive<0 && n.nCollision==0)
