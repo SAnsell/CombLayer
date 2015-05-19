@@ -1,7 +1,7 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
- * File:   t1UpgradeInc/TubeMod.h
+ * File:   photonInc/TubeMod.h
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -41,7 +41,7 @@ struct TUnit
   \author S. Ansell
   \version 1.0
   \date Janurary 2015
-  \brief Specialized for a layered cylinder pre-mod object
+  \brief Specialized for a layered cylinder Moderator
 */
 
 class TubeMod : public attachSystem::ContainedComp,

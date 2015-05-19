@@ -1,7 +1,7 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
- * File:   t1UpgradeInc/CylLayer.h
+ * File:   photonInc/CylLayer.h
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -60,8 +60,8 @@ class CylLayer : public attachSystem::ContainedComp,
   double xyAngle;               ///< Angle rotation [deg]
   double zAngle;                ///< horizontal rotation [deg]
 
-  double outerRadius;                 ///< Outer radius
-  size_t nLayers;
+  double outerRadius;                ///< Outer radius
+  size_t nLayers;                    ///< Layer count
   std::vector<LInfo> LVec;           ///< Layer Info
 
   void populate(const FuncDataBase&);

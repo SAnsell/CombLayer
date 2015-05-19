@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   construct/DiskChopper.cxx
  *
@@ -358,7 +358,7 @@ DiskChopper::createAllBeam(Simulation& System,
   /*!
     Generic function to create everything
     \param System :: Simulation item
-    \param FC :: FixedComp
+    \param TC :: Twincomp if using beam direction
     \param FIndex :: Side Index [0 entry/1 exit]
   */
 {
