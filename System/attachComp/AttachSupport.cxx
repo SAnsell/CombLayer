@@ -444,6 +444,7 @@ addToInsertSurfCtrl(Simulation& System,
   */
 {
   ELog::RegMethod RegA("AttachSupport","addToInsertSurfCtrl(FC,CC)");
+  
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
   const int cellN=OR.getCell(BaseFC.getKeyName());

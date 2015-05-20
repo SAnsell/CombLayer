@@ -62,7 +62,7 @@ namespace essSystem
   class ProtonTube;
   class GuideBay;
   class BeamMonitor;
-  class MidWaterDivider;
+  class DiskPreMod;
 
   /*!
     \class makeESS
@@ -84,7 +84,7 @@ class makeESS
   // Butterly
   /// Primary Lower Mod [
   std::shared_ptr<constructSystem::ModBase> LowMod;
-  std::shared_ptr<essSystem::MidWaterDivider> LowPreMod;
+  std::shared_ptr<DiskPreMod> LowPreMod;
 
   // Cylindrical [to be dumped]
   std::shared_ptr<moderatorSystem::FlightLine> LowAFL;  ///< Lower Mode FL

@@ -88,7 +88,7 @@
 #include "BulkModule.h"
 #include "ShutterBay.h"
 #include "GuideBay.h"
-#include "MidWaterDivider.h"
+#include "DiskPreMod.h"
 
 #include "ConicModerator.h"
 #include "essDBMaterial.h"
@@ -103,7 +103,7 @@ makeESS::makeESS() :
   Reflector(new BeRef("BeRef")),
   PBeam(new ProtonTube("ProtonTube")),
   BMon(new BeamMonitor("BeamMonitor")),
-  LowPreMod(new MidWaterDivider("LowMidMod")),
+  LowPreMod(new DiskPreMod("LowPreMod")),
   
   LowAFL(new moderatorSystem::FlightLine("LowAFlight")),
   LowBFL(new moderatorSystem::FlightLine("LowBFlight")),
@@ -333,12 +333,9 @@ makeESS::buildLowPreMod(Simulation& System)
     \param System :: Stardard simulation
   */
 {
-  ELog::RegMethod RegA("makeESS","buildLowButteflyMod");
+  ELog::RegMethod RegA("makeESS","buildLowPreMod");
 
-
-
-
-  LowPreMod->createAll(System,*Reflector);
+  LowPreMod->createAll(System,*Target,1);
   attachSystem::addToInsertForced(System,*Reflector,*LowMod);
 
   return;

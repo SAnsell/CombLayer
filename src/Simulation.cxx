@@ -2115,7 +2115,6 @@ Simulation::prepareWrite()
   return;
 }
 
-
 void
 Simulation::masterRotation() 
   /*!

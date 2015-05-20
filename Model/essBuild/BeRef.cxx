@@ -91,7 +91,7 @@ BeRef::BeRef(const BeRef& A) :
   yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
   zAngle(A.zAngle),radius(A.radius),height(A.height),
   wallThick(A.wallThick),lowVoidThick(A.lowVoidThick),
-  topVoidThick(A.topVoidThick),
+  topVoidThick(A.topVoidThick),targSepThick(A.targSepThick),
   refMat(A.refMat),wallMat(A.wallMat),
   targSepMat(A.targSepMat)
   /*!
@@ -124,6 +124,7 @@ BeRef::operator=(const BeRef& A)
       wallThick=A.wallThick;
       lowVoidThick=A.lowVoidThick;
       topVoidThick=A.topVoidThick;
+      targSepThick=A.targSepThick;
       refMat=A.refMat;
       wallMat=A.wallMat;
       targSepMat=A.targSepMat;
@@ -166,6 +167,7 @@ BeRef::populate(const FuncDataBase& Control)
   
   lowVoidThick=Control.EvalVar<double>(keyName+"LowVoidThick");
   topVoidThick=Control.EvalVar<double>(keyName+"TopVoidThick");
+  targSepThick=Control.EvalVar<double>(keyName+"TargetSepThick");
   
   return;
 }
@@ -205,10 +207,19 @@ BeRef::createSurfaces()
 
   //define planes where the Be is substituted by Fe
 
+  // Inner planes
   ModelSupport::buildPlane(SMap,refIndex+105,Origin-
-			   Z*(lowVoidThick/2.0+wallThick),Z);  
+			   Z*((targSepThick+lowVoidThick)/2.0+wallThick),Z);  
   ModelSupport::buildPlane(SMap,refIndex+106,Origin+
-			   Z*(topVoidThick/2.0+wallThick),Z);  
+			   Z*((targSepThick+topVoidThick)/2.0+wallThick),Z);  
+
+
+  
+
+  ModelSupport::buildPlane(SMap,refIndex+105,Origin-
+			   Z*((targSepThick+lowVoidThick)/2.0+wallThick),Z);  
+  ModelSupport::buildPlane(SMap,refIndex+106,Origin+
+			   Z*((targSepThick+topVoidThick)/2.0+wallThick),Z);  
 
   ModelSupport::buildPlane(SMap,refIndex+115,Origin-Z*(lowVoidThick/2.0),Z);  
   ModelSupport::buildPlane(SMap,refIndex+116,Origin+Z*(topVoidThick/2.0),Z);  
@@ -221,7 +232,7 @@ BeRef::createObjects(Simulation& System)
   /*!
     Create the vaned moderator
     \param System :: Simulation to add results
-   */
+  */
 {
   ELog::RegMethod RegA("BeRef","createObjects");
 
@@ -229,6 +240,12 @@ BeRef::createObjects(Simulation& System)
   // low segment
   Out=ModelSupport::getComposite(SMap,refIndex," -7 5 -105 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,refMat,0.0,Out));
+
+  Out=ModelSupport::getComposite(SMap,refIndex," -17 115 -116");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,targSepMat,0.0,Out));
+
+  Out=ModelSupport::getComposite(SMap,refIndex," -17 115 -116");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,targSepMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,refIndex," -17 115 -116");
   System.addCell(MonteCarlo::Qhull(cellIndex++,targSepMat,0.0,Out));

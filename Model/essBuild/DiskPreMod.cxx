@@ -154,15 +154,13 @@ DiskPreMod::populate(const FuncDataBase& Control)
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");   
   for(size_t i=0;i<nLayers;i++)
     {
-      H+=Control.EvalVar<double>
-	(StrFunc::makeString(keyName+"Height",i));   
-      D+=Control.EvalVar<double>
-	(StrFunc::makeString(keyName+"Depth",i));   
-      R+=Control.EvalVar<double>
-	(StrFunc::makeString(keyName+"Thick",i));   
-      M=ModelSupport::EvalMat<int>
-	(Control,StrFunc::makeString(keyName+"Material",i));   
-      const std::string TStr=StrFunc::makeString(keyName+"Temp",i);
+      const std::string NStr(StrFunc::makeString(i));
+      H+=Control.EvalVar<double>(keyName+"Height"+NStr);
+      D+=Control.EvalVar<double>(keyName+"Depth"+NStr);
+      R+=Control.EvalPair<double>(keyName+"Radius"+NStr,
+				  keyName+"Thick"+NStr);
+      M=ModelSupport::EvalMat<int>(Control,keyName+"Mat"+NStr);   
+      const std::string TStr=keyName+"Temp"+NStr;
       T=(!M || !Control.hasVariable(TStr)) ?
 	0.0 : Control.EvalVar<double>(TStr); 
       
@@ -187,7 +185,8 @@ DiskPreMod::createUnitVector(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("DiskPreMod","createUnitVector");
   attachSystem::FixedComp::createUnitVector(FC,linkIndex);
-  applyShift(0,depth
+  // move away from connection
+  applyShift(0,depth.back(),0.0);
   return;
 }
 
