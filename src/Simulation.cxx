@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   src/Simulation.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -610,23 +610,6 @@ Simulation::readMaster(const std::string& Fname)
       return;
     }
   throw ColErr::ExBase("Build object error");
-}
-
-void
-Simulation::setCutter(const int CellN)
-  /*!
-    Sets a particular cell to be a cutter cell
-    \param CellN :: Cell to move from OList to Cutters.
-  */
-{
-  ELog::RegMethod RegA("Simulation","setCutter");
-  OTYPE::iterator vc;
-  vc=OList.find(CellN);
-  if (vc!=OList.end())
-    {
-      return;
-    }
-  return;
 }
 
 int
@@ -1656,7 +1639,7 @@ Simulation::writePhysics(std::ostream& OX) const
 	}
     }
   // Remaining Physics cards
-  PhysPtr->write(OX,cellOutOrder);
+  PhysPtr->write(OX,cellOutOrder,voidCells);
   OX<<"c ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
   OX<<std::endl;  // MCNPX requires a blank line to terminate
   return;
@@ -2118,11 +2101,16 @@ Simulation::prepareWrite()
   ELog::RegMethod RegA("Simulation","prepareWrite");
   
   cellOutOrder.clear();
-  OTYPE::iterator oc;
-  for(oc=OList.begin();oc!=OList.end();oc++)
+  voidCells.clear();
+
+  for(const std::pair<int,MonteCarlo::Qhull*>& OVal : OList)
     {
-      if (!oc->second->isPlaceHold())
-	cellOutOrder.push_back(oc->first);
+      if (!OVal.second->isPlaceHold())
+	{
+	  cellOutOrder.push_back(OVal.first);
+	  if (!OVal.second->getMat())
+	    voidCells.insert(OVal.first);
+	}
     }
   return;
 }

@@ -141,15 +141,6 @@ setItemRotate(const attachSystem::FixedComp& WMaster,
 					   TwinPtr->getBZ(),
 					   TwinPtr->getBY(),
 					   TwinPtr->getBX());
-      ELog::EM<<"x == "<<ItemPtr->getX()<<" : "<<ItemPtr->getY()
-	      <<" : "<<ItemPtr->getZ()<<ELog::endDebug;
-      ELog::EM<<"x == "<<TwinPtr->getBX()<<" : "<<TwinPtr->getBY()
-	      <<" : "<<TwinPtr->getBZ()<<ELog::endDebug;
-
-      ELog::EM<<"New origin = "<<newOrigin<<ELog::endDebug;
-      ELog::EM<<"P origin = "<<ItemPtr->getCentre()<<ELog::endDebug;
-      ELog::EM<<"QA origin = "<<QA.getAxis()<<ELog::endDebug;
-
     }
   
   MR.reset();

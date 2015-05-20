@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   physics/ExtControl.cxx
  *
@@ -285,12 +285,14 @@ ExtControl::renumberCell(const int originalCell,const int newCell)
   */
 {
   ELog::RegMethod RegA("ExtControl","renumberCell");
+
   if (originalCell!=newCell)
     {
       // first check if any work is required:
       std::map<MapSupport::Range<int>,EUnit>::const_iterator mc=
 	MapItem.find(MapSupport::Range<int>(originalCell));
-      if (mc==MapItem.end()) return;
+      if (mc==MapItem.end())
+	return;
       
       // second check if in renumbered list (either way?)
       std::map<int,int>::const_iterator mcN=
@@ -331,11 +333,13 @@ ExtControl::writeHeader(std::ostream& OX) const
   
 void
 ExtControl::write(std::ostream& OX,
-		  const std::vector<int>& cellOutOrder) const
+		  const std::vector<int>& cellOutOrder,
+		  const std::set<int>& voidCells) const
   /*!
     Write out the card
     \param OX :: Output stream
     \param cellOutOrder :: Cell List
+    \param voidCells :: List of void cells
   */
 {
   ELog::RegMethod RegA("ExtControl","write");
@@ -349,10 +353,12 @@ ExtControl::write(std::ostream& OX,
 	  int CNActive(CN);
 	  std::map<int,int>::const_iterator rmc=renumberMap.find(CN);
 	  if (rmc!=renumberMap.end())
-	    CNActive=rmc->second;
-	    
-	  MTYPE::const_iterator mc=MapItem.find(RTYPE(CN));
-	  if (mc!=MapItem.end())
+	    {
+	      CNActive=rmc->second;
+	    }
+	  MTYPE::const_iterator mc=MapItem.find(RTYPE(CNActive));
+	  if (mc!=MapItem.end() &&
+	      voidCells.find(CN)==voidCells.end())
 	    mc->second.write(cx);
 	  else
 	    cx<<"0 ";

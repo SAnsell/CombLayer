@@ -181,7 +181,7 @@ PhysicsCards::processCard(const std::string& Line)
   if(Line.empty())
     return 0;  
 
-  int expCell(0);
+  int extCell(0);
   std::string Comd=Line;
   StrFunc::stripComment(Comd);
   Comd=StrFunc::fullBlock(Comd);
@@ -322,7 +322,7 @@ PhysicsCards::processCard(const std::string& Line)
       return 1;
     }
   // ext card
-  pos=Comd.find("exp:");
+  pos=Comd.find("ext:");
   if (pos!=std::string::npos)
     {
       Comd.erase(0,pos+4);
@@ -333,18 +333,18 @@ PhysicsCards::processCard(const std::string& Line)
 	if (Comd[index]!=',')
 	  ExtCard->addElm(std::string(1,Comd[index]));
       // NOW HAVE PROBLEM BECAUSE MULTI-LINE
-      expCell=1;
-      if (ExtCard->addUnitList(expCell,Comd))
+      extCell=1;
+      if (ExtCard->addUnitList(extCell,Comd))
 	return 1;
       // drops through to further processing
-      expCell=0;
+      extCell=0;
     }
 
-  if (expCell)
+  if (extCell)
     {
-      if (ExtCard->addUnitList(expCell,Comd))
+      if (ExtCard->addUnitList(extCell,Comd))
 	return 1;
-      expCell=0;
+      extCell=0;
     }
 	
   // Component:
@@ -762,11 +762,13 @@ PhysicsCards::setPrintNum(std::string Numbers)
 
 void 
 PhysicsCards::write(std::ostream& OX,
-		    const std::vector<int>& cellOutOrder) const 
+		    const std::vector<int>& cellOutOrder,
+		    const std::set<int>& voidCells) const 
   /*!
     Write out each of the cards
     \param OX :: Output stream
     \param cellOutOrder :: Cell List
+    \param voidCell :: List of void cells
     \todo Check that histp does not need a line cut.
   */
 {
@@ -796,7 +798,7 @@ PhysicsCards::write(std::ostream& OX,
   for(const std::string& PC : Basic)
     StrFunc::writeMCNPX(PC,OX);
 
-  ExtCard->write(OX,cellOutOrder);
+  ExtCard->write(OX,cellOutOrder,voidCells);
   
   LEA.write(OX);
   sdefCard.write(OX);

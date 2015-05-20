@@ -302,7 +302,7 @@ SimPHITS::writePhysics(std::ostream& OX) const
     }
 
   // Remaining Physics cards
-  PhysPtr->write(OX,cellOutOrder);
+  PhysPtr->write(OX,cellOutOrder,voidCells);
   OX<<"c ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
   OX<<std::endl;  // MCNPX requires a blank line to terminate
   return;

@@ -74,7 +74,7 @@ getUnits(std::string Line)
   if (posA==std::string::npos || posB==std::string::npos)
     return Out;
 
-  while(posA==std::string::npos || posB==std::string::npos)
+  while(posA!=std::string::npos && posB!=std::string::npos)
     {
       // Remove > before <
       if (posB>posA)

@@ -32,7 +32,6 @@
 #include <string>
 #include <algorithm>
 #include <memory>
-#include <boost/bind.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -344,6 +343,9 @@ TriangleMod::createLinks()
 	      nAve++;
 	      jA = (jA+1) % Outer.nCorner;
 	    }
+	  if (!nAve)
+	    throw ColErr::NumericalAbort
+	      ("nAve==0 :: Points colinear etc, as not triangle found");
 	  AveDir/=nAve;
 	  Geometry::Vec3D CP(realPt(Outer.Pts[i]));
 	  FixedComp::setConnect(i+2,CP,AveDir);

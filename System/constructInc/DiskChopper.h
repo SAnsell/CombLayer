@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   constructInc/DiskChopper.h
  *
@@ -37,11 +37,11 @@ namespace constructSystem
 
 struct DiskInfo
 {
-  double thick;           ///< Thickness of 
-  double phaseAngle;          ///< Phase angle
-  double openAngle;
-  int innerMat;
-  int outerMat;
+  double thick;               ///< Thickness of disk
+  double phaseAngle;          ///< Phase angle [deg]
+  double openAngle;           ///< Opening angle [deg]
+  int innerMat;               ///< Inner material [non-viewed]
+  int outerMat;               ///< Outer material [viewed]
 };
   
 /*!
@@ -64,15 +64,15 @@ class DiskChopper : public attachSystem::FixedComp,
   double xStep;                 ///< Origin step
   double yStep;                 ///< Origin step
   double zStep;                 ///< Origin step
-  double xyAngle;
-  double zAngle;
+  double xyAngle;               ///< Axis rotation
+  double zAngle;                ///< Axis rotation
   
-  double innerRadius;
-  double outerRadius;
+  double innerRadius;           ///< Inner Non-Viewed radius 
+  double outerRadius;           ///< Outer Viewed radius
   double diskGap;               ///< Gap betwen disks
 
-  size_t nDisk;
-  std::vector<DiskInfo> DInfo;
+  size_t nDisk;                 ///< Number of disks
+  std::vector<DiskInfo> DInfo;  ///< Info on each disk
 
   
   void populate(const FuncDataBase&);

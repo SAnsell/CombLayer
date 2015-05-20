@@ -55,7 +55,7 @@ class ModBase : public attachSystem::ContainedComp,
 
   virtual void populate(const FuncDataBase&);
   virtual void createUnitVector(const attachSystem::FixedComp&);
-
+  
  public:
 
   ModBase(const std::string&,const size_t);

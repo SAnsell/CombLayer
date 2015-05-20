@@ -163,12 +163,14 @@ main(int argc,char* argv[])
 
 	  SimPtr->resetAll();
 	  SimPtr->readMaster(Fname);
-	  //	  TMRSystem::removeTallyWindows(*SimPtr);
+	  SDef::sourceSelection(*SimPtr,IParam);
+	  
 	  SimPtr->removeComplements();
-	  SimPtr->removeDeadCells();            // Generic
 	  SimPtr->removeDeadSurfaces(0);         
-	  SimPtr->processCellsImp();
-	  SimPtr->getPC().setCells("imp",1,0);            // Set a zero cell
+	  ModelSupport::setDefaultPhysics(*SimPtr,IParam);
+
+	  const int renumCellWork=tallySelection(*SimPtr,IParam);
+	  SimPtr->masterRotation();
 
 	  if (createVTK(IParam,SimPtr,Oname))
 	    {
@@ -178,28 +180,18 @@ main(int argc,char* argv[])
 	      return 0;
 	    }
 
-
 	  if (IParam.flag("endf"))
 	    SimPtr->setENDF7();
 
-	  if (!IParam.flag("sdefVoid"))
-	    {
-	      SDef::createSimpleSource(SimPtr->getPC().getSDefCard(),0.1,800);
-	      ModelSupport::setDefaultPhysics(*SimPtr,IParam);
-	    }
+	  SimProcess::importanceSim(*SimPtr,IParam);
+	  SimProcess::inputPatternSim(*SimPtr,IParam); // energy cut etc
 
-	  // outer void to zero
-	  // RENUMBER:
-	  mainSystem::renumberCells(*SimPtr,IParam);
-	  WeightSystem::simulationWeights(*SimPtr,IParam);
+	  if (renumCellWork)
+	    tallyRenumberWork(*SimPtr,IParam);
+	  tallyModification(*SimPtr,IParam);
 
 	  if (IParam.flag("cinder"))
 	    SimPtr->setForCinder();
-
-	  // Cut energy tallies:
-	  if (IParam.flag("ECut"))
-	    SimPtr->setEnergy(IParam.getValue<double>("ECut"));
-
 
 	  // Ensure we done loop
 	  do
@@ -209,9 +201,7 @@ main(int argc,char* argv[])
 	    }
 	  while(!iteractive && MCIndex<multi);
 	}
-      if (IParam.flag("cinder"))
-	  SimPtr->writeCinder();
-
+      exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
       ModelSupport::calcVolumes(SimPtr,IParam);
       ModelSupport::objectRegister::Instance().write("ObjectRegister.txt");
     }

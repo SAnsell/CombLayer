@@ -50,6 +50,8 @@ class ExtConstructor
   /// Ranges to build
   std::vector<MapSupport::Range<int>> Zones;
 
+  static bool getVector(const std::vector<std::string>&,
+			const size_t,Geometry::Vec3D&);
   void sortZone();
   bool procZone(std::vector<std::string>&);
   bool procType(std::vector<std::string>&,ExtControl&);

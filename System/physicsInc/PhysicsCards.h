@@ -130,7 +130,8 @@ class PhysicsCards
   void substituteCell(const int,const int);
   void substituteSurface(const int,const int); 
 
-  void write(std::ostream&,const std::vector<int>&) const;   
+  void write(std::ostream&,const std::vector<int>&,
+	     const std::set<int>&) const;   
 };
 
 }
