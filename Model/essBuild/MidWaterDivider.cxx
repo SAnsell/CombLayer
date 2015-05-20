@@ -1,7 +1,7 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
- * File:   t1Upgrade/MidWaterDivider.cxx 
+ * File:   essBuild/MidWaterDivider.cxx 
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -433,7 +433,8 @@ MidWaterDivider::getLayerString(const size_t layerIndex,
 void
 MidWaterDivider::createAll(Simulation& System,
 			   const attachSystem::FixedComp& FC,
-			   const H2Wing& LA,const H2Wing& RA)
+			   const H2Wing& LA,
+			   const H2Wing& RA)
   /*!
     Generic function to create everything
     \param System :: Simulation item

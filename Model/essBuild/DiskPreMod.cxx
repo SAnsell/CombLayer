@@ -186,7 +186,8 @@ DiskPreMod::createUnitVector(const attachSystem::FixedComp& FC,
   */
 {
   ELog::RegMethod RegA("DiskPreMod","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC,linkIndex);  
+  attachSystem::FixedComp::createUnitVector(FC,linkIndex);
+  applyShift(0,depth
   return;
 }
 
@@ -354,7 +355,7 @@ DiskPreMod::getLayerString(const size_t layerIndex,
     \return Surface string
   */
 {
-  ELog::RegMethod RegA("H2Moderator","getLinkString");
+  ELog::RegMethod RegA("DiskPreMod","getLinkString");
 
   if (layerIndex>nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");

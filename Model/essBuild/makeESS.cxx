@@ -88,6 +88,7 @@
 #include "BulkModule.h"
 #include "ShutterBay.h"
 #include "GuideBay.h"
+#include "MidWaterDivider.h"
 
 #include "ConicModerator.h"
 #include "essDBMaterial.h"
@@ -102,9 +103,12 @@ makeESS::makeESS() :
   Reflector(new BeRef("BeRef")),
   PBeam(new ProtonTube("ProtonTube")),
   BMon(new BeamMonitor("BeamMonitor")),
+  LowPreMod(new MidWaterDivider("LowMidMod")),
+  
   LowAFL(new moderatorSystem::FlightLine("LowAFlight")),
   LowBFL(new moderatorSystem::FlightLine("LowBFlight")),
   LowPre(new CylPreMod("LowPre")),
+
   LowSupplyPipe(new constructSystem::SupplyPipe("LSupply")),
   LowReturnPipe(new constructSystem::SupplyPipe("LReturn")),
 
@@ -125,6 +129,8 @@ makeESS::makeESS() :
   OR.addObject(Reflector);
   OR.addObject(PBeam);
   OR.addObject(BMon);
+  OR.addObject(LowPreMod);
+  
   OR.addObject(LowAFL);
   OR.addObject(LowBFL);
   OR.addObject(LowPre);
@@ -277,46 +283,26 @@ makeESS::createGuides(Simulation& System)
 }
 
 void
-makeESS::buildLowMod(Simulation& System,
-		     const std::string& ModType)
+makeESS::buildLowMod(Simulation& System)		   
   /*!
     Build the lower moderators
     \param System :: Simulation to build
-    \param ModType :: Moderator Type
   */
 {
   ELog::RegMethod RegA("makeESS","buildLowMod");
 
-  if (ModType=="help")
-    {
-      ELog::EM<<"Low Moderator type [LowMod]:"<<ELog::endBasic;
-      ELog::EM<<"  -- {Any}       : Basic cylindrical moderator"
-	      <<ELog::endBasic;
-      ELog::EM<<"  -- Butterfly    :  Butterfly moderator"
-	      <<ELog::endBasic;
-      ELog::EM<<"  -- Cone    : Cone/Double cone moderator"
-	      <<ELog::endBasic;
-      return;
-    }
 
-  if (ModType=="Cone")
-    {
-      buildLowConicMod(System);
-    }
-  else if (ModType=="Butterfly")
-    {
-      buildLowButterfly(System);
-    }
-  else 
-    {
-      buildLowCylMod(System);
-      lowFlightLines(System);
-      Bulk->addFlightUnit(System,*LowAFL);
-      Bulk->addFlightUnit(System,*LowBFL);  
-    }
+  buildLowButterfly(System);
+  buildLowPreMod(System);
+  // else 
+  //   {
+  //     buildLowCylMod(System);
+  //     lowFlightLines(System);
+  //     Bulk->addFlightUnit(System,*LowAFL);
+  //     Bulk->addFlightUnit(System,*LowBFL);  
+  //   }
   return;
 }
-
 
 void
 makeESS::buildLowButterfly(Simulation& System)
@@ -339,9 +325,25 @@ makeESS::buildLowButterfly(Simulation& System)
 
   return;
 }
-  
-  
-  
+
+void
+makeESS::buildLowPreMod(Simulation& System)
+  /*!
+    Build the Lower PreMod moderator
+    \param System :: Stardard simulation
+  */
+{
+  ELog::RegMethod RegA("makeESS","buildLowButteflyMod");
+
+
+
+
+  LowPreMod->createAll(System,*Reflector);
+  attachSystem::addToInsertForced(System,*Reflector,*LowMod);
+
+  return;
+}
+    
 void
 makeESS::buildLowCylMod(Simulation& System)
   /*!
@@ -367,49 +369,6 @@ makeESS::buildLowCylMod(Simulation& System)
   attachSystem::addToInsertControl(System,*Reflector,*LowPre,"BlockB");
 
 
-  return;
-}
-
-
-void
-makeESS::buildLowConicMod(Simulation& System)
-  /*!
-    Builds the lower conic moderator
-    \param System :: simulation to add
-  */
-{
-  ELog::RegMethod RegA("makeESS","buildLowConicMod");
-
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-  
-  LowMod=std::shared_ptr<constructSystem::ModBase>
-    (new ConicModerator("LowConeMod"));
-  OR.addObject(LowMod);
-    
-  LowMod->createAll(System,*Reflector);
-  attachSystem::addToInsertControl(System,*Reflector,*LowMod);
-
-  std::string Out=Reflector->getLinkComplement(0);
-  LowAFL->addBoundarySurf("inner",Out);  
-  LowAFL->addBoundarySurf("outer",Out);  
-  LowAFL->createAll(System,*LowMod,2);
-  attachSystem::addToInsertSurfCtrl(System,*Reflector,
-  				    LowAFL->getKey("outer"));
-    
-  LowModB=std::shared_ptr<constructSystem::ModBase>
-    (new ConicModerator("LowConeModB"));
-  OR.addObject(LowModB);
-
-  LowModB->createAll(System,*Reflector);
-  attachSystem::addToInsertControl(System,*Reflector,*LowModB);
-  attachSystem::addToInsertSurfCtrl(System,*LowModB,*LowMod);
-  Out=Reflector->getLinkComplement(0);
-  LowBFL->addBoundarySurf("inner",Out);  
-  LowBFL->addBoundarySurf("outer",Out);  
-  LowBFL->createAll(System,*LowModB,2);   // was 1 now 1+1
-  attachSystem::addToInsertSurfCtrl(System,*Reflector,
-  				    LowBFL->getKey("outer"));
   return;
 }
 
@@ -490,7 +449,6 @@ makeESS::optionSummary(Simulation& System)
   ELog::RegMethod RegA("makeESS","optionSummary");
   
   makeTarget(System,"help");
-  buildLowMod(System,"help");
   buildLowerPipe(System,"help");
   
   return;
@@ -523,43 +481,6 @@ makeESS::makeBeamLine(Simulation& System,
   return;
 }
 
-/*
-void
-makeESS::buildF5Collimator(Simulation& System)
-{
-  ELog::RegMethod RegA("makeESS","buildf5Collimator");
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
-  std::shared_ptr<F5Collimator> F5Coll(new F5Collimator("F5Col"));
-  OR.addObject(F5Coll);
-  F5Coll->createAll(System);
-
-  // Find objects by group name 
-  std::set<int> Oset;
-  for(size_t i=0;i<F5Coll.NConnect();i++)
-    {
-      const Geometry::Vec3D TestPt=F5Coll.getLinkPt(i);
-      MonteCarlo::Object* OPtr=System.findCell(TestPt,0);
-      Oset.insert(OPtr->getName());
-    }
-  std::set<std::string> ONameSet;
-  std::set<MonteCarlo::Object*>::const_iterator ac;
-  for(ac=Oset.begin();ac!=Oset.end();ac++)
-    ONameSet.insert(OR.inRange(*ac));
-      
-  std::set<std::string>::const_iterator nc;
-  for(nc=ONameSet.begin();nc!=ONameSet.end();nc++)
-    {
-      const attachSystem::FixedComp* foundObj=
-	OR.getObject<attachSystem::FixedComp>(*nc);
-      attachSystem::addToInsertLineCtrl(System,*foundObj,*F5Coll);
-    }
-
-  return;
-    
-}
-*/
 
 void 
 makeESS::build(Simulation* SimPtr,
@@ -599,7 +520,7 @@ makeESS::build(Simulation* SimPtr,
   attachSystem::addToInsertSurfCtrl(*SimPtr,*Bulk,Target->getKey("Wheel"));
   attachSystem::addToInsertForced(*SimPtr,*Bulk,Target->getKey("Shaft"));
 
-  buildLowMod(*SimPtr,lowModType);
+  buildLowMod(*SimPtr);
 
 
   buildTopCylMod(*SimPtr);

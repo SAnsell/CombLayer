@@ -1,0 +1,39 @@
+
+\subsection{EXT Command}
+
+MCNP(X) provides the EXT card for biasing the direction of the
+particles after collisions. The card can be configured with a
+stretching parameter value between -1.0 and 1.0 and an optional vector
+or direction associated with it. If a vector is not given the
+stretching parameter is applied in the direction of the neutron travel.
+
+MCNP(X) only accepts the direction to be X,Y,Z which is highly
+limiting in the CombLayer environment, so it is only partially supported.
+
+The other two options vector and non-vector are supported.
+
+\subsection{-wExt entry}
+
+The first method of entry is via the command line option -wExt. This
+command takes a sequence of additional values which are split into a
+{\it zone} and {\it type} region. The {\it zone} region is based on
+the cells that are to be biased. This can be give with the commands:
+
+\begin{itemize}
+\item{ {\bf all} : Apply to all non-void cells}
+\item{ {\bf Object [name]} : Apply to all objects within the object name
+\item{ {\bf Cells [N1 N2...]} : Apply to given cell numbers [pre-renumber]
+\item{ {\bf Range [N1  N2]} : Apply to all cell numbers between N1 and N2.
+\end{itemize}
+
+The {\it type} section depends on the type of EXT command required. The options are
+
+\begin{itemize}
+\item{ {\bf simple} : Simple \Sigma_C/\Sigma_T scaling}
+\item{ {\bf simpleVec [Vec]} : Simple \Sigma_C/\Sigma_T scaling} 
+\item{ {\bf Object [name]} : Apply to all objects within the object name
+\item{ {\bf Cells [N1 N2...]} : Apply to given cell numbers [pre-renumber]
+\item{ {\bf Range [N1  N2]} : Apply to all cell numbers between N1 and N2.  
+\end{itemize}
+
+

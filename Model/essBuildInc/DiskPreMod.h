@@ -43,12 +43,12 @@ class DiskPreMod : public attachSystem::ContainedComp,
   const int modIndex;             ///< Index of surface offset
   int cellIndex;                  ///< Cell index
 
-  std::vector<double> radius;         ///< cylinder radii
-  std::vector<double> height;         ///< Full heights
-  std::vector<double> depth;          ///< full depths
-  std::vector<int> mat;               ///< Materials
+  std::vector<double> radius;         ///< cylinder radii [additive]
+  std::vector<double> height;         ///< Full heights [additive]
+  std::vector<double> depth;          ///< full depths [additive]
+  std::vector<int> mat;               ///< Materials 
   std::vector<double> temp;           ///< Temperatures
-
+  
   // Functions:  
   void checkItems(const attachSystem::FixedComp&);
   
