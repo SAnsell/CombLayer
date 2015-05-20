@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   beamline/PlateUnit.cxx 
  *
@@ -31,6 +31,7 @@
 #include <map>
 #include <string>
 #include <algorithm>
+#include <functional>
 
 #include "Exception.h"
 #include "FileReport.h"
