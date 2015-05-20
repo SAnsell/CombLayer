@@ -208,22 +208,19 @@ BeRef::createSurfaces()
   //define planes where the Be is substituted by Fe
 
   // Inner planes
-  ModelSupport::buildPlane(SMap,refIndex+105,Origin-
-			   Z*((targSepThick+lowVoidThick)/2.0+wallThick),Z);  
-  ModelSupport::buildPlane(SMap,refIndex+106,Origin+
-			   Z*((targSepThick+topVoidThick)/2.0+wallThick),Z);  
+  ModelSupport::buildPlane(SMap,refIndex+105,Origin-Z*(targSepThick/2.0),Z);  
+  ModelSupport::buildPlane(SMap,refIndex+106,Origin+Z*(targSepThick/2.0),Z);  
 
+  ModelSupport::buildPlane(SMap,refIndex+115,Origin-
+			   Z*((lowVoidThick+targSepThick)/2.0),Z);  
+  ModelSupport::buildPlane(SMap,refIndex+116,Origin-
+			   Z*((topVoidThick+targSepThick)/2.0),Z);  
 
+  ModelSupport::buildPlane(SMap,refIndex+125,Origin-
+			   Z*((lowVoidThick+targSepThick)/2.0+wallThick),Z);  
+  ModelSupport::buildPlane(SMap,refIndex+126,Origin-
+			   Z*((topVoidThick+targSepThick/2.0)+wallThick),Z);
   
-
-  ModelSupport::buildPlane(SMap,refIndex+105,Origin-
-			   Z*((targSepThick+lowVoidThick)/2.0+wallThick),Z);  
-  ModelSupport::buildPlane(SMap,refIndex+106,Origin+
-			   Z*((targSepThick+topVoidThick)/2.0+wallThick),Z);  
-
-  ModelSupport::buildPlane(SMap,refIndex+115,Origin-Z*(lowVoidThick/2.0),Z);  
-  ModelSupport::buildPlane(SMap,refIndex+116,Origin+Z*(topVoidThick/2.0),Z);  
-
   return; 
 }
 
