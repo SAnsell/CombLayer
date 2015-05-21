@@ -337,14 +337,12 @@ PhysicsCards::processCard(const std::string& Line)
       if (ExtCard->addUnitList(extCell,Comd))
 	return 1;
       // drops through to further processing
-      extCell=0;
     }
 
   if (extCell)
     {
       if (ExtCard->addUnitList(extCell,Comd))
 	return 1;
-      extCell=0;
     }
 	
   // Component:

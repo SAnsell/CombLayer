@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   tally/surfaceConstruct.cxx
  *
@@ -45,7 +45,6 @@
 #include "BaseModVisit.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
-#include "Tensor.h"
 #include "Vec3D.h"
 #include "Triple.h"
 #include "support.h"
@@ -133,7 +132,7 @@ surfaceConstruct::processSurface(Simulation& System,
 	inputItem<std::string>(IParam,Index,2,"position not given");
       const std::string snd=
 	inputItem<std::string>(IParam,Index,3,"front/back/side not give");
-      const int linkNumber=getLinkIndex(snd);
+      const long int linkNumber=getLinkIndex(snd);
       std::vector<int> surfN;
       const size_t maxIndex=IParam.itemCnt("tally",Index);
       for(size_t i=4;i<maxIndex;i++)
