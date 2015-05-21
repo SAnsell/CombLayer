@@ -431,7 +431,7 @@ MatrixBase<T>::setMem(const size_t a,const size_t b)
     return;
 
   deleteMem();
-  if (a<=0 || b<=0)
+  if (!a || !b)
     return;
 
   nx=a;
