@@ -224,6 +224,7 @@ Convex::addPoint(const Geometry::Vec3D& PItem)
   else
     {
       ELog::EM<<"Adding Identical point"<<PItem<<ELog::endWarn;
+      delete NV;
     }
   return;
 }

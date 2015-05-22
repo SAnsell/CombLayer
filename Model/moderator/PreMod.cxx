@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   moderator/PreMod.cxx
  *
@@ -228,7 +228,8 @@ PreMod::createSurfaces(const size_t baseIndex,
       SX=ModelSupport::surfaceCreateExpand
 	(SMap.realSurfPtr(preIndex+5),-alThickness);
       PX=dynamic_cast<Geometry::Plane*>(SX);
-      PX->mirrorSelf();
+      if (PX)
+	PX->mirrorSelf();
     }
   else
     SX=ModelSupport::surfaceCreateExpand

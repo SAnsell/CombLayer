@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testPairItem.cxx
  *
@@ -234,14 +234,15 @@ testPairItem::checkSurfaceEqual
       ELog::EM<<"Failed to create surface "<<surfStr<<ELog::endCrit;
       return -1;
     }
-  const Geometry::Surface* TPtr=SurI.getSurf(SN);
-  
+  std::shared_ptr<Geometry::Surface> TPtr(SurI.getSurf(SN));
+
+
   if (!TPtr)
     {
       ELog::EM<<"Failed to find surface number:"<<SN<<ELog::endCrit;
       return -1;
     }
-  if (!ModelSupport::equalSurface(SPtr,TPtr))
+  else if (!ModelSupport::equalSurface(SPtr,TPtr.get()))
     {
       ELog::EM<<"Surfaces not equal:"<<ELog::endCrit;
       ELog::EM<<"SPtr :"<<*SPtr<<ELog::endCrit;
