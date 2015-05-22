@@ -510,7 +510,8 @@ makeESS::build(Simulation* SimPtr,
 
   makeTarget(*SimPtr,targetType);
   
-  Reflector->createAll(*SimPtr,World::masterOrigin());
+  Reflector->createAll(*SimPtr,World::masterOrigin(),
+		       Target->wheelHeight(),-1.0,-1.0);
   attachSystem::addToInsertForced(*SimPtr,*Reflector,Target->getKey("Wheel"));
 
   Bulk->createAll(*SimPtr,*Reflector,*Reflector);

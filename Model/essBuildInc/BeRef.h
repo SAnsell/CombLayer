@@ -65,7 +65,7 @@ class BeRef : public attachSystem::ContainedComp,
 
   // Functions:
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&,const double,const double,const double);
   void createUnitVector(const attachSystem::FixedComp&);
 
   void createSurfaces();
@@ -79,7 +79,8 @@ class BeRef : public attachSystem::ContainedComp,
   BeRef& operator=(const BeRef&);
   virtual ~BeRef();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const double,const double,const double);
   
 };
 

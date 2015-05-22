@@ -49,7 +49,7 @@ class SegWheel : public WheelBase
   double zAngle;                  ///< zAngle step
   
   double targetHeight;           ///< Total height of target
-  double targetSectorOffsetX;
+  double targetSectorOffsetX;    ///< shift of segment
   double targetSectorOffsetY;
   double targetSectorOffsetZ;
   double targetSectorAngleXY;
@@ -121,6 +121,9 @@ class SegWheel : public WheelBase
   virtual SegWheel* clone() const;
   virtual ~SegWheel();
 
+    /// total wheel void size
+  virtual double wheelHeight() const
+  { return targetHeight/2.0 ;} 
   int getCell() const { return mainShaftCell; }
   void createAll(Simulation&,const attachSystem::FixedComp&);
   

@@ -51,6 +51,8 @@ class WheelBase : public attachSystem::ContainedGroup,
   virtual WheelBase* clone() const =0;
   virtual ~WheelBase();
 
+  virtual double wheelHeight() const =0;
+  
   virtual int getCell() const =0;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&) =0;
   

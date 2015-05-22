@@ -69,7 +69,6 @@
 #include "CellMap.h"
 #include "BeRef.h"
 
-
 namespace essSystem
 {
 
@@ -141,10 +140,16 @@ BeRef::~BeRef()
 {}
 
 void
-BeRef::populate(const FuncDataBase& Control)
+BeRef::populate(const FuncDataBase& Control,
+		const double targetThick,
+		const double topVThick,
+		const double lowVThick)
   /*!
     Populate all the variables
     \param Control :: Variable table to use
+    \param targetThick :: thickness of the target
+    \param topVThick :: thickness of the premod-void
+    \param lowVThick :: thickness of the premod-void
   */
 {
   ELog::RegMethod RegA("BeRef","populate");
@@ -165,8 +170,12 @@ BeRef::populate(const FuncDataBase& Control)
   targSepMat=ModelSupport::EvalMat<int>
     (Control,StrFunc::makeString(keyName+"TargSepMat"));
   
-  lowVoidThick=Control.EvalVar<double>(keyName+"LowVoidThick");
-  topVoidThick=Control.EvalVar<double>(keyName+"TopVoidThick");
+  lowVoidThick=(lowVThick<Geometry::zeroTol) ?
+    Control.EvalVar<double>(keyName+"LowVoidThick") : lowVThick;
+  topVoidThick=(topVThick<Geometry::zeroTol) ?
+    Control.EvalVar<double>(keyName+"TopVoidThick") : topVThick;
+  targSepThick=(targetThick<Geometry::zeroTol) ?
+    Control.EvalVar<double>(keyName+"TargetSepThick") : targetThick;
   targSepThick=Control.EvalVar<double>(keyName+"TargetSepThick");
   
   return;
@@ -208,18 +217,22 @@ BeRef::createSurfaces()
   //define planes where the Be is substituted by Fe
 
   // Inner planes
-  ModelSupport::buildPlane(SMap,refIndex+105,Origin-Z*(targSepThick/2.0),Z);  
-  ModelSupport::buildPlane(SMap,refIndex+106,Origin+Z*(targSepThick/2.0),Z);  
+  
+  // wall and all gaps
+  ModelSupport::buildPlane(SMap,refIndex+105,Origin-
+			   Z*(lowVoidThick+targSepThick/2.0+wallThick),Z);  
+  ModelSupport::buildPlane(SMap,refIndex+106,Origin+
+			   Z*(topVoidThick+targSepThick/2.0+wallThick),Z);  
 
   ModelSupport::buildPlane(SMap,refIndex+115,Origin-
-			   Z*((lowVoidThick+targSepThick)/2.0),Z);  
-  ModelSupport::buildPlane(SMap,refIndex+116,Origin-
-			   Z*((topVoidThick+targSepThick)/2.0),Z);  
+			   Z*(lowVoidThick+targSepThick/2.0),Z);  
+  ModelSupport::buildPlane(SMap,refIndex+116,Origin+
+			   Z*(topVoidThick+targSepThick/2.0),Z);  
 
-  ModelSupport::buildPlane(SMap,refIndex+125,Origin-
-			   Z*((lowVoidThick+targSepThick)/2.0+wallThick),Z);  
-  ModelSupport::buildPlane(SMap,refIndex+126,Origin-
-			   Z*((topVoidThick+targSepThick/2.0)+wallThick),Z);
+  
+  ModelSupport::buildPlane(SMap,refIndex+205,Origin-Z*(targSepThick/2.0),Z);  
+  ModelSupport::buildPlane(SMap,refIndex+206,Origin+Z*(targSepThick/2.0),Z);  
+
   
   return; 
 }
@@ -238,22 +251,25 @@ BeRef::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,refIndex," -7 5 -105 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,refMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,refIndex," -17 115 -116");
+  // low void
+  Out=ModelSupport::getComposite(SMap,refIndex," -17 115 -205");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+
+  // Target void
+  Out=ModelSupport::getComposite(SMap,refIndex," -17 205 -206");
   System.addCell(MonteCarlo::Qhull(cellIndex++,targSepMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,refIndex," -17 115 -116");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,targSepMat,0.0,Out));
+  // top Segment
+  Out=ModelSupport::getComposite(SMap,refIndex," -17 -116 206");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,refIndex," -17 115 -116");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,targSepMat,0.0,Out));
-
-  Out=ModelSupport::getComposite(SMap,refIndex," -7 106 -6 ");
+  // top segment
+  Out=ModelSupport::getComposite(SMap,refIndex," -7 -6 106");
   System.addCell(MonteCarlo::Qhull(cellIndex++,refMat,0.0,Out));
-  
-  Out=ModelSupport::getComposite(SMap,refIndex," -7 5 -6 ");
 
   if (wallThick>Geometry::zeroTol)
     {
+
       Out=ModelSupport::getComposite(SMap,refIndex," -17 15 -105 (7:-5)");
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
@@ -271,7 +287,9 @@ BeRef::createObjects(Simulation& System)
 
       Out=ModelSupport::getComposite(SMap,refIndex," -17 15 -16 ");
     }
-      
+  else
+    Out=ModelSupport::getComposite(SMap,refIndex," -17 5 -6 ");
+  
   addOuterSurf(Out);
   return; 
 
@@ -299,15 +317,21 @@ BeRef::createLinks()
 
 void
 BeRef::createAll(Simulation& System,
-		     const attachSystem::FixedComp& FC)
+		 const attachSystem::FixedComp& FC,
+		 const double tThick,
+		 const double tpThick,
+		 const double lpThick)
   /*!
     Extrenal build everything
     \param System :: Simulation
     \param FC :: FixedComponent for origin
-   */
+    \param tThick :: Thickness of target void for exact cutting
+    \param lpThick :: Thickness of lower-preMod
+    \param tpThick :: Thickness of top-preMod
+  */
 {
   ELog::RegMethod RegA("BeRef","createAll");
-  populate(System.getDataBase());
+  populate(System.getDataBase(),tThick,tpThick,lpThick);
 
   createUnitVector(FC);
   createSurfaces();

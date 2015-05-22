@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   essBuildInc/Wheel.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,9 +68,9 @@ class Wheel : public WheelBase
   double shaftVoidThick;            ///< void
   double shaftHeight;               ///< Shaft Height (above origin)
   
-  int wMat;                      ///< W material
-  int heMat;                     ///< He material
-  int steelMat;                  ///< Steel mat
+  int wMat;                         ///< W material
+  int heMat;                        ///< He material
+  int steelMat;                     ///< Steel mat
   
   int innerMat;                     ///< Inner Material block
   int mainShaftMat;                 ///< Main shaft material
@@ -94,6 +94,11 @@ class Wheel : public WheelBase
   Wheel& operator=(const Wheel&);
   virtual Wheel* clone() const;
   virtual ~Wheel();
+
+  /// total wheel void size
+  virtual double wheelHeight() const
+  { return targetHeight+
+      2.0*(coolantThick+caseThick+voidThick); }
 
   virtual int getCell() const { return mainShaftCell; }
   virtual void createAll(Simulation&,const attachSystem::FixedComp&);

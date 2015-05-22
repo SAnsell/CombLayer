@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   essBuild/essVariables.cxx
  *
@@ -829,8 +829,9 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("BeRefRadius",29.9);
   Control.addVariable("BeRefHeight",89.8);
   Control.addVariable("BeRefWallThick",1.1);
-  Control.addVariable("BeRefLowVoidThick",43.0);
-  Control.addVariable("BeRefTopVoidThick",12.30);
+  Control.addVariable("BeRefTargetSepThick",13.0);
+  Control.addVariable("BeRefLowVoidThick",7.0);
+  Control.addVariable("BeRefTopVoidThick",2.30);
   Control.addVariable("BeRefRefMat","Be300K");
 
   Control.addVariable("BeRefWallMat","Aluminium");
