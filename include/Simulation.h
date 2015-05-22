@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   include/Simulation.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -85,7 +85,6 @@ class Simulation
   int CNum;                             ///< Number of complementary components
   FuncDataBase DB;                      ///< DataBase of variables
   ModelSupport::ObjSurfMap* OSMPtr;     ///< Object surface map [if required]
-  MonteCarlo::Object* curObjPtr;        ///< Last find pointer
 
   TransTYPE TList;        ///< Transforms List (key=Transform)
 
