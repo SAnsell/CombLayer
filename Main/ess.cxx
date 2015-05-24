@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   Main/ess.cxx
  *
@@ -136,7 +136,7 @@ main(int argc,char* argv[])
 
 	  essSystem::makeESS ESSObj;
 	  World::createOuterObjects(*SimPtr);
-	  ESSObj.build(SimPtr,IParam);
+	  ESSObj.build(*SimPtr,IParam);
 	  SDef::sourceSelection(*SimPtr,IParam);
 
 	  SimPtr->removeComplements();

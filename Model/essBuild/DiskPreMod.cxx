@@ -175,18 +175,29 @@ DiskPreMod::populate(const FuncDataBase& Control)
 }
 
 void
-DiskPreMod::createUnitVector(const attachSystem::FixedComp& FC,
+DiskPreMod::createUnitVector(const attachSystem::FixedComp& refCentre,
+			     const attachSystem::FixedComp& targFC,
 			     const long int linkIndex)
   /*!
     Create the unit vectors
-    \param FC :: Fixed Component
-    \param linkIndex :: Link index
+    \param refCentre :: Centre for object
+    \param targFC :: Target Unit [Z distance]
+    \param linkIndex :: Link index for target
   */
 {
   ELog::RegMethod RegA("DiskPreMod","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC,linkIndex);
+  attachSystem::FixedComp::createUnitVector(refCentre);
+
+  const Geometry::Vec3D ZAxis=
+    targFC.getSignedLinkAxis(linkIndex);
+  const Geometry::Vec3D ZTargPt=
+    targFC.getSignedLinkPt(linkIndex);
+
+  ELog::EM<<"OR == "<<Origin<<ELog::endDiag;
+  Origin+=ZAxis*ZTargPt.dotProd(ZAxis);
+  ELog::EM<<"Z == "<<ZAxis<<ELog::endDiag;
   // move away from connection
-  applyShift(0,depth.back(),0.0);
+  ELog::EM<<"OR == "<<Origin<<ELog::endDiag;
   return;
 }
 
@@ -393,8 +404,9 @@ DiskPreMod::getLayerString(const size_t layerIndex,
 
 void
 DiskPreMod::createAll(Simulation& System,
-			const attachSystem::FixedComp& FC,
-			const long int linkIndex)
+		      const attachSystem::FixedComp& FC,
+		      const attachSystem::FixedComp& targFC,
+		      const long int linkIndex)
   /*!
     Extrenal build everything
     \param System :: Simulation
@@ -405,7 +417,7 @@ DiskPreMod::createAll(Simulation& System,
   ELog::RegMethod RegA("DiskPreMod","createAll");
 
   populate(System.getDataBase());
-  createUnitVector(FC,linkIndex);
+  createUnitVector(FC,targFC,linkIndex);
 
   createSurfaces();
   createObjects(System);

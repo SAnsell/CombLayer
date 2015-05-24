@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   attachComp/CellMap.cxx
  *
@@ -43,6 +43,25 @@
 #include "BaseModVisit.h"
 #include "support.h"
 #include "stringCombine.h"
+#include "MatrixBase.h"
+#include "Matrix.h"
+#include "Vec3D.h"
+#include "Surface.h"
+#include "SurInter.h"
+#include "Rules.h"
+#include "HeadRule.h"
+#include "Object.h"
+#include "BnId.h"
+#include "Acomp.h"
+#include "Algebra.h"
+#include "Line.h"
+#include "Qhull.h"
+#include "varList.h"
+#include "Code.h"
+#include "FuncDataBase.h"
+#include "Simulation.h"
+#include "AttachSupport.h"
+#include "ContainedComp.h"
 #include "CellMap.h"
 
 namespace attachSystem
@@ -149,6 +168,63 @@ CellMap::getCell(const std::string& Key,const size_t Index) const
     throw ColErr::InContainerError<std::string>(Key,"Key not present");
 
   return mc->second;
+}
+
+void
+CellMap::insertComponent(Simulation& System,
+			  const std::string& Key,
+			  const ContainedComp& CC) const
+  /*!
+    Insert a component into a cell
+    \param System :: Simulation to obtain cell from
+    \param Key :: KeyName for cell
+    \param CC :: Contained Componenet
+   */
+{
+  ELog::RegMethod RegA("CellMap","insertComponent");
+  if (CC.hasOuterSurf())
+    insertComponent(System,Key,CC.getExclude());
+  return;
+}
+
+void
+CellMap::insertComponent(Simulation& System,
+			  const std::string& Key,
+			  const HeadRule& HR) const
+  /*!
+    Insert a component into a cell
+    \param System :: Simulation to obtain cell from
+    \param Key :: KeyName for cell
+    \param HR :: Contained Componenet
+   */
+{
+  ELog::RegMethod RegA("CellMap","insertComponent");
+  if (HR.hasRule())
+    insertComponent(System,Key,HR.display());
+  return;
+}
+
+  
+void
+CellMap::insertComponent(Simulation& System,
+			  const std::string& Key,
+			  const std::string& exclude) const
+  /*!
+    Insert a component into a cell
+    \param System :: Simulation to obtain cell from
+    \param Key :: KeyName for cell
+    \param CC :: Contained Componenet
+   */
+{
+  ELog::RegMethod RegA("CellMap","insertComponent");
+    
+  const int cellNum=getCell(Key);
+  MonteCarlo::Qhull* outerObj=System.findQhull(cellNum);
+  if (!outerObj)
+    throw ColErr::InContainerError<int>(cellNum,"Cell["+Key+"] not present");
+  
+  outerObj->addSurfString(exclude);  
+  return;
 }
 
 

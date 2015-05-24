@@ -49,11 +49,10 @@ class DiskPreMod : public attachSystem::ContainedComp,
   std::vector<int> mat;               ///< Materials 
   std::vector<double> temp;           ///< Temperatures
   
-  // Functions:  
-  void checkItems(const attachSystem::FixedComp&);
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
+			const attachSystem::FixedComp&,
 			const long int);
 
   void createSurfaces();
@@ -69,6 +68,7 @@ class DiskPreMod : public attachSystem::ContainedComp,
   virtual ~DiskPreMod();
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const attachSystem::FixedComp&,
 		 const long int);
 
   virtual Geometry::Vec3D getSurfacePoint(const size_t,const size_t) const;

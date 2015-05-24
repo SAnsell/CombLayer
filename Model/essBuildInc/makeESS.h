@@ -139,7 +139,7 @@ class makeESS
   makeESS& operator=(const makeESS&);
   ~makeESS();
   
-  void build(Simulation*,const mainSystem::inputParam&);
+  void build(Simulation&,const mainSystem::inputParam&);
 
 };
 

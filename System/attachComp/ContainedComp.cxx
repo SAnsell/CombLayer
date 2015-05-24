@@ -3,7 +3,7 @@
  
  * File:   attachComp/ContainedComp.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,6 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
-#include <boost/bind.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -588,7 +587,8 @@ ContainedComp::setInsertCell(const std::vector<int>& CN)
 {
   ELog::RegMethod RegA("ContainedComp","setInsertCell(vec)");
   if (find_if(CN.begin(),CN.end(),
-	      boost::bind(std::equal_to<int>(),_1,0))!=CN.end())
+	      std::bind(std::equal_to<int>(),
+			std::placeholders::_1,0))!=CN.end())
     throw ColErr::EmptyValue<int>("CN index");
 
   insertCells=CN;

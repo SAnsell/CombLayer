@@ -273,8 +273,8 @@ makeESS::createGuides(Simulation& System)
       GB->addInsertCell("Outer",ShutterBayObj->getMainCell());
       GB->setCylBoundary(Bulk->getLinkSurf(2),
 			 ShutterBayObj->getLinkSurf(2));
-      if(i<2)
-	GB->createAll(System,*LowMod);  
+      //      if(i<2)
+      //	GB->createAll(System,*LowMod);  
       //      else
 	//	GB->createAll(System,*TopMod);  
       GBArray.push_back(GB);
@@ -293,7 +293,6 @@ makeESS::buildLowMod(Simulation& System)
 
 
   buildLowButterfly(System);
-  buildLowPreMod(System);
   // else 
   //   {
   //     buildLowCylMod(System);
@@ -321,21 +320,6 @@ makeESS::buildLowButterfly(Simulation& System)
   OR.addObject(LowMod);
 
   LowMod->createAll(System,*Reflector);
-  attachSystem::addToInsertForced(System,*Reflector,*LowMod);
-
-  return;
-}
-
-void
-makeESS::buildLowPreMod(Simulation& System)
-  /*!
-    Build the Lower PreMod moderator
-    \param System :: Stardard simulation
-  */
-{
-  ELog::RegMethod RegA("makeESS","buildLowPreMod");
-
-  LowPreMod->createAll(System,*Target,1);
   attachSystem::addToInsertForced(System,*Reflector,*LowMod);
 
   return;
@@ -480,11 +464,11 @@ makeESS::makeBeamLine(Simulation& System,
 
 
 void 
-makeESS::build(Simulation* SimPtr,
+makeESS::build(Simulation& System,
 	       const mainSystem::inputParam& IParam)
   /*!
     Carry out the full build
-    \param SimPtr :: Simulation system
+    \param System :: Simulation system
     \param IParam :: Input parameters
    */
 {
@@ -504,56 +488,61 @@ makeESS::build(Simulation* SimPtr,
   if (StrFunc::checkKey("help",lowPipeType,lowModType,targetType) ||
       StrFunc::checkKey("help",iradLine,topModType,""))
     {
-      optionSummary(*SimPtr);
+      optionSummary(System);
       throw ColErr::ExitAbort("Help system exit");
     }
 
-  makeTarget(*SimPtr,targetType);
-  
-  Reflector->createAll(*SimPtr,World::masterOrigin(),
+  makeTarget(System,targetType);
+  //  LowPreMod->createAll(System,World::masterOrigin(),*Target,5);
+
+  Reflector->createAll(System,World::masterOrigin(),
 		       Target->wheelHeight(),-1.0,-1.0);
-  attachSystem::addToInsertForced(*SimPtr,*Reflector,Target->getKey("Wheel"));
+  //  buildLowMod(System);
+    
+  //  attachSystem::addToInsertForced(System,*Reflector,Target->getKey("Wheel"));
 
-  Bulk->createAll(*SimPtr,*Reflector,*Reflector);
-  attachSystem::addToInsertSurfCtrl(*SimPtr,*Bulk,Target->getKey("Wheel"));
-  attachSystem::addToInsertForced(*SimPtr,*Bulk,Target->getKey("Shaft"));
+      
+  Bulk->createAll(System,*Reflector,*Reflector);
+  attachSystem::addToInsertSurfCtrl(System,*Bulk,Target->getKey("Wheel"));
+  attachSystem::addToInsertForced(System,*Bulk,Target->getKey("Shaft"));
 
-  buildLowMod(*SimPtr);
+  //  buildTopCylMod(System);
 
-
-  buildTopCylMod(*SimPtr);
-
-  // Bulk->addFlightUnit(*SimPtr,*TopAFL);
-  // Bulk->addFlightUnit(*SimPtr,*TopBFL);
+  // Bulk->addFlightUnit(System,*TopAFL);
+  // Bulk->addFlightUnit(System,*TopBFL);
 
   // Full surround object
   ShutterBayObj->addInsertCell(voidCell);
-  ShutterBayObj->createAll(*SimPtr,*Bulk,*Bulk);
-  attachSystem::addToInsertForced(*SimPtr,*ShutterBayObj,
+  ShutterBayObj->createAll(System,*Bulk,*Bulk);
+  attachSystem::addToInsertForced(System,*ShutterBayObj,
 				  Target->getKey("Wheel"));
-  attachSystem::addToInsertForced(*SimPtr,*ShutterBayObj,
+  attachSystem::addToInsertForced(System,*ShutterBayObj,
 				  Target->getKey("Shaft"));
 
-  createGuides(*SimPtr);  
+  createGuides(System);  
 
   // PROTON BEAMLINE
   
-  
-  PBeam->createAll(*SimPtr,*Target,2,*ShutterBayObj,-1);
-  attachSystem::addToInsertSurfCtrl(*SimPtr,*Reflector,
+
+  PBeam->createAll(System,*Target,2,*ShutterBayObj,-1);
+  attachSystem::addToInsertSurfCtrl(System,*Reflector,
 				    PBeam->getKey("Sector0"));
   
-  attachSystem::addToInsertSurfCtrl(*SimPtr,*ShutterBayObj,
+  attachSystem::addToInsertSurfCtrl(System,*ShutterBayObj,
 				    PBeam->getKey("Full"));
-  attachSystem::addToInsertSurfCtrl(*SimPtr,*Bulk,
+  attachSystem::addToInsertSurfCtrl(System,*Bulk,
 				    PBeam->getKey("Full"));
 
-  // BMon->createAll(*SimPtr,*Target,1,*PBeam,"Sector");
-  // attachSystem::addToInsertForced(*SimPtr,*Reflector,*BMon);
+  // BMon->createAll(System,*Target,1,*PBeam,"Sector");
+  // attachSystem::addToInsertForced(System,*Reflector,*BMon);
 
-  //  buildLowerPipe(*SimPtr,lowPipeType);
+  //  buildLowerPipe(System,lowPipeType);
 
-  makeBeamLine(*SimPtr,IParam);
+
+
+
+
+  makeBeamLine(System,IParam);
 
 
 
