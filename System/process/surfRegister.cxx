@@ -28,6 +28,7 @@
 #include <map> 
 #include <string>
 #include <algorithm>
+#include <functional>
 
 #include "Exception.h"
 #include "FileReport.h"
