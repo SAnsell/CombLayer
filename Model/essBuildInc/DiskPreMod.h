@@ -43,17 +43,19 @@ class DiskPreMod : public attachSystem::ContainedComp,
   const int modIndex;             ///< Index of surface offset
   int cellIndex;                  ///< Cell index
 
+  double zStep;                   ///< Step away from target
+  double outerRadius;             ///< Outer radius of Be Zone
+  
   std::vector<double> radius;         ///< cylinder radii [additive]
   std::vector<double> height;         ///< Full heights [additive]
   std::vector<double> depth;          ///< full depths [additive]
   std::vector<int> mat;               ///< Materials 
   std::vector<double> temp;           ///< Temperatures
+
   
-  
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&,const double,const double);
   void createUnitVector(const attachSystem::FixedComp&,
-			const attachSystem::FixedComp&,
-			const long int);
+			const bool);
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -67,15 +69,19 @@ class DiskPreMod : public attachSystem::ContainedComp,
   virtual DiskPreMod* clone() const;
   virtual ~DiskPreMod();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const attachSystem::FixedComp&,
-		 const long int);
 
   virtual Geometry::Vec3D getSurfacePoint(const size_t,const size_t) const;
   virtual int getLayerSurf(const size_t,const size_t) const;
   virtual std::string getLayerString(const size_t,const size_t) const;
 
+  /// total height of object
+  double getHeight() const
+    { return (depth.empty()) ? 0.0 : depth.back()+height.back(); }
 
+
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const bool,const double,const double);
+  
 };
 
 }

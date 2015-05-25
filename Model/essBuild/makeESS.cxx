@@ -492,11 +492,16 @@ makeESS::build(Simulation& System,
       throw ColErr::ExitAbort("Help system exit");
     }
 
+  
   makeTarget(System,targetType);
-  //  LowPreMod->createAll(System,World::masterOrigin(),*Target,5);
-
+  Reflector->globalPopulate(System.getDataBase());
+    
+  LowPreMod->createAll(System,World::masterOrigin(),1,
+		       Target->wheelHeight()/2.0,
+		       Reflector->getRadius());
   Reflector->createAll(System,World::masterOrigin(),
-		       Target->wheelHeight(),-1.0,-1.0);
+		       Target->wheelHeight(),LowPreMod->getHeight(),-1.0);
+  Reflector->insertComponent(System,"targetVoid",*Target,1);
   //  buildLowMod(System);
     
   //  attachSystem::addToInsertForced(System,*Reflector,Target->getKey("Wheel"));

@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   essBuild/BeRef.cxx
  *
@@ -176,7 +176,26 @@ BeRef::populate(const FuncDataBase& Control,
     Control.EvalVar<double>(keyName+"TopVoidThick") : topVThick;
   targSepThick=(targetThick<Geometry::zeroTol) ?
     Control.EvalVar<double>(keyName+"TargetSepThick") : targetThick;
-  targSepThick=Control.EvalVar<double>(keyName+"TargetSepThick");
+  
+  return;
+}
+
+void
+BeRef::globalPopulate(const FuncDataBase& Control)
+  /*!
+    Populate all the variables
+    \param Control :: Variable table to use
+    \param targetThick :: thickness of the target
+    \param topVThick :: thickness of the premod-void
+    \param lowVThick :: thickness of the premod-void
+  */
+{
+  ELog::RegMethod RegA("BeRef","globalPopulate");
+
+  radius=Control.EvalVar<double>(keyName+"Radius");   
+  height=Control.EvalVar<double>(keyName+"Height");   
+  wallThick=Control.EvalVar<double>(keyName+"WallThick");   
+
   
   return;
 }
@@ -254,15 +273,16 @@ BeRef::createObjects(Simulation& System)
   // low void
   Out=ModelSupport::getComposite(SMap,refIndex," -17 115 -205");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-
+  setCell("lowVoid",cellIndex-1);
   // Target void
   Out=ModelSupport::getComposite(SMap,refIndex," -17 205 -206");
   System.addCell(MonteCarlo::Qhull(cellIndex++,targSepMat,0.0,Out));
-
+  setCell("targetVoid",cellIndex-1);
+  
   // top Segment
   Out=ModelSupport::getComposite(SMap,refIndex," -17 -116 206");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-
+  setCell("topVoid",cellIndex-1);
   // top segment
   Out=ModelSupport::getComposite(SMap,refIndex," -7 -6 106");
   System.addCell(MonteCarlo::Qhull(cellIndex++,refMat,0.0,Out));
@@ -342,4 +362,5 @@ BeRef::createAll(Simulation& System,
   return;
 }
 
+  
 }  // NAMESPACE instrumentSystem

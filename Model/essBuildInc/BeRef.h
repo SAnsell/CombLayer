@@ -79,9 +79,12 @@ class BeRef : public attachSystem::ContainedComp,
   BeRef& operator=(const BeRef&);
   virtual ~BeRef();
 
+  void globalPopulate(const FuncDataBase&);
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const double,const double,const double);
-  
+
+  /// Access to radius
+  double getRadius() const { return radius+wallThick; }
 };
 
 }

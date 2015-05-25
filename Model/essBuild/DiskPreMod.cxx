@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   essBuild/DiskPreSimple.cxx
  *
@@ -137,13 +137,20 @@ DiskPreMod::~DiskPreMod()
   
 
 void
-DiskPreMod::populate(const FuncDataBase& Control)
+DiskPreMod::populate(const FuncDataBase& Control,
+		     const double zShift,
+		     const double outRadius)
   /*!
     Populate all the variables
     \param Control :: Variable table to use
+    \param zShift :: Default offset height a
+    \param outRadius :: Outer radius of reflector [for void fill]
   */
 {
   ELog::RegMethod RegA("DiskPreMod","populate");
+
+  zStep=Control.EvalDefVar<double>(keyName+"ZStep",zShift);
+  outerRadius=outRadius;
 
   // clear stuff 
   double R(0.0);
@@ -170,34 +177,29 @@ DiskPreMod::populate(const FuncDataBase& Control)
       mat.push_back(M);
       temp.push_back(T);
     }
-
+  
   return;
 }
 
 void
 DiskPreMod::createUnitVector(const attachSystem::FixedComp& refCentre,
-			     const attachSystem::FixedComp& targFC,
-			     const long int linkIndex)
+			     const bool zRotate)
   /*!
     Create the unit vectors
     \param refCentre :: Centre for object
-    \param targFC :: Target Unit [Z distance]
-    \param linkIndex :: Link index for target
+    \param zRotate :: rotate Zaxis
   */
 {
   ELog::RegMethod RegA("DiskPreMod","createUnitVector");
   attachSystem::FixedComp::createUnitVector(refCentre);
 
-  const Geometry::Vec3D ZAxis=
-    targFC.getSignedLinkAxis(linkIndex);
-  const Geometry::Vec3D ZTargPt=
-    targFC.getSignedLinkPt(linkIndex);
-
-  ELog::EM<<"OR == "<<Origin<<ELog::endDiag;
-  Origin+=ZAxis*ZTargPt.dotProd(ZAxis);
-  ELog::EM<<"Z == "<<ZAxis<<ELog::endDiag;
-  // move away from connection
-  ELog::EM<<"OR == "<<Origin<<ELog::endDiag;
+  if (zRotate)
+    {
+      X*=-1;
+      Z*=-1;
+    }
+  const double D=(depth.empty()) ? 0.0 : depth.back();
+  applyShift(0,0,zStep+D);
   return;
 }
 
@@ -221,6 +223,9 @@ DiskPreMod::createSurfaces()
       ModelSupport::buildPlane(SMap,SI+6,Origin+Z*height[i],Z);  
       SI+=10;
     }
+  if (radius.empty() || radius.back()>outerRadius+Geometry::zeroTol)
+    ModelSupport::buildCylinder(SMap,SI+7,Origin,Z,outerRadius);
+  
   return; 
 }
 
@@ -242,10 +247,20 @@ DiskPreMod::createObjects(Simulation& System)
   for(size_t i=0;i<nLayers;i++)
     {
       Out=ModelSupport::getComposite(SMap,SI," -7 5 -6 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],Out+Inner.display()));
+      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],
+				       Out+Inner.display()));
       SI+=10;
       Inner.procString(Out);
       Inner.makeComplement();
+    }
+
+  SI-=10;
+
+  // Outer extra void
+  if (radius.empty() || radius.back()>outerRadius+Geometry::zeroTol)
+    {
+      Out=ModelSupport::getComposite(SMap,SI," -17 5 -6 7");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
     }
   addOuterSurf(Out);
   return; 
@@ -405,19 +420,22 @@ DiskPreMod::getLayerString(const size_t layerIndex,
 void
 DiskPreMod::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,
-		      const attachSystem::FixedComp& targFC,
-		      const long int linkIndex)
+		      const bool zRotate,
+		      const double VOffset,
+		      const double ORad)
   /*!
     Extrenal build everything
     \param System :: Simulation
-    \param FC :: Attachment point
-    \param linkIndex :: link index 
+    \param FC :: Attachment point	       
+    \param zRotate :: Rotate to -ve Z
+    \param VOffset :: Vertical offset from target
+    \param ORad :: Outer radius of zone
    */
 {
   ELog::RegMethod RegA("DiskPreMod","createAll");
 
-  populate(System.getDataBase());
-  createUnitVector(FC,targFC,linkIndex);
+  populate(System.getDataBase(),VOffset,ORad);
+  createUnitVector(FC,zRotate);
 
   createSurfaces();
   createObjects(System);

@@ -60,6 +60,9 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "Simulation.h"
+#include "surfRegister.h"
+#include "LinkUnit.h"
+#include "FixedComp.h"
 #include "AttachSupport.h"
 #include "ContainedComp.h"
 #include "CellMap.h"
@@ -181,7 +184,7 @@ CellMap::insertComponent(Simulation& System,
     \param CC :: Contained Componenet
    */
 {
-  ELog::RegMethod RegA("CellMap","insertComponent");
+  ELog::RegMethod RegA("CellMap","insertComponent(CC)");
   if (CC.hasOuterSurf())
     insertComponent(System,Key,CC.getExclude());
   return;
@@ -198,9 +201,39 @@ CellMap::insertComponent(Simulation& System,
     \param HR :: Contained Componenet
    */
 {
-  ELog::RegMethod RegA("CellMap","insertComponent");
+  ELog::RegMethod RegA("CellMap","insertComponent(HR)");
   if (HR.hasRule())
     insertComponent(System,Key,HR.display());
+  return;
+}
+
+void
+CellMap::insertComponent(Simulation& System,
+			  const std::string& Key,
+			 const FixedComp& FC,
+			 const long int sideIndex) const
+/*!
+    Insert a component into a cell
+    \param System :: Simulation to obtain cell from
+    \param Key :: KeyName for cell
+    \param FC :: FixedComp for link surface
+   */
+{
+  ELog::RegMethod RegA("CellMap","insertComponent(FC)");
+
+  if (sideIndex>0)
+    {
+      insertComponent
+	(System,Key,FC.getLinkString(static_cast<size_t>(sideIndex-1)));
+    }
+  else if (sideIndex<0)
+    {
+      insertComponent
+	(System,Key,FC.getLinkComplement(static_cast<size_t>(-sideIndex-1)));
+    }
+  else
+    throw ColErr::InContainerError<long int>
+      (0,"Zero line surface not define");
   return;
 }
 

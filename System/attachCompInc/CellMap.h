@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   attachCompInc/CellMap.h
  *
@@ -60,6 +60,8 @@ class CellMap
 		       const HeadRule&) const;
   void insertComponent(Simulation&,const std::string&,
 		       const std::string&) const;
+  void insertComponent(Simulation&,const std::string&,
+		       const FixedComp&,const long int) const;
 };
 
 }

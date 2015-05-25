@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   scatMat/SQWmaterial.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,7 +62,8 @@ extern MTRand RNG;
 namespace scatterSystem
 {
 
-SQWmaterial::SQWmaterial() : neutMaterial()
+SQWmaterial::SQWmaterial() :
+  neutMaterial(),Extra(0)
  /*!
     Constructor
   */
@@ -84,9 +85,9 @@ SQWmaterial::SQWmaterial(const std::string& N,const double M,
   */
 {}
 
-  SQWmaterial::SQWmaterial(const double M,const double D,const double B,
-			   const double S,const double I,const double A) : 
-    neutMaterial(M,D,B,S,I,A),eFrac(0),Extra(0)
+SQWmaterial::SQWmaterial(const double M,const double D,const double B,
+			 const double S,const double I,const double A) : 
+  neutMaterial(M,D,B,S,I,A),eFrac(0),Extra(0)
   /*!
     Constructor for values
     \param M :: Mean atomic mass
