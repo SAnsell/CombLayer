@@ -223,7 +223,7 @@ DiskPreMod::createSurfaces()
       ModelSupport::buildPlane(SMap,SI+6,Origin+Z*height[i],Z);  
       SI+=10;
     }
-  if (radius.empty() || radius.back()>outerRadius+Geometry::zeroTol)
+  if (radius.empty() || radius.back()<outerRadius-Geometry::zeroTol)
     ModelSupport::buildCylinder(SMap,SI+7,Origin,Z,outerRadius);
   
   return; 
@@ -241,7 +241,7 @@ DiskPreMod::createObjects(Simulation& System)
   std::string Out;
 
   int SI(modIndex);
-
+  ELog::EM<<"NLAYER ++ "<<nLayers<<ELog::endDiag;
   // Process even number of surfaces:
   HeadRule Inner;
   for(size_t i=0;i<nLayers;i++)
@@ -257,7 +257,7 @@ DiskPreMod::createObjects(Simulation& System)
   SI-=10;
 
   // Outer extra void
-  if (radius.empty() || radius.back()>outerRadius+Geometry::zeroTol)
+  if (radius.empty() || radius.back()<outerRadius-Geometry::zeroTol)
     {
       Out=ModelSupport::getComposite(SMap,SI," -17 5 -6 7");
       System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));

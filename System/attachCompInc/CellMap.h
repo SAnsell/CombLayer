@@ -62,6 +62,9 @@ class CellMap
 		       const std::string&) const;
   void insertComponent(Simulation&,const std::string&,
 		       const FixedComp&,const long int) const;
+
+  void deleteCell(Simulation&,const std::string&);
+
 };
 
 }

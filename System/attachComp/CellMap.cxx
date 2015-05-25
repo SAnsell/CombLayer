@@ -260,5 +260,25 @@ CellMap::insertComponent(Simulation& System,
   return;
 }
 
+void
+CellMap::deleteCell(Simulation& System,
+		    const std::string& Key) 
+  /*!
+    Delete a cell
+    \param System :: Simulation to obtain cell from
+    \param Key :: KeyName for cell
+  */
+{
+  ELog::RegMethod RegA("CellMap","deleteCell");
+
+  LCTYPE::iterator mc=Cells.find(Key);
+  if (mc==Cells.end())
+    throw ColErr::InContainerError<std::string>(Key,"Key not present");
+
+  System.removeCell(mc->second);
+  Cells.erase(mc);
+  return;
+}
+  
 
 }  // NAMESPACE attachSystem

@@ -69,7 +69,6 @@ class DiskPreMod : public attachSystem::ContainedComp,
   virtual DiskPreMod* clone() const;
   virtual ~DiskPreMod();
 
-
   virtual Geometry::Vec3D getSurfacePoint(const size_t,const size_t) const;
   virtual int getLayerSurf(const size_t,const size_t) const;
   virtual std::string getLayerString(const size_t,const size_t) const;
@@ -77,7 +76,6 @@ class DiskPreMod : public attachSystem::ContainedComp,
   /// total height of object
   double getHeight() const
     { return (depth.empty()) ? 0.0 : depth.back()+height.back(); }
-
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const bool,const double,const double);

@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   Main/fullBuild.cxx
  *
@@ -101,7 +101,7 @@ main(int argc,char* argv[])
   // For output stream
   ELog::RegMethod RControl("","main");
   mainSystem::activateLogging(RControl);
-  
+
   ELog::FM<<"Version == "<<version::Instance().getVersion()+1
 	  <<ELog::endDiag;
 
@@ -109,20 +109,21 @@ main(int argc,char* argv[])
   std::map<std::string,double> IterVal;           // Variable to iterate 
   std::string Oname;
 
-  // PROCESS INPUT:
-  InputControl::mainVector(argc,argv,Names);
-  mainSystem::inputParam IParam;
-  createFullInputs(IParam);
-
-  const int iteractive(IterVal.empty() ? 0 : 1);   
-
-  
-  // Read XML/Variable
-  Simulation* SimPtr=createSimulation(IParam,Names,Oname);
-  if (!SimPtr) return -1;
-
+  Simulation* SimPtr(0);
   try
     {
+      // PROCESS INPUT:
+      InputControl::mainVector(argc,argv,Names);
+      mainSystem::inputParam IParam;
+      createFullInputs(IParam);
+      
+      const int iteractive(IterVal.empty() ? 0 : 1);   
+      
+      
+      // Read XML/Variable
+      SimPtr=createSimulation(IParam,Names,Oname);
+      if (!SimPtr) return -1;
+      
       TS2InputModifications(SimPtr,IParam,Names);
       
       if (IParam.flag("units"))

@@ -1040,11 +1040,15 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("MidWaterModTemp",300.0);
 
   
-  Control.addVariable("LowPreModNLayers",1);
+  Control.addVariable("LowPreModNLayers",2);
   Control.addVariable("LowPreModHeight0",2.0);
   Control.addVariable("LowPreModDepth0",2.0);
   Control.addVariable("LowPreModRadius0",30.0);
   Control.addVariable("LowPreModMat0","H2O");
+  Control.addVariable("LowPreModHeight1",0.3);
+  Control.addVariable("LowPreModDepth1",0.3);
+  Control.addVariable("LowPreModRadius1",0.3);
+  Control.addVariable("LowPreModMat1","Aluminium");
 
   return;
 }

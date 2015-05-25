@@ -142,8 +142,8 @@ BeRef::~BeRef()
 void
 BeRef::populate(const FuncDataBase& Control,
 		const double targetThick,
-		const double topVThick,
-		const double lowVThick)
+		const double lowVThick,
+		const double topVThick)
   /*!
     Populate all the variables
     \param Control :: Variable table to use
@@ -339,8 +339,8 @@ void
 BeRef::createAll(Simulation& System,
 		 const attachSystem::FixedComp& FC,
 		 const double tThick,
-		 const double tpThick,
-		 const double lpThick)
+		 const double lpThick,
+		 const double tpThick)
   /*!
     Extrenal build everything
     \param System :: Simulation
@@ -351,7 +351,7 @@ BeRef::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("BeRef","createAll");
-  populate(System.getDataBase(),tThick,tpThick,lpThick);
+  populate(System.getDataBase(),tThick,lpThick,tpThick);
 
   createUnitVector(FC);
   createSurfaces();

@@ -104,25 +104,26 @@ main(int argc,char* argv[])
   std::map<std::string,std::string> AddValues;  
   std::map<std::string,double> IterVal;           // Variable to iterate 
 
-  // PROCESS INPUT:
-  InputControl::mainVector(argc,argv,Names);
-  mainSystem::inputParam IParam;
-  createESSInputs(IParam);
-
-  const int iteractive(IterVal.empty() ? 0 : 1);   
-  Simulation* SimPtr=createSimulation(IParam,Names,Oname);
-  if (!SimPtr) return -1;
-
-  // The big variable setting
-  setVariable::EssVariables(SimPtr->getDataBase());
-  mainSystem::setDefUnits(SimPtr->getDataBase(),IParam);
-  InputModifications(SimPtr,IParam,Names);
-  
-  // Definitions section 
-  int MCIndex(0);
-  const int multi=IParam.getValue<int>("multi");
+  Simulation* SimPtr(0);
   try
     {
+      // PROCESS INPUT:
+      InputControl::mainVector(argc,argv,Names);
+      mainSystem::inputParam IParam;
+      createESSInputs(IParam);
+      
+      const int iteractive(IterVal.empty() ? 0 : 1);   
+      SimPtr=createSimulation(IParam,Names,Oname);
+      if (!SimPtr) return -1;
+      
+      // The big variable setting
+      setVariable::EssVariables(SimPtr->getDataBase());
+      mainSystem::setDefUnits(SimPtr->getDataBase(),IParam);
+      InputModifications(SimPtr,IParam,Names);
+  
+      // Definitions section 
+      int MCIndex(0);
+      const int multi=IParam.getValue<int>("multi");
       while(MCIndex<multi)
 	{
 	  if (MCIndex)

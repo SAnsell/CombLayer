@@ -707,10 +707,7 @@ Simulation::removeCell(const int Index)
 
   OTYPE::iterator vc=OList.find(Index);
   if (vc==OList.end())
-    {
-      ELog::EM<<"Cell Not found:"<<Index<<ELog::endErr;
-      return 0;
-    }
+    throw ColErr::InContainerError<int>(Index,"Cell Index not found");
   
   ModelSupport::SimTrack& ST(ModelSupport::SimTrack::Instance());
   ST.checkDelete(this,vc->second);
