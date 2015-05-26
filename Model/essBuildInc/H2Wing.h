@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   essBuildInc/H2Wing.h
  *
@@ -46,17 +46,14 @@ class H2Wing :
 
   const int wingIndex;       ///< Index of surface offset
   int cellIndex;             ///< Cell index
-  
-  double xStep;                   ///< Offset on X to Target		  
-  double yStep;	                  ///< Offset on Y to Target [+ve forward]  
-  double zStep;	                  ///< Offset on Z top Target		  
-  double xyAngle;                 ///< Angle of master XY rotation	  
-  double zAngle;                  ///< Angle of master Z rotation           
+
+  double xyOffset;           ///< xy-Angle offset
   
   std::array<Geometry::Vec3D,3> Pts;    ///< Corner Points
   std::array<double,3> radius;  ///< corner radii
-  double height;                ///< total height x
-
+  double height;                ///< height of moderator cell
+  double totalHeight;           ///< total height modertoa
+  
   int modMat;                   ///< LH2
   double modTemp;               ///< LH2 temperature [K]
   std::vector<double> thick;    ///< Layer thickness
@@ -84,7 +81,7 @@ class H2Wing :
 
  public:
 
-  H2Wing(const std::string&);
+  H2Wing(const std::string&,const double);
   H2Wing(const H2Wing&);
   H2Wing& operator=(const H2Wing&);
   virtual H2Wing* clone() const;

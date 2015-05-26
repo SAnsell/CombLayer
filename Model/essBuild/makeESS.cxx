@@ -258,7 +258,7 @@ makeESS::makeTarget(Simulation& System,
 }
 
 void 
-makeESS::createGuides(Simulation& System)
+makeESS::createGuides(Simulation&)
   /*!
     Create all the guidebays and guides
     \param System :: Simulation system to use
@@ -315,43 +315,16 @@ makeESS::buildLowButterfly(Simulation& System)
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  LowMod=std::shared_ptr<constructSystem::ModBase>
+  std::shared_ptr<ButterflyModerator> BM
     (new essSystem::ButterflyModerator("LowFly"));
+  BM->setRadiusX(Reflector->getRadius());
+  LowMod=std::shared_ptr<constructSystem::ModBase>(BM);
   OR.addObject(LowMod);
-
-  LowMod->createAll(System,*Reflector,LowPreMod.get(),5);
-  attachSystem::addToInsertForced(System,*Reflector,*LowMod);
-
+  
+  LowMod->createAll(System,*Reflector,LowPreMod.get(),6);
   return;
 }
     
-void
-makeESS::buildLowCylMod(Simulation& System)
-  /*!
-    Build the standard moderators
-    \param System :: Stardard simulation
-  */
-{
-  ELog::RegMethod RegA("makeESS","buildLowCylMod");
-  
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
-  LowMod=std::shared_ptr<constructSystem::ModBase>
-    (new constructSystem::CylMod("LowMod"));
-  OR.addObject(LowMod);
-
-  LowMod->createAll(System,*Reflector);
-  attachSystem::addToInsertControl(System,*Reflector,*LowMod);
-
-  LowPre->createAll(System,*LowMod);
-  attachSystem::addToInsertControl(System,*Reflector,*LowPre,"Main");
-  attachSystem::addToInsertControl(System,*Reflector,*LowPre,"BlockA");
-  attachSystem::addToInsertControl(System,*Reflector,*LowPre,"BlockB");
-
-
-  return;
-}
 
 void
 makeESS::buildTopCylMod(Simulation& System)
@@ -500,9 +473,14 @@ makeESS::build(Simulation& System,
 		       Target->wheelHeight()/2.0,
 		       Reflector->getRadius());
   buildLowButterfly(System);
+  const double LMHeight=attachSystem::calcLinkDistance(*LowMod,5,6);
   
   Reflector->createAll(System,World::masterOrigin(),
-		       Target->wheelHeight(),LowPreMod->getHeight(),-1.0);
+		       Target->wheelHeight(),
+		       LowPreMod->getHeight()+LMHeight,
+		       -1.0);
+
+  
   Reflector->insertComponent(System,"targetVoid",*Target,1);
   Reflector->deleteCell(System,"lowVoid");
   //  buildLowMod(System);

@@ -58,9 +58,11 @@ namespace essSystem
 
 ButterflyModerator::ButterflyModerator(const std::string& Key) :
   constructSystem::ModBase(Key,12),
-  LeftUnit(new H2Wing("LeftLobe")),
-  RightUnit(new H2Wing("RightLobe")),
-  MidWater(new MidWaterDivider("MidWater"))
+  flyIndex(ModelSupport::objectRegister::Instance().cell(Key)),
+  cellIndex(flyIndex+1),
+  LeftUnit(new H2Wing(Key+"LeftLobe",90.0)),
+  RightUnit(new H2Wing(Key+"RightLobe",270.0)),
+  MidWater(new MidWaterDivider(Key+"MidWater"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -75,7 +77,11 @@ ButterflyModerator::ButterflyModerator(const std::string& Key) :
 
 ButterflyModerator::ButterflyModerator(const ButterflyModerator& A) : 
   constructSystem::ModBase(A),
-  LeftUnit(A.LeftUnit),RightUnit(A.RightUnit)
+  flyIndex(A.flyIndex),cellIndex(A.cellIndex),
+  LeftUnit(A.LeftUnit->clone()),
+  RightUnit(A.RightUnit->clone()),
+  MidWater(A.MidWater->clone()),
+  outerRadius(A.outerRadius)
   /*!
     Copy constructor
     \param A :: ButterflyModerator to copy
@@ -93,8 +99,11 @@ ButterflyModerator::operator=(const ButterflyModerator& A)
   if (this!=&A)
     {
       constructSystem::ModBase::operator=(A);
-      LeftUnit=A.LeftUnit;
-      RightUnit=A.RightUnit;
+      cellIndex= A.cellIndex;
+      *LeftUnit= *A.LeftUnit;
+      *RightUnit= *A.RightUnit;
+      *MidWater= *A.MidWater;
+      outerRadius=A.outerRadius;
     }
   return *this;
 }
@@ -115,6 +124,40 @@ ButterflyModerator::~ButterflyModerator()
     Destructor
   */
 {}
+
+void
+ButterflyModerator::createSurfaces()
+  /*!
+    Create/hi-jack all the surfaces
+  */
+{
+  ELog::RegMethod RegA("ButterflyModerator","createSurface");
+  
+  ModelSupport::buildCylinder(SMap,flyIndex+7,Origin,Z,outerRadius);
+  return;
+}
+
+void
+ButterflyModerator::createObjects(Simulation& System)
+    /*!
+    Adds the main components
+    \param System :: Simulation to create objects in
+  */
+{
+  ELog::RegMethod RegA("ButterflyModerator","createObjects");
+  
+  const std::string Lower=LeftUnit->getLinkComplement(4);
+  const std::string Upper=LeftUnit->getLinkComplement(5);
+
+  std::string Out;
+  Out=ModelSupport::getComposite(SMap,flyIndex," -7 ");
+  Out+=Lower+Upper;
+  Out+=ContainedComp::getExclude();
+  
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  return;
+}
+  
 
 int
 ButterflyModerator::getCommonSurf(const size_t) const
@@ -161,10 +204,28 @@ ButterflyModerator::getSurfacePoint(const size_t,
 }
 
 void
+ButterflyModerator::createLinks()
+  /*!
+    Create linkes but currently incomplete
+  */
+{
+  ELog::RegMethod RegA("ButterflyModerator","createLinks");
+
+  // copy top/bottom from H2Wing
+  FixedComp::setLinkCopy(4,*LeftUnit,4);
+  FixedComp::setLinkCopy(5,*LeftUnit,5);
+  
+  return;
+}
+
+  
+void
 ButterflyModerator::createExternal()
   
 {
   ELog::RegMethod RegA("ButterflyModerator","createExternal");
+
+  //  addOuterUnionSurf(MidWater->getCompExclude());
 
   addOuterUnionSurf(LeftUnit->getCompExclude());
   addOuterUnionSurf(RightUnit->getCompExclude());
@@ -181,7 +242,7 @@ ButterflyModerator::createAll(Simulation& System,
   /*!
     Construct the butterfly components
     \param System :: Simulation 
-    \param FC :: FixedComp to get axis [origin if orgFC == 0]
+    \param axisFC :: FixedComp to get axis [origin if orgFC == 0]
     \param orgFC :: Extra origin point if required
     \param sideIndex :: link point for origin if given
    */
@@ -191,11 +252,16 @@ ButterflyModerator::createAll(Simulation& System,
   ModBase::populate(System.getDataBase());
   ModBase::createUnitVector(axisFC,orgFC,sideIndex);
 
+  ELog::EM<<"Point == "<<Origin<<" :: "
+	  <<orgFC->getSignedLinkPt(sideIndex)<<ELog::endDiag;
   LeftUnit->createAll(System,*this);
   RightUnit->createAll(System,*this);
   MidWater->createAll(System,*this,*LeftUnit,*RightUnit);
   createExternal();
+  createLinks();
   
+  createSurfaces();
+  createObjects(System);
   
   return;
 }

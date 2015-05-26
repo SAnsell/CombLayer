@@ -951,93 +951,86 @@ EssButterflyModerator(FuncDataBase& Control)
 
   Control.addVariable("LowFlyXStep",0.0);  
   Control.addVariable("LowFlyYStep",0.0);  
-  Control.addVariable("LowFlyZStep",-18.0);
+  Control.addVariable("LowFlyZStep",0.0);
   //  Control.addVariable("LowFlyXYangle",54.850);
   Control.addVariable("LowFlyXYangle",0.0);
-  Control.addVariable("LowFlyZangle",0.0);
+  Control.addVariable("LowFlyZangle",180.0);
 
-  Control.addVariable("LeftLobeXStep",1.0);  
-  Control.addVariable("LeftLobeYStep",0.0);  
-  Control.addVariable("LeftLobeZStep",0.0);
-  Control.addVariable("LeftLobeXYangle",90.0); 
-  Control.addVariable("LeftLobeZangle",0.0);
-
-  Control.addVariable("LeftLobeCorner1",Geometry::Vec3D(0,0,0));
-  Control.addVariable("LeftLobeCorner2",Geometry::Vec3D(-13.4,-14.3,0));
-  Control.addVariable("LeftLobeCorner3",Geometry::Vec3D(13.4,-14.3,0));
+  Control.addVariable("LowFlyLeftLobeCorner1",Geometry::Vec3D(0,0,0));
+  Control.addVariable("LowFlyLeftLobeCorner2",Geometry::Vec3D(-13.4,-14.3,0));
+  Control.addVariable("LowFlyLeftLobeCorner3",Geometry::Vec3D(13.4,-14.3,0));
   
-  Control.addVariable("LeftLobeRadius1",5.0);
-  Control.addVariable("LeftLobeRadius2",2.506);
-  Control.addVariable("LeftLobeRadius3",2.506);
+  Control.addVariable("LowFlyLeftLobeRadius1",5.0);
+  Control.addVariable("LowFlyLeftLobeRadius2",2.506);
+  Control.addVariable("LowFlyLeftLobeRadius3",2.506);
 
-  Control.addVariable("LeftLobeHeight",6.0);
-  Control.addVariable("LeftLobeModMat","ParaH2");
-  Control.addVariable("LeftLobeModTemp",20.0);
+  Control.addVariable("LowFlyLeftLobeHeight",6.0);
+  Control.addVariable("LowFlyLeftLobeModMat","ParaH2");
+  Control.addVariable("LowFlyLeftLobeModTemp",20.0);
 
-  Control.addVariable("LeftLobeNLayers",4);
-  Control.addVariable("LeftLobeThick1",0.3);
-  Control.addVariable("LeftLobeMat1","Aluminium");
-  Control.addVariable("LeftLobeVThick1",0.3);
-  Control.addVariable("LeftLobeModTemp1",20.0);
+  Control.addVariable("LowFlyLeftLobeNLayers",4);
+  Control.addVariable("LowFlyLeftLobeThick1",0.3);
+  Control.addVariable("LowFlyLeftLobeMat1","Aluminium");
+  Control.addVariable("LowFlyLeftLobeVThick1",0.3);
+  Control.addVariable("LowFlyLeftLobeModTemp1",20.0);
   
-  Control.addVariable("LeftLobeThick2",0.5);
-  Control.addVariable("LeftLobeMat2","Void");
-  Control.addVariable("LeftLobeVThick2",0.8);
+  Control.addVariable("LowFlyLeftLobeThick2",0.5);
+  Control.addVariable("LowFlyLeftLobeMat2","Void");
+  Control.addVariable("LowFlyLeftLobeVThick2",0.8);
 
-  Control.addVariable("LeftLobeThick3",0.3);
-  Control.addVariable("LeftLobeMat3","Aluminium");
-  Control.addVariable("LeftLobeVThick3",0.3);
+  Control.addVariable("LowFlyLeftLobeThick3",0.3);
+  Control.addVariable("LowFlyLeftLobeMat3","Aluminium");
+  Control.addVariable("LowFlyLeftLobeVThick3",0.3);
 
-  Control.addVariable("LeftLobeThick4",0.5);
-  Control.addVariable("LeftLobeMat4","Void");
-  Control.addVariable("LeftLobeVThick4",0.3);
+  Control.addVariable("LowFlyLeftLobeThick4",0.5);
+  Control.addVariable("LowFlyLeftLobeMat4","Void");
+  Control.addVariable("LowFlyLeftLobeVThick4",0.3);
 
+  Control.addVariable("LowFlyRightLobeXStep",-1.0);  
+  Control.addVariable("LowFlyRightLobeYStep",0.0);  
+  Control.addVariable("LowFlyRightLobeZStep",0.0);
+  Control.addVariable("LowFlyRightLobeXYangle",270.0); 
+  Control.addVariable("LowFlyRightLobeZangle",0.0);
+
+  Control.addVariable("LowFlyRightLobeCorner1",Geometry::Vec3D(0,0,0));
+  Control.addVariable("LowFlyRightLobeCorner2",Geometry::Vec3D(-13.4,-14.3,0));
+  Control.addVariable("LowFlyRightLobeCorner3",Geometry::Vec3D(13.4,-14.3,0));
+
+  Control.addVariable("LowFlyRightLobeRadius1",5.0);
+  Control.addVariable("LowFlyRightLobeRadius2",2.506);
+  Control.addVariable("LowFlyRightLobeRadius3",2.506);
+
+  Control.addVariable("LowFlyRightLobeHeight",6.0);
+  Control.addVariable("LowFlyRightLobeModMat","ParaH2");
+  Control.addVariable("LowFlyRightLobeModTemp",20.0);
+
+  Control.addVariable("LowFlyRightLobeNLayers",4);
+  Control.addVariable("LowFlyRightLobeThick1",0.3);
+  Control.addVariable("LowFlyRightLobeMat1","Aluminium");
+  Control.addVariable("LowFlyRightLobeVThick1",0.3);
+  Control.addVariable("LowFlyRightLobeModTemp1",20.0);
   
-  Control.addVariable("RightLobeXStep",-1.0);  
-  Control.addVariable("RightLobeYStep",0.0);  
-  Control.addVariable("RightLobeZStep",0.0);
-  Control.addVariable("RightLobeXYangle",270.0); 
-  Control.addVariable("RightLobeZangle",0.0);
+  Control.addVariable("LowFlyRightLobeThick2",0.5);
+  Control.addVariable("LowFlyRightLobeMat2","Void");
+  Control.addVariable("LowFlyRightLobeVThick2",0.8);
 
-  Control.addVariable("RightLobeCorner1",Geometry::Vec3D(0,0,0));
-  Control.addVariable("RightLobeCorner2",Geometry::Vec3D(-13.4,-14.3,0));
-  Control.addVariable("RightLobeCorner3",Geometry::Vec3D(13.4,-14.3,0));
+  Control.addVariable("LowFlyRightLobeThick3",0.3);
+  Control.addVariable("LowFlyRightLobeMat3","Aluminium");
+  Control.addVariable("LowFlyRightLobeVThick3",0.3);
 
-  Control.addVariable("RightLobeRadius1",5.0);
-  Control.addVariable("RightLobeRadius2",2.506);
-  Control.addVariable("RightLobeRadius3",2.506);
+  Control.addVariable("LowFlyRightLobeThick4",0.5);
+  Control.addVariable("LowFlyRightLobeMat4","Void");
+  Control.addVariable("LowFlyRightLobeVThick4",0.3);
 
-  Control.addVariable("RightLobeHeight",6.0);
-  Control.addVariable("RightLobeModMat","ParaH2");
-  Control.addVariable("RightLobeModTemp",20.0);
-
-  Control.addVariable("RightLobeNLayers",4);
-  Control.addVariable("RightLobeThick1",0.5);
-  Control.addVariable("RightLobeMat1","Aluminium");
-  Control.addVariable("RightLobeVThick1",0.8);
-  Control.addVariable("RightLobeModTemp1",20.0);
-  
-  Control.addVariable("RightLobeThick2",0.5);
-  Control.addVariable("RightLobeMat2","Void");
-  Control.addVariable("RightLobeVThick2",0.8);
-
-  Control.addVariable("RightLobeThick3",0.3);
-  Control.addVariable("RightLobeMat3","Aluminium");
-  Control.addVariable("RightLobeVThick3",0.3);
-
-  Control.addVariable("RightLobeThick4",0.5);
-  Control.addVariable("RightLobeMat4","Void");
-  Control.addVariable("RightLobeVThick4",0.5);
-
-  Control.addVariable("MidWaterCutLayer",3);
-  Control.addVariable("MidWaterMidYStep",1.0);
-  Control.addVariable("MidWaterMidAngle",90.0);
-  Control.addVariable("MidWaterLength",8.0);
-  Control.addVariable("MidWaterHeight",6.0);
-  Control.addVariable("MidWaterWallThick",0.2);
-  Control.addVariable("MidWaterModMat","H2O");
-  Control.addVariable("MidWaterWallMat","Aluminium");
-  Control.addVariable("MidWaterModTemp",300.0);
+  Control.addVariable("LowFlyMidWaterCutLayer",3);
+  Control.addVariable("LowFlyMidWaterMidYStep",1.0);
+  Control.addVariable("LowFlyMidWaterMidAngle",90.0);
+  Control.addVariable("LowFlyMidWaterLength",8.0);
+  Control.addVariable("LowFlyMidWaterHeight",6.0);
+  Control.addVariable("LowFlyMidWaterWallThick",0.2);
+  Control.addVariable("LowFlyMidWaterModMat","H2O");
+  Control.addVariable("LowFlyMidWaterWallMat","Aluminium");
+  Control.addVariable("LowFlyMidWaterModTemp",300.0);
 
   
   Control.addVariable("LowPreModNLayers",2);

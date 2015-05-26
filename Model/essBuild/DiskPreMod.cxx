@@ -241,7 +241,6 @@ DiskPreMod::createObjects(Simulation& System)
   std::string Out;
 
   int SI(modIndex);
-  ELog::EM<<"NLAYER ++ "<<nLayers<<ELog::endDiag;
   // Process even number of surfaces:
   HeadRule Inner;
   for(size_t i=0;i<nLayers;i++)
@@ -295,10 +294,10 @@ DiskPreMod::createLinks()
   FixedComp::setLinkSurf(3,SMap.realSurf(SI+7));
   FixedComp::addLinkSurf(3,SMap.realSurf(modIndex+1));
   
-  FixedComp::setConnect(4,Origin-Z*(height[nLayers-1]/2.0),-Z);
+  FixedComp::setConnect(4,Origin-Z*depth[nLayers-1],-Z);
   FixedComp::setLinkSurf(4,-SMap.realSurf(SI+5));
-  
-  FixedComp::setConnect(5,Origin+Z*(height[nLayers-1]/2.0),Z);
+
+  FixedComp::setConnect(5,Origin+Z*height[nLayers-1],Z);
   FixedComp::setLinkSurf(5,SMap.realSurf(SI+6));
 
   return;

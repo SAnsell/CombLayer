@@ -86,15 +86,16 @@
 namespace essSystem
 {
 
-H2Wing::H2Wing(const std::string& Key) :
+H2Wing::H2Wing(const std::string& Key,const double XYAngle) :
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0,0),
   attachSystem::FixedComp(Key,8),
   wingIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(wingIndex+1)
+  cellIndex(wingIndex+1),xyOffset(XYAngle)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
+    \param XYAngle :: Offset of angle of Wing
   */
 {}
 
@@ -102,11 +103,8 @@ H2Wing::H2Wing(const H2Wing& A) :
   attachSystem::ContainedComp(A),attachSystem::LayerComp(A),
   attachSystem::FixedComp(A),
   wingIndex(A.wingIndex),cellIndex(A.cellIndex),
-  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  xyAngle(A.xyAngle),zAngle(A.zAngle),Pts(A.Pts),
-  radius(A.radius),
-  height(A.height),modMat(A.modMat),
-  modTemp(A.modTemp)
+  Pts(A.Pts),radius(A.radius),height(A.height),
+  modMat(A.modMat),modTemp(A.modTemp)
   /*!
     Copy constructor
     \param A :: H2Wing to copy
@@ -126,11 +124,6 @@ H2Wing::operator=(const H2Wing& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
       cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
       Pts=A.Pts;
       radius=A.radius;
       height=A.height;
@@ -165,12 +158,6 @@ H2Wing::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("H2Wing","populate");
 
-  xStep=Control.EvalDefVar<double>(keyName+"XStep",0.0);
-  yStep=Control.EvalDefVar<double>(keyName+"YStep",0.0);
-  zStep=Control.EvalDefVar<double>(keyName+"ZStep",0.0);
-  xyAngle=Control.EvalDefVar<double>(keyName+"XYangle",0.0);
-  zAngle=Control.EvalDefVar<double>(keyName+"Zangle",0.0);
-
   for(size_t i=0;i<3;i++)
     {
       Pts[i]=Control.EvalVar<Geometry::Vec3D>
@@ -191,6 +178,8 @@ H2Wing::populate(const FuncDataBase& Control)
   vThick.push_back(0.0);
   temp.push_back(modTemp);
   mat.push_back(modMat);
+
+  totalHeight=height;
   for(size_t i=1;i<nLayers;i++)
     {
       const std::string Num=StrFunc::makeString(i);
@@ -203,6 +192,7 @@ H2Wing::populate(const FuncDataBase& Control)
       vThick.push_back(VT);
       temp.push_back(mTemp);
       mat.push_back(M);
+      totalHeight+=2.0*VT;
     }
 
   return;
@@ -221,9 +211,9 @@ H2Wing::createUnitVector(const attachSystem::FixedComp& FC)
   ELog::RegMethod RegA("H2Wing","createUnitVector");
 
   FixedComp::createUnitVector(FC);
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
-
+  applyShift(0,0,totalHeight/2.0);
+  applyAngleRotate(xyOffset,0.0);
+  ELog::EM<<"X == "<<X<<" : "<<Y<<" : "<<Z<<ELog::endDiag;
   for(size_t i=0;i<3;i++)
     Pts[i]=realPt(Pts[i]);
 
@@ -234,7 +224,7 @@ void
 H2Wing::createLinks()
   /*!
     Construct links for the triangle moderator
-    The normal 1-3 and 5-6 are plane,
+    The normal 1-3 and 4-5 are plane,
     7,8,9 are 
   */
 {
@@ -253,14 +243,20 @@ H2Wing::createLinks()
   cornerSet(PDepth,CPts,NPts);
 
   // mid plane points:
-  int ii(wingIndex+static_cast<int>(nLayers-1)*100);
+  const int triOffset(wingIndex+static_cast<int>(nLayers-1)*100);
+  int ii(triOffset);
   for(size_t i=0;i<3;i++)
     {
       ii++;
       FixedComp::setConnect(i,(CPts[i]+CPts[(i+1)%3])/2.0,NPts[i]);
       FixedComp::setLinkSurf(i,SMap.realSurf(ii));
     }
+  // Top/bottom
 
+  FixedComp::setConnect(4,Origin-Z*(VDepth+height/2.0),-Z);
+  FixedComp::setConnect(5,Origin+Z*(VDepth+height/2.0),Z);
+  FixedComp::setLinkSurf(4,-SMap.realSurf(triOffset+5));
+  FixedComp::setLinkSurf(5,SMap.realSurf(triOffset+6));
   return;
 }
   
@@ -513,21 +509,21 @@ H2Wing::getLayerString(const size_t layerIndex,
       return StrFunc::makeString(SMap.realSurf(triOffset+2));
     case 2:
       return StrFunc::makeString(SMap.realSurf(triOffset+3));
-    case 5:
+    case 4:
       return StrFunc::makeString(-SMap.realSurf(triOffset+5));
-    case 6:
+    case 5:
       return StrFunc::makeString(SMap.realSurf(triOffset+6));
-    case 7:
+    case 6:
       return ModelSupport::getComposite(SMap,triOffset,"-1 -3 (21:-7) ");
-    case 8:
+    case 7:
       return ModelSupport::getComposite(SMap,triOffset,"-1 -2 (22:-8) ");
-    case 9:
+    case 8:
       return ModelSupport::getComposite(SMap,triOffset,"-2 -3 (23:-9) ");
-    case 10:
+    case 9:
       return ModelSupport::getComposite(SMap,triOffset," (21:-7) ");
-    case 11:
+    case 10:
       return ModelSupport::getComposite(SMap,triOffset," (22:-8) ");
-    case 12:
+    case 11:
       return ModelSupport::getComposite(SMap,triOffset," (23:-9) ");
     }
   
@@ -548,8 +544,6 @@ H2Wing::createAll(Simulation& System,
 
   populate(System.getDataBase());
   createUnitVector(FC);
-
-
   createSurfaces();
   createObjects(System);
 

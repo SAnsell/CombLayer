@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   attachComp/AttachSupport.cxx
  *
@@ -775,6 +775,24 @@ addToInsertForced(Simulation& System,
   return;
 }  
 
+double
+calcLinkDistance(const FixedComp& FC,const long int sideIndexA,
+		 const long int sideIndexB)
+/*!
+  Calculate the distance between two link point
+  \param FC :: FixedComp to use
+  \param sideIndexA :: First point +1
+  \param sideIndexB :: Second point +1 
+  \return distance between points
+*/
 
+{
+  ELog::RegMethod RegA("AttachSupport","calcLinkDistance");
+
+  const Geometry::Vec3D PtA=FC.getSignedLinkPt(sideIndexA);
+  const Geometry::Vec3D PtB=FC.getSignedLinkPt(sideIndexB);
+  return PtA.Distance(PtB);
+  
+}
 
 }  // NAMESPACE attachSystem

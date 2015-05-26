@@ -23,12 +23,19 @@ class ButterflyModerator :
 {
  private:
 
+  const int flyIndex;        ///< Index of surface offset
+  int cellIndex;             ///< Cell index
   
   std::shared_ptr<H2Wing> LeftUnit;        ///< Left part of the moderator
   std::shared_ptr<H2Wing> RightUnit;       ///< Right part of the moderator
   std::shared_ptr<MidWaterDivider> MidWater;    ///< Water divider
-
+    
+  double outerRadius;                     ///< Main outer radius
+  
   void createExternal();
+  void createSurfaces();
+  void createObjects(Simulation&);
+  void createLinks();
   
  public:
   
@@ -43,6 +50,9 @@ class ButterflyModerator :
   virtual std::string getLayerString(const size_t,const size_t) const;
   virtual int getCommonSurf(const size_t) const;
 
+  /// Accessor to radius
+  void setRadiusX(const double R) { outerRadius=R; }
+  
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const attachSystem::FixedComp*,
 		 const long int);

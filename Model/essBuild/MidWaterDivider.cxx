@@ -32,7 +32,6 @@
 #include <string>
 #include <algorithm>
 #include <memory>
-#include <boost/bind.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -192,7 +191,8 @@ MidWaterDivider::createUnitVector(const attachSystem::FixedComp& FC)
   ELog::RegMethod RegA("MidWaterDivider","createUnitVector");
 
   FixedComp::createUnitVector(FC);
-
+  applyShift(0,0,wallThick+height/2.0);
+  ELog::EM<<"X == "<<X<<" : "<<Y<<" : "<<Z<<ELog::endDiag;
   return;
 }
 
@@ -439,6 +439,8 @@ MidWaterDivider::createAll(Simulation& System,
     Generic function to create everything
     \param System :: Simulation item
     \param FC :: Fixed object just for origin/axis
+    \param LA :: Left node object
+    \param RA :: Right node object
   */
 {
   ELog::RegMethod RegA("MidWaterDivider","createAll");
