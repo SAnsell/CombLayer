@@ -73,7 +73,7 @@ namespace essSystem
 {
 
 BeRef::BeRef(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,3),
+  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
   attachSystem::CellMap(),
   refIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(refIndex+1)
@@ -325,11 +325,20 @@ BeRef::createLinks()
   FixedComp::setConnect(0,Origin+Y*radius,-Y);
   FixedComp::setLinkSurf(0,SMap.realSurf(refIndex+17));
 
-  FixedComp::setConnect(1,Origin-Z*(height/2.0+wallThick),-Z);
-  FixedComp::setLinkSurf(1,-SMap.realSurf(refIndex+15));
+  FixedComp::setConnect(1,Origin+Y*radius,Y);
+  FixedComp::setLinkSurf(1,SMap.realSurf(refIndex+17));
 
-  FixedComp::setConnect(2,Origin+Z*(height/2.0+wallThick),Z);
-  FixedComp::setLinkSurf(2,SMap.realSurf(refIndex+16));
+  FixedComp::setConnect(2,Origin+Y*radius,-X);
+  FixedComp::setLinkSurf(2,SMap.realSurf(refIndex+17));
+
+  FixedComp::setConnect(3,Origin+Y*radius,-X);
+  FixedComp::setLinkSurf(3,SMap.realSurf(refIndex+17));
+
+  FixedComp::setConnect(4,Origin-Z*(height/2.0+wallThick),-Z);
+  FixedComp::setLinkSurf(4,-SMap.realSurf(refIndex+15));
+
+  FixedComp::setConnect(5,Origin+Z*(height/2.0+wallThick),Z);
+  FixedComp::setLinkSurf(5,SMap.realSurf(refIndex+16));
 
   return;
 }

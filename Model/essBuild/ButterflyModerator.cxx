@@ -133,7 +133,8 @@ ButterflyModerator::createSurfaces()
 {
   ELog::RegMethod RegA("ButterflyModerator","createSurface");
   
-  ModelSupport::buildCylinder(SMap,flyIndex+7,Origin,Z,outerRadius);
+  Geometry::Cylinder* CPtr=
+    ModelSupport::buildCylinder(SMap,flyIndex+7,Origin,Z,outerRadius);
   return;
 }
 
@@ -211,7 +212,17 @@ ButterflyModerator::createLinks()
 {
   ELog::RegMethod RegA("ButterflyModerator","createLinks");
 
+  FixedComp::setConnect(0,Origin-Y*outerRadius,-Y);
+  FixedComp::setConnect(1,Origin+Y*outerRadius,Y);
+  FixedComp::setConnect(2,Origin-X*outerRadius,-X);
+  FixedComp::setConnect(3,Origin+X*outerRadius,X);
+  FixedComp::setLinkSurf(0,SMap.realSurf(flyIndex+7));
+  FixedComp::setLinkSurf(1,SMap.realSurf(flyIndex+7));
+  FixedComp::setLinkSurf(2,SMap.realSurf(flyIndex+7));
+  FixedComp::setLinkSurf(3,SMap.realSurf(flyIndex+7));
+
   // copy top/bottom from H2Wing
+
   FixedComp::setLinkCopy(4,*LeftUnit,4);
   FixedComp::setLinkCopy(5,*LeftUnit,5);
   
@@ -252,16 +263,14 @@ ButterflyModerator::createAll(Simulation& System,
   ModBase::populate(System.getDataBase());
   ModBase::createUnitVector(axisFC,orgFC,sideIndex);
 
-  ELog::EM<<"Point == "<<Origin<<" :: "
-	  <<orgFC->getSignedLinkPt(sideIndex)<<ELog::endDiag;
   LeftUnit->createAll(System,*this);
   RightUnit->createAll(System,*this);
   MidWater->createAll(System,*this,*LeftUnit,*RightUnit);
   createExternal();
-  createLinks();
   
   createSurfaces();
   createObjects(System);
+  createLinks();
   
   return;
 }

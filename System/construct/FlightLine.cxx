@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   construct/FlightLine.cxx
  *
@@ -151,7 +151,7 @@ FlightLine::~FlightLine()
 {}
 
 void
-FlightLine::populate(const Simulation& System)
+FlightLine::populate(const FuncDataBase& Control)
  /*!
    Populate all the variables
    \param System :: Simulation to use
@@ -159,8 +159,6 @@ FlightLine::populate(const Simulation& System)
 {
   ELog::RegMethod RegA("FlightLine","populate");
   
-  const FuncDataBase& Control=System.getDataBase();
-
   // First get inner widths:
   xStep=Control.EvalVar<double>(keyName+"XStep");
   zStep=Control.EvalVar<double>(keyName+"ZStep");
@@ -179,7 +177,6 @@ FlightLine::populate(const Simulation& System)
 
   innerMat=ModelSupport::EvalDefMat<int>(Control,keyName+"InnerMat",0);
 
-  
   nLayer=Control.EvalDefVar<size_t>(keyName+"NLiner",0);
   lThick.clear();
   lMat.clear();
@@ -216,7 +213,8 @@ FlightLine::createUnitVector(const attachSystem::FixedComp& FC,
   // PROCESS Origin of a point
 
   FixedComp::createUnitVector(FC,sideIndex);
-
+  ELog::EM<<"Origin == "<<Origin<<ELog::endDiag;
+  ELog::EM<<"XYZ == "<<Y<<ELog::endDiag;
   return;
 }
 
@@ -439,7 +437,6 @@ FlightLine::createCapSurfaces(const attachSystem::FixedComp& FC,
 	
   for(size_t i=0;i<nLayer;i++)
     {
-
       capRule.push_back(MainUnit);      // for cases were not needed
       if (capLayer[i])
 	{
@@ -480,6 +477,9 @@ FlightLine::createCapSurfaces(const attachSystem::FixedComp& FC,
 	    }
 	}
     }
+  ELog::EM<<"This object = "<<Y<<ELog::endDiag;
+  ELog::EM<<"Cap rul == "<<capRule[0].display()<<ELog::endDiag;
+  ELog::EM<<"Cap rul == "<<capRule[1].display()<<ELog::endDiag;
   return;
 }
 
@@ -488,7 +488,7 @@ FlightLine::createObjects(Simulation& System,
 			  const attachSystem::FixedComp& FC,
 			  const size_t sideIndex)
   /*!
-    Adds the Chip guide components
+    Creates the objects for the flightline
     \param System :: Simulation to create objects in
     \param FC :: Inner Object
     \param sideIndex :: Side index
@@ -562,13 +562,12 @@ FlightLine::createObjects(Simulation& System,
   */
 {
   ELog::RegMethod RegA("FlightLine","createObjects(FC,sign,sideIndex,CC)");
-  
+
   const int outIndex=flightIndex+static_cast<int>(nLayer)*10;
 
   // attachRule SET in getRotatedDivider
   const std::string divider=getRotatedDivider(FC,sideIndex);
   attachRule+=divider+FC.getMasterString(sideIndex);
-  
   // Note this is negative
   const std::string baseSurf( (surfSign>0) ? 
 			      FC.getMasterString(sideIndex) : 
@@ -577,11 +576,14 @@ FlightLine::createObjects(Simulation& System,
   std::string Out;
   Out=ModelSupport::getComposite(SMap,outIndex," 3 -4 5 -6 ");
   Out+=StrFunc::makeString(baseSurf);
+  ELog::EM<<":ASDFASDF:"<<Out<<ELog::endDiag;    
   addOuterSurf("outer",Out);
+  ELog::EM<<":ASDFASDF"<<ELog::endDiag;    
+    
   addOuterSurf("inner",Out);
   const std::string attachRule=StrFunc::makeString(baseSurf)
     +" "+CC.getExclude();
-
+  ELog::EM<<":ASDFASDF"<<ELog::endDiag;    
   Out=ModelSupport::getComposite(SMap,flightIndex," 3 -4 5 -6 ");
   Out+=attachRule;         // forward boundary of object
   Out+=" "+ContainedGroup::getContainer("outer");      // Be outer surface
@@ -685,7 +687,29 @@ FlightLine::getInnerVec(std::vector<int>& ISurf) const
 }
 
 void
-FlightLine::createAll(Simulation& System,const attachSystem::FixedComp& FC,
+FlightLine::reBoundary(Simulation& System,
+		       const size_t sideIndex,
+		       const attachSystem::FixedComp& FC)
+  /*!
+    Reposition a flightline after initial construction
+    \param System :: Simulation to add vessel to
+    \param sideIndex :: Side index
+    \param FC :: Moderator Object
+  */
+{
+  ELog::RegMethod RegA("FlightLine","reboundary");
+
+  removeObjects(System);
+  //  createObjects(System,FC,sideSign,sideIndex,CC);
+  createObjects(System,FC,sideIndex);
+  insertObjects(System);       
+
+  return;
+}
+
+void
+FlightLine::createAll(Simulation& System,
+		      const attachSystem::FixedComp& FC,
 		      const long int sideIndex)
   /*!
     Global creation of the vac-vessel
@@ -694,8 +718,9 @@ FlightLine::createAll(Simulation& System,const attachSystem::FixedComp& FC,
     \param FC :: Moderator Object
   */
 {
-  ELog::RegMethod RegA("FlightLine","createAll");
-  populate(System);
+  ELog::RegMethod RegA("FlightLine","createAll(FC,int)");
+
+  populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
   createSurfaces();
 
@@ -730,8 +755,8 @@ FlightLine::createAll(Simulation& System,
     \param FC :: Moderator Object
   */
 {
-  ELog::RegMethod RegA("FlightLine","createAll");
-  populate(System);
+  ELog::RegMethod RegA("FlightLine","createAll(int,int,FC)");
+  populate(System.getDataBase());
 
   createRotatedUnitVector(FC,orgIndex,sideIndex);
   createSurfaces();
@@ -742,28 +767,6 @@ FlightLine::createAll(Simulation& System,
 
   return;
 }
-
-void
-FlightLine::reBoundary(Simulation& System,
-		       const size_t sideIndex,
-		       const attachSystem::FixedComp& FC)
-  /*!
-    Reposition a flightline after initial construction
-    \param System :: Simulation to add vessel to
-    \param sideIndex :: Side index
-    \param FC :: Moderator Object
-  */
-{
-  ELog::RegMethod RegA("FlightLine","reboundary");
-
-  removeObjects(System);
-  //  createObjects(System,FC,sideSign,sideIndex,CC);
-  createObjects(System,FC,sideIndex);
-  insertObjects(System);       
-
-  return;
-}
-
 
 void
 FlightLine::createAll(Simulation& System,
@@ -779,7 +782,7 @@ FlightLine::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("FlightLine","createAll(FC,CC)");
-  populate(System);
+  populate(System.getDataBase());
 
   if (modSideIndex)
     plateIndex=modSideIndex;

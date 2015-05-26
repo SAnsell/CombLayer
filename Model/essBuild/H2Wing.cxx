@@ -245,7 +245,7 @@ H2Wing::createLinks()
   cornerSet(PDepth,CPts,NPts);
 
   // mid plane points:
-  const int triOffset(wingIndex+static_cast<int>(nLayers-1)*100);
+  const int triOffset(wingIndex+static_cast<int>(nLayers)*100);
   int ii(triOffset);
   for(size_t i=0;i<3;i++)
     {

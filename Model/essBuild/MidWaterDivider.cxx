@@ -251,9 +251,6 @@ MidWaterDivider::createSurfaces()
   ModelSupport::buildPlane(SMap,divIndex+32,Origin-leftNorm*length,-leftNorm);
 
   
-  ModelSupport::buildPlane(SMap,divIndex+5,Origin-Z*(height/2.0),Z);
-  ModelSupport::buildPlane(SMap,divIndex+6,Origin+Z*(height/2.0),Z);
-
   // Aluminum layers [+100]
   // +Y section
   const double LStep(midYStep+wallThick/sin(midAngle/2.0));
@@ -281,8 +278,6 @@ MidWaterDivider::createSurfaces()
   ModelSupport::buildPlane(SMap,divIndex+132,
 			   Origin-leftNorm*(wallThick+length),-leftNorm);
 
-  ModelSupport::buildPlane(SMap,divIndex+105,Origin-Z*(wallThick+height/2.0),Z);
-  ModelSupport::buildPlane(SMap,divIndex+106,Origin+Z*(wallThick+height/2.0),Z);
 
   return;
 }
@@ -298,6 +293,9 @@ MidWaterDivider::createObjects(Simulation& System,
 {
   ELog::RegMethod RegA("MidWaterDivider","createObjects");
 
+  const std::string Base=
+    leftWing.getLinkComplement(4)+leftWing.getLinkComplement(5);
+  
   HeadRule LCut(leftWing.getLayerString(cutLayer,6));
   HeadRule RCut(rightWing.getLayerString(cutLayer,6));
 
@@ -305,32 +303,32 @@ MidWaterDivider::createObjects(Simulation& System,
   RCut.makeComplement();
   std::string Out;
 
-  Out=ModelSupport::getComposite(SMap,divIndex,"100 (-3 : 4) 5 -6 -11 -12 ");
-  Out+=LCut.display()+RCut.display();
+  Out=ModelSupport::getComposite(SMap,divIndex,"100 (-3 : 4) -11 -12 ");
+  Out+=LCut.display()+RCut.display()+Base;
   System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
 
   // Aluminium
   Out=ModelSupport::getComposite(SMap,divIndex,
-				 "100 (-103 : 104) 105 -106 -111 -112 "
-				 " ( (3  -4) : -5 : 6 : 11 : 12 ) ");
+				 "100 (-103 : 104) -111 -112 "
+				 " ( (3  -4) : 11 : 12 ) ");
 				 
-  Out+=LCut.display()+RCut.display();
+  Out+=LCut.display()+RCut.display()+Base;
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out));
 
   Out=ModelSupport::getComposite(SMap,divIndex,
-				 "100 (-103 : 104) 105 -106 -111 -112 ");
+				 "100 (-103 : 104)  -111 -112 ");
   addOuterSurf(Out);
   // Reverse layer
-  Out=ModelSupport::getComposite(SMap,divIndex,"-100 (-23 : 24) 5 -6 -31 -32 ");
-  Out+=LCut.display()+RCut.display();
+  Out=ModelSupport::getComposite(SMap,divIndex,"-100 (-23 : 24) -31 -32 ");
+  Out+=LCut.display()+RCut.display()+Base;
   System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
   Out=ModelSupport::getComposite(SMap,divIndex,
-				 "-100 (-123 : 124) 105 -106 -131 -132 "
-				 "((23  -24) : -5 : 6 : 31 : 32 )");
-  Out+=LCut.display()+RCut.display();
+				 "-100 (-123 : 124)  -131 -132 "
+				 "((23  -24) : 31 : 32 )");
+  Out+=LCut.display()+RCut.display()+Base;
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out));
   Out=ModelSupport::getComposite(SMap,divIndex,
-				 "-100 (-123 : 124) 105 -106 -131 -132 ");
+				 "-100 (-123 : 124) -131 -132 ");
   addOuterUnionSurf(Out);
   
   
@@ -352,7 +350,12 @@ MidWaterDivider::cutOuterWing(Simulation& System,
   ELog::RegMethod RegA("MidWaterDivider","cutOuterWing");
 
   const size_t lWing=leftWing.getNLayers();
-  const size_t rWing=leftWing.getNLayers();
+  const size_t rWing=rightWing.getNLayers();
+
+  const std::string LBase=
+    leftWing.getLinkComplement(4)+leftWing.getLinkComplement(5);
+  const std::string RBase=
+    rightWing.getLinkComplement(4)+rightWing.getLinkComplement(5);
 
   HeadRule cutRule;
   std::string Out;
@@ -364,7 +367,7 @@ MidWaterDivider::cutOuterWing(Simulation& System,
       if (!OPtr)
 	throw ColErr::InContainerError<int>(cellA,"leftWing Cell: Outer");
       Out=ModelSupport::getComposite(SMap,divIndex,
-				     "5 -6 (100: -11) (-100:-31) ");
+				     " (100: -11) (-100:-31) ");
       cutRule.procString(Out);
       cutRule.makeComplement();
       OPtr->addSurfString(cutRule.display());
@@ -376,7 +379,7 @@ MidWaterDivider::cutOuterWing(Simulation& System,
       if (!OPtr)
 	throw ColErr::InContainerError<int>(cellB,"rightWing Cell: Outer");
       Out=ModelSupport::getComposite(SMap,divIndex,
-				     "5 -6 (100:-12) : (-100:-32) ");
+				     " (100:-12) : (-100:-32) ");
       cutRule.procString(Out);
       cutRule.makeComplement();
       OPtr->addSurfString(cutRule.display());

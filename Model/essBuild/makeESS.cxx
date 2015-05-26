@@ -163,26 +163,20 @@ makeESS::lowFlightLines(Simulation& System)
 
   std::string Out;
 
-  Out=Reflector->getLinkComplement(0)+LowPre->getBoxCut('A');
-  LowAFL->addBoundarySurf("inner",Out);  
-  LowAFL->addBoundarySurf("outer",Out);  
-  LowAFL->addOuterSurf("outer",LowPre->getBoxCut('A'));  
-  LowAFL->createAll(System,*LowPre,2);   // was 1 no 1+1
-  attachSystem::addToInsertSurfCtrl(System,*LowAFL,*LowPre->getBox('A'));
-  attachSystem::addToInsertSurfCtrl(System,*Reflector,
-  				    LowAFL->getKey("outer"));
+  //  Out=Reflector->getLinkComplement(0)+LowPre->getBoxCut('A');
+  //  LowAFL->addBoundarySurf("inner",Out);  
+  //  LowAFL->addBoundarySurf("outer",Out);  
+  //  LowAFL->addOuterSurf("outer",LowPre->getBoxCut('A'));
+  
+  LowAFL->createAll(System,*Reflector,2);   // Note system +1 
 
+  /*
   Out=Reflector->getLinkComplement(0)+LowPre->getBoxCut('B');
   LowBFL->addBoundarySurf("inner",Out);  
   LowBFL->addBoundarySurf("outer",Out);  
   LowBFL->createAll(System,0,0,*LowPre);
   LowBFL->addOuterSurf("outer",LowPre->getBoxCut('B'));  
-
-  attachSystem::addToInsertSurfCtrl(System,*LowBFL,*LowPre->getBox('B'));
-  attachSystem::addToInsertSurfCtrl(System,*Reflector,
-  				    LowBFL->getKey("outer"));
-  attachSystem::addToInsertSurfCtrl(System,*LowBFL,
-  				    LowAFL->getKey("outer"));
+  */
   return;
 }
 
@@ -483,11 +477,8 @@ makeESS::build(Simulation& System,
   
   Reflector->insertComponent(System,"targetVoid",*Target,1);
   Reflector->deleteCell(System,"lowVoid");
-  //  buildLowMod(System);
-    
-  //  attachSystem::addToInsertForced(System,*Reflector,Target->getKey("Wheel"));
-
-      
+  LowAFL->createAll(System,*LowMod,*Reflector,2);   // Note system +1
+  
   Bulk->createAll(System,*Reflector,*Reflector);
   attachSystem::addToInsertSurfCtrl(System,*Bulk,Target->getKey("Wheel"));
   attachSystem::addToInsertForced(System,*Bulk,Target->getKey("Shaft"));

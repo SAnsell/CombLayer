@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   constructInc/FlightLine.h
  *
@@ -62,13 +62,13 @@ class FlightLine : public attachSystem::ContainedGroup,
   std::vector<double> lThick;   ///< Linear Thickness 
   std::vector<int> lMat;        ///< Layer Material
 
-  bool capActive;
+  bool capActive;               ///< Using front/back cap
   std::vector<int> capLayer;    ///< End cap layers
   std::vector<HeadRule> capRule;   ///< Rule for each cap
 
   std::string attachRule;       ///< Attached rule
   
-  void populate(const Simulation&);
+  void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createUnitVector(const attachSystem::FixedComp&,const size_t,
 			const long int);
