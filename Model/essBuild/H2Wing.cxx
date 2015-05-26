@@ -1,7 +1,7 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
- * File:   t1Upgrade/H2Wing.cxx 
+ * File:   essBuild/H2Wing.cxx 
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -32,7 +32,6 @@
 #include <string>
 #include <algorithm>
 #include <memory>
-#include <boost/bind.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -158,6 +157,9 @@ H2Wing::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("H2Wing","populate");
 
+  xStep=Control.EvalVar<double>(keyName+"XStep");
+  yStep=Control.EvalVar<double>(keyName+"YStep");
+  
   for(size_t i=0;i<3;i++)
     {
       Pts[i]=Control.EvalVar<Geometry::Vec3D>
@@ -211,7 +213,7 @@ H2Wing::createUnitVector(const attachSystem::FixedComp& FC)
   ELog::RegMethod RegA("H2Wing","createUnitVector");
 
   FixedComp::createUnitVector(FC);
-  applyShift(0,0,totalHeight/2.0);
+  applyShift(xStep,yStep,totalHeight/2.0);
   applyAngleRotate(xyOffset,0.0);
   ELog::EM<<"X == "<<X<<" : "<<Y<<" : "<<Z<<ELog::endDiag;
   for(size_t i=0;i<3;i++)

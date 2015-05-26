@@ -47,6 +47,8 @@ class H2Wing :
   const int wingIndex;       ///< Index of surface offset
   int cellIndex;             ///< Cell index
 
+  double xStep;
+  double yStep;
   double xyOffset;           ///< xy-Angle offset
   
   std::array<Geometry::Vec3D,3> Pts;    ///< Corner Points

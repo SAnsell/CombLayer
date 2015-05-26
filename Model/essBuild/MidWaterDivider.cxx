@@ -192,7 +192,6 @@ MidWaterDivider::createUnitVector(const attachSystem::FixedComp& FC)
 
   FixedComp::createUnitVector(FC);
   applyShift(0,0,wallThick+height/2.0);
-  ELog::EM<<"X == "<<X<<" : "<<Y<<" : "<<Z<<ELog::endDiag;
   return;
 }
 
@@ -299,8 +298,8 @@ MidWaterDivider::createObjects(Simulation& System,
 {
   ELog::RegMethod RegA("MidWaterDivider","createObjects");
 
-  HeadRule LCut(leftWing.getLayerString(cutLayer,7));
-  HeadRule RCut(rightWing.getLayerString(cutLayer,7));
+  HeadRule LCut(leftWing.getLayerString(cutLayer,6));
+  HeadRule RCut(rightWing.getLayerString(cutLayer,6));
 
   LCut.makeComplement();
   RCut.makeComplement();

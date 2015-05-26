@@ -956,6 +956,9 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowFlyXYangle",0.0);
   Control.addVariable("LowFlyZangle",180.0);
 
+  Control.addVariable("LowFlyLeftLobeXStep",1.0);  
+  Control.addVariable("LowFlyLeftLobeYStep",0.0);  
+
   Control.addVariable("LowFlyLeftLobeCorner1",Geometry::Vec3D(0,0,0));
   Control.addVariable("LowFlyLeftLobeCorner2",Geometry::Vec3D(-13.4,-14.3,0));
   Control.addVariable("LowFlyLeftLobeCorner3",Geometry::Vec3D(13.4,-14.3,0));
@@ -988,9 +991,6 @@ EssButterflyModerator(FuncDataBase& Control)
 
   Control.addVariable("LowFlyRightLobeXStep",-1.0);  
   Control.addVariable("LowFlyRightLobeYStep",0.0);  
-  Control.addVariable("LowFlyRightLobeZStep",0.0);
-  Control.addVariable("LowFlyRightLobeXYangle",270.0); 
-  Control.addVariable("LowFlyRightLobeZangle",0.0);
 
   Control.addVariable("LowFlyRightLobeCorner1",Geometry::Vec3D(0,0,0));
   Control.addVariable("LowFlyRightLobeCorner2",Geometry::Vec3D(-13.4,-14.3,0));
