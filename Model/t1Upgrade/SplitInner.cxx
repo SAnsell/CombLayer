@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1Upgrade/SplitInner.cxx
  *
@@ -185,22 +185,6 @@ SplitInner::populate(const FuncDataBase& Control)
 }
   
 void
-SplitInner::createUnitVector(const attachSystem::FixedComp& FC)
-  /*!
-    Create the unit vectors
-    - Y Down the beamline
-    \param FC :: Linked object
-  */
-{
-  ELog::RegMethod RegA("SplitInner","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC);
-
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,0);
-  return;
-}
-
-void
 SplitInner::createSurfaces()
   /*!
     Create All the surfaces
@@ -306,17 +290,21 @@ SplitInner::getLayerSurf(const size_t layerIndex,
 
 void
 SplitInner::createAll(Simulation& System,
-		    const attachSystem::FixedComp& FC)
+		      const attachSystem::FixedComp& axisFC,
+		      const attachSystem::FixedComp* orgFC,
+		      const long int sideIndex)
   /*!
-    Global creation of the hutch
-    \param System :: Simulation to add vessel to
-    \param FC :: Fixed Component to place object within
-  */
+    Extrenal build everything include divided inner
+    \param System :: Simulation
+    \param axisFC :: FixedComp to get axis [origin if orgFC == 0]
+    \param orgFC :: Extra origin point if required
+    \param sideIndex :: link point for origin if given
+   */
 {
   ELog::RegMethod RegA("SplitInner","createAll");
 
   populate(System.getDataBase());
-  createUnitVector(FC);
+  ModBase::createUnitVector(axisFC,orgFC,sideIndex);
 
   createSurfaces();
   createObjects(System);

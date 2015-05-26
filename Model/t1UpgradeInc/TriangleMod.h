@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1UpgradeInc/TriangleMod.h
  *
@@ -106,10 +106,14 @@ class TriangleMod : public constructSystem::ModBase
   // special for 5 sides!!
   virtual int getExitWindow(const size_t,std::vector<int>&) const;
 
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&);
   virtual Geometry::Vec3D getSurfacePoint(const size_t,const size_t) const;
   virtual int getLayerSurf(const size_t,const size_t) const;
   virtual std::string getLayerString(const size_t,const size_t) const;
+
+
+  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const attachSystem::FixedComp*,const long int);
+  
 };
 
 }

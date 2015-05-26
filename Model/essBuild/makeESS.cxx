@@ -319,7 +319,7 @@ makeESS::buildLowButterfly(Simulation& System)
     (new essSystem::ButterflyModerator("LowFly"));
   OR.addObject(LowMod);
 
-  LowMod->createAll(System,*Reflector);
+  LowMod->createAll(System,*Reflector,LowPreMod.get(),5);
   attachSystem::addToInsertForced(System,*Reflector,*LowMod);
 
   return;
@@ -499,6 +499,8 @@ makeESS::build(Simulation& System,
   LowPreMod->createAll(System,World::masterOrigin(),1,
 		       Target->wheelHeight()/2.0,
 		       Reflector->getRadius());
+  buildLowButterfly(System);
+  
   Reflector->createAll(System,World::masterOrigin(),
 		       Target->wheelHeight(),LowPreMod->getHeight(),-1.0);
   Reflector->insertComponent(System,"targetVoid",*Target,1);

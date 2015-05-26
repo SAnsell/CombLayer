@@ -1,7 +1,7 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
- * File:   t1UpgradeInc/ModBase.h
+ * File:   constructInc/ModBase.h
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -54,7 +54,9 @@ class ModBase : public attachSystem::ContainedComp,
   std::vector<long int> flightSides;  ///< Sides for flight inde
 
   virtual void populate(const FuncDataBase&);
-  virtual void createUnitVector(const attachSystem::FixedComp&);
+  virtual void createUnitVector(const attachSystem::FixedComp&,
+				const attachSystem::FixedComp*,
+				const long int);
   
  public:
 
@@ -67,7 +69,9 @@ class ModBase : public attachSystem::ContainedComp,
   std::string getComposite(const std::string&) const;
 
   long int getSideIndex(const size_t) const;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&) =0;
+  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const attachSystem::FixedComp* =0,
+			 const long int =0) =0;
 
 };
 

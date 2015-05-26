@@ -1,7 +1,7 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
- * File:   t1Upgrade/makeGamma.cxx
+ * File:   gammaBuild/makeGamma.cxx
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -142,7 +142,7 @@ makeGamma::build(Simulation* SimPtr,
   const int voidCell(74123);
   
   brick->addInsertCell(voidCell);
-  brick->createAll(*SimPtr,World::masterOrigin());
+  brick->createAll(*SimPtr,World::masterOrigin(),0,0);
 
   tallyVol->addInsertCell(voidCell);
   tallyVol->createAll(*SimPtr,*brick);

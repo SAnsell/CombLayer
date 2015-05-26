@@ -175,17 +175,21 @@ ButterflyModerator::createExternal()
   
 void
 ButterflyModerator::createAll(Simulation& System,
-			      const attachSystem::FixedComp& FC)
+			      const attachSystem::FixedComp& axisFC,
+			      const attachSystem::FixedComp* orgFC,
+			      const long int sideIndex)
   /*!
     Construct the butterfly components
     \param System :: Simulation 
-    \param FC :: FixedComp to get origin from 
+    \param FC :: FixedComp to get axis [origin if orgFC == 0]
+    \param orgFC :: Extra origin point if required
+    \param sideIndex :: link point for origin if given
    */
 {
   ELog::RegMethod RegA("ButterflyModerator","createAll");
 
   ModBase::populate(System.getDataBase());
-  ModBase::createUnitVector(FC);
+  ModBase::createUnitVector(axisFC,orgFC,sideIndex);
 
   LeftUnit->createAll(System,*this);
   RightUnit->createAll(System,*this);

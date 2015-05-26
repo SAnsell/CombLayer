@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1Upgrade/CH4Layer.cxx
  *
@@ -569,18 +569,21 @@ CH4Layer::createLinks()
 
 void
 CH4Layer::createAll(Simulation& System,
-		    const attachSystem::FixedComp& FC)
+		    const attachSystem::FixedComp& axisFC,
+		    const attachSystem::FixedComp* orgFC,
+		    const long int sideIndex)
   /*!
-    Global creation of the hutch
-    \param System :: Simulation to add vessel to
-    \param FC :: Fixed Component to place object within
-  */
+    Extrenal build layered moderator
+    \param System :: Simulation
+    \param axisFC :: FixedComp to get axis [origin if orgFC == 0]
+    \param orgFC :: Extra origin point if required
+    \param sideIndex :: link point for origin if given
+   */
 {
   ELog::RegMethod RegA("CH4Layer","createAll");
+
   populate(System.getDataBase());
-
-
-  createUnitVector(FC);
+  createUnitVector(axisFC,orgFC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

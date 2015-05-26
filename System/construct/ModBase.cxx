@@ -160,15 +160,21 @@ ModBase::populate(const FuncDataBase& Control)
 }
 
 void
-ModBase::createUnitVector(const attachSystem::FixedComp& FC)
+ModBase::createUnitVector(const attachSystem::FixedComp& axisFC,
+			  const attachSystem::FixedComp* orgFC,
+			  const long int sideIndex)
   /*!
     Local create unit for central Base.
-    \param FC :: FixedComp for origin
+    \param axisFC :: Axis coordinate system
+    \param orgFC :: if given origin point
+    \param sideIndex :: link point of orgFC
   */
 {
   ELog::RegMethod RegA("ModBase","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC);
-
+  
+  attachSystem::FixedComp::createUnitVector(axisFC);
+  if (orgFC)
+    Origin= orgFC->getSignedLinkPt(sideIndex);
   applyShift(xStep,yStep,zStep);
   applyAngleRotate(xyAngle,zAngle);
   return; 

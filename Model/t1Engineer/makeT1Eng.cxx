@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1Upgrade/makeT1Eng.cxx
  *
@@ -368,12 +368,12 @@ makeT1Eng::build(Simulation* SimPtr,
   TarObj->addProtonLineInsertCell(RefObj->getCells());
   TarObj->addProtonLine(*SimPtr,*RefObj,-3);
 
-  TriMod->createAll(*SimPtr,World::masterOrigin());
+  TriMod->createAll(*SimPtr,World::masterOrigin(),0,0);
   RefObj->addToInsertControl(*SimPtr,*TriMod,*TriMod);
 
   ColdCentObj->createAll(*SimPtr,World::masterOrigin());
 
-  H2Mod->createAll(*SimPtr,*ColdCentObj);
+  H2Mod->createAll(*SimPtr,*ColdCentObj,0,0);
   RefObj->addToInsertControl(*SimPtr,*H2Mod,*H2Mod); //
   
   H2PMod->createAll(*SimPtr,*H2Mod,4,0);
@@ -381,7 +381,7 @@ makeT1Eng::build(Simulation* SimPtr,
   RefObj->addToInsertControl(*SimPtr,*H2PMod,*H2PMod);
 //  RefObj->addToInsertControl(*SimPtr,*H2Mod,*H2Mod);
 
-  CH4Mod->createAll(*SimPtr,*ColdCentObj);
+  CH4Mod->createAll(*SimPtr,*ColdCentObj,0,0);
   RefObj->addToInsertControl(*SimPtr,*CH4Mod,*CH4Mod);
 
   CH4PMod->createAll(*SimPtr,*CH4Mod,5,0);

@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1Upgrade/TriangleMod.cxx 
  *
@@ -800,16 +800,21 @@ TriangleMod::getLayerString(const size_t layerIndex,
   
 void
 TriangleMod::createAll(Simulation& System,
-		       const attachSystem::FixedComp& FC)
+		       const attachSystem::FixedComp& axisFC,
+		       const attachSystem::FixedComp* orgFC,
+		       const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
-    \param FC :: Fixed object just for origin/axis
+    \param axisFC :: FixedComp to get axis [origin if orgFC == 0]
+    \param orgFC :: Extra origin point if required
+    \param sideIndex :: link point for origin if given
   */
 {
   ELog::RegMethod RegA("TriangleMod","createAll");
+  
   populate(System.getDataBase());
-  ModBase::createUnitVector(FC);
+  ModBase::createUnitVector(axisFC,orgFC,sideIndex);
   
   createConvex();
   createSurfaces();

@@ -57,7 +57,6 @@ class CylMod : public constructSystem::ModBase
   // Functions:
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -80,7 +79,9 @@ class CylMod : public constructSystem::ModBase
   virtual int getCommonSurf(const size_t) const;
   virtual std::string getLayerString(const size_t,const size_t) const;
 
-  void createAll(Simulation&,const attachSystem::FixedComp&);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const attachSystem::FixedComp*,
+		 const long int);
   
 };
 

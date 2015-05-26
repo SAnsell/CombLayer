@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNPX Input builder
  
  * File:   essBuild/ConicModerator.cxx
  *
@@ -407,7 +407,9 @@ ConicModerator::getLayerSurf(const size_t layerIndex,
   
 void
 ConicModerator::createAll(Simulation& System,
-			  const attachSystem::FixedComp& FC)
+			  const attachSystem::FixedComp& axisFC,
+			  const attachSystem::FixedComp* orgFC,
+			  const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation to create objects in
@@ -417,7 +419,7 @@ ConicModerator::createAll(Simulation& System,
   ELog::RegMethod RegA("ConicModerator","createAll");
   populate(System.getDataBase());
 
-  ModBase::createUnitVector(FC);
+  ModBase::createUnitVector(axisFC,orgFC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();
