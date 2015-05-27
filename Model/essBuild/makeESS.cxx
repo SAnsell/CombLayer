@@ -483,10 +483,6 @@ makeESS::build(Simulation& System,
   attachSystem::addToInsertSurfCtrl(System,*Bulk,Target->getKey("Wheel"));
   attachSystem::addToInsertForced(System,*Bulk,Target->getKey("Shaft"));
 
-  //  buildTopCylMod(System);
-
-  // Bulk->addFlightUnit(System,*TopAFL);
-  // Bulk->addFlightUnit(System,*TopBFL);
 
   // Full surround object
   ShutterBayObj->addInsertCell(voidCell);
@@ -501,9 +497,9 @@ makeESS::build(Simulation& System,
   // PROTON BEAMLINE
   
 
-  PBeam->createAll(System,*Target,2,*ShutterBayObj,-1);
-  attachSystem::addToInsertSurfCtrl(System,*Reflector,
-				    PBeam->getKey("Sector0"));
+  PBeam->createAll(System,*Reflector,1,*ShutterBayObj,-1);
+  // attachSystem::addToInsertSurfCtrl(System,*Reflector,
+  // 				    PBeam->getKey("Sector0"));
   
   attachSystem::addToInsertSurfCtrl(System,*ShutterBayObj,
 				    PBeam->getKey("Full"));

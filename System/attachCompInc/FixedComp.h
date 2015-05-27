@@ -124,6 +124,7 @@ class FixedComp
 
   virtual Geometry::Vec3D getSignedLinkPt(const long int) const;
   virtual Geometry::Vec3D getSignedLinkAxis(const long int) const;
+  virtual std::string getSignedLinkString(const long int) const;
 
   const HeadRule& getMainRule(const size_t) const;
   const HeadRule& getCommonRule(const size_t) const;

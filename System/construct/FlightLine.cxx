@@ -576,14 +576,11 @@ FlightLine::createObjects(Simulation& System,
   std::string Out;
   Out=ModelSupport::getComposite(SMap,outIndex," 3 -4 5 -6 ");
   Out+=StrFunc::makeString(baseSurf);
-  ELog::EM<<":ASDFASDF:"<<Out<<ELog::endDiag;    
   addOuterSurf("outer",Out);
-  ELog::EM<<":ASDFASDF"<<ELog::endDiag;    
     
   addOuterSurf("inner",Out);
   const std::string attachRule=StrFunc::makeString(baseSurf)
     +" "+CC.getExclude();
-  ELog::EM<<":ASDFASDF"<<ELog::endDiag;    
   Out=ModelSupport::getComposite(SMap,flightIndex," 3 -4 5 -6 ");
   Out+=attachRule;         // forward boundary of object
   Out+=" "+ContainedGroup::getContainer("outer");      // Be outer surface

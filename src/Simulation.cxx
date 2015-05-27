@@ -36,8 +36,6 @@
 #include <memory>
 #include <array>
 #include <boost/functional.hpp>
-#include <boost/bind.hpp>
-
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -652,11 +650,11 @@ Simulation::removeDeadSurfaces(const int placeFlag)
       if (SFound.find(sc->first)==SFound.end())
 	Dead.push_back(sc->first);
     }
-  // Dead:
+
+  // Dead:  
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();  
-  for_each(Dead.begin(),Dead.end(),
-  	   boost::bind<void>(&ModelSupport::surfIndex::deleteSurface,
-  			     boost::ref(SurI),_1));
+  for(const int DSurf : Dead)
+    SurI.deleteSurface(DSurf);
   
   return 0;
 }
@@ -707,7 +705,10 @@ Simulation::removeCell(const int Index)
 
   OTYPE::iterator vc=OList.find(Index);
   if (vc==OList.end())
-    throw ColErr::InContainerError<int>(Index,"Cell Index not found");
+    {
+      ELog::EM<<"Cell Not found:"<<Index<<ELog::endErr;
+      return 0;
+    }
   
   ModelSupport::SimTrack& ST(ModelSupport::SimTrack::Instance());
   ST.checkDelete(this,vc->second);
@@ -1007,9 +1008,10 @@ Simulation::removeNullSurfaces()
 	  dead.push_back(keyN);
 	}
     }
-  for_each(dead.begin(),dead.end(),
-	   boost::bind<void>(&ModelSupport::surfIndex::deleteSurface,
-			     boost::ref(SI),_1));
+  
+  for(const int DSurf : dead)
+    SI.deleteSurface(DSurf);
+
   return 0;
 }
 
@@ -1468,10 +1470,9 @@ Simulation::writeTally(std::ostream& OX) const
   // It iterats over the Titems and since they are a map
   // uses the mathSupport:::PSecond
   // _1 refers back to the TItem pair<int,tally*>
-  for_each(TItem.begin(),TItem.end(),
-	   boost::bind(&tallySystem::Tally::write,
-		       boost::bind(MapSupport::PSecond<TallyTYPE>(),_1),
-		       boost::ref(OX)));
+  for(const TallyTYPE::value_type& TM : TItem)
+    TM.second->write(OX);
+
   return;
 }
 
@@ -2005,10 +2006,9 @@ Simulation::renumberCells(const std::vector<int>& cOffset,
       if (!vc->second->isPlaceHold())
 	{
 	  PhysPtr->substituteCell(cNum,nNum);
-	  for_each(TItem.begin(),TItem.end(),
-		   boost::bind(&tallySystem::Tally::renumberCell,
-			       boost::bind(&TallyTYPE::value_type::second,_1),
-			       cNum,nNum));
+	  for(TallyTYPE::value_type& TI : TItem)
+	    TI.second->renumberCell(cNum,nNum);
+
 	}
       
       ELog::RN<<"Cell Changed :"<<cNum<<" "<<nNum
@@ -2111,6 +2111,7 @@ Simulation::prepareWrite()
     }
   return;
 }
+
 
 void
 Simulation::masterRotation() 

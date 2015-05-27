@@ -774,6 +774,28 @@ FixedComp::getMasterComplement(const size_t Index) const
   return RP.display();
 }
 
+
+std::string
+FixedComp::getSignedLinkString(const long int sideIndex) const
+  /*!
+    Accessor to the link string
+    \param sideIndex :: SIGNED +1 side index
+    \return Link string 
+  */
+{
+  ELog::RegMethod RegA("FixedComp","getSignedLinkString:"+keyName);
+
+  if (!sideIndex) return "";
+
+  const size_t linkIndex=
+    (sideIndex>0) ? static_cast<size_t>(sideIndex-1) :
+    static_cast<size_t>(-sideIndex-1) ;
+  return (sideIndex>0) ?
+    getLinkString(linkIndex) : getLinkComplement(linkIndex);
+}
+
+
+  
 std::string
 FixedComp::getLinkString(const size_t Index) const
   /*!

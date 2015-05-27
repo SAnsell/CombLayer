@@ -222,7 +222,12 @@ BeRef::createSurfaces()
   */
 {
   ELog::RegMethod RegA("BeRef","createSurfaces");
-      
+
+  // DIVIDER PLANES:
+  
+  ModelSupport::buildPlane(SMap,refIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,refIndex+2,Origin,X);  
+  
   ModelSupport::buildCylinder(SMap,refIndex+7,Origin,Z,radius);  
   ModelSupport::buildCylinder(SMap,refIndex+17,Origin,Z,radius+wallThick);  
 
@@ -324,16 +329,20 @@ BeRef::createLinks()
 {
   FixedComp::setConnect(0,Origin+Y*radius,-Y);
   FixedComp::setLinkSurf(0,SMap.realSurf(refIndex+17));
+  FixedComp::addLinkSurf(0,-SMap.realSurf(refIndex+1));
 
   FixedComp::setConnect(1,Origin+Y*radius,Y);
   FixedComp::setLinkSurf(1,SMap.realSurf(refIndex+17));
+  FixedComp::addLinkSurf(1,SMap.realSurf(refIndex+1));
 
   FixedComp::setConnect(2,Origin+Y*radius,-X);
   FixedComp::setLinkSurf(2,SMap.realSurf(refIndex+17));
-
+  FixedComp::addLinkSurf(2,-SMap.realSurf(refIndex+2));
+  
   FixedComp::setConnect(3,Origin+Y*radius,-X);
   FixedComp::setLinkSurf(3,SMap.realSurf(refIndex+17));
-
+  FixedComp::addLinkSurf(3,SMap.realSurf(refIndex+2));
+  
   FixedComp::setConnect(4,Origin-Z*(height/2.0+wallThick),-Z);
   FixedComp::setLinkSurf(4,-SMap.realSurf(refIndex+15));
 
