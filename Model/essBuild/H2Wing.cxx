@@ -85,11 +85,14 @@
 namespace essSystem
 {
 
-H2Wing::H2Wing(const std::string& Key,const double XYAngle) :
+H2Wing::H2Wing(const std::string& baseKey,
+	       const std::string& extraKey,
+	       const double XYAngle) :
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0,0),
-  attachSystem::FixedComp(Key,8),
-  wingIndex(ModelSupport::objectRegister::Instance().cell(Key)),
+  attachSystem::FixedComp(baseKey+extraKey,8),
+  baseKey(baseName)
+  wingIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
   cellIndex(wingIndex+1),xyOffset(XYAngle)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -215,7 +218,6 @@ H2Wing::createUnitVector(const attachSystem::FixedComp& FC)
   FixedComp::createUnitVector(FC);
   applyShift(xStep,yStep,totalHeight/2.0);
   applyAngleRotate(xyOffset,0.0);
-  ELog::EM<<"X == "<<X<<" : "<<Y<<" : "<<Z<<ELog::endDiag;
   for(size_t i=0;i<3;i++)
     Pts[i]=realPt(Pts[i]);
 

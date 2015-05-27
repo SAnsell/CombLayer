@@ -86,21 +86,24 @@
 namespace essSystem
 {
 
-MidWaterDivider::MidWaterDivider(const std::string& Key) :
+MidWaterDivider::MidWaterDivider(const std::string& baseKey,
+				 const std::string& extraKey) :
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0,0),
-  attachSystem::FixedComp(Key,8),
-  divIndex(ModelSupport::objectRegister::Instance().cell(Key)),
+  attachSystem::FixedComp(baseKey+extraKey,8),
+  baseName(baseKey),
+  divIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
   cellIndex(divIndex+1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
-    \param Key :: Name for item in search
+    \param baseKey :: Base Name for item in search
+    \param extraKey :: extra [specialized] Name for item in search
   */
 {}
 
 MidWaterDivider::MidWaterDivider(const MidWaterDivider& A) : 
   attachSystem::ContainedComp(A),attachSystem::LayerComp(A),
-  attachSystem::FixedComp(A),  
+  attachSystem::FixedComp(A), baseName(A.baseName),
   divIndex(A.divIndex),cellIndex(A.cellIndex),midYStep(A.midYStep),
   midAngle(A.midAngle),length(A.length),height(A.height),
   wallThick(A.wallThick),modMat(A.modMat),wallMat(A.wallMat),
@@ -175,6 +178,7 @@ MidWaterDivider::populate(const FuncDataBase& Control)
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   modTemp=Control.EvalVar<double>(keyName+"ModTemp");
 
+  totalHeight=Control.EvalPair<double>(keyName,baseName,"TotalHeight");
   return;
 }
   
@@ -191,7 +195,7 @@ MidWaterDivider::createUnitVector(const attachSystem::FixedComp& FC)
   ELog::RegMethod RegA("MidWaterDivider","createUnitVector");
 
   FixedComp::createUnitVector(FC);
-  applyShift(0,0,wallThick+height/2.0);
+  applyShift(0,0,totalHeight/2.0);
   return;
 }
 

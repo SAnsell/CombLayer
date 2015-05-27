@@ -37,6 +37,7 @@ namespace constructSystem
 
 namespace moderatorSystem
 {
+  class BasicFlightLine;
   class FlightLine;
 }
 
@@ -87,8 +88,8 @@ class makeESS
   std::shared_ptr<DiskPreMod> LowPreMod;
 
   // Cylindrical [to be dumped]
-  std::shared_ptr<moderatorSystem::FlightLine> LowAFL;  ///< Lower Mode FL
-  std::shared_ptr<moderatorSystem::FlightLine> LowBFL;  ///< Lower Mode FL
+  std::shared_ptr<moderatorSystem::BasicFlightLine> LowAFL;  ///< Lower Mode FL
+  std::shared_ptr<moderatorSystem::BasicFlightLine> LowBFL;  ///< Lower Mode FL
   std::shared_ptr<CylPreMod> LowPre;          ///< Lower Mod (Pre)
 
   

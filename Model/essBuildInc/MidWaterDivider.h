@@ -43,6 +43,8 @@ class MidWaterDivider :
 {
  private:
 
+  const std::string baseName; ///< Base Name
+      
   const int divIndex;       ///< Index of surface offset
   int cellIndex;            ///< Cell index
 
@@ -58,6 +60,8 @@ class MidWaterDivider :
   int wallMat;              ///< Wall material
   double modTemp;           ///< Moderator temperature
 
+  double totalHeight;       ///< Total height of system
+  
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
 
@@ -69,7 +73,7 @@ class MidWaterDivider :
 
  public:
 
-  MidWaterDivider(const std::string&);
+  MidWaterDivider(const std::string&,const std::string&);
   MidWaterDivider(const MidWaterDivider&);
   MidWaterDivider& operator=(const MidWaterDivider&);
   virtual MidWaterDivider* clone() const;

@@ -211,7 +211,6 @@ EssWheel(FuncDataBase& Control)
 
 
 void
-
 EssVariables(FuncDataBase& Control)
   /*!
     Function to set the control variables and constants
@@ -388,11 +387,9 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("LowModConic3WallMat","Aluminium");
   Control.addVariable("LowModConic3Wall",0.2);
 
-  
-
   // FLIGHT LINE
 
-  Control.addVariable("LowAFlightXStep",-3.2+1.5);      // Step from centre
+  Control.addVariable("LowAFlightXStep",0.0); // Step from centre
   Control.addVariable("LowAFlightZStep",0.0);      // Step from centre
   Control.addVariable("LowAFlightAngleXY1",30.0);  // Angle out
   Control.addVariable("LowAFlightAngleXY2",30.0);  // Angle out
@@ -410,12 +407,6 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("LowAFlightLinerThick4",0.3);      // Liner
   Control.addVariable("LowAFlightLinerMat4","Void");      // Liner
 
-  Control.addVariable("LowAFlightLinerCap1",1);      // Liner
-  Control.addVariable("LowAFlightLinerCap2",2);      // Liner
-  Control.addVariable("LowAFlightLinerCap3",1);      // Liner
-
-  
-
   Control.addVariable("LowBFlightXStep",3.5);     // Angle
   Control.addVariable("LowBFlightZStep",0.0);      // Step from centre
   Control.addVariable("LowBFlightMasterXY",0.0);  // Angle out
@@ -428,7 +419,6 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("LowBFlightNLiner",1);      // Liner
   Control.addVariable("LowBFlightLinerThick1",0.5);   
   Control.addVariable("LowBFlightLinerMat1","Aluminium");      
-
   // 
   Control.addVariable("LowPreNLayers",4);  
   Control.addVariable("LowPreHeight1",0.2);  
@@ -955,7 +945,9 @@ EssButterflyModerator(FuncDataBase& Control)
   //  Control.addVariable("LowFlyXYangle",54.850);
   Control.addVariable("LowFlyXYangle",90.0);
   Control.addVariable("LowFlyZangle",180.0);
+  Control.addVariable("LowFlyTotalHeight",6.0);
 
+  
   Control.addVariable("LowFlyLeftLobeXStep",1.0);  
   Control.addVariable("LowFlyLeftLobeYStep",0.0);  
 
@@ -1026,7 +1018,8 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowFlyMidWaterMidYStep",1.0);
   Control.addVariable("LowFlyMidWaterMidAngle",90.0);
   Control.addVariable("LowFlyMidWaterLength",8.0);
-  Control.addVariable("LowFlyMidWaterHeight",6.0);
+ 
+
   Control.addVariable("LowFlyMidWaterWallThick",0.2);
   Control.addVariable("LowFlyMidWaterModMat","H2O");
   Control.addVariable("LowFlyMidWaterWallMat","Aluminium");
@@ -1055,8 +1048,6 @@ EssConicModerator(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("essVariables[F]","EssConicModerator");
   
-  //  Control.addVariable("LowAFlightXStep",0.0);      // Step from centre
-
 
   // CONE MODERATOR
   Control.addVariable("LowConeModXStep",-0.0);      

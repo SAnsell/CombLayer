@@ -44,6 +44,7 @@ class H2Wing :
 {
  private:
 
+  const std::string baseName; ///< Basename
   const int wingIndex;       ///< Index of surface offset
   int cellIndex;             ///< Cell index
 
@@ -83,7 +84,7 @@ class H2Wing :
 
  public:
 
-  H2Wing(const std::string&,const double);
+  H2Wing(const std::string&,const std::string&,const double);
   H2Wing(const H2Wing&);
   H2Wing& operator=(const H2Wing&);
   virtual H2Wing* clone() const;

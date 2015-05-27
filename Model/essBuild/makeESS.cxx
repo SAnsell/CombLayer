@@ -65,6 +65,7 @@
 #include "LayerComp.h"
 #include "CellMap.h"
 #include "World.h"
+#include "BasicFlightLine.h"
 #include "FlightLine.h"
 #include "AttachSupport.h"
 #include "pipeUnit.h"
@@ -105,8 +106,8 @@ makeESS::makeESS() :
   BMon(new BeamMonitor("BeamMonitor")),
   LowPreMod(new DiskPreMod("LowPreMod")),
   
-  LowAFL(new moderatorSystem::FlightLine("LowAFlight")),
-  LowBFL(new moderatorSystem::FlightLine("LowBFlight")),
+  LowAFL(new moderatorSystem::BasicFlightLine("LowAFlight")),
+  LowBFL(new moderatorSystem::BasicFlightLine("LowBFlight")),
   LowPre(new CylPreMod("LowPre")),
 
   LowSupplyPipe(new constructSystem::SupplyPipe("LSupply")),
@@ -150,35 +151,6 @@ makeESS::~makeESS()
     Destructor
   */
 {}
-
-
-void
-makeESS::lowFlightLines(Simulation& System)
-  /*!
-    Build the flight lines of the reflector
-    \param System :: Simulation to add to
-  */
-{
-  ELog::RegMethod RegA("makeESS","lowFlightLines");
-
-  std::string Out;
-
-  //  Out=Reflector->getLinkComplement(0)+LowPre->getBoxCut('A');
-  //  LowAFL->addBoundarySurf("inner",Out);  
-  //  LowAFL->addBoundarySurf("outer",Out);  
-  //  LowAFL->addOuterSurf("outer",LowPre->getBoxCut('A'));
-  
-  LowAFL->createAll(System,*Reflector,2);   // Note system +1 
-
-  /*
-  Out=Reflector->getLinkComplement(0)+LowPre->getBoxCut('B');
-  LowBFL->addBoundarySurf("inner",Out);  
-  LowBFL->addBoundarySurf("outer",Out);  
-  LowBFL->createAll(System,0,0,*LowPre);
-  LowBFL->addOuterSurf("outer",LowPre->getBoxCut('B'));  
-  */
-  return;
-}
 
 void
 makeESS::topFlightLines(Simulation& System)
@@ -477,11 +449,17 @@ makeESS::build(Simulation& System,
   
   Reflector->insertComponent(System,"targetVoid",*Target,1);
   Reflector->deleteCell(System,"lowVoid");
-  LowAFL->createAll(System,*LowMod,*Reflector,2);   // Note system +1
-  
+
   Bulk->createAll(System,*Reflector,*Reflector);
+
+  // Build flightlines after bulk
+  LowAFL->createAll(System,*LowMod,0,*Reflector,4,*Bulk,-3);
+  //  LowBFL->createAll(System,*LowMod,0,*Reflector,3,*Bulk,-3);   
+  
   attachSystem::addToInsertSurfCtrl(System,*Bulk,Target->getKey("Wheel"));
   attachSystem::addToInsertForced(System,*Bulk,Target->getKey("Shaft"));
+  attachSystem::addToInsertForced(System,*Bulk,LowAFL->getKey("outer"));
+  //  attachSystem::addToInsertForced(System,*Bulk,LowBFL->getKey("outer"));
 
 
   // Full surround object
@@ -510,9 +488,6 @@ makeESS::build(Simulation& System,
   // attachSystem::addToInsertForced(System,*Reflector,*BMon);
 
   //  buildLowerPipe(System,lowPipeType);
-
-
-
 
 
   makeBeamLine(System,IParam);

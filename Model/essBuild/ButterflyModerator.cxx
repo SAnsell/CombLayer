@@ -60,9 +60,9 @@ ButterflyModerator::ButterflyModerator(const std::string& Key) :
   constructSystem::ModBase(Key,12),
   flyIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(flyIndex+1),
-  LeftUnit(new H2Wing(Key+"LeftLobe",90.0)),
-  RightUnit(new H2Wing(Key+"RightLobe",270.0)),
-  MidWater(new MidWaterDivider(Key+"MidWater"))
+  LeftUnit(new H2Wing(Key,"LeftLobe",90.0)),
+  RightUnit(new H2Wing(Key,"RightLobe",270.0)),
+  MidWater(new MidWaterDivider(Key,"MidWater"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -133,8 +133,7 @@ ButterflyModerator::createSurfaces()
 {
   ELog::RegMethod RegA("ButterflyModerator","createSurface");
   
-  Geometry::Cylinder* CPtr=
-    ModelSupport::buildCylinder(SMap,flyIndex+7,Origin,Z,outerRadius);
+  ModelSupport::buildCylinder(SMap,flyIndex+7,Origin,Z,outerRadius);
   return;
 }
 
@@ -266,6 +265,8 @@ ButterflyModerator::createAll(Simulation& System,
   LeftUnit->createAll(System,*this);
   RightUnit->createAll(System,*this);
   MidWater->createAll(System,*this,*LeftUnit,*RightUnit);
+  Origin=MidWater->getCentre();
+  ELog::EM<<"Origin == "<<Origin<<ELog::endDiag;
   createExternal();
   
   createSurfaces();
