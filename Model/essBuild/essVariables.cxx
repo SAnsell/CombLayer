@@ -391,6 +391,8 @@ EssVariables(FuncDataBase& Control)
 
   Control.addVariable("LowAFlightXStep",0.0); // Step from centre
   Control.addVariable("LowAFlightZStep",0.0);      // Step from centre
+  Control.addVariable("LowAFlightXYangle",0.0);  // Angle out
+  Control.addVariable("LowAFlightZangle",0.0);  // Angle out
   Control.addVariable("LowAFlightAngleXY1",30.0);  // Angle out
   Control.addVariable("LowAFlightAngleXY2",30.0);  // Angle out
   Control.addVariable("LowAFlightAngleZTop",0.0);  // Step down angle
@@ -409,7 +411,8 @@ EssVariables(FuncDataBase& Control)
 
   Control.addVariable("LowBFlightXStep",3.5);     // Angle
   Control.addVariable("LowBFlightZStep",0.0);      // Step from centre
-  Control.addVariable("LowBFlightMasterXY",0.0);  // Angle out
+  Control.addVariable("LowBFlightXYangle",180.0);  // Angle out
+  Control.addVariable("LowBFlightZangle",0.0);  // Angle out
   Control.addVariable("LowBFlightAngleXY1",30.0);  // Angle out
   Control.addVariable("LowBFlightAngleXY2",30.0);  // Angle out
   Control.addVariable("LowBFlightAngleZTop",0.0);  // Step down angle
@@ -942,11 +945,9 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowFlyXStep",0.0);  
   Control.addVariable("LowFlyYStep",0.0);  
   Control.addVariable("LowFlyZStep",0.0);
-  //  Control.addVariable("LowFlyXYangle",54.850);
   Control.addVariable("LowFlyXYangle",90.0);
   Control.addVariable("LowFlyZangle",180.0);
   Control.addVariable("LowFlyTotalHeight",6.0);
-
   
   Control.addVariable("LowFlyLeftLobeXStep",1.0);  
   Control.addVariable("LowFlyLeftLobeYStep",0.0);  

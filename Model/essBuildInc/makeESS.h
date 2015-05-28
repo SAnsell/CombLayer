@@ -118,7 +118,6 @@ class makeESS
   void lowFlightLines(Simulation&);
   void createGuides(Simulation&);
 
-  void buildLowMod(Simulation&);
   void buildLowButterfly(Simulation&);
   void buildLowPreMod(Simulation&);
   void buildLowCylMod(Simulation&);

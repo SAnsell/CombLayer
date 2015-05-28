@@ -171,7 +171,7 @@ MidWaterDivider::populate(const FuncDataBase& Control)
   midAngle=Control.EvalVar<double>(keyName+"MidAngle");
 
   length=Control.EvalVar<double>(keyName+"Length");
-  height=Control.EvalVar<double>(keyName+"Height");
+  height=Control.EvalDefVar<double>(keyName+"Height",-1.0);
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
   
   modMat=ModelSupport::EvalMat<int>(Control,keyName+"ModMat");
@@ -179,6 +179,8 @@ MidWaterDivider::populate(const FuncDataBase& Control)
   modTemp=Control.EvalVar<double>(keyName+"ModTemp");
 
   totalHeight=Control.EvalPair<double>(keyName,baseName,"TotalHeight");
+  if (height<Geometry::zeroTol)
+    height=totalHeight-2.0*wallThick;
   return;
 }
   

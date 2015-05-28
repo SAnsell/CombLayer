@@ -29,9 +29,11 @@ class ButterflyModerator :
   std::shared_ptr<H2Wing> LeftUnit;        ///< Left part of the moderator
   std::shared_ptr<H2Wing> RightUnit;       ///< Right part of the moderator
   std::shared_ptr<MidWaterDivider> MidWater;    ///< Water divider
-    
+
+  double totalHeight;                     ///< Total height
   double outerRadius;                     ///< Main outer radius
-  
+
+  void populate(const FuncDataBase&);
   void createExternal();
   void createSurfaces();
   void createObjects(Simulation&);

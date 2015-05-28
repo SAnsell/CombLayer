@@ -91,7 +91,7 @@ H2Wing::H2Wing(const std::string& baseKey,
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0,0),
   attachSystem::FixedComp(baseKey+extraKey,8),
-  baseKey(baseName)
+  baseName(baseKey),
   wingIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
   cellIndex(wingIndex+1),xyOffset(XYAngle)
   /*!
@@ -103,7 +103,7 @@ H2Wing::H2Wing(const std::string& baseKey,
 
 H2Wing::H2Wing(const H2Wing& A) : 
   attachSystem::ContainedComp(A),attachSystem::LayerComp(A),
-  attachSystem::FixedComp(A),
+  attachSystem::FixedComp(A),baseName(A.baseName),
   wingIndex(A.wingIndex),cellIndex(A.cellIndex),
   Pts(A.Pts),radius(A.radius),height(A.height),
   modMat(A.modMat),modTemp(A.modTemp)
@@ -160,6 +160,9 @@ H2Wing::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("H2Wing","populate");
 
+
+  totalHeight=Control.EvalVar<double>(baseName+"TotalHeight");
+  
   xStep=Control.EvalVar<double>(keyName+"XStep");
   yStep=Control.EvalVar<double>(keyName+"YStep");
   
@@ -170,7 +173,6 @@ H2Wing::populate(const FuncDataBase& Control)
       radius[i]=Control.EvalVar<double>
 	(keyName+"Radius"+StrFunc::makeString(i+1));
     }
-  height=Control.EvalVar<double>(keyName+"Height");
 
   modTemp=Control.EvalVar<double>(keyName+"ModTemp");
   modMat=ModelSupport::EvalMat<int>(Control,keyName+"ModMat");
@@ -183,8 +185,7 @@ H2Wing::populate(const FuncDataBase& Control)
   vThick.push_back(0.0);
   temp.push_back(modTemp);
   mat.push_back(modMat);
-
-  totalHeight=height;
+  double TH(0.0);
   for(size_t i=1;i<nLayers;i++)
     {
       const std::string Num=StrFunc::makeString(i);
@@ -197,9 +198,18 @@ H2Wing::populate(const FuncDataBase& Control)
       vThick.push_back(VT);
       temp.push_back(mTemp);
       mat.push_back(M);
-      totalHeight+=2.0*VT;
+      TH+=2.0*VT;
     }
 
+  // calculated relative to 
+  height=totalHeight-TH;
+  if (height<Geometry::zeroTol)
+    throw ColErr::NumericalAbort("Unable to calculate a negative height.\n"
+				 "Thickness   == "+
+				 StrFunc::makeString(height)+
+				 "totalheight == "+
+				 StrFunc::makeString(totalHeight));
+  
   return;
 }
   
@@ -220,7 +230,8 @@ H2Wing::createUnitVector(const attachSystem::FixedComp& FC)
   applyAngleRotate(xyOffset,0.0);
   for(size_t i=0;i<3;i++)
     Pts[i]=realPt(Pts[i]);
-
+  ELog::EM<<"TOTOA == "<<totalHeight<<ELog::endDiag;
+  ELog::EM<<"Origin = "<<Origin<<ELog::endDiag;
   return;
 }
 

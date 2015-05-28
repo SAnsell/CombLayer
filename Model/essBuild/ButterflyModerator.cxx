@@ -126,6 +126,20 @@ ButterflyModerator::~ButterflyModerator()
 {}
 
 void
+ButterflyModerator::populate(const FuncDataBase& Control)
+  /*!
+    Populate the variables
+    \param Control :: DataBase
+   */
+{
+  ELog::RegMethod RegA("ButterflyModerator","populate");
+
+  ModBase::populate(Control);
+  totalHeight=Control.EvalVar<double>(keyName+"TotalHeight");
+  return;
+}
+  
+void
 ButterflyModerator::createSurfaces()
   /*!
     Create/hi-jack all the surfaces
@@ -259,12 +273,15 @@ ButterflyModerator::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("ButterflyModerator","createAll");
 
-  ModBase::populate(System.getDataBase());
+  populate(System.getDataBase());
+
   ModBase::createUnitVector(axisFC,orgFC,sideIndex);
 
+  
   LeftUnit->createAll(System,*this);
   RightUnit->createAll(System,*this);
   MidWater->createAll(System,*this,*LeftUnit,*RightUnit);
+  ELog::EM<<"Origin == "<<Origin<<ELog::endDiag;
   Origin=MidWater->getCentre();
   ELog::EM<<"Origin == "<<Origin<<ELog::endDiag;
   createExternal();

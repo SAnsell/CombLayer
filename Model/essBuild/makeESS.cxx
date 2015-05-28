@@ -224,7 +224,7 @@ makeESS::makeTarget(Simulation& System,
 }
 
 void 
-makeESS::createGuides(Simulation&)
+makeESS::createGuides(Simulation& System)
   /*!
     Create all the guidebays and guides
     \param System :: Simulation system to use
@@ -239,33 +239,14 @@ makeESS::createGuides(Simulation&)
       GB->addInsertCell("Outer",ShutterBayObj->getMainCell());
       GB->setCylBoundary(Bulk->getLinkSurf(2),
 			 ShutterBayObj->getLinkSurf(2));
+      if (i<2)
+	GB->createAll(System,*LowMod);  
       //      if(i<2)
-      //	GB->createAll(System,*LowMod);  
+      //
       //      else
 	//	GB->createAll(System,*TopMod);  
       GBArray.push_back(GB);
     }
-  return;
-}
-
-void
-makeESS::buildLowMod(Simulation& System)		   
-  /*!
-    Build the lower moderators
-    \param System :: Simulation to build
-  */
-{
-  ELog::RegMethod RegA("makeESS","buildLowMod");
-
-
-  buildLowButterfly(System);
-  // else 
-  //   {
-  //     buildLowCylMod(System);
-  //     lowFlightLines(System);
-  //     Bulk->addFlightUnit(System,*LowAFL);
-  //     Bulk->addFlightUnit(System,*LowBFL);  
-  //   }
   return;
 }
 
@@ -445,7 +426,6 @@ makeESS::build(Simulation& System,
 		       Target->wheelHeight(),
 		       LowPreMod->getHeight()+LMHeight,
 		       -1.0);
-
   
   Reflector->insertComponent(System,"targetVoid",*Target,1);
   Reflector->deleteCell(System,"lowVoid");
@@ -454,13 +434,12 @@ makeESS::build(Simulation& System,
 
   // Build flightlines after bulk
   LowAFL->createAll(System,*LowMod,0,*Reflector,4,*Bulk,-3);
-  //  LowBFL->createAll(System,*LowMod,0,*Reflector,3,*Bulk,-3);   
+  LowBFL->createAll(System,*LowMod,0,*Reflector,3,*Bulk,-3);   
   
   attachSystem::addToInsertSurfCtrl(System,*Bulk,Target->getKey("Wheel"));
   attachSystem::addToInsertForced(System,*Bulk,Target->getKey("Shaft"));
   attachSystem::addToInsertForced(System,*Bulk,LowAFL->getKey("outer"));
-  //  attachSystem::addToInsertForced(System,*Bulk,LowBFL->getKey("outer"));
-
+  attachSystem::addToInsertForced(System,*Bulk,LowBFL->getKey("outer"));
 
   // Full surround object
   ShutterBayObj->addInsertCell(voidCell);

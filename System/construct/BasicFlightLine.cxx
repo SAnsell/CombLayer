@@ -109,9 +109,8 @@ BasicFlightLine::populate(const FuncDataBase& Control)
   // First get inner widths:
   xStep=Control.EvalVar<double>(keyName+"XStep");
   zStep=Control.EvalVar<double>(keyName+"ZStep");
-
-  masterXY=Control.EvalDefVar<double>(keyName+"MasterXY",0.0);
-  masterZ=Control.EvalDefVar<double>(keyName+"MasterZ",0.0);
+  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
+  zAngle=Control.EvalVar<double>(keyName+"Zangle");
 
   anglesXY[0]=Control.EvalVar<double>(keyName+"AngleXY1");
   anglesXY[1]=Control.EvalVar<double>(keyName+"AngleXY2");
@@ -151,7 +150,6 @@ BasicFlightLine::createUnitVector(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("BasicFlightLine","createUnitVector");
   FixedComp::createUnitVector(FC,sideIndex);
-
   applyShift(xStep,0,zStep);
   applyAngleRotate(xyAngle,zAngle);
   return;
