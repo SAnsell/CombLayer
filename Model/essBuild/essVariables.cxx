@@ -984,7 +984,7 @@ EssButterflyModerator(FuncDataBase& Control)
 
   Control.addVariable("LowFlyFlowGuideBaseThick",1.0);
   Control.addVariable("LowFlyFlowGuideBaseLen",3.0);
-  Control.addVariable("LowFlyFlowGuideBaseOffset",Geometry::Vec3D(0,6,0));
+  Control.addVariable("LowFlyFlowGuideBaseOffset",Geometry::Vec3D(0,-6,0));
   Control.addVariable("LowFlyFlowGuideWallMat","Aluminium");
   Control.addVariable("LowFlyFlowGuideWallTemp",20.0);
   

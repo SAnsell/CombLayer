@@ -186,7 +186,7 @@ H2FlowGuide::createUnitVector(const attachSystem::FixedComp& FC)
   ELog::EM<<"Y == "<<Y<<ELog::endDiag;
   return;
 }  
-
+  
 void
 H2FlowGuide::createSurfaces()
   /*!
@@ -220,6 +220,7 @@ H2FlowGuide::createObjects(Simulation& System,
 {
   ELog::RegMethod RegA("H2FlowGuide","createObjects");
 
+  
   const attachSystem::CellMap* CM=
     dynamic_cast<const attachSystem::CellMap*>(&HW);
   MonteCarlo::Object* InnerObj(0);
