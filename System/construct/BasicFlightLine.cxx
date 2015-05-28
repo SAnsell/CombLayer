@@ -150,6 +150,7 @@ BasicFlightLine::createUnitVector(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("BasicFlightLine","createUnitVector");
   FixedComp::createUnitVector(FC,sideIndex);
+
   applyShift(xStep,0,zStep);
   applyAngleRotate(xyAngle,zAngle);
   return;

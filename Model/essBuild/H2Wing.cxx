@@ -80,6 +80,7 @@
 #include "AttachSupport.h"
 #include "geomSupport.h"
 #include "ModBase.h"
+#include "H2FlowGuide.h"
 #include "H2Wing.h"
 
 namespace essSystem
@@ -90,21 +91,32 @@ H2Wing::H2Wing(const std::string& baseKey,
 	       const double XYAngle) :
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0,0),
-  attachSystem::FixedComp(baseKey+extraKey,8),
+  attachSystem::FixedComp(baseKey+extraKey,16),
+  attachSystem::CellMap(),
   baseName(baseKey),
   wingIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
-  cellIndex(wingIndex+1),xyOffset(XYAngle)
+  cellIndex(wingIndex+1),
+  InnerComp(new H2FlowGuide(baseKey,extraKey,"FlowGuide")),
+  xyOffset(XYAngle)
   /*!
     Constructor BUT ALL variable are left unpopulated.
-    \param Key :: Name for item in search
+    \param baseKey :: Butterfly main key
+    \param extraKey :: Specialized name
     \param XYAngle :: Offset of angle of Wing
   */
-{}
+{
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+  OR.addObject(InnerComp);
+}
 
 H2Wing::H2Wing(const H2Wing& A) : 
   attachSystem::ContainedComp(A),attachSystem::LayerComp(A),
-  attachSystem::FixedComp(A),baseName(A.baseName),
+  attachSystem::FixedComp(A),attachSystem::CellMap(A),
+  baseName(A.baseName),
   wingIndex(A.wingIndex),cellIndex(A.cellIndex),
+  InnerComp(A.InnerComp->clone()),
   Pts(A.Pts),radius(A.radius),height(A.height),
   modMat(A.modMat),modTemp(A.modTemp)
   /*!
@@ -124,8 +136,11 @@ H2Wing::operator=(const H2Wing& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
+      attachSystem::LayerComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
       cellIndex=A.cellIndex;
+      *InnerComp=*A.InnerComp;
       Pts=A.Pts;
       radius=A.radius;
       height=A.height;
@@ -159,7 +174,6 @@ H2Wing::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("H2Wing","populate");
-
 
   totalHeight=Control.EvalVar<double>(baseName+"TotalHeight");
   
@@ -230,8 +244,6 @@ H2Wing::createUnitVector(const attachSystem::FixedComp& FC)
   applyAngleRotate(xyOffset,0.0);
   for(size_t i=0;i<3;i++)
     Pts[i]=realPt(Pts[i]);
-  ELog::EM<<"TOTOA == "<<totalHeight<<ELog::endDiag;
-  ELog::EM<<"Origin = "<<Origin<<ELog::endDiag;
   return;
 }
 
@@ -272,6 +284,23 @@ H2Wing::createLinks()
   FixedComp::setConnect(5,Origin+Z*(VDepth+height/2.0),Z);
   FixedComp::setLinkSurf(4,-SMap.realSurf(triOffset+5));
   FixedComp::setLinkSurf(5,SMap.realSurf(triOffset+6));
+
+  // INNER LINKS
+  
+  cornerSet(0.0,CPts,NPts);
+  // mid plane points
+  ii=wingIndex+100;
+  for(size_t i=0;i<3;i++)
+    {
+      ii++;
+      FixedComp::setConnect(i+8,(CPts[i]+CPts[(i+1)%3])/2.0,-NPts[i]);
+      FixedComp::setLinkSurf(i+8,-SMap.realSurf(ii));
+    }
+  FixedComp::setConnect(12,Origin-Z*(height/2.0),Z);
+  FixedComp::setConnect(13,Origin+Z*(height/2.0),-Z);
+  FixedComp::setLinkSurf(12,SMap.realSurf(wingIndex+105));
+  FixedComp::setLinkSurf(13,-SMap.realSurf(wingIndex+106));
+
   return;
 }
   
@@ -435,6 +464,9 @@ H2Wing::createObjects(Simulation& System)
       Inner.makeComplement();
       System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],
 				       Out+Inner.display()));
+      if (!i)
+	CellMap::setCell("Inner",cellIndex-1);
+      
       Inner.procString(Out);
       triOffset+=100;
     }
@@ -548,7 +580,7 @@ H2Wing::getLayerString(const size_t layerIndex,
 
 void
 H2Wing::createAll(Simulation& System,
-		       const attachSystem::FixedComp& FC)
+		  const attachSystem::FixedComp& FC)
   /*!
     Generic function to create everything
     \param System :: Simulation item
@@ -563,7 +595,9 @@ H2Wing::createAll(Simulation& System,
   createObjects(System);
 
   createLinks();
-  insertObjects(System);       
+  insertObjects(System);
+
+  InnerComp->createAll(System,*this);
   return;
 }
   

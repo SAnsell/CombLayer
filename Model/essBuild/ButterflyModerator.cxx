@@ -281,9 +281,7 @@ ButterflyModerator::createAll(Simulation& System,
   LeftUnit->createAll(System,*this);
   RightUnit->createAll(System,*this);
   MidWater->createAll(System,*this,*LeftUnit,*RightUnit);
-  ELog::EM<<"Origin == "<<Origin<<ELog::endDiag;
   Origin=MidWater->getCentre();
-  ELog::EM<<"Origin == "<<Origin<<ELog::endDiag;
   createExternal();
   
   createSurfaces();

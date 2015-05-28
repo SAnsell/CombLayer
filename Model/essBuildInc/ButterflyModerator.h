@@ -15,7 +15,6 @@ namespace essSystem
   \brief Butterfly moderator object [composite for mutli-system]
      
   Implementation based on K. Bat concept
-     
 */
 
 class ButterflyModerator :

@@ -65,6 +65,8 @@ class CellMap
 
   void deleteCell(Simulation&,const std::string&);
 
+  static int getCell(const std::string&,const std::string&);
+  
 };
 
 }

@@ -209,7 +209,7 @@ CellMap::insertComponent(Simulation& System,
 
 void
 CellMap::insertComponent(Simulation& System,
-			  const std::string& Key,
+			 const std::string& Key,
 			 const FixedComp& FC,
 			 const long int sideIndex) const
 /*!
