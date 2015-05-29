@@ -1,7 +1,7 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
- * File:   d4cModel/makeTS3.cxx
+ * File:   t3Model/makeTS3.cxx
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -110,7 +110,7 @@ makeTS3::build(Simulation& System,
   int voidCell(74123);
 
   CentObj->addInsertCell(voidCell);
-  CentObj->createAll(System,World::masterOrigin());
+  CentObj->createAll(System,World::masterOrigin(),0,0);
 
   HeadRule WBoundary;
   WCut->addInsertCell(CentObj->getCell(CentObj->getKeyName(),5));

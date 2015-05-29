@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   essBuild/essVariables.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,6 +55,7 @@ namespace setVariable
   void EssBeamLinesVariables(FuncDataBase&);
   void EssReflectorVariables(FuncDataBase&);
   void EssSANSVariables(FuncDataBase&);
+  void EssButterflyModerator(FuncDataBase&);
   void EssConicModerator(FuncDataBase&);
   void ESSWheel(FuncDataBase&);
 
@@ -386,12 +387,12 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("LowModConic3WallMat","Aluminium");
   Control.addVariable("LowModConic3Wall",0.2);
 
-  
-
   // FLIGHT LINE
 
-  Control.addVariable("LowAFlightXStep",-3.2+1.5);      // Step from centre
+  Control.addVariable("LowAFlightXStep",0.0); // Step from centre
   Control.addVariable("LowAFlightZStep",0.0);      // Step from centre
+  Control.addVariable("LowAFlightXYangle",0.0);  // Angle out
+  Control.addVariable("LowAFlightZangle",0.0);  // Angle out
   Control.addVariable("LowAFlightAngleXY1",30.0);  // Angle out
   Control.addVariable("LowAFlightAngleXY2",30.0);  // Angle out
   Control.addVariable("LowAFlightAngleZTop",0.0);  // Step down angle
@@ -408,15 +409,10 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("LowAFlightLinerThick4",0.3);      // Liner
   Control.addVariable("LowAFlightLinerMat4","Void");      // Liner
 
-  Control.addVariable("LowAFlightLinerCap1",1);      // Liner
-  Control.addVariable("LowAFlightLinerCap2",2);      // Liner
-  Control.addVariable("LowAFlightLinerCap3",1);      // Liner
-
-  
-
   Control.addVariable("LowBFlightXStep",3.5);     // Angle
   Control.addVariable("LowBFlightZStep",0.0);      // Step from centre
-  Control.addVariable("LowBFlightMasterXY",0.0);  // Angle out
+  Control.addVariable("LowBFlightXYangle",180.0);  // Angle out
+  Control.addVariable("LowBFlightZangle",0.0);  // Angle out
   Control.addVariable("LowBFlightAngleXY1",30.0);  // Angle out
   Control.addVariable("LowBFlightAngleXY2",30.0);  // Angle out
   Control.addVariable("LowBFlightAngleZTop",0.0);  // Step down angle
@@ -426,7 +422,6 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("LowBFlightNLiner",1);      // Liner
   Control.addVariable("LowBFlightLinerThick1",0.5);   
   Control.addVariable("LowBFlightLinerMat1","Aluminium");      
-
   // 
   Control.addVariable("LowPreNLayers",4);  
   Control.addVariable("LowPreHeight1",0.2);  
@@ -826,13 +821,14 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("BeRefZangle",0.0);
   Control.addVariable("BeRefRadius",29.9);
   Control.addVariable("BeRefHeight",89.8);
-  Control.addVariable("BeRefWallThick",0.1);
-  Control.addVariable("BeRefTargSepThick",12.30);
+  Control.addVariable("BeRefWallThick",1.1);
+  Control.addVariable("BeRefTargetSepThick",13.0);
+  Control.addVariable("BeRefLowVoidThick",7.0);
+  Control.addVariable("BeRefTopVoidThick",2.30);
   Control.addVariable("BeRefRefMat","Be300K");
-  Control.addVariable("BeRefWallMat","Aluminium");
-  Control.addVariable("BeRefTargSepMat","Stainless304");
 
-  
+  Control.addVariable("BeRefWallMat","Aluminium");
+  Control.addVariable("BeRefTargSepMat","Void");
 
   Control.addVariable("BulkXStep",0.0);
   Control.addVariable("BulkYStep",0.0);
@@ -908,6 +904,7 @@ EssVariables(FuncDataBase& Control)
   EssReflectorVariables(Control);
   EssSANSVariables(Control);
   EssConicModerator(Control);
+  EssButterflyModerator(Control);
   EssWheel(Control);
 
 
@@ -937,6 +934,119 @@ EssVariables(FuncDataBase& Control)
 }
 
 void
+EssButterflyModerator(FuncDataBase& Control)
+  /*!
+    Create all the Conic moderator option variables
+    \param Control :: DataBase
+  */
+{
+  ELog::RegMethod RegA("essVariables[F]","EssButterflyModerator");
+
+  Control.addVariable("LowFlyXStep",0.0);  
+  Control.addVariable("LowFlyYStep",0.0);  
+  Control.addVariable("LowFlyZStep",0.0);
+  Control.addVariable("LowFlyXYangle",90.0);
+  Control.addVariable("LowFlyZangle",180.0);
+  Control.addVariable("LowFlyTotalHeight",6.0);
+  
+  Control.addVariable("LowFlyLeftLobeXStep",1.0);  
+  Control.addVariable("LowFlyLeftLobeYStep",0.0);  
+
+  Control.addVariable("LowFlyLeftLobeCorner1",Geometry::Vec3D(0,0,0));
+  Control.addVariable("LowFlyLeftLobeCorner2",Geometry::Vec3D(-13.4,-14.3,0));
+  Control.addVariable("LowFlyLeftLobeCorner3",Geometry::Vec3D(13.4,-14.3,0));
+  
+  Control.addVariable("LowFlyLeftLobeRadius1",5.0);
+  Control.addVariable("LowFlyLeftLobeRadius2",2.506);
+  Control.addVariable("LowFlyLeftLobeRadius3",2.506);
+
+  Control.addVariable("LowFlyLeftLobeHeight",6.0);
+  Control.addVariable("LowFlyLeftLobeModMat","ParaH2");
+  Control.addVariable("LowFlyLeftLobeModTemp",20.0);
+
+  Control.addVariable("LowFlyLeftLobeNLayers",4);
+  Control.addVariable("LowFlyLeftLobeThick1",0.3);
+  Control.addVariable("LowFlyLeftLobeMat1","Aluminium");
+  Control.addVariable("LowFlyLeftLobeVThick1",0.3);
+  Control.addVariable("LowFlyLeftLobeModTemp1",20.0);
+  
+  Control.addVariable("LowFlyLeftLobeThick2",0.5);
+  Control.addVariable("LowFlyLeftLobeMat2","Void");
+  Control.addVariable("LowFlyLeftLobeVThick2",0.8);
+
+  Control.addVariable("LowFlyLeftLobeThick3",0.3);
+  Control.addVariable("LowFlyLeftLobeMat3","Aluminium");
+  Control.addVariable("LowFlyLeftLobeVThick3",0.3);
+
+  Control.addVariable("LowFlyLeftLobeThick4",0.5);
+  Control.addVariable("LowFlyLeftLobeMat4","Void");
+  Control.addVariable("LowFlyLeftLobeVThick4",0.3);
+
+  Control.addVariable("LowFlyFlowGuideBaseThick",1.0);
+  Control.addVariable("LowFlyFlowGuideBaseLen",3.0);
+  Control.addVariable("LowFlyFlowGuideBaseOffset",Geometry::Vec3D(0,-6,0));
+  Control.addVariable("LowFlyFlowGuideWallMat","Aluminium");
+  Control.addVariable("LowFlyFlowGuideWallTemp",20.0);
+  
+  Control.addVariable("LowFlyRightLobeXStep",-1.0);  
+  Control.addVariable("LowFlyRightLobeYStep",0.0);  
+
+  Control.addVariable("LowFlyRightLobeCorner1",Geometry::Vec3D(0,0,0));
+  Control.addVariable("LowFlyRightLobeCorner2",Geometry::Vec3D(-13.4,-14.3,0));
+  Control.addVariable("LowFlyRightLobeCorner3",Geometry::Vec3D(13.4,-14.3,0));
+
+  Control.addVariable("LowFlyRightLobeRadius1",5.0);
+  Control.addVariable("LowFlyRightLobeRadius2",2.506);
+  Control.addVariable("LowFlyRightLobeRadius3",2.506);
+
+  Control.addVariable("LowFlyRightLobeHeight",6.0);
+  Control.addVariable("LowFlyRightLobeModMat","ParaH2");
+  Control.addVariable("LowFlyRightLobeModTemp",20.0);
+
+  Control.addVariable("LowFlyRightLobeNLayers",4);
+  Control.addVariable("LowFlyRightLobeThick1",0.3);
+  Control.addVariable("LowFlyRightLobeMat1","Aluminium");
+  Control.addVariable("LowFlyRightLobeVThick1",0.3);
+  Control.addVariable("LowFlyRightLobeModTemp1",20.0);
+  
+  Control.addVariable("LowFlyRightLobeThick2",0.5);
+  Control.addVariable("LowFlyRightLobeMat2","Void");
+  Control.addVariable("LowFlyRightLobeVThick2",0.8);
+
+  Control.addVariable("LowFlyRightLobeThick3",0.3);
+  Control.addVariable("LowFlyRightLobeMat3","Aluminium");
+  Control.addVariable("LowFlyRightLobeVThick3",0.3);
+
+  Control.addVariable("LowFlyRightLobeThick4",0.5);
+  Control.addVariable("LowFlyRightLobeMat4","Void");
+  Control.addVariable("LowFlyRightLobeVThick4",0.3);
+
+  Control.addVariable("LowFlyMidWaterCutLayer",3);
+  Control.addVariable("LowFlyMidWaterMidYStep",1.0);
+  Control.addVariable("LowFlyMidWaterMidAngle",90.0);
+  Control.addVariable("LowFlyMidWaterLength",8.0);
+ 
+
+  Control.addVariable("LowFlyMidWaterWallThick",0.2);
+  Control.addVariable("LowFlyMidWaterModMat","H2O");
+  Control.addVariable("LowFlyMidWaterWallMat","Aluminium");
+  Control.addVariable("LowFlyMidWaterModTemp",300.0);
+
+  
+  Control.addVariable("LowPreModNLayers",2);
+  Control.addVariable("LowPreModHeight0",2.0);
+  Control.addVariable("LowPreModDepth0",2.0);
+  Control.addVariable("LowPreModRadius0",30.0);
+  Control.addVariable("LowPreModMat0","H2O");
+  Control.addVariable("LowPreModHeight1",0.3);
+  Control.addVariable("LowPreModDepth1",0.3);
+  Control.addVariable("LowPreModRadius1",0.3);
+  Control.addVariable("LowPreModMat1","Aluminium");
+
+  return;
+}
+  
+void
 EssConicModerator(FuncDataBase& Control)
   /*!
     Create all the Conic moderator option variables
@@ -945,8 +1055,6 @@ EssConicModerator(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("essVariables[F]","EssConicModerator");
   
-  //  Control.addVariable("LowAFlightXStep",0.0);      // Step from centre
-
 
   // CONE MODERATOR
   Control.addVariable("LowConeModXStep",-0.0);      
@@ -1103,6 +1211,7 @@ EssSANSVariables(FuncDataBase& Control)
   return;
 }
 
+  
 void
 EssBeamLinesVariables(FuncDataBase& Control)
   /*!

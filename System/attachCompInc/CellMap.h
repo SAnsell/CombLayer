@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   attachCompInc/CellMap.h
  *
@@ -24,6 +24,8 @@
 
 namespace attachSystem
 {
+  class ContainedComp;
+
 /*!
   \class CellMap
   \version 1.0
@@ -51,6 +53,19 @@ class CellMap
   void setCell(const std::string&,const size_t,const int);
   int getCell(const std::string&) const;
   int getCell(const std::string&,const size_t) const;
+
+  void insertComponent(Simulation&,const std::string&,
+		       const ContainedComp&) const;
+  void insertComponent(Simulation&,const std::string&,
+		       const HeadRule&) const;
+  void insertComponent(Simulation&,const std::string&,
+		       const std::string&) const;
+  void insertComponent(Simulation&,const std::string&,
+		       const FixedComp&,const long int) const;
+
+  void deleteCell(Simulation&,const std::string&);
+
+  static int getCell(const std::string&,const std::string&);
   
 };
 

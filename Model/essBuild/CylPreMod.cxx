@@ -3,7 +3,7 @@
  
  * File:   essBuild/CylPreMod.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -338,7 +338,7 @@ CylPreMod::createUnitVector(const attachSystem::FixedComp& FC)
 void
 CylPreMod::createSurfaces()
   /*!
-    Create planes for the silicon and Polyethene layers
+    Create surfaces for the model
   */
 {
   ELog::RegMethod RegA("CylPreMod","createSurfaces");
@@ -442,8 +442,9 @@ CylPreMod::createObjects(Simulation& System,
 	{	  
 	  const int divideN(modIndex+100*static_cast<int>(viewIndex));
 	  Out=ModelSupport::getComposite(SMap,SI,CI," 7 -7M ");
-	  Out+=ModelSupport::getComposite(SMap,SI+100*static_cast<int>(viewIndex),
-					  divideN," 101M (103:104:105:106) -113 -114 -115 -116");
+	  Out+=ModelSupport::getComposite
+	    (SMap,SI+100*static_cast<int>(viewIndex),
+	     divideN," 101M (103:104:105:106) -113 -114 -115 -116");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],Out));
 	  layerCells.push_back(cellIndex-1);
 	}

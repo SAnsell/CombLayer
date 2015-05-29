@@ -83,9 +83,8 @@ bool findPlaneIntersect(const Geometry::Plane&,
 			std::vector<int>&,
 			std::vector<int>&);
 
-size_t calcLinkIntersect(const Geometry::Vec3D&,
-			 const Geometry::Vec3D&,
-			 const std::string&);
+double calcLinkDistance(const FixedComp&,
+			const long int,const long int);
 
 }
 

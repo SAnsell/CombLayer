@@ -253,12 +253,12 @@ $gM->addDepUnit("cuBuild",  ["cuBlock","delft","visit","src","physics",
 			     "attachComp","visit"]);
 
 $gM->addDepUnit("ess",      ["essBuild","visit","src","simMC",
-			     "beamline","physics",
+			     "beamline","physics","support",
 			     "input","source","monte","funcBase","log",
 			     "tally","construct","crystal","transport",
 			     "scatMat","md5","endf","process","world","work",
 			     "monte","geometry","mersenne","src","xml","poly",
-			     "support","weights","global","attachComp",
+			     "weights","global","attachComp",
 			     "visit"]);
 
 $gM->addDepUnit("sinbad",   ["sinbadBuild","visit","src","simMC",

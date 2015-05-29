@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   essBuild/makeESS.cxx
  *
@@ -65,6 +65,7 @@
 #include "LayerComp.h"
 #include "CellMap.h"
 #include "World.h"
+#include "BasicFlightLine.h"
 #include "FlightLine.h"
 #include "AttachSupport.h"
 #include "pipeUnit.h"
@@ -80,12 +81,15 @@
 #include "ModBase.h"
 #include "ConicInfo.h"
 #include "CylMod.h"
+#include "H2Wing.h"
+#include "ButterflyModerator.h"
 #include "BlockAddition.h"
 #include "CylPreMod.h"
 #include "SupplyPipe.h"
 #include "BulkModule.h"
 #include "ShutterBay.h"
 #include "GuideBay.h"
+#include "DiskPreMod.h"
 
 #include "ConicModerator.h"
 #include "essDBMaterial.h"
@@ -100,9 +104,12 @@ makeESS::makeESS() :
   Reflector(new BeRef("BeRef")),
   PBeam(new ProtonTube("ProtonTube")),
   BMon(new BeamMonitor("BeamMonitor")),
-  LowAFL(new moderatorSystem::FlightLine("LowAFlight")),
-  LowBFL(new moderatorSystem::FlightLine("LowBFlight")),
+  LowPreMod(new DiskPreMod("LowPreMod")),
+  
+  LowAFL(new moderatorSystem::BasicFlightLine("LowAFlight")),
+  LowBFL(new moderatorSystem::BasicFlightLine("LowBFlight")),
   LowPre(new CylPreMod("LowPre")),
+
   LowSupplyPipe(new constructSystem::SupplyPipe("LSupply")),
   LowReturnPipe(new constructSystem::SupplyPipe("LReturn")),
 
@@ -123,6 +130,8 @@ makeESS::makeESS() :
   OR.addObject(Reflector);
   OR.addObject(PBeam);
   OR.addObject(BMon);
+  OR.addObject(LowPreMod);
+  
   OR.addObject(LowAFL);
   OR.addObject(LowBFL);
   OR.addObject(LowPre);
@@ -142,41 +151,6 @@ makeESS::~makeESS()
     Destructor
   */
 {}
-
-
-void
-makeESS::lowFlightLines(Simulation& System)
-  /*!
-    Build the flight lines of the reflector
-    \param System :: Simulation to add to
-  */
-{
-  ELog::RegMethod RegA("makeESS","lowFlightLines");
-
-  std::string Out;
-
-  Out=Reflector->getLinkComplement(0)+LowPre->getBoxCut('A');
-  LowAFL->addBoundarySurf("inner",Out);  
-  LowAFL->addBoundarySurf("outer",Out);  
-  LowAFL->addOuterSurf("outer",LowPre->getBoxCut('A'));  
-  LowAFL->createAll(System,*LowPre,2);   // was 1 no 1+1
-  attachSystem::addToInsertSurfCtrl(System,*LowAFL,*LowPre->getBox('A'));
-  attachSystem::addToInsertSurfCtrl(System,*Reflector,
-  				    LowAFL->getKey("outer"));
-
-  Out=Reflector->getLinkComplement(0)+LowPre->getBoxCut('B');
-  LowBFL->addBoundarySurf("inner",Out);  
-  LowBFL->addBoundarySurf("outer",Out);  
-  LowBFL->createAll(System,0,0,*LowPre);
-  LowBFL->addOuterSurf("outer",LowPre->getBoxCut('B'));  
-
-  attachSystem::addToInsertSurfCtrl(System,*LowBFL,*LowPre->getBox('B'));
-  attachSystem::addToInsertSurfCtrl(System,*Reflector,
-  				    LowBFL->getKey("outer"));
-  attachSystem::addToInsertSurfCtrl(System,*LowBFL,
-  				    LowAFL->getKey("outer"));
-  return;
-}
 
 void
 makeESS::topFlightLines(Simulation& System)
@@ -265,8 +239,10 @@ makeESS::createGuides(Simulation& System)
       GB->addInsertCell("Outer",ShutterBayObj->getMainCell());
       GB->setCylBoundary(Bulk->getLinkSurf(2),
 			 ShutterBayObj->getLinkSurf(2));
-      if(i<2)
+      if (i<2)
 	GB->createAll(System,*LowMod);  
+      //      if(i<2)
+      //
       //      else
 	//	GB->createAll(System,*TopMod);  
       GBArray.push_back(GB);
@@ -275,108 +251,27 @@ makeESS::createGuides(Simulation& System)
 }
 
 void
-makeESS::buildLowMod(Simulation& System,
-		     const std::string& ModType)
+makeESS::buildLowButterfly(Simulation& System)
   /*!
-    Build the lower moderators
-    \param System :: Simulation to build
-    \param ModType :: Moderator Type
-  */
-{
-  ELog::RegMethod RegA("makeESS","buildLowMod");
-
-  if (ModType=="help")
-    {
-      ELog::EM<<"Low Moderator type [LowMod]:"<<ELog::endBasic;
-      ELog::EM<<"  -- {Any}       : Basic cylindrical moderator"
-	      <<ELog::endBasic;
-      ELog::EM<<"  -- Cone    : Cone/Double cone moderator"
-	      <<ELog::endBasic;
-      return;
-    }
-
-  if (ModType=="Cone")
-    {
-      buildLowConicMod(System);
-    }
-  else 
-    {
-      buildLowCylMod(System);
-      lowFlightLines(System);
-    }
-  return;
-}
-
-void
-makeESS::buildLowCylMod(Simulation& System)
-  /*!
-    Build the standard moderators
+    Build the butterfly moderators
     \param System :: Stardard simulation
   */
 {
-  ELog::RegMethod RegA("makeESS","buildLowCylMod");
-  
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
-  LowMod=std::shared_ptr<constructSystem::ModBase>
-    (new constructSystem::CylMod("LowMod"));
-  OR.addObject(LowMod);
-
-  LowMod->createAll(System,*Reflector);
-  attachSystem::addToInsertControl(System,*Reflector,*LowMod);
-
-  LowPre->createAll(System,*LowMod);
-  attachSystem::addToInsertControl(System,*Reflector,*LowPre,"Main");
-  attachSystem::addToInsertControl(System,*Reflector,*LowPre,"BlockA");
-  attachSystem::addToInsertControl(System,*Reflector,*LowPre,"BlockB");
-
-
-  return;
-}
-
-
-void
-makeESS::buildLowConicMod(Simulation& System)
-  /*!
-    Builds the lower conic moderator
-    \param System :: simulation to add
-  */
-{
-  ELog::RegMethod RegA("makeESS","buildLowConicMod");
+  ELog::RegMethod RegA("makeESS","buildLowButteflyMod");
 
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-  
-  LowMod=std::shared_ptr<constructSystem::ModBase>
-    (new ConicModerator("LowConeMod"));
+
+  std::shared_ptr<ButterflyModerator> BM
+    (new essSystem::ButterflyModerator("LowFly"));
+  BM->setRadiusX(Reflector->getRadius());
+  LowMod=std::shared_ptr<constructSystem::ModBase>(BM);
   OR.addObject(LowMod);
-    
-  LowMod->createAll(System,*Reflector);
-  attachSystem::addToInsertControl(System,*Reflector,*LowMod);
-
-  std::string Out=Reflector->getLinkComplement(0);
-  LowAFL->addBoundarySurf("inner",Out);  
-  LowAFL->addBoundarySurf("outer",Out);  
-  LowAFL->createAll(System,*LowMod,2);
-  attachSystem::addToInsertSurfCtrl(System,*Reflector,
-  				    LowAFL->getKey("outer"));
-    
-  LowModB=std::shared_ptr<constructSystem::ModBase>
-    (new ConicModerator("LowConeModB"));
-  OR.addObject(LowModB);
-
-  LowModB->createAll(System,*Reflector);
-  attachSystem::addToInsertControl(System,*Reflector,*LowModB);
-  attachSystem::addToInsertSurfCtrl(System,*LowModB,*LowMod);
-  Out=Reflector->getLinkComplement(0);
-  LowBFL->addBoundarySurf("inner",Out);  
-  LowBFL->addBoundarySurf("outer",Out);  
-  LowBFL->createAll(System,*LowModB,2);   // was 1 now 1+1
-  attachSystem::addToInsertSurfCtrl(System,*Reflector,
-  				    LowBFL->getKey("outer"));
+  
+  LowMod->createAll(System,*Reflector,LowPreMod.get(),6);
   return;
 }
+    
 
 void
 makeESS::buildTopCylMod(Simulation& System)
@@ -455,7 +350,6 @@ makeESS::optionSummary(Simulation& System)
   ELog::RegMethod RegA("makeESS","optionSummary");
   
   makeTarget(System,"help");
-  buildLowMod(System,"help");
   buildLowerPipe(System,"help");
   
   return;
@@ -488,50 +382,13 @@ makeESS::makeBeamLine(Simulation& System,
   return;
 }
 
-/*
-void
-makeESS::buildF5Collimator(Simulation& System)
-{
-  ELog::RegMethod RegA("makeESS","buildf5Collimator");
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
-  std::shared_ptr<F5Collimator> F5Coll(new F5Collimator("F5Col"));
-  OR.addObject(F5Coll);
-  F5Coll->createAll(System);
-
-  // Find objects by group name 
-  std::set<int> Oset;
-  for(size_t i=0;i<F5Coll.NConnect();i++)
-    {
-      const Geometry::Vec3D TestPt=F5Coll.getLinkPt(i);
-      MonteCarlo::Object* OPtr=System.findCell(TestPt,0);
-      Oset.insert(OPtr->getName());
-    }
-  std::set<std::string> ONameSet;
-  std::set<MonteCarlo::Object*>::const_iterator ac;
-  for(ac=Oset.begin();ac!=Oset.end();ac++)
-    ONameSet.insert(OR.inRange(*ac));
-      
-  std::set<std::string>::const_iterator nc;
-  for(nc=ONameSet.begin();nc!=ONameSet.end();nc++)
-    {
-      const attachSystem::FixedComp* foundObj=
-	OR.getObject<attachSystem::FixedComp>(*nc);
-      attachSystem::addToInsertLineCtrl(System,*foundObj,*F5Coll);
-    }
-
-  return;
-    
-}
-*/
 
 void 
-makeESS::build(Simulation* SimPtr,
+makeESS::build(Simulation& System,
 	       const mainSystem::inputParam& IParam)
   /*!
     Carry out the full build
-    \param SimPtr :: Simulation system
+    \param System :: Simulation system
     \param IParam :: Input parameters
    */
 {
@@ -551,57 +408,68 @@ makeESS::build(Simulation* SimPtr,
   if (StrFunc::checkKey("help",lowPipeType,lowModType,targetType) ||
       StrFunc::checkKey("help",iradLine,topModType,""))
     {
-      optionSummary(*SimPtr);
+      optionSummary(System);
       throw ColErr::ExitAbort("Help system exit");
     }
 
-  makeTarget(*SimPtr,targetType);
   
-  Reflector->createAll(*SimPtr,World::masterOrigin());
-  attachSystem::addToInsertForced(*SimPtr,*Reflector,Target->getKey("Wheel"));
+  makeTarget(System,targetType);
+  Reflector->globalPopulate(System.getDataBase());
+    
+  LowPreMod->createAll(System,World::masterOrigin(),1,
+		       Target->wheelHeight()/2.0,
+		       Reflector->getRadius());
+  buildLowButterfly(System);
+  const double LMHeight=attachSystem::calcLinkDistance(*LowMod,5,6);
+  
+  Reflector->createAll(System,World::masterOrigin(),
+		       Target->wheelHeight(),
+		       LowPreMod->getHeight()+LMHeight,
+		       -1.0);
+  
+  Reflector->insertComponent(System,"targetVoid",*Target,1);
+  Reflector->deleteCell(System,"lowVoid");
 
-  Bulk->createAll(*SimPtr,*Reflector,*Reflector);
-  attachSystem::addToInsertSurfCtrl(*SimPtr,*Bulk,Target->getKey("Wheel"));
-  attachSystem::addToInsertForced(*SimPtr,*Bulk,Target->getKey("Shaft"));
+  Bulk->createAll(System,*Reflector,*Reflector);
 
-  buildLowMod(*SimPtr,lowModType);
-
-  Bulk->addFlightUnit(*SimPtr,*LowAFL);
-  Bulk->addFlightUnit(*SimPtr,*LowBFL);  
-
-  buildTopCylMod(*SimPtr);
-
-  // Bulk->addFlightUnit(*SimPtr,*TopAFL);
-  // Bulk->addFlightUnit(*SimPtr,*TopBFL);
+  // Build flightlines after bulk
+  LowAFL->createAll(System,*LowMod,0,*Reflector,4,*Bulk,-3);
+  LowBFL->createAll(System,*LowMod,0,*Reflector,3,*Bulk,-3);   
+  
+  attachSystem::addToInsertSurfCtrl(System,*Bulk,Target->getKey("Wheel"));
+  attachSystem::addToInsertForced(System,*Bulk,Target->getKey("Shaft"));
+  attachSystem::addToInsertForced(System,*Bulk,LowAFL->getKey("outer"));
+  attachSystem::addToInsertForced(System,*Bulk,LowBFL->getKey("outer"));
 
   // Full surround object
   ShutterBayObj->addInsertCell(voidCell);
-  ShutterBayObj->createAll(*SimPtr,*Bulk,*Bulk);
-  attachSystem::addToInsertForced(*SimPtr,*ShutterBayObj,
+  ShutterBayObj->createAll(System,*Bulk,*Bulk);
+  attachSystem::addToInsertForced(System,*ShutterBayObj,
 				  Target->getKey("Wheel"));
-  attachSystem::addToInsertForced(*SimPtr,*ShutterBayObj,
+  attachSystem::addToInsertForced(System,*ShutterBayObj,
 				  Target->getKey("Shaft"));
 
-  createGuides(*SimPtr);  
+  createGuides(System);  
 
   // PROTON BEAMLINE
   
+
+  PBeam->createAll(System,*Reflector,1,*ShutterBayObj,-1);
+  // attachSystem::addToInsertSurfCtrl(System,*Reflector,
+  // 				    PBeam->getKey("Sector0"));
   
-  PBeam->createAll(*SimPtr,*Target,1,*ShutterBayObj,-1);
-  attachSystem::addToInsertSurfCtrl(*SimPtr,*Reflector,
-				    PBeam->getKey("Sector0"));
-  
-  attachSystem::addToInsertSurfCtrl(*SimPtr,*ShutterBayObj,
+  attachSystem::addToInsertSurfCtrl(System,*ShutterBayObj,
 				    PBeam->getKey("Full"));
-  attachSystem::addToInsertSurfCtrl(*SimPtr,*Bulk,
+  attachSystem::addToInsertSurfCtrl(System,*Bulk,
 				    PBeam->getKey("Full"));
 
-  // BMon->createAll(*SimPtr,*Target,1,*PBeam,"Sector");
-  // attachSystem::addToInsertForced(*SimPtr,*Reflector,*BMon);
+  // BMon->createAll(System,*Target,1,*PBeam,"Sector");
+  // attachSystem::addToInsertForced(System,*Reflector,*BMon);
 
-  buildLowerPipe(*SimPtr,lowPipeType);
+  //  buildLowerPipe(System,lowPipeType);
 
-  makeBeamLine(*SimPtr,IParam);
+
+  makeBeamLine(System,IParam);
 
 
 

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   essBuild/BeRef.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,14 +66,15 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
+#include "CellMap.h"
 #include "BeRef.h"
-
 
 namespace essSystem
 {
 
 BeRef::BeRef(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,3),
+  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
+  attachSystem::CellMap(),
   refIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(refIndex+1)
   /*!
@@ -81,6 +82,55 @@ BeRef::BeRef(const std::string& Key) :
     \param Key :: Name of construction key
   */
 {}
+
+BeRef::BeRef(const BeRef& A) : 
+  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  attachSystem::CellMap(A),  
+  refIndex(A.refIndex),cellIndex(A.cellIndex),xStep(A.xStep),
+  yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
+  zAngle(A.zAngle),radius(A.radius),height(A.height),
+  wallThick(A.wallThick),lowVoidThick(A.lowVoidThick),
+  topVoidThick(A.topVoidThick),targSepThick(A.targSepThick),
+  refMat(A.refMat),wallMat(A.wallMat),
+  targSepMat(A.targSepMat)
+  /*!
+    Copy constructor
+    \param A :: BeRef to copy
+  */
+{}
+
+BeRef&
+BeRef::operator=(const BeRef& A)
+  /*!
+    Assignment operator
+    \param A :: BeRef to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::FixedComp::operator=(A);
+      CellMap::operator=(A);
+      cellIndex=A.cellIndex;
+      xStep=A.xStep;
+      yStep=A.yStep;
+      zStep=A.zStep;
+      xyAngle=A.xyAngle;
+      zAngle=A.zAngle;
+      radius=A.radius;
+      height=A.height;
+      wallThick=A.wallThick;
+      lowVoidThick=A.lowVoidThick;
+      topVoidThick=A.topVoidThick;
+      targSepThick=A.targSepThick;
+      refMat=A.refMat;
+      wallMat=A.wallMat;
+      targSepMat=A.targSepMat;
+    }
+  return *this;
+}
+  
 
 
 BeRef::~BeRef()
@@ -90,10 +140,16 @@ BeRef::~BeRef()
 {}
 
 void
-BeRef::populate(const FuncDataBase& Control)
+BeRef::populate(const FuncDataBase& Control,
+		const double targetThick,
+		const double lowVThick,
+		const double topVThick)
   /*!
     Populate all the variables
     \param Control :: Variable table to use
+    \param targetThick :: thickness of the target
+    \param topVThick :: thickness of the premod-void
+    \param lowVThick :: thickness of the premod-void
   */
 {
   ELog::RegMethod RegA("BeRef","populate");
@@ -111,10 +167,36 @@ BeRef::populate(const FuncDataBase& Control)
   refMat=ModelSupport::EvalMat<int>(Control,keyName+"RefMat");   
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");   
   
-  targSepThick=Control.EvalVar<double>(keyName+"TargSepThick");   
   targSepMat=ModelSupport::EvalMat<int>
-    (Control,StrFunc::makeString(keyName+"TargSepMat"));   
+    (Control,StrFunc::makeString(keyName+"TargSepMat"));
+  
+  lowVoidThick=(lowVThick<Geometry::zeroTol) ?
+    Control.EvalVar<double>(keyName+"LowVoidThick") : lowVThick;
+  topVoidThick=(topVThick<Geometry::zeroTol) ?
+    Control.EvalVar<double>(keyName+"TopVoidThick") : topVThick;
+  targSepThick=(targetThick<Geometry::zeroTol) ?
+    Control.EvalVar<double>(keyName+"TargetSepThick") : targetThick;
+  
+  return;
+}
 
+void
+BeRef::globalPopulate(const FuncDataBase& Control)
+  /*!
+    Populate all the variables
+    \param Control :: Variable table to use
+    \param targetThick :: thickness of the target
+    \param topVThick :: thickness of the premod-void
+    \param lowVThick :: thickness of the premod-void
+  */
+{
+  ELog::RegMethod RegA("BeRef","globalPopulate");
+
+  radius=Control.EvalVar<double>(keyName+"Radius");   
+  height=Control.EvalVar<double>(keyName+"Height");   
+  wallThick=Control.EvalVar<double>(keyName+"WallThick");   
+
+  
   return;
 }
 
@@ -140,7 +222,12 @@ BeRef::createSurfaces()
   */
 {
   ELog::RegMethod RegA("BeRef","createSurfaces");
-      
+
+  // DIVIDER PLANES:
+  
+  ModelSupport::buildPlane(SMap,refIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,refIndex+2,Origin,X);  
+  
   ModelSupport::buildCylinder(SMap,refIndex+7,Origin,Z,radius);  
   ModelSupport::buildCylinder(SMap,refIndex+17,Origin,Z,radius+wallThick);  
 
@@ -153,14 +240,24 @@ BeRef::createSurfaces()
 
   //define planes where the Be is substituted by Fe
 
-  ModelSupport::buildPlane(SMap,refIndex+25,Origin-
-			   Z*(targSepThick/2.0+wallThick),Z);  
-  ModelSupport::buildPlane(SMap,refIndex+26,Origin+
-			   Z*(targSepThick/2.0+wallThick),Z);  
+  // Inner planes
+  
+  // wall and all gaps
+  ModelSupport::buildPlane(SMap,refIndex+105,Origin-
+			   Z*(lowVoidThick+targSepThick/2.0+wallThick),Z);  
+  ModelSupport::buildPlane(SMap,refIndex+106,Origin+
+			   Z*(topVoidThick+targSepThick/2.0+wallThick),Z);  
 
-  ModelSupport::buildPlane(SMap,refIndex+35,Origin-Z*(targSepThick/2.0),Z);  
-  ModelSupport::buildPlane(SMap,refIndex+36,Origin+Z*(targSepThick/2.0),Z);  
+  ModelSupport::buildPlane(SMap,refIndex+115,Origin-
+			   Z*(lowVoidThick+targSepThick/2.0),Z);  
+  ModelSupport::buildPlane(SMap,refIndex+116,Origin+
+			   Z*(topVoidThick+targSepThick/2.0),Z);  
 
+  
+  ModelSupport::buildPlane(SMap,refIndex+205,Origin-Z*(targSepThick/2.0),Z);  
+  ModelSupport::buildPlane(SMap,refIndex+206,Origin+Z*(targSepThick/2.0),Z);  
+
+  
   return; 
 }
 
@@ -169,44 +266,55 @@ BeRef::createObjects(Simulation& System)
   /*!
     Create the vaned moderator
     \param System :: Simulation to add results
-   */
+  */
 {
   ELog::RegMethod RegA("BeRef","createObjects");
 
   std::string Out;
-  
   // low segment
-  Out=ModelSupport::getComposite(SMap,refIndex," -7 5 -35 ");
+  Out=ModelSupport::getComposite(SMap,refIndex," -7 5 -105 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,refMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,refIndex," -17 35 -36");
+  // low void
+  Out=ModelSupport::getComposite(SMap,refIndex," -17 115 -205");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  setCell("lowVoid",cellIndex-1);
+  // Target void
+  Out=ModelSupport::getComposite(SMap,refIndex," -17 205 -206");
   System.addCell(MonteCarlo::Qhull(cellIndex++,targSepMat,0.0,Out));
-
-  Out=ModelSupport::getComposite(SMap,refIndex," -7 36 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,refMat,0.0,Out));
+  setCell("targetVoid",cellIndex-1);
   
-  Out=ModelSupport::getComposite(SMap,refIndex," -7 5 -6 ");
+  // top Segment
+  Out=ModelSupport::getComposite(SMap,refIndex," -17 -116 206");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  setCell("topVoid",cellIndex-1);
+  // top segment
+  Out=ModelSupport::getComposite(SMap,refIndex," -7 -6 106");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,refMat,0.0,Out));
 
   if (wallThick>Geometry::zeroTol)
     {
-      Out=ModelSupport::getComposite(SMap,refIndex," -17 15 -35 (7:-5)");
+
+      Out=ModelSupport::getComposite(SMap,refIndex," -17 15 -105 (7:-5)");
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
       // divide layer
-      Out=ModelSupport::getComposite(SMap,refIndex," -17 -25 35 ");
+      Out=ModelSupport::getComposite(SMap,refIndex," -17 105 -115 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
       // divide layer
-      Out=ModelSupport::getComposite(SMap,refIndex," -17 26 -36 ");
+      Out=ModelSupport::getComposite(SMap,refIndex," -17 -106 116 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
 
-      Out=ModelSupport::getComposite(SMap,refIndex," -17 -16 36 (7:6)");
+      Out=ModelSupport::getComposite(SMap,refIndex," -17 -16 106 (7:6)");
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
       Out=ModelSupport::getComposite(SMap,refIndex," -17 15 -16 ");
     }
-      
+  else
+    Out=ModelSupport::getComposite(SMap,refIndex," -17 5 -6 ");
+  
   addOuterSurf(Out);
   return; 
 
@@ -221,12 +329,25 @@ BeRef::createLinks()
 {
   FixedComp::setConnect(0,Origin+Y*radius,-Y);
   FixedComp::setLinkSurf(0,SMap.realSurf(refIndex+17));
+  FixedComp::addLinkSurf(0,-SMap.realSurf(refIndex+1));
 
-  FixedComp::setConnect(1,Origin-Z*(height/2.0+wallThick),-Z);
-  FixedComp::setLinkSurf(1,-SMap.realSurf(refIndex+15));
+  FixedComp::setConnect(1,Origin+Y*radius,Y);
+  FixedComp::setLinkSurf(1,SMap.realSurf(refIndex+17));
+  FixedComp::addLinkSurf(1,SMap.realSurf(refIndex+1));
 
-  FixedComp::setConnect(2,Origin+Z*(height/2.0+wallThick),Z);
-  FixedComp::setLinkSurf(2,SMap.realSurf(refIndex+16));
+  FixedComp::setConnect(2,Origin+Y*radius,-X);
+  FixedComp::setLinkSurf(2,SMap.realSurf(refIndex+17));
+  FixedComp::addLinkSurf(2,-SMap.realSurf(refIndex+2));
+  
+  FixedComp::setConnect(3,Origin+Y*radius,-X);
+  FixedComp::setLinkSurf(3,SMap.realSurf(refIndex+17));
+  FixedComp::addLinkSurf(3,SMap.realSurf(refIndex+2));
+  
+  FixedComp::setConnect(4,Origin-Z*(height/2.0+wallThick),-Z);
+  FixedComp::setLinkSurf(4,-SMap.realSurf(refIndex+15));
+
+  FixedComp::setConnect(5,Origin+Z*(height/2.0+wallThick),Z);
+  FixedComp::setLinkSurf(5,SMap.realSurf(refIndex+16));
 
   return;
 }
@@ -234,15 +355,21 @@ BeRef::createLinks()
 
 void
 BeRef::createAll(Simulation& System,
-		     const attachSystem::FixedComp& FC)
+		 const attachSystem::FixedComp& FC,
+		 const double tThick,
+		 const double lpThick,
+		 const double tpThick)
   /*!
     Extrenal build everything
     \param System :: Simulation
     \param FC :: FixedComponent for origin
-   */
+    \param tThick :: Thickness of target void for exact cutting
+    \param lpThick :: Thickness of lower-preMod
+    \param tpThick :: Thickness of top-preMod
+  */
 {
   ELog::RegMethod RegA("BeRef","createAll");
-  populate(System.getDataBase());
+  populate(System.getDataBase(),tThick,lpThick,tpThick);
 
   createUnitVector(FC);
   createSurfaces();
@@ -253,4 +380,5 @@ BeRef::createAll(Simulation& System,
   return;
 }
 
+  
 }  // NAMESPACE instrumentSystem

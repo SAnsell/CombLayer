@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1UpgradeInc/CH4Layer.h
  *
@@ -82,8 +82,9 @@ class CH4Layer : public constructSystem::ModBase
   virtual std::string 
     getLayerString(const size_t,const size_t) const;
 
-  void createAll(Simulation&,const attachSystem::FixedComp&);
-
+  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const attachSystem::FixedComp*,const long int);
+    
 };
 
 }

@@ -1,7 +1,7 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
- * File:   t1Upgrade/BlockMod.cxx
+ * File:   construct/BlockMod.cxx
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -212,22 +212,6 @@ BlockMod::populate(const FuncDataBase& Control)
     }
 
   nWedge=Control.EvalVar<size_t>(keyName+"NWedge");  
-  return;
-}
-
-void
-BlockMod::createUnitVector(const attachSystem::FixedComp& FC)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed Component
-  */
-{
-  ELog::RegMethod RegA("BlockMod","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC);
-
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
-
   return;
 }
 
@@ -498,17 +482,21 @@ BlockMod::createWedges(Simulation& System)
 
 void
 BlockMod::createAll(Simulation& System,
-		     const attachSystem::FixedComp& FC)
+		    const attachSystem::FixedComp& axisFC,
+		    const attachSystem::FixedComp* orgFC,
+		    const long int sideIndex)
   /*!
     Extrenal build everything
     \param System :: Simulation
-    \param FC :: FixedComponent for origin
+    \param axisFC :: FixedComp to get axis [origin if orgFC == 0]
+    \param orgFC :: Extra origin point if required
+    \param sideIndex :: link point for origin if given
    */
 {
   ELog::RegMethod RegA("BlockMod","createAll");
+  
   populate(System.getDataBase());
-
-  createUnitVector(FC);
+  ModBase::createUnitVector(axisFC,orgFC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

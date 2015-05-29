@@ -208,23 +208,6 @@ CylMod::populate(const FuncDataBase& Control)
 }
 
 void
-CylMod::createUnitVector(const attachSystem::FixedComp& FC)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed Component
-  */
-{
-  ELog::RegMethod RegA("CylMod","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC);
-
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
-
-
-  return;
-}
-
-void
 CylMod::createSurfaces()
   /*!
     Create planes for the silicon and Polyethene layers
@@ -528,17 +511,21 @@ CylMod::createWedges(Simulation& System)
 
 void
 CylMod::createAll(Simulation& System,
-		     const attachSystem::FixedComp& FC)
+		  const attachSystem::FixedComp& axisFC,
+		  const attachSystem::FixedComp* orgFC,
+		  const long int sideIndex)
   /*!
     Extrenal build everything
     \param System :: Simulation
-    \param FC :: FixedComponent for origin
+    \param axisFC :: FixedComponent for axis
+    \param orgFC :: FixedComponent for origin
+    \param sideIndex :: connection point 
    */
 {
   ELog::RegMethod RegA("CylMod","createAll");
   populate(System.getDataBase());
 
-  createUnitVector(FC);
+  ModBase::createUnitVector(axisFC,orgFC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testSingleObject.cxx
  *
@@ -34,7 +34,6 @@
 #include <numeric>
 #include <iterator>
 #include <memory>
-#include <boost/functional.hpp>
 #include <tuple>
 
 #include "Exception.h"
@@ -271,7 +270,7 @@ testSingleObject::createObj()
   constructSystem::CylMod A("H2CylMod");
 
   A.addInsertCell(74123);
-  A.createAll(ASim,World::masterOrigin());
+  A.createAll(ASim,World::masterOrigin(),0,0);
 
   ASim.createObjSurfMap();
   std::vector<int> rOffset;

@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1UpgradeInc/InnerLayer.h
  *
@@ -55,7 +55,6 @@ class InnerLayer : public ts1System::CH4Layer
 
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -78,7 +77,9 @@ class InnerLayer : public ts1System::CH4Layer
   /// Const accessor
   const std::vector<int>& getInnerCells() const
     { return innerCells; }
-  void createAll(Simulation&,const attachSystem::FixedComp&);
+
+  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const attachSystem::FixedComp*,const long int);
 
 };
 

@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   attachComp/FixedComp.cxx
  *
@@ -672,9 +672,34 @@ FixedComp::getLinkPt(const size_t Index) const
 {
   ELog::RegMethod RegA("FixedComp","getLinkPt:"+keyName);
   if (Index>=LU.size())
-    throw ColErr::IndexError<size_t>(Index,LU.size(),"Index/LU.size");
+    throw ColErr::IndexError<size_t>(Index,LU.size(),
+				     "Index/LU.size");
 
+  // this can throw:
   return LU[Index].getConnectPt();
+}
+
+Geometry::Vec3D
+FixedComp::getSignedLinkPt(const long int sideIndex) const
+  /*!
+    Accessor to the link point
+    \param sideIndex :: SIGNED +1 side index
+    \return Link point
+  */
+{
+  ELog::RegMethod RegA("FixedComp","getSignedLinkPt:"+keyName);
+
+  if (!sideIndex) return Origin;
+
+  
+  const size_t linkIndex=
+    (sideIndex>0) ? static_cast<size_t>(sideIndex-1) :
+    static_cast<size_t>(-sideIndex-1) ;
+
+  if (linkIndex>=LU.size())
+    throw ColErr::IndexError<size_t>(linkIndex,LU.size(),"Index/LU.size");
+  // Not sign doesn't matter
+  return LU[linkIndex].getConnectPt();
 }
 
 const Geometry::Vec3D&
@@ -690,6 +715,30 @@ FixedComp::getLinkAxis(const size_t Index) const
     throw ColErr::IndexError<size_t>(Index,LU.size(),"Index/LU.size");
   
   return LU[Index].getAxis();
+}
+
+Geometry::Vec3D
+FixedComp::getSignedLinkAxis(const long int sideIndex) const
+  /*!
+    Accessor to the link axis
+    \param sideIndex :: SIGNED +1 side index
+    \return signed Link Axis [Y is sideIndex == 0]
+  */
+{
+  ELog::RegMethod RegA("FixedComp","getSignedLinkAxis:"+keyName);
+
+  if (sideIndex==0)
+    return Y;
+  
+  const size_t linkIndex=
+    (sideIndex>0) ? static_cast<size_t>(sideIndex-1) :
+    static_cast<size_t>(-sideIndex-1) ;
+  
+  if (linkIndex>=LU.size())
+    throw ColErr::IndexError<size_t>(linkIndex,LU.size(),
+				     "linkIndex/LU.size");
+  return (sideIndex>0)  ?
+    LU[linkIndex].getAxis() : -LU[linkIndex].getAxis();
 }
 
 std::string
@@ -725,6 +774,28 @@ FixedComp::getMasterComplement(const size_t Index) const
   return RP.display();
 }
 
+
+std::string
+FixedComp::getSignedLinkString(const long int sideIndex) const
+  /*!
+    Accessor to the link string
+    \param sideIndex :: SIGNED +1 side index
+    \return Link string 
+  */
+{
+  ELog::RegMethod RegA("FixedComp","getSignedLinkString:"+keyName);
+
+  if (!sideIndex) return "";
+
+  const size_t linkIndex=
+    (sideIndex>0) ? static_cast<size_t>(sideIndex-1) :
+    static_cast<size_t>(-sideIndex-1) ;
+  return (sideIndex>0) ?
+    getLinkString(linkIndex) : getLinkComplement(linkIndex);
+}
+
+
+  
 std::string
 FixedComp::getLinkString(const size_t Index) const
   /*!

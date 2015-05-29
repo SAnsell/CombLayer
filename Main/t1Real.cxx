@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   Main/t1Real.cxx
  *
@@ -113,29 +113,31 @@ main(int argc,char* argv[])
   std::map<std::string,std::string> AddValues;  
   std::map<std::string,double> IterVal;           // Variable to iterate 
 
-
-  // PROCESS INPUT:
-  InputControl::mainVector(argc,argv,Names);
-  mainSystem::inputParam IParam;
-  createTS1Inputs(IParam);
-
-  const int iteractive(IterVal.empty() ? 0 : 1);   
-  Simulation* SimPtr=createSimulation(IParam,Names,Oname);
-  if (!SimPtr) return -1;
-
-  // The big variable setting
-  setVariable::TS1real(SimPtr->getDataBase());
-  InputModifications(SimPtr,IParam,Names);
-
-  // Definitions section 
-  int MCIndex(0);
-  const int multi=IParam.getValue<int>("multi");
-  ELog::EM<<"T1REAL : variable hash:"
-	  <<SimPtr->getDataBase().variableHash()
-	  <<ELog::endBasic;
-
+  Simulation* SimPtr(0);
   try
     {
+
+  // PROCESS INPUT:
+      InputControl::mainVector(argc,argv,Names);
+      mainSystem::inputParam IParam;
+      createTS1Inputs(IParam);
+      
+      const int iteractive(IterVal.empty() ? 0 : 1);   
+
+      SimPtr=createSimulation(IParam,Names,Oname);      
+      if (!SimPtr) return -1;
+      
+      // The big variable setting
+      setVariable::TS1real(SimPtr->getDataBase());
+      InputModifications(SimPtr,IParam,Names);
+
+      // Definitions section 
+      int MCIndex(0);
+      const int multi=IParam.getValue<int>("multi");
+      ELog::EM<<"T1REAL : variable hash:"
+	      <<SimPtr->getDataBase().variableHash()
+	      <<ELog::endBasic;
+      
       while(MCIndex<multi)
 	{
 	  if (MCIndex)

@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   t1UpgradeInc/CylMod.h
+ * File:   essBuildInc/DiskPreMod.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,69 +19,66 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef constructSystem_CylMod_h
-#define constructSystem_CylMod_h
+#ifndef essSystem_DiskPreMod_h
+#define essSystem_DiskPreMod_h
 
 class Simulation;
 
-namespace constructSystem
+namespace essSystem
 {
-
-  class WedgeInsert;
-
 /*!
-  \class CylMod
+  \class DiskPreMod
   \author S. Ansell
   \version 1.0
-  \date October 2012
-  \brief Specialized for a cylinder moderator
+  \date May 2015
+  \brief Specialized for a cylinder pre-mod under moderator
 */
 
-class CylMod : public constructSystem::ModBase
+class DiskPreMod : public attachSystem::ContainedComp,
+    public attachSystem::LayerComp,
+    public attachSystem::FixedComp
 {
  private:
   
-  typedef std::shared_ptr<WedgeInsert> WTYPE;
+  const int modIndex;             ///< Index of surface offset
+  int cellIndex;                  ///< Cell index
 
-  std::vector<double> radius;         ///< cylinder radii
-  std::vector<double> height;         ///< Full heights
-  std::vector<int> mat;               ///< Materials
+  double zStep;                   ///< Step away from target
+  double outerRadius;             ///< Outer radius of Be Zone
+  
+  std::vector<double> radius;         ///< cylinder radii [additive]
+  std::vector<double> height;         ///< Full heights [additive]
+  std::vector<double> depth;          ///< full depths [additive]
+  std::vector<int> mat;               ///< Materials 
   std::vector<double> temp;           ///< Temperatures
 
-  size_t nConic;                     ///< Number of conic segments
-  std::vector<ConicInfo> Conics;     ///< Conics [non-intersecting]
-  size_t nWedge;                     ///< Number of Wedge segments
-  std::vector<WTYPE> Wedges;         ///< Wedges [non-intersecting]
-
-  int mainCell;                      ///< Main cell
-  // Functions:
-
-  void populate(const FuncDataBase&);
+  
+  void populate(const FuncDataBase&,const double,const double);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const bool);
 
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
-  void createWedges(Simulation&);
-  
+
  public:
 
-  CylMod(const std::string&);
-  CylMod(const CylMod&);
-  CylMod& operator=(const CylMod&);
-  virtual ~CylMod();
-  virtual CylMod* clone() const;
-  
-  /// Accessor to the main H2 body
-  virtual int getMainBody() const { return modIndex+1; }
+  DiskPreMod(const std::string&);
+  DiskPreMod(const DiskPreMod&);
+  DiskPreMod& operator=(const DiskPreMod&);
+  virtual DiskPreMod* clone() const;
+  virtual ~DiskPreMod();
 
   virtual Geometry::Vec3D getSurfacePoint(const size_t,const size_t) const;
   virtual int getLayerSurf(const size_t,const size_t) const;
-  virtual int getCommonSurf(const size_t) const;
   virtual std::string getLayerString(const size_t,const size_t) const;
 
+  /// total height of object
+  double getHeight() const
+    { return (depth.empty()) ? 0.0 : depth.back()+height.back(); }
+
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const attachSystem::FixedComp*,
-		 const long int);
+		 const bool,const double,const double);
   
 };
 

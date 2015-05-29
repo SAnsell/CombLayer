@@ -2,8 +2,8 @@
   CombLayer : MNCPX Input builder
  
  * File:   essBuild/SegWheel.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -345,7 +345,8 @@ SegWheel::makeShaftObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,0.0,Out));
 
   // inner steel body
-   Out=ModelSupport::getComposite(SMap,wheelIndex,"(-1006 1045 1007 -7):(-1047 1017 1045 -45) :(-1006 1017 -1027 -1045 1025):(-1017 -1005 1015) ");
+   Out=ModelSupport::getComposite(SMap,wheelIndex,"(-1006 1045 1007 -7):(-1047 1017 1045 -45) : "
+				  "(-1006 1017 -1027 -1045 1025):(-1017 -1005 1015) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,cladShaftMat,0.0,Out));
 
   // outer wheel support
@@ -364,51 +365,61 @@ SegWheel::makeShaftObjects(Simulation& System)
   ModelSupport::getComposite(SMap,wheelIndex," 7 -1017 -25 1045 ");	
 
   // the loop is very similar to the one for the wheel sectors (see below); surfaces from wheel::createSurfaces
+  
   for(size_t i=0;i<targetSectorNumber;i++)
-   {
-    if(i<targetSectorNumber/4-1)
-     { 
-      Out0=ModelSupport::getComposite(SMap,wheelIndex,SI0," 503 -501  4M -3M ");
-      Out1=ModelSupport::getComposite(SMap,wheelIndex,SI0," 503  1M -2M ");
-      Out2=ModelSupport::getComposite(SMap,wheelIndex,SI0," 503 -501 12M -4M ");
-      Out3=ModelSupport::getComposite(SMap,wheelIndex,SI0," 503  -1M 3M");  
-     }
-    else if(i>=targetSectorNumber/4-1 && i<=targetSectorNumber/2-1)
-     {
-      Out0=ModelSupport::getComposite(SMap,wheelIndex,SI0," -501 -503 4M -3M ");
-      Out1=ModelSupport::getComposite(SMap,wheelIndex,SI0," -501 -1M 2M ");
-      Out2=ModelSupport::getComposite(SMap,wheelIndex,SI0," -501 -503 11M -4M ");
-      Out3=ModelSupport::getComposite(SMap,wheelIndex,SI0," -501  -2M 3M");   
-     }
-    else if(i>=targetSectorNumber/2-1 && i<=targetSectorNumber*3/4-1)
-     {
-      Out0=ModelSupport::getComposite(SMap,wheelIndex,SI0," -503  4M -3M ");
-      Out1=ModelSupport::getComposite(SMap,wheelIndex,SI0," -503 -1M 2M ");
-      Out2=ModelSupport::getComposite(SMap,wheelIndex,SI0," -503  11M -4M ");
-      Out3=ModelSupport::getComposite(SMap,wheelIndex,SI0," -503  -2M 3M");  
- 
-     }
-    else
-     {
-       Out0=ModelSupport::getComposite(SMap,wheelIndex,SI0," 501  4M -3M ");
-       Out1=ModelSupport::getComposite(SMap,wheelIndex,SI0," 501  1M -2M ");
-       Out2=ModelSupport::getComposite(SMap,wheelIndex,SI0," 501  12M -4M ");
-       Out3=ModelSupport::getComposite(SMap,wheelIndex,SI0," 501  -1M 3M");  
-       if(i==targetSectorNumber-1)
-	 Out2=ModelSupport::getComposite(SMap,wheelIndex,SI0,"503 2 -4M");
-     }
+    {
+      const size_t index((4*(i+1))/targetSectorNumber);
 
-    System.addCell(MonteCarlo::Qhull(cellIndex++,cladShaftMat,0.0,Out0+shaftCoolingDown));
-    System.addCell(MonteCarlo::Qhull(cellIndex++,cladShaftMat,0.0,Out0+shaftCoolingUp));
+      if (i<targetSectorNumber/4-1)
+	{
+	  Out0=ModelSupport::getComposite(SMap,wheelIndex,SI0," 503 -501  4M -3M ");
+	  Out1=ModelSupport::getComposite(SMap,wheelIndex,SI0," 503  1M -2M ");
+	  Out2=ModelSupport::getComposite(SMap,wheelIndex,SI0," 503 -501 12M -4M ");
+	  Out3=ModelSupport::getComposite(SMap,wheelIndex,SI0," 503  -1M 3M ");  
+	}
+      else if (i>=targetSectorNumber/4-1 && i<=targetSectorNumber/2-1)
+	{
+	  Out0=ModelSupport::getComposite(SMap,wheelIndex,SI0," -501 -503 4M -3M ");
+	  Out1=ModelSupport::getComposite(SMap,wheelIndex,SI0," -501 -1M 2M ");
+	  Out2=ModelSupport::getComposite(SMap,wheelIndex,SI0," -501 -503 11M -4M ");
+	  Out3=ModelSupport::getComposite(SMap,wheelIndex,SI0," -501  -2M 3M ");   
+	}
+      else if (i>=targetSectorNumber/2-1 && i<=targetSectorNumber*3/4-1)
+	{
+	  Out0=ModelSupport::getComposite(SMap,wheelIndex,SI0," -503  4M -3M ");
+	  Out1=ModelSupport::getComposite(SMap,wheelIndex,SI0," -503 -1M 2M ");
+	  Out2=ModelSupport::getComposite(SMap,wheelIndex,SI0," -503  11M -4M ");
+	  Out3=ModelSupport::getComposite(SMap,wheelIndex,SI0," -503  -2M 3M");  
+	}
+      else
+	{
+	  Out0=ModelSupport::getComposite(SMap,wheelIndex,SI0," 501  4M -3M ");
+	  Out1=ModelSupport::getComposite(SMap,wheelIndex,SI0," 501  1M -2M ");
+	  Out2=ModelSupport::getComposite(SMap,wheelIndex,SI0," 501  12M -4M ");
+	  Out3=ModelSupport::getComposite(SMap,wheelIndex,SI0," 501  -1M 3M");  
+	  if(i==targetSectorNumber-1)
+	    Out2=ModelSupport::getComposite(SMap,wheelIndex,SI0,"503 2 -4M");
+	}
+    
+    System.addCell(MonteCarlo::Qhull(cellIndex++,cladShaftMat,
+				     0.0,Out0+shaftCoolingDown));
+    System.addCell(MonteCarlo::Qhull(cellIndex++,cladShaftMat,
+				     0.0,Out0+shaftCoolingUp));
 
-    System.addCell(MonteCarlo::Qhull(cellIndex++,cladShaftMat,0.0,Out1+shaftCoolingDown));
-    System.addCell(MonteCarlo::Qhull(cellIndex++,cladShaftMat,0.0,Out1+shaftCoolingUp));
+    System.addCell(MonteCarlo::Qhull(cellIndex++,cladShaftMat,
+				     0.0,Out1+shaftCoolingDown));
+    System.addCell(MonteCarlo::Qhull(cellIndex++,cladShaftMat,
+				     0.0,Out1+shaftCoolingUp));
 
-    System.addCell(MonteCarlo::Qhull(cellIndex++,cladShaftMat,0.0,Out2+shaftCoolingDown));
-    System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,0.0,Out2+shaftCoolingUp));
+    System.addCell(MonteCarlo::Qhull(cellIndex++,cladShaftMat,
+				     0.0,Out2+shaftCoolingDown));
+    System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,
+				     0.0,Out2+shaftCoolingUp));
 
-    System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,0.0,Out3+shaftCoolingDown));
-    System.addCell(MonteCarlo::Qhull(cellIndex++,cladShaftMat,0.0,Out3+shaftCoolingUp));
+    System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,
+				     0.0,Out3+shaftCoolingDown));
+    System.addCell(MonteCarlo::Qhull(cellIndex++,cladShaftMat,
+				     0.0,Out3+shaftCoolingUp));
  
     SI0+=10;
    }
@@ -418,7 +429,9 @@ SegWheel::makeShaftObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
   // void around shaft
-  Out=ModelSupport::getComposite(SMap,wheelIndex," (-1037 1056 -1006 1027):(-1057 -1056 1027 46 (1046:1047)):(-1057 1027 -45 1055 (-1045:1047)):(-1055 -1037 1035 (-1025:1027) ");
+  Out=ModelSupport::getComposite(SMap,wheelIndex," (-1037 1056 -1006 1027) : "
+				 "(-1057 -1056 1027 46 (1046:1047)): (-1057 1027 -45 1055 (-1045:1047)): "
+				 "(-1055 -1037 1035 (-1025:1027) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,wheelIndex,"-18 1035 -1006 (-1037:(-1056 1055))");
@@ -468,16 +481,14 @@ SegWheel::createSurfaces()
     { 
       Geometry::Quaternion::calcQRotDeg(psi,Z).rotate(dirX);
       ModelSupport::buildPlane(SMap,SI1+1,Origin-X*caseThickX,dirX);  
-      ModelSupport::buildPlane(SMap,SI1+2,Origin+X*caseThickX,dirX);  
-      
-      psi=-psi2;
-      
-      Geometry::Quaternion::calcQRotDeg(psi,Z).rotate(dirX);
+      ModelSupport::buildPlane(SMap,SI1+2,Origin+X*caseThickX,dirX);              
+      Geometry::Quaternion::calcQRotDeg(-psi2,Z).rotate(dirX);
       ModelSupport::buildPlane(SMap,SI1+3,Origin-X*FPX+Y*FPY,dirX);
       
       FPX=targetSectorOffsetY*sin((i+1)*psi1*M_PI/180);
       FPY=targetSectorOffsetY*cos((i+1)*psi1*M_PI/180);
-      psi=psi1+2*psi2;  
+
+      psi=psi1+2.0*psi2;  
       
       Geometry::Quaternion::calcQRotDeg(psi,Z).rotate(dirX);   
       ModelSupport::buildPlane(SMap,SI1+4,Origin+Y*FPY-X*FPX,dirX);

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   attachCompInc/FixedComp.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -121,6 +121,10 @@ class FixedComp
   virtual int getLinkSurf(const size_t) const;
   virtual const Geometry::Vec3D& getLinkPt(const size_t) const;
   virtual const Geometry::Vec3D& getLinkAxis(const size_t) const;
+
+  virtual Geometry::Vec3D getSignedLinkPt(const long int) const;
+  virtual Geometry::Vec3D getSignedLinkAxis(const long int) const;
+  virtual std::string getSignedLinkString(const long int) const;
 
   const HeadRule& getMainRule(const size_t) const;
   const HeadRule& getCommonRule(const size_t) const;

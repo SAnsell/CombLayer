@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   essBuildInc/makeESS.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,6 +37,7 @@ namespace constructSystem
 
 namespace moderatorSystem
 {
+  class BasicFlightLine;
   class FlightLine;
 }
 
@@ -62,13 +63,14 @@ namespace essSystem
   class ProtonTube;
   class GuideBay;
   class BeamMonitor;
+  class DiskPreMod;
 
   /*!
     \class makeESS
     \version 1.0
     \author S. Ansell
     \date January 2013
-    \brief WheeModerator for ESS 
+    \brief Main moderator system for ESS
   */
   
 class makeESS
@@ -80,14 +82,17 @@ class makeESS
   std::shared_ptr<ProtonTube> PBeam;   ///< Proton Void
   std::shared_ptr<BeamMonitor> BMon;   ///< Beam Monitor
 
-  // ASSEMBLY 1:
-  /// Primary Lower Mod
-  std::shared_ptr<constructSystem::ModBase> LowMod;  
-  /// Secondary  Lower Mod [if needed]
-  std::shared_ptr<constructSystem::ModBase> LowModB; 
-  std::shared_ptr<moderatorSystem::FlightLine> LowAFL;  ///< Lower Mode FL
-  std::shared_ptr<moderatorSystem::FlightLine> LowBFL;  ///< Lower Mode FL
-  std::shared_ptr<CylPreMod> LowPre;          ///< Upper Mod (Pre)
+  // Butterly
+  /// Primary Lower Mod [
+  std::shared_ptr<constructSystem::ModBase> LowMod;
+  std::shared_ptr<DiskPreMod> LowPreMod;
+
+  // Cylindrical [to be dumped]
+  std::shared_ptr<moderatorSystem::BasicFlightLine> LowAFL;  ///< Lower Mode FL
+  std::shared_ptr<moderatorSystem::BasicFlightLine> LowBFL;  ///< Lower Mode FL
+  std::shared_ptr<CylPreMod> LowPre;          ///< Lower Mod (Pre)
+
+  
   /// Lower supply 
   std::shared_ptr<constructSystem::SupplyPipe> LowSupplyPipe; 
   std::shared_ptr<constructSystem::SupplyPipe> LowReturnPipe;  ///< Lower supply 
@@ -113,7 +118,8 @@ class makeESS
   void lowFlightLines(Simulation&);
   void createGuides(Simulation&);
 
-  void buildLowMod(Simulation&,const std::string&);
+  void buildLowButterfly(Simulation&);
+  void buildLowPreMod(Simulation&);
   void buildLowCylMod(Simulation&);
   void buildLowConicMod(Simulation&);
   void buildLayerMod(Simulation&);
@@ -133,7 +139,7 @@ class makeESS
   makeESS& operator=(const makeESS&);
   ~makeESS();
   
-  void build(Simulation*,const mainSystem::inputParam&);
+  void build(Simulation&,const mainSystem::inputParam&);
 
 };
 

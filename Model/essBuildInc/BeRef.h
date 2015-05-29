@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/BeRef.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,8 @@ namespace essSystem
 */
 
 class BeRef : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+  public attachSystem::FixedComp,
+  public attachSystem::CellMap
 {
  private:
 
@@ -53,6 +54,9 @@ class BeRef : public attachSystem::ContainedComp,
   double height;                  ///< Height
   double wallThick;               ///< Wall thickness
 
+  double lowVoidThick;            ///< Low void segment
+  double topVoidThick;            ///< Top void segment
+
   double targSepThick;            ///< Steel seperator at target level
 
   int refMat;                     ///< reflector material
@@ -61,7 +65,7 @@ class BeRef : public attachSystem::ContainedComp,
 
   // Functions:
 
-  void populate(const FuncDataBase&);
+  void populate(const FuncDataBase&,const double,const double,const double);
   void createUnitVector(const attachSystem::FixedComp&);
 
   void createSurfaces();
@@ -75,8 +79,12 @@ class BeRef : public attachSystem::ContainedComp,
   BeRef& operator=(const BeRef&);
   virtual ~BeRef();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&);
-  
+  void globalPopulate(const FuncDataBase&);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const double,const double,const double);
+
+  /// Access to radius
+  double getRadius() const { return radius+wallThick; }
 };
 
 }
