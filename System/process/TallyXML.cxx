@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   process/TallyXML.cxx
  *
@@ -35,9 +35,6 @@
 #include <iterator>
 #include <memory>
 #include <array>
-#include <boost/functional.hpp>
-#include <boost/bind.hpp>
-
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -50,8 +47,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Triple.h"
 #include "NList.h"
 #include "NRange.h"
@@ -70,16 +65,7 @@
 #include "FItem.h"
 #include "varList.h"
 #include "FuncDataBase.h"
-#include "ModeCard.h"
-#include "PhysCard.h"
-#include "LSwitchCard.h"
-#include "PhysImp.h"
-#include "KGroup.h"
-#include "Source.h"
-#include "KCode.h"
-#include "PhysicsCards.h"
 #include "Simulation.h"
-#include "SpecialSurf.h"
 #include "LineTrack.h"
 #include "ObjectTrackAct.h"
 #include "pointDetOpt.h"

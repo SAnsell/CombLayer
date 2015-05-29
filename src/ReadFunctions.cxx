@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   src/ReadFunctions.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,8 +35,6 @@
 #include <iterator>
 #include <memory>
 #include <array>
-#include <boost/functional.hpp>
-
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -62,7 +60,6 @@
 #include "Transform.h"
 #include "Surface.h"
 #include "surfIndex.h"
-#include "surfaceFactory.h"
 #include "Rules.h"
 #include "varList.h"
 #include "Code.h"
@@ -75,19 +72,12 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "Material.h"
 #include "DBMaterial.h"
-#include "SrcData.h"
-#include "SrcItem.h"
-#include "DSTerm.h"
 #include "Source.h"
 #include "KCode.h"
 #include "ModeCard.h"
 #include "PhysCard.h"
 #include "LSwitchCard.h"
-#include "NList.h"
-#include "NRange.h"
-#include "KGroup.h"
 #include "PhysImp.h"
 #include "PhysicsCards.h"
 #include "ReadFunctions.h"

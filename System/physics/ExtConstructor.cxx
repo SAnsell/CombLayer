@@ -85,7 +85,6 @@
 #include "LSwitchCard.h"
 #include "NList.h"
 #include "NRange.h"
-#include "KGroup.h"
 #include "PhysicsCards.h"
 
 #include "EUnit.h"

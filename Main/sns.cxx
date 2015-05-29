@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   Main/sns.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,7 +48,6 @@
 #include "InputControl.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
-#include "Tensor.h"
 #include "Vec3D.h"
 #include "inputParam.h"
 #include "Triple.h"
@@ -77,7 +76,6 @@
 #include "PhysCard.h"
 #include "LSwitchCard.h"
 #include "PhysImp.h"
-#include "KGroup.h"
 #include "Source.h"
 #include "KCode.h"
 #include "PhysicsCards.h"
@@ -93,7 +91,6 @@
 #include "ContainedGroup.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "LinearComp.h"
 #include "mainJobs.h"
 #include "Volumes.h"
 #include "DefPhysics.h"

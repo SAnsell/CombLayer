@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   tally/TallyCreate.cxx
  *
@@ -73,7 +73,6 @@
 #include "PhysCard.h"
 #include "LSwitchCard.h"
 #include "PhysImp.h"
-#include "KGroup.h"
 #include "Source.h"
 #include "KCode.h"
 #include "PhysicsCards.h"

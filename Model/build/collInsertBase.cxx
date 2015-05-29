@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   build/collInsertBase.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@
 #include <list>
 #include <vector>
 #include <string>
-#include <boost/format.hpp>
+#include <memory>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -43,9 +43,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
@@ -63,8 +60,6 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "shutterBlock.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
@@ -379,9 +374,9 @@ collInsertBase::write(std::ostream& OX) const
     \param OX :: Output stream
   */
 {
-  OX<<"origin == "<<beamOrigin<<std::endl;
+  OX<<"Origin == "<<beamOrigin<<std::endl;
   OX<<"Width == "<<width<<" "<<beamX<<std::endl;
-  OX<<"HEight == "<<height<<":"<<beamZ<<std::endl;
+  OX<<"Height == "<<height<<":"<<beamZ<<std::endl;
 }
 
 } // NAMESPACE shutterSystem

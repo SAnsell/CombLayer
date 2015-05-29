@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   process/DefPhysics.cxx
  *
@@ -73,7 +73,6 @@
 #include "SecondTrack.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
 #include "Source.h"
 #include "KCode.h"
 #include "Simulation.h"
@@ -81,7 +80,6 @@
 #include "PhysCard.h"
 #include "NList.h"
 #include "NRange.h"
-#include "KGroup.h"
 #include "ModeCard.h"
 #include "LSwitchCard.h"
 #include "PhysImp.h"

@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   Main/t1MarkII.cxx
  *
@@ -106,32 +106,32 @@ main(int argc,char* argv[])
   ELog::RegMethod RControl("","main");
   mainSystem::activateLogging(RControl);
 
-  std::string Oname;
   std::vector<std::string> Names;  
-  std::map<std::string,std::string> Values;  
-  std::map<std::string,std::string> AddValues;  
   std::map<std::string,double> IterVal;           // Variable to iterate 
+  std::string Oname;
 
-  // PROCESS INPUT:
-  InputControl::mainVector(argc,argv,Names);
-  mainSystem::inputParam IParam;
-  createTS1Inputs(IParam);
-
-  const int iteractive(IterVal.empty() ? 0 : 1);   
-  Simulation* SimPtr=createSimulation(IParam,Names,Oname);
-  if (!SimPtr) return -1;
-
-  // The big variable setting
-  setVariable::TS1upgrade(SimPtr->getDataBase());
-  // Check for model type
-  mainSystem::setDefUnits(SimPtr->getDataBase(),IParam);
-  InputModifications(SimPtr,IParam,Names);
-
-  // Definitions section 
-  int MCIndex(0);
-  const int multi=IParam.getValue<int>("multi");
+  Simulation* SimPtr(0);
   try
     {
+      // PROCESS INPUT:
+      InputControl::mainVector(argc,argv,Names);
+      mainSystem::inputParam IParam;
+      createTS1Inputs(IParam);
+
+      const int iteractive(IterVal.empty() ? 0 : 1);
+      
+      SimPtr=createSimulation(IParam,Names,Oname);
+      if (!SimPtr) return -1;
+      
+      // The big variable setting
+      setVariable::TS1upgrade(SimPtr->getDataBase());
+      // Check for model type
+      mainSystem::setDefUnits(SimPtr->getDataBase(),IParam);
+      InputModifications(SimPtr,IParam,Names);
+      
+      // Definitions section 
+      int MCIndex(0);
+      const int multi=IParam.getValue<int>("multi");
       while(MCIndex<multi)
 	{
 	  if (MCIndex)
@@ -140,19 +140,19 @@ main(int argc,char* argv[])
 	      ELog::FM.setActive(4);    
 	      ELog::RN.setActive(0);    
 	    }
-
+	  
 	  SimPtr->resetAll();
-
+	  
 	  ts1System::makeT1Upgrade T1Obj;
 	  World::createOuterObjects(*SimPtr);
 	  T1Obj.build(SimPtr,IParam);
-
+	  
 	  SDef::sourceSelection(*SimPtr,IParam);
-
+	  
 	  SimPtr->removeComplements();
 	  SimPtr->removeDeadSurfaces(0);         
 	  ModelSupport::setDefaultPhysics(*SimPtr,IParam);
-
+	  
 	  const int renumCellWork=beamTallySelection(*SimPtr,IParam);
 	  SimPtr->masterRotation();
 	  if (createVTK(IParam,SimPtr,Oname))
@@ -163,13 +163,13 @@ main(int argc,char* argv[])
 	    }
 	  if (IParam.flag("endf"))
 	    SimPtr->setENDF7();
-
+	  
 	  SimProcess::importanceSim(*SimPtr,IParam);
 	  SimProcess::inputPatternSim(*SimPtr,IParam); // energy cut etc
 	  if (renumCellWork)
 	    tallyRenumberWork(*SimPtr,IParam);
 	  tallyModification(*SimPtr,IParam);
-
+	  
 	  // Ensure we done loop
 	  ELog::EM<<"T1MARKII : variable hash: "
 		  <<SimPtr->getDataBase().variableHash()

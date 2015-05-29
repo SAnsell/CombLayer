@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   delft/delftH2Moderator.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,12 +46,7 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "Tally.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -70,13 +65,10 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
-#include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "SecondTrack.h"
@@ -95,6 +87,8 @@ int
 delftH2Moderator::calcDir(const double R)
   /*!
     Calculate the direction of the curvature
+    \param R :: Radius direction 
+    \return +/- direction [0 if none]
   */
 {
   // Fix the back direction:
@@ -183,7 +177,7 @@ delftH2Moderator::~delftH2Moderator()
 {}
 
 void
-delftH2Moderator::populate(const Simulation& System)
+delftH2Moderator::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param System :: Simulation to use
@@ -191,8 +185,6 @@ delftH2Moderator::populate(const Simulation& System)
 {
   ELog::RegMethod RegA("delftH2Moderator","populate");
   
-  const FuncDataBase& Control=System.getDataBase();
-
   xStep=Control.EvalVar<double>(keyName+"XStep");
   yStep=Control.EvalVar<double>(keyName+"YStep");
   zStep=Control.EvalVar<double>(keyName+"ZStep");
@@ -464,7 +456,7 @@ delftH2Moderator::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("delftH2Moderator","createAll");
-  populate(System);
+  populate(System.getDataBase());
 
   createUnitVector(FUnit);
   createSurfaces();
@@ -475,4 +467,4 @@ delftH2Moderator::createAll(Simulation& System,
   return;
 }
   
-}  // NAMESPACE moderatorSystem
+}  // NAMESPACE delftSystem

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   process/SimProcess.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,7 +62,6 @@
 #include "PhysCard.h"
 #include "PhysImp.h"
 #include "LSwitchCard.h"
-#include "KGroup.h"
 #include "Source.h"
 #include "KCode.h"
 #include "PhysicsCards.h"

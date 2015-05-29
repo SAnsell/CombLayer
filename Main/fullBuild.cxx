@@ -34,7 +34,6 @@
 #include <iterator>
 #include <memory>
 #include <array>
-#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "MersenneTwister.h"
@@ -232,6 +231,8 @@ main(int argc,char* argv[])
       exitFlag= -1;
     }
   mainSystem::exitDelete(SimPtr);
+  ModelSupport::objectRegister::Instance().reset();
+  ModelSupport::surfIndex::Instance().reset();
   return exitFlag;
 }
 

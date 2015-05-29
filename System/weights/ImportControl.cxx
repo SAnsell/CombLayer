@@ -58,7 +58,6 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
 #include "Source.h"
 #include "KCode.h"
 #include "LSwitchCard.h"

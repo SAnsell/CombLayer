@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   src/SimPHITS.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,8 +35,6 @@
 #include <iterator>
 #include <memory>
 #include <array>
-#include <boost/functional.hpp>
-#include <boost/bind.hpp>
 #include <boost/format.hpp>
 
 #include "Exception.h"
@@ -100,7 +98,6 @@
 #include "LSwitchCard.h"
 #include "PhysCard.h"
 #include "PhysImp.h"
-#include "KGroup.h"
 #include "SrcData.h"
 #include "SrcItem.h"
 #include "Source.h"
@@ -155,10 +152,9 @@ SimPHITS::writeTally(std::ostream& OX) const
   // It iterats over the Titems and since they are a map
   // uses the mathSupport:::PSecond
   // _1 refers back to the TItem pair<int,tally*>
-  for_each(TItem.begin(),TItem.end(),
-	   boost::bind(&tallySystem::Tally::write,
-	  boost::bind(MapSupport::PSecond<TallyTYPE>(),_1),
-		       boost::ref(OX)));
+  for(const TallyTYPE::value_type& TI : TItem)
+    TI.second->write(OX);
+
   return;
 }
 

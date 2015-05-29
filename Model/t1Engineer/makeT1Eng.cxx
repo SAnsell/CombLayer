@@ -371,7 +371,7 @@ makeT1Eng::build(Simulation* SimPtr,
   TriMod->createAll(*SimPtr,World::masterOrigin(),0,0);
   RefObj->addToInsertControl(*SimPtr,*TriMod,*TriMod);
 
-  ColdCentObj->createAll(*SimPtr,World::masterOrigin());
+  ColdCentObj->createAll(SimPtr->getDataBase(),World::masterOrigin());
 
   H2Mod->createAll(*SimPtr,*ColdCentObj,0,0);
   RefObj->addToInsertControl(*SimPtr,*H2Mod,*H2Mod); //

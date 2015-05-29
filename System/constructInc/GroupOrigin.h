@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   constructInc/GroupOrigin.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ class GroupOrigin : public attachSystem::FixedComp
   double xyAngle;               ///< Angle [degrees]
   double zAngle;                ///< Angle [degrees]
 
-  void populate(const Simulation&);
+  void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
 
  public:
@@ -56,7 +56,7 @@ class GroupOrigin : public attachSystem::FixedComp
   virtual ~GroupOrigin();
 //
 
-  void createAll(Simulation&,const attachSystem::FixedComp&);
+  void createAll(const FuncDataBase&,const attachSystem::FixedComp&);
 
 };
 

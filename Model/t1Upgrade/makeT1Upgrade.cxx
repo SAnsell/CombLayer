@@ -763,7 +763,7 @@ makeT1Upgrade::build(Simulation* SimPtr,
   //  attachSystem::addToInsertControl(*SimPtr,*TriMod,*TriMod);
 
   // Cold centre
-  ColdCentObj->createAll(*SimPtr,World::masterOrigin());
+  ColdCentObj->createAll(SimPtr->getDataBase(),World::masterOrigin());
   const std::string H2ModExclude=
     buildH2Mod(*SimPtr,*ColdCentObj,H2ModName);
 

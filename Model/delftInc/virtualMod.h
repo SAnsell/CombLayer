@@ -24,6 +24,11 @@
 
 class Simulation;
 
+namespace attachSystem
+{
+  class TwinComp;
+}
+
 namespace delftSystem
 {
 

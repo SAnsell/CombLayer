@@ -55,7 +55,6 @@
 #include "LSwitchCard.h"
 #include "NList.h"
 #include "NRange.h"
-#include "KGroup.h"
 #include "dbcnCard.h"
 #include "EUnit.h"
 #include "ExtControl.h"

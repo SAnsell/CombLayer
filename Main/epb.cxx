@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   Main/epb.cxx
  *
@@ -50,11 +50,6 @@
 #include "Tensor.h"
 #include "Vec3D.h"
 #include "inputParam.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "Tally.h"
-#include "TallyCreate.h"
 #include "Transform.h"
 #include "Quaternion.h"
 #include "localRotate.h"
@@ -76,10 +71,6 @@
 #include "PhysCard.h"
 #include "LSwitchCard.h"
 #include "PhysImp.h"
-#include "KGroup.h"
-#include "Source.h"
-#include "KCode.h"
-#include "PhysicsCards.h"
 #include "BasicWWE.h"
 #include "MainProcess.h"
 #include "SimProcess.h"

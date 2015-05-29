@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   lensModel/LensTally.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,7 +66,6 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
 #include "Source.h"
 #include "Simulation.h"
 #include "ContainedComp.h"
@@ -159,4 +158,4 @@ addSurfTally(Simulation& System,
   return TNum;
 }
 
-}  // NAMESPACE shutterSystem
+}  // NAMESPACE lensSystem

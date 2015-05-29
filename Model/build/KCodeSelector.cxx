@@ -61,7 +61,6 @@
 #include "surfRegister.h"
 #include "HeadRule.h"
 #include "inputParam.h"
-#include "KGroup.h"
 #include "PhysCard.h"
 #include "LSwitchCard.h"
 #include "ModeCard.h"

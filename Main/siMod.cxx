@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   Main/siMod.cxx
  *
@@ -81,7 +81,6 @@
 #include "ModeCard.h"
 #include "PhysCard.h"
 #include "PhysImp.h"
-#include "KGroup.h"
 #include "LSwitchCard.h"
 #include "Source.h"
 #include "KCode.h"
@@ -103,7 +102,6 @@
 #include "SourceSelector.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "LinearComp.h"
 #include "SecondTrack.h"
 #include "TwinComp.h"
 #include "ContainedComp.h"

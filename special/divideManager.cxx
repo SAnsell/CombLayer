@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   special/divideManager.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,6 @@
 #include <string>
 #include <algorithm>
 #include <memory>
-#include <boost/multi_array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -45,17 +44,12 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "surfDivide.h"
 #include "surfDIter.h"
 #include "Rules.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
-#include "KGroup.h"
-#include "Source.h"
 #include "SurInter.h"
 #include "Simulation.h"
 #include "XMLload.h"
@@ -84,6 +78,7 @@ divideManager::createAll(const std::string& FName,Simulation& System)
    */
 {
   ELog::RegMethod RegA("divideManager","createAll");
+  
   const FuncDataBase& Control=System.getDataBase();
   
   if (FName.empty())  return;

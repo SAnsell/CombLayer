@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   process/Volumes.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,9 +43,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "Rules.h"
 #include "varList.h"
 #include "Code.h"
@@ -53,8 +50,6 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "KGroup.h"
-#include "SurInter.h"
 #include "Simulation.h"
 #include "inputParam.h"
 #include "volUnit.h"
@@ -81,7 +76,7 @@ calcVolumes(Simulation* SimPtr,const mainSystem::inputParam& IParam)
       for(size_t i=0;i<3;i++)
 	Org[i]=IParam.getValue<double>("volume",i);
       const double R=IParam.getValue<double>("volume",3);
-      const int NP=IParam.getValue<int>("volNum");
+      const size_t NP=IParam.getValue<size_t>("volNum");
       VolSum VTally(Org,R);
       VTally.populateTally(*SimPtr);
       VTally.pointRun(*SimPtr,NP);
