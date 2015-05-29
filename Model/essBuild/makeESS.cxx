@@ -105,6 +105,7 @@ makeESS::makeESS() :
   PBeam(new ProtonTube("ProtonTube")),
   BMon(new BeamMonitor("BeamMonitor")),
   LowPreMod(new DiskPreMod("LowPreMod")),
+  LowCapMod(new DiskPreMod("LowCapMod")),
   
   LowAFL(new moderatorSystem::BasicFlightLine("LowAFlight")),
   LowBFL(new moderatorSystem::BasicFlightLine("LowBFlight")),
@@ -131,6 +132,7 @@ makeESS::makeESS() :
   OR.addObject(PBeam);
   OR.addObject(BMon);
   OR.addObject(LowPreMod);
+  OR.addObject(LowCapMod);
   
   OR.addObject(LowAFL);
   OR.addObject(LowBFL);
@@ -419,8 +421,12 @@ makeESS::build(Simulation& System,
   LowPreMod->createAll(System,World::masterOrigin(),1,
 		       Target->wheelHeight()/2.0,
 		       Reflector->getRadius());
+  
   buildLowButterfly(System);
   const double LMHeight=attachSystem::calcLinkDistance(*LowMod,5,6);
+  // Cap moderator DOES not span whole unit
+  LowCapMod->createAll(System,*LowMod,1,LMHeight,
+   		       Reflector->getRadius());
   
   Reflector->createAll(System,World::masterOrigin(),
 		       Target->wheelHeight(),
@@ -440,6 +446,7 @@ makeESS::build(Simulation& System,
   attachSystem::addToInsertForced(System,*Bulk,Target->getKey("Shaft"));
   attachSystem::addToInsertForced(System,*Bulk,LowAFL->getKey("outer"));
   attachSystem::addToInsertForced(System,*Bulk,LowBFL->getKey("outer"));
+  attachSystem::addToInsertForced(System,*Reflector,*LowCapMod);
 
   // Full surround object
   ShutterBayObj->addInsertCell(voidCell);
@@ -462,12 +469,6 @@ makeESS::build(Simulation& System,
 				    PBeam->getKey("Full"));
   attachSystem::addToInsertSurfCtrl(System,*Bulk,
 				    PBeam->getKey("Full"));
-
-  // BMon->createAll(System,*Target,1,*PBeam,"Sector");
-  // attachSystem::addToInsertForced(System,*Reflector,*BMon);
-
-  //  buildLowerPipe(System,lowPipeType);
-
 
   makeBeamLine(System,IParam);
 

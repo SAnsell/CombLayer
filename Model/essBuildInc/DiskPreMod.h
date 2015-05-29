@@ -49,9 +49,12 @@ class DiskPreMod : public attachSystem::ContainedComp,
   std::vector<double> radius;         ///< cylinder radii [additive]
   std::vector<double> height;         ///< Full heights [additive]
   std::vector<double> depth;          ///< full depths [additive]
+  std::vector<double> width;          ///< Widths [additive]
   std::vector<int> mat;               ///< Materials 
   std::vector<double> temp;           ///< Temperatures
 
+  size_t NWidth;                      ///< Number of widths active
+  
   
   void populate(const FuncDataBase&,const double,const double);
   void createUnitVector(const attachSystem::FixedComp&,

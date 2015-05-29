@@ -182,8 +182,6 @@ H2FlowGuide::createUnitVector(const attachSystem::FixedComp& FC)
 {
   ELog::RegMethod RegA("H2FlowGuide","createUnitVector");
   FixedComp::createUnitVector(FC);
-  ELog::EM<<"Orgin == "<<FC.getKeyName() <<" " <<Origin<<ELog::endDiag;
-  ELog::EM<<"Y == "<<Y<<ELog::endDiag;
   return;
 }  
   
@@ -240,9 +238,7 @@ H2FlowGuide::createObjects(Simulation& System,
   Out+=HW.getLinkString(12)+HW.getLinkString(13);
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out));
 
-  ELog::EM<<"Out == "<<Out<<ELog::endDiag;
   wallExclude.makeComplement();
-  ELog::EM<<"Exclude == "<<wallExclude.display()<<ELog::endDiag;
   InnerObj->addSurfString(wallExclude.display());
   
   return;

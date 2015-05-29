@@ -86,6 +86,7 @@ class makeESS
   /// Primary Lower Mod [
   std::shared_ptr<constructSystem::ModBase> LowMod;
   std::shared_ptr<DiskPreMod> LowPreMod;
+  std::shared_ptr<DiskPreMod> LowCapMod;
 
   // Cylindrical [to be dumped]
   std::shared_ptr<moderatorSystem::BasicFlightLine> LowAFL;  ///< Lower Mode FL
