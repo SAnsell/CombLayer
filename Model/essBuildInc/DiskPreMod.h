@@ -57,7 +57,7 @@ class DiskPreMod : public attachSystem::ContainedComp,
   
   
   void populate(const FuncDataBase&,const double,const double);
-  void createUnitVector(const attachSystem::FixedComp&,
+  void createUnitVector(const attachSystem::FixedComp&,const long int,
 			const bool);
 
   void createSurfaces();
@@ -81,8 +81,8 @@ class DiskPreMod : public attachSystem::ContainedComp,
     { return (depth.empty()) ? 0.0 : depth.back()+height.back(); }
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const bool,const double,const double);
-  
+		 const long int,const bool,const double,const double);
+
 };
 
 }

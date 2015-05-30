@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuild/MidWaterDivider.cxx 
+ * File:   essBuild/EdgeWater.cxx 
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -81,12 +81,12 @@
 #include "geomSupport.h"
 #include "ModBase.h"
 #include "H2Wing.h"
-#include "MidWaterDivider.h"
+#include "EdgeWater.h"
 
 namespace essSystem
 {
 
-MidWaterDivider::MidWaterDivider(const std::string& baseKey,
+EdgeWater::EdgeWater(const std::string& baseKey,
 				 const std::string& extraKey) :
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0,0),
@@ -101,7 +101,7 @@ MidWaterDivider::MidWaterDivider(const std::string& baseKey,
   */
 {}
 
-MidWaterDivider::MidWaterDivider(const MidWaterDivider& A) : 
+EdgeWater::EdgeWater(const EdgeWater& A) : 
   attachSystem::ContainedComp(A),attachSystem::LayerComp(A),
   attachSystem::FixedComp(A), baseName(A.baseName),
   divIndex(A.divIndex),cellIndex(A.cellIndex),midYStep(A.midYStep),
@@ -110,15 +110,15 @@ MidWaterDivider::MidWaterDivider(const MidWaterDivider& A) :
   modTemp(A.modTemp)
   /*!
     Copy constructor
-    \param A :: MidWaterDivider to copy
+    \param A :: EdgeWater to copy
   */
 {}
 
-MidWaterDivider&
-MidWaterDivider::operator=(const MidWaterDivider& A)
+EdgeWater&
+EdgeWater::operator=(const EdgeWater& A)
   /*!
     Assignment operator
-    \param A :: MidWaterDivider to copy
+    \param A :: EdgeWater to copy
     \return *this
   */
 {
@@ -140,61 +140,52 @@ MidWaterDivider::operator=(const MidWaterDivider& A)
   return *this;
 }
 
-MidWaterDivider*
-MidWaterDivider::clone() const
+EdgeWater*
+EdgeWater::clone() const
   /*!
     Virtual copy constructor
     \return new (this)
    */
 {
-  return new MidWaterDivider(*this);
+  return new EdgeWater(*this);
 }
   
-MidWaterDivider::~MidWaterDivider() 
+EdgeWater::~EdgeWater() 
   /*!
     Destructor
   */
 {}
 
 void
-MidWaterDivider::populate(const FuncDataBase& Control)
+EdgeWater::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: DataBase for variables
   */
 {
-  ELog::RegMethod RegA("MidWaterDivider","populate");
+  ELog::RegMethod RegA("EdgeWater","populate");
 
-  cutLayer=Control.EvalDefVar<size_t>(keyName+"CutLayer",3);
-  
-  midYStep=Control.EvalVar<double>(keyName+"MidYStep");
-  midAngle=Control.EvalVar<double>(keyName+"MidAngle");
+  width=Control.EvalVar<size_t>(keyName+"Width");
+  wallThick=Control.EvalVar<size_t>(keyName+"WallThick");
 
-  length=Control.EvalVar<double>(keyName+"Length");
-  height=Control.EvalDefVar<double>(keyName+"Height",-1.0);
-  wallThick=Control.EvalVar<double>(keyName+"WallThick");
-  
   modMat=ModelSupport::EvalMat<int>(Control,keyName+"ModMat");
-  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
-  modTemp=Control.EvalVar<double>(keyName+"ModTemp");
-
-  totalHeight=Control.EvalPair<double>(keyName,baseName,"TotalHeight");
-  if (height<Geometry::zeroTol)
-    height=totalHeight-2.0*wallThick;
+  modMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
+  modTemp=Control.EvalVar<size_t>(keyName+"ModTemp");
+  
   return;
 }
   
 void
-MidWaterDivider::createUnitVector(const attachSystem::FixedComp& FC)
+EdgeWater::createUnitVector(const attachSystem::FixedComp& FC)
   /*!
     Create the unit vectors
-    - Y Points down the MidWaterDivider direction
-    - X Across the MidWaterDivider
+    - Y Points down the EdgeWater direction
+    - X Across the EdgeWater
     - Z up (towards the target)
     \param FC :: fixed Comp [and link comp]
   */
 {
-  ELog::RegMethod RegA("MidWaterDivider","createUnitVector");
+  ELog::RegMethod RegA("EdgeWater","createUnitVector");
 
   FixedComp::createUnitVector(FC);
   applyShift(0,0,totalHeight/2.0);
@@ -202,14 +193,14 @@ MidWaterDivider::createUnitVector(const attachSystem::FixedComp& FC)
 }
 
 void
-MidWaterDivider::createLinks()
+EdgeWater::createLinks()
   /*!
     Construct links for the triangle moderator
     The normal 1-3 and 5-6 are plane,
     7,8,9 are 
   */
 {
-  ELog::RegMethod RegA("MidWaterDivider","createLinks");
+  ELog::RegMethod RegA("EdgeWater","createLinks");
 
   // Loop over corners that are bound by convex
 
@@ -219,12 +210,12 @@ MidWaterDivider::createLinks()
 
 
 void
-MidWaterDivider::createSurfaces()
+EdgeWater::createSurfaces()
   /*!
     Create All the surfaces
   */
 {
-  ELog::RegMethod RegA("MidWaterDivider","createSurface");
+  ELog::RegMethod RegA("EdgeWater","createSurface");
 
   // Mid divider
   ModelSupport::buildPlane(SMap,divIndex+100,Origin,Y);
@@ -288,7 +279,7 @@ MidWaterDivider::createSurfaces()
 }
  
 void
-MidWaterDivider::createObjects(Simulation& System,
+EdgeWater::createObjects(Simulation& System,
 			       const H2Wing& leftWing,
 			       const H2Wing& rightWing)
   /*!
@@ -296,7 +287,7 @@ MidWaterDivider::createObjects(Simulation& System,
     \param System :: Simulation to create objects in
   */
 {
-  ELog::RegMethod RegA("MidWaterDivider","createObjects");
+  ELog::RegMethod RegA("EdgeWater","createObjects");
 
   const std::string Base=
     leftWing.getLinkComplement(4)+leftWing.getLinkComplement(5);
@@ -341,7 +332,7 @@ MidWaterDivider::createObjects(Simulation& System,
 }
 
 void
-MidWaterDivider::cutOuterWing(Simulation& System,
+EdgeWater::cutOuterWing(Simulation& System,
 			      const H2Wing& leftWing,
 			      const H2Wing& rightWing) const
   /*!
@@ -352,7 +343,7 @@ MidWaterDivider::cutOuterWing(Simulation& System,
     \param rightWing :: Right wing object
   */
 {
-  ELog::RegMethod RegA("MidWaterDivider","cutOuterWing");
+  ELog::RegMethod RegA("EdgeWater","cutOuterWing");
 
   const size_t lWing=leftWing.getNLayers();
   const size_t rWing=rightWing.getNLayers();
@@ -394,7 +385,7 @@ MidWaterDivider::cutOuterWing(Simulation& System,
 
   
 Geometry::Vec3D
-MidWaterDivider::getSurfacePoint(const size_t,
+EdgeWater::getSurfacePoint(const size_t,
 			const size_t) const
   /*!
     Given a side and a layer calculate the link point
@@ -403,12 +394,12 @@ MidWaterDivider::getSurfacePoint(const size_t,
     \return Surface point
   */
 {
-  ELog::RegMethod RegA("MidWaterDivider","getSurfacePoint");
+  ELog::RegMethod RegA("EdgeWater","getSurfacePoint");
   throw ColErr::AbsObjMethod("Not implemented yet");
 }
 
 int
-MidWaterDivider::getLayerSurf(const size_t layerIndex,
+EdgeWater::getLayerSurf(const size_t layerIndex,
 		     const size_t sideIndex) const
   /*!
     Given a side and a layer calculate the link point
@@ -417,12 +408,12 @@ MidWaterDivider::getLayerSurf(const size_t layerIndex,
     \return Surface point
   */
 {
-  ELog::RegMethod RegA("MidWaterDivider","getLayerSurf");
+  ELog::RegMethod RegA("EdgeWater","getLayerSurf");
   throw ColErr::AbsObjMethod("Not implemented yet");
 }
 
 std::string
-MidWaterDivider::getLayerString(const size_t layerIndex,
+EdgeWater::getLayerString(const size_t layerIndex,
 		       const size_t sideIndex) const
   /*!
     Given a side and a layer calculate the link point
@@ -431,14 +422,14 @@ MidWaterDivider::getLayerString(const size_t layerIndex,
     \return Surface point
   */
 {
-  ELog::RegMethod RegA("MidWaterDivider","getLayerString");
+  ELog::RegMethod RegA("EdgeWater","getLayerString");
 
   throw ColErr::IndexError<size_t>(sideIndex,12,"sideIndex");
 }
 
 
 void
-MidWaterDivider::createAll(Simulation& System,
+EdgeWater::createAll(Simulation& System,
 			   const attachSystem::FixedComp& FC,
 			   const H2Wing& LA,
 			   const H2Wing& RA)
@@ -450,7 +441,7 @@ MidWaterDivider::createAll(Simulation& System,
     \param RA :: Right node object
   */
 {
-  ELog::RegMethod RegA("MidWaterDivider","createAll");
+  ELog::RegMethod RegA("EdgeWater","createAll");
 
   populate(System.getDataBase());
   createUnitVector(FC);

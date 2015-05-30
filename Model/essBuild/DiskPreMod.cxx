@@ -197,16 +197,18 @@ DiskPreMod::populate(const FuncDataBase& Control,
 
 void
 DiskPreMod::createUnitVector(const attachSystem::FixedComp& refCentre,
-			     const bool zRotate)
+			     const long int sideIndex,const bool zRotate)
   /*!
     Create the unit vectors
     \param refCentre :: Centre for object
+
+    \param sideIndex :: index for link
     \param zRotate :: rotate Zaxis
   */
 {
   ELog::RegMethod RegA("DiskPreMod","createUnitVector");
   attachSystem::FixedComp::createUnitVector(refCentre);
-
+  Origin=refCentre.getSignedLinkPt(sideIndex);
   if (zRotate)
     {
       X*=-1;
@@ -214,8 +216,10 @@ DiskPreMod::createUnitVector(const attachSystem::FixedComp& refCentre,
     }
   const double D=(depth.empty()) ? 0.0 : depth.back();
   applyShift(0,0,zStep+D);
+  ELog::EM<<"Origin = "<<Origin<<ELog::endDiag;
   return;
 }
+
 
 void
 DiskPreMod::createSurfaces()
@@ -286,12 +290,16 @@ DiskPreMod::createObjects(Simulation& System)
 
   SI-=10;
 
+
   // Outer extra void
   if (radius.empty() || radius.back()<outerRadius-Geometry::zeroTol)
     {
       Out=ModelSupport::getComposite(SMap,SI," -17 5 -6 7");
       System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      // For exit surface
+      Out=ModelSupport::getComposite(SMap,SI," -17 5 -6 ");
     }
+
   addOuterSurf(Out);
   return; 
 }
@@ -453,6 +461,7 @@ DiskPreMod::getLayerString(const size_t layerIndex,
 void
 DiskPreMod::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,
+		      const long int sideIndex,
 		      const bool zRotate,
 		      const double VOffset,
 		      const double ORad)
@@ -460,6 +469,7 @@ DiskPreMod::createAll(Simulation& System,
     Extrenal build everything
     \param System :: Simulation
     \param FC :: Attachment point	       
+    \param sideIndex :: side of object
     \param zRotate :: Rotate to -ve Z
     \param VOffset :: Vertical offset from target
     \param ORad :: Outer radius of zone
@@ -468,7 +478,7 @@ DiskPreMod::createAll(Simulation& System,
   ELog::RegMethod RegA("DiskPreMod","createAll");
 
   populate(System.getDataBase(),VOffset,ORad);
-  createUnitVector(FC,zRotate);
+  createUnitVector(FC,sideIndex,zRotate);
 
   createSurfaces();
   createObjects(System);

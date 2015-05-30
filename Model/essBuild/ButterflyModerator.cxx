@@ -234,10 +234,16 @@ ButterflyModerator::createLinks()
   FixedComp::setLinkSurf(2,SMap.realSurf(flyIndex+7));
   FixedComp::setLinkSurf(3,SMap.realSurf(flyIndex+7));
 
-  // copy top/bottom from H2Wing
-
+  // copy surface top/bottom from H2Wing and Orign from center
+  
   FixedComp::setLinkCopy(4,*LeftUnit,4);
   FixedComp::setLinkCopy(5,*LeftUnit,5);
+  const double LowV= LU[4].getConnectPt().Z();
+  const double HighV= LU[5].getConnectPt().Z();
+  const Geometry::Vec3D LowPt(Origin.X(),Origin.Y(),LowV);
+  const Geometry::Vec3D HighPt(Origin.X(),Origin.Y(),HighV);
+  FixedComp::setConnect(4,LowPt,-Z);
+  FixedComp::setConnect(5,HighPt,Z);
   
   return;
 }
@@ -282,6 +288,7 @@ ButterflyModerator::createAll(Simulation& System,
   RightUnit->createAll(System,*this);
   MidWater->createAll(System,*this,*LeftUnit,*RightUnit);
   Origin=MidWater->getCentre();
+  ELog::EM<<"ORIG == "<<Origin<<ELog::endDiag;
   createExternal();
   
   createSurfaces();

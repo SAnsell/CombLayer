@@ -418,19 +418,19 @@ makeESS::build(Simulation& System,
   makeTarget(System,targetType);
   Reflector->globalPopulate(System.getDataBase());
     
-  LowPreMod->createAll(System,World::masterOrigin(),1,
+  LowPreMod->createAll(System,World::masterOrigin(),0,true,
 		       Target->wheelHeight()/2.0,
 		       Reflector->getRadius());
   
   buildLowButterfly(System);
   const double LMHeight=attachSystem::calcLinkDistance(*LowMod,5,6);
   // Cap moderator DOES not span whole unit
-  LowCapMod->createAll(System,*LowMod,1,LMHeight,
-   		       Reflector->getRadius());
+  LowCapMod->createAll(System,*LowMod,6,false,
+   		       0.0,Reflector->getRadius());
   
   Reflector->createAll(System,World::masterOrigin(),
 		       Target->wheelHeight(),
-		       LowPreMod->getHeight()+LMHeight,
+		       LowPreMod->getHeight()+LMHeight+LowCapMod->getHeight(),
 		       -1.0);
   
   Reflector->insertComponent(System,"targetVoid",*Target,1);
@@ -446,7 +446,7 @@ makeESS::build(Simulation& System,
   attachSystem::addToInsertForced(System,*Bulk,Target->getKey("Shaft"));
   attachSystem::addToInsertForced(System,*Bulk,LowAFL->getKey("outer"));
   attachSystem::addToInsertForced(System,*Bulk,LowBFL->getKey("outer"));
-  attachSystem::addToInsertForced(System,*Reflector,*LowCapMod);
+
 
   // Full surround object
   ShutterBayObj->addInsertCell(voidCell);
