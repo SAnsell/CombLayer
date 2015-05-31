@@ -240,7 +240,7 @@ H2Wing::createUnitVector(const attachSystem::FixedComp& FC)
   ELog::RegMethod RegA("H2Wing","createUnitVector");
 
   FixedComp::createUnitVector(FC);
-  applyShift(xStep,yStep,totalHeight/2.0);
+  applyShift(xStep,yStep,0.0);
   applyAngleRotate(xyOffset,0.0);
   for(size_t i=0;i<3;i++)
     Pts[i]=realPt(Pts[i]);

@@ -142,7 +142,7 @@ surfRegister::realSurfPtr(const int SN) const
   /*!
     Aquire the real surface from a given number
     \param SN :: surface number 
-    \return Surface PTr
+    \return Surface Ptr
   */
 {
   const int out=abs(realSurf(SN));

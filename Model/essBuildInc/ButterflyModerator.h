@@ -6,6 +6,7 @@ class Simulation;
 namespace essSystem
 {
   class MidWaterDivider;
+  class EdgeWater;
 
 /*!
   \class ButterflyModerator
@@ -28,11 +29,17 @@ class ButterflyModerator :
   std::shared_ptr<H2Wing> LeftUnit;        ///< Left part of the moderator
   std::shared_ptr<H2Wing> RightUnit;       ///< Right part of the moderator
   std::shared_ptr<MidWaterDivider> MidWater;    ///< Water divider
+  std::shared_ptr<EdgeWater> LeftWater;    ///< Water divider
+  std::shared_ptr<EdgeWater> RightWater;    ///< Water divider
 
   double totalHeight;                     ///< Total height
   double outerRadius;                     ///< Main outer radius
 
   void populate(const FuncDataBase&);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const attachSystem::FixedComp*,
+			const long int);
+
   void createExternal();
   void createSurfaces();
   void createObjects(Simulation&);

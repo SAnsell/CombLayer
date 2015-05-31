@@ -43,8 +43,6 @@ class EdgeWater :
 {
  private:
 
-  const std::string baseName; ///< Base Name
-      
   const int edgeIndex;       ///< Index of surface offset
   int cellIndex;            ///< Cell index
 
@@ -59,14 +57,13 @@ class EdgeWater :
   void createUnitVector(const attachSystem::FixedComp&);
 
   void createSurfaces();
-  void createObjects(Simulation&,const H2Wing&,const H2Wing&);
-  void cutOuterWing(Simulation&,const H2Wing&,const H2Wing&) const;
+  void createObjects(Simulation&,const std::string&,const std::string&);
   void createLinks();
 
 
  public:
 
-  EdgeWater(const std::string&,const std::string&);
+  EdgeWater(const std::string&);
   EdgeWater(const EdgeWater&);
   EdgeWater& operator=(const EdgeWater&);
   virtual EdgeWater* clone() const;
@@ -75,8 +72,9 @@ class EdgeWater :
   virtual Geometry::Vec3D getSurfacePoint(const size_t,const size_t) const;
   virtual std::string getLayerString(const size_t,const size_t) const;
   virtual int getLayerSurf(const size_t,const size_t) const;
+
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const H2Wing&,const H2Wing&);
+		 const std::string&,const std::string&);
 };
 
 }
