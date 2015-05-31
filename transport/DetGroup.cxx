@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   transport/DetGroup.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,8 +29,6 @@
 #include <vector>
 #include <map>
 #include <string>
-#include <boost/format.hpp>
-#include <boost/bind.hpp>
 #include <boost/multi_array.hpp>
 
 #include "MersenneTwister.h"
@@ -119,7 +117,7 @@ DetGroup::clear()
   */
 {
   for_each(DetVec.begin(),DetVec.end(),
-	   boost::bind(&Detector::clear,_1));
+	   std::bind(&Detector::clear,std::placeholders::_1));
   return;
 }
 		       

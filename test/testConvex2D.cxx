@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testConvex2D.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,9 +30,7 @@
 #include <string>
 #include <algorithm>
 #include <functional>
-#include <iterator>
 #include <tuple>
-#include <boost/bind.hpp>
 
 #include <boost/format.hpp>
 
@@ -333,7 +331,8 @@ testConvex2D::testHull()
   // Find if the 0,0,0 point has been dropped:
   std::vector<Geometry::Vec3D>::iterator vc=
     find_if(Out.begin(),Out.end(),
-	    boost::bind(std::equal_to<Geometry::Vec3D>(),Pt[4],_1));
+	    std::bind(std::equal_to<Geometry::Vec3D>(),Pt[4],
+		      std::placeholders::_1));
   
   if (Out.size()!=4  || vc!=Out.end()) 
     {

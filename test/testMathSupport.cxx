@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testMathSupport.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,8 +28,8 @@
 #include <complex>
 #include <map>
 #include <algorithm>
+#include <functional>
 #include <tuple>
-#include <boost/bind.hpp>
 
 #include "MersenneTwister.h"
 #include "Exception.h"
@@ -381,7 +381,8 @@ testMathSupport::testIndexSort()
 
   std::vector<double> V(10);
   std::generate(V.begin(),V.end(),
-       boost::bind(&MTRand::rand,Rand));
+		std::bind<double(MTRand::*)()>(&MTRand::rand,Rand));
+
 
   std::vector<size_t> Index(10);
   std::generate(Index.begin(),Index.end(),IncSeq());

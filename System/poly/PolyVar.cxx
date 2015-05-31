@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   poly/PolyVar.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,8 +29,6 @@
 #include <algorithm>
 #include <iterator>
 #include <functional>
-
-#include <boost/bind.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -700,8 +698,8 @@ PolyVar<VCount>::compress(const double epsilon)
   for (;iDegree>0 && PCoeff[iDegree].isZero(eps);iDegree--) ;
   PCoeff.resize(iDegree+1);
 
-  for_each(PCoeff.begin(),PCoeff.end(),
-	   boost::bind(&PolyVar<VCount-1>::compress,_1,epsilon));
+  for(PolyVar<VCount-1>& PC : PCoeff)
+    PC.compress(epsilon);
 
   return;
 }

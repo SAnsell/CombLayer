@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testSurfEqual.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,8 +33,6 @@
 #include <string>
 #include <algorithm>
 #include <memory>
-#include <boost/bind.hpp>
-#include <boost/format.hpp>
 #include <tuple>
 
 #include "Exception.h"
@@ -48,7 +46,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
 #include "Quaternion.h"
 #include "Surface.h"
 #include "surfIndex.h"
