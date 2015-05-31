@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   poly/solveValues.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,8 +28,6 @@
 #include <algorithm>
 #include <iterator>
 #include <functional>
-
-#include <boost/bind.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -346,8 +344,8 @@ solveValues::getSolution()
 	{
 	  std::vector<double> Out=OneArray[i].realRoots(1e-10);
 	  // X coordinates all agree:
-	  for_each(Out.begin(),Out.end(),
-		  boost::bind(&solveValues::backSolve,this,0,_1));
+	  for(const double D : Out)
+	    this->backSolve(0,D);
 	}
 
     }
@@ -384,7 +382,8 @@ solveValues::checkSolutions()
   ELog::RegMethod RegA("solveValues","checkSolutions");
 
   Ans.erase(remove_if(Ans.begin(),Ans.end(),
-		      boost::bind(&solveValues::notValid,this,_1)),
+		      std::bind(&solveValues::notValid,
+				this,std::placeholders::_1)),
 	    Ans.end());
 
   sort(Ans.begin(),Ans.end(),Geometry::vecOrder());
