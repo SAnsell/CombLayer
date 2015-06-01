@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   process/MainProcess.cxx
  *
@@ -619,8 +619,9 @@ void createESSInputs(inputParam& IParam)
   IParam.regDefItem<std::string>("lowMod","lowModType",1,std::string("lowMod"));
   IParam.regDefItem<std::string>("topMod","topModType",1,std::string("topMod"));
   IParam.regDefItem<std::string>("lowPipe","lowPipeType",1,std::string("side"));
-  IParam.regDefItem<std::string>("iradLine","iradLineType",1,
-				 std::string("void"));
+  IParam.regDefItem<std::string>("iradLine","iradLineType",
+				 1,std::string("void"));
+  IParam.regDefItem<std::string>("bunker","bunkerType",1,std::string("null"));
   IParam.regMulti<std::string>("beamlines","beamlines",15,1);
   IParam.setDesc("beamlines","Creates beamlines on the main model");
   IParam.setDesc("lowMod","Type of low moderator to be built");
@@ -628,6 +629,7 @@ void createESSInputs(inputParam& IParam)
   IParam.setDesc("lowPipe","Type of low moderator pipework");
   IParam.setDesc("iradLine","Build an irradiation line [void for none]");
   IParam.setDesc("beamlines","Build beamlines [void for none]");
+  IParam.setDesc("bunker","Build bunker [void for none [A-D]");
   return;
 }
 

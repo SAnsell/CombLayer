@@ -259,8 +259,6 @@ GuideItem::calcBeamLineTrack(const attachSystem::FixedComp& FC)
   // Need to calculate impact point of beamline:
   const double yShift=sqrt(RInner*RInner-beamXStep*beamXStep)-RInner;
   bEnter=FC.getCentre()+X*beamXStep+Y*yShift+Z*beamZStep;
-  ELog::EM<<"Orig == "<<keyName<<" "<<FC.getCentre()<<":"
-	  <<beamZStep<<ELog::endDiag;
       
   applyBeamAngleRotate(beamXYAngle,beamZAngle);
   MonteCarlo::LineIntersectVisit LI(bEnter,bY);

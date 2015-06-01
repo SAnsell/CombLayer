@@ -201,7 +201,6 @@ DiskPreMod::createUnitVector(const attachSystem::FixedComp& refCentre,
   /*!
     Create the unit vectors
     \param refCentre :: Centre for object
-
     \param sideIndex :: index for link
     \param zRotate :: rotate Zaxis
   */
@@ -216,7 +215,7 @@ DiskPreMod::createUnitVector(const attachSystem::FixedComp& refCentre,
     }
   const double D=(depth.empty()) ? 0.0 : depth.back();
   applyShift(0,0,zStep+D);
-  ELog::EM<<"Origin = "<<Origin<<ELog::endDiag;
+
   return;
 }
 

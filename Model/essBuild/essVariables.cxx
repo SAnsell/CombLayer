@@ -53,6 +53,7 @@
 namespace setVariable
 {
   void EssBeamLinesVariables(FuncDataBase&);
+  void EssBunkerVariables(FuncDataBase&);
   void EssReflectorVariables(FuncDataBase&);
   void EssSANSVariables(FuncDataBase&);
   void EssButterflyModerator(FuncDataBase&);
@@ -906,6 +907,7 @@ EssVariables(FuncDataBase& Control)
   EssConicModerator(Control);
   EssButterflyModerator(Control);
   EssWheel(Control);
+  EssBunkerVariables(Control);
 
 
   Control.addVariable("sdefEnergy",2500.0);  
@@ -1232,11 +1234,43 @@ EssSANSVariables(FuncDataBase& Control)
   return;
 }
 
+
+void
+EssBunkerVariables(FuncDataBase& Control)
+  /*!
+    Create all the bunker variables
+    \param Control :: DataBase
+  */
+{
+  ELog::RegMethod RegA("essVariables[F]","EssBunkerVariables");
+
+
+  Control.addVariable("LowABunkerLeftPhase",30.0);
+  Control.addVariable("LowABunkerRightPhase",30.0);
+  Control.addVariable("LowABunkerLeftAngle",0.0);
+  Control.addVariable("LowABunkerRightAngle",0.0);
+
+  Control.addVariable("LowABunkerWallRadius",1000.0);
+  Control.addVariable("LowABunkerFloorDepth",100.0);
+  Control.addVariable("LowABunkerRoofHeight",100.0);
+
+  Control.addVariable("LowABunkerWallThick",200.0);
+  Control.addVariable("LowABunkerSideThick",100.0);
+  Control.addVariable("LowABunkerRoofThick",100.0);
+  Control.addVariable("LowABunkerFloorThick",100.0);
+
+  Control.addVariable("LowABunkerWallMat","Steel71");
+
+  Control.addVariable("LowABunkerNLayers",12);
+      
+  
+  return;
+}
   
 void
 EssBeamLinesVariables(FuncDataBase& Control)
   /*!
-    Create all the beamline variabes
+    Create all the beamline variables
     \param Control :: DataBase
   */
 {

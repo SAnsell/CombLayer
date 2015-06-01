@@ -214,7 +214,7 @@ EdgeWater::createSurfaces()
 
   ModelSupport::buildPlane(SMap,edgeIndex+1,Origin-Y*(width/2.0),Y);
   ModelSupport::buildPlane(SMap,edgeIndex+2,Origin+Y*(width/2.0),Y);
-  ELog::EM<<"Wallthick == "<<wallThick<<ELog::endDiag;
+
   ModelSupport::buildPlane(SMap,edgeIndex+11,
 			   Origin-Y*(wallThick+width/2.0),Y);
   ModelSupport::buildPlane(SMap,edgeIndex+12,
