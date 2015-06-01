@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   essBuild/GuideItem.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -240,6 +240,7 @@ GuideItem::createUnitVector(const attachSystem::FixedComp& FC,
   FixedComp::createUnitVector(FC.getCentre(),-LU.getAxis(),FC.getZ());
   applyShift(xStep,yStep,zStep);
   applyAngleRotate(xyAngle,zAngle);
+
   return;
 }
 
@@ -258,6 +259,9 @@ GuideItem::calcBeamLineTrack(const attachSystem::FixedComp& FC)
   // Need to calculate impact point of beamline:
   const double yShift=sqrt(RInner*RInner-beamXStep*beamXStep)-RInner;
   bEnter=FC.getCentre()+X*beamXStep+Y*yShift+Z*beamZStep;
+  ELog::EM<<"Orig == "<<keyName<<" "<<FC.getCentre()<<":"
+	  <<beamZStep<<ELog::endDiag;
+      
   applyBeamAngleRotate(beamXYAngle,beamZAngle);
   MonteCarlo::LineIntersectVisit LI(bEnter,bY);
 

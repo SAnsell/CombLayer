@@ -243,13 +243,12 @@ EdgeWater::createObjects(Simulation& System,
   
   // Two walls : otherwise divider container
   Out=ModelSupport::getComposite(SMap,edgeIndex," 11 -1");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,
 				   modTemp,Out+container+divider));
   Out=ModelSupport::getComposite(SMap,edgeIndex," 2 -12");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,
 				   modTemp,Out+container+divider));
   
-  ELog::EM<<"OUt == "<<Out<<ELog::endDiag;
   Out=ModelSupport::getComposite(SMap,edgeIndex," 11 -12 ");
   addOuterSurf(Out+divider);
   return;

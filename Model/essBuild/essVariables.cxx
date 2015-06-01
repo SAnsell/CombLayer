@@ -399,7 +399,7 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("LowAFlightAngleZBase",0.0); // Step up angle
   Control.addVariable("LowAFlightHeight",10.0);     // Full height
   Control.addVariable("LowAFlightWidth",22.0);     // Full width
-  Control.addVariable("LowAFlightNLiner",4);      // Liner
+  Control.addVariable("LowAFlightNLiner",1);      // Liner
   Control.addVariable("LowAFlightLinerThick1",0.2);      // Liner
   Control.addVariable("LowAFlightLinerMat1","Aluminium");      // Liner
   Control.addVariable("LowAFlightLinerThick2",1.5);      // Liner
@@ -1022,7 +1022,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowFlyRightLobeVThick4",0.3);
 
   Control.addVariable("LowFlyMidWaterCutLayer",3);
-  Control.addVariable("LowFlyMidWaterMidYStep",1.0);
+  Control.addVariable("LowFlyMidWaterMidYStep",2.0);
   Control.addVariable("LowFlyMidWaterMidAngle",90.0);
   Control.addVariable("LowFlyMidWaterLength",8.0);
  
@@ -1032,16 +1032,16 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowFlyMidWaterWallMat","Aluminium");
   Control.addVariable("LowFlyMidWaterModTemp",300.0);
 
-  Control.addVariable("LowFlyLeftWaterWidth",3.3);
+  Control.addVariable("LowFlyLeftWaterWidth",6.3);
   Control.addVariable("LowFlyLeftWaterWallThick",0.2);
   Control.addVariable("LowFlyLeftWaterModMat","H2O");
-  Control.addVariable("LowFlyLeftWaterWallMat","H2O");
+  Control.addVariable("LowFlyLeftWaterWallMat","Aluminium");
   Control.addVariable("LowFlyLeftWaterModTemp",300.0);
 
-  Control.addVariable("LowFlyRightWaterWidth",3.2);
+  Control.addVariable("LowFlyRightWaterWidth",6.3);
   Control.addVariable("LowFlyRightWaterWallThick",0.2);
   Control.addVariable("LowFlyRightWaterModMat","H2O");
-  Control.addVariable("LowFlyRightWaterWallMat","H2O");
+  Control.addVariable("LowFlyRightWaterWallMat","Aluminium");
   Control.addVariable("LowFlyRightWaterModTemp",300.0);
 
   Control.addVariable("LowPreModNLayers",2);
@@ -1254,7 +1254,7 @@ EssBeamLinesVariables(FuncDataBase& Control)
       Control.addVariable(baseKey+"BeamXYAngle",0.0); 
       Control.addVariable(baseKey+"BeamZAngle",0.0);
       Control.addVariable(baseKey+"BeamXStep",0.0);
-      Control.addVariable(baseKey+"BeamZStep",2.1);  
+      Control.addVariable(baseKey+"BeamZStep",0.0);  
       Control.addVariable(baseKey+"BeamHeight",3.0);
       Control.addVariable(baseKey+"BeamWidth",7.6);
       Control.addVariable(baseKey+"NSegment",3);

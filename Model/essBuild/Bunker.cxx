@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   essBuild/Bunker.cxx
  *
@@ -81,8 +81,8 @@ namespace essSystem
 
 Bunker::Bunker(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
-  bulkIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(bulkIndex+1)
+  bnkIndex(ModelSupport::objectRegister::Instance().cell(Key)),
+  cellIndex(bnkIndex+1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -103,23 +103,42 @@ Bunker::populate(const FuncDataBase& Control)
  */
 {
   ELog::RegMethod RegA("Bunker","populate");
+
+  leftPhase=Control.EvalVar<double>(keyName+"LeftPhase");
+  rightPhase=Control.EvalVar<double>(keyName+"RightPhase");
+  leftAngle=Control.EvalVar<double>(keyName+"LeftAngle");
+  rightAngle=Control.EvalVar<double>(keyName+"RightAngle");
+  
+  wallRadius=Control.EvalVar<double>(keyName+"WallRadius");
+  floorDepth=Control.EvalVar<double>(keyName+"FloorDepth");
+  roofHeight=Control.EvalVar<double>(keyName+"RoofHeight");
+
+  wallThick=Control.EvalVar<double>(keyName+"WallThick");
+  sideThick=Control.EvalVar<double>(keyName+"SideThick");
+  roofThick=Control.EvalVar<double>(keyName+"RoofThick");
+  floorThick=Control.EvalVar<double>(keyName+"FloorThick");
+
+  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   
   return;
 }
   
 void
-  Bunker::createUnitVector(const attachSystem::FixedComp& FC,
-			   const long int)
+Bunker::createUnitVector(const attachSystem::FixedComp& MainCentre,
+			 const attachSystem::FixedComp& FC,
+			 const long int sideIndex)
   /*!
     Create the unit vectors
+    \param MainCentre :: Main rotation centre
     \param FC :: Linked object
+    \param sideIndex :: Side for linkage centre
   */
 {
   ELog::RegMethod RegA("Bunker","createUnitVector");
 
-  FixedComp::createUnitVector(FC);
-    
-
+  rotCentre=MainCentre.getCentre();
+  FixedComp::createUnitVector(FC,sideIndex);
+  
   return;
 }
   
@@ -131,21 +150,77 @@ Bunker::createSurfaces()
 {
   ELog::RegMethod RegA("Bunker","createSurface");
 
+  innerRadius=rotCentre.Distance(Origin);
+  
+  Geometry::Vec3D AWallDir(X);
+  Geometry::Vec3D BWallDir(X);
   // rotation of axis:
+  Geometry::Quaternion::calcQRotDeg(leftAngle,Z).rotate(AWallDir);
+  Geometry::Quaternion::calcQRotDeg(rightAngle,Z).rotate(BWallDir);
+  // rotation of phase points:
 
+  // Points on wall
+  Geometry::Vec3D AWall(Origin-rotCentre);
+  Geometry::Vec3D BWall(Origin-rotCentre);
+  Geometry::Quaternion::calcQRotDeg(leftPhase,Z).rotate(AWall);
+  Geometry::Quaternion::calcQRotDeg(rightPhase,Z).rotate(BWall);
+
+  // Divider
+  ModelSupport::buildPlane(SMap,bnkIndex+1,rotCentre,Y);
+  ModelSupport::buildCylinder(SMap,bnkIndex+7,rotCentre,Z,wallRadius);
+    
+  ModelSupport::buildPlane(SMap,bnkIndex+3,AWall,AWallDir);
+  ModelSupport::buildPlane(SMap,bnkIndex+4,BWall,BWallDir);
+  
+  ModelSupport::buildPlane(SMap,bnkIndex+5,Origin-Z*floorDepth,Z);
+  ModelSupport::buildPlane(SMap,bnkIndex+6,Origin-Z*roofHeight,Z);
+
+  // Walls
+  ModelSupport::buildCylinder(SMap,bnkIndex+17,rotCentre,
+			      Z,wallRadius+wallThick);
+    
+  ModelSupport::buildPlane(SMap,bnkIndex+13,
+			   AWall-AWallDir*wallThick,AWallDir);
+  ModelSupport::buildPlane(SMap,bnkIndex+14,
+			   BWall+BWallDir*wallThick,BWallDir);
+  
+  ModelSupport::buildPlane(SMap,bnkIndex+5,
+			   Origin-Z*(floorDepth+floorThick),Z);
+  ModelSupport::buildPlane(SMap,bnkIndex+6,
+			   Origin-Z*(roofHeight+roofThick),Z);
+  
+  
   return;
 }
 
 void
 Bunker::createObjects(Simulation& System,
-		      const attachSystem::FixedComp&,
-		      const long int)
+		      const attachSystem::FixedComp& FC,  
+		      const long int sideIndex)
   /*!
     Adds the all the components
     \param System :: Simulation to create objects in
+    \param FC :: Side of bulk shield + divider(?)
+    \param sideIndex :: side of linke point
   */
 {
   ELog::RegMethod RegA("Bunker","createObjects");
+  
+  std::string Out;
+  const std::string Inner=FC.getSignedLinkString(sideIndex);
+  
+  Out=ModelSupport::getComposite(SMap,bnkIndex,"1 -7 3 -4 5 -6 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+Inner));
+
+
+  Out=ModelSupport::getComposite(SMap,bnkIndex,
+				 " 1 -17 13 -14 15 -16 (7:-3:4:5:6) ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Inner));
+		 
+
+  Out=ModelSupport::getComposite(SMap,bnkIndex," 1 -7 3 -4 5 -6 ");
+  addOuterSurf(Out);
+  
   return;
 }
 
@@ -168,13 +243,15 @@ Bunker::createAll(Simulation& System,
 /*!
     Generic function to create everything
     \param System :: Simulation item
+    \param MainCentre :: Rotatioin Centre
     \param FC :: Central origin
+    \param linkIndex :: linkIndex number
   */
 {
   ELog::RegMethod RegA("Bunker","createAll");
 
   populate(System.getDataBase());
-  createUnitVector(FC,linkIndex);
+  createUnitVector(MainCentre,FC,linkIndex);
   createSurfaces();
   createLinks();
   createObjects(System,FC,linkIndex);

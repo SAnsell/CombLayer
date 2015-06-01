@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   essBuildInc/Bunker.h
  *
@@ -40,26 +40,32 @@ class Bunker : public attachSystem::ContainedComp,
 {
  private:
   
-  const int bulkIndex;           ///< Index of surface offset
+  const int bnkIndex;           ///< Index of surface offset
   int cellIndex;                 ///< Cell index
 
+  Geometry::Vec3D rotCentre;     ///< Rotation centre
+  
   double leftPhase;              ///< Sector phase left
-  double rightPhase;             ///< Sector phase rightx
+  double rightPhase;             ///< Sector phase right
   
   double leftAngle;              ///< Extent of left angle
   double rightAngle;             ///< Extent of right ange
 
-  double floorDepth;             ///< 
-  double roofDepth;
+  double innerRadius;            ///< inner radius [calculated]
+  double wallRadius;             ///< Wall radius
+  double floorDepth;             ///< Floor depth
+  double roofHeight;             ///< Roof height
 
-  double wallThick;
-  double roofThick;
-  double floorThick;
+  double wallThick;              ///< backWall thickness
+  double sideThick;              ///< Side thickness
+  double roofThick;              ///< Roof thickness
+  double floorThick;             ///< Floor thickness
 
-  int mat;
+  int wallMat;                   ///< wall material
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
+			const attachSystem::FixedComp&,
 			const long int);
 
   void createSurfaces();
