@@ -1262,6 +1262,11 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("LowABunkerWallMat","Steel71");
 
   Control.addVariable("LowABunkerNLayers",12);
+  Control.addVariable("LowABunkerWallMat1","Aluminium");
+  Control.addVariable("LowABunkerWallMat2","Tungsten");
+  Control.addVariable("LowABunkerWallMat3","Stainless304");
+  Control.addVariable("LowABunkerWallMat4","Steel71");
+  Control.addVariable("LowABunkerWallMat9","Concrete");
       
   
   return;
