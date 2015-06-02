@@ -165,7 +165,6 @@ ButterflyModerator::createUnitVector(const attachSystem::FixedComp& axisFC,
   ELog::RegMethod RegA("ButterflyModerator","createUnitVector");
   ModBase::createUnitVector(axisFC,orgFC,sideIndex);
   applyShift(0,0,totalHeight/2.0);
-  ELog::EM<<"Origin == "<<Origin<<ELog::endDiag;
   
   return;
 }
@@ -195,18 +194,12 @@ ButterflyModerator::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("ButterflyModerator","createObjects");
   
-  //  const std::string Lower=LeftUnit->getLinkComplement(4);
-  //  const std::string Upper=LeftUnit->getLinkComplement(5);
-
   const std::string Exclude=ContainedComp::getExclude();
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,flyIndex," -7 5 -6 ");
-  //  Out+=Lower+" "+Upper;
-  
+  Out=ModelSupport::getComposite(SMap,flyIndex," -7 5 -6 ");  
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+Exclude));
 
-  ELog::EM<<"Out == "<<Out<<ELog::endDiag;
   clearRules();
   addOuterSurf(Out);
   

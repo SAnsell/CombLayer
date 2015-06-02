@@ -90,6 +90,7 @@
 #include "ShutterBay.h"
 #include "GuideBay.h"
 #include "DiskPreMod.h"
+#include "Bunker.h"
 
 #include "ConicModerator.h"
 #include "essDBMaterial.h"
@@ -120,7 +121,9 @@ makeESS::makeESS() :
 
   Bulk(new BulkModule("Bulk")),
   BulkLowAFL(new moderatorSystem::FlightLine("BulkLAFlight")),
-  ShutterBayObj(new ShutterBay("ShutterBay"))
+  ShutterBayObj(new ShutterBay("ShutterBay")),
+
+  LowABunker(new Bunker("LowABunker"))
  /*!
     Constructor
  */
@@ -145,6 +148,7 @@ makeESS::makeESS() :
   OR.addObject(BulkLowAFL);
 
   OR.addObject(ShutterBayObj);
+  OR.addObject(LowABunker);
 }
 
 
@@ -372,10 +376,10 @@ makeESS::makeBeamLine(Simulation& System,
 
   const size_t NItems=IParam.itemCnt("beamlines",0);
 
-  for(size_t i=0;i+1<NItems;i+=2)
+  for(size_t i=1;i<NItems;i+=2)
     {
-      const std::string BL=IParam.getValue<std::string>("beamlines",i);
-      const std::string Btype=IParam.getValue<std::string>("beamlines",i+1);
+      const std::string BL=IParam.getValue<std::string>("beamlines",i-1);
+      const std::string Btype=IParam.getValue<std::string>("beamlines",i);
       ELog::EM<<"Making beamline "<<BL
       	      <<" [" <<Btype<< "] "<<ELog::endDiag;
       makeESSBL BLfactory(BL,Btype);
@@ -384,7 +388,19 @@ makeESS::makeBeamLine(Simulation& System,
   return;
 }
 
+void
+makeESS::makeBunker(Simulation& System,
+		    const std::string& bunkerType)
+{
+  ELog::RegMethod RegA("makeESS","makeBunker");
 
+  LowABunker->addInsertCell(74123);
+  LowABunker->createAll(System,*LowMod,*GBArray[0],2,true);
+
+  return;
+}
+
+  
 void 
 makeESS::build(Simulation& System,
 	       const mainSystem::inputParam& IParam)
@@ -406,6 +422,7 @@ makeESS::build(Simulation& System,
   const std::string topModType=IParam.getValue<std::string>("topMod");
   const std::string targetType=IParam.getValue<std::string>("targetType");
   const std::string iradLine=IParam.getValue<std::string>("iradLineType");
+  const std::string bunker=IParam.getValue<std::string>("bunkerType");
 
   if (StrFunc::checkKey("help",lowPipeType,lowModType,targetType) ||
       StrFunc::checkKey("help",iradLine,topModType,""))
@@ -456,8 +473,9 @@ makeESS::build(Simulation& System,
   attachSystem::addToInsertForced(System,*ShutterBayObj,
 				  Target->getKey("Shaft"));
 
-  createGuides(System);  
-
+  createGuides(System);
+  makeBunker(System,bunker);
+  
   // PROTON BEAMLINE
   
 

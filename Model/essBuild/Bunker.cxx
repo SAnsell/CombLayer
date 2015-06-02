@@ -72,7 +72,12 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
-#include "ContainedGroup.h"
+#include "CellMap.h"
+#include "surfDBase.h"
+#include "surfDIter.h"
+#include "surfDivide.h"
+#include "mergeTemplate.h"
+
 #include "World.h"
 #include "Bunker.h"
 
@@ -81,6 +86,7 @@ namespace essSystem
 
 Bunker::Bunker(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
+  attachSystem::CellMap(),
   bnkIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(bnkIndex+1)
   /*!
@@ -119,26 +125,39 @@ Bunker::populate(const FuncDataBase& Control)
   floorThick=Control.EvalVar<double>(keyName+"FloorThick");
 
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
-  
+
+  nLayers=Control.EvalVar<size_t>(keyName+"NLayers");
+
+  ModelSupport::populateDivide(Control,nLayers,keyName+"WallMat",
+			       wallMat,wallMatVec);
+  ModelSupport::populateDivideLen(Control,nLayers,keyName+"WallLen",
+				  wallThick,wallFrac);
   return;
 }
   
 void
 Bunker::createUnitVector(const attachSystem::FixedComp& MainCentre,
 			 const attachSystem::FixedComp& FC,
-			 const long int sideIndex)
+			 const long int sideIndex,
+			 const bool reverseZ)
   /*!
     Create the unit vectors
     \param MainCentre :: Main rotation centre
     \param FC :: Linked object
     \param sideIndex :: Side for linkage centre
+    \param reverseZ :: reverse Z direction
   */
 {
   ELog::RegMethod RegA("Bunker","createUnitVector");
 
   rotCentre=MainCentre.getCentre();
   FixedComp::createUnitVector(FC,sideIndex);
-  
+  if (reverseZ)
+    {
+      X*=-1;
+      Z*=-1;
+    }
+      
   return;
 }
   
@@ -155,15 +174,21 @@ Bunker::createSurfaces()
   Geometry::Vec3D AWallDir(X);
   Geometry::Vec3D BWallDir(X);
   // rotation of axis:
-  Geometry::Quaternion::calcQRotDeg(leftAngle,Z).rotate(AWallDir);
-  Geometry::Quaternion::calcQRotDeg(rightAngle,Z).rotate(BWallDir);
+  // Geometry::Quaternion::calcQRotDeg
+  //   (-(leftAngle+leftPhase),Z).rotate(AWallDir);
+  // Geometry::Quaternion::calcQRotDeg
+  //   (-(rightAngle+rightPhase),Z).rotate(BWallDir)
+
+
+  Geometry::Quaternion::calcQRotDeg(leftAngle+leftPhase,Z).rotate(AWallDir);
+  Geometry::Quaternion::calcQRotDeg(-(rightAngle+rightPhase),Z).rotate(BWallDir);
   // rotation of phase points:
 
   // Points on wall
   Geometry::Vec3D AWall(Origin-rotCentre);
   Geometry::Vec3D BWall(Origin-rotCentre);
   Geometry::Quaternion::calcQRotDeg(leftPhase,Z).rotate(AWall);
-  Geometry::Quaternion::calcQRotDeg(rightPhase,Z).rotate(BWall);
+  Geometry::Quaternion::calcQRotDeg(-rightPhase,Z).rotate(BWall);
 
   // Divider
   ModelSupport::buildPlane(SMap,bnkIndex+1,rotCentre,Y);
@@ -173,21 +198,21 @@ Bunker::createSurfaces()
   ModelSupport::buildPlane(SMap,bnkIndex+4,BWall,BWallDir);
   
   ModelSupport::buildPlane(SMap,bnkIndex+5,Origin-Z*floorDepth,Z);
-  ModelSupport::buildPlane(SMap,bnkIndex+6,Origin-Z*roofHeight,Z);
+  ModelSupport::buildPlane(SMap,bnkIndex+6,Origin+Z*roofHeight,Z);
 
   // Walls
   ModelSupport::buildCylinder(SMap,bnkIndex+17,rotCentre,
 			      Z,wallRadius+wallThick);
     
   ModelSupport::buildPlane(SMap,bnkIndex+13,
-			   AWall-AWallDir*wallThick,AWallDir);
+			   AWall-AWallDir*sideThick,AWallDir);
   ModelSupport::buildPlane(SMap,bnkIndex+14,
-			   BWall+BWallDir*wallThick,BWallDir);
+			   BWall+BWallDir*sideThick,BWallDir);
   
-  ModelSupport::buildPlane(SMap,bnkIndex+5,
+  ModelSupport::buildPlane(SMap,bnkIndex+15,
 			   Origin-Z*(floorDepth+floorThick),Z);
-  ModelSupport::buildPlane(SMap,bnkIndex+6,
-			   Origin-Z*(roofHeight+roofThick),Z);
+  ModelSupport::buildPlane(SMap,bnkIndex+16,
+			   Origin+Z*(roofHeight+roofThick),Z);
   
   
   return;
@@ -212,18 +237,73 @@ Bunker::createObjects(Simulation& System,
   Out=ModelSupport::getComposite(SMap,bnkIndex,"1 -7 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+Inner));
 
-
-  Out=ModelSupport::getComposite(SMap,bnkIndex,
-				 " 1 -17 13 -14 15 -16 (7:-3:4:5:6) ");
+  // left:right:floor:roof:Outer
+  Out=ModelSupport::getComposite(SMap,bnkIndex," 1 -7 -3 13 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Inner));
-		 
+  Out=ModelSupport::getComposite(SMap,bnkIndex," 1 -7 4 -14 5 -6 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Inner));
+  Out=ModelSupport::getComposite(SMap,bnkIndex," 1 -7 13 -14 -5 15 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Inner));
+  Out=ModelSupport::getComposite(SMap,bnkIndex," 1 -7 13 -14 6 -16 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Inner));
 
-  Out=ModelSupport::getComposite(SMap,bnkIndex," 1 -7 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,bnkIndex," 1 -17 7 13 -14 15 -16 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  setCell("MainWall",cellIndex-1);
+  // External
+  Out=ModelSupport::getComposite(SMap,bnkIndex," 1 -17 13 -14 15 -16 ");
   addOuterSurf(Out);
   
   return;
 }
 
+void 
+Bunker::layerProcess(Simulation& System)
+  /*!
+    Processes the splitting of the surfaces into a multilayer system
+    \param System :: Simulation to work on
+  */
+{
+  ELog::RegMethod RegA("Bunker","layerProcess");
+  // Steel layers
+  //  layerSpecial(System);
+
+  if (nLayers>1)
+    {
+      std::string OutA,OutB;
+      ModelSupport::surfDivide DA;
+            
+      for(size_t i=1;i<nLayers;i++)
+	{
+	  DA.addFrac(wallFrac[i-1]);
+	  DA.addMaterial(wallMatVec[i-1]);
+	}
+      DA.addMaterial(wallMatVec.back());
+      
+      // Cell Specific:
+      DA.setCellN(getCell("MainWall"));
+      DA.setOutNum(cellIndex,bnkIndex+101);
+
+      ModelSupport::mergeTemplate<Geometry::Cylinder,
+				  Geometry::Cylinder> surroundRule;
+
+      surroundRule.setSurfPair(SMap.realSurf(bnkIndex+7),
+			       SMap.realSurf(bnkIndex+17));
+
+      OutA=ModelSupport::getComposite(SMap,bnkIndex," 7 ");
+      OutB=ModelSupport::getComposite(SMap,bnkIndex," -17 ");
+
+      surroundRule.setInnerRule(OutA);
+      surroundRule.setOuterRule(OutB);
+
+      DA.addRule(&surroundRule);
+      DA.activeDivideTemplate(System);
+
+      cellIndex=DA.getCellNum();
+    }
+}
+
+  
 void
 Bunker::createLinks()
   /*!
@@ -239,11 +319,13 @@ void
 Bunker::createAll(Simulation& System,
 		  const attachSystem::FixedComp& MainCentre,
 		  const attachSystem::FixedComp& FC,
-		  const long int linkIndex)
+		  const long int linkIndex,
+		  const bool reverseZ)
 /*!
     Generic function to create everything
     \param System :: Simulation item
     \param MainCentre :: Rotatioin Centre
+    \param reverseZ :: Reverse Z direction
     \param FC :: Central origin
     \param linkIndex :: linkIndex number
   */
@@ -251,10 +333,11 @@ Bunker::createAll(Simulation& System,
   ELog::RegMethod RegA("Bunker","createAll");
 
   populate(System.getDataBase());
-  createUnitVector(MainCentre,FC,linkIndex);
+  createUnitVector(MainCentre,FC,linkIndex,reverseZ);
   createSurfaces();
   createLinks();
   createObjects(System,FC,linkIndex);
+  layerProcess(System);
   insertObjects(System);              
 
   return;
