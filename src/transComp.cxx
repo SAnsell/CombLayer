@@ -295,8 +295,9 @@ transMirror::transMirror(const Geometry::Plane& A) : transComp(),
   */
 {}
 
-transMirror::transMirror(const transMirror& A) : transComp(A),
-						 Mirror(A.Mirror)					 
+transMirror::transMirror(const transMirror& A)
+  : transComp(A),
+    Mirror(A.Mirror)					 
   /*!
     Copy Constructor
     \param A :: transMirror to copy

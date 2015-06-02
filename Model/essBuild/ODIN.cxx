@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuild/makeESSBL.cxx
+ * File:   essBuild/ODIN.cxx
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -34,7 +34,6 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
-#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -64,99 +63,55 @@
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "LayerComp.h"
-#include "FixedGroup.h"
-#include "ShapeUnit.h"
-#include "GuideLine.h"
-
+#include "CellMap.h"
+#include "World.h"
+#include "AttachSupport.h"
+#include "Jaws.h"
 #include "ODIN.h"
-#include "beamlineConstructor.h"
-#include "makeESSBL.h"
 
 namespace essSystem
 {
 
-makeESSBL::makeESSBL(const std::string& SN,
-		     const std::string& BName) : 
-  beamlineSystem::beamlineConstructor(),
-  shutterName(SN),beamName(BName)
+ODIN::ODIN() :
+  CollA(new Jaws("ODINCollA"))  
  /*!
     Constructor
-    \param SN :: Shutter name
-    \param BName :: Beamline
  */
 {
-}
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
 
-makeESSBL::makeESSBL(const makeESSBL& A) : 
-  shutterName(A.shutterName),beamName(A.beamName)
-  /*!
-    Copy constructor
-    \param A :: makeESSBL to copy
-  */
-{}
-
-makeESSBL&
-makeESSBL::operator=(const makeESSBL& A)
-  /*!
-    Assignment operator
-    \param A :: makeESSBL to copy
-    \return *this
-  */
-{
-  if (this!=&A)
-    {
-    }
-  return *this;
+  OR.addObject(CollA);
+  
 }
 
 
-makeESSBL::~makeESSBL()
+ODIN::~ODIN()
   /*!
     Destructor
   */
 {}
 
+
 void 
-makeESSBL::build(Simulation& System,const int bunkerCell)
+ODIN::build(Simulation& System,
+	    const Bunker& BItem,const GuideItem& GI)
   /*!
     Carry out the full build
-    \param SimPtr :: Simulation system
-    \param bunkerCell :: Bunker cell number 	
+    \param System :: Simulation system
+    \param BItem :: Bunker Item
+    \param GI :: Guide Item 
    */
 {
   // For output stream
-  ELog::RegMethod RegA("makeESSBL","build");
+  ELog::RegMethod RegA("ODIN","build");
 
-  const int voidCell(74123);
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
+  CollA->addInsertCell(BItem->getCell("MainVoid"));
+  CollA->createAll(System,GI,2);
 
-  const attachSystem::FixedComp* mainFCPtr=
-    OR.getObject<attachSystem::FixedComp>(shutterName);
-
-  if (!mainFCPtr)
-    throw ColErr::InContainerError<std::string>(shutterName,"shutterObject");
-
-  if (BName=="ODIN")
-    {
-      std::shared_ptr<ODIN> OdinBL;             ///< Odin beamline
-      OR.addObject(OdinBL);
-      OdinBL->addInsertCell(bunkerCell);
-      OdinBL->createAll();
-    }
-  else if (BName=="JSANS" || BName="JRef")
-    {
-      std::shared_ptr<beamlineSystem::GuideLine> RefA;   ///< Guide line [refl]
-      RefA=new beamlineSystem::GuideLine(BName);
-      OR.addObject(RefA);
-      RefA->addInsertCell(voidCell);
-      RefA->createAll(System,*mainFCPtr,2,*mainFCPtr,2);
-    }
-  
   return;
 }
 
 
 }   // NAMESPACE essSystem
-
 

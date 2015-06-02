@@ -56,8 +56,7 @@ class beamlineConstructor
     { return *this; }
   virtual ~beamlineConstructor() {}   ///< Destructor
   
-  virtual void build(Simulation&,
-		     const mainSystem::inputParam&) =0;
+  virtual void build(Simulation&,const int) =0;
 
 };
 

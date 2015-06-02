@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
- * File:   essBuildInc/makeESSBL.h
+ * File:   essBuildInc/ODIN.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,43 +19,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef essSystem_makeESSBL_h
-#define essSystem_makeESSBL_h
+#ifndef essSystem_ODIN_h
+#define essSystem_ODIN_h
 
-namespace beamlineSystem
+namespace constructSystem
 {
-  class GuideLine;
+  class Jaws;
 }
 
 namespace essSystem
 {
-  class GuideBay;
 
   /*!
-    \class makeESSBL
+    \class ODIN
     \version 1.0
     \author S. Ansell
-    \date April 2014
-    \brief Simple beamline constructor for ESS
+    \date January 2013
+    \brief Main moderator system for ESS
   */
   
-class makeESSBL : 
-  public  beamlineSystem::beamlineConstructor
+class ODIN
 {
  private:
 
-  const std::string shutterName;              ///< Shutter name
-  const std::string beamName;                 ///< Name of beamline
-  
+  std::shared_ptr<constructSystem::Jaws> CollA;
+
  public:
   
-  makeESSBL(const std::string&,const std::string&);
-  makeESSBL(const makeESSBL&);
-  makeESSBL& operator=(const makeESSBL&);
-  virtual ~makeESSBL();
+  ODIN();
+  ODIN(const ODIN&);
+  ODIN& operator=(const ODIN&);
+  ~ODIN();
   
-  
-  virtual void build(Simulation&,const int);
+  void build(Simulation&);
 
 };
 

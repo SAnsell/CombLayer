@@ -66,6 +66,7 @@ namespace essSystem
   class DiskPreMod;
   class Bunker;
 
+  class ODIN;
   /*!
     \class makeESS
     \version 1.0

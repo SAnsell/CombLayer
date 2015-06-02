@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   xml/XMLgroup.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,6 @@
 #include <functional>
 #include <iterator>
 #include <algorithm>
-#include <boost/bind.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -90,8 +89,8 @@ XMLgroup::XMLgroup(const XMLgroup& A) :
   Grp.resize(A.Grp.size());
   transform(A.Grp.begin(),A.Grp.end(),
 		Grp.begin(),std::mem_fun(&XMLobject::clone));
-  for_each(Grp.begin(),Grp.end(),
-	   boost::bind(&XMLobject::setParent,_1,this));
+  for(XMLobject* GO : Grp)
+    GO->setParent(this);
 }
 
 XMLgroup&
@@ -110,8 +109,9 @@ XMLgroup::operator=(const XMLgroup& A)
       Grp.resize(A.Grp.size());
       transform(A.Grp.begin(),A.Grp.end(),
 		Grp.begin(),std::mem_fun(&XMLobject::clone));
-      for_each(Grp.begin(),Grp.end(),
-	       boost::bind(&XMLobject::setParent,_1,this));
+      for(XMLobject* GO : Grp)
+	GO->setParent(this);
+
       Index=A.Index;
     }
   return *this;
@@ -120,6 +120,7 @@ XMLgroup::operator=(const XMLgroup& A)
 XMLgroup*
 XMLgroup::clone() const
   /*!
+    Virtual constructor
     \returns new (this) [ virtual constructor ] 
   */
 {

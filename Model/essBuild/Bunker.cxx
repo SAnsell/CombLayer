@@ -236,7 +236,8 @@ Bunker::createObjects(Simulation& System,
   
   Out=ModelSupport::getComposite(SMap,bnkIndex,"1 -7 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+Inner));
-
+  setCell("MainVoid",cellIndex-1);
+  
   // left:right:floor:roof:Outer
   Out=ModelSupport::getComposite(SMap,bnkIndex," 1 -7 -3 13 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Inner));

@@ -95,6 +95,7 @@
 #include "ConicModerator.h"
 #include "essDBMaterial.h"
 #include "makeESSBL.h"
+#include "ODIN.h"
 
 #include "makeESS.h"
 
@@ -382,8 +383,9 @@ makeESS::makeBeamLine(Simulation& System,
       const std::string Btype=IParam.getValue<std::string>("beamlines",i);
       ELog::EM<<"Making beamline "<<BL
       	      <<" [" <<Btype<< "] "<<ELog::endDiag;
+
       makeESSBL BLfactory(BL,Btype);
-      BLfactory.build(System,IParam);
+      BLfactory.build(System,0);
     }
   return;
 }
@@ -391,6 +393,10 @@ makeESS::makeBeamLine(Simulation& System,
 void
 makeESS::makeBunker(Simulation& System,
 		    const std::string& bunkerType)
+  /*!
+    Make the bunker system
+    \param System :: Simulation 
+   */
 {
   ELog::RegMethod RegA("makeESS","makeBunker");
 
