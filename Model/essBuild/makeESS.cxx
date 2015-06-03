@@ -381,11 +381,11 @@ makeESS::makeBeamLine(Simulation& System,
     {
       const std::string BL=IParam.getValue<std::string>("beamlines",i-1);
       const std::string Btype=IParam.getValue<std::string>("beamlines",i);
-      ELog::EM<<"Making beamline "<<BL<<" [" <<Btype<< "] "<<ELog::endDiag;
 
       // FIND BUNKER HERE:::
-
       
+      ELog::EM<<"Making beamline "<<BL
+      	      <<" [" <<Btype<< "] "<<ELog::endDiag;
       makeESSBL BLfactory(BL,Btype);
       BLfactory.build(System,*LowABunker);
       
