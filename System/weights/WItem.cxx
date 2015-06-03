@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   weights/WItem.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,6 @@
 #include <iterator>
 #include <functional>
 #include <algorithm>
-#include <boost/bind.hpp>
 #include <boost/format.hpp>
 
 #include "Exception.h"
@@ -214,8 +213,8 @@ WItem::rescale(const int cA,const int cB,const double SF)
 {
   if (cellN>=cA && cellN<=cB) 
     {
-      transform(Val.begin(),Val.end(),Val.begin(),
-		std::bind2nd(std::divides<double>(),SF));
+      for(double& V : Val)
+	V/=SF;
     }
   return;
 }
