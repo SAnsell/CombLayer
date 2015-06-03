@@ -22,6 +22,12 @@
 #ifndef essSystem_ODIN_h
 #define essSystem_ODIN_h
 
+namespace attachSystem
+{
+  class FixedComp;
+  class CellMap;
+}
+
 namespace constructSystem
 {
   class Jaws;
@@ -42,8 +48,11 @@ class ODIN
 {
  private:
 
+  /// First collimation jaws
   std::shared_ptr<constructSystem::Jaws> CollA;
-
+  /// Tapper Unit
+  std::shared_ptr<beamlineSystem::GuideLine> GuideA;
+  
  public:
   
   ODIN();
@@ -51,7 +60,8 @@ class ODIN
   ODIN& operator=(const ODIN&);
   ~ODIN();
   
-  void build(Simulation&);
+  void build(Simulation&,const attachSystem::FixedComp&,
+	     const attachSystem::CellMap&,const int);
 
 };
 

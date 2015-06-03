@@ -60,6 +60,7 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "LayerComp.h"
@@ -67,13 +68,15 @@
 #include "World.h"
 #include "AttachSupport.h"
 #include "Jaws.h"
+#include "GuideLine.h"
 #include "ODIN.h"
 
 namespace essSystem
 {
 
 ODIN::ODIN() :
-  CollA(new Jaws("ODINCollA"))  
+  CollA(new constructSystem::Jaws("ODINCollA")),
+  GuideA(new beamlineSystem::GuideLine("ODINg1"))
  /*!
     Constructor
  */
@@ -82,7 +85,8 @@ ODIN::ODIN() :
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(CollA);
-  
+  OR.addObject(GuideA);
+
 }
 
 
@@ -94,20 +98,24 @@ ODIN::~ODIN()
 
 
 void 
-ODIN::build(Simulation& System,
-	    const Bunker& BItem,const GuideItem& GI)
+ODIN::build(Simulation& System,const attachSystem::FixedComp& GItem,
+	    const attachSystem::CellMap& Bunker,const int voidCell)
   /*!
     Carry out the full build
     \param System :: Simulation system
-    \param BItem :: Bunker Item
-    \param GI :: Guide Item 
+    \param GItem :: Guide Item 
+    \param Bunkdr :: Bunker cell map [for inserts]
+    \param voidCell :: Void cell
    */
 {
   // For output stream
   ELog::RegMethod RegA("ODIN","build");
 
-  CollA->addInsertCell(BItem->getCell("MainVoid"));
-  CollA->createAll(System,GI,2);
+  CollA->addInsertCell(Bunker.getCell("MainVoid"));
+  CollA->createAll(System,GItem,2);
+
+  GuideA->addInsertCell(Bunker.getCell("MainVoid"));
+  GuideA->createAll(System,*CollA,2,*CollA,2);
 
   return;
 }

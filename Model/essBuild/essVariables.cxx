@@ -57,7 +57,6 @@ namespace setVariable
   void EssReflectorVariables(FuncDataBase&);
   void EssSANSVariables(FuncDataBase&);
   void EssButterflyModerator(FuncDataBase&);
-  void EssConicModerator(FuncDataBase&);
   void ESSWheel(FuncDataBase&);
 
 void
@@ -875,7 +874,7 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("ShutterBayZStep",0.0);
   Control.addVariable("ShutterBayXYangle",0.0); 
   Control.addVariable("ShutterBayZangle",0.0);
-  Control.addVariable("ShutterBayRadius",600.0);
+  Control.addVariable("ShutterBayRadius",550.0);
   Control.addVariable("ShutterBayHeight",400.0);
   Control.addVariable("ShutterBayDepth",400.0);
   Control.addVariable("ShutterBayMat","CastIron");
@@ -904,7 +903,7 @@ EssVariables(FuncDataBase& Control)
   EssBeamLinesVariables(Control);
   EssReflectorVariables(Control);
   EssSANSVariables(Control);
-  EssConicModerator(Control);
+  ODINvariables(Control);
   EssButterflyModerator(Control);
   EssWheel(Control);
   EssBunkerVariables(Control);
@@ -1069,73 +1068,6 @@ EssButterflyModerator(FuncDataBase& Control)
   return;
 }
   
-void
-EssConicModerator(FuncDataBase& Control)
-  /*!
-    Create all the Conic moderator option variables
-    \param Control :: DataBase
-  */
-{
-  ELog::RegMethod RegA("essVariables[F]","EssConicModerator");
-  
-
-  // CONE MODERATOR
-  Control.addVariable("LowConeModXStep",-0.0);      
-  Control.addVariable("LowConeModYStep",4.0);      
-  Control.addVariable("LowConeModZStep",-18.0);      
-  Control.addVariable("LowConeModXYAngle",125.15);      
-  Control.addVariable("LowConeModZAngle",0.0);      
-
-  Control.addVariable("LowConeModIWidth",2.0);      
-  Control.addVariable("LowConeModIHeight",2.0);      
-  Control.addVariable("LowConeModOWidth",20.0);      
-  Control.addVariable("LowConeModOHeight",10.0);      
-  Control.addVariable("LowConeModLength",20.0);      
-  Control.addVariable("LowConeModFaceThick",2.0);      
-  Control.addVariable("LowConeModThick",1.5);      
-
-  Control.addVariable("LowConeModAlThick",0.5);      
-
-  Control.addVariable("LowConeModVacGap",0.3);      
-  Control.addVariable("LowConeModWaterAlThick",0.5);      
-  Control.addVariable("LowConeModWaterThick",2.0);      
-  Control.addVariable("LowConeModVoidGap",0.3);      
-  Control.addVariable("LowConeModWaterMat","H2O");      
-
-  Control.addVariable("LowConeModModTemp",20.0);         // Temperature of H2 
-  Control.addVariable("LowConeModModMat","ParaH2");            // Liquid H2
-  Control.addVariable("LowConeModAlMat","Aluminium");              // Aluminium
-
-
-  // CONE MODERATOR
-  Control.addVariable("LowConeModBXStep",-0.0);      
-  Control.addVariable("LowConeModBYStep",4.0);      
-  Control.addVariable("LowConeModBZStep",-18.0);      
-  Control.addVariable("LowConeModBXYAngle",125.15-180.0);      
-  Control.addVariable("LowConeModBZAngle",0.0);      
-
-  Control.addVariable("LowConeModBIWidth",2.0);      
-  Control.addVariable("LowConeModBIHeight",2.0);      
-  Control.addVariable("LowConeModBOWidth",20.0);      
-  Control.addVariable("LowConeModBOHeight",10.0);      
-  Control.addVariable("LowConeModBLength",20.0);      
-  Control.addVariable("LowConeModBFaceThick",2.0);      
-  Control.addVariable("LowConeModBThick",1.5);      
-
-  Control.addVariable("LowConeModBAlThick",0.5);      
-
-  Control.addVariable("LowConeModBVacGap",0.3);      
-  Control.addVariable("LowConeModBWaterAlThick",0.5);      
-  Control.addVariable("LowConeModBWaterThick",2.0);      
-  Control.addVariable("LowConeModBVoidGap",0.3);      
-  Control.addVariable("LowConeModBWaterMat","H2O");      
-
-  Control.addVariable("LowConeModBModTemp",20.0);        // Temp. of H2
-  Control.addVariable("LowConeModBModMat","ParaH2");        // Liquid H2
-  Control.addVariable("LowConeModBAlMat","Aluminium");       // Aluminium
-
-}
-
 void
 EssReflectorVariables(FuncDataBase& Control)
   /*!

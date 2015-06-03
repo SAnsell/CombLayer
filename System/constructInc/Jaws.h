@@ -64,10 +64,15 @@ class Jaws : public attachSystem::FixedComp,
   double XHeight;               ///< Global box space [X]
   double YHeight;               ///< Global box space [Y]
   double ZHeight;               ///< Global box space [Z]
+
+  double wallThick;             ///< Simple X/Z walls
   
   int zJawMat;                  ///< Z material
-  int xJawMat;                  ///< X materail
-  
+  int xJawMat;                  ///< X material
+
+  int wallMat;                  ///< Wall material
+
+
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);

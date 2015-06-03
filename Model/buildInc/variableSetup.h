@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   buildInc/variableSetup.h
  *
@@ -78,6 +78,7 @@ namespace setVariable
 
   void siSimulation(FuncDataBase&);
 
+  void ODINvariables(FuncDataBase&);
   
 }
 

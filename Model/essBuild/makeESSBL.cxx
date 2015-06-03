@@ -34,7 +34,6 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
-#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -63,9 +62,11 @@
 #include "FixedComp.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+#include "CellMap.h"
 #include "LayerComp.h"
 #include "FixedGroup.h"
 #include "ShapeUnit.h"
+#include "Bunker.h"
 #include "GuideLine.h"
 
 #include "ODIN.h"
@@ -117,11 +118,11 @@ makeESSBL::~makeESSBL()
 {}
 
 void 
-makeESSBL::build(Simulation& System,const int bunkerCell)
+makeESSBL::build(Simulation& System,const Bunker& bunkerObj)
   /*!
     Carry out the full build
     \param SimPtr :: Simulation system
-    \param bunkerCell :: Bunker cell number 	
+    \param bunkerObj :: Bunker cell system
    */
 {
   // For output stream
@@ -137,17 +138,17 @@ makeESSBL::build(Simulation& System,const int bunkerCell)
   if (!mainFCPtr)
     throw ColErr::InContainerError<std::string>(shutterName,"shutterObject");
 
-  if (BName=="ODIN")
+  if (beamName=="ODIN")
     {
-      std::shared_ptr<ODIN> OdinBL;             ///< Odin beamline
-      OR.addObject(OdinBL);
-      OdinBL->addInsertCell(bunkerCell);
-      OdinBL->createAll();
+      // Odin beamline
+      ODIN OdinBL;
+      OdinBL.build(System,*mainFCPtr,bunkerObj,voidCell);
     }
-  else if (BName=="JSANS" || BName="JRef")
+  else if (beamName=="JSANS" || beamName=="JRef")
     {
-      std::shared_ptr<beamlineSystem::GuideLine> RefA;   ///< Guide line [refl]
-      RefA=new beamlineSystem::GuideLine(BName);
+      ///< Guide line [refl]
+      std::shared_ptr<beamlineSystem::GuideLine>
+	RefA(new beamlineSystem::GuideLine(beamName));
       OR.addObject(RefA);
       RefA->addInsertCell(voidCell);
       RefA->createAll(System,*mainFCPtr,2,*mainFCPtr,2);
