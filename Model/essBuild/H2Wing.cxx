@@ -175,6 +175,8 @@ H2Wing::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("H2Wing","populate");
 
+  engActive=Control.EvalTriple<int>(keyName,baseName,"","EngineeringActive");
+
   totalHeight=Control.EvalVar<double>(baseName+"TotalHeight");
   
   xStep=Control.EvalVar<double>(keyName+"XStep");
@@ -597,7 +599,8 @@ H2Wing::createAll(Simulation& System,
   createLinks();
   insertObjects(System);
 
-  InnerComp->createAll(System,*this);
+  if (engActive)
+    InnerComp->createAll(System,*this);
   return;
 }
   

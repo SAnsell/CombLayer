@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   funcBaseInc/FuncDataBase.h
  *
@@ -98,6 +98,14 @@ class FuncDataBase
   T EvalDefPair(const std::string&,const std::string&,
 		const std::string&,const T&) const;      
 
+  template<typename T>
+  T EvalTriple(const std::string&,const std::string&,
+	       const std::string&) const;        
+  template<typename T>
+  T EvalTriple(const std::string&,const std::string&,
+	       const std::string&,const std::string&) const;      
+  
+  
   /// Add variable
   template<typename T>
   void addVariable(const std::string&,const T&);
