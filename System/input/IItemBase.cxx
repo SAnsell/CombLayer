@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   input/IItemBase.cxx
  *
@@ -53,7 +53,7 @@ namespace mainSystem
 {
 
 std::ostream&
-operator<<(std::ostream& OX,const IItemBase& A)
+operator<<(std::ostream& OX,const IItem& A)
   /*!
     Output stream writer
     \param OX :: Output stream
@@ -65,16 +65,17 @@ operator<<(std::ostream& OX,const IItemBase& A)
   return OX;
 }
 
-IItemBase::IItemBase(const std::string& K) : 
-  Key(K),maxSets(0),maxItems(0),reqItems(0)
+IItem::IItem(const std::string& K) : 
+  Key(K),active(0),maxSets(0),maxItems(0),reqItems(0)
   /*!
     Constructor only with  descriptor
     \param K :: Key Name
   */
 {}
 
-IItemBase::IItemBase(const std::string& K,const std::string& L) :
-  Key(K),Long(L),maxSets(0),maxItems(0),reqItems(0)
+IItem::IItem(const std::string& K,const std::string& L) :
+  Key(K),Long(L),active(0),
+  maxSets(0),maxItems(0),reqItems(0)
   /*!
     Full Constructor 
     \param K :: Key Name
@@ -82,8 +83,8 @@ IItemBase::IItemBase(const std::string& K,const std::string& L) :
   */
 {}
 
-IItemBase::IItemBase(const IItemBase& A) : 
-  Key(A.Key),Long(A.Long),Desc(A.Desc),active(0),
+IItem::IItem(const IItem& A) : 
+  Key(A.Key),Long(A.Long),Desc(A.Desc),active(A.active),
   maxSets(A.maxSets),maxItems(A.maxItems),reqItems(A.reqItems),
   DItems(A.DItems)
   /*!
@@ -92,8 +93,8 @@ IItemBase::IItemBase(const IItemBase& A) :
   */
 {}
 
-IItemBase&
-IItemBase::operator=(const IItemBase& A) 
+IItem&
+IItem::operator=(const IItem& A) 
   /*!
     Assignment operator
     \param A :: Object to copy
@@ -114,45 +115,9 @@ IItemBase::operator=(const IItemBase& A)
   return *this;
 }
 
-// ------------------------------------------------------------
   
-template<typename T>
-IItem<T>::IItem(const std::string& K) : 
-  IItemBase(K)
-  /*!
-    Constructor
-    \param dCnt :: number of data items;
-    \param K :: Short Key
-  */
-{}
-
-template<typename T> 
-IItem<T>::IItem(const std::string& K,
-		      const std::string& L) : 
-  IItemBase(K,L)
-  /*!
-    Constructor
-    \param dCnt :: number of data items;
-    \param K :: Short Key
-    \param L :: Long Key
-  */
-{}
-
-
-template<typename T>
-IItem<T>*
-IItem<T>::clone() const 
-  /*!
-    Virtual copy constructor
-    \return new (this)
-  */
-{ 
-  return new IItem<T>(*this);
-}
-  
-template<typename T>
 size_t
-IItem<T>::getNSets() const
+IItem::getNSets() const
   /*!
     Number of data sets
     \return number of sets in the model
@@ -161,9 +126,8 @@ IItem<T>::getNSets() const
   return DItems.size();
 }
 
-template<typename T>
 size_t
-IItem<T>::getNItems(const size_t setIndex) const
+IItem::getNItems(const size_t setIndex) const
   /*!
     Number of items
     \param setIndex :: Index value 
@@ -176,15 +140,15 @@ IItem<T>::getNItems(const size_t setIndex) const
   return DItems[setIndex].size();
 }
 
-template<typename T>
 bool
-IItem<T>::isValid(const size_t setIndex) const
+IItem::isValid(const size_t setIndex) const
   /*!
     Number of data sets
     \return number of sets in the model
    */
 {
   ELog::RegMethod RegA("IItem","isValid");
+  
   if (DItems.size()>=setIndex)
     return 0;
 
@@ -192,10 +156,65 @@ IItem<T>::isValid(const size_t setIndex) const
       
 }
 
+void
+IItem::setObj(const size_t setIndex,const size_t itemIndex,
+	      const std::string& V)
+  /*!
+    Set the object based on the setIndex and the itemIndex 
+    Allows a +1 basis but not more:	
+    \param setIndex :: Item number
+    \return 
+  */
+{
+  ELog::RegMethod RegA("IItem","setObj");
+  const size_t SS(DItems.size());
+
+  if (setIndex>=maxSets || setIndex>SS+1)
+    throw ColErr::IndexError<size_t>(setIndex,DItems.size(),"setIndex");
+
+  if (setIndex==SS)
+    DItems.push_back(std::vector<std::string>());
+
+  const size_t IS(DItems[setIndex].size());
+  if (itemIndex>=maxItems || setIndex>IS+1)
+      throw ColErr::IndexError<size_t>(itemIndex,DItems[setIndex].size(),
+				     "itemIndex");
+  if (setIndex==IS)
+    DItems[setIndex].push_back(V);
+  else
+    DItems[setIndex][itemIndex]=V;
+
+  return;
+}
+
+void
+IItem::setObj(const size_t itemIndex,const std::string& V)
+  /*!
+    Set the object based on the setIndex and the itemIndex 
+    Allows a +1 basis but not more:	
+    \param itemIndex :: Item number
+    \param V :: Value to set
+  */
+{
+  setObj(0,itemIndex,V);
+  return;
+}
+
+void
+IItem::setObj(const std::string& V)
+  /*!
+    Set the object based on 0,0 time
+    \param V :: Value to set
+  */
+{
+  setObj(0,0,V);
+  return;
+}
+
   
 template<typename T>
 T
-IItem<T>::getObj(const size_t setIndex,const size_t itemIndex) const
+IItem::getObj(const size_t setIndex,const size_t itemIndex) const
   /*!
     Get Object
     \param setIndex :: Index
@@ -220,9 +239,8 @@ IItem<T>::getObj(const size_t setIndex,const size_t itemIndex) const
 }
 
 
-template<typename T>
 void
-IItem<T>::writeSet(std::ostream& OX,const size_t setIndex) const
+IItem::writeSet(std::ostream& OX,const size_t setIndex) const
   /*!
     Complex functiion to convert the system into a string
     \param OX :: Output stream
@@ -239,9 +257,8 @@ IItem<T>::writeSet(std::ostream& OX,const size_t setIndex) const
   return;
 }
 
-  template<typename T>
 void
-IItem<T>::write(std::ostream& OX) const
+IItem::write(std::ostream& OX) const
   /*!
     Complex function to convert the system into a string
     \param OX :: Output stream
@@ -261,13 +278,6 @@ IItem<T>::write(std::ostream& OX) const
 
 ///\cond TEMPLATE
 
-template class IItem<int>;
-// template class IItem<long int>;
-// template class IItem<unsigned int>;
-// template class IItem<size_t>;
-// template class IItem<double>;
-// template class IItem<std::string>;
-// template class IItem<Geometry::Vec3D>;
 
 ///\endcond TEMPLATE
  

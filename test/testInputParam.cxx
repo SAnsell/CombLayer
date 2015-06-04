@@ -410,10 +410,10 @@ testInputParam::testMultiExtract()
 	  return -cnt;
 	}
 
-      if ( A.grpCnt(key)<=std::get<1>(tc) ||            // How many TC
+      if ( A.setCnt(key)<=std::get<1>(tc) ||            // How many TC
 	   A.itemCnt(key,std::get<1>(tc))<=std::get<2>(tc) )
 	{
-	  ELog::EM<<"Grp Cnt =="<<A.grpCnt(key)<<ELog::endTrace;
+	  ELog::EM<<"Grp Cnt =="<<A.setCnt(key)<<ELog::endTrace;
 	  ELog::EM<<"Item Cnt=="<<A.itemCnt(key,std::get<1>(tc))<<
 	    ":"<<std::get<3>(tc)<<ELog::endTrace;
 	  return -cnt;

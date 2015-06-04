@@ -92,7 +92,7 @@ inputParam::operator=(const inputParam& A)
 inputParam::~inputParam()
   /*!
     Destructor
-  */
+rrrrrrrrrrrf6  */
 {
   deleteMaps();
 }
@@ -109,10 +109,11 @@ inputParam::copyMaps(const inputParam& A)
   if (!Keys.empty())
     deleteMaps();
 
+  for
   MTYPE::const_iterator mc;
   for(mc=A.Keys.begin();mc!=A.Keys.end();mc++)
     {
-      IItemBase* IObj=mc->second->clone();
+      IItem* IObj=new mc->second->clone();
       Keys.insert(MTYPE::value_type(mc->first,IObj));
       if (A.Names.find(IObj->getLong())!=A.Names.end())
 	Names.insert(MTYPE::value_type(IObj->getLong(),IObj));
