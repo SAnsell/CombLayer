@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   process/createDivide.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,9 +31,6 @@
 #include <string>
 #include <algorithm>
 #include <functional>
-#include <numeric>
-#include <iterator>
-#include <boost/bind.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -48,13 +45,10 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "Rules.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "Quadratic.h"
 #include "Plane.h"
-#include "surfRegister.h"
 #include "surfExpand.h"
 #include "SurInter.h"
 #include "createDivide.h"

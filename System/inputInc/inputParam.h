@@ -117,6 +117,7 @@ class inputParam
   void setFlag(const std::string&);
   template<typename T>
   void setValue(const std::string&,const T&,const size_t =0);
+  void setMultiValue(const std::string&,const size_t,const std::string&);
 
   void processMainInput(std::vector<std::string>&);
   

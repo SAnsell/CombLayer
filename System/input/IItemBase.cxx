@@ -669,6 +669,7 @@ IItemMulti<T>::setObj(const T& A)
   
   if (ObjVec.empty() || ObjVec.back().back())
     {
+      ELog::EM<<"SPECIAL "<<getKey()<<" == "<<A<<ELog::endDiag;
       ObjVec.push_back(ITYPE(nRead));
       std::fill(ObjVec.back().begin(),ObjVec.back().end(),
 		static_cast<T*>(0));
@@ -682,6 +683,8 @@ IItemMulti<T>::setObj(const T& A)
     {
       if (!ObjVec.back()[i])
 	{
+	  ELog::EM<<"X "<<getKey()<<" == "<<NGrp-1<<" "<<i
+		  <<" "<<A<<ELog::endDiag;
 	  setObj(NGrp-1,i,A);
 	  return;
 	}
@@ -762,7 +765,7 @@ IItemMulti<T>::addNewSection()
 
 template<typename T>
 size_t
-IItemMulti<T>::convert(const size_t ,
+IItemMulti<T>::convert(const size_t Index,
 		       const size_t UIndex,
 		       const std::vector<std::string>& Units)
   /*!
@@ -800,6 +803,8 @@ IItemMulti<std::string>::convert(const size_t,
 {
   ELog::RegMethod RegA("IItemMulti<std::string>","convert");
 
+
+	
   // If empty / -value return 0
   if (Units[UIndex].empty() ||
       (Units[UIndex].size()>1 && 

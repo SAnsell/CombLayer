@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   inputInc/IItemBase.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,6 +63,7 @@ class IItemBase
   virtual size_t convert(const size_t,const size_t,
 		      const std::vector<std::string>&)=0;
   virtual void write(std::ostream&) const =0;
+
   ///\endcond ABSTRACT
 
   /// Set Description
@@ -73,6 +74,7 @@ class IItemBase
   const std::string& getLong() const { return Long; }
   /// Get Description
   const std::string& getDesc() const { return Desc; }  
+
   
 };
 
@@ -195,7 +197,7 @@ class IItemMulti: public IItemBase
   const size_t nReq;                   ///< Number Req [per read]
   size_t NGrp;                         ///< Number of groups
   size_t active;                       ///< [binary flag + bin-key on items]
-  VTYPE ObjVec;                       ///< Object to store
+  VTYPE ObjVec;                        ///< Object to store
 
   void deleteVec();
 

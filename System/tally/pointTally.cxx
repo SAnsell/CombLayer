@@ -34,8 +34,6 @@
 #include <algorithm>
 #include <numeric>
 #include <memory>
-#include <boost/bind.hpp>
-
 
 #include "Exception.h"
 #include "FileReport.h"

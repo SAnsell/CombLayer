@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   processInc/defaultConfig.h
  *
@@ -45,6 +45,9 @@ class defaultConfig
   std::map<std::string,std::string> varName;       ///< Var name [mat]
   std::map<std::string,Geometry::Vec3D> varVec;       ///< Var Vec [mat]
   std::map<std::string,std::string> flagName;      ///< Flag e.g. targetType
+  /// Triple for multiples
+  typedef std::tuple<std::string,size_t,std::string> TTYPE;
+  std::vector<TTYPE> multiSet;    ///< Mulit sets
 
  public:
 
@@ -58,6 +61,7 @@ class defaultConfig
   void setVar(const std::string&,const Geometry::Vec3D&);
   
   void setOption(const std::string&,const std::string&);
+  void setMultiOption(const std::string&,const size_t,const std::string&);
 
   void process(FuncDataBase&,mainSystem::inputParam&) const;
     

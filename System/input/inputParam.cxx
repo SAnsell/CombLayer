@@ -561,12 +561,11 @@ inputParam::setValue(const std::string& K,const T& A,
   /*!
     Set a value based on key
     \param K :: Key to add/search
-    \param A :: Object ot set
+    \param A :: Object to set
     \param I :: Index value
   */
 {
   ELog::RegMethod RegA("inputParam","setValue(N)");
-
   IItemBase* IPtr=getIndex(K);
   IItemObj<T>* Ptr=dynamic_cast<IItemObj<T>*> (IPtr);
   if (!Ptr)
@@ -576,6 +575,29 @@ inputParam::setValue(const std::string& K,const T& A,
 				     "Key Failed :"+K);
 
   Ptr->setObj(I,A);
+  return;
+}
+
+void
+inputParam::setMultiValue(const std::string& K,const size_t index,
+			  const std::string& Values) 
+/*!
+    Set a value based on key
+    \param K :: Key to add/search
+    \param index :: Index to multi-unit
+    \param Values :: String of values
+  */
+{
+  ELog::RegMethod RegA("inputParam","setMultValue");
+  IItemBase* IPtr=getIndex(K);  // throws
+
+  const std::vector<std::string> Items=
+    StrFunc::splitParts(Values,' ');
+  for(size_t i=0;i<Items.size();i++)
+    {
+      if (!IPtr->convert(0,i,Items))
+	ELog::EM<<"Error with convert:"<<K<<" "<<index<<" "<<i<<ELog::endDiag;
+    }
   return;
 }
 
