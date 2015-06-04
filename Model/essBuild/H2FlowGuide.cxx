@@ -107,7 +107,8 @@ H2FlowGuide::H2FlowGuide(const H2FlowGuide& A) :
   baseThick(A.baseThick),baseLen(A.baseLen),
   armThick(A.armThick), armLen(A.armLen),
   baseArmSep(A.baseArmSep),
-  baseOffset(A.baseOffset),wallMat(A.wallMat),
+  baseOffset(A.baseOffset),armOffset(A.armOffset),
+  wallMat(A.wallMat),
   wallTemp(A.wallTemp)
   /*!
     Copy constructor
@@ -133,6 +134,7 @@ H2FlowGuide::operator=(const H2FlowGuide& A)
       armLen=A.armLen;
       baseArmSep=A.baseArmSep;
       baseOffset=A.baseOffset;
+      armOffset=A.armOffset;
       wallMat=A.wallMat;
       wallTemp=A.wallTemp;
     }
@@ -170,8 +172,8 @@ H2FlowGuide::populate(const FuncDataBase& Control)
   armThick=Control.EvalPair<double>(keyName,baseName+endName,"ArmThick");
   armLen=Control.EvalPair<double>(keyName,baseName+endName,"ArmLen");
   baseArmSep=Control.EvalPair<double>(keyName,baseName+endName,"BaseArmSep");
-  baseOffset=Control.EvalPair<Geometry::Vec3D>
-    (keyName,baseName+endName,"BaseOffset");
+  baseOffset=Control.EvalPair<Geometry::Vec3D>(keyName,baseName+endName,"BaseOffset");
+  armOffset=Control.EvalPair<Geometry::Vec3D>(keyName,baseName+endName,"ArmOffset");
 
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat",
 				     baseName+endName+"WallMat");
@@ -200,6 +202,7 @@ H2FlowGuide::createSurfaces()
 {
   ELog::RegMethod RegA("H2FlowGuide","createSurface");
 
+  // base
   ModelSupport::buildPlane(SMap,flowIndex+1,
 			   Origin+Y*(baseOffset.Y()-baseThick/2.0),Y);
   ModelSupport::buildPlane(SMap,flowIndex+2,
@@ -214,6 +217,17 @@ H2FlowGuide::createSurfaces()
 			   Origin-X*(baseOffset.X()+armThick/2.0+baseArmSep),X);
   ModelSupport::buildPlane(SMap,flowIndex+14,
 			   Origin-X*(baseOffset.X()+armThick/2.0+baseArmSep+baseLen),X);
+
+  // arm
+  ModelSupport::buildPlane(SMap,flowIndex+101,
+			   Origin+Y*(armOffset.Y()-armLen/2.0),Y);
+  ModelSupport::buildPlane(SMap,flowIndex+102,
+			   Origin+Y*(armOffset.Y()+armLen/2.0),Y);
+
+  ModelSupport::buildPlane(SMap,flowIndex+103,
+			   Origin+X*(armOffset.X()-armThick/2.0),X);
+  ModelSupport::buildPlane(SMap,flowIndex+104,
+			   Origin+X*(armOffset.X()+armThick/2.0),X);
   
 
   return;
@@ -248,18 +262,26 @@ H2FlowGuide::createObjects(Simulation& System,
 
   // base
   Out=ModelSupport::getComposite(SMap,flowIndex," 1 -2 3 -4 ");
-  HeadRule wallExclude(Out);
-  Out+=HW.getLinkString(12)+HW.getLinkString(13);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out));
-  wallExclude.makeComplement();
-  InnerObj->addSurfString(wallExclude.display());
-
-  Out=ModelSupport::getComposite(SMap,flowIndex," 1 -2 -13 14 ");
   HeadRule wallExclude1(Out);
   Out+=HW.getLinkString(12)+HW.getLinkString(13);
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out));
   wallExclude1.makeComplement();
   InnerObj->addSurfString(wallExclude1.display());
+
+  Out=ModelSupport::getComposite(SMap,flowIndex," 1 -2 -13 14 ");
+  HeadRule wallExclude2(Out);
+  Out+=HW.getLinkString(12)+HW.getLinkString(13);
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out));
+  wallExclude2.makeComplement();
+  InnerObj->addSurfString(wallExclude2.display());
+
+  // arm
+  Out=ModelSupport::getComposite(SMap,flowIndex," 101 -102 103 -104 ");
+  HeadRule wallExclude3(Out);
+  Out+=HW.getLinkString(12)+HW.getLinkString(13);
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out));
+  wallExclude3.makeComplement();
+  InnerObj->addSurfString(wallExclude3.display());
   
   return;
 }

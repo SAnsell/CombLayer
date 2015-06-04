@@ -53,6 +53,7 @@ class H2FlowGuide :
   double armLen;               ///< Arm length
   double baseArmSep;           ///< Base arm seperation
   Geometry::Vec3D baseOffset;  ///< Base offset
+  Geometry::Vec3D armOffset;   ///< Arm offset
    
   int wallMat;                   ///< LH2
   double wallTemp;               ///< LH2 temperature [K]
