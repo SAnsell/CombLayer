@@ -90,7 +90,7 @@ class inputParam
 
  
   size_t dataCnt(const std::string&) const;
-  size_t grpCnt(const std::string&) const;
+  size_t setCnt(const std::string&) const;
   size_t itemCnt(const std::string&,const size_t) const;
 
   bool hasKey(const std::string&) const;

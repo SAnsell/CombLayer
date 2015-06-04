@@ -270,27 +270,30 @@ inputParam::hasKey(const std::string& K) const
 size_t
 inputParam::dataCnt(const std::string& K) const
   /*!
-    Determine if active
+    Determine number of data object for a given key [assuming set 0]
     \param K :: Key to seach
     \return active flag
    */
 {
   ELog::RegMethod RegA("inputParam","dataCnt");
+  
   const IItemBase* IPtr=getIndex(K);
-  return IPtr->dataCnt();
+  
+  return IPtr->getNItems();
 }
 
 size_t
-inputParam::grpCnt(const std::string& K) const
+inputParam::setCnt(const std::string& K) const
   /*!
     Count number of groups
     \param K :: Key to seach
     \return Grp count 
    */
 {
-  ELog::RegMethod RegA("inputParam","grpCnt");
+  ELog::RegMethod RegA("inputParam","setCnt");
+  
   const IItemBase* IPtr=getIndex(K);
-  return IPtr->getNComp();
+  return IPtr->getNSets();
 }
 
 
@@ -305,9 +308,9 @@ inputParam::itemCnt(const std::string& K,const size_t Index) const
 {
   ELog::RegMethod RegA("inputParam","itemCnt");
   const IItemBase* IPtr=getIndex(K);
-  return IPtr->getNCompData(Index);
+  
+  return IPtr->getNItems(Index);
 }
-
 
 bool
 inputParam::flag(const std::string& K) const
@@ -342,9 +345,14 @@ inputParam::getFlagDef(const std::string& InpKey,
   ELog::RegMethod RegA("inputParam","getFlagDef");
 
   const IItemBase* IPtr=findKey(InpKey);
-  const IItemObj<T>* Ptr=dynamic_cast< const IItemObj<T>* >(IPtr);
-  if (Ptr && I<Ptr->getNData())
+  
+  const IItem<T>* Ptr=dynamic_cast< const IItem<T>* >(IPtr);
+  
+  if (IPtr && IPtr->getNData())
     return Ptr->getObj(I);
+
+
+  
   const IItemMulti<T>* MPtr=dynamic_cast< const IItemMulti<T>* >(IPtr);
   if (MPtr && I<MPtr->getNData())
     return MPtr->getObj(I);
@@ -360,11 +368,11 @@ inputParam::getFlagDef(const std::string& InpKey,
 
 
 std::string
-inputParam::getFull(const std::string& K,const size_t I) const
+inputParam::getFull(const std::string& K,const size_t setIndex) const
   /*!
-    Get the full string of all options for a given index
+    Get the full string of all options for a given setindex
     \param K :: Key to seach
-    \param I :: Index value
+    \param setIndex :: Index value
     \return Values in spc separated list
    */
 {
@@ -374,45 +382,40 @@ inputParam::getFull(const std::string& K,const size_t I) const
   if (!IPtr)
     throw ColErr::EmptyValue<void>("Key : "+K);
 
-  if (I>=IPtr->dataCnt())
-    throw ColErr::IndexError<size_t>(I,IPtr->dataCnt(),
-				     "key failed : "+K);
-
-  // Output streamx
   std::ostringstream OX;
-  IPtr->write(OX);
+  IPtr->writeSet(OX,setIndex);
   return OX.str();
 }
 
 template<typename T>
-const T&
-inputParam::getValue(const std::string& K,const size_t I) const
+T
+inputParam::getValue(const std::string& K,const size_t Index) const
   /*!
     Get a value based on key
     \param K :: Key to seach
-    \param I :: Index value
+    \param Index :: Index value
     \return Value
    */
 {
-  ELog::RegMethod RegA("inputParam","getValue");
+  ELog::RegMethod RegA("inputParam","getValue(index)");
+  return getValue<T>(K,0,IndeX);
+}
 
-  const IItemBase* IPtr=getIndex(K);
-  if (!IPtr)
-    throw ColErr::EmptyValue<void>("Key : "+K);
-
-  if (I>=IPtr->dataCnt())
-    throw ColErr::IndexError<size_t>(I,IPtr->dataCnt(),
-				     "key failed : "+K);
-
-  const IItemObj<T>* Ptr=dynamic_cast< const IItemObj<T>* >(IPtr);
-  if (Ptr)
-    return Ptr->getObj(I);
-
-  const IItemMulti<T>* MPtr=dynamic_cast< const IItemMulti<T>* >(IPtr);
-  if (!MPtr)
-    throw ColErr::CastError<IItemBase>(IPtr,"key failed :"+K);
-
-  return MPtr->getObj(I);
+template<typename T>
+T
+inputParam::getValue(const std::string& K,
+		     const size_t setIndex,
+		     const size_t Index) const
+  /*!
+    Get a value based on key
+    \param K :: Key to seach
+    \param setIndex :: set Value
+    \param Index :: Index value
+    \return Value
+   */
+{
+  ELog::RegMethod RegA("inputParam","getValue(index)");
+  return getValue<T>(K,0,IndeX);
 }
 
 template<typename T>
