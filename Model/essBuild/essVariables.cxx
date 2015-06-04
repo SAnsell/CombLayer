@@ -225,6 +225,8 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("zero",0.0);     // Zero
   Control.addVariable("one",1.0);      // one
 
+  Control.addVariable("EngineeringActive",0);      // NO engineering
+
   Control.addVariable("LSupplyNSegIn",2);
   // Central point:
   Control.addVariable("LSupplyPPt0",Geometry::Vec3D(0,-1.0,0.0));

@@ -49,6 +49,7 @@ class H2Wing :
   const int wingIndex;       ///< Index of surface offset
   int cellIndex;             ///< Cell index
 
+  int engActive;             ///< Engineering active
   std::shared_ptr<H2FlowGuide> InnerComp;    ///< Inner flow components
   
   double xStep;
