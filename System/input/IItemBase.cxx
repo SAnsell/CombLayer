@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   input/IItemBase.cxx
+ * File:   input/IItem.cxx
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -53,7 +53,7 @@ namespace mainSystem
 {
 
 std::ostream&
-operator<<(std::ostream& OX,const IItemBase& A)
+operator<<(std::ostream& OX,const IItem& A)
   /*!
     Output stream writer
     \param OX :: Output stream
@@ -65,7 +65,7 @@ operator<<(std::ostream& OX,const IItemBase& A)
   return OX;
 }
 
-IItemBase::IItemBase(const std::string& K) : 
+IItem::IItem(const std::string& K) : 
   Key(K),maxSets(0),maxItems(0),reqItems(0)
   /*!
     Constructor only with  descriptor
@@ -73,7 +73,7 @@ IItemBase::IItemBase(const std::string& K) :
   */
 {}
 
-IItemBase::IItemBase(const std::string& K,const std::string& L) :
+IItem::IItem(const std::string& K,const std::string& L) :
   Key(K),Long(L),maxSets(0),maxItems(0),reqItems(0)
   /*!
     Full Constructor 
@@ -82,7 +82,7 @@ IItemBase::IItemBase(const std::string& K,const std::string& L) :
   */
 {}
 
-IItemBase::IItemBase(const IItemBase& A) : 
+IItem::IItem(const IItem& A) : 
   Key(A.Key),Long(A.Long),Desc(A.Desc),active(0),
   maxSets(A.maxSets),maxItems(A.maxItems),reqItems(A.reqItems),
   DItems(A.DItems)
@@ -92,8 +92,8 @@ IItemBase::IItemBase(const IItemBase& A) :
   */
 {}
 
-IItemBase&
-IItemBase::operator=(const IItemBase& A) 
+IItem&
+IItem::operator=(const IItem& A) 
   /*!
     Assignment operator
     \param A :: Object to copy
@@ -124,9 +124,8 @@ IItem::getNSets() const
   return DItems.size();
 }
 
-template<typename T>
 size_t
-IItem<T>::getNItems(const size_t setIndex) const
+IItem::getNItems(const size_t setIndex) const
   /*!
     Number of items
     \param setIndex :: Index value 
@@ -139,9 +138,8 @@ IItem<T>::getNItems(const size_t setIndex) const
   return DItems[setIndex].size();
 }
 
-template<typename T>
 bool
-IItem<T>::isValid(const size_t setIndex) const
+IItem::isValid(const size_t setIndex) const
   /*!
     Number of data sets
     \return number of sets in the model
@@ -158,7 +156,7 @@ IItem<T>::isValid(const size_t setIndex) const
   
 template<typename T>
 T
-IItem<T>::getObj(const size_t setIndex,const size_t itemIndex) const
+IItem::getObj(const size_t setIndex,const size_t itemIndex) const
   /*!
     Get Object
     \param setIndex :: Index
@@ -167,6 +165,7 @@ IItem<T>::getObj(const size_t setIndex,const size_t itemIndex) const
   */
 { 
   ELog::RegMethod RegA("IItem","getObj");
+  
   if (DItems.size()>=setIndex)
     throw ColErr::IndexError<size_t>(setIndex,DItems.size(),"setIndex");
   if (DItems[setIndex].size()>=itemIndex)
@@ -183,9 +182,8 @@ IItem<T>::getObj(const size_t setIndex,const size_t itemIndex) const
 }
 
 
-template<typename T>
 void
-IItem<T>::writeSet(std::ostream& OX,const size_t setIndex) const
+IItem::writeSet(std::ostream& OX,const size_t setIndex) const
   /*!
     Complex functiion to convert the system into a string
     \param OX :: Output stream
@@ -202,9 +200,8 @@ IItem<T>::writeSet(std::ostream& OX,const size_t setIndex) const
   return;
 }
 
-  template<typename T>
 void
-IItem<T>::write(std::ostream& OX) const
+IItem::write(std::ostream& OX) const
   /*!
     Complex function to convert the system into a string
     \param OX :: Output stream
@@ -224,7 +221,6 @@ IItem<T>::write(std::ostream& OX) const
 
 ///\cond TEMPLATE
 
-template class IItem<int>;
 // template class IItem<long int>;
 // template class IItem<unsigned int>;
 // template class IItem<size_t>;

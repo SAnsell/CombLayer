@@ -60,12 +60,10 @@ class IItem
   bool flag() const { return active; }
   
 
-  size_t getNSets() const =0;
-  size_t getNItems(const size_t =0) const =0;
+  size_t getNSets() const;
+  size_t getNItems(const size_t =0) const;
 
-  bool isValid(const size_t =0) const =0;
-
-  ///\endcond ABSTRACT
+  bool isValid(const size_t =0) const;
 
   /// Set Description
   void setDesc(const std::string& D) {Desc=D;}
@@ -80,13 +78,13 @@ class IItem
   void setObj(const size_t,const std::string&);
   void setObj(const std::string&);
 
-  template<typename T> T getObj(const size_t,const size_t);
-  template<typename T> T getObj(const size_t);
-  template<typename T> T getObj();
+  template<typename T> T getObj(const size_t,const size_t) const;
+  template<typename T> T getObj(const size_t) const;
+  template<typename T> T getObj() const;
   
   
-  void writeSet(std::ostream&,const size_t) const =0;
-  void write(std::ostream&) const =0;
+  void writeSet(std::ostream&,const size_t) const;
+  void write(std::ostream&) const;
 
 };
 

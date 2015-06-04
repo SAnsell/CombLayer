@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   input/inputParam.cxx
  *
@@ -109,11 +109,10 @@ inputParam::copyMaps(const inputParam& A)
   if (!Keys.empty())
     deleteMaps();
 
-  MTYPE::const_iterator mc;
-  for(mc=A.Keys.begin();mc!=A.Keys.end();mc++)
+  for(MTYPE::value_type MC : Keys)
     {
-      IItemBase* IObj=mc->second->clone();
-      Keys.insert(MTYPE::value_type(mc->first,IObj));
+      IItem* IObj=new IItem(*MC.second);
+      Keys.insert(MTYPE::value_type(MC.first,IObj));
       if (A.Names.find(IObj->getLong())!=A.Names.end())
 	Names.insert(MTYPE::value_type(IObj->getLong(),IObj));
     }
