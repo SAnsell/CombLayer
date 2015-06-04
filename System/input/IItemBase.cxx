@@ -114,45 +114,8 @@ IItemBase::operator=(const IItemBase& A)
   return *this;
 }
 
-// ------------------------------------------------------------
-  
-template<typename T>
-IItem<T>::IItem(const std::string& K) : 
-  IItemBase(K)
-  /*!
-    Constructor
-    \param dCnt :: number of data items;
-    \param K :: Short Key
-  */
-{}
-
-template<typename T> 
-IItem<T>::IItem(const std::string& K,
-		      const std::string& L) : 
-  IItemBase(K,L)
-  /*!
-    Constructor
-    \param dCnt :: number of data items;
-    \param K :: Short Key
-    \param L :: Long Key
-  */
-{}
-
-
-template<typename T>
-IItem<T>*
-IItem<T>::clone() const 
-  /*!
-    Virtual copy constructor
-    \return new (this)
-  */
-{ 
-  return new IItem<T>(*this);
-}
-  
-template<typename T>
 size_t
-IItem<T>::getNSets() const
+IItem::getNSets() const
   /*!
     Number of data sets
     \return number of sets in the model

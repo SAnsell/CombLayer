@@ -415,6 +415,12 @@ inputParam::getValue(const std::string& K,
    */
 {
   ELog::RegMethod RegA("inputParam","getValue(index)");
+
+  const IItemBase* IPtr=findKey(InpKey);
+  
+  const IItem<T>* Ptr=dynamic_cast< const IItem<T>* >(IPtr);
+
+  
   return getValue<T>(K,0,IndeX);
 }
 

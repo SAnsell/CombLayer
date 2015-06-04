@@ -80,12 +80,9 @@ class IItem
   void setObj(const size_t,const std::string&);
   void setObj(const std::string&);
 
-  template<typename T>
-  T getObj(const size_t,const size_t);
-  template<typename T>
-  T getObj(const size_t);
-  template<typename T>
-  T getObj();
+  template<typename T> T getObj(const size_t,const size_t);
+  template<typename T> T getObj(const size_t);
+  template<typename T> T getObj();
   
   
   void writeSet(std::ostream&,const size_t) const =0;
