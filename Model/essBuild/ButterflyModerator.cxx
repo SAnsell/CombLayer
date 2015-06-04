@@ -51,6 +51,7 @@
 #include "ModBase.h"
 #include "H2Wing.h"
 #include "MidWaterDivider.h"
+#include "EdgeWater.h"
 #include "ButterflyModerator.h"
 
 namespace essSystem
@@ -62,7 +63,9 @@ ButterflyModerator::ButterflyModerator(const std::string& Key) :
   cellIndex(flyIndex+1),
   LeftUnit(new H2Wing(Key,"LeftLobe",90.0)),
   RightUnit(new H2Wing(Key,"RightLobe",270.0)),
-  MidWater(new MidWaterDivider(Key,"MidWater"))
+  MidWater(new MidWaterDivider(Key,"MidWater")),
+  LeftWater(new EdgeWater(Key+"LeftWater")),
+  RightWater(new EdgeWater(Key+"RightWater"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -70,9 +73,12 @@ ButterflyModerator::ButterflyModerator(const std::string& Key) :
 {
    ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
+
    OR.addObject(LeftUnit);
    OR.addObject(RightUnit);
    OR.addObject(MidWater);
+   OR.addObject(LeftWater);
+   OR.addObject(RightWater);
 }
 
 ButterflyModerator::ButterflyModerator(const ButterflyModerator& A) : 
@@ -81,6 +87,8 @@ ButterflyModerator::ButterflyModerator(const ButterflyModerator& A) :
   LeftUnit(A.LeftUnit->clone()),
   RightUnit(A.RightUnit->clone()),
   MidWater(A.MidWater->clone()),
+  LeftWater(A.LeftWater->clone()),
+  RightWater(A.LeftWater->clone()),
   outerRadius(A.outerRadius)
   /*!
     Copy constructor
@@ -103,6 +111,8 @@ ButterflyModerator::operator=(const ButterflyModerator& A)
       *LeftUnit= *A.LeftUnit;
       *RightUnit= *A.RightUnit;
       *MidWater= *A.MidWater;
+      *LeftWater= *A.LeftWater;
+      *RightWater= *A.RightWater;
       outerRadius=A.outerRadius;
     }
   return *this;
@@ -138,6 +148,27 @@ ButterflyModerator::populate(const FuncDataBase& Control)
   totalHeight=Control.EvalVar<double>(keyName+"TotalHeight");
   return;
 }
+
+void
+ButterflyModerator::createUnitVector(const attachSystem::FixedComp& axisFC,
+				     const attachSystem::FixedComp* orgFC,
+				     const long int sideIndex)
+  /*!
+    Create the unit vectors. This one uses axis from ther first FC
+    but the origin for the second. Futher shifting the origin on the
+    Z axis to the centre.
+    \param axisFC :: FixedComp to get axis [origin if orgFC == 0]
+    \param orgFC :: Extra origin point if required
+    \param sideIndex :: link point for origin if given
+  */
+{
+  ELog::RegMethod RegA("ButterflyModerator","createUnitVector");
+  ModBase::createUnitVector(axisFC,orgFC,sideIndex);
+  applyShift(0,0,totalHeight/2.0);
+  
+  return;
+}
+
   
 void
 ButterflyModerator::createSurfaces()
@@ -148,6 +179,9 @@ ButterflyModerator::createSurfaces()
   ELog::RegMethod RegA("ButterflyModerator","createSurface");
   
   ModelSupport::buildCylinder(SMap,flyIndex+7,Origin,Z,outerRadius);
+  ModelSupport::buildPlane(SMap,flyIndex+5,Origin-Z*(totalHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,flyIndex+6,Origin+Z*(totalHeight/2.0),Z);
+
   return;
 }
 
@@ -160,15 +194,15 @@ ButterflyModerator::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("ButterflyModerator","createObjects");
   
-  const std::string Lower=LeftUnit->getLinkComplement(4);
-  const std::string Upper=LeftUnit->getLinkComplement(5);
+  const std::string Exclude=ContainedComp::getExclude();
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,flyIndex," -7 ");
-  Out+=Lower+Upper;
-  Out+=ContainedComp::getExclude();
+  Out=ModelSupport::getComposite(SMap,flyIndex," -7 5 -6 ");  
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+Exclude));
+
+  clearRules();
+  addOuterSurf(Out);
   
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   return;
 }
   
@@ -234,10 +268,16 @@ ButterflyModerator::createLinks()
   FixedComp::setLinkSurf(2,SMap.realSurf(flyIndex+7));
   FixedComp::setLinkSurf(3,SMap.realSurf(flyIndex+7));
 
-  // copy top/bottom from H2Wing
-
+  // copy surface top/bottom from H2Wing and Orign from center
+  
   FixedComp::setLinkCopy(4,*LeftUnit,4);
   FixedComp::setLinkCopy(5,*LeftUnit,5);
+  const double LowV= LU[4].getConnectPt().Z();
+  const double HighV= LU[5].getConnectPt().Z();
+  const Geometry::Vec3D LowPt(Origin.X(),Origin.Y(),LowV);
+  const Geometry::Vec3D HighPt(Origin.X(),Origin.Y(),HighV);
+  FixedComp::setConnect(4,LowPt,-Z);
+  FixedComp::setConnect(5,HighPt,Z);
   
   return;
 }
@@ -249,11 +289,11 @@ ButterflyModerator::createExternal()
 {
   ELog::RegMethod RegA("ButterflyModerator","createExternal");
 
-  //  addOuterUnionSurf(MidWater->getCompExclude());
-
   addOuterUnionSurf(LeftUnit->getCompExclude());
   addOuterUnionSurf(RightUnit->getCompExclude());
   addOuterUnionSurf(MidWater->getCompExclude());
+  addOuterUnionSurf(LeftWater->getCompExclude());
+  addOuterUnionSurf(RightWater->getCompExclude());
   
   return;
 }
@@ -274,17 +314,25 @@ ButterflyModerator::createAll(Simulation& System,
   ELog::RegMethod RegA("ButterflyModerator","createAll");
 
   populate(System.getDataBase());
-
-  ModBase::createUnitVector(axisFC,orgFC,sideIndex);
-
+  createUnitVector(axisFC,orgFC,sideIndex);
+  createSurfaces();
   
   LeftUnit->createAll(System,*this);
   RightUnit->createAll(System,*this);
   MidWater->createAll(System,*this,*LeftUnit,*RightUnit);
-  Origin=MidWater->getCentre();
-  createExternal();
   
-  createSurfaces();
+  std::string CutString=LeftUnit->getSignedLinkString(2);
+  const std::string Exclude=
+    ModelSupport::getComposite(SMap,flyIndex," -7 5 -6 ");
+  LeftWater->createAll(System,*this,CutString,Exclude);
+
+  CutString=RightUnit->getSignedLinkString(2);
+  RightWater->createAll(System,*this,CutString,Exclude);
+
+  Origin=MidWater->getCentre();
+  createExternal();  // makes intermediate 
+
+
   createObjects(System);
   createLinks();
   

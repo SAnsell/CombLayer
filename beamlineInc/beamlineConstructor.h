@@ -22,13 +22,17 @@
 #ifndef beamlineSystem_beamlineConstructor_h
 #define beamlineSystem_beamlineConstructor_h
 
+namespace essSystem
+{
+  class Bunker;
+}
+
 /*!
   \namespace beamlineSystem
   \brief General stuff to build a beamline 
   \version 1.0
   \date April 2014
   \author S. Ansell
-
 */
 
 namespace beamlineSystem
@@ -56,8 +60,7 @@ class beamlineConstructor
     { return *this; }
   virtual ~beamlineConstructor() {}   ///< Destructor
   
-  virtual void build(Simulation&,
-		     const mainSystem::inputParam&) =0;
+  virtual void build(Simulation&,const essSystem::Bunker&) =0;
 
 };
 

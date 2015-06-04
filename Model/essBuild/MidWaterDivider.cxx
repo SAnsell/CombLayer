@@ -197,7 +197,6 @@ MidWaterDivider::createUnitVector(const attachSystem::FixedComp& FC)
   ELog::RegMethod RegA("MidWaterDivider","createUnitVector");
 
   FixedComp::createUnitVector(FC);
-  applyShift(0,0,totalHeight/2.0);
   return;
 }
 
@@ -212,7 +211,6 @@ MidWaterDivider::createLinks()
   ELog::RegMethod RegA("MidWaterDivider","createLinks");
 
   // Loop over corners that are bound by convex
-  
 
   return;
 }

@@ -64,7 +64,9 @@ namespace essSystem
   class GuideBay;
   class BeamMonitor;
   class DiskPreMod;
+  class Bunker;
 
+  class ODIN;
   /*!
     \class makeESS
     \version 1.0
@@ -86,6 +88,7 @@ class makeESS
   /// Primary Lower Mod [
   std::shared_ptr<constructSystem::ModBase> LowMod;
   std::shared_ptr<DiskPreMod> LowPreMod;
+  std::shared_ptr<DiskPreMod> LowCapMod;
 
   // Cylindrical [to be dumped]
   std::shared_ptr<moderatorSystem::BasicFlightLine> LowAFL;  ///< Lower Mode FL
@@ -114,6 +117,8 @@ class makeESS
   std::vector<std::shared_ptr<beamlineSystem::beamlineConstructor> > 
     BLArray;  
 
+  std::shared_ptr<Bunker> LowABunker;  ///< Lower bunker
+  
   void topFlightLines(Simulation&);
   void lowFlightLines(Simulation&);
   void createGuides(Simulation&);
@@ -127,9 +132,11 @@ class makeESS
   void buildLowerPipe(Simulation&,const std::string&);
 
   void makeTarget(Simulation&,const std::string&);
-
+  void makeBunker(Simulation&,const std::string&);
+  
   void makeBeamLine(Simulation&,
 		    const mainSystem::inputParam&);
+
   void optionSummary(Simulation&);
 
  public:

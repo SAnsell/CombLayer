@@ -274,7 +274,8 @@ BeRef::createObjects(Simulation& System)
   // low segment
   Out=ModelSupport::getComposite(SMap,refIndex," -7 5 -105 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,refMat,0.0,Out));
-
+  setCell("lowBe",cellIndex-1);
+  
   // low void
   Out=ModelSupport::getComposite(SMap,refIndex," -17 115 -205");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
@@ -291,17 +292,20 @@ BeRef::createObjects(Simulation& System)
   // top segment
   Out=ModelSupport::getComposite(SMap,refIndex," -7 -6 106");
   System.addCell(MonteCarlo::Qhull(cellIndex++,refMat,0.0,Out));
-
+  setCell("topBe",cellIndex-1);
+  
   if (wallThick>Geometry::zeroTol)
     {
 
       Out=ModelSupport::getComposite(SMap,refIndex," -17 15 -105 (7:-5)");
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
-
+      setCell("lowWall",cellIndex-1);
+      
       // divide layer
       Out=ModelSupport::getComposite(SMap,refIndex," -17 105 -115 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
-
+      setCell("lowWallDivider",cellIndex-1);
+      
       // divide layer
       Out=ModelSupport::getComposite(SMap,refIndex," -17 -106 116 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));

@@ -68,13 +68,14 @@ class GuideLine : public attachSystem::ContainedComp,
   double leftWidth;            ///< Left width
   double rightWidth;           ///< Right width
 
-  size_t nShapeLayers;         ///< Number of shapeLayers
-  std::vector<double> layerThick;        ///< Thickness [inner->outer]
-  std::vector<int> layerMat;              ///< Mat 
+  size_t nShapeLayers;              ///< Number of shapeLayers
+  std::vector<double> layerThick;   ///< Thickness [inner->outer]
+  std::vector<int> layerMat;         ///< Mat 
 
   size_t nShapes;              ///< Number of shape segments
+  /// Shape units
   std::vector<ShapeUnit*> shapeUnits;
-
+  /// Layer shielding
   int feMat;
 
   void clear();

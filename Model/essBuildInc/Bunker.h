@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   essBuildInc/Bunker.h
  *
@@ -36,37 +36,51 @@ namespace essSystem
 */
 
 class Bunker : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+  public attachSystem::FixedComp,public attachSystem::CellMap
 {
  private:
   
-  const int bulkIndex;           ///< Index of surface offset
+  const int bnkIndex;           ///< Index of surface offset
   int cellIndex;                 ///< Cell index
 
+  Geometry::Vec3D rotCentre;     ///< Rotation centre
+  
   double leftPhase;              ///< Sector phase left
-  double rightPhase;             ///< Sector phase rightx
+  double rightPhase;             ///< Sector phase right
   
   double leftAngle;              ///< Extent of left angle
   double rightAngle;             ///< Extent of right ange
 
-  double floorDepth;             ///< 
-  double roofDepth;
+  double innerRadius;            ///< inner radius [calculated]
+  double wallRadius;             ///< Wall radius
+  double floorDepth;             ///< Floor depth
+  double roofHeight;             ///< Roof height
 
-  double wallThick;
-  double roofThick;
-  double floorThick;
+  double wallThick;              ///< backWall thickness
+  double sideThick;              ///< Side thickness
+  double roofThick;              ///< Roof thickness
+  double floorThick;             ///< Floor thickness
 
-  int mat;
+  int wallMat;                   ///< wall material
 
+  // Layers
+  size_t nLayers;                ///< number of layers
+  std::vector<double> wallFrac;  ///< guide Layer thicknesss (fractions)
+  std::vector<int> wallMatVec;   ///< guide Layer materials
+  
+  
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
+			const attachSystem::FixedComp&,
+			const long int,const bool);
 
   void createSurfaces();
   void createLinks();
   void createObjects(Simulation&,const attachSystem::FixedComp&,
 		     const long int);
 
+  void layerProcess(Simulation&);
+  
  public:
 
   Bunker(const std::string&);
@@ -76,7 +90,7 @@ class Bunker : public attachSystem::ContainedComp,
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const attachSystem::FixedComp&,
-		 const long int);
+		 const long int,const bool);
 
 };
 

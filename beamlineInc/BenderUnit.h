@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   beamlineInc/BenderUnit.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,13 +50,13 @@ class BenderUnit : public ShapeUnit
   double Length;              ///< Length of section
   double rotAng;              ///< Rotation of Z bend axis for bend
 
-  Geometry::Vec3D AXVec;    ///< Current XVector
-  Geometry::Vec3D AYVec;    ///< Current YVector
-  Geometry::Vec3D AZVec;    ///< Current ZVector
+  Geometry::Vec3D AXVec;    ///< Current XVector [Front]
+  Geometry::Vec3D AYVec;    ///< Current YVector [Front]
+  Geometry::Vec3D AZVec;    ///< Current ZVector [Front]
 
-  Geometry::Vec3D BXVec;    ///< Current XVector
-  Geometry::Vec3D BYVec;    ///< Current YVector
-  Geometry::Vec3D BZVec;    ///< Current ZVector
+  Geometry::Vec3D BXVec;    ///< Current XVector [Back]
+  Geometry::Vec3D BYVec;    ///< Current YVector [Back]
+  Geometry::Vec3D BZVec;    ///< Current ZVector [Back]
 
   Geometry::Vec3D calcWidthCent(const bool) const;
   

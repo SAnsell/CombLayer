@@ -78,7 +78,7 @@ DiskPreMod::DiskPreMod(const std::string& Key) :
   attachSystem::LayerComp(0),
   attachSystem::FixedComp(Key,6),
   modIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(modIndex+1)
+  cellIndex(modIndex+1),NWidth(0)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -89,7 +89,8 @@ DiskPreMod::DiskPreMod(const DiskPreMod& A) :
   attachSystem::ContainedComp(A),
   attachSystem::LayerComp(A),attachSystem::FixedComp(A),
   modIndex(A.modIndex),cellIndex(A.cellIndex),radius(A.radius),
-  height(A.height),depth(A.depth),mat(A.mat),temp(A.temp)
+  height(A.height),depth(A.depth),width(A.width),
+  mat(A.mat),temp(A.temp)
   /*!
     Copy constructor
     \param A :: DiskPreMod to copy
@@ -113,6 +114,7 @@ DiskPreMod::operator=(const DiskPreMod& A)
       radius=A.radius;
       height=A.height;
       depth=A.depth;
+      width=A.width;
       mat=A.mat;
       temp=A.temp;
     }
@@ -156,6 +158,7 @@ DiskPreMod::populate(const FuncDataBase& Control,
   double R(0.0);
   double H(0.0);
   double D(0.0);
+  double W(0.0);
   double T;
   int M;
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");   
@@ -166,6 +169,7 @@ DiskPreMod::populate(const FuncDataBase& Control,
       D+=Control.EvalVar<double>(keyName+"Depth"+NStr);
       R+=Control.EvalPair<double>(keyName+"Radius"+NStr,
 				  keyName+"Thick"+NStr);
+      W+=Control.EvalDefVar<double>(keyName+"Width"+NStr,0.0);
       M=ModelSupport::EvalMat<int>(Control,keyName+"Mat"+NStr);   
       const std::string TStr=keyName+"Temp"+NStr;
       T=(!M || !Control.hasVariable(TStr)) ?
@@ -174,25 +178,36 @@ DiskPreMod::populate(const FuncDataBase& Control,
       radius.push_back(R);
       height.push_back(H);
       depth.push_back(D);
+      width.push_back(W);
       mat.push_back(M);
       temp.push_back(T);
     }
-  
+
+  // Find first Width that has not increase from last:
+  W=0.0;
+  NWidth=0;
+  while(NWidth<width.size() &&
+	(width[NWidth]-W)>Geometry::zeroTol)
+    {
+      W+=width[NWidth];
+      NWidth++;
+    } 
   return;
 }
 
 void
 DiskPreMod::createUnitVector(const attachSystem::FixedComp& refCentre,
-			     const bool zRotate)
+			     const long int sideIndex,const bool zRotate)
   /*!
     Create the unit vectors
     \param refCentre :: Centre for object
+    \param sideIndex :: index for link
     \param zRotate :: rotate Zaxis
   */
 {
   ELog::RegMethod RegA("DiskPreMod","createUnitVector");
   attachSystem::FixedComp::createUnitVector(refCentre);
-
+  Origin=refCentre.getSignedLinkPt(sideIndex);
   if (zRotate)
     {
       X*=-1;
@@ -200,8 +215,10 @@ DiskPreMod::createUnitVector(const attachSystem::FixedComp& refCentre,
     }
   const double D=(depth.empty()) ? 0.0 : depth.back();
   applyShift(0,0,zStep+D);
+
   return;
 }
+
 
 void
 DiskPreMod::createSurfaces()
@@ -215,17 +232,22 @@ DiskPreMod::createSurfaces()
   ModelSupport::buildPlane(SMap,modIndex+1,Origin,X);  
   ModelSupport::buildPlane(SMap,modIndex+2,Origin,Y);  
 
+
   int SI(modIndex);
   for(size_t i=0;i<nLayers;i++)
     {
       ModelSupport::buildCylinder(SMap,SI+7,Origin,Z,radius[i]);  
       ModelSupport::buildPlane(SMap,SI+5,Origin-Z*depth[i],Z);  
-      ModelSupport::buildPlane(SMap,SI+6,Origin+Z*height[i],Z);  
+      ModelSupport::buildPlane(SMap,SI+6,Origin+Z*height[i],Z);
+      if (i<NWidth)
+	{
+	  ModelSupport::buildPlane(SMap,SI+3,Origin-X*(width[i]/2.0),X);
+	  ModelSupport::buildPlane(SMap,SI+4,Origin+X*(width[i]/2.0),X);
+	}
       SI+=10;
     }
   if (radius.empty() || radius.back()<outerRadius-Geometry::zeroTol)
     ModelSupport::buildCylinder(SMap,SI+7,Origin,Z,outerRadius);
-  
   return; 
 }
 
@@ -243,11 +265,23 @@ DiskPreMod::createObjects(Simulation& System)
   int SI(modIndex);
   // Process even number of surfaces:
   HeadRule Inner;
+  HeadRule Width;
+  std::string widthUnit;
   for(size_t i=0;i<nLayers;i++)
     {
+      if (i<NWidth)
+	{
+	  // previous width:
+	  Width.procString(widthUnit);
+	  Width.makeComplement();
+	  widthUnit=ModelSupport::getComposite(SMap,SI," -3 4 ");
+	}
       Out=ModelSupport::getComposite(SMap,SI," -7 5 -6 ");
+
+	
       System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],
-				       Out+Inner.display()));
+				       Out+widthUnit+
+				       Inner.display()+Width.display()));
       SI+=10;
       Inner.procString(Out);
       Inner.makeComplement();
@@ -255,12 +289,16 @@ DiskPreMod::createObjects(Simulation& System)
 
   SI-=10;
 
+
   // Outer extra void
   if (radius.empty() || radius.back()<outerRadius-Geometry::zeroTol)
     {
       Out=ModelSupport::getComposite(SMap,SI," -17 5 -6 7");
       System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      // For exit surface
+      Out=ModelSupport::getComposite(SMap,SI," -17 5 -6 ");
     }
+
   addOuterSurf(Out);
   return; 
 }
@@ -325,7 +363,10 @@ DiskPreMod::getSurfacePoint(const size_t layerIndex,
     case 1:
       return Origin+Y*(radius[layerIndex]);
     case 2:
-      return Origin-X*(radius[layerIndex]);
+      return (layerIndex<NWidth) ? 
+	Origin-X*(width[layerIndex]/2.0) :
+	Origin-X*radius[layerIndex];
+    
     case 3:
       return Origin+X*(radius[layerIndex]);
     case 4:
@@ -419,6 +460,7 @@ DiskPreMod::getLayerString(const size_t layerIndex,
 void
 DiskPreMod::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,
+		      const long int sideIndex,
 		      const bool zRotate,
 		      const double VOffset,
 		      const double ORad)
@@ -426,6 +468,7 @@ DiskPreMod::createAll(Simulation& System,
     Extrenal build everything
     \param System :: Simulation
     \param FC :: Attachment point	       
+    \param sideIndex :: side of object
     \param zRotate :: Rotate to -ve Z
     \param VOffset :: Vertical offset from target
     \param ORad :: Outer radius of zone
@@ -434,11 +477,12 @@ DiskPreMod::createAll(Simulation& System,
   ELog::RegMethod RegA("DiskPreMod","createAll");
 
   populate(System.getDataBase(),VOffset,ORad);
-  createUnitVector(FC,zRotate);
+  createUnitVector(FC,sideIndex,zRotate);
 
   createSurfaces();
   createObjects(System);
   createLinks();
+
   insertObjects(System);       
   return;
 }

@@ -90,10 +90,12 @@
 #include "ShutterBay.h"
 #include "GuideBay.h"
 #include "DiskPreMod.h"
+#include "Bunker.h"
 
 #include "ConicModerator.h"
 #include "essDBMaterial.h"
 #include "makeESSBL.h"
+#include "ODIN.h"
 
 #include "makeESS.h"
 
@@ -105,6 +107,7 @@ makeESS::makeESS() :
   PBeam(new ProtonTube("ProtonTube")),
   BMon(new BeamMonitor("BeamMonitor")),
   LowPreMod(new DiskPreMod("LowPreMod")),
+  LowCapMod(new DiskPreMod("LowCapMod")),
   
   LowAFL(new moderatorSystem::BasicFlightLine("LowAFlight")),
   LowBFL(new moderatorSystem::BasicFlightLine("LowBFlight")),
@@ -119,7 +122,9 @@ makeESS::makeESS() :
 
   Bulk(new BulkModule("Bulk")),
   BulkLowAFL(new moderatorSystem::FlightLine("BulkLAFlight")),
-  ShutterBayObj(new ShutterBay("ShutterBay"))
+  ShutterBayObj(new ShutterBay("ShutterBay")),
+
+  LowABunker(new Bunker("LowABunker"))
  /*!
     Constructor
  */
@@ -131,6 +136,7 @@ makeESS::makeESS() :
   OR.addObject(PBeam);
   OR.addObject(BMon);
   OR.addObject(LowPreMod);
+  OR.addObject(LowCapMod);
   
   OR.addObject(LowAFL);
   OR.addObject(LowBFL);
@@ -143,6 +149,7 @@ makeESS::makeESS() :
   OR.addObject(BulkLowAFL);
 
   OR.addObject(ShutterBayObj);
+  OR.addObject(LowABunker);
 }
 
 
@@ -370,19 +377,39 @@ makeESS::makeBeamLine(Simulation& System,
 
   const size_t NItems=IParam.itemCnt("beamlines",0);
 
-  for(size_t i=0;i+1<NItems;i+=2)
+  for(size_t i=1;i<NItems;i+=2)
     {
-      const std::string BL=IParam.getValue<std::string>("beamlines",i);
-      const std::string Btype=IParam.getValue<std::string>("beamlines",i+1);
+      const std::string BL=IParam.getValue<std::string>("beamlines",i-1);
+      const std::string Btype=IParam.getValue<std::string>("beamlines",i);
+
+      // FIND BUNKER HERE:::
+      
       ELog::EM<<"Making beamline "<<BL
       	      <<" [" <<Btype<< "] "<<ELog::endDiag;
       makeESSBL BLfactory(BL,Btype);
-      BLfactory.build(System,IParam);
+      BLfactory.build(System,*LowABunker);
+      
     }
   return;
 }
 
+void
+makeESS::makeBunker(Simulation& System,
+		    const std::string& bunkerType)
+  /*!
+    Make the bunker system
+    \param System :: Simulation 
+   */
+{
+  ELog::RegMethod RegA("makeESS","makeBunker");
 
+  LowABunker->addInsertCell(74123);
+  LowABunker->createAll(System,*LowMod,*GBArray[0],2,true);
+
+  return;
+}
+
+  
 void 
 makeESS::build(Simulation& System,
 	       const mainSystem::inputParam& IParam)
@@ -404,6 +431,7 @@ makeESS::build(Simulation& System,
   const std::string topModType=IParam.getValue<std::string>("topMod");
   const std::string targetType=IParam.getValue<std::string>("targetType");
   const std::string iradLine=IParam.getValue<std::string>("iradLineType");
+  const std::string bunker=IParam.getValue<std::string>("bunkerType");
 
   if (StrFunc::checkKey("help",lowPipeType,lowModType,targetType) ||
       StrFunc::checkKey("help",iradLine,topModType,""))
@@ -416,15 +444,19 @@ makeESS::build(Simulation& System,
   makeTarget(System,targetType);
   Reflector->globalPopulate(System.getDataBase());
     
-  LowPreMod->createAll(System,World::masterOrigin(),1,
+  LowPreMod->createAll(System,World::masterOrigin(),0,true,
 		       Target->wheelHeight()/2.0,
 		       Reflector->getRadius());
+  
   buildLowButterfly(System);
   const double LMHeight=attachSystem::calcLinkDistance(*LowMod,5,6);
+  // Cap moderator DOES not span whole unit
+  LowCapMod->createAll(System,*LowMod,6,false,
+   		       0.0,Reflector->getRadius());
   
   Reflector->createAll(System,World::masterOrigin(),
 		       Target->wheelHeight(),
-		       LowPreMod->getHeight()+LMHeight,
+		       LowPreMod->getHeight()+LMHeight+LowCapMod->getHeight(),
 		       -1.0);
   
   Reflector->insertComponent(System,"targetVoid",*Target,1);
@@ -441,6 +473,7 @@ makeESS::build(Simulation& System,
   attachSystem::addToInsertForced(System,*Bulk,LowAFL->getKey("outer"));
   attachSystem::addToInsertForced(System,*Bulk,LowBFL->getKey("outer"));
 
+
   // Full surround object
   ShutterBayObj->addInsertCell(voidCell);
   ShutterBayObj->createAll(System,*Bulk,*Bulk);
@@ -449,8 +482,9 @@ makeESS::build(Simulation& System,
   attachSystem::addToInsertForced(System,*ShutterBayObj,
 				  Target->getKey("Shaft"));
 
-  createGuides(System);  
-
+  createGuides(System);
+  makeBunker(System,bunker);
+  
   // PROTON BEAMLINE
   
 
@@ -462,11 +496,6 @@ makeESS::build(Simulation& System,
 				    PBeam->getKey("Full"));
   attachSystem::addToInsertSurfCtrl(System,*Bulk,
 				    PBeam->getKey("Full"));
-
-  // BMon->createAll(System,*Target,1,*PBeam,"Sector");
-  // attachSystem::addToInsertForced(System,*Reflector,*BMon);
-
-  //  buildLowerPipe(System,lowPipeType);
 
 
   makeBeamLine(System,IParam);
