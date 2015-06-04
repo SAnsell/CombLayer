@@ -49,8 +49,10 @@ class H2FlowGuide :
 
   double baseThick;            ///< Base thickness
   double baseLen;              ///< Base length
-  double baseMidSep;           ///< Base mid seperation
-  Geometry::Vec3D baseOffset;  ///< Base mid seperation
+  double armThick;             ///< Arm thickness
+  double armLen;               ///< Arm length
+  double baseArmSep;           ///< Base arm seperation
+  Geometry::Vec3D baseOffset;  ///< Base offset
    
   int wallMat;                   ///< LH2
   double wallTemp;               ///< LH2 temperature [K]
