@@ -259,31 +259,22 @@ H2FlowGuide::createObjects(Simulation& System,
       (innerCell,"H2Wing inner Cell not found");
   
   std::string Out;
+  const std::string topBottomStr=HW.getLinkString(12)+HW.getLinkString(13);
   HeadRule wallExclude;
   // base
   Out=ModelSupport::getComposite(SMap,flowIndex," 1 -2 3 -4 ");
-  wallExclude.procString(Out);
-  
-  Out+=HW.getLinkString(12)+HW.getLinkString(13);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out));
-  wallExclude1.makeComplement();
+  wallExclude.procString(Out); 
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+topBottomStr));
 
 
   Out=ModelSupport::getComposite(SMap,flowIndex," 1 -2 -13 14 ");
-  wallExclude.addUnionString(Out);
-  
-  Out+=HW.getLinkString(12)+HW.getLinkString(13);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out));
-  wallExclude2.makeComplement();
-  InnerObj->addSurfString(wallExclude2.display());
+  wallExclude.addUnion(Out); 
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+topBottomStr));
 
   // arm
   Out=ModelSupport::getComposite(SMap,flowIndex," 101 -102 103 -104 ");
-
-  Out+=HW.getLinkString(12)+HW.getLinkString(13);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out));
-
-
+  wallExclude.addUnion(Out);
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+topBottomStr));
 
   wallExclude.makeComplement();
   InnerObj->addSurfString(wallExclude.display());
