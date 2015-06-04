@@ -161,6 +161,54 @@ FuncDataBase::EvalDefVar(const std::string& Key,const T& def) const
 
 template<typename T>
 T
+FuncDataBase::EvalTriple(const std::string& KeyA,
+			 const std::string& KeyB,
+			 const std::string& KeyC) const
+  /*!
+    Finds the value of a variable item 
+    \param KeyA :: First string to search    
+    \param KeyB :: Second string to search 
+    \param KeyC :: Third string to search 
+
+    \return Value of variable 
+    \throw InContainterError if no variables exists
+  */
+{
+  const FItem* FI=findItem(KeyA);
+  if (!FI)
+    FI=findItem(KeyB);
+  if (!FI)
+    FI=findItem(KeyC);
+  if (!FI)
+    throw ColErr::InContainerError<std::string>
+      (KeyC+":"+KeyB+":"+KeyA,"FuncDataBase::EvalTriple no variables found");
+  
+  T Out;
+  FI->getValue(Out);
+  return Out;
+}
+
+template<typename T>
+T
+FuncDataBase::EvalTriple(const std::string& KeyA,
+			 const std::string& KeyB,
+			 const std::string& KeyC,
+			 const std::string& Tail) const
+  /*!
+    Finds the value of a variable item 
+    \param KeyA :: First string to search    
+    \param KeyB :: Second string to search 
+    \param KeyC :: Third string to search 
+    \param Tail :: Tail string for keys
+    \return Value of variable 
+    \throw InContainterError if no variables exists
+  */
+{
+  return EvalTriple<T>(KeyA+Tail,KeyB+Tail,KeyC+Tail);
+}
+
+template<typename T>
+T
 FuncDataBase::EvalPair(const std::string& KeyA,
 		       const std::string& KeyB) const
   /*!
@@ -1106,6 +1154,17 @@ template size_t FuncDataBase::EvalDefPair
 template Geometry::Vec3D FuncDataBase::EvalDefPair
 (const std::string&,const std::string&,
  const std::string&, const Geometry::Vec3D&) const;
+
+
+// EVALTRIPLE
+
+template int FuncDataBase::EvalTriple
+(const std::string&,const std::string&,
+ const std::string&) const;
+
+template int FuncDataBase::EvalTriple
+(const std::string&,const std::string&,
+ const std::string&,const std::string&) const;
 
 
 

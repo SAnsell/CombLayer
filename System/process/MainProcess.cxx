@@ -214,6 +214,7 @@ createInputs(inputParam& IParam)
   IParam.regItem<std::string>("defaultConfig","defaultConfig");
   IParam.regDefItem<std::string>("dc","doseCalc",1,"InternalDOSE");
   IParam.regFlag("e","endf");
+  IParam.regMulti<std::string>("eng","engineering",0);
   IParam.regMulti<std::string>("E","exclude",1);
   IParam.regDefItem<double>("electron","electron",1,-1.0);
   IParam.regFlag("help","helf");
@@ -287,6 +288,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("defaultConfig","Set up a default configuration");
   IParam.setDesc("e","Convert materials to ENDF-VII");
   IParam.setDesc("electron","Add electron physics at Energy");
+  IParam.setDesc("engineering","Select engineering detail {components}");
   IParam.setDesc("E","exclude part of the simualtion [chipir/zoom]");
   IParam.setDesc("help","Help on the diff options for building [only TS1] ");
   IParam.setDesc("i","iterate on variables");
@@ -413,7 +415,6 @@ createDelftInputs(inputParam& IParam)
   IParam.regItem<std::string>("FuelXML","FuelXML",1);
   IParam.regItem<std::string>("fuelXML","fuelXML",1);
 
-
   IParam.setDesc("coreType","Selection of Delft cores");
   IParam.setDesc("kcode","MatN nsourcePart keff skip realRuns");
   IParam.setDesc("ksrcMat","Acceptable material number for ksrc");
@@ -421,7 +422,6 @@ createDelftInputs(inputParam& IParam)
   IParam.setDesc("modType","Type of moderator (sphere/tunnel)");
   IParam.setDesc("refExtra","Type of extra Be around moderators");
   IParam.setDesc("FuelXML","Write Fuel config to XMLfile");
-
 
   return;
 }
@@ -791,6 +791,19 @@ setVariables(Simulation& System,const inputParam& IParam,
       System.getDataBase().writeXML(IParam.getValue<std::string>("xmlout"));
     }
 
+  if (IParam.flag("engineering"))
+    {
+      const size_t NP=IParam.itemCnt("engineering",0);
+      FuncDataBase& Control=System.getDataBase();
+      for(size_t i=0;i<NP;i++)
+	{
+	  const std::string KN=IParam.getValue<std::string>("engineering",i);
+	  Control.addVariable(KN+"EngineeringActive",1);
+	}
+      if (!NP)
+	Control.addVariable("EngineeringActive",1);
+    }
+  
 
   return;
 }
