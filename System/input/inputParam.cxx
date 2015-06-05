@@ -134,7 +134,7 @@ inputParam::deleteMaps()
   return;
 }
   
-IItemBase*
+IItem*
 inputParam::getIndex(const std::string& K)
   /*!
     Given a key find the index
@@ -154,7 +154,7 @@ inputParam::getIndex(const std::string& K)
   return mc->second;
 }
 
-const IItemBase*
+const IItem*
 inputParam::getIndex(const std::string& K) const
   /*!
     Given a key find the index
@@ -174,7 +174,7 @@ inputParam::getIndex(const std::string& K) const
   return mc->second;
 }
 
-const IItemBase*
+const IItem*
 inputParam::findLongKey(const std::string& K) const
   /*!
     Given a key find the Item  Does not-throw
@@ -187,7 +187,7 @@ inputParam::findLongKey(const std::string& K) const
   return (mc!=Names.end()) ? mc->second : 0;
 }
 
-const IItemBase*
+const IItem*
 inputParam::findShortKey(const std::string& K) const
   /*!
     Given a key find the Item
@@ -201,7 +201,7 @@ inputParam::findShortKey(const std::string& K) const
   return (mc!=Keys.end()) ? mc->second : 0;
 }
 
-const IItemBase*
+const IItem*
 inputParam::findKey(const std::string& K) const
   /*!
     Given a key find the Item
@@ -210,11 +210,11 @@ inputParam::findKey(const std::string& K) const
     \return Ptr / 0 on failure
    */
 {
-  const IItemBase* OutPtr=findShortKey(K);
+  const IItem* OutPtr=findShortKey(K);
   return (!OutPtr) ? findLongKey(K) : OutPtr;
 }
 
-IItemBase*
+IItem*
 inputParam::findLongKey(const std::string& K) 
   /*!
     Given a key find the Item  Does not-throw
@@ -227,7 +227,7 @@ inputParam::findLongKey(const std::string& K)
   return (mc!=Names.end()) ? mc->second : 0;
 }
 
-IItemBase*
+IItem*
 inputParam::findShortKey(const std::string& K)
   /*!
     Given a key find the Item
@@ -241,7 +241,7 @@ inputParam::findShortKey(const std::string& K)
   return (mc!=Keys.end()) ? mc->second : 0;
 }
 
-IItemBase*
+IItem*
 inputParam::findKey(const std::string& K) 
   /*!
     Given a key find the Item
@@ -250,7 +250,7 @@ inputParam::findKey(const std::string& K)
     \return Ptr / 0 on failure
    */
 {
-  IItemBase* OutPtr=findShortKey(K);
+  IItem* OutPtr=findShortKey(K);
   return (!OutPtr) ? findLongKey(K) : OutPtr;
 }
 
@@ -276,7 +276,7 @@ inputParam::dataCnt(const std::string& K) const
 {
   ELog::RegMethod RegA("inputParam","dataCnt");
   
-  const IItemBase* IPtr=getIndex(K);
+  const IItem* IPtr=getIndex(K);
   
   return IPtr->getNItems();
 }
@@ -291,7 +291,7 @@ inputParam::setCnt(const std::string& K) const
 {
   ELog::RegMethod RegA("inputParam","setCnt");
   
-  const IItemBase* IPtr=getIndex(K);
+  const IItem* IPtr=getIndex(K);
   return IPtr->getNSets();
 }
 
@@ -306,7 +306,7 @@ inputParam::itemCnt(const std::string& K,const size_t Index) const
    */
 {
   ELog::RegMethod RegA("inputParam","itemCnt");
-  const IItemBase* IPtr=getIndex(K);
+  const IItem* IPtr=getIndex(K);
   
   return IPtr->getNItems(Index);
 }
@@ -321,7 +321,7 @@ inputParam::flag(const std::string& K) const
 {
   ELog::RegMethod RegA("inputParam","flag");
 
-  const IItemBase* IPtr=getIndex(K);
+  const IItem* IPtr=getIndex(K);
   return IPtr->flag();
 }
 
@@ -330,41 +330,32 @@ T
 inputParam::getFlagDef(const std::string& InpKey,
 		       const FuncDataBase& Control,
 		       const std::string& VarKey,  
-		       const size_t I) const
+		       const size_t itemIndex) const
   /*!
     Get a value based initially on the input line,
     and to resolve to the variable.
     \param InpKey :: Key to seach
     \param Control :: FuncDataBase to search 
     \param VarKey :: Variable Key
-    \param I :: Index value
+    \param itemIndex :: Index value
     \return Value
    */
 {
   ELog::RegMethod RegA("inputParam","getFlagDef");
 
-  const IItemBase* IPtr=findKey(InpKey);
+  const IItem* IPtr=findKey(InpKey);
   
-  const IItem<T>* Ptr=dynamic_cast< const IItem<T>* >(IPtr);
   
-  if (IPtr && IPtr->getNData())
-    return Ptr->getObj(I);
-
-
-  
-  const IItemMulti<T>* MPtr=dynamic_cast< const IItemMulti<T>* >(IPtr);
-  if (MPtr && I<MPtr->getNData())
-    return MPtr->getObj(I);
+  if (IPtr && IPtr->getNItems(0)>itemIndex)
+    return IPtr->getObj<T>(itemIndex);
   
   // Fall back to var set
   if (!Control.hasVariable(VarKey))
-    {
-      throw ColErr::InContainerError<std::string>(InpKey+":"+VarKey,
-						  "InpKey:VarKey");
-    }
+    throw ColErr::InContainerError<std::string>(InpKey+":"+VarKey,
+						"InpKey:VarKey");
+
   return Control.EvalVar<T>(VarKey);
 }
-
 
 std::string
 inputParam::getFull(const std::string& K,const size_t setIndex) const
@@ -377,7 +368,7 @@ inputParam::getFull(const std::string& K,const size_t setIndex) const
 {
   ELog::RegMethod RegA("inputParam","getFull");
 
-  const IItemBase* IPtr=getIndex(K);
+  const IItem* IPtr=getIndex(K);
   if (!IPtr)
     throw ColErr::EmptyValue<void>("Key : "+K);
 
@@ -388,63 +379,38 @@ inputParam::getFull(const std::string& K,const size_t setIndex) const
 
 template<typename T>
 T
-inputParam::getValue(const std::string& K,const size_t Index) const
+inputParam::getValue(const std::string& K,
+		     const size_t itemIndex) const
   /*!
     Get a value based on key
     \param K :: Key to seach
-    \param Index :: Index value
+    \param itemIndex :: Index value
     \return Value
    */
 {
   ELog::RegMethod RegA("inputParam","getValue(index)");
-  return getValue<T>(K,0,IndeX);
+  return getValue<T>(K,0,itemIndex);
 }
 
 template<typename T>
 T
 inputParam::getValue(const std::string& K,
 		     const size_t setIndex,
-		     const size_t Index) const
+		     const size_t itemIndex) const
   /*!
     Get a value based on key
     \param K :: Key to seach
     \param setIndex :: set Value
-    \param Index :: Index value
+    \param itemIndex :: Index value
     \return Value
    */
 {
-  ELog::RegMethod RegA("inputParam","getValue(index)");
+  ELog::RegMethod RegA("inputParam","getValue(setIndex,index)");
 
-  const IItemBase* IPtr=findKey(InpKey);
-  
-  const IItem<T>* Ptr=dynamic_cast< const IItem<T>* >(IPtr);
-
-  
-  return getValue<T>(K,0,IndeX);
-}
-
-template<typename T>
-const T&
-inputParam::getCompValue(const std::string& K,const size_t Index,
-			 const size_t Item) const
-  /*!
-    Get a value based on key
-    \param K :: Key to seach
-    \param Index :: Index value
-    \param Item :: Item value [ of many ]
-    \return Value
-   */
-{
-  ELog::RegMethod RegA("inputParam","getCompValue");
-
-  const IItemBase* IPtr=getIndex(K);
+  const IItem* IPtr=getIndex(K);
   if (!IPtr)
     throw ColErr::EmptyValue<void>(K+":IPtr");
-  const IItemMulti<T>* MPtr=dynamic_cast< const IItemMulti<T>* >(IPtr);
-  if (!MPtr)
-    throw ColErr::CastError<IItemBase>(IPtr,"key failed :"+K);
-
-  return MPtr->getObj(Index,Item);
+  return IPtr->getObj<T>(setIndex,itemIndex);
 }
 
 bool
@@ -460,26 +426,19 @@ inputParam::compNoCaseValue(const std::string& K,
 {
   ELog::RegMethod RegA("inputParam","compNoCaseValue");
   
-  const IItemBase* IPtr=getIndex(K);
+  const IItem* IPtr=getIndex(K);
   if (!IPtr)
     throw ColErr::EmptyValue<void>("Key failed: "+K);
-  const size_t N=IPtr->dataCnt();
+
+  const size_t N=IPtr->getNItems();
   std::string NCValue(Value);
   boost::algorithm::to_lower(NCValue);
   for(size_t i=0;i<N;i++)
     {
-
-      const IItemObj<std::string>* Ptr=
-	dynamic_cast< const IItemObj<std::string>* >(IPtr);
-      const IItemMulti<std::string>* MPtr=
-	dynamic_cast< const IItemMulti<std::string>* >(IPtr);
-      if (Ptr || MPtr) 
-	{
-	  std::string OStr=(Ptr) ? Ptr->getObj(i) : MPtr->getObj(i);
-	  boost::algorithm::to_lower(OStr);      
-	  if (NCValue==OStr)
-	    return 1;
-	}
+      std::string OStr=IPtr->getObj<std::string>(i); 
+      boost::algorithm::to_lower(OStr);      
+      if (NCValue==OStr)
+	return 1;
     }
   return 0;
 }
@@ -497,21 +456,16 @@ inputParam::compValue(const std::string& K,const T& Value) const
 {
   ELog::RegMethod RegA("inputParam","compValue");
 
-  const IItemBase* IPtr=getIndex(K);
+  const IItem* IPtr=getIndex(K);
   if (!IPtr)
     throw ColErr::EmptyValue<void>("Key failed: "+K);
-  const size_t N=IPtr->dataCnt();
+  const size_t N=IPtr->getNItems();
+  std::string NCValue(Value);
+
   for(size_t i=0;i<N;i++)
-    {
-      const IItemObj<T>* Ptr=dynamic_cast< const IItemObj<T>* >(IPtr);
-      const IItemMulti<T>* MPtr=dynamic_cast< const IItemMulti<T>* >(IPtr);
-      if (Ptr) 
-	if (Ptr->getObj(i)==Value)
-	  return 1;
-      if (MPtr) 
-	if (MPtr->getObj(i)==Value)
-	  return 1;
-      }
+    if (IPtr->getObj<T>(i)==Value)
+      return 1;
+  
   return 0;
 }
 
@@ -525,7 +479,7 @@ inputParam::setDesc(const std::string& K,const std::string& D)
 {
   ELog::RegMethod RegA("inputParam","setDesc");
 
-  IItemBase* IPtr=getIndex(K);
+  IItem* IPtr=getIndex(K);
   std::string::size_type pos=D.find('\n');
   if (pos!=std::string::npos)
     {
@@ -553,19 +507,18 @@ inputParam::setFlag(const std::string& K)
 {
   ELog::RegMethod RegA("inputParam","setFlag");
 
-  IItemBase* IPtr=getIndex(K);
-  IItemFlag* Ptr=dynamic_cast<IItemFlag*> (IPtr);
-  if (!Ptr)
-    throw ColErr::CastError<IItemBase>(IPtr,"Key Failed :"+K);
+  IItem* IPtr=getIndex(K);
+  if (!IPtr)
+    throw ColErr::CastError<IItem>(IPtr,"Key Failed :"+K);
 
-  Ptr->setObj();
+  IPtr->setActive();
   return;
 }
 
 template<typename T>
 void
-inputParam::setValue(const std::string& K,const T& A,
-		     const size_t I) 
+inputParam::setValue(const std::string& K,
+		     const T& A,const size_t itemIndex) 
   /*!
     Set a value based on key
     \param K :: Key to add/search
@@ -573,39 +526,55 @@ inputParam::setValue(const std::string& K,const T& A,
     \param I :: Index value
   */
 {
-  ELog::RegMethod RegA("inputParam","setValue(N)");
-  IItemBase* IPtr=getIndex(K);
-  IItemObj<T>* Ptr=dynamic_cast<IItemObj<T>*> (IPtr);
-  if (!Ptr)
-    throw ColErr::CastError<IItemBase>(IPtr,"Key Failed :"+K);
-  if (I>=Ptr->getNData())
-    throw ColErr::IndexError<size_t>(I,Ptr->getNData(),
-				     "Key Failed :"+K);
+  setValue<T>(K,A,0,itemIndex);
+  return;
+}
 
-  Ptr->setObj(I,A);
+template<typename T>
+void
+inputParam::setValue(const std::string& K,
+		     const T& A,const size_t setIndex,
+		     const size_t itemIndex) 
+  /*!
+    Set a value based on key
+    \param K :: Key to add/search
+    \param A :: Object to set
+    \param setIndex :: index value to set
+    \param itemIndex :: Index value
+
+  */
+{
+  ELog::RegMethod RegA("inputParam","setValue");
+  
+  IItem* IPtr=getIndex(K);
+  if (!IPtr)
+    throw ColErr::InContainerError<std::string>(K,"Key Failed :");
+
+  std::ostringstream cx;
+  cx<<A;
+  IPtr->setObj(setIndex,itemIndex,cx.str());
   return;
 }
 
 void
-inputParam::setMultiValue(const std::string& K,const size_t index,
+inputParam::setMultiValue(const std::string& K,
+			  const size_t setIndex,
 			  const std::string& Values) 
 /*!
     Set a value based on key
     \param K :: Key to add/search
-    \param index :: Index to multi-unit
+    \param setIndex :: Index to multi-unit
     \param Values :: String of values
   */
 {
   ELog::RegMethod RegA("inputParam","setMultValue");
-  IItemBase* IPtr=getIndex(K);  // throws
+  IItem* IPtr=getIndex(K);  // throws
 
   const std::vector<std::string> Items=
     StrFunc::splitParts(Values,' ');
   for(size_t i=0;i<Items.size();i++)
-    {
-      if (!IPtr->convert(0,i,Items))
-	ELog::EM<<"Error with convert:"<<K<<" "<<index<<" "<<i<<ELog::endDiag;
-    }
+    IPtr->setObj(setIndex,i,Items[i]);
+  
   return;
 }
 
@@ -625,7 +594,8 @@ inputParam::regFlag(const std::string& K,const std::string& LK)
       return;
     }
 
-  IItemFlag* IPtr=new IItemFlag(K,LK);
+  IItem* IPtr=new IItem(K,LK);
+  IPtr->setMax(0,0,0);
   Keys.insert(MTYPE::value_type(K,IPtr));
   if (!LK.empty())
     Names.insert(MTYPE::value_type(LK,IPtr));
@@ -829,7 +799,7 @@ inputParam::processMainInput(std::vector<std::string>& Names)
   for(size_t i=0;i<Names.size();)
     {
       Out.push_back(Names[i]);    // erased later
-      IItemBase* IPtr=0;
+      IItem* IPtr=0;
       const int numberFlag=StrFunc::convert(Names[i],DValue);
       if (Names[i].size()>2 && 
 	    Names[i][0]=='-' && Names[i][1]=='-')
@@ -890,7 +860,7 @@ inputParam::writeDescription(std::ostream& OX) const
   MTYPE::const_iterator mc;
   for(mc=Keys.begin();mc!=Keys.end();mc++)
     {
-      const IItemBase* IPtr=mc->second;
+      const IItem* IPtr=mc->second;
       OX<<(FMTstr % IPtr->getKey() % IPtr->getLong() % 
 	   IPtr->getDesc() )<<std::endl;
     }
@@ -908,7 +878,7 @@ inputParam::write(std::ostream& OX) const
   MTYPE::const_iterator mc;
   for(mc=Keys.begin();mc!=Keys.end();mc++)
     {
-      const IItemBase* IPtr=mc->second;
+      const IItem* IPtr=mc->second;
       OX<<(FMTstr % IPtr->getKey() % IPtr->getLong() % 
 	   (IPtr->flag() ? " set " : " not-set "));
       OX<<":: "<<*IPtr<<std::endl;

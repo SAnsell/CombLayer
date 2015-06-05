@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   input/IItem.cxx
  *
@@ -66,7 +66,7 @@ operator<<(std::ostream& OX,const IItem& A)
 }
 
 IItem::IItem(const std::string& K) : 
-  Key(K),maxSets(0),maxItems(0),reqItems(0)
+  Key(K),active(0),maxSets(0),maxItems(0),reqItems(0)
   /*!
     Constructor only with  descriptor
     \param K :: Key Name
@@ -74,7 +74,8 @@ IItem::IItem(const std::string& K) :
 {}
 
 IItem::IItem(const std::string& K,const std::string& L) :
-  Key(K),Long(L),maxSets(0),maxItems(0),reqItems(0)
+  Key(K),Long(L),active(0),
+  maxSets(0),maxItems(0),reqItems(0)
   /*!
     Full Constructor 
     \param K :: Key Name
@@ -83,7 +84,7 @@ IItem::IItem(const std::string& K,const std::string& L) :
 {}
 
 IItem::IItem(const IItem& A) : 
-  Key(A.Key),Long(A.Long),Desc(A.Desc),active(0),
+  Key(A.Key),Long(A.Long),Desc(A.Desc),active(A.active),
   maxSets(A.maxSets),maxItems(A.maxItems),reqItems(A.reqItems),
   DItems(A.DItems)
   /*!
@@ -114,6 +115,22 @@ IItem::operator=(const IItem& A)
   return *this;
 }
 
+ovid
+IItem::setMaxN(const size_t S,const size_t I,const size_t R)
+  /*!
+    Set max/required list
+    \param S :: Max sets
+    \param I :: Max Items per set
+    \param R :: Required items per set
+   */
+{
+  maxSets=S;
+  maxItems=I;
+  reqItems=R;
+  return;
+}
+    
+  
 size_t
 IItem::getNSets() const
   /*!
@@ -146,11 +163,67 @@ IItem::isValid(const size_t setIndex) const
    */
 {
   ELog::RegMethod RegA("IItem","isValid");
+  
   if (DItems.size()>=setIndex)
     return 0;
 
   return (DItems[setIndex].size()<reqItems) ? 0 : 1;
       
+}
+
+void
+IItem::setObj(const size_t setIndex,const size_t itemIndex,
+	      const std::string& V)
+  /*!
+    Set the object based on the setIndex and the itemIndex 
+    Allows a +1 basis but not more:	
+    \param setIndex :: Item number
+    \return 
+  */
+{
+  ELog::RegMethod RegA("IItem","setObj");
+  const size_t SS(DItems.size());
+
+  if (setIndex>=maxSets || setIndex>SS+1)
+    throw ColErr::IndexError<size_t>(setIndex,DItems.size(),"setIndex");
+
+  if (setIndex==SS)
+    DItems.push_back(std::vector<std::string>());
+
+  const size_t IS(DItems[setIndex].size());
+  if (itemIndex>=maxItems || setIndex>IS+1)
+      throw ColErr::IndexError<size_t>(itemIndex,DItems[setIndex].size(),
+				     "itemIndex");
+  if (setIndex==IS)
+    DItems[setIndex].push_back(V);
+  else
+    DItems[setIndex][itemIndex]=V;
+
+  return;
+}
+
+void
+IItem::setObj(const size_t itemIndex,const std::string& V)
+  /*!
+    Set the object based on the setIndex and the itemIndex 
+    Allows a +1 basis but not more:	
+    \param itemIndex :: Item number
+    \param V :: Value to set
+  */
+{
+  setObj(0,itemIndex,V);
+  return;
+}
+
+void
+IItem::setObj(const std::string& V)
+  /*!
+    Set the object based on 0,0 time
+    \param V :: Value to set
+  */
+{
+  setObj(0,0,V);
+  return;
 }
 
   
@@ -221,12 +294,6 @@ IItem::write(std::ostream& OX) const
 
 ///\cond TEMPLATE
 
-// template class IItem<long int>;
-// template class IItem<unsigned int>;
-// template class IItem<size_t>;
-// template class IItem<double>;
-// template class IItem<std::string>;
-// template class IItem<Geometry::Vec3D>;
 
 ///\endcond TEMPLATE
  

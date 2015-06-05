@@ -26,7 +26,7 @@ class FuncDataBase;
 
 namespace mainSystem
 {
-  class IItemBase;
+  class IItem;
 /*!
   \class inputParam
   \version 1.0
@@ -40,23 +40,23 @@ class inputParam
  private:
 
   /// Keys/Names type
-  typedef std::map<std::string,IItemBase*> MTYPE;
+  typedef std::map<std::string,IItem*> MTYPE;
 
-  std::map<std::string,IItemBase*> Keys;         ///< Simple search key
-  std::map<std::string,IItemBase*> Names;        ///< Full name [optional]
+  std::map<std::string,IItem*> Keys;         ///< Simple search key
+  std::map<std::string,IItem*> Names;        ///< Full name [optional]
 
   void copyMaps(const inputParam&);
 
   void deleteMaps();
-  IItemBase* getIndex(const std::string&);
-  const IItemBase* getIndex(const std::string&) const;
-  const IItemBase* findKey(const std::string&) const;
-  const IItemBase* findShortKey(const std::string&) const;
-  const IItemBase* findLongKey(const std::string&) const;
+  IItem* getIndex(const std::string&);
+  const IItem* getIndex(const std::string&) const;
+  const IItem* findKey(const std::string&) const;
+  const IItem* findShortKey(const std::string&) const;
+  const IItem* findLongKey(const std::string&) const;
 
-  IItemBase* findKey(const std::string&);
-  IItemBase* findShortKey(const std::string&);
-  IItemBase* findLongKey(const std::string&);
+  IItem* findKey(const std::string&);
+  IItem* findShortKey(const std::string&);
+  IItem* findLongKey(const std::string&);
   
  public:
 
@@ -99,10 +99,12 @@ class inputParam
 
   std::string getFull(const std::string&,const size_t =0) const;
   template<typename T>
-  const T& getValue(const std::string&,const size_t =0) const;
+  T getValue(const std::string&,const size_t =0) const;
+  template<typename T>
+  T getValue(const std::string&,const size_t,const size_t) const;
 
   template<typename T>
-  const T& getCompValue(const std::string&,const size_t,const size_t) const;
+  T getCompValue(const std::string&,const size_t,const size_t) const;
 
 
   bool compNoCaseValue(const std::string&,const std::string&) const;
@@ -117,6 +119,8 @@ class inputParam
   void setFlag(const std::string&);
   template<typename T>
   void setValue(const std::string&,const T&,const size_t =0);
+  template<typename T>
+  void setValue(const std::string&,const T&,const size_t,const size_t);
   void setMultiValue(const std::string&,const size_t,const std::string&);
 
   void processMainInput(std::vector<std::string>&);

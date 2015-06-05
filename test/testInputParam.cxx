@@ -419,8 +419,8 @@ testInputParam::testMultiExtract()
 	  return -cnt;
 	}
 
-      Out=A.getCompValue<std::string>(key,std::get<1>(tc),std::get<2>(tc));
-	
+      Out=A.getValue<std::string>(key,std::get<1>(tc),std::get<2>(tc));
+      
       
       if (A.itemCnt(key,std::get<1>(tc))!=std::get<3>(tc) ||
 	  Out!=std::get<4>(tc))

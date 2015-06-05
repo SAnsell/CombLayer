@@ -58,7 +58,8 @@ class IItem
 
     /// is active
   bool flag() const { return active; }
-  
+
+  void setMaxN(const size_t,const size_t,const size_t);
 
   size_t getNSets() const;
   size_t getNItems(const size_t =0) const;
@@ -74,6 +75,8 @@ class IItem
   /// Get Description
   const std::string& getDesc() const { return Desc; }  
 
+  /// Set active
+  void setActive() { active=1; }
   void setObj(const size_t,const size_t,const std::string&);
   void setObj(const size_t,const std::string&);
   void setObj(const std::string&);
