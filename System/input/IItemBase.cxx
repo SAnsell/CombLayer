@@ -39,6 +39,7 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "support.h"
+#include "stringCombine.h"
 #include "mathSupport.h"
 #include "MapSupport.h"
 #include "InputControl.h"
@@ -115,13 +116,13 @@ IItem::operator=(const IItem& A)
   return *this;
 }
 
-ovid
-IItem::setMaxN(const size_t S,const size_t I,const size_t R)
+void
+IItem::setMaxN(const size_t S,const size_t R,const size_t I)
   /*!
     Set max/required list
     \param S :: Max sets
-    \param I :: Max Items per set
     \param R :: Required items per set
+    \param I :: Max Items per set
    */
 {
   maxSets=S;
@@ -169,6 +170,43 @@ IItem::isValid(const size_t setIndex) const
 
   return (DItems[setIndex].size()<reqItems) ? 0 : 1;
       
+}
+
+template<>
+void
+IItem::setObjItem(const size_t setIndex,const size_t itemIndex,
+		  const std::string& V)
+  /*!
+    Set the object based on the setIndex and the itemIndex 
+    Allows a +1 basis but not more:	
+    \param setIndex :: Set number
+    \param itemIndex :: Item index 
+    \param V :: Convertable item
+    \return 
+  */
+{
+  ELog::RegMethod RegA("IItem","setObjItem<string>");
+  setObj(setIndex,itemIndex,V);
+  return;
+}
+
+template<typename T>
+void
+IItem::setObjItem(const size_t setIndex,const size_t itemIndex,
+		     const T& V)
+  /*!
+    Set the object based on the setIndex and the itemIndex 
+    Allows a +1 basis but not more:	
+    \param setIndex :: Set number
+    \param itemIndex :: Item index 
+    \param V :: Convertable item
+    \return 
+  */
+{
+  ELog::RegMethod RegA("IItem","setObjItem");
+
+  setObj(setIndex,itemIndex,StrFunc::makeString(V));
+  return;
 }
 
 void
@@ -229,6 +267,35 @@ IItem::setObj(const std::string& V)
   
 template<typename T>
 T
+IItem::getObj() const
+  /*!
+    Get Object [assuming setIndex/itemIndex ==0]
+    \return Object
+  */
+{ 
+  ELog::RegMethod RegA("IItem","getObj(int)");
+
+
+  return getObj<T>(0,0);
+}
+
+template<typename T>
+T
+IItem::getObj(const size_t itemIndex) const
+  /*!
+    Get Object [assuming  setIndex [0]]]
+    \param itemIndex :: item count
+    \return Object
+  */
+{ 
+  ELog::RegMethod RegA("IItem","getObj(int)");
+
+
+  return getObj<T>(0,itemIndex);
+}
+
+template<typename T>
+T
 IItem::getObj(const size_t setIndex,const size_t itemIndex) const
   /*!
     Get Object
@@ -252,6 +319,66 @@ IItem::getObj(const size_t setIndex,const size_t itemIndex) const
 
   return ObjValue;
       
+}
+
+template<>
+std::string
+IItem::getObj(const size_t setIndex,const size_t itemIndex) const
+  /*!
+    Get Object
+    \param setIndex :: Index
+    \param itemIndex :: item count
+    \return Object
+  */
+{ 
+  ELog::RegMethod RegA("IItem","getObj<string>");
+  
+  if (DItems.size()>=setIndex)
+    throw ColErr::IndexError<size_t>(setIndex,DItems.size(),"setIndex");
+  if (DItems[setIndex].size()>=itemIndex)
+    throw ColErr::IndexError<size_t>
+      (itemIndex,DItems[setIndex].size(),"itemIndex");
+
+  return DItems[setIndex][itemIndex];
+}
+
+size_t
+IItem::addSet()
+  /*!
+    Adds V to the last set items
+    \return setSize on success  / 0 on failure
+  */
+{
+  ELog::RegMethod RegA("IItem","addSet");
+
+  if (DItems.size()>=maxSets)
+    return 0;
+  DItems.push_back(std::vector<std::string>());
+  return DItems.size();
+}
+
+bool
+IItem::addObject(const size_t setIndex,const std::string& V)
+  /*!
+    Adds V to the last set items
+    \return 1 on success / 0 on failure
+  */
+{
+  ELog::RegMethod RegA("IItem","addObject");
+
+  if (DItems.size()>setIndex || setIndex>=maxSets ||
+      !maxItems || V.empty())
+    return 0;
+  
+  if (DItems.size()==setIndex)
+    DItems.push_back(std::vector<std::string>());
+
+  if (DItems[setIndex].size()>=maxItems)
+    return 0;
+
+  DItems[setIndex].push_back(V);
+
+  return 1;
 }
 
 
@@ -293,6 +420,33 @@ IItem::write(std::ostream& OX) const
 
 
 ///\cond TEMPLATE
+
+template int IItem::getObj(const size_t,const size_t) const;
+template unsigned int IItem::getObj(const size_t,const size_t) const;
+template double IItem::getObj(const size_t,const size_t) const;
+template size_t IItem::getObj(const size_t,const size_t) const;
+template long int IItem::getObj(const size_t,const size_t) const;
+template Geometry::Vec3D IItem::getObj(const size_t,const size_t) const;
+
+template std::string IItem::getObj(const size_t) const;
+template int IItem::getObj(const size_t) const;
+template unsigned int IItem::getObj(const size_t) const;
+template double IItem::getObj(const size_t) const;
+template size_t IItem::getObj(const size_t) const;
+template long int IItem::getObj(const size_t) const;
+template Geometry::Vec3D IItem::getObj(const size_t) const;
+
+
+template void
+IItem::setObjItem(const size_t,const size_t,const double&);
+template void
+IItem::setObjItem(const size_t,const size_t,const int&);
+template void
+IItem::setObjItem(const size_t,const size_t,const long int&);
+template void
+IItem::setObjItem(const size_t,const size_t,const size_t&);
+template void
+IItem::setObjItem(const size_t,const size_t,const Geometry::Vec3D&);
 
 
 ///\endcond TEMPLATE

@@ -206,27 +206,27 @@ createInputs(inputParam& IParam)
   std::vector<std::string> RItems(10,"");
 
   IParam.regFlag("a","axis");
-  IParam.regItem<std::string>("angle","angle");
+  IParam.regItem("angle","angle");
   IParam.regDefItem<int>("c","cellRange",2,0,0);
-  IParam.regItem<double>("C","ECut");
+  IParam.regItem("C","ECut");
   IParam.regFlag("cinder","cinder");
-  IParam.regItem<int>("d","debug");
-  IParam.regItem<std::string>("defaultConfig","defaultConfig");
+  IParam.regItem("d","debug");
+  IParam.regItem("defaultConfig","defaultConfig");
   IParam.regDefItem<std::string>("dc","doseCalc",1,"InternalDOSE");
   IParam.regFlag("e","endf");
-  IParam.regMulti<std::string>("E","exclude",1);
+  IParam.regMulti("E","exclude",10000,1);
   IParam.regDefItem<double>("electron","electron",1,-1.0);
   IParam.regFlag("help","helf");
-  IParam.regMulti<std::string>("i","iterate",1);
-  IParam.regItem<std::string>("I","isolate");
+  IParam.regMulti("i","iterate",10000,1);
+  IParam.regItem("I","isolate");
   IParam.regDefItemList<std::string>("imp","importance",10,RItems);
   IParam.regDefItem<int>("m","multi",1,1);
   IParam.regFlag("M","mesh");
-  IParam.regItem<Geometry::Vec3D>("MA","meshA");
-  IParam.regItem<Geometry::Vec3D>("MB","meshB");
-  IParam.regItem<size_t>("MN","meshNPS",3);
+  IParam.regItem("MA","meshA");
+  IParam.regItem("MB","meshB");
+  IParam.regItem("MN","meshNPS",3,3);
   IParam.regFlag("md5","md5");
-  IParam.regItem<int>("memStack","memStack");
+  IParam.regItem("memStack","memStack");
   IParam.regDefItem<int>("n","nps",1,10000);
   IParam.regFlag("p","PHITS");
   IParam.regFlag("mcnp6","MCNP6");
@@ -237,30 +237,30 @@ createInputs(inputParam& IParam)
   IParam.regDefItem<std::string>("sdefType","sdefType",1,"");
   IParam.regDefItem<std::string>("physModel","physicsModel",1,"CEM03"); 
   IParam.regDefItem<double>("SA","sdefAngle",1,35.0);
-  IParam.regItem<std::string>("SF","sdefFile");
+  IParam.regItem("SF","sdefFile");
   IParam.regDefItem<int>("SI","sdefIndex",1,1);
 
   std::vector<std::string> SItems(3,"");
   IParam.regDefItemList<std::string>("SObj","sdefObj",3,SItems);
   
-  IParam.regItem<Geometry::Vec3D>("SP","sdefPos");
-  IParam.regItem<double>("SR","sdefRadius");
-  IParam.regItem<Geometry::Vec3D>("SV","sdefVec");
-  IParam.regItem<double>("SZ","sdefZRot");
+  IParam.regItem("SP","sdefPos");
+  IParam.regItem("SR","sdefRadius");
+  IParam.regItem("SV","sdefVec");
+  IParam.regItem("SZ","sdefZRot");
   IParam.regDefItem<long int>("s","random",1,375642321L);
   // std::vector<std::string> AItems(15);
   // IParam.regDefItemList<std::string>("T","tally",15,AItems);
-  IParam.regMulti<std::string>("T","tally",25,0);
-  IParam.regMulti<std::string>("TC","tallyCells",3,2);
-  IParam.regMulti<size_t>("TGrid","TGrid",3,2);
-  IParam.regMulti<std::string>("TMod","tallyMod",8,1);
+  IParam.regMulti("T","tally",1000,0);
+  IParam.regMulti("TC","tallyCells",10000,3,2);
+  IParam.regMulti("TGrid","TGrid",10000,3,2);
+  IParam.regMulti("TMod","tallyMod",8,1);
   IParam.regFlag("TW","tallyWeight");
-  IParam.regItem<std::string>("TX","Txml",1);
-  IParam.regItem<std::string>("targetType","targetType",1);
+  IParam.regItem("TX","Txml",1);
+  IParam.regItem("targetType","targetType",1);
   IParam.regDefItem<int>("u","units",1,0);
-  IParam.regItem<size_t>("validCheck","validCheck",1);
+  IParam.regItem("validCheck","validCheck",1);
   IParam.regFlag("um","voidUnMask");
-  IParam.regItem<double>("volume","volume",4);
+  IParam.regItem("volume","volume",4);
   IParam.regDefItem<int>("VN","volNum",1,20000);
   IParam.regFlag("void","void");
   IParam.regFlag("vtk","vtk");
@@ -268,14 +268,14 @@ createInputs(inputParam& IParam)
   IParam.regDefItemList<std::string>("vmat","vmat",15,VItems);
   IParam.regFlag("vcell","vcell");
 
-  IParam.regItem<double>("w","weight");
-  IParam.regItem<Geometry::Vec3D>("WP","weightPt");
-  IParam.regMulti<std::string>("wExt","wExt",25,0);    
-  IParam.regItem<double>("WTemp","weightTemp",1);
+  IParam.regItem("w","weight");
+  IParam.regItem("WP","weightPt");
+  IParam.regMulti("wExt","wExt",25,0);    
+  IParam.regItem("WTemp","weightTemp",1);
   IParam.regDefItem<std::string>("WType","weightType",1,"basic");
 
   IParam.regDefItem<std::string>("X","xmlout",1,"Model.xml");
-  IParam.regMulti<std::string>("x","xml",1,1);
+  IParam.regMulti("x","xml",10000,1);
   
   IParam.setDesc("angle","Orientate to component [name]");
   IParam.setDesc("axis","Rotate to main axis rotation [TS2]");
@@ -353,13 +353,13 @@ createSiliconInputs(inputParam& IParam)
 {
   ELog::RegMethod RegA("MainProcess[F]","createSiliconInputs");
 
-  IParam.regItem<double>("b","bias");
+  IParam.regItem("b","bias");
   IParam.regDefItem<double>("d","detSize",1,50.0);
   IParam.regDefItem<double>("l","lambda",1,1.0);
   IParam.regDefItem<std::string>("m","material",1,"Poly");
   IParam.regDefItem<std::string>("si","silicon",1,"Silicon");
   IParam.regDefItem<int>("n","nps",1,20);
-  IParam.regItem<std::string>("o","output");
+  IParam.regItem("o","output");
   IParam.regDefItem<long int>("s","random",1,37564232L);
 
   IParam.setDesc("bias","");
@@ -403,15 +403,15 @@ createDelftInputs(inputParam& IParam)
 
   createInputs(IParam);
 
-  IParam.regItem<std::string>("coreType","coreType",1);
+  IParam.regItem("coreType","coreType",1);
   IParam.regDefItem<std::string>("modType","modType",1,"Sphere");
   IParam.regDefItem<std::string>("refExtra","refExtra",1,"None");
-  IParam.regMulti<std::string>("kcode","kcode",15,0);
-  IParam.regMulti<int>("ksrcMat","ksrcMat",15,0);
-  IParam.regMulti<Geometry::Vec3D>("ksrcVec","ksrcVec",15,0);
+  IParam.regMulti("kcode","kcode",1000);
+  IParam.regMulti("ksrcMat","ksrcMat",1000);
+  IParam.regMulti("ksrcVec","ksrcVec",1000);
 
-  IParam.regItem<std::string>("FuelXML","FuelXML",1);
-  IParam.regItem<std::string>("fuelXML","fuelXML",1);
+  IParam.regItem("FuelXML","FuelXML",1);
+  IParam.regItem("fuelXML","fuelXML",1);
 
 
   IParam.setDesc("coreType","Selection of Delft cores");
@@ -438,11 +438,11 @@ void createFullInputs(inputParam& IParam)
   IParam.regDefItem<std::string>("b","beamstop",1,"");
   IParam.regFlag("bolts","bolts");
   IParam.regDefItem<int>("cf","collFlag",1,7);
-  IParam.regItem<std::string>("decFile","decFile");
+  IParam.regItem("decFile","decFile",1,1);
   IParam.regDefItem<std::string>("decType","decType",1,"standard");
   IParam.regFlag("h","horr");  
   IParam.regFlag("orthoH","orthoH");  
-  IParam.regMulti<std::string>("t","target",5,0);
+  IParam.regMulti("t","target",5);
   IParam.regDefItem<int>("zoomShutterGN","zoomShutterGN",1,4);
 
   IParam.setDesc("b","Add beamstop");
@@ -451,7 +451,7 @@ void createFullInputs(inputParam& IParam)
   IParam.setDesc("decFile","Surface File to replace CH4 in decoupled");
   IParam.setDesc("h","horrizontal for chipIR");
   IParam.setDesc("orthoH","Add ortho/para layer to the Coupled H2");
-  IParam.setDesc("t","Use flat target");
+  IParam.setDesc("target","Use flat target");
   IParam.setDesc("zoomShutterGN","Number of sections between B4C "
 		 "in zoom shutter");
 
@@ -622,7 +622,8 @@ void createESSInputs(inputParam& IParam)
   IParam.regDefItem<std::string>("iradLine","iradLineType",
 				 1,std::string("void"));
   IParam.regDefItem<std::string>("bunker","bunkerType",1,std::string("null"));
-  IParam.regMulti<std::string>("beamlines","beamlines",15,1);
+  IParam.regMulti("beamlines","beamlines",1000);
+  
   IParam.setDesc("beamlines","Creates beamlines on the main model");
   IParam.setDesc("lowMod","Type of low moderator to be built");
   IParam.setDesc("topMod","Type of top moderator to be built");
@@ -680,9 +681,9 @@ createLensInputs(inputParam& IParam)
   */
 {
   createInputs(IParam);
-  IParam.regMulti<std::string>("TS","surfTally",2,2);
-  IParam.regMulti<std::string>("TE","tallyEnergy",1,1);
-  IParam.regMulti<std::string>("TT","tallyTime",1,1);
+  IParam.regMulti("TS","surfTally",1000,2,2);
+  IParam.regMulti("TE","tallyEnergy",1000,1,1);
+  IParam.regMulti("TT","tallyTime",10000,1,1);
 
   IParam.setDesc("TE","Tally Energy: Energy string");
   IParam.setDesc("TT","Tally Time: Time string");
@@ -774,7 +775,7 @@ setVariables(Simulation& System,const inputParam& IParam,
   std::map<std::string,double> IterVal;  
 
 
-  for(size_t i=0;i<IParam.grpCnt("xml");i++)
+  for(size_t i=0;i<IParam.setCnt("xml");i++)
     {
       const std::string FileName=IParam.getValue<std::string>("xml",i);
       System.getDataBase().processXML(FileName);

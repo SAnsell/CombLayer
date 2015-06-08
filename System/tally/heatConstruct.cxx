@@ -108,8 +108,8 @@ heatConstruct::processHeat(Simulation& System,
     throw ColErr::IndexError<size_t>(NItems,3,
 				     "Insufficient items for tally");
 
-  const std::string pType(IParam.getCompValue<std::string>("tally",Index,1)); 
-  const std::string MType(IParam.getCompValue<std::string>("tally",Index,2)); 
+  const std::string pType(IParam.getValue<std::string>("tally",Index,1)); 
+  const std::string MType(IParam.getValue<std::string>("tally",Index,2)); 
   
   // Process a Ranged Heat:
 

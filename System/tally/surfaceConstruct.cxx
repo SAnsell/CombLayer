@@ -109,11 +109,11 @@ surfaceConstruct::processSurface(Simulation& System,
   if (NItems<3)
     throw ColErr::IndexError<size_t>(NItems,3,
 				     "Insufficient items for tally");
-  const std::string pType(IParam.getCompValue<std::string>("tally",Index,1)); 
+  const std::string pType(IParam.getValue<std::string>("tally",Index,1)); 
   
 
 
-  const std::string MType(IParam.getCompValue<std::string>("tally",Index,2)); 
+  const std::string MType(IParam.getValue<std::string>("tally",Index,2)); 
   ELog::EM<<"Surface Tally Type == "<<pType<<ELog::endDiag;
   std::vector<std::string> excludeSurf;
   if (pType=="object")
@@ -139,7 +139,7 @@ surfaceConstruct::processSurface(Simulation& System,
 	{
 	  // Check for surface by S/R designator at end [to do]
 	  const std::string ST=
-	    IParam.getCompValue<std::string>("tally",Index,i);
+	    IParam.getValue<std::string>("tally",Index,i);
 	  excludeSurf.push_back(ST);
 	}
       return processSurfObject(System,place,linkNumber,excludeSurf);

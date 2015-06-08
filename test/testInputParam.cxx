@@ -155,7 +155,7 @@ testInputParam::testDefValue()
   ELog::RegMethod RegA("testInputParam","testDefValue");
   
   inputParam A;
-  A.regItem<double>("d","dbl");
+  A.regItem("d","dbl");
   // Test partial [Success]
   A.regDefItem<int>("i","int",3,-8);
   // Test partial [Success]
@@ -163,16 +163,12 @@ testInputParam::testDefValue()
   A.regDefItem<std::string>("X","xmlout",1,
 			    "Model.xml");
 
-  std::vector<std::string> Names;
-  Names.push_back("-k");
-  Names.push_back("-i");
-  Names.push_back("10");
-  Names.push_back("7");
-  Names.push_back("-X");
-  Names.push_back("test.xml");
+  std::vector<std::string> Names=
+    { "-k", "-i", "10", "7", "-X", "test.xml" };
   
   A.processMainInput(Names);
-  if (!A.flag("i") || A.getValue<int>("i",0)!=10 ||
+  if (!A.flag("i") ||
+      A.getValue<int>("i",0)!=10 ||
       A.getValue<int>("i",1)!=7 || 
       A.getValue<int>("i",2)!=-8)
     {
@@ -205,13 +201,13 @@ testInputParam::testGetValue()
   ELog::RegMethod RegA("testInputParam","testGetValue");
   
   inputParam A;
-  A.regItem<double>("d","dbl");
-  A.regItem<int>("i","int");
+  A.regItem("d","dbl",1,10000);
+  A.regItem("i","int",1,1000);
   
   try
     {
-      A.setValue("i",10);
-      A.setValue("d",20.0);
+      A.setValue<int>("i",10);
+      A.setValue<double>("d",20.0);
       const double x=A.getValue<double>("d");
       if (fabs(x-20.0)>1e-8)
 	{
@@ -241,10 +237,10 @@ testInputParam::testFlagDef()
   Control.addVariable("testX",20.3);
 
   inputParam A;
-  A.regItem<double>("x","xlong");
-  A.regMulti<double>("m","mlong",1);
-  A.setValue("x",30.0);
-
+  A.regItem("x","xlong");
+  A.regMulti("m","mlong",2,0,1000);
+  A.setValue<double>("x",30.0);
+  
   // key : varKey : index : Except flag : result
   typedef std::tuple<std::string,std::string,
 		       size_t,bool,double> TTYPE;
@@ -310,12 +306,12 @@ testInputParam::testInput()
 
   inputParam A;
   A.regFlag("f","flag");
-  A.regItem<int>("i","int");
-  A.regItem<double>("d","dbl");
+  A.regItem("i","int");
+  A.regItem("d","dbl");
   A.regDefItem<double>("y","yobj",3,4.5);
-  A.regMulti<std::string>("E","exclude",1);
+  A.regMulti("E","exclude",1);
 
-  A.regItem<Geometry::Vec3D>("SP","sdefPos");
+  A.regItem("SP","sdefPos");
   const std::string Input[]={
     "--flag","-i","10",
     "-j","A","y",
@@ -385,17 +381,12 @@ testInputParam::testMultiExtract()
 
   // TEST code:
   inputParam A;
-  A.regMulti<std::string>("TC","tallyC",3,1);
-  const std::string Input[]=
-    { "-TC","help",
-      "-TC","1","2",
-      "-TC","3.4","444","23",
-      ""
-    };
+  A.regMulti("TC","tallyC",3,1);
 
-  std::vector<std::string> Names;
-  for(int i=0;!Input[i].empty();i++)
-    Names.push_back(Input[i]);
+  std::vector<std::string> Names={
+    "-TC","help",
+    "-TC","1","2",
+    "-TC","3.4","444","23" };
 
   A.processMainInput(Names);
 
@@ -457,8 +448,8 @@ testInputParam::testMultiTail()
   Tests.push_back(TTYPE("i",1));
   // TEST code:
   inputParam A;
-  A.regMulti<std::string>("R","R",3,0);
-  A.regMulti<std::string>("r","r",3,0);
+  A.regMulti("R","R",3,0);
+  A.regMulti("r","r",3,0);
   std::vector<std::string> RItems(10,"");
   A.regDefItemList<std::string>("i","i",10,RItems);
   std::vector<std::string> Names=
@@ -504,22 +495,18 @@ testInputParam::testMulti()
   Tests.push_back(TTYPE("TD",4,"5"));
 
   inputParam A;
-  A.regMulti<std::string>("E","exclude",1);
-  A.regMulti<std::string>("TC","tallyC",3);
-  A.regMulti<std::string>("TD","def",3,1);
-  A.regMulti<std::string>("TF","singleFlag",3,2);
+  A.regMulti("E","exclude",100,1);
+  A.regMulti("TC","tallyC",100,3);
+  A.regMulti("TD","def",100,3,1);
+  A.regMulti("TF","singleFlag",100,3,2);
 
-  const std::string Input[]={"-E","Zoom",
-			     "-E","Extra",
-			     "-TC","3","4","5",
-			     "-TC","6","7","8",
-			     "-TD","1","2",
-			     "-TD","4","5","6",
-			     ""};                    // Empyt string
-  std::vector<std::string> Names;
-  for(int i=0;!Input[i].empty();i++)
-    Names.push_back(Input[i]);
-  
+  std::vector<std::string> Names={"-E","Zoom",
+				  "-E","Extra",
+				  "-TC","3","4","5",
+				  "-TC","6","7","8",
+				  "-TD","1","2",
+				  "-TD","4","5","6"};
+
   A.processMainInput(Names);
   int cnt(1);
   for(const TTYPE& tc : Tests)
@@ -554,22 +541,22 @@ testInputParam::testSetValue()
   ELog::RegMethod RegA("testInputParam","testSetValue");
   
   inputParam A;
-  A.regItem<double>("d","dbl");
-  A.regItem<int>("i","int");
+  A.regItem("d","dbl");
+  A.regItem("i","int");
   A.regFlag("f","flag");
   A.regFlag("g","Gflag");
   
   try
     {
-      A.setValue("i",10);
-      A.setValue("d",10.0);
+      A.setValue<int>("i",10);
+      A.setValue<double>("d",10.0);
       A.setFlag("g");
       if (A.flag("f") || !A.flag("g"))
 	{
 	  ELog::EM<<"Failed to find non-flag :f/g"<<ELog::endTrace;
 	  return -1;
 	}
-      A.setValue("xa",10.0);
+      A.setValue<double>("xa",10.0);
     }
   catch (ColErr::InContainerError<std::string>& EA)
     {
@@ -598,8 +585,8 @@ testInputParam::testWriteDesc()
 			  " -i       int \n");
 
   inputParam A;
-  A.regItem<double>("d","dbl");
-  A.regItem<int>("i","int");
+  A.regItem("d","dbl");
+  A.regItem("i","int");
   A.regFlag("f","flag");
   A.setDesc("f","This is the desc");  
 
@@ -640,16 +627,14 @@ testInputParam::testWrite()
 			  " -y       yobj       set ::  10  20 (4.5) \n");
   
   inputParam A;
-  A.regItem<double>("d","dbl");               // single double item
-  A.regItem<int>("i","int");                  // single int item
+  A.regItem("d","dbl");               // single double item
+  A.regItem("i","int");                  // single int item
   A.regFlag("f","flag");                      // Flag item 
   A.regDefItem<double>("x","xobj",3,4.5);
   A.regDefItem<double>("y","yobj",3,4.5);
 
-  std::vector<std::string> Names;
-  Names.push_back("-y");
-  Names.push_back("10.0");
-  Names.push_back("20.0");
+  std::vector<std::string> Names=
+    { "-y","10.0","20.0" };
 
   A.processMainInput(Names);
   std::ostringstream cx;

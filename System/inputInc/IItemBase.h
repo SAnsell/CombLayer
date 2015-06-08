@@ -64,6 +64,9 @@ class IItem
   size_t getNSets() const;
   size_t getNItems(const size_t =0) const;
 
+  size_t getReqItems() const { return reqItems; }
+  size_t getMaxItems() const { return maxItems; }
+
   bool isValid(const size_t =0) const;
 
   /// Set Description
@@ -80,11 +83,15 @@ class IItem
   void setObj(const size_t,const size_t,const std::string&);
   void setObj(const size_t,const std::string&);
   void setObj(const std::string&);
-
+  template<typename T>
+  void setObjItem(const size_t,const size_t,const T&);
+  
   template<typename T> T getObj(const size_t,const size_t) const;
   template<typename T> T getObj(const size_t) const;
   template<typename T> T getObj() const;
-  
+
+  size_t addSet();
+  bool addObject(const size_t,const std::string&);
   
   void writeSet(std::ostream&,const size_t) const;
   void write(std::ostream&) const;
