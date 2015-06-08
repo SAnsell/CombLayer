@@ -971,7 +971,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowFlyLeftLobeThick1",0.3);
   Control.addVariable("LowFlyLeftLobeMat1","Aluminium");
   Control.addVariable("LowFlyLeftLobeVThick1",0.3);
-  Control.addVariable("LowFlyLeftLobeModTemp1",20.0);
+  Control.addVariable("LowFlyLeftLobeTemp1",20.0);
   
   Control.addVariable("LowFlyLeftLobeThick2",0.5);
   Control.addVariable("LowFlyLeftLobeMat2","Void");
@@ -1014,7 +1014,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowFlyRightLobeThick1",0.3);
   Control.addVariable("LowFlyRightLobeMat1","Aluminium");
   Control.addVariable("LowFlyRightLobeVThick1",0.3);
-  Control.addVariable("LowFlyRightLobeModTemp1",20.0);
+  Control.addVariable("LowFlyRightLobeTemp1",20.0);
   
   Control.addVariable("LowFlyRightLobeThick2",0.5);
   Control.addVariable("LowFlyRightLobeMat2","Void");
