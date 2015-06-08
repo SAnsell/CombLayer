@@ -40,12 +40,18 @@ class IItem
   std::string Desc;  ///< Description
 
   bool active;       ///< Has been set
+
+  size_t activeSet;  ///< Current set:
+  size_t activeItem;  ///< Current item:
+  
   size_t maxSets;    ///< Max number of sets 
   size_t maxItems;   ///< Max items per set
   size_t reqItems;   ///< Required items per set
 
   /// DATA Items BEFORE conversion:
   std::vector<std::vector<std::string>> DItems;
+
+  void checkIndex(const size_t,const size_t) const;
   
  public:
 
@@ -55,6 +61,7 @@ class IItem
   IItem(const IItem&);
   IItem& operator=(const IItem&);
   virtual ~IItem() {}  ///< Destructor
+
 
     /// is active
   bool flag() const { return active; }
@@ -91,7 +98,7 @@ class IItem
   template<typename T> T getObj() const;
 
   size_t addSet();
-  bool addObject(const size_t,const std::string&);
+  bool addObject(const std::string&);
   
   void writeSet(std::ostream&,const size_t) const;
   void write(std::ostream&) const;

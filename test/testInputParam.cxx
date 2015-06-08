@@ -67,19 +67,6 @@ testInputParam::~testInputParam()
 ///< Destructor
 {}
 
-void
-testInputParam::initInput(const std::string Input[],
-			  std::vector<std::string>& Names)
-  /*!
-    Create an input string from a terminated array
-    \param Input :: String array [Terminated with empty string]
-    \param Names :: Vector to add output to
-  */
-{
-  for(int i=0;!Input[i].empty();i++)
-    Names.push_back(Input[i]);
-  return;
-}
 
 int 
 testInputParam::applyTest(const int extra)
@@ -156,6 +143,7 @@ testInputParam::testDefValue()
   
   inputParam A;
   A.regItem("d","dbl");
+
   // Test partial [Success]
   A.regDefItem<int>("i","int",3,-8);
   // Test partial [Success]
@@ -167,6 +155,7 @@ testInputParam::testDefValue()
     { "-k", "-i", "10", "7", "-X", "test.xml" };
   
   A.processMainInput(Names);
+
   if (!A.flag("i") ||
       A.getValue<int>("i",0)!=10 ||
       A.getValue<int>("i",1)!=7 || 
@@ -312,14 +301,12 @@ testInputParam::testInput()
   A.regMulti("E","exclude",1);
 
   A.regItem("SP","sdefPos");
-  const std::string Input[]={
+  std::vector<std::string> Names={
     "--flag","-i","10",
     "-j","A","y",
-    "-SP","20.0","30.0","40.0",
-    ""};
+    "-SP","20.0","30.0","40.0"
+    };
 
-  std::vector<std::string> Names;
-  initInput(Input,Names);
   A.processMainInput(Names);
   
 
@@ -353,6 +340,11 @@ testInputParam::testInput()
 	  (NP>0 && A.getValue<Geometry::Vec3D>(key,0)!=std::get<3>(vc)))
 	{
 	  ELog::EM<<"Names.size() == "<<Names.size()<<ELog::endTrace;
+	  ELog::EM<<"Flag["<<std::get<1>(vc)<<"] =="
+		  <<A.flag(key)<<ELog::endTrace;
+	  if (NP>0)
+	    ELog::EM<<"Vec3D["<<std::get<3>(vc)<<"] =="
+		    <<A.getValue<Geometry::Vec3D>(key,0)<<ELog::endTrace;
 	  ELog::EM<<"Item["<<key<<"] failed:"<<ELog::endTrace;
 	  A.write(ELog::EM.Estream());
 	  ELog::EM<<ELog::endTrace;
@@ -483,22 +475,22 @@ testInputParam::testMulti()
   ELog::RegMethod RegA("testInputParam","testMulti");
 
   // Test : flag : Index : Value
-  typedef std::tuple<std::string,size_t,std::string> TTYPE;
+  typedef std::tuple<std::string,size_t,size_t,std::string> TTYPE;
   
   std::vector<TTYPE> Tests;
 
-  Tests.push_back(TTYPE("E",0,"Zoom"));
-  Tests.push_back(TTYPE("E",1,"Extra"));
-  Tests.push_back(TTYPE("TC",1,"4"));
-  Tests.push_back(TTYPE("TC",5,"8"));
-  Tests.push_back(TTYPE("TD",1,"2"));
-  Tests.push_back(TTYPE("TD",4,"5"));
+  Tests.push_back(TTYPE("E",0,0,"Zoom"));
+  Tests.push_back(TTYPE("E",1,0,"Extra"));
+  Tests.push_back(TTYPE("TC",0,1,"4"));
+  Tests.push_back(TTYPE("TC",1,2,"8"));
+  Tests.push_back(TTYPE("TD",0,1,"2"));
+  Tests.push_back(TTYPE("TD",1,1,"5"));
 
-  inputParam A;
+  inputParam A; 
   A.regMulti("E","exclude",100,1);
   A.regMulti("TC","tallyC",100,3);
-  A.regMulti("TD","def",100,3,1);
-  A.regMulti("TF","singleFlag",100,3,2);
+  A.regMulti("TD","def",100,1,3);
+  A.regMulti("TF","singleFlag",100,2,3);
 
   std::vector<std::string> Names={"-E","Zoom",
 				  "-E","Extra",
@@ -509,17 +501,29 @@ testInputParam::testMulti()
 
   A.processMainInput(Names);
   int cnt(1);
+  int exceptionFlag=0;
   for(const TTYPE& tc : Tests)
     {
       const std::string& key=std::get<0>(tc);
       if (A.flag(key))
 	{
-	  std::string Out=A.getValue<std::string>(key,std::get<1>(tc));
-
-	  if (Out!=std::get<2>(tc))
+	  const size_t setIndex=std::get<1>(tc);
+	  const size_t itemIndex=std::get<2>(tc);
+	  std::string Out;
+	  try
 	    {
+	      Out=A.getValue<std::string>(key,setIndex,itemIndex);
+	    }
+	  catch(ColErr::ExBase& A)
+	    {
+	      exceptionFlag=1;
+	      ELog::EM<<"Exception == "<<A.what()<<ELog::endDiag;
+	    }
+	  if (exceptionFlag || (Out!=std::get<3>(tc)))
+	    {
+	      ELog::EM<<"Test == "<<cnt<<ELog::endDiag;
 	      ELog::EM<<"Item["<<key<<"] failed:"<<ELog::endTrace;
-	      ELog::EM<<"Expected ="<<std::get<2>(tc)<<ELog::endTrace;
+	      ELog::EM<<"Expected ="<<std::get<3>(tc)<<ELog::endTrace;
 	      A.write(ELog::EM.Estream());
 	      ELog::EM<<ELog::endTrace;
 	      return -cnt;
@@ -600,6 +604,7 @@ testInputParam::testWriteDesc()
 	  ELog::EM<<"Cell "<<i<<" :"
 		  <<static_cast<unsigned int>(Out[i])<<"=="
 		  <<static_cast<unsigned int>(OutString[i])<<ELog::endTrace;
+
       ELog::EM<<"Failed on string :"<<
 	Out.size()<<" "<<OutString.size()<<std::endl;
       ELog::EM<<Out<<ELog::endTrace;
@@ -620,11 +625,11 @@ testInputParam::testWrite()
   ELog::RegMethod RegA("testInputParam","testWrite");
 
   const std::string OutString=
-    StrFunc::stripMultSpc(" -d       dbl        not-set ::  -- \n"
+    StrFunc::stripMultSpc(" -d       dbl        not-set :: \n"
 			  " -f       flag       not-set :: \n"
-			  " -i       int        not-set ::  -- \n"
-			  " -x       xobj       not-set ::  --  -- (4.5) \n"
-			  " -y       yobj       set ::  10  20 (4.5) \n");
+			  " -i       int        not-set :: \n"
+			  " -x       xobj       not-set ::  4.5 4.5 4.5\n"
+			  " -y       yobj       set ::  10.0 20.0 4.5\n");
   
   inputParam A;
   A.regItem("d","dbl");               // single double item
@@ -642,11 +647,16 @@ testInputParam::testWrite()
   std::string Out=StrFunc::stripMultSpc(cx.str());
   if (Out!=OutString)
     {
-      for(size_t i=0;i<40;i++)
+      for(size_t i=0;i<125;i++)
 	if (Out[i]!=OutString[i])
-	  ELog::EM<<"Cell "<<i<<" :"
-		  <<static_cast<unsigned int>(Out[i])<<"=="
-		  <<static_cast<unsigned int>(OutString[i])<<ELog::endTrace;
+	  {
+	    ELog::EM<<"Cell "<<i<<" :"
+		    <<static_cast<unsigned int>(Out[i])<<"=="
+		    <<static_cast<unsigned int>(OutString[i])<<" ||| "
+		  <<(Out[i])<<"=="
+		    <<(OutString[i])<<ELog::endTrace;
+	  }
+      
       ELog::EM<<"Failed on string :"<<
 	Out.size()<<" "<<OutString.size()<<std::endl;
       ELog::EM<<Out<<ELog::endTrace;

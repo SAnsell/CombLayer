@@ -633,9 +633,9 @@ inputParam::regItem(const std::string& K,
   checkKeys(K,LK);
 
   IItem* IPtr=new IItem(K,LK);
-  IPtr->setMaxN(1,MaxData,ReqData);
+  IPtr->setMaxN(1,ReqData,MaxData);
   Keys.insert(MTYPE::value_type(K,IPtr));
-  
+
   if (!LK.empty())
     Names.insert(MTYPE::value_type(LK,IPtr));
   return;  
@@ -688,7 +688,7 @@ inputParam::regDefItemList(const std::string& K,const std::string& LK,
 				     "Items and required size incompatable");
   
   IItem* IPtr=new IItem(K,LK);
-  IPtr->setMaxN(1,reqNData,10000);
+  IPtr->setMaxN(1,0,10000);            // no required as has def.
   Keys.insert(MTYPE::value_type(K,IPtr));
   if (!LK.empty())
     Names.insert(MTYPE::value_type(LK,IPtr));
@@ -715,7 +715,7 @@ inputParam::regDefItem(const std::string& K,const std::string& LK,
   checkKeys(K,LK);
 
   IItem* IPtr=new IItem(K,LK);
-  IPtr->setMaxN(1,reqItem,10000);
+  IPtr->setMaxN(1,0,10000);
 
   Keys.insert(MTYPE::value_type(K,IPtr));
   if (!LK.empty())
@@ -746,10 +746,12 @@ inputParam::regDefItem(const std::string& K,const std::string& LK,
     throw ColErr::IndexError<size_t>(reqData,2,"reqData");
 
   IItem* IPtr=new IItem(K,LK);
+  IPtr->setMaxN(1,0,10000);
+  
   Keys.insert(MTYPE::value_type(K,IPtr));
   if (!LK.empty())
     Names.insert(MTYPE::value_type(LK,IPtr));
-  IPtr->setMaxN(1,reqData,10000);
+
   IPtr->setObjItem<T>(0,0,AItem);
   IPtr->setObjItem<T>(0,1,BItem);
 
@@ -777,10 +779,11 @@ inputParam::regDefItem(const std::string& K,const std::string& LK,
     throw ColErr::IndexError<size_t>(reqData,3,"reqData");
 
   IItem* IPtr=new IItem(K,LK);
+  IPtr->setMaxN(1,0,10000);
   Keys.insert(MTYPE::value_type(K,IPtr));
   if (!LK.empty())
     Names.insert(MTYPE::value_type(LK,IPtr));
-  IPtr->setMaxN(1,reqData,10000);
+
   IPtr->setObjItem<T>(0,0,AItem);
   IPtr->setObjItem<T>(0,1,BItem);
   IPtr->setObjItem<T>(0,2,CItem);
@@ -803,10 +806,11 @@ inputParam::processMainInput(std::vector<std::string>& Names)
   std::vector<std::string> Out;
   // First search for all keys [use long int as can got to -1 below]
   std::string SubName;
-  double DValue;
+  double DValue;              // Dumy value to avoid checking -10.0 etc
   for(size_t i=0;i<Names.size();)
     {
       Out.push_back(Names[i]);    // erased later
+      
       IItem* IPtr=0;
       const int numberFlag=StrFunc::convert(Names[i],DValue);
       if (Names[i].size()>2 && 
@@ -822,30 +826,38 @@ inputParam::processMainInput(std::vector<std::string>& Names)
 	  IPtr=findShortKey(SubName);
 	}
       // Did we find anything:
-
       if (IPtr)       // Index found
 	{
 	  const size_t NReq=IPtr->getReqItems();
 	  const size_t NMax=IPtr->getMaxItems();
-	  // check enough items exist
-	  i++;
+	  size_t processNumber(0);
 	  if (i+NReq <= Names.size())
 	    {
-	      size_t cN(0);
-	      bool processGood(1);
-	      IPtr->setActive();
+	      i++;
+	      // add set if new:
 	      const size_t SNum=IPtr->addSet();
-	      while(SNum && i<Names.size() &&
-		    cN<NMax && processGood)
+	      size_t nextFlag(SNum);
+	      while(nextFlag && i<Names.size())
 		{
-		  processGood=IPtr->addObject(SNum-1,Names[i]);
-		  if (processGood) cN++;
+		  nextFlag=0;
+		  // check if a -ve number
+		  if (Names[i][0]!='-' ||
+		      StrFunc::convert(Names[i],DValue))
+		    {
+		      nextFlag=IPtr->addObject(Names[i]);
+		      if (nextFlag)
+			{
+			  processNumber++;
+			  i++;
+			}
+		    }
 		}
-	      if (cN<NReq)   
-		ELog::EM<<"Item "<<SubName<<" failed at "
-			<<cN<<" ("<<NMax<<") ["<<NReq<<"]"<<ELog::endErr;
-	      Out.pop_back(); // All good so remove Items
 	    }
+	  
+	  if (processNumber<NReq)   
+	    ELog::EM<<"Item "<<SubName<<" failed at "
+		    <<processNumber<<" ("<<NMax<<") ["<<NReq<<"]"<<ELog::endErr;
+	  Out.pop_back(); // All good so remove Items
 	}
       else 
 	i++;
@@ -889,7 +901,7 @@ inputParam::write(std::ostream& OX) const
       const IItem* IPtr=mc->second;
       OX<<(FMTstr % IPtr->getKey() % IPtr->getLong() % 
 	   (IPtr->flag() ? " set " : " not-set "));
-      OX<<":: "<<*IPtr<<std::endl;
+      OX<<":: "<<*IPtr<<"\n";
     }
 
   return;
