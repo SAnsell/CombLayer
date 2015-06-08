@@ -314,18 +314,18 @@ inputParam::setCnt(const std::string& K) const
 
 
 size_t
-inputParam::itemCnt(const std::string& K,const size_t Index) const
+inputParam::itemCnt(const std::string& K,const size_t setIndex) const
   /*!
     Determine number of items in a specific group
     \param K :: Key to seach
-    \param Index :: Nubmer of entry point
-    \return active flag
+    \param setIndex :: Nubmer of entry point
+    \return item count
    */
 {
   ELog::RegMethod RegA("inputParam","itemCnt");
   const IItem* IPtr=getIndex(K);
-  
-  return IPtr->getNItems(Index);
+  if (!setIndex && !IPtr->getNSets()) return 0;
+  return IPtr->getNItems(setIndex);
 }
 
 bool

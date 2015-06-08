@@ -376,7 +376,6 @@ makeESS::makeBeamLine(Simulation& System,
   ELog::RegMethod RegA("makeESS","makeBeamLine");
 
   const size_t NItems=IParam.itemCnt("beamlines",0);
-
   for(size_t i=1;i<NItems;i+=2)
     {
       const std::string BL=IParam.getValue<std::string>("beamlines",i-1);
@@ -440,6 +439,7 @@ makeESS::build(Simulation& System,
       throw ColErr::ExitAbort("Help system exit");
     }
 
+
   
   makeTarget(System,targetType);
   Reflector->globalPopulate(System.getDataBase());
@@ -497,7 +497,7 @@ makeESS::build(Simulation& System,
   attachSystem::addToInsertSurfCtrl(System,*Bulk,
 				    PBeam->getKey("Full"));
 
-
+  ELog::EM<<"ASDFAFDS "<<ELog::endDiag;
   makeBeamLine(System,IParam);
 
 

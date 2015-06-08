@@ -172,6 +172,8 @@ IItem::getNItems(const size_t setIndex) const
   */
 {
   ELog::RegMethod RegA("IItem","getNItems");
+
+  if (setIndex==0  && DItems.empty()) return 0;
   if (setIndex>=DItems.size())
     throw ColErr::IndexError<size_t>(setIndex,DItems.size(),
 				     " ["+Key+"] setIndex");
