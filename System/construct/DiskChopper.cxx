@@ -182,10 +182,13 @@ DiskChopper::createUnitVector(const attachSystem::FixedComp& FC,
   ELog::RegMethod RegA("DiskChopper","createUnitVector");
 
   FixedComp::createUnitVector(FC,sideIndex);
+  ELog::EM<<"O == ::"<<Origin<<ELog::endDiag;
   applyShift(xStep,yStep,zStep);
   applyAngleRotate(xyAngle,zAngle);
+    ELog::EM<<"O == ::"<<Origin<<ELog::endDiag;
   if (!centreFlag)
     Origin-=Z*outerRadius;
+  ELog::EM<<"O == ::"<<Origin<<ELog::endDiag;
   return;
 }
 

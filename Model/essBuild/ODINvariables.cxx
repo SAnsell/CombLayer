@@ -65,8 +65,8 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("ODINCollAXStep",0.0);
   Control.addVariable("ODINCollAYStep",50.0);
   Control.addVariable("ODINCollAZStep",0.0);
-  Control.addVariable("ODINCollAXYangle",0.0);
-  Control.addVariable("ODINCollAZangle",0.0);
+  Control.addVariable("ODINCollAXYangle",180.0);
+  Control.addVariable("ODINCollAZangle",180.0);
 
   Control.addVariable("ODINCollAZOpen",1.5);
   Control.addVariable("ODINCollAZThick",4.0);
@@ -91,20 +91,59 @@ ODINvariables(FuncDataBase& Control)
 
   Control.addVariable("ODINCollAzJawMat","Aluminium");
 
-  Control.addVariable("ODINg1XStep",0.0);       
-  Control.addVariable("ODINg1YStep",0.0);       
-  Control.addVariable("ODINg1ZStep",0.0);       
-  Control.addVariable("ODINg1XYAngle",0.0);       
-  Control.addVariable("ODINg1ZAngle",0.0);       
-  Control.addVariable("ODINg1Length",3190.0);       
-  Control.addVariable("ODINg1Height",100.0);       
-  Control.addVariable("ODINg1Depth",100.0);       
-  Control.addVariable("ODINg1LeftWidth",30.0);       
-  Control.addVariable("ODINg1RightWidth",30.0);       
-  Control.addVariable("ODINg1FeMat","Stainless304");       
-  Control.addVariable("ODINg1NShapes",2);       
-  Control.addVariable("ODINg1NShapeLayers",3);       
+  Control.addVariable("ODINgAXStep",0.0);       
+  Control.addVariable("ODINgAYStep",0.0);       
+  Control.addVariable("ODINgAZStep",0.0);       
+  Control.addVariable("ODINgAXYAngle",0.0);       
+  Control.addVariable("ODINgAZAngle",0.0);       
+  Control.addVariable("ODINgALength",220.0);       
+  Control.addVariable("ODINgAHeight",100.0);       
+  Control.addVariable("ODINgADepth",100.0);       
+  Control.addVariable("ODINgALeftWidth",20.0);       
+  Control.addVariable("ODINgARightWidth",20.0);       
+  Control.addVariable("ODINgAFeMat","Void");       
+  Control.addVariable("ODINgANShapes",1);       
+  Control.addVariable("ODINgANShapeLayers",3);
 
+  Control.addVariable("ODINgALayerThick1",0.4);  // glass thick
+  Control.addVariable("ODINgALayerThick2",1.5);
+
+  Control.addVariable("ODINgALayerMat0","Void");
+  Control.addVariable("ODINgALayerMat1","Glass");
+  Control.addVariable("ODINgALayerMat2","Void");       
+
+  Control.addVariable("ODINgA0TypeID","Tapper");
+  Control.addVariable("ODINgA0HeightStart",3.0);
+  Control.addVariable("ODINgA0HeightEnd",3.0);
+  Control.addVariable("ODINgA0WidthStart",7.0);
+  Control.addVariable("ODINgA0WidthEnd",10.0);
+  Control.addVariable("ODINgA0Length",220.0);
+  Control.addVariable("ODINgA0ZAngle",0.0);       
+
+
+  // T0 Chopper 
+
+  Control.addVariable("odinTZeroXStep",0.0);
+  Control.addVariable("odinTZeroYStep",2.0);
+  Control.addVariable("odinTZeroZStep",15.0/2.0);
+  Control.addVariable("odinTZeroXYangle",0.0);
+  Control.addVariable("odinTZeroZangle",0.0);
+
+  Control.addVariable("odinTZeroGap",3.0);
+  Control.addVariable("odinTZeroInnerRadius",10.0);
+  Control.addVariable("odinTZeroOuterRadius",25.0);
+  Control.addVariable("odinTZeroNDisk",1);
+
+  Control.addVariable("odinTZero0Thick",40.0);
+  Control.addVariable("odinTZeroInnerMat","Aluminium");
+  Control.addVariable("odinTZeroOuterMat","Inconnel");
+
+  Control.addVariable("odinTZero0PhaseAngle",95.0);
+  Control.addVariable("odinTZero0OpenAngle",30.0);
+  
+  
+
+  
   return;
 }
 

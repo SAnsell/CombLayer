@@ -497,7 +497,6 @@ makeESS::build(Simulation& System,
   attachSystem::addToInsertSurfCtrl(System,*Bulk,
 				    PBeam->getKey("Full"));
 
-  ELog::EM<<"ASDFAFDS "<<ELog::endDiag;
   makeBeamLine(System,IParam);
 
 

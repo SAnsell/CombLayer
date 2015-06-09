@@ -31,6 +31,7 @@ namespace attachSystem
 namespace constructSystem
 {
   class Jaws;
+  class DiskChopper;
 }
 
 namespace essSystem
@@ -52,6 +53,8 @@ class ODIN
   std::shared_ptr<constructSystem::Jaws> CollA;
   /// Tapper Unit
   std::shared_ptr<beamlineSystem::GuideLine> GuideA;
+  /// T0 chopper [9-9.5m]
+  std::shared_ptr<constructSystem::DiskChopper> T0Chopper;
   
  public:
   

@@ -98,7 +98,7 @@ setESS(defaultConfig& A)
   ELog::RegMethod RegA("DefUnitsESS[F]","setESS");
 
   A.setOption("lowMod","Butterfly");
-  A.setMultiOption("beamlines",0,"G1BLine ODIN");
+  A.setMultiOption("beamlines",0,"G1BLine1 ODIN");
   
   return;
 }

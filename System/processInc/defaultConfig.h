@@ -45,9 +45,10 @@ class defaultConfig
   std::map<std::string,std::string> varName;       ///< Var name [mat]
   std::map<std::string,Geometry::Vec3D> varVec;       ///< Var Vec [mat]
   std::map<std::string,std::string> flagName;      ///< Flag e.g. targetType
+
   /// Triple for multiples
   typedef std::tuple<std::string,size_t,std::string> TTYPE;
-  std::vector<TTYPE> multiSet;    ///< Mulit sets
+  std::vector<TTYPE> multiSet;    ///< Multi sets
 
  public:
 

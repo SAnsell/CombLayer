@@ -308,7 +308,7 @@ void
 GuideLine::processShape(const FuncDataBase& Control)
   /*!
     Build a simple shape component from the Control Values
-    \param Control :: Fundermental 
+    \param Control :: Fundermental variables for shapes
    */
 {
   ELog::RegMethod RegA("GuideLine","processShape");
@@ -369,10 +369,14 @@ GuideLine::processShape(const FuncDataBase& Control)
 	  const double HB=Control.EvalVar<double>(keyName+NStr+"HeightEnd");
 	  const double WB=Control.EvalVar<double>(keyName+NStr+"WidthEnd");
 
-	  SU->addPairPoint(-X*(WA/2.0)-Z*(HA/2.0),-X*(WB/2.0)-Z*(HB/2.0));
-	  SU->addPairPoint(X*(WA/2.0)-Z*(HA/2.0),X*(WB/2.0)-Z*(HB/2.0));
-	  SU->addPairPoint(X*(WA/2.0)+Z*(HA/2.0),X*(WB/2.0)+Z*(HB/2.0));
-	  SU->addPairPoint(-X*(WA/2.0)+Z*(HA/2.0),-X*(WB/2.0)+Z*(HB/2.0));
+	  SU->addPairPoint(Geometry::Vec3D(-WA/2.0,0.0,-HA/2.0),
+			   Geometry::Vec3D(-WB/2.0,0.0,-HB/2.0));
+	  SU->addPairPoint(Geometry::Vec3D(WA/2.0,0.0,-HA/2.0),
+			   Geometry::Vec3D(WB/2.0,0.0,-HB/2.0));
+	  SU->addPairPoint(Geometry::Vec3D(WA/2.0,0.0,HA/2.0),
+			   Geometry::Vec3D(WB/2.0,0.0,HB/2.0));
+	  SU->addPairPoint(Geometry::Vec3D(-WA/2.0,0.0,HA/2.0),
+			   Geometry::Vec3D(-WB/2.0,0.0,HB/2.0));
 
 	  SU->setEndPts(Origin,Origin+Y*L);      	  
 	  SU->setXAxis(X,Z);      
@@ -434,14 +438,15 @@ GuideLine::createUnitVector(const attachSystem::FixedComp& mainFC,
 
 
   attachSystem::FixedComp& guideFC=FixedGroup::getKey("GuideOrigin");
-  ELog::EM<<"Creating guide origin with:"<<beamFC.getKeyName()<<" "
-	  <<beamLP<<" == "<<beamFC.NConnect()<<ELog::endDiag;  
-  //  guideFC.createUnitVector(beamFC,beamLP);
-  guideFC.createUnitVector(beamFC,0);
-  ELog::EM<<"Creating guide origin with:"<<beamFC.getKeyName()<<" "
-	  <<beamLP<<ELog::endDiag;  
+
+  guideFC.createUnitVector(beamFC,beamLP);
   guideFC.applyShift(beamXStep,beamYStep,beamZStep);
   guideFC.applyAngleRotate(beamXYAngle,beamZAngle);
+
+  ELog::EM<<"Creating guide origin with:"<<beamFC.getKeyName()<<" "
+	  <<beamLP<<" == "<<guideFC.getCentre()<<ELog::endDiag;  
+  ELog::EM<<"Direction:"<<guideFC.getY()<<" : "<<guideFC.getZ()<<ELog::endDiag;
+  ELog::EM<<"Jaws:"<<beamFC.getY()<<" : "<<beamFC.getZ()<<ELog::endDiag;
 
   setDefault("Shield");
 

@@ -579,7 +579,7 @@ void
 inputParam::setMultiValue(const std::string& K,
 			  const size_t setIndex,
 			  const std::string& Values) 
-/*!
+ /*!
     Set a value based on key
     \param K :: Key to add/search
     \param setIndex :: Index to multi-unit

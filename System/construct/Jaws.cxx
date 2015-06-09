@@ -200,6 +200,7 @@ Jaws::createUnitVector(const attachSystem::FixedComp& FC,
   FixedComp::createUnitVector(FC,sideIndex);
   applyShift(xStep,yStep,zStep);
   applyAngleRotate(xyAngle,zAngle);
+  ELog::EM<<"Z == "<<Z<<" "<<FC.getZ()<<ELog::endDiag;
   return;
 }
 

@@ -63,12 +63,15 @@
 #include "FixedGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+#include "SecondTrack.h"
+#include "TwinComp.h"
 #include "LayerComp.h"
 #include "CellMap.h"
 #include "World.h"
 #include "AttachSupport.h"
 #include "Jaws.h"
 #include "GuideLine.h"
+#include "DiskChopper.h"
 #include "ODIN.h"
 
 namespace essSystem
@@ -76,7 +79,8 @@ namespace essSystem
 
 ODIN::ODIN() :
   CollA(new constructSystem::Jaws("ODINCollA")),
-  GuideA(new beamlineSystem::GuideLine("ODINg1"))
+  GuideA(new beamlineSystem::GuideLine("ODINgA")),
+  T0Chopper(new constructSystem::DiskChopper("odinTZero"))
  /*!
     Constructor
  */
@@ -86,8 +90,10 @@ ODIN::ODIN() :
 
   OR.addObject(CollA);
   OR.addObject(GuideA);
-
+  OR.addObject(T0Chopper);
 }
+
+
 
 
 ODIN::~ODIN()
@@ -116,6 +122,9 @@ ODIN::build(Simulation& System,const attachSystem::FixedComp& GItem,
 
   GuideA->addInsertCell(Bunker.getCell("MainVoid"));
   GuideA->createAll(System,*CollA,2,*CollA,2);
+
+  T0Chopper->addInsertCell(Bunker.getCell("MainVoid"));
+  T0Chopper->createAll(System,GuideA->getKey("Guide0"),2);
 
   return;
 }
