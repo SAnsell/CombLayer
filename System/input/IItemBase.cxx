@@ -31,6 +31,7 @@
 #include <map>
 #include <string>
 #include <algorithm>
+#include <typeinfo>
 
 #include "Exception.h"
 #include "FileReport.h"
