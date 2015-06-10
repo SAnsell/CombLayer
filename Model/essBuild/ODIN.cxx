@@ -72,6 +72,7 @@
 #include "Jaws.h"
 #include "GuideLine.h"
 #include "DiskChopper.h"
+#include "Bunker.h"
 #include "ODIN.h"
 
 namespace essSystem
@@ -81,7 +82,7 @@ ODIN::ODIN() :
   BladeChopper(new constructSystem::DiskChopper("odinBlade")),
   GuideA(new beamlineSystem::GuideLine("ODINgA")),
   T0Chopper(new constructSystem::DiskChopper("odinTZero")),
-  GuideB(new beamlineSystem::GuideLine("ODINgA"))
+  GuideB(new beamlineSystem::GuideLine("odinGB"))
  /*!
     Constructor
  */
@@ -107,7 +108,7 @@ ODIN::~ODIN()
 
 void 
 ODIN::build(Simulation& System,const attachSystem::TwinComp& GItem,
-	    const attachSystem::CellMap& Bunker,const int voidCell)
+	    const Bunker& bunkerObj,const int voidCell)
   /*!
     Carry out the full build
     \param System :: Simulation system
@@ -119,17 +120,18 @@ ODIN::build(Simulation& System,const attachSystem::TwinComp& GItem,
   // For output stream
   ELog::RegMethod RegA("ODIN","build");
   
-  BladeChopper->addInsertCell(Bunker.getCell("MainVoid"));
+  BladeChopper->addInsertCell(bunkerObj.getCell("MainVoid"));
   BladeChopper->createAll(System,GItem,2);
 
-  GuideA->addInsertCell(Bunker.getCell("MainVoid"));
+  GuideA->addInsertCell(bunkerObj.getCell("MainVoid"));
   GuideA->createAll(System,BladeChopper->getKey("Main"),2,
 		    BladeChopper->getKey("Beam"),2);
   
-  T0Chopper->addInsertCell(Bunker.getCell("MainVoid"));
+  T0Chopper->addInsertCell(bunkerObj.getCell("MainVoid"));
   T0Chopper->createAll(System,GuideA->getKey("Guide0"),2);
 
-  GuideB->addInsertCell(Bunker.getCell("MainVoid"));
+  GuideB->addInsertCell(bunkerObj.getCell("MainVoid"));
+  GuideB->addEndCut(bunkerObj.getSignedLinkString(8));
   GuideB->createAll(System,T0Chopper->getKey("Main"),2,
 		    T0Chopper->getKey("Beam"),2);
 

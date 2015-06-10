@@ -125,8 +125,8 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("ODINgAXYAngle",0.0);       
   Control.addVariable("ODINgAZAngle",0.0);       
   Control.addVariable("ODINgALength",220.0);       
-  Control.addVariable("ODINgAHeight",100.0);       
-  Control.addVariable("ODINgADepth",100.0);       
+  Control.addVariable("ODINgAHeight",20.0);       
+  Control.addVariable("ODINgADepth",20.0);       
   Control.addVariable("ODINgALeftWidth",20.0);       
   Control.addVariable("ODINgARightWidth",20.0);       
   Control.addVariable("ODINgAFeMat","Void");       
@@ -167,7 +167,38 @@ ODINvariables(FuncDataBase& Control)
 
   Control.addVariable("odinTZero0PhaseAngle",95.0);
   Control.addVariable("odinTZero0OpenAngle",30.0);
+
+  // SECOND GUIDE SEGMENT
   
+  Control.addVariable("odinGBXStep",0.0);       
+  Control.addVariable("odinGBYStep",0.0);       
+  Control.addVariable("odinGBZStep",0.0);       
+  Control.addVariable("odinGBXYAngle",0.0);       
+  Control.addVariable("odinGBZAngle",0.0);       
+  Control.addVariable("odinGBLength",220.0);       
+  Control.addVariable("odinGBHeight",100.0);       
+  Control.addVariable("odinGBDepth",100.0);       
+  Control.addVariable("odinGBLeftWidth",20.0);       
+  Control.addVariable("odinGBRightWidth",20.0);       
+  Control.addVariable("odinGBFeMat","Void");       
+  Control.addVariable("odinGBNShapes",1);       
+  Control.addVariable("odinGBNShapeLayers",3);
+
+  Control.addVariable("odinGBLayerThick1",0.4);  // glass thick
+  Control.addVariable("odinGBLayerThick2",1.5);
+
+  Control.addVariable("odinGBLayerMat0","Void");
+  Control.addVariable("odinGBLayerMat1","Glass");
+  Control.addVariable("odinGBLayerMat2","Void");       
+
+  Control.addVariable("odinGB0TypeID","Tapper");
+  Control.addVariable("odinGB0HeightStart",3.0);
+  Control.addVariable("odinGB0HeightEnd",3.0);
+  Control.addVariable("odinGB0WidthStart",7.0);
+  Control.addVariable("odinGB0WidthEnd",10.0);
+  Control.addVariable("odinGB0Length",220.0);
+  Control.addVariable("odinGB0ZAngle",0.0);       
+
 
   
   return;

@@ -72,12 +72,17 @@ class GuideLine : public attachSystem::ContainedComp,
   std::vector<double> layerThick;   ///< Thickness [inner->outer]
   std::vector<int> layerMat;         ///< Mat 
 
+  int activeEnd;               ///< Active end cut
+  HeadRule endCut;             ///< Extra end rule cut [if required]
+  
   size_t nShapes;              ///< Number of shape segments
   /// Shape units
   std::vector<ShapeUnit*> shapeUnits;
   /// Layer shielding
   int feMat;
 
+  std::string shapeBackSurf(const size_t) const;
+  
   void clear();
   void processShape(const FuncDataBase&);
   void addGuideUnit(const size_t,const Geometry::Vec3D&,
@@ -108,6 +113,8 @@ class GuideLine : public attachSystem::ContainedComp,
   GuideLine& operator=(const GuideLine&);
   virtual ~GuideLine();
 
+  void addEndCut(const std::string&);
+  
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
 			 const long int,const attachSystem::FixedComp&,
 			 const long int);

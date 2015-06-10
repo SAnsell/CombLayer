@@ -76,6 +76,8 @@ class Bunker : public attachSystem::ContainedComp,
 
   void createSurfaces();
   void createLinks();
+  void createSideLinks(const Geometry::Vec3D&,const Geometry::Vec3D&,
+		       const Geometry::Vec3D&,const Geometry::Vec3D&);
   void createObjects(Simulation&,const attachSystem::FixedComp&,
 		     const long int);
 

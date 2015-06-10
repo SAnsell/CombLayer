@@ -91,7 +91,8 @@ GuideLine::GuideLine(const std::string& Key) :
   attachSystem::FixedGroup(Key,"Shield",6,"GuideOrigin",0),
   SUItem(200),SULayer(20),
   guideIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(guideIndex+1),nShapeLayers(0),nShapes(0)
+  cellIndex(guideIndex+1),nShapeLayers(0),activeEnd(0),  
+  nShapes(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -109,7 +110,8 @@ GuideLine::GuideLine(const GuideLine& A) :
   length(A.length),height(A.height),depth(A.depth),
   leftWidth(A.leftWidth),rightWidth(A.rightWidth),
   nShapeLayers(A.nShapeLayers),layerThick(A.layerThick),
-  layerMat(A.layerMat),nShapes(A.nShapes),feMat(A.feMat)
+  layerMat(A.layerMat),activeEnd(A.activeEnd),
+  endCut(A.endCut),nShapes(A.nShapes),feMat(A.feMat)
   /*!
     Copy constructor
     \param A :: GuideLine to copy
@@ -152,6 +154,8 @@ GuideLine::operator=(const GuideLine& A)
       layerThick=A.layerThick;
       layerMat=A.layerMat;
       nShapes=A.nShapes;
+      activeEnd=A.activeEnd;
+      endCut=A.endCut;
       feMat=A.feMat;
     }
   return *this;
@@ -257,6 +261,7 @@ GuideLine::addGuideUnit(const size_t index,
   const std::string PGKey=(index) ? 
     "Guide"+StrFunc::makeString(index-1) :  "GuideOrigin";
   attachSystem::FixedComp& prevFC=FixedGroup::getKey(PGKey);
+
   guideFC.createUnitVector(prevFC,POrigin);
   guideFC.applyShift(bX,0.0,bZ);
   guideFC.applyAngleRotate(bXYang,bZang);
@@ -463,8 +468,9 @@ GuideLine::createSurfaces(const long int mainLP)
   if (!mainLP)
     ModelSupport::buildPlane(SMap,guideIndex+1,Origin,Y);
   
-
-  ModelSupport::buildPlane(SMap,guideIndex+2,Origin+Y*length,Y);
+  if (!activeEnd)
+    ModelSupport::buildPlane(SMap,guideIndex+2,Origin+Y*length,Y);
+  
   ModelSupport::buildPlane(SMap,guideIndex+3,Origin-X*leftWidth,X);
   ModelSupport::buildPlane(SMap,guideIndex+4,Origin+X*rightWidth,X);
   ModelSupport::buildPlane(SMap,guideIndex+5,Origin-Z*depth,Z);
@@ -483,6 +489,31 @@ GuideLine::createSurfaces(const long int mainLP)
   return;
 }
 
+std::string
+GuideLine::shapeBackSurf(const size_t index) const
+  /*!
+    Determine the backcutting surface
+    \param Index :: index of shape number
+    \return cutting surface string
+   */
+{
+  ELog::RegMethod RegA("GuideLine","shapeBackSurf");
+
+  if (activeEnd)
+    {
+      ELog::EM<<"END == "<<endCut.display()<<ELog::endDiag;
+    }
+
+  const int frontNum(guideIndex+9+static_cast<int>(index));
+  if (index!=nShapes-1)
+    return ModelSupport::getComposite(SMap,frontNum," -2 ");
+
+  return (activeEnd) ?
+    endCut.display() :
+    ModelSupport::getComposite(SMap,guideIndex," -2 ");
+  
+}
+  
 void
 GuideLine::createObjects(Simulation& System,
 			 const attachSystem::FixedComp& mainFC,
@@ -515,10 +546,8 @@ GuideLine::createObjects(Simulation& System,
       // front
       const std::string front= (!i) ? startSurf : 
 	ModelSupport::getComposite(SMap,frontNum," 1 ");
-      // Back
-      const std::string back = (i==nShapes-1) ?
-	ModelSupport::getComposite(SMap,guideIndex," -2 ") : 
-	ModelSupport::getComposite(SMap,frontNum," -2 ");
+      const std::string back=shapeBackSurf(i);
+      ELog::EM<<"BACK:"<<back<<ELog::endDiag;
       for(size_t j=0;j<nShapeLayers;j++)
 	{
 	  shapeLayer=ModelSupport::getComposite(SMap,guideIndex,
@@ -541,8 +570,13 @@ GuideLine::createObjects(Simulation& System,
     }
 
   // Outer steel
-  Out=ModelSupport::getComposite(SMap,guideIndex," -2 3 -4 5 -6 ")+
-    startSurf;
+  if (!activeEnd)
+    Out=ModelSupport::getComposite(SMap,guideIndex," -2 3 -4 5 -6 ");
+  else
+    Out=ModelSupport::getComposite(SMap,guideIndex," 3 -4 5 -6 ")+
+      endCut.display();
+
+  Out+=startSurf;
   addOuterSurf(Out);      
 
   excludeCell.makeComplement();
@@ -626,6 +660,24 @@ GuideLine::createUnitLinks()
   return;
 }
 
+void
+GuideLine::addEndCut(const std::string& EC)
+  /*!
+    Add an end cut to the string
+    \param EC :: End cut
+  */
+{
+  ELog::RegMethod RegA("GuideLine","addEndCut");
+
+  if (EC.empty())
+    activeEnd=0;
+  else
+    {
+      activeEnd=1;
+      endCut.procString(EC);
+    }
+  return;
+}
 
 void
 GuideLine::createAll(Simulation& System,

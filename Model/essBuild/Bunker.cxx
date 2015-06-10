@@ -85,7 +85,7 @@ namespace essSystem
 {
 
 Bunker::Bunker(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
+  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,12),
   attachSystem::CellMap(),
   bnkIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(bnkIndex+1)
@@ -174,12 +174,6 @@ Bunker::createSurfaces()
   Geometry::Vec3D AWallDir(X);
   Geometry::Vec3D BWallDir(X);
   // rotation of axis:
-  // Geometry::Quaternion::calcQRotDeg
-  //   (-(leftAngle+leftPhase),Z).rotate(AWallDir);
-  // Geometry::Quaternion::calcQRotDeg
-  //   (-(rightAngle+rightPhase),Z).rotate(BWallDir)
-
-
   Geometry::Quaternion::calcQRotDeg(leftAngle+leftPhase,Z).rotate(AWallDir);
   Geometry::Quaternion::calcQRotDeg(-(rightAngle+rightPhase),Z).rotate(BWallDir);
   // rotation of phase points:
@@ -213,11 +207,43 @@ Bunker::createSurfaces()
 			   Origin-Z*(floorDepth+floorThick),Z);
   ModelSupport::buildPlane(SMap,bnkIndex+16,
 			   Origin+Z*(roofHeight+roofThick),Z);
-  
-  
+
+
+
   return;
 }
 
+void
+Bunker::createSideLinks(const Geometry::Vec3D& AWall,
+			const Geometry::Vec3D& BWall,
+			const Geometry::Vec3D& AWallDir,
+			const Geometry::Vec3D& BWallDir)
+  /*!
+    Ugly function to create side wall linkes
+    \param AWall :: Left wall point
+    \param BWall :: Left wall point
+   */
+{
+  ELog::RegMethod RegA("Bunker","createSideLinks");
+		      
+  // Construct links on side walls:
+  Geometry::Vec3D AWallY(AWallDir*Z);
+  Geometry::Vec3D BWallY(BWallDir*Z);
+
+  if (AWallY.dotProd(Y)<0.0)
+    AWallY*=-1;
+  if (BWallY.dotProd(Y)<0.0)
+    BWallY*=-1;
+
+  // Outer 
+  FixedComp::setConnect(2,AWall+AWallY*wallRadius/2.0,AWallDir);
+  FixedComp::setConnect(3,BWall+BWallY*wallRadius/2.0,BWallDir);
+
+
+  return;
+}
+
+  
 void
 Bunker::createObjects(Simulation& System,
 		      const attachSystem::FixedComp& FC,  
@@ -312,6 +338,25 @@ Bunker::createLinks()
   */
 {
   ELog::RegMethod RegA("Bunker","createLinks");
+
+  // Outer
+  FixedComp::setConnect(1,rotCentre+Y*(wallRadius+wallThick),Y);
+  FixedComp::setLinkSurf(1,SMap.realSurf(bnkIndex+17));
+
+  FixedComp::setConnect(4,Origin-Z*(floorDepth+floorThick),-Z);
+  FixedComp::setLinkSurf(4,-SMap.realSurf(bnkIndex+15));
+  FixedComp::setConnect(5,Origin+Z*(roofHeight+roofThick),Z);
+  FixedComp::setLinkSurf(5,SMap.realSurf(bnkIndex+16));
+
+  // Inner
+  FixedComp::setConnect(7,rotCentre+Y*wallRadius,-Y);
+  FixedComp::setLinkSurf(7,-SMap.realSurf(bnkIndex+7));
+
+  FixedComp::setConnect(10,Origin-Z*floorDepth,Z);
+  FixedComp::setLinkSurf(10,SMap.realSurf(bnkIndex+5));
+  FixedComp::setConnect(11,Origin+Z*roofHeight,-Z);
+  FixedComp::setLinkSurf(11,-SMap.realSurf(bnkIndex+6));
+
   return;
 }
 

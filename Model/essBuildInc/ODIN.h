@@ -37,7 +37,8 @@ namespace constructSystem
 
 namespace essSystem
 {
-
+  class Bunker;
+  
   /*!
     \class ODIN
     \version 1.0
@@ -67,7 +68,7 @@ class ODIN
   ~ODIN();
   
   void build(Simulation&,const attachSystem::TwinComp&,
-	     const attachSystem::CellMap&,const int);
+	     const Bunker&,const int);
 
 };
 
