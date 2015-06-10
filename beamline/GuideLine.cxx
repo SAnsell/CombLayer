@@ -331,6 +331,7 @@ GuideLine::processShape(const FuncDataBase& Control)
       bXYang=Control.EvalDefVar<double>(BKey+"XYAngle",0.0);
       bZang=Control.EvalDefVar<double>(BKey+"ZAngle",0.0);
 
+      ELog::EM<<"Guide Unit == "<<Origin<<ELog::endDiag;
       if (index)
 	{
 	  addGuideUnit(index,shapeUnits.back()->getEnd(),
@@ -430,25 +431,19 @@ GuideLine::createUnitVector(const attachSystem::FixedComp& mainFC,
   */
 {
   ELog::RegMethod RegA("GuideLine","createUnitVector");
+  
   attachSystem::FixedComp& shieldFC=FixedGroup::getKey("Shield");
   shieldFC.createUnitVector(mainFC,mainLP);
-
   shieldFC.applyShift(xStep,yStep,zStep);
   shieldFC.applyAngleRotate(xyAngle,zAngle);
 
 
   attachSystem::FixedComp& guideFC=FixedGroup::getKey("GuideOrigin");
-
   guideFC.createUnitVector(beamFC,beamLP);
   guideFC.applyShift(beamXStep,beamYStep,beamZStep);
   guideFC.applyAngleRotate(beamXYAngle,beamZAngle);
 
-  ELog::EM<<"Creating guide origin with:"<<beamFC.getKeyName()<<" "
-	  <<beamLP<<" == "<<guideFC.getCentre()<<ELog::endDiag;  
-  ELog::EM<<"Direction:"<<guideFC.getY()<<" : "<<guideFC.getZ()<<ELog::endDiag;
-  ELog::EM<<"Jaws:"<<beamFC.getY()<<" : "<<beamFC.getZ()<<ELog::endDiag;
-
-  setDefault("Shield");
+  setDefault("GuideOrigin");
 
   return;
 }
@@ -507,12 +502,11 @@ GuideLine::createObjects(Simulation& System,
     startSurf=ModelSupport::getComposite(SMap,guideIndex," 1 ");
   else
     {
-      startSurf=(mainLP>0) ? 
-	mainFC.getLinkString(static_cast<size_t>(mainLP-1)) : 
-	mainFC.getLinkComplement(static_cast<size_t>(mainLP+1));
+      startSurf=mainFC.getSignedLinkString(mainLP);
+      ELog::EM<<"Start = "<<mainFC.getKeyName()
+	      <<" "<<mainLP<<" "<<startSurf<<ELog::endDiag;
     }
-
-
+  
   HeadRule excludeCell;
   int frontNum(guideIndex+9);
   std::string shapeLayer;

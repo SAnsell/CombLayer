@@ -265,4 +265,4 @@ ShutterBay::createAll(Simulation& System,
   return;
 }
 
-}  // NAMESPACE ts1System
+}  // NAMESPACE essSystem

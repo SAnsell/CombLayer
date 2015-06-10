@@ -65,6 +65,8 @@
 #include "CellMap.h"
 #include "LayerComp.h"
 #include "FixedGroup.h"
+#include "SecondTrack.h"
+#include "TwinComp.h"
 #include "ShapeUnit.h"
 #include "Bunker.h"
 #include "GuideLine.h"
@@ -132,8 +134,8 @@ makeESSBL::build(Simulation& System,const Bunker& bunkerObj)
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  const attachSystem::FixedComp* mainFCPtr=
-    OR.getObject<attachSystem::FixedComp>(shutterName);
+  const attachSystem::TwinComp* mainFCPtr=
+    OR.getObject<attachSystem::TwinComp>(shutterName);
 
   if (!mainFCPtr)
     throw ColErr::InContainerError<std::string>(shutterName,"shutterObject");

@@ -88,9 +88,37 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("ODINCollAzJawMat","Aluminium");
   Control.addVariable("ODINCollAxJawMat","Aluminium");
   Control.addVariable("ODINCollAWallMat","Aluminium");
-
   Control.addVariable("ODINCollAzJawMat","Aluminium");
 
+
+  // Quad Blade chopper
+  Control.addVariable("odinBladeXStep",0.0);
+  Control.addVariable("odinBladeYStep",2.0);
+  Control.addVariable("odinBladeZStep",15.0/2.0);
+  Control.addVariable("odinBladeXYangle",0.0);
+  Control.addVariable("odinBladeZangle",0.0);
+
+  Control.addVariable("odinBladeGap",3.0);
+  Control.addVariable("odinBladeInnerRadius",10.0);
+  Control.addVariable("odinBladeOuterRadius",25.0);
+  Control.addVariable("odinBladeNDisk",4);
+
+  Control.addVariable("odinBlade0Thick",1.0);
+  Control.addVariable("odinBlade1Thick",1.0);
+  Control.addVariable("odinBlade2Thick",1.0);
+  Control.addVariable("odinBlade3Thick",1.0);
+  Control.addVariable("odinBladeInnerMat","Inconnel");
+  Control.addVariable("odinBladeOuterMat","Aluminum");
+
+  Control.addVariable("odinBlade0PhaseAngle",95.0);
+  Control.addVariable("odinBlade0OpenAngle",30.0);
+  Control.addVariable("odinBlade1PhaseAngle",95.0);
+  Control.addVariable("odinBlade1OpenAngle",30.0);
+  Control.addVariable("odinBlade2PhaseAngle",95.0);
+  Control.addVariable("odinBlade2OpenAngle",30.0);
+  Control.addVariable("odinBlade3PhaseAngle",95.0);
+  Control.addVariable("odinBlade3OpenAngle",30.0);
+  
   Control.addVariable("ODINgAXStep",0.0);       
   Control.addVariable("ODINgAYStep",0.0);       
   Control.addVariable("ODINgAZStep",0.0);       
@@ -122,7 +150,6 @@ ODINvariables(FuncDataBase& Control)
 
 
   // T0 Chopper 
-
   Control.addVariable("odinTZeroXStep",0.0);
   Control.addVariable("odinTZeroYStep",2.0);
   Control.addVariable("odinTZeroZStep",15.0/2.0);
@@ -140,7 +167,6 @@ ODINvariables(FuncDataBase& Control)
 
   Control.addVariable("odinTZero0PhaseAngle",95.0);
   Control.addVariable("odinTZero0OpenAngle",30.0);
-  
   
 
   

@@ -66,7 +66,8 @@
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"  
-#include "FixedComp.h" 
+#include "FixedComp.h"
+#include "FixedGroup.h" 
 #include "SecondTrack.h"
 #include "TwinComp.h"
 #include "ContainedComp.h"
@@ -77,7 +78,8 @@ namespace constructSystem
 {
 
 DiskChopper::DiskChopper(const std::string& Key) : 
-  attachSystem::FixedComp(Key,6),attachSystem::ContainedComp(),
+  attachSystem::FixedGroup(Key,"Main",6,"Beam",2),
+  attachSystem::ContainedComp(),
   chpIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(chpIndex+1),centreFlag(0),nDisk(0)
   /*!
@@ -87,7 +89,7 @@ DiskChopper::DiskChopper(const std::string& Key) :
 {}
 
 DiskChopper::DiskChopper(const DiskChopper& A) : 
-  attachSystem::FixedComp(A),
+  attachSystem::FixedGroup(A),
   chpIndex(A.chpIndex),cellIndex(A.cellIndex),
   centreFlag(A.centreFlag),xStep(A.xStep),yStep(A.yStep),
   zStep(A.zStep),xyAngle(A.xyAngle),zAngle(A.zAngle),
@@ -109,7 +111,7 @@ DiskChopper::operator=(const DiskChopper& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedGroup::operator=(A);
       cellIndex=A.cellIndex;
       centreFlag=A.centreFlag;
       xStep=A.xStep;
@@ -181,14 +183,17 @@ DiskChopper::createUnitVector(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("DiskChopper","createUnitVector");
 
+
   FixedComp::createUnitVector(FC,sideIndex);
-  ELog::EM<<"O == ::"<<Origin<<ELog::endDiag;
+  beamOrigin=Origin;
+
   applyShift(xStep,yStep,zStep);
   applyAngleRotate(xyAngle,zAngle);
-    ELog::EM<<"O == ::"<<Origin<<ELog::endDiag;
+
+
   if (!centreFlag)
     Origin-=Z*outerRadius;
-  ELog::EM<<"O == ::"<<Origin<<ELog::endDiag;
+  
   return;
 }
 
@@ -204,13 +209,15 @@ DiskChopper::createUnitVector(const attachSystem::TwinComp& TC,
   ELog::RegMethod RegA("DiskChopper","createUnitVector(TwinComp)");
 
   if (sideIndex>1)
-    throw ColErr::IndexError<size_t>(sideIndex,1,"sideIndex");
+    throw ColErr::IndexError<long int>(sideIndex,1,"sideIndex");
 
   Origin=(!sideIndex) ? TC.getBeamStart() : TC.getBeamExit();
   X=TC.getBX();
   Y=TC.getBY();
   Z=TC.getBZ();
 
+  beamOrigin=Origin;
+  ELog::EM<<"Beam origin == "<<beamOrigin<<ELog::endDiag;
   applyShift(xStep,yStep,zStep);
   applyAngleRotate(xyAngle,zAngle);
   if (!centreFlag)
@@ -302,29 +309,42 @@ DiskChopper::createLinks()
 {
   ELog::RegMethod RegA("DiskChopper","createLinks");
 
-  FixedComp::setConnect(0,Origin,-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(chpIndex+1));
+  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+  
+  mainFC.setConnect(0,Origin,-Y);
+  mainFC.setLinkSurf(0,-SMap.realSurf(chpIndex+1));
 
-  const int CLast(static_cast<int>(nDisk-1)*50);
+  const int CLast(chpIndex+static_cast<int>(nDisk-1)*50);
   double L(-diskGap);  // one less gap !
   for(const DiskInfo& DRef : DInfo)
     L+=DRef.thick+diskGap;
   
-  FixedComp::setConnect(1,Origin+Y*L,Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(CLast+2));
+  mainFC.setConnect(1,Origin+Y*L,Y);
+  mainFC.setLinkSurf(1,SMap.realSurf(CLast+2));
   
-  FixedComp::setConnect(2,Origin+Y*(L/2.0)-X*outerRadius,-X);
-  FixedComp::setLinkSurf(2,SMap.realSurf(chpIndex+17));
+  mainFC.setConnect(2,Origin+Y*(L/2.0)-X*outerRadius,-X);
+  mainFC.setLinkSurf(2,SMap.realSurf(chpIndex+17));
 
-  FixedComp::setConnect(3,Origin+Y*(L/2.0)-Z*outerRadius,-Z);
-  FixedComp::setLinkSurf(3,SMap.realSurf(chpIndex+17));
+  mainFC.setConnect(3,Origin+Y*(L/2.0)-Z*outerRadius,-Z);
+  mainFC.setLinkSurf(3,SMap.realSurf(chpIndex+17));
 
-  FixedComp::setConnect(4,Origin+Y*(L/2.0)+Z*outerRadius,Z);
-  FixedComp::setLinkSurf(4,SMap.realSurf(chpIndex+17));
+  mainFC.setConnect(4,Origin+Y*(L/2.0)+Z*outerRadius,Z);
+  mainFC.setLinkSurf(4,SMap.realSurf(chpIndex+17));
 
-  FixedComp::setConnect(5,Origin+Y*(L/2.0)+X*outerRadius,X);
-  FixedComp::setLinkSurf(5,SMap.realSurf(chpIndex+17));
+  mainFC.setConnect(5,Origin+Y*(L/2.0)+X*outerRadius,X);
+  mainFC.setLinkSurf(5,SMap.realSurf(chpIndex+17));
 
+  // MAIN BEAM:
+  beamFC.setConnect(0,beamOrigin,-beamAxis);
+  beamFC.setLinkSurf(0,-SMap.realSurf(chpIndex+1));
+
+  beamFC.setConnect(1,beamOrigin+Y*L,beamAxis);
+  beamFC.setLinkSurf(1,SMap.realSurf(CLast+2));
+  ELog::EM<<"Connect point == "<<beamOrigin+Y*L<<ELog::endDiag;
+
+  
+  
   
   return;
 }
