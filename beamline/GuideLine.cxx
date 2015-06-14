@@ -336,7 +336,6 @@ GuideLine::processShape(const FuncDataBase& Control)
       bXYang=Control.EvalDefVar<double>(BKey+"XYAngle",0.0);
       bZang=Control.EvalDefVar<double>(BKey+"ZAngle",0.0);
 
-      ELog::EM<<"Guide Unit == "<<Origin<<ELog::endDiag;
       if (index)
 	{
 	  addGuideUnit(index,shapeUnits.back()->getEnd(),
@@ -499,11 +498,6 @@ GuideLine::shapeBackSurf(const size_t index) const
 {
   ELog::RegMethod RegA("GuideLine","shapeBackSurf");
 
-  if (activeEnd)
-    {
-      ELog::EM<<"END == "<<endCut.display()<<ELog::endDiag;
-    }
-
   const int frontNum(guideIndex+9+static_cast<int>(index));
   if (index!=nShapes-1)
     return ModelSupport::getComposite(SMap,frontNum," -2 ");
@@ -532,11 +526,7 @@ GuideLine::createObjects(Simulation& System,
   if (!mainLP)
     startSurf=ModelSupport::getComposite(SMap,guideIndex," 1 ");
   else
-    {
-      startSurf=mainFC.getSignedLinkString(mainLP);
-      ELog::EM<<"Start = "<<mainFC.getKeyName()
-	      <<" "<<mainLP<<" "<<startSurf<<ELog::endDiag;
-    }
+    startSurf=mainFC.getSignedLinkString(mainLP);
   
   HeadRule excludeCell;
   int frontNum(guideIndex+9);
@@ -547,7 +537,6 @@ GuideLine::createObjects(Simulation& System,
       const std::string front= (!i) ? startSurf : 
 	ModelSupport::getComposite(SMap,frontNum," 1 ");
       const std::string back=shapeBackSurf(i);
-      ELog::EM<<"BACK:"<<back<<ELog::endDiag;
       for(size_t j=0;j<nShapeLayers;j++)
 	{
 	  shapeLayer=ModelSupport::getComposite(SMap,guideIndex,

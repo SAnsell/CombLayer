@@ -103,10 +103,10 @@ Bunker::~Bunker()
 
 void
 Bunker::populate(const FuncDataBase& Control)
- /*!
-   Populate all the variables
-   \param Control :: Variable data base
- */
+  /*!
+    Populate all the variables
+    \param Control :: Variable data base
+  */
 {
   ELog::RegMethod RegA("Bunker","populate");
 
@@ -114,6 +114,8 @@ Bunker::populate(const FuncDataBase& Control)
   rightPhase=Control.EvalVar<double>(keyName+"RightPhase");
   leftAngle=Control.EvalVar<double>(keyName+"LeftAngle");
   rightAngle=Control.EvalVar<double>(keyName+"RightAngle");
+
+  nSectors=Control.EvalVar<size_t>(keyName+"NSectors");
   
   wallRadius=Control.EvalVar<double>(keyName+"WallRadius");
   floorDepth=Control.EvalVar<double>(keyName+"FloorDepth");
@@ -209,7 +211,26 @@ Bunker::createSurfaces()
 			   Origin+Z*(roofHeight+roofThick),Z);
 
 
-
+  // CREATE Sector boundary lines
+  // Note negative subtraction as moving +ve to -ve
+  double phaseAngle(leftPhase);
+  const double phaseStep((leftPhase+rightPhase)/nSectors);
+  double normAngle(leftAngle+leftPhase);
+  const double normStep((leftAngle+leftPhase+rightAngle+rightPhase)/nSectors);
+  int divIndex(bnkIndex+500);
+      
+  for(size_t i=1;i<nSectors;i++)
+    {
+      divIndex++;
+      phaseAngle-=phaseStep;
+      normAngle-=normStep;
+      Geometry::Vec3D DPosition(Origin-rotCentre);
+      Geometry::Quaternion::calcQRotDeg(phaseAngle,Z).rotate(DPosition);
+      Geometry::Vec3D DNorm(X);
+      Geometry::Quaternion::calcQRotDeg(normAngle,Z).rotate(DNorm);
+      ModelSupport::buildPlane(SMap,divIndex,DPosition,DNorm);
+    }
+      
   return;
 }
 
@@ -238,7 +259,6 @@ Bunker::createSideLinks(const Geometry::Vec3D& AWall,
   // Outer 
   FixedComp::setConnect(2,AWall+AWallY*wallRadius/2.0,AWallDir);
   FixedComp::setConnect(3,BWall+BWallY*wallRadius/2.0,BWallDir);
-
 
   return;
 }
@@ -274,12 +294,29 @@ Bunker::createObjects(Simulation& System,
   Out=ModelSupport::getComposite(SMap,bnkIndex," 1 -7 13 -14 6 -16 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Inner));
 
-  Out=ModelSupport::getComposite(SMap,bnkIndex," 1 -17 7 13 -14 15 -16 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
-  setCell("MainWall",cellIndex-1);
+  int divIndex(bnkIndex+500);
+  for(size_t i=0;i<nSectors;i++)
+    {
+      
+      const std::string ACut=(!i) ?
+	ModelSupport::getComposite(SMap,bnkIndex," 13 ") :
+	ModelSupport::getComposite(SMap,divIndex-1," 1M ");
+      const std::string BCut=(i+1 == nSectors) ?
+	ModelSupport::getComposite(SMap,bnkIndex," -14 ") :
+	ModelSupport::getComposite(SMap,divIndex," -1M ");
+        Out=ModelSupport::getComposite(SMap,bnkIndex," 1 -17 7  15 -16 ");
+      Out+=ACut+BCut;
+	  
+      divIndex++;
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+      setCell("MainWall"+StrFunc::makeString(i),cellIndex-1);
+    }
+
+
   // External
   Out=ModelSupport::getComposite(SMap,bnkIndex," 1 -17 13 -14 15 -16 ");
   addOuterSurf(Out);
+      
   
   return;
 }
@@ -306,27 +343,30 @@ Bunker::layerProcess(Simulation& System)
 	  DA.addMaterial(wallMatVec[i-1]);
 	}
       DA.addMaterial(wallMatVec.back());
-      
-      // Cell Specific:
-      DA.setCellN(getCell("MainWall"));
-      DA.setOutNum(cellIndex,bnkIndex+101);
 
-      ModelSupport::mergeTemplate<Geometry::Cylinder,
-				  Geometry::Cylinder> surroundRule;
-
-      surroundRule.setSurfPair(SMap.realSurf(bnkIndex+7),
-			       SMap.realSurf(bnkIndex+17));
-
-      OutA=ModelSupport::getComposite(SMap,bnkIndex," 7 ");
-      OutB=ModelSupport::getComposite(SMap,bnkIndex," -17 ");
-
-      surroundRule.setInnerRule(OutA);
-      surroundRule.setOuterRule(OutB);
-
-      DA.addRule(&surroundRule);
-      DA.activeDivideTemplate(System);
-
-      cellIndex=DA.getCellNum();
+      for(size_t i=0;i<nSectors;i++)
+	{
+	  // Cell Specific:
+	  DA.setCellN(getCell("MainWall"+StrFunc::makeString(i)));
+	  DA.setOutNum(cellIndex,bnkIndex+1001);
+	  
+	  ModelSupport::mergeTemplate<Geometry::Cylinder,
+				      Geometry::Cylinder> surroundRule;
+	  
+	  surroundRule.setSurfPair(SMap.realSurf(bnkIndex+7),
+				   SMap.realSurf(bnkIndex+17));
+	  
+	  OutA=ModelSupport::getComposite(SMap,bnkIndex," 7 ");
+	  OutB=ModelSupport::getComposite(SMap,bnkIndex," -17 ");
+	  
+	  surroundRule.setInnerRule(OutA);
+	  surroundRule.setOuterRule(OutB);
+	  
+	  DA.addRule(&surroundRule);
+	  DA.activeDivideTemplate(System);
+	  
+	  cellIndex=DA.getCellNum();
+	}
     }
 }
 

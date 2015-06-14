@@ -341,10 +341,6 @@ DiskChopper::createLinks()
 
   beamFC.setConnect(1,beamOrigin+Y*L,beamAxis);
   beamFC.setLinkSurf(1,SMap.realSurf(CLast+2));
-  ELog::EM<<"Connect point == "<<beamOrigin+Y*L<<ELog::endDiag;
-
-  
-  
   
   return;
 }

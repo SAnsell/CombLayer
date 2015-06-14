@@ -51,6 +51,8 @@ class Bunker : public attachSystem::ContainedComp,
   double leftAngle;              ///< Extent of left angle
   double rightAngle;             ///< Extent of right ange
 
+  size_t nSectors;
+  
   double innerRadius;            ///< inner radius [calculated]
   double wallRadius;             ///< Wall radius
   double floorDepth;             ///< Floor depth
@@ -76,12 +78,14 @@ class Bunker : public attachSystem::ContainedComp,
 
   void createSurfaces();
   void createLinks();
-  void createSideLinks(const Geometry::Vec3D&,const Geometry::Vec3D&,
-		       const Geometry::Vec3D&,const Geometry::Vec3D&);
   void createObjects(Simulation&,const attachSystem::FixedComp&,
 		     const long int);
 
   void layerProcess(Simulation&);
+
+  void createSideLinks(const Geometry::Vec3D&,const Geometry::Vec3D&,
+		       const Geometry::Vec3D&,const Geometry::Vec3D&);
+
   
  public:
 

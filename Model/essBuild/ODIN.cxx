@@ -73,6 +73,7 @@
 #include "GuideLine.h"
 #include "DiskChopper.h"
 #include "Bunker.h"
+#include "BunkerInsert.h"
 #include "ODIN.h"
 
 namespace essSystem
@@ -82,7 +83,9 @@ ODIN::ODIN() :
   BladeChopper(new constructSystem::DiskChopper("odinBlade")),
   GuideA(new beamlineSystem::GuideLine("ODINgA")),
   T0Chopper(new constructSystem::DiskChopper("odinTZero")),
-  GuideB(new beamlineSystem::GuideLine("odinGB"))
+  GuideB(new beamlineSystem::GuideLine("odinGB")),
+  BInsert(new BunkerInsert("odinBInsert")),
+  
  /*!
     Constructor
  */
@@ -94,6 +97,7 @@ ODIN::ODIN() :
   OR.addObject(GuideA);
   OR.addObject(T0Chopper);
   OR.addObject(GuideB);
+  OR.addObject(BInsert);
 }
 
 
@@ -134,6 +138,8 @@ ODIN::build(Simulation& System,const attachSystem::TwinComp& GItem,
   GuideB->addEndCut(bunkerObj.getSignedLinkString(8));
   GuideB->createAll(System,T0Chopper->getKey("Main"),2,
 		    T0Chopper->getKey("Beam"),2);
+
+  BInsert->addInsertCell(bunkerObj.getCell("MainVoid"));
 
   return;
 }

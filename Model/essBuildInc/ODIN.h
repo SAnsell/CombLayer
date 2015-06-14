@@ -59,6 +59,8 @@ class ODIN
   std::shared_ptr<constructSystem::DiskChopper> T0Chopper;
   /// Tapper Unit
   std::shared_ptr<beamlineSystem::GuideLine> GuideB;
+  /// Bunker insert
+  std::shared_ptr<essSystem::BunkerInsert> BInsert;
   
  public:
   

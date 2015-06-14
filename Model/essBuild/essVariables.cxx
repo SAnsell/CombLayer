@@ -1181,7 +1181,8 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("LowABunkerRightPhase",30.0);
   Control.addVariable("LowABunkerLeftAngle",0.0);
   Control.addVariable("LowABunkerRightAngle",0.0);
-
+  Control.addVariable("LowABunkerNSectors",9);
+  
   Control.addVariable("LowABunkerWallRadius",1000.0);
   Control.addVariable("LowABunkerFloorDepth",100.0);
   Control.addVariable("LowABunkerRoofHeight",100.0);
