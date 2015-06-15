@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   tally/TallySelector.cxx
  *
@@ -92,7 +92,7 @@ tallyModification(Simulation& System,
   */
 {
   ELog::RegMethod RegA("TallySelector","tallyModification");
-  const size_t nP=IParam.grpCnt("TMod");
+  const size_t nP=IParam.setCnt("TMod");
   for(size_t i=0;i<nP;i++)
     {
 
@@ -100,10 +100,10 @@ tallyModification(Simulation& System,
       // This is enforced a >1
       const size_t nV=IParam.itemCnt("TMod",i);
       const std::string key=
-	IParam.getCompValue<std::string>("TMod",i,0);
+	IParam.getValue<std::string>("TMod",i,0);
       for(size_t j=1;j<nV;j++)
 	StrItem.push_back
-	  (IParam.getCompValue<std::string>("TMod",i,j));
+	  (IParam.getValue<std::string>("TMod",i,j));
 
       int errFlag(1);
       if(key=="help")
@@ -146,7 +146,7 @@ tallyModification(Simulation& System,
 	  if (nV>=2)
 	    {
 	      const std::string TN=
-		IParam.getCompValue<std::string>("TMod",i,1);
+		IParam.getValue<std::string>("TMod",i,1);
 	      if (!StrFunc::convert(StrItem[0],tNumber))
 		ELog::EM<<"Failed to understand TNumber :"
 			<<StrItem[0]<<ELog::endErr;
@@ -235,7 +235,7 @@ tallyModification(Simulation& System,
 	  if (nV>=2)
 	    {
 	      const std::string TN=
-		IParam.getCompValue<std::string>("TMod",i,1);
+		IParam.getValue<std::string>("TMod",i,1);
 	      if (!StrFunc::convert(StrItem[0],tNumber))
 		ELog::EM<<"Failed to understand TNumber :"
 			<<StrItem[0]<<ELog::endErr;
@@ -256,7 +256,7 @@ tallyModification(Simulation& System,
 	  if (nV==2)
 	    {
 	      const std::string TN=
-		IParam.getCompValue<std::string>("TMod",i,1);
+		IParam.getValue<std::string>("TMod",i,1);
 	      if (!StrFunc::convert(TN,tNumber))
 		ELog::EM<<"Failed to understand TNumber :"<<TN<<ELog::endErr;
 	      else

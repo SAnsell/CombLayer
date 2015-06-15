@@ -106,7 +106,7 @@ basicConstruct::inputItem<Geometry::Vec3D>
   for(size_t i=0;i<3;i++)
     {
       const std::string& OutItem=
-	IParam.getCompValue<std::string>("tally",Index,INum+i);
+	IParam.getValue<std::string>("tally",Index,INum+i);
       if (!StrFunc::convert(OutItem,V))
 	ELog::EM<<ErrMessage<<ELog::endErr;
       Out[i]=V;
@@ -141,7 +141,7 @@ basicConstruct::inputItem(const mainSystem::inputParam& IParam,
 
   T Out;
   const std::string& OutItem=
-    IParam.getCompValue<std::string>("tally",Index,INum);
+    IParam.getValue<std::string>("tally",Index,INum);
   if (!StrFunc::convert(OutItem,Out))
     ELog::EM<<"Convert error:"<<ErrMessage<<ELog::endErr;
 
@@ -170,7 +170,7 @@ basicConstruct::checkItem(const mainSystem::inputParam& IParam,
     return 0;
 
   const std::string& OutItem=
-    IParam.getCompValue<std::string>("tally",Index,INum);
+    IParam.getValue<std::string>("tally",Index,INum);
 
   return StrFunc::convert(OutItem,Out);
 }
@@ -289,7 +289,7 @@ basicConstruct::convertRegion(const mainSystem::inputParam& IParam,
   int outFlag(1);
   // First determine if a region name is used:
   const std::string region
-    (IParam.getCompValue<std::string>(keyName,Index,Offset));
+    (IParam.getValue<std::string>(keyName,Index,Offset));
   RA=OR.getCell(region);
   if (RA) 
     {
@@ -306,7 +306,7 @@ basicConstruct::convertRegion(const mainSystem::inputParam& IParam,
     }
 
   const std::string regionB
-    (IParam.getCompValue<std::string>(keyName,Index,Offset+1));
+    (IParam.getValue<std::string>(keyName,Index,Offset+1));
 
   if (!region.empty() && tolower(region[0])=='r' && 
       !regionB.empty() && tolower(regionB[0]=='r') &&

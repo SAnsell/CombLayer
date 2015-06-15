@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   testInclude/testInputParam.h
+ * File:   attachCompInc/FixedOffset.h
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -19,42 +19,43 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef testInputParam_h
-#define testInputParam_h 
+#ifndef attachSystem_FixedOffset_h
+#define attachSystem_FixedOffset_h
 
+class FuncDataBase;
+
+namespace attachSystem
+{
 /*!
-  \class testInputParam
-  \brief InputParam insert/find/setting
-  \author S. Ansell
-  \date April 2011
+  \class FixedOffset
   \version 1.0
-  
-  Test the insert system
+  \author S. Ansell
+  \date  2015
+  \brief FixedComp derivative which handles x-z step and xy/z angle rotation
 */
 
-
-class testInputParam 
+class FixedOffset  : public FixedComp
 {
-private:
+ protected:
 
-  //Tests 
-  int testDefValue();
-  int testFlagDef();
-  int testGetValue();
-  int testInput();
-  int testMulti();
-  int testMultiExtract();
-  int testMultiTail();
-  int testSetValue();
-  int testWrite();
-  int testWriteDesc();
- 
-public:
+  double xStep;       ///< x step
+  double yStep;       ///< y step
+  double zStep;       ///< z step
+  double xyAngle;     ///< xy Angle
+  double zAngle;      ///< z Angle
+  
+ public:
 
-  testInputParam();
-  ~testInputParam();
+  FixedOffset(const std::string&,const size_t);
+  FixedOffset(const FixedOffset&);
+  FixedOffset& operator=(const FixedOffset&);
+  virtual ~FixedOffset() {}     ///< Destructor
 
-  int applyTest(const int);     
+  virtual void populate(const FuncDataBase&);
+  void applyOffset();
 };
 
+}
+
 #endif
+ 

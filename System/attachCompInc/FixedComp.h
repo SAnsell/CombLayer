@@ -42,8 +42,9 @@ class FixedComp
   Geometry::Vec3D X;            ///< X-coordinate [shutter x]
   Geometry::Vec3D Y;            ///< Y-coordinate [shutter y]
   Geometry::Vec3D Z;            ///< Z-coordinate 
-  Geometry::Vec3D Origin;       ///< Beam Origin  
+  Geometry::Vec3D Origin;       ///< Origin  
 
+  Geometry::Vec3D beamOrigin;   ///< Neutron origin [if different]
   Geometry::Vec3D beamAxis;     ///< Neutron direction [if different]
 
   std::vector<LinkUnit> LU;     ///< Linked unit items
@@ -108,6 +109,9 @@ class FixedComp
   /// Access centre
   virtual const Geometry::Vec3D& getCentre() const 
     { return Origin; }  
+  /// Access beamOrigin
+  virtual const Geometry::Vec3D& getBeamOrigin() const 
+    { return beamOrigin; }  
 
   virtual int getExitWindow(const size_t,std::vector<int>&) const;
   virtual int getMasterSurf(const size_t) const;
@@ -140,6 +144,7 @@ class FixedComp
   virtual std::string getMasterComplement(const size_t) const;
 
   size_t findLinkAxis(const Geometry::Vec3D&) const;
+
 
   const Geometry::Vec3D& getExit() const;
   const Geometry::Vec3D& getExitNorm() const;

@@ -33,6 +33,7 @@
 #include <algorithm>
 #include <numeric>
 #include <memory>
+#include <tuple>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -66,7 +67,7 @@ defaultConfig::defaultConfig(const std::string& Key)  :
 
 defaultConfig::defaultConfig(const defaultConfig& A) : 
   keyName(A.keyName),varVal(A.varVal),varName(A.varName),
-  varVec(A.varVec),flagName(A.flagName)
+  varVec(A.varVec),flagName(A.flagName),multiSet(A.multiSet)
   /*!
     Copy constructor
     \param A :: defaultConfig to copy
@@ -87,6 +88,7 @@ defaultConfig::operator=(const defaultConfig& A)
       varName=A.varName;
       varVec=A.varVec;
       flagName=A.flagName;
+      multiSet=A.multiSet;
     }
   return *this;
 }
@@ -152,6 +154,21 @@ defaultConfig::setOption(const std::string& K,const std::string& V)
 }
 
 void
+defaultConfig::setMultiOption(const std::string& K,const size_t index,
+			 const std::string& V) 
+  /*!
+    Set a string type variable
+    \param K :: Keyname
+    \param index :: Index item in multi 
+    \param V :: Varaible value
+  */
+{
+  if (!K.empty() && !V.empty())
+    multiSet.push_back(TTYPE(K,index,V));
+  return;
+}
+
+void
 defaultConfig::process(FuncDataBase& Control,
 		       mainSystem::inputParam& IParam) const
   /*!
@@ -174,10 +191,18 @@ defaultConfig::process(FuncDataBase& Control,
   for(vc=varVec.begin();vc!=varVec.end();vc++)
     Control.addVariable(vc->first,vc->second);
 
-  for(mc=flagName.begin();mc!=flagName.end();mc++)
+  // Option flags
+  for(const std::pair<std::string,std::string>& FItem : flagName)
     {
-      if(!IParam.flag(mc->first))
-	IParam.setValue(mc->first,mc->second);
+      if(!IParam.flag(FItem.first))
+	IParam.setValue(FItem.first,FItem.second);
+    }
+
+  // Multi set
+  for(const TTYPE& TI : multiSet)
+    {
+      IParam.setMultiValue(std::get<0>(TI),std::get<1>(TI),
+		      std::get<2>(TI));
     }
   return;
 }

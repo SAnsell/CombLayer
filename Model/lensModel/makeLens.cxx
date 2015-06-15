@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   lensModel/makeLens.cxx
  *
@@ -189,17 +189,17 @@ makeLens::createTally(Simulation& System,
 {
   ELog::RegMethod RegA("makeLens","createTally");
   
-  const size_t NSTally=IParam.grpCnt("surfTally");
-  const size_t NEng=IParam.grpCnt("tallyEnergy");
+  const size_t NSTally=IParam.setCnt("surfTally");
+  const size_t NEng=IParam.setCnt("tallyEnergy");
   
   int FL;
   double Dist;
   for(size_t i=0;i<NSTally;i++)
     {
       std::string A=
-	IParam.getCompValue<std::string>("surfTally",i,0);
+	IParam.getValue<std::string>("surfTally",i,0);
       std::string B=
-	IParam.getCompValue<std::string>("surfTally",i,1);
+	IParam.getValue<std::string>("surfTally",i,1);
       if ( StrFunc::convert(A,FL) && StrFunc::convert(B,Dist) )
 	{
 	  ELog::EM<<"Creating tally FL"<<FL+1

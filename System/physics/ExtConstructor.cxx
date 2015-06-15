@@ -294,7 +294,7 @@ ExtConstructor::processUnit(Simulation& System,
   // Get all values:
   for(size_t j=0;j<NParam;j++)
     StrItem.push_back
-      (IParam.getCompValue<std::string>("wExt",Index,j));
+      (IParam.getValue<std::string>("wExt",Index,j));
 
   if (StrItem[0]=="help" || StrItem[0]=="Help")
     {

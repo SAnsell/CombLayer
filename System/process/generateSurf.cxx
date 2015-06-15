@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   process/generateSurf.cxx
  *
@@ -28,7 +28,6 @@
 #include <map> 
 #include <string>
 #include <algorithm>
-#include <boost/bind.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -45,7 +44,6 @@
 #include "stringCombine.h"
 #include "Surface.h"
 #include "surfIndex.h"
-#include "surfEqual.h"
 #include "surfRegister.h"
 #include "Surface.h"
 #include "Quadratic.h"

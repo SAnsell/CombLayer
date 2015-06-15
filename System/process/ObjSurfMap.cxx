@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   process/ObjSurfMap.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,6 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
-#include <boost/bind.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -199,7 +198,8 @@ ObjSurfMap::addSurface(const int SurfN,MonteCarlo::Object* OPtr)
       STYPE& VItem=mc->second;
       STYPE::iterator vc=
 	find_if(VItem.begin(),VItem.end(),
-		boost::bind(std::equal_to<MonteCarlo::Object*>(),_1,OPtr));
+		std::bind(std::equal_to<MonteCarlo::Object*>(),
+			  std::placeholders::_1,OPtr));
       if (vc==VItem.end())
 	mc->second.push_back(OPtr);
     }
@@ -322,7 +322,8 @@ ObjSurfMap::write(std::ostream& OX) const
 
       transform(mc->second.begin(),mc->second.end(),
 		std::ostream_iterator<int>(OX," "),
-		(boost::bind(&MonteCarlo::Object::getName,_1)));
+		(std::bind(&MonteCarlo::Object::getName,
+			   std::placeholders::_1)));
       OX<<std::endl;
     }
   

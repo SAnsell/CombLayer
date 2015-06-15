@@ -155,6 +155,7 @@ FixedComp::createUnitVector(const FixedComp& FC)
   Y=FC.Y;
   X=FC.X;
   Origin=FC.Origin;
+  beamOrigin=FC.beamOrigin;
   beamAxis=FC.beamAxis;
 
   return;
@@ -175,6 +176,7 @@ FixedComp::createUnitVector(const FixedComp& FC,
   Y=FC.Y;
   X=FC.X;
   Origin=POrigin;
+  beamOrigin=FC.beamOrigin;
   beamAxis=FC.beamAxis;
 
   return;
@@ -235,6 +237,7 @@ FixedComp::createUnitVector(const Geometry::Vec3D& OG,
   X=(Y*Z);                            // horrizontal axis [across]
 
   Origin=OG;
+  beamOrigin=OG;
   beamAxis=Y;
   return;
 }

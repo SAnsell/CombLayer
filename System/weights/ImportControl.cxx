@@ -179,7 +179,7 @@ ExtField(Simulation& System,
 
   // currently only first item / get all
   std::vector<std::string> StrItem;
-  const size_t NGrp=IParam.grpCnt("wExt");
+  const size_t NGrp=IParam.setCnt("wExt");
 
   for(size_t grpIndex=0;grpIndex<NGrp;grpIndex++)
     {

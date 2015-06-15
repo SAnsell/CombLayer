@@ -52,7 +52,7 @@ struct DiskInfo
   \brief DiskChopper unit  
 */
 
-class DiskChopper : public attachSystem::FixedComp,
+class DiskChopper : public attachSystem::FixedGroup,
     public attachSystem::ContainedComp
 {
  private:

@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   tally/fluxConstruct.cxx
  *
@@ -113,8 +113,8 @@ fluxConstruct::processFlux(Simulation& System,
     throw ColErr::IndexError<size_t>(NItems,3,
 				     "Insufficient items for tally");
   // PARTICLE TYPE
-  const std::string PType(IParam.getCompValue<std::string>("tally",Index,1)); 
-  const std::string MType(IParam.getCompValue<std::string>("tally",Index,2)); 
+  const std::string PType(IParam.getValue<std::string>("tally",Index,1)); 
+  const std::string MType(IParam.getValue<std::string>("tally",Index,2)); 
   if (MType=="cell")
     return processFluxCell(System,IParam,Index,renumberFlag);
   // Process a Ranged Heat:
@@ -179,11 +179,11 @@ fluxConstruct::processFluxCell(Simulation& System,
     }
 
   // Particles
-  const std::string PType(IParam.getCompValue<std::string>("tally",Index,1)); 
+  const std::string PType(IParam.getValue<std::string>("tally",Index,1)); 
 
   // CellRegion can be object name or number:
   const std::string CellRegion
-    (IParam.getCompValue<std::string>("tally",Index,3)); 
+    (IParam.getValue<std::string>("tally",Index,3)); 
 
   // returns 0 if failed to find
   const int cellOffset=OR.getCell(CellRegion);
@@ -200,7 +200,7 @@ fluxConstruct::processFluxCell(Simulation& System,
   while(nCount<NItems)
     {
       const std::string CVal=
-	IParam.getCompValue<std::string>("tally",Index,nCount);
+	IParam.getValue<std::string>("tally",Index,nCount);
       if (StrFunc::convert(CVal,cellNum) &&
 	  System.existCell(cellNum+cellOffset))
 	cellVec.push_back(cellNum+cellOffset);

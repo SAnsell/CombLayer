@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   tally/tallyConstruct.cxx
  *
@@ -182,14 +182,14 @@ tallyConstruct::tallySelection(Simulation& System,
 
 
   int workFlag(0);  
-  for(size_t i=0;i<IParam.grpCnt("tally");i++)
+  for(size_t i=0;i<IParam.setCnt("tally");i++)
     {
       const std::string TType=
-	IParam.getCompValue<std::string>("tally",i,0);
+	IParam.getValue<std::string>("tally",i,0);
 
       const size_t NItems=IParam.itemCnt("tally",i);
       const std::string HType=(NItems>1) ?
-	IParam.getCompValue<std::string>("tally",i,1) : "help";
+	IParam.getValue<std::string>("tally",i,1) : "help";
       
       if (TType=="help" || TType=="?")
 	helpTallyType(HType);
@@ -234,10 +234,10 @@ tallyConstruct::tallyRenumber(Simulation& System,
   ELog::RegMethod RegA("tallyConstruct","tallySelection");
 
   int workFlag(0);  
-  for(size_t i=0;i<IParam.grpCnt("tally");i++)
+  for(size_t i=0;i<IParam.setCnt("tally");i++)
     {
       const std::string TType=
-	IParam.getCompValue<std::string>("tally",i,0);
+	IParam.getValue<std::string>("tally",i,0);
 
       if (TType=="flux")
 	fluxPtr->processFlux(System,IParam,i,1);

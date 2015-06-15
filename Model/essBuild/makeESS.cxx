@@ -376,7 +376,6 @@ makeESS::makeBeamLine(Simulation& System,
   ELog::RegMethod RegA("makeESS","makeBeamLine");
 
   const size_t NItems=IParam.itemCnt("beamlines",0);
-
   for(size_t i=1;i<NItems;i+=2)
     {
       const std::string BL=IParam.getValue<std::string>("beamlines",i-1);
@@ -399,10 +398,13 @@ makeESS::makeBunker(Simulation& System,
   /*!
     Make the bunker system
     \param System :: Simulation 
-   */
+    \param bunkerType :: different bunker to make
+  */
 {
   ELog::RegMethod RegA("makeESS","makeBunker");
 
+  ELog::EM<<"Bunker == "<<bunkerType<<ELog::endDiag;
+  
   LowABunker->addInsertCell(74123);
   LowABunker->createAll(System,*LowMod,*GBArray[0],2,true);
 
@@ -439,6 +441,7 @@ makeESS::build(Simulation& System,
       optionSummary(System);
       throw ColErr::ExitAbort("Help system exit");
     }
+
 
   
   makeTarget(System,targetType);
@@ -496,7 +499,6 @@ makeESS::build(Simulation& System,
 				    PBeam->getKey("Full"));
   attachSystem::addToInsertSurfCtrl(System,*Bulk,
 				    PBeam->getKey("Full"));
-
 
   makeBeamLine(System,IParam);
 

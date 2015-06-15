@@ -1,7 +1,7 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
- * File:   input/IItemBase.cxx
+ * File:   input/IItem.cxx
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -31,6 +31,7 @@
 #include <map>
 #include <string>
 #include <algorithm>
+#include <typeinfo>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -39,6 +40,7 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "support.h"
+#include "stringCombine.h"
 #include "mathSupport.h"
 #include "MapSupport.h"
 #include "InputControl.h"
@@ -53,7 +55,7 @@ namespace mainSystem
 {
 
 std::ostream&
-operator<<(std::ostream& OX,const IItemBase& A)
+operator<<(std::ostream& OX,const IItem& A)
   /*!
     Output stream writer
     \param OX :: Output stream
@@ -65,16 +67,18 @@ operator<<(std::ostream& OX,const IItemBase& A)
   return OX;
 }
 
-IItemBase::IItemBase(const std::string& K) : 
-  Key(K)
+IItem::IItem(const std::string& K) : 
+  Key(K),active(0),activeSet(0),activeItem(0),
+  maxSets(0),maxItems(0),reqItems(0)
   /*!
     Constructor only with  descriptor
     \param K :: Key Name
   */
 {}
 
-IItemBase::IItemBase(const std::string& K,const std::string& L) :
-  Key(K),Long(L)
+IItem::IItem(const std::string& K,const std::string& L) :
+  Key(K),Long(L),active(0),activeSet(0),activeItem(0),
+  maxSets(0),maxItems(0),reqItems(0)
   /*!
     Full Constructor 
     \param K :: Key Name
@@ -82,16 +86,19 @@ IItemBase::IItemBase(const std::string& K,const std::string& L) :
   */
 {}
 
-IItemBase::IItemBase(const IItemBase& A) : 
-  Key(A.Key),Long(A.Long),Desc(A.Desc)
+IItem::IItem(const IItem& A) : 
+  Key(A.Key),Long(A.Long),Desc(A.Desc),active(A.active),
+  activeSet(A.activeSet),activeItem(A.activeItem),
+  maxSets(A.maxSets),maxItems(A.maxItems),
+  reqItems(A.reqItems),DItems(A.DItems)
   /*!
     Copy constructor
     \param A :: Object to copy
   */
 {}
 
-IItemBase&
-IItemBase::operator=(const IItemBase& A) 
+IItem&
+IItem::operator=(const IItem& A) 
   /*!
     Assignment operator
     \param A :: Object to copy
@@ -103,787 +110,402 @@ IItemBase::operator=(const IItemBase& A)
       Key=A.Key;
       Long=A.Long;
       Desc=A.Desc;
-    }
-  return *this;
-}
-
-IItemFlag::IItemFlag(const std::string& K) : 
-  IItemBase(K),active(0)
-  /*!
-    Constructor
-    \param K :: Key Name
-  */
-{}
-
-IItemFlag::IItemFlag(const std::string& K,const std::string& L) :
-  IItemBase(K,L),active(0)
-  /*!
-    Full Constructor
-    \param K :: Key Name
-    \param L :: Long name
-  */
-{}
-
-IItemFlag::IItemFlag(const IItemFlag& A) :
-  IItemBase(A),active(A.active)
-  /*!
-    Copy Constructor
-    \param A :: Item to copy
-  */
-{}
-
-IItemFlag&
-IItemFlag::operator=(const IItemFlag& A)
-  /*!
-    Assignment operator
-    \param A :: Item to copy
-    \return *this
-  */
-{
-  if (this != &A)
-    {
-      IItemBase::operator=(A);
       active=A.active;
+      activeSet=A.activeSet;
+      activeItem=A.activeItem;
+      maxSets=A.maxSets;
+      maxItems=A.maxItems;
+      reqItems=A.reqItems;
+      DItems=A.DItems;
     }
   return *this;
-}
-
-IItemBase*
-IItemFlag::clone() const 
-  /*!
-    Virtual copy constructor
-    \return new (this)
-  */
-{ 
-  return new IItemFlag(*this);
 }
 
 void
-IItemFlag::addNewSection() 
+IItem::setMaxN(const size_t S,const size_t R,const size_t I)
   /*!
-    Found key adding new section --
-    just sets active 
-  */
+    Set max/required list
+    \param S :: Max sets
+    \param R :: Required items per set
+    \param I :: Max Items per set
+   */
 {
-  active=1;
+  maxSets=S;
+  maxItems=I;
+  reqItems=R;
   return;
 }
 
-size_t
-IItemFlag::convert(const size_t,const size_t,
-		   const std::vector<std::string>&)
+void
+IItem::checkIndex(const size_t setIndex,const size_t itemIndex) const
   /*!
-    Convert the Unit into the appropiate item.
-    \return Always fails as flags can't have components
-  */
+    Simple range check for set and item value
+    \param  setIndex :: set values
+    \param  itemIndex :: item values
+   */
 {
-  return 0;
-}
+    if (setIndex >= DItems.size())
+    throw ColErr::IndexError<size_t>(setIndex,DItems.size(),Key+":setIndex");
 
-// --------------------------------------------------------------
+  if (itemIndex>=DItems[setIndex].size())
+    throw ColErr::IndexError<size_t>
+      (itemIndex,DItems[setIndex].size(),Key+":itemIndex");
 
-template<typename T>
-IItemObj<T>::IItemObj(const size_t dCnt,const std::string& K) : 
-  IItemBase(K),N((dCnt<1) ? 1 : dCnt),
-  NReq(N),active(0),ObjPtr(new T[N])
-  /*!
-    Constructor
-    \param dCnt :: number of data items;
-    \param K :: Short Key
-  */
-{}
-
-template<typename T> 
-IItemObj<T>::IItemObj(const size_t dCnt,const std::string& K,
-		      const std::string& L) : 
-  IItemBase(K,L),N((dCnt<1) ? 1 : dCnt),
-  NReq(N),active(0),ObjPtr(new T[N])
-  /*!
-    Constructor
-    \param dCnt :: number of data items;
-    \param K :: Short Key
-    \param L :: Long Key
-  */
-{}
-
-template<typename T>
-IItemObj<T>::IItemObj(const size_t dCnt,const size_t reqCnt,
-		      const std::string& K) : 
-  IItemBase(K),N((dCnt<1) ? 1 : dCnt),
-  NReq((reqCnt>N) ? N : reqCnt),
-  active(0),ObjPtr(new T[N])
-  /*!
-    Constructor
-    \param dCnt :: number of data items;
-    \param reqCnt :: Required number of data items
-    \param K :: Short Key
-  */
-{}
-
-template<typename T>
-IItemObj<T>::IItemObj(const size_t dCnt,const size_t reqCnt,
-		      const std::string& K,const std::string& L) :
-  IItemBase(K,L),N((dCnt<1) ? 1 : dCnt),
-  NReq((reqCnt>N) ? N : reqCnt),
-  active(0),ObjPtr(new T[N])
-  /*!
-    Constructor
-    \param dCnt :: number of data items;
-    \param reqCnt :: Required number of data items
-    \param K :: Key Name
-    \param L :: Long Key
-  */
-{}
-
-template<typename T>
-IItemObj<T>::IItemObj(const IItemObj<T>& A) : 
-  IItemBase(A),N(A.N),NReq(A.NReq),
-  active(A.active),ObjPtr(new T[N])
-  /*!
-    Copy constructor
-    \param A :: Object to copy
-  */
-{
-  for(size_t i=0;i<N;i++)
-    ObjPtr[i] = A.ObjPtr[i];
-}
-
-template<typename T>
-IItemObj<T>& 
-IItemObj<T>::operator=(const IItemObj<T>& A)
-  /*!
-    Assignment operator
-    \param A :: Object to copy
-    \return *this
-  */
-{
-  if (this!=&A)
-    {
-      IItemBase::operator=(A);
-      active=A.active;
-      if (N!=A.N)
-	delete [] ObjPtr;      
-      ObjPtr=new T[N];
-      for(size_t i=0;i<N;i++)
-	ObjPtr[i]= A.ObjPtr[i];
-    }
-  return *this;
+  return;
 }
   
-template<typename T>
-IItemBase*
-IItemObj<T>::clone() const 
+size_t
+IItem::getNSets() const
   /*!
-    Virtual copy constructor
-    \return new (this)
-  */
-{ 
-  return new IItemObj<T>(*this);
+    Number of data sets
+    \return number of sets in the model
+   */
+{
+  return DItems.size();
 }
 
-template<typename T>
-IItemObj<T>::~IItemObj()
+size_t
+IItem::getNItems(const size_t setIndex) const
   /*!
-    Destructor
-  */
-{ 
-  delete [] ObjPtr;
-}
-
-template<typename T>
-bool
-IItemObj<T>::flag() const
-  /*!
-    Is everything set/default value
-    Acitve 
-    \return if fully set [with def]
+    Number of items
+    \param setIndex :: Index value 
+    \return Number of items in a given set
   */
 {
-  ELog::RegMethod RegA("IItemObj<T>","flag");
-  const size_t reqActive((2UL << NReq)-1);
-  return ((active & reqActive)==reqActive) ? 1 : 0;
+  ELog::RegMethod RegA("IItem","getNItems");
+
+  if (setIndex==0  && DItems.empty()) return 0;
+  if (setIndex>=DItems.size())
+    throw ColErr::IndexError<size_t>(setIndex,DItems.size(),
+				     " ["+Key+"] setIndex");
+  return DItems[setIndex].size();
+}
+
+bool
+IItem::isValid(const size_t setIndex) const
+  /*!
+    Number of data sets
+    \return number of sets in the model
+   */
+{
+  ELog::RegMethod RegA("IItem","isValid");
+  
+  if (setIndex>=DItems.size())
+    return 0;
+
+  return (DItems[setIndex].size()<reqItems) ? 0 : 1;
+      
+}
+
+template<>
+void
+IItem::setObjItem(const size_t setIndex,const size_t itemIndex,
+		  const std::string& V)
+  /*!
+    Set the object based on the setIndex and the itemIndex 
+    Allows a +1 basis but not more:	
+    \param setIndex :: Set number
+    \param itemIndex :: Item index 
+    \param V :: Convertable item
+    \return 
+  */
+{
+  ELog::RegMethod RegA("IItem","setObjItem<string>");
+  setObj(setIndex,itemIndex,V);
+  return;
 }
 
 template<typename T>
-const T&
-IItemObj<T>::getObj(const size_t I) const
+void
+IItem::setObjItem(const size_t setIndex,const size_t itemIndex,
+		     const T& V)
   /*!
-    Get Object
-    \param I :: Index
+    Set the object based on the setIndex and the itemIndex 
+    Allows a +1 basis but not more:	
+    \param setIndex :: Set number
+    \param itemIndex :: Item index 
+    \param V :: Convertable item
+    \return 
+  */
+{
+  ELog::RegMethod RegA("IItem","setObjItem");
+
+  setObj(setIndex,itemIndex,StrFunc::makeString(V));
+  return;
+}
+
+void
+IItem::setObj(const size_t setIndex,const size_t itemIndex,
+	      const std::string& V)
+  /*!
+    Set the object based on the setIndex and the itemIndex 
+    Allows a +1 basis but not more:	
+    \param setIndex :: Item number
+    \return 
+  */
+{
+  ELog::RegMethod RegA("IItem","setObj");
+  const size_t SS(DItems.size());
+
+  if (setIndex>=maxSets || setIndex>SS+1)
+    throw ColErr::IndexError<size_t>(setIndex,DItems.size(),Key+"::setIndex");
+
+  if (setIndex==SS)
+    DItems.push_back(std::vector<std::string>());
+
+  const size_t IS(DItems[setIndex].size());
+  
+  if (itemIndex>=maxItems || setIndex>IS+1)
+      throw ColErr::IndexError<size_t>(itemIndex,DItems[setIndex].size(),
+				     Key+"::itemIndex");
+  if (itemIndex==IS)
+    DItems[setIndex].push_back(V);
+  else
+    DItems[setIndex][itemIndex]=V;
+
+  return;
+}
+
+void
+IItem::setObj(const size_t itemIndex,const std::string& V)
+  /*!
+    Set the object based on the setIndex and the itemIndex 
+    Allows a +1 basis but not more:	
+    \param itemIndex :: Item number
+    \param V :: Value to set
+  */
+{
+  setObj(0,itemIndex,V);
+  return;
+}
+
+void
+IItem::setObj(const std::string& V)
+  /*!
+    Set the object based on 0,0 time
+    \param V :: Value to set
+  */
+{
+  setObj(0,0,V);
+  return;
+}
+
+  
+template<typename T>
+T
+IItem::getObj() const
+  /*!
+    Get Object [assuming setIndex/itemIndex ==0]
     \return Object
   */
 { 
-  // No need to check since called from inputParam
-  return ObjPtr[I]; 
+  ELog::RegMethod RegA("IItem","getObj(int)");
+  return getObj<T>(0,0);
 }
 
 template<typename T>
-void
-IItemObj<T>::setObj(const T& A)
+T
+IItem::getObj(const size_t itemIndex) const
   /*!
-    Set Object
-    \param A :: Object
+    Get Object [assuming  setIndex [0]]]
+    \param itemIndex :: item count
+    \return Object
   */
 { 
-  setObj(0,A);
-  return;
+  ELog::RegMethod RegA("IItem","getObj(int)");
+
+  return getObj<T>(0,itemIndex);
 }
-  
+
 template<typename T>
-void
-IItemObj<T>::setObj(const size_t I,const T& A) 
+T
+IItem::getObj(const size_t setIndex,const size_t itemIndex) const
   /*!
-    Set Object
-    \param I :: Index
-    \param A :: Object
+    Get Object
+    \param setIndex :: Index
+    \param itemIndex :: item count
+    \return Object
   */
 { 
-  // No need to check since called from inputParam
-  ObjPtr[I]=A;
-  active |= (2UL << I);
-  return;
-}
-  
-template<typename T>
-void
-IItemObj<T>::setDefObj(const size_t I,const T& A) 
-  /*!
-    Set Object
-    \param I :: Index
-    \param A :: Object
-  */
-{ 
-  // No need to check since called from inputParam
-  ObjPtr[I]=A;
-  return;
-}
+  ELog::RegMethod RegA("IItem","getObj");
 
-template<typename T>
-size_t
-IItemObj<T>::dataCnt() const
-  /*!
-    Checks to see how many flags are set
-    \return count of flags
-  */
-{
-  size_t cnt;
-  size_t flag(2);
-  for(cnt=0;cnt<NReq && (flag & active);cnt++)
-    flag <<= 1;
-  return (cnt==NReq) ? N : cnt;
-}
+  if (setIndex >= DItems.size())
+    throw ColErr::IndexError<size_t>(setIndex,DItems.size(),Key+":setIndex");
 
-template<typename T>
-size_t
-IItemObj<T>::getNCompData(const size_t Index) const
-  /*!
-    Checks to see how many flags are set
-    \param Index :: Index of current group
-    \return count of flags
-  */
-{
-  if (!active || Index!=0) 
-    return 0;
-  return dataCnt();
-}
+  if (itemIndex>=DItems[setIndex].size())
+    throw ColErr::IndexError<size_t>
+      (itemIndex,DItems[setIndex].size(),Key+":itemIndex");
 
-template<typename T>
-void
-IItemObj<T>::addNewSection()
-  /*!
-    Processes a new flag
-   */
-{
-  active |= 1;               // set -key flag
-  return;
-}
+  T ObjValue;
+  if (!StrFunc::convert(DItems[setIndex][itemIndex],ObjValue))
+    throw ColErr::TypeMatch(DItems[setIndex][itemIndex],
+				  typeid(T).name(),Key+":convert error");
 
-template<>
-size_t
-IItemObj<Geometry::Vec3D>::convert(const size_t Index,
-				   const size_t UIndex,
-				   const std::vector<std::string>& Units)
-  /*!
-    Convert the Unit into the appropiate item.
-    \param Index :: Object index
-    \param UIndex :: Position in vector
-    \param Units :: Vector of input
-    \return 3 on success and 0 on failure
-  */
-{
-  ELog::RegMethod RegA("IItemObj<T>","convert");
-
-  std::string ConcUnit(Units[UIndex]);
-  for(size_t i=1;i<3 &&	(i+UIndex < Units.size());i++)
-    ConcUnit+=" "+Units[UIndex+i];
+  return ObjValue;
       
-  if (StrFunc::convert(ConcUnit,ObjPtr[Index]))
-    {
-      active |= 2UL << Index;
-      return 3;
-    }
-  return 0;
 }
 
 template<>
-size_t
-IItemObj<std::string>::convert(const size_t Index,const size_t UIndex,
-			       const std::vector<std::string>& Units)
+Geometry::Vec3D
+IItem::getObj(const size_t setIndex,const size_t itemIndex) const
   /*!
-    Convert the Unit into the appropiate item.
-    Note, if Index < 0 then it is part of the flag checking
-    sequence.
-    \param Index :: Object index
-    \param UIndex :: Units position
-    \param Units :: Vector of units
-    \return 1 on success and 0 on failure
+    Get Object
+    \param setIndex :: Index
+    \param itemIndex :: item count
+    \return Object
   */
-{
-  ELog::RegMethod RegA("IItemObj<T>","convert");
+{ 
+  ELog::RegMethod RegA("IItem","getObj");
 
-  // If empty / -value return 0
-  if (Units[UIndex].empty() ||
-      (Units[UIndex].size()>1 && 
-       Units[UIndex][0]=='-'&&
-       !isdigit(Units[UIndex][1])))
-      return 0;
+  checkIndex(setIndex,itemIndex);
   
+  Geometry::Vec3D Value;
+  if (StrFunc::convert(DItems[setIndex][itemIndex],Value))
+    return Value;
 
-  if (StrFunc::convert(Units[UIndex],ObjPtr[Index]))
-    {
-      active |= 2UL << Index;
-      return 1;
-    }
-  return 0;
+  if (itemIndex+3>DItems[setIndex].size() ||
+      !StrFunc::convert(DItems[setIndex][itemIndex],Value[0]) ||
+      !StrFunc::convert(DItems[setIndex][itemIndex+1],Value[1]) ||
+      !StrFunc::convert(DItems[setIndex][itemIndex+2],Value[2]) )
+    throw ColErr::TypeMatch(DItems[setIndex][itemIndex],
+				  "Geomtery::Vec3D",Key+":convert error");
+
+  return Value;
 }
 
-template<typename T>
-size_t
-IItemObj<T>::convert(const size_t Index,const size_t UIndex,
-		     const std::vector<std::string>& Units)
+  
+template<>
+std::string
+IItem::getObj(const size_t setIndex,const size_t itemIndex) const
   /*!
-    Convert the Unit into the appropiate item.
-    Note, if Index < 0 then it is part of teh flag checking
-    sequence.
-    \param Index :: Object index
-    \param UIndex :: Units position
-    \param Units :: Vector of units
-    \return 1 on success and 0 on failure
+    Get Object
+    \param setIndex :: Index
+    \param itemIndex :: item count
+    \return Object
+  */
+{ 
+  ELog::RegMethod RegA("IItem","getObj<string>");
+
+  checkIndex(setIndex,itemIndex);
+  return DItems[setIndex][itemIndex];
+}
+
+size_t
+IItem::addSet()
+  /*!
+    Adds V to the last set items
+    \return setSize on success  / 0 on failure
   */
 {
-  ELog::RegMethod RegA("IItemObj<T>","convert");
+  ELog::RegMethod RegA("IItem","addSet");
+  
+  if (!active && maxSets)
+    activeSet=0;
+  else
+    activeSet++;
 
-  if (StrFunc::convert(Units[UIndex],ObjPtr[Index]))
-    {
-      active |= (2UL << Index);
-      return 1;
-    }
-  return 0;
+  // ALL STUFF IS MADE ACTIVE to include flags
+  activeItem=0;
+  active=1;
+
+  if (activeSet>=maxSets)
+    return 0;
+  
+  if (DItems.size()<=activeSet)
+    DItems.push_back(std::vector<std::string>());
+  return activeSet+1;
 }
 
-template<typename T>
+bool
+IItem::addObject(const std::string& V)
+  /*!
+    Adds V to the last set items
+    \return 1 on success / 0 on failure
+  */
+{
+  ELog::RegMethod RegA("IItem","addObject");
+
+  if (activeSet>=maxSets || V.empty() ||
+      activeItem>=maxItems)
+    return 0;
+  if (activeItem>=DItems[activeSet].size())
+    DItems[activeSet].push_back(V);
+  else
+    DItems[activeSet][activeItem]=V;
+  activeItem++;
+  return 1;
+}
+
+
 void
-IItemObj<T>::write(std::ostream& OX) const
+IItem::writeSet(std::ostream& OX,const size_t setIndex) const
   /*!
     Complex functiion to convert the system into a string
     \param OX :: Output stream
   */
 {
-  ELog::RegMethod RegA("IItemObj<T>","write");
+  ELog::RegMethod RegA("IItem","writeSet");
 
-  size_t index(2);
-  for(size_t i=0;i<N;i++,index <<= 1)
-    {
-      if (active & index)
-	OX<<ObjPtr[i]<<" ";
-      else if (i>=NReq)
-	OX<<"("<<ObjPtr[i]<<") ";
-      else
-	OX<<" -- ";
-    }
+  if (setIndex>=DItems.size())
+    throw ColErr::IndexError<size_t>(setIndex,DItems.size(),
+				     " ["+Key+"] setIndex");
+  
+  for(const std::string& Item : DItems[setIndex])
+    OX<<Item<<" ";
+
   return;
 }
 
-// --------------------------------------------------------------
- 
-template<typename T>
-IItemMulti<T>::IItemMulti(const std::string& K,const size_t NG,
-			  const size_t NR) : 
-  IItemBase(K),nRead(NG),nReq(NR),NGrp(0),active(0)
+void
+IItem::write(std::ostream& OX) const
   /*!
-    Constructor
-    \param K :: Short Key
-    \param NG :: Number in each group
-    \param NR :: Number required in each group
-  */
-{}
-
-template<typename T>
-IItemMulti<T>::IItemMulti(const std::string& K,const std::string& L,
-			  const size_t NG,const size_t NR) : 
-  IItemBase(K,L),nRead(NG),nReq(NR),NGrp(0),active(0)
-  /*!
-    Constructor
-    \param K :: Short Key
-    \param L :: Long Key
-    \param NG :: Number in each group
-    \param NR :: Number required in each group
-  */
-{}
-
-template<typename T>
-IItemMulti<T>::IItemMulti(const IItemMulti<T>& A) : 
-  IItemBase(A),nRead(A.nRead),nReq(A.nReq),NGrp(A.NGrp),
-  active(A.active)  
-  /*!
-    Copy constructor
-    \param A :: Object to copy
+    Complex function to convert the system into a string
+    \param OX :: Output stream
   */
 {
-  for(size_t i=0;i<ObjVec.size();i++)
-    {
-      ObjVec.push_back(ITYPE(nRead));
-      for(size_t j=0;j<nRead;j++)
-	ObjVec.back()[j]=(A.ObjVec[i][j] ? new T(*A.ObjVec[i][j]) : 0);
-    }
-}
+  ELog::RegMethod RegA("IItem","write");
 
-template<typename T>
-IItemMulti<T>& 
-IItemMulti<T>::operator=(const IItemMulti<T>& A)
-  /*!
-    Assignment operator
-    \param A :: Object to copy
-    \return *this
-  */
-{
-  if (this!=&A)
+  for(size_t i=0;i<DItems.size();i++)
     {
-      IItemBase::operator=(A);
-      active=A.active;
-      NGrp=A.NGrp;
-      deleteVec();
-      for(size_t i=0;i<ObjVec.size();i++)
+      if (i) OX<<"\n";
+      for(size_t j=0;j<DItems[i].size();j++)
 	{
-	  ObjVec.push_back(ITYPE(nRead));
-	  for(size_t j=0;j<nRead;j++)
-	    ObjVec.back()[j]=(A.ObjVec[i][j] ? new T(*A.ObjVec[i][j]) : 0);
+	  if (j) OX<<" ";
+	  OX<<DItems[i][j];
 	}
     }
-  return *this;
-}
- 
-template<typename T>
-IItemBase*
-IItemMulti<T>::clone() const 
-  /*!
-    Virtual copy constructor
-    \return new (this)
-  */
-{ 
-  return new IItemMulti<T>(*this);
-}
-
-template<typename T>
-IItemMulti<T>::~IItemMulti()
-  /*!
-    Destructor
-  */
-{ 
-  deleteVec();
-}
-
-template<typename T>
-void
-IItemMulti<T>::deleteVec()
-  /*!
-    Delete all the items
-  */
-{
-  typename VTYPE::iterator vc;
-  for(vc=ObjVec.begin();vc!=ObjVec.end();vc++)
-    {
-      typename ITYPE::iterator ic;
-      for(ic=vc->begin();ic!=vc->end();ic++)
-	delete *ic;
-    }
-  ObjVec.clear();
-  NGrp=0;
-  active=0;
   return;
 }
 
-template<typename T>
-bool
-IItemMulti<T>::flag() const
-  /*!
-    Is everything set/default value
-    \return if fully set [with def]
-  */
-{
-  return active;
-}
-
-template<typename T>
-const T&
-IItemMulti<T>::getObj(const size_t Index) const
-  /*!
-    Get Object
-    \param Index :: Full index value
-    \return Object
-  */
-{ 
-  return getObj(Index/nRead,Index%nRead);
-}
-
-template<typename T>
-const T&
-IItemMulti<T>::getObj(const size_t IG,const size_t II) const
-  /*!
-    Get Object
-    \param IG :: Index of group
-    \param II :: Index of item
-    \return Object
-  */
-{ 
-  ELog::RegMethod RegA("IItemMulti","getObj");
-  // No need to check since called from inputParam
-  if (IG>=NGrp || II>=nRead)
-    throw ColErr::IndexError<size_t>(II,IG,"II/IG");
-
-  if (!ObjVec[IG][II])
-    throw ColErr::EmptyValue<T*>("ObjVec empty");
-
-  return *ObjVec[IG][II];
-}
-  
-template<typename T>
-void
-IItemMulti<T>::setObj(const T& A) 
-  /*!
-    Set Object
-    \param A :: Object
-  */
-{ 
-  ELog::RegMethod RegA("IItemMulti","setObj(IMulti)");
-  
-  if (ObjVec.empty() || ObjVec.back().back())
-    {
-      ObjVec.push_back(ITYPE(nRead));
-      std::fill(ObjVec.back().begin(),ObjVec.back().end(),
-		static_cast<T*>(0));
-      setObj(NGrp,0,A);
-      NGrp++;
-      return;
-    }
-
-  // This must work
-  for(size_t i=0;i<nRead;i++)
-    {
-      if (!ObjVec.back()[i])
-	{
-	  setObj(NGrp-1,i,A);
-	  return;
-	}
-    }
-
-  return;
-}
-
-template<typename T>
-void
-IItemMulti<T>::setObj(const size_t IGrp,const size_t IItem,const T& A) 
-  /*!
-    Set Object
-    \param IGrp :: Index of group
-    \param IItem :: Index of item
-    \param A :: Object
-  */
-{ 
-  ELog::RegMethod RegA("IItemMulti","setObj(int,int,A)");
-
-  // Error conditions:
-
-  if (IGrp>=ObjVec.size())
-    throw ColErr::IndexError<size_t>(IGrp,ObjVec.size(),
-				     "IGrp beyond ObjVec.size()");
-  if (IItem>=nRead)
-    throw ColErr::IndexError<size_t>(IItem,nRead,"IItem at nRead");
-
-  delete ObjVec[IGrp][IItem];
-  ObjVec[IGrp][IItem] = new T(A);
-
-  return;
-}
-  
-template<typename T>
-size_t
-IItemMulti<T>::dataCnt() const
-  /*!
-    Checks to see how many flags are set
-    \return count of flags
-  */
-{
-  return (active) ? NGrp*nRead : 0;
-}
-
-template<typename T>
-size_t
-IItemMulti<T>::getNCompData(const size_t Index) const
-  /*!
-    Checks to see how many flags are set
-    \param Index :: Index of current group
-    \return count of flags
-  */
-{
-  if ( !active || Index >= NGrp)
-    return 0;
-  const ITYPE& OV=ObjVec[Index];
-  size_t i;
-  for(i=0;i<OV.size() && OV[i]; i++) ;
-
-  return i;
-}
-
-template<typename T>
-void
-IItemMulti<T>::addNewSection()
-  /*!
-    Adds a new component
-  */
-{
-  active |=1;
-  ObjVec.push_back(ITYPE(nRead));
-  std::fill(ObjVec.back().begin(),ObjVec.back().end(),
-	    static_cast<T*>(0));
-  NGrp++;
-  return;
-}
-
-template<typename T>
-size_t
-IItemMulti<T>::convert(const size_t ,
-		       const size_t UIndex,
-		       const std::vector<std::string>& Units)
-  /*!
-    Convert the Unit into the appropiate item.
-    \param :: Object index
-    \param UIndex :: position in input
-    \param Units :: Vector of inputs
-    \retval 1 on success and 0 on failure
-  */
-{
-  ELog::RegMethod RegA("IItemMulti<T>","convert");
-
-  T Obj;
-  if (!Units[UIndex].empty() &&
-      StrFunc::convert(Units[UIndex],Obj))
-    {
-      setObj(Obj);
-      return 1;
-    }
-  return 0;
-}
-
-template<>
-size_t
-IItemMulti<std::string>::convert(const size_t,
-				 const size_t UIndex,
-				 const std::vector<std::string>& Units)
-  /*!
-    Convert the Unit into the appropiate item.
-    \param  :: Object index
-    \param UIndex :: position in input
-    \param Units :: Vector of inputs
-    \retval 1 on success and 0 on failure
-  */
-{
-  ELog::RegMethod RegA("IItemMulti<std::string>","convert");
-
-  // If empty / -value return 0
-  if (Units[UIndex].empty() ||
-      (Units[UIndex].size()>1 && 
-       Units[UIndex][0]=='-'&&
-       !isdigit(Units[UIndex][1])))
-      return 0;
-
-  const std::string Obj=StrFunc::fullBlock(Units[UIndex]);
-  if (!Obj.empty())
-    {
-      setObj(Obj);
-      return 1;
-    }
-  return 0;
-}
-
-template<>
-size_t
-IItemMulti<Geometry::Vec3D>::convert(const size_t,
-				     const size_t UIndex,
-				     const std::vector<std::string>& Units)
-  /*!
-    Convert the Unit into the appropiate item.
-    Note, if Index < 0 then it is part of the flag checking
-    sequence.
-    \param :: Object index
-    \param UIndex :: Position in vector
-    \param Units :: Vector of input items
-    \return 1 on success and 0 on failure
-  */
-{
-  ELog::RegMethod RegA("IItemMulti<Vec3D>","convert");
-
-  std::string ConcUnit(Units[UIndex]);
-  for(size_t i=1;i<3 && ((i+UIndex) < Units.size());i++)
-    ConcUnit+=" "+Units[UIndex+i];
-
-  Geometry::Vec3D Obj;
-  if (StrFunc::convert(ConcUnit,Obj))
-    {
-      setObj(Obj);
-      return 1;
-    }
-  return 0;
-}
-
-template<typename T>
-void
-IItemMulti<T>::write(std::ostream& OX) const
-  /*!
-    Complex functiion to convert the system into a stream
-    \param OX :: Out put stream
-  */
-{
-  ELog::RegMethod RegA("IItemMulti<T>","write");
-  for(size_t i=0;i<NGrp;i++)
-    {
-      for(size_t j=0;j<nRead;j++)
-	if (ObjVec[i][j])
-	  OX<<*ObjVec[i][j]<<" ";
-	else if (j<nReq)
-	  OX<<"NULL ";
-      OX<<":: ";
-    }
-  return;
-}
 
 ///\cond TEMPLATE
 
-template class IItemObj<int>;
-template class IItemObj<long int>;
-template class IItemObj<unsigned int>;
-template class IItemObj<size_t>;
-template class IItemObj<double>;
-template class IItemObj<std::string>;
-template class IItemObj<Geometry::Vec3D>;
+template int IItem::getObj(const size_t,const size_t) const;
+template unsigned int IItem::getObj(const size_t,const size_t) const;
+template double IItem::getObj(const size_t,const size_t) const;
+template size_t IItem::getObj(const size_t,const size_t) const;
+template long int IItem::getObj(const size_t,const size_t) const;
 
-template class IItemMulti<long int>;
-template class IItemMulti<int>;
-template class IItemMulti<unsigned int>;
-template class IItemMulti<size_t>;
-template class IItemMulti<double>;
-template class IItemMulti<std::string>;
-template class IItemMulti<Geometry::Vec3D>;
+template std::string IItem::getObj(const size_t) const;
+template int IItem::getObj(const size_t) const;
+template unsigned int IItem::getObj(const size_t) const;
+template double IItem::getObj(const size_t) const;
+template size_t IItem::getObj(const size_t) const;
+template long int IItem::getObj(const size_t) const;
+template Geometry::Vec3D IItem::getObj(const size_t) const;
+
+
+template void
+IItem::setObjItem(const size_t,const size_t,const double&);
+template void
+IItem::setObjItem(const size_t,const size_t,const int&);
+template void
+IItem::setObjItem(const size_t,const size_t,const long int&);
+template void
+IItem::setObjItem(const size_t,const size_t,const size_t&);
+template void
+IItem::setObjItem(const size_t,const size_t,const Geometry::Vec3D&);
+
 
 ///\endcond TEMPLATE
  

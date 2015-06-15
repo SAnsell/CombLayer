@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   input/inputParam.cxx
  *
@@ -44,6 +44,7 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
+#include "stringCombine.h"
 #include "mathSupport.h"
 #include "MapSupport.h"
 #include "InputControl.h"
@@ -109,17 +110,31 @@ inputParam::copyMaps(const inputParam& A)
   if (!Keys.empty())
     deleteMaps();
 
-  MTYPE::const_iterator mc;
-  for(mc=A.Keys.begin();mc!=A.Keys.end();mc++)
+  for(MTYPE::value_type MC : Keys)
     {
-      IItemBase* IObj=mc->second->clone();
-      Keys.insert(MTYPE::value_type(mc->first,IObj));
+      IItem* IObj=new IItem(*MC.second);
+      Keys.insert(MTYPE::value_type(MC.first,IObj));
       if (A.Names.find(IObj->getLong())!=A.Names.end())
 	Names.insert(MTYPE::value_type(IObj->getLong(),IObj));
     }
   return;
 }
 
+void
+inputParam::checkKeys(const std::string& K,const std::string& LK) const
+  /*!
+    Simple check to see if key in use
+    \param K :: Short key
+    \param LK :: Long key if given
+  */
+{
+  if (K.empty() || findShortKey(K)!=0)
+    throw ColErr::InContainerError<std::string>(K,"Key[K] in use");
+  if (findLongKey(K)!=0)  
+    throw ColErr::InContainerError<std::string>(LK,"Long Key[LK] in use");
+  return;
+}
+  
 void
 inputParam::deleteMaps()
   /*!
@@ -135,7 +150,7 @@ inputParam::deleteMaps()
   return;
 }
   
-IItemBase*
+IItem*
 inputParam::getIndex(const std::string& K)
   /*!
     Given a key find the index
@@ -155,7 +170,7 @@ inputParam::getIndex(const std::string& K)
   return mc->second;
 }
 
-const IItemBase*
+const IItem*
 inputParam::getIndex(const std::string& K) const
   /*!
     Given a key find the index
@@ -175,7 +190,7 @@ inputParam::getIndex(const std::string& K) const
   return mc->second;
 }
 
-const IItemBase*
+const IItem*
 inputParam::findLongKey(const std::string& K) const
   /*!
     Given a key find the Item  Does not-throw
@@ -183,12 +198,13 @@ inputParam::findLongKey(const std::string& K) const
     \return Ptr / 0 on failure
    */
 {
+  if (K.empty()) return 0;
   MTYPE::const_iterator mc;
   mc=Names.find(K);
   return (mc!=Names.end()) ? mc->second : 0;
 }
 
-const IItemBase*
+const IItem*
 inputParam::findShortKey(const std::string& K) const
   /*!
     Given a key find the Item
@@ -202,7 +218,7 @@ inputParam::findShortKey(const std::string& K) const
   return (mc!=Keys.end()) ? mc->second : 0;
 }
 
-const IItemBase*
+const IItem*
 inputParam::findKey(const std::string& K) const
   /*!
     Given a key find the Item
@@ -211,11 +227,11 @@ inputParam::findKey(const std::string& K) const
     \return Ptr / 0 on failure
    */
 {
-  const IItemBase* OutPtr=findShortKey(K);
+  const IItem* OutPtr=findShortKey(K);
   return (!OutPtr) ? findLongKey(K) : OutPtr;
 }
 
-IItemBase*
+IItem*
 inputParam::findLongKey(const std::string& K) 
   /*!
     Given a key find the Item  Does not-throw
@@ -228,7 +244,7 @@ inputParam::findLongKey(const std::string& K)
   return (mc!=Names.end()) ? mc->second : 0;
 }
 
-IItemBase*
+IItem*
 inputParam::findShortKey(const std::string& K)
   /*!
     Given a key find the Item
@@ -242,7 +258,7 @@ inputParam::findShortKey(const std::string& K)
   return (mc!=Keys.end()) ? mc->second : 0;
 }
 
-IItemBase*
+IItem*
 inputParam::findKey(const std::string& K) 
   /*!
     Given a key find the Item
@@ -251,7 +267,7 @@ inputParam::findKey(const std::string& K)
     \return Ptr / 0 on failure
    */
 {
-  IItemBase* OutPtr=findShortKey(K);
+  IItem* OutPtr=findShortKey(K);
   return (!OutPtr) ? findLongKey(K) : OutPtr;
 }
 
@@ -270,44 +286,47 @@ inputParam::hasKey(const std::string& K) const
 size_t
 inputParam::dataCnt(const std::string& K) const
   /*!
-    Determine if active
+    Determine number of data object for a given key [assuming set 0]
     \param K :: Key to seach
     \return active flag
    */
 {
   ELog::RegMethod RegA("inputParam","dataCnt");
-  const IItemBase* IPtr=getIndex(K);
-  return IPtr->dataCnt();
+  
+  const IItem* IPtr=getIndex(K);
+  
+  return IPtr->getNItems();
 }
 
 size_t
-inputParam::grpCnt(const std::string& K) const
+inputParam::setCnt(const std::string& K) const
   /*!
     Count number of groups
     \param K :: Key to seach
     \return Grp count 
    */
 {
-  ELog::RegMethod RegA("inputParam","grpCnt");
-  const IItemBase* IPtr=getIndex(K);
-  return IPtr->getNComp();
+  ELog::RegMethod RegA("inputParam","setCnt");
+  
+  const IItem* IPtr=getIndex(K);
+  return IPtr->getNSets();
 }
 
 
 size_t
-inputParam::itemCnt(const std::string& K,const size_t Index) const
+inputParam::itemCnt(const std::string& K,const size_t setIndex) const
   /*!
     Determine number of items in a specific group
     \param K :: Key to seach
-    \param Index :: Nubmer of entry point
-    \return active flag
+    \param setIndex :: Nubmer of entry point
+    \return item count
    */
 {
   ELog::RegMethod RegA("inputParam","itemCnt");
-  const IItemBase* IPtr=getIndex(K);
-  return IPtr->getNCompData(Index);
+  const IItem* IPtr=getIndex(K);
+  if (!setIndex && !IPtr->getNSets()) return 0;
+  return IPtr->getNItems(setIndex);
 }
-
 
 bool
 inputParam::flag(const std::string& K) const
@@ -319,7 +338,7 @@ inputParam::flag(const std::string& K) const
 {
   ELog::RegMethod RegA("inputParam","flag");
 
-  const IItemBase* IPtr=getIndex(K);
+  const IItem* IPtr=getIndex(K);
   return IPtr->flag();
 }
 
@@ -328,115 +347,87 @@ T
 inputParam::getFlagDef(const std::string& InpKey,
 		       const FuncDataBase& Control,
 		       const std::string& VarKey,  
-		       const size_t I) const
+		       const size_t itemIndex) const
   /*!
     Get a value based initially on the input line,
     and to resolve to the variable.
     \param InpKey :: Key to seach
     \param Control :: FuncDataBase to search 
     \param VarKey :: Variable Key
-    \param I :: Index value
+    \param itemIndex :: Index value
     \return Value
    */
 {
   ELog::RegMethod RegA("inputParam","getFlagDef");
 
-  const IItemBase* IPtr=findKey(InpKey);
-  const IItemObj<T>* Ptr=dynamic_cast< const IItemObj<T>* >(IPtr);
-  if (Ptr && I<Ptr->getNData())
-    return Ptr->getObj(I);
-  const IItemMulti<T>* MPtr=dynamic_cast< const IItemMulti<T>* >(IPtr);
-  if (MPtr && I<MPtr->getNData())
-    return MPtr->getObj(I);
+  const IItem* IPtr=findKey(InpKey);
+  
+  
+  if (IPtr && IPtr->getNItems(0)>itemIndex)
+    return IPtr->getObj<T>(itemIndex);
   
   // Fall back to var set
   if (!Control.hasVariable(VarKey))
-    {
-      throw ColErr::InContainerError<std::string>(InpKey+":"+VarKey,
-						  "InpKey:VarKey");
-    }
+    throw ColErr::InContainerError<std::string>(InpKey+":"+VarKey,
+						"InpKey:VarKey");
+
   return Control.EvalVar<T>(VarKey);
 }
 
-
 std::string
-inputParam::getFull(const std::string& K,const size_t I) const
+inputParam::getFull(const std::string& K,const size_t setIndex) const
   /*!
-    Get the full string of all options for a given index
+    Get the full string of all options for a given setindex
     \param K :: Key to seach
-    \param I :: Index value
+    \param setIndex :: Index value
     \return Values in spc separated list
    */
 {
   ELog::RegMethod RegA("inputParam","getFull");
 
-  const IItemBase* IPtr=getIndex(K);
+  const IItem* IPtr=getIndex(K);
   if (!IPtr)
     throw ColErr::EmptyValue<void>("Key : "+K);
 
-  if (I>=IPtr->dataCnt())
-    throw ColErr::IndexError<size_t>(I,IPtr->dataCnt(),
-				     "key failed : "+K);
-
-  // Output streamx
   std::ostringstream OX;
-  IPtr->write(OX);
+  IPtr->writeSet(OX,setIndex);
   return OX.str();
 }
 
 template<typename T>
-const T&
-inputParam::getValue(const std::string& K,const size_t I) const
+T
+inputParam::getValue(const std::string& K,
+		     const size_t itemIndex) const
   /*!
     Get a value based on key
     \param K :: Key to seach
-    \param I :: Index value
+    \param itemIndex :: Index value
     \return Value
    */
 {
-  ELog::RegMethod RegA("inputParam","getValue");
-
-  const IItemBase* IPtr=getIndex(K);
-  if (!IPtr)
-    throw ColErr::EmptyValue<void>("Key : "+K);
-
-  if (I>=IPtr->dataCnt())
-    throw ColErr::IndexError<size_t>(I,IPtr->dataCnt(),
-				     "key failed : "+K);
-
-  const IItemObj<T>* Ptr=dynamic_cast< const IItemObj<T>* >(IPtr);
-  if (Ptr)
-    return Ptr->getObj(I);
-
-  const IItemMulti<T>* MPtr=dynamic_cast< const IItemMulti<T>* >(IPtr);
-  if (!MPtr)
-    throw ColErr::CastError<IItemBase>(IPtr,"key failed :"+K);
-
-  return MPtr->getObj(I);
+  ELog::RegMethod RegA("inputParam","getValue(index)");
+  return getValue<T>(K,0,itemIndex);
 }
 
 template<typename T>
-const T&
-inputParam::getCompValue(const std::string& K,const size_t Index,
-			 const size_t Item) const
+T
+inputParam::getValue(const std::string& K,
+		     const size_t setIndex,
+		     const size_t itemIndex) const
   /*!
     Get a value based on key
     \param K :: Key to seach
-    \param Index :: Index value
-    \param Item :: Item value [ of many ]
+    \param setIndex :: set Value
+    \param itemIndex :: Index value
     \return Value
    */
 {
-  ELog::RegMethod RegA("inputParam","getCompValue");
+  ELog::RegMethod RegA("inputParam","getValue(setIndex,index)");
 
-  const IItemBase* IPtr=getIndex(K);
+  const IItem* IPtr=getIndex(K);
   if (!IPtr)
     throw ColErr::EmptyValue<void>(K+":IPtr");
-  const IItemMulti<T>* MPtr=dynamic_cast< const IItemMulti<T>* >(IPtr);
-  if (!MPtr)
-    throw ColErr::CastError<IItemBase>(IPtr,"key failed :"+K);
-
-  return MPtr->getObj(Index,Item);
+  return IPtr->getObj<T>(setIndex,itemIndex);
 }
 
 bool
@@ -452,26 +443,19 @@ inputParam::compNoCaseValue(const std::string& K,
 {
   ELog::RegMethod RegA("inputParam","compNoCaseValue");
   
-  const IItemBase* IPtr=getIndex(K);
+  const IItem* IPtr=getIndex(K);
   if (!IPtr)
     throw ColErr::EmptyValue<void>("Key failed: "+K);
-  const size_t N=IPtr->dataCnt();
+
+  const size_t N=IPtr->getNItems();
   std::string NCValue(Value);
   boost::algorithm::to_lower(NCValue);
   for(size_t i=0;i<N;i++)
     {
-
-      const IItemObj<std::string>* Ptr=
-	dynamic_cast< const IItemObj<std::string>* >(IPtr);
-      const IItemMulti<std::string>* MPtr=
-	dynamic_cast< const IItemMulti<std::string>* >(IPtr);
-      if (Ptr || MPtr) 
-	{
-	  std::string OStr=(Ptr) ? Ptr->getObj(i) : MPtr->getObj(i);
-	  boost::algorithm::to_lower(OStr);      
-	  if (NCValue==OStr)
-	    return 1;
-	}
+      std::string OStr=IPtr->getObj<std::string>(i); 
+      boost::algorithm::to_lower(OStr);      
+      if (NCValue==OStr)
+	return 1;
     }
   return 0;
 }
@@ -489,23 +473,20 @@ inputParam::compValue(const std::string& K,const T& Value) const
 {
   ELog::RegMethod RegA("inputParam","compValue");
 
-  const IItemBase* IPtr=getIndex(K);
+  const IItem* IPtr=getIndex(K);
   if (!IPtr)
     throw ColErr::EmptyValue<void>("Key failed: "+K);
-  const size_t N=IPtr->dataCnt();
+  const size_t N=IPtr->getNItems();
+
+  const std::string NCValue(StrFunc::makeString(Value));
+
   for(size_t i=0;i<N;i++)
-    {
-      const IItemObj<T>* Ptr=dynamic_cast< const IItemObj<T>* >(IPtr);
-      const IItemMulti<T>* MPtr=dynamic_cast< const IItemMulti<T>* >(IPtr);
-      if (Ptr) 
-	if (Ptr->getObj(i)==Value)
-	  return 1;
-      if (MPtr) 
-	if (MPtr->getObj(i)==Value)
-	  return 1;
-      }
+    if (IPtr->getObj<T>(i)==Value)
+      return 1;
+  
   return 0;
 }
+  
 
 void
 inputParam::setDesc(const std::string& K,const std::string& D)
@@ -517,7 +498,7 @@ inputParam::setDesc(const std::string& K,const std::string& D)
 {
   ELog::RegMethod RegA("inputParam","setDesc");
 
-  IItemBase* IPtr=getIndex(K);
+  IItem* IPtr=getIndex(K);
   std::string::size_type pos=D.find('\n');
   if (pos!=std::string::npos)
     {
@@ -545,37 +526,74 @@ inputParam::setFlag(const std::string& K)
 {
   ELog::RegMethod RegA("inputParam","setFlag");
 
-  IItemBase* IPtr=getIndex(K);
-  IItemFlag* Ptr=dynamic_cast<IItemFlag*> (IPtr);
-  if (!Ptr)
-    throw ColErr::CastError<IItemBase>(IPtr,"Key Failed :"+K);
+  IItem* IPtr=getIndex(K);
+  if (!IPtr)
+    throw ColErr::InContainerError<std::string>(K,"Key");
 
-  Ptr->setObj();
+  IPtr->setActive();
   return;
 }
 
 template<typename T>
 void
-inputParam::setValue(const std::string& K,const T& A,
-		     const size_t I) 
+inputParam::setValue(const std::string& K,
+		     const T& A,const size_t itemIndex) 
   /*!
     Set a value based on key
     \param K :: Key to add/search
-    \param A :: Object ot set
+    \param A :: Object to set
     \param I :: Index value
   */
 {
-  ELog::RegMethod RegA("inputParam","setValue(N)");
+  setValue<T>(K,A,0,itemIndex);
+  return;
+}
 
-  IItemBase* IPtr=getIndex(K);
-  IItemObj<T>* Ptr=dynamic_cast<IItemObj<T>*> (IPtr);
-  if (!Ptr)
-    throw ColErr::CastError<IItemBase>(IPtr,"Key Failed :"+K);
-  if (I>=Ptr->getNData())
-    throw ColErr::IndexError<size_t>(I,Ptr->getNData(),
-				     "Key Failed :"+K);
+template<typename T>
+void
+inputParam::setValue(const std::string& K,
+		     const T& A,const size_t setIndex,
+		     const size_t itemIndex) 
+  /*!
+    Set a value based on key
+    \param K :: Key to add/search
+    \param A :: Object to set
+    \param setIndex :: index value to set
+    \param itemIndex :: Index value
 
-  Ptr->setObj(I,A);
+  */
+{
+  ELog::RegMethod RegA("inputParam","setValue");
+  
+  IItem* IPtr=getIndex(K);
+  if (!IPtr)
+    throw ColErr::InContainerError<std::string>(K,"Key Failed :");
+
+  std::ostringstream cx;
+  cx<<A;
+  IPtr->setObj(setIndex,itemIndex,cx.str());
+  return;
+}
+
+void
+inputParam::setMultiValue(const std::string& K,
+			  const size_t setIndex,
+			  const std::string& Values) 
+ /*!
+    Set a value based on key
+    \param K :: Key to add/search
+    \param setIndex :: Index to multi-unit
+    \param Values :: String of values
+  */
+{
+  ELog::RegMethod RegA("inputParam","setMultValue");
+  IItem* IPtr=getIndex(K);  // throws
+
+  const std::vector<std::string> Items=
+    StrFunc::splitParts(Values,' ');
+  for(size_t i=0;i<Items.size();i++)
+    IPtr->setObj(setIndex,i,Items[i]);
+  
   return;
 }
 
@@ -588,67 +606,61 @@ inputParam::regFlag(const std::string& K,const std::string& LK)
   */
 {
   ELog::RegMethod RegA("inputParam","regFlag");
-  
-  if (K.empty() || findShortKey(K)!=0)
-    {
-      ELog::EM<<"Failed to register item:"<<K<<ELog::endErr;
-      return;
-    }
+  checkKeys(K,LK);
 
-  IItemFlag* IPtr=new IItemFlag(K,LK);
+  IItem* IPtr=new IItem(K,LK);
+  IPtr->setMaxN(0,0,0);
   Keys.insert(MTYPE::value_type(K,IPtr));
   if (!LK.empty())
     Names.insert(MTYPE::value_type(LK,IPtr));
   return;  
 }
 
-template<typename T>
 void
 inputParam::regItem(const std::string& K,
 		    const std::string& LK,
-		    const size_t NData)
+		    const size_t ReqData,
+		    const size_t MaxData)
   /*!
     Registers a particular type
     \param K :: Keyname
     \param LK :: Long keyname
-    \param NData :: Number of data points
+    \param ReqData :: Required Number of data points [min]
+    \param MaxData :: Max number of data 
   */
 {
-  ELog::RegMethod RegA("inputParam","regItem<T>");
-  
-  if (K.empty() || findShortKey(K)!=0)
-    {
-      ELog::EM<<"Failed to register item:"<<K<<ELog::endErr;
-      return;
-    }
-  IItemObj<T>* IPtr=new IItemObj<T>(NData,K,LK);
+  ELog::RegMethod RegA("inputParam","regItem");
+  checkKeys(K,LK);
+
+  IItem* IPtr=new IItem(K,LK);
+  IPtr->setMaxN(1,ReqData,MaxData);
   Keys.insert(MTYPE::value_type(K,IPtr));
+
   if (!LK.empty())
     Names.insert(MTYPE::value_type(LK,IPtr));
   return;  
 }
 
-template<typename T>
 void
 inputParam::regMulti(const std::string& K,const std::string& LK,
-		     const size_t nData,const long int nReq)
+		     const size_t maxSets,const size_t reqData,
+		     const size_t maxData)
   /*!
     Registers a particular Multi type
     \param K :: Keyname
     \param LK :: Long keyname
-    \param nData :: number of data items per unit
+    \param maxSets :: Max number of sets
+    \param reqData :: Required data per set
+    \param maxData :: Max number of dat per set
     \param nReq :: number of data actually required [-ve to mean all]
   */
 {
-  ELog::RegMethod RegA("inputParam","regMulti<T>");
+  ELog::RegMethod RegA("inputParam","regMulti");
+  checkKeys(K,LK);
+
+  IItem* IPtr=new IItem(K,LK);
+  IPtr->setMaxN(maxSets,reqData,maxData);
   
-  if (K.empty() || findShortKey(K)!=0)
-    {
-      ELog::EM<<"Failed to register item:"<<K<<ELog::endErr;
-      return;
-    }
-  const size_t nAReq(nReq<0 ? nData : static_cast<size_t>(nReq));
-  IItemMulti<T>* IPtr=new IItemMulti<T>(K,LK,nData,nAReq);
   Keys.insert(MTYPE::value_type(K,IPtr));
   if (!LK.empty())
     Names.insert(MTYPE::value_type(LK,IPtr));
@@ -659,7 +671,7 @@ inputParam::regMulti(const std::string& K,const std::string& LK,
 template<typename T>
 void
 inputParam::regDefItemList(const std::string& K,const std::string& LK,
-			   const size_t NData,const std::vector<T>& AItems)
+			   const size_t reqNData,const std::vector<T>& AItems)
   /*!
     Registers a particular type
     \param K :: Keyname
@@ -669,21 +681,20 @@ inputParam::regDefItemList(const std::string& K,const std::string& LK,
   */
 {
   ELog::RegMethod RegA("inputParam","regDefItemList<T>");
+  checkKeys(K,LK);
   
-  if (K.empty() || findShortKey(K)!=0 ||
-      NData<1)
-    {
-      ELog::EM<<"Failed to register item :"<<K<<ELog::endErr;
-      return;
-    }
-  const size_t NDef=AItems.size();
-  IItemObj<T>* IPtr=new IItemObj<T>(NData,NData-NDef,K,LK);
+  if (reqNData>AItems.size())
+    throw ColErr::IndexError<size_t>(reqNData,AItems.size(),
+				     "Items and required size incompatable");
+  
+  IItem* IPtr=new IItem(K,LK);
+  IPtr->setMaxN(1,0,10000);            // no required as has def.
   Keys.insert(MTYPE::value_type(K,IPtr));
   if (!LK.empty())
     Names.insert(MTYPE::value_type(LK,IPtr));
 
   for(size_t i=0;i<AItems.size();i++)
-    IPtr->setDefObj(NData-NDef+i,AItems[i]);
+    IPtr->setObjItem<T>(0,i,AItems[i]);
 
   return;  
 }
@@ -691,102 +702,102 @@ inputParam::regDefItemList(const std::string& K,const std::string& LK,
 template<typename T>
 void
 inputParam::regDefItem(const std::string& K,const std::string& LK,
-		       const size_t NData,const T& AItem)
+		       const size_t reqItem,const T& AItem)
   /*!
     Registers a particular type
     \param K :: Keyname
     \param LK :: Long keyname
-    \param NData :: Number of data points
+    \param reqItem :: Number of data points require
     \param AItem :: Last Item with default
   */
 {
   ELog::RegMethod RegA("inputParam","regDefItem<T>(A)");
-  
-  if (K.empty() || findShortKey(K)!=0 ||
-      NData<1)
-    {
-      ELog::EM<<"Failed to register item :"<<K<<ELog::endErr;
-      return;
-    }
+  checkKeys(K,LK);
 
-  IItemObj<T>* IPtr=new IItemObj<T>(NData,NData-1,K,LK);
+  IItem* IPtr=new IItem(K,LK);
+  IPtr->setMaxN(1,0,10000);
+
   Keys.insert(MTYPE::value_type(K,IPtr));
   if (!LK.empty())
     Names.insert(MTYPE::value_type(LK,IPtr));
 
-  IPtr->setDefObj(NData-1,AItem);
+  for(size_t i=0;i<reqItem;i++)
+    IPtr->setObjItem<T>(0,i,AItem);
   return;  
 }
 
 template<typename T>
 void
 inputParam::regDefItem(const std::string& K,const std::string& LK,
-		       const size_t NData,const T& AItem,const T& BItem)
+		       const size_t reqData,const T& AItem,
+		       const T& BItem)
   /*!
     Registers a particular type
     \param K :: Keyname
     \param LK :: Long keyname
-    \param NData :: Number of data points
+    \param reqData :: Number of data points
     \param AItem :: Penultimate Item with default
     \param BItem :: Last Item with default
   */
 {
   ELog::RegMethod RegA("inputParam","regDefItem<T>(A,B)");
+  checkKeys(K,LK);
+  if (reqData<2)
+    throw ColErr::IndexError<size_t>(reqData,2,"reqData");
+
+  IItem* IPtr=new IItem(K,LK);
+  IPtr->setMaxN(1,0,10000);
   
-  if (K.empty() || NData<2)
-    {
-      ELog::EM<<"Failed to register item :"<<K
-	      <<" == Points =="<<NData<<ELog::endErr;
-      return;
-    }
-  IItemObj<T>* IPtr=new IItemObj<T>(NData,NData-2,K,LK);
   Keys.insert(MTYPE::value_type(K,IPtr));
   if (!LK.empty())
     Names.insert(MTYPE::value_type(LK,IPtr));
 
-  IPtr->setDefObj(NData-2,AItem);
-  IPtr->setDefObj(NData-1,BItem);
+  IPtr->setObjItem<T>(0,0,AItem);
+  IPtr->setObjItem<T>(0,1,BItem);
+
   return;  
 }
 
 template<typename T>
 void
 inputParam::regDefItem(const std::string& K,const std::string& LK,
-		       const size_t NData,const T& AItem,
+		       const size_t reqData,const T& AItem,
 		       const T& BItem,const T& CItem)
   /*!
     Registers a particular type
     \param K :: Keyname
     \param LK :: Long keyname
-    \param NData :: Number of data points
-    \param AItem :: First Item with default
-    \param BItem :: Second Item with default
+    \param reqData :: Number of data points
+    \param AItem :: Penultimate Item with default
+    \param BItem :: Last Item with default
     \param CItem :: Last Item with default
   */
 {
-  ELog::RegMethod RegA("inputParam","regDefItem<T>(A)");
-  
-  if (K.empty() || NData<3)
-    {
-      ELog::EM<<"Failed to register item :"<<K
-	      <<" == Points =="<<NData<<ELog::endErr;
-      return;
-    }
-  IItemObj<T>* IPtr=new IItemObj<T>(NData,NData-3,K,LK);
+  ELog::RegMethod RegA("inputParam","regDefItem<T>(A,B,C)");
+  checkKeys(K,LK);
+  if (reqData<3)
+    throw ColErr::IndexError<size_t>(reqData,3,"reqData");
+
+  IItem* IPtr=new IItem(K,LK);
+  IPtr->setMaxN(1,0,10000);
   Keys.insert(MTYPE::value_type(K,IPtr));
   if (!LK.empty())
     Names.insert(MTYPE::value_type(LK,IPtr));
 
-  IPtr->setDefObj(NData-3,AItem);
-  IPtr->setDefObj(NData-2,BItem);
-  IPtr->setDefObj(NData-1,CItem);
+  IPtr->setObjItem<T>(0,0,AItem);
+  IPtr->setObjItem<T>(0,1,BItem);
+  IPtr->setObjItem<T>(0,2,CItem);
+
   return;  
 }
+
 
 void
 inputParam::processMainInput(std::vector<std::string>& Names)
   /*!
-    Process all the main input
+    Process all the main input. Populate pre-defined object.
+    Those imtes/values in Name that are processed correctly are
+    removed.
     \param Names :: Vector of keys and parameters
   */
 {
@@ -795,14 +806,15 @@ inputParam::processMainInput(std::vector<std::string>& Names)
   std::vector<std::string> Out;
   // First search for all keys [use long int as can got to -1 below]
   std::string SubName;
-  double DValue;
+  double DValue;              // Dumy value to avoid checking -10.0 etc
   for(size_t i=0;i<Names.size();)
     {
       Out.push_back(Names[i]);    // erased later
-      IItemBase* IPtr=0;
+      
+      IItem* IPtr=0;
       const int numberFlag=StrFunc::convert(Names[i],DValue);
       if (Names[i].size()>2 && 
-	    Names[i][0]=='-' && Names[i][1]=='-')
+	  Names[i][0]=='-' && Names[i][1]=='-')
 	{
 	  SubName=Names[i].substr(2);
 	  IPtr=findLongKey(SubName);
@@ -814,37 +826,45 @@ inputParam::processMainInput(std::vector<std::string>& Names)
 	  IPtr=findShortKey(SubName);
 	}
       // Did we find anything:
-      size_t cN(0);
       if (IPtr)       // Index found
 	{
-	  const size_t Nreq=IPtr->getNReqData();    
-	  const size_t Nparam=IPtr->getNData();
-	  IPtr->addNewSection();
-          i++;
-	  // check enough items exist
-	  if (i+Nreq <= Names.size())
+	  const size_t NReq=IPtr->getReqItems();
+	  const size_t NMax=IPtr->getMaxItems();
+	  size_t processNumber(0);
+	  if (i+NReq <= Names.size())
 	    {
-	      size_t processCnt(1);
-	      while(processCnt && cN<Nparam &&
-		    i<Names.size())
+	      i++;
+	      // add set if new:
+	      const size_t SNum=IPtr->addSet();
+	      size_t nextFlag(SNum);
+	      while(nextFlag && i<Names.size())
 		{
-		  // returns number of Names[i] used :
-		  processCnt=IPtr->convert(cN,i,Names);
-		  i+=processCnt;
-		  if (processCnt) cN++;   
+		  nextFlag=0;
+		  // check if a -ve number
+		  if (Names[i][0]!='-' ||
+		      StrFunc::convert(Names[i],DValue))
+		    {
+		      nextFlag=IPtr->addObject(Names[i]);
+		      if (nextFlag)
+			{
+			  processNumber++;
+			  i++;
+			}
+		    }
 		}
-	    } 
-
-	  if (cN<Nreq)   
+	    }
+	  
+	  if (processNumber<NReq)   
 	    ELog::EM<<"Item "<<SubName<<" failed at "
-		    <<cN<<" ("<<Nparam<<") ["<<Nreq<<"]"<<ELog::endErr;
-	  Out.pop_back();
+		    <<processNumber<<" ("<<NMax<<") ["<<NReq<<"]"<<ELog::endErr;
+	  Out.pop_back(); // All good so remove Items
 	}
-      if (!IPtr)
+      else 
 	i++;
     }
+  
   Names=Out;
-  return ;
+  return;
 }
 
 void
@@ -860,7 +880,7 @@ inputParam::writeDescription(std::ostream& OX) const
   MTYPE::const_iterator mc;
   for(mc=Keys.begin();mc!=Keys.end();mc++)
     {
-      const IItemBase* IPtr=mc->second;
+      const IItem* IPtr=mc->second;
       OX<<(FMTstr % IPtr->getKey() % IPtr->getLong() % 
 	   IPtr->getDesc() )<<std::endl;
     }
@@ -878,52 +898,16 @@ inputParam::write(std::ostream& OX) const
   MTYPE::const_iterator mc;
   for(mc=Keys.begin();mc!=Keys.end();mc++)
     {
-      const IItemBase* IPtr=mc->second;
+      const IItem* IPtr=mc->second;
       OX<<(FMTstr % IPtr->getKey() % IPtr->getLong() % 
 	   (IPtr->flag() ? " set " : " not-set "));
-      OX<<":: "<<*IPtr<<std::endl;
+      OX<<":: "<<*IPtr<<"\n";
     }
 
   return;
 }
 
 ///\cond TEMPLATE
-
-template void 
-inputParam::regItem<int>(const std::string&,const std::string&,
-			 const size_t);
-template void 
-inputParam::regItem<size_t>(const std::string&,const std::string&,
-			 const size_t);
-template void 
-inputParam::regItem<double>(const std::string&,const std::string&,
-			    const size_t);
-template void 
-inputParam::regItem<std::string>(const std::string&,const std::string&,
-				 const size_t);
-template void 
-inputParam::regItem<Geometry::Vec3D>(const std::string&,const std::string&,
-				     const size_t);
-// MULTI:
-template void 
-inputParam::regMulti<int>(const std::string&,const std::string&,
-			  const size_t,const long int);
-template void 
-inputParam::regMulti<size_t>(const std::string&,const std::string&,
-			  const size_t,const long int);
-
-template void 
-inputParam::regMulti<double>(const std::string&,const std::string&,
-			     const size_t,const long int);
-
-template void 
-inputParam::regMulti<std::string>(const std::string&,const std::string&,
-				  const size_t,const long int);
-
-template void 
-inputParam::regMulti<Geometry::Vec3D>(const std::string&,const std::string&,
-				      const size_t,const long int);
-
 
 // DEFAULT : INT
 template void 
@@ -981,33 +965,41 @@ inputParam::regDefItem<long int>
 
 template void inputParam::setValue(const std::string&,const double&,const size_t);
 template void inputParam::setValue(const std::string&,const int&,const size_t);
-template void inputParam::setValue(const std::string&,const 
-				   std::string&,const size_t);
-template void inputParam::setValue(const std::string&,
-				   const Geometry::Vec3D&,const size_t);
+template void inputParam::setValue(const std::string&,const std::string&,const size_t);
+template void inputParam::setValue(const std::string&,const Geometry::Vec3D&,const size_t);
 
-template const double& inputParam::getValue(const std::string&,const size_t) const;
-template const int& inputParam::getValue(const std::string&,const size_t) const;
-template const size_t& inputParam::getValue(const std::string&,const size_t) const;
-template const unsigned int& inputParam::getValue(const std::string&,const size_t) const;
-template const long int& inputParam::getValue(const std::string&,const size_t) const;
-template const std::string& 
-inputParam::getValue(const std::string&,const size_t) const;
-template const Geometry::Vec3D& 
-inputParam::getValue(const std::string&,const size_t) const;
+template void inputParam::setValue(const std::string&,const double&,const size_t,const size_t);
+template void inputParam::setValue(const std::string&,const int&,const size_t,const size_t);
+template void inputParam::setValue(const std::string&,const std::string&,const size_t,const size_t);
+template void inputParam::setValue(const std::string&,const Geometry::Vec3D&,const size_t,const size_t);
 
-template const Geometry::Vec3D& 
-inputParam::getCompValue(const std::string&,const size_t,const size_t) const;
-template const std::string&
-inputParam::getCompValue(const std::string&,const size_t,const size_t) const;
-template const int&
-inputParam::getCompValue(const std::string&,const size_t,const size_t) const;
+template double inputParam::getValue(const std::string&,const size_t) const;
+template int inputParam::getValue(const std::string&,const size_t) const;
+template size_t inputParam::getValue(const std::string&,const size_t) const;
+template unsigned int inputParam::getValue(const std::string&,const size_t) const;
+template long int inputParam::getValue(const std::string&,const size_t) const;
+template std::string inputParam::getValue(const std::string&,const size_t) const;
+template Geometry::Vec3D inputParam::getValue(const std::string&,const size_t) const;
+
+template double inputParam::getValue(const std::string&,const size_t,const size_t) const;
+template int inputParam::getValue(const std::string&,const size_t,const size_t) const;
+template size_t inputParam::getValue(const std::string&,const size_t,const size_t) const;
+template unsigned int inputParam::getValue(const std::string&,const size_t,const size_t) const;
+template long int inputParam::getValue(const std::string&,const size_t,const size_t) const;
+template std::string inputParam::getValue(const std::string&,const size_t,const size_t) const;
+template Geometry::Vec3D inputParam::getValue(const std::string&,const size_t,const size_t) const;
+
+
+template bool
+inputParam::compValue(const std::string&,const size_t&) const;
 
 template double
 inputParam::getFlagDef(const std::string&,const FuncDataBase& Control,
 		       const std::string&,const size_t) const;
 
-template bool inputParam::compValue(const std::string&,
+
+
+  template bool inputParam::compValue(const std::string&,
 				    const std::string&) const;
 
 template void 

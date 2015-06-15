@@ -25,17 +25,21 @@
 namespace attachSystem
 {
   class FixedComp;
+  class TwinComp;
   class CellMap;
 }
 
 namespace constructSystem
 {
   class Jaws;
+  class DiskChopper;
 }
 
 namespace essSystem
 {
-
+  class Bunker;
+  class BunkerInsert;
+  
   /*!
     \class ODIN
     \version 1.0
@@ -49,9 +53,15 @@ class ODIN
  private:
 
   /// First collimation jaws
-  std::shared_ptr<constructSystem::Jaws> CollA;
+  std::shared_ptr<constructSystem::DiskChopper> BladeChopper;
   /// Tapper Unit
   std::shared_ptr<beamlineSystem::GuideLine> GuideA;
+  /// T0 chopper [9-9.5m]
+  std::shared_ptr<constructSystem::DiskChopper> T0Chopper;
+  /// Tapper Unit
+  std::shared_ptr<beamlineSystem::GuideLine> GuideB;
+  /// Bunker insert
+  std::shared_ptr<essSystem::BunkerInsert> BInsert;
   
  public:
   
@@ -60,8 +70,8 @@ class ODIN
   ODIN& operator=(const ODIN&);
   ~ODIN();
   
-  void build(Simulation&,const attachSystem::FixedComp&,
-	     const attachSystem::CellMap&,const int);
+  void build(Simulation&,const attachSystem::TwinComp&,
+	     const Bunker&,const int);
 
 };
 
