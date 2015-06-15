@@ -398,10 +398,13 @@ makeESS::makeBunker(Simulation& System,
   /*!
     Make the bunker system
     \param System :: Simulation 
-   */
+    \param bunkerType :: different bunker to make
+  */
 {
   ELog::RegMethod RegA("makeESS","makeBunker");
 
+  ELog::EM<<"Bunker == "<<bunkerType<<ELog::endDiag;
+  
   LowABunker->addInsertCell(74123);
   LowABunker->createAll(System,*LowMod,*GBArray[0],2,true);
 

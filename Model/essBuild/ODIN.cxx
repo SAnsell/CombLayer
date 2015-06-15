@@ -60,6 +60,7 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "FixedGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -84,8 +85,7 @@ ODIN::ODIN() :
   GuideA(new beamlineSystem::GuideLine("ODINgA")),
   T0Chopper(new constructSystem::DiskChopper("odinTZero")),
   GuideB(new beamlineSystem::GuideLine("odinGB")),
-  BInsert(new BunkerInsert("odinBInsert")),
-  
+  BInsert(new BunkerInsert("odinBInsert"))
  /*!
     Constructor
  */

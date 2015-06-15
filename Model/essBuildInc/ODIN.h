@@ -38,6 +38,7 @@ namespace constructSystem
 namespace essSystem
 {
   class Bunker;
+  class BunkerInsert;
   
   /*!
     \class ODIN
