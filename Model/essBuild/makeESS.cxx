@@ -456,8 +456,10 @@ makeESS::build(Simulation& System,
   
   Reflector->createAll(System,World::masterOrigin(),
 		       Target->wheelHeight(),
-		       LowPreMod->getHeight()+LMHeight+LowCapMod->getHeight(),
+		       LowPreMod->getHeight()+LMHeight, //+LowCapMod->getHeight(),
 		       -1.0);
+
+  attachSystem::addToInsertControl(System,*Reflector,*LowCapMod);
   
   Reflector->insertComponent(System,"targetVoid",*Target,1);
   Reflector->deleteCell(System,"lowVoid");
