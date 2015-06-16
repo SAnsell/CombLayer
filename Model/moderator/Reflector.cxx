@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   moderator/Reflector.cxx
  *
@@ -246,8 +246,8 @@ Reflector::populate(const Simulation& System)
   
   defMat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 
-  const int nPads=Control.EvalVar<int>(keyName+"NPads");
-  for(int i=0;i<nPads;i++)
+  const size_t nPads=Control.EvalVar<size_t>(keyName+"NPads");
+  for(size_t i=0;i<nPads;i++)
     Pads.push_back(CoolPad("coolPad",i+1));
 
   return;

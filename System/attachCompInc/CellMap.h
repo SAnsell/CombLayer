@@ -56,8 +56,9 @@ class CellMap
   void setCell(const std::string&,const size_t,const int);
   int getCell(const std::string&) const;
   int getCell(const std::string&,const size_t) const;
-  
-  const std::vector<int>& getCells(const std::string&) const;
+
+  void setCells(const std::string&,const int,const int);  
+  std::vector<int> getCells(const std::string&) const;
 
   void insertComponent(Simulation&,const std::string&,
 		       const ContainedComp&) const;
@@ -69,8 +70,7 @@ class CellMap
 		       const FixedComp&,const long int) const;
 
   void deleteCell(Simulation&,const std::string&,const size_t =0);
-
-  static int getCell(const std::string&,const std::string&);
+  int removeCell(const std::string&,const size_t =0);
   
 };
 

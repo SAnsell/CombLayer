@@ -139,7 +139,11 @@ ODIN::build(Simulation& System,const attachSystem::TwinComp& GItem,
   GuideB->createAll(System,T0Chopper->getKey("Main"),2,
 		    T0Chopper->getKey("Beam"),2);
 
-  BInsert->addInsertCell(bunkerObj.getCell("MainWall0"));
+
+  BInsert->setInsertCell(bunkerObj.getCells("MainWall0"));
+  const std::vector<int> AR=bunkerObj.getCells("MainWall0");
+  for(int ii : AR)
+    ELog::EM<<"Cells == "<<ii<<ELog::endDiag;
   const std::string BWall=bunkerObj.getSignedLinkString(1)+" "+
     bunkerObj.getSignedLinkString(-2);
   BInsert->createAll(System,GuideB->getKey("Guide0"),2,BWall);
