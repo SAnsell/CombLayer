@@ -31,7 +31,7 @@ namespace essSystem
   \class BunkerInsert
   \version 1.0
   \author S. Ansell
-  \date April 2013
+  \date June 2015
   \brief Bulk around Reflector
 */
 
@@ -42,6 +42,8 @@ class BunkerInsert : public attachSystem::ContainedComp,
   
   const int insIndex;            ///< Index of surface offset
   int cellIndex;                 ///< Cell index
+
+  double backStep;               ///< Step back of dividing plane
   
   double height;                 ///< Height of insert 
   double width;                  ///< Width of insert 

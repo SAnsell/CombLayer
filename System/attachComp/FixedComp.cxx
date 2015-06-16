@@ -827,8 +827,10 @@ FixedComp::getLinkComplement(const size_t Index) const
     throw ColErr::IndexError<size_t>(Index,LU.size(),"Index/LU.size");
 
   HeadRule RP;
-  RP.procString(LU[Index].getLinkString());
+  RP.procString(LU[Index].getMain());
   RP.makeComplement();
+  
+  RP.addIntersection(LU[Index].getCommon());
   return RP.display();
 }
 

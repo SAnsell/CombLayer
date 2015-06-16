@@ -117,7 +117,7 @@ ODIN::build(Simulation& System,const attachSystem::TwinComp& GItem,
     Carry out the full build
     \param System :: Simulation system
     \param GItem :: Guide Item 
-    \param Bunkdr :: Bunker cell map [for inserts]
+    \param BunkerObj :: Bunker component [for inserts]
     \param voidCell :: Void cell
    */
 {
@@ -139,7 +139,10 @@ ODIN::build(Simulation& System,const attachSystem::TwinComp& GItem,
   GuideB->createAll(System,T0Chopper->getKey("Main"),2,
 		    T0Chopper->getKey("Beam"),2);
 
-  BInsert->addInsertCell(bunkerObj.getCell("MainVoid"));
+  BInsert->addInsertCell(bunkerObj.getCell("MainWall0"));
+  const std::string BWall=bunkerObj.getSignedLinkString(1)+" "+
+    bunkerObj.getSignedLinkString(-2);
+  BInsert->createAll(System,GuideB->getKey("Guide0"),2,BWall);
 
   return;
 }

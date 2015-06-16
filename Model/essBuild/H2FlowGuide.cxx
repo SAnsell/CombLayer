@@ -169,10 +169,11 @@ H2FlowGuide::populate(const FuncDataBase& Control)
 
   baseThick=Control.EvalPair<double>(keyName,baseName+endName,"BaseThick");
   baseLen=Control.EvalPair<double>(keyName,baseName+endName,"BaseLen");
-  armThick=Control.EvalPair<double>(keyName,baseName+endName,"ArmThick");
-  armLen=Control.EvalPair<double>(keyName,baseName+endName,"ArmLen");
   baseArmSep=Control.EvalPair<double>(keyName,baseName+endName,"BaseArmSep");
   baseOffset=Control.EvalPair<Geometry::Vec3D>(keyName,baseName+endName,"BaseOffset");
+
+  armThick=Control.EvalPair<double>(keyName,baseName+endName,"ArmThick");
+  armLen=Control.EvalPair<double>(keyName,baseName+endName,"ArmLen");
   armOffset=Control.EvalPair<Geometry::Vec3D>(keyName,baseName+endName,"ArmOffset");
 
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat",
@@ -239,12 +240,11 @@ H2FlowGuide::createObjects(Simulation& System,
   /*!
     Adds the main components
     \param System :: Simulation to create objects in
-    \param H2Wing object
+    \param HW :: H2Wing object
   */
 {
   ELog::RegMethod RegA("H2FlowGuide","createObjects");
 
-  
   const attachSystem::CellMap* CM=
     dynamic_cast<const attachSystem::CellMap*>(&HW);
   MonteCarlo::Object* InnerObj(0);
@@ -259,29 +259,25 @@ H2FlowGuide::createObjects(Simulation& System,
       (innerCell,"H2Wing inner Cell not found");
   
   std::string Out;
-
+  const std::string topBottomStr=HW.getLinkString(12)+HW.getLinkString(13);
+  HeadRule wallExclude;
   // base
   Out=ModelSupport::getComposite(SMap,flowIndex," 1 -2 3 -4 ");
-  HeadRule wallExclude1(Out);
-  Out+=HW.getLinkString(12)+HW.getLinkString(13);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out));
-  wallExclude1.makeComplement();
-  InnerObj->addSurfString(wallExclude1.display());
+  wallExclude.procString(Out); 
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+topBottomStr));
+
 
   Out=ModelSupport::getComposite(SMap,flowIndex," 1 -2 -13 14 ");
-  HeadRule wallExclude2(Out);
-  Out+=HW.getLinkString(12)+HW.getLinkString(13);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out));
-  wallExclude2.makeComplement();
-  InnerObj->addSurfString(wallExclude2.display());
+  wallExclude.addUnion(Out); 
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+topBottomStr));
 
   // arm
   Out=ModelSupport::getComposite(SMap,flowIndex," 101 -102 103 -104 ");
-  HeadRule wallExclude3(Out);
-  Out+=HW.getLinkString(12)+HW.getLinkString(13);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out));
-  wallExclude3.makeComplement();
-  InnerObj->addSurfString(wallExclude3.display());
+  wallExclude.addUnion(Out);
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+topBottomStr));
+
+  wallExclude.makeComplement();
+  InnerObj->addSurfString(wallExclude.display());
   
   return;
 }

@@ -31,6 +31,8 @@
 #include <map>
 #include <string>
 #include <iterator>
+#include <memory>
+
 #include <boost/format.hpp>
 
 #include "Exception.h"

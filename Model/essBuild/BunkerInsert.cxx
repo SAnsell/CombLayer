@@ -111,7 +111,9 @@ BunkerInsert::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("BunkerInsert","populate");
   FixedOffset::populate(Control);
-  
+
+  backStep=Control.EvalDefVar<double>(keyName+"BackStep",30.0);
+    
   height=Control.EvalVar<double>(keyName+"Height");
   width=Control.EvalVar<double>(keyName+"Width");
   topWall=Control.EvalVar<double>(keyName+"TopWall");
@@ -148,6 +150,9 @@ BunkerInsert::createSurfaces()
 {
   ELog::RegMethod RegA("BunkerInsert","createSurface");
 
+  /// Dividing plane
+  ModelSupport::buildPlane(SMap,insIndex+1,Origin-Y*backStep,Y);
+    
   ModelSupport::buildPlane(SMap,insIndex+3,Origin-X*width/2.0,X);
   ModelSupport::buildPlane(SMap,insIndex+4,Origin+X*width/2.0,X);
 
@@ -184,7 +189,7 @@ BunkerInsert::createObjects(Simulation& System,
 				 " 13 -14 15 -16 (-3 : 4: -5: 6) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+BCell));
   
-  Out=ModelSupport::getComposite(SMap,insIndex," 13 -14 15 -16 ");
+  Out=ModelSupport::getComposite(SMap,insIndex," 1 13 -14 15 -16 ");
   addOuterSurf(Out);
   
   return;

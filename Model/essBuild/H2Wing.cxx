@@ -403,6 +403,7 @@ H2Wing::createSurfaces()
   std::array<Geometry::Vec3D,3> NPts;
   double PDepth(0.0);
   double VDepth(0.0);
+  
   for(size_t j=0;j<nLayers;j++)
     {
       PDepth+=thick[j];
@@ -434,7 +435,6 @@ H2Wing::createSurfaces()
 	  
 	  ModelSupport::buildCylinder(SMap,triOffset+ii+6,
 				      RCent,Z,radius[i]+PDepth);
-
 	}
       
       ModelSupport::buildPlane(SMap,triOffset+5,Origin-
@@ -442,6 +442,19 @@ H2Wing::createSurfaces()
       ModelSupport::buildPlane(SMap,triOffset+6,Origin+
 			       Z*(VDepth+height/2.0),Z);
       triOffset+=100;
+    }
+
+  // MidPlane divider optimizatoin:
+  // Get original points again
+  cornerSet(0.0,CPts,NPts);
+  const Geometry::Vec3D midPoint((CPts[0]+CPts[1]+CPts[2])/3.0);
+  for(size_t i=0;i<3;i++)
+    {
+      const int ii(wingIndex+1001+static_cast<int>(i));
+      const Geometry::Vec3D sidePt((CPts[(i+1)%3]+CPts[i])/2.0);
+      
+      ModelSupport::buildPlane(SMap,ii,midPoint,midPoint+Z,
+			       sidePt,CPts[(i+1) % 3]-sidePt);
     }
   return;
 }
@@ -455,26 +468,57 @@ H2Wing::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("H2Wing","createObjects");
 
-  std::string Out;
+  std::string Out,OutA,OutB,OutC;
 
   int triOffset(wingIndex+100);
-  HeadRule Inner;
+  HeadRule InnerA,InnerB,InnerC;
+  
+  const std::string CutA=
+    ModelSupport::getComposite(SMap,wingIndex," -1001 1003 ");
+  const std::string CutB=
+    ModelSupport::getComposite(SMap,wingIndex," 1001 -1002 ");
+  const std::string CutC=
+    ModelSupport::getComposite(SMap,wingIndex," 1002 -1003 ");
+  
   for(size_t i=0;i<nLayers;i++)
     {
-      Out=ModelSupport::getComposite(SMap,triOffset,
-				     "-1 -2 -3 5 -6 (21:-7) (22:-8) (23:-9) ");
-      Inner.makeComplement();
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],
-				       Out+Inner.display()));
-      if (!i)
-	CellMap::setCell("Inner",cellIndex-1);
+      InnerA.makeComplement();
+      InnerB.makeComplement();
+      InnerC.makeComplement();
+
+      OutA=ModelSupport::getComposite(SMap,triOffset,"-1 -3 5 -6 (21:-7)");
+      OutB=ModelSupport::getComposite(SMap,triOffset,"-1 -2 5 -6 (22:-8)");
+      OutC=ModelSupport::getComposite(SMap,triOffset,"-2 -3 5 -6 (23:-9) ");
+
+      if (!i && engActive)
+	{
+	  Out=ModelSupport::getComposite
+	    (SMap,triOffset,"-1 -2 -3 5 -6 (21:-7) (22:-8) (23:-9)");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],Out));
+	  CellMap::setCell("Inner",cellIndex-1);
+	}
+      else
+	{
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],
+				       OutA+InnerA.display()+CutA));
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],
+					   OutB+InnerB.display()+CutB));
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],
+					   OutC+InnerC.display()+CutC));
+	}
       
-      Inner.procString(Out);
+      InnerA.procString(OutA);
+      InnerB.procString(OutB);
+      InnerC.procString(OutC);
       triOffset+=100;
     }
   // Add last cell to cell map
   CellMap::setCell("Outer",cellIndex-1);
-  addOuterSurf(Inner.display());
+
+  triOffset-=100;
+  OutA=ModelSupport::getComposite(SMap,triOffset,
+				     "-1 -2 -3 5 -6 (21:-7) (22:-8) (23:-9)");
+  addOuterSurf(OutA);
 
   return;
 }
