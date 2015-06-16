@@ -101,8 +101,8 @@ class makeESS
   std::shared_ptr<constructSystem::SupplyPipe> LowReturnPipe;  ///< Lower supply 
 
   std::shared_ptr<constructSystem::ModBase> TopMod;   ///< Upper Mod
-  std::shared_ptr<moderatorSystem::FlightLine> TopAFL;  ///< Upper Mode FL
-  std::shared_ptr<moderatorSystem::FlightLine> TopBFL;  ///< Upper Mode FL
+  std::shared_ptr<moderatorSystem::BasicFlightLine> TopAFL;  ///< Upper Mode FL
+  std::shared_ptr<moderatorSystem::BasicFlightLine> TopBFL;  ///< Upper Mode FL
   std::shared_ptr<CylPreMod> TopPre;  ///< Upper Mod (Pre)
 
   std::shared_ptr<BulkModule> Bulk;      ///< Main bulk module

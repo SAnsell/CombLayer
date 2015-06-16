@@ -116,8 +116,8 @@ makeESS::makeESS() :
   LowSupplyPipe(new constructSystem::SupplyPipe("LSupply")),
   LowReturnPipe(new constructSystem::SupplyPipe("LReturn")),
 
-  TopAFL(new moderatorSystem::FlightLine("TopAFlight")),
-  TopBFL(new moderatorSystem::FlightLine("TopBFlight")),
+  TopAFL(new moderatorSystem::BasicFlightLine("TopAFlight")),
+  TopBFL(new moderatorSystem::BasicFlightLine("TopBFlight")),
   TopPre(new CylPreMod("TopPre")),
 
   Bulk(new BulkModule("Bulk")),
@@ -170,7 +170,7 @@ makeESS::topFlightLines(Simulation& System)
   return;
   std::string Out;
 
-  Out=Reflector->getLinkComplement(0)+TopPre->getBoxCut('A');
+  /*  Out=Reflector->getLinkComplement(0)+TopPre->getBoxCut('A');
   TopAFL->addBoundarySurf("inner",Out);  
   TopAFL->addBoundarySurf("outer",Out);  
   TopAFL->addOuterSurf("outer",TopPre->getBoxCut('A'));  
@@ -187,7 +187,7 @@ makeESS::topFlightLines(Simulation& System)
   attachSystem::addToInsertSurfCtrl(System,*TopBFL,*TopPre->getBox('B'));
   attachSystem::addToInsertSurfCtrl(System,*Reflector,
   				    TopBFL->getKey("outer"));
-
+  */
 
   return;
 }
