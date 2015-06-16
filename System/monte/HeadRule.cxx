@@ -1313,11 +1313,14 @@ HeadRule::addIntersection(const std::string& RStr)
    */
 {
   ELog::RegMethod RegA("HeadRule","addIntersection(string)");
-  HeadRule A;
-  if (A.procString(RStr))
-    addIntersection(A.getTopRule());
-  else
-    ELog::EM<<"Failed on string :"<<RStr<<ELog::endErr;
+  if (!RStr.empty())
+    {
+      HeadRule A;
+      if (A.procString(RStr))
+	addIntersection(A.getTopRule());
+      else
+	ELog::EM<<"Failed on string :"<<RStr<<ELog::endErr;
+    }
   return;
 }
 

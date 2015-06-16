@@ -31,6 +31,8 @@
 #include <map>
 #include <string>
 #include <iterator>
+#include <memory>
+
 #include <boost/format.hpp>
 
 #include "Exception.h"
@@ -214,7 +216,7 @@ createInputs(inputParam& IParam)
   IParam.regItem("defaultConfig","defaultConfig");
   IParam.regDefItem<std::string>("dc","doseCalc",1,"InternalDOSE");
   IParam.regFlag("e","endf");
-  IParam.regMulti<std::string>("eng","engineering",10000,0);
+  IParam.regMulti("eng","engineering",10000,0);
   IParam.regMulti("E","exclude",10000,1);
   IParam.regDefItem<double>("electron","electron",1,-1.0);
   IParam.regFlag("help","helf");

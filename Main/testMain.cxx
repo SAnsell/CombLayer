@@ -422,13 +422,13 @@ globalTest(const int type,const int extra)
       "testSource",
       "testTally"
     };
-  const int TSize(TestName.size());
+  const size_t TSize(TestName.size());
 
   if (type==0)
     {
       TestFunc::Instance().reportTest(std::cout);
       boost::format FMT("%1$s%|20t|(%2$d)");
-      for(int i=0;i<TSize;i++)
+      for(size_t i=0;i<TSize;i++)
 	std::cout<<FMT % TestName[i] % (i+1)<<std::endl;
       return 0;
     }

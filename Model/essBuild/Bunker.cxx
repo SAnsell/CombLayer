@@ -272,7 +272,7 @@ Bunker::createObjects(Simulation& System,
     Adds the all the components
     \param System :: Simulation to create objects in
     \param FC :: Side of bulk shield + divider(?)
-    \param sideIndex :: side of linke point
+    \param sideIndex :: side of link point
   */
 {
   ELog::RegMethod RegA("Bunker","createObjects");
@@ -368,6 +368,7 @@ Bunker::layerProcess(Simulation& System)
 	  cellIndex=DA.getCellNum();
 	}
     }
+  return;
 }
 
   
@@ -379,9 +380,14 @@ Bunker::createLinks()
 {
   ELog::RegMethod RegA("Bunker","createLinks");
 
+  FixedComp::setConnect(0,rotCentre+Y*(wallRadius),Y);
+  FixedComp::setLinkSurf(0,SMap.realSurf(bnkIndex+7));
+  
   // Outer
   FixedComp::setConnect(1,rotCentre+Y*(wallRadius+wallThick),Y);
   FixedComp::setLinkSurf(1,SMap.realSurf(bnkIndex+17));
+  FixedComp::setBridgeSurf(1,SMap.realSurf(bnkIndex+1));
+
 
   FixedComp::setConnect(4,Origin-Z*(floorDepth+floorThick),-Z);
   FixedComp::setLinkSurf(4,-SMap.realSurf(bnkIndex+15));
