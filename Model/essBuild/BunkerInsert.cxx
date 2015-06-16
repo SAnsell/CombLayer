@@ -112,7 +112,7 @@ BunkerInsert::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("BunkerInsert","populate");
   FixedOffset::populate(Control);
 
-  backStep=Control.EvalDefVar<double>(keyName+"BackStep",30.0);
+  backStep=Control.EvalDefVar<double>(keyName+"BackStep",300.0);
     
   height=Control.EvalVar<double>(keyName+"Height");
   width=Control.EvalVar<double>(keyName+"Width");

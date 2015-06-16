@@ -347,9 +347,11 @@ Bunker::layerProcess(Simulation& System)
       for(size_t i=0;i<nSectors;i++)
 	{
 	  // Cell Specific:
-	  DA.setCellN(getCell("MainWall"+StrFunc::makeString(i)));
+	  const int firstCell(cellIndex);
+	  const std::string cellName("MainWall"+StrFunc::makeString(i));
+	  DA.setCellN(getCell(cellName));
 	  DA.setOutNum(cellIndex,bnkIndex+1001);
-	  
+
 	  ModelSupport::mergeTemplate<Geometry::Cylinder,
 				      Geometry::Cylinder> surroundRule;
 	  
@@ -366,6 +368,8 @@ Bunker::layerProcess(Simulation& System)
 	  DA.activeDivideTemplate(System);
 	  
 	  cellIndex=DA.getCellNum();
+	  removeCell(cellName);
+	  setCells(cellName,firstCell,cellIndex-1);
 	}
     }
   return;

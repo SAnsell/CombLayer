@@ -127,7 +127,6 @@ CellMap::setCell(const std::string& Key,const size_t Index,
   LCTYPE::iterator mc=Cells.find(Key);
   if (mc==Cells.end())
     {
-      ELog::EM<<"Cell adding " <<Key<<ELog::endDiag;
       if (Index==0)
 	Cells.insert(LCTYPE::value_type(Key,CN));
       else
@@ -176,12 +175,13 @@ CellMap::setCells(const std::string& Key,const int CNA,const int CNB)
   */
 {
   ELog::RegMethod RegA("CellMap","setCells");
+  
   int mA(std::min(CNA,CNB));
   int mB(std::max(CNA,CNB));
   std::vector<int> Out;
-  for(;mA!=mB;mA++)
+  for(;mA<=mB;mA++)
     Out.push_back(mA);
-  
+
   LCTYPE::iterator mc=Cells.find(Key);
   if (mc==Cells.end())
     {
@@ -192,7 +192,7 @@ CellMap::setCells(const std::string& Key,const int CNA,const int CNB)
 	  SplitUnits.push_back(Out);
 	  Cells.insert(LCTYPE::value_type
 		       (Key,-static_cast<int>(SplitUnits.size())));
-	}
+	}      
       return;
     }
   
@@ -208,6 +208,7 @@ CellMap::setCells(const std::string& Key,const int CNA,const int CNB)
   const size_t SI(static_cast<size_t>(-mc->second)-1);
   std::move(Out.begin(),Out.end(),
 	    std::back_inserter(SplitUnits[SI]));
+
 
   return; 
 }
@@ -247,7 +248,7 @@ CellMap::getCell(const std::string& Key,const size_t Index) const
       return mc->second;
     }
   // This can't fail:
-  const size_t SI(static_cast<size_t>(1-mc->second));
+  const size_t SI(static_cast<size_t>(-mc->second-1));
   const size_t SU(SplitUnits[SI].size());
   
   if (Index>=SU)
@@ -275,7 +276,7 @@ CellMap::getCells(const std::string& Key) const
   if (mc->second>=0)
     return std::vector<int>({mc->second});
   
-  const size_t SU(static_cast<size_t>(1-mc->second));
+  const size_t SU(static_cast<size_t>(-mc->second-1));
 
   std::vector<int> Out;
   for(const int& CN : SplitUnits[SU])
@@ -421,7 +422,7 @@ CellMap::removeCell(const std::string& Key,
     }
   // NOTE HERE WE ZERO and not delete because otherwise a seti
   // of linear calls to this function are junk.
-  const size_t SI(static_cast<size_t>(-mc->second)-1);
+  const size_t SI(static_cast<size_t>(-mc->second-1));
   const size_t SU(SplitUnits[SI].size());
   if (Index>=SU)
     throw ColErr::IndexError<size_t>
