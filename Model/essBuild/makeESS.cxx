@@ -461,10 +461,10 @@ makeESS::build(Simulation& System,
 		       Target->wheelHeight(),
 		       LowPreMod->getHeight()+LMHeight+LowCapMod->getHeight(),
 		       -1.0);
-  
-  Reflector->insertComponent(System,"targetVoid",*Target,1);
-  Reflector->deleteCell(System,"lowVoid");
 
+  Reflector->insertComponent(System,"targetVoid",*Target,1);
+
+  Reflector->deleteCell(System,"lowVoid");
   Bulk->createAll(System,*Reflector,*Reflector);
 
   // Build flightlines after bulk

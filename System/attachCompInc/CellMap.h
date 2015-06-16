@@ -39,9 +39,12 @@ class CellMap
  private:
 
   typedef std::map<std::string,int> LCTYPE;
+  typedef std::vector<std::vector<int>> SEQTYPE;
+
   
   LCTYPE Cells;   ///< Named cells
-    
+  SEQTYPE SplitUnits;    ///< Split named cells
+  
  public:
 
   CellMap();         
@@ -53,6 +56,8 @@ class CellMap
   void setCell(const std::string&,const size_t,const int);
   int getCell(const std::string&) const;
   int getCell(const std::string&,const size_t) const;
+  
+  const std::vector<int>& getCells(const std::string&) const;
 
   void insertComponent(Simulation&,const std::string&,
 		       const ContainedComp&) const;
@@ -63,7 +68,7 @@ class CellMap
   void insertComponent(Simulation&,const std::string&,
 		       const FixedComp&,const long int) const;
 
-  void deleteCell(Simulation&,const std::string&);
+  void deleteCell(Simulation&,const std::string&,const size_t =0);
 
   static int getCell(const std::string&,const std::string&);
   

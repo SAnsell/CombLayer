@@ -200,7 +200,13 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinGB0ZAngle",0.0);
 
   // BEAM INSERT:
-  Control.addVariable("odinGB0ZAngle",0.0);       
+  Control.addVariable("odinBInsertHeight",10.0);
+  Control.addVariable("odinBInsertWidth",10.0);
+  Control.addVariable("odinBInsertTopWall",1.0);
+  Control.addVariable("odinBInsertLowWall",1.0);
+  Control.addVariable("odinBInsertLeftWall",1.0);
+  Control.addVariable("odinBInsertRightWall",1.0);
+  Control.addVariable("odinBInsertWallMat","Stainless304");       
 
 
   
