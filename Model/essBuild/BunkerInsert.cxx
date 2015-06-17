@@ -80,6 +80,7 @@
 #include "mergeTemplate.h"
 
 #include "World.h"
+#include "Bunker.h"
 #include "BunkerInsert.h"
 
 namespace essSystem
@@ -183,7 +184,7 @@ BunkerInsert::createObjects(Simulation& System,
   std::string Out;
   Out=ModelSupport::getComposite(SMap,insIndex," 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+BCell));
-  setCell("void",cellIndex-1);
+  setCell("Void",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,insIndex,
 				 " 13 -14 15 -16 (-3 : 4: -5: 6) ");
@@ -194,19 +195,69 @@ BunkerInsert::createObjects(Simulation& System,
   
   return;
 }
+
+size_t
+BunkerInsert::closestPt(const Geometry::Vec3D& AimPt,
+			const std::vector<Geometry::Vec3D>& PtVec)
+  /*!
+    Detemine the point that is closest [STATIC]
+    \param AimPt :: Aiming point
+    \param PtVec :: Vector of points
+    \return index in array [0 in empty]
+  */
+{
+  size_t index(0);
+  if (!PtVec.empty())
+    {
+      double D=AimPt.Distance(PtVec[index]);
+      for(size_t i=1;i<PtVec.size();i++)
+	{
+	  const double ND=AimPt.Distance(PtVec[i]);
+	  if (ND<D)
+	    {
+	      D=ND;
+	      index=i;
+	    }
+	}
+    }
+  return index;
+}
+
   
 void
-BunkerInsert::createLinks()
+BunkerInsert::createLinks(const attachSystem::FixedComp& BUnit)
   /*!
     Create all the linkes [OutGoing]
+    \param BUnit :: Bunker unit						
   */
 {
   ELog::RegMethod RegA("BunkerInsert","createLinks");
 
-  FixedComp::setConnect(0,,-Y);
+  FixedComp::setLinkCopy(0,BUnit,0);
+  FixedComp::setLinkCopy(1,BUnit,1);
 
 
+  // Calc bunker edge intersectoin
+  std::vector<Geometry::Vec3D> Pts;
+  std::vector<int> SNum;
 
+  // Inner point
+  HeadRule HM(BUnit.getMainRule(0));
+  HM.addIntersection(BUnit.getCommonRule(0));
+  HM.populateSurf();
+  HM.calcSurfIntersection(Origin,Y,Pts,SNum);
+  const size_t indexA=closestPt(Origin,Pts);
+  FixedComp::setConnect(0,Pts[indexA],-Y);
+
+  // Outer point
+  HM=BUnit.getMainRule(1);
+  HM.addIntersection(BUnit.getCommonRule(1));
+  HM.populateSurf();
+  HM.calcSurfIntersection(Origin,Y,Pts,SNum);
+  const size_t indexB=closestPt(Origin,Pts);
+  FixedComp::setConnect(1,Pts[indexB],Y);
+
+  
   return;
 }
 
@@ -232,10 +283,10 @@ BunkerInsert::createAll(Simulation& System,
   createSurfaces();
 
   // Walls : [put 
-  const std::string BWallStr=bunkerObj.getSignedLinkString(1)+" "+
+  const std::string BWallStr=bunkerObj.getSignedLinkString(-1)+" "+
     bunkerObj.getSignedLinkString(-2);
-  createObjects(System,BWalls);
-  createLinks(BWalls);
+  createObjects(System,BWallStr);
+  createLinks(bunkerObj);
   
   insertObjects(System);              
 

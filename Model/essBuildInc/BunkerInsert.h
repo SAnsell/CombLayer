@@ -54,13 +54,15 @@ class BunkerInsert : public attachSystem::ContainedComp,
 
   int wallMat;                   ///< wall material
 
+  static size_t closestPt(const Geometry::Vec3D&,
+			 const std::vector<Geometry::Vec3D>&);
     
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
 
   void createSurfaces();
-  void createLinks(const Bunker&);
+  void createLinks(const attachSystem::FixedComp&);
   void createObjects(Simulation&,const std::string&);
 
  public:

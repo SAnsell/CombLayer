@@ -1617,7 +1617,7 @@ HeadRule::trackSurf(const Geometry::Vec3D& Org,
   const std::vector<const Geometry::Surface*>& surfIndex(LI.getSurfIndex());
 
 
-  D= -std::numeric_limits<double>::max();
+  D= std::numeric_limits<double>::max();
   const Geometry::Surface* surfPtr=0;
   // NOTE: we only check for and exiting surface by going
   // along the line.
@@ -1632,7 +1632,6 @@ HeadRule::trackSurf(const Geometry::Vec3D& Org,
 	  const int pAB=isDirectionValid(IPts[i],NS);
 	  const int mAB=isDirectionValid(IPts[i],-NS);
 	  const int normD=surfIndex[i]->sideDirection(IPts[i],Unit);
-
 	  if (pAB!=mAB)  // out going positive surface
 	    {
 	      bestPairValid=normD;
@@ -1643,6 +1642,60 @@ HeadRule::trackSurf(const Geometry::Vec3D& Org,
 	}
     }    
   return (!surfPtr) ? 0 : bestPairValid*surfPtr->getName();
+}
+
+size_t
+HeadRule::calcSurfIntersection(const Geometry::Vec3D& Org,
+			       const Geometry::Vec3D& Unit,
+			       std::vector<Geometry::Vec3D>& Pts,
+			       std::vector<int>& SNum) const
+  /*!
+    Calculate a track of a line that intersects the rule
+    \param Org :: Origin of line
+    \param Unit :: Direction of line
+    \param Pts :: Points
+    \param SNum :: Surface number
+    \return Number found
+  */
+{
+  ELog::RegMethod RegA("HeadRule","calcSurfIntersection");
+
+
+  MonteCarlo::LineIntersectVisit LI(Org,Unit);
+
+  const std::vector<const Geometry::Surface*> SurfList=
+    this->getSurfaces();
+  std::vector<const Geometry::Surface*>::const_iterator vc;
+  for(vc=SurfList.begin();vc!=SurfList.end();vc++)
+    (*vc)->acceptVisitor(LI);
+
+  // IPTS contains non-exit points
+  const std::vector<Geometry::Vec3D>& IPts(LI.getPoints());
+  const std::vector<double>& dPts(LI.getDistance());
+  const std::vector<const Geometry::Surface*>& surfIndex(LI.getSurfIndex());
+
+  // Clear data
+  Pts.clear();
+  SNum.clear();
+
+  // NOTE: we only check for and exiting surface by going
+  // along the line.
+  for(size_t i=0;i<dPts.size();i++)
+    {
+      const Geometry::Surface* surfPtr=surfIndex[i];
+      // Is point possible closer
+      const int NS=surfPtr->getName();	    // NOT SIGNED
+      const int pAB=isDirectionValid(IPts[i],NS);
+      const int mAB=isDirectionValid(IPts[i],-NS);
+      const int normD=surfPtr->sideDirection(IPts[i],Unit);
+      if (pAB!=mAB)  // out going positive surface
+	{
+	  SNum.push_back(normD*surfPtr->getName());
+	  Pts.push_back(Org+Unit*dPts[i]);
+	}
+    }    
+
+  return SNum.size();
 }
 
 int

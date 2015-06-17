@@ -178,9 +178,8 @@ GuideLine::clear()
 {
   ELog::RegMethod RegA("GuideLine","clear");
 
-  std::vector<ShapeUnit*>::iterator vc;
-  for(vc=shapeUnits.begin();vc!=shapeUnits.end();vc++)
-    delete *vc;
+  for(ShapeUnit* SU : shapeUnits)
+    delete SU;
   return;
 }
 
@@ -645,6 +644,25 @@ GuideLine::createUnitLinks()
       	guideFC.setLinkSurf(1,SMap.realSurf(SN+1));       
 
       SN++;
+    }
+  return;
+}
+
+void
+GuideLine::addFrontCut(const std::string& EC)
+  /*!
+    Add an end cut to the string
+    \param EC :: End cut
+  */
+{
+  ELog::RegMethod RegA("GuideLine","addFrontCut");
+
+  if (EC.empty())
+    activeFront=0;
+  else
+    {
+      activeFront=1;
+      frontCut.procString(EC);
     }
   return;
 }

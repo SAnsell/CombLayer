@@ -385,7 +385,7 @@ Bunker::createLinks()
   ELog::RegMethod RegA("Bunker","createLinks");
 
   FixedComp::setConnect(0,rotCentre+Y*(wallRadius),Y);
-  FixedComp::setLinkSurf(0,SMap.realSurf(bnkIndex+7));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(bnkIndex+7));
   FixedComp::setBridgeSurf(0,SMap.realSurf(bnkIndex+1));
   
   // Outer
