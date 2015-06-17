@@ -203,6 +203,9 @@ BunkerInsert::createLinks()
 {
   ELog::RegMethod RegA("BunkerInsert","createLinks");
 
+  FixedComp::setConnect(0,,-Y);
+
+
 
   return;
 }
@@ -212,14 +215,14 @@ void
 BunkerInsert::createAll(Simulation& System,
 			const attachSystem::FixedComp& FC,
 			const long int orgIndex,
-			const std::string& BWalls)
+			const Bunker& bunkerObj)
 
 /*!
     Generic function to create everything
     \param System :: Simulation item
     \param FC :: Central origin
     \param orgIndex :: link for origin
-    \param BWalls :: Bunker wall cut
+    \param bunkerObj :: Bunker wall object
   */
 {
   ELog::RegMethod RegA("BunkerInsert","createAll");
@@ -227,8 +230,13 @@ BunkerInsert::createAll(Simulation& System,
   populate(System.getDataBase());
   createUnitVector(FC,orgIndex);
   createSurfaces();
-  createLinks();
+
+  // Walls : [put 
+  const std::string BWallStr=bunkerObj.getSignedLinkString(1)+" "+
+    bunkerObj.getSignedLinkString(-2);
   createObjects(System,BWalls);
+  createLinks(BWalls);
+  
   insertObjects(System);              
 
   return;

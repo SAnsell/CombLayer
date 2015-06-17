@@ -599,7 +599,7 @@ GuideLine::createMainLinks(const attachSystem::FixedComp& mainFC,
   else
     shieldFC.setLinkCopy(0,mainFC,sLP);       
   
-  shieldFC.setConnect(1,Origin+Y*length,Y);     
+  shieldFC.setConnect(1,Origin+Y*length,Y);
   shieldFC.setConnect(2,Origin-X*leftWidth/2.0,-X);     
   shieldFC.setConnect(3,Origin+X*rightWidth/2.0,X);     
   shieldFC.setConnect(4,Origin-Z*depth,-Z);     

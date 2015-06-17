@@ -60,7 +60,7 @@ class BunkerInsert : public attachSystem::ContainedComp,
 			const long int);
 
   void createSurfaces();
-  void createLinks();
+  void createLinks(const Bunker&);
   void createObjects(Simulation&,const std::string&);
 
  public:
@@ -71,7 +71,7 @@ class BunkerInsert : public attachSystem::ContainedComp,
   virtual ~BunkerInsert();
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int,const std::string&);
+		 const long int,const Bunker&);
 
 };
 

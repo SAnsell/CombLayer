@@ -139,11 +139,10 @@ ODIN::build(Simulation& System,const attachSystem::TwinComp& GItem,
   GuideB->createAll(System,T0Chopper->getKey("Main"),2,
 		    T0Chopper->getKey("Beam"),2);
 
-
+  ELog::EM<<"Guide exit point == "<<
+    GuideB->getKey("Guide0").getSignedLinkPt(2)<<ELog::endDiag;
   BInsert->setInsertCell(bunkerObj.getCells("MainWall8"));
-  const std::string BWall=bunkerObj.getSignedLinkString(1)+" "+
-    bunkerObj.getSignedLinkString(-2);
-  BInsert->createAll(System,GuideB->getKey("Guide0"),2,BWall);
+  BInsert->createAll(System,GuideB->getKey("Guide0"),2,*bunkerObj);
 
   return;
 }
