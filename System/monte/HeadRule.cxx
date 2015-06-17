@@ -1243,7 +1243,7 @@ HeadRule::display() const
   // union test
   return (HeadNode->type()== -1) ? 
     "("+HeadNode->display()+")" :
-    HeadNode->display();
+    " "+HeadNode->display()+" ";
 }
 
 

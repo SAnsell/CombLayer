@@ -85,7 +85,8 @@ ODIN::ODIN() :
   GuideA(new beamlineSystem::GuideLine("ODINgA")),
   T0Chopper(new constructSystem::DiskChopper("odinTZero")),
   GuideB(new beamlineSystem::GuideLine("odinGB")),
-  BInsert(new BunkerInsert("odinBInsert"))
+  BInsert(new BunkerInsert("odinBInsert")),
+  GuideC(new beamlineSystem::GuideLine("odinGC"))
  /*!
     Constructor
  */
@@ -98,6 +99,7 @@ ODIN::ODIN() :
   OR.addObject(T0Chopper);
   OR.addObject(GuideB);
   OR.addObject(BInsert);
+  OR.addObject(GuideC);
 }
 
 
@@ -144,13 +146,12 @@ ODIN::build(Simulation& System,const attachSystem::TwinComp& GItem,
   BInsert->setInsertCell(bunkerObj.getCells("MainWall8"));
   BInsert->createAll(System,GuideB->getKey("Guide0"),2,bunkerObj);
 
+
   // Guide in the bunker insert
-  GuideC->addInsertCell(BInsert.getCell("Void"));
-  GuideC->addEndCut(bunkerObj.getSignedLinkString(8));
-  GuideC->createAll(System,T0Chopper->getKey("Main"),2,
-		    T0Chopper->getKey("Beam"),2);
-
-
+  GuideC->addInsertCell(BInsert->getCell("Void"));
+  ELog::EM<<"Cell void == "<<BInsert->getCell("Void")<<ELog::endDiag;
+  GuideC->addEndCut(bunkerObj.getSignedLinkString(-2));
+  GuideC->createAll(System,*BInsert,-1,*BInsert,-1);
 
   return;
 }

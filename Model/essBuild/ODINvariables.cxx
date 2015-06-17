@@ -209,6 +209,33 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinBInsertWallMat","Stainless304");       
 
 
+  // GUDE IN the beam insert
+  Control.addVariable("odinGCXStep",0.0);       
+  Control.addVariable("odinGCYStep",0.0);       
+  Control.addVariable("odinGCZStep",0.0);       
+  Control.addVariable("odinGCXYAngle",0.0);       
+  Control.addVariable("odinGCZAngle",0.0);       
+  Control.addVariable("odinGCLength",220.0);       
+  Control.addVariable("odinGCHeight",5.0);       
+  Control.addVariable("odinGCDepth",5.0);       
+  Control.addVariable("odinGCLeftWidth",5.0);       
+  Control.addVariable("odinGCRightWidth",5.0);       
+  Control.addVariable("odinGCFeMat","Void");       
+  Control.addVariable("odinGCNShapes",1);       
+  Control.addVariable("odinGCNShapeLayers",3);
+
+  Control.addVariable("odinGCLayerThick1",0.4);  // glass thick
+  Control.addVariable("odinGCLayerThick2",1.5);
+
+  Control.addVariable("odinGCLayerMat0","Void");
+  Control.addVariable("odinGCLayerMat1","Glass");
+  Control.addVariable("odinGCLayerMat2","Void");       
+
+  Control.addVariable("odinGC0TypeID","Rectangle");
+  Control.addVariable("odinGC0Height",5.0);
+  Control.addVariable("odinGC0Width",9.0);
+  Control.addVariable("odinGC0Length",220.0);
+  Control.addVariable("odinGC0ZAngle",0.0);
   
   return;
 }

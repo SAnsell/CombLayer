@@ -72,9 +72,6 @@ class GuideLine : public attachSystem::ContainedComp,
   std::vector<double> layerThick;   ///< Thickness [inner->outer]
   std::vector<int> layerMat;         ///< Mat 
 
-  int activeFront;             ///< Active front cut
-  HeadRule frontCut            ///< Extra front rule cut [if required]
-
   int activeEnd;               ///< Active end cut
   HeadRule endCut;             ///< Extra end rule cut [if required]
   
@@ -108,6 +105,7 @@ class GuideLine : public attachSystem::ContainedComp,
 		       const long int);
   void createUnitLinks();
 
+  void checkRectangle(const double,const double) const;
 
  public:
 

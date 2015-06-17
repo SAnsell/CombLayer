@@ -309,6 +309,29 @@ GuideLine::addGuideUnit(const size_t index,
 }
 
 void
+GuideLine::checkRectangle(const double W,const double H) const
+  /*!
+    Check the rectangle size relative to the outside values
+    \param W :: Width
+    \param H :: Height
+  */
+{
+  ELog::RegMethod RegA("GuideLine","checkRectangle");
+
+  if ((W/2.0)>leftWidth || (W/2.0)>rightWidth)
+    ELog::EM<<"Check rectangle width "<<W
+	    <<" > ("<<leftWidth<<":"<<rightWidth<<")"<<ELog::endErr;
+  if ((H/2.0)>height || (H/2)>depth)
+    ELog::EM<<"Check rectangle height "<<H
+	    <<" > ("<<depth<<":"<<height<<")"<<ELog::endErr;
+
+  ELog::EM<<"Check rectangle height "<<H
+	    <<" > ("<<depth<<":"<<height<<")"<<ELog::endErr;
+
+  return;
+}
+  
+void
 GuideLine::processShape(const FuncDataBase& Control)
   /*!
     Build a simple shape component from the Control Values
@@ -363,7 +386,8 @@ GuideLine::processShape(const FuncDataBase& Control)
 	  SU->setXAxis(X,Z);      
 	  SU->constructConvex();
 	  shapeUnits.push_back(SU);
-	  
+
+	  checkRectangle(W,H);
 	}
       else if (typeID=="Tapper")   
 	{	
@@ -468,7 +492,7 @@ GuideLine::createSurfaces(const long int mainLP)
   
   if (!activeEnd)
     ModelSupport::buildPlane(SMap,guideIndex+2,Origin+Y*length,Y);
-  
+
   ModelSupport::buildPlane(SMap,guideIndex+3,Origin-X*leftWidth,X);
   ModelSupport::buildPlane(SMap,guideIndex+4,Origin+X*rightWidth,X);
   ModelSupport::buildPlane(SMap,guideIndex+5,Origin-Z*depth,Z);
@@ -567,6 +591,8 @@ GuideLine::createObjects(Simulation& System,
   Out+=startSurf;
   addOuterSurf(Out);      
 
+  ELog::EM<<"OuterCell "<<getKeyName()<<" "<<Out<<ELog::endDiag;
+  
   excludeCell.makeComplement();
   Out+=excludeCell.display();
   System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
@@ -648,24 +674,6 @@ GuideLine::createUnitLinks()
   return;
 }
 
-void
-GuideLine::addFrontCut(const std::string& EC)
-  /*!
-    Add an end cut to the string
-    \param EC :: End cut
-  */
-{
-  ELog::RegMethod RegA("GuideLine","addFrontCut");
-
-  if (EC.empty())
-    activeFront=0;
-  else
-    {
-      activeFront=1;
-      frontCut.procString(EC);
-    }
-  return;
-}
 
 void
 GuideLine::addEndCut(const std::string& EC)

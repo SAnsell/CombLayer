@@ -62,6 +62,8 @@ class ODIN
   std::shared_ptr<beamlineSystem::GuideLine> GuideB;
   /// Bunker insert
   std::shared_ptr<essSystem::BunkerInsert> BInsert;
+  /// Guide in the Bunker wall
+  std::shared_ptr<beamlineSystem::GuideLine> GuideC;
   
  public:
   
