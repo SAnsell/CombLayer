@@ -470,13 +470,12 @@ Reflector::createInternalObjects(Simulation& System,
       OI.createAll(System,*HydObj,*GrooveObj);
     }
   VacObj->createAllPair(System,*GrooveObj,*HydObj);
-
   std::string Out;
   Out=ModelSupport::getComposite(SMap,refIndex,"1 -14 -4");
   FLgroove->addBoundarySurf("inner",Out);  
   FLgroove->addBoundarySurf("outer",Out);  
   FLgroove->createAll(System,*VacObj,1);
-
+  
   Out=ModelSupport::getComposite(SMap,refIndex,"-2 13 3");
   FLhydro->addBoundarySurf("inner",Out);  
   FLhydro->addBoundarySurf("outer",Out);  

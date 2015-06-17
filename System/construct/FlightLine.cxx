@@ -213,8 +213,6 @@ FlightLine::createUnitVector(const attachSystem::FixedComp& FC,
   // PROCESS Origin of a point
 
   FixedComp::createUnitVector(FC,sideIndex);
-  ELog::EM<<"Origin == "<<Origin<<ELog::endDiag;
-  ELog::EM<<"XYZ == "<<Y<<ELog::endDiag;
   return;
 }
 
@@ -477,9 +475,6 @@ FlightLine::createCapSurfaces(const attachSystem::FixedComp& FC,
 	    }
 	}
     }
-  ELog::EM<<"This object = "<<Y<<ELog::endDiag;
-  ELog::EM<<"Cap rul == "<<capRule[0].display()<<ELog::endDiag;
-  ELog::EM<<"Cap rul == "<<capRule[1].display()<<ELog::endDiag;
   return;
 }
 
@@ -725,11 +720,11 @@ FlightLine::createAll(Simulation& System,
     throw ColErr::IndexError<long int>
       (0,0,"sideIndex == 0 no long possible"
        " as flightline cannot current track from centre origin");
-  
+
   const size_t SI=static_cast<size_t>
     ((sideIndex>0) ? sideIndex-1 : 1-sideIndex);
-  createCapSurfaces(FC,SI);
 
+  createCapSurfaces(FC,SI);
   FixedComp::setLinkSurf(0,FC,SI);
   FixedComp::setLinkSurf(6,FC,SI);
 

@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   moderator/makeTS2.cxx
  *
@@ -125,7 +125,9 @@ makeTS2::build(Simulation* SimPtr,
       return;
     }
 
+
   bulkObj.build(SimPtr,IParam);
+
   if (!IParam.flag("exclude") ||
       (!IParam.compValue("E",std::string("Bulk"))) ) 
     {
