@@ -213,7 +213,6 @@ GuideLine::populate(const FuncDataBase& Control)
   rightWidth=Control.EvalVar<double>(keyName+"RightWidth");
 
   feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
-  ELog::EM<<"FeMat == "<<feMat<<ELog::endDiag;
   nShapes=Control.EvalVar<size_t>(keyName+"NShapes");
   nShapeLayers=Control.EvalVar<size_t>(keyName+"NShapeLayers");
   

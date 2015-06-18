@@ -705,7 +705,12 @@ Material::write(std::ostream& OX) const
 {
   typedef std::map<std::string,MXcards> MXTYPE;
 
+  
   std::ostringstream cx;
+  cx<<"c\nc Material : "<<Name<<" rho="<<atomDensity;
+  StrFunc::writeMCNPX(cx.str(),OX);
+  cx.str("");
+
   cx.precision(10);
   cx<<"m"<<Mnum<<"     ";
   if (Mnum<10) cx<<" ";

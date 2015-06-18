@@ -33,6 +33,7 @@ namespace constructSystem
 {
   class Jaws;
   class DiskChopper;
+  class ChopperPit;
 }
 
 namespace essSystem
@@ -64,10 +65,14 @@ class ODIN
   std::shared_ptr<essSystem::BunkerInsert> BInsert;
   /// Guide in the Bunker wall
   std::shared_ptr<beamlineSystem::GuideLine> GuideC;
-
   /// Guide after the Bunker to first chopper
   std::shared_ptr<beamlineSystem::GuideLine> GuideD;
 
+  /// Chopper pit for first outer bunker chopper
+  std::shared_ptr<constructSystem::ChopperPit> PitA;
+
+
+  
  public:
   
   ODIN();

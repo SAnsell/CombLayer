@@ -267,6 +267,17 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinGD0Length",220.0);
   Control.addVariable("odinGD0ZAngle",0.0);
 
+  Control.addVariable("odinPitAVoidHeight",20.0);
+  Control.addVariable("odinPitAVoidDepth",20.0);
+  Control.addVariable("odinPitAVoidWidth",50.0);
+  Control.addVariable("odinPitAVoidLength",50.0);
+  
+  Control.addVariable("odinPitAVoidHeight",20.0);
+  Control.addVariable("odinPitAVoidDepth",20.0);
+  Control.addVariable("odinPitAVoidWidth",50.0);
+  Control.addVariable("odinPitAVoidLength",50.0);
+
+  
   return;
 }
 

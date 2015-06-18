@@ -75,6 +75,7 @@
 #include "DiskChopper.h"
 #include "Bunker.h"
 #include "BunkerInsert.h"
+#include "ChopperPit.h"
 #include "ODIN.h"
 
 namespace essSystem
@@ -87,7 +88,8 @@ ODIN::ODIN() :
   GuideB(new beamlineSystem::GuideLine("odinGB")),
   BInsert(new BunkerInsert("odinBInsert")),
   GuideC(new beamlineSystem::GuideLine("odinGC")),
-  GuideD(new beamlineSystem::GuideLine("odinGD"))
+  GuideD(new beamlineSystem::GuideLine("odinGD")),
+  PitA(new constructSystem::ChopperPit("odinPitA"))
  /*!
     Constructor
  */
@@ -103,6 +105,7 @@ ODIN::ODIN() :
   
   OR.addObject(GuideC);
   OR.addObject(GuideD);
+  OR.addObject(PitA);
 }
 
 
@@ -158,9 +161,14 @@ ODIN::build(Simulation& System,const attachSystem::TwinComp& GItem,
   // Guide leaving the bunker
   ELog::EM<<"GuideC exit point == "<<
     GuideC->getKey("Guide0").getSignedLinkPt(2)<<ELog::endDiag;
-    
+
+
   GuideD->addInsertCell(voidCell);
   GuideD->createAll(System,*BInsert,2,GuideC->getKey("Guide0"),2);
+
+  // First chopper pit out of bunker
+  PitA->addInsertCell(voidCell);
+  PitA->createAll(System,GuideD->getKey("Guide0"),2);
 
   return;
 }

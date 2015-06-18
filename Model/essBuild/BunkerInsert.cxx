@@ -139,7 +139,8 @@ BunkerInsert::createUnitVector(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("BunkerInsert","createUnitVector");
 
-  FixedComp::createUnitVector(FC,orgIndex);      
+  FixedComp::createUnitVector(FC,orgIndex);
+  applyOffset();
   return;
 }
   
