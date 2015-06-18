@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   tally/itemConstruct.cxx
  *
@@ -44,7 +44,6 @@
 #include "BaseModVisit.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
-#include "Tensor.h"
 #include "Vec3D.h"
 #include "Triple.h"
 #include "support.h"
@@ -117,7 +116,7 @@ itemConstruct::processItem(Simulation& System,
     throw ColErr::IndexError<size_t>(NItems,2,
 				     "Insufficient items for tally");
 
-  const std::string PType(IParam.getCompValue<std::string>("item",Index,1)); 
+  const std::string PType(IParam.getValue<std::string>("item",Index,1)); 
   
   if (PType=="beamline")  // beamline : Number
     {
@@ -169,7 +168,7 @@ itemConstruct::addBeamLineItem(Simulation& System,
 
   size_t iLP((viewSurface>=0) ? static_cast<size_t>(viewSurface) : 
 	     static_cast<size_t>(-viewSurface-1));
-  int VSign((viewSurface<0) ? -1 : 1);
+   int VSign((viewSurface<0) ? -1 : 1);
 
   const attachSystem::FixedComp* ModPtr;
   const attachSystem::FixedComp* ShutterPtr;

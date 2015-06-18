@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   process/SpecialSurf.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,6 @@
 #include <numeric>
 #include <iterator>
 #include <memory>
-#include <boost/bind.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -49,8 +48,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "Rules.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "Quadratic.h"
@@ -58,8 +55,6 @@
 #include "surfRegister.h"
 #include "surfExpand.h"
 #include "SurInter.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "SpecialSurf.h"
 
 namespace ModelSupport
@@ -283,11 +278,9 @@ listSurfaces()
   typedef std::map<int,Geometry::Surface*> STYPE;
   const STYPE& SurMap=ModelSupport::surfIndex::Instance().surMap();
 
-  ELog::EM<<"Start of surface list -- "<<SurMap.size()<<ELog::endBasic;  
-  for_each(SurMap.begin(),SurMap.end(),
-	boost::bind(&Geometry::Surface::write,
-		    boost::bind(&STYPE::value_type::second,_1),
-		    boost::ref(ELog::EM.Estream())));
+  ELog::EM<<"Start of surface list -- "<<SurMap.size()<<ELog::endBasic;
+  for(const STYPE::value_type& SI : SurMap)
+    SI.second->write(ELog::EM.Estream());
   
   return;
 }

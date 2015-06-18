@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testInputParam.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,19 +67,6 @@ testInputParam::~testInputParam()
 ///< Destructor
 {}
 
-void
-testInputParam::initInput(const std::string Input[],
-			  std::vector<std::string>& Names)
-  /*!
-    Create an input string from a terminated array
-    \param Input :: String array [Terminated with empty string]
-    \param Names :: Vector to add output to
-  */
-{
-  for(int i=0;!Input[i].empty();i++)
-    Names.push_back(Input[i]);
-  return;
-}
 
 int 
 testInputParam::applyTest(const int extra)
@@ -155,7 +142,8 @@ testInputParam::testDefValue()
   ELog::RegMethod RegA("testInputParam","testDefValue");
   
   inputParam A;
-  A.regItem<double>("d","dbl");
+  A.regItem("d","dbl");
+
   // Test partial [Success]
   A.regDefItem<int>("i","int",3,-8);
   // Test partial [Success]
@@ -163,16 +151,13 @@ testInputParam::testDefValue()
   A.regDefItem<std::string>("X","xmlout",1,
 			    "Model.xml");
 
-  std::vector<std::string> Names;
-  Names.push_back("-k");
-  Names.push_back("-i");
-  Names.push_back("10");
-  Names.push_back("7");
-  Names.push_back("-X");
-  Names.push_back("test.xml");
+  std::vector<std::string> Names=
+    { "-k", "-i", "10", "7", "-X", "test.xml" };
   
   A.processMainInput(Names);
-  if (!A.flag("i") || A.getValue<int>("i",0)!=10 ||
+
+  if (!A.flag("i") ||
+      A.getValue<int>("i",0)!=10 ||
       A.getValue<int>("i",1)!=7 || 
       A.getValue<int>("i",2)!=-8)
     {
@@ -205,13 +190,13 @@ testInputParam::testGetValue()
   ELog::RegMethod RegA("testInputParam","testGetValue");
   
   inputParam A;
-  A.regItem<double>("d","dbl");
-  A.regItem<int>("i","int");
+  A.regItem("d","dbl",1,10000);
+  A.regItem("i","int",1,1000);
   
   try
     {
-      A.setValue("i",10);
-      A.setValue("d",20.0);
+      A.setValue<int>("i",10);
+      A.setValue<double>("d",20.0);
       const double x=A.getValue<double>("d");
       if (fabs(x-20.0)>1e-8)
 	{
@@ -241,10 +226,10 @@ testInputParam::testFlagDef()
   Control.addVariable("testX",20.3);
 
   inputParam A;
-  A.regItem<double>("x","xlong");
-  A.regMulti<double>("m","mlong",1);
-  A.setValue("x",30.0);
-
+  A.regItem("x","xlong");
+  A.regMulti("m","mlong",2,0,1000);
+  A.setValue<double>("x",30.0);
+  
   // key : varKey : index : Except flag : result
   typedef std::tuple<std::string,std::string,
 		       size_t,bool,double> TTYPE;
@@ -310,20 +295,18 @@ testInputParam::testInput()
 
   inputParam A;
   A.regFlag("f","flag");
-  A.regItem<int>("i","int");
-  A.regItem<double>("d","dbl");
+  A.regItem("i","int");
+  A.regItem("d","dbl");
   A.regDefItem<double>("y","yobj",3,4.5);
-  A.regMulti<std::string>("E","exclude",1);
+  A.regMulti("E","exclude",1);
 
-  A.regItem<Geometry::Vec3D>("SP","sdefPos");
-  const std::string Input[]={
+  A.regItem("SP","sdefPos");
+  std::vector<std::string> Names={
     "--flag","-i","10",
     "-j","A","y",
-    "-SP","20.0","30.0","40.0",
-    ""};
+    "-SP","20.0","30.0","40.0"
+    };
 
-  std::vector<std::string> Names;
-  initInput(Input,Names);
   A.processMainInput(Names);
   
 
@@ -357,6 +340,11 @@ testInputParam::testInput()
 	  (NP>0 && A.getValue<Geometry::Vec3D>(key,0)!=std::get<3>(vc)))
 	{
 	  ELog::EM<<"Names.size() == "<<Names.size()<<ELog::endTrace;
+	  ELog::EM<<"Flag["<<std::get<1>(vc)<<"] =="
+		  <<A.flag(key)<<ELog::endTrace;
+	  if (NP>0)
+	    ELog::EM<<"Vec3D["<<std::get<3>(vc)<<"] =="
+		    <<A.getValue<Geometry::Vec3D>(key,0)<<ELog::endTrace;
 	  ELog::EM<<"Item["<<key<<"] failed:"<<ELog::endTrace;
 	  A.write(ELog::EM.Estream());
 	  ELog::EM<<ELog::endTrace;
@@ -385,17 +373,12 @@ testInputParam::testMultiExtract()
 
   // TEST code:
   inputParam A;
-  A.regMulti<std::string>("TC","tallyC",3,1);
-  const std::string Input[]=
-    { "-TC","help",
-      "-TC","1","2",
-      "-TC","3.4","444","23",
-      ""
-    };
+  A.regMulti("TC","tallyC",3,1);
 
-  std::vector<std::string> Names;
-  for(int i=0;!Input[i].empty();i++)
-    Names.push_back(Input[i]);
+  std::vector<std::string> Names={
+    "-TC","help",
+    "-TC","1","2",
+    "-TC","3.4","444","23" };
 
   A.processMainInput(Names);
 
@@ -410,17 +393,17 @@ testInputParam::testMultiExtract()
 	  return -cnt;
 	}
 
-      if ( A.grpCnt(key)<=std::get<1>(tc) ||            // How many TC
+      if ( A.setCnt(key)<=std::get<1>(tc) ||            // How many TC
 	   A.itemCnt(key,std::get<1>(tc))<=std::get<2>(tc) )
 	{
-	  ELog::EM<<"Grp Cnt =="<<A.grpCnt(key)<<ELog::endTrace;
+	  ELog::EM<<"Grp Cnt =="<<A.setCnt(key)<<ELog::endTrace;
 	  ELog::EM<<"Item Cnt=="<<A.itemCnt(key,std::get<1>(tc))<<
 	    ":"<<std::get<3>(tc)<<ELog::endTrace;
 	  return -cnt;
 	}
 
-      Out=A.getCompValue<std::string>(key,std::get<1>(tc),std::get<2>(tc));
-	
+      Out=A.getValue<std::string>(key,std::get<1>(tc),std::get<2>(tc));
+      
       
       if (A.itemCnt(key,std::get<1>(tc))!=std::get<3>(tc) ||
 	  Out!=std::get<4>(tc))
@@ -457,8 +440,8 @@ testInputParam::testMultiTail()
   Tests.push_back(TTYPE("i",1));
   // TEST code:
   inputParam A;
-  A.regMulti<std::string>("R","R",3,0);
-  A.regMulti<std::string>("r","r",3,0);
+  A.regMulti("R","R",3,0);
+  A.regMulti("r","r",3,0);
   std::vector<std::string> RItems(10,"");
   A.regDefItemList<std::string>("i","i",10,RItems);
   std::vector<std::string> Names=
@@ -492,47 +475,55 @@ testInputParam::testMulti()
   ELog::RegMethod RegA("testInputParam","testMulti");
 
   // Test : flag : Index : Value
-  typedef std::tuple<std::string,size_t,std::string> TTYPE;
+  typedef std::tuple<std::string,size_t,size_t,std::string> TTYPE;
   
   std::vector<TTYPE> Tests;
 
-  Tests.push_back(TTYPE("E",0,"Zoom"));
-  Tests.push_back(TTYPE("E",1,"Extra"));
-  Tests.push_back(TTYPE("TC",1,"4"));
-  Tests.push_back(TTYPE("TC",5,"8"));
-  Tests.push_back(TTYPE("TD",1,"2"));
-  Tests.push_back(TTYPE("TD",4,"5"));
+  Tests.push_back(TTYPE("E",0,0,"Zoom"));
+  Tests.push_back(TTYPE("E",1,0,"Extra"));
+  Tests.push_back(TTYPE("TC",0,1,"4"));
+  Tests.push_back(TTYPE("TC",1,2,"8"));
+  Tests.push_back(TTYPE("TD",0,1,"2"));
+  Tests.push_back(TTYPE("TD",1,1,"5"));
 
-  inputParam A;
-  A.regMulti<std::string>("E","exclude",1);
-  A.regMulti<std::string>("TC","tallyC",3);
-  A.regMulti<std::string>("TD","def",3,1);
-  A.regMulti<std::string>("TF","singleFlag",3,2);
+  inputParam A; 
+  A.regMulti("E","exclude",100,1);
+  A.regMulti("TC","tallyC",100,3);
+  A.regMulti("TD","def",100,1,3);
+  A.regMulti("TF","singleFlag",100,2,3);
 
-  const std::string Input[]={"-E","Zoom",
-			     "-E","Extra",
-			     "-TC","3","4","5",
-			     "-TC","6","7","8",
-			     "-TD","1","2",
-			     "-TD","4","5","6",
-			     ""};                    // Empyt string
-  std::vector<std::string> Names;
-  for(int i=0;!Input[i].empty();i++)
-    Names.push_back(Input[i]);
-  
+  std::vector<std::string> Names={"-E","Zoom",
+				  "-E","Extra",
+				  "-TC","3","4","5",
+				  "-TC","6","7","8",
+				  "-TD","1","2",
+				  "-TD","4","5","6"};
+
   A.processMainInput(Names);
   int cnt(1);
+  int exceptionFlag=0;
   for(const TTYPE& tc : Tests)
     {
       const std::string& key=std::get<0>(tc);
       if (A.flag(key))
 	{
-	  std::string Out=A.getValue<std::string>(key,std::get<1>(tc));
-
-	  if (Out!=std::get<2>(tc))
+	  const size_t setIndex=std::get<1>(tc);
+	  const size_t itemIndex=std::get<2>(tc);
+	  std::string Out;
+	  try
 	    {
+	      Out=A.getValue<std::string>(key,setIndex,itemIndex);
+	    }
+	  catch(ColErr::ExBase& A)
+	    {
+	      exceptionFlag=1;
+	      ELog::EM<<"Exception == "<<A.what()<<ELog::endDiag;
+	    }
+	  if (exceptionFlag || (Out!=std::get<3>(tc)))
+	    {
+	      ELog::EM<<"Test == "<<cnt<<ELog::endDiag;
 	      ELog::EM<<"Item["<<key<<"] failed:"<<ELog::endTrace;
-	      ELog::EM<<"Expected ="<<std::get<2>(tc)<<ELog::endTrace;
+	      ELog::EM<<"Expected ="<<std::get<3>(tc)<<ELog::endTrace;
 	      A.write(ELog::EM.Estream());
 	      ELog::EM<<ELog::endTrace;
 	      return -cnt;
@@ -554,22 +545,22 @@ testInputParam::testSetValue()
   ELog::RegMethod RegA("testInputParam","testSetValue");
   
   inputParam A;
-  A.regItem<double>("d","dbl");
-  A.regItem<int>("i","int");
+  A.regItem("d","dbl");
+  A.regItem("i","int");
   A.regFlag("f","flag");
   A.regFlag("g","Gflag");
   
   try
     {
-      A.setValue("i",10);
-      A.setValue("d",10.0);
+      A.setValue<int>("i",10);
+      A.setValue<double>("d",10.0);
       A.setFlag("g");
       if (A.flag("f") || !A.flag("g"))
 	{
 	  ELog::EM<<"Failed to find non-flag :f/g"<<ELog::endTrace;
 	  return -1;
 	}
-      A.setValue("xa",10.0);
+      A.setValue<double>("xa",10.0);
     }
   catch (ColErr::InContainerError<std::string>& EA)
     {
@@ -598,8 +589,8 @@ testInputParam::testWriteDesc()
 			  " -i       int \n");
 
   inputParam A;
-  A.regItem<double>("d","dbl");
-  A.regItem<int>("i","int");
+  A.regItem("d","dbl");
+  A.regItem("i","int");
   A.regFlag("f","flag");
   A.setDesc("f","This is the desc");  
 
@@ -613,6 +604,7 @@ testInputParam::testWriteDesc()
 	  ELog::EM<<"Cell "<<i<<" :"
 		  <<static_cast<unsigned int>(Out[i])<<"=="
 		  <<static_cast<unsigned int>(OutString[i])<<ELog::endTrace;
+
       ELog::EM<<"Failed on string :"<<
 	Out.size()<<" "<<OutString.size()<<std::endl;
       ELog::EM<<Out<<ELog::endTrace;
@@ -633,23 +625,21 @@ testInputParam::testWrite()
   ELog::RegMethod RegA("testInputParam","testWrite");
 
   const std::string OutString=
-    StrFunc::stripMultSpc(" -d       dbl        not-set ::  -- \n"
+    StrFunc::stripMultSpc(" -d       dbl        not-set :: \n"
 			  " -f       flag       not-set :: \n"
-			  " -i       int        not-set ::  -- \n"
-			  " -x       xobj       not-set ::  --  -- (4.5) \n"
-			  " -y       yobj       set ::  10  20 (4.5) \n");
+			  " -i       int        not-set :: \n"
+			  " -x       xobj       not-set ::  4.5 4.5 4.5\n"
+			  " -y       yobj       set ::  10.0 20.0 4.5\n");
   
   inputParam A;
-  A.regItem<double>("d","dbl");               // single double item
-  A.regItem<int>("i","int");                  // single int item
+  A.regItem("d","dbl");               // single double item
+  A.regItem("i","int");                  // single int item
   A.regFlag("f","flag");                      // Flag item 
   A.regDefItem<double>("x","xobj",3,4.5);
   A.regDefItem<double>("y","yobj",3,4.5);
 
-  std::vector<std::string> Names;
-  Names.push_back("-y");
-  Names.push_back("10.0");
-  Names.push_back("20.0");
+  std::vector<std::string> Names=
+    { "-y","10.0","20.0" };
 
   A.processMainInput(Names);
   std::ostringstream cx;
@@ -657,11 +647,16 @@ testInputParam::testWrite()
   std::string Out=StrFunc::stripMultSpc(cx.str());
   if (Out!=OutString)
     {
-      for(size_t i=0;i<40;i++)
+      for(size_t i=0;i<125;i++)
 	if (Out[i]!=OutString[i])
-	  ELog::EM<<"Cell "<<i<<" :"
-		  <<static_cast<unsigned int>(Out[i])<<"=="
-		  <<static_cast<unsigned int>(OutString[i])<<ELog::endTrace;
+	  {
+	    ELog::EM<<"Cell "<<i<<" :"
+		    <<static_cast<unsigned int>(Out[i])<<"=="
+		    <<static_cast<unsigned int>(OutString[i])<<" ||| "
+		  <<(Out[i])<<"=="
+		    <<(OutString[i])<<ELog::endTrace;
+	  }
+      
       ELog::EM<<"Failed on string :"<<
 	Out.size()<<" "<<OutString.size()<<std::endl;
       ELog::EM<<Out<<ELog::endTrace;

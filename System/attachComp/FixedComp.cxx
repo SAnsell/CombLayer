@@ -155,6 +155,7 @@ FixedComp::createUnitVector(const FixedComp& FC)
   Y=FC.Y;
   X=FC.X;
   Origin=FC.Origin;
+  beamOrigin=FC.beamOrigin;
   beamAxis=FC.beamAxis;
 
   return;
@@ -175,6 +176,7 @@ FixedComp::createUnitVector(const FixedComp& FC,
   Y=FC.Y;
   X=FC.X;
   Origin=POrigin;
+  beamOrigin=FC.beamOrigin;
   beamAxis=FC.beamAxis;
 
   return;
@@ -235,6 +237,7 @@ FixedComp::createUnitVector(const Geometry::Vec3D& OG,
   X=(Y*Z);                            // horrizontal axis [across]
 
   Origin=OG;
+  beamOrigin=OG;
   beamAxis=Y;
   return;
 }
@@ -824,8 +827,10 @@ FixedComp::getLinkComplement(const size_t Index) const
     throw ColErr::IndexError<size_t>(Index,LU.size(),"Index/LU.size");
 
   HeadRule RP;
-  RP.procString(LU[Index].getLinkString());
+  RP.procString(LU[Index].getMain());
   RP.makeComplement();
+  
+  RP.addIntersection(LU[Index].getCommon());
   return RP.display();
 }
 

@@ -161,7 +161,6 @@ makeTS2Bulk::build(Simulation* SimPtr,
   // For output stream
   ELog::RegMethod RControl("makeTS2Bulk","build");
 
-
   if (!IParam.flag("exclude") ||
       (!IParam.compValue("E",std::string("Bulk"))) ) 
     {

@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   tally/meshConstruct.cxx
  *
@@ -107,7 +107,7 @@ meshConstruct::processMesh(Simulation& System,
     throw ColErr::IndexError<size_t>(NItems,4,
 				     "Insufficient items for tally");
 
-  const std::string PType(IParam.getCompValue<std::string>("tally",Index,1)); 
+  const std::string PType(IParam.getValue<std::string>("tally",Index,1)); 
 
   const masterRotate& MR=masterRotate::Instance();
   

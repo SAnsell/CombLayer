@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
- * File:   testInclude/testMergeRule.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * File:   attachCompInc/FixedOffset.h
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,41 +19,43 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef testMergeRule_h
-#define testMergeRule_h 
+#ifndef attachSystem_FixedOffset_h
+#define attachSystem_FixedOffset_h
 
+class FuncDataBase;
+
+namespace attachSystem
+{
 /*!
-  \class testMergeRule
-  \brief Tests the SurfExpand class
-  \author S. Ansell
-  \date December 2009
+  \class FixedOffset
   \version 1.0
-  
-  Test of the surf Expand system
+  \author S. Ansell
+  \date  2015
+  \brief FixedComp derivative which handles x-z step and xy/z angle rotation
 */
 
-class testMergeRule 
+class FixedOffset  : public FixedComp
 {
- private:
+ protected:
 
-  Simulation ASim;         ///< Simulation to allow mcnpx model output
-
-  void initSim();
-  void createObjects();
-  void createSurfaces();
-
+  double xStep;       ///< x step
+  double yStep;       ///< y step
+  double zStep;       ///< z step
+  double xyAngle;     ///< xy Angle
+  double zAngle;      ///< z Angle
   
-  int checkSurfaceEqual(const int,const std::string&) const;
-		  
-  //Tests 
-  int testBasicPair();
- 
  public:
 
-  testMergeRule();
-  ~testMergeRule();
+  FixedOffset(const std::string&,const size_t);
+  FixedOffset(const FixedOffset&);
+  FixedOffset& operator=(const FixedOffset&);
+  virtual ~FixedOffset() {}     ///< Destructor
 
-  int applyTest(const int);     
+  virtual void populate(const FuncDataBase&);
+  void applyOffset();
 };
 
+}
+
 #endif
+ 

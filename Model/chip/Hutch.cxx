@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   chip/Hutch.cxx
  *
@@ -432,7 +432,6 @@ ChipIRHutch::createUnitVector(const attachSystem::FixedComp& shutterFC,
   Geometry::Quaternion::calcQRotDeg(beamAngle,X).rotate(bY);
   bX=X;
   bZ=bY*X;
-  ELog::EM<<"Origin == "<<Origin<<ELog::endDiag;
 
   ImpactPoint= (shutterFC.NConnect()) ?
     shutterFC.getLinkPt(0) : shutterFC.getCentre(); 

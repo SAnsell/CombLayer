@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   zoom/ZoomChopper.cxx
  *
@@ -493,7 +493,6 @@ ZoomChopper::divideMainShield(Simulation& System)
       for(size_t i=1;i<nShield;i++)
 	{
 	  DA.addFrac(shieldFrac[i-1]);
-	  ELog::EM<<"Fac == "<<shieldFrac[i-1]<<ELog::endDiag;
 	  DA.addMaterial(shieldMat[i-1]);
 	}
       DA.addMaterial(shieldMat.back());

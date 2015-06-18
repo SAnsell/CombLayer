@@ -60,23 +60,34 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "FixedGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+#include "SecondTrack.h"
+#include "TwinComp.h"
 #include "LayerComp.h"
 #include "CellMap.h"
 #include "World.h"
 #include "AttachSupport.h"
 #include "Jaws.h"
 #include "GuideLine.h"
+#include "DiskChopper.h"
+#include "Bunker.h"
+#include "BunkerInsert.h"
 #include "ODIN.h"
 
 namespace essSystem
 {
 
 ODIN::ODIN() :
-  CollA(new constructSystem::Jaws("ODINCollA")),
-  GuideA(new beamlineSystem::GuideLine("ODINg1"))
+  BladeChopper(new constructSystem::DiskChopper("odinBlade")),
+  GuideA(new beamlineSystem::GuideLine("odinGA")),
+  T0Chopper(new constructSystem::DiskChopper("odinTZero")),
+  GuideB(new beamlineSystem::GuideLine("odinGB")),
+  BInsert(new BunkerInsert("odinBInsert")),
+  GuideC(new beamlineSystem::GuideLine("odinGC")),
+  GuideD(new beamlineSystem::GuideLine("odinGD"))
  /*!
     Constructor
  */
@@ -84,10 +95,17 @@ ODIN::ODIN() :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  OR.addObject(CollA);
+  OR.addObject(BladeChopper);
   OR.addObject(GuideA);
-
+  OR.addObject(T0Chopper);
+  OR.addObject(GuideB);
+  OR.addObject(BInsert);
+  
+  OR.addObject(GuideC);
+  OR.addObject(GuideD);
 }
+
+
 
 
 ODIN::~ODIN()
@@ -98,24 +116,51 @@ ODIN::~ODIN()
 
 
 void 
-ODIN::build(Simulation& System,const attachSystem::FixedComp& GItem,
-	    const attachSystem::CellMap& Bunker,const int voidCell)
+ODIN::build(Simulation& System,const attachSystem::TwinComp& GItem,
+	    const Bunker& bunkerObj,const int voidCell)
   /*!
     Carry out the full build
     \param System :: Simulation system
     \param GItem :: Guide Item 
-    \param Bunkdr :: Bunker cell map [for inserts]
+    \param BunkerObj :: Bunker component [for inserts]
     \param voidCell :: Void cell
    */
 {
   // For output stream
   ELog::RegMethod RegA("ODIN","build");
+  
+  BladeChopper->addInsertCell(bunkerObj.getCell("MainVoid"));
+  BladeChopper->createAll(System,GItem,2);
 
-  CollA->addInsertCell(Bunker.getCell("MainVoid"));
-  CollA->createAll(System,GItem,2);
+  GuideA->addInsertCell(bunkerObj.getCell("MainVoid"));
+  GuideA->createAll(System,BladeChopper->getKey("Main"),2,
+		    BladeChopper->getKey("Beam"),2);
+  
+  T0Chopper->addInsertCell(bunkerObj.getCell("MainVoid"));
+  T0Chopper->createAll(System,GuideA->getKey("Guide0"),2);
 
-  GuideA->addInsertCell(Bunker.getCell("MainVoid"));
-  GuideA->createAll(System,*CollA,2,*CollA,2);
+  GuideB->addInsertCell(bunkerObj.getCell("MainVoid"));
+  GuideB->addEndCut(bunkerObj.getSignedLinkString(8));
+  GuideB->createAll(System,T0Chopper->getKey("Main"),2,
+		    T0Chopper->getKey("Beam"),2);
+
+  ELog::EM<<"Guide exit point == "<<
+    GuideB->getKey("Guide0").getSignedLinkPt(2)<<ELog::endDiag;
+  BInsert->setInsertCell(bunkerObj.getCells("MainWall8"));
+  BInsert->createAll(System,GuideB->getKey("Guide0"),2,bunkerObj);
+
+
+  // Guide in the bunker insert
+  GuideC->addInsertCell(BInsert->getCell("Void"));
+  GuideC->addEndCut(bunkerObj.getSignedLinkString(-2));
+  GuideC->createAll(System,*BInsert,-1,*BInsert,-1);
+
+  // Guide leaving the bunker
+  ELog::EM<<"GuideC exit point == "<<
+    GuideC->getKey("Guide0").getSignedLinkPt(2)<<ELog::endDiag;
+    
+  GuideD->addInsertCell(voidCell);
+  GuideD->createAll(System,*BInsert,2,GuideC->getKey("Guide0"),2);
 
   return;
 }

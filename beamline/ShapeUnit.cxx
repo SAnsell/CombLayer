@@ -122,8 +122,5 @@ ShapeUnit::setEndPts(const Geometry::Vec3D& A,
   return;
 }
 
-  
-
-
-  
+ 
 }  // NAMESPACE beamlineSystem

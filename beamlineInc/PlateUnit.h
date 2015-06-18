@@ -69,7 +69,7 @@ class PlateUnit : public ShapeUnit
 	       const double) const;
   Geometry::Vec3D sideNorm(const std::pair<Geometry::Vec3D,
 			    Geometry::Vec3D>&) const;
-   
+
  public:
 
   PlateUnit(const int,const int);

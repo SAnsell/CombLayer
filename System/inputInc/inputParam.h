@@ -26,7 +26,7 @@ class FuncDataBase;
 
 namespace mainSystem
 {
-  class IItemBase;
+  class IItem;
 /*!
   \class inputParam
   \version 1.0
@@ -40,23 +40,25 @@ class inputParam
  private:
 
   /// Keys/Names type
-  typedef std::map<std::string,IItemBase*> MTYPE;
+  typedef std::map<std::string,IItem*> MTYPE;
 
-  std::map<std::string,IItemBase*> Keys;         ///< Simple search key
-  std::map<std::string,IItemBase*> Names;        ///< Full name [optional]
+  std::map<std::string,IItem*> Keys;         ///< Simple search key
+  std::map<std::string,IItem*> Names;        ///< Full name [optional]
 
   void copyMaps(const inputParam&);
 
   void deleteMaps();
-  IItemBase* getIndex(const std::string&);
-  const IItemBase* getIndex(const std::string&) const;
-  const IItemBase* findKey(const std::string&) const;
-  const IItemBase* findShortKey(const std::string&) const;
-  const IItemBase* findLongKey(const std::string&) const;
+  IItem* getIndex(const std::string&);
+  const IItem* getIndex(const std::string&) const;
+  const IItem* findKey(const std::string&) const;
+  const IItem* findShortKey(const std::string&) const;
+  const IItem* findLongKey(const std::string&) const;
 
-  IItemBase* findKey(const std::string&);
-  IItemBase* findShortKey(const std::string&);
-  IItemBase* findLongKey(const std::string&);
+  IItem* findKey(const std::string&);
+  IItem* findShortKey(const std::string&);
+  IItem* findLongKey(const std::string&);
+
+  void checkKeys(const std::string&,const std::string&) const;
   
  public:
 
@@ -66,13 +68,11 @@ class inputParam
   ~inputParam();
   
   void regFlag(const std::string&,const std::string&);
-
-  template<typename T>
-  void regItem(const std::string&,const std::string&,
-	       const size_t =1);
-  template<typename T>
-  void regMulti(const std::string&,const std::string&,const size_t,
-		const long int = -1);
+  void regItem(const std::string&,const std::string&,const size_t =0,
+	       const size_t = 10000);
+  void regMulti(const std::string&,const std::string&,const size_t =10000,
+		const size_t = 1,const size_t = 10000);
+  
 
   template<typename T>
   void regDefItemList(const std::string&,const std::string&,
@@ -88,9 +88,13 @@ class inputParam
   void regDefItem(const std::string&,const std::string&,
 		  const size_t,const T&,const T&,const T&);
 
- 
+
+
+
+  
   size_t dataCnt(const std::string&) const;
-  size_t grpCnt(const std::string&) const;
+
+  size_t setCnt(const std::string&) const;
   size_t itemCnt(const std::string&,const size_t) const;
 
   bool hasKey(const std::string&) const;
@@ -99,11 +103,9 @@ class inputParam
 
   std::string getFull(const std::string&,const size_t =0) const;
   template<typename T>
-  const T& getValue(const std::string&,const size_t =0) const;
-
+  T getValue(const std::string&,const size_t =0) const;
   template<typename T>
-  const T& getCompValue(const std::string&,const size_t,const size_t) const;
-
+  T getValue(const std::string&,const size_t,const size_t) const;
 
   bool compNoCaseValue(const std::string&,const std::string&) const;
   template<typename T>
@@ -112,11 +114,14 @@ class inputParam
   template<typename T>
   T getFlagDef(const std::string&,const FuncDataBase&,
 		      const std::string&,const size_t =0) const;
-
+  
   void setDesc(const std::string&,const std::string&);
   void setFlag(const std::string&);
   template<typename T>
   void setValue(const std::string&,const T&,const size_t =0);
+  template<typename T>
+  void setValue(const std::string&,const T&,const size_t,const size_t);
+  void setMultiValue(const std::string&,const size_t,const std::string&);
 
   void processMainInput(std::vector<std::string>&);
   

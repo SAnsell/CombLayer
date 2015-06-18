@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   tally/gridConstruct.cxx
  *
@@ -134,7 +134,7 @@ gridConstruct::processGrid(Simulation& System,
 
   //    NItems<<ELog::endDiag;
 
-  const std::string PType(IParam.getCompValue<std::string>("tally",Index,1));   
+  const std::string PType(IParam.getValue<std::string>("tally",Index,1));   
   const masterRotate& MR=masterRotate::Instance();
 
   // First point to used
@@ -219,7 +219,6 @@ gridConstruct::calcGlobalCXY(const std::string& Place,
   Geometry::Vec3D O,X,Y,Z;
   O=(linkNumber) ? FC->getLinkPt(LN) : FC->getCentre();
 
-  const masterRotate& MR=masterRotate::Instance();
 
   FC->calcLinkAxis(linkNumber,X,Y,Z);
 

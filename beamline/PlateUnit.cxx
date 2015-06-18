@@ -147,11 +147,11 @@ PlateUnit::addCell(const int C)
 size_t
 PlateUnit::findFirstPoint(const Geometry::Vec3D& testPt,
 			  const std::vector<Geometry::Vec3D>& BVec) 
-/*!
-    Find the first point in BPts that equals BPts
-    \param testPt :: First point to find
-    \param BVec :: Vector of look up
-    \return 
+ /*!
+   Find the first point in BVec that equals testPt
+   \param testPt :: First point to find
+   \param BVec :: Vector of look up
+   \return 
   */
 {
   ELog::RegMethod RegA("PlateUnit","findFirstPt");
@@ -164,22 +164,23 @@ PlateUnit::findFirstPoint(const Geometry::Vec3D& testPt,
   return (vc!=BVec.end()) ? 
     static_cast<size_t>(vc-BVec.begin()) :  BVec.size();
 }
- 
+  
 void
 PlateUnit::constructConvex()
   /*!
     Process a group of points to produce correct orientation
     -- note need non-static as we need axis information (Y)
     to remove bias
-    \param Y :: Principle direction
-   */
+  */
 {
   ELog::RegMethod RegA("PlateUnit","constructConvex");
 
   if (nCorner>2)
     {
       delete CHPtr;
+      // construct convex for front window
       CHPtr=new Geometry::Convex2D;
+      
       CHPtr->setPoints(APts);
       CHPtr->constructHull();
 
@@ -207,8 +208,8 @@ PlateUnit::constructConvex()
       Cent-=CHPtr->getCentroid();
       Cent.makeUnit();
 
+
       const Geometry::Vec3D N(AX*YVec);
-      
       if (N.dotProd(Cent)>0)
 	{
 	  // rotate : could you c++11 construct rotate
@@ -262,6 +263,7 @@ PlateUnit::setXAxis(const Geometry::Vec3D& X,
   ZVec=XVec*YVec;
   if (ZVec.dotProd(Z)<0)
     ZVec*=-1.0;
+
   return;
 }
 
@@ -304,6 +306,7 @@ PlateUnit::frontPt(const size_t Index) const
    */
 {
   const Geometry::Vec3D& CPT(APts[(Index % nCorner)]);
+
   return begPt+XVec*CPT.X()+ZVec*CPT.Z();
 }
 
@@ -380,7 +383,6 @@ PlateUnit::scaledPair(const Geometry::Vec3D& APoint,
       Geometry::Vec3D ASide=(BPoint-APoint).unit();
       ASide=YVec*ASide;
       Out.first-=ASide*scale;
-
       Out.second-=ASide*scale;
     }
   return Out;
@@ -425,17 +427,15 @@ PlateUnit::createSurfaces(ModelSupport::surfRegister& SMap,
 	{
 	  const std::pair<Geometry::Vec3D,Geometry::Vec3D> PX=
 	    frontPair(i,i+1,Thick[j]);
+	  const std::pair<Geometry::Vec3D,Geometry::Vec3D> PY=
+	    backPair(i,i+1,Thick[j]);
 	  ModelSupport::buildPlane(SMap,SN,
 				   PX.first,PX.second,
-				   backPt(i),
+				   PY.first,
 				   sideNorm(PX));
 	  SN++;
 	}
-    }
-
-  const std::pair<Geometry::Vec3D,Geometry::Vec3D> PXX=
-    frontPair(0,1,0.0);
-   
+    }   
   return;
 }
 

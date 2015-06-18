@@ -1,7 +1,7 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
- * File:   essBuild/DefUnitsESS.cxx
+ * File:   attachComp/FixedOffset.cxx
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -25,11 +25,13 @@
 #include <sstream>
 #include <cmath>
 #include <complex>
+#include <list>
 #include <vector>
 #include <set>
-#include <list>
 #include <map>
 #include <string>
+#include <algorithm>
+#include <memory>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -39,68 +41,64 @@
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
+#include "support.h"
+#include "MatrixBase.h"
+#include "Matrix.h"
 #include "Vec3D.h"
+#include "Quaternion.h"
+#include "Surface.h"
+#include "surfIndex.h"
+#include "surfRegister.h"
+#include "surfEqual.h"
+#include "Rules.h"
+#include "HeadRule.h"
+#include "LinkUnit.h"
+#include "FixedComp.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
-#include "InputControl.h"
-#include "inputParam.h"
-#include "support.h"
-#include "defaultConfig.h"
-#include "DefUnitsESS.h"
+#include "FixedOffset.h"
 
-namespace mainSystem
+namespace attachSystem
 {
 
-void 
-setDefUnits(FuncDataBase& Control,
-	    inputParam& IParam)
-  /*!
-    Based on the defaultConf set up the model
-    \param Control :: FuncDataBase
-    \param IParam :: input system
+FixedOffset::FixedOffset(const std::string& KN,const size_t NL) :
+  FixedComp(KN,NL),xStep(0.0),yStep(0.0),zStep(0.0),
+  xyAngle(0.0),zAngle(0.0)
+ /*!
+    Constructor 
+    \param KN :: KeyName
+    \param NL :: Number of links
   */
-{
-  ELog::RegMethod RegA("DefUnitsESS[F]","setDefUnits");
-
-  defaultConfig A("");
-  if (IParam.flag("defaultConfig"))
-    {
-      const std::string Key=IParam.getValue<std::string>("defaultConfig");
-      if (Key=="Main")
-	setESS(A);
-      else if (Key=="help")
-	{
-	  ELog::EM<<"Options : "<<ELog::endDiag;
-	  ELog::EM<<"  Main  "<<ELog::endDiag;
-	  throw ColErr::InContainerError<std::string>
-	    (Key,"Iparam.defaultConfig");	  
-	}
-      else 
-	{
-	  ELog::EM<<"Unknown Default Key ::"<<Key<<ELog::endDiag;
-	  throw ColErr::InContainerError<std::string>
-	    (Key,"Iparam.defaultConfig");
-	}
-      A.process(Control,IParam);
-    }
-  return;
-}
-
+{}
 
 void
-setESS(defaultConfig& A)
+FixedOffset::populate(const FuncDataBase& Control)
   /*!
-    Default configuration for ESS
-    \param A :: Paramter for default config
+    Populate the variables
+    \param Control :: Control data base
    */
 {
-  ELog::RegMethod RegA("DefUnitsESS[F]","setESS");
+  ELog::RegMethod RegA("FixedOffset","populate");
 
-  A.setOption("lowMod","Butterfly");
-  A.setMultiOption("beamlines",0,"G1BLine1 ODIN");
   
+}
+  
+void
+FixedOffset::applyOffset()
+  /*!
+    Apply the rotation/step offset
+  */
+{
+  ELog::RegMethod RegA("FixedOffset","applyOffset");
+  
+  FixedComp::applyShift(xStep,yStep,zStep);
+  FixedComp::applyAngleRotate(xyAngle,zAngle);
   return;
 }
 
-} // NAMESPACE mainSystem
+  
+
+
+
+}  // NAMESPACE attachSystem

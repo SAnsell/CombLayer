@@ -134,7 +134,7 @@ reactorTallyConstruct::processPower
     throw ColErr::IndexError<size_t>(NItems,2,
 				     "Insufficient items for tally");
 
-  const std::string PType(IParam.getCompValue<std::string>("tally",Index,1)); 
+  const std::string PType(IParam.getValue<std::string>("tally",Index,1)); 
 
   const delftSystem::ReactorGrid* GPtr=
     dynamic_cast<const delftSystem::ReactorGrid*>

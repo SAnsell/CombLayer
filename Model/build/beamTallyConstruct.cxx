@@ -139,7 +139,7 @@ beamTallyConstruct::processPoint(Simulation& System,
 				     "Insufficient items for tally");
 
 
-  const std::string PType(IParam.getCompValue<std::string>("tally",Index,1)); 
+  const std::string PType(IParam.getValue<std::string>("tally",Index,1)); 
   
   if (PType=="beamline" || PType=="shutterLine")
     {

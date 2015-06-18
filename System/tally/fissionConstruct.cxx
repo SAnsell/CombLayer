@@ -117,7 +117,7 @@ fissionConstruct::processPower(Simulation& System,
 
   // CellRegion can be object name or number:
   const std::string CellRegion
-    (IParam.getCompValue<std::string>("tally",Index,2)); 
+    (IParam.getValue<std::string>("tally",Index,2)); 
 
   // returns 0 if failed to find
   const int cellOffset=OR.getCell(CellRegion);
@@ -132,7 +132,7 @@ fissionConstruct::processPower(Simulation& System,
   while(nCount<NItems)
     {
       std::string CVal=
-	IParam.getCompValue<std::string>("tally",Index,nCount);
+	IParam.getValue<std::string>("tally",Index,nCount);
       if (StrFunc::convert(CVal,cellNum) &&
 	  System.existCell(cellNum+cellOffset))
 	cellVec.push_back(cellNum+cellOffset);
