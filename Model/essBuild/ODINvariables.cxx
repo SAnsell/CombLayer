@@ -119,34 +119,34 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinBlade3PhaseAngle",95.0);
   Control.addVariable("odinBlade3OpenAngle",30.0);
   
-  Control.addVariable("ODINgAXStep",0.0);       
-  Control.addVariable("ODINgAYStep",0.0);       
-  Control.addVariable("ODINgAZStep",0.0);       
-  Control.addVariable("ODINgAXYAngle",0.0);       
-  Control.addVariable("ODINgAZAngle",0.0);       
-  Control.addVariable("ODINgALength",220.0);       
-  Control.addVariable("ODINgAHeight",20.0);       
-  Control.addVariable("ODINgADepth",20.0);       
-  Control.addVariable("ODINgALeftWidth",20.0);       
-  Control.addVariable("ODINgARightWidth",20.0);       
-  Control.addVariable("ODINgAFeMat","Void");       
-  Control.addVariable("ODINgANShapes",1);       
-  Control.addVariable("ODINgANShapeLayers",3);
+  Control.addVariable("odinGAXStep",0.0);       
+  Control.addVariable("odinGAYStep",0.0);       
+  Control.addVariable("odinGAZStep",0.0);       
+  Control.addVariable("odinGAXYAngle",0.0);       
+  Control.addVariable("odinGAZAngle",0.0);       
+  Control.addVariable("odinGALength",220.0);       
+  Control.addVariable("odinGAHeight",20.0);       
+  Control.addVariable("odinGADepth",20.0);       
+  Control.addVariable("odinGALeftWidth",20.0);       
+  Control.addVariable("odinGARightWidth",20.0);       
+  Control.addVariable("odinGAFeMat","Void");       
+  Control.addVariable("odinGANShapes",1);       
+  Control.addVariable("odinGANShapeLayers",3);
 
-  Control.addVariable("ODINgALayerThick1",0.4);  // glass thick
-  Control.addVariable("ODINgALayerThick2",1.5);
+  Control.addVariable("odinGALayerThick1",0.4);  // glass thick
+  Control.addVariable("odinGALayerThick2",1.5);
 
-  Control.addVariable("ODINgALayerMat0","Void");
-  Control.addVariable("ODINgALayerMat1","Glass");
-  Control.addVariable("ODINgALayerMat2","Void");       
+  Control.addVariable("odinGALayerMat0","Void");
+  Control.addVariable("odinGALayerMat1","Glass");
+  Control.addVariable("odinGALayerMat2","Void");       
 
-  Control.addVariable("ODINgA0TypeID","Tapper");
-  Control.addVariable("ODINgA0HeightStart",3.0);
-  Control.addVariable("ODINgA0HeightEnd",3.0);
-  Control.addVariable("ODINgA0WidthStart",7.0);
-  Control.addVariable("ODINgA0WidthEnd",10.0);
-  Control.addVariable("ODINgA0Length",220.0);
-  Control.addVariable("ODINgA0ZAngle",0.0);       
+  Control.addVariable("odinGA0TypeID","Tapper");
+  Control.addVariable("odinGA0HeightStart",3.0);
+  Control.addVariable("odinGA0HeightEnd",3.0);
+  Control.addVariable("odinGA0WidthStart",7.0);
+  Control.addVariable("odinGA0WidthEnd",10.0);
+  Control.addVariable("odinGA0Length",220.0);
+  Control.addVariable("odinGA0ZAngle",0.0);       
 
 
   // T0 Chopper 
@@ -218,8 +218,8 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinGCLength",220.0);       
   Control.addVariable("odinGCHeight",5.0);       
   Control.addVariable("odinGCDepth",5.0);       
-  Control.addVariable("odinGCLeftWidth",5.0);       
-  Control.addVariable("odinGCRightWidth",5.0);       
+  Control.addVariable("odinGCLeftWidth",7.0);       
+  Control.addVariable("odinGCRightWidth",7.0);       
   Control.addVariable("odinGCFeMat","Void");       
   Control.addVariable("odinGCNShapes",1);       
   Control.addVariable("odinGCNShapeLayers",3);
@@ -236,7 +236,37 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinGC0Width",9.0);
   Control.addVariable("odinGC0Length",220.0);
   Control.addVariable("odinGC0ZAngle",0.0);
-  
+
+    // GUIDE IN the beam insert
+  Control.addVariable("odinGDXStep",0.0);       
+  Control.addVariable("odinGDYStep",0.0);       
+  Control.addVariable("odinGDZStep",0.0);       
+  Control.addVariable("odinGDXYAngle",0.0);       
+  Control.addVariable("odinGDZAngle",0.0);       
+  Control.addVariable("odinGDLength",220.0);       
+  Control.addVariable("odinGDHeight",90.0);       
+  Control.addVariable("odinGDDepth",90.0);       
+  Control.addVariable("odinGDLeftWidth",90.0);       
+  Control.addVariable("odinGDRightWidth",90.0);       
+  Control.addVariable("odinGDFeMat","Concrete");       
+  Control.addVariable("odinGDNShapes",1);       
+  Control.addVariable("odinGDNShapeLayers",4);
+
+  Control.addVariable("odinGDLayerThick1",0.4);  // glass thick
+  Control.addVariable("odinGDLayerThick2",1.5);
+  Control.addVariable("odinGDLayerThick3",33.0);
+
+  Control.addVariable("odinGDLayerMat0","Void");
+  Control.addVariable("odinGDLayerMat1","Glass");
+  Control.addVariable("odinGDLayerMat2","Void");
+  Control.addVariable("odinGDLayerMat3","Stainless304");       
+
+  Control.addVariable("odinGD0TypeID","Rectangle");
+  Control.addVariable("odinGD0Height",5.0);
+  Control.addVariable("odinGD0Width",9.0);
+  Control.addVariable("odinGD0Length",220.0);
+  Control.addVariable("odinGD0ZAngle",0.0);
+
   return;
 }
 

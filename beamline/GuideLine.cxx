@@ -213,7 +213,7 @@ GuideLine::populate(const FuncDataBase& Control)
   rightWidth=Control.EvalVar<double>(keyName+"RightWidth");
 
   feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
-
+  ELog::EM<<"FeMat == "<<feMat<<ELog::endDiag;
   nShapes=Control.EvalVar<size_t>(keyName+"NShapes");
   nShapeLayers=Control.EvalVar<size_t>(keyName+"NShapeLayers");
   
@@ -318,14 +318,14 @@ GuideLine::checkRectangle(const double W,const double H) const
 {
   ELog::RegMethod RegA("GuideLine","checkRectangle");
 
-  if ((W/2.0)>leftWidth || (W/2.0)>rightWidth)
-    ELog::EM<<"Check rectangle width "<<W
+  const double TThick=
+    std::accumulate(layerThick.begin(),layerThick.end(),0.0);
+  
+  if ((TThick+W/2.0)>leftWidth || (TThick+W/2.0)>rightWidth)
+    ELog::EM<<"Guide["<<keyName<<"] rectangle width/thick "<<W<<":"<<TThick
 	    <<" > ("<<leftWidth<<":"<<rightWidth<<")"<<ELog::endErr;
-  if ((H/2.0)>height || (H/2)>depth)
-    ELog::EM<<"Check rectangle height "<<H
-	    <<" > ("<<depth<<":"<<height<<")"<<ELog::endErr;
-
-  ELog::EM<<"Check rectangle height "<<H
+  if ((TThick+H/2.0)>height || (TThick+H/2)>depth)
+    ELog::EM<<"Guide["<<keyName<<"] rectangle height/thick "<<H<<":"<<TThick
 	    <<" > ("<<depth<<":"<<height<<")"<<ELog::endErr;
 
   return;

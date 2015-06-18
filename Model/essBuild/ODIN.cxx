@@ -82,11 +82,12 @@ namespace essSystem
 
 ODIN::ODIN() :
   BladeChopper(new constructSystem::DiskChopper("odinBlade")),
-  GuideA(new beamlineSystem::GuideLine("ODINgA")),
+  GuideA(new beamlineSystem::GuideLine("odinGA")),
   T0Chopper(new constructSystem::DiskChopper("odinTZero")),
   GuideB(new beamlineSystem::GuideLine("odinGB")),
   BInsert(new BunkerInsert("odinBInsert")),
-  GuideC(new beamlineSystem::GuideLine("odinGC"))
+  GuideC(new beamlineSystem::GuideLine("odinGC")),
+  GuideD(new beamlineSystem::GuideLine("odinGD"))
  /*!
     Constructor
  */
@@ -99,7 +100,9 @@ ODIN::ODIN() :
   OR.addObject(T0Chopper);
   OR.addObject(GuideB);
   OR.addObject(BInsert);
+  
   OR.addObject(GuideC);
+  OR.addObject(GuideD);
 }
 
 
@@ -149,9 +152,15 @@ ODIN::build(Simulation& System,const attachSystem::TwinComp& GItem,
 
   // Guide in the bunker insert
   GuideC->addInsertCell(BInsert->getCell("Void"));
-  ELog::EM<<"Cell void == "<<BInsert->getCell("Void")<<ELog::endDiag;
   GuideC->addEndCut(bunkerObj.getSignedLinkString(-2));
   GuideC->createAll(System,*BInsert,-1,*BInsert,-1);
+
+  // Guide leaving the bunker
+  ELog::EM<<"GuideC exit point == "<<
+    GuideC->getKey("Guide0").getSignedLinkPt(2)<<ELog::endDiag;
+    
+  GuideD->addInsertCell(voidCell);
+  GuideD->createAll(System,*BInsert,2,GuideC->getKey("Guide0"),2);
 
   return;
 }
