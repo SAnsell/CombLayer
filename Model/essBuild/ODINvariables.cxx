@@ -377,24 +377,24 @@ ODINvariables(FuncDataBase& Control)
   // 
   // PIT B ::
   // 
-  Control.addVariable("odinPitAVoidHeight",30.0);
-  Control.addVariable("odinPitAVoidDepth",60.0);
-  Control.addVariable("odinPitAVoidWidth",40.0);
-  Control.addVariable("odinPitAVoidLength",50.0);
+  Control.addVariable("odinPitBVoidHeight",30.0);
+  Control.addVariable("odinPitBVoidDepth",60.0);
+  Control.addVariable("odinPitBVoidWidth",40.0);
+  Control.addVariable("odinPitBVoidLength",50.0);
   
-  Control.addVariable("odinPitAFeHeight",50.0);
-  Control.addVariable("odinPitAFeDepth",50.0);
-  Control.addVariable("odinPitAFeWidth",50.0);
-  Control.addVariable("odinPitAFeFront",50.0);
-  Control.addVariable("odinPitAFeBack",50.0);
-  Control.addVariable("odinPitAFeMat","Stainless304");
+  Control.addVariable("odinPitBFeHeight",50.0);
+  Control.addVariable("odinPitBFeDepth",50.0);
+  Control.addVariable("odinPitBFeWidth",50.0);
+  Control.addVariable("odinPitBFeFront",50.0);
+  Control.addVariable("odinPitBFeBack",50.0);
+  Control.addVariable("odinPitBFeMat","Stainless304");
 
-  Control.addVariable("odinPitAConcHeight",50.0);
-  Control.addVariable("odinPitAConcDepth",50.0);
-  Control.addVariable("odinPitAConcWidth",50.0);
-  Control.addVariable("odinPitAConcFront",50.0);
-  Control.addVariable("odinPitAConcBack",50.0);
-  Control.addVariable("odinPitAConcMat","Concrete");
+  Control.addVariable("odinPitBConcHeight",50.0);
+  Control.addVariable("odinPitBConcDepth",50.0);
+  Control.addVariable("odinPitBConcWidth",50.0);
+  Control.addVariable("odinPitBConcFront",50.0);
+  Control.addVariable("odinPitBConcBack",50.0);
+  Control.addVariable("odinPitBConcMat","Concrete");
   
   // GUDE IN the beam insert
   Control.addVariable("odinGPitBFrontXStep",0.0);       

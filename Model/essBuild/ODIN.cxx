@@ -203,11 +203,17 @@ ODIN::build(Simulation& System,const attachSystem::TwinComp& GItem,
 			    GuideE->getKey("Guide0"),-1);
 
 
-
   // SECOND CHOPPER PIT:
-  
-  GuideD->addInsertCell(voidCell);
-  GuideD->createAll(System,*BInsert,2,GuideC->getKey("Guide0"),2);
+  // First chopper pit out of bunker
+  // Guide guide String
+  const attachSystem::FixedComp& GOuterB=GuideE->getKey("Shield");
+  GuideCut.reset();
+  for(size_t i=1;i<6;i++)
+    GuideCut.addUnion(GOuterB.getLinkString(i));
+  PitB->addInsertCell(voidCell);
+  PitB->createAll(System,GuideE->getKey("Guide0"),2,GuideCut.display());
+
+
   
   return;
 }
