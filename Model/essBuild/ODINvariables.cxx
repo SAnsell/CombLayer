@@ -237,13 +237,13 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinGC0Length",220.0);
   Control.addVariable("odinGC0ZAngle",0.0);
 
-    // GUIDE IN the beam insert
+    // GUIDE Exiting Bunker wall
   Control.addVariable("odinGDXStep",0.0);       
   Control.addVariable("odinGDYStep",0.0);       
   Control.addVariable("odinGDZStep",0.0);       
   Control.addVariable("odinGDXYAngle",0.0);       
   Control.addVariable("odinGDZAngle",0.0);       
-  Control.addVariable("odinGDLength",220.0);       
+  Control.addVariable("odinGDLength",141.0);       
   Control.addVariable("odinGDHeight",90.0);       
   Control.addVariable("odinGDDepth",90.0);       
   Control.addVariable("odinGDLeftWidth",90.0);       
@@ -264,21 +264,25 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinGD0TypeID","Rectangle");
   Control.addVariable("odinGD0Height",5.0);
   Control.addVariable("odinGD0Width",9.0);
-  Control.addVariable("odinGD0Length",220.0);
+  Control.addVariable("odinGD0Length",141.0);
   Control.addVariable("odinGD0ZAngle",0.0);
 
+ 
+  // PIT A : At 3520 pixels (13.08m) [1.08m from Bunker wall]
+  // Centre position is GuideD Length + Radius [12m] + void Depth/2 + front
   Control.addVariable("odinPitAVoidHeight",30.0);
   Control.addVariable("odinPitAVoidDepth",60.0);
-  Control.addVariable("odinPitAVoidWidth",40.0);
-  Control.addVariable("odinPitAVoidLength",50.0);
+  Control.addVariable("odinPitAVoidWidth",246.0);
+  Control.addVariable("odinPitAVoidLength",105.0);
   
   Control.addVariable("odinPitAFeHeight",50.0);
   Control.addVariable("odinPitAFeDepth",50.0);
   Control.addVariable("odinPitAFeWidth",50.0);
-  Control.addVariable("odinPitAFeFront",50.0);
+  Control.addVariable("odinPitAFeFront",35.0);
   Control.addVariable("odinPitAFeBack",50.0);
   Control.addVariable("odinPitAFeMat","Stainless304");
 
+  
   Control.addVariable("odinPitAConcHeight",50.0);
   Control.addVariable("odinPitAConcDepth",50.0);
   Control.addVariable("odinPitAConcWidth",50.0);
@@ -451,6 +455,36 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinGPitBBack0Width",9.0);
   Control.addVariable("odinGPitBBack0Length",220.0);
   Control.addVariable("odinGPitBBack0ZAngle",0.0);
+
+  // GUIDE EXITING PIT B
+  Control.addVariable("odinGFXStep",0.0);       
+  Control.addVariable("odinGFYStep",0.0);       
+  Control.addVariable("odinGFZStep",0.0);       
+  Control.addVariable("odinGFXYAngle",0.0);       
+  Control.addVariable("odinGFZAngle",0.0);       
+  Control.addVariable("odinGFLength",220.0);       
+  Control.addVariable("odinGFHeight",90.0);       
+  Control.addVariable("odinGFDepth",90.0);       
+  Control.addVariable("odinGFLeftWidth",90.0);       
+  Control.addVariable("odinGFRightWidth",90.0);       
+  Control.addVariable("odinGFFeMat","Concrete");       
+  Control.addVariable("odinGFNShapes",1);       
+  Control.addVariable("odinGFNShapeLayers",4);
+
+  Control.addVariable("odinGFLayerThick1",0.4);  // glass thick
+  Control.addVariable("odinGFLayerThick2",1.5);
+  Control.addVariable("odinGFLayerThick3",33.0);
+
+  Control.addVariable("odinGFLayerMat0","Void");
+  Control.addVariable("odinGFLayerMat1","Glass");
+  Control.addVariable("odinGFLayerMat2","Void");
+  Control.addVariable("odinGFLayerMat3","Stainless304");       
+
+  Control.addVariable("odinGF0TypeID","Rectangle");
+  Control.addVariable("odinGF0Height",5.0);
+  Control.addVariable("odinGF0Width",9.0);
+  Control.addVariable("odinGF0Length",220.0);
+  Control.addVariable("odinGF0ZAngle",0.0);
 
   
   return;

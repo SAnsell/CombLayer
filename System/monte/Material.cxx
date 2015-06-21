@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   monte/Material.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@
 #include <functional>
 #include <iterator>
 #include <numeric>
-#include <boost/bind.hpp>
+#include <memory>
 #include <boost/format.hpp>
 
 #include "Exception.h"
@@ -529,30 +529,28 @@ Material::setDensity(const double D)
   for(zcc=zaidVec.begin();zcc!=zaidVec.end();zcc++)
     FSum+=zcc->getDensity();
 
-  //    std::accumulate<double>(zaidVec.begin(),zaidVec.end(),
-  //	       0.0,boost::bind<double>(&Zaid::getDensity,_1));
-
   if (fabs(FSum)<1e-7)
     throw ColErr::NumericalAbort("Sum of zaidDensity: zero");
       
   if (D>0.0)
     {
-      for(zc=zaidVec.begin();zc!=zaidVec.end();zc++)
-	zc->setDensity(D*zc->getDensity()/FSum);
+      for(Zaid& ZC : zaidVec)
+	ZC.setDensity(D*ZC.getDensity()/FSum);
       atomDensity=D;
     }
   else if (D<0.0)
     {
       double MAW(0.0);   // Mean atomic weight
 
-      for(zcc=zaidVec.begin();zcc!=zaidVec.end();zcc++)
-	MAW+=zcc->getAtomicMass()*zcc->getDensity()/FSum;
+      for(const Zaid& ZC : zaidVec)
+	MAW+=ZC.getAtomicMass()*ZC.getDensity()/FSum;
       if (fabs(MAW)<0.5)
 	throw ColErr::NumericalAbort("MAW too low: <0.5 ");
       const double aRho= -D*RefCon::avogadro/MAW;
 
-      for(zc=zaidVec.begin();zc!=zaidVec.end();zc++)
-	zc->setDensity(aRho*zc->getDensity()/FSum);
+      for(Zaid& ZC : zaidVec)
+	ZC.setDensity(aRho*ZC.getDensity()/FSum);
+
       atomDensity=aRho;
     }
   return;
@@ -565,9 +563,9 @@ Material::calcAtomicDensity()
    */
 {
   atomDensity=0.0;
-  std::vector<Zaid>::const_iterator zc;
-  for(zc=zaidVec.begin();zc!=zaidVec.end();zc++)
-    atomDensity+=zc->getDensity();
+  for(const Zaid& ZC : zaidVec)
+    atomDensity+=ZC.getDensity();
+
   return;
 }
 
@@ -664,14 +662,10 @@ Material::changeLibrary(const int T,const char key)
     \param key :: type-key
   */
 {
-  std::vector<Zaid>::iterator zc;
-  for(zc=zaidVec.begin();zc!=zaidVec.end();zc++)
-    {
-      if (zc->getIso() && zc->getKey()==key)
-	{
-	  zc->setTag(T);
-	}
-    }
+  for(Zaid& ZC : zaidVec)
+    if (ZC.getIso() && ZC.getKey()==key)
+      ZC.setTag(T);
+
   return;
 }
 

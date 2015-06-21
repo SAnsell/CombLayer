@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   monte/Acomp.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,8 +34,6 @@
 #include <numeric>
 #include <functional>
 #include <iterator>
-#include <boost/bind.hpp> 
-#include <boost/multi_array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -1128,7 +1126,8 @@ Acomp::makeEPI(std::vector<BnId>& DNFobj,
   // Remove dead items from active list
   DNFactive.erase(
     remove_if(DNFactive.begin(),DNFactive.end(),
-	      boost::bind(std::equal_to<size_t>(),_1,ULONG_MAX)),
+	      std::bind(std::equal_to<size_t>(),
+			std::placeholders::_1,ULONG_MAX)),
     DNFactive.end());
 
 

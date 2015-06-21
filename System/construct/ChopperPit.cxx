@@ -144,15 +144,16 @@ ChopperPit::createUnitVector(const attachSystem::FixedComp& FC,
   ELog::RegMethod RegA("ChopperPit","createUnitVector");
 
   yStep=voidLength/2.0+feFront;
+  ELog::EM<<"YStep == "<<yStep<<ELog::endDiag;
+  attachSystem::FixedComp& Outer=getKey("Outer");
+  attachSystem::FixedComp& Inner=getKey("Inner");
 
-  setDefault("Outer");
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-
-  setDefault("Inner");
-  FixedComp::createUnitVector(FC,sideIndex);
+  Outer.createUnitVector(FC,sideIndex);
+  Inner.createUnitVector(FC,sideIndex);
+  ELog::EM<<"Joing point == "<<Inner.getCentre()<<ELog::endDiag;
   applyOffset();
   
+  setDefault("Inner");
   return;
 }
 

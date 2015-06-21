@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   process/ObjTrackItem.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,6 @@
 #include <string>
 #include <algorithm>
 #include <boost/format.hpp>
-#include <boost/bind.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -152,6 +151,7 @@ ObjTrackItem::write(std::ostream& OX) const
   boost::format FMT("%1$d %2$5.2e ");
 
   OX<<"Pts == "<<InitPt<<"::"<<EndPt<<std::endl;
+
   std::map<int,double>::const_iterator mc;
   for(mc=MTrack.begin();mc!=MTrack.end();mc++)
     OX<<(FMT % mc->first % mc->second);

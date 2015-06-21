@@ -225,7 +225,7 @@ FixedGroup::getKey(const std::string& Key)
     throw ColErr::InContainerError<std::string>(Key,"Key in FMap");
   return *(mc->second);
 }
-
+  
 const FixedComp&
 FixedGroup::getKey(const std::string& Key) const
 /*!

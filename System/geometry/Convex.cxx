@@ -30,7 +30,7 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
-#include <boost/bind.hpp>
+#include <functional>
 
 #include "Exception.h"
 #include "BaseVisit.h"
@@ -263,7 +263,8 @@ Convex::reduceSurfaces()
 	  const long int li(static_cast<long int>(i));
 	  const Geometry::Plane& PL=SurfList[i];
 	  vc=find_if(SurfList.begin(),SurfList.begin()+li,
-		     boost::bind(std::equal_to<Geometry::Plane>(),_1,PL));
+		     std::bind(std::equal_to<Geometry::Plane>(),
+			       std::placeholders::_1,PL));
 
 	  if (vc != SurfList.begin()+li)
 	    SurfList.erase(SurfList.begin()+li);
@@ -286,12 +287,19 @@ Convex::constructHull()
 
   for(;;)
     {
-      VTYPE::iterator vc=
-	find_if(VList.begin(),VList.end(),
-		!boost::bind(&Vertex::isDone,_1));
-      if (vc==VList.end()) return;
-      (*vc)->Done();
-      addOne(*vc);
+      Vertex* VPtr(0);
+      for(Vertex* vc : VList)
+	{
+	  if (!vc->isDone())
+	    {
+	      VPtr=vc;
+	      break;
+	    }
+	}
+
+      if (!VPtr) return;
+      VPtr->Done();
+      addOne(VPtr);
       cleanUp();
     }
   return;
@@ -381,15 +389,13 @@ Convex::addOne(Vertex* VPtr)
 {
   ELog::RegMethod RegA("Convex","addOne");
   int visFlag(0);        // Check that one face is visible
-  FTYPE::iterator fc;
 
   // Clear all cone edges
-  for_each(VList.begin(),VList.end(),
-	   boost::bind(&Vertex::setConeEdge,_1,static_cast<Edge*>(0)));
+  for(Vertex* vc : VList)
+    vc->setConeEdge(static_cast<Edge*>(0));
 
-  for(fc=FList.begin();fc!=FList.end();fc++)
+  for(Face* FPtr : FList)
     {
-      Face* FPtr = *fc;
       if (FPtr->volumeSign(*VPtr)<0)
         {
 	  FPtr->setVisible(1);
@@ -398,7 +404,7 @@ Convex::addOne(Vertex* VPtr)
       else
 	FPtr->setVisible(0);
     }
-
+  
   // No visible faces therefore point must be in the hull
   if (!visFlag)
     {
@@ -496,9 +502,9 @@ Convex::cleanVertex()
   */
 {
   ELog::RegMethod RegItem("Convex","cleanVertex");
-  // Set all 
-  for_each(EList.begin(),EList.end(),
-	   boost::bind(&Edge::setOnHull,_1));
+  // Set all
+  for(Edge* ec : EList)
+    ec->setOnHull();
 
   VTYPE::iterator vc=VList.begin();
   while(vc!=VList.end())
@@ -665,13 +671,15 @@ Convex::getNonMatch(std::vector<const Face*>& OFaces) const
       const Geometry::Vec3D& PtC=(*fc)->getVertex(2)->getV();
       AP.setPlane(PtA,PtB,PtC);
       vc=find_if(foundSet.begin(),foundSet.end(),
-		 boost::bind(&Geometry::Plane::isEqual,_1,AP));
+		 std::bind(&Geometry::Plane::isEqual,
+			   std::placeholders::_1,AP));
       if (vc!=foundSet.end())
 	fc=OFaces.erase(fc);
       else
 	{
 	  vc=find_if(SurfList.begin(),SurfList.end(),
-		     boost::bind(&Geometry::Plane::isEqual,_1,AP));
+		     std::bind(&Geometry::Plane::isEqual,
+			       std::placeholders::_1,AP));
 	  if (vc!=SurfList.end())
 	    fc=OFaces.erase(fc);
 	  else

@@ -591,8 +591,6 @@ GuideLine::createObjects(Simulation& System,
   Out+=startSurf;
   addOuterSurf(Out);      
 
-  ELog::EM<<"OuterCell "<<getKeyName()<<" "<<Out<<ELog::endDiag;
-  
   excludeCell.makeComplement();
   Out+=excludeCell.display();
   System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));

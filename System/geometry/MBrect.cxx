@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   geometry/MBrect.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,8 +32,6 @@
 #include <stack>
 #include <string>
 #include <algorithm>
-#include <boost/bind.hpp>
-#include <boost/multi_array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -46,13 +44,13 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "Surface.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Line.h"
+#include "Triple.h"
 #include "MBrect.h"
 
 namespace Geometry
@@ -367,11 +365,12 @@ MBrect::mirror(const Geometry::Plane& MP)
    */
 {
   MP.mirrorPt(Corner);
-  for(int i=0;i<3;i++)
+  for(size_t i=0;i<3;i++)
     MP.mirrorPt(LVec[i]);
 
-  for_each(Sides.begin(),Sides.end(),
-	   boost::bind(&Plane::mirror,_1,MP));
+  for(Geometry::Plane& sc : Sides)
+    sc.mirror(MP);
+
   return;
 }
 
@@ -515,10 +514,10 @@ MBrect::calcMainPlane() const
   */
 {
   // First calculate the minimiun LVector 
-  int index=0;
+  size_t index=0;
   double Dist=LVec[0].abs();
   Vec3D sumVec(LVec[0]);
-  for(int i=1;i<3;i++)
+  for(size_t i=1;i<3;i++)
     {
       sumVec+=LVec[i];
       const double A=LVec[i].abs();

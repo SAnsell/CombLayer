@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   geometry/CylCan.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,8 +32,6 @@
 #include <stack>
 #include <string>
 #include <algorithm>
-#include <boost/bind.hpp>
-#include <boost/multi_array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -284,9 +282,10 @@ CylCan::mirror(const Geometry::Plane& MP)
 {
   MP.mirrorPt(OPt);
   MP.mirrorAxis(unitD);
-  
-  for_each(Sides.begin(),Sides.end(),
-	   boost::bind(&Plane::mirror,_1,MP));
+
+  for(Geometry::Plane& sc : Sides)
+    sc.mirror(MP);
+
   return;
 }
 
