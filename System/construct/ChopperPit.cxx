@@ -67,7 +67,9 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
+#include "FixedGroup.h"
 #include "FixedOffset.h"
+#include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
 #include "CellMap.h"
 
@@ -77,7 +79,7 @@ namespace constructSystem
 {
 
 ChopperPit::ChopperPit(const std::string& Key) : 
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedOffsetGroup(Key,"Inner",6,"Mid",6,"Outer",6),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   pitIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(pitIndex+1)
@@ -102,13 +104,13 @@ ChopperPit::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("ChopperPit","populate");
   
-  FixedOffset::populate(Control);
+  FixedOffsetGroup::populate(Control);
 
   // Void + Fe special:
   voidHeight=Control.EvalVar<double>(keyName+"VoidHeight");
   voidWidth=Control.EvalVar<double>(keyName+"VoidWidth");
   voidDepth=Control.EvalVar<double>(keyName+"VoidDepth");
-  voidLength=Control.EvalVar<double>(keyName+"VoidWidth");
+  voidLength=Control.EvalVar<double>(keyName+"VoidLength");
 
 
   feHeight=Control.EvalVar<double>(keyName+"FeHeight");
@@ -118,7 +120,15 @@ ChopperPit::populate(const FuncDataBase& Control)
   feBack=Control.EvalVar<double>(keyName+"FeBack");
 
   feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
+  concMat=ModelSupport::EvalMat<int>(Control,keyName+"ConcMat");
+
   
+  concHeight=Control.EvalVar<double>(keyName+"ConcHeight");
+  concDepth=Control.EvalVar<double>(keyName+"ConcDepth");
+  concWidth=Control.EvalVar<double>(keyName+"ConcWidth");
+  concFront=Control.EvalVar<double>(keyName+"ConcFront");
+  concBack=Control.EvalVar<double>(keyName+"ConcBack");
+
   return;
 }
 
@@ -133,10 +143,14 @@ ChopperPit::createUnitVector(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("ChopperPit","createUnitVector");
 
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  // set origin central
   yStep=voidLength/2.0+feFront;
+
+  setDefault("Outer");
+  FixedComp::createUnitVector(FC,sideIndex);
+  applyOffset();
+
+  setDefault("Inner");
+  FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
   
   return;
@@ -164,13 +178,27 @@ ChopperPit::createSurfaces()
   ModelSupport::buildPlane(SMap,pitIndex+12,
 			   Origin+Y*(feBack+voidLength/2.0),Y);
   ModelSupport::buildPlane(SMap,pitIndex+13,
-			   Origin-X*((feWidth+voidWidth)/2.0),X);
+			   Origin-X*(feWidth+voidWidth/2.0),X);
   ModelSupport::buildPlane(SMap,pitIndex+14,
-			   Origin+X*((feWidth+voidWidth)/2.0),X);
+			   Origin+X*(feWidth+voidWidth/2.0),X);
   ModelSupport::buildPlane(SMap,pitIndex+15,
 			   Origin-Z*(voidDepth+feDepth),Z);
   ModelSupport::buildPlane(SMap,pitIndex+16,
 			   Origin+Z*(voidHeight+feHeight),Z);  
+
+  // Conc system
+  ModelSupport::buildPlane(SMap,pitIndex+21,
+			   Origin-Y*(feFront+concFront+voidLength/2.0),Y);
+  ModelSupport::buildPlane(SMap,pitIndex+22,
+			   Origin+Y*(feBack+concBack+voidLength/2.0),Y);
+  ModelSupport::buildPlane(SMap,pitIndex+23,
+			   Origin-X*(feWidth+concWidth+voidWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,pitIndex+24,
+			   Origin+X*(feWidth+concWidth+voidWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,pitIndex+25,
+			   Origin-Z*(voidDepth+feDepth+concDepth),Z);
+  ModelSupport::buildPlane(SMap,pitIndex+26,
+			   Origin+Z*(voidHeight+feHeight+concHeight),Z);  
 
   return;
 }
@@ -178,33 +206,45 @@ ChopperPit::createSurfaces()
 void
 ChopperPit::createObjects(Simulation& System,
 			  const attachSystem::FixedComp& FC,
-			  const long int sideIndex)
+			  const long int sideIndex,
+			  const std::string& cutRule)
   /*!
     Adds the zoom chopper box
     \param System :: Simulation to create objects in
     \param FC :: FixedComp of front face
     \param sideIndex :: Fixed link point of object [signed]
+    \param cutRule :: Exclude from the front cut 
    */
 {
   ELog::RegMethod RegA("ChopperPit","createObjects");
 
   std::string Out;
 
-  const std::string frontFace=
-    FC.getSignedLinkString(sideIndex);
-  
+  HeadRule frontFace(FC.getSignedLinkString(sideIndex));
+
   // Void 
   Out=ModelSupport::getComposite(SMap,pitIndex,"1 -2 3 -4 5 -6");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   setCell("Void",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,pitIndex,
-				 " -12 13 -14 15 -16 (-1:2:-3:4:-5:6");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out+frontFace));
+				 " -12 13 -14 15 -16 (-1:2:-3:4:-5:6)");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out+
+				   frontFace.display()));
+  setCell("MidLayer",cellIndex-1);
   
-
+  // Make full exclude:
   Out=ModelSupport::getComposite(SMap,pitIndex," -12 13 -14 15 -16 ");
-  addOuterSurf(Out+frontFace);      
+  frontFace.addIntersection(Out);
+  frontFace.makeComplement();
+  Out=ModelSupport::getComposite(SMap,pitIndex," 21 -22 23 -24 25 -26 ");
+  Out+=frontFace.display()+" "+cutRule;
+  System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
+  setCell("Outer",cellIndex-1);
+
+  // Exclude:
+  Out=ModelSupport::getComposite(SMap,pitIndex," 21 -22 23 -24 25 -26 ");
+  addOuterSurf(Out);      
 
   return;
 }
@@ -217,28 +257,81 @@ ChopperPit::createLinks()
   */
 {
   ELog::RegMethod RegA("ChopperPit","createLinks");
+
+  attachSystem::FixedComp& innerFC=FixedGroup::getKey("Inner");
+  attachSystem::FixedComp& midFC=FixedGroup::getKey("Mid");
+  attachSystem::FixedComp& outerFC=FixedGroup::getKey("Outer");
+
+  innerFC.setConnect(0,Origin-Y*(voidLength/2.0),-Y);
+  innerFC.setConnect(1,Origin+Y*(voidLength/2.0),Y);
+  innerFC.setConnect(2,Origin-X*(voidWidth/2.0),-X);
+  innerFC.setConnect(3,Origin+X*(voidWidth/2.0),X);
+  innerFC.setConnect(4,Origin-Z*voidDepth,-Z);
+  innerFC.setConnect(5,Origin+Z*voidHeight,Z);  
+
+  innerFC.setLinkSurf(0,-SMap.realSurf(pitIndex+1));
+  innerFC.setLinkSurf(1,SMap.realSurf(pitIndex+2));
+  innerFC.setLinkSurf(2,-SMap.realSurf(pitIndex+3));
+  innerFC.setLinkSurf(3,SMap.realSurf(pitIndex+4));
+  innerFC.setLinkSurf(4,-SMap.realSurf(pitIndex+5));
+  innerFC.setLinkSurf(5,SMap.realSurf(pitIndex+6));
+	  
+  // Fe system [front face is link surf]
+
+  midFC.setConnect(1,Origin+Y*(feBack+voidLength/2.0),Y);
+  midFC.setConnect(2,Origin-X*(feWidth+voidWidth/2.0),-X);
+  midFC.setConnect(3,Origin+X*(feWidth+voidWidth/2.0),X);
+  midFC.setConnect(4,Origin-Z*(voidDepth+feDepth),-Z);
+  midFC.setConnect(5,Origin+Z*(voidHeight+feHeight),Z);  
+
+  midFC.setLinkSurf(0,-SMap.realSurf(pitIndex+11));
+  midFC.setLinkSurf(1,SMap.realSurf(pitIndex+12));
+  midFC.setLinkSurf(2,-SMap.realSurf(pitIndex+13));
+  midFC.setLinkSurf(3,SMap.realSurf(pitIndex+14));
+  midFC.setLinkSurf(4,-SMap.realSurf(pitIndex+15));
+  midFC.setLinkSurf(5,SMap.realSurf(pitIndex+16));
+
+  // Conc esction
+  outerFC.setConnect(0,Origin-Y*(concFront+feFront+voidLength/2.0),Y);
+  outerFC.setConnect(1,Origin+Y*(concBack+feBack+voidLength/2.0),Y);
+  outerFC.setConnect(2,Origin-X*(concWidth+feWidth+voidWidth/2.0),-X);
+  outerFC.setConnect(3,Origin+X*(concWidth+feWidth+voidWidth/2.0),X);
+  outerFC.setConnect(4,Origin-Z*(concDepth+voidDepth+feDepth),-Z);
+  outerFC.setConnect(5,Origin+Z*(concHeight+voidHeight+feHeight),Z);  
+
+  outerFC.setLinkSurf(0,-SMap.realSurf(pitIndex+21));
+  outerFC.setLinkSurf(1,SMap.realSurf(pitIndex+22));
+  outerFC.setLinkSurf(2,-SMap.realSurf(pitIndex+23));
+  outerFC.setLinkSurf(3,SMap.realSurf(pitIndex+24));
+  outerFC.setLinkSurf(4,-SMap.realSurf(pitIndex+25));
+  outerFC.setLinkSurf(5,SMap.realSurf(pitIndex+26));
+
+  
+  
   
   return;
 }
 
 void
 ChopperPit::createAll(Simulation& System,
-		       const attachSystem::FixedComp& FC,
-		       const long int FIndex)
+		      const attachSystem::FixedComp& FC,
+		      const long int FIndex,
+		      const std::string& cutRule)
   /*!
     Generic function to create everything
     \param System :: Simulation item
     \param FC :: FixedComp
     \param FIndex :: Fixed Index
+    \param cutRule :: Cut for main exclude
   */
 {
   ELog::RegMethod RegA("ChopperPit","createAll(FC)");
-  return;
+
   populate(System.getDataBase());
   createUnitVector(FC,FIndex);
 
   createSurfaces();    
-  createObjects(System,FC,FIndex);
+  createObjects(System,FC,FIndex,cutRule);
   
   createLinks();
   insertObjects(System);   

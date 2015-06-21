@@ -499,11 +499,12 @@ GuideLine::createSurfaces(const long int mainLP)
 
   // Note we ignore the length component of the last item 
   // and use the guide closer
+
   for(size_t i=0;i<nShapes;i++)
     {
       if (i)
 	ModelSupport::buildPlane(SMap,guideIndex+10+static_cast<int>(i),
-				 shapeUnits[i]->getBegin(),Y);
+				   shapeUnits[i]->getBegin(),Y);
       shapeUnits[i]->createSurfaces(SMap,guideIndex,layerThick);
     }
     
@@ -628,10 +629,14 @@ GuideLine::createMainLinks(const attachSystem::FixedComp& mainFC,
   shieldFC.setConnect(3,Origin+X*rightWidth/2.0,X);     
   shieldFC.setConnect(4,Origin-Z*depth,-Z);     
   shieldFC.setConnect(5,Origin+Z*height,Z);     
-  
+
+  int sign(1);
   for(int i=1;i<6;i++)
-    shieldFC.setLinkSurf(static_cast<size_t>(i),
-			   SMap.realSurf(guideIndex+i+1));
+    {
+      shieldFC.setLinkSurf(static_cast<size_t>(i),
+			   sign*SMap.realSurf(guideIndex+i+1));
+      sign*=-1;
+    }
 
   return;
 }
@@ -663,10 +668,10 @@ GuideLine::createUnitLinks()
       else
 	guideFC.setLinkSurf(0,-SMap.realSurf(SN));       
 
-      if (i!=nShapes-1)
+      if (i==nShapes-1)
 	guideFC.setLinkSurf(1,SMap.realSurf(guideIndex+2));
       else
-      	guideFC.setLinkSurf(1,SMap.realSurf(SN+1));       
+	guideFC.setLinkSurf(1,SMap.realSurf(SN+1));       
 
       SN++;
     }

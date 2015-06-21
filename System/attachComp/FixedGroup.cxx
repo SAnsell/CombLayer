@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   attachComp/FixedGroup.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -97,6 +97,32 @@ FixedGroup::FixedGroup(const std::string& mainKey,
 
   registerKey(AKey,ANL);
   registerKey(BKey,BNL);
+
+  setDefault(AKey);
+}
+
+FixedGroup::FixedGroup(const std::string& mainKey,
+		       const std::string& AKey,
+		       const size_t ANL,
+		       const std::string& BKey,
+		       const size_t BNL,
+		       const std::string& CKey,
+		       const size_t CNL) :
+  FixedComp(mainKey,0)
+  /*!
+    Constructor 
+    \param mainKey :: mainKey
+    \param AKey :: Key one
+    \param ANL :: Size of Fixed group
+    \param BKey :: Key Two
+    \param BNL :: Size of Fixed group
+  */
+{
+  ELog::RegMethod RegA("FixedGroup","constructor(string,string)");
+
+  registerKey(AKey,ANL);
+  registerKey(BKey,BNL);
+  registerKey(CKey,CNL);
 
   setDefault(AKey);
 }

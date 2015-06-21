@@ -81,6 +81,12 @@ FixedOffset::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("FixedOffset","populate");
 
+  xStep=Control.EvalDefVar<double>(keyName+"XStep",0.0);
+  yStep=Control.EvalDefVar<double>(keyName+"YStep",0.0);
+  zStep=Control.EvalDefVar<double>(keyName+"ZStep",0.0);
+  xyAngle=Control.EvalDefVar<double>(keyName+"XYAngle",0.0);
+  zAngle=Control.EvalDefVar<double>(keyName+"ZAngle",0.0);
+  return;
   
 }
   

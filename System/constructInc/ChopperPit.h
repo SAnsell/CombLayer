@@ -36,7 +36,7 @@ namespace constructSystem
 */
 
 class ChopperPit :
-  public attachSystem::FixedOffset,
+  public attachSystem::FixedOffsetGroup,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap
   
@@ -58,13 +58,20 @@ class ChopperPit :
   double feFront;             ///< fe front 
   double feBack;              ///< fe front 
 
+  double concHeight;            ///< concrete height [top only]
+  double concDepth;             ///< concrete depth [low only]
+  double concWidth;             ///< concrete width [total]
+  double concFront;             ///< concrete front 
+  double concBack;              ///< concrete back 
+
   int feMat;                  //< Fe material layer
+  int concMat;                //< conc material layer
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&,const attachSystem::FixedComp&,
-		     const long int);
+		     const long int,const std::string&);
   void createLinks();
 
  public:
@@ -75,7 +82,7 @@ class ChopperPit :
   virtual ~ChopperPit();
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int,const std::string&);
 
 };
 

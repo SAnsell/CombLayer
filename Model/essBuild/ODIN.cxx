@@ -62,6 +62,7 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedGroup.h"
+#include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "SecondTrack.h"
@@ -89,7 +90,15 @@ ODIN::ODIN() :
   BInsert(new BunkerInsert("odinBInsert")),
   GuideC(new beamlineSystem::GuideLine("odinGC")),
   GuideD(new beamlineSystem::GuideLine("odinGD")),
-  PitA(new constructSystem::ChopperPit("odinPitA"))
+  PitA(new constructSystem::ChopperPit("odinPitA")),
+  GuidePitAFront(new beamlineSystem::GuideLine("odinGPitAFront")),
+  GuidePitABack(new beamlineSystem::GuideLine("odinGPitABack")),
+  GuideE(new beamlineSystem::GuideLine("odinGE")),
+
+  PitB(new constructSystem::ChopperPit("odinPitB")),
+  GuidePitBFront(new beamlineSystem::GuideLine("odinGPitBFront")),
+  GuidePitBBack(new beamlineSystem::GuideLine("odinGPitBBack"))
+
  /*!
     Constructor
  */
@@ -106,6 +115,11 @@ ODIN::ODIN() :
   OR.addObject(GuideC);
   OR.addObject(GuideD);
   OR.addObject(PitA);
+  OR.addObject(GuidePitAFront);
+  OR.addObject(GuidePitABack);
+
+  OR.addObject(GuideE);
+  
 }
 
 
@@ -147,11 +161,8 @@ ODIN::build(Simulation& System,const attachSystem::TwinComp& GItem,
   GuideB->createAll(System,T0Chopper->getKey("Main"),2,
 		    T0Chopper->getKey("Beam"),2);
 
-  ELog::EM<<"Guide exit point == "<<
-    GuideB->getKey("Guide0").getSignedLinkPt(2)<<ELog::endDiag;
   BInsert->setInsertCell(bunkerObj.getCells("MainWall8"));
   BInsert->createAll(System,GuideB->getKey("Guide0"),2,bunkerObj);
-
 
   // Guide in the bunker insert
   GuideC->addInsertCell(BInsert->getCell("Void"));
@@ -167,9 +178,37 @@ ODIN::build(Simulation& System,const attachSystem::TwinComp& GItem,
   GuideD->createAll(System,*BInsert,2,GuideC->getKey("Guide0"),2);
 
   // First chopper pit out of bunker
+  // Guide guide String
+  const attachSystem::FixedComp& GOuter=GuideD->getKey("Shield");
+  HeadRule GuideCut;
+  for(size_t i=1;i<6;i++)
+    GuideCut.addUnion(GOuter.getLinkString(i));
   PitA->addInsertCell(voidCell);
-  PitA->createAll(System,GuideD->getKey("Guide0"),2);
+  PitA->createAll(System,GuideD->getKey("Guide0"),2,GuideCut.display());
 
+  GuidePitAFront->addInsertCell(PitA->getCell("MidLayer"));
+  GuidePitAFront->addEndCut(PitA->getKey("Inner").getSignedLinkString(1));
+  GuidePitAFront->createAll(System,GuideD->getKey("Guide0"),2,
+			    GuideD->getKey("Guide0"),2);
+
+  GuideE->addInsertCell(voidCell);
+  GuideE->addInsertCell(PitA->getCell("MidLayer"));
+  GuideE->addInsertCell(PitA->getCell("Outer"));
+  GuideE->createAll(System,PitA->getKey("Mid"),2,PitA->getKey("Mid"),2);
+
+  // runs backwards from guide to chopper
+  GuidePitABack->addInsertCell(PitA->getCell("MidLayer"));
+  GuidePitABack->addEndCut(PitA->getKey("Inner").getSignedLinkString(2));
+  GuidePitABack->createAll(System,GuideE->getKey("Guide0"),-1,
+			    GuideE->getKey("Guide0"),-1);
+
+
+
+  // SECOND CHOPPER PIT:
+  
+  GuideD->addInsertCell(voidCell);
+  GuideD->createAll(System,*BInsert,2,GuideC->getKey("Guide0"),2);
+  
   return;
 }
 

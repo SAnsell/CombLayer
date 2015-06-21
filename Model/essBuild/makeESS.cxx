@@ -502,8 +502,6 @@ makeESS::build(Simulation& System,
 
   makeBeamLine(System,IParam);
 
-
-
   return;
 }
 

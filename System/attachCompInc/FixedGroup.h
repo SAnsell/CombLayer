@@ -34,7 +34,7 @@ namespace attachSystem
 
 class FixedGroup : public FixedComp
 {
- private:
+ protected:
 
   /// Fixed Storage
   typedef std::shared_ptr<attachSystem::FixedComp> CompTYPE;
@@ -49,6 +49,9 @@ class FixedGroup : public FixedComp
   
   FixedGroup(const std::string&,const std::string&,const size_t);
   FixedGroup(const std::string&,const std::string&,const size_t,
+	     const std::string&,const size_t);
+  FixedGroup(const std::string&,const std::string&,const size_t,
+	     const std::string&,const size_t,
 	     const std::string&,const size_t);
   FixedGroup(const FixedGroup&);
   FixedGroup& operator=(const FixedGroup&);
