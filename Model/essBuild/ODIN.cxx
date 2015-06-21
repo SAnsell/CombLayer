@@ -99,7 +99,12 @@ ODIN::ODIN() :
   PitB(new constructSystem::ChopperPit("odinPitB")),
   GuidePitBFront(new beamlineSystem::GuideLine("odinGPitBFront")),
   GuidePitBBack(new beamlineSystem::GuideLine("odinGPitBBack")),
-  GuideF(new beamlineSystem::GuideLine("odinGF"))
+  GuideF(new beamlineSystem::GuideLine("odinGF")),
+
+  PitC(new constructSystem::ChopperPit("odinPitC")),
+  GuidePitCFront(new beamlineSystem::GuideLine("odinGPitCFront")),
+  GuidePitCBack(new beamlineSystem::GuideLine("odinGPitCBack")),
+  GuideG(new beamlineSystem::GuideLine("odinGG"))
   
  /*!
     Constructor
@@ -188,6 +193,7 @@ ODIN::build(Simulation& System,const attachSystem::TwinComp& GItem,
   ELog::EM<<"GuideD exit poaint == "<<
     GuideD->getKey("Guide0").getSignedLinkPt(2)<<ELog::endDiag;
 
+  //
   // First chopper pit out of bunker
   // Guide guide String
   const attachSystem::FixedComp& GOuter=GuideD->getKey("Shield");
@@ -196,7 +202,7 @@ ODIN::build(Simulation& System,const attachSystem::TwinComp& GItem,
     GuideCut.addUnion(GOuter.getLinkString(i));
   PitA->addInsertCell(voidCell);
   PitA->createAll(System,GuideD->getKey("Guide0"),2,GuideCut.display());
-  ELog::EM<<"CENTER == "<<PitA->getCentre()
+  ELog::EM<<"PitA == "<<PitA->getCentre()
 	  <<" :: "<<PitA->getCentre().abs()<<ELog::endDiag;
   
   GuidePitAFront->addInsertCell(PitA->getCell("MidLayer"));
@@ -215,6 +221,8 @@ ODIN::build(Simulation& System,const attachSystem::TwinComp& GItem,
   GuidePitABack->createAll(System,GuideE->getKey("Guide0"),-1,
 			    GuideE->getKey("Guide0"),-1);
 
+  ELog::EM<<"GuideE exit poaint == "<<
+    GuideE->getKey("Guide0").getSignedLinkPt(2).abs()<<ELog::endDiag;
 
   // SECOND CHOPPER PIT:
   // First chopper pit out of bunker
@@ -226,6 +234,9 @@ ODIN::build(Simulation& System,const attachSystem::TwinComp& GItem,
   PitB->addInsertCell(voidCell);
   PitB->createAll(System,GuideE->getKey("Guide0"),2,GuideCut.display());
 
+  ELog::EM<<"PitB == "<<PitB->getCentre()
+	  <<" :: "<<PitB->getCentre().abs()<<ELog::endDiag;
+
   GuidePitBFront->addInsertCell(PitB->getCell("MidLayer"));
   GuidePitBFront->addEndCut(PitB->getKey("Inner").getSignedLinkString(1));
   GuidePitBFront->createAll(System,GuideE->getKey("Guide0"),2,
@@ -235,6 +246,41 @@ ODIN::build(Simulation& System,const attachSystem::TwinComp& GItem,
   GuideF->addInsertCell(PitB->getCell("MidLayer"));
   GuideF->addInsertCell(PitB->getCell("Outer"));
   GuideF->createAll(System,PitB->getKey("Mid"),2,PitB->getKey("Mid"),2);
+
+  // runs backwards from guide to chopper
+  GuidePitBBack->addInsertCell(PitB->getCell("MidLayer"));
+  GuidePitBBack->addEndCut(PitB->getKey("Inner").getSignedLinkString(2));
+  GuidePitBBack->createAll(System,GuideF->getKey("Guide0"),-1,
+			    GuideF->getKey("Guide0"),-1);
+
+  //
+  // THIRD CHOPPER PIT:
+  //
+  const attachSystem::FixedComp& GOuterC=GuideF->getKey("Shield");
+  GuideCut.reset();
+  for(size_t i=1;i<6;i++)
+    GuideCut.addUnion(GOuterC.getLinkString(i));
+  PitC->addInsertCell(voidCell);
+  PitC->createAll(System,GuideF->getKey("Guide0"),2,GuideCut.display());
+
+  ELog::EM<<"PitC == "<<PitC->getCentre()
+	  <<" :: "<<PitC->getCentre().abs()<<ELog::endDiag;
+
+  GuidePitCFront->addInsertCell(PitC->getCell("MidLayer"));
+  GuidePitCFront->addEndCut(PitC->getKey("Inner").getSignedLinkString(1));
+  GuidePitCFront->createAll(System,GuideF->getKey("Guide0"),2,
+			    GuideF->getKey("Guide0"),2);
+
+  GuideG->addInsertCell(voidCell);
+  GuideG->addInsertCell(PitC->getCell("MidLayer"));
+  GuideG->addInsertCell(PitC->getCell("Outer"));
+  GuideG->createAll(System,PitC->getKey("Mid"),2,PitC->getKey("Mid"),2);
+
+  // runs backwards from guide to chopper
+  GuidePitCBack->addInsertCell(PitC->getCell("MidLayer"));
+  GuidePitCBack->addEndCut(PitC->getKey("Inner").getSignedLinkString(2));
+  GuidePitCBack->createAll(System,GuideG->getKey("Guide0"),-1,
+			    GuideG->getKey("Guide0"),-1);
   
   return;
 }

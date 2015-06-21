@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   geometry/SurInter.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -572,6 +572,34 @@ nearPoint(const std::vector<Geometry::Vec3D>& Pts,
   return *mVal;
 }
 
+size_t
+closestPt(const std::vector<Geometry::Vec3D>& PtVec,
+	  const Geometry::Vec3D& AimPt)
+  /*!
+    Detemine the point that is closest 
+    \param AimPt :: Aiming point
+    \param PtVec :: Vector of points
+    \return index in array [0 in empty]
+  */
+{
+  ELog::RegMethod RegA("SurInter","closestPt");
+  
+  size_t index(0);
+  if (!PtVec.empty())
+    {
+      double D=AimPt.Distance(PtVec[index]);
+      for(size_t i=1;i<PtVec.size();i++)
+	{
+	  const double ND=AimPt.Distance(PtVec[i]);
+	  if (ND<D)
+	    {
+	      D=ND;
+	      index=i;
+	    }
+	}
+    }
+  return index;
+}
 
 
 }  // NAMESPACE SurInter

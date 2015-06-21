@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   geomInc/SurInter.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,6 +48,10 @@ namespace SurInter
 
 Geometry::Vec3D
 nearPoint(const std::vector<Geometry::Vec3D>&,
+	  const Geometry::Vec3D&);
+
+size_t
+closestPt(const std::vector<Geometry::Vec3D>&,
 	  const Geometry::Vec3D&);
 
 // Generic point intersection

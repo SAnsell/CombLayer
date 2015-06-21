@@ -639,6 +639,30 @@ GuideLine::createMainLinks(const attachSystem::FixedComp& mainFC,
   return;
 }
 
+Geometry::Vec3D
+GuideLine::calcActiveEndIntercept() 
+  /*!
+    Determine the active end point intercept
+    with the list link point
+  */
+{
+  ELog::RegMethod RegA("GuideLine","calcActiveEndIntercept");
+  // Start of track
+  const Geometry::Vec3D APt =
+    shapeUnits.back()->getBegin();
+  const Geometry::Vec3D AAxis =
+    shapeUnits.back()->getEndAxis();
+  std::vector<Geometry::Vec3D> Pts;
+  std::vector<int> SNum;
+  
+  // This should not need to be called:
+  endCut.populateSurf();
+  endCut.calcSurfIntersection(APt,AAxis,Pts,SNum);
+  const size_t indexA=SurInter::closestPt(Pts,APt);
+  return Pts[indexA];
+}
+
+  
 void
 GuideLine::createUnitLinks()
   /*!
@@ -657,10 +681,14 @@ GuideLine::createUnitLinks()
 	FixedGroup::getKey(GKey);
       
       guideFC.setConnect(0,shapeUnits[i]->getBegin(),
-			 shapeUnits[i]->getBegAxis());     
-      guideFC.setConnect(1,shapeUnits[i]->getEnd(),
-			 shapeUnits[i]->getEndAxis());     
-      
+			 shapeUnits[i]->getBegAxis());
+      if (i!=nShapes-1 || !activeEnd)
+	guideFC.setConnect(1,shapeUnits[i]->getEnd(),
+			   shapeUnits[i]->getEndAxis());     
+      else
+	guideFC.setConnect(1,calcActiveEndIntercept(),
+			   shapeUnits[i]->getEndAxis());     
+	
       if (!i)
 	guideFC.setLinkCopy(0,shieldFC,0);       
       else
