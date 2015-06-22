@@ -40,6 +40,7 @@ namespace essSystem
 {
   class Bunker;
   class BunkerInsert;
+  class Hut;
   
   /*!
     \class ODIN
@@ -97,10 +98,15 @@ class ODIN
   /// Guide from Chopper to exterior [Hutch side]
   std::shared_ptr<beamlineSystem::GuideLine> GuidePitCBack;
 
+
   /// Guide from chopper C to exterior
   std::shared_ptr<beamlineSystem::GuideLine> GuideG;
+  /// Guide in Hutch 
+  std::shared_ptr<beamlineSystem::GuideLine> GuideH;
 
 
+  /// The Hutch
+  std::shared_ptr<Hut> Cave;
   
  public:
   

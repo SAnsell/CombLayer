@@ -43,7 +43,7 @@ class Hut :
 {
  private:
   
-  const int pitIndex;           ///< Index of surface offset
+  const int hutIndex;           ///< Index of surface offset
   int cellIndex;                ///< Cell index  
 
 
@@ -52,22 +52,37 @@ class Hut :
   double voidDepth;             ///< void depth [low only]
   double voidLength;            ///< void length [total]
   double voidNoseLen;           ///< lenght of nose cone [centre]
-  double voidNoseWidth;         ///< void length [total]
+  double voidNoseWidth;         ///< length a front point
 
-  double feLeftWall;
-  double feRightWall;
-  double feRoof;
-  double feFloor;
-  double feNoseWall;
-  double feNoseSide;
+  double feLeftWall;            ///< Left wall
+  double feRightWall;           ///< Right wall
+  double feRoof;                ///< Roof
+  double feFloor;               ///< Token floor depth
+  double feNoseFront;           ///< Thickness of front of nose
+  double feNoseSide;            ///< Side thickness [not angle correct]
   double feBack;
 
-  int feMat;                  //< Fe material layer
+  double concLeftWall;            ///< Left wall
+  double concRightWall;           ///< Right wall
+  double concRoof;                ///< Roof
+  double concFloor;               ///< Token floor depth
+  double concNoseFront;           ///< Thickness of front of nose
+  double concNoseSide;            ///< Side thickness [not angle correct]
+  double concBack;
+
+  double wallYStep;               ///< Step from flat cut point
+  double wallThick;               ///< Thickness 
+  double wallXGap;                ///< Hole for beam [X size]
+  double wallZGap;                ///< Hole for beam [Z size]
+  
+  int feMat;                  ///< Fe layer material 
+  int concMat;                ///< Second layer material
+  int wallMat;                ///< Second layer material
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
-  void createObjects(Simulation&);
+  void createObjects(Simulation&,const std::string&);
   void createLinks();
 
  public:
@@ -78,7 +93,7 @@ class Hut :
   virtual ~Hut();
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int,const std::string&);
 
 };
 

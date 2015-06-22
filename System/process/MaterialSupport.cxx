@@ -75,9 +75,15 @@ EvalMat(const FuncDataBase& Control,const std::string& Key)
   const std::string A=Control.EvalVar<std::string>(Key);
   if (DB.createMaterial(A))
     return DB.getIndex(A);
-  const int out=Control.EvalVar<int>(Key);  // throws if cannot make an int
+
+  // Note: EvalVar converts any string into a integer [best guess]
+  int out;
+  if (!StrFunc::convert(A,out))
+    throw ColErr::InContainerError<std::string>(A,"Material not present");
+
   if(!DB.hasKey(out))
     throw ColErr::InContainerError<int>(out,"Material not present");
+
   return out;
 }
 
@@ -98,10 +104,15 @@ EvalMat(const FuncDataBase& Control,const std::string& Key)
     ModelSupport::DBMaterial::Instance();
   const std::string A=Control.EvalVar<std::string>(Key);
   int out = DB.hasKey(A);
-  if (out) 
+  if (out)
     return A;
+  
+  if (!StrFunc::convert(A,out))
+    throw ColErr::InContainerError<std::string>(A,"Material not present");
 
-  out=Control.EvalVar<int>(Key);  // throws if cannot make an int
+  if(!DB.hasKey(out))
+    throw ColErr::InContainerError<int>(out,"Material not present");
+
   if(!DB.hasKey(out))
     throw ColErr::InContainerError<int>(out,"Material not present");
 

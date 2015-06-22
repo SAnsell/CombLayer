@@ -24,6 +24,7 @@
 
 class Rule;
 class Simulation;
+class HeadRule;
 
 namespace attachSystem
 {
@@ -86,6 +87,12 @@ bool findPlaneIntersect(const Geometry::Plane&,
 double calcLinkDistance(const FixedComp&,
 			const long int,const long int);
 
+
+HeadRule unionLink(const FixedComp&,
+		   const std::vector<long int>&);
+HeadRule intersectionLink(const FixedComp&,
+			  const std::vector<long int>&);
+ 
 }
 
 #endif

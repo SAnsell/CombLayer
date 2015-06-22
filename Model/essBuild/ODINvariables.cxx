@@ -108,7 +108,7 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinBlade2Thick",1.0);
   Control.addVariable("odinBlade3Thick",1.0);
   Control.addVariable("odinBladeInnerMat","Inconnel");
-  Control.addVariable("odinBladeOuterMat","Aluminum");
+  Control.addVariable("odinBladeOuterMat","Aluminium");
 
   Control.addVariable("odinBlade0PhaseAngle",95.0);
   Control.addVariable("odinBlade0OpenAngle",30.0);
@@ -176,8 +176,8 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinGBXYAngle",0.0);       
   Control.addVariable("odinGBZAngle",0.0);       
   Control.addVariable("odinGBLength",220.0);       
-  Control.addVariable("odinGBHeight",100.0);       
-  Control.addVariable("odinGBDepth",100.0);       
+  Control.addVariable("odinGBHeight",50.0);       
+  Control.addVariable("odinGBDepth",50.0);       
   Control.addVariable("odinGBLeftWidth",20.0);       
   Control.addVariable("odinGBRightWidth",20.0);       
   Control.addVariable("odinGBFeMat","Void");       
@@ -579,7 +579,7 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinGGZStep",0.0);       
   Control.addVariable("odinGGXYAngle",0.0);       
   Control.addVariable("odinGGZAngle",0.0);       
-  Control.addVariable("odinGGLength",220.0);       
+  Control.addVariable("odinGGLength",1200.0);       
   Control.addVariable("odinGGHeight",90.0);       
   Control.addVariable("odinGGDepth",90.0);       
   Control.addVariable("odinGGLeftWidth",90.0);       
@@ -600,12 +600,70 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinGG0TypeID","Rectangle");
   Control.addVariable("odinGG0Height",5.0);
   Control.addVariable("odinGG0Width",9.0);
-  Control.addVariable("odinGG0Length",220.0);
+  Control.addVariable("odinGG0Length",1200.0);
   Control.addVariable("odinGG0ZAngle",0.0);
 
+  // HUT:
+  Control.addVariable("odinCaveVoidHeight",300.0);
+  Control.addVariable("odinCaveVoidDepth",183.0);
+  Control.addVariable("odinCaveVoidWidth",600.0);
+  Control.addVariable("odinCaveVoidLength",1686.0);
+  Control.addVariable("odinCaveVoidNoseWidth",293.0);
+  Control.addVariable("odinCaveVoidNoseLen",183.0);
 
+  Control.addVariable("odinCaveFeLeftWall",35.0);
+  Control.addVariable("odinCaveFeRightWall",35.0);
+  Control.addVariable("odinCaveFeRoof",60.0);
+  Control.addVariable("odinCaveFeFloor",30.0);
+  Control.addVariable("odinCaveFeNoseFront",60.0);
+  Control.addVariable("odinCaveFeNoseSide",45.0);
+  Control.addVariable("odinCaveFeBack",60.0);
 
-  
+  Control.addVariable("odinCaveConcLeftWall",35.0);
+  Control.addVariable("odinCaveConcRightWall",35.0);
+  Control.addVariable("odinCaveConcRoof",60.0);
+  Control.addVariable("odinCaveConcFloor",30.0);
+  Control.addVariable("odinCaveConcNoseFront",60.0);
+  Control.addVariable("odinCaveConcNoseSide",45.0);
+  Control.addVariable("odinCaveConcBack",60.0);
+
+  Control.addVariable("odinCaveFeMat","Stainless304");
+  Control.addVariable("odinCaveConcMat","Concrete");
+   
+  // WALL for Hut
+  Control.addVariable("odinCaveWallYStep",6.0);
+  Control.addVariable("odinCaveWallThick",30.0);
+  Control.addVariable("odinCaveWallXGap",6.0);
+  Control.addVariable("odinCaveWallZGap",6.0);
+  Control.addVariable("odinCaveWallMat","Stainless304");
+
+  // GUIDE in Hutch nose cone
+  Control.addVariable("odinGHXStep",0.0);       
+  Control.addVariable("odinGHYStep",0.0);       
+  Control.addVariable("odinGHZStep",0.0);       
+  Control.addVariable("odinGHXYAngle",0.0);       
+  Control.addVariable("odinGHZAngle",0.0);       
+  Control.addVariable("odinGHLength",150.0);       
+  Control.addVariable("odinGHHeight",9.0);       
+  Control.addVariable("odinGHDepth",9.0);       
+  Control.addVariable("odinGHLeftWidth",9.0);       
+  Control.addVariable("odinGHRightWidth",9.0);       
+  Control.addVariable("odinGHFeMat","Void");       
+  Control.addVariable("odinGHNShapes",1);       
+  Control.addVariable("odinGHNShapeLayers",3);
+
+  Control.addVariable("odinGHLayerThick1",0.4);  // glass thick
+  Control.addVariable("odinGHLayerThick2",1.5);
+
+  Control.addVariable("odinGHLayerMat0","Void");
+  Control.addVariable("odinGHLayerMat1","Glass");
+  Control.addVariable("odinGHLayerMat2","Void");
+
+  Control.addVariable("odinGH0TypeID","Rectangle");
+  Control.addVariable("odinGH0Height",5.0);
+  Control.addVariable("odinGH0Width",9.0);
+  Control.addVariable("odinGH0Length",150.0);
+  Control.addVariable("odinGH0ZAngle",0.0);
 
   
   return;

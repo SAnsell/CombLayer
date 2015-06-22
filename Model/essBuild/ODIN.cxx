@@ -77,6 +77,7 @@
 #include "Bunker.h"
 #include "BunkerInsert.h"
 #include "ChopperPit.h"
+#include "Hut.h"
 #include "ODIN.h"
 
 namespace essSystem
@@ -104,7 +105,10 @@ ODIN::ODIN() :
   PitC(new constructSystem::ChopperPit("odinPitC")),
   GuidePitCFront(new beamlineSystem::GuideLine("odinGPitCFront")),
   GuidePitCBack(new beamlineSystem::GuideLine("odinGPitCBack")),
-  GuideG(new beamlineSystem::GuideLine("odinGG"))
+  GuideG(new beamlineSystem::GuideLine("odinGG")),
+
+  Cave(new essSystem::Hut("odinCave")),
+  GuideH(new beamlineSystem::GuideLine("odinGH"))
   
  /*!
     Constructor
@@ -125,14 +129,20 @@ ODIN::ODIN() :
   OR.addObject(PitA);
   OR.addObject(GuidePitAFront);
   OR.addObject(GuidePitABack);
-
   OR.addObject(GuideE);
 
   OR.addObject(PitB);
   OR.addObject(GuidePitBFront);
   OR.addObject(GuidePitBBack);
-
   OR.addObject(GuideF);
+
+  OR.addObject(PitC);
+  OR.addObject(GuidePitCFront);
+  OR.addObject(GuidePitCBack);
+  OR.addObject(GuideG);
+
+  OR.addObject(Cave);
+  OR.addObject(GuideH);
   
 }
 
@@ -184,7 +194,7 @@ ODIN::build(Simulation& System,const attachSystem::TwinComp& GItem,
   GuideC->createAll(System,*BInsert,-1,*BInsert,-1);
 
   // Guide leaving the bunker
-  ELog::EM<<"GuideC exit poaint == "<<
+  ELog::EM<<"GuideC exit point == "<<
     GuideC->getKey("Guide0").getSignedLinkPt(2)<<ELog::endDiag;
 
 
@@ -281,7 +291,18 @@ ODIN::build(Simulation& System,const attachSystem::TwinComp& GItem,
   GuidePitCBack->addEndCut(PitC->getKey("Inner").getSignedLinkString(2));
   GuidePitCBack->createAll(System,GuideG->getKey("Guide0"),-1,
 			    GuideG->getKey("Guide0"),-1);
-  
+
+
+  GuideCut=attachSystem::unionLink(GuideG->getKey("Shield"),{2,3,4,5});
+  Cave->addInsertCell(voidCell);  
+  Cave->createAll(System,GuideG->getKey("Guide0"),2,GuideCut.display());
+
+  // runs through wall and into void 
+  GuideH->addInsertCell(Cave->getCell("VoidNose"));
+  GuideH->addInsertCell(Cave->getCell("FeNose"));
+  GuideH->createAll(System,GuideG->getKey("Guide0"),2,
+		    GuideG->getKey("Guide0"),2);
+
   return;
 }
 
