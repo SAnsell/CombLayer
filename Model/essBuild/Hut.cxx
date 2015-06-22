@@ -270,6 +270,10 @@ Hut::createSurfaces()
 			   Origin+Y*(wallYStep-voidLength/2.0),Y);  
   ModelSupport::buildPlane(SMap,hutIndex+1002,
 			   Origin+Y*(wallYStep+wallThick-voidLength/2.0),Y);  
+  ModelSupport::buildPlane(SMap,hutIndex+1003,Origin-X*(wallXGap/2.0),X);
+  ModelSupport::buildPlane(SMap,hutIndex+1004,Origin+X*(wallXGap/2.0),X);
+  ModelSupport::buildPlane(SMap,hutIndex+1005,Origin-Z*(wallZGap/2.0),Z);
+  ModelSupport::buildPlane(SMap,hutIndex+1006,Origin+Z*(wallZGap/2.0),Z);
   return;
 }
 
@@ -283,18 +287,55 @@ Hut::createObjects(Simulation& System,const std::string& cutRule)
 {
   ELog::RegMethod RegA("Hut","createObjects");
 
+  const int frontWallCut((wallYStep<0) ? 1 : 0);
+  const int backWallCut((wallYStep+wallThick>0) ? 1 : 0);
   std::string Out;
 
   // Void [main]
-  Out=ModelSupport::getComposite(SMap,hutIndex,"1 -2 3 -4 5 -6");
+  if (backWallCut)
+    Out=ModelSupport::getComposite(SMap,hutIndex,"1002 -2 3 -4 5 -6");
+  else
+    Out=ModelSupport::getComposite(SMap,hutIndex,"1 -2 3 -4 5 -6");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   setCell("VoidMain",cellIndex-1);
 
   // Void [front]
-  Out=ModelSupport::getComposite(SMap,hutIndex,"11 -1 13 -14 5 -6");
+  if (frontWallCut)
+    Out=ModelSupport::getComposite(SMap,hutIndex,"11 -1001 13 -14 5 -6");
+  else
+    Out=ModelSupport::getComposite(SMap,hutIndex,"11 -1 13 -14 5 -6");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   setCell("VoidNose",cellIndex-1);
+  // EXTRA If required:
 
+  if (!frontWallCut && backWallCut) // completely within nose cone
+    {
+      Out=ModelSupport::getComposite(SMap,hutIndex,"1 -1001 3 -4 5 -6");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+    }
+  else if (frontWallCut && !backWallCut) // completely within nose cone
+    {
+      Out=ModelSupport::getComposite(SMap,hutIndex,"1002 -1 13 -14 5 -6");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+    }
+  
+  // Make Wall
+  Out=ModelSupport::getComposite
+    (SMap,hutIndex,"1001 -1002 5 -6 (-1003:1004:-1005:1006)");
+  if (frontWallCut<0)
+    Out+=ModelSupport::getComposite(SMap,hutIndex," 13 -14 ");
+  if (backWallCut>0)
+    Out+=ModelSupport::getComposite(SMap,hutIndex," 3 -4 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  setCell("InnerWall",cellIndex-1);
+
+  Out=ModelSupport::getComposite
+    (SMap,hutIndex,"1001 -1002 1003 -1004 1005 -1006");
+
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  setCell("InnerWall",cellIndex-1);
+
+  
   // Fe [main]
   Out=ModelSupport::getComposite(SMap,hutIndex,
 				 "1 -102 103 -104 105 -106 "
