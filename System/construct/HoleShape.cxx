@@ -49,6 +49,7 @@
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
+#include "objectRegister.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
@@ -61,16 +62,16 @@
 #include "Qhull.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
+#include "generateSurf.h"
 #include "LinkUnit.h"
-#include "TwinComp.h"
+#include "FixedComp.h"
 #include "ContainedComp.h"
 #include "HoleShape.h"
 
 namespace constructSystem
 {
 
-HoleShape::HoleShape(const std::string& Key,
-		     const int HIndex) :
+HoleShape::HoleShape(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::FixedComp(Key,2),
   holeIndex(ModelSupport::objectRegister::Instance().cell(Key)),
@@ -78,9 +79,7 @@ HoleShape::HoleShape(const std::string& Key,
   angleOffset(0),radialOffset(0.0),radius(0.0)
   /*!
     Default constructor
-    \param SR :: Register to use
     \param Key :: Key name for variables
-    \param HIndex :: Index offset 
   */
 {}
 
@@ -100,7 +99,7 @@ HoleShape::setShape(const size_t ST)
   ELog::RegMethod RegA("HoleShape","setShape");
       
   if (ST>4)
-    throw ColErr::IndexError<int>(ST,4,"Shape not definde : ST"); 
+    throw ColErr::IndexError<size_t>(ST,4,"Shape not definde : ST"); 
 
   shapeType=ST;
   return;
@@ -139,20 +138,6 @@ HoleShape::createUnitVector(const attachSystem::FixedComp& FC,
   FixedComp::createUnitVector(FC,sideIndex);
   FixedComp::applyShift(0,0,radialOffset);
   FixedComp::applyAngleRotate(rotAngle,0.0);
-  
-  
-
-  apply
-  Origin=FC.getExit();
-  // Now rotate:
-  const Geometry::Quaternion QAxisR=
-    Geometry::Quaternion::calcQRotDeg(rotAngle+AngleOffset,Y);
- 
-  QAxisR.rotate(X);
-  QAxisR.rotate(Z);
-
-  Centre=Origin+X*radialOffset;
-  setExit(Origin+X*radialOffset+Y*depth,Y);
   return;
 }
 
@@ -164,14 +149,9 @@ HoleShape::createCircleSurfaces()
     later will have a cone cut.
   */
 {
-  ELog::RegMethod RegA("HoleShape","createCircleSurfaces");
-  ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
-  
-  // inner cyclinder:
-  Geometry::Cylinder* CX;
-  CX=SurI.createUniqSurf<Geometry::Cylinder>(holeIndex+31);  
-  CX->setCylinder(Centre,Y,radius);
-  HMap.registerSurf(holeIndex+31,CX);
+  ELog::RegMethod RegA("HoleShape","createCircleSurfaces");  
+
+  ModelSupport::buildCylinder(SMap,holeIndex+31,Origin,Y,radius);
   return;
 }
 
@@ -183,8 +163,10 @@ HoleShape::setFaces(const int F,const int B)
     \param B :: Back face
   */
 {
-  frontFace=F;
-  backFace=B;
+  frontFace.reset();
+  backFace.reset();
+  frontFace.addIntersection(F);
+  backFace.addIntersection(B);
   return;
 }
 
@@ -198,12 +180,11 @@ HoleShape::createCircleObj()
   */
 {
   ELog::RegMethod RegA("HoleShape","createCircleObj");
-  std::ostringstream cx;
-  cx<<ModelSupport::getComposite(HMap,holeIndex,"-31");
-  addOuterSurf(cx.str());
-  cx<<" "<<frontFace<<" "<<-backFace;   
-  
-  return cx.str();
+
+  const std::string Out=
+    ModelSupport::getComposite(SMap,holeIndex," -31 ");
+  addOuterSurf(Out);
+  return Out+frontFace.display()+backFace.display();
 }
 
 void
@@ -215,25 +196,12 @@ HoleShape::createSquareSurfaces()
   */
 {
   ELog::RegMethod RegA("HoleShape","createSquareSurfaces");
-  ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
-  
+
   // inner square
-  Geometry::Plane* PX;
-  PX=SurI.createUniqSurf<Geometry::Plane>(holeIndex+33);  
-  PX->setPlane(Centre-X*radius,X);
-  HMap.registerSurf(holeIndex+33,PX);
-
-  PX=SurI.createUniqSurf<Geometry::Plane>(holeIndex+34);  
-  PX->setPlane(Centre+X*radius,X);
-  HMap.registerSurf(holeIndex+34,PX);
-
-  PX=SurI.createUniqSurf<Geometry::Plane>(holeIndex+35);  
-  PX->setPlane(Centre-Z*radius,Z);
-  HMap.registerSurf(holeIndex+35,PX);
-
-  PX=SurI.createUniqSurf<Geometry::Plane>(holeIndex+36);  
-  PX->setPlane(Centre+Z*radius,Z);
-  HMap.registerSurf(holeIndex+36,PX);
+  ModelSupport::buildPlane(SMap,holeIndex+33,Origin-X*radius,X);
+  ModelSupport::buildPlane(SMap,holeIndex+34,Origin+X*radius,X);
+  ModelSupport::buildPlane(SMap,holeIndex+35,Origin-Z*radius,Z);
+  ModelSupport::buildPlane(SMap,holeIndex+36,Origin+Z*radius,Z);
   return;
 }
 
@@ -246,12 +214,11 @@ HoleShape::createSquareObj()
 {
   ELog::RegMethod RegA("HoleShape","createSquareObj");
   
-  std::ostringstream cx;
-  cx<<ModelSupport::getComposite(HMap,holeIndex," 33 -34 35 -36");
-  addOuterSurf(cx.str());
-  cx<<" "<<frontFace<<" "<<-backFace;   
+  const std::string Out=
+    ModelSupport::getComposite(SMap,holeIndex," 33 -34 35 -36");
 
-  return cx.str();
+  addOuterSurf(Out);
+  return Out+frontFace.display()+backFace.display();  
 }
 
 void
@@ -263,17 +230,13 @@ HoleShape::createHexagonSurfaces()
   */
 {
   ELog::RegMethod RegA("HoleShape","createHexagonSurfaces");
-  ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
-  
-  // inner hexagon
-  Geometry::Plane* PX;
-  double theta=0.0;
+
+  double theta(0.0);
   for(int i=0;i<6;i++)
     {
-      PX=SurI.createUniqSurf<Geometry::Plane>(holeIndex+31+i);  
-      const Geometry::Vec3D Norm=X*sin(theta)+Z*cos(theta);
-      PX->setPlane(Centre+Norm*radius,Norm);
-      HMap.registerSurf(holeIndex+31+i,PX);
+      const Geometry::Vec3D Norm=X*sin(theta)+Z*cos(theta);      
+      ModelSupport::buildPlane(SMap,holeIndex+31+i,
+			       Origin+Norm*radius,Norm);      
       theta+=2.0*M_PI/6.0;
     }
   return;
@@ -288,12 +251,10 @@ HoleShape::createHexagonObj()
 {
   ELog::RegMethod RegA("HoleShape","createHexagonObj");
   
-  std::ostringstream cx;
-  cx<<ModelSupport::getComposite(HMap,holeIndex," -31 -32 -33 -34 -35 -36");
-  addOuterSurf(cx.str());
-  cx<<" "<<frontFace<<" "<<-backFace;   
-    
-  return cx.str();
+  const std::string Out=
+    ModelSupport::getComposite(SMap,holeIndex," -31 -32 -33 -34 -35 -36");
+  addOuterSurf(Out);
+  return Out+frontFace.display()+backFace.display();  
 }
 
 void
@@ -305,17 +266,13 @@ HoleShape::createOctagonSurfaces()
   */
 {
   ELog::RegMethod RegA("HoleShape","createOctagonSurfaces");
-  ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
-  
+
   // inner Octagon
-  Geometry::Plane* PX;
-  double theta=0.0;
+  double theta(0.0);
   for(int i=0;i<8;i++)
     {
-      PX=SurI.createUniqSurf<Geometry::Plane>(holeIndex+31+i);  
       const Geometry::Vec3D Norm=X*sin(theta)+Z*cos(theta);
-      PX->setPlane(Centre+Norm*radius,Norm);
-      HMap.registerSurf(holeIndex+31+i,PX);
+      ModelSupport::buildPlane(SMap,holeIndex+31+i,Origin+Norm*radius,Norm);
       theta+=2.0*M_PI/8.0;
     }
   return;
@@ -330,12 +287,11 @@ HoleShape::createOctagonObj()
 {
   ELog::RegMethod RegA("HoleShape","createOctagonObj");
 
-  std::ostringstream cx;
-  cx<<ModelSupport::getComposite(HMap,holeIndex,
+  const std::string Out=
+    ModelSupport::getComposite(SMap,holeIndex,
 				 " -31 -32 -33 -34 -35 -36 -37 -38");
-  addOuterSurf(cx.str());
-  cx<<" "<<frontFace<<" "<<-backFace;   
-  return cx.str();
+  addOuterSurf(Out);
+  return Out+frontFace.display()+backFace.display();  
 }
 
 void
@@ -361,9 +317,7 @@ HoleShape::createSurfaces()
       break;
     case 4:   // Octagon
       createOctagonSurfaces();
-      break;
-    default:
-      ELog::EM<<"Unwritten bit"<<ELog::endErr;
+      // No way to get here at Shape is controlled
     }
 
   return;
@@ -382,59 +336,32 @@ HoleShape::createObjects()
     {
     case 0:  // No shape
       return " ";
-      break;
     case 1:  // circle
       return createCircleObj();
-      break;
     case 2:  // square
       return createSquareObj();
-      break;
     case 3:  // hexagon
       return createHexagonObj();
-      break;
     case 4:  // octagon
       return createOctagonObj();
-      break;
-    default:
-      ELog::EM<<"Unwritten object component"<<ELog::endErr;
     }
   return " ";
 }
 
-int
-HoleShape::exitWindow(const double Dist,
-		    std::vector<int>& window,
-		    Geometry::Vec3D& Pt) const
-  /*!
-    Outputs a window
-    \param Dist :: Dist from exit point
-    \param window :: window vector of paired planes
-    \param Pt :: Output point for tally
-    \return Master Plane
-  */
-{
-  window.clear();
-  window.push_back(HMap.realSurf(holeIndex+3));
-  window.push_back(HMap.realSurf(holeIndex+4));
-  window.push_back(HMap.realSurf(holeIndex+5));
-  window.push_back(HMap.realSurf(holeIndex+6));
-  Pt=Origin+Y*(depth+Dist);  
-  return HMap.realSurf(holeIndex+2);
-}
-  
-
+ 
 void
-HoleShape::createAll(const double rotAngle,
-		    const attachSystem::FixedComp& FC)
+HoleShape::createAll(const FuncDataBase& Control,
+		     const attachSystem::FixedComp& FC,
+		     const long int sideIndex)
   /*!
     Generic function to create everything
-    \param rotAngle :: Angle offset
     \param FC :: Fixed component to set axis etc
   */
 {
   ELog::RegMethod RegA("HoleShape","createAll");
 
-  createUnitVector(rotAngle,FC);
+  populate(Control);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   
   return;

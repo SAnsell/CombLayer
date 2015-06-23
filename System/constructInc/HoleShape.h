@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   chipInc/HoleShape.h
+ * File:   constructInc/HoleShape.h
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -19,19 +19,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef hutchSystem_HoleShape_h
-#define hutchSystem_HoleShape_h
+#ifndef constructSystem_HoleShape_h
+#define constructSystem_HoleShape_h
 
 class Simulation;
 
-namespace hutchSystem
+namespace constructSystem
 {
   /*!
     \class HoleShape
     \version 1.0
     \author S. Ansell
     \date June 2015
-    Creates a hole
+    \brief Variable detemine hole type
   */
   
 class HoleShape : public attachSystem::ContainedComp,
@@ -40,8 +40,9 @@ class HoleShape : public attachSystem::ContainedComp,
  private:
 
   const int holeIndex;          ///< Hole index
+  int cellIndex;                ///< Cell index
   
-  int shapeType;                ///< Shape index
+  size_t shapeType;                ///< Shape index
 
   double angleOffset;           ///< Rotation around centre point
   double radialOffset;          ///< Centre radial position
@@ -68,15 +69,14 @@ class HoleShape : public attachSystem::ContainedComp,
   std::string createOctagonObj();
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const double,const attachSystem::FixedComp&,
+  void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
   void createSurfaces();
-  void createObjects(Simulation&);
+
   
  public:
   
-  HoleShape(ModelSupport::surfRegister&,const std::string&,
-	   const int);
+  HoleShape(const std::string&);
   HoleShape(const HoleShape&);
   HoleShape& operator=(const HoleShape&);
   virtual ~HoleShape() {}
@@ -84,10 +84,9 @@ class HoleShape : public attachSystem::ContainedComp,
   std::string createObjects();
   
   void setFaces(const int,const int);
-  void setFaces(const int,const int);
   
-  void createAll(Simulation& System,
-		 xconst attachSystem::FixedComp&,
+  void createAll(const FuncDataBase&,
+		 const attachSystem::FixedComp&,
 		 const long int);
   
 };
