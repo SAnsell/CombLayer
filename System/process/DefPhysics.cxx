@@ -193,6 +193,12 @@ setDefRotation(const mainSystem::inputParam& IParam)
 			 Geometry::Vec3D(0,0,0),
 			 45.00-180.0);
 	}
+      else if (AItem=="ODIN" || AItem=="odin")
+	{
+	  MR.addRotation(Geometry::Vec3D(0,0,1),
+			 Geometry::Vec3D(0,0,0),
+			 27.5);
+	}
       else 
 	retFlag=AItem;
     }

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   support/mathSupport.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,7 +46,7 @@ lowBitIndex(const size_t& x)
   or if x is zero, returns zero.
 */
 {
-  return static_cast<size_t>(__builtin_ffsl(x));
+  return static_cast<size_t>(__builtin_ffsl(static_cast<long>(x)));
 }
 
 size_t
@@ -59,7 +59,7 @@ lowBitIndex(const unsigned int& x)
   or if x is zero, returns zero.
 */
 {
-  return static_cast<size_t>(__builtin_ffs(x));
+  return static_cast<size_t>(__builtin_ffs(static_cast<int>(x)));
 }
 
 size_t
@@ -536,13 +536,14 @@ mathFunc::binSearch(const typename std::vector<T>::const_iterator& pVecB,
 		    const T& V)
 /*!
   Determine a binary search of a component
-  Returns 0 if below intdex and 
+  Returns 0 if below index and 
   \param pVecB :: start point in vector list
   \param pVecE :: end point in vector list
   \param V :: Item to search for
   \return position index
 */
 {
+  if (pVecB==pVecE) return 0;
   if (*pVecB>=V)
     return 0;
   if (*(pVecE-1)<=V)

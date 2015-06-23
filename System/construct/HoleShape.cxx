@@ -1,8 +1,8 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   chip/HoleUnit.cxx
-*
+ * File:   construct/HoleShape.cxx
+ *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
@@ -45,23 +45,13 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "Tally.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
-#include "surfEqual.h"
-#include "surfDivide.h"
-#include "surfDIter.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
-#include "Line.h"
 #include "Rules.h"
 #include "varList.h"
 #include "Code.h"
@@ -71,24 +61,21 @@
 #include "Qhull.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
-#include "chipDataStore.h"
 #include "LinkUnit.h"
-#include "FixedComp.h"
-#include "SecondTrack.h"
 #include "TwinComp.h"
 #include "ContainedComp.h"
-#include "HoleUnit.h"
+#include "HoleShape.h"
 
-namespace hutchSystem
+namespace constructSystem
 {
 
-HoleUnit::HoleUnit(ModelSupport::surfRegister& SR,
-		   const std::string& Key,
-		   const int HIndex) :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,2),
-  HMap(SR),holeIndex(HIndex),shapeType(0),
-  AngleOffset(0),radialOffset(0.0),radius(0.0),
-  depth(0.0),frontFace(0),backFace(0)
+HoleShape::HoleShape(const std::string& Key,
+		     const int HIndex) :
+  attachSystem::ContainedComp(),
+  attachSystem::FixedComp(Key,2),
+  holeIndex(ModelSupport::objectRegister::Instance().cell(Key)),
+  cellIndex(holeIndex+1),shapeType(0),
+  angleOffset(0),radialOffset(0.0),radius(0.0)
   /*!
     Default constructor
     \param SR :: Register to use
@@ -97,60 +84,8 @@ HoleUnit::HoleUnit(ModelSupport::surfRegister& SR,
   */
 {}
 
-HoleUnit::HoleUnit(const HoleUnit& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  HMap(A.HMap),holeIndex(A.holeIndex),shapeType(A.shapeType),
-  AngleOffset(A.AngleOffset),radialOffset(A.radialOffset),
-  radius(A.radius),depth(A.depth),frontFace(A.frontFace),
-  backFace(A.backFace),Centre(A.Centre)
-  /*!
-    Copy constructor
-    \param A :: HoleUnit to copy
-  */
-{}
-
-HoleUnit&
-HoleUnit::operator=(const HoleUnit& A)
-  /*!
-    Assignment operator
-    \param A :: HoleUnit to copy
-    \return *this
-  */
-{
-  if (this!=&A)
-    {
-      attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
-      shapeType=A.shapeType;
-      AngleOffset=A.AngleOffset;
-      radialOffset=A.radialOffset;
-      radius=A.radius;
-      depth=A.depth;
-      frontFace=A.frontFace;
-      backFace=A.backFace;
-      Centre=A.Centre;
-    }
-  return *this;
-}
-
 void
-HoleUnit::populate(const FuncDataBase& Control)
-  /*!
-    Sets the size of the object
-    \param Control :: Variable data base
-  */
-{
-  ELog::RegMethod RegA("HoleUnit","populate");
-
-  setShape(Control.EvalVar<int>(keyName+"Shape"));
-  AngleOffset=Control.EvalVar<double>(keyName+"Angle");
-  radialOffset=Control.EvalVar<double>(keyName+"ROffset");
-  radius=Control.EvalVar<double>(keyName+"Radius");
-  return;
-}
-
-void
-HoleUnit::setShape(const int ST)
+HoleShape::setShape(const size_t ST)
   /*!
     Set the output shape:
     Options are :
@@ -162,35 +97,52 @@ HoleUnit::setShape(const int ST)
     \param ST :: Shape type
   */
 {
-  ELog::RegMethod RegA("HoleUnit","setShape");
+  ELog::RegMethod RegA("HoleShape","setShape");
       
-  if (ST<0 || ST>4)
-    {
-      ELog::EM<<"HoleUnit only has 5 shapes types"<<ELog::endCrit;
-      throw ColErr::IndexError<int>(ST,4,RegA.getBase()); 
-    }
-  shapeType=ST;
+  if (ST>4)
+    throw ColErr::IndexError<int>(ST,4,"Shape not definde : ST"); 
 
+  shapeType=ST;
   return;
 }
 
+void
+HoleShape::populate(const FuncDataBase& Control)
+  /*!
+    Sets the size of the object
+    \param Control :: Variable data base
+  */
+{
+  ELog::RegMethod RegA("HoleShape","populate");
+  
+  setShape(Control.EvalVar<size_t>(keyName+"Shape"));
+  
+  angleOffset=Control.EvalVar<double>(keyName+"Angle");
+  radialOffset=Control.EvalVar<double>(keyName+"ROffset");
+  radius=Control.EvalVar<double>(keyName+"Radius");
+  return;
+}
 
 void
-HoleUnit::createUnitVector(const double rotAngle,
-			   const attachSystem::FixedComp& FC)
+HoleShape::createUnitVector(const attachSystem::FixedComp& FC,
+			    const long int sideIndex)
   /*!
     Create the unit vectors:
     LC gives the origin for the wheel
     \param rotAngle :: Rotation angle
-    \param FC :: Fixed Component hole is within
+    \param FC :: Rotational origin 
+    \param sideIndex :: Side index
   */
 {
-  ELog::RegMethod RegA("HoleUnit","createUnitVector(FixedComp)");
+  ELog::RegMethod RegA("HoleShape","createUnitVector");
 
-  //  const masterRotate& MR=masterRotate::Instance();
-  //  chipIRDatum::chipDataStore& CS=chipIRDatum::chipDataStore::Instance();
+  FixedComp::createUnitVector(FC,sideIndex);
+  FixedComp::applyShift(0,0,radialOffset);
+  FixedComp::applyAngleRotate(rotAngle,0.0);
+  
+  
 
-  FixedComp::createUnitVector(FC);
+  apply
   Origin=FC.getExit();
   // Now rotate:
   const Geometry::Quaternion QAxisR=
@@ -205,14 +157,14 @@ HoleUnit::createUnitVector(const double rotAngle,
 }
 
 void
-HoleUnit::createCircleSurfaces()
+HoleShape::createCircleSurfaces()
   /*!
     Construct inner shape with a circle.
     Initially a straight cyclinder cut along the axis
     later will have a cone cut.
   */
 {
-  ELog::RegMethod RegA("HoleUnit","createCircleSurfaces");
+  ELog::RegMethod RegA("HoleShape","createCircleSurfaces");
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
   
   // inner cyclinder:
@@ -224,7 +176,7 @@ HoleUnit::createCircleSurfaces()
 }
 
 void
-HoleUnit::setFaces(const int F,const int B)
+HoleShape::setFaces(const int F,const int B)
   /*!
     Set face objects
     \param F :: Front face
@@ -237,7 +189,7 @@ HoleUnit::setFaces(const int F,const int B)
 }
 
 std::string
-HoleUnit::createCircleObj() 
+HoleShape::createCircleObj() 
   /*!
     Create the void and liner objects.
     Note that the returned object will be passed via
@@ -245,7 +197,7 @@ HoleUnit::createCircleObj()
     \return the exclusion surface object / set
   */
 {
-  ELog::RegMethod RegA("HoleUnit","createCircleObj");
+  ELog::RegMethod RegA("HoleShape","createCircleObj");
   std::ostringstream cx;
   cx<<ModelSupport::getComposite(HMap,holeIndex,"-31");
   addOuterSurf(cx.str());
@@ -255,14 +207,14 @@ HoleUnit::createCircleObj()
 }
 
 void
-HoleUnit::createSquareSurfaces()
+HoleShape::createSquareSurfaces()
   /*!
     Construct inner shape with a square.
     Initially a straight cyclinder cut along the axis
     later will have a cone cut.
   */
 {
-  ELog::RegMethod RegA("HoleUnit","createSquareSurfaces");
+  ELog::RegMethod RegA("HoleShape","createSquareSurfaces");
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
   
   // inner square
@@ -286,13 +238,13 @@ HoleUnit::createSquareSurfaces()
 }
 
 std::string
-HoleUnit::createSquareObj() 
+HoleShape::createSquareObj() 
   /*!
     Create the square cutout
     \return the exclusion surface object / set
   */
 {
-  ELog::RegMethod RegA("HoleUnit","createSquareObj");
+  ELog::RegMethod RegA("HoleShape","createSquareObj");
   
   std::ostringstream cx;
   cx<<ModelSupport::getComposite(HMap,holeIndex," 33 -34 35 -36");
@@ -303,14 +255,14 @@ HoleUnit::createSquareObj()
 }
 
 void
-HoleUnit::createHexagonSurfaces()
+HoleShape::createHexagonSurfaces()
   /*!
     Construct inner shape with a hexagon.
     Initially a straight Hexagon cut along the axis
     later will have a cone cut.
   */
 {
-  ELog::RegMethod RegA("HoleUnit","createHexagonSurfaces");
+  ELog::RegMethod RegA("HoleShape","createHexagonSurfaces");
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
   
   // inner hexagon
@@ -328,13 +280,13 @@ HoleUnit::createHexagonSurfaces()
 }
 
 std::string
-HoleUnit::createHexagonObj() 
+HoleShape::createHexagonObj() 
   /*!
     Create the hexagon cutout
     \return the  surface object / set
   */
 {
-  ELog::RegMethod RegA("HoleUnit","createHexagonObj");
+  ELog::RegMethod RegA("HoleShape","createHexagonObj");
   
   std::ostringstream cx;
   cx<<ModelSupport::getComposite(HMap,holeIndex," -31 -32 -33 -34 -35 -36");
@@ -345,14 +297,14 @@ HoleUnit::createHexagonObj()
 }
 
 void
-HoleUnit::createOctagonSurfaces()
+HoleShape::createOctagonSurfaces()
   /*!
     Construct inner shape with a octagon.
     Initially a straight Octagon cut along the axis
     later will have a cone cut.
   */
 {
-  ELog::RegMethod RegA("HoleUnit","createOctagonSurfaces");
+  ELog::RegMethod RegA("HoleShape","createOctagonSurfaces");
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
   
   // inner Octagon
@@ -370,13 +322,13 @@ HoleUnit::createOctagonSurfaces()
 }
 
 std::string
-HoleUnit::createOctagonObj() 
+HoleShape::createOctagonObj() 
   /*!
     Create the octagon cutout
     \return the exclusion surface object / set
   */
 {
-  ELog::RegMethod RegA("HoleUnit","createOctagonObj");
+  ELog::RegMethod RegA("HoleShape","createOctagonObj");
 
   std::ostringstream cx;
   cx<<ModelSupport::getComposite(HMap,holeIndex,
@@ -387,12 +339,12 @@ HoleUnit::createOctagonObj()
 }
 
 void
-HoleUnit::createSurfaces()
+HoleShape::createSurfaces()
   /*!
     Create All the surfaces
    */
 {
-  ELog::RegMethod RegA("HoleUnit","createSurface");
+  ELog::RegMethod RegA("HoleShape","createSurface");
   
   switch (shapeType)
     {
@@ -418,13 +370,13 @@ HoleUnit::createSurfaces()
 }
 
 std::string 
-HoleUnit::createObjects() 
+HoleShape::createObjects() 
   /*!
     Adds the Chip guide components
     \return String of the created object
   */
 {
-  ELog::RegMethod RegA("HoleUnit","createObjects");
+  ELog::RegMethod RegA("HoleShape","createObjects");
 
   switch (shapeType)
     {
@@ -450,7 +402,7 @@ HoleUnit::createObjects()
 }
 
 int
-HoleUnit::exitWindow(const double Dist,
+HoleShape::exitWindow(const double Dist,
 		    std::vector<int>& window,
 		    Geometry::Vec3D& Pt) const
   /*!
@@ -472,7 +424,7 @@ HoleUnit::exitWindow(const double Dist,
   
 
 void
-HoleUnit::createAll(const double rotAngle,
+HoleShape::createAll(const double rotAngle,
 		    const attachSystem::FixedComp& FC)
   /*!
     Generic function to create everything
@@ -480,7 +432,7 @@ HoleUnit::createAll(const double rotAngle,
     \param FC :: Fixed component to set axis etc
   */
 {
-  ELog::RegMethod RegA("HoleUnit","createAll");
+  ELog::RegMethod RegA("HoleShape","createAll");
 
   createUnitVector(rotAngle,FC);
   createSurfaces();

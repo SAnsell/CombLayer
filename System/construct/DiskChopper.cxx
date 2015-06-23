@@ -72,6 +72,7 @@
 #include "TwinComp.h"
 #include "ContainedComp.h"
 
+#include "DiskBlades.h"
 #include "DiskChopper.h"
 
 namespace constructSystem
@@ -158,15 +159,23 @@ DiskChopper::populate(const FuncDataBase& Control)
   nDisk=Control.EvalVar<size_t>(keyName+"NDisk");
   for(size_t i=0;i<nDisk;i++)
     {
-      DiskInfo DItem;
+      DiskBlades DItem;
       const std::string kN=keyName+StrFunc::makeString(i);
       DItem.thick=Control.EvalPair<double>(kN,keyName,"Thick");
-      DItem.phaseAngle=Control.EvalPair<double>(kN,keyName,"PhaseAngle");
-      DItem.openAngle=Control.EvalPair<double>(kN,keyName,"OpenAngle");
       DItem.innerMat=ModelSupport::EvalMat<int>
 	(Control,kN+"InnerMat",keyName+"InnerMat");
       DItem.outerMat=ModelSupport::EvalMat<int>
 	(Control,kN+"OuterMat",keyName+"OuterMat");
+
+      const size_t NB=Control.EvalPair<size_t>(kN,keyName,"NBlades");
+      for(size_t j=0;j<NB;j++)
+	{
+	  const std::string PAStr("PhaseAngle"+StrFunc::makeString(j));
+	  const std::string OAStr("OpenAngle"+StrFunc::makeString(j));
+	  const double pA=Control.EvalPair<double>(kN,keyName,PAStr);
+	  const double oA=Control.EvalPair<double>(kN,keyName,OAStr);
+	  DItem.addOpen(pA,oA);
+	}
       DInfo.push_back(DItem);
     }
   return;
@@ -238,22 +247,23 @@ DiskChopper::createSurfaces()
 
   int CI(chpIndex);
   Geometry::Vec3D DCent(Origin);
-  for(const DiskInfo& DRef : DInfo)
+  for(const DiskBlades& DRef : DInfo)
     {
       ModelSupport::buildPlane(SMap,CI+1,DCent,Y);
-      ModelSupport::buildPlane(SMap,CI+2,DCent+Y*DRef.thick,Y);
-      ModelSupport::buildPlaneRotAxis(SMap,CI+13,DCent,X,
-				      Y,DRef.phaseAngle);
-      ModelSupport::buildPlaneRotAxis(SMap,CI+14,DCent,X,
-				      Y,DRef.phaseAngle+DRef.openAngle);
-      // Need to be careful here:
-      // -- divider surface that
-      ModelSupport::buildPlaneRotAxis(SMap,CI+19,DCent,X,Y,
-				      (90.0+DRef.phaseAngle+
-				       DRef.openAngle/2.0));
-
+      ModelSupport::buildPlane(SMap,CI+2,DCent+Y*DRef.getThick(),Y);
+      // make inner blades
+      int PI(CI);
+      for(size_t index=0; index<DRef.getNPhase();index++)
+	{
+	  const double oA=DRef.getOpenAngle(index);
+	  const double cA=DRef.getCloseAngle(index);
+	  ModelSupport::buildPlaneRotAxis(SMap,PI+3,DCent,X,Y,oA);
+	  ModelSupport::buildPlaneRotAxis(SMap,PI+4,DCent,X,Y,cA);
+	  
+	  PI+=10;
+	}
       DCent+=Y*(DRef.thick+diskGap);
-      CI+=50;
+      CI+=500;
     }
 
   return;
@@ -262,39 +272,62 @@ DiskChopper::createSurfaces()
 void
 DiskChopper::createObjects(Simulation& System)
   /*!
-    Adds the zoom chopper box
+    Adds the chopper blades
     \param System :: Simulation to create objects in
-   */
+  */
 {
   ELog::RegMethod RegA("DiskChopper","createObjects");
 
   std::string Out;
   int CI(chpIndex);
-  for(const DiskInfo& DRef : DInfo)
+  for(const DiskBlades& DRef : DInfo)
     {
       // Gap if there is previous item
       if (CI!=chpIndex)
 	{
-	  Out=ModelSupport::getComposite(SMap,chpIndex,CI-50,"2M -51M -17");
+	  Out=ModelSupport::getComposite(SMap,chpIndex,CI-500,"2M -501M -17");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 	}
-      
+      // inner layer
       Out=ModelSupport::getComposite(SMap,chpIndex,CI,"1M -2M -7");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,DRef.innerMat,0.0,Out));
+      System.addCell(MonteCarlo::Qhull(cellIndex++,
+				       DRef.getInnerMat(),0.0,Out));
 
-      Out=ModelSupport::getComposite(SMap,chpIndex,CI,
-				     "1M -2M 13M -14M -19M 7 -17");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0.0,0.0,Out));
-
-      Out=ModelSupport::getComposite(SMap,chpIndex,CI,
-				     "1M -2M (-13M:14M:19M) 7 -17");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,DRef.outerMat,0.0,Out));
-
-
-      CI+=50;
+      // Chopper opening
+      const size_t NPhase=DRef.getNPhase();
+        const std::string Main=
+	ModelSupport::getComposite(SMap,chpIndex,CI,"1M -2M  7 -17");
+      
+      int PI(CI);       // current 
+      int PN(CI+10);    // next
+      for(size_t index=0;index<NPhase;index++)
+	{
+	  if (index==NPhase-1)
+	    PN=CI;
+	  // OPENING
+	  double oA=DRef.getOpenAngle(index/2);
+	  double cA=DRef.getCloseAngle(index/2);
+	  if (cA-oA<180.0)
+	    Out=ModelSupport::getComposite(SMap,PI," 3 -4 ");
+	  else
+	    Out=ModelSupport::getComposite(SMap,PI," (3 : -4) ");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+Main));
+	  // CLOSING
+	  oA=DRef.getCloseAngle(index/2);
+	  cA=DRef.getOpenAngle(1+(index/2));
+	  if (cA-oA<180.0)
+	    Out=ModelSupport::getComposite(SMap,PI,PN," 4 -3M ");
+	  else
+	    Out=ModelSupport::getComposite(SMap,PI,PN," (4 : -3M) ");
+	  System.addCell(MonteCarlo::Qhull
+			 (cellIndex++,DRef.getOuterMat(),0.0,Out+Main));
+	  PI+=10;
+	  PN+=10;
+	}
+      CI+=500;
     }
 
-  Out=ModelSupport::getComposite(SMap,chpIndex,CI-50,"1 -17 -2M");
+  Out=ModelSupport::getComposite(SMap,chpIndex,CI-500,"1 -17 -2M");
   addOuterSurf(Out);      
 
   return;
@@ -315,11 +348,11 @@ DiskChopper::createLinks()
   mainFC.setConnect(0,Origin,-Y);
   mainFC.setLinkSurf(0,-SMap.realSurf(chpIndex+1));
 
-  const int CLast(chpIndex+static_cast<int>(nDisk-1)*50);
+  const int CLast(chpIndex+static_cast<int>(nDisk-1)*500);
   double L(-diskGap);  // one less gap !
-  for(const DiskInfo& DRef : DInfo)
-    L+=DRef.thick+diskGap;
-  
+  for(const DiskBlades& DRef : DInfo)
+    L+=DRef.getThick()+diskGap;
+
   mainFC.setConnect(1,Origin+Y*L,Y);
   mainFC.setLinkSurf(1,SMap.realSurf(CLast+2));
   

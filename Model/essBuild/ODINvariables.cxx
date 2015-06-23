@@ -100,7 +100,7 @@ ODINvariables(FuncDataBase& Control)
 
   Control.addVariable("odinBladeGap",3.0);
   Control.addVariable("odinBladeInnerRadius",10.0);
-  Control.addVariable("odinBladeOuterRadius",25.0);
+  Control.addVariable("odinBladeOuterRadius",22.50);
   Control.addVariable("odinBladeNDisk",4);
 
   Control.addVariable("odinBlade0Thick",1.0);
@@ -109,24 +109,34 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinBlade3Thick",1.0);
   Control.addVariable("odinBladeInnerMat","Inconnel");
   Control.addVariable("odinBladeOuterMat","Aluminium");
-
-  Control.addVariable("odinBlade0PhaseAngle",95.0);
-  Control.addVariable("odinBlade0OpenAngle",30.0);
-  Control.addVariable("odinBlade1PhaseAngle",95.0);
-  Control.addVariable("odinBlade1OpenAngle",30.0);
-  Control.addVariable("odinBlade2PhaseAngle",95.0);
-  Control.addVariable("odinBlade2OpenAngle",30.0);
-  Control.addVariable("odinBlade3PhaseAngle",95.0);
-  Control.addVariable("odinBlade3OpenAngle",30.0);
   
+  Control.addVariable("odinBladeNBlades",2);
+  Control.addVariable("odinBlade0PhaseAngle0",95.0);
+  Control.addVariable("odinBlade0OpenAngle0",30.0);
+  Control.addVariable("odinBlade1PhaseAngle0",95.0);
+  Control.addVariable("odinBlade1OpenAngle0",30.0);
+  Control.addVariable("odinBlade2PhaseAngle0",95.0);
+  Control.addVariable("odinBlade2OpenAngle0",30.0);
+  Control.addVariable("odinBlade3PhaseAngle0",95.0);
+  Control.addVariable("odinBlade3OpenAngle0",30.0);
+
+  Control.addVariable("odinBlade0PhaseAngle1",275.0);
+  Control.addVariable("odinBlade0OpenAngle1",30.0);
+  Control.addVariable("odinBlade1PhaseAngle1",275.0);
+  Control.addVariable("odinBlade1OpenAngle1",30.0);
+  Control.addVariable("odinBlade2PhaseAngle1",275.0);
+  Control.addVariable("odinBlade2OpenAngle1",30.0);
+  Control.addVariable("odinBlade3PhaseAngle1",275.0);
+  Control.addVariable("odinBlade3OpenAngle1",30.0);
+
   Control.addVariable("odinGAXStep",0.0);       
   Control.addVariable("odinGAYStep",0.0);       
   Control.addVariable("odinGAZStep",0.0);       
   Control.addVariable("odinGAXYAngle",0.0);       
   Control.addVariable("odinGAZAngle",0.0);       
   Control.addVariable("odinGALength",220.0);       
-  Control.addVariable("odinGAHeight",20.0);       
-  Control.addVariable("odinGADepth",20.0);       
+  Control.addVariable("odinGAHeight",10.0);       
+  Control.addVariable("odinGADepth",30.0);       
   Control.addVariable("odinGALeftWidth",20.0);       
   Control.addVariable("odinGARightWidth",20.0);       
   Control.addVariable("odinGAFeMat","Void");       
@@ -165,8 +175,12 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinTZeroInnerMat","Aluminium");
   Control.addVariable("odinTZeroOuterMat","Inconnel");
 
-  Control.addVariable("odinTZero0PhaseAngle",95.0);
-  Control.addVariable("odinTZero0OpenAngle",30.0);
+  Control.addVariable("odinTZeroNBlades",2);
+  Control.addVariable("odinTZero0PhaseAngle0",-20.0);
+  Control.addVariable("odinTZero0OpenAngle0",160.0);
+
+  Control.addVariable("odinTZero0PhaseAngle1",160.0);
+  Control.addVariable("odinTZero0OpenAngle1",160.0);
 
   // SECOND GUIDE SEGMENT
   

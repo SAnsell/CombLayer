@@ -169,14 +169,13 @@ ODIN::build(Simulation& System,const attachSystem::TwinComp& GItem,
 {
   // For output stream
   ELog::RegMethod RegA("ODIN","build");
-  
+  ELog::EM<<"Building ODIN on : "<<GItem.getKeyName()<<ELog::endDiag;
   BladeChopper->addInsertCell(bunkerObj.getCell("MainVoid"));
   BladeChopper->createAll(System,GItem,2);
 
   GuideA->addInsertCell(bunkerObj.getCell("MainVoid"));
   GuideA->createAll(System,BladeChopper->getKey("Main"),2,
 		    BladeChopper->getKey("Beam"),2);
-  
   T0Chopper->addInsertCell(bunkerObj.getCell("MainVoid"));
   T0Chopper->createAll(System,GuideA->getKey("Guide0"),2);
 

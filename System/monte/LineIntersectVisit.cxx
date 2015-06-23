@@ -32,6 +32,7 @@
 #include <string>
 #include <algorithm>
 #include <complex>
+#include <memory>
 
 #include "Exception.h"
 #include "FileReport.h"

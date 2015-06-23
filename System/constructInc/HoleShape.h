@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   chipInc/HoleUnit.h
+ * File:   chipInc/HoleShape.h
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -19,44 +19,43 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef hutchSystem_HoleUnit_h
-#define hutchSystem_HoleUnit_h
+#ifndef hutchSystem_HoleShape_h
+#define hutchSystem_HoleShape_h
 
 class Simulation;
 
 namespace hutchSystem
 {
   /*!
-    \class HoleUnit
+    \class HoleShape
     \version 1.0
     \author S. Ansell
-    \date April 2011
+    \date June 2015
     Creates a hole
   */
   
-class HoleUnit : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+class HoleShape : public attachSystem::ContainedComp,
+  public attachSystem::FixedComp
 {
  private:
 
-  ModelSupport::surfRegister& HMap;   ///< Surface register
-  const int holeIndex;                ///< Hole index
+  const int holeIndex;          ///< Hole index
   
   int shapeType;                ///< Shape index
-  double AngleOffset;           ///< Angle round the hole
+
+  double angleOffset;           ///< Rotation around centre point
   double radialOffset;          ///< Centre radial position
+  
   double radius;                ///< Shape radius
-  double depth;                 ///< Depth of collimator
 
-  int frontFace;                ///< Front face
-  int backFace;                 ///< Back face
+  Geometry::Vec3D rotCentre;       ///< Centre position
+  double rotAngle;                 ///< Angle of whole system
 
-  Geometry::Vec3D Centre;       ///< Centre position
+  HeadRule frontFace;                ///< Front face
+  HeadRule backFace;                 ///< Back face
 
-  void setShape(const int);
-  void createUnitVector(const double,const attachSystem::FixedComp&);
-  void createUnitVector(const double,const attachSystem::SecondTrack&);
-  void createSurfaces();
+  
+  void setShape(const size_t);
 
   void createCircleSurfaces();
   void createSquareSurfaces();  
@@ -68,28 +67,29 @@ class HoleUnit : public attachSystem::ContainedComp,
   std::string createHexagonObj();
   std::string createOctagonObj();
 
+  void populate(const FuncDataBase&);
+  void createUnitVector(const double,const attachSystem::FixedComp&,
+			const long int);
+  void createSurfaces();
+  void createObjects(Simulation&);
+  
  public:
   
-  HoleUnit(ModelSupport::surfRegister&,const std::string&,
+  HoleShape(ModelSupport::surfRegister&,const std::string&,
 	   const int);
-  HoleUnit(const HoleUnit&);
-  HoleUnit& operator=(const HoleUnit&);
-  virtual ~HoleUnit() {}
+  HoleShape(const HoleShape&);
+  HoleShape& operator=(const HoleShape&);
+  virtual ~HoleShape() {}
 
   std::string createObjects();
   
-  void populate(const FuncDataBase&);
   void setFaces(const int,const int);
-
-  void createAll(const double,const attachSystem::FixedComp&);
+  void setFaces(const int,const int);
   
-  /// Access the angle
-  double getAngle() const { return AngleOffset; }
-  /// Get Centre point [relative to rotation point]
-  const Geometry::Vec3D& getCentre() const  { return Centre; }
-
-  int exitWindow(const double,std::vector<int>&,
-		 Geometry::Vec3D&) const;
+  void createAll(Simulation& System,
+		 xconst attachSystem::FixedComp&,
+		 const long int);
+  
 };
 
 }
