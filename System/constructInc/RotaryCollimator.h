@@ -76,6 +76,7 @@ class RotaryCollimator : public attachSystem::ContainedComp,
 
   void createSurfaces();
   void createObjects(Simulation&);
+  void createLinks();
   void layerProcess(Simulation&);
 
  public:

@@ -73,6 +73,7 @@
 #include "FixedComp.h"
 #include "FixedGroup.h"
 #include "ContainedComp.h"
+#include "SurInter.h"
 #include "HoleShape.h"
 #include "RotaryCollimator.h"
 
@@ -251,6 +252,37 @@ RotaryCollimator::setHoleIndex()
   return;
 }
 
+void
+RotaryCollimator::createLinks()
+  /*!
+    Create the linkes
+   */
+{
+  ELog::RegMethod RegA("RotaryCollimator","createLinks");
+
+  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+  // 
+  const std::string Out=getExclude();
+  HeadRule HM(Out);
+  std::pair<Geometry::Vec3D,int> PtA=
+    SurInter::interceptRule(HM,beamFC.getCentre(),beamFC.getY());
+  std::pair<Geometry::Vec3D,int> PtB=
+    SurInter::interceptRule(HM,beamFC.getCentre()+beamFC.getY()*thick,
+			    beamFC.getY());
+  beamFC.setConnect(0,PtA.first,-beamFC.getY());
+  beamFC.setConnect(1,PtB.first,beamFC.getY());
+  beamFC.setLinkSurf(0,-SMap.realSurf(colIndex+1));
+  beamFC.setLinkSurf(1,SMap.realSurf(colIndex+2));
+
+  mainFC.setConnect(0,Origin,-Y);
+  mainFC.setConnect(1,Origin+Y*thick,-Y);
+  mainFC.setLinkSurf(0,-SMap.realSurf(colIndex+1));
+  mainFC.setLinkSurf(1,SMap.realSurf(colIndex+2));
+
+  return;
+}
+  
 void 
 RotaryCollimator::layerProcess(Simulation& System)
   /*!
@@ -283,6 +315,7 @@ RotaryCollimator::createAll(Simulation& System,
   createSurfaces();
   createObjects(System);
   layerProcess(System);
+  createLinks();
   insertObjects(System);
   
   return;
