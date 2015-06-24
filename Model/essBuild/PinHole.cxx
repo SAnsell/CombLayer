@@ -73,6 +73,7 @@
 #include "CellMap.h"
 #include "HoleShape.h"
 #include "RotaryCollimator.h"
+#include "Jaws.h"
 
 #include "PinHole.h"
 
@@ -85,13 +86,26 @@ PinHole::PinHole(const std::string& Key) :
   attachSystem::CellMap(),
   pinIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(pinIndex+1),
-  CollA(new constructSystem::RotaryCollimator(Key+"A")),
-  CollB(new constructSystem::RotaryCollimator(Key+"B"))
+  CollA(new constructSystem::RotaryCollimator(Key+"CollA")),
+  CollB(new constructSystem::RotaryCollimator(Key+"CollB")),
+  JawX(new constructSystem::Jaws(Key+"JawVert")),
+  JawXZ(new constructSystem::Jaws(Key+"JawDiag"))
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
-{}
+{
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  OR.addObject(CollA);
+  OR.addObject(CollB);
+
+  OR.addObject(JawX);
+  OR.addObject(JawXZ);
+
+	  
+ }
 
 PinHole::~PinHole() 
   /*!
@@ -129,6 +143,7 @@ PinHole::createUnitVector(const attachSystem::FixedComp& FC,
   ELog::RegMethod RegA("PinHole","createUnitVector");
   FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
+
   return;
 }
 
@@ -169,15 +184,17 @@ PinHole::createObjects(Simulation& System)
 
 void
 PinHole::createLinks()
+  /*!
+    Simple beam transfer link points
+  */
 {
+  
   ELog::RegMethod RegA("PinHole","createLinks");
 
   FixedComp::setConnect(0,Origin,-Y);
   FixedComp::setConnect(1,Origin+Y*length,Y);
   FixedComp::setLinkSurf(0,-SMap.realSurf(pinIndex+1));
   FixedComp::setLinkSurf(1,SMap.realSurf(pinIndex+2));
-
-
   
   return;
 }
@@ -197,14 +214,22 @@ PinHole::createAll(Simulation& System,
   ELog::RegMethod RegA("PinHole","createAll(FC)");
 
   populate(System.getDataBase());
+  createUnitVector(FC,FIndex);
   createSurfaces();
   createObjects(System);
   createLinks();
-
+  insertObjects(System);
+  
   CollA->setInsertCell(getCell("Void"));
   CollB->setInsertCell(getCell("Void"));
   CollA->createAll(System,FC,FIndex);
   CollB->createAll(System,FC,FIndex);
+
+  JawX->setInsertCell(getCell("Void"));
+  JawX->createAll(System,FC,FIndex);
+
+  JawXZ->setInsertCell(getCell("Void"));
+  JawXZ->createAll(System,FC,FIndex);
   
   return;
 }

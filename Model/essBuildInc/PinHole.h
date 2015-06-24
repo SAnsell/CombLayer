@@ -27,6 +27,7 @@ class Simulation;
 namespace constructSystem
 {
   class RotaryCollimator;
+  class Jaws;
 }
 
 namespace essSystem
@@ -52,6 +53,12 @@ class PinHole : public attachSystem::ContainedComp,
   std::shared_ptr<constructSystem::RotaryCollimator> CollA;
   /// Second collimator
   std::shared_ptr<constructSystem::RotaryCollimator> CollB;
+
+  /// JAW X Axis
+  std::shared_ptr<constructSystem::Jaws> JawX;
+  /// JAW ZX (+45deg)
+  std::shared_ptr<constructSystem::Jaws> JawXZ;
+
 
   double radius;           ///< Excloseing radius
   double length;           ///< Enclosing length

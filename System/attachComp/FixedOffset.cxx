@@ -72,6 +72,37 @@ FixedOffset::FixedOffset(const std::string& KN,const size_t NL) :
   */
 {}
 
+FixedOffset::FixedOffset(const FixedOffset& A) : 
+  FixedComp(A),
+  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
+  xyAngle(A.xyAngle),zAngle(A.zAngle)
+  /*!
+    Copy constructor
+    \param A :: FixedOffset to copy
+  */
+{}
+
+FixedOffset&
+FixedOffset::operator=(const FixedOffset& A)
+  /*!
+    Assignment operator
+    \param A :: FixedOffset to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      FixedComp::operator=(A);
+      xStep=A.xStep;
+      yStep=A.yStep;
+      zStep=A.zStep;
+      xyAngle=A.xyAngle;
+      zAngle=A.zAngle;
+    }
+  return *this;
+}
+
+
 void
 FixedOffset::populate(const FuncDataBase& Control)
   /*!

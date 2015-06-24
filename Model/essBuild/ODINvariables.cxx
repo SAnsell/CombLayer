@@ -62,34 +62,6 @@ ODINvariables(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("ODINvariables[F]","ODINvariables");
 
-  Control.addVariable("ODINCollAXStep",0.0);
-  Control.addVariable("ODINCollAYStep",50.0);
-  Control.addVariable("ODINCollAZStep",0.0);
-  Control.addVariable("ODINCollAXYangle",180.0);
-  Control.addVariable("ODINCollAZangle",180.0);
-
-  Control.addVariable("ODINCollAZOpen",1.5);
-  Control.addVariable("ODINCollAZThick",4.0);
-  Control.addVariable("ODINCollAZCross",15.0);
-  Control.addVariable("ODINCollAZLen",8.0);
-
-  Control.addVariable("ODINCollAGap",0.5);  
-  
-  Control.addVariable("ODINCollAXOpen",1.5);
-  Control.addVariable("ODINCollAXThick",4.0);
-  Control.addVariable("ODINCollAXCross",15.0);
-  Control.addVariable("ODINCollAXLen",8.0);  
-
-  Control.addVariable("ODINCollAXHeight",18.0);
-  Control.addVariable("ODINCollAYHeight",9.0);
-  Control.addVariable("ODINCollAZHeight",18.0);
-  Control.addVariable("ODINCollAWallThick",2.0);
-
-  Control.addVariable("ODINCollAzJawMat","Aluminium");
-  Control.addVariable("ODINCollAxJawMat","Aluminium");
-  Control.addVariable("ODINCollAWallMat","Aluminium");
-  Control.addVariable("ODINCollAzJawMat","Aluminium");
-
 
   // Quad Blade chopper
   Control.addVariable("odinBladeXStep",0.0);
@@ -679,42 +651,141 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinGH0Length",150.0);
   Control.addVariable("odinGH0ZAngle",0.0);
 
-  // Collimator
-  Control.addVariable("odinCollAYStep",1.0);
-  Control.addVariable("odinCollARotDepth",20.0);
-  Control.addVariable("odinCollARadius",30.0);
-  Control.addVariable("odinCollAThick",10.0);
+  // PIN COLLIMATOR SYSTEM
+  Control.addVariable("odinPinLength",60.0);
+  Control.addVariable("odinPinRadius",60.0);
+  // Collimator A:
+  Control.addVariable("odinPinCollAYStep",1.0);
+  Control.addVariable("odinPinCollARotDepth",20.0);
+  Control.addVariable("odinPinCollARadius",30.0);
+  Control.addVariable("odinPinCollAThick",10.0);
 
-  Control.addVariable("odinCollAInnerWall",1.0);
-  Control.addVariable("odinCollAInnerWallMat","Void");
+  Control.addVariable("odinPinCollAInnerWall",1.0);
+  Control.addVariable("odinPinCollAInnerWallMat","Void");
 
-  Control.addVariable("odinCollANLayers",0);
-  Control.addVariable("odinCollAHoleIndex",0);
-  Control.addVariable("odinCollAHoleAngOff",0.0);
+  Control.addVariable("odinPinCollANLayers",0);
+  Control.addVariable("odinPinCollAHoleIndex",0);
+  Control.addVariable("odinPinCollAHoleAngOff",0.0);
 
-  Control.addVariable("odinCollADefMat","Aluminium");
+  Control.addVariable("odinPinCollADefMat","Aluminium");
   // collimator holes:
-  Control.addVariable("odinCollANHole",3);
-  Control.addVariable("odinCollAHole0Shape",1);
-  Control.addVariable("odinCollAHole0Radius",3.0);
+  Control.addVariable("odinPinCollANHole",3);
+  Control.addVariable("odinPinCollAHole0Shape",1);
+  Control.addVariable("odinPinCollAHole0Radius",3.0);
 
-  Control.addVariable("odinCollAHole0AngleCentre",0.0);
-  Control.addVariable("odinCollAHole0AngleOffset",0.0);
-  Control.addVariable("odinCollAHole0RadialStep",20.0);
+  Control.addVariable("odinPinCollAHole0AngleCentre",0.0);
+  Control.addVariable("odinPinCollAHole0AngleOffset",0.0);
+  Control.addVariable("odinPinCollAHole0RadialStep",20.0);
 
-  Control.addVariable("odinCollAHole1Shape",3);
-  Control.addVariable("odinCollAHole1Radius",5.0);
-  Control.addVariable("odinCollAHole1AngleCentre",120.0);
-  Control.addVariable("odinCollAHole1AngleOffset",0.0);
-  Control.addVariable("odinCollAHole1RadialStep",15.0);
+  Control.addVariable("odinPinCollAHole1Shape",3);
+  Control.addVariable("odinPinCollAHole1Radius",5.0);
+  Control.addVariable("odinPinCollAHole1AngleCentre",120.0);
+  Control.addVariable("odinPinCollAHole1AngleOffset",0.0);
+  Control.addVariable("odinPinCollAHole1RadialStep",15.0);
   
-  Control.addVariable("odinCollAHole2Shape",1);
-  Control.addVariable("odinCollAHole2Radius",4.0);
-  Control.addVariable("odinCollAHole2AngleCentre",240.0);
-  Control.addVariable("odinCollAHole2AngleOffset",0.0);
-  Control.addVariable("odinCollAHole2RadialStep",20.0);
+  Control.addVariable("odinPinCollAHole2Shape",1);
+  Control.addVariable("odinPinCollAHole2Radius",4.0);
+  Control.addVariable("odinPinCollAHole2AngleCentre",240.0);
+  Control.addVariable("odinPinCollAHole2AngleOffset",0.0);
+  Control.addVariable("odinPinCollAHole2RadialStep",20.0);
 
+  // Collimator B:
+  Control.addVariable("odinPinCollBYStep",40.0);
+  Control.addVariable("odinPinCollBRotDepth",20.0);
+  Control.addVariable("odinPinCollBRadius",30.0);
+  Control.addVariable("odinPinCollBThick",10.0);
+
+  Control.addVariable("odinPinCollBInnerWall",1.0);
+  Control.addVariable("odinPinCollBInnerWallMat","Void");
+
+  Control.addVariable("odinPinCollBNLayers",0);
+  Control.addVariable("odinPinCollBHoleIndex",0);
+  Control.addVariable("odinPinCollBHoleAngOff",0.0);
+
+  Control.addVariable("odinPinCollBDefMat","Aluminium");
+  // collimator holes:
+  Control.addVariable("odinPinCollBNHole",3);
+  Control.addVariable("odinPinCollBHole0Shape",1);
+  Control.addVariable("odinPinCollBHole0Radius",3.0);
+
+  Control.addVariable("odinPinCollBHole0AngleCentre",0.0);
+  Control.addVariable("odinPinCollBHole0AngleOffset",0.0);
+  Control.addVariable("odinPinCollBHole0RadialStep",20.0);
+
+  Control.addVariable("odinPinCollBHole1Shape",3);
+  Control.addVariable("odinPinCollBHole1Radius",5.0);
+  Control.addVariable("odinPinCollBHole1AngleCentre",120.0);
+  Control.addVariable("odinPinCollBHole1AngleOffset",0.0);
+  Control.addVariable("odinPinCollBHole1RadialStep",15.0);
   
+  Control.addVariable("odinPinCollBHole2Shape",1);
+  Control.addVariable("odinPinCollBHole2Radius",4.0);
+  Control.addVariable("odinPinCollBHole2AngleCentre",240.0);
+  Control.addVariable("odinPinCollBHole2AngleOffset",0.0);
+  Control.addVariable("odinPinCollBHole2RadialStep",20.0);
+
+  //
+  // JAWS
+  //
+  // Jaw X
+  Control.addVariable("odinPinJawVertXStep",0.0);
+  Control.addVariable("odinPinJawVertYStep",17.0);
+  Control.addVariable("odinPinJawVertZStep",0.0);
+  Control.addVariable("odinPinJawVertXYangle",180.0);
+  Control.addVariable("odinPinJawVertZangle",0.0);
+
+  Control.addVariable("odinPinJawVertZOpen",1.5);
+  Control.addVariable("odinPinJawVertZThick",4.0);
+  Control.addVariable("odinPinJawVertZCross",15.0);
+  Control.addVariable("odinPinJawVertZLen",8.0);
+
+  Control.addVariable("odinPinJawVertGap",0.5);  
+  
+  Control.addVariable("odinPinJawVertXOpen",1.5);
+  Control.addVariable("odinPinJawVertXThick",4.0);
+  Control.addVariable("odinPinJawVertXCross",15.0);
+  Control.addVariable("odinPinJawVertXLen",8.0);  
+
+  Control.addVariable("odinPinJawVertXHeight",28.0);
+  Control.addVariable("odinPinJawVertYHeight",9.0);
+  Control.addVariable("odinPinJawVertZHeight",28.0);
+  Control.addVariable("odinPinJawVertWallThick",2.0);
+
+  Control.addVariable("odinPinJawVertxJawMat","Tungsten");
+  Control.addVariable("odinPinJawVertzJawMat","Tungsten");
+  Control.addVariable("odinPinJawVertWallMat","Aluminium");
+
+  // Jaw XZ
+  Control.addVariable("odinPinJawDiagXStep",0.0);
+  Control.addVariable("odinPinJawDiagYStep",32.0);
+  Control.addVariable("odinPinJawDiagZStep",0.0);
+  Control.addVariable("odinPinJawDiagXAngle",0.0);
+  Control.addVariable("odinPinJawDiagYAngle",45.0);
+  Control.addVariable("odinPinJawDiagZAngle",0.0);
+
+  Control.addVariable("odinPinJawDiagZOpen",1.5);
+  Control.addVariable("odinPinJawDiagZThick",4.0);
+  Control.addVariable("odinPinJawDiagZCross",15.0);
+  Control.addVariable("odinPinJawDiagZLen",8.0);
+
+  Control.addVariable("odinPinJawDiagGap",0.5);  
+  
+  Control.addVariable("odinPinJawDiagXOpen",1.5);
+  Control.addVariable("odinPinJawDiagXThick",4.0);
+  Control.addVariable("odinPinJawDiagXCross",15.0);
+  Control.addVariable("odinPinJawDiagXLen",8.0);  
+
+  Control.addVariable("odinPinJawDiagXHeight",28.0);
+  Control.addVariable("odinPinJawDiagYHeight",9.0);
+  Control.addVariable("odinPinJawDiagZHeight",28.0);
+  Control.addVariable("odinPinJawDiagWallThick",2.0);
+
+
+  Control.addVariable("odinPinJawDiagxJawMat","Tungsten");
+  Control.addVariable("odinPinJawDiagzJawMat","Tungsten");
+  Control.addVariable("odinPinJawDiagWallMat","Aluminium");
+
+
   return;
 }
 

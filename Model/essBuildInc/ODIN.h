@@ -42,6 +42,7 @@ namespace essSystem
   class Bunker;
   class BunkerInsert;
   class Hut;
+  class PinHole;
   
   /*!
     \class ODIN
@@ -109,7 +110,7 @@ class ODIN
   std::shared_ptr<beamlineSystem::GuideLine> GuideH;
   
   // Collimator
-  std::shared_ptr<constructSystem::RotaryCollimator> CollA;
+  std::shared_ptr<PinHole> PinA;
 
 
   
