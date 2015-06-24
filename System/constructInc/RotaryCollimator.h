@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   chipInc/RotaryCollimator.h
+ * File:   constructInc/RotaryCollimator.h
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -26,12 +26,12 @@ class Simulation;
 
 namespace constructSystem
 {
-
+  class HoleShape;
 /*!
   \class RotaryCollimator
   \version 1.0
   \author S. Ansell
-  \date January 2011
+  \date June 2015
   \brief RotaryCollimator [insert object]
 */
 
@@ -64,15 +64,15 @@ class RotaryCollimator : public attachSystem::ContainedComp,
   
   size_t nHole;           ///< number of holes
   size_t nLayers;         ///< number of layers
-  std::vector<HoleShape> Holes;  ///< Holes
+  std::vector<std::shared_ptr<HoleShape>> Holes;  ///< Holes
 
   std::vector<double> cFrac;    ///< coll Layer thicknesss (fractions)
   std::vector<int> cMat;        ///< coll Layer materials
 
-  void setHoleIndex(const size_t,const double);
+  void setHoleIndex();
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
+  void createUnitVector(const attachSystem::FixedComp&,const long int);
 
   void createSurfaces();
   void createObjects(Simulation&);

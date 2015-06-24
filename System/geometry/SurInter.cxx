@@ -27,6 +27,7 @@
 #include <complex>
 #include <vector>
 #include <deque>
+#include <set>
 #include <map>
 #include <string>
 #include <algorithm>
@@ -63,6 +64,7 @@
 #include "DblLine.h"
 #include "Circle.h"
 #include "Ellipse.h"
+#include "HeadRule.h"
 #include "SurInter.h"
 
 #include "Debug.h"
@@ -601,6 +603,32 @@ closestPt(const std::vector<Geometry::Vec3D>& PtVec,
   return index;
 }
 
+std::pair<Geometry::Vec3D,int>
+interceptRule(HeadRule& HR,const Geometry::Vec3D& Origin,
+	      const Geometry::Vec3D& N)
+  /*!
+    Determine the closes point to the headRule intercept
+    \param HR :: HeadRule
+    \param Origin :: Origin of line
+    \param N :: Direction of the line
+    \return pair of position and surface.
+  */
+{
+  ELog::RegMethod RegA("SurInter[F]","interceptRule");
+
+  // Calc bunker edge intersectoin
+  std::vector<Geometry::Vec3D> Pts;
+  std::vector<int> SNum;
+
+  HR.populateSurf();
+  HR.calcSurfIntersection(Origin,N,Pts,SNum);
+  if (Pts.empty())
+    return std::pair<Geometry::Vec3D,int>(Origin,0);
+  
+  const size_t indexA=SurInter::closestPt(Pts,Origin);
+  return std::pair<Geometry::Vec3D,int>(Pts[indexA],SNum[indexA]); 
+
+}
 
 }  // NAMESPACE SurInter
 

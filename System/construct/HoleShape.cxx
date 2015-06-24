@@ -66,7 +66,11 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
+#include "SurInter.h"
 #include "HoleShape.h"
+
+#include "localRotate.h"
+#include "masterRotate.h"
 
 namespace constructSystem
 {
@@ -76,12 +80,52 @@ HoleShape::HoleShape(const std::string& Key) :
   attachSystem::FixedComp(Key,2),
   holeIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(holeIndex+1),shapeType(0),
-  angleOffset(0),radialOffset(0.0),radius(0.0)
+  angleOffset(0),radialStep(0.0),radius(0.0)
   /*!
     Default constructor
     \param Key :: Key name for variables
   */
 {}
+
+HoleShape::HoleShape(const HoleShape& A) : 
+  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  holeIndex(A.holeIndex),cellIndex(A.cellIndex),
+  shapeType(A.shapeType),angleCentre(A.angleCentre),
+  angleOffset(A.angleOffset),radialStep(A.radialStep),
+  radius(A.radius),rotCentre(A.rotCentre),
+  rotAngle(A.rotAngle),frontFace(A.frontFace),
+  backFace(A.backFace)
+  /*!
+    Copy constructor
+    \param A :: HoleShape to copy
+  */
+{}
+
+HoleShape&
+HoleShape::operator=(const HoleShape& A)
+  /*!
+    Assignment operator
+    \param A :: HoleShape to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::FixedComp::operator=(A);
+      cellIndex=A.cellIndex;
+      shapeType=A.shapeType;
+      angleCentre=A.angleCentre;
+      angleOffset=A.angleOffset;
+      radialStep=A.radialStep;
+      radius=A.radius;
+      rotCentre=A.rotCentre;
+      rotAngle=A.rotAngle;
+      frontFace=A.frontFace;
+      backFace=A.backFace;
+    }
+  return *this;
+}
 
 void
 HoleShape::setShape(const size_t ST)
@@ -116,8 +160,9 @@ HoleShape::populate(const FuncDataBase& Control)
   
   setShape(Control.EvalVar<size_t>(keyName+"Shape"));
   
-  angleOffset=Control.EvalVar<double>(keyName+"Angle");
-  radialOffset=Control.EvalVar<double>(keyName+"ROffset");
+  angleCentre=Control.EvalVar<double>(keyName+"AngleCentre");
+  angleOffset=Control.EvalVar<double>(keyName+"AngleOffset");
+  radialStep=Control.EvalVar<double>(keyName+"RadialStep");
   radius=Control.EvalVar<double>(keyName+"Radius");
   return;
 }
@@ -128,16 +173,23 @@ HoleShape::createUnitVector(const attachSystem::FixedComp& FC,
   /*!
     Create the unit vectors:
     LC gives the origin for the wheel
-    \param rotAngle :: Rotation angle
-    \param FC :: Rotational origin 
+    \param FC :: Rotational origin of wheel
     \param sideIndex :: Side index
   */
 {
   ELog::RegMethod RegA("HoleShape","createUnitVector");
 
   FixedComp::createUnitVector(FC,sideIndex);
-  FixedComp::applyShift(0,0,radialOffset);
-  FixedComp::applyAngleRotate(rotAngle,0.0);
+  rotCentre=Origin;
+  
+  // Now need to move origin to centre of shape
+
+  const Geometry::Quaternion Qy=
+    Geometry::Quaternion::calcQRotDeg(rotAngle,Y);
+  Qy.rotate(X);
+  Qy.rotate(Z);
+  FixedComp::applyShift(0,0,radialStep);  
+
   return;
 }
 
@@ -183,8 +235,7 @@ HoleShape::createCircleObj()
 
   const std::string Out=
     ModelSupport::getComposite(SMap,holeIndex," -31 ");
-  addOuterSurf(Out);
-  return Out+frontFace.display()+backFace.display();
+  return Out;
 }
 
 void
@@ -217,8 +268,7 @@ HoleShape::createSquareObj()
   const std::string Out=
     ModelSupport::getComposite(SMap,holeIndex," 33 -34 35 -36");
 
-  addOuterSurf(Out);
-  return Out+frontFace.display()+backFace.display();  
+  return Out;
 }
 
 void
@@ -253,8 +303,7 @@ HoleShape::createHexagonObj()
   
   const std::string Out=
     ModelSupport::getComposite(SMap,holeIndex," -31 -32 -33 -34 -35 -36");
-  addOuterSurf(Out);
-  return Out+frontFace.display()+backFace.display();  
+  return Out;
 }
 
 void
@@ -290,8 +339,8 @@ HoleShape::createOctagonObj()
   const std::string Out=
     ModelSupport::getComposite(SMap,holeIndex,
 				 " -31 -32 -33 -34 -35 -36 -37 -38");
-  addOuterSurf(Out);
-  return Out+frontFace.display()+backFace.display();  
+
+  return Out;
 }
 
 void
@@ -323,46 +372,88 @@ HoleShape::createSurfaces()
   return;
 }
 
-std::string 
-HoleShape::createObjects() 
+void
+HoleShape::createObjects(Simulation& System) 
   /*!
     Adds the Chip guide components
-    \return String of the created object
+    \param System :: Simuation for object
   */
 {
   ELog::RegMethod RegA("HoleShape","createObjects");
-
+  std::string Out;
   switch (shapeType)
     {
-    case 0:  // No shape
-      return " ";
     case 1:  // circle
-      return createCircleObj();
+      Out=createCircleObj();
+      break;
     case 2:  // square
-      return createSquareObj();
+      Out=createSquareObj();
+      break;
     case 3:  // hexagon
-      return createHexagonObj();
+      Out=createHexagonObj();
+      break;
     case 4:  // octagon
-      return createOctagonObj();
+      Out=createOctagonObj();
+      break;
+    default:  // No work
+      return;
     }
-  return " ";
+  System.addCell(MonteCarlo::Qhull
+		 (cellIndex++,0,0.0,Out+frontFace.display()+
+		  backFace.display()));
+  addOuterSurf(Out);
+  return;
 }
 
- 
 void
-HoleShape::createAll(const FuncDataBase& Control,
+HoleShape::createLinks()
+  /*!
+    Construct the links for the system
+   */
+{
+  ELog::RegMethod RegA("HoleShape","createLinks");
+  
+  const std::pair<Geometry::Vec3D,int> Front=
+    SurInter::interceptRule(frontFace,Origin,Y);
+  const std::pair<Geometry::Vec3D,int> Back=
+    SurInter::interceptRule(backFace,Origin,Y);
+
+  FixedComp::setConnect(0,Front.first,-Y);
+  FixedComp::setConnect(1,Back.first,-Y);
+  FixedComp::setLinkSurf(0,SMap.realSurf(Front.second));
+  FixedComp::setLinkSurf(1,SMap.realSurf(Back.second));
+  return;
+}
+
+void
+HoleShape::setMasterAngle(const double masterAngle)
+  /*!
+    Given the main angle for the system
+    \param masterAngle :: angle for the wheel
+  */
+{
+  ELog::RegMethod RegA("HoleShape","setMasterAngle");
+  
+  rotAngle=masterAngle+angleOffset+angleCentre;
+  return;
+}
+  
+void
+HoleShape::createAll(Simulation& System,
 		     const attachSystem::FixedComp& FC,
 		     const long int sideIndex)
   /*!
     Generic function to create everything
+    \param System :: Simuation 
     \param FC :: Fixed component to set axis etc
   */
 {
   ELog::RegMethod RegA("HoleShape","createAll");
 
-  populate(Control);
   createUnitVector(FC,sideIndex);
   createSurfaces();
+  createObjects(System);
+  createLinks();
   
   return;
 }

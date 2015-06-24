@@ -679,6 +679,41 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinGH0Length",150.0);
   Control.addVariable("odinGH0ZAngle",0.0);
 
+  // Collimator
+  Control.addVariable("odinCollAYStep",1.0);
+  Control.addVariable("odinCollARotDepth",20.0);
+  Control.addVariable("odinCollARadius",30.0);
+  Control.addVariable("odinCollAThick",10.0);
+
+  Control.addVariable("odinCollAInnerWall",1.0);
+  Control.addVariable("odinCollAInnerWallMat","Void");
+
+  Control.addVariable("odinCollANLayers",0);
+  Control.addVariable("odinCollAHoleIndex",0);
+  Control.addVariable("odinCollAHoleAngOff",0.0);
+
+  Control.addVariable("odinCollADefMat","Aluminium");
+  // collimator holes:
+  Control.addVariable("odinCollANHole",3);
+  Control.addVariable("odinCollAHole0Shape",1);
+  Control.addVariable("odinCollAHole0Radius",3.0);
+
+  Control.addVariable("odinCollAHole0AngleCentre",0.0);
+  Control.addVariable("odinCollAHole0AngleOffset",0.0);
+  Control.addVariable("odinCollAHole0RadialStep",20.0);
+
+  Control.addVariable("odinCollAHole1Shape",3);
+  Control.addVariable("odinCollAHole1Radius",5.0);
+  Control.addVariable("odinCollAHole1AngleCentre",120.0);
+  Control.addVariable("odinCollAHole1AngleOffset",0.0);
+  Control.addVariable("odinCollAHole1RadialStep",15.0);
+  
+  Control.addVariable("odinCollAHole2Shape",1);
+  Control.addVariable("odinCollAHole2Radius",4.0);
+  Control.addVariable("odinCollAHole2AngleCentre",240.0);
+  Control.addVariable("odinCollAHole2AngleOffset",0.0);
+  Control.addVariable("odinCollAHole2RadialStep",20.0);
+
   
   return;
 }

@@ -42,15 +42,16 @@ class HoleShape : public attachSystem::ContainedComp,
   const int holeIndex;          ///< Hole index
   int cellIndex;                ///< Cell index
   
-  size_t shapeType;                ///< Shape index
+  size_t shapeType;             ///< Shape index
 
+  double angleCentre;           ///< Mid point for alignment [for interigation]
   double angleOffset;           ///< Rotation around centre point
-  double radialOffset;          ///< Centre radial position
+  double radialStep;          ///< Centre radial position
   
   double radius;                ///< Shape radius
 
   Geometry::Vec3D rotCentre;       ///< Centre position
-  double rotAngle;                 ///< Angle of whole system
+  double rotAngle;                 ///< Angle of whole system [true pos]
 
   HeadRule frontFace;                ///< Front face
   HeadRule backFace;                 ///< Back face
@@ -68,11 +69,12 @@ class HoleShape : public attachSystem::ContainedComp,
   std::string createHexagonObj();
   std::string createOctagonObj();
 
-  void populate(const FuncDataBase&);
+
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
   void createSurfaces();
-
+  void createObjects(Simulation&);
+  void createLinks();
   
  public:
   
@@ -81,12 +83,15 @@ class HoleShape : public attachSystem::ContainedComp,
   HoleShape& operator=(const HoleShape&);
   virtual ~HoleShape() {}
 
-  std::string createObjects();
+  void populate(const FuncDataBase&);
   
   void setFaces(const int,const int);
-  
-  void createAll(const FuncDataBase&,
-		 const attachSystem::FixedComp&,
+  void setMasterAngle(const double);
+  /// accessor to central angle
+  double getCentreAngle() const { return angleCentre; }
+  /// accessor to shape
+  size_t getShape() const { return shapeType; }
+  void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
   
 };

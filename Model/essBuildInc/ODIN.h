@@ -34,6 +34,7 @@ namespace constructSystem
   class Jaws;
   class DiskChopper;
   class ChopperPit;
+  class RotaryCollimator;
 }
 
 namespace essSystem
@@ -101,12 +102,16 @@ class ODIN
 
   /// Guide from chopper C to exterior
   std::shared_ptr<beamlineSystem::GuideLine> GuideG;
-  /// Guide in Hutch 
-  std::shared_ptr<beamlineSystem::GuideLine> GuideH;
-
 
   /// The Hutch
   std::shared_ptr<Hut> Cave;
+  /// Guide in Hutch 
+  std::shared_ptr<beamlineSystem::GuideLine> GuideH;
+  
+  // Collimator
+  std::shared_ptr<constructSystem::RotaryCollimator> CollA;
+
+
   
  public:
   

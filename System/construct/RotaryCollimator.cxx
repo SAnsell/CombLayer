@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuild/RotaryCollimator.cxx
+ * File:   construct/RotaryCollimator.cxx
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -42,6 +42,7 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
+#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -68,12 +69,11 @@
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
-#include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedGroup.h"
 #include "ContainedComp.h"
-#include "HoleUnit.h"
+#include "HoleShape.h"
 #include "RotaryCollimator.h"
 
 namespace constructSystem
@@ -106,18 +106,22 @@ RotaryCollimator::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("RotaryCollimator","populate");
 
-  const FuncDataBase& Control=System.getDataBase();
-
+  // NEED TO REGISTER objects
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();  
+  
   nHole=Control.EvalVar<size_t>(keyName+"NHole");
   
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYAngle");
-  zAngle=Control.EvalVar<double>(keyName+"ZAngle");
+  xStep=Control.EvalDefVar<double>(keyName+"XStep",0.0);
+  yStep=Control.EvalDefVar<double>(keyName+"YStep",0.0);
+  zStep=Control.EvalDefVar<double>(keyName+"ZStep",0.0);
+  xyAngle=Control.EvalDefVar<double>(keyName+"XYAngle",0.0);
+  zAngle=Control.EvalDefVar<double>(keyName+"ZAngle",0.0);
 
+  rotDepth=Control.EvalVar<double>(keyName+"RotDepth");
   radius=Control.EvalVar<double>(keyName+"Radius");
-  depth=Control.EvalVar<double>(keyName+"Depth");
+  thick=Control.EvalVar<double>(keyName+"Thick");
+  
   defMat=ModelSupport::EvalMat<int>(Control,keyName+"DefMat");
 
   innerWall=Control.EvalVar<double>(keyName+"InnerWall");
@@ -126,7 +130,7 @@ RotaryCollimator::populate(const FuncDataBase& Control)
   // Layers
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");
   ModelSupport::populateDivideLen(Control,nLayers,
-				  keyName+"Frac",depth,
+				  keyName+"Frac",thick,
 				  cFrac);
   ModelSupport::populateDivide(Control,nLayers,
 			       keyName+"Mat",defMat,cMat);
@@ -135,44 +139,23 @@ RotaryCollimator::populate(const FuncDataBase& Control)
     {
       const std::string holeName=keyName+"Hole"+
 	StrFunc::makeString(i);
-      Holes.push_back(HoleUnit(SMap,holeName));
-      Holes.back().populate(Control);
+      Holes.push_back(std::shared_ptr<HoleShape>(new HoleShape(holeName)));
+      Holes.back()->populate(Control);
+      OR.addObject(Holes.back());
     }
 
   // Rotation angle:
-  const size_t HI=Control.EvalVar<size_t>(keyName+"HoleIndex");
-  const double HA=Control.EvalVar<double>(keyName+"HoleAngOff");
-  setHoleIndex(HI,HA);
-
+  holeIndex=Control.EvalVar<size_t>(keyName+"HoleIndex");
+  holeAngOffset=Control.EvalVar<double>(keyName+"HoleAngOff");
+  setHoleIndex();
+  for(std::shared_ptr<HoleShape>& HH : Holes)
+    HH->setMasterAngle(holeAngOffset);
+  
   return;
 }
 
 void
-RotaryCollimator::setHoleIndex(const size_t HIndex,const double HAngle)
-  /*!
-    Given a hole index determine and set the angle offset
-    \param HIndex :: Index to use [ Zero :: use HAngle directly]
-    \param HAngle :: Angle to use if HIndex is zero
-  */
-{
-  ELog::RegMethod RegA("RotaryCollimator","setHoleIndex");
-
-  if (HIndex==0)
-    {
-      holeIndex=0;
-      holeAngOffset=HAngle;
-      return;
-    }
-  if (HIndex>Holes.size())
-    throw ColErr::IndexError<size_t>(HIndex,Holes.size(),
-				     "vector<Hole> :: HIndex");
-  holeIndex=HIndex;
-  holeAngOffset= -Holes[HIndex-1].getAngle();
-  return;
-}
-
-void
-RotaryCollimator::createUnitVector(const attachSystem::FixedComp& FC
+RotaryCollimator::createUnitVector(const attachSystem::FixedComp& FC,
 				   const long int sideIndex)
   /*!
     Create the unit vectors. The vectors are created
@@ -193,23 +176,11 @@ RotaryCollimator::createUnitVector(const attachSystem::FixedComp& FC
 
   beamFC=mainFC;
   mainFC.applyShift(xStep,yStep,zStep-rotDepth);  
-  mainRC.applyAngleRotate(xyAngle,zAngle);
+  mainFC.applyAngleRotate(xyAngle,zAngle);
   setDefault("Main");
   return;
 }
 
-Geometry::Vec3D
-RotaryCollimator::getHoleCentre() const
-  /*!
-    Calculate the hole centre 
-    \return Centre point
-  */
-{
-  if (holeIndex>0)
-    return Holes[holeIndex-1].getCentre();
-  
-  return Centre;
-}
 
 void
 RotaryCollimator::createSurfaces()
@@ -222,7 +193,7 @@ RotaryCollimator::createSurfaces()
   
   // Front/Back
   ModelSupport::buildPlane(SMap,colIndex+1,Origin,Y);
-  ModelSupport::buildPlane(SMap,colIndex+1,Origin+Y*thick,Y);
+  ModelSupport::buildPlane(SMap,colIndex+2,Origin+Y*thick,Y);
 
   // Master Cylinder
   ModelSupport::buildCylinder(SMap,colIndex+7,Origin,Y,radius);
@@ -249,27 +220,34 @@ RotaryCollimator::createObjects(Simulation& System)
   HeadRule HoleExclude;
   for(size_t i=0;i<nHole;i++)
     {
-      HoleShape& HU=Holes[i];
-      HU.setFaces(SMap.realSurf(colIndex+1),SMap.realSurf(colIndex+2));
-      HU.createAll(holeAngOffset,*this,0);          // Use THESE Origins
-      if (HU.getShape())
-	HoleExclude.addUnion(HU.getExclude());
+      std::shared_ptr<HoleShape>& HU=Holes[i];
+      HU->setFaces(SMap.realSurf(colIndex+1),-SMap.realSurf(colIndex+2));
+      HU->createAll(System,*this,0);          // Use THIS Origin (rot centre)
+      if (HU->getShape())
+	HoleExclude.addIntersection(HU->getExclude());
     }
-  
   Out+=" "+HoleExclude.display();
   System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));            
 
   return;
 }
 
-void 
-RotaryCollimator::setCentre(const Geometry::Vec3D& C)
+void
+RotaryCollimator::setHoleIndex()
   /*!
-    Sets the centre
-    \param C :: Centre point
+    Given a hole index determine and set the angle offset
+    \param HIndex :: Index to use [ Zero :: use HAngle directly]
+    \param HAngle :: Angle to use if HIndex is zero
   */
 {
-  Centre=C;
+  ELog::RegMethod RegA("RotaryCollimator","setHoleIndex");
+  if (holeIndex)
+    {
+      if (holeIndex>Holes.size())
+	throw ColErr::IndexError<size_t>(holeIndex,Holes.size(),
+					 "vector<Hole> :: holeIndex");
+      holeAngOffset= Holes[holeIndex-1]->getCentreAngle();
+    }
   return;
 }
 
@@ -289,18 +267,19 @@ RotaryCollimator::layerProcess(Simulation& System)
 
 void
 RotaryCollimator::createAll(Simulation& System,
-			    const attachSystem::FixedComp& LC,
-			    const long int index)
+			    const attachSystem::FixedComp& FC,
+			    const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
-    \param LC :: Linear component to set axis etc [Guide]
+    \param FC :: Link component
+    \param sideIndex :: link index
   */
 {
   ELog::RegMethod RegA("RotaryCollimator","createAll");
 
-  populate(System);
-  createUnitVector(LC);
+  populate(System.getDataBase());
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   layerProcess(System);

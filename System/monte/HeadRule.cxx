@@ -1331,7 +1331,7 @@ HeadRule::addUnion(const std::string& RStr)
     \param RStr :: Rule string
    */
 {
-  ELog::RegMethod RegA("HeadRule","addIntersection(string)");
+  ELog::RegMethod RegA("HeadRule","addUnion(string)");
   HeadRule A;
   if (A.procString(RStr))
     addUnion(A.getTopRule());
@@ -1650,11 +1650,12 @@ HeadRule::calcSurfIntersection(const Geometry::Vec3D& Org,
 			       std::vector<Geometry::Vec3D>& Pts,
 			       std::vector<int>& SNum) const
   /*!
-    Calculate a track of a line that intersects the rule
+    Calculate a track of a line that intersects the rule.
+    The surface number is the outgoing surface number.
     \param Org :: Origin of line
     \param Unit :: Direction of line
     \param Pts :: Points
-    \param SNum :: Surface number
+    \param SNum :: Surface number 
     \return Number found
   */
 {
@@ -1673,7 +1674,7 @@ HeadRule::calcSurfIntersection(const Geometry::Vec3D& Org,
   const std::vector<Geometry::Vec3D>& IPts(LI.getPoints());
   const std::vector<double>& dPts(LI.getDistance());
   const std::vector<const Geometry::Surface*>& surfIndex(LI.getSurfIndex());
-
+  
   // Clear data
   Pts.clear();
   SNum.clear();
@@ -1688,10 +1689,13 @@ HeadRule::calcSurfIntersection(const Geometry::Vec3D& Org,
       const int pAB=isDirectionValid(IPts[i],NS);
       const int mAB=isDirectionValid(IPts[i],-NS);
       const int normD=surfPtr->sideDirection(IPts[i],Unit);
+      const double lambda=dPts[i];
       if (pAB!=mAB)  // out going positive surface
 	{
-	  SNum.push_back(normD*surfPtr->getName());
-	  Pts.push_back(Org+Unit*dPts[i]);
+	  const int signValue((pAB>0) ? 1 : -1);
+	  const int distValue((lambda>0) ? 1 : -1);
+	  SNum.push_back(distValue*normD*NS);
+	  Pts.push_back(Org+Unit*lambda);
 	}
     }    
 

@@ -78,6 +78,8 @@
 #include "BunkerInsert.h"
 #include "ChopperPit.h"
 #include "Hut.h"
+#include "HoleShape.h"
+#include "RotaryCollimator.h"
 #include "ODIN.h"
 
 namespace essSystem
@@ -108,7 +110,8 @@ ODIN::ODIN() :
   GuideG(new beamlineSystem::GuideLine("odinGG")),
 
   Cave(new essSystem::Hut("odinCave")),
-  GuideH(new beamlineSystem::GuideLine("odinGH"))
+  GuideH(new beamlineSystem::GuideLine("odinGH")),
+  CollA(new constructSystem::RotaryCollimator("odinCollA"))
   
  /*!
     Constructor
@@ -199,7 +202,7 @@ ODIN::build(Simulation& System,const attachSystem::TwinComp& GItem,
 
   GuideD->addInsertCell(voidCell);
   GuideD->createAll(System,*BInsert,2,GuideC->getKey("Guide0"),2);
-  ELog::EM<<"GuideD exit poaint == "<<
+  ELog::EM<<"GuideD exit point == "<<
     GuideD->getKey("Guide0").getSignedLinkPt(2)<<ELog::endDiag;
 
   //
@@ -302,6 +305,10 @@ ODIN::build(Simulation& System,const attachSystem::TwinComp& GItem,
   GuideH->createAll(System,GuideG->getKey("Guide0"),2,
 		    GuideG->getKey("Guide0"),2);
 
+
+  CollA->addInsertCell(Cave->getCell("VoidNose"));
+  CollA->createAll(System,GuideH->getKey("Guide0"),2);
+  
   return;
 }
 

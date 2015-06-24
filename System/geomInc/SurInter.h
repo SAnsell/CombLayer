@@ -22,6 +22,8 @@
 #ifndef SurInter_h
 #define SurInter_h
 
+class HeadRule;
+
 namespace Geometry
 {
   class Intersect;
@@ -53,6 +55,10 @@ nearPoint(const std::vector<Geometry::Vec3D>&,
 size_t
 closestPt(const std::vector<Geometry::Vec3D>&,
 	  const Geometry::Vec3D&);
+
+std::pair<Geometry::Vec3D,int>
+interceptRule(HeadRule&,const Geometry::Vec3D&,
+	      const Geometry::Vec3D&);
 
 // Generic point intersection
 std::vector<Geometry::Vec3D> 
