@@ -116,6 +116,8 @@ makeESS::makeESS() :
   LowSupplyPipe(new constructSystem::SupplyPipe("LSupply")),
   LowReturnPipe(new constructSystem::SupplyPipe("LReturn")),
 
+  TopPreMod(new DiskPreMod("TopPreMod")),
+  TopCapMod(new DiskPreMod("TopCapMod")),
   TopAFL(new moderatorSystem::BasicFlightLine("TopAFlight")),
   TopBFL(new moderatorSystem::BasicFlightLine("TopBFlight")),
   TopPre(new CylPreMod("TopPre")),
@@ -141,6 +143,8 @@ makeESS::makeESS() :
   OR.addObject(LowAFL);
   OR.addObject(LowBFL);
   OR.addObject(LowPre);
+  OR.addObject(TopPreMod);
+  OR.addObject(TopCapMod);
   OR.addObject(TopAFL);
   OR.addObject(TopBFL);
   OR.addObject(TopPre);
@@ -260,7 +264,7 @@ makeESS::createGuides(Simulation& System)
 void
 makeESS::buildLowButterfly(Simulation& System)
   /*!
-    Build the butterfly moderators
+    Build the lower butterfly moderator
     \param System :: Stardard simulation
   */
 {
@@ -276,6 +280,28 @@ makeESS::buildLowButterfly(Simulation& System)
   OR.addObject(LowMod);
   
   LowMod->createAll(System,*Reflector,LowPreMod.get(),6);
+  return;
+}
+
+void
+makeESS::buildTopButterfly(Simulation& System)
+  /*!
+    Build the upper butterfly moderator
+    \param System :: Stardard simulation
+  */
+{
+  ELog::RegMethod RegA("makeESS","buildTopButteflyMod");
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  std::shared_ptr<ButterflyModerator> BM
+    (new essSystem::ButterflyModerator("TopFly"));
+  BM->setRadiusX(Reflector->getRadius());
+  TopMod=std::shared_ptr<constructSystem::ModBase>(BM);
+  OR.addObject(TopMod);
+  
+  TopMod->createAll(System,*Reflector,TopPreMod.get(),6);
   return;
 }
     
@@ -447,26 +473,38 @@ makeESS::build(Simulation& System,
   makeTarget(System,targetType);
   Reflector->globalPopulate(System.getDataBase());
     
+  // lower moderator
   LowPreMod->createAll(System,World::masterOrigin(),0,true,
+		       Target->wheelHeight()/2.0,
+		       Reflector->getRadius());
+
+  TopPreMod->createAll(System,World::masterOrigin(),0,false,
 		       Target->wheelHeight()/2.0,
 		       Reflector->getRadius());
   
   buildLowButterfly(System);
+  buildTopButterfly(System);
   const double LMHeight=attachSystem::calcLinkDistance(*LowMod,5,6);
+  const double TMHeight=attachSystem::calcLinkDistance(*TopMod,5,6);
   // Cap moderator DOES not span whole unit
   LowCapMod->createAll(System,*LowMod,6,false,
+   		       0.0,Reflector->getRadius());
+  TopCapMod->createAll(System,*TopMod,6,false,
    		       0.0,Reflector->getRadius());
   
   Reflector->createAll(System,World::masterOrigin(),
 		       Target->wheelHeight(),
 		       LowPreMod->getHeight()+LMHeight, //+LowCapMod->getHeight(),
-		       -1.0);
+		       TopPreMod->getHeight()+TMHeight);
 
   attachSystem::addToInsertControl(System,*Reflector,*LowCapMod);
+  attachSystem::addToInsertControl(System,*Reflector,*TopCapMod);
+
 
   Reflector->insertComponent(System,"targetVoid",*Target,1);
 
   Reflector->deleteCell(System,"lowVoid");
+  Reflector->deleteCell(System,"topVoid");
   Bulk->createAll(System,*Reflector,*Reflector);
 
   // Build flightlines after bulk

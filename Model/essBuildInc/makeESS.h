@@ -101,6 +101,8 @@ class makeESS
   std::shared_ptr<constructSystem::SupplyPipe> LowReturnPipe;  ///< Lower supply 
 
   std::shared_ptr<constructSystem::ModBase> TopMod;   ///< Upper Mod
+  std::shared_ptr<DiskPreMod> TopPreMod;
+  std::shared_ptr<DiskPreMod> TopCapMod;
   std::shared_ptr<moderatorSystem::BasicFlightLine> TopAFL;  ///< Upper Mode FL
   std::shared_ptr<moderatorSystem::BasicFlightLine> TopBFL;  ///< Upper Mode FL
   std::shared_ptr<CylPreMod> TopPre;  ///< Upper Mod (Pre)
@@ -128,6 +130,9 @@ class makeESS
   void buildLowCylMod(Simulation&);
   void buildLowConicMod(Simulation&);
   void buildLayerMod(Simulation&);
+
+  void buildTopButterfly(Simulation&);
+
   void buildTopCylMod(Simulation&);
   void buildLowerPipe(Simulation&,const std::string&);
 
