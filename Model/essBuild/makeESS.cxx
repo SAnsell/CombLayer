@@ -462,6 +462,8 @@ makeESS::build(Simulation& System,
 		       LowPreMod->getHeight()+LMHeight, //+LowCapMod->getHeight(),
 		       -1.0);
 
+  attachSystem::addToInsertControl(System,*Reflector,*LowCapMod);
+
   Reflector->insertComponent(System,"targetVoid",*Target,1);
 
   Reflector->deleteCell(System,"lowVoid");
