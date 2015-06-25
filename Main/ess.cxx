@@ -102,7 +102,6 @@ main(int argc,char* argv[])
   std::vector<std::string> Names;  
   std::map<std::string,std::string> Values;  
   std::map<std::string,std::string> AddValues;  
-  std::map<std::string,double> IterVal;           // Variable to iterate 
 
   Simulation* SimPtr(0);
   try
@@ -112,7 +111,6 @@ main(int argc,char* argv[])
       mainSystem::inputParam IParam;
       createESSInputs(IParam);
       
-      const int iteractive(IterVal.empty() ? 0 : 1);   
       SimPtr=createSimulation(IParam,Names,Oname);
       if (!SimPtr) return -1;
       
@@ -176,7 +174,7 @@ main(int argc,char* argv[])
 	      SimProcess::writeIndexSim(*SimPtr,Oname,MCIndex);
 	      MCIndex++;
 	    }
-	  while(!iteractive && MCIndex<multi);
+	  while(MCIndex<multi);
 	}
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
       ModelSupport::calcVolumes(SimPtr,IParam);
