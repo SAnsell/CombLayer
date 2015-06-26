@@ -66,7 +66,7 @@ ODINvariables(FuncDataBase& Control)
   // Quad Blade chopper
   Control.addVariable("odinBladeXStep",0.0);
   Control.addVariable("odinBladeYStep",2.0);
-  Control.addVariable("odinBladeZStep",15.0/2.0);
+  Control.addVariable("odinBladeZStep",0.0);
   Control.addVariable("odinBladeXYangle",0.0);
   Control.addVariable("odinBladeZangle",0.0);
 
@@ -134,7 +134,7 @@ ODINvariables(FuncDataBase& Control)
   // T0 Chopper 
   Control.addVariable("odinTZeroXStep",0.0);
   Control.addVariable("odinTZeroYStep",2.0);
-  Control.addVariable("odinTZeroZStep",15.0/2.0);
+  Control.addVariable("odinTZeroZStep",0.0);
   Control.addVariable("odinTZeroXYangle",0.0);
   Control.addVariable("odinTZeroZangle",0.0);
 
@@ -331,6 +331,29 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinGPitABack0Width",9.0);
   Control.addVariable("odinGPitABack0Length",220.0);
   Control.addVariable("odinGPitABack0ZAngle",0.0);
+
+  // Chopper A : Single 1.2m disk chopper [6 phases]
+  Control.addVariable("odinChopperAXStep",0.0);
+  Control.addVariable("odinChopperAYStep",0.0);
+  Control.addVariable("odinChopperAZStep",0.0);
+  Control.addVariable("odinChopperAXYangle",0.0);
+  Control.addVariable("odinChopperAZangle",0.0);
+
+  Control.addVariable("odinChopperAGap",3.0);
+  Control.addVariable("odinChopperAInnerRadius",45.0);
+  Control.addVariable("odinChopperAOuterRadius",63.0);
+  Control.addVariable("odinChopperANDisk",1);
+
+  Control.addVariable("odinChopperA0Thick",2.0);
+  Control.addVariable("odinChopperAInnerMat","Aluminium");
+  Control.addVariable("odinChopperAOuterMat","Inconnel");
+
+  Control.addVariable("odinChopperANBlades",2);
+  Control.addVariable("odinChopperA0PhaseAngle0",-20.0);
+  Control.addVariable("odinChopperA0OpenAngle0",160.0);
+
+  Control.addVariable("odinChopperA0PhaseAngle1",160.0);
+  Control.addVariable("odinChopperA0OpenAngle1",160.0);
 
   
   // GUIDE EXITING PIT
@@ -598,20 +621,20 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinCaveVoidNoseLen",183.0);
 
   Control.addVariable("odinCaveFeLeftWall",35.0);
-  Control.addVariable("odinCaveFeRightWall",35.0);
-  Control.addVariable("odinCaveFeRoof",60.0);
-  Control.addVariable("odinCaveFeFloor",30.0);
-  Control.addVariable("odinCaveFeNoseFront",60.0);
-  Control.addVariable("odinCaveFeNoseSide",45.0);
-  Control.addVariable("odinCaveFeBack",60.0);
+  Control.addVariable("odinCaveFeRightWall",15.0);
+  Control.addVariable("odinCaveFeRoof",15.0);
+  Control.addVariable("odinCaveFeFloor",15.0);
+  Control.addVariable("odinCaveFeNoseFront",25.0);
+  Control.addVariable("odinCaveFeNoseSide",25.0);
+  Control.addVariable("odinCaveFeBack",15.0);
 
   Control.addVariable("odinCaveConcLeftWall",35.0);
   Control.addVariable("odinCaveConcRightWall",35.0);
-  Control.addVariable("odinCaveConcRoof",60.0);
-  Control.addVariable("odinCaveConcFloor",30.0);
-  Control.addVariable("odinCaveConcNoseFront",60.0);
-  Control.addVariable("odinCaveConcNoseSide",45.0);
-  Control.addVariable("odinCaveConcBack",60.0);
+  Control.addVariable("odinCaveConcRoof",35.0);
+  Control.addVariable("odinCaveConcFloor",50.0);
+  Control.addVariable("odinCaveConcNoseFront",35.0);
+  Control.addVariable("odinCaveConcNoseSide",35.0);
+  Control.addVariable("odinCaveConcBack",35.0);
 
   Control.addVariable("odinCaveFeMat","Stainless304");
   Control.addVariable("odinCaveConcMat","Concrete");

@@ -98,6 +98,8 @@ ODIN::ODIN() :
   PitA(new constructSystem::ChopperPit("odinPitA")),
   GuidePitAFront(new beamlineSystem::GuideLine("odinGPitAFront")),
   GuidePitABack(new beamlineSystem::GuideLine("odinGPitABack")),
+  ChopperA(new constructSystem::DiskChopper("odinChopperA")),
+
   GuideE(new beamlineSystem::GuideLine("odinGE")),
 
   PitB(new constructSystem::ChopperPit("odinPitB")),
@@ -133,6 +135,8 @@ ODIN::ODIN() :
   OR.addObject(PitA);
   OR.addObject(GuidePitAFront);
   OR.addObject(GuidePitABack);
+  OR.addObject(ChopperA);
+    
   OR.addObject(GuideE);
 
   OR.addObject(PitB);
@@ -176,12 +180,14 @@ ODIN::build(Simulation& System,const attachSystem::TwinComp& GItem,
   ELog::RegMethod RegA("ODIN","build");
   ELog::EM<<"Building ODIN on : "<<GItem.getKeyName()<<ELog::endDiag;
   BladeChopper->addInsertCell(bunkerObj.getCell("MainVoid"));
+  BladeChopper->setCentreFlag(3);  // Z direction
   BladeChopper->createAll(System,GItem,2);
 
   GuideA->addInsertCell(bunkerObj.getCell("MainVoid"));
   GuideA->createAll(System,BladeChopper->getKey("Main"),2,
 		    BladeChopper->getKey("Beam"),2);
   T0Chopper->addInsertCell(bunkerObj.getCell("MainVoid"));
+  T0Chopper->setCentreFlag(3);  // Z direction
   T0Chopper->createAll(System,GuideA->getKey("Guide0"),2);
 
   GuideB->addInsertCell(bunkerObj.getCell("MainVoid"));
@@ -216,6 +222,7 @@ ODIN::build(Simulation& System,const attachSystem::TwinComp& GItem,
     GuideCut.addUnion(GOuter.getLinkString(i));
   PitA->addInsertCell(voidCell);
   PitA->createAll(System,GuideD->getKey("Guide0"),2,GuideCut.display());
+
   ELog::EM<<"PitA == "<<PitA->getCentre()
 	  <<" :: "<<PitA->getCentre().abs()<<ELog::endDiag;
   
@@ -224,6 +231,10 @@ ODIN::build(Simulation& System,const attachSystem::TwinComp& GItem,
   GuidePitAFront->createAll(System,GuideD->getKey("Guide0"),2,
 			    GuideD->getKey("Guide0"),2);
 
+  ChopperA->addInsertCell(PitA->getCell("Void"));
+  ChopperA->setCentreFlag(-3);  // -Z direction
+  ChopperA->createAll(System,*PitA,0);
+  
   GuideE->addInsertCell(voidCell);
   GuideE->addInsertCell(PitA->getCell("MidLayer"));
   GuideE->addInsertCell(PitA->getCell("Outer"));
