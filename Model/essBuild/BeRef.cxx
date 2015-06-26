@@ -160,6 +160,7 @@ BeRef::populate(const FuncDataBase& Control,
   zStep=Control.EvalVar<double>(keyName+"ZStep");
   xyAngle=Control.EvalVar<double>(keyName+"XYangle");
   zAngle=Control.EvalVar<double>(keyName+"Zangle");
+  
   radius=Control.EvalVar<double>(keyName+"Radius");   
   height=Control.EvalVar<double>(keyName+"Height");   
   wallThick=Control.EvalVar<double>(keyName+"WallThick");   

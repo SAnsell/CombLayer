@@ -77,6 +77,7 @@ class DiskPreMod : public attachSystem::ContainedComp,
   virtual std::string getLayerString(const size_t,const size_t) const;
 
   /// total height of object
+  double getZOffset() const { return zStep; }
   double getHeight() const
     { return (depth.empty()) ? 0.0 : depth.back()+height.back(); }
 

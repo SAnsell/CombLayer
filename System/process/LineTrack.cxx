@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   process/LineTrack.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,8 +30,7 @@
 #include <map> 
 #include <string>
 #include <algorithm>
-#include <boost/format.hpp>
-#include <boost/bind.hpp>
+#include <memory>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -66,7 +65,6 @@
 #include "Qhull.h"
 #include "ObjSurfMap.h"
 #include "ObjTrackItem.h"
-#include "ReadFunctions.h"
 #include "neutron.h"
 #include "Simulation.h"
 #include "LineTrack.h"
@@ -333,14 +331,11 @@ LineTrack::write(std::ostream& OX) const
     \param OX :: Output stream
   */
 {
-  boost::format FMT("%1$d %2$5.2e ");
-
   OX<<"Pts == "<<InitPt<<"::"<<EndPt<<std::endl;
   for(size_t i=0;i<Cells.size();i++)
     OX<<"  "<<Cells[i]<<" : "<<Track[i]<<std::endl;
-
   return;
 }
 
   
-} // Namespace ModelSupportf
+} // Namespace ModelSupport

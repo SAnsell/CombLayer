@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   chip/ChipIRInsert.cxx
  *
@@ -519,7 +519,6 @@ ChipIRInsert::createAll(Simulation& System,
   createLeadPlate(System);
   layerProcess(System);
   createDatumPoints();
-  ELog::EM<<"BULK INSERT == "<<innerWidth<<ELog::endDiag;
   return;
 }
   

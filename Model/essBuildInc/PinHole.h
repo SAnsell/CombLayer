@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuildInc/BunkerInsert.h
+ * File:   constructInc/PinHole.h
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -19,59 +19,67 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef essSystem_BunkerInsert_h
-#define essSystem_BunkerInsert_h
+#ifndef essSystem_PinHole_h
+#define essSystem_PinHole_h
 
 class Simulation;
 
+namespace constructSystem
+{
+  class RotaryCollimator;
+  class Jaws;
+}
+
 namespace essSystem
 {
-
+  
 /*!
-  \class BunkerInsert
+  \class PinHole
   \version 1.0
   \author S. Ansell
   \date June 2015
-  \brief Bulk around Reflector
+  \brief Container class for multi-collimator system
 */
 
-class BunkerInsert : public attachSystem::ContainedComp,
+class PinHole : public attachSystem::ContainedComp,
   public attachSystem::FixedOffset,public attachSystem::CellMap
 {
  private:
-  
-  const int insIndex;            ///< Index of surface offset
-  int cellIndex;                 ///< Cell index
 
-  double backStep;               ///< Step back of dividing plane
-  
-  double height;                 ///< Height of insert 
-  double width;                  ///< Width of insert 
-  double topWall;                ///< Top Wall thickness 
-  double lowWall;                ///< Low wall thickness
-  double leftWall;               ///< Left wall thickness
-  double rightWall;              ///< Right wall thickness
+  const int pinIndex;             ///< SurfIndex offset
+  int cellIndex;                  ///< cell index
 
-  int wallMat;                   ///< wall material
+  /// First collimator
+  std::shared_ptr<constructSystem::RotaryCollimator> CollA;
+  /// Second collimator
+  std::shared_ptr<constructSystem::RotaryCollimator> CollB;
 
-    
+  /// JAW X Axis
+  std::shared_ptr<constructSystem::Jaws> JawX;
+  /// JAW ZX (+45deg)
+  std::shared_ptr<constructSystem::Jaws> JawXZ;
+
+
+  double radius;           ///< Excloseing radius
+  double length;           ///< Enclosing length
+
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
-
   void createSurfaces();
-  void createLinks(const attachSystem::FixedComp&);
-  void createObjects(Simulation&,const std::string&);
-
+  void createObjects(Simulation&);
+  void createLinks();
+    
  public:
 
-  BunkerInsert(const std::string&);
-  BunkerInsert(const BunkerInsert&);
-  BunkerInsert& operator=(const BunkerInsert&);
-  virtual ~BunkerInsert();
+  PinHole(const std::string&);
+  PinHole(const PinHole&);
+  PinHole& operator=(const PinHole&);
+  virtual ~PinHole();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int,const Bunker&);
+  void createAll(Simulation&,
+		 const attachSystem::FixedComp&,
+		 const long int);
 
 };
 
@@ -79,4 +87,3 @@ class BunkerInsert : public attachSystem::ContainedComp,
 
 #endif
  
-

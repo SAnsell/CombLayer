@@ -72,6 +72,7 @@
 #include "Debug.h"
 #include "debugMethod.h"
 
+
 namespace attachSystem
 {
 
@@ -795,4 +796,46 @@ calcLinkDistance(const FixedComp& FC,const long int sideIndexA,
   
 }
 
+HeadRule
+unionLink(const attachSystem::FixedComp& FC,
+	  const std::vector<long int>& LIndex)
+  /*!
+    Simple way to combined a number of link units into
+    a HeadRule to export
+    \param FC :: FixedComp unit
+    \param LIndex :: List of signed link surfaces
+    \return HeadRule of union join
+   */
+{
+  ELog::RegMethod RegA("AttachSupport[F]","unionLink");
+
+  HeadRule Out;
+
+  for(const long int LI : LIndex)
+    Out.addUnion(FC.getSignedLinkString(LI));
+
+
+  return Out;
+}
+
+HeadRule
+intersectionLink(const attachSystem::FixedComp& FC,
+		 const std::vector<long int>& LIndex)
+  /*!
+    Simple way to combined a number of link units into
+    a HeadRule to export
+    \param FC :: FixedComp unit
+    \param LIndex :: List of signed link surfaces
+    \return HeadRule of union join
+   */
+{
+  ELog::RegMethod RegA("AttachSupport[F]","intersectionLink");
+  HeadRule Out;
+
+  for(const long int LI : LIndex)
+    Out.addIntersection(FC.getSignedLinkString(LI));
+
+  return Out;
+}
+  
 }  // NAMESPACE attachSystem

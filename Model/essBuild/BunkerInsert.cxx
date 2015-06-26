@@ -52,6 +52,7 @@
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "surfEqual.h"
+#include "SurInter.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
@@ -80,6 +81,7 @@
 #include "mergeTemplate.h"
 
 #include "World.h"
+#include "Bunker.h"
 #include "BunkerInsert.h"
 
 namespace essSystem
@@ -112,7 +114,7 @@ BunkerInsert::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("BunkerInsert","populate");
   FixedOffset::populate(Control);
 
-  backStep=Control.EvalDefVar<double>(keyName+"BackStep",30.0);
+  backStep=Control.EvalDefVar<double>(keyName+"BackStep",300.0);
     
   height=Control.EvalVar<double>(keyName+"Height");
   width=Control.EvalVar<double>(keyName+"Width");
@@ -138,7 +140,8 @@ BunkerInsert::createUnitVector(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("BunkerInsert","createUnitVector");
 
-  FixedComp::createUnitVector(FC,orgIndex);      
+  FixedComp::createUnitVector(FC,orgIndex);
+  applyOffset();
   return;
 }
   
@@ -183,7 +186,7 @@ BunkerInsert::createObjects(Simulation& System,
   std::string Out;
   Out=ModelSupport::getComposite(SMap,insIndex," 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+BCell));
-  setCell("void",cellIndex-1);
+  setCell("Void",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,insIndex,
 				 " 13 -14 15 -16 (-3 : 4: -5: 6) ");
@@ -194,16 +197,43 @@ BunkerInsert::createObjects(Simulation& System,
   
   return;
 }
+
+
   
 void
-BunkerInsert::createLinks()
+BunkerInsert::createLinks(const attachSystem::FixedComp& BUnit)
   /*!
     Create all the linkes [OutGoing]
+    \param BUnit :: Bunker unit						
   */
 {
   ELog::RegMethod RegA("BunkerInsert","createLinks");
 
+  FixedComp::setLinkCopy(0,BUnit,0);
+  FixedComp::setLinkCopy(1,BUnit,1);
 
+
+  // Calc bunker edge intersectoin
+  std::vector<Geometry::Vec3D> Pts;
+  std::vector<int> SNum;
+
+  // Inner point
+  HeadRule HM(BUnit.getMainRule(0));
+  HM.addIntersection(BUnit.getCommonRule(0));
+  HM.populateSurf();
+  HM.calcSurfIntersection(Origin,Y,Pts,SNum);
+  const size_t indexA=SurInter::closestPt(Pts,Origin);
+  FixedComp::setConnect(0,Pts[indexA],-Y);
+
+  // Outer point
+  HM=BUnit.getMainRule(1);
+  HM.addIntersection(BUnit.getCommonRule(1));
+  HM.populateSurf();
+  HM.calcSurfIntersection(Origin,Y,Pts,SNum);
+  const size_t indexB=SurInter::closestPt(Pts,Origin);
+  FixedComp::setConnect(1,Pts[indexB],Y);
+
+  
   return;
 }
 
@@ -212,14 +242,14 @@ void
 BunkerInsert::createAll(Simulation& System,
 			const attachSystem::FixedComp& FC,
 			const long int orgIndex,
-			const std::string& BWalls)
+			const Bunker& bunkerObj)
 
 /*!
     Generic function to create everything
     \param System :: Simulation item
     \param FC :: Central origin
     \param orgIndex :: link for origin
-    \param BWalls :: Bunker wall cut
+    \param bunkerObj :: Bunker wall object
   */
 {
   ELog::RegMethod RegA("BunkerInsert","createAll");
@@ -227,8 +257,13 @@ BunkerInsert::createAll(Simulation& System,
   populate(System.getDataBase());
   createUnitVector(FC,orgIndex);
   createSurfaces();
-  createLinks();
-  createObjects(System,BWalls);
+
+  // Walls : [put 
+  const std::string BWallStr=bunkerObj.getSignedLinkString(-1)+" "+
+    bunkerObj.getSignedLinkString(-2);
+  createObjects(System,BWallStr);
+  createLinks(bunkerObj);
+  
   insertObjects(System);              
 
   return;

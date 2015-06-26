@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   monte/LineIntersectVisit.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@
 #include <string>
 #include <algorithm>
 #include <complex>
-#include <boost/bind.hpp>
+#include <memory>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -398,7 +398,8 @@ LineIntersectVisit::getPoint(const Geometry::Surface* SPtr,
   SPtr->acceptVisitor(*this);
   std::vector<Geometry::Vec3D>::iterator vc=
     remove_if(PtOut.begin(),PtOut.end(),
-	      boost::bind(&Geometry::surfaceCheck,sign,CntlPtr,_1));
+	      std::bind(&Geometry::surfaceCheck,sign,CntlPtr,
+			std::placeholders::_1));
   PtOut.erase(vc,PtOut.end());
 
   if (PtOut.empty())
@@ -438,7 +439,8 @@ LineIntersectVisit::getPoints(const Geometry::Surface* SPtr,
   SPtr->acceptVisitor(*this);
   std::vector<Geometry::Vec3D>::iterator vc=
     remove_if(PtOut.begin(),PtOut.end(),
-	      boost::bind(&Geometry::surfaceCheck,sign,CntlPtr,_1));
+	      std::bind(&Geometry::surfaceCheck,sign,CntlPtr,
+			std::placeholders::_1));
 
   PtOut.erase(vc,PtOut.end());
   return PtOut;

@@ -105,7 +105,9 @@ class GuideLine : public attachSystem::ContainedComp,
 		       const long int);
   void createUnitLinks();
 
-
+  void checkRectangle(const double,const double) const;
+  Geometry::Vec3D calcActiveEndIntercept();
+  
  public:
 
   GuideLine(const std::string&);

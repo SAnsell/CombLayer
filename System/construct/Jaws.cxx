@@ -66,7 +66,7 @@
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"  
-#include "FixedComp.h" 
+#include "FixedComp.h"
 #include "SecondTrack.h"
 #include "TwinComp.h"
 #include "ContainedComp.h"
@@ -89,12 +89,12 @@ Jaws::Jaws(const std::string& Key) :
 Jaws::Jaws(const Jaws& A) : 
   attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
   jawIndex(A.jawIndex),cellIndex(A.cellIndex),xStep(A.xStep),
-  yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
-  zAngle(A.zAngle),zOpen(A.zOpen),zThick(A.zThick),
-  zCross(A.zCross),zLen(A.zLen),xOpen(A.xOpen),
-  xThick(A.xThick),xCross(A.xCross),xLen(A.xLen),
-  jawGap(A.jawGap),XHeight(A.XHeight),YHeight(A.YHeight),
-  ZHeight(A.ZHeight),wallThick(A.wallThick),
+  yStep(A.yStep),zStep(A.zStep),xAngle(A.xAngle),
+  yAngle(A.yAngle),zAngle(A.zAngle),zOpen(A.zOpen),
+  zThick(A.zThick),zCross(A.zCross),zLen(A.zLen),
+  xOpen(A.xOpen),xThick(A.xThick),xCross(A.xCross),
+  xLen(A.xLen),jawGap(A.jawGap),XHeight(A.XHeight),
+  YHeight(A.YHeight),ZHeight(A.ZHeight),wallThick(A.wallThick),
   zJawMat(A.zJawMat),xJawMat(A.xJawMat),wallMat(A.wallMat)
   /*!
     Copy constructor
@@ -118,7 +118,8 @@ Jaws::operator=(const Jaws& A)
       xStep=A.xStep;
       yStep=A.yStep;
       zStep=A.zStep;
-      xyAngle=A.xyAngle;
+      xAngle=A.xAngle;
+      yAngle=A.yAngle;
       zAngle=A.zAngle;
       zOpen=A.zOpen;
       zThick=A.zThick;
@@ -140,6 +141,7 @@ Jaws::operator=(const Jaws& A)
   return *this;
 }
 
+
 Jaws::~Jaws() 
   /*!
     Destructor
@@ -155,12 +157,13 @@ Jaws::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("Jaws","populate");
-  
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
-  zAngle=Control.EvalVar<double>(keyName+"Zangle");
+
+  xStep=Control.EvalDefVar<double>(keyName+"XStep",0.0);
+  yStep=Control.EvalDefVar<double>(keyName+"YStep",0.0);
+  zStep=Control.EvalDefVar<double>(keyName+"ZStep",0.0);
+  xAngle=Control.EvalDefVar<double>(keyName+"XAngle",0.0);
+  yAngle=Control.EvalDefVar<double>(keyName+"YAngle",0.0);
+  zAngle=Control.EvalDefVar<double>(keyName+"ZAngle",0.0);
 
   zOpen=Control.EvalVar<double>(keyName+"ZOpen");
   zThick=Control.EvalVar<double>(keyName+"ZThick");
@@ -196,11 +199,11 @@ Jaws::createUnitVector(const attachSystem::FixedComp& FC,
   */
 {
   ELog::RegMethod RegA("Jaws","createUnitVector");
-
+  
   FixedComp::createUnitVector(FC,sideIndex);
+
   applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
-  ELog::EM<<"Z == "<<Z<<" "<<FC.getZ()<<ELog::endDiag;
+  applyAngleRotate(xAngle,yAngle,zAngle);
   return;
 }
 

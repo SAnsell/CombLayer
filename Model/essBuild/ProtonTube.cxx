@@ -188,10 +188,14 @@ ProtonTube::createObjects(Simulation& System,
       const std::string SName=StrFunc::makeString("Sector",i);
       FrontCap=(!i) ? TargetSurfBoundary : ModelSupport::getComposite(SMap,PT-100, " 2 ");
       EndCap=(i+1 == nSec) ? outerSurfBoundary : ModelSupport::getComposite(SMap,PT, " -2 ");
+      
       Out=ModelSupport::getSetComposite(SMap,PT, " -7 5 -6 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,inMat[i],0.0,Out+FrontCap+EndCap));
-      Out=ModelSupport::getSetComposite(SMap,PT, " 7 -17 5 -6");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat[i],0.0,Out+FrontCap+EndCap));
+      if (thick[i]>Geometry::zeroTol)
+	{
+	  Out=ModelSupport::getSetComposite(SMap,PT, " 7 -17 5 -6");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat[i],0.0,Out+FrontCap+EndCap));
+	}
 
       Out=ModelSupport::getSetComposite(SMap,PT, " -17 5 -6 ");
       attachSystem::ContainedGroup::addKey(SName);

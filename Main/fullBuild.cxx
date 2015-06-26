@@ -159,7 +159,6 @@ main(int argc,char* argv[])
 	    }
 	  SimPtr->resetAll();
 	  World::createOuterObjects(*SimPtr);
-
 	  moderatorSystem::makeTS2 TS2Obj;
 	  TS2Obj.build(SimPtr,IParam);
 	  // This for chipObjBuild

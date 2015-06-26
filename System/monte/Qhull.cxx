@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   monte/Qhull.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,6 @@
 #include <string>
 #include <algorithm>
 #include <memory>
-#include <boost/bind.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -293,7 +292,7 @@ Qhull::getVertex() const
 {
   std::vector<Geometry::Vec3D> outV(VList.size());
   transform(VList.begin(),VList.end(),outV.begin(),
-	    boost::bind(&SurfVertex::getPoint,_1));
+	    std::bind(&SurfVertex::getPoint,std::placeholders::_1));
   return outV;
 }
 
@@ -449,8 +448,8 @@ Qhull::displace(const Geometry::Vec3D& DVec)
     \param DVec :: displacement
   */
 {
-  for_each(VList.begin(),VList.end(),
-	   boost::bind(&SurfVertex::displace,_1,boost::ref(DVec)));
+  for(SurfVertex& vc :  VList)
+    vc.displace(DVec);
   return;
 }
 
@@ -462,8 +461,8 @@ Qhull::rotate(const Geometry::Matrix<double>& MRot)
     \param MRot :: rotation matrix
   */
 {
-  for_each(VList.begin(),VList.end(),
-	   boost::bind(&SurfVertex::rotate,_1,boost::ref(MRot)));
+  for(SurfVertex& vc :  VList)
+    vc.rotate(MRot);
   return;
 }
 
@@ -475,8 +474,8 @@ Qhull::mirror(const Geometry::Plane& PObj)
     \param PObj :: Plane to mirror around
   */
 {
-  for_each(VList.begin(),VList.end(),
-	   boost::bind(&SurfVertex::mirror,_1,boost::ref(PObj)));
+  for(SurfVertex& vc :  VList)
+    vc.mirror(PObj);
   return;
 }
 

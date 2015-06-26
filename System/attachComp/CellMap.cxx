@@ -127,7 +127,6 @@ CellMap::setCell(const std::string& Key,const size_t Index,
   LCTYPE::iterator mc=Cells.find(Key);
   if (mc==Cells.end())
     {
-      ELog::EM<<"Cell adding " <<Key<<ELog::endDiag;
       if (Index==0)
 	Cells.insert(LCTYPE::value_type(Key,CN));
       else
@@ -137,7 +136,7 @@ CellMap::setCell(const std::string& Key,const size_t Index,
       return;
     }
   
-  if (mc->second>0)           // +1 case
+  if (mc->second>=0)           // +1 case
     {
       if (Index==0)
 	mc->second=CN;
@@ -162,6 +161,54 @@ CellMap::setCell(const std::string& Key,const size_t Index,
   else
     throw ColErr::IndexError<size_t>
       (Index,SU,"Key["+Key+"] index error");
+
+  return; 
+}
+
+void
+CellMap::setCells(const std::string& Key,const int CNA,const int CNB)
+  /*!
+    Insert a set of cells
+    \param Key :: Keyname
+    \param CNA :: Cell number [Start]
+    \param CNB :: Cell number [End]
+  */
+{
+  ELog::RegMethod RegA("CellMap","setCells");
+  
+  int mA(std::min(CNA,CNB));
+  int mB(std::max(CNA,CNB));
+  std::vector<int> Out;
+  for(;mA<=mB;mA++)
+    Out.push_back(mA);
+
+  LCTYPE::iterator mc=Cells.find(Key);
+  if (mc==Cells.end())
+    {
+      if (mA==mB)
+	Cells.insert(LCTYPE::value_type(Key,mA));
+      else
+	{
+	  SplitUnits.push_back(Out);
+	  Cells.insert(LCTYPE::value_type
+		       (Key,-static_cast<int>(SplitUnits.size())));
+	}      
+      return;
+    }
+  
+  if (mc->second>=0)           // +1 case
+    {
+      Out.push_back(mc->second);
+      SplitUnits.push_back(Out);
+      mc->second = -static_cast<int>(SplitUnits.size());
+      return;
+    }
+
+  // mc->second :: -ve
+  const size_t SI(static_cast<size_t>(-mc->second)-1);
+  std::move(Out.begin(),Out.end(),
+	    std::back_inserter(SplitUnits[SI]));
+
 
   return; 
 }
@@ -194,14 +241,14 @@ CellMap::getCell(const std::string& Key,const size_t Index) const
   if (mc==Cells.end())
     throw ColErr::InContainerError<std::string>(Key,"Key not present");
 
-  if (mc->second>0)
+  if (mc->second>=0)
     {
       if (Index!=0)
 	throw ColErr::IndexError<size_t>(Index,0,"Key["+Key+"] index error");
       return mc->second;
     }
   // This can't fail:
-  const size_t SI(static_cast<size_t>(1-mc->second));
+  const size_t SI(static_cast<size_t>(-mc->second-1));
   const size_t SU(SplitUnits[SI].size());
   
   if (Index>=SU)
@@ -209,6 +256,35 @@ CellMap::getCell(const std::string& Key,const size_t Index) const
   return SplitUnits[SI][Index];
 }
 
+std::vector<int>
+CellMap::getCells(const std::string& Key) const
+  /*!
+    Returns a vector of cells: 
+    Note a bit of care is needed over the case on a single value
+    \param Key :: keyname to search
+    \return vector
+   */
+{
+  static std::vector<int> Singlet({0});  
+  ELog::RegMethod RegA("CellMap","getCells");
+
+  
+  LCTYPE::const_iterator mc=Cells.find(Key);
+  if (mc==Cells.end())
+    throw ColErr::InContainerError<std::string>(Key,"Key not present");
+
+  if (mc->second>=0)
+    return std::vector<int>({mc->second});
+  
+  const size_t SU(static_cast<size_t>(-mc->second-1));
+
+  std::vector<int> Out;
+  for(const int& CN : SplitUnits[SU])
+    if (CN)
+      Out.push_back(CN);
+  return Out;
+}
+  
 void
 CellMap::insertComponent(Simulation& System,
 			  const std::string& Key,
@@ -310,28 +386,51 @@ CellMap::deleteCell(Simulation& System,
 {
   ELog::RegMethod RegA("CellMap","deleteCell");
 
+  const int CN=removeCell(Key,Index);
+
+  if (!CN)
+    throw ColErr::InContainerError<int>(CN,"Key["+Key+"] zero cell");
+  
+  System.removeCell(CN);
+  return;
+}
+
+int
+CellMap::removeCell(const std::string& Key,
+		    const size_t Index) 
+/*!
+    Remove a cell number a cell
+    \param Key :: KeyName for cell
+    \param Index :: Cell index
+    \return cell number removed
+  */
+{
+  ELog::RegMethod RegA("CellMap","deleteCell");
+
   LCTYPE::iterator mc=Cells.find(Key);
   if (mc==Cells.end())
     throw ColErr::InContainerError<std::string>(Key,"Key not present");
-  if (mc->second>0)
+  if (mc->second>=0)
     {
       if (Index!=0)
 	throw ColErr::IndexError<size_t>
 	  (Index,0,"Key["+Key+"] index error");
-      System.removeCell(mc->second);
-      Cells.erase(mc);
-      return;
-    }
-  // NOTE HERE WE ZERO Cell becuase otherwise a linear call is junk
-  const size_t SI(static_cast<size_t>(-mc->second)-1);
-  const size_t SU(SplitUnits[SI].size());
-  if (Index>=SU || !SplitUnits[SI][SU])
-    throw ColErr::IndexError<size_t>
-	  (Index,SU,"Key["+Key+"] index error");
 
-  System.removeCell(SplitUnits[SI][SU]);
+      const int outCN=mc->second;
+      Cells.erase(mc);
+      return outCN;
+    }
+  // NOTE HERE WE ZERO and not delete because otherwise a seti
+  // of linear calls to this function are junk.
+  const size_t SI(static_cast<size_t>(-mc->second-1));
+  const size_t SU(SplitUnits[SI].size());
+  if (Index>=SU)
+    throw ColErr::IndexError<size_t>
+      (Index,SU,"Key["+Key+"] index error");
+
+  const int outCN=SplitUnits[SI][SU];
   SplitUnits[SI][SU]=0;
-  return;
+  return outCN;
 }
   
 

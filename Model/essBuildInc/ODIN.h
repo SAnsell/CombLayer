@@ -33,12 +33,16 @@ namespace constructSystem
 {
   class Jaws;
   class DiskChopper;
+  class ChopperPit;
+  class RotaryCollimator;
 }
 
 namespace essSystem
 {
   class Bunker;
   class BunkerInsert;
+  class Hut;
+  class PinHole;
   
   /*!
     \class ODIN
@@ -62,6 +66,55 @@ class ODIN
   std::shared_ptr<beamlineSystem::GuideLine> GuideB;
   /// Bunker insert
   std::shared_ptr<essSystem::BunkerInsert> BInsert;
+  /// Guide in the Bunker wall
+  std::shared_ptr<beamlineSystem::GuideLine> GuideC;
+  /// Guide after the Bunker to first chopper
+  std::shared_ptr<beamlineSystem::GuideLine> GuideD;
+
+  /// Chopper pit for first outer bunker chopper
+  std::shared_ptr<constructSystem::ChopperPit> PitA;
+  /// Guide from Chopper to exterior
+  std::shared_ptr<beamlineSystem::GuideLine> GuidePitAFront;
+  /// Guide from Chopper to exterior
+  std::shared_ptr<beamlineSystem::GuideLine> GuidePitABack;
+  /// Guide from Chopper to exterior
+  std::shared_ptr<constructSystem::DiskChopper> ChopperA;
+
+  /// Guide from Chopper A to exterior
+  std::shared_ptr<beamlineSystem::GuideLine> GuideE;
+
+
+  /// Chopper pit for second choppers:
+  std::shared_ptr<constructSystem::ChopperPit> PitB;
+  /// Guide from Chopper to exterior [target]
+  std::shared_ptr<beamlineSystem::GuideLine> GuidePitBFront;
+  /// Guide from Chopper to exterior [Hutch side]
+  std::shared_ptr<beamlineSystem::GuideLine> GuidePitBBack;
+
+  /// Guide from chopper B to exterior
+  std::shared_ptr<beamlineSystem::GuideLine> GuideF;
+
+
+  /// Chopper pit for third choppers:
+  std::shared_ptr<constructSystem::ChopperPit> PitC;
+  /// Guide from Chopper to exterior [target]
+  std::shared_ptr<beamlineSystem::GuideLine> GuidePitCFront;
+  /// Guide from Chopper to exterior [Hutch side]
+  std::shared_ptr<beamlineSystem::GuideLine> GuidePitCBack;
+
+
+  /// Guide from chopper C to exterior
+  std::shared_ptr<beamlineSystem::GuideLine> GuideG;
+
+  /// The Hutch
+  std::shared_ptr<Hut> Cave;
+  /// Guide in Hutch 
+  std::shared_ptr<beamlineSystem::GuideLine> GuideH;
+  
+  // Collimator
+  std::shared_ptr<PinHole> PinA;
+
+
   
  public:
   

@@ -42,12 +42,13 @@ class Jaws : public attachSystem::FixedComp,
   
   const int jawIndex;           ///< Index of surface offset
   int cellIndex;                ///< Cell index
-  
-  double xStep;                 ///< Origin step
-  double yStep;                 ///< Origin step
-  double zStep;                 ///< Origin step
-  double xyAngle;               ///< Axis rotation
-  double zAngle;                ///< Axis rotation
+
+  double xStep;                 ///< step in X 
+  double yStep;                 ///< step in X 
+  double zStep;                 ///< step in X 
+  double xAngle;                ///< rotation about X [last]
+  double yAngle;                ///< rotation about Y [mid]
+  double zAngle;                ///< rotation about Z [first]
   
   double zOpen;                 ///< Z-opening
   double zThick;                ///< Blade thickness
@@ -71,7 +72,6 @@ class Jaws : public attachSystem::FixedComp,
   int xJawMat;                  ///< X material
 
   int wallMat;                  ///< Wall material
-
 
   
   void populate(const FuncDataBase&);

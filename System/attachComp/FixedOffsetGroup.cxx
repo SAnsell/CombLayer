@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   attachComp/FixedOffset.cxx
+ * File:   attachComp/FixedOffsetGroup.cxx
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -57,13 +57,16 @@
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
-#include "FixedOffset.h"
+#include "FixedGroup.h"
+#include "FixedOffsetGroup.h"
 
 namespace attachSystem
 {
 
-FixedOffset::FixedOffset(const std::string& KN,const size_t NL) :
-  FixedComp(KN,NL),xStep(0.0),yStep(0.0),zStep(0.0),
+FixedOffsetGroup::FixedOffsetGroup(const std::string& mainKey,
+				   const std::string& KN,
+				   const size_t NL) :
+  FixedGroup(mainKey,KN,NL),xStep(0.0),yStep(0.0),zStep(0.0),
   xyAngle(0.0),zAngle(0.0)
  /*!
     Constructor 
@@ -72,45 +75,54 @@ FixedOffset::FixedOffset(const std::string& KN,const size_t NL) :
   */
 {}
 
-FixedOffset::FixedOffset(const FixedOffset& A) : 
-  FixedComp(A),
-  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  xyAngle(A.xyAngle),zAngle(A.zAngle)
-  /*!
-    Copy constructor
-    \param A :: FixedOffset to copy
+FixedOffsetGroup::FixedOffsetGroup(const std::string& mainKey,
+				   const std::string& AKey,
+				   const size_t ANL,
+				   const std::string& BKey,
+				   const size_t BNL) :
+  FixedGroup(mainKey,AKey,ANL,BKey,BNL),
+  xStep(0.0),yStep(0.0),zStep(0.0),
+  xyAngle(0.0),zAngle(0.0)
+ /*!
+    Constructor 
+    \param mainKey :: KeyName [main system]
+    \param AKey :: Key unit
+    \param ANL :: A Number of links
+    \param BKey :: Key unit
+    \param BNL :: B Number of links
   */
 {}
 
-FixedOffset&
-FixedOffset::operator=(const FixedOffset& A)
-  /*!
-    Assignment operator
-    \param A :: FixedOffset to copy
-    \return *this
+ FixedOffsetGroup::FixedOffsetGroup(const std::string& mainKey,
+				    const std::string& AKey,
+				    const size_t ANL,
+				    const std::string& BKey,
+				    const size_t BNL,
+				    const std::string& CKey,
+				    const size_t CNL) :
+  FixedGroup(mainKey,AKey,ANL,BKey,BNL,CKey,CNL),
+  xStep(0.0),yStep(0.0),zStep(0.0),
+  xyAngle(0.0),zAngle(0.0)
+ /*!
+    Constructor 
+    \param mainKey :: KeyName [main system]
+    \param AKey :: Key unit
+    \param ANL :: A Number of links
+    \param BKey :: Key unit
+    \param BNL :: B Number of links
+    \param CKey :: Key unit
+    \param CNL :: B Number of links
   */
-{
-  if (this!=&A)
-    {
-      FixedComp::operator=(A);
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
-    }
-  return *this;
-}
-
+{}
 
 void
-FixedOffset::populate(const FuncDataBase& Control)
+FixedOffsetGroup::populate(const FuncDataBase& Control)
   /*!
     Populate the variables
     \param Control :: Control data base
    */
 {
-  ELog::RegMethod RegA("FixedOffset","populate");
+  ELog::RegMethod RegA("FixedOffsetGroup","populate");
 
   xStep=Control.EvalDefVar<double>(keyName+"XStep",0.0);
   yStep=Control.EvalDefVar<double>(keyName+"YStep",0.0);
@@ -118,24 +130,23 @@ FixedOffset::populate(const FuncDataBase& Control)
   xyAngle=Control.EvalDefVar<double>(keyName+"XYAngle",0.0);
   zAngle=Control.EvalDefVar<double>(keyName+"ZAngle",0.0);
   return;
-  
 }
   
 void
-FixedOffset::applyOffset()
+FixedOffsetGroup::applyOffset()
   /*!
     Apply the rotation/step offset
   */
 {
-  ELog::RegMethod RegA("FixedOffset","applyOffset");
-  
-  FixedComp::applyShift(xStep,yStep,zStep);
-  FixedComp::applyAngleRotate(xyAngle,zAngle);
+  ELog::RegMethod RegA("FixedOffsetGroup","applyOffset");
+
+  for(FTYPE::value_type& FCmc : FMap)
+    {
+      FCmc.second->applyShift(xStep,yStep,zStep);
+      FCmc.second->applyAngleRotate(xyAngle,zAngle);
+    }
   return;
 }
 
-  
-
-
-
+ 
 }  // NAMESPACE attachSystem

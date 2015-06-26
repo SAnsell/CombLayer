@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X)  Input builder
  
  * File:   process/mergeMulti.cxx
  *
@@ -34,8 +34,6 @@
 #include <numeric>
 #include <iterator>
 #include <memory>
-#include <boost/functional.hpp>
-#include <boost/bind.hpp>
  
 #include "Exception.h"
 #include "FileReport.h"

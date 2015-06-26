@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   zoom/makeZoom.cxx
  *
@@ -235,7 +235,6 @@ makeZoom::build(Simulation& System,
       ZChopper->setMonoSurface(BulkObj.getMonoSurf());
       ZChopper->createAll(System,*ZBend,*ZS);
 
-      ELog::EM<<"Void == "<<ZChopper->getVoidCell()<<ELog::endDiag;
       ZDisk->addInsertCell(ZChopper->getVoidCell());
       ZDisk->createAll(System,*ZChopper,0);
       

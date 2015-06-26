@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   process/ObjectTrackAct.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,6 @@
 #include <string>
 #include <algorithm>
 #include <memory>
-#include <boost/bind.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -185,31 +184,4 @@ ObjectTrackAct::write(std::ostream& OX) const
   return;
 }
   
-/*
-void
-ObjectTrackAct::addDistance(const int ObjN,const int MatN,
-			    const double D) 
-  / *!
-    Adds a distance to the material track / creates
-    a new material if one doesn't exist
-    \param ObjN :: Object Number
-    \param MatN :: Material Number 
-    \param D :: Distance in material
-   * /
-{
-  typedef std::map<int,ObjTrackItem> TTYPE;
-
-  TTYPE::iterator mc=Items.find(ObjN);
-  if (mc!=Items.end())
-    mc->second.addDistance(MatN,D);
-  else
-    {
-      std::pair<TTYPE::iterator,bool> Res=
-	Items.insert(TTYPE::value_type(MatN,ObjTrackItem(TargetPt,TargetPt)));
-      Res.first->second.addDistance(MatN,D);
-    }
-
-  return;
-}
-*/
 } // Namespace ModelSupport

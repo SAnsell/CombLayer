@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   moderator/Reflector.cxx
  *
@@ -246,8 +246,8 @@ Reflector::populate(const Simulation& System)
   
   defMat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 
-  const int nPads=Control.EvalVar<int>(keyName+"NPads");
-  for(int i=0;i<nPads;i++)
+  const size_t nPads=Control.EvalVar<size_t>(keyName+"NPads");
+  for(size_t i=0;i<nPads;i++)
     Pads.push_back(CoolPad("coolPad",i+1));
 
   return;
@@ -470,13 +470,12 @@ Reflector::createInternalObjects(Simulation& System,
       OI.createAll(System,*HydObj,*GrooveObj);
     }
   VacObj->createAllPair(System,*GrooveObj,*HydObj);
-
   std::string Out;
   Out=ModelSupport::getComposite(SMap,refIndex,"1 -14 -4");
   FLgroove->addBoundarySurf("inner",Out);  
   FLgroove->addBoundarySurf("outer",Out);  
   FLgroove->createAll(System,*VacObj,1);
-
+  
   Out=ModelSupport::getComposite(SMap,refIndex,"-2 13 3");
   FLhydro->addBoundarySurf("inner",Out);  
   FLhydro->addBoundarySurf("outer",Out);  

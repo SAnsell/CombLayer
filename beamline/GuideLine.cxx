@@ -178,9 +178,8 @@ GuideLine::clear()
 {
   ELog::RegMethod RegA("GuideLine","clear");
 
-  std::vector<ShapeUnit*>::iterator vc;
-  for(vc=shapeUnits.begin();vc!=shapeUnits.end();vc++)
-    delete *vc;
+  for(ShapeUnit* SU : shapeUnits)
+    delete SU;
   return;
 }
 
@@ -214,7 +213,6 @@ GuideLine::populate(const FuncDataBase& Control)
   rightWidth=Control.EvalVar<double>(keyName+"RightWidth");
 
   feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
-
   nShapes=Control.EvalVar<size_t>(keyName+"NShapes");
   nShapeLayers=Control.EvalVar<size_t>(keyName+"NShapeLayers");
   
@@ -310,6 +308,29 @@ GuideLine::addGuideUnit(const size_t index,
 }
 
 void
+GuideLine::checkRectangle(const double W,const double H) const
+  /*!
+    Check the rectangle size relative to the outside values
+    \param W :: Width
+    \param H :: Height
+  */
+{
+  ELog::RegMethod RegA("GuideLine","checkRectangle");
+
+  const double TThick=
+    std::accumulate(layerThick.begin(),layerThick.end(),0.0);
+  
+  if ((TThick+W/2.0)>leftWidth || (TThick+W/2.0)>rightWidth)
+    ELog::EM<<"Guide["<<keyName<<"] rectangle width/thick "<<W<<":"<<TThick
+	    <<" > ("<<leftWidth<<":"<<rightWidth<<")"<<ELog::endErr;
+  if ((TThick+H/2.0)>height || (TThick+H/2)>depth)
+    ELog::EM<<"Guide["<<keyName<<"] rectangle height/thick "<<H<<":"<<TThick
+	    <<" > ("<<depth<<":"<<height<<")"<<ELog::endErr;
+
+  return;
+}
+  
+void
 GuideLine::processShape(const FuncDataBase& Control)
   /*!
     Build a simple shape component from the Control Values
@@ -364,7 +385,8 @@ GuideLine::processShape(const FuncDataBase& Control)
 	  SU->setXAxis(X,Z);      
 	  SU->constructConvex();
 	  shapeUnits.push_back(SU);
-	  
+
+	  checkRectangle(W,H);
 	}
       else if (typeID=="Tapper")   
 	{	
@@ -469,7 +491,7 @@ GuideLine::createSurfaces(const long int mainLP)
   
   if (!activeEnd)
     ModelSupport::buildPlane(SMap,guideIndex+2,Origin+Y*length,Y);
-  
+
   ModelSupport::buildPlane(SMap,guideIndex+3,Origin-X*leftWidth,X);
   ModelSupport::buildPlane(SMap,guideIndex+4,Origin+X*rightWidth,X);
   ModelSupport::buildPlane(SMap,guideIndex+5,Origin-Z*depth,Z);
@@ -477,11 +499,12 @@ GuideLine::createSurfaces(const long int mainLP)
 
   // Note we ignore the length component of the last item 
   // and use the guide closer
+
   for(size_t i=0;i<nShapes;i++)
     {
       if (i)
 	ModelSupport::buildPlane(SMap,guideIndex+10+static_cast<int>(i),
-				 shapeUnits[i]->getBegin(),Y);
+				   shapeUnits[i]->getBegin(),Y);
       shapeUnits[i]->createSurfaces(SMap,guideIndex,layerThick);
     }
     
@@ -599,19 +622,47 @@ GuideLine::createMainLinks(const attachSystem::FixedComp& mainFC,
   else
     shieldFC.setLinkCopy(0,mainFC,sLP);       
   
-  shieldFC.setConnect(1,Origin+Y*length,Y);     
+  shieldFC.setConnect(1,Origin+Y*length,Y);
   shieldFC.setConnect(2,Origin-X*leftWidth/2.0,-X);     
   shieldFC.setConnect(3,Origin+X*rightWidth/2.0,X);     
   shieldFC.setConnect(4,Origin-Z*depth,-Z);     
   shieldFC.setConnect(5,Origin+Z*height,Z);     
-  
+
+  int sign(1);
   for(int i=1;i<6;i++)
-    shieldFC.setLinkSurf(static_cast<size_t>(i),
-			   SMap.realSurf(guideIndex+i+1));
+    {
+      shieldFC.setLinkSurf(static_cast<size_t>(i),
+			   sign*SMap.realSurf(guideIndex+i+1));
+      sign*=-1;
+    }
 
   return;
 }
 
+Geometry::Vec3D
+GuideLine::calcActiveEndIntercept() 
+  /*!
+    Determine the active end point intercept
+    with the list link point
+  */
+{
+  ELog::RegMethod RegA("GuideLine","calcActiveEndIntercept");
+  // Start of track
+  const Geometry::Vec3D APt =
+    shapeUnits.back()->getBegin();
+  const Geometry::Vec3D AAxis =
+    shapeUnits.back()->getEndAxis();
+  std::vector<Geometry::Vec3D> Pts;
+  std::vector<int> SNum;
+  
+  // This should not need to be called:
+  endCut.populateSurf();
+  endCut.calcSurfIntersection(APt,AAxis,Pts,SNum);
+  const size_t indexA=SurInter::closestPt(Pts,APt);
+  return Pts[indexA];
+}
+
+  
 void
 GuideLine::createUnitLinks()
   /*!
@@ -630,24 +681,29 @@ GuideLine::createUnitLinks()
 	FixedGroup::getKey(GKey);
       
       guideFC.setConnect(0,shapeUnits[i]->getBegin(),
-			 shapeUnits[i]->getBegAxis());     
-      guideFC.setConnect(1,shapeUnits[i]->getEnd(),
-			 shapeUnits[i]->getEndAxis());     
-      
+			 shapeUnits[i]->getBegAxis());
+      if (i!=nShapes-1 || !activeEnd)
+	guideFC.setConnect(1,shapeUnits[i]->getEnd(),
+			   shapeUnits[i]->getEndAxis());     
+      else
+	guideFC.setConnect(1,calcActiveEndIntercept(),
+			   shapeUnits[i]->getEndAxis());     
+	
       if (!i)
 	guideFC.setLinkCopy(0,shieldFC,0);       
       else
 	guideFC.setLinkSurf(0,-SMap.realSurf(SN));       
 
-      if (i!=nShapes-1)
+      if (i==nShapes-1)
 	guideFC.setLinkSurf(1,SMap.realSurf(guideIndex+2));
       else
-      	guideFC.setLinkSurf(1,SMap.realSurf(SN+1));       
+	guideFC.setLinkSurf(1,SMap.realSurf(SN+1));       
 
       SN++;
     }
   return;
 }
+
 
 void
 GuideLine::addEndCut(const std::string& EC)
