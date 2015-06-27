@@ -395,8 +395,8 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("LowAFlightZStep",0.0);      // Step from centre
   Control.addVariable("LowAFlightXYangle",0.0);  // Angle out
   Control.addVariable("LowAFlightZangle",0.0);  // Angle out
-  Control.addVariable("LowAFlightAngleXY1",30.0);  // Angle out
-  Control.addVariable("LowAFlightAngleXY2",30.0);  // Angle out
+  Control.addVariable("LowAFlightAngleXY1",60.0);  // Angle out
+  Control.addVariable("LowAFlightAngleXY2",60.0);  // Angle out
   Control.addVariable("LowAFlightAngleZTop",0.0);  // Step down angle
   Control.addVariable("LowAFlightAngleZBase",0.0); // Step up angle
   Control.addVariable("LowAFlightHeight",10.0);     // Full height
@@ -415,8 +415,8 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("LowBFlightZStep",0.0);      // Step from centre
   Control.addVariable("LowBFlightXYangle",180.0);  // Angle out
   Control.addVariable("LowBFlightZangle",0.0);  // Angle out
-  Control.addVariable("LowBFlightAngleXY1",30.0);  // Angle out
-  Control.addVariable("LowBFlightAngleXY2",30.0);  // Angle out
+  Control.addVariable("LowBFlightAngleXY1",60.0);  // Angle out
+  Control.addVariable("LowBFlightAngleXY2",60.0);  // Angle out
   Control.addVariable("LowBFlightAngleZTop",0.0);  // Step down angle
   Control.addVariable("LowBFlightAngleZBase",0.0); // Step up angle
   Control.addVariable("LowBFlightHeight",10.0);     // Full height
