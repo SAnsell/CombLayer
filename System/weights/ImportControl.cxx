@@ -186,36 +186,29 @@ ExtField(Simulation& System,
       physicsSystem::ExtConstructor A;
       A.processUnit(System,IParam,grpIndex);
     }
-    //   // PROCESS ZONE:
+  return;
+}
   
-      
-    //   double a,b,c;
-    //   Geometry::Vec3D PointVec;
-      
-    //   size_t index(0);
-    //   size_t remain(NParam);
-    //   while(index<NParam)
-    // 	{
-    // 	  ELog::EM<<"Cell == "<<StrItem[index]<<ELog::endDiag;
-    // 	  if (remain>=1 && StrFunc::convert(StrItem[index],PointVec))
-    // 	    {
-    // 	      ELog::EM<<"Vector[1] == "<<PointVec<<ELog::endDiag;
-    // 	      index++;
-    // 	    }
-	  
-    // 	  if (remain>=4 && StrItem[index]=="Vec3D" &&
-    // 	      StrFunc::convert(StrItem[index+1],a) &&
-    // 	      StrFunc::convert(StrItem[index+2],b) &&
-    // 	      StrFunc::convert(StrItem[index+3],c) )
-    // 	    {
-    // 	      PointVec(a,b,c);
-    // 	      index+=3;
-    // 	    }
-	  
-    // 	  index++;
-    // 	  remain--;
-    // 	}
-    // }
+void
+SBias(Simulation& System,
+      const mainSystem::inputParam& IParam)
+  /*!
+    Control SBIAS card(s) on the 
+    \param System :: Simulation
+    \param IParam :: input stream
+  */
+{
+  ELog::RegMethod RegA("ImportControl","ExtField");
+
+  // currently only first item / get all
+  std::vector<std::string> StrItem;
+  const size_t NGrp=IParam.setCnt("wExt");
+
+  for(size_t grpIndex=0;grpIndex<NGrp;grpIndex++)
+    {
+      physicsSystem::ExtConstructor A;
+      A.processUnit(System,IParam,grpIndex);
+    }
   return;
 }
 

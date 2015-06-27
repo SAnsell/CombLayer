@@ -78,6 +78,7 @@
 #include "Simulation.h"
 #include "PhysImp.h"
 #include "PhysCard.h"
+#include "PStandard.h"
 #include "NList.h"
 #include "NRange.h"
 #include "ModeCard.h"
@@ -130,8 +131,8 @@ setItemRotate(const attachSystem::FixedComp& WMaster,
     }
   else 
     {
-      const attachSystem::FixedComp* 
-	ItemPtr=OR.getObject<attachSystem::FixedComp>(ItemName);  
+      //      const attachSystem::FixedComp* 
+      //	ItemPtr=OR.getObject<attachSystem::FixedComp>(ItemName);  
       newOrigin=TwinPtr->getBeamStart();
       QA=Geometry::Quaternion::basisRotate(WMaster.getX(),
 					   WMaster.getY(),
@@ -258,8 +259,6 @@ setPhysicsModel(physicsSystem::LSwitchCard& lea,
       throw ColErr::ExitAbort("No model");
     }
   lea.setValues("lea","1 4 1 0 1 0 0 1");
-
-
   return;
 }
 
@@ -287,41 +286,55 @@ setDefaultPhysics(Simulation& System,
   const double maxEnergy=Control.EvalDefVar<double>("sdefEnergy",800.0);
   const double elcEnergy=IParam.getValue<double>("electron");
   const double phtEnergy=IParam.getValue<double>("photon");
+  const double phtModel=IParam.getValue<double>("photonModel");
   const std::string elcAdd((elcEnergy>0 ? " e" : ""));
 
-  System.getPC().setMode("n p "+PList+elcAdd);
-  System.getPC().setPrintNum("10 110");
-  System.processCellsImp();
   physicsSystem::PhysicsCards& PC=System.getPC();
+  PC.setMode("n p "+PList+elcAdd);
+  PC.setPrintNum("10 110");
+  System.processCellsImp();
 
   PC.setCells("imp",1,0);            // Set a zero cell	  
-  physicsSystem::PhysCard& NCut=PC.addPhysCard("cut","n");
-  NCut.setValues(4,1e+8,0.0,0.4,-0.1);
+  physicsSystem::PStandard* NCut=
+    PC.addPhysCard<physicsSystem::PStandard>("cut","n");
+  NCut->setValues(4,1.0e+8,0.0,0.4,-0.1);
   
-  physicsSystem::PhysCard& allCut=PC.addPhysCard("cut",PList);
-  allCut.setValues(2,1e+8,0.0);
-  physicsSystem::PhysCard& photonCut=PC.addPhysCard("cut","p");
-  photonCut.setValues(2,1e+8,phtEnergy);
+  physicsSystem::PStandard* allCut=
+     PC.addPhysCard<physicsSystem::PStandard>("cut",PList);
+  allCut->setValues(2,1e+8,0.0);
+  physicsSystem::PStandard* photonCut=
+     PC.addPhysCard<physicsSystem::PStandard>("cut","p");
+  photonCut->setValues(2,1e+8,phtEnergy);
 
   if (elcEnergy>=0.0)
     {
-      physicsSystem::PhysCard& elcCut=PC.addPhysCard("cut","e");
-      elcCut.setValues(2,1e+8,elcEnergy);
+      physicsSystem::PStandard* elcCut=
+	PC.addPhysCard<physicsSystem::PStandard>("cut","e");
+      elcCut->setValues(2,1e+8,elcEnergy);
     }
   
   const std::string EMax=StrFunc::makeString(maxEnergy);
+  const std::string PHMax=StrFunc::makeString(phtModel);
   // Process physics
-  physicsSystem::PhysCard& pn=PC.addPhysCard("phys","n");
-  pn.setValues(EMax+" 0.0 j j j");
-  physicsSystem::PhysCard& pp=PC.addPhysCard("phys","p");
+  physicsSystem::PStandard* pn=
+	PC.addPhysCard<physicsSystem::PStandard>("phys","n");
+  pn->setValues(EMax+" 0.0 j j j");
+
+  physicsSystem::PStandard* pp=
+	PC.addPhysCard<physicsSystem::PStandard>("phys","p");
   if (elcEnergy>=0.0)
-    pp.setValues(EMax+" j j 1");
+    pp->setValues(PHMax+" j j -1");
   else
-    pp.setValues(EMax);
-  physicsSystem::PhysCard& pa=PC.addPhysCard("phys","/ d t s a "+elcAdd);
-  pa.setValues(EMax);
-  physicsSystem::PhysCard& ph=PC.addPhysCard("phys","h");
-  ph.setValues(EMax);
+    pp->setValues(PHMax);
+
+
+  physicsSystem::PStandard* pa=
+	PC.addPhysCard<physicsSystem::PStandard>("phys","/ d t s a "+elcAdd);
+  pa->setValues(EMax);
+  
+  physicsSystem::PStandard* ph=
+	PC.addPhysCard<physicsSystem::PStandard>("phys","h");
+  ph->setValues(EMax);
 
   // LCA ielas ipreq iexisa ichoic jcoul nexite npidk noact icem ilaq 
   // LEA ipht icc nobalc nobale ifbrk ilvden ievap nofis
@@ -356,6 +369,7 @@ setReactorPhysics(Simulation& System,
   const double maxEnergy=Control.EvalDefVar<double>("sdefEnergy",20.0);
   const double elcEnergy=IParam.getValue<double>("electron");
   const double phtEnergy=IParam.getValue<double>("photon");
+  const double phtModel=IParam.getValue<double>("photonModel");
   const std::string elcAdd((elcEnergy>0 ? " e" : ""));
 
   System.getPC().setMode("n p "+PList+elcAdd);
@@ -363,34 +377,48 @@ setReactorPhysics(Simulation& System,
   System.processCellsImp();
   physicsSystem::PhysicsCards& PC=System.getPC();
 
-  PC.setCells("imp",1,0);            // Set a zero cell	  
-  physicsSystem::PhysCard& NCut=PC.addPhysCard("cut","n");
-  NCut.setValues(4,1e+8,0.0,0.4,-0.1);
+  PC.setCells("imp",1,0);            // Set a zero cell
   
-  physicsSystem::PhysCard& allCut=PC.addPhysCard("cut",PList);
-  allCut.setValues(2,1e+8,0.0);
-  physicsSystem::PhysCard& photonCut=PC.addPhysCard("cut","p");
-  photonCut.setValues(2,1e+8,phtEnergy);
+  physicsSystem::PStandard* NCut=
+    PC.addPhysCard<physicsSystem::PStandard>("cut","n");
+  NCut->setValues(4,1.0e+8,0.0,0.4,-0.1);
+  
+  physicsSystem::PStandard* allCut=
+     PC.addPhysCard<physicsSystem::PStandard>("cut",PList);
+  allCut->setValues(2,1e+8,0.0);
+  physicsSystem::PStandard* photonCut=
+     PC.addPhysCard<physicsSystem::PStandard>("cut","p");
+  photonCut->setValues(2,1e+8,phtEnergy);
 
   if (elcEnergy>=0.0)
     {
-      physicsSystem::PhysCard& elcCut=PC.addPhysCard("cut","e");
-      elcCut.setValues(2,1e+8,elcEnergy);
+      physicsSystem::PStandard* elcCut=
+	PC.addPhysCard<physicsSystem::PStandard>("cut","e");
+      elcCut->setValues(2,1e+8,elcEnergy);
     }
+
   
   const std::string EMax=StrFunc::makeString(maxEnergy);
-  // Process physics
-  physicsSystem::PhysCard& pn=PC.addPhysCard("phys","n");
-  pn.setValues(EMax+" 0.0 j j j");
-  physicsSystem::PhysCard& pp=PC.addPhysCard("phys","p");
+  const std::string PHMax=StrFunc::makeString(phtModel);
+  physicsSystem::PStandard* pn=
+	PC.addPhysCard<physicsSystem::PStandard>("phys","n");
+  pn->setValues(EMax+" 0.0 j j j");
+  
+  physicsSystem::PStandard* pp=
+	PC.addPhysCard<physicsSystem::PStandard>("phys","p");
   if (elcEnergy>=0.0)
-    pp.setValues(EMax+" j j 1");
+    pp->setValues(PHMax+" j j 1");
   else
-    pp.setValues(EMax);
-  physicsSystem::PhysCard& pa=PC.addPhysCard("phys","/ d t s a "+elcAdd);
-  pa.setValues(EMax);
-  physicsSystem::PhysCard& ph=PC.addPhysCard("phys","h");
-  ph.setValues(EMax);
+    pp->setValues(PHMax);
+
+  physicsSystem::PStandard* pa=
+    PC.addPhysCard<physicsSystem::PStandard>("phys","/ d t s a "+elcAdd);
+  pa->setValues(EMax);
+  
+  physicsSystem::PStandard* ph=
+	PC.addPhysCard<physicsSystem::PStandard>("phys","h");
+  ph->setValues(EMax);
+
 
   // LCA ielas ipreq iexisa ichoic jcoul nexite npidk noact icem ilaq 
   // LEA ipht icc nobalc nobale ifbrk ilvden ievap nofis

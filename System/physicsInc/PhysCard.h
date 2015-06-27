@@ -28,54 +28,30 @@ namespace physicsSystem
 /*!
   \class PhysCard 
   \version 1.0
-  \date Jully 2010
+  \date June 2015
   \version 1.0
   \author S. Ansell
-  \brief Holds cut cards
-  
-  Holds any card which indexes.
-  Has a particle list ie imp:n,h nad
-  a cell mapping to number. The map is ordered
-  prior to being written.
+  \brief Virtual header for Physics card physics card
 */
 
-class PhysCard
+class PhysCard 
 {
- private:
-
-  std::string KeyName;               ///< NameType e.g. cut/phys
-  std::list<std::string> particles;  ///< Particle list (if any)
-  std::array<int,5> defFlag;         ///< Default values
-  std::array<double,5> vals;         ///< Values
-
  public:
 
-  PhysCard(const std::string&);
-  PhysCard(const PhysCard&);
-  PhysCard& operator=(const PhysCard&);
-  ~PhysCard();
+  PhysCard() {}
+  virtual PhysCard* clone() const =0;
+  virtual ~PhysCard() {}
 
-  void clear();
+  
+  virtual void clear() =0;
+  virtual std::string getKey() const =0;
+  virtual void write(std::ostream&) const =0;
 
-  /// Access key
-  const std::string& getKey() const { return KeyName; }
-  int hasElm(const std::string&) const;
-  /// Get particle count
-  size_t particleCount() const { return particles.size(); } 
-  int removeParticle(const std::string&);
-
-  double getValue(const size_t) const;
-  void setValue(const size_t,const double);
-  void setValues(const size_t,const double =0.0,const double =0.0,
-		 const double =0.0,const double =0.0,const double =0.0);
-  void setValues(const std::string&);
-  void setDef(const size_t);
-  void setEnergyCut(const double);
-
-  void addElm(const std::string&);
-  void addElmList(const std::string&);
-
-  void write(std::ostream&) const;
+  // NOP FUNCTION that can be specialized
+  virtual void setEnergyCut(const double) {};
+  /// Element check:
+  virtual bool hasElm(const std::string&) const { return 0; }
+  virtual void addElm(const std::string&) {}
   
 };
 

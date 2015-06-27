@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   physics/PhysCard.cxx
+ * File:   physics/PStandard.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,16 +40,17 @@
 #include "support.h"
 #include "mathSupport.h"
 #include "PhysCard.h"
+#include "PStandard.h"
 
 namespace physicsSystem
 {
 
 std::ostream&
-operator<<(std::ostream& OX,const PhysCard& A)
+operator<<(std::ostream& OX,const PStandard& A)
   /*!
     Write out the cut to the stream
     \param OX :: Output Stream
-    \param A :: PhysCard object
+    \param A :: PStandard object
     \return Output stream
    */
 {
@@ -57,8 +58,8 @@ operator<<(std::ostream& OX,const PhysCard& A)
   return OX;
 }
 
-PhysCard::PhysCard(const std::string& Key) :
-  KeyName(Key)
+PStandard::PStandard(const std::string& Key) :
+  PhysCard(),KeyName(Key)
   /*!
     Constructor
     \param Key :: KeyName
@@ -67,20 +68,20 @@ PhysCard::PhysCard(const std::string& Key) :
   std::fill(defFlag.begin(),defFlag.end(),1);
 } 
 
-PhysCard::PhysCard(const PhysCard& A) :
-  KeyName(A.KeyName),particles(A.particles),
+PStandard::PStandard(const PStandard& A) :
+  PhysCard(),KeyName(A.KeyName),particles(A.particles),
   defFlag(A.defFlag),vals(A.vals)
   /*!
     Copy Constructor
-    \param A :: PhysCard to copy
+    \param A :: PStandard to copy
   */
 {}
 
-PhysCard&
-PhysCard::operator=(const PhysCard& A) 
+PStandard&
+PStandard::operator=(const PStandard& A) 
   /*!
     Assignment operator
-    \param A :: PhysCard to copy
+    \param A :: PStandard to copy
     \return *this
   */
 {
@@ -94,14 +95,24 @@ PhysCard::operator=(const PhysCard& A)
   return *this;
 }
 
-PhysCard::~PhysCard()
+PStandard::~PStandard()
   /*!
     Destructor
   */
 {}
 
+PStandard*
+PStandard::clone() const
+  /*!
+    Clone constructor 
+    \return new(this)
+  */
+{
+  return new PStandard(*this);
+}
+
 void
-PhysCard::clear()
+PStandard::clear()
   /*!
     Clear everything
    */
@@ -112,13 +123,13 @@ PhysCard::clear()
 }
 
 void
-PhysCard::setValues(const std::string& Line) 
+PStandard::setValues(const std::string& Line) 
   /*!
     Set the values from a card
     \param Line :: Line to process	       
   */
 {
-  ELog::RegMethod RegA("PhysCard","setValues(string)");
+  ELog::RegMethod RegA("PStandard","setValues(string)");
   std::string procLine=Line;
   std::string Unit;
   double V;
@@ -146,7 +157,7 @@ PhysCard::setValues(const std::string& Line)
 }
 
 void
-PhysCard::setValue(const size_t ID,const double value)
+PStandard::setValue(const size_t ID,const double value)
   /*!
     Set a special interest in a cell ID
     The existance of the cell is only 
@@ -156,14 +167,14 @@ PhysCard::setValue(const size_t ID,const double value)
   */
 {
   if (ID>=5)
-    throw ColErr::IndexError<size_t>(ID,5,"PhysCard::setValue");
+    throw ColErr::IndexError<size_t>(ID,5,"PStandard::setValue");
   defFlag[ID]=0;
   vals[ID]=value;
   return;
 }
 
 void
-PhysCard::setValues(const size_t NVal,const double A,const double B,
+PStandard::setValues(const size_t NVal,const double A,const double B,
 		   const double C,const double D,const double E)
   /*!
     Set the values
@@ -187,27 +198,27 @@ PhysCard::setValues(const size_t NVal,const double A,const double B,
 }
 
 void
-PhysCard::setDef(const size_t ID)
+PStandard::setDef(const size_t ID)
   /*!
     Set an index to default.
     \param ID :: Index value
   */
 {
   if (ID>=5)
-    throw ColErr::IndexError<size_t>(ID,5,"PhysCard::setDef");
+    throw ColErr::IndexError<size_t>(ID,5,"PStandard::setDef");
   defFlag[ID]=1;
   return;
 }
 
 void
-PhysCard::setEnergyCut(const double value)
+PStandard::setEnergyCut(const double value)
   /*!
     Sets the minimum energy: Does not lower the 
     energy if already set
     \param value :: new value
   */
 {
-  ELog::RegMethod RegA("PhysCard","setEenergyCut");
+  ELog::RegMethod RegA("PStandard","setEenergyCut");
   if (KeyName=="cut")
     {
       if (value>0.0 && (defFlag[1] || vals[1]<value))
@@ -220,7 +231,7 @@ PhysCard::setEnergyCut(const double value)
 }
 
 void
-PhysCard::addElm(const std::string& EN) 
+PStandard::addElm(const std::string& EN) 
   /*!
     Adds an element to the particles list
     (note it also checks the element ??)
@@ -232,7 +243,7 @@ PhysCard::addElm(const std::string& EN)
 }
 
 void
-PhysCard::addElmList(const std::string& EM) 
+PStandard::addElmList(const std::string& EM) 
   /*!
     Adds an element to the particles list
     \param EM :: Add element list
@@ -247,8 +258,8 @@ PhysCard::addElmList(const std::string& EM)
   return;
 }
 
-int
-PhysCard::hasElm(const std::string& E) const
+bool
+PStandard::hasElm(const std::string& E) const
   /*!
     Finds the item on the list if it exists
     \param E :: Particle string to find
@@ -261,7 +272,7 @@ PhysCard::hasElm(const std::string& E) const
 }
 
 double
-PhysCard::getValue(const size_t ID) const
+PStandard::getValue(const size_t ID) const
   /*!
     Get the Value  for a given cell.
     \param ID :: Physics value to index
@@ -270,12 +281,12 @@ PhysCard::getValue(const size_t ID) const
   */
 {
   if (ID>=5)
-    throw ColErr::IndexError<size_t>(ID,5,"PhysCard::getValue");
+    throw ColErr::IndexError<size_t>(ID,5,"PStandard::getValue");
   return vals[ID];
 }
 
 int
-PhysCard::removeParticle(const std::string& PT)
+PStandard::removeParticle(const std::string& PT)
   /*!
     Removes a particle type
     \param PT :: Particle type
@@ -291,7 +302,7 @@ PhysCard::removeParticle(const std::string& PT)
 }
 
 void
-PhysCard::write(std::ostream& OX) const
+PStandard::write(std::ostream& OX) const
   /*!
     Writes out the imp list including
     those files that are required.

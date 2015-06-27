@@ -52,6 +52,7 @@
 #include "ModeCard.h"
 #include "PhysImp.h"
 #include "PhysCard.h"
+#include "PStandard.h"
 #include "LSwitchCard.h"
 #include "NList.h"
 #include "NRange.h"
@@ -77,13 +78,16 @@ PhysicsCards::PhysicsCards(const PhysicsCards& A) :
   dbCard(new dbcnCard(*dbCard)),Basic(A.Basic),mode(A.mode),
   voidCard(A.voidCard),nImpOut(A.nImpOut),printNum(A.printNum),
   prdmp(A.prdmp),ImpCards(A.ImpCards),
-  PhysCards(A.PhysCards),LEA(A.LEA),sdefCard(A.sdefCard),
+  PCards(),LEA(A.LEA),sdefCard(A.sdefCard),
   Volume(A.Volume),ExtCard(new ExtControl(*A.ExtCard))
   /*!
     Copy constructor
     \param A :: PhysicsCards to copy
   */
-{}
+{
+  for(const PhysCard* PC : A.PCards)
+    PCards.push_back(PC->clone());      
+}
 
 PhysicsCards&
 PhysicsCards::operator=(const PhysicsCards& A)
@@ -105,11 +109,15 @@ PhysicsCards::operator=(const PhysicsCards& A)
       printNum=A.printNum;
       prdmp=A.prdmp;
       ImpCards=A.ImpCards;
-      PhysCards=A.PhysCards;
       LEA=A.LEA;
       sdefCard=A.sdefCard;
       Volume=A.Volume;
       *ExtCard= *A.ExtCard;
+
+      deletePCards();
+      for(const PhysCard* PC : A.PCards)
+	PCards.push_back(PC->clone());      
+
     }
   return *this;
 }
@@ -119,8 +127,22 @@ PhysicsCards::~PhysicsCards()
   /*!
     Destructor
   */
-{}
+{
+  deletePCards();
+}
 
+void
+PhysicsCards::deletePCards()
+  /*!
+    Delete the memory
+  */
+{
+  for(PhysCard* PC : PCards)
+    delete PC;
+  PCards.clear();
+  return;
+}
+  
 void
 PhysicsCards::clearAll()
   /*!
@@ -132,7 +154,7 @@ PhysicsCards::clearAll()
   mode.clear();
   printNum.clear();
   ImpCards.clear();
-  PhysCards.clear();
+  deletePCards();
   Volume.clear();
   sdefCard.clear();
   dbCard->reset();
@@ -287,7 +309,7 @@ PhysicsCards::processCard(const std::string& Line)
   if (pos!=std::string::npos)
     {
       Comd.erase(0,pos+4);
-      PhysCards.push_back(PhysCard("cut"));
+      PStandard* PC=new PStandard("cut");
       std::string Item;
       if (StrFunc::section(Comd,Item))
         {
@@ -302,21 +324,21 @@ PhysicsCards::processCard(const std::string& Line)
 					       std::placeholders::_1)),
 		     part.end());
 	  
-	  PhysCard& PC(PhysCards.back());
 	  for(const std::string& PStr : part)
-	    PC.addElm(PStr);
+	    PC->addElm(PStr);
 	  // Strip and process numbers / j
 	  for(size_t i=0;i<5 && !Comd.empty();i++)
 	    {
 	      double d;
 	      if (StrFunc::section(Comd,d))
-		PC.setValue(i,d);
+		PC->setValue(i,d);
 	      else if (StrFunc::section(Comd,Item))
 	        {
 		  if (Item.size()==1 && tolower(Item[0]=='j'))
-		    PC.setDef(i);
+		    PC->setDef(i);
 		}
 	    }
+	  PCards.push_back(PC);
 	}
       return 1;
     }
@@ -358,8 +380,8 @@ PhysicsCards::setEnergyCut(const double E)
 {
   ELog::RegMethod RegA("PhysicsCards","setEnergyCut");
 
-  for(PhysCard& PC : PhysCards)
-    PC.setEnergyCut(E);
+  for(PhysCard* PC : PCards)
+    PC->setEnergyCut(E);
 
   sdefCard.cutEnergy(E);
   return;
@@ -394,7 +416,8 @@ PhysicsCards::addPhysImp(const std::string& Type,const std::string& Particle)
 }
 
 
-PhysCard&
+template<typename T>
+T*
 PhysicsCards::addPhysCard(const std::string& Key,
 			  const std::string& Particle)
   /*!
@@ -402,8 +425,10 @@ PhysicsCards::addPhysCard(const std::string& Key,
     If ANY particle is found in the current cards, then 
     all remaining particles are added and the 
     card returned. If not then a new card is created
+    \tparam T :: PhysCard Template
     \param Key :: KeyName
     \param Particle :: Particle to add [n,p,e] etc
+
     \return PhysCard
   */
 {
@@ -411,37 +436,41 @@ PhysicsCards::addPhysCard(const std::string& Key,
   const std::vector<std::string> PList=
     StrFunc::StrParts(Particle);
   
-  for(PhysCard& PC : PhysCards)
+  for(PhysCard* PC : PCards)
     {
       int found(0);
-      if (PC.getKey()==Key)  	// First determine if any key exists:
+      if (PC->getKey()==Key)  	// First determine if any key exists:
 	{
-	  for(size_t i=0;i<PList.size();i++)
+	  T* PX=(dynamic_cast<T*>(PC));
+	  if (PX)
 	    {
-	      const std::string particle=PList[i];
-	      if (!found && PC.hasElm(particle))
+	      for(size_t i=0;i<PList.size();i++)
 		{
-		  // Add old non-found particles
-		  for(size_t j=0;j<i;j++)
-		    PC.addElm(PList[i]);
-		  found=1;
+		  const std::string particle=PList[i];
+		  if (!found && PX->hasElm(particle))
+		    {
+		      // Add old non-found particles [previous]
+		      for(size_t j=0;j<i;j++)
+			PX->addElm(PList[i]);
+		      found=1;
+		    }
+		  else if (found && !PX->hasElm(particle))
+		    PX->addElm(particle);
 		}
-	      else if (found && !PC.hasElm(particle))
-		PC.addElm(particle);
+	      if (found)
+		return PX;
 	    }
-	  if (found)
-	    return PC;
 	}
     }
-  // No card found add:
-  PhysCards.push_back(PhysCard(Key));
-  PhysCard& PC=PhysCards.back();
+  // No card found add: ADD PSTANDARD
+  T* PX=new T(Key);
+  PCards.push_back(PX);
   for(const std::string& particle :  PList)
-    PC.addElm(particle);
-  return PhysCards.back();
+    PX->addElm(particle);
+  return PX;
 }
 
-const PhysCard&
+const PhysCard*
 PhysicsCards::getPhysCard(const std::string& Key,
 			  const std::string& particle) const
   /*!
@@ -453,11 +482,10 @@ PhysicsCards::getPhysCard(const std::string& Key,
   */
 {
   ELog::RegMethod RegA("PhysicsCards","getPhysCard");
-
   
-  for(const PhysCard& PC : PhysCards)
-    if (PC.getKey()==Key &&
-	(particle.empty() || PC.hasElm(particle)))  
+  for(const PhysCard* PC : PCards)
+    if (PC->getKey()==Key &&
+	(particle.empty() || PC->hasElm(particle)))  
       return PC;
 
   throw ColErr::InContainerError<std::string>
@@ -476,6 +504,8 @@ PhysicsCards::setCellNumbers(const std::vector<int>& cellInfo,
   */
 
 {
+  ELog::RegMethod RegA("PhysicsCards","setCellNumbers");
+  
   if(cellInfo.size()!=impValue.size())
     throw ColErr::MisMatch<size_t>(cellInfo.size(),
 				   impValue.size(),
@@ -789,8 +819,8 @@ PhysicsCards::write(std::ostream& OX,
   for(const PhysImp& PI : ImpCards)
     PI.write(OX,cellOutOrder);
 
-  for(const PhysCard& PC : PhysCards)
-    PC.write(OX);
+  for(const PhysCard* PC : PCards)
+    PC->write(OX);
 
   for(const std::string& PC : Basic)
     StrFunc::writeMCNPX(PC,OX);
@@ -823,6 +853,8 @@ PhysicsCards::write(std::ostream& OX,
   return;
 }
 
+template PStandard*
+PhysicsCards::addPhysCard(const std::string&,const std::string&);
 
 } // NAMESPACE PhysicsCards	
       

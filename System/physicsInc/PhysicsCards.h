@@ -57,13 +57,15 @@ class PhysicsCards
   std::list<int> printNum;                ///< print numbers
   std::string prdmp;                      ///< prdmp string
   std::vector<PhysImp> ImpCards;          ///< Importance cards
-  std::vector<PhysCard> PhysCards;        ///< Physics cards
+  std::vector<PhysCard*> PCards;        ///< Physics cards
   LSwitchCard LEA;                        ///< LEA/LCA Card
 
   SDef::Source sdefCard;                  ///< Source term
   SDef::KCode kcodeCard;                  ///< KCode term [if used]
   PhysImp Volume;                         ///< Volume stack
   std::unique_ptr<ExtControl> ExtCard;    ///< Exponent control system
+
+  void deletePCards();
     
  public:
    
@@ -97,8 +99,9 @@ class PhysicsCards
   PhysImp& getPhysImp(const std::string&,const std::string&);
 
   PhysImp& addPhysImp(const std::string&,const std::string&);
-  PhysCard& addPhysCard(const std::string&,const std::string&);
-  const PhysCard& getPhysCard(const std::string&,const std::string&) const;
+  template<typename T>
+  T* addPhysCard(const std::string&,const std::string&);
+  const PhysCard* getPhysCard(const std::string&,const std::string&) const;
   /// Access source card
   SDef::Source& getSDefCard() { return sdefCard; }
   /// Access kcode card

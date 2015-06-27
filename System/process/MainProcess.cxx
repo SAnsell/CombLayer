@@ -235,6 +235,7 @@ createInputs(inputParam& IParam)
   IParam.regFlag("mcnp6","MCNP6");
   IParam.regFlag("Monte","Monte");
   IParam.regDefItem<double>("photon","photon",1,0.001);
+  IParam.regDefItem<double>("photonModel","photonModel",1,100.0);
   IParam.regDefItemList<std::string>("r","renum",10,RItems);
   IParam.regFlag("sdefVoid","sdefVoid");
   IParam.regDefItem<std::string>("sdefType","sdefType",1,"");
@@ -308,6 +309,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("p","PHITS output");
   IParam.setDesc("Monte","MonteCarlo capable simulation");
   IParam.setDesc("photon","Photon Cut energy");
+  IParam.setDesc("photonModel","Photon Model Energy [min]");
   IParam.setDesc("r","Renubmer cells");
   IParam.setDesc("s","RND Seed");
   IParam.setDesc("SF","File read source");
