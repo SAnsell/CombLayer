@@ -353,7 +353,7 @@ Hut::createObjects(Simulation& System,const std::string& cutRule)
 
   // Conc [main]
   Out=ModelSupport::getComposite(SMap,hutIndex,
-				 "1 -202 203 -204 205 -206 "
+				 "1 213 -214 -202 203 -204 205 -206 "
 				 " (102:-103:104:-105:106) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
   setCell("ConcMain",cellIndex-1);
@@ -361,7 +361,7 @@ Hut::createObjects(Simulation& System,const std::string& cutRule)
   // Conc [nose]
   Out=ModelSupport::getComposite(SMap,hutIndex,
 				 "111 -1 213 -214 203 -204 205 -206 "
-				 " (-103:-113:104:114:-5:6) ");
+				 " (-103:-113:104:114:-105:106) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
   setCell("ConcNose",cellIndex-1);
 
@@ -369,6 +369,7 @@ Hut::createObjects(Simulation& System,const std::string& cutRule)
   // FRONT CONC SECTION:
   Out=ModelSupport::getComposite(SMap,hutIndex,"-111 211 213 -214 205 -206 ");
   Out+=cutRule;
+  ELog::EM<<"Cut rul == "<<cutRule<<ELog::endDiag;
   System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
 
   

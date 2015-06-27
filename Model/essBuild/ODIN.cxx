@@ -217,9 +217,8 @@ ODIN::build(Simulation& System,const attachSystem::TwinComp& GItem,
   // First chopper pit out of bunker
   // Guide guide String
   const attachSystem::FixedComp& GOuter=GuideD->getKey("Shield");
-  HeadRule GuideCut;
-  for(size_t i=1;i<6;i++)
-    GuideCut.addUnion(GOuter.getLinkString(i));
+  HeadRule GuideCut=
+    attachSystem::unionLink(GuideD->getKey("Shield"),{2,3,4,5,6});
   PitA->addInsertCell(voidCell);
   PitA->createAll(System,GuideD->getKey("Guide0"),2,GuideCut.display());
 
@@ -253,9 +252,7 @@ ODIN::build(Simulation& System,const attachSystem::TwinComp& GItem,
   // First chopper pit out of bunker
   // Guide guide String
   const attachSystem::FixedComp& GOuterB=GuideE->getKey("Shield");
-  GuideCut.reset();
-  for(size_t i=1;i<6;i++)
-    GuideCut.addUnion(GOuterB.getLinkString(i));
+  GuideCut=attachSystem::unionLink(GuideE->getKey("Shield"),{2,3,4,5,6});
   PitB->addInsertCell(voidCell);
   PitB->createAll(System,GuideE->getKey("Guide0"),2,GuideCut.display());
 
@@ -308,7 +305,7 @@ ODIN::build(Simulation& System,const attachSystem::TwinComp& GItem,
 			    GuideG->getKey("Guide0"),-1);
 
 
-  GuideCut=attachSystem::unionLink(GuideG->getKey("Shield"),{2,3,4,5});
+  GuideCut=attachSystem::unionLink(GuideG->getKey("Shield"),{3,4,5,6});
   Cave->addInsertCell(voidCell);  
   Cave->createAll(System,GuideG->getKey("Guide0"),2,GuideCut.display());
 

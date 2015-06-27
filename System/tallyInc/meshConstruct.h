@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   tallyInc/meshConstruct.h
  *
@@ -45,6 +45,7 @@ class meshConstruct : virtual public basicConstruct
  private:
   
   static const std::string& getDoseConversion();
+  static const std::string& getPhotonDoseConversion();
 
   void rectangleMesh(Simulation&,const int,const std::string&,
 		     const Geometry::Vec3D&,const Geometry::Vec3D&,

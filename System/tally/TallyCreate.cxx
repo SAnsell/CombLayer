@@ -81,6 +81,9 @@
 #include "LineTrack.h"
 #include "ObjectTrackAct.h"
 #include "pointDetOpt.h"
+#include "basicConstruct.h" 
+#include "meshConstruct.h" 
+
 #include "TallyCreate.h"
 
 namespace tallySystem

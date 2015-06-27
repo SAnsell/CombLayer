@@ -390,8 +390,8 @@ ODINvariables(FuncDataBase& Control)
   // 
   // PIT B ::
   // 
-  Control.addVariable("odinPitBVoidHeight",251.0);
-  Control.addVariable("odinPitBVoidDepth",36.0);
+  Control.addVariable("odinPitBVoidHeight",251.1);
+  Control.addVariable("odinPitBVoidDepth",36.1);
   Control.addVariable("odinPitBVoidWidth",246.0);
   Control.addVariable("odinPitBVoidLength",105.0);
   
@@ -675,7 +675,7 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinGH0ZAngle",0.0);
 
   // PIN COLLIMATOR SYSTEM
-  Control.addVariable("odinPinLength",60.0);
+  Control.addVariable("odinPinLength",50.0);
   Control.addVariable("odinPinRadius",60.0);
   // Collimator A:
   Control.addVariable("odinPinCollAYStep",1.0);
@@ -690,7 +690,7 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinPinCollAHoleIndex",0);
   Control.addVariable("odinPinCollAHoleAngOff",0.0);
 
-  Control.addVariable("odinPinCollADefMat","Aluminium");
+  Control.addVariable("odinPinCollADefMat","Tungsten");
   // collimator holes:
   Control.addVariable("odinPinCollANHole",3);
   Control.addVariable("odinPinCollAHole0Shape",1);
@@ -725,7 +725,7 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinPinCollBHoleIndex",0);
   Control.addVariable("odinPinCollBHoleAngOff",0.0);
 
-  Control.addVariable("odinPinCollBDefMat","Aluminium");
+  Control.addVariable("odinPinCollBDefMat","Tungsten");
   // collimator holes:
   Control.addVariable("odinPinCollBNHole",3);
   Control.addVariable("odinPinCollBHole0Shape",1);
