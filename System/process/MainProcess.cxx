@@ -274,7 +274,8 @@ createInputs(inputParam& IParam)
 
   IParam.regItem("w","weight");
   IParam.regItem("WP","weightPt");
-  IParam.regMulti("wExt","wExt",25,0);    
+  IParam.regMulti("wExt","wExt",25,0);
+  IParam.regMulti("wPWT","wPWT",25,0);    
   IParam.regItem("WTemp","weightTemp",1);
   IParam.regDefItem<std::string>("WType","weightType",1,"basic");
 
@@ -340,6 +341,7 @@ createInputs(inputParam& IParam)
 
   IParam.setDesc("w","weightBias");
   IParam.setDesc("wExt","Extraction biasisng [see: -wExt help]");
+  IParam.setDesc("wPWT","Photon Bias [set -wPWT help]");
   IParam.setDesc("WType","Initial model for weights [help for info]");
   IParam.setDesc("WTemp","Temperature correction for weights");
   IParam.setDesc("WP","Weight bias Point");

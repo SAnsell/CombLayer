@@ -199,17 +199,14 @@ DiskChopper::createUnitVector(const attachSystem::FixedComp& FC,
   applyShift(xStep,yStep,zStep);
   applyAngleRotate(xyAngle,zAngle);
 
-  ELog::EM<<"Centre flag == "<<centreFlag<<ELog::endDiag;
   if (centreFlag && centreFlag<4 && centreFlag>-4)
     {
       const Geometry::Vec3D A[]={X,Y,Z};
       const size_t index=static_cast<size_t>(std::abs(centreFlag)-1);
-      ELog::EM<<"Old Origin == "<<Origin<<ELog::endDiag;
       if (centreFlag>0)
 	Origin-=A[index]*((outerRadius+innerRadius)/2.0);
       else
 	Origin+=A[index]*((outerRadius+innerRadius)/2.0);
-      ELog::EM<<"New Origin == "<<Origin<<ELog::endDiag;
     }
   
   return;

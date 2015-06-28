@@ -59,7 +59,8 @@ ExtControl::ExtControl()
 ExtControl::ExtControl(const ExtControl& A) :
   particles(A.particles),
   MapItem(A.MapItem),
-  CentMap(A.CentMap)
+  CentMap(A.CentMap),
+  renumberMap(A.renumberMap)
   /*!
     Copy constructor
     \param A :: ExtControl to copy
@@ -79,6 +80,7 @@ ExtControl::operator=(const ExtControl& A)
       particles=A.particles;
       MapItem=A.MapItem;
       CentMap=A.CentMap;
+      renumberMap=A.renumberMap;
     }
   return *this;
 }
@@ -98,6 +100,7 @@ ExtControl::clear()
   particles.clear();
   MapItem.erase(MapItem.begin(),MapItem.end());
   CentMap.erase(CentMap.begin(),CentMap.end());
+  renumberMap.erase(renumberMap.begin(),renumberMap.end());
   return;
 }
 

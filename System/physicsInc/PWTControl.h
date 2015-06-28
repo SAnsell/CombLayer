@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   physicsInc/ExtControl.h
+ * File:   physicsInc/PWTControl.h
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -19,56 +19,47 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef physicsSystem_ExtControl_h
-#define physicsSystem_ExtControl_h
+#ifndef physicsSystem_PWTControl_h
+#define physicsSystem_PWTControl_h
 
 namespace physicsSystem
 {
  
 /*!
-  \class ExtControl
+  \class PWTControl
   \version 2.0
   \date April 2015
   \author S.Ansell
-  \brief Process Exponential Transform card [EXT]  
+  \brief Process Photon Weight
+  
 */
 
-class ExtControl 
+class PWTControl 
 {
  private:
 
   typedef MapSupport::Range<int> RTYPE;             ///< Range type
-  typedef std::map<RTYPE,EUnit> MTYPE;              ///< Master type
-
-  std::set<std::string> particles;           ///< Particle list
+  typedef std::map<RTYPE,double> MTYPE;             ///< Master type
   
   /// cells : Exp card values
-  std::map<MapSupport::Range<int>,EUnit> MapItem; 
-  std::map<size_t,Geometry::Vec3D> CentMap;  ///< Location vectors 
+  std::map<MapSupport::Range<int>,double> MapItem; 
 
   /// maps NEW -> OLD
   std::map<int,int> renumberMap;
-    
-  void writeHeader(std::ostream&) const;
   
  public:
    
-  ExtControl();
-  ExtControl(const ExtControl&);
-  ExtControl& operator=(const ExtControl&);
-  virtual ~ExtControl();
+  PWTControl();
+  PWTControl(const PWTControl&);
+  PWTControl& operator=(const PWTControl&);
+  virtual ~PWTControl();
 
   void clear();
 
-  void addElm(const std::string&);
-  int addUnitList(int&,const std::string&);
+  void setUnit(const MapSupport::Range<int>&,
+	      const double);
+  void setUnit(const int,const double);
 
-  int addUnit(const MapSupport::Range<int>&,
-	      const std::string&);
-  int addUnit(const int&,const std::string&);
-
-  void setVect(const size_t,const Geometry::Vec3D&);
-  size_t addVect(const Geometry::Vec3D&);
   void renumberCell(const int,const int);
   
   void write(std::ostream&,const std::vector<int>&,

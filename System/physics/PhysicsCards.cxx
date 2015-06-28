@@ -59,6 +59,7 @@
 #include "dbcnCard.h"
 #include "EUnit.h"
 #include "ExtControl.h"
+#include "PWTControl.h"
 #include "PhysicsCards.h"
 
 namespace physicsSystem
@@ -67,7 +68,8 @@ namespace physicsSystem
 PhysicsCards::PhysicsCards() :
   nps(10000),histp(0),dbCard(new dbcnCard),
   voidCard(0),nImpOut(0),prdmp("1e7 1e7 0 2 1e7"),
-  Volume("vol"),ExtCard(new ExtControl)
+  Volume("vol"),ExtCard(new ExtControl),
+  PWTCard(new PWTControl)
   /*!
     Constructor
   */
@@ -79,7 +81,9 @@ PhysicsCards::PhysicsCards(const PhysicsCards& A) :
   voidCard(A.voidCard),nImpOut(A.nImpOut),printNum(A.printNum),
   prdmp(A.prdmp),ImpCards(A.ImpCards),
   PCards(),LEA(A.LEA),sdefCard(A.sdefCard),
-  Volume(A.Volume),ExtCard(new ExtControl(*A.ExtCard))
+  Volume(A.Volume),
+  ExtCard(new ExtControl(*A.ExtCard)),
+  PWTCard(new PWTControl(*A.PWTCard))
   /*!
     Copy constructor
     \param A :: PhysicsCards to copy
@@ -113,6 +117,7 @@ PhysicsCards::operator=(const PhysicsCards& A)
       sdefCard=A.sdefCard;
       Volume=A.Volume;
       *ExtCard= *A.ExtCard;
+      *PWTCard= *A.PWTCard;
 
       deletePCards();
       for(const PhysCard* PC : A.PCards)
@@ -159,6 +164,7 @@ PhysicsCards::clearAll()
   sdefCard.clear();
   dbCard->reset();
   ExtCard->clear();
+  PWTCard->clear();
   return;
 }
 
@@ -253,7 +259,7 @@ PhysicsCards::processCard(const std::string& Line)
       Volume=PhysImp("vol");
       return 1;
     }
-
+  
   pos=Comd.find("histp");
   if (pos!=std::string::npos)
     {
@@ -404,7 +410,7 @@ PhysicsCards::addPhysImp(const std::string& Type,const std::string& Particle)
       PhysImp& FImp=getPhysImp(Type,Particle);
       if (FImp.particleCount()==1)
 	return FImp;
-      // remove and continue after catch
+      // remove particle so a new PhysImp can be specialised
       FImp.removeParticle(Particle);
     }
   catch (ColErr::InContainerError<std::string>&)
@@ -415,6 +421,7 @@ PhysicsCards::addPhysImp(const std::string& Type,const std::string& Particle)
   return ImpCards.back();
 }
 
+  
 
 template<typename T>
 T*
@@ -701,6 +708,19 @@ PhysicsCards::setVolume(const int cellID,const double V)
   return;
 }
 
+
+void
+PhysicsCards::setPWT(const int cellID,const double V)
+  /*!
+    Sets the PWT of a particular cell
+    \param cellID :: the particular cell number to set
+    \param V :: New importance value  
+  */
+{
+  PWTCard->setUnit(cellID,V);
+  return;
+}
+
 void
 PhysicsCards::setRND(const long int N)
 {
@@ -732,6 +752,7 @@ PhysicsCards::substituteCell(const int oldCell,const int newCell)
     PI.renumberCell(oldCell,newCell);
   
   Volume.renumberCell(oldCell,newCell);
+  PWTCard->renumberCell(oldCell,newCell);
   ExtCard->renumberCell(oldCell,newCell);
 
   return;
@@ -816,8 +837,10 @@ PhysicsCards::write(std::ostream& OX,
     }
   mode.write(OX);
   Volume.write(OX,cellOutOrder);
-  for(const PhysImp& PI : ImpCards)
-    PI.write(OX,cellOutOrder);
+   for(const PhysImp& PI : ImpCards)
+    PI.write(OX,cellOutOrder);  
+
+   PWTCard->write(OX,cellOutOrder,voidCells);
 
   for(const PhysCard* PC : PCards)
     PC->write(OX);
@@ -843,13 +866,6 @@ PhysicsCards::write(std::ostream& OX,
       StrFunc::writeMCNPX(cx.str(),OX);
     }
 
-/*
-  std::vector<std::string>::const_iterator vc;
-  for(vc=Basic.begin();vc!=Basic.end();vc++)
-    {
-      StrFunc::writeMCNPX(*vc,OX);
-    }
-*/    
   return;
 }
 

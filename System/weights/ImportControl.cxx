@@ -70,6 +70,7 @@
 #include "objectRegister.h"
 #include "inputParam.h"
 #include "ExtConstructor.h"
+#include "PWTConstructor.h"
 #include "ImportControl.h"
 
 namespace WeightSystem
@@ -198,15 +199,39 @@ SBias(Simulation& System,
     \param IParam :: input stream
   */
 {
-  ELog::RegMethod RegA("ImportControl","ExtField");
+  ELog::RegMethod RegA("ImportControl","SBias");
 
   // currently only first item / get all
   std::vector<std::string> StrItem;
-  const size_t NGrp=IParam.setCnt("wExt");
+  const size_t NGrp=IParam.setCnt("sbias");
 
   for(size_t grpIndex=0;grpIndex<NGrp;grpIndex++)
     {
       physicsSystem::ExtConstructor A;
+      A.processUnit(System,IParam,grpIndex);
+    }
+  return;
+}
+
+void
+PWT(Simulation& System,
+    const mainSystem::inputParam& IParam)
+  /*!
+    Control PWT card(s) on the 
+    \param System :: Simulation
+    \param IParam :: input stream
+  */
+{
+  ELog::RegMethod RegA("ImportControl","PWT");
+
+  // currently only first item / get all
+  std::vector<std::string> StrItem;
+  const size_t NGrp=IParam.setCnt("wPWT");
+  for(size_t grpIndex=0;grpIndex<NGrp;grpIndex++)
+    {
+
+      physicsSystem::PWTConstructor A;
+      
       A.processUnit(System,IParam,grpIndex);
     }
   return;

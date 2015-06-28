@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   physicsInc/PhysicsCards.h
  *
@@ -26,6 +26,7 @@ namespace physicsSystem
 {
   class dbcnCard;
   class ExtControl;
+  class PWTControl;
   
 /*!
   \class PhysicsCards
@@ -57,14 +58,15 @@ class PhysicsCards
   std::list<int> printNum;                ///< print numbers
   std::string prdmp;                      ///< prdmp string
   std::vector<PhysImp> ImpCards;          ///< Importance cards
-  std::vector<PhysCard*> PCards;        ///< Physics cards
+  std::vector<PhysCard*> PCards;          ///< Physics cards
   LSwitchCard LEA;                        ///< LEA/LCA Card
 
   SDef::Source sdefCard;                  ///< Source term
   SDef::KCode kcodeCard;                  ///< KCode term [if used]
   PhysImp Volume;                         ///< Volume stack
   std::unique_ptr<ExtControl> ExtCard;    ///< Exponent control system
-
+  std::unique_ptr<PWTControl> PWTCard;    ///< Photon Weight
+  
   void deletePCards();
     
  public:
@@ -109,6 +111,8 @@ class PhysicsCards
 
   // Access ExpControl card
   ExtControl& getExtCard() { return *ExtCard; }
+  // Access PWTControl card
+  PWTControl& getPWTCard() { return *PWTCard; }
   
   // ALL Particle/Type
   int processCard(const std::string&);
@@ -117,6 +121,8 @@ class PhysicsCards
   // Special for type: vol
   void setVolume(const std::vector<int>&,const double =1.0);
   void setVolume(const int,const double);
+  void setPWT(const std::vector<int>&,const double =1.0);
+  void setPWT(const int,const double);
   void setNPS(const int N) { nps=N; }      ///< Set the Number of particles
   void setRND(const long int);
   void setEnergyCut(const double);  
