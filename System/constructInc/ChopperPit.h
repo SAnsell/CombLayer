@@ -64,8 +64,13 @@ class ChopperPit :
   double concFront;             ///< concrete front 
   double concBack;              ///< concrete back 
 
-  int feMat;                  //< Fe material layer
-  int concMat;                //< conc material layer
+  double colletWidth;           ///< Width of collette
+  double colletDepth;           ///< Depth of collette
+  double colletHeight;          ///< Height of collette
+  
+  int feMat;                  ///< Fe material layer
+  int concMat;                ///< conc material layer
+  int collMat;                ///< Collette material 
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);

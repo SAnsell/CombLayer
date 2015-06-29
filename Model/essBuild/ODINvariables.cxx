@@ -265,7 +265,7 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinPitAFeDepth",50.0);
   Control.addVariable("odinPitAFeWidth",50.0);
   Control.addVariable("odinPitAFeFront",35.0);
-  Control.addVariable("odinPitAFeBack",50.0);
+  Control.addVariable("odinPitAFeBack",60.0);
   Control.addVariable("odinPitAFeMat","Stainless304");
 
   
@@ -365,15 +365,15 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinGELength",787.0);       
   Control.addVariable("odinGEHeight",65.0);       
   Control.addVariable("odinGEDepth",65.0);       
-  Control.addVariable("odinGELeftWidth",65.0);       
-  Control.addVariable("odinGERightWidth",65.0);       
+  Control.addVariable("odinGELeftWidth",71.0);       
+  Control.addVariable("odinGERightWidth",71.0);       
   Control.addVariable("odinGEFeMat","Concrete");       
   Control.addVariable("odinGENShapes",1);       
   Control.addVariable("odinGENShapeLayers",4);
 
   Control.addVariable("odinGELayerThick1",0.4);  // glass thick
   Control.addVariable("odinGELayerThick2",1.5);
-  Control.addVariable("odinGELayerThick3",20.0);
+  Control.addVariable("odinGELayerThick3",26.0);
 
   Control.addVariable("odinGELayerMat0","Void");
   Control.addVariable("odinGELayerMat1","Glass");
