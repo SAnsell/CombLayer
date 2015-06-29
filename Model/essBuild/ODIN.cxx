@@ -81,6 +81,7 @@
 #include "HoleShape.h"
 #include "RotaryCollimator.h"
 #include "PinHole.h"
+#include "RentrantBS.h"
 #include "ODIN.h"
 
 namespace essSystem
@@ -114,7 +115,9 @@ ODIN::ODIN() :
 
   Cave(new essSystem::Hut("odinCave")),
   GuideH(new beamlineSystem::GuideLine("odinGH")),
-  PinA(new PinHole("odinPin"))
+  PinA(new PinHole("odinPin")),
+
+  BeamStop(new RentrantBS("odinBeamStop"))
   
  /*!
     Constructor
@@ -152,6 +155,7 @@ ODIN::ODIN() :
   OR.addObject(Cave);
   OR.addObject(GuideH);
   OR.addObject(PinA);
+  OR.addObject(BeamStop);
   
 }
 
@@ -318,6 +322,9 @@ ODIN::build(Simulation& System,const attachSystem::TwinComp& GItem,
 
   PinA->addInsertCell(Cave->getCell("VoidNose"));
   PinA->createAll(System,GuideH->getKey("Guide0"),2);
+
+  BeamStop->addInsertCell(Cave->getCell("VoidMain"));
+  BeamStop->createAll(System,GuideH->getKey("Guide0"),2);
   
   return;
 }

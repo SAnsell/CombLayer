@@ -43,6 +43,7 @@ namespace essSystem
   class BunkerInsert;
   class Hut;
   class PinHole;
+  class RentrantBS;
   
   /*!
     \class ODIN
@@ -114,8 +115,9 @@ class ODIN
   // Collimator
   std::shared_ptr<PinHole> PinA;
 
+  // BeamStop
+  std::shared_ptr<RentrantBS> BeamStop;
 
-  
  public:
   
   ODIN();
