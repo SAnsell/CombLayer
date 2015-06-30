@@ -249,20 +249,20 @@ testVolumes::testVolume()
   double V;
 
 
-  VolSum VTallyX(Geometry::Vec3D(0,0,-4),8.0);
+  VolSum VTallyX(Geometry::Vec3D(0,0,-4),Geometry::Vec3D(8.0,8.0,8.0));
   //  VTally.populate(ASim);
   VTallyX.addTallyCell(4,2);
   //  VTally.addTallyCell(14,3);
-  VTallyX.run(ASim,80000);
+  VTallyX.trackRun(ASim,80000);
   V=VTallyX.calcVolume(4);
   ELog::EM<<"CalcValue(4X) == "<<V<<ELog::endTrace;
   ELog::EM<<" ========= "<<V<<ELog::endTrace<<
     ELog::endTrace;
-  VolSum VTally(Geometry::Vec3D(0,0,0),8.0);
+  VolSum VTally(Geometry::Vec3D(0,0,0),Geometry::Vec3D(8.0,8.0,8.0));
   //  VTally.populate(ASim);
   VTally.addTallyCell(4,2);
   //  VTally.addTallyCell(14,3);
-  VTally.run(ASim,80000);
+  VTally.trackRun(ASim,80000);
   V=VTally.calcVolume(4);
   ELog::EM<<"CalcValue(4) == "<<V<<ELog::endTrace;
   ELog::EM<<" ========= "<<V<<ELog::endTrace<<
@@ -282,7 +282,7 @@ testVolumes::testPointVolume()
   double V;
 
 
-  VolSum VTallyX(Geometry::Vec3D(0,0,0),8.0);
+  VolSum VTallyX(Geometry::Vec3D(0,0,0),Geometry::Vec3D(8.0,8,8));
   //  VTally.populate(ASim);
   VTallyX.addTallyCell(4,2);
   VTallyX.addTallyCell(5,3);
@@ -291,6 +291,7 @@ testVolumes::testPointVolume()
   V=VTallyX.calcVolume(4);
   double Vx=VTallyX.calcVolume(5);
   ELog::EM<<"CalcValue(4X) == "<<V<<ELog::endTrace;
+  ELog::EM<<"CalcValue(5X) == "<<Vx<<ELog::endTrace;
   ELog::EM<<" ========= "<<V<<ELog::endTrace<<
     ELog::endTrace;
 
