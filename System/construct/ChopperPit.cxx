@@ -133,7 +133,7 @@ ChopperPit::populate(const FuncDataBase& Control)
   colletDepth=Control.EvalDefVar<double>(keyName+"ColletDepth",0.0);
   colletHeight=Control.EvalDefVar<double>(keyName+"ColletHeight",0.0);
   colletWidth=Control.EvalDefVar<double>(keyName+"ColletWidth",0.0);
-  colletMat=ModelSupport::.EvalDefMat<int>(keyName+"ColletMat",-1);
+  colletMat=ModelSupport::EvalDefMat<int>(Control,keyName+"ColletMat",-1);
 
   if (colletDepth*colletHeight*colletWidth<Geometry::zeroTol)
     colletMat=-1;
@@ -211,11 +211,11 @@ ChopperPit::createSurfaces()
   ModelSupport::buildPlane(SMap,pitIndex+26,
 			   Origin+Z*(voidHeight+feHeight+concHeight),Z);  
 
-  if (collMat>=0)
+  if (colletMat>=0)
     {
       // Collet on iron exit wall:
       ModelSupport::buildPlane(SMap,pitIndex+102,
-			       Origin+Y*(colletDepth+voidLengh/2.0),Y);  
+			       Origin+Y*(colletDepth+voidLength/2.0),Y);  
       ModelSupport::buildPlane(SMap,pitIndex+103,
 			       Origin-X*(colletWidth/2.0),X);
       ModelSupport::buildPlane(SMap,pitIndex+104,
@@ -255,18 +255,21 @@ ChopperPit::createObjects(Simulation& System,
   setCell("Void",cellIndex-1);
 
   HeadRule Collet;
-  if (collMat>=0)
+  if (colletMat>=0)
     {
       Out=ModelSupport::getComposite(SMap,pitIndex,"2 -102 103 -104 105 -106");
       Collet.procString(Out);
-      System.addCell(MonteCarlo::Qhull(cellIndex++,collMat,0.0,Out));
+      System.addCell(MonteCarlo::Qhull(cellIndex++,colletMat,0.0,Out));
+      setCell("Collet",cellIndex-1);
     }
   
   Out=ModelSupport::getComposite(SMap,pitIndex,
 				 " -12 13 -14 15 -16 (-1:2:-3:4:-5:6)");
+  Collet.makeComplement();
+  Out+=Collet.display();
   System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out+
 				   frontFace.display()));
-  setCell("MidLayer",cellIndex-1);
+  addCell("MidLayer",cellIndex-1);
   
   // Make full exclude:
   Out=ModelSupport::getComposite(SMap,pitIndex," -12 13 -14 15 -16 ");

@@ -73,18 +73,19 @@ namespace ModelSupport
 {
 
 VolSum::VolSum(const Geometry::Vec3D& OPt,
-	       const double R) : 
-  Origin(OPt),radius(R),fullVol(M_PI*R*R),
-  totalDist(0),nTracks(0)
+	       const Geometry::Vec3D& AxisRange) : 
+  Origin(OPt),X(fabs(AxisRange[0]),0,0),
+  Y(fabs(AxisRange[1]),0,0),Z(fabs(AxisRange[2]),0,0),
+  fullVol(0.0),totalDist(0),nTracks(0)
   /*!
     Constructor
     \param OPt :: Centre
-    \param R :: Radius
+    \param AxisRange :: X/Y/Z extent
   */
 {}
 
 VolSum::VolSum(const VolSum& A) : 
-  Origin(A.Origin),radius(A.radius),
+  Origin(A.Origin),X(A.X),Y(A.Y),Z(A.Z),
   fullVol(A.fullVol),totalDist(A.totalDist),
   nTracks(A.nTracks),tallyVols(A.tallyVols)
   /*!
@@ -104,7 +105,9 @@ VolSum::operator=(const VolSum& A)
   if (this!=&A)
     {
       Origin=A.Origin;
-      radius=A.radius;
+      X=A.X;
+      Y=A.Y;
+      Z=A.Z;
       fullVol=A.fullVol;
       totalDist=A.totalDist;
       nTracks=A.nTracks;
@@ -121,13 +124,47 @@ VolSum::~VolSum()
 {}
 
 void
+VolSum::populateAll(const Simulation& System)
+  /*!
+    The big population call for all cell
+    \param System :: Simulation system
+  */
+{
+  ELog::RegMethod RegA("VolSum","populateAll");
+  const std::vector<int> CVec=System.getNonVoidCellVector();
+  typedef std::map<int,std::vector<int> > MTYPE;
+  MTYPE MatSet;
+  for(const int CN : CVec)
+    {
+      const int matN=System.getCellMaterial(CN);
+      MTYPE::iterator mc=MatSet.find(matN);
+      if (mc!=MatSet.end())
+	mc->second.push_back(CN);
+      else
+	{
+	  std::vector<int> Input;
+	  Input.push_back(CN);
+	  MatSet.insert(MTYPE::value_type(matN,Input));
+	}
+    }
+  int cnt(1);
+  for(const MTYPE::value_type& TC : MatSet)
+    {  
+      tallyVols.insert(tvTYPE::value_type
+		       (cnt,volUnit(TC.first," A ",TC.second)));
+      cnt++;
+    }
+  return;
+}
+
+void
 VolSum::populateTally(const Simulation& System)
   /*!
     The big population call
     \param System :: Simulation system
   */
 {
-  ELog::RegMethod RegA("VolSum","populate");
+  ELog::RegMethod RegA("VolSum","populateTally");
   
   const Simulation::TallyTYPE& TM=System.getTallyMap();
   Simulation::TallyTYPE::const_iterator mc;
@@ -247,32 +284,63 @@ VolSum::pointRun(const Simulation& System,const size_t N)
   ELog::RegMethod RegA("VolSum","run");
   
   MonteCarlo::Object* OPtr(0);
+
   reset();
-  fullVol=4.0*M_PI*(radius*radius*radius)/3.0;
+  fullVol=X.abs()*Y.abs()*Z.abs();
   // Note for sphere that you can use X,Y,Z in any orthogonal 
   // directiron
-  double phi,theta;
-  Geometry::Vec3D XPt;
+
   for(size_t i=0;i<N;i++)
     {
-      // Get random starting point on edge of volume
-      phi=RNG.rand()*M_PI;
-      theta=2.0*RNG.rand()*M_PI;
-      Geometry::Vec3D Pt(cos(theta)*sin(phi),
-			 sin(theta)*sin(phi),
-			 cos(phi));
-      // Deal with scaling
-      Pt*=radius*pow(RNG.rand(),0.3333333333);
-
-      OPtr=System.findCell(Pt,OPtr);      
+      Geometry::Vec3D Pt(Origin+
+			 X*(RNG.rand()-0.5)+
+			 Y*(RNG.rand()-0.5)+
+			 Z*(RNG.rand()-0.5));
+      OPtr=System.findCell(Pt,OPtr);
+      ELog::EM<<"Found point "<<OPtr->getName()<<ELog::endDiag;
       addDistance(OPtr->getName(),1.0);
     }
   nTracks+=N;
   return;
 }
 
+Geometry::Vec3D
+VolSum::getCubePoint() const
+  /*!
+    Get a random point on the cuboic
+    \return surface point
+  */
+{
+  double R=RNG.rand();
+  double pm(0.5);
+  if (R>0.5)   
+    {
+      pm=-0.5;
+      R/=2.0;
+    }
+  Geometry::Vec3D Pt(Origin);
+  if (R<fracX) // XY surface
+    {
+      Pt+=X*(RNG.rand()-0.5)+Y*(RNG.rand()-0.5);
+      Pt+=Z*pm;
+    }
+  else if (R<fracY)
+    {
+      Pt+=X*(RNG.rand()-0.5)+Z*(RNG.rand()-0.5);
+      Pt+=Y*pm;
+    }
+  else 
+    {
+      Pt+=Y*(RNG.rand()-0.5)+Z*(RNG.rand()-0.5);
+      Pt+=X*pm;
+    }
+  return Pt;
+}
+  
+
+  
 void
-VolSum::run(const Simulation& System,const size_t N) 
+VolSum::trackRun(const Simulation& System,const size_t N) 
   /*!
     Calculate the tracking
     \param System :: Simulation to use
@@ -282,42 +350,37 @@ VolSum::run(const Simulation& System,const size_t N)
   ELog::RegMethod RegA("VolSum","run");
   
   const ModelSupport::ObjSurfMap* OSMPtr =System.getOSM();
+
   MonteCarlo::Object* InitObj(0);
   reset();
-  fullVol=M_PI*radius*radius;
+  
+  const double AreaXY(X[0]*Y[1]);
+  const double AreaXZ(X[0]*Z[2]);
+  const double AreaYZ(Y[1]*Z[2]);
+  fullVol=X[0]*Y[1]*Z[2];
+
+  const double totalArea(2.0*(AreaXY+AreaXZ+AreaYZ));
+
+  fracX=AreaXY/totalArea;
+  fracY=(AreaXZ+AreaXY)/totalArea;
+  
   const Geometry::Surface* SPtr;          // Output surface
   double aDist;       
 
   // Note for sphere that you can use X,Y,Z in any orthogonal 
   // directiron
-  double phi,theta;
-  Geometry::Vec3D XPt;
+
   for(size_t i=0;i<N;i++)
     {
-      // Get random starting point on edge of volume
-      phi=RNG.rand()*M_PI;
-      theta=2.0*RNG.rand()*M_PI;
-      Geometry::Vec3D Pt(cos(theta)*sin(phi),
-			 sin(theta)*sin(phi),
-			 cos(phi));
-      // Random point on sphere:
-      // Choose an direction (make it normal to the sphere):
-      phi=RNG.rand()*M_PI;
-      theta=2.0*RNG.rand()*M_PI;
-      XPt=Geometry::Vec3D(cos(theta)*sin(phi),
-			  sin(theta)*sin(phi),
-			  cos(phi));
-      double trackDistance=radius*Pt.Distance(XPt);
+      Geometry::Vec3D Pt=getCubePoint();
+      Geometry::Vec3D XPt=getCubePoint();
+      double trackDistance=Pt.Distance(XPt);
       XPt-=Pt;
-
-      // track length to go == [Max]
-      // A is on the sphere and lambda then is l=-2(A.u)
-      // Note aDv is negative
-
       totalDist+=trackDistance;
       
-      MonteCarlo::neutron TNeut(1,Origin+Pt*radius,XPt);
-
+      // track length to go == [Max]
+      
+      MonteCarlo::neutron TNeut(1,Pt,XPt);
       // Find Initial cell [Store for next time]
       InitObj=System.findCell(TNeut.Pos,InitObj);      
       MonteCarlo::Object* OPtr=InitObj;

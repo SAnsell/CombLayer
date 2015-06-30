@@ -213,6 +213,26 @@ CellMap::setCells(const std::string& Key,const int CNA,const int CNB)
   return; 
 }
 
+void
+CellMap::addCell(const std::string& Key,const int CN)
+  /*!
+    Insert a cell 
+    \param Key :: Keyname
+    \param CN :: Cell number
+  */
+{
+  LCTYPE::iterator mc=Cells.find(Key);
+  if (mc==Cells.end())
+    setCell(Key,0,CN);
+  else if (mc->second>=0)  // +1 case
+    setCell(Key,1,CN);
+  else
+    {
+      const size_t index=static_cast<size_t>(1-mc->second);
+      setCell(Key,SplitUnits[index].size()-1,CN);
+    }
+  return;
+}
   
 int
 CellMap::getCell(const std::string& Key) const
@@ -265,20 +285,20 @@ CellMap::getCells(const std::string& Key) const
     \return vector
    */
 {
-  static std::vector<int> Singlet({0});  
   ELog::RegMethod RegA("CellMap","getCells");
 
+  std::vector<int> Out;
   
   LCTYPE::const_iterator mc=Cells.find(Key);
   if (mc==Cells.end())
-    throw ColErr::InContainerError<std::string>(Key,"Key not present");
+    return Out;
 
   if (mc->second>=0)
     return std::vector<int>({mc->second});
   
   const size_t SU(static_cast<size_t>(-mc->second-1));
 
-  std::vector<int> Out;
+
   for(const int& CN : SplitUnits[SU])
     if (CN)
       Out.push_back(CN);

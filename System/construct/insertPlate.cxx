@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   construct/insertPlate.cxx
  *
@@ -32,7 +32,6 @@
 #include <string>
 #include <algorithm>
 #include <memory>
-#include <boost/bind.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -129,13 +128,13 @@ insertPlate::~insertPlate()
 {}
 
 void
-insertPlate::populate(const Simulation& System)
+insertPlate::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: Data Basex
   */
 {
-  const FuncDataBase& Control=System.getDataBase();
+  ELog::RegMethod RegA("insertPlate","populate");
   
   zAngle=Control.EvalVar<double>(keyName+"ZAngle");
   xyAngle=Control.EvalVar<double>(keyName+"XYAngle");
@@ -286,8 +285,10 @@ insertPlate::findObjects(const Simulation& System)
       if (OPtr)
 	ICells.insert(OPtr->getName());
     }
-  for_each(ICells.begin(),ICells.end(),
-	  boost::bind(&attachSystem::ContainedComp::addInsertCell,this,_1));
+
+  for(const int IC : ICells)
+    attachSystem::ContainedComp::addInsertCell(IC);
+
   return;
 }
 
@@ -316,7 +317,9 @@ insertPlate::mainAll(Simulation& System)
     Common part to createAll
     \param System :: Simulation
    */
-{  
+{
+  ELog::RegMethod RegA("insertPlate","mainAll");
+  
   createSurfaces();
   createObjects(System);
   createLinks();
@@ -337,7 +340,7 @@ insertPlate::createAll(Simulation& System,const Geometry::Vec3D& OG,
 {
   ELog::RegMethod RegA("insertPlate","createAll");
   if (!populated) 
-    populate(System);  
+    populate(System.getDataBase());  
   createUnitVector(OG,FC);
   mainAll(System);
   return;
@@ -361,8 +364,8 @@ insertPlate::createAll(Simulation& System,const Geometry::Vec3D& OG,
 {
   ELog::RegMethod RegA("insertPlate","createAll<vec>");
   
-  if (!populated) 
-    populate(System);
+  if (!populated)
+    populate(System.getDataBase());  
   createUnitVector(OG,Xunit,Yunit,Zunit);
   mainAll(System);
 

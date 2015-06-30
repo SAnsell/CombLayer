@@ -264,7 +264,8 @@ createInputs(inputParam& IParam)
   IParam.regDefItem<int>("u","units",1,0);
   IParam.regItem("validCheck","validCheck",1);
   IParam.regFlag("um","voidUnMask");
-  IParam.regItem("volume","volume",4);
+  IParam.regMulti("volume","volume",4,1);
+  IParam.regFlag("volAll","volumeAll");
   IParam.regDefItem<int>("VN","volNum",1,20000);
   IParam.regFlag("void","void");
   IParam.regFlag("vtk","vtk");
@@ -334,6 +335,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("um","Unset void area (from imp=0)");
   IParam.setDesc("void","Adds the void card to the simulation");
   IParam.setDesc("volume","Create volume about point/radius for f4 tally");
+  IParam.setDesc("volAll","Sum for all cells");
   IParam.setDesc("vtk","Write out VTK plot mesh");
   IParam.setDesc("vmat","Material sections to be written by vtk output");
   IParam.setDesc("VN","Number of points in the volume integration");

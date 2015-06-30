@@ -229,7 +229,7 @@ ODIN::build(Simulation& System,const attachSystem::TwinComp& GItem,
   ELog::EM<<"PitA == "<<PitA->getCentre()
 	  <<" :: "<<PitA->getCentre().abs()<<ELog::endDiag;
   
-  GuidePitAFront->addInsertCell(PitA->getCell("MidLayer"));
+  GuidePitAFront->addInsertCell(PitA->getCells("MidLayer"));
   GuidePitAFront->addEndCut(PitA->getKey("Inner").getSignedLinkString(1));
   GuidePitAFront->createAll(System,GuideD->getKey("Guide0"),2,
 			    GuideD->getKey("Guide0"),2);
@@ -239,12 +239,13 @@ ODIN::build(Simulation& System,const attachSystem::TwinComp& GItem,
   ChopperA->createAll(System,*PitA,0);
   
   GuideE->addInsertCell(voidCell);
-  GuideE->addInsertCell(PitA->getCell("MidLayer"));
+  GuideE->addInsertCell(PitA->getCells("MidLayer"));
   GuideE->addInsertCell(PitA->getCell("Outer"));
   GuideE->createAll(System,PitA->getKey("Mid"),2,PitA->getKey("Mid"),2);
 
   // runs backwards from guide to chopper
-  GuidePitABack->addInsertCell(PitA->getCell("MidLayer"));
+  GuidePitABack->addInsertCell(PitA->getCells("MidLayer"));
+  GuidePitABack->addInsertCell(PitA->getCells("Collet"));
   GuidePitABack->addEndCut(PitA->getKey("Inner").getSignedLinkString(2));
   GuidePitABack->createAll(System,GuideE->getKey("Guide0"),-1,
 			    GuideE->getKey("Guide0"),-1);
@@ -263,18 +264,19 @@ ODIN::build(Simulation& System,const attachSystem::TwinComp& GItem,
   ELog::EM<<"PitB == "<<PitB->getCentre()
 	  <<" :: "<<PitB->getCentre().abs()<<ELog::endDiag;
 
-  GuidePitBFront->addInsertCell(PitB->getCell("MidLayer"));
+  GuidePitBFront->addInsertCell(PitB->getCells("MidLayer"));
   GuidePitBFront->addEndCut(PitB->getKey("Inner").getSignedLinkString(1));
   GuidePitBFront->createAll(System,GuideE->getKey("Guide0"),2,
 			    GuideE->getKey("Guide0"),2);
 
   GuideF->addInsertCell(voidCell);
-  GuideF->addInsertCell(PitB->getCell("MidLayer"));
+  GuideF->addInsertCell(PitB->getCells("MidLayer"));
   GuideF->addInsertCell(PitB->getCell("Outer"));
   GuideF->createAll(System,PitB->getKey("Mid"),2,PitB->getKey("Mid"),2);
 
   // runs backwards from guide to chopper
-  GuidePitBBack->addInsertCell(PitB->getCell("MidLayer"));
+  GuidePitBBack->addInsertCell(PitB->getCells("MidLayer"));
+  GuidePitBBack->addInsertCell(PitB->getCells("Collet"));
   GuidePitBBack->addEndCut(PitB->getKey("Inner").getSignedLinkString(2));
   GuidePitBBack->createAll(System,GuideF->getKey("Guide0"),-1,
 			    GuideF->getKey("Guide0"),-1);
@@ -304,6 +306,7 @@ ODIN::build(Simulation& System,const attachSystem::TwinComp& GItem,
 
   // runs backwards from guide to chopper
   GuidePitCBack->addInsertCell(PitC->getCell("MidLayer"));
+  GuidePitCBack->addInsertCell(PitC->getCells("Collet"));
   GuidePitCBack->addEndCut(PitC->getKey("Inner").getSignedLinkString(2));
   GuidePitCBack->createAll(System,GuideG->getKey("Guide0"),-1,
 			    GuideG->getKey("Guide0"),-1);

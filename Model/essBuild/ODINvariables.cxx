@@ -275,6 +275,12 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinPitAConcFront",50.0);
   Control.addVariable("odinPitAConcBack",50.0);
   Control.addVariable("odinPitAConcMat","Concrete");
+
+  Control.addVariable("odinPitAColletHeight",15.0);
+  Control.addVariable("odinPitAColletDepth",15.0);
+  Control.addVariable("odinPitAColletWidth",40.0);
+  Control.addVariable("odinPitAColletLength",5.0);
+  Control.addVariable("odinPitAColletMat","Tungsten");
   
   // GUDE IN the beam insert
   Control.addVariable("odinGPitAFrontXStep",0.0);       

@@ -47,17 +47,24 @@ class VolSum
   typedef std::map<int,volUnit> tvTYPE; 
   // Input data
   Geometry::Vec3D Origin;                   ///< Origin
-  double radius;                            ///< Radius
-  double fullVol;                           ///< Full volume
+  Geometry::Vec3D X;                        ///< Axis of box
+  Geometry::Vec3D Y;                       
+  Geometry::Vec3D Z;
+
+  double fracX;
+  double fracY;
   
+  double fullVol;                           ///< Full volume  
   double totalDist;                         ///< Total distance
   int nTracks;                              ///< Number of full tracks
    
   tvTYPE tallyVols;                         ///< TallyNum:Volumes
-    
+
+  Geometry::Vec3D getCubePoint() const;
+  
  public:
   
-  VolSum(const Geometry::Vec3D&,const double);
+  VolSum(const Geometry::Vec3D&,const Geometry::Vec3D&);
   VolSum(const VolSum&);
   VolSum& operator=(const VolSum&);
   ~VolSum();
@@ -65,15 +72,17 @@ class VolSum
   void reset();
   void addDistance(const int,const double);
   void addFlux(const int,const double&,const double&);
-  //  void populate(const Simulation&);
+  
   void addTally(const int,const int,const std::string&,
 		const std::vector<int>&);
   void addTallyCell(const int,const int);
 
-  void run(const Simulation&,const size_t);
+  void trackRun(const Simulation&,const size_t);
   void pointRun(const Simulation&,const size_t);
   double calcVolume(const int) const;
   void populateTally(const Simulation&);
+  void populateAll(const Simulation&);
+  
   void write(const std::string&) const;
 
 };

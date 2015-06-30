@@ -72,14 +72,18 @@ calcVolumes(Simulation* SimPtr,const mainSystem::inputParam& IParam)
   if (SimPtr && IParam.flag("volume"))
     {
       SimPtr->createObjSurfMap();
-      Geometry::Vec3D Org;
-      for(size_t i=0;i<3;i++)
-	Org[i]=IParam.getValue<double>("volume",i);
-      const double R=IParam.getValue<double>("volume",3);
+      Geometry::Vec3D Org=IParam.getValue<Geometry::Vec3D>("volume");
+
+      const Geometry::Vec3D XYZ=IParam.getValue<Geometry::Vec3D>("volume",1);
+
       const size_t NP=IParam.getValue<size_t>("volNum");
-      VolSum VTally(Org,R);
-      VTally.populateTally(*SimPtr);
+      VolSum VTally(Org,XYZ);
+      if (IParam.flag("volumeAll"))
+	VTally.populateAll(*SimPtr);
+      else
+	VTally.populateTally(*SimPtr);
       VTally.pointRun(*SimPtr,NP);
+      ELog::EM<<"Volume == "<<Org<<" : "<<XYZ<<" : "<<NP<<ELog::endDiag;
       VTally.write("volumes");
     }
 

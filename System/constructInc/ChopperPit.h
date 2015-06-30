@@ -70,7 +70,7 @@ class ChopperPit :
   
   int feMat;                  ///< Fe material layer
   int concMat;                ///< conc material layer
-  int collMat;                ///< Collette material 
+  int colletMat;              ///< Collette material 
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);

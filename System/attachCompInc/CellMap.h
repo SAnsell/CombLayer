@@ -54,6 +54,7 @@ class CellMap
   
   void setCell(const std::string&,const int);
   void setCell(const std::string&,const size_t,const int);
+  void addCell(const std::string&,const int);
   int getCell(const std::string&) const;
   int getCell(const std::string&,const size_t) const;
 
