@@ -369,7 +369,6 @@ Hut::createObjects(Simulation& System,const std::string& cutRule)
   // FRONT CONC SECTION:
   Out=ModelSupport::getComposite(SMap,hutIndex,"-111 211 213 -214 205 -206 ");
   Out+=cutRule;
-  ELog::EM<<"Cut rul == "<<cutRule<<ELog::endDiag;
   System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
 
   

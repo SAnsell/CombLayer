@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   processInc/Volumes.h
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,12 +19,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef ModelSupport_createDivide_h
-#define ModelSupport_createDivide_h
+#ifndef ModelSupport_Volumes_h
+#define ModelSupport_Volumes_h
 
 namespace ModelSupport
 {
+  class VolSum;
+  
   void calcVolumes(Simulation*,const mainSystem::inputParam&);
+  void populateCells(const Simulation&,const mainSystem::inputParam&,
+		     VolSum&);
+
 }
 
 

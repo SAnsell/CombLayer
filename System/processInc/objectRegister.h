@@ -51,6 +51,7 @@ class objectRegister
 
   int cellNumber;                  ///< Current new cell number
   MTYPE regionMap;                 ///< Index of kept object number
+  MTYPE renumMap;                  ///< Index of renumbered units
 
   cMapTYPE Components;             ///< Pointer to real objects
 
@@ -71,6 +72,10 @@ class objectRegister
   int getRange(const std::string&,const int =-1) const;
   std::string inRange(const int) const;
 
+  int getRenumberCell(const std::string&,const int =-1) const;
+  int getRenumberRange(const std::string&,const int =-1) const;
+
+  
   void addObject(const std::string&,const CTYPE&);
   void addObject(const CTYPE&);
   template<typename T> const T*
@@ -78,7 +83,8 @@ class objectRegister
   template<typename T>  T*
     getObject(const std::string&);
   bool hasObject(const std::string&) const;
-
+  void setRenumber(const std::string&,const int,const int);
+  
   void reset();
   void write(const std::string&) const;
   

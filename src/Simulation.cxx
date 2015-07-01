@@ -35,7 +35,6 @@
 #include <iterator>
 #include <memory>
 #include <array>
-#include <boost/functional.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -1950,6 +1949,28 @@ Simulation::getNonVoidCellVector() const
   return cellOrder;
 }
 
+std::vector<int>
+Simulation::getCellVectorRange(const int RA,const int RB) const
+  /*!
+    Ugly function to return the current
+    vector of cells which are not vacuum.
+    \return vector of cell numbers (ordered)
+  */
+{
+  ELog::RegMethod RegA("Simluation","getCellVecotRange");
+
+  std::vector<int> cellOrder;
+
+  // OTYPE is an ORDER map by number
+  OTYPE::const_iterator mc=OList.lower_bound(RA);
+  while(mc!=OList.end() && mc->first<RA+RB)
+    {
+      if (mc->second->getMat() && !mc->second->isPlaceHold())
+	cellOrder.push_back(mc->first);
+    }
+  return cellOrder;
+}
+
 void
 Simulation::renumberCells(const std::vector<int>& cOffset,
 			  const std::vector<int>& cRange)
@@ -1961,7 +1982,7 @@ Simulation::renumberCells(const std::vector<int>& cOffset,
 {
   ELog::RegMethod RegA("Simulation","renumberCells");
 
-  const ModelSupport::objectRegister& OR=
+  ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
   WeightSystem::weightManager& WM=
@@ -1973,10 +1994,15 @@ Simulation::renumberCells(const std::vector<int>& cOffset,
   OTYPE newMap;           // New map with correct numbering
   int nNum(0);
   int index(1);
+
+  std::string oldUnit;
+  int startNum(0);
+  // This is ordered:
   OTYPE::const_iterator vc;  
   for(vc=OList.begin();vc!=OList.end();vc++)
     {
       const int cNum=vc->second->getName();
+      const std::string keyUnit=OR.inRange(cNum);
       // Determine inf the cell is within cRange:
       size_t j=0;
       while(j<cOffset.size())
@@ -2005,11 +2031,16 @@ Simulation::renumberCells(const std::vector<int>& cOffset,
 	  PhysPtr->substituteCell(cNum,nNum);
 	  for(TallyTYPE::value_type& TI : TItem)
 	    TI.second->renumberCell(cNum,nNum);
-
 	}
-      
+      if (keyUnit!=oldUnit)
+	{
+	  OR.setRenumber(oldUnit,startNum,nNum-1);
+	  oldUnit=keyUnit;
+	  startNum=nNum;
+	}
+
       ELog::RN<<"Cell Changed :"<<cNum<<" "<<nNum
-	      <<" Object:"<<OR.inRange(cNum)<<ELog::endBasic;
+	      <<" Object:"<<keyUnit<<ELog::endBasic;
     }
 
   OList=newMap;

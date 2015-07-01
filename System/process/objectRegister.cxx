@@ -313,6 +313,31 @@ objectRegister::getObject(const std::string& Name) const
 }
 
 void
+objectRegister::setRenumber(const std::string& key,
+			    const int startN,const int endN)
+  /*!
+    Insert renumber into the system :
+    \param key :: Keyname [nop if not present in renumMap]
+    \param startN :: First cell number
+    \param endN :: last cell number
+  */
+{
+  ELog::RegMethod RegA("objectRegister","setRenumber");
+
+  if (regionMap.find(key)!=regionMap.end())
+    {
+      MTYPE::iterator mc=renumMap.find(key);
+      if (mc!=renumMap.end())
+	mc->second=std::pair<int,int>(startN,1+startN-endN);
+      else
+	renumMap.insert(MTYPE::value_type
+			(key,std::pair<int,int>(startN,1+startN-endN)));
+    }
+      
+  return;
+}
+  
+void
 objectRegister::write(const std::string& OFile) const
   /*!
     Write out to a file

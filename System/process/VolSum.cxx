@@ -124,29 +124,34 @@ VolSum::~VolSum()
 {}
 
 void
-VolSum::populateAll(const Simulation& System)
+VolSum::populateVSet(const Simulation& System,
+		     const std::vector<int>& VSet)
   /*!
-    The big population call for all cell
-    \param System :: Simulation system
-  */
+    Populate a set of cells
+    \param System :: Simulation
+    \param VSet :: Set of cells
+   */
 {
-  ELog::RegMethod RegA("VolSum","populateAll");
-  const std::vector<int> CVec=System.getNonVoidCellVector();
+  ELog::RegMethod RegA("VolSum","populateVSet");
   typedef std::map<int,std::vector<int> > MTYPE;
   MTYPE MatSet;
-  for(const int CN : CVec)
+  for(const int CN : VSet)
     {
-      const int matN=System.getCellMaterial(CN);
-      MTYPE::iterator mc=MatSet.find(matN);
-      if (mc!=MatSet.end())
-	mc->second.push_back(CN);
-      else
+      if (System.existCell(CN))
 	{
-	  std::vector<int> Input;
-	  Input.push_back(CN);
-	  MatSet.insert(MTYPE::value_type(matN,Input));
+	  const int matN=System.getCellMaterial(CN);
+	  MTYPE::iterator mc=MatSet.find(matN);
+	  if (mc!=MatSet.end())
+	    mc->second.push_back(CN);
+	  else
+	    {
+	      std::vector<int> Input;
+	      Input.push_back(CN);
+	      MatSet.insert(MTYPE::value_type(matN,Input));
+	    }
 	}
     }
+
   int cnt(1);
   for(const MTYPE::value_type& TC : MatSet)
     {  
@@ -156,7 +161,21 @@ VolSum::populateAll(const Simulation& System)
     }
   return;
 }
+  
+void
+VolSum::populateAll(const Simulation& System)
+  /*!
+    The big population call for all cell
+    \param System :: Simulation system
+  */
+{
+  ELog::RegMethod RegA("VolSum","populateAll");
+  const std::vector<int> CVec=System.getNonVoidCellVector();
+  populateVSet(System,CVec);
+  return;
+}
 
+  
 void
 VolSum::populateTally(const Simulation& System)
   /*!
@@ -297,7 +316,6 @@ VolSum::pointRun(const Simulation& System,const size_t N)
 			 Y*(RNG.rand()-0.5)+
 			 Z*(RNG.rand()-0.5));
       OPtr=System.findCell(Pt,OPtr);
-      ELog::EM<<"Found point "<<OPtr->getName()<<ELog::endDiag;
       addDistance(OPtr->getName(),1.0);
     }
   nTracks+=N;

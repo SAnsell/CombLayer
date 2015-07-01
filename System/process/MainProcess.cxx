@@ -255,8 +255,8 @@ createInputs(inputParam& IParam)
   // std::vector<std::string> AItems(15);
   // IParam.regDefItemList<std::string>("T","tally",15,AItems);
   IParam.regMulti("T","tally",1000,0);
-  IParam.regMulti("TC","tallyCells",10000,3,2);
-  IParam.regMulti("TGrid","TGrid",10000,3,2);
+  IParam.regMulti("TC","tallyCells",10000,2,3);
+  IParam.regMulti("TGrid","TGrid",10000,2,3);
   IParam.regMulti("TMod","tallyMod",8,1);
   IParam.regFlag("TW","tallyWeight");
   IParam.regItem("TX","Txml",1);
@@ -265,13 +265,14 @@ createInputs(inputParam& IParam)
   IParam.regItem("validCheck","validCheck",1);
   IParam.regFlag("um","voidUnMask");
   IParam.regMulti("volume","volume",4,1);
-  IParam.regFlag("volAll","volumeAll");
   IParam.regDefItem<int>("VN","volNum",1,20000);
+  IParam.regMulti("volCell","volCells",100,1,100);
+    
   IParam.regFlag("void","void");
   IParam.regFlag("vtk","vtk");
   std::vector<std::string> VItems(15,"");
   IParam.regDefItemList<std::string>("vmat","vmat",15,VItems);
-  IParam.regFlag("vcell","vcell");
+  IParam.regFlag("vcell","vcells");
 
   IParam.regItem("w","weight");
   IParam.regItem("WP","weightPt");
@@ -335,7 +336,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("um","Unset void area (from imp=0)");
   IParam.setDesc("void","Adds the void card to the simulation");
   IParam.setDesc("volume","Create volume about point/radius for f4 tally");
-  IParam.setDesc("volAll","Sum for all cells");
+  IParam.setDesc("volCells","Cells [object/range]");
   IParam.setDesc("vtk","Write out VTK plot mesh");
   IParam.setDesc("vmat","Material sections to be written by vtk output");
   IParam.setDesc("VN","Number of points in the volume integration");

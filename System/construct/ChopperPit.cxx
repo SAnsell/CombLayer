@@ -153,7 +153,7 @@ ChopperPit::createUnitVector(const attachSystem::FixedComp& FC,
   ELog::RegMethod RegA("ChopperPit","createUnitVector");
 
   yStep=voidLength/2.0+feFront;
-  ELog::EM<<"YStep == "<<yStep<<ELog::endDiag;
+
   attachSystem::FixedComp& Outer=getKey("Outer");
   attachSystem::FixedComp& Mid=getKey("Mid");
   attachSystem::FixedComp& Inner=getKey("Inner");
