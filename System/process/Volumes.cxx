@@ -80,7 +80,7 @@ calcVolumes(Simulation* SimPtr,const mainSystem::inputParam& IParam)
 
       const size_t NP=IParam.getValue<size_t>("volNum");
       VolSum VTally(Org,XYZ);
-      if (IParam.flag("vCells") )
+      if (IParam.flag("volCells") )
 	populateCells(*SimPtr,IParam,VTally);
       else
 	VTally.populateTally(*SimPtr);
@@ -110,12 +110,12 @@ populateCells(const Simulation& System,
   const ModelSupport::objectRegister& OR= 
     ModelSupport::objectRegister::Instance();
 
-  for(size_t i=0;i<IParam.setCnt("vCells");i++)
+  for(size_t i=0;i<IParam.setCnt("volCells");i++)
     {
-      const size_t NItems=IParam.itemCnt("vCells",i);
+      const size_t NItems=IParam.itemCnt("volCells",i);
       std::vector<std::string> CStr;
       for(size_t j=0;j<NItems;j++)
-	CStr.push_back(IParam.getValue<std::string>("vCells",i,j));
+	CStr.push_back(IParam.getValue<std::string>("volCells",i,j));
       
       if (NItems && (CStr[0]=="all" || CStr[0]=="All"))
 	VTally.populateAll(System);

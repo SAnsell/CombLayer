@@ -36,6 +36,18 @@
   \file mathSupport.cxx 
 */
 
+double
+logFromLinear(const double A,const double B,const size_t N,
+	      const size_t index)
+  /*!
+    Calculate the log step in a range A-B
+   */
+{
+  const double step(log(fabs((B-A)/A))/N);
+  return (A>B) ? B*exp(index*step) : A*exp(index*step);
+}
+  
+
 size_t
 lowBitIndex(const size_t& x)
 /*!
