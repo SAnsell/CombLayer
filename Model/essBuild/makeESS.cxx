@@ -95,7 +95,9 @@
 #include "ConicModerator.h"
 #include "essDBMaterial.h"
 #include "makeESSBL.h"
+// BEAMLINES:
 #include "ODIN.h"
+#include "LOKI.h"
 
 #include "makeESS.h"
 
@@ -375,19 +377,26 @@ makeESS::makeBeamLine(Simulation& System,
 {
   ELog::RegMethod RegA("makeESS","makeBeamLine");
 
-  const size_t NItems=IParam.itemCnt("beamlines",0);
-  for(size_t i=1;i<NItems;i+=2)
-    {
-      const std::string BL=IParam.getValue<std::string>("beamlines",i-1);
-      const std::string Btype=IParam.getValue<std::string>("beamlines",i);
 
-      // FIND BUNKER HERE:::
-      
-      ELog::EM<<"Making beamline "<<BL
+  const size_t NSet=IParam.setCnt("beamlines");
+
+  for(size_t j=0;j<NSet;j++)
+    {
+      const size_t NItems=IParam.itemCnt("beamlines",0);
+      for(size_t i=1;i<NItems;i+=2)
+	{
+	  const std::string BL=IParam.getValue<std::string>("beamlines",j,i-1);
+	  const std::string Btype=IParam.getValue<std::string>("beamlines",j,i);
+	  // FIND BUNKER HERE:::
+	  
+	  ELog::EM<<"Making beamline "<<BL
+		  <<" [" <<Btype<< "] "<<ELog::endDiag;
+	  makeESSBL BLfactory(BL,Btype);
+	  BLfactory.build(System,*LowABunker);
+	  ELog::EM<<"Finished beamline "<<BL
       	      <<" [" <<Btype<< "] "<<ELog::endDiag;
-      makeESSBL BLfactory(BL,Btype);
-      BLfactory.build(System,*LowABunker);
-      
+	    
+	}
     }
   return;
 }

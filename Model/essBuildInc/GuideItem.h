@@ -36,7 +36,7 @@ namespace essSystem
 */
 
 class GuideItem : public attachSystem::ContainedGroup,
-    public attachSystem::TwinComp
+  public attachSystem::FixedGroup,public attachSystem::CellMap
 {
  private:
   

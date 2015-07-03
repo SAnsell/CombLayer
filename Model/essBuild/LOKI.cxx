@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuild/makeESSBL.cxx
+ * File:   essBuild/LOKI.cxx
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -60,116 +60,78 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
+#include "FixedGroup.h"
+#include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
-#include "CellMap.h"
-#include "LayerComp.h"
-#include "FixedGroup.h"
 #include "SecondTrack.h"
 #include "TwinComp.h"
-#include "ShapeUnit.h"
-#include "Bunker.h"
-#include "GuideLine.h"
+#include "LayerComp.h"
+#include "CellMap.h"
+#include "World.h"
+#include "AttachSupport.h"
 #include "GuideItem.h"
-
-#include "ODIN.h"
+#include "Jaws.h"
+#include "GuideLine.h"
+#include "DiskChopper.h"
+#include "Bunker.h"
+#include "BunkerInsert.h"
+#include "ChopperPit.h"
+#include "Hut.h"
+#include "HoleShape.h"
+#include "RotaryCollimator.h"
+#include "PinHole.h"
+#include "RentrantBS.h"
 #include "LOKI.h"
-#include "beamlineConstructor.h"
-#include "makeESSBL.h"
 
 namespace essSystem
 {
 
-makeESSBL::makeESSBL(const std::string& SN,
-		     const std::string& BName) : 
-  beamlineSystem::beamlineConstructor(),
-  shutterName(SN),beamName(BName)
+LOKI::LOKI() :
+  BendA(new beamlineSystem::GuideLine("lokiBA"))
  /*!
     Constructor
-    \param SN :: Shutter name
-    \param BName :: Beamline
  */
 {
-}
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
 
-makeESSBL::makeESSBL(const makeESSBL& A) : 
-  shutterName(A.shutterName),beamName(A.beamName)
-  /*!
-    Copy constructor
-    \param A :: makeESSBL to copy
-  */
-{}
-
-makeESSBL&
-makeESSBL::operator=(const makeESSBL& A)
-  /*!
-    Assignment operator
-    \param A :: makeESSBL to copy
-    \return *this
-  */
-{
-  if (this!=&A)
-    {
-    }
-  return *this;
+  OR.addObject(BendA);
 }
 
 
-makeESSBL::~makeESSBL()
+
+LOKI::~LOKI()
   /*!
     Destructor
   */
 {}
 
+
 void 
-makeESSBL::build(Simulation& System,const Bunker& bunkerObj)
+LOKI::build(Simulation& System,
+	    const GuideItem& GItem,
+	    const Bunker& bunkerObj,
+	    const int voidCell)
   /*!
     Carry out the full build
-    \param SimPtr :: Simulation system
-    \param bunkerObj :: Bunker cell system
+    \param System :: Simulation system
+    \param GItem :: Guide Item 
+    \param BunkerObj :: Bunker component [for inserts]
+    \param voidCell :: Void cell
    */
 {
   // For output stream
-  ELog::RegMethod RegA("makeESSBL","build");
+  ELog::RegMethod RegA("LOKI","build");
+  ELog::EM<<"Building LOKI on : "<<GItem.getKeyName()<<ELog::endDiag;
 
-  const int voidCell(74123);
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
-  const attachSystem::FixedComp* mainFCPtr=
-    OR.getObject<attachSystem::FixedComp>(shutterName);
-  const GuideItem* mainGIPtr=
-    dynamic_cast<const GuideItem*>(mainFCPtr);
-    
-  if (!mainGIPtr)
-    throw ColErr::InContainerError<std::string>(shutterName,"shutterObject");
-
-  if (beamName=="ODIN")
-    {
-      // Odin beamline
-      ODIN OdinBL;
-      //      OdinBL.build(System,*mainFCPtr,bunkerObj,voidCell);
-    }
-  else if (beamName=="LOKI")
-    {
-      // LOKI beamline
-      LOKI LokiBL;
-      LokiBL.build(System,*mainGIPtr,bunkerObj,voidCell);
-    }
-  else if (beamName=="JSANS" || beamName=="JRef")
-    {
-      ///< Guide line [refl]
-      std::shared_ptr<beamlineSystem::GuideLine>
-	RefA(new beamlineSystem::GuideLine(beamName));
-      OR.addObject(RefA);
-      RefA->addInsertCell(voidCell);
-      RefA->createAll(System,*mainFCPtr,2,*mainFCPtr,2);
-    }
-
+  
+  BendA->addInsertCell(GItem.getCell("Void"));
+  BendA->createAll(System,GItem,1,GItem,1);
   return;
 }
 
 
 }   // NAMESPACE essSystem
-
 

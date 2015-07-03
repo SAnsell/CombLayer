@@ -154,8 +154,9 @@ defaultConfig::setOption(const std::string& K,const std::string& V)
 }
 
 void
-defaultConfig::setMultiOption(const std::string& K,const size_t index,
-			 const std::string& V) 
+defaultConfig::setMultiOption(const std::string& K,
+			      const size_t index,
+			      const std::string& V) 
   /*!
     Set a string type variable
     \param K :: Keyname

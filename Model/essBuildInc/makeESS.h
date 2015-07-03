@@ -85,10 +85,10 @@ class makeESS
   std::shared_ptr<BeamMonitor> BMon;   ///< Beam Monitor
 
   // Butterly
-  /// Primary Lower Mod [
+  /// Primary Lower Mod 
   std::shared_ptr<constructSystem::ModBase> LowMod;
-  std::shared_ptr<DiskPreMod> LowPreMod;
-  std::shared_ptr<DiskPreMod> LowCapMod;
+  std::shared_ptr<DiskPreMod> LowPreMod;         ///< Lower mod 
+  std::shared_ptr<DiskPreMod> LowCapMod;         ///< Upper mod
 
   // Cylindrical [to be dumped]
   std::shared_ptr<moderatorSystem::BasicFlightLine> LowAFL;  ///< Lower Mode FL

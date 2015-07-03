@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuildInc/makeESSBL.h
+ * File:   essBuildInc/LOKI.h
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -19,42 +19,52 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef essSystem_makeESSBL_h
-#define essSystem_makeESSBL_h
+#ifndef essSystem_LOKI_h
+#define essSystem_LOKI_h
 
-namespace beamlineSystem
+namespace attachSystem
 {
-  class GuideLine;
+  class FixedComp;
+  class TwinComp;
+  class CellMap;
+}
+
+namespace constructSystem
+{  
+  class Jaws;
+  class DiskChopper;
+  class ChopperPit;
+  class RotaryCollimator;
 }
 
 namespace essSystem
-{
-  class GuideBay;
+{  
+  class GuideItem;
 
   /*!
-    \class makeESSBL
+    \class LOKI
     \version 1.0
     \author S. Ansell
-    \date April 2014
-    \brief Simple beamline constructor for ESS
+    \date July 2014
+    \brief LOKI beamline constructor for the ESS
   */
   
-class makeESSBL : 
-  public  beamlineSystem::beamlineConstructor
+class LOKI
 {
  private:
 
-  const std::string shutterName;              ///< Shutter name
-  const std::string beamName;                 ///< Name of beamline
-  
+  /// Bender in insert bay
+  std::shared_ptr<beamlineSystem::GuideLine> BendA;
+
  public:
   
-  makeESSBL(const std::string&,const std::string&);
-  makeESSBL(const makeESSBL&);
-  makeESSBL& operator=(const makeESSBL&);
-  virtual ~makeESSBL();  
+  LOKI();
+  LOKI(const LOKI&);
+  LOKI& operator=(const LOKI&);
+  ~LOKI();
   
-  virtual void build(Simulation&,const essSystem::Bunker&);
+  void build(Simulation&,const GuideItem&,
+	     const Bunker&,const int);
 
 };
 

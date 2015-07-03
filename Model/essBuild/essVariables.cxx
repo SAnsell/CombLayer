@@ -906,6 +906,7 @@ EssVariables(FuncDataBase& Control)
   EssReflectorVariables(Control);
   EssSANSVariables(Control);
   ODINvariables(Control);
+  LOKIvariables(Control);
   EssButterflyModerator(Control);
   EssWheel(Control);
   EssBunkerVariables(Control);

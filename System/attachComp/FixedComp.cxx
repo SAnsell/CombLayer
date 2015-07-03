@@ -227,9 +227,10 @@ FixedComp::createUnitVector(const Geometry::Vec3D& OG,
     Create the unit vectors [using beam directions]
     \param OG :: Origin
     \param BeamAxis :: Beamline axis line
+    \param ZAxis :: Direction for Z
   */
 {
-  ELog::RegMethod RegA("FixedComp","createUnitVector(Vec3D,Vec3D>)");
+  ELog::RegMethod RegA("FixedComp","createUnitVector(Vec3D,Vec3D,Vec3D))");
 
   //Geometry::Vec3D(-1,0,0);          // Gravity axis [up]
   Z=ZAxis;

@@ -49,7 +49,6 @@ class FixedComp
 
   std::vector<LinkUnit> LU;     ///< Linked unit items
 
-  
  public:
 
   FixedComp(const std::string&,const size_t);
