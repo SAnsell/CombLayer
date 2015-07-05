@@ -396,40 +396,40 @@ makeT1Eng::build(Simulation* SimPtr,
   const std::string Out=RefObj->getLinkComplement(2);
   TriFLA->addBoundarySurf("inner",Out);  
   TriFLA->addBoundarySurf("outer",Out);  
-  RefObj->addToInsertChain(TriFLA->getKey("outer"));
+  RefObj->addToInsertChain(TriFLA->getCC("outer"));
   TriFLA->createAll(*SimPtr,*TriMod,*TriMod,TriMod->getSideIndex(0));
 
   TriFLB->addBoundarySurf("inner",Out);  
   TriFLB->addBoundarySurf("outer",Out);  
   TriFLB->createAll(*SimPtr,*TriMod,*TriMod,TriMod->getSideIndex(1));
-  attachSystem::addToInsertSurfCtrl(*SimPtr,*RefObj,TriFLB->getKey("outer"));  
+  attachSystem::addToInsertSurfCtrl(*SimPtr,*RefObj,TriFLB->getCC("outer"));  
 
   H2FL->addBoundarySurf("inner",Out);  
   H2FL->addBoundarySurf("outer",Out);  
-  RefObj->addToInsertChain(H2FL->getKey("outer"));
+  RefObj->addToInsertChain(H2FL->getCC("outer"));
   H2FL->createAll(*SimPtr,1,1,*H2Mod);
 
   CH4FLA->addBoundarySurf("inner",Out);  
   CH4FLA->addBoundarySurf("outer",Out);  
-  RefObj->addToInsertChain(CH4FLA->getKey("outer"));
+  RefObj->addToInsertChain(CH4FLA->getCC("outer"));
   CH4FLA->createAll(*SimPtr,*CH4Mod,*CH4Mod);
 
   CH4FLB->addBoundarySurf("inner",Out);  
   CH4FLB->addBoundarySurf("outer",Out);  
-  RefObj->addToInsertChain(CH4FLB->getKey("outer"));
+  RefObj->addToInsertChain(CH4FLB->getCC("outer"));
 
   CH4FLB->createAll(*SimPtr,*CH4Mod,*CH4Mod);
 
   attachSystem::addToInsertSurfCtrl(*SimPtr,*CH4PMod,*H2PMod);  
   
   attachSystem::addToInsertSurfCtrl(*SimPtr,*CH4PMod,
-				    H2FL->getKey("outer"));  
+				    H2FL->getCC("outer"));  
   attachSystem::addToInsertSurfCtrl(*SimPtr,*CH4PMod,
-				    CH4FLA->getKey("outer"));  
+				    CH4FLA->getCC("outer"));  
   attachSystem::addToInsertSurfCtrl(*SimPtr,*CH4PMod,
-				    CH4FLA->getKey("outer"));  
+				    CH4FLA->getCC("outer"));  
   attachSystem::addToInsertSurfCtrl(*SimPtr,*CH4PMod,
-				    CH4FLB->getKey("outer"));  
+				    CH4FLB->getCC("outer"));  
 
   //  attachSystem::addToInsertSurfCtrl(*SimPtr,*RefObj,*CH4Mod);
 

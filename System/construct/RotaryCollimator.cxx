@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
- *
+ * 
  ****************************************************************************/
 #include <fstream>
 #include <iomanip>
@@ -91,6 +91,55 @@ RotaryCollimator::RotaryCollimator(const std::string& Key)  :
   */
 {}
 
+RotaryCollimator::RotaryCollimator(const RotaryCollimator& A) : 
+  attachSystem::ContainedComp(A),attachSystem::FixedGroup(A),
+  colIndex(A.colIndex),cellIndex(A.cellIndex),xyAngle(A.xyAngle),
+  zAngle(A.zAngle),xStep(A.xStep),yStep(A.yStep),
+  zStep(A.zStep),rotDepth(A.rotDepth),radius(A.radius),
+  thick(A.thick),defMat(A.defMat),holeIndex(A.holeIndex),
+  holeAngOffset(A.holeAngOffset),innerWall(A.innerWall),
+  innerWallMat(A.innerWallMat),nHole(A.nHole),nLayers(A.nLayers),
+  Holes(A.Holes),cFrac(A.cFrac),cMat(A.cMat)
+  /*!
+    Copy constructor
+    \param A :: RotaryCollimator to copy
+  */
+{}
+
+RotaryCollimator&
+RotaryCollimator::operator=(const RotaryCollimator& A)
+  /*!
+    Assignment operator
+    \param A :: RotaryCollimator to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::FixedGroup::operator=(A);
+      cellIndex=A.cellIndex;
+      xyAngle=A.xyAngle;
+      zAngle=A.zAngle;
+      xStep=A.xStep;
+      yStep=A.yStep;
+      zStep=A.zStep;
+      rotDepth=A.rotDepth;
+      radius=A.radius;
+      thick=A.thick;
+      defMat=A.defMat;
+      holeIndex=A.holeIndex;
+      holeAngOffset=A.holeAngOffset;
+      innerWall=A.innerWall;
+      innerWallMat=A.innerWallMat;
+      nHole=A.nHole;
+      nLayers=A.nLayers;
+      Holes=A.Holes;
+      cFrac=A.cFrac;
+      cMat=A.cMat;
+    }
+  return *this;
+}
 
 RotaryCollimator::~RotaryCollimator() 
   /*!

@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   essBuild/CylPreMod.cxx
  *
@@ -743,7 +743,7 @@ CylPreMod::createAll(Simulation& System,
   ExtAObj->setCentRotate(Origin);
   ExtAObj->setEdgeSurf(SMap.realSurf(modIndex+103+
 				     static_cast<int>(aSide)));  //103
-  ExtAObj->copyInterObj(this->getKey("Main"));
+  ExtAObj->copyInterObj(this->getCC("Main"));
   ExtAObj->createAll(System,IPt,*this,nLayers-2,4+aSide);   //4
   addOuterSurf("BlockA",ExtAObj->getCompExclude());
 
@@ -753,7 +753,7 @@ CylPreMod::createAll(Simulation& System,
   ExtBObj->setEdgeSurf(SMap.realSurf(modIndex+204-
 				     static_cast<int>(bSide)));  // 204
   ExtBObj->setCentRotate(Origin);
-  ExtBObj->copyInterObj(this->getKey("Main"));
+  ExtBObj->copyInterObj(this->getCC("Main"));
 
   ExtBObj->createAll(System,IPt,*this,nLayers-2,4+bSide);
 

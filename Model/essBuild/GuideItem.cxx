@@ -86,8 +86,7 @@ namespace essSystem
 GuideItem::GuideItem(const std::string& Key,const size_t Index)  :
   attachSystem::ContainedGroup("Inner","Outer"),
   attachSystem::FixedGroup(Key+StrFunc::makeString(Index),
-			   Key+StrFunc::makeString(Index)+"Main",6,
-			   Key+StrFunc::makeString(Index)+"Beam",2),
+			   "Main",6,"Beam",2),
   attachSystem::CellMap(),
   baseName(Key),
   guideIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
@@ -241,8 +240,8 @@ GuideItem::createUnitVector(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("GuideItem","createUnitVector");
 
-  attachSystem::FixedComp& mainFC=FixedGroup::getKey(keyName+"Main");
-  attachSystem::FixedComp& beamFC=FixedGroup::getKey(keyName+"Beam");
+  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
   
   const attachSystem::LinkUnit& LU=FC.getLU(sideIndex);
   
@@ -252,7 +251,7 @@ GuideItem::createUnitVector(const attachSystem::FixedComp& FC,
 
   beamFC=mainFC;
 
-  setDefault(keyName+"Main");
+  setDefault("Main");
   calcBeamLineTrack(FC);
 
 
@@ -268,7 +267,7 @@ GuideItem::calcBeamLineTrack(const attachSystem::FixedComp& FC)
 {
   ELog::RegMethod RegA("GuideItem","calcBeamLineTrack");
 
-  attachSystem::FixedComp& beamFC=FixedGroup::getKey(keyName+"Beam");
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
 
   // Need to calculate impact point of beamline:
   const double yShift=sqrt(RInner*RInner-beamXStep*beamXStep)-RInner;
@@ -291,7 +290,7 @@ GuideItem::createSurfaces()
   ModelSupport::buildPlane(SMap,guideIndex+1,Origin,Y);    // Divider plane
 
   const attachSystem::FixedComp& beamFC=
-    FixedGroup::getKey(keyName+"Beam");
+    FixedGroup::getKey("Beam");
   
   const Geometry::Vec3D& bX=beamFC.getX();
   const Geometry::Vec3D& bZ=beamFC.getZ();
@@ -441,8 +440,8 @@ GuideItem::createLinks()
 {
   ELog::RegMethod RegA("GuideItem","createLinks");
 
-  attachSystem::FixedComp& mainFC=FixedGroup::getKey(keyName+"Main");
-  attachSystem::FixedComp& beamFC=FixedGroup::getKey(keyName+"Beam");
+  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
   const Geometry::Vec3D& bX=beamFC.getX();
   const Geometry::Vec3D& bY=beamFC.getY();
   const Geometry::Vec3D& bZ=beamFC.getZ();
@@ -453,7 +452,17 @@ GuideItem::createLinks()
   const Geometry::Vec3D beamExit=
     LI.getPoint(DPtr,beamOrigin+bY*length.back());
 
-  /*  
+
+  beamFC.setConnect(0,beamOrigin+bY*RInner,-bY);
+  beamFC.setLinkSurf(0,-SMap.realSurf(guideIndex+7));
+
+  const int GI=10*static_cast<int>(nSegment)+guideIndex;
+  beamFC.setConnect(1,beamExit,bY);
+  beamFC.setLinkSurf(1,SMap.realSurf(GI+7));
+  beamFC.addBridgeSurf(1,SMap.realSurf(guideIndex+1));
+
+  //  mainFC.setConnect(0,beamOrigin+bY*RInner,-bY);
+  /*
   // Beamline :: 
   FixedComp::setConnect(0,beamOrigin+bY*RInner,-bY);
   FixedComp::setLinkSurf(0,-SMap.realSurf(guideIndex+7));

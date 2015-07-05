@@ -148,7 +148,7 @@ makeESSBL::build(Simulation& System,const Bunker& bunkerObj)
     {
       // Odin beamline
       ODIN OdinBL;
-      //      OdinBL.build(System,*mainFCPtr,bunkerObj,voidCell);
+      OdinBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="LOKI")
     {

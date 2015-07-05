@@ -179,7 +179,7 @@ makeESS::topFlightLines(Simulation& System)
   TopAFL->createAll(System,0,1,*TopPre);
   attachSystem::addToInsertSurfCtrl(System,*TopAFL,*TopPre->getBox('A'));
   attachSystem::addToInsertSurfCtrl(System,*Reflector,
-  				    TopAFL->getKey("outer"));
+  				    TopAFL->getCC("outer"));
 
   Out=Reflector->getLinkComplement(0)+TopPre->getBoxCut('B');
   TopBFL->addBoundarySurf("inner",Out);  
@@ -188,7 +188,7 @@ makeESS::topFlightLines(Simulation& System)
   TopBFL->addOuterSurf("outer",TopPre->getBoxCut('B'));  
   attachSystem::addToInsertSurfCtrl(System,*TopBFL,*TopPre->getBox('B'));
   attachSystem::addToInsertSurfCtrl(System,*Reflector,
-  				    TopBFL->getKey("outer"));
+  				    TopBFL->getCC("outer"));
 
 
   return;
@@ -480,19 +480,19 @@ makeESS::build(Simulation& System,
   LowAFL->createAll(System,*LowMod,0,*Reflector,4,*Bulk,-3);
   LowBFL->createAll(System,*LowMod,0,*Reflector,3,*Bulk,-3);   
   
-  attachSystem::addToInsertSurfCtrl(System,*Bulk,Target->getKey("Wheel"));
-  attachSystem::addToInsertForced(System,*Bulk,Target->getKey("Shaft"));
-  attachSystem::addToInsertForced(System,*Bulk,LowAFL->getKey("outer"));
-  attachSystem::addToInsertForced(System,*Bulk,LowBFL->getKey("outer"));
+  attachSystem::addToInsertSurfCtrl(System,*Bulk,Target->getCC("Wheel"));
+  attachSystem::addToInsertForced(System,*Bulk,Target->getCC("Shaft"));
+  attachSystem::addToInsertForced(System,*Bulk,LowAFL->getCC("outer"));
+  attachSystem::addToInsertForced(System,*Bulk,LowBFL->getCC("outer"));
 
 
   // Full surround object
   ShutterBayObj->addInsertCell(voidCell);
   ShutterBayObj->createAll(System,*Bulk,*Bulk);
   attachSystem::addToInsertForced(System,*ShutterBayObj,
-				  Target->getKey("Wheel"));
+				  Target->getCC("Wheel"));
   attachSystem::addToInsertForced(System,*ShutterBayObj,
-				  Target->getKey("Shaft"));
+				  Target->getCC("Shaft"));
 
   createGuides(System);
   makeBunker(System,bunker);
@@ -502,12 +502,12 @@ makeESS::build(Simulation& System,
 
   PBeam->createAll(System,*Reflector,1,*ShutterBayObj,-1);
   // attachSystem::addToInsertSurfCtrl(System,*Reflector,
-  // 				    PBeam->getKey("Sector0"));
+  // 				    PBeam->getCC("Sector0"));
   
   attachSystem::addToInsertSurfCtrl(System,*ShutterBayObj,
-				    PBeam->getKey("Full"));
+				    PBeam->getCC("Full"));
   attachSystem::addToInsertSurfCtrl(System,*Bulk,
-				    PBeam->getKey("Full"));
+				    PBeam->getCC("Full"));
 
   makeBeamLine(System,IParam);
 

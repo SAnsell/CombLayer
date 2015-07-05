@@ -272,7 +272,6 @@ createInputs(inputParam& IParam)
   IParam.regFlag("vtk","vtk");
   std::vector<std::string> VItems(15,"");
   IParam.regDefItemList<std::string>("vmat","vmat",15,VItems);
-  IParam.regFlag("vcell","vcells");
 
   IParam.regItem("w","weight");
   IParam.regItem("WP","weightPt");

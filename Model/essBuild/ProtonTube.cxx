@@ -69,6 +69,48 @@ ProtonTube::ProtonTube(const std::string& Key) :
   */
 {}
 
+ProtonTube::ProtonTube(const ProtonTube& A) : 
+  attachSystem::ContainedGroup(A),attachSystem::FixedComp(A),
+  ptIndex(A.ptIndex),cellIndex(A.cellIndex),xStep(A.xStep),
+  yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
+  zAngle(A.zAngle),nSec(A.nSec),radius(A.radius),
+  length(A.length),zCut(A.zCut),thick(A.thick),
+  inMat(A.inMat),wallMat(A.wallMat)
+  /*!
+    Copy constructor
+    \param A :: ProtonTube to copy
+  */
+{}
+
+ProtonTube&
+ProtonTube::operator=(const ProtonTube& A)
+  /*!
+    Assignment operator
+    \param A :: ProtonTube to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::ContainedGroup::operator=(A);
+      attachSystem::FixedComp::operator=(A);
+      cellIndex=A.cellIndex;
+      xStep=A.xStep;
+      yStep=A.yStep;
+      zStep=A.zStep;
+      xyAngle=A.xyAngle;
+      zAngle=A.zAngle;
+      nSec=A.nSec;
+      radius=A.radius;
+      length=A.length;
+      zCut=A.zCut;
+      thick=A.thick;
+      inMat=A.inMat;
+      wallMat=A.wallMat;
+    }
+  return *this;
+}
+
 ProtonTube::~ProtonTube()
   /*!
     Destructor
@@ -182,23 +224,27 @@ ProtonTube::createObjects(Simulation& System,
 
   std::string Out,EndCap,FrontCap;
   int PT(ptIndex);
-  attachSystem::ContainedGroup::addKey("Full");
+  attachSystem::ContainedGroup::addCC("Full");
   for(size_t i=0;i<nSec;i++)
     {
       const std::string SName=StrFunc::makeString("Sector",i);
-      FrontCap=(!i) ? TargetSurfBoundary : ModelSupport::getComposite(SMap,PT-100, " 2 ");
-      EndCap=(i+1 == nSec) ? outerSurfBoundary : ModelSupport::getComposite(SMap,PT, " -2 ");
+      FrontCap=(!i) ? TargetSurfBoundary :
+	ModelSupport::getComposite(SMap,PT-100, " 2 ");
+      EndCap=(i+1 == nSec) ? outerSurfBoundary :
+	ModelSupport::getComposite(SMap,PT, " -2 ");
       
       Out=ModelSupport::getSetComposite(SMap,PT, " -7 5 -6 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,inMat[i],0.0,Out+FrontCap+EndCap));
+      System.addCell(MonteCarlo::Qhull(cellIndex++,inMat[i],0.0,
+				       Out+FrontCap+EndCap));
       if (thick[i]>Geometry::zeroTol)
 	{
 	  Out=ModelSupport::getSetComposite(SMap,PT, " 7 -17 5 -6");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat[i],0.0,Out+FrontCap+EndCap));
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat[i],0.0,
+					   Out+FrontCap+EndCap));
 	}
 
       Out=ModelSupport::getSetComposite(SMap,PT, " -17 5 -6 ");
-      attachSystem::ContainedGroup::addKey(SName);
+      attachSystem::ContainedGroup::addCC(SName);
       addOuterSurf(SName,Out+EndCap+FrontCap);
       addOuterUnionSurf("Full",Out+EndCap+FrontCap);
 
@@ -274,4 +320,4 @@ ProtonTube::createAll(Simulation& System,
   return;
 }
 
-}  // NAMESPACE instrumentSystem
+}  // NAMESPACE essSystem

@@ -170,7 +170,7 @@ ODIN::~ODIN()
 
 
 void 
-ODIN::build(Simulation& System,const attachSystem::TwinComp& GItem,
+ODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
 	    const Bunker& bunkerObj,const int voidCell)
   /*!
     Carry out the full build
@@ -183,9 +183,10 @@ ODIN::build(Simulation& System,const attachSystem::TwinComp& GItem,
   // For output stream
   ELog::RegMethod RegA("ODIN","build");
   ELog::EM<<"Building ODIN on : "<<GItem.getKeyName()<<ELog::endDiag;
+  
   BladeChopper->addInsertCell(bunkerObj.getCell("MainVoid"));
   BladeChopper->setCentreFlag(3);  // Z direction
-  BladeChopper->createAll(System,GItem,2);
+  BladeChopper->createAll(System,GItem.getKey("Beam"),2);
 
   GuideA->addInsertCell(bunkerObj.getCell("MainVoid"));
   GuideA->createAll(System,BladeChopper->getKey("Main"),2,

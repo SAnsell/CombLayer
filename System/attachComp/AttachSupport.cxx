@@ -224,7 +224,7 @@ addToInsertControl(Simulation& System,
 				  InsertFC.getKeyName()+"to containedGroup");
 
   addToInsertControl(System,cellN,cellN+cellR,InsertFC,
-		     CGPtr->getKey(groupName));
+		     CGPtr->getCC(groupName));
 
   return;
 }

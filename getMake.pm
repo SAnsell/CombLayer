@@ -39,6 +39,8 @@ sub new
     luaShared=> "Script",     ## Script directory
     swigShared=> "Swig",      ## Swig directory
     swigIndex=> undef,
+    rootShared=> "rootCint",  ## rootcint directory
+    rootIndex=> undef,        ## rootcint directory
 
     optimise=>"",
     debug=>"-g",
@@ -47,6 +49,8 @@ sub new
     shared=>0,
     fortranlib=>0,
     boost=>0,
+    root=>0,
+    rootcint=>0,
     gtk=>0,
     gcov=>0,          ## Gcov
     gsl=>0,          ## Gnu scietific lib
@@ -71,6 +75,7 @@ sub new
   $self->{StdLib}=[ ];
   $self->{IncLib}=[ ];
   $self->{swigIndex}={ };
+  $self->{rootIndex}={ };
   return $self;
 }
 
@@ -211,6 +216,35 @@ sub getForFiles
   return @FOut;
 }
 
+sub getRootFiles
+  ## 
+  ## Gets a list .h files in include that 
+  ## have classDef macros
+  ## 
+{
+  my $Dname="./include";
+  my $iAll=`ls $Dname/*.h  2> /dev/null`;  
+  my @IFiles =split " ",$iAll;
+  my @OFiles;
+  foreach my $file (@IFiles)
+    {
+      open(DX,$file);
+      my @lines=<DX>;
+      foreach my $item (@lines)
+        {
+	  if ($item=~/ClassDef/ && $item!~/\;/)
+	    {
+	      $file = $1 if ($file=~/.*\/(.*)/);
+	      $file = $1 if ($file=~/(.*)\..*/);
+	      push(@OFiles,$file);
+	      print STDERR "Found ",$file,"\n";
+	      last;
+	    }
+	}
+    }
+  return @OFiles;
+}
+
 sub getSwigFiles
   ## 
   ## Gets a list of .i files from a directory
@@ -325,6 +359,7 @@ sub addFlags
       $retString.="\$(XLIBS) " if ($ix eq "-X");
       $retString.="\$(PGLIBS) " if ($ix eq "-P");
       $retString.="\$(GSLLIBS) " if ($ix eq "-S");
+      $retString.="\$(ROOTLIBS) " if ($ix eq "-R"); # || $self->{root});
       $retString.="\$(GTKLIBS) " if ($ix eq "-M");
       $retString.="\$(GTKLIBS) " if ($ix eq "-K");
       $retString.="\$(OPENLIBS) " if ($ix eq "-G");
@@ -688,6 +723,28 @@ sub addCoreItems
   return;
 }
 
+sub getLocalParameters
+  ##
+  ## Given a set of flags
+  ## Determine which parameters we should set for a give master proc
+  ##  
+{
+  my $self=shift;
+  my $i=shift;
+
+
+  my $nogsl=1;
+  my @Flags =split " ",$self->{controlflags}[$i];
+  my $out=0;
+  foreach my $Ostr (@Flags)
+    {
+	$out|=1 if ($Ostr eq "-RC");   ## Rootcint 
+	$out|=2 if ($Ostr eq "-R");    ## Root
+    }
+  
+  return $out;
+}
+
 sub setParameters
   ##
   ## Given a set of flags
@@ -718,6 +775,8 @@ sub setParameters
 	  $self->{pglib}=1 if ($Ostr eq "-P");
 	  $self->{gsl}=1 if ($Ostr eq "-S");
 	  $nogsl=-1 if ($Ostr eq "-NS");
+	  $self->{root}=1 if ($Ostr eq "-R");
+	  $self->{rootcint}=1 if ($Ostr eq "-RC");
 	  $self->{regex}=-1 if ($Ostr eq "-NR");
 	  $self->{xlib}=1 if ($Ostr eq "-X");
 	  $self->{shared}=1 if ($Ostr eq "-s");
@@ -734,6 +793,7 @@ sub setParameters
   print STDERR "INIT Opt=",$self->{optimise},"\n";
   print STDERR "INIT Deb=",$self->{debug},"\n";
   print STDERR "GSL == ",$self->{gsl},"\n";
+  print STDERR "ROOT == ",$self->{root},"\n";
   print STDERR "REGEX == ",$self->{regex},"\n";
   print STDERR "G++ == ",$self->{ccomp},$self->{cxx11},"\n";
   print STDERR "GCC == ",$self->{bcomp},"\n";
@@ -839,6 +899,7 @@ sub printFullDep
 sub printHeaders
 {
   my $self=shift;
+  my $localDir=(@_) ? shift : ".";
   my $GcovFlag="";
   my $OFlag=$self->{debug}." ".$self->{optimise};
   
@@ -850,7 +911,8 @@ sub printHeaders
   print "#\n";
   print "#\n";
   print "# First where are we going to get the sources\n";
-  print "SRCDIR=.\n";
+  print "SRCDIR=".$localDir."\n";
+  print "ROOTDIR=../rootCint\n" if ($self->{root});
   print "#\n";
   print "## Fortran compiler and compilation flags\n";
   print "#\n";
@@ -880,6 +942,12 @@ sub printHeaders
   if ($self->{boost})
     {
       my $incL= "INCBOOST = ".$self->{boostInc};
+      printString($incL,66,5);
+    }
+  if ($self->{root})
+    {
+      my $incL="INCROOT = ";
+      $incL.=`root-config --cflags `;
       printString($incL,66,5);
     }
 
@@ -938,6 +1006,10 @@ sub printHeaders
   my $gsllibs;
   $gsllibs="GSLLIBS=".`pkg-config --libs gsl` if ($self->{gsl}>0);
   printString($gsllibs,66,5) if ($self->{gsl}>0);
+
+  my $rootlibs;
+  $rootlibs="ROOTLIBS=".`root-config --libs --new` if ($self->{root});
+  printString($rootlibs,66,5) if ($self->{root}>0);
 
   my $xlibs;
   $xlibs="XLIBS= -L/usr/X11R6/lib -lXm -lXt -lXmu -lXp -lX11 -lSM -lICE" if ($self->{xlib});
@@ -1050,6 +1122,7 @@ sub processCPP
       my $activeGTK=0;
       my $activeGSL=0;
       my $activeBOOST=0;
+      my $activeROOT=0;
       ## Determine the active Include 
       my %incActive;
       my $basename=$cname;
@@ -1076,6 +1149,8 @@ sub processCPP
 	      $activeGTK=1 if ($self->{gtk} && $line=~/^\s*\#include\s+\<gtk/);
 	      $activeGTK=1 if ($self->{gtk} && $line=~/^\s*\#include\s+\<gdk/);
 	      $activeGSL=1 if ($self->{gsl} && $line=~/^\s*\#include\s+\<gsl/);
+	      $activeROOT=1 if ($self->{root} && 
+				$line=~/^\s*\#include\s+\<TROOT/);
 	      my $found=($fortFlag==1) ?  
 		  ($line=~/^\s*include\s+\'(.*)\'/i) :                 
 		  ($line=~/^\s*\#include\s+\"(.*)\"/);
@@ -1163,6 +1238,7 @@ sub processCPP
       $compLine.="\$(INCBOOST) " if ($activeBOOST);
       $compLine.="\$(INCREGEX) " if ($activeBOOST && $self->{regex});
       $compLine.="\$(INCGSL) " if ($activeGSL);
+      $compLine.="\$(INCROOT) " if ($activeROOT);
       $compLine.="\$(SRCDIR)\/".$namePlusExt."\n";
       printString($compLine,72,15);
       print "\n";
@@ -1215,6 +1291,7 @@ sub printMainAll
   for(my $i=0;$i<scalar(@{$self->{masterProg}});$i++)
     {
       my $name=$self->{masterProg}[$i];
+      my $localflag=$self->getLocalParameters($i);
       my $depLine = $name." : mainProg Main/".$name.".o ";
       my $compLine;
       my $fileExt=getFileExt("Main/".$name);
@@ -1603,6 +1680,42 @@ sub runMainDir
   return;
 }
 
+sub runRootCintDir
+  ## Create the makefile in the swig directory
+{
+  my $self=shift;
+  return if (!$self->{root});
+  
+  $self->clearInclude();
+  $self->setPrintFile($self->{rootShared}."/Makefile");
+  $self->printHeaders("../src");
+  my @RootFiles=getRootFiles();
+  # Loop over all items found and construct C++ include list
+  my @CppFiles;
+  my $ODEP="ODEP = ";
+  foreach my $item (@RootFiles)
+    {
+	$ODEP.=$item."Dict.o ";
+    }
+  printString($ODEP,72,15);
+  print "\n";
+  foreach my $item (@RootFiles)
+    {
+#      my $cppFile="./src/".$item.".cxx";
+      my $cppFile=$item.".cxx";
+      my $compLine=$self->getProcessRootCPP("src",$cppFile,0);
+      while($compLine=~s/^([^\n]*)\n//)
+        {
+	  print $1,"\n";
+	}
+      printString($compLine,72,15);
+      print "\n";
+    }
+
+  $self->printLibDep("rootCint");
+  printTail($self->{swigShared});
+  return;
+}
 
 sub runSwigDir
   ## Create the makefile in the swig directory

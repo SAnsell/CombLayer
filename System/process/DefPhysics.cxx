@@ -162,6 +162,9 @@ setDefRotation(const mainSystem::inputParam& IParam)
 {
   ELog::RegMethod RegA("DefPhysics[F]","setDefRotation");
 
+  const ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
   std::string retFlag;
   masterRotate& MR = masterRotate::Instance();
   if (IParam.flag("axis"))
@@ -195,6 +198,12 @@ setDefRotation(const mainSystem::inputParam& IParam)
 			 45.00-180.0);
 	}
       else if (AItem=="ODIN" || AItem=="odin")
+	{
+	  MR.addRotation(Geometry::Vec3D(0,0,1),
+			 Geometry::Vec3D(0,0,0),
+			 27.5);
+	}
+      else if (AItem=="LOKI" || AItem=="loki")
 	{
 	  MR.addRotation(Geometry::Vec3D(0,0,1),
 			 Geometry::Vec3D(0,0,0),

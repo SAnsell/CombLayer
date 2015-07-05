@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1Build/makeT1Real.cxx
  *
@@ -231,20 +231,20 @@ makeT1Real::flightLines(Simulation* SimPtr)
   std::string Out;
   std::string Out1;
 
-  RefObj->addToInsertChain(H2FL->getKey("outer"));
+  RefObj->addToInsertChain(H2FL->getCC("outer"));
   Out=RefObj->getComposite(" 3 ");
   H2FL->addBoundarySurf("inner",Out);  
   H2FL->addBoundarySurf("outer",Out);  
   H2FL->createAll(*SimPtr,*Lh2ModObj,1);
 
-  RefObj->addToInsertChain(CH4NorthFL->getKey("outer"));
+  RefObj->addToInsertChain(CH4NorthFL->getCC("outer"));
   Out=RefObj->getComposite(" 3 -12 ");
   Out1=Lh2ModObj->getComposite(" (-61:64)  ");
   CH4NorthFL->addBoundarySurf("inner",Out+Out1);
   CH4NorthFL->addBoundarySurf("outer",Out+Out1);
   CH4NorthFL->createAll(*SimPtr,*CH4ModObj,1);
 
-  RefObj->addToInsertChain(CH4SouthFL->getKey("outer"));
+  RefObj->addToInsertChain(CH4SouthFL->getCC("outer"));
   Out=RefObj->getComposite(" 1 -4 -13 ");
   CH4SouthFL->addBoundarySurf("inner",Out);
   CH4SouthFL->addBoundarySurf("outer",Out);
@@ -253,17 +253,17 @@ makeT1Real::flightLines(Simulation* SimPtr)
   Out=RefObj->getComposite(" -4 ");
   MerlinFL->addBoundarySurf("inner",Out);
   MerlinFL->addBoundarySurf("outer",Out);
-  RefObj->addToInsertChain(MerlinFL->getKey("outer"));
+  RefObj->addToInsertChain(MerlinFL->getCC("outer"));
   MerlinFL->createAll(*SimPtr,*MerlinMod,1);
   
   Out=RefObj->getComposite(" 1 3 -11 ");
-  RefObj->addToInsertChain(WaterNorthFL->getKey("outer"));
+  RefObj->addToInsertChain(WaterNorthFL->getCC("outer"));
   WaterNorthFL->addBoundarySurf("inner",Out);
   WaterNorthFL->addBoundarySurf("outer",Out);
   WaterNorthFL->createAll(*SimPtr,*WaterModObj,1);
 
   Out=RefObj->getComposite(" -14 -4 ");
-  RefObj->addToInsertChain(WaterSouthFL->getKey("outer"));
+  RefObj->addToInsertChain(WaterSouthFL->getCC("outer"));
   WaterSouthFL->addBoundarySurf("inner",Out);
   WaterSouthFL->addBoundarySurf("outer",Out);
   WaterSouthFL->createAll(*SimPtr,*WaterModObj,2); 

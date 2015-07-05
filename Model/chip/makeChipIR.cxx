@@ -167,7 +167,7 @@ makeChipIR::buildIsolated(Simulation& System,
   HObj->addInsertCell(74123);
 
   HObj->createAll(System,World::masterTS2Origin(),*GObj,
-  		  GObj->getKey("inner"));
+  		  GObj->getCC("inner"));
   //  FB.createAll(System,*HObj);
 
   FB.createAll(System,*HObj);
@@ -213,7 +213,7 @@ makeChipIR::build(Simulation* SimPtr,
   GObj->createAll(*SimPtr,BulkObj,0);
   HObj->addInsertCell(74123);
   HObj->createAll(*SimPtr,*BulkObj.getShutter(0),*GObj,
-		  GObj->getKey("inner"));
+		  GObj->getCC("inner"));
   
   FB.createAll(*SimPtr,*HObj);
 

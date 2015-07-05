@@ -25,6 +25,7 @@
 namespace attachSystem
 {
   class FixedComp;
+  class FixedGroup;
   class TwinComp;
   class CellMap;
 }
@@ -125,7 +126,7 @@ class ODIN
   ODIN& operator=(const ODIN&);
   ~ODIN();
   
-  void build(Simulation&,const attachSystem::TwinComp&,
+  void build(Simulation&,const attachSystem::FixedGroup&,
 	     const Bunker&,const int);
 
 };
