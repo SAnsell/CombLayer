@@ -118,7 +118,7 @@ LOKI::~LOKI()
 void
 LOKI::setBeamAxis(const GuideItem& GItem)
   /*!
-    
+    Set the primary direction object
    */
 {
   ELog::RegMethod RegA("LOKI","setBeamAxis");
@@ -126,9 +126,6 @@ LOKI::setBeamAxis(const GuideItem& GItem)
   lokiAxis->createUnitVector(GItem);
   lokiAxis->setLinkCopy(0,GItem.getKey("Main"),0);
   lokiAxis->setLinkCopy(1,GItem.getKey("Main"),1);
-
-  ELog::EM<<"loki A = "<<lokiAxis->getSignedLinkPt(1)<<" : "
-	  <<lokiAxis->getSignedLinkPt(1)<<ELog::endDiag;
 
   return;
 }
@@ -153,7 +150,16 @@ LOKI::build(Simulation& System,
   setBeamAxis(GItem);
   
   BendA->addInsertCell(GItem.getCell("Void"));
-  BendA->createAll(System,GItem.getKey("Main"),-1,GItem.getKey("Beam"),-1);
+  BendA->addEndCut(GItem.getKey("Beam").getSignedLinkString(-2));
+  BendA->createAll(System,GItem.getKey("Beam"),-1,
+		   GItem.getKey("Beam"),-1);
+
+  Geometry::Vec3D A=BendA->getKey("Guide0").getSignedLinkAxis(-1);
+  Geometry::Vec3D B=BendA->getKey("Guide0").getSignedLinkAxis(2);
+
+  ELog::EM<<"BendA START DIR == "<<A<<ELog::endDiag;
+  ELog::EM<<"BendA END DIR == "<<B<<ELog::endDiag;
+  ELog::EM<<"BendA Cos == "<<A.dotProd(B)<<ELog::endDiag;
 
 
   

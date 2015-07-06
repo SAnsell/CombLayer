@@ -897,10 +897,10 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("GuideBay2XYangle",180.0); 
   Control.addVariable("GuideBay3XYangle",0.0); 
   Control.addVariable("GuideBay4XYangle",180.0); 
-  Control.addVariable("GuideBay1NItems",12);  
-  Control.addVariable("GuideBay2NItems",12);  
-  Control.addVariable("GuideBay3NItems",12);  
-  Control.addVariable("GuideBay4NItems",12);  
+  Control.addVariable("GuideBay1NItems",11);  
+  Control.addVariable("GuideBay2NItems",11);  
+  Control.addVariable("GuideBay3NItems",11);  
+  Control.addVariable("GuideBay4NItems",11);  
 
   EssBeamLinesVariables(Control);
   EssReflectorVariables(Control);
@@ -1152,8 +1152,8 @@ EssSANSVariables(FuncDataBase& Control)
   Control.addVariable("JSANSNShapeLayers",3);       
 
   Control.addVariable("JSANS0TypeID","Bend");
-  Control.addVariable("JSANS0Height",16.0);
-  Control.addVariable("JSANS0Width",16.0);
+  Control.addVariable("JSANS0AHeight",16.0);
+  Control.addVariable("JSANS0AWidth",16.0);
   Control.addVariable("JSANS0BWidth",16.0);
   Control.addVariable("JSANS0AngDir",0.0);
   Control.addVariable("JSANS0Length",400.0);       
@@ -1184,8 +1184,8 @@ EssBunkerVariables(FuncDataBase& Control)
   ELog::RegMethod RegA("essVariables[F]","EssBunkerVariables");
 
 
-  Control.addVariable("LowABunkerLeftPhase",30.0);
-  Control.addVariable("LowABunkerRightPhase",30.0);
+  Control.addVariable("LowABunkerLeftPhase",35.0);
+  Control.addVariable("LowABunkerRightPhase",35.0);
   Control.addVariable("LowABunkerLeftAngle",0.0);
   Control.addVariable("LowABunkerRightAngle",0.0);
   Control.addVariable("LowABunkerNSectors",9);
@@ -1220,7 +1220,7 @@ EssBeamLinesVariables(FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("essVariables[F]","EssBeamLinesVariables");
-  for(int i=0;i<4;i++)
+  for(size_t i=0;i<4;i++)
     {
       const std::string baseKey=
 	StrFunc::makeString("G",i+1)+"BLine";
@@ -1245,18 +1245,17 @@ EssBeamLinesVariables(FuncDataBase& Control)
       Control.addVariable(baseKey+"Height3",60.0);
       Control.addVariable(baseKey+"Length1",170.0);
       Control.addVariable(baseKey+"Length2",170.0);
-      Control.addVariable(baseKey+"1XYangle",27.50); 
-      Control.addVariable(baseKey+"2XYangle",22.5); 
-      Control.addVariable(baseKey+"3XYangle",17.5); 
-      Control.addVariable(baseKey+"4XYangle",12.5); 
-      Control.addVariable(baseKey+"5XYangle",7.5); 
-      Control.addVariable(baseKey+"6XYangle",2.5); 
-      Control.addVariable(baseKey+"7XYangle",-2.5); 
-      Control.addVariable(baseKey+"8XYangle",-7.5);
-      Control.addVariable(baseKey+"9XYangle",-12.5); 
-      Control.addVariable(baseKey+"10XYangle",-17.5); 
-      Control.addVariable(baseKey+"11XYangle",-22.5); 
-      Control.addVariable(baseKey+"12XYangle",-27.50); 
+      Control.addVariable(baseKey+"1XYangle",30.0); 
+      Control.addVariable(baseKey+"2XYangle",24.0); 
+      Control.addVariable(baseKey+"3XYangle",18.0); 
+      Control.addVariable(baseKey+"4XYangle",12.0); 
+      Control.addVariable(baseKey+"5XYangle",6.0); 
+      Control.addVariable(baseKey+"6XYangle",0); 
+      Control.addVariable(baseKey+"7XYangle",-6.0); 
+      Control.addVariable(baseKey+"8XYangle",-12.0);
+      Control.addVariable(baseKey+"9XYangle",-18.0); 
+      Control.addVariable(baseKey+"10XYangle",-24.0); 
+      Control.addVariable(baseKey+"11XYangle",-30.0); 
     }
   return;
 }

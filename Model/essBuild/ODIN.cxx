@@ -88,6 +88,7 @@ namespace essSystem
 {
 
 ODIN::ODIN() :
+  odinAxis(new attachSystem::FixedComp("odinAxis",2)),
   BladeChopper(new constructSystem::DiskChopper("odinBlade")),
   GuideA(new beamlineSystem::GuideLine("odinGA")),
   T0Chopper(new constructSystem::DiskChopper("odinTZero")),
@@ -118,7 +119,6 @@ ODIN::ODIN() :
   PinA(new PinHole("odinPin")),
 
   BeamStop(new RentrantBS("odinBeamStop"))
-  
  /*!
     Constructor
  */
@@ -126,6 +126,9 @@ ODIN::ODIN() :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
+  OR.cell("odinAxis");
+  OR.addObject(odinAxis);
+  
   OR.addObject(BladeChopper);
   OR.addObject(GuideA);
   OR.addObject(T0Chopper);
@@ -159,15 +162,30 @@ ODIN::ODIN() :
   
 }
 
-
-
-
 ODIN::~ODIN()
   /*!
     Destructor
   */
 {}
 
+void
+ODIN::setBeamAxis(const attachSystem::FixedGroup& GItem)
+  /*!
+    Set the primary direction object
+    \param Primary beam object
+   */
+{
+  ELog::RegMethod RegA("ODIN","setBeamAxis");
+
+  odinAxis->createUnitVector(GItem);
+  odinAxis->setLinkCopy(0,GItem.getKey("Main"),0);
+  odinAxis->setLinkCopy(1,GItem.getKey("Main"),1);
+
+  ELog::EM<<"ODIN A = "<<odinAxis->getSignedLinkPt(1)<<" : "
+	  <<odinAxis->getSignedLinkPt(1)<<ELog::endDiag;
+
+  return;
+}
 
 void 
 ODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
@@ -183,6 +201,7 @@ ODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
   // For output stream
   ELog::RegMethod RegA("ODIN","build");
   ELog::EM<<"Building ODIN on : "<<GItem.getKeyName()<<ELog::endDiag;
+  setBeamAxis(GItem);
   
   BladeChopper->addInsertCell(bunkerObj.getCell("MainVoid"));
   BladeChopper->setCentreFlag(3);  // Z direction
@@ -251,7 +270,7 @@ ODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
   GuidePitABack->createAll(System,GuideE->getKey("Guide0"),-1,
 			    GuideE->getKey("Guide0"),-1);
 
-  ELog::EM<<"GuideE exit poaint == "<<
+  ELog::EM<<"GuideE exit point == "<<
     GuideE->getKey("Guide0").getSignedLinkPt(2).abs()<<ELog::endDiag;
 
   // SECOND CHOPPER PIT:
@@ -332,7 +351,6 @@ ODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
   
   return;
 }
-
 
 }   // NAMESPACE essSystem
 

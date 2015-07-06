@@ -58,6 +58,9 @@ class ODIN
 {
  private:
 
+  /// Main Beam Axis [for construction]
+  std::shared_ptr<attachSystem::FixedComp> odinAxis;
+
   /// First collimation jaws
   std::shared_ptr<constructSystem::DiskChopper> BladeChopper;
   /// Tapper Unit
@@ -119,6 +122,8 @@ class ODIN
   // BeamStop
   std::shared_ptr<RentrantBS> BeamStop;
 
+  void setBeamAxis(const attachSystem::FixedGroup&);
+  
  public:
   
   ODIN();

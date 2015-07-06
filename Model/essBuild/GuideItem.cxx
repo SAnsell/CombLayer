@@ -457,6 +457,7 @@ GuideItem::createLinks()
 
   beamFC.setConnect(0,beamOrigin+bY*RInner,-bY);
   beamFC.setLinkSurf(0,-SMap.realSurf(guideIndex+7));
+  beamFC.addBridgeSurf(0,SMap.realSurf(guideIndex+1));
 
   const int GI=10*static_cast<int>(nSegment)+guideIndex;
   beamFC.setConnect(1,beamExit,bY);
@@ -473,7 +474,8 @@ GuideItem::createLinks()
 
   mainFC.setConnect(0,Origin+Y*RInner,-Y);
   mainFC.setLinkSurf(0,-SMap.realSurf(guideIndex+7));
-
+  mainFC.addBridgeSurf(0,SMap.realSurf(guideIndex+1));
+  
   mainFC.setConnect(1,orgExit,Y);
   mainFC.setLinkSurf(1,SMap.realSurf(GI+7));
   mainFC.addBridgeSurf(1,SMap.realSurf(guideIndex+1));

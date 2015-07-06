@@ -99,7 +99,7 @@ setESS(defaultConfig& A)
 
   A.setOption("lowMod","Butterfly");
   A.setMultiOption("beamlines",0,"G1BLine2 LOKI");
-  //  A.setMultiOption("beamlines",0,"G1BLine1 ODIN");
+  //A.setMultiOption("beamlines",0,"G1BLine1 ODIN");
 
   
   return;

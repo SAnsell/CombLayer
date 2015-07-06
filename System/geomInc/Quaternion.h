@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   geomInc/Quaternion.h
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef Quaternion_h
-#define Quaternion_h
+#ifndef Geometry_Quaternion_h
+#define Geometry_Quaternion_h
 
 namespace Geometry
 {
@@ -95,7 +95,6 @@ class Quaternion
     Vec3D& invRotate(Vec3D&) const;
 
     bool zeroAngle(const double&) const;
-    void calcAngle() const;
 
     void read(std::istream&);
     void write(std::ostream&) const;

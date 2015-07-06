@@ -303,7 +303,7 @@ GuideLine::addGuideUnit(const size_t index,
   guideFC.createUnitVector(prevFC,POrigin);
   guideFC.applyShift(bX,0.0,bZ);
   guideFC.applyAngleRotate(bXYang,bZang);
-    
+
   return;
 }
 
@@ -416,17 +416,17 @@ GuideLine::processShape(const FuncDataBase& Control)
 	  BenderUnit* BU=
 	    new BenderUnit(SUItem*static_cast<int>(index+1),SULayer);
 
-	  const double H=Control.EvalVar<double>(keyName+NStr+"Height");
-	  const double HB=Control.EvalDefVar<double>(keyName+NStr+"BHeight",H);
-	  const double W=Control.EvalVar<double>(keyName+NStr+"Width");
-	  const double WB=Control.EvalDefVar<double>(keyName+NStr+"BWidth",W);
+	  const double HA=Control.EvalVar<double>(keyName+NStr+"AHeight");
+	  const double HB=Control.EvalDefVar<double>(keyName+NStr+"BHeight",HA);
+	  const double WA=Control.EvalVar<double>(keyName+NStr+"AWidth");
+	  const double WB=Control.EvalDefVar<double>(keyName+NStr+"BWidth",WA);
 	  // angular rotation of bend direciton from +Z
 	  const double bendAngDir=
 	    Control.EvalVar<double>(keyName+NStr+"AngDir");
 	  const double radius=
 	    Control.EvalVar<double>(keyName+NStr+"Radius");
 
-	  BU->setValues(H,HB,W,WB,L,radius,bendAngDir);
+	  BU->setValues(HA,HB,WA,WB,L,radius,bendAngDir);
 	  BU->setOriginAxis(Origin,X,Y,Z);
 	  //	  BU->setEndPts(Origin,Origin+Y*L);      	  
 	  shapeUnits.push_back(BU);
@@ -462,15 +462,12 @@ GuideLine::createUnitVector(const attachSystem::FixedComp& mainFC,
   shieldFC.createUnitVector(mainFC,mainLP);
   shieldFC.applyShift(xStep,yStep,zStep);
   shieldFC.applyAngleRotate(xyAngle,zAngle);
-  ELog::EM<<"shieldFC == "<<shieldFC.getCentre()<<ELog::endDiag;
 
   attachSystem::FixedComp& guideFC=FixedGroup::getKey("GuideOrigin");
   guideFC.createUnitVector(beamFC,beamLP);
   guideFC.applyShift(beamXStep,beamYStep,beamZStep);
   guideFC.applyAngleRotate(beamXYAngle,beamZAngle);
 
-
-  ELog::EM<<"GuideFC == "<<guideFC.getCentre()<<ELog::endDiag;
   setDefault("GuideOrigin");
 
   return;
@@ -541,7 +538,7 @@ GuideLine::createObjects(Simulation& System,
     Adds the  guide components
     \param System :: Simulation to create objects in
     \param mainFC :: link object 
-    \param mainLP :: link point
+    \param mainLP :: link point [first surface]
    */
 {
   ELog::RegMethod RegA("GuideLine","createObjects");
@@ -551,7 +548,11 @@ GuideLine::createObjects(Simulation& System,
   if (!mainLP)
     startSurf=ModelSupport::getComposite(SMap,guideIndex," 1 ");
   else
-    startSurf=mainFC.getSignedLinkString(mainLP);
+    {
+      startSurf=mainFC.getSignedLinkString(mainLP);
+      ELog::EM<<"Start "<<startSurf<<ELog::endDiag;
+
+    }
   
   HeadRule excludeCell;
   int frontNum(guideIndex+9);
@@ -642,13 +643,15 @@ GuideLine::createMainLinks(const attachSystem::FixedComp& mainFC,
 }
 
 Geometry::Vec3D
-GuideLine::calcActiveEndIntercept() 
+GuideLine::calcActiveEndIntercept(const ShapeUnit* shapePtr) 
   /*!
     Determine the active end point intercept
     with the list link point
+    \param shapePtr :: ShapeUnit of last point
   */
 {
   ELog::RegMethod RegA("GuideLine","calcActiveEndIntercept");
+
   // Start of track
   const Geometry::Vec3D APt =
     shapeUnits.back()->getBegin();
@@ -658,6 +661,9 @@ GuideLine::calcActiveEndIntercept()
   std::vector<int> SNum;
   
   // This should not need to be called:
+  if (!activeEnd)
+    endCut.procString(ModelSupport::getComposite(SMap,guideIndex," -2 "));
+  
   endCut.populateSurf();
   endCut.calcSurfIntersection(APt,AAxis,Pts,SNum);
   const size_t indexA=SurInter::closestPt(Pts,APt);
@@ -688,7 +694,7 @@ GuideLine::createUnitLinks()
 	guideFC.setConnect(1,shapeUnits[i]->getEnd(),
 			   shapeUnits[i]->getEndAxis());     
       else
-	guideFC.setConnect(1,calcActiveEndIntercept(),
+	guideFC.setConnect(1,calcActiveEndIntercept(shapeUnits[i]),
 			   shapeUnits[i]->getEndAxis());     
 	
       if (!i)

@@ -79,8 +79,6 @@
 #include "PhysImp.h"
 #include "PhysCard.h"
 #include "PStandard.h"
-#include "NList.h"
-#include "NRange.h"
 #include "ModeCard.h"
 #include "LSwitchCard.h"
 #include "PhysImp.h"
@@ -185,7 +183,7 @@ setDefRotation(const mainSystem::inputParam& IParam)
     }
   if (IParam.flag("angle"))
     {
-      const std::string AItem=
+      std::string AItem=
 	IParam.getValue<std::string>("angle");
       if (AItem=="chipIR" || AItem=="ChipIR")
 	MR.addRotation(Geometry::Vec3D(0,0,1),
@@ -197,25 +195,21 @@ setDefRotation(const mainSystem::inputParam& IParam)
 			 Geometry::Vec3D(0,0,0),
 			 45.00-180.0);
 	}
-      else if (AItem=="ODIN" || AItem=="odin")
+      else if (AItem=="ODIN" || AItem=="odin" ||
+	       AItem=="LOKI" || AItem=="loki")
 	{
-	  MR.addRotation(Geometry::Vec3D(0,0,1),
-			 Geometry::Vec3D(0,0,0),
-			 27.5);
-	}
-      else if (AItem=="LOKI" || AItem=="loki")
-	{
+	  std::transform(AItem.begin(),AItem.end(),
+	    AItem.begin(),::tolower);
+	  
 	  const attachSystem::FixedComp* GIPtr=
-	    OR.getObject<attachSystem::FixedComp>("lokiAxis");
+	    OR.getObject<attachSystem::FixedComp>(AItem+"Axis");
 	  if (!GIPtr)
 	    throw ColErr::InContainerError<std::string>
-	      ("lokiAxis","Fixed component");
-	  const double angle=180.0*acos(GIPtr->getY()[1])/M_PI;
-	  ELog::EM<<"Angle == "<<180-angle<<ELog::endDiag;
-	  ELog::EM<<"Y     == "<<GIPtr->getY()<<ELog::endDiag;
-	  MR.addRotation(GIPtr->getZ(),
-			 Geometry::Vec3D(0,0,0),
-			 angle);
+	      (AItem+"Axis","Fixed component");
+	  // Y is beam direction -- Alignment along X
+	  const double angle=180.0*acos(GIPtr->getY()[0])/M_PI;
+	  MR.addRotation(GIPtr->getZ(),Geometry::Vec3D(0,0,0),
+			 -angle);
 	}
       else 
 	retFlag=AItem;

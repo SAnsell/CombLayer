@@ -68,13 +68,13 @@ LOKIvariables(FuncDataBase& Control)
   Control.addVariable("lokiBAXYAngle",0.0);       
   Control.addVariable("lokiBAZAngle",0.0);       
   Control.addVariable("lokiBALength",220.0);       
-  Control.addVariable("lokiBAHeight",50.0);       
-  Control.addVariable("lokiBADepth",50.0);       
-  Control.addVariable("lokiBALeftWidth",20.0);       
-  Control.addVariable("lokiBARightWidth",20.0);       
+  Control.addVariable("lokiBAHeight",1.0);       
+  Control.addVariable("lokiBADepth",1.0);       
+  Control.addVariable("lokiBALeftWidth",2.0);       
+  Control.addVariable("lokiBARightWidth",2.0);       
   Control.addVariable("lokiBAFeMat","Void");       
   Control.addVariable("lokiBANShapes",1);       
-  Control.addVariable("lokiBANShapeLayers",3);
+  Control.addVariable("lokiBANShapeLayers",1);
 
   Control.addVariable("lokiBALayerThick1",0.4);  // glass thick
   Control.addVariable("lokiBALayerThick2",1.5);
@@ -83,13 +83,15 @@ LOKIvariables(FuncDataBase& Control)
   Control.addVariable("lokiBALayerMat1","Glass");
   Control.addVariable("lokiBALayerMat2","Void");       
 
-  Control.addVariable("lokiBA0TypeID","Tapper");
-  Control.addVariable("lokiBA0HeightStart",3.0);
-  Control.addVariable("lokiBA0HeightEnd",3.0);
-  Control.addVariable("lokiBA0WidthStart",7.0);
-  Control.addVariable("lokiBA0WidthEnd",10.0);
-  Control.addVariable("lokiBA0Length",220.0);
-  Control.addVariable("lokiBA0ZAngle",0.0);
+  Control.addVariable("lokiBA0TypeID","Bend");
+  Control.addVariable("lokiBA0AHeight",1.0);
+  Control.addVariable("lokiBA0BHeight",1.0);
+  Control.addVariable("lokiBA0AWidth",1.0);
+  Control.addVariable("lokiBA0BWidth",1.0);
+  Control.addVariable("lokiBA0Length",350.0);
+  Control.addVariable("lokiBA0AngDir",0.0);
+  Control.addVariable("lokiBA0Radius",350.0);
+  Control.addVariable("lokiBA0ZAngle",0.0);   // rotation of bend axis
 
 
   return;
