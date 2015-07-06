@@ -205,9 +205,17 @@ setDefRotation(const mainSystem::inputParam& IParam)
 	}
       else if (AItem=="LOKI" || AItem=="loki")
 	{
-	  MR.addRotation(Geometry::Vec3D(0,0,1),
+	  const attachSystem::FixedComp* GIPtr=
+	    OR.getObject<attachSystem::FixedComp>("lokiAxis");
+	  if (!GIPtr)
+	    throw ColErr::InContainerError<std::string>
+	      ("lokiAxis","Fixed component");
+	  const double angle=180.0*acos(GIPtr->getY()[1])/M_PI;
+	  ELog::EM<<"Angle == "<<180-angle<<ELog::endDiag;
+	  ELog::EM<<"Y     == "<<GIPtr->getY()<<ELog::endDiag;
+	  MR.addRotation(GIPtr->getZ(),
 			 Geometry::Vec3D(0,0,0),
-			 27.5);
+			 angle);
 	}
       else 
 	retFlag=AItem;

@@ -53,9 +53,14 @@ class LOKI
 {
  private:
 
+  /// Main Beam Axis [for construction]
+  std::shared_ptr<attachSystem::FixedComp> lokiAxis;
+
   /// Bender in insert bay
   std::shared_ptr<beamlineSystem::GuideLine> BendA;
 
+  void setBeamAxis(const GuideItem&);
+  
  public:
   
   LOKI();

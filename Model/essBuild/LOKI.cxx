@@ -89,15 +89,22 @@ namespace essSystem
 {
 
 LOKI::LOKI() :
+  lokiAxis(new attachSystem::FixedComp("lokiAxis",2)),
   BendA(new beamlineSystem::GuideLine("lokiBA"))
  /*!
     Constructor
  */
 {
+  ELog::RegMethod RegA("LOKI","LOKI");
+
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
+  // This necessary:
+  OR.cell("lokiAxis");
+  
   OR.addObject(BendA);
+  OR.addObject(lokiAxis);
 }
 
 
@@ -108,7 +115,24 @@ LOKI::~LOKI()
   */
 {}
 
+void
+LOKI::setBeamAxis(const GuideItem& GItem)
+  /*!
+    
+   */
+{
+  ELog::RegMethod RegA("LOKI","setBeamAxis");
 
+  lokiAxis->createUnitVector(GItem);
+  lokiAxis->setLinkCopy(0,GItem.getKey("Main"),0);
+  lokiAxis->setLinkCopy(1,GItem.getKey("Main"),1);
+
+  ELog::EM<<"loki A = "<<lokiAxis->getSignedLinkPt(1)<<" : "
+	  <<lokiAxis->getSignedLinkPt(1)<<ELog::endDiag;
+
+  return;
+}
+  
 void 
 LOKI::build(Simulation& System,
 	    const GuideItem& GItem,
@@ -126,9 +150,13 @@ LOKI::build(Simulation& System,
   ELog::RegMethod RegA("LOKI","build");
   ELog::EM<<"Building LOKI on : "<<GItem.getKeyName()<<ELog::endDiag;
 
-
+  setBeamAxis(GItem);
+  
   BendA->addInsertCell(GItem.getCell("Void"));
   BendA->createAll(System,GItem.getKey("Main"),-1,GItem.getKey("Beam"),-1);
+
+
+  
   return;
 }
 

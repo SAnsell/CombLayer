@@ -118,7 +118,7 @@ main(int argc,char* argv[])
       setVariable::EssVariables(SimPtr->getDataBase());
       mainSystem::setDefUnits(SimPtr->getDataBase(),IParam);
       InputModifications(SimPtr,IParam,Names);
-      const std::string rotFlag=ModelSupport::setDefRotation(IParam);
+
       
       // Definitions section 
       int MCIndex(0);
@@ -144,6 +144,7 @@ main(int argc,char* argv[])
 	  ModelSupport::setDefaultPhysics(*SimPtr,IParam);
 
 	  const int renumCellWork=tallySelection(*SimPtr,IParam);
+	  const std::string rotFlag=ModelSupport::setDefRotation(IParam);
 	  SimPtr->masterRotation();
 	  if (createVTK(IParam,SimPtr,Oname))
 	    {
@@ -163,10 +164,6 @@ main(int argc,char* argv[])
 
 	  if (IParam.flag("cinder"))
 	    SimPtr->setForCinder();
-
-	  // // Cut energy tallies:
-	  // if (IParam.flag("ECut"))
-	  //   SimPtr->setEnergy(IParam.getValue<double>("ECut"));
 
 	  // Ensure we done loop
 	  do
