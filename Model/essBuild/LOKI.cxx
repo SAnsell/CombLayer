@@ -125,9 +125,10 @@ LOKI::build(Simulation& System,
   // For output stream
   ELog::RegMethod RegA("LOKI","build");
   ELog::EM<<"Building LOKI on : "<<GItem.getKeyName()<<ELog::endDiag;
-  
+
+
   BendA->addInsertCell(GItem.getCell("Void"));
-  BendA->createAll(System,GItem.getKey("Main"),1,GItem.getKey("Beam"),1);
+  BendA->createAll(System,GItem.getKey("Main"),-1,GItem.getKey("Beam"),-1);
   return;
 }
 

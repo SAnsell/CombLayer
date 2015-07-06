@@ -436,6 +436,8 @@ void
 GuideItem::createLinks()
   /*!
     Create all the linkes [OutGoing]
+    - Beam links are for moderator centre
+    - Main links are for target centre
   */
 {
   ELog::RegMethod RegA("GuideItem","createLinks");
@@ -461,6 +463,22 @@ GuideItem::createLinks()
   beamFC.setLinkSurf(1,SMap.realSurf(GI+7));
   beamFC.addBridgeSurf(1,SMap.realSurf(guideIndex+1));
 
+
+  // Main provides 2 things : target centre tracking:
+  Origin-=Geometry::Vec3D(0,0,Origin[2]);     // TARGET CENTRE
+
+  MonteCarlo::LineIntersectVisit LITC(Origin,mainFC.getY());
+  const Geometry::Vec3D orgExit=
+    LI.getPoint(DPtr,Origin+Y*length.back());
+
+  mainFC.setConnect(0,Origin+Y*RInner,-Y);
+  mainFC.setLinkSurf(0,-SMap.realSurf(guideIndex+7));
+
+  mainFC.setConnect(1,orgExit,Y);
+  mainFC.setLinkSurf(1,SMap.realSurf(GI+7));
+  mainFC.addBridgeSurf(1,SMap.realSurf(guideIndex+1));
+
+  //
   //  mainFC.setConnect(0,beamOrigin+bY*RInner,-bY);
   /*
   // Beamline :: 
