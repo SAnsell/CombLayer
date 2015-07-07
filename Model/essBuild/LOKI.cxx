@@ -90,7 +90,11 @@ namespace essSystem
 
 LOKI::LOKI() :
   lokiAxis(new attachSystem::FixedComp("lokiAxis",2)),
-  BendA(new beamlineSystem::GuideLine("lokiBA"))
+  BendA(new beamlineSystem::GuideLine("lokiBA")),
+  GuideA(new beamlineSystem::GuideLine("lokiGA")),
+  DDisk(new constructSystem::DiskChopper("lokiDBlade")),
+  GuideInner(new beamlineSystem::GuideLine("lokiGInner")),
+  SDisk(new constructSystem::DiskChopper("lokiSBlade"))
  /*!
     Constructor
  */
@@ -102,9 +106,13 @@ LOKI::LOKI() :
 
   // This necessary:
   OR.cell("lokiAxis");
-  
-  OR.addObject(BendA);
   OR.addObject(lokiAxis);
+
+  OR.addObject(BendA);
+  OR.addObject(GuideA);
+  OR.addObject(DDisk);
+  OR.addObject(GuideInner);
+  OR.addObject(SDisk);
 }
 
 
@@ -149,20 +157,37 @@ LOKI::build(Simulation& System,
 
   setBeamAxis(GItem);
   
-  BendA->addInsertCell(GItem.getCell("Void"));
-  BendA->addEndCut(GItem.getKey("Beam").getSignedLinkString(-2));
+  BendA->addInsertCell(GItem.getCells("Void"));
+  BendA->addInsertCell(bunkerObj.getCell("MainVoid"));
+  //  BendA->addEndCut(GItem.getKey("Beam").getSignedLinkString(-2));
   BendA->createAll(System,GItem.getKey("Beam"),-1,
 		   GItem.getKey("Beam"),-1);
 
-  Geometry::Vec3D A=BendA->getKey("Guide0").getSignedLinkAxis(-1);
-  Geometry::Vec3D B=BendA->getKey("Guide0").getSignedLinkAxis(2);
+  // First straight section
+  GuideA->addInsertCell(bunkerObj.getCell("MainVoid"));
+  GuideA->createAll(System,BendA->getKey("Guide0"),2,
+		    BendA->getKey("Guide0"),2);
 
-  ELog::EM<<"BendA START DIR == "<<A<<ELog::endDiag;
-  ELog::EM<<"BendA END DIR == "<<B<<ELog::endDiag;
-  ELog::EM<<"BendA Cos == "<<A.dotProd(B)<<ELog::endDiag;
+  // Double disk chopper
+  DDisk->addInsertCell(bunkerObj.getCell("MainVoid"));
+  DDisk->setCentreFlag(3);  // Z direction
+  DDisk->createAll(System,GuideA->getKey("Guide0"),2);
 
+  // First straight section
+  GuideInner->addInsertCell(bunkerObj.getCell("MainVoid"));
+  GuideInner->createAll(System,DDisk->getKey("Beam"),2,
+			DDisk->getKey("Beam"),2);
 
-  
+  // Single disk chopper
+  SDisk->addInsertCell(bunkerObj.getCell("MainVoid"));
+  SDisk->setCentreFlag(3);  // Z direction
+  SDisk->createAll(System,GuideInner->getKey("Guide0"),2);
+  ELog::EM<<"Start point == "
+	  <<GuideInner->getKey("Guide0").getSignedLinkPt(1)
+	  <<ELog::endDiag;
+  ELog::EM<<"End point == "
+	  <<GuideInner->getKey("Guide0").getSignedLinkPt(2)
+	  <<ELog::endDiag;
   return;
 }
 

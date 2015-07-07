@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   crystalInc/CifStore.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ class SymUnit;
 
   /*!
     \class CifStore
-    \author S. Ansell#include "CryMat.h"
+    \author S. Ansell
     \version 1.0
     \date March 2008
     \brief Holds a Cif file for processing
@@ -42,7 +42,7 @@ class CifStore
  private:
 
 
-  typedef std::map<std::string,int> ZTYPE;  ///< Type of Zmap 
+  typedef std::map<std::string,size_t> ZTYPE;  ///< Type of Zmap 
   typedef std::map<std::string,int> NTYPE;  ///< Type of Nmap 
   typedef std::map<std::string,int> UTYPE;  ///< Type for read of comp
   
@@ -52,8 +52,8 @@ class CifStore
   Geometry::Vec3D recipVec[3];        ///< Reciprical vectors
   double V0;                          ///< Volume [V0]
   
-  int tableNumber;                    ///< Table number 
-  int exafsAtom;                      ///< Central atom
+  size_t tableNumber;                 ///< Table number [not used]
+  long int exafsAtom;                   ///< Central atom
   int exafsType;                      ///< Central atom (type)
 
   ZTYPE Zmap;                         ///< Map of Z + Ion [from symbol]
@@ -93,7 +93,7 @@ class CifStore
   double originDistance(const Geometry::Vec3D&) const;
   double volume() const;
   double aveOcc() const;
-  int setCentralAtom(const std::string&,const int =0);
+  long int setCentralAtom(const std::string&,const size_t =0);
   void makeAtoms(const double);
   int applyOcc();
   void primaryRotation(const Triple<int>&,const Geometry::Vec3D&,

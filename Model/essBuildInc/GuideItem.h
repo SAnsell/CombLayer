@@ -62,6 +62,7 @@ class GuideItem : public attachSystem::ContainedGroup,
   std::vector<double> width;         ///< Depth 
   std::vector<double> length;        ///< Y Axis length [last one ignored]
   int mat;                           ///< Material
+  int filled;                        ///< Inner void filled
 
   int dividePlane;     ///< Divide plane
   int innerCyl;        ///< Inner Cylinder

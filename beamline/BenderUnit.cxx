@@ -219,11 +219,12 @@ BenderUnit::setOriginAxis(const Geometry::Vec3D& O,
   const double theta = Length/Radius;
   endPt+=RPlane*(2*Radius*pow(sin(theta/2.0),2.0))+AYVec*(Radius*sin(theta));
   const Geometry::Quaternion Qxy=
-    Geometry::Quaternion::calcQRot(theta,RAxis);
+    Geometry::Quaternion::calcQRot(-theta,RAxis);
 
   Qxy.rotate(BXVec);
   Qxy.rotate(BYVec);
   Qxy.rotate(BZVec);
+  ELog::EM<<"BY == "<<BYVec<<" "<<YAxis<<ELog::endDiag;
   return;
 }
 

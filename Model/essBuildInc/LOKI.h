@@ -58,6 +58,14 @@ class LOKI
 
   /// Bender in insert bay
   std::shared_ptr<beamlineSystem::GuideLine> BendA;
+  /// Straight section to first chopper pit
+  std::shared_ptr<beamlineSystem::GuideLine> GuideA;
+  /// Double disk chopper
+  std::shared_ptr<constructSystem::DiskChopper> DDisk;
+  /// Straight section between choppers
+  std::shared_ptr<beamlineSystem::GuideLine> GuideInner;
+  /// Double disk chopper
+  std::shared_ptr<constructSystem::DiskChopper> SDisk;
 
   void setBeamAxis(const GuideItem&);
   

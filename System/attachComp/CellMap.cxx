@@ -154,6 +154,7 @@ CellMap::setCell(const std::string& Key,const size_t Index,
   // mc->second :: -ve
   const size_t SI(static_cast<size_t>(-mc->second)-1);
   const size_t SU(SplitUnits[SI].size());
+
   if (Index<SU)
     SplitUnits[SI][Index]=CN;
   else if (Index==SU)
@@ -221,6 +222,8 @@ CellMap::addCell(const std::string& Key,const int CN)
     \param CN :: Cell number
   */
 {
+  ELog::RegMethod RegA("CellMap","addCell");
+  
   LCTYPE::iterator mc=Cells.find(Key);
   if (mc==Cells.end())
     setCell(Key,0,CN);
@@ -228,8 +231,8 @@ CellMap::addCell(const std::string& Key,const int CN)
     setCell(Key,1,CN);
   else
     {
-      const size_t index=static_cast<size_t>(1-mc->second);
-      setCell(Key,SplitUnits[index].size()-1,CN);
+      const size_t index=static_cast<size_t>((1+mc->second));
+      setCell(Key,SplitUnits[index].size(),CN);
     }
   return;
 }

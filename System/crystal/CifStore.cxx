@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   crystal/CifStore.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,6 @@
 #include <algorithm>
 #include <functional>
 #include <memory>
-#include <boost/bind.hpp>
 #include <boost/multi_array.hpp>
 
 #include "MersenneTwister.h"
@@ -140,8 +139,7 @@ CifStore::insertElement(const std::string& KeyName,double Ion)
 	    {
 	      Z.push_back(ZI.first);
 	      Ions.push_back(static_cast<int>(Ion));
-	      Zmap.insert(ZTYPE::value_type
-			  (KeyName,static_cast<int>(Z.size())-1));
+	      Zmap.emplace(KeyName,Z.size());
 	    }
 	}
     }
@@ -164,7 +162,6 @@ CifStore::insertAtom(const std::string& Site,const std::string& Elm,
     {
       // Determine if we need to update  Zmap
       insertElement(Elm);
-      NTYPE::const_iterator mc=Nmap.find(Site);
       ZTYPE::const_iterator zc=Zmap.find(Elm);
       if (zc==Zmap.end())
 	return;
@@ -209,8 +206,8 @@ CifStore::readAtoms(const CifLoop& CLoop)
   std::string SiteName;
   std::string ElmName;
   Geometry::Vec3D Pt;
-  const long int lneCnt(CLoop.getLineCnt());
-  for(int i=0;i<lneCnt;i++)
+  const size_t lneCnt(CLoop.getLineCnt());
+  for(size_t i=0;i<lneCnt;i++)
     {
       double occ(1.0);
       const int NFlag=CLoop.getItem(i,IntVec[0],SiteName)+
@@ -261,10 +258,10 @@ CifStore::readSym(const CifLoop& CLoop)
   if (nIndex<1)  return 0;
 
   int retval(1);
-  const long int lneCnt(CLoop.getLineCnt());
+  const size_t lneCnt(CLoop.getLineCnt());
   std::string SymElm;
   SymUnit A;
-  for(int i=0;i<lneCnt;i++)
+  for(size_t i=0;i<lneCnt;i++)
     {
       if (CLoop.getItem(i,IntVec[0],SymElm) &&
 	  !A.setLine(SymElm)) 
@@ -301,8 +298,8 @@ CifStore::readTypes(const CifLoop& CLoop)
   int retval(1);
   double ion(0.0);
   std::string SymElm;
-  const long int lneCnt(CLoop.getLineCnt());
-  for(int i=0;i<lneCnt;i++)
+  const size_t lneCnt(CLoop.getLineCnt());
+  for(size_t i=0;i<lneCnt;i++)
     {
       if (CLoop.getItem(i,IntVec[0],SymElm) &&
 	  (nIndex<2 || CLoop.getItem(i,IntVec[1],ion) ))
@@ -509,7 +506,7 @@ CifStore::originDistance(const Geometry::Vec3D& Pt) const
   const double cg=cos(gamma);
   
   Geometry::Matrix<double> G(3,3);
-  for(int i=0;i<3;i++)
+  for(size_t i=0;i<3;i++)
     G[i][i]=cellAxis[i]*cellAxis[i];
 
   G[0][1]=a*b*cg;
@@ -636,9 +633,9 @@ CifStore::primaryRotation(const Triple<int>& zIndex,
     Rotate the zIndex to the zAxis.
     Then rotate the xIndex to the xAxis (or as close as possible)
     keeping the zAxis correct.
-    \param zIndex :: zmillar index [integer]
+    \param zIndex :: z-millar index [integer]
     \param zAxis :: real Z axis
-    \param xIndex :: xmillar index [integer]
+    \param xIndex :: x-millar index [integer]
     \param xAxis :: real X axis
   */
 {
@@ -762,8 +759,8 @@ CifStore::inCube(const Geometry::Vec3D& Pt,const double R) const
   return 1;
 }
 
-int
-CifStore::setCentralAtom(const std::string& CentAtom,const int index) 
+long int
+CifStore::setCentralAtom(const std::string& CentAtom,const size_t index) 
   /*!
     Sets the central atom from the main list
     \param CentAtom :: Name of central atom 
@@ -777,19 +774,21 @@ CifStore::setCentralAtom(const std::string& CentAtom,const int index)
   NTYPE::const_iterator mc=Nmap.find(CentAtom);
   if (mc!=Nmap.end())  // found in table
     {
-      std::vector<int> CentAtomList;
+      std::vector<size_t> CentAtomList;
       std::vector<AtomPos>::iterator ac=Cell.begin();
       while(ac!=Cell.end())
         {
 	  ac=
 	    find_if(ac,Cell.end(),
-		    boost::bind(
+		    std::bind(
 		      std::equal_to<std::string>(),
-		      boost::bind(&AtomPos::getName,_1),
+		      std::bind(&AtomPos::getName,std::placeholders::_1),
 		      CentAtom));
 	  if (ac!=Cell.end())
 	    {
-	      CentAtomList.push_back(static_cast<int>(std::distance(Cell.begin(),ac)));
+	      CentAtomList.push_back
+		(static_cast<size_t>(std::distance(Cell.begin(),ac)));
+	      
 	      ac++;
 	    }
 	} 
@@ -799,12 +798,11 @@ CifStore::setCentralAtom(const std::string& CentAtom,const int index)
         {
 	  ELog::EM<<"Central Atom positions:"<<ELog::endDiag;
 	  std::vector<int>::const_iterator vc;
-	  for(unsigned int i=0;i<CentAtomList.size();i++)
-	    {
-	      ELog::EM<<i<<" :: "<<Cell[CentAtomList[i]]<<ELog::endDiag;
-	    }
+	  for(size_t i=0;i<CentAtomList.size();i++)
+	    ELog::EM<<i<<" :: "<<Cell[CentAtomList[i]]<<ELog::endDiag;
+
 	  ELog::EM.basic();
-	  if (index<static_cast<int>(CentAtomList.size()))
+	  if (index<CentAtomList.size())
 	    {
 	      exafsAtom=CentAtomList[index];
 	      exafsType=mc->second; 

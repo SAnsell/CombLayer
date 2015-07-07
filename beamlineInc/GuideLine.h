@@ -61,6 +61,9 @@ class GuideLine : public attachSystem::ContainedComp,
   double beamXYAngle;               ///< Shielding Rotation angle
   double beamZAngle;                ///< Shielding Rotation angle
 
+  bool frontCut;                ///< Construct+Use plane cut
+  bool beamFrontCut;            ///< Construct+Use beam plane tu
+  
   // OUTER DIMENTIONS:
   double length;               ///< Full length
   double height;               ///< Centre to top height
@@ -78,9 +81,10 @@ class GuideLine : public attachSystem::ContainedComp,
   size_t nShapes;              ///< Number of shape segments
   /// Shape units
   std::vector<ShapeUnit*> shapeUnits;
-  /// Layer shielding
-  int feMat;
 
+  int activeShield;              ///< Outer layer active
+  int feMat;                     ///< Layer shielding
+ 
   std::string shapeBackSurf(const size_t) const;
   
   void clear();
@@ -98,7 +102,7 @@ class GuideLine : public attachSystem::ContainedComp,
   void createUnitVector(const attachSystem::FixedComp&,const long int,
 			const attachSystem::FixedComp&,const long int);
   
-  void createSurfaces(const long int);
+  void createSurfaces();
   void createObjects(Simulation&,const attachSystem::FixedComp&,
 		     const long int);
   void createMainLinks(const attachSystem::FixedComp&,
@@ -106,7 +110,7 @@ class GuideLine : public attachSystem::ContainedComp,
   void createUnitLinks();
 
   void checkRectangle(const double,const double) const;
-  Geometry::Vec3D calcActiveEndIntercept();
+  Geometry::Vec3D calcActiveEndIntercept(const ShapeUnit*);
   
  public:
 

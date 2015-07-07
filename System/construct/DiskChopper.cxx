@@ -152,11 +152,14 @@ DiskChopper::populate(const FuncDataBase& Control)
   xyAngle=Control.EvalVar<double>(keyName+"XYangle");
   zAngle=Control.EvalVar<double>(keyName+"Zangle");
 
-  diskGap=Control.EvalVar<double>(keyName+"Gap");
+
   innerRadius=Control.EvalVar<double>(keyName+"InnerRadius");
   outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
 
   nDisk=Control.EvalVar<size_t>(keyName+"NDisk");
+  diskGap= (nDisk>1) ?
+    Control.EvalVar<double>(keyName+"Gap") : 0.0;
+  
   for(size_t i=0;i<nDisk;i++)
     {
       DiskBlades DItem;

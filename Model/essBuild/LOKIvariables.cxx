@@ -62,19 +62,20 @@ LOKIvariables(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("LOKIvariables[F]","LOKIvariables");
 
+  // Bender in section so use cut system
+  Control.addVariable("G1BLine2Filled",1);
+  
   Control.addVariable("lokiBAXStep",0.0);       
   Control.addVariable("lokiBAYStep",0.0);       
   Control.addVariable("lokiBAZStep",0.0);       
-  Control.addVariable("lokiBAXYAngle",0.0);       
-  Control.addVariable("lokiBAZAngle",0.0);       
-  Control.addVariable("lokiBALength",220.0);       
-  Control.addVariable("lokiBAHeight",1.0);       
-  Control.addVariable("lokiBADepth",1.0);       
-  Control.addVariable("lokiBALeftWidth",2.0);       
-  Control.addVariable("lokiBARightWidth",2.0);       
-  Control.addVariable("lokiBAFeMat","Void");       
+  Control.addVariable("lokiBAXYAngle",0.0);
+  Control.addVariable("lokiBAZAngle",0.0);
+  Control.addVariable("lokiBABeamXYAngle",0.0);       
+
+  Control.addVariable("lokiBALength",400.0);       
   Control.addVariable("lokiBANShapes",1);       
-  Control.addVariable("lokiBANShapeLayers",1);
+  Control.addVariable("lokiBANShapeLayers",3);
+  Control.addVariable("lokiBAActiveShield",0);
 
   Control.addVariable("lokiBALayerThick1",0.4);  // glass thick
   Control.addVariable("lokiBALayerThick2",1.5);
@@ -84,16 +85,120 @@ LOKIvariables(FuncDataBase& Control)
   Control.addVariable("lokiBALayerMat2","Void");       
 
   Control.addVariable("lokiBA0TypeID","Bend");
-  Control.addVariable("lokiBA0AHeight",1.0);
-  Control.addVariable("lokiBA0BHeight",1.0);
-  Control.addVariable("lokiBA0AWidth",1.0);
-  Control.addVariable("lokiBA0BWidth",1.0);
-  Control.addVariable("lokiBA0Length",350.0);
-  Control.addVariable("lokiBA0AngDir",0.0);
-  Control.addVariable("lokiBA0Radius",350.0);
-  Control.addVariable("lokiBA0ZAngle",0.0);   // rotation of bend axis
+  Control.addVariable("lokiBA0AHeight",3.0);
+  Control.addVariable("lokiBA0BHeight",3.0);
+  Control.addVariable("lokiBA0AWidth",3.0);
+  Control.addVariable("lokiBA0BWidth",3.0);
+  Control.addVariable("lokiBA0Length",400.0);
+  Control.addVariable("lokiBA0AngDir",180.0);
+  Control.addVariable("lokiBA0Radius",6600.0);
 
 
+
+  // GUIDE EXITING BEND [Straight A]
+  Control.addVariable("lokiGAXStep",0.0);       
+  Control.addVariable("lokiGAYStep",0.0);       
+  Control.addVariable("lokiGAZStep",0.0);       
+  Control.addVariable("lokiGAXYAngle",0.0);       
+  Control.addVariable("lokiGAZAngle",0.0);       
+  Control.addVariable("lokiGALength",50.0);       
+  
+  Control.addVariable("lokiGANShapes",1);       
+  Control.addVariable("lokiGANShapeLayers",3);
+  Control.addVariable("lokiGAActiveShield",0);
+
+  Control.addVariable("lokiGALayerThick1",0.4);  // glass thick
+  Control.addVariable("lokiGALayerThick2",1.5);
+
+  Control.addVariable("lokiGALayerMat0","Void");
+  Control.addVariable("lokiGALayerMat1","Glass");
+  Control.addVariable("lokiGALayerMat2","Void");       
+
+  Control.addVariable("lokiGA0TypeID","Rectangle");
+  Control.addVariable("lokiGA0Height",3.0);
+  Control.addVariable("lokiGA0Width",3.0);
+  Control.addVariable("lokiGA0Length",50.0);
+  Control.addVariable("lokiGA0ZAngle",0.0);
+
+
+  // Double Blade chopper
+  Control.addVariable("lokiDBladeXStep",0.0);
+  Control.addVariable("lokiDBladeYStep",2.0);
+  Control.addVariable("lokiDBladeZStep",0.0);
+  Control.addVariable("lokiDBladeXYangle",0.0);
+  Control.addVariable("lokiDBladeZangle",0.0);
+
+  Control.addVariable("lokiDBladeGap",3.0);
+  Control.addVariable("lokiDBladeInnerRadius",10.0);
+  Control.addVariable("lokiDBladeOuterRadius",22.50);
+  Control.addVariable("lokiDBladeNDisk",2);
+
+  Control.addVariable("lokiDBlade0Thick",1.0);
+  Control.addVariable("lokiDBlade1Thick",1.0);
+  Control.addVariable("lokiDBladeInnerMat","Inconnel");
+  Control.addVariable("lokiDBladeOuterMat","Aluminium");
+  
+  Control.addVariable("lokiDBladeNBlades",2);
+  Control.addVariable("lokiDBlade0PhaseAngle0",95.0);
+  Control.addVariable("lokiDBlade0OpenAngle0",30.0);
+  Control.addVariable("lokiDBlade1PhaseAngle0",95.0);
+  Control.addVariable("lokiDBlade1OpenAngle0",30.0);
+
+  Control.addVariable("lokiDBlade0PhaseAngle1",275.0);
+  Control.addVariable("lokiDBlade0OpenAngle1",30.0);
+  Control.addVariable("lokiDBlade1PhaseAngle1",275.0);
+  Control.addVariable("lokiDBlade1OpenAngle1",30.0);
+
+  // GUIDE BETWEEN BENDERS
+  Control.addVariable("lokiGInnerXStep",0.0);       
+  Control.addVariable("lokiGInnerYStep",2.0);       
+  Control.addVariable("lokiGInnerZStep",0.0);       
+  Control.addVariable("lokiGInnerXYAngle",0.0);       
+  Control.addVariable("lokiGInnerZAngle",0.0);       
+  Control.addVariable("lokiGInnerLength",40.0);       
+
+  Control.addVariable("lokiGInnerBeamYStep",4.0);
+  
+  Control.addVariable("lokiGInnerNShapes",1);       
+  Control.addVariable("lokiGInnerNShapeLayers",3);
+  Control.addVariable("lokiGInnerActiveShield",0);
+
+  Control.addVariable("lokiGInnerLayerThick1",0.4);  // glass thick
+  Control.addVariable("lokiGInnerLayerThick2",1.5);
+
+  Control.addVariable("lokiGInnerLayerMat0","Void");
+  Control.addVariable("lokiGInnerLayerMat1","Glass");
+  Control.addVariable("lokiGInnerLayerMat2","Void");       
+
+  Control.addVariable("lokiGInner0TypeID","Rectangle");
+  Control.addVariable("lokiGInner0Height",3.0);
+  Control.addVariable("lokiGInner0Width",3.0);
+  Control.addVariable("lokiGInner0Length",40.0);
+  Control.addVariable("lokiGInner0ZAngle",0.0);
+
+  // Single Blade chopper
+  Control.addVariable("lokiSBladeXStep",0.0);
+  Control.addVariable("lokiSBladeYStep",0.0);
+  Control.addVariable("lokiSBladeZStep",0.0);
+  Control.addVariable("lokiSBladeXYangle",0.0);
+  Control.addVariable("lokiSBladeZangle",0.0);
+
+  Control.addVariable("lokiSBladeInnerRadius",10.0);
+  Control.addVariable("lokiSBladeOuterRadius",22.50);
+  Control.addVariable("lokiSBladeNDisk",1);
+
+  Control.addVariable("lokiSBlade0Thick",1.0);
+  Control.addVariable("lokiSBladeInnerMat","Inconnel");
+  Control.addVariable("lokiSBladeOuterMat","B4C");
+  
+  Control.addVariable("lokiSBladeNBlades",2);
+  Control.addVariable("lokiSBlade0PhaseAngle0",95.0);
+  Control.addVariable("lokiSBlade0OpenAngle0",30.0);
+
+  Control.addVariable("lokiSBlade0PhaseAngle1",275.0);
+  Control.addVariable("lokiSBlade0OpenAngle1",30.0);
+
+  
   return;
 }
 

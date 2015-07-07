@@ -1255,7 +1255,8 @@ EssBeamLinesVariables(FuncDataBase& Control)
       Control.addVariable(baseKey+"8XYangle",-12.0);
       Control.addVariable(baseKey+"9XYangle",-18.0); 
       Control.addVariable(baseKey+"10XYangle",-24.0); 
-      Control.addVariable(baseKey+"11XYangle",-30.0); 
+      Control.addVariable(baseKey+"11XYangle",-30.0);
+      Control.addVariable(baseKey+"Filled",0);      
     }
   return;
 }

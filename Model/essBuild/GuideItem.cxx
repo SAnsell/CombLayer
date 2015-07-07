@@ -225,6 +225,7 @@ GuideItem::populate(const FuncDataBase& Control)
       width.push_back(W);
     }
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat",baseName+"Mat");
+  filled=Control.EvalPair<int>(keyName,baseName,"Filled");
 
   return;
 }
@@ -380,8 +381,7 @@ GuideItem::createObjects(Simulation& System,const GuideItem* GPtr)
 {
   ELog::RegMethod RegA("GuideItem","createObjects");
 
-  const std::string edgeStr=
-    getEdgeStr(GPtr);
+  const std::string edgeStr=getEdgeStr(GPtr);
   std::string Out;  
 
 
@@ -403,17 +403,22 @@ GuideItem::createObjects(Simulation& System,const GuideItem* GPtr)
 	addOuterSurf("Inner",Out);
       else 
 	addOuterUnionSurf("Outer",Out);
-
-      Out+=ModelSupport::getComposite(SMap,guideIndex,"(-103:104:-105:106) ");
+      if (!filled)
+	Out+=ModelSupport::getComposite(SMap,guideIndex,
+					"(-103:104:-105:106) ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+      if (filled) addCell("Void",cellIndex-1);
+
       GI+=10;
     }      
-  // Inner void  
-  Out=ModelSupport::getComposite(SMap,guideIndex,GI,
-				 "1 7 -7M 103 -104 105 -106 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-  setCell("Void",cellIndex-1);
-  //  addBoundarySurf(Out);
+  // Inner void
+  if (!filled)
+    {
+      Out=ModelSupport::getComposite(SMap,guideIndex,GI,
+				     "1 7 -7M 103 -104 105 -106 ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      setCell("Void",cellIndex-1);
+    }
 
   return;
 }

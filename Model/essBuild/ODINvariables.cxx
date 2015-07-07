@@ -130,7 +130,6 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinGA0Length",220.0);
   Control.addVariable("odinGA0ZAngle",0.0);       
 
-
   // T0 Chopper 
   Control.addVariable("odinTZeroXStep",0.0);
   Control.addVariable("odinTZeroYStep",2.0);
