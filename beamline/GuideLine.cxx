@@ -486,8 +486,10 @@ GuideLine::createUnitVector(const attachSystem::FixedComp& mainFC,
 
   attachSystem::FixedComp& guideFC=FixedGroup::getKey("GuideOrigin");
   guideFC.createUnitVector(beamFC,beamLP);
+  ELog::EM<<"GC Origin == "<<guideFC.getCentre()<<ELog::endDiag;    
   guideFC.applyShift(beamXStep,beamYStep,beamZStep);
   guideFC.applyAngleRotate(beamXYAngle,beamZAngle);
+  ELog::EM<<"GC XX Origin == "<<guideFC.getCentre()<<ELog::endDiag;
 
   setDefault("GuideOrigin");
 

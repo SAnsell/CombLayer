@@ -198,7 +198,8 @@ DiskChopper::createUnitVector(const attachSystem::FixedComp& FC,
 
   FixedComp::createUnitVector(FC,sideIndex);
   beamOrigin=Origin;
-
+  beamOrigin+=X*xStep+Y*yStep+Z*zStep;
+  
   applyShift(xStep,yStep,zStep);
   applyAngleRotate(xyAngle,zAngle);
 

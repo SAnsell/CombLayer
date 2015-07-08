@@ -56,13 +56,13 @@ class objectRegister
   cMapTYPE Components;             ///< Pointer to real objects
 
   ///\cond SINGLETON
+  objectRegister();
   objectRegister(const objectRegister&);
   objectRegister& operator=(const objectRegister&);
   ///\endcond SINGLETON
 
  public:
   
-  objectRegister();
   ~objectRegister();
 
   static objectRegister& Instance();

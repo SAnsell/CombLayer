@@ -94,8 +94,9 @@ LOKI::LOKI() :
   GuideA(new beamlineSystem::GuideLine("lokiGA")),
   DDisk(new constructSystem::DiskChopper("lokiDBlade")),
   GuideInner(new beamlineSystem::GuideLine("lokiGInner")),
-  SDisk(new constructSystem::DiskChopper("lokiSBlade"))
- /*!
+  SDisk(new constructSystem::DiskChopper("lokiSBlade")),
+  GuideB(new beamlineSystem::GuideLine("lokiGB"))
+  /*!
     Constructor
  */
 {
@@ -113,6 +114,7 @@ LOKI::LOKI() :
   OR.addObject(DDisk);
   OR.addObject(GuideInner);
   OR.addObject(SDisk);
+  OR.addObject(GuideB);
 }
 
 
@@ -182,13 +184,12 @@ LOKI::build(Simulation& System,
   SDisk->addInsertCell(bunkerObj.getCell("MainVoid"));
   SDisk->setCentreFlag(3);  // Z direction
   SDisk->createAll(System,GuideInner->getKey("Guide0"),2);
-  ELog::EM<<"Start point == "
-	  <<GuideInner->getKey("Guide0").getSignedLinkPt(1)
-	  <<ELog::endDiag;
-  ELog::EM<<"End point == "
-	  <<GuideInner->getKey("Guide0").getSignedLinkPt(2)
-	  <<ELog::endDiag;
-  return;
+
+
+  GuideB->addInsertCell(bunkerObj.getCell("MainVoid"));
+  GuideB->createAll(System,SDisk->getKey("Beam"),2,
+		    SDisk->getKey("Beam"),2);
+return;
 }
 
 

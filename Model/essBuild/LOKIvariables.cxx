@@ -178,7 +178,7 @@ LOKIvariables(FuncDataBase& Control)
 
   // Single Blade chopper
   Control.addVariable("lokiSBladeXStep",0.0);
-  Control.addVariable("lokiSBladeYStep",0.0);
+  Control.addVariable("lokiSBladeYStep",2.0);
   Control.addVariable("lokiSBladeZStep",0.0);
   Control.addVariable("lokiSBladeXYangle",0.0);
   Control.addVariable("lokiSBladeZangle",0.0);
@@ -197,6 +197,33 @@ LOKIvariables(FuncDataBase& Control)
 
   Control.addVariable("lokiSBlade0PhaseAngle1",275.0);
   Control.addVariable("lokiSBlade0OpenAngle1",30.0);
+
+  // GUIDE EXITING Single Chopper [Straight A]
+  Control.addVariable("lokiGBXStep",0.0);       
+  Control.addVariable("lokiGBYStep",2.0);
+  Control.addVariable("lokiGBBeamYStep",3.0);
+  Control.addVariable("lokiGBZStep",0.0);       
+  Control.addVariable("lokiGBXYAngle",0.0);       
+  Control.addVariable("lokiGBZAngle",0.0);       
+  Control.addVariable("lokiGBLength",45.0);       
+  
+  Control.addVariable("lokiGBNShapes",1);       
+  Control.addVariable("lokiGBNShapeLayers",3);
+  Control.addVariable("lokiGBActiveShield",0);
+
+  Control.addVariable("lokiGBLayerThick1",0.4);  // glass thick
+  Control.addVariable("lokiGBLayerThick2",1.5);
+
+  Control.addVariable("lokiGBLayerMat0","Void");
+  Control.addVariable("lokiGBLayerMat1","Glass");
+  Control.addVariable("lokiGBLayerMat2","Void");       
+
+  Control.addVariable("lokiGB0TypeID","Rectangle");
+  Control.addVariable("lokiGB0Height",3.0);
+  Control.addVariable("lokiGB0Width",3.0);
+  Control.addVariable("lokiGB0Length",45.0);
+  Control.addVariable("lokiGB0ZAngle",0.0);
+
 
   
   return;

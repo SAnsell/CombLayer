@@ -144,6 +144,7 @@ makeESSBL::build(Simulation& System,const Bunker& bunkerObj)
   if (!mainGIPtr)
     throw ColErr::InContainerError<std::string>(shutterName,"shutterObject");
 
+  ELog::EM<<"Beamline == "<<beamName<<ELog::endDiag;
   if (beamName=="ODIN")
     {
       // Odin beamline

@@ -64,8 +64,11 @@ class LOKI
   std::shared_ptr<constructSystem::DiskChopper> DDisk;
   /// Straight section between choppers
   std::shared_ptr<beamlineSystem::GuideLine> GuideInner;
-  /// Double disk chopper
+  /// Single disk chopper
   std::shared_ptr<constructSystem::DiskChopper> SDisk;
+  /// Guide leaving single chopper 
+  std::shared_ptr<beamlineSystem::GuideLine> GuideB;
+
 
   void setBeamAxis(const GuideItem&);
   
