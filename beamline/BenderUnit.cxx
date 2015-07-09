@@ -224,7 +224,6 @@ BenderUnit::setOriginAxis(const Geometry::Vec3D& O,
   Qxy.rotate(BXVec);
   Qxy.rotate(BYVec);
   Qxy.rotate(BZVec);
-  ELog::EM<<"BY == "<<BYVec<<" "<<YAxis<<ELog::endDiag;
   return;
 }
 
@@ -285,7 +284,6 @@ BenderUnit::createSurfaces(ModelSupport::surfRegister& SMap,
   ELog::RegMethod RegA("BenderUnit","createSurfaces");
   Geometry::Vec3D PCentre= calcWidthCent(1);
   Geometry::Vec3D MCentre= calcWidthCent(0);
-  ELog::EM<<"PCent == "<<PCentre<<":: "<<MCentre<<":: "<<RCent<<ELog::endDiag;
   // Make divider plane +ve required
   const double maxThick=Thick.back()+(aWidth+bWidth);
   ModelSupport::buildPlane(SMap,indexOffset+offset+1,
@@ -293,7 +291,6 @@ BenderUnit::createSurfaces(ModelSupport::surfRegister& SMap,
 			   endPt+RPlane*maxThick,
 			   endPt+RPlane*maxThick+RAxis,
 			   -RPlane);
-  ELog::EM<<"DPlane == "<<begPt+RPlane*maxThick<<" :: "<<begPt<<ELog::endDiag;
   for(size_t j=0;j<Thick.size();j++)
     {
       const int SN(indexOffset+offset+

@@ -313,6 +313,7 @@ GuideLine::addGuideUnit(const size_t index,
   
   const std::string PGKey=(index) ? 
     "Guide"+StrFunc::makeString(index-1) :  "GuideOrigin";
+
   attachSystem::FixedComp& prevFC=FixedGroup::getKey(PGKey);
   guideFC.createUnitVector(prevFC,POrigin);
   guideFC.applyShift(bX,0.0,bZ);
@@ -402,7 +403,7 @@ GuideLine::processShape(const FuncDataBase& Control)
 	  SU->addPrimaryPoint(Geometry::Vec3D(W/2.0,0,-H/2.0));
 	  SU->addPrimaryPoint(Geometry::Vec3D(W/2.0,0,H/2.0));
 	  SU->addPrimaryPoint(Geometry::Vec3D(-W/2.0,0,H/2.0));
-	  SU->setEndPts(Origin,Origin+Y*L);      	  
+	  SU->setEndPts(Origin,Origin+Y*L);
 	  SU->setXAxis(X,Z);      
 	  SU->constructConvex();
 	  shapeUnits.push_back(SU);
@@ -486,13 +487,10 @@ GuideLine::createUnitVector(const attachSystem::FixedComp& mainFC,
 
   attachSystem::FixedComp& guideFC=FixedGroup::getKey("GuideOrigin");
   guideFC.createUnitVector(beamFC,beamLP);
-  ELog::EM<<"GC Origin == "<<guideFC.getCentre()<<ELog::endDiag;    
   guideFC.applyShift(beamXStep,beamYStep,beamZStep);
   guideFC.applyAngleRotate(beamXYAngle,beamZAngle);
-  ELog::EM<<"GC XX Origin == "<<guideFC.getCentre()<<ELog::endDiag;
 
   setDefault("GuideOrigin");
-
   return;
 }
 
@@ -578,8 +576,6 @@ GuideLine::createObjects(Simulation& System,
 
   if (beamFrontCut)
     {
-        ELog::EM<<"Front Cut "<<beamFrontCut<<ELog::endDiag;
-
       startSurf=ModelSupport::getComposite(SMap,guideIndex," 1001 ");
     }
   else
@@ -588,7 +584,6 @@ GuideLine::createObjects(Simulation& System,
 	ModelSupport::getComposite(SMap,guideIndex," 1 ")  :
 	mainFC.getSignedLinkString(mainLP);
     }
-  ELog::EM<<"Front surf = "<<startSurf<<ELog::endDiag;
       
   HeadRule excludeCell;
   int frontNum(guideIndex+9);
@@ -720,7 +715,6 @@ GuideLine::calcActiveEndIntercept(const ShapeUnit* shapePtr)
 
   endCut.calcSurfIntersection(APt,AAxis,Pts,SNum);
   const size_t indexA=SurInter::closestPt(Pts,APt);
-  ELog::EM<<"Intercept == "<<Pts[indexA]<<ELog::endDiag;
   return Pts[indexA];
 }
 

@@ -73,6 +73,7 @@
 #include "FixedComp.h"
 #include "FixedGroup.h"
 #include "ContainedComp.h"
+#include "CellMap.h"
 #include "SurInter.h"
 #include "HoleShape.h"
 #include "RotaryCollimator.h"
@@ -83,6 +84,7 @@ namespace constructSystem
 RotaryCollimator::RotaryCollimator(const std::string& Key)  :
   attachSystem::ContainedComp(),
   attachSystem::FixedGroup(Key,"Main",6,"Beam",2),
+  attachSystem::CellMap(),
   colIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(colIndex+1),holeIndex(0),nHole(0),nLayers(0)
   /*!
@@ -93,6 +95,7 @@ RotaryCollimator::RotaryCollimator(const std::string& Key)  :
 
 RotaryCollimator::RotaryCollimator(const RotaryCollimator& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedGroup(A),
+  attachSystem::CellMap(A),
   colIndex(A.colIndex),cellIndex(A.cellIndex),xyAngle(A.xyAngle),
   zAngle(A.zAngle),xStep(A.xStep),yStep(A.yStep),
   zStep(A.zStep),rotDepth(A.rotDepth),radius(A.radius),
@@ -118,6 +121,7 @@ RotaryCollimator::operator=(const RotaryCollimator& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedGroup::operator=(A);
+      attachSystem::CellMap::operator=(A);
       cellIndex=A.cellIndex;
       xyAngle=A.xyAngle;
       zAngle=A.zAngle;

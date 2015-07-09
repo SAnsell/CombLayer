@@ -231,7 +231,7 @@ CellMap::addCell(const std::string& Key,const int CN)
     setCell(Key,1,CN);
   else
     {
-      const size_t index=static_cast<size_t>((1+mc->second));
+      const size_t index=static_cast<size_t>((-mc->second-1));
       setCell(Key,SplitUnits[index].size(),CN);
     }
   return;

@@ -195,13 +195,17 @@ DiskChopper::createUnitVector(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("DiskChopper","createUnitVector");
 
+  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
 
-  FixedComp::createUnitVector(FC,sideIndex);
-  beamOrigin=Origin;
-  beamOrigin+=X*xStep+Y*yStep+Z*zStep;
-  
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
+  mainFC.createUnitVector(FC,sideIndex);
+  mainFC.applyShift(xStep,yStep,zStep);
+  beamFC=mainFC;          // rotation not applied to beamFC
+  mainFC.applyAngleRotate(xyAngle,zAngle);
+
+  beamOrigin=beamFC.getCentre();
+  beamAxis=beamFC.getY();
+  setDefault("Main");
 
   if (centreFlag && centreFlag<4 && centreFlag>-4)
     {
@@ -236,7 +240,6 @@ DiskChopper::createUnitVector(const attachSystem::TwinComp& TC,
   Z=TC.getBZ();
 
   beamOrigin=Origin;
-  ELog::EM<<"Beam origin == "<<beamOrigin<<ELog::endDiag;
   applyShift(xStep,yStep,zStep);
   applyAngleRotate(xyAngle,zAngle);
   if (!centreFlag)
@@ -254,7 +257,6 @@ DiskChopper::createSurfaces()
 
   ModelSupport::buildCylinder(SMap,chpIndex+7,Origin,Y,innerRadius);
   ModelSupport::buildCylinder(SMap,chpIndex+17,Origin,Y,outerRadius);
-
   int CI(chpIndex);
   Geometry::Vec3D DCent(Origin);
   for(const DiskBlades& DRef : DInfo)
@@ -403,7 +405,6 @@ DiskChopper::createAll(Simulation& System,
   
   populate(System.getDataBase());
   createUnitVector(FC,FIndex);
-
   createSurfaces();    
   createObjects(System);
   
@@ -428,7 +429,6 @@ DiskChopper::createAllBeam(Simulation& System,
   
   populate(System.getDataBase());
   createUnitVector(TC,FIndex);
-
   createSurfaces();    
   createObjects(System);
   

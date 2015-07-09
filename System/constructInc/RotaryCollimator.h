@@ -36,7 +36,7 @@ namespace constructSystem
 */
 
 class RotaryCollimator : public attachSystem::ContainedComp,
-    public attachSystem::FixedGroup
+  public attachSystem::FixedGroup,public attachSystem::CellMap
 {
  private:
   
