@@ -92,9 +92,27 @@ class LOKI
   /// Guide leaving chopper pit 3 to collimator section
   std::shared_ptr<beamlineSystem::GuideLine> GuideE;
 
+  /// Collimator unit selector A
+  std::shared_ptr<constructSystem::RotaryCollimator> GridA;
   /// Collimator unit
   std::shared_ptr<constructSystem::RotaryCollimator> CollA;
+  /// Collimator unit selector A
+  std::shared_ptr<constructSystem::RotaryCollimator> GridB;
+  /// Collimator unit
+  std::shared_ptr<constructSystem::RotaryCollimator> CollB;
+  /// Collimator unit selector A
+  std::shared_ptr<constructSystem::RotaryCollimator> GridC;
+  /// Collimator unit
+  std::shared_ptr<constructSystem::RotaryCollimator> CollC;
+  /// Collimator unit selector A
+  std::shared_ptr<constructSystem::RotaryCollimator> GridD;
 
+  /// Guide in collimator A
+  std::shared_ptr<beamlineSystem::GuideLine> GuideCollA;
+  /// Guide in collimator B
+  std::shared_ptr<beamlineSystem::GuideLine> GuideCollB;
+  /// Guide in collimator C
+  std::shared_ptr<beamlineSystem::GuideLine> GuideCollC;
 
   void setBeamAxis(const GuideItem&);
   

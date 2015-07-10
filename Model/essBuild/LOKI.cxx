@@ -108,7 +108,16 @@ LOKI::LOKI() :
   Guide12mInter(new beamlineSystem::GuideLine("lokiG12mI")),
   S12mDisk(new constructSystem::DiskChopper("lokiSDisk")),
   GuideE(new beamlineSystem::GuideLine("lokiGE")),
-  CollA(new constructSystem::RotaryCollimator("lokiCollA"))
+  GridA(new constructSystem::RotaryCollimator("lokiGridA")),
+  CollA(new constructSystem::RotaryCollimator("lokiCollA")),
+  GridB(new constructSystem::RotaryCollimator("lokiGridB")),
+  CollB(new constructSystem::RotaryCollimator("lokiCollB")),
+  GridC(new constructSystem::RotaryCollimator("lokiGridC")),
+  CollC(new constructSystem::RotaryCollimator("lokiCollC")),
+  GridD(new constructSystem::RotaryCollimator("lokiGridD")),
+  GuideCollA(new beamlineSystem::GuideLine("lokiGuideCA")),
+  GuideCollB(new beamlineSystem::GuideLine("lokiGuideCB")),
+  GuideCollC(new beamlineSystem::GuideLine("lokiGuideCC"))
   /*!
     Constructor
  */
@@ -139,6 +148,18 @@ LOKI::LOKI() :
   OR.addObject(Guide12mInter);
   OR.addObject(S12mDisk);
   OR.addObject(GuideE);
+
+  OR.addObject(GridA);
+  OR.addObject(CollA);
+  OR.addObject(GridB);
+  OR.addObject(CollB);
+  OR.addObject(GridC);
+  OR.addObject(CollC);
+  OR.addObject(GridD);
+
+  OR.addObject(GuideCollA);
+  OR.addObject(GuideCollB);
+  OR.addObject(GuideCollC);
 }
 
 
@@ -276,11 +297,54 @@ LOKI::build(Simulation& System,
   GuideE->createAll(System,S12mDisk->getKey("Beam"),2,
 		    S12mDisk->getKey("Beam"),2);
 
-  // Straight section leaving chopper pit 3.
-  CollA->addInsertCell(bunkerObj.getCell("MainVoid"));
-  CollA->createAll(System,GuideE->getKey("Guide0"),2);
+  // First grid cutter
+  GridA->addInsertCell(bunkerObj.getCell("MainVoid"));
+  GridA->createAll(System,GuideE->getKey("Guide0"),2);
 
-return;
+  // First collimator
+  CollA->setInsertCell(bunkerObj.getCells("MainWall7"));
+  CollA->addInsertCell(bunkerObj.getCell("MainVoid"));
+  CollA->addInsertCell(voidCell);
+  CollA->createAll(System,GridA->getKey("Beam"),2);
+  // Second grid cutter
+  GridB->addInsertCell(voidCell);
+  GridB->createAll(System,CollA->getKey("Beam"),2);
+
+  // First collimator
+  CollB->addInsertCell(voidCell);
+  CollB->createAll(System,GridB->getKey("Beam"),2);
+  // Second grid cutter
+  GridC->addInsertCell(voidCell);
+  GridC->createAll(System,CollB->getKey("Beam"),2);
+
+  // Last collimator block
+  CollC->addInsertCell(voidCell);
+  CollC->createAll(System,GridC->getKey("Beam"),2);
+  // Final definin apperature
+  GridD->addInsertCell(voidCell);
+  GridD->createAll(System,CollC->getKey("Beam"),2);
+
+
+  // GUIDE for Collimator blocks:
+  GuideCollA->addInsertCell(CollA->getCell("Main"));
+  GuideCollA->addEndCut(CollA->getKey("Beam").getSignedLinkString(-2));
+  GuideCollA->createAll(System,CollA->getKey("Beam"),-1,
+			CollA->getKey("Beam"),-1);
+
+  // GUIDE for Collimator blocks [B]:
+  GuideCollB->addInsertCell(CollB->getCell("Main"));
+  GuideCollB->addEndCut(CollB->getKey("Beam").getSignedLinkString(-2));
+  GuideCollB->createAll(System,CollB->getKey("Beam"),-1,
+			CollB->getKey("Beam"),-1);
+
+  // GUIDE for Collimator blocks [C]:
+  GuideCollC->addInsertCell(CollC->getCell("Main"));
+  GuideCollC->addEndCut(CollC->getKey("Beam").getSignedLinkString(-2));
+  GuideCollC->createAll(System,CollC->getKey("Beam"),-1,
+			CollC->getKey("Beam"),-1);
+  
+  
+  return;
 }
 
 

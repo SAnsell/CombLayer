@@ -229,6 +229,7 @@ RotaryCollimator::createUnitVector(const attachSystem::FixedComp& FC,
   mainFC.createUnitVector(FC,sideIndex);
 
   beamFC=mainFC;
+  beamFC.applyShift(0,yStep,0);  
   mainFC.applyShift(xStep,yStep,zStep-rotDepth);  
   mainFC.applyAngleRotate(xyAngle,zAngle);
   setDefault("Main");
@@ -282,7 +283,7 @@ RotaryCollimator::createObjects(Simulation& System)
     }
   Out+=" "+HoleExclude.display();
   System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));            
-
+  addCell("Main",cellIndex-1);
   return;
 }
 
@@ -313,6 +314,7 @@ RotaryCollimator::createLinks()
 {
   ELog::RegMethod RegA("RotaryCollimator","createLinks");
 
+  
   attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
   attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
   // 

@@ -485,14 +485,49 @@ LOKIvariables(FuncDataBase& Control)
   Control.addVariable("lokiGE0ZAngle",0.0);
 
 
-  // PIN COLLIMATOR SYSTEM
-  Control.addVariable("odinPinLength",50.0);
-  Control.addVariable("odinPinRadius",60.0);
+  // COLLIMATOR SYSTEM
+
+  // Initial define grid:
+  Control.addVariable("lokiGridAYStep",1.0);
+  Control.addVariable("lokiGridARotDepth",20.0);
+  Control.addVariable("lokiGridARadius",30.0);
+  Control.addVariable("lokiGridAThick",1.0);
+
+  Control.addVariable("lokiGridAInnerWall",1.0);
+  Control.addVariable("lokiGridAInnerWallMat","Void");
+
+  Control.addVariable("lokiGridANLayers",0);
+  Control.addVariable("lokiGridAHoleIndex",0);
+  Control.addVariable("lokiGridAHoleAngOff",0.0);
+
+  Control.addVariable("lokiGridADefMat","B4C");
+  // collimator holes:
+  Control.addVariable("lokiGridANHole",3);
+  Control.addVariable("lokiGridAHole0Shape",1);
+  Control.addVariable("lokiGridAHole0Radius",3.0);
+
+  Control.addVariable("lokiGridAHole0AngleCentre",0.0);
+  Control.addVariable("lokiGridAHole0AngleOffset",0.0);
+  Control.addVariable("lokiGridAHole0RadialStep",20.0);
+
+  Control.addVariable("lokiGridAHole1Shape",3);
+  Control.addVariable("lokiGridAHole1Radius",5.0);
+  Control.addVariable("lokiGridAHole1AngleCentre",120.0);
+  Control.addVariable("lokiGridAHole1AngleOffset",0.0);
+  Control.addVariable("lokiGridAHole1RadialStep",15.0);
+  
+  Control.addVariable("lokiGridAHole2Shape",1);
+  Control.addVariable("lokiGridAHole2Radius",4.0);
+  Control.addVariable("lokiGridAHole2AngleCentre",240.0);
+  Control.addVariable("lokiGridAHole2AngleOffset",0.0);
+  Control.addVariable("lokiGridAHole2RadialStep",20.0);
+
+  
   // Collimator A:
   Control.addVariable("lokiCollAYStep",1.0);
   Control.addVariable("lokiCollARotDepth",0.0);
   Control.addVariable("lokiCollARadius",30.0);
-  Control.addVariable("lokiCollAThick",10.0);
+  Control.addVariable("lokiCollAThick",300.0);
 
   Control.addVariable("lokiCollAInnerWall",1.0);
   Control.addVariable("lokiCollAInnerWallMat","Void");
@@ -505,6 +540,223 @@ LOKIvariables(FuncDataBase& Control)
   // collimator holes:
   Control.addVariable("lokiCollANHole",0);
 
+  // Initial define grid:
+  Control.addVariable("lokiGridBYStep",1.0);
+  Control.addVariable("lokiGridBRotDepth",20.0);
+  Control.addVariable("lokiGridBRadius",30.0);
+  Control.addVariable("lokiGridBThick",1.0);
+
+  Control.addVariable("lokiGridBInnerWall",1.0);
+  Control.addVariable("lokiGridBInnerWallMat","Void");
+
+  Control.addVariable("lokiGridBNLayers",0);
+  Control.addVariable("lokiGridBHoleIndex",0);
+  Control.addVariable("lokiGridBHoleAngOff",0.0);
+
+  Control.addVariable("lokiGridBDefMat","B4C");
+  // collimator holes:
+  Control.addVariable("lokiGridBNHole",3);
+  Control.addVariable("lokiGridBHole0Shape",1);
+  Control.addVariable("lokiGridBHole0Radius",3.0);
+
+  Control.addVariable("lokiGridBHole0AngleCentre",0.0);
+  Control.addVariable("lokiGridBHole0AngleOffset",0.0);
+  Control.addVariable("lokiGridBHole0RadialStep",20.0);
+
+  Control.addVariable("lokiGridBHole1Shape",3);
+  Control.addVariable("lokiGridBHole1Radius",5.0);
+  Control.addVariable("lokiGridBHole1AngleCentre",120.0);
+  Control.addVariable("lokiGridBHole1AngleOffset",0.0);
+  Control.addVariable("lokiGridBHole1RadialStep",15.0);
+
+  Control.addVariable("lokiGridBHole2Shape",1);
+  Control.addVariable("lokiGridBHole2Radius",4.0);
+  Control.addVariable("lokiGridBHole2AngleCentre",240.0);
+  Control.addVariable("lokiGridBHole2AngleOffset",0.0);
+  Control.addVariable("lokiGridBHole2RadialStep",20.0);
+
+  // Collimator B:
+  Control.addVariable("lokiCollBYStep",1.0);
+  Control.addVariable("lokiCollBRotDepth",0.0);
+  Control.addVariable("lokiCollBRadius",30.0);
+  Control.addVariable("lokiCollBThick",300.0);
+
+  Control.addVariable("lokiCollBInnerWall",1.0);
+  Control.addVariable("lokiCollBInnerWallMat","Void");
+
+  Control.addVariable("lokiCollBNLayers",0);
+  Control.addVariable("lokiCollBHoleIndex",0);
+  Control.addVariable("lokiCollBHoleAngOff",0.0);
+
+  Control.addVariable("lokiCollBDefMat","Stainless304");
+  // collimator holes:
+  Control.addVariable("lokiCollBNHole",0);
+
+    // Initial define grid:
+  Control.addVariable("lokiGridCYStep",1.0);
+  Control.addVariable("lokiGridCRotDepth",20.0);
+  Control.addVariable("lokiGridCRadius",30.0);
+  Control.addVariable("lokiGridCThick",1.0);
+
+  Control.addVariable("lokiGridCInnerWall",1.0);
+  Control.addVariable("lokiGridCInnerWallMat","Void");
+
+  Control.addVariable("lokiGridCNLayers",0);
+  Control.addVariable("lokiGridCHoleIndex",0);
+  Control.addVariable("lokiGridCHoleAngOff",0.0);
+
+  Control.addVariable("lokiGridCDefMat","B4C");
+  // collimator holes:
+  Control.addVariable("lokiGridCNHole",3);
+  Control.addVariable("lokiGridCHole0Shape",1);
+  Control.addVariable("lokiGridCHole0Radius",3.0);
+
+  Control.addVariable("lokiGridCHole0AngleCentre",0.0);
+  Control.addVariable("lokiGridCHole0AngleOffset",0.0);
+  Control.addVariable("lokiGridCHole0RadialStep",20.0);
+
+  Control.addVariable("lokiGridCHole1Shape",3);
+  Control.addVariable("lokiGridCHole1Radius",5.0);
+  Control.addVariable("lokiGridCHole1AngleCentre",120.0);
+  Control.addVariable("lokiGridCHole1AngleOffset",0.0);
+  Control.addVariable("lokiGridCHole1RadialStep",15.0);
+
+  Control.addVariable("lokiGridCHole2Shape",1);
+  Control.addVariable("lokiGridCHole2Radius",4.0);
+  Control.addVariable("lokiGridCHole2AngleCentre",240.0);
+  Control.addVariable("lokiGridCHole2AngleOffset",0.0);
+  Control.addVariable("lokiGridCHole2RadialStep",20.0);
+
+  // Collimator C:
+  Control.addVariable("lokiCollCYStep",1.0);
+  Control.addVariable("lokiCollCRotDepth",0.0);
+  Control.addVariable("lokiCollCRadius",30.0);
+  Control.addVariable("lokiCollCThick",300.0);
+
+  Control.addVariable("lokiCollCInnerWall",1.0);
+  Control.addVariable("lokiCollCInnerWallMat","Void");
+
+  Control.addVariable("lokiCollCNLayers",0);
+  Control.addVariable("lokiCollCHoleIndex",0);
+  Control.addVariable("lokiCollCHoleAngOff",0.0);
+
+  Control.addVariable("lokiCollCDefMat","Stainless304");
+  Control.addVariable("lokiCollCNHole",0);
+  
+  // Last grid defineer
+  Control.addVariable("lokiGridDYStep",1.0);
+  Control.addVariable("lokiGridDRotDepth",20.0);
+  Control.addVariable("lokiGridDRadius",30.0);
+  Control.addVariable("lokiGridDThick",1.0);
+
+  Control.addVariable("lokiGridDInnerWall",1.0);
+  Control.addVariable("lokiGridDInnerWallMat","Void");
+
+  Control.addVariable("lokiGridDNLayers",0);
+  Control.addVariable("lokiGridDHoleIndex",0);
+  Control.addVariable("lokiGridDHoleAngOff",0.0);
+
+  Control.addVariable("lokiGridDDefMat","B4C");
+  // collimator holes:
+  Control.addVariable("lokiGridDNHole",3);
+  Control.addVariable("lokiGridDHole0Shape",1);
+  Control.addVariable("lokiGridDHole0Radius",3.0);
+
+  Control.addVariable("lokiGridDHole0AngleCentre",0.0);
+  Control.addVariable("lokiGridDHole0AngleOffset",0.0);
+  Control.addVariable("lokiGridDHole0RadialStep",20.0);
+
+  Control.addVariable("lokiGridDHole1Shape",3);
+  Control.addVariable("lokiGridDHole1Radius",5.0);
+  Control.addVariable("lokiGridDHole1AngleCentre",120.0);
+  Control.addVariable("lokiGridDHole1AngleOffset",0.0);
+  Control.addVariable("lokiGridDHole1RadialStep",15.0);
+
+  Control.addVariable("lokiGridDHole2Shape",1);
+  Control.addVariable("lokiGridDHole2Radius",4.0);
+  Control.addVariable("lokiGridDHole2AngleCentre",240.0);
+  Control.addVariable("lokiGridDHole2AngleOffset",0.0);
+  Control.addVariable("lokiGridDHole2RadialStep",20.0);
+
+
+  // Guide in Collimator
+  Control.addVariable("lokiGuideCAXStep",0.0);       
+  Control.addVariable("lokiGuideCAYStep",0.0);       
+  Control.addVariable("lokiGuideCAZStep",0.0);       
+  Control.addVariable("lokiGuideCAXYAngle",0.0);       
+  Control.addVariable("lokiGuideCAZAngle",0.0);       
+  Control.addVariable("lokiGuideCALength",400.0);     
+  
+  Control.addVariable("lokiGuideCANShapes",1);       
+  Control.addVariable("lokiGuideCANShapeLayers",3);
+  Control.addVariable("lokiGuideCAActiveShield",0);
+
+  Control.addVariable("lokiGuideCALayerThick1",0.4);  // glass thick
+  Control.addVariable("lokiGuideCALayerThick2",1.5);
+
+  Control.addVariable("lokiGuideCALayerMat0","Void");
+  Control.addVariable("lokiGuideCALayerMat1","Glass");
+  Control.addVariable("lokiGuideCALayerMat2","Void");       
+
+  Control.addVariable("lokiGuideCA0TypeID","Rectangle");
+  Control.addVariable("lokiGuideCA0Height",3.0);
+  Control.addVariable("lokiGuideCA0Width",3.0);
+  Control.addVariable("lokiGuideCA0Length",400.0);   
+  Control.addVariable("lokiGuideCA0ZAngle",0.0);
+
+
+  // Guide in Collimator B
+  Control.addVariable("lokiGuideCBXStep",0.0);       
+  Control.addVariable("lokiGuideCBYStep",0.0);       
+  Control.addVariable("lokiGuideCBZStep",0.0);       
+  Control.addVariable("lokiGuideCBXYAngle",0.0);       
+  Control.addVariable("lokiGuideCBZAngle",0.0);       
+  Control.addVariable("lokiGuideCBLength",400.0);     
+  
+  Control.addVariable("lokiGuideCBNShapes",1);       
+  Control.addVariable("lokiGuideCBNShapeLayers",3);
+  Control.addVariable("lokiGuideCBActiveShield",0);
+
+  Control.addVariable("lokiGuideCBLayerThick1",0.4);  // glass thick
+  Control.addVariable("lokiGuideCBLayerThick2",1.5);
+
+  Control.addVariable("lokiGuideCBLayerMat0","Void");
+  Control.addVariable("lokiGuideCBLayerMat1","Glass");
+  Control.addVariable("lokiGuideCBLayerMat2","Void");       
+
+  Control.addVariable("lokiGuideCB0TypeID","Rectangle");
+  Control.addVariable("lokiGuideCB0Height",3.0);
+  Control.addVariable("lokiGuideCB0Width",3.0);
+  Control.addVariable("lokiGuideCB0Length",400.0);   
+  Control.addVariable("lokiGuideCB0ZAngle",0.0);
+
+  
+  // Guide in Collimator B
+  Control.addVariable("lokiGuideCCXStep",0.0);       
+  Control.addVariable("lokiGuideCCYStep",0.0);       
+  Control.addVariable("lokiGuideCCZStep",0.0);       
+  Control.addVariable("lokiGuideCCXYAngle",0.0);       
+  Control.addVariable("lokiGuideCCZAngle",0.0);       
+  Control.addVariable("lokiGuideCCLength",400.0);     
+  
+  Control.addVariable("lokiGuideCCNShapes",1);       
+  Control.addVariable("lokiGuideCCNShapeLayers",3);
+  Control.addVariable("lokiGuideCCActiveShield",0);
+
+  Control.addVariable("lokiGuideCCLayerThick1",0.4);  // glass thick
+  Control.addVariable("lokiGuideCCLayerThick2",1.5);
+
+  Control.addVariable("lokiGuideCCLayerMat0","Void");
+  Control.addVariable("lokiGuideCCLayerMat1","Glass");
+  Control.addVariable("lokiGuideCCLayerMat2","Void");       
+
+  Control.addVariable("lokiGuideCC0TypeID","Rectangle");
+  Control.addVariable("lokiGuideCC0Height",3.0);
+  Control.addVariable("lokiGuideCC0Width",3.0);
+  Control.addVariable("lokiGuideCC0Length",400.0);   
+  Control.addVariable("lokiGuideCC0ZAngle",0.0);
+  
+  
   return;
 }
 
