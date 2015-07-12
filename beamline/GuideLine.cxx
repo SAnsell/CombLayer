@@ -575,9 +575,7 @@ GuideLine::createObjects(Simulation& System,
   std::string startSurf;
 
   if (beamFrontCut)
-    {
-      startSurf=ModelSupport::getComposite(SMap,guideIndex," 1001 ");
-    }
+    startSurf=ModelSupport::getComposite(SMap,guideIndex," 1001 ");
   else
     {
       startSurf=(frontCut) ?
@@ -622,8 +620,8 @@ GuideLine::createObjects(Simulation& System,
 	Out=ModelSupport::getComposite(SMap,guideIndex," -2 3 -4 5 -6 ");
       else
 	Out=ModelSupport::getComposite(SMap,guideIndex," 3 -4 5 -6 ")+
-	  endCut.display();
-      
+	  endCut.display();  
+
       Out+=startSurf;
       addOuterSurf(Out);      
       
@@ -651,11 +649,11 @@ GuideLine::createMainLinks(const attachSystem::FixedComp& mainFC,
     \param mainLP :: link point
    */
 {
-  ELog::RegMethod RegA("GuideLine","createLinks");
+  ELog::RegMethod RegA("GuideLine","createMainLinks");
 
   attachSystem::FixedComp& shieldFC=FixedGroup::getKey("Shield");
   const size_t sLP(static_cast<size_t>
-		   ((mainLP>0) ? mainLP-1 : mainLP+1));
+		   ((mainLP>0) ? mainLP-1 : -1-mainLP));
   if (!mainLP)
     {
       shieldFC.setConnect(0,Origin,-Y);       

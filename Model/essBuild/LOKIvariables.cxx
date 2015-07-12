@@ -64,6 +64,7 @@ LOKIvariables(FuncDataBase& Control)
 
   // Bender in section so use cut system
   Control.addVariable("G1BLine2Filled",1);
+  Control.addVariable("G1BLine3Filled",1);
   
   Control.addVariable("lokiBAXStep",0.0);       
   Control.addVariable("lokiBAYStep",0.0);       
@@ -579,7 +580,7 @@ LOKIvariables(FuncDataBase& Control)
   Control.addVariable("lokiCollBYStep",1.0);
   Control.addVariable("lokiCollBRotDepth",0.0);
   Control.addVariable("lokiCollBRadius",30.0);
-  Control.addVariable("lokiCollBThick",300.0);
+  Control.addVariable("lokiCollBThick",200.0);
 
   Control.addVariable("lokiCollBInnerWall",1.0);
   Control.addVariable("lokiCollBInnerWallMat","Void");
@@ -756,6 +757,58 @@ LOKIvariables(FuncDataBase& Control)
   Control.addVariable("lokiGuideCC0Length",400.0);   
   Control.addVariable("lokiGuideCC0ZAngle",0.0);
   
+  // HUT:
+  Control.addVariable("lokiCaveYStep",0.0);
+  Control.addVariable("lokiCaveVoidFront",60.0);
+  Control.addVariable("lokiCaveVoidHeight",300.0);
+  Control.addVariable("lokiCaveVoidDepth",183.0);
+  Control.addVariable("lokiCaveVoidWidth",400.0);
+  Control.addVariable("lokiCaveVoidLength",1600.0);
+
+
+  Control.addVariable("lokiCaveFeFront",25.0);
+  Control.addVariable("lokiCaveFeLeftWall",15.0);
+  Control.addVariable("lokiCaveFeRightWall",15.0);
+  Control.addVariable("lokiCaveFeRoof",15.0);
+  Control.addVariable("lokiCaveFeFloor",15.0);
+  Control.addVariable("lokiCaveFeBack",15.0);
+
+  Control.addVariable("lokiCaveConcFront",35.0);
+  Control.addVariable("lokiCaveConcLeftWall",35.0);
+  Control.addVariable("lokiCaveConcRightWall",35.0);
+  Control.addVariable("lokiCaveConcRoof",35.0);
+  Control.addVariable("lokiCaveConcFloor",50.0);
+  Control.addVariable("lokiCaveConcBack",35.0);
+
+  Control.addVariable("lokiCaveFeMat","Stainless304");
+  Control.addVariable("lokiCaveConcMat","Concrete");
+
+  
+  // Guide in Cave
+  Control.addVariable("lokiCaveGuideXStep",0.0);       
+  Control.addVariable("lokiCaveGuideYStep",0.0);       
+  Control.addVariable("lokiCaveGuideZStep",0.0);       
+  Control.addVariable("lokiCaveGuideXYAngle",0.0);       
+  Control.addVariable("lokiCaveGuideZAngle",0.0);       
+  Control.addVariable("lokiCaveGuideLength",200.0);     
+  
+  Control.addVariable("lokiCaveGuideNShapes",1);       
+  Control.addVariable("lokiCaveGuideNShapeLayers",3);
+  Control.addVariable("lokiCaveGuideActiveShield",0);
+
+  Control.addVariable("lokiCaveGuideLayerThick1",0.4);  // glass thick
+  Control.addVariable("lokiCaveGuideLayerThick2",1.5);
+
+  Control.addVariable("lokiCaveGuideLayerMat0","Void");
+  Control.addVariable("lokiCaveGuideLayerMat1","Glass");
+  Control.addVariable("lokiCaveGuideLayerMat2","Void");       
+
+  Control.addVariable("lokiCaveGuide0TypeID","Rectangle");
+  Control.addVariable("lokiCaveGuide0Height",3.0);
+  Control.addVariable("lokiCaveGuide0Width",3.0);
+  Control.addVariable("lokiCaveGuide0Length",200.0);   
+  Control.addVariable("lokiCaveGuide0ZAngle",0.0);
+
   
   return;
 }

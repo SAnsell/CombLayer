@@ -84,6 +84,7 @@
 #include "RotaryCollimator.h"
 #include "PinHole.h"
 #include "RentrantBS.h"
+#include "LokiHut.h"
 #include "LOKI.h"
 
 namespace essSystem
@@ -117,7 +118,9 @@ LOKI::LOKI() :
   GridD(new constructSystem::RotaryCollimator("lokiGridD")),
   GuideCollA(new beamlineSystem::GuideLine("lokiGuideCA")),
   GuideCollB(new beamlineSystem::GuideLine("lokiGuideCB")),
-  GuideCollC(new beamlineSystem::GuideLine("lokiGuideCC"))
+  GuideCollC(new beamlineSystem::GuideLine("lokiGuideCC")),
+  Cave(new LokiHut("lokiCave")),
+  CaveGuide(new beamlineSystem::GuideLine("lokiCaveGuide"))
   /*!
     Constructor
  */
@@ -160,6 +163,9 @@ LOKI::LOKI() :
   OR.addObject(GuideCollA);
   OR.addObject(GuideCollB);
   OR.addObject(GuideCollC);
+
+  OR.addObject(Cave);
+  OR.addObject(CaveGuide);
 }
 
 
@@ -302,7 +308,7 @@ LOKI::build(Simulation& System,
   GridA->createAll(System,GuideE->getKey("Guide0"),2);
 
   // First collimator
-  CollA->setInsertCell(bunkerObj.getCells("MainWall7"));
+  CollA->setInsertCell(bunkerObj.getCells("MainWall8"));
   CollA->addInsertCell(bunkerObj.getCell("MainVoid"));
   CollA->addInsertCell(voidCell);
   CollA->createAll(System,GridA->getKey("Beam"),2);
@@ -320,9 +326,6 @@ LOKI::build(Simulation& System,
   // Last collimator block
   CollC->addInsertCell(voidCell);
   CollC->createAll(System,GridC->getKey("Beam"),2);
-  // Final definin apperature
-  GridD->addInsertCell(voidCell);
-  GridD->createAll(System,CollC->getKey("Beam"),2);
 
 
   // GUIDE for Collimator blocks:
@@ -342,7 +345,23 @@ LOKI::build(Simulation& System,
   GuideCollC->addEndCut(CollC->getKey("Beam").getSignedLinkString(-2));
   GuideCollC->createAll(System,CollC->getKey("Beam"),-1,
 			CollC->getKey("Beam"),-1);
-  
+
+
+  Cave->addInsertCell(voidCell);
+  Cave->createAll(System,GuideCollC->getKey("Guide0"),2);
+
+  CollC->addInsertCell(Cave->getCells("FrontWall"));
+  CollC->addInsertCell(Cave->getCell("Void"));
+  CollC->insertObjects(System);
+
+    // Final definin apperature
+  GridD->addInsertCell(Cave->getCell("Void"));
+  GridD->createAll(System,CollC->getKey("Beam"),2);
+
+      // Final definin apperature
+  CaveGuide->addInsertCell(Cave->getCell("Void"));
+  CaveGuide->createAll(System,GridD->getKey("Beam"),2,
+		       GridD->getKey("Beam"),2);
   
   return;
 }

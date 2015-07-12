@@ -1183,12 +1183,11 @@ EssBunkerVariables(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("essVariables[F]","EssBunkerVariables");
 
-
   Control.addVariable("LowABunkerLeftPhase",35.0);
   Control.addVariable("LowABunkerRightPhase",35.0);
   Control.addVariable("LowABunkerLeftAngle",0.0);
   Control.addVariable("LowABunkerRightAngle",0.0);
-  Control.addVariable("LowABunkerNSectors",9);
+  Control.addVariable("LowABunkerNSectors",11);
   
   Control.addVariable("LowABunkerWallRadius",1300.0);
   Control.addVariable("LowABunkerFloorDepth",100.0);

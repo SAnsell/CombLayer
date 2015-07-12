@@ -208,8 +208,9 @@ ODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
   BladeChopper->createAll(System,GItem.getKey("Beam"),2);
 
   GuideA->addInsertCell(bunkerObj.getCell("MainVoid"));
-  GuideA->createAll(System,BladeChopper->getKey("Main"),2,
+  GuideA->createAll(System,BladeChopper->getKey("Beam"),2,
 		    BladeChopper->getKey("Beam"),2);
+  ELog::EM<<"Guide A = "<<GuideA->getExclude()<<ELog::endDiag;
   T0Chopper->addInsertCell(bunkerObj.getCell("MainVoid"));
   T0Chopper->setCentreFlag(3);  // Z direction
   T0Chopper->createAll(System,GuideA->getKey("Guide0"),2);
@@ -219,7 +220,7 @@ ODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
   GuideB->createAll(System,T0Chopper->getKey("Main"),2,
 		    T0Chopper->getKey("Beam"),2);
 
-  BInsert->setInsertCell(bunkerObj.getCells("MainWall8"));
+  BInsert->setInsertCell(bunkerObj.getCells("MainWall10"));
   BInsert->createAll(System,GuideB->getKey("Guide0"),2,bunkerObj);
 
   // Guide in the bunker insert

@@ -41,6 +41,7 @@ namespace constructSystem
 namespace essSystem
 {  
   class GuideItem;
+  class LokiHut;
 
   /*!
     \class LOKI
@@ -113,6 +114,10 @@ class LOKI
   std::shared_ptr<beamlineSystem::GuideLine> GuideCollB;
   /// Guide in collimator C
   std::shared_ptr<beamlineSystem::GuideLine> GuideCollC;
+  /// Cave
+  std::shared_ptr<LokiHut> Cave;
+  /// Guide to sample
+  std::shared_ptr<beamlineSystem::GuideLine> CaveGuide;
 
   void setBeamAxis(const GuideItem&);
   
