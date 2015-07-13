@@ -270,6 +270,7 @@ createInputs(inputParam& IParam)
     
   IParam.regFlag("void","void");
   IParam.regFlag("vtk","vtk");
+  IParam.regFlag("vcell","vcell");
   std::vector<std::string> VItems(15,"");
   IParam.regDefItemList<std::string>("vmat","vmat",15,VItems);
 
@@ -337,6 +338,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("volume","Create volume about point/radius for f4 tally");
   IParam.setDesc("volCells","Cells [object/range]");
   IParam.setDesc("vtk","Write out VTK plot mesh");
+  IParam.setDesc("vcell","Use cell id rather than material");
   IParam.setDesc("vmat","Material sections to be written by vtk output");
   IParam.setDesc("VN","Number of points in the volume integration");
   IParam.setDesc("validCheck","Run simulation to check for validity");

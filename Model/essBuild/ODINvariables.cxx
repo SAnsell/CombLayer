@@ -229,8 +229,8 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinGDXYAngle",0.0);       
   Control.addVariable("odinGDZAngle",0.0);       
   Control.addVariable("odinGDLength",141.0);       
-  Control.addVariable("odinGDHeight",90.0);       
-  Control.addVariable("odinGDDepth",90.0);       
+  Control.addVariable("odinGDHeight",110.0);       
+  Control.addVariable("odinGDDepth",110.0);       
   Control.addVariable("odinGDLeftWidth",90.0);       
   Control.addVariable("odinGDRightWidth",90.0);       
   Control.addVariable("odinGDFeMat","Concrete");       
@@ -239,7 +239,7 @@ ODINvariables(FuncDataBase& Control)
 
   Control.addVariable("odinGDLayerThick1",0.4);  // glass thick
   Control.addVariable("odinGDLayerThick2",1.5);
-  Control.addVariable("odinGDLayerThick3",33.0);
+  Control.addVariable("odinGDLayerThick3",50.0);
 
   Control.addVariable("odinGDLayerMat0","Void");
   Control.addVariable("odinGDLayerMat1","Glass");
