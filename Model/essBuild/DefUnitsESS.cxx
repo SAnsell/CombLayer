@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   essBuild/DefUnitsESS.cxx
  *
@@ -99,7 +99,7 @@ setESS(defaultConfig& A)
 
   A.setOption("lowMod","Butterfly");
   A.setMultiOption("beamlines",0,"G1BLine1 ODIN");
-  //  A.setMultiOption("beamlines",1,"G1BLine3 LOKI");
+  A.setMultiOption("beamlines",1,"G1BLine3 LOKI");
     
 
   

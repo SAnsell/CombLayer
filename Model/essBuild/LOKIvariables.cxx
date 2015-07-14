@@ -142,12 +142,12 @@ LOKIvariables(FuncDataBase& Control)
 
   // Double Blade chopper
   Control.addVariable("lokiDBladeXStep",0.0);
-  Control.addVariable("lokiDBladeYStep",2.0);
+  Control.addVariable("lokiDBladeYStep",1.0);
   Control.addVariable("lokiDBladeZStep",0.0);
   Control.addVariable("lokiDBladeXYangle",0.0);
   Control.addVariable("lokiDBladeZangle",0.0);
 
-  Control.addVariable("lokiDBladeGap",3.0);
+  Control.addVariable("lokiDBladeGap",1.0);
   Control.addVariable("lokiDBladeInnerRadius",10.0);
   Control.addVariable("lokiDBladeOuterRadius",22.50);
   Control.addVariable("lokiDBladeNDisk",2);
@@ -170,13 +170,13 @@ LOKIvariables(FuncDataBase& Control)
 
   // GUIDE BETWEEN BENDERS
   Control.addVariable("lokiGInnerXStep",0.0);       
-  Control.addVariable("lokiGInnerYStep",2.0);       
+  Control.addVariable("lokiGInnerYStep",1.0);       
   Control.addVariable("lokiGInnerZStep",0.0);       
   Control.addVariable("lokiGInnerXYAngle",0.0);       
   Control.addVariable("lokiGInnerZAngle",0.0);       
   Control.addVariable("lokiGInnerLength",40.0);       
 
-  Control.addVariable("lokiGInnerBeamYStep",4.0);
+  Control.addVariable("lokiGInnerBeamYStep",1.0);
   
   Control.addVariable("lokiGInnerNShapes",1);       
   Control.addVariable("lokiGInnerNShapeLayers",3);
@@ -197,7 +197,7 @@ LOKIvariables(FuncDataBase& Control)
 
   // Single Blade chopper
   Control.addVariable("lokiSBladeXStep",0.0);
-  Control.addVariable("lokiSBladeYStep",2.0);
+  Control.addVariable("lokiSBladeYStep",1.0);
   Control.addVariable("lokiSBladeZStep",0.0);
   Control.addVariable("lokiSBladeXYangle",0.0);
   Control.addVariable("lokiSBladeZangle",0.0);
@@ -219,12 +219,12 @@ LOKIvariables(FuncDataBase& Control)
 
   // GUIDE EXITING Single Chopper [Straight A]
   Control.addVariable("lokiGBXStep",0.0);       
-  Control.addVariable("lokiGBYStep",2.0);
-  Control.addVariable("lokiGBBeamYStep",3.0);
+  Control.addVariable("lokiGBYStep",1.0);
+  Control.addVariable("lokiGBBeamYStep",1.0);
   Control.addVariable("lokiGBZStep",0.0);       
   Control.addVariable("lokiGBXYAngle",0.0);       
   Control.addVariable("lokiGBZAngle",0.0);       
-  Control.addVariable("lokiGBLength",45.0);       
+  Control.addVariable("lokiGBLength",50.0);       
   
   Control.addVariable("lokiGBNShapes",1);       
   Control.addVariable("lokiGBNShapeLayers",3);
@@ -240,7 +240,7 @@ LOKIvariables(FuncDataBase& Control)
   Control.addVariable("lokiGB0TypeID","Rectangle");
   Control.addVariable("lokiGB0Height",3.0);
   Control.addVariable("lokiGB0Width",3.0);
-  Control.addVariable("lokiGB0Length",45.0);
+  Control.addVariable("lokiGB0Length",50.0);
   Control.addVariable("lokiGB0ZAngle",0.0);
 
   // Bender B : Straighten the guide
@@ -579,7 +579,7 @@ LOKIvariables(FuncDataBase& Control)
   // Collimator B:
   Control.addVariable("lokiCollBYStep",1.0);
   Control.addVariable("lokiCollBRotDepth",0.0);
-  Control.addVariable("lokiCollBRadius",30.0);
+  Control.addVariable("lokiCollBRadius",40.0);
   Control.addVariable("lokiCollBThick",200.0);
 
   Control.addVariable("lokiCollBInnerWall",1.0);
@@ -786,7 +786,8 @@ LOKIvariables(FuncDataBase& Control)
   
   // Guide in Cave
   Control.addVariable("lokiCaveGuideXStep",0.0);       
-  Control.addVariable("lokiCaveGuideYStep",0.0);       
+  Control.addVariable("lokiCaveGuideYStep",0.0);
+  Control.addVariable("lokiCaveGuideBeamYStep",1.0);       
   Control.addVariable("lokiCaveGuideZStep",0.0);       
   Control.addVariable("lokiCaveGuideXYAngle",0.0);       
   Control.addVariable("lokiCaveGuideZAngle",0.0);       

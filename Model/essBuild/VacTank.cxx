@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   zoom/ZoomTank.cxx
+ * File:   essBuild/VacTank.cxx
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -70,192 +70,102 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
-#include "ContainedComp.h"
-#include "ZoomTank.h"
+#include "VacTank.h"
 
 namespace zoomSystem
 {
 
-ZoomTank::ZoomTank(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::TwinComp(Key,0),
+VacTank::VacTank(const std::string& Key)  :
+  attachSystem::ContainedComp(),
+  attachSystem::FixedOffset(Key,6),
   tankIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(tankIndex+1),populated(0)
+  cellIndex(tankIndex+1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
   */
 {}
 
-ZoomTank::ZoomTank(const ZoomTank& A) : 
-  attachSystem::ContainedComp(A),attachSystem::TwinComp(A),
-  tankIndex(A.tankIndex),cellIndex(A.cellIndex),
-  populated(A.populated),xStep(A.xStep),yStep(A.yStep),
-  zStep(A.zStep),xyAngle(A.xyAngle),zAngle(A.zAngle),
-  nCylinder(A.nCylinder),cylThickness(A.cylThickness),
-  CRadius(A.CRadius),CylDepth(A.CylDepth),CylX(A.CylX),
-  CylZ(A.CylZ),cylTotalDepth(A.cylTotalDepth),
-  windowThick(A.windowThick),windowRadius(A.windowRadius),
-  width(A.width),height(A.height),length(A.length),
-  wallThick(A.wallThick),wallMat(A.wallMat),
-  windowMat(A.windowMat)
-  /*!
-    Copy constructor
-    \param A :: ZoomTank to copy
-  */
-{}
 
-ZoomTank&
-ZoomTank::operator=(const ZoomTank& A)
-  /*!
-    Assignment operator
-    \param A :: ZoomTank to copy
-    \return *this
-  */
-{
-  if (this!=&A)
-    {
-      attachSystem::ContainedComp::operator=(A);
-      attachSystem::TwinComp::operator=(A);
-      cellIndex=A.cellIndex;
-      populated=A.populated;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
-      nCylinder=A.nCylinder;
-      cylThickness=A.cylThickness;
-      CRadius=A.CRadius;
-      CylDepth=A.CylDepth;
-      CylX=A.CylX;
-      CylZ=A.CylZ;
-      cylTotalDepth=A.cylTotalDepth;
-      windowThick=A.windowThick;
-      windowRadius=A.windowRadius;
-      width=A.width;
-      height=A.height;
-      length=A.length;
-      wallThick=A.wallThick;
-      wallMat=A.wallMat;
-      windowMat=A.windowMat;
-    }
-  return *this;
-}
-
-ZoomTank::~ZoomTank() 
+VacTank::~VacTank() 
  /*!
    Destructor
  */
 {}
 
 void
-ZoomTank::populate(const Simulation& System)
+VacTank::populate(const FuncDataBase& Control)
  /*!
    Populate all the variables
-   \param System :: Simulation to use
+   \param Control :: Database of variable
  */
 {
-  ELog::RegMethod RegA("ZoomTank","populate");
+  ELog::RegMethod RegA("VacTank","populate");
   
-  const FuncDataBase& Control=System.getDataBase();
+  FixedOffset::populate(Control);
 
-  // Master values
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
-  zAngle=Control.EvalVar<double>(keyName+"Zangle");
 
-  nCylinder=Control.EvalVar<size_t>(keyName+"NCylinder");
-  CRadius.resize(nCylinder);
-  CylDepth.resize(nCylinder);
-  CylX.resize(nCylinder);
-  CylZ.resize(nCylinder);
-  std::ostringstream cx;
-  for(size_t i=0;i<nCylinder;i++)
-    {
-      cx.str("");
-      cx<<i+1;
-      CRadius[i]=Control.EvalVar<double>(keyName+"Radius"+cx.str());
-      CylDepth[i]=Control.EvalVar<double>(keyName+"CDepth"+cx.str());
-      CylX[i]=Control.EvalVar<double>(keyName+"CXStep"+cx.str());
-      CylZ[i]=Control.EvalVar<double>(keyName+"CZStep"+cx.str());
-    }
-  cylTotalDepth=std::accumulate(CylDepth.begin(),CylDepth.end(),0.0);
+  radius=Control.EvalVar<double>(keyName+"Radius");
+  length=Control.EvalVar<double>(keyName+"Length");
+  sideThick=Control.EvalVar<double>(keyName+"SideThick");
+  backThick=Control.EvalVar<double>(keyName+"BackThick");
+  frontThick=Control.EvalVar<double>(keyName+"FrontThick");
+
 
   windowThick=Control.EvalVar<double>(keyName+"WindowThick");
   windowRadius=Control.EvalVar<double>(keyName+"WindowRadius");
-  wallThick=Control.EvalVar<double>(keyName+"WallThick");
-  width=Control.EvalVar<double>(keyName+"Width");
-  height=Control.EvalVar<double>(keyName+"Height");
-  length=Control.EvalVar<double>(keyName+"Length");
-
+  windowLength=Control.EvalVar<double>(keyName+"WindowLength");
+  
   // Material
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   windowMat=ModelSupport::EvalMat<int>(Control,keyName+"WindowMat");
 
-  populated |= 1;
   return;
 }
   
 void
-ZoomTank::createUnitVector(const attachSystem::TwinComp& TC)
+VacTank::createUnitVector(const attachSystem::FixedComp& FC,
+			  const long int sideIndex)
   /*!
     Create the unit vectors
     - Y Down the beamline
-    \param TC :: Linked object
+    \param FC :: Linked object
+    \param sideIndex :: sinde track
   */
 {
-  ELog::RegMethod RegA("ZoomTank","createUnitVector");
-  TwinComp::createUnitVector(TC);
+  ELog::RegMethod RegA("VacTank","createUnitVector");
+  FixedComp::createUnitVector(FC,orgIndex);
 
-  // // Reverse X
-  // X*=-1;
-  Origin=bEnter;
-  Origin+=X*xStep+Y*yStep+Z*zStep;
-  const Geometry::Quaternion Qz=
-    Geometry::Quaternion::calcQRotDeg(zAngle,X);
-  const Geometry::Quaternion Qxy=
-    Geometry::Quaternion::calcQRotDeg(xyAngle,Z);
-  Qz.rotate(Y);
-  Qz.rotate(Z);
-  Qxy.rotate(Y);
-  Qxy.rotate(X);
-  Qxy.rotate(Z);
-
-  // SAMPLE Position
-  // const masterRotate& MR=masterRotate::Instance();
-  // ELog::EM<<"Zoom Sample postion == "
-  // 	  <<MR.calcRotate(bEnter+bY*200.0)<<ELog::endDebug;
+  applyOffset();
   return;
 }
-
+  
 void
-ZoomTank::createSurfaces()
+VacTank::createSurfaces()
   /*!
     Create All the surfaces
   */
 {
-  ELog::RegMethod RegA("ZoomTank","createSurface");
+  ELog::RegMethod RegA("VacTank","createSurface");
 
-  // First layer [Bulk]
+  // Main cylinder tank
   ModelSupport::buildPlane(SMap,tankIndex+1,
-			   Origin+Y*cylTotalDepth,Y);
+			   Origin+Y*windowInsertLen,Y);
   ModelSupport::buildPlane(SMap,tankIndex+2,
-			   Origin+Y*(cylTotalDepth+length),Y);
-  ModelSupport::buildPlane(SMap,tankIndex+3,
-			   Origin-X*width/2.0,X);
-  ModelSupport::buildPlane(SMap,tankIndex+4,
-			   Origin+X*width/2.0,X);
-  ModelSupport::buildPlane(SMap,tankIndex+5,
-			   Origin-Z*height/2.0,Z);
-  ModelSupport::buildPlane(SMap,tankIndex+6,
-			   Origin+Z*height/2.0,Z);
+			   Origin+Y*(windowInsertLen+length),Y);
+  ModelSupport::buildPlane(SMap,tankIndex+7,
+			   Origin,Y,radius);
 
-  ModelSupport::buildPlane(SMap,tankIndex+11,
-			   Origin+Y*(cylTotalDepth+wallThick),Y);
+  ModelSupport::buildPlane(SMap,tankIndex+12,
+			   Origin+Y*(windowInsertLen+length+backThick),Y);
+  ModelSupport::buildPlane(SMap,tankIndex+17,
+			   Origin,Y,radius+sideThick);
+
+  // Nose cone:
+  
+  ModelSupport::buildPlane(SMap,tankIndex+101,Origin,Y);
+  ModelSupport::buildPlane(SMap,tankIndex+102,Origin+Y*windowThick,Y);
+  Geometry::Vec3D ConeOrigin=
   ModelSupport::buildPlane(SMap,tankIndex+12,
 			   Origin+Y*(cylTotalDepth+length-wallThick),Y);
   ModelSupport::buildPlane(SMap,tankIndex+13,
@@ -299,13 +209,13 @@ ZoomTank::createSurfaces()
 }
 
 void
-ZoomTank::createObjects(Simulation& System)
+VacTank::createObjects(Simulation& System)
   /*!
     Adds the Chip guide components
     \param System :: Simulation to create objects in
   */
 {
-  ELog::RegMethod RegA("ZoomTank","createObjects");
+  ELog::RegMethod RegA("VacTank","createObjects");
   
   std::string Out;
   Out=ModelSupport::getComposite(SMap,tankIndex,
@@ -362,7 +272,7 @@ ZoomTank::createObjects(Simulation& System)
 }
 
 void
-ZoomTank::createLinks()
+VacTank::createLinks()
   /*!
     Creates a full attachment set
   */
@@ -397,14 +307,14 @@ ZoomTank::createLinks()
 }
 
 void
-ZoomTank::createAll(Simulation& System,const attachSystem::TwinComp& FC)
+VacTank::createAll(Simulation& System,const attachSystem::TwinComp& FC)
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to
     \param FC :: Fixed Component to place object within
   */
 {
-  ELog::RegMethod RegA("ZoomTank","createAll");
+  ELog::RegMethod RegA("VacTank","createAll");
   populate(System);
 
   createUnitVector(FC);
