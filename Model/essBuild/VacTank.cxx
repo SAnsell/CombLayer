@@ -70,14 +70,17 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
+#include "ContainedComp.h"
+#include "CellMap.h"
 #include "VacTank.h"
 
-namespace zoomSystem
+namespace essSystem
 {
 
 VacTank::VacTank(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedOffset(Key,6),attachSystem::CellMap(),
   tankIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(tankIndex+1)
   /*!
@@ -114,7 +117,7 @@ VacTank::populate(const FuncDataBase& Control)
 
   windowThick=Control.EvalVar<double>(keyName+"WindowThick");
   windowRadius=Control.EvalVar<double>(keyName+"WindowRadius");
-  windowLength=Control.EvalVar<double>(keyName+"WindowLength");
+  windowInsetLen=Control.EvalVar<double>(keyName+"WindowInsetLen");
   
   // Material
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -134,7 +137,8 @@ VacTank::createUnitVector(const attachSystem::FixedComp& FC,
   */
 {
   ELog::RegMethod RegA("VacTank","createUnitVector");
-  FixedComp::createUnitVector(FC,orgIndex);
+
+  FixedComp::createUnitVector(FC,sideIndex);
 
   applyOffset();
   return;
@@ -150,60 +154,31 @@ VacTank::createSurfaces()
 
   // Main cylinder tank
   ModelSupport::buildPlane(SMap,tankIndex+1,
-			   Origin+Y*windowInsertLen,Y);
+			   Origin+Y*windowInsetLen,Y);
   ModelSupport::buildPlane(SMap,tankIndex+2,
-			   Origin+Y*(windowInsertLen+length),Y);
-  ModelSupport::buildPlane(SMap,tankIndex+7,
-			   Origin,Y,radius);
+			   Origin+Y*(windowInsetLen+length),Y);
+  ModelSupport::buildCylinder(SMap,tankIndex+7,Origin,Y,radius);
 
   ModelSupport::buildPlane(SMap,tankIndex+12,
-			   Origin+Y*(windowInsertLen+length+backThick),Y);
-  ModelSupport::buildPlane(SMap,tankIndex+17,
+			   Origin+Y*(windowInsetLen+length+backThick),Y);
+  ModelSupport::buildCylinder(SMap,tankIndex+17,
 			   Origin,Y,radius+sideThick);
 
+  //
   // Nose cone:
-  
+  //
   ModelSupport::buildPlane(SMap,tankIndex+101,Origin,Y);
-  ModelSupport::buildPlane(SMap,tankIndex+102,Origin+Y*windowThick,Y);
-  Geometry::Vec3D ConeOrigin=
-  ModelSupport::buildPlane(SMap,tankIndex+12,
-			   Origin+Y*(cylTotalDepth+length-wallThick),Y);
-  ModelSupport::buildPlane(SMap,tankIndex+13,
-			   Origin-X*(width/2.0-wallThick),X);
-  ModelSupport::buildPlane(SMap,tankIndex+14,
-			   Origin+X*(width/2.0-wallThick),X);
-  ModelSupport::buildPlane(SMap,tankIndex+15,
-			   Origin-Z*(height/2.0-wallThick),Z);
-  ModelSupport::buildPlane(SMap,tankIndex+16,
-			   Origin+Z*(height/2.0-wallThick),Z);
+  ModelSupport::buildPlane(SMap,tankIndex+102,Origin-Y*windowThick,Y);
 
+  const double coneAngle=180.0*atan((radius-windowRadius)/windowInsetLen)/M_PI;
+  const Geometry::Vec3D coneOrigin=Origin-Y*
+    (windowRadius*windowInsetLen)/(radius-windowRadius);
 
-  double depthSum=0.0;
-  for(size_t i=0;i<nCylinder;i++)
-    {
-      const int iN(static_cast<int>(i));
-      // Plates across
-      ModelSupport::buildPlane(SMap,tankIndex+111+iN,
-			       Origin+Y*depthSum,Y);
-      ModelSupport::buildPlane(SMap,tankIndex+121+iN,
-			       Origin+Y*(depthSum+wallThick),Y);
-      depthSum+=CylDepth[i];
-      // Radii [Outer]
-      ModelSupport::buildCylinder(SMap,tankIndex+171+iN,
-				  Origin+X*CylX[i]+Z*CylZ[i],
-				  Y,CRadius[i]);
-      // Radii [Inner]
-      ModelSupport::buildCylinder(SMap,tankIndex+181+iN,
-				  Origin+X*CylX[i]+Z*CylZ[i],
-				  Y,CRadius[i]-wallThick);
-    }      
-
-  // Window stuff
-  ModelSupport::buildCylinder(SMap,tankIndex+17,
-			      Origin+X*CylX[0]+Z*CylZ[0],
-			      Y,windowRadius);
-  ModelSupport::buildPlane(SMap,tankIndex+101,
-			   Origin+Y*(wallThick-windowThick),Y);
+  ModelSupport::buildCone(SMap,tankIndex+108,
+			  coneOrigin,Y,coneAngle);
+  ModelSupport::buildCone(SMap,tankIndex+118,
+			  coneOrigin-Y*(frontThick*sin(coneAngle*M_PI/180.0)),
+			  Y,coneAngle);
   
   return;
 }
@@ -211,62 +186,41 @@ VacTank::createSurfaces()
 void
 VacTank::createObjects(Simulation& System)
   /*!
-    Adds the Chip guide components
+    Adds the vacuum object
     \param System :: Simulation to create objects in
   */
 {
   ELog::RegMethod RegA("VacTank","createObjects");
   
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,tankIndex,
-				 "111 -2 3 -4 5 -6 (1:-173)");
-  addOuterSurf(Out);
 
-  // Dead Volume
-  Out=ModelSupport::getComposite(SMap,tankIndex,"-173 171 111 -113 (-112:172)");
+  // Main voids
+  Out=ModelSupport::getComposite(SMap,tankIndex,"1 -2 -7");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-  
-  // Inner Volume
-  Out=ModelSupport::getComposite(SMap,tankIndex,"11 -12 13 -14 15 -16 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-  
-  // first Cylinder:
-  Out=ModelSupport::getComposite(SMap,tankIndex,"-181 121 -122");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-  // skipping front window
-  Out=ModelSupport::getComposite(SMap,tankIndex,"-171 181 121 -122");
+  addCell("Void",cellIndex-1);
+
+  // Steel layer
+  Out=ModelSupport::getComposite(SMap,tankIndex,"1 -12 -17 -118 (2:7)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  addCell("Steel",cellIndex-1);
 
-  // second Cylinder:
-  Out=ModelSupport::getComposite(SMap,tankIndex,"-182 122 -123");
+  // Nose cone
+  Out=ModelSupport::getComposite(SMap,tankIndex,"101 -1 -108");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  addCell("Void",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,tankIndex,"-172 171 112 -123 (-122:182)");
+  // Nose Steel
+  Out=ModelSupport::getComposite(SMap,tankIndex,"101 -1 -118 108");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
-
-  // third Cylinder:
-  Out=ModelSupport::getComposite(SMap,tankIndex,"-183 123 -11");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-
-  Out=ModelSupport::getComposite(SMap,tankIndex,"-173 172 113 -11 (-123:183)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
-
-  // Main bulk tank:
-  Out=ModelSupport::getComposite(SMap,tankIndex,"1 -2 3 -4 5 -6 "
-				 "((-11 173):12:-13:14:-15:16)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
-  
+  addCell("Steel",cellIndex-1);
 
   // window
-  //   support:
-  Out=ModelSupport::getComposite(SMap,tankIndex,"-171 17 111 -121");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
-  //  Silicon window
-  Out=ModelSupport::getComposite(SMap,tankIndex,"-17 101 -121");
+  Out=ModelSupport::getComposite(SMap,tankIndex,"102 -101 -118");
   System.addCell(MonteCarlo::Qhull(cellIndex++,windowMat,0.0,Out));
-  //  void
-  Out=ModelSupport::getComposite(SMap,tankIndex,"-17 111 -101 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  addCell("Window",cellIndex-1);
+
+  Out=ModelSupport::getComposite(SMap,tankIndex,"102 -118 -12 -17");
+  addOuterSurf(Out);
   
   return;
 }
@@ -277,47 +231,31 @@ VacTank::createLinks()
     Creates a full attachment set
   */
 {
-  // // set Links:
-  // FixedComp::setConnect(0,BVec[0]+Y*(vacPosGap+alPos+terPos+
-  // 				     outPos+clearNeg),Y);
-  // FixedComp::setConnect(1,BVec[1]-Y*(vacNegGap+alPos+terNeg+
-  // 				     outNeg+clearNeg),-Y);
-  // FixedComp::setConnect(2,BVec[2]-
-  // 			X*(vacSide+alSide+terSide+outSide+clearSide),-X);
-  // FixedComp::setConnect(3,BVec[3]+
-  // 			X*(vacSide+alSide+terSide+outSide+clearSide),X);
-  // FixedComp::setConnect(4,BVec[4]-
-  // 			Z*(vacBase+alBase+terBase+outBase+clearBase),-Z);
-  // FixedComp::setConnect(5,BVec[5]+
-  // 			Z*(vacTop+alTop+terTop+outTop+clearTop),Z);
-
-  // // Set Connect surfaces:
-  // for(int i=2;i<6;i++)
-  //   FixedComp::setLinkSurf(i,SMap.realSurf(vacIndex+41+i));
-
-  // // For Cylindrical surface must also have a divider:
-  // // -- Groove:
-  // FixedComp::setLinkSurf(0,SMap.realSurf(vacIndex+41));
-  // FixedComp::addLinkSurf(0,SMap.realSurf(divideSurf));
-
-  // FixedComp::setLinkSurf(1,SMap.realSurf(vacIndex+42));
-  // FixedComp::addLinkSurf(1,-SMap.realSurf(divideSurf));
+  ELog::RegMethod RegA("VacTank","createLinks");
+  
+  FixedComp::setConnect(0,Origin-Y*windowThick,-Y);
+  FixedComp::setLinkSurf(0,-SMap.realSurf(tankIndex+101));
+  FixedComp::setConnect(1,Origin+Y*(length+windowInsetLen),Y);
+  FixedComp::setLinkSurf(1,SMap.realSurf(tankIndex+2));
 
   return;
 }
 
 void
-VacTank::createAll(Simulation& System,const attachSystem::TwinComp& FC)
+VacTank::createAll(Simulation& System,
+		   const attachSystem::FixedComp& FC,
+		   const long int sideIndex)
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to
     \param FC :: Fixed Component to place object within
+    \param sideIndex :: Link point
   */
 {
   ELog::RegMethod RegA("VacTank","createAll");
-  populate(System);
+  populate(System.getDataBase());
 
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

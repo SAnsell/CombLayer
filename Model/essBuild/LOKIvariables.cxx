@@ -810,6 +810,28 @@ LOKIvariables(FuncDataBase& Control)
   Control.addVariable("lokiCaveGuide0Length",200.0);   
   Control.addVariable("lokiCaveGuide0ZAngle",0.0);
 
+  // Vacumm tank
+  Control.addVariable("lokiVTankXStep",0.0);       
+  Control.addVariable("lokiVTankYStep",25.0);
+  Control.addVariable("lokiVTankZStep",0.0);       
+  Control.addVariable("lokiVTankXYAngle",0.0);       
+  Control.addVariable("lokiVTankZAngle",0.0);
+  
+  Control.addVariable("lokiVTankRadius",144.0);
+  Control.addVariable("lokiVTankLength",1048.0);
+  Control.addVariable("lokiVTankSideThick",5.0);   // NOT CORRECT
+  Control.addVariable("lokiVTankBackThick",5.0);   // NOT CORRECT
+  Control.addVariable("lokiVTankFrontThick",1.0);  // NOT CORRECT
+
+  Control.addVariable("lokiVTankWindowInsetLen",106.0);  // NOT CORRECT
+  Control.addVariable("lokiVTankWindowThick",1.0);  // NOT CORRECT
+  Control.addVariable("lokiVTankWindowRadius",8.0);  // NOT CORRECT
+
+  Control.addVariable("lokiVTankWindowMat","SiCrystal");  // NOT CORRECT
+  Control.addVariable("lokiVTankWallMat","Stainless304");
+  
+  
+
   
   return;
 }

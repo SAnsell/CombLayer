@@ -85,6 +85,7 @@
 #include "PinHole.h"
 #include "RentrantBS.h"
 #include "LokiHut.h"
+#include "VacTank.h"
 #include "LOKI.h"
 
 namespace essSystem
@@ -120,7 +121,8 @@ LOKI::LOKI() :
   GuideCollB(new beamlineSystem::GuideLine("lokiGuideCB")),
   GuideCollC(new beamlineSystem::GuideLine("lokiGuideCC")),
   Cave(new LokiHut("lokiCave")),
-  CaveGuide(new beamlineSystem::GuideLine("lokiCaveGuide"))
+  CaveGuide(new beamlineSystem::GuideLine("lokiCaveGuide")),
+  VTank(new VacTank("lokiVTank"))
   /*!
     Constructor
  */
@@ -166,6 +168,7 @@ LOKI::LOKI() :
 
   OR.addObject(Cave);
   OR.addObject(CaveGuide);
+  OR.addObject(VTank);
 }
 
 
@@ -358,11 +361,16 @@ LOKI::build(Simulation& System,
   GridD->addInsertCell(Cave->getCell("Void"));
   GridD->createAll(System,CollC->getKey("Beam"),2);
 
-      // Final definin apperature
+      // Final definive apperature
   CaveGuide->addInsertCell(Cave->getCell("Void"));
   CaveGuide->createAll(System,GridD->getKey("Beam"),2,
 		       GridD->getKey("Beam"),2);
   
+  // Vacuum tank
+  VTank->addInsertCell(Cave->getCell("Void"));
+  VTank->createAll(System,CaveGuide->getKey("Guide0"),2);
+
+
   return;
 }
 

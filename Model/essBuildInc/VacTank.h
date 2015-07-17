@@ -56,7 +56,7 @@ class VacTank : public attachSystem::ContainedComp,
   double windowInsetLen;        ///< Length fof insert window
 
   int wallMat;                  ///< Material for walls
-  int windowMat;                  ///< Material for walls
+  int windowMat;                ///< Material for window
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
@@ -73,7 +73,8 @@ class VacTank : public attachSystem::ContainedComp,
   VacTank& operator=(const VacTank&);
   ~VacTank();
 
-  void createAll(Simulation&,const attachSystem::TwinComp&);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
 
 };
 
