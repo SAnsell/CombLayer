@@ -88,7 +88,7 @@ namespace essSystem
 {
 
 ODIN::ODIN() :
-  odinAxis(new attachSystem::FixedComp("odinAxis",2)),
+  odinAxis(new attachSystem::FixedComp("odinAxis",4)),
   BladeChopper(new constructSystem::DiskChopper("odinBlade")),
   GuideA(new beamlineSystem::GuideLine("odinGA")),
   T0Chopper(new constructSystem::DiskChopper("odinTZero")),
@@ -169,11 +169,13 @@ ODIN::~ODIN()
 {}
 
 void
-ODIN::setBeamAxis(const attachSystem::FixedGroup& GItem)
+ODIN::setBeamAxis(const attachSystem::FixedGroup& GItem,
+		  const bool reverseZ)
   /*!
     Set the primary direction object
-    \param Primary beam object
-   */
+    \param GItem :: Primary beam object
+    \param reverseZ :: Reverse Z direction
+  */
 {
   ELog::RegMethod RegA("ODIN","setBeamAxis");
 
@@ -181,9 +183,11 @@ ODIN::setBeamAxis(const attachSystem::FixedGroup& GItem)
   odinAxis->setLinkCopy(0,GItem.getKey("Main"),0);
   odinAxis->setLinkCopy(1,GItem.getKey("Main"),1);
 
-  ELog::EM<<"ODIN A = "<<odinAxis->getSignedLinkPt(1)<<" : "
-	  <<odinAxis->getSignedLinkPt(1)<<ELog::endDiag;
+  odinAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
+  odinAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
 
+  if (reverseZ)
+    odinAxis->reverseZ();
   return;
 }
 
@@ -200,12 +204,15 @@ ODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
 {
   // For output stream
   ELog::RegMethod RegA("ODIN","build");
+
   ELog::EM<<"Building ODIN on : "<<GItem.getKeyName()<<ELog::endDiag;
-  setBeamAxis(GItem);
+  ELog::EM<<"REVERSE Z on axis"<<ELog::endDiag;
+  setBeamAxis(GItem,1);
   
   BladeChopper->addInsertCell(bunkerObj.getCell("MainVoid"));
   BladeChopper->setCentreFlag(3);  // Z direction
-  BladeChopper->createAll(System,GItem.getKey("Beam"),2);
+  // beam direction from GIetm
+  BladeChopper->createAll(System,*odinAxis,4);
 
   GuideA->addInsertCell(bunkerObj.getCell("MainVoid"));
   GuideA->createAll(System,BladeChopper->getKey("Beam"),2,

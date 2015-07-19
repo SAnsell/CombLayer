@@ -36,6 +36,7 @@ namespace constructSystem
   class ChopperPit;
   class RotaryCollimator;
   class VacuumBox;
+  class ChopperHousing;
 }
 
 namespace essSystem
@@ -67,10 +68,14 @@ class LOKI
   std::shared_ptr<beamlineSystem::GuideLine> GuideA;
   /// Double disk chopper
   std::shared_ptr<constructSystem::DiskChopper> DDisk;
+  /// Double disk chopper Housing
+  std::shared_ptr<constructSystem::ChopperHousing> DDiskHouse;
   /// Straight section between choppers
   std::shared_ptr<beamlineSystem::GuideLine> GuideInner;
   /// Single disk chopper
   std::shared_ptr<constructSystem::DiskChopper> SDisk;
+  /// Single disk chopper Housing
+  std::shared_ptr<constructSystem::ChopperHousing> SDiskHouse;
   /// Guide leaving single chopper 
   std::shared_ptr<beamlineSystem::GuideLine> GuideB;
   /// Bender in opposite direciton
@@ -81,16 +86,22 @@ class LOKI
   std::shared_ptr<constructSystem::VacuumBox> VacBoxB;
   /// Single disk chopper at 10m
   std::shared_ptr<constructSystem::DiskChopper> SingleDisk;
+  /// 10m disk chopper Housing
+  std::shared_ptr<constructSystem::ChopperHousing> SingleDiskHouse;
   /// Guide after 10m to 12m chopper pit
   std::shared_ptr<beamlineSystem::GuideLine> GuideD;
   /// Vac box for second single box
   std::shared_ptr<constructSystem::VacuumBox> VacBoxC;
   /// Double disk chopper
   std::shared_ptr<constructSystem::DiskChopper> D12mDisk;
-    /// Guide between single and double choppers
+  /// Double disk 12m chopper Housing
+  std::shared_ptr<constructSystem::ChopperHousing> D12mDiskHouse;
+  /// Guide between single and double choppers
   std::shared_ptr<beamlineSystem::GuideLine> Guide12mInter;
   /// Single disk chopper
   std::shared_ptr<constructSystem::DiskChopper> S12mDisk;
+  /// Single disk 12m chopper Housing
+  std::shared_ptr<constructSystem::ChopperHousing> S12mDiskHouse;
   /// Guide leaving chopper pit 3 to collimator section
   std::shared_ptr<beamlineSystem::GuideLine> GuideE;
 
@@ -123,7 +134,7 @@ class LOKI
   /// Vacuum tank
   std::shared_ptr<VacTank> VTank;
   
-  void setBeamAxis(const GuideItem&);
+  void setBeamAxis(const GuideItem&,const bool);
   
  public:
   

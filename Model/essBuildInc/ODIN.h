@@ -122,7 +122,7 @@ class ODIN
   // BeamStop
   std::shared_ptr<RentrantBS> BeamStop;
 
-  void setBeamAxis(const attachSystem::FixedGroup&);
+  void setBeamAxis(const attachSystem::FixedGroup&,const bool);
   
  public:
   

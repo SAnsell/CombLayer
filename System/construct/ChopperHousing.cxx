@@ -77,7 +77,7 @@ namespace constructSystem
 {
 
 ChopperHousing::ChopperHousing(const std::string& Key) : 
-  attachSystem::FixedComp(Key,6),
+  attachSystem::FixedOffset(Key,6),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   houseIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(houseIndex+1)
@@ -101,7 +101,8 @@ ChopperHousing::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("ChopperHousing","populate");
-  
+
+  FixedOffset::populate(Control);
   // Void + Fe special:
   voidHeight=Control.EvalVar<double>(keyName+"VoidHeight");
   voidWidth=Control.EvalVar<double>(keyName+"VoidWidth");
@@ -127,7 +128,7 @@ ChopperHousing::createUnitVector(const attachSystem::FixedComp& FC,
 
 
   FixedComp::createUnitVector(FC,sideIndex);
-
+  applyOffset();
   return;
 }
 
@@ -239,13 +240,6 @@ ChopperHousing::createAll(Simulation& System,
   
   createLinks();
   insertObjects(System);   
-  // Special to cut into the Vacuum Box:
-  const attachSystem::ContainedComp* CC=
-    dynamic_cast<const attachSystem::ContainedComp*>(&FC);
-  
-  
-  if (CC)
-    insertComponent(System,"Void",*CC);
 
   return;
 }

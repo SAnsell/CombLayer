@@ -76,6 +76,7 @@
 #include "GuideLine.h"
 #include "DiskChopper.h"
 #include "VacuumBox.h"
+#include "ChopperHousing.h"
 #include "Bunker.h"
 #include "BunkerInsert.h"
 #include "ChopperPit.h"
@@ -86,29 +87,35 @@
 #include "RentrantBS.h"
 #include "LokiHut.h"
 #include "VacTank.h"
+
 #include "LOKI.h"
 
 namespace essSystem
 {
 
 LOKI::LOKI() :
-  lokiAxis(new attachSystem::FixedComp("lokiAxis",2)),
+  lokiAxis(new attachSystem::FixedComp("lokiAxis",4)),
   BendA(new beamlineSystem::GuideLine("lokiBA")),
   VacBoxA(new constructSystem::VacuumBox("lokiVacA")),
   GuideA(new beamlineSystem::GuideLine("lokiGA")),
   DDisk(new constructSystem::DiskChopper("lokiDBlade")),
+  DDiskHouse(new constructSystem::ChopperHousing("lokiDBladeHouse")),
   GuideInner(new beamlineSystem::GuideLine("lokiGInner")),
   SDisk(new constructSystem::DiskChopper("lokiSBlade")),
+  SDiskHouse(new constructSystem::ChopperHousing("lokiSBladeHouse")),
   GuideB(new beamlineSystem::GuideLine("lokiGB")),
   BendB(new beamlineSystem::GuideLine("lokiBB")),
   GuideC(new beamlineSystem::GuideLine("lokiGC")),
   VacBoxB(new constructSystem::VacuumBox("lokiVacB")),
   SingleDisk(new constructSystem::DiskChopper("loki10mBlade")),
+  SingleDiskHouse(new constructSystem::ChopperHousing("loki10mBladeHouse")),
   GuideD(new beamlineSystem::GuideLine("lokiGD")),
   VacBoxC(new constructSystem::VacuumBox("lokiVacC")),
   D12mDisk(new constructSystem::DiskChopper("lokiDDisk")),
+  D12mDiskHouse(new constructSystem::ChopperHousing("lokiDDiskHouse")),
   Guide12mInter(new beamlineSystem::GuideLine("lokiG12mI")),
   S12mDisk(new constructSystem::DiskChopper("lokiSDisk")),
+  S12mDiskHouse(new constructSystem::ChopperHousing("lokiSDiskHouse")),
   GuideE(new beamlineSystem::GuideLine("lokiGE")),
   GridA(new constructSystem::RotaryCollimator("lokiGridA")),
   CollA(new constructSystem::RotaryCollimator("lokiCollA")),
@@ -140,18 +147,23 @@ LOKI::LOKI() :
   OR.addObject(VacBoxA);
   OR.addObject(GuideA);
   OR.addObject(DDisk);
+  OR.addObject(DDiskHouse);
   OR.addObject(GuideInner);
   OR.addObject(SDisk);
+  OR.addObject(SDiskHouse);
   OR.addObject(GuideB);
   OR.addObject(BendB);
   OR.addObject(GuideC);
   OR.addObject(VacBoxB);
   OR.addObject(SingleDisk);
+  OR.addObject(SingleDiskHouse);
   OR.addObject(GuideD);
   OR.addObject(VacBoxC);
   OR.addObject(D12mDisk);
+  OR.addObject(D12mDiskHouse);
   OR.addObject(Guide12mInter);
   OR.addObject(S12mDisk);
+  OR.addObject(S12mDiskHouse);
   OR.addObject(GuideE);
 
   OR.addObject(GridA);
@@ -180,9 +192,11 @@ LOKI::~LOKI()
 {}
 
 void
-LOKI::setBeamAxis(const GuideItem& GItem)
+LOKI::setBeamAxis(const GuideItem& GItem,
+		  const bool reverseZ)
   /*!
     Set the primary direction object
+    \param GItem :: Guide Item to 
    */
 {
   ELog::RegMethod RegA("LOKI","setBeamAxis");
@@ -190,7 +204,11 @@ LOKI::setBeamAxis(const GuideItem& GItem)
   lokiAxis->createUnitVector(GItem);
   lokiAxis->setLinkCopy(0,GItem.getKey("Main"),0);
   lokiAxis->setLinkCopy(1,GItem.getKey("Main"),1);
+  lokiAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
+  lokiAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
 
+  if (reverseZ)
+    lokiAxis->reverseZ();
   return;
 }
   
@@ -211,13 +229,17 @@ LOKI::build(Simulation& System,
   ELog::RegMethod RegA("LOKI","build");
   ELog::EM<<"Building LOKI on : "<<GItem.getKeyName()<<ELog::endDiag;
 
-  setBeamAxis(GItem);
+  setBeamAxis(GItem,1);
   
   BendA->addInsertCell(GItem.getCells("Void"));
   BendA->addInsertCell(bunkerObj.getCell("MainVoid"));
   //  BendA->addEndCut(GItem.getKey("Beam").getSignedLinkString(-2));
   BendA->createAll(System,GItem.getKey("Beam"),-1,
 		   GItem.getKey("Beam"),-1);
+
+  ELog::EM<<"LOW MODERATOR REVERSE"<<ELog::endDiag;
+  BendA->getKey("Guide0").reverseZ();
+  
   // First straight section
   VacBoxA->addInsertCell(bunkerObj.getCell("MainVoid"));
   VacBoxA->createAll(System,BendA->getKey("Guide0"),2);
@@ -232,6 +254,13 @@ LOKI::build(Simulation& System,
   DDisk->setCentreFlag(3);  // Z direction
   DDisk->createAll(System,GuideA->getKey("Guide0"),2);
 
+  // Double disk chopper housing
+  DDiskHouse->addInsertCell(VacBoxA->getCells("Void"));
+  DDiskHouse->addInsertCell(VacBoxA->getCells("Box"));  // soon to become lid
+  DDiskHouse->addInsertCell(bunkerObj.getCell("MainVoid"));
+  DDiskHouse->createAll(System,DDisk->getKey("Main"),0);
+  DDiskHouse->insertComponent(System,"Void",*DDisk);
+
   // First straight section
   GuideInner->addInsertCell(VacBoxA->getCells("Void"));
   GuideInner->createAll(System,DDisk->getKey("Beam"),2,
@@ -242,6 +271,13 @@ LOKI::build(Simulation& System,
   SDisk->setCentreFlag(3);  // Z direction
   SDisk->createAll(System,GuideInner->getKey("Guide0"),2);
 
+
+  // Single disk chopper housing
+  SDiskHouse->addInsertCell(VacBoxA->getCells("Void"));
+  SDiskHouse->addInsertCell(VacBoxA->getCells("Box"));  // soon to become lid
+  SDiskHouse->addInsertCell(bunkerObj.getCell("MainVoid"));
+  SDiskHouse->createAll(System,SDisk->getKey("Main"),0);
+  SDiskHouse->insertComponent(System,"Void",*SDisk);
 
   GuideB->addInsertCell(bunkerObj.getCell("MainVoid"));
   GuideB->addInsertCell(VacBoxA->getCells("Void"));
@@ -273,6 +309,13 @@ LOKI::build(Simulation& System,
   SingleDisk->setCentreFlag(3);  // Z direction
   SingleDisk->createAll(System,GuideC->getKey("Guide0"),2);
 
+    // Single disk chopper housing
+  SingleDiskHouse->addInsertCell(VacBoxB->getCells("Void"));
+  SingleDiskHouse->addInsertCell(VacBoxB->getCells("Box"));  
+  SingleDiskHouse->addInsertCell(bunkerObj.getCell("MainVoid"));
+  SingleDiskHouse->createAll(System,SingleDisk->getKey("Main"),0);
+  SingleDiskHouse->insertComponent(System,"Void",*SingleDisk);
+
   // Straight section after single 10m chopper
   GuideD->addInsertCell(bunkerObj.getCell("MainVoid"));
   GuideD->addInsertCell(VacBoxB->getCells("Void"));
@@ -290,6 +333,13 @@ LOKI::build(Simulation& System,
   D12mDisk->setCentreFlag(3);  // Z direction
   D12mDisk->createAll(System,GuideD->getKey("Guide0"),2);
 
+  // D12m disk chopper housing
+  D12mDiskHouse->addInsertCell(VacBoxC->getCells("Void"));
+  D12mDiskHouse->addInsertCell(VacBoxC->getCells("Box"));  
+  D12mDiskHouse->addInsertCell(bunkerObj.getCell("MainVoid"));
+  D12mDiskHouse->createAll(System,D12mDisk->getKey("Main"),0);
+  D12mDiskHouse->insertComponent(System,"Void",*D12mDisk);
+
     // Straight section after single 10m chopper
   Guide12mInter->addInsertCell(VacBoxC->getCells("Void"));
   Guide12mInter->createAll(System,D12mDisk->getKey("Beam"),2,
@@ -299,6 +349,13 @@ LOKI::build(Simulation& System,
   S12mDisk->addInsertCell(VacBoxC->getCells("Void"));
   S12mDisk->setCentreFlag(3);  // Z direction
   S12mDisk->createAll(System,Guide12mInter->getKey("Guide0"),2);
+
+  // S12m disk chopper housing
+  S12mDiskHouse->addInsertCell(VacBoxC->getCells("Void"));
+  S12mDiskHouse->addInsertCell(VacBoxC->getCells("Box"));  
+  S12mDiskHouse->addInsertCell(bunkerObj.getCell("MainVoid"));
+  S12mDiskHouse->createAll(System,S12mDisk->getKey("Main"),0);
+  S12mDiskHouse->insertComponent(System,"Void",*S12mDisk);
 
   // Straight section leaving chopper pit 3.
   GuideE->addInsertCell(VacBoxC->getCells("Void"));

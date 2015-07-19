@@ -337,6 +337,18 @@ FixedComp::applyFullRotate(const double xyAngle,
 }
 
 void
+FixedComp::reverseZ()
+  /*!
+    Flip the Z axis keeping Y Fixed
+    (could generalize but ...)
+  */
+{
+  Z=-Z;
+  X= -X;
+  return;
+}
+
+void
 FixedComp::setNConnect(const size_t N) 
   /*!
     Create/Remove new links point

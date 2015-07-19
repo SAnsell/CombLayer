@@ -205,18 +205,19 @@ DiskChopper::createUnitVector(const attachSystem::FixedComp& FC,
 
   beamOrigin=beamFC.getCentre();
   beamAxis=beamFC.getY();
-  setDefault("Main");
 
   if (centreFlag && centreFlag<4 && centreFlag>-4)
     {
-      const Geometry::Vec3D A[]={X,Y,Z};
+      double XYZ[3]={0,0,0};
       const size_t index=static_cast<size_t>(std::abs(centreFlag)-1);
-      if (centreFlag>0)
-	Origin-=A[index]*((outerRadius+innerRadius)/2.0);
+      if (centreFlag<0)
+	XYZ[index]=-((outerRadius+innerRadius)/2.0);
       else
-	Origin+=A[index]*((outerRadius+innerRadius)/2.0);
+	XYZ[index]=((outerRadius+innerRadius)/2.0);
+
+      mainFC.applyShift(XYZ[0],XYZ[1],XYZ[2]);
     }
-  
+  setDefault("Main");  
   return;
 }
 

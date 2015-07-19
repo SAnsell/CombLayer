@@ -168,6 +168,14 @@ LOKIvariables(FuncDataBase& Control)
   Control.addVariable("lokiDBlade1PhaseAngle1",275.0);
   Control.addVariable("lokiDBlade1OpenAngle1",30.0);
 
+  // Double Blade chopper
+  Control.addVariable("lokiDBladeHouseVoidHeight",40.0);
+  Control.addVariable("lokiDBladeHouseVoidDepth",12.0);
+  Control.addVariable("lokiDBladeHouseVoidThick",8.0);
+  Control.addVariable("lokiDBladeHouseVoidWidth",60.0);
+  Control.addVariable("lokiDBladeHouseWallThick",1.0);
+  Control.addVariable("lokiDBladeHouseWallMat","Stainless304");
+
   // GUIDE BETWEEN BENDERS
   Control.addVariable("lokiGInnerXStep",0.0);       
   Control.addVariable("lokiGInnerYStep",1.0);       
@@ -217,6 +225,15 @@ LOKIvariables(FuncDataBase& Control)
   Control.addVariable("lokiSBlade0PhaseAngle1",275.0);
   Control.addVariable("lokiSBlade0OpenAngle1",30.0);
 
+  // Double Blade chopper
+  Control.addVariable("lokiSBladeHouseVoidHeight",40.0);
+  Control.addVariable("lokiSBladeHouseVoidDepth",12.0);
+  Control.addVariable("lokiSBladeHouseVoidThick",8.0);
+  Control.addVariable("lokiSBladeHouseVoidWidth",60.0);
+  Control.addVariable("lokiSBladeHouseWallThick",1.0);
+  Control.addVariable("lokiSBladeHouseWallMat","Stainless304");
+
+  
   // GUIDE EXITING Single Chopper [Straight A]
   Control.addVariable("lokiGBXStep",0.0);       
   Control.addVariable("lokiGBYStep",1.0);
@@ -269,7 +286,7 @@ LOKIvariables(FuncDataBase& Control)
   Control.addVariable("lokiBB0AWidth",3.0);
   Control.addVariable("lokiBB0BWidth",3.0);
   Control.addVariable("lokiBB0Length",220.0);
-  Control.addVariable("lokiBB0AngDir",0.0);
+  Control.addVariable("lokiBB0AngDir",180.0);
   Control.addVariable("lokiBB0Radius",3680.0);
 
   // VACUUM For single chopper at 10m
@@ -339,6 +356,13 @@ LOKIvariables(FuncDataBase& Control)
   Control.addVariable("loki10mBlade0PhaseAngle1",275.0);
   Control.addVariable("loki10mBlade0OpenAngle1",30.0);
 
+  // 10m Blade chopper housing
+  Control.addVariable("loki10mBladeHouseVoidHeight",40.0);
+  Control.addVariable("loki10mBladeHouseVoidDepth",12.0);
+  Control.addVariable("loki10mBladeHouseVoidThick",8.0);
+  Control.addVariable("loki10mBladeHouseVoidWidth",60.0);
+  Control.addVariable("loki10mBladeHouseWallThick",1.0);
+  Control.addVariable("loki10mBladeHouseWallMat","Stainless304");
 
   // STRAIGHT SECTION TO Chopper 10m
   Control.addVariable("lokiGDXStep",0.0);       
@@ -411,7 +435,15 @@ LOKIvariables(FuncDataBase& Control)
   Control.addVariable("lokiDDisk0OpenAngle1",30.0);
   Control.addVariable("lokiDDisk1PhaseAngle1",275.0);
   Control.addVariable("lokiDDisk1OpenAngle1",30.0);
-
+  
+    // 12m double Blade chopper housing
+  Control.addVariable("lokiDDiskHouseYStep",3.0);
+  Control.addVariable("lokiDDiskHouseVoidHeight",40.0);
+  Control.addVariable("lokiDDiskHouseVoidDepth",12.0);
+  Control.addVariable("lokiDDiskHouseVoidThick",8.0);
+  Control.addVariable("lokiDDiskHouseVoidWidth",60.0);
+  Control.addVariable("lokiDDiskHouseWallThick",1.0);
+  Control.addVariable("lokiDDiskHouseWallMat","Stainless304");
 
   // STRAIGHT SECTION TO Chopper 10m
   Control.addVariable("lokiG12mIXStep",0.0);       
@@ -460,6 +492,15 @@ LOKIvariables(FuncDataBase& Control)
   Control.addVariable("lokiSDisk0PhaseAngle1",275.0);
   Control.addVariable("lokiSDisk0OpenAngle1",30.0);
 
+  // 12m single Blade chopper housing
+  Control.addVariable("lokiSDiskHouseVoidHeight",40.0);
+  Control.addVariable("lokiSDiskHouseVoidDepth",12.0);
+  Control.addVariable("lokiSDiskHouseVoidThick",8.0);
+  Control.addVariable("lokiSDiskHouseVoidWidth",60.0);
+  Control.addVariable("lokiSDiskHouseWallThick",1.0);
+  Control.addVariable("lokiSDiskHouseWallMat","Stainless304");
+
+  
   // STRAIGHT SECTION from chopper pit 3 to collimator
   Control.addVariable("lokiGEXStep",0.0);       
   Control.addVariable("lokiGEYStep",2.0);       

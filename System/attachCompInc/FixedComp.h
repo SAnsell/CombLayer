@@ -74,7 +74,8 @@ class FixedComp
   void applyAngleRotate(const double,const double,const double);
   void applyFullRotate(const double,const double,
 		       const Geometry::Vec3D&);
-
+  void reverseZ();
+  
   void setConnect(const size_t,const Geometry::Vec3D&,const Geometry::Vec3D&);
   void setBasicExtent(const double,const double,const double);
 

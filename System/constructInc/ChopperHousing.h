@@ -39,7 +39,7 @@ namespace constructSystem
 */
 
 class ChopperHousing :
-  public attachSystem::FixedComp,
+  public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap
 {
