@@ -74,6 +74,7 @@
 
 #include "ODIN.h"
 #include "LOKI.h"
+#include "NMX.h"
 #include "beamlineConstructor.h"
 #include "makeESSBL.h"
 
@@ -156,6 +157,12 @@ makeESSBL::build(Simulation& System,const Bunker& bunkerObj)
       // LOKI beamline
       LOKI LokiBL;
       LokiBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+    }
+  else if (beamName=="NMX")
+    {
+      // LOKI beamline
+      NMX nmxBL;
+      nmxBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="JSANS" || beamName=="JRef")
     {

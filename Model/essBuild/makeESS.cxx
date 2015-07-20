@@ -98,6 +98,7 @@
 // BEAMLINES:
 #include "ODIN.h"
 #include "LOKI.h"
+#include "NMX.h"
 
 #include "makeESS.h"
 
