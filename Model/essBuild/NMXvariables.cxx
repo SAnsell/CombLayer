@@ -92,6 +92,36 @@ NMXvariables(FuncDataBase& Control)
   Control.addVariable("nmxGA0WidthEnd",3.0);
   Control.addVariable("nmxGA0Length",400.0);
   Control.addVariable("nmxGA0ZAngle",0.0);
+
+
+  Control.addVariable("nmxBAXStep",0.0);       
+  Control.addVariable("nmxBAYStep",0.0);       
+  Control.addVariable("nmxBAZStep",0.0);       
+  Control.addVariable("nmxBAXYAngle",0.0);
+  Control.addVariable("nmxBAZAngle",0.0);
+  Control.addVariable("nmxBABeamXYAngle",0.0);       
+
+  Control.addVariable("nmxBALength",2550.0);       
+  Control.addVariable("nmxBANShapes",1);       
+  Control.addVariable("nmxBANShapeLayers",3);
+  Control.addVariable("nmxBAActiveShield",0);
+
+  Control.addVariable("nmxBALayerThick1",0.4);  // glass thick
+  Control.addVariable("nmxBALayerThick2",1.5);
+
+  Control.addVariable("nmxBALayerMat0","Void");
+  Control.addVariable("nmxBALayerMat1","Glass");
+  Control.addVariable("nmxBALayerMat2","Void");       
+
+  Control.addVariable("nmxBA0TypeID","Bend");
+  Control.addVariable("nmxBA0AHeight",4.50);
+  Control.addVariable("nmxBA0BHeight",4.50);
+  Control.addVariable("nmxBA0AWidth",3.0);
+  Control.addVariable("nmxBA0BWidth",3.0);
+  Control.addVariable("nmxBA0Length",2550.0);
+  Control.addVariable("nmxBA0AngDir",180.0);
+  Control.addVariable("nmxBA0Radius",120000.0);
+
   
   return;
 }

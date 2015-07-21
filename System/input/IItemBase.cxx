@@ -249,13 +249,12 @@ IItem::setObj(const size_t setIndex,const size_t itemIndex,
 
   if (setIndex>=maxSets || setIndex>SS+1)
     throw ColErr::IndexError<size_t>(setIndex,DItems.size(),Key+"::setIndex");
-
   if (setIndex==SS)
     DItems.push_back(std::vector<std::string>());
 
   const size_t IS(DItems[setIndex].size());
-  
-  if (itemIndex>=maxItems || setIndex>IS+1)
+
+  if (itemIndex>=maxItems || itemIndex>IS+1)
       throw ColErr::IndexError<size_t>(itemIndex,DItems[setIndex].size(),
 				     Key+"::itemIndex");
   if (itemIndex==IS)

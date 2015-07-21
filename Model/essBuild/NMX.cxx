@@ -88,7 +88,8 @@ namespace essSystem
 
 NMX::NMX() :
   nmxAxis(new attachSystem::FixedComp("nmxAxis",4)),
-  GuideA(new beamlineSystem::GuideLine("nmxBA"))
+  GuideA(new beamlineSystem::GuideLine("nmxGA")),
+  BendA(new beamlineSystem::GuideLine("nmxBA"))
   /*!
     Constructor
  */
@@ -161,6 +162,13 @@ NMX::build(Simulation& System,
   ELog::EM<<"LOW MODERATOR REVERSE"<<ELog::endDiag;
   GuideA->getKey("Guide0").reverseZ();
 
+
+  BendA->addInsertCell(bunkerObj.getCells("MainVoid"));
+  BendA->createAll(System,GuideA->getKey("Guide0"),2,
+		   GuideA->getKey("Guide0"),2);
+  
+
+  
   return;
 }
 

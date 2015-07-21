@@ -60,8 +60,10 @@ class NMX
   /// Main Beam Axis [for construction]
   std::shared_ptr<attachSystem::FixedComp> nmxAxis;
 
-  /// Bender in insert bay
+  /// tapper in insert bay
   std::shared_ptr<beamlineSystem::GuideLine> GuideA;
+  /// Bender in insert bay
+  std::shared_ptr<beamlineSystem::GuideLine> BendA;
   
   void setBeamAxis(const GuideItem&,const bool);
   

@@ -81,6 +81,7 @@ namespace setVariable
   // ESS Beamlines
   void ODINvariables(FuncDataBase&);
   void LOKIvariables(FuncDataBase&);
+  void NMXvariables(FuncDataBase&);
   
 }
 

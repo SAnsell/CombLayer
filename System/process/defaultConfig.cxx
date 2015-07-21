@@ -164,6 +164,7 @@ defaultConfig::setMultiOption(const std::string& K,
     \param V :: Varaible value
   */
 {
+  ELog::RegMethod RegA("defaultConfig","setMultiOption");
   if (!K.empty() && !V.empty())
     multiSet.push_back(TTYPE(K,index,V));
   return;
@@ -201,10 +202,9 @@ defaultConfig::process(FuncDataBase& Control,
 
   // Multi set
   for(const TTYPE& TI : multiSet)
-    {
-      IParam.setMultiValue(std::get<0>(TI),std::get<1>(TI),
+    IParam.setMultiValue(std::get<0>(TI),std::get<1>(TI),
 		      std::get<2>(TI));
-    }
+
   return;
 }
 
