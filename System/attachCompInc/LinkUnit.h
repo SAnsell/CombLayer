@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   attachCompInc/LinkUnit.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -87,14 +87,17 @@ class LinkUnit
 
   void setLinkSurf(const int);
   void setLinkSurf(const std::string&);
+  void setLinkSurf(const HeadRule&);
   void addLinkSurf(const int);
   void addLinkSurf(const std::string&);
-
+  void addLinkSurf(const HeadRule&);
+  
   void setBridgeSurf(const int);
   void setBridgeSurf(const std::string&);
+  void setBridgeSurf(const HeadRule&);
   void addBridgeSurf(const int);
   void addBridgeSurf(const std::string&);
-
+  void addBridgeSurf(const HeadRule&);
   
 };
 

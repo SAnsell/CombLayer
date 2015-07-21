@@ -45,6 +45,11 @@ class VacuumPipe :
   const int vacIndex;           ///< Index of surface offset
   int cellIndex;                ///< Cell index  
 
+  bool activeFront;
+  bool activeBack;
+  HeadRule frontSurf;           ///< Front surfaces [if used]
+  HeadRule backSurf;            ///< Back surfaces [if used]
+  
   double radius;                ///< void height [top only]
   double length;                ///< void length [total]
 
@@ -68,6 +73,10 @@ class VacuumPipe :
   VacuumPipe& operator=(const VacuumPipe&);
   virtual ~VacuumPipe();
 
+
+  void setFront(const HeadRule&);
+  void setBack(const HeadRule&);
+  
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

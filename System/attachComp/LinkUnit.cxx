@@ -188,13 +188,29 @@ LinkUnit::setLinkSurf(const std::string& SList)
     \param SList :: String set to add
   */
 {
-  ELog::RegMethod RegA("LinkUnit","setLinkSurf");
+  ELog::RegMethod RegA("LinkUnit","setLinkSurf(string)");
   mainSurf.reset();
   linkSurf=0;
   addLinkSurf(SList);
   return;
 }
 
+void
+LinkUnit::setLinkSurf(const HeadRule& HR) 
+  /*!
+    Add a surface to the output
+    \param HR :: HEadRule to add
+  */
+{
+  ELog::RegMethod RegA("LinkUnit","setLinkSurf(HeadRule)");
+  mainSurf.reset();
+  linkSurf=0;
+  addLinkSurf(HR);
+  return;
+}
+
+
+  
 void
 LinkUnit::addLinkSurf(const int SN) 
   /*!
@@ -225,6 +241,25 @@ LinkUnit::addLinkSurf(const std::string& SList)
   return;
 }
 
+void
+LinkUnit::addLinkSurf(const HeadRule& HR) 
+  /*!
+    Add a set of surfaces to the output
+    \param HR ::  Link Rule
+  */
+{
+  ELog::RegMethod RegA("LinkUnit","addInterSurf(HeadRule)");
+  
+  if (!mainSurf.hasRule())
+    {
+      const std::string SList=HR.display();
+      StrFunc::convert(SList,linkSurf);
+    }
+  
+  mainSurf.addIntersection(HR);
+  return;
+}
+
 
 
 void
@@ -247,10 +282,21 @@ LinkUnit::setBridgeSurf(const std::string& SList)
     \param SList :: String set to add
   */
 {
-  ELog::RegMethod RegA("LinkUnit","setBridgeSurf");
+  ELog::RegMethod RegA("LinkUnit","setBridgeSurf(string)");
   bridgeSurf.reset();
-  //  linkSurf=0;
   addBridgeSurf(SList);
+  return;
+}
+
+void
+LinkUnit::setBridgeSurf(const HeadRule& HR) 
+  /*!
+    Add a surface to the output
+    \param SList :: String set to add
+  */
+{
+  ELog::RegMethod RegA("LinkUnit","setBridgeSurf(HeadRule)");
+  bridgeSurf=HR;
   return;
 }
 
@@ -276,6 +322,19 @@ LinkUnit::addBridgeSurf(const std::string& SList)
   ELog::RegMethod RegA("LinkUnit","addInterSurf(std::string)");
 
   bridgeSurf.addIntersection(SList);
+  return;
+}
+
+void
+LinkUnit::addBridgeSurf(const HeadRule& HR) 
+  /*!
+    Add a set of surfaces to the output
+    \param SList ::  Surface string [fully decomposed]
+  */
+{
+  ELog::RegMethod RegA("LinkUnit","addInterSurf(HeadRule)");
+
+  bridgeSurf.addIntersection(HR);
   return;
 }
 

@@ -431,6 +431,23 @@ FixedComp::setLinkSurf(const size_t Index,
 }
 
 void
+FixedComp::setLinkSurf(const size_t Index,
+		       const HeadRule& HR) 
+  /*!
+    Set a surface to output
+    \param Index :: Link number
+    \param HR :: HeadRule to add
+  */
+{
+  ELog::RegMethod RegA("FixedComp","setLinkSurf(HR)");
+  if (Index>=LU.size())
+    throw ColErr::IndexError<size_t>(Index,LU.size(),"LU size/Index");
+
+  LU[Index].setLinkSurf(HR);
+  return;
+}
+
+void
 FixedComp::setLinkSurf(const size_t Index,const int SN) 
   /*!
     Set  a surface to output
@@ -479,6 +496,22 @@ FixedComp::setBridgeSurf(const size_t Index,const int SN)
     throw ColErr::IndexError<size_t>(Index,LU.size(),"LU size/index");
 
   LU[Index].setBridgeSurf(SN);
+  return;
+}
+
+void
+FixedComp::setBridgeSurf(const size_t Index,const HeadRule& HR) 
+  /*!
+    Set a surface to bridge output
+    \param Index :: Link number
+    \param HR :: HeadRule for bridge
+  */
+{
+  ELog::RegMethod RegA("FixedComp","setBridgeSurf");
+  if (Index>=LU.size())
+    throw ColErr::IndexError<size_t>(Index,LU.size(),"LU size/index");
+
+  LU[Index].setBridgeSurf(HR);
   return;
 }
 
