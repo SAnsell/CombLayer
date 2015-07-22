@@ -89,7 +89,7 @@ setDefUnits(FuncDataBase& Control,
 
 
 void
-setESS(defaultConfig& A)
+setESSFull(defaultConfig& A)
   /*!
     Default configuration for ESS
     \param A :: Paramter for default config
@@ -98,6 +98,12 @@ setESS(defaultConfig& A)
   ELog::RegMethod RegA("DefUnitsESS[F]","setESS");
 
   A.setOption("lowMod","Butterfly");
+  A.setOption("topMod","Butterfly");
+  A.setOption("lowModFlowGuide","On");
+  A.setOption("topModFlowGuide","On");
+  A.setOption("lowWaterDisk","On");
+  A.setOption("topWaterDisk","On");
+  A.setOption("topWaterDisk","On");
   A.setMultiOption("beamlines",0,"G1BLine1 ODIN");
   A.setMultiOption("beamlines",1,"G1BLine3 LOKI");
   //  A.setMultiOption("beamlines",2,"G1BLine5 NMX");
