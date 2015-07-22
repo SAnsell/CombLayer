@@ -101,9 +101,24 @@ setESS(defaultConfig& A)
   A.setMultiOption("beamlines",0,"G1BLine1 ODIN");
   A.setMultiOption("beamlines",1,"G1BLine3 LOKI");
   //  A.setMultiOption("beamlines",2,"G1BLine5 NMX");
-    
+     
+  return;
+}
 
-  
+void
+setESS(defaultConfig& A)
+  /*!
+    Default configuration for ESS
+    \param A :: Paramter for default config
+   */
+{
+  ELog::RegMethod RegA("DefUnitsESS[F]","setESS");
+
+  A.setOption("lowMod","Butterfly");
+  A.setMultiOption("beamlines",0,"G1BLine1 ODIN");
+  A.setMultiOption("beamlines",1,"G1BLine3 LOKI");
+  //  A.setMultiOption("beamlines",2,"G1BLine5 NMX");
+     
   return;
 }
 
