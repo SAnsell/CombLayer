@@ -913,7 +913,7 @@ EssVariables(FuncDataBase& Control)
   EssBunkerVariables(Control);
 
 
-  Control.addVariable("sdefEnergy",2500.0);  
+  Control.addVariable("sdefEnergy",2000.0);  
 
    // STUFF FOR 90 angle:
   /*
