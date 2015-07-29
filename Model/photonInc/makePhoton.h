@@ -1,7 +1,7 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
- * File:   t1UpgradeInc/makePhoton.h
+ * File:   photonInc/makePhoton.h
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -53,6 +53,7 @@ class makePhoton
 {
  private:
 
+  std::shared_ptr<CylLayer> CatcherObj;        ///< Initial moderator
   std::shared_ptr<CylContainer> OuterObj;   ///< Surround object
   std::shared_ptr<CylLayer> PrimObj;        ///< Initial moderator
   std::shared_ptr<CylLayer> CarbonObj;      ///< Pre-Mod moderator (graphite)

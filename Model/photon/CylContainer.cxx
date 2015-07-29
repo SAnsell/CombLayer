@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   photon/CylContainer.cxx
  *
@@ -168,7 +168,8 @@ CylContainer::populate(const FuncDataBase& Control)
       const std::string kN=keyName+StrFunc::makeString(i);
       H=Control.EvalPair<double>(kN,keyName,"Height");   
       R=Control.EvalPair<double>(kN,keyName,"Radius");   
-      M=ModelSupport::EvalMat<int>(Control,kN+"Mat",keyName+"Mat");   
+      M=ModelSupport::EvalMat<int>(Control,kN+"Mat",keyName+"Mat");
+      
       T=Control.EvalDefVar<double>(keyName+"Temp",0.0);
       T=Control.EvalDefVar<double>(kN+"Temp",T);   
 
@@ -205,15 +206,15 @@ CylContainer::createSurfaces()
   ELog::RegMethod RegA("CylContainer","createSurfaces");
 
   // Divide plane
-  ModelSupport::buildPlane(SMap,cylIndex+1,Origin,X);  
-  ModelSupport::buildPlane(SMap,cylIndex+2,Origin,Y);  
+  ModelSupport::buildPlane(SMap,cylIndex+103,Origin,X);  
+  ModelSupport::buildPlane(SMap,cylIndex+105,Origin,Z);  
 
   int SI(cylIndex);
   for(size_t i=0;i<nLayers;i++)
     {
-      ModelSupport::buildCylinder(SMap,SI+7,Origin,Z,radius[i]);  
-      ModelSupport::buildPlane(SMap,SI+5,Origin-Z*height[i]/2.0,Z);  
-      ModelSupport::buildPlane(SMap,SI+6,Origin+Z*height[i]/2.0,Z);  
+      ModelSupport::buildCylinder(SMap,SI+7,Origin,Y,radius[i]);  
+      ModelSupport::buildPlane(SMap,SI+1,Origin-Y*height[i]/2.0,Y);  
+      ModelSupport::buildPlane(SMap,SI+2,Origin+Y*height[i]/2.0,Y);  
       SI+=10;
     }
 
@@ -234,11 +235,11 @@ CylContainer::createObjects(Simulation& System)
   int SI(cylIndex);
   for(size_t i=0;i<nLayers;i++)
     {
-      Out=ModelSupport::getComposite(SMap,SI," -7 5 -6 ");
+     Out=ModelSupport::getComposite(SMap,SI," -7 1 -2 ");
 
       if ((i+1)==nLayers) addOuterSurf(Out);
       if (i)
-	Out+=ModelSupport::getComposite(SMap,SI-10," (7:-5:6) ");
+	Out+=ModelSupport::getComposite(SMap,SI-10," (7:-1:2) ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],Out));
       SI+=10;
     }
@@ -256,28 +257,29 @@ CylContainer::createLinks()
   if (!nLayers) return;
   const size_t NL(nLayers-1);
   const int SI(cylIndex+static_cast<int>(NL)*10);
+
+  FixedComp::setConnect(0,Origin-Y*(height[NL]/2.0),-Y);
+  FixedComp::setLinkSurf(0,-SMap.realSurf(SI+1));
   
-  FixedComp::setConnect(0,Origin-Y*radius[NL],-Y);
-  FixedComp::setLinkSurf(0,SMap.realSurf(SI+7));
-  FixedComp::setBridgeSurf(0,-SMap.realSurf(cylIndex+2));
-  
-  FixedComp::setConnect(1,Origin+Y*radius[NL],Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(SI+7));
-  FixedComp::setBridgeSurf(1,SMap.realSurf(cylIndex+2));
+  FixedComp::setConnect(1,Origin+Y*(height[NL]/2.0),Y);
+  FixedComp::setLinkSurf(1,SMap.realSurf(SI+2));
 
   FixedComp::setConnect(2,Origin-X*radius[NL],-X);
   FixedComp::setLinkSurf(2,SMap.realSurf(SI+7));
-  FixedComp::setBridgeSurf(2,-SMap.realSurf(cylIndex+1));
+  FixedComp::setBridgeSurf(2,-SMap.realSurf(cylIndex+103));
   
   FixedComp::setConnect(3,Origin+X*radius[NL],X);
   FixedComp::setLinkSurf(3,SMap.realSurf(SI+7));
-  FixedComp::setBridgeSurf(3,SMap.realSurf(cylIndex+1));
-      
-  FixedComp::setConnect(4,Origin-Z*(height[NL]/2.0),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(SI+5));
+  FixedComp::setBridgeSurf(3,SMap.realSurf(cylIndex+103));
+
+  FixedComp::setConnect(4,Origin-Z*radius[NL],-Z);
+  FixedComp::setLinkSurf(4,SMap.realSurf(SI+7));
+  FixedComp::setBridgeSurf(4,-SMap.realSurf(cylIndex+105));
   
-  FixedComp::setConnect(5,Origin+Z*(height[NL]/2.0),Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(SI+6));
+  FixedComp::setConnect(5,Origin+Z*radius[NL],Z);
+  FixedComp::setLinkSurf(5,SMap.realSurf(SI+7));
+  FixedComp::setBridgeSurf(5,SMap.realSurf(cylIndex+105));
+      
 
   return;
 }
@@ -304,17 +306,17 @@ CylContainer::getSurfacePoint(const size_t layerIndex,
   switch(sideIndex)
     {
     case 0:
-      return Origin-Y*radius[layerIndex];
+      return Origin-Y*(height[layerIndex]/2.0);
     case 1:
-      return Origin+Y*radius[layerIndex];
+      return Origin+Y*(height[layerIndex]/2.0);
     case 2:
       return Origin-X*radius[layerIndex];
     case 3:
       return Origin+X*radius[layerIndex];
     case 4:
-      return Origin-Z*(height[layerIndex]/2.0);
+      return Origin-Z*radius[layerIndex];
     case 5:
-      return Origin+Z*(height[layerIndex]/2.0);
+      return Origin+Z*radius[layerIndex];
     }
   throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
 }
@@ -332,16 +334,16 @@ CylContainer::getCommonSurf(const size_t sideIndex) const
   switch(sideIndex)
     {
     case 0:
-      return -SMap.realSurf(cylIndex+2);
     case 1:
-      return SMap.realSurf(cylIndex+2);
-    case 2:
-      return -SMap.realSurf(cylIndex+1);
-    case 3:
-      return SMap.realSurf(cylIndex+1);
-    case 4:
-    case 5:
       return 0;
+    case 2:
+      return -SMap.realSurf(cylIndex+103);
+    case 3:
+      return SMap.realSurf(cylIndex+103);
+    case 4:
+      return -SMap.realSurf(cylIndex+105);
+    case 5:
+      return SMap.realSurf(cylIndex+105);
     }
   throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
 }
@@ -367,16 +369,16 @@ CylContainer::getLayerString(const size_t layerIndex,
   switch(sideIndex)
     {
     case 0:
+      cx<<" "<<-SMap.realSurf(SI+1)<<" ";
+      return cx.str();
     case 1:
+      cx<<" "<<SMap.realSurf(SI+2)<<" ";
+      return cx.str();
     case 2:
     case 3:
-      cx<<" "<<SMap.realSurf(SI+7)<<" ";
-      return cx.str();
     case 4:
-      cx<<" "<<-SMap.realSurf(SI+5)<<" ";
-      return cx.str();
     case 5:
-      cx<<" "<<SMap.realSurf(SI+6)<<" ";
+      cx<<" "<<SMap.realSurf(SI+7)<<" ";
       return cx.str();
     }
   throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex");
@@ -401,14 +403,14 @@ CylContainer::getLayerSurf(const size_t layerIndex,
   switch(sideIndex)
     {
     case 0:
+      return -SMap.realSurf(SI+1);
     case 1:
+      return SMap.realSurf(SI+2);
     case 2:
     case 3:
-      return SMap.realSurf(SI+7);
     case 4:
-      return -SMap.realSurf(SI+5);
     case 5:
-      return SMap.realSurf(SI+6);
+      return SMap.realSurf(SI+7);
     }
   throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
 }

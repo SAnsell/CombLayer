@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   source/GammaSource.cxx
  *
@@ -227,8 +227,9 @@ GammaSource::populate(const FuncDataBase& Control)
   yStep=Control.EvalVar<double>(keyName+"YStep"); 
   zStep=Control.EvalVar<double>(keyName+"ZStep");
   xyAngle=Control.EvalDefVar<double>(keyName+"XYangle",0.0);
-  zAngle=Control.EvalDefVar<double>(keyName+"ZStep",0.0); 
+  zAngle=Control.EvalDefVar<double>(keyName+"ZAngle",0.0); 
 
+  // default photon
   particleType=Control.EvalDefVar<int>(keyName+"ParticleType",2); 
   radius=Control.EvalVar<double>(keyName+"Radius"); 
   angleSpread=Control.EvalVar<double>(keyName+"ASpread"); 
@@ -299,6 +300,8 @@ GammaSource::createSource(SDef::Source& sourceCard) const
   sourceCard.setComp("par",particleType);            /// photon (2)
   sourceCard.setComp("pos",FocusPoint);
 
+  ELog::EM<<"Direction  "<<Direction<<ELog::endDiag;
+  ELog::EM<<"FocusPoint "<<FocusPoint<<ELog::endDiag;
   // Direction:
   
   SDef::SrcData D1(1);

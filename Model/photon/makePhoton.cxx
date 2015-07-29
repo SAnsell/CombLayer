@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   t1Upgrade/makePhoton.cxx
+ * File:   photon/makePhoton.cxx
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -76,6 +76,7 @@ namespace photonSystem
 {
 
 makePhoton::makePhoton() :
+  CatcherObj(new CylLayer("Catcher")),
   OuterObj(new CylContainer("Outer")),
   PrimObj(new CylLayer("PrimMod")),
   CarbonObj(new CylLayer("Carbon")),
@@ -87,6 +88,7 @@ makePhoton::makePhoton() :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
+  OR.addObject(CatcherObj);
   OR.addObject(OuterObj);
   OR.addObject(PrimObj);
   OR.addObject(CarbonObj);
@@ -142,18 +144,22 @@ makePhoton::build(Simulation* SimPtr,
 
   int voidCell(74123);
 
+  
   OuterObj->addInsertCell(voidCell);
   OuterObj->createAll(*SimPtr,World::masterOrigin());
-  
-  PrimObj->createAll(*SimPtr,*OuterObj,-5);
+
+  CatcherObj->addInsertCell(voidCell);
+  CatcherObj->createAll(*SimPtr,*OuterObj,-1);
+
+  PrimObj->createAll(*SimPtr,*OuterObj,-1);
   attachSystem::addToInsertLineCtrl(*SimPtr,*OuterObj,*PrimObj);
 
-  CarbonObj->createAll(*SimPtr,*PrimObj,2);
-  attachSystem::addToInsertLineCtrl(*SimPtr,*OuterObj,*CarbonObj);
+  //  CarbonObj->createAll(*SimPtr,*PrimObj,2);
+  //  attachSystem::addToInsertLineCtrl(*SimPtr,*OuterObj,*CarbonObj);
 
   ModObj->addInsertCell(voidCell);
-  ModObj->createAll(*SimPtr,*CarbonObj,2);
-  
+  ModObj->createAll(*SimPtr,*PrimObj,2);
+
   attachSystem::addToInsertLineCtrl(*SimPtr,*OuterObj,*ModObj);
   return;
 }

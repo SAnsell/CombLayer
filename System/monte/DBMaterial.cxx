@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   monte/DBMaterial.cxx
  *
@@ -404,7 +404,8 @@ DBMaterial::initMaterial()
 
   // Material #53: Lithium 
   // Total atom density 0.0219560 - 1.270 g/cc
-  MObj.setMaterial(53,"Lithium","3006.60c 0.0047136 3007.60c 0.0424228","",MLib);
+  MObj.setMaterial(53,"Lithium","3006.70c 0.0047136 "
+		   "3007.70c 0.0424228","",MLib);
   setMaterial(MObj);
 
   // Material #54 Standard Cast Iron [Grey -ASTM A48]:
@@ -426,7 +427,7 @@ DBMaterial::initMaterial()
   // Material #57: Lithium Carbonate
   // Total atom density 0.103 Atom/A3 - 2.11 g/cc
   MObj.setMaterial(57,"LithiumCarbonate",
-		   "3006.60c 1.2875e-3 3007.60c 1.5889e-2 "
+		   "3006.70c 1.2875e-3 3007.70c 1.5889e-2 "
 		   "6000.70c 1.7166e-2 8016.24c 5.15e-2","",MLib);
   setMaterial(MObj);
 
