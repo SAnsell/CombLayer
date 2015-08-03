@@ -40,6 +40,8 @@ namespace photonSystem
   class CylLayer;
   class CylContainer;
   class TubeMod;
+  class B4CCollimator;
+  class EQDetector;
   
   /*!
     \class makePhoton
@@ -58,6 +60,8 @@ class makePhoton
   std::shared_ptr<CylLayer> PrimObj;        ///< Initial moderator
   std::shared_ptr<CylLayer> CarbonObj;      ///< Pre-Mod moderator (graphite)
   std::shared_ptr<TubeMod> ModObj;          ///< Mod moderator (D2O)
+  std::shared_ptr<B4CCollimator> B4CObj;    ///< B4C collimator
+  std::shared_ptr<EQDetector> ND2;         ///< Detector
 
 
  public:

@@ -38,6 +38,8 @@ class FixedOffset  : public FixedComp
 {
  protected:
 
+  double preXYAngle;     ///< pre-shift xy Angle
+  double preZAngle;      ///< pre-shift z Angle
   double xStep;       ///< x step
   double yStep;       ///< y step
   double zStep;       ///< z step
