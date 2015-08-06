@@ -718,23 +718,23 @@ ChipVariables(FuncDataBase& Control)
   Control.addVariable("chipJawLinerThick",0.5);         // lead thickness
   Control.addVariable("chipJawLinerMat","Lead");       // lead
 
-  Control.addVariable("chipJawXStep",5.6);       // Step accross [+ve to TSA]
+  Control.addVariable("chipJawXStep",15.6);       // Step accross [+ve to TSA]
   Control.addVariable("chipJawYStep",248.0);       // Forward step 
   Control.addVariable("chipJawZStep",19.0);        // Forward step 
   Control.addVariable("chipJawXYangle",1.0);       // Rotation angle
   Control.addVariable("chipJawZangle",1.0);        // Z-
 
-  Control.addVariable("chipJawZOpen",20.0);        // Gap in middel
+  Control.addVariable("chipJawZOpen",40.0);        // Gap in middel
   Control.addVariable("chipJawZThick",50.0);       // Height away from gap
   Control.addVariable("chipJawZCross",90.0);       // Width across gap
   Control.addVariable("chipJawZLen",50.0);         // Thickness along gap
 
   Control.addVariable("chipJawGap",10.0);        // Gap in middel
   
-  Control.addVariable("chipJawXOpen",20.0);        // Gap in middel
-  Control.addVariable("chipJawXThick",50.0);       // Height away from gap
+  Control.addVariable("chipJawXOpen",40.0);        // Gap in middel
+  Control.addVariable("chipJawXThick",50.0);       // Thickness [Y]
   Control.addVariable("chipJawXCross",90.0);       // Width across gap
-  Control.addVariable("chipJawXLen",50.0);         // Thickness along gap
+  Control.addVariable("chipJawXLen",30.0);         //  along gap
 
   Control.addVariable("chipJawXHeight",228.0);
   Control.addVariable("chipJawYHeight",120.0);
