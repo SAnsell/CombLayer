@@ -89,7 +89,7 @@ BeRef::BeRef(const BeRef& A) :
   refIndex(A.refIndex),cellIndex(A.cellIndex),xStep(A.xStep),
   yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
   zAngle(A.zAngle),radius(A.radius),height(A.height),
-  wallThick(A.wallThick),lowVoidThick(A.lowVoidThick),
+  wallThick(A.wallThick),wallThickLow(A.wallThickLow),lowVoidThick(A.lowVoidThick),
   topVoidThick(A.topVoidThick),targSepThick(A.targSepThick),
   refMat(A.refMat),wallMat(A.wallMat),
   targSepMat(A.targSepMat)
@@ -121,6 +121,7 @@ BeRef::operator=(const BeRef& A)
       radius=A.radius;
       height=A.height;
       wallThick=A.wallThick;
+      wallThickLow=A.wallThickLow;
       lowVoidThick=A.lowVoidThick;
       topVoidThick=A.topVoidThick;
       targSepThick=A.targSepThick;
@@ -162,7 +163,8 @@ BeRef::populate(const FuncDataBase& Control,
   zAngle=Control.EvalVar<double>(keyName+"Zangle");
   radius=Control.EvalVar<double>(keyName+"Radius");   
   height=Control.EvalVar<double>(keyName+"Height");   
-  wallThick=Control.EvalVar<double>(keyName+"WallThick");   
+  wallThick=Control.EvalVar<double>(keyName+"WallThick");
+  wallThickLow=Control.EvalVar<double>(keyName+"WallThickLow");
 
   refMat=ModelSupport::EvalMat<int>(Control,keyName+"RefMat");   
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");   
@@ -195,6 +197,7 @@ BeRef::globalPopulate(const FuncDataBase& Control)
   radius=Control.EvalVar<double>(keyName+"Radius");   
   height=Control.EvalVar<double>(keyName+"Height");   
   wallThick=Control.EvalVar<double>(keyName+"WallThick");   
+  wallThickLow=Control.EvalVar<double>(keyName+"WallThickLow");   
 
   
   return;
@@ -244,9 +247,9 @@ BeRef::createSurfaces()
   
   // wall and all gaps
   ModelSupport::buildPlane(SMap,refIndex+105,Origin-
-			   Z*(lowVoidThick+targSepThick/2.0+wallThick),Z);  
+			   Z*(lowVoidThick+targSepThick/2.0+wallThickLow),Z);  
   ModelSupport::buildPlane(SMap,refIndex+106,Origin+
-			   Z*(topVoidThick+targSepThick/2.0+wallThick),Z);  
+			   Z*(topVoidThick+targSepThick/2.0+wallThickLow),Z);  
 
   ModelSupport::buildPlane(SMap,refIndex+115,Origin-
 			   Z*(lowVoidThick+targSepThick/2.0),Z);  
@@ -301,6 +304,7 @@ BeRef::createObjects(Simulation& System)
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
       setCell("lowWall",cellIndex-1);
       
+      if (wallThickLow>Geometry::zeroTol) {
       // divide layer
       Out=ModelSupport::getComposite(SMap,refIndex," -17 105 -115 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
@@ -309,7 +313,7 @@ BeRef::createObjects(Simulation& System)
       // divide layer
       Out=ModelSupport::getComposite(SMap,refIndex," -17 -106 116 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
-
+      }
 
       Out=ModelSupport::getComposite(SMap,refIndex," -17 -16 106 (7:6)");
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));

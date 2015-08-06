@@ -827,6 +827,7 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("BeRefRadius",34.3);
   Control.addVariable("BeRefHeight",88.7);
   Control.addVariable("BeRefWallThick",0.4);
+  Control.addVariable("BeRefWallThickLow",1.0);
   Control.addVariable("BeRefTargetSepThick",13.0);
   Control.addVariable("BeRefLowVoidThick",2.3);
   Control.addVariable("BeRefTopVoidThick",2.3);

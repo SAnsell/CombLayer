@@ -53,6 +53,7 @@ class BeRef : public attachSystem::ContainedComp,
   double radius;                  ///< Radius
   double height;                  ///< Height
   double wallThick;               ///< Wall thickness
+  double wallThickLow;            ///< Wall thickness of the side near the target wheel. Separated from wallThick in order to optimise wrapping with CapMod
 
   double lowVoidThick;            ///< Low void segment
   double topVoidThick;            ///< Top void segment
