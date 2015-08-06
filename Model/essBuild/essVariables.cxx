@@ -1163,8 +1163,8 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopFlyRightLobeThick4",0.5);
   Control.addVariable("TopFlyRightLobeMat4","Void");
 
-  Control.addVariable("TopFlyRightLobeHeight4",0.3);
-  Control.addVariable("TopFlyRightLobeDepth4",0.3);
+  Control.addVariable("TopFlyRightLobeHeight4",1.3);
+  Control.addVariable("TopFlyRightLobeDepth4",1.3);
 
   Control.addVariable("TopFlyMidWaterCutLayer",3);
   Control.addVariable("TopFlyMidWaterMidYStep",5.0);

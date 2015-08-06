@@ -198,9 +198,8 @@ H2Wing::populate(const FuncDataBase& Control)
   double T,mTemp;
   double VH, VD;
   int M;
-  thick.push_back(0.0);
-  vThick.push_back(0.0);
-  vHeight.push_back(0.0); vDepth.push_back(0.0);
+  Thick.push_back(0.0);
+  Height.push_back(0.0); Depth.push_back(0.0);
   temp.push_back(modTemp);
   mat.push_back(modMat);
   double TH(0.0);
@@ -213,9 +212,9 @@ H2Wing::populate(const FuncDataBase& Control)
       mTemp=Control.EvalDefVar<double>(keyName+"Temp"+Num,0.0);
       M=ModelSupport::EvalMat<int>(Control,keyName+"Mat"+Num);
 
-      thick.push_back(T);
-      vHeight.push_back(VH);
-      vDepth.push_back(VD);
+      Thick.push_back(T);
+      Height.push_back(VH);
+      Depth.push_back(VD);
       temp.push_back(mTemp);
       mat.push_back(M);
       TH+=VH+VD;
@@ -270,9 +269,9 @@ H2Wing::createLinks()
   double VH(0.0), VD(0.0);
   for(size_t i=1;i<nLayers;i++)
     {
-      PDepth+=thick[i];
-      VH += vHeight[i];
-      VD += vDepth[i];
+      PDepth+=Thick[i];
+      VH += Height[i];
+      VD += Depth[i];
     }
   cornerSet(PDepth,CPts,NPts);
 
@@ -412,9 +411,9 @@ H2Wing::createSurfaces()
   
   for(size_t j=0;j<nLayers;j++)
     {
-      PDepth+=thick[j];
-      VH += vHeight[j];
-      VD += vDepth[j];
+      PDepth+=Thick[j];
+      VH += Height[j];
+      VD += Depth[j];
       cornerSet(PDepth,CPts,NPts);
       for(size_t i=0;i<3;i++)
 	{
