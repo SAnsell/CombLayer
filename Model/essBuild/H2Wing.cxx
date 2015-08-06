@@ -208,8 +208,8 @@ H2Wing::populate(const FuncDataBase& Control)
     {
       const std::string Num=StrFunc::makeString(i);
       T=Control.EvalVar<double>(keyName+"Thick"+Num);
-      VH=Control.EvalDefVar<double>(keyName+"VHeight"+Num,T);
-      VD=Control.EvalDefVar<double>(keyName+"VDepth"+Num,T);
+      VH=Control.EvalDefVar<double>(keyName+"Height"+Num,T);
+      VD=Control.EvalDefVar<double>(keyName+"Depth"+Num,T);
       mTemp=Control.EvalDefVar<double>(keyName+"Temp"+Num,0.0);
       M=ModelSupport::EvalMat<int>(Control,keyName+"Mat"+Num);
 
