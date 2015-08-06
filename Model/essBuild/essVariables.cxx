@@ -990,11 +990,11 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowFlyLeftLobeHeight3",0.3);
   Control.addVariable("LowFlyLeftLobeDepth3",0.3);
 
-  Control.addVariable("LowFlyLeftLobeThick4",0.5);
-  Control.addVariable("LowFlyLeftLobeMat4","Void");
 
-  Control.addVariable("LowFlyLeftLobeHeight4",0.3);
-  Control.addVariable("LowFlyLeftLobeDepth4",0.3);
+
+
+
+
 
   Control.addVariable("LowFlyFlowGuideBaseThick",0.2);
   Control.addVariable("LowFlyFlowGuideBaseLen",8.5);
@@ -1040,11 +1040,11 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowFlyRightLobeHeight3",0.3);
   Control.addVariable("LowFlyRightLobeDepth3",0.3);
 
-  Control.addVariable("LowFlyRightLobeThick4",0.5);
-  Control.addVariable("LowFlyRightLobeMat4","Void");
 
-  Control.addVariable("LowFlyRightLobeHeight4",0.3);
-  Control.addVariable("LowFlyRightLobeDepth4",0.3);
+
+
+
+
 
   Control.addVariable("LowFlyMidWaterCutLayer",3);
   Control.addVariable("LowFlyMidWaterMidYStep",5.0);
@@ -1110,11 +1110,11 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopFlyLeftLobeHeight3",0.3);
   Control.addVariable("TopFlyLeftLobeDepth3",0.3);
 
-  Control.addVariable("TopFlyLeftLobeThick4",0.5);
-  Control.addVariable("TopFlyLeftLobeMat4","Void");
 
-  Control.addVariable("TopFlyLeftLobeHeight4",0.3);
-  Control.addVariable("TopFlyLeftLobeDepth4",0.3);
+
+
+
+
 
   Control.addVariable("TopFlyFlowGuideBaseThick",0.2);
   Control.addVariable("TopFlyFlowGuideBaseLen",8.5);
@@ -1160,11 +1160,11 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopFlyRightLobeHeight3",0.3);
   Control.addVariable("TopFlyRightLobeDepth3",0.3);
 
-  Control.addVariable("TopFlyRightLobeThick4",0.5);
-  Control.addVariable("TopFlyRightLobeMat4","Void");
 
-  Control.addVariable("TopFlyRightLobeHeight4",1.3);
-  Control.addVariable("TopFlyRightLobeDepth4",1.3);
+
+
+
+
 
   Control.addVariable("TopFlyMidWaterCutLayer",3);
   Control.addVariable("TopFlyMidWaterMidYStep",5.0);
