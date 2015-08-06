@@ -195,10 +195,12 @@ H2Wing::populate(const FuncDataBase& Control)
 
   // Multi-layer
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");
-  double T,VT,mTemp;
+  double T,mTemp;
+  double VH, VD;
   int M;
   thick.push_back(0.0);
   vThick.push_back(0.0);
+  vHeight.push_back(0.0); vDepth.push_back(0.0);
   temp.push_back(modTemp);
   mat.push_back(modMat);
   double TH(0.0);
@@ -206,15 +208,17 @@ H2Wing::populate(const FuncDataBase& Control)
     {
       const std::string Num=StrFunc::makeString(i);
       T=Control.EvalVar<double>(keyName+"Thick"+Num);
-      VT=Control.EvalDefVar<double>(keyName+"VThick"+Num,T);
+      VH=Control.EvalDefVar<double>(keyName+"VHeight"+Num,T);
+      VD=Control.EvalDefVar<double>(keyName+"VDepth"+Num,T);
       mTemp=Control.EvalDefVar<double>(keyName+"Temp"+Num,0.0);
       M=ModelSupport::EvalMat<int>(Control,keyName+"Mat"+Num);
 
       thick.push_back(T);
-      vThick.push_back(VT);
+      vHeight.push_back(VH);
+      vDepth.push_back(VD);
       temp.push_back(mTemp);
       mat.push_back(M);
-      TH+=2.0*VT;
+      TH+=VH+VD;
     }
 
   // calculated relative to 
@@ -263,11 +267,12 @@ H2Wing::createLinks()
   std::array<Geometry::Vec3D,3> CPts;
   std::array<Geometry::Vec3D,3> NPts;
   double PDepth(0.0);
-  double VDepth(0.0);
+  double VH(0.0), VD(0.0);
   for(size_t i=1;i<nLayers;i++)
     {
       PDepth+=thick[i];
-      VDepth+=vThick[i];
+      VH += vHeight[i];
+      VD += vDepth[i];
     }
   cornerSet(PDepth,CPts,NPts);
 
@@ -282,8 +287,8 @@ H2Wing::createLinks()
     }
   // Top/bottom
 
-  FixedComp::setConnect(4,Origin-Z*(VDepth+height/2.0),-Z);
-  FixedComp::setConnect(5,Origin+Z*(VDepth+height/2.0),Z);
+  FixedComp::setConnect(4,Origin-Z*(VD+height/2.0),-Z);
+  FixedComp::setConnect(5,Origin+Z*(VH+height/2.0),Z);
   FixedComp::setLinkSurf(4,-SMap.realSurf(triOffset+5));
   FixedComp::setLinkSurf(5,SMap.realSurf(triOffset+6));
 
@@ -402,12 +407,14 @@ H2Wing::createSurfaces()
   std::array<Geometry::Vec3D,3> CPts;
   std::array<Geometry::Vec3D,3> NPts;
   double PDepth(0.0);
-  double VDepth(0.0);
+  double VH(0.0);
+  double VD(0.0);
   
   for(size_t j=0;j<nLayers;j++)
     {
       PDepth+=thick[j];
-      VDepth+=vThick[j];
+      VH += vHeight[j];
+      VD += vDepth[j];
       cornerSet(PDepth,CPts,NPts);
       for(size_t i=0;i<3;i++)
 	{
@@ -438,9 +445,9 @@ H2Wing::createSurfaces()
 	}
       
       ModelSupport::buildPlane(SMap,triOffset+5,Origin-
-			       Z*(VDepth+height/2.0),Z);
+			       Z*(VD+height/2.0),Z);
       ModelSupport::buildPlane(SMap,triOffset+6,Origin+
-			       Z*(VDepth+height/2.0),Z);
+			       Z*(VH+height/2.0),Z);
       triOffset+=100;
     }
 
