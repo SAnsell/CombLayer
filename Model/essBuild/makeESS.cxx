@@ -494,11 +494,11 @@ makeESS::build(Simulation& System,
   
   Reflector->createAll(System,World::masterOrigin(),
 		       Target->wheelHeight(),
-		       LowPreMod->getHeight()+LMHeight, //+LowCapMod->getHeight(),
-		       TopPreMod->getHeight()+TMHeight);
+		       LowPreMod->getHeight()+LMHeight+LowCapMod->getHeight(),
+		       TopPreMod->getHeight()+TMHeight+TopCapMod->getHeight());
 
-  attachSystem::addToInsertControl(System,*Reflector,*LowCapMod);
-  attachSystem::addToInsertControl(System,*Reflector,*TopCapMod);
+  //  attachSystem::addToInsertControl(System,*Reflector,*LowCapMod);
+  //  attachSystem::addToInsertControl(System,*Reflector,*TopCapMod);
 
 
   Reflector->insertComponent(System,"targetVoid",*Target,1);
