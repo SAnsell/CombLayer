@@ -508,11 +508,18 @@ makeESS::build(Simulation& System,
   Bulk->createAll(System,*Reflector,*Reflector);
 
   // Build flightlines after bulk
+  TopAFL->createAll(System,*TopMod,1,*Reflector,4,*Bulk,-3);
+  TopBFL->createAll(System,*TopMod,0,*Reflector,3,*Bulk,-3);
+
   LowAFL->createAll(System,*LowMod,0,*Reflector,4,*Bulk,-3);
   LowBFL->createAll(System,*LowMod,0,*Reflector,3,*Bulk,-3);   
   
   attachSystem::addToInsertSurfCtrl(System,*Bulk,Target->getKey("Wheel"));
   attachSystem::addToInsertForced(System,*Bulk,Target->getKey("Shaft"));
+
+  attachSystem::addToInsertForced(System,*Bulk,TopAFL->getKey("outer"));
+  attachSystem::addToInsertForced(System,*Bulk,TopBFL->getKey("outer"));
+
   attachSystem::addToInsertForced(System,*Bulk,LowAFL->getKey("outer"));
   attachSystem::addToInsertForced(System,*Bulk,LowBFL->getKey("outer"));
 
