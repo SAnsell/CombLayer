@@ -217,9 +217,9 @@ createInputs(inputParam& IParam)
   IParam.regDefItem<std::string>("dc","doseCalc",1,"InternalDOSE");
   IParam.regFlag("e","endf");
   IParam.regMulti("eng","engineering",10000,0);
-  IParam.regMulti("E","exclude",10000,1);
+  IParam.regItem("E","exclude");
   IParam.regDefItem<double>("electron","electron",1,-1.0);
-  IParam.regFlag("help","helf");
+  IParam.regFlag("help","help");
   IParam.regMulti("i","iterate",10000,1);
   IParam.regItem("I","isolate");
   IParam.regDefItemList<std::string>("imp","importance",10,RItems);

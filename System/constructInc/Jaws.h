@@ -36,7 +36,8 @@ namespace constructSystem
 */
 
 class Jaws : public attachSystem::FixedComp,
-    public attachSystem::ContainedComp
+  public attachSystem::ContainedComp,
+  public attachSystem::CellMap
 {
  private:
   
@@ -66,20 +67,29 @@ class Jaws : public attachSystem::FixedComp,
   double YHeight;               ///< Global box space [Y]
   double ZHeight;               ///< Global box space [Z]
 
+  double linerThick;            ///< Simple X/Z liner
   double wallThick;             ///< Simple X/Z walls
   
   int zJawMat;                  ///< Z material
   int xJawMat;                  ///< X material
 
+  int linerMat;                 ///< Liner material
   int wallMat;                  ///< Wall material
 
-  
+  // Layers
+  size_t nLayers;                 ///< number of layers
+  std::vector<double> jawXFrac;   ///< Layer thicknesss (fractions)
+  std::vector<int> jawXMatVec;    ///<  Layer materials
+  std::vector<double> jawZFrac;   ///< Layer thicknesss (fractions)
+  std::vector<int> jawZMatVec;    ///<  Layer materials
+
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
-
+  void layerProcess(Simulation&);
+  
  public:
 
   Jaws(const std::string&);

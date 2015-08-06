@@ -51,7 +51,7 @@ class Bunker : public attachSystem::ContainedComp,
   double leftAngle;              ///< Extent of left angle
   double rightAngle;             ///< Extent of right ange
 
-  size_t nSectors;
+  size_t nSectors;               ///< Number of sector divisions
   
   double innerRadius;            ///< inner radius [calculated]
   double wallRadius;             ///< Wall radius

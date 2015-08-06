@@ -119,7 +119,7 @@ main(int argc,char* argv[])
       const int iteractive(IterVal.empty() ? 0 : 1);   
       
       
-      // Read XML/Variable
+      // Read XML/Variable and set IParam
       SimPtr=createSimulation(IParam,Names,Oname);
       if (!SimPtr) return -1;
       

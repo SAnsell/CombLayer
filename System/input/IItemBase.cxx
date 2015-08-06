@@ -419,6 +419,7 @@ bool
 IItem::addObject(const std::string& V)
   /*!
     Adds V to the last set items
+    \param V :: Item to add
     \return 1 on success / 0 on failure
   */
 {
@@ -427,6 +428,7 @@ IItem::addObject(const std::string& V)
   if (activeSet>=maxSets || V.empty() ||
       activeItem>=maxItems)
     return 0;
+
   if (activeItem>=DItems[activeSet].size())
     DItems[activeSet].push_back(V);
   else

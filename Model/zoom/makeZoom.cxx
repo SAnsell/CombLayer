@@ -209,7 +209,8 @@ makeZoom::build(Simulation& System,
   int isoFlag(0);
   // Exit if no work to do:
   if (IParam.flag("exclude") && IParam.compValue("E",std::string("Zoom")))
-    return;
+      return;
+  
   if (IParam.flag("isolate") && IParam.compValue("I",std::string("zoom")))
     isoFlag=1;
 

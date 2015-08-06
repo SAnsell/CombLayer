@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   chip/makeChipIR.cxx
  *
@@ -63,8 +63,10 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedGroup.h"
 #include "SecondTrack.h"
 #include "TwinComp.h"
+#include "CellMap.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "LinearComp.h"
@@ -74,7 +76,7 @@
 #include "InnerWall.h"
 #include "HoleUnit.h"
 #include "PreCollimator.h"
-#include "Collimator.h"
+#include "Jaws.h"
 #include "ColBox.h"
 #include "beamBlock.h"
 #include "BeamStop.h"

@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   chipInc/Hutch.h
  *
@@ -39,8 +39,12 @@ namespace shutterSystem
 namespace attachSystem
 {
  class FixedComp;
- class LinearComp;
- class InsertComp;
+ class CellMap;
+}
+
+namespace constructSystem
+{
+  class Jaws;
 }
 
 namespace hutchSystem
@@ -56,8 +60,8 @@ class ChipSample;
   \brief Adds the ChipIR Hutch
 */
 
- class ChipIRHutch : public attachSystem::TwinComp,
-  public attachSystem::ContainedComp
+class ChipIRHutch : public attachSystem::FixedGroup,
+   public attachSystem::ContainedComp,public attachSystem::CellMap
 {
  private:
   
@@ -66,8 +70,7 @@ class ChipSample;
   int populated;                ///< populated or not
 
   std::shared_ptr<PreCollimator> PreColObj;      ///< PreCollimator
-  std::shared_ptr<Collimator> ColObjV;           ///< Vertial collimator
-  std::shared_ptr<Collimator> ColObjH;           ///< Horrizontal collimator
+  std::shared_ptr<constructSystem::Jaws> Jaw;   ///< Vertial collimator
   std::shared_ptr<ColBox> ColB;                  ///< Collimator box
   std::shared_ptr<InnerWall> Trimmer;            ///< Inner Trimmer
   std::shared_ptr<Table> FTable;                 ///< Front table

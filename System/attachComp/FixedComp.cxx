@@ -203,8 +203,10 @@ FixedComp::createUnitVector(const FixedComp& FC,
     (sideIndex>0) ? static_cast<size_t>(sideIndex-1) :
     static_cast<size_t>(-sideIndex-1) ;
   if (linkIndex>=FC.LU.size())
-    throw ColErr::IndexError<size_t>(linkIndex,FC.LU.size(),
-				     "LU.size()/linkIndex in object:"+keyName);
+    throw ColErr::IndexError<size_t>
+      (linkIndex,FC.LU.size(),
+       "LU.size()/linkIndex in object:"+FC.getKeyName()+" to object "+
+       keyName);
      
   const LinkUnit& LU=FC.getLU(linkIndex);
   const double signV((sideIndex>0) ? 1.0 : -1.0);
@@ -936,6 +938,18 @@ FixedComp::getBridgeComplement(const size_t Index) const
     RP.addIntersection(LU[Index].getCommon());
 
   return RP.display();
+}
+
+void 
+FixedComp::setCentre(const Geometry::Vec3D& C)
+  /*!
+    User Interface to LU[1] to set Point + Axis
+    \param C :: Centre point
+  */
+{
+  ELog::RegMethod RegA("FixedComp","setCentre");
+  Origin=C;
+  return;
 }
 
 void 

@@ -828,6 +828,7 @@ inputParam::processMainInput(std::vector<std::string>& Names)
       // Did we find anything:
       if (IPtr)       // Index found
 	{
+
 	  const size_t NReq=IPtr->getReqItems();
 	  const size_t NMax=IPtr->getMaxItems();
 	  size_t processNumber(0);
@@ -990,17 +991,18 @@ template std::string inputParam::getValue(const std::string&,const size_t,const 
 template Geometry::Vec3D inputParam::getValue(const std::string&,const size_t,const size_t) const;
 
 
-template bool
-inputParam::compValue(const std::string&,const size_t&) const;
 
 template double
 inputParam::getFlagDef(const std::string&,const FuncDataBase& Control,
 		       const std::string&,const size_t) const;
 
 
+template bool
+inputParam::compValue(const std::string&,const size_t&) const;
 
-  template bool inputParam::compValue(const std::string&,
-				    const std::string&) const;
+template bool
+inputParam::compValue(const std::string&,
+		      const std::string&) const;
 
 template void 
 inputParam::regDefItemList(const std::string&,

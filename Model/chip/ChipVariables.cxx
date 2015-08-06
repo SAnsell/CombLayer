@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   chip/ChipVariables.cxx
  *
@@ -33,7 +33,6 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
-#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -402,7 +401,7 @@ ChipVariables(FuncDataBase& Control)
   Control.addVariable("chipWiresCollTrack6",Geometry::Vec3D(91.3,51.0,-66.1));
  
   // BEAM STOP::
-  Control.addVariable("chipHutBSOpenXStep",17.0);        // X offset of Void
+  Control.addVariable("chipHutBSOpenXStep",-17.0);        // X offset of Void
   Control.addVariable("chipHutBSOpenZStep",50.0);        // Z offset of Void
   Control.addVariable("chipHutBSOpenWidth",120.0);        // Z offset of Void
   Control.addVariable("chipHutBSOpenHeight",100.0);        // Z offset of Void
@@ -425,9 +424,9 @@ ChipVariables(FuncDataBase& Control)
   Control.addVariable("chipHutWestLen_4",-9.0);   // Concrete
   Control.addVariable("chipHutWestLen_5",-7.0);   // Contrete 
 
-  Control.addVariable("chipBSFStep",-24.0);      // Stop position [from surf 22]
-  Control.addVariable("chipBSXStep",12.50);      // +ve to TSA
-  Control.addVariable("chipBSZStep",50.0);       // Stop position 
+  Control.addVariable("chipBSXStep",-12.50);      // +ve to TSA
+  Control.addVariable("chipBSYStep",-24.0);      // [from outersurf 32]
+  Control.addVariable("chipBSZStep",50.0);       // 
 
   Control.addVariable("chipBSInnerWidth",188.0);      // Beam Stop width 
   Control.addVariable("chipBSInnerHeight",192.5);     // Beam Stop height
@@ -707,35 +706,46 @@ ChipVariables(FuncDataBase& Control)
   Control.addVariable("chipColBoxViewX",40.0);
   Control.addVariable("chipColBoxViewZ",40.0);
 
-  Control.addVariable("chipColVGap",20.0);              // Gap
-  Control.addVariable("chipColVOffset",0.0);            // Centre offset 
-  Control.addVariable("chipColVFStep",110.0);           // Forward step 
-  Control.addVariable("chipColVXStep",-15.60);           // +ve to the TSA
-  Control.addVariable("chipColVZStep",19.0);            // Forward step 
-  Control.addVariable("chipColVXYangle",1.0);           // +ve to the TSA
-  Control.addVariable("chipColVZangle",1.0);            // Forward step 
-  Control.addVariable("chipColVWidth",200.0);           // width
-  Control.addVariable("chipColVHeight",220.0);            
-  Control.addVariable("chipColVDepth",50.0);            // [thickness]
-  Control.addVariable("chipColVDefMat","Stainless304");              // Steel
 
-  Control.addVariable("chipColVInnerWall",0.5);         // lead thickness
-  Control.addVariable("chipColVInnerWallMat","Lead");       // lead
-  Control.addVariable("chipColVNLayers",3);          
-  Control.addVariable("chipColVFrac_1",-10.0);      // Fe
-  Control.addVariable("chipColVFrac_2",-30.0);      // W
- 
-  Control.addVariable("chipColVMat_0","Stainless304");           // Fe
-  Control.addVariable("chipColVMat_1","Tungsten");          // W
-  Control.addVariable("chipColVMat_2","Aluminium");           // Al
 
+  Control.addVariable("chipJawNLayers",5);          
+  Control.addVariable("chipJawMat0","Stainless304");          // Fe
+  Control.addVariable("chipJawMat1","Tungsten");              // W
+  Control.addVariable("chipJawMat2","Aluminium");             // Al
+  Control.addVariable("chipJawMat3","Nickel");                // W
+  Control.addVariable("chipJawMat4","Stainless304");          // W
+
+  Control.addVariable("chipJawLinerThick",0.5);         // lead thickness
+  Control.addVariable("chipJawLinerMat","Lead");       // lead
+
+  Control.addVariable("chipJawXStep",5.6);       // Step accross [+ve to TSA]
+  Control.addVariable("chipJawYStep",248.0);       // Forward step 
+  Control.addVariable("chipJawZStep",19.0);        // Forward step 
+  Control.addVariable("chipJawXYangle",1.0);       // Rotation angle
+  Control.addVariable("chipJawZangle",1.0);        // Z-
+
+  Control.addVariable("chipJawZOpen",20.0);        // Gap in middel
+  Control.addVariable("chipJawZThick",50.0);       // Height away from gap
+  Control.addVariable("chipJawZCross",90.0);       // Width across gap
+  Control.addVariable("chipJawZLen",50.0);         // Thickness along gap
+
+  Control.addVariable("chipJawGap",10.0);        // Gap in middel
+  
+  Control.addVariable("chipJawXOpen",20.0);        // Gap in middel
+  Control.addVariable("chipJawXThick",50.0);       // Height away from gap
+  Control.addVariable("chipJawXCross",90.0);       // Width across gap
+  Control.addVariable("chipJawXLen",50.0);         // Thickness along gap
+
+  Control.addVariable("chipJawXHeight",228.0);
+  Control.addVariable("chipJawYHeight",120.0);
+  Control.addVariable("chipJawZHeight",228.0);
+  Control.addVariable("chipJawWallThick",0.0);
+  Control.addVariable("chipJawxJawMat","Stainless304");           
+  Control.addVariable("chipJawzJawMat","Stainless304");           
+  Control.addVariable("chipJawWallMat","Aluminium");              
+  
   Control.addVariable("chipColHGap",20.0);          // Gap
   Control.addVariable("chipColHOffset",0.0);        // Centre offset 
-  Control.addVariable("chipColHFStep",168.0);       // Forward step 
-  Control.addVariable("chipColHXStep",-25.6);       // Step accross [+ve to TSA]
-  Control.addVariable("chipColHZStep",18.0);        // Forward step 
-  Control.addVariable("chipColHXYangle",0.0);       // Rotation angle
-  Control.addVariable("chipColHZangle",0.0);        // Z-
   Control.addVariable("chipColHWidth",120.0);
   Control.addVariable("chipColHHeight",180.0);
   Control.addVariable("chipColHDepth",50.0); 
