@@ -967,7 +967,6 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowFlyLeftLobeRadius2",2.506);
   Control.addVariable("LowFlyLeftLobeRadius3",2.506);
 
-  Control.addVariable("LowFlyLeftLobeHeight",6.0);
   Control.addVariable("LowFlyLeftLobeModMat","LH05ortho");
   Control.addVariable("LowFlyLeftLobeModTemp",20.0);
 
@@ -1018,7 +1017,6 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowFlyRightLobeRadius2",2.506);
   Control.addVariable("LowFlyRightLobeRadius3",2.506);
 
-  Control.addVariable("LowFlyRightLobeHeight",6.0);
   Control.addVariable("LowFlyRightLobeModMat","HPARA%HORTHO%5.0");
   Control.addVariable("LowFlyRightLobeModTemp",20.0);
 
@@ -1089,7 +1087,6 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopFlyLeftLobeRadius2",2.506);
   Control.addVariable("TopFlyLeftLobeRadius3",2.506);
 
-  Control.addVariable("TopFlyLeftLobeHeight",6.0);
   Control.addVariable("TopFlyLeftLobeModMat","LH05ortho");
   Control.addVariable("TopFlyLeftLobeModTemp",20.0);
 
@@ -1140,7 +1137,6 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopFlyRightLobeRadius2",2.506);
   Control.addVariable("TopFlyRightLobeRadius3",2.506);
 
-  Control.addVariable("TopFlyRightLobeHeight",6.0);
   Control.addVariable("TopFlyRightLobeModMat","HPARA%HORTHO%5.0");
   Control.addVariable("TopFlyRightLobeModTemp",20.0);
 
