@@ -245,7 +245,8 @@ H2Wing::createUnitVector(const attachSystem::FixedComp& FC)
   ELog::RegMethod RegA("H2Wing","createUnitVector");
 
   FixedComp::createUnitVector(FC);
-  applyShift(xStep,yStep,0.0);
+  const double dh = std::accumulate(Depth.begin(), Depth.end(), 0.0) - std::accumulate(Height.begin(), Height.end(), 0.0); // difference between total depth and total height
+  applyShift(xStep,yStep, dh/2.0);
   applyAngleRotate(xyOffset,0.0);
   for(size_t i=0;i<3;i++)
     Pts[i]=realPt(Pts[i]);
