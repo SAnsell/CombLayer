@@ -146,7 +146,7 @@ void addESSMaterial()
 
   // ESS M74000 - same ase 74001 but at 300 K
   // T = 300 K
-  MObj.setMaterial(74000, "Tungsten300K",
+  MObj.setMaterial(74000, "Tungsten",
 		   "74180.50c  0.001200000 "
 		   "74182.71c  0.265000000 "
 		   "74183.71c  0.143100000 "

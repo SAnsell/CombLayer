@@ -66,146 +66,6 @@ EssWheel(FuncDataBase& Control)
     \param Control :: Segment variables
    */
 {
-  // WHEEL SHAFT
-
-  Control.addVariable("SegWheelShaftNLayers",6);
-  Control.addVariable("SegWheelShaftTopHeight",400.0);
-  Control.addVariable("SegWheelShaftBaseHeight",-13.5);
-  // Control.addVariable("SegWheelShaftHeight",435.0);
-
-  // Control.addVariable("SegWheelShaftRadius",25.0);
-  // see WheelInnerRadius below (28cm): it's the external joint radius
-  Control.addVariable("SegWheelShaftJointThick",3.0);
-  Control.addVariable("SegWheelShaftCoolThick",4.0);
-  Control.addVariable("SegWheelShaftCladThick",3.0);
-  Control.addVariable("SegWheelShaftVoidThick",1.0);
-  Control.addVariable("SegWheelShaftSupportRadius",40.0);
-  Control.addVariable("SegWheelShaftSupportThick",2.5);
-  Control.addVariable("SegWheelShaftBaseThick",3.0);
-  Control.addVariable("SegWheelShaftBaseFootThick",13.5);
-
-  Control.addVariable("SegWheelCladShaftMat","Stainless304");
-  Control.addVariable("SegWheelCoolingShaftMatInt","Stainless304");
-  Control.addVariable("SegWheelCoolingShaftMatExt","Void");
- 
-  // TARGET
-
-  Control.addVariable("SegWheelXStep",0.0);  
-  Control.addVariable("SegWheelYStep",115.0);  
-  Control.addVariable("SegWheelZStep",0.0);
-  Control.addVariable("SegWheelXYangle",0.0); 
-  Control.addVariable("SegWheelZangle",0.0);
-  //
-  Control.addVariable("SegWheelTargetHeight",8.0);
-  Control.addVariable("SegWheelTargetSectorOffsetX",0.0);  
-  Control.addVariable("SegWheelTargetSectorOffsetY",142.6476749356);
-  Control.addVariable("SegWheelTargetSectorOffsetZ",0.0);
-  Control.addVariable("SegWheelTargetSectorAngleXY",1.1234180949);
-  Control.addVariable("SegWheelTargetSectorAngleZ",0.0);
-  Control.addVariable("SegWheelTargetSectorApertureXY",2.2468361899);
-  Control.addVariable("SegWheelTargetSectorApertureZ",0.0);
-  Control.addVariable("SegWheelTargetSectorNumber",33);
-  //
-  Control.addVariable("SegWheelCoolantThickOut",0.15);
-  Control.addVariable("SegWheelCoolantThickIn",0.65);
-  //
-  Control.addVariable("SegWheelCaseThickZ",0.5);
-  Control.addVariable("SegWheelCaseThickX",0.1);
-  //
-  Control.addVariable("SegWheelVoidThick",2.15);  //distance target-ion tube height
-
-  Control.addVariable("SegWheelInnerRadius",28.0);
-  Control.addVariable("SegWheelCoolantRadiusOut",124.8);
-  Control.addVariable("SegWheelCoolantRadiusIn",114.5);
-  Control.addVariable("SegWheelCaseRadius",125.0);
-  Control.addVariable("SegWheelVoidRadius",126.0);
-
-  // Material types 1:2:3
-  Control.addVariable("SegWheelWMat","Tungsten");
-  Control.addVariable("SegWheelSteelMat","Stainless304");
-  Control.addVariable("SegWheelHeMat","helium");
-
-  Control.addVariable("SegWheelInnerMat","Stainless304");
-
-  Control.addVariable("SegWheelNLayers",25);
-
-  Control.addVariable("SegWheelRadius1",84.27);
-  Control.addVariable("SegWheelMatTYPE1",1);
-
-  Control.addVariable("SegWheelRadius2",85.65);
-  Control.addVariable("SegWheelMatTYPE2",2);
-
-  Control.addVariable("SegWheelRadius3",97.02);
-  Control.addVariable("SegWheelMatTYPE3",3);
-
-  Control.addVariable("SegWheelRadius4",97.52);
-  Control.addVariable("SegWheelMatTYPE4",2);
-
-  Control.addVariable("SegWheelRadius5",102.37); 
-  Control.addVariable("SegWheelMatTYPE5",3);
-
-  Control.addVariable("SegWheelRadius6",102.77);
-  Control.addVariable("SegWheelMatTYPE6",2);
-
-  Control.addVariable("SegWheelRadius7",106.97);
-  Control.addVariable("SegWheelMatTYPE7",3);
-
-  Control.addVariable("SegWheelRadius8",107.29);
-  Control.addVariable("SegWheelMatTYPE8",2);
-
-  Control.addVariable("SegWheelRadius9",110.49);
-  Control.addVariable("SegWheelMatTYPE9",3);
-
-  Control.addVariable("SegWheelRadius10",110.78);
-  Control.addVariable("SegWheelMatTYPE10",2); 
-
-  Control.addVariable("SegWheelRadius11",112.78);
-  Control.addVariable("SegWheelMatTYPE11",3); 
-
-  Control.addVariable("SegWheelRadius12",113.05);
-  Control.addVariable("SegWheelMatTYPE12",2); 
-
-  Control.addVariable("SegWheelRadius13",114.65);
-  Control.addVariable("SegWheelMatTYPE13",3); 
-
-  Control.addVariable("SegWheelRadius14",114.9);
-  Control.addVariable("SegWheelMatTYPE14",2); 
-
-  // Control.addVariable("SegWheelRadius15",114.9);
-  // Control.addVariable("SegWheelMatTYPE15",1); 
-
-  Control.addVariable("SegWheelRadius15",116.5);
-  Control.addVariable("SegWheelMatTYPE15",3); 
-
-  Control.addVariable("SegWheelRadius16",116.75);
-  Control.addVariable("SegWheelMatTYPE16",2); 
-
-  Control.addVariable("SegWheelRadius17",118.35);
-  Control.addVariable("SegWheelMatTYPE17",3); 
-
-  Control.addVariable("SegWheelRadius18",118.6);
-  Control.addVariable("SegWheelMatTYPE18",2); 
-
-  Control.addVariable("SegWheelRadius19",120.0);
-  Control.addVariable("SegWheelMatTYPE19",3); 
-
-  Control.addVariable("SegWheelRadius20",120.25);
-  Control.addVariable("SegWheelMatTYPE20",2); 
-
-  Control.addVariable("SegWheelRadius21",121.65);
-  Control.addVariable("SegWheelMatTYPE21",3); 
-
-  Control.addVariable("SegWheelRadius22",121.9);
-  Control.addVariable("SegWheelMatTYPE22",2); 
-
-  Control.addVariable("SegWheelRadius23",123.1);
-  Control.addVariable("SegWheelMatTYPE23",3); 
-
-  Control.addVariable("SegWheelRadius24",123.35);
-  Control.addVariable("SegWheelMatTYPE24",2); 
-
-  Control.addVariable("SegWheelRadius25",124.55);
-  Control.addVariable("SegWheelMatTYPE25",3); 
   return;
 }
 
@@ -710,114 +570,105 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("WheelShaftCladThick",0.5);
   Control.addVariable("WheelShaftVoidThick",0.8);
 
-  Control.addVariable("WheelCladShaftMat","Stainless304");
-  Control.addVariable("WheelMainShaftMat","Stainless304");
+  Control.addVariable("WheelCladShaftMat","Iron");
+  Control.addVariable("WheelMainShaftMat","Iron");
 
   Control.addVariable("WheelXStep",0.0);  
-  Control.addVariable("WheelYStep",115.0);  
+  Control.addVariable("WheelYStep",113.0);  
   Control.addVariable("WheelZStep",0.0);
   Control.addVariable("WheelXYangle",0.0); 
   Control.addVariable("WheelZangle",0.0);
   Control.addVariable("WheelTargetHeight",8.0);
-  Control.addVariable("WheelCoolantThick",0.5);
+  Control.addVariable("WheelTemp",600.0);
+  Control.addVariable("WheelCoolantThickIn",0.65);
+  Control.addVariable("WheelCoolantThickOut",0.15);
   Control.addVariable("WheelCaseThick",0.5);
   Control.addVariable("WheelVoidThick",1.0);
 
-  Control.addVariable("WheelInnerRadius",82.0);
-  Control.addVariable("WheelCoolantRadius",125.0);
-  Control.addVariable("WheelCaseRadius",127.0);
-  Control.addVariable("WheelVoidRadius",130.0);
+  Control.addVariable("WheelInnerRadius",84.27);
+  Control.addVariable("WheelCoolantRadiusIn",114.5);
+  Control.addVariable("WheelCoolantRadiusOut",124.8);
+  Control.addVariable("WheelCaseRadius",125.0);
+  Control.addVariable("WheelVoidRadius",126.0);
 
   Control.addVariable("WheelWMat","Tungsten");
-  Control.addVariable("WheelSteelMat","Stainless304");
-  Control.addVariable("WheelHeMat","helium");
-  Control.addVariable("WheelInnerMat","Stainless304");
+  Control.addVariable("WheelSteelMat","SS316L");
+  Control.addVariable("WheelHeMat",0);
+  Control.addVariable("WheelInnerMat","SS316L");
 
-  Control.addVariable("WheelNLayers",28);
+  Control.addVariable("WheelNLayers",24);
 
-  Control.addVariable("WheelRadius1",83.87);
-  Control.addVariable("WheelMatTYPE1",1);
+  Control.addVariable("WheelRadius1",85.65);
+  Control.addVariable("WheelMatTYPE1",2);
 
-  Control.addVariable("WheelRadius2",85.25);
-  Control.addVariable("WheelMatTYPE2",2);
+  Control.addVariable("WheelRadius2",97.02);
+  Control.addVariable("WheelMatTYPE2",3);
 
-  Control.addVariable("WheelRadius3",96.62);
-  Control.addVariable("WheelMatTYPE3",3);
+  Control.addVariable("WheelRadius3",97.52);
+  Control.addVariable("WheelMatTYPE3",2);
 
-  Control.addVariable("WheelRadius4",97.12);
-  Control.addVariable("WheelMatTYPE4",2);
+  Control.addVariable("WheelRadius4",102.37);
+  Control.addVariable("WheelMatTYPE4",3);
 
-  Control.addVariable("WheelRadius5",100.00);    // WRONG
-  Control.addVariable("WheelMatTYPE5",3);
+  Control.addVariable("WheelRadius5",102.77);    // WRONG
+  Control.addVariable("WheelMatTYPE5",2);
 
-  Control.addVariable("WheelRadius6",101.97);
-  Control.addVariable("WheelMatTYPE6",2);
+  Control.addVariable("WheelRadius6",106.97);
+  Control.addVariable("WheelMatTYPE6",3);
 
-  Control.addVariable("WheelRadius7",102.17);
-  Control.addVariable("WheelMatTYPE7",1);
+  Control.addVariable("WheelRadius7",107.29);
+  Control.addVariable("WheelMatTYPE7",2);
 
-  Control.addVariable("WheelRadius8",102.57);
-  Control.addVariable("WheelMatTYPE8",2);
+  Control.addVariable("WheelRadius8",110.49);
+  Control.addVariable("WheelMatTYPE8",3);
 
-  Control.addVariable("WheelRadius9",106.77);
-  Control.addVariable("WheelMatTYPE9",3);
+  Control.addVariable("WheelRadius9",110.78);
+  Control.addVariable("WheelMatTYPE9",2);
 
-  Control.addVariable("WheelRadius10",107.09);
-  Control.addVariable("WheelMatTYPE10",2);
+  Control.addVariable("WheelRadius10",112.78);
+  Control.addVariable("WheelMatTYPE10",3);
 
-  Control.addVariable("WheelRadius11",110.29);
-  Control.addVariable("WheelMatTYPE11",3);
+  Control.addVariable("WheelRadius11",113.05);
+  Control.addVariable("WheelMatTYPE11",2);
 
-  Control.addVariable("WheelRadius12",110.58);
-  Control.addVariable("WheelMatTYPE12",2); 
+  Control.addVariable("WheelRadius12",114.65);
+  Control.addVariable("WheelMatTYPE12",3); 
 
-  Control.addVariable("WheelRadius13",112.58);
-  Control.addVariable("WheelMatTYPE13",3); 
+  Control.addVariable("WheelRadius13",114.9);
+  Control.addVariable("WheelMatTYPE13",2); 
 
-  Control.addVariable("WheelRadius14",113.3);
-  Control.addVariable("WheelMatTYPE14",2); 
+  Control.addVariable("WheelRadius14",116.5);
+  Control.addVariable("WheelMatTYPE14",3); 
 
-  Control.addVariable("WheelRadius15",114.45);
-  Control.addVariable("WheelMatTYPE15",3); 
+  Control.addVariable("WheelRadius15",116.75);
+  Control.addVariable("WheelMatTYPE15",2); 
 
-  Control.addVariable("WheelRadius16",114.7);
-  Control.addVariable("WheelMatTYPE16",2); 
+  Control.addVariable("WheelRadius16",118.35);
+  Control.addVariable("WheelMatTYPE16",3); 
 
-  Control.addVariable("WheelRadius17",114.9);
-  Control.addVariable("WheelMatTYPE17",1); 
+  Control.addVariable("WheelRadius17",118.6);
+  Control.addVariable("WheelMatTYPE17",2); 
 
-  Control.addVariable("WheelRadius18",116.5);
+  Control.addVariable("WheelRadius18",120);
   Control.addVariable("WheelMatTYPE18",3); 
 
-  Control.addVariable("WheelRadius19",116.75);
+  Control.addVariable("WheelRadius19",120.25);
   Control.addVariable("WheelMatTYPE19",2); 
 
-  Control.addVariable("WheelRadius20",118.35);
+  Control.addVariable("WheelRadius20",121.65);
   Control.addVariable("WheelMatTYPE20",3); 
 
-  Control.addVariable("WheelRadius21",118.6);
+  Control.addVariable("WheelRadius21",121.9);
   Control.addVariable("WheelMatTYPE21",2); 
 
-  Control.addVariable("WheelRadius22",120.0);
+  Control.addVariable("WheelRadius22",123.1);
   Control.addVariable("WheelMatTYPE22",3); 
 
-  Control.addVariable("WheelRadius23",120.25);
+  Control.addVariable("WheelRadius23",123.35);
   Control.addVariable("WheelMatTYPE23",2); 
 
-  Control.addVariable("WheelRadius24",121.65);
+  Control.addVariable("WheelRadius24",124.55);
   Control.addVariable("WheelMatTYPE24",3); 
-
-  Control.addVariable("WheelRadius25",121.9);
-  Control.addVariable("WheelMatTYPE25",2); 
-
-  Control.addVariable("WheelRadius26",123.1);
-  Control.addVariable("WheelMatTYPE26",3); 
-
-  Control.addVariable("WheelRadius27",123.35);
-  Control.addVariable("WheelMatTYPE27",2); 
-
-  Control.addVariable("WheelRadius28",124.55);
-  Control.addVariable("WheelMatTYPE28",3); 
 
   Control.addVariable("BeRefXStep",0.0);  
   Control.addVariable("BeRefYStep",0.0);  
