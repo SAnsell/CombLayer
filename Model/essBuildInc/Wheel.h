@@ -49,14 +49,18 @@ class Wheel : public WheelBase
   double zAngle;                  ///< zAngle step
   
   double targetHeight;           ///< Total height of target
-  double coolantThick;           ///< Thickness of coolant
+  double coolantThickIn;         ///< Thickness of coolant (inner wheel part, before the step)
+  double coolantThickOut;        ///< Thickness of coolant (outer wheel part, after the step)
   double caseThick;              ///< Case Thickness
   double voidThick;              ///< void surrounding thickness
   
   double innerRadius;            ///< Inner core
-  double coolantRadius;          ///< Outer coolant radius
+  double coolantRadiusIn;          ///< Outer coolant radius (inner part, before the step)
+  double coolantRadiusOut;          ///< Outer coolant radius (inner part, after the step)
   double caseRadius;             ///< Outer case radius
   double voidRadius;             ///< Final outer radius
+
+  double temperature;            ///< Temperature
 
   size_t nLayers;                ///< number of layers
   std::vector<double> radius;    ///< cylinder radii
@@ -98,7 +102,7 @@ class Wheel : public WheelBase
   /// total wheel void size
   virtual double wheelHeight() const
   { return targetHeight+
-      2.0*(coolantThick+caseThick+voidThick); }
+      2.0*(coolantThickIn+caseThick+voidThick); }
 
   virtual int getCell() const { return mainShaftCell; }
   virtual void createAll(Simulation&,const attachSystem::FixedComp&);

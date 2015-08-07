@@ -87,7 +87,7 @@ Wheel::Wheel(const Wheel& A) :
   lh2Index(A.lh2Index),mainShaftCell(A.mainShaftCell),
   xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
   xyAngle(A.xyAngle),zAngle(A.zAngle),targetHeight(A.targetHeight),
-  coolantThick(A.coolantThick),caseThick(A.caseThick),
+  coolantThickIn(A.coolantThickIn),coolantThickOut(A.coolantThickOut),caseThick(A.caseThick),
   voidThick(A.voidThick),innerRadius(A.innerRadius),
   caseRadius(A.caseRadius),voidRadius(A.voidRadius),
   nLayers(A.nLayers),radius(A.radius),matTYPE(A.matTYPE),
@@ -117,7 +117,8 @@ Wheel::operator=(const Wheel& A)
       xyAngle=A.xyAngle;
       zAngle=A.zAngle;
       targetHeight=A.targetHeight;
-      coolantThick=A.coolantThick;
+      coolantThickIn=A.coolantThickIn;
+      coolantThickOut=A.coolantThickOut;
       caseThick=A.caseThick;
       voidThick=A.voidThick;
       innerRadius=A.innerRadius;
@@ -164,6 +165,7 @@ Wheel::populate(const FuncDataBase& Control)
   zStep=Control.EvalVar<double>(keyName+"ZStep");
   xyAngle=Control.EvalVar<double>(keyName+"XYangle");
   zAngle=Control.EvalVar<double>(keyName+"Zangle");
+  temperature=Control.EvalVar<double>(keyName+"Temp");  
 
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");   
   double R;
@@ -180,12 +182,14 @@ Wheel::populate(const FuncDataBase& Control)
     }
 
   innerRadius=Control.EvalVar<double>(keyName+"InnerRadius");  
-  coolantRadius=Control.EvalVar<double>(keyName+"CoolantRadius");  
+  coolantRadiusIn=Control.EvalVar<double>(keyName+"CoolantRadiusIn");  
+  coolantRadiusOut=Control.EvalVar<double>(keyName+"CoolantRadiusOut");  
   caseRadius=Control.EvalVar<double>(keyName+"CaseRadius");  
   voidRadius=Control.EvalVar<double>(keyName+"VoidRadius");
 
   targetHeight=Control.EvalVar<double>(keyName+"TargetHeight");  
-  coolantThick=Control.EvalVar<double>(keyName+"CoolantThick");  
+  coolantThickIn=Control.EvalVar<double>(keyName+"CoolantThickIn");  
+  coolantThickOut=Control.EvalVar<double>(keyName+"CoolantThickOut");  
   caseThick=Control.EvalVar<double>(keyName+"CaseThick");  
   voidThick=Control.EvalVar<double>(keyName+"VoidThick");  
 
@@ -237,36 +241,37 @@ Wheel::makeShaftObjects(Simulation& System)
   ELog::RegMethod RegA("Wheel","makeShaftObjects");
   std::string Out;
 
-  // Main body [disk]
+  // Main body [disc]
   Out=ModelSupport::getComposite(SMap,wheelIndex,"-7 5 -6");	  
-  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,temperature,Out));
   // Coolant
   Out=ModelSupport::getComposite(SMap,wheelIndex," -7 15 -16 (-5 : 6 1007)" );	
-  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,temperature,Out));
 
   // steel
   Out=ModelSupport::getComposite(SMap,wheelIndex," -7 25 -26 (-15 : 16 1017)" );	
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,temperature,Out));
 
   // void
   Out=ModelSupport::getComposite(SMap,wheelIndex," -7 35 -36 (-25 : 26 1027)" );	
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,temperature,Out));
 
   // shaft
   Out=ModelSupport::getComposite(SMap,wheelIndex," -1007 6 -1006 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mainShaftMat,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mainShaftMat,temperature,Out));
 
   Out=ModelSupport::getComposite(SMap,wheelIndex," -1017 1007 16 -1006 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,temperature,Out));
 
   Out=ModelSupport::getComposite(SMap,wheelIndex," -1027 1017 26 -1006 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,cladShaftMat,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,cladShaftMat,temperature,Out));
 
   Out=ModelSupport::getComposite(SMap,wheelIndex," -1037 1027 36 -1006 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,temperature,Out));
 
   Out=ModelSupport::getComposite(SMap,wheelIndex," -1037 36 -1006 ");
   addOuterSurf("Shaft",Out);  
+
   return;
 }
 
@@ -302,7 +307,7 @@ Wheel::createSurfaces()
   ModelSupport::buildPlane(SMap,wheelIndex+5,Origin-Z*H,Z);  
   ModelSupport::buildPlane(SMap,wheelIndex+6,Origin+Z*H,Z);  
 
-  H+=coolantThick;
+  H+=coolantThickIn;
   ModelSupport::buildPlane(SMap,wheelIndex+15,Origin-Z*H,Z);  
   ModelSupport::buildPlane(SMap,wheelIndex+16,Origin+Z*H,Z);  
 
@@ -314,17 +319,31 @@ Wheel::createSurfaces()
   ModelSupport::buildPlane(SMap,wheelIndex+35,Origin-Z*H,Z);  
   ModelSupport::buildPlane(SMap,wheelIndex+36,Origin+Z*H,Z);  
 
+  ModelSupport::buildCylinder(SMap,wheelIndex+7,Origin,Z,innerRadius);  
+
+  // step
+  ModelSupport::buildCylinder(SMap, wheelIndex+45, Origin, Z, coolantRadiusIn);
+  ModelSupport::buildCylinder(SMap, wheelIndex+46, Origin, Z, coolantRadiusIn+caseThick);
+
+  H  = targetHeight/2.0;
+  H += coolantThickOut;
+  ModelSupport::buildPlane(SMap, wheelIndex+12, Origin-Z*H, Z);
+  ModelSupport::buildPlane(SMap, wheelIndex+13, Origin+Z*H, Z);
+
+  H += caseThick;
+  ModelSupport::buildPlane(SMap, wheelIndex+22, Origin-Z*H, Z);
+  ModelSupport::buildPlane(SMap, wheelIndex+23, Origin+Z*H, Z);
 
 
   int SI(wheelIndex+10);
-  ModelSupport::buildCylinder(SMap,wheelIndex+7,Origin,Z,innerRadius);  
   for(size_t i=0;i<nLayers;i++)
     {
       ModelSupport::buildCylinder(SMap,SI+7,Origin,Z,radius[i]);  
       SI+=10;
     }
 
-  ModelSupport::buildCylinder(SMap,wheelIndex+517,Origin,Z,coolantRadius);  
+  // !!! these surfaces are the samease 8,9,10
+  ModelSupport::buildCylinder(SMap,wheelIndex+517,Origin,Z,coolantRadiusOut);  
   ModelSupport::buildCylinder(SMap,wheelIndex+527,Origin,Z,caseRadius);  
   ModelSupport::buildCylinder(SMap,wheelIndex+537,Origin,Z,voidRadius);  
 
@@ -334,7 +353,6 @@ Wheel::createSurfaces()
 void
 Wheel::createObjects(Simulation& System)
   /*!
-    Create the vaned moderator
     \param System :: Simulation to add results
    */
 {
@@ -356,44 +374,44 @@ Wheel::createObjects(Simulation& System)
       else
 	Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -17M 15 -16 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,
-				       matNum[matTYPE[i]],0.0,Out));  
+				       matNum[matTYPE[i]],temperature,Out));  
       SI+=10;
     }
   // Now make sections for the coolant
   int frontIndex(wheelIndex);
   int backIndex(wheelIndex);
-  const std::string TopBase=
-    ModelSupport::getComposite(SMap,wheelIndex," 15 -16 (-5:6) ");	
+  const std::string TopBase = ModelSupport::getComposite(SMap,wheelIndex," 15 -16 (-5:6) ");	
   for(size_t i=0;i<nLayers;i++)
     {
       if (matTYPE[i]==1)
 	{
-	  if (i)  // otherwize this space has zero size
+	  if (i)  // otherwise this space has zero size
 	    {
 	      Out=ModelSupport::getComposite(SMap,frontIndex,backIndex,
 					     " 7 -7M ");
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,
-					       0.0,Out+TopBase));
+	      System.addCell(MonteCarlo::Qhull(cellIndex++,heMat, temperature, Out+TopBase));
 	    }
 	  frontIndex=backIndex+10;
 	}
       backIndex+=10;
     }
   // Final coolant section
-  Out=ModelSupport::getComposite(SMap,wheelIndex,frontIndex," 7M -517 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,0.0,Out+TopBase));
+  Out=ModelSupport::getComposite(SMap,wheelIndex,frontIndex," ((15 -16 -45 7M) : (12 -13 -517 7M)) (-5:6:7M) ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat, temperature, Out+TopBase));
+
 
   // Back coolant:
   Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -517 5 -6");	
-  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,temperature,Out));
 
   // Metal surround
-  Out=ModelSupport::getComposite(SMap,wheelIndex,"7 -527 (517:-15:16) 25 -26");	
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,wheelIndex,"((7 25 -26 -46) : (7 22 -23 -527)) (-15:16:45) (-12:13:517)");	
+  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat, temperature, Out));
+
 
   // Void surround
-  Out=ModelSupport::getComposite(SMap,wheelIndex,"7 -537 (527:-25:26) 35 -36");	
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,wheelIndex,"7 35 -36 -537 (-25:26:46) (-22:23:527)");	
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0, 0,Out));
 
   Out=ModelSupport::getComposite(SMap,wheelIndex,"-537 35 -36");	
   addOuterSurf("Wheel",Out);
@@ -427,7 +445,7 @@ Wheel::createLinks()
   FixedComp::setLinkSurf(3,SMap.realSurf(wheelIndex+1037));
   FixedComp::addLinkSurf(3,SMap.realSurf(wheelIndex+1));
 
-  const double H=(targetHeight/2.0)+coolantThick+caseThick+voidThick;
+  const double H=(targetHeight/2.0)+coolantThickIn+caseThick+voidThick;
   FixedComp::setConnect(4,Origin-Z*H,-Z);
   FixedComp::setLinkSurf(4,-SMap.realSurf(wheelIndex+35));
 
@@ -462,4 +480,4 @@ Wheel::createAll(Simulation& System,
   return;
 }
 
-}  // NAMESPACE instrumentSystem
+} 
