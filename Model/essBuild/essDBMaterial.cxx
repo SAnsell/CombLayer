@@ -96,7 +96,7 @@ void addESSMaterial()
   MDB.resetMaterial(MObj); 
 
   // ESS Iron
-  MObj.setMaterial(26000, "Iron",
+  MObj.setMaterial(2600, "Iron",
 		   " 26054.70c  0.058450000 "
 		   " 26056.70c  0.917540000 "
 		   " 26057.70c  0.021190000 "
@@ -107,7 +107,7 @@ void addESSMaterial()
 
 
   // ESS  SS316L
-  MObj.setMaterial(26317, "SS316L",
+  MObj.setMaterial(2636, "SS316L",
 		   " 06000.71c  0.001392603 "
 		   " 14028.71c  0.007323064 "
 		   " 14029.71c  0.000372017 "
@@ -146,7 +146,7 @@ void addESSMaterial()
 
   // ESS M74000 - same ase 74001 but at 300 K
   // T = 300 K
-  MObj.setMaterial(74000, "Tungsten",
+  MObj.setMaterial(7400, "Tungsten",
 		   "74180.50c  0.001200000 "
 		   "74182.71c  0.265000000 "
 		   "74183.71c  0.143100000 "
