@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   tallyInc/basicConstruct.h
  *
@@ -54,6 +54,12 @@ class basicConstruct
   T inputItem(const mainSystem::inputParam&,
 	      const size_t,const size_t,
 	      const std::string&) const;
+
+  
+  Geometry::Vec3D
+    inputCntVec3D(const mainSystem::inputParam&,
+		  const size_t,size_t&,
+		  const std::string&) const;
 
  
   template<typename T>

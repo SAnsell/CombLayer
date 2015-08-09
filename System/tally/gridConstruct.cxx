@@ -157,16 +157,21 @@ gridConstruct::processGrid(Simulation& System,
   
   else if (PType=="object")
     {
+      size_t offsetIndex(4);
       const std::string place=
 	inputItem<std::string>(IParam,Index,2,"object name not given");
       const std::string snd=
 	inputItem<std::string>(IParam,Index,3,"front/back/side not give");
       Geometry::Vec3D TOrigin=
-	inputItem<Geometry::Vec3D>(IParam,Index,4,"Centre point offset");
+	inputCntVec3D(IParam,Index,offsetIndex,"Centre point offset");
       Geometry::Vec3D XVec=
-	inputItem<Geometry::Vec3D>(IParam,Index,7,"XVector scale");
+	inputCntVec3D(IParam,Index,offsetIndex,"XVector scale");
+
       Geometry::Vec3D YVec=
-	inputItem<Geometry::Vec3D>(IParam,Index,10,"YVector scale");
+	inputCntVec3D(IParam,Index,offsetIndex,"YVector scale");
+      ELog::EM<<"TOgin == "<<XVec<<ELog::endDiag;
+      ELog::EM<<"OI == "<<offsetIndex<<ELog::endDiag;
+
 
       const long int linkNumber=getLinkIndex(snd);
       if (!calcGlobalCXY(place,linkNumber,TOrigin,XVec,YVec))

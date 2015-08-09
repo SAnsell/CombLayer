@@ -556,7 +556,8 @@ HeadRule::pairValid(const int S,const Geometry::Vec3D& Pt)const
 void
 HeadRule::isolateSurfNum(const std::set<int>& SN) 
   /*!
-    Top down pruning of our rules
+    Top down pruning of our rules to remove all the item
+    in SN.
     \param SN :: surface numbers to keep
    */
 {

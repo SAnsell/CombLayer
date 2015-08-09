@@ -217,7 +217,7 @@ ODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
   GuideA->addInsertCell(bunkerObj.getCell("MainVoid"));
   GuideA->createAll(System,BladeChopper->getKey("Beam"),2,
 		    BladeChopper->getKey("Beam"),2);
-  ELog::EM<<"Guide A = "<<GuideA->getExclude()<<ELog::endDiag;
+
   T0Chopper->addInsertCell(bunkerObj.getCell("MainVoid"));
   T0Chopper->setCentreFlag(3);  // Z direction
   T0Chopper->createAll(System,GuideA->getKey("Guide0"),2);
@@ -235,15 +235,10 @@ ODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
   GuideC->addEndCut(bunkerObj.getSignedLinkString(-2));
   GuideC->createAll(System,*BInsert,-1,*BInsert,-1);
 
-  // Guide leaving the bunker
-  ELog::EM<<"GuideC exit point == "<<
-    GuideC->getKey("Guide0").getSignedLinkPt(2)<<ELog::endDiag;
 
 
   GuideD->addInsertCell(voidCell);
   GuideD->createAll(System,*BInsert,2,GuideC->getKey("Guide0"),2);
-  ELog::EM<<"GuideD exit point == "<<
-    GuideD->getKey("Guide0").getSignedLinkPt(2)<<ELog::endDiag;
 
   //
   // First chopper pit out of bunker

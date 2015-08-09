@@ -160,7 +160,8 @@ makeESSBL::build(Simulation& System,const Bunker& bunkerObj)
     }
   else if (beamName=="NMX")
     {
-      // LOKI beamline
+      // NMX beamline
+      ELog::EM<<"Building NMW"<<ELog::endDiag;
       NMX nmxBL;
       nmxBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
