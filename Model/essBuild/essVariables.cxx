@@ -255,14 +255,14 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("LowAFlightZStep",0.0);      // Step from centre
   Control.addVariable("LowAFlightXYangle",0.0);  // Angle out
   Control.addVariable("LowAFlightZangle",0.0);  // Angle out
-  Control.addVariable("LowAFlightAngleXY1",30.0);  // Angle out
-  Control.addVariable("LowAFlightAngleXY2",30.0);  // Angle out
+  Control.addVariable("LowAFlightAngleXY1",60.0);  // Angle out
+  Control.addVariable("LowAFlightAngleXY2",60.0);  // Angle out
   Control.addVariable("LowAFlightAngleZTop",0.0);  // Step down angle
   Control.addVariable("LowAFlightAngleZBase",0.0); // Step up angle
-  Control.addVariable("LowAFlightHeight",10.0);     // Full height
-  Control.addVariable("LowAFlightWidth",22.0);     // Full width
+  Control.addVariable("LowAFlightHeight",7.6);     // Full height = LowFlyTotalHeight
+  Control.addVariable("LowAFlightWidth",10.7);     // Full width
   Control.addVariable("LowAFlightNLiner",1);      // Liner
-  Control.addVariable("LowAFlightLinerThick1",0.2);      // Liner
+  Control.addVariable("LowAFlightLinerThick1",0.4);      // Liner
   Control.addVariable("LowAFlightLinerMat1","Aluminium");      // Liner
   Control.addVariable("LowAFlightLinerThick2",1.5);      // Liner
   Control.addVariable("LowAFlightLinerMat2","H2O");      // Liner
@@ -271,16 +271,16 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("LowAFlightLinerThick4",0.3);      // Liner
   Control.addVariable("LowAFlightLinerMat4","Void");      // Liner
 
-  Control.addVariable("LowBFlightXStep",3.5);     // Angle
+  Control.addVariable("LowBFlightXStep",0.0);     // Angle
   Control.addVariable("LowBFlightZStep",0.0);      // Step from centre
   Control.addVariable("LowBFlightXYangle",180.0);  // Angle out
   Control.addVariable("LowBFlightZangle",0.0);  // Angle out
-  Control.addVariable("LowBFlightAngleXY1",30.0);  // Angle out
-  Control.addVariable("LowBFlightAngleXY2",30.0);  // Angle out
+  Control.addVariable("LowBFlightAngleXY1",60.0);  // Angle out
+  Control.addVariable("LowBFlightAngleXY2",60.0);  // Angle out
   Control.addVariable("LowBFlightAngleZTop",0.0);  // Step down angle
   Control.addVariable("LowBFlightAngleZBase",0.0); // Step up angle
-  Control.addVariable("LowBFlightHeight",10.0);     // Full height
-  Control.addVariable("LowBFlightWidth",20.0);     // Full width
+  Control.addVariable("LowBFlightHeight",7.6);     // Full height = LowFlyTotalHeight
+  Control.addVariable("LowBFlightWidth",10.7);     // Full width
   Control.addVariable("LowBFlightNLiner",1);      // Liner
   Control.addVariable("LowBFlightLinerThick1",0.5);   
   Control.addVariable("LowBFlightLinerMat1","Aluminium");      
