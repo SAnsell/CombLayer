@@ -41,8 +41,11 @@ class BeRef : public attachSystem::ContainedComp,
 {
  private:
 
+  const std::string baseName; ///< Basename
   const int refIndex;             ///< Index of surface offset
   int cellIndex;                  ///< Cell index
+
+  int engActive;                  ///< Engineering active flag
 
   double xStep;                   ///< X step
   double yStep;                   ///< Y step

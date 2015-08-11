@@ -155,6 +155,8 @@ BeRef::populate(const FuncDataBase& Control,
 {
   ELog::RegMethod RegA("BeRef","populate");
 
+  engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
+
     // Master values
   xStep=Control.EvalVar<double>(keyName+"XStep");
   yStep=Control.EvalVar<double>(keyName+"YStep");
