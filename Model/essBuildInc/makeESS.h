@@ -110,6 +110,9 @@ class makeESS
   std::shared_ptr<BulkModule> Bulk;      ///< Main bulk module
   std::shared_ptr<moderatorSystem::FlightLine> BulkLowAFL;  ///< Lower Mode FL
 
+  std::shared_ptr<DiskPreMod> TopBeRefWaterDisc; ///< Water disc above Reflector (eng detail - for cooling)
+  std::shared_ptr<DiskPreMod> LowBeRefWaterDisc; ///< Water disc below Reflector (eng detail - for cooling)
+
   /// Shutterbay objects
   std::shared_ptr<ShutterBay> ShutterBayObj;  
   /// Array of Guidies
