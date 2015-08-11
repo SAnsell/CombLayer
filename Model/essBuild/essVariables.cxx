@@ -446,30 +446,31 @@ EssVariables(FuncDataBase& Control)
   // TOP A FLIGHT
   Control.addVariable("TopAFlightXStep", 0.0);      // Step from centre
   Control.addVariable("TopAFlightZStep", 0.0);      // Step from centre
-  Control.addVariable("TopAFlightAngleXY1", 30.0);  // Angle out
-  Control.addVariable("TopAFlightAngleXY2", 30.0);  // Angle out
+  Control.addVariable("TopAFlightAngleXY1", 60.0);  // Angle out
+  Control.addVariable("TopAFlightAngleXY2", 60.0);  // Angle out
   Control.addVariable("TopAFlightXYangle", 0.0);
   Control.addVariable("TopAFlightZangle", 0.0);
   Control.addVariable("TopAFlightAngleZTop", 0.0);  // Step down angle
   Control.addVariable("TopAFlightAngleZBase", 0.0); // Step up angle
-  Control.addVariable("TopAFlightHeight", 10.0);     // Full height
-  Control.addVariable("TopAFlightWidth", 22.0);     // Full width
+  //  Control.Parse("TopFlyTotalHeight");
+  Control.addVariable("TopAFlightHeight", 4.6);     // Full height = TopFlyTotalHeight
+  Control.addVariable("TopAFlightWidth", 130.7);     // Full width
   Control.addVariable("TopAFlightNLiner", 1);      // Liner
-  Control.addVariable("TopAFlightLinerThick1", 0.2);      // Liner
+  Control.addVariable("TopAFlightLinerThick1", 0.4);      // Liner
   Control.addVariable("TopAFlightLinerMat1","Aluminium");      // Liner
 
   Control.addVariable("TopBFlightXStep", 0.0);      // Step from centre
   Control.addVariable("TopBFlightZStep", 0.0);      // Step from centre
-  Control.addVariable("TopBFlightAngleXY1", 30.0);  // Angle out
-  Control.addVariable("TopBFlightAngleXY2", 30.0);  // Angle out
+  Control.addVariable("TopBFlightAngleXY1", 60.0);  // Angle out
+  Control.addVariable("TopBFlightAngleXY2", 60.0);  // Angle out
   Control.addVariable("TopBFlightXYangle", 0.0);
   Control.addVariable("TopBFlightZangle", 0.0);
   Control.addVariable("TopBFlightAngleZTop", 0.0);  // Step down angle
   Control.addVariable("TopBFlightAngleZBase", 0.0); // Step up angle
-  Control.addVariable("TopBFlightHeight", 10.0);     // Full height
-  Control.addVariable("TopBFlightWidth", 22.0);     // Full width
+  Control.addVariable("TopBFlightHeight", 4.6);     // Full height = TopFlyTotalHeight
+  Control.addVariable("TopBFlightWidth", 10.7);     // Full width
   Control.addVariable("TopBFlightNLiner", 1);      // Liner
-  Control.addVariable("TopBFlightLinerThick1", 0.2);      // Liner
+  Control.addVariable("TopBFlightLinerThick1", 0.4);      // Liner
   Control.addVariable("TopBFlightLinerMat1","Aluminium");      // Liner
 
 
@@ -805,7 +806,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowFlyZStep",0.0);
   Control.addVariable("LowFlyXYangle",90.0);
   Control.addVariable("LowFlyZangle",180.0);
-  Control.addVariable("LowFlyTotalHeight",5.7);
+  Control.addVariable("LowFlyTotalHeight",7.6);
   
   Control.addVariable("LowFlyLeftLobeXStep",1.0);  
   Control.addVariable("LowFlyLeftLobeYStep",0.0);  
@@ -832,20 +833,14 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowFlyLeftLobeThick2",0.5);
   Control.addVariable("LowFlyLeftLobeMat2","Void");
 
-  Control.addVariable("LowFlyLeftLobeHeight2",0.8);
-  Control.addVariable("LowFlyLeftLobeDepth2",0.8);
+  Control.addVariable("LowFlyLeftLobeHeight2",0.5);
+  Control.addVariable("LowFlyLeftLobeDepth2",0.5);
 
   Control.addVariable("LowFlyLeftLobeThick3",0.3);
   Control.addVariable("LowFlyLeftLobeMat3","Aluminium");
 
   Control.addVariable("LowFlyLeftLobeHeight3",0.0);
   Control.addVariable("LowFlyLeftLobeDepth3",0.0);
-
-
-
-
-
-
 
   Control.addVariable("LowFlyFlowGuideBaseThick",0.2);
   Control.addVariable("LowFlyFlowGuideBaseLen",8.5);
@@ -882,20 +877,14 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowFlyRightLobeThick2",0.5);
   Control.addVariable("LowFlyRightLobeMat2","Void");
 
-  Control.addVariable("LowFlyRightLobeHeight2",0.8);
-  Control.addVariable("LowFlyRightLobeDepth2",0.8);
+  Control.addVariable("LowFlyRightLobeHeight2",0.5);
+  Control.addVariable("LowFlyRightLobeDepth2",0.5);
 
   Control.addVariable("LowFlyRightLobeThick3",0.3);
   Control.addVariable("LowFlyRightLobeMat3","Aluminium");
 
   Control.addVariable("LowFlyRightLobeHeight3",0.0);
   Control.addVariable("LowFlyRightLobeDepth3",0.0);
-
-
-
-
-
-
 
   Control.addVariable("LowFlyMidWaterCutLayer",3);
   Control.addVariable("LowFlyMidWaterMidYStep",5.0);
@@ -1103,7 +1092,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowCapModRadius2");
   Control.addVariable("LowCapModMat2","Be300K");
   Control.addVariable("LowCapModHeight3",0);
-  Control.addVariable("LowCapModDepth3", 0.6);
+  Control.addVariable("LowCapModDepth3", 0.3);
   Control.Parse("BeRefWallThick");
   Control.addVariable("LowCapModRadius3");
   //  Control.Parse("BeRefWallMat");
