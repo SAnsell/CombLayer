@@ -250,19 +250,21 @@ VacuumBox::createLinks()
   /*!
     Determines the link point on the outgoing plane.
     It must follow the beamline, but exit at the plane
+    Note that 0/1 are the flange surfaces
   */
 {
   ELog::RegMethod RegA("VacuumBox","createLinks");
 
-  FixedComp::setConnect(0,Origin-Y*(feFront+voidLength/2.0),-Y);
-  FixedComp::setConnect(1,Origin+Y*(feBack+voidLength/2.0),Y);
+
+  FixedComp::setConnect(0,Origin-Y*(flangeLength+voidLength/2.0),-Y);
+  FixedComp::setConnect(1,Origin+Y*(flangeLength+voidLength/2.0),Y);
   FixedComp::setConnect(2,Origin-X*((feWidth+voidWidth)/2.0),-X);
   FixedComp::setConnect(3,Origin+X*((feWidth+voidWidth)/2.0),-X);
   FixedComp::setConnect(4,Origin-Z*(feDepth+voidDepth),-Z);
   FixedComp::setConnect(5,Origin+Z*(feHeight+voidHeight),Z);  
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(vacIndex+11));
-  FixedComp::setLinkSurf(1,SMap.realSurf(vacIndex+12));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(vacIndex+101));
+  FixedComp::setLinkSurf(1,SMap.realSurf(vacIndex+102));
   FixedComp::setLinkSurf(2,-SMap.realSurf(vacIndex+13));
   FixedComp::setLinkSurf(3,SMap.realSurf(vacIndex+14));
   FixedComp::setLinkSurf(4,-SMap.realSurf(vacIndex+15));

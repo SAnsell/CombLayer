@@ -87,6 +87,48 @@ VacuumPipe::VacuumPipe(const std::string& Key) :
   */
 {}
 
+VacuumPipe::VacuumPipe(const VacuumPipe& A) : 
+  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),
+  vacIndex(A.vacIndex),cellIndex(A.cellIndex),activeFront(A.activeFront),
+  activeBack(A.activeBack),frontSurf(A.frontSurf),
+  backSurf(A.backSurf),radius(A.radius),length(A.length),
+  feThick(A.feThick),flangeRadius(A.flangeRadius),
+  flangeLength(A.flangeLength),feMat(A.feMat)
+  /*!
+    Copy constructor
+    \param A :: VacuumPipe to copy
+  */
+{}
+
+VacuumPipe&
+VacuumPipe::operator=(const VacuumPipe& A)
+  /*!
+    Assignment operator
+    \param A :: VacuumPipe to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedOffset::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      cellIndex=A.cellIndex;
+      activeFront=A.activeFront;
+      activeBack=A.activeBack;
+      frontSurf=A.frontSurf;
+      backSurf=A.backSurf;
+      radius=A.radius;
+      length=A.length;
+      feThick=A.feThick;
+      flangeRadius=A.flangeRadius;
+      flangeLength=A.flangeLength;
+      feMat=A.feMat;
+    }
+  return *this;
+}
+
 VacuumPipe::~VacuumPipe() 
   /*!
     Destructor
@@ -105,8 +147,8 @@ VacuumPipe::populate(const FuncDataBase& Control)
   FixedOffset::populate(Control);
 
   // Void + Fe special:
-  radius=Control.EvalVar<double>(keyName+"radius");
-  length=Control.EvalVar<double>(keyName+"length");
+  radius=Control.EvalVar<double>(keyName+"Radius");
+  length=Control.EvalVar<double>(keyName+"Length");
 
   feThick=Control.EvalVar<double>(keyName+"FeThick");
   flangeRadius=Control.EvalVar<double>(keyName+"FlangeRadius");
@@ -132,10 +174,41 @@ VacuumPipe::createUnitVector(const attachSystem::FixedComp& FC,
   FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
   // after rotation
-  Origin+=Y*(flangeLength+length/2.0);
+  Origin+=Y*(length/2.0);
   return;
 }
 
+void
+VacuumPipe::getShiftedSurf(const HeadRule& HR,
+			   const int index,
+			   const int dFlag)
+  /*!
+    Support function to calculate the shifted surface
+    \param HR :: HeadRule to extract plane surf
+    \param index :: offset index
+    \param dFlag :: direction flag
+   */
+{
+  ELog::RegMethod RegA("VacuumPipe","getShiftedSurf");
+  
+  std::set<int> FS=HR.getSurfSet();
+  for(const int& SN : FS)
+    {
+      const Geometry::Plane* PPtr=SMap.realPtr<Geometry::Plane>(SN);
+      if (PPtr)
+	{
+	  if (SN*dFlag>0)
+	    ModelSupport::buildShiftedPlane
+	      (SMap,vacIndex+index,PPtr,dFlag*flangeLength);
+	  else
+	    ModelSupport::buildShiftedPlaneReversed
+	      (SMap,vacIndex+index,PPtr,dFlag*flangeLength);
+	  
+	  return;
+	}
+    }
+  throw ColErr::EmptyValue<int>("HeadRule contains no planes");
+} 
 
 void
 VacuumPipe::createSurfaces()
@@ -145,22 +218,33 @@ VacuumPipe::createSurfaces()
 {
   ELog::RegMethod RegA("VacuumPipe","createSurfaces");
 
-
   // Inner void
+  if (activeFront)
+    getShiftedSurf(frontSurf,101,1);
+  else
+    {
+      ModelSupport::buildPlane(SMap,vacIndex+1,Origin-Y*(length/2.0),Y);
+      ModelSupport::buildPlane(SMap,vacIndex+101,
+			       Origin-Y*(length/2.0-flangeLength),Y);
+    }
 
+    // Inner void
+  if (activeBack)
+    getShiftedSurf(backSurf,102,-1);
+  else
+    {
+      ELog::EM<<"Y == "<<Y<<ELog::endDiag;
+      ModelSupport::buildPlane(SMap,vacIndex+2,Origin+Y*(length/2.0),Y);
+      ModelSupport::buildPlane(SMap,vacIndex+102,
+			       Origin+Y*(length/2.0-flangeLength),Y);
+    }
+  
   ModelSupport::buildCylinder(SMap,vacIndex+7,Origin,Y,radius);
 
   ModelSupport::buildCylinder(SMap,vacIndex+17,Origin,Y,radius+feThick);
 
   ModelSupport::buildCylinder(SMap,vacIndex+107,Origin,Y,flangeRadius);
 
-  ModelSupport::buildPlane(SMap,vacIndex+1,Origin-Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,vacIndex+2,Origin+Y*(length/2.0),Y);
-  
-  ModelSupport::buildPlane(SMap,vacIndex+101,
-			   Origin-Y*(length/2.0-flangeLength),Y);
-  ModelSupport::buildPlane(SMap,vacIndex+102,
-			   Origin+Y*(length/2.0-flangeLength),Y);
   
   return;
 }
@@ -176,32 +260,42 @@ VacuumPipe::createObjects(Simulation& System)
   ELog::RegMethod RegA("VacuumPipe","createObjects");
 
   std::string Out;
+  
+  const std::string frontStr
+    (activeFront ? frontSurf.display() : 
+     ModelSupport::getComposite(SMap,vacIndex," 1 "));
+  const std::string backStr
+    (activeBack ? backSurf.display() : 
+     ModelSupport::getComposite(SMap,vacIndex," -2 "));
+  const std::string FBStr=frontStr+backStr;
+
 
   // Void 
-  Out=ModelSupport::getComposite(SMap,vacIndex,"1 -2 -7");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,vacIndex," -7 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+FBStr));
   addCell("Void",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,vacIndex,"101 -102 -17 7");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
   addCell("Steel",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,vacIndex,"1 -101 -107 7");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,vacIndex,"-101 -107 7");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out+frontStr));
   addCell("Steel",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,vacIndex,"102 -2 -107 7");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,vacIndex,"102 -107 7");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out+backStr));
   addCell("Steel",cellIndex-1);
 
   // outer void:
   Out=ModelSupport::getComposite(SMap,vacIndex,"101 -102 -107 17");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-  addCell("Steel",cellIndex-1);
+  addCell("OutVoid",cellIndex-1);
 
   // Outer
-  Out=ModelSupport::getComposite(SMap,vacIndex,"1 -2 107");
-  addOuterSurf(Out);      
+  Out=ModelSupport::getComposite(SMap,vacIndex,"-107 ");
+  addOuterSurf(Out+FBStr);
+
   return;
 }
 
@@ -240,32 +334,62 @@ VacuumPipe::createLinks()
 }
 
 void
-VacuumPipe::setFront(const HeadRule& HR)
+VacuumPipe::setFront(const attachSystem::FixedComp& FC,
+		     const long int sideIndex)
   /*!
     Set front surface
+    \param FC :: FixedComponent 
+    \param sideIndex ::  Direction to link
    */
 {
+  ELog::RegMethod RegA("VacuumPipe","setFront");
+  
+  if (sideIndex==0)
+    throw ColErr::EmptyValue<long int>("SideIndex cant be zero");
+
   activeFront=1;
-  frontSurf=HR;
+  if (sideIndex>0)
+    frontSurf=FC.getMainRule(static_cast<size_t>(sideIndex-1));
+  else
+    {
+      frontSurf=FC.getMainRule(static_cast<size_t>(sideIndex-1));
+      frontSurf.makeComplement();
+    }
   return;
 }
   
 void
-VacuumPipe::setBack(const HeadRule& HR)
+VacuumPipe::setBack(const attachSystem::FixedComp& FC,
+		     const long int sideIndex)
   /*!
-    Set back surface
+    Set Back surface
+    \param FC :: FixedComponent 
+    \param sideIndex ::  Direction to link
    */
 {
+  ELog::RegMethod RegA("VacuumPipe","setBack");
+  
+  if (sideIndex==0)
+    throw ColErr::EmptyValue<long int>("SideIndex cant be zero");
+
   activeBack=1;
-  backSurf=HR;
+  if (sideIndex>0)
+    backSurf=FC.getMainRule(static_cast<size_t>(sideIndex-1));
+  else
+    {
+      backSurf=FC.getMainRule(static_cast<size_t>(sideIndex-1));
+      backSurf.makeComplement();
+    }
   return;
 }
+  
+
   
 void
 VacuumPipe::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,
-		     const long int FIndex)
-  /*!
+		      const long int FIndex)
+/*!
     Generic function to create everything
     \param System :: Simulation item
     \param FC :: FixedComp
@@ -277,8 +401,7 @@ VacuumPipe::createAll(Simulation& System,
   populate(System.getDataBase());
   createUnitVector(FC,FIndex);
   createSurfaces();    
-  createObjects(System);
-  
+  createObjects(System);  
   createLinks();
   insertObjects(System);   
   

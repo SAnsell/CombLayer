@@ -45,8 +45,8 @@ class VacuumPipe :
   const int vacIndex;           ///< Index of surface offset
   int cellIndex;                ///< Cell index  
 
-  bool activeFront;
-  bool activeBack;
+  bool activeFront;             ///< Flag for front active
+  bool activeBack;              ///< Flag for back active
   HeadRule frontSurf;           ///< Front surfaces [if used]
   HeadRule backSurf;            ///< Back surfaces [if used]
   
@@ -66,6 +66,8 @@ class VacuumPipe :
   void createObjects(Simulation&);
   void createLinks();
 
+  void getShiftedSurf(const HeadRule&,const int,const int);
+  
  public:
 
   VacuumPipe(const std::string&);
@@ -74,8 +76,8 @@ class VacuumPipe :
   virtual ~VacuumPipe();
 
 
-  void setFront(const HeadRule&);
-  void setBack(const HeadRule&);
+  void setFront(const attachSystem::FixedComp&,const long int);
+  void setBack(const attachSystem::FixedComp&,const long int);
   
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

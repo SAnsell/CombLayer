@@ -36,6 +36,7 @@ namespace constructSystem
   class ChopperPit;
   class RotaryCollimator;
   class VacuumBox;
+  class VacuumPipe;
   class ChopperHousing;
 }
 
@@ -133,6 +134,12 @@ class LOKI
   std::shared_ptr<beamlineSystem::GuideLine> CaveGuide;
   /// Vacuum tank
   std::shared_ptr<VacTank> VTank;
+
+  /// Vacuum Pipes
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeA;
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeB;
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeC;
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeD;
   
   void setBeamAxis(const GuideItem&,const bool);
   
