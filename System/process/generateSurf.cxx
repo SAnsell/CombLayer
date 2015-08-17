@@ -113,6 +113,33 @@ buildShiftedPlane(surfRegister& SMap,const int N,
 }
 
 Geometry::Plane*
+buildShiftedPlaneReversed(surfRegister& SMap,const int N,
+			  const Geometry::Plane* PN,
+			  const double Dist)
+  /*!
+    Builds a plane that is rotated about the centre and the axis
+    \param SMap :: Surface Map system
+    \param N :: Initial Number
+    \param PN :: Plane to use as template
+    \param Dist :: Distance along normal to move plane
+    \return New plane ptr [inserted/tested]
+  */
+{
+  ELog::RegMethod("generateSurf","buildShiftedPlaneReversed");
+  if (!PN) return 0;
+
+  ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
+
+
+  Geometry::Plane* PX=SurI.createUniqSurf<Geometry::Plane>(N);
+  PX->setPlane(-PN->getNormal(),-PN->getDistance());
+  PX->displace(-PN->getNormal()*Dist);
+  
+  const int NFound=SMap.registerSurf(N,PX);
+  return SMap.realPtr<Geometry::Plane>(NFound);
+}
+
+Geometry::Plane*
 buildPlane(surfRegister& SMap,const int N,
 	   const Geometry::Vec3D& A,const Geometry::Vec3D& B,
 	   const Geometry::Vec3D& C,const Geometry::Vec3D& normDir) 

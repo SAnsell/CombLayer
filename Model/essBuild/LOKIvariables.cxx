@@ -108,7 +108,7 @@ LOKIvariables(FuncDataBase& Control)
   Control.addVariable("lokiVacAFeWidth",0.5);
   Control.addVariable("lokiVacAFeFront",0.5);
   Control.addVariable("lokiVacAFeBack",0.5);
-  Control.addVariable("lokiVacAFlangeRadius",16.0);  // GUESS
+  Control.addVariable("lokiVacAFlangeRadius",8.0);  // GUESS
   Control.addVariable("lokiVacAFlangeWall",1.0);  // GUESS
   Control.addVariable("lokiVacAFlangeLength",10.0);  // GUESS
   Control.addVariable("lokiVacAFeMat","Stainless304");
@@ -302,7 +302,7 @@ LOKIvariables(FuncDataBase& Control)
   Control.addVariable("lokiVacBFeWidth",0.5);
   Control.addVariable("lokiVacBFeFront",0.5);
   Control.addVariable("lokiVacBFeBack",0.5);
-  Control.addVariable("lokiVacBFlangeRadius",16.0);  // GUESS
+  Control.addVariable("lokiVacBFlangeRadius",8.0);  // GUESS
   Control.addVariable("lokiVacBFlangeWall",1.0);  // GUESS
   Control.addVariable("lokiVacBFlangeLength",10.0);  // GUESS
   Control.addVariable("lokiVacBFeMat","Stainless304");
@@ -403,7 +403,7 @@ LOKIvariables(FuncDataBase& Control)
   Control.addVariable("lokiVacCFeWidth",0.5);
   Control.addVariable("lokiVacCFeFront",0.5);
   Control.addVariable("lokiVacCFeBack",0.5);
-  Control.addVariable("lokiVacCFlangeRadius",16.0);  // GUESS
+  Control.addVariable("lokiVacCFlangeRadius",8.0);  // GUESS
   Control.addVariable("lokiVacCFlangeWall",1.0);  // GUESS
   Control.addVariable("lokiVacCFlangeLength",10.0);  // GUESS
   Control.addVariable("lokiVacCFeMat","Stainless304");
@@ -870,10 +870,38 @@ LOKIvariables(FuncDataBase& Control)
 
   Control.addVariable("lokiVTankWindowMat","SiCrystal");  // NOT CORRECT
   Control.addVariable("lokiVTankWallMat","Stainless304");
-  
-  
 
-  
+  // VACUUM PIPES:
+  Control.addVariable("lokiPipeARadius",8.0);
+  Control.addVariable("lokiPipeALength",1.0);
+  Control.addVariable("lokiPipeAFeThick",1.0);
+  Control.addVariable("lokiPipeAFlangeRadius",12.0);
+  Control.addVariable("lokiPipeAFlangeLength",1.0);
+  Control.addVariable("lokiPipeAFeMat","Stainless304");
+
+  Control.addVariable("lokiPipeBRadius",8.0);
+  Control.addVariable("lokiPipeBLength",100.0);
+  Control.addVariable("lokiPipeBFeThick",1.0);
+  Control.addVariable("lokiPipeBFlangeRadius",12.0);
+  Control.addVariable("lokiPipeBFlangeLength",1.0);
+  Control.addVariable("lokiPipeBFeMat","Stainless304");
+
+  Control.addVariable("lokiPipeCRadius",8.0);
+  Control.addVariable("lokiPipeCXYAngle",-1.0);
+  Control.addVariable("lokiPipeCLength",20.0);
+  Control.addVariable("lokiPipeCFeThick",1.0);
+  Control.addVariable("lokiPipeCFlangeRadius",12.0);
+  Control.addVariable("lokiPipeCFlangeLength",1.0);
+  Control.addVariable("lokiPipeCFeMat","Stainless304");
+
+  Control.addVariable("lokiPipeDRadius",8.0);
+  Control.addVariable("lokiPipeDLength",20.0);
+  Control.addVariable("lokiPipeDFeThick",1.0);
+  Control.addVariable("lokiPipeDFlangeRadius",12.0);
+  Control.addVariable("lokiPipeDFlangeLength",1.0);
+  Control.addVariable("lokiPipeDFeMat","Stainless304");
+
+ 
   return;
 }
 

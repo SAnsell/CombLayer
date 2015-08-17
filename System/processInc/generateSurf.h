@@ -36,6 +36,10 @@ Geometry::Plane*
 buildShiftedPlane(surfRegister&,const int,
 		  const Geometry::Plane*,
 		  const double);
+Geometry::Plane*
+buildShiftedPlaneReversed(surfRegister&,const int,
+			  const Geometry::Plane*,
+			  const double);
 
 Geometry::Plane*
 buildPlaneRotAxis(surfRegister&,const int,

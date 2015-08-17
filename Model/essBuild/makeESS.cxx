@@ -224,7 +224,8 @@ makeESS::makeTarget(Simulation& System,
   else if (targetType=="SegWheel")
     Target=std::shared_ptr<WheelBase>(new SegWheel("SegWheel"));
   else
-    throw ColErr::InContainerError<std::string>(targetType,"Unknown target type");
+    throw ColErr::InContainerError<std::string>
+      (targetType,"Unknown target type");
 
   Target->addInsertCell("Shaft",voidCell);
   Target->addInsertCell("Wheel",voidCell);

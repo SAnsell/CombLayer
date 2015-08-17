@@ -76,6 +76,7 @@
 #include "GuideLine.h"
 #include "DiskChopper.h"
 #include "VacuumBox.h"
+#include "VacuumPipe.h"
 #include "ChopperHousing.h"
 #include "Bunker.h"
 #include "BunkerInsert.h"
@@ -129,7 +130,10 @@ LOKI::LOKI() :
   GuideCollC(new beamlineSystem::GuideLine("lokiGuideCC")),
   Cave(new LokiHut("lokiCave")),
   CaveGuide(new beamlineSystem::GuideLine("lokiCaveGuide")),
-  VTank(new VacTank("lokiVTank"))
+  VTank(new VacTank("lokiVTank")),
+  VPipeB(new constructSystem::VacuumPipe("lokiPipeB")),
+  VPipeC(new constructSystem::VacuumPipe("lokiPipeC")),
+  VPipeD(new constructSystem::VacuumPipe("lokiPipeD"))
   /*!
     Constructor
  */
@@ -181,6 +185,10 @@ LOKI::LOKI() :
   OR.addObject(Cave);
   OR.addObject(CaveGuide);
   OR.addObject(VTank);
+
+  OR.addObject(VPipeB);
+  OR.addObject(VPipeC);
+  OR.addObject(VPipeD);
 }
 
 
@@ -279,9 +287,9 @@ LOKI::build(Simulation& System,
   SDiskHouse->createAll(System,SDisk->getKey("Main"),0);
   SDiskHouse->insertComponent(System,"Void",*SDisk);
 
+  
   GuideB->addInsertCell(bunkerObj.getCell("MainVoid"));
   GuideB->addInsertCell(VacBoxA->getCells("Void"));
-  
   GuideB->createAll(System,SDisk->getKey("Beam"),2,
 		    SDisk->getKey("Beam"),2);
 
@@ -427,6 +435,25 @@ LOKI::build(Simulation& System,
   VTank->addInsertCell(Cave->getCell("Void"));
   VTank->createAll(System,CaveGuide->getKey("Guide0"),2);
 
+
+  VPipeB->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeB->setFront(*VacBoxA,2);
+  VPipeB->createAll(System,*VacBoxA,2);
+  VPipeB->insertComponent(System,"Void",*GuideB);
+  VPipeB->insertComponent(System,"Void",*BendB);  
+
+    // Vacuum Pipes
+  VPipeC->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeC->setFront(*VacBoxB,1);
+  VPipeC->setBack(*VPipeB,2);
+  VPipeC->createAll(System,*VacBoxB,1);
+  VPipeC->insertComponent(System,"Void",*BendB);  
+
+  VPipeD->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeD->setFront(*VacBoxB,2);
+  VPipeD->setBack(*VacBoxC,1);
+  VPipeD->createAll(System,*VacBoxB,1);
+  VPipeD->insertComponent(System,"Void",*GuideD);  
 
   return;
 }
