@@ -90,20 +90,29 @@ class makeESS
   std::shared_ptr<DiskPreMod> LowPreMod;         ///< Lower mod 
   std::shared_ptr<DiskPreMod> LowCapMod;         ///< Upper mod
 
-  // Cylindrical [to be dumped]
   std::shared_ptr<moderatorSystem::BasicFlightLine> LowAFL;  ///< Lower Mode FL
   std::shared_ptr<moderatorSystem::BasicFlightLine> LowBFL;  ///< Lower Mode FL
   std::shared_ptr<CylPreMod> LowPre;          ///< Lower Mod (Pre)
 
-  
   /// Lower supply 
   std::shared_ptr<constructSystem::SupplyPipe> LowSupplyPipe; 
-  std::shared_ptr<constructSystem::SupplyPipe> LowReturnPipe;  ///< Lower supply 
+  std::shared_ptr<constructSystem::SupplyPipe> LowReturnPipe;  ///< Lower supply
 
-  std::shared_ptr<constructSystem::ModBase> TopMod;   ///< Upper Mod
-  std::shared_ptr<moderatorSystem::FlightLine> TopAFL;  ///< Upper Mode FL
-  std::shared_ptr<moderatorSystem::FlightLine> TopBFL;  ///< Upper Mode FL
-  std::shared_ptr<CylPreMod> TopPre;  ///< Upper Mod (Pre)
+
+
+  // Butterly
+  /// Primary Upper Mod 
+  std::shared_ptr<constructSystem::ModBase> TopMod;
+  std::shared_ptr<DiskPreMod> TopPreMod;         ///< Top mod 
+  std::shared_ptr<DiskPreMod> TopCapMod;         ///< Lower mod
+
+  std::shared_ptr<moderatorSystem::BasicFlightLine> TopAFL;  ///< Top Mode FL
+  std::shared_ptr<moderatorSystem::BasicFlightLine> TopBFL;  ///< Top Mode FL
+  std::shared_ptr<CylPreMod> TopPre;          ///< Toper Mod (Pre)
+
+  /// Toper supply 
+  std::shared_ptr<constructSystem::SupplyPipe> TopSupplyPipe; 
+  std::shared_ptr<constructSystem::SupplyPipe> TopReturnPipe;  ///< Top supply
 
   std::shared_ptr<BulkModule> Bulk;      ///< Main bulk module
   std::shared_ptr<moderatorSystem::FlightLine> BulkLowAFL;  ///< Lower Mode FL
@@ -125,11 +134,11 @@ class makeESS
 
   void buildLowButterfly(Simulation&);
   void buildLowPreMod(Simulation&);
-  void buildLowCylMod(Simulation&);
-  void buildLowConicMod(Simulation&);
-  void buildLayerMod(Simulation&);
-  void buildTopCylMod(Simulation&);
   void buildLowerPipe(Simulation&,const std::string&);
+
+  void buildTopButterfly(Simulation&);
+  void buildTopPreMod(Simulation&);
+  void buildToperPipe(Simulation&,const std::string&);
 
   void makeTarget(Simulation&,const std::string&);
   void makeBunker(Simulation&,const std::string&);

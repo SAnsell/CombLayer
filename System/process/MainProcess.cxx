@@ -629,6 +629,7 @@ void createESSInputs(inputParam& IParam)
   IParam.regDefItem<std::string>("lowMod","lowModType",1,std::string("lowMod"));
   IParam.regDefItem<std::string>("topMod","topModType",1,std::string("topMod"));
   IParam.regDefItem<std::string>("lowPipe","lowPipeType",1,std::string("side"));
+  IParam.regDefItem<std::string>("topPipe","topPipeType",1,std::string("side"));
   IParam.regDefItem<std::string>("iradLine","iradLineType",
 				 1,std::string("void"));
   IParam.regDefItem<std::string>("bunker","bunkerType",1,std::string("null"));
@@ -638,6 +639,7 @@ void createESSInputs(inputParam& IParam)
   IParam.setDesc("lowMod","Type of low moderator to be built");
   IParam.setDesc("topMod","Type of top moderator to be built");
   IParam.setDesc("lowPipe","Type of low moderator pipework");
+  IParam.setDesc("topPipe","Type of top moderator pipework");
   IParam.setDesc("iradLine","Build an irradiation line [void for none]");
   IParam.setDesc("beamlines","Build beamlines [void for none]");
   IParam.setDesc("bunker","Build bunker [void for none [A-D]");
