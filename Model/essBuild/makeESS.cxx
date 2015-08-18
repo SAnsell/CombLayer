@@ -420,48 +420,51 @@ makeESS::build(Simulation& System,
   LowPreMod->createAll(System,World::masterOrigin(),0,true,
 		       Target->wheelHeight()/2.0,
 		       Reflector->getRadius());
+
+  TopPreMod->createAll(System,World::masterOrigin(),0,false,
+		       Target->wheelHeight()/2.0,
+		       Reflector->getRadius());
   
   buildLowButterfly(System);
+  buildTopButterfly(System);
   const double LMHeight=attachSystem::calcLinkDistance(*LowMod,5,6);
+  const double TMHeight=attachSystem::calcLinkDistance(*TopMod,5,6);
   // Cap moderator DOES not span whole unit
   LowCapMod->createAll(System,*LowMod,6,false,
    		       0.0,Reflector->getRadius());
-
-  ELog::EM<<"HERE "<<ELog::endDiag;
-  TopPreMod->createAll(System,World::masterOrigin(),0,true,
-		       Target->wheelHeight()/2.0,
-		       Reflector->getRadius());
-  ELog::EM<<"HERE "<<ELog::endDiag;
-  buildTopButterfly(System);
-  const double TMHeight=attachSystem::calcLinkDistance(*TopMod,5,6);
-  // Cap moderator DOES not span whole unit
   TopCapMod->createAll(System,*TopMod,6,false,
-   		       0.0,Reflector->getRadius());
+   		       0.0,Reflector>getRadius());
 
 
-  
   Reflector->createAll(System,World::masterOrigin(),
 		       Target->wheelHeight(),
 		       LowPreMod->getHeight()+LMHeight+LowCapMod->getHeight(),
 		       TopPreMod->getHeight()+TMHeight+TopCapMod->getHeight());
 
+
   Reflector->insertComponent(System,"targetVoid",*Target,1);
 
   Reflector->deleteCell(System,"lowVoid");
+  Reflector->deleteCell(System,"topVoid");
   Bulk->createAll(System,*Reflector,*Reflector);
 
   // Build flightlines after bulk
   LowAFL->createAll(System,*LowMod,0,*Reflector,4,*Bulk,-3);
   LowBFL->createAll(System,*LowMod,0,*Reflector,3,*Bulk,-3);   
 
+  TopAFL->createAll(System,*TopMod,1,*Reflector,4,*Bulk,-3);
+  TopBFL->createAll(System,*TopMod,0,*Reflector,3,*Bulk,-3);
+
     // Build flightlines after bulk
-  TopAFL->createAll(System,*LowMod,0,*Reflector,4,*Bulk,-3);
-  TopBFL->createAll(System,*LowMod,0,*Reflector,3,*Bulk,-3);   
+  //  TopAFL->createAll(System,*TopMod,0,*Reflector,4,*Bulk,-3);
+  //  TopBFL->createAll(System,*TopMod,0,*Reflector,3,*Bulk,-3);   
 
   attachSystem::addToInsertSurfCtrl(System,*Bulk,Target->getCC("Wheel"));
   attachSystem::addToInsertForced(System,*Bulk,Target->getCC("Shaft"));
   attachSystem::addToInsertForced(System,*Bulk,LowAFL->getCC("outer"));
   attachSystem::addToInsertForced(System,*Bulk,LowBFL->getCC("outer"));
+  attachSystem::addToInsertForced(System,*Bulk,TopAFL->getCC("outer"));
+  attachSystem::addToInsertForced(System,*Bulk,TopBFL->getCC("outer"));
 
 
   // Full surround object
