@@ -688,6 +688,11 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("BeRefWallMat","Aluminium");
   Control.addVariable("BeRefTargSepMat","Void");
 
+  Control.addVariable("BeRefInnerStructureWaterDiscThick", 0.6);
+  Control.addVariable("BeRefInnerStructureWaterDiscMat", "H2O");
+  Control.addVariable("BeRefInnerStructureWaterDiscWallThick", 0.3);
+  Control.addVariable("BeRefInnerStructureWaterDiscWallMat", "Aluminium");
+
   Control.addVariable("BulkXStep",0.0);
   Control.addVariable("BulkYStep",0.0);
   Control.addVariable("BulkZStep",0.0);

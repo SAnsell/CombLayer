@@ -67,21 +67,26 @@
 #include "FixedComp.h"
 #include "ContainedComp.h"
 #include "CellMap.h"
+#include "BeRefInnerStructure.h"
 #include "BeRef.h"
 
 namespace essSystem
 {
 
 BeRef::BeRef(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
+  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,9),
   attachSystem::CellMap(),
   refIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(refIndex+1)
+  cellIndex(refIndex+1),
+  InnerComp(new BeRefInnerStructure(Key + "InnerStructure"))
   /*!
     Constructor
     \param Key :: Name of construction key
   */
-{}
+{
+  ModelSupport::objectRegister& OR = ModelSupport::objectRegister::Instance();
+  OR.addObject(InnerComp);
+}
 
 BeRef::BeRef(const BeRef& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
@@ -92,7 +97,8 @@ BeRef::BeRef(const BeRef& A) :
   wallThick(A.wallThick),wallThickLow(A.wallThickLow),lowVoidThick(A.lowVoidThick),
   topVoidThick(A.topVoidThick),targSepThick(A.targSepThick),
   refMat(A.refMat),wallMat(A.wallMat),
-  targSepMat(A.targSepMat)
+  targSepMat(A.targSepMat),
+  InnerComp(A.InnerComp->clone())
   /*!
     Copy constructor
     \param A :: BeRef to copy
@@ -128,6 +134,7 @@ BeRef::operator=(const BeRef& A)
       refMat=A.refMat;
       wallMat=A.wallMat;
       targSepMat=A.targSepMat;
+      *InnerComp = *A.InnerComp;
     }
   return *this;
 }
@@ -359,6 +366,15 @@ BeRef::createLinks()
   FixedComp::setConnect(5,Origin+Z*(height/2.0+wallThick),Z);
   FixedComp::setLinkSurf(5,SMap.realSurf(refIndex+16));
 
+  FixedComp::setConnect(6,Origin-Z*(height/2.0),-Z);
+  FixedComp::setLinkSurf(6,-SMap.realSurf(refIndex+5));
+
+  FixedComp::setConnect(7,Origin+Z*(height/2.0),Z);
+  FixedComp::setLinkSurf(7,SMap.realSurf(refIndex+6));
+
+  FixedComp::setConnect(8,Origin+Y*(radius),-Y);
+  FixedComp::setLinkSurf(8,-SMap.realSurf(refIndex+7));
+
   return;
 }
 
@@ -386,6 +402,10 @@ BeRef::createAll(Simulation& System,
   createObjects(System);
   createLinks();
   insertObjects(System);       
+
+  if (engActive) {
+    InnerComp->createAll(System, *this);
+  }
 
   return;
 }

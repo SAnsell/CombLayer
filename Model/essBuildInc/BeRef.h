@@ -26,6 +26,7 @@ class Simulation;
 
 namespace essSystem
 {
+  class BeRefInnerStructure;
 
 /*!
   \class BeRef
@@ -46,6 +47,7 @@ class BeRef : public attachSystem::ContainedComp,
   int cellIndex;                  ///< Cell index
 
   int engActive;                  ///< Engineering active flag
+  std::shared_ptr<BeRefInnerStructure> InnerComp;   ///< Inner components inside Reflector (eng detail)
 
   double xStep;                   ///< X step
   double yStep;                   ///< Y step
