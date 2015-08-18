@@ -433,7 +433,7 @@ makeESS::build(Simulation& System,
   LowCapMod->createAll(System,*LowMod,6,false,
    		       0.0,Reflector->getRadius());
   TopCapMod->createAll(System,*TopMod,6,false,
-   		       0.0,Reflector>getRadius());
+   		       0.0,Reflector->getRadius());
 
 
   Reflector->createAll(System,World::masterOrigin(),

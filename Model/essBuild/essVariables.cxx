@@ -781,8 +781,8 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("WheelRadius15",116.75);
   Control.addVariable("WheelMatTYPE15",2); 
 
-  Control.addVariable("WheelRadius16",114.7);
-  Control.addVariable("WheelMatTYPE16",2); 
+    Control.addVariable("WheelRadius16",118.35);
+  Control.addVariable("WheelMatTYPE16",3); 
 
   Control.addVariable("WheelRadius17",118.6);
   Control.addVariable("WheelMatTYPE17",2); 
@@ -808,6 +808,7 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("WheelRadius24",124.55);
   Control.addVariable("WheelMatTYPE24",3); 
 
+  
   Control.addVariable("BeRefXStep",0.0);  
   Control.addVariable("BeRefYStep",0.0);  
   Control.addVariable("BeRefZStep",0.0);
