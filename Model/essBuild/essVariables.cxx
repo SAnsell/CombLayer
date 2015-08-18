@@ -688,30 +688,6 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("BeRefWallMat","Aluminium");
   Control.addVariable("BeRefTargSepMat","Void");
 
-  Control.addVariable("TopBeRefWaterDiscNLayers",2);
-  Control.addVariable("TopBeRefWaterDiscHeight0",0.3);
-  Control.addVariable("TopBeRefWaterDiscDepth0",0.3);
-  Control.Parse("BeRefRadius");
-  Control.addVariable("TopBeRefWaterDiscRadius0");
-  Control.addVariable("TopBeRefWaterDiscMat0","H2O");
-  Control.addVariable("TopBeRefWaterDiscHeight1",0.4);
-  Control.addVariable("TopBeRefWaterDiscDepth1",0.0);
-  Control.Parse("BeRefWallThick");
-  Control.addVariable("TopBeRefWaterDiscRadius1");
-  Control.addVariable("TopBeRefWaterDiscMat1", "Aluminium");
-
-  Control.addVariable("LowBeRefWaterDiscNLayers",2);
-  Control.addVariable("LowBeRefWaterDiscHeight0",0.3);
-  Control.addVariable("LowBeRefWaterDiscDepth0",0.3);
-  Control.Parse("BeRefRadius");
-  Control.addVariable("LowBeRefWaterDiscRadius0");
-  Control.addVariable("LowBeRefWaterDiscMat0","H2O");
-  Control.addVariable("LowBeRefWaterDiscHeight1",0.4);
-  Control.addVariable("LowBeRefWaterDiscDepth1",0.0);
-  Control.Parse("BeRefWallThick");
-  Control.addVariable("LowBeRefWaterDiscRadius1");
-  Control.addVariable("LowBeRefWaterDiscMat1", "Aluminium");
-
   Control.addVariable("BulkXStep",0.0);
   Control.addVariable("BulkYStep",0.0);
   Control.addVariable("BulkZStep",0.0);
@@ -721,9 +697,9 @@ EssVariables(FuncDataBase& Control)
 
   Control.Parse("BeRefRadius+BeRefWallThick+0.2");
   Control.addVariable("BulkRadius1");
-  Control.Parse("BeRefHeight/2.0+BeRefWallThick+TopBeRefWaterDiscHeight0+TopBeRefWaterDiscDepth0+TopBeRefWaterDiscHeight1+0.2");
+  Control.Parse("BeRefHeight/2.0+BeRefWallThick+0.2");
   Control.addVariable("BulkHeight1");
-  Control.Parse("BeRefHeight/2.0+BeRefWallThick+LowBeRefWaterDiscHeight0+LowBeRefWaterDiscDepth0+LowBeRefWaterDiscHeight1+0.2");
+  Control.Parse("BeRefHeight/2.0+BeRefWallThick+0.2");
   Control.addVariable("BulkDepth1");
   Control.addVariable("BulkMat1","Void");
 

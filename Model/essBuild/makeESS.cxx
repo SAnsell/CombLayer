@@ -507,15 +507,6 @@ makeESS::build(Simulation& System,
   Reflector->deleteCell(System,"topVoid");
   Bulk->createAll(System,*Reflector,*Reflector);
 
-  TopBeRefWaterDisc = std::shared_ptr<DiskPreMod>(new DiskPreMod("TopBeRefWaterDisc"));
-  const double RHeight=attachSystem::calcLinkDistance(*Reflector,5,6)/2.0;
-  TopBeRefWaterDisc->createAll(System, World::masterOrigin(), 0, false, RHeight, Reflector->getRadius());
-  attachSystem::addToInsertForced(System, *Bulk, *TopBeRefWaterDisc);
-
-  LowBeRefWaterDisc = std::shared_ptr<DiskPreMod>(new DiskPreMod("LowBeRefWaterDisc"));
-  LowBeRefWaterDisc->createAll(System, World::masterOrigin(), 0, true, RHeight, Reflector->getRadius());
-  attachSystem::addToInsertForced(System, *Bulk, *LowBeRefWaterDisc);
-
   // Build flightlines after bulk
   TopAFL->createAll(System,*TopMod,1,*Reflector,4,*Bulk,-3);
   TopBFL->createAll(System,*TopMod,0,*Reflector,3,*Bulk,-3);
