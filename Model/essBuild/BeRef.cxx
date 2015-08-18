@@ -74,7 +74,7 @@ namespace essSystem
 {
 
 BeRef::BeRef(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,9),
+  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,11),
   attachSystem::CellMap(),
   refIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(refIndex+1),
@@ -374,6 +374,12 @@ BeRef::createLinks()
 
   FixedComp::setConnect(8,Origin+Y*(radius),-Y);
   FixedComp::setLinkSurf(8,-SMap.realSurf(refIndex+7));
+
+  FixedComp::setConnect(9,Origin-Z*(lowVoidThick+targSepThick/2.0+wallThickLow),-Z);
+  FixedComp::setLinkSurf(9,-SMap.realSurf(refIndex+105));
+
+  FixedComp::setConnect(10,Origin+Z*(lowVoidThick+targSepThick/2.0+wallThickLow),Z);
+  FixedComp::setLinkSurf(10,SMap.realSurf(refIndex+106));
 
   return;
 }

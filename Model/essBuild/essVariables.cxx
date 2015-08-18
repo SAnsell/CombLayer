@@ -683,7 +683,7 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("BeRefTargetSepThick",13.0);
   Control.addVariable("BeRefLowVoidThick",2.3);
   Control.addVariable("BeRefTopVoidThick",2.3);
-  Control.addVariable("BeRefRefMat","Be300K");
+  Control.addVariable("BeRefRefMat","Be5H2O");
 
   Control.addVariable("BeRefWallMat","Aluminium");
   Control.addVariable("BeRefTargSepMat","Void");
@@ -692,6 +692,11 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("BeRefInnerStructureWaterDiscMat", "H2O");
   Control.addVariable("BeRefInnerStructureWaterDiscWallThick", 0.3);
   Control.addVariable("BeRefInnerStructureWaterDiscWallMat", "Aluminium");
+
+  Control.addVariable("BeRefInnerStructureBeRadius", 12.5);
+  Control.addVariable("BeRefInnerStructureBeMat", "Be10H2O");
+  Control.addVariable("BeRefInnerStructureBeWallThick", 0.3);
+  Control.addVariable("BeRefInnerStructureBeWallMat", "Aluminium");
 
   Control.addVariable("BulkXStep",0.0);
   Control.addVariable("BulkYStep",0.0);
@@ -1097,7 +1102,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowCapModDepth2",0.0);
   Control.Parse("BeRefRadius-LowCapModRadius0-LowCapModRadius1");
   Control.addVariable("LowCapModRadius2");
-  Control.addVariable("LowCapModMat2","Be300K");
+  Control.addVariable("LowCapModMat2","Be5H2O");
   Control.addVariable("LowCapModHeight3",0);
   Control.addVariable("LowCapModDepth3", 0.3);
   Control.Parse("BeRefWallThick");
@@ -1118,7 +1123,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopCapModDepth2",0.0);
   Control.Parse("BeRefRadius-TopCapModRadius0-TopCapModRadius1");
   Control.addVariable("TopCapModRadius2");
-  Control.addVariable("TopCapModMat2","Be300K");
+  Control.addVariable("TopCapModMat2","Be5H2O");
   Control.addVariable("TopCapModHeight3",0);
   Control.addVariable("TopCapModDepth3", 0.3);
   Control.Parse("BeRefWallThick");

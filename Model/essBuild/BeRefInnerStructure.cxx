@@ -91,7 +91,11 @@ namespace essSystem
     cellIndex(A.cellIndex),
     waterDiscThick(A.waterDiscThick),
     waterDiscMat(A.waterDiscMat),
-    waterDiscWallMat(A.waterDiscWallMat)
+    waterDiscWallMat(A.waterDiscWallMat),
+    BeRadius(A.BeRadius),
+    BeMat(A.BeMat),
+    BeWallThick(A.BeWallThick),
+    BeWallMat(A.BeWallMat)
     /*!
       Copy constructor
       \param A :: BeRefInnerStructure to copy
@@ -115,6 +119,10 @@ namespace essSystem
 	waterDiscMat=A.waterDiscMat;
 	waterDiscWallThick=A.waterDiscWallThick;
 	waterDiscWallMat=A.waterDiscWallMat;
+	BeRadius=A.BeRadius;
+	BeMat=A.BeMat;
+	BeWallThick=A.BeWallThick;
+	BeWallMat=A.BeWallMat;
       }
     return *this;
   }
@@ -151,6 +159,12 @@ namespace essSystem
     waterDiscWallThick=Control.EvalVar<double>(keyName+"WaterDiscWallThick");
     waterDiscWallMat=ModelSupport::EvalMat<int>(Control,keyName+"WaterDiscWallMat");
 
+    BeRadius=Control.EvalVar<double>(keyName+"BeRadius");
+    BeMat=ModelSupport::EvalMat<int>(Control,keyName+"BeMat");
+
+    BeWallThick=Control.EvalVar<double>(keyName+"BeWallThick");
+    BeWallMat=ModelSupport::EvalMat<int>(Control,keyName+"BeWallMat");
+
     return;
   }
 
@@ -184,6 +198,9 @@ namespace essSystem
 
     ModelSupport::buildPlane(SMap, insIndex+15, Origin+Z*(BeRefZBottom+waterDiscThick+waterDiscWallThick), Z);
     ModelSupport::buildPlane(SMap, insIndex+16, Origin+Z*(BeRefZTop-waterDiscThick-waterDiscWallThick), Z);
+
+    ModelSupport::buildCylinder(SMap, insIndex+7, Origin, Z, BeRadius);
+    ModelSupport::buildCylinder(SMap, insIndex+17, Origin, Z, BeRadius+BeWallThick);
 
     return; 
   }
@@ -232,8 +249,17 @@ namespace essSystem
     Out = ModelSupport::getComposite(SMap, insIndex, " 5 -15 ");
     System.addCell(MonteCarlo::Qhull(cellIndex++, waterDiscWallMat, 0, Out+sideBeStr));
 
-    Out = ModelSupport::getComposite(SMap, insIndex, " -15 ");
+    Out = ModelSupport::getComposite(SMap, insIndex, " -7 15");
+    System.addCell(MonteCarlo::Qhull(cellIndex++, BeMat, 0, Out + Reflector.getLinkString(9)));
+
+    Out = ModelSupport::getComposite(SMap, insIndex, " -17 7 15 ");
+    System.addCell(MonteCarlo::Qhull(cellIndex++, BeWallMat, 0, Out + Reflector.getLinkString(9)));
+
+    Out = ModelSupport::getComposite(SMap, insIndex, " -17 15 ");
     LowBeExclude.procString(Out);
+
+    Out = ModelSupport::getComposite(SMap, insIndex, " -15 ");
+    LowBeExclude.addUnion(Out);
     LowBeExclude.makeComplement();
     LowBeObj->addSurfString(LowBeExclude.display());
     
@@ -246,9 +272,17 @@ namespace essSystem
     Out = ModelSupport::getComposite(SMap, insIndex, " 16 -6 ");
     System.addCell(MonteCarlo::Qhull(cellIndex++, waterDiscWallMat, 0, Out+sideBeStr));
 
-    Out = ModelSupport::getComposite(SMap, insIndex, " 16 ");
+    Out = ModelSupport::getComposite(SMap, insIndex, " -7 -16");
+    System.addCell(MonteCarlo::Qhull(cellIndex++, BeMat, 0, Out + Reflector.getLinkString(10)));
+
+    Out = ModelSupport::getComposite(SMap, insIndex, " -17 7 -16 ");
+    System.addCell(MonteCarlo::Qhull(cellIndex++, BeWallMat, 0, Out + Reflector.getLinkString(10)));
+
+    Out = ModelSupport::getComposite(SMap, insIndex, " -17 -16 ");
     TopBeExclude.procString(Out);
 
+    Out = ModelSupport::getComposite(SMap, insIndex, " 16 ");
+    TopBeExclude.addUnion(Out);
     TopBeExclude.makeComplement();
     TopBeObj->addSurfString(TopBeExclude.display());
 

@@ -47,6 +47,11 @@ class BeRefInnerStructure : public attachSystem::ContainedComp,
   double waterDiscWallThick;      ///< Water disc wall thickness
   int    waterDiscWallMat;        ///< Water disc wall material
 
+  double BeRadius;                ///< Inner Be radius
+  int    BeMat;                   ///< Inner Be material
+  double BeWallThick;             ///< Inner Be wall thickness
+  int    BeWallMat;               ///< Inner Be wall material
+
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
 
