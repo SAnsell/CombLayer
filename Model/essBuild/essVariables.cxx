@@ -917,10 +917,10 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("GuideBay2XYangle",180.0); 
   Control.addVariable("GuideBay3XYangle",0.0); 
   Control.addVariable("GuideBay4XYangle",180.0); 
-  Control.addVariable("GuideBay1NItems",12);  
-  Control.addVariable("GuideBay2NItems",12);  
-  Control.addVariable("GuideBay3NItems",12);  
-  Control.addVariable("GuideBay4NItems",12);  
+  Control.addVariable("GuideBay1NItems",11);  
+  Control.addVariable("GuideBay2NItems",11);  
+  Control.addVariable("GuideBay3NItems",11);  
+  Control.addVariable("GuideBay4NItems",11);  
 
   EssBeamLinesVariables(Control);
   EssReflectorVariables(Control);

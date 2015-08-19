@@ -214,14 +214,14 @@ Wheel::makeShaftSurfaces()
 {
   ELog::RegMethod RegA("Wheel","makeShaftSurfaces");
   
-  ModelSupport::buildPlane(SMap,wheelIndex+1006,Origin+Z*shaftHeight,Z);  
+  ModelSupport::buildPlane(SMap,wheelIndex+2006,Origin+Z*shaftHeight,Z);  
 
-  ModelSupport::buildCylinder(SMap,wheelIndex+1007,Origin,Z,shaftRadius);  
-  ModelSupport::buildCylinder(SMap,wheelIndex+1017,Origin,
-			      Z,shaftRadius+shaftCoolThick);  
-  ModelSupport::buildCylinder(SMap,wheelIndex+1027,Origin,
+  ModelSupport::buildCylinder(SMap,wheelIndex+2007,Origin,Z,shaftRadius);  
+
+  ModelSupport::buildCylinder(SMap,wheelIndex+2017,Origin,Z,shaftRadius+shaftCoolThick);  
+  ModelSupport::buildCylinder(SMap,wheelIndex+2027,Origin,
 			      Z,shaftRadius+shaftCoolThick+shaftCladThick);
-  ModelSupport::buildCylinder(SMap,wheelIndex+1037,Origin,
+  ModelSupport::buildCylinder(SMap,wheelIndex+2037,Origin,
 			      Z,shaftRadius+shaftCoolThick+
 			      shaftCladThick+shaftVoidThick);  
   
@@ -242,31 +242,31 @@ Wheel::makeShaftObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,wheelIndex,"-7 5 -6");	  
   System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,mainTemp,Out));
   // Coolant
-  Out=ModelSupport::getComposite(SMap,wheelIndex," -7 15 -16 (-5 : 6 1007)" );	
+  Out=ModelSupport::getComposite(SMap,wheelIndex," -7 15 -16 (-5 : 6 2007)" );	
   System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,mainTemp,Out));
 
   // steel
-  Out=ModelSupport::getComposite(SMap,wheelIndex," -7 25 -26 (-15 : 16 1017)" );	
+  Out=ModelSupport::getComposite(SMap,wheelIndex," -7 25 -26 (-15 : 16 2017)" );	
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
   // void
-  Out=ModelSupport::getComposite(SMap,wheelIndex," -7 35 -36 (-25 : 26 1027)" );	
+  Out=ModelSupport::getComposite(SMap,wheelIndex," -7 35 -36 (-25 : 26 2027)" );	
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
 
   // shaft
-  Out=ModelSupport::getComposite(SMap,wheelIndex," -1007 6 -1006 ");
+  Out=ModelSupport::getComposite(SMap,wheelIndex," -2007 6 -2006 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainShaftMat,mainTemp,Out));
 
-  Out=ModelSupport::getComposite(SMap,wheelIndex," -1017 1007 16 -1006 ");
+  Out=ModelSupport::getComposite(SMap,wheelIndex," -2017 2007 16 -2006 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,mainTemp,Out));
 
-  Out=ModelSupport::getComposite(SMap,wheelIndex," -1027 1017 26 -1006 ");
+  Out=ModelSupport::getComposite(SMap,wheelIndex," -2027 2017 26 -2006 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,cladShaftMat,mainTemp,Out));
 
-  Out=ModelSupport::getComposite(SMap,wheelIndex," -1037 1027 36 -1006 ");
+  Out=ModelSupport::getComposite(SMap,wheelIndex," -2037 2027 36 -2006 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,wheelIndex," -1037 36 -1006 ");
+  Out=ModelSupport::getComposite(SMap,wheelIndex," -2037 36 -2006 ");
   addOuterSurf("Shaft",Out);  
   return;
 }
@@ -326,7 +326,7 @@ Wheel::createSurfaces()
 
   H  = targetHeight/2.0;
   H += coolantThickOut;
-  ModelSupport::buildPlane(SMap,wheelIndex+115,Origin-Z*H, Z); // 13 : 14 
+  ModelSupport::buildPlane(SMap,wheelIndex+115,Origin-Z*H, Z); // 12 : 13 
   ModelSupport::buildPlane(SMap,wheelIndex+116,Origin+Z*H, Z);
   
   H += caseThick;
@@ -396,8 +396,9 @@ Wheel::createObjects(Simulation& System)
 	}
       backIndex+=10;
     }
-  // Final coolant section
-  Out=ModelSupport::getComposite(SMap,wheelIndex,frontIndex," 7M -517 ");
+  // Final coolant section [ UNACCEPTABLE JUNK CELL]
+  Out=ModelSupport::getComposite(SMap,wheelIndex,frontIndex,
+		    " ((15 -16 -1017 7M) : (115 -116 -517 7M)) (-5:6:7M) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,mainTemp,Out+TopBase));
 
   // Back coolant:
@@ -446,7 +447,7 @@ Wheel::createLinks()
   FixedComp::setLinkSurf(3,SMap.realSurf(wheelIndex+1037));
   FixedComp::addLinkSurf(3,SMap.realSurf(wheelIndex+1));
 
-  const double H=(targetHeight/2.0)+coolantThick+caseThick+voidThick;
+  const double H=(targetHeight/2.0)+coolantThickIn+caseThick+voidThick;
   FixedComp::setConnect(4,Origin-Z*H,-Z);
   FixedComp::setLinkSurf(4,-SMap.realSurf(wheelIndex+35));
 
