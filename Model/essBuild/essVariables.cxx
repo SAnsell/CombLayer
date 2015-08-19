@@ -1065,6 +1065,11 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowPreModRadius4", 0.0);
   Control.addVariable("LowPreModMat4","Void");
 
+  Control.addVariable("LowPreModFlowGuideWallThick", 0.3);
+  Control.addVariable("LowPreModFlowGuideWallMat", "Aluminium");
+  Control.addVariable("LowPreModFlowGuideNBaffles", 9);
+  Control.addVariable("LowPreModFlowGuideGapWidth", 3);
+
   Control.addVariable("TopPreModNLayers",5);
   Control.addVariable("TopPreModHeight0",1.5);
   Control.addVariable("TopPreModDepth0",1.5);
@@ -1089,6 +1094,14 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopPreModRadius4", 0.0);
   Control.addVariable("TopPreModMat4","Void");
 
+  Control.Parse("LowPreModFlowGuideWallThick");
+  Control.addVariable("TopPreModFlowGuideWallThick");
+  Control.addVariable("TopPreModFlowGuideWallMat", "Aluminium");
+  Control.Parse("LowPreModFlowGuideNBaffles");
+  Control.addVariable("TopPreModFlowGuideNBaffles");
+  Control.Parse("LowPreModFlowGuideGapWidth");
+  Control.addVariable("TopPreModFlowGuideGapWidth");
+
   Control.addVariable("LowCapModNLayers",4);
   Control.addVariable("LowCapModHeight0",0.5);
   Control.addVariable("LowCapModDepth0", 0.5);
@@ -1110,6 +1123,11 @@ EssButterflyModerator(FuncDataBase& Control)
   //  Control.Parse("BeRefWallMat");
   Control.addVariable("LowCapModMat3", "Aluminium");
 
+  Control.addVariable("LowCapModFlowGuideWallThick", 0.3);
+  Control.addVariable("LowCapModFlowGuideWallMat", "Aluminium");
+  Control.addVariable("LowCapModFlowGuideNBaffles", 9);
+  Control.addVariable("LowCapModFlowGuideGapWidth", 3);
+
   Control.addVariable("TopCapModNLayers",4);
   Control.addVariable("TopCapModHeight0",0.5);
   Control.addVariable("TopCapModDepth0", 0.5);
@@ -1130,6 +1148,15 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopCapModRadius3");
   //  Control.Parse("BeRefWallMat");
   Control.addVariable("TopCapModMat3", "Aluminium");
+
+  Control.Parse("LowCapModFlowGuideWallThick");
+  Control.addVariable("TopCapModFlowGuideWallThick");
+  Control.addVariable("TopCapModFlowGuideWallMat", "Aluminium");
+  Control.Parse("LowCapModFlowGuideNBaffles");
+  Control.addVariable("TopCapModFlowGuideNBaffles");
+  Control.Parse("LowCapModFlowGuideGapWidth");
+  Control.addVariable("TopCapModFlowGuideGapWidth");
+
   return;
 }
   
