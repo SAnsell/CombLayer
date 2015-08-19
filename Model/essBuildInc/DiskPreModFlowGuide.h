@@ -49,11 +49,6 @@ class DiskPreModFlowGuide : public attachSystem::ContainedComp,
 
   double gapWidth;      ///< Gap width
 
-  double BeRadius;                ///< Inner Be radius
-  int    BeMat;                   ///< Inner Be material
-  double BeWallThick;             ///< Inner Be wall thickness
-  int    BeWallMat;               ///< Inner Be wall material
-
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
 

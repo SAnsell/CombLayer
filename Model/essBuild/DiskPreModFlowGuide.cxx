@@ -91,11 +91,8 @@ namespace essSystem
     cellIndex(A.cellIndex),
     wallThick(A.wallThick),
     wallMat(A.wallMat),
-    nBaffles(A.nBaffles),
-    BeRadius(A.BeRadius),
-    BeMat(A.BeMat),
-    BeWallThick(A.BeWallThick),
-    BeWallMat(A.BeWallMat)
+    gapWidth(A.gapWidth),
+    nBaffles(A.nBaffles)
     /*!
       Copy constructor
       \param A :: DiskPreModFlowGuide to copy
@@ -119,10 +116,6 @@ namespace essSystem
 	wallMat=A.wallMat;
 	gapWidth=A.gapWidth;
 	nBaffles=A.nBaffles;
-	BeRadius=A.BeRadius;
-	BeMat=A.BeMat;
-	BeWallThick=A.BeWallThick;
-	BeWallMat=A.BeWallMat;
       }
     return *this;
   }
@@ -155,15 +148,9 @@ namespace essSystem
 
     wallThick=Control.EvalVar<double>(keyName+"WallThick");
     wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
-    nBaffles=Control.EvalVar<int>(keyName+"NBaffles");
     gapWidth=Control.EvalVar<double>(keyName+"GapWidth");
+    nBaffles=Control.EvalVar<int>(keyName+"NBaffles");
 
-	  /*    BeRadius=Control.EvalVar<double>(keyName+"BeRadius");
-    BeMat=ModelSupport::EvalMat<int>(Control,keyName+"BeMat");
-
-    BeWallThick=Control.EvalVar<double>(keyName+"BeWallThick");
-    BeWallMat=ModelSupport::EvalMat<int>(Control,keyName+"BeWallMat");
-    */
     return;
   }
 
