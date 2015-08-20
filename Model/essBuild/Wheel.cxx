@@ -77,10 +77,10 @@ namespace essSystem
 Wheel::Wheel(const std::string& Key) :
   WheelBase(Key)
   /*!
-   Constructor
-      \param Key :: Name of construction key
-    */
-  {}
+    Constructor
+    \param Key :: Name of construction key
+  */
+{}
 
 Wheel::Wheel(const Wheel& A) : 
   WheelBase(A),
@@ -380,7 +380,8 @@ Wheel::createObjects(Simulation& System)
   int frontIndex(wheelIndex);
   int backIndex(wheelIndex);
   const std::string TopBase=
-    ModelSupport::getComposite(SMap,wheelIndex," 15 -16 (-5:6) ");	
+    ModelSupport::getComposite(SMap,wheelIndex," 15 -16 (-5:6) ");
+  
   for(size_t i=0;i<nLayers;i++)
     {
       if (matTYPE[i]==1)
@@ -392,22 +393,56 @@ Wheel::createObjects(Simulation& System)
 	      System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,
 					       mainTemp,Out+TopBase));
 	    }
+	  ELog::EM<<"++ Index = "<<wheelIndex<<ELog::endDiag;
 	  frontIndex=backIndex+10;
 	}
       backIndex+=10;
     }
   // Final coolant section [ UNACCEPTABLE JUNK CELL]
-  Out=ModelSupport::getComposite(SMap,wheelIndex,frontIndex,
-		    " ((15 -16 -1017 7M) : (115 -116 -517 7M)) (-5:6:7M) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,mainTemp,Out+TopBase));
+  Out=ModelSupport::getComposite(SMap,wheelIndex," 6 -116 -517 1017 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,mainTemp,Out));
 
+  Out=ModelSupport::getComposite(SMap,wheelIndex," -5 115 -517 1017 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,mainTemp,Out));
+
+  Out=ModelSupport::getComposite(SMap,wheelIndex,frontIndex,
+				 "-16 6 -1017 7M ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,mainTemp,Out));
+
+  Out=ModelSupport::getComposite(SMap,wheelIndex,frontIndex,
+				 "15 -5 -1017 7M ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,mainTemp,Out));
+
+
+  
   // Back coolant:
   Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -517 5 -6");	
   System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,mainTemp,Out));
 
   // Metal surround [ UNACCEPTABLE JUNK CELL]
-  Out=ModelSupport::getComposite(SMap,wheelIndex,
-	 "((7 25 -26 -1027) : (7 125 -126 -527)) (-15:16:1017) (-115:116:517)");
+  // Metal front:
+  Out=ModelSupport::getComposite(SMap,wheelIndex,"-527 517 115 -116");	
+  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+
+  // forward Main sections:
+  Out=ModelSupport::getComposite(SMap,wheelIndex,"-527 1027 -16 116");	
+  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+
+  Out=ModelSupport::getComposite(SMap,wheelIndex,"-527 1027 15 -115");	
+  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+
+  // Join Main sections:
+  Out=ModelSupport::getComposite(SMap,wheelIndex,"-1027 1017 -26 116");	
+  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+
+  Out=ModelSupport::getComposite(SMap,wheelIndex,"-1027 1017 25 -115");	
+  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+
+  // Inner Main sections:
+  Out=ModelSupport::getComposite(SMap,wheelIndex,"-1017 7 -26 16");	
+  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+
+  Out=ModelSupport::getComposite(SMap,wheelIndex,"-1017 7 25 -15");	
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
   // Void surround
