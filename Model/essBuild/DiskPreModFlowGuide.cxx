@@ -200,7 +200,7 @@ namespace essSystem
   }
 
   void
-  DiskPreModFlowGuide::createObjects(Simulation& System, const attachSystem::FixedComp& FC)
+  DiskPreModFlowGuide::createObjects(Simulation& System, attachSystem::FixedComp& FC)
   /*!
     Create the objects
     \param System :: Simulation to add results
@@ -209,7 +209,7 @@ namespace essSystem
   {
     ELog::RegMethod RegA("DiskPreModFlowGuide","createObjects");
     
-    const attachSystem::CellMap* CM = dynamic_cast<const attachSystem::CellMap*>(&FC);
+    attachSystem::CellMap* CM = dynamic_cast<attachSystem::CellMap*>(&FC);
     MonteCarlo::Object* InnerObj(0);
     int innerCell(0);
 
@@ -221,63 +221,84 @@ namespace essSystem
     if (!InnerObj)
       throw ColErr::InContainerError<int>(innerCell,"DiskPreMod inner cell not found");
 
-    //    CM->deleteCell(System, "Inner");
+    const int innerMat = InnerObj->getMat();
+    const double innerTemp = InnerObj->getTemp();
+    CM->deleteCell(System, "Inner");
     
     std::string Out;
     const std::string topBottomStr = FC.getLinkString(7) + FC.getLinkString(8);
     const std::string sideStr = FC.getLinkString(6);
-    HeadRule wallExclude;
 
     // central plate
     Out=ModelSupport::getComposite(SMap,insIndex," 3 -4 ");
-    wallExclude.procString(Out); 
     System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0,Out+topBottomStr+sideStr));
 
     // side plates
     int SI(insIndex);
     for (size_t i=0; i<nBaffles; i++)
       {
+	// Baffles
 	if (i%2)
 	  {
 	    Out = ModelSupport::getComposite(SMap, SI, insIndex, " 1 -2 -14M  ");
 	    System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0,Out+topBottomStr+sideStr));
 
 	    Out = ModelSupport::getComposite(SMap, SI, insIndex, " 1 -2 14M -3M  ");
-	    System.addCell(MonteCarlo::Qhull(cellIndex++,InnerObj->getMat(),InnerObj->getTemp(),Out+topBottomStr));
+	    System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,Out+topBottomStr));
 
 	    Out = ModelSupport::getComposite(SMap, SI, insIndex, " 1 -2 24M  ");
 	    System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0,Out+topBottomStr+sideStr));
 
 	    Out = ModelSupport::getComposite(SMap, SI, insIndex, " 1 -2 -24M 4M ");
-	    System.addCell(MonteCarlo::Qhull(cellIndex++,InnerObj->getMat(),InnerObj->getTemp(),Out+topBottomStr+sideStr));
+	    System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,Out+topBottomStr+sideStr));
 
 	    Out = ModelSupport::getComposite(SMap, SI, insIndex, " 1 -2 ");
-	    wallExclude.addUnion(Out);
 	  }
-	else
+	else if (i<nBaffles)
 	  {
 	    Out = ModelSupport::getComposite(SMap, SI, insIndex, " 1 -2 -3M -7M ");
 	    System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0,Out+topBottomStr));
 
 	    // x<0
 	    Out = ModelSupport::getComposite(SMap, SI, insIndex, " 1 -2 7M -3M ");
-	    System.addCell(MonteCarlo::Qhull(cellIndex++,InnerObj->getMat(),InnerObj->getTemp(),Out+topBottomStr+sideStr));
+	    System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,Out+topBottomStr+sideStr));
 	    // same but x>0 - divided by surf 3M to gain speed
 	    Out = ModelSupport::getComposite(SMap, SI, insIndex, " 1 -2 7M 3M ");
-	    System.addCell(MonteCarlo::Qhull(cellIndex++,InnerObj->getMat(),InnerObj->getTemp(),Out+topBottomStr+sideStr));
+	    System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,Out+topBottomStr+sideStr));
 
 	    Out = ModelSupport::getComposite(SMap, SI, insIndex, " 1 -2 4M -7M ");
 	    System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0,Out+topBottomStr));
 
 	    Out = ModelSupport::getComposite(SMap, SI, insIndex, " 1 -2 ");
-	    wallExclude.addUnion(Out);
+	  }
+
+	// Splitting of innerCell (to gain speed)
+	if (i==0)
+	  {
+	    Out = ModelSupport::getComposite(SMap, SI, insIndex, " -1 -3M ");
+	    System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,Out+topBottomStr+sideStr));
+	    Out = ModelSupport::getComposite(SMap, SI, insIndex, " -1 4M ");
+	    System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,Out+topBottomStr+sideStr));
+	  }
+	else
+	  {
+	    Out = ModelSupport::getComposite(SMap, SI, SI-10, " -1 2M ") + ModelSupport::getComposite(SMap, insIndex, " -3 ");
+	    System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,Out+topBottomStr+sideStr));
+	    
+	    Out = ModelSupport::getComposite(SMap, SI, SI-10, " -1 2M ") + ModelSupport::getComposite(SMap, insIndex, " 4 ");
+	    System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,Out+topBottomStr+sideStr));
+
+	    if (i == nBaffles-1)
+	    {
+	      Out = ModelSupport::getComposite(SMap, SI, insIndex, " 2 -3M ");
+	      System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,Out+topBottomStr+sideStr));
+	      Out = ModelSupport::getComposite(SMap, SI, insIndex, " 2 4M ");
+	      System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,Out+topBottomStr+sideStr));
+	    }
 	  }
 	
 	SI += 10;
       }
-
-    wallExclude.makeComplement();
-    InnerObj->addSurfString(wallExclude.display());
 
     return; 
   }
@@ -296,7 +317,7 @@ namespace essSystem
 
   void
   DiskPreModFlowGuide::createAll(Simulation& System,
-				 const attachSystem::FixedComp& FC)
+				 attachSystem::FixedComp& FC)
   /*!
     Extrenal build everything
     \param System :: Simulation

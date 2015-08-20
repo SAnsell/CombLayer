@@ -52,7 +52,7 @@ class DiskPreModFlowGuide : public attachSystem::ContainedComp,
   void createUnitVector(const attachSystem::FixedComp&);
 
   void createSurfaces(const attachSystem::FixedComp&);
-  void createObjects(Simulation&, const attachSystem::FixedComp&);
+  void createObjects(Simulation&, attachSystem::FixedComp&);
   void createLinks();
 
  public:
@@ -63,7 +63,7 @@ class DiskPreModFlowGuide : public attachSystem::ContainedComp,
   virtual DiskPreModFlowGuide* clone() const;
   virtual ~DiskPreModFlowGuide();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&);
+  void createAll(Simulation&,attachSystem::FixedComp&);
 
 };
 
