@@ -45,9 +45,8 @@ class DiskPreModFlowGuide : public attachSystem::ContainedComp,
   double wallThick;          ///< Wall thickness
   int    wallMat;            ///< Wall material
 
-  size_t nBaffles;        ///< Number of baffles
-
   double gapWidth;      ///< Gap width
+  size_t nBaffles;        ///< Number of baffles
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);

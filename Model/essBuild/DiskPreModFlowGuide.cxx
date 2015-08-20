@@ -177,7 +177,7 @@ namespace essSystem
     ELog::RegMethod RegA("DiskPreModFlowGuide","createSurfaces");
 
     const double radius = fabs(FC.getLinkPt(6)[0]) > Geometry::zeroTol ? fabs(FC.getLinkPt(6)[0]) : fabs(FC.getLinkPt(6)[1]);
-    const double dy = radius*2/(nBaffles+1); // y-distance between plates
+    const double dy = radius*2.0/static_cast<double>(nBaffles+1); // y-distance between plates
 
     ModelSupport::buildPlane(SMap, insIndex+3, Origin-X*(wallThick/2.0), X);
     ModelSupport::buildPlane(SMap, insIndex+4, Origin+X*(wallThick/2.0), X);
@@ -186,11 +186,11 @@ namespace essSystem
     ModelSupport::buildPlane(SMap, insIndex+14, Origin-X*(gapWidth+wallThick/2.0), X);
     ModelSupport::buildPlane(SMap, insIndex+24, Origin+X*(gapWidth+wallThick/2.0), X);
 
-    double y(0);
+    double y(0.0);
     int SI(insIndex);
     for (size_t i=0; i<nBaffles; i++)
       {
-	y = -radius + dy*(i+1);
+	y = -radius + dy*static_cast<double>(i+1);
 	ModelSupport::buildPlane(SMap, SI+1, Origin+Y*(y-wallThick/2.0), Y);
 	ModelSupport::buildPlane(SMap, SI+2, Origin+Y*(y+wallThick/2.0), Y);
 	SI += 10;
@@ -220,8 +220,10 @@ namespace essSystem
       }
     if (!InnerObj)
       throw ColErr::InContainerError<int>(innerCell,"DiskPreMod inner cell not found");
+
+    //    CM->deleteCell(System, "Inner");
     
-    std::string Out, Out1, Out2;
+    std::string Out;
     const std::string topBottomStr = FC.getLinkString(7) + FC.getLinkString(8);
     const std::string sideStr = FC.getLinkString(6);
     HeadRule wallExclude;
@@ -237,24 +239,37 @@ namespace essSystem
       {
 	if (i%2)
 	  {
-	    Out1 = ModelSupport::getComposite(SMap, SI, insIndex, " 1 -2 -14M  ");
-	    System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0,Out1+topBottomStr+sideStr));
+	    Out = ModelSupport::getComposite(SMap, SI, insIndex, " 1 -2 -14M  ");
+	    System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0,Out+topBottomStr+sideStr));
 
-	    Out2 = ModelSupport::getComposite(SMap, SI, insIndex, " 1 -2 24M  ");
-	    System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0,Out2+topBottomStr+sideStr));
+	    Out = ModelSupport::getComposite(SMap, SI, insIndex, " 1 -2 14M -3M  ");
+	    System.addCell(MonteCarlo::Qhull(cellIndex++,InnerObj->getMat(),InnerObj->getTemp(),Out+topBottomStr));
 
-	    wallExclude.addUnion(Out1);
-	    wallExclude.addUnion(Out2);
+	    Out = ModelSupport::getComposite(SMap, SI, insIndex, " 1 -2 24M  ");
+	    System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0,Out+topBottomStr+sideStr));
+
+	    Out = ModelSupport::getComposite(SMap, SI, insIndex, " 1 -2 -24M 4M ");
+	    System.addCell(MonteCarlo::Qhull(cellIndex++,InnerObj->getMat(),InnerObj->getTemp(),Out+topBottomStr+sideStr));
+
+	    Out = ModelSupport::getComposite(SMap, SI, insIndex, " 1 -2 ");
+	    wallExclude.addUnion(Out);
 	  }
 	else
-	  { // first
-	    Out1 = ModelSupport::getComposite(SMap, SI, insIndex, " 1 -2 -3M -7M ");
-	    System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0,Out1+topBottomStr));
+	  {
+	    Out = ModelSupport::getComposite(SMap, SI, insIndex, " 1 -2 -3M -7M ");
+	    System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0,Out+topBottomStr));
 
-	    Out2 = ModelSupport::getComposite(SMap, SI, insIndex, " 1 -2 4M -7M ");
-	    System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0,Out2+topBottomStr));
+	    // x<0
+	    Out = ModelSupport::getComposite(SMap, SI, insIndex, " 1 -2 7M -3M ");
+	    System.addCell(MonteCarlo::Qhull(cellIndex++,InnerObj->getMat(),InnerObj->getTemp(),Out+topBottomStr+sideStr));
+	    // same but x>0 - divided by surf 3M to gain speed
+	    Out = ModelSupport::getComposite(SMap, SI, insIndex, " 1 -2 7M 3M ");
+	    System.addCell(MonteCarlo::Qhull(cellIndex++,InnerObj->getMat(),InnerObj->getTemp(),Out+topBottomStr+sideStr));
 
-	    Out = ModelSupport::getComposite(SMap, SI, insIndex, " 1 -2 -7M ");
+	    Out = ModelSupport::getComposite(SMap, SI, insIndex, " 1 -2 4M -7M ");
+	    System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0,Out+topBottomStr));
+
+	    Out = ModelSupport::getComposite(SMap, SI, insIndex, " 1 -2 ");
 	    wallExclude.addUnion(Out);
 	  }
 	
