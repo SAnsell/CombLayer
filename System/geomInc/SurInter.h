@@ -57,6 +57,10 @@ closestPt(const std::vector<Geometry::Vec3D>&,
 	  const Geometry::Vec3D&);
 
 std::pair<Geometry::Vec3D,int>
+interceptRuleConst(const HeadRule&,const Geometry::Vec3D&,
+	      const Geometry::Vec3D&);
+
+std::pair<Geometry::Vec3D,int>
 interceptRule(HeadRule&,const Geometry::Vec3D&,
 	      const Geometry::Vec3D&);
 

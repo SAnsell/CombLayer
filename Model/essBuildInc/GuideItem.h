@@ -43,6 +43,7 @@ class GuideItem : public attachSystem::ContainedGroup,
   const std::string baseName;   ///< Base keyname
   const int guideIndex;         ///< Index of surface offset
   int cellIndex;                ///< Cell index
+  int active;                   ///< Build/don't build flag
   
   double xStep;                 ///< orthogonal offset (on circle)
   double yStep;                 ///< Forward offset [not current used]

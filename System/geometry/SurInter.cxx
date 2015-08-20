@@ -604,6 +604,33 @@ closestPt(const std::vector<Geometry::Vec3D>& PtVec,
 }
 
 std::pair<Geometry::Vec3D,int>
+interceptRuleConst(const HeadRule& HR,
+		   const Geometry::Vec3D& Origin,
+		   const Geometry::Vec3D& N)
+  /*!
+    Determine the closes point to the headRule intercept
+    \param HR :: HeadRule
+    \param Origin :: Origin of line
+    \param N :: Direction of the line
+    \return pair of position and surface.
+  */
+{
+  ELog::RegMethod RegA("SurInter[F]","interceptRuleConst");
+
+  // Calc bunker edge intersectoin
+  std::vector<Geometry::Vec3D> Pts;
+  std::vector<int> SNum;
+
+  HR.calcSurfIntersection(Origin,N,Pts,SNum);
+  if (Pts.empty())
+    return std::pair<Geometry::Vec3D,int>(Origin,0);
+  
+  const size_t indexA=SurInter::closestPt(Pts,Origin);
+  return std::pair<Geometry::Vec3D,int>(Pts[indexA],SNum[indexA]); 
+
+}
+
+std::pair<Geometry::Vec3D,int>
 interceptRule(HeadRule& HR,const Geometry::Vec3D& Origin,
 	      const Geometry::Vec3D& N)
   /*!
@@ -614,20 +641,10 @@ interceptRule(HeadRule& HR,const Geometry::Vec3D& Origin,
     \return pair of position and surface.
   */
 {
-  ELog::RegMethod RegA("SurInter[F]","interceptRule");
-
-  // Calc bunker edge intersectoin
-  std::vector<Geometry::Vec3D> Pts;
-  std::vector<int> SNum;
+  ELog::RegMethod RegA("SurInter[F]","interceptRule(HeadRule&)");
 
   HR.populateSurf();
-  HR.calcSurfIntersection(Origin,N,Pts,SNum);
-  if (Pts.empty())
-    return std::pair<Geometry::Vec3D,int>(Origin,0);
-  
-  const size_t indexA=SurInter::closestPt(Pts,Origin);
-  return std::pair<Geometry::Vec3D,int>(Pts[indexA],SNum[indexA]); 
-
+  return interceptRuleConst(HR,Origin,N);
 }
 
 }  // NAMESPACE SurInter

@@ -919,8 +919,8 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("GuideBay4XYangle",180.0); 
   Control.addVariable("GuideBay1NItems",11);  
   Control.addVariable("GuideBay2NItems",11);  
-  Control.addVariable("GuideBay3NItems",11);  
-  Control.addVariable("GuideBay4NItems",11);  
+  Control.addVariable("GuideBay3NItems",0);  
+  Control.addVariable("GuideBay4NItems",0);  
 
   EssBeamLinesVariables(Control);
   EssReflectorVariables(Control);
@@ -1436,7 +1436,8 @@ EssBeamLinesVariables(FuncDataBase& Control)
       Control.addVariable(baseKey+"9XYangle",-18.0); 
       Control.addVariable(baseKey+"10XYangle",-24.0); 
       Control.addVariable(baseKey+"11XYangle",-30.0);
-      Control.addVariable(baseKey+"Filled",0);      
+      Control.addVariable(baseKey+"Filled",0);
+      Control.addVariable(baseKey+"Active",0);      
     }
   return;
 }

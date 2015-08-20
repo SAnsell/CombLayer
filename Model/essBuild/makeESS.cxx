@@ -220,14 +220,18 @@ makeESS::createGuides(Simulation& System)
       GB->addInsertCell("Outer",ShutterBayObj->getMainCell());
       GB->setCylBoundary(Bulk->getLinkSurf(2),
 			 ShutterBayObj->getLinkSurf(2));
+      
       if (i<2)
 	GB->createAll(System,*LowMod);  
-      //      if(i<2)
-      //
-      //      else
-	//	GB->createAll(System,*TopMod);  
+      else
+	GB->createAll(System,*TopMod);
+      
       GBArray.push_back(GB);
     }
+  //  GBArray[0]->outerMerge(System,*GBArray[2]);
+  //  for(size_t i=0;i<4;i++)
+  //    GBArray[i]->createGuideItems(System);
+
   return;
 }
 
@@ -477,7 +481,7 @@ makeESS::build(Simulation& System,
 
   createGuides(System);
   makeBunker(System,bunker);
-  
+
   // PROTON BEAMLINE
   
 
@@ -491,7 +495,6 @@ makeESS::build(Simulation& System,
 				    PBeam->getCC("Full"));
 
   makeBeamLine(System,IParam);
-
   return;
 }
 

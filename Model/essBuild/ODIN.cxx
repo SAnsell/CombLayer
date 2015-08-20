@@ -322,6 +322,7 @@ ODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
   GuidePitCFront->createAll(System,GuideF->getKey("Guide0"),2,
 			    GuideF->getKey("Guide0"),2);
 
+
   GuideG->addInsertCell(voidCell);
   GuideG->addInsertCell(PitC->getCell("MidLayer"));
   GuideG->addInsertCell(PitC->getCell("Outer"));
@@ -333,7 +334,7 @@ ODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
   GuidePitCBack->addEndCut(PitC->getKey("Inner").getSignedLinkString(2));
   GuidePitCBack->createAll(System,GuideG->getKey("Guide0"),-1,
 			    GuideG->getKey("Guide0"),-1);
-
+  
 
   GuideCut=attachSystem::unionLink(GuideG->getKey("Shield"),{3,4,5,6});
   Cave->addInsertCell(voidCell);  
@@ -351,7 +352,7 @@ ODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
 
   BeamStop->addInsertCell(Cave->getCell("VoidMain"));
   BeamStop->createAll(System,GuideH->getKey("Guide0"),2);
-  
+
   return;
 }
 

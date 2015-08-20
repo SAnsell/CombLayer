@@ -90,7 +90,7 @@ GuideItem::GuideItem(const std::string& Key,const size_t Index)  :
   attachSystem::CellMap(),
   baseName(Key),
   guideIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
-  cellIndex(guideIndex+1),innerCyl(0),outerCyl(0)
+  cellIndex(guideIndex+1),active(1),innerCyl(0),outerCyl(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -102,14 +102,15 @@ GuideItem::GuideItem(const GuideItem& A) :
   attachSystem::ContainedGroup(A),attachSystem::FixedGroup(A),
   attachSystem::CellMap(A),
   baseName(A.baseName),guideIndex(A.guideIndex),
-  cellIndex(A.cellIndex),xStep(A.xStep),yStep(A.yStep),
-  zStep(A.zStep),xyAngle(A.xyAngle),zAngle(A.zAngle),
-  beamXStep(A.beamXStep),beamZStep(A.beamZStep),
-  beamXYAngle(A.beamXYAngle),beamZAngle(A.beamZAngle),
-  beamWidth(A.beamWidth),beamHeight(A.beamHeight),
-  nSegment(A.nSegment),height(A.height),width(A.width),
-  length(A.length),mat(A.mat),innerCyl(A.innerCyl),
-  outerCyl(A.outerCyl),RInner(A.RInner),ROuter(A.ROuter)
+  cellIndex(A.cellIndex),active(A.active),xStep(A.xStep),
+  yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
+  zAngle(A.zAngle),beamXStep(A.beamXStep),
+  beamZStep(A.beamZStep),beamXYAngle(A.beamXYAngle),
+  beamZAngle(A.beamZAngle),beamWidth(A.beamWidth),
+  beamHeight(A.beamHeight),nSegment(A.nSegment),
+  height(A.height),width(A.width),length(A.length),
+  mat(A.mat),innerCyl(A.innerCyl),outerCyl(A.outerCyl),
+  RInner(A.RInner),ROuter(A.ROuter)
   /*!
     Copy constructor
     \param A :: GuideItem to copy
@@ -130,6 +131,7 @@ GuideItem::operator=(const GuideItem& A)
       attachSystem::FixedGroup::operator=(A);
       attachSystem::CellMap::operator=(A);
       cellIndex=A.cellIndex;
+      active=A.active;
       xStep=A.xStep;
       yStep=A.yStep;
       zStep=A.zStep;
@@ -192,7 +194,9 @@ GuideItem::populate(const FuncDataBase& Control)
  */
 {
   ELog::RegMethod RegA("GuideItem","populate");
-  
+
+  active=Control.EvalPair<int>(keyName,baseName,"Filled");
+
   xStep=Control.EvalPair<double>(keyName,baseName,"XStep");
   yStep=Control.EvalPair<double>(keyName,baseName,"YStep");
   zStep=Control.EvalPair<double>(keyName,baseName,"ZStep");
@@ -226,6 +230,7 @@ GuideItem::populate(const FuncDataBase& Control)
     }
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat",baseName+"Mat");
   filled=Control.EvalPair<int>(keyName,baseName,"Filled");
+
 
   return;
 }
@@ -380,7 +385,8 @@ GuideItem::createObjects(Simulation& System,const GuideItem* GPtr)
   */
 {
   ELog::RegMethod RegA("GuideItem","createObjects");
-
+  if (!active) return;
+  
   const std::string edgeStr=getEdgeStr(GPtr);
   std::string Out;  
 
@@ -485,30 +491,6 @@ GuideItem::createLinks()
   mainFC.setLinkSurf(1,SMap.realSurf(GI+7));
   mainFC.addBridgeSurf(1,SMap.realSurf(guideIndex+1));
 
-  //
-  //  mainFC.setConnect(0,beamOrigin+bY*RInner,-bY);
-  /*
-  // Beamline :: 
-  FixedComp::setConnect(0,beamOrigin+bY*RInner,-bY);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(guideIndex+7));
-
-  const int GI=10*static_cast<int>(nSegment)+guideIndex;
-  FixedComp::setConnect(1,beamExit,bY);
-  FixedComp::setLinkSurf(1,SMap.realSurf(GI+7));
-  FixedComp::addBridgeSurf(1,SMap.realSurf(guideIndex+1));
-  FixedComp::setConnect(2,beamOrigin-bX*(beamWidth/2.0)+
-			bY*((RInner+ROuter)/2.0),-bX);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(guideIndex+103));
-  FixedComp::setConnect(3,beamOrigin+bX*(beamWidth/2.0)+
-			bY*((RInner+ROuter)/2.0),bX);
-  FixedComp::setLinkSurf(3,SMap.realSurf(guideIndex+104));
-  FixedComp::setConnect(4,beamOrigin-bZ*(beamHeight/2.0)+
-			bY*((RInner+ROuter)/2.0),-bZ);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(guideIndex+105));
-  FixedComp::setConnect(5,beamOrigin+bZ*(beamHeight/2.0)+
-			bY*((RInner+ROuter)/2.0),bZ);
-  FixedComp::setLinkSurf(5,SMap.realSurf(guideIndex+106));
-  */
   return;
 }
 

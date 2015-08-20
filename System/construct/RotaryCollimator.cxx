@@ -368,7 +368,9 @@ RotaryCollimator::createAll(Simulation& System,
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
   createSurfaces();
+  ELog::EM<<"XASFDASF"<<ELog::endDiag;
   createObjects(System);
+  ELog::EM<<"XASFDASF"<<ELog::endDiag;
   layerProcess(System);
   createLinks();
   insertObjects(System);

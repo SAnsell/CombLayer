@@ -117,6 +117,7 @@ Hut::populate(const FuncDataBase& Control)
   feLeftWall=Control.EvalVar<double>(keyName+"FeLeftWall");
   feRightWall=Control.EvalVar<double>(keyName+"FeRightWall");
   feRoof=Control.EvalVar<double>(keyName+"FeRoof");
+  feFloor=Control.EvalVar<double>(keyName+"FeFloor");
   feNoseFront=Control.EvalVar<double>(keyName+"FeNoseFront");
   feNoseSide=Control.EvalVar<double>(keyName+"FeNoseSide");
   feBack=Control.EvalVar<double>(keyName+"FeBack");
@@ -124,6 +125,7 @@ Hut::populate(const FuncDataBase& Control)
   concLeftWall=Control.EvalVar<double>(keyName+"ConcLeftWall");
   concRightWall=Control.EvalVar<double>(keyName+"ConcRightWall");
   concRoof=Control.EvalVar<double>(keyName+"ConcRoof");
+  concFloor=Control.EvalVar<double>(keyName+"ConcFloor");
   concNoseFront=Control.EvalVar<double>(keyName+"ConcNoseFront");
   concNoseSide=Control.EvalVar<double>(keyName+"ConcNoseSide");
   concBack=Control.EvalVar<double>(keyName+"ConcBack");
