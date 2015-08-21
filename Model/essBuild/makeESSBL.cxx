@@ -145,7 +145,6 @@ makeESSBL::build(Simulation& System,const Bunker& bunkerObj)
   if (!mainGIPtr)
     throw ColErr::InContainerError<std::string>(shutterName,"shutterObject");
 
-  ELog::EM<<"Beamline == "<<beamName<<ELog::endDiag;
   if (beamName=="ODIN")
     {
       // Odin beamline
@@ -161,7 +160,6 @@ makeESSBL::build(Simulation& System,const Bunker& bunkerObj)
   else if (beamName=="NMX")
     {
       // NMX beamline
-      ELog::EM<<"Building NMW"<<ELog::endDiag;
       NMX nmxBL;
       nmxBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }

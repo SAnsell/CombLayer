@@ -310,7 +310,7 @@ HeadRule::subMatched(const HeadRule& A,
 		     const HeadRule& SubUnit) 
   /*!
     Sub-a part matched unit into main system
-    \param A :: Rule to check
+    \param A :: Rule to check find 
     \param SubUnit :: Rule to replace unit with
     \return 0 :: No match / 1 matched 
   */
@@ -558,7 +558,7 @@ HeadRule::isolateSurfNum(const std::set<int>& SN)
   /*!
     Top down pruning of our rules to remove all the item
     in SN.
-    \param SN :: surface numbers to keep
+    \param SN :: surface numbers to remove
    */
 {
   ELog::RegMethod RegA("HeadRule","isolateSurfNum");
@@ -814,6 +814,26 @@ HeadRule::removeTopItem(const int SN)
 	}
     }
   return 0;
+}
+
+int
+HeadRule::removeUnsignedItems(const int SN) 
+  /*!
+    Given a signed surface SN , removes the first instance 
+    of that surface from the Rule
+    \param SN :: Unsigned surface to remove
+    \retval -ve error,
+    \retval 0  not-found 
+    \retval  count of removed surfaces [success]
+  */
+{
+  ELog::RegMethod RegA("HeadRule","removeUnsignedItems");
+
+  const int cntA=removeItems(SN);
+  if (cntA<0) return cntA;
+  const int cntB=removeItems(-SN);
+  if (cntB<0) return cntB;
+  return cntA+cntB;
 }
 
 int
@@ -1187,6 +1207,76 @@ HeadRule::removeItem(const Rule* Target)
   delete P;
   return;
 }
+
+void
+HeadRule::removeCommon()
+  /*!
+    Objective is to remove common surface at the same
+    effective level
+  */
+{
+  ELog::RegMethod RegA("HeadRule","removeCommon");
+
+  if (!HeadNode) 
+    return;
+  std::set<int> SFound;  // surf : Level [paired]
+
+  std::stack<Rule*> TreeLine;
+  std::stack<size_t> TreeLevel;
+  TreeLine.push(HeadNode);
+  TreeLevel.push(0);
+
+  std::set<int>::const_iterator mc;
+  int activeLevel(0);
+  //  int statePoint(HeadNode->type());
+  
+  while(!TreeLine.empty())
+    {
+      Rule* tmpA=TreeLine.top();
+      activeLevel=TreeLevel.top();
+      TreeLine.pop();
+      TreeLevel.pop();
+
+      // Process level:
+      if (tmpA->getParent() && 
+	  tmpA->getParent()->type()!=tmpA->type())
+	{
+	  activeLevel++;
+	}
+      const SurfPoint* SurX=dynamic_cast<const SurfPoint*>(tmpA);
+      if (SurX)
+	{
+	  const int SN=(100*SurX->getSignKeyN())+activeLevel;
+	  
+	  mc=SFound.find(SN);
+	  if (mc!=SFound.end())
+	    removeItem(SurX);
+	  else
+	    SFound.insert(SN);
+	}
+      else                           // PROCESS LEAF NODE:
+	{
+	  Rule* tmpB=tmpA->leaf(0);
+	  Rule* tmpC=tmpA->leaf(1);
+	  if (tmpB || tmpC)
+	    {
+	      if (tmpB)
+		{
+		  TreeLevel.push(activeLevel);
+		  TreeLine.push(tmpB);
+		}
+	      if (tmpC)
+		{
+		  TreeLevel.push(activeLevel);
+		  TreeLine.push(tmpC);
+		}
+	    }
+	}
+    }
+  return;
+}
+
+
 
 int
 HeadRule::substituteSurf(const int SurfN,const int newSurfN,

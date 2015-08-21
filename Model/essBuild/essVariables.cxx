@@ -906,7 +906,7 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("GuideBayYStep",0.0);  
   Control.addVariable("GuideBayZStep",0.0);
   Control.addVariable("GuideBayZangle",0.0);
-  Control.addVariable("GuideBayViewAngle",68.0); 
+  Control.addVariable("GuideBayViewAngle",128.0); 
   Control.addVariable("GuideBayInnerHeight",11.0);
   Control.addVariable("GuideBayInnerDepth",11.0);
   Control.addVariable("GuideBayMidRadius",170.0);
@@ -919,8 +919,9 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("GuideBay4XYangle",180.0); 
   Control.addVariable("GuideBay1NItems",11);  
   Control.addVariable("GuideBay2NItems",11);  
-  Control.addVariable("GuideBay3NItems",0);  
-  Control.addVariable("GuideBay4NItems",0);  
+  Control.addVariable("GuideBay3NItems",11);  
+  Control.addVariable("GuideBay4NItems",11);
+
 
   EssBeamLinesVariables(Control);
   EssReflectorVariables(Control);
@@ -1364,29 +1365,29 @@ EssBunkerVariables(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("essVariables[F]","EssBunkerVariables");
 
-  Control.addVariable("LowABunkerLeftPhase",35.0);
-  Control.addVariable("LowABunkerRightPhase",35.0);
-  Control.addVariable("LowABunkerLeftAngle",0.0);
-  Control.addVariable("LowABunkerRightAngle",0.0);
-  Control.addVariable("LowABunkerNSectors",11);
+  Control.addVariable("ABunkerLeftPhase",70.0);
+  Control.addVariable("ABunkerRightPhase",70.0);
+  Control.addVariable("ABunkerLeftAngle",0.0);
+  Control.addVariable("ABunkerRightAngle",0.0);
+  Control.addVariable("ABunkerNSectors",11);
   
-  Control.addVariable("LowABunkerWallRadius",1300.0);
-  Control.addVariable("LowABunkerFloorDepth",100.0);
-  Control.addVariable("LowABunkerRoofHeight",100.0);
+  Control.addVariable("ABunkerWallRadius",1300.0);
+  Control.addVariable("ABunkerFloorDepth",100.0);
+  Control.addVariable("ABunkerRoofHeight",100.0);
 
-  Control.addVariable("LowABunkerWallThick",250.0);
-  Control.addVariable("LowABunkerSideThick",100.0);
-  Control.addVariable("LowABunkerRoofThick",100.0);
-  Control.addVariable("LowABunkerFloorThick",100.0);
+  Control.addVariable("ABunkerWallThick",250.0);
+  Control.addVariable("ABunkerSideThick",100.0);
+  Control.addVariable("ABunkerRoofThick",100.0);
+  Control.addVariable("ABunkerFloorThick",100.0);
 
-  Control.addVariable("LowABunkerWallMat","Steel71");
+  Control.addVariable("ABunkerWallMat","Steel71");
 
-  Control.addVariable("LowABunkerNLayers",12);
-  Control.addVariable("LowABunkerWallMat1","Tungsten");
-  Control.addVariable("LowABunkerWallMat2","Tungsten");
-  Control.addVariable("LowABunkerWallMat3","Stainless304");
-  Control.addVariable("LowABunkerWallMat4","Steel71");
-  Control.addVariable("LowABunkerWallMat9","Tungsten");
+  Control.addVariable("ABunkerNLayers",12);
+  Control.addVariable("ABunkerWallMat1","Tungsten");
+  Control.addVariable("ABunkerWallMat2","Tungsten");
+  Control.addVariable("ABunkerWallMat3","Stainless304");
+  Control.addVariable("ABunkerWallMat4","Steel71");
+  Control.addVariable("ABunkerWallMat9","Tungsten");
       
   
   return;

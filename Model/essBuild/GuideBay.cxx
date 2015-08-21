@@ -306,10 +306,10 @@ GuideBay::outerMerge(Simulation& System,
   */
 {
   ELog::RegMethod RegA("GuideBay","outerMerge");
-  return;
+
   MonteCarlo::Qhull* AB=System.findQhull(CellMap::getCell("Outer"));
   MonteCarlo::Qhull* BB=System.findQhull(otherBay.CellMap::getCell("Outer"));
-
+  
   if (!AB)
     throw ColErr::InContainerError<int>
       (CellMap::getCell("Outer"),"Outer cell not found");
@@ -325,16 +325,35 @@ GuideBay::outerMerge(Simulation& System,
     (CInner->getRadius()+COuter->getRadius())/2.0;
 
   // Keep positive direction of sense
-  const Geometry::Vec3D CPoint = Origin+Y*midRadius;
+  Geometry::Vec3D CPoint = (Origin+otherBay.getCentre())/2.0
+    +Y*midRadius;
 
+
+  HeadRule ARule=AB->getHeadRule();
+  HeadRule BRule=BB->getHeadRule();
   const std::pair<Geometry::Vec3D,int> APoint=
-    SurInter::interceptRuleConst(AB->getHeadRule(),CPoint,Z);
+    SurInter::interceptRule(ARule,CPoint,Z);
   const std::pair<Geometry::Vec3D,int> BPoint=
-    SurInter::interceptRuleConst(BB->getHeadRule(),CPoint,Z);
+    SurInter::interceptRule(BRule,CPoint,Z);
 
-  ELog::EM<<"APoint == "<<APoint.first<<" :: "<<APoint.second<<ELog::endDiag;
-  ELog::EM<<"BPoint == "<<BPoint.first<<" :: "<<BPoint.second<<ELog::endDiag;
-  
+  if (APoint.second && BPoint.second)
+    {
+      ARule.removeUnsignedItems(APoint.second);
+      BRule.removeUnsignedItems(BPoint.second);
+      ARule.addIntersection(BRule);
+      //      ARule.removeCommon();      
+    }
+
+  // Delete common stuff and build object
+  const int mat=AB->getMat();
+  const double temp=AB->getTemp();
+  System.removeCell(AB->getName());
+  System.removeCell(BB->getName());
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,temp,
+				   ARule.display()));
+  // NOW RESET names in cellMap:
+  setCell("Outer",cellIndex-1);
+  otherBay.setCell("Outer",cellIndex-1);
   return;
 }
   
@@ -389,7 +408,6 @@ GuideBay::createAll(Simulation& System,
   createSurfaces();
   createObjects(System);
   createLinks();
-  createGuideItems(System);
   insertObjects(System);              
   return;
 }

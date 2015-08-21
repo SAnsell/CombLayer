@@ -41,6 +41,7 @@
 #include "RegMethod.h"
 #include "GTKreport.h"
 #include "OutputLog.h"
+#include "debugMethod.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "MatrixBase.h"
@@ -150,7 +151,7 @@ NMX::build(Simulation& System,
 {
   // For output stream
   ELog::RegMethod RegA("NMX","build");
-  ELog::EM<<"Building NMX on : "<<GItem.getKeyName()<<ELog::endDiag;
+  ELog::EM<<"\nBuilding NMX on : "<<GItem.getKeyName()<<ELog::endDiag;
 
   setBeamAxis(GItem,1);
   
@@ -159,7 +160,6 @@ NMX::build(Simulation& System,
   //  BendA->addEndCut(GItem.getKey("Beam").getSignedLinkString(-2));
   GuideA->createAll(System,GItem.getKey("Beam"),-1,
 		     GItem.getKey("Beam"),-1);
-  ELog::EM<<"LOW MODERATOR REVERSE"<<ELog::endDiag;
   GuideA->getKey("Guide0").reverseZ();
 
 

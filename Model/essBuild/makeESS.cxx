@@ -130,7 +130,7 @@ makeESS::makeESS() :
   BulkLowAFL(new moderatorSystem::FlightLine("BulkLAFlight")),
   ShutterBayObj(new ShutterBay("ShutterBay")),
 
-  LowABunker(new Bunker("LowABunker"))
+  ABunker(new Bunker("ABunker"))
  /*!
     Constructor
  */
@@ -156,7 +156,7 @@ makeESS::makeESS() :
   OR.addObject(BulkLowAFL);
 
   OR.addObject(ShutterBayObj);
-  OR.addObject(LowABunker);
+  OR.addObject(ABunker);
 }
 
 
@@ -212,10 +212,13 @@ makeESS::createGuides(Simulation& System)
    */
 {
   ELog::RegMethod RegA("makeESS","createGuides");
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
 
   for(size_t i=0;i<4;i++)
     {
       std::shared_ptr<GuideBay> GB(new GuideBay("GuideBay",i+1));
+      OR.addObject(GB);
       GB->addInsertCell("Inner",ShutterBayObj->getMainCell());
       GB->addInsertCell("Outer",ShutterBayObj->getMainCell());
       GB->setCylBoundary(Bulk->getLinkSurf(2),
@@ -228,9 +231,10 @@ makeESS::createGuides(Simulation& System)
       
       GBArray.push_back(GB);
     }
-  //  GBArray[0]->outerMerge(System,*GBArray[2]);
-  //  for(size_t i=0;i<4;i++)
-  //    GBArray[i]->createGuideItems(System);
+  GBArray[1]->outerMerge(System,*GBArray[2]);
+  GBArray[0]->outerMerge(System,*GBArray[3]);
+  for(size_t i=0;i<4;i++)
+    GBArray[i]->createGuideItems(System);
 
   return;
 }
@@ -342,7 +346,6 @@ makeESS::makeBeamLine(Simulation& System,
 {
   ELog::RegMethod RegA("makeESS","makeBeamLine");
 
-
   const size_t NSet=IParam.setCnt("beamlines");
 
   for(size_t j=0;j<NSet;j++)
@@ -354,12 +357,8 @@ makeESS::makeBeamLine(Simulation& System,
 	  const std::string Btype=IParam.getValue<std::string>("beamlines",j,i);
 	  // FIND BUNKER HERE:::
 	  
-	  ELog::EM<<"Making beamline "<<BL
-		  <<" [" <<Btype<< "] "<<ELog::endDiag;
 	  makeESSBL BLfactory(BL,Btype);
-	  BLfactory.build(System,*LowABunker);
-	  ELog::EM<<"Finished beamline "<<BL
-      	      <<" [" <<Btype<< "] "<<ELog::endDiag;
+	  BLfactory.build(System,*ABunker);
 	    
 	}
     }
@@ -379,8 +378,8 @@ makeESS::makeBunker(Simulation& System,
 
   ELog::EM<<"Bunker == "<<bunkerType<<ELog::endDiag;
   
-  LowABunker->addInsertCell(74123);
-  LowABunker->createAll(System,*LowMod,*GBArray[0],2,true);
+  ABunker->addInsertCell(74123);
+  ABunker->createAll(System,*LowMod,*GBArray[0],2,true);
 
   return;
 }

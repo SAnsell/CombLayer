@@ -126,7 +126,7 @@ class makeESS
   std::vector<std::shared_ptr<beamlineSystem::beamlineConstructor> > 
     BLArray;  
 
-  std::shared_ptr<Bunker> LowABunker;  ///< Lower bunker
+  std::shared_ptr<Bunker> ABunker;  ///< Right bunker
   
   void topFlightLines(Simulation&);
   void lowFlightLines(Simulation&);

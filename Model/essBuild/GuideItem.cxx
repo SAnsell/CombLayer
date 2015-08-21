@@ -195,8 +195,7 @@ GuideItem::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("GuideItem","populate");
 
-  active=Control.EvalPair<int>(keyName,baseName,"Filled");
-
+  active=Control.EvalPair<int>(keyName,baseName,"Active");
   xStep=Control.EvalPair<double>(keyName,baseName,"XStep");
   yStep=Control.EvalPair<double>(keyName,baseName,"YStep");
   zStep=Control.EvalPair<double>(keyName,baseName,"ZStep");

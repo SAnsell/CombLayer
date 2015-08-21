@@ -233,7 +233,6 @@ VacuumPipe::createSurfaces()
     getShiftedSurf(backSurf,102,-1);
   else
     {
-      ELog::EM<<"Y == "<<Y<<ELog::endDiag;
       ModelSupport::buildPlane(SMap,vacIndex+2,Origin+Y*(length/2.0),Y);
       ModelSupport::buildPlane(SMap,vacIndex+102,
 			       Origin+Y*(length/2.0-flangeLength),Y);
