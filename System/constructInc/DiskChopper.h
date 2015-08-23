@@ -26,24 +26,7 @@ class Simulation;
 
 namespace constructSystem
 {
-
-/*!
-  \struct DiskInfo
-  \version 1.0
-  \author S. Ansell
-  \date January 2015
-  \brief DiskChopper basic info
-*/
-
-struct DiskInfo
-{
-  double thick;               ///< Thickness of disk
-  double phaseAngle;          ///< Phase angle [deg]
-  double openAngle;           ///< Opening angle [deg]
-  int innerMat;               ///< Inner material [non-viewed]
-  int outerMat;               ///< Outer material [viewed]
-};
-  
+  class DiskBlades;
 /*!
   \class DiskChopper
   \version 1.0
@@ -72,7 +55,7 @@ class DiskChopper : public attachSystem::FixedGroup,
   double diskGap;               ///< Gap betwen disks
 
   size_t nDisk;                 ///< Number of disks
-  std::vector<DiskInfo> DInfo;  ///< Info on each disk
+  std::vector<DiskBlades> DInfo;  ///< Info on each disk
 
   
   void populate(const FuncDataBase&);

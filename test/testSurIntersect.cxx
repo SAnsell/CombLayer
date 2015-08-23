@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testSurIntersect.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@
 #include <complex>
 #include <vector>
 #include <deque>
+#include <set>
 #include <map>
 #include <string>
 #include <algorithm>
@@ -60,6 +61,7 @@
 #include "DblLine.h"
 #include "Circle.h"
 #include "Ellipse.h"
+#include "HeadRule.h"
 #include "SurInter.h"
 
 #include "testFunc.h"

@@ -72,6 +72,37 @@ FixedOffset::FixedOffset(const std::string& KN,const size_t NL) :
   */
 {}
 
+FixedOffset::FixedOffset(const FixedOffset& A) : 
+  FixedComp(A),
+  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
+  xyAngle(A.xyAngle),zAngle(A.zAngle)
+  /*!
+    Copy constructor
+    \param A :: FixedOffset to copy
+  */
+{}
+
+FixedOffset&
+FixedOffset::operator=(const FixedOffset& A)
+  /*!
+    Assignment operator
+    \param A :: FixedOffset to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      FixedComp::operator=(A);
+      xStep=A.xStep;
+      yStep=A.yStep;
+      zStep=A.zStep;
+      xyAngle=A.xyAngle;
+      zAngle=A.zAngle;
+    }
+  return *this;
+}
+
+
 void
 FixedOffset::populate(const FuncDataBase& Control)
   /*!
@@ -81,6 +112,12 @@ FixedOffset::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("FixedOffset","populate");
 
+  xStep=Control.EvalDefVar<double>(keyName+"XStep",0.0);
+  yStep=Control.EvalDefVar<double>(keyName+"YStep",0.0);
+  zStep=Control.EvalDefVar<double>(keyName+"ZStep",0.0);
+  xyAngle=Control.EvalDefVar<double>(keyName+"XYAngle",0.0);
+  zAngle=Control.EvalDefVar<double>(keyName+"ZAngle",0.0);
+  return;
   
 }
   

@@ -72,6 +72,7 @@
 #include "Debug.h"
 #include "debugMethod.h"
 
+
 namespace attachSystem
 {
 
@@ -223,7 +224,7 @@ addToInsertControl(Simulation& System,
 				  InsertFC.getKeyName()+"to containedGroup");
 
   addToInsertControl(System,cellN,cellN+cellR,InsertFC,
-		     CGPtr->getKey(groupName));
+		     CGPtr->getCC(groupName));
 
   return;
 }
@@ -582,7 +583,7 @@ checkIntersect(const ContainedComp& CC,const MonteCarlo::Object& CellObj,
    */
 {
   ELog::RegMethod RegA("AttachSupport","checkInsert");
-  ELog::debugMethod DegA;
+  //  ELog::debugMethod DegA;
   const std::vector<Geometry::Surface*>& SVec=CC.getSurfaces(); 
   std::vector<Geometry::Vec3D> Out;
   std::vector<Geometry::Vec3D>::const_iterator vc;
@@ -761,8 +762,7 @@ addToInsertForced(Simulation& System,
    Force CC into the BaseFC objects
   \param System :: Simulation to use
   \param CellA :: First cell number [to test]
-   \param CellB :: Last cell number  [to test]
-   
+  \param CellB :: Last cell number  [to test]
   \param CC :: ContainedComp object to add to the BaseFC
  */
 {
@@ -795,4 +795,46 @@ calcLinkDistance(const FixedComp& FC,const long int sideIndexA,
   
 }
 
+HeadRule
+unionLink(const attachSystem::FixedComp& FC,
+	  const std::vector<long int>& LIndex)
+  /*!
+    Simple way to combined a number of link units into
+    a HeadRule to export
+    \param FC :: FixedComp unit
+    \param LIndex :: List of signed link surfaces
+    \return HeadRule of union join
+   */
+{
+  ELog::RegMethod RegA("AttachSupport[F]","unionLink");
+
+  HeadRule Out;
+
+  for(const long int LI : LIndex)
+    Out.addUnion(FC.getSignedLinkString(LI));
+
+
+  return Out;
+}
+
+HeadRule
+intersectionLink(const attachSystem::FixedComp& FC,
+		 const std::vector<long int>& LIndex)
+  /*!
+    Simple way to combined a number of link units into
+    a HeadRule to export
+    \param FC :: FixedComp unit
+    \param LIndex :: List of signed link surfaces
+    \return HeadRule of union join
+   */
+{
+  ELog::RegMethod RegA("AttachSupport[F]","intersectionLink");
+  HeadRule Out;
+
+  for(const long int LI : LIndex)
+    Out.addIntersection(FC.getSignedLinkString(LI));
+
+  return Out;
+}
+  
 }  // NAMESPACE attachSystem

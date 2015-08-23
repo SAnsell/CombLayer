@@ -104,6 +104,7 @@ class ContainedComp
   int surfOuterIntersect(const Geometry::Line&) const;
 
   void addInsertCell(const int);
+  void addInsertCell(const std::vector<int>&);
   void setInsertCell(const int);
   void setInsertCell(const std::vector<int>&);
   void insertObjects(Simulation&);

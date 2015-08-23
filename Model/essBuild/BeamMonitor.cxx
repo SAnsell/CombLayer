@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   essBuild/BeamMonitor.cxx
  *
@@ -241,7 +241,7 @@ BeamMonitor::calcExclude(const size_t index,
       const std::string CKey=CName+StrFunc::makeString(i);
       if (CG.hasKey(CKey))
 	{
-	  const ContainedComp& CA=CG.getKey(CKey);
+	  const ContainedComp& CA=CG.getCC(CKey);
 	  if (CA.isOuterLine(PtA,PtB))
 	    {
 	      ELog::EM<<"Found["<<index<<"] "<<i<<ELog::endTrace;

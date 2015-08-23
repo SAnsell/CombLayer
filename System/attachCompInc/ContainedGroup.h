@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   attachCompInc/ContainedGroup.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -97,9 +97,9 @@ class ContainedGroup
   /// Size accessor
   size_t nGroups() const { return CMap.size(); } 
   bool hasKey(const std::string&) const;
-  ContainedComp& addKey(const std::string&);
-  ContainedComp& getKey(const std::string&);
-  const ContainedComp& getKey(const std::string&) const;
+  ContainedComp& addCC(const std::string&);
+  ContainedComp& getCC(const std::string&);
+  const ContainedComp& getCC(const std::string&) const;
 
 };
 

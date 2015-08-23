@@ -68,6 +68,7 @@ class HeadRule
   bool operator==(const HeadRule&) const;
   bool operator!=(const HeadRule&) const;
 
+  /// access main rule
   const Rule* getTopRule() const { return HeadNode; }
 
 
@@ -108,9 +109,11 @@ class HeadRule
   std::set<int> getSurfSet() const;
 
   int removeItems(const int);
+  int removeUnsignedItems(const int);
   void isolateSurfNum(const std::set<int>&);
   int removeTopItem(const int);
   int substituteSurf(const int,const int,const Geometry::Surface*);
+  void removeCommon();
   
   void makeComplement();
 

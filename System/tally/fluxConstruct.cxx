@@ -189,9 +189,7 @@ fluxConstruct::processFluxCell(Simulation& System,
   const int cellOffset=OR.getCell(CellRegion);
   const int cellRange=(cellOffset) ? 
     OR.getRange(CellRegion) : 1000000;
-  
   size_t nCount((cellOffset) ? 4 : 3);
-
   
   std::vector<int> cellVec;
   int cellNum,RA,RB;
@@ -201,14 +199,20 @@ fluxConstruct::processFluxCell(Simulation& System,
     {
       const std::string CVal=
 	IParam.getValue<std::string>("tally",Index,nCount);
+
       if (StrFunc::convert(CVal,cellNum) &&
 	  System.existCell(cellNum+cellOffset))
 	cellVec.push_back(cellNum+cellOffset);
       else if (basicConstruct::convertRange(CVal,RA,RB)) // X-Y
 	{
 	  RB=std::max<int>(cellRange,RB);
-	  ELog::EM<<"Cell Range "<<RA<<" "<<RB<<ELog::endDiag;
 	  for(;RA<=RB;RA++)
+	    if (System.existCell(RA+cellOffset))
+	      cellVec.push_back(RA+cellOffset);
+	}
+      else if (CVal=="All" || CVal=="all")   // Everything
+	{
+	  for(RA=1;RA<cellRange;RA++)
 	    if (System.existCell(RA+cellOffset))
 	      cellVec.push_back(RA+cellOffset);
 	}
@@ -223,7 +227,7 @@ fluxConstruct::processFluxCell(Simulation& System,
       initTally=0;
       nCount++;
     }  
-
+  ELog::EM<<"CellRegion== "<<cellVec.size()<<ELog::endDiag;  
   const int nTally=System.nextTallyNum(4);
 
   tallySystem::addF4Tally(System,nTally,PType,cellVec);
@@ -246,14 +250,17 @@ fluxConstruct::writeHelp(std::ostream& OX) const
   OX<<"Flux tally :\n"
     "particles material(int) objects \n"
     "particles material(int) Range(low-high)\n"
-    "particles cell object offsets \n"
+    "particles cell objectNam offsets \n"
     " -- material can be: \n"
     "      zaid number \n"
     "      material name \n"
     "      material number \n"
     "      -1 :: [all] \n"
-    "  -- cell [keyword] \n"
-    "     object name [list of int for individuals]";
+    "  -- cell [keywords] \n"
+    "          objectName [cellOffset cellCount]\n";
+    "          objectName all\n";
+    "  -- cell  \n"
+    "          cellOffset cellCount\n";
   return;
 }
   

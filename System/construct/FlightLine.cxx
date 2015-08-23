@@ -508,7 +508,6 @@ FlightLine::createObjects(Simulation& System,
   addOuterSurf("inner",Out);
 
   Out+=" "+ContainedGroup::getContainer("outer");      // Be outer surface
-  ELog::EM<<"Inner["<<keyName<<"] == "<<Out<<ELog::endDiag;
 
   System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,0.0,Out));
 

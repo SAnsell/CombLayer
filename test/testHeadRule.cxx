@@ -54,6 +54,7 @@
 #include "Object.h"
 #include "surfIndex.h"
 #include "mapIterator.h"
+#include "SurInter.h"
 
 #include "testFunc.h"
 #include "testHeadRule.h"
@@ -78,7 +79,8 @@ testHeadRule::createSurfaces()
    */
 {
   ELog::RegMethod RegA("testObject","createSurfaces");
-  ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
+  ModelSupport::surfIndex& SurI=
+    ModelSupport::surfIndex::Instance();
   SurI.reset();
   // First box :
   SurI.createSurface(1,"px -1");
@@ -119,6 +121,7 @@ testHeadRule::applyTest(const int extra)
       &testHeadRule::testFindNodes,      
       &testHeadRule::testFindTopNodes,
       &testHeadRule::testGetComponent,
+      &testHeadRule::testInterceptRule,
       &testHeadRule::testLevel,
       &testHeadRule::testPartEqual,
       &testHeadRule::testRemoveSurf,
@@ -133,6 +136,7 @@ testHeadRule::applyTest(const int extra)
       "FindNodes",
       "FindTopNodes",
       "GetComponent",
+      "InterceptRule",
       "Level",
       "PartEqual",
       "RemoveSurf",      
@@ -163,7 +167,6 @@ testHeadRule::applyTest(const int extra)
     }
   return 0;
 }
-
 
 int
 testHeadRule::testAddInterUnion()
@@ -426,6 +429,71 @@ testHeadRule::testGetComponent()
 	  return -1;
 	}
     }
+  return 0;
+}
+
+
+
+int
+testHeadRule::testInterceptRule()
+  /*!
+    Tests the point going into a headrule.
+    The surface that the track crosses is signed. It needs 
+    to have the sign that would make the surface true for 
+    points that are at a greater distance from the origin along 
+    the track. 
+    [uses SurInter]
+    \retval 0 :: success
+  */
+{
+  ELog::RegMethod RegA("testHeadRule","testInterceptRule");
+
+  createSurfaces();
+  
+  // HeadRule : Origin : Axis ::: Point : Surf
+  typedef std::tuple<std::string,Geometry::Vec3D,Geometry::Vec3D,
+		     Geometry::Vec3D,int> TTYPE;
+    
+  // Target / result
+  std::vector<TTYPE> Tests;
+  Tests={
+    TTYPE("1",Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,1,0),
+	  Geometry::Vec3D(0,0,0),0),
+    TTYPE("3",Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,-1,0),
+	  Geometry::Vec3D(0,-1,0),-3),
+    TTYPE("3",Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,1,0),
+	  Geometry::Vec3D(0,-1,0),-3),
+    TTYPE("-4",Geometry::Vec3D(0.5,0.5,0),Geometry::Vec3D(0,1,0),
+	  Geometry::Vec3D(0.5,1.0,0),4),
+    TTYPE("-4",Geometry::Vec3D(0.5,0.5,0),Geometry::Vec3D(0,1,0),
+	  Geometry::Vec3D(0.5,1.0,0),4),
+    TTYPE("-4",Geometry::Vec3D(0.5,1.5,0),Geometry::Vec3D(0,1,0),
+	  Geometry::Vec3D(0.5,1.0,0),-4)
+  };
+ 
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
+    {
+      HeadRule HM(std::get<0>(tc));
+      const Geometry::Vec3D& O(std::get<1>(tc));
+      const Geometry::Vec3D& A(std::get<2>(tc));
+      std::pair<Geometry::Vec3D,int> Result=
+	SurInter::interceptRule(HM,O,A);
+      const Geometry::Vec3D& RPt(std::get<3>(tc));
+      int SNum(std::get<4>(tc));
+      
+      if (Result.second!=SNum ||
+	  (SNum && Result.first.Distance(RPt)>1e-5))
+	{
+	  ELog::EM<<"Failed on test "<<cnt<<ELog::endTrace;
+	  ELog::EM<<"Result "<<Result.first<<" at SN="<<Result.second
+		  <<ELog::endDiag;
+	  ELog::EM<<"Expect "<<RPt<<" at SN="<<SNum<<ELog::endDiag;
+	  return -1;
+	}
+      cnt++;
+    }
+
   return 0;
 }
 

@@ -36,13 +36,14 @@ namespace essSystem
 */
 
 class GuideItem : public attachSystem::ContainedGroup,
-    public attachSystem::TwinComp
+  public attachSystem::FixedGroup,public attachSystem::CellMap
 {
  private:
   
   const std::string baseName;   ///< Base keyname
   const int guideIndex;         ///< Index of surface offset
   int cellIndex;                ///< Cell index
+  int active;                   ///< Build/don't build flag
   
   double xStep;                 ///< orthogonal offset (on circle)
   double yStep;                 ///< Forward offset [not current used]
@@ -62,6 +63,7 @@ class GuideItem : public attachSystem::ContainedGroup,
   std::vector<double> width;         ///< Depth 
   std::vector<double> length;        ///< Y Axis length [last one ignored]
   int mat;                           ///< Material
+  int filled;                        ///< Inner void filled
 
   int dividePlane;     ///< Divide plane
   int innerCyl;        ///< Inner Cylinder

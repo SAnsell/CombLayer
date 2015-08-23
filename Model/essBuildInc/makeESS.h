@@ -85,27 +85,32 @@ class makeESS
   std::shared_ptr<BeamMonitor> BMon;   ///< Beam Monitor
 
   // Butterly
-  /// Primary Lower Mod [
+  /// Primary Lower Mod 
   std::shared_ptr<constructSystem::ModBase> LowMod;
-  std::shared_ptr<DiskPreMod> LowPreMod;
-  std::shared_ptr<DiskPreMod> LowCapMod;
+  std::shared_ptr<DiskPreMod> LowPreMod;         ///< Lower mod 
+  std::shared_ptr<DiskPreMod> LowCapMod;         ///< Upper mod
 
-  // Cylindrical [to be dumped]
   std::shared_ptr<moderatorSystem::BasicFlightLine> LowAFL;  ///< Lower Mode FL
   std::shared_ptr<moderatorSystem::BasicFlightLine> LowBFL;  ///< Lower Mode FL
   std::shared_ptr<CylPreMod> LowPre;          ///< Lower Mod (Pre)
 
-  
   /// Lower supply 
   std::shared_ptr<constructSystem::SupplyPipe> LowSupplyPipe; 
-  std::shared_ptr<constructSystem::SupplyPipe> LowReturnPipe;  ///< Lower supply 
+  std::shared_ptr<constructSystem::SupplyPipe> LowReturnPipe;  ///< Lower supply
 
-  std::shared_ptr<constructSystem::ModBase> TopMod;   ///< Upper Mod
-  std::shared_ptr<DiskPreMod> TopPreMod;
-  std::shared_ptr<DiskPreMod> TopCapMod;
-  std::shared_ptr<moderatorSystem::BasicFlightLine> TopAFL;  ///< Upper Mode FL
-  std::shared_ptr<moderatorSystem::BasicFlightLine> TopBFL;  ///< Upper Mode FL
-  std::shared_ptr<CylPreMod> TopPre;  ///< Upper Mod (Pre)
+  // Butterly
+  /// Primary Upper Mod 
+  std::shared_ptr<constructSystem::ModBase> TopMod;
+  std::shared_ptr<DiskPreMod> TopPreMod;         ///< Top mod 
+  std::shared_ptr<DiskPreMod> TopCapMod;         ///< Lower mod
+
+  std::shared_ptr<moderatorSystem::BasicFlightLine> TopAFL;  ///< Top Mode FL
+  std::shared_ptr<moderatorSystem::BasicFlightLine> TopBFL;  ///< Top Mode FL
+  std::shared_ptr<CylPreMod> TopPre;          ///< Toper Mod (Pre)
+
+  /// Top supply 
+  std::shared_ptr<constructSystem::SupplyPipe> TopSupplyPipe; 
+  std::shared_ptr<constructSystem::SupplyPipe> TopReturnPipe;  ///< Top supply
 
   std::shared_ptr<BulkModule> Bulk;      ///< Main bulk module
   std::shared_ptr<moderatorSystem::FlightLine> BulkLowAFL;  ///< Lower Mode FL
@@ -119,7 +124,7 @@ class makeESS
   std::vector<std::shared_ptr<beamlineSystem::beamlineConstructor> > 
     BLArray;  
 
-  std::shared_ptr<Bunker> LowABunker;  ///< Lower bunker
+  std::shared_ptr<Bunker> ABunker;  ///< Right bunker
   
   void topFlightLines(Simulation&);
   void lowFlightLines(Simulation&);
@@ -127,14 +132,13 @@ class makeESS
 
   void buildLowButterfly(Simulation&);
   void buildLowPreMod(Simulation&);
-  void buildLowCylMod(Simulation&);
-  void buildLowConicMod(Simulation&);
-  void buildLayerMod(Simulation&);
 
   void buildTopButterfly(Simulation&);
-
-  void buildTopCylMod(Simulation&);
   void buildLowerPipe(Simulation&,const std::string&);
+
+
+  void buildTopPreMod(Simulation&);
+  void buildToperPipe(Simulation&,const std::string&);
 
   void makeTarget(Simulation&,const std::string&);
   void makeBunker(Simulation&,const std::string&);

@@ -29,6 +29,7 @@
 #include <list> 
 #include <set>
 #include <string>
+#include <memory>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -52,6 +53,7 @@
 #include "Qhull.h"
 #include "Simulation.h"
 #include "inputParam.h"
+#include "objectRegister.h"
 #include "volUnit.h"
 #include "VolSum.h"
 #include "Volumes.h"
@@ -67,24 +69,78 @@ calcVolumes(Simulation* SimPtr,const mainSystem::inputParam& IParam)
     \param IParam :: Simulation to use
   */
 {
-  ELog::RegMethod RegA("createDivide","calcVols");
+  ELog::RegMethod RegA("Volumes[F]","calcVolumes");
 
   if (SimPtr && IParam.flag("volume"))
     {
       SimPtr->createObjSurfMap();
-      Geometry::Vec3D Org;
-      for(size_t i=0;i<3;i++)
-	Org[i]=IParam.getValue<double>("volume",i);
-      const double R=IParam.getValue<double>("volume",3);
+      Geometry::Vec3D Org=IParam.getValue<Geometry::Vec3D>("volume");
+
+      const Geometry::Vec3D XYZ=IParam.getValue<Geometry::Vec3D>("volume",1);
+
       const size_t NP=IParam.getValue<size_t>("volNum");
-      VolSum VTally(Org,R);
-      VTally.populateTally(*SimPtr);
+      VolSum VTally(Org,XYZ);
+      if (IParam.flag("volCells") )
+	populateCells(*SimPtr,IParam,VTally);
+      else
+	VTally.populateTally(*SimPtr);
+
       VTally.pointRun(*SimPtr,NP);
+      ELog::EM<<"Volume == "<<Org<<" : "<<XYZ<<" : "<<NP<<ELog::endDiag;
       VTally.write("volumes");
     }
 
   return;
 }
+
+void
+populateCells(const Simulation& System,
+	      const mainSystem::inputParam& IParam,
+	      VolSum& VTally)
+  /*!
+    Populate the Volume Tallys with cells defined of the input
+    stream.
+    \param System :: Simulation 
+    \param IParam :: Input stream
+    \param VTally :: Tally to populate
+   */
+{
+  ELog::RegMethod RegA("Volumes[F]","populateCells");
+
+  const ModelSupport::objectRegister& OR= 
+    ModelSupport::objectRegister::Instance();
+
+  for(size_t i=0;i<IParam.setCnt("volCells");i++)
+    {
+      const size_t NItems=IParam.itemCnt("volCells",i);
+      std::vector<std::string> CStr;
+      for(size_t j=0;j<NItems;j++)
+	CStr.push_back(IParam.getValue<std::string>("volCells",i,j));
+      
+      if (NItems && (CStr[0]=="all" || CStr[0]=="All"))
+	VTally.populateAll(System);
+      else if (NItems>=2 && (CStr[0]=="object" || CStr[0]=="Object"))
+	{
+	  std::vector<int> CNumbers;
+	  for(size_t j=1;j<NItems;j++)
+	    {
+	      const int cellOffset=OR.getCell(CStr[j]);
+	      const int cellRange=OR.getRange(CStr[j]);
+	      if (!cellOffset)
+		throw ColErr::InContainerError<std::string>
+		  (CStr[j]," Cell object not known");
+	      const std::vector<int> CNumPlus=
+		System.getCellVectorRange(cellOffset,cellRange);
+	      ELog::EM<<"CNum == "<<CNumPlus.size()<<ELog::endDiag;
+	      CNumbers.insert(CNumbers.end(),CNumPlus.begin(),CNumPlus.end());
+	    }
+	  ELog::EM<<"Cell size = "<<CNumbers.size()<<ELog::endDiag;
+	  VTally.populateVSet(System,CNumbers);
+	}
+    }
+  return;
+}
   
+
 
 } // NAMESPACE ModelSupport

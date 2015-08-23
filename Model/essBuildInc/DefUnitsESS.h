@@ -31,7 +31,8 @@ namespace mainSystem
 
   void setDefUnits(FuncDataBase&,inputParam&);
 
-  void setESS(defaultConfig&); 
+  void setESS(defaultConfig&);
+  void setESSFull(defaultConfig&); 
 
 }
 

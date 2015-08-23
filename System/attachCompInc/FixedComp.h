@@ -49,7 +49,6 @@ class FixedComp
 
   std::vector<LinkUnit> LU;     ///< Linked unit items
 
-  
  public:
 
   FixedComp(const std::string&,const size_t);
@@ -70,23 +69,28 @@ class FixedComp
   void createUnitVector(const FixedComp&,const long int);
   void createUnitVector(const Geometry::Vec3D&,const Geometry::Vec3D&,
 			const Geometry::Vec3D&);
+
+  void setCentre(const Geometry::Vec3D&);
   void applyShift(const double,const double,const double);
   void applyAngleRotate(const double,const double);
   void applyAngleRotate(const double,const double,const double);
   void applyFullRotate(const double,const double,
 		       const Geometry::Vec3D&);
-
+  void reverseZ();
+  
   void setConnect(const size_t,const Geometry::Vec3D&,const Geometry::Vec3D&);
   void setBasicExtent(const double,const double,const double);
 
   void setLinkSurf(const size_t,const FixedComp&,const size_t);
   void setLinkSurf(const size_t,const int);
   void setLinkSurf(const size_t,const std::string&);
+  void setLinkSurf(const size_t,const HeadRule&);
   void addLinkSurf(const size_t,const int);
   void addLinkSurf(const size_t,const std::string&);
 
   void setBridgeSurf(const size_t,const FixedComp&,const size_t);
   void setBridgeSurf(const size_t,const int);
+  void setBridgeSurf(const size_t,const HeadRule&);
   void addBridgeSurf(const size_t,const int);
   void addBridgeSurf(const size_t,const std::string&);
 

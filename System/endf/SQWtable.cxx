@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   endf/SQWtable.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -120,9 +120,10 @@ SQWtable::setNBeta(const size_t NB)
   nBeta=NB;
   Beta.resize(NB);
   if (nBeta*nAlpha)
-    {
-      SAB.resize(boost::extents[nAlpha][nBeta]);
-    }
+    SAB.resize(boost::extents
+       [static_cast<long int>(nAlpha)]
+       [static_cast<long int>(nBeta)]);
+
   return;
 }
 
@@ -137,10 +138,11 @@ SQWtable::alphaType(const long int Index) const
   std::vector<int>::const_iterator vc=
     lower_bound(alphaIBoundary.begin(),alphaIBoundary.end(),Index);
   return (vc!=alphaIBoundary.end()) ? 
-    alphaInterp[vc-alphaIBoundary.begin()] : alphaIBoundary.back();
+    alphaInterp[static_cast<size_t>(vc-alphaIBoundary.begin())] :
+    alphaIBoundary.back();
 }
 
-int
+int 
 SQWtable::betaType(const long int Index) const
   /*!
     Given an index determine the type
@@ -151,7 +153,8 @@ SQWtable::betaType(const long int Index) const
   std::vector<int>::const_iterator vc=
     lower_bound(betaIBoundary.begin(),betaIBoundary.end(),Index);
   return (vc!=betaIBoundary.end()) ? 
-    betaInterp[vc-betaIBoundary.begin()] : betaIBoundary.back();
+    betaInterp[static_cast<size_t>(vc-betaIBoundary.begin())] :
+    betaIBoundary.back();
 }
 
 int
@@ -168,7 +171,7 @@ SQWtable::checkAlpha(const std::vector<int>& IB,
 {
   ELog::RegMethod RegA("SQWtable","checkAlpha");
 
-  if (static_cast<int>(Acomp.size())!=nAlpha ||
+  if (Acomp.size()!=nAlpha ||
       IB.size()!=alphaIBoundary.size() ||
       II.size()!=alphaInterp.size() )
     {
@@ -204,7 +207,7 @@ SQWtable::setData(const size_t index,const std::vector<double>& aVec,
 {
   if (index>=nBeta)
     throw ColErr::IndexError<size_t>(index,nBeta,"SQWtable::setData");
-  if (static_cast<int>(sVec.size())!=nAlpha)
+  if (sVec.size()!=nAlpha)
     throw ColErr::MisMatch<size_t>(sVec.size(),nAlpha,"SQWtable::setData");
 
   if (index==0)
@@ -236,7 +239,8 @@ SQWtable::isValidRangePt(const double& alphaV,const double& betaV,
   aInt=mathFunc::binSearch(Alpha.begin(),Alpha.end(),alphaV);
   bInt=mathFunc::binSearch(Beta.begin(),Beta.end(),betaV);
   // No extreme cases:
-  if (!(aInt*bInt) || aInt>=nAlpha-1 || bInt>=nBeta-1)
+  if (!(aInt*bInt) || static_cast<size_t>(aInt+1)>=nAlpha
+      || static_cast<size_t>(bInt+1)>=nBeta)
     return 0;
   aInt--;
   bInt--;
@@ -262,14 +266,16 @@ SQWtable::Sab(const double alphaV,const double betaV) const
       return 0.0;
     }
 
-  const int aType=alphaType(aInt);
-  const int bType=betaType(bInt);
+  //  const int aType=alphaType(aInt);
+  //  const int bType=betaType(bInt);
 
-  const double Alow=loglinear(Alpha[aInt],Alpha[aInt+1],
+  const size_t saInt(static_cast<size_t>(aInt));
+  const size_t sbInt(static_cast<size_t>(bInt));
+  const double Alow=loglinear(Alpha[saInt],Alpha[saInt+1],
 			      SAB[aInt][bInt],SAB[aInt+1][bInt],
 			      alphaV);
 
-  const double Ahigh=loglinear(Alpha[aInt],Alpha[aInt+1],
+  const double Ahigh=loglinear(Alpha[saInt],Alpha[saInt+1],
 			       SAB[aInt][bInt+1],SAB[aInt+1][bInt+1],
 			       alphaV);
 
@@ -279,7 +285,7 @@ SQWtable::Sab(const double alphaV,const double betaV) const
   // ELog::EM<<SAB[aInt][bInt]<<" "<<SAB[aInt+1][bInt]<<" "
   //  	  <<SAB[aInt][bInt+1]<<" "<<SAB[aInt+1][bInt+1]<<ELog::endCrit;
 
-  const double SAB=loglinear(Beta[bInt],Beta[bInt+1],
+  const double SAB=loglinear(Beta[sbInt],Beta[sbInt+1],
 			     Alow,Ahigh,betaV);  
   //  ELog::EM<<ELog::endCrit;
 

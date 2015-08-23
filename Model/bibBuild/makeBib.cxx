@@ -217,13 +217,13 @@ makeBib::build(Simulation* SimPtr,
 
   RefObj->createAll(*SimPtr,*Rotor,8);
   attachSystem::addToInsertSurfCtrl(*SimPtr,*RefObj,
-				  Rotor->getKey("Target"));
+				  Rotor->getCC("Target"));
   attachSystem::addToInsertForced(*SimPtr,*RefObj,
-				 Rotor->getKey("Body"));
+				 Rotor->getCC("Body"));
   CWall->addInsertCell(voidCell);
   CWall->createAll(*SimPtr,*Rotor,8,*RefObj,2);
   attachSystem::addToInsertSurfCtrl(*SimPtr,*CWall,
-				    Rotor->getKey("Body"));
+				    Rotor->getCC("Body"));
   
   // first moderator
   ColdMod->createAll(*SimPtr,*Rotor,12,1);
@@ -241,7 +241,7 @@ makeBib::build(Simulation* SimPtr,
   // Second moderator
   ColdMod2->createAll(*SimPtr,*Rotor,12,11);
   attachSystem::addToInsertControl(*SimPtr,*RefObj,*ColdMod2);
-  attachSystem::addToInsertSurfCtrl(*SimPtr,*ColdMod2,Rotor->getKey("Target"));
+  attachSystem::addToInsertSurfCtrl(*SimPtr,*ColdMod2,Rotor->getCC("Target"));
   attachSystem::addToInsertForced(*SimPtr,*ProtonObj,*ColdMod2);
   attachSystem::addToInsertForced(*SimPtr,*CWall,*ProtonObj);
 

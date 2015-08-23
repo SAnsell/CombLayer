@@ -274,7 +274,7 @@ createTS1Source(const FuncDataBase& Control,Source& sourceCard)
     \param sourceCard :: Source system
   */
 {
-  ELog::RegMethod RegA("SourceCreate","createTS2Source");
+  ELog::RegMethod RegA("SourceCreate","createTS1Source");
 
   const double E=Control.EvalDefVar<double>("sdefEnergy",800.0);
   const double yStart=Control.EvalDefVar<double>("sdefYPos",-10.0);
@@ -385,7 +385,7 @@ createLensSource(const FuncDataBase& Control,Source& Card,
     \param protonComp :: Proton component
    */
 {
-  ELog::RegMethod RegA("SourceCreate","createLaserSource");
+  ELog::RegMethod RegA("SourceCreate","createLensSource");
   LensSource LS("lensSource");
   LS.createAll(Control,Card,protonComp);
   return;

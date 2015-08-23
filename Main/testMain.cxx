@@ -522,7 +522,7 @@ globalTest(const int type,const int extra)
 	  X=A.applyTest(extra);
 	}
 
-    } while (!X && type!=index && index<TSize);
+    } while (!X && type!=index && index<static_cast<int>(TSize));
     
   if (X)
     return -index;

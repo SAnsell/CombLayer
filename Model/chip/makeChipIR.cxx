@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   chip/makeChipIR.cxx
  *
@@ -63,8 +63,10 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedGroup.h"
 #include "SecondTrack.h"
 #include "TwinComp.h"
+#include "CellMap.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "LinearComp.h"
@@ -74,7 +76,7 @@
 #include "InnerWall.h"
 #include "HoleUnit.h"
 #include "PreCollimator.h"
-#include "Collimator.h"
+#include "Jaws.h"
 #include "ColBox.h"
 #include "beamBlock.h"
 #include "BeamStop.h"
@@ -167,7 +169,7 @@ makeChipIR::buildIsolated(Simulation& System,
   HObj->addInsertCell(74123);
 
   HObj->createAll(System,World::masterTS2Origin(),*GObj,
-  		  GObj->getKey("inner"));
+  		  GObj->getCC("inner"));
   //  FB.createAll(System,*HObj);
 
   FB.createAll(System,*HObj);
@@ -213,7 +215,7 @@ makeChipIR::build(Simulation* SimPtr,
   GObj->createAll(*SimPtr,BulkObj,0);
   HObj->addInsertCell(74123);
   HObj->createAll(*SimPtr,*BulkObj.getShutter(0),*GObj,
-		  GObj->getKey("inner"));
+		  GObj->getCC("inner"));
   
   FB.createAll(*SimPtr,*HObj);
 

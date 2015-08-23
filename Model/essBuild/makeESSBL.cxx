@@ -70,8 +70,11 @@
 #include "ShapeUnit.h"
 #include "Bunker.h"
 #include "GuideLine.h"
+#include "GuideItem.h"
 
 #include "ODIN.h"
+#include "LOKI.h"
+#include "NMX.h"
 #include "beamlineConstructor.h"
 #include "makeESSBL.h"
 
@@ -134,17 +137,31 @@ makeESSBL::build(Simulation& System,const Bunker& bunkerObj)
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  const attachSystem::TwinComp* mainFCPtr=
-    OR.getObject<attachSystem::TwinComp>(shutterName);
-
-  if (!mainFCPtr)
+  const attachSystem::FixedComp* mainFCPtr=
+    OR.getObject<attachSystem::FixedComp>(shutterName);
+  const GuideItem* mainGIPtr=
+    dynamic_cast<const GuideItem*>(mainFCPtr);
+    
+  if (!mainGIPtr)
     throw ColErr::InContainerError<std::string>(shutterName,"shutterObject");
 
   if (beamName=="ODIN")
     {
       // Odin beamline
       ODIN OdinBL;
-      OdinBL.build(System,*mainFCPtr,bunkerObj,voidCell);
+      OdinBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+    }
+  else if (beamName=="LOKI")
+    {
+      // LOKI beamline
+      LOKI LokiBL;
+      LokiBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+    }
+  else if (beamName=="NMX")
+    {
+      // NMX beamline
+      NMX nmxBL;
+      nmxBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="JSANS" || beamName=="JRef")
     {

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   essBuild/essDBMaterial.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -75,15 +75,16 @@ void addESSMaterial()
   MObj.setDensity(-7.0e-2);
   MDB.resetMaterial(MObj);
 
-
-  MObj.setMaterial(1003, "LH05ortho", " 1001.70c 99.5 1004.70c 0.5 ","hpara.10t hortho.10t", MLib);
-  MObj.setDensity(-7.0e-2*(0.07/0.0689677)); // 0.07/0.0689677 because CL for some reason changes the density !!! todo !!!
+  MObj.setMaterial(1003, "LH05ortho", " 1001.70c 99.5 "
+                   "1004.70c 0.5 ","hpara.10t hortho.10t", MLib);
+  MObj.setDensity(-7.0e-2*(0.07/0.0689677));
+  // 0.07/0.0689677 because CL for some reason changes the density !!! todo !!!
   MDB.resetMaterial(MObj);
 
   // Generic light water
   // Simplified light water for  basic neutronic simulations
-  MObj.setMaterial(110, "H2O", " 01001.70c 0.66666667 "
-		                 " 08016.70c 0.33333333 ", "lwtr.10t", MLib);
+  MObj.setMaterial(110, "H2O", " 1001.70c 0.66666667 "
+		   " 8016.70c 0.33333333 ", "lwtr.10t", MLib);
   MObj.setDensity(-1.0);
   MDB.resetMaterial(MObj);
 

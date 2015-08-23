@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   process/volUnit.cxx
  *
@@ -22,6 +22,7 @@
 #include <iostream>
 #include <iomanip>
 #include <fstream>
+#include <sstream>
 #include <cmath>
 #include <complex>
 #include <string>
@@ -30,8 +31,8 @@
 #include <map>
 #include <set>
 #include <vector>
+#include <iterator>
 #include <memory>
-#include <boost/multi_array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"

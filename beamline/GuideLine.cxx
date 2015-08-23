@@ -111,7 +111,8 @@ GuideLine::GuideLine(const GuideLine& A) :
   leftWidth(A.leftWidth),rightWidth(A.rightWidth),
   nShapeLayers(A.nShapeLayers),layerThick(A.layerThick),
   layerMat(A.layerMat),activeEnd(A.activeEnd),
-  endCut(A.endCut),nShapes(A.nShapes),feMat(A.feMat)
+  endCut(A.endCut),nShapes(A.nShapes),
+  activeShield(A.activeShield),feMat(A.feMat)
   /*!
     Copy constructor
     \param A :: GuideLine to copy
@@ -145,6 +146,8 @@ GuideLine::operator=(const GuideLine& A)
       beamZStep=A.beamZStep;
       beamXYAngle=A.beamXYAngle;
       beamZAngle=A.beamZAngle;
+      frontCut=A.frontCut;
+      beamFrontCut=A.beamFrontCut;
       length=A.length;
       height=A.height;
       depth=A.depth;
@@ -156,6 +159,7 @@ GuideLine::operator=(const GuideLine& A)
       nShapes=A.nShapes;
       activeEnd=A.activeEnd;
       endCut=A.endCut;
+      activeShield=A.activeShield;
       feMat=A.feMat;
     }
   return *this;
@@ -206,14 +210,19 @@ GuideLine::populate(const FuncDataBase& Control)
   beamXYAngle=Control.EvalDefVar<double>(keyName+"BeamXYAngle",xyAngle);
   beamZAngle=Control.EvalDefVar<double>(keyName+"BeamZAngle",xyAngle);
 
+  activeShield=Control.EvalDefVar<int>(keyName+"ActiveShield",1);    
   length=Control.EvalVar<double>(keyName+"Length");
-  height=Control.EvalVar<double>(keyName+"Height");
-  depth=Control.EvalVar<double>(keyName+"Depth");
-  leftWidth=Control.EvalVar<double>(keyName+"LeftWidth");
-  rightWidth=Control.EvalVar<double>(keyName+"RightWidth");
+  
+  if (activeShield)
+    {
+      height=Control.EvalVar<double>(keyName+"Height");
+      depth=Control.EvalVar<double>(keyName+"Depth");
+      leftWidth=Control.EvalVar<double>(keyName+"LeftWidth");
+      rightWidth=Control.EvalVar<double>(keyName+"RightWidth");
+      feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
+    }
 
-  feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
-  ELog::EM<<"FeMat == "<<feMat<<ELog::endDiag;
+
   nShapes=Control.EvalVar<size_t>(keyName+"NShapes");
   nShapeLayers=Control.EvalVar<size_t>(keyName+"NShapeLayers");
   
@@ -229,7 +238,11 @@ GuideLine::populate(const FuncDataBase& Control)
       layerThick.push_back(T);
       layerMat.push_back(M);
     }
-    
+
+  // set frontcut based on offset:
+  beamFrontCut=(fabs(beamYStep)>Geometry::zeroTol) ? 1 : 0;
+  frontCut=(fabs(yStep)>Geometry::zeroTol) ? 1 : 0;
+      
   return;
 }
 
@@ -300,11 +313,12 @@ GuideLine::addGuideUnit(const size_t index,
   
   const std::string PGKey=(index) ? 
     "Guide"+StrFunc::makeString(index-1) :  "GuideOrigin";
+
   attachSystem::FixedComp& prevFC=FixedGroup::getKey(PGKey);
   guideFC.createUnitVector(prevFC,POrigin);
   guideFC.applyShift(bX,0.0,bZ);
   guideFC.applyAngleRotate(bXYang,bZang);
-    
+
   return;
 }
 
@@ -318,15 +332,19 @@ GuideLine::checkRectangle(const double W,const double H) const
 {
   ELog::RegMethod RegA("GuideLine","checkRectangle");
 
-  const double TThick=
-    std::accumulate(layerThick.begin(),layerThick.end(),0.0);
-  
-  if ((TThick+W/2.0)>leftWidth || (TThick+W/2.0)>rightWidth)
-    ELog::EM<<"Guide["<<keyName<<"] rectangle width/thick "<<W<<":"<<TThick
-	    <<" > ("<<leftWidth<<":"<<rightWidth<<")"<<ELog::endErr;
-  if ((TThick+H/2.0)>height || (TThick+H/2)>depth)
-    ELog::EM<<"Guide["<<keyName<<"] rectangle height/thick "<<H<<":"<<TThick
-	    <<" > ("<<depth<<":"<<height<<")"<<ELog::endErr;
+  if (activeShield)
+    {
+      const double TThick=
+	std::accumulate(layerThick.begin(),layerThick.end(),0.0);
+      
+
+      if ((TThick+W/2.0)>leftWidth || (TThick+W/2.0)>rightWidth)
+	ELog::EM<<"Guide["<<keyName<<"] rectangle width/thick "<<W<<":"<<TThick
+		<<" > ("<<leftWidth<<":"<<rightWidth<<")"<<ELog::endErr;
+      if ((TThick+H/2.0)>height || (TThick+H/2)>depth)
+	ELog::EM<<"Guide["<<keyName<<"] rectangle height/thick "<<H<<":"<<TThick
+		<<" > ("<<depth<<":"<<height<<")"<<ELog::endErr;
+    }
 
   return;
 }
@@ -340,8 +358,11 @@ GuideLine::processShape(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("GuideLine","processShape");
 
-  Geometry::Vec3D StartPt=Origin;
+  const attachSystem::FixedComp& guideFC=FixedGroup::getKey("GuideOrigin");
+  
+  Geometry::Vec3D StartPt=guideFC.getCentre();
   double beamX,beamZ,bXYang,bZang;
+
   for(size_t index=0;index<nShapes;index++)
     {
       const std::string NStr=StrFunc::makeString(index);
@@ -364,7 +385,7 @@ GuideLine::processShape(const FuncDataBase& Control)
 		       beamX,beamZ,bXYang,bZang);
 	}
       else
-	addGuideUnit(index,Origin,beamX,beamZ,bXYang,bZang);
+	addGuideUnit(index,StartPt,beamX,beamZ,bXYang,bZang);
 
       setDefault("Guide"+NStr);
       const double L=Control.EvalVar<double>(keyName+NStr+"Length");      
@@ -382,7 +403,7 @@ GuideLine::processShape(const FuncDataBase& Control)
 	  SU->addPrimaryPoint(Geometry::Vec3D(W/2.0,0,-H/2.0));
 	  SU->addPrimaryPoint(Geometry::Vec3D(W/2.0,0,H/2.0));
 	  SU->addPrimaryPoint(Geometry::Vec3D(-W/2.0,0,H/2.0));
-	  SU->setEndPts(Origin,Origin+Y*L);      	  
+	  SU->setEndPts(Origin,Origin+Y*L);
 	  SU->setXAxis(X,Z);      
 	  SU->constructConvex();
 	  shapeUnits.push_back(SU);
@@ -417,17 +438,17 @@ GuideLine::processShape(const FuncDataBase& Control)
 	  BenderUnit* BU=
 	    new BenderUnit(SUItem*static_cast<int>(index+1),SULayer);
 
-	  const double H=Control.EvalVar<double>(keyName+NStr+"Height");
-	  const double HB=Control.EvalDefVar<double>(keyName+NStr+"BHeight",H);
-	  const double W=Control.EvalVar<double>(keyName+NStr+"Width");
-	  const double WB=Control.EvalDefVar<double>(keyName+NStr+"BWidth",W);
+	  const double HA=Control.EvalVar<double>(keyName+NStr+"AHeight");
+	  const double HB=Control.EvalDefVar<double>(keyName+NStr+"BHeight",HA);
+	  const double WA=Control.EvalVar<double>(keyName+NStr+"AWidth");
+	  const double WB=Control.EvalDefVar<double>(keyName+NStr+"BWidth",WA);
 	  // angular rotation of bend direciton from +Z
 	  const double bendAngDir=
 	    Control.EvalVar<double>(keyName+NStr+"AngDir");
 	  const double radius=
 	    Control.EvalVar<double>(keyName+NStr+"Radius");
 
-	  BU->setValues(H,HB,W,WB,L,radius,bendAngDir);
+	  BU->setValues(HA,HB,WA,WB,L,radius,bendAngDir);
 	  BU->setOriginAxis(Origin,X,Y,Z);
 	  //	  BU->setEndPts(Origin,Origin+Y*L);      	  
 	  shapeUnits.push_back(BU);
@@ -464,47 +485,53 @@ GuideLine::createUnitVector(const attachSystem::FixedComp& mainFC,
   shieldFC.applyShift(xStep,yStep,zStep);
   shieldFC.applyAngleRotate(xyAngle,zAngle);
 
-
   attachSystem::FixedComp& guideFC=FixedGroup::getKey("GuideOrigin");
   guideFC.createUnitVector(beamFC,beamLP);
   guideFC.applyShift(beamXStep,beamYStep,beamZStep);
   guideFC.applyAngleRotate(beamXYAngle,beamZAngle);
 
   setDefault("GuideOrigin");
-
   return;
 }
 
 void
-GuideLine::createSurfaces(const long int mainLP)
+GuideLine::createSurfaces()
   /*!
     Create All the surfaces
-    \param LC :: Linear Component [to get outer surface]
+    \param mainLP :: Front object construction surface
   */
 {
   ELog::RegMethod RegA("GuideLine","createSurface");
   
   FixedGroup::setDefault("Shield");
+  const attachSystem::FixedComp& beamFC=
+    FixedGroup::getKey("GuideOrigin");
 
   // Only need to build if not provided
-  if (!mainLP)
+  if (frontCut)
     ModelSupport::buildPlane(SMap,guideIndex+1,Origin,Y);
-  
+  if (beamFrontCut)
+    ModelSupport::buildPlane(SMap,guideIndex+1001,
+			       beamFC.getCentre(),beamFC.getY());
+
   if (!activeEnd)
     ModelSupport::buildPlane(SMap,guideIndex+2,Origin+Y*length,Y);
 
-  ModelSupport::buildPlane(SMap,guideIndex+3,Origin-X*leftWidth,X);
-  ModelSupport::buildPlane(SMap,guideIndex+4,Origin+X*rightWidth,X);
-  ModelSupport::buildPlane(SMap,guideIndex+5,Origin-Z*depth,Z);
-  ModelSupport::buildPlane(SMap,guideIndex+6,Origin+Z*height,Z);
-
+  if (activeShield)
+    {
+      ModelSupport::buildPlane(SMap,guideIndex+3,Origin-X*leftWidth,X);
+      ModelSupport::buildPlane(SMap,guideIndex+4,Origin+X*rightWidth,X);
+      ModelSupport::buildPlane(SMap,guideIndex+5,Origin-Z*depth,Z);
+      ModelSupport::buildPlane(SMap,guideIndex+6,Origin+Z*height,Z);
+    }
   // Note we ignore the length component of the last item 
   // and use the guide closer
+
   for(size_t i=0;i<nShapes;i++)
     {
       if (i)
 	ModelSupport::buildPlane(SMap,guideIndex+10+static_cast<int>(i),
-				 shapeUnits[i]->getBegin(),Y);
+				   shapeUnits[i]->getBegin(),Y);
       shapeUnits[i]->createSurfaces(SMap,guideIndex,layerThick);
     }
     
@@ -539,27 +566,33 @@ GuideLine::createObjects(Simulation& System,
     Adds the  guide components
     \param System :: Simulation to create objects in
     \param mainFC :: link object 
-    \param mainLP :: link point
+    \param mainLP :: link point [first surface]
    */
 {
   ELog::RegMethod RegA("GuideLine","createObjects");
 
   std::string Out;
   std::string startSurf;
-  if (!mainLP)
-    startSurf=ModelSupport::getComposite(SMap,guideIndex," 1 ");
+
+  if (beamFrontCut)
+    startSurf=ModelSupport::getComposite(SMap,guideIndex," 1001 ");
   else
-    startSurf=mainFC.getSignedLinkString(mainLP);
-  
+    {
+      startSurf=(frontCut) ?
+	ModelSupport::getComposite(SMap,guideIndex," 1 ")  :
+	mainFC.getSignedLinkString(mainLP);
+    }
+      
   HeadRule excludeCell;
   int frontNum(guideIndex+9);
   std::string shapeLayer;
+  std::string back;
   for(size_t i=0;i<nShapes;i++)
     {
       // front
       const std::string front= (!i) ? startSurf : 
 	ModelSupport::getComposite(SMap,frontNum," 1 ");
-      const std::string back=shapeBackSurf(i);
+      back=shapeBackSurf(i);
       for(size_t j=0;j<nShapeLayers;j++)
 	{
 	  shapeLayer=ModelSupport::getComposite(SMap,guideIndex,
@@ -580,22 +613,29 @@ GuideLine::createObjects(Simulation& System,
       excludeCell.addUnion(ExOut);
       frontNum++;
     }
+  if (activeShield)
+    {
+      // Outer steel
+      if (!activeEnd)
+	Out=ModelSupport::getComposite(SMap,guideIndex," -2 3 -4 5 -6 ");
+      else
+	Out=ModelSupport::getComposite(SMap,guideIndex," 3 -4 5 -6 ")+
+	  endCut.display();  
 
-  // Outer steel
-  if (!activeEnd)
-    Out=ModelSupport::getComposite(SMap,guideIndex," -2 3 -4 5 -6 ");
+      Out+=startSurf;
+      addOuterSurf(Out);      
+      
+      excludeCell.makeComplement();
+      Out+=excludeCell.display();
+      System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
+    }
   else
-    Out=ModelSupport::getComposite(SMap,guideIndex," 3 -4 5 -6 ")+
-      endCut.display();
-
-  Out+=startSurf;
-  addOuterSurf(Out);      
-
-  ELog::EM<<"OuterCell "<<getKeyName()<<" "<<Out<<ELog::endDiag;
-  
-  excludeCell.makeComplement();
-  Out+=excludeCell.display();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
+    {
+      if (activeEnd)
+	addOuterSurf(startSurf+excludeCell.display());
+      else
+	addOuterSurf(startSurf+excludeCell.display()+back);
+    }
 
   return;
 }
@@ -609,11 +649,11 @@ GuideLine::createMainLinks(const attachSystem::FixedComp& mainFC,
     \param mainLP :: link point
    */
 {
-  ELog::RegMethod RegA("GuideLine","createLinks");
+  ELog::RegMethod RegA("GuideLine","createMainLinks");
 
   attachSystem::FixedComp& shieldFC=FixedGroup::getKey("Shield");
   const size_t sLP(static_cast<size_t>
-		   ((mainLP>0) ? mainLP-1 : mainLP+1));
+		   ((mainLP>0) ? mainLP-1 : -1-mainLP));
   if (!mainLP)
     {
       shieldFC.setConnect(0,Origin,-Y);       
@@ -623,20 +663,60 @@ GuideLine::createMainLinks(const attachSystem::FixedComp& mainFC,
     shieldFC.setLinkComponent(0,mainFC,sLP);       
   else
     shieldFC.setLinkCopy(0,mainFC,sLP);       
-  
+
   shieldFC.setConnect(1,Origin+Y*length,Y);
-  shieldFC.setConnect(2,Origin-X*leftWidth/2.0,-X);     
-  shieldFC.setConnect(3,Origin+X*rightWidth/2.0,X);     
-  shieldFC.setConnect(4,Origin-Z*depth,-Z);     
-  shieldFC.setConnect(5,Origin+Z*height,Z);     
+  if (!activeEnd)
+    shieldFC.setLinkSurf(1,SMap.realSurf(guideIndex+2));
+  else
+    shieldFC.setLinkSurf(1,endCut.display());
   
-  for(int i=1;i<6;i++)
-    shieldFC.setLinkSurf(static_cast<size_t>(i),
-			   SMap.realSurf(guideIndex+i+1));
+  if (activeShield)
+    {
+      shieldFC.setConnect(2,Origin-X*leftWidth/2.0,-X);     
+      shieldFC.setConnect(3,Origin+X*rightWidth/2.0,X);     
+      shieldFC.setConnect(4,Origin-Z*depth,-Z);     
+      shieldFC.setConnect(5,Origin+Z*height,Z);
+      int sign(-1);
+      for(int i=2;i<6;i++)
+	{
+	  shieldFC.setLinkSurf(static_cast<size_t>(i),
+			       sign*SMap.realSurf(guideIndex+i+1));
+	  sign*=-1;
+	}
+    }
 
   return;
 }
 
+Geometry::Vec3D
+GuideLine::calcActiveEndIntercept(const ShapeUnit* shapePtr) 
+  /*!
+    Determine the active end point intercept
+    with the list link point
+    \param shapePtr :: ShapeUnit of last point
+  */
+{
+  ELog::RegMethod RegA("GuideLine","calcActiveEndIntercept");
+
+  // Start of track
+  const Geometry::Vec3D APt =
+    shapeUnits.back()->getEnd();
+  const Geometry::Vec3D AAxis =
+    shapeUnits.back()->getEndAxis();
+  std::vector<Geometry::Vec3D> Pts;
+  std::vector<int> SNum;
+  
+  // This should not need to be called:
+  if (!activeEnd)
+    endCut.procString(ModelSupport::getComposite(SMap,guideIndex," -2 "));
+  endCut.populateSurf();
+
+  endCut.calcSurfIntersection(APt,AAxis,Pts,SNum);
+  const size_t indexA=SurInter::closestPt(Pts,APt);
+  return Pts[indexA];
+}
+
+  
 void
 GuideLine::createUnitLinks()
   /*!
@@ -655,19 +735,30 @@ GuideLine::createUnitLinks()
 	FixedGroup::getKey(GKey);
       
       guideFC.setConnect(0,shapeUnits[i]->getBegin(),
-			 shapeUnits[i]->getBegAxis());     
-      guideFC.setConnect(1,shapeUnits[i]->getEnd(),
-			 shapeUnits[i]->getEndAxis());     
-      
-      if (!i)
-	guideFC.setLinkCopy(0,shieldFC,0);       
-      else
-	guideFC.setLinkSurf(0,-SMap.realSurf(SN));       
+			 shapeUnits[i]->getBegAxis());
 
       if (i!=nShapes-1)
+	guideFC.setConnect(1,shapeUnits[i]->getEnd(),
+			   shapeUnits[i]->getEndAxis());     
+      else
+	guideFC.setConnect(1,calcActiveEndIntercept(shapeUnits[i]),
+			   shapeUnits[i]->getEndAxis());     
+
+      // decide which point to used 
+      if (!i && !beamFrontCut && !frontCut)
+	guideFC.setLinkCopy(0,shieldFC,0);       
+      else if (!i && beamFrontCut)
+	guideFC.setLinkSurf(0,-SMap.realSurf(guideIndex+1001));
+      else if (!i && frontCut)
+	guideFC.setLinkSurf(0,-SMap.realSurf(guideIndex+1));
+      else 
+	guideFC.setLinkSurf(0,-SMap.realSurf(SN));       
+
+      // END Link Pts
+      if (i==nShapes-1)
 	guideFC.setLinkSurf(1,SMap.realSurf(guideIndex+2));
       else
-      	guideFC.setLinkSurf(1,SMap.realSurf(SN+1));       
+	guideFC.setLinkSurf(1,SMap.realSurf(SN+1));       
 
       SN++;
     }
@@ -714,7 +805,7 @@ GuideLine::createAll(Simulation& System,
   populate(System.getDataBase());
   createUnitVector(mainFC,mainLP,beamFC,beamLP);
   processShape(System.getDataBase());
-  createSurfaces(mainLP);
+  createSurfaces();
   createObjects(System,mainFC,mainLP);
   createMainLinks(mainFC,mainLP);
   createUnitLinks();

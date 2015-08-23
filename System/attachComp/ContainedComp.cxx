@@ -545,7 +545,25 @@ ContainedComp::isOuterValid(const Geometry::Vec3D& V) const
   return (outerSurf.isValid(V)) ? 0 : 1;
 }
 
+void 
+ContainedComp::addInsertCell(const std::vector<int>& CVec)
+  /*!
+    Adds a cell to the insert list
+    \param CN :: Cell number
+  */
+{
+  ELog::RegMethod RegA("ContainedComp","addInsertCell<vector>");
 
+  for(const int CN : CVec)
+    {
+      if (CN==0)
+	throw ColErr::EmptyValue<int>("CN index");
+      if (std::find(insertCells.begin(),insertCells.end(),CN)
+	  ==insertCells.end())
+	insertCells.push_back(CN);
+    }
+  return;
+}
 
 void 
 ContainedComp::addInsertCell(const int CN)
@@ -604,15 +622,14 @@ ContainedComp::insertObjects(Simulation& System)
 {
   ELog::RegMethod RegA("ContainedComp","insertObjects");
   if (!hasOuterSurf()) return;
-
-  std::vector<int>::const_iterator vc;
-  for(vc=insertCells.begin();vc!=insertCells.end();vc++)
+  
+  for(const int CN : insertCells)
     {
-      MonteCarlo::Qhull* outerObj=System.findQhull(*vc);
+      MonteCarlo::Qhull* outerObj=System.findQhull(CN);
       if (outerObj)
 	outerObj->addSurfString(getExclude());
       else
-	ELog::EM<<"Failed to find outerObject: "<<*vc<<ELog::endErr;
+	ELog::EM<<"Failed to find outerObject: "<<CN<<ELog::endErr;
     }
   insertCells.clear();
   return;

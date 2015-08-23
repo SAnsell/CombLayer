@@ -80,20 +80,22 @@
 #include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "LinearComp.h"
+#include "FixedGroup.h"
 #include "SecondTrack.h"
 #include "TwinComp.h"
 #include "ContainedComp.h"
+#include "CellMap.h"
 #include "GeneralShutter.h"
 #include "HoleUnit.h"
 #include "InnerWall.h"
 #include "PreCollimator.h"
-#include "Collimator.h"
+#include "Jaws.h"
 #include "ColBox.h"
 #include "Table.h"
 #include "beamBlock.h"
 #include "BeamStop.h"
 #include "ChipSample.h"
+
 #include "Hutch.h"
 
 #include "surfDBase.h"
@@ -103,11 +105,11 @@ namespace hutchSystem
 {
 
 ChipIRHutch::ChipIRHutch(const std::string& Key)  : 
-  attachSystem::TwinComp(Key,3),attachSystem::ContainedComp(),
+  attachSystem::FixedGroup(Key,"Main",4,"Beam",2),
+  attachSystem::ContainedComp(),attachSystem::CellMap(),
   hutchIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(hutchIndex+1),PreColObj(new PreCollimator("chipPre")),
-  ColObjV(new Collimator("chipColV")),
-  ColObjH(new Collimator("chipColH")),
+  Jaw(new constructSystem::Jaws("chipJaw")),
   ColB(new ColBox("chipColBox")),
   Trimmer(new InnerWall("chipHutTrim")),
   FTable(new Table(0,"chipHutTable1")),
@@ -122,8 +124,7 @@ ChipIRHutch::ChipIRHutch(const std::string& Key)  :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
   OR.addObject(PreColObj);
-  OR.addObject(ColObjV);
-  OR.addObject(ColObjH);
+  OR.addObject(Jaw);
   OR.addObject(ColB);
   OR.addObject(Trimmer);
   OR.addObject(FTable);
@@ -132,16 +133,17 @@ ChipIRHutch::ChipIRHutch(const std::string& Key)  :
 }
 
 ChipIRHutch::ChipIRHutch(const ChipIRHutch& A) : 
-  attachSystem::TwinComp(A),attachSystem::ContainedComp(A),
+  attachSystem::FixedGroup(A),attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),
   hutchIndex(A.hutchIndex),cellIndex(A.cellIndex),
   PreColObj(new PreCollimator(*A.PreColObj)),
-  ColObjV(new Collimator(*A.ColObjV)),
-  ColObjH(new Collimator(*A.ColObjH)),
+  Jaw(new constructSystem::Jaws(*A.Jaw)),
+
   ColB(new ColBox(*A.ColB)),
   Trimmer(new InnerWall(*A.Trimmer)),
   FTable(new Table(*A.FTable)),BTable(new Table(*A.BTable)),
   BStop(new BeamStop(*A.BStop)),SampleItems(A.SampleItems),
-  BeamCentPoint(A.BeamCentPoint),ImpactPoint(A.ImpactPoint),
+  BeamCentPoint(A.BeamCentPoint),
   xStep(A.xStep),yStep(A.yStep),zLine(A.zLine),
   beamAngle(A.beamAngle),screenY(A.screenY),
   hGuideWidth(A.hGuideWidth),hFLWidth(A.hFLWidth),
@@ -191,12 +193,12 @@ ChipIRHutch::operator=(const ChipIRHutch& A)
 {
   if (this!=&A)
     {
-      attachSystem::TwinComp::operator=(A);
+      attachSystem::FixedGroup::operator=(A);
       attachSystem::ContainedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
       cellIndex=A.cellIndex;
       *PreColObj = *A.PreColObj;
-      *ColObjV = *A.ColObjV;
-      *ColObjH = *A.ColObjH;
+      *Jaw = *A.Jaw;
       *ColB = *A.ColB;
       *Trimmer = *A.Trimmer;
       *FTable = *A.FTable;
@@ -204,7 +206,6 @@ ChipIRHutch::operator=(const ChipIRHutch& A)
       *BStop = *A.BStop;
       SampleItems=A.SampleItems;
       BeamCentPoint=A.BeamCentPoint;
-      ImpactPoint=A.ImpactPoint;
       xStep=A.xStep;
       yStep=A.yStep;
       zLine=A.zLine;
@@ -292,7 +293,6 @@ ChipIRHutch::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("ChipIRHutch","populate");
-
 
   beamAngle=Control.EvalVar<double>("chipSndAngle");
   xStep=Control.EvalVar<double>(keyName+"XStep");
@@ -419,26 +419,30 @@ ChipIRHutch::createUnitVector(const attachSystem::FixedComp& shutterFC,
   ELog::RegMethod RegA("ChipIRHutch","createUnitVector");
 
   const masterRotate& MR=masterRotate::Instance();
-  attachSystem::FixedComp::createUnitVector(LC);
-
-  Origin=LC.getLinkPt(6);                 // [Guide Position]
-  BeamCentPoint=LC.getExit();             // [NOT USED YET]
-  bY=Y;
-
-  Origin+=X*xStep+Y*yStep;
+  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+  
+  mainFC.createUnitVector(LC);
+  mainFC.setCentre(LC.getSignedLinkPt(7));
+  beamFC.createUnitVector(LC);
+  beamFC.setCentre(LC.getSignedLinkPt(7));
+  FixedGroup::setDefault("Main");
+      
   // remove old Z component and replace:
-  Origin+=Z*(zLine-Z.dotProd(Origin));
-  
-  Geometry::Quaternion::calcQRotDeg(beamAngle,X).rotate(bY);
-  bX=X;
-  bZ=bY*X;
 
-  ImpactPoint= (shutterFC.NConnect()) ?
+  mainFC.applyShift(xStep,yStep,0);
+  const double zStep(zLine-mainFC.getZ().dotProd(Origin));
+  mainFC.applyShift(0,0,zStep);
+  beamFC.applyAngleRotate(0,beamAngle);
+
+
+  FixedGroup::setDefault("Main");
+  
+  const Geometry::Vec3D ImpactPoint= (shutterFC.NConnect()) ?
     shutterFC.getLinkPt(0) : shutterFC.getCentre(); 
-  
-  setExit(Origin+Y*hMainLen,Y);
-  SecondTrack::setBeamExit(BeamCentPoint,bY);
-  
+  //  setExit(Origin+Y*hMainLen,Y);
+  //  SecondTrack::setBeamExit(LC.getLinkPoint(1),bY);
+
   const Geometry::Vec3D Saxis=MR.calcAxisRotate(xyAxis);
 
   chipIRDatum::chipDataStore::Instance().
@@ -470,12 +474,14 @@ ChipIRHutch::createWallObjects(Simulation& System,
   // Front void
   Out=ModelSupport::getComposite(SMap,hutchIndex,"1 -101 33 -34 15 -16 -84");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  addCell("FrontVoid",cellIndex-1);
   collimatorVoid=cellIndex-1;
   
   // tail void
   Out=ModelSupport::getComposite(SMap,hutchIndex,"102 -32 33 (-44 : -82) "
 				 "(-84 : 82) 43 35 -16");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  addCell("TailVoid",cellIndex-1);
   tailVoid=cellIndex-1;
 
   // -------------------------
@@ -833,10 +839,13 @@ ChipIRHutch::writeMasterPoints() const
   ELog::RegMethod RegA("ChipIRHutch","writeMasterPoints");
 
   const masterRotate& MR=masterRotate::Instance();
+  //  const attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+  const attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+  
   chipIRDatum::chipDataStore& CS=chipIRDatum::chipDataStore::Instance();
   //.setCNum(chipIRDatum::shutterAxis,Saxis);
 
-  CS.setCNum(chipIRDatum::tubeAxis,MR.calcAxisRotate(bY));
+  CS.setCNum(chipIRDatum::tubeAxis,MR.calcAxisRotate(beamFC.getY()));
   CS.setCNum(chipIRDatum::table1Cent,MR.calcRotate(calcIndexPosition(0)));
   CS.setCNum(chipIRDatum::table2Cent,MR.calcRotate(calcIndexPosition(1)));
   CS.setCNum(chipIRDatum::beamStop,MR.calcRotate(BStop->getCentre()));
@@ -944,11 +953,11 @@ ChipIRHutch::calcIndexPosition(const int Index) const
     case 1:              // Table 2
       return BTable->getBeamPos();
     case 2:              // Guide exit point+small step
-      return Origin+bY;
+      return Origin+Y;
     case 3:              // beamstop ??? -- this is not correct
-      return Origin+bY;
+      return Origin+Y;
     }
-  throw ColErr::IndexError<int>(Index,4,RegA.getFull());
+  throw ColErr::IndexError<int>(Index,4,"Index");
 } 
 
 void 
@@ -1130,8 +1139,7 @@ ChipIRHutch::addExtraWalls(Simulation& System,
 
   return;
 }
-  
-  
+    
 void
 ChipIRHutch::addCollimators(Simulation& System,
 			    const attachSystem::TwinComp& GI)
@@ -1145,7 +1153,7 @@ ChipIRHutch::addCollimators(Simulation& System,
 
   const masterRotate& MR=masterRotate::Instance();
   chipIRDatum::chipDataStore& CS=chipIRDatum::chipDataStore::Instance();
-
+  
   PreColObj->addInsertCell(collimatorVoid);
   PreColObj->addBoundarySurf(SMap.realSurf(hutchIndex+33));
   PreColObj->addBoundarySurf(-SMap.realSurf(hutchIndex+34));
@@ -1154,42 +1162,25 @@ ChipIRHutch::addCollimators(Simulation& System,
     PreColObj->createAll(System,GI);
   else
     PreColObj->createPartial(System,GI);
-  
+
 
   // Stuff for collimator box:
   if (collActiveFlag & 8)
     {
-      ColB->addInsertCell(collimatorVoid);
-      ColB->setMidFace(GI.getExit());
-      ColB->createAll(System,*this);
+      //      ColB->addInsertCell(collimatorVoid);
+      //      ColB->setMidFace(GI.getExit());
+      //      ColB->createAll(System,*this);
     }
-  
-  ColObjV->addInsertCell(collimatorVoid);
-  ColObjV->setAxis(Z);
-  ColObjV->setMidFace(GI.getExit());
-  // Note Vertial needs both sides:
-  ColObjV->addBoundarySurf(SMap.realSurf(hutchIndex+33));
-  ColObjV->addBoundarySurf(-SMap.realSurf(hutchIndex+34));
-  ColObjV->addBoundarySurf(-SMap.realSurf(hutchIndex+16));
-  ColObjV->addBoundarySurf(SMap.realSurf(hutchIndex+15));
+  Jaw->addInsertCell(collimatorVoid);
+  Jaw->addBoundarySurf(SMap.realSurf(hutchIndex+33));
+  // Jaw->addBoundarySurf(-SMap.realSurf(hutchIndex+34));
+  // Jaw->addBoundarySurf(-SMap.realSurf(hutchIndex+16));
+  // Jaw->addBoundarySurf(SMap.realSurf(hutchIndex+15));
   
   if (collActiveFlag & 2)
-    ColObjV->createAll(System,*this);
-  else
-    ColObjV->createPartial(System,*this);
+    Jaw->createAll(System,getKey("Beam"),-1);
 
-  ColObjH->addInsertCell(collimatorVoid);
-  ColObjH->setAxis(X);
-  ColObjH->setMidFace(GI.getExit());
-  ColObjH->addBoundarySurf(SMap.realSurf(hutchIndex+33));
-  ColObjH->addBoundarySurf(-SMap.realSurf(hutchIndex+34));
-  ColObjH->addBoundarySurf(-SMap.realSurf(hutchIndex+16));
-  ColObjH->addBoundarySurf(SMap.realSurf(hutchIndex+15));
-  
-  if (collActiveFlag & 4)
-    ColObjH->createAll(System,*this);
-  else
-    ColObjH->createPartial(System,*this);
+  return;	
 
   CS.setCNum(chipIRDatum::preCollOrigin,
 	     MR.calcRotate(PreColObj->getCentre()));
@@ -1198,13 +1189,13 @@ ChipIRHutch::addCollimators(Simulation& System,
   CS.setCNum(chipIRDatum::preCollHoleCent,
 	     MR.calcRotate(PreColObj->getHoleCentre()));
   CS.setCNum(chipIRDatum::collVOrigin,
-	     MR.calcRotate(ColObjV->getCentre()));
+	     MR.calcRotate(Jaw->getCentre()));
   CS.setCNum(chipIRDatum::collVAxis,
-	     MR.calcAxisRotate(ColObjV->getBeamAxis()));
+	     MR.calcAxisRotate(Jaw->getY()));
   CS.setCNum(chipIRDatum::collHOrigin,
-	     MR.calcRotate(ColObjH->getCentre()));
+	     MR.calcRotate(Jaw->getCentre()));
   CS.setCNum(chipIRDatum::collHAxis,
-	     MR.calcAxisRotate(ColObjH->getBeamAxis()));
+	     MR.calcAxisRotate(Jaw->getY()));
 
   return;
 }
@@ -1305,6 +1296,24 @@ ChipIRHutch::createLinks()
     Create all the link points
   */
 {
+  ELog::RegMethod RegA("ChipIRHutch","createLinks");
+  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+
+  mainFC.setConnect(0,Origin,-Y);
+  mainFC.setLinkSurf(0,-SMap.realSurf(hutchIndex+1));
+
+  mainFC.setConnect(1,Origin+Y*(hMainLen-hBWallThick),Y);
+  mainFC.setLinkSurf(1,-SMap.realSurf(hutchIndex+102));
+
+  mainFC.setConnect(3,Origin+Y*hMainLen,Y);
+  mainFC.setLinkSurf(3,-SMap.realSurf(hutchIndex+32));
+
+  beamFC.setConnect(0,Origin,-Y);
+  beamFC.setLinkSurf(0,-SMap.realSurf(hutchIndex+1));
+
+  beamFC.setConnect(1,Origin+Y*(hMainLen-hBWallThick),Y);
+  beamFC.setLinkSurf(1,-SMap.realSurf(hutchIndex+102));
   
   return;
 }
@@ -1364,17 +1373,18 @@ ChipIRHutch::createCommonAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("Hutch","createCommonAll");
+
   Trimmer->createSurf(System,Guide);
   createWallSurfaces(Guide);
-
-  //  createBeamStopObjects(System);
+  
   createWallObjects(System,IC);
   addExtraWalls(System,Guide);
-    
+  createLinks();
+
   Trimmer->createObj(System);
   addOuterVoid();
   addCollimators(System,Guide);
-  BStop->createAll(System,*this);
+  BStop->createAll(System,getKey("Main"),4);
 
   FTable->setFloor(SMap.realSurf(hutchIndex+35));
   FTable->addInsertCell(tailVoid);
@@ -1389,6 +1399,7 @@ ChipIRHutch::createCommonAll(Simulation& System,
       SI->createAll(System,*FTable,*BTable);
     }
   layerProcess(System);
+
   insertObjects(System);       
   
   writeMasterPoints();

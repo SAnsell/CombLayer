@@ -1,7 +1,7 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
- * File:   t1Upgrade/makePhoton.cxx
+ * File:   photon/makePhoton.cxx
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -60,6 +60,7 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "LayerComp.h"
@@ -68,6 +69,8 @@
 #include "CylContainer.h"
 #include "CylLayer.h"
 #include "TubeMod.h"
+#include "B4CCollimator.h"
+#include "EQDetector.h"
 #include "makePhoton.h"
 
 #include "Debug.h"
@@ -76,10 +79,14 @@ namespace photonSystem
 {
 
 makePhoton::makePhoton() :
+  CatcherObj(new CylLayer("Catcher")),
   OuterObj(new CylContainer("Outer")),
   PrimObj(new CylLayer("PrimMod")),
   CarbonObj(new CylLayer("Carbon")),
-  ModObj(new TubeMod("D2OMod"))
+  ModObj(new TubeMod("D2OMod")),
+  B4CObj(new B4CCollimator("B4CCol")),
+  ND2(new EQDetector("ND2"))
+  
   /*!
     Constructor
   */
@@ -87,10 +94,13 @@ makePhoton::makePhoton() :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
+  OR.addObject(CatcherObj);
   OR.addObject(OuterObj);
   OR.addObject(PrimObj);
   OR.addObject(CarbonObj);
   OR.addObject(ModObj);
+  OR.addObject(B4CObj);
+  OR.addObject(ND2);
 
 }
 
@@ -142,19 +152,26 @@ makePhoton::build(Simulation* SimPtr,
 
   int voidCell(74123);
 
+  
   OuterObj->addInsertCell(voidCell);
   OuterObj->createAll(*SimPtr,World::masterOrigin());
-  
-  PrimObj->createAll(*SimPtr,*OuterObj,-5);
+
+  CatcherObj->addInsertCell(voidCell);
+  CatcherObj->createAll(*SimPtr,*OuterObj,-1);
+  /*
+  PrimObj->createAll(*SimPtr,*OuterObj,-1);
   attachSystem::addToInsertLineCtrl(*SimPtr,*OuterObj,*PrimObj);
 
-  CarbonObj->createAll(*SimPtr,*PrimObj,2);
-  attachSystem::addToInsertLineCtrl(*SimPtr,*OuterObj,*CarbonObj);
-
   ModObj->addInsertCell(voidCell);
-  ModObj->createAll(*SimPtr,*CarbonObj,2);
-  
-  attachSystem::addToInsertLineCtrl(*SimPtr,*OuterObj,*ModObj);
+  ModObj->createAll(*SimPtr,*PrimObj,2);
+
+  B4CObj->addInsertCell(voidCell);
+  B4CObj->createAll(*SimPtr,*ModObj,2);
+  */
+  ND2->addInsertCell(voidCell);
+  ND2->createAll(*SimPtr,*CatcherObj,0);
+
+  //  atitachSystem::addToInsertLineCtrl(*SimPtr,*OuterObj,*ModObj);
   return;
 }
 

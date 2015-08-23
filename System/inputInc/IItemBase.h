@@ -47,7 +47,8 @@ class IItem
   size_t maxSets;    ///< Max number of sets 
   size_t maxItems;   ///< Max items per set
   size_t reqItems;   ///< Required items per set
-
+  //  bool joinFlag;     ///< Concaternate items
+  
   /// DATA Items BEFORE conversion:
   std::vector<std::vector<std::string>> DItems;
 

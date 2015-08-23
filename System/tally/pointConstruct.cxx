@@ -186,11 +186,8 @@ pointConstruct::processPoint(Simulation& System,
       const double D=
 	inputItem<double>(IParam,Index,4,"Distance not given");
       const long int linkNumber=getLinkIndex(snd);
-      ELog::EM<<"LN == "<<linkNumber<<ELog::endDiag;
-	    
       processPointFree(System,place,linkNumber,D);
     }
-
   else
     {
       ELog::EM<<"Point TallyType "<<PType<<" ignored"<<ELog::endWarn;

@@ -203,8 +203,10 @@ FixedComp::createUnitVector(const FixedComp& FC,
     (sideIndex>0) ? static_cast<size_t>(sideIndex-1) :
     static_cast<size_t>(-sideIndex-1) ;
   if (linkIndex>=FC.LU.size())
-    throw ColErr::IndexError<size_t>(linkIndex,FC.LU.size(),
-				     "LU.size()/linkIndex in object:"+keyName);
+    throw ColErr::IndexError<size_t>
+      (linkIndex,FC.LU.size(),
+       "LU.size()/linkIndex in object:"+FC.getKeyName()+" to object "+
+       keyName);
      
   const LinkUnit& LU=FC.getLU(linkIndex);
   const double signV((sideIndex>0) ? 1.0 : -1.0);
@@ -227,9 +229,10 @@ FixedComp::createUnitVector(const Geometry::Vec3D& OG,
     Create the unit vectors [using beam directions]
     \param OG :: Origin
     \param BeamAxis :: Beamline axis line
+    \param ZAxis :: Direction for Z
   */
 {
-  ELog::RegMethod RegA("FixedComp","createUnitVector(Vec3D,Vec3D>)");
+  ELog::RegMethod RegA("FixedComp","createUnitVector(Vec3D,Vec3D,Vec3D))");
 
   //Geometry::Vec3D(-1,0,0);          // Gravity axis [up]
   Z=ZAxis;
@@ -336,6 +339,18 @@ FixedComp::applyFullRotate(const double xyAngle,
 }
 
 void
+FixedComp::reverseZ()
+  /*!
+    Flip the Z axis keeping Y Fixed
+    (could generalize but ...)
+  */
+{
+  Z=-Z;
+  X= -X;
+  return;
+}
+
+void
 FixedComp::setNConnect(const size_t N) 
   /*!
     Create/Remove new links point
@@ -418,6 +433,23 @@ FixedComp::setLinkSurf(const size_t Index,
 }
 
 void
+FixedComp::setLinkSurf(const size_t Index,
+		       const HeadRule& HR) 
+  /*!
+    Set a surface to output
+    \param Index :: Link number
+    \param HR :: HeadRule to add
+  */
+{
+  ELog::RegMethod RegA("FixedComp","setLinkSurf(HR)");
+  if (Index>=LU.size())
+    throw ColErr::IndexError<size_t>(Index,LU.size(),"LU size/Index");
+
+  LU[Index].setLinkSurf(HR);
+  return;
+}
+
+void
 FixedComp::setLinkSurf(const size_t Index,const int SN) 
   /*!
     Set  a surface to output
@@ -466,6 +498,22 @@ FixedComp::setBridgeSurf(const size_t Index,const int SN)
     throw ColErr::IndexError<size_t>(Index,LU.size(),"LU size/index");
 
   LU[Index].setBridgeSurf(SN);
+  return;
+}
+
+void
+FixedComp::setBridgeSurf(const size_t Index,const HeadRule& HR) 
+  /*!
+    Set a surface to bridge output
+    \param Index :: Link number
+    \param HR :: HeadRule for bridge
+  */
+{
+  ELog::RegMethod RegA("FixedComp","setBridgeSurf");
+  if (Index>=LU.size())
+    throw ColErr::IndexError<size_t>(Index,LU.size(),"LU size/index");
+
+  LU[Index].setBridgeSurf(HR);
   return;
 }
 
@@ -890,6 +938,18 @@ FixedComp::getBridgeComplement(const size_t Index) const
     RP.addIntersection(LU[Index].getCommon());
 
   return RP.display();
+}
+
+void 
+FixedComp::setCentre(const Geometry::Vec3D& C)
+  /*!
+    User Interface to LU[1] to set Point + Axis
+    \param C :: Centre point
+  */
+{
+  ELog::RegMethod RegA("FixedComp","setCentre");
+  Origin=C;
+  return;
 }
 
 void 

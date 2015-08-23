@@ -244,10 +244,12 @@ ZoomVariables(const mainSystem::inputParam& IParam,
   Control.addVariable("zoomDiskInnerMat","Aluminium");
   Control.addVariable("zoomDiskOuterMat","Inconnel");
 
-  Control.addVariable("zoomDisk0PhaseAngle",95.0);
-  Control.addVariable("zoomDisk0OpenAngle",30.0);
-  Control.addVariable("zoomDisk1PhaseAngle",95.0);
-  Control.addVariable("zoomDisk1OpenAngle",30.0);
+  Control.addVariable("zoomDisk0NBlades",1);
+  Control.addVariable("zoomDisk1NBlades",1);
+  Control.addVariable("zoomDisk0PhaseAngle0",95.0);
+  Control.addVariable("zoomDisk0OpenAngle0",30.0);
+  Control.addVariable("zoomDisk1PhaseAngle0",95.0);
+  Control.addVariable("zoomDisk1OpenAngle0",30.0);
   
   
   Control.addVariable("zoomRoofNSteel",5);     // -ve away to target

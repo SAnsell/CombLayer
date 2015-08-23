@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   essBuild/DefUnitsESS.cxx
  *
@@ -89,6 +89,33 @@ setDefUnits(FuncDataBase& Control,
 
 
 void
+setESSFull(defaultConfig& A)
+  /*!
+    Default configuration for ESS
+    \param A :: Paramter for default config
+   */
+{
+  ELog::RegMethod RegA("DefUnitsESS[F]","setESS");
+
+  A.setOption("lowMod","Butterfly");
+  A.setOption("topMod","Butterfly");
+  A.setOption("lowModFlowGuide","On");
+  A.setOption("topModFlowGuide","On");
+  A.setOption("lowWaterDisk","On");
+  A.setOption("topWaterDisk","On");
+  A.setOption("topWaterDisk","On");
+  A.setMultiOption("beamlines",0,"G1BLine1 ODIN");
+  A.setMultiOption("beamlines",1,"G1BLine3 LOKI");
+  A.setMultiOption("beamlines",2,"G1BLine5 NMX");
+
+  A.setVar("G1BLine1Active",1);
+  A.setVar("G1BLine3Active",1);
+  A.setVar("G1BLine5Active",1);
+  
+  return;
+}
+
+void
 setESS(defaultConfig& A)
   /*!
     Default configuration for ESS
@@ -99,7 +126,14 @@ setESS(defaultConfig& A)
 
   A.setOption("lowMod","Butterfly");
   A.setMultiOption("beamlines",0,"G1BLine1 ODIN");
-  
+  A.setMultiOption("beamlines",1,"G4BLine3 LOKI");
+  A.setMultiOption("beamlines",2,"G1BLine5 NMX");
+
+  A.setVar("G1BLine1Active",1);
+  A.setVar("G4BLine3Active",1);
+  A.setVar("G4BLine3Filled",1);
+  A.setVar("G1BLine5Active",1);
+     
   return;
 }
 

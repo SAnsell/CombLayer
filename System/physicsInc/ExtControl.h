@@ -30,8 +30,7 @@ namespace physicsSystem
   \version 2.0
   \date April 2015
   \author S.Ansell
-  \brief Process Exponential Transform card [EXT]
-  
+  \brief Process Exponential Transform card [EXT]  
 */
 
 class ExtControl 
@@ -49,8 +48,7 @@ class ExtControl
 
   /// maps NEW -> OLD
   std::map<int,int> renumberMap;
-  
-  
+    
   void writeHeader(std::ostream&) const;
   
  public:

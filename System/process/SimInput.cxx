@@ -80,6 +80,7 @@ importanceSim(Simulation& System,const mainSystem::inputParam& IParam)
 
   WeightSystem::simulationImp(System,IParam);
   WeightSystem::ExtField(System,IParam);
+  WeightSystem::PWT(System,IParam);
   mainSystem::renumberCells(System,IParam);
   WeightSystem::simulationWeights(System,IParam);
 

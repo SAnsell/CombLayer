@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   attachCompInc/FixedGroup.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@ namespace attachSystem
 
 class FixedGroup : public FixedComp
 {
- private:
+ protected:
 
   /// Fixed Storage
   typedef std::shared_ptr<attachSystem::FixedComp> CompTYPE;
@@ -50,6 +50,9 @@ class FixedGroup : public FixedComp
   FixedGroup(const std::string&,const std::string&,const size_t);
   FixedGroup(const std::string&,const std::string&,const size_t,
 	     const std::string&,const size_t);
+  FixedGroup(const std::string&,const std::string&,const size_t,
+	     const std::string&,const size_t,
+	     const std::string&,const size_t);
   FixedGroup(const FixedGroup&);
   FixedGroup& operator=(const FixedGroup&);
   virtual ~FixedGroup();
@@ -61,8 +64,8 @@ class FixedGroup : public FixedComp
   size_t nGroups() const { return FMap.size(); } 
   bool hasKey(const std::string&) const;
   FixedComp& addKey(const std::string&,const size_t);
-  FixedComp& getKey(const std::string&);
-  const FixedComp& getKey(const std::string&) const;
+  virtual FixedComp& getKey(const std::string&);
+  virtual const FixedComp& getKey(const std::string&) const;
 
 
 

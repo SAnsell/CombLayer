@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   attachComp/ContainedGroup.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,6 @@
 #include <string>
 #include <algorithm>
 #include <memory>
-#include <boost/bind.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -171,14 +170,14 @@ ContainedGroup::hasKey(const std::string& Key) const
 }
 
 ContainedComp&
-ContainedGroup::addKey(const std::string& Key)
+ContainedGroup::addCC(const std::string& Key)
   /*!
     Add a component to the group
     \param Key :: Key to add
     \return ContainedComp 
   */
 {
-  ELog::RegMethod RegA("ContainedGroup","addKey");
+  ELog::RegMethod RegA("ContainedGroup","addCC");
   
   CTYPE::iterator mc=CMap.find(Key);
   if (mc!=CMap.end())
@@ -190,14 +189,14 @@ ContainedGroup::addKey(const std::string& Key)
 }
 
 ContainedComp&
-ContainedGroup::getKey(const std::string& Key)
+ContainedGroup::getCC(const std::string& Key)
   /*!
     Determine the component from the key
     \param Key :: Key to look up
     \return ContainedComp 
   */
 {
-  ELog::RegMethod RegA("ContainedGroup","getKey");
+  ELog::RegMethod RegA("ContainedGroup","getCC");
   
   CTYPE::iterator mc=CMap.find(Key);
   if (mc==CMap.end())
@@ -206,14 +205,14 @@ ContainedGroup::getKey(const std::string& Key)
 }
 
 const ContainedComp&
-ContainedGroup::getKey(const std::string& Key) const
+ContainedGroup::getCC(const std::string& Key) const
 /*!
   Determine the key 
   \param Key :: Key to look up
   \return ContainedComp 
 */
 {
-  ELog::RegMethod RegA("ContainedGroup","getKey");
+  ELog::RegMethod RegA("ContainedGroup","getCC");
   
   CTYPE::const_iterator mc=CMap.find(Key);
   if (mc==CMap.end())
@@ -230,7 +229,7 @@ ContainedGroup::addOuterSurf(const std::string& Key,const int SN)
   */
 {
   ELog::RegMethod RegA("ContainedGroup","addInterSurf");
-  getKey(Key).addOuterSurf(SN);
+  getCC(Key).addOuterSurf(SN);
   return;
 }
   
@@ -244,7 +243,7 @@ ContainedGroup::addOuterSurf(const std::string& Key,
 */
 {
   ELog::RegMethod RegA("ContainedGroup","addInterSurf(std::string)");
-  getKey(Key).addOuterSurf(SList);
+  getCC(Key).addOuterSurf(SList);
   return;
 }
   
@@ -258,7 +257,7 @@ ContainedGroup::addOuterUnionSurf(const std::string& Key,
 */
 {
   ELog::RegMethod RegA("ContainedGroup","addInterSurf(std::string)");
-  getKey(Key).addOuterUnionSurf(SList);
+  getCC(Key).addOuterUnionSurf(SList);
   return;
 }
 
@@ -273,7 +272,7 @@ ContainedGroup::addBoundarySurf(const std::string& Key,
 */
 {
   ELog::RegMethod RegA("ContainedGroup","addBoundarySurf(std::string)");
-  getKey(Key).addBoundarySurf(SN);
+  getCC(Key).addBoundarySurf(SN);
   return;
 }
   
@@ -287,7 +286,7 @@ ContainedGroup::addBoundarySurf(const std::string& Key,
   */
 {
   ELog::RegMethod RegA("ContainedGroup","addBoundarySurf(std::string)");
-  getKey(Key).addBoundarySurf(SList);
+  getCC(Key).addBoundarySurf(SList);
   return;
 }
 
@@ -302,7 +301,7 @@ ContainedGroup::addBoundaryUnionSurf(const std::string& Key,
 */
 {
   ELog::RegMethod RegA("ContainedGroup","addBoundaryUnionSurf(std::string)");
-  getKey(Key).addBoundaryUnionSurf(SN);
+  getCC(Key).addBoundaryUnionSurf(SN);
   return;
 }
 
@@ -316,7 +315,7 @@ ContainedGroup::addBoundaryUnionSurf(const std::string& Key,
   */
 {
   ELog::RegMethod RegA("ContainedGroup","addBoundaryUnionSurf(std::string)");
-  getKey(Key).addBoundaryUnionSurf(SList);
+  getCC(Key).addBoundaryUnionSurf(SList);
   return;
 }
 
@@ -331,7 +330,7 @@ ContainedGroup::getExclude(const std::string& Key) const
   */
 {
   ELog::RegMethod RegA("ContainedGroup","getExclude");
-  return getKey(Key).getExclude();
+  return getCC(Key).getExclude();
 }
 
 std::string
@@ -345,7 +344,7 @@ ContainedGroup::getCompExclude(const std::string& Key) const
   */
 {
   ELog::RegMethod RegA("ContainedGroup","getExclude");
-  return getKey(Key).getCompExclude();
+  return getCC(Key).getCompExclude();
 }
 
 
@@ -360,7 +359,7 @@ ContainedGroup::getContainer(const std::string& Key) const
   */
 {
   ELog::RegMethod RegA("ContainedGroup","getContainer");
-  return getKey(Key).getContainer();
+  return getCC(Key).getContainer();
 }
 
 std::string
@@ -374,7 +373,7 @@ ContainedGroup::getCompContainer(const std::string& Key) const
   */
 {
   ELog::RegMethod RegA("ContainedGroup","getContainer");
-  return getKey(Key).getCompContainer();
+  return getCC(Key).getCompContainer();
 }
   
 int
@@ -388,7 +387,7 @@ ContainedGroup::surfOuterIntersect(const std::string& Key,
   */
 {
   ELog::RegMethod RegA("ContainedGroup","surfOuterIntersect");
-  return getKey(Key).surfOuterIntersect(LA);
+  return getCC(Key).surfOuterIntersect(LA);
 }
 
 void 
@@ -401,7 +400,7 @@ ContainedGroup::addInsertCell(const std::string& Key,
   */
 {
   ELog::RegMethod RegA("ContainedGroup","addInsertCell");
-  getKey(Key).addInsertCell(CN);
+  getCC(Key).addInsertCell(CN);
   return;
 }
 
@@ -429,7 +428,7 @@ ContainedGroup::setInsertCell(const std::string& Key,
   */
 {
   ELog::RegMethod RegA("ContainedGroup","setInsertCell");
-  getKey(Key).setInsertCell(CN);
+  getCC(Key).setInsertCell(CN);
   return;
 }
   

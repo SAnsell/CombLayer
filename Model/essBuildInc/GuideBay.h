@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   essBuildInc/GuideBay.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@ namespace essSystem
 
 
 class GuideBay : public attachSystem::ContainedGroup,
-    public attachSystem::FixedComp
+  public attachSystem::FixedComp,public attachSystem::CellMap
 {
  private:
   
@@ -74,7 +74,7 @@ class GuideBay : public attachSystem::ContainedGroup,
   void createSurfaces();
   void createLinks();
   void createObjects(Simulation&);
-  void createGuideItems(Simulation&);
+
   
  public:
 
@@ -86,7 +86,9 @@ class GuideBay : public attachSystem::ContainedGroup,
   /// access to cylinder
   void setCylBoundary(const int A,const int B) 
       { innerCyl=abs(A); outerCyl=abs(B); } 
-    
+
+  void outerMerge(Simulation&,GuideBay&);
+  void createGuideItems(Simulation&);
   void createAll(Simulation&,const attachSystem::FixedComp&);
 
 };

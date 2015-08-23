@@ -76,6 +76,7 @@
 #include "surfDBase.h"
 #include "surfDIter.h"
 #include "surfDivide.h"
+#include "SurInter.h"
 #include "mergeTemplate.h"
 
 #include "World.h"
@@ -409,7 +410,36 @@ Bunker::createLinks()
 
   return;
 }
-
+  
+std::string
+Bunker::calcSegment(const Simulation& System,
+		    const Geometry::Vec3D& TPoint,
+		    const Geometry::Vec3D& Axis) const
+  /*!
+    Determine the segment that a point falls int
+    \param TPoint :: Point to check
+    \param Axis :: Direction 
+    \return Segment string
+  */
+{
+  ELog::RegMethod RegA("Bunker","calcSegment");
+  for(size_t i=0;i<nSectors;i++)
+    {
+      const std::string SName="MainWall"+StrFunc::makeString(i);
+      const int cN=getCell(SName);
+      const MonteCarlo::Object* SUnit=System.findQhull(cN);
+      if (SUnit)
+	{
+	  const HeadRule& HR=SUnit->getHeadRule();
+	  std::pair<Geometry::Vec3D,int> LCut=
+	    SurInter::interceptRuleConst(HR,TPoint,Axis);
+	  if (LCut.second)
+	    return SName;
+	}
+    }
+  throw ColErr::InContainerError<Geometry::Vec3D>
+    (TPoint,"Not in bunker wall sectors");
+}
 
 void
 Bunker::createAll(Simulation& System,

@@ -52,6 +52,7 @@
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "surfEqual.h"
+#include "SurInter.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
@@ -139,7 +140,8 @@ BunkerInsert::createUnitVector(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("BunkerInsert","createUnitVector");
 
-  FixedComp::createUnitVector(FC,orgIndex);      
+  FixedComp::createUnitVector(FC,orgIndex);
+  applyOffset();
   return;
 }
   
@@ -196,32 +198,6 @@ BunkerInsert::createObjects(Simulation& System,
   return;
 }
 
-size_t
-BunkerInsert::closestPt(const Geometry::Vec3D& AimPt,
-			const std::vector<Geometry::Vec3D>& PtVec)
-  /*!
-    Detemine the point that is closest [STATIC]
-    \param AimPt :: Aiming point
-    \param PtVec :: Vector of points
-    \return index in array [0 in empty]
-  */
-{
-  size_t index(0);
-  if (!PtVec.empty())
-    {
-      double D=AimPt.Distance(PtVec[index]);
-      for(size_t i=1;i<PtVec.size();i++)
-	{
-	  const double ND=AimPt.Distance(PtVec[i]);
-	  if (ND<D)
-	    {
-	      D=ND;
-	      index=i;
-	    }
-	}
-    }
-  return index;
-}
 
   
 void
@@ -246,7 +222,7 @@ BunkerInsert::createLinks(const attachSystem::FixedComp& BUnit)
   HM.addIntersection(BUnit.getCommonRule(0));
   HM.populateSurf();
   HM.calcSurfIntersection(Origin,Y,Pts,SNum);
-  const size_t indexA=closestPt(Origin,Pts);
+  const size_t indexA=SurInter::closestPt(Pts,Origin);
   FixedComp::setConnect(0,Pts[indexA],-Y);
 
   // Outer point
@@ -254,7 +230,7 @@ BunkerInsert::createLinks(const attachSystem::FixedComp& BUnit)
   HM.addIntersection(BUnit.getCommonRule(1));
   HM.populateSurf();
   HM.calcSurfIntersection(Origin,Y,Pts,SNum);
-  const size_t indexB=closestPt(Origin,Pts);
+  const size_t indexB=SurInter::closestPt(Pts,Origin);
   FixedComp::setConnect(1,Pts[indexB],Y);
 
   

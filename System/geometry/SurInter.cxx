@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   geometry/SurInter.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@
 #include <complex>
 #include <vector>
 #include <deque>
+#include <set>
 #include <map>
 #include <string>
 #include <algorithm>
@@ -63,6 +64,7 @@
 #include "DblLine.h"
 #include "Circle.h"
 #include "Ellipse.h"
+#include "HeadRule.h"
 #include "SurInter.h"
 
 #include "Debug.h"
@@ -572,7 +574,78 @@ nearPoint(const std::vector<Geometry::Vec3D>& Pts,
   return *mVal;
 }
 
+size_t
+closestPt(const std::vector<Geometry::Vec3D>& PtVec,
+	  const Geometry::Vec3D& AimPt)
+  /*!
+    Detemine the point that is closest 
+    \param AimPt :: Aiming point
+    \param PtVec :: Vector of points
+    \return index in array [0 in empty]
+  */
+{
+  ELog::RegMethod RegA("SurInter","closestPt");
+  
+  size_t index(0);
+  if (!PtVec.empty())
+    {
+      double D=AimPt.Distance(PtVec[index]);
+      for(size_t i=1;i<PtVec.size();i++)
+	{
+	  const double ND=AimPt.Distance(PtVec[i]);
+	  if (ND<D)
+	    {
+	      D=ND;
+	      index=i;
+	    }
+	}
+    }
+  return index;
+}
 
+std::pair<Geometry::Vec3D,int>
+interceptRuleConst(const HeadRule& HR,
+		   const Geometry::Vec3D& Origin,
+		   const Geometry::Vec3D& N)
+  /*!
+    Determine the closes point to the headRule intercept
+    \param HR :: HeadRule
+    \param Origin :: Origin of line
+    \param N :: Direction of the line
+    \return pair of position and surface.
+  */
+{
+  ELog::RegMethod RegA("SurInter[F]","interceptRuleConst");
+
+  // Calc bunker edge intersectoin
+  std::vector<Geometry::Vec3D> Pts;
+  std::vector<int> SNum;
+
+  HR.calcSurfIntersection(Origin,N,Pts,SNum);
+  if (Pts.empty())
+    return std::pair<Geometry::Vec3D,int>(Origin,0);
+  
+  const size_t indexA=SurInter::closestPt(Pts,Origin);
+  return std::pair<Geometry::Vec3D,int>(Pts[indexA],SNum[indexA]); 
+
+}
+
+std::pair<Geometry::Vec3D,int>
+interceptRule(HeadRule& HR,const Geometry::Vec3D& Origin,
+	      const Geometry::Vec3D& N)
+  /*!
+    Determine the closes point to the headRule intercept
+    \param HR :: HeadRule
+    \param Origin :: Origin of line
+    \param N :: Direction of the line
+    \return pair of position and surface.
+  */
+{
+  ELog::RegMethod RegA("SurInter[F]","interceptRule(HeadRule&)");
+
+  HR.populateSurf();
+  return interceptRuleConst(HR,Origin,N);
+}
 
 }  // NAMESPACE SurInter
 

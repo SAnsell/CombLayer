@@ -95,7 +95,10 @@
 #include "ConicModerator.h"
 #include "essDBMaterial.h"
 #include "makeESSBL.h"
+// BEAMLINES:
 #include "ODIN.h"
+#include "LOKI.h"
+#include "NMX.h"
 
 #include "makeESS.h"
 
@@ -106,27 +109,27 @@ makeESS::makeESS() :
   Reflector(new BeRef("BeRef")),
   PBeam(new ProtonTube("ProtonTube")),
   BMon(new BeamMonitor("BeamMonitor")),
+
   LowPreMod(new DiskPreMod("LowPreMod")),
   LowCapMod(new DiskPreMod("LowCapMod")),
   
   LowAFL(new moderatorSystem::BasicFlightLine("LowAFlight")),
   LowBFL(new moderatorSystem::BasicFlightLine("LowBFlight")),
-  LowPre(new CylPreMod("LowPre")),
 
   LowSupplyPipe(new constructSystem::SupplyPipe("LSupply")),
   LowReturnPipe(new constructSystem::SupplyPipe("LReturn")),
 
   TopPreMod(new DiskPreMod("TopPreMod")),
   TopCapMod(new DiskPreMod("TopCapMod")),
+
   TopAFL(new moderatorSystem::BasicFlightLine("TopAFlight")),
   TopBFL(new moderatorSystem::BasicFlightLine("TopBFlight")),
-  TopPre(new CylPreMod("TopPre")),
 
   Bulk(new BulkModule("Bulk")),
   BulkLowAFL(new moderatorSystem::FlightLine("BulkLAFlight")),
   ShutterBayObj(new ShutterBay("ShutterBay")),
 
-  LowABunker(new Bunker("LowABunker"))
+  ABunker(new Bunker("ABunker"))
  /*!
     Constructor
  */
@@ -142,18 +145,17 @@ makeESS::makeESS() :
   
   OR.addObject(LowAFL);
   OR.addObject(LowBFL);
-  OR.addObject(LowPre);
   OR.addObject(TopPreMod);
   OR.addObject(TopCapMod);
+
   OR.addObject(TopAFL);
   OR.addObject(TopBFL);
-  OR.addObject(TopPre);
 
   OR.addObject(Bulk);
   OR.addObject(BulkLowAFL);
 
   OR.addObject(ShutterBayObj);
-  OR.addObject(LowABunker);
+  OR.addObject(ABunker);
 }
 
 
@@ -162,40 +164,6 @@ makeESS::~makeESS()
     Destructor
   */
 {}
-
-void
-makeESS::topFlightLines(Simulation& System)
-  /*!
-    Build the flight lines of the reflector
-    \param System :: Simulation to add to
-  */
-{
-  ELog::RegMethod RegA("makeESS","topFlightLines");
-  return;
-  std::string Out;
-
-  /*  Out=Reflector->getLinkComplement(0)+TopPre->getBoxCut('A');
-  TopAFL->addBoundarySurf("inner",Out);  
-  TopAFL->addBoundarySurf("outer",Out);  
-  TopAFL->addOuterSurf("outer",TopPre->getBoxCut('A'));  
-  TopAFL->createAll(System,0,1,*TopPre);
-  attachSystem::addToInsertSurfCtrl(System,*TopAFL,*TopPre->getBox('A'));
-  attachSystem::addToInsertSurfCtrl(System,*Reflector,
-  				    TopAFL->getKey("outer"));
-
-  Out=Reflector->getLinkComplement(0)+TopPre->getBoxCut('B');
-  TopBFL->addBoundarySurf("inner",Out);  
-  TopBFL->addBoundarySurf("outer",Out);  
-  TopBFL->createAll(System,0,0,*TopPre);
-  TopBFL->addOuterSurf("outer",TopPre->getBoxCut('B'));  
-  attachSystem::addToInsertSurfCtrl(System,*TopBFL,*TopPre->getBox('B'));
-  attachSystem::addToInsertSurfCtrl(System,*Reflector,
-  				    TopBFL->getKey("outer"));
-  */
-
-  return;
-}
-
 
 void
 makeESS::makeTarget(Simulation& System,
@@ -225,7 +193,8 @@ makeESS::makeTarget(Simulation& System,
   else if (targetType=="SegWheel")
     Target=std::shared_ptr<WheelBase>(new SegWheel("SegWheel"));
   else
-    throw ColErr::InContainerError<std::string>(targetType,"Unknown target type");
+    throw ColErr::InContainerError<std::string>
+      (targetType,"Unknown target type");
 
   Target->addInsertCell("Shaft",voidCell);
   Target->addInsertCell("Wheel",voidCell);
@@ -242,22 +211,30 @@ makeESS::createGuides(Simulation& System)
    */
 {
   ELog::RegMethod RegA("makeESS","createGuides");
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
 
   for(size_t i=0;i<4;i++)
     {
       std::shared_ptr<GuideBay> GB(new GuideBay("GuideBay",i+1));
+      OR.addObject(GB);
       GB->addInsertCell("Inner",ShutterBayObj->getMainCell());
       GB->addInsertCell("Outer",ShutterBayObj->getMainCell());
       GB->setCylBoundary(Bulk->getLinkSurf(2),
 			 ShutterBayObj->getLinkSurf(2));
+      
       if (i<2)
 	GB->createAll(System,*LowMod);  
-      //      if(i<2)
-      //
-      //      else
-	//	GB->createAll(System,*TopMod);  
+      else
+	GB->createAll(System,*TopMod);
+      
       GBArray.push_back(GB);
     }
+  GBArray[1]->outerMerge(System,*GBArray[2]);
+  GBArray[0]->outerMerge(System,*GBArray[3]);
+  for(size_t i=0;i<4;i++)
+    GBArray[i]->createGuideItems(System);
+
   return;
 }
 
@@ -278,7 +255,6 @@ makeESS::buildLowButterfly(Simulation& System)
   BM->setRadiusX(Reflector->getRadius());
   LowMod=std::shared_ptr<constructSystem::ModBase>(BM);
   OR.addObject(LowMod);
-  
   LowMod->createAll(System,*Reflector,LowPreMod.get(),6);
   return;
 }
@@ -304,38 +280,7 @@ makeESS::buildTopButterfly(Simulation& System)
   TopMod->createAll(System,*Reflector,TopPreMod.get(),6);
   return;
 }
-    
-
-void
-makeESS::buildTopCylMod(Simulation& System)
-  /*!
-    Build the standard moderators
-    \param System :: Stardard simulation
-  */
-{
-  ELog::RegMethod RegA("makeESS","buildTopCylMod");
-
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
-  TopMod=std::shared_ptr<constructSystem::ModBase>
-    (new constructSystem::CylMod("TopMod"));
-
-  OR.addObject(TopMod);
-
-  TopMod->createAll(System,*Reflector);
-  attachSystem::addToInsertControl(System,*Reflector,*TopMod);
-
-  TopPre->createAll(System,*TopMod);
-  attachSystem::addToInsertControl(System,*Reflector,*TopPre,"Main");
-  attachSystem::addToInsertControl(System,*Reflector,*TopPre,"BlockA");
-  attachSystem::addToInsertControl(System,*Reflector,*TopPre,"BlockB");
-  
-  topFlightLines(System);
-
-  return;
-}
-
+      
 void 
 makeESS::buildLowerPipe(Simulation& System,
 			const std::string& pipeType)
@@ -401,19 +346,21 @@ makeESS::makeBeamLine(Simulation& System,
 {
   ELog::RegMethod RegA("makeESS","makeBeamLine");
 
-  const size_t NItems=IParam.itemCnt("beamlines",0);
-  for(size_t i=1;i<NItems;i+=2)
-    {
-      const std::string BL=IParam.getValue<std::string>("beamlines",i-1);
-      const std::string Btype=IParam.getValue<std::string>("beamlines",i);
+  const size_t NSet=IParam.setCnt("beamlines");
 
-      // FIND BUNKER HERE:::
-      
-      ELog::EM<<"Making beamline "<<BL
-      	      <<" [" <<Btype<< "] "<<ELog::endDiag;
-      makeESSBL BLfactory(BL,Btype);
-      BLfactory.build(System,*LowABunker);
-      
+  for(size_t j=0;j<NSet;j++)
+    {
+      const size_t NItems=IParam.itemCnt("beamlines",0);
+      for(size_t i=1;i<NItems;i+=2)
+	{
+	  const std::string BL=IParam.getValue<std::string>("beamlines",j,i-1);
+	  const std::string Btype=IParam.getValue<std::string>("beamlines",j,i);
+	  // FIND BUNKER HERE:::
+	  
+	  makeESSBL BLfactory(BL,Btype);
+	  BLfactory.build(System,*ABunker);
+	    
+	}
     }
   return;
 }
@@ -431,8 +378,8 @@ makeESS::makeBunker(Simulation& System,
 
   ELog::EM<<"Bunker == "<<bunkerType<<ELog::endDiag;
   
-  LowABunker->addInsertCell(74123);
-  LowABunker->createAll(System,*LowMod,*GBArray[0],2,true);
+  ABunker->addInsertCell(74123);
+  ABunker->createAll(System,*LowMod,*GBArray[0],2,true);
 
   return;
 }
@@ -457,6 +404,8 @@ makeESS::build(Simulation& System,
   const std::string lowPipeType=IParam.getValue<std::string>("lowPipe");
   const std::string lowModType=IParam.getValue<std::string>("lowMod");
   const std::string topModType=IParam.getValue<std::string>("topMod");
+  const std::string topPipeType=IParam.getValue<std::string>("topPipe");
+  
   const std::string targetType=IParam.getValue<std::string>("targetType");
   const std::string iradLine=IParam.getValue<std::string>("iradLineType");
   const std::string bunker=IParam.getValue<std::string>("bunkerType");
@@ -467,12 +416,10 @@ makeESS::build(Simulation& System,
       optionSummary(System);
       throw ColErr::ExitAbort("Help system exit");
     }
-
-
   
   makeTarget(System,targetType);
   Reflector->globalPopulate(System.getDataBase());
-    
+
   // lower moderator
   LowPreMod->createAll(System,World::masterOrigin(),0,true,
 		       Target->wheelHeight()/2.0,
@@ -481,7 +428,7 @@ makeESS::build(Simulation& System,
   TopPreMod->createAll(System,World::masterOrigin(),0,false,
 		       Target->wheelHeight()/2.0,
 		       Reflector->getRadius());
-  
+
   buildLowButterfly(System);
   buildTopButterfly(System);
   const double LMHeight=attachSystem::calcLinkDistance(*LowMod,5,6);
@@ -491,18 +438,12 @@ makeESS::build(Simulation& System,
    		       0.0,Reflector->getRadius());
   TopCapMod->createAll(System,*TopMod,6,false,
    		       0.0,Reflector->getRadius());
-  
   Reflector->createAll(System,World::masterOrigin(),
 		       Target->wheelHeight(),
 		       LowPreMod->getHeight()+LMHeight+LowCapMod->getHeight(),
 		       TopPreMod->getHeight()+TMHeight+TopCapMod->getHeight());
 
-  //  attachSystem::addToInsertControl(System,*Reflector,*LowCapMod);
-  //  attachSystem::addToInsertControl(System,*Reflector,*TopCapMod);
-
-
   Reflector->insertComponent(System,"targetVoid",*Target,1);
-
   Reflector->deleteCell(System,"lowVoid");
   Reflector->deleteCell(System,"topVoid");
   Bulk->createAll(System,*Reflector,*Reflector);
@@ -513,44 +454,39 @@ makeESS::build(Simulation& System,
 
   LowAFL->createAll(System,*LowMod,0,*Reflector,4,*Bulk,-3);
   LowBFL->createAll(System,*LowMod,0,*Reflector,3,*Bulk,-3);   
-  
-  attachSystem::addToInsertSurfCtrl(System,*Bulk,Target->getKey("Wheel"));
-  attachSystem::addToInsertForced(System,*Bulk,Target->getKey("Shaft"));
 
-  attachSystem::addToInsertForced(System,*Bulk,TopAFL->getKey("outer"));
-  attachSystem::addToInsertForced(System,*Bulk,TopBFL->getKey("outer"));
-
-  attachSystem::addToInsertForced(System,*Bulk,LowAFL->getKey("outer"));
-  attachSystem::addToInsertForced(System,*Bulk,LowBFL->getKey("outer"));
+  attachSystem::addToInsertSurfCtrl(System,*Bulk,Target->getCC("Wheel"));
+  attachSystem::addToInsertForced(System,*Bulk,Target->getCC("Shaft"));
+  attachSystem::addToInsertForced(System,*Bulk,LowAFL->getCC("outer"));
+  attachSystem::addToInsertForced(System,*Bulk,LowBFL->getCC("outer"));
+  attachSystem::addToInsertForced(System,*Bulk,TopAFL->getCC("outer"));
+  attachSystem::addToInsertForced(System,*Bulk,TopBFL->getCC("outer"));
 
 
   // Full surround object
   ShutterBayObj->addInsertCell(voidCell);
   ShutterBayObj->createAll(System,*Bulk,*Bulk);
   attachSystem::addToInsertForced(System,*ShutterBayObj,
-				  Target->getKey("Wheel"));
+				  Target->getCC("Wheel"));
   attachSystem::addToInsertForced(System,*ShutterBayObj,
-				  Target->getKey("Shaft"));
+				  Target->getCC("Shaft"));
 
   createGuides(System);
   makeBunker(System,bunker);
-  
+
   // PROTON BEAMLINE
   
 
   PBeam->createAll(System,*Reflector,1,*ShutterBayObj,-1);
   // attachSystem::addToInsertSurfCtrl(System,*Reflector,
-  // 				    PBeam->getKey("Sector0"));
+  // 				    PBeam->getCC("Sector0"));
   
   attachSystem::addToInsertSurfCtrl(System,*ShutterBayObj,
-				    PBeam->getKey("Full"));
+				    PBeam->getCC("Full"));
   attachSystem::addToInsertSurfCtrl(System,*Bulk,
-				    PBeam->getKey("Full"));
+				    PBeam->getCC("Full"));
 
   makeBeamLine(System,IParam);
-
-
-
   return;
 }
 

@@ -36,18 +36,20 @@ namespace constructSystem
 */
 
 class Jaws : public attachSystem::FixedComp,
-    public attachSystem::ContainedComp
+  public attachSystem::ContainedComp,
+  public attachSystem::CellMap
 {
  private:
   
   const int jawIndex;           ///< Index of surface offset
   int cellIndex;                ///< Cell index
-  
-  double xStep;                 ///< Origin step
-  double yStep;                 ///< Origin step
-  double zStep;                 ///< Origin step
-  double xyAngle;               ///< Axis rotation
-  double zAngle;                ///< Axis rotation
+
+  double xStep;                 ///< step in X 
+  double yStep;                 ///< step in X 
+  double zStep;                 ///< step in X 
+  double xAngle;                ///< rotation about X [last]
+  double yAngle;                ///< rotation about Y [mid]
+  double zAngle;                ///< rotation about Z [first]
   
   double zOpen;                 ///< Z-opening
   double zThick;                ///< Blade thickness
@@ -65,21 +67,29 @@ class Jaws : public attachSystem::FixedComp,
   double YHeight;               ///< Global box space [Y]
   double ZHeight;               ///< Global box space [Z]
 
+  double linerThick;            ///< Simple X/Z liner
   double wallThick;             ///< Simple X/Z walls
   
   int zJawMat;                  ///< Z material
   int xJawMat;                  ///< X material
 
+  int linerMat;                 ///< Liner material
   int wallMat;                  ///< Wall material
 
+  // Layers
+  size_t nLayers;                 ///< number of layers
+  std::vector<double> jawXFrac;   ///< Layer thicknesss (fractions)
+  std::vector<int> jawXMatVec;    ///<  Layer materials
+  std::vector<double> jawZFrac;   ///< Layer thicknesss (fractions)
+  std::vector<int> jawZMatVec;    ///<  Layer materials
 
-  
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
-
+  void layerProcess(Simulation&);
+  
  public:
 
   Jaws(const std::string&);

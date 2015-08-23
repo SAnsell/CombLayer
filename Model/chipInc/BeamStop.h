@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   chipInc/BeamStop.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,10 +43,9 @@ class BeamStop : public attachSystem::ContainedComp,
   
   const int stopIndex;          ///< Index of surface offset
   int cellIndex;                ///< Cell index
-  int populated;                ///< Variable set
 
-  double fStep;             ///< origin forward step
   double xStep;             ///< Offset on XAxis of centre
+  double yStep;             ///< origin forward step
   double zStep;             ///< Offset on ZAxis of centre
   
   double innerWidth;        ///< Inner width 
@@ -77,12 +76,14 @@ class BeamStop : public attachSystem::ContainedComp,
   int nLayers;                    ///< Number of layers
   std::vector<int> CDivideList;   ///< Cell divide List for 
 
-  void populate(const Simulation&);
-  void createUnitVector(const attachSystem::FixedComp&);
+  void populate(const FuncDataBase&);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const long int);
   
   void createSurfaces();
   void createDefSurfaces();
   void createObjects(Simulation&);
+  void createLinks();
   void layerProcess(Simulation&);
 
  public:
@@ -95,7 +96,8 @@ class BeamStop : public attachSystem::ContainedComp,
   int exitWindow(const double,std::vector<int>&,
 		 Geometry::Vec3D&) const;
 
-  void createAll(Simulation&,const attachSystem::FixedComp&);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
     
 };
 

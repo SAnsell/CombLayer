@@ -217,10 +217,9 @@ createInputs(inputParam& IParam)
   IParam.regDefItem<std::string>("dc","doseCalc",1,"InternalDOSE");
   IParam.regFlag("e","endf");
   IParam.regMulti("eng","engineering",10000,0);
-  IParam.regMulti("E","exclude",10000,1);
-
+  IParam.regItem("E","exclude");
   IParam.regDefItem<double>("electron","electron",1,-1.0);
-  IParam.regFlag("help","helf");
+  IParam.regFlag("help","help");
   IParam.regMulti("i","iterate",10000,1);
   IParam.regItem("I","isolate");
   IParam.regDefItemList<std::string>("imp","importance",10,RItems);
@@ -236,6 +235,7 @@ createInputs(inputParam& IParam)
   IParam.regFlag("mcnp6","MCNP6");
   IParam.regFlag("Monte","Monte");
   IParam.regDefItem<double>("photon","photon",1,0.001);
+  IParam.regDefItem<double>("photonModel","photonModel",1,100.0);
   IParam.regDefItemList<std::string>("r","renum",10,RItems);
   IParam.regFlag("sdefVoid","sdefVoid");
   IParam.regDefItem<std::string>("sdefType","sdefType",1,"");
@@ -255,8 +255,8 @@ createInputs(inputParam& IParam)
   // std::vector<std::string> AItems(15);
   // IParam.regDefItemList<std::string>("T","tally",15,AItems);
   IParam.regMulti("T","tally",1000,0);
-  IParam.regMulti("TC","tallyCells",10000,3,2);
-  IParam.regMulti("TGrid","TGrid",10000,3,2);
+  IParam.regMulti("TC","tallyCells",10000,2,3);
+  IParam.regMulti("TGrid","TGrid",10000,2,3);
   IParam.regMulti("TMod","tallyMod",8,1);
   IParam.regFlag("TW","tallyWeight");
   IParam.regItem("TX","Txml",1);
@@ -264,17 +264,20 @@ createInputs(inputParam& IParam)
   IParam.regDefItem<int>("u","units",1,0);
   IParam.regItem("validCheck","validCheck",1);
   IParam.regFlag("um","voidUnMask");
-  IParam.regItem("volume","volume",4);
+  IParam.regMulti("volume","volume",4,1);
   IParam.regDefItem<int>("VN","volNum",1,20000);
+  IParam.regMulti("volCell","volCells",100,1,100);
+    
   IParam.regFlag("void","void");
   IParam.regFlag("vtk","vtk");
+  IParam.regFlag("vcell","vcell");
   std::vector<std::string> VItems(15,"");
   IParam.regDefItemList<std::string>("vmat","vmat",15,VItems);
-  IParam.regFlag("vcell","vcell");
 
   IParam.regItem("w","weight");
   IParam.regItem("WP","weightPt");
-  IParam.regMulti("wExt","wExt",25,0);    
+  IParam.regMulti("wExt","wExt",25,0);
+  IParam.regMulti("wPWT","wPWT",25,0);    
   IParam.regItem("WTemp","weightTemp",1);
   IParam.regDefItem<std::string>("WType","weightType",1,"basic");
 
@@ -309,6 +312,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("p","PHITS output");
   IParam.setDesc("Monte","MonteCarlo capable simulation");
   IParam.setDesc("photon","Photon Cut energy");
+  IParam.setDesc("photonModel","Photon Model Energy [min]");
   IParam.setDesc("r","Renubmer cells");
   IParam.setDesc("s","RND Seed");
   IParam.setDesc("SF","File read source");
@@ -332,13 +336,16 @@ createInputs(inputParam& IParam)
   IParam.setDesc("um","Unset void area (from imp=0)");
   IParam.setDesc("void","Adds the void card to the simulation");
   IParam.setDesc("volume","Create volume about point/radius for f4 tally");
+  IParam.setDesc("volCells","Cells [object/range]");
   IParam.setDesc("vtk","Write out VTK plot mesh");
+  IParam.setDesc("vcell","Use cell id rather than material");
   IParam.setDesc("vmat","Material sections to be written by vtk output");
   IParam.setDesc("VN","Number of points in the volume integration");
   IParam.setDesc("validCheck","Run simulation to check for validity");
 
   IParam.setDesc("w","weightBias");
   IParam.setDesc("wExt","Extraction biasisng [see: -wExt help]");
+  IParam.setDesc("wPWT","Photon Bias [set -wPWT help]");
   IParam.setDesc("WType","Initial model for weights [help for info]");
   IParam.setDesc("WTemp","Temperature correction for weights");
   IParam.setDesc("WP","Weight bias Point");
@@ -623,6 +630,7 @@ void createESSInputs(inputParam& IParam)
   IParam.regDefItem<std::string>("lowMod","lowModType",1,std::string("lowMod"));
   IParam.regDefItem<std::string>("topMod","topModType",1,std::string("topMod"));
   IParam.regDefItem<std::string>("lowPipe","lowPipeType",1,std::string("side"));
+  IParam.regDefItem<std::string>("topPipe","topPipeType",1,std::string("side"));
   IParam.regDefItem<std::string>("iradLine","iradLineType",
 				 1,std::string("void"));
   IParam.regDefItem<std::string>("bunker","bunkerType",1,std::string("null"));
@@ -632,6 +640,7 @@ void createESSInputs(inputParam& IParam)
   IParam.setDesc("lowMod","Type of low moderator to be built");
   IParam.setDesc("topMod","Type of top moderator to be built");
   IParam.setDesc("lowPipe","Type of low moderator pipework");
+  IParam.setDesc("topPipe","Type of top moderator pipework");
   IParam.setDesc("iradLine","Build an irradiation line [void for none]");
   IParam.setDesc("beamlines","Build beamlines [void for none]");
   IParam.setDesc("bunker","Build bunker [void for none [A-D]");

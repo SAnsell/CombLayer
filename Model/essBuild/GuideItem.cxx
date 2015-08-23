@@ -73,10 +73,10 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
+#include "FixedGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+#include "CellMap.h"
 #include "World.h"
 #include "GuideItem.h"
 
@@ -85,10 +85,12 @@ namespace essSystem
 
 GuideItem::GuideItem(const std::string& Key,const size_t Index)  :
   attachSystem::ContainedGroup("Inner","Outer"),
-  attachSystem::TwinComp(StrFunc::makeString(Key,Index),6),
+  attachSystem::FixedGroup(Key+StrFunc::makeString(Index),
+			   "Main",6,"Beam",2),
+  attachSystem::CellMap(),
   baseName(Key),
   guideIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
-  cellIndex(guideIndex+1),innerCyl(0),outerCyl(0)
+  cellIndex(guideIndex+1),active(1),innerCyl(0),outerCyl(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -97,16 +99,18 @@ GuideItem::GuideItem(const std::string& Key,const size_t Index)  :
 {}
 
 GuideItem::GuideItem(const GuideItem& A) : 
-  attachSystem::ContainedGroup(A),attachSystem::TwinComp(A),
+  attachSystem::ContainedGroup(A),attachSystem::FixedGroup(A),
+  attachSystem::CellMap(A),
   baseName(A.baseName),guideIndex(A.guideIndex),
-  cellIndex(A.cellIndex),xStep(A.xStep),yStep(A.yStep),
-  zStep(A.zStep),xyAngle(A.xyAngle),zAngle(A.zAngle),
-  beamXStep(A.beamXStep),beamZStep(A.beamZStep),
-  beamXYAngle(A.beamXYAngle),beamZAngle(A.beamZAngle),
-  beamWidth(A.beamWidth),beamHeight(A.beamHeight),
-  nSegment(A.nSegment),height(A.height),width(A.width),
-  length(A.length),mat(A.mat),innerCyl(A.innerCyl),
-  outerCyl(A.outerCyl),RInner(A.RInner),ROuter(A.ROuter)
+  cellIndex(A.cellIndex),active(A.active),xStep(A.xStep),
+  yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
+  zAngle(A.zAngle),beamXStep(A.beamXStep),
+  beamZStep(A.beamZStep),beamXYAngle(A.beamXYAngle),
+  beamZAngle(A.beamZAngle),beamWidth(A.beamWidth),
+  beamHeight(A.beamHeight),nSegment(A.nSegment),
+  height(A.height),width(A.width),length(A.length),
+  mat(A.mat),innerCyl(A.innerCyl),outerCyl(A.outerCyl),
+  RInner(A.RInner),ROuter(A.ROuter)
   /*!
     Copy constructor
     \param A :: GuideItem to copy
@@ -124,8 +128,10 @@ GuideItem::operator=(const GuideItem& A)
   if (this!=&A)
     {
       attachSystem::ContainedGroup::operator=(A);
-      attachSystem::TwinComp::operator=(A);
+      attachSystem::FixedGroup::operator=(A);
+      attachSystem::CellMap::operator=(A);
       cellIndex=A.cellIndex;
+      active=A.active;
       xStep=A.xStep;
       yStep=A.yStep;
       zStep=A.zStep;
@@ -188,7 +194,8 @@ GuideItem::populate(const FuncDataBase& Control)
  */
 {
   ELog::RegMethod RegA("GuideItem","populate");
-  
+
+  active=Control.EvalPair<int>(keyName,baseName,"Active");
   xStep=Control.EvalPair<double>(keyName,baseName,"XStep");
   yStep=Control.EvalPair<double>(keyName,baseName,"YStep");
   zStep=Control.EvalPair<double>(keyName,baseName,"ZStep");
@@ -221,6 +228,8 @@ GuideItem::populate(const FuncDataBase& Control)
       width.push_back(W);
     }
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat",baseName+"Mat");
+  filled=Control.EvalPair<int>(keyName,baseName,"Filled");
+
 
   return;
 }
@@ -235,11 +244,21 @@ GuideItem::createUnitVector(const attachSystem::FixedComp& FC,
   */
 {
   ELog::RegMethod RegA("GuideItem","createUnitVector");
+
+  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
   
   const attachSystem::LinkUnit& LU=FC.getLU(sideIndex);
-  FixedComp::createUnitVector(FC.getCentre(),-LU.getAxis(),FC.getZ());
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
+  
+  mainFC.createUnitVector(FC.getCentre(),-LU.getAxis(),FC.getZ());
+  mainFC.applyShift(xStep,yStep,zStep);
+  mainFC.applyAngleRotate(xyAngle,zAngle);
+
+  beamFC=mainFC;
+
+  setDefault("Main");
+  calcBeamLineTrack(FC);
+
 
   return;
 }
@@ -253,19 +272,15 @@ GuideItem::calcBeamLineTrack(const attachSystem::FixedComp& FC)
 {
   ELog::RegMethod RegA("GuideItem","calcBeamLineTrack");
 
-  bX=X;
-  bY=Y;
-  bZ=Z;
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+
   // Need to calculate impact point of beamline:
   const double yShift=sqrt(RInner*RInner-beamXStep*beamXStep)-RInner;
-  bEnter=FC.getCentre()+X*beamXStep+Y*yShift+Z*beamZStep;
-      
-  applyBeamAngleRotate(beamXYAngle,beamZAngle);
-  MonteCarlo::LineIntersectVisit LI(bEnter,bY);
 
-  const Geometry::Cylinder* DPtr=
-    SMap.realPtr<Geometry::Cylinder>(outerCyl);
-  bExit=LI.getPoint(DPtr,bEnter+bY*length.back());
+  beamOrigin=FC.getCentre()+X*beamXStep+Y*yShift+Z*beamZStep;
+  beamFC.applyAngleRotate(beamXYAngle,beamZAngle);
+  beamFC.createUnitVector(beamOrigin,beamFC.getY(),beamFC.getZ());
+    
   return;
 }
   
@@ -279,6 +294,12 @@ GuideItem::createSurfaces()
 
   ModelSupport::buildPlane(SMap,guideIndex+1,Origin,Y);    // Divider plane
 
+  const attachSystem::FixedComp& beamFC=
+    FixedGroup::getKey("Beam");
+  
+  const Geometry::Vec3D& bX=beamFC.getX();
+  const Geometry::Vec3D& bZ=beamFC.getZ();
+  
   SMap.addMatch(guideIndex+1,dividePlane);
   SMap.addMatch(guideIndex+7,innerCyl);
 
@@ -298,10 +319,14 @@ GuideItem::createSurfaces()
   SMap.addMatch(GI+7,outerCyl);
 
   // Beamline :: 
-  ModelSupport::buildPlane(SMap,guideIndex+103,bEnter-bX*(beamWidth/2.0),bX);
-  ModelSupport::buildPlane(SMap,guideIndex+104,bEnter+bX*(beamWidth/2.0),bX);
-  ModelSupport::buildPlane(SMap,guideIndex+105,bEnter-bZ*(beamHeight/2.0),bZ);
-  ModelSupport::buildPlane(SMap,guideIndex+106,bEnter+bZ*(beamHeight/2.0),bZ);
+  ModelSupport::buildPlane(SMap,guideIndex+103,
+			   beamOrigin-bX*(beamWidth/2.0),bX);
+  ModelSupport::buildPlane(SMap,guideIndex+104,
+			   beamOrigin+bX*(beamWidth/2.0),bX);
+  ModelSupport::buildPlane(SMap,guideIndex+105,
+			   beamOrigin-bZ*(beamHeight/2.0),bZ);
+  ModelSupport::buildPlane(SMap,guideIndex+106,
+			   beamOrigin+bZ*(beamHeight/2.0),bZ);
   
   
   return;
@@ -338,8 +363,8 @@ GuideItem::getEdgeStr(const GuideItem* GPtr) const
   const Geometry::Plane* P4=getPlane(4);
   const Geometry::Plane* ZPlane=getPlane(6);
   
-  const Geometry::Vec3D RptA=SurInter::getPoint(gP3,P4,ZPlane,bEnter);
-  const Geometry::Vec3D RptB=SurInter::getPoint(gP4,P3,ZPlane,bEnter);
+  const Geometry::Vec3D RptA=SurInter::getPoint(gP3,P4,ZPlane,beamOrigin);
+  const Geometry::Vec3D RptB=SurInter::getPoint(gP4,P3,ZPlane,beamOrigin);
   const Geometry::Cylinder* CPtr=
     SMap.realPtr<Geometry::Cylinder>(innerCyl);
 
@@ -359,9 +384,9 @@ GuideItem::createObjects(Simulation& System,const GuideItem* GPtr)
   */
 {
   ELog::RegMethod RegA("GuideItem","createObjects");
-
-  const std::string edgeStr=
-    getEdgeStr(GPtr);
+  if (!active) return;
+  
+  const std::string edgeStr=getEdgeStr(GPtr);
   std::string Out;  
 
 
@@ -383,16 +408,22 @@ GuideItem::createObjects(Simulation& System,const GuideItem* GPtr)
 	addOuterSurf("Inner",Out);
       else 
 	addOuterUnionSurf("Outer",Out);
-
-      Out+=ModelSupport::getComposite(SMap,guideIndex,"(-103:104:-105:106) ");
+      if (!filled)
+	Out+=ModelSupport::getComposite(SMap,guideIndex,
+					"(-103:104:-105:106) ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+      if (filled) addCell("Void",cellIndex-1);
+
       GI+=10;
     }      
-  // Inner void  
-  Out=ModelSupport::getComposite(SMap,guideIndex,GI,
-				 "1 7 -7M 103 -104 105 -106 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-  //  addBoundarySurf(Out);
+  // Inner void
+  if (!filled)
+    {
+      Out=ModelSupport::getComposite(SMap,guideIndex,GI,
+				     "1 7 -7M 103 -104 105 -106 ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      setCell("Void",cellIndex-1);
+    }
 
   return;
 }
@@ -415,29 +446,49 @@ void
 GuideItem::createLinks()
   /*!
     Create all the linkes [OutGoing]
+    - Beam links are for moderator centre
+    - Main links are for target centre
   */
 {
   ELog::RegMethod RegA("GuideItem","createLinks");
-  // Beamline :: 
-  FixedComp::setConnect(0,bEnter+bY*RInner,-bY);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(guideIndex+7));
+
+  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+  const Geometry::Vec3D& bX=beamFC.getX();
+  const Geometry::Vec3D& bY=beamFC.getY();
+  const Geometry::Vec3D& bZ=beamFC.getZ();
+
+  MonteCarlo::LineIntersectVisit LI(beamOrigin,beamFC.getY());
+  const Geometry::Cylinder* DPtr=
+    SMap.realPtr<Geometry::Cylinder>(outerCyl);
+  const Geometry::Vec3D beamExit=
+    LI.getPoint(DPtr,beamOrigin+bY*length.back());
+
+
+  beamFC.setConnect(0,beamOrigin+bY*RInner,-bY);
+  beamFC.setLinkSurf(0,-SMap.realSurf(guideIndex+7));
+  beamFC.addBridgeSurf(0,SMap.realSurf(guideIndex+1));
 
   const int GI=10*static_cast<int>(nSegment)+guideIndex;
-  FixedComp::setConnect(1,bExit,bY);
-  FixedComp::setLinkSurf(1,SMap.realSurf(GI+7));
-  FixedComp::addBridgeSurf(1,SMap.realSurf(guideIndex+1));
-  FixedComp::setConnect(2,bEnter-bX*(beamWidth/2.0)+
-			bY*((RInner+ROuter)/2.0),-bX);
-  FixedComp::setLinkSurf(2,-SMap.realSurf(guideIndex+103));
-  FixedComp::setConnect(3,bEnter+bX*(beamWidth/2.0)+
-			bY*((RInner+ROuter)/2.0),bX);
-  FixedComp::setLinkSurf(3,SMap.realSurf(guideIndex+104));
-  FixedComp::setConnect(4,bEnter-bZ*(beamHeight/2.0)+
-			bY*((RInner+ROuter)/2.0),-bZ);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(guideIndex+105));
-  FixedComp::setConnect(5,bEnter+bZ*(beamHeight/2.0)+
-			bY*((RInner+ROuter)/2.0),bZ);
-  FixedComp::setLinkSurf(5,SMap.realSurf(guideIndex+106));
+  beamFC.setConnect(1,beamExit,bY);
+  beamFC.setLinkSurf(1,SMap.realSurf(GI+7));
+  beamFC.addBridgeSurf(1,SMap.realSurf(guideIndex+1));
+
+
+  // Main provides 2 things : target centre tracking:
+  Origin-=Geometry::Vec3D(0,0,Origin[2]);     // TARGET CENTRE
+
+  MonteCarlo::LineIntersectVisit LITC(Origin,mainFC.getY());
+  const Geometry::Vec3D orgExit=
+    LI.getPoint(DPtr,Origin+Y*length.back());
+
+  mainFC.setConnect(0,Origin+Y*RInner,-Y);
+  mainFC.setLinkSurf(0,-SMap.realSurf(guideIndex+7));
+  mainFC.addBridgeSurf(0,SMap.realSurf(guideIndex+1));
+  
+  mainFC.setConnect(1,orgExit,Y);
+  mainFC.setLinkSurf(1,SMap.realSurf(GI+7));
+  mainFC.addBridgeSurf(1,SMap.realSurf(guideIndex+1));
 
   return;
 }
@@ -459,7 +510,6 @@ GuideItem::createAll(Simulation& System,
 
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
-  calcBeamLineTrack(FC);
   createSurfaces();
   createObjects(System,GPtr);
   createLinks();
@@ -468,4 +518,4 @@ GuideItem::createAll(Simulation& System,
   return;
 }
 
-}  // NAMESPACE ts1System
+}  // NAMESPACE essSystem

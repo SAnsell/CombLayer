@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   construct/DiskChopper.cxx
+ * File:   construct/Jaws.cxx
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -66,10 +66,14 @@
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"  
-#include "FixedComp.h" 
-#include "SecondTrack.h"
-#include "TwinComp.h"
+#include "FixedComp.h"
+#include "CellMap.h"
 #include "ContainedComp.h"
+#include "surfDBase.h"
+#include "surfDIter.h"
+#include "surfDivide.h"
+#include "mergeTemplate.h"
+
 
 #include "Jaws.h"
 
@@ -78,6 +82,7 @@ namespace constructSystem
 
 Jaws::Jaws(const std::string& Key) : 
   attachSystem::FixedComp(Key,6),attachSystem::ContainedComp(),
+  attachSystem::CellMap(),
   jawIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(jawIndex+1)
   /*!
@@ -89,12 +94,12 @@ Jaws::Jaws(const std::string& Key) :
 Jaws::Jaws(const Jaws& A) : 
   attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
   jawIndex(A.jawIndex),cellIndex(A.cellIndex),xStep(A.xStep),
-  yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
-  zAngle(A.zAngle),zOpen(A.zOpen),zThick(A.zThick),
-  zCross(A.zCross),zLen(A.zLen),xOpen(A.xOpen),
-  xThick(A.xThick),xCross(A.xCross),xLen(A.xLen),
-  jawGap(A.jawGap),XHeight(A.XHeight),YHeight(A.YHeight),
-  ZHeight(A.ZHeight),wallThick(A.wallThick),
+  yStep(A.yStep),zStep(A.zStep),xAngle(A.xAngle),
+  yAngle(A.yAngle),zAngle(A.zAngle),zOpen(A.zOpen),
+  zThick(A.zThick),zCross(A.zCross),zLen(A.zLen),
+  xOpen(A.xOpen),xThick(A.xThick),xCross(A.xCross),
+  xLen(A.xLen),jawGap(A.jawGap),XHeight(A.XHeight),
+  YHeight(A.YHeight),ZHeight(A.ZHeight),wallThick(A.wallThick),
   zJawMat(A.zJawMat),xJawMat(A.xJawMat),wallMat(A.wallMat)
   /*!
     Copy constructor
@@ -118,7 +123,8 @@ Jaws::operator=(const Jaws& A)
       xStep=A.xStep;
       yStep=A.yStep;
       zStep=A.zStep;
-      xyAngle=A.xyAngle;
+      xAngle=A.xAngle;
+      yAngle=A.yAngle;
       zAngle=A.zAngle;
       zOpen=A.zOpen;
       zThick=A.zThick;
@@ -132,13 +138,16 @@ Jaws::operator=(const Jaws& A)
       XHeight=A.XHeight;
       YHeight=A.YHeight;
       ZHeight=A.ZHeight;
+      linerThick=A.linerThick;
       wallThick=A.wallThick;
       zJawMat=A.zJawMat;
       xJawMat=A.xJawMat;
+      linerMat=A.linerMat;
       wallMat=A.wallMat;
     }
   return *this;
 }
+
 
 Jaws::~Jaws() 
   /*!
@@ -155,12 +164,13 @@ Jaws::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("Jaws","populate");
-  
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
-  zAngle=Control.EvalVar<double>(keyName+"Zangle");
+
+  xStep=Control.EvalDefVar<double>(keyName+"XStep",0.0);
+  yStep=Control.EvalDefVar<double>(keyName+"YStep",0.0);
+  zStep=Control.EvalDefVar<double>(keyName+"ZStep",0.0);
+  xAngle=Control.EvalDefVar<double>(keyName+"XAngle",0.0);
+  yAngle=Control.EvalDefVar<double>(keyName+"YAngle",0.0);
+  zAngle=Control.EvalDefVar<double>(keyName+"ZAngle",0.0);
 
   zOpen=Control.EvalVar<double>(keyName+"ZOpen");
   zThick=Control.EvalVar<double>(keyName+"ZThick");
@@ -179,10 +189,26 @@ Jaws::populate(const FuncDataBase& Control)
   ZHeight=Control.EvalVar<double>(keyName+"ZHeight");
 
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
+  linerThick=Control.EvalDefVar<double>(keyName+"LinerThick",0.0);
 
   zJawMat=ModelSupport::EvalMat<int>(Control,keyName+"zJawMat");
   xJawMat=ModelSupport::EvalMat<int>(Control,keyName+"xJawMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
+  linerMat=ModelSupport::EvalDefMat<int>(Control,keyName+"LinerMat",0);
+
+  nLayers=Control.EvalDefVar<size_t>(keyName+"NLayers",0);
+  if (nLayers)
+    {
+      ModelSupport::populateDivide(Control,nLayers,keyName+"Mat",
+				   xJawMat,jawXMatVec);
+      ModelSupport::populateDivide(Control,nLayers,keyName+"Mat",
+				   zJawMat,jawZMatVec);
+      ModelSupport::populateDivideLen(Control,nLayers,keyName+"Len",
+				      xLen,jawXFrac);
+      ModelSupport::populateDivideLen(Control,nLayers,keyName+"Len",
+				      zLen,jawZFrac);
+    }
+  
   return;
 }
 
@@ -196,11 +222,12 @@ Jaws::createUnitVector(const attachSystem::FixedComp& FC,
   */
 {
   ELog::RegMethod RegA("Jaws","createUnitVector");
-
+  
   FixedComp::createUnitVector(FC,sideIndex);
+
   applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
-  ELog::EM<<"Z == "<<Z<<" "<<FC.getZ()<<ELog::endDiag;
+  applyAngleRotate(xAngle,yAngle,zAngle);
+
   return;
 }
 
@@ -250,7 +277,17 @@ Jaws::createSurfaces()
   ModelSupport::buildPlane(SMap,jawIndex+255,Origin-Z*(zLen+zOpen/2.0),Z);
   ModelSupport::buildPlane(SMap,jawIndex+256,Origin+Z*(zLen+zOpen/2.0),Z);
 
+  // Liner::
+  ModelSupport::buildPlane(SMap,jawIndex+1103,
+			   Origin-X*(xOpen/2.0-linerThick),X);
+  ModelSupport::buildPlane(SMap,jawIndex+1104,
+			   Origin+X*(xOpen/2.0-linerThick),X);
   
+  ModelSupport::buildPlane(SMap,jawIndex+1205,
+			   Origin-Z*(zOpen/2.0-linerThick),Z);
+  ModelSupport::buildPlane(SMap,jawIndex+1206,
+			   Origin+Z*(zOpen/2.0-linerThick),Z);
+
   
   return;
 }
@@ -264,39 +301,67 @@ Jaws::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("Jaws","createObjects");
 
-
   HeadRule CutRule;
   std::string Out;
-
-  // X Jaw A: 
+  
+  // X Jaw A:
+  if (linerThick>Geometry::zeroTol)
+    {
+      Out=ModelSupport::getComposite(SMap,jawIndex,
+				     " 101 -102 103 -1103 105 -106 ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,linerMat,0.0,Out));
+      Out=ModelSupport::getComposite(SMap,jawIndex,
+				     " 101 -102 -104 1104 105 -106 ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,linerMat,0.0,Out));
+    }
+  
   Out=ModelSupport::getComposite(SMap,jawIndex," 101 -102 -103 153 105 -106 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,xJawMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,jawIndex," 101 -102 103 -104 105 -106 ");
+  addCell("xJaw",cellIndex-1);
+  Out=ModelSupport::getComposite(SMap,jawIndex,"101 -102 1103 -1104 105 -106");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   Out=ModelSupport::getComposite(SMap,jawIndex," 101 -102 104 -154 105 -106 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,xJawMat,0.0,Out));
+  addCell("xJaw",cellIndex-1);
 
+  
   Out=ModelSupport::getComposite(SMap,jawIndex," 101 -102 153 -154 105 -106 ");
   CutRule.procString(Out);
 
-  // Z Jaw A: 
+  // Z Jaw A:
+  if (linerThick>Geometry::zeroTol)
+    {
+      Out=ModelSupport::getComposite(SMap,jawIndex,
+				     " 201 -202 205 -1205 203 -204 ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,linerMat,0.0,Out));
+      Out=ModelSupport::getComposite(SMap,jawIndex,
+				     " 201 -202 -206 1206 203 -204 ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,linerMat,0.0,Out));
+    }
+
   Out=ModelSupport::getComposite(SMap,jawIndex," 201 -202 -205 255 203 -204 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,zJawMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,jawIndex," 201 -202 205 -206 203 -204 ");
+  addCell("zJaw",cellIndex-1);
+  Out=ModelSupport::getComposite(SMap,jawIndex," 201 -202 1205 -1206 203 -204 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   Out=ModelSupport::getComposite(SMap,jawIndex," 201 -202 206 -256 203 -204 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,zJawMat,0.0,Out));
+  addCell("zJaw",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,jawIndex," 201 -202 203 -204 255 -256 ");
   CutRule.addUnion(Out);
   CutRule.makeComplement();
 
   Out=ModelSupport::getComposite(SMap,jawIndex,"1 -2 3 -4 5 -6 ");
+  Out+=getContainer();
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+CutRule.display()));
 
-  Out=ModelSupport::getComposite(SMap,jawIndex,
+  if (wallThick>Geometry::zeroTol)
+    {
+      Out=ModelSupport::getComposite(SMap,jawIndex,
 				 "1 -2 13 -14 15 -16 (-3 : 4 : -5: 6)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+    }
 
   
   Out=ModelSupport::getComposite(SMap,jawIndex," 1 -2 13 -14 15 -16 ");
@@ -336,6 +401,109 @@ Jaws::createLinks()
 }
 
 void
+Jaws::layerProcess(Simulation& System)
+  /*!
+    Processes the splitting of the surfaces into a multilayer system
+    Currently twoL
+      -- X
+      -- Z
+    \param System :: Simulation to work on
+  */
+
+{
+  ELog::RegMethod RegA("Jaws","LayerProcess");
+  
+  if (nLayers>1)
+    {
+      // X LAYER:
+      std::string OutA,OutB;
+      ModelSupport::surfDivide DA;
+            
+      for(size_t i=1;i<nLayers;i++)
+	{
+	  DA.addFrac(jawXFrac[i-1]);
+	  DA.addMaterial(jawXMatVec[i-1]);
+	}
+      DA.addMaterial(jawXMatVec.back());
+
+	  
+      ModelSupport::mergeTemplate<Geometry::Plane,
+				  Geometry::Plane> surroundRule;
+      
+
+      surroundRule.setSurfPair(SMap.realSurf(jawIndex+101),
+			       SMap.realSurf(jawIndex+102));
+      
+      OutA=ModelSupport::getComposite(SMap,jawIndex," 101 ");
+      OutB=ModelSupport::getComposite(SMap,jawIndex," -102 ");
+      
+      surroundRule.setInnerRule(OutA);
+      surroundRule.setOuterRule(OutB);
+      
+      DA.addRule(&surroundRule);
+      
+      for(size_t jawNumber=0;jawNumber<2;jawNumber++)
+	{
+	  const std::string cellName("xJaw");
+	  const int cellNumber(getCell(cellName,jawNumber));
+	  DA.setCellN(cellNumber);
+	  DA.setOutNum(cellIndex,jawIndex+1001+
+		       static_cast<int>(jawNumber)*100);
+	  DA.activeDivideTemplate(System);
+	  cellIndex=DA.getCellNum();
+	  // remove from cellMap:
+	  removeCell(cellName,jawNumber);   
+	  setCells(cellName,cellNumber,cellIndex-1);
+	}
+    }
+
+  // Z LAYER:
+  if (nLayers>1)
+    {
+
+      std::string OutA,OutB;
+      ModelSupport::surfDivide DA;
+            
+      for(size_t i=1;i<nLayers;i++)
+	{
+	  DA.addFrac(jawZFrac[i-1]);
+	  DA.addMaterial(jawZMatVec[i-1]);
+	}
+      DA.addMaterial(jawZMatVec.back());
+
+      ModelSupport::mergeTemplate<Geometry::Plane,
+				  Geometry::Plane> surroundRule;
+      
+
+      surroundRule.setSurfPair(SMap.realSurf(jawIndex+201),
+			       SMap.realSurf(jawIndex+202));
+      
+      OutA=ModelSupport::getComposite(SMap,jawIndex," 201 ");
+      OutB=ModelSupport::getComposite(SMap,jawIndex," -202 ");
+      
+      surroundRule.setInnerRule(OutA);
+      surroundRule.setOuterRule(OutB);
+      
+      DA.addRule(&surroundRule);
+      
+      for(size_t jawNumber=0;jawNumber<2;jawNumber++)
+	{
+	  const std::string cellName("zJaw");
+	  const int cellNumber(getCell(cellName,jawNumber));
+	  DA.setCellN(cellNumber);
+	  DA.setOutNum(cellIndex,jawIndex+2001+
+		       static_cast<int>(jawNumber)*100);
+	  DA.activeDivideTemplate(System);
+	  cellIndex=DA.getCellNum();
+	  // remove from cellMap:
+	  removeCell(cellName,jawNumber);   
+	  setCells(cellName,cellNumber,cellIndex-1);
+	}
+    }
+  return;
+}
+  
+void
 Jaws::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
 		       const long int FIndex)
@@ -355,6 +523,7 @@ Jaws::createAll(Simulation& System,
   createObjects(System);
   
   createLinks();
+  layerProcess(System);
   insertObjects(System);   
   
   return;

@@ -220,8 +220,8 @@ SurfPoint::isDirectionValid(const Geometry::Vec3D& Pt,
   */
 {
   if (!key) return 0;
-  if (abs(ExSN)==keyN) 
-    return ((sign*ExSN>0) ? 1 : 0);
+  if (abs(ExSN)==keyN)
+      return ((sign*ExSN>0) ? 1 : 0);
   return (key->side(Pt)*sign)>=0 ? 1 : 0;
 }
 

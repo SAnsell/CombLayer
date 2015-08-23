@@ -102,7 +102,6 @@ main(int argc,char* argv[])
   std::vector<std::string> Names;  
   std::map<std::string,std::string> Values;  
   std::map<std::string,std::string> AddValues;  
-  std::map<std::string,double> IterVal;           // Variable to iterate 
 
   Simulation* SimPtr(0);
   try
@@ -112,7 +111,6 @@ main(int argc,char* argv[])
       mainSystem::inputParam IParam;
       createESSInputs(IParam);
       
-      const int iteractive(IterVal.empty() ? 0 : 1);   
       SimPtr=createSimulation(IParam,Names,Oname);
       if (!SimPtr) return -1;
       
@@ -120,7 +118,8 @@ main(int argc,char* argv[])
       setVariable::EssVariables(SimPtr->getDataBase());
       mainSystem::setDefUnits(SimPtr->getDataBase(),IParam);
       InputModifications(SimPtr,IParam,Names);
-  
+
+      
       // Definitions section 
       int MCIndex(0);
       const int multi=IParam.getValue<int>("multi");
@@ -145,6 +144,7 @@ main(int argc,char* argv[])
 	  ModelSupport::setDefaultPhysics(*SimPtr,IParam);
 
 	  const int renumCellWork=tallySelection(*SimPtr,IParam);
+	  const std::string rotFlag=ModelSupport::setDefRotation(IParam);
 	  SimPtr->masterRotation();
 	  if (createVTK(IParam,SimPtr,Oname))
 	    {
@@ -165,17 +165,13 @@ main(int argc,char* argv[])
 	  if (IParam.flag("cinder"))
 	    SimPtr->setForCinder();
 
-	  // // Cut energy tallies:
-	  // if (IParam.flag("ECut"))
-	  //   SimPtr->setEnergy(IParam.getValue<double>("ECut"));
-
 	  // Ensure we done loop
 	  do
 	    {
 	      SimProcess::writeIndexSim(*SimPtr,Oname,MCIndex);
 	      MCIndex++;
 	    }
-	  while(!iteractive && MCIndex<multi);
+	  while(MCIndex<multi);
 	}
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
       ModelSupport::calcVolumes(SimPtr,IParam);

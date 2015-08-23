@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   chip/BeamStop.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -84,7 +84,7 @@ namespace hutchSystem
 BeamStop::BeamStop(const std::string& Key)  :
   attachSystem::FixedComp(Key,2),
   stopIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(stopIndex+1),populated(0),nLayers(0)
+  cellIndex(stopIndex+1),nLayers(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -94,7 +94,7 @@ BeamStop::BeamStop(const std::string& Key)  :
 BeamStop::BeamStop(const BeamStop& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
   stopIndex(A.stopIndex),cellIndex(A.cellIndex),
-  populated(A.populated),fStep(A.fStep),xStep(A.xStep),
+  xStep(A.xStep),yStep(A.yStep),
   zStep(A.zStep),innerWidth(A.innerWidth),innerHeight(A.innerHeight),
   innerLength(A.innerLength),steelWidth(A.steelWidth),
   steelHeight(A.steelHeight),steelLength(A.steelLength),
@@ -124,9 +124,8 @@ BeamStop::operator=(const BeamStop& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
       cellIndex=A.cellIndex;
-      populated=A.populated;
-      fStep=A.fStep;
       xStep=A.xStep;
+      yStep=A.yStep;
       zStep=A.zStep;
       innerWidth=A.innerWidth;
       innerHeight=A.innerHeight;
@@ -160,14 +159,13 @@ BeamStop::~BeamStop()
 {}
 
 void
-BeamStop::populate(const Simulation& System)
+BeamStop::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: DataBase
   */
 {
   ELog::RegMethod RegA("BeamStop","populate");
-  const FuncDataBase& Control=System.getDataBase();
 
   beamBlock Item;
   size_t flag(0);
@@ -189,8 +187,8 @@ BeamStop::populate(const Simulation& System)
 	  flag++) ;
     } while (flag==beamBlock::Size);
 
-  fStep=Control.EvalVar<double>(keyName+"FStep");
   xStep=Control.EvalVar<double>(keyName+"XStep");
+  yStep=Control.EvalVar<double>(keyName+"YStep");
   zStep=Control.EvalVar<double>(keyName+"ZStep");
 
 
@@ -217,26 +215,26 @@ BeamStop::populate(const Simulation& System)
   defInnerMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerMat");
   steelMat=ModelSupport::EvalMat<int>(Control,keyName+"SteelMat");
   concMat=ModelSupport::EvalMat<int>(Control,keyName+"ConcMat");
-
-  populated |= 1;
   
   return;
 }
 
 void
-BeamStop::createUnitVector(const attachSystem::FixedComp& LC)
+BeamStop::createUnitVector(const attachSystem::FixedComp& LC,
+			   const long int sideIndex)
   /*!
     Create the unit vectors
     \param LC :: LinearComponent the beamstop is attached to.
+    \param sideIndex :: Side to conect to
   */
 {
   ELog::RegMethod RegA("BeamStop","createUnitVector");
 
 //  chipIRDatum::chipDataStore& CS=chipIRDatum::chipDataStore::Instance();
 
-  FixedComp::createUnitVector(LC);
-  Origin=LC.getLinkPt(1);  
-  Origin+=X*xStep+Y*fStep+Z*zStep;
+  FixedComp::createUnitVector(LC,sideIndex);
+  applyShift(xStep,yStep,zStep);
+  
 //  CS.setENum(chipIRDatum::collExit,MR.calcRotate(ExitPoint));  
   return;
 }
@@ -412,25 +410,51 @@ BeamStop::layerProcess(Simulation& )
   
   return;
 }
+
+  
+void
+BeamStop::createLinks()
+  /*!
+    Create all the linkes [OutGoing]
+    \param BUnit :: Bunker unit						
+  */
+{
+  ELog::RegMethod RegA("BunkerInsert","createLinks");
+
+  FixedComp::setConnect(0,Origin,-Y);
+  FixedComp::setConnect(1,Origin+Y*
+			(innerLength+steelLength+voidLength+concLength),Y);
+  
+
+  FixedComp::setLinkSurf(0,-SMap.realSurf(1));
+  FixedComp::setLinkSurf(1,SMap.realSurf(32));
+
+  
+  return;
+}
+
   
 void
 BeamStop::createAll(Simulation& System,
-		    const attachSystem::FixedComp& LC)
+		    const attachSystem::FixedComp& LC,
+		    const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
-    \param LC :: LinearComponent to use
+    \param FC :: FixedComponent to use
+    \param sideIndex :: index point [signed]
   */
 {
   ELog::RegMethod RegA("BeamStop","createAll");
 
-  populate(System);
-  createUnitVector(LC);
+  populate(System.getDataBase());
+  createUnitVector(LC,sideIndex);
   createSurfaces();  
 
   createDefSurfaces();
   createObjects(System);
   layerProcess(System);
+  createLinks();
   insertObjects(System);
  
   return;

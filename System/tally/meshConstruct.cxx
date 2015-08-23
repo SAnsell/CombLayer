@@ -184,6 +184,12 @@ meshConstruct::rectangleMesh(Simulation& System,const int type,
       MT.setKeyWords("DOSE 1");
       MT.setResponse(getDoseConversion());
     }
+  else if (KeyWords=="DOSEPHOTON")
+    {
+      MT.setParticles("p");
+      MT.setKeyWords("DOSE 1");
+      MT.setResponse(getPhotonDoseConversion());
+    }
   else if (KeyWords=="InternalDOSE")
     {
       MT.setKeyWords("DOSE");
@@ -213,8 +219,10 @@ const std::string&
 meshConstruct::getDoseConversion()
   /*!
     Return the dose string  for a mshtr
-    Uses the FCD files values
-    \return FCD string
+    Uses the FTD files values [Flux to Dose conversion].
+    - These values are in mrem/hour. You need a conversion factor
+    of 360 to go to 1uSv/hour from particles/sec.
+    \return FTD string
   */
 {
   static std::string fcdString=
@@ -239,6 +247,40 @@ meshConstruct::getDoseConversion()
     "1.8000E+02  1.6020E-01  2.0000E+02  1.7028E-01  5.0000E+02  2.2680E-01 "
     "1.0000E+03  3.4920E-01  2.0000E+03  5.0724E-01  ";
 
+  return fcdString;
+}
+
+const std::string& 
+meshConstruct::getPhotonDoseConversion()
+  /*!
+    Return the dose string  for a mshtr
+    Uses the FtD files values. Tihs is the H*(10) values which are higher
+    than the FtD values!
+    - These values are in mrem/hour. You need a conversion factor
+    of 360 to go to 1uSv/hour from particles/sec.
+    \return FCD string
+  */
+{
+  static std::string fcdString=
+    "1.0000E-09 2.3760E-03 1.0000E-08 3.2400E-03 2.5300E-08 3.8160E-03 "
+    "1.0000E-07 4.6440E-03 2.0000E-07 4.8600E-03 1.0000E-06 4.7880E-03 "
+    "2.0000E-06 4.6440E-03 5.0000E-06 4.3200E-03 1.0000E-05 4.0680E-03 "
+    "2.0000E-05 3.8160E-03 5.0000E-05 3.5640E-03 1.0000E-04 3.3840E-03 "
+    "2.0000E-04 3.2040E-03 5.0000E-04 2.9880E-03 1.0000E-03 2.8440E-03 "
+    "2.0000E-03 2.7720E-03 5.0000E-03 2.8800E-03 1.0000E-02 3.7800E-03 "
+    "2.0000E-02 5.9760E-03 3.0000E-02 8.5320E-03 5.0000E-02 1.4796E-02 "
+    "7.0000E-02 2.1600E-02 1.0000E-01 3.1680E-02 2.0000E-01 6.1200E-02 "
+    "3.0000E-01 8.3880E-02 5.0000E-01 1.1592E-01 7.0000E-01 1.3500E-01 "
+    "9.0000E-01 1.4400E-01 1.0000E+00 1.4976E-01 1.2000E+00 1.5300E-01 "
+    "2.0000E+00 1.5120E-01 3.0000E+00 1.4832E-01 4.0000E+00 1.4688E-01 "
+    "5.0000E+00 1.4580E-01 6.0000E+00 1.4400E-01 7.0000E+00 1.4580E-01 "
+    "8.0000E+00 1.4724E-01 9.0000E+00 1.5120E-01 1.0000E+01 1.5840E-01 "
+    "1.2000E+01 1.7280E-01 1.4000E+01 1.8720E-01 1.6000E+01 1.9980E-01 "
+    "1.8000E+01 2.0520E-01 2.0000E+01 2.1600E-01 3.0000E+01 1.8540E-01 "
+    "5.0000E+01 1.4400E-01 7.5000E+01 1.1880E-01 1.0000E+02 1.0260E-01 "
+    "1.2500E+02 9.3600E-02 1.5000E+02 8.8200E-02 1.7500E+02 9.0000E-02 "
+    "2.0100E+02 9.3600E-02 ";
+    
   return fcdString;
 }
 

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   geometry/Quaternion.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,6 @@
 #include <string>
 #include <vector>
 #include <map>
-#include <boost/test/floating_point_comparison.hpp>
 
 #include "Exception.h"
 #include "mathSupport.h"
@@ -559,18 +558,6 @@ Quaternion::getTheta() const
   return 2.0*acos(q0);
 }
 
-void
-Quaternion::calcAngle() const
-  /*!
-    Calculate the angle (in degrees)
-  */
-{
-  Quaternion A(*this);
-  std::cout<<"Size == "<<A.makeUnit()<<std::endl;
-  std::cout<<"Angle == "<<A[0]<<" "<<(180.0/M_PI)*acos(A[0])<<std::endl;
-  std::cout<<"Vector == "<<A<<std::endl;
-  return;
-}
 
 void 
 Quaternion::read(std::istream& IX)

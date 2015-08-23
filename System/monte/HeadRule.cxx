@@ -310,7 +310,7 @@ HeadRule::subMatched(const HeadRule& A,
 		     const HeadRule& SubUnit) 
   /*!
     Sub-a part matched unit into main system
-    \param A :: Rule to check
+    \param A :: Rule to check find 
     \param SubUnit :: Rule to replace unit with
     \return 0 :: No match / 1 matched 
   */
@@ -556,8 +556,9 @@ HeadRule::pairValid(const int S,const Geometry::Vec3D& Pt)const
 void
 HeadRule::isolateSurfNum(const std::set<int>& SN) 
   /*!
-    Top down pruning of our rules
-    \param SN :: surface numbers to keep
+    Top down pruning of our rules to remove all the item
+    in SN.
+    \param SN :: surface numbers to remove
    */
 {
   ELog::RegMethod RegA("HeadRule","isolateSurfNum");
@@ -813,6 +814,26 @@ HeadRule::removeTopItem(const int SN)
 	}
     }
   return 0;
+}
+
+int
+HeadRule::removeUnsignedItems(const int SN) 
+  /*!
+    Given a signed surface SN , removes the first instance 
+    of that surface from the Rule
+    \param SN :: Unsigned surface to remove
+    \retval -ve error,
+    \retval 0  not-found 
+    \retval  count of removed surfaces [success]
+  */
+{
+  ELog::RegMethod RegA("HeadRule","removeUnsignedItems");
+
+  const int cntA=removeItems(SN);
+  if (cntA<0) return cntA;
+  const int cntB=removeItems(-SN);
+  if (cntB<0) return cntB;
+  return cntA+cntB;
 }
 
 int
@@ -1187,6 +1208,76 @@ HeadRule::removeItem(const Rule* Target)
   return;
 }
 
+void
+HeadRule::removeCommon()
+  /*!
+    Objective is to remove common surface at the same
+    effective level
+  */
+{
+  ELog::RegMethod RegA("HeadRule","removeCommon");
+
+  if (!HeadNode) 
+    return;
+  std::set<int> SFound;  // surf : Level [paired]
+
+  std::stack<Rule*> TreeLine;
+  std::stack<size_t> TreeLevel;
+  TreeLine.push(HeadNode);
+  TreeLevel.push(0);
+
+  std::set<int>::const_iterator mc;
+  int activeLevel(0);
+  //  int statePoint(HeadNode->type());
+  
+  while(!TreeLine.empty())
+    {
+      Rule* tmpA=TreeLine.top();
+      activeLevel=TreeLevel.top();
+      TreeLine.pop();
+      TreeLevel.pop();
+
+      // Process level:
+      if (tmpA->getParent() && 
+	  tmpA->getParent()->type()!=tmpA->type())
+	{
+	  activeLevel++;
+	}
+      const SurfPoint* SurX=dynamic_cast<const SurfPoint*>(tmpA);
+      if (SurX)
+	{
+	  const int SN=(100*SurX->getSignKeyN())+activeLevel;
+	  
+	  mc=SFound.find(SN);
+	  if (mc!=SFound.end())
+	    removeItem(SurX);
+	  else
+	    SFound.insert(SN);
+	}
+      else                           // PROCESS LEAF NODE:
+	{
+	  Rule* tmpB=tmpA->leaf(0);
+	  Rule* tmpC=tmpA->leaf(1);
+	  if (tmpB || tmpC)
+	    {
+	      if (tmpB)
+		{
+		  TreeLevel.push(activeLevel);
+		  TreeLine.push(tmpB);
+		}
+	      if (tmpC)
+		{
+		  TreeLevel.push(activeLevel);
+		  TreeLine.push(tmpC);
+		}
+	    }
+	}
+    }
+  return;
+}
+
+
+
 int
 HeadRule::substituteSurf(const int SurfN,const int newSurfN,
 			 const Geometry::Surface* SPtr)
@@ -1331,7 +1422,7 @@ HeadRule::addUnion(const std::string& RStr)
     \param RStr :: Rule string
    */
 {
-  ELog::RegMethod RegA("HeadRule","addIntersection(string)");
+  ELog::RegMethod RegA("HeadRule","addUnion(string)");
   HeadRule A;
   if (A.procString(RStr))
     addUnion(A.getTopRule());
@@ -1650,11 +1741,12 @@ HeadRule::calcSurfIntersection(const Geometry::Vec3D& Org,
 			       std::vector<Geometry::Vec3D>& Pts,
 			       std::vector<int>& SNum) const
   /*!
-    Calculate a track of a line that intersects the rule
+    Calculate a track of a line that intersects the rule.
+    The surface number is the outgoing surface number.
     \param Org :: Origin of line
     \param Unit :: Direction of line
     \param Pts :: Points
-    \param SNum :: Surface number
+    \param SNum :: Surface number 
     \return Number found
   */
 {
@@ -1673,7 +1765,7 @@ HeadRule::calcSurfIntersection(const Geometry::Vec3D& Org,
   const std::vector<Geometry::Vec3D>& IPts(LI.getPoints());
   const std::vector<double>& dPts(LI.getDistance());
   const std::vector<const Geometry::Surface*>& surfIndex(LI.getSurfIndex());
-
+  
   // Clear data
   Pts.clear();
   SNum.clear();
@@ -1688,10 +1780,13 @@ HeadRule::calcSurfIntersection(const Geometry::Vec3D& Org,
       const int pAB=isDirectionValid(IPts[i],NS);
       const int mAB=isDirectionValid(IPts[i],-NS);
       const int normD=surfPtr->sideDirection(IPts[i],Unit);
+      const double lambda=dPts[i];
       if (pAB!=mAB)  // out going positive surface
 	{
-	  SNum.push_back(normD*surfPtr->getName());
-	  Pts.push_back(Org+Unit*dPts[i]);
+	  const int signValue((pAB>0) ? 1 : -1);
+	  const int distValue((lambda>0) ? 1 : -1);
+	  SNum.push_back(distValue*normD*NS);
+	  Pts.push_back(Org+Unit*lambda);
 	}
     }    
 
