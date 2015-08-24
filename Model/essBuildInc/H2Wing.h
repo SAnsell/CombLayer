@@ -63,8 +63,8 @@ class H2Wing :
   
   int modMat;                   ///< LH2
   double modTemp;               ///< LH2 temperature [K]
-  std::vector<double> thick;    ///< Layer thickness
-  std::vector<double> vThick;   ///< Vertical thickness
+  std::vector<double> Thick;    ///< Layer thickness
+  std::vector<double> Height,Depth;   ///< Vertical thickness
   std::vector<int> mat;         ///< Layer material
   std::vector<double> temp;     ///< Layer temperature
 

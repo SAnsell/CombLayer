@@ -26,6 +26,7 @@ class Simulation;
 
 namespace essSystem
 {
+  class DiskPreModFlowGuide;
 /*!
   \class DiskPreMod
   \author S. Ansell
@@ -36,12 +37,16 @@ namespace essSystem
 
 class DiskPreMod : public attachSystem::ContainedComp,
     public attachSystem::LayerComp,
-    public attachSystem::FixedComp
+    public attachSystem::FixedComp,
+    public attachSystem::CellMap
 {
  private:
   
   const int modIndex;             ///< Index of surface offset
   int cellIndex;                  ///< Cell index
+
+  int engActive;                  ///< Engineering active flag
+  std::shared_ptr<DiskPreModFlowGuide> InnerComp; ///< Flow guide pattern inside DiskPreMod (engineering detail)
 
   double zStep;                   ///< Step away from target
   double outerRadius;             ///< Outer radius of Be Zone

@@ -432,6 +432,7 @@ createDelftInputs(inputParam& IParam)
   IParam.setDesc("modType","Type of moderator (sphere/tunnel)");
   IParam.setDesc("refExtra","Type of extra Be around moderators");
   IParam.setDesc("FuelXML","Write Fuel config to XMLfile");
+  IParam.setDesc("fuelXML","Read the Fuel config from an XMLfile");
 
   return;
 }

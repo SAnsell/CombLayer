@@ -115,7 +115,6 @@ makeESS::makeESS() :
   
   LowAFL(new moderatorSystem::BasicFlightLine("LowAFlight")),
   LowBFL(new moderatorSystem::BasicFlightLine("LowBFlight")),
-  //  LowPre(new CylPreMod("LowPre")),
 
   LowSupplyPipe(new constructSystem::SupplyPipe("LSupply")),
   LowReturnPipe(new constructSystem::SupplyPipe("LReturn")),
@@ -146,11 +145,11 @@ makeESS::makeESS() :
   
   OR.addObject(LowAFL);
   OR.addObject(LowBFL);
-  //  OR.addObject(LowPre);
+  OR.addObject(TopPreMod);
+  OR.addObject(TopCapMod);
 
   OR.addObject(TopAFL);
   OR.addObject(TopBFL);
-  //  OR.addObject(TopPre);
 
   OR.addObject(Bulk);
   OR.addObject(BulkLowAFL);
@@ -242,7 +241,7 @@ makeESS::createGuides(Simulation& System)
 void
 makeESS::buildLowButterfly(Simulation& System)
   /*!
-    Build the butterfly moderators
+    Build the lower butterfly moderator
     \param System :: Stardard simulation
   */
 {
@@ -263,7 +262,7 @@ makeESS::buildLowButterfly(Simulation& System)
 void
 makeESS::buildTopButterfly(Simulation& System)
   /*!
-    Build the top butterfly moderator
+    Build the upper butterfly moderator
     \param System :: Stardard simulation
   */
 {
@@ -277,10 +276,11 @@ makeESS::buildTopButterfly(Simulation& System)
   BM->setRadiusX(Reflector->getRadius());
   TopMod=std::shared_ptr<constructSystem::ModBase>(BM);
   OR.addObject(TopMod);
+  
   TopMod->createAll(System,*Reflector,TopPreMod.get(),6);
   return;
 }
-  
+      
 void 
 makeESS::buildLowerPipe(Simulation& System,
 			const std::string& pipeType)
@@ -419,7 +419,8 @@ makeESS::build(Simulation& System,
   
   makeTarget(System,targetType);
   Reflector->globalPopulate(System.getDataBase());
-    
+
+  // lower moderator
   LowPreMod->createAll(System,World::masterOrigin(),0,true,
 		       Target->wheelHeight()/2.0,
 		       Reflector->getRadius());
@@ -427,7 +428,7 @@ makeESS::build(Simulation& System,
   TopPreMod->createAll(System,World::masterOrigin(),0,false,
 		       Target->wheelHeight()/2.0,
 		       Reflector->getRadius());
-  
+
   buildLowButterfly(System);
   buildTopButterfly(System);
   const double LMHeight=attachSystem::calcLinkDistance(*LowMod,5,6);
@@ -437,30 +438,22 @@ makeESS::build(Simulation& System,
    		       0.0,Reflector->getRadius());
   TopCapMod->createAll(System,*TopMod,6,false,
    		       0.0,Reflector->getRadius());
-
-
   Reflector->createAll(System,World::masterOrigin(),
 		       Target->wheelHeight(),
 		       LowPreMod->getHeight()+LMHeight+LowCapMod->getHeight(),
 		       TopPreMod->getHeight()+TMHeight+TopCapMod->getHeight());
 
-
   Reflector->insertComponent(System,"targetVoid",*Target,1);
-
   Reflector->deleteCell(System,"lowVoid");
   Reflector->deleteCell(System,"topVoid");
   Bulk->createAll(System,*Reflector,*Reflector);
 
   // Build flightlines after bulk
-  LowAFL->createAll(System,*LowMod,0,*Reflector,4,*Bulk,-3);
-  LowBFL->createAll(System,*LowMod,0,*Reflector,3,*Bulk,-3);   
-
   TopAFL->createAll(System,*TopMod,1,*Reflector,4,*Bulk,-3);
   TopBFL->createAll(System,*TopMod,0,*Reflector,3,*Bulk,-3);
 
-    // Build flightlines after bulk
-  //  TopAFL->createAll(System,*TopMod,0,*Reflector,4,*Bulk,-3);
-  //  TopBFL->createAll(System,*TopMod,0,*Reflector,3,*Bulk,-3);   
+  LowAFL->createAll(System,*LowMod,0,*Reflector,4,*Bulk,-3);
+  LowBFL->createAll(System,*LowMod,0,*Reflector,3,*Bulk,-3);   
 
   attachSystem::addToInsertSurfCtrl(System,*Bulk,Target->getCC("Wheel"));
   attachSystem::addToInsertForced(System,*Bulk,Target->getCC("Shaft"));
