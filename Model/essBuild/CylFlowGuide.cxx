@@ -70,12 +70,12 @@
 #include "CellMap.h"
 #include "ContainedComp.h"
 
-#include "DiskPreModFlowGuide.h"
+#include "CylFlowGuide.h"
 
 namespace essSystem
 {
 
-DiskPreModFlowGuide::DiskPreModFlowGuide(const std::string& Key) :
+CylFlowGuide::CylFlowGuide(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::FixedComp(Key,6),
   insIndex(ModelSupport::objectRegister::Instance().cell(Key)),
@@ -86,7 +86,7 @@ DiskPreModFlowGuide::DiskPreModFlowGuide(const std::string& Key) :
   */
 {}
 
-DiskPreModFlowGuide::DiskPreModFlowGuide(const DiskPreModFlowGuide& A) : 
+CylFlowGuide::CylFlowGuide(const CylFlowGuide& A) : 
   attachSystem::ContainedComp(A),
   attachSystem::FixedComp(A),
   insIndex(A.insIndex),
@@ -97,15 +97,15 @@ DiskPreModFlowGuide::DiskPreModFlowGuide(const DiskPreModFlowGuide& A) :
   nBaffles(A.nBaffles)
   /*!
       Copy constructor
-      \param A :: DiskPreModFlowGuide to copy
+      \param A :: CylFlowGuide to copy
     */
   {}
 
-DiskPreModFlowGuide&
-DiskPreModFlowGuide::operator=(const DiskPreModFlowGuide& A)
+CylFlowGuide&
+CylFlowGuide::operator=(const CylFlowGuide& A)
   /*!
     Assignment operator
-    \param A :: DiskPreModFlowGuide to copy
+    \param A :: CylFlowGuide to copy
     \return *this
   */
   {
@@ -122,17 +122,17 @@ DiskPreModFlowGuide::operator=(const DiskPreModFlowGuide& A)
     return *this;
   }
 
-DiskPreModFlowGuide*
-DiskPreModFlowGuide::clone() const
+CylFlowGuide*
+CylFlowGuide::clone() const
  /*!
    Clone self 
    \return new (this)
  */
 {
-  return new DiskPreModFlowGuide(*this);
+  return new CylFlowGuide(*this);
 }
 
-DiskPreModFlowGuide::~DiskPreModFlowGuide()
+CylFlowGuide::~CylFlowGuide()
   /*!
     Destructor
   */
@@ -140,13 +140,13 @@ DiskPreModFlowGuide::~DiskPreModFlowGuide()
   
 
 void
-DiskPreModFlowGuide::populate(const FuncDataBase& Control)
+CylFlowGuide::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: Variable table to use
   */
 {
-  ELog::RegMethod RegA("DiskPreModFlowGuide","populate");
+  ELog::RegMethod RegA("CylFlowGuide","populate");
 
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -158,7 +158,7 @@ DiskPreModFlowGuide::populate(const FuncDataBase& Control)
 }
 
 void
-DiskPreModFlowGuide::createUnitVector(const attachSystem::FixedComp& FC,
+CylFlowGuide::createUnitVector(const attachSystem::FixedComp& FC,
 				      const size_t sideIndex)
   /*!
     Create the unit vectors
@@ -166,7 +166,7 @@ DiskPreModFlowGuide::createUnitVector(const attachSystem::FixedComp& FC,
     \param sideIndex :: Inner link point
   */
 {
-  ELog::RegMethod RegA("DiskPreModFlowGuide","createUnitVector");
+  ELog::RegMethod RegA("CylFlowGuide","createUnitVector");
   attachSystem::FixedComp::createUnitVector(FC);
 
   // Take data from containing object
@@ -183,12 +183,12 @@ DiskPreModFlowGuide::createUnitVector(const attachSystem::FixedComp& FC,
 
 
 void
-DiskPreModFlowGuide::createSurfaces()
+CylFlowGuide::createSurfaces()
   /*!
     Create planes for the inner structure iside DiskPreMod
   */
 {
-  ELog::RegMethod RegA("DiskPreModFlowGuide","createSurfaces");
+  ELog::RegMethod RegA("CylFlowGuide","createSurfaces");
 
   // y-distance between plates
   const double dy((2.0*radius)/static_cast<double>(nBaffles+1)); 
@@ -216,7 +216,7 @@ DiskPreModFlowGuide::createSurfaces()
 }
 
 void
-DiskPreModFlowGuide::createObjects(Simulation& System,
+CylFlowGuide::createObjects(Simulation& System,
 				   attachSystem::FixedComp& FC,
 				   const size_t sideIndex)
 /*!
@@ -226,7 +226,7 @@ DiskPreModFlowGuide::createObjects(Simulation& System,
     \param sideIndex :: link point for inner volume 
   */
 {
-  ELog::RegMethod RegA("DiskPreModFlowGuide","createObjects");
+  ELog::RegMethod RegA("CylFlowGuide","createObjects");
   
   attachSystem::CellMap* CM = dynamic_cast<attachSystem::CellMap*>(&FC);
   if (!CM)
@@ -316,17 +316,17 @@ DiskPreModFlowGuide::createObjects(Simulation& System,
 }
   
 void
-DiskPreModFlowGuide::createLinks()
+CylFlowGuide::createLinks()
   /*!
     Creates a full attachment set
   */
 {  
-  ELog::RegMethod RegA("DiskPreModFlowGuide","createLinks");
+  ELog::RegMethod RegA("CylFlowGuide","createLinks");
   return;
 }
 
 void
-DiskPreModFlowGuide::createAll(Simulation& System,
+CylFlowGuide::createAll(Simulation& System,
 			       attachSystem::FixedComp& FC,
 			       const long int sideIndex)
   /*!
@@ -336,7 +336,7 @@ DiskPreModFlowGuide::createAll(Simulation& System,
     \param sideIndex :: inner cylinder index [signed for consistancy]
   */
 {
-  ELog::RegMethod RegA("DiskPreModFlowGuide","createAll");
+  ELog::RegMethod RegA("CylFlowGuide","createAll");
   
   // unsigned version [long 
   const size_t SIndex=static_cast<size_t>(std::abs(sideIndex)-1);

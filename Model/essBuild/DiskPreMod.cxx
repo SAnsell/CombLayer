@@ -69,8 +69,9 @@
 #include "LayerComp.h"
 #include "CellMap.h"
 #include "ContainedComp.h"
+#include "CylFlowGuide.h"
 #include "DiskPreMod.h"
-#include "DiskPreModFlowGuide.h"
+
 
 namespace essSystem
 {
@@ -82,7 +83,7 @@ DiskPreMod::DiskPreMod(const std::string& Key) :
   attachSystem::CellMap(),  
   modIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(modIndex+1),NWidth(0),
-  InnerComp(new DiskPreModFlowGuide(Key+"FlowGuide"))
+  InnerComp(new CylFlowGuide(Key+"FlowGuide"))
 
   /*!
     Constructor
@@ -521,4 +522,4 @@ DiskPreMod::createAll(Simulation& System,
   return;
 }
 
-}  // NAMESPACE essSystem
+}  // NAMESPACE essSystem 

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   essBuildInc/DiskPreModFlowGuide.h
+ * File:   essBuildInc/CylFlowGuide.h
  *
  * Copyright (c) 2004-2015 by Konstatin Batkov/Stuart Ansell
  *
@@ -19,22 +19,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef essSystem_DiskPreModFlowGuide_h
-#define essSystem_DiskPreModFlowGuide_h
+#ifndef essSystem_CylFlowGuide_h
+#define essSystem_CylFlowGuide_h
 
 class Simulation;
 
 namespace essSystem
 {
 /*!
-  \class DiskPreModFlowGuide
+  \class CylFlowGuide
   \author K. Batkov
   \version 1.1
   \date August 2015
   \brief Inner structure of Be reflector (engineering details)
 */
 
-class DiskPreModFlowGuide : public attachSystem::ContainedComp,
+class CylFlowGuide : public attachSystem::ContainedComp,
     public attachSystem::FixedComp
 {
  private:
@@ -59,11 +59,11 @@ class DiskPreModFlowGuide : public attachSystem::ContainedComp,
 
  public:
 
-  DiskPreModFlowGuide(const std::string&);
-  DiskPreModFlowGuide(const DiskPreModFlowGuide&);
-  DiskPreModFlowGuide& operator=(const DiskPreModFlowGuide&);
-  virtual DiskPreModFlowGuide* clone() const;
-  virtual ~DiskPreModFlowGuide();
+  CylFlowGuide(const std::string&);
+  CylFlowGuide(const CylFlowGuide&);
+  CylFlowGuide& operator=(const CylFlowGuide&);
+  virtual CylFlowGuide* clone() const;
+  virtual ~CylFlowGuide();
 
   void createAll(Simulation&,attachSystem::FixedComp&,
 		 const long int);
