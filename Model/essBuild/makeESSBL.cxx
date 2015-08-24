@@ -160,10 +160,7 @@ makeESSBL::build(Simulation& System,const Bunker& bunkerObj)
   else if (beamName=="NMX")
     {
       // NMX beamline
-<<<<<<< HEAD
       ELog::EM<<"Building NMW"<<ELog::endDiag;
-=======
->>>>>>> origin/kbatMerge
       NMX nmxBL;
       nmxBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }

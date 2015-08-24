@@ -67,6 +67,8 @@ namespace essSystem
   class Bunker;
 
   class ODIN;
+  class LOKI;
+  class VOR;
   /*!
     \class makeESS
     \version 1.0
@@ -98,21 +100,6 @@ class makeESS
   std::shared_ptr<constructSystem::SupplyPipe> LowSupplyPipe; 
   std::shared_ptr<constructSystem::SupplyPipe> LowReturnPipe;  ///< Lower supply
 
-<<<<<<< HEAD
-
-
-  // Butterly
-  /// Primary Upper Mod 
-  std::shared_ptr<constructSystem::ModBase> TopMod;
-  std::shared_ptr<DiskPreMod> TopPreMod;         ///< Top mod 
-  std::shared_ptr<DiskPreMod> TopCapMod;         ///< Lower mod
-
-  std::shared_ptr<moderatorSystem::BasicFlightLine> TopAFL;  ///< Top Mode FL
-  std::shared_ptr<moderatorSystem::BasicFlightLine> TopBFL;  ///< Top Mode FL
-  std::shared_ptr<CylPreMod> TopPre;          ///< Toper Mod (Pre)
-
-  /// Toper supply 
-=======
   // Butterly
   /// Primary Upper Mod 
   std::shared_ptr<constructSystem::ModBase> TopMod;
@@ -124,7 +111,7 @@ class makeESS
   std::shared_ptr<CylPreMod> TopPre;          ///< Toper Mod (Pre)
 
   /// Top supply 
->>>>>>> origin/kbatMerge
+
   std::shared_ptr<constructSystem::SupplyPipe> TopSupplyPipe; 
   std::shared_ptr<constructSystem::SupplyPipe> TopReturnPipe;  ///< Top supply
 
@@ -148,17 +135,10 @@ class makeESS
 
   void buildLowButterfly(Simulation&);
   void buildLowPreMod(Simulation&);
-<<<<<<< HEAD
-  void buildLowerPipe(Simulation&,const std::string&);
-
-  void buildTopButterfly(Simulation&);
-=======
 
   void buildTopButterfly(Simulation&);
   void buildLowerPipe(Simulation&,const std::string&);
 
-
->>>>>>> origin/kbatMerge
   void buildTopPreMod(Simulation&);
   void buildToperPipe(Simulation&,const std::string&);
 
