@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuild/DiskPreSimple.cxx
+ * File:   essBuild/DiskPreMod.cxx
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *

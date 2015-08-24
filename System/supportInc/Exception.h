@@ -364,8 +364,9 @@ class CastError : public ExBase
   virtual ~CastError() throw() {}    ///< Destructor
 
 };
+
 /*!
-  \class CastError
+  \class TypeConvError
   \brief Dynamic Cast problems
   \author Stuart Ansell
   \date October 2006
@@ -389,6 +390,34 @@ class TypeConvError : public ExBase
   TypeConvError(const TypeConvError<T,U>&);
   TypeConvError<T,U>& operator=(const TypeConvError<T,U>&);
   virtual ~TypeConvError() throw() {}    ///< Destructor
+
+};
+
+/*!
+  \class DynamicConv
+  \brief Dynamic Cast problems
+  \author Stuart Ansell
+  \date August 2015
+  \version 1.0
+
+  When failing to convert from type A to type B
+*/
+
+class DynamicConv : public ExBase
+{
+ private:
+
+  std::string Base;          ///< Base clase 
+  std::string Derived;       ///< New derived class
+  void setOutLine();
+
+ public:
+
+  DynamicConv(const std::string&,const std::string&,const std::string&);
+
+  DynamicConv(const DynamicConv&);
+  DynamicConv& operator=(const DynamicConv&);
+  virtual ~DynamicConv() throw() {}    ///< Destructor
 
 };
 

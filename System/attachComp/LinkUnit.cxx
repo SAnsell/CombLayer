@@ -338,7 +338,6 @@ LinkUnit::addBridgeSurf(const HeadRule& HR)
   return;
 }
 
-
 int 
 LinkUnit::getLinkSurf() const 
   /*!
