@@ -254,7 +254,7 @@ DiskPreMod::createSurfaces()
 void
 DiskPreMod::createObjects(Simulation& System)
   /*!
-    Create the vaned moderator
+    Create the disc component
     \param System :: Simulation to add results
   */
 {
