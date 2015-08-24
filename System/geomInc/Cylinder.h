@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   geomInc/Cylinder.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -83,8 +83,11 @@ class Cylinder : public Quadratic
   void setNorm(const Geometry::Vec3D&);       
   void setRadius(double const);
 
-  const Geometry::Vec3D& getCentre() const { return Centre; }   ///< Return centre point       
-  const Geometry::Vec3D& getNormal() const { return Normal; }   ///< Return Central line
+  /// Return centre point
+  const Geometry::Vec3D& getCentre() const { return Centre; }
+  /// Return Central line
+  const Geometry::Vec3D& getNormal() const { return Normal; }  
+
   double getRadius() const { return Radius; }  ///< Get Radius      
   void setBaseEqn();
 

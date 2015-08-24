@@ -3,7 +3,7 @@
  
  * File:   essBuild/GuideBay.cxx
  *
- * Copyright (c) 2004-20145 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,8 +70,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedGroup.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
+#include "SurInter.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "CellMap.h"
@@ -82,9 +81,10 @@
 namespace essSystem
 {
 
- GuideBay::GuideBay(const std::string& Key,const size_t BN)  :
+GuideBay::GuideBay(const std::string& Key,const size_t BN)  :
   attachSystem::ContainedGroup("Inner","Outer"),
   attachSystem::FixedComp(StrFunc::makeString(Key,BN),6),
+  attachSystem::CellMap(),
   baseKey(Key),bayNumber(BN),
   bayIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
   cellIndex(bayIndex+1),nItems(0)
@@ -96,6 +96,7 @@ namespace essSystem
 
 GuideBay::GuideBay(const GuideBay& A) : 
   attachSystem::ContainedGroup(A),attachSystem::FixedComp(A),
+  attachSystem::CellMap(A),
   baseKey(A.baseKey),bayNumber(A.bayNumber),bayIndex(A.bayIndex),
   cellIndex(A.cellIndex),xStep(A.xStep),yStep(A.yStep),
   zStep(A.zStep),xyAngle(A.xyAngle),zAngle(A.zAngle),
@@ -121,6 +122,7 @@ GuideBay::operator=(const GuideBay& A)
     {
       attachSystem::ContainedGroup::operator=(A);
       attachSystem::FixedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
       cellIndex=A.cellIndex;
       xStep=A.xStep;
       yStep=A.yStep;
@@ -213,7 +215,6 @@ GuideBay::createSurfaces()
   const double RInner=CPtr->getRadius();
   ModelSupport::buildCylinder(SMap,bayIndex+17,Origin,Z,RInner+midRadius);
   
-
   ModelSupport::buildPlane(SMap,bayIndex+5,Origin-Z*innerDepth,Z);
   ModelSupport::buildPlane(SMap,bayIndex+6,Origin+Z*innerHeight,Z);
   ModelSupport::buildPlane(SMap,bayIndex+15,Origin-Z*depth,Z);
@@ -272,13 +273,15 @@ GuideBay::createObjects(Simulation& System)
 
   std::string Out;
   Out=ModelSupport::getComposite(SMap,bayIndex,"1 7 -17 3 -4 5 -6 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+  CellMap::addCell("Inner",cellIndex-1);
   addOuterSurf("Inner",Out);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
-
-  Out=ModelSupport::getComposite(SMap,bayIndex,"1 17 -27 3 -4 15 -16 ");
-  addOuterSurf("Outer",Out);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
   
+  Out=ModelSupport::getComposite(SMap,bayIndex,"1 17 -27 3 -4 15 -16 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+  CellMap::addCell("Outer",cellIndex-1);
+  addOuterSurf("Outer",Out);
+
   return;
 }
 
@@ -293,6 +296,68 @@ GuideBay::createLinks()
   return;
 }
 
+void
+GuideBay::outerMerge(Simulation& System,
+		     GuideBay& otherBay)
+  /*!
+    Merge the outer component of the guidebay
+    \param System :: simulaiton to use
+    \param otherBay :: Other guidebase
+  */
+{
+  ELog::RegMethod RegA("GuideBay","outerMerge");
+
+  MonteCarlo::Qhull* AB=System.findQhull(CellMap::getCell("Outer"));
+  MonteCarlo::Qhull* BB=System.findQhull(otherBay.CellMap::getCell("Outer"));
+  
+  if (!AB)
+    throw ColErr::InContainerError<int>
+      (CellMap::getCell("Outer"),"Outer cell not found");
+  if (!BB)
+    throw ColErr::InContainerError<int>
+      (otherBay.CellMap::getCell("Outer"),"Outer cell not found");
+  // Get radii:
+  const Geometry::Cylinder* CInner=
+    SMap.realPtr<Geometry::Cylinder>(bayIndex+7);
+  const Geometry::Cylinder* COuter=
+    SMap.realPtr<Geometry::Cylinder>(bayIndex+27);
+  const double midRadius=
+    (CInner->getRadius()+COuter->getRadius())/2.0;
+
+  // Keep positive direction of sense
+  Geometry::Vec3D CPoint = (Origin+otherBay.getCentre())/2.0
+    +Y*midRadius;
+
+
+  HeadRule ARule=AB->getHeadRule();
+  HeadRule BRule=BB->getHeadRule();
+  const std::pair<Geometry::Vec3D,int> APoint=
+    SurInter::interceptRule(ARule,CPoint,Z);
+  const std::pair<Geometry::Vec3D,int> BPoint=
+    SurInter::interceptRule(BRule,CPoint,Z);
+
+  if (APoint.second && BPoint.second)
+    {
+      ARule.removeUnsignedItems(APoint.second);
+      BRule.removeUnsignedItems(BPoint.second);
+      ARule.addIntersection(BRule);
+      //      ARule.removeCommon();      
+    }
+
+  // Delete common stuff and build object
+  const int mat=AB->getMat();
+  const double temp=AB->getTemp();
+  System.removeCell(AB->getName());
+  System.removeCell(BB->getName());
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,temp,
+				   ARule.display()));
+  // NOW RESET names in cellMap:
+  setCell("Outer",cellIndex-1);
+  otherBay.setCell("Outer",cellIndex-1);
+  return;
+}
+  
+  
 void
 GuideBay::createGuideItems(Simulation& System)
   /*!
@@ -312,17 +377,16 @@ GuideBay::createGuideItems(Simulation& System)
     {
       std::shared_ptr<GuideItem> GA(new GuideItem(BL,i+1));
       GA->setCylBoundary(dPlane,innerCyl,outerCyl);
-      GA->addInsertCell("Inner",bayIndex+1);
-      GA->addInsertCell("Outer",bayIndex+2);
+
+      GA->addInsertCell("Inner",getCell("Inner"));
+      GA->addInsertCell("Outer",getCell("Outer"));
       if (i)
 	GA->createAll(System,*this,0,GUnit[i-1].get());
       else
 	GA->createAll(System,*this,0,0);
 
       GUnit.push_back(GA);
-      OR.addObject(GUnit.back());
-
-      
+      OR.addObject(GUnit.back());      
     }
   return;
 }
@@ -334,7 +398,7 @@ GuideBay::createAll(Simulation& System,
   /*!
     Generic function to create everything
     \param System :: Simulation item
-    \param FC :: Central origin
+    \param FC ::  Central origin
   */
 {
   ELog::RegMethod RegA("GuideBay","createAll");
@@ -344,10 +408,8 @@ GuideBay::createAll(Simulation& System,
   createSurfaces();
   createObjects(System);
   createLinks();
-  createGuideItems(System);
   insertObjects(System);              
-
   return;
 }
 
-}  // NAMESPACE ts1System
+}  // NAMESPACE essSystem

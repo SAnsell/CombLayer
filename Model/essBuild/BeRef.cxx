@@ -67,21 +67,26 @@
 #include "FixedComp.h"
 #include "ContainedComp.h"
 #include "CellMap.h"
+#include "BeRefInnerStructure.h"
 #include "BeRef.h"
 
 namespace essSystem
 {
 
 BeRef::BeRef(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
+  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,11),
   attachSystem::CellMap(),
   refIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(refIndex+1)
+  cellIndex(refIndex+1),
+  InnerComp(new BeRefInnerStructure(Key + "InnerStructure"))
   /*!
     Constructor
     \param Key :: Name of construction key
   */
-{}
+{
+  ModelSupport::objectRegister& OR = ModelSupport::objectRegister::Instance();
+  OR.addObject(InnerComp);
+}
 
 BeRef::BeRef(const BeRef& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
@@ -89,10 +94,11 @@ BeRef::BeRef(const BeRef& A) :
   refIndex(A.refIndex),cellIndex(A.cellIndex),xStep(A.xStep),
   yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
   zAngle(A.zAngle),radius(A.radius),height(A.height),
-  wallThick(A.wallThick),lowVoidThick(A.lowVoidThick),
+  wallThick(A.wallThick),wallThickLow(A.wallThickLow),lowVoidThick(A.lowVoidThick),
   topVoidThick(A.topVoidThick),targSepThick(A.targSepThick),
   refMat(A.refMat),wallMat(A.wallMat),
-  targSepMat(A.targSepMat)
+  targSepMat(A.targSepMat),
+  InnerComp(A.InnerComp->clone())
   /*!
     Copy constructor
     \param A :: BeRef to copy
@@ -121,12 +127,14 @@ BeRef::operator=(const BeRef& A)
       radius=A.radius;
       height=A.height;
       wallThick=A.wallThick;
+      wallThickLow=A.wallThickLow;
       lowVoidThick=A.lowVoidThick;
       topVoidThick=A.topVoidThick;
       targSepThick=A.targSepThick;
       refMat=A.refMat;
       wallMat=A.wallMat;
       targSepMat=A.targSepMat;
+      *InnerComp = *A.InnerComp;
     }
   return *this;
 }
@@ -154,6 +162,8 @@ BeRef::populate(const FuncDataBase& Control,
 {
   ELog::RegMethod RegA("BeRef","populate");
 
+  engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
+
     // Master values
   xStep=Control.EvalVar<double>(keyName+"XStep");
   yStep=Control.EvalVar<double>(keyName+"YStep");
@@ -163,7 +173,8 @@ BeRef::populate(const FuncDataBase& Control,
   
   radius=Control.EvalVar<double>(keyName+"Radius");   
   height=Control.EvalVar<double>(keyName+"Height");   
-  wallThick=Control.EvalVar<double>(keyName+"WallThick");   
+  wallThick=Control.EvalVar<double>(keyName+"WallThick");
+  wallThickLow=Control.EvalVar<double>(keyName+"WallThickLow");
 
   refMat=ModelSupport::EvalMat<int>(Control,keyName+"RefMat");   
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");   
@@ -196,6 +207,7 @@ BeRef::globalPopulate(const FuncDataBase& Control)
   radius=Control.EvalVar<double>(keyName+"Radius");   
   height=Control.EvalVar<double>(keyName+"Height");   
   wallThick=Control.EvalVar<double>(keyName+"WallThick");   
+  wallThickLow=Control.EvalVar<double>(keyName+"WallThickLow");   
 
   
   return;
@@ -245,9 +257,9 @@ BeRef::createSurfaces()
   
   // wall and all gaps
   ModelSupport::buildPlane(SMap,refIndex+105,Origin-
-			   Z*(lowVoidThick+targSepThick/2.0+wallThick),Z);  
+			   Z*(lowVoidThick+targSepThick/2.0+wallThickLow),Z);  
   ModelSupport::buildPlane(SMap,refIndex+106,Origin+
-			   Z*(topVoidThick+targSepThick/2.0+wallThick),Z);  
+			   Z*(topVoidThick+targSepThick/2.0+wallThickLow),Z);  
 
   ModelSupport::buildPlane(SMap,refIndex+115,Origin-
 			   Z*(lowVoidThick+targSepThick/2.0),Z);  
@@ -302,6 +314,7 @@ BeRef::createObjects(Simulation& System)
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
       setCell("lowWall",cellIndex-1);
       
+      if (wallThickLow>Geometry::zeroTol) {
       // divide layer
       Out=ModelSupport::getComposite(SMap,refIndex," -17 105 -115 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
@@ -310,7 +323,7 @@ BeRef::createObjects(Simulation& System)
       // divide layer
       Out=ModelSupport::getComposite(SMap,refIndex," -17 -106 116 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
-
+      }
 
       Out=ModelSupport::getComposite(SMap,refIndex," -17 -16 106 (7:6)");
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
@@ -354,6 +367,21 @@ BeRef::createLinks()
   FixedComp::setConnect(5,Origin+Z*(height/2.0+wallThick),Z);
   FixedComp::setLinkSurf(5,SMap.realSurf(refIndex+16));
 
+  FixedComp::setConnect(6,Origin-Z*(height/2.0),-Z);
+  FixedComp::setLinkSurf(6,-SMap.realSurf(refIndex+5));
+
+  FixedComp::setConnect(7,Origin+Z*(height/2.0),Z);
+  FixedComp::setLinkSurf(7,SMap.realSurf(refIndex+6));
+
+  FixedComp::setConnect(8,Origin+Y*(radius),-Y);
+  FixedComp::setLinkSurf(8,-SMap.realSurf(refIndex+7));
+
+  FixedComp::setConnect(9,Origin-Z*(lowVoidThick+targSepThick/2.0+wallThickLow),-Z);
+  FixedComp::setLinkSurf(9,-SMap.realSurf(refIndex+105));
+
+  FixedComp::setConnect(10,Origin+Z*(lowVoidThick+targSepThick/2.0+wallThickLow),Z);
+  FixedComp::setLinkSurf(10,SMap.realSurf(refIndex+106));
+
   return;
 }
 
@@ -381,6 +409,10 @@ BeRef::createAll(Simulation& System,
   createObjects(System);
   createLinks();
   insertObjects(System);       
+
+  if (engActive) {
+    InnerComp->createAll(System, *this);
+  }
 
   return;
 }

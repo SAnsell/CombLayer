@@ -418,17 +418,44 @@ CellMap::deleteCell(Simulation& System,
   return;
 }
 
+std::pair<int,double>
+CellMap::deleteCellWithData(Simulation& System,
+			    const std::string& Key,
+			    const size_t Index) 
+/*!
+    Delete a cell and then return material  
+    \param System :: Simulation to obtain cell from
+    \param Key :: KeyName for cell
+    \param Index :: Cell index
+    \return materialNumber : temperature
+  */
+{
+  ELog::RegMethod RegA("CellMap","deleteCell");
+
+  const int CN=removeCell(Key,Index);
+
+  if (!CN)
+    throw ColErr::InContainerError<int>(CN,"Key["+Key+"] zero cell");
+  const MonteCarlo::Object* ObjPtr=System.findQhull(CN);
+  if (!ObjPtr)
+    throw ColErr::InContainerError<int>(CN,"Cell Ptr zero");
+
+  std::pair<int,double> Out(ObjPtr->getMat(),ObjPtr->getTemp());
+  System.removeCell(CN);  // too complex to handle from ObjPtr
+  return Out;
+}
+
 int
 CellMap::removeCell(const std::string& Key,
 		    const size_t Index) 
-/*!
+ /*!
     Remove a cell number a cell
     \param Key :: KeyName for cell
     \param Index :: Cell index
     \return cell number removed
   */
 {
-  ELog::RegMethod RegA("CellMap","deleteCell");
+  ELog::RegMethod RegA("CellMap","removeCell");
 
   LCTYPE::iterator mc=Cells.find(Key);
   if (mc==Cells.end())
@@ -455,6 +482,6 @@ CellMap::removeCell(const std::string& Key,
   SplitUnits[SI][SU]=0;
   return outCN;
 }
-  
 
+ 
 }  // NAMESPACE attachSystem

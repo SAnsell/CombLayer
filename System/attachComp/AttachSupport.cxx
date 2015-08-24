@@ -583,7 +583,7 @@ checkIntersect(const ContainedComp& CC,const MonteCarlo::Object& CellObj,
    */
 {
   ELog::RegMethod RegA("AttachSupport","checkInsert");
-  ELog::debugMethod DegA;
+  //  ELog::debugMethod DegA;
   const std::vector<Geometry::Surface*>& SVec=CC.getSurfaces(); 
   std::vector<Geometry::Vec3D> Out;
   std::vector<Geometry::Vec3D>::const_iterator vc;
@@ -762,8 +762,7 @@ addToInsertForced(Simulation& System,
    Force CC into the BaseFC objects
   \param System :: Simulation to use
   \param CellA :: First cell number [to test]
-   \param CellB :: Last cell number  [to test]
-   
+  \param CellB :: Last cell number  [to test]
   \param CC :: ContainedComp object to add to the BaseFC
  */
 {

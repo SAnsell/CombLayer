@@ -58,6 +58,7 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Simulation.h"
+#include "debugMethod.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
@@ -204,9 +205,10 @@ ODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
 {
   // For output stream
   ELog::RegMethod RegA("ODIN","build");
+  ELog::debugMethod DA;
 
-  ELog::EM<<"Building ODIN on : "<<GItem.getKeyName()<<ELog::endDiag;
-  ELog::EM<<"REVERSE Z on axis"<<ELog::endDiag;
+  ELog::EM<<"\nBuilding ODIN on : "<<GItem.getKeyName()<<ELog::endDiag;
+  ELog::EM<<"REVERSE Z on axis"<<ELog::endDebug;
   setBeamAxis(GItem,1);
   
   BladeChopper->addInsertCell(bunkerObj.getCell("MainVoid"));
@@ -250,7 +252,7 @@ ODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
   PitA->createAll(System,GuideD->getKey("Guide0"),2,GuideCut.display());
 
   ELog::EM<<"PitA == "<<PitA->getCentre()
-	  <<" :: "<<PitA->getCentre().abs()<<ELog::endDiag;
+	  <<" :: "<<PitA->getCentre().abs()<<ELog::endDebug;
   
   GuidePitAFront->addInsertCell(PitA->getCells("MidLayer"));
   GuidePitAFront->addEndCut(PitA->getKey("Inner").getSignedLinkString(1));
@@ -274,7 +276,7 @@ ODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
 			    GuideE->getKey("Guide0"),-1);
 
   ELog::EM<<"GuideE exit point == "<<
-    GuideE->getKey("Guide0").getSignedLinkPt(2).abs()<<ELog::endDiag;
+    GuideE->getKey("Guide0").getSignedLinkPt(2).abs()<<ELog::endDebug;
 
   // SECOND CHOPPER PIT:
   // First chopper pit out of bunker
@@ -285,7 +287,7 @@ ODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
   PitB->createAll(System,GuideE->getKey("Guide0"),2,GuideCut.display());
 
   ELog::EM<<"PitB == "<<PitB->getCentre()
-	  <<" :: "<<PitB->getCentre().abs()<<ELog::endDiag;
+	  <<" :: "<<PitB->getCentre().abs()<<ELog::endDebug;
 
   GuidePitBFront->addInsertCell(PitB->getCells("MidLayer"));
   GuidePitBFront->addEndCut(PitB->getKey("Inner").getSignedLinkString(1));
@@ -315,12 +317,13 @@ ODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
   PitC->createAll(System,GuideF->getKey("Guide0"),2,GuideCut.display());
 
   ELog::EM<<"PitC == "<<PitC->getCentre()
-	  <<" :: "<<PitC->getCentre().abs()<<ELog::endDiag;
+	  <<" :: "<<PitC->getCentre().abs()<<ELog::endDebug;
 
   GuidePitCFront->addInsertCell(PitC->getCell("MidLayer"));
   GuidePitCFront->addEndCut(PitC->getKey("Inner").getSignedLinkString(1));
   GuidePitCFront->createAll(System,GuideF->getKey("Guide0"),2,
 			    GuideF->getKey("Guide0"),2);
+
 
   GuideG->addInsertCell(voidCell);
   GuideG->addInsertCell(PitC->getCell("MidLayer"));
@@ -333,7 +336,7 @@ ODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
   GuidePitCBack->addEndCut(PitC->getKey("Inner").getSignedLinkString(2));
   GuidePitCBack->createAll(System,GuideG->getKey("Guide0"),-1,
 			    GuideG->getKey("Guide0"),-1);
-
+  
 
   GuideCut=attachSystem::unionLink(GuideG->getKey("Shield"),{3,4,5,6});
   Cave->addInsertCell(voidCell);  
@@ -351,7 +354,7 @@ ODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
 
   BeamStop->addInsertCell(Cave->getCell("VoidMain"));
   BeamStop->createAll(System,GuideH->getKey("Guide0"),2);
-  
+
   return;
 }
 

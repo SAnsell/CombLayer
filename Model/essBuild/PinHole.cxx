@@ -102,10 +102,45 @@ PinHole::PinHole(const std::string& Key) :
   OR.addObject(CollB);
 
   OR.addObject(JawX);
-  OR.addObject(JawXZ);
-
-	  
+  OR.addObject(JawXZ);	  
  }
+
+PinHole::PinHole(const PinHole& A) : 
+  attachSystem::ContainedComp(A),
+  attachSystem::FixedOffset(A),
+  attachSystem::CellMap(A),
+  pinIndex(A.pinIndex),cellIndex(A.cellIndex),CollA(A.CollA),
+  CollB(A.CollB),JawX(A.JawX),JawXZ(A.JawXZ),radius(A.radius),
+  length(A.length)
+  /*!
+    Copy constructor
+    \param A :: PinHole to copy
+  */
+{}
+
+PinHole&
+PinHole::operator=(const PinHole& A)
+  /*!
+    Assignment operator
+    \param A :: PinHole to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      cellIndex=A.cellIndex;
+      CollA=A.CollA;
+      CollB=A.CollB;
+      JawX=A.JawX;
+      JawXZ=A.JawXZ;
+      radius=A.radius;
+      length=A.length;
+    }
+  return *this;
+}
 
 PinHole::~PinHole() 
   /*!
@@ -219,12 +254,11 @@ PinHole::createAll(Simulation& System,
   createObjects(System);
   createLinks();
   insertObjects(System);
-  
+
   CollA->setInsertCell(getCell("Void"));
   CollB->setInsertCell(getCell("Void"));
   CollA->createAll(System,FC,FIndex);
   CollB->createAll(System,FC,FIndex);
-
   JawX->setInsertCell(getCell("Void"));
   JawX->createAll(System,FC,FIndex);
 

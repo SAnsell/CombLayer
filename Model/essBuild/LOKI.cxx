@@ -41,6 +41,7 @@
 #include "RegMethod.h"
 #include "GTKreport.h"
 #include "OutputLog.h"
+#include "debugMethod.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "MatrixBase.h"
@@ -58,6 +59,7 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Simulation.h"
+
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
@@ -235,18 +237,17 @@ LOKI::build(Simulation& System,
 {
   // For output stream
   ELog::RegMethod RegA("LOKI","build");
-  ELog::EM<<"Building LOKI on : "<<GItem.getKeyName()<<ELog::endDiag;
+  ELog::EM<<"\nBuilding LOKI on : "<<GItem.getKeyName()<<ELog::endDiag;
 
   setBeamAxis(GItem,1);
-  
   BendA->addInsertCell(GItem.getCells("Void"));
   BendA->addInsertCell(bunkerObj.getCell("MainVoid"));
   //  BendA->addEndCut(GItem.getKey("Beam").getSignedLinkString(-2));
   BendA->createAll(System,GItem.getKey("Beam"),-1,
 		   GItem.getKey("Beam"),-1);
 
-  ELog::EM<<"LOW MODERATOR REVERSE"<<ELog::endDiag;
-  BendA->getKey("Guide0").reverseZ();
+  //  ELog::EM<<"LOW MODERATOR REVERSE"<<ELog::endDebug;
+  //  BendA->getKey("Guide0").reverseZ();
   
   // First straight section
   VacBoxA->addInsertCell(bunkerObj.getCell("MainVoid"));
@@ -375,11 +376,16 @@ LOKI::build(Simulation& System,
   GridA->addInsertCell(bunkerObj.getCell("MainVoid"));
   GridA->createAll(System,GuideE->getKey("Guide0"),2);
 
-  // First collimator
-  CollA->setInsertCell(bunkerObj.getCells("MainWall8"));
+  // First collimator [In WALL]
+  const attachSystem::FixedComp& GFC(GridA->getKey("Beam"));
+  const std::string BSector=
+    bunkerObj.calcSegment(System,GFC.getSignedLinkPt(2),
+			  GFC.getSignedLinkAxis(2));  
+  CollA->setInsertCell(bunkerObj.getCells(BSector));
   CollA->addInsertCell(bunkerObj.getCell("MainVoid"));
   CollA->addInsertCell(voidCell);
-  CollA->createAll(System,GridA->getKey("Beam"),2);
+  CollA->createAll(System,GFC,2);
+
   // Second grid cutter
   GridB->addInsertCell(voidCell);
   GridB->createAll(System,CollA->getKey("Beam"),2);

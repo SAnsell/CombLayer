@@ -26,6 +26,7 @@ class Simulation;
 
 namespace essSystem
 {
+  class BeRefInnerStructure;
 
 /*!
   \class BeRef
@@ -44,6 +45,9 @@ class BeRef : public attachSystem::ContainedComp,
   const int refIndex;             ///< Index of surface offset
   int cellIndex;                  ///< Cell index
 
+  int engActive;                  ///< Engineering active flag
+  std::shared_ptr<BeRefInnerStructure> InnerComp;   ///< Inner components inside Reflector (eng detail)
+
   double xStep;                   ///< X step
   double yStep;                   ///< Y step
   double zStep;                   ///< Z step
@@ -53,6 +57,7 @@ class BeRef : public attachSystem::ContainedComp,
   double radius;                  ///< Radius
   double height;                  ///< Height
   double wallThick;               ///< Wall thickness
+  double wallThickLow;            ///< Wall thickness of the side near the target wheel. Separated from wallThick in order to optimise wrapping with CapMod
 
   double lowVoidThick;            ///< Low void segment
   double topVoidThick;            ///< Top void segment

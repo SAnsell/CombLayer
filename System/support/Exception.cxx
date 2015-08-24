@@ -761,6 +761,68 @@ TypeConvError<T,U>::setOutLine()
   return;
 }
 
+
+  
+//--------------------
+// DynamicConv
+//--------------------
+
+
+DynamicConv::DynamicConv(const std::string& B,const std::string& D,
+			 const std::string& Place)  :
+  ExBase(0,Place),Base(B),Derived(D)
+  /*!
+    Constructor of an invalid line
+    \param B :: Base class
+    \param D :: Derived Class
+    \param Place :: Reason/Code item for error
+  */
+{
+  setOutLine();
+}
+
+DynamicConv::DynamicConv(const DynamicConv& A) :
+  ExBase(A),Base(A.Base),Derived(A.Derived)
+  /*!
+    Copy constructor
+    \param A :: Object to copy
+  */
+{}
+
+DynamicConv&
+DynamicConv::operator=(const DynamicConv& A) 
+  /*!
+    Assignment operator
+    \param A :: Object to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      ExBase::operator=(A);
+      Base=A.Base;
+      Derived=A.Derived;
+    }
+  return *this;
+}
+
+void
+DynamicConv::setOutLine()
+  /*!
+    Writes out the range and limits
+    to outline
+  */
+{
+  std::stringstream cx;
+  cx<<"DynamicConv:"<<getErr()<<"::\n"
+    <<Base<<"  ==>> "<<Derived;
+  OutLine=cx.str();
+  return;
+}
+
+
+  
+  
 // ----------------------------------------------
 //           CommandError
 // ----------------------------------------------

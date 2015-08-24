@@ -42,7 +42,8 @@ namespace essSystem
 */
 
 class PinHole : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,public attachSystem::CellMap
+  public attachSystem::FixedOffset,
+  public attachSystem::CellMap
 {
  private:
 

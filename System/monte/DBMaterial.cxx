@@ -979,6 +979,15 @@ DBMaterial::initMaterial()
   MObj.setMaterial(116,"LiqHelium","2004.50c 0.01882","",MLib);
   setMaterial(MObj);
 
+
+  // Material #117 Silicon Oxide 
+  MObj.setMaterial(117,"SiO2",
+		   "14028.70c 0.0245002 "
+		   "14029.70c 0.00124406 "
+		   "14030.70c 0.000820094 "
+		   "8016.70c 0.0531292 ","",MLib);
+  setMaterial(MObj);
+  
   return;
 }
 

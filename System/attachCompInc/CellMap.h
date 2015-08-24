@@ -71,6 +71,9 @@ class CellMap
 		       const FixedComp&,const long int) const;
 
   void deleteCell(Simulation&,const std::string&,const size_t =0);
+  std::pair<int,double>
+    deleteCellWithData(Simulation&,const std::string&,const size_t =0);
+  
   int removeCell(const std::string&,const size_t =0);
   
 };

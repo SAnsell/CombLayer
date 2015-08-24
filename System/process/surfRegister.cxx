@@ -273,7 +273,7 @@ surfRegister::realPtr(const int SN) const
 template<typename T>
 T*
 surfRegister::findPtr(const Geometry::Vec3D& A,const Geometry::Vec3D& B,
-		       const Geometry::Vec3D& C) const
+		      const Geometry::Vec3D& C) const
   /*!
     Given three points find the surface that matches
     \param A :: First point

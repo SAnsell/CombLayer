@@ -115,20 +115,27 @@ makeESS::makeESS() :
   
   LowAFL(new moderatorSystem::BasicFlightLine("LowAFlight")),
   LowBFL(new moderatorSystem::BasicFlightLine("LowBFlight")),
-  LowPre(new CylPreMod("LowPre")),
 
   LowSupplyPipe(new constructSystem::SupplyPipe("LSupply")),
   LowReturnPipe(new constructSystem::SupplyPipe("LReturn")),
 
+<<<<<<< HEAD
   TopAFL(new moderatorSystem::BasicFlightLine("TopAFlight")),
   TopBFL(new moderatorSystem::BasicFlightLine("TopBFlight")),
   TopPre(new CylPreMod("TopPre")),
+=======
+  TopPreMod(new DiskPreMod("TopPreMod")),
+  TopCapMod(new DiskPreMod("TopCapMod")),
+
+  TopAFL(new moderatorSystem::BasicFlightLine("TopAFlight")),
+  TopBFL(new moderatorSystem::BasicFlightLine("TopBFlight")),
+>>>>>>> origin/kbatMerge
 
   Bulk(new BulkModule("Bulk")),
   BulkLowAFL(new moderatorSystem::FlightLine("BulkLAFlight")),
   ShutterBayObj(new ShutterBay("ShutterBay")),
 
-  LowABunker(new Bunker("LowABunker"))
+  ABunker(new Bunker("ABunker"))
  /*!
     Constructor
  */
@@ -144,17 +151,21 @@ makeESS::makeESS() :
   
   OR.addObject(LowAFL);
   OR.addObject(LowBFL);
+<<<<<<< HEAD
   OR.addObject(LowPre);
+=======
+  OR.addObject(TopPreMod);
+  OR.addObject(TopCapMod);
+>>>>>>> origin/kbatMerge
 
   OR.addObject(TopAFL);
   OR.addObject(TopBFL);
-  OR.addObject(TopPre);
 
   OR.addObject(Bulk);
   OR.addObject(BulkLowAFL);
 
   OR.addObject(ShutterBayObj);
-  OR.addObject(LowABunker);
+  OR.addObject(ABunker);
 }
 
 
@@ -210,29 +221,37 @@ makeESS::createGuides(Simulation& System)
    */
 {
   ELog::RegMethod RegA("makeESS","createGuides");
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
 
   for(size_t i=0;i<4;i++)
     {
       std::shared_ptr<GuideBay> GB(new GuideBay("GuideBay",i+1));
+      OR.addObject(GB);
       GB->addInsertCell("Inner",ShutterBayObj->getMainCell());
       GB->addInsertCell("Outer",ShutterBayObj->getMainCell());
       GB->setCylBoundary(Bulk->getLinkSurf(2),
 			 ShutterBayObj->getLinkSurf(2));
+      
       if (i<2)
 	GB->createAll(System,*LowMod);  
-      //      if(i<2)
-      //
-      //      else
-	//	GB->createAll(System,*TopMod);  
+      else
+	GB->createAll(System,*TopMod);
+      
       GBArray.push_back(GB);
     }
+  GBArray[1]->outerMerge(System,*GBArray[2]);
+  GBArray[0]->outerMerge(System,*GBArray[3]);
+  for(size_t i=0;i<4;i++)
+    GBArray[i]->createGuideItems(System);
+
   return;
 }
 
 void
 makeESS::buildLowButterfly(Simulation& System)
   /*!
-    Build the butterfly moderators
+    Build the lower butterfly moderator
     \param System :: Stardard simulation
   */
 {
@@ -253,7 +272,11 @@ makeESS::buildLowButterfly(Simulation& System)
 void
 makeESS::buildTopButterfly(Simulation& System)
   /*!
+<<<<<<< HEAD
     Build the top butterfly moderator
+=======
+    Build the upper butterfly moderator
+>>>>>>> origin/kbatMerge
     \param System :: Stardard simulation
   */
 {
@@ -267,10 +290,18 @@ makeESS::buildTopButterfly(Simulation& System)
   BM->setRadiusX(Reflector->getRadius());
   TopMod=std::shared_ptr<constructSystem::ModBase>(BM);
   OR.addObject(TopMod);
+<<<<<<< HEAD
   TopMod->createAll(System,*Reflector,TopPreMod.get(),6);
   return;
 }
   
+=======
+  
+  TopMod->createAll(System,*Reflector,TopPreMod.get(),6);
+  return;
+}
+      
+>>>>>>> origin/kbatMerge
 void 
 makeESS::buildLowerPipe(Simulation& System,
 			const std::string& pipeType)
@@ -336,7 +367,6 @@ makeESS::makeBeamLine(Simulation& System,
 {
   ELog::RegMethod RegA("makeESS","makeBeamLine");
 
-
   const size_t NSet=IParam.setCnt("beamlines");
 
   for(size_t j=0;j<NSet;j++)
@@ -348,12 +378,8 @@ makeESS::makeBeamLine(Simulation& System,
 	  const std::string Btype=IParam.getValue<std::string>("beamlines",j,i);
 	  // FIND BUNKER HERE:::
 	  
-	  ELog::EM<<"Making beamline "<<BL
-		  <<" [" <<Btype<< "] "<<ELog::endDiag;
 	  makeESSBL BLfactory(BL,Btype);
-	  BLfactory.build(System,*LowABunker);
-	  ELog::EM<<"Finished beamline "<<BL
-      	      <<" [" <<Btype<< "] "<<ELog::endDiag;
+	  BLfactory.build(System,*ABunker);
 	    
 	}
     }
@@ -373,8 +399,8 @@ makeESS::makeBunker(Simulation& System,
 
   ELog::EM<<"Bunker == "<<bunkerType<<ELog::endDiag;
   
-  LowABunker->addInsertCell(74123);
-  LowABunker->createAll(System,*LowMod,*GBArray[0],2,true);
+  ABunker->addInsertCell(74123);
+  ABunker->createAll(System,*LowMod,*GBArray[0],2,true);
 
   return;
 }
@@ -414,16 +440,24 @@ makeESS::build(Simulation& System,
   
   makeTarget(System,targetType);
   Reflector->globalPopulate(System.getDataBase());
-    
+
+  // lower moderator
   LowPreMod->createAll(System,World::masterOrigin(),0,true,
 		       Target->wheelHeight()/2.0,
 		       Reflector->getRadius());
-  
+
+  TopPreMod->createAll(System,World::masterOrigin(),0,false,
+		       Target->wheelHeight()/2.0,
+		       Reflector->getRadius());
+
   buildLowButterfly(System);
+  buildTopButterfly(System);
   const double LMHeight=attachSystem::calcLinkDistance(*LowMod,5,6);
+  const double TMHeight=attachSystem::calcLinkDistance(*TopMod,5,6);
   // Cap moderator DOES not span whole unit
   LowCapMod->createAll(System,*LowMod,6,false,
    		       0.0,Reflector->getRadius());
+<<<<<<< HEAD
 
 
   TopPreMod->createAll(System,World::masterOrigin(),0,true,
@@ -438,28 +472,40 @@ makeESS::build(Simulation& System,
 
 
   
+=======
+  TopCapMod->createAll(System,*TopMod,6,false,
+   		       0.0,Reflector->getRadius());
+>>>>>>> origin/kbatMerge
   Reflector->createAll(System,World::masterOrigin(),
 		       Target->wheelHeight(),
 		       LowPreMod->getHeight()+LMHeight+LowCapMod->getHeight(),
 		       TopPreMod->getHeight()+TMHeight+TopCapMod->getHeight());
 
   Reflector->insertComponent(System,"targetVoid",*Target,1);
-
   Reflector->deleteCell(System,"lowVoid");
+  Reflector->deleteCell(System,"topVoid");
   Bulk->createAll(System,*Reflector,*Reflector);
 
   // Build flightlines after bulk
+  TopAFL->createAll(System,*TopMod,1,*Reflector,4,*Bulk,-3);
+  TopBFL->createAll(System,*TopMod,0,*Reflector,3,*Bulk,-3);
+
   LowAFL->createAll(System,*LowMod,0,*Reflector,4,*Bulk,-3);
   LowBFL->createAll(System,*LowMod,0,*Reflector,3,*Bulk,-3);   
 
+<<<<<<< HEAD
     // Build flightlines after bulk
   TopAFL->createAll(System,*LowMod,0,*Reflector,4,*Bulk,-3);
   TopBFL->createAll(System,*LowMod,0,*Reflector,3,*Bulk,-3);   
 
+=======
+>>>>>>> origin/kbatMerge
   attachSystem::addToInsertSurfCtrl(System,*Bulk,Target->getCC("Wheel"));
   attachSystem::addToInsertForced(System,*Bulk,Target->getCC("Shaft"));
   attachSystem::addToInsertForced(System,*Bulk,LowAFL->getCC("outer"));
   attachSystem::addToInsertForced(System,*Bulk,LowBFL->getCC("outer"));
+  attachSystem::addToInsertForced(System,*Bulk,TopAFL->getCC("outer"));
+  attachSystem::addToInsertForced(System,*Bulk,TopBFL->getCC("outer"));
 
 
   // Full surround object
@@ -472,7 +518,7 @@ makeESS::build(Simulation& System,
 
   createGuides(System);
   makeBunker(System,bunker);
-  
+
   // PROTON BEAMLINE
   
 
@@ -486,7 +532,6 @@ makeESS::build(Simulation& System,
 				    PBeam->getCC("Full"));
 
   makeBeamLine(System,IParam);
-
   return;
 }
 

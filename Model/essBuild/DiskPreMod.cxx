@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuild/DiskPreSimple.cxx
+ * File:   essBuild/DiskPreMod.cxx
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -67,8 +67,11 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "LayerComp.h"
+#include "CellMap.h"
 #include "ContainedComp.h"
+#include "CylFlowGuide.h"
 #include "DiskPreMod.h"
+
 
 namespace essSystem
 {
@@ -76,21 +79,30 @@ namespace essSystem
 DiskPreMod::DiskPreMod(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0),
-  attachSystem::FixedComp(Key,6),
+  attachSystem::FixedComp(Key,9),
+  attachSystem::CellMap(),  
   modIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(modIndex+1),NWidth(0)
+  cellIndex(modIndex+1),NWidth(0),
+  InnerComp(new CylFlowGuide(Key+"FlowGuide"))
+
   /*!
     Constructor
     \param Key :: Name of construction key
   */
-{}
+{
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+  OR.addObject(InnerComp);
+}
 
 DiskPreMod::DiskPreMod(const DiskPreMod& A) : 
   attachSystem::ContainedComp(A),
   attachSystem::LayerComp(A),attachSystem::FixedComp(A),
+  attachSystem::CellMap(A),
   modIndex(A.modIndex),cellIndex(A.cellIndex),radius(A.radius),
   height(A.height),depth(A.depth),width(A.width),
-  mat(A.mat),temp(A.temp)
+  mat(A.mat),temp(A.temp),
+  InnerComp(A.InnerComp->clone())
   /*!
     Copy constructor
     \param A :: DiskPreMod to copy
@@ -110,6 +122,7 @@ DiskPreMod::operator=(const DiskPreMod& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::LayerComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
       cellIndex=A.cellIndex;
       radius=A.radius;
       height=A.height;
@@ -117,7 +130,8 @@ DiskPreMod::operator=(const DiskPreMod& A)
       width=A.width;
       mat=A.mat;
       temp=A.temp;
-    }
+      *InnerComp=*A.InnerComp;
+   }
   return *this;
 }
 
@@ -150,6 +164,9 @@ DiskPreMod::populate(const FuncDataBase& Control,
   */
 {
   ELog::RegMethod RegA("DiskPreMod","populate");
+
+  ///< \todo Make this part of IParam NOT a variable
+  engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
 
   zStep=Control.EvalDefVar<double>(keyName+"ZStep",zShift);
   outerRadius=outRadius;
@@ -282,6 +299,9 @@ DiskPreMod::createObjects(Simulation& System)
       System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],
 				       Out+widthUnit+
 				       Inner.display()+Width.display()));
+      if (!i)
+	CellMap::setCell("Inner", cellIndex-1);
+
       SI+=10;
       Inner.procString(Out);
       Inner.makeComplement();
@@ -337,6 +357,16 @@ DiskPreMod::createLinks()
 
   FixedComp::setConnect(5,Origin+Z*height[nLayers-1],Z);
   FixedComp::setLinkSurf(5,SMap.realSurf(SI+6));
+
+  // inner links point inwards
+  FixedComp::setConnect(6,Origin+Y*radius[0],-Y);
+  FixedComp::setLinkSurf(6,-SMap.realSurf(modIndex+7));
+
+  FixedComp::setConnect(7,Origin-Z*depth[0],Z);
+  FixedComp::setLinkSurf(7,SMap.realSurf(modIndex+5));
+
+  FixedComp::setConnect(8,Origin+Z*height[0],-Z);
+  FixedComp::setLinkSurf(8,-SMap.realSurf(modIndex+6));
 
   return;
 }
@@ -483,8 +513,13 @@ DiskPreMod::createAll(Simulation& System,
   createObjects(System);
   createLinks();
 
-  insertObjects(System);       
+  insertObjects(System);
+
+  if (engActive) 
+    InnerComp->createAll(System,*this,7);
+  
+
   return;
 }
 
-}  // NAMESPACE essSystem
+}  // NAMESPACE essSystem 

@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   essBuildInc/DiskPreMod.h
  *
@@ -26,6 +26,7 @@ class Simulation;
 
 namespace essSystem
 {
+  class CylFlowGuide;
 /*!
   \class DiskPreMod
   \author S. Ansell
@@ -36,13 +37,14 @@ namespace essSystem
 
 class DiskPreMod : public attachSystem::ContainedComp,
     public attachSystem::LayerComp,
-    public attachSystem::FixedComp
+    public attachSystem::FixedComp,
+    public attachSystem::CellMap
 {
  private:
   
   const int modIndex;             ///< Index of surface offset
   int cellIndex;                  ///< Cell index
-
+  
   double zStep;                   ///< Step away from target
   double outerRadius;             ///< Outer radius of Be Zone
   
@@ -54,6 +56,9 @@ class DiskPreMod : public attachSystem::ContainedComp,
   std::vector<double> temp;           ///< Temperatures
 
   size_t NWidth;                      ///< Number of widths active
+  int engActive;                  ///< Engineering active flag
+  /// Flow guide pattern inside DiskPreMod (engineering detail)
+  std::shared_ptr<CylFlowGuide> InnerComp; 
   
   
   void populate(const FuncDataBase&,const double,const double);
