@@ -1,24 +1,24 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
-  * File:   essBuild/DiskPre.cxx
-  *
-  * Copyright (c) 2004-2015 by Konstantin Batkov
-  *
-  * This program is free software: you can redistribute it and/or modify
-  * it under the terms of the GNU General Public License as published by
-  * the Free Software Foundation, either version 3 of the License, or
-  * (at your option) any later version.
-  *
-  * This program is distributed in the hope that it will be useful,
-  * but WITHOUT ANY WARRANTY; without even the implied warranty of
-  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  * GNU General Public License for more details.
-  *
-  * You should have received a copy of the GNU General Public License
-  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
-  *
-  ****************************************************************************/
+ * File:   essBuild/CylFlowGuide.cxx
+ *
+ * Copyright (c) 2004-2015 by Konstantin Batkov
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ *
+ ****************************************************************************/
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -63,7 +63,6 @@
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "support.h"
-#include "SurInter.h"
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -77,7 +76,7 @@ namespace essSystem
 
 CylFlowGuide::CylFlowGuide(const std::string& Key) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedComp(Key,6),
+  attachSystem::FixedComp(Key,0),
   insIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(insIndex+1)
   /*!
@@ -236,12 +235,14 @@ CylFlowGuide::createObjects(Simulation& System,
   const int innerMat=MatInfo.first;
   const double innerTemp=MatInfo.second;
   std::string Out;
-  const std::string vertStr = FC.getLinkString(sideIndex+1)+FC.getLinkString(sideIndex+2);
+  const std::string vertStr = FC.getLinkString(sideIndex+1)+
+    FC.getLinkString(sideIndex+2);
   const std::string sideStr = FC.getLinkString(sideIndex);
   
   // central plate
   Out=ModelSupport::getComposite(SMap,insIndex," 3 -4 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0,Out+vertStr+sideStr));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,innerTemp,
+				   Out+vertStr+sideStr));
 
   // side plates
   int SI(insIndex);
@@ -264,50 +265,53 @@ CylFlowGuide::createObjects(Simulation& System,
 	  Out = ModelSupport::getComposite(SMap,SI,insIndex," 1 -2 -24M 4M ");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,
 					   Out+vertStr+sideStr));
-	  
-	  Out = ModelSupport::getComposite(SMap,SI,insIndex," 1 -2 ");
 	}
-      
-      else if (i<nBaffles)
+      else 
 	{
-	  Out = ModelSupport::getComposite(SMap, SI, insIndex, " 1 -2 -3M -7M ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0,Out+vertStr));
+	  Out = ModelSupport::getComposite(SMap,SI,insIndex, " 1 -2 -3M -7M ");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,innerMat,Out+vertStr));
 	  
 	  // x<0
-	  Out = ModelSupport::getComposite(SMap, SI, insIndex, " 1 -2 7M -3M ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,Out+vertStr+sideStr));
+	  Out = ModelSupport::getComposite(SMap,SI,insIndex, " 1 -2 7M -3M ");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,
+					   Out+vertStr+sideStr));
 	  // same but x>0 - divided by surf 3M to gain speed
-	  Out = ModelSupport::getComposite(SMap, SI, insIndex, " 1 -2 7M 3M ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,Out+vertStr+sideStr));
+	  Out = ModelSupport::getComposite(SMap,SI,insIndex, " 1 -2 7M 3M ");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,
+					   Out+vertStr+sideStr));
 	  
-	  Out = ModelSupport::getComposite(SMap, SI, insIndex, " 1 -2 4M -7M ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0,Out+vertStr));
+	  Out = ModelSupport::getComposite(SMap,SI,insIndex, " 1 -2 4M -7M ");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,innerTemp,
+					   Out+vertStr));
 	  
-	  Out = ModelSupport::getComposite(SMap, SI, insIndex, " 1 -2 ");
 	}
       
       // Splitting of innerCell (to gain speed)
       if (i==0)
 	{
-	  Out = ModelSupport::getComposite(SMap,SI,insIndex, " -1 -3M ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,Out+vertStr+sideStr));
-	  Out = ModelSupport::getComposite(SMap,SI,insIndex, " -1 4M ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,Out+vertStr+sideStr));
-	}
-      else if (i==nBaffles-1)
-	{
-	  Out = ModelSupport::getComposite(SMap,SI,insIndex, " 2 -3M ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,Out+vertStr+sideStr));
-	  Out = ModelSupport::getComposite(SMap,SI,insIndex, " 2 4M ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,Out+vertStr+sideStr));
+	  Out = ModelSupport::getComposite(SMap,SI,insIndex," -1 -3M ");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,
+					   Out+vertStr+sideStr));
+	  Out = ModelSupport::getComposite(SMap,SI,insIndex," -1 4M ");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,
+					   innerTemp,Out+vertStr+sideStr));
 	}
       else
 	{
 	  Out = ModelSupport::getComposite(SMap,SI-10,insIndex," -11 2 -3M");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,Out+vertStr+sideStr));
-
-	  Out = ModelSupport::getComposite(SMap,SI-10,insIndex," -11 2 -4M");
+	  ELog::EM<<" key["<<keyName<<"] i["<<i<<"]== "<<Out<<ELog::endDiag;
+	  
+	  Out = ModelSupport::getComposite(SMap,SI-10,insIndex," -11 2 4M");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,Out+vertStr+sideStr));
+
+	  if (i==nBaffles-1)
+	    {
+	      Out = ModelSupport::getComposite(SMap,SI,insIndex," 2 -3M ");
+	      System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,Out+vertStr+sideStr));
+	      Out = ModelSupport::getComposite(SMap,SI,insIndex," 2 4M ");
+	      System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,Out+vertStr+sideStr));
+	    }
 	}
       SI += 10;
     }
