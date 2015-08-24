@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuild/DiskPreSimple.cxx
+ * File:   essBuild/DiskPreMod.cxx
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -79,22 +79,25 @@ DiskPreMod::DiskPreMod(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0),
   attachSystem::FixedComp(Key,9),
-  attachSystem::CellMap(),
+  attachSystem::CellMap(),  
   modIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(modIndex+1),NWidth(0),
-  InnerComp(new DiskPreModFlowGuide(Key + "FlowGuide"))
+  InnerComp(new DiskPreModFlowGuide(Key+"FlowGuide"))
+
   /*!
     Constructor
     \param Key :: Name of construction key
   */
 {
-  ModelSupport::objectRegister& OR = ModelSupport::objectRegister::Instance();
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
   OR.addObject(InnerComp);
 }
 
 DiskPreMod::DiskPreMod(const DiskPreMod& A) : 
   attachSystem::ContainedComp(A),
-  attachSystem::LayerComp(A),attachSystem::FixedComp(A),attachSystem::CellMap(A),
+  attachSystem::LayerComp(A),attachSystem::FixedComp(A),
+  attachSystem::CellMap(A),
   modIndex(A.modIndex),cellIndex(A.cellIndex),radius(A.radius),
   height(A.height),depth(A.depth),width(A.width),
   mat(A.mat),temp(A.temp),
@@ -161,6 +164,7 @@ DiskPreMod::populate(const FuncDataBase& Control,
 {
   ELog::RegMethod RegA("DiskPreMod","populate");
 
+  ///< \todo Make this part of IParam NOT a variable
   engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
 
   zStep=Control.EvalDefVar<double>(keyName+"ZStep",zShift);
@@ -266,7 +270,7 @@ DiskPreMod::createSurfaces()
 void
 DiskPreMod::createObjects(Simulation& System)
   /*!
-    Create the vaned moderator
+    Create the disc component
     \param System :: Simulation to add results
   */
 {
@@ -510,9 +514,9 @@ DiskPreMod::createAll(Simulation& System,
 
   insertObjects(System);
 
-  if (engActive) {
-    InnerComp->createAll(System, *this);
-  }
+  if (engActive) 
+    InnerComp->createAll(System,*this,7);
+  
 
   return;
 }

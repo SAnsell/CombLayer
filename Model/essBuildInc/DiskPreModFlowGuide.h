@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/DiskPreModFlowGuide.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Konstatin Batkov/Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,8 +29,8 @@ namespace essSystem
 /*!
   \class DiskPreModFlowGuide
   \author K. Batkov
-  \version 1.0
-  \date Aug 2015
+  \version 1.1
+  \date August 2015
   \brief Inner structure of Be reflector (engineering details)
 */
 
@@ -42,17 +42,19 @@ class DiskPreModFlowGuide : public attachSystem::ContainedComp,
   const int insIndex;             ///< Index of surface offset
   int cellIndex;                  ///< Cell index
 
-  double wallThick;          ///< Wall thickness
-  int    wallMat;            ///< Wall material
+  double radius;                  ///< Main radius [from built object]
+  double wallThick;               ///< Wall thickness
+  int wallMat;                    ///< Wall material
 
-  double gapWidth;      ///< Gap width
+  double gapWidth;        ///< Gap to allow water to flow
   size_t nBaffles;        ///< Number of baffles
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
+  void createUnitVector(const attachSystem::FixedComp&,const size_t);
 
-  void createSurfaces(const attachSystem::FixedComp&);
-  void createObjects(Simulation&, attachSystem::FixedComp&);
+  void createSurfaces();
+  void createObjects(Simulation&,attachSystem::FixedComp&,
+		     const size_t);
   void createLinks();
 
  public:
@@ -63,7 +65,8 @@ class DiskPreModFlowGuide : public attachSystem::ContainedComp,
   virtual DiskPreModFlowGuide* clone() const;
   virtual ~DiskPreModFlowGuide();
 
-  void createAll(Simulation&,attachSystem::FixedComp&);
+  void createAll(Simulation&,attachSystem::FixedComp&,
+		 const long int);
 
 };
 
