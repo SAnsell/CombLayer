@@ -153,7 +153,7 @@ ChipIRInsert::operator=(const ChipIRInsert& A)
       nLayers=A.nLayers;
       cFrac=A.cFrac;
       cMat=A.cMat;
-      CDivideList=A.CDivideList;
+     CDivideList=A.CDivideList;
     }
   return *this;
 }
@@ -458,6 +458,7 @@ void
 ChipIRInsert::createCollimator(Simulation& System)
   /*!
     Create the cylindrical collimator
+    \param System :: Simuation to add
   */
 {
   ELog::RegMethod RegA("ChipIRInsert","createCollimator");

@@ -1211,8 +1211,8 @@ HeadRule::removeItem(const Rule* Target)
 void
 HeadRule::removeCommon()
   /*!
-    Objective is to remove common surface at the same
-    effective level
+    Objective is to remove the common surfaces at the same
+    effective level. i.e. 3 4 5 5: (101: 4) removes 5 but not 4.  
   */
 {
   ELog::RegMethod RegA("HeadRule","removeCommon");
@@ -1225,9 +1225,9 @@ HeadRule::removeCommon()
   std::stack<size_t> TreeLevel;
   TreeLine.push(HeadNode);
   TreeLevel.push(0);
-
+ 
   std::set<int>::const_iterator mc;
-  int activeLevel(0);
+  size_t activeLevel(0);
   //  int statePoint(HeadNode->type());
   
   while(!TreeLine.empty())
@@ -1235,18 +1235,18 @@ HeadRule::removeCommon()
       Rule* tmpA=TreeLine.top();
       activeLevel=TreeLevel.top();
       TreeLine.pop();
-      TreeLevel.pop();
+      TreeLevel.pop(); 
 
       // Process level:
       if (tmpA->getParent() && 
 	  tmpA->getParent()->type()!=tmpA->type())
-	{
-	  activeLevel++;
-	}
+	activeLevel++;
+
       const SurfPoint* SurX=dynamic_cast<const SurfPoint*>(tmpA);
       if (SurX)
 	{
-	  const int SN=(100*SurX->getSignKeyN())+activeLevel;
+	  const int SN=(100*SurX->getSignKeyN())+
+	    static_cast<int>(activeLevel);
 	  
 	  mc=SFound.find(SN);
 	  if (mc!=SFound.end())
@@ -1783,7 +1783,9 @@ HeadRule::calcSurfIntersection(const Geometry::Vec3D& Org,
       const double lambda=dPts[i];
       if (pAB!=mAB)  // out going positive surface
 	{
-	  const int signValue((pAB>0) ? 1 : -1);
+	  // previously used signValue but now gone to
+	  // distValue BUT not 100% sure if that is correct.
+	  //	  const int signValue((pAB>0) ? 1 : -1);
 	  const int distValue((lambda>0) ? 1 : -1);
 	  SNum.push_back(distValue*normD*NS);
 	  Pts.push_back(Org+Unit*lambda);

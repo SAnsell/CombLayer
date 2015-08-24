@@ -1365,8 +1365,8 @@ EssBunkerVariables(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("essVariables[F]","EssBunkerVariables");
 
-  Control.addVariable("ABunkerLeftPhase",70.0);
-  Control.addVariable("ABunkerRightPhase",70.0);
+  Control.addVariable("ABunkerLeftPhase",65.0);
+  Control.addVariable("ABunkerRightPhase",65.0);
   Control.addVariable("ABunkerLeftAngle",0.0);
   Control.addVariable("ABunkerRightAngle",0.0);
   Control.addVariable("ABunkerNSectors",11);
