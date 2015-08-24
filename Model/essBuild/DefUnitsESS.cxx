@@ -107,15 +107,11 @@ setESSFull(defaultConfig& A)
   A.setMultiOption("beamlines",0,"G1BLine1 ODIN");
   A.setMultiOption("beamlines",1,"G1BLine3 LOKI");
   A.setMultiOption("beamlines",2,"G1BLine5 NMX");
-<<<<<<< HEAD
-     
-=======
 
   A.setVar("G1BLine1Active",1);
   A.setVar("G1BLine3Active",1);
   A.setVar("G1BLine5Active",1);
-  
->>>>>>> origin/kbatMerge
+
   return;
 }
 
@@ -130,10 +126,6 @@ setESS(defaultConfig& A)
 
   A.setOption("lowMod","Butterfly");
   A.setMultiOption("beamlines",0,"G1BLine1 ODIN");
-<<<<<<< HEAD
-  A.setMultiOption("beamlines",1,"G1BLine3 LOKI");
-  A.setMultiOption("beamlines",2,"G1BLine5 NMX");
-=======
   A.setMultiOption("beamlines",1,"G4BLine3 LOKI");
   A.setMultiOption("beamlines",2,"G1BLine5 NMX");
 
@@ -141,7 +133,7 @@ setESS(defaultConfig& A)
   A.setVar("G4BLine3Active",1);
   A.setVar("G4BLine3Filled",1);
   A.setVar("G1BLine5Active",1);
->>>>>>> origin/kbatMerge
+
      
   return;
 }
