@@ -136,6 +136,7 @@ setESS(defaultConfig& A)
   A.setVar("G4BLine3Active",1);
   A.setVar("G4BLine3Filled",1);
   A.setVar("G1BLine5Active",1);
+  A.setVar("G1BLine7Filled",1);
   A.setVar("G1BLine7Active",1);
      
   return;

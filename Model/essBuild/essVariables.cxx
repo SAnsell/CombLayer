@@ -811,6 +811,8 @@ EssVariables(FuncDataBase& Control)
   ODINvariables(Control);
   LOKIvariables(Control);
   NMXvariables(Control);
+  VORvariables(Control);
+      
   EssButterflyModerator(Control);
   EssWheel(Control);
   EssBunkerVariables(Control);
