@@ -433,7 +433,7 @@ CellMap::deleteCellWithData(Simulation& System,
   ELog::RegMethod RegA("CellMap","deleteCell");
 
   const int CN=removeCell(Key,Index);
-  ELog::EM<<"Deleting cell "<<CN<<ELog::endDiag;
+
   if (!CN)
     throw ColErr::InContainerError<int>(CN,"Key["+Key+"] zero cell");
   const MonteCarlo::Object* ObjPtr=System.findQhull(CN);

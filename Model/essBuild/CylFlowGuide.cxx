@@ -298,24 +298,21 @@ CylFlowGuide::createObjects(Simulation& System,
 	}
       else
 	{
-	  Out = ModelSupport::getComposite(SMap,SI-10,insIndex," -11 2 -3M");
+	  Out = ModelSupport::getSetComposite(SMap,SI-10,insIndex," -11 2 -3M");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,Out+vertStr+sideStr));
-	  ELog::EM<<" key["<<keyName<<"] i["<<i<<"]== "<<Out<<ELog::endDiag;
 	  
-	  Out = ModelSupport::getComposite(SMap,SI-10,insIndex," -11 2 4M");
+	  Out = ModelSupport::getSetComposite(SMap,SI-10,insIndex," -11 2 4M");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,Out+vertStr+sideStr));
 
-	  if (i==nBaffles-1)
-	    {
-	      Out = ModelSupport::getComposite(SMap,SI,insIndex," 2 -3M ");
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,Out+vertStr+sideStr));
-	      Out = ModelSupport::getComposite(SMap,SI,insIndex," 2 4M ");
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,Out+vertStr+sideStr));
-	    }
 	}
       SI += 10;
     }
-  
+  // Tail end:
+  Out = ModelSupport::getComposite(SMap,SI-10,insIndex," 2 -3M ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,Out+vertStr+sideStr));
+  Out = ModelSupport::getComposite(SMap,SI-10,insIndex," 2 4M ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,Out+vertStr+sideStr));
+
   return; 
 }
   
