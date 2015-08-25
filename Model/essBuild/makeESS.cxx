@@ -229,6 +229,7 @@ makeESS::createGuides(Simulation& System)
 	GB->createAll(System,*TopMod);
       
       GBArray.push_back(GB);
+      attachSystem::addToInsertForced(System,*GB, Target->getCC("Wheel"));
     }
   GBArray[1]->outerMerge(System,*GBArray[2]);
   GBArray[0]->outerMerge(System,*GBArray[3]);
