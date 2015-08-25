@@ -160,7 +160,7 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinGBZStep",0.0);       
   Control.addVariable("odinGBXYAngle",0.0);       
   Control.addVariable("odinGBZAngle",0.0);       
-  Control.addVariable("odinGBLength",220.0);       
+  Control.addVariable("odinGBLength",475.0);       
   Control.addVariable("odinGBHeight",50.0);       
   Control.addVariable("odinGBDepth",50.0);       
   Control.addVariable("odinGBLeftWidth",20.0);       
@@ -181,12 +181,12 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinGB0HeightEnd",3.0);
   Control.addVariable("odinGB0WidthStart",7.0);
   Control.addVariable("odinGB0WidthEnd",10.0);
-  Control.addVariable("odinGB0Length",220.0);
+  Control.addVariable("odinGB0Length",475.0);
   Control.addVariable("odinGB0ZAngle",0.0);
 
   // BEAM INSERT:
-  Control.addVariable("odinBInsertHeight",14.0);
-  Control.addVariable("odinBInsertWidth",14.0);
+  Control.addVariable("odinBInsertHeight",20.0);
+  Control.addVariable("odinBInsertWidth",28.0);
   Control.addVariable("odinBInsertTopWall",1.0);
   Control.addVariable("odinBInsertLowWall",1.0);
   Control.addVariable("odinBInsertLeftWall",1.0);

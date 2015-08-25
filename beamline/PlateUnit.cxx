@@ -367,14 +367,6 @@ PlateUnit::createSurfaces(ModelSupport::surfRegister& SMap,
 	  const Geometry::Plane* PX=
 	    ModelSupport::buildPlane(SMap,SN,PA,PB,BA,Norm);
 	  const double DP=PX->getNormal().dotProd(Norm);
-	  ELog::EM<<"DP == "<<DP<<ELog::endDiag;
-	    
-	  if (j==0 && PX->side(Cent)>0)
-	    ELog::EM<<"Failed["<<i<<"] on "<<Cent<<" :: "<<*PX<<" :: "<<Norm<<ELog::endDiag;
-	  else
-	    ELog::EM<<"Succes["<<i<<"] on "<<Cent<<" :: "<<*PX
-		    <<" :: "<<Norm<<ELog::endDiag;
-
 	  SN++;
 	}
     }   

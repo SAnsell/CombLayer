@@ -83,6 +83,8 @@
 #include "BenderUnit.h"
 #include "GuideLine.h"
 
+#include "debugMethod.h"
+
 namespace beamlineSystem
 {
 
@@ -242,7 +244,6 @@ GuideLine::populate(const FuncDataBase& Control)
   // set frontcut based on offset:
   beamFrontCut=(fabs(beamYStep)>Geometry::zeroTol) ? 1 : 0;
   frontCut=(fabs(yStep)>Geometry::zeroTol) ? 1 : 0;
-      
   return;
 }
 
@@ -591,11 +592,17 @@ GuideLine::createObjects(Simulation& System,
       // front
       const std::string front= (!i) ? startSurf : 
 	ModelSupport::getComposite(SMap,frontNum," 1 ");
+      
       back=shapeBackSurf(i);
       for(size_t j=0;j<nShapeLayers;j++)
 	{
+
 	  shapeLayer=ModelSupport::getComposite(SMap,guideIndex,
 						shapeUnits[i]->getString(j));
+	  if (keyName=="lokiGC")
+	    ELog::EM<<"Key == "<<j<<" "<<shapeUnits[i]->getString(i)<<"\n"
+		    <<"   = "<<shapeLayer<<ELog::endDiag;
+
 	  Out=shapeLayer;
 	  Out+=front+back;
 	  if (j)
@@ -612,6 +619,7 @@ GuideLine::createObjects(Simulation& System,
       excludeCell.addUnion(ExOut);
       frontNum++;
     }
+
   if (activeShield)
     {
       // Outer steel

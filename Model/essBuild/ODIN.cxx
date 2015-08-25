@@ -235,13 +235,13 @@ ODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
     bunkerObj.calcSegment(System,GFC.getSignedLinkPt(2),
 			  GFC.getSignedLinkAxis(2));  
   BInsert->setInsertCell(bunkerObj.getCells(BSector));
-  ELog::EM<<"Bunker == "<<BSector<<ELog::endDiag;
   BInsert->createAll(System,GuideB->getKey("Guide0"),2,bunkerObj);
 
   // Guide in the bunker insert
   GuideC->addInsertCell(BInsert->getCell("Void"));
   GuideC->addEndCut(bunkerObj.getSignedLinkString(-2));
   GuideC->createAll(System,*BInsert,-1,*BInsert,-1);
+
   return;
   GuideD->addInsertCell(voidCell);
   GuideD->createAll(System,*BInsert,2,GuideC->getKey("Guide0"),2);
