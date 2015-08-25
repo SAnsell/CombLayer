@@ -95,6 +95,9 @@
 #include "ConicModerator.h"
 #include "essDBMaterial.h"
 #include "makeESSBL.h"
+// F5 collimators:
+#include "F5Calc.h"
+#include "F5Collimator.h"
 // BEAMLINES:
 #include "ODIN.h"
 #include "LOKI.h"
@@ -236,6 +239,8 @@ makeESS::createGuides(Simulation& System)
   for(size_t i=0;i<4;i++)
     GBArray[i]->createGuideItems(System);
 
+
+
   return;
 }
 
@@ -318,6 +323,29 @@ makeESS::buildLowerPipe(Simulation& System,
   return;
 }
 
+void makeESS::buildF5Collimator(Simulation& System, size_t nF5)
+/*!
+  Build F5 collimators
+  \param System :: Stardard simulation
+ */
+{
+  ELog::RegMethod RegA("makeESS", "buildF5Collimator");
+  ModelSupport::objectRegister& OR = ModelSupport::objectRegister::Instance();
+
+  for (size_t i=0; i<nF5; i++) {
+    std::shared_ptr<F5Collimator> F5(new F5Collimator(StrFunc::makeString("F", i*10+5).c_str()));
+
+    OR.addObject(F5);
+    F5->addInsertCell(74123); // !!! 74123=voidCell // SA: how to exclude F5 from any cells?
+    F5->createAll(System, World::masterOrigin());
+
+    attachSystem::addToInsertSurfCtrl(System, *ShutterBayObj, *F5);
+    attachSystem::addToInsertSurfCtrl(System, *ABunker, *F5);
+    F5array.push_back(F5);
+  }
+
+  return;
+}
 
 void
 makeESS::optionSummary(Simulation& System)
@@ -411,6 +439,8 @@ makeESS::build(Simulation& System,
   const std::string iradLine=IParam.getValue<std::string>("iradLineType");
   const std::string bunker=IParam.getValue<std::string>("bunkerType");
 
+  const size_t nF5 = IParam.getValue<int>("nF5");
+
   if (StrFunc::checkKey("help",lowPipeType,lowModType,targetType) ||
       StrFunc::checkKey("help",iradLine,topModType,""))
     {
@@ -472,6 +502,7 @@ makeESS::build(Simulation& System,
   attachSystem::addToInsertForced(System,*ShutterBayObj,
 				  Target->getCC("Shaft"));
 
+
   createGuides(System);
   makeBunker(System,bunker);
 
@@ -488,6 +519,8 @@ makeESS::build(Simulation& System,
 				    PBeam->getCC("Full"));
 
   makeBeamLine(System,IParam);
+
+  buildF5Collimator(System, nF5);
   return;
 }
 

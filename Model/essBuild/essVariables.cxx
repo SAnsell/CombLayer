@@ -58,6 +58,7 @@ namespace setVariable
   void EssSANSVariables(FuncDataBase&);
   void EssButterflyModerator(FuncDataBase&);
   void ESSWheel(FuncDataBase&);
+  void F5Variables(FuncDataBase&);
 
 void
 EssWheel(FuncDataBase& Control)
@@ -815,6 +816,7 @@ EssVariables(FuncDataBase& Control)
   EssWheel(Control);
   EssBunkerVariables(Control);
 
+  F5Variables(Control);
 
   Control.addVariable("sdefEnergy",2000.0);  
 
@@ -1467,6 +1469,37 @@ EssBunkerVariables(FuncDataBase& Control)
       
   
   return;
+}
+
+void
+F5Variables(FuncDataBase& Control)
+/*!
+  Create variables for all F5 collimators
+ */
+{
+    Control.addVariable("F5Length", 440);
+    Control.addVariable("F5XB", 10.58);
+    Control.addVariable("F5YB", -14.2);
+    Control.addVariable("F5ZB", 14.4);
+    Control.addVariable("F5XC", 10.47);
+    Control.addVariable("F5YC", -8.20);
+    Control.addVariable("F5ZC", 14.4);
+    Control.addVariable("F5ZG", 11.4);
+    Control.addVariable("F5X", 999.84);
+    Control.addVariable("F5Y", -17.45);
+    Control.addVariable("F5Z", 12.9);
+
+    Control.addVariable("F15Length", 440);
+    Control.addVariable("F15XB", 10.58);
+    Control.addVariable("F15YB", -14.2);
+    Control.addVariable("F15ZB", 14.4);
+    Control.addVariable("F15XC", 10.47);
+    Control.addVariable("F15YC", -8.20);
+    Control.addVariable("F15ZC", 14.4);
+    Control.addVariable("F15ZG", 11.4);
+    Control.addVariable("F15X", -999.84);
+    Control.addVariable("F15Y", -17.45);
+    Control.addVariable("F15Z", 12.9);
 }
   
 void

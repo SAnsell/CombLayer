@@ -65,7 +65,7 @@ namespace essSystem
   class BeamMonitor;
   class DiskPreMod;
   class Bunker;
-
+  class F5Collimator;
   class ODIN;
   /*!
     \class makeESS
@@ -125,6 +125,8 @@ class makeESS
     BLArray;  
 
   std::shared_ptr<Bunker> ABunker;  ///< Right bunker
+
+  std::vector<std::shared_ptr<F5Collimator>> F5array; ///< collimators for F5 tallies
   
   void topFlightLines(Simulation&);
   void lowFlightLines(Simulation&);
@@ -145,6 +147,8 @@ class makeESS
   
   void makeBeamLine(Simulation&,
 		    const mainSystem::inputParam&);
+
+  void buildF5Collimator(Simulation&, size_t);
 
   void optionSummary(Simulation&);
 

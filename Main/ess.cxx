@@ -111,6 +111,9 @@ main(int argc,char* argv[])
       mainSystem::inputParam IParam;
       createESSInputs(IParam);
       
+      IParam.regDefItem<int>("nF5", "nF5", 1,0);
+      IParam.setDesc("nF5","Number of F5 collimators to build. The collimators will be named as F5, F15, F25 etc. The corresponding variables must exist.");
+
       SimPtr=createSimulation(IParam,Names,Oname);
       if (!SimPtr) return -1;
       
