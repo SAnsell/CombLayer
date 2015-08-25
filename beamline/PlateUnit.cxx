@@ -53,6 +53,11 @@
 #include "ShapeUnit.h"
 #include "PlateUnit.h"
 
+#include "Rules.h"
+#include "Quadratic.h"
+#include "Plane.h"
+#include "HeadRule.h"
+
 namespace beamlineSystem
 {
 
@@ -325,9 +330,7 @@ PlateUnit::backPt(const size_t Index,const double T) const
   const Geometry::Vec3D& CPT(BPts[(Index % nCorner)]);
   return endPt+XVec*((1.0+T)*CPT.X())+ZVec*((1.0+T)*CPT.Z());
 }
-  
-
-
+ 
 void
 PlateUnit::createSurfaces(ModelSupport::surfRegister& SMap,
 			  const int indexOffset,
@@ -341,6 +344,11 @@ PlateUnit::createSurfaces(ModelSupport::surfRegister& SMap,
 {
   ELog::RegMethod RegA("PlateUnit","createSurfaces");
 
+  Geometry::Vec3D Cent;
+  for(size_t ii=0;ii<4;ii++)
+    Cent+=frontPt(ii,0);
+  Cent/=4.0;
+  
   for(size_t j=0;j<Thick.size();j++)
     {
       // Start from 1
@@ -356,8 +364,17 @@ PlateUnit::createSurfaces(ModelSupport::surfRegister& SMap,
 	  
 	  if (!rotateFlag)
 	    Norm*=-1;
-	  ModelSupport::buildPlane(SMap,SN,PA,PB,BA,Norm);
-	  
+	  const Geometry::Plane* PX=
+	    ModelSupport::buildPlane(SMap,SN,PA,PB,BA,Norm);
+	  const double DP=PX->getNormal().dotProd(Norm);
+	  ELog::EM<<"DP == "<<DP<<ELog::endDiag;
+	    
+	  if (j==0 && PX->side(Cent)>0)
+	    ELog::EM<<"Failed["<<i<<"] on "<<Cent<<" :: "<<*PX<<" :: "<<Norm<<ELog::endDiag;
+	  else
+	    ELog::EM<<"Succes["<<i<<"] on "<<Cent<<" :: "<<*PX
+		    <<" :: "<<Norm<<ELog::endDiag;
+
 	  SN++;
 	}
     }   
@@ -419,7 +436,7 @@ PlateUnit::getExclude(const size_t layerN) const
   */
 {
   ELog::RegMethod RegA("PlateUnit","getExclude");
-  
+
   if (!nCorner) return "";
   std::ostringstream cx;
   cx<<" ( ";

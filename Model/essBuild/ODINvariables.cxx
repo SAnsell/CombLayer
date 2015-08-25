@@ -193,7 +193,6 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinBInsertRightWall",1.0);
   Control.addVariable("odinBInsertWallMat","Stainless304");       
 
-
   // GUDE IN the beam insert
   Control.addVariable("odinGCXStep",0.0);       
   Control.addVariable("odinGCYStep",0.0);       
@@ -208,6 +207,7 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinGCFeMat","Void");       
   Control.addVariable("odinGCNShapes",1);       
   Control.addVariable("odinGCNShapeLayers",3);
+  Control.addVariable("odinGCActiveShield",0);
 
   Control.addVariable("odinGCLayerThick1",0.4);  // glass thick
   Control.addVariable("odinGCLayerThick2",1.5);
@@ -221,6 +221,7 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinGC0Width",9.0);
   Control.addVariable("odinGC0Length",220.0);
   Control.addVariable("odinGC0ZAngle",0.0);
+
 
   // GUIDE  Bunker wall to PIT A
   Control.addVariable("odinGDXStep",0.0);       

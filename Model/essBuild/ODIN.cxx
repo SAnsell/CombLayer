@@ -229,16 +229,20 @@ ODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
   GuideB->createAll(System,T0Chopper->getKey("Main"),2,
 		    T0Chopper->getKey("Beam"),2);
 
-  BInsert->setInsertCell(bunkerObj.getCells("MainWall10"));
+  // Make bunker insert
+  const attachSystem::FixedComp& GFC(GuideB->getKey("Guide0"));
+  const std::string BSector=
+    bunkerObj.calcSegment(System,GFC.getSignedLinkPt(2),
+			  GFC.getSignedLinkAxis(2));  
+  BInsert->setInsertCell(bunkerObj.getCells(BSector));
+  ELog::EM<<"Bunker == "<<BSector<<ELog::endDiag;
   BInsert->createAll(System,GuideB->getKey("Guide0"),2,bunkerObj);
 
   // Guide in the bunker insert
   GuideC->addInsertCell(BInsert->getCell("Void"));
   GuideC->addEndCut(bunkerObj.getSignedLinkString(-2));
   GuideC->createAll(System,*BInsert,-1,*BInsert,-1);
-
-
-
+  return;
   GuideD->addInsertCell(voidCell);
   GuideD->createAll(System,*BInsert,2,GuideC->getKey("Guide0"),2);
 

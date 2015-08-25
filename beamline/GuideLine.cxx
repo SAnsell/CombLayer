@@ -572,12 +572,6 @@ GuideLine::createObjects(Simulation& System,
   std::string Out;
   std::string startSurf;
 
-  if (keyName=="vorFA")
-    {
-      ELog::EM<<"Creating object "<<keyName<<ELog::endDiag;
-      ELog::EM<<"Y == "<<Y<<ELog::endDiag;
-      ELog::EM<<"O == "<<Origin<<ELog::endDiag;
-    }
 
   if (beamFrontCut)
     startSurf=ModelSupport::getComposite(SMap,guideIndex," 1001 ");
