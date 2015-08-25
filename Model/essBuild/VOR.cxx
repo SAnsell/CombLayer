@@ -158,7 +158,7 @@ VOR::build(Simulation& System,
   //  FocusA->addEndCut(GItem.getKey("Beam").getSignedLinkString(-2));
   FocusA->createAll(System,GItem.getKey("Beam"),-1,
 		    GItem.getKey("Beam"),-1);
-
+  FocusA->getKey("Guide0").reverseZ();
 
   return;
 }

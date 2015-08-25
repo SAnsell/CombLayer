@@ -57,7 +57,7 @@ namespace beamlineSystem
 {
 
 PlateUnit::PlateUnit(const int ON,const int LS)  :
-  ShapeUnit(ON,LS),CHPtr(0),nCorner(0)
+  ShapeUnit(ON,LS),CHPtr(0),nCorner(0),rotateFlag(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param LS :: Layer separation
@@ -68,7 +68,8 @@ PlateUnit::PlateUnit(const int ON,const int LS)  :
 PlateUnit::PlateUnit(const PlateUnit& A) : 
   ShapeUnit(A),
   CHPtr(A.CHPtr),XVec(A.XVec),YVec(A.YVec),ZVec(A.ZVec),
-  nCorner(A.nCorner),APts(A.APts),BPts(A.BPts),
+  nCorner(A.nCorner),rotateFlag(A.rotateFlag),
+  APts(A.APts),BPts(A.BPts),
   nonConvex(A.nonConvex)
   /*!
     Copy constructor
@@ -91,6 +92,7 @@ PlateUnit::operator=(const PlateUnit& A)
       YVec=A.YVec;
       ZVec=A.ZVec;
       nCorner=A.nCorner;
+      rotateFlag=A.rotateFlag;
       APts=A.APts;
       BPts=A.BPts;
       nonConvex=A.nonConvex;
@@ -126,6 +128,7 @@ PlateUnit::clear()
   delete CHPtr;
   CHPtr=0;
   nCorner=0;
+  rotateFlag=0;
   cells.clear();
   APts.clear();
   BPts.clear();
@@ -151,7 +154,7 @@ PlateUnit::findFirstPoint(const Geometry::Vec3D& testPt,
    Find the first point in BVec that equals testPt
    \param testPt :: First point to find
    \param BVec :: Vector of look up
-   \return 
+   \return position in BVec 
   */
 {
   ELog::RegMethod RegA("PlateUnit","findFirstPt");
@@ -212,6 +215,7 @@ PlateUnit::constructConvex()
       const Geometry::Vec3D N(AX*YVec);
       if (N.dotProd(Cent)>0)
 	{
+	  rotateFlag=1;
 	  // rotate : could you c++11 construct rotate
 	  for(size_t i=1;i<(nCorner+1)/2;i++)
 	    {
@@ -298,20 +302,20 @@ PlateUnit::addPairPoint(const Geometry::Vec3D& PA,
 }
 
 Geometry::Vec3D
-PlateUnit::frontPt(const size_t Index) const
+PlateUnit::frontPt(const size_t Index,const double T) const
   /*!
     Calculate the real point based on the offest
-    \param Index :: Index poitn
+    \param Index :: Index point
+    \param T :: Offset distance (T)
     \return real point 
    */
 {
   const Geometry::Vec3D& CPT(APts[(Index % nCorner)]);
-
-  return begPt+XVec*CPT.X()+ZVec*CPT.Z();
+  return begPt+XVec*((1.0+T)*CPT.X())+ZVec*((1.0+T)*CPT.Z());
 }
 
 Geometry::Vec3D
-PlateUnit::backPt(const size_t Index) const
+PlateUnit::backPt(const size_t Index,const double T) const
   /*!
     Calculate the real point based on the offest
     \param Index :: Index point
@@ -319,90 +323,10 @@ PlateUnit::backPt(const size_t Index) const
    */
 {
   const Geometry::Vec3D& CPT(BPts[(Index % nCorner)]);
-  return endPt+XVec*CPT.X()+ZVec*CPT.Z();
+  return endPt+XVec*((1.0+T)*CPT.X())+ZVec*((1.0+T)*CPT.Z());
 }
   
 
-std::pair<Geometry::Vec3D,Geometry::Vec3D>
-PlateUnit::frontPair(const size_t IndexA,const size_t IndexB,
-		     const double scale) const
-  /*!
-    Given two corners which define a normal to line.
-    Step out by the distance scale.
-    -- Converts both points into normal origin/X/Y
-    \param IndexA :: First corner
-    \param IndexB :: Second corner
-    \param scale :: Distance out from the surface
-    \return shifted points
-  */
-{
-  ELog::RegMethod RegA("PlateUnit","frontPair");
-
-  Geometry::Vec3D APoint=frontPt(IndexA);
-  Geometry::Vec3D BPoint=frontPt(IndexB);
-  return scaledPair(APoint,BPoint,scale);
-}
-
-std::pair<Geometry::Vec3D,Geometry::Vec3D>
-PlateUnit::backPair(const size_t IndexA,const size_t IndexB,
-		    const double scale) const
-/*!
-    Given two corners which define a normal to line.
-    Step out by the distance scale.
-    -- Converts both points into normal origin/X/Y
-    \param IndexA :: First corner
-    \param IndexB :: Second corner
-    \param scale :: Distance out from the surface
-    \return shifted points
-  */
-{
-  ELog::RegMethod RegA("PlateUnit","backPair");
-
-  Geometry::Vec3D APoint=backPt(IndexA);
-  Geometry::Vec3D BPoint=backPt(IndexB);
-  return scaledPair(APoint,BPoint,scale);
-}
-
-std::pair<Geometry::Vec3D,Geometry::Vec3D>
-PlateUnit::scaledPair(const Geometry::Vec3D& APoint,
-		      const Geometry::Vec3D& BPoint,
-		      const double scale) const
-  /*!
-    Determine a scaled pair
-    \param APoint :: First point 
-    \param BPoint :: Second point 
-    \return pair unit
-  */
-{
-  ELog::RegMethod RegA("PlateUnit","scaledPair");
-  std::pair<Geometry::Vec3D,Geometry::Vec3D> Out(APoint,BPoint);
-  // Note points go inward
-      
-  if (fabs(scale)>Geometry::zeroTol)
-    {
-      Geometry::Vec3D ASide=(BPoint-APoint).unit();
-      ASide=YVec*ASide;
-      Out.first-=ASide*scale;
-      Out.second-=ASide*scale;
-    }
-  return Out;
-}
-
-Geometry::Vec3D 
-PlateUnit::sideNorm(const std::pair<Geometry::Vec3D,
-		    Geometry::Vec3D>& touchPair) const
-  /*!
-    Calculate the normal leaving the side of the triangle
-    \param touchPair :: Pair of points making up surface (with +Z)
-    \return Normal
-  */
-{
-  ELog::RegMethod RegA("PlateUnit","sideNorm");
-
-  // Now get cross vector
-  const Geometry::Vec3D ASide=(touchPair.second-touchPair.first).unit();
-  return YVec*ASide;
-}
 
 void
 PlateUnit::createSurfaces(ModelSupport::surfRegister& SMap,
@@ -422,17 +346,18 @@ PlateUnit::createSurfaces(ModelSupport::surfRegister& SMap,
       // Start from 1
       int SN(indexOffset+offset+
 	     static_cast<int>(j)*layerSep+1);
-
       for(size_t i=0;i<nCorner;i++)
 	{
-	  const std::pair<Geometry::Vec3D,Geometry::Vec3D> PX=
-	    frontPair(i,i+1,Thick[j]);
-	  const std::pair<Geometry::Vec3D,Geometry::Vec3D> PY=
-	    backPair(i,i+1,Thick[j]);
-	  ModelSupport::buildPlane(SMap,SN,
-				   PX.first,PX.second,
-				   PY.first,
-				   sideNorm(PX));
+	  const Geometry::Vec3D PA=frontPt(i,Thick[j]);
+	  const Geometry::Vec3D PB=frontPt(i+1,Thick[j]);
+	  const Geometry::Vec3D BA=backPt(i,Thick[j]);
+	  Geometry::Vec3D Norm=(BA-PA)*(PB-PA);
+	  Norm.makeUnit();
+	  
+	  if (!rotateFlag)
+	    Norm*=-1;
+	  ModelSupport::buildPlane(SMap,SN,PA,PB,BA,Norm);
+	  
 	  SN++;
 	}
     }   

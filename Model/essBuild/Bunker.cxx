@@ -430,9 +430,11 @@ Bunker::calcSegment(const Simulation& System,
       const MonteCarlo::Object* SUnit=System.findQhull(cN);
       if (SUnit)
 	{
-	  const HeadRule& HR=SUnit->getHeadRule();
+	  HeadRule HR=SUnit->getHeadRule();
+	  HR.populateSurf();
 	  std::pair<Geometry::Vec3D,int> LCut=
 	    SurInter::interceptRuleConst(HR,TPoint,Axis);
+	  
 	  if (LCut.second)
 	    return SName;
 	}

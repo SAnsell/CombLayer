@@ -49,7 +49,8 @@ class PlateUnit : public ShapeUnit
   Geometry::Vec3D YVec;    ///< Current YVector
   Geometry::Vec3D ZVec;    ///< Current ZVector
 
-  size_t nCorner;                     ///< number of corner points  
+  size_t nCorner;                     ///< number of corner points
+  bool rotateFlag;                    ///< Rotation on points
   std::vector<Geometry::Vec3D> APts;  ///< Points of front shape
   std::vector<Geometry::Vec3D> BPts;  ///< Points of Tail shape
   std::vector<int> nonConvex;         ///< Points are non-convex
@@ -57,18 +58,8 @@ class PlateUnit : public ShapeUnit
   static size_t findFirstPoint(const Geometry::Vec3D&,
 			       const std::vector<Geometry::Vec3D>&); 
 
-  Geometry::Vec3D frontPt(const size_t) const;
-  Geometry::Vec3D backPt(const size_t) const;
-  std::pair<Geometry::Vec3D,Geometry::Vec3D>
-    frontPair(const size_t,const size_t,const double) const;
-  std::pair<Geometry::Vec3D,Geometry::Vec3D>
-    backPair(const size_t,const size_t,const double) const;
-
-  std::pair<Geometry::Vec3D,Geometry::Vec3D>
-    scaledPair(const Geometry::Vec3D&,const Geometry::Vec3D&,
-	       const double) const;
-  Geometry::Vec3D sideNorm(const std::pair<Geometry::Vec3D,
-			    Geometry::Vec3D>&) const;
+  Geometry::Vec3D frontPt(const size_t,const double) const;
+  Geometry::Vec3D backPt(const size_t,const double) const;
 
  public:
 

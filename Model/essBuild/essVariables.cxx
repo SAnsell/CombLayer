@@ -1469,7 +1469,7 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("ABunkerRightPhase",65.0);
   Control.addVariable("ABunkerLeftAngle",0.0);
   Control.addVariable("ABunkerRightAngle",0.0);
-  Control.addVariable("ABunkerNSectors",11);
+  Control.addVariable("ABunkerNSectors",13);
   
   Control.addVariable("ABunkerWallRadius",1300.0);
   Control.addVariable("ABunkerFloorDepth",100.0);

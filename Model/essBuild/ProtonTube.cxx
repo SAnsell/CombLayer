@@ -27,8 +27,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -309,7 +307,7 @@ ProtonTube::createAll(Simulation& System,
     }
   if (bIndex)
     {
-      const size_t lIndex(static_cast<size_t>(abs(bIndex))-1);
+      const size_t lIndex(static_cast<size_t>(std::abs(bIndex)-1));
       BSurf=(bIndex>0) ?
 	BulkFC.getLinkString(lIndex) : BulkFC.getBridgeComplement(lIndex) ;
       FixedComp::setLinkComponent(0,BulkFC,lIndex);

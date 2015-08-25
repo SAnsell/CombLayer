@@ -308,7 +308,6 @@ GuideLine::addGuideUnit(const size_t index,
   ELog::RegMethod RegA("GuideLine","addGuideUnit(outX,outY,outZ)");
 
   const std::string GKey="Guide"+StrFunc::makeString(index);
-
   attachSystem::FixedComp& guideFC=FixedGroup::addKey(GKey,2);
   
   const std::string PGKey=(index) ? 
@@ -337,7 +336,6 @@ GuideLine::checkRectangle(const double W,const double H) const
       const double TThick=
 	std::accumulate(layerThick.begin(),layerThick.end(),0.0);
       
-
       if ((TThick+W/2.0)>leftWidth || (TThick+W/2.0)>rightWidth)
 	ELog::EM<<"Guide["<<keyName<<"] rectangle width/thick "<<W<<":"<<TThick
 		<<" > ("<<leftWidth<<":"<<rightWidth<<")"<<ELog::endErr;
@@ -490,6 +488,7 @@ GuideLine::createUnitVector(const attachSystem::FixedComp& mainFC,
   guideFC.applyShift(beamXStep,beamYStep,beamZStep);
   guideFC.applyAngleRotate(beamXYAngle,beamZAngle);
 
+
   setDefault("GuideOrigin");
   return;
 }
@@ -502,7 +501,7 @@ GuideLine::createSurfaces()
   */
 {
   ELog::RegMethod RegA("GuideLine","createSurface");
-  
+
   FixedGroup::setDefault("Shield");
   const attachSystem::FixedComp& beamFC=
     FixedGroup::getKey("GuideOrigin");
@@ -526,7 +525,6 @@ GuideLine::createSurfaces()
     }
   // Note we ignore the length component of the last item 
   // and use the guide closer
-
   for(size_t i=0;i<nShapes;i++)
     {
       if (i)
@@ -573,6 +571,13 @@ GuideLine::createObjects(Simulation& System,
 
   std::string Out;
   std::string startSurf;
+
+  if (keyName=="vorFA")
+    {
+      ELog::EM<<"Creating object "<<keyName<<ELog::endDiag;
+      ELog::EM<<"Y == "<<Y<<ELog::endDiag;
+      ELog::EM<<"O == "<<Origin<<ELog::endDiag;
+    }
 
   if (beamFrontCut)
     startSurf=ModelSupport::getComposite(SMap,guideIndex," 1001 ");

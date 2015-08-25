@@ -166,8 +166,16 @@ NMX::build(Simulation& System,
   BendA->addInsertCell(bunkerObj.getCells("MainVoid"));
   BendA->createAll(System,GuideA->getKey("Guide0"),2,
 		   GuideA->getKey("Guide0"),2);
-  
 
+  // First collimator [In WALL]
+  const attachSystem::FixedComp& GFC(BendA->getKey("Guide0"));
+  
+   const std::string BSector=
+     bunkerObj.calcSegment(System,GFC.getSignedLinkPt(2),
+			   GFC.getSignedLinkAxis(2));
+      
+  //  BendA->addInsertCell(bunkerObj.getCells(BSector));
+  //  BendA->insertObjects(System);
   
   return;
 }

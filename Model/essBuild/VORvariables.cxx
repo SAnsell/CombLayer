@@ -63,8 +63,7 @@ VORvariables(FuncDataBase& Control)
   ELog::RegMethod RegA("VORvariables[F]","VORvariables");
 
   // Bender in section so use cut system
-  Control.addVariable("G1BLine2Filled",1);
-  Control.addVariable("G1BLine3Filled",1);
+  Control.addVariable("G1BLine7Filled",1);
   
   Control.addVariable("vorFAXStep",0.0);       
   Control.addVariable("vorFAYStep",0.0);       
@@ -86,11 +85,11 @@ VORvariables(FuncDataBase& Control)
   Control.addVariable("vorFALayerMat2","Void");       
 
   Control.addVariable("vorFA0TypeID","Tapper");
-  Control.addVariable("vorFA0HeightStart",12.0);
-  Control.addVariable("vorFA0HeightEnd",20.0);
-  Control.addVariable("vorFA0WidthStart",12.0);
-  Control.addVariable("vorFA0WidthEnd",20.0);
-  Control.addVariable("vorFA0Length",800.0);
+  Control.addVariable("vorFA0HeightStart",6.0);
+  Control.addVariable("vorFA0HeightEnd",6.0);
+  Control.addVariable("vorFA0WidthStart",6.0);
+  Control.addVariable("vorFA0WidthEnd",6.0);
+  Control.addVariable("vorFA0Length",400.0);
 
  
   return;
