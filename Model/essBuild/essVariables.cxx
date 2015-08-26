@@ -794,7 +794,7 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("GuideBayMidRadius",170.0);
   Control.addVariable("GuideBayHeight",32.0);
   Control.addVariable("GuideBayDepth",40.0);
-  Control.addVariable("GuideBayMat","Aluminium");
+  Control.addVariable("GuideBayMat","CastIron");
   Control.addVariable("GuideBay1XYangle",0.0); 
   Control.addVariable("GuideBay2XYangle",180.0); 
   Control.addVariable("GuideBay3XYangle",0.0); 
