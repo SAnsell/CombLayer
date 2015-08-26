@@ -90,7 +90,13 @@ namespace essSystem
 
 VOR::VOR() :
   vorAxis(new attachSystem::FixedComp("vorAxis",4)),
-  FocusA(new beamlineSystem::GuideLine("vorFA"))
+  FocusA(new beamlineSystem::GuideLine("vorFA")),
+  VacBoxA(new constructSystem::VacuumBox("vorVacA")),
+  DDisk(new constructSystem::DiskChopper("vorDBlade")),
+  DDiskHouse(new constructSystem::ChopperHousing("vorDBladeHouse")),
+  VPipeB(new constructSystem::VacuumPipe("vorPipeB")),
+  FocusB(new beamlineSystem::GuideLine("vorFB")),
+  BInsert(new BunkerInsert("vorBInsert"))
  /*!
     Constructor
  */
@@ -105,6 +111,12 @@ VOR::VOR() :
   OR.addObject(vorAxis);
 
   OR.addObject(FocusA);
+  OR.addObject(VacBoxA);
+  OR.addObject(DDisk);
+  OR.addObject(DDiskHouse);
+  OR.addObject(VPipeB);
+  OR.addObject(FocusB);
+  OR.addObject(BInsert);
 }
 
 VOR::~VOR()
@@ -160,6 +172,48 @@ VOR::build(Simulation& System,
 		    GItem.getKey("Beam"),-1);
   FocusA->getKey("Guide0").reverseZ();
 
+  // First straight section
+  VacBoxA->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VacBoxA->createAll(System,FocusA->getKey("Guide0"),2);
+  FocusA->addInsertCell(VacBoxA->getCells("Void"));
+  FocusA->insertObjects(System);
+  
+  // Double disk chopper
+  DDisk->addInsertCell(VacBoxA->getCell("Void",0));
+  DDisk->setCentreFlag(3);  // Z direction
+  DDisk->createAll(System,FocusA->getKey("Guide0"),2);
+
+  // Double disk chopper housing
+  DDiskHouse->addInsertCell(VacBoxA->getCells("Void"));
+  DDiskHouse->addInsertCell(VacBoxA->getCells("Box"));  // soon to become lid
+  DDiskHouse->addInsertCell(bunkerObj.getCell("MainVoid"));
+  DDiskHouse->createAll(System,DDisk->getKey("Main"),0);
+  DDiskHouse->insertComponent(System,"Void",*DDisk);
+
+  //  FocusB->addInsertCell(VacBoxA->getCells("Void"));
+  //FocusB->insertObjects(System);
+
+  // PIPE
+  VPipeB->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeB->setFront(*VacBoxA,2);
+  VPipeB->setBack(bunkerObj,1);
+  VPipeB->createAll(System,*VacBoxA,2);
+
+  FocusB->addInsertCell(VPipeB->getCell("Void"));
+  FocusB->addInsertCell(VacBoxA->getCells("Void"));
+  FocusB->createAll(System,DDisk->getKey("Beam"),2,
+		    DDisk->getKey("Beam"),2);
+
+  // Make bunker insert
+  const attachSystem::FixedComp& GFC(FocusB->getKey("Guide0"));
+  const std::string BSector=
+    bunkerObj.calcSegment(System,GFC.getSignedLinkPt(-1),
+			  GFC.getSignedLinkAxis(-1));  
+  BInsert->setInsertCell(bunkerObj.getCells(BSector));
+  BInsert->createAll(System,FocusB->getKey("Guide0"),-1,bunkerObj);
+
+  //  FocusB->addInsertCell(BInsert->getCell("Void"));
+  BInsert->insertComponent(System,"Void",*FocusB);
   return;
 }
 

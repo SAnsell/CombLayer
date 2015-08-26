@@ -333,7 +333,7 @@ PlateUnit::backPt(const size_t Index,const double T) const
     \return real point 
    */
 {
-  const Geometry::Vec3D& CPT(APts[Index % nCorner]);
+  const Geometry::Vec3D& CPT(BPts[Index % nCorner]);
 
   const double XScale(1.0+T/fabs(CPT.X()));
   const double ZScale(1.0+T/fabs(CPT.Z()));

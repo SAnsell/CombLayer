@@ -196,7 +196,8 @@ setDefRotation(const mainSystem::inputParam& IParam)
 			 45.00-180.0);
 	}
       else if (AItem=="ODIN" || AItem=="odin" ||
-	       AItem=="LOKI" || AItem=="loki")
+	       AItem=="LOKI" || AItem=="loki" ||
+	       AItem=="VOR" || AItem=="vor") 
 	{
 	  std::transform(AItem.begin(),AItem.end(),
 	    AItem.begin(),::tolower);
@@ -209,7 +210,7 @@ setDefRotation(const mainSystem::inputParam& IParam)
 	  // Y is beam direction -- Alignment along X
 	  const double angle=180.0*acos(GIPtr->getY()[0])/M_PI;
 	  MR.addRotation(GIPtr->getZ(),Geometry::Vec3D(0,0,0),
-			 angle);
+			 -angle);
 	}
       else 
 	retFlag=AItem;

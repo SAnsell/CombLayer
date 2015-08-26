@@ -194,7 +194,10 @@ VacuumPipe::getShiftedSurf(const HeadRule& HR,
   std::set<int> FS=HR.getSurfSet();
   for(const int& SN : FS)
     {
-      const Geometry::Plane* PPtr=SMap.realPtr<Geometry::Plane>(SN);
+      const Geometry::Surface* SPtr=SMap.realSurfPtr(SN);
+
+      const Geometry::Plane* PPtr=
+	dynamic_cast<const Geometry::Plane*>(SPtr);
       if (PPtr)
 	{
 	  if (SN*dFlag>0)
@@ -206,8 +209,23 @@ VacuumPipe::getShiftedSurf(const HeadRule& HR,
 	  
 	  return;
 	}
+      const Geometry::Cylinder* CPtr=
+	dynamic_cast<const Geometry::Cylinder*>(SPtr);
+      // Cylinder case:
+      if (CPtr)
+	{
+	  if (SN*dFlag>0)
+	    ModelSupport::buildCylinder
+	      (SMap,vacIndex+index,CPtr->getCentre()-Y*flangeLength,
+	       CPtr->getNormal(),CPtr->getRadius());
+	  else
+	    ModelSupport::buildCylinder
+	      (SMap,vacIndex+index,CPtr->getCentre()+Y*flangeLength,
+	       CPtr->getNormal(),CPtr->getRadius());
+	  return;
+	}
     }
-  throw ColErr::EmptyValue<int>("HeadRule contains no planes");
+  throw ColErr::EmptyValue<int>("HeadRule contains no planes/cylinder");
 } 
 
 void
@@ -351,7 +369,7 @@ VacuumPipe::setFront(const attachSystem::FixedComp& FC,
     frontSurf=FC.getMainRule(static_cast<size_t>(sideIndex-1));
   else
     {
-      frontSurf=FC.getMainRule(static_cast<size_t>(sideIndex-1));
+      frontSurf=FC.getMainRule(static_cast<size_t>(-sideIndex-1));
       frontSurf.makeComplement();
     }
   return;
@@ -376,7 +394,7 @@ VacuumPipe::setBack(const attachSystem::FixedComp& FC,
     backSurf=FC.getMainRule(static_cast<size_t>(sideIndex-1));
   else
     {
-      backSurf=FC.getMainRule(static_cast<size_t>(sideIndex-1));
+      backSurf=FC.getMainRule(static_cast<size_t>(-sideIndex-1));
       backSurf.makeComplement();
     }
   return;

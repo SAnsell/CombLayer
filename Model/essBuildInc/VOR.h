@@ -63,7 +63,19 @@ class VOR
 
   /// Elliptic forcus in bulkshield [m5]
   std::shared_ptr<beamlineSystem::GuideLine> FocusA;
-  
+  /// Vac box for first chopper
+  std::shared_ptr<constructSystem::VacuumBox> VacBoxA;
+  /// Double disk chopper
+  std::shared_ptr<constructSystem::DiskChopper> DDisk;
+  /// Double disk chopper Housing
+  std::shared_ptr<constructSystem::ChopperHousing> DDiskHouse;
+  /// Pipe between chopper 1 and the wall
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeB;
+  /// Elliptic forcus in bulkshield [m2.5]
+  std::shared_ptr<beamlineSystem::GuideLine> FocusB;
+  /// Bunker insert
+  std::shared_ptr<essSystem::BunkerInsert> BInsert;
+
   void setBeamAxis(const GuideItem&,const bool);
   
  public:
