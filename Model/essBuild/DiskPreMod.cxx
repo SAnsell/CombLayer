@@ -262,7 +262,10 @@ DiskPreMod::createSurfaces(const bool tiltSide)
       ModelSupport::buildCylinder(SMap,SI+7,Origin,Z,radius[i]);  
       // tilting:
       ModelSupport::buildCylinder(SMap,SI+8,Origin,Z,tiltRadius);  
-      ModelSupport::buildCone(SMap, SI+9, Origin+Z*(depth[i]+h), Z, 90-tiltAngle, -1);
+      if (tiltSide)
+	ModelSupport::buildCone(SMap, SI+9, Origin+Z*(depth[i]+h), Z, 90-tiltAngle, -1);
+      else
+	ModelSupport::buildCone(SMap, SI+9, Origin-Z*(depth[i]+h), Z, 90-tiltAngle, 1);
 
       ModelSupport::buildPlane(SMap,SI+5,Origin-Z*depth[i],Z);  
       ModelSupport::buildPlane(SMap,SI+6,Origin+Z*height[i],Z);
@@ -307,21 +310,17 @@ DiskPreMod::createObjects(Simulation& System, const bool tiltSide)
 
       if (tiltAngle>Geometry::zeroTol)
 	{
-	  if (tiltSide)
-	    Out = ModelSupport::getComposite(SMap, SI, " ((-8 5 -6) : (8 -7 5 -9 -6)) ");
-	  else
-	    Out = ModelSupport::getComposite(SMap, SI, " ((-8 5 -6) : (8 -7 5 -9 5)) ");
-
+	  Out = ModelSupport::getComposite(SMap, SI, " ((-8 5 -6) : (8 -7 5 -9 -6)) ");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i], Out+widthUnit+Inner.display()+Width.display()));
 	  if (i==nLayers-1)
 	    {
 	      if (tiltSide)
-		Out1 = ModelSupport::getComposite(SMap, SI, " -7 -6  9 ");
+		Out1 = ModelSupport::getComposite(SMap, SI, " -7 -6 9 ");
 	      else
-	      	Out1 = ModelSupport::getComposite(SMap, SI, " -7  5  9 ");
+		Out1 = ModelSupport::getComposite(SMap, SI, " -7  5 9 ");
 	      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0, Out1+widthUnit+Width.display()));
+	      }
 	    }
-	}
       else
 	{
 	  Out=ModelSupport::getComposite(SMap,SI," -7 5 -6 ");
