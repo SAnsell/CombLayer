@@ -222,6 +222,7 @@ GuideLine::populate(const FuncDataBase& Control)
       leftWidth=Control.EvalVar<double>(keyName+"LeftWidth");
       rightWidth=Control.EvalVar<double>(keyName+"RightWidth");
       feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
+      ELog::EM<<"Key == "<<keyName<<" "<<depth<<" "<<height<<ELog::endDebug;
     }
 
 
@@ -391,10 +392,10 @@ GuideLine::processShape(const FuncDataBase& Control)
 
       // Simple rectangle projection:
       // ALL PROJECTIONS IN ROTATED DISTANCE
+      const int GINumber(guideIndex+SUItem*static_cast<int>(index+1));
       if (typeID=="Rectangle")   
 	{
-
-	  PlateUnit* SU=new PlateUnit(SUItem*static_cast<int>(index+1),SULayer);
+	  PlateUnit* SU=new PlateUnit(GINumber,SULayer);
 	  const double H=Control.EvalVar<double>(keyName+NStr+"Height");
 	  const double W=Control.EvalVar<double>(keyName+NStr+"Width");
 
@@ -410,8 +411,8 @@ GuideLine::processShape(const FuncDataBase& Control)
 	  checkRectangle(W,H);
 	}
       else if (typeID=="Tapper")   
-	{	
-	  PlateUnit* SU=new PlateUnit(SUItem*static_cast<int>(index+1),SULayer);
+	{
+	  PlateUnit* SU=new PlateUnit(GINumber,SULayer);
 	  const double HA=Control.EvalVar<double>(keyName+NStr+"HeightStart");
 	  const double WA=Control.EvalVar<double>(keyName+NStr+"WidthStart");
 	  const double HB=Control.EvalVar<double>(keyName+NStr+"HeightEnd");
@@ -434,8 +435,7 @@ GuideLine::processShape(const FuncDataBase& Control)
 	}
       else if (typeID=="Bend")
 	{
-	  BenderUnit* BU=
-	    new BenderUnit(SUItem*static_cast<int>(index+1),SULayer);
+	  BenderUnit* BU=new BenderUnit(GINumber,SULayer);
 
 	  const double HA=Control.EvalVar<double>(keyName+NStr+"AHeight");
 	  const double HB=Control.EvalDefVar<double>(keyName+NStr+"BHeight",HA);
@@ -526,12 +526,14 @@ GuideLine::createSurfaces()
     }
   // Note we ignore the length component of the last item 
   // and use the guide closer
+  int GI(guideIndex+1000);
   for(size_t i=0;i<nShapes;i++)
     {
       if (i)
-	ModelSupport::buildPlane(SMap,guideIndex+10+static_cast<int>(i),
+	ModelSupport::buildPlane(SMap,GI+static_cast<int>(i),
 				   shapeUnits[i]->getBegin(),Y);
-      shapeUnits[i]->createSurfaces(SMap,guideIndex,layerThick);
+      shapeUnits[i]->createSurfaces(SMap,layerThick);
+      GI+=100;
     }
     
   return;
@@ -573,7 +575,6 @@ GuideLine::createObjects(Simulation& System,
   std::string Out;
   std::string startSurf;
 
-
   if (beamFrontCut)
     startSurf=ModelSupport::getComposite(SMap,guideIndex," 1001 ");
   else
@@ -596,18 +597,13 @@ GuideLine::createObjects(Simulation& System,
       back=shapeBackSurf(i);
       for(size_t j=0;j<nShapeLayers;j++)
 	{
-
-	  shapeLayer=ModelSupport::getComposite(SMap,guideIndex,
-						shapeUnits[i]->getString(j));
-	  if (keyName=="lokiGC")
-	    ELog::EM<<"Key == "<<j<<" "<<shapeUnits[i]->getString(i)<<"\n"
-		    <<"   = "<<shapeLayer<<ELog::endDiag;
+	  // Note that shapeUnits has own offset but
+	  shapeLayer=shapeUnits[i]->getString(SMap,j);
 
 	  Out=shapeLayer;
 	  Out+=front+back;
 	  if (j)
-	    Out+=ModelSupport::getComposite
-	      (SMap,guideIndex,shapeUnits[i]->getExclude(j-1));
+	    Out+=shapeUnits[i]->getExclude(SMap,j-1);
 
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,layerMat[j],0.0,Out));
 	}
@@ -622,6 +618,9 @@ GuideLine::createObjects(Simulation& System,
 
   if (activeShield)
     {
+      if (keyName=="odinGD")
+	ELog::EM<<"Key == "<<activeShield<<" "<<Out<<ELog::endDiag;
+	    
       // Outer steel
       if (!activeEnd)
 	Out=ModelSupport::getComposite(SMap,guideIndex," -2 3 -4 5 -6 ");
@@ -638,6 +637,7 @@ GuideLine::createObjects(Simulation& System,
     }
   else
     {
+	
       if (activeEnd)
 	addOuterSurf(startSurf+excludeCell.display());
       else

@@ -87,15 +87,16 @@ class PlateUnit : public ShapeUnit
 
   void addPrimaryPoint(const Geometry::Vec3D&);
   void addPairPoint(const Geometry::Vec3D&,const Geometry::Vec3D&);
-  int getOffset() const { return offset; }  ///< Access offset
 
   Geometry::Vec3D getBegAxis() const { return -YVec; }
   Geometry::Vec3D getEndAxis() const { return YVec; }
 
-  virtual std::string getString(const size_t) const;
-  virtual std::string getExclude(const size_t) const;
+  virtual std::string getString(const ModelSupport::surfRegister&,
+				const size_t) const;
+  virtual std::string getExclude(const ModelSupport::surfRegister&,
+				 const size_t) const;
 
-  virtual void createSurfaces(ModelSupport::surfRegister&,const int,
+  virtual void createSurfaces(ModelSupport::surfRegister&,
 			      const std::vector<double>&);
 };
 

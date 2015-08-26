@@ -50,6 +50,7 @@
 #include "surfRegister.h"
 #include "Surface.h"
 #include "generateSurf.h"
+#include "ModelSupport.h"
 #include "ShapeUnit.h"
 #include "PlateUnit.h"
 
@@ -272,7 +273,8 @@ PlateUnit::setXAxis(const Geometry::Vec3D& X,
   ZVec=XVec*YVec;
   if (ZVec.dotProd(Z)<0)
     ZVec*=-1.0;
-
+  ZVec.unit();
+  
   return;
 }
 
@@ -295,7 +297,7 @@ PlateUnit::addPairPoint(const Geometry::Vec3D& PA,
 			const Geometry::Vec3D& PB)
   /*!
     Add extra point
-    \param PA :: A  Point
+    \param PA :: A Point
     \param PB :: B Point
    */
 {
@@ -315,8 +317,12 @@ PlateUnit::frontPt(const size_t Index,const double T) const
     \return real point 
    */
 {
-  const Geometry::Vec3D& CPT(APts[(Index % nCorner)]);
-  return begPt+XVec*((1.0+T)*CPT.X())+ZVec*((1.0+T)*CPT.Z());
+  const Geometry::Vec3D& CPT(APts[Index % nCorner]);
+
+  const double XScale(1.0+T/fabs(CPT.X()));
+  const double ZScale(1.0+T/fabs(CPT.Z()));
+
+  return begPt+XVec*(CPT.X()*XScale)+ZVec*(CPT.Z()*ZScale);
 }
 
 Geometry::Vec3D
@@ -327,33 +333,31 @@ PlateUnit::backPt(const size_t Index,const double T) const
     \return real point 
    */
 {
-  const Geometry::Vec3D& CPT(BPts[(Index % nCorner)]);
-  return endPt+XVec*((1.0+T)*CPT.X())+ZVec*((1.0+T)*CPT.Z());
+  const Geometry::Vec3D& CPT(APts[Index % nCorner]);
+
+  const double XScale(1.0+T/fabs(CPT.X()));
+  const double ZScale(1.0+T/fabs(CPT.Z()));
+
+  return endPt+XVec*(CPT.X()*XScale)+ZVec*(CPT.Z()*ZScale);
 }
  
 void
 PlateUnit::createSurfaces(ModelSupport::surfRegister& SMap,
-			  const int indexOffset,
 			  const std::vector<double>& Thick)
   /*!
     Build the surfaces for the track
     \param SMap :: SMap to use
-    \param indexOffset :: Index offset
     \param Thick :: Thickness for each layer
    */
 {
   ELog::RegMethod RegA("PlateUnit","createSurfaces");
 
-  Geometry::Vec3D Cent;
-  for(size_t ii=0;ii<4;ii++)
-    Cent+=frontPt(ii,0);
-  Cent/=4.0;
   
   for(size_t j=0;j<Thick.size();j++)
     {
       // Start from 1
-      int SN(indexOffset+offset+
-	     static_cast<int>(j)*layerSep+1);
+      int SN(shapeIndex+layerSep*static_cast<int>(j)+1);
+
       for(size_t i=0;i<nCorner;i++)
 	{
 	  const Geometry::Vec3D PA=frontPt(i,Thick[j]);
@@ -364,9 +368,7 @@ PlateUnit::createSurfaces(ModelSupport::surfRegister& SMap,
 	  
 	  if (!rotateFlag)
 	    Norm*=-1;
-	  const Geometry::Plane* PX=
-	    ModelSupport::buildPlane(SMap,SN,PA,PB,BA,Norm);
-	  const double DP=PX->getNormal().dotProd(Norm);
+	  ModelSupport::buildPlane(SMap,SN,PA,PB,BA,Norm);
 	  SN++;
 	}
     }   
@@ -387,9 +389,11 @@ PlateUnit::inHull(const Geometry::Vec3D& testPt) const
 }
 
 std::string
-PlateUnit::getString(const size_t layerN) const
+PlateUnit::getString(const ModelSupport::surfRegister& SMap,
+		      const size_t layerN) const
   /*!
     Write string for layer number
+    \param SMap :: Surface register
     \param layerN :: Layer number
     \return inward string
   */
@@ -400,7 +404,8 @@ PlateUnit::getString(const size_t layerN) const
 
   std::ostringstream cx;
   bool bFlag(0);
-  const int lValue(offset+static_cast<int>(layerN)*layerSep);
+  // Start from 1
+  int SN(layerSep*static_cast<int>(layerN)+1);
   for(size_t i=0;i<nCorner;i++)
     {
       if (nonConvex[i] || nonConvex[(i+1) % nCorner])
@@ -413,32 +418,27 @@ PlateUnit::getString(const size_t layerN) const
 	  cx<< ((bFlag) ? ") " : " ");
 	  bFlag=0;
 	}
-      cx<<lValue+static_cast<int>(i+1);
+      cx<<SN++;
     }
   if (bFlag) cx<<")";
-  return cx.str();
+
+  return ModelSupport::getComposite(SMap,shapeIndex,cx.str());
 }
 
 std::string
-PlateUnit::getExclude(const size_t layerN) const
+PlateUnit::getExclude(const ModelSupport::surfRegister& SMap,
+		       const size_t layerN) const
   /*!
     Write string for layer number
+    \param SMap :: Surface register
     \param layerN :: Layer number
     \return inward string
   */
 {
   ELog::RegMethod RegA("PlateUnit","getExclude");
-
-  if (!nCorner) return "";
-  std::ostringstream cx;
-  cx<<" ( ";
-  cx<<-(offset+static_cast<int>(layerN*layerSep+1));
-  for(size_t i=1;i<nCorner;i++)
-    cx<<" : "<<-(offset+static_cast<int>(layerN*layerSep+i+1));
-
-  cx<<" ) ";
-  return cx.str();
+  HeadRule Out(getString(SMap,layerN));
+  Out.makeComplement();
+  return Out.display();
 }
-
   
 }  // NAMESPACE beamlineSystem

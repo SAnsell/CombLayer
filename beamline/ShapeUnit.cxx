@@ -55,17 +55,17 @@ namespace beamlineSystem
 {
 
 ShapeUnit::ShapeUnit(const int ON,const int LS)  :
-  offset(ON),layerSep(LS)
+  shapeIndex(ON),layerSep(LS)
   /*!
     Constructor BUT ALL variable are left unpopulated.
+    \param ON :: offset number [full objectRegsiter number]
     \param LS :: Layer separation
-    \param ON :: offset number
+
   */
 {}
 
-
 ShapeUnit::ShapeUnit(const ShapeUnit& A) : 
-  offset(A.offset),layerSep(A.layerSep),cells(A.cells),
+  shapeIndex(A.shapeIndex),layerSep(A.layerSep),cells(A.cells),
   begPt(A.begPt),endPt(A.endPt)
   /*!
     Copy constructor

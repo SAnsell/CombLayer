@@ -242,7 +242,6 @@ ODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
   GuideC->addEndCut(bunkerObj.getSignedLinkString(-2));
   GuideC->createAll(System,*BInsert,-1,*BInsert,-1);
 
-  return;
   GuideD->addInsertCell(voidCell);
   GuideD->createAll(System,*BInsert,2,GuideC->getKey("Guide0"),2);
 

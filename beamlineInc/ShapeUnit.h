@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   beamlineInc/ShapeUnit.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ class ShapeUnit
 {
  protected:
 
-  const int offset;            ///< Offset number
+  const int shapeIndex;        ///< Offset number
   const int layerSep;          ///< Layer seperation count
 
   std::vector<int> cells;      ///< Cell numbers
@@ -65,7 +65,7 @@ class ShapeUnit
   /// access cells
   const std::vector<int>& getCells() const { return cells; }
 
-  int getOffset() const { return offset; }  ///< Access offset
+  //  int getOffset() const { return offset; }  ///< Access offset
 
   /// Accessor 
   const Geometry::Vec3D& getBegin() const { return begPt; }
@@ -74,10 +74,12 @@ class ShapeUnit
   virtual Geometry::Vec3D getBegAxis() const =0; 
   virtual Geometry::Vec3D getEndAxis() const =0;
 
-  virtual std::string getString(const size_t) const =0;
-  virtual std::string getExclude(const size_t) const =0;
+  virtual std::string getString(const ModelSupport::surfRegister&,
+				const size_t) const =0;
+  virtual std::string getExclude(const ModelSupport::surfRegister&,
+				 const size_t) const =0;
 
-  virtual void createSurfaces(ModelSupport::surfRegister&,const int,
+  virtual void createSurfaces(ModelSupport::surfRegister&,
 		      const std::vector<double>&) =0;
 };
 
