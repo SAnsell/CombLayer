@@ -614,10 +614,7 @@ GuideLine::createObjects(Simulation& System,
     }
 
   if (activeShield)
-    {
-      if (keyName=="odinGD")
-	ELog::EM<<"Key == "<<activeShield<<" "<<Out<<ELog::endDiag;
-	    
+    {	    
       // Outer steel
       if (!activeEnd)
 	Out=ModelSupport::getComposite(SMap,guideIndex," -2 3 -4 5 -6 ");

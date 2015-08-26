@@ -174,8 +174,9 @@ NMX::build(Simulation& System,
      bunkerObj.calcSegment(System,GFC.getSignedLinkPt(2),
 			   GFC.getSignedLinkAxis(2));
       
-  //  BendA->addInsertCell(bunkerObj.getCells(BSector));
-  //  BendA->insertObjects(System);
+  BendA->addInsertCell(bunkerObj.getCells(BSector));
+  BendA->addInsertCell(voidCell);
+  BendA->insertObjects(System);
   
   return;
 }

@@ -789,12 +789,12 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("GuideBayZStep",0.0);
   Control.addVariable("GuideBayZangle",0.0);
   Control.addVariable("GuideBayViewAngle",128.0); 
-  Control.addVariable("GuideBayInnerHeight",11.0);
-  Control.addVariable("GuideBayInnerDepth",11.0);
+  Control.addVariable("GuideBayInnerHeight",20.0);
+  Control.addVariable("GuideBayInnerDepth",6.3);
   Control.addVariable("GuideBayMidRadius",170.0);
   Control.addVariable("GuideBayHeight",32.0);
   Control.addVariable("GuideBayDepth",40.0);
-  Control.addVariable("GuideBayMat","CastIron");
+  Control.addVariable("GuideBayMat","Aluminium");
   Control.addVariable("GuideBay1XYangle",0.0); 
   Control.addVariable("GuideBay2XYangle",180.0); 
   Control.addVariable("GuideBay3XYangle",0.0); 
@@ -919,7 +919,7 @@ EssButterflyModerator(FuncDataBase& Control)
 
   Control.addVariable("LowFlyRightLobeNLayers",4);
   Control.addVariable("LowFlyRightLobeThick1",0.3);
-  Control.addVariable("LowFlyRightLobeMat1","Aluminium20K");
+  Control.addVariable("LowFlyRightLobeMat1","Aluminium");
 
   Control.addVariable("LowFlyRightLobeHeight1",0.3);
   Control.addVariable("LowFlyRightLobeDepth1",0.3);
@@ -983,7 +983,7 @@ EssButterflyModerator(FuncDataBase& Control)
 
   Control.addVariable("TopFlyLeftLobeNLayers",4);
   Control.addVariable("TopFlyLeftLobeThick1",0.3);
-  Control.addVariable("TopFlyLeftLobeMat1","Aluminium20K");
+  Control.addVariable("TopFlyLeftLobeMat1","Aluminium");
 
   Control.addVariable("TopFlyLeftLobeHeight1",0.3);
   Control.addVariable("TopFlyLeftLobeDepth1",0.3);
@@ -1014,7 +1014,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopFlyFlowGuideBaseArmSep",0.1);
   Control.addVariable("TopFlyFlowGuideBaseOffset",Geometry::Vec3D(0,-10.7,0));
   Control.addVariable("TopFlyFlowGuideArmOffset",Geometry::Vec3D(0,-9,0));
-  Control.addVariable("TopFlyFlowGuideWallMat","Aluminium20K");
+  Control.addVariable("TopFlyFlowGuideWallMat","Aluminium");
   Control.addVariable("TopFlyFlowGuideWallTemp",20.0);
   
   Control.addVariable("TopFlyRightLobeXStep",-1.0);  
@@ -1033,7 +1033,7 @@ EssButterflyModerator(FuncDataBase& Control)
 
   Control.addVariable("TopFlyRightLobeNLayers",4);
   Control.addVariable("TopFlyRightLobeThick1",0.3);
-  Control.addVariable("TopFlyRightLobeMat1","Aluminium20K");
+  Control.addVariable("TopFlyRightLobeMat1","Aluminium");
 
   Control.addVariable("TopFlyRightLobeHeight1",0.3);
   Control.addVariable("TopFlyRightLobeDepth1",0.3);
@@ -1105,7 +1105,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowPreModMat4","Void");
 
   Control.addVariable("LowPreModFlowGuideWallThick", 0.3);
-  Control.addVariable("LowPreModFlowGuideWallMat", "Aluminium");
+  Control.addVariable("LowPreModFlowGuideWallMat","Aluminium");
   Control.addVariable("LowPreModFlowGuideNBaffles", 9);
   Control.addVariable("LowPreModFlowGuideGapWidth", 3);
 
@@ -1246,7 +1246,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopFlyFlowGuideBaseArmSep",0.1);
   Control.addVariable("TopFlyFlowGuideBaseOffset",Geometry::Vec3D(0,-10.7,0));
   Control.addVariable("TopFlyFlowGuideArmOffset",Geometry::Vec3D(0,-9,0));
-  Control.addVariable("TopFlyFlowGuideWallMat","Aluminium20K");
+  Control.addVariable("TopFlyFlowGuideWallMat","Aluminium");
   Control.addVariable("TopFlyFlowGuideWallTemp",20.0);
   
   Control.addVariable("TopFlyRightLobeXStep",-1.0);  
@@ -1518,8 +1518,8 @@ EssBeamLinesVariables(FuncDataBase& Control)
       Control.addVariable(baseKey+"BeamHeight",3.0);
       Control.addVariable(baseKey+"BeamWidth",7.6);
       Control.addVariable(baseKey+"NSegment",3);
-      Control.addVariable(baseKey+"Width1",22.0);
-      Control.addVariable(baseKey+"Height1",22.0);
+      Control.addVariable(baseKey+"Width1",16.0);
+      Control.addVariable(baseKey+"Height1",12.0);
       Control.addVariable(baseKey+"Width2",28.0);
       Control.addVariable(baseKey+"Height2",44.0);
       Control.addVariable(baseKey+"Width3",40.0);
