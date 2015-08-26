@@ -59,14 +59,16 @@ class DiskPreMod : public attachSystem::ContainedComp,
   int engActive;                  ///< Engineering active flag
   /// Flow guide pattern inside DiskPreMod (engineering detail)
   std::shared_ptr<CylFlowGuide> InnerComp; 
-  
+
+  double tiltAngle;                   ///< tilting angle
+  double tiltRadius;                  ///< radius where tilting starts
   
   void populate(const FuncDataBase&,const double,const double);
   void createUnitVector(const attachSystem::FixedComp&,const long int,
 			const bool);
 
-  void createSurfaces();
-  void createObjects(Simulation&);
+  void createSurfaces(const bool);
+  void createObjects(Simulation&, const bool);
   void createLinks();
 
  public:
@@ -87,7 +89,7 @@ class DiskPreMod : public attachSystem::ContainedComp,
     { return (depth.empty()) ? 0.0 : depth.back()+height.back(); }
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int,const bool,const double,const double);
+		 const long int,const bool,const double,const double, const bool);
 
 };
 

@@ -453,11 +453,11 @@ makeESS::build(Simulation& System,
   // lower moderator
   LowPreMod->createAll(System,World::masterOrigin(),0,true,
 		       Target->wheelHeight()/2.0,
-		       Reflector->getRadius());
+		       Reflector->getRadius(), false);
 
   TopPreMod->createAll(System,World::masterOrigin(),0,false,
 		       Target->wheelHeight()/2.0,
-		       Reflector->getRadius());
+		       Reflector->getRadius(), true);
 
   buildLowButterfly(System);
   buildTopButterfly(System);
@@ -465,9 +465,9 @@ makeESS::build(Simulation& System,
   const double TMHeight=attachSystem::calcLinkDistance(*TopMod,5,6);
   // Cap moderator DOES not span whole unit
   LowCapMod->createAll(System,*LowMod,6,false,
-   		       0.0,Reflector->getRadius());
+   		       0.0,Reflector->getRadius(), true);
   TopCapMod->createAll(System,*TopMod,6,false,
-   		       0.0,Reflector->getRadius());
+   		       0.0,Reflector->getRadius(), false);
   Reflector->createAll(System,World::masterOrigin(),
 		       Target->wheelHeight(),
 		       LowPreMod->getHeight()+LMHeight+LowCapMod->getHeight(),

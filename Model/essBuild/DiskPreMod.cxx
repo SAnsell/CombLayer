@@ -209,6 +209,10 @@ DiskPreMod::populate(const FuncDataBase& Control,
       W+=width[NWidth];
       NWidth++;
     } 
+
+  tiltAngle = Control.EvalDefVar<double>(keyName+"TiltAngle", 0.0); // must correspond to ZBase of the corresponding flight line !!! remove default or set it to zero
+  tiltRadius = Control.EvalDefVar<double>(keyName+"TiltRadius", 20.0); // must correspond to ZBase of the corresponding flight line !!! remove default or set it to zero
+
   return;
 }
 
@@ -238,9 +242,10 @@ DiskPreMod::createUnitVector(const attachSystem::FixedComp& refCentre,
 
 
 void
-DiskPreMod::createSurfaces()
+DiskPreMod::createSurfaces(const bool tiltSide)
   /*!
     Create planes for the silicon and Polyethene layers
+    \param tiltSide :: top/bottom side to tilt
   */
 {
   ELog::RegMethod RegA("DiskPreMod","createSurfaces");
@@ -249,11 +254,16 @@ DiskPreMod::createSurfaces()
   ModelSupport::buildPlane(SMap,modIndex+1,Origin,X);  
   ModelSupport::buildPlane(SMap,modIndex+2,Origin,Y);  
 
+  const double h = tiltRadius * tan(tiltAngle*M_PI/180.0); // cone must be shifted for the tilting to start at Y=tiltRadius
 
   int SI(modIndex);
   for(size_t i=0;i<nLayers;i++)
     {
       ModelSupport::buildCylinder(SMap,SI+7,Origin,Z,radius[i]);  
+      // tilting:
+      ModelSupport::buildCylinder(SMap,SI+8,Origin,Z,tiltRadius);  
+      ModelSupport::buildCone(SMap, SI+9, Origin+Z*(depth[i]+h), Z, 90-tiltAngle, -1);
+
       ModelSupport::buildPlane(SMap,SI+5,Origin-Z*depth[i],Z);  
       ModelSupport::buildPlane(SMap,SI+6,Origin+Z*height[i],Z);
       if (i<NWidth)
@@ -269,15 +279,16 @@ DiskPreMod::createSurfaces()
 }
 
 void
-DiskPreMod::createObjects(Simulation& System)
+DiskPreMod::createObjects(Simulation& System, const bool tiltSide)
   /*!
     Create the disc component
     \param System :: Simulation to add results
+    \param tiltSide :: top/bottom side to tilt
   */
 {
   ELog::RegMethod RegA("DiskPreMod","createObjects");
 
-  std::string Out;
+  std::string Out, Out1;
 
   int SI(modIndex);
   // Process even number of surfaces:
@@ -293,18 +304,38 @@ DiskPreMod::createObjects(Simulation& System)
 	  Width.makeComplement();
 	  widthUnit=ModelSupport::getComposite(SMap,SI," -3 4 ");
 	}
-      Out=ModelSupport::getComposite(SMap,SI," -7 5 -6 ");
 
-	
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],
-				       Out+widthUnit+
-				       Inner.display()+Width.display()));
+      if (tiltAngle>Geometry::zeroTol)
+	{
+	  if (tiltSide)
+	    Out = ModelSupport::getComposite(SMap, SI, " ((-8 5 -6) : (8 -7 5 -9 -6)) ");
+	  else
+	    Out = ModelSupport::getComposite(SMap, SI, " ((-8 5 -6) : (8 -7 5 -9 5)) ");
+
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i], Out+widthUnit+Inner.display()+Width.display()));
+	  if (i==nLayers-1)
+	    {
+	      if (tiltSide)
+		Out1 = ModelSupport::getComposite(SMap, SI, " -7 -6  9 ");
+	      else
+	      	Out1 = ModelSupport::getComposite(SMap, SI, " -7  5  9 ");
+	      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0, Out1+widthUnit+Width.display()));
+	    }
+	}
+      else
+	{
+	  Out=ModelSupport::getComposite(SMap,SI," -7 5 -6 ");
+      
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i], Out+widthUnit+Inner.display()+Width.display()));
+	}
+
       if (!i)
 	CellMap::setCell("Inner", cellIndex-1);
 
-      SI+=10;
       Inner.procString(Out);
       Inner.makeComplement();
+
+      SI+=10;
     }
 
   SI-=10;
@@ -493,7 +524,8 @@ DiskPreMod::createAll(Simulation& System,
 		      const long int sideIndex,
 		      const bool zRotate,
 		      const double VOffset,
-		      const double ORad)
+		      const double ORad,
+		      const bool tiltSide)
   /*!
     Extrenal build everything
     \param System :: Simulation
@@ -502,6 +534,7 @@ DiskPreMod::createAll(Simulation& System,
     \param zRotate :: Rotate to -ve Z
     \param VOffset :: Vertical offset from target
     \param ORad :: Outer radius of zone
+    \param tiltSide :: top/bottom side to be tilted
    */
 {
   ELog::RegMethod RegA("DiskPreMod","createAll");
@@ -509,8 +542,8 @@ DiskPreMod::createAll(Simulation& System,
   populate(System.getDataBase(),VOffset,ORad);
   createUnitVector(FC,sideIndex,zRotate);
 
-  createSurfaces();
-  createObjects(System);
+  createSurfaces(tiltSide);
+  createObjects(System, tiltSide);
   createLinks();
 
   insertObjects(System);
