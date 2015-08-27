@@ -626,8 +626,10 @@ void createESSInputs(inputParam& IParam)
   //  IParam.setValue("sdefEnergy",2503.0);    
   IParam.setValue("sdefType",std::string("ess"));  
   IParam.setValue("targetType",std::string("Wheel"));
-  
+
+  ///\todo change to database list [ordered]
   IParam.regFlag("essDB","essDB");
+  
   IParam.regDefItem<std::string>("lowMod","lowModType",1,std::string("lowMod"));
   IParam.regDefItem<std::string>("topMod","topModType",1,std::string("topMod"));
   IParam.regDefItem<std::string>("lowPipe","lowPipeType",1,std::string("side"));
