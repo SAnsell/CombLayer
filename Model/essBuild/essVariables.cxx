@@ -1239,16 +1239,6 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopFlyLeftLobeHeight3",0.0);
   Control.addVariable("TopFlyLeftLobeDepth3",0.0);
 
-  Control.addVariable("TopFlyFlowGuideBaseThick",0.2);
-  Control.addVariable("TopFlyFlowGuideBaseLen",8.5);
-  Control.addVariable("TopFlyFlowGuideArmThick",0.2);
-  Control.addVariable("TopFlyFlowGuideArmLen",8.0);
-  Control.addVariable("TopFlyFlowGuideBaseArmSep",0.1);
-  Control.addVariable("TopFlyFlowGuideBaseOffset",Geometry::Vec3D(0,-10.7,0));
-  Control.addVariable("TopFlyFlowGuideArmOffset",Geometry::Vec3D(0,-9,0));
-  Control.addVariable("TopFlyFlowGuideWallMat","Aluminium20K");
-  Control.addVariable("TopFlyFlowGuideWallTemp",20.0);
-  
   return;
 }
 
