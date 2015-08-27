@@ -1305,30 +1305,6 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopFlyRightWaterModMat","H2O");
   Control.addVariable("TopFlyRightWaterWallMat","Aluminium");
   Control.addVariable("TopFlyRightWaterModTemp",300.0);
-
-  Control.addVariable("TopPreModNLayers",5);
-  Control.addVariable("TopPreModHeight0",1.5);
-  Control.addVariable("TopPreModDepth0",1.5);
-  Control.addVariable("TopPreModRadius0",30.0);
-  Control.addVariable("TopPreModMat0","H2O");
-  Control.addVariable("TopPreModHeight1",0);
-  Control.addVariable("TopPreModDepth1",0);
-  Control.addVariable("TopPreModRadius1",0.3);
-  Control.addVariable("TopPreModMat1","Aluminium");
-  Control.addVariable("TopPreModHeight2",0);
-  Control.addVariable("TopPreModDepth2",0);
-  Control.Parse("BeRefRadius-TopPreModRadius0-TopPreModRadius1");
-  Control.addVariable("TopPreModRadius2");
-  Control.addVariable("TopPreModMat2","Stainless304");
-  Control.addVariable("TopPreModHeight3",0.3);
-  Control.addVariable("TopPreModDepth3",0.3);
-  Control.Parse("BeRefWallThick");
-  Control.addVariable("TopPreModRadius3");
-  Control.addVariable("TopPreModMat3","Aluminium");
-  Control.addVariable("TopPreModHeight4", 0.0);
-  Control.addVariable("TopPreModDepth4",  0.85);
-  Control.addVariable("TopPreModRadius4", 0.0);
-  Control.addVariable("TopPreModMat4","Void");
   
   return;
 }
