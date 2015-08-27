@@ -1300,12 +1300,6 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopFlyLeftWaterWallMat","Aluminium");
   Control.addVariable("TopFlyLeftWaterModTemp",300.0);
 
-  Control.addVariable("TopFlyRightWaterWidth",10.6672);
-  Control.addVariable("TopFlyRightWaterWallThick",0.347);
-  Control.addVariable("TopFlyRightWaterModMat","H2O");
-  Control.addVariable("TopFlyRightWaterWallMat","Aluminium");
-  Control.addVariable("TopFlyRightWaterModTemp",300.0);
-  
   return;
 }
 
