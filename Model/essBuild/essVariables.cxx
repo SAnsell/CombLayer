@@ -1196,15 +1196,6 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.Parse("LowCapModFlowGuideGapWidth");
   Control.addVariable("TopCapModFlowGuideGapWidth");
 
-  // TOP MODERATOR
-
-  Control.addVariable("TopFlyXStep",0.0);  
-  Control.addVariable("TopFlyYStep",0.0);  
-  Control.addVariable("TopFlyZStep",0.0);
-  Control.addVariable("TopFlyXYangle",90.0);
-  Control.addVariable("TopFlyZangle",0.0);
-  Control.addVariable("TopFlyTotalHeight",4.6);
-
   return;
 }
 
