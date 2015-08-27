@@ -401,7 +401,8 @@ makeESS::build(Simulation& System,
 
   int voidCell(74123);
   // Add extra materials to the DBdatabase
-  ModelSupport::addESSMaterial();
+  if (IParam.flag("essDB"))
+      ModelSupport::addESSMaterial();
 
   const std::string lowPipeType=IParam.getValue<std::string>("lowPipe");
   const std::string lowModType=IParam.getValue<std::string>("lowMod");

@@ -29,6 +29,11 @@ namespace attachSystem
   class CellMap;
 }
 
+namespace instrumentSystem
+{
+  class CylSample;
+}
+
 namespace constructSystem
 {  
   class Jaws;
@@ -44,7 +49,7 @@ namespace essSystem
 {  
   class GuideItem;
   class DHut;
-  class VacTank;
+  class DetectorTank;
 
   /*!
     \class VOR
@@ -110,6 +115,12 @@ class VOR
   std::shared_ptr<DHut> Cave;
   /// Guide entering the cave
   std::shared_ptr<beamlineSystem::GuideLine> FocusF;
+  
+  /// Detector tank
+  std::shared_ptr<DetectorTank> Tank;
+
+  /// Sample
+  std::shared_ptr<instrumentSystem::CylSample> Sample;
 
   
   void setBeamAxis(const GuideItem&,const bool);

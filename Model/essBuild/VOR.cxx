@@ -84,6 +84,8 @@
 #include "BunkerInsert.h"
 #include "ChopperPit.h"
 #include "DHut.h"
+#include "DetectorTank.h"
+#include "CylSample.h"
 
 #include "VOR.h"
 
@@ -117,7 +119,10 @@ VOR::VOR() :
   FocusE(new beamlineSystem::GuideLine("vorFE")),
 
   Cave(new DHut("vorCave")),
-  FocusF(new beamlineSystem::GuideLine("vorFF"))
+  FocusF(new beamlineSystem::GuideLine("vorFF")),
+
+  Tank(new DetectorTank("vorTank")),
+  Sample(new instrumentSystem::CylSample("vorSample"))
  /*!
     Constructor
  */
@@ -341,6 +346,12 @@ VOR::build(Simulation& System,
   Cave->insertComponent(System,"Void",*FocusF);
   Cave->insertComponent(System,"Steel",*FocusF);
   Cave->insertComponent(System,"Concrete",*FocusF);
+
+  Tank->addInsertCell(Cave->getCell("Void"));
+  Tank->createAll(System,FocusF->getKey("Guide0"),2);
+    
+  Sample->addInsertCell(Tank->getCell("SampleVoid"));
+  Sample->createAll(System,*Tank,0);
   
   return;
 }

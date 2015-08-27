@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   monteInc/DBMaterial.h
  *
@@ -95,7 +95,8 @@ class DBMaterial
   bool hasKey(const int) const;
   const std::string& getKey(const int) const;
   int getIndex(const std::string&) const;
-
+  void cloneMaterial(const std::string&,const std::string&);
+  
   void resetActive();
   void setActive(const int);
   bool isActive(const int) const;

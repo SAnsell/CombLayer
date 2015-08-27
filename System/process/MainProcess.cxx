@@ -625,8 +625,9 @@ void createESSInputs(inputParam& IParam)
   
   //  IParam.setValue("sdefEnergy",2503.0);    
   IParam.setValue("sdefType",std::string("ess"));  
-  IParam.setValue("targetType",std::string("Wheel"));  
-
+  IParam.setValue("targetType",std::string("Wheel"));
+  
+  IParam.regFlag("essDB","essDB");
   IParam.regDefItem<std::string>("lowMod","lowModType",1,std::string("lowMod"));
   IParam.regDefItem<std::string>("topMod","topModType",1,std::string("topMod"));
   IParam.regDefItem<std::string>("lowPipe","lowPipeType",1,std::string("side"));
@@ -635,6 +636,8 @@ void createESSInputs(inputParam& IParam)
 				 1,std::string("void"));
   IParam.regDefItem<std::string>("bunker","bunkerType",1,std::string("null"));
   IParam.regMulti("beamlines","beamlines",1000);
+  
+  IParam.setDesc("essDB","Allows the use of the ESS material database");
   
   IParam.setDesc("beamlines","Creates beamlines on the main model");
   IParam.setDesc("lowMod","Type of low moderator to be built");

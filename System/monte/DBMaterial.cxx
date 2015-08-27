@@ -987,10 +987,48 @@ DBMaterial::initMaterial()
 		   "14030.70c 0.000820094 "
 		   "8016.70c 0.0531292 ","",MLib);
   setMaterial(MObj);
-  
+
+  MObj.setMaterial(118, "Be5H2O",
+		   "1001.70c 0.0272983770406 "
+		   "4009.70c 0.959052434439 "
+		   "8016.70c 0.0136491885203 ", "", MLib);
+  //  MObj.setMXitem(4009,70,'c',"h","model");
+  MObj.setDensity(-1.8075);
+  setMaterial(MObj);
+
+  // CLONE Materials:
+  cloneMaterial("Stainless304","SS316L");
+  cloneMaterial("CastIron","Iron");
+  cloneMaterial("Aluminium","Aluminium20K");
+
   return;
 }
 
+void
+DBMaterial::cloneMaterial(const std::string& oldName,
+			  const std::string& extraName)
+  /*!
+    Clone a name for use
+    \param oldName :: Existing material
+    \param extraName :: new name
+  */
+{
+  ELog::RegMethod RegA("DBMaterial","cloneMaterial");
+
+  SCTYPE::const_iterator mc=IndexMap.find(oldName);
+  if (mc==IndexMap.end())
+    throw ColErr::InContainerError<std::string>
+      (oldName,"No material available");
+
+  SCTYPE::const_iterator nx=IndexMap.find(extraName);
+  if (nx!=IndexMap.end())
+    throw ColErr::InContainerError<std::string>
+      (extraName,"Material already present");
+  
+  IndexMap.emplace(extraName,mc->second);
+  return;
+}
+  
 void
 DBMaterial::setMaterial(const MonteCarlo::Material& MO)
   /*!

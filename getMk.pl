@@ -254,7 +254,7 @@ $gM->addDepUnit("cuBuild",  ["cuBlock","delft","visit","src","physics",
 
 $gM->addDepUnit("ess",      ["essBuild","visit","src","simMC",
 			     "beamline","physics","support",
-			     "input","source","monte","funcBase","log",
+			     "input","instrument","source","monte","funcBase","log",
 			     "tally","construct","crystal","transport",
 			     "scatMat","md5","endf","process","world","work",
 			     "monte","geometry","mersenne","src","xml","poly",

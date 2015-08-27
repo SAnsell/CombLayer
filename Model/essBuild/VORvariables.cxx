@@ -337,8 +337,8 @@ VORvariables(FuncDataBase& Control)
   Control.addVariable("vorFCLength",739.0);
   Control.addVariable("vorFCHeight",110.0);
   Control.addVariable("vorFCDepth",110.0);       
-  Control.addVariable("vorFCLeftWidth",90.0);       
-  Control.addVariable("vorFCRightWidth",90.0);       
+  Control.addVariable("vorFCLeftWidth",65.0);       
+  Control.addVariable("vorFCRightWidth",65.0);       
   Control.addVariable("vorFCFeMat","Concrete");       
 
   Control.addVariable("vorFCBeamYStep",0.0);
@@ -349,7 +349,7 @@ VORvariables(FuncDataBase& Control)
 
   Control.addVariable("vorFCLayerThick1",0.4);  // glass thick
   Control.addVariable("vorFCLayerThick2",1.5);
-  Control.addVariable("vorFCLayerThick3",50.0);
+  Control.addVariable("vorFCLayerThick3",25.0);
   
   Control.addVariable("vorFCLayerMat0","Void");
   Control.addVariable("vorFCLayerMat1","Glass");
@@ -371,11 +371,11 @@ VORvariables(FuncDataBase& Control)
   Control.addVariable("vorPitBVoidWidth",246.0);
   Control.addVariable("vorPitBVoidLength",22.0);
   
-  Control.addVariable("vorPitBFeHeight",70.0);
-  Control.addVariable("vorPitBFeDepth",60.0);
-  Control.addVariable("vorPitBFeWidth",60.0);
-  Control.addVariable("vorPitBFeFront",45.0);
-  Control.addVariable("vorPitBFeBack",70.0);
+  Control.addVariable("vorPitBFeHeight",40.0);
+  Control.addVariable("vorPitBFeDepth",30.0);
+  Control.addVariable("vorPitBFeWidth",30.0);
+  Control.addVariable("vorPitBFeFront",20.0);
+  Control.addVariable("vorPitBFeBack",30.0);
   Control.addVariable("vorPitBFeMat","Stainless304");
 
   
@@ -533,18 +533,19 @@ VORvariables(FuncDataBase& Control)
   Control.addVariable("vorFE0WidthEnd",1.6829);
   Control.addVariable("vorFE0HeightStart",3.311);
   Control.addVariable("vorFE0HeightEnd",2.0493);
-  Control.addVariable("vorFE0Length",141.0);   
+  Control.addVariable("vorFE0Length",101.0);   
 
     // HUT:
+  Control.addVariable("vorCaveXStep",80.0);
   Control.addVariable("vorCaveYStep",0.0);
   Control.addVariable("vorCaveVoidHeight",200.0);
   Control.addVariable("vorCaveVoidDepth",183.0);
-  Control.addVariable("vorCaveVoidWidth",400.0);
-  Control.addVariable("vorCaveVoidLength",800.0);
-  Control.addVariable("vorCaveVoidFrontCut",100.0);
-  Control.addVariable("vorCaveVoidBackCut",100.0);
-  Control.addVariable("vorCaveVoidFrontStep",100.0);
-  Control.addVariable("vorCaveVoidBackStep",100.0);
+  Control.addVariable("vorCaveVoidWidth",640.0);
+  Control.addVariable("vorCaveVoidLength",600.0);
+  Control.addVariable("vorCaveVoidFrontCut",160.0);
+  Control.addVariable("vorCaveVoidBackCut",90.0);
+  Control.addVariable("vorCaveVoidFrontStep",60.0);
+  Control.addVariable("vorCaveVoidBackStep",60.0);
 
   Control.addVariable("vorCaveFeThick",25.0);
   Control.addVariable("vorCaveConcThick",35.0);
@@ -558,7 +559,7 @@ VORvariables(FuncDataBase& Control)
   Control.addVariable("vorFFZStep",0.0);       
   Control.addVariable("vorFFXYAngle",0.0);       
   Control.addVariable("vorFFZAngle",0.0);
-  Control.addVariable("vorFFLength",101.0);  // 1.51m - 50cm
+  Control.addVariable("vorFFLength",251.0);  // 1.51m - 50cm
   Control.addVariable("vorFFBeamYStep",0.0);
  
   Control.addVariable("vorFFNShapes",1);       
@@ -575,8 +576,41 @@ VORvariables(FuncDataBase& Control)
   Control.addVariable("vorFF0TypeID","Rectangle");
   Control.addVariable("vorFF0Width",1.6829);
   Control.addVariable("vorFF0Height",2.0493);
-  Control.addVariable("vorFF0Length",101.0);
+  Control.addVariable("vorFF0Length",251.0);
+
+  // DetectorTank
+  Control.addVariable("vorTankXStep",0.0);
+  Control.addVariable("vorTankYStep",35.0);
+  Control.addVariable("vorTankZStep",0.0);
+  Control.addVariable("vorTankXYAngle",0.0);
+  Control.addVariable("vorTankZAngle",0.0);
+
+  Control.addVariable("vorTankNLayers",2.0);
+  Control.addVariable("vorTankInnerRadius",10.0);
+  Control.addVariable("vorTankOuterRadius",300.0);
+  Control.addVariable("vorTankHeight",100.0);
+  Control.addVariable("vorTankMidAngle",-40.0);
+  Control.addVariable("vorTankFrontThick",2.0);
+  Control.addVariable("vorTankInnerThick",2.0);
+  Control.addVariable("vorTankRoofThick",1.0);
+  Control.addVariable("vorTankBackThick",3.0);
+  Control.addVariable("vorTankWallMat","Stainless304");
+
   
+  // SAMPLE
+  Control.addVariable("vorSampleXStep",0.0);
+  Control.addVariable("vorSampleYStep",0.0);
+  Control.addVariable("vorSampleZStep",0.0);
+  Control.addVariable("vorSampleXYangle",0.0);
+  Control.addVariable("vorSampleZangle",0.0);
+  Control.addVariable("vorSampleNLayers",2.0);
+  Control.addVariable("vorSampleRadius1",0.5);
+  Control.addVariable("vorSampleRadius2",0.6);
+  Control.addVariable("vorSampleHeight1",2.0);
+  Control.addVariable("vorSampleHeight2",2.1);
+  Control.addVariable("vorSampleMaterial1","H2O");
+  Control.addVariable("vorSampleMaterial2","Aluminium");
+
   return;
 }
  
