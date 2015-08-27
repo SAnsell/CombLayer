@@ -1204,40 +1204,6 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopFlyXYangle",90.0);
   Control.addVariable("TopFlyZangle",0.0);
   Control.addVariable("TopFlyTotalHeight",4.6);
-  
-  Control.addVariable("TopFlyLeftLobeXStep",1.0);  
-  Control.addVariable("TopFlyLeftLobeYStep",0.0);  
-
-  Control.addVariable("TopFlyLeftLobeCorner1",Geometry::Vec3D(0,0.45,0));
-  Control.addVariable("TopFlyLeftLobeCorner2",Geometry::Vec3D(-14.4,-13.2,0));
-  Control.addVariable("TopFlyLeftLobeCorner3",Geometry::Vec3D(14.4,-13.2,0));
-  
-  Control.addVariable("TopFlyLeftLobeRadius1",5.0);
-  Control.addVariable("TopFlyLeftLobeRadius2",2.506);
-  Control.addVariable("TopFlyLeftLobeRadius3",2.506);
-
-  Control.addVariable("TopFlyLeftLobeModMat","ParaOrtho%5.0");  // LH05ortho
-  Control.addVariable("TopFlyLeftLobeModTemp",20.0);
-
-  Control.addVariable("TopFlyLeftLobeNLayers",4);
-  Control.addVariable("TopFlyLeftLobeThick1",0.3);
-  Control.addVariable("TopFlyLeftLobeMat1","Aluminium");
-
-  Control.addVariable("TopFlyLeftLobeHeight1",0.3);
-  Control.addVariable("TopFlyLeftLobeDepth1",0.3);
-  Control.addVariable("TopFlyLeftLobeTemp1",20.0);
-  
-  Control.addVariable("TopFlyLeftLobeThick2",0.5);
-  Control.addVariable("TopFlyLeftLobeMat2","Void");
-
-  Control.addVariable("TopFlyLeftLobeHeight2",0.5);
-  Control.addVariable("TopFlyLeftLobeDepth2",0.5);
-
-  Control.addVariable("TopFlyLeftLobeThick3",0.3);
-  Control.addVariable("TopFlyLeftLobeMat3","Aluminium");
-
-  Control.addVariable("TopFlyLeftLobeHeight3",0.0);
-  Control.addVariable("TopFlyLeftLobeDepth3",0.0);
 
   return;
 }
