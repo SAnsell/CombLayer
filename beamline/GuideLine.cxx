@@ -199,11 +199,11 @@ GuideLine::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("GuideLine","populate");
 
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYAngle");
-  zAngle=Control.EvalVar<double>(keyName+"ZAngle");
+  xStep=Control.EvalDefVar<double>(keyName+"XStep",0.0);
+  yStep=Control.EvalDefVar<double>(keyName+"YStep",0.0);
+  zStep=Control.EvalDefVar<double>(keyName+"ZStep",0.0);
+  xyAngle=Control.EvalDefVar<double>(keyName+"XYAngle",0.0);
+  zAngle=Control.EvalDefVar<double>(keyName+"ZAngle",0.0);
 
   beamXStep=Control.EvalDefVar<double>(keyName+"BeamXStep",xStep);
   beamYStep=Control.EvalDefVar<double>(keyName+"BeamYStep",yStep);

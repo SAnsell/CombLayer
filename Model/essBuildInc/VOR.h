@@ -43,7 +43,7 @@ namespace constructSystem
 namespace essSystem
 {  
   class GuideItem;
-  class LokiHut;
+  class DHut;
   class VacTank;
 
   /*!
@@ -75,7 +75,43 @@ class VOR
   std::shared_ptr<beamlineSystem::GuideLine> FocusB;
   /// Bunker insert
   std::shared_ptr<essSystem::BunkerInsert> BInsert;
+  /// Elliptic forcus in bulkshield [m2.5] 
+  std::shared_ptr<beamlineSystem::GuideLine> FocusBExtra;
 
+   /// Chopper pit for first outer bunker chopper
+  std::shared_ptr<constructSystem::ChopperPit> PitA;
+  /// Guide from Chopper to exterior
+  std::shared_ptr<beamlineSystem::GuideLine> GuidePitAFront;
+  /// Guide from Chopper to exterior
+  std::shared_ptr<beamlineSystem::GuideLine> GuidePitABack;
+  /// Guide from Chopper to exterior
+  std::shared_ptr<constructSystem::DiskChopper> ChopperA;
+
+  /// Elliptic focus in bulkshield [m2.5]
+  std::shared_ptr<beamlineSystem::GuideLine> FocusC;
+
+  /// Chopper pit for first outer bunker chopper
+  std::shared_ptr<constructSystem::ChopperPit> PitB;
+  /// Guide from Chopper to exterior
+  std::shared_ptr<beamlineSystem::GuideLine> GuidePitBFront;
+  /// Guide from Chopper to exterior
+  std::shared_ptr<beamlineSystem::GuideLine> GuidePitBBack;
+  /// Guide from Chopper to exterior
+  std::shared_ptr<constructSystem::DiskChopper> ChopperB;
+
+  /// Elliptic focus in bulkshield [m2.5]
+  std::shared_ptr<beamlineSystem::GuideLine> FocusD;
+
+  /// Elliptic focus in bulkshield [m2.5]
+  std::shared_ptr<beamlineSystem::GuideLine> FocusE;
+
+
+  /// Cave
+  std::shared_ptr<DHut> Cave;
+  /// Guide entering the cave
+  std::shared_ptr<beamlineSystem::GuideLine> FocusF;
+
+  
   void setBeamAxis(const GuideItem&,const bool);
   
  public:

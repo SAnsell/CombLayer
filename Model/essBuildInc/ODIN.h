@@ -78,7 +78,7 @@ class ODIN
 
   /// Chopper pit for first outer bunker chopper
   std::shared_ptr<constructSystem::ChopperPit> PitA;
-  /// Guide from Chopper to exterior
+  /// Guide to Chopper to exterior
   std::shared_ptr<beamlineSystem::GuideLine> GuidePitAFront;
   /// Guide from Chopper to exterior
   std::shared_ptr<beamlineSystem::GuideLine> GuidePitABack;
