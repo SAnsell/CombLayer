@@ -106,6 +106,17 @@ void addESSMaterial()
   MObj.setDensity(-7.85);
   MDB.resetMaterial(MObj);
 
+  // Homogeneous mixture of Iron and 10% volume H2O
+  MObj.setMaterial(2610, "Iron10H2O",
+                   " 01001.70c 0.077534884 "
+                   " 08016.70c 0.038767442 "
+                   " 26054.70c 0.051652129 "
+                   " 26056.70c 0.810827964 "
+                   " 26057.70c 0.018725554 "
+                   " 26058.70c 0.002492027 ", "lwtr.10t fe56.12t", MLib);
+  MObj.setDensity(-7.17);
+  MDB.resetMaterial(MObj);
+
 
   // ESS  SS316L
   MObj.setMaterial(2636, "SS316L",

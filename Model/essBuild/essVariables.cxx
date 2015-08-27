@@ -751,13 +751,13 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("BulkRadius2",65.0);
   Control.addVariable("BulkHeight2",75.0);
   Control.addVariable("BulkDepth2",75.0);
-  Control.addVariable("BulkMat2","Stainless304");           // stainless
+  Control.addVariable("BulkMat2","Iron10H2O");        // SA: using hand-made mixture because CL can't generate volume fractions
 
   // Bulk steel layer [No individual guides]
   Control.addVariable("BulkRadius3",200.0);
   Control.addVariable("BulkHeight3",200.0);
   Control.addVariable("BulkDepth3",200.0);
-  Control.addVariable("BulkMat3","CastIron");           // Bulk Steel
+  Control.addVariable("BulkMat3","Iron10H2O");        // SA: using hand-made mixture because CL can't generate volume fractions
 
 
   // BULK FLIGHT VOID
