@@ -1093,7 +1093,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowPreModDepth2",0);
   Control.Parse("BeRefRadius-LowPreModRadius0-LowPreModRadius1");
   Control.addVariable("LowPreModRadius2");
-  Control.addVariable("LowPreModMat2","Stainless304");
+  Control.addVariable("LowPreModMat2","Iron10H2O");
   Control.addVariable("LowPreModHeight3",0.3);
   Control.addVariable("LowPreModDepth3",0.3);
   Control.Parse("BeRefWallThick");
@@ -1122,7 +1122,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopPreModDepth2",0);
   Control.Parse("BeRefRadius-TopPreModRadius0-TopPreModRadius1");
   Control.addVariable("TopPreModRadius2");
-  Control.addVariable("TopPreModMat2","Stainless304");
+  Control.addVariable("TopPreModMat2","Iron10H2O");
   Control.addVariable("TopPreModHeight3",0.3);
   Control.addVariable("TopPreModDepth3",0.3);
   Control.Parse("BeRefWallThick");
