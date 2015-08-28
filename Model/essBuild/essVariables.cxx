@@ -465,8 +465,10 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("TopBFlightAngleXY2", 60.0);  // Angle out
   Control.addVariable("TopBFlightXYangle", 0.0);
   Control.addVariable("TopBFlightZangle", 0.0);
-  Control.addVariable("TopBFlightAngleZTop", 0.0);  // Step down angle
-  Control.addVariable("TopBFlightAngleZBase", 0.0); // Step up angle
+  Control.Parse("TopAFlightAngleZTop");
+  Control.addVariable("TopBFlightAngleZTop");  // Step down angle
+  Control.Parse("TopAFlightAngleZBase");
+  Control.addVariable("TopBFlightAngleZBase"); // Step up angle
   Control.addVariable("TopBFlightHeight", 4.6);     // Full height = TopFlyTotalHeight
   Control.addVariable("TopBFlightWidth", 10.7);     // Full width
   Control.addVariable("TopBFlightNLiner", 1);     
@@ -1190,7 +1192,8 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopCapModRadius3");
   //  Control.Parse("BeRefWallMat");
   Control.addVariable("TopCapModMat3", "Aluminium");
-  Control.addVariable("TopCapModTiltAngle", 2.0);
+  Control.Parse("TopAFlightAngleZBase");
+  Control.addVariable("TopCapModTiltAngle");
   //  Control.addVariable("TopCapModZAngle", 180);
 
 
@@ -1335,6 +1338,8 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopPreModDepth4",  0.85);
   Control.addVariable("TopPreModRadius4", 0.0);
   Control.addVariable("TopPreModMat4","Void");
+  Control.Parse("TopAFlightAngleZTop");
+  Control.addVariable("TopPreModTiltAngle");
   
   return;
 }
