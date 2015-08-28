@@ -118,7 +118,8 @@ BasicFlightLine::populate(const FuncDataBase& Control)
   anglesZ[0]=Control.EvalVar<double>(keyName+"AngleZTop");
   anglesZ[1]=Control.EvalVar<double>(keyName+"AngleZBase");
 
-  height=Control.EvalVar<double>(keyName+"Height");
+  if (height<Geometry::zeroTol)
+    height=Control.EvalVar<double>(keyName+"Height"); // otherwise it was set by setHeight()
   width=Control.EvalVar<double>(keyName+"Width");
 
   innerMat=ModelSupport::EvalDefMat<int>(Control,keyName+"InnerMat",0);
