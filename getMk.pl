@@ -31,6 +31,7 @@ my @modelLibDir=qw( bibBuild bnctBuild build chip
                     gammaBuild imat lensModel moderator 
                     muon pipeBuild photon sinbadBuild snsBuild t1Build 
                     t1Engineer t1Upgrade t3Model zoom );
+
 my @modelNames= @modelLibDir;
 
 
@@ -65,6 +66,7 @@ my @modelInclude = qw( bibBuildInc bnctBuildInc buildInc chipInc
                        moderatorInc muonInc pipeBuildInc photonInc
                        sinbadBuildInc snsBuildInc t1BuildInc t1EngineerInc 
                        t1UpgradeInc t3ModelInc zoomInc );
+
 
 ## SYSTEM Directory
 my @systemInclude = qw(
@@ -101,12 +103,17 @@ $gM->addMasterProgs(\@masterprog,\@controlflags);
 $gM->addCoreItems(\@core,\@coreInc);
 $gM->addLibs(\@libnames,\@sublibdir,\@libflags);
 
+my @vorInclude = qw( VORInc );
+$gM->addSubDirLibs("Model/essBuild");
+
 $gM->addDirLibs("Model",\@modelNames,\@modelLibDir,\@libflags);
 $gM->addDirLibs("System",\@systemNames,\@systemLibDir,\@libflags);
 
 $gM->addIncDir(\@incdir);
 $gM->addIncSubDir("System",\@systemInclude);
 $gM->addIncSubDir("Model",\@modelInclude);
+$gM->addSubIncDir("Model/essBuildInc");
+# $gM->addIncSubDir("Model/essBuildInc",\@vorInclude);
 
 # my @libnames=("mcnpx","build","funcBase","geometry",  0,1,2,3
 #	      "log","monte","mersenne","poly",          4,5,6,7,
@@ -259,7 +266,7 @@ $gM->addDepUnit("ess",      ["essBuild","visit","src","simMC",
 			     "scatMat","md5","endf","process","world","work",
 			     "monte","geometry","mersenne","src","xml","poly",
 			     "weights","global","attachComp",
-			     "visit"]);
+			     "visit","VOR"]);
 
 $gM->addDepUnit("sinbad",   ["sinbadBuild","visit","src","simMC",
 			     "physics","input",

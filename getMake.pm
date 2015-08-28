@@ -641,6 +641,60 @@ sub addLibs
   return;
 }
 
+sub addSubDirLibs
+ ##
+ ## Adds sub-directories of libraries 
+ ## Assumes that all are being added   
+ ##
+{
+  my $self=shift;
+  my $topDirName=shift;  ## Top directory name
+
+  my $dirAll=`ls -d ./$topDirName/*/ 2> /dev/null`;
+  my @DPts=split /\s+/,$dirAll;
+  my @subDir;
+  my @blanklibFlags=("","");
+  foreach my $dname (@DPts)
+    {
+      if ($dname=~/$topDirName\/(.*)\//)
+        {
+	  push(@subDir,$1);
+	  push(@blanklibFlags,"");
+	  print STDERR "Found subdir :",$1,"\n";
+	}
+    }
+
+  $self->addDirLibs($topDirName,\@subDir,\@subDir,\@blanklibFlags) 
+      if (@subDir);
+  return;
+}
+
+sub addSubIncDir
+ ##
+ ## Adds sub-directories of libraries [include files]
+ ## Assumes that all *Inc are being added   
+ ##
+{
+  my $self=shift;
+  my $topDirName=shift;  ## Top directory name
+
+  my $dirAll=`ls -d ./$topDirName/*/ 2> /dev/null`;
+  my @DPts=split /\s+/,$dirAll;
+  my @subDir;
+  my @blanklibFlags=("","");
+  foreach my $dname (@DPts)
+    {
+      if ($dname=~/$topDirName\/(.*Inc)\//)
+        {
+	  push(@subDir,$1);
+	  print STDERR "Found include dir :",$1,"\n";
+	}
+    }
+
+  $self->addIncSubDir($topDirName,\@subDir) if (@subDir);
+  return;
+}
+
 sub addDirLibs
   ##
   ## Add an array of libraries
