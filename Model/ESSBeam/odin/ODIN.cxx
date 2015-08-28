@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuild/ODIN.cxx
+ * File:   ESSBeam/odin/ODIN.cxx
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *

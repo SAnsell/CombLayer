@@ -42,9 +42,6 @@ namespace constructSystem
 namespace essSystem
 {  
   class GuideItem;
-  class LokiHut;
-  class VacTank;
-
   /*!
     \class NMX
     \version 1.0

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essModel/RentrantBS.cxx
+ * File:   ESSBeam/odin/RentrantBS.cxx
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -285,4 +285,4 @@ RentrantBS::createAll(Simulation& System,
   return;
 }
   
-}  // NAMESPACE constructSystem
+}  // NAMESPACE essSystem

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuild/VacTank.cxx
+ * File:   ESSBeam/loki/VacTank.cxx
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *

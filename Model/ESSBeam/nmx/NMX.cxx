@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuild/NMX.cxx
+ * File:   ESSBeam/nmx/NMX.cxx
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *

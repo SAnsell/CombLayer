@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/PinHole.h
+ * File:   ESSBeam/odin/PinHole.h
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *

@@ -302,7 +302,7 @@ BeamMonitor::createAll(Simulation& System,
 		       const attachSystem::ContainedGroup& CG,
 		       const std::string& CGName)
   /*!
-    Global creation of the hutch
+    Global creation of the monitor
     \param System :: Simulation to add vessel to
     \param FC :: Proton beam FixedComp for origin
     \param linkIndex :: link point on FC
@@ -323,4 +323,4 @@ BeamMonitor::createAll(Simulation& System,
   return;
 }
 
-}  // NAMESPACE instrumentSystem
+}  // NAMESPACE essSystem

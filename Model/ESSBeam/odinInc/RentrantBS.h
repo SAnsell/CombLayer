@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/RentrantBS.h
+ * File:   ESSBeam/odin/RentrantBS.h
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *

@@ -103,24 +103,14 @@ $gM->addMasterProgs(\@masterprog,\@controlflags);
 $gM->addCoreItems(\@core,\@coreInc);
 $gM->addLibs(\@libnames,\@sublibdir,\@libflags);
 
-my @vorInclude = qw( VORInc );
-$gM->addSubDirLibs("Model/essBuild");
-
+$gM->addSubDirLibs("Model/ESSBeam");
 $gM->addDirLibs("Model",\@modelNames,\@modelLibDir,\@libflags);
 $gM->addDirLibs("System",\@systemNames,\@systemLibDir,\@libflags);
 
 $gM->addIncDir(\@incdir);
 $gM->addIncSubDir("System",\@systemInclude);
 $gM->addIncSubDir("Model",\@modelInclude);
-$gM->addSubIncDir("Model/essBuildInc");
-# $gM->addIncSubDir("Model/essBuildInc",\@vorInclude);
-
-# my @libnames=("mcnpx","build","funcBase","geometry",  0,1,2,3
-#	      "log","monte","mersenne","poly",          4,5,6,7,
-#	      "process","support","test","lensModel");                  
-
-
-# $gM->addDepUnit("bilbau",   ["bibBuild","delft","visit","src","physics","input","source","monte","funcBase","log","tally","construct","crystal","transport","scatMat","md5","endf","process","world","work","monte","geometry","mersenne","src","xml","poly","support","weights","global","attachComp","visit","build"]);
+$gM->addSubIncDir("Model/ESSBeam");
 
 
 $gM->addDepUnit("bilbau", ["bibBuild","build","visit","chip","t1Upgrade",
@@ -266,7 +256,7 @@ $gM->addDepUnit("ess",      ["essBuild","visit","src","simMC",
 			     "scatMat","md5","endf","process","world","work",
 			     "monte","geometry","mersenne","src","xml","poly",
 			     "weights","global","attachComp",
-			     "visit","VOR"]);
+			     "visit"]);
 
 $gM->addDepUnit("sinbad",   ["sinbadBuild","visit","src","simMC",
 			     "physics","input",

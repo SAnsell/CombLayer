@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuild/LOKIvariables.cxx
+ * File:   ESSBeam/loki/LOKIvariables.cxx
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *

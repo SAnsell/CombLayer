@@ -52,7 +52,7 @@ sub new
     root=>0,
     rootcint=>0,
     gtk=>0,
-    gcov=>0,          ## Gcov
+    gcov=>0,         ## Gcov
     gsl=>0,          ## Gnu scietific lib
     regex=>0,        ## regex
     lua=>0,          ## lua
@@ -653,19 +653,24 @@ sub addSubDirLibs
   my $dirAll=`ls -d ./$topDirName/*/ 2> /dev/null`;
   my @DPts=split /\s+/,$dirAll;
   my @subDir;
-  my @blanklibFlags=("","");
+  my @blanklibFlags=("");
   foreach my $dname (@DPts)
     {
       if ($dname=~/$topDirName\/(.*)\//)
         {
-	  push(@subDir,$1);
-	  push(@blanklibFlags,"");
-	  print STDERR "Found subdir :",$1,"\n";
+	  my $subName=$1;
+	  my $filenames=`ls -d ./$topDirName/$subName/*.cxx 2> /dev/null`;
+	  my @FPts=split /\s+/,$filenames;
+	  if (@FPts)
+	    {
+	      push(@subDir,$subName);
+	      push(@blanklibFlags,"");
+	      print STDERR "Found subdir :",$subName,"\n";
+	    }
 	}
     }
 
-  $self->addDirLibs($topDirName,\@subDir,\@subDir,\@blanklibFlags) 
-      if (@subDir);
+  $self->addDirLibs($topDirName,\@subDir,\@subDir,\@blanklibFlags) if (@subDir);
   return;
 }
 
@@ -692,6 +697,34 @@ sub addSubIncDir
     }
 
   $self->addIncSubDir($topDirName,\@subDir) if (@subDir);
+  return;
+}
+
+sub addCombinedDirLib
+  ##
+  ## Add an array of libraries
+  ## and their subdirectories
+  ##
+{
+  my $self=shift;
+  
+  my $dirName=shift; ## Directory tree name
+  my $LName=shift;  ## Library name
+  
+  my $Dr=shift;  ## Directorie
+  my $flags=shift;  ## Libflag
+
+  my @fullLibs;
+  my @fullNames;
+
+  
+  my $index=scalar($self->{LibName});
+  $self->{LibName}{$LName}=$index;
+
+  push(@{$self->{libnames}},$LName);
+  push(@{$self->{sublibdir}},$dirName."/".$Dr);
+  push(@{$self->{libflags}},$flags);
+  push(@{$self->{masterDirList}},$dirName);
   return;
 }
 

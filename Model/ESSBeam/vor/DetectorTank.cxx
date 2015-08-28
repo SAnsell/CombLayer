@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuild/DetectorTank.cxx
+ * File:   ESSBeam/vor/DetectorTank.cxx
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -270,4 +270,4 @@ DetectorTank::createAll(Simulation& System,
 }
 
   
-}  // NAMESPACE zoomSystem
+}  // NAMESPACE essSystem
