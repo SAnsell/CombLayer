@@ -71,7 +71,9 @@
 #include "ContainedComp.h"
 #include "CylFlowGuide.h"
 #include "DiskPreMod.h"
-
+#include "Cone.h"
+#include "Plane.h"
+#include "Cylinder.h"
 
 namespace essSystem
 {
@@ -553,5 +555,35 @@ DiskPreMod::createAll(Simulation& System,
 
   return;
 }
+
+  const double DiskPreMod::getZFlightLine(const bool tiltSide) const
+  /*!
+    Return z-coordinate of intersection with flight line
+    To be used for flight line height calculation, e.g.
+    height = TopCapMod->getZFlightLine()-TopPreMod->getZFlightLine();
+
+    \todo
+    We use tan() instead of probably a more clever way to do it with surface intersection (SurInter::getPoint),
+    but for some reason intersection with cone gives a wrong result.
+    It seems the method SurInter::getPoint does not take into account that a cone in MCNP is made of two surfaces.
+    
+    \param tiltSide :: defines which side is tilted (top or bottom)
+   */
+  {
+    const double z = tiltSide ? (Origin+Z*height[nLayers-1])[2] : (Origin-Z*depth[nLayers-1])[2];
+    const double R = radius[nLayers-1]-tiltRadius;
+    const double x = R * tan(tiltAngle*M_PI/180.0);
+    return tiltSide ? z-x : z+x;
+
+    // // this is how the same could have been done with SurInter::gePoint:
+    // const int SI(modIndex+static_cast<int>(nLayers-1)*10);
+    // const Geometry::Cone *tiltCone = SMap.realPtr<Geometry::Cone>(SI+9);
+    // const Geometry::Plane *yPlane =  SMap.realPtr<Geometry::Plane>(modIndex+2);
+    // const Geometry::Cylinder *outerCyl = SMap.realPtr<Geometry::Cylinder>(SI+7);
+
+    // Geometry::Vec3D nearPt(radius[nLayers-1], 0.0, z);
+    // Geometry::Vec3D p = SurInter::getPoint(yPlane, outerCyl, tiltCone, nearPt);
+    // return p[3];
+  }
 
 }  // NAMESPACE essSystem 
