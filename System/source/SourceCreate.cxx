@@ -156,7 +156,7 @@ createESSSource(const FuncDataBase& Control,Source& sourceCard)
   ELog::RegMethod RegA("SourceCreate","createESSSource");
 
   const double E=Control.EvalDefVar<double>("sdefEnergy",2000.0);
-  const double yStart=Control.EvalDefVar<double>("sdefYPos",-10.0);
+  const double yStart=Control.EvalDefVar<double>("sdefYPos",-30.0);
 
   sourceCard.setActive();
   sourceCard.setComp("dir",1.0);
