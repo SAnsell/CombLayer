@@ -92,6 +92,7 @@ class DiskPreMod : public attachSystem::ContainedComp,
 		 const long int,const bool,const double,const double, const bool);
 
   const double getZFlightLine(const bool) const;
+  const double getTiltRadius() const {return tiltRadius;}
 };
 
 }

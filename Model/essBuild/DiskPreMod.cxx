@@ -213,7 +213,7 @@ DiskPreMod::populate(const FuncDataBase& Control,
     } 
 
   tiltAngle = Control.EvalDefVar<double>(keyName+"TiltAngle", 0.0); // must correspond to ZBase of the corresponding flight line !!! remove default or set it to zero
-  tiltRadius = Control.EvalDefVar<double>(keyName+"TiltRadius", 20.0); // must correspond to ZBase of the corresponding flight line !!! remove default or set it to zero
+  tiltRadius = Control.EvalDefVar<double>(keyName+"TiltRadius", 10.0); // must correspond to ZBase of the corresponding flight line !!! remove default or set it to zero
 
   return;
 }
@@ -263,12 +263,14 @@ DiskPreMod::createSurfaces(const bool tiltSide)
     {
       ModelSupport::buildCylinder(SMap,SI+7,Origin,Z,radius[i]);  
       // tilting:
-      ModelSupport::buildCylinder(SMap,SI+8,Origin,Z,tiltRadius);  
-      if (tiltSide)
-	ModelSupport::buildCone(SMap, SI+9, Origin+Z*(depth[i]+h), Z, 90-tiltAngle, -1);
-      else
-	ModelSupport::buildCone(SMap, SI+9, Origin-Z*(depth[i]+h), Z, 90-tiltAngle, 1);
-
+      if (tiltAngle>Geometry::zeroTol)
+	{
+	  ModelSupport::buildCylinder(SMap,SI+8,Origin,Z,tiltRadius);  
+	  if (tiltSide)
+	    ModelSupport::buildCone(SMap, SI+9, Origin+Z*(depth[i]+h), Z, 90-tiltAngle, -1);
+	  else
+	    ModelSupport::buildCone(SMap, SI+9, Origin-Z*(depth[i]+h), Z, 90-tiltAngle, 1);
+	}
       ModelSupport::buildPlane(SMap,SI+5,Origin-Z*depth[i],Z);  
       ModelSupport::buildPlane(SMap,SI+6,Origin+Z*height[i],Z);
       if (i<NWidth)
