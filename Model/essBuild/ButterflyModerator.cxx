@@ -199,6 +199,7 @@ ButterflyModerator::createObjects(Simulation& System)
   std::string Out;
   Out=ModelSupport::getComposite(SMap,flyIndex," -7 5 -6 ");  
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+Exclude));
+  setCell("ambientVoid", cellIndex-1);
 
   clearRules();
   addOuterSurf(Out);
