@@ -448,13 +448,13 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("TopAFlightZStep", 0.0);      // Step from centre
   Control.addVariable("TopAFlightAngleXY1", 60.0);  // Angle out
   Control.addVariable("TopAFlightAngleXY2", 60.0);  // Angle out
-  Control.addVariable("TopAFlightXYangle", 0.0);
+  Control.addVariable("TopAFlightXYangle",180.0);
   Control.addVariable("TopAFlightZangle", 0.0);
   Control.addVariable("TopAFlightAngleZTop", 0.0);  // Step down angle
   Control.addVariable("TopAFlightAngleZBase", 0.0); // Step up angle
   //  Control.Parse("TopFlyTotalHeight");
   Control.addVariable("TopAFlightHeight", 4.6);     // Full height = TopFlyTotalHeight
-  Control.addVariable("TopAFlightWidth", 130.7);     // Full width
+  Control.addVariable("TopAFlightWidth", 10.7);     // Full width
   Control.addVariable("TopAFlightNLiner", 1);      // Liner
   Control.addVariable("TopAFlightLinerThick1", 0.4);      // Liner
   Control.addVariable("TopAFlightLinerMat1","Aluminium");      // Liner
