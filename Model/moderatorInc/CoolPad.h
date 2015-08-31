@@ -42,7 +42,7 @@ class CoolPad :  public attachSystem::ContainedComp,
 {
  private:
 
-  const int ID;                     ///< ID number
+  const size_t ID;                     ///< ID number
   const int padIndex;               ///< Index of surface offset
   int cellIndex;                    ///< Cell index
   
