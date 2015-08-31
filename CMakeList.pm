@@ -17,7 +17,7 @@ sub new
     
     masterProg => undef,
     depLists => undef,	
-    stdLib => undef,          ## Array of all the standard librarys includes used
+
     incLib => undef,           ## Array of all our includes used
     srcDir => undef,           ## Array of all our cxx directories
     incDir => undef            ## Array of all our includes used
@@ -182,6 +182,7 @@ sub writeHeader
 
   print $DX "cmake_minimum_required(VERSION 3.2)\n\n";
 
+  
   print $DX "set(CMAKE_CXX_COMPILER ",$self->{ccomp},")\n";
   print $DX "add_definitions(",$self->{cflag},")\n";
 
@@ -267,14 +268,18 @@ sub writeTail
   
   my $tarString;
   
-  print $DX "add_custom_target(dist ",
-    "ALL COMMAND tar zcvf \${PROJECT_SOURCE_DIR}/",$pdir.".tgz \n";
+  print $DX "add_custom_target(tar ",
+    " COMMAND tar zcvf \${PROJECT_SOURCE_DIR}/",$pdir.".tgz \n";
 
   my $cnt=0;
   foreach my $item (keys (%{$self->{srcDir}}))
-  {
+    {
       my $val=$self->{srcDir}{$item};
       print $DX "     \${PROJECT_SOURCE_DIR}/",$val,"/*.cxx \n";
+    }
+  foreach my $item (@{$self->{incDir}})
+    {
+      print $DX "     \${PROJECT_SOURCE_DIR}/",$item,"/*.h \n";
     }
 
   print $DX " )\n";

@@ -10,15 +10,7 @@ my @masterprog=("fullBuild","ess","pipe","sinbad","t1Real",
 		"sns","reactor","t1MarkII","t1Eng","t3Expt",
 		"testMain"); 
 
-## SYSTEM Directory
-my @systemLibDir=qw( attachComp construct compWeights crystal 
-                     endf funcBase geometry input log md5 
-                     mersenne monte physics poly process 
-                     simMC source support tally  visit weights 
-                     world work xml 
-                     );
 
-my @systemNames= @systemLibDir;
 
 ## Model Directory
 my @modelLibDir=qw( bibBuild bnctBuild build chip 
@@ -35,20 +27,6 @@ my @sublibdir=("src","beamline","global",
 	       "instrument","scatMat","transport","special",
 	       "test");                            
 
-my @core=qw( src attachComp beamline compWeights
-             construct crystal endf funcBase
-             geometry global input instrument log md5 monte 
-             mersenne physics poly process scatMat source 
-             support tally transport visit weights
-             world work xml special test);
-
-my @coreInc=qw( include  attachCompInc beamlineInc 
-             compWeightsInc constructInc crystalInc 
-             endfInc funcBaseInc geomInc globalInc inputInc
-             instrumentInc logInc md5Inc  mersenneInc
-             monteInc muonInc physicsInc polyInc processInc scatMatInc
-             sourceInc supportInc tallyInc transportInc visitInc
-             weightsInc worldInc workInc xmlInc specialInc testInclude);
 
 my @libnames=@sublibdir;
 
@@ -73,9 +51,8 @@ my @systemInclude = qw(
                      worldInc workInc xmlInc 
                      );
 
-my @incdir=qw( include beamlineInc  chipInc  globalInc  
-               instrumentInc polyInc  scatMatInc  
-               specialInc  transportInc  worldInc testInclude );
+my @incdir=qw( include beamlineInc globalInc instrumentInc 
+               scatMatInc specialInc transportInc testInclude );
 
 
 my $gM=new CMakeList;
@@ -90,7 +67,6 @@ $gM->findSubSrcDir("System");
 $gM->findSubSrcDir("Model/ESSBeam");
 $gM->findSubSrcDir("");
 
-#$gM->addDirLibs("System",\@systemNames,\@systemLibDir,\@libflags);
 
 $gM->addDepUnit("ess",      ["essBuild","visit","src","simMC",
 			     "beamline","physics","support",
