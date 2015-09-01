@@ -129,7 +129,8 @@ makeESS::makeESS() :
   BulkLowAFL(new moderatorSystem::FlightLine("BulkLAFlight")),
   ShutterBayObj(new ShutterBay("ShutterBay")),
 
-  ABunker(new Bunker("ABunker"))
+  ABunker(new Bunker("ABunker")),
+  BBunker(new Bunker("BBunker"))
  /*!
     Constructor
  */
@@ -158,6 +159,7 @@ makeESS::makeESS() :
 
   OR.addObject(ShutterBayObj);
   OR.addObject(ABunker);
+  OR.addObject(BBunker);
 }
 
 
@@ -382,6 +384,9 @@ makeESS::makeBunker(Simulation& System,
   
   ABunker->addInsertCell(74123);
   ABunker->createAll(System,*LowMod,*GBArray[0],2,true);
+
+  BBunker->addInsertCell(74123);
+  BBunker->createAll(System,*LowMod,*GBArray[0],2,true);
 
   return;
 }

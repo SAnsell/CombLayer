@@ -1466,7 +1466,7 @@ EssBunkerVariables(FuncDataBase& Control)
   ELog::RegMethod RegA("essVariables[F]","EssBunkerVariables");
 
   Control.addVariable("ABunkerLeftPhase",65.0);
-  Control.addVariable("ABunkerRightPhase",65.0);
+  Control.addVariable("ABunkerRightPhase",10.0);
   Control.addVariable("ABunkerLeftAngle",0.0);
   Control.addVariable("ABunkerRightAngle",0.0);
   Control.addVariable("ABunkerNSectors",13);
@@ -1488,7 +1488,34 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("ABunkerWallMat3","Stainless304");
   Control.addVariable("ABunkerWallMat4","Steel71");
   Control.addVariable("ABunkerWallMat9","Tungsten");
-      
+
+  //
+  // RIGHT BUNKER : B PART
+  //
+  Control.addVariable("BBunkerLeftPhase",0.0);
+  Control.addVariable("BBunkerRightPhase",65.0);
+  Control.addVariable("BBunkerLeftAngle",0.0);
+  Control.addVariable("BBunkerRightAngle",0.0);
+  Control.addVariable("BBunkerNSectors",13);
+  
+  Control.addVariable("BBunkerWallRadius",1700.0);
+  Control.addVariable("BBunkerFloorDepth",100.0);
+  Control.addVariable("BBunkerRoofHeight",100.0);
+
+  Control.addVariable("BBunkerWallThick",250.0);
+  Control.addVariable("BBunkerSideThick",100.0);
+  Control.addVariable("BBunkerRoofThick",100.0);
+  Control.addVariable("BBunkerFloorThick",100.0);
+
+  Control.addVariable("BBunkerWallMat","Steel71");
+
+  Control.addVariable("BBunkerNLayers",1);
+  Control.addVariable("BBunkerWallMat1","Tungsten");
+  Control.addVariable("BBunkerWallMat2","Tungsten");
+  Control.addVariable("BBunkerWallMat3","Stainless304");
+  Control.addVariable("BBunkerWallMat4","Steel71");
+  Control.addVariable("BBunkerWallMat9","Tungsten");
+
   
   return;
 }

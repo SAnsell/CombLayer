@@ -264,6 +264,74 @@ Bunker::createSideLinks(const Geometry::Vec3D& AWall,
   return;
 }
 
+
+std::string
+Bunker::procLeftWall(Simulation& System,
+		     const std::string& Inner) 
+  /*!
+    Create the left wall
+    \param System :: Simulation to create objects in
+    \param Inner :: Inner surface of bunker unit
+  */
+{
+  ELog::RegMethod RegA("Bunker","createObjects");
+
+  std::string Out(Inner);
+  Out+=ModelSupport::getComposite(SMap,bnkIndex," 1 -7 -3 13 5 -6 ");
+  std::string leftCut=ModelSupport::getComposite(SMap,bnkIndex," 13 ");
+  if (!leftWallFlag)   // No action : normal wall:
+    {
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+    }
+  else if (leftWallFlag & 1)   // No wall
+    {
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+    }
+  else if (leftWallFlag & 2)   // Cut wall
+    {
+      Out+=leftCutRule;
+      leftCut+=leftCutRule;
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+    }
+  else
+    throw ColErr::IndexError<size_t>(leftWallFlag,2,"leftWallFlag");
+
+  return leftCut; 
+}
+
+std::string
+Bunker::procRightWall(Simulation& System,
+		     const std::string& Inner) 
+  /*!
+    Create the left wall
+    \param System :: Simulation to create objects in
+    \param Inner :: Inner surface of bunker unit
+  */
+{
+  ELog::RegMethod RegA("Bunker","createObjects");
+
+  std::string Out(Inner);
+  Out+=ModelSupport::getComposite(SMap,bnkIndex," 1 -7 4 -14 5 -6 ");
+  std::string rightCut=ModelSupport::getComposite(SMap,bnkIndex," -14 ");
+  if (!rightWallFlag)   // No action : normal wall:
+    {
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+    }
+  else if (rightWallFlag & 1)   // No wall
+    {
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+    }
+  else if (rightWallFlag & 2)   // Cut wall
+    {
+      Out+=rightCutRule;
+      rightCut+=rightCutRule;
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+    }
+  else
+    throw ColErr::IndexError<size_t>(rightWallFlag,2,"rightWallFlag");
+
+  return rightCut; 
+}
   
 void
 Bunker::createObjects(Simulation& System,
@@ -285,9 +353,13 @@ Bunker::createObjects(Simulation& System,
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+Inner));
   setCell("MainVoid",cellIndex-1);
 
+  // process left wall:
+  //  std::string leftWallStr=procLeftWall(System);
+  
   // left:right:floor:roof:Outer
-  Out=ModelSupport::getComposite(SMap,bnkIndex," 1 -7 -3 13 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Inner));
+        Out=ModelSupport::getComposite(SMap,bnkIndex," 1 -7 -3 13 5 -6 ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Inner));
+
   Out=ModelSupport::getComposite(SMap,bnkIndex," 1 -7 4 -14 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Inner));
   Out=ModelSupport::getComposite(SMap,bnkIndex," 1 -7 13 -14 -5 15 ");
@@ -316,6 +388,7 @@ Bunker::createObjects(Simulation& System,
 
   // External
   Out=ModelSupport::getComposite(SMap,bnkIndex," 1 -17 13 -14 15 -16 ");
+
   addOuterSurf(Out);
       
   
@@ -444,12 +517,61 @@ Bunker::calcSegment(const Simulation& System,
 }
 
 void
+Bunker::setCutWall(const size_t lFlag,const size_t rFlag)
+  /*!
+    Sets the cut rule base on an existing fixed component.
+    \param lFlag :: Wall to use [0 none / 1 full / use flag [not set here]
+    \param rFlag :: Wall to use [0 none / 1 full / use flag [not set here]
+  */
+{
+  ELog::RegMethod RegA("Bunker","setCutWall");
+
+  leftWallFlag=lFlag;
+  rightWallFlag=rFlag;
+  return;
+}
+  
+void
+Bunker::setLeftCutWall(const attachSystem::FixedComp& FC,
+		       const long int sideIndex)
+  /*!
+    Sets the cut rule base on an existing fixed component.
+    \param FC :: FixedComp  to use
+    \param sideIndex :: Signed link point
+   */
+{
+  ELog::RegMethod RegA("Bunker","setLeftCutWall");
+
+  leftWallFlag=2;
+  leftCutRule=FC.getSignedLinkString(sideIndex);
+  
+  return;
+}
+
+void
+Bunker::setRightCutWall(const attachSystem::FixedComp& FC,
+			const long int sideIndex)
+  /*!
+    Sets the cut rule base on an existing fixed component.
+    \param FC :: FixedComp  to use
+    \param sideIndex :: Signed link point
+   */
+{
+  ELog::RegMethod RegA("Bunker","setRightCutWall");
+
+  rightWallFlag=2;
+  rightCutRule=FC.getSignedLinkString(sideIndex);
+  
+  return;
+}
+  
+void
 Bunker::createAll(Simulation& System,
 		  const attachSystem::FixedComp& MainCentre,
 		  const attachSystem::FixedComp& FC,
 		  const long int linkIndex,
 		  const bool reverseZ)
-/*!
+  /*!
     Generic function to create everything
     \param System :: Simulation item
     \param MainCentre :: Rotatioin Centre

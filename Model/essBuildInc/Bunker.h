@@ -41,9 +41,16 @@ class Bunker : public attachSystem::ContainedComp,
  private:
   
   const int bnkIndex;           ///< Index of surface offset
-  int cellIndex;                 ///< Cell index
+  int cellIndex;                ///< Cell index
 
-  Geometry::Vec3D rotCentre;     ///< Rotation centre
+  size_t leftWallFlag;          ///< 0 normal / 1 remove/ 2 cut
+  std::string leftCutRule;         ///< Wall cut rule
+
+  size_t rightWallFlag;         ///< 0 normal / 1 remove/ 2 cut
+  std::string rightCutRule;        ///< Wall cut rule
+  
+  Geometry::Vec3D rotCentre;    ///< Rotation centre
+
   
   double leftPhase;              ///< Sector phase left
   double rightPhase;             ///< Sector phase right
@@ -86,6 +93,9 @@ class Bunker : public attachSystem::ContainedComp,
   void createSideLinks(const Geometry::Vec3D&,const Geometry::Vec3D&,
 		       const Geometry::Vec3D&,const Geometry::Vec3D&);
 
+
+  std::string procLeftWall(Simulation&,const std::string&);
+  std::string procRightWall(Simulation&,const std::string&);
   
  public:
 
@@ -97,6 +107,12 @@ class Bunker : public attachSystem::ContainedComp,
   std::string calcSegment(const Simulation&,
 			  const Geometry::Vec3D&,
 			  const Geometry::Vec3D&) const;
+  
+  void setCutWall(const size_t,const size_t);
+  void setLeftCutWall(const attachSystem::FixedComp&,
+		      const long int);
+  void setRightCutWall(const attachSystem::FixedComp&,
+		       const long int);
   
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const attachSystem::FixedComp&,

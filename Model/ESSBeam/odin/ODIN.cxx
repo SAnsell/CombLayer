@@ -248,7 +248,6 @@ ODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
   //
   // First chopper pit out of bunker
   // Guide guide String
-  const attachSystem::FixedComp& GOuter=GuideD->getKey("Shield");
   HeadRule GuideCut=
     attachSystem::unionLink(GuideD->getKey("Shield"),{2,3,4,5,6});
   PitA->addInsertCell(voidCell);
@@ -284,7 +283,6 @@ ODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
   // SECOND CHOPPER PIT:
   // First chopper pit out of bunker
   // Guide guide String
-  const attachSystem::FixedComp& GOuterB=GuideE->getKey("Shield");
   GuideCut=attachSystem::unionLink(GuideE->getKey("Shield"),{2,3,4,5,6});
   PitB->addInsertCell(voidCell);
   PitB->createAll(System,GuideE->getKey("Guide0"),2,GuideCut.display());
