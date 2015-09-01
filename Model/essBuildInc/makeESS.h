@@ -58,6 +58,7 @@ namespace essSystem
   class essMod;
   class ConicModerator;
   class CylPreMod;
+  class PreModWing;
   class BulkModule;
   class ShutterBay;
   class ProtonTube;
@@ -108,6 +109,11 @@ class makeESS
   std::shared_ptr<moderatorSystem::BasicFlightLine> TopBFL;  ///< Top Mode FL
   std::shared_ptr<CylPreMod> TopPre;          ///< Toper Mod (Pre)
 
+  std::shared_ptr<PreModWing> LowPreWing; ///< Low premoderator wing
+  std::shared_ptr<PreModWing> TopPreWing; ///< Top premoderator wing
+  std::shared_ptr<PreModWing> LowCapWing; ///< Low cap premoderator wing
+  std::shared_ptr<PreModWing> TopCapWing; ///< Top cap premoderator wing
+
   /// Top supply 
   std::shared_ptr<constructSystem::SupplyPipe> TopSupplyPipe; 
   std::shared_ptr<constructSystem::SupplyPipe> TopReturnPipe;  ///< Top supply
@@ -149,6 +155,8 @@ class makeESS
 		    const mainSystem::inputParam&);
 
   void buildF5Collimator(Simulation&, size_t);
+
+  void buildPreWings(Simulation&);
 
   void optionSummary(Simulation&);
 

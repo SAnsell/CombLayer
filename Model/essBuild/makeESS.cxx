@@ -85,6 +85,7 @@
 #include "ButterflyModerator.h"
 #include "BlockAddition.h"
 #include "CylPreMod.h"
+#include "PreModWing.h"
 #include "SupplyPipe.h"
 #include "BulkModule.h"
 #include "ShutterBay.h"
@@ -412,6 +413,18 @@ makeESS::makeBunker(Simulation& System,
   return;
 }
 
+void
+makeESS::buildPreWings(Simulation& System)
+{
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+  
+  TopPreWing = std::shared_ptr<PreModWing>(new PreModWing("TopPreWing"));
+
+  OR.addObject(TopPreWing);
+  TopPreWing->createAll(System, *TopMod);
+}
+
   
 void 
 makeESS::build(Simulation& System,
@@ -472,6 +485,8 @@ makeESS::build(Simulation& System,
 		       Target->wheelHeight(),
 		       LowPreMod->getHeight()+LMHeight+LowCapMod->getHeight(),
 		       TopPreMod->getHeight()+TMHeight+TopCapMod->getHeight());
+
+  buildPreWings(System);
 
   Reflector->insertComponent(System,"targetVoid",*Target,1);
   Reflector->deleteCell(System,"lowVoid");
