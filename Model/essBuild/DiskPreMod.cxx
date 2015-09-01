@@ -244,7 +244,7 @@ DiskPreMod::createUnitVector(const attachSystem::FixedComp& refCentre,
 
 
 void
-DiskPreMod::createSurfaces(const bool tiltSide)
+DiskPreMod::createSurfaces()
   /*!
     Create planes for the silicon and Polyethene layers
     \param tiltSide :: top/bottom side to tilt
@@ -286,7 +286,7 @@ DiskPreMod::createSurfaces(const bool tiltSide)
 }
 
 void
-DiskPreMod::createObjects(Simulation& System, const bool tiltSide)
+DiskPreMod::createObjects(Simulation& System)
   /*!
     Create the disc component
     \param System :: Simulation to add results
@@ -528,7 +528,7 @@ DiskPreMod::createAll(Simulation& System,
 		      const bool zRotate,
 		      const double VOffset,
 		      const double ORad,
-		      const bool tiltSide)
+		      const bool ts)
   /*!
     Extrenal build everything
     \param System :: Simulation
@@ -542,11 +542,13 @@ DiskPreMod::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("DiskPreMod","createAll");
 
+  tiltSide = ts;
+
   populate(System.getDataBase(),VOffset,ORad);
   createUnitVector(FC,sideIndex,zRotate);
 
-  createSurfaces(tiltSide);
-  createObjects(System, tiltSide);
+  createSurfaces();
+  createObjects(System);
   createLinks();
 
   insertObjects(System);
@@ -558,7 +560,7 @@ DiskPreMod::createAll(Simulation& System,
   return;
 }
 
-  const double DiskPreMod::getZFlightLine(const bool tiltSide) const
+  const double DiskPreMod::getZFlightLine() const
   /*!
     Return z-coordinate of intersection with flight line
     To be used for flight line height calculation, e.g.
@@ -568,8 +570,6 @@ DiskPreMod::createAll(Simulation& System,
     We use tan() instead of probably a more clever way to do it with surface intersection (SurInter::getPoint),
     but for some reason intersection with cone gives a wrong result.
     It seems the method SurInter::getPoint does not take into account that a cone in MCNP is made of two surfaces.
-    
-    \param tiltSide :: defines which side is tilted (top or bottom)
    */
   {
     const double z = tiltSide ? (Origin+Z*height[nLayers-1])[2] : (Origin-Z*depth[nLayers-1])[2];

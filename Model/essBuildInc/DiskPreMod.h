@@ -60,6 +60,7 @@ class DiskPreMod : public attachSystem::ContainedComp,
   /// Flow guide pattern inside DiskPreMod (engineering detail)
   std::shared_ptr<CylFlowGuide> InnerComp; 
 
+  bool   tiltSide;                    ///< true ? top : bottom   side to be tilted
   double tiltAngle;                   ///< tilting angle
   double tiltRadius;                  ///< radius where tilting starts
   
@@ -67,8 +68,8 @@ class DiskPreMod : public attachSystem::ContainedComp,
   void createUnitVector(const attachSystem::FixedComp&,const long int,
 			const bool);
 
-  void createSurfaces(const bool);
-  void createObjects(Simulation&, const bool);
+  void createSurfaces();
+  void createObjects(Simulation&);
   void createLinks();
 
  public:
@@ -91,7 +92,7 @@ class DiskPreMod : public attachSystem::ContainedComp,
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int,const bool,const double,const double, const bool);
 
-  const double getZFlightLine(const bool) const;
+  const double getZFlightLine() const;
   const double getTiltRadius() const {return tiltRadius;}
 };
 
