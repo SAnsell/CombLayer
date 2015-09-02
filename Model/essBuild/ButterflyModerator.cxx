@@ -343,7 +343,22 @@ ButterflyModerator::createAll(Simulation& System,
   return;
 }
 
-
+std::string
+ButterflyModerator::getSideSurface() const
+/*
+  Return side surface string
+*/
+{
+  std::string side("");
+  HeadRule HR;
+  HR.procString(LeftUnit->getSideSurface());
+  HR.addUnion(RightUnit->getSideSurface());
+  HR.addUnion(MidWater->getSideSurface());
+  HR.addUnion(LeftWater->getSideSurface());
+  HR.addUnion(RightWater->getSideSurface());
+  HR.makeComplement();
+  return HR.display();
+}
 
 
 }  // NAMESPACE essSystem

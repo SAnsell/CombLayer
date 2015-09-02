@@ -68,6 +68,7 @@ class ButterflyModerator :
 		 const long int);
 
   inline std::string getExcludeStr() const { return ExcludeStr; }
+  std::string getSideSurface() const;
 };
 
 }

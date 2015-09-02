@@ -221,7 +221,11 @@ PreModWing::createObjects(Simulation& System, const attachSystem::FixedComp& FC)
       (innerCell,"ButterflyModerator ambient void cell not found");
   
   const ButterflyModerator *BM = dynamic_cast<const ButterflyModerator*>(&FC);
-  const std::string Exclude = BM->getExcludeStr(); 
+  BM->getSideSurface();
+  const std::string Exclude = BM->getSideSurface();;//BM->getExcludeStr(); 
+
+  //  ELog::EM << BM->getExcludeStr() << ELog::endDiag;
+  //  ELog::EM << Exclude << ELog::endDiag;
 
   // BM outer cylinder side surface
   HeadRule HR;

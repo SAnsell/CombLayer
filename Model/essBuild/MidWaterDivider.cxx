@@ -334,8 +334,11 @@ MidWaterDivider::createObjects(Simulation& System,
   Out=ModelSupport::getComposite(SMap,divIndex,
 				 "-100 (-123 : 124) -131 -132 ");
   addOuterUnionSurf(Out);
-  
-  
+
+  HeadRule HR;
+  HR.procString(ContainedComp::getExclude());
+  HR.makeComplement();
+  sideSurface = HR.display();
   return;
 }
 
