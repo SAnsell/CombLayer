@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   processInc/surfDIter.h
 *
@@ -39,6 +39,10 @@ void populateDivide(const FuncDataBase&,const size_t,
 
 void populateDivide(const FuncDataBase&,const size_t,
 		    const std::string&,const int,std::vector<int>&);
+
+ void populateRange(const FuncDataBase&,const size_t,
+		    const std::string&,const double,
+		    const double,std::vector<double>&);
 
  
 }

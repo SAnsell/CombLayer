@@ -799,10 +799,10 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("GuideBay2XYangle",180.0); 
   Control.addVariable("GuideBay3XYangle",0.0); 
   Control.addVariable("GuideBay4XYangle",180.0); 
-  Control.addVariable("GuideBay1NItems",11);  
-  Control.addVariable("GuideBay2NItems",11);  
-  Control.addVariable("GuideBay3NItems",11);  
-  Control.addVariable("GuideBay4NItems",11);
+  Control.addVariable("GuideBay1NItems",19);  
+  Control.addVariable("GuideBay2NItems",19);  
+  Control.addVariable("GuideBay3NItems",19);  
+  Control.addVariable("GuideBay4NItems",19);
 
 
   EssBeamLinesVariables(Control);
@@ -1465,29 +1465,32 @@ EssBunkerVariables(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("essVariables[F]","EssBunkerVariables");
 
-  Control.addVariable("ABunkerLeftPhase",65.0);
-  Control.addVariable("ABunkerRightPhase",10.0);
+  Control.addVariable("ABunkerLeftPhase",-65.0);
+  Control.addVariable("ABunkerRightPhase",0.0);
   Control.addVariable("ABunkerLeftAngle",0.0);
   Control.addVariable("ABunkerRightAngle",0.0);
-  Control.addVariable("ABunkerNSectors",13);
+  Control.addVariable("ABunkerNSectors",8);
   
   Control.addVariable("ABunkerWallRadius",1300.0);
   Control.addVariable("ABunkerFloorDepth",100.0);
   Control.addVariable("ABunkerRoofHeight",100.0);
 
-  Control.addVariable("ABunkerWallThick",250.0);
+  Control.addVariable("ABunkerWallThick",320.0);
   Control.addVariable("ABunkerSideThick",100.0);
   Control.addVariable("ABunkerRoofThick",100.0);
   Control.addVariable("ABunkerFloorThick",100.0);
 
   Control.addVariable("ABunkerWallMat","Steel71");
 
-  Control.addVariable("ABunkerNLayers",1);
-  Control.addVariable("ABunkerWallMat1","Tungsten");
-  Control.addVariable("ABunkerWallMat2","Tungsten");
-  Control.addVariable("ABunkerWallMat3","Stainless304");
-  Control.addVariable("ABunkerWallMat4","Steel71");
-  Control.addVariable("ABunkerWallMat9","Tungsten");
+  Control.addVariable("ABunkerNLayers",9);
+  Control.addVariable("ABunkerWallMat1","B4C");
+  Control.addVariable("ABunkerWallMat2","Lead");
+  Control.addVariable("ABunkerWallMat3","CastIron");
+  Control.addVariable("ABunkerWallMat4","CastIron");
+  Control.addVariable("ABunkerWallMat9","Concrete");
+  
+  Control.addVariable("ABunkerWallLen1",5.0);
+  Control.addVariable("ABunkerWallLen2",25.0);
 
   //
   // RIGHT BUNKER : B PART
@@ -1496,15 +1499,15 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("BBunkerRightPhase",65.0);
   Control.addVariable("BBunkerLeftAngle",0.0);
   Control.addVariable("BBunkerRightAngle",0.0);
-  Control.addVariable("BBunkerNSectors",13);
+  Control.addVariable("BBunkerNSectors",8);
   
   Control.addVariable("BBunkerWallRadius",1700.0);
   Control.addVariable("BBunkerFloorDepth",100.0);
   Control.addVariable("BBunkerRoofHeight",100.0);
 
   Control.addVariable("BBunkerWallThick",250.0);
-  Control.addVariable("BBunkerSideThick",100.0);
-  Control.addVariable("BBunkerRoofThick",100.0);
+  Control.addVariable("BBunkerSideThick",150.0);
+  Control.addVariable("BBunkerRoofThick",200.0);
   Control.addVariable("BBunkerFloorThick",100.0);
 
   Control.addVariable("BBunkerWallMat","Steel71");
@@ -1553,17 +1556,25 @@ EssBeamLinesVariables(FuncDataBase& Control)
       Control.addVariable(baseKey+"Height3",60.0);
       Control.addVariable(baseKey+"Length1",170.0);
       Control.addVariable(baseKey+"Length2",170.0);
-      Control.addVariable(baseKey+"1XYangle",30.0); 
-      Control.addVariable(baseKey+"2XYangle",24.0); 
-      Control.addVariable(baseKey+"3XYangle",18.0); 
-      Control.addVariable(baseKey+"4XYangle",12.0); 
-      Control.addVariable(baseKey+"5XYangle",6.0); 
-      Control.addVariable(baseKey+"6XYangle",0); 
-      Control.addVariable(baseKey+"7XYangle",-6.0); 
-      Control.addVariable(baseKey+"8XYangle",-12.0);
-      Control.addVariable(baseKey+"9XYangle",-18.0); 
-      Control.addVariable(baseKey+"10XYangle",-24.0); 
-      Control.addVariable(baseKey+"11XYangle",-30.0);
+      Control.addVariable(baseKey+"1XYangle",54.0); 
+      Control.addVariable(baseKey+"2XYangle",48.0); 
+      Control.addVariable(baseKey+"3XYangle",42.0); 
+      Control.addVariable(baseKey+"4XYangle",36.0); 
+      Control.addVariable(baseKey+"5XYangle",30.0); 
+      Control.addVariable(baseKey+"6XYangle",24); 
+      Control.addVariable(baseKey+"7XYangle",18.0); 
+      Control.addVariable(baseKey+"8XYangle",12.0); 
+      Control.addVariable(baseKey+"9XYangle",6.0); 
+      Control.addVariable(baseKey+"10XYangle",0.0); 
+      Control.addVariable(baseKey+"11XYangle",-6.0); 
+      Control.addVariable(baseKey+"12XYangle",-12.0); 
+      Control.addVariable(baseKey+"13XYangle",-18.0); 
+      Control.addVariable(baseKey+"14XYangle",-24.0);
+      Control.addVariable(baseKey+"15XYangle",-30.0); 
+      Control.addVariable(baseKey+"16XYangle",-36.0); 
+      Control.addVariable(baseKey+"17XYangle",-42.0);
+      Control.addVariable(baseKey+"18XYangle",-48.0);
+      Control.addVariable(baseKey+"19XYangle",-54.0);
       Control.addVariable(baseKey+"Filled",0);
       Control.addVariable(baseKey+"Active",0);      
     }

@@ -360,10 +360,14 @@ makeESS::makeBeamLine(Simulation& System,
 	  const std::string BL=IParam.getValue<std::string>("beamlines",j,i-1);
 	  const std::string Btype=IParam.getValue<std::string>("beamlines",j,i);
 	  // FIND BUNKER HERE:::
-	  
 	  makeESSBL BLfactory(BL,Btype);
-	  BLfactory.build(System,*ABunker);
-	    
+	  std::pair<int,int> BLNum=makeESSBL::getBeamNum(BL);
+	  if ((BLNum.first==1 && BLNum.second>8) ||
+	      (BLNum.first==4 && BLNum.second<=8) )
+	    BLfactory.build(System,*ABunker);
+	  else if ((BLNum.first==1 && BLNum.second<=8) ||
+	      (BLNum.first==4 && BLNum.second>8) )
+	    BLfactory.build(System,*BBunker);
 	}
     }
   return;
@@ -381,13 +385,17 @@ makeESS::makeBunker(Simulation& System,
   ELog::RegMethod RegA("makeESS","makeBunker");
 
   ELog::EM<<"Bunker == "<<bunkerType<<ELog::endDiag;
+
   
   ABunker->addInsertCell(74123);
+  ABunker->setCutWall(1,0);
   ABunker->createAll(System,*LowMod,*GBArray[0],2,true);
+
 
   BBunker->addInsertCell(74123);
   BBunker->createAll(System,*LowMod,*GBArray[0],2,true);
 
+  BBunker->insertComponent(System,"leftWall",*ABunker);
   return;
 }
 

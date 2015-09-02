@@ -172,5 +172,73 @@ populateDivide(const FuncDataBase& Control,const size_t N,
   return;
 }
 
+void
+populateRange(const FuncDataBase& Control,const size_t N,
+	      const std::string& Name,
+	      const double ARange,
+	      const double BRange,
+	      std::vector<double>& Vec)
+  /*!
+    Function to populate a double vector with a set of points 
+    bases on a name type 
+    \param Control :: Function data base
+    \param N :: Number of points to get
+    \param Name :: BaseName of divide name
+    \param ARange :: Start value    
+    \param BRange :: End value 
+    \param Vec :: Vector to populate [and cleared]
+  */
+{
+  ELog::RegMethod RegA("surfDIter","populateRange");
+  
+  Vec.clear();
+  if (N>0)
+    {
+      // first get as many as possible
+      Vec.resize(N);
+      std::vector<size_t> setValues;
+      for(size_t i=0;i<N;i++)
+	{
+	  const std::string NName=Name+StrFunc::makeString(i);
+	  if (Control.hasVariable(NName))
+	    {
+	      const double fA=Control.EvalVar<double>(NName);
+	      Vec[i]=fA;
+	      setValues.push_back(i);
+	    }
+	  else if (!i)
+	    {
+	      Vec[0]=ARange;
+	      setValues.push_back(0);
+	    }
+	  else if (i==N-1)
+	    {
+	      Vec[i]=BRange;
+	      setValues.push_back(i);
+	    }
+	}
+
+      // Now even out the ranges
+      size_t aPt(0);
+      double aVal(Vec[0]);
+      for(const size_t index : setValues)
+	{
+	  if (index)
+	    {
+	      const double step=(Vec[index]-aVal)
+		/static_cast<double>(index-aPt);
+	      for(size_t j=aPt+1;j<index;j++)
+		{
+		  aVal+=step;
+		  Vec[j]=aVal;
+		}
+	      aVal=Vec[index];
+	      aPt=index;
+	    }
+	}
+    }
+  return;
+}
+
 
 } // NAMESPACE ModelSupport

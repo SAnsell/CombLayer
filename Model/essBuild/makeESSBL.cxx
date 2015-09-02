@@ -46,6 +46,7 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
+#include "support.h"
 #include "stringCombine.h"
 #include "inputParam.h"
 #include "Surface.h"
@@ -123,8 +124,35 @@ makeESSBL::~makeESSBL()
   */
 {}
 
+std::pair<int,int>
+makeESSBL::getBeamNum(const std::string& Name)
+  /*!
+    Process to determine the range of the beamline
+    \param Name :: beamline name in form GxBLineyy
+    \return pair of sector/Index
+   */
+{
+  ELog::RegMethod RegA("makeESSBL","getBeamNum");
+  
+  if (Name.length()<8)
+    throw ColErr::InvalidLine(Name,"Name not in from : GxBLineyy");
+  std::pair<int,int> Out(0,0);
+  std::string BN(Name);
+  BN[0]=' ';
+  BN.replace(2,5,"     ");
+  if (!StrFunc::section(BN,Out.first) ||
+      !StrFunc::section(BN,Out.second))
+    {
+
+      throw ColErr::InvalidLine(Name,"Name processable in from : GxBLineyy");
+    }
+  return Out;
+}
+  
+  
 void 
-makeESSBL::build(Simulation& System,const Bunker& bunkerObj)
+makeESSBL::build(Simulation& System,
+		 const Bunker& bunkerObj)
   /*!
     Carry out the full build
     \param SimPtr :: Simulation system

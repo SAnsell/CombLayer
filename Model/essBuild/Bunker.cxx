@@ -89,12 +89,71 @@ Bunker::Bunker(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::FixedComp(Key,12),
   attachSystem::CellMap(),
   bnkIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(bnkIndex+1)
+  cellIndex(bnkIndex+1),leftWallFlag(1),rightWallFlag(1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
   */
 {}
+
+Bunker::Bunker(const Bunker& A) : 
+  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  attachSystem::CellMap(A),
+  bnkIndex(A.bnkIndex),cellIndex(A.cellIndex),
+  leftWallFlag(A.leftWallFlag),rightWallFlag(A.rightWallFlag),
+  rotCentre(A.rotCentre),leftPhase(A.leftPhase),
+  rightPhase(A.rightPhase),leftAngle(A.leftAngle),
+  rightAngle(A.rightAngle),nSectors(A.nSectors),
+  innerRadius(A.innerRadius),wallRadius(A.wallRadius),
+  floorDepth(A.floorDepth),roofHeight(A.roofHeight),
+  wallThick(A.wallThick),sideThick(A.sideThick),
+  roofThick(A.roofThick),floorThick(A.floorThick),
+  wallMat(A.wallMat),nLayers(A.nLayers),wallFrac(A.wallFrac),
+  wallMatVec(A.wallMatVec)
+  /*!
+    Copy constructor
+    \param A :: Bunker to copy
+  */
+{}
+
+Bunker&
+Bunker::operator=(const Bunker& A)
+  /*!
+    Assignment operator
+    \param A :: Bunker to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::FixedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      cellIndex=A.cellIndex;
+      leftWallFlag=A.leftWallFlag;
+      rightWallFlag=A.rightWallFlag;
+      rotCentre=A.rotCentre;
+      leftPhase=A.leftPhase;
+      rightPhase=A.rightPhase;
+      leftAngle=A.leftAngle;
+      rightAngle=A.rightAngle;
+      nSectors=A.nSectors;
+      innerRadius=A.innerRadius;
+      wallRadius=A.wallRadius;
+      floorDepth=A.floorDepth;
+      roofHeight=A.roofHeight;
+      wallThick=A.wallThick;
+      sideThick=A.sideThick;
+      roofThick=A.roofThick;
+      floorThick=A.floorThick;
+      wallMat=A.wallMat;
+      nLayers=A.nLayers;
+      wallFrac=A.wallFrac;
+      wallMatVec=A.wallMatVec;
+    }
+  return *this;
+}
+
 
 Bunker::~Bunker() 
   /*!
@@ -117,7 +176,9 @@ Bunker::populate(const FuncDataBase& Control)
   rightAngle=Control.EvalVar<double>(keyName+"RightAngle");
 
   nSectors=Control.EvalVar<size_t>(keyName+"NSectors");
-  
+  ModelSupport::populateRange(Control,nSectors,keyName+"SectAngle",
+			      leftPhase,rightPhase,sectPhase);
+
   wallRadius=Control.EvalVar<double>(keyName+"WallRadius");
   floorDepth=Control.EvalVar<double>(keyName+"FloorDepth");
   roofHeight=Control.EvalVar<double>(keyName+"RoofHeight");
@@ -177,14 +238,14 @@ Bunker::createSurfaces()
   Geometry::Vec3D AWallDir(X);
   Geometry::Vec3D BWallDir(X);
   // rotation of axis:
-  Geometry::Quaternion::calcQRotDeg(leftAngle+leftPhase,Z).rotate(AWallDir);
+  Geometry::Quaternion::calcQRotDeg(leftAngle-leftPhase,Z).rotate(AWallDir);
   Geometry::Quaternion::calcQRotDeg(-(rightAngle+rightPhase),Z).rotate(BWallDir);
   // rotation of phase points:
 
   // Points on wall
   Geometry::Vec3D AWall(Origin-rotCentre);
   Geometry::Vec3D BWall(Origin-rotCentre);
-  Geometry::Quaternion::calcQRotDeg(leftPhase,Z).rotate(AWall);
+  Geometry::Quaternion::calcQRotDeg(-leftPhase,Z).rotate(AWall);
   Geometry::Quaternion::calcQRotDeg(-rightPhase,Z).rotate(BWall);
 
   // Divider
@@ -214,15 +275,28 @@ Bunker::createSurfaces()
 
   // CREATE Sector boundary lines
   // Note negative subtraction as moving +ve to -ve
-  double phaseAngle(leftPhase);
-  const double phaseStep((leftPhase+rightPhase)/nSectors);
-  double normAngle(leftAngle+leftPhase);
-  const double normStep((leftAngle+leftPhase+rightAngle+rightPhase)/nSectors);
+
+
+  //  double phaseAngle(leftPhase);
+  //  const double phaseStep((leftPhase+rightPhase)/nSectors);
+
+  // NEW:
+  const double phaseDiff(rightPhase-leftPhase);
+  const double angleDiff(rightAngle-leftAngle);
+
   int divIndex(bnkIndex+500);
-      
+
+  double phaseAngle(-leftPhase);
+  const double phaseStep((-leftPhase+rightPhase)/nSectors);
+  double normAngle(leftAngle-leftPhase);
+  const double normStep((leftAngle-leftPhase+rightAngle+rightPhase)/nSectors);
+  
   for(size_t i=1;i<nSectors;i++)
     {
       divIndex++;
+      // const double normAngle=(leftAngle+
+      // 			      angleDiff*(sectPhase[i]-leftPhase)/phaseDiff);
+
       phaseAngle-=phaseStep;
       normAngle-=normStep;
       Geometry::Vec3D DPosition(Origin-rotCentre);
@@ -230,6 +304,15 @@ Bunker::createSurfaces()
       Geometry::Vec3D DNorm(X);
       Geometry::Quaternion::calcQRotDeg(normAngle,Z).rotate(DNorm);
       ModelSupport::buildPlane(SMap,divIndex,DPosition,DNorm);
+
+      // normAngleX-=normStep;
+
+      
+      // Geometry::Vec3D DPosition(Origin-rotCentre);
+      // Geometry::Quaternion::calcQRotDeg(sectPhase[i],Z).rotate(DPosition);
+      // Geometry::Vec3D DNorm(X);
+      // Geometry::Quaternion::calcQRotDeg(normAngle-sectPhase[i],Z).rotate(DNorm);
+      // ModelSupport::buildPlane(SMap,divIndex,DPosition,DNorm);
     }
       
   return;
@@ -263,75 +346,6 @@ Bunker::createSideLinks(const Geometry::Vec3D& AWall,
 
   return;
 }
-
-
-std::string
-Bunker::procLeftWall(Simulation& System,
-		     const std::string& Inner) 
-  /*!
-    Create the left wall
-    \param System :: Simulation to create objects in
-    \param Inner :: Inner surface of bunker unit
-  */
-{
-  ELog::RegMethod RegA("Bunker","createObjects");
-
-  std::string Out(Inner);
-  Out+=ModelSupport::getComposite(SMap,bnkIndex," 1 -7 -3 13 5 -6 ");
-  std::string leftCut=ModelSupport::getComposite(SMap,bnkIndex," 13 ");
-  if (!leftWallFlag)   // No action : normal wall:
-    {
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
-    }
-  else if (leftWallFlag & 1)   // No wall
-    {
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
-    }
-  else if (leftWallFlag & 2)   // Cut wall
-    {
-      Out+=leftCutRule;
-      leftCut+=leftCutRule;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
-    }
-  else
-    throw ColErr::IndexError<size_t>(leftWallFlag,2,"leftWallFlag");
-
-  return leftCut; 
-}
-
-std::string
-Bunker::procRightWall(Simulation& System,
-		     const std::string& Inner) 
-  /*!
-    Create the left wall
-    \param System :: Simulation to create objects in
-    \param Inner :: Inner surface of bunker unit
-  */
-{
-  ELog::RegMethod RegA("Bunker","createObjects");
-
-  std::string Out(Inner);
-  Out+=ModelSupport::getComposite(SMap,bnkIndex," 1 -7 4 -14 5 -6 ");
-  std::string rightCut=ModelSupport::getComposite(SMap,bnkIndex," -14 ");
-  if (!rightWallFlag)   // No action : normal wall:
-    {
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
-    }
-  else if (rightWallFlag & 1)   // No wall
-    {
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
-    }
-  else if (rightWallFlag & 2)   // Cut wall
-    {
-      Out+=rightCutRule;
-      rightCut+=rightCutRule;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
-    }
-  else
-    throw ColErr::IndexError<size_t>(rightWallFlag,2,"rightWallFlag");
-
-  return rightCut; 
-}
   
 void
 Bunker::createObjects(Simulation& System,
@@ -355,27 +369,43 @@ Bunker::createObjects(Simulation& System,
 
   // process left wall:
   //  std::string leftWallStr=procLeftWall(System);
-  
+
   // left:right:floor:roof:Outer
-        Out=ModelSupport::getComposite(SMap,bnkIndex," 1 -7 -3 13 5 -6 ");
+  int lwIndex(bnkIndex);  // indexs for wall 
+  int rwIndex(bnkIndex);
+  if (leftWallFlag)
+    {
+      Out=ModelSupport::getComposite(SMap,bnkIndex," 1 -7 -3 13 5 -6 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Inner));
-
-  Out=ModelSupport::getComposite(SMap,bnkIndex," 1 -7 4 -14 5 -6 ");
+      setCell("leftWall",cellIndex-1);
+      lwIndex+=10;
+    }
+  if (rightWallFlag)
+    {
+      Out=ModelSupport::getComposite(SMap,bnkIndex," 1 -7 4 -14 5 -6 ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Inner));
+      setCell("rightWall",cellIndex-1);
+      rwIndex+=10;
+    }
+  
+  Out=ModelSupport::getComposite(SMap,bnkIndex,lwIndex,rwIndex,
+				 " 1 -7 3M -4N -5 15 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Inner));
-  Out=ModelSupport::getComposite(SMap,bnkIndex," 1 -7 13 -14 -5 15 ");
+  setCell("floor",cellIndex-1);
+  
+  Out=ModelSupport::getComposite(SMap,bnkIndex,lwIndex,rwIndex,
+				 " 1 -7 3M -4N 6 -16 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Inner));
-  Out=ModelSupport::getComposite(SMap,bnkIndex," 1 -7 13 -14 6 -16 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Inner));
-
+  setCell("roof",cellIndex-1);
+  
   int divIndex(bnkIndex+500);
   for(size_t i=0;i<nSectors;i++)
     {
-      
       const std::string ACut=(!i) ?
-	ModelSupport::getComposite(SMap,bnkIndex," 13 ") :
+	ModelSupport::getComposite(SMap,lwIndex," 3 ") :
 	ModelSupport::getComposite(SMap,divIndex-1," 1M ");
       const std::string BCut=(i+1 == nSectors) ?
-	ModelSupport::getComposite(SMap,bnkIndex," -14 ") :
+	ModelSupport::getComposite(SMap,rwIndex," -4 ") :
 	ModelSupport::getComposite(SMap,divIndex," -1M ");
         Out=ModelSupport::getComposite(SMap,bnkIndex," 1 -17 7  15 -16 ");
       Out+=ACut+BCut;
@@ -387,11 +417,10 @@ Bunker::createObjects(Simulation& System,
 
 
   // External
-  Out=ModelSupport::getComposite(SMap,bnkIndex," 1 -17 13 -14 15 -16 ");
-
+  Out=ModelSupport::getComposite(SMap,bnkIndex,lwIndex,rwIndex,
+				 " 1 -17 3M -4N 15 -16 ");
   addOuterSurf(Out);
-      
-  
+        
   return;
 }
 
@@ -517,11 +546,11 @@ Bunker::calcSegment(const Simulation& System,
 }
 
 void
-Bunker::setCutWall(const size_t lFlag,const size_t rFlag)
+Bunker::setCutWall(const bool lFlag,const bool rFlag)
   /*!
     Sets the cut rule base on an existing fixed component.
-    \param lFlag :: Wall to use [0 none / 1 full / use flag [not set here]
-    \param rFlag :: Wall to use [0 none / 1 full / use flag [not set here]
+    \param lFlag :: Wall to use [0 none / 1 full ]
+    \param rFlag :: Wall to use [0 none / 1 full ]
   */
 {
   ELog::RegMethod RegA("Bunker","setCutWall");
@@ -531,39 +560,7 @@ Bunker::setCutWall(const size_t lFlag,const size_t rFlag)
   return;
 }
   
-void
-Bunker::setLeftCutWall(const attachSystem::FixedComp& FC,
-		       const long int sideIndex)
-  /*!
-    Sets the cut rule base on an existing fixed component.
-    \param FC :: FixedComp  to use
-    \param sideIndex :: Signed link point
-   */
-{
-  ELog::RegMethod RegA("Bunker","setLeftCutWall");
 
-  leftWallFlag=2;
-  leftCutRule=FC.getSignedLinkString(sideIndex);
-  
-  return;
-}
-
-void
-Bunker::setRightCutWall(const attachSystem::FixedComp& FC,
-			const long int sideIndex)
-  /*!
-    Sets the cut rule base on an existing fixed component.
-    \param FC :: FixedComp  to use
-    \param sideIndex :: Signed link point
-   */
-{
-  ELog::RegMethod RegA("Bunker","setRightCutWall");
-
-  rightWallFlag=2;
-  rightCutRule=FC.getSignedLinkString(sideIndex);
-  
-  return;
-}
   
 void
 Bunker::createAll(Simulation& System,

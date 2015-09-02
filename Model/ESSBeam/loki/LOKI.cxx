@@ -379,18 +379,19 @@ LOKI::build(Simulation& System,
   const attachSystem::FixedComp& GFC(GridA->getKey("Beam"));
   const std::string BSector=
     bunkerObj.calcSegment(System,GFC.getSignedLinkPt(2),
-			  GFC.getSignedLinkAxis(2));  
-  CollA->setInsertCell(bunkerObj.getCells(BSector));
+			  GFC.getSignedLinkAxis(2));
+  CollA->addInsertCell(bunkerObj.getCells(BSector));
   CollA->addInsertCell(bunkerObj.getCell("MainVoid"));
   CollA->addInsertCell(voidCell);
   CollA->createAll(System,GFC,2);
 
   // Second grid cutter
-  GridB->addInsertCell(voidCell);
+  GridB->addInsertCell(bunkerObj.getCells(BSector));
   GridB->createAll(System,CollA->getKey("Beam"),2);
 
   // First collimator
   CollB->addInsertCell(voidCell);
+  CollB->addInsertCell(bunkerObj.getCells(BSector));
   CollB->createAll(System,GridB->getKey("Beam"),2);
   // Second grid cutter
   GridC->addInsertCell(voidCell);
