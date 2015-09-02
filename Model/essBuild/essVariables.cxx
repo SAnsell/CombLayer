@@ -1129,6 +1129,8 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopPreModTiltAngle");
   Control.addVariable("TopPreModTiltRadius", 20.0);
 
+  Control.addVariable("TopPreWingWallMat", "Aluminium");
+  Control.addVariable("TopPreWingWallThick", 0.3);
 
   Control.Parse("LowPreModFlowGuideWallThick");
   Control.addVariable("TopPreModFlowGuideWallThick");

@@ -45,6 +45,8 @@ class PreModWing : public attachSystem::ContainedComp,
   int cellIndex;                  ///< Cell index
 
   int engActive;                  ///< engineering active flag
+  double wallThick;               ///< wall thickness
+  int wallMat;                    ///< wall material
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);

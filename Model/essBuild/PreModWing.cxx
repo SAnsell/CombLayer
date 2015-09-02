@@ -154,6 +154,9 @@ PreModWing::populate(const FuncDataBase& Control)
 
   ///< \todo Make this part of IParam NOT a variable
   engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
+  wallThick=Control.EvalVar<double>(keyName+"WallThick");
+  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
+
   return;
 }
 
@@ -188,8 +191,8 @@ PreModWing::createSurfaces()
   ModelSupport::buildPlane(SMap,modIndex+1,Origin,X);  
   ModelSupport::buildPlane(SMap,modIndex+2,Origin,Y);  
 
-  ModelSupport::buildPlane(SMap,modIndex+5,Origin-Z*1.0,Z);  
-  ModelSupport::buildPlane(SMap,modIndex+6,Origin+Z*1.0,Z);  
+  ModelSupport::buildPlane(SMap,modIndex+5,Origin,Z);  
+  ModelSupport::buildPlane(SMap,modIndex+6,Origin+Z*(wallThick),Z);  
 
   return; 
 }
@@ -216,13 +219,25 @@ PreModWing::createObjects(Simulation& System, const attachSystem::FixedComp& FC)
   if (!InnerObj)
     throw ColErr::InContainerError<int>
       (innerCell,"ButterflyModerator ambient void cell not found");
-
+  
   const ButterflyModerator *BM = dynamic_cast<const ButterflyModerator*>(&FC);
-const std::string Exclude = BM->getExcludeStr();
-  std::string Out;
+  const std::string Exclude = BM->getExcludeStr(); 
 
+  // BM outer cylinder side surface
+  HeadRule HR;
+  HR.procString(BM->getLinkString(2));
+  HR.makeComplement();
+  const std::string BMouterCyl = HR.display();
+
+  std::string Out;
+  HeadRule wingExclude;
+  
   Out=ModelSupport::getComposite(SMap,modIndex," 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+Exclude));
+wingExclude.procString(Out);
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Exclude + BMouterCyl));
+
+wingExclude.makeComplement();
+InnerObj->addSurfString(wingExclude.display());
 
   addOuterSurf(Out);
   return; 

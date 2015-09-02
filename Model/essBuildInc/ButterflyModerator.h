@@ -35,7 +35,7 @@ class ButterflyModerator :
   double totalHeight;                     ///< Total height
   double outerRadius;                     ///< Main outer radius
 
-  std::string ExcludeStr;                 ///< exclude string (contains lobes and mid water)
+  std::string ExcludeStr;                 ///< exclude string (contains H2Wings, MidWater and both EdgeWater regions)
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
