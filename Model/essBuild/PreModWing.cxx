@@ -154,8 +154,15 @@ PreModWing::populate(const FuncDataBase& Control)
 
   ///< \todo Make this part of IParam NOT a variable
   engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
+
+  thick=Control.EvalVar<double>(keyName+"Thick");
+  mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
+
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
+
+  tiltAngle=Control.EvalVar<double>(keyName+"TiltAngle");
+  tiltRadius=Control.EvalVar<double>(keyName+"TiltRadius");
 
   return;
 }
@@ -173,6 +180,7 @@ PreModWing::createUnitVector(const attachSystem::FixedComp& FC, const long int s
   ELog::RegMethod RegA("PreModWing","createUnitVector");
   attachSystem::FixedComp::createUnitVector(FC);
   Origin=FC.getSignedLinkPt(sideIndex);
+  ELog::EM << Origin << ELog::endCrit;
   if (zRotate)
     {
       X*=-1;
@@ -199,15 +207,19 @@ PreModWing::createSurfaces()
   ModelSupport::buildPlane(SMap,modIndex+1,Origin,X);  
   ModelSupport::buildPlane(SMap,modIndex+2,Origin,Y);  
 
-  ModelSupport::buildPlane(SMap,modIndex+5,Origin,Z);  
-  ModelSupport::buildPlane(SMap,modIndex+6,Origin+Z*(wallThick),Z);  
+  //  ModelSupport::buildPlane(SMap,modIndex+5,Origin+Z*(thick),Z);  
+  //  ModelSupport::buildPlane(SMap,modIndex+6,Origin+Z*(thick+wallThick),Z);  
+
+  ModelSupport::buildCylinder(SMap,modIndex+8,Origin,Z,tiltRadius);  
+  ModelSupport::buildCone(SMap, modIndex+5, Origin+Z*(thick), Z, 90-tiltAngle, -1);
+  ModelSupport::buildCone(SMap, modIndex+6, Origin+Z*(thick+wallThick), Z, 90-tiltAngle, -1);
 
   return; 
 }
 
 void
-PreModWing::createObjects(Simulation& System, const attachSystem::FixedComp& Mod,
-			  const attachSystem::FixedComp& Pre, const long int linkPoint)
+PreModWing::createObjects(Simulation& System, const attachSystem::FixedComp& Pre, const long int linkPoint, 
+			  const attachSystem::FixedComp& Mod)
 
   /*!
     Create the disc component
@@ -246,17 +258,23 @@ PreModWing::createObjects(Simulation& System, const attachSystem::FixedComp& Mod
   HeadRule wingExclude;
 
   std::string PreString = Pre.getLinkString(linkPoint);
-  // HR.procString(Pre.getLinkString(linkPoint));
-  // HR.makeComplement();
-  // PreString = HR.display();
+  HR.procString(Pre.getLinkString(linkPoint));
+  HR.makeComplement();
+  PreString = HR.display();
+  ELog::EM << "PreString: " << PreString << ELog::endCrit;
   
-  Out=ModelSupport::getComposite(SMap,modIndex," -6 ") + PreString;
+  Out=ModelSupport::getComposite(SMap,modIndex," -5 ") + PreString;
   wingExclude.procString(Out);
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out+Exclude + BMouterCyl));
+
+  Out=ModelSupport::getComposite(SMap,modIndex," 5 -6 ");
+  wingExclude.addUnion(Out);
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Exclude + BMouterCyl));
 
-wingExclude.makeComplement();
-AmbientVoid->addSurfString(wingExclude.display());
+  wingExclude.makeComplement();
+  AmbientVoid->addSurfString(wingExclude.display());
 
+  Out=ModelSupport::getComposite(SMap,modIndex," -6 ") + PreString+Exclude+BMouterCyl;
   addOuterSurf(Out);
   return; 
 }
@@ -294,10 +312,10 @@ PreModWing::createAll(Simulation& System,
 
 
   populate(System.getDataBase());
-  createUnitVector(Mod, linkPoint, zRotate);
+  createUnitVector(Pre, linkPoint, zRotate);
 
   createSurfaces();
-  createObjects(System, Mod, Pre, linkPoint);
+  createObjects(System, Pre, linkPoint, Mod);
   createLinks();
 
 

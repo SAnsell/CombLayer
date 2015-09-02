@@ -45,15 +45,21 @@ class PreModWing : public attachSystem::ContainedComp,
   int cellIndex;                  ///< Cell index
 
   int engActive;                  ///< engineering active flag
+
+  double thick;                   ///< (water) thickness
+  int mat;                     ///< (water) material
   double wallThick;               ///< wall thickness
   int wallMat;                    ///< wall material
+
+  double tiltAngle;               ///< tilt angle
+  double tiltRadius;              ///< radius where tilting starts
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&, const long int, const bool);
 
   void createSurfaces();
-  void createObjects(Simulation&, const attachSystem::FixedComp&,
-		     const attachSystem::FixedComp&, const long int);
+  void createObjects(Simulation&, const attachSystem::FixedComp&, const long int,
+		     const attachSystem::FixedComp&);
   void createLinks();
 
  public:

@@ -422,7 +422,8 @@ makeESS::buildPreWings(Simulation& System)
   TopPreWing = std::shared_ptr<PreModWing>(new PreModWing("TopPreWing"));
 
   OR.addObject(TopPreWing);
-  TopPreWing->createAll(System, *TopPreMod, 5, false, *TopMod);
+  TopPreWing->createAll(System, *TopPreMod, 9, false, *TopMod);
+  attachSystem::addToInsertSurfCtrl(System, *TopPreMod, *TopPreWing);
 }
 
   

@@ -1125,12 +1125,16 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopPreModDepth4",  0.85);
   Control.addVariable("TopPreModRadius4", 0.0);
   Control.addVariable("TopPreModMat4","Void");
-  Control.Parse("TopAFlightAngleZTop");
-  Control.addVariable("TopPreModTiltAngle");
+  //  Control.Parse("TopAFlightAngleZTop");
+  Control.addVariable("TopPreModTiltAngle", 0.0);
   Control.addVariable("TopPreModTiltRadius", 20.0);
 
+  Control.addVariable("TopPreWingMat", "H2O");
+  Control.addVariable("TopPreWingThick", 2.0);
   Control.addVariable("TopPreWingWallMat", "Aluminium");
   Control.addVariable("TopPreWingWallThick", 0.3);
+  Control.addVariable("TopPreWingTiltAngle", 3.0);
+  Control.addVariable("TopPreWingTiltRadius", 20.0);
 
   Control.Parse("LowPreModFlowGuideWallThick");
   Control.addVariable("TopPreModFlowGuideWallThick");
@@ -1188,8 +1192,8 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopCapModRadius3");
   //  Control.Parse("BeRefWallMat");
   Control.addVariable("TopCapModMat3", "Aluminium");
-  Control.Parse("TopAFlightAngleZBase");
-  Control.addVariable("TopCapModTiltAngle");
+  //  Control.Parse("TopAFlightAngleZBase");
+  Control.addVariable("TopCapModTiltAngle", 0.0);
   Control.Parse("TopPreModTiltRadius");
   Control.addVariable("TopCapModTiltRadius");
 

@@ -81,7 +81,7 @@ namespace essSystem
 DiskPreMod::DiskPreMod(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0),
-  attachSystem::FixedComp(Key,9),
+  attachSystem::FixedComp(Key,11),
   attachSystem::CellMap(),  
   modIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(modIndex+1),NWidth(0),
@@ -368,7 +368,7 @@ DiskPreMod::createLinks()
 {  
   ELog::RegMethod RegA("DiskPreMod","createLinks");
 
-  const int SI(modIndex+static_cast<int>(nLayers-1)*10);
+  int SI(modIndex+static_cast<int>(nLayers-1)*10);
   FixedComp::setConnect(0,Origin-Y*radius[nLayers-1],-Y);
   FixedComp::setLinkSurf(0,SMap.realSurf(SI+7));
   FixedComp::setBridgeSurf(0,-SMap.realSurf(modIndex+2));
@@ -401,6 +401,14 @@ DiskPreMod::createLinks()
 
   FixedComp::setConnect(8,Origin+Z*height[0],-Z);
   FixedComp::setLinkSurf(8,-SMap.realSurf(modIndex+6));
+
+  // outer again
+  SI=modIndex+static_cast<int>(nLayers-3)*10;
+  FixedComp::setConnect(9,Origin-Z*depth[nLayers-3],-Z);
+  FixedComp::setLinkSurf(9,-SMap.realSurf(SI+6));
+
+  FixedComp::setConnect(10,Origin+Z*height[nLayers-3],Z);
+  FixedComp::setLinkSurf(10,SMap.realSurf(SI+6));
 
   return;
 }
