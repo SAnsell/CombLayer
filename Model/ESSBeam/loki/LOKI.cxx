@@ -243,7 +243,7 @@ LOKI::build(Simulation& System,
   setBeamAxis(GItem,0);
   BendA->addInsertCell(GItem.getCells("Void"));
   BendA->addInsertCell(bunkerObj.getCell("MainVoid"));
-  BendA->createAll(System,*lokiAxis,-3,*lokiAxis,-3);
+  BendA->createAll(System,*lokiAxis,-3,*lokiAxis,-3); // beam front reversed
   
   // First straight section
   VacBoxA->addInsertCell(bunkerObj.getCell("MainVoid"));

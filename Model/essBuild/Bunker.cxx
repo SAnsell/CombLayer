@@ -297,9 +297,10 @@ Bunker::createSurfaces()
       divIndex++;
       phase+=phaseStep;
       angle+=angleStep;
-      ELog::EM<<"Phase["<<keyName<<"] = "
-	      <<phase<<" "<<sectPhase[i]<<ELog::endDiag;
-      
+
+      const double F= (sectPhase[i]-leftPhase)/phaseDiff;
+      angle= leftAngle+F*angleDiff;
+            
       Geometry::Vec3D DPosition(Origin-rotCentre);
       Geometry::Quaternion::calcQRotDeg(sectPhase[i],-Z).rotate(DPosition);
       DPosition+=rotCentre;
@@ -307,15 +308,6 @@ Bunker::createSurfaces()
       Geometry::Vec3D DDir(X);      
       Geometry::Quaternion::calcQRotDeg(sectPhase[i]+angle,-Z).rotate(DDir);
       ModelSupport::buildPlane(SMap,divIndex,DPosition,DDir);
-
-      // normAngleX-=normStep;
-
-      
-      // Geometry::Vec3D DPosition(Origin-rotCentre);
-      // Geometry::Quaternion::calcQRotDeg(sectPhase[i],Z).rotate(DPosition);
-      // Geometry::Vec3D DNorm(X);
-      // Geometry::Quaternion::calcQRotDeg(normAngle-sectPhase[i],Z).rotate(DNorm);
-      // ModelSupport::buildPlane(SMap,divIndex,DPosition,DNorm);
     }
       
   return;
@@ -329,7 +321,9 @@ Bunker::createSideLinks(const Geometry::Vec3D& AWall,
   /*!
     Ugly function to create side wall linkes
     \param AWall :: Left wall point
-    \param BWall :: Left wall point
+    \param BWall :: Right wall point		
+    \param AWallDir :: Left wall main direction
+    \param BWallDir :: Right wall main direction    
    */
 {
   ELog::RegMethod RegA("Bunker","createSideLinks");

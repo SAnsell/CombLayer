@@ -396,6 +396,8 @@ makeESS::makeBunker(Simulation& System,
   BBunker->createAll(System,*LowMod,*GBArray[0],2,true);
 
   BBunker->insertComponent(System,"leftWall",*ABunker);
+  BBunker->insertComponent(System,"roof",*ABunker);
+  BBunker->insertComponent(System,"floor",*ABunker);
   return;
 }
 

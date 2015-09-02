@@ -46,6 +46,7 @@
 #include "InputControl.h"
 #include "inputParam.h"
 #include "support.h"
+#include "stringCombine.h"
 #include "defaultConfig.h"
 #include "DefUnitsESS.h"
 
@@ -131,9 +132,10 @@ setESS(defaultConfig& A)
   A.setMultiOption("beamlines",0,"G1BLine19 ODIN");
   A.setMultiOption("beamlines",1,"G4BLine4 LOKI");
   A.setMultiOption("beamlines",2,"G1BLine5 VOR");
-  //  A.setMultiOption("beamlines",2,"G1BLine9 NMX");
+  A.setMultiOption("beamlines",3,"G4BLine12 NMX");
 
-  A.setVar("G1BLine19Active",1);
+  //  for(size_t i=0;i<19;i++)
+  //    A.setVar("G1BLine"+StrFunc::makeString(i+1)+"Active",1);
 
 
   A.setVar("G4BLine4Active",1);
@@ -144,7 +146,10 @@ setESS(defaultConfig& A)
 
   A.setVar("G1BLine5Filled",1);
   A.setVar("G1BLine5Active",1);
-     
+
+  A.setVar("G4BLine12Filled",1);
+  A.setVar("G4BLine12Active",1);
+  
   return;
 }
 
