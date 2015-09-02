@@ -450,13 +450,13 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("TopAFlightAngleXY2", 60.0);  // Angle out
   Control.addVariable("TopAFlightXYangle", 180.0);
   Control.addVariable("TopAFlightZangle", 0.0);
-  Control.addVariable("TopAFlightAngleZTop", 2.0);  // Step down angle
-  Control.addVariable("TopAFlightAngleZBase", 2.0); // Step up angle
+  Control.addVariable("TopAFlightAngleZTop", 1.455);  // Step down angle
+  Control.addVariable("TopAFlightAngleZBase", 1.455); // Step up angle
   //  Control.Parse("TopFlyTotalHeight");
-  Control.addVariable("TopAFlightHeight", 4.6);     // Full height = TopFlyTotalHeight
+  Control.addVariable("TopAFlightHeight", 2);     // Full height = TopFlyTotalHeight
   Control.addVariable("TopAFlightWidth", 10.7);     // Full width
   Control.addVariable("TopAFlightNLiner", 1);      // Liner
-  Control.addVariable("TopAFlightLinerThick1", 0.4);      // Liner
+  Control.addVariable("TopAFlightLinerThick1", 0.3);      // Liner
   Control.addVariable("TopAFlightLinerMat1","Aluminium");      // Liner
 
   Control.addVariable("TopBFlightXStep", 0.0);      // Step from centre
@@ -469,10 +469,12 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("TopBFlightAngleZTop");  // Step down angle
   Control.Parse("TopAFlightAngleZBase");
   Control.addVariable("TopBFlightAngleZBase"); // Step up angle
-  Control.addVariable("TopBFlightHeight", 4.6);     // Full height = TopFlyTotalHeight
+  Control.Parse("TopAFlightHeight");
+  Control.addVariable("TopBFlightHeight");
   Control.addVariable("TopBFlightWidth", 10.7);     // Full width
   Control.addVariable("TopBFlightNLiner", 1);     
-  Control.addVariable("TopBFlightLinerThick1", 0.4); 
+  Control.Parse("TopAFlightLinerThick1");
+  Control.addVariable("TopBFlightLinerThick1"); 
   Control.addVariable("TopBFlightLinerMat1","Aluminium");
 
   
@@ -1130,18 +1132,20 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopPreModTiltRadius", 20.0);
 
   Control.addVariable("TopPreWingMat", "H2O");
-  Control.addVariable("TopPreWingThick", 2.0);
+  Control.addVariable("TopPreWingThick", 0.8);
   Control.addVariable("TopPreWingWallMat", "Aluminium");
   Control.addVariable("TopPreWingWallThick", 0.3);
-  Control.addVariable("TopPreWingTiltAngle", 3.0);
+  Control.Parse("TopAFlightAngleZTop");
+  Control.addVariable("TopPreWingTiltAngle");
   Control.addVariable("TopPreWingTiltRadius", 20.0);
 
   Control.addVariable("TopCapWingMat", "H2O");
-  Control.addVariable("TopCapWingThick", 2.0);
+  Control.addVariable("TopCapWingThick", 0.8);
   Control.addVariable("TopCapWingWallMat", "Aluminium");
   Control.addVariable("TopCapWingWallThick", 0.3);
-  Control.addVariable("TopCapWingTiltAngle", 3.0);
-  Control.addVariable("TopCapWingTiltRadius", 20.0);
+  Control.Parse("TopAFlightAngleZBase");
+  Control.addVariable("TopCapWingTiltAngle");
+  Control.addVariable("TopCapWingTiltRadius", 20.1);
 
   Control.Parse("LowPreModFlowGuideWallThick");
   Control.addVariable("TopPreModFlowGuideWallThick");

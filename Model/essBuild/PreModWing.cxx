@@ -203,23 +203,27 @@ PreModWing::createSurfaces()
 {
   ELog::RegMethod RegA("PreModWing","createSurfaces");
 
+  const double h = tiltRadius * tan(tiltAngle*M_PI/180.0); // cone must be shifted for the tilting to start at Y=tiltRadius
+
   // Divide plane
   ModelSupport::buildPlane(SMap,modIndex+1,Origin,X);  
   ModelSupport::buildPlane(SMap,modIndex+2,Origin,Y);  
 
-  //  ModelSupport::buildPlane(SMap,modIndex+5,Origin+Z*(thick),Z);  
-  //  ModelSupport::buildPlane(SMap,modIndex+6,Origin+Z*(thick+wallThick),Z);  
+  ModelSupport::buildCylinder(SMap,modIndex+7,Origin,Z,tiltRadius);  
 
-  ModelSupport::buildCylinder(SMap,modIndex+8,Origin,Z,tiltRadius);  
   if (tiltSide)
     {
-      ModelSupport::buildCone(SMap, modIndex+5, Origin+Z*(thick), Z, 90-tiltAngle, -1);
-      ModelSupport::buildCone(SMap, modIndex+6, Origin+Z*(thick+wallThick), Z, 90-tiltAngle, -1);
+      ModelSupport::buildPlane(SMap,modIndex+5,Origin+Z*(thick),Z);  
+      ModelSupport::buildPlane(SMap,modIndex+6,Origin+Z*(thick+wallThick),Z);  
+      ModelSupport::buildCone(SMap, modIndex+8, Origin+Z*(thick+h), Z, 90-tiltAngle, -1);
+      ModelSupport::buildCone(SMap, modIndex+9, Origin+Z*(thick+wallThick+h), Z, 90-tiltAngle, -1);
     }
   else
     {
-      ModelSupport::buildCone(SMap, modIndex+5, Origin-Z*(thick), Z, 90-tiltAngle, 1);
-      ModelSupport::buildCone(SMap, modIndex+6, Origin-Z*(thick+wallThick), Z, 90-tiltAngle, 1);
+      ModelSupport::buildPlane(SMap,modIndex+5,Origin-Z*(thick),Z);  
+      ModelSupport::buildPlane(SMap,modIndex+6,Origin-Z*(thick+wallThick),Z);  
+      ModelSupport::buildCone(SMap, modIndex+8, Origin-Z*(thick+h), Z, 90-tiltAngle, 1);
+      ModelSupport::buildCone(SMap, modIndex+9, Origin-Z*(thick+wallThick+h), Z, 90-tiltAngle, 1);
     }
 
   return; 
@@ -270,19 +274,33 @@ PreModWing::createObjects(Simulation& System, const attachSystem::FixedComp& Pre
   HR.makeComplement();
   PreString = HR.display();
   ELog::EM << "PreString: " << PreString << ELog::endCrit;
-  
-  Out=ModelSupport::getComposite(SMap,modIndex," -5 ") + PreString;
+
+  if (tiltSide)
+    Out=ModelSupport::getComposite(SMap,modIndex," -5 -7 ") + PreString;
+  else
+    Out=ModelSupport::getComposite(SMap,modIndex," 5 -7 ") + PreString;
   wingExclude.procString(Out);
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out+Exclude));
+
+  if (tiltSide)
+    Out=ModelSupport::getComposite(SMap,modIndex," 5 -6 -7 ") + PreString;
+  else
+      Out=ModelSupport::getComposite(SMap,modIndex," 6 -5 -7 ") + PreString;
+  wingExclude.addUnion(Out);
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Exclude));
+  
+  Out=ModelSupport::getComposite(SMap,modIndex," 7 -8 ") + PreString;
+  wingExclude.addUnion(Out);
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out+Exclude + BMouterCyl));
 
-  Out=ModelSupport::getComposite(SMap,modIndex," 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,modIndex," 7 8 -9 ");
   wingExclude.addUnion(Out);
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Exclude + BMouterCyl));
 
   wingExclude.makeComplement();
   AmbientVoid->addSurfString(wingExclude.display());
 
-  Out=ModelSupport::getComposite(SMap,modIndex," -6 ") + PreString+Exclude+BMouterCyl;
+  Out=ModelSupport::getComposite(SMap,modIndex," -9 ") + PreString+Exclude+BMouterCyl;
   addOuterSurf(Out);
   return; 
 }
