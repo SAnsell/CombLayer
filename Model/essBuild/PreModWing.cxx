@@ -161,18 +161,26 @@ PreModWing::populate(const FuncDataBase& Control)
 }
 
 void
-PreModWing::createUnitVector(const attachSystem::FixedComp& FC)
+PreModWing::createUnitVector(const attachSystem::FixedComp& FC, const long int sideIndex,
+			     const bool zRotate)
   /*!
     Create the unit vectors
-    \param refCentre :: Centre for object
+    \param FC :: Centre for object
     \param sideIndex :: index for link
     \param zRotate :: rotate Zaxis
   */
 {
   ELog::RegMethod RegA("PreModWing","createUnitVector");
   attachSystem::FixedComp::createUnitVector(FC);
-  //  applyShift(0.0,0.0,0.0);
-  //  applyAngleRotate(0.0,0.0);
+  Origin=FC.getSignedLinkPt(sideIndex);
+  if (zRotate)
+    {
+      X*=-1;
+      Z*=-1;
+    }
+  //  const double D=(depth.empty()) ? 0.0 : depth.back();
+  //  applyShift(0,0,zStep+D);
+
 
   return;
 }
@@ -198,34 +206,35 @@ PreModWing::createSurfaces()
 }
 
 void
-PreModWing::createObjects(Simulation& System, const attachSystem::FixedComp& FC)
+PreModWing::createObjects(Simulation& System, const attachSystem::FixedComp& Mod,
+			  const attachSystem::FixedComp& Pre, const long int linkPoint)
+
   /*!
     Create the disc component
     \param System :: Simulation to add results
+    \param Mod :: butterfly moderator (to get it's side surface)
+    \param Pre :: attachment top/bottom point
   */
 {
   ELog::RegMethod RegA("PreModWing","createObjects");
 
   const attachSystem::CellMap* CM=
-    dynamic_cast<const attachSystem::CellMap*>(&FC);
+    dynamic_cast<const attachSystem::CellMap*>(&Mod);
 
-  MonteCarlo::Object* InnerObj(0);
-  int innerCell(0);
+  MonteCarlo::Object* AmbientVoid(0);
+  int ambientCell(0);
   if (CM)
     {
-      innerCell=CM->getCell("ambientVoid");
-      InnerObj=System.findQhull(innerCell);
+      ambientCell=CM->getCell("ambientVoid");
+      AmbientVoid=System.findQhull(ambientCell);
     }
-  if (!InnerObj)
+  if (!AmbientVoid)
     throw ColErr::InContainerError<int>
-      (innerCell,"ButterflyModerator ambient void cell not found");
+      (ambientCell,"ButterflyModerator ambient void cell not found");
   
-  const ButterflyModerator *BM = dynamic_cast<const ButterflyModerator*>(&FC);
+  const ButterflyModerator *BM = dynamic_cast<const ButterflyModerator*>(&Mod);
   BM->getSideSurface();
   const std::string Exclude = BM->getSideSurface();;//BM->getExcludeStr(); 
-
-  //  ELog::EM << BM->getExcludeStr() << ELog::endDiag;
-  //  ELog::EM << Exclude << ELog::endDiag;
 
   // BM outer cylinder side surface
   HeadRule HR;
@@ -235,13 +244,18 @@ PreModWing::createObjects(Simulation& System, const attachSystem::FixedComp& FC)
 
   std::string Out;
   HeadRule wingExclude;
+
+  std::string PreString = Pre.getLinkString(linkPoint);
+  // HR.procString(Pre.getLinkString(linkPoint));
+  // HR.makeComplement();
+  // PreString = HR.display();
   
-  Out=ModelSupport::getComposite(SMap,modIndex," 5 -6 ");
-wingExclude.procString(Out);
+  Out=ModelSupport::getComposite(SMap,modIndex," -6 ") + PreString;
+  wingExclude.procString(Out);
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Exclude + BMouterCyl));
 
 wingExclude.makeComplement();
-InnerObj->addSurfString(wingExclude.display());
+AmbientVoid->addSurfString(wingExclude.display());
 
   addOuterSurf(Out);
   return; 
@@ -264,21 +278,26 @@ PreModWing::createLinks()
 
 void
 PreModWing::createAll(Simulation& System,
-		      const attachSystem::FixedComp& FC)
+		      const attachSystem::FixedComp& Pre, const long int linkPoint,
+		      const bool zRotate,
+		      const attachSystem::FixedComp& Mod)
   /*!
     Extrenal build everything
     \param System :: Simulation
-    \param FC :: Attachment point	       
+    \param Pre :: Attachment point
+    \param linkPoint :: z-surface of Pre
+    \param zRotate :: true if must be flipped
+    \param Mod :: Butterfly moderator
    */
 {
   ELog::RegMethod RegA("PreModWing","createAll");
 
 
   populate(System.getDataBase());
-  createUnitVector(FC);
+  createUnitVector(Mod, linkPoint, zRotate);
 
   createSurfaces();
-  createObjects(System, FC);
+  createObjects(System, Mod, Pre, linkPoint);
   createLinks();
 
 

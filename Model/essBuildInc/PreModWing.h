@@ -49,10 +49,11 @@ class PreModWing : public attachSystem::ContainedComp,
   int wallMat;                    ///< wall material
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
+  void createUnitVector(const attachSystem::FixedComp&, const long int, const bool);
 
   void createSurfaces();
-  void createObjects(Simulation&, const attachSystem::FixedComp&);
+  void createObjects(Simulation&, const attachSystem::FixedComp&,
+		     const attachSystem::FixedComp&, const long int);
   void createLinks();
 
  public:
@@ -63,7 +64,8 @@ class PreModWing : public attachSystem::ContainedComp,
   virtual PreModWing* clone() const;
   virtual ~PreModWing();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&);
+  void createAll(Simulation&,const attachSystem::FixedComp&, const long int, const bool,
+		 const attachSystem::FixedComp&);
 };
 
 }

@@ -422,7 +422,7 @@ makeESS::buildPreWings(Simulation& System)
   TopPreWing = std::shared_ptr<PreModWing>(new PreModWing("TopPreWing"));
 
   OR.addObject(TopPreWing);
-  TopPreWing->createAll(System, *TopMod);
+  TopPreWing->createAll(System, *TopPreMod, 5, false, *TopMod);
 }
 
   

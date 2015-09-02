@@ -347,6 +347,7 @@ std::string
 ButterflyModerator::getSideSurface() const
 /*
   Return side surface string
+  \todo // SA: Use union of link points as it is faster
 */
 {
   std::string side("");
