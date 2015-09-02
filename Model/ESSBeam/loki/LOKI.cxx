@@ -214,6 +214,7 @@ LOKI::setBeamAxis(const GuideItem& GItem,
   lokiAxis->createUnitVector(GItem);
   lokiAxis->setLinkCopy(0,GItem.getKey("Main"),0);
   lokiAxis->setLinkCopy(1,GItem.getKey("Main"),1);
+
   lokiAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
   lokiAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
 
@@ -239,15 +240,10 @@ LOKI::build(Simulation& System,
   ELog::RegMethod RegA("LOKI","build");
   ELog::EM<<"\nBuilding LOKI on : "<<GItem.getKeyName()<<ELog::endDiag;
 
-  setBeamAxis(GItem,1);
+  setBeamAxis(GItem,0);
   BendA->addInsertCell(GItem.getCells("Void"));
   BendA->addInsertCell(bunkerObj.getCell("MainVoid"));
-  //  BendA->addEndCut(GItem.getKey("Beam").getSignedLinkString(-2));
-  BendA->createAll(System,GItem.getKey("Beam"),-1,
-		   GItem.getKey("Beam"),-1);
-
-  //  ELog::EM<<"LOW MODERATOR REVERSE"<<ELog::endDebug;
-  //  BendA->getKey("Guide0").reverseZ();
+  BendA->createAll(System,*lokiAxis,-3,*lokiAxis,-3);
   
   // First straight section
   VacBoxA->addInsertCell(bunkerObj.getCell("MainVoid"));

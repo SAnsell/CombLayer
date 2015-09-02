@@ -134,7 +134,10 @@ setESS(defaultConfig& A)
   //  A.setMultiOption("beamlines",2,"G1BLine9 NMX");
 
   A.setVar("G1BLine19Active",1);
+
+
   A.setVar("G4BLine4Active",1);
+  A.setVar("G4BLine4Filled",1);
 
   A.setVar("G1BLine9Filled",1);
   A.setVar("G1BLine9Active",1);

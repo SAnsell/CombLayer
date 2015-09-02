@@ -176,7 +176,7 @@ Bunker::populate(const FuncDataBase& Control)
   rightAngle=Control.EvalVar<double>(keyName+"RightAngle");
 
   nSectors=Control.EvalVar<size_t>(keyName+"NSectors");
-  ModelSupport::populateRange(Control,nSectors,keyName+"SectAngle",
+  ModelSupport::populateRange(Control,nSectors+1,keyName+"SectAngle",
 			      leftPhase,rightPhase,sectPhase);
 
   wallRadius=Control.EvalVar<double>(keyName+"WallRadius");
@@ -234,12 +234,12 @@ Bunker::createSurfaces()
   ELog::RegMethod RegA("Bunker","createSurface");
 
   innerRadius=rotCentre.Distance(Origin);
-  
+
   Geometry::Vec3D AWallDir(X);
   Geometry::Vec3D BWallDir(X);
   // rotation of axis:
-  Geometry::Quaternion::calcQRotDeg(leftAngle-leftPhase,Z).rotate(AWallDir);
-  Geometry::Quaternion::calcQRotDeg(-(rightAngle+rightPhase),Z).rotate(BWallDir);
+  Geometry::Quaternion::calcQRotDeg(leftAngle+leftPhase,-Z).rotate(AWallDir);
+  Geometry::Quaternion::calcQRotDeg(rightAngle+rightPhase,-Z).rotate(BWallDir);
   // rotation of phase points:
 
   // Points on wall
@@ -247,7 +247,8 @@ Bunker::createSurfaces()
   Geometry::Vec3D BWall(Origin-rotCentre);
   Geometry::Quaternion::calcQRotDeg(-leftPhase,Z).rotate(AWall);
   Geometry::Quaternion::calcQRotDeg(-rightPhase,Z).rotate(BWall);
-
+  AWall+=rotCentre;
+  BWall+=rotCentre;
   // Divider
   ModelSupport::buildPlane(SMap,bnkIndex+1,rotCentre,Y);
   ModelSupport::buildCylinder(SMap,bnkIndex+7,rotCentre,Z,wallRadius);
@@ -286,24 +287,26 @@ Bunker::createSurfaces()
 
   int divIndex(bnkIndex+500);
 
-  double phaseAngle(-leftPhase);
-  const double phaseStep((-leftPhase+rightPhase)/nSectors);
-  double normAngle(leftAngle-leftPhase);
-  const double normStep((leftAngle-leftPhase+rightAngle+rightPhase)/nSectors);
+  double phase(leftPhase);
+  double angle(leftAngle);
+  const double phaseStep((rightPhase-leftPhase)/nSectors);
+  const double angleStep((rightAngle-leftAngle)/nSectors);
   
   for(size_t i=1;i<nSectors;i++)
     {
       divIndex++;
-      // const double normAngle=(leftAngle+
-      // 			      angleDiff*(sectPhase[i]-leftPhase)/phaseDiff);
-
-      phaseAngle-=phaseStep;
-      normAngle-=normStep;
+      phase+=phaseStep;
+      angle+=angleStep;
+      ELog::EM<<"Phase["<<keyName<<"] = "
+	      <<phase<<" "<<sectPhase[i]<<ELog::endDiag;
+      
       Geometry::Vec3D DPosition(Origin-rotCentre);
-      Geometry::Quaternion::calcQRotDeg(phaseAngle,Z).rotate(DPosition);
-      Geometry::Vec3D DNorm(X);
-      Geometry::Quaternion::calcQRotDeg(normAngle,Z).rotate(DNorm);
-      ModelSupport::buildPlane(SMap,divIndex,DPosition,DNorm);
+      Geometry::Quaternion::calcQRotDeg(sectPhase[i],-Z).rotate(DPosition);
+      DPosition+=rotCentre;
+      
+      Geometry::Vec3D DDir(X);      
+      Geometry::Quaternion::calcQRotDeg(sectPhase[i]+angle,-Z).rotate(DDir);
+      ModelSupport::buildPlane(SMap,divIndex,DPosition,DDir);
 
       // normAngleX-=normStep;
 

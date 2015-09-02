@@ -1512,7 +1512,7 @@ EssBunkerVariables(FuncDataBase& Control)
 
   Control.addVariable("BBunkerWallMat","Steel71");
 
-  Control.addVariable("BBunkerNLayers",1);
+  Control.addVariable("BBunkerNLayers",9);
   Control.addVariable("BBunkerWallMat1","Tungsten");
   Control.addVariable("BBunkerWallMat2","Tungsten");
   Control.addVariable("BBunkerWallMat3","Stainless304");

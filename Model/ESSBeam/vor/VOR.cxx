@@ -268,7 +268,6 @@ VOR::build(Simulation& System,
 
   // First chopper pit out of bunker
   // Guide guide String
-  const attachSystem::FixedComp& GOuter=FocusBExtra->getKey("Shield");
   HeadRule GuideCut=
     attachSystem::unionLink(FocusBExtra->getKey("Shield"),{2,3,4,5,6});
   PitA->addInsertCell(voidCell);
@@ -299,7 +298,6 @@ VOR::build(Simulation& System,
 
 
   // SECOND CHOPPER PIT OUT OF BUNKER
-  const attachSystem::FixedComp& GOuterB=FocusC->getKey("Shield");
   HeadRule GuideCutB=
     attachSystem::unionLink(FocusC->getKey("Shield"),{2,3,4,5,6});
   PitB->addInsertCell(voidCell);

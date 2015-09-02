@@ -62,10 +62,7 @@ LOKIvariables(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("LOKIvariables[F]","LOKIvariables");
 
-  // Bender in section so use cut system
-  Control.addVariable("G1BLine2Filled",1);
-  Control.addVariable("G1BLine3Filled",1);
-  
+  // Bender in section so use cut system  
   Control.addVariable("lokiBAXStep",0.0);       
   Control.addVariable("lokiBAYStep",0.0);       
   Control.addVariable("lokiBAZStep",0.0);       
@@ -91,7 +88,7 @@ LOKIvariables(FuncDataBase& Control)
   Control.addVariable("lokiBA0AWidth",3.0);
   Control.addVariable("lokiBA0BWidth",3.0);
   Control.addVariable("lokiBA0Length",400.0);
-  Control.addVariable("lokiBA0AngDir",180.0);
+  Control.addVariable("lokiBA0AngDir",0.0);
   Control.addVariable("lokiBA0Radius",6600.0);
 
   // VACBOX A : A[1.08m from Bunker wall]

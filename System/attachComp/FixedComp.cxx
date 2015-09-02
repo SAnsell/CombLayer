@@ -345,8 +345,8 @@ FixedComp::reverseZ()
     (could generalize but ...)
   */
 {
-  Z=-Z;
-  X= -X;
+  Z*= -1.0;
+  X*= -1.0;
   return;
 }
 
