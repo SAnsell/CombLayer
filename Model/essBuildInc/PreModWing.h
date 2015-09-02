@@ -51,6 +51,7 @@ class PreModWing : public attachSystem::ContainedComp,
   double wallThick;               ///< wall thickness
   int wallMat;                    ///< wall material
 
+  bool   tiltSide;                ///< true ? top : bottom  side to be tilted
   double tiltAngle;               ///< tilt angle
   double tiltRadius;              ///< radius where tilting starts
   
@@ -71,6 +72,7 @@ class PreModWing : public attachSystem::ContainedComp,
   virtual ~PreModWing();
 
   void createAll(Simulation&,const attachSystem::FixedComp&, const long int, const bool,
+		 const bool,
 		 const attachSystem::FixedComp&);
 };
 

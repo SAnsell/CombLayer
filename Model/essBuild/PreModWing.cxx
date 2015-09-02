@@ -211,8 +211,16 @@ PreModWing::createSurfaces()
   //  ModelSupport::buildPlane(SMap,modIndex+6,Origin+Z*(thick+wallThick),Z);  
 
   ModelSupport::buildCylinder(SMap,modIndex+8,Origin,Z,tiltRadius);  
-  ModelSupport::buildCone(SMap, modIndex+5, Origin+Z*(thick), Z, 90-tiltAngle, -1);
-  ModelSupport::buildCone(SMap, modIndex+6, Origin+Z*(thick+wallThick), Z, 90-tiltAngle, -1);
+  if (tiltSide)
+    {
+      ModelSupport::buildCone(SMap, modIndex+5, Origin+Z*(thick), Z, 90-tiltAngle, -1);
+      ModelSupport::buildCone(SMap, modIndex+6, Origin+Z*(thick+wallThick), Z, 90-tiltAngle, -1);
+    }
+  else
+    {
+      ModelSupport::buildCone(SMap, modIndex+5, Origin-Z*(thick), Z, 90-tiltAngle, 1);
+      ModelSupport::buildCone(SMap, modIndex+6, Origin-Z*(thick+wallThick), Z, 90-tiltAngle, 1);
+    }
 
   return; 
 }
@@ -298,6 +306,7 @@ void
 PreModWing::createAll(Simulation& System,
 		      const attachSystem::FixedComp& Pre, const long int linkPoint,
 		      const bool zRotate,
+		      const bool ts,
 		      const attachSystem::FixedComp& Mod)
   /*!
     Extrenal build everything
@@ -305,11 +314,13 @@ PreModWing::createAll(Simulation& System,
     \param Pre :: Attachment point
     \param linkPoint :: z-surface of Pre
     \param zRotate :: true if must be flipped
+    \param ts :: tilt side
     \param Mod :: Butterfly moderator
    */
 {
   ELog::RegMethod RegA("PreModWing","createAll");
 
+  tiltSide = ts;
 
   populate(System.getDataBase());
   createUnitVector(Pre, linkPoint, zRotate);

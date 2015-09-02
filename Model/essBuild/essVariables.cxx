@@ -1136,6 +1136,13 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopPreWingTiltAngle", 3.0);
   Control.addVariable("TopPreWingTiltRadius", 20.0);
 
+  Control.addVariable("TopCapWingMat", "H2O");
+  Control.addVariable("TopCapWingThick", 2.0);
+  Control.addVariable("TopCapWingWallMat", "Aluminium");
+  Control.addVariable("TopCapWingWallThick", 0.3);
+  Control.addVariable("TopCapWingTiltAngle", 3.0);
+  Control.addVariable("TopCapWingTiltRadius", 20.0);
+
   Control.Parse("LowPreModFlowGuideWallThick");
   Control.addVariable("TopPreModFlowGuideWallThick");
   Control.addVariable("TopPreModFlowGuideWallMat", "Aluminium");

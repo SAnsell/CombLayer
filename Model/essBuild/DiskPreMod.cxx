@@ -408,7 +408,7 @@ DiskPreMod::createLinks()
   FixedComp::setLinkSurf(9,-SMap.realSurf(SI+6));
 
   FixedComp::setConnect(10,Origin+Z*height[nLayers-3],Z);
-  FixedComp::setLinkSurf(10,SMap.realSurf(SI+6));
+  FixedComp::setLinkSurf(10,SMap.realSurf(SI+5));
 
   return;
 }
