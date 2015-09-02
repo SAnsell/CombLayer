@@ -89,7 +89,8 @@ ButterflyModerator::ButterflyModerator(const ButterflyModerator& A) :
   MidWater(A.MidWater->clone()),
   LeftWater(A.LeftWater->clone()),
   RightWater(A.LeftWater->clone()),
-  outerRadius(A.outerRadius)
+  outerRadius(A.outerRadius),
+  ExcludeStr(A.ExcludeStr)
   /*!
     Copy constructor
     \param A :: ButterflyModerator to copy
@@ -114,6 +115,7 @@ ButterflyModerator::operator=(const ButterflyModerator& A)
       *LeftWater= *A.LeftWater;
       *RightWater= *A.RightWater;
       outerRadius=A.outerRadius;
+      ExcludeStr=A.ExcludeStr;
     }
   return *this;
 }
@@ -195,6 +197,7 @@ ButterflyModerator::createObjects(Simulation& System)
   ELog::RegMethod RegA("ButterflyModerator","createObjects");
   
   const std::string Exclude=ContainedComp::getExclude();
+  ExcludeStr = Exclude;
 
   std::string Out;
   Out=ModelSupport::getComposite(SMap,flyIndex," -7 5 -6 ");  

@@ -73,7 +73,11 @@
 #include "Cone.h"
 #include "Plane.h"
 #include "Cylinder.h"
-//#include "ButterflyModerator.h"
+// for Butterfly
+#include "LayerComp.h"
+#include "ModBase.h"
+#include "H2Wing.h"
+#include "ButterflyModerator.h"
 
 namespace essSystem
 {
@@ -213,7 +217,8 @@ PreModWing::createObjects(Simulation& System, const attachSystem::FixedComp& FC)
     throw ColErr::InContainerError<int>
       (innerCell,"ButterflyModerator ambient void cell not found");
 
-  const std::string Exclude = "";//dynamic_cast<ButterflyModerator>(*FC).ContainedComp::getExclude();
+  const ButterflyModerator *BM = dynamic_cast<const ButterflyModerator*>(&FC);
+const std::string Exclude = BM->getExcludeStr();
   std::string Out;
 
   Out=ModelSupport::getComposite(SMap,modIndex," 5 -6 ");
