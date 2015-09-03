@@ -54,8 +54,6 @@ namespace setVariable
 {
   void EssBeamLinesVariables(FuncDataBase&);
   void EssBunkerVariables(FuncDataBase&);
-  void EssReflectorVariables(FuncDataBase&);
-  void EssSANSVariables(FuncDataBase&);
   void EssButterflyModerator(FuncDataBase&);
   void ESSWheel(FuncDataBase&);
 
@@ -806,8 +804,6 @@ EssVariables(FuncDataBase& Control)
 
 
   EssBeamLinesVariables(Control);
-  EssReflectorVariables(Control);
-  EssSANSVariables(Control);
   ODINvariables(Control);
   LOKIvariables(Control);
   NMXvariables(Control);
@@ -1080,24 +1076,24 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopFlyRightWaterWallMat","Aluminium");
   Control.addVariable("TopFlyRightWaterModTemp",300.0);
 
-  Control.addVariable("LowPreModNLayers",5);
+  Control.addVariable("LowPreModNLayers",4);
   Control.addVariable("LowPreModHeight0",1.5);
   Control.addVariable("LowPreModDepth0",1.5);
   Control.addVariable("LowPreModRadius0",30.0);
   Control.addVariable("LowPreModMat0","H2O");
   Control.addVariable("LowPreModHeight1",0);
   Control.addVariable("LowPreModDepth1",0);
-  Control.addVariable("LowPreModRadius1",0.3);
+  Control.addVariable("LowPreModRadius1",30.3);
   Control.addVariable("LowPreModMat1","Aluminium");
   Control.addVariable("LowPreModHeight2",0);
   Control.addVariable("LowPreModDepth2",0);
-  Control.Parse("BeRefRadius-LowPreModRadius0-LowPreModRadius1");
+  Control.Parse("BeRefRadius");
   Control.addVariable("LowPreModRadius2");
   Control.addVariable("LowPreModMat2","Stainless304");
   Control.addVariable("LowPreModHeight3",0.3);
   Control.addVariable("LowPreModDepth3",0.3);
   Control.Parse("BeRefWallThick");
-  Control.addVariable("LowPreModRadius3");
+  Control.addVariable("LowPreModThick3");
   Control.addVariable("LowPreModMat3","Aluminium");
   Control.addVariable("LowPreModHeight4", 0.0);
   Control.addVariable("LowPreModDepth4",  0.85);
@@ -1109,25 +1105,26 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowPreModFlowGuideNBaffles", 9);
   Control.addVariable("LowPreModFlowGuideGapWidth", 3);
 
-  Control.addVariable("TopPreModNLayers",5);
+  Control.addVariable("TopPreModNLayers",4);
   Control.addVariable("TopPreModHeight0",1.5);
   Control.addVariable("TopPreModDepth0",1.5);
   Control.addVariable("TopPreModRadius0",30.0);
   Control.addVariable("TopPreModMat0","H2O");
   Control.addVariable("TopPreModHeight1",0);
   Control.addVariable("TopPreModDepth1",0);
-  Control.addVariable("TopPreModRadius1",0.3);
+  Control.addVariable("TopPreModRadius1",30.3);
   Control.addVariable("TopPreModMat1","Aluminium");
   Control.addVariable("TopPreModHeight2",0);
   Control.addVariable("TopPreModDepth2",0);
-  Control.Parse("BeRefRadius-TopPreModRadius0-TopPreModRadius1");
+  Control.Parse("BeRefRadius");
   Control.addVariable("TopPreModRadius2");
   Control.addVariable("TopPreModMat2","Stainless304");
   Control.addVariable("TopPreModHeight3",0.3);
   Control.addVariable("TopPreModDepth3",0.3);
   Control.Parse("BeRefWallThick");
-  Control.addVariable("TopPreModRadius3");
+  Control.addVariable("TopPreModThick3");
   Control.addVariable("TopPreModMat3","Aluminium");
+
   Control.addVariable("TopPreModHeight4", 0.0);
   Control.addVariable("TopPreModDepth4",  0.85);
   Control.addVariable("TopPreModRadius4", 0.0);
@@ -1146,20 +1143,19 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowCapModDepth0", 0.5);
   Control.addVariable("LowCapModRadius0",19.5);
   Control.addVariable("LowCapModMat0","H2O");
-  Control.addVariable("LowCapModHeight1",0.6);
+  Control.addVariable("LowCapModHeight1",0.3);
   Control.addVariable("LowCapModDepth1",0.0);
-  Control.addVariable("LowCapModRadius1",0.6);
+  Control.addVariable("LowCapModRadius1",19.8);
   Control.addVariable("LowCapModMat1","Aluminium");
   Control.addVariable("LowCapModHeight2",0.0);
   Control.addVariable("LowCapModDepth2",0.0);
-  Control.Parse("BeRefRadius-LowCapModRadius0-LowCapModRadius1");
+  Control.Parse("BeRefRadius");
   Control.addVariable("LowCapModRadius2");
   Control.addVariable("LowCapModMat2","Be5H2O");
   Control.addVariable("LowCapModHeight3",0);
   Control.addVariable("LowCapModDepth3", 0.3);
   Control.Parse("BeRefWallThick");
-  Control.addVariable("LowCapModRadius3");
-  //  Control.Parse("BeRefWallMat");
+  Control.addVariable("LowCapModThick3");
   Control.addVariable("LowCapModMat3", "Aluminium");
 
   Control.addVariable("LowCapModFlowGuideWallThick", 0.3);
@@ -1167,26 +1163,6 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowCapModFlowGuideNBaffles", 9);
   Control.addVariable("LowCapModFlowGuideGapWidth", 3);
 
-  Control.addVariable("TopCapModNLayers",4);
-  Control.addVariable("TopCapModHeight0",0.5);
-  Control.addVariable("TopCapModDepth0", 0.5);
-  Control.addVariable("TopCapModRadius0",19.5);
-  Control.addVariable("TopCapModMat0","H2O");
-  Control.addVariable("TopCapModHeight1",0.6);
-  Control.addVariable("TopCapModDepth1",0.0);
-  Control.addVariable("TopCapModRadius1",0.6);
-  Control.addVariable("TopCapModMat1","Aluminium");
-  Control.addVariable("TopCapModHeight2",0.0);
-  Control.addVariable("TopCapModDepth2",0.0);
-  Control.Parse("BeRefRadius-TopCapModRadius0-TopCapModRadius1");
-  Control.addVariable("TopCapModRadius2");
-  Control.addVariable("TopCapModMat2","Be5H2O");
-  Control.addVariable("TopCapModHeight3",0);
-  Control.addVariable("TopCapModDepth3", 0.3);
-  Control.Parse("BeRefWallThick");
-  Control.addVariable("TopCapModRadius3");
-  //  Control.Parse("BeRefWallMat");
-  Control.addVariable("TopCapModMat3", "Aluminium");
 
   Control.Parse("LowCapModFlowGuideWallThick");
   Control.addVariable("TopCapModFlowGuideWallThick");
@@ -1306,30 +1282,6 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopFlyRightWaterWallMat","Aluminium");
   Control.addVariable("TopFlyRightWaterModTemp",300.0);
 
-  Control.addVariable("TopPreModNLayers",5);
-  Control.addVariable("TopPreModHeight0",1.5);
-  Control.addVariable("TopPreModDepth0",1.5);
-  Control.addVariable("TopPreModRadius0",30.0);
-  Control.addVariable("TopPreModMat0","H2O");
-  Control.addVariable("TopPreModHeight1",0);
-  Control.addVariable("TopPreModDepth1",0);
-  Control.addVariable("TopPreModRadius1",0.3);
-  Control.addVariable("TopPreModMat1","Aluminium");
-  Control.addVariable("TopPreModHeight2",0);
-  Control.addVariable("TopPreModDepth2",0);
-  Control.Parse("BeRefRadius-TopPreModRadius0-TopPreModRadius1");
-  Control.addVariable("TopPreModRadius2");
-  Control.addVariable("TopPreModMat2","Stainless304");
-  Control.addVariable("TopPreModHeight3",0.3);
-  Control.addVariable("TopPreModDepth3",0.3);
-  Control.Parse("BeRefWallThick");
-  Control.addVariable("TopPreModRadius3");
-  Control.addVariable("TopPreModMat3","Aluminium");
-  Control.addVariable("TopPreModHeight4", 0.0);
-  Control.addVariable("TopPreModDepth4",  0.85);
-  Control.addVariable("TopPreModRadius4", 0.0);
-  Control.addVariable("TopPreModMat4","Void");
-
   Control.addVariable("TopCapModNLayers",4);
   Control.addVariable("TopCapModHeight0",0.5);
   Control.addVariable("TopCapModDepth0", 0.5);
@@ -1337,124 +1289,22 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopCapModMat0","H2O");
   Control.addVariable("TopCapModHeight1",0.6);
   Control.addVariable("TopCapModDepth1",0.0);
-  Control.addVariable("TopCapModRadius1",0.6);
+  Control.addVariable("TopCapModThick1",0.6);
   Control.addVariable("TopCapModMat1","Aluminium");
   Control.addVariable("TopCapModHeight2",0.0);
   Control.addVariable("TopCapModDepth2",0.0);
-  Control.Parse("BeRefRadius-TopCapModRadius0-TopCapModRadius1");
+  Control.Parse("BeRefRadius");
   Control.addVariable("TopCapModRadius2");
-  Control.addVariable("TopCapModMat2","Be300K");
+  Control.addVariable("TopCapModMat2","Be10H2O");
   Control.addVariable("TopCapModHeight3",0);
   Control.addVariable("TopCapModDepth3", 0.3);
   Control.Parse("BeRefWallThick");
-  Control.addVariable("TopCapModRadius3");
-  //  Control.Parse("BeRefWallMat");
+  Control.addVariable("TopCapModThick3");
   Control.addVariable("TopCapModMat3", "Aluminium");
 
   
   return;
 }
-
-
-  
-void
-EssReflectorVariables(FuncDataBase& Control)
-  /*!
-    Add ESS JRefl beamline 
-    \param Control :: Data to add
-   */
-{
-  ELog::RegMethod RegA("essVariables[F]","EssReflectorVariables");
-
-  Control.addVariable("JReflXStep",0.0);       
-  Control.addVariable("JReflYStep",0.0);       
-  Control.addVariable("JReflZStep",0.0);       
-  Control.addVariable("JReflXYAngle",0.0);       
-  Control.addVariable("JReflZAngle",0.0);       
-  Control.addVariable("JReflLength",3190.0);       
-  Control.addVariable("JReflHeight",100.0);       
-  Control.addVariable("JReflDepth",100.0);       
-  Control.addVariable("JReflLeftWidth",30.0);       
-  Control.addVariable("JReflRightWidth",30.0);       
-  Control.addVariable("JReflFeMat","Stainless304");       
-  Control.addVariable("JReflNShapes",3);       
-  Control.addVariable("JReflNShapeLayers",3);       
-
-  Control.addVariable("JRefl0TypeID","Tapper");
-  Control.addVariable("JRefl0HeightStart",2.0);
-  Control.addVariable("JRefl0HeightEnd",2.0);
-  Control.addVariable("JRefl0WidthStart",10.0);
-  Control.addVariable("JRefl0WidthEnd",25.0);
-  Control.addVariable("JRefl0Length",1070.0);       
-
-  Control.addVariable("JRefl1TypeID","Rectangle");
-  Control.addVariable("JRefl1Height",2.0);
-  Control.addVariable("JRefl1Width",25.0);
-  Control.addVariable("JRefl1Length",1120.0);
-  Control.addVariable("JRefl1ZAngle",0.25);       
-
-  Control.addVariable("JRefl2TypeID","Tapper");
-  Control.addVariable("JRefl2HeightStart",3.0);
-  Control.addVariable("JRefl2HeightEnd",3.0);
-  Control.addVariable("JRefl2WidthStart",25.0);
-  Control.addVariable("JRefl2WidthEnd",10.0);
-  Control.addVariable("JRefl2Length",1310.0);
-  Control.addVariable("JRefl2ZAngle",-0.25);       
-
-
-  Control.addVariable("JReflLayerMat0","Void");
-  Control.addVariable("JReflLayerThick1",0.4);
-  Control.addVariable("JReflLayerMat1","Glass");
-  Control.addVariable("JReflLayerThick2",1.5);
-  Control.addVariable("JReflLayerMat2","Void");
-  return;
-}
-
-void
-EssSANSVariables(FuncDataBase& Control)
-  /*!
-    Add ESS JRefl beamline 
-    \param Control :: Data to add
-   */
-{
-  ELog::RegMethod RegA("essVariables[F]","EssReflectorVariables");
-
-  Control.addVariable("JSANSXStep",0.0);       
-  Control.addVariable("JSANSYStep",0.0);       
-  Control.addVariable("JSANSZStep",0.0);       
-  Control.addVariable("JSANSXYAngle",0.0);       
-  Control.addVariable("JSANSZAngle",0.0);       
-  Control.addVariable("JSANSLength",3190.0);       
-  Control.addVariable("JSANSHeight",100.0);       
-  Control.addVariable("JSANSDepth",100.0);       
-  Control.addVariable("JSANSLeftWidth",30.0);       
-  Control.addVariable("JSANSRightWidth",30.0);       
-  Control.addVariable("JSANSFeMat","Stainless304");       
-  Control.addVariable("JSANSNShapes",2);       
-  Control.addVariable("JSANSNShapeLayers",3);       
-
-  Control.addVariable("JSANS0TypeID","Bend");
-  Control.addVariable("JSANS0AHeight",16.0);
-  Control.addVariable("JSANS0AWidth",16.0);
-  Control.addVariable("JSANS0BWidth",16.0);
-  Control.addVariable("JSANS0AngDir",0.0);
-  Control.addVariable("JSANS0Length",400.0);       
-  Control.addVariable("JSANS0Radius",4000.0);       
-
-  Control.addVariable("JSANS1TypeID","Rectangle");
-  Control.addVariable("JSANS1Height",16.0);
-  Control.addVariable("JSANS1Width",16.0);
-  Control.addVariable("JSANS1Length",1120.0);
-  Control.addVariable("JSANS1ZAngle",0.0);       
-
-  Control.addVariable("JSANSLayerMat0","Void");
-  Control.addVariable("JSANSLayerThick1",0.4);
-  Control.addVariable("JSANSLayerMat1","Glass");
-  Control.addVariable("JSANSLayerThick2",1.5);
-  Control.addVariable("JSANSLayerMat2","Void");
-  return;
-}
-
 
 void
 EssBunkerVariables(FuncDataBase& Control)

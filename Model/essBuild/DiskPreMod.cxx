@@ -184,8 +184,10 @@ DiskPreMod::populate(const FuncDataBase& Control,
       const std::string NStr(StrFunc::makeString(i));
       H+=Control.EvalVar<double>(keyName+"Height"+NStr);
       D+=Control.EvalVar<double>(keyName+"Depth"+NStr);
-      R+=Control.EvalPair<double>(keyName+"Radius"+NStr,
-				  keyName+"Thick"+NStr);
+      if (Control.hasVariable(keyName+"Radius"+NStr))
+	R=Control.EvalVar<double>(keyName+"Radius"+NStr);
+      else
+	R+=Control.EvalVar<double>(keyName+"Thick"+NStr);
       W+=Control.EvalDefVar<double>(keyName+"Width"+NStr,0.0);
       M=ModelSupport::EvalMat<int>(Control,keyName+"Mat"+NStr);   
       const std::string TStr=keyName+"Temp"+NStr;
@@ -253,7 +255,9 @@ DiskPreMod::createSurfaces()
   int SI(modIndex);
   for(size_t i=0;i<nLayers;i++)
     {
-      ModelSupport::buildCylinder(SMap,SI+7,Origin,Z,radius[i]);  
+      ELog::EM<<"Radius["<<keyName<<"] == "<<radius[i]<<ELog::endDiag;
+      ModelSupport::buildCylinder(SMap,SI+7,Origin,Z,radius[i]);
+
       ModelSupport::buildPlane(SMap,SI+5,Origin-Z*depth[i],Z);  
       ModelSupport::buildPlane(SMap,SI+6,Origin+Z*height[i],Z);
       if (i<NWidth)

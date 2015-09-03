@@ -456,7 +456,8 @@ makeESS::build(Simulation& System,
   TopCapMod->createAll(System,*TopMod,6,false,
    		       0.0,Reflector->getRadius());
 
-
+  LowCapMod->createAll(System,*LowMod,6,false,
+   		       0.0,Reflector->getRadius());
 
   Reflector->createAll(System,World::masterOrigin(),
 		       Target->wheelHeight(),
