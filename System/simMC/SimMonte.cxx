@@ -324,4 +324,16 @@ SimMonte::writeDetectors(const std::string& outName,
   OX.close();
   return;
 }
-  
+
+void
+SimMonte::write(const std::string& outName) const
+  /*!
+    Write the informaton to a file
+    \param outName :: head name
+  */
+{
+  Simulation::write(outName+".x");
+  writeDetectors(outName,1.0);
+  return;
+}
+
