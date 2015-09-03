@@ -180,7 +180,7 @@ PreModWing::createUnitVector(const attachSystem::FixedComp& FC, const long int s
   ELog::RegMethod RegA("PreModWing","createUnitVector");
   attachSystem::FixedComp::createUnitVector(FC);
   Origin=FC.getSignedLinkPt(sideIndex);
-  ELog::EM << Origin << ELog::endCrit;
+  //  ELog::EM << Origin << ELog::endCrit;
   if (zRotate)
     {
       X*=-1;
@@ -273,7 +273,7 @@ PreModWing::createObjects(Simulation& System, const attachSystem::FixedComp& Pre
   HR.procString(Pre.getLinkString(linkPoint));
   HR.makeComplement();
   PreString = HR.display();
-  ELog::EM << "PreString: " << PreString << ELog::endCrit;
+  //  ELog::EM << "PreString: " << PreString << ELog::endCrit;
 
   if (tiltSide)
     Out=ModelSupport::getComposite(SMap,modIndex," -5 -7 ") + PreString;
