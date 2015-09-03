@@ -282,7 +282,7 @@ pointConstruct::processPointFree(Simulation& System,
 {
   ELog::RegMethod RegA("pointConstruct","processPointFree(String)");
 
-  ModelSupport::objectRegister& OR=
+  const ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
   const attachSystem::FixedComp* TPtr=

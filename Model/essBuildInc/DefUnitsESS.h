@@ -1,7 +1,7 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
- * File:   t1UpgradeInc/DefUnitsESS.h
+ * File:   essBuildInc/DefUnitsESS.h
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -32,6 +32,7 @@ namespace mainSystem
   void setDefUnits(FuncDataBase&,inputParam&);
 
   void setESS(defaultConfig&);
+  void setESSPortsOnly(defaultConfig&);
   void setESSFull(defaultConfig&); 
 
 }
