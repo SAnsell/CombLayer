@@ -198,7 +198,6 @@ DiskPreMod::populate(const FuncDataBase& Control,
 	radius.push_back(R);
       else
 	radius.push_back(outerRadius+R);
-      ELog::EM<<"Radius == "<<radius.back()<<" "<<outerRadius<<" "<<R<<ELog::endDiag;
       height.push_back(H);
       depth.push_back(D);
       width.push_back(W);
@@ -259,7 +258,6 @@ DiskPreMod::createSurfaces()
   int SI(modIndex);
   for(size_t i=0;i<nLayers;i++)
     {
-      ELog::EM<<"Radius["<<keyName<<"] == "<<radius[i]<<ELog::endDiag;
       ModelSupport::buildCylinder(SMap,SI+7,Origin,Z,radius[i]);
 
       ModelSupport::buildPlane(SMap,SI+5,Origin-Z*depth[i],Z);  
