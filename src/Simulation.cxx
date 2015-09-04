@@ -1737,7 +1737,7 @@ Simulation::write(const std::string& Fname) const
 void
 Simulation::writeHTape() const
   /*!
-    Write out the all the f4 tallys
+    Write out the all the f4 tallys 
   */
 {
   ELog::RegMethod RegA("Simulation","writeHTape");

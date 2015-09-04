@@ -281,46 +281,6 @@ GuideLine::addGuideUnit(const size_t index,
 }
 
 void
-GuideLine::addGuideUnit(const size_t index,
-			const Geometry::Vec3D& POrigin,
-			const Geometry::Vec3D& outX,
-			const Geometry::Vec3D& outY,
-			const Geometry::Vec3D& outZ,
-			const double bX,const double bZ,
-			const double bXYang,const double bZang)
-  /*!
-    Set the guide unit to the fixed system
-    The direction/rotation are applied to previous fixed unit
-    out track.
-
-    \param Index :: index for the unit
-    \param POrigin :: Previous Origin [link on]
-    \param outX :: X out outgoing component
-    \param outY :: Y out outgoing component
-    \param outZ :: Z out outgoing component
-    \param bX :: X shift on origin
-    \param bZ :: Z shift on origin
-    \param bXYang :: xy Angle rotation [deg]
-    \param bZang :: z Angle rotation [deg]
-  */
-{
-  ELog::RegMethod RegA("GuideLine","addGuideUnit(outX,outY,outZ)");
-
-  const std::string GKey="Guide"+StrFunc::makeString(index);
-  attachSystem::FixedComp& guideFC=FixedGroup::addKey(GKey,2);
-  
-  const std::string PGKey=(index) ? 
-    "Guide"+StrFunc::makeString(index-1) :  "GuideOrigin";
-
-  attachSystem::FixedComp& prevFC=FixedGroup::getKey(PGKey);
-  guideFC.createUnitVector(prevFC,POrigin);
-  guideFC.applyShift(bX,0.0,bZ);
-  guideFC.applyAngleRotate(bXYang,bZang);
-
-  return;
-}
-
-void
 GuideLine::checkRectangle(const double W,const double H) const
   /*!
     Check the rectangle size relative to the outside values
@@ -690,11 +650,12 @@ GuideLine::createMainLinks(const attachSystem::FixedComp& mainFC,
 }
 
 Geometry::Vec3D
-GuideLine::calcActiveEndIntercept(const ShapeUnit* shapePtr) 
+GuideLine::calcActiveEndIntercept() 
   /*!
     Determine the active end point intercept
-    with the list link point
-    \param shapePtr :: ShapeUnit of last point
+    with the list link point.
+    Note that it is not constant because it needs to
+    populate the surfaces of the endCut HeadRule.
   */
 {
   ELog::RegMethod RegA("GuideLine","calcActiveEndIntercept");
@@ -742,7 +703,7 @@ GuideLine::createUnitLinks()
 	guideFC.setConnect(1,shapeUnits[i]->getEnd(),
 			   shapeUnits[i]->getEndAxis());     
       else
-	guideFC.setConnect(1,calcActiveEndIntercept(shapeUnits[i]),
+	guideFC.setConnect(1,calcActiveEndIntercept(),
 			   shapeUnits[i]->getEndAxis());     
 
       // decide which point to used 

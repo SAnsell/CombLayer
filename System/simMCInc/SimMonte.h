@@ -44,7 +44,7 @@ class SimMonte : public Simulation
 
   size_t TCount;                    ///< Total counts 
 
-  int MSActive;                      ///< Multi-scattering [0-all, -1 => single]
+  int MSActive;                       ///< Multi-scattering [0-all,-1=>single]
   Transport::Beam* B;                 ///< Main Beam (init partiles)
   Transport::DetGroup DUnit;          ///< Detector Units
   
@@ -72,8 +72,8 @@ class SimMonte : public Simulation
 
   void normalizeDetectors();
   void writeDetectors(const std::string&,const double) const;
-  void write(const std::string&) const;
 
+  virtual void write(const std::string&) const;
 };
 
 #endif

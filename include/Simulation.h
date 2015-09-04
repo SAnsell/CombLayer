@@ -70,11 +70,15 @@ namespace MonteCarlo
 
 class Simulation
 {
+ protected:
+
+  typedef std::map<int,Geometry::Transform> TransTYPE; ///< Transform type
+ 
  public:
 
+  // UGLY
   typedef std::map<int,MonteCarlo::Qhull*> OTYPE;      ///< Object type
   typedef std::map<int,tallySystem::Tally*> TallyTYPE; ///< Tally type
-  typedef std::map<int,Geometry::Transform> TransTYPE; ///< Transform type
 
  protected:
 
@@ -232,9 +236,10 @@ class Simulation
   void renumberCells(const std::vector<int>&,const std::vector<int>&);
   void renumberSurfaces(const std::vector<int>&,const std::vector<int>&);
   void prepareWrite();
-  void write(const std::string&) const;  
   void writeCinder() const;          
 
+  virtual void write(const std::string&) const;  
+    
   // Debug stuff
   
   void printVertex(const int) const;
