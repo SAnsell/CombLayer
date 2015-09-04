@@ -193,8 +193,12 @@ DiskPreMod::populate(const FuncDataBase& Control,
       const std::string TStr=keyName+"Temp"+NStr;
       T=(!M || !Control.hasVariable(TStr)) ?
 	0.0 : Control.EvalVar<double>(TStr); 
-      
-      radius.push_back(R);
+
+      if (R>Geometry::zeroTol)
+	radius.push_back(R);
+      else
+	radius.push_back(outerRadius+R);
+      ELog::EM<<"Radius == "<<radius.back()<<" "<<outerRadius<<" "<<R<<ELog::endDiag;
       height.push_back(H);
       depth.push_back(D);
       width.push_back(W);
