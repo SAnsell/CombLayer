@@ -470,16 +470,16 @@ Vec3D::masterDir(const double Tol) const
   return idx;
 }
 
-int 
+size_t 
 Vec3D::principleDir() const
   /*! 
      Calculates the index of the primary direction
      \retval range 0,1,2 :: direction of maximum 
   */
 {
-  int maxI=0;
+  size_t maxI=0;
   double maxV=0.0;
-  for(int i=0;i<3;i++)
+  for(size_t i=0;i<3;i++)
     if (fabs(this->operator[](i))>maxV)
       {
 	maxV=fabs(this->operator[](i));

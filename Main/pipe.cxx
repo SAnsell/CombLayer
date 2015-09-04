@@ -62,6 +62,7 @@
 #include "SimInput.h"
 #include "SurInter.h"
 #include "Simulation.h"
+#include "SimFLUKA.h"
 #include "SimPHITS.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"

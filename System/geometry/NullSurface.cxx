@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   geometry/NullSurface.cxx
  *
@@ -193,15 +193,24 @@ NullSurface::print() const
 }
 
 void 
+NullSurface::writeFLUKA(std::ostream&) const
+  /*! 
+    Object of write is to output a MCNPX plane info 
+    This should not write but puts a warning to EMessage
+  */
+{
+  ELog::EM<<"Writing Null Surface: "<<ELog::endWarn;
+  return;
+}
+
+void 
 NullSurface::write(std::ostream&) const
   /*! 
     Object of write is to output a MCNPX plane info 
     This should not write but puts a warning to EMessage
   */
 {
-  ELog::EM<<"Writing Null Surface: ";
-  Surface::writeHeader(ELog::EM.Estream());
-  ELog::EM<<ELog::endWarn;
+  ELog::EM<<"Writing Null Surface: "<<ELog::endWarn;
   return;
 }
 

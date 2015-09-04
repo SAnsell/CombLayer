@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   geomInc/Torus.h
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,7 +65,7 @@ class Torus : public Surface
   Torus& operator=(const Torus&);
   bool operator==(const Torus&) const;
   bool operator!=(const Torus&) const;
-  ~Torus();
+  virtual ~Torus();
 
   /// Effective TYPENAME 
   static std::string classType() { return "Torus"; }
@@ -101,6 +101,7 @@ class Torus : public Surface
   Geometry::Vec3D surfaceNormal(const Geometry::Vec3D&) const;
 
   void write(std::ostream&) const;
+  virtual void writeFLUKA(std::ostream&) const;
 
 };
 

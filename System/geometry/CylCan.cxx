@@ -465,4 +465,19 @@ CylCan::write(std::ostream& OX) const
   return;
 }
 
+void
+CylCan::writeFLUKA(std::ostream&) const
+  /*!
+    Write out the cone class in an mcnpx
+    format.
+    \param  :: Output Stream (required for multiple std::endl)
+  */
+{
+  ELog::EM<<"Unsupported output"<<ELog::endErr;
+  return;
+}
+
+
+  
+  
 }  // NAMESPACE Geometry
