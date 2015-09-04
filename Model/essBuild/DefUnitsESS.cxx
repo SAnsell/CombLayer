@@ -70,10 +70,13 @@ setDefUnits(FuncDataBase& Control,
       const std::string Key=IParam.getValue<std::string>("defaultConfig");
       if (Key=="Main")
 	setESS(A);
+      else if (Key=="PortsOnly")
+	setESSPortsOnly(A);
       else if (Key=="help")
 	{
 	  ELog::EM<<"Options : "<<ELog::endDiag;
-	  ELog::EM<<"  Main  "<<ELog::endDiag;
+	  ELog::EM<<"  Main : Everything that works"<<ELog::endDiag;
+	  ELog::EM<<"  PortsOnly  : Nothing beyond beamport "<<ELog::endDiag;
 	  throw ColErr::InContainerError<std::string>
 	    (Key,"Iparam.defaultConfig");	  
 	}
@@ -119,6 +122,24 @@ setESSFull(defaultConfig& A)
 }
 
 void
+setESSPortsOnly(defaultConfig& A)
+  /*!
+    Default configuration for ESS for beamports only
+    \param A :: Paramter for default config
+   */
+{
+  ELog::RegMethod RegA("DefUnitsESS[F]","setESS");
+
+  A.setOption("lowMod","Butterfly");
+
+
+  for(size_t i=0;i<19;i++)
+    A.setVar("G1BLine"+StrFunc::makeString(i+1)+"Active",1);
+  ELog::EM<<"Port Only "<<ELog::endDiag;
+  return;
+}
+
+void
 setESS(defaultConfig& A)
   /*!
     Default configuration for ESS
@@ -129,14 +150,15 @@ setESS(defaultConfig& A)
 
   A.setOption("lowMod","Butterfly");
 
+
+  for(size_t i=0;i<19;i++)
+    A.setVar("G1BLine"+StrFunc::makeString(i+1)+"Active",1);
+
+
   A.setMultiOption("beamlines",0,"G1BLine19 ODIN");
   A.setMultiOption("beamlines",1,"G4BLine4 LOKI");
   A.setMultiOption("beamlines",2,"G1BLine5 VOR");
   A.setMultiOption("beamlines",3,"G4BLine12 NMX");
-
-  //  for(size_t i=0;i<19;i++)
-  //    A.setVar("G1BLine"+StrFunc::makeString(i+1)+"Active",1);
-
 
   A.setVar("G4BLine4Active",1);
   A.setVar("G4BLine4Filled",1);

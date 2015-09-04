@@ -989,12 +989,19 @@ DBMaterial::initMaterial()
   setMaterial(MObj);
 
   MObj.setMaterial(118, "Be5H2O",
-		   "1001.70c 0.0272983770406 "
-		   "4009.70c 0.959052434439 "
-		   "8016.70c 0.0136491885203 ", "", MLib);
-  //  MObj.setMXitem(4009,70,'c',"h","model");
-  MObj.setDensity(-1.8075);
+		   "1001.70c 0.0033422785 "
+		   "4009.70c 0.117311225 "
+		   "8016.70c 0.00167113925 ",
+		   "be.60t lwtr.01t", MLib);
   setMaterial(MObj);
+
+  MObj.setMaterial(119, "Be10H2O",
+		   "1001.70c 0.006684557 "
+		   "4009.70c 0.11113695 "
+		   "8016.70c 0.003342780 ",
+		   "be.60t lwtr.01t", MLib);
+  setMaterial(MObj);
+
 
   // CLONE Materials:
   cloneMaterial("Stainless304","SS316L");

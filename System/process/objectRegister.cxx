@@ -255,6 +255,66 @@ objectRegister::hasObject(const std::string& Name) const
   return (mc!=Components.end()) ? 1 : 0;
 }
 
+attachSystem::FixedComp*
+objectRegister::getInternalObject(const std::string& Name) 
+  /*!
+    Find a FixedComp [if it exists] (from group name if used)
+    \param Name :: Name [divided by : if group:head]
+    \return ObjectPtr / 0 
+  */
+{
+  ELog::RegMethod RegA("objectRegister","getInternalObject");
+
+  const std::string::size_type pos=Name.find(":");
+
+  if (pos!=0 && pos!=std::string::npos)
+    {
+      const std::string head=Name.substr(0,pos);
+      const std::string tail=Name.substr(pos+1);
+      cMapTYPE::iterator mcx=Components.find(head);
+      if (mcx!=Components.end())
+	{
+	  attachSystem::FixedGroup* FGPtr=
+	    dynamic_cast<attachSystem::FixedGroup*>(mcx->second.get());
+	  return (FGPtr->hasKey(tail)) ? &(FGPtr->getKey(tail)) : 0;
+	}
+      // Fall through here to test whole name:
+    }
+  
+  cMapTYPE::iterator mc=Components.find(Name);
+  return (mc!=Components.end()) ? mc->second.get() : 0;
+}
+
+const attachSystem::FixedComp*
+objectRegister::getInternalObject(const std::string& Name)  const
+  /*!
+    Find a FixedComp [if it exists] (from group name if used)
+    \param Name :: Name [divided by : if group:head]
+    \return ObjectPtr / 0 
+  */
+{
+  ELog::RegMethod RegA("objectRegister","getInternalObject(const)");
+
+  const std::string::size_type pos=Name.find(":");
+
+  if (pos!=0 && pos!=std::string::npos)
+    {
+      const std::string head=Name.substr(0,pos);
+      const std::string tail=Name.substr(pos+1);
+      cMapTYPE::const_iterator mcx=Components.find(head);
+      if (mcx!=Components.end())
+	{
+	  const attachSystem::FixedGroup* FGPtr=
+	    dynamic_cast<const attachSystem::FixedGroup*>(mcx->second.get());
+	  return (FGPtr->hasKey(tail)) ? &(FGPtr->getKey(tail)) : 0;
+	}
+      // Fall through here to test whole name:
+    }
+  
+  cMapTYPE::const_iterator mc=Components.find(Name);
+  return (mc!=Components.end()) ? mc->second.get() : 0;
+}
+
 template<typename T>
 const T*
 objectRegister::getObject(const std::string& Name) const
@@ -265,10 +325,8 @@ objectRegister::getObject(const std::string& Name) const
   */
 {
   ELog::RegMethod RegA("objectRegister","getObject(const)");
-
-  cMapTYPE::const_iterator mc=Components.find(Name);
-  return (mc!=Components.end()) 
-    ? dynamic_cast<const T*>(mc->second.get()) : 0;
+  const attachSystem::FixedComp* FCPtr = getInternalObject(Name);
+  return dynamic_cast<const T*>(FCPtr);
 }
 
 template<typename T>
@@ -281,10 +339,8 @@ objectRegister::getObject(const std::string& Name)
   */
 {
   ELog::RegMethod RegA("objectRegister","getObject");
-
-  cMapTYPE::iterator mc=Components.find(Name);
-  return (mc!=Components.end()) 
-    ? dynamic_cast<T*>(mc->second.get()) : 0;
+  attachSystem::FixedComp* FCPtr = getInternalObject(Name);
+  return dynamic_cast<T*>(FCPtr);
 }
 
 

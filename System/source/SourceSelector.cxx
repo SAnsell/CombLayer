@@ -196,11 +196,12 @@ sourceSelection(Simulation& System,
     \param IParam :: Input parameter
   */
 {
-  ELog::RegMethod RegA("SourceSelector","sourceSelection");
+  ELog::RegMethod RegA("SourceSelector[F]","sourceSelection");
+  
   const FuncDataBase& Control=System.getDataBase();
   SDef::Source& sourceCard=System.getPC().getSDefCard();
   const masterRotate& MR = masterRotate::Instance();
-  ModelSupport::objectRegister& OR=
+  const ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
   const std::string DObj=IParam.getValue<std::string>("sdefObj",0);

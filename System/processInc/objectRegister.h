@@ -61,6 +61,11 @@ class objectRegister
   objectRegister& operator=(const objectRegister&);
   ///\endcond SINGLETON
 
+  const attachSystem::FixedComp*
+    getInternalObject(const std::string&) const;
+  attachSystem::FixedComp*
+    getInternalObject(const std::string&);
+  
  public:
   
   ~objectRegister();

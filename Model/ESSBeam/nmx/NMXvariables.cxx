@@ -62,9 +62,6 @@ NMXvariables(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("NMXvariables[F]","NMXvariables");
 
-  // Bender in section so use cut system
-  Control.addVariable("G1BLine5Filled",1);
-  
   Control.addVariable("nmxGAXStep",0.0);       
   Control.addVariable("nmxGAYStep",0.0);       
   Control.addVariable("nmxGAZStep",0.0);       
