@@ -115,7 +115,7 @@ class Simulation
   void writeTransform(std::ostream&) const;
   void writeTally(std::ostream&) const;
   void writePhysics(std::ostream&) const;
-  void writeVariables(std::ostream&) const;
+  void writeVariables(std::ostream&,const char ='c') const;
 
   // The Cinder Write stuff
   void writeCinderMat() const;

@@ -317,7 +317,7 @@ SimFLUKA::write(const std::string& Fname) const
   ELog::RegMethod RegA("SimFLUKA","write");
   
   std::ofstream OX(Fname.c_str());
-  Simulation::writeVariables(OX);
+  Simulation::writeVariables(OX,'*');
   writeCells(OX);
   writeSurfaces(OX);
   writeMaterial(OX);

@@ -1640,18 +1640,20 @@ Simulation::writePhysics(std::ostream& OX) const
 }
 
 void
-Simulation::writeVariables(std::ostream& OX) const
+Simulation::writeVariables(std::ostream& OX,
+			   const char commentChar) const
   /*!
     Write all the variables in standard MCNPX output format
     \param OX :: Output stream
   */
 {
   ELog::RegMethod RegA("Simulation","writeVaraibles");
-  OX<<"c --------------- VERSION NUMBER ------------------------"<<std::endl;
-  OX<<"c  === "<<version::Instance().getIncrement()<<" === "<<std::endl;
-  OX<<"c -------------------------------------------------------"<<std::endl;
-  OX<<"c --------------- VARIABLE CARDS ------------------------"<<std::endl;
-  OX<<"c -------------------------------------------------------"<<std::endl;
+  OX<<commentChar<<" ---------- VERSION NUMBER ------------------"<<std::endl;
+  OX<<commentChar<<"  ========= "<<version::Instance().getIncrement()
+    <<" ========== "<<std::endl;
+  OX<<commentChar<<" ----------------------------------------------"<<std::endl;
+  OX<<commentChar<<" --------------- VARIABLE CARDS ---------------"<<std::endl;
+  OX<<commentChar<<" ----------------------------------------------"<<std::endl;
   const varList& Ptr= DB.getVarList();
   varList::varStore::const_iterator vc;
   for(vc=Ptr.begin();vc!=Ptr.end();vc++)
@@ -1660,11 +1662,10 @@ Simulation::writeVariables(std::ostream& OX) const
       if (vc->second->isActive())
 	{
 	  vc->second->getValue(Val);
-	  OX<<"c "<<vc->first<<" "
+	  OX<<commentChar<<" "<<vc->first<<" "
 	    <<Val<<std::endl;
 	}
-    }
-  
+    }  
   return;
 }
   

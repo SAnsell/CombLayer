@@ -457,7 +457,6 @@ CylCan::write(std::ostream& OX) const
   */
 {
   std::ostringstream cx;
-  Surface::writeHeader(cx);
   cx.precision(Geometry::Nprecision);
   
   cx<<"rcc "<<OPt<<" "<<unitD*length<<" "<<radius;
