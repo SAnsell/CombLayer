@@ -271,7 +271,25 @@ sub writeTail
   print $DX "add_custom_target(tar ",
     " COMMAND tar zcvf \${PROJECT_SOURCE_DIR}/",$pdir.".tgz \n";
 
-  my $cnt=0;
+  foreach my $item (keys (%{$self->{srcDir}}))
+    {
+      my $val=$self->{srcDir}{$item};
+      print $DX "     \${PROJECT_SOURCE_DIR}/",$val,"/*.cxx \n";
+    }
+  foreach my $item (@{$self->{incDir}})
+    {
+      print $DX "     \${PROJECT_SOURCE_DIR}/",$item,"/*.h \n";
+    }
+
+  print $DX "     \${PROJECT_SOURCE_DIR}/CMake.pl  \n";
+  print $DX "     \${PROJECT_SOURCE_DIR}/CMakeList.pm \n";
+  print $DX " )\n";
+  print $DX "\n";
+  ## TAGS:
+  print $DX "add_custom_target(tags ",
+    " COMMAND etags  \n";
+
+
   foreach my $item (keys (%{$self->{srcDir}}))
     {
       my $val=$self->{srcDir}{$item};
