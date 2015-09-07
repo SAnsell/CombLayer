@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   src/SimPHITS.cxx
+ * File:   src/SimFLUKA.cxx
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -181,29 +181,21 @@ SimFLUKA::writeTransform(std::ostream& OX) const
 void
 SimFLUKA::writeCells(std::ostream& OX) const
   /*!
-    Write all the cells in standard MCNPX output 
+    Write all the cells in standard FLUKA output 
     type.
     \param OX :: Output stream
   */
 {
-  boost::format FmtStr("  %1$d%|20t|%2$d\n");
-  OX<<"[cell]"<<std::endl;
+  ELog::RegMethod RegA("SimFLUKA","writeCells");
+  
+  
   OTYPE::const_iterator mp;
   for(mp=OList.begin();mp!=OList.end();mp++)
-    mp->second->writePHITS(OX);
-
-  OX<<std::endl;  // Empty line manditory for MCNPX
-
-  OX<<"[temperature]"<<std::endl;
-  for(mp=OList.begin();mp!=OList.end();mp++)
     {
-      const double T=mp->second->getTemp();
-      if (fabs(T-300.0)>1.0)
-	{
-	  OX<<FmtStr % mp->second->getName() % (T*8.6173422e11);
-	}
+      mp->second->writeFLUKA(OX);
     }
 
+  OX<<"END"<<std::endl;
   return;
 }
 
@@ -215,7 +207,6 @@ SimFLUKA::writeSurfaces(std::ostream& OX) const
     \param OX :: Output stream
   */
 {
-
   OX<<"* -------------------------------------------------------"<<std::endl;
   OX<<"* --------------- SURFACE CARDS -------------------------"<<std::endl;
   OX<<"* -------------------------------------------------------"<<std::endl;
@@ -295,9 +286,8 @@ SimFLUKA::writePhysics(std::ostream& OX) const
       copy(Idum.begin(),Idum.end(),std::ostream_iterator<int>(OX," "));
       OX<<std::endl;
       OX<<"rdum       "<<Rdum.front()<<std::endl;
-      std::vector<Geometry::Vec3D>::const_iterator vc;
-      for(vc=Rdum.begin()+1;vc!=Rdum.end();vc++)
-	OX<<"           "<< *vc<<std::endl;
+      for(const Geometry::Vec3D& rN : Rdum)
+	OX<<"           "<<rN<<std::endl;	
     }
 
   // Remaining Physics cards
@@ -315,11 +305,17 @@ SimFLUKA::write(const std::string& Fname) const
   */
 {
   ELog::RegMethod RegA("SimFLUKA","write");
-  
+  boost::format FmtStr("%1%|71t|%2%\n");  
+
   std::ofstream OX(Fname.c_str());
+  OX<<"TITLE "<<std::endl;
+  OX<<" Fluka model from CombLayer"<<std::endl;
   Simulation::writeVariables(OX,'*');
-  writeCells(OX);
+  OX<<FmtStr % "GEOBEGIN" % "COMBNAM";
   writeSurfaces(OX);
+  writeCells(OX);
+  OX<<"GEOEND"<<std::endl;
+  
   writeMaterial(OX);
   writeTransform(OX);
   writeWeights(OX);
