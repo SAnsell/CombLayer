@@ -135,6 +135,7 @@ setESSPortsOnly(defaultConfig& A)
 
   for(size_t i=0;i<19;i++)
     A.setVar("G1BLine"+StrFunc::makeString(i+1)+"Active",1);
+
   ELog::EM<<"Port Only "<<ELog::endDiag;
   return;
 }
@@ -149,11 +150,6 @@ setESS(defaultConfig& A)
   ELog::RegMethod RegA("DefUnitsESS[F]","setESS");
 
   A.setOption("lowMod","Butterfly");
-
-
-  for(size_t i=0;i<19;i++)
-    A.setVar("G1BLine"+StrFunc::makeString(i+1)+"Active",1);
-
 
   A.setMultiOption("beamlines",0,"G1BLine19 ODIN");
   A.setMultiOption("beamlines",1,"G4BLine4 LOKI");
