@@ -481,10 +481,10 @@ GuideItem::createLinks()
       beamFC.setConnect(4,MidPt-bZ*(beamWidth/2.0),-bZ);
       beamFC.setConnect(5,MidPt+bZ*(beamWidth/2.0),bZ);
 
-      beamFC.setLinkSurf(2,-SMap.realSurf(GI+103));
-      beamFC.setLinkSurf(3,SMap.realSurf(GI+104));
-      beamFC.setLinkSurf(4,-SMap.realSurf(GI+105));
-      beamFC.setLinkSurf(5,SMap.realSurf(GI+106));
+      beamFC.setLinkSurf(2,-SMap.realSurf(guideIndex+103));
+      beamFC.setLinkSurf(3,SMap.realSurf(guideIndex+104));
+      beamFC.setLinkSurf(4,-SMap.realSurf(guideIndex+105));
+      beamFC.setLinkSurf(5,SMap.realSurf(guideIndex+106));
     }
     
     
