@@ -348,7 +348,8 @@ LinkUnit::getLinkSurf() const
 {
   ELog::RegMethod RegA("LinkUnit","getLinkSurf");
   if (!linkSurf)
-    throw ColErr::EmptyValue<int>("Bridge surf ="+getCommon());
+    throw ColErr::EmptyValue<int>("Empty linkSurf :: "
+				  "Bridge surf ="+getCommon());
       
   return linkSurf;
 }

@@ -741,7 +741,6 @@ FixedComp::getSignedLinkPt(const long int sideIndex) const
   ELog::RegMethod RegA("FixedComp","getSignedLinkPt:"+keyName);
 
   if (!sideIndex) return Origin;
-
   
   const size_t linkIndex=
     (sideIndex>0) ? static_cast<size_t>(sideIndex-1) :
@@ -753,6 +752,30 @@ FixedComp::getSignedLinkPt(const long int sideIndex) const
   return LU[linkIndex].getConnectPt();
 }
 
+int
+FixedComp::getSignedLinkSurf(const long int sideIndex) const
+  /*!
+    Accessor to the link surface string
+    \param sideIndex :: Link number
+    \return Surface Key number
+  */
+{
+  ELog::RegMethod RegA("FixedComp","getSignedLinkSurf");
+  if (!sideIndex) return 0;
+
+  const size_t linkIndex=
+    (sideIndex>0) ? static_cast<size_t>(sideIndex-1) :
+    static_cast<size_t>(-sideIndex-1) ;
+
+  if (linkIndex>=LU.size())
+    throw ColErr::IndexError<size_t>
+      (linkIndex,LU.size(),"sideIndex to big");
+  const int sign((sideIndex>0) ? 1 : -1);
+  return sign*LU[linkIndex].getLinkSurf();
+}
+
+
+  
 const Geometry::Vec3D&
 FixedComp::getLinkAxis(const size_t Index) const
   /*!

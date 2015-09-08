@@ -182,10 +182,7 @@ surfaceConstruct::processSurfObject(Simulation& System,
       for(size_t i=0;i<linkN.size();i++)
 	{
 	  const long int LIndex=getLinkIndex(linkN[i]);
-	  if (LIndex>0)
-	    surfN.push_back(TPtr->getLinkSurf(static_cast<size_t>(LIndex-1)));
-	  else
-	    surfN.push_back(-TPtr->getLinkSurf(static_cast<size_t>(-LIndex-1)));
+	  surfN.push_back(TPtr->getSignedLinkSurf(LIndex));
 	}
       
       addF1Tally(System,tNum,masterPlane,surfN);
@@ -203,7 +200,8 @@ surfaceConstruct::writeHelp(std::ostream& OX) const
 {
   OX<<"Surface tally options:\n"
     <<"object linkName\n"
-    <<"object objectName front/back \n";
+    <<"object objectName front/back \n"
+    <<"viewObject objectName front/back/N {1-4 designator} \n";
   return;
 }
 
