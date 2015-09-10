@@ -805,6 +805,7 @@ EssVariables(FuncDataBase& Control)
 
   EssBeamLinesVariables(Control);
   ODINvariables(Control);
+  DREAMvariables(Control);
   LOKIvariables(Control);
   NMXvariables(Control);
   VORvariables(Control);

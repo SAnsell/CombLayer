@@ -76,7 +76,7 @@ $gM->addDepUnit("ess",      ["essBuild","visit","src","simMC",
 			     "endf","process","world","work",
 			     "monte","geometry","mersenne","src","xml","poly",
 			     "weights","global","attachComp",
-			     "visit","odin","loki","nmx","vor" ]);
+			     "visit","odin","loki","nmx","vor","dream" ]);
 
 $gM->addDepUnit("bilbau", ["bibBuild","build","visit","chip","t1Upgrade",
 			   "imat","moderator","build","zoom","construct",

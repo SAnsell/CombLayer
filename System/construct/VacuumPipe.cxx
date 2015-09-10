@@ -216,11 +216,11 @@ VacuumPipe::getShiftedSurf(const HeadRule& HR,
 	{
 	  if (SN*dFlag>0)
 	    ModelSupport::buildCylinder
-	      (SMap,vacIndex+index,CPtr->getCentre()-Y*flangeLength,
+	      (SMap,vacIndex+index,CPtr->getCentre()+Y*flangeLength,
 	       CPtr->getNormal(),CPtr->getRadius());
 	  else
 	    ModelSupport::buildCylinder
-	      (SMap,vacIndex+index,CPtr->getCentre()+Y*flangeLength,
+	      (SMap,vacIndex+index,CPtr->getCentre()-Y*flangeLength,
 	       CPtr->getNormal(),CPtr->getRadius());
 	  return;
 	}

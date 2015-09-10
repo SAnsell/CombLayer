@@ -197,7 +197,8 @@ setDefRotation(const mainSystem::inputParam& IParam)
 	}
       else if (AItem=="ODIN" || AItem=="odin" ||
 	       AItem=="LOKI" || AItem=="loki" ||
-	       AItem=="VOR" || AItem=="vor") 
+	       AItem=="VOR" || AItem=="vor" ||
+	       AItem=="DREAM" || AItem=="dream")
 	{
 	  std::transform(AItem.begin(),AItem.end(),
 	    AItem.begin(),::tolower);
