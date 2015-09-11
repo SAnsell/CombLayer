@@ -108,6 +108,7 @@ ODIN::ODIN() :
   PitB(new constructSystem::ChopperPit("odinPitB")),
   GuidePitBFront(new beamlineSystem::GuideLine("odinGPitBFront")),
   GuidePitBBack(new beamlineSystem::GuideLine("odinGPitBBack")),
+  ChopperB(new constructSystem::DiskChopper("odinChopperB")),
   GuideF(new beamlineSystem::GuideLine("odinGF")),
 
   PitC(new constructSystem::ChopperPit("odinPitC")),
@@ -149,6 +150,7 @@ ODIN::ODIN() :
   OR.addObject(PitB);
   OR.addObject(GuidePitBFront);
   OR.addObject(GuidePitBBack);
+  OR.addObject(ChopperB);
   OR.addObject(GuideF);
 
   OR.addObject(PitC);
@@ -286,6 +288,10 @@ ODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
   GuideCut=attachSystem::unionLink(GuideE->getKey("Shield"),{2,3,4,5,6});
   PitB->addInsertCell(voidCell);
   PitB->createAll(System,GuideE->getKey("Guide0"),2,GuideCut.display());
+
+  ChopperB->addInsertCell(PitB->getCell("Void"));
+  ChopperB->setCentreFlag(-3);  // -Z direction
+  ChopperB->createAll(System,*PitB,0);
 
   ELog::EM<<"PitB == "<<PitB->getCentre()
 	  <<" :: "<<PitB->getCentre().abs()<<ELog::endDebug;
