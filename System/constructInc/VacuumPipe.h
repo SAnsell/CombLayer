@@ -47,8 +47,10 @@ class VacuumPipe :
 
   bool activeFront;             ///< Flag for front active
   bool activeBack;              ///< Flag for back active
+  bool activeDivide;              ///< Flag for back active
   HeadRule frontSurf;           ///< Front surfaces [if used]
   HeadRule backSurf;            ///< Back surfaces [if used]
+  HeadRule divideSurf;          ///< divider surfaces [if used]
   
   double radius;                ///< void height [top only]
   double length;                ///< void length [total]
@@ -78,6 +80,7 @@ class VacuumPipe :
 
   void setFront(const attachSystem::FixedComp&,const long int);
   void setBack(const attachSystem::FixedComp&,const long int);
+  void setDivider(const attachSystem::FixedComp&,const long int);
   
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

@@ -67,8 +67,6 @@
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
 #include "LayerComp.h"
 #include "CellMap.h"
 #include "World.h"
@@ -109,9 +107,21 @@ DREAM::DREAM() :
   VPipeB(new constructSystem::VacuumPipe("dreamPipeB")),
   T0DiskB(new constructSystem::DiskChopper("dreamT0DiskB")),  
   T0DiskBHouse(new constructSystem::ChopperHousing("dreamT0DiskBHouse")),
+  FocusC(new beamlineSystem::GuideLine("dreamFC")),
 
-  FocusC(new beamlineSystem::GuideLine("dreamFC"))
- /*!
+  VacBoxC(new constructSystem::VacuumBox("dreamVacC",1)),
+  BandADisk(new constructSystem::DiskChopper("dreamBandADisk")),  
+  BandAHouse(new constructSystem::ChopperHousing("dreamBandAHouse")),
+  VPipeC(new constructSystem::VacuumPipe("dreamPipeC")),
+  FocusD(new beamlineSystem::GuideLine("dreamFD")),
+
+
+  VacBoxD(new constructSystem::VacuumBox("dreamVacD",1)),
+  BandBDisk(new constructSystem::DiskChopper("dreamBandBDisk")),  
+  BandBHouse(new constructSystem::ChopperHousing("dreamBandBHouse")),
+  VPipeD(new constructSystem::VacuumPipe("dreamPipeD")),
+  FocusE(new beamlineSystem::GuideLine("dreamFE"))
+/*!
     Constructor
  */
 {
@@ -141,6 +151,17 @@ DREAM::DREAM() :
   OR.addObject(T0DiskBHouse);
   OR.addObject(FocusC);
 
+  OR.addObject(BandADisk);
+  OR.addObject(BandAHouse);
+  OR.addObject(VPipeC);
+  OR.addObject(VacBoxC);
+  OR.addObject(FocusD);
+
+  OR.addObject(BandBDisk);
+  OR.addObject(BandBHouse);
+  OR.addObject(VPipeD);
+  OR.addObject(VacBoxD);
+  OR.addObject(FocusE);
 }
 
 DREAM::~DREAM()
@@ -188,12 +209,12 @@ DREAM::build(Simulation& System,
 
   ELog::EM<<"\nBuilding DREAM on : "<<GItem.getKeyName()<<ELog::endDiag;
 
-  setBeamAxis(GItem,0);
+  setBeamAxis(GItem,1);
   FocusA->addInsertCell(GItem.getCells("Void"));
   FocusA->addEndCut(GItem.getKey("Beam").getSignedLinkString(-2));
   FocusA->createAll(System,GItem.getKey("Beam"),-1,
 		    GItem.getKey("Beam"),-1);
-  
+
   // First section out of monolyth
   VacBoxA->addInsertCell(bunkerObj.getCell("MainVoid"));
   VacBoxA->createAll(System,FocusA->getKey("Guide0"),2);
@@ -202,6 +223,7 @@ DREAM::build(Simulation& System,
   VPipeA->addInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeA->setFront(GItem.getKey("Beam"),2);
   VPipeA->setBack(*VacBoxA,1);
+  VPipeA->setDivider(GItem.getKey("Beam"),2);
   VPipeA->createAll(System,GItem.getKey("Beam"),2);
 
   FocusB->addInsertCell(VPipeA->getCells("Void"));
@@ -245,7 +267,7 @@ DREAM::build(Simulation& System,
   T0DiskAHouse->createAll(System,T0DiskA->getKey("Main"),0);
   T0DiskAHouse->insertComponent(System,"Void",*T0DiskA);
 
-  // Secon T0 system
+  // Second T0 system
   VacBoxB->addInsertCell(bunkerObj.getCell("MainVoid"));
   VacBoxB->createAll(System,T0DiskA->getKey("Beam"),2);
 
@@ -276,6 +298,70 @@ DREAM::build(Simulation& System,
   FocusC->createAll(System,T0DiskA->getKey("Beam"),2,
 		    T0DiskA->getKey("Beam"),2);
 
+
+  // GOING TO POSITION 2:
+
+  // Box for BandA Disk
+  VacBoxC->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VacBoxC->createAll(System,T0DiskB->getKey("Beam"),2);
+
+  
+  // Double disk T0 chopper
+  BandADisk->addInsertCell(VacBoxC->getCell("Void",0));
+  BandADisk->setCentreFlag(3);  // Z direction
+  BandADisk->createAll(System,*VacBoxC,0);
+
+  // Double disk chopper housing
+  BandAHouse->addInsertCell(VacBoxC->getCells("Void"));
+  BandAHouse->addInsertCell(VacBoxC->getCells("Box"));  // soon to become lid
+  BandAHouse->addInsertCell(bunkerObj.getCell("MainVoid"));
+  BandAHouse->createAll(System,BandADisk->getKey("Main"),0);
+  
+  BandAHouse->insertComponent(System,"Void",*BandADisk);
+
+  VPipeC->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeC->setFront(*VacBoxB,2);
+  VPipeC->setBack(*VacBoxC,1);
+  VPipeC->createAll(System,*VacBoxB,2);
+
+  FocusD->addInsertCell(VPipeC->getCells("Void"));
+  FocusD->addInsertCell(VacBoxB->getCells("Void"));
+  FocusD->addInsertCell(VacBoxC->getCells("Void"));
+  FocusD->createAll(System,T0DiskB->getKey("Beam"),2,
+		    T0DiskB->getKey("Beam"),2);
+
+
+
+  // GOING TO 1300 m
+
+  // Box for BandA Disk
+  VacBoxD->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VacBoxD->createAll(System,BandADisk->getKey("Beam"),2);
+
+  
+  // Double disk T0 chopper
+  BandBDisk->addInsertCell(VacBoxD->getCell("Void",0));
+  BandBDisk->setCentreFlag(3);  // Z direction
+  BandBDisk->createAll(System,*VacBoxD,0);
+
+  // Double disk chopper housing
+  BandBHouse->addInsertCell(VacBoxD->getCells("Void"));
+  BandBHouse->addInsertCell(VacBoxD->getCells("Box"));  // soon to become lid
+  BandBHouse->addInsertCell(bunkerObj.getCell("MainVoid"));
+  BandBHouse->createAll(System,BandBDisk->getKey("Main"),0);
+  BandBHouse->insertComponent(System,"Void",*BandBDisk);
+
+  VPipeD->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeD->setFront(*VacBoxC,2);
+  VPipeD->setBack(*VacBoxD,1);
+  VPipeD->createAll(System,*VacBoxC,2);
+  
+  FocusE->addInsertCell(VPipeD->getCells("Void"));
+  FocusE->addInsertCell(VacBoxC->getCells("Void"));
+  FocusE->addInsertCell(VacBoxD->getCells("Void"));
+  FocusE->createAll(System,BandADisk->getKey("Beam"),2,
+		    BandADisk->getKey("Beam"),2);
+  
   return;
 }
 

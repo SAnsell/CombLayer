@@ -80,7 +80,8 @@ VacuumPipe::VacuumPipe(const std::string& Key) :
   attachSystem::FixedOffset(Key,6),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   vacIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(vacIndex+1),activeFront(0),activeBack(0)
+  cellIndex(vacIndex+1),activeFront(0),activeBack(0),
+  activeDivide(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -91,8 +92,9 @@ VacuumPipe::VacuumPipe(const VacuumPipe& A) :
   attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),
   vacIndex(A.vacIndex),cellIndex(A.cellIndex),activeFront(A.activeFront),
-  activeBack(A.activeBack),frontSurf(A.frontSurf),
-  backSurf(A.backSurf),radius(A.radius),length(A.length),
+  activeBack(A.activeBack),activeDivide(A.activeDivide),
+  frontSurf(A.frontSurf),backSurf(A.backSurf),divideSurf(A.divideSurf),
+  radius(A.radius),length(A.length),
   feThick(A.feThick),flangeRadius(A.flangeRadius),
   flangeLength(A.flangeLength),feMat(A.feMat)
   /*!
@@ -117,8 +119,10 @@ VacuumPipe::operator=(const VacuumPipe& A)
       cellIndex=A.cellIndex;
       activeFront=A.activeFront;
       activeBack=A.activeBack;
+      activeDivide=A.activeDivide;
       frontSurf=A.frontSurf;
       backSurf=A.backSurf;
+      divideSurf=A.divideSurf;
       radius=A.radius;
       length=A.length;
       feThick=A.feThick;
@@ -284,8 +288,11 @@ VacuumPipe::createObjects(Simulation& System)
   const std::string backStr
     (activeBack ? backSurf.display() : 
      ModelSupport::getComposite(SMap,vacIndex," -2 "));
-  const std::string FBStr=frontStr+backStr;
+  const std::string divStr
+    (activeDivide ? divideSurf.display() :  "");
 
+
+  const std::string FBStr=frontStr+backStr+divStr;
 
   // Void 
   Out=ModelSupport::getComposite(SMap,vacIndex," -7 ");
@@ -293,20 +300,22 @@ VacuumPipe::createObjects(Simulation& System)
   addCell("Void",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,vacIndex,"101 -102 -17 7");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out+divStr));
   addCell("Steel",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,vacIndex,"-101 -107 7");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out+frontStr));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out+
+				   frontStr+divStr));
   addCell("Steel",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,vacIndex,"102 -107 7");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out+backStr));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out+
+				   backStr+divStr));
   addCell("Steel",cellIndex-1);
 
   // outer void:
   Out=ModelSupport::getComposite(SMap,vacIndex,"101 -102 -107 17");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+divStr));
   addCell("OutVoid",cellIndex-1);
 
   // Outer
@@ -351,6 +360,37 @@ VacuumPipe::createLinks()
 }
 
 void
+VacuumPipe::setDivider(const attachSystem::FixedComp& FC,
+		       const long int sideIndex)
+  /*!
+    Set divider surface
+    \param FC :: FixedComponent 
+    \param sideIndex ::  Direction to link
+   */
+{
+  ELog::RegMethod RegA("VacuumPipe","setDivider");
+  
+  if (sideIndex==0)
+    throw ColErr::EmptyValue<long int>("SideIndex cant be zero");
+
+  activeDivide=1;
+  if (sideIndex>0)
+    {
+      const size_t SI(static_cast<size_t>(sideIndex-1));
+      divideSurf=FC.getCommonRule(SI);
+    }
+  else
+    {
+      const size_t SI(static_cast<size_t>(-sideIndex-1));
+      divideSurf=FC.getCommonRule(SI);
+      divideSurf.makeComplement();
+    }
+  return;
+}
+
+  
+  
+void
 VacuumPipe::setFront(const attachSystem::FixedComp& FC,
 		     const long int sideIndex)
   /*!
@@ -366,10 +406,14 @@ VacuumPipe::setFront(const attachSystem::FixedComp& FC,
 
   activeFront=1;
   if (sideIndex>0)
-    frontSurf=FC.getMainRule(static_cast<size_t>(sideIndex-1));
+    {
+      const size_t SI(static_cast<size_t>(sideIndex-1));
+      frontSurf=FC.getMainRule(SI);
+    }
   else
     {
-      frontSurf=FC.getMainRule(static_cast<size_t>(-sideIndex-1));
+      const size_t SI(static_cast<size_t>(-sideIndex-1));
+      frontSurf=FC.getMainRule(SI);
       frontSurf.makeComplement();
     }
   return;

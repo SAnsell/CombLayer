@@ -155,10 +155,10 @@ setESSTest(defaultConfig& A)
   A.setOption("lowMod","Butterfly");
 
   //  A.setMultiOption("beamlines",0,"G4BLine4 LOKI");
-  A.setMultiOption("beamlines",0,"G4BLine4 DREAM");
+  A.setMultiOption("beamlines",0,"G4BLine11 DREAM");
 
-  A.setVar("G4BLine4Active",1);
-  A.setVar("G4BLine4Filled",1);
+  A.setVar("G4BLine11Active",1);
+  A.setVar("G4BLine11Filled",1);
   
   ELog::EM<<"TEST of DREAM Only "<<ELog::endDiag;
   return;
