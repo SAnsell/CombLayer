@@ -370,7 +370,7 @@ DREAMvariables(FuncDataBase& Control)
 
   Control.addVariable("dreamBandAHouseYStep",0.0);
   Control.addVariable("dreamBandAHouseVoidHeight",38.0);
-  Control.addVariable("dreamBandAHouseVoidDepth",25.0);
+  Control.addVariable("dreamBandAHouseVoidDepth",20.0);
   Control.addVariable("dreamBandAHouseVoidThick",3.0);
   Control.addVariable("dreamBandAHouseVoidWidth",80.0);
   Control.addVariable("dreamBandAHouseWallThick",1.0);
@@ -468,7 +468,7 @@ DREAMvariables(FuncDataBase& Control)
 
   Control.addVariable("dreamBandBHouseYStep",0.0);
   Control.addVariable("dreamBandBHouseVoidHeight",38.0);
-  Control.addVariable("dreamBandBHouseVoidDepth",25.0);
+  Control.addVariable("dreamBandBHouseVoidDepth",22.0);
   Control.addVariable("dreamBandBHouseVoidThick",3.0);
   Control.addVariable("dreamBandBHouseVoidWidth",80.0);
   Control.addVariable("dreamBandBHouseWallThick",1.0);

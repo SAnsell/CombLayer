@@ -249,7 +249,6 @@ VacuumPipe::createSurfaces()
       ModelSupport::buildPlane(SMap,vacIndex+101,
 			       Origin-Y*(length/2.0-flangeLength),Y);
     }
-
     // Inner void
   if (activeBack)
     getShiftedSurf(backSurf,102,-1);

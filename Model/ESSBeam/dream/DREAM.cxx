@@ -115,7 +115,6 @@ DREAM::DREAM() :
   VPipeC(new constructSystem::VacuumPipe("dreamPipeC")),
   FocusD(new beamlineSystem::GuideLine("dreamFD")),
 
-
   VacBoxD(new constructSystem::VacuumBox("dreamVacD",1)),
   BandBDisk(new constructSystem::DiskChopper("dreamBandBDisk")),  
   BandBHouse(new constructSystem::ChopperHousing("dreamBandBHouse")),
@@ -190,6 +189,56 @@ DREAM::setBeamAxis(const GuideItem& GItem,
     dreamAxis->reverseZ();
   return;
 }
+
+void
+DREAM::buildChopperBlock(Simulation& System,
+			 const Bunker& bunkerObj,
+			 const attachSystem::FixedComp& prevFC,
+			 const constructSystem::VacuumBox& prevVacBox,
+			 constructSystem::VacuumBox& VacBox,
+			 beamlineSystem::GuideLine& GL,
+			 constructSystem::DiskChopper& Disk,
+			 constructSystem::ChopperHousing& House,
+			 constructSystem::VacuumPipe& Pipe)
+  /*!
+    Build a chopper block [about to move to some higher level]
+    \param System :: Simulation 
+    \param bunkerObj :: Object
+    \param prevFC :: FixedComponent for like point [uses side 2]
+    \param GL :: Guide Line 
+  */
+{
+  ELog::RegMethod RegA("DREAM","buildChopperBlock");
+  
+  // Box for BandA Disk
+  VacBox.addInsertCell(bunkerObj.getCell("MainVoid"));
+  VacBox.createAll(System,prevFC,2);
+
+  // Double disk T0 chopper
+  Disk.addInsertCell(VacBox.getCell("Void",0));
+  Disk.setCentreFlag(3);  // Z direction
+  Disk.createAll(System,VacBox,0);
+
+  // Double disk chopper housing
+  House.addInsertCell(VacBox.getCells("Void"));
+  House.addInsertCell(VacBox.getCells("Box"));  // soon to become lid
+  House.addInsertCell(bunkerObj.getCell("MainVoid"));
+  House.createAll(System,Disk.getKey("Main"),0);
+  House.insertComponent(System,"Void",Disk);
+
+  Pipe.addInsertCell(bunkerObj.getCell("MainVoid"));
+  Pipe.setFront(prevVacBox,2);
+  Pipe.setBack(VacBox,1);
+  Pipe.createAll(System,prevVacBox,2);
+  
+  GL.addInsertCell(Pipe.getCells("Void"));
+  GL.addInsertCell(prevVacBox.getCells("Void"));
+  GL.addInsertCell(VacBox.getCells("Void"));
+  GL.createAll(System,prevFC,2,prevFC,2);
+  return;
+} 
+
+
   
 void 
 DREAM::build(Simulation& System,
@@ -267,100 +316,26 @@ DREAM::build(Simulation& System,
   T0DiskAHouse->createAll(System,T0DiskA->getKey("Main"),0);
   T0DiskAHouse->insertComponent(System,"Void",*T0DiskA);
 
-  // Second T0 system
-  VacBoxB->addInsertCell(bunkerObj.getCell("MainVoid"));
-  VacBoxB->createAll(System,T0DiskA->getKey("Beam"),2);
-
-
-  VPipeB->addInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeB->setFront(*VacBoxA,2);
-  VPipeB->setBack(*VacBoxB,1);
-  VPipeB->createAll(System,*VacBoxA,2);
-
-  // PIPE
-
-  // offset disk
-  T0DiskB->addInsertCell(VacBoxB->getCell("Void",0));
-  T0DiskB->setCentreFlag(3);  // Z direction
-  T0DiskB->createAll(System,SDisk->getKey("Beam"),2);
-
-  // T0 Part B chopper housing
-  T0DiskBHouse->addInsertCell(VacBoxB->getCells("Void"));
-  T0DiskBHouse->addInsertCell(VacBoxB->getCells("Box"));  // soon to become lid
-  T0DiskBHouse->addInsertCell(bunkerObj.getCell("MainVoid"));
-  T0DiskBHouse->createAll(System,T0DiskB->getKey("Main"),0);
-  T0DiskBHouse->insertComponent(System,"Void",*T0DiskB);
   
-
-  FocusC->addInsertCell(VPipeB->getCells("Void"));
-  FocusC->addInsertCell(VacBoxA->getCells("Void"));
-  FocusC->addInsertCell(VacBoxB->getCells("Void"));
-  FocusC->createAll(System,T0DiskA->getKey("Beam"),2,
-		    T0DiskA->getKey("Beam"),2);
-
-
+  buildChopperBlock(System,bunkerObj,
+		    T0DiskA->getKey("Beam"),*VacBoxA,
+		    *VacBoxB,*FocusC,
+		    *T0DiskB,*T0DiskBHouse,
+		    *VPipeC);
   // GOING TO POSITION 2:
 
-  // Box for BandA Disk
-  VacBoxC->addInsertCell(bunkerObj.getCell("MainVoid"));
-  VacBoxC->createAll(System,T0DiskB->getKey("Beam"),2);
-
-  
-  // Double disk T0 chopper
-  BandADisk->addInsertCell(VacBoxC->getCell("Void",0));
-  BandADisk->setCentreFlag(3);  // Z direction
-  BandADisk->createAll(System,*VacBoxC,0);
-
-  // Double disk chopper housing
-  BandAHouse->addInsertCell(VacBoxC->getCells("Void"));
-  BandAHouse->addInsertCell(VacBoxC->getCells("Box"));  // soon to become lid
-  BandAHouse->addInsertCell(bunkerObj.getCell("MainVoid"));
-  BandAHouse->createAll(System,BandADisk->getKey("Main"),0);
-  
-  BandAHouse->insertComponent(System,"Void",*BandADisk);
-
-  VPipeC->addInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeC->setFront(*VacBoxB,2);
-  VPipeC->setBack(*VacBoxC,1);
-  VPipeC->createAll(System,*VacBoxB,2);
-
-  FocusD->addInsertCell(VPipeC->getCells("Void"));
-  FocusD->addInsertCell(VacBoxB->getCells("Void"));
-  FocusD->addInsertCell(VacBoxC->getCells("Void"));
-  FocusD->createAll(System,T0DiskB->getKey("Beam"),2,
-		    T0DiskB->getKey("Beam"),2);
-
-
-
+  buildChopperBlock(System,bunkerObj,
+		    T0DiskB->getKey("Beam"),*VacBoxB,
+		    *VacBoxC,*FocusD,
+		    *BandADisk,*BandAHouse,
+		    *VPipeC);
   // GOING TO 1300 m
-
-  // Box for BandA Disk
-  VacBoxD->addInsertCell(bunkerObj.getCell("MainVoid"));
-  VacBoxD->createAll(System,BandADisk->getKey("Beam"),2);
-
-  
-  // Double disk T0 chopper
-  BandBDisk->addInsertCell(VacBoxD->getCell("Void",0));
-  BandBDisk->setCentreFlag(3);  // Z direction
-  BandBDisk->createAll(System,*VacBoxD,0);
-
-  // Double disk chopper housing
-  BandBHouse->addInsertCell(VacBoxD->getCells("Void"));
-  BandBHouse->addInsertCell(VacBoxD->getCells("Box"));  // soon to become lid
-  BandBHouse->addInsertCell(bunkerObj.getCell("MainVoid"));
-  BandBHouse->createAll(System,BandBDisk->getKey("Main"),0);
-  BandBHouse->insertComponent(System,"Void",*BandBDisk);
-
-  VPipeD->addInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeD->setFront(*VacBoxC,2);
-  VPipeD->setBack(*VacBoxD,1);
-  VPipeD->createAll(System,*VacBoxC,2);
-  
-  FocusE->addInsertCell(VPipeD->getCells("Void"));
-  FocusE->addInsertCell(VacBoxC->getCells("Void"));
-  FocusE->addInsertCell(VacBoxD->getCells("Void"));
-  FocusE->createAll(System,BandADisk->getKey("Beam"),2,
-		    BandADisk->getKey("Beam"),2);
+  buildChopperBlock(System,bunkerObj,
+		    BandADisk->getKey("Beam"),*VacBoxC,
+		    *VacBoxD,*FocusE,
+		    *BandBDisk,*BandBHouse,
+		    *VPipeD);
+  return;
   
   return;
 }

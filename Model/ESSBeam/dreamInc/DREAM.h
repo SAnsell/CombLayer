@@ -104,28 +104,40 @@ class DREAM
   std::shared_ptr<beamlineSystem::GuideLine> FocusC;
 
 
-    /// Band Chopper
+
+  /// Vac box for second chopper set
+  std::shared_ptr<constructSystem::VacuumBox> VacBoxC;
+  /// Band Chopper
   std::shared_ptr<constructSystem::DiskChopper> BandADisk;  
   /// Band width chopper Housing
   std::shared_ptr<constructSystem::ChopperHousing> BandAHouse;
-  /// Vac box for second chopper set
-  std::shared_ptr<constructSystem::VacuumBox> VacBoxC;
   /// Pipe between T0 and Second chopper set
   std::shared_ptr<constructSystem::VacuumPipe> VPipeC;
   /// Elliptic forcus in bulkshield [m5]
   std::shared_ptr<beamlineSystem::GuideLine> FocusD;
 
 
+  /// Vac box for second chopper set
+  std::shared_ptr<constructSystem::VacuumBox> VacBoxD;
   /// Band Chopper 
   std::shared_ptr<constructSystem::DiskChopper> BandBDisk;  
   /// Band width chopper Housing
   std::shared_ptr<constructSystem::ChopperHousing> BandBHouse;
-  /// Vac box for second chopper set
-  std::shared_ptr<constructSystem::VacuumBox> VacBoxD;
   /// Pipe between T0 and Second chopper set
   std::shared_ptr<constructSystem::VacuumPipe> VPipeD;
   /// Elliptic forcus in bulkshield [m5]
   std::shared_ptr<beamlineSystem::GuideLine> FocusE;
+
+  
+  static void
+    buildChopperBlock(Simulation&,const Bunker&,
+		      const attachSystem::FixedComp&,
+		      const constructSystem::VacuumBox&,
+		      constructSystem::VacuumBox&,
+		      beamlineSystem::GuideLine&,
+		      constructSystem::DiskChopper&,
+		      constructSystem::ChopperHousing&,
+		      constructSystem::VacuumPipe&);
 
   
   void setBeamAxis(const GuideItem&,const bool);
