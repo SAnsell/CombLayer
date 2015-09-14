@@ -156,10 +156,14 @@ setESSTest(defaultConfig& A)
 
   //  A.setMultiOption("beamlines",0,"G4BLine4 LOKI");
   //  A.setMultiOption("beamlines",0,"G4BLine11 DREAM");
-  A.setMultiOption("beamlines",0,"G1BLine5 VOR");
-  
+  A.setMultiOption("beamlines",0,"G4BLine17 DREAM");
+  //  A.setMultiOption("beamlines",0,"G1BLine5 VOR");
   //  A.setVar("G4BLine11Active",1);
   //  A.setVar("G4BLine11Filled",1);
+
+  // DREAM
+  A.setVar("G4BLine17Filled",1);
+  A.setVar("G4BLine17Active",1);
   A.setVar("G1BLine5Active",1);
   A.setVar("G1BLine5Filled",1);
   

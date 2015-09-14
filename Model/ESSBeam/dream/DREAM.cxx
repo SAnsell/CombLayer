@@ -103,7 +103,7 @@ DREAM::DREAM() :
   T0DiskA(new constructSystem::DiskChopper("dreamT0DiskA")),
 
   T0DiskAHouse(new constructSystem::ChopperHousing("dreamT0DiskAHouse")),
-  VacBoxB(new constructSystem::VacuumBox("dreamVacB")),
+  VacBoxB(new constructSystem::VacuumBox("dreamVacB",1)),
   VPipeB(new constructSystem::VacuumPipe("dreamPipeB")),
   T0DiskB(new constructSystem::DiskChopper("dreamT0DiskB")),  
   T0DiskBHouse(new constructSystem::ChopperHousing("dreamT0DiskBHouse")),
@@ -119,7 +119,23 @@ DREAM::DREAM() :
   BandBDisk(new constructSystem::DiskChopper("dreamBandBDisk")),  
   BandBHouse(new constructSystem::ChopperHousing("dreamBandBHouse")),
   VPipeD(new constructSystem::VacuumPipe("dreamPipeD")),
-  FocusE(new beamlineSystem::GuideLine("dreamFE"))
+  FocusE(new beamlineSystem::GuideLine("dreamFE")),
+
+  VacBoxE(new constructSystem::VacuumBox("dreamVacE",1)),
+  T0DiskC(new constructSystem::DiskChopper("dreamT0DiskC")),  
+  T0HouseC(new constructSystem::ChopperHousing("dreamT0DiskCHouse")),
+  VPipeE(new constructSystem::VacuumPipe("dreamPipeE")),
+  FocusF(new beamlineSystem::GuideLine("dreamFF")),
+
+  VacBoxF(new constructSystem::VacuumBox("dreamVacF",1)),
+  T0DiskD(new constructSystem::DiskChopper("dreamT0DiskD")),  
+  T0HouseD(new constructSystem::ChopperHousing("dreamT0DiskDHouse")),
+  VPipeF(new constructSystem::VacuumPipe("dreamPipeF")),
+  FocusG(new beamlineSystem::GuideLine("dreamFG")),
+
+  VPipeFinal(new constructSystem::VacuumPipe("dreamPipeFinal")),
+  FocusFinal(new beamlineSystem::GuideLine("dreamFFinal"))
+  
 /*!
     Constructor
  */
@@ -161,6 +177,21 @@ DREAM::DREAM() :
   OR.addObject(VPipeD);
   OR.addObject(VacBoxD);
   OR.addObject(FocusE);
+
+  OR.addObject(T0DiskC);
+  OR.addObject(T0HouseC);
+  OR.addObject(VPipeE);
+  OR.addObject(VacBoxE);
+  OR.addObject(FocusF);
+
+  OR.addObject(T0DiskD);
+  OR.addObject(T0HouseD);
+  OR.addObject(VPipeF);
+  OR.addObject(VacBoxF);
+  OR.addObject(FocusG);
+
+  OR.addObject(VPipeFinal);
+  OR.addObject(FocusFinal);
 }
 
 DREAM::~DREAM()
@@ -316,14 +347,14 @@ DREAM::build(Simulation& System,
   T0DiskAHouse->createAll(System,T0DiskA->getKey("Main"),0);
   T0DiskAHouse->insertComponent(System,"Void",*T0DiskA);
 
-  
+
   buildChopperBlock(System,bunkerObj,
 		    T0DiskA->getKey("Beam"),*VacBoxA,
 		    *VacBoxB,*FocusC,
 		    *T0DiskB,*T0DiskBHouse,
-		    *VPipeC);
+		    *VPipeB);
+  
   // GOING TO POSITION 2:
-
   buildChopperBlock(System,bunkerObj,
 		    T0DiskB->getKey("Beam"),*VacBoxB,
 		    *VacBoxC,*FocusD,
@@ -335,8 +366,34 @@ DREAM::build(Simulation& System,
 		    *VacBoxD,*FocusE,
 		    *BandBDisk,*BandBHouse,
 		    *VPipeD);
-  return;
-  
+
+  // T0 after Position 3
+  buildChopperBlock(System,bunkerObj,
+		    BandBDisk->getKey("Beam"),*VacBoxD,
+		    *VacBoxE,*FocusF,
+		    *T0DiskC,*T0HouseC,
+		    *VPipeE);
+
+  // T0 after Position 3 PartB
+  buildChopperBlock(System,bunkerObj,
+		    T0DiskC->getKey("Beam"),*VacBoxE,
+		    *VacBoxF,*FocusG,
+		    *T0DiskD,*T0HouseD,
+		    *VPipeF);
+
+
+  // CONNECT TO  WALL
+  VPipeFinal->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeFinal->setFront(*VacBoxF,2);
+  VPipeFinal->setBack(bunkerObj,1);
+  VPipeFinal->createAll(System,*VacBoxF,2);
+
+  FocusFinal->addInsertCell(VPipeFinal->getCell("Void"));
+  FocusFinal->addInsertCell(VacBoxE->getCells("Void"));
+  FocusFinal->addEndCut(bunkerObj.getSignedLinkString(1));
+  FocusFinal->createAll(System,T0DiskD->getKey("Beam"),2,
+			T0DiskD->getKey("Beam"),2);
+
   return;
 }
 

@@ -129,6 +129,34 @@ class DREAM
   std::shared_ptr<beamlineSystem::GuideLine> FocusE;
 
   
+  /// Vac box for Second T0  chopper set
+  std::shared_ptr<constructSystem::VacuumBox> VacBoxE;
+  /// T0 Chopper 
+  std::shared_ptr<constructSystem::DiskChopper> T0DiskC;  
+  /// Band width chopper Housing
+  std::shared_ptr<constructSystem::ChopperHousing> T0HouseC;
+  /// Pipe between Pos3 and T0
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeE;
+  /// Elliptic forcus in bulkshield [m5]
+  std::shared_ptr<beamlineSystem::GuideLine> FocusF;
+
+    /// Vac box for Second T0  chopper set [Part B]
+  std::shared_ptr<constructSystem::VacuumBox> VacBoxF;
+  /// T0 Chopper 
+  std::shared_ptr<constructSystem::DiskChopper> T0DiskD;  
+  /// Band width chopper Housing
+  std::shared_ptr<constructSystem::ChopperHousing> T0HouseD;
+  /// Pipe between Pos3 and T0
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeF;
+  /// Elliptic forcus in bulkshield [m5]
+  std::shared_ptr<beamlineSystem::GuideLine> FocusG;
+
+
+  /// Pipe to bunker Wall
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeFinal;
+  /// Guide running to bunker wall
+  std::shared_ptr<beamlineSystem::GuideLine> FocusFinal;
+  
   static void
     buildChopperBlock(Simulation&,const Bunker&,
 		      const attachSystem::FixedComp&,

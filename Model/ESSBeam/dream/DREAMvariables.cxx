@@ -237,7 +237,7 @@ DREAMvariables(FuncDataBase& Control)
 
   // T0 Chopper disk B
   Control.addVariable("dreamT0DiskBXStep",0.0);
-  Control.addVariable("dreamT0DiskBYStep",47.0);
+  Control.addVariable("dreamT0DiskBYStep",-2.0);
   Control.addVariable("dreamT0DiskBZStep",0.0);
   Control.addVariable("dreamT0DiskBXYangle",0.0);
   Control.addVariable("dreamT0DiskBZangle",0.0);
@@ -284,8 +284,7 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamPipeBFeMat","Stainless304");
 
   // VACBOX B : for the second chopper T0 unit
-  //  Length 100.7 + Width [87.0] + Height [39.0] void Depth/2 + front
-  Control.addVariable("dreamVacBYStep",27.0);
+  Control.addVariable("dreamVacBYStep",40.0);
     
   Control.addVariable("dreamVacBVoidHeight",20.0);
   Control.addVariable("dreamVacBVoidDepth",19.0);
@@ -413,22 +412,9 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamFD0WidthEnd",3.05);
   Control.addVariable("dreamFD0Length",210.0);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  // ------------------------------------------
   // Band Pass/C : for the band pass chopper
-
+  // -------------------------------------------
   Control.addVariable("dreamVacDYStep",450.0);    
   Control.addVariable("dreamVacDVoidHeight",20.0);
   Control.addVariable("dreamVacDVoidDepth",19.0);
@@ -511,6 +497,221 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamFE0WidthEnd",3.05);
   Control.addVariable("dreamFE0Length",440.0);
 
+  // ------------------------------------------
+  // T0DiskC : for the second T0 pair
+  // -------------------------------------------
+  Control.addVariable("dreamVacEYStep",50.0);    
+  Control.addVariable("dreamVacEVoidHeight",20.0);
+  Control.addVariable("dreamVacEVoidDepth",19.0);
+  Control.addVariable("dreamVacEVoidWidth",87.0);
+  Control.addVariable("dreamVacEVoidLength",10.7);
+  
+  Control.addVariable("dreamVacEFeHeight",0.5);
+  Control.addVariable("dreamVacEFeDepth",0.5);
+  Control.addVariable("dreamVacEFeWidth",0.5);
+  Control.addVariable("dreamVacEFeFront",0.5);
+  Control.addVariable("dreamVacEFeBack",0.5);
+  Control.addVariable("dreamVacEFlangeRadius",8.0);    // GUESS
+  Control.addVariable("dreamVacEFlangeWall",1.0);      // GUESS
+  Control.addVariable("dreamVacEFlangeLength",10.0);   // GUESS
+  Control.addVariable("dreamVacEFeMat","Stainless304");
+
+
+    // T0 Chopper disk A
+  Control.addVariable("dreamT0DiskCXStep",0.0);
+  Control.addVariable("dreamT0DiskCYStep",-2.0);
+  Control.addVariable("dreamT0DiskCZStep",0.0);
+  Control.addVariable("dreamT0DiskCXYangle",0.0);
+  Control.addVariable("dreamT0DiskCZangle",0.0);
+
+  Control.addVariable("dreamT0DiskCInnerRadius",28.0);
+  Control.addVariable("dreamT0DiskCOuterRadius",38.0);
+  Control.addVariable("dreamT0DiskCNDisk",1);
+
+  Control.addVariable("dreamT0DiskC0Thick",5.4);  // to include B4C
+  Control.addVariable("dreamT0DiskCInnerMat","Inconnel");
+  Control.addVariable("dreamT0DiskCOuterMat","Tungsten");
+  
+  Control.addVariable("dreamT0DiskCNBlades",2);
+  Control.addVariable("dreamT0DiskC0PhaseAngle0",95.0);
+  Control.addVariable("dreamT0DiskC0OpenAngle0",35.0);
+  Control.addVariable("dreamT0DiskC0PhaseAngle1",275.0);
+  Control.addVariable("dreamT0DiskC0OpenAngle1",25.0);
+
+  // T0 Blade chopper house
+  Control.addVariable("dreamT0DiskCHouseYStep",2.6);
+  Control.addVariable("dreamT0DiskCHouseZStep",2.0);
+  Control.addVariable("dreamT0DiskCHouseVoidHeight",38.0);
+  Control.addVariable("dreamT0DiskCHouseVoidDepth",28.0);
+  Control.addVariable("dreamT0DiskCHouseVoidThick",8.0);
+  Control.addVariable("dreamT0DiskCHouseVoidWidth",80.0);
+  Control.addVariable("dreamT0DiskCHouseWallThick",1.0);
+  Control.addVariable("dreamT0DiskCHouseWallMat","Stainless304");
+
+  // VACUUM PIPES / T0/B and Band Choppers
+  Control.addVariable("dreamPipeERadius",8.0);
+  Control.addVariable("dreamPipeELength",300.0);
+  Control.addVariable("dreamPipeEFeThick",1.0);
+  Control.addVariable("dreamPipeEFlangeRadius",12.0);
+  Control.addVariable("dreamPipeEFlangeLength",1.0);
+  Control.addVariable("dreamPipeEFeMat","Stainless304");
+
+
+  // 6.6m to 8.5m between T0 and Band chopper
+  Control.addVariable("dreamFFXStep",0.0);       
+  Control.addVariable("dreamFFYStep",0.8);       
+  Control.addVariable("dreamFFZStep",0.0);       
+  Control.addVariable("dreamFFXYAngle",0.0);       
+  Control.addVariable("dreamFFZAngle",0.0);
+  Control.addVariable("dreamFFLength",40.0);       
+  
+  Control.addVariable("dreamFFBeamYStep",1.0);
+ 
+  Control.addVariable("dreamFFNShapes",1);       
+  Control.addVariable("dreamFFNShapeLayers",3);
+  Control.addVariable("dreamFFActiveShield",0);
+
+  Control.addVariable("dreamFFLayerThick1",0.4);  // glass thick
+  Control.addVariable("dreamFFLayerThick2",1.5);
+
+  Control.addVariable("dreamFFLayerMat0","Void");
+  Control.addVariable("dreamFFLayerMat1","Glass");
+  Control.addVariable("dreamFFLayerMat2","Void");       
+  
+  Control.addVariable("dreamFF0TypeID","Tapper");
+  Control.addVariable("dreamFF0HeightStart",4.5);
+  Control.addVariable("dreamFF0HeightEnd",4.97);
+  Control.addVariable("dreamFF0WidthStart",2.24);
+  Control.addVariable("dreamFF0WidthEnd",3.05);
+  Control.addVariable("dreamFF0Length",40.0);
+
+
+
+  // ---------------------------------
+  // T0 Chopper disk D (second Part B)
+  //----------------------------------
+
+  Control.addVariable("dreamVacFYStep",50.0);    
+  Control.addVariable("dreamVacFVoidHeight",20.0);
+  Control.addVariable("dreamVacFVoidDepth",19.0);
+  Control.addVariable("dreamVacFVoidWidth",87.0);
+  Control.addVariable("dreamVacFVoidLength",10.7);
+  
+  Control.addVariable("dreamVacFFeHeight",0.5);
+  Control.addVariable("dreamVacFFeDepth",0.5);
+  Control.addVariable("dreamVacFFeWidth",0.5);
+  Control.addVariable("dreamVacFFeFront",0.5);
+  Control.addVariable("dreamVacFFeBack",0.5);
+  Control.addVariable("dreamVacFFlangeRadius",8.0);    // GUESS
+  Control.addVariable("dreamVacFFlangeWall",1.0);      // GUESS
+  Control.addVariable("dreamVacFFlangeLength",10.0);   // GUESS
+  Control.addVariable("dreamVacFFeMat","Stainless304");
+  
+  Control.addVariable("dreamT0DiskDXStep",0.0);
+  Control.addVariable("dreamT0DiskDYStep",-2.0);
+  Control.addVariable("dreamT0DiskDZStep",0.0);
+  Control.addVariable("dreamT0DiskDXYangle",0.0);
+  Control.addVariable("dreamT0DiskDZangle",0.0);
+
+  Control.addVariable("dreamT0DiskDInnerRadius",28.0);
+  Control.addVariable("dreamT0DiskDOuterRadius",38.0);
+  Control.addVariable("dreamT0DiskDNDisk",1);
+
+  Control.addVariable("dreamT0DiskD0Thick",5.4);  // to include B4C
+  Control.addVariable("dreamT0DiskDInnerMat","Inconnel");
+  Control.addVariable("dreamT0DiskDOuterMat","Tungsten");
+  
+  Control.addVariable("dreamT0DiskDNBlades",2);
+  Control.addVariable("dreamT0DiskD0PhaseAngle0",95.0);
+  Control.addVariable("dreamT0DiskD0OpenAngle0",35.0);
+  Control.addVariable("dreamT0DiskD0PhaseAngle1",275.0);
+  Control.addVariable("dreamT0DiskD0OpenAngle1",25.0);
+
+  // T0 Blade chopper house
+  Control.addVariable("dreamT0DiskDHouseYStep",2.6);
+  Control.addVariable("dreamT0DiskDHouseZStep",2.0);
+  Control.addVariable("dreamT0DiskDHouseVoidHeight",38.0);
+  Control.addVariable("dreamT0DiskDHouseVoidDepth",28.0);
+  Control.addVariable("dreamT0DiskDHouseVoidThick",8.0);
+  Control.addVariable("dreamT0DiskDHouseVoidWidth",80.0);
+  Control.addVariable("dreamT0DiskDHouseWallThick",1.0);
+  Control.addVariable("dreamT0DiskDHouseWallMat","Stainless304");
+
+  // VACUUM PIPES / T0/B and Band Choppers
+  Control.addVariable("dreamPipeFRadius",8.0);
+  Control.addVariable("dreamPipeFLength",300.0);
+  Control.addVariable("dreamPipeFFeThick",1.0);
+  Control.addVariable("dreamPipeFFlangeRadius",12.0);
+  Control.addVariable("dreamPipeFFlangeLength",1.0);
+  Control.addVariable("dreamPipeFFeMat","Stainless304");
+
+
+  // 6.6m to 8.5m between T0 and Band chopper
+  Control.addVariable("dreamFGXStep",0.0);       
+  Control.addVariable("dreamFGYStep",0.8);       
+  Control.addVariable("dreamFGZStep",0.0);       
+  Control.addVariable("dreamFGXYAngle",0.0);       
+  Control.addVariable("dreamFGZAngle",0.0);
+  Control.addVariable("dreamFGLength",40.0);       
+  
+  Control.addVariable("dreamFGBeamYStep",1.0);
+ 
+  Control.addVariable("dreamFGNShapes",1);       
+  Control.addVariable("dreamFGNShapeLayers",3);
+  Control.addVariable("dreamFGActiveShield",0);
+
+  Control.addVariable("dreamFGLayerThick1",0.4);  // glass thick
+  Control.addVariable("dreamFGLayerThick2",1.5);
+
+  Control.addVariable("dreamFGLayerMat0","Void");
+  Control.addVariable("dreamFGLayerMat1","Glass");
+  Control.addVariable("dreamFGLayerMat2","Void");       
+  
+  Control.addVariable("dreamFG0TypeID","Tapper");
+  Control.addVariable("dreamFG0HeightStart",4.5);
+  Control.addVariable("dreamFG0HeightEnd",4.97);
+  Control.addVariable("dreamFG0WidthStart",2.24);
+  Control.addVariable("dreamFG0WidthEnd",3.05);
+  Control.addVariable("dreamFG0Length",40.0);
+
+  
+  // --------------------
+  // PIPE to Bunker Wall:
+  // --------------------
+  Control.addVariable("dreamPipeFinalRadius",8.0);
+  Control.addVariable("dreamPipeFinalLength",200.0);
+  Control.addVariable("dreamPipeFinalFeThick",1.0);
+  Control.addVariable("dreamPipeFinalFlangeRadius",12.0);
+  Control.addVariable("dreamPipeFinalFlangeLength",1.0);
+  Control.addVariable("dreamPipeFinalFeMat","Stainless304");
+
+  // 6.6m to 8.5m between T0 and Band chopper
+  Control.addVariable("dreamFFinalXStep",0.0);       
+  Control.addVariable("dreamFFinalYStep",0.8);       
+  Control.addVariable("dreamFFinalZStep",0.0);       
+  Control.addVariable("dreamFFinalXYAngle",0.0);       
+  Control.addVariable("dreamFFinalZAngle",0.0);
+  Control.addVariable("dreamFFinalLength",440.0);       
+  
+  Control.addVariable("dreamFFinalBeamYStep",1.0);
+ 
+  Control.addVariable("dreamFFinalNShapes",1);       
+  Control.addVariable("dreamFFinalNShapeLayers",3);
+  Control.addVariable("dreamFFinalActiveShield",0);
+
+  Control.addVariable("dreamFFinalLayerThick1",0.4);  // glass thick
+  Control.addVariable("dreamFFinalLayerThick2",1.5);
+
+  Control.addVariable("dreamFFinalLayerMat0","Void");
+  Control.addVariable("dreamFFinalLayerMat1","Glass");
+  Control.addVariable("dreamFFinalLayerMat2","Void");       
+  
+  Control.addVariable("dreamFFinal0TypeID","Tapper");
+  Control.addVariable("dreamFFinal0HeightStart",4.5);
+  Control.addVariable("dreamFFinal0HeightEnd",4.97);
+  Control.addVariable("dreamFFinal0WidthStart",2.24);
+  Control.addVariable("dreamFFinal0WidthEnd",3.05);
+  Control.addVariable("dreamFFinal0Length",440.0);
   
   return;
 }
