@@ -134,8 +134,9 @@ DREAM::DREAM() :
   FocusG(new beamlineSystem::GuideLine("dreamFG")),
 
   VPipeFinal(new constructSystem::VacuumPipe("dreamPipeFinal")),
-  FocusFinal(new beamlineSystem::GuideLine("dreamFFinal"))
-  
+  FocusFinal(new beamlineSystem::GuideLine("dreamFFinal")),
+  BInsert(new BunkerInsert("dreamBInsert")),
+  FocusWall(new beamlineSystem::GuideLine("dreamFWall"))
 /*!
     Constructor
  */
@@ -192,6 +193,8 @@ DREAM::DREAM() :
 
   OR.addObject(VPipeFinal);
   OR.addObject(FocusFinal);
+  OR.addObject(BInsert);
+  OR.addObject(FocusWall);
 }
 
 DREAM::~DREAM()
@@ -389,10 +392,25 @@ DREAM::build(Simulation& System,
   VPipeFinal->createAll(System,*VacBoxF,2);
 
   FocusFinal->addInsertCell(VPipeFinal->getCell("Void"));
-  FocusFinal->addInsertCell(VacBoxE->getCells("Void"));
+  FocusFinal->addInsertCell(VacBoxF->getCells("Void"));
   FocusFinal->addEndCut(bunkerObj.getSignedLinkString(1));
   FocusFinal->createAll(System,T0DiskD->getKey("Beam"),2,
 			T0DiskD->getKey("Beam"),2);
+
+  // IN WALL
+  // Make bunker insert
+  const attachSystem::FixedComp& GFC(FocusFinal->getKey("Guide0"));
+  const std::string BSector=
+    bunkerObj.calcSegment(System,GFC.getSignedLinkPt(-1),
+			  GFC.getSignedLinkAxis(-1));  
+  BInsert->setInsertCell(bunkerObj.getCells(BSector));
+  BInsert->createAll(System,GFC,-1,bunkerObj);
+
+  FocusWall->addInsertCell(BInsert->getCell("Void"));
+  FocusWall->createAll(System,*BInsert,-1,
+			 FocusFinal->getKey("Guide0"),2);
+
+  // Section to 17m
 
   return;
 }

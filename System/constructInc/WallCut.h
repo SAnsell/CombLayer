@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   constructInc/WallCut.h
  *
@@ -33,6 +33,8 @@ namespace constructSystem
   \author S. Ansell
   \date Febrary 2015
   \brief WallCut [insert object]
+
+  Designed as a cutout of a wall to do gaps etc
 */
 
 class WallCut : public attachSystem::FixedComp,

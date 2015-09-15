@@ -712,6 +712,76 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamFFinal0WidthStart",2.24);
   Control.addVariable("dreamFFinal0WidthEnd",3.05);
   Control.addVariable("dreamFFinal0Length",440.0);
+
+  // BEAM INSERT:
+  Control.addVariable("dreamBInsertHeight",20.0);
+  Control.addVariable("dreamBInsertWidth",28.0);
+  Control.addVariable("dreamBInsertTopWall",1.0);
+  Control.addVariable("dreamBInsertLowWall",1.0);
+  Control.addVariable("dreamBInsertLeftWall",1.0);
+  Control.addVariable("dreamBInsertRightWall",1.0);
+  Control.addVariable("dreamBInsertWallMat","Stainless304");       
+
+  // Guide in wall
+  Control.addVariable("dreamFWallXStep",0.0);       
+  Control.addVariable("dreamFWallYStep",0.8);       
+  Control.addVariable("dreamFWallZStep",0.0);       
+  Control.addVariable("dreamFWallXYAngle",0.0);       
+  Control.addVariable("dreamFWallZAngle",0.0);
+  Control.addVariable("dreamFWallLength",318.0);       
+  
+  Control.addVariable("dreamFWallBeamYStep",1.0);
+ 
+  Control.addVariable("dreamFWallNShapes",1);       
+  Control.addVariable("dreamFWallNShapeLayers",3);
+  Control.addVariable("dreamFWallActiveShield",0);
+
+  Control.addVariable("dreamFWallLayerThick1",0.4);  // glass thick
+  Control.addVariable("dreamFWallLayerThick2",1.5);
+
+  Control.addVariable("dreamFWallLayerMat0","Void");
+  Control.addVariable("dreamFWallLayerMat1","Glass");
+  Control.addVariable("dreamFWallLayerMat2","Void");       
+  
+  Control.addVariable("dreamFWall0TypeID","Rectangle");
+  Control.addVariable("dreamFWall0Height",6.0);
+  Control.addVariable("dreamFWall0Width",6.0);
+  Control.addVariable("dreamFWall0Length",318.0);
+
+  // Guide after wall [17.5m - 3.20] for wall
+  Control.addVariable("dreamFOutAXStep",0.0);       
+  Control.addVariable("dreamFOutAYStep",0.8);       
+  Control.addVariable("dreamFOutAZStep",0.0);       
+  Control.addVariable("dreamFOutAXYAngle",0.0);       
+  Control.addVariable("dreamFOutAZAngle",0.0);
+  Control.addVariable("dreamFOutALength",1750.0-320.0);       
+  
+  Control.addVariable("dreamFOutABeamYStep",1.0);
+ 
+  Control.addVariable("dreamFOutANShapes",1);       
+  Control.addVariable("dreamFOutANShapeLayers",3);
+  Control.addVariable("dreamFOutAActiveShield",0);
+
+  Control.addVariable("dreamFOutALayerThick1",0.4);  // glass thick
+  Control.addVariable("dreamFOutALayerThick2",1.5);
+
+  Control.addVariable("dreamFOutALayerMat0","Void");
+  Control.addVariable("dreamFOutALayerMat1","Glass");
+  Control.addVariable("dreamFOutALayerMat2","Void");       
+  
+  Control.addVariable("dreamFOutA0TypeID","Tapper");
+  Control.addVariable("dreamFOutA0HeightStart",4.5);
+  Control.addVariable("dreamFOutA0HeightEnd",4.97);
+  Control.addVariable("dreamFOutA0WidthStart",2.24);
+  Control.addVariable("dreamFOutA0WidthEnd",3.05);
+  Control.addVariable("dreamFOutA0Length",1750.0-320.0);
+
+  Control.addVariable("dreamPipeOutARadius",8.0);
+  Control.addVariable("dreamPipeOutALength",1750.0-320);
+  Control.addVariable("dreamPipeOutAFeThick",1.0);
+  Control.addVariable("dreamPipeOutAFlangeRadius",12.0);
+  Control.addVariable("dreamPipeOutAFlangeLength",1.0);
+  Control.addVariable("dreamPipeOutAFeMat","Stainless304");
   
   return;
 }

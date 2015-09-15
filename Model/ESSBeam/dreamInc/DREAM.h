@@ -156,7 +156,11 @@ class DREAM
   std::shared_ptr<constructSystem::VacuumPipe> VPipeFinal;
   /// Guide running to bunker wall
   std::shared_ptr<beamlineSystem::GuideLine> FocusFinal;
-  
+  /// Bunker insert
+  std::shared_ptr<essSystem::BunkerInsert> BInsert;
+  /// Guide running to bunker wall
+  std::shared_ptr<beamlineSystem::GuideLine> FocusWall;
+
   static void
     buildChopperBlock(Simulation&,const Bunker&,
 		      const attachSystem::FixedComp&,
