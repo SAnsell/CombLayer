@@ -84,6 +84,7 @@
 #include "DHut.h"
 #include "DetectorTank.h"
 #include "CylSample.h"
+#include "LineShield.h"
 
 #include "DREAM.h"
 
@@ -136,7 +137,9 @@ DREAM::DREAM() :
   VPipeFinal(new constructSystem::VacuumPipe("dreamPipeFinal")),
   FocusFinal(new beamlineSystem::GuideLine("dreamFFinal")),
   BInsert(new BunkerInsert("dreamBInsert")),
-  FocusWall(new beamlineSystem::GuideLine("dreamFWall"))
+  FocusWall(new beamlineSystem::GuideLine("dreamFWall")),
+
+  ShieldA(new constructSystem::LineShield("dreamShieldA"))
 /*!
     Constructor
  */
@@ -195,6 +198,8 @@ DREAM::DREAM() :
   OR.addObject(FocusFinal);
   OR.addObject(BInsert);
   OR.addObject(FocusWall);
+
+  OR.addObject(ShieldA);
 }
 
 DREAM::~DREAM()
@@ -411,7 +416,10 @@ DREAM::build(Simulation& System,
 			 FocusFinal->getKey("Guide0"),2);
 
   // Section to 17m
-
+  
+  ShieldA->addInsertCell(voidCell);
+  ShieldA->setFront(bunkerObj,2);
+  ShieldA->createAll(System,bunkerObj,2);
   return;
 }
 

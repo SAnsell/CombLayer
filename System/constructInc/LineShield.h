@@ -42,7 +42,7 @@ class LineShield :
 {
  private:
   
-  const int vacIndex;           ///< Index of surface offset
+  const int shieldIndex;        ///< Index of surface offset
   int cellIndex;                ///< Cell index  
 
   bool activeFront;             ///< Flag for front active
@@ -63,15 +63,15 @@ class LineShield :
   // Layers
   size_t nWallLayers;               ///< number of layers
   std::vector<double> wallFrac;     ///< wall Layer thicknesss 
-  std::vector<int> wallMat;         ///< guide Layer materials
+  std::vector<int> wallMat;         ///< wall Layer materials
 
   size_t nRoofLayers;                ///< number of layers
-  std::vector<double> roofLen;       ///< guide Layer thicknesss 
-  std::vector<int> roofMat;          ///< guide Layer materials
+  std::vector<double> roofFrac;      ///< Layer thicknesss 
+  std::vector<int> roofMat;          ///< Layer materials
 
   size_t nFloorLayers;                ///< number of layers
-  std::vector<double> floorLen;       ///< guide Layer thicknesss 
-  std::vector<int> floorMat;          ///< guide Layer materials
+  std::vector<double> floorFrac;      ///< Layer thicknesss 
+  std::vector<int> floorMat;          ///< Layer materials
 
   
   void populate(const FuncDataBase&);

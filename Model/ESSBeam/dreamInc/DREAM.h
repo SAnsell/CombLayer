@@ -36,9 +36,10 @@ namespace instrumentSystem
 
 namespace constructSystem
 {  
-  class Jaws;
-  class DiskChopper;
   class ChopperPit;
+  class DiskChopper;
+  class Jaws;
+  class LineShield;
   class RotaryCollimator;
   class VacuumBox;
   class VacuumPipe;
@@ -160,6 +161,9 @@ class DREAM
   std::shared_ptr<essSystem::BunkerInsert> BInsert;
   /// Guide running to bunker wall
   std::shared_ptr<beamlineSystem::GuideLine> FocusWall;
+  /// Guide running to bunker wall
+  std::shared_ptr<constructSystem::LineShield> ShieldA;
+  
 
   static void
     buildChopperBlock(Simulation&,const Bunker&,

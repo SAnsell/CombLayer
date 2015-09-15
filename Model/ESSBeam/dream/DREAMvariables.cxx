@@ -63,7 +63,7 @@ DREAMvariables(FuncDataBase& Control)
   ELog::RegMethod RegA("DREAMvariables[F]","DREAMvariables");
 
   // Bender in section so use cut system
-  Control.addVariable("dreamFAXStep",0.0);       
+  Control.addVariable("dreamFAXStep",-2.0);        // Centre of thermal
   Control.addVariable("dreamFAYStep",0.0);       
   Control.addVariable("dreamFAZStep",0.0);       
   Control.addVariable("dreamFAXYAngle",0.0);
@@ -85,13 +85,13 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamFA0TypeID","Tapper");
   Control.addVariable("dreamFA0HeightStart",3.5); // guess
   Control.addVariable("dreamFA0HeightEnd",4.5);
-  Control.addVariable("dreamFA0WidthStart",0.7);
-  Control.addVariable("dreamFA0WidthEnd",1.89);
+  Control.addVariable("dreamFA0WidthStart",8.0); // NOT Centred
+  Control.addVariable("dreamFA0WidthEnd",2.0);
   Control.addVariable("dreamFA0Length",350.0);
 
-  // VACBOX A : A[2.08m from Bunker wall]
+  // VACBOX A : 6.10m target centre
   //  Length 100.7 + Width [87.0] + Height [39.0] void Depth/2 + front
-  Control.addVariable("dreamVacAYStep",30.0);
+  Control.addVariable("dreamVacAYStep",40.0);
     
   Control.addVariable("dreamVacAVoidHeight",20.0);
   Control.addVariable("dreamVacAVoidDepth",19.0);
@@ -147,7 +147,7 @@ DREAMvariables(FuncDataBase& Control)
   
   // Double Blade chopper
   Control.addVariable("dreamDBladeXStep",0.0);
-  Control.addVariable("dreamDBladeYStep",1.0);
+  Control.addVariable("dreamDBladeYStep",11.0);
   Control.addVariable("dreamDBladeZStep",0.0);
   Control.addVariable("dreamDBladeXYangle",0.0);
   Control.addVariable("dreamDBladeZangle",0.0);
@@ -782,7 +782,17 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamPipeOutAFlangeRadius",12.0);
   Control.addVariable("dreamPipeOutAFlangeLength",1.0);
   Control.addVariable("dreamPipeOutAFeMat","Stainless304");
-  
+
+
+  Control.addVariable("dreamShieldALength",1750.0-320);
+  Control.addVariable("dreamShieldALeft",32.0);
+  Control.addVariable("dreamShieldARight",32.0);
+  Control.addVariable("dreamShieldAHeight",32.0);
+  Control.addVariable("dreamShieldADepth",32.0);
+  Control.addVariable("dreamShieldADefMat","Stainless304");
+  Control.addVariable("dreamShieldANWallLayers",1);
+  Control.addVariable("dreamShieldANFloorLayers",1);
+  Control.addVariable("dreamShieldANRoofLayers",1);
   return;
 }
  

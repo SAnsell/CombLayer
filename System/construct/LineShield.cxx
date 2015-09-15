@@ -70,6 +70,7 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "CellMap.h"
+#include "surfDIter.h"
 
 #include "LineShield.h"
 
@@ -114,12 +115,25 @@ LineShield::populate(const FuncDataBase& Control)
   
   defMat=ModelSupport::EvalDefMat<int>(Control,keyName+"DefMat",0);
 
-  nLayers=Control.EvalVar<size_t>(keyName+"NWallLayers");
+  nWallLayers=Control.EvalVar<size_t>(keyName+"NWallLayers");
   ModelSupport::populateDivide(Control,nWallLayers,keyName+"WallMat",
 			       defMat,wallMat);
-  ModelSupport::populateDivideLen(Control,nWalLayers,keyName+"WallLen",
-				  wallThick,wallFrac);
+  ModelSupport::populateDivideLen(Control,nWallLayers,keyName+"WallLen",
+				  std::min(left,right),wallFrac);
+  wallFrac.push_back(1.0);
+  
+  nRoofLayers=Control.EvalVar<size_t>(keyName+"NRoofLayers");
+  ModelSupport::populateDivide(Control,nRoofLayers,keyName+"RoofMat",
+			       defMat,roofMat);
+  ModelSupport::populateDivideLen(Control,nRoofLayers,keyName+"RoofLen",
+				  height,roofFrac);
 
+  nFloorLayers=Control.EvalVar<size_t>(keyName+"NFloorLayers");
+  ModelSupport::populateDivide(Control,nFloorLayers,keyName+"FloorMat",
+			       defMat,floorMat);
+  ModelSupport::populateDivideLen(Control,nFloorLayers,keyName+"FloorLen",
+				  depth,floorFrac);
+  
   return;
 }
 
@@ -145,7 +159,8 @@ LineShield::createUnitVector(const attachSystem::FixedComp& FC,
 void
 LineShield::createSurfaces()
   /*!
-    Create the surfaces
+    Create the surfaces. Note that layers is not used
+    because we want to break up the objects into sub components
   */
 {
   ELog::RegMethod RegA("LineShield","createSurfaces");
@@ -157,11 +172,32 @@ LineShield::createSurfaces()
   if (!activeBack)
     ModelSupport::buildPlane(SMap,shieldIndex+2,Origin+Y*(length/2.0),Y);
 
-  ModelSupport::buildPlane(SMap,shieldIndex+3,Origin-X*left,X);
-  ModelSupport::buildPlane(SMap,shieldIndex+4,Origin+X*right,X);
-  ModelSupport::buildPlane(SMap,shieldIndex+5,Origin-Z*depth,Z);
-  ModelSupport::buildPlane(SMap,shieldIndex+6,Origin+Z*height,Z);
-  
+  int WI(shieldIndex);
+  ELog::EM<<"NWall = "<<wallFrac.size()<<ELog::endDiag;
+  for(size_t i=0;i<nWallLayers;i++)
+    {
+      ModelSupport::buildPlane(SMap,WI+3,
+			       Origin-X*(left*wallFrac[i]),X);
+      ModelSupport::buildPlane(SMap,WI+3,
+			       Origin+X*(right*wallFrac[i]),X);
+      WI+=10;
+    }
+
+  int RI(shieldIndex);
+  for(size_t i=0;i<nRoofLayers;i++)
+    {
+      ModelSupport::buildPlane(SMap,RI+6,
+			       Origin+Z*(height*roofFrac[i]),Z);
+      RI+=10;
+    }
+
+  int FI(shieldIndex);
+  for(size_t i=0;i<nFloorLayers;i++)
+    {
+      ModelSupport::buildPlane(SMap,FI+5,
+			       Origin-Z*(depth*floorFrac[i]),Z);
+      FI+=10;
+    }  
   return;
 }
 
@@ -188,13 +224,44 @@ LineShield::createObjects(Simulation& System)
 
   const std::string FBStr=frontStr+backStr+divStr;
 
+  // Inner is a single component
   // Void + inner 
   Out=ModelSupport::getComposite(SMap,shieldIndex," 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+FBStr));
   addCell("Void",cellIndex-1);
+
+  // Walls are contained:
+  int WI(shieldIndex);
+  for(size_t i=0;i<nWallLayers;i++)
+    {
+      Out=ModelSupport::getComposite(SMap,WI,shieldIndex," 13 -3 5M -6M ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat[i],0.0,Out+FBStr));
+            
+      Out=ModelSupport::getComposite(SMap,WI,shieldIndex," 4 -14 5M -6M ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat[i],0.0,Out+FBStr));
+      WI+=10;
+    }
+ 
+  // Roof on top of walls are contained:
+  int SI(shieldIndex);
+  for(size_t i=0;i<nRoofLayers;i++)
+    {
+      Out=ModelSupport::getComposite(SMap,SI,shieldIndex," 3M -4M -16 6 ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,roofMat[i],0.0,Out+FBStr));
+      SI+=10;
+    }
+
+  // Floor complete:
+  int FI(shieldIndex);
+  for(size_t i=0;i<nRoofLayers;i++)
+    {
+      Out=ModelSupport::getComposite(SMap,FI,WI," 3M -4M -5 15 ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,floorMat[i],0.0,Out+FBStr));
+      FI+=10;
+    }
   
   // Outer
-  Out=ModelSupport::getComposite(SMap,shieldIndex,"-107 ");
+  Out=ModelSupport::getComposite(SMap,WI,SI,FI," 3 -4 5 -6 ");
   addOuterSurf(Out+FBStr);
 
   return;
