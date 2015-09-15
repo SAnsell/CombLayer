@@ -419,7 +419,8 @@ DREAM::build(Simulation& System,
   
   ShieldA->addInsertCell(voidCell);
   ShieldA->setFront(bunkerObj,2);
-  ShieldA->createAll(System,bunkerObj,2);
+  ShieldA->setDivider(bunkerObj,2);
+  ShieldA->createAll(System,*BInsert,2);
   return;
 }
 

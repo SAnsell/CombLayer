@@ -127,12 +127,14 @@ LineShield::populate(const FuncDataBase& Control)
 			       defMat,roofMat);
   ModelSupport::populateDivideLen(Control,nRoofLayers,keyName+"RoofLen",
 				  height,roofFrac);
-
+  roofFrac.push_back(1.0);
+  
   nFloorLayers=Control.EvalVar<size_t>(keyName+"NFloorLayers");
   ModelSupport::populateDivide(Control,nFloorLayers,keyName+"FloorMat",
 			       defMat,floorMat);
   ModelSupport::populateDivideLen(Control,nFloorLayers,keyName+"FloorLen",
 				  depth,floorFrac);
+  floorFrac.push_back(1.0);
   
   return;
 }
@@ -153,6 +155,7 @@ LineShield::createUnitVector(const attachSystem::FixedComp& FC,
   applyOffset();
   // after rotation
   Origin+=Y*(length/2.0);
+  ELog::EM<<"O == "<<Origin<<ELog::endDiag;
   return;
 }
 
@@ -178,7 +181,7 @@ LineShield::createSurfaces()
     {
       ModelSupport::buildPlane(SMap,WI+3,
 			       Origin-X*(left*wallFrac[i]),X);
-      ModelSupport::buildPlane(SMap,WI+3,
+      ModelSupport::buildPlane(SMap,WI+4,
 			       Origin+X*(right*wallFrac[i]),X);
       WI+=10;
     }
@@ -232,7 +235,7 @@ LineShield::createObjects(Simulation& System)
 
   // Walls are contained:
   int WI(shieldIndex);
-  for(size_t i=0;i<nWallLayers;i++)
+  for(size_t i=1;i<nWallLayers;i++)
     {
       Out=ModelSupport::getComposite(SMap,WI,shieldIndex," 13 -3 5M -6M ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat[i],0.0,Out+FBStr));
@@ -244,7 +247,7 @@ LineShield::createObjects(Simulation& System)
  
   // Roof on top of walls are contained:
   int SI(shieldIndex);
-  for(size_t i=0;i<nRoofLayers;i++)
+  for(size_t i=1;i<nRoofLayers;i++)
     {
       Out=ModelSupport::getComposite(SMap,SI,shieldIndex," 3M -4M -16 6 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,roofMat[i],0.0,Out+FBStr));
@@ -253,7 +256,7 @@ LineShield::createObjects(Simulation& System)
 
   // Floor complete:
   int FI(shieldIndex);
-  for(size_t i=0;i<nRoofLayers;i++)
+  for(size_t i=1;i<nRoofLayers;i++)
     {
       Out=ModelSupport::getComposite(SMap,FI,WI," 3M -4M -5 15 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,floorMat[i],0.0,Out+FBStr));
@@ -261,7 +264,7 @@ LineShield::createObjects(Simulation& System)
     }
   
   // Outer
-  Out=ModelSupport::getComposite(SMap,WI,SI,FI," 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,WI,SI,FI," 3 -4 5M -6N ");
   addOuterSurf(Out+FBStr);
 
   return;

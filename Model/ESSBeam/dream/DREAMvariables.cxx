@@ -790,7 +790,7 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamShieldAHeight",32.0);
   Control.addVariable("dreamShieldADepth",32.0);
   Control.addVariable("dreamShieldADefMat","Stainless304");
-  Control.addVariable("dreamShieldANWallLayers",1);
+  Control.addVariable("dreamShieldANWallLayers",3);
   Control.addVariable("dreamShieldANFloorLayers",1);
   Control.addVariable("dreamShieldANRoofLayers",1);
   return;
