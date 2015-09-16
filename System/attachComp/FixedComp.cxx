@@ -636,6 +636,29 @@ FixedComp::setLinkCopy(const size_t Index,
 }
 
 void
+FixedComp::setLinkSignedCopy(const size_t Index,
+			     const FixedComp& FC,
+			     const long int  sideIndex)
+  /*!
+    Copy the opposite (as if joined) link surface 
+    Note that the surfaces are complemented
+    \param Index :: Link number
+    \param FC :: Other Fixed component to copy object from
+    \param sideIndex :: signed link unit of other object
+  */
+{
+  ELog::RegMethod RegA("FixedComp","setLinkSurf");
+  if (sideIndex>0)
+    setLinkCopy(Index,FC,static_cast<size_t>(sideIndex-1));
+  else if (sideIndex<0)
+    setLinkCopy(Index,FC,static_cast<size_t>(-1-sideIndex));
+  else
+    throw ColErr::IndexError<size_t>(sideIndex,FC.LU.size(),"FC/index");
+
+  return;
+}
+
+void
 FixedComp::setBasicExtent(const double XWidth,const double YWidth,
 			  const double ZWidth)
  /*!

@@ -96,6 +96,7 @@ class FixedComp
 
   void setLinkComponent(const size_t,const FixedComp&,const size_t);
   void setLinkCopy(const size_t,const FixedComp&,const size_t);
+  void setLinkSignedCopy(const size_t,const FixedComp&,const long int);
 
 
   /// Get keyname

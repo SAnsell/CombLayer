@@ -216,7 +216,7 @@ createESSSource(const FuncDataBase& Control,Source& sourceCard)
 
 void
 createESSPortSource(const FuncDataBase& Control,
-		    const attachSystem::FixedComp& FC,
+		    const attachSystem::FixedComp* FCPtr,
 		    const long int sideIndex,
 		    Source& sourceCard)
   /*!
@@ -230,9 +230,12 @@ createESSPortSource(const FuncDataBase& Control,
 {
   ELog::RegMethod RegA("SourceCreate","createESSPortSource");
 
+  if (!FCPtr)
+    throw ColErr::EmptyValue<void>("Pointer to FixedComp not filled");
+  
   SurfNormSource SX("portSource");
 
-  SX.createAll(Control,FC,sideIndex,sourceCard);
+  SX.createAll(Control,*FCPtr,sideIndex,sourceCard);
 
   return;
 }

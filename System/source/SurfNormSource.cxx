@@ -217,14 +217,14 @@ SurfNormSource::setSurf(const attachSystem::FixedComp& FC,
   /*!
     Set the surface number. Also set centre of the system
     and determine the Z axis [to be done]
-    \param FC :: FixedComponent
+    \param FCPtr :: FixedComponent [can be zero]
     \param sideIndex :: surface index
   */
 {
   ELog::RegMethod RegA("SurfNormSource","setSurf");
-
+      
   surfNum=FC.getSignedLinkSurf(sideIndex);
-  
+  ELog::EM<<"Surface == "<<FC.getKeyName()<<ELog::endDiag;
   return;
 }
   
@@ -289,6 +289,7 @@ SurfNormSource::createAll(const FuncDataBase& Control,
    */
 {
   ELog::RegMethod RegA("SurfNormSource","createAll<FC,linkIndex>");
+
   populate(Control);
   setSurf(FC,sideIndex);
   createSource(sourceCard);

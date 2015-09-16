@@ -32,7 +32,7 @@ namespace SDef
   void createD4CSource(const FuncDataBase&,Source&);
   void createESSSource(const FuncDataBase&,Source&);
   void createESSPortSource(const FuncDataBase&,
-			   const attachSystem::FixedComp&,const long int,
+			   const attachSystem::FixedComp*,const long int,
 			   Source&);
   void createGammaSource(const FuncDataBase&,const std::string&,Source&);
   void createGammaSource(const FuncDataBase&,const std::string&,

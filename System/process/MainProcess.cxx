@@ -617,7 +617,8 @@ void createPipeInputs(inputParam& IParam)
   return;
 }
 
-void createESSInputs(inputParam& IParam)
+void
+createESSInputs(inputParam& IParam)
   /*!
     Set the specialise inputs for TS2
     \param IParam :: Input Parameters

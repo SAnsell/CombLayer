@@ -815,7 +815,14 @@ EssVariables(FuncDataBase& Control)
   EssBunkerVariables(Control);
 
 
-  Control.addVariable("sdefEnergy",2000.0);  
+  Control.addVariable("sdefEnergy",2000.0);
+  // port version:
+  Control.addVariable("portSourceASpread",0.0);
+  Control.addVariable("portSourceHeight",3.0);
+  Control.addVariable("portSourceEStart",3.0);
+  Control.addVariable("portSourceEEnd",4.0);
+  Control.addVariable("portSourceNE",2);
+
 
   return;
 }
