@@ -213,6 +213,14 @@ setDefRotation(const mainSystem::inputParam& IParam)
 	  MR.addRotation(GIPtr->getZ(),Geometry::Vec3D(0,0,0),
 			 -angle);
 	}
+      else if (AItem=="free" || AItem=="FREE")
+	{
+	  const double rotAngle=
+	    IParam.getValue<double>("angle",1);
+	  MR.addRotation(Geometry::Vec3D(0,0,1),Geometry::Vec3D(0,0,0),
+			 -rotAngle);
+		  
+	}
       else 
 	retFlag=AItem;
     }

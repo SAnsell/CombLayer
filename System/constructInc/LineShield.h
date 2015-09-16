@@ -60,6 +60,7 @@ class LineShield :
 
   int defMat;                    ///< Fe material layer
 
+  size_t nSeg;                   ///< number of segments
   // Layers
   size_t nWallLayers;               ///< number of layers
   std::vector<double> wallFrac;     ///< wall Layer thicknesss 

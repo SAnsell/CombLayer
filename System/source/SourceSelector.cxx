@@ -242,6 +242,8 @@ sourceSelection(Simulation& System,
     SDef::createBilbaoSource(Control,sourceCard);
   else if (sdefType=="ess")
     SDef::createESSSource(Control,sourceCard);
+  else if (sdefType=="essPort")
+    SDef::createESSPortSource(Control,sourceCard);
   else if (sdefType=="D4C")
     SDef::createD4CSource(Control,sourceCard);
   else if (sdefType=="Sinbad" || sdefType=="sinbad")

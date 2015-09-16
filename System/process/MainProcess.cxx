@@ -209,7 +209,7 @@ createInputs(inputParam& IParam)
   std::vector<std::string> RItems(10,"");
 
   IParam.regFlag("a","axis");
-  IParam.regItem("angle","angle");
+  IParam.regItem("angle","angle",1,4);
   IParam.regDefItem<int>("c","cellRange",2,0,0);
   IParam.regItem("C","ECut");
   IParam.regFlag("cinder","cinder");

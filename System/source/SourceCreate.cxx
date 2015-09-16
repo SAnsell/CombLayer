@@ -61,6 +61,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "GammaSource.h"
+#include "SurfNormSource.h"
 #include "LensSource.h"
 #include "SourceCreate.h"
 
@@ -212,6 +213,21 @@ createESSSource(const FuncDataBase& Control,Source& sourceCard)
 
   return;
 }
+
+void
+createESSPortSource(const FuncDataBase& Control,
+		    Source& sourceCard)
+  /*!
+    \param Control :: Control system
+    \param sourceCard :: Source system
+   */
+{
+  ELog::RegMethod RegA("SourceCreate","createESSPortSource");
+  
+
+  return;
+}
+
 
 void
 createD4CSource(const FuncDataBase& Control,Source& sourceCard)

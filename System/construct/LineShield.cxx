@@ -115,6 +115,7 @@ LineShield::populate(const FuncDataBase& Control)
   
   defMat=ModelSupport::EvalDefMat<int>(Control,keyName+"DefMat",0);
 
+  nSeg=Control.EvalDefVar<size_t>(keyName+"NSeg",1);
   nWallLayers=Control.EvalVar<size_t>(keyName+"NWallLayers");
   ModelSupport::populateDivide(Control,nWallLayers,keyName+"WallMat",
 			       defMat,wallMat);
@@ -175,8 +176,17 @@ LineShield::createSurfaces()
   if (!activeBack)
     ModelSupport::buildPlane(SMap,shieldIndex+2,Origin+Y*(length/2.0),Y);
 
+  const double segStep(length/static_cast<double>(nSeg));
+  double segLen(-length/2.0);
+  int SI(shieldIndex+10);
+  for(size_t i=1;i<nSeg;i++)
+    {
+      segLen+=segStep;
+      ModelSupport::buildPlane(SMap,SI+2,Origin+Y*segLen,Y);
+      SI+=10;
+    }
+  
   int WI(shieldIndex);
-  ELog::EM<<"NWall = "<<wallFrac.size()<<ELog::endDiag;
   for(size_t i=0;i<nWallLayers;i++)
     {
       ModelSupport::buildPlane(SMap,WI+3,
@@ -224,48 +234,85 @@ LineShield::createObjects(Simulation& System)
   const std::string divStr
     (activeDivide ? divideSurf.display() :  "");
 
-
-  const std::string FBStr=frontStr+backStr+divStr;
-
-  // Inner is a single component
-  // Void + inner 
+  // Inner void is a single segment
   Out=ModelSupport::getComposite(SMap,shieldIndex," 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+FBStr));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+
+				   frontStr+backStr+divStr));
   addCell("Void",cellIndex-1);
 
-  // Walls are contained:
-  int WI(shieldIndex);
-  for(size_t i=1;i<nWallLayers;i++)
-    {
-      Out=ModelSupport::getComposite(SMap,WI,shieldIndex," 13 -3 5M -6M ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat[i],0.0,Out+FBStr));
-            
-      Out=ModelSupport::getComposite(SMap,WI,shieldIndex," 4 -14 5M -6M ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat[i],0.0,Out+FBStr));
-      WI+=10;
-    }
- 
-  // Roof on top of walls are contained:
+  // Loop over all segments:
+  std::string FBStr;
   int SI(shieldIndex);
-  for(size_t i=1;i<nRoofLayers;i++)
+  int WI,RI,FI;    
+  for(size_t index=0;index<nSeg;index++)
     {
-      Out=ModelSupport::getComposite(SMap,SI,shieldIndex," 3M -4M -16 6 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,roofMat[i],0.0,Out+FBStr));
+	
+      FBStr=((index) ?
+	     ModelSupport::getComposite(SMap,shieldIndex," 2 ") :
+	     frontStr+divStr);
+      FBStr+= ((index+1!=nSeg) ?
+	       ModelSupport::getComposite(SMap,shieldIndex," -12 ") :
+	       backStr+divStr);
       SI+=10;
-    }
 
-  // Floor complete:
-  int FI(shieldIndex);
-  for(size_t i=1;i<nRoofLayers;i++)
-    {
-      Out=ModelSupport::getComposite(SMap,FI,WI," 3M -4M -5 15 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,floorMat[i],0.0,Out+FBStr));
-      FI+=10;
+      // Inner is a single component
+      // Walls are contained:
+      WI=shieldIndex;
+      for(size_t i=1;i<nWallLayers;i++)
+	{
+	  Out=ModelSupport::getComposite(SMap,WI,shieldIndex," 13 -3 5M -6M ");
+	  System.addCell(MonteCarlo::Qhull
+			 (cellIndex++,wallMat[i],0.0,Out+FBStr));
+		 
+	  Out=ModelSupport::getComposite(SMap,WI,shieldIndex," 4 -14 5M -6M ");
+	  System.addCell(MonteCarlo::Qhull
+			 (cellIndex++,wallMat[i],0.0,Out+FBStr));
+	  WI+=10;
+	}
+      
+      // Roof on top of walls are contained:
+      RI=shieldIndex;
+      for(size_t i=1;i<nRoofLayers;i++)
+	{
+	  Out=ModelSupport::getComposite(SMap,RI,shieldIndex," 3M -4M -16 6 ");
+	  System.addCell(MonteCarlo::Qhull
+			 (cellIndex++,roofMat[i],0.0,Out+FBStr));
+	  RI+=10;
+	}
+      
+      // Floor complete:
+      FI=shieldIndex;
+      for(size_t i=1;i<nFloorLayers;i++)
+	{
+	  Out=ModelSupport::getComposite(SMap,FI,WI," 3M -4M -5 15 ");
+	  System.addCell(MonteCarlo::Qhull
+			 (cellIndex++,floorMat[i],0.0,Out+FBStr));
+	  FI+=10;
+	}
+      
+      // Left corner
+      RI=shieldIndex;
+      for(size_t i=1;i<nRoofLayers;i++)
+	{
+	  WI=shieldIndex;
+	  for(size_t j=1;j<nWallLayers;j++)
+	    {
+	      const int mat((i>j) ? roofMat[i] : wallMat[j]);
+
+	      Out=ModelSupport::getComposite(SMap,WI,RI," -3 13 6M -16M ");
+	      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out+FBStr));
+	      
+	      Out=ModelSupport::getComposite(SMap,WI,RI," 4 -14 6M -16M ");
+	      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out+FBStr));
+	      WI+=10;
+	    }
+	  RI+=10;
+	}
     }
-  
   // Outer
-  Out=ModelSupport::getComposite(SMap,WI,SI,FI," 3 -4 5M -6N ");
-  addOuterSurf(Out+FBStr);
+  Out=ModelSupport::getComposite(SMap,WI,RI,FI," 3 -4 5M -6N ");
+  ELog::EM<<"Out == "<<Out<<ELog::endDiag;
+  addOuterSurf(Out+frontStr+backStr+divStr);
 
   return;
 }
