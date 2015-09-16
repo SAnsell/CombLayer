@@ -38,7 +38,8 @@ namespace SDef
   \brief Creat a source on the +/- of a surface
 */
 
-class SurfNormSource 
+class SurfNormSource :
+  public attachSystem::FixedComp
 {
  private:
     
@@ -61,7 +62,7 @@ class SurfNormSource
 
  public:
 
-  SurfNormSource();
+  SurfNormSource(const std::string&);
   SurfNormSource(const SurfNormSource&);
   SurfNormSource& operator=(const SurfNormSource&);
   ~SurfNormSource();
@@ -70,7 +71,8 @@ class SurfNormSource
   void setCutEnergy(const double E) { cutEnergy=E; }
   void loadEnergy(const std::string&);
   
-  void createAll(const FuncDataBase&,SDef::Source&);
+  void createAll(const FuncDataBase&,const attachSystem::FixedComp&,
+		 const long int,SDef::Source&);
   
 };
 

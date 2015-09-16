@@ -248,10 +248,10 @@ LineShield::createObjects(Simulation& System)
     {
 	
       FBStr=((index) ?
-	     ModelSupport::getComposite(SMap,shieldIndex," 2 ") :
+	     ModelSupport::getComposite(SMap,SI," 2 ") :
 	     frontStr+divStr);
       FBStr+= ((index+1!=nSeg) ?
-	       ModelSupport::getComposite(SMap,shieldIndex," -12 ") :
+	       ModelSupport::getComposite(SMap,SI," -12 ") :
 	       backStr+divStr);
       SI+=10;
 
@@ -310,7 +310,7 @@ LineShield::createObjects(Simulation& System)
 	}
     }
   // Outer
-  Out=ModelSupport::getComposite(SMap,WI,RI,FI," 3 -4 5M -6N ");
+  Out=ModelSupport::getComposite(SMap,WI,FI,RI," 3 -4 5M -6N ");
   ELog::EM<<"Out == "<<Out<<ELog::endDiag;
   addOuterSurf(Out+frontStr+backStr+divStr);
 

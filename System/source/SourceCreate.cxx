@@ -216,14 +216,23 @@ createESSSource(const FuncDataBase& Control,Source& sourceCard)
 
 void
 createESSPortSource(const FuncDataBase& Control,
+		    const attachSystem::FixedComp& FC,
+		    const long int sideIndex,
 		    Source& sourceCard)
   /*!
+    Create a port source on a set of beam ports
     \param Control :: Control system
+    \param FC :: link surface for cylinder 
+    \param sideIndex ::surface number
     \param sourceCard :: Source system
-   */
+    
+  */
 {
   ELog::RegMethod RegA("SourceCreate","createESSPortSource");
-  
+
+  SurfNormSource SX("portSource");
+
+  SX.createAll(Control,FC,sideIndex,sourceCard);
 
   return;
 }

@@ -67,12 +67,13 @@
 namespace SDef
 {
 
-SurfNormSource::SurfNormSource() : 
+SurfNormSource::SurfNormSource(const std::string& K) :
+  attachSystem::FixedComp(K,0),
   particleType(1),angleSpread(0.0),surfNum(0),
   cutEnergy(0.0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
-    \param keyName :: main name
+    \param K :: main keyname 
   */
 {}
 
@@ -241,8 +242,6 @@ SurfNormSource::createSource(SDef::Source& sourceCard) const
   sourceCard.setComp("sur",std::abs(surfNum));
   sourceCard.setComp("par",particleType);            /// photon (2)
 
-  ELog::EM<<"Direction  "<<Direction<<ELog::endDiag;
-  ELog::EM<<"FocusPoint "<<FocusPoint<<ELog::endDiag;
   // Direction:
   
   SDef::SrcData D1(1);
