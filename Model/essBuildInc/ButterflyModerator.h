@@ -64,6 +64,8 @@ class ButterflyModerator :
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const attachSystem::FixedComp*,
 		 const long int);
+
+  Geometry::Vec3D getFocalPoint(int i) const;
 };
 
 }

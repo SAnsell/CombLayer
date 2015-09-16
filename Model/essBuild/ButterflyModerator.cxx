@@ -339,7 +339,14 @@ ButterflyModerator::createAll(Simulation& System,
   return;
 }
 
-
+  Geometry::Vec3D ButterflyModerator::getFocalPoint(int i) const
+  /*
+    Return focal point coordinates for collimator setup
+    \param i :: link point number of MidWater
+   */
+  {
+    return MidWater->getLinkPt(i);
+  }
 
 
 }  // NAMESPACE essSystem
