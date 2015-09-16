@@ -82,6 +82,7 @@
 #include "ModBase.h"
 #include "H2Wing.h"
 #include "MidWaterDivider.h"
+#include "SurInter.h"
 
 namespace essSystem
 {
@@ -201,7 +202,7 @@ MidWaterDivider::createUnitVector(const attachSystem::FixedComp& FC)
 }
 
 void
-MidWaterDivider::createLinks()
+MidWaterDivider::createLinks(const H2Wing &LA, const H2Wing &RA)
   /*!
     Construct links for the triangle moderator
     The normal 1-3 and 5-6 are plane,
@@ -211,6 +212,54 @@ MidWaterDivider::createLinks()
   ELog::RegMethod RegA("MidWaterDivider","createLinks");
 
   // Loop over corners that are bound by convex
+  const double LStep(midYStep+wallThick/sin(midAngle/2.0));
+
+  FixedComp::setConnect(0, Origin+X*LStep, X); // x+
+  FixedComp::setLinkSurf(0, -SMap.realSurf(divIndex+103));
+  FixedComp::addLinkSurf(0, SMap.realSurf(divIndex+104));
+
+  FixedComp::setConnect(1, Origin-X*LStep, -X); // x-
+  FixedComp::setLinkSurf(1, -SMap.realSurf(divIndex+123));
+  FixedComp::addLinkSurf(1, SMap.realSurf(divIndex+124));
+
+  // minor links
+  const Geometry::Plane *pz = ModelSupport::buildPlane(SMap, divIndex+5, Origin, Z);
+  const Geometry::Plane *pWater, *pWing;
+  int iWater; // mid water surface index
+
+  // x+y-
+  iWater = divIndex+112;
+  pWater = SMap.realPtr<Geometry::Plane>(iWater);
+  pWing = SMap.realPtr<Geometry::Plane>(RA.getLinkSurf(0));
+  // SA: check definitions of normals
+  FixedComp::setConnect(2, SurInter::getPoint(pWater, pWing, pz), pWing->getNormal());
+  FixedComp::setLinkSurf(2, -SMap.realSurf(iWater));
+
+  // x-y-
+  iWater = divIndex+132;
+  pWater = SMap.realPtr<Geometry::Plane>(iWater);
+  pWing = SMap.realPtr<Geometry::Plane>(RA.getLinkSurf(2));
+  FixedComp::setConnect(3, SurInter::getPoint(pWater, pWing, pz), pWing->getNormal());
+  FixedComp::setLinkSurf(3, -SMap.realSurf(iWater));
+
+  // x-y+
+  iWater = divIndex+131;
+  pWater = SMap.realPtr<Geometry::Plane>(iWater);
+  pWing = SMap.realPtr<Geometry::Plane>(LA.getLinkSurf(0));
+  FixedComp::setConnect(4, SurInter::getPoint(pWater, pWing, pz), pWing->getNormal());
+  FixedComp::setLinkSurf(4, SMap.realSurf(iWater));
+
+  // x+y+
+  iWater = divIndex+111;
+  pWater = SMap.realPtr<Geometry::Plane>(iWater);
+  pWing = SMap.realPtr<Geometry::Plane>(LA.getLinkSurf(2));
+  FixedComp::setConnect(5, SurInter::getPoint(pWater, pWing, pz), pWing->getNormal());
+  FixedComp::setLinkSurf(5, SMap.realSurf(iWater));
+
+  ELog::EM << "Coordinates and sufaces are correct, but do not correspond to each other" << ELog::endCrit;
+  if (Z[2]>0)
+    for (int i=0; i<3; i++)
+      ELog::EM << i << ":\t" << getLinkPt(i) << " " << getLinkString(i) << ELog::endBasic;
 
   return;
 }
@@ -456,7 +505,7 @@ MidWaterDivider::createAll(Simulation& System,
   createSurfaces();
   createObjects(System,LA,RA);
   cutOuterWing(System,LA,RA);
-  createLinks();
+  createLinks(LA, RA);
   insertObjects(System);       
   return;
 }
