@@ -141,7 +141,11 @@ DREAM::DREAM() :
 
   ShieldA(new constructSystem::LineShield("dreamShieldA")),
   VPipeOutA(new constructSystem::VacuumPipe("dreamPipeOutA")),
-  FocusOutA(new beamlineSystem::GuideLine("dreamFOutA"))
+  FocusOutA(new beamlineSystem::GuideLine("dreamFOutA")),
+
+  ShieldB(new constructSystem::LineShield("dreamShieldB")),
+  VPipeOutB(new constructSystem::VacuumPipe("dreamPipeOutB")),
+  FocusOutB(new beamlineSystem::GuideLine("dreamFOutB"))
 /*!
     Constructor
  */
@@ -426,16 +430,28 @@ DREAM::build(Simulation& System,
   ShieldA->setDivider(bunkerObj,2);
   ShieldA->createAll(System,*BInsert,2);
 
-
   VPipeOutA->addInsertCell(ShieldA->getCell("Void"));
   VPipeOutA->setFront(bunkerObj,2);
   VPipeOutA->setDivider(bunkerObj,2);
+  VPipeOutA->setBack(*ShieldA,-2);
   VPipeOutA->createAll(System,FocusWall->getKey("Guide0"),2);
 
   FocusOutA->addInsertCell(VPipeOutA->getCell("Void"));
   FocusOutA->createAll(System,FocusWall->getKey("Guide0"),2,
 		       FocusWall->getKey("Guide0"),2);
-  
+
+  // Section to 34  
+  ShieldB->addInsertCell(voidCell);
+  ShieldB->createAll(System,*ShieldA,2);
+
+  VPipeOutB->addInsertCell(ShieldB->getCell("Void"));
+  VPipeOutB->setFront(*ShieldB,-1);
+  VPipeOutB->setBack(*ShieldB,-2);
+  VPipeOutB->createAll(System,*ShieldB,1);
+
+  FocusOutB->addInsertCell(VPipeOutB->getCell("Void"));
+  FocusOutB->createAll(System,FocusOutA->getKey("Guide0"),2,
+		       FocusOutA->getKey("Guide0"),2);
   
   return;
 }

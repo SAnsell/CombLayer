@@ -157,6 +157,7 @@ LineShield::createUnitVector(const attachSystem::FixedComp& FC,
   // after rotation
   Origin+=Y*(length/2.0);
   ELog::EM<<"O == "<<Origin<<ELog::endDiag;
+  ELog::EM<<"Y == "<<Y<<ELog::endDiag;
   return;
 }
 
@@ -311,7 +312,6 @@ LineShield::createObjects(Simulation& System)
     }
   // Outer
   Out=ModelSupport::getComposite(SMap,WI,FI,RI," 3 -4 5M -6N ");
-  ELog::EM<<"Out == "<<Out<<ELog::endDiag;
   addOuterSurf(Out+frontStr+backStr+divStr);
 
   return;
@@ -326,22 +326,21 @@ LineShield::createLinks()
 {
   ELog::RegMethod RegA("LineShield","createLinks");
 
-  FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
-  FixedComp::setConnect(1,Origin-Y*(length/2.0),-Y);
   FixedComp::setConnect(2,Origin-X*left,-X);
   FixedComp::setConnect(3,Origin+X*right,X);
   FixedComp::setConnect(4,Origin-Z*depth,-Z);
   FixedComp::setConnect(5,Origin+Z*height,Z);
 
-  if (activeFront)
-    FixedComp::setLinkSurf(0,frontSurf);      
-  else
-    FixedComp::setLinkSurf(0,-SMap.realSurf(shieldIndex+1));      
-
-  if (activeBack)
-    FixedComp::setLinkSurf(1,backSurf);      
-  else
-    FixedComp::setLinkSurf(1,SMap.realSurf(shieldIndex+2));      
+  if (!activeFront)
+    {
+      FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
+      FixedComp::setLinkSurf(0,-SMap.realSurf(shieldIndex+1));      
+    }
+  if (!activeBack)
+    {
+      FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
+      FixedComp::setLinkSurf(1,SMap.realSurf(shieldIndex+2));      
+    }
 
   FixedComp::setLinkSurf(2,-SMap.realSurf(shieldIndex+3));
   FixedComp::setLinkSurf(3,SMap.realSurf(shieldIndex+4));
@@ -408,6 +407,8 @@ LineShield::setFront(const attachSystem::FixedComp& FC,
       frontSurf=FC.getMainRule(SI);
       frontSurf.makeComplement();
     }
+  // negative side because we point out
+  setLinkSignedCopy(0,FC,-sideIndex);
   return;
 }
   
@@ -433,6 +434,9 @@ LineShield::setBack(const attachSystem::FixedComp& FC,
       backSurf=FC.getMainRule(static_cast<size_t>(-sideIndex-1));
       backSurf.makeComplement();
     }
+  // negative side because we point out
+  setLinkSignedCopy(1,FC,-sideIndex);
+
   return;
 }
     

@@ -750,14 +750,12 @@ DREAMvariables(FuncDataBase& Control)
 
   // Guide after wall [17.5m - 3.20] for wall
   Control.addVariable("dreamFOutAXStep",0.0);       
-  Control.addVariable("dreamFOutAYStep",0.8);       
+  Control.addVariable("dreamFOutAYStep",1.6);
   Control.addVariable("dreamFOutAZStep",0.0);       
   Control.addVariable("dreamFOutAXYAngle",0.0);       
   Control.addVariable("dreamFOutAZAngle",0.0);
-  Control.addVariable("dreamFOutALength",1750.0-320.0);       
+  Control.addVariable("dreamFOutALength",1750.0-320.8);       
   
-  Control.addVariable("dreamFOutABeamYStep",1.0);
- 
   Control.addVariable("dreamFOutANShapes",1);       
   Control.addVariable("dreamFOutANShapeLayers",3);
   Control.addVariable("dreamFOutAActiveShield",0);
@@ -774,7 +772,7 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamFOutA0HeightEnd",4.97);
   Control.addVariable("dreamFOutA0WidthStart",2.24);
   Control.addVariable("dreamFOutA0WidthEnd",3.05);
-  Control.addVariable("dreamFOutA0Length",1750.0-320.0);
+  Control.addVariable("dreamFOutA0Length",1750.0-320.8);
 
   Control.addVariable("dreamPipeOutARadius",6.0);
   Control.addVariable("dreamPipeOutALength",1750.0-320);
@@ -785,10 +783,10 @@ DREAMvariables(FuncDataBase& Control)
 
 
   Control.addVariable("dreamShieldALength",1750.0-320);
-  Control.addVariable("dreamShieldALeft",32.0);
-  Control.addVariable("dreamShieldARight",32.0);
-  Control.addVariable("dreamShieldAHeight",32.0);
-  Control.addVariable("dreamShieldADepth",32.0);
+  Control.addVariable("dreamShieldALeft",40.0);
+  Control.addVariable("dreamShieldARight",40.0);
+  Control.addVariable("dreamShieldAHeight",40.0);
+  Control.addVariable("dreamShieldADepth",40.0);
   Control.addVariable("dreamShieldADefMat","Stainless304");
   Control.addVariable("dreamShieldANSeg",8);
   Control.addVariable("dreamShieldANWallLayers",8);
@@ -808,7 +806,7 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamFOutBZStep",0.0);       
   Control.addVariable("dreamFOutBXYAngle",0.0);       
   Control.addVariable("dreamFOutBZAngle",0.0);
-  Control.addVariable("dreamFOutBLength",1750.0);       
+  Control.addVariable("dreamFOutBLength",1748.2);       
   
   Control.addVariable("dreamFOutBBeamYStep",1.0);
  
@@ -826,7 +824,7 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamFOutB0TypeID","Rectangle");
   Control.addVariable("dreamFOutB0Height",5.0);
   Control.addVariable("dreamFOutB0Width",4.0);
-  Control.addVariable("dreamFOutB0Length",1750.0);
+  Control.addVariable("dreamFOutB0Length",1748.2);
 
   Control.addVariable("dreamPipeOutBRadius",6.0);
   Control.addVariable("dreamPipeOutBLength",1750.0);

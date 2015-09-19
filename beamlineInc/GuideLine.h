@@ -59,7 +59,7 @@ class GuideLine : public attachSystem::ContainedComp,
   double beamYStep;                 ///< Shielding Y Step
   double beamZStep;                 ///< Shielding Z Step
   double beamXYAngle;               ///< Shielding Rotation angle
-  double beamZAngle;                ///< Shielding Rotation angle
+  double beamZAngle;                ///< Shielding Z-Rotation angle
 
   bool frontCut;                ///< Construct+Use plane cut
   bool beamFrontCut;            ///< Construct+Use beam plane tu
