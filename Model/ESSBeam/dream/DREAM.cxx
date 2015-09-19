@@ -139,7 +139,9 @@ DREAM::DREAM() :
   BInsert(new BunkerInsert("dreamBInsert")),
   FocusWall(new beamlineSystem::GuideLine("dreamFWall")),
 
-  ShieldA(new constructSystem::LineShield("dreamShieldA"))
+  ShieldA(new constructSystem::LineShield("dreamShieldA")),
+  VPipeOutA(new constructSystem::VacuumPipe("dreamPipeOutA")),
+  FocusOutA(new beamlineSystem::GuideLine("dreamFOutA"))
 /*!
     Constructor
  */
@@ -200,6 +202,8 @@ DREAM::DREAM() :
   OR.addObject(FocusWall);
 
   OR.addObject(ShieldA);
+  OR.addObject(VPipeOutA);
+  OR.addObject(FocusOutA);
 }
 
 DREAM::~DREAM()
@@ -421,6 +425,18 @@ DREAM::build(Simulation& System,
   ShieldA->setFront(bunkerObj,2);
   ShieldA->setDivider(bunkerObj,2);
   ShieldA->createAll(System,*BInsert,2);
+
+
+  VPipeOutA->addInsertCell(ShieldA->getCell("Void"));
+  VPipeOutA->setFront(bunkerObj,2);
+  VPipeOutA->setDivider(bunkerObj,2);
+  VPipeOutA->createAll(System,FocusWall->getKey("Guide0"),2);
+
+  FocusOutA->addInsertCell(VPipeOutA->getCell("Void"));
+  FocusOutA->createAll(System,FocusWall->getKey("Guide0"),2,
+		       FocusWall->getKey("Guide0"),2);
+  
+  
   return;
 }
 

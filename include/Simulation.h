@@ -90,13 +90,13 @@ class Simulation
   FuncDataBase DB;                      ///< DataBase of variables
   ModelSupport::ObjSurfMap* OSMPtr;     ///< Object surface map [if required]
 
-  TransTYPE TList;        ///< Transforms List (key=Transform)
+  TransTYPE TList;                      ///< Transforms List (key=Transform)
 
   OTYPE OList;   ///< List of objects  (allow to become hulls)
-  std::vector<int> cellOutOrder;    ///< List of cells [output order]
-  std::set<int> voidCells;          ///< List of void cells
+  std::vector<int> cellOutOrder;        ///< List of cells [output order]
+  std::set<int> voidCells;              ///< List of void cells
 
-  TallyTYPE TItem;  ///< Tally Items
+  TallyTYPE TItem;                        ///< Tally Items
   physicsSystem::PhysicsCards* PhysPtr;   ///< Physics Cards
   
   // METHODS:

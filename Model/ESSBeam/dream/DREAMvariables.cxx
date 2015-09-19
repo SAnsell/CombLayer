@@ -776,10 +776,10 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamFOutA0WidthEnd",3.05);
   Control.addVariable("dreamFOutA0Length",1750.0-320.0);
 
-  Control.addVariable("dreamPipeOutARadius",8.0);
+  Control.addVariable("dreamPipeOutARadius",6.0);
   Control.addVariable("dreamPipeOutALength",1750.0-320);
   Control.addVariable("dreamPipeOutAFeThick",1.0);
-  Control.addVariable("dreamPipeOutAFlangeRadius",12.0);
+  Control.addVariable("dreamPipeOutAFlangeRadius",9.0);
   Control.addVariable("dreamPipeOutAFlangeLength",1.0);
   Control.addVariable("dreamPipeOutAFeMat","Stainless304");
 
@@ -794,9 +794,65 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamShieldANWallLayers",8);
   Control.addVariable("dreamShieldANFloorLayers",3);
   Control.addVariable("dreamShieldANRoofLayers",8);
-  Control.addVariable("dreamShieldAWallLen1",8.0);
+  Control.addVariable("dreamShieldAWallLen1",10.0);
   Control.addVariable("dreamShieldAWallMat1","CastIron");
   Control.addVariable("dreamShieldAWallMat5","Concrete");
+
+  Control.addVariable("dreamShieldARoofLen1",10.0);
+  Control.addVariable("dreamShieldAFloorLen1",10.0);
+
+
+  // Guide after wall [+17.5m] after section 1
+  Control.addVariable("dreamFOutBXStep",0.0);       
+  Control.addVariable("dreamFOutBYStep",0.8);       
+  Control.addVariable("dreamFOutBZStep",0.0);       
+  Control.addVariable("dreamFOutBXYAngle",0.0);       
+  Control.addVariable("dreamFOutBZAngle",0.0);
+  Control.addVariable("dreamFOutBLength",1750.0);       
+  
+  Control.addVariable("dreamFOutBBeamYStep",1.0);
+ 
+  Control.addVariable("dreamFOutBNShapes",1);       
+  Control.addVariable("dreamFOutBNShapeLayers",3);
+  Control.addVariable("dreamFOutBActiveShield",0);
+
+  Control.addVariable("dreamFOutBLayerThick1",0.4);  // glass thick
+  Control.addVariable("dreamFOutBLayerThick2",1.5);
+
+  Control.addVariable("dreamFOutBLayerMat0","Void");
+  Control.addVariable("dreamFOutBLayerMat1","Glass");
+  Control.addVariable("dreamFOutBLayerMat2","Void");       
+  
+  Control.addVariable("dreamFOutB0TypeID","Rectangle");
+  Control.addVariable("dreamFOutB0Height",5.0);
+  Control.addVariable("dreamFOutB0Width",4.0);
+  Control.addVariable("dreamFOutB0Length",1750.0);
+
+  Control.addVariable("dreamPipeOutBRadius",6.0);
+  Control.addVariable("dreamPipeOutBLength",1750.0);
+  Control.addVariable("dreamPipeOutBFeThick",1.0);
+  Control.addVariable("dreamPipeOutBFlangeRadius",9.0);
+  Control.addVariable("dreamPipeOutBFlangeLength",1.0);
+  Control.addVariable("dreamPipeOutBFeMat","Stainless304");
+
+
+  Control.addVariable("dreamShieldBLength",1750.0);
+  Control.addVariable("dreamShieldBLeft",32.0);
+  Control.addVariable("dreamShieldBRight",32.0);
+  Control.addVariable("dreamShieldBHeight",32.0);
+  Control.addVariable("dreamShieldBDepth",32.0);
+  Control.addVariable("dreamShieldBDefMat","Stainless304");
+  Control.addVariable("dreamShieldBNSeg",8);
+  Control.addVariable("dreamShieldBNWallLayers",8);
+  Control.addVariable("dreamShieldBNFloorLayers",3);
+  Control.addVariable("dreamShieldBNRoofLayers",8);
+  Control.addVariable("dreamShieldBWallLen1",10.0);
+  Control.addVariable("dreamShieldBWallMat1","CastIron");
+  Control.addVariable("dreamShieldBWallMat5","Concrete");
+
+  Control.addVariable("dreamShieldBRoofLen1",10.0);
+  Control.addVariable("dreamShieldBFloorLen1",10.0);
+
   return;
 }
  

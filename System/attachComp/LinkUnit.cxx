@@ -88,6 +88,7 @@ LinkUnit::operator=(const LinkUnit& A)
       populated=A.populated;
       Axis=A.Axis;
       ConnectPt=A.ConnectPt;
+      linkSurf=A.linkSurf;
       mainSurf=A.mainSurf;
       bridgeSurf=A.bridgeSurf;
     }

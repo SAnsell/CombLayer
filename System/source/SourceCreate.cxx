@@ -232,9 +232,9 @@ createESSPortSource(const FuncDataBase& Control,
 
   if (!FCPtr)
     throw ColErr::EmptyValue<void>("Pointer to FixedComp not filled");
-  
-  SurfNormSource SX("portSource");
 
+  SurfNormSource SX("portSource");
+  
   SX.createAll(Control,*FCPtr,sideIndex,sourceCard);
 
   return;

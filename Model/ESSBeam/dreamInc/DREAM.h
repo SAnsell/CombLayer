@@ -161,9 +161,19 @@ class DREAM
   std::shared_ptr<essSystem::BunkerInsert> BInsert;
   /// Guide running to bunker wall
   std::shared_ptr<beamlineSystem::GuideLine> FocusWall;
-  /// Guide running to bunker wall
+  /// First outer shield section
   std::shared_ptr<constructSystem::LineShield> ShieldA;
-  
+  /// Pipe leaving bunker
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeOutA;
+  /// Guide leaving the bunker wall
+  std::shared_ptr<beamlineSystem::GuideLine> FocusOutA;  
+
+  /// First outer shield section
+  std::shared_ptr<constructSystem::LineShield> ShieldB;
+  /// Pipe leaving bunker
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeOutB;
+  /// Guide leaving the bunker wall
+  std::shared_ptr<beamlineSystem::GuideLine> FocusOutB;  
 
   static void
     buildChopperBlock(Simulation&,const Bunker&,
