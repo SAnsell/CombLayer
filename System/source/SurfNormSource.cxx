@@ -244,20 +244,28 @@ SurfNormSource::createSource(SDef::Source& sourceCard) const
   sourceCard.setComp("par",particleType);            /// photon (2)
 
   // Direction:
-  
-  SDef::SrcData D1(1);
-  SDef::SrcInfo SI1;
-  SI1.addData(-1.0);
-  SI1.addData(cos(M_PI*angleSpread/180.0));
-  SI1.addData(1.0);
 
-  SDef::SrcProb SP1;
-  SP1.addData(0.0);
-  SP1.addData(0.0);
-  SP1.addData(1.0);
-  D1.addUnit(SI1);  
-  D1.addUnit(SP1);  
-  sourceCard.setData("dir",D1);  
+  if(angleSpread>Geometry::zeroTol)
+    {
+      SDef::SrcData D1(1);
+      SDef::SrcInfo SI1;
+      SI1.addData(-1.0);
+      SI1.addData(cos(M_PI*angleSpread/180.0));
+      SI1.addData(1.0);
+      
+      SDef::SrcProb SP1;
+      SP1.addData(0.0);
+      SP1.addData(0.0);
+      SP1.addData(1.0);
+      D1.addUnit(SI1);  
+      D1.addUnit(SP1);  
+      sourceCard.setData("dir",D1);
+    }
+  else
+    {
+      sourceCard.setComp("dir",1.0);
+    }
+      
 
   // Energy:
   if (Energy.size()>1)
