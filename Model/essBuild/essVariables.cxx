@@ -562,6 +562,54 @@ EssVariables(FuncDataBase& Control)
 
 
   Control.addVariable("ProtonBeamViewRadius",4.0);  
+
+
+  Control.addVariable("BilbaoWheelShaftNLayers",3);
+  Control.addVariable("BilbaoWheelShaftHeight",435.0);
+  Control.addVariable("BilbaoWheelShaftRadius",32.0);
+  Control.addVariable("BilbaoWheelShaftCoolThick",1.0);
+  Control.addVariable("BilbaoWheelShaftCladThick",0.5);
+  Control.addVariable("BilbaoWheelShaftVoidThick",0.8);
+
+  Control.addVariable("BilbaoWheelCladShaftMat","Iron");
+  Control.addVariable("BilbaoWheelMainShaftMat","Iron");
+
+  Control.addVariable("BilbaoWheelXStep",0.0);
+  Control.addVariable("BilbaoWheelYStep",100.0);
+  Control.addVariable("BilbaoWheelZStep",0.0);
+  Control.addVariable("BilbaoWheelXYangle",0.0);
+  Control.addVariable("BilbaoWheelZangle",0.0);
+  Control.addVariable("BilbaoWheelTargetHeight",8.0);
+  Control.addVariable("BilbaoWheelTemp",300.0);
+  Control.addVariable("BilbaoWheelCoolantThickIn",0.65);
+  Control.addVariable("BilbaoWheelCoolantThickOut",0.15);
+  Control.addVariable("BilbaoWheelCaseThick",0.5);
+  Control.addVariable("BilbaoWheelVoidThick",1.0);
+
+  Control.addVariable("BilbaoWheelInnerRadius",45);
+  Control.addVariable("BilbaoWheelCoolantRadiusIn",114.5);
+  Control.addVariable("BilbaoWheelCoolantRadiusOut",131);
+  Control.addVariable("BilbaoWheelCaseRadius",132.0);
+  Control.addVariable("BilbaoWheelVoidRadius",133.0);
+
+  Control.addVariable("BilbaoWheelWMat","Tungsten156");
+  Control.addVariable("BilbaoWheelSteelMat","SS316L793");
+  Control.addVariable("BilbaoWheelHeMat","Helium");
+  Control.addVariable("BilbaoWheelInnerMat",0);
+
+  Control.addVariable("BilbaoWheelNLayers",3);
+
+  Control.addVariable("BilbaoWheelRadius1",48);
+  Control.addVariable("BilbaoWheelMatTYPE1",1); // SS316L
+
+  Control.addVariable("BilbaoWheelRadius2",70.0);
+  Control.addVariable("BilbaoWheelMatTYPE2",0);
+
+  Control.addVariable("BilbaoWheelRadius3",125.0);
+  Control.addVariable("BilbaoWheelMatTYPE3",3);
+
+
+
  
   Control.addVariable("WheelShaftNLayers",3);
   Control.addVariable("WheelShaftHeight",435.0);
