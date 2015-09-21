@@ -451,7 +451,7 @@ BilbaoWheel::createObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   
   Out=ModelSupport::getComposite(SMap,wheelIndex,"-537 35 -36");	
-  addOuterSurf("BilbaoWheel",Out);
+  addOuterSurf("Wheel",Out);
 
   return; 
 }
