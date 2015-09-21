@@ -284,7 +284,7 @@ sub writeTail
 
   print $DX "     \./Main/*.cxx \n";
   print $DX "     \./CMake.pl  \n";
-  print $DX "     .//CMakeList.pm \n";
+  print $DX "     \./CMakeList.pm \n";
   print $DX " )\n";
   print $DX "\n";
   ## TAGS:
