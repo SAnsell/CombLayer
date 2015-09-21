@@ -88,6 +88,15 @@ void addESSMaterial()
   MObj.setDensity(-1.0);
   MDB.resetMaterial(MObj);
 
+  // Natural Helium. Density -1.74E-4 g/cm3
+  // Temperature: 300 K
+  // Reference: Material Data Compilation 21 Sep 2015
+  MObj.setMaterial(200, "Helium",
+  		   " 2003.70c 1.34E-6 "
+  		   " 2004.70c 0.999998660 ", "", MLib);
+  MObj.setDensity(-1.74E-4);
+  MDB.resetMaterial(MObj);
+
   MObj.setMaterial(1300, "Aluminium", " 13027.70c 1.0 ", "al27.12t", MLib);
   MObj.setDensity(-2.7);
   MDB.resetMaterial(MObj); 
