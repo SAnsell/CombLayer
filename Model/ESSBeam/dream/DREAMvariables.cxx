@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:    ESSBeam/vor/DREAMvariables.cxx
+ * File:    ESSBeam/dream/DREAMvariables.cxx
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -227,7 +227,7 @@ DREAMvariables(FuncDataBase& Control)
 
   Control.addVariable("dreamT0DiskA0Thick",5.4);  // to include B4C
   Control.addVariable("dreamT0DiskAInnerMat","Inconnel");
-  Control.addVariable("dreamT0DiskAOuterMat","Tungsten");
+  Control.addVariable("dreamT0DiskAOuterMat","Void");
   
   Control.addVariable("dreamT0DiskANBlades",2);
   Control.addVariable("dreamT0DiskA0PhaseAngle0",95.0);
@@ -248,7 +248,7 @@ DREAMvariables(FuncDataBase& Control)
 
   Control.addVariable("dreamT0DiskB0Thick",5.4);  // to include B4C
   Control.addVariable("dreamT0DiskBInnerMat","Inconnel");
-  Control.addVariable("dreamT0DiskBOuterMat","Tungsten");
+  Control.addVariable("dreamT0DiskBOuterMat","Void");
   
   Control.addVariable("dreamT0DiskBNBlades",2);
   Control.addVariable("dreamT0DiskB0PhaseAngle0",95.0);
@@ -343,7 +343,7 @@ DREAMvariables(FuncDataBase& Control)
 
   Control.addVariable("dreamBandADisk0Thick",0.5);  // to include B4C
   Control.addVariable("dreamBandADiskInnerMat","Inconnel");
-  Control.addVariable("dreamBandADiskOuterMat","Tungsten");
+  Control.addVariable("dreamBandADiskOuterMat","Void");
   
   Control.addVariable("dreamBandADiskNBlades",2);
   Control.addVariable("dreamBandADisk0PhaseAngle0",95.0);
@@ -443,7 +443,7 @@ DREAMvariables(FuncDataBase& Control)
 
   Control.addVariable("dreamBandBDisk0Thick",0.5);  // to include B4C
   Control.addVariable("dreamBandBDiskInnerMat","Inconnel");
-  Control.addVariable("dreamBandBDiskOuterMat","Tungsten");
+  Control.addVariable("dreamBandBDiskOuterMat","Void");
   
   Control.addVariable("dreamBandBDiskNBlades",2);
   Control.addVariable("dreamBandBDisk0PhaseAngle0",95.0);
@@ -530,7 +530,7 @@ DREAMvariables(FuncDataBase& Control)
 
   Control.addVariable("dreamT0DiskC0Thick",5.4);  // to include B4C
   Control.addVariable("dreamT0DiskCInnerMat","Inconnel");
-  Control.addVariable("dreamT0DiskCOuterMat","Tungsten");
+  Control.addVariable("dreamT0DiskCOuterMat","Void");
   
   Control.addVariable("dreamT0DiskCNBlades",2);
   Control.addVariable("dreamT0DiskC0PhaseAngle0",95.0);
@@ -619,7 +619,7 @@ DREAMvariables(FuncDataBase& Control)
 
   Control.addVariable("dreamT0DiskD0Thick",5.4);  // to include B4C
   Control.addVariable("dreamT0DiskDInnerMat","Inconnel");
-  Control.addVariable("dreamT0DiskDOuterMat","Tungsten");
+  Control.addVariable("dreamT0DiskDOuterMat","Void");
   
   Control.addVariable("dreamT0DiskDNBlades",2);
   Control.addVariable("dreamT0DiskD0PhaseAngle0",95.0);
