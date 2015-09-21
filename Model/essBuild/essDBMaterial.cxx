@@ -186,6 +186,17 @@ void addESSMaterial()
   MObj.setDensity(-19.3);
   MDB.resetMaterial(MObj);  
 
+  // Bilbao M30001 - same ase 7400 but at 15.6 g/cm3
+  MObj.setMaterial(7401, "Tungsten156",
+		   "74180.50c  0.001200000 "
+		   "74182.71c  0.265000000 "
+		   "74183.71c  0.143100000 "
+		   "74184.71c  0.306400000 "
+		   "74186.71c  0.284300000 ",
+		   "",MLib);
+  MObj.setDensity(-15.6);
+  MDB.resetMaterial(MObj);
+
   
   
   return;
