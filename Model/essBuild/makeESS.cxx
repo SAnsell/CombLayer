@@ -74,7 +74,7 @@
 #include "beamlineConstructor.h"
 #include "WheelBase.h"
 #include "Wheel.h"
-#include "SegWheel.h"
+#include "BilbaoWheel.h"
 #include "BeRef.h"
 #include "ProtonTube.h"
 #include "BeamMonitor.h"
@@ -186,15 +186,15 @@ makeESS::makeTarget(Simulation& System,
     {
       ELog::EM<<"Target Type [Target]:"<<ELog::endBasic;
       ELog::EM<<"  -- Wheel       : Simple wheel form"<<ELog::endBasic;
-      ELog::EM<<"  -- SegWheel    : Segmented wheel"<<ELog::endBasic;
+      ELog::EM<<"  -- BilbaoWheel    : Bilbao wheel"<<ELog::endBasic;
       return;
     }
 
 
   if (targetType=="Wheel")
     Target=std::shared_ptr<WheelBase>(new Wheel("Wheel"));
-  else if (targetType=="SegWheel")
-    Target=std::shared_ptr<WheelBase>(new SegWheel("SegWheel"));
+  else if (targetType=="BilbaoWheel")
+    Target=std::shared_ptr<WheelBase>(new BilbaoWheel("BilbaoWheel"));
   else
     throw ColErr::InContainerError<std::string>
       (targetType,"Unknown target type");
