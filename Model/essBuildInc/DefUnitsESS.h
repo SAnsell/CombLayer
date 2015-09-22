@@ -34,6 +34,7 @@ namespace mainSystem
   void setESS(defaultConfig&);
   void setESSPortsOnly(defaultConfig&);
   void setESSFull(defaultConfig&); 
+  void setESSTest(defaultConfig&);
 
 }
 

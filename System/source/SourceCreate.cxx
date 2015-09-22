@@ -61,6 +61,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "GammaSource.h"
+#include "SurfNormSource.h"
 #include "LensSource.h"
 #include "SourceCreate.h"
 
@@ -212,6 +213,33 @@ createESSSource(const FuncDataBase& Control,Source& sourceCard)
 
   return;
 }
+
+void
+createESSPortSource(const FuncDataBase& Control,
+		    const attachSystem::FixedComp* FCPtr,
+		    const long int sideIndex,
+		    Source& sourceCard)
+  /*!
+    Create a port source on a set of beam ports
+    \param Control :: Control system
+    \param FC :: link surface for cylinder 
+    \param sideIndex ::surface number
+    \param sourceCard :: Source system
+    
+  */
+{
+  ELog::RegMethod RegA("SourceCreate","createESSPortSource");
+
+  if (!FCPtr)
+    throw ColErr::EmptyValue<void>("Pointer to FixedComp not filled");
+
+  SurfNormSource SX("portSource");
+  
+  SX.createAll(Control,*FCPtr,sideIndex,sourceCard);
+
+  return;
+}
+
 
 void
 createD4CSource(const FuncDataBase& Control,Source& sourceCard)

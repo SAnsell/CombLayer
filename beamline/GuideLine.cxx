@@ -208,7 +208,6 @@ GuideLine::populate(const FuncDataBase& Control)
   beamXStep=Control.EvalDefVar<double>(keyName+"BeamXStep",xStep);
   beamYStep=Control.EvalDefVar<double>(keyName+"BeamYStep",yStep);
   beamZStep=Control.EvalDefVar<double>(keyName+"BeamZStep",zStep);
-
   beamXYAngle=Control.EvalDefVar<double>(keyName+"BeamXYAngle",xyAngle);
   beamZAngle=Control.EvalDefVar<double>(keyName+"BeamZAngle",xyAngle);
 

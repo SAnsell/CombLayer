@@ -138,6 +138,7 @@ class HeadRule
   std::string displayAddress() const;
   void displayVec(std::vector<Token>&) const;  
 
+  std::string displayFluka() const;
 };  
 
 std::ostream&

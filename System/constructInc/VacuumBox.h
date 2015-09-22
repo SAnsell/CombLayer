@@ -41,7 +41,8 @@ class VacuumBox :
   public attachSystem::CellMap
 {
  private:
-  
+
+  const bool centreConstruct;   ///< Construct on the centre line
   const int vacIndex;           ///< Index of surface offset
   int cellIndex;                ///< Cell index  
 
@@ -70,7 +71,7 @@ class VacuumBox :
 
  public:
 
-  VacuumBox(const std::string&);
+  VacuumBox(const std::string&,const bool =0);
   VacuumBox(const VacuumBox&);
   VacuumBox& operator=(const VacuumBox&);
   virtual ~VacuumBox();

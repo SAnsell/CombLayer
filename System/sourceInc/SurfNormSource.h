@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   sourceInc/GammaSource.h
+ * File:   sourceInc/SurfNormSource.h
 *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef SDef_GammaSource_h
-#define SDef_GammaSource_h
+#ifndef SDef_SurfNormSource_h
+#define SDef_SurfNormSource_h
 
 namespace SDef
 {
@@ -31,57 +31,46 @@ namespace SDef
 {
 
 /*!
-  \class GammaSource
+  \class SurfNormSource
   \version 1.0
   \author S. Ansell
-  \date November 2014
-  \brief Adds gamma ray circular divergent source
+  \date September 2015
+  \brief Creat a source on the +/- of a surface
 */
 
-class GammaSource : 
+class SurfNormSource :
   public attachSystem::FixedComp
 {
  private:
-  
-  double xStep;                 ///< Step in X
-  double yStep;                 ///< Step in Y
-  double zStep;                 ///< Step in Z
-
-  double xyAngle;               ///< Rotate XY angle
-  double zAngle;                ///< Rotate XY angle
-  
+    
   int particleType;             ///< Particle Type
-  double cutEnergy;             ///< Energy cut point
-  double radius;
-  double angleSpread;           ///< Angle spread
-
-  Geometry::Vec3D FocusPoint;   ///< Focus point
-  Geometry::Vec3D Direction;    ///< Beam direction
-
+  double angleSpread;           ///< Angle from normal
+  int surfNum;                  ///< Surfacte number
+  double cutEnergy;             ///< Start energy
+  double height;                ///< Height of source
+  
   double weight;
   std::vector<double> Energy;   ///< Energies [MeV]
   std::vector<double> EWeight;  ///< Weights
   
   void populate(const FuncDataBase& Control);
   int populateEnergy(std::string,std::string);
-  int populateEFile(const std::string&,const int,const int);
-  void createUnitVector(const attachSystem::FixedComp&,
+
+  void setSurf(const attachSystem::FixedComp&,
 			const long int);
-  void calcPosition();
   void createSource(SDef::Source&) const;
 
  public:
 
-  GammaSource(const std::string&);
-  GammaSource(const GammaSource&);
-  GammaSource& operator=(const GammaSource&);
-  ~GammaSource();
+  SurfNormSource(const std::string&);
+  SurfNormSource(const SurfNormSource&);
+  SurfNormSource& operator=(const SurfNormSource&);
+  ~SurfNormSource();
 
   /// Set cut energy
   void setCutEnergy(const double E) { cutEnergy=E; }
-
-
-  void createAll(const FuncDataBase&,SDef::Source&);
+  void loadEnergy(const std::string&);
+  
   void createAll(const FuncDataBase&,const attachSystem::FixedComp&,
 		 const long int,SDef::Source&);
   

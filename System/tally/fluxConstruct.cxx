@@ -257,8 +257,8 @@ fluxConstruct::writeHelp(std::ostream& OX) const
     "      material number \n"
     "      -1 :: [all] \n"
     "  -- cell [keywords] \n"
-    "          objectName [cellOffset cellCount]\n";
-    "          objectName all\n";
+    "          objectName [cellOffset cellCount]\n"
+    "          objectName all\n"
     "  -- cell  \n"
     "          cellOffset cellCount\n";
   return;

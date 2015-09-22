@@ -47,7 +47,7 @@ class objectRegister
   /// Storage of component pointers
   typedef std::shared_ptr<attachSystem::FixedComp> CTYPE;
   /// Index of them
-  typedef std::map<std::string,CTYPE > cMapTYPE;
+  typedef std::map<std::string,CTYPE> cMapTYPE;
 
   int cellNumber;                  ///< Current new cell number
   MTYPE regionMap;                 ///< Index of kept object number

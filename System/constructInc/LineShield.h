@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/VacuumPipe.h
+ * File:   constructInc/LineShield.h
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef constructSystem_VacuumPipe_h
-#define constructSystem_VacuumPipe_h
+#ifndef constructSystem_LineShield_h
+#define constructSystem_LineShield_h
 
 class Simulation;
 
@@ -28,54 +28,65 @@ namespace constructSystem
 {
   
 /*!
-  \class VacuumPipe
+  \class LineShield
   \version 1.0
   \author S. Ansell
   \date July 2015
-  \brief VacuumPipe unit  
+  \brief LineShield unit  
 */
 
-class VacuumPipe :
+class LineShield :
   public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap
 {
  private:
   
-  const int vacIndex;           ///< Index of surface offset
+  const int shieldIndex;        ///< Index of surface offset
   int cellIndex;                ///< Cell index  
 
   bool activeFront;             ///< Flag for front active
   bool activeBack;              ///< Flag for back active
-  bool activeDivide;              ///< Flag for back active
+  bool activeDivide;            ///< Flag for back active
   HeadRule frontSurf;           ///< Front surfaces [if used]
   HeadRule backSurf;            ///< Back surfaces [if used]
   HeadRule divideSurf;          ///< divider surfaces [if used]
   
-  double radius;                ///< void height [top only]
   double length;                ///< void length [total]
+  double left;                  ///< total left width
+  double right;                 ///< total right width
+  double height;                ///< Total height
+  double depth;                 ///< Total depth
 
-  double feThick;               ///< fe thick
+  int defMat;                    ///< Fe material layer
 
-  double flangeRadius;           ///< Joining Flange thick
-  double flangeLength;          ///< Joining Flange length
-  
-  int feMat;                    ///< Fe material layer
+  size_t nSeg;                   ///< number of segments
+  // Layers
+  size_t nWallLayers;               ///< number of layers
+  std::vector<double> wallFrac;     ///< wall Layer thicknesss 
+  std::vector<int> wallMat;         ///< wall Layer materials
+
+  size_t nRoofLayers;                ///< number of layers
+  std::vector<double> roofFrac;      ///< Layer thicknesss 
+  std::vector<int> roofMat;          ///< Layer materials
+
+  size_t nFloorLayers;                ///< number of layers
+  std::vector<double> floorFrac;      ///< Layer thicknesss 
+  std::vector<int> floorMat;          ///< Layer materials
+
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
-
-  void getShiftedSurf(const HeadRule&,const int,const int);
   
  public:
 
-  VacuumPipe(const std::string&);
-  VacuumPipe(const VacuumPipe&);
-  VacuumPipe& operator=(const VacuumPipe&);
-  virtual ~VacuumPipe();
+  LineShield(const std::string&);
+  LineShield(const LineShield&);
+  LineShield& operator=(const LineShield&);
+  virtual ~LineShield();
 
 
   void setFront(const attachSystem::FixedComp&,const long int);

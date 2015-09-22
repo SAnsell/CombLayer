@@ -55,6 +55,7 @@
 #include "surfIndex.h"
 #include "Simulation.h"
 #include "SimPHITS.h"
+#include "SimFLUKA.h"
 #include "neutron.h"
 #include "Detector.h"
 #include "DetGroup.h"
@@ -208,7 +209,7 @@ createInputs(inputParam& IParam)
   std::vector<std::string> RItems(10,"");
 
   IParam.regFlag("a","axis");
-  IParam.regItem("angle","angle");
+  IParam.regItem("angle","angle",1,4);
   IParam.regDefItem<int>("c","cellRange",2,0,0);
   IParam.regItem("C","ECut");
   IParam.regFlag("cinder","cinder");
@@ -232,6 +233,7 @@ createInputs(inputParam& IParam)
   IParam.regItem("memStack","memStack");
   IParam.regDefItem<int>("n","nps",1,10000);
   IParam.regFlag("p","PHITS");
+  IParam.regFlag("fluka","FLUKA");
   IParam.regFlag("mcnp6","MCNP6");
   IParam.regFlag("Monte","Monte");
   IParam.regDefItem<double>("photon","photon",1,0.001);
@@ -309,7 +311,8 @@ createInputs(inputParam& IParam)
   IParam.setDesc("memStack","Memstack verbrosity value");
   IParam.setDesc("n","Number of starting particles");
   IParam.setDesc("MCNP6","MCNP6 output");
-  IParam.setDesc("p","PHITS output");
+  IParam.setDesc("FLUKA","FLUKA output");
+  IParam.setDesc("PHITS","PHITS output");
   IParam.setDesc("Monte","MonteCarlo capable simulation");
   IParam.setDesc("photon","Photon Cut energy");
   IParam.setDesc("photonModel","Photon Model Energy [min]");
@@ -614,7 +617,8 @@ void createPipeInputs(inputParam& IParam)
   return;
 }
 
-void createESSInputs(inputParam& IParam)
+void
+createESSInputs(inputParam& IParam)
   /*!
     Set the specialise inputs for TS2
     \param IParam :: Input Parameters
@@ -881,6 +885,8 @@ createSimulation(inputParam& IParam,
   Simulation* SimPtr;
   if (IParam.flag("PHITS"))
       SimPtr=new SimPHITS;
+  else if (IParam.flag("FLUKA"))
+      SimPtr=new SimFLUKA;
   else if (IParam.flag("Monte"))
     SimPtr=new SimMonte; 
   else 

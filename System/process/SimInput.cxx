@@ -124,7 +124,6 @@ inputPatternSim(Simulation& System,const mainSystem::inputParam& IParam)
 {
   ELog::RegMethod RegA("SimInput[F]","inputPatterSim");
   
-  // RENUMBER:
   if (IParam.flag("cinder"))
     System.setForCinder();
   

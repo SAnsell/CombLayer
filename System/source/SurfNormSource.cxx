@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   source/GammaSource.cxx
+ * File:   source/SurfNormSource.cxx
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -62,102 +62,67 @@
 #include "FixedComp.h"
 #include "WorkData.h"
 #include "World.h"
-#include "GammaSource.h"
+#include "SurfNormSource.h"
 
 namespace SDef
 {
 
-GammaSource::GammaSource(const std::string& keyName) : 
-  FixedComp(keyName,0),
+SurfNormSource::SurfNormSource(const std::string& K) :
+  attachSystem::FixedComp(K,0),
+  particleType(1),angleSpread(0.0),surfNum(0),
   cutEnergy(0.0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
-    \param keyName :: main name
+    \param K :: main keyname 
   */
 {}
 
-GammaSource::GammaSource(const GammaSource& A) : 
-  attachSystem::FixedComp(A),
-  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  particleType(A.particleType),cutEnergy(A.cutEnergy),
-  radius(A.radius),angleSpread(A.angleSpread),
-  FocusPoint(A.FocusPoint),Direction(A.Direction),
-  weight(A.weight),Energy(A.Energy),EWeight(A.EWeight)
-  /*!
-    Copy constructor
-    \param A :: GammaSource to copy
-  */
-{}
-
-GammaSource&
-GammaSource::operator=(const GammaSource& A)
-  /*!
-    Assignment operator
-    \param A :: GammaSource to copy
-    \return *this
-  */
-{
-  if (this!=&A)
-    {
-      attachSystem::FixedComp::operator=(A);
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      particleType=A.particleType;
-      cutEnergy=A.cutEnergy;
-      radius=A.radius;
-      angleSpread=A.angleSpread;
-      FocusPoint=A.FocusPoint;
-      Direction=A.Direction;
-      weight=A.weight;
-      Energy=A.Energy;
-      EWeight=A.EWeight;
-    }
-  return *this;
-}
 
 
-GammaSource::~GammaSource() 
+SurfNormSource::~SurfNormSource() 
   /*!
     Destructor
   */
 {}
 
-int
-GammaSource::populateEFile(const std::string& FName,
-			   const int colE,const int colP)
+void
+SurfNormSource::loadEnergy(const std::string& FName)
   /*!
     Load a distribution table
     - Care is taken to add an extra energy with zero 
     weight onto the table since we are using a
     \param FName :: filename 
-    return 0 on failure / 1 on success
   */
 {
-  ELog::RegMethod RegA("GammaSource","loadEnergy");
+  ELog::RegMethod RegA("SurfNormSource","loadEnergy");
 
-  const int eCol(colE);
-  const int iCol(colP);
+  const double current(60.0);
+  const int eCol(1);
+  const int iCol(11);
   
   Energy.clear();
   EWeight.clear();
   
   WorkData A;
-  if (FName.empty() || A.load(FName,eCol,iCol,0))
-    return 0;
+  if (A.load(FName,eCol,iCol,0))
+    {
+      ELog::EM<<"Failed to read file:"<<FName<<ELog::endErr;
+      return;
+    }  
 
-
-  A.xScale(1e-6);   // convert to MeV
+  A.xScale(1e-6);
   A.binDivide(1.0);
+  //  DError::doubleErr IV=A.integrate(cutEnergy,1e38);
   DError::doubleErr IV=A.integrate(cutEnergy,1e38);
+  weight=IV.getVal()/(current*6.24150636309e12);
   // Normalize A:
   A/=IV;
 
   Energy=A.getXdata();
-  if (Energy.size()<2)
+  if (Energy.size()<2 || weight<1e-12)
     {
       ELog::EM<<"Failed to read energy/data from file:"<<FName<<ELog::endErr;
-      return 0;
+      return;
     }
   Energy.push_back(2.0*Energy.back()-Energy[Energy.size()-2]);
   const std::vector<DError::doubleErr>& Yvec=A.getYdata();
@@ -167,11 +132,12 @@ GammaSource::populateEFile(const std::string& FName,
   for(vc=Yvec.begin();vc!=Yvec.end();vc++)
     EWeight.push_back(vc->getVal());
   EWeight.push_back(0.0);
-  return (EWeight.empty()) ? 0 : 1;
+
+  return;
 }
 
 int
-GammaSource::populateEnergy(std::string EPts,std::string EProb)
+SurfNormSource::populateEnergy(std::string EPts,std::string EProb)
   /*!
     Read two strings that are the Energy points and the 
     \param EPts :: Energy Points string 
@@ -179,7 +145,7 @@ GammaSource::populateEnergy(std::string EPts,std::string EProb)
     \return 1 on success success
    */
 {
-  ELog::RegMethod RegA("GammaSource","populateEnergy");
+  ELog::RegMethod RegA("SurfNormSource","populateEnergy");
 
   Energy.clear();
   EWeight.clear();
@@ -211,34 +177,25 @@ GammaSource::populateEnergy(std::string EPts,std::string EProb)
 }
   
 void
-GammaSource::populate(const FuncDataBase& Control)
+SurfNormSource::populate(const FuncDataBase& Control)
   /*!
     Populate Varaibles
     \param Control :: Control variables
    */
 {
-  ELog::RegMethod RegA("GammaSource","populate");
-  
-  xStep=Control.EvalVar<double>(keyName+"XStep"); 
-  yStep=Control.EvalVar<double>(keyName+"YStep"); 
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalDefVar<double>(keyName+"XYangle",0.0);
-  zAngle=Control.EvalDefVar<double>(keyName+"ZAngle",0.0); 
+  ELog::RegMethod RegA("SurfNormSource","populate");
 
   // default photon
   particleType=Control.EvalDefVar<int>(keyName+"ParticleType",2); 
-  radius=Control.EvalVar<double>(keyName+"Radius"); 
-  angleSpread=Control.EvalVar<double>(keyName+"ASpread"); 
+  angleSpread=Control.EvalVar<double>(keyName+"ASpread");
+  height=Control.EvalVar<double>(keyName+"Height"); 
 
   const std::string EList=
     Control.EvalDefVar<std::string>(keyName+"Energy","");
   const std::string EPList=
     Control.EvalDefVar<std::string>(keyName+"EProb","");
-  const std::string EFile=
-    Control.EvalDefVar<std::string>(keyName+"EFile","");
 
-  if (!populateEnergy(EList,EPList) &&
-      !populateEFile(EFile,1,11))
+  if (!populateEnergy(EList,EPList))
     {
       double E=Control.EvalVar<double>(keyName+"EStart"); 
       const size_t nE=Control.EvalVar<size_t>(keyName+"NE"); 
@@ -255,67 +212,60 @@ GammaSource::populate(const FuncDataBase& Control)
 }
 
 void
-GammaSource::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int linkIndex)
+SurfNormSource::setSurf(const attachSystem::FixedComp& FC,
+			const long int sideIndex)
   /*!
-    Create the unit vector
-    \param FC :: Fixed Componenet
-    \param linkIndex :: Link index [signed for opposite side]
-   */
+    Set the surface number. Also set centre of the system
+    and determine the Z axis [to be done]
+    \param FCPtr :: FixedComponent [can be zero]
+    \param sideIndex :: surface index
+  */
 {
-  ELog::RegMethod RegA("GammaSource","createUnitVector");
-
-  attachSystem::FixedComp::createUnitVector(FC,linkIndex);
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
-  Direction=Y;
-
+  ELog::RegMethod RegA("SurfNormSource","setSurf");
+  ELog::EM<<"Surface == "<<FC.getKeyName()<<" "<<sideIndex<<ELog::endDiag;
+  ELog::EM<<"STR == "<<FC.getSignedLinkString(sideIndex)<<ELog::endDiag;
+  surfNum=FC.getSignedLinkSurf(sideIndex);
+  ELog::EM<<"Surface == "<<FC.getKeyName()<<ELog::endDiag;
   return;
 }
   
+  
 void
-GammaSource::calcPosition()
-  /*!
-    Calcuate the focus position and other points
-  */    
-{
-  ELog::RegMethod RegA("GammaSource","calcPosition");
-  FocusPoint=Origin-Direction*(radius/tan(M_PI*angleSpread/180.0));
-  return;
-}
-
-void
-GammaSource::createSource(SDef::Source& sourceCard) const
+SurfNormSource::createSource(SDef::Source& sourceCard) const
   /*!
     Creates a gamma bremstraual source
     \param sourceCard :: Source system
   */
 {
-  ELog::RegMethod RegA("GammaSource","createSource");
-
+  ELog::RegMethod RegA("SurfNormSource","createSource");
   
   sourceCard.setActive();
-  sourceCard.setComp("vec",Direction);
+  sourceCard.setComp("sur",std::abs(surfNum));
   sourceCard.setComp("par",particleType);            /// photon (2)
-  sourceCard.setComp("pos",FocusPoint);
 
-  ELog::EM<<"Direction  "<<Direction<<ELog::endDiag;
-  ELog::EM<<"FocusPoint "<<FocusPoint<<ELog::endDiag;
   // Direction:
-  
-  SDef::SrcData D1(1);
-  SDef::SrcInfo SI1;
-  SI1.addData(-1.0);
-  SI1.addData(cos(M_PI*angleSpread/180.0));
-  SI1.addData(1.0);
 
-  SDef::SrcProb SP1;
-  SP1.addData(0.0);
-  SP1.addData(0.0);
-  SP1.addData(1.0);
-  D1.addUnit(SI1);  
-  D1.addUnit(SP1);  
-  sourceCard.setData("dir",D1);  
+  if(angleSpread>Geometry::zeroTol)
+    {
+      SDef::SrcData D1(1);
+      SDef::SrcInfo SI1;
+      SI1.addData(-1.0);
+      SI1.addData(cos(M_PI*angleSpread/180.0));
+      SI1.addData(1.0);
+      
+      SDef::SrcProb SP1;
+      SP1.addData(0.0);
+      SP1.addData(0.0);
+      SP1.addData(1.0);
+      D1.addUnit(SI1);  
+      D1.addUnit(SP1);  
+      sourceCard.setData("dir",D1);
+    }
+  else
+    {
+      sourceCard.setComp("dir",1.0);
+    }
+      
 
   // Energy:
   if (Energy.size()>1)
@@ -336,27 +286,10 @@ GammaSource::createSource(SDef::Source& sourceCard) const
 }  
 
 void
-GammaSource::createAll(const FuncDataBase& Control,
-		       SDef::Source& sourceCard)
-  /*!
-    Create all the source
-    \param Control :: DataBase for variables
-    \param souceCard :: Source Term
-   */
-{
-  ELog::RegMethod RegA("GammaSource","createAll");
-  populate(Control);
-  createUnitVector(World::masterOrigin(),0);
-  calcPosition();
-  createSource(sourceCard);
-  return;
-}
-
-void
-GammaSource::createAll(const FuncDataBase& Control,
-		       const attachSystem::FixedComp& FC,
-		       const long int linkIndex,
-		       SDef::Source& sourceCard)
+SurfNormSource::createAll(const FuncDataBase& Control,
+			  const attachSystem::FixedComp& FC,
+			  const long int sideIndex,
+			  SDef::Source& sourceCard)
 
   /*!
     Create all the source
@@ -364,10 +297,10 @@ GammaSource::createAll(const FuncDataBase& Control,
     \param souceCard :: Source Term
    */
 {
-  ELog::RegMethod RegA("GammaSource","createAll<FC,linkIndex>");
+  ELog::RegMethod RegA("SurfNormSource","createAll<FC,linkIndex>");
+
   populate(Control);
-  createUnitVector(FC,linkIndex);
-  calcPosition();
+  setSurf(FC,sideIndex);
   createSource(sourceCard);
   return;
 }

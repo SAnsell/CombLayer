@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   sourceInc/SourceSelector.h
+ * File:   include/SimFLUKA.h
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -19,16 +19,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef SourceSelector_h
-#define SourceSelector_h
+#ifndef SimFLUKA_h
+#define SimFLUKA_h
 
-class Simulation;
-
-namespace SDef
+/*!
+  \class SimFLUKA
+  \brief Modifides Simulation to output a Fluka input file
+  \author S. Ansell
+  \version 1.0
+  \date September 2015
+ */
+class SimFLUKA : public Simulation
 {
-  long int getLinkIndex(const std::string&);
-  void sourceSelection(Simulation&,const mainSystem::inputParam&);
-}
+ private:
+
+  // ALL THE sub-write stuff
+  void writeCells(std::ostream&) const;
+  void writeSurfaces(std::ostream&) const;
+  void writeMaterial(std::ostream&) const;
+  void writeWeights(std::ostream&) const;
+  void writeTransform(std::ostream&) const;
+  void writeTally(std::ostream&) const;
+  void writePhysics(std::ostream&) const;
+  void writeVariables(std::ostream&) const;
+  
+ public:
+  
+  SimFLUKA();
+  SimFLUKA(const SimFLUKA&);
+  SimFLUKA& operator=(const SimFLUKA&);
+  ~SimFLUKA() {}           ///< Destructor
+
+  virtual void write(const std::string&) const;
+
+};
 
 #endif
- 

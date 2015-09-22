@@ -59,6 +59,7 @@ include_directories("${PROJECT_SOURCE_DIR}/Model/t1EngineerInc")
 include_directories("${PROJECT_SOURCE_DIR}/Model/t1UpgradeInc")
 include_directories("${PROJECT_SOURCE_DIR}/Model/t3ModelInc")
 include_directories("${PROJECT_SOURCE_DIR}/Model/zoomInc")
+include_directories("${PROJECT_SOURCE_DIR}/Model/ESSBeam/dreamInc")
 include_directories("${PROJECT_SOURCE_DIR}/Model/ESSBeam/lokiInc")
 include_directories("${PROJECT_SOURCE_DIR}/Model/ESSBeam/nmxInc")
 include_directories("${PROJECT_SOURCE_DIR}/Model/ESSBeam/odinInc")
@@ -66,126 +67,126 @@ include_directories("${PROJECT_SOURCE_DIR}/Model/ESSBeam/vorInc")
 ## END INCLUDES 
 
 ## GLOBS 
-file(GLOB vor "${PROJECT_SOURCE_DIR}/Model/ESSBeam/vor/*.cxx")
-add_library(libvor SHARED ${vor})
-file(GLOB moderator "${PROJECT_SOURCE_DIR}/Model/moderator/*.cxx")
-add_library(libmoderator SHARED ${moderator})
-file(GLOB imat "${PROJECT_SOURCE_DIR}/Model/imat/*.cxx")
-add_library(libimat SHARED ${imat})
-file(GLOB world "${PROJECT_SOURCE_DIR}/System/world/*.cxx")
-add_library(libworld SHARED ${world})
-file(GLOB test "${PROJECT_SOURCE_DIR}/test/*.cxx")
-add_library(libtest SHARED ${test})
-file(GLOB endf "${PROJECT_SOURCE_DIR}/System/endf/*.cxx")
-add_library(libendf SHARED ${endf})
-file(GLOB md5 "${PROJECT_SOURCE_DIR}/System/md5/*.cxx")
-add_library(libmd5 SHARED ${md5})
-file(GLOB support "${PROJECT_SOURCE_DIR}/System/support/*.cxx")
-add_library(libsupport SHARED ${support})
-file(GLOB lensModel "${PROJECT_SOURCE_DIR}/Model/lensModel/*.cxx")
-add_library(liblensModel SHARED ${lensModel})
-file(GLOB global "${PROJECT_SOURCE_DIR}/global/*.cxx")
-add_library(libglobal SHARED ${global})
-file(GLOB log "${PROJECT_SOURCE_DIR}/System/log/*.cxx")
-add_library(liblog SHARED ${log})
-file(GLOB t1Upgrade "${PROJECT_SOURCE_DIR}/Model/t1Upgrade/*.cxx")
-add_library(libt1Upgrade SHARED ${t1Upgrade})
-file(GLOB t3Model "${PROJECT_SOURCE_DIR}/Model/t3Model/*.cxx")
-add_library(libt3Model SHARED ${t3Model})
-file(GLOB muon "${PROJECT_SOURCE_DIR}/Model/muon/*.cxx")
-add_library(libmuon SHARED ${muon})
-file(GLOB weights "${PROJECT_SOURCE_DIR}/System/weights/*.cxx")
-add_library(libweights SHARED ${weights})
-file(GLOB geometry "${PROJECT_SOURCE_DIR}/System/geometry/*.cxx")
-add_library(libgeometry SHARED ${geometry})
 file(GLOB t1Engineer "${PROJECT_SOURCE_DIR}/Model/t1Engineer/*.cxx")
 add_library(libt1Engineer SHARED ${t1Engineer})
-file(GLOB beamline "${PROJECT_SOURCE_DIR}/beamline/*.cxx")
-add_library(libbeamline SHARED ${beamline})
+file(GLOB world "${PROJECT_SOURCE_DIR}/System/world/*.cxx")
+add_library(libworld SHARED ${world})
+file(GLOB essBuild "${PROJECT_SOURCE_DIR}/Model/essBuild/*.cxx")
+add_library(libessBuild SHARED ${essBuild})
+file(GLOB attachComp "${PROJECT_SOURCE_DIR}/System/attachComp/*.cxx")
+add_library(libattachComp SHARED ${attachComp})
+file(GLOB endf "${PROJECT_SOURCE_DIR}/System/endf/*.cxx")
+add_library(libendf SHARED ${endf})
+file(GLOB t3Model "${PROJECT_SOURCE_DIR}/Model/t3Model/*.cxx")
+add_library(libt3Model SHARED ${t3Model})
+file(GLOB gammaBuild "${PROJECT_SOURCE_DIR}/Model/gammaBuild/*.cxx")
+add_library(libgammaBuild SHARED ${gammaBuild})
+file(GLOB nmx "${PROJECT_SOURCE_DIR}/Model/ESSBeam/nmx/*.cxx")
+add_library(libnmx SHARED ${nmx})
+file(GLOB source "${PROJECT_SOURCE_DIR}/System/source/*.cxx")
+add_library(libsource SHARED ${source})
+file(GLOB bnctBuild "${PROJECT_SOURCE_DIR}/Model/bnctBuild/*.cxx")
+add_library(libbnctBuild SHARED ${bnctBuild})
+file(GLOB weights "${PROJECT_SOURCE_DIR}/System/weights/*.cxx")
+add_library(libweights SHARED ${weights})
+file(GLOB visit "${PROJECT_SOURCE_DIR}/System/visit/*.cxx")
+add_library(libvisit SHARED ${visit})
+file(GLOB funcBase "${PROJECT_SOURCE_DIR}/System/funcBase/*.cxx")
+add_library(libfuncBase SHARED ${funcBase})
+file(GLOB support "${PROJECT_SOURCE_DIR}/System/support/*.cxx")
+add_library(libsupport SHARED ${support})
+file(GLOB geometry "${PROJECT_SOURCE_DIR}/System/geometry/*.cxx")
+add_library(libgeometry SHARED ${geometry})
+file(GLOB cuBlock "${PROJECT_SOURCE_DIR}/Model/cuBlock/*.cxx")
+add_library(libcuBlock SHARED ${cuBlock})
+file(GLOB tally "${PROJECT_SOURCE_DIR}/System/tally/*.cxx")
+add_library(libtally SHARED ${tally})
+file(GLOB lensModel "${PROJECT_SOURCE_DIR}/Model/lensModel/*.cxx")
+add_library(liblensModel SHARED ${lensModel})
+file(GLOB monte "${PROJECT_SOURCE_DIR}/System/monte/*.cxx")
+add_library(libmonte SHARED ${monte})
+file(GLOB zoom "${PROJECT_SOURCE_DIR}/Model/zoom/*.cxx")
+add_library(libzoom SHARED ${zoom})
+file(GLOB process "${PROJECT_SOURCE_DIR}/System/process/*.cxx")
+add_library(libprocess SHARED ${process})
 file(GLOB construct "${PROJECT_SOURCE_DIR}/System/construct/*.cxx")
 add_library(libconstruct SHARED ${construct})
+file(GLOB d4cModel "${PROJECT_SOURCE_DIR}/Model/d4cModel/*.cxx")
+add_library(libd4cModel SHARED ${d4cModel})
+file(GLOB beamline "${PROJECT_SOURCE_DIR}/beamline/*.cxx")
+add_library(libbeamline SHARED ${beamline})
+file(GLOB input "${PROJECT_SOURCE_DIR}/System/input/*.cxx")
+add_library(libinput SHARED ${input})
 file(GLOB src "${PROJECT_SOURCE_DIR}/src/*.cxx")
 add_library(libsrc SHARED ${src})
-file(GLOB loki "${PROJECT_SOURCE_DIR}/Model/ESSBeam/loki/*.cxx")
-add_library(libloki SHARED ${loki})
-file(GLOB bibBuild "${PROJECT_SOURCE_DIR}/Model/bibBuild/*.cxx")
-add_library(libbibBuild SHARED ${bibBuild})
-file(GLOB odin "${PROJECT_SOURCE_DIR}/Model/ESSBeam/odin/*.cxx")
-add_library(libodin SHARED ${odin})
-file(GLOB photon "${PROJECT_SOURCE_DIR}/Model/photon/*.cxx")
-add_library(libphoton SHARED ${photon})
+file(GLOB md5 "${PROJECT_SOURCE_DIR}/System/md5/*.cxx")
+add_library(libmd5 SHARED ${md5})
+file(GLOB imat "${PROJECT_SOURCE_DIR}/Model/imat/*.cxx")
+add_library(libimat SHARED ${imat})
+file(GLOB compWeights "${PROJECT_SOURCE_DIR}/System/compWeights/*.cxx")
+add_library(libcompWeights SHARED ${compWeights})
+file(GLOB transport "${PROJECT_SOURCE_DIR}/transport/*.cxx")
+add_library(libtransport SHARED ${transport})
+file(GLOB xml "${PROJECT_SOURCE_DIR}/System/xml/*.cxx")
+add_library(libxml SHARED ${xml})
+file(GLOB scatMat "${PROJECT_SOURCE_DIR}/scatMat/*.cxx")
+add_library(libscatMat SHARED ${scatMat})
+file(GLOB sinbadBuild "${PROJECT_SOURCE_DIR}/Model/sinbadBuild/*.cxx")
+add_library(libsinbadBuild SHARED ${sinbadBuild})
+file(GLOB build "${PROJECT_SOURCE_DIR}/Model/build/*.cxx")
+add_library(libbuild SHARED ${build})
+file(GLOB pipeBuild "${PROJECT_SOURCE_DIR}/Model/pipeBuild/*.cxx")
+add_library(libpipeBuild SHARED ${pipeBuild})
+file(GLOB vor "${PROJECT_SOURCE_DIR}/Model/ESSBeam/vor/*.cxx")
+add_library(libvor SHARED ${vor})
+file(GLOB simMC "${PROJECT_SOURCE_DIR}/System/simMC/*.cxx")
+add_library(libsimMC SHARED ${simMC})
+file(GLOB log "${PROJECT_SOURCE_DIR}/System/log/*.cxx")
+add_library(liblog SHARED ${log})
+file(GLOB instrument "${PROJECT_SOURCE_DIR}/instrument/*.cxx")
+add_library(libinstrument SHARED ${instrument})
+file(GLOB delft "${PROJECT_SOURCE_DIR}/Model/delft/*.cxx")
+add_library(libdelft SHARED ${delft})
+file(GLOB test "${PROJECT_SOURCE_DIR}/test/*.cxx")
+add_library(libtest SHARED ${test})
+file(GLOB special "${PROJECT_SOURCE_DIR}/special/*.cxx")
+add_library(libspecial SHARED ${special})
+file(GLOB t1Upgrade "${PROJECT_SOURCE_DIR}/Model/t1Upgrade/*.cxx")
+add_library(libt1Upgrade SHARED ${t1Upgrade})
+file(GLOB t1Build "${PROJECT_SOURCE_DIR}/Model/t1Build/*.cxx")
+add_library(libt1Build SHARED ${t1Build})
+file(GLOB dream "${PROJECT_SOURCE_DIR}/Model/ESSBeam/dream/*.cxx")
+add_library(libdream SHARED ${dream})
 file(GLOB snsBuild "${PROJECT_SOURCE_DIR}/Model/snsBuild/*.cxx")
 add_library(libsnsBuild SHARED ${snsBuild})
 file(GLOB epbBuild "${PROJECT_SOURCE_DIR}/Model/epbBuild/*.cxx")
 add_library(libepbBuild SHARED ${epbBuild})
-file(GLOB t1Build "${PROJECT_SOURCE_DIR}/Model/t1Build/*.cxx")
-add_library(libt1Build SHARED ${t1Build})
-file(GLOB scatMat "${PROJECT_SOURCE_DIR}/scatMat/*.cxx")
-add_library(libscatMat SHARED ${scatMat})
-file(GLOB tally "${PROJECT_SOURCE_DIR}/System/tally/*.cxx")
-add_library(libtally SHARED ${tally})
-file(GLOB delft "${PROJECT_SOURCE_DIR}/Model/delft/*.cxx")
-add_library(libdelft SHARED ${delft})
-file(GLOB attachComp "${PROJECT_SOURCE_DIR}/System/attachComp/*.cxx")
-add_library(libattachComp SHARED ${attachComp})
-file(GLOB cuBlock "${PROJECT_SOURCE_DIR}/Model/cuBlock/*.cxx")
-add_library(libcuBlock SHARED ${cuBlock})
-file(GLOB pipeBuild "${PROJECT_SOURCE_DIR}/Model/pipeBuild/*.cxx")
-add_library(libpipeBuild SHARED ${pipeBuild})
-file(GLOB essBuild "${PROJECT_SOURCE_DIR}/Model/essBuild/*.cxx")
-add_library(libessBuild SHARED ${essBuild})
-file(GLOB build "${PROJECT_SOURCE_DIR}/Model/build/*.cxx")
-add_library(libbuild SHARED ${build})
-file(GLOB xml "${PROJECT_SOURCE_DIR}/System/xml/*.cxx")
-add_library(libxml SHARED ${xml})
-file(GLOB process "${PROJECT_SOURCE_DIR}/System/process/*.cxx")
-add_library(libprocess SHARED ${process})
-file(GLOB mersenne "${PROJECT_SOURCE_DIR}/System/mersenne/*.cxx")
-add_library(libmersenne SHARED ${mersenne})
-file(GLOB visit "${PROJECT_SOURCE_DIR}/System/visit/*.cxx")
-add_library(libvisit SHARED ${visit})
-file(GLOB nmx "${PROJECT_SOURCE_DIR}/Model/ESSBeam/nmx/*.cxx")
-add_library(libnmx SHARED ${nmx})
-file(GLOB simMC "${PROJECT_SOURCE_DIR}/System/simMC/*.cxx")
-add_library(libsimMC SHARED ${simMC})
-file(GLOB zoom "${PROJECT_SOURCE_DIR}/Model/zoom/*.cxx")
-add_library(libzoom SHARED ${zoom})
-file(GLOB work "${PROJECT_SOURCE_DIR}/System/work/*.cxx")
-add_library(libwork SHARED ${work})
-file(GLOB d4cModel "${PROJECT_SOURCE_DIR}/Model/d4cModel/*.cxx")
-add_library(libd4cModel SHARED ${d4cModel})
-file(GLOB source "${PROJECT_SOURCE_DIR}/System/source/*.cxx")
-add_library(libsource SHARED ${source})
-file(GLOB monte "${PROJECT_SOURCE_DIR}/System/monte/*.cxx")
-add_library(libmonte SHARED ${monte})
-file(GLOB compWeights "${PROJECT_SOURCE_DIR}/System/compWeights/*.cxx")
-add_library(libcompWeights SHARED ${compWeights})
-file(GLOB gammaBuild "${PROJECT_SOURCE_DIR}/Model/gammaBuild/*.cxx")
-add_library(libgammaBuild SHARED ${gammaBuild})
-file(GLOB funcBase "${PROJECT_SOURCE_DIR}/System/funcBase/*.cxx")
-add_library(libfuncBase SHARED ${funcBase})
-file(GLOB physics "${PROJECT_SOURCE_DIR}/System/physics/*.cxx")
-add_library(libphysics SHARED ${physics})
-file(GLOB transport "${PROJECT_SOURCE_DIR}/transport/*.cxx")
-add_library(libtransport SHARED ${transport})
 file(GLOB crystal "${PROJECT_SOURCE_DIR}/System/crystal/*.cxx")
 add_library(libcrystal SHARED ${crystal})
-file(GLOB sinbadBuild "${PROJECT_SOURCE_DIR}/Model/sinbadBuild/*.cxx")
-add_library(libsinbadBuild SHARED ${sinbadBuild})
-file(GLOB input "${PROJECT_SOURCE_DIR}/System/input/*.cxx")
-add_library(libinput SHARED ${input})
-file(GLOB instrument "${PROJECT_SOURCE_DIR}/instrument/*.cxx")
-add_library(libinstrument SHARED ${instrument})
-file(GLOB poly "${PROJECT_SOURCE_DIR}/System/poly/*.cxx")
-add_library(libpoly SHARED ${poly})
-file(GLOB special "${PROJECT_SOURCE_DIR}/special/*.cxx")
-add_library(libspecial SHARED ${special})
-file(GLOB bnctBuild "${PROJECT_SOURCE_DIR}/Model/bnctBuild/*.cxx")
-add_library(libbnctBuild SHARED ${bnctBuild})
-file(GLOB CMakeFiles "${PROJECT_SOURCE_DIR}/CMakeFiles/*.cxx")
-add_library(libCMakeFiles SHARED ${CMakeFiles})
+file(GLOB global "${PROJECT_SOURCE_DIR}/global/*.cxx")
+add_library(libglobal SHARED ${global})
+file(GLOB bibBuild "${PROJECT_SOURCE_DIR}/Model/bibBuild/*.cxx")
+add_library(libbibBuild SHARED ${bibBuild})
 file(GLOB chip "${PROJECT_SOURCE_DIR}/Model/chip/*.cxx")
 add_library(libchip SHARED ${chip})
+file(GLOB mersenne "${PROJECT_SOURCE_DIR}/System/mersenne/*.cxx")
+add_library(libmersenne SHARED ${mersenne})
+file(GLOB poly "${PROJECT_SOURCE_DIR}/System/poly/*.cxx")
+add_library(libpoly SHARED ${poly})
+file(GLOB work "${PROJECT_SOURCE_DIR}/System/work/*.cxx")
+add_library(libwork SHARED ${work})
+file(GLOB photon "${PROJECT_SOURCE_DIR}/Model/photon/*.cxx")
+add_library(libphoton SHARED ${photon})
+file(GLOB loki "${PROJECT_SOURCE_DIR}/Model/ESSBeam/loki/*.cxx")
+add_library(libloki SHARED ${loki})
+file(GLOB muon "${PROJECT_SOURCE_DIR}/Model/muon/*.cxx")
+add_library(libmuon SHARED ${muon})
+file(GLOB physics "${PROJECT_SOURCE_DIR}/System/physics/*.cxx")
+add_library(libphysics SHARED ${physics})
+file(GLOB odin "${PROJECT_SOURCE_DIR}/Model/ESSBeam/odin/*.cxx")
+add_library(libodin SHARED ${odin})
+file(GLOB moderator "${PROJECT_SOURCE_DIR}/Model/moderator/*.cxx")
+add_library(libmoderator SHARED ${moderator})
 ## END GLOBS 
 
 ## EXECUTABLES 
@@ -267,6 +268,7 @@ target_link_libraries(ess  libodin)
 target_link_libraries(ess  libloki)
 target_link_libraries(ess  libnmx)
 target_link_libraries(ess  libvor)
+target_link_libraries(ess  libdream)
 target_link_libraries(ess boost_regex)
 target_link_libraries(ess stdc++)
  target_link_libraries(ess gsl)
@@ -622,191 +624,193 @@ target_link_libraries(testMain stdc++)
  target_link_libraries(testMain gsl)
 ## END EXECUTABLE 
 
-add_custom_target(tar  COMMAND tar zcvf ${PROJECT_SOURCE_DIR}/CombLayerOut.tgz 
-     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/vor/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/moderator/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/imat/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/world/*.cxx 
-     ${PROJECT_SOURCE_DIR}/test/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/endf/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/md5/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/support/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/lensModel/*.cxx 
-     ${PROJECT_SOURCE_DIR}/global/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/log/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/t1Upgrade/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/t3Model/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/muon/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/weights/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/geometry/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/t1Engineer/*.cxx 
-     ${PROJECT_SOURCE_DIR}/beamline/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/construct/*.cxx 
-     ${PROJECT_SOURCE_DIR}/src/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/loki/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/bibBuild/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/odin/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/photon/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/snsBuild/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/epbBuild/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/t1Build/*.cxx 
-     ${PROJECT_SOURCE_DIR}/scatMat/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/tally/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/delft/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/attachComp/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/cuBlock/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/pipeBuild/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/essBuild/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/build/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/xml/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/process/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/mersenne/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/visit/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/nmx/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/simMC/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/zoom/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/work/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/d4cModel/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/source/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/monte/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/compWeights/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/gammaBuild/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/funcBase/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/physics/*.cxx 
-     ${PROJECT_SOURCE_DIR}/transport/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/crystal/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/sinbadBuild/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/input/*.cxx 
-     ${PROJECT_SOURCE_DIR}/instrument/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/poly/*.cxx 
-     ${PROJECT_SOURCE_DIR}/special/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/bnctBuild/*.cxx 
-     ${PROJECT_SOURCE_DIR}/CMakeFiles/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/chip/*.cxx 
-     ${PROJECT_SOURCE_DIR}/include/*.h 
-     ${PROJECT_SOURCE_DIR}/beamlineInc/*.h 
-     ${PROJECT_SOURCE_DIR}/globalInc/*.h 
-     ${PROJECT_SOURCE_DIR}/instrumentInc/*.h 
-     ${PROJECT_SOURCE_DIR}/scatMatInc/*.h 
-     ${PROJECT_SOURCE_DIR}/specialInc/*.h 
-     ${PROJECT_SOURCE_DIR}/transportInc/*.h 
-     ${PROJECT_SOURCE_DIR}/testInclude/*.h 
-     ${PROJECT_SOURCE_DIR}/System/attachCompInc/*.h 
-     ${PROJECT_SOURCE_DIR}/System/compWeightsInc/*.h 
-     ${PROJECT_SOURCE_DIR}/System/constructInc/*.h 
-     ${PROJECT_SOURCE_DIR}/System/crystalInc/*.h 
-     ${PROJECT_SOURCE_DIR}/System/endfInc/*.h 
-     ${PROJECT_SOURCE_DIR}/System/funcBaseInc/*.h 
-     ${PROJECT_SOURCE_DIR}/System/geomInc/*.h 
-     ${PROJECT_SOURCE_DIR}/System/inputInc/*.h 
-     ${PROJECT_SOURCE_DIR}/System/logInc/*.h 
-     ${PROJECT_SOURCE_DIR}/System/md5Inc/*.h 
-     ${PROJECT_SOURCE_DIR}/System/mersenneInc/*.h 
-     ${PROJECT_SOURCE_DIR}/System/monteInc/*.h 
-     ${PROJECT_SOURCE_DIR}/System/physicsInc/*.h 
-     ${PROJECT_SOURCE_DIR}/System/polyInc/*.h 
-     ${PROJECT_SOURCE_DIR}/System/processInc/*.h 
-     ${PROJECT_SOURCE_DIR}/System/simMCInc/*.h 
-     ${PROJECT_SOURCE_DIR}/System/sourceInc/*.h 
-     ${PROJECT_SOURCE_DIR}/System/supportInc/*.h 
-     ${PROJECT_SOURCE_DIR}/System/tallyInc/*.h 
-     ${PROJECT_SOURCE_DIR}/System/visitInc/*.h 
-     ${PROJECT_SOURCE_DIR}/System/weightsInc/*.h 
-     ${PROJECT_SOURCE_DIR}/System/workInc/*.h 
-     ${PROJECT_SOURCE_DIR}/System/worldInc/*.h 
-     ${PROJECT_SOURCE_DIR}/System/xmlInc/*.h 
-     ${PROJECT_SOURCE_DIR}/Model/bibBuildInc/*.h 
-     ${PROJECT_SOURCE_DIR}/Model/bnctBuildInc/*.h 
-     ${PROJECT_SOURCE_DIR}/Model/buildInc/*.h 
-     ${PROJECT_SOURCE_DIR}/Model/chipInc/*.h 
-     ${PROJECT_SOURCE_DIR}/Model/cuBlockInc/*.h 
-     ${PROJECT_SOURCE_DIR}/Model/d4cModelInc/*.h 
-     ${PROJECT_SOURCE_DIR}/Model/delftInc/*.h 
-     ${PROJECT_SOURCE_DIR}/Model/epbBuildInc/*.h 
-     ${PROJECT_SOURCE_DIR}/Model/essBuildInc/*.h 
-     ${PROJECT_SOURCE_DIR}/Model/gammaBuildInc/*.h 
-     ${PROJECT_SOURCE_DIR}/Model/imatInc/*.h 
-     ${PROJECT_SOURCE_DIR}/Model/lensModelInc/*.h 
-     ${PROJECT_SOURCE_DIR}/Model/moderatorInc/*.h 
-     ${PROJECT_SOURCE_DIR}/Model/muonInc/*.h 
-     ${PROJECT_SOURCE_DIR}/Model/photonInc/*.h 
-     ${PROJECT_SOURCE_DIR}/Model/pipeBuildInc/*.h 
-     ${PROJECT_SOURCE_DIR}/Model/sinbadBuildInc/*.h 
-     ${PROJECT_SOURCE_DIR}/Model/snsBuildInc/*.h 
-     ${PROJECT_SOURCE_DIR}/Model/t1BuildInc/*.h 
-     ${PROJECT_SOURCE_DIR}/Model/t1EngineerInc/*.h 
-     ${PROJECT_SOURCE_DIR}/Model/t1UpgradeInc/*.h 
-     ${PROJECT_SOURCE_DIR}/Model/t3ModelInc/*.h 
-     ${PROJECT_SOURCE_DIR}/Model/zoomInc/*.h 
-     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/lokiInc/*.h 
-     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/nmxInc/*.h 
-     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/odinInc/*.h 
-     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/vorInc/*.h 
-     ${PROJECT_SOURCE_DIR}/CMake.pl  
-     ${PROJECT_SOURCE_DIR}/CMakeList.pm 
+add_custom_target(tar  COMMAND tar zcvf ${PROJECT_SOURCE_DIR}/Master.tgz 
+     ./Model/t1Engineer/*.cxx 
+     ./System/world/*.cxx 
+     ./Model/essBuild/*.cxx 
+     ./System/attachComp/*.cxx 
+     ./System/endf/*.cxx 
+     ./Model/t3Model/*.cxx 
+     ./Model/gammaBuild/*.cxx 
+     ./Model/ESSBeam/nmx/*.cxx 
+     ./System/source/*.cxx 
+     ./Model/bnctBuild/*.cxx 
+     ./System/weights/*.cxx 
+     ./System/visit/*.cxx 
+     ./System/funcBase/*.cxx 
+     ./System/support/*.cxx 
+     ./System/geometry/*.cxx 
+     ./Model/cuBlock/*.cxx 
+     ./System/tally/*.cxx 
+     ./Model/lensModel/*.cxx 
+     ./System/monte/*.cxx 
+     ./Model/zoom/*.cxx 
+     ./System/process/*.cxx 
+     ./System/construct/*.cxx 
+     ./Model/d4cModel/*.cxx 
+     ./beamline/*.cxx 
+     ./System/input/*.cxx 
+     ./src/*.cxx 
+     ./System/md5/*.cxx 
+     ./Model/imat/*.cxx 
+     ./System/compWeights/*.cxx 
+     ./transport/*.cxx 
+     ./System/xml/*.cxx 
+     ./scatMat/*.cxx 
+     ./Model/sinbadBuild/*.cxx 
+     ./Model/build/*.cxx 
+     ./Model/pipeBuild/*.cxx 
+     ./Model/ESSBeam/vor/*.cxx 
+     ./System/simMC/*.cxx 
+     ./System/log/*.cxx 
+     ./instrument/*.cxx 
+     ./Model/delft/*.cxx 
+     ./test/*.cxx 
+     ./special/*.cxx 
+     ./Model/t1Upgrade/*.cxx 
+     ./Model/t1Build/*.cxx 
+     ./Model/ESSBeam/dream/*.cxx 
+     ./Model/snsBuild/*.cxx 
+     ./Model/epbBuild/*.cxx 
+     ./System/crystal/*.cxx 
+     ./global/*.cxx 
+     ./Model/bibBuild/*.cxx 
+     ./Model/chip/*.cxx 
+     ./System/mersenne/*.cxx 
+     ./System/poly/*.cxx 
+     ./System/work/*.cxx 
+     ./Model/photon/*.cxx 
+     ./Model/ESSBeam/loki/*.cxx 
+     ./Model/muon/*.cxx 
+     ./System/physics/*.cxx 
+     ./Model/ESSBeam/odin/*.cxx 
+     ./Model/moderator/*.cxx 
+     ./include/*.h 
+     ./beamlineInc/*.h 
+     ./globalInc/*.h 
+     ./instrumentInc/*.h 
+     ./scatMatInc/*.h 
+     ./specialInc/*.h 
+     ./transportInc/*.h 
+     ./testInclude/*.h 
+     ./System/attachCompInc/*.h 
+     ./System/compWeightsInc/*.h 
+     ./System/constructInc/*.h 
+     ./System/crystalInc/*.h 
+     ./System/endfInc/*.h 
+     ./System/funcBaseInc/*.h 
+     ./System/geomInc/*.h 
+     ./System/inputInc/*.h 
+     ./System/logInc/*.h 
+     ./System/md5Inc/*.h 
+     ./System/mersenneInc/*.h 
+     ./System/monteInc/*.h 
+     ./System/physicsInc/*.h 
+     ./System/polyInc/*.h 
+     ./System/processInc/*.h 
+     ./System/simMCInc/*.h 
+     ./System/sourceInc/*.h 
+     ./System/supportInc/*.h 
+     ./System/tallyInc/*.h 
+     ./System/visitInc/*.h 
+     ./System/weightsInc/*.h 
+     ./System/workInc/*.h 
+     ./System/worldInc/*.h 
+     ./System/xmlInc/*.h 
+     ./Model/bibBuildInc/*.h 
+     ./Model/bnctBuildInc/*.h 
+     ./Model/buildInc/*.h 
+     ./Model/chipInc/*.h 
+     ./Model/cuBlockInc/*.h 
+     ./Model/d4cModelInc/*.h 
+     ./Model/delftInc/*.h 
+     ./Model/epbBuildInc/*.h 
+     ./Model/essBuildInc/*.h 
+     ./Model/gammaBuildInc/*.h 
+     ./Model/imatInc/*.h 
+     ./Model/lensModelInc/*.h 
+     ./Model/moderatorInc/*.h 
+     ./Model/muonInc/*.h 
+     ./Model/photonInc/*.h 
+     ./Model/pipeBuildInc/*.h 
+     ./Model/sinbadBuildInc/*.h 
+     ./Model/snsBuildInc/*.h 
+     ./Model/t1BuildInc/*.h 
+     ./Model/t1EngineerInc/*.h 
+     ./Model/t1UpgradeInc/*.h 
+     ./Model/t3ModelInc/*.h 
+     ./Model/zoomInc/*.h 
+     ./Model/ESSBeam/dreamInc/*.h 
+     ./Model/ESSBeam/lokiInc/*.h 
+     ./Model/ESSBeam/nmxInc/*.h 
+     ./Model/ESSBeam/odinInc/*.h 
+     ./Model/ESSBeam/vorInc/*.h 
+     ./Main/*.cxx 
+     ./CMake.pl  
+     ./CMakeList.pm 
  )
 
 add_custom_target(tags  COMMAND etags  
-     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/vor/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/moderator/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/imat/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/world/*.cxx 
-     ${PROJECT_SOURCE_DIR}/test/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/endf/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/md5/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/support/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/lensModel/*.cxx 
-     ${PROJECT_SOURCE_DIR}/global/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/log/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/t1Upgrade/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/t3Model/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/muon/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/weights/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/geometry/*.cxx 
      ${PROJECT_SOURCE_DIR}/Model/t1Engineer/*.cxx 
-     ${PROJECT_SOURCE_DIR}/beamline/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/world/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/essBuild/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/attachComp/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/endf/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/t3Model/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/gammaBuild/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/nmx/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/source/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/bnctBuild/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/weights/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/visit/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/funcBase/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/support/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/geometry/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/cuBlock/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/tally/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/lensModel/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/monte/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/zoom/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/process/*.cxx 
      ${PROJECT_SOURCE_DIR}/System/construct/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/d4cModel/*.cxx 
+     ${PROJECT_SOURCE_DIR}/beamline/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/input/*.cxx 
      ${PROJECT_SOURCE_DIR}/src/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/loki/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/bibBuild/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/odin/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/photon/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/md5/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/imat/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/compWeights/*.cxx 
+     ${PROJECT_SOURCE_DIR}/transport/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/xml/*.cxx 
+     ${PROJECT_SOURCE_DIR}/scatMat/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/sinbadBuild/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/build/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/pipeBuild/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/vor/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/simMC/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/log/*.cxx 
+     ${PROJECT_SOURCE_DIR}/instrument/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/delft/*.cxx 
+     ${PROJECT_SOURCE_DIR}/test/*.cxx 
+     ${PROJECT_SOURCE_DIR}/special/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/t1Upgrade/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/t1Build/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/dream/*.cxx 
      ${PROJECT_SOURCE_DIR}/Model/snsBuild/*.cxx 
      ${PROJECT_SOURCE_DIR}/Model/epbBuild/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/t1Build/*.cxx 
-     ${PROJECT_SOURCE_DIR}/scatMat/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/tally/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/delft/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/attachComp/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/cuBlock/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/pipeBuild/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/essBuild/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/build/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/xml/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/process/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/mersenne/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/visit/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/nmx/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/simMC/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/zoom/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/work/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/d4cModel/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/source/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/monte/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/compWeights/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/gammaBuild/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/funcBase/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/physics/*.cxx 
-     ${PROJECT_SOURCE_DIR}/transport/*.cxx 
      ${PROJECT_SOURCE_DIR}/System/crystal/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/sinbadBuild/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/input/*.cxx 
-     ${PROJECT_SOURCE_DIR}/instrument/*.cxx 
-     ${PROJECT_SOURCE_DIR}/System/poly/*.cxx 
-     ${PROJECT_SOURCE_DIR}/special/*.cxx 
-     ${PROJECT_SOURCE_DIR}/Model/bnctBuild/*.cxx 
-     ${PROJECT_SOURCE_DIR}/CMakeFiles/*.cxx 
+     ${PROJECT_SOURCE_DIR}/global/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/bibBuild/*.cxx 
      ${PROJECT_SOURCE_DIR}/Model/chip/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/mersenne/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/poly/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/work/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/photon/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/loki/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/muon/*.cxx 
+     ${PROJECT_SOURCE_DIR}/System/physics/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/odin/*.cxx 
+     ${PROJECT_SOURCE_DIR}/Model/moderator/*.cxx 
      ${PROJECT_SOURCE_DIR}/include/*.h 
      ${PROJECT_SOURCE_DIR}/beamlineInc/*.h 
      ${PROJECT_SOURCE_DIR}/globalInc/*.h 
@@ -862,6 +866,7 @@ add_custom_target(tags  COMMAND etags
      ${PROJECT_SOURCE_DIR}/Model/t1UpgradeInc/*.h 
      ${PROJECT_SOURCE_DIR}/Model/t3ModelInc/*.h 
      ${PROJECT_SOURCE_DIR}/Model/zoomInc/*.h 
+     ${PROJECT_SOURCE_DIR}/Model/ESSBeam/dreamInc/*.h 
      ${PROJECT_SOURCE_DIR}/Model/ESSBeam/lokiInc/*.h 
      ${PROJECT_SOURCE_DIR}/Model/ESSBeam/nmxInc/*.h 
      ${PROJECT_SOURCE_DIR}/Model/ESSBeam/odinInc/*.h 

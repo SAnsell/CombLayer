@@ -169,8 +169,8 @@ meshTally::setIndex(const size_t* IDX)
 
   for(size_t i=0;i<3;i++)
     {
-      if (IDX[i]<1)
-	throw ColErr::IndexError<int>(IDX[i],1,RegA.getBase());
+      if (!IDX[i])
+	throw ColErr::IndexError<size_t>(IDX[i],i,"IDX[index] zero");
 
       Pts[i]=IDX[i];
     }

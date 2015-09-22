@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   geometry/Plane.cxx
  *
@@ -611,7 +611,6 @@ Plane::planeType() const
   return 0;
 }
 
-
 void 
 Plane::setBaseEqn()
   /*!
@@ -628,6 +627,32 @@ Plane::setBaseEqn()
   BaseEqn[7]=NormV[1];     // H y
   BaseEqn[8]=NormV[2];     // J z
   BaseEqn[9]= -Dist;        // K const
+  return;
+}
+
+void 
+Plane::writeFLUKA(std::ostream& OX) const
+  /*! 
+    Object of write is to output a Fluka file [free format]
+    \param OX :: Output stream (required for multiple std::endl)  
+  */
+{
+  masterWrite& MW=masterWrite::Instance();
+
+  std::ostringstream cx;
+  Surface::writeHeader(cx);
+  const int ptype=planeType();
+  if (!ptype)
+    {
+      cx<<"PLA s"<<getName()<<" "
+	<<MW.Num(NormV)<<" "
+	<<MW.Num(NormV*Dist);
+    }
+  // NormV[] is -1.0 or 1.0
+  const double D=NormV[ptype-1]*Dist;
+  const std::string PNMX[3]={"YZP","XZP","XYP"};
+  cx<<PNMX[ptype-1]<<" s"<<getName()<<" "<<MW.Num(D);
+  StrFunc::writeMCNPX(cx.str(),OX);
   return;
 }
 
