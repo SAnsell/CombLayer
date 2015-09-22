@@ -74,10 +74,12 @@
 #include "GuideItem.h"
 
 #include "ODIN.h"
+#include "ESTIA.h"
 #include "LOKI.h"
 #include "NMX.h"
 #include "DREAM.h"
 #include "VOR.h"
+
 #include "beamlineConstructor.h"
 #include "makeESSBL.h"
 
@@ -180,6 +182,13 @@ makeESSBL::build(Simulation& System,
       // Odin beamline
       ODIN OdinBL;
       OdinBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+    }
+  else if (beamName=="ESTIA")
+    {
+      // NMX beamline
+      ELog::EM<<"Building ESTIA"<<ELog::endDiag;
+      ESTIA estiaBL;
+      estiaBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="LOKI")
     {

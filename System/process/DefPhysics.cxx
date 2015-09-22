@@ -195,10 +195,11 @@ setDefRotation(const mainSystem::inputParam& IParam)
 			 Geometry::Vec3D(0,0,0),
 			 45.00-180.0);
 	}
-      else if (AItem=="ODIN" || AItem=="odin" ||
+      else if (AItem=="DREAM" || AItem=="dream" ||
+	       AItem=="ESTIA" || AItem=="estia"
 	       AItem=="LOKI" || AItem=="loki" ||
-	       AItem=="VOR" || AItem=="vor" ||
-	       AItem=="DREAM" || AItem=="dream")
+	       AItem=="ODIN" || AItem=="odin" ||
+	       AItem=="VOR" || AItem=="vor")
 	{
 	  std::transform(AItem.begin(),AItem.end(),
 	    AItem.begin(),::tolower);
