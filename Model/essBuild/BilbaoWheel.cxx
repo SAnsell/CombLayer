@@ -91,7 +91,7 @@ BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) :
   innerRadius(A.innerRadius),caseRadius(A.caseRadius),
   voidRadius(A.voidRadius),nLayers(A.nLayers),radius(A.radius),
   matTYPE(A.matTYPE),wMat(A.wMat),heMat(A.heMat),
-  steelMat(A.steelMat)
+  steelMat(A.steelMat),nShaftLayers(A.nShaftLayers),shaftHeight(A.shaftHeight)
   /*!
     Copy constructor
     \param A :: BilbaoWheel to copy
@@ -128,6 +128,8 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
       wMat=A.wMat;
       heMat=A.heMat;
       steelMat=A.steelMat;
+      nShaftLayers=A.nShaftLayers;
+      shaftHeight=A.shaftHeight;
     }
   return *this;
 }
@@ -190,18 +192,25 @@ BilbaoWheel::populate(const FuncDataBase& Control)
   caseThick=Control.EvalVar<double>(keyName+"CaseThick");  
   voidThick=Control.EvalVar<double>(keyName+"VoidThick");  
 
-  shaftRadius=Control.EvalVar<double>(keyName+"ShaftRadius");
+  nShaftLayers=Control.EvalVar<size_t>(keyName+"NShaftLayers"); 
+  for (size_t i=0; i<nShaftLayers; i++)
+    {
+      R = Control.EvalVar<double>(StrFunc::makeString(keyName+"ShaftRadius",i+1));   
+      if (i && R<=shaftRadius.back())
+	ELog::EM<<"ShaftRadius["<<i+1<<"] not ordered "
+		<<R<<" "<<shaftRadius.back()<<ELog::endErr;
+      shaftRadius.push_back(R);
+      shaftMat.push_back(ModelSupport::EvalMat<int>(Control, 
+						    StrFunc::makeString(keyName+"ShaftMat",i+1)));
+    }
+
+
   shaftHeight=Control.EvalVar<double>(keyName+"ShaftHeight");
-  shaftCoolThick=Control.EvalVar<double>(keyName+"ShaftCoolThick");
-  shaftCladThick=Control.EvalVar<double>(keyName+"ShaftCladThick");
-  shaftVoidThick=Control.EvalVar<double>(keyName+"ShaftVoidThick");
-  
+
   wMat=ModelSupport::EvalMat<int>(Control,keyName+"WMat");  
   heMat=ModelSupport::EvalMat<int>(Control,keyName+"HeMat");  
   steelMat=ModelSupport::EvalMat<int>(Control,keyName+"SteelMat");  
   innerMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerMat");  
-  mainShaftMat=ModelSupport::EvalMat<int>(Control,keyName+"MainShaftMat");  
-  cladShaftMat=ModelSupport::EvalMat<int>(Control,keyName+"CladShaftMat");  
 
   return;
 }
@@ -216,14 +225,12 @@ BilbaoWheel::makeShaftSurfaces()
   
   ModelSupport::buildPlane(SMap,wheelIndex+2006,Origin+Z*shaftHeight,Z);  
 
-  ModelSupport::buildCylinder(SMap,wheelIndex+2007,Origin,Z,shaftRadius);  
-
-  ModelSupport::buildCylinder(SMap,wheelIndex+2017,Origin,Z,shaftRadius+shaftCoolThick);  
-  ModelSupport::buildCylinder(SMap,wheelIndex+2027,Origin,
-			      Z,shaftRadius+shaftCoolThick+shaftCladThick);
-  ModelSupport::buildCylinder(SMap,wheelIndex+2037,Origin,
-			      Z,shaftRadius+shaftCoolThick+
-			      shaftCladThick+shaftVoidThick);  
+  int SI(wheelIndex);
+  for (size_t i=0; i<nShaftLayers; i++)
+    {
+      ModelSupport::buildCylinder(SMap,SI+2007,Origin,Z,shaftRadius[i]);
+      SI+=10;
+    }
   
   return;
 }
@@ -254,20 +261,28 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
 
   // shaft
-  Out=ModelSupport::getComposite(SMap,wheelIndex," -2007 6 -2006 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mainShaftMat,mainTemp,Out));
-
-  Out=ModelSupport::getComposite(SMap,wheelIndex," -2017 2007 16 -2006 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,mainTemp,Out));
-
-  Out=ModelSupport::getComposite(SMap,wheelIndex," -2027 2017 26 -2006 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,cladShaftMat,mainTemp,Out));
-
-  Out=ModelSupport::getComposite(SMap,wheelIndex," -2037 2027 36 -2006 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-
-  Out=ModelSupport::getComposite(SMap,wheelIndex," -2037 36 -2006 ");
-  addOuterSurf("Shaft",Out);  
+  int SI(wheelIndex);
+  for (size_t i=0; i<nShaftLayers; i++)
+    {
+      if (i==0)
+	{
+	  Out=ModelSupport::getComposite(SMap,SI,wheelIndex," -2007 6M -2006M ");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,shaftMat[i],mainTemp,Out));
+	}
+      else
+	{
+	  Out=ModelSupport::getComposite(SMap,SI,SI-10, " -2007 2007M 6 ");
+	  Out += ModelSupport::getComposite(wheelIndex, " -2006 ");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,shaftMat[i],mainTemp,Out));
+	}
+      if (i==nShaftLayers-1)
+	{
+	  Out=ModelSupport::getComposite(SMap,SI,wheelIndex," -2007 36M -2006M ");
+	  addOuterSurf("Shaft",Out);  
+	}
+      SI += 10;
+    }
+  
   return;
 }
 

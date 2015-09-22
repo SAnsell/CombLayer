@@ -63,19 +63,17 @@ class BilbaoWheel : public WheelBase
   std::vector<double> radius;    ///< cylinder radii
   std::vector<int> matTYPE;      ///< Material type
 
-  double shaftRadius;               ///< Main shaft radius
-  double shaftCoolThick;            ///< coolant 
-  double shaftCladThick;            ///< cladding
-  double shaftVoidThick;            ///< void
+  // shaft
   double shaftHeight;               ///< Shaft Height (above origin)
+  size_t nShaftLayers;           ///< Number of shaft layers
+  std::vector<double> shaftRadius; ///< shaft radii
+  std::vector<int> shaftMat;     ///< shaft materials
   
   int wMat;                         ///< W material
   int heMat;                        ///< He material
   int steelMat;                     ///< Steel mat
   
   int innerMat;                     ///< Inner Material block
-  int mainShaftMat;                 ///< Main shaft material
-  int cladShaftMat;                 ///< Cladding on shaft;
 
   // Functions:
 
