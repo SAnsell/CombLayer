@@ -234,12 +234,11 @@ BilbaoWheel::makeShaftSurfaces()
     }
 
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
-  Geometry::General *GA;//(SI+2010, 0);
+  Geometry::General GA(SI+2010, 0);
 
-  GA = SurI.createUniqSurf<Geometry::General>(SI+2010);
   //                A      B      C      D E F    G   x y z
-  GA->setSurface("sq 6.4E-5 6.4E-5 0.001 0 0 0   -1   0 113 0");
-  SMap.registerSurf(GA);
+  GA.setSurface("sq 6.4E-5 6.4E-5 0.001 0 0 0   -1   0 113 0");
+  SMap.registerSurf(&GA);
 
   return;
 }
