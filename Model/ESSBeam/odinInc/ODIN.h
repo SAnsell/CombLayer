@@ -95,7 +95,8 @@ class ODIN
   std::shared_ptr<beamlineSystem::GuideLine> GuidePitBFront;
   /// Guide from Chopper to exterior [Hutch side]
   std::shared_ptr<beamlineSystem::GuideLine> GuidePitBBack;
-
+  /// Guide from Chopper to exterior
+  std::shared_ptr<constructSystem::DiskChopper> ChopperB;
   /// Guide from chopper B to exterior
   std::shared_ptr<beamlineSystem::GuideLine> GuideF;
 

@@ -371,7 +371,7 @@ Union::displayVec(std::vector<Token>& TVec) const
   */
 {
   if (!A || !B)
-    throw ColErr::ExBase(2,"Intersection::displayVec incomplete type");
+    throw ColErr::ExBase(2,"Union::displayVec incomplete type");
 
   if (A->type()==1)
     {
@@ -407,7 +407,7 @@ Union::display() const
 {
   std::string out;
   if (!A || !B)
-    throw ColErr::ExBase(2,"Intersection::display incomplete type");
+    throw ColErr::ExBase(2,"Union::display incomplete type");
   if (A->type()==1)
     out="( "+A->display()+" )";
   else
@@ -422,6 +422,33 @@ Union::display() const
 
   return out;
 }
+
+std::string
+Union::displayFluka() const
+  /*!
+    Display the union in the form
+    |N M| where N,M are the downward rules
+    \returns bracket string 
+  */
+{
+  std::string out;
+  if (!A || !B)
+    throw ColErr::ExBase(2,"Union::displayFluka incomplete type");
+  if (A->type()==1)
+    out="| "+A->display()+" |";
+  else
+    out=A->display();
+
+  out+=" | ";
+  
+  if (B->type()==1)
+    out+="| "+B->display()+" |";
+  else
+    out+=B->display();
+
+  return out;
+}
+
 std::string
 Union::display(const Geometry::Vec3D& Pt) const
   /*!
@@ -434,7 +461,7 @@ Union::display(const Geometry::Vec3D& Pt) const
 {
   std::string out;
   if (!A || !B)
-    throw ColErr::ExBase(2,"Intersection::display incomplete type");
+    throw ColErr::ExBase(2,"Union::display incomplete type");
   if (A->type()==1)
     out="( "+A->display(Pt)+" )";
   else

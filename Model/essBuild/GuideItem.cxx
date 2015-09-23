@@ -86,7 +86,7 @@ namespace essSystem
 GuideItem::GuideItem(const std::string& Key,const size_t Index)  :
   attachSystem::ContainedGroup("Inner","Outer"),
   attachSystem::FixedGroup(Key+StrFunc::makeString(Index),
-			   "Main",6,"Beam",2),
+			   "Main",6,"Beam",6),
   attachSystem::CellMap(),
   baseName(Key),
   guideIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
@@ -473,7 +473,21 @@ GuideItem::createLinks()
   beamFC.setConnect(1,beamExit,bY);
   beamFC.setLinkSurf(1,SMap.realSurf(GI+7));
   beamFC.addBridgeSurf(1,SMap.realSurf(guideIndex+1));
+  if (!filled)
+    {
+      const Geometry::Vec3D MidPt((beamOrigin+bY*RInner+beamExit)/2.0);
+      beamFC.setConnect(2,MidPt-bX*(beamWidth/2.0),-bX);
+      beamFC.setConnect(3,MidPt+bX*(beamWidth/2.0),bX);
+      beamFC.setConnect(4,MidPt-bZ*(beamWidth/2.0),-bZ);
+      beamFC.setConnect(5,MidPt+bZ*(beamWidth/2.0),bZ);
 
+      beamFC.setLinkSurf(2,-SMap.realSurf(guideIndex+103));
+      beamFC.setLinkSurf(3,SMap.realSurf(guideIndex+104));
+      beamFC.setLinkSurf(4,-SMap.realSurf(guideIndex+105));
+      beamFC.setLinkSurf(5,SMap.realSurf(guideIndex+106));
+    }
+    
+    
 
   // Main provides 2 things : target centre tracking:
   Origin-=Geometry::Vec3D(0,0,Origin[2]);     // TARGET CENTRE

@@ -715,7 +715,7 @@ inputParam::regDefItem(const std::string& K,const std::string& LK,
   checkKeys(K,LK);
 
   IItem* IPtr=new IItem(K,LK);
-  IPtr->setMaxN(1,0,10000);
+  IPtr->setMaxN(1,0,1);
 
   Keys.insert(MTYPE::value_type(K,IPtr));
   if (!LK.empty())
@@ -743,10 +743,10 @@ inputParam::regDefItem(const std::string& K,const std::string& LK,
   ELog::RegMethod RegA("inputParam","regDefItem<T>(A,B)");
   checkKeys(K,LK);
   if (reqData<2)
-    throw ColErr::IndexError<size_t>(reqData,2,"reqData");
+    throw ColErr::IndexError<size_t>(reqData,2,"reqData in:"+K);
 
   IItem* IPtr=new IItem(K,LK);
-  IPtr->setMaxN(1,0,10000);
+  IPtr->setMaxN(1,0,2);
   
   Keys.insert(MTYPE::value_type(K,IPtr));
   if (!LK.empty())
@@ -779,7 +779,7 @@ inputParam::regDefItem(const std::string& K,const std::string& LK,
     throw ColErr::IndexError<size_t>(reqData,3,"reqData");
 
   IItem* IPtr=new IItem(K,LK);
-  IPtr->setMaxN(1,0,10000);
+  IPtr->setMaxN(1,0,3);
   Keys.insert(MTYPE::value_type(K,IPtr));
   if (!LK.empty())
     Names.insert(MTYPE::value_type(LK,IPtr));
@@ -828,7 +828,6 @@ inputParam::processMainInput(std::vector<std::string>& Names)
       // Did we find anything:
       if (IPtr)       // Index found
 	{
-
 	  const size_t NReq=IPtr->getReqItems();
 	  const size_t NMax=IPtr->getMaxItems();
 	  size_t processNumber(0);
@@ -853,8 +852,7 @@ inputParam::processMainInput(std::vector<std::string>& Names)
 			}
 		    }
 		}
-	    }
-	  
+	    }	  
 	  if (processNumber<NReq)   
 	    ELog::EM<<"Item "<<SubName<<" failed at "
 		    <<processNumber<<" ("<<NMax<<") ["<<NReq<<"]"<<ELog::endErr;

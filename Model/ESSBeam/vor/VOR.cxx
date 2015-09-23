@@ -210,7 +210,7 @@ VOR::build(Simulation& System,
 
   ELog::EM<<"\nBuilding VOR on : "<<GItem.getKeyName()<<ELog::endDiag;
 
-  setBeamAxis(GItem,1);
+  setBeamAxis(GItem,0);
   FocusA->addInsertCell(GItem.getCells("Void"));
   FocusA->addInsertCell(bunkerObj.getCell("MainVoid"));
   //  FocusA->addEndCut(GItem.getKey("Beam").getSignedLinkString(-2));

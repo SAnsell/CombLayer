@@ -76,6 +76,7 @@
 #include "ODIN.h"
 #include "LOKI.h"
 #include "NMX.h"
+#include "DREAM.h"
 #include "VOR.h"
 #include "beamlineConstructor.h"
 #include "makeESSBL.h"
@@ -199,6 +200,13 @@ makeESSBL::build(Simulation& System,
       ELog::EM<<"Building VOR"<<ELog::endDiag;
       VOR vorBL;
       vorBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+    }
+  else if (beamName=="DREAM")
+    {
+      // NMX beamline
+      ELog::EM<<"Building DREAM"<<ELog::endDiag;
+      DREAM dreamBL;
+      dreamBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="JSANS" || beamName=="JRef")
     {

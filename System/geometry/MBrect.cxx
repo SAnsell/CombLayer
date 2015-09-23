@@ -611,4 +611,16 @@ MBrect::write(std::ostream& OX) const
   return;
 }
 
+void
+MBrect::writeFLUKA(std::ostream&) const
+  /*!
+    Write out the cone class in an mcnpx
+    format.
+    \param  :: Output Stream (required for multiple std::endl)
+  */
+{
+  ELog::EM<<"Unsupported output"<<ELog::endErr;
+  return;
+}
+
 }  // NAMESPACE Geometry

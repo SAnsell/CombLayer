@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   geometry/Torus.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,6 @@
 #include <map>
 #include <stack>
 #include <algorithm>
-#include <boost/multi_array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -400,6 +399,18 @@ Torus::write(std::ostream& OX) const
    
   cx<<Centre<<" "<<" "<<Oradius<<" "<<Iradius<<std::endl;
   StrFunc::writeMCNPX(cx.str(),OX);
+  return;
+}
+
+void
+Torus::writeFLUKA(std::ostream&) const
+  /*!
+    Write out the cone class in an mcnpx
+    format.
+    \param  :: Output Stream (required for multiple std::endl)
+  */
+{
+  ELog::EM<<"Unsupported output"<<ELog::endErr;
   return;
 }
 

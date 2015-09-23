@@ -116,7 +116,7 @@ processSDefFile(const mainSystem::inputParam& IParam,
 		const std::string& DObj,
 		SDef::Source& sourceCard)
   /*!
-    process the case of an sdefFile [spectrum] -- use 
+    Process the case of an sdefFile [spectrum] -- use 
     the void sdef card
     \param IParam :: input Parameters
     \param Control :: dataBase for variables
@@ -242,6 +242,9 @@ sourceSelection(Simulation& System,
     SDef::createBilbaoSource(Control,sourceCard);
   else if (sdefType=="ess")
     SDef::createESSSource(Control,sourceCard);
+  else if (sdefType=="essPort")
+    SDef::createESSPortSource(Control,FCPtr,linkIndex,
+			      sourceCard);
   else if (sdefType=="D4C")
     SDef::createD4CSource(Control,sourceCard);
   else if (sdefType=="Sinbad" || sdefType=="sinbad")

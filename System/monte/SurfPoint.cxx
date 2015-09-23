@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   monte/RuleItems.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +32,7 @@
 #include <sstream>
 #include <algorithm>
 #include <iterator>
+#include <memory>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -50,6 +51,7 @@
 #include "Surface.h"
 #include "Rules.h"
 #include "Token.h"
+#include "objectRegister.h"
 #include "HeadRule.h"
 #include "Object.h"
 
@@ -319,13 +321,29 @@ SurfPoint::displayVec(std::vector<Token>& TVec) const
 std::string
 SurfPoint::display() const
   /*!
+    Returns the signed surface number as a string.
+    \returns string of the value
+  */
+{
+  std::stringstream cx;
+  cx<<sign*keyN;
+  return cx.str();
+}
+
+std::string
+SurfPoint::displayFluka() const
+  /*!
     Returns the signed surface number as
     a string.
     \returns string of the value
   */
 {
   std::stringstream cx;
-  cx<<sign*keyN;
+  if (sign>0)
+    cx<<"+s"<<keyN;
+  else
+    cx<<"-s"<<keyN;
+
   return cx.str();
 }
 

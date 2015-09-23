@@ -805,6 +805,7 @@ EssVariables(FuncDataBase& Control)
 
   EssBeamLinesVariables(Control);
   ODINvariables(Control);
+  DREAMvariables(Control);
   LOKIvariables(Control);
   NMXvariables(Control);
   VORvariables(Control);
@@ -814,7 +815,14 @@ EssVariables(FuncDataBase& Control)
   EssBunkerVariables(Control);
 
 
-  Control.addVariable("sdefEnergy",2000.0);  
+  Control.addVariable("sdefEnergy",2000.0);
+  // port version:
+  Control.addVariable("portSourceASpread",0.0);
+  Control.addVariable("portSourceHeight",3.0);
+  Control.addVariable("portSourceEStart",3.0);
+  Control.addVariable("portSourceEEnd",4.0);
+  Control.addVariable("portSourceNE",2);
+
 
   return;
 }
@@ -1327,7 +1335,7 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("BBunkerFloorDepth",100.0);
   Control.addVariable("BBunkerRoofHeight",100.0);
 
-  Control.addVariable("BBunkerWallThick",250.0);
+  Control.addVariable("BBunkerWallThick",320.0);
   Control.addVariable("BBunkerSideThick",150.0);
   Control.addVariable("BBunkerRoofThick",200.0);
   Control.addVariable("BBunkerFloorThick",100.0);

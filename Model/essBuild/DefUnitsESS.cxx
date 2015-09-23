@@ -72,11 +72,14 @@ setDefUnits(FuncDataBase& Control,
 	setESS(A);
       else if (Key=="PortsOnly")
 	setESSPortsOnly(A);
+      else if (Key=="Test")
+	setESSTest(A);
       else if (Key=="help")
 	{
 	  ELog::EM<<"Options : "<<ELog::endDiag;
 	  ELog::EM<<"  Main : Everything that works"<<ELog::endDiag;
 	  ELog::EM<<"  PortsOnly  : Nothing beyond beamport "<<ELog::endDiag;
+	  ELog::EM<<"  Test  : Single beamline [for BL devel] "<<ELog::endDiag;
 	  throw ColErr::InContainerError<std::string>
 	    (Key,"Iparam.defaultConfig");	  
 	}
@@ -132,10 +135,39 @@ setESSPortsOnly(defaultConfig& A)
 
   A.setOption("lowMod","Butterfly");
 
-
   for(size_t i=0;i<19;i++)
     A.setVar("G1BLine"+StrFunc::makeString(i+1)+"Active",1);
+
   ELog::EM<<"Port Only "<<ELog::endDiag;
+  return;
+}
+
+void
+setESSTest(defaultConfig& A)
+  /*!
+    Default configuration for ESS for testing single beamlines
+    for building
+    \param A :: Paramter for default config
+   */
+{
+  ELog::RegMethod RegA("DefUnitsESS[F]","setESS");
+
+  A.setOption("lowMod","Butterfly");
+
+  //  A.setMultiOption("beamlines",0,"G4BLine4 LOKI");
+  //  A.setMultiOption("beamlines",0,"G4BLine11 DREAM");
+  A.setMultiOption("beamlines",0,"G4BLine17 DREAM");
+  //  A.setMultiOption("beamlines",0,"G1BLine5 VOR");
+  //  A.setVar("G4BLine11Active",1);
+  //  A.setVar("G4BLine11Filled",1);
+
+  // DREAM
+  A.setVar("G4BLine17Filled",1);
+  A.setVar("G4BLine17Active",1);
+  A.setVar("G1BLine5Active",1);
+  A.setVar("G1BLine5Filled",1);
+  
+  ELog::EM<<"TEST of DREAM Only "<<ELog::endDiag;
   return;
 }
 
@@ -150,27 +182,29 @@ setESS(defaultConfig& A)
 
   A.setOption("lowMod","Butterfly");
 
-
-  for(size_t i=0;i<19;i++)
-    A.setVar("G1BLine"+StrFunc::makeString(i+1)+"Active",1);
-
-
   A.setMultiOption("beamlines",0,"G1BLine19 ODIN");
   A.setMultiOption("beamlines",1,"G4BLine4 LOKI");
-  A.setMultiOption("beamlines",2,"G1BLine5 VOR");
+  A.setMultiOption("beamlines",2,"G4BLine7 VOR");
   A.setMultiOption("beamlines",3,"G4BLine12 NMX");
+  A.setMultiOption("beamlines",4,"G4BLine17 DREAM");
 
-  A.setVar("G4BLine4Active",1);
+  // odin : No action
+
+  // LOKI
+  A.setVar("G4BLine4Active",1);  
   A.setVar("G4BLine4Filled",1);
 
-  A.setVar("G1BLine9Filled",1);
-  A.setVar("G1BLine9Active",1);
+  // VOR
+  A.setVar("G4BLine7Filled",1);
+  A.setVar("G4BLine7Active",1);
 
-  A.setVar("G1BLine5Filled",1);
-  A.setVar("G1BLine5Active",1);
-
+  // NMX
+  A.setVar("G4BLine12Active",1); 
   A.setVar("G4BLine12Filled",1);
-  A.setVar("G4BLine12Active",1);
+
+  // DREAM
+  A.setVar("G4BLine17Filled",1);
+  A.setVar("G4BLine17Active",1);
   
   return;
 }

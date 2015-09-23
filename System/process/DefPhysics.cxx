@@ -197,7 +197,8 @@ setDefRotation(const mainSystem::inputParam& IParam)
 	}
       else if (AItem=="ODIN" || AItem=="odin" ||
 	       AItem=="LOKI" || AItem=="loki" ||
-	       AItem=="VOR" || AItem=="vor") 
+	       AItem=="VOR" || AItem=="vor" ||
+	       AItem=="DREAM" || AItem=="dream")
 	{
 	  std::transform(AItem.begin(),AItem.end(),
 	    AItem.begin(),::tolower);
@@ -211,6 +212,14 @@ setDefRotation(const mainSystem::inputParam& IParam)
 	  const double angle=180.0*acos(GIPtr->getY()[0])/M_PI;
 	  MR.addRotation(GIPtr->getZ(),Geometry::Vec3D(0,0,0),
 			 -angle);
+	}
+      else if (AItem=="free" || AItem=="FREE")
+	{
+	  const double rotAngle=
+	    IParam.getValue<double>("angle",1);
+	  MR.addRotation(Geometry::Vec3D(0,0,1),Geometry::Vec3D(0,0,0),
+			 -rotAngle);
+		  
 	}
       else 
 	retFlag=AItem;

@@ -95,10 +95,6 @@
 #include "ConicModerator.h"
 #include "essDBMaterial.h"
 #include "makeESSBL.h"
-// BEAMLINES:
-#include "ODIN.h"
-#include "LOKI.h"
-#include "NMX.h"
 
 #include "makeESS.h"
 

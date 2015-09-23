@@ -616,7 +616,8 @@ FixedComp::setLinkComponent(const size_t Index,
 
 void
 FixedComp::setLinkCopy(const size_t Index,
-		       const FixedComp& FC,const size_t sideIndex)
+		       const FixedComp& FC,
+		       const size_t sideIndex)
   /*!
     Copy the opposite (as if joined) link surface 
     Note that the surfaces are complemented
@@ -632,6 +633,29 @@ FixedComp::setLinkCopy(const size_t Index,
     throw ColErr::IndexError<size_t>(sideIndex,FC.LU.size(),"FC/index");
   
   LU[Index]=FC.LU[sideIndex];
+  return;
+}
+
+void
+FixedComp::setLinkSignedCopy(const size_t Index,
+			     const FixedComp& FC,
+			     const long int  sideIndex)
+  /*!
+    Copy the opposite (as if joined) link surface 
+    Note that the surfaces are complemented
+    \param Index :: Link number
+    \param FC :: Other Fixed component to copy object from
+    \param sideIndex :: signed link unit of other object
+  */
+{
+  ELog::RegMethod RegA("FixedComp","setLinkSurf");
+  if (sideIndex>0)
+    setLinkCopy(Index,FC,static_cast<size_t>(sideIndex-1));
+  else if (sideIndex<0)   // complement form
+    setLinkComponent(Index,FC,static_cast<size_t>(-1-sideIndex));
+  else
+    throw ColErr::IndexError<size_t>(sideIndex,FC.LU.size(),"FC/index");
+
   return;
 }
 
@@ -741,7 +765,6 @@ FixedComp::getSignedLinkPt(const long int sideIndex) const
   ELog::RegMethod RegA("FixedComp","getSignedLinkPt:"+keyName);
 
   if (!sideIndex) return Origin;
-
   
   const size_t linkIndex=
     (sideIndex>0) ? static_cast<size_t>(sideIndex-1) :
@@ -753,6 +776,30 @@ FixedComp::getSignedLinkPt(const long int sideIndex) const
   return LU[linkIndex].getConnectPt();
 }
 
+int
+FixedComp::getSignedLinkSurf(const long int sideIndex) const
+  /*!
+    Accessor to the link surface string
+    \param sideIndex :: Link number
+    \return Surface Key number
+  */
+{
+  ELog::RegMethod RegA("FixedComp","getSignedLinkSurf");
+  if (!sideIndex) return 0;
+
+  const size_t linkIndex=
+    (sideIndex>0) ? static_cast<size_t>(sideIndex-1) :
+    static_cast<size_t>(-sideIndex-1) ;
+
+  if (linkIndex>=LU.size())
+    throw ColErr::IndexError<size_t>
+      (linkIndex,LU.size(),"sideIndex to big");
+  const int sign((sideIndex>0) ? 1 : -1);
+  return sign*LU[linkIndex].getLinkSurf();
+}
+
+
+  
 const Geometry::Vec3D&
 FixedComp::getLinkAxis(const size_t Index) const
   /*!
@@ -841,6 +888,7 @@ FixedComp::getSignedLinkString(const long int sideIndex) const
   const size_t linkIndex=
     (sideIndex>0) ? static_cast<size_t>(sideIndex-1) :
     static_cast<size_t>(-sideIndex-1) ;
+
   return (sideIndex>0) ?
     getLinkString(linkIndex) : getLinkComplement(linkIndex);
 }
