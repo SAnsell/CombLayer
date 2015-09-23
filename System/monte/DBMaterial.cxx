@@ -680,11 +680,11 @@ DBMaterial::initMaterial()
   MObj.setMaterial(81,"Silicon20K","14028.24c 0.0460848 "
 		   "14029.24c 0.00234 14030.24c 0.0015403","si.81t",MLib);
   setMaterial(MObj);
-  // Material #82 Silicon with no-bragg (20K)
+  // Material #82 Silicon with no-bragg (77K)
   MObj.setMaterial(82,"Silicon80K","14028.24c 0.0460848 "
 		   "14029.24c 0.00234 14030.24c 0.0015403","si.82t",MLib);
   setMaterial(MObj);
-  // Material #83 Silicon with no-bragg (20K)
+  // Material #83 Silicon with no-bragg (300K)
   MObj.setMaterial(83,"Silicon300K","14028.24c 0.0460848 "
 		   "14029.24c 0.00234 14030.24c 0.0015403","si.83t",MLib);
   setMaterial(MObj);
