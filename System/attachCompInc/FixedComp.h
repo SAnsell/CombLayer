@@ -74,6 +74,7 @@ class FixedComp
   void applyShift(const double,const double,const double);
   void applyAngleRotate(const double,const double);
   void applyAngleRotate(const double,const double,const double);
+  void linkAngleRotate(const long int,const double,const double);
   void applyFullRotate(const double,const double,
 		       const Geometry::Vec3D&);
   void reverseZ();
@@ -124,8 +125,12 @@ class FixedComp
   void copyLinkObjects(const FixedComp&);
   /// How many connections
   size_t NConnect() const { return LU.size(); }
-  const LinkUnit& getLU(const size_t)  const; 
   void setNConnect(const size_t);
+  const LinkUnit& getLU(const size_t)  const;
+
+  LinkUnit& getSignedLU(const long int);
+  const LinkUnit& getSignedLU(const long int)  const; 
+
 
   virtual int getLinkSurf(const size_t) const;
   virtual const Geometry::Vec3D& getLinkPt(const size_t) const;

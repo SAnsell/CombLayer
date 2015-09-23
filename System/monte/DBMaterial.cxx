@@ -216,7 +216,7 @@ DBMaterial::initMaterial()
   // Material #23 Lead  11340kg m-3 [0.03296371]
   //204Pb 1.4 206Pb  24.1 207Pb 22.1  208Pb 	52.4 
   MObj.setMaterial(23,"Lead","82206.24c 0.00794248 "
-		   "82207.24c 0.00728335 82208.25c 0.0172691","",MLib);
+		   "82207.24c 0.00728335 82208.24c 0.0172691","",MLib);
   setMaterial(MObj);
 
   // Material #24 Lead  11340kg m-3 [0.03296371] + Sb at 1.2%

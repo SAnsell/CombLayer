@@ -92,7 +92,10 @@ namespace essSystem
 {
 
 ESTIA::ESTIA() :
-  estiaAxis(new attachSystem::FixedComp("estiaAxis",4))
+  estiaAxis(new attachSystem::FixedOffset("estiaAxis",4)),
+  FocusMono(new beamlineSystem::GuideLine("estiaFMono")),
+  VPipeA(new constructSystem::VacuumPipe("estiaPipeA")),
+  FocusB(new beamlineSystem::GuideLine("estiaFA"))
 /*!
     Constructor
  */
@@ -106,6 +109,10 @@ ESTIA::ESTIA() :
   OR.cell("estiaAxis");
   OR.addObject(estiaAxis);
 
+  OR.addObject(FocusMono);
+  OR.addObject(FocusA);
+  OR.addObject(VPipeA);
+
 }
 
 ESTIA::~ESTIA()
@@ -115,7 +122,8 @@ ESTIA::~ESTIA()
 {}
 
 void
-ESTIA::setBeamAxis(const GuideItem& GItem,
+ESTIA::setBeamAxis(const FuncDataBase& Control,
+		   const GuideItem& GItem,
 		  const bool reverseZ)
   /*!
     Set the primary direction object
@@ -124,11 +132,15 @@ ESTIA::setBeamAxis(const GuideItem& GItem,
 {
   ELog::RegMethod RegA("ESTIA","setBeamAxis");
 
+  estiaAxis->populate(Control);
   estiaAxis->createUnitVector(GItem);
   estiaAxis->setLinkCopy(0,GItem.getKey("Main"),0);
   estiaAxis->setLinkCopy(1,GItem.getKey("Main"),1);
   estiaAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
   estiaAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
+  
+  estiaAxis->linkAngleRotate(3);
+  estiaAxis->linkAngleRotate(4);
 
   if (reverseZ)
     estiaAxis->reverseZ();
@@ -203,7 +215,13 @@ ESTIA::build(Simulation& System,
 
   ELog::EM<<"\nBuilding ESTIA on : "<<GItem.getKeyName()<<ELog::endDiag;
 
-  setBeamAxis(GItem,1);
+  setBeamAxis(System.getDataBase(),GItem,1);
+
+  FocusA->addInsertCell(GItem.getCells("Void"));
+  FocusA->addEndCut(GItem.getKey("Beam").getSignedLinkString(-2));
+  FocusA->createAll(System,GItem.getKey("Beam"),-1,
+		    GItem.getKey("Beam"),-1);
+
   
   return;
 }

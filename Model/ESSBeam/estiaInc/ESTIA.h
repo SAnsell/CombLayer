@@ -25,6 +25,7 @@
 namespace attachSystem
 {
   class FixedComp;
+  class FixedOffset;
   class CellMap;
 }
 
@@ -36,6 +37,7 @@ namespace instrumentSystem
 namespace constructSystem
 {  
   class ChopperPit;
+  class ChopperHousing;
   class DiskChopper;
   class Jaws;
   class LineShield;
@@ -61,7 +63,24 @@ class ESTIA
  private:
 
   /// Main Beam Axis [for construction]
-  std::shared_ptr<attachSystem::FixedComp> estiaAxis;
+  std::shared_ptr<attachSystem::FixedOffset> estiaAxis;
+
+  /// mirror to end of monolith
+  std::shared_ptr<beamlineSystem::GuideLine> FocusMono;
+
+  /// Pipe between bunker and the wall
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeA;
+  /// mirror to end of monolith
+  std::shared_ptr<beamlineSystem::GuideLine> FocusA;
+
+
+
+
+  
+  /// Vac box for 
+  std::shared_ptr<constructSystem::VacuumBox> VacBoxA;
+  /// Elliptic guide from 5.5 to 6metre
+  std::shared_ptr<beamlineSystem::GuideLine> FocusB;
 
 
   static void
@@ -75,7 +94,7 @@ class ESTIA
 		      constructSystem::VacuumPipe&);
 
   
-  void setBeamAxis(const GuideItem&,const bool);
+  void setBeamAxis(const FuncDataBase&,const GuideItem&,const bool);
   
  public:
   

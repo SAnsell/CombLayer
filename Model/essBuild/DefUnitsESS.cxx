@@ -72,8 +72,8 @@ setDefUnits(FuncDataBase& Control,
 	setESS(A);
       else if (Key=="PortsOnly")
 	setESSPortsOnly(A);
-      else if (Key=="Test")
-	setESSTest(A);
+      else if (Key=="Single")
+	setESSSingle(A);
       else if (Key=="help")
 	{
 	  ELog::EM<<"Options : "<<ELog::endDiag;
@@ -143,7 +143,7 @@ setESSPortsOnly(defaultConfig& A)
 }
 
 void
-setESSTest(defaultConfig& A)
+setESSSingle(defaultConfig& A)
   /*!
     Default configuration for ESS for testing single beamlines
     for building
@@ -154,12 +154,15 @@ setESSTest(defaultConfig& A)
 
   A.setOption("lowMod","Butterfly");
 
-  //  A.setMultiOption("beamlines",0,"G4BLine4 LOKI");
+  A.setMultiOption("beamlines",0,"G4BLine4 ESTIA");
+  
   //  A.setMultiOption("beamlines",0,"G4BLine11 DREAM");
-  A.setMultiOption("beamlines",0,"G4BLine17 DREAM");
+  //  A.setMultiOption("beamlines",0,"G4BLine17 DREAM");
   //  A.setMultiOption("beamlines",0,"G1BLine5 VOR");
-  //  A.setVar("G4BLine11Active",1);
-  //  A.setVar("G4BLine11Filled",1);
+  //A.setMultiOption("beamlines",0,"G4BLine4 LOKI");
+  
+  A.setVar("G4BLine4Active",1);
+  A.setVar("G4BLine4Filled",1);
 
   // DREAM
   A.setVar("G4BLine17Filled",1);
@@ -167,7 +170,7 @@ setESSTest(defaultConfig& A)
   A.setVar("G1BLine5Active",1);
   A.setVar("G1BLine5Filled",1);
   
-  ELog::EM<<"TEST of DREAM Only "<<ELog::endDiag;
+  ELog::EM<<"TEST of ESTIA Only "<<ELog::endDiag;
   return;
 }
 

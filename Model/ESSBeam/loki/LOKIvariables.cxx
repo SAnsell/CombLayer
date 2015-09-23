@@ -61,7 +61,13 @@ LOKIvariables(FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("LOKIvariables[F]","LOKIvariables");
-
+  
+  Control.addVariable("lokiAxisXStep",0.0);
+  Control.addVariable("lokiAxisYStep",0.0);
+  Control.addVariable("lokiAxisZStep",0.0);
+  Control.addVariable("lokiAxisXYAngle",1.5);   // rotation 
+  Control.addVariable("lokiAxisZAngle",0.0);
+  
   // Bender in section so use cut system  
   Control.addVariable("lokiBAXStep",0.0);       
   Control.addVariable("lokiBAYStep",0.0);       
