@@ -60,19 +60,20 @@ FilterVariables(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("FilterVariables[F]","FilterVariables");
 
-  Control.addVariable("laserSourceParticleType",1);     
+  Control.addVariable("beamSourceParticleType",1);     
 
-  Control.addVariable("laserSourceXStep",0.0);       
-  Control.addVariable("laserSourceYStep",-5.0);       
-  Control.addVariable("laserSourceZStep",0.0);
-  Control.addVariable("laserSourceZAngle",0.0);       
-  Control.addVariable("laserSourceRadius",3.0);       
-  Control.addVariable("laserSourceASpread",2.0);       
-  Control.addVariable("laserSourceEStart",3.0);       
-  Control.addVariable("laserSourceNE",10);       
-  Control.addVariable("laserSourceEEnd",80.0);     
-  Control.addVariable("laserSourceEnergy","0.7 0.8 1.0 2.0 4.0 8.0 10.0");
-  Control.addVariable("laserSourceEProb"," 0.0 2e9 1e9 8e8 4e8 2e8 1e8");
+  Control.addVariable("beamSourceXStep",0.0);       
+  Control.addVariable("beamSourceYStep",-5.0);       
+  Control.addVariable("beamSourceZStep",0.0);
+  Control.addVariable("beamSourceZAngle",0.0);       
+  Control.addVariable("beamSourceRadius",3.0);       
+  Control.addVariable("beamSourceASpread",0.0);       
+  Control.addVariable("beamSourceEStart",3.0);       
+  Control.addVariable("beamSourceNE",10);       
+  Control.addVariable("beamSourceEEnd",80.0);     
+  //  Control.addVariable("beamSourceEnergy","0.7 0.8 1.0 2.0 4.0 8.0 10.0");
+  //  Control.addVariable("beamSourceEProb"," 0.0 2e9 1e9 8e8 4e8 2e8 1e8");
+  Control.addVariable("beamSourceEFile","Spectrum.out");
 
   Control.addVariable("SiPrimaryXStep",0.0);
   Control.addVariable("SiPrimaryYStep",0.0);
@@ -82,9 +83,9 @@ FilterVariables(FuncDataBase& Control)
   Control.addVariable("SiPrimaryNLayers",1);
   Control.addVariable("SiPrimaryOuterRadius",5.0);
   Control.addVariable("SiPrimaryNUnits",1);
-  Control.addVariable("SiPrimary0Thick",30.0);
+  Control.addVariable("SiPrimary0Thick",10.0);
   Control.addVariable("SiPrimaryMat0","Silicon80K");
-  Control.addVariable("SiPrimaryTemp0",80.0);
+  Control.addVariable("SiPrimaryTemp0",20.0);
 
 
   Control.addVariable("SiSecondXStep",0.0);
@@ -94,11 +95,10 @@ FilterVariables(FuncDataBase& Control)
   Control.addVariable("SiSecondZangle",0.0);
   Control.addVariable("SiSecondNLayers",1);
   Control.addVariable("SiSecondOuterRadius",5.0);
-  Control.addVariable("SiSecondHeight",30.0);
   Control.addVariable("SiSecondNUnits",1);
-  Control.addVariable("SiSecond0Thick",30.0);
+  Control.addVariable("SiSecond0Thick",10.0);
   Control.addVariable("SiSecondMat0","Silicon80K");
-  Control.addVariable("SiSecondTemp0",80.0);
+  Control.addVariable("SiSecondTemp0",20.0);
   
   Control.addVariable("LeadXStep",0.0);
   Control.addVariable("LeadYStep",100.0);
@@ -109,7 +109,7 @@ FilterVariables(FuncDataBase& Control)
   Control.addVariable("LeadOuterRadius",5.0);
   Control.addVariable("LeadNUnits",1);
   Control.addVariable("Lead0Thick",5.0);
-  Control.addVariable("LeadMat0","Lead");
+  Control.addVariable("LeadMat0","Void");
   Control.addVariable("LeadTemp0",80.0);
     
   Control.addVariable("SiThirdXStep",0.0);
@@ -120,7 +120,7 @@ FilterVariables(FuncDataBase& Control)
   Control.addVariable("SiThirdNLayers",1);
   Control.addVariable("SiThirdOuterRadius",5.0);
   Control.addVariable("SiThirdNUnits",1);
-  Control.addVariable("SiThird0Thick",30.0);
+  Control.addVariable("SiThird0Thick",10.0);
   Control.addVariable("SiThirdMat0","Silicon80K");
   Control.addVariable("SiThirdTemp0",80.0);
   

@@ -320,19 +320,19 @@ CylLayer::createLinks()
   FixedComp::setLinkSurf(0,-SMap.realSurf(layerIndex+1));
 
   FixedComp::setConnect(1,Origin+Y*tThick,Y);
-  FixedComp::setLinkSurf(1,-SMap.realSurf(NL+2));
+  FixedComp::setLinkSurf(1,-SMap.realSurf(NL+101));
 
   FixedComp::setConnect(2,Origin+Y*(tThick/2.0)-X*outerRadius,-X);
-  FixedComp::setLinkSurf(2,SMap.realSurf(layerIndex+18));
+  FixedComp::setLinkSurf(2,SMap.realSurf(layerIndex+8));
   
   FixedComp::setConnect(3,Origin+Y*(tThick/2.0)+X*outerRadius,X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(layerIndex+18));
+  FixedComp::setLinkSurf(3,SMap.realSurf(layerIndex+8));
   
   FixedComp::setConnect(4,Origin+Y*(tThick/2.0)-Z*outerRadius,-Z);
-  FixedComp::setLinkSurf(4,SMap.realSurf(layerIndex+18));
+  FixedComp::setLinkSurf(4,SMap.realSurf(layerIndex+8));
 
   FixedComp::setConnect(5,Origin+Y*(tThick/2.0)+Z*outerRadius,Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(layerIndex+18));
+  FixedComp::setLinkSurf(5,SMap.realSurf(layerIndex+8));
 
   return;
 }
