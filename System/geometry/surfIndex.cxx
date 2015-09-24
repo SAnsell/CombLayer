@@ -853,6 +853,9 @@ surfIndex::createUniqSurf<Geometry::EllipticCyl>(const int);
 template Geometry::Plane* 
 surfIndex::createUniqSurf<Geometry::Plane>(const int);
 
+template Geometry::General* 
+surfIndex::createUniqSurf<Geometry::General>(const int);
+
 template Geometry::Sphere* 
 surfIndex::createNewSurf<Geometry::Sphere>(int&);
 template Geometry::Cylinder* 
@@ -863,6 +866,8 @@ template Geometry::Cone*
 surfIndex::createNewSurf<Geometry::Cone>(int&);
 template Geometry::Plane* 
 surfIndex::createNewSurf<Geometry::Plane>(int&);
+template Geometry::General* 
+surfIndex::createNewSurf<Geometry::General>(int&);
 
 template Geometry::Plane*
 surfIndex::addTypeSurface(Geometry::Plane*);

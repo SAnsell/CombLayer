@@ -68,6 +68,7 @@
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "General.h"
+#include "Plane.h"
 #include "WheelBase.h"
 #include "BilbaoWheel.h"
 
@@ -233,13 +234,6 @@ BilbaoWheel::makeShaftSurfaces()
       SI+=10;
     }
 
-  ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
-  Geometry::General GA(SI+2010, 0);
-
-  //                A      B      C      D E F    G   x y z
-  GA.setSurface("sq 6.4E-5 6.4E-5 0.001 0 0 0   -1   0 113 0");
-  SMap.registerSurf(&GA);
-
   return;
 }
 
@@ -292,6 +286,20 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
     }
   
   return;
+}
+
+const char*
+BilbaoWheel::getSQSurface(const double R, const double e)
+{
+  /*
+    Return MCNP(X) surface card for SQ ellipsoids
+  */
+  std::string surf = "sq " + StrFunc::makeString(1./pow(R,2)) + " " +
+    StrFunc::makeString(1./pow(R,2)) + " " +
+    StrFunc::makeString(e) + " 0 0 0 -1 " +
+    StrFunc::makeString(yStep) + " 0 0";
+
+  return surf.c_str();
 }
 
 void
@@ -364,8 +372,17 @@ BilbaoWheel::createSurfaces()
       SI+=10;
     }
   
-  ModelSupport::buildCylinder(SMap,wheelIndex+517,Origin,Z,coolantRadiusOut);  
-  ModelSupport::buildCylinder(SMap,wheelIndex+527,Origin,Z,caseRadius);  
+  ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
+  Geometry::General *GA;
+
+  GA = SurI.createUniqSurf<Geometry::General>(wheelIndex+517);
+  GA->setSurface(getSQSurface(coolantRadiusOut, 0.001));
+  SMap.registerSurf(GA);
+
+  GA = SurI.createUniqSurf<Geometry::General>(wheelIndex+527);
+  GA->setSurface(getSQSurface(caseRadius, 0.001));
+  SMap.registerSurf(GA);
+
   ModelSupport::buildCylinder(SMap,wheelIndex+537,Origin,Z,voidRadius);  
 
   return; 
@@ -440,7 +457,7 @@ BilbaoWheel::createObjects(Simulation& System)
   
   // Back coolant:
   Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -517 5 -6");	
-  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,mainTemp,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat*0,mainTemp,Out));
 
   // Metal surround [ UNACCEPTABLE JUNK CELL]
   // Metal front:
