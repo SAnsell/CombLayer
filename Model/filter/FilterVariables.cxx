@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   photon/PhotonVariables.cxx
+ * File:   filter/FilterVariables.cxx
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -67,7 +67,7 @@ FilterVariables(FuncDataBase& Control)
   Control.addVariable("laserSourceZStep",0.0);
   Control.addVariable("laserSourceZAngle",0.0);       
   Control.addVariable("laserSourceRadius",3.0);       
-  Control.addVariable("laserSourceASpread",2.0);       
+  Control.addVariable("laserSourceASpread",0.001);       
   Control.addVariable("laserSourceEStart",3.0);       
   Control.addVariable("laserSourceNE",10);       
   Control.addVariable("laserSourceEEnd",80.0);     

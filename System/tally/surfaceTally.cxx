@@ -239,7 +239,7 @@ surfaceTally::renumberSurf(const int oldN,const int newN)
   if (vc!=SurfList.end())
     *vc=newN;
 
-
+  ELog::EM<<"Surface == "<<oldN<<" "<<newN<<ELog::endDiag;
   std::replace_if(FSfield.begin(),FSfield.end(),
 		  [&oldN](const int& x) { return (x==oldN); },
 		  newN);
