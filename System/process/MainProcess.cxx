@@ -481,11 +481,11 @@ createFilterInputs(inputParam& IParam)
     \param IParam :: Initial input
   */
 {
-  ELog::RegMethod RegA("MainProcess::","createPhotonInputs");
+  ELog::RegMethod RegA("MainProcess::","createFilterInputs");
   createInputs(IParam);
   
 
-  IParam.setValue("sdefType",std::string("Laser"));
+  IParam.setValue("sdefType",std::string("Beam"));
   IParam.setFlag("voidUnMask");  
   return;
 }

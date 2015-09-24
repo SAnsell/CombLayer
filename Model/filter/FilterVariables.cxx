@@ -60,19 +60,19 @@ FilterVariables(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("FilterVariables[F]","FilterVariables");
 
-  Control.addVariable("laserSourceParticleType",1);     
+  Control.addVariable("beamSourceParticleType",1);     
 
-  Control.addVariable("laserSourceXStep",0.0);       
-  Control.addVariable("laserSourceYStep",-5.0);       
-  Control.addVariable("laserSourceZStep",0.0);
-  Control.addVariable("laserSourceZAngle",0.0);       
-  Control.addVariable("laserSourceRadius",3.0);       
-  Control.addVariable("laserSourceASpread",0.001);       
-  Control.addVariable("laserSourceEStart",3.0);       
-  Control.addVariable("laserSourceNE",10);       
-  Control.addVariable("laserSourceEEnd",80.0);     
-  Control.addVariable("laserSourceEnergy","0.7 0.8 1.0 2.0 4.0 8.0 10.0");
-  Control.addVariable("laserSourceEProb"," 0.0 2e9 1e9 8e8 4e8 2e8 1e8");
+  Control.addVariable("beamSourceXStep",0.0);       
+  Control.addVariable("beamSourceYStep",-5.0);       
+  Control.addVariable("beamSourceZStep",0.0);
+  Control.addVariable("beamSourceZAngle",0.0);       
+  Control.addVariable("beamSourceRadius",3.0);       
+  Control.addVariable("beamSourceASpread",0.001);       
+  Control.addVariable("beamSourceEStart",3.0);       
+  Control.addVariable("beamSourceNE",10);       
+  Control.addVariable("beamSourceEEnd",80.0);     
+  Control.addVariable("beamSourceEnergy","0.7 0.8 1.0 2.0 4.0 8.0 10.0");
+  Control.addVariable("beamSourceEProb"," 0.0 2e9 1e9 8e8 4e8 2e8 1e8");
 
   Control.addVariable("SiPrimaryXStep",0.0);
   Control.addVariable("SiPrimaryYStep",0.0);

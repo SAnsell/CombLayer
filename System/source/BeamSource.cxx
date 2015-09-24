@@ -60,6 +60,7 @@
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "WorkData.h"
 #include "World.h"
 #include "BeamSource.h"
@@ -68,7 +69,7 @@ namespace SDef
 {
 
 BeamSource::BeamSource(const std::string& keyName) : 
-  FixedComp(keyName,0),
+  FixedOffset(keyName,0),
   cutEnergy(0.0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -242,29 +243,20 @@ BeamSource::createSource(SDef::Source& sourceCard) const
   sourceCard.setActive();
   sourceCard.setComp("vec",Direction);
   sourceCard.setComp("axs",Direction);
-  sourceCard.setComp("par",particleType);            /// photon (2)
+  sourceCard.setComp("par",particleType);   // neutron (1)/photon(2)
+  sourceCard.setComp("dir",cos(angleSpread*M_PI/180.0));         /// 
 
-
-  // RAD [
-  SDef::SrcInfo SI1;
-  SI1.addData(0.0);
-  SI1.addData(radius);
-
-  sourceCard.setComp("pos",FocusPoint);
-
-  ELog::EM<<"Direction  "<<Direction<<ELog::endDiag;
-  ELog::EM<<"FocusPoint "<<FocusPoint<<ELog::endDiag;
-  // Direction:
-  
+  // RAD
   SDef::SrcData D1(1);
   SDef::SrcInfo SI1;
   SDef::SrcProb SP1;
-  SI1.addData(-1.0);
-  SI1.addData(cos(M_PI*angleSpread/180.0));
-  SI1.addData(1.0);
-  SP1.setFminus(-21,2.0);
-  DA.addUnit(SI1);
-  DA.addUnit(SP1);
+  SI1.addData(0.0);
+  SI1.addData(radius);
+  SP1.setFminus(-21,1.0);
+  D1.addUnit(SI1);
+  D1.addUnit(SP1);
+  sourceCard.setData("rad",D1);
+  
 
   // Energy:
   if (Energy.size()>1)
@@ -313,6 +305,7 @@ BeamSource::createAll(const FuncDataBase& Control,
    */
 {
   ELog::RegMethod RegA("BeamSource","createAll<FC,linkIndex>");
+
   populate(Control);
   createUnitVector(FC,linkIndex);
   createSource(sourceCard);

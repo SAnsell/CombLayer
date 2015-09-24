@@ -45,7 +45,7 @@ class BeamSource :
     
   int particleType;             ///< Particle Type
   double cutEnergy;             ///< Energy cut point
-  double radius;
+  double radius;                ///< Radius of beam
   double angleSpread;           ///< Angle spread
 
   Geometry::Vec3D Direction;    ///< Beam direction

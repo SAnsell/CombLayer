@@ -28,6 +28,10 @@ namespace SDef
   void createGaussianSource(Source&,const double,const double,const double);  
 
   void createSimpleSource(Source&,const double,const double);
+  void createBeamSource(const FuncDataBase&,const std::string&,
+			const attachSystem::FixedComp&,const long int,
+			Source&);
+  void createBeamSource(const FuncDataBase&,const std::string&,Source&);
   void createBilbaoSource(const FuncDataBase&,Source&);
   void createD4CSource(const FuncDataBase&,Source&);
   void createESSSource(const FuncDataBase&,Source&);
