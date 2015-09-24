@@ -56,6 +56,7 @@ class BilbaoWheel : public WheelBase
   double coolantRadiusOut;       ///< Outer coolant radius
   double caseRadius;             ///< Outer case radius
   double voidRadius;             ///< Final outer radius
+  double aspectRatio;            ///< Defines curvature in the yz view
 
   double mainTemp;               ///< Main temperature 
   

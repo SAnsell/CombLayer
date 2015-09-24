@@ -91,7 +91,8 @@ BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) :
   coolantThickIn(A.coolantThickIn),coolantThickOut(A.coolantThickOut),
   caseThick(A.caseThick),voidThick(A.voidThick),
   innerRadius(A.innerRadius),caseRadius(A.caseRadius),
-  voidRadius(A.voidRadius),nLayers(A.nLayers),radius(A.radius),
+  voidRadius(A.voidRadius),aspectRatio(A.aspectRatio),
+  nLayers(A.nLayers),radius(A.radius),
   matTYPE(A.matTYPE),wMat(A.wMat),heMat(A.heMat),
   steelMat(A.steelMat),nShaftLayers(A.nShaftLayers),shaftHeight(A.shaftHeight)
   /*!
@@ -124,6 +125,7 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
       innerRadius=A.innerRadius;
       caseRadius=A.caseRadius;
       voidRadius=A.voidRadius;
+      aspectRatio=A.aspectRatio;
       nLayers=A.nLayers;
       radius=A.radius;
       matTYPE=A.matTYPE;
@@ -187,6 +189,7 @@ BilbaoWheel::populate(const FuncDataBase& Control)
   coolantRadiusOut=Control.EvalVar<double>(keyName+"CoolantRadiusOut");  
   caseRadius=Control.EvalVar<double>(keyName+"CaseRadius");  
   voidRadius=Control.EvalVar<double>(keyName+"VoidRadius");
+  aspectRatio=Control.EvalVar<double>(keyName+"AspectRatio");
 
   targetHeight=Control.EvalVar<double>(keyName+"TargetHeight");
   coolantThickIn=Control.EvalVar<double>(keyName+"CoolantThickIn");  
@@ -376,11 +379,11 @@ BilbaoWheel::createSurfaces()
   Geometry::General *GA;
 
   GA = SurI.createUniqSurf<Geometry::General>(wheelIndex+517);
-  GA->setSurface(getSQSurface(coolantRadiusOut, 0.001));
+  GA->setSurface(getSQSurface(coolantRadiusOut, aspectRatio));
   SMap.registerSurf(GA);
 
   GA = SurI.createUniqSurf<Geometry::General>(wheelIndex+527);
-  GA->setSurface(getSQSurface(caseRadius, 0.001));
+  GA->setSurface(getSQSurface(caseRadius, aspectRatio));
   SMap.registerSurf(GA);
 
   ModelSupport::buildCylinder(SMap,wheelIndex+537,Origin,Z,voidRadius);  
