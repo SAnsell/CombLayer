@@ -31,7 +31,7 @@ namespace essSystem
   \class Bunker
   \version 1.0
   \author S. Ansell
-  \date April 2013
+  \date April 2015
   \brief Bulk around Reflector
 */
 
@@ -69,6 +69,7 @@ class Bunker : public attachSystem::ContainedComp,
   double roofThick;              ///< Roof thickness
   double floorThick;             ///< Floor thickness
 
+  int voidMat;                   ///< void material 
   int wallMat;                   ///< wall material
 
   // Layers

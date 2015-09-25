@@ -62,6 +62,7 @@ NMXvariables(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("NMXvariables[F]","NMXvariables");
 
+  // FIRST SECTION
   Control.addVariable("nmxGAXStep",0.0);       
   Control.addVariable("nmxGAYStep",0.0);       
   Control.addVariable("nmxGAZStep",0.0);       
@@ -69,7 +70,7 @@ NMXvariables(FuncDataBase& Control)
   Control.addVariable("nmxGAZAngle",0.0);
   Control.addVariable("nmxGABeamXYAngle",0.0);       
 
-  Control.addVariable("nmxGALength",400.0);       
+  Control.addVariable("nmxGALength",350.0);       
   Control.addVariable("nmxGANShapes",1);       
   Control.addVariable("nmxGANShapeLayers",3);
   Control.addVariable("nmxGAActiveShield",0);
@@ -87,9 +88,38 @@ NMXvariables(FuncDataBase& Control)
   Control.addVariable("nmxGA0HeightEnd",4.5);
   Control.addVariable("nmxGA0WidthStart",3.0);
   Control.addVariable("nmxGA0WidthEnd",3.0);
-  Control.addVariable("nmxGA0Length",400.0);
+  Control.addVariable("nmxGA0Length",350.0);
   Control.addVariable("nmxGA0ZAngle",0.0);
 
+  Control.addVariable("nmxGAXStep",0.0);       
+  Control.addVariable("nmxGAYStep",0.0);       
+  Control.addVariable("nmxGAZStep",0.0);       
+  Control.addVariable("nmxGAXYAngle",0.0);
+  Control.addVariable("nmxGAZAngle",0.0);
+  Control.addVariable("nmxGABeamXYAngle",0.0);       
+
+  Control.addVariable("nmxGALength",350.0);       
+  Control.addVariable("nmxGANShapes",1);       
+  Control.addVariable("nmxGANShapeLayers",3);
+  Control.addVariable("nmxGAActiveShield",0);
+
+  Control.addVariable("nmxGALayerThick1",0.4);  // glass thick
+  Control.addVariable("nmxGALayerThick2",1.5);
+
+  Control.addVariable("nmxGALayerMat0","Void");
+  Control.addVariable("nmxGALayerMat1","Glass");
+  Control.addVariable("nmxGALayerMat2","Void");       
+
+  Control.addVariable("nmxGA0TypeID","Tapper");
+
+  Control.addVariable("nmxGA0HeightStart",3.0);
+  Control.addVariable("nmxGA0HeightEnd",4.5);
+  Control.addVariable("nmxGA0WidthStart",3.0);
+  Control.addVariable("nmxGA0WidthEnd",3.0);
+  Control.addVariable("nmxGA0Length",350.0);
+  Control.addVariable("nmxGA0ZAngle",0.0);
+
+  
 
   Control.addVariable("nmxBAXStep",0.0);       
   Control.addVariable("nmxBAYStep",0.0);       

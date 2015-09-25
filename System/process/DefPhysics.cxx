@@ -198,6 +198,7 @@ setDefRotation(const mainSystem::inputParam& IParam)
       else if (AItem=="DREAM" || AItem=="dream" ||
 	       AItem=="ESTIA" || AItem=="estia" ||
 	       AItem=="LOKI" || AItem=="loki" ||
+	       AItem=="NMX" || AItem=="nxm" ||
 	       AItem=="ODIN" || AItem=="odin" ||
 	       AItem=="VOR" || AItem=="vor")
 	{

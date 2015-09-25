@@ -154,7 +154,7 @@ setESSSingle(defaultConfig& A)
 
   A.setOption("lowMod","Butterfly");
 
-  A.setMultiOption("beamlines",0,"G4BLine4 ESTIA");
+  A.setMultiOption("beamlines",0,"G4BLine17 NMX");
   
   //  A.setMultiOption("beamlines",0,"G4BLine11 DREAM");
   //  A.setMultiOption("beamlines",0,"G4BLine17 DREAM");
@@ -170,7 +170,7 @@ setESSSingle(defaultConfig& A)
   A.setVar("G1BLine5Active",1);
   A.setVar("G1BLine5Filled",1);
   
-  ELog::EM<<"TEST of ESTIA Only "<<ELog::endDiag;
+  ELog::EM<<"TEST of NMX Only "<<ELog::endDiag;
   return;
 }
 
