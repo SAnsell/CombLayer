@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   source/SourceSelector.cxx
  *
@@ -272,7 +272,6 @@ sourceSelection(Simulation& System,
 			       *FCPtr,linkIndex,sourceCard);
       else
 	SDef::createBeamSource(Control,"beamSource",sourceCard);
-
     }
   else if (sdefType=="LENS" || sdefType=="lens")
     {
@@ -306,6 +305,7 @@ sourceSelection(Simulation& System,
 	"Bilbao :: Bilbao beam proton\n"
 	"Laser :: Laser D/T fussion source\n"
 	"Point :: Test point source\n"
+	"Beam :: Test Beam [Radial] source \n"
 	"D4C :: D4C neutron beam"<<ELog::endBasic;
     }
 	

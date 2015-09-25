@@ -63,6 +63,7 @@
 #include "FixedOffset.h"
 #include "WorkData.h"
 #include "World.h"
+
 #include "BeamSource.h"
 
 namespace SDef
@@ -180,7 +181,7 @@ BeamSource::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("BeamSource","populate");
 
-  FixedOffset::populate(Control);
+  attachSystem::FixedOffset::populate(Control);
 
   // default photon
   particleType=Control.EvalDefVar<int>(keyName+"ParticleType",1); 
@@ -225,8 +226,6 @@ BeamSource::createUnitVector(const attachSystem::FixedComp& FC,
   attachSystem::FixedComp::createUnitVector(FC,linkIndex);
   applyOffset();
 
-  Direction=Y;
-
   return;
 }
   
@@ -241,11 +240,13 @@ BeamSource::createSource(SDef::Source& sourceCard) const
 
   
   sourceCard.setActive();
+
   sourceCard.setComp("vec",Direction);
   sourceCard.setComp("axs",Direction);
   sourceCard.setComp("par",particleType);   // neutron (1)/photon(2)
   sourceCard.setComp("dir",cos(angleSpread*M_PI/180.0));         /// 
-
+  sourceCard.setComp("pos",Origin);
+  
   // RAD
   SDef::SrcData D1(1);
   SDef::SrcInfo SI1;
@@ -302,10 +303,10 @@ BeamSource::createAll(const FuncDataBase& Control,
     Create all the source
     \param Control :: DataBase for variables
     \param souceCard :: Source Term
+    \param linkIndex :: link Index						
    */
 {
   ELog::RegMethod RegA("BeamSource","createAll<FC,linkIndex>");
-
   populate(Control);
   createUnitVector(FC,linkIndex);
   createSource(sourceCard);

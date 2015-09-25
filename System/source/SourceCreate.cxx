@@ -367,6 +367,45 @@ createTS1Source(const FuncDataBase& Control,Source& sourceCard)
 }
 
 void
+createBeamSource(const FuncDataBase& Control,
+		  const std::string& keyName,Source& Card)
+  /*!
+    Create the photon source for gamma-nuclea spectrum
+    nuclear experiment source
+    \param Control :: Variables data base
+    \param keyName :: keyname for Gamma source
+    \param Card :: Source system
+   */
+{
+  ELog::RegMethod RegA("SourceCreate","createBeamSource");
+
+  BeamSource GX(keyName);
+  GX.createAll(Control,Card);
+  return;
+}
+
+
+void
+createBeamSource(const FuncDataBase& Control,
+		  const std::string& keyName,
+		  const attachSystem::FixedComp& FC,
+		  const long int linkIndex,
+		  Source& Card)
+  /*!
+    Create the point source -- currently a copy of the photo
+    nuclear experiment source
+    \param Control :: Variables data base
+    \param Card :: Source system
+   */
+{
+  ELog::RegMethod RegA("SourceCreate","createBeamSource(FC,link)");
+  BeamSource GX(keyName);
+
+  GX.createAll(Control,FC,linkIndex,Card);
+  return;
+}
+  
+void
 createGammaSource(const FuncDataBase& Control,
 		  const std::string& keyName,Source& Card)
   /*!

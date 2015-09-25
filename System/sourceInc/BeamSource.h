@@ -3,6 +3,7 @@
  
  * File:   sourceInc/BeamSource.h
  *
+ *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
@@ -42,15 +43,15 @@ class BeamSource :
   public attachSystem::FixedOffset
 {
  private:
-    
+  
+  
   int particleType;             ///< Particle Type
   double cutEnergy;             ///< Energy cut point
-  double radius;                ///< Radius of beam
+  double radius;
   double angleSpread;           ///< Angle spread
 
-  Geometry::Vec3D Direction;    ///< Beam direction
+  double weight;                ///< Particle weight
 
-  double weight;
   std::vector<double> Energy;   ///< Energies [MeV]
   std::vector<double> EWeight;  ///< Weights
   
@@ -59,7 +60,7 @@ class BeamSource :
   int populateEFile(const std::string&,const int,const int);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
-  void calcPosition();
+
   void createSource(SDef::Source&) const;
 
  public:

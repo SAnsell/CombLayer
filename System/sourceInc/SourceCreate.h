@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   sourceInc/SourceCreate.h
  *
@@ -38,6 +38,10 @@ namespace SDef
   void createESSPortSource(const FuncDataBase&,
 			   const attachSystem::FixedComp*,const long int,
 			   Source&);
+  void createBeamSource(const FuncDataBase&,const std::string&,Source&);
+  void createBeamSource(const FuncDataBase&,const std::string&,
+			 const attachSystem::FixedComp&,const long int,
+			 Source&);
   void createGammaSource(const FuncDataBase&,const std::string&,Source&);
   void createGammaSource(const FuncDataBase&,const std::string&,
 			 const attachSystem::FixedComp&,const long int,
