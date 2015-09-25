@@ -241,8 +241,8 @@ BeamSource::createSource(SDef::Source& sourceCard) const
   
   sourceCard.setActive();
 
-  sourceCard.setComp("vec",Direction);
-  sourceCard.setComp("axs",Direction);
+  sourceCard.setComp("vec",Y);
+  sourceCard.setComp("axs",Y);
   sourceCard.setComp("par",particleType);   // neutron (1)/photon(2)
   sourceCard.setComp("dir",cos(angleSpread*M_PI/180.0));         /// 
   sourceCard.setComp("pos",Origin);
