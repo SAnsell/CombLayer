@@ -69,6 +69,7 @@ class DREAM
 
   /// Elliptic forcus in bulkshield [m5]
   std::shared_ptr<beamlineSystem::GuideLine> FocusA;
+  
   /// Vac box for first chopper
   std::shared_ptr<constructSystem::VacuumBox> VacBoxA;
   /// Pipe between bunker and the wall

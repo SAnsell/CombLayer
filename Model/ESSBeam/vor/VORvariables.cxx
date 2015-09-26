@@ -138,7 +138,7 @@ VORvariables(FuncDataBase& Control)
 
   // Double Blade chopper
   Control.addVariable("vorDBladeHouseVoidHeight",40.0);
-  Control.addVariable("vorDBladeHouseVoidDepth",12.0);
+  Control.addVariable("vorDBladeHouseVoidDepth",11.0);
   Control.addVariable("vorDBladeHouseVoidThick",8.0);
   Control.addVariable("vorDBladeHouseVoidWidth",60.0);
   Control.addVariable("vorDBladeHouseWallThick",1.0);

@@ -93,7 +93,7 @@ GuideLine::GuideLine(const std::string& Key) :
   attachSystem::FixedGroup(Key,"Shield",6,"GuideOrigin",0),
   SUItem(200),SULayer(20),
   guideIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(guideIndex+1),nShapeLayers(0),activeEnd(0),  
+  cellIndex(guideIndex+1),nShapeLayers(0),activeEnd(0),
   nShapes(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -705,7 +705,7 @@ GuideLine::createUnitLinks()
 	guideFC.setConnect(1,calcActiveEndIntercept(),
 			   shapeUnits[i]->getEndAxis());     
 
-      // decide which point to used 
+      // [FRONT] decide which point to used 
       if (!i && !beamFrontCut && !frontCut)
 	guideFC.setLinkCopy(0,shieldFC,0);       
       else if (!i && beamFrontCut)
@@ -715,12 +715,16 @@ GuideLine::createUnitLinks()
       else 
 	guideFC.setLinkSurf(0,-SMap.realSurf(SN));       
 
-      // END Link Pts
-      if (i==nShapes-1)
+      // [END] 
+      if (i==nShapes-1 && activeEnd)
+	{
+	  guideFC.setLinkSurf(1,endCut.complement());
+	  guideFC.setBridgeSurf(1,endCutBridge);
+	}
+      else if (i==nShapes-1)
 	guideFC.setLinkSurf(1,SMap.realSurf(guideIndex+2));
       else
 	guideFC.setLinkSurf(1,SMap.realSurf(SN+1));       
-
       SN++;
     }
   return;
@@ -743,6 +747,24 @@ GuideLine::addEndCut(const std::string& EC)
       activeEnd=1;
       endCut.procString(EC);
     }
+  return;
+}
+
+void
+GuideLine::addEndCut(const FixedComp& EC,const long int sideIndex)
+  /*!
+    Add an end cut system
+    \param EC :: End cut
+    \param sideIndex :: side intec
+  */
+{
+  ELog::RegMethod RegA("GuideLine","addEndCut");
+
+
+  activeEnd=1;
+  endCut=EC.getSignedMainRule(sideIndex);
+  endCutBridge=EC.getSignedCommonRule(sideIndex);
+
   return;
 }
 

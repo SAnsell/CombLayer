@@ -1343,6 +1343,7 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("BBunkerRoofThick",200.0);
   Control.addVariable("BBunkerFloorThick",100.0);
 
+  Control.addVariable("BBunkerVoidMat","Void");
   Control.addVariable("BBunkerWallMat","Steel71");
 
   Control.addVariable("BBunkerNLayers",9);

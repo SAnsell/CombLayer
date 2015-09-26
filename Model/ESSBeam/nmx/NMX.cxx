@@ -77,6 +77,7 @@
 #include "GuideLine.h"
 #include "DiskChopper.h"
 #include "VacuumBox.h"
+#include "VacuumPipe.h"
 #include "ChopperHousing.h"
 #include "Bunker.h"
 #include "BunkerInsert.h"
@@ -90,7 +91,10 @@ namespace essSystem
 NMX::NMX() :
   nmxAxis(new attachSystem::FixedComp("nmxAxis",4)),
   GuideA(new beamlineSystem::GuideLine("nmxGA")),
-  BendA(new beamlineSystem::GuideLine("nmxBA"))
+  VPipeA(new constructSystem::VacuumPipe("nmxPipeA")),
+  VPipeB(new constructSystem::VacuumPipe("nmxPipeB")),
+  BendA(new beamlineSystem::GuideLine("nmxBA")),
+  BInsert(new BunkerInsert("nmxBInsert"))
   /*!
     Constructor
  */
@@ -105,6 +109,9 @@ NMX::NMX() :
   OR.addObject(nmxAxis);
 
   OR.addObject(GuideA);
+  OR.addObject(VPipeA);
+  OR.addObject(VPipeB);
+  OR.addObject(BendA);
 }
 
 
@@ -131,6 +138,7 @@ NMX::setBeamAxis(const GuideItem& GItem,
   nmxAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
   nmxAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
 
+
   if (reverseZ)
     nmxAxis->reverseZ();
   return;
@@ -156,28 +164,42 @@ NMX::build(Simulation& System,
   setBeamAxis(GItem,1);
   
   GuideA->addInsertCell(GItem.getCells("Void"));
-  GuideA->addInsertCell(bunkerObj.getCell("MainVoid"));
-  //  BendA->addEndCut(GItem.getKey("Beam").getSignedLinkString(-2));
+  //  GuideA->addEndCut(GItem.getKey("Beam").getSignedLinkString(-2));
+  GuideA->addEndCut(GItem.getKey("Beam"),-2);
   GuideA->createAll(System,GItem.getKey("Beam"),-1,
-		     GItem.getKey("Beam"),-1);
-  GuideA->getKey("Guide0").reverseZ();
+		    GItem.getKey("Beam"),-1);
+
+ //  GuideA->getKey("Guide0").reverseZ();
+
+  // PIPE out of monolith
+
+  VPipeA->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeA->setFront(GItem.getKey("Beam"),2);
+  VPipeA->setDivider(GItem.getKey("Beam"),2);
+  VPipeA->createAll(System,GItem.getKey("Beam"),2);
 
 
-  BendA->addInsertCell(bunkerObj.getCells("MainVoid"));
+  VPipeB->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeB->setFront(*VPipeA,2);
+  VPipeB->setBack(bunkerObj,1);
+  VPipeB->createAll(System,*VPipeA,2);
+
+  BendA->addInsertCell(VPipeA->getCells("Void"));
+  BendA->addInsertCell(VPipeB->getCells("Void"));
   BendA->createAll(System,GuideA->getKey("Guide0"),2,
 		   GuideA->getKey("Guide0"),2);
 
+  
   // First collimator [In WALL]
-  const attachSystem::FixedComp& GFC(BendA->getKey("Guide0"));
-  
-   const std::string BSector=
-     bunkerObj.calcSegment(System,GFC.getSignedLinkPt(2),
-			   GFC.getSignedLinkAxis(2));
-      
-  BendA->addInsertCell(bunkerObj.getCells(BSector));
-  BendA->addInsertCell(voidCell);
-  BendA->insertObjects(System);
-  
+  //  const attachSystem::FixedComp& GFC(BendA->getKey("Guide0"));
+  const attachSystem::FixedComp& GFC(*VPipeB);
+  const std::string BSector=
+    bunkerObj.calcSegment(System,GFC.getSignedLinkPt(2),
+			  GFC.getSignedLinkAxis(2));
+
+  BInsert->setInsertCell(bunkerObj.getCells(BSector));
+  BInsert->createAll(System,GFC,2,bunkerObj);
+
   return;
 }
 

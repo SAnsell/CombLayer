@@ -120,7 +120,6 @@ NMXvariables(FuncDataBase& Control)
   Control.addVariable("nmxGA0ZAngle",0.0);
 
   
-
   Control.addVariable("nmxBAXStep",0.0);       
   Control.addVariable("nmxBAYStep",0.0);       
   Control.addVariable("nmxBAZStep",0.0);       
@@ -128,7 +127,7 @@ NMXvariables(FuncDataBase& Control)
   Control.addVariable("nmxBAZAngle",0.0);
   Control.addVariable("nmxBABeamXYAngle",0.0);       
 
-  Control.addVariable("nmxBALength",2550.0);       
+  Control.addVariable("nmxBALength",1149.0);       
   Control.addVariable("nmxBANShapes",1);       
   Control.addVariable("nmxBANShapeLayers",3);
   Control.addVariable("nmxBAActiveShield",0);
@@ -145,10 +144,38 @@ NMXvariables(FuncDataBase& Control)
   Control.addVariable("nmxBA0BHeight",4.50);
   Control.addVariable("nmxBA0AWidth",3.0);
   Control.addVariable("nmxBA0BWidth",3.0);
-  Control.addVariable("nmxBA0Length",2550.0);
-  Control.addVariable("nmxBA0AngDir",180.0);
-  Control.addVariable("nmxBA0Radius",120000.0);
+  Control.addVariable("nmxBA0Length",1149.0);
+  Control.addVariable("nmxBA0AngDir",0.0);
+  Control.addVariable("nmxBA0Radius",80000.0);
 
+  // VACUUM PIPES:
+  Control.addVariable("nmxPipeARadius",8.0);
+  Control.addVariable("nmxPipeALength",700.0);
+  Control.addVariable("nmxPipeAFeThick",1.0);
+  Control.addVariable("nmxPipeAFlangeRadius",12.0);
+  Control.addVariable("nmxPipeAFlangeLength",1.0);
+  Control.addVariable("nmxPipeAFeMat","Aluminium");
+
+  // VACUUM PIPES:
+  Control.addVariable("nmxPipeBXYAngle",-0.8);
+  Control.addVariable("nmxPipeBRadius",8.0);
+  Control.addVariable("nmxPipeBLength",500.0);
+  Control.addVariable("nmxPipeBFeThick",1.0);
+  Control.addVariable("nmxPipeBFlangeRadius",12.0);
+  Control.addVariable("nmxPipeBFlangeLength",1.0);
+  Control.addVariable("nmxPipeBFeMat","Aluminium");
+  Control.addVariable("nmxPipeBVoidMat","CastIron");
+
+  // BEAM INSERT:
+  Control.addVariable("nmxBInsertHeight",20.0);
+  Control.addVariable("nmxBInsertWidth",28.0);
+  Control.addVariable("nmxBInsertTopWall",1.0);
+  Control.addVariable("nmxBInsertLowWall",1.0);
+  Control.addVariable("nmxBInsertLeftWall",1.0);
+  Control.addVariable("nmxBInsertRightWall",1.0);
+  Control.addVariable("nmxBInsertWallMat","Stainless304");       
+  
+  
   
   return;
 }

@@ -59,8 +59,16 @@ class NMX
 
   /// tapper in insert bay
   std::shared_ptr<beamlineSystem::GuideLine> GuideA;
+    
+  /// Pipe between bunker and the wall
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeA;
+  /// Pipe between bunker and the wall
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeB;
   /// Bender in insert bay
   std::shared_ptr<beamlineSystem::GuideLine> BendA;
+  /// Bunker insert
+  std::shared_ptr<essSystem::BunkerInsert> BInsert;
+
   
   void setBeamAxis(const GuideItem&,const bool);
   

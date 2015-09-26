@@ -198,7 +198,7 @@ setDefRotation(const mainSystem::inputParam& IParam)
       else if (AItem=="DREAM" || AItem=="dream" ||
 	       AItem=="ESTIA" || AItem=="estia" ||
 	       AItem=="LOKI" || AItem=="loki" ||
-	       AItem=="NMX" || AItem=="nxm" ||
+	       AItem=="NMX" || AItem=="nmx" ||
 	       AItem=="ODIN" || AItem=="odin" ||
 	       AItem=="VOR" || AItem=="vor")
 	{
@@ -212,8 +212,7 @@ setDefRotation(const mainSystem::inputParam& IParam)
 	      (AItem+"Axis","Fixed component");
 	  // Y is beam direction -- Alignment along X
 	  const double angle=180.0*acos(GIPtr->getY()[0])/M_PI;
-	  MR.addRotation(GIPtr->getZ(),Geometry::Vec3D(0,0,0),
-			 -angle);
+	  MR.addRotation(GIPtr->getZ(),Geometry::Vec3D(0,0,0),-angle);
 	}
       else if (AItem=="free" || AItem=="FREE")
 	{
