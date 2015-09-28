@@ -89,7 +89,7 @@ namespace essSystem
 {
 
 NMX::NMX() :
-  nmxAxis(new attachSystem::FixedComp("nmxAxis",4)),
+  nmxAxis(new attachSystem::FixedOffset("nmxAxis",4)),
   GuideA(new beamlineSystem::GuideLine("nmxGA")),
   VPipeA(new constructSystem::VacuumPipe("nmxPipeA")),
   VPipeB(new constructSystem::VacuumPipe("nmxPipeB")),
@@ -112,6 +112,7 @@ NMX::NMX() :
   OR.addObject(VPipeA);
   OR.addObject(VPipeB);
   OR.addObject(BendA);
+  OR.addObject(BInsert);
 }
 
 
@@ -123,21 +124,27 @@ NMX::~NMX()
 {}
 
 void
-NMX::setBeamAxis(const GuideItem& GItem,
-		  const bool reverseZ)
+NMX::setBeamAxis(const FuncDataBase& Control,
+		 const GuideItem& GItem,
+		 const bool reverseZ)
   /*!
     Set the primary direction object
+    \param Control :: Data base of info on variables
     \param GItem :: Guide Item to 
    */
 {
   ELog::RegMethod RegA("NMX","setBeamAxis");
 
+  nmxAxis->populate(Control);
   nmxAxis->createUnitVector(GItem);
   nmxAxis->setLinkCopy(0,GItem.getKey("Main"),0);
   nmxAxis->setLinkCopy(1,GItem.getKey("Main"),1);
   nmxAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
   nmxAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
 
+  // BEAM needs to be rotated:
+  nmxAxis->linkAngleRotate(3);
+  nmxAxis->linkAngleRotate(4);
 
   if (reverseZ)
     nmxAxis->reverseZ();
@@ -161,22 +168,19 @@ NMX::build(Simulation& System,
   ELog::RegMethod RegA("NMX","build");
   ELog::EM<<"\nBuilding NMX on : "<<GItem.getKeyName()<<ELog::endDiag;
 
-  setBeamAxis(GItem,1);
-  
+  setBeamAxis(System.getDataBase(),GItem,1);
+
   GuideA->addInsertCell(GItem.getCells("Void"));
-  //  GuideA->addEndCut(GItem.getKey("Beam").getSignedLinkString(-2));
   GuideA->addEndCut(GItem.getKey("Beam"),-2);
-  GuideA->createAll(System,GItem.getKey("Beam"),-1,
-		    GItem.getKey("Beam"),-1);
+  GuideA->createAll(System,*nmxAxis,-3,*nmxAxis,-3); // beam front reversed
 
- //  GuideA->getKey("Guide0").reverseZ();
-
+  return;
   // PIPE out of monolith
 
   VPipeA->addInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeA->setFront(GItem.getKey("Beam"),2);
-  VPipeA->setDivider(GItem.getKey("Beam"),2);
-  VPipeA->createAll(System,GItem.getKey("Beam"),2);
+  VPipeA->setDivider(GItem.getKey("Beam"),2);  
+  VPipeA->createAll(System,GuideA->getKey("Guide0"),2);
 
 
   VPipeB->addInsertCell(bunkerObj.getCell("MainVoid"));

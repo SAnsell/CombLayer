@@ -62,6 +62,14 @@ NMXvariables(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("NMXvariables[F]","NMXvariables");
 
+  
+  Control.addVariable("nmxAxisXStep",0.0);
+  Control.addVariable("nmxAxisYStep",0.0);
+  Control.addVariable("nmxAxisZStep",0.0);
+  Control.addVariable("nmxAxisXYAngle",0.0);   // rotation 
+  Control.addVariable("nmxAxisZAngle",0.0);
+
+  
   // FIRST SECTION
   Control.addVariable("nmxGAXStep",0.0);       
   Control.addVariable("nmxGAYStep",0.0);       
@@ -100,14 +108,14 @@ NMXvariables(FuncDataBase& Control)
 
   Control.addVariable("nmxGALength",350.0);       
   Control.addVariable("nmxGANShapes",1);       
-  Control.addVariable("nmxGANShapeLayers",3);
+  Control.addVariable("nmxGANShapeLayers",1);
   Control.addVariable("nmxGAActiveShield",0);
 
   Control.addVariable("nmxGALayerThick1",0.4);  // glass thick
   Control.addVariable("nmxGALayerThick2",1.5);
 
   Control.addVariable("nmxGALayerMat0","Void");
-  Control.addVariable("nmxGALayerMat1","Glass");
+  Control.addVariable("nmxGALayerMat1","Copper");
   Control.addVariable("nmxGALayerMat2","Void");       
 
   Control.addVariable("nmxGA0TypeID","Tapper");
@@ -146,10 +154,10 @@ NMXvariables(FuncDataBase& Control)
   Control.addVariable("nmxBA0BWidth",3.0);
   Control.addVariable("nmxBA0Length",1149.0);
   Control.addVariable("nmxBA0AngDir",0.0);
-  Control.addVariable("nmxBA0Radius",80000.0);
+  Control.addVariable("nmxBA0Radius",60000.0);
 
   // VACUUM PIPES:
-  Control.addVariable("nmxPipeARadius",8.0);
+  Control.addVariable("nmxPipeARadius",9.0);
   Control.addVariable("nmxPipeALength",700.0);
   Control.addVariable("nmxPipeAFeThick",1.0);
   Control.addVariable("nmxPipeAFlangeRadius",12.0);
@@ -157,8 +165,8 @@ NMXvariables(FuncDataBase& Control)
   Control.addVariable("nmxPipeAFeMat","Aluminium");
 
   // VACUUM PIPES:
-  Control.addVariable("nmxPipeBXYAngle",-0.8);
-  Control.addVariable("nmxPipeBRadius",8.0);
+  Control.addVariable("nmxPipeBXYAngle",-1.8);   // from -0.8
+  Control.addVariable("nmxPipeBRadius",10.0);
   Control.addVariable("nmxPipeBLength",500.0);
   Control.addVariable("nmxPipeBFeThick",1.0);
   Control.addVariable("nmxPipeBFlangeRadius",12.0);

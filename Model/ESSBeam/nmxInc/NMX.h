@@ -55,7 +55,7 @@ class NMX
  private:
 
   /// Main Beam Axis [for construction]
-  std::shared_ptr<attachSystem::FixedComp> nmxAxis;
+  std::shared_ptr<attachSystem::FixedOffset> nmxAxis;
 
   /// tapper in insert bay
   std::shared_ptr<beamlineSystem::GuideLine> GuideA;
@@ -70,7 +70,8 @@ class NMX
   std::shared_ptr<essSystem::BunkerInsert> BInsert;
 
   
-  void setBeamAxis(const GuideItem&,const bool);
+  void setBeamAxis(const FuncDataBase&,
+		   const GuideItem&,const bool);
   
  public:
   

@@ -57,7 +57,11 @@ class GuideItem : public attachSystem::ContainedGroup,
   double beamZAngle;            ///< Beam angle 
   double beamWidth;             ///< Beam width 
   double beamHeight;            ///< Beam depth
- 
+
+  double sideGap;               ///< Clearance gap
+  double topGap;                ///< Top gap 
+  double baseGap;               ///< Base Gap
+  
   size_t nSegment;              ///< number of segments in the insert
   std::vector<double> height;        ///< height
   std::vector<double> width;         ///< Depth 
