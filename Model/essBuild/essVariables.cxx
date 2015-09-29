@@ -592,7 +592,7 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelVoidThick",1.0);
 
   Control.addVariable("BilbaoWheelInnerRadius",45);
-  Control.addVariable("BilbaoWheelCoolantRadiusIn",114.5);
+  Control.addVariable("BilbaoWheelCoolantRadiusIn",64.07);
   Control.addVariable("BilbaoWheelCoolantRadiusOut",128.95);
   Control.addVariable("BilbaoWheelCaseRadius",129.15);
   Control.addVariable("BilbaoWheelVoidRadius",131.15);
