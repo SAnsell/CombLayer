@@ -258,7 +258,7 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,heMat*0,mainTemp,Out));
 
   // steel
-  Out=ModelSupport::getComposite(SMap,wheelIndex," -7 25 -26 (-15 : 16 2017)" );	
+  Out=ModelSupport::getComposite(SMap,wheelIndex," -1017 25 -26 (-15 : 16 2017)" );	
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
   // void
@@ -471,13 +471,6 @@ BilbaoWheel::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,wheelIndex,"-1027 1017 25 -115");	
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out)); // step vertical below W
-
-  // Inner Main sections:
-  Out=ModelSupport::getComposite(SMap,wheelIndex,"-1017 7 -26 16");	
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out)); // above remove
-
-  Out=ModelSupport::getComposite(SMap,wheelIndex,"-1017 7 25 -15");	
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out)); // below remove
 
   // Void surround
   Out=ModelSupport::getComposite(SMap,wheelIndex,
