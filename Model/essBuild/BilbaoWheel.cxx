@@ -255,14 +255,14 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,mainTemp,Out));
   // Coolant
   Out=ModelSupport::getComposite(SMap,wheelIndex," -1017 15 -16 (-5 : 6 2007)" );	// below W and inside innerRad
-  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat*0,mainTemp,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,mainTemp,Out));
 
   // steel
   Out=ModelSupport::getComposite(SMap,wheelIndex," -1017 25 -26 (-15 : 16 2017)" );	
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
   // void
-  Out=ModelSupport::getComposite(SMap,wheelIndex," -7 35 -36 (-25 : 26 2027)" );	
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " -1027 35 -36 (-25 : 26 2027)" );	
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
 
   // shaft
@@ -474,7 +474,7 @@ BilbaoWheel::createObjects(Simulation& System)
 
   // Void surround
   Out=ModelSupport::getComposite(SMap,wheelIndex,
-				 "7 35 -36 -537 (-25:26:1027) (-125:126:527)");
+				 "1027 35 -36 -537 (-125:126:527)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   
   Out=ModelSupport::getComposite(SMap,wheelIndex,"-537 35 -36");	
