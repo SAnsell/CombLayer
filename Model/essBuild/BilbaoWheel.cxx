@@ -411,10 +411,10 @@ BilbaoWheel::createObjects(Simulation& System)
   int SI(wheelIndex);
   for(size_t i=0;i<nLayers;i++)
     {
-      if (matTYPE[i]!=1)
+      //      if (matTYPE[i]!=1)
 	Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -17M 5 -6 ");
-      else
-	Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -17M 15 -16 ");
+	//      else
+	//	Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -17M 15 -16 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,
 				       matNum[matTYPE[i]],mainTemp,Out));  
       SI+=10;
@@ -433,8 +433,7 @@ BilbaoWheel::createObjects(Simulation& System)
 	    {
 	      Out=ModelSupport::getComposite(SMap,frontIndex,backIndex,
 					     " 7 -7M ");
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,
-					       mainTemp,Out+TopBase));
+	      //    System.addCell(MonteCarlo::Qhull(cellIndex++,heMat*0, mainTemp,Out+TopBase));
 	    }
 	  ELog::EM<<"++ Index = "<<wheelIndex<<ELog::endDiag;
 	  frontIndex=backIndex+10;
@@ -443,17 +442,15 @@ BilbaoWheel::createObjects(Simulation& System)
     }
   // Final coolant section [ UNACCEPTABLE JUNK CELL]
   Out=ModelSupport::getComposite(SMap,wheelIndex," 6 -116 -517 1017 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,mainTemp,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,mainTemp,Out)); // cooling above W
 
   Out=ModelSupport::getComposite(SMap,wheelIndex," -5 115 -517 1017 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,mainTemp,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,mainTemp,Out)); // cooling below W
 
-  Out=ModelSupport::getComposite(SMap,wheelIndex,frontIndex,
-				 "-16 6 -1017 7M ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,mainTemp,Out));
+  Out=ModelSupport::getComposite(SMap,wheelIndex, "-16 6 -1017 7 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,mainTemp,Out)); // cooling above W right outside RadiusIn
 
-  Out=ModelSupport::getComposite(SMap,wheelIndex,frontIndex,
-				 "15 -5 -1017 7M ");
+  Out=ModelSupport::getComposite(SMap,wheelIndex, "15 -5 -1017 7 "); // cooling below W right outside RadiusIn
   System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,mainTemp,Out));
 
 

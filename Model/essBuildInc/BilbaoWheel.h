@@ -60,7 +60,7 @@ class BilbaoWheel : public WheelBase
 
   double mainTemp;               ///< Main temperature 
   
-  size_t nLayers;                ///< number of layers
+  size_t nLayers;                ///< number of radial layers
   std::vector<double> radius;    ///< cylinder radii
   std::vector<int> matTYPE;      ///< Material type
 
