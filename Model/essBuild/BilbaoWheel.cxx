@@ -254,8 +254,8 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,wheelIndex,"-7 5 -6");	  
   System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,mainTemp,Out));
   // Coolant
-  Out=ModelSupport::getComposite(SMap,wheelIndex," -7 15 -16 (-5 : 6 2007)" );	
-  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,mainTemp,Out));
+  Out=ModelSupport::getComposite(SMap,wheelIndex," -1017 15 -16 (-5 : 6 2007)" );	// below W and inside innerRad
+  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat*0,mainTemp,Out));
 
   // steel
   Out=ModelSupport::getComposite(SMap,wheelIndex," -7 25 -26 (-15 : 16 2017)" );	
@@ -447,12 +447,6 @@ BilbaoWheel::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,wheelIndex," -5 115 -517 1017 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,mainTemp,Out)); // cooling below W
 
-  Out=ModelSupport::getComposite(SMap,wheelIndex, "-16 6 -1017 7 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,mainTemp,Out)); // cooling above W right outside RadiusIn
-
-  Out=ModelSupport::getComposite(SMap,wheelIndex, "15 -5 -1017 7 "); // cooling below W right outside RadiusIn
-  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,mainTemp,Out));
-
 
   
   // Back coolant:
@@ -465,25 +459,25 @@ BilbaoWheel::createObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
   // forward Main sections:
-  Out=ModelSupport::getComposite(SMap,wheelIndex,"-527 1027 -16 116");	
+  Out=ModelSupport::getComposite(SMap,wheelIndex,"-527 1027 -16 116");	 // outer above W
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
   Out=ModelSupport::getComposite(SMap,wheelIndex,"-527 1027 15 -115");	
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out)); // outer below W
 
   // Join Main sections:
   Out=ModelSupport::getComposite(SMap,wheelIndex,"-1027 1017 -26 116");	
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out)); // step vertical above W
 
   Out=ModelSupport::getComposite(SMap,wheelIndex,"-1027 1017 25 -115");	
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out)); // step vertical below W
 
   // Inner Main sections:
   Out=ModelSupport::getComposite(SMap,wheelIndex,"-1017 7 -26 16");	
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out)); // above remove
 
   Out=ModelSupport::getComposite(SMap,wheelIndex,"-1017 7 25 -15");	
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out)); // below remove
 
   // Void surround
   Out=ModelSupport::getComposite(SMap,wheelIndex,
