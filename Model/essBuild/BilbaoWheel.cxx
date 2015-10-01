@@ -300,7 +300,9 @@ BilbaoWheel::getSQSurface(const double R, const double e)
   std::string surf = "sq " + StrFunc::makeString(1./pow(R,2)) + " " +
     StrFunc::makeString(1./pow(R,2)) + " " +
     StrFunc::makeString(e) + " 0 0 0 -1 " +
-    StrFunc::makeString(yStep) + " 0 0";
+    StrFunc::makeString(Origin[1]) + " " + // Y SA: why X and Y are swapped? 
+    StrFunc::makeString(Origin[0]) + " " + // X 
+    StrFunc::makeString(Origin[2]);        // Z
 
   return surf;
 }
@@ -451,7 +453,7 @@ BilbaoWheel::createObjects(Simulation& System)
   
   // Back coolant:
   Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -517 5 -6");	
-  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat*0,mainTemp,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
 
   // Metal surround [ UNACCEPTABLE JUNK CELL]
   // Metal front:
