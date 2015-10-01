@@ -46,6 +46,7 @@ class BilbaoWheel : public WheelBase
   double zAngle;                  ///< zAngle step
   
   double targetHeight;           ///< Total height of target
+  double voidTungstenThick;       ///< Void thickness below/above Tungsten
   double coolantThickIn;         ///< Thickness of coolant (inner wheel)
   double coolantThickOut;        ///< Thickness of coolant (outer wheel)
   double caseThick;              ///< Case Thickness
@@ -99,7 +100,7 @@ class BilbaoWheel : public WheelBase
   /// total wheel void size
   virtual double wheelHeight() const
   { return targetHeight+
-      2.0*(coolantThickIn+caseThick+voidThick); }
+      2.0*(voidTungstenThick+coolantThickIn+caseThick+voidThick); }
 
   //  virtual int getCell() const { return mainShaftCell; }
   virtual void createAll(Simulation&,const attachSystem::FixedComp&);
