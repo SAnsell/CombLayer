@@ -88,13 +88,13 @@ BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) :
   WheelBase(A),
   xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
   xyAngle(A.xyAngle),zAngle(A.zAngle),targetHeight(A.targetHeight),
-  coolantThickIn(A.coolantThickIn),coolantThickOut(A.coolantThickOut),
+  caseThickIn(A.caseThickIn),coolantThick(A.coolantThick),
   caseThick(A.caseThick),voidThick(A.voidThick),
   innerRadius(A.innerRadius),caseRadius(A.caseRadius),
   voidRadius(A.voidRadius),aspectRatio(A.aspectRatio),
   nLayers(A.nLayers),radius(A.radius),
   matTYPE(A.matTYPE),shaftHeight(A.shaftHeight),nShaftLayers(A.nShaftLayers),
-  wMat(A.wMat),heMat(A.heMat),steelMat(A.steelMat)
+  wMat(A.wMat),heMat(A.heMat),steelMat(A.steelMat),ssVoidMat(A.ssVoidMat)
   /*!
     Copy constructor
     \param A :: BilbaoWheel to copy
@@ -118,8 +118,8 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
       xyAngle=A.xyAngle;
       zAngle=A.zAngle;
       targetHeight=A.targetHeight;
-      coolantThickIn=A.coolantThickIn;
-      coolantThickOut=A.coolantThickOut;
+      caseThickIn=A.caseThickIn;
+      coolantThick=A.coolantThick;
       caseThick=A.caseThick;
       voidThick=A.voidThick;
       innerRadius=A.innerRadius;
@@ -134,6 +134,7 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
       wMat=A.wMat;
       heMat=A.heMat;
       steelMat=A.steelMat;
+      ssVoidMat=A.ssVoidMat;
     }
   return *this;
 }
@@ -193,8 +194,8 @@ BilbaoWheel::populate(const FuncDataBase& Control)
 
   targetHeight=Control.EvalVar<double>(keyName+"TargetHeight");
   voidTungstenThick=Control.EvalVar<double>(keyName+"VoidTungstenThick");
-  coolantThickIn=Control.EvalVar<double>(keyName+"CoolantThickIn");  
-  coolantThickOut=Control.EvalVar<double>(keyName+"CoolantThickOut");  
+  caseThickIn=Control.EvalVar<double>(keyName+"CaseThickIn");  
+  coolantThick=Control.EvalVar<double>(keyName+"CoolantThick");  
   caseThick=Control.EvalVar<double>(keyName+"CaseThick");  
   voidThick=Control.EvalVar<double>(keyName+"VoidThick");  
 
@@ -216,6 +217,7 @@ BilbaoWheel::populate(const FuncDataBase& Control)
   wMat=ModelSupport::EvalMat<int>(Control,keyName+"WMat");  
   heMat=ModelSupport::EvalMat<int>(Control,keyName+"HeMat");  
   steelMat=ModelSupport::EvalMat<int>(Control,keyName+"SteelMat");  
+  ssVoidMat=ModelSupport::EvalMat<int>(Control,keyName+"SS316LVoidMat");
   innerMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerMat");  
 
   return;
@@ -254,9 +256,6 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
   // Main body [disk]
   Out=ModelSupport::getComposite(SMap,wheelIndex,"-7 5 -6");	  
   System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,mainTemp,Out));
-  // Coolant
-  Out=ModelSupport::getComposite(SMap,wheelIndex," -1027 15 -16 (-5 : 6 2007)" );	// below W and inside innerRad
-  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,mainTemp,Out));
 
   // steel
   Out=ModelSupport::getComposite(SMap,wheelIndex," -1027 25 -26 (-15 : 16 2017)" );  // inner shroud above/below
@@ -344,11 +343,11 @@ BilbaoWheel::createSurfaces()
   ModelSupport::buildPlane(SMap,wheelIndex+45,Origin-Z*H,Z);  
   ModelSupport::buildPlane(SMap,wheelIndex+46,Origin+Z*H,Z);  
 
-  H+=coolantThickIn;
+  H+=coolantThick;
   ModelSupport::buildPlane(SMap,wheelIndex+15,Origin-Z*H,Z);  
   ModelSupport::buildPlane(SMap,wheelIndex+16,Origin+Z*H,Z);  
 
-  H+=caseThick;
+  H+=caseThickIn;
   ModelSupport::buildPlane(SMap,wheelIndex+25,Origin-Z*H,Z);  
   ModelSupport::buildPlane(SMap,wheelIndex+26,Origin+Z*H,Z);  
 
@@ -360,11 +359,11 @@ BilbaoWheel::createSurfaces()
 
   // step to outer radius: 45/46
   ModelSupport::buildCylinder(SMap,wheelIndex+1027,Origin,
-			      Z,coolantRadiusIn+caseThick);
+			      Z,coolantRadiusIn);
 
 
   H  = targetHeight/2.0;
-  H += coolantThickOut;
+  H += coolantThick;
   ModelSupport::buildPlane(SMap,wheelIndex+115,Origin-Z*H, Z); // 12 : 13 
   ModelSupport::buildPlane(SMap,wheelIndex+116,Origin+Z*H, Z);
   
@@ -445,17 +444,16 @@ BilbaoWheel::createObjects(Simulation& System)
 	}
       backIndex+=10;
     }
-  // Final coolant section [ UNACCEPTABLE JUNK CELL]
-  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 6 -116 -7M 1027 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,mainTemp,Out)); // cooling above W
-
-  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," -5 115 -7M 1027 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,mainTemp,Out)); // cooling below W
-
   
-  // Back coolant:
+  // front coolant:
   Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -517 115 -116");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,mainTemp,Out));
+
+  // Coolant
+  Out=ModelSupport::getComposite(SMap,wheelIndex,SI,
+				 " -7M 15 -16 (-5 : 6 2007)" );	// He above/below W
+  System.addCell(MonteCarlo::Qhull(cellIndex++,ssVoidMat,mainTemp,Out));
+
 
   // Metal surround [ UNACCEPTABLE JUNK CELL]
   // Metal front:
@@ -463,10 +461,10 @@ BilbaoWheel::createObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
   // forward Main sections:
-  Out=ModelSupport::getComposite(SMap,wheelIndex,"-527 1027 -16 116");	 // outer above W
+  Out=ModelSupport::getComposite(SMap,wheelIndex,"-527 1027 -126 116");	 // outer above W
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
-  Out=ModelSupport::getComposite(SMap,wheelIndex,"-527 1027 15 -115");	
+  Out=ModelSupport::getComposite(SMap,wheelIndex,"-527 1027 125 -115");	
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out)); // outer below W
 
   // Void surround
@@ -506,7 +504,7 @@ BilbaoWheel::createLinks()
   FixedComp::setLinkSurf(3,SMap.realSurf(wheelIndex+1037));
   FixedComp::addLinkSurf(3,SMap.realSurf(wheelIndex+1));
 
-  const double H=(targetHeight/2.0)+coolantThickIn+caseThick+voidThick;
+  const double H=(targetHeight/2.0)+coolantThick+caseThickIn+voidThick;
   FixedComp::setConnect(4,Origin-Z*H,-Z);
   FixedComp::setLinkSurf(4,-SMap.realSurf(wheelIndex+35));
 
@@ -531,10 +529,11 @@ BilbaoWheel::createAll(Simulation& System,
 
   createUnitVector(FC);
   createSurfaces();
-  createObjects(System);
-
   makeShaftSurfaces();
+
+  createObjects(System);
   makeShaftObjects(System);
+
   createLinks();
   insertObjects(System);       
 

@@ -47,8 +47,8 @@ class BilbaoWheel : public WheelBase
   
   double targetHeight;           ///< Total height of target
   double voidTungstenThick;       ///< Void thickness below/above Tungsten
-  double coolantThickIn;         ///< Thickness of coolant (inner wheel)
-  double coolantThickOut;        ///< Thickness of coolant (outer wheel)
+  double caseThickIn;         ///< Thickness of coolant (inner wheel)
+  double coolantThick;        ///< Thickness of coolant (outer wheel)
   double caseThick;              ///< Case Thickness
   double voidThick;              ///< void surrounding thickness
   
@@ -74,6 +74,7 @@ class BilbaoWheel : public WheelBase
   int wMat;                         ///< W material
   int heMat;                        ///< He material
   int steelMat;                     ///< Steel mat
+  int ssVoidMat;                    ///< Mixture of SS316L and void (for the simplified version)
   
   int innerMat;                     ///< Inner Material block
 
@@ -100,7 +101,7 @@ class BilbaoWheel : public WheelBase
   /// total wheel void size
   virtual double wheelHeight() const
   { return targetHeight+
-      2.0*(voidTungstenThick+coolantThickIn+caseThick+voidThick); }
+      2.0*(voidTungstenThick+coolantThick+caseThickIn+voidThick); }
 
   //  virtual int getCell() const { return mainShaftCell; }
   virtual void createAll(Simulation&,const attachSystem::FixedComp&);
