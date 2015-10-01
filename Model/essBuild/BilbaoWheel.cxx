@@ -443,16 +443,16 @@ BilbaoWheel::createObjects(Simulation& System)
       backIndex+=10;
     }
   // Final coolant section [ UNACCEPTABLE JUNK CELL]
-  Out=ModelSupport::getComposite(SMap,wheelIndex," 6 -116 -517 1017 ");
+  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 6 -116 -7M 1017 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,mainTemp,Out)); // cooling above W
 
-  Out=ModelSupport::getComposite(SMap,wheelIndex," -5 115 -517 1017 ");
+  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," -5 115 -7M 1017 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,mainTemp,Out)); // cooling below W
 
 
   
   // Back coolant:
-  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -517 5 -6");	
+  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -517 115 -116");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
 
   // Metal surround [ UNACCEPTABLE JUNK CELL]
