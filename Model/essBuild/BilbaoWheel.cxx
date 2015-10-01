@@ -192,6 +192,7 @@ BilbaoWheel::populate(const FuncDataBase& Control)
   aspectRatio=Control.EvalVar<double>(keyName+"AspectRatio");
 
   targetHeight=Control.EvalVar<double>(keyName+"TargetHeight");
+  voidTungstenThick=Control.EvalVar<double>(keyName+"VoidTungstenThick");
   coolantThickIn=Control.EvalVar<double>(keyName+"CoolantThickIn");  
   coolantThickOut=Control.EvalVar<double>(keyName+"CoolantThickOut");  
   caseThick=Control.EvalVar<double>(keyName+"CaseThick");  
@@ -254,11 +255,11 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,wheelIndex,"-7 5 -6");	  
   System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,mainTemp,Out));
   // Coolant
-  Out=ModelSupport::getComposite(SMap,wheelIndex," -1017 15 -16 (-5 : 6 2007)" );	// below W and inside innerRad
+  Out=ModelSupport::getComposite(SMap,wheelIndex," -1027 15 -16 (-5 : 6 2007)" );	// below W and inside innerRad
   System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,mainTemp,Out));
 
   // steel
-  Out=ModelSupport::getComposite(SMap,wheelIndex," -1017 25 -26 (-15 : 16 2017)" );	
+  Out=ModelSupport::getComposite(SMap,wheelIndex," -1027 25 -26 (-15 : 16 2017)" );  // inner shroud above/below
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
   // void
@@ -339,6 +340,10 @@ BilbaoWheel::createSurfaces()
   ModelSupport::buildPlane(SMap,wheelIndex+5,Origin-Z*H,Z);  
   ModelSupport::buildPlane(SMap,wheelIndex+6,Origin+Z*H,Z);  
 
+  H+= voidTungstenThick;
+  ModelSupport::buildPlane(SMap,wheelIndex+45,Origin-Z*H,Z);  
+  ModelSupport::buildPlane(SMap,wheelIndex+46,Origin+Z*H,Z);  
+
   H+=coolantThickIn;
   ModelSupport::buildPlane(SMap,wheelIndex+15,Origin-Z*H,Z);  
   ModelSupport::buildPlane(SMap,wheelIndex+16,Origin+Z*H,Z);  
@@ -354,8 +359,6 @@ BilbaoWheel::createSurfaces()
   ModelSupport::buildCylinder(SMap,wheelIndex+7,Origin,Z,innerRadius);
 
   // step to outer radius: 45/46
-  ModelSupport::buildCylinder(SMap,wheelIndex+1017,Origin,
-			      Z,coolantRadiusIn);
   ModelSupport::buildCylinder(SMap,wheelIndex+1027,Origin,
 			      Z,coolantRadiusIn+caseThick);
 
@@ -443,12 +446,11 @@ BilbaoWheel::createObjects(Simulation& System)
       backIndex+=10;
     }
   // Final coolant section [ UNACCEPTABLE JUNK CELL]
-  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 6 -116 -7M 1017 ");
+  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 6 -116 -7M 1027 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,mainTemp,Out)); // cooling above W
 
-  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," -5 115 -7M 1017 ");
+  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," -5 115 -7M 1027 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,mainTemp,Out)); // cooling below W
-
 
   
   // Back coolant:
@@ -466,13 +468,6 @@ BilbaoWheel::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,wheelIndex,"-527 1027 15 -115");	
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out)); // outer below W
-
-  // Join Main sections:
-  Out=ModelSupport::getComposite(SMap,wheelIndex,"-1027 1017 -26 116");	
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out)); // step vertical above W
-
-  Out=ModelSupport::getComposite(SMap,wheelIndex,"-1027 1017 25 -115");	
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out)); // step vertical below W
 
   // Void surround
   Out=ModelSupport::getComposite(SMap,wheelIndex,
