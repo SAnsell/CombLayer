@@ -93,8 +93,8 @@ BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) :
   innerRadius(A.innerRadius),caseRadius(A.caseRadius),
   voidRadius(A.voidRadius),aspectRatio(A.aspectRatio),
   nLayers(A.nLayers),radius(A.radius),
-  matTYPE(A.matTYPE),wMat(A.wMat),heMat(A.heMat),
-  steelMat(A.steelMat),nShaftLayers(A.nShaftLayers),shaftHeight(A.shaftHeight)
+  matTYPE(A.matTYPE),shaftHeight(A.shaftHeight),nShaftLayers(A.nShaftLayers),
+  wMat(A.wMat),heMat(A.heMat),steelMat(A.steelMat)
   /*!
     Copy constructor
     \param A :: BilbaoWheel to copy
@@ -129,11 +129,11 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
       nLayers=A.nLayers;
       radius=A.radius;
       matTYPE=A.matTYPE;
+      shaftHeight=A.shaftHeight;
+      nShaftLayers=A.nShaftLayers;
       wMat=A.wMat;
       heMat=A.heMat;
       steelMat=A.steelMat;
-      nShaftLayers=A.nShaftLayers;
-      shaftHeight=A.shaftHeight;
     }
   return *this;
 }
