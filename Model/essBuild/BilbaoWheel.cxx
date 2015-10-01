@@ -291,7 +291,7 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
   return;
 }
 
-const char*
+std::string
 BilbaoWheel::getSQSurface(const double R, const double e)
 {
   /*
@@ -302,7 +302,7 @@ BilbaoWheel::getSQSurface(const double R, const double e)
     StrFunc::makeString(e) + " 0 0 0 -1 " +
     StrFunc::makeString(yStep) + " 0 0";
 
-  return surf.c_str();
+  return surf;
 }
 
 void

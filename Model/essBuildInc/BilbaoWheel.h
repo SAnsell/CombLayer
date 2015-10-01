@@ -86,7 +86,7 @@ class BilbaoWheel : public WheelBase
   void createLinks();
   void makeShaftSurfaces();
   void makeShaftObjects(Simulation&);
-  const char *getSQSurface(const double R, const double e);
+  std::string getSQSurface(const double R, const double e);
 
   public:
 
