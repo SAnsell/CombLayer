@@ -609,7 +609,7 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelMatTYPE1",1); // SS316L
 
   Control.addVariable("BilbaoWheelRadius2",70.0);
-  Control.addVariable("BilbaoWheelMatTYPE2",0);
+  Control.addVariable("BilbaoWheelMatTYPE2",1);
 
   Control.addVariable("BilbaoWheelRadius3",125.0);
   Control.addVariable("BilbaoWheelMatTYPE3",3);
