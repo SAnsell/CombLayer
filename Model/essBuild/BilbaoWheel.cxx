@@ -88,6 +88,7 @@ BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) :
   WheelBase(A),
   xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
   xyAngle(A.xyAngle),zAngle(A.zAngle),targetHeight(A.targetHeight),
+  voidTungstenThick(A.voidTungstenThick),steelTungstenThick(A.steelTungstenThick),
   caseThickIn(A.caseThickIn),coolantThick(A.coolantThick),
   caseThick(A.caseThick),voidThick(A.voidThick),
   innerRadius(A.innerRadius),caseRadius(A.caseRadius),
@@ -118,6 +119,8 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
       xyAngle=A.xyAngle;
       zAngle=A.zAngle;
       targetHeight=A.targetHeight;
+      voidTungstenThick=A.voidTungstenThick;
+      steelTungstenThick=A.steelTungstenThick;
       caseThickIn=A.caseThickIn;
       coolantThick=A.coolantThick;
       caseThick=A.caseThick;
@@ -194,6 +197,7 @@ BilbaoWheel::populate(const FuncDataBase& Control)
 
   targetHeight=Control.EvalVar<double>(keyName+"TargetHeight");
   voidTungstenThick=Control.EvalVar<double>(keyName+"VoidTungstenThick");
+  steelTungstenThick=Control.EvalVar<double>(keyName+"SteelTungstenThick");
   caseThickIn=Control.EvalVar<double>(keyName+"CaseThickIn");  
   coolantThick=Control.EvalVar<double>(keyName+"CoolantThick");  
   caseThick=Control.EvalVar<double>(keyName+"CaseThick");  
@@ -342,7 +346,11 @@ BilbaoWheel::createSurfaces()
   H+= voidTungstenThick;
   ModelSupport::buildPlane(SMap,wheelIndex+45,Origin-Z*H,Z);  
   ModelSupport::buildPlane(SMap,wheelIndex+46,Origin+Z*H,Z);  
-
+  
+  H+= steelTungstenThick;
+  ModelSupport::buildPlane(SMap,wheelIndex+55,Origin-Z*H,Z);  
+  ModelSupport::buildPlane(SMap,wheelIndex+56,Origin+Z*H,Z);  
+  
   H+=coolantThick;
   ModelSupport::buildPlane(SMap,wheelIndex+15,Origin-Z*H,Z);  
   ModelSupport::buildPlane(SMap,wheelIndex+16,Origin+Z*H,Z);  
@@ -363,10 +371,9 @@ BilbaoWheel::createSurfaces()
 
 
   H  = targetHeight/2.0;
+  H += voidTungstenThick;
+  H += steelTungstenThick;
   H += coolantThick;
-  ModelSupport::buildPlane(SMap,wheelIndex+115,Origin-Z*H, Z); // 12 : 13 
-  ModelSupport::buildPlane(SMap,wheelIndex+116,Origin+Z*H, Z);
-  
   H += caseThick;
   ModelSupport::buildPlane(SMap,wheelIndex+125,Origin-Z*H,Z);  // 22 : 23 
   ModelSupport::buildPlane(SMap,wheelIndex+126,Origin+Z*H,Z);
@@ -446,25 +453,36 @@ BilbaoWheel::createObjects(Simulation& System)
     }
   
   // front coolant:
-  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -517 115 -116");
+  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -517 15 -16");
   System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,mainTemp,Out));
+
+  // Void above/below W
+  Out=ModelSupport::getComposite(SMap,wheelIndex,SI,
+				 " -7M 45 -46 (-5 : 6 2007)" );
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
+
+  // Steel above/below W
+  Out=ModelSupport::getComposite(SMap,wheelIndex,SI,
+				 " -7M 55 -56 (-45 : 46 2007)" );
+  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+
 
   // Coolant
   Out=ModelSupport::getComposite(SMap,wheelIndex,SI,
-				 " -7M 15 -16 (-5 : 6 2007)" );	// He above/below W
+				 " -7M 15 -16 (-55 : 56 2007)" );	// He above/below W
   System.addCell(MonteCarlo::Qhull(cellIndex++,ssVoidMat,mainTemp,Out));
 
 
   // Metal surround [ UNACCEPTABLE JUNK CELL]
   // Metal front:
-  Out=ModelSupport::getComposite(SMap,wheelIndex,"-527 517 115 -116");	
+  Out=ModelSupport::getComposite(SMap,wheelIndex,"-527 517 15 -16");	
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
   // forward Main sections:
-  Out=ModelSupport::getComposite(SMap,wheelIndex,"-527 1027 -126 116");	 // outer above W
+  Out=ModelSupport::getComposite(SMap,wheelIndex,"-527 1027 -126 16");	 // outer above W
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
-  Out=ModelSupport::getComposite(SMap,wheelIndex,"-527 1027 125 -115");	
+  Out=ModelSupport::getComposite(SMap,wheelIndex,"-527 1027 125 -15");	
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out)); // outer below W
 
   // Void surround
@@ -504,7 +522,7 @@ BilbaoWheel::createLinks()
   FixedComp::setLinkSurf(3,SMap.realSurf(wheelIndex+1037));
   FixedComp::addLinkSurf(3,SMap.realSurf(wheelIndex+1));
 
-  const double H=(targetHeight/2.0)+coolantThick+caseThickIn+voidThick;
+  const double H=wheelHeight()/2.0;
   FixedComp::setConnect(4,Origin-Z*H,-Z);
   FixedComp::setLinkSurf(4,-SMap.realSurf(wheelIndex+35));
 
