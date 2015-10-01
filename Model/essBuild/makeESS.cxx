@@ -186,14 +186,14 @@ makeESS::makeTarget(Simulation& System,
     {
       ELog::EM<<"Target Type [Target]:"<<ELog::endBasic;
       ELog::EM<<"  -- Wheel       : Simple wheel form"<<ELog::endBasic;
-      ELog::EM<<"  -- BilbaoWheel    : Bilbao wheel"<<ELog::endBasic;
+      ELog::EM<<"  -- Bilbao    : Bilbao wheel"<<ELog::endBasic;
       return;
     }
 
 
   if (targetType=="Wheel")
     Target=std::shared_ptr<WheelBase>(new Wheel("Wheel"));
-  else if (targetType=="BilbaoWheel")
+  else if (targetType=="Bilbao")
     Target=std::shared_ptr<WheelBase>(new BilbaoWheel("BilbaoWheel"));
   else
     throw ColErr::InContainerError<std::string>
