@@ -67,6 +67,58 @@ EssWheel(FuncDataBase& Control)
     \param Control :: Segment variables
    */
 {
+  Control.addVariable("BilbaoWheelShaftHeight",435.0);
+
+  Control.addVariable("BilbaoWheelNShaftLayers",4);
+  Control.addVariable("BilbaoWheelShaftRadius1",14.0);
+  Control.addVariable("BilbaoWheelShaftMat1","Iron");
+  Control.addVariable("BilbaoWheelShaftRadius2",15.0);
+  Control.addVariable("BilbaoWheelShaftMat2","Iron");
+  Control.addVariable("BilbaoWheelShaftRadius3",17.0);
+  Control.addVariable("BilbaoWheelShaftMat3",0);
+  Control.addVariable("BilbaoWheelShaftRadius4",20.0);
+  Control.addVariable("BilbaoWheelShaftMat4","Iron");
+  Control.addVariable("BilbaoWheelShaftRadius5",34.0);
+  Control.addVariable("BilbaoWheelShaftMat5",0);
+
+
+
+  Control.addVariable("BilbaoWheelXStep",0.0);
+  Control.addVariable("BilbaoWheelYStep",113.0);
+  Control.addVariable("BilbaoWheelZStep",0.0);
+  Control.addVariable("BilbaoWheelXYangle",0.0);
+  Control.addVariable("BilbaoWheelZangle",0.0);
+  Control.addVariable("BilbaoWheelTargetHeight",8.0);
+  Control.addVariable("BilbaoWheelVoidTungstenThick", 0.1);
+  Control.addVariable("BilbaoWheelTemp",300.0);
+  Control.addVariable("BilbaoWheelCoolantThickIn",0.65);
+  Control.addVariable("BilbaoWheelCoolantThickOut",0.15);
+  Control.addVariable("BilbaoWheelCaseThick",0.5);
+  Control.addVariable("BilbaoWheelVoidThick",1.0);
+
+  Control.addVariable("BilbaoWheelInnerRadius",45);
+  Control.addVariable("BilbaoWheelCoolantRadiusIn",64.07);
+  Control.addVariable("BilbaoWheelCoolantRadiusOut",128.95);
+  Control.addVariable("BilbaoWheelCaseRadius",129.15);
+  Control.addVariable("BilbaoWheelVoidRadius",131.15);
+  Control.addVariable("BilbaoWheelAspectRatio", 0.00138);
+
+  Control.addVariable("BilbaoWheelWMat","Tungsten156");
+  Control.addVariable("BilbaoWheelSteelMat","SS316L793");
+  Control.addVariable("BilbaoWheelHeMat","Helium");
+  Control.addVariable("BilbaoWheelInnerMat",0);
+
+  Control.addVariable("BilbaoWheelNLayers",3);
+
+  Control.addVariable("BilbaoWheelRadius1",48);
+  Control.addVariable("BilbaoWheelMatTYPE1",1); // SS316L
+
+  Control.addVariable("BilbaoWheelRadius2",70.0);
+  Control.addVariable("BilbaoWheelMatTYPE2",1);
+
+  Control.addVariable("BilbaoWheelRadius3",125.0);
+  Control.addVariable("BilbaoWheelMatTYPE3",3);
+
   return;
 }
 
@@ -562,58 +614,6 @@ EssVariables(FuncDataBase& Control)
 
 
   Control.addVariable("ProtonBeamViewRadius",4.0);  
-
-  Control.addVariable("BilbaoWheelShaftHeight",435.0);
-
-  Control.addVariable("BilbaoWheelNShaftLayers",4);
-  Control.addVariable("BilbaoWheelShaftRadius1",14.0);
-  Control.addVariable("BilbaoWheelShaftMat1","Iron");
-  Control.addVariable("BilbaoWheelShaftRadius2",15.0);
-  Control.addVariable("BilbaoWheelShaftMat2","Iron");
-  Control.addVariable("BilbaoWheelShaftRadius3",17.0);
-  Control.addVariable("BilbaoWheelShaftMat3",0);
-  Control.addVariable("BilbaoWheelShaftRadius4",20.0);
-  Control.addVariable("BilbaoWheelShaftMat4","Iron");
-  Control.addVariable("BilbaoWheelShaftRadius5",34.0);
-  Control.addVariable("BilbaoWheelShaftMat5",0);
-
-
-
-  Control.addVariable("BilbaoWheelXStep",0.0);
-  Control.addVariable("BilbaoWheelYStep",113.0);
-  Control.addVariable("BilbaoWheelZStep",0.0);
-  Control.addVariable("BilbaoWheelXYangle",0.0);
-  Control.addVariable("BilbaoWheelZangle",0.0);
-  Control.addVariable("BilbaoWheelTargetHeight",8.0);
-  Control.addVariable("BilbaoWheelTemp",300.0);
-  Control.addVariable("BilbaoWheelCoolantThickIn",0.65);
-  Control.addVariable("BilbaoWheelCoolantThickOut",0.15);
-  Control.addVariable("BilbaoWheelCaseThick",0.5);
-  Control.addVariable("BilbaoWheelVoidThick",1.0);
-
-  Control.addVariable("BilbaoWheelInnerRadius",45);
-  Control.addVariable("BilbaoWheelCoolantRadiusIn",64.07);
-  Control.addVariable("BilbaoWheelCoolantRadiusOut",128.95);
-  Control.addVariable("BilbaoWheelCaseRadius",129.15);
-  Control.addVariable("BilbaoWheelVoidRadius",131.15);
-  Control.addVariable("BilbaoWheelAspectRatio", 0.00138);
-
-  Control.addVariable("BilbaoWheelWMat","Tungsten156");
-  Control.addVariable("BilbaoWheelSteelMat","SS316L793");
-  Control.addVariable("BilbaoWheelHeMat","Helium");
-  Control.addVariable("BilbaoWheelInnerMat",0);
-
-  Control.addVariable("BilbaoWheelNLayers",3);
-
-  Control.addVariable("BilbaoWheelRadius1",48);
-  Control.addVariable("BilbaoWheelMatTYPE1",1); // SS316L
-
-  Control.addVariable("BilbaoWheelRadius2",70.0);
-  Control.addVariable("BilbaoWheelMatTYPE2",1);
-
-  Control.addVariable("BilbaoWheelRadius3",125.0);
-  Control.addVariable("BilbaoWheelMatTYPE3",3);
-
 
 
  
