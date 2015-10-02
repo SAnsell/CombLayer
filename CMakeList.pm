@@ -273,17 +273,6 @@ sub writeTail
 
   foreach my $item (keys (%{$self->{srcDir}}))
     {
-<<<<<<< HEAD
-      my $val=$self->{srcDir}{$item};
-      print $DX "     \${PROJECT_SOURCE_DIR}/",$val,"/*.cxx \n";
-    }
-  foreach my $item (@{$self->{incDir}})
-    {
-      print $DX "     \${PROJECT_SOURCE_DIR}/",$item,"/*.h \n";
-    }
-
-  print $DX "     \${PROJECT_SOURCE_DIR}/CMake.pl  \n";
-  print $DX "     \${PROJECT_SOURCE_DIR}/CMakeList.pm \n";
       ## Care here because we want local tar file
       my $val=$self->{srcDir}{$item};
       print $DX "     \./",$val,"/*.cxx \n";
@@ -296,6 +285,23 @@ sub writeTail
   print $DX "     \./Main/*.cxx \n";
   print $DX "     \./CMake.pl  \n";
   print $DX "     \./CMakeList.pm \n";
+  print $DX " )\n";
+  print $DX "\n";
+  ## TAGS:
+  print $DX "add_custom_target(tags ",
+    " COMMAND etags  \n";
+
+
+  foreach my $item (keys (%{$self->{srcDir}}))
+    {
+      my $val=$self->{srcDir}{$item};
+      print $DX "     \${PROJECT_SOURCE_DIR}/",$val,"/*.cxx \n";
+    }
+  foreach my $item (@{$self->{incDir}})
+    {
+      print $DX "     \${PROJECT_SOURCE_DIR}/",$item,"/*.h \n";
+    }
+
   print $DX " )\n";
   print $DX "\n";
   return;
