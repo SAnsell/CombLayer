@@ -82,6 +82,7 @@
 #include "Bunker.h"
 #include "BunkerInsert.h"
 #include "ChopperPit.h"
+#include "LineShield.h"
 
 #include "NMX.h"
 
@@ -94,7 +95,9 @@ NMX::NMX() :
   VPipeA(new constructSystem::VacuumPipe("nmxPipeA")),
   VPipeB(new constructSystem::VacuumPipe("nmxPipeB")),
   BendA(new beamlineSystem::GuideLine("nmxBA")),
-  BInsert(new BunkerInsert("nmxBInsert"))
+  BInsert(new BunkerInsert("nmxBInsert")),
+  FocusWall(new beamlineSystem::GuideLine("nmxFWall")),
+  ShieldA(new constructSystem::LineShield("nmxShieldA"))
   /*!
     Constructor
  */
@@ -113,6 +116,7 @@ NMX::NMX() :
   OR.addObject(VPipeB);
   OR.addObject(BendA);
   OR.addObject(BInsert);
+  OR.addObject(FocusWall);
 }
 
 
@@ -174,7 +178,6 @@ NMX::build(Simulation& System,
   GuideA->addEndCut(GItem.getKey("Beam"),-2);
   GuideA->createAll(System,*nmxAxis,-3,*nmxAxis,-3); // beam front reversed
 
-  return;
   // PIPE out of monolith
 
   VPipeA->addInsertCell(bunkerObj.getCell("MainVoid"));
@@ -203,6 +206,16 @@ NMX::build(Simulation& System,
 
   BInsert->setInsertCell(bunkerObj.getCells(BSector));
   BInsert->createAll(System,GFC,2,bunkerObj);
+
+  FocusWall->addInsertCell(BInsert->getCell("Void"));
+  FocusWall->createAll(System,*BInsert,-1,
+			 BendA->getKey("Guide0"),2);
+
+  // Section to 17m
+  ShieldA->addInsertCell(voidCell);
+  ShieldA->setFront(bunkerObj,2);
+  ShieldA->setDivider(bunkerObj,2);
+  ShieldA->createAll(System,*BInsert,2);
 
   return;
 }

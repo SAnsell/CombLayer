@@ -319,10 +319,10 @@ GuideItem::createSurfaces()
       ModelSupport::buildPlane(SMap,GI+5,Origin-Z*(height[i]/2.0),Z);
       ModelSupport::buildPlane(SMap,GI+6,Origin+Z*(height[i]/2.0),Z);
 
-      // ModelSupport::buildPlane(SMap,GI+3,Origin-X*(width[i]/2.0),X);
-      // ModelSupport::buildPlane(SMap,GI+4,Origin+X*(width[i]/2.0),X);
-      // ModelSupport::buildPlane(SMap,GI+5,Origin-Z*(height[i]/2.0),Z);
-      // ModelSupport::buildPlane(SMap,GI+6,Origin+Z*(height[i]/2.0),Z);
+      ModelSupport::buildPlane(SMap,GI+13,Origin-X*(-sideGap+width[i]/2.0),X);
+      ModelSupport::buildPlane(SMap,GI+14,Origin+X*(-sideGap+width[i]/2.0),X);
+      ModelSupport::buildPlane(SMap,GI+15,Origin-Z*(-baseGap+height[i]/2.0),Z);
+      ModelSupport::buildPlane(SMap,GI+16,Origin+Z*(-topGap+height[i]/2.0),Z);
 
       GI+=50;
     }
@@ -359,7 +359,7 @@ GuideItem::getPlane(const int SN) const
 std::string
 GuideItem::getEdgeStr(const GuideItem* GPtr) const
   /*!
-    Given another GuideItem determine the end point collision stirng
+    Given another GuideItem determine the end point collision string
     \param GPtr :: Other object Ptr [0 for none]
     \return Edge string (3 side)
    */
@@ -403,6 +403,7 @@ GuideItem::createObjects(Simulation& System,const GuideItem* GPtr)
   int GI(guideIndex);
   for(size_t i=0;i<nSegment;i++)
     {
+      // Outer layer
       if (i==0)
 	{
 	  Out=ModelSupport::getComposite(SMap,guideIndex,"1 7 3 -4 5 -6 -57");
@@ -410,14 +411,35 @@ GuideItem::createObjects(Simulation& System,const GuideItem* GPtr)
 	}
       else 
 	Out=ModelSupport::getComposite(SMap,GI,guideIndex,"1M 7 3 -4 5 -6 -57");
+
       if (!i)
 	addOuterSurf("Inner",Out);
       else 
 	addOuterUnionSurf("Outer",Out);
+
+
+
+      // Add inner boundary
+      Out+=ModelSupport::getComposite(SMap,GI," (-13:14:-15:16) ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      // Inner metal:
+      
+      
+
       if (!filled)
 	Out+=ModelSupport::getComposite(SMap,guideIndex,
 					"(-1103:1104:-1105:1106) ");
+      if (i==0)
+	{
+	  Out=ModelSupport::getComposite
+	    (SMap,guideIndex,"1 7 13 -14 15 -16 -57");
+	  Out+=edgeStr;
+	}
+      else 
+	Out=ModelSupport::getComposite
+	  (SMap,GI,guideIndex,"1M 7 13 -14 15 -16 -57");
       System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+      
       if (filled) addCell("Void",cellIndex-1);
 
       GI+=50;

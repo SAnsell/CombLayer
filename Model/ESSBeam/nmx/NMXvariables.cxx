@@ -108,7 +108,7 @@ NMXvariables(FuncDataBase& Control)
 
   Control.addVariable("nmxGALength",350.0);       
   Control.addVariable("nmxGANShapes",1);       
-  Control.addVariable("nmxGANShapeLayers",1);
+  Control.addVariable("nmxGANShapeLayers",3);
   Control.addVariable("nmxGAActiveShield",0);
 
   Control.addVariable("nmxGALayerThick1",0.4);  // glass thick
@@ -163,7 +163,8 @@ NMXvariables(FuncDataBase& Control)
   Control.addVariable("nmxPipeAFlangeRadius",12.0);
   Control.addVariable("nmxPipeAFlangeLength",1.0);
   Control.addVariable("nmxPipeAFeMat","Aluminium");
-
+  Control.addVariable("nmxPipeAVoidMat","CastIron");
+  
   // VACUUM PIPES:
   Control.addVariable("nmxPipeBXYAngle",-1.8);   // from -0.8
   Control.addVariable("nmxPipeBRadius",10.0);
@@ -183,8 +184,51 @@ NMXvariables(FuncDataBase& Control)
   Control.addVariable("nmxBInsertRightWall",1.0);
   Control.addVariable("nmxBInsertWallMat","Stainless304");       
   
+    // Guide in wall
+  Control.addVariable("nmxFWallXStep",0.0);       
+  Control.addVariable("nmxFWallYStep",0.0);       
+  Control.addVariable("nmxFWallZStep",0.0);       
+  Control.addVariable("nmxFWallXYAngle",0.0);       
+  Control.addVariable("nmxFWallZAngle",0.0);
+  Control.addVariable("nmxFWallLength",318.0);       
   
+  Control.addVariable("nmxFWallBeamYStep",1.5);
+ 
+  Control.addVariable("nmxFWallNShapes",1);       
+  Control.addVariable("nmxFWallNShapeLayers",3);
+  Control.addVariable("nmxFWallActiveShield",0);
+
+  Control.addVariable("nmxFWallLayerThick1",0.4);  // glass thick
+  Control.addVariable("nmxFWallLayerThick2",1.5);
+
+  Control.addVariable("nmxFWallLayerMat0","Void");
+  Control.addVariable("nmxFWallLayerMat1","Glass");
+  Control.addVariable("nmxFWallLayerMat2","Void");       
   
+  Control.addVariable("nmxFWall0TypeID","Rectangle");
+  Control.addVariable("nmxFWall0Height",6.0);
+  Control.addVariable("nmxFWall0Width",6.0);
+  Control.addVariable("nmxFWall0Length",318.0);
+
+
+  Control.addVariable("nmxShieldALength",1750.0);
+  Control.addVariable("nmxShieldALeft",40.0);
+  Control.addVariable("nmxShieldARight",40.0);
+  Control.addVariable("nmxShieldAHeight",40.0);
+  Control.addVariable("nmxShieldADepth",40.0);
+  Control.addVariable("nmxShieldADefMat","Stainless304");
+  Control.addVariable("nmxShieldANSeg",8);
+  Control.addVariable("nmxShieldANWallLayers",8);
+  Control.addVariable("nmxShieldANFloorLayers",3);
+  Control.addVariable("nmxShieldANRoofLayers",8);
+  Control.addVariable("nmxShieldAWallLen1",10.0);
+  Control.addVariable("nmxShieldAWallMat1","CastIron");
+  Control.addVariable("nmxShieldAWallMat5","Concrete");
+
+  Control.addVariable("nmxShieldARoofLen1",10.0);
+  Control.addVariable("nmxShieldAFloorLen1",10.0);
+
+
   return;
 }
 

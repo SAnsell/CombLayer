@@ -68,12 +68,6 @@ ESTIAvariables(FuncDataBase& Control)
   Control.addVariable("estiaAxisXYAngle",1.5);   // rotation 
   Control.addVariable("estiaAxisZAngle",0.0);
 
-    Control.addVariable("dreamFAXStep",-2.0);        // Centre of thermal
-  Control.addVariable("dreamFAYStep",0.0);       
-  Control.addVariable("dreamFAZStep",0.0);       
-  Control.addVariable("dreamFAXYAngle",0.0);
-  Control.addVariable("dreamFAZAngle",0.0);
-  Control.addVariable("dreamFABeamXYAngle",0.0);       
 
   Control.addVariable("estiaFMonoLength",350.0);       
   Control.addVariable("estiaFMonoNShapes",1);       
@@ -94,8 +88,38 @@ ESTIAvariables(FuncDataBase& Control)
   Control.addVariable("estiaFMono0WidthEnd",2.0);
   Control.addVariable("estiaFMono0Length",350.0);
 
+  // VACUUM PIPES for Shutter:
+  Control.addVariable("estiaPipeAYStep",2.0);
+  Control.addVariable("estiaPipeARadius",9.0);
+  Control.addVariable("estiaPipeALength",48.0);
+  Control.addVariable("estiaPipeAFeThick",1.0);
+  Control.addVariable("estiaPipeAFlangeRadius",12.0);
+  Control.addVariable("estiaPipeAFlangeLength",1.0);
+  Control.addVariable("estiaPipeAFeMat","Aluminium");
+  Control.addVariable("estiaPipeAVoidMat","Void");
 
- 
+  // Shutter section
+  Control.addVariable("estiaFAYStep",3.0);       
+  Control.addVariable("estiaFALength",47.0);       
+  Control.addVariable("estiaFANShapes",1);       
+  Control.addVariable("estiaFANShapeLayers",3);
+  Control.addVariable("estiaFAActiveShield",0);
+
+  Control.addVariable("estiaFALayerThick1",0.4);  // glass thick
+  Control.addVariable("estiaFALayerThick2",1.5);
+
+  Control.addVariable("estiaFALayerMat0","Void");
+  Control.addVariable("estiaFALayerMat1","Glass");
+  Control.addVariable("estiaFALayerMat2","Void");       
+
+  Control.addVariable("estiaFA0TypeID","Tapper");
+  Control.addVariable("estiaFA0HeightStart",3.5); // guess
+  Control.addVariable("estiaFA0HeightEnd",4.5);
+  Control.addVariable("estiaFA0WidthStart",8.0); // NOT Centred
+  Control.addVariable("estiaFA0WidthEnd",2.0);
+  Control.addVariable("estiaFA0Length",47.0);
+
+  
   return;
 }
 

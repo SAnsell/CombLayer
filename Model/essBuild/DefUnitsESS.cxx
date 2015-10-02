@@ -67,13 +67,18 @@ setDefUnits(FuncDataBase& Control,
   defaultConfig A("");
   if (IParam.flag("defaultConfig"))
     {
+      const size_t ICnt=IParam.itemCnt("defaultConfig",0);
       const std::string Key=IParam.getValue<std::string>("defaultConfig");
+
+      const std::string sndItem=(ICnt>1) ? 
+	IParam.getValue<std::string>("defaultConfig",1) : "";
+      
       if (Key=="Main")
 	setESS(A);
       else if (Key=="PortsOnly")
 	setESSPortsOnly(A);
       else if (Key=="Single")
-	setESSSingle(A);
+	setESSSingle(A,sndItem);
       else if (Key=="help")
 	{
 	  ELog::EM<<"Options : "<<ELog::endDiag;
@@ -143,7 +148,7 @@ setESSPortsOnly(defaultConfig& A)
 }
 
 void
-setESSSingle(defaultConfig& A)
+setESSSingle(defaultConfig& A,const std::string& beamItem)
   /*!
     Default configuration for ESS for testing single beamlines
     for building
@@ -153,24 +158,32 @@ setESSSingle(defaultConfig& A)
   ELog::RegMethod RegA("DefUnitsESS[F]","setESS");
 
   A.setOption("lowMod","Butterfly");
-
-  A.setMultiOption("beamlines",0,"G4BLine17 NMX");
   
-  //  A.setMultiOption("beamlines",0,"G4BLine11 DREAM");
-  //  A.setMultiOption("beamlines",0,"G4BLine17 DREAM");
-  //  A.setMultiOption("beamlines",0,"G1BLine5 VOR");
-  //A.setMultiOption("beamlines",0,"G4BLine4 LOKI");
-  
+  if (beamItem=="NMX")
+    A.setMultiOption("beamlines",0,"G4BLine17 NMX");
+  else if (beamItem=="DREAM")
+    A.setMultiOption("beamlines",0,"G4BLine11 DREAM");
+  else if (beamItem=="VOR")
+    A.setMultiOption("beamlines",0,"G1BLine5 VOR");
+  else if (beamItem=="LOKI")
+    A.setMultiOption("beamlines",0,"G4BLine4 LOKI");
+  else if (beamItem=="ESTIA")
+    A.setMultiOption("beamlines",0,"G4BLine11 ESTIA");
+  else
+    throw ColErr::InContainerError<std::string>(beamItem,"BeamItem");
+    
   A.setVar("G4BLine4Active",1);
   A.setVar("G4BLine4Filled",1);
 
   // DREAM
   A.setVar("G4BLine17Filled",1);
   A.setVar("G4BLine17Active",1);
+  A.setVar("G4BLine11Filled",1);
+  A.setVar("G4BLine11Active",1);
   A.setVar("G1BLine5Active",1);
   A.setVar("G1BLine5Filled",1);
   
-  ELog::EM<<"TEST of NMX Only "<<ELog::endDiag;
+  ELog::EM<<"TEST of "<<beamItem<<" Only "<<ELog::endDiag;
   return;
 }
 

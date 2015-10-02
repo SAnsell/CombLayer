@@ -95,8 +95,8 @@ ESTIA::ESTIA() :
   estiaAxis(new attachSystem::FixedOffset("estiaAxis",4)),
   FocusMono(new beamlineSystem::GuideLine("estiaFMono")),
   VPipeA(new constructSystem::VacuumPipe("estiaPipeA")),
-  FocusB(new beamlineSystem::GuideLine("estiaFA"))
-/*!
+  FocusA(new beamlineSystem::GuideLine("estiaFA"))
+/*! 
     Constructor
  */
 {
@@ -217,12 +217,26 @@ ESTIA::build(Simulation& System,
 
   setBeamAxis(System.getDataBase(),GItem,1);
 
-  FocusA->addInsertCell(GItem.getCells("Void"));
-  FocusA->addEndCut(GItem.getKey("Beam").getSignedLinkString(-2));
-  FocusA->createAll(System,GItem.getKey("Beam"),-1,
-		    GItem.getKey("Beam"),-1);
+  FocusMono->addInsertCell(GItem.getCells("Void"));
+  FocusMono->addEndCut(GItem.getKey("Beam").getSignedLinkString(-2));
+  FocusMono->createAll(System,*estiaAxis,-3,*estiaAxis,-3);
 
-  
+  // Shutter pipe [note gap front/back]
+  VPipeA->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeA->createAll(System,FocusMono->getKey("Guide0"),2);
+
+  FocusA->addInsertCell(VPipeA->getCells("Void"));
+  FocusA->createAll(System,FocusMono->getKey("Guide0"),2,
+		    FocusMono->getKey("Guide0"),2);
+
+  // pipe for first section
+  VPipeB->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeB->createAll(System,FocusA->getKey("Guide0"),2);
+
+  FocusB->addInsertCell(VPipeA->getCells("Void"));
+  FocusB->createAll(System,FocusA->getKey("Guide0"),2,
+		    FocusA->getKey("Guide0"),2);
+
   return;
 }
 

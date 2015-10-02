@@ -69,6 +69,11 @@ class NMX
   /// Bunker insert
   std::shared_ptr<essSystem::BunkerInsert> BInsert;
 
+  /// tapper in insert bay
+  std::shared_ptr<beamlineSystem::GuideLine> FocusWall;
+
+  // Piece after wall
+  std::shared_ptr<constructSystem::LineShield> ShieldA;
   
   void setBeamAxis(const FuncDataBase&,
 		   const GuideItem&,const bool);
