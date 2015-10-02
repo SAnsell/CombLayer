@@ -363,6 +363,11 @@ BilbaoWheel::createSurfaces()
   ModelSupport::buildPlane(SMap,wheelIndex+55,Origin-Z*H,Z);  
   ModelSupport::buildPlane(SMap,wheelIndex+56,Origin+Z*H,Z);  
 
+  // dummy planes (same ase 55,56) to attach shaft outer void
+  // they will be revised when the inner void step is implemented
+  ModelSupport::buildPlane(SMap,wheelIndex+65,Origin-Z*H,Z);
+  ModelSupport::buildPlane(SMap,wheelIndex+66,Origin+Z*H,Z);
+
   ModelSupport::buildCylinder(SMap,wheelIndex+7,Origin,Z,innerRadius);
 
   // step to outer radius:

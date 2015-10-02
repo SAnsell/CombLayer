@@ -69,7 +69,7 @@ EssWheel(FuncDataBase& Control)
 {
   Control.addVariable("BilbaoWheelShaftHeight",435.0);
 
-  Control.addVariable("BilbaoWheelNShaftLayers",4);
+  Control.addVariable("BilbaoWheelNShaftLayers",5);
   Control.addVariable("BilbaoWheelShaftRadius1",14.0);
   Control.addVariable("BilbaoWheelShaftMat1","Iron");
   Control.addVariable("BilbaoWheelShaftRadius2",15.0);
@@ -78,7 +78,7 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelShaftMat3",0);
   Control.addVariable("BilbaoWheelShaftRadius4",20.0);
   Control.addVariable("BilbaoWheelShaftMat4","Iron");
-  Control.addVariable("BilbaoWheelShaftRadius5",34.0);
+  Control.addVariable("BilbaoWheelShaftRadius5",22.0);
   Control.addVariable("BilbaoWheelShaftMat5",0);
 
 
