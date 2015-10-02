@@ -47,7 +47,7 @@ class BilbaoWheel : public WheelBase
   
   double targetHeight;           ///< Total height of target
   double voidTungstenThick;      ///< Void thickness below/above Tungsten
-  double  steelTungstenThick;     ///< Steel thickness below/above Tungsten
+  double steelTungstenThick;     ///< Steel thickness below/above Tungsten
   double caseThickIn;            ///< Thickness of coolant (inner wheel)
   double coolantThick;           ///< Thickness of coolant (outer wheel)
   double caseThick;              ///< Case Thickness
@@ -59,6 +59,8 @@ class BilbaoWheel : public WheelBase
   double caseRadius;             ///< Outer case radius
   double voidRadius;             ///< Final outer radius
   double aspectRatio;            ///< Defines curvature in the yz view
+
+  int nSectors;                  ///< Number of sectors in Tungsten
 
   double mainTemp;               ///< Main temperature 
   

@@ -92,7 +92,7 @@ BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) :
   caseThickIn(A.caseThickIn),coolantThick(A.coolantThick),
   caseThick(A.caseThick),voidThick(A.voidThick),
   innerRadius(A.innerRadius),caseRadius(A.caseRadius),
-  voidRadius(A.voidRadius),aspectRatio(A.aspectRatio),
+  voidRadius(A.voidRadius),aspectRatio(A.aspectRatio),nSectors(A.nSectors),
   nLayers(A.nLayers),radius(A.radius),
   matTYPE(A.matTYPE),shaftHeight(A.shaftHeight),nShaftLayers(A.nShaftLayers),
   wMat(A.wMat),heMat(A.heMat),steelMat(A.steelMat),ssVoidMat(A.ssVoidMat)
@@ -129,6 +129,7 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
       caseRadius=A.caseRadius;
       voidRadius=A.voidRadius;
       aspectRatio=A.aspectRatio;
+      nSectors=A.nSectors;
       nLayers=A.nLayers;
       radius=A.radius;
       matTYPE=A.matTYPE;
@@ -194,6 +195,7 @@ BilbaoWheel::populate(const FuncDataBase& Control)
   caseRadius=Control.EvalVar<double>(keyName+"CaseRadius");  
   voidRadius=Control.EvalVar<double>(keyName+"VoidRadius");
   aspectRatio=Control.EvalVar<double>(keyName+"AspectRatio");
+  nSectors=Control.EvalVar<double>(keyName+"NSectors");
 
   targetHeight=Control.EvalVar<double>(keyName+"TargetHeight");
   voidTungstenThick=Control.EvalVar<double>(keyName+"VoidTungstenThick");
@@ -404,6 +406,24 @@ BilbaoWheel::createSurfaces()
 
   ModelSupport::buildCylinder(SMap,wheelIndex+537,Origin,Z,voidRadius);  
 
+  // segmentation
+  double theta(0.0);
+  double thetarad(0.0);
+  double thick(0.0);
+  const double dTheta = 360.0/nSectors;
+  int SIsec(wheelIndex+5000);
+  for (size_t j=0; j<nSectors; j++)
+    {
+      theta = j*dTheta;
+      thetarad = theta*M_PI/180.0;
+      std::cout << j << " " << theta << std::endl;
+      //      if (theta-90.0>Geometry::zeroTol)
+      thick = 0.5/cos(thetarad);
+      ModelSupport::buildPlaneRotAxis(SMap, SIsec+3, Origin-X*thick, X, Z, theta);
+      ModelSupport::buildPlaneRotAxis(SMap, SIsec+4, Origin+X*thick, X, Z, theta);
+      SIsec += 10;
+    }
+
   return; 
 }
 
@@ -419,20 +439,41 @@ BilbaoWheel::createObjects(Simulation& System)
   // Inner Radius is 7
   
   const int matNum[4]={0,steelMat,heMat,wMat};
-  std::string Out;
+  std::string Out, Out1;
   // 
   // Loop through each item and build inner section
   // 
 
   int SI(wheelIndex);
+  int SIsec, SI1;
   for(size_t i=0;i<nLayers;i++)
     {
-      //      if (matTYPE[i]!=1)
+      if (matTYPE[i]!=3)
+	{
 	Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -17M 5 -6 ");
-	//      else
-	//	Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -17M 35 -36 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,
-				       matNum[matTYPE[i]],mainTemp,Out));  
+	System.addCell(MonteCarlo::Qhull(cellIndex++,matNum[matTYPE[i]],mainTemp,Out));  
+	}
+      else // build the sectors
+	{
+	  SIsec = wheelIndex+5000;
+	  for (size_t j=0; j<nSectors; j++)
+	    {
+	      Out1=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -17M 5 -6 ");
+	      // Tungsten
+	      SI1 = (j!=nSectors-1) ? SIsec+10 : wheelIndex+5000;
+	      Out = ModelSupport::getComposite(SMap, SIsec, SI1, " 4 -3M ");
+	      System.addCell(MonteCarlo::Qhull(cellIndex++,matNum[matTYPE[i]],mainTemp,
+					       Out1+Out));
+
+	      // Pieces of steel between Tungsten sectors
+	      // -3M is needed since planes 3 and -4 cross Tunsten in two places,
+	      //     so we need to select only one
+	      Out = ModelSupport::getComposite(SMap, SIsec, SI1, " 3 -4 -3M ");
+	      System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out1+Out));
+
+	      SIsec+=10;
+	    }
+	}
       SI+=10;
     }
   // Now make sections for the coolant
