@@ -262,11 +262,11 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,mainTemp,Out));
 
   // steel
-  Out=ModelSupport::getComposite(SMap,wheelIndex," -1027 25 -26 (-15 : 16 2017)" );  // inner shroud above/below
+  Out=ModelSupport::getComposite(SMap,wheelIndex," -1027 45 -46 (-35 : 36 2017)" );  // inner shroud above/below
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
   // void
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " -1027 35 -36 (-25 : 26 2027)" );	
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " -1027 55 -56 (-45 : 46 2027)" );	
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
 
   // shaft
@@ -280,13 +280,13 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
 	}
       else
 	{
-	  Out=ModelSupport::getComposite(SMap,SI,SI-10, " -2007 2007M 6 ");
+	  Out=ModelSupport::getComposite(SMap,SI,SI-10, " -2007 2007M 26 ");
 	  Out += ModelSupport::getComposite(wheelIndex, " -2006 ");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,shaftMat[i],mainTemp,Out));
 	}
       if (i==nShaftLayers-1)
 	{
-	  Out=ModelSupport::getComposite(SMap,SI,wheelIndex," -2007 36M -2006M ");
+	  Out=ModelSupport::getComposite(SMap,SI,wheelIndex," -2007 56M -2006M ");
 	  addOuterSurf("Shaft",Out);  
 	}
       SI += 10;
@@ -344,28 +344,28 @@ BilbaoWheel::createSurfaces()
   ModelSupport::buildPlane(SMap,wheelIndex+6,Origin+Z*H,Z);  
 
   H+= voidTungstenThick;
-  ModelSupport::buildPlane(SMap,wheelIndex+45,Origin-Z*H,Z);  
-  ModelSupport::buildPlane(SMap,wheelIndex+46,Origin+Z*H,Z);  
-  
-  H+= steelTungstenThick;
-  ModelSupport::buildPlane(SMap,wheelIndex+55,Origin-Z*H,Z);  
-  ModelSupport::buildPlane(SMap,wheelIndex+56,Origin+Z*H,Z);  
-  
-  H+=coolantThick;
   ModelSupport::buildPlane(SMap,wheelIndex+15,Origin-Z*H,Z);  
   ModelSupport::buildPlane(SMap,wheelIndex+16,Origin+Z*H,Z);  
-
-  H+=caseThickIn;
+  
+  H+= steelTungstenThick;
   ModelSupport::buildPlane(SMap,wheelIndex+25,Origin-Z*H,Z);  
   ModelSupport::buildPlane(SMap,wheelIndex+26,Origin+Z*H,Z);  
-
-  H+=voidThick;
+  
+  H+=coolantThick;
   ModelSupport::buildPlane(SMap,wheelIndex+35,Origin-Z*H,Z);  
   ModelSupport::buildPlane(SMap,wheelIndex+36,Origin+Z*H,Z);  
 
+  H+=caseThickIn;
+  ModelSupport::buildPlane(SMap,wheelIndex+45,Origin-Z*H,Z);  
+  ModelSupport::buildPlane(SMap,wheelIndex+46,Origin+Z*H,Z);  
+
+  H+=voidThick;
+  ModelSupport::buildPlane(SMap,wheelIndex+55,Origin-Z*H,Z);  
+  ModelSupport::buildPlane(SMap,wheelIndex+56,Origin+Z*H,Z);  
+
   ModelSupport::buildCylinder(SMap,wheelIndex+7,Origin,Z,innerRadius);
 
-  // step to outer radius: 45/46
+  // step to outer radius:
   ModelSupport::buildCylinder(SMap,wheelIndex+1027,Origin,
 			      Z,coolantRadiusIn);
 
@@ -425,7 +425,7 @@ BilbaoWheel::createObjects(Simulation& System)
       //      if (matTYPE[i]!=1)
 	Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -17M 5 -6 ");
 	//      else
-	//	Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -17M 15 -16 ");
+	//	Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -17M 35 -36 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,
 				       matNum[matTYPE[i]],mainTemp,Out));  
       SI+=10;
@@ -434,7 +434,7 @@ BilbaoWheel::createObjects(Simulation& System)
   int frontIndex(wheelIndex);
   int backIndex(wheelIndex);
   const std::string TopBase=
-    ModelSupport::getComposite(SMap,wheelIndex," 15 -16 (-5:6) ");
+    ModelSupport::getComposite(SMap,wheelIndex," 35 -36 (-5:6) ");
   
   for(size_t i=0;i<nLayers;i++)
     {
@@ -453,44 +453,44 @@ BilbaoWheel::createObjects(Simulation& System)
     }
   
   // front coolant:
-  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -517 15 -16");
+  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -517 35 -36");
   System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,mainTemp,Out));
 
   // Void above/below W
   Out=ModelSupport::getComposite(SMap,wheelIndex,SI,
-				 " -7M 45 -46 (-5 : 6 2007)" );
+				 " -7M 15 -16 (-5 : 6 2007)" );
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
 
   // Steel above/below W
   Out=ModelSupport::getComposite(SMap,wheelIndex,SI,
-				 " -7M 55 -56 (-45 : 46 2007)" );
+				 " -7M 25 -26 (-15 : 16 2007)" );
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
 
   // Coolant
   Out=ModelSupport::getComposite(SMap,wheelIndex,SI,
-				 " -7M 15 -16 (-55 : 56 2007)" );	// He above/below W
+				 " -7M 35 -36 (-25 : 26 2007)" );	// He above/below W
   System.addCell(MonteCarlo::Qhull(cellIndex++,ssVoidMat,mainTemp,Out));
 
 
   // Metal surround [ UNACCEPTABLE JUNK CELL]
   // Metal front:
-  Out=ModelSupport::getComposite(SMap,wheelIndex,"-527 517 15 -16");	
+  Out=ModelSupport::getComposite(SMap,wheelIndex,"-527 517 35 -36");	
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
   // forward Main sections:
-  Out=ModelSupport::getComposite(SMap,wheelIndex,"-527 1027 -126 16");	 // outer above W
+  Out=ModelSupport::getComposite(SMap,wheelIndex,"-527 1027 -126 36");	 // outer above W
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
-  Out=ModelSupport::getComposite(SMap,wheelIndex,"-527 1027 125 -15");	
+  Out=ModelSupport::getComposite(SMap,wheelIndex,"-527 1027 125 -35");	
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out)); // outer below W
 
   // Void surround
   Out=ModelSupport::getComposite(SMap,wheelIndex,
-				 "1027 35 -36 -537 (-125:126:527)");
+				 "1027 55 -56 -537 (-125:126:527)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   
-  Out=ModelSupport::getComposite(SMap,wheelIndex,"-537 35 -36");	
+  Out=ModelSupport::getComposite(SMap,wheelIndex,"-537 55 -56");	
   addOuterSurf("Wheel",Out);
 
   return; 
@@ -524,10 +524,10 @@ BilbaoWheel::createLinks()
 
   const double H=wheelHeight()/2.0;
   FixedComp::setConnect(4,Origin-Z*H,-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(wheelIndex+35));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(wheelIndex+55));
 
   FixedComp::setConnect(5,Origin+Z*H,Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(wheelIndex+36));
+  FixedComp::setLinkSurf(5,SMap.realSurf(wheelIndex+56));
 
   
   return;
