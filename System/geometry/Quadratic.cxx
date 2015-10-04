@@ -559,8 +559,10 @@ Quadratic::writeFLUKA(std::ostream& OX) const
     \param OX :: Output stream (required for multiple std::endl)
   */
 {
+  ELog::RegMethod RegA("Quadratic","writeFLUKA");
+    
   std::ostringstream cx;
-  writeHeader(cx);
+  Surface::writeHeader(cx);
   cx.precision(Geometry::Nprecision);
   cx<<"  QUA s"<<getName()<<" ";
   for(size_t i=0;i<10;i++)

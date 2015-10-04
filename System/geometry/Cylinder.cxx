@@ -520,17 +520,19 @@ Cylinder::writeFLUKA(std::ostream& OX) const
   */
 {
   ELog::RegMethod RegA("Cylinder","writeFLUKA");
-  
+
+  masterWrite& MW=masterWrite::Instance();
   const int Ndir=Normal.masterDir(Geometry::zeroTol);
+  
   if (Ndir==0)
     {
       // general surface
-      Quadratic::write(OX);
+      Quadratic::writeFLUKA(OX);
       return;
     }
 
   std::ostringstream cx;
-  masterWrite& MW=masterWrite::Instance();
+
   Surface::writeHeader(cx);
   cx.precision(Geometry::Nprecision);  
   if (Ndir==-1 || Ndir==1)
