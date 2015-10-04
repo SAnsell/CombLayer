@@ -216,7 +216,7 @@ DBMaterial::initMaterial()
   // Material #23 Lead  11340kg m-3 [0.03296371]
   //204Pb 1.4 206Pb  24.1 207Pb 22.1  208Pb 	52.4 
   MObj.setMaterial(23,"Lead","82206.24c 0.00794248 "
-		   "82207.24c 0.00728335 82208.25c 0.0172691","",MLib);
+		   "82207.24c 0.00728335 82208.24c 0.0172691","",MLib);
   setMaterial(MObj);
 
   // Material #24 Lead  11340kg m-3 [0.03296371] + Sb at 1.2%
@@ -680,11 +680,11 @@ DBMaterial::initMaterial()
   MObj.setMaterial(81,"Silicon20K","14028.24c 0.0460848 "
 		   "14029.24c 0.00234 14030.24c 0.0015403","si.81t",MLib);
   setMaterial(MObj);
-  // Material #82 Silicon with no-bragg (20K)
+  // Material #82 Silicon with no-bragg (77K)
   MObj.setMaterial(82,"Silicon80K","14028.24c 0.0460848 "
 		   "14029.24c 0.00234 14030.24c 0.0015403","si.82t",MLib);
   setMaterial(MObj);
-  // Material #83 Silicon with no-bragg (20K)
+  // Material #83 Silicon with no-bragg (300K)
   MObj.setMaterial(83,"Silicon300K","14028.24c 0.0460848 "
 		   "14029.24c 0.00234 14030.24c 0.0015403","si.83t",MLib);
   setMaterial(MObj);

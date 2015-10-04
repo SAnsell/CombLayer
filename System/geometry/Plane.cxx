@@ -637,6 +637,8 @@ Plane::writeFLUKA(std::ostream& OX) const
     \param OX :: Output stream (required for multiple std::endl)  
   */
 {
+  ELog::RegMethod RegA("Plane","writeFLUKA");
+  
   masterWrite& MW=masterWrite::Instance();
 
   std::ostringstream cx;
@@ -648,10 +650,13 @@ Plane::writeFLUKA(std::ostream& OX) const
 	<<MW.Num(NormV)<<" "
 	<<MW.Num(NormV*Dist);
     }
-  // NormV[] is -1.0 or 1.0
-  const double D=NormV[ptype-1]*Dist;
-  const std::string PNMX[3]={"YZP","XZP","XYP"};
-  cx<<PNMX[ptype-1]<<" s"<<getName()<<" "<<MW.Num(D);
+  else
+    {
+      // NormV[] is -1.0 or 1.0
+      const double D=NormV[ptype-1]*Dist;
+      const std::string PNMX[3]={"YZP","XZP","XYP"};
+      cx<<PNMX[ptype-1]<<" s"<<getName()<<" "<<MW.Num(D);
+    }
   StrFunc::writeMCNPX(cx.str(),OX);
   return;
 }

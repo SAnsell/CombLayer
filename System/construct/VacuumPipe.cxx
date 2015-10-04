@@ -96,7 +96,8 @@ VacuumPipe::VacuumPipe(const VacuumPipe& A) :
   frontSurf(A.frontSurf),backSurf(A.backSurf),divideSurf(A.divideSurf),
   radius(A.radius),length(A.length),
   feThick(A.feThick),flangeRadius(A.flangeRadius),
-  flangeLength(A.flangeLength),feMat(A.feMat)
+  flangeLength(A.flangeLength),voidMat(A.voidMat),
+  feMat(A.feMat)
   /*!
     Copy constructor
     \param A :: VacuumPipe to copy
@@ -129,6 +130,7 @@ VacuumPipe::operator=(const VacuumPipe& A)
       flangeRadius=A.flangeRadius;
       flangeLength=A.flangeLength;
       feMat=A.feMat;
+      voidMat=A.voidMat;
     }
   return *this;
 }
@@ -158,6 +160,7 @@ VacuumPipe::populate(const FuncDataBase& Control)
   flangeRadius=Control.EvalVar<double>(keyName+"FlangeRadius");
   flangeLength=Control.EvalVar<double>(keyName+"FlangeLength");
   
+  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
 
   return;
@@ -295,7 +298,7 @@ VacuumPipe::createObjects(Simulation& System)
 
   // Void 
   Out=ModelSupport::getComposite(SMap,vacIndex," -7 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+FBStr));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,voidMat,0.0,Out+FBStr));
   addCell("Void",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,vacIndex,"101 -102 -17 7");
@@ -334,7 +337,7 @@ VacuumPipe::createLinks()
   ELog::RegMethod RegA("VacuumPipe","createLinks");
 
   FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
-  FixedComp::setConnect(1,Origin-Y*(length/2.0),-Y);
+  FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
   FixedComp::setConnect(2,Origin-X*((radius+feThick)/2.0),-X);
   FixedComp::setConnect(3,Origin+X*((radius+feThick)/2.0),X);
   FixedComp::setConnect(4,Origin-Z*((radius+feThick)/2.0),-Z);

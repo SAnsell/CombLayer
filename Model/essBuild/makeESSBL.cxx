@@ -74,10 +74,12 @@
 #include "GuideItem.h"
 
 #include "ODIN.h"
+#include "ESTIA.h"
 #include "LOKI.h"
 #include "NMX.h"
 #include "DREAM.h"
 #include "VOR.h"
+
 #include "beamlineConstructor.h"
 #include "makeESSBL.h"
 
@@ -175,41 +177,51 @@ makeESSBL::build(Simulation& System,
   if (!mainGIPtr)
     throw ColErr::InContainerError<std::string>(shutterName,"shutterObject");
 
+	
   if (beamName=="ODIN")
     {
+      ELog::EM<<"Building "<<beamName<<ELog::endDiag;
       // Odin beamline
       ODIN OdinBL;
       OdinBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
+  else if (beamName=="ESTIA")
+    {
+      ELog::EM<<"Building "<<beamName<<ELog::endDiag;
+      ESTIA estiaBL;
+      estiaBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+    }
   else if (beamName=="LOKI")
     {
       // LOKI beamline
+      ELog::EM<<"Building "<<beamName<<ELog::endDiag;
       LOKI LokiBL;
       LokiBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="NMX")
     {
       // NMX beamline
-      ELog::EM<<"Building NMW"<<ELog::endDiag;
+      ELog::EM<<"Building "<<beamName<<ELog::endDiag;
       NMX nmxBL;
       nmxBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="VOR")
     {
-      // NMX beamline
-      ELog::EM<<"Building VOR"<<ELog::endDiag;
+      ELog::EM<<"Building "<<beamName<<ELog::endDiag;
       VOR vorBL;
       vorBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="DREAM")
     {
       // NMX beamline
+      ELog::EM<<"Building "<<beamName<<ELog::endDiag;
       ELog::EM<<"Building DREAM"<<ELog::endDiag;
       DREAM dreamBL;
       dreamBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="JSANS" || beamName=="JRef")
     {
+      
       ///< Guide line [refl]
       std::shared_ptr<beamlineSystem::GuideLine>
 	RefA(new beamlineSystem::GuideLine(beamName));

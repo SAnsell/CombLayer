@@ -167,16 +167,18 @@ surfaceConstruct::processSurfObject(Simulation& System,
     ModelSupport::objectRegister::Instance();
   
   const int tNum=System.nextTallyNum(1);
-  if (linkPt>0)
+  if (linkPt)
     {
       const attachSystem::FixedComp* TPtr=
 	OR.getObject<attachSystem::FixedComp>(FObject);
-
       if (!TPtr)
 	throw ColErr::InContainerError<std::string>
 	  (FObject,"Fixed Object not found");
-      size_t iLP=static_cast<size_t>(linkPt-1);
-      int masterPlane=  
+
+      
+      const size_t iLP=(linkPt>0) ?
+	static_cast<size_t>(linkPt-1) : static_cast<size_t>(-1-linkPt);
+      const int masterPlane=  
 	TPtr->getMasterSurf(iLP);
       std::vector<int> surfN;
       for(size_t i=0;i<linkN.size();i++)
@@ -184,8 +186,8 @@ surfaceConstruct::processSurfObject(Simulation& System,
 	  const long int LIndex=getLinkIndex(linkN[i]);
 	  surfN.push_back(TPtr->getSignedLinkSurf(LIndex));
 	}
-      
-      addF1Tally(System,tNum,masterPlane,surfN);
+      const int signV((linkPt>0) ? 1 : -1);
+      addF1Tally(System,tNum,signV*masterPlane,surfN);
       return 1;
     }
   return 0;

@@ -25,6 +25,7 @@
 namespace attachSystem
 {
   class FixedComp;
+  class FixedOffset;
   class TwinComp;
   class CellMap;
 }
@@ -59,7 +60,7 @@ class LOKI
  private:
 
   /// Main Beam Axis [for construction]
-  std::shared_ptr<attachSystem::FixedComp> lokiAxis;
+  std::shared_ptr<attachSystem::FixedOffset> lokiAxis;
 
   /// Bender in insert bay
   std::shared_ptr<beamlineSystem::GuideLine> BendA;
@@ -141,7 +142,7 @@ class LOKI
   std::shared_ptr<constructSystem::VacuumPipe> VPipeC;
   std::shared_ptr<constructSystem::VacuumPipe> VPipeD;
   
-  void setBeamAxis(const GuideItem&,const bool);
+  void setBeamAxis(const FuncDataBase&,const GuideItem&,const bool);
   
  public:
   

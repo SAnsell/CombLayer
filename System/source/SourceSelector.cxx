@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   source/SourceSelector.cxx
  *
@@ -210,7 +210,9 @@ sourceSelection(Simulation& System,
   const attachSystem::FixedComp* FCPtr=
     OR.getObject<attachSystem::FixedComp>(DObj);
   const long int linkIndex=getLinkIndex(DSnd);
-  
+
+
+
   if (IParam.flag("sdefVoid"))
     {
       sourceCard.deactivate();
@@ -225,7 +227,8 @@ sourceSelection(Simulation& System,
     }
   
   const std::string sdefType=IParam.getValue<std::string>("sdefType");
-
+  ELog::EM<<"SDEF == "<<sdefType<<ELog::endDiag;
+  
   if (sdefType=="TS1")
     SDef::createTS1Source(Control,sourceCard);
   else if (sdefType=="TS1Gauss") 
@@ -262,6 +265,14 @@ sourceSelection(Simulation& System,
 	SDef::createGammaSource(Control,"pointSource",
 				sourceCard);
     }
+  else if (sdefType=="Beam" || sdefType=="beam")
+    {
+      if (FCPtr)
+	SDef::createBeamSource(Control,"beamSource",
+			       *FCPtr,linkIndex,sourceCard);
+      else
+	SDef::createBeamSource(Control,"beamSource",sourceCard);
+    }
   else if (sdefType=="LENS" || sdefType=="lens")
     {
       const attachSystem::FixedComp* PC=
@@ -274,7 +285,7 @@ sourceSelection(Simulation& System,
     }
   else if (sdefType=="TS2")
     {
-  // Basic TS2 source
+      // Basic TS2 source
       if(IParam.hasKey("horr") && IParam.flag("horr"))
 	sourceCard.setTransform(System.createSourceTransform());
   
@@ -294,6 +305,7 @@ sourceSelection(Simulation& System,
 	"Bilbao :: Bilbao beam proton\n"
 	"Laser :: Laser D/T fussion source\n"
 	"Point :: Test point source\n"
+	"Beam :: Test Beam [Radial] source \n"
 	"D4C :: D4C neutron beam"<<ELog::endBasic;
     }
 	

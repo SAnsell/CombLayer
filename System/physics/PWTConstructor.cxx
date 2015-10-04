@@ -116,7 +116,7 @@ PWTConstructor::procZone(std::vector<std::string>& StrItem)
       Zones.push_back(MapSupport::Range<int>(0,100000000));
       cut=1;
     }
-  else if (NS>=2 && StrItem[0]=="Object" || StrItem[0]=="object")
+  else if (NS>=2 && (StrItem[0]=="Object" || StrItem[0]=="object"))
     {
       const ModelSupport::objectRegister& OR= 
 	ModelSupport::objectRegister::Instance();

@@ -116,6 +116,7 @@ class HeadRule
   void removeCommon();
   
   void makeComplement();
+  HeadRule complement() const;
 
   int procString(const std::string&);
 

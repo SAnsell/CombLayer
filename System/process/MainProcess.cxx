@@ -475,6 +475,22 @@ void createFullInputs(inputParam& IParam)
 }
 
 void
+createFilterInputs(inputParam& IParam)
+  /*!
+    Create Photon-neutron source input
+    \param IParam :: Initial input
+  */
+{
+  ELog::RegMethod RegA("MainProcess::","createFilterInputs");
+  createInputs(IParam);
+  
+
+  IParam.setValue("sdefType",std::string("Beam"));
+  IParam.setFlag("voidUnMask");  
+  return;
+}
+
+void
 createGammaInputs(inputParam& IParam)
   /*!
     Create Gamma expt model

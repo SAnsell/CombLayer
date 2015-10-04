@@ -156,8 +156,6 @@ LineShield::createUnitVector(const attachSystem::FixedComp& FC,
   applyOffset();
   // after rotation
   Origin+=Y*(length/2.0);
-  ELog::EM<<"O == "<<Origin<<ELog::endDiag;
-  ELog::EM<<"Y == "<<Y<<ELog::endDiag;
   return;
 }
 

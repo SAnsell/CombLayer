@@ -134,7 +134,19 @@ FixedOffset::applyOffset()
   return;
 }
 
-  
+
+void
+FixedOffset::linkAngleRotate(const long int sideIndex)
+  /*!
+    Apply a rotation to a link point axis
+    \param sideIndex :: link point index [signed]
+   */
+{
+  ELog::RegMethod RegA("FixedOffset","applyOffset");
+
+  FixedComp::linkAngleRotate(sideIndex,xyAngle,zAngle);
+  return;
+}
 
 
 

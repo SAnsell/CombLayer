@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuildInc/NMX.h
+ * File:   essBuildInc/ESTIA.h
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -19,71 +19,87 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef essSystem_NMX_h
-#define essSystem_NMX_h
+#ifndef essSystem_ESTIA_h
+#define essSystem_ESTIA_h
 
 namespace attachSystem
 {
   class FixedComp;
-  class TwinComp;
+  class FixedOffset;
   class CellMap;
+}
+
+namespace instrumentSystem
+{
+  class CylSample;
 }
 
 namespace constructSystem
 {  
-  class Jaws;
-  class DiskChopper;
   class ChopperPit;
+  class ChopperHousing;
+  class DiskChopper;
+  class Jaws;
+  class LineShield;
   class RotaryCollimator;
   class VacuumBox;
-  class ChopperHousing;
+  class VacuumPipe;
+
 }
 
 namespace essSystem
 {  
-  class GuideItem;
+
   /*!
-    \class NMX
+    \class ESTIA
     \version 1.0
     \author S. Ansell
-    \date July 2014
-    \brief NMX beamline constructor for the ESS
+    \date September 2015
+    \brief ESTIA beamline constructor for the ESS
   */
   
-class NMX
+class ESTIA
 {
  private:
 
   /// Main Beam Axis [for construction]
-  std::shared_ptr<attachSystem::FixedOffset> nmxAxis;
+  std::shared_ptr<attachSystem::FixedOffset> estiaAxis;
 
-  /// tapper in insert bay
-  std::shared_ptr<beamlineSystem::GuideLine> GuideA;
-    
+  /// mirror to end of monolith
+  std::shared_ptr<beamlineSystem::GuideLine> FocusMono;
+
   /// Pipe between bunker and the wall
   std::shared_ptr<constructSystem::VacuumPipe> VPipeA;
+  /// mirror to end of monolith
+  std::shared_ptr<beamlineSystem::GuideLine> FocusA;
+
   /// Pipe between bunker and the wall
   std::shared_ptr<constructSystem::VacuumPipe> VPipeB;
-  /// Bender in insert bay
-  std::shared_ptr<beamlineSystem::GuideLine> BendA;
-  /// Bunker insert
-  std::shared_ptr<essSystem::BunkerInsert> BInsert;
+  /// Vac box for 
+  std::shared_ptr<constructSystem::VacuumBox> VacBoxA;
+  /// Elliptic guide from 5.5 to 6metre
+  std::shared_ptr<beamlineSystem::GuideLine> FocusB;
 
-  /// tapper in insert bay
-  std::shared_ptr<beamlineSystem::GuideLine> FocusWall;
 
-  // Piece after wall
-  std::shared_ptr<constructSystem::LineShield> ShieldA;
+  static void
+    buildChopperBlock(Simulation&,const Bunker&,
+		      const attachSystem::FixedComp&,
+		      const constructSystem::VacuumBox&,
+		      constructSystem::VacuumBox&,
+		      beamlineSystem::GuideLine&,
+		      constructSystem::DiskChopper&,
+		      constructSystem::ChopperHousing&,
+		      constructSystem::VacuumPipe&);
+
   
-  void setBeamAxis(const FuncDataBase&,
-		   const GuideItem&,const bool);
+  void setBeamAxis(const FuncDataBase&,const GuideItem&,const bool);
   
  public:
   
-  NMX();
-  NMX(const NMX&);
-  NMX& operator=(const NMX&);
-  ~NMX();
+  ESTIA();
+  ESTIA(const ESTIA&);
+  ESTIA& operator=(const ESTIA&);
+  ~ESTIA();
   
   void build(Simulation&,const GuideItem&,
 	     const Bunker&,const int);

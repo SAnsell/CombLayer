@@ -305,9 +305,9 @@ SimFLUKA::write(const std::string& Fname) const
   */
 {
   ELog::RegMethod RegA("SimFLUKA","write");
-  boost::format FmtStr("%1%|71t|%2%\n");  
+  boost::format FmtStr("%1%%|71t|%2%\n");  
 
-  std::ofstream OX(Fname.c_str());
+  std::ofstream OX(Fname.c_str()); 
   OX<<"TITLE "<<std::endl;
   OX<<" Fluka model from CombLayer"<<std::endl;
   Simulation::writeVariables(OX,'*');

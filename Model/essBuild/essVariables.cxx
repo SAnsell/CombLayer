@@ -802,10 +802,12 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("GuideBay3NItems",19);  
   Control.addVariable("GuideBay4NItems",19);
 
-
+  Control.addVariable("GuideBay4InnerDepth",5.8);
+  
   EssBeamLinesVariables(Control);
   ODINvariables(Control);
   DREAMvariables(Control);
+  ESTIAvariables(Control);
   LOKIvariables(Control);
   NMXvariables(Control);
   VORvariables(Control);
@@ -1310,6 +1312,7 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("ABunkerRoofThick",100.0);
   Control.addVariable("ABunkerFloorThick",100.0);
 
+  Control.addVariable("ABunkerVoidMat","Void");
   Control.addVariable("ABunkerWallMat","Steel71");
 
   Control.addVariable("ABunkerNLayers",9);
@@ -1340,6 +1343,7 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("BBunkerRoofThick",200.0);
   Control.addVariable("BBunkerFloorThick",100.0);
 
+  Control.addVariable("BBunkerVoidMat","Void");
   Control.addVariable("BBunkerWallMat","Steel71");
 
   Control.addVariable("BBunkerNLayers",9);
@@ -1378,8 +1382,14 @@ EssBeamLinesVariables(FuncDataBase& Control)
       Control.addVariable(baseKey+"BeamHeight",3.0);
       Control.addVariable(baseKey+"BeamWidth",7.6);
       Control.addVariable(baseKey+"NSegment",3);
+      Control.addVariable(baseKey+"SideGap",0.6);
+      Control.addVariable(baseKey+"BaseGap",0.1);
+      Control.addVariable(baseKey+"TopGap",0.8); 
       Control.addVariable(baseKey+"Width1",16.0);
-      Control.addVariable(baseKey+"Height1",12.0);
+      if (i==3)
+	Control.addVariable(baseKey+"Height1",11.5);
+      else 
+	Control.addVariable(baseKey+"Height1",12.0);
       Control.addVariable(baseKey+"Width2",28.0);
       Control.addVariable(baseKey+"Height2",44.0);
       Control.addVariable(baseKey+"Width3",40.0);
@@ -1406,7 +1416,9 @@ EssBeamLinesVariables(FuncDataBase& Control)
       Control.addVariable(baseKey+"18XYangle",-48.0);
       Control.addVariable(baseKey+"19XYangle",-54.0);
       Control.addVariable(baseKey+"Filled",0);
-      Control.addVariable(baseKey+"Active",0);      
+      Control.addVariable(baseKey+"Active",0);
+
+
     }
   return;
 }

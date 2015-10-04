@@ -16,7 +16,9 @@ sub new
     boostLib => "-L/opt/local/lib -lboost_regex",
     
     masterProg => undef,
-    depLists => undef,	
+    depLists => undef,
+    optimise => "",
+    debug => "",
 
     incLib => undef,           ## Array of all our includes used
     srcDir => undef,           ## Array of all our cxx directories
@@ -171,6 +173,42 @@ sub addDepUnit
   return;
 }
 
+sub setParameters
+  ##
+  ## Given a set of flags
+  ## Determine which parameters we should set
+  ##  
+{
+  my $self=shift;
+  my $Ar=shift;
+
+  my $nogsl=1;
+  foreach my $FlagArray (@{$Ar})
+    {
+      my @Flags =split " ",$FlagArray;
+      foreach my $Ostr (@Flags)
+        {
+	  $self->{optimise}.=" -O2 " if ($Ostr eq "-O");
+	  $self->{optimise}.=" -pg " if ($Ostr eq "-p"); ## Gprof
+	  $self->{gcov}=1 if ($Ostr eq "-C");
+	  $self->{debug}="" if ($Ostr eq "-g");
+	  $self->{bcomp}=$1 if ($Ostr=~/-gcc=(.*)/);
+	  $self->{ccomp}=$1 if ($Ostr=~/-g\+\+=(.*)/);
+	  $self->{cxx11}="" if ($Ostr=~/-std/);
+	}
+    }
+  $self->{gsl}*=$nogsl;
+
+  print STDERR "INIT Opt=",$self->{optimise},"\n";
+  print STDERR "INIT Deb=",$self->{debug},"\n";
+#  print STDERR "GSL == ",$self->{gsl},"\n";
+#  print STDERR "ROOT == ",$self->{root},"\n";
+#  print STDERR "REGEX == ",$self->{regex},"\n";
+#  print STDERR "G++ == ",$self->{ccomp},$self->{cxx11},"\n";
+#  print STDERR "GCC == ",$self->{bcomp},"\n";
+  return;
+}
+
 sub writeHeader
   ##
   ## Header
@@ -185,6 +223,14 @@ sub writeHeader
   
   print $DX "set(CMAKE_CXX_COMPILER ",$self->{ccomp},")\n";
   print $DX "add_definitions(",$self->{cflag},")\n";
+
+
+
+  print $DX "add_definitions(",$self->{optimise},")\n"
+      if ($self->{optimise});
+  print $DX "add_definitions(",$self->{debug},")\n"
+      if ($self->{debug});
+
 
   print $DX "set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ./lib)\n";
   
@@ -284,7 +330,7 @@ sub writeTail
 
   print $DX "     \./Main/*.cxx \n";
   print $DX "     \./CMake.pl  \n";
-  print $DX "     \./CMakeList.pm \n";
+  print $DX "     .//CMakeList.pm \n";
   print $DX " )\n";
   print $DX "\n";
   ## TAGS:

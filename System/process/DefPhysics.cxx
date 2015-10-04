@@ -195,10 +195,12 @@ setDefRotation(const mainSystem::inputParam& IParam)
 			 Geometry::Vec3D(0,0,0),
 			 45.00-180.0);
 	}
-      else if (AItem=="ODIN" || AItem=="odin" ||
+      else if (AItem=="DREAM" || AItem=="dream" ||
+	       AItem=="ESTIA" || AItem=="estia" ||
 	       AItem=="LOKI" || AItem=="loki" ||
-	       AItem=="VOR" || AItem=="vor" ||
-	       AItem=="DREAM" || AItem=="dream")
+	       AItem=="NMX" || AItem=="nmx" ||
+	       AItem=="ODIN" || AItem=="odin" ||
+	       AItem=="VOR" || AItem=="vor")
 	{
 	  std::transform(AItem.begin(),AItem.end(),
 	    AItem.begin(),::tolower);
@@ -210,8 +212,7 @@ setDefRotation(const mainSystem::inputParam& IParam)
 	      (AItem+"Axis","Fixed component");
 	  // Y is beam direction -- Alignment along X
 	  const double angle=180.0*acos(GIPtr->getY()[0])/M_PI;
-	  MR.addRotation(GIPtr->getZ(),Geometry::Vec3D(0,0,0),
-			 -angle);
+	  MR.addRotation(GIPtr->getZ(),Geometry::Vec3D(0,0,0),-angle);
 	}
       else if (AItem=="free" || AItem=="FREE")
 	{
@@ -304,7 +305,7 @@ setDefaultPhysics(Simulation& System,
   const FuncDataBase& Control=System.getDataBase();
   
   std::string PList("h / d t s a");
-  const double maxEnergy=Control.EvalDefVar<double>("sdefEnergy",800.0);
+  const double maxEnergy=Control.EvalDefVar<double>("sdefEnergy",2000.0);
   const double elcEnergy=IParam.getValue<double>("electron");
   const double phtEnergy=IParam.getValue<double>("photon");
   const double phtModel=IParam.getValue<double>("photonModel");
