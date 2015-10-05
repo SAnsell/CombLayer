@@ -1159,7 +1159,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowPreModRadius3");
   Control.addVariable("LowPreModMat3","Aluminium");
   Control.addVariable("LowPreModHeight4", 0.0);
-  Control.addVariable("LowPreModDepth4",  0.85);
+  Control.addVariable("LowPreModDepth4",  0.0);
   Control.addVariable("LowPreModRadius4", 0.0);
   Control.addVariable("LowPreModMat4","Void");
 
