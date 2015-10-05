@@ -104,6 +104,7 @@ class DBMaterial
 
   void writeCinder(std::ostream& OX) const;
   void writeMCNPX(std::ostream& OX) const;
+  void writeFLUKA(std::ostream& OX) const;
 };
 
 }

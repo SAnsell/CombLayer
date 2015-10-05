@@ -31,7 +31,7 @@
 #include <map>
 #include <string>
 #include <algorithm>
-#include <boost/multi_array.hpp>
+#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "BaseVisit.h"
@@ -46,6 +46,7 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
+#include "masterWrite.h"
 #include "Quaternion.h"
 #include "PolyFunction.h"
 #include "PolyVar.h"
@@ -560,13 +561,15 @@ Quadratic::writeFLUKA(std::ostream& OX) const
   */
 {
   ELog::RegMethod RegA("Quadratic","writeFLUKA");
-    
+  masterWrite& MW=masterWrite::Instance();
+  
   std::ostringstream cx;
   Surface::writeHeader(cx);
   cx.precision(Geometry::Nprecision);
-  cx<<"  QUA s"<<getName()<<" ";
-  for(size_t i=0;i<10;i++)
-    cx<<" "<<BaseEqn[i]<<" ";
+  cx<<"QUA s"<<getName();
+  // write all 10 items in order: as xy xz yz coeffients
+  for(const double& val : BaseEqn)
+    cx<<" "<<MW.Num(val);
   StrFunc::writeMCNPX(cx.str(),OX);
   return;
 }

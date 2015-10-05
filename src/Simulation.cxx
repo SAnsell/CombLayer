@@ -1556,7 +1556,7 @@ Simulation::writeMaterial(std::ostream& OX) const
 
 {
   OX<<"c -------------------------------------------------------"<<std::endl;
-  OX<<"c --------------- MATERIAL CARDS --------------------------"<<std::endl;
+  OX<<"c --------------- MATERIAL CARDS ------------------------"<<std::endl;
   OX<<"c -------------------------------------------------------"<<std::endl;
   ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();  
   DB.resetActive();
@@ -1998,14 +1998,14 @@ Simulation::renumberCells(const std::vector<int>& cOffset,
   int nNum(0);
   int index(1);
 
-  std::string oldUnit;
+  std::string oldUnit,keyUnit;
   int startNum(0);
   // This is ordered:
   OTYPE::const_iterator vc;  
   for(vc=OList.begin();vc!=OList.end();vc++)
     {
       const int cNum=vc->second->getName();
-      const std::string keyUnit=OR.inRange(cNum);
+      keyUnit=OR.inRange(cNum);
       // Determine inf the cell is within cRange:
       size_t j=0;
       while(j<cOffset.size())
@@ -2037,7 +2037,8 @@ Simulation::renumberCells(const std::vector<int>& cOffset,
 	}
       if (keyUnit!=oldUnit)
 	{
-	  OR.setRenumber(oldUnit,startNum,nNum-1);
+	  if (startNum)
+	    OR.setRenumber(oldUnit,startNum,nNum-1);
 	  oldUnit=keyUnit;
 	  startNum=nNum;
 	}
@@ -2046,6 +2047,11 @@ Simulation::renumberCells(const std::vector<int>& cOffset,
 	      <<" Object:"<<keyUnit<<ELog::endBasic;
     }
 
+  // Last item
+  OR.setRenumber(keyUnit,startNum,nNum);
+
+
+  
   OList=newMap;
   return;
 }

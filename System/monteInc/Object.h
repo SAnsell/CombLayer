@@ -188,9 +188,10 @@ class Object
   std::string headStr() const;
   std::string str() const;
   std::string pointStr(const Geometry::Vec3D&) const;
-  void write(std::ostream&) const;          ///< MCNPX output
-  void writePHITS(std::ostream&) const;     ///< PHITS output
-  void writeFLUKA(std::ostream&) const;     ///< PHITS output
+  void write(std::ostream&) const;         
+  void writePHITS(std::ostream&) const;    
+  void writeFLUKA(std::ostream&) const;    
+  void writeFLUKAmat(std::ostream&) const;    
 
   void checkPointers() const;
 

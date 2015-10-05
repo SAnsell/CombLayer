@@ -556,6 +556,24 @@ Material::setDensity(const double D)
   return;
 }
 
+double
+Material::getMacroDensity() const
+  /*!
+    Return the macroscopic density (g/cc)
+   */
+{
+  double AW(0.0);
+  double sumDens(0.0);
+  for(const Zaid& ZC : zaidVec)
+    {
+      AW+=ZC.getAtomicMass()*ZC.getDensity();
+      sumDens+=ZC.getDensity();
+    }
+  if (sumDens<1e-10) return 0.0;
+  AW/=sumDens;
+  return atomDensity*AW/RefCon::avogadro;
+}
+   
 void
 Material::calcAtomicDensity() 
   /*!
@@ -688,6 +706,56 @@ Material::writeZaid(std::ostream& OX,const double F,const int ZD)
     OX<<(ZFMT % A % Z % F)<<std::endl;
   return;
 }
+
+void 
+Material::writeFLUKA(std::ostream& OX) const
+  /*!
+    Write out the information about the material
+    in a humman readable form (same as mcnpx file)
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("Material","writeFLUKA");
+  
+  typedef std::map<std::string,MXcards> MXTYPE;
+  
+  std::ostringstream cx;
+  cx<<"*\n* Material : "<<Name<<" rho="<<atomDensity;
+  StrFunc::writeMCNPX(cx.str(),OX);
+  cx.str("");
+
+  cx<<"MATERIAL 0 0"<<
+  
+  cx.precision(10);
+  cx<<"m"<<Mnum<<"     ";
+  if (Mnum<10) cx<<" ";
+  std::vector<Zaid>::const_iterator zc;
+  std::vector<std::string>::const_iterator vc;
+  for(zc=zaidVec.begin();zc!=zaidVec.end();zc++)
+    cx<<*zc<<" ";
+
+  for(vc=Libs.begin();vc!=Libs.end();vc++)
+    cx<<*vc<<"  ";
+
+  StrFunc::writeMCNPX(cx.str(),OX);
+
+  MXTYPE::const_iterator mc;
+  for(mc=mxCards.begin();mc!=mxCards.end();mc++)
+    mc->second.write(OX);
+
+
+  std::ostringstream rx;
+  if (!SQW.empty())
+    {
+      rx.str("");
+      rx<<"mt"<<Mnum<<"    ";
+      if (Mnum<10) rx<<" ";
+      for(vc=SQW.begin();vc!=SQW.end();vc++)
+	rx<<*vc<<" ";
+      StrFunc::writeMCNPX(rx.str(),OX);
+    }
+  return;
+} 
 
 void 
 Material::write(std::ostream& OX) const

@@ -1442,4 +1442,29 @@ DBMaterial::writeMCNPX(std::ostream& OX) const
   return;
 }
 
+void
+DBMaterial::writeFLUKA(std::ostream& OX) const
+  /*!
+    Write everything out to the fluka system
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("DBMaterial","writeMCNPX");
+
+  for(const int sActive : active)
+    {
+      if (sActive)
+	{
+	  MTYPE::const_iterator mp=MStore.find(sActive);
+	  if (mp==MStore.end())
+	    throw ColErr::InContainerError<int>
+	      (sActive,"MStore find(active item)");
+	  
+	  if (mp->first)
+	    mp->second.writeFLUKA(OX);
+	}
+    }
+  return;
+}
+
 } // NAMESPACE ModelSupport
