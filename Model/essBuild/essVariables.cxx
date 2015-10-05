@@ -1188,7 +1188,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopPreModRadius3");
   Control.addVariable("TopPreModMat3","Aluminium");
   Control.addVariable("TopPreModHeight4", 0.0);
-  Control.addVariable("TopPreModDepth4",  0.85);
+  Control.addVariable("TopPreModDepth4",  0.0);
   Control.addVariable("TopPreModRadius4", 0.0);
   Control.addVariable("TopPreModMat4","Void");
 
