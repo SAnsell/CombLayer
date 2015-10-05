@@ -196,6 +196,8 @@ BilbaoWheel::populate(const FuncDataBase& Control)
   voidRadius=Control.EvalVar<double>(keyName+"VoidRadius");
   aspectRatio=Control.EvalVar<double>(keyName+"AspectRatio");
   nSectors=Control.EvalVar<double>(keyName+"NSectors");
+  if (nSectors<1)
+    ELog::EM << "NSectors must be >= 1" << ELog::endErr;
 
   targetHeight=Control.EvalVar<double>(keyName+"TargetHeight");
   voidTungstenThick=Control.EvalVar<double>(keyName+"VoidTungstenThick");
@@ -410,6 +412,9 @@ BilbaoWheel::createSurfaces()
   double theta(0.0);
   double thetarad(0.0);
   double thick(0.0);
+  Geometry::Plane *p1, *p2;
+  Geometry::Vec3D dirX(X);
+  Geometry::Quaternion Qxy;
   const double dTheta = 360.0/nSectors;
   int SIsec(wheelIndex+5000);
   for (size_t j=0; j<nSectors; j++)
@@ -419,8 +424,17 @@ BilbaoWheel::createSurfaces()
       std::cout << j << " " << theta << std::endl;
       //      if (theta-90.0>Geometry::zeroTol)
       thick = 0.5/cos(thetarad);
-      ModelSupport::buildPlaneRotAxis(SMap, SIsec+3, Origin-X*thick, X, Z, theta);
-      ModelSupport::buildPlaneRotAxis(SMap, SIsec+4, Origin+X*thick, X, Z, theta);
+      ModelSupport::buildPlaneRotAxis(SMap, SIsec+1, Origin, X, Z, theta+90); // invisible divider
+
+      dirX = X;
+      Geometry::Quaternion::calcQRotDeg(theta,Z).rotate(dirX);
+      p1 = ModelSupport::buildPlane(SMap, SIsec+3, Origin-X*thick, dirX);
+      p2 = ModelSupport::buildPlane(SMap, SIsec+4, Origin+X*thick, dirX);
+
+      //      Qxy = Geometry::Quaternion::calcQRotDeg(theta,Z);
+      //      p1->rotate(Qxy);
+      //      p2->rotate(Qxy);
+
       SIsec += 10;
     }
 
@@ -456,7 +470,12 @@ BilbaoWheel::createObjects(Simulation& System)
       else // build the sectors
 	{
 	  SIsec = wheelIndex+5000;
-	  for (size_t j=0; j<nSectors; j++)
+	  if (nSectors==1) // no sectors requested
+	    {
+	      Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -17M 5 -6 ");
+	      System.addCell(MonteCarlo::Qhull(cellIndex++,matNum[matTYPE[i]],mainTemp,Out));
+	    }
+	  else for (size_t j=0; j<nSectors; j++)
 	    {
 	      Out1=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -17M 5 -6 ");
 	      // Tungsten
@@ -466,9 +485,9 @@ BilbaoWheel::createObjects(Simulation& System)
 					       Out1+Out));
 
 	      // Pieces of steel between Tungsten sectors
-	      // -3M is needed since planes 3 and -4 cross Tunsten in two places,
+	      // -1 is needed since planes 3 and -4 cross Tunsten in two places,
 	      //     so we need to select only one
-	      Out = ModelSupport::getComposite(SMap, SIsec, SI1, " 3 -4 -3M ");
+	      Out = ModelSupport::getComposite(SMap, SIsec, " 3 -4 -1 ");
 	      System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out1+Out));
 
 	      SIsec+=10;
