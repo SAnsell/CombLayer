@@ -3,7 +3,7 @@
  
  * File:   essBuild/BilbaoWheel.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2015 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -87,7 +87,7 @@ BilbaoWheel::BilbaoWheel(const std::string& Key) :
 BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) : 
   WheelBase(A),
   xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  xyAngle(A.xyAngle),zAngle(A.zAngle),targetHeight(A.targetHeight),
+  xyAngle(A.xyAngle),zAngle(A.zAngle),engActive(A.engActive),targetHeight(A.targetHeight),
   voidTungstenThick(A.voidTungstenThick),steelTungstenThick(A.steelTungstenThick),
   caseThickIn(A.caseThickIn),coolantThick(A.coolantThick),
   caseThick(A.caseThick),voidThick(A.voidThick),
@@ -119,6 +119,7 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
       zStep=A.zStep;
       xyAngle=A.xyAngle;
       zAngle=A.zAngle;
+      engActive=A.engActive;
       targetHeight=A.targetHeight;
       voidTungstenThick=A.voidTungstenThick;
       steelTungstenThick=A.steelTungstenThick;
@@ -177,6 +178,8 @@ BilbaoWheel::populate(const FuncDataBase& Control)
   zStep=Control.EvalVar<double>(keyName+"ZStep");
   xyAngle=Control.EvalVar<double>(keyName+"XYangle");
   zAngle=Control.EvalVar<double>(keyName+"Zangle");
+
+  engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
 
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");   
   double R;

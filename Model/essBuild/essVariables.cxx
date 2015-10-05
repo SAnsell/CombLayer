@@ -67,6 +67,7 @@ EssWheel(FuncDataBase& Control)
     \param Control :: Segment variables
    */
 {
+  Control.addVariable("BilbaoWheelEngineeringActive", 1);
   Control.addVariable("BilbaoWheelShaftHeight",435.0);
 
   Control.addVariable("BilbaoWheelNShaftLayers",5);

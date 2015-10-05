@@ -44,6 +44,8 @@ class BilbaoWheel : public WheelBase
   double zStep;                   ///< Z step
   double xyAngle;                 ///< xy angle
   double zAngle;                  ///< zAngle step
+
+  int engActive;                 ///< Engineering active flag
   
   double targetHeight;           ///< Total height of target
   double voidTungstenThick;      ///< Void thickness below/above Tungsten
