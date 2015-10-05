@@ -92,7 +92,8 @@ BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) :
   caseThickIn(A.caseThickIn),coolantThick(A.coolantThick),
   caseThick(A.caseThick),voidThick(A.voidThick),
   innerRadius(A.innerRadius),caseRadius(A.caseRadius),
-  voidRadius(A.voidRadius),aspectRatio(A.aspectRatio),nSectors(A.nSectors),
+  voidRadius(A.voidRadius),aspectRatio(A.aspectRatio),
+  nSectors(A.nSectors),secSepThick(A.secSepThick),secSepMat(A.secSepMat),
   nLayers(A.nLayers),radius(A.radius),
   matTYPE(A.matTYPE),shaftHeight(A.shaftHeight),nShaftLayers(A.nShaftLayers),
   wMat(A.wMat),heMat(A.heMat),steelMat(A.steelMat),ssVoidMat(A.ssVoidMat)
@@ -130,6 +131,8 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
       voidRadius=A.voidRadius;
       aspectRatio=A.aspectRatio;
       nSectors=A.nSectors;
+      secSepThick=A.secSepThick;
+      secSepMat=A.secSepMat;
       nLayers=A.nLayers;
       radius=A.radius;
       matTYPE=A.matTYPE;
@@ -195,9 +198,12 @@ BilbaoWheel::populate(const FuncDataBase& Control)
   caseRadius=Control.EvalVar<double>(keyName+"CaseRadius");  
   voidRadius=Control.EvalVar<double>(keyName+"VoidRadius");
   aspectRatio=Control.EvalVar<double>(keyName+"AspectRatio");
-  nSectors=Control.EvalVar<double>(keyName+"NSectors");
+
+  nSectors=Control.EvalVar<int>(keyName+"NSectors");
   if (nSectors<1)
     ELog::EM << "NSectors must be >= 1" << ELog::endErr;
+  secSepThick=Control.EvalVar<double>(keyName+"SectorSepThick");
+  secSepMat=ModelSupport::EvalMat<int>(Control,keyName+"SectorSepMat");  
 
   targetHeight=Control.EvalVar<double>(keyName+"TargetHeight");
   voidTungstenThick=Control.EvalVar<double>(keyName+"VoidTungstenThick");
@@ -411,10 +417,6 @@ BilbaoWheel::createSurfaces()
   // segmentation
   double theta(0.0);
   double thetarad(0.0);
-  double thick(0.0);
-  Geometry::Plane *p1, *p2;
-  Geometry::Vec3D dirX(X);
-  Geometry::Quaternion Qxy;
   const double dTheta = 360.0/nSectors;
   int SIsec(wheelIndex+5000);
   for (size_t j=0; j<nSectors; j++)
@@ -422,18 +424,9 @@ BilbaoWheel::createSurfaces()
       theta = j*dTheta;
       thetarad = theta*M_PI/180.0;
       std::cout << j << " " << theta << std::endl;
-      //      if (theta-90.0>Geometry::zeroTol)
-      thick = 0.5/cos(thetarad);
       ModelSupport::buildPlaneRotAxis(SMap, SIsec+1, Origin, X, Z, theta+90); // invisible divider
-
-      dirX = X;
-      Geometry::Quaternion::calcQRotDeg(theta,Z).rotate(dirX);
-      p1 = ModelSupport::buildPlane(SMap, SIsec+3, Origin-X*thick, dirX);
-      p2 = ModelSupport::buildPlane(SMap, SIsec+4, Origin+X*thick, dirX);
-
-      //      Qxy = Geometry::Quaternion::calcQRotDeg(theta,Z);
-      //      p1->rotate(Qxy);
-      //      p2->rotate(Qxy);
+      ModelSupport::buildPlaneRotAxis(SMap, SIsec+3, Origin-X*(secSepThick/2.0*cos(thetarad))-Y*(secSepThick/2.0*sin(thetarad)), X, Z, theta);
+      ModelSupport::buildPlaneRotAxis(SMap, SIsec+4, Origin+X*(secSepThick/2.0*cos(thetarad))+Y*(secSepThick/2.0*sin(thetarad)), X, Z, theta);
 
       SIsec += 10;
     }
@@ -475,7 +468,7 @@ BilbaoWheel::createObjects(Simulation& System)
 	      Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -17M 5 -6 ");
 	      System.addCell(MonteCarlo::Qhull(cellIndex++,matNum[matTYPE[i]],mainTemp,Out));
 	    }
-	  else for (size_t j=0; j<nSectors; j++)
+	  else for (int j=0; j<nSectors; j++)
 	    {
 	      Out1=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -17M 5 -6 ");
 	      // Tungsten
@@ -488,7 +481,7 @@ BilbaoWheel::createObjects(Simulation& System)
 	      // -1 is needed since planes 3 and -4 cross Tunsten in two places,
 	      //     so we need to select only one
 	      Out = ModelSupport::getComposite(SMap, SIsec, " 3 -4 -1 ");
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out1+Out));
+	      System.addCell(MonteCarlo::Qhull(cellIndex++,secSepMat,mainTemp,Out1+Out));
 
 	      SIsec+=10;
 	    }
