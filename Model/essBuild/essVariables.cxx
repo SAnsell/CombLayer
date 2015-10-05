@@ -106,13 +106,13 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelAspectRatio", 0.00138);
   Control.addVariable("BilbaoWheelNSectors", 36);
   Control.addVariable("BilbaoWheelSectorSepThick", 1.0);
-  Control.addVariable("BilbaoWheelSectorSepMat", "SS316L793");
+  Control.addVariable("BilbaoWheelSectorSepMat", "SS316L785");
 
-  Control.addVariable("BilbaoWheelWMat","Tungsten156");
-  Control.addVariable("BilbaoWheelSteelMat","SS316L793");
+  Control.addVariable("BilbaoWheelWMat","Tungsten151");
+  Control.addVariable("BilbaoWheelSteelMat","SS316L785");
   Control.addVariable("BilbaoWheelHeMat","Helium");
   Control.addVariable("BilbaoWheelSS316LVoidMat","M2644"); // !!! use appropriate name
-  Control.addVariable("BilbaoWheelInnerMat","SS316L793");
+  Control.addVariable("BilbaoWheelInnerMat","SS316L785");
 
   Control.addVariable("BilbaoWheelNLayers",3);
 

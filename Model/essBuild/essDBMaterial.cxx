@@ -201,6 +201,43 @@ void addESSMaterial()
   MObj.setDensity(-7.93);
   MDB.resetMaterial(MObj);
 
+  // Same ase 2636 but with a2t density of 7.85 g/cm3 and fe56.12t instead of fe56.14t (material 2636 in a2t200)
+  MObj.setMaterial(2638, "SS316L785",
+		   " 06000.71c  0.001392603 "
+		   " 14028.71c  0.007323064 "
+		   " 14029.71c  0.000372017 "
+		   " 14030.71c  0.000245523 "
+		   " 15031.71c  0.000360008 "
+		   " 16032.71c  0.000165168 "
+		   " 16033.71c  0.000001304 "
+		   " 16034.71c  0.000007390 "
+		   " 16036.71c  0.000000017 "
+		   " 24050.71c  0.007920331 "
+		   " 24052.71c  0.152735704 "
+		   " 24053.71c  0.017319003 "
+		   " 24054.71c  0.004311066 "
+		   " 25055.71c  0.018267327 "
+		   " 26054.71c  0.038344779 "
+		   " 26056.71c  0.601931034 "
+		   " 26057.71c  0.013901213 "
+		   " 26058.71c  0.001849996 "
+		   " 27059.71c  0.000283816 "
+		   " 28058.71c  0.080834464 "
+		   " 28060.71c  0.031137291 "
+		   " 28061.71c  0.001353516 "
+		   " 28062.71c  0.004315603 "
+		   " 28064.71c  0.001099057 "
+		   " 42092.71c  0.002145890 "
+		   " 42094.71c  0.001341000 "
+		   " 42095.71c  0.002310064 "
+		   " 42096.71c  0.002423388 "
+		   " 42097.71c  0.001388944 "
+		   " 42098.71c  0.003514494 "
+		   " 42100.71c  0.001404926 ", "fe56.12t", MLib);
+  MObj.setMXitem(6000, 71, 'c', "h", "06012");
+  MObj.setDensity(-7.85);
+  MDB.resetMaterial(MObj);
+
 // SS316L and void
 // density -1.62E-2
 // Reference: a2t200
@@ -271,8 +308,20 @@ MDB.resetMaterial(MObj);
   MObj.setDensity(-19.3);
   MDB.resetMaterial(MObj);  
 
+
+  // Tunsten as in a2t200 mat 7400 with average density 15.1 g/cm3
+  MObj.setMaterial(7401, "Tungsten151",
+		   "74180.50c  0.001200000 "
+		   "74182.71c  0.265000000 "
+		   "74183.71c  0.143100000 "
+		   "74184.71c  0.306400000 "
+		   "74186.71c  0.284300000 ",
+		   "",MLib);
+  MObj.setDensity(-15.1);
+  MDB.resetMaterial(MObj);
+
   // Bilbao M30001 - same ase 7400 but at 15.6 g/cm3
-  MObj.setMaterial(7401, "Tungsten156",
+  MObj.setMaterial(7402, "Tungsten156",
 		   "74180.50c  0.001200000 "
 		   "74182.71c  0.265000000 "
 		   "74183.71c  0.143100000 "
@@ -281,6 +330,7 @@ MDB.resetMaterial(MObj);
 		   "",MLib);
   MObj.setDensity(-15.6);
   MDB.resetMaterial(MObj);
+
 
   
   
