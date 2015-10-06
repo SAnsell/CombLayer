@@ -71,6 +71,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "SecondTrack.h"
+#include "AttachSupport.h"
 #include "Object.h"
 #include "Qhull.h"
 #include "Source.h"
@@ -167,7 +168,6 @@ setDefRotation(const mainSystem::inputParam& IParam)
   masterRotate& MR = masterRotate::Instance();
   if (IParam.flag("axis"))
     {
-
       // Move X to Z:
       MR.addRotation(Geometry::Vec3D(0,1,0),
 		     Geometry::Vec3D(0,0,0),
@@ -179,7 +179,6 @@ setDefRotation(const mainSystem::inputParam& IParam)
       MR.addMirror(Geometry::Plane
 		   (1,0,Geometry::Vec3D(0,0,0),
 		    Geometry::Vec3D(1,0,0)));
-
     }
   if (IParam.flag("angle"))
     {
@@ -219,8 +218,23 @@ setDefRotation(const mainSystem::inputParam& IParam)
 	  const double rotAngle=
 	    IParam.getValue<double>("angle",1);
 	  MR.addRotation(Geometry::Vec3D(0,0,1),Geometry::Vec3D(0,0,0),
-			 -rotAngle);
-		  
+			 -rotAngle);		  
+	}
+      else if (AItem=="object" || AItem=="object")
+	{
+	  const std::string keyName=
+	    IParam.getValue<std::string>("angle",1);
+	  const std::string linkName=
+	    IParam.getValue<std::string>("angle",2);
+	  const long int LN=attachSystem::getLinkNumber(linkName);
+	  const attachSystem::FixedComp* OPtr=
+	    OR.getObject<attachSystem::FixedComp>(keyName);
+	  if (!OPtr)
+	    throw ColErr::InContainerError<std::string>
+	      (keyName,"Fixed component");
+	  const Geometry::Vec3D YAxis=OPtr->getSignedLinkAxis(LN);
+	  const double angle=180.0*acos(YAxis[0])/M_PI;
+	  MR.addRotation(Geometry::Vec3D(0,0,1),Geometry::Vec3D(0,0,0),-angle);
 	}
       else 
 	retFlag=AItem;

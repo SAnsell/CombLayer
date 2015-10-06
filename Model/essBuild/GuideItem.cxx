@@ -438,10 +438,12 @@ GuideItem::createObjects(Simulation& System,const GuideItem* GPtr)
       else 
 	Out=ModelSupport::getComposite
 	  (SMap,GI,guideIndex,"1M 7 13 -14 15 -16 -57");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
-      
-      if (filled) addCell("Void",cellIndex-1);
 
+      if (!filled)
+	Out+=ModelSupport::getComposite
+	  (SMap,guideIndex,"(-1103:1104:-1105:1106) ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));      
+      if (filled) addCell("Void",cellIndex-1);
       GI+=50;
     }      
   // Inner void
@@ -450,6 +452,7 @@ GuideItem::createObjects(Simulation& System,const GuideItem* GPtr)
       Out=ModelSupport::getComposite(SMap,guideIndex,GI,
 				     "1 7 -7M 1103 -1104 1105 -1106 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      
       setCell("Void",cellIndex-1);
     }
 

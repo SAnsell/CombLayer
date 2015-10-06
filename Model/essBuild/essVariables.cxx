@@ -1315,15 +1315,20 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("ABunkerVoidMat","Void");
   Control.addVariable("ABunkerWallMat","Steel71");
 
-  Control.addVariable("ABunkerNLayers",9);
+  Control.addVariable("ABunkerNLayers",12);
   Control.addVariable("ABunkerWallMat1","B4C");
   Control.addVariable("ABunkerWallMat2","Lead");
   Control.addVariable("ABunkerWallMat3","CastIron");
   Control.addVariable("ABunkerWallMat4","CastIron");
+  Control.addVariable("ABunkerWallMat5","Concrete");
+  Control.addVariable("ABunkerWallMat6","CastIron");
+  Control.addVariable("ABunkerWallMat7","CastIron");
+  Control.addVariable("ABunkerWallMat8","B4C");
   Control.addVariable("ABunkerWallMat9","Concrete");
   
   Control.addVariable("ABunkerWallLen1",5.0);
-  Control.addVariable("ABunkerWallLen2",25.0);
+  Control.addVariable("ABunkerWallLen2",10.0);
+  Control.addVariable("ABunkerWallLen8",1.0);
 
   //
   // RIGHT BUNKER : B PART

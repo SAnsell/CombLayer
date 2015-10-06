@@ -79,7 +79,7 @@ populateDivideLen(const FuncDataBase& Control,const size_t N,
 	  const std::string NName=StrFunc::makeString(i);
 	  const double fA=Control.EvalDefVar<double>(Name+NName,frac);
 	  Vec.push_back(fA);
-	  if (fA<0 || fA>1.0)
+	  if (fabs(fA-frac)>Geometry::zeroTol)
 	    {
 	      curLen+=std::fabs(fA);    // NOTE: vec.back is negative
 	      if (curLen>TLen)

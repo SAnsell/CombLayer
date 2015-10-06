@@ -291,13 +291,8 @@ PWTConstructor::writeHelp(std::ostream& OX) const
       " :: \n"
       "   All / object [objectName] / Cells {numbers}(s) / [cellNumber] \n"
       "TYPE :: \n"
-      "   cells ::  \n"
-      "   simpleVec [Vec3D] :: implicit capture along a direction\n"
-      "   simpleVec Object linkPt :: implicit capture along a direction\n"
-      "   scale :: [frac] implicit capture \n"
-      "   scaleVec :: [frac] [Vec3D] :: implicit capture along a direction\n"
-      "   scaleVec :: [frac] Object linkPt :: "
-      " implicit capture along a direction\n";
+      "   simple [value] \n";
+      "       -- vias to the point\n";
   return;
 }
 

@@ -45,6 +45,7 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
+#include "support.h"
 #include "Surface.h"
 #include "Quadratic.h"
 #include "Plane.h"
@@ -56,6 +57,7 @@
 
 #include "varList.h"
 #include "Code.h"
+
 #include "FuncDataBase.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -78,7 +80,31 @@ namespace attachSystem
 
 void createAddition(const int,Rule*,Rule*&);
 
-
+long int
+getLinkNumber(const std::string& Name)
+  /*!
+    Get a link number
+  */
+{
+  ELog::RegMethod RegA("AttachSupport[F]","getLinkNumber");
+  
+  long int linkPt(0);
+  
+  if (!Name.empty() && !StrFunc::convert(Name,linkPt))
+    {
+      if (Name=="origin") 
+	linkPt=0;
+      else if (Name=="front") 
+	linkPt=1;
+      else if (Name=="back")
+	linkPt=2;
+      else 
+	throw ColErr::InContainerError<std::string>(Name,"String");
+    }
+  return linkPt;
+}
+  
+  
 void
 addUnion(const MonteCarlo::Object& Obj,Rule*& outRule)
   /*!
