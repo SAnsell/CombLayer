@@ -422,7 +422,7 @@ BilbaoWheel::createSurfaces()
   double thetarad(0.0);
   const double dTheta = 360.0/nSectors;
   int SIsec(wheelIndex+5000);
-  for (size_t j=0; j<nSectors; j++)
+  for (int j=0; j<nSectors; j++)
     {
       theta = j*dTheta;
       thetarad = theta*M_PI/180.0;
