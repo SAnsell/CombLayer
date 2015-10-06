@@ -310,6 +310,15 @@ MDB.resetMaterial(MObj);
 
 
   // Tunsten as in a2t200 mat 7400 with average density 15.1 g/cm3
+  // Tungsten bricks are arranged in square lattice.
+  // The length X width of one brick is 3 cm X 1 cm and the gap between bricks is 0.2 cm.
+  // Hence, the filling factor of the infinite square lattice is:
+  // 3*1/(3+0.2)/(1+0.2) = 0.78125
+  // Natural Tungsten density is 19.298 19.3 g/cm3 [Material book] at 300 K,
+  // therefore the density of homogenised material is 15.0766 \approx 15.1 g/cm3 
+  // We need to use density at 300 K despite of the fact that during the operation the temperature will be ~600 K since the Tungsten bricks are placed inside
+  // containers which do not allow them to expand.
+
   MObj.setMaterial(7401, "Tungsten151",
 		   "74180.50c  0.001200000 "
 		   "74182.71c  0.265000000 "
