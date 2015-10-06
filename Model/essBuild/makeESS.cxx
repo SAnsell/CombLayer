@@ -185,7 +185,7 @@ makeESS::makeTarget(Simulation& System,
   if (targetType=="help")
     {
       ELog::EM<<"Target Type [Target]:"<<ELog::endBasic;
-      ELog::EM<<"  -- Wheel       : Simple wheel form"<<ELog::endBasic;
+      ELog::EM<<"  -- Wheel     : Simple wheel form"<<ELog::endBasic;
       ELog::EM<<"  -- Bilbao    : Bilbao wheel"<<ELog::endBasic;
       return;
     }
