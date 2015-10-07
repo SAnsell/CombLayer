@@ -67,6 +67,64 @@ EssWheel(FuncDataBase& Control)
     \param Control :: Segment variables
    */
 {
+  Control.addVariable("BilbaoWheelEngineeringActive", 1);
+  Control.addVariable("BilbaoWheelShaftHeight",435.0);
+
+  Control.addVariable("BilbaoWheelNShaftLayers",5);
+  Control.addVariable("BilbaoWheelShaftRadius1",14.0);
+  Control.addVariable("BilbaoWheelShaftMat1","Iron");
+  Control.addVariable("BilbaoWheelShaftRadius2",15.0);
+  Control.addVariable("BilbaoWheelShaftMat2","Iron");
+  Control.addVariable("BilbaoWheelShaftRadius3",17.0);
+  Control.addVariable("BilbaoWheelShaftMat3",0);
+  Control.addVariable("BilbaoWheelShaftRadius4",20.0);
+  Control.addVariable("BilbaoWheelShaftMat4","Iron");
+  Control.addVariable("BilbaoWheelShaftRadius5",22.0);
+  Control.addVariable("BilbaoWheelShaftMat5",0);
+
+
+
+  Control.addVariable("BilbaoWheelXStep",0.0);
+  Control.addVariable("BilbaoWheelYStep",112.0);
+  Control.addVariable("BilbaoWheelZStep",0.0);
+  Control.addVariable("BilbaoWheelXYangle",5.0);
+  Control.addVariable("BilbaoWheelZangle",0.0);
+  Control.addVariable("BilbaoWheelTargetHeight",8.0);
+  Control.addVariable("BilbaoWheelVoidTungstenThick", 0.1);
+  Control.addVariable("BilbaoWheelSteelTungstenThick", 0.2);
+  Control.addVariable("BilbaoWheelTemp",300.0);
+  Control.addVariable("BilbaoWheelCoolantThick",0.5);
+  Control.addVariable("BilbaoWheelCaseThick",1.0);
+  Control.addVariable("BilbaoWheelCaseThickIn",1.5);
+  Control.addVariable("BilbaoWheelVoidThick",0.7);
+
+  Control.addVariable("BilbaoWheelInnerRadius",45);
+  Control.addVariable("BilbaoWheelCoolantRadiusIn",64.07);
+  Control.addVariable("BilbaoWheelCoolantRadiusOut",128.95);
+  Control.addVariable("BilbaoWheelCaseRadius",129.15);
+  Control.addVariable("BilbaoWheelVoidRadius",131.15);
+  Control.addVariable("BilbaoWheelAspectRatio", 0.00138);
+  Control.addVariable("BilbaoWheelNSectors", 36);
+  Control.addVariable("BilbaoWheelSectorSepThick", 1.0);
+  Control.addVariable("BilbaoWheelSectorSepMat", "SS316L785");
+
+  Control.addVariable("BilbaoWheelWMat","Tungsten151");
+  Control.addVariable("BilbaoWheelSteelMat","SS316L785");
+  Control.addVariable("BilbaoWheelHeMat","Helium");
+  Control.addVariable("BilbaoWheelSS316LVoidMat","M2644"); // !!! use appropriate name
+  Control.addVariable("BilbaoWheelInnerMat","SS316L785");
+
+  Control.addVariable("BilbaoWheelNLayers",3);
+
+  Control.addVariable("BilbaoWheelRadius1",48);
+  Control.addVariable("BilbaoWheelMatTYPE1",1); // SS316L
+
+  Control.addVariable("BilbaoWheelRadius2",85.0);
+  Control.addVariable("BilbaoWheelMatTYPE2",1);
+
+  Control.addVariable("BilbaoWheelRadius3",125.0);
+  Control.addVariable("BilbaoWheelMatTYPE3",3);
+
   return;
 }
 
@@ -562,6 +620,8 @@ EssVariables(FuncDataBase& Control)
 
 
   Control.addVariable("ProtonBeamViewRadius",4.0);  
+
+
  
   Control.addVariable("WheelShaftNLayers",3);
   Control.addVariable("WheelShaftHeight",435.0);
@@ -900,7 +960,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowFlyFlowGuideBaseArmSep",0.1);
   Control.addVariable("LowFlyFlowGuideBaseOffset",Geometry::Vec3D(0,-10.7,0));
   Control.addVariable("LowFlyFlowGuideArmOffset",Geometry::Vec3D(0,-9,0));
-  Control.addVariable("LowFlyFlowGuideWallMat","Aluminium");
+  Control.addVariable("LowFlyFlowGuideWallMat","Aluminium20K");
   Control.addVariable("LowFlyFlowGuideWallTemp",20.0);
   
   Control.addVariable("LowFlyRightLobeXStep",-1.0);  
@@ -914,7 +974,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowFlyRightLobeRadius2",2.506);
   Control.addVariable("LowFlyRightLobeRadius3",2.506);
 
-  Control.addVariable("LowFlyRightLobeModMat","HPARA%HORTHO%5.0");
+  Control.addVariable("LowFlyRightLobeModMat","LH05ortho");
   Control.addVariable("LowFlyRightLobeModTemp",20.0);
 
   Control.addVariable("LowFlyRightLobeNLayers",4);
@@ -1100,7 +1160,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowPreModRadius3");
   Control.addVariable("LowPreModMat3","Aluminium");
   Control.addVariable("LowPreModHeight4", 0.0);
-  Control.addVariable("LowPreModDepth4",  0.85);
+  Control.addVariable("LowPreModDepth4",  0.0);
   Control.addVariable("LowPreModRadius4", 0.0);
   Control.addVariable("LowPreModMat4","Void");
 
@@ -1129,7 +1189,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopPreModRadius3");
   Control.addVariable("TopPreModMat3","Aluminium");
   Control.addVariable("TopPreModHeight4", 0.0);
-  Control.addVariable("TopPreModDepth4",  0.85);
+  Control.addVariable("TopPreModDepth4",  0.0);
   Control.addVariable("TopPreModRadius4", 0.0);
   Control.addVariable("TopPreModMat4","Void");
 

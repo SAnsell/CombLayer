@@ -625,7 +625,7 @@ void createESSInputs(inputParam& IParam)
   
   //  IParam.setValue("sdefEnergy",2503.0);    
   IParam.setValue("sdefType",std::string("ess"));  
-  IParam.setValue("targetType",std::string("Wheel"));  
+  IParam.setValue("targetType",std::string("Bilbao"));
 
   IParam.regDefItem<std::string>("lowMod","lowModType",1,std::string("lowMod"));
   IParam.regDefItem<std::string>("topMod","topModType",1,std::string("topMod"));

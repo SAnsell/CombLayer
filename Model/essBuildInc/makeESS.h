@@ -52,8 +52,8 @@ namespace moderatorSystem
 namespace essSystem
 {
   class WheelBase;
-  class SegWheel;
   class Wheel;
+  class BilbaoWheel;
   class BeRef;
   class essMod;
   class ConicModerator;
