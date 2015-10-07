@@ -227,38 +227,37 @@ MidWaterDivider::createLinks(const H2Wing &LA, const H2Wing &RA)
   const Geometry::Plane *pWater, *pWing;
   int iWater; // mid water surface index
 
-  // x+y-
+  // x-y-
   iWater = divIndex+112;
   pWater = SMap.realPtr<Geometry::Plane>(iWater);
   pWing = SMap.realPtr<Geometry::Plane>(RA.getLinkSurf(0));
   // SA: check definitions of normals
   FixedComp::setConnect(2, SurInter::getPoint(pWater, pWing, pz), pWing->getNormal());
   FixedComp::setLinkSurf(2, -SMap.realSurf(iWater));
-
+  
   // x-y-
   iWater = divIndex+132;
   pWater = SMap.realPtr<Geometry::Plane>(iWater);
   pWing = SMap.realPtr<Geometry::Plane>(RA.getLinkSurf(2));
   FixedComp::setConnect(3, SurInter::getPoint(pWater, pWing, pz), pWing->getNormal());
   FixedComp::setLinkSurf(3, -SMap.realSurf(iWater));
-
-  // x-y+
+  
+  // x+y+
   iWater = divIndex+131;
   pWater = SMap.realPtr<Geometry::Plane>(iWater);
   pWing = SMap.realPtr<Geometry::Plane>(LA.getLinkSurf(0));
   FixedComp::setConnect(4, SurInter::getPoint(pWater, pWing, pz), pWing->getNormal());
   FixedComp::setLinkSurf(4, SMap.realSurf(iWater));
 
-  // x+y+
+  // x-y+
   iWater = divIndex+111;
   pWater = SMap.realPtr<Geometry::Plane>(iWater);
   pWing = SMap.realPtr<Geometry::Plane>(LA.getLinkSurf(2));
   FixedComp::setConnect(5, SurInter::getPoint(pWater, pWing, pz), pWing->getNormal());
   FixedComp::setLinkSurf(5, SMap.realSurf(iWater));
 
-  ELog::EM << "Coordinates and sufaces are correct, but do not correspond to each other" << ELog::endCrit;
-  if (Z[2]>0)
-    for (int i=0; i<3; i++)
+  if (Z[2]>0) // if top moderator
+    for (int i=0; i<6; i++)
       ELog::EM << i << ":\t" << getLinkPt(i) << " " << getLinkString(i) << ELog::endBasic;
 
   return;
@@ -321,15 +320,15 @@ MidWaterDivider::createSurfaces()
 
   
   ModelSupport::buildPlane(SMap,divIndex+111,
-			   Origin+leftNorm*(length+wallThick),leftNorm);
+			   Origin+leftNorm*(length+wallThick),leftNorm); // x-y+
   ModelSupport::buildPlane(SMap,divIndex+112,
-			   Origin+rightNorm*(length+wallThick),rightNorm);
+			   Origin+rightNorm*(length+wallThick),rightNorm); // x-y-
 
   // Length below [note reverse of normals]
   ModelSupport::buildPlane(SMap,divIndex+131,
-			   Origin-rightNorm*(wallThick+length),-rightNorm);
+			   Origin-rightNorm*(wallThick+length),-rightNorm); // x+y+
   ModelSupport::buildPlane(SMap,divIndex+132,
-			   Origin-leftNorm*(wallThick+length),-leftNorm);
+			   Origin-leftNorm*(wallThick+length),-leftNorm); // x+y-
 
 
   return;
