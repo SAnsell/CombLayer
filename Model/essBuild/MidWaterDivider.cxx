@@ -91,7 +91,7 @@ MidWaterDivider::MidWaterDivider(const std::string& baseKey,
 				 const std::string& extraKey) :
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0,0),
-  attachSystem::FixedComp(baseKey+extraKey,8),
+  attachSystem::FixedComp(baseKey+extraKey,10),
   baseName(baseKey),
   divIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
   cellIndex(divIndex+1)
@@ -227,38 +227,47 @@ MidWaterDivider::createLinks(const H2Wing &LA, const H2Wing &RA)
   const Geometry::Plane *pWater, *pWing;
   int iWater; // mid water surface index
 
-  // x-y-
-  iWater = divIndex+112;
-  pWater = SMap.realPtr<Geometry::Plane>(iWater);
-  pWing = SMap.realPtr<Geometry::Plane>(RA.getLinkSurf(0));
-  // SA: check definitions of normals
-  FixedComp::setConnect(2, SurInter::getPoint(pWater, pWing, pz), pWing->getNormal());
-  FixedComp::setLinkSurf(2, -SMap.realSurf(iWater));
-  
-  // x-y-
-  iWater = divIndex+132;
-  pWater = SMap.realPtr<Geometry::Plane>(iWater);
-  pWing = SMap.realPtr<Geometry::Plane>(RA.getLinkSurf(2));
-  FixedComp::setConnect(3, SurInter::getPoint(pWater, pWing, pz), pWing->getNormal());
-  FixedComp::setLinkSurf(3, -SMap.realSurf(iWater));
-  
-  // x+y+
-  iWater = divIndex+131;
-  pWater = SMap.realPtr<Geometry::Plane>(iWater);
-  pWing = SMap.realPtr<Geometry::Plane>(LA.getLinkSurf(0));
-  FixedComp::setConnect(4, SurInter::getPoint(pWater, pWing, pz), pWing->getNormal());
-  FixedComp::setLinkSurf(4, SMap.realSurf(iWater));
+  // === Intersections of water divider and outer/inner H2Wing surfaces ===
+  //     Inner link points are used by F5Collimators
+  // !!! Signs of surfaces for outer and inner link points must be different !!!
 
-  // x-y+
-  iWater = divIndex+111;
-  pWater = SMap.realPtr<Geometry::Plane>(iWater);
-  pWing = SMap.realPtr<Geometry::Plane>(LA.getLinkSurf(2));
-  FixedComp::setConnect(5, SurInter::getPoint(pWater, pWing, pz), pWing->getNormal());
-  FixedComp::setLinkSurf(5, SMap.realSurf(iWater));
+  for (int i=0; i<2; i++) // 0=outer H2Wing surface, 1=inner H2Wing surface
+    {
+      // x+y+
+      iWater = divIndex+131;
+      pWater = SMap.realPtr<Geometry::Plane>(iWater);
+      pWing = SMap.realPtr<Geometry::Plane>(LA.getLinkSurf(0+i*8));
+      FixedComp::setConnect(2+i*4, SurInter::getPoint(pWater, pWing, pz), pWing->getNormal());
+      FixedComp::setLinkSurf(2+i*4, SMap.realSurf(iWater));
+
+      // x-y+
+      iWater = divIndex+111;
+      pWater = SMap.realPtr<Geometry::Plane>(iWater);
+      pWing = SMap.realPtr<Geometry::Plane>(LA.getLinkSurf(2+i*8));
+      FixedComp::setConnect(3+i*4, SurInter::getPoint(pWater, pWing, pz), pWing->getNormal());
+      FixedComp::setLinkSurf(3+i*4, SMap.realSurf(iWater));
+
+      // x-y-
+      iWater = divIndex+112;
+      pWater = SMap.realPtr<Geometry::Plane>(iWater);
+      pWing = SMap.realPtr<Geometry::Plane>(RA.getLinkSurf(0+i*8));
+      FixedComp::setConnect(4+i*4, SurInter::getPoint(pWater, pWing, pz), pWing->getNormal());
+      FixedComp::setLinkSurf(4+i*4, -SMap.realSurf(iWater));
+  
+      // x+y-
+      iWater = divIndex+132;
+      pWater = SMap.realPtr<Geometry::Plane>(iWater);
+      pWing = SMap.realPtr<Geometry::Plane>(RA.getLinkSurf(2+i*8));
+      FixedComp::setConnect(5+i*4, SurInter::getPoint(pWater, pWing, pz), pWing->getNormal());
+      FixedComp::setLinkSurf(5+i*4, -SMap.realSurf(iWater));
+    }
+  //  !!! check if surface signs in setLinkSurf are ok. Since there are always 2 surfaces, use addLinkSurf for link points 2-5  in the same way as it is done for 0-1 !!!
+  // postponed until I understand surfaces in the link points 0 and 1 - I think 0 should use surfaces 123 and 124, and 1 - 103 and 104
 
   if (Z[2]>0) // if top moderator
-    for (int i=0; i<6; i++)
+    for (int i=0; i<10; i++)
       ELog::EM << i << ":\t" << getLinkPt(i) << " " << getLinkString(i) << ELog::endBasic;
+
 
   return;
 }
