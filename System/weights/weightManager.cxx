@@ -53,6 +53,7 @@
 #include "WForm.h"
 #include "WItem.h"
 #include "WCells.h"
+#include "WeightMesh.h"
 #include "weightManager.h"
 
 
@@ -86,6 +87,20 @@ weightManager::Instance()
   return A;
 }
 
+WeightMesh*
+weightManager::getMesh()
+  /*!
+    Create/access mesh
+    \return Mesh
+   */
+{
+  ELog::RegMethod RegA("weightManager","getMesh");
+  if (!WWGPtr)
+    WWGPtr=new WeightMesh();
+  return WWGPtr;
+}
+
+  
 WForm*
 weightManager::getParticle(const char c)
   /*!

@@ -56,7 +56,7 @@ namespace WeightSystem
 WeightMesh::WeightMesh() : 
   WForm(),type(XYZ)			   
   /*!
-    Cconstructor [makes XYZ mesh]
+    Constructor [makes XYZ mesh]
   */
 {}
 
@@ -212,6 +212,8 @@ WeightMesh::write(std::ostream& OX) const
     \param OX :: output stream
   */
 {
+  ELog::RegMethod RegA("WeightMesh","write");
+
   std::ostringstream cx;
   cx<<"mesh "<<getType()<<" origin "<<Origin
     <<" axs "<<Axis<<" vec "<<Vec<<" ref "<<RefPoint;
@@ -227,8 +229,8 @@ WeightMesh::write(std::ostream& OX) const
       
       cx.str("");
       cx<<c[i]<<"mesh ";
-      for(vc=X.begin();vc!=X.end();vc++)
-	cx<<*vc<<" ";
+      for(const double& val : Vec)
+	cx<<val<<" ";
       StrFunc::writeMCNPX(cx.str(),OX);
       cx<<c[i]<<"ints";
       for(size_t index=0;index<Vec.size();index++)

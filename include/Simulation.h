@@ -49,6 +49,11 @@ namespace ModelSupport
   class ObjSurfMap;
 }
 
+namespace weightsSystem
+{
+  class WeightMesh;
+}
+
 namespace MonteCarlo
 {
   class Object;
@@ -98,7 +103,7 @@ class Simulation
 
   TallyTYPE TItem;                        ///< Tally Items
   physicsSystem::PhysicsCards* PhysPtr;   ///< Physics Cards
-  
+
   // METHODS:
 
   void deleteObjects();
@@ -212,13 +217,13 @@ class Simulation
   /// Access surface map
   const ModelSupport::ObjSurfMap* getOSM() const;
 
-
   // Tally processing
 
   bool isMCNP6() { return (mcnpType==1) ? 1 : 0; }  ///< get a state
   void setMcnpType(const int T) { mcnpType=T; }  ///< Set type
   void removeAllTally();
   int removeTally(const int);
+
 
   int addTally(const tallySystem::Tally&);
   tallySystem::Tally* getTally(const int) const;

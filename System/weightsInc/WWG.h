@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   weightsInc/BasicWWE.h
+ * File:   weightsInc/BasicWWG.h
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef WeightSystem_BasicWWE_h
-#define WeightSystem_BasicWWE_h
+#ifndef WeightSystem_BasicWWG_h
+#define WeightSystem_BasicWWG_h
 
 ///\file 
 
@@ -29,7 +29,7 @@ class Simulation;
 
 /*!
   \namespace WeightSystem
-  \brief Adds a layer of shutters to the Target/Reflect/Moderatr
+  \brief Controls basic WWG system
   \author S. Ansell
   \version 1.0
   \date April 2009
@@ -37,16 +37,7 @@ class Simulation;
 
 namespace WeightSystem
 { 
-  void simulationWeights(Simulation&,const mainSystem::inputParam&);
-			
-  void setWeights(Simulation&,const std::vector<double>&,
-		  const std::vector<double>&,
-		  const std::set<std::string>&);
-
-  void setWeights(Simulation&,const std::string&);
-  void setWeightsBasic(Simulation&);
-  void setWeightsMidE(Simulation&);
-  void setWeightsHighE(Simulation&);
+  void createWWG(Simulation&,const mainSystem::inputParam&);
 
 }
 

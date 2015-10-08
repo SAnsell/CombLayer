@@ -244,7 +244,8 @@ Simulation::deleteTally()
   TItem.erase(TItem.begin(),TItem.end());
   return;
 }
- 
+
+
 int
 Simulation::readTransform(std::istream& IX)
   /*!
@@ -1579,6 +1580,8 @@ Simulation::writeWeights(std::ostream& OX) const
   */
 
 {
+  ELog::RegMethod RegA("Simulation","writeWeights");
+  
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();  
   OX<<"c -------------------------------------------------------"<<std::endl;

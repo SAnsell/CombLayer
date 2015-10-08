@@ -41,7 +41,8 @@ class weightManager
 
   typedef std::map<char,WForm*> CtrlTYPE;  ///< WControl map  
   CtrlTYPE WMap;              ///< Map of weight systems
-  
+  WeightMesh* WWGPtr;      ///< Weight mesh
+    
  private:  
 
   weightManager();
