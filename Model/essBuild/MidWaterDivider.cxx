@@ -264,10 +264,21 @@ MidWaterDivider::createLinks(const H2Wing &LA, const H2Wing &RA)
   //  !!! check if surface signs in setLinkSurf are ok. Since there are always 2 surfaces, use addLinkSurf for link points 2-5  in the same way as it is done for 0-1 !!!
   // postponed until I understand surfaces in the link points 0 and 1 - I think 0 should use surfaces 123 and 124, and 1 - 103 and 104
 
-  if (Z[2]>0) // if top moderator
-    for (int i=0; i<10; i++)
-      ELog::EM << i << ":\t" << getLinkPt(i) << " " << getLinkString(i) << ELog::endBasic;
 
+  if (Z[2]>0)
+    { // if top moderator
+      Geometry::Vec3D pt;
+      std::ofstream essdat;
+      essdat.open(".ess.dat", std::ios::out);// | std::ios::app);
+      essdat << "F: ";
+      for (int i=6; i<10; i++)
+	{
+	  pt = getLinkPt(i);
+	  essdat << pt[0] << " " << pt[1] << " " << pt[2]+LA.getHeight()/2.0 << " ";
+	}
+      essdat << pt[2]-LA.getHeight()/2.0 << std::endl;
+      essdat.close();
+    }
 
   return;
 }
