@@ -20,6 +20,7 @@ namespace essSystem
 	double length;                   ///< Width  along x
 	double width;                   ///< Width  along y
 	double wall;                    ///< Wall thickness
+	double viewWidth;               ///< View width in horizontal direction (distance between points B and C)
 
 	int GluePoint;              ///< Glue point number (currently number defines quadrant as in butterfly.svgz). Not used if <0
 	

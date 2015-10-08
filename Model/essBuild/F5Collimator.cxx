@@ -86,10 +86,12 @@ namespace essSystem
 
     length=Control.EvalVar<double>(keyName+"Length"); // along x
     wall=Control.EvalDefVar<double>(keyName+"WallThick", 0.5);
+    viewWidth=Control.EvalDefVar<double>("F5ViewWidth", 6);
 
     GluePoint = Control.EvalDefVar<int>(keyName+"GluePoint", -1);
 
     tallySystem::point gC,gB,gB2;
+
 
     if (GluePoint>=0) {
       std::ifstream essdat; // currently used by collimators
@@ -113,11 +115,40 @@ namespace essSystem
 	  Control.setVariable<double>(keyName+"YB", F[gpshift+1]);
 	  Control.setVariable<double>(keyName+"ZB", F[gpshift+2]);
 
-	  Control.setVariable<double>(keyName+"XC", L[gpshift+0]);
-	  Control.setVariable<double>(keyName+"YC", L[gpshift+1]);
-	  Control.setVariable<double>(keyName+"ZC", L[gpshift+2]);
+	  // Calculate the coordinate of L (the second point)
+	  /*
+	    F and L are two points where the collimator looks
+            O is the F5 tally location
 
-	  Control.setVariable<double>(keyName+"ZG", L[12]);
+	    C
+	    |
+            |                              O(xStep, yStep, zStep)
+            |
+	    B(gpshift+0, gpshift+1, zStep)
+
+	   */
+
+	  Geometry::Vec3D B(F[gpshift+0],F[gpshift+1],F[gpshift+2]);
+	  Geometry::Vec3D OB(B[0]-xStep, B[1]-yStep, B[2]-zStep);
+
+	  // Calculate angle BOC by the law of cosines:
+	  double BOC = acos((2*pow(OB.abs(), 2) - pow(viewWidth, 2))/(2*pow(OB.abs(), 2)));
+	  if (GluePoint==0)
+	    BOC *= -1;
+	  Geometry::Vec3D OC(OB);
+	  Geometry::Quaternion::calcQRotDeg(BOC*180/M_PI,Z).rotate(OC);
+
+	  Geometry::Vec3D BC(OC-OB);
+	  if (BC.abs()-viewWidth>Geometry::zeroTol)
+	    ELog::EM << "Problem with tally " << keyName << ": distance between B and C is " << BC.abs() << " not equal to F5ViewWidth = " << viewWidth << ELog::endErr;
+
+	  std::cout << B[0]+BC[0] << " " << B[1]+BC[1] << " " << B[2]+BC[2] << std::endl;
+
+	  Control.setVariable<double>(keyName+"XC", B[0]+BC[0]);
+	  Control.setVariable<double>(keyName+"YC", B[1]+BC[1]);
+	  Control.setVariable<double>(keyName+"ZC", B[2]+BC[2]);
+
+	  Control.setVariable<double>(keyName+"ZG", F[12]);
 	}
       } 
       essdat.close();
