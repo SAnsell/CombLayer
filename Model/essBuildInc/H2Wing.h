@@ -98,6 +98,7 @@ class H2Wing :
   virtual std::string getLayerString(const size_t,const size_t) const;
   virtual int getLayerSurf(const size_t,const size_t) const;
   void createAll(Simulation&,const attachSystem::FixedComp&);
+  double getHeight() const { return height; }
 };
 
 }
