@@ -59,7 +59,9 @@ namespace essSystem
       Constructor
       \param Key :: Name of construction key
     */
-  {}
+  {
+    theta = -1111;
+  }
 
   /*  F5Collimator::F5Collimator(const F5Collimator& A) : 
   colIndex(A.colIndex), cellIndex(A.cellIndex)
@@ -80,6 +82,24 @@ namespace essSystem
   {
     ELog::RegMethod RegA("F5Collimator","populate");
 
+    radius=Control.EvalDefVar<double>("F5Radius", -1);  // used with theta. If set, this value is the same for all collimators. Must be positive to be used with theta.
+    //    std::cout << "theta: " << theta << std::endl;
+    if (theta>0) // => it was set by setTheta
+      {
+	if (radius<0)
+	  ELog::EM << "Radius must be positive if used with theta" << ELog::endErr;
+	Control.setVariable<double>(keyName+"X", radius*sin(theta*M_PI/180.0));
+	Control.setVariable<double>(keyName+"Y", radius*cos(theta*M_PI/180.0));
+	if (theta<90)
+	  Control.setVariable<double>(keyName+"GluePoint", 0);
+	else if (theta<180)
+	  Control.setVariable<double>(keyName+"GluePoint", 3);
+	else if (theta<270)
+	  Control.setVariable<double>(keyName+"GluePoint", 2);
+	else // if theta>270
+	  Control.setVariable<double>(keyName+"GluePoint", 1);
+      }
+
     xStep=Control.EvalVar<double>(keyName+"X");
     yStep=Control.EvalVar<double>(keyName+"Y");
     zStep=Control.EvalVar<double>(keyName+"Z");
@@ -96,7 +116,7 @@ namespace essSystem
     if (GluePoint>=0) {
       std::ifstream essdat; // currently used by collimators
       essdat.open(".ess.dat", std::ios::in);
-      double F[12], L[13];
+      double F[12], L[12];
       while (!essdat.eof()) {
 	std::string str;
 	std::getline(essdat, str);
@@ -133,7 +153,7 @@ namespace essSystem
 
 	  // Calculate angle BOC by the law of cosines:
 	  double BOC = acos((2*pow(OB.abs(), 2) - pow(viewWidth, 2))/(2*pow(OB.abs(), 2)));
-	  if (GluePoint==0)
+	  if ((GluePoint==0) || (GluePoint==2))
 	    BOC *= -1;
 	  Geometry::Vec3D OC(OB);
 	  Geometry::Quaternion::calcQRotDeg(BOC*180/M_PI,Z).rotate(OC);
@@ -141,8 +161,6 @@ namespace essSystem
 	  Geometry::Vec3D BC(OC-OB);
 	  if (BC.abs()-viewWidth>Geometry::zeroTol)
 	    ELog::EM << "Problem with tally " << keyName << ": distance between B and C is " << BC.abs() << " not equal to F5ViewWidth = " << viewWidth << ELog::endErr;
-
-	  std::cout << B[0]+BC[0] << " " << B[1]+BC[1] << " " << B[2]+BC[2] << std::endl;
 
 	  Control.setVariable<double>(keyName+"XC", B[0]+BC[0]);
 	  Control.setVariable<double>(keyName+"YC", B[1]+BC[1]);
@@ -214,6 +232,13 @@ namespace essSystem
     ModelSupport::buildPlane(SMap,colIndex+16, Origin+Z*(height/2.0+wall), Z);
 
     return; 
+  }
+
+  void F5Collimator::setTheta(double t)
+  {
+    if ((t<0) || (t>360))
+      throw ColErr::RangeError<double>(theta, 0, 360, "Theta must be set in range 0-360 deg");
+    theta=t;
   }
 
   void F5Collimator::addToInsertChain(attachSystem::ContainedComp& CC) const

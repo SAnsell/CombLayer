@@ -114,6 +114,9 @@ main(int argc,char* argv[])
       IParam.regDefItem<int>("nF5", "nF5", 1,0);
       IParam.setDesc("nF5","Number of F5 collimators to build. The collimators will be named as F5, F15, F25 etc. The corresponding variables must exist.");
 
+      IParam.regMulti("TopCC","TopColdCollimators",20);
+      IParam.setDesc("TopCC","Space separated list of theta angles for top moderator cold collimators (theta is defined on page 183 of TDR)");
+
       SimPtr=createSimulation(IParam,Names,Oname);
       if (!SimPtr) return -1;
       

@@ -148,7 +148,8 @@ class makeESS
   void makeBeamLine(Simulation&,
 		    const mainSystem::inputParam&);
 
-  void buildF5Collimator(Simulation&, size_t);
+  void buildF5Collimator(Simulation&, size_t); // when -nF5 is used
+  void buildF5Collimator(Simulation&, const mainSystem::inputParam&); // when -TopCC is used
 
   void optionSummary(Simulation&);
 
