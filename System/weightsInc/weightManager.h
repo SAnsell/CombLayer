@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   weightsInc/weightManager.h
  *
@@ -27,6 +27,7 @@ class Simulation;
 namespace WeightSystem
 {
   class WForm;
+  class WeightMesh;
 /*!
   \class weightManager
   \version 1.0
@@ -57,6 +58,7 @@ class weightManager
   ~weightManager();
   
   WForm* getParticle(const char);
+  WeightMesh* getMesh();
   template<typename T> void addParticle(const char);
   
   void renumberCell(const int,const int);  

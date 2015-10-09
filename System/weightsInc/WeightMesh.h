@@ -35,10 +35,12 @@ namespace WeightSystem
 
 */
 
-class WeightMesh : public WForm
+class WeightMesh 
 {
  private:
 
+  int tallyN;                  ///< Tally number required
+  
   /// Types of weight mess
   enum GeomENUM { XYZ=1,Cyl=2,Sph=3 };
   
@@ -74,8 +76,10 @@ class WeightMesh : public WForm
 		   const Geometry::Vec3D&,const double,
 		   const size_t,const size_t,const size_t);
 
+  
   void zeroCell(const int) { }      ///< Non-important return
   void write(std::ostream&) const;
+  void writeWWINP() const;
 };
 
 }  

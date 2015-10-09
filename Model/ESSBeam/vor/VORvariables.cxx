@@ -126,14 +126,14 @@ VORvariables(FuncDataBase& Control)
   Control.addVariable("vorDBladeOuterMat","Aluminium");
   
   Control.addVariable("vorDBladeNBlades",2);
-  Control.addVariable("vorDBlade0PhaseAngle0",95.0);
+  Control.addVariable("vorDBlade0PhaseAngle0",-15.0);
   Control.addVariable("vorDBlade0OpenAngle0",30.0);
-  Control.addVariable("vorDBlade1PhaseAngle0",95.0);
+  Control.addVariable("vorDBlade1PhaseAngle0",-15.0);
   Control.addVariable("vorDBlade1OpenAngle0",30.0);
 
-  Control.addVariable("vorDBlade0PhaseAngle1",275.0);
+  Control.addVariable("vorDBlade0PhaseAngle1",165.0);  // 275
   Control.addVariable("vorDBlade0OpenAngle1",30.0);
-  Control.addVariable("vorDBlade1PhaseAngle1",275.0);
+  Control.addVariable("vorDBlade1PhaseAngle1",165.0);
   Control.addVariable("vorDBlade1OpenAngle1",30.0);
 
   // Double Blade chopper

@@ -34,6 +34,7 @@
 #include <algorithm>
 #include <memory>
 #include <boost/multi_array.hpp>
+#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -54,14 +55,14 @@ namespace WeightSystem
 {
 
 WeightMesh::WeightMesh() : 
-  WForm(),type(XYZ)			   
+  tallyN(1),type(XYZ)			   
   /*!
     Constructor [makes XYZ mesh]
   */
 {}
 
 WeightMesh::WeightMesh(const WeightMesh& A) : 
-  WForm(),type(A.type),RefPoint(A.RefPoint),Origin(A.Origin),
+  type(A.type),RefPoint(A.RefPoint),Origin(A.Origin),
   Axis(A.Axis),Vec(A.Vec),X(A.X),Y(A.Y),Z(A.Z),Mesh(A.Mesh)
   /*!
     Copy constructor
@@ -79,7 +80,6 @@ WeightMesh::operator=(const WeightMesh& A)
 {
   if (this!=&A)
     {
-      WForm::operator=(A);
       type=A.type;
       RefPoint=A.RefPoint;
       Origin=A.Origin;
@@ -205,6 +205,26 @@ WeightMesh::point(const size_t a,const size_t b,const size_t c) const
   return Geometry::Vec3D(xc,yc,zc);
 }
 
+void
+WeightMesh::writeWWINP() const
+  /*!
+    Write out to a mesh to a wwinp file
+    Currently ONLY works correctly with a rectangular file
+  */
+{
+  ELog::RegMethod RegA("WeightMesh","write");
+
+  std::ofstream OX;
+  OX.open("wwinp");
+
+  
+  boost::format TopFMT("%10i%10i%10i%10i%28sn");
+  const std::string date("10/07/15 15:37:51");
+  OX<<(TopFMT % tallyN % 1 % 1 % 10 % date);
+  OX.close();
+  return;
+}
+  
 void
 WeightMesh::write(std::ostream& OX) const
   /*!

@@ -293,21 +293,8 @@ pointConstruct::processPointFree(Simulation& System,
       (FObject,"Fixed Object not found");
   
   const int tNum=System.nextTallyNum(5);
-  Geometry::Vec3D TPoint;
-  if (linkPt>0)
-    {
-      const size_t iLP=static_cast<size_t>(linkPt-1);
-      TPoint=TPtr->getLinkPt(iLP)+TPtr->getLinkAxis(iLP)*OD;
-    }
-  else if (linkPt<0)
-    {
-      const size_t iLP=static_cast<size_t>(1-linkPt);
-      TPoint=TPtr->getLinkPt(iLP)-TPtr->getLinkAxis(iLP)*OD;
-    }
-  else   // origin case
-    {
-      TPoint=TPtr->getCentre()+TPtr->getY()*OD;
-    }
+  Geometry::Vec3D TPoint=TPtr->getSignedLinkPt(linkPt);
+  TPoint+=TPtr->getSignedLinkAxis(linkPt)*OD;
 
   std::vector<Geometry::Vec3D> EmptyVec;
   addF5Tally(System,tNum,TPoint,EmptyVec);

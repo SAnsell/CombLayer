@@ -163,6 +163,9 @@ VOR::VOR() :
   OR.addObject(Cave);
   OR.addObject(FocusF);
 
+  OR.addObject(Tank);
+  OR.addObject(Sample);
+
 }
 
 VOR::~VOR()
