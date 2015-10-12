@@ -114,17 +114,17 @@ meshConstruct::processMesh(Simulation& System,
   if (PType=="free" || PType=="heat" ||
       PType=="freeRotated" || PType=="heatRotated")
     {
+      int itemIndex(2);
       const std::string doseType=
-	inputItem<std::string>(IParam,Index,2,"Dose type");
+	inputItem<std::string>(IParam,Index,itemIndex++,"Dose type");
       Geometry::Vec3D APt=
-	inputItem<Geometry::Vec3D>(IParam,Index,3,"Low Corner");
+	inputCntVec3D(IParam,Index,itemIndex,"Low Corner");
       Geometry::Vec3D BPt=
-	inputItem<Geometry::Vec3D>(IParam,Index,6,"High Corner");
+	inputCntVec3D(IParam,Index,itemIndex,"High Corner");
       
       // Rotation:
-      size_t nxyzIndex(9);
       std::string revStr;
-      const int flag=checkItem<std::string>(IParam,Index,9,revStr);
+      const int flag=checkItem<std::string>(IParam,Index,itemIndex,revStr);
       if (!flag && revStr!="r" &&
 	  PType!="freeRotated" && PType!="heatRotated")
 	{
@@ -135,9 +135,9 @@ meshConstruct::processMesh(Simulation& System,
 	}
       
       size_t Nxyz[3];
-      Nxyz[0]=inputItem<size_t>(IParam,Index,nxyzIndex++,"NXpts");
-      Nxyz[1]=inputItem<size_t>(IParam,Index,nxyzIndex++,"NYpts");
-      Nxyz[2]=inputItem<size_t>(IParam,Index,nxyzIndex++,"NZpts");
+      Nxyz[0]=inputItem<size_t>(IParam,Index,itemIndex++,"NXpts");
+      Nxyz[1]=inputItem<size_t>(IParam,Index,itemIndex++,"NYpts");
+      Nxyz[2]=inputItem<size_t>(IParam,Index,itemIndex++,"NZpts");
       if (PType=="heat" || PType=="heatRotated")
 	rectangleMesh(System,3,"void",APt,BPt,Nxyz);
       else
