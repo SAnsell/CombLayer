@@ -76,7 +76,52 @@ namespace essSystem
 
   void F5Collimator::populate(FuncDataBase& Control)
   /*!
-    Populate all the variables
+    Populate all the variables for collimators without glue points
+    \param Control :: Variable table to use
+  */
+  {
+    ELog::RegMethod RegA("F5Collimator","populate");
+
+    xStep=Control.EvalVar<double>(keyName+"X");
+    yStep=Control.EvalVar<double>(keyName+"Y");
+    zStep=Control.EvalVar<double>(keyName+"Z");
+
+    length=Control.EvalVar<double>(keyName+"Length"); // along x
+    wall=Control.EvalDefVar<double>(keyName+"WallThick", 0.5);
+
+    GluePoint = Control.EvalDefVar<int>(keyName+"GluePoint", -1);
+
+    tallySystem::point gC,gB,gB2;
+
+    gB.x=Control.EvalDefVar<double>(keyName+"XB", 0);
+    gB.y=Control.EvalDefVar<double>(keyName+"YB", 0);
+    gB.z=Control.EvalDefVar<double>(keyName+"ZB", 0);
+
+    gC.x=Control.EvalDefVar<double>(keyName+"XC", 0);
+    gC.y=Control.EvalDefVar<double>(keyName+"YC", 0);
+    gC.z=Control.EvalDefVar<double>(keyName+"ZC", 0);
+
+    gB2.z = Control.EvalDefVar<double>(keyName+"ZG", 0);
+    
+
+    gB2.x = gB.x;
+    gB2.y = gB.y;
+
+    SetTally(xStep, yStep, zStep);
+    SetPoints(gB, gC, gB2);
+    SetLength(length);
+    xyAngle = GetXYAngle();
+    zAngle  = GetZAngle();
+    width = 2*GetHalfSizeX();
+    height = 2*GetHalfSizeZ();
+
+    return;
+  }
+
+
+  void F5Collimator::populateGluePoints(FuncDataBase& Control)
+  /*!
+    Populate all the variables in the case when the glue points are used
     \param Control :: Variable table to use
   */
   {
@@ -164,7 +209,7 @@ namespace essSystem
 
 	  Geometry::Vec3D BC(OC-OB);
 	  if (BC.abs()-viewWidth>Geometry::zeroTol)
-	    ELog::EM << "Problem with tally " << keyName << ": distance between B and C is " << BC.abs() << " not equal to F5ViewWidth = " << viewWidth << ELog::endErr;
+	    ELog::EM << "Problem with tally " << keyName << ": distance between B and C is " << BC.abs() << " --- not equal to F5ViewWidth = " << viewWidth << ELog::endErr;
 
 	  Control.setVariable<double>(keyName+"XC", B[0]+BC[0]);
 	  Control.setVariable<double>(keyName+"YC", B[1]+BC[1]);
@@ -321,7 +366,10 @@ namespace essSystem
   */
   {
     ELog::RegMethod RegA("F5Collimator","createAll");
-    populate(System.getDataBase());
+    if (theta>0)
+      populateGluePoints(System.getDataBase()); // build collimators with glue points
+    else
+      populate(System.getDataBase()); // no glue points
 
     createUnitVector(FC);
     createSurfaces();
