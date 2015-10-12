@@ -339,8 +339,8 @@ void makeESS::buildF5Collimator(Simulation& System, size_t nF5)
 
   for (size_t i=0; i<nF5; i++) {
     std::shared_ptr<F5Collimator> F5(new F5Collimator(StrFunc::makeString("F", i*10+5).c_str()));
-
     OR.addObject(F5);
+    F5->setFocalPoints(TopFocalPoints);
     F5->addInsertCell(74123); // !!! 74123=voidCell // SA: how to exclude F5 from any cells?
     F5->createAll(System, World::masterOrigin());
 
@@ -367,8 +367,9 @@ void makeESS::buildF5Collimator(Simulation& System, const mainSystem::inputParam
     {
       theta = IParam.getValue<double>("TopCC", i);
       std::shared_ptr<F5Collimator> F5(new F5Collimator(StrFunc::makeString("F", i*10+5).c_str()));
-      F5->setTheta(theta);
       OR.addObject(F5);
+      F5->setTheta(theta);
+      F5->setFocalPoints(TopFocalPoints);
       F5->addInsertCell(74123); // !!! 74123=voidCell // SA: how to exclude F5 from any cells?
       F5->createAll(System, World::masterOrigin());
       

@@ -25,6 +25,8 @@ namespace essSystem
 	int GluePoint;              ///< Glue point number (currently number defines quadrant as in butterfly.svgz). Not used if <0. Calculated if setTheta is used.
 	double radius;              ///< Radius for cylindrical coordinates. Defined via 'F5Radius' in essVariables
 	double theta;               ///< Theta as defined on page 183 of TDR. If theta is set vis setTheta, [xyz]Step are calculated.
+
+	std::vector<Geometry::Vec3D> vecFP; ///< vector of focal points
 	
 	// Functions:
 
@@ -44,6 +46,7 @@ namespace essSystem
 	virtual ~F5Collimator();
 
 	void setTheta(double t);
+	inline void setFocalPoints(std::vector<Geometry::Vec3D> vec) { vecFP = vec; }
 	int getMainCell() const { return colIndex+1; }
 	virtual void addToInsertChain(attachSystem::ContainedComp&) const; 
 	void createAll(Simulation&,const attachSystem::FixedComp&);

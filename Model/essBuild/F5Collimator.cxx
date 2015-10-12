@@ -166,67 +166,55 @@ namespace essSystem
 
     tallySystem::point gC,gB,gB2;
 
+    const double zmin = vecFP[vecFP.size()-2].Z();
+    const double zmax = vecFP[vecFP.size()-1].Z();
 
-    std::ifstream essdat; // currently used by collimators
-    essdat.open(".ess.dat", std::ios::in);
-    double F[13];
-    while (!essdat.eof()) {
-      std::string str;
-      std::getline(essdat, str);
-      std::stringstream ss(str);
-      std::string header; // F: or L: point title
-      ss >> header;
-      int i=0;
-      if (header == "F:")
-	while(ss >> F[i]) i++;
-
-      if (i && (i!=sizeof(F)/sizeof(double)))
-	ELog::EM << "Mismatch between length of F[] and .ess.dat: " << i << " " << sizeof(F)/sizeof(double) << ELog::endErr;
-
-      Control.setVariable<double>(keyName+"Z", (F[11]+F[12])/2.0);
-      zStep=Control.EvalVar<double>(keyName+"Z");
+    Control.setVariable<double>(keyName+"Z", (zmin+zmax)/2.0);
+    zStep=Control.EvalVar<double>(keyName+"Z");
 	
-      int gpshift = GluePoint*3;
-      if (F[2]>0) { // top moderator;
-	Control.setVariable<double>(keyName+"XB", F[gpshift+0]);
-	Control.setVariable<double>(keyName+"YB", F[gpshift+1]);
-	Control.setVariable<double>(keyName+"ZB", F[gpshift+2]);
+    const size_t gpshift = 6+GluePoint;
 
-	// Calculate the coordinate of L (the second point)
-	/*
-	  F and L are two points where the collimator looks
-	  O is the F5 tally location
+    if (zStep>0) { // top moderator;
+      Control.setVariable<double>(keyName+"XB", vecFP[gpshift].X());
+      Control.setVariable<double>(keyName+"YB", vecFP[gpshift].Y());
+      Control.setVariable<double>(keyName+"ZB", zmax);
+      // std::cout << "topX: " << GluePoint << " " << F[gpshift+0] << " " << vecFP[gpshift].X() << std::endl;
+      // std::cout << "topY: " << GluePoint << " " << F[gpshift+1] << " " << vecFP[gpshift].Y() << std::endl;
+      // std::cout << "topZ: " << GluePoint << " " << F[gpshift+2] << " " << zmax << std::endl;
 
-	  C
-	  |
-	  |                              O(xStep, yStep, zStep)
-	  |
-	  B(gpshift+0, gpshift+1, zStep)
+      // Calculate the coordinate of L (the second point)
+      /*
+	F and L are two points where the collimator looks
+	O is the F5 tally location
 
-	*/
+	C
+	|
+	|                              O(xStep, yStep, zStep)
+	|
+	B(gpshift+0, gpshift+1, zStep)
 
-	Geometry::Vec3D B(F[gpshift+0],F[gpshift+1],F[gpshift+2]);
-	Geometry::Vec3D OB(B[0]-xStep, B[1]-yStep, B[2]-zStep);
+      */
 
-	// Calculate angle BOC by the law of cosines:
-	double BOC = acos((2*pow(OB.abs(), 2) - pow(viewWidth, 2))/(2*pow(OB.abs(), 2)));
-	if ((GluePoint==0) || (GluePoint==2))
-	  BOC *= -1;
-	Geometry::Vec3D OC(OB);
-	Geometry::Quaternion::calcQRotDeg(BOC*180/M_PI,Z).rotate(OC);
+      Geometry::Vec3D B(vecFP[gpshift].X(), vecFP[gpshift].Y(), zmax);
+      Geometry::Vec3D OB(B[0]-xStep, B[1]-yStep, B[2]-zStep);
 
-	Geometry::Vec3D BC(OC-OB);
-	if (BC.abs()-viewWidth>Geometry::zeroTol)
-	  ELog::EM << "Problem with tally " << keyName << ": distance between B and C is " << BC.abs() << " --- not equal to F5ViewWidth = " << viewWidth << ELog::endErr;
+      // Calculate angle BOC by the law of cosines:
+      double BOC = acos((2*pow(OB.abs(), 2) - pow(viewWidth, 2))/(2*pow(OB.abs(), 2)));
+      if ((GluePoint==0) || (GluePoint==2))
+	BOC *= -1;
+      Geometry::Vec3D OC(OB);
+      Geometry::Quaternion::calcQRotDeg(BOC*180/M_PI,Z).rotate(OC);
 
-	Control.setVariable<double>(keyName+"XC", B[0]+BC[0]);
-	Control.setVariable<double>(keyName+"YC", B[1]+BC[1]);
-	Control.setVariable<double>(keyName+"ZC", B[2]+BC[2]);
+      Geometry::Vec3D BC(OC-OB);
+      if (BC.abs()-viewWidth>Geometry::zeroTol)
+	ELog::EM << "Problem with tally " << keyName << ": distance between B and C is " << BC.abs() << " --- not equal to F5ViewWidth = " << viewWidth << ELog::endErr;
 
-	Control.setVariable<double>(keyName+"ZG", F[12]);
-      }
-    } 
-    essdat.close();
+      Control.setVariable<double>(keyName+"XC", B[0]+BC[0]);
+      Control.setVariable<double>(keyName+"YC", B[1]+BC[1]);
+      Control.setVariable<double>(keyName+"ZC", B[2]+BC[2]);
+
+      Control.setVariable<double>(keyName+"ZG", zmin);
+    }
 
     gB.x=Control.EvalDefVar<double>(keyName+"XB", 0);
     gB.y=Control.EvalDefVar<double>(keyName+"YB", 0);
