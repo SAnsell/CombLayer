@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNPX Input builder
  
  * File:   log/RegMethod.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,8 +24,11 @@
 #include <map>
 #include <vector>
 
+#include <iostream>
+
 #include "NameStack.h"
 #include "RegMethod.h"
+
 
 namespace ELog
 {
@@ -70,6 +73,29 @@ RegMethod::~RegMethod()
     Base.addIndent(-indentLevel);
 }
 
+void
+RegMethod::setTrack(const std::string& ES)
+  /*!
+    Add an extra string to the output in the case
+    of an exception
+    \param ES :: Extra string
+  */
+{
+  Base.setExtra(ES);
+  std::cout<<"EX == "<<ES<<std::endl;
+  return;
+}
+
+void
+RegMethod::clearTrack()
+  /*!
+    Clear the extra track
+   */
+{
+  Base.clearExtra();
+  return;
+}
+  
 void
 RegMethod::incIndent() 
   /*!

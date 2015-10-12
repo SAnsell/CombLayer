@@ -137,14 +137,9 @@ basicConstruct::inputCntVec3D
     throw ColErr::IndexError<size_t>(NItems,INum,
 				     "Insufficient items for tally");
 
-    
+  RegA.setTrack(ErrMessage);
   Geometry::Vec3D Out=
-    IParam.getCntVec3D("tally",Index,INum);  
-
-  ELog::EM<<ErrMessage<<ELog::endErr;
-      
-      Out[i]=V;
-    }
+    IParam.getCntVec3D("tally",Index,INum);
   return Out;
 }
 

@@ -291,7 +291,7 @@ PWTConstructor::writeHelp(std::ostream& OX) const
       " :: \n"
       "   All / object [objectName] / Cells {numbers}(s) / [cellNumber] \n"
       "TYPE :: \n"
-      "   simple [value] \n";
+      "   simple [value] \n"
       "       -- vias to the point\n";
   return;
 }

@@ -44,7 +44,6 @@
 #include "BaseModVisit.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
-#include "Tensor.h"
 #include "Vec3D.h"
 #include "Triple.h"
 #include "support.h"
@@ -114,7 +113,7 @@ meshConstruct::processMesh(Simulation& System,
   if (PType=="free" || PType=="heat" ||
       PType=="freeRotated" || PType=="heatRotated")
     {
-      int itemIndex(2);
+      size_t itemIndex(2);
       const std::string doseType=
 	inputItem<std::string>(IParam,Index,itemIndex++,"Dose type");
       Geometry::Vec3D APt=
@@ -144,6 +143,7 @@ meshConstruct::processMesh(Simulation& System,
 	rectangleMesh(System,1,doseType,APt,BPt,Nxyz);
       return;
     }
+  
   ELog::EM<<"Unknown Mesh type :"<<PType<<ELog::endWarn;
   return;
 }

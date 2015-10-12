@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   logInc/RegMethod.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,6 +41,7 @@ class RegMethod
 
   static NameStack Base;           ///< Singleton of base to register
 
+  int extraFlag;                   ///< Lifetime flag on extra
   int indentLevel;                 ///< Additional indent
   /// \cond NOWRITTEN
   RegMethod(const RegMethod&);
@@ -55,6 +56,9 @@ class RegMethod
   RegMethod(const std::string&,const std::string&,const int);
   ~RegMethod();
 
+  void setTrack(const std::string&);
+  void clearTrack();
+  
   /// Access string
   static std::string getBase() { return Base.getBase(); }
   /// Access string
