@@ -100,9 +100,10 @@ namespace essSystem
 	  Control.setVariable<double>(keyName+"GluePoint", 1);
       }
 
+    // x and y are either read from essVariables or set by theta
     xStep=Control.EvalVar<double>(keyName+"X");
     yStep=Control.EvalVar<double>(keyName+"Y");
-    zStep=Control.EvalVar<double>(keyName+"Z");
+    // zStep - see below
 
     length=Control.EvalVar<double>(keyName+"Length"); // along x
     wall=Control.EvalDefVar<double>(keyName+"WallThick", 0.5);
@@ -116,7 +117,7 @@ namespace essSystem
     if (GluePoint>=0) {
       std::ifstream essdat; // currently used by collimators
       essdat.open(".ess.dat", std::ios::in);
-      double F[12], L[12];
+      double F[13];
       while (!essdat.eof()) {
 	std::string str;
 	std::getline(essdat, str);
@@ -126,8 +127,11 @@ namespace essSystem
 	int i=0;
 	if (header == "F:")
 	  while(ss >> F[i]) i++;
-	else if (header == "L:")
-	  while(ss >> L[i]) i++;
+
+	if (i && (i!=sizeof(F)/sizeof(double)))
+	  ELog::EM << "Mismatch between length of F[] and .ess.dat: " << i << " " << sizeof(F)/sizeof(double) << ELog::endErr;
+
+	zStep = (F[11]+F[12])/2.0;
 	
 	int gpshift = GluePoint*3;
 	if (F[2]>0) { // top moderator;
@@ -146,7 +150,7 @@ namespace essSystem
             |
 	    B(gpshift+0, gpshift+1, zStep)
 
-	   */
+          */
 
 	  Geometry::Vec3D B(F[gpshift+0],F[gpshift+1],F[gpshift+2]);
 	  Geometry::Vec3D OB(B[0]-xStep, B[1]-yStep, B[2]-zStep);
@@ -170,7 +174,10 @@ namespace essSystem
 	}
       } 
       essdat.close();
-    } 
+    } else
+      {
+	zStep=Control.EvalVar<double>(keyName+"Z");
+      }
     gB.x=Control.EvalDefVar<double>(keyName+"XB", 0);
     gB.y=Control.EvalDefVar<double>(keyName+"YB", 0);
     gB.z=Control.EvalDefVar<double>(keyName+"ZB", 0);
