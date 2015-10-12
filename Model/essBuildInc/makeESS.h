@@ -127,6 +127,8 @@ class makeESS
   std::shared_ptr<Bunker> ABunker;  ///< Right bunker
 
   std::vector<std::shared_ptr<F5Collimator>> F5array; ///< collimators for F5 tallies
+  std::vector<Geometry::Vec3D> TopFocalPoints; ///< top moderator focal points
+  std::vector<Geometry::Vec3D> LowFocalPoints; ///< low moderator focal points
   
   void topFlightLines(Simulation&);
   void lowFlightLines(Simulation&);

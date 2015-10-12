@@ -229,7 +229,7 @@ MidWaterDivider::createLinks(const H2Wing &LA, const H2Wing &RA)
 
   // === Intersections of water divider and outer/inner H2Wing surfaces ===
   //     Inner link points are used by F5Collimators
-  // !!! Signs of surfaces for outer and inner link points must be different !!!
+  // !!! Signs of surfaces for outer and inner link points must be different - check this!!!
 
   for (int i=0; i<2; i++) // 0=outer H2Wing surface, 1=inner H2Wing surface
     {
