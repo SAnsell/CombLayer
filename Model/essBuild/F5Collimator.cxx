@@ -119,31 +119,39 @@ namespace essSystem
   }
 
 
-  void F5Collimator::populateGluePoints(FuncDataBase& Control)
+  void F5Collimator::populateWithTheta(FuncDataBase& Control)
   /*!
-    Populate all the variables in the case when the glue points are used
+    Populate all the variables in the case when \theta is defined
+    (i.e. if theta is defined then glue points are calculated automatically)
     \param Control :: Variable table to use
   */
   {
     ELog::RegMethod RegA("F5Collimator","populate");
 
-    radius=Control.EvalDefVar<double>("F5Radius", -1);  // used with theta. If set, this value is the same for all collimators. Must be positive to be used with theta.
-    //    std::cout << "theta: " << theta << std::endl;
-    if (theta>0) // => it was set by setTheta
+    if (theta<0) 
       {
-	if (radius<0)
-	  ELog::EM << "Radius must be positive if used with theta" << ELog::endErr;
-	Control.setVariable<double>(keyName+"X", radius*sin(theta*M_PI/180.0));
-	Control.setVariable<double>(keyName+"Y", radius*cos(theta*M_PI/180.0));
-	if (theta<90)
-	  Control.setVariable<double>(keyName+"GluePoint", 0);
-	else if (theta<180)
-	  Control.setVariable<double>(keyName+"GluePoint", 3);
-	else if (theta<270)
-	  Control.setVariable<double>(keyName+"GluePoint", 2);
-	else // if theta>270
-	  Control.setVariable<double>(keyName+"GluePoint", 1);
+	ELog::EM << "Theta must be defined when this method is used. Call F5Collimator::populate() if glue points are not needed" << ELog::endErr;
+	return;
       }
+
+    radius=Control.EvalDefVar<double>("F5Radius", -1);  // used with theta. If set, this value is the same for all collimators. Must be positive to be used with theta.
+    if (radius<0)
+      {
+	ELog::EM << "Radius must be positive if used with theta" << ELog::endErr;
+	return;
+      }
+
+    //    std::cout << "theta: " << theta << std::endl;
+    Control.setVariable<double>(keyName+"X", radius*sin(theta*M_PI/180.0));
+    Control.setVariable<double>(keyName+"Y", radius*cos(theta*M_PI/180.0));
+    if (theta<90)
+      Control.setVariable<double>(keyName+"GluePoint", 0);
+    else if (theta<180)
+      Control.setVariable<double>(keyName+"GluePoint", 3);
+    else if (theta<270)
+      Control.setVariable<double>(keyName+"GluePoint", 2);
+    else // if theta>270
+      Control.setVariable<double>(keyName+"GluePoint", 1);
 
     // x and y are either read from essVariables or set by theta
     xStep=Control.EvalVar<double>(keyName+"X");
@@ -159,70 +167,67 @@ namespace essSystem
     tallySystem::point gC,gB,gB2;
 
 
-    if (GluePoint>=0) {
-      std::ifstream essdat; // currently used by collimators
-      essdat.open(".ess.dat", std::ios::in);
-      double F[13];
-      while (!essdat.eof()) {
-	std::string str;
-	std::getline(essdat, str);
-	std::stringstream ss(str);
-	std::string header; // F: or L: point title
-	ss >> header;
-	int i=0;
-	if (header == "F:")
-	  while(ss >> F[i]) i++;
+    std::ifstream essdat; // currently used by collimators
+    essdat.open(".ess.dat", std::ios::in);
+    double F[13];
+    while (!essdat.eof()) {
+      std::string str;
+      std::getline(essdat, str);
+      std::stringstream ss(str);
+      std::string header; // F: or L: point title
+      ss >> header;
+      int i=0;
+      if (header == "F:")
+	while(ss >> F[i]) i++;
 
-	if (i && (i!=sizeof(F)/sizeof(double)))
-	  ELog::EM << "Mismatch between length of F[] and .ess.dat: " << i << " " << sizeof(F)/sizeof(double) << ELog::endErr;
+      if (i && (i!=sizeof(F)/sizeof(double)))
+	ELog::EM << "Mismatch between length of F[] and .ess.dat: " << i << " " << sizeof(F)/sizeof(double) << ELog::endErr;
 
-	zStep = (F[11]+F[12])/2.0;
+      Control.setVariable<double>(keyName+"Z", (F[11]+F[12])/2.0);
+      zStep=Control.EvalVar<double>(keyName+"Z");
 	
-	int gpshift = GluePoint*3;
-	if (F[2]>0) { // top moderator;
-	  Control.setVariable<double>(keyName+"XB", F[gpshift+0]);
-	  Control.setVariable<double>(keyName+"YB", F[gpshift+1]);
-	  Control.setVariable<double>(keyName+"ZB", F[gpshift+2]);
+      int gpshift = GluePoint*3;
+      if (F[2]>0) { // top moderator;
+	Control.setVariable<double>(keyName+"XB", F[gpshift+0]);
+	Control.setVariable<double>(keyName+"YB", F[gpshift+1]);
+	Control.setVariable<double>(keyName+"ZB", F[gpshift+2]);
 
-	  // Calculate the coordinate of L (the second point)
-	  /*
-	    F and L are two points where the collimator looks
-            O is the F5 tally location
+	// Calculate the coordinate of L (the second point)
+	/*
+	  F and L are two points where the collimator looks
+	  O is the F5 tally location
 
-	    C
-	    |
-            |                              O(xStep, yStep, zStep)
-            |
-	    B(gpshift+0, gpshift+1, zStep)
+	  C
+	  |
+	  |                              O(xStep, yStep, zStep)
+	  |
+	  B(gpshift+0, gpshift+1, zStep)
 
-          */
+	*/
 
-	  Geometry::Vec3D B(F[gpshift+0],F[gpshift+1],F[gpshift+2]);
-	  Geometry::Vec3D OB(B[0]-xStep, B[1]-yStep, B[2]-zStep);
+	Geometry::Vec3D B(F[gpshift+0],F[gpshift+1],F[gpshift+2]);
+	Geometry::Vec3D OB(B[0]-xStep, B[1]-yStep, B[2]-zStep);
 
-	  // Calculate angle BOC by the law of cosines:
-	  double BOC = acos((2*pow(OB.abs(), 2) - pow(viewWidth, 2))/(2*pow(OB.abs(), 2)));
-	  if ((GluePoint==0) || (GluePoint==2))
-	    BOC *= -1;
-	  Geometry::Vec3D OC(OB);
-	  Geometry::Quaternion::calcQRotDeg(BOC*180/M_PI,Z).rotate(OC);
+	// Calculate angle BOC by the law of cosines:
+	double BOC = acos((2*pow(OB.abs(), 2) - pow(viewWidth, 2))/(2*pow(OB.abs(), 2)));
+	if ((GluePoint==0) || (GluePoint==2))
+	  BOC *= -1;
+	Geometry::Vec3D OC(OB);
+	Geometry::Quaternion::calcQRotDeg(BOC*180/M_PI,Z).rotate(OC);
 
-	  Geometry::Vec3D BC(OC-OB);
-	  if (BC.abs()-viewWidth>Geometry::zeroTol)
-	    ELog::EM << "Problem with tally " << keyName << ": distance between B and C is " << BC.abs() << " --- not equal to F5ViewWidth = " << viewWidth << ELog::endErr;
+	Geometry::Vec3D BC(OC-OB);
+	if (BC.abs()-viewWidth>Geometry::zeroTol)
+	  ELog::EM << "Problem with tally " << keyName << ": distance between B and C is " << BC.abs() << " --- not equal to F5ViewWidth = " << viewWidth << ELog::endErr;
 
-	  Control.setVariable<double>(keyName+"XC", B[0]+BC[0]);
-	  Control.setVariable<double>(keyName+"YC", B[1]+BC[1]);
-	  Control.setVariable<double>(keyName+"ZC", B[2]+BC[2]);
+	Control.setVariable<double>(keyName+"XC", B[0]+BC[0]);
+	Control.setVariable<double>(keyName+"YC", B[1]+BC[1]);
+	Control.setVariable<double>(keyName+"ZC", B[2]+BC[2]);
 
-	  Control.setVariable<double>(keyName+"ZG", F[12]);
-	}
-      } 
-      essdat.close();
-    } else
-      {
-	zStep=Control.EvalVar<double>(keyName+"Z");
+	Control.setVariable<double>(keyName+"ZG", F[12]);
       }
+    } 
+    essdat.close();
+
     gB.x=Control.EvalDefVar<double>(keyName+"XB", 0);
     gB.y=Control.EvalDefVar<double>(keyName+"YB", 0);
     gB.z=Control.EvalDefVar<double>(keyName+"ZB", 0);
@@ -367,7 +372,7 @@ namespace essSystem
   {
     ELog::RegMethod RegA("F5Collimator","createAll");
     if (theta>0)
-      populateGluePoints(System.getDataBase()); // build collimators with glue points
+      populateWithTheta(System.getDataBase()); // build collimators with glue points
     else
       populate(System.getDataBase()); // no glue points
 

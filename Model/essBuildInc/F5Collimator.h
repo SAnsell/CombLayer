@@ -29,7 +29,7 @@ namespace essSystem
 	// Functions:
 
 	void populate(FuncDataBase&);
-	void populateGluePoints(FuncDataBase&);
+	void populateWithTheta(FuncDataBase&);
 	void createUnitVector(const attachSystem::FixedComp&);
 
 	void createSurfaces();
