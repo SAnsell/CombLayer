@@ -39,6 +39,7 @@ class NameStack
   std::vector<std::string> Class;       ///< Class Name
   std::vector<std::string> Method;      ///< Method Name
   std::string Extra;                    ///< Extra tag if neeed
+  size_t extraLevel;                    ///< Extra tag if neeed
   long int indentLevel;                 ///< Indent level
 
  public:
@@ -62,6 +63,7 @@ class NameStack
   std::string getItem(const long int) const;
   std::string getFull() const;
   std::string getFullTree() const;
+  const std::string& getExtra() const;
 
   /// Access depth of function:
   size_t getDepth() const { return Class.size(); }

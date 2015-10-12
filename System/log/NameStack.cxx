@@ -38,7 +38,7 @@ NameStack::NameStack() :
 
 NameStack::NameStack(const NameStack& A) :
   key(A.key),Class(A.Class),Method(A.Method),
-  Extra(A.Extra),
+  Extra(A.Extra),extraLevel(A.extraLevel),
   indentLevel(A.indentLevel)
   /*!
     Copy Constructor
@@ -60,6 +60,7 @@ NameStack::operator=(const NameStack& A)
       Class=A.Class;
       Method=A.Method;
       Extra=A.Extra;
+      extraLevel=A.extraLevel;
       indentLevel=A.indentLevel;
     }
   return *this;
@@ -75,6 +76,7 @@ NameStack::clear()
   Class.clear();
   Method.clear();
   Extra.clear();
+  extraLevel=0;
   indentLevel=0;
   return;
 }
@@ -101,18 +103,37 @@ NameStack::popBack()
 {
   if (!Class.empty())
     {
+      if (extraLevel==Class.size())
+	{
+	  Extra.clear();
+	  extraLevel=0;
+	}
       Class.pop_back();
       Method.pop_back();
     }
-  Extra.clear();
   return;
 }
 
 void
 NameStack::setExtra(const std::string& A)
+  /*!
+    Set the extra string
+    \param A :: Extra component
+   */
 {
   Extra=A;
+  extraLevel=Class.size();
   return;
+}
+
+const std::string&
+NameStack::getExtra() const
+  /*!
+    Accessor
+    \return Extra item 
+  */
+{
+  return Extra;
 }
   
 std::string

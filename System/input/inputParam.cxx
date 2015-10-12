@@ -445,11 +445,10 @@ inputParam::getCntVec3D(const std::string& K,
    */
 {
   ELog::RegMethod RegA("inputParam","getCntVec3D(setIndex,index)");
-  
   const IItem* IPtr=getIndex(K);
   if (!IPtr)
     throw ColErr::EmptyValue<void>(K+":IPtr");
-
+  
   return IPtr->getCntVec3D(setIndex,itemIndex);
 }
 

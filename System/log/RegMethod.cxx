@@ -45,6 +45,7 @@ RegMethod::RegMethod(const std::string& CN,
   */
 {
   Base.addComp(CN,MN);
+
 }
 
 RegMethod::RegMethod(const std::string& CN,
@@ -82,7 +83,6 @@ RegMethod::setTrack(const std::string& ES)
   */
 {
   Base.setExtra(ES);
-  std::cout<<"EX == "<<ES<<std::endl;
   return;
 }
 
