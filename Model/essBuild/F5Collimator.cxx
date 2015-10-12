@@ -160,7 +160,7 @@ namespace essSystem
 
     length=Control.EvalVar<double>(keyName+"Length"); // along x
     wall=Control.EvalDefVar<double>(keyName+"WallThick", 0.5);
-    viewWidth=Control.EvalDefVar<double>("F5ViewWidth", 6);
+    viewWidth=Control.EvalVar<double>(keyName+"ViewWidth");
 
     GluePoint = Control.EvalDefVar<int>(keyName+"GluePoint", -1);
 

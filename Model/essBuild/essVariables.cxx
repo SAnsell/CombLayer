@@ -1405,6 +1405,7 @@ F5Variables(FuncDataBase& Control)
  */
 {
     Control.addVariable("F5Length", 998.0);
+    Control.addVariable("F5ViewWidth", 6);
     Control.addVariable("F5GluePoint", 0.0);
     Control.addVariable("F5XB", 11.0);
     Control.addVariable("F5YB", -14.0);
@@ -1418,6 +1419,7 @@ F5Variables(FuncDataBase& Control)
     Control.addVariable("F5Z", 13.0);
 
     Control.addVariable("F15Length", 998.0);
+    Control.addVariable("F15ViewWidth", 6);
     Control.addVariable("F15GluePoint", 0.0);
     Control.addVariable("F15XB", 11.0);
     Control.addVariable("F15YB", -14.0);
@@ -1431,6 +1433,7 @@ F5Variables(FuncDataBase& Control)
     Control.addVariable("F15Z", 13.0);
 
     Control.addVariable("F25Length", 998.0);
+    Control.addVariable("F25ViewWidth", 6);
     Control.addVariable("F25GluePoint", 0.0);
     Control.addVariable("F25XB", 11.0);
     Control.addVariable("F25YB", -14.0);
@@ -1445,6 +1448,7 @@ F5Variables(FuncDataBase& Control)
 
 
     Control.addVariable("F35Length", 998.0);
+    Control.addVariable("F35ViewWidth", 6);
     Control.addVariable("F35GluePoint", 0.0);
     Control.addVariable("F35XB", 11.0);
     Control.addVariable("F35YB", -14.0);
@@ -1458,6 +1462,7 @@ F5Variables(FuncDataBase& Control)
     Control.addVariable("F35Z", 13.0);
 
     Control.addVariable("F45Length", 998.0);
+    Control.addVariable("F45ViewWidth", 6);
     Control.addVariable("F45GluePoint", 0.0);
     Control.addVariable("F45XB", 11.0);
     Control.addVariable("F45YB", -14.0);
@@ -1471,6 +1476,7 @@ F5Variables(FuncDataBase& Control)
     Control.addVariable("F45Z", 13.0);
 
     Control.addVariable("F55Length", 998.0);
+    Control.addVariable("F55ViewWidth", 6);
     Control.addVariable("F55GluePoint", 0.0);
     Control.addVariable("F55XB", 11.0);
     Control.addVariable("F55YB", -14.0);
@@ -1484,6 +1490,7 @@ F5Variables(FuncDataBase& Control)
     Control.addVariable("F55Z", 13.0);
 
     Control.addVariable("F65Length", 998.0);
+    Control.addVariable("F65ViewWidth", 6);
     Control.addVariable("F65GluePoint", 0.0);
     Control.addVariable("F65XB", 11.0);
     Control.addVariable("F65YB", -14.0);
@@ -1497,6 +1504,7 @@ F5Variables(FuncDataBase& Control)
     Control.addVariable("F65Z", 13.0);
 
     Control.addVariable("F75Length", 998.0);
+    Control.addVariable("F75ViewWidth", 6);
     Control.addVariable("F75GluePoint", 0.0);
     Control.addVariable("F75XB", 11.0);
     Control.addVariable("F75YB", -14.0);
@@ -1510,6 +1518,7 @@ F5Variables(FuncDataBase& Control)
     Control.addVariable("F75Z", 13.0);
 
     Control.addVariable("F85Length", 998.0);
+    Control.addVariable("F85ViewWidth", 6);
     Control.addVariable("F85GluePoint", 0.0);
     Control.addVariable("F85XB", 11.0);
     Control.addVariable("F85YB", -14.0);
@@ -1523,6 +1532,7 @@ F5Variables(FuncDataBase& Control)
     Control.addVariable("F85Z", 13.0);
 
     Control.addVariable("F95Length", 998.0);
+    Control.addVariable("F95ViewWidth", 6);
     Control.addVariable("F95GluePoint", 0.0);
     Control.addVariable("F95XB", 11.0);
     Control.addVariable("F95YB", -14.0);
@@ -1536,6 +1546,7 @@ F5Variables(FuncDataBase& Control)
     Control.addVariable("F95Z", 13.0);
 
     Control.addVariable("F105Length", 998.0);
+    Control.addVariable("F105ViewWidth", 6);
     Control.addVariable("F105GluePoint", 0.0);
     Control.addVariable("F105XB", 11.0);
     Control.addVariable("F105YB", -14.0);
@@ -1549,6 +1560,7 @@ F5Variables(FuncDataBase& Control)
     Control.addVariable("F105Z", 13.0);
 
     Control.addVariable("F115Length", 998.0);
+    Control.addVariable("F115ViewWidth", 6);
     Control.addVariable("F115GluePoint", 0.0);
     Control.addVariable("F115XB", 11.0);
     Control.addVariable("F115YB", -14.0);
@@ -1562,6 +1574,7 @@ F5Variables(FuncDataBase& Control)
     Control.addVariable("F115Z", 13.0);
 
     Control.addVariable("F125Length", 998.0);
+    Control.addVariable("F125ViewWidth", 6);
     Control.addVariable("F125GluePoint", 0.0);
     Control.addVariable("F125XB", 11.0);
     Control.addVariable("F125YB", -14.0);
@@ -1576,6 +1589,7 @@ F5Variables(FuncDataBase& Control)
 
 
     Control.addVariable("F135Length", 998.0);
+    Control.addVariable("F135ViewWidth", 6);
     Control.addVariable("F135GluePoint", 0.0);
     Control.addVariable("F135XB", 11.0);
     Control.addVariable("F135YB", -14.0);
@@ -1589,6 +1603,7 @@ F5Variables(FuncDataBase& Control)
     Control.addVariable("F135Z", 13.0);
 
     Control.addVariable("F145Length", 998.0);
+    Control.addVariable("F145ViewWidth", 6);
     Control.addVariable("F145GluePoint", 0.0);
     Control.addVariable("F145XB", 11.0);
     Control.addVariable("F145YB", -14.0);
@@ -1602,6 +1617,7 @@ F5Variables(FuncDataBase& Control)
     Control.addVariable("F145Z", 13.0);
 
     Control.addVariable("F155Length", 998.0);
+    Control.addVariable("F155ViewWidth", 6);
     Control.addVariable("F155GluePoint", 0.0);
     Control.addVariable("F155XB", 11.0);
     Control.addVariable("F155YB", -14.0);
@@ -1615,6 +1631,7 @@ F5Variables(FuncDataBase& Control)
     Control.addVariable("F155Z", 13.0);
 
     Control.addVariable("F165Length", 998.0);
+    Control.addVariable("F165ViewWidth", 6);
     Control.addVariable("F165GluePoint", 0.0);
     Control.addVariable("F165XB", 11.0);
     Control.addVariable("F165YB", -14.0);
@@ -1628,6 +1645,7 @@ F5Variables(FuncDataBase& Control)
     Control.addVariable("F165Z", 13.0);
 
     Control.addVariable("F175Length", 998.0);
+    Control.addVariable("F175ViewWidth", 6);
     Control.addVariable("F175GluePoint", 0.0);
     Control.addVariable("F175XB", 11.0);
     Control.addVariable("F175YB", -14.0);
@@ -1641,6 +1659,7 @@ F5Variables(FuncDataBase& Control)
     Control.addVariable("F175Z", 13.0);
 
     Control.addVariable("F185Length", 998.0);
+    Control.addVariable("F185ViewWidth", 6);
     Control.addVariable("F185GluePoint", 0.0);
     Control.addVariable("F185XB", 11.0);
     Control.addVariable("F185YB", -14.0);
@@ -1654,6 +1673,7 @@ F5Variables(FuncDataBase& Control)
     Control.addVariable("F185Z", 13.0);
 
     Control.addVariable("F195Length", 998.0);
+    Control.addVariable("F195ViewWidth", 6);
     Control.addVariable("F195GluePoint", 0.0);
     Control.addVariable("F195XB", 11.0);
     Control.addVariable("F195YB", -14.0);
