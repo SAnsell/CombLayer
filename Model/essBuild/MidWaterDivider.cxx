@@ -213,18 +213,25 @@ MidWaterDivider::createLinks(const H2Wing &LA, const H2Wing &RA)
 
   // Loop over corners that are bound by convex
   const double LStep(midYStep+wallThick/sin(midAngle/2.0));
+  const Geometry::Plane *pz = ModelSupport::buildPlane(SMap, divIndex+5, Origin, Z);
 
-  FixedComp::setConnect(0, Origin+X*LStep, X); // x+
+  const Geometry::Plane *p103 = SMap.realPtr<Geometry::Plane>(divIndex+103);
+  const Geometry::Plane *p104 = SMap.realPtr<Geometry::Plane>(divIndex+104);
+  //FixedComp::setConnect(0, Origin+X*LStep, X); // x+
+  FixedComp::setConnect(0, SurInter::getPoint(p103, p104, pz), X);
+  ELog::EM << "Why x and y are swapped when the commented line is called instead of the line above? Are the plane numbers correct?" << ELog::endCrit;
   FixedComp::setLinkSurf(0, -SMap.realSurf(divIndex+103));
   FixedComp::addLinkSurf(0, SMap.realSurf(divIndex+104));
-  ELog::EM << "Why x and y are swapped when getLinkPt() is called?" << ELog::endCrit;
 
-  FixedComp::setConnect(1, Origin-X*LStep, -X); // x-
+  const Geometry::Plane *p123 = SMap.realPtr<Geometry::Plane>(divIndex+123);
+  const Geometry::Plane *p124 = SMap.realPtr<Geometry::Plane>(divIndex+124);
+  //  FixedComp::setConnect(1, Origin-X*LStep, -X); // x-
+  FixedComp::setConnect(1, SurInter::getPoint(p123, p124, pz), -X);
+  ELog::EM << "Why x and y are swapped when the commented line is called instead of the line above? Are the plane numbers correct?" << ELog::endCrit;
   FixedComp::setLinkSurf(1, -SMap.realSurf(divIndex+123));
   FixedComp::addLinkSurf(1, SMap.realSurf(divIndex+124));
 
   // minor links
-  const Geometry::Plane *pz = ModelSupport::buildPlane(SMap, divIndex+5, Origin, Z);
   const Geometry::Plane *pWater, *pWing;
   int iWater; // mid water surface index
 
