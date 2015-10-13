@@ -130,7 +130,8 @@ namespace essSystem
 
     if (theta<0) 
       {
-	ELog::EM << "Theta must be defined when this method is used. Call F5Collimator::populate() if glue points are not needed" << ELog::endErr;
+	ELog::EM << "Theta must be defined when this method is used. Call F5Collimator::populate() if glue points are not needed"
+		 << ELog::endErr;
 	return;
       }
 
@@ -178,9 +179,6 @@ namespace essSystem
       Control.setVariable<double>(keyName+"XB", vecFP[gpshift].X());
       Control.setVariable<double>(keyName+"YB", vecFP[gpshift].Y());
       Control.setVariable<double>(keyName+"ZB", zmax);
-      // std::cout << "topX: " << GluePoint << " " << F[gpshift+0] << " " << vecFP[gpshift].X() << std::endl;
-      // std::cout << "topY: " << GluePoint << " " << F[gpshift+1] << " " << vecFP[gpshift].Y() << std::endl;
-      // std::cout << "topZ: " << GluePoint << " " << F[gpshift+2] << " " << zmax << std::endl;
 
       // Calculate the coordinate of L (the second point)
       /*

@@ -355,20 +355,27 @@ void makeESS::buildF5Collimator(Simulation& System, const mainSystem::inputParam
 /*!
   Build F5 collimators
   \param System :: Stardard simulation
-  \param IParam :: command line parameters
+  \param IParam :: command line parameters. Example: --f5-collimators {top,low} {cold,thermal} theta1 theta2 theta3 ...
  */
 {
   ELog::RegMethod RegA("makeESS", "buildF5Collimator");
   ModelSupport::objectRegister& OR = ModelSupport::objectRegister::Instance();
 
-  size_t nCold = IParam.itemCnt("f5-collimators",0); // number of cold collimators to build
+  const std::string moderator(IParam.getValue<std::string>("f5-collimators", 0));
+  const std::string range(IParam.getValue<std::string>("f5-collimators", 1));
+
+  const size_t nColl = IParam.itemCnt("f5-collimators",0)-2; // number of collimators to build (-2 due to Mod and Range)
+  ELog::EM << moderator << " " << range << " " << nColl << ELog::endDiag;
+  //  return;
   double theta(0.0);
-  for (size_t i=0; i<nCold; i++)
+  for (size_t i=0; i<nColl; i++)
     {
-      theta = IParam.getValue<double>("f5-collimators", i);
+      theta = IParam.getValue<double>("f5-collimators", i+2);
+      std::cout << theta << std::endl;
       std::shared_ptr<F5Collimator> F5(new F5Collimator(StrFunc::makeString("F", i*10+5).c_str()));
       OR.addObject(F5);
       F5->setTheta(theta);
+      F5->setRange(range);
       F5->setFocalPoints(TopFocalPoints);
       F5->addInsertCell(74123); // !!! 74123=voidCell // SA: how to exclude F5 from any cells?
       F5->createAll(System, World::masterOrigin());

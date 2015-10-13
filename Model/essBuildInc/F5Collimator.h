@@ -27,6 +27,7 @@ namespace essSystem
 	double theta;               ///< Theta as defined on page 183 of TDR. If theta is set vis setTheta, [xyz]Step are calculated.
 
 	std::vector<Geometry::Vec3D> vecFP; ///< vector of focal points
+	std::string range; ///< Wavelengh range {cold, thermal} - to define which focal points to use
 	
 	// Functions:
 
@@ -47,6 +48,7 @@ namespace essSystem
 
 	void setTheta(double t);
 	inline void setFocalPoints(std::vector<Geometry::Vec3D> vec) { vecFP = vec; }
+	inline void setRange(std::string val) { range = val; }
 	int getMainCell() const { return colIndex+1; }
 	virtual void addToInsertChain(attachSystem::ContainedComp&) const; 
 	void createAll(Simulation&,const attachSystem::FixedComp&);
