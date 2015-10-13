@@ -161,7 +161,6 @@ namespace essSystem
 
 
     tallySystem::point gC,gB,gB2;
-    size_t fpshift(0); // shift in the vecFP, depends on the range
     if (range=="cold")
       {
 	// link point (defined by theta)
@@ -173,23 +172,18 @@ namespace essSystem
 	  Control.setVariable<int>(keyName+"LinkPoint", 8);
 	else // if theta>270
 	  Control.setVariable<int>(keyName+"LinkPoint", 7);
-
-	LinkPoint = Control.EvalDefVar<int>(keyName+"LinkPoint", -1);
       }
     else if (range=="thermal")
       {
-	ELog::EM << vecFP[0] << ELog::endDiag;
-	throw ColErr::AbsObjMethod("'thermal' range in F5Collimator not yet implemented");
-	//	Control.setVariable<double>
+	ELog::EM << "lp0: " << vecFP[0] << ELog::endDiag;
+	//	throw ColErr::AbsObjMethod("'thermal' range in F5Collimator not yet implemented");
+	Control.setVariable<int>(keyName+"LinkPoint", 1);
       }
     else
       {
 	ELog::EM << "Range must be either 'cold' or 'thermal'" << ELog::endErr;
       }
-
-    Control.setVariable<double>(keyName+"XB", vecFP[LinkPoint].X());
-    Control.setVariable<double>(keyName+"YB", vecFP[LinkPoint].Y());
-    Control.setVariable<double>(keyName+"ZB", zmax);
+    LinkPoint = Control.EvalDefVar<int>(keyName+"LinkPoint", -1);
 
     // Calculate the coordinate of L (the second point)
     /*
@@ -218,12 +212,17 @@ namespace essSystem
     if (BC.abs()-viewWidth>Geometry::zeroTol)
       ELog::EM << "Problem with tally " << keyName << ": distance between B and C is " << BC.abs() << " --- not equal to F5ViewWidth = " << viewWidth << ELog::endErr;
 
-    Control.setVariable<double>(keyName+"XC", B[0]+BC[0]);
-    Control.setVariable<double>(keyName+"YC", B[1]+BC[1]);
-    Control.setVariable<double>(keyName+"ZC", B[2]+BC[2]);
+    Geometry::Vec3D C(B+BC);
+
+    Control.setVariable<double>(keyName+"XB", B.X());
+    Control.setVariable<double>(keyName+"YB", B.Y());
+    Control.setVariable<double>(keyName+"ZB", B.Z());
+
+    Control.setVariable<double>(keyName+"XC", C.X());
+    Control.setVariable<double>(keyName+"YC", C.Y());
+    Control.setVariable<double>(keyName+"ZC", C.Z());
 
     Control.setVariable<double>(keyName+"ZG", zmin);
-
 
     gB.x=Control.EvalDefVar<double>(keyName+"XB", 0);
     gB.y=Control.EvalDefVar<double>(keyName+"YB", 0);
