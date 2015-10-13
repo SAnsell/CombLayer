@@ -185,7 +185,7 @@ namespace essSystem
 	// we will use this angle to determine the link point number
 	Geometry::Vec3D vtmp(vecFP[6]-vecFP[2]);
 	const double alpha = acos(vtmp.dotProd(Y)/vtmp.abs())*180/M_PI;
-	if (theta<90-alpha)
+	if (theta<=90-alpha)
 	  {
 	    Control.setVariable<int>(keyName+"LinkPoint", 2);
 	  }
@@ -194,15 +194,15 @@ namespace essSystem
 	    Control.setVariable<int>(keyName+"LinkPoint", 1);
 	    LinkPointCentered = true;
 	  }
-	else if ((theta>90+alpha) && (theta<180))
+	else if ((theta>=90+alpha) && (theta<180))
 	  {
 	    Control.setVariable<int>(keyName+"LinkPoint", 5);
 	  }
-	else if ((theta>=180) && (theta<270-alpha))
+	else if ((theta>=180) && (theta<=270-alpha))
 	  {
 	    Control.setVariable<int>(keyName+"LinkPoint", 4);
 	  }
-	else if (abs(theta-270)<alpha) // 240-300
+	else if (abs(theta-270)<alpha)
 	  {
 	    Control.setVariable<int>(keyName+"LinkPoint", 0);
 	    LinkPointCentered = true;
