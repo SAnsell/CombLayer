@@ -63,7 +63,8 @@ class GuideItem : public attachSystem::ContainedGroup,
   double baseGap;               ///< Base Gap
   
   size_t nSegment;              ///< number of segments in the insert
-  std::vector<double> height;        ///< height
+  std::vector<double> height;        ///< away from target
+  std::vector<double> depth;         ///< towards target depth
   std::vector<double> width;         ///< Depth 
   std::vector<double> length;        ///< Y Axis length [last one ignored]
   int mat;                           ///< Material

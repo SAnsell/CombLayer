@@ -330,7 +330,6 @@ FixedComp::linkAngleRotate(const long int sideIndex,
     Geometry::Quaternion::calcQRotDeg(xyAngle*signV,Z);
 
   Geometry::Vec3D Axis=LItem.getAxis();
-  
   Qz.rotate(Axis);
   Qxy.rotate(Axis);
 
@@ -1117,7 +1116,7 @@ FixedComp::findLinkAxis(const Geometry::Vec3D& AX) const
     }
   return outIndex;
 }
-
+  
 void
 FixedComp::selectAltAxis(const size_t Index,Geometry::Vec3D& XOut,
 			 Geometry::Vec3D& YOut,Geometry::Vec3D& ZOut) const
@@ -1236,7 +1235,8 @@ FixedComp::calcLinkAxis(const long int sideIndex,
 			Geometry::Vec3D& YVec,
 			Geometry::Vec3D& ZVec) const
   /*!
-    Given a linkindex calculate the axes at that point.
+    Given a sideIndex calculate the axises at that point.
+    biasing the prefrence to select Z relative to 
     \param sideIndex :: Signed side+1 (zero for origin of FC)
     \param XVec :: Output X Vec
     \param YVec :: Output Y Vec
@@ -1252,21 +1252,23 @@ FixedComp::calcLinkAxis(const long int sideIndex,
       ZVec=Z;
       return;
     }
+  YVec=getSignedLinkAxis(sideIndex);
+  // Y not parallel to Z case
+  const double ZdotYVec=Z.dotProd(YVec);
+
   
-  if (sideIndex>0)
+  const Geometry::Vec3D& ZPrime=
+    (fabs(ZdotYVec) < 1.0-Geometry::zeroTol) ? Z : X;
+
+  XVec=YVec*ZPrime;
+  ZVec=YVec*XVec;
+  // note that ZdotYVec could have been invalidated by swapping
+  // x for z so have to recalc Y.Z'.
+  if ((ZVec.dotProd(ZPrime) * ZPrime.dotProd(YVec))< -Geometry::zeroTol)
     {
-      const size_t linkIndex=static_cast<size_t>(sideIndex-1);
-      YVec=getLinkAxis(linkIndex);
+      ZVec*=-1.0;
+      XVec*=-1.0;
     }
-  else 
-    {
-      const size_t linkIndex=static_cast<size_t>(1-sideIndex);
-      YVec= -getLinkAxis(linkIndex);
-    }
-  ZVec=Z;          
-  if (fabs(ZVec.dotProd(YVec))>1.0-Geometry::zeroTol)
-    ZVec=X;
-  XVec=YVec*ZVec;
   return;
 }
 

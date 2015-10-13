@@ -95,7 +95,11 @@ ESTIA::ESTIA() :
   estiaAxis(new attachSystem::FixedOffset("estiaAxis",4)),
   FocusMono(new beamlineSystem::GuideLine("estiaFMono")),
   VPipeA(new constructSystem::VacuumPipe("estiaPipeA")),
-  FocusA(new beamlineSystem::GuideLine("estiaFA"))
+  FocusA(new beamlineSystem::GuideLine("estiaFA")),
+
+  VPipeB(new constructSystem::VacuumPipe("estiaPipeB")),
+  VacBoxA(new constructSystem::VacuumBox("estiaVBoxA")),
+  FocusB(new beamlineSystem::GuideLine("estiaFB"))
 /*! 
     Constructor
  */
@@ -113,6 +117,8 @@ ESTIA::ESTIA() :
   OR.addObject(FocusA);
   OR.addObject(VPipeA);
 
+  OR.addObject(FocusB);
+  OR.addObject(VPipeB);
 }
 
 ESTIA::~ESTIA()
@@ -124,7 +130,7 @@ ESTIA::~ESTIA()
 void
 ESTIA::setBeamAxis(const FuncDataBase& Control,
 		   const GuideItem& GItem,
-		  const bool reverseZ)
+		   const bool reverseZ)
   /*!
     Set the primary direction object
     \param GItem :: Guide Item to 
@@ -138,9 +144,11 @@ ESTIA::setBeamAxis(const FuncDataBase& Control,
   estiaAxis->setLinkCopy(1,GItem.getKey("Main"),1);
   estiaAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
   estiaAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
-  
   estiaAxis->linkAngleRotate(3);
   estiaAxis->linkAngleRotate(4);
+
+  ELog::EM<<"YAXIS = "<<estiaAxis->getSignedLinkAxis(2)<<ELog::endDiag;
+  ELog::EM<<"YAXIS = "<<estiaAxis->getSignedLinkAxis(4)<<ELog::endDiag;
 
   if (reverseZ)
     estiaAxis->reverseZ();
@@ -233,6 +241,7 @@ ESTIA::build(Simulation& System,
   VPipeB->addInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeB->createAll(System,FocusA->getKey("Guide0"),2);
 
+  return;
   FocusB->addInsertCell(VPipeA->getCells("Void"));
   FocusB->createAll(System,FocusA->getKey("Guide0"),2,
 		    FocusA->getKey("Guide0"),2);

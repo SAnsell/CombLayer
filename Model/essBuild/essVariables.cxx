@@ -1379,28 +1379,27 @@ EssBeamLinesVariables(FuncDataBase& Control)
       Control.addVariable(baseKey+"YStep",0.0);  
       Control.addVariable(baseKey+"ZStep",0.0);
       Control.addVariable(baseKey+"Zangle",0.0);
-      Control.addVariable(baseKey+"Mat","CastIron");
+      Control.addVariable(baseKey+"Mat","Stainless304");
       Control.addVariable(baseKey+"BeamXYAngle",0.0); 
       Control.addVariable(baseKey+"BeamZAngle",0.0);
       Control.addVariable(baseKey+"BeamXStep",0.0);
       Control.addVariable(baseKey+"BeamZStep",0.0);  
       Control.addVariable(baseKey+"BeamHeight",3.0);
       Control.addVariable(baseKey+"BeamWidth",7.6);
-      Control.addVariable(baseKey+"NSegment",3);
+      Control.addVariable(baseKey+"NSegment",2);
       Control.addVariable(baseKey+"SideGap",0.6);
       Control.addVariable(baseKey+"BaseGap",0.1);
       Control.addVariable(baseKey+"TopGap",0.8); 
       Control.addVariable(baseKey+"Width1",16.0);
       if (i==3)
-	Control.addVariable(baseKey+"Height1",11.5);
+	Control.addVariable(baseKey+"Depth1",1.5);
       else 
-	Control.addVariable(baseKey+"Height1",12.0);
+	Control.addVariable(baseKey+"Depth1",1.0);
+      Control.addVariable(baseKey+"Height1",25.0);
       Control.addVariable(baseKey+"Width2",28.0);
-      Control.addVariable(baseKey+"Height2",44.0);
-      Control.addVariable(baseKey+"Width3",40.0);
-      Control.addVariable(baseKey+"Height3",60.0);
+      Control.addVariable(baseKey+"Height2",22.0);
+      Control.addVariable(baseKey+"Depth2",22.0);
       Control.addVariable(baseKey+"Length1",170.0);
-      Control.addVariable(baseKey+"Length2",170.0);
       Control.addVariable(baseKey+"1XYangle",54.0); 
       Control.addVariable(baseKey+"2XYangle",48.0); 
       Control.addVariable(baseKey+"3XYangle",42.0); 

@@ -306,7 +306,8 @@ objectRegister::getInternalObject(const std::string& Name)  const
 	{
 	  const attachSystem::FixedGroup* FGPtr=
 	    dynamic_cast<const attachSystem::FixedGroup*>(mcx->second.get());
-	  return (FGPtr->hasKey(tail)) ? &(FGPtr->getKey(tail)) : 0;
+	  if (FGPtr)
+	    return (FGPtr->hasKey(tail)) ? &(FGPtr->getKey(tail)) : 0;
 	}
       // Fall through here to test whole name:
     }
@@ -325,6 +326,7 @@ objectRegister::getObject(const std::string& Name) const
   */
 {
   ELog::RegMethod RegA("objectRegister","getObject(const)");
+
   const attachSystem::FixedComp* FCPtr = getInternalObject(Name);
   return dynamic_cast<const T*>(FCPtr);
 }

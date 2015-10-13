@@ -108,7 +108,7 @@ GuideItem::GuideItem(const GuideItem& A) :
   beamZStep(A.beamZStep),beamXYAngle(A.beamXYAngle),
   beamZAngle(A.beamZAngle),beamWidth(A.beamWidth),
   beamHeight(A.beamHeight),nSegment(A.nSegment),
-  height(A.height),width(A.width),length(A.length),
+  height(A.height),depth(A.depth),width(A.width),length(A.length),
   mat(A.mat),innerCyl(A.innerCyl),outerCyl(A.outerCyl),
   RInner(A.RInner),ROuter(A.ROuter)
   /*!
@@ -145,6 +145,7 @@ GuideItem::operator=(const GuideItem& A)
       beamHeight=A.beamHeight;
       nSegment=A.nSegment;
       height=A.height;
+      depth=A.depth;
       width=A.width;
       length=A.length;
       mat=A.mat;
@@ -214,7 +215,7 @@ GuideItem::populate(const FuncDataBase& Control)
   topGap=Control.EvalPair<double>(keyName,baseName,"TopGap");
   baseGap=Control.EvalPair<double>(keyName,baseName,"BaseGap");
 
-  double W,H,L(RInner);
+  double D,W,H,L(RInner);
   nSegment=Control.EvalPair<size_t>(keyName,baseName,"NSegment");
   for(size_t i=0;i<nSegment;i++)
     {
@@ -222,6 +223,8 @@ GuideItem::populate(const FuncDataBase& Control)
 				  StrFunc::makeString("Width",i+1));
       H=Control.EvalPair<double>(keyName,baseName,
 				 StrFunc::makeString("Height",i+1));
+      D=Control.EvalPair<double>(keyName,baseName,
+				 StrFunc::makeString("Depth",i+1));
       if (i!=nSegment-1)
 	{
 	  L+=Control.EvalPair<double>(keyName,baseName,
@@ -229,6 +232,7 @@ GuideItem::populate(const FuncDataBase& Control)
 	  length.push_back(L);
 	}
       height.push_back(H);
+      depth.push_back(D);
       width.push_back(W);
     }
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat",baseName+"Mat");
@@ -316,13 +320,13 @@ GuideItem::createSurfaces()
 
       ModelSupport::buildPlane(SMap,GI+3,Origin-X*(width[i]/2.0),X);
       ModelSupport::buildPlane(SMap,GI+4,Origin+X*(width[i]/2.0),X);
-      ModelSupport::buildPlane(SMap,GI+5,Origin-Z*(height[i]/2.0),Z);
-      ModelSupport::buildPlane(SMap,GI+6,Origin+Z*(height[i]/2.0),Z);
+      ModelSupport::buildPlane(SMap,GI+5,Origin-Z*depth[i],Z);
+      ModelSupport::buildPlane(SMap,GI+6,Origin+Z*height[i],Z);
 
       ModelSupport::buildPlane(SMap,GI+13,Origin-X*(-sideGap+width[i]/2.0),X);
       ModelSupport::buildPlane(SMap,GI+14,Origin+X*(-sideGap+width[i]/2.0),X);
-      ModelSupport::buildPlane(SMap,GI+15,Origin-Z*(-baseGap+height[i]/2.0),Z);
-      ModelSupport::buildPlane(SMap,GI+16,Origin+Z*(-topGap+height[i]/2.0),Z);
+      ModelSupport::buildPlane(SMap,GI+15,Origin-Z*(-baseGap+depth[i]),Z);
+      ModelSupport::buildPlane(SMap,GI+16,Origin+Z*(-topGap+height[i]),Z);
 
       GI+=50;
     }
