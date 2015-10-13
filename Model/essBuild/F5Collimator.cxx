@@ -166,13 +166,13 @@ namespace essSystem
       {
 	// link point (defined by theta)
 	if (theta<90)
-	  Control.setVariable<double>(keyName+"LinkPoint", 6);
+	  Control.setVariable<int>(keyName+"LinkPoint", 6);
 	else if (theta<180)
-	  Control.setVariable<double>(keyName+"LinkPoint", 9);
+	  Control.setVariable<int>(keyName+"LinkPoint", 9);
 	else if (theta<270)
-	  Control.setVariable<double>(keyName+"LinkPoint", 8);
+	  Control.setVariable<int>(keyName+"LinkPoint", 8);
 	else // if theta>270
-	  Control.setVariable<double>(keyName+"LinkPoint", 7);
+	  Control.setVariable<int>(keyName+"LinkPoint", 7);
 
 	LinkPoint = Control.EvalDefVar<int>(keyName+"LinkPoint", -1);
       }
@@ -180,6 +180,7 @@ namespace essSystem
       {
 	ELog::EM << vecFP[0] << ELog::endDiag;
 	throw ColErr::AbsObjMethod("'thermal' range in F5Collimator not yet implemented");
+	//	Control.setVariable<double>
       }
     else
       {
