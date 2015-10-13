@@ -161,6 +161,7 @@ namespace essSystem
 
 
     tallySystem::point gC,gB,gB2;
+    bool LinkPointCentered = false; // defines if the link point is located in the center of the viewing area
     if (range=="cold")
       {
 	// link point (defined by theta)
@@ -172,12 +173,14 @@ namespace essSystem
 	  Control.setVariable<int>(keyName+"LinkPoint", 8);
 	else // if theta>270
 	  Control.setVariable<int>(keyName+"LinkPoint", 7);
+	LinkPointCentered = false;
       }
     else if (range=="thermal")
       {
-	ELog::EM << "lp0: " << vecFP[0] << ELog::endDiag;
+	//	ELog::EM << "lp0: " << vecFP[0] << ELog::endDiag;
 	//	throw ColErr::AbsObjMethod("'thermal' range in F5Collimator not yet implemented");
 	Control.setVariable<int>(keyName+"LinkPoint", 1);
+	LinkPointCentered = true;
       }
     else
       {
@@ -213,6 +216,12 @@ namespace essSystem
       ELog::EM << "Problem with tally " << keyName << ": distance between B and C is " << BC.abs() << " --- not equal to F5ViewWidth = " << viewWidth << ELog::endErr;
 
     Geometry::Vec3D C(B+BC);
+
+    if (LinkPointCentered)
+      {
+	B = B-BC/2.0;
+	C = C-BC/2.0;
+      }
 
     Control.setVariable<double>(keyName+"XB", B.X());
     Control.setVariable<double>(keyName+"YB", B.Y());
