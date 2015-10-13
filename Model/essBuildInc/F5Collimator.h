@@ -22,7 +22,7 @@ namespace essSystem
 	double wall;                    ///< Wall thickness
 	double viewWidth;               ///< View width in horizontal direction (distance between points B and C)
 
-	int GluePoint;              ///< Glue point number (currently number defines quadrant as in butterfly.svgz). Not used if <0. Calculated if setTheta is used.
+	int LinkPoint;              ///< Link point number (currently number-6 defines the quadrant as in butterfly.svgz). Not used if <0. Calculated if setTheta is used.
 	double radius;              ///< Radius for cylindrical coordinates. Defined via 'F5Radius' in essVariables
 	double theta;               ///< Theta as defined on page 183 of TDR. If theta is set vis setTheta, [xyz]Step are calculated.
 

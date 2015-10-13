@@ -76,7 +76,7 @@ namespace essSystem
 
   void F5Collimator::populate(FuncDataBase& Control)
   /*!
-    Populate all the variables for collimators without glue points
+    Populate all the variables for collimators without link points
     \param Control :: Variable table to use
   */
   {
@@ -89,7 +89,7 @@ namespace essSystem
     length=Control.EvalVar<double>(keyName+"Length"); // along x
     wall=Control.EvalDefVar<double>(keyName+"WallThick", 0.5);
 
-    GluePoint = Control.EvalDefVar<int>(keyName+"GluePoint", -1);
+    LinkPoint = Control.EvalDefVar<int>(keyName+"LinkPoint", -1);
 
     tallySystem::point gC,gB,gB2;
 
@@ -122,7 +122,7 @@ namespace essSystem
   void F5Collimator::populateWithTheta(FuncDataBase& Control)
   /*!
     Populate all the variables in the case when \theta is defined
-    (i.e. if theta is defined then glue points are calculated automatically)
+    (i.e. if theta is defined then link points are calculated automatically)
     \param Control :: Variable table to use
   */
   {
@@ -130,7 +130,7 @@ namespace essSystem
 
     if (theta<0) 
       {
-	ELog::EM << "Theta must be defined when this method is used. Call F5Collimator::populate() if glue points are not needed"
+	ELog::EM << "Theta must be defined when this method is used. Call F5Collimator::populate() if link points are not needed"
 		 << ELog::endErr;
 	return;
       }
@@ -164,17 +164,17 @@ namespace essSystem
     size_t fpshift(0); // shift in the vecFP, depends on the range
     if (range=="cold")
       {
-	// glue point (defined by theta)
+	// link point (defined by theta)
 	if (theta<90)
-	  Control.setVariable<double>(keyName+"GluePoint", 6);
+	  Control.setVariable<double>(keyName+"LinkPoint", 6);
 	else if (theta<180)
-	  Control.setVariable<double>(keyName+"GluePoint", 9);
+	  Control.setVariable<double>(keyName+"LinkPoint", 9);
 	else if (theta<270)
-	  Control.setVariable<double>(keyName+"GluePoint", 8);
+	  Control.setVariable<double>(keyName+"LinkPoint", 8);
 	else // if theta>270
-	  Control.setVariable<double>(keyName+"GluePoint", 7);
+	  Control.setVariable<double>(keyName+"LinkPoint", 7);
 
-	GluePoint = Control.EvalDefVar<int>(keyName+"GluePoint", -1);
+	LinkPoint = Control.EvalDefVar<int>(keyName+"LinkPoint", -1);
       }
     else if (range=="thermal")
       {
@@ -186,8 +186,8 @@ namespace essSystem
 	ELog::EM << "Range must be either 'cold' or 'thermal'" << ELog::endErr;
       }
 
-    Control.setVariable<double>(keyName+"XB", vecFP[GluePoint].X());
-    Control.setVariable<double>(keyName+"YB", vecFP[GluePoint].Y());
+    Control.setVariable<double>(keyName+"XB", vecFP[LinkPoint].X());
+    Control.setVariable<double>(keyName+"YB", vecFP[LinkPoint].Y());
     Control.setVariable<double>(keyName+"ZB", zmax);
 
     // Calculate the coordinate of L (the second point)
@@ -199,16 +199,16 @@ namespace essSystem
       |
       |                              O(xStep, yStep, zStep)
       |
-      B(GluePoint+0, GluePoint+1, zStep)
+      B(LinkPoint+0, LinkPoint+1, zStep)
 
     */
 
-    Geometry::Vec3D B(vecFP[GluePoint].X(), vecFP[GluePoint].Y(), zmax);
+    Geometry::Vec3D B(vecFP[LinkPoint].X(), vecFP[LinkPoint].Y(), zmax);
     Geometry::Vec3D OB(B[0]-xStep, B[1]-yStep, B[2]-zStep);
 
     // Calculate angle BOC by the law of cosines:
     double BOC = acos((2*pow(OB.abs(), 2) - pow(viewWidth, 2))/(2*pow(OB.abs(), 2)));
-    if ((GluePoint==6) || (GluePoint==8))
+    if ((LinkPoint==6) || (LinkPoint==8))
       BOC *= -1;
     Geometry::Vec3D OC(OB);
     Geometry::Quaternion::calcQRotDeg(BOC*180/M_PI,Z).rotate(OC);
@@ -368,9 +368,9 @@ namespace essSystem
   {
     ELog::RegMethod RegA("F5Collimator","createAll");
     if (theta>0)
-      populateWithTheta(System.getDataBase()); // build collimators with glue points
+      populateWithTheta(System.getDataBase()); // build collimators with link points
     else
-      populate(System.getDataBase()); // no glue points
+      populate(System.getDataBase()); // no link points
 
     createUnitVector(FC);
     createSurfaces();
