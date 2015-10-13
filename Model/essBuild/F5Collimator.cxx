@@ -166,20 +166,19 @@ namespace essSystem
       {
 	// glue point (defined by theta)
 	if (theta<90)
-	  Control.setVariable<double>(keyName+"GluePoint", 0);
+	  Control.setVariable<double>(keyName+"GluePoint", 6);
 	else if (theta<180)
-	  Control.setVariable<double>(keyName+"GluePoint", 3);
+	  Control.setVariable<double>(keyName+"GluePoint", 9);
 	else if (theta<270)
-	  Control.setVariable<double>(keyName+"GluePoint", 2);
+	  Control.setVariable<double>(keyName+"GluePoint", 8);
 	else // if theta>270
-	  Control.setVariable<double>(keyName+"GluePoint", 1);
+	  Control.setVariable<double>(keyName+"GluePoint", 7);
 
 	GluePoint = Control.EvalDefVar<int>(keyName+"GluePoint", -1);
-
-	fpshift = 6+GluePoint;
       }
     else if (range=="thermal")
       {
+	ELog::EM << vecFP[0] << ELog::endDiag;
 	throw ColErr::AbsObjMethod("'thermal' range in F5Collimator not yet implemented");
       }
     else
@@ -187,8 +186,8 @@ namespace essSystem
 	ELog::EM << "Range must be either 'cold' or 'thermal'" << ELog::endErr;
       }
 
-    Control.setVariable<double>(keyName+"XB", vecFP[fpshift].X());
-    Control.setVariable<double>(keyName+"YB", vecFP[fpshift].Y());
+    Control.setVariable<double>(keyName+"XB", vecFP[GluePoint].X());
+    Control.setVariable<double>(keyName+"YB", vecFP[GluePoint].Y());
     Control.setVariable<double>(keyName+"ZB", zmax);
 
     // Calculate the coordinate of L (the second point)
@@ -200,16 +199,16 @@ namespace essSystem
       |
       |                              O(xStep, yStep, zStep)
       |
-      B(fpshift+0, fpshift+1, zStep)
+      B(GluePoint+0, GluePoint+1, zStep)
 
     */
 
-    Geometry::Vec3D B(vecFP[fpshift].X(), vecFP[fpshift].Y(), zmax);
+    Geometry::Vec3D B(vecFP[GluePoint].X(), vecFP[GluePoint].Y(), zmax);
     Geometry::Vec3D OB(B[0]-xStep, B[1]-yStep, B[2]-zStep);
 
     // Calculate angle BOC by the law of cosines:
     double BOC = acos((2*pow(OB.abs(), 2) - pow(viewWidth, 2))/(2*pow(OB.abs(), 2)));
-    if ((GluePoint==0) || (GluePoint==2))
+    if ((GluePoint==6) || (GluePoint==8))
       BOC *= -1;
     Geometry::Vec3D OC(OB);
     Geometry::Quaternion::calcQRotDeg(BOC*180/M_PI,Z).rotate(OC);
