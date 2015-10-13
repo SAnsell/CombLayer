@@ -179,8 +179,38 @@ namespace essSystem
       {
 	//	ELog::EM << "lp0: " << vecFP[0] << ELog::endDiag;
 	//	throw ColErr::AbsObjMethod("'thermal' range in F5Collimator not yet implemented");
-	Control.setVariable<int>(keyName+"LinkPoint", 1);
-	LinkPointCentered = true;
+
+	// calculate angle between the wing side plane and the x-axis
+	// it is the same as angle b/w vtmp and the y-axis
+	// we will use this angle to determine the link point number
+	Geometry::Vec3D vtmp(vecFP[6]-vecFP[2]);
+	const double alpha = acos(vtmp.dotProd(Y)/vtmp.abs())*180/M_PI;
+	if (theta<90-alpha)
+	  {
+	    Control.setVariable<int>(keyName+"LinkPoint", 2);
+	  }
+	else if (abs(theta-90)<alpha)
+	  {
+	    Control.setVariable<int>(keyName+"LinkPoint", 1);
+	    LinkPointCentered = true;
+	  }
+	else if ((theta>90+alpha) && (theta<180))
+	  {
+	    Control.setVariable<int>(keyName+"LinkPoint", 5);
+	  }
+	else if ((theta>=180) && (theta<270-alpha))
+	  {
+	    Control.setVariable<int>(keyName+"LinkPoint", 4);
+	  }
+	else if (abs(theta-270)<alpha) // 240-300
+	  {
+	    Control.setVariable<int>(keyName+"LinkPoint", 0);
+	    LinkPointCentered = true;
+	  }
+	else if (theta>=270+alpha)
+	  {
+	    Control.setVariable<int>(keyName+"LinkPoint", 7);
+	  }
       }
     else
       {
@@ -206,7 +236,7 @@ namespace essSystem
 
     // Calculate angle BOC by the law of cosines:
     double BOC = acos((2*pow(OB.abs(), 2) - pow(viewWidth, 2))/(2*pow(OB.abs(), 2)));
-    if ((LinkPoint==6) || (LinkPoint==8))
+    if ((LinkPoint==5) || (LinkPoint==6) || (LinkPoint==7) || (LinkPoint==8))
       BOC *= -1;
     Geometry::Vec3D OC(OB);
     Geometry::Quaternion::calcQRotDeg(BOC*180/M_PI,Z).rotate(OC);
