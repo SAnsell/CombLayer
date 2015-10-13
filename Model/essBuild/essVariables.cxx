@@ -144,7 +144,7 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("one",1.0);      // one
 
   Control.addVariable("EngineeringActive",0);      // NO engineering
-  Control.addVariable("F5Radius", 1000);      // Radial location of all F5 tallies (valid with -TopCC argument)
+  Control.addVariable("F5Radius", 1000);      // Radial location of all F5 tallies (valid with -f5-collimators argument)
 
   Control.addVariable("LSupplyNSegIn",2);
   // Central point:

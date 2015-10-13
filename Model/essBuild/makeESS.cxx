@@ -361,11 +361,11 @@ void makeESS::buildF5Collimator(Simulation& System, const mainSystem::inputParam
   ELog::RegMethod RegA("makeESS", "buildF5Collimator");
   ModelSupport::objectRegister& OR = ModelSupport::objectRegister::Instance();
 
-  size_t nCold = IParam.itemCnt("TopCC",0); // number of cold collimators to build
+  size_t nCold = IParam.itemCnt("f5-collimators",0); // number of cold collimators to build
   double theta(0.0);
   for (size_t i=0; i<nCold; i++)
     {
-      theta = IParam.getValue<double>("TopCC", i);
+      theta = IParam.getValue<double>("f5-collimators", i);
       std::shared_ptr<F5Collimator> F5(new F5Collimator(StrFunc::makeString("F", i*10+5).c_str()));
       OR.addObject(F5);
       F5->setTheta(theta);
