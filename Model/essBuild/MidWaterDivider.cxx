@@ -217,6 +217,7 @@ MidWaterDivider::createLinks(const H2Wing &LA, const H2Wing &RA)
   FixedComp::setConnect(0, Origin+X*LStep, X); // x+
   FixedComp::setLinkSurf(0, -SMap.realSurf(divIndex+103));
   FixedComp::addLinkSurf(0, SMap.realSurf(divIndex+104));
+  ELog::EM << "Why x and y are swapped when getLinkPt() is called?" << ELog::endCrit;
 
   FixedComp::setConnect(1, Origin-X*LStep, -X); // x-
   FixedComp::setLinkSurf(1, -SMap.realSurf(divIndex+123));
