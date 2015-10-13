@@ -142,77 +142,88 @@ namespace essSystem
 	return;
       }
 
-    //    std::cout << "theta: " << theta << std::endl;
-    Control.setVariable<double>(keyName+"X", radius*sin(theta*M_PI/180.0));
-    Control.setVariable<double>(keyName+"Y", radius*cos(theta*M_PI/180.0));
-    if (theta<90)
-      Control.setVariable<double>(keyName+"GluePoint", 0);
-    else if (theta<180)
-      Control.setVariable<double>(keyName+"GluePoint", 3);
-    else if (theta<270)
-      Control.setVariable<double>(keyName+"GluePoint", 2);
-    else // if theta>270
-      Control.setVariable<double>(keyName+"GluePoint", 1);
-
-    // x and y are either read from essVariables or set by theta
-    xStep=Control.EvalVar<double>(keyName+"X");
-    yStep=Control.EvalVar<double>(keyName+"Y");
-    // zStep - see below
 
     length=Control.EvalVar<double>(keyName+"Length"); // along x
     wall=Control.EvalDefVar<double>(keyName+"WallThick", 0.5);
     viewWidth=Control.EvalVar<double>(keyName+"ViewWidth");
 
-    GluePoint = Control.EvalDefVar<int>(keyName+"GluePoint", -1);
+    // xyz coordinates of F5 tally
+    Control.setVariable<double>(keyName+"X", radius*sin(theta*M_PI/180.0));
+    Control.setVariable<double>(keyName+"Y", radius*cos(theta*M_PI/180.0));
 
-    tallySystem::point gC,gB,gB2;
+    xStep=Control.EvalVar<double>(keyName+"X");
+    yStep=Control.EvalVar<double>(keyName+"Y");
 
     const double zmin = vecFP[vecFP.size()-2].Z();
     const double zmax = vecFP[vecFP.size()-1].Z();
-
     Control.setVariable<double>(keyName+"Z", (zmin+zmax)/2.0);
     zStep=Control.EvalVar<double>(keyName+"Z");
-	
-    const size_t gpshift = 6+GluePoint;
 
-    if (zStep>0) { // top moderator;
-      Control.setVariable<double>(keyName+"XB", vecFP[gpshift].X());
-      Control.setVariable<double>(keyName+"YB", vecFP[gpshift].Y());
-      Control.setVariable<double>(keyName+"ZB", zmax);
 
-      // Calculate the coordinate of L (the second point)
-      /*
-	F and L are two points where the collimator looks
-	O is the F5 tally location
+    tallySystem::point gC,gB,gB2;
+    size_t fpshift(0); // shift in the vecFP, depends on the range
+    if (range=="cold")
+      {
+	// glue point (defined by theta)
+	if (theta<90)
+	  Control.setVariable<double>(keyName+"GluePoint", 0);
+	else if (theta<180)
+	  Control.setVariable<double>(keyName+"GluePoint", 3);
+	else if (theta<270)
+	  Control.setVariable<double>(keyName+"GluePoint", 2);
+	else // if theta>270
+	  Control.setVariable<double>(keyName+"GluePoint", 1);
 
-	C
-	|
-	|                              O(xStep, yStep, zStep)
-	|
-	B(gpshift+0, gpshift+1, zStep)
+	GluePoint = Control.EvalDefVar<int>(keyName+"GluePoint", -1);
 
-      */
+	fpshift = 6+GluePoint;
+      }
+    else if (range=="thermal")
+      {
+	throw ColErr::AbsObjMethod("'thermal' range in F5Collimator not yet implemented");
+      }
+    else
+      {
+	ELog::EM << "Range must be either 'cold' or 'thermal'" << ELog::endErr;
+      }
 
-      Geometry::Vec3D B(vecFP[gpshift].X(), vecFP[gpshift].Y(), zmax);
-      Geometry::Vec3D OB(B[0]-xStep, B[1]-yStep, B[2]-zStep);
+    Control.setVariable<double>(keyName+"XB", vecFP[fpshift].X());
+    Control.setVariable<double>(keyName+"YB", vecFP[fpshift].Y());
+    Control.setVariable<double>(keyName+"ZB", zmax);
 
-      // Calculate angle BOC by the law of cosines:
-      double BOC = acos((2*pow(OB.abs(), 2) - pow(viewWidth, 2))/(2*pow(OB.abs(), 2)));
-      if ((GluePoint==0) || (GluePoint==2))
-	BOC *= -1;
-      Geometry::Vec3D OC(OB);
-      Geometry::Quaternion::calcQRotDeg(BOC*180/M_PI,Z).rotate(OC);
+    // Calculate the coordinate of L (the second point)
+    /*
+      F and L are two points where the collimator looks
+      O is the F5 tally location
 
-      Geometry::Vec3D BC(OC-OB);
-      if (BC.abs()-viewWidth>Geometry::zeroTol)
-	ELog::EM << "Problem with tally " << keyName << ": distance between B and C is " << BC.abs() << " --- not equal to F5ViewWidth = " << viewWidth << ELog::endErr;
+      C
+      |
+      |                              O(xStep, yStep, zStep)
+      |
+      B(fpshift+0, fpshift+1, zStep)
 
-      Control.setVariable<double>(keyName+"XC", B[0]+BC[0]);
-      Control.setVariable<double>(keyName+"YC", B[1]+BC[1]);
-      Control.setVariable<double>(keyName+"ZC", B[2]+BC[2]);
+    */
 
-      Control.setVariable<double>(keyName+"ZG", zmin);
-    }
+    Geometry::Vec3D B(vecFP[fpshift].X(), vecFP[fpshift].Y(), zmax);
+    Geometry::Vec3D OB(B[0]-xStep, B[1]-yStep, B[2]-zStep);
+
+    // Calculate angle BOC by the law of cosines:
+    double BOC = acos((2*pow(OB.abs(), 2) - pow(viewWidth, 2))/(2*pow(OB.abs(), 2)));
+    if ((GluePoint==0) || (GluePoint==2))
+      BOC *= -1;
+    Geometry::Vec3D OC(OB);
+    Geometry::Quaternion::calcQRotDeg(BOC*180/M_PI,Z).rotate(OC);
+
+    Geometry::Vec3D BC(OC-OB);
+    if (BC.abs()-viewWidth>Geometry::zeroTol)
+      ELog::EM << "Problem with tally " << keyName << ": distance between B and C is " << BC.abs() << " --- not equal to F5ViewWidth = " << viewWidth << ELog::endErr;
+
+    Control.setVariable<double>(keyName+"XC", B[0]+BC[0]);
+    Control.setVariable<double>(keyName+"YC", B[1]+BC[1]);
+    Control.setVariable<double>(keyName+"ZC", B[2]+BC[2]);
+
+    Control.setVariable<double>(keyName+"ZG", zmin);
+
 
     gB.x=Control.EvalDefVar<double>(keyName+"XB", 0);
     gB.y=Control.EvalDefVar<double>(keyName+"YB", 0);
