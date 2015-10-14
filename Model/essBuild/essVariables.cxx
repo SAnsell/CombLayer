@@ -788,7 +788,7 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("GuideBayZangle",0.0);
   Control.addVariable("GuideBayViewAngle",128.0); 
   Control.addVariable("GuideBayInnerHeight",20.0);
-  Control.addVariable("GuideBayInnerDepth",6.3);
+  Control.addVariable("GuideBayInnerDepth",10.3);
   Control.addVariable("GuideBayMidRadius",170.0);
   Control.addVariable("GuideBayHeight",32.0);
   Control.addVariable("GuideBayDepth",40.0);
@@ -1392,10 +1392,10 @@ EssBeamLinesVariables(FuncDataBase& Control)
       Control.addVariable(baseKey+"TopGap",0.8); 
       Control.addVariable(baseKey+"Width1",16.0);
       if (i==3)
-	Control.addVariable(baseKey+"Depth1",1.5);
+	Control.addVariable(baseKey+"Depth1",5.5);
       else 
-	Control.addVariable(baseKey+"Depth1",1.0);
-      Control.addVariable(baseKey+"Height1",25.0);
+	Control.addVariable(baseKey+"Depth1",5.0);
+      Control.addVariable(baseKey+"Height1",10.0);
       Control.addVariable(baseKey+"Width2",28.0);
       Control.addVariable(baseKey+"Height2",22.0);
       Control.addVariable(baseKey+"Depth2",22.0);
