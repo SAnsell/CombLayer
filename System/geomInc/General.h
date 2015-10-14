@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   geomInc/General.h
  *
@@ -67,6 +67,9 @@ class General : public Quadratic
   void setBaseEqn();
 
 };
+
+std::ostream&
+operator<<(std::ostream&,const General&);
 
 }  // NAMESPACE Geometry
 

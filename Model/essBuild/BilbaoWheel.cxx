@@ -50,6 +50,7 @@
 #include "Surface.h"
 #include "surfIndex.h"
 #include "Quadratic.h"
+#include "EllipticCyl.h"
 #include "Rules.h"
 #include "varList.h"
 #include "Code.h"
@@ -339,8 +340,8 @@ BilbaoWheel::getSQSurface(const double R, const double e)
   std::string surf = "sq " + StrFunc::makeString(1./pow(R,2)) + " " +
     StrFunc::makeString(1./pow(R,2)) + " " +
     StrFunc::makeString(e) + " 0 0 0 -1 " +
-    StrFunc::makeString(Origin[1]) + " " + // Y [X and Y are swapped :: because MCNP inconsistant]
-    StrFunc::makeString(Origin[0]) + " " + // X 
+    StrFunc::makeString(Origin[0]) + " " + // X
+    StrFunc::makeString(Origin[1]) + " " + // Y 
     StrFunc::makeString(Origin[2]);        // Z
 
   return surf;
@@ -437,6 +438,18 @@ BilbaoWheel::createSurfaces()
   GA->setSurface(getSQSurface(caseRadius, aspectRatio));
   SMap.registerSurf(GA);
 
+  Geometry::EllipticCyl* ECPtr=
+    ModelSupport::buildEllipticCyl(SMap,wheelIndex+528,Origin,Z,
+				   X,caseRadius,caseRadius);
+
+  GA->normalizeGEQ(0);
+  ELog::EM<<"XXN ="<<*GA<<ELog::endDiag;
+  ELog::EM<<"ASPECT ="<<1/aspectRatio<<ELog::endDiag;
+  ECPtr->normalizeGEQ(0);
+  ELog::EM<<"YY ="<<*ECPtr<<ELog::endDiag;
+
+
+  
   ModelSupport::buildCylinder(SMap,wheelIndex+537,Origin,Z,voidRadius);  
 
   // segmentation
