@@ -440,23 +440,24 @@ BilbaoWheel::createSurfaces()
   ModelSupport::buildCylinder(SMap,wheelIndex+537,Origin,Z,voidRadius);  
 
   // segmentation
-  double thetadeg,theta;
+  double thetaDeg,theta;
   const double dTheta = 360.0/nSectors;
   int SIsec(wheelIndex+5000);
   for (int j=0; j<nSectors; j++)
     {
-      thetadeg = j*dTheta;
-      theta = theta*M_PI/180.0;
-      ModelSupport::buildPlaneRotAxis(SMap, SIsec+1, Origin, X, Z, theta+90.0); // invisible divider
+      thetaDeg = j*dTheta;
+      theta = thetaDeg*M_PI/180.0;
+      ModelSupport::buildPlaneRotAxis
+	(SMap, SIsec+1, Origin, X, Z, thetaDeg+90.0); // invisible divider
       ModelSupport::buildPlaneRotAxis
 	(SMap, SIsec+3,
 	 Origin-X*(secSepThick/2.0*cos(theta))-Y*(secSepThick/2.0*sin(theta)),
-	 X, Z, thetadeg);
+	 X, Z, thetaDeg);
       
       ModelSupport::buildPlaneRotAxis
 	(SMap, SIsec+4,
 	 Origin+X*(secSepThick/2.0*cos(theta))+Y*(secSepThick/2.0*sin(theta)),
-	 X, Z, thetadeg);
+	 X, Z, thetaDeg);
 
       SIsec += 10;
     }
