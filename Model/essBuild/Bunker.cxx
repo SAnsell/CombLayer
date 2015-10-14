@@ -108,7 +108,8 @@ Bunker::Bunker(const Bunker& A) :
   floorDepth(A.floorDepth),roofHeight(A.roofHeight),
   wallThick(A.wallThick),sideThick(A.sideThick),
   roofThick(A.roofThick),floorThick(A.floorThick),
-  wallMat(A.wallMat),nLayers(A.nLayers),wallFrac(A.wallFrac),
+  voidMat(A.voidMat),wallMat(A.wallMat),
+  nLayers(A.nLayers),wallFrac(A.wallFrac),
   wallMatVec(A.wallMatVec)
   /*!
     Copy constructor
@@ -146,6 +147,7 @@ Bunker::operator=(const Bunker& A)
       sideThick=A.sideThick;
       roofThick=A.roofThick;
       floorThick=A.floorThick;
+      voidMat=A.voidMat;
       wallMat=A.wallMat;
       nLayers=A.nLayers;
       wallFrac=A.wallFrac;
@@ -188,6 +190,7 @@ Bunker::populate(const FuncDataBase& Control)
   roofThick=Control.EvalVar<double>(keyName+"RoofThick");
   floorThick=Control.EvalVar<double>(keyName+"FloorThick");
 
+  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");
@@ -361,7 +364,7 @@ Bunker::createObjects(Simulation& System,
   const std::string Inner=FC.getSignedLinkString(sideIndex);
   
   Out=ModelSupport::getComposite(SMap,bnkIndex,"1 -7 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+Inner));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,voidMat,0.0,Out+Inner));
   setCell("MainVoid",cellIndex-1);
 
   // process left wall:

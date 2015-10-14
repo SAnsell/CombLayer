@@ -278,6 +278,7 @@ createInputs(inputParam& IParam)
 
   IParam.regItem("w","weight");
   IParam.regItem("WP","weightPt");
+  IParam.regMulti("wWWG","wWWG",25,0);
   IParam.regMulti("wExt","wExt",25,0);
   IParam.regMulti("wPWT","wPWT",25,0);    
   IParam.regItem("WTemp","weightTemp",1);
@@ -475,6 +476,22 @@ void createFullInputs(inputParam& IParam)
 }
 
 void
+createFilterInputs(inputParam& IParam)
+  /*!
+    Create Photon-neutron source input
+    \param IParam :: Initial input
+  */
+{
+  ELog::RegMethod RegA("MainProcess::","createFilterInputs");
+  createInputs(IParam);
+  
+
+  IParam.setValue("sdefType",std::string("Beam"));
+  IParam.setFlag("voidUnMask");  
+  return;
+}
+
+void
 createGammaInputs(inputParam& IParam)
   /*!
     Create Gamma expt model
@@ -629,7 +646,7 @@ createESSInputs(inputParam& IParam)
   
   //  IParam.setValue("sdefEnergy",2503.0);    
   IParam.setValue("sdefType",std::string("ess"));  
-  IParam.setValue("targetType",std::string("Wheel"));
+  IParam.setValue("targetType",std::string("Bilbao"));
 
   ///\todo change to database list [ordered]
   IParam.regFlag("essDB","essDB");

@@ -8,7 +8,7 @@ use strict;
 ## EXECUTABLES
 my @masterprog=("fullBuild","ess","pipe","sinbad","t1Real",
 		"sns","reactor","t1MarkII","t1Eng","t3Expt",
-		"testMain"); 
+		"filter","testMain"); 
 
 
 
@@ -76,7 +76,16 @@ $gM->addDepUnit("ess",      ["essBuild","visit","src","simMC",
 			     "endf","process","world","work",
 			     "monte","geometry","mersenne","src","xml","poly",
 			     "weights","global","attachComp",
-			     "visit","odin","loki","nmx","vor","dream" ]);
+			     "visit","odin","loki","nmx","vor","dream",
+			     "estia" ]);
+
+$gM->addDepUnit("filter", ["filter","photon","visit","src","simMC",
+			   "construct","physics","input","process",
+			   "transport","scatMat","endf","crystal",
+			   "source","monte","funcBase","log","monte",
+			   "tally","geometry","mersenne","src","world",
+			   "work","xml","poly","support","weights",
+			   "md5","global","attachComp","visit","poly"]);
 
 $gM->addDepUnit("bilbau", ["bibBuild","build","visit","chip","t1Upgrade",
 			   "imat","moderator","build","zoom","construct",

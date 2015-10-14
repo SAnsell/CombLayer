@@ -216,7 +216,7 @@ DBMaterial::initMaterial()
   // Material #23 Lead  11340kg m-3 [0.03296371]
   //204Pb 1.4 206Pb  24.1 207Pb 22.1  208Pb 	52.4 
   MObj.setMaterial(23,"Lead","82206.24c 0.00794248 "
-		   "82207.24c 0.00728335 82208.25c 0.0172691","",MLib);
+		   "82207.24c 0.00728335 82208.24c 0.0172691","",MLib);
   setMaterial(MObj);
 
   // Material #24 Lead  11340kg m-3 [0.03296371] + Sb at 1.2%
@@ -680,11 +680,11 @@ DBMaterial::initMaterial()
   MObj.setMaterial(81,"Silicon20K","14028.24c 0.0460848 "
 		   "14029.24c 0.00234 14030.24c 0.0015403","si.81t",MLib);
   setMaterial(MObj);
-  // Material #82 Silicon with no-bragg (20K)
+  // Material #82 Silicon with no-bragg (77K)
   MObj.setMaterial(82,"Silicon80K","14028.24c 0.0460848 "
 		   "14029.24c 0.00234 14030.24c 0.0015403","si.82t",MLib);
   setMaterial(MObj);
-  // Material #83 Silicon with no-bragg (20K)
+  // Material #83 Silicon with no-bragg (300K)
   MObj.setMaterial(83,"Silicon300K","14028.24c 0.0460848 "
 		   "14029.24c 0.00234 14030.24c 0.0015403","si.83t",MLib);
   setMaterial(MObj);
@@ -1002,9 +1002,32 @@ DBMaterial::initMaterial()
 		   "be.60t lwtr.01t", MLib);
   setMaterial(MObj);
 
+  // Material #120: helium liquid
+  // Low density tungsten
 
-  // CLONE Materials:
-  cloneMaterial("Stainless304","SS316L");
+  MObj.setMaterial(120, "Tungsten_15.1g",
+		   "74180.50c  0.001200000 "
+		   "74182.71c  0.265000000 "
+		   "74183.71c  0.143100000 "
+		   "74184.71c  0.306400000 "
+		   "74186.71c  0.284300000 ",
+		   "",MLib);
+  MObj.setDensity(-15.1);
+  setMaterial(MObj);
+
+  // Homogeneous mixture of Iron and 10% volume H2O
+  MObj.setMaterial(2610, "Iron_10H2O",
+                   " 1001.70c 0.077534884 "
+                   " 8016.70c 0.038767442 "
+                   " 26054.70c 0.051652129 "
+                   " 26056.70c 0.810827964 "
+                   " 26057.70c 0.018725554 "
+                   " 26058.70c 0.002492027 ", "lwtr.01t", MLib);
+  MObj.setDensity(-7.17);
+  setMaterial(MObj);
+
+  
+  // CLONE Materials: 
   cloneMaterial("CastIron","Iron");
   cloneMaterial("Aluminium","Aluminium20K");
 
@@ -1437,6 +1460,31 @@ DBMaterial::writeMCNPX(std::ostream& OX) const
 	      (*sc,"MStore find(active item)");
 	  if (mp->first)
 	    mp->second.write(OX);
+	}
+    }
+  return;
+}
+
+void
+DBMaterial::writeFLUKA(std::ostream& OX) const
+  /*!
+    Write everything out to the fluka system
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("DBMaterial","writeMCNPX");
+
+  for(const int sActive : active)
+    {
+      if (sActive)
+	{
+	  MTYPE::const_iterator mp=MStore.find(sActive);
+	  if (mp==MStore.end())
+	    throw ColErr::InContainerError<int>
+	      (sActive,"MStore find(active item)");
+	  
+	  if (mp->first)
+	    mp->second.writeFLUKA(OX);
 	}
     }
   return;

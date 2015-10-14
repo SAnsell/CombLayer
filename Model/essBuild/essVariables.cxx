@@ -56,6 +56,7 @@ namespace setVariable
   void EssBunkerVariables(FuncDataBase&);
   void EssButterflyModerator(FuncDataBase&);
   void ESSWheel(FuncDataBase&);
+  void F5Variables(FuncDataBase&);
 
 void
 EssWheel(FuncDataBase& Control)
@@ -64,6 +65,64 @@ EssWheel(FuncDataBase& Control)
     \param Control :: Segment variables
    */
 {
+  Control.addVariable("BilbaoWheelEngineeringActive", 1);
+  Control.addVariable("BilbaoWheelShaftHeight",435.0);
+
+  Control.addVariable("BilbaoWheelNShaftLayers",5);
+  Control.addVariable("BilbaoWheelShaftRadius1",14.0);
+  Control.addVariable("BilbaoWheelShaftMat1","Iron");
+  Control.addVariable("BilbaoWheelShaftRadius2",15.0);
+  Control.addVariable("BilbaoWheelShaftMat2","Iron");
+  Control.addVariable("BilbaoWheelShaftRadius3",17.0);
+  Control.addVariable("BilbaoWheelShaftMat3",0);
+  Control.addVariable("BilbaoWheelShaftRadius4",20.0);
+  Control.addVariable("BilbaoWheelShaftMat4","Iron");
+  Control.addVariable("BilbaoWheelShaftRadius5",22.0);
+  Control.addVariable("BilbaoWheelShaftMat5",0);
+
+
+
+  Control.addVariable("BilbaoWheelXStep",0.0);
+  Control.addVariable("BilbaoWheelYStep",112.0);
+  Control.addVariable("BilbaoWheelZStep",0.0);
+  Control.addVariable("BilbaoWheelXYangle",5.0);
+  Control.addVariable("BilbaoWheelZangle",0.0);
+  Control.addVariable("BilbaoWheelTargetHeight",8.0);
+  Control.addVariable("BilbaoWheelVoidTungstenThick", 0.1);
+  Control.addVariable("BilbaoWheelSteelTungstenThick", 0.2);
+  Control.addVariable("BilbaoWheelTemp",300.0);
+  Control.addVariable("BilbaoWheelCoolantThick",0.5);
+  Control.addVariable("BilbaoWheelCaseThick",1.0);
+  Control.addVariable("BilbaoWheelCaseThickIn",1.5);
+  Control.addVariable("BilbaoWheelVoidThick",0.7);
+
+  Control.addVariable("BilbaoWheelInnerRadius",45);
+  Control.addVariable("BilbaoWheelCoolantRadiusIn",64.07);
+  Control.addVariable("BilbaoWheelCoolantRadiusOut",128.95);
+  Control.addVariable("BilbaoWheelCaseRadius",129.15);
+  Control.addVariable("BilbaoWheelVoidRadius",131.15);
+  Control.addVariable("BilbaoWheelAspectRatio", 0.00138);
+  Control.addVariable("BilbaoWheelNSectors", 36);
+  Control.addVariable("BilbaoWheelSectorSepThick", 1.0);
+  Control.addVariable("BilbaoWheelSectorSepMat", "SS316L785");
+
+  Control.addVariable("BilbaoWheelWMat","Tungsten151");
+  Control.addVariable("BilbaoWheelSteelMat","SS316L785");
+  Control.addVariable("BilbaoWheelHeMat","Helium");
+  Control.addVariable("BilbaoWheelSS316LVoidMat","M2644"); // !!! use appropriate name
+  Control.addVariable("BilbaoWheelInnerMat","SS316L785");
+
+  Control.addVariable("BilbaoWheelNLayers",3);
+
+  Control.addVariable("BilbaoWheelRadius1",48);
+  Control.addVariable("BilbaoWheelMatTYPE1",1); // SS316L
+
+  Control.addVariable("BilbaoWheelRadius2",85.0);
+  Control.addVariable("BilbaoWheelMatTYPE2",1);
+
+  Control.addVariable("BilbaoWheelRadius3",125.0);
+  Control.addVariable("BilbaoWheelMatTYPE3",3);
+
   return;
 }
 
@@ -443,12 +502,15 @@ EssVariables(FuncDataBase& Control)
   // TOP A FLIGHT
   Control.addVariable("TopAFlightXStep", 0.0);      // Step from centre
   Control.addVariable("TopAFlightZStep", 0.0);      // Step from centre
+
   Control.addVariable("TopAFlightAngleXY1",60.0);  // Angle out
   Control.addVariable("TopAFlightAngleXY2",60.0);  // Angle out
   Control.addVariable("TopAFlightXYangle",180.0);
   Control.addVariable("TopAFlightZangle",0.0);
   Control.addVariable("TopAFlightAngleZTop",1.0);  // Step down angle
   Control.addVariable("TopAFlightAngleZBase",1.0); // Step up angle
+
+
   //  Control.Parse("TopFlyTotalHeight");
   Control.addVariable("TopAFlightHeight", 4.6);     // Full height = TopFlyTotalHeight
   Control.addVariable("TopAFlightWidth", 10.7);     // Full width
@@ -559,6 +621,8 @@ EssVariables(FuncDataBase& Control)
 
 
   Control.addVariable("ProtonBeamViewRadius",4.0);  
+
+
  
   Control.addVariable("WheelShaftNLayers",3);
   Control.addVariable("WheelShaftHeight",435.0);
@@ -748,13 +812,13 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("BulkRadius2",65.0);
   Control.addVariable("BulkHeight2",75.0);
   Control.addVariable("BulkDepth2",75.0);
-  Control.addVariable("BulkMat2","Stainless304");           // stainless
+  Control.addVariable("BulkMat2","Iron10H2O");        // SA: using hand-made mixture because CL can't generate volume fractions
 
   // Bulk steel layer [No individual guides]
   Control.addVariable("BulkRadius3",200.0);
   Control.addVariable("BulkHeight3",200.0);
   Control.addVariable("BulkDepth3",200.0);
-  Control.addVariable("BulkMat3","CastIron");           // Bulk Steel
+  Control.addVariable("BulkMat3","Iron10H2O");        // SA: using hand-made mixture because CL can't generate volume fractions
 
 
   // BULK FLIGHT VOID
@@ -788,7 +852,7 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("GuideBayZangle",0.0);
   Control.addVariable("GuideBayViewAngle",128.0); 
   Control.addVariable("GuideBayInnerHeight",20.0);
-  Control.addVariable("GuideBayInnerDepth",6.3);
+  Control.addVariable("GuideBayInnerDepth",10.3);
   Control.addVariable("GuideBayMidRadius",170.0);
   Control.addVariable("GuideBayHeight",32.0);
   Control.addVariable("GuideBayDepth",40.0);
@@ -802,10 +866,12 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("GuideBay3NItems",19);  
   Control.addVariable("GuideBay4NItems",19);
 
-
+  Control.addVariable("GuideBay4InnerDepth",5.8);
+  
   EssBeamLinesVariables(Control);
   ODINvariables(Control);
   DREAMvariables(Control);
+  ESTIAvariables(Control);
   LOKIvariables(Control);
   NMXvariables(Control);
   VORvariables(Control);
@@ -814,6 +880,7 @@ EssVariables(FuncDataBase& Control)
   EssWheel(Control);
   EssBunkerVariables(Control);
 
+  F5Variables(Control);
 
   Control.addVariable("sdefEnergy",2000.0);
   // port version:
@@ -884,7 +951,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowFlyFlowGuideBaseArmSep",0.1);
   Control.addVariable("LowFlyFlowGuideBaseOffset",Geometry::Vec3D(0,-10.7,0));
   Control.addVariable("LowFlyFlowGuideArmOffset",Geometry::Vec3D(0,-9,0));
-  Control.addVariable("LowFlyFlowGuideWallMat","Aluminium");
+  Control.addVariable("LowFlyFlowGuideWallMat","Aluminium20K");
   Control.addVariable("LowFlyFlowGuideWallTemp",20.0);
   
   Control.addVariable("LowFlyRightLobeXStep",-1.0);  
@@ -897,6 +964,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowFlyRightLobeRadius1",5.0);
   Control.addVariable("LowFlyRightLobeRadius2",2.506);
   Control.addVariable("LowFlyRightLobeRadius3",2.506);
+
 
   Control.addVariable("LowFlyRightLobeModMat","ParaOrtho%0.5");
   Control.addVariable("LowFlyRightLobeModTemp",20.0);
@@ -1072,18 +1140,15 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowPreModDepth2",0);
   //  Control.Parse("BeRefRadius");
   Control.addVariable("LowPreModRadius2",-0.3);
-  Control.addVariable("LowPreModMat2","Stainless304");
+  //  Control.Parse("BeRefRadius-LowPreModRadius0-LowPreModRadius1");
+  //  Control.addVariable("LowPreModRadius2");
+  Control.addVariable("LowPreModMat2","Iron10H2O");
+
   Control.addVariable("LowPreModHeight3",0.3);
   Control.addVariable("LowPreModDepth3",0.3);
-  //  Control.Parse("BeRefWallThick");
   Control.addVariable("LowPreModRadius3",0.0);
   Control.addVariable("LowPreModMat3","Aluminium");
-  /*
-  Control.addVariable("LowPreModHeight4", 0.0);
-  Control.addVariable("LowPreModDepth4",  0.85);
-  Control.addVariable("LowPreModRadius4", 0.0);
-  Control.addVariable("LowPreModMat4","Void");
-  */
+
   Control.addVariable("LowPreModFlowGuideWallThick", 0.3);
   Control.addVariable("LowPreModFlowGuideWallMat","Aluminium");
   Control.addVariable("LowPreModFlowGuideNBaffles", 9);
@@ -1102,7 +1167,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopPreModDepth2",0);
   Control.Parse("BeRefRadius");
   Control.addVariable("TopPreModRadius2");
-  Control.addVariable("TopPreModMat2","Stainless304");
+  Control.addVariable("TopPreModMat2","Iron10H2O");
   Control.addVariable("TopPreModHeight3",0.3);
   Control.addVariable("TopPreModDepth3",0.3);
   Control.Parse("BeRefWallThick");
@@ -1110,7 +1175,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopPreModMat3","Aluminium");
 
   Control.addVariable("TopPreModHeight4", 0.0);
-  Control.addVariable("TopPreModDepth4",  0.85);
+  Control.addVariable("TopPreModDepth4",  0.0);
   Control.addVariable("TopPreModRadius4", 0.0);
   Control.addVariable("TopPreModMat4","Void");
 
@@ -1281,7 +1346,6 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopCapModDepth3", 0.3);
   Control.addVariable("TopCapModRadius3",0.0);
   Control.addVariable("TopCapModMat3", "Aluminium");
-
   
   return;
 }
@@ -1303,24 +1367,30 @@ EssBunkerVariables(FuncDataBase& Control)
   
   Control.addVariable("ABunkerWallRadius",1300.0);
   Control.addVariable("ABunkerFloorDepth",100.0);
-  Control.addVariable("ABunkerRoofHeight",100.0);
+  Control.addVariable("ABunkerRoofHeight",195.0);
 
   Control.addVariable("ABunkerWallThick",320.0);
   Control.addVariable("ABunkerSideThick",100.0);
   Control.addVariable("ABunkerRoofThick",100.0);
   Control.addVariable("ABunkerFloorThick",100.0);
 
+  Control.addVariable("ABunkerVoidMat","Void");
   Control.addVariable("ABunkerWallMat","Steel71");
 
-  Control.addVariable("ABunkerNLayers",9);
+  Control.addVariable("ABunkerNLayers",12);
   Control.addVariable("ABunkerWallMat1","B4C");
   Control.addVariable("ABunkerWallMat2","Lead");
   Control.addVariable("ABunkerWallMat3","CastIron");
   Control.addVariable("ABunkerWallMat4","CastIron");
+  Control.addVariable("ABunkerWallMat5","Concrete");
+  Control.addVariable("ABunkerWallMat6","CastIron");
+  Control.addVariable("ABunkerWallMat7","CastIron");
+  Control.addVariable("ABunkerWallMat8","B4C");
   Control.addVariable("ABunkerWallMat9","Concrete");
   
   Control.addVariable("ABunkerWallLen1",5.0);
-  Control.addVariable("ABunkerWallLen2",25.0);
+  Control.addVariable("ABunkerWallLen2",10.0);
+  Control.addVariable("ABunkerWallLen8",1.0);
 
   //
   // RIGHT BUNKER : B PART
@@ -1333,13 +1403,14 @@ EssBunkerVariables(FuncDataBase& Control)
   
   Control.addVariable("BBunkerWallRadius",1700.0);
   Control.addVariable("BBunkerFloorDepth",100.0);
-  Control.addVariable("BBunkerRoofHeight",100.0);
+  Control.addVariable("BBunkerRoofHeight",195.0);
 
   Control.addVariable("BBunkerWallThick",320.0);
   Control.addVariable("BBunkerSideThick",150.0);
   Control.addVariable("BBunkerRoofThick",200.0);
   Control.addVariable("BBunkerFloorThick",100.0);
 
+  Control.addVariable("BBunkerVoidMat","Void");
   Control.addVariable("BBunkerWallMat","Steel71");
 
   Control.addVariable("BBunkerNLayers",9);
@@ -1351,6 +1422,37 @@ EssBunkerVariables(FuncDataBase& Control)
 
   
   return;
+}
+
+void
+F5Variables(FuncDataBase& Control)
+/*!
+  Create variables for all F5 collimators
+ */
+{
+    Control.addVariable("F5Length", 440);
+    Control.addVariable("F5XB", 10.58);
+    Control.addVariable("F5YB", -14.2);
+    Control.addVariable("F5ZB", 14.4);
+    Control.addVariable("F5XC", 10.47);
+    Control.addVariable("F5YC", -8.20);
+    Control.addVariable("F5ZC", 14.4);
+    Control.addVariable("F5ZG", 11.4);
+    Control.addVariable("F5X", 999.84);
+    Control.addVariable("F5Y", -17.45);
+    Control.addVariable("F5Z", 12.9);
+
+    Control.addVariable("F15Length", 440);
+    Control.addVariable("F15XB", 10.58);
+    Control.addVariable("F15YB", -14.2);
+    Control.addVariable("F15ZB", 14.4);
+    Control.addVariable("F15XC", 10.47);
+    Control.addVariable("F15YC", -8.20);
+    Control.addVariable("F15ZC", 14.4);
+    Control.addVariable("F15ZG", 11.4);
+    Control.addVariable("F15X", -999.84);
+    Control.addVariable("F15Y", -17.45);
+    Control.addVariable("F15Z", 12.9);
 }
   
 void
@@ -1370,22 +1472,28 @@ EssBeamLinesVariables(FuncDataBase& Control)
       Control.addVariable(baseKey+"YStep",0.0);  
       Control.addVariable(baseKey+"ZStep",0.0);
       Control.addVariable(baseKey+"Zangle",0.0);
-      Control.addVariable(baseKey+"Mat","CastIron");
+      Control.addVariable(baseKey+"Mat","Stainless304");
       Control.addVariable(baseKey+"BeamXYAngle",0.0); 
       Control.addVariable(baseKey+"BeamZAngle",0.0);
       Control.addVariable(baseKey+"BeamXStep",0.0);
       Control.addVariable(baseKey+"BeamZStep",0.0);  
       Control.addVariable(baseKey+"BeamHeight",3.0);
       Control.addVariable(baseKey+"BeamWidth",7.6);
-      Control.addVariable(baseKey+"NSegment",3);
+      Control.addVariable(baseKey+"NSegment",2);
+      Control.addVariable(baseKey+"SideGap",0.6);
+      Control.addVariable(baseKey+"BaseGap",0.1);
+      Control.addVariable(baseKey+"TopGap",0.8); 
       Control.addVariable(baseKey+"Width1",16.0);
+      if (i==3)
+	Control.addVariable(baseKey+"Depth1",5.5);
+      else 
+	Control.addVariable(baseKey+"Depth1",5.0);
+
       Control.addVariable(baseKey+"Height1",12.0);
       Control.addVariable(baseKey+"Width2",28.0);
-      Control.addVariable(baseKey+"Height2",44.0);
-      Control.addVariable(baseKey+"Width3",40.0);
-      Control.addVariable(baseKey+"Height3",60.0);
+      Control.addVariable(baseKey+"Height2",22.0);
+      Control.addVariable(baseKey+"Depth2",22.0);
       Control.addVariable(baseKey+"Length1",170.0);
-      Control.addVariable(baseKey+"Length2",170.0);
       Control.addVariable(baseKey+"1XYangle",54.0); 
       Control.addVariable(baseKey+"2XYangle",48.0); 
       Control.addVariable(baseKey+"3XYangle",42.0); 
@@ -1406,7 +1514,9 @@ EssBeamLinesVariables(FuncDataBase& Control)
       Control.addVariable(baseKey+"18XYangle",-48.0);
       Control.addVariable(baseKey+"19XYangle",-54.0);
       Control.addVariable(baseKey+"Filled",0);
-      Control.addVariable(baseKey+"Active",0);      
+      Control.addVariable(baseKey+"Active",0);
+
+
     }
   return;
 }

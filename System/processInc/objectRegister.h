@@ -79,6 +79,7 @@ class objectRegister
 
   int getRenumberCell(const std::string&,const int =-1) const;
   int getRenumberRange(const std::string&,const int =-1) const;
+  std::string inRenumberRange(const int) const;
 
   
   void addObject(const std::string&,const CTYPE&);

@@ -55,14 +55,28 @@ class NMX
  private:
 
   /// Main Beam Axis [for construction]
-  std::shared_ptr<attachSystem::FixedComp> nmxAxis;
+  std::shared_ptr<attachSystem::FixedOffset> nmxAxis;
 
   /// tapper in insert bay
   std::shared_ptr<beamlineSystem::GuideLine> GuideA;
+    
+  /// Pipe between bunker and the wall
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeA;
+  /// Pipe between bunker and the wall
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeB;
   /// Bender in insert bay
   std::shared_ptr<beamlineSystem::GuideLine> BendA;
+  /// Bunker insert
+  std::shared_ptr<essSystem::BunkerInsert> BInsert;
+
+  /// tapper in insert bay
+  std::shared_ptr<beamlineSystem::GuideLine> FocusWall;
+
+  // Piece after wall
+  std::shared_ptr<constructSystem::LineShield> ShieldA;
   
-  void setBeamAxis(const GuideItem&,const bool);
+  void setBeamAxis(const FuncDataBase&,
+		   const GuideItem&,const bool);
   
  public:
   

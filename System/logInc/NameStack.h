@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   logInc/NameStack.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,6 +38,8 @@ class NameStack
   std::map<std::string,int> key;        ///< Key names
   std::vector<std::string> Class;       ///< Class Name
   std::vector<std::string> Method;      ///< Method Name
+  std::string Extra;                    ///< Extra tag if neeed
+  size_t extraLevel;                    ///< Extra tag if neeed
   long int indentLevel;                 ///< Indent level
 
  public:
@@ -48,14 +50,20 @@ class NameStack
   ~NameStack() {}    ///< Destructor
 
   void clear(); 
-  
+
+  /// Set extra output for exception
+  void setExtra(const std::string&);
+  /// Remove extra output for exception [early]
+  void clearExtra() { Extra.clear(); }
   void addComp(const std::string&,const std::string&);
   void popBack();
 
+  
   std::string getBase() const;
   std::string getItem(const long int) const;
   std::string getFull() const;
   std::string getFullTree() const;
+  const std::string& getExtra() const;
 
   /// Access depth of function:
   size_t getDepth() const { return Class.size(); }

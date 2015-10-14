@@ -198,7 +198,8 @@ ModBase::getSideIndex(const size_t I) const
   /*!
     Accessor to flight sides
     \param I :: Index for side
-   */
+    \return flight surface index 
+  */
 {
   return (I>=flightSides.size()) ? 0 : flightSides[I];
 }

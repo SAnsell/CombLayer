@@ -96,8 +96,8 @@
 namespace essSystem
 {
 
-LOKI::LOKI() :
-  lokiAxis(new attachSystem::FixedComp("lokiAxis",4)),
+LOKI::LOKI() : 
+  lokiAxis(new attachSystem::FixedOffset("lokiAxis",4)),
   BendA(new beamlineSystem::GuideLine("lokiBA")),
   VacBoxA(new constructSystem::VacuumBox("lokiVacA")),
   GuideA(new beamlineSystem::GuideLine("lokiGA")),
@@ -202,24 +202,30 @@ LOKI::~LOKI()
 {}
 
 void
-LOKI::setBeamAxis(const GuideItem& GItem,
+LOKI::setBeamAxis(const FuncDataBase& Control,
+		  const GuideItem& GItem,
 		  const bool reverseZ)
   /*!
     Set the primary direction object
+    \param Control :: Data base of info on variables
     \param GItem :: Guide Item to 
    */
 {
   ELog::RegMethod RegA("LOKI","setBeamAxis");
 
+  lokiAxis->populate(Control);
   lokiAxis->createUnitVector(GItem);
   lokiAxis->setLinkCopy(0,GItem.getKey("Main"),0);
   lokiAxis->setLinkCopy(1,GItem.getKey("Main"),1);
 
   lokiAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
   lokiAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
-
-  if (reverseZ)
-    lokiAxis->reverseZ();
+  // BEAM needs to be rotated:
+  lokiAxis->linkAngleRotate(3);
+  lokiAxis->linkAngleRotate(4);
+  
+    if (reverseZ)
+      lokiAxis->reverseZ();
   return;
 }
   
@@ -240,7 +246,7 @@ LOKI::build(Simulation& System,
   ELog::RegMethod RegA("LOKI","build");
   ELog::EM<<"\nBuilding LOKI on : "<<GItem.getKeyName()<<ELog::endDiag;
 
-  setBeamAxis(GItem,0);
+  setBeamAxis(System.getDataBase(),GItem,0);
   BendA->addInsertCell(GItem.getCells("Void"));
   BendA->addInsertCell(bunkerObj.getCell("MainVoid"));
   BendA->createAll(System,*lokiAxis,-3,*lokiAxis,-3); // beam front reversed

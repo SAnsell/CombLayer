@@ -1322,6 +1322,21 @@ HeadRule::makeComplement()
   return;
 }
 
+HeadRule
+HeadRule::complement() const
+  /*!
+    Make the rule a complement 
+    and return that object
+    \return #(this)
+   */
+{
+  ELog::RegMethod RegA("HeadRule","complement");
+
+  HeadRule A(*this);
+  A.makeComplement();
+  return A;
+}
+
 std::string 
 HeadRule::display() const
   /*!
@@ -1348,8 +1363,8 @@ HeadRule::displayFluka() const
   
   // union test
   return (HeadNode->type()== -1) ? 
-    "|"+HeadNode->display()+"|" :
-    " "+HeadNode->display()+" ";
+    "|"+HeadNode->displayFluka()+"|" :
+    " "+HeadNode->displayFluka()+" ";
 }
 
 

@@ -61,7 +61,7 @@ class Vec3D
   
   Vec3D();
   Vec3D(const double,const double,const double);
-  Vec3D(const double*);
+  explicit Vec3D(const double*);
   Vec3D(const Vec3D&);
   virtual ~Vec3D();
 

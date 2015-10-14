@@ -71,6 +71,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "SecondTrack.h"
+#include "AttachSupport.h"
 #include "Object.h"
 #include "Qhull.h"
 #include "Source.h"
@@ -167,7 +168,6 @@ setDefRotation(const mainSystem::inputParam& IParam)
   masterRotate& MR = masterRotate::Instance();
   if (IParam.flag("axis"))
     {
-
       // Move X to Z:
       MR.addRotation(Geometry::Vec3D(0,1,0),
 		     Geometry::Vec3D(0,0,0),
@@ -179,12 +179,14 @@ setDefRotation(const mainSystem::inputParam& IParam)
       MR.addMirror(Geometry::Plane
 		   (1,0,Geometry::Vec3D(0,0,0),
 		    Geometry::Vec3D(1,0,0)));
-
     }
   if (IParam.flag("angle"))
     {
       std::string AItem=
 	IParam.getValue<std::string>("angle");
+      std::string BItem=(IParam.itemCnt("angle",0)>1) ?
+	IParam.getValue<std::string>("angle",1) : "";
+
       if (AItem=="chipIR" || AItem=="ChipIR")
 	MR.addRotation(Geometry::Vec3D(0,0,1),
 		       Geometry::Vec3D(0,0,0),
@@ -195,31 +197,60 @@ setDefRotation(const mainSystem::inputParam& IParam)
 			 Geometry::Vec3D(0,0,0),
 			 45.00-180.0);
 	}
-      else if (AItem=="ODIN" || AItem=="odin" ||
+      else if (AItem=="DREAM" || AItem=="dream" ||
+	       AItem=="ESTIA" || AItem=="estia" ||
 	       AItem=="LOKI" || AItem=="loki" ||
-	       AItem=="VOR" || AItem=="vor" ||
-	       AItem=="DREAM" || AItem=="dream")
+	       AItem=="NMX" || AItem=="nmx" ||
+	       AItem=="ODIN" || AItem=="odin" ||
+	       AItem=="VOR" || AItem=="vor")
 	{
 	  std::transform(AItem.begin(),AItem.end(),
 	    AItem.begin(),::tolower);
-	  
+	  std::transform(BItem.begin(),BItem.end(),
+	    BItem.begin(),::tolower);
+
+	  // link point to use for beam axis
+	  const long int axisIndex=
+	    (BItem=="main") ? 2 : 4;
+	    
 	  const attachSystem::FixedComp* GIPtr=
 	    OR.getObject<attachSystem::FixedComp>(AItem+"Axis");
 	  if (!GIPtr)
 	    throw ColErr::InContainerError<std::string>
 	      (AItem+"Axis","Fixed component");
+
 	  // Y is beam direction -- Alignment along X
-	  const double angle=180.0*acos(GIPtr->getY()[0])/M_PI;
-	  MR.addRotation(GIPtr->getZ(),Geometry::Vec3D(0,0,0),
-			 -angle);
+	  const Geometry::Vec3D AxisVec=
+	    GIPtr->getSignedLinkAxis(axisIndex);
+
+	  const double angle=180.0*acos(AxisVec[0])/M_PI;
+	  MR.addRotation(GIPtr->getZ(),Geometry::Vec3D(0,0,0),-angle);
+	  // Z rotation
+	  const double angleZ=90.0-180.0*acos(-AxisVec[2])/M_PI;
+	  MR.addRotation(GIPtr->getX(),Geometry::Vec3D(0,0,0),-angleZ);
 	}
       else if (AItem=="free" || AItem=="FREE")
 	{
 	  const double rotAngle=
 	    IParam.getValue<double>("angle",1);
 	  MR.addRotation(Geometry::Vec3D(0,0,1),Geometry::Vec3D(0,0,0),
-			 -rotAngle);
-		  
+			 -rotAngle);		  
+	}
+      else if (AItem=="object" || AItem=="object")
+	{
+	  const std::string keyName=
+	    IParam.getValue<std::string>("angle",1);
+	  const std::string linkName=
+	    IParam.getValue<std::string>("angle",2);
+	  const long int LN=attachSystem::getLinkNumber(linkName);
+	  const attachSystem::FixedComp* OPtr=
+	    OR.getObject<attachSystem::FixedComp>(keyName);
+	  if (!OPtr)
+	    throw ColErr::InContainerError<std::string>
+	      (keyName,"Fixed component");
+	  const Geometry::Vec3D YAxis=OPtr->getSignedLinkAxis(LN);
+	  const double angle=180.0*acos(YAxis[0])/M_PI;
+	  MR.addRotation(Geometry::Vec3D(0,0,1),Geometry::Vec3D(0,0,0),-angle);
 	}
       else 
 	retFlag=AItem;
@@ -304,7 +335,7 @@ setDefaultPhysics(Simulation& System,
   const FuncDataBase& Control=System.getDataBase();
   
   std::string PList("h / d t s a");
-  const double maxEnergy=Control.EvalDefVar<double>("sdefEnergy",800.0);
+  const double maxEnergy=Control.EvalDefVar<double>("sdefEnergy",2000.0);
   const double elcEnergy=IParam.getValue<double>("electron");
   const double phtEnergy=IParam.getValue<double>("photon");
   const double phtModel=IParam.getValue<double>("photonModel");

@@ -188,6 +188,20 @@ pointConstruct::processPoint(Simulation& System,
       const long int linkNumber=getLinkIndex(snd);
       processPointFree(System,place,linkNumber,D);
     }
+  else if (PType=="objOffset")
+    {
+      const std::string place=
+	inputItem<std::string>(IParam,Index,2,"position not given");
+      const std::string snd=
+	inputItem<std::string>(IParam,Index,3,"front/back/side not give");
+
+      size_t itemIndex(4);
+      const Geometry::Vec3D DVec=
+	inputCntVec3D(IParam,Index,itemIndex,"Offset");
+      const long int linkNumber=getLinkIndex(snd);
+      
+      processPointFree(System,place,linkNumber,DVec);
+    }
   else
     {
       ELog::EM<<"Point TallyType "<<PType<<" ignored"<<ELog::endWarn;
@@ -293,21 +307,46 @@ pointConstruct::processPointFree(Simulation& System,
       (FObject,"Fixed Object not found");
   
   const int tNum=System.nextTallyNum(5);
-  Geometry::Vec3D TPoint;
-  if (linkPt>0)
-    {
-      const size_t iLP=static_cast<size_t>(linkPt-1);
-      TPoint=TPtr->getLinkPt(iLP)+TPtr->getLinkAxis(iLP)*OD;
-    }
-  else if (linkPt<0)
-    {
-      const size_t iLP=static_cast<size_t>(1-linkPt);
-      TPoint=TPtr->getLinkPt(iLP)-TPtr->getLinkAxis(iLP)*OD;
-    }
-  else   // origin case
-    {
-      TPoint=TPtr->getCentre()+TPtr->getY()*OD;
-    }
+  Geometry::Vec3D TPoint=TPtr->getSignedLinkPt(linkPt);
+  TPoint+=TPtr->getSignedLinkAxis(linkPt)*OD;
+
+  std::vector<Geometry::Vec3D> EmptyVec;
+  addF5Tally(System,tNum,TPoint,EmptyVec);
+  
+  return;
+}
+
+void
+pointConstruct::processPointFree(Simulation& System,
+				 const std::string& FObject,
+				 const long int linkPt,
+				 const Geometry::Vec3D& DVec) const
+/*!
+  Process a point tally in a registered object
+  \param System :: Simulation to add tallies
+  \param FObject :: Fixed/Twin name
+  \param linkPt :: Link point [-ve for beam object]
+  \param DVec :: Out distance Distance
+*/
+{
+  ELog::RegMethod RegA("pointConstruct","processPointFree(Vec)");
+
+  const ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  const attachSystem::FixedComp* TPtr=
+    OR.getObject<attachSystem::FixedComp>(FObject);
+  
+  if (!TPtr)
+    throw ColErr::InContainerError<std::string>
+      (FObject,"Fixed Object not found");
+  
+  const int tNum=System.nextTallyNum(5);
+  Geometry::Vec3D TPoint=TPtr->getSignedLinkPt(linkPt);
+  
+  Geometry::Vec3D XDir,YDir,ZDir;
+  TPtr->calcLinkAxis(linkPt,XDir,YDir,ZDir);
+  TPoint+=XDir*DVec[0]+YDir*DVec[1]+ZDir*DVec[2];
 
   std::vector<Geometry::Vec3D> EmptyVec;
   addF5Tally(System,tNum,TPoint,EmptyVec);

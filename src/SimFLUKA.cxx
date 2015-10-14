@@ -187,15 +187,16 @@ SimFLUKA::writeCells(std::ostream& OX) const
   */
 {
   ELog::RegMethod RegA("SimFLUKA","writeCells");
+  OX<<"* -------------------------------------------------------"<<std::endl;
+  OX<<"* ------------------ CELL CARDS -------------------------"<<std::endl;
+  OX<<"* -------------------------------------------------------"<<std::endl;
   
   
   OTYPE::const_iterator mp;
   for(mp=OList.begin();mp!=OList.end();mp++)
-    {
-      mp->second->writeFLUKA(OX);
-    }
-
+    mp->second->writeFLUKA(OX);
   OX<<"END"<<std::endl;
+  OX<<"* ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
   return;
 }
 
@@ -216,7 +217,7 @@ SimFLUKA::writeSurfaces(std::ostream& OX) const
 
   for(const ModelSupport::surfIndex::STYPE::value_type& sm : SurMap)
     sm.second->writeFLUKA(OX);
-  
+  OX<<"END"<<std::endl;
   OX<<"* ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
   OX<<std::endl;
   return;
@@ -230,10 +231,28 @@ SimFLUKA::writeMaterial(std::ostream& OX) const
     \param OX :: Output stream
   */
 {
-  OX<<"    [material]"<<std::endl;
-  ModelSupport::DBMaterial::Instance().writeMCNPX(OX);
+  ELog::RegMethod RegA("SimFLUKA","writeMaterial");
+
+  OX<<"* -------------------------------------------------------"<<std::endl;
+  OX<<"* --------------- MATERIAL CARDS ------------------------"<<std::endl;
+  OX<<"* -------------------------------------------------------"<<std::endl;
+  // WRITE OUT ASSIGNMENT:
+  for(const OTYPE::value_type& mp : OList)
+    mp.second->writeFLUKAmat(OX);
+    
+  ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();  
+  DB.resetActive();
+
+  OTYPE::const_iterator mp;
+  for(mp=OList.begin();mp!=OList.end();mp++)
+    DB.setActive(mp->second->getMat());
+
+  DB.writeFLUKA(OX);
+  
+  OX<<"* ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
   return;
 }
+  
 
 
 void
@@ -305,9 +324,9 @@ SimFLUKA::write(const std::string& Fname) const
   */
 {
   ELog::RegMethod RegA("SimFLUKA","write");
-  boost::format FmtStr("%1%|71t|%2%\n");  
+  boost::format FmtStr("%1%%|71t|%2%\n");  
 
-  std::ofstream OX(Fname.c_str());
+  std::ofstream OX(Fname.c_str()); 
   OX<<"TITLE "<<std::endl;
   OX<<" Fluka model from CombLayer"<<std::endl;
   Simulation::writeVariables(OX,'*');
@@ -315,7 +334,6 @@ SimFLUKA::write(const std::string& Fname) const
   writeSurfaces(OX);
   writeCells(OX);
   OX<<"GEOEND"<<std::endl;
-  
   writeMaterial(OX);
   writeTransform(OX);
   writeWeights(OX);

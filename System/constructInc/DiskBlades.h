@@ -43,14 +43,11 @@ private:
   std::vector<double> phaseAngle;          ///< Phase angle [deg]
   std::vector<double> openAngle;           ///< Opening angle [deg]
 
-  
-
 public:
 
   double thick;              ///< Thickness of disk
   int innerMat;               ///< Inner material [non-viewed]
   int outerMat;               ///< Outer material [viewed]
-
 
   DiskBlades();
   DiskBlades(const DiskBlades&);

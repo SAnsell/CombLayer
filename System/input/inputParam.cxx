@@ -429,6 +429,28 @@ inputParam::getValue(const std::string& K,
     throw ColErr::EmptyValue<void>(K+":IPtr");
   return IPtr->getObj<T>(setIndex,itemIndex);
 }
+  
+
+
+Geometry::Vec3D
+inputParam::getCntVec3D(const std::string& K,
+			const size_t setIndex,
+			size_t& itemIndex) const
+  /*!
+    Get a value based on key
+    \param K :: Key to seach
+    \param setIndex :: set Value
+    \param itemIndex :: Index value [updated by 3/1]
+    \return Value
+   */
+{
+  ELog::RegMethod RegA("inputParam","getCntVec3D(setIndex,index)");
+  const IItem* IPtr=getIndex(K);
+  if (!IPtr)
+    throw ColErr::EmptyValue<void>(K+":IPtr");
+  
+  return IPtr->getCntVec3D(setIndex,itemIndex);
+}
 
 bool
 inputParam::compNoCaseValue(const std::string& K,
@@ -987,7 +1009,6 @@ template unsigned int inputParam::getValue(const std::string&,const size_t,const
 template long int inputParam::getValue(const std::string&,const size_t,const size_t) const;
 template std::string inputParam::getValue(const std::string&,const size_t,const size_t) const;
 template Geometry::Vec3D inputParam::getValue(const std::string&,const size_t,const size_t) const;
-
 
 
 template double

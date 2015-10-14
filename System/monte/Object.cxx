@@ -1231,6 +1231,38 @@ Object::write(std::ostream& OX) const
   return;
 }
 
+void
+Object::writeFLUKAmat(std::ostream& OX) const
+  /*!
+    Write the object material assignment to a standard stream
+    in standard FLUKA output format.
+    \param OX :: Output stream (required for multiple std::endl)
+  */
+{
+  ELog::RegMethod RegA("Object","writeFLUKAmat");
+
+  
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+  if (!placehold)
+    {
+      std::string objName=OR.inRenumberRange(ObjName);
+      if (objName.empty())
+	objName="global";
+      std::ostringstream cx;
+      cx<<"ASSIGNMA    ";
+      if (!MatN)
+	cx<<" VACUUM";
+      else
+	cx<<"    M"<<MatN;
+      
+      cx<<"    "<<objName<<"_"<<ObjName;
+      StrFunc::writeMCNPX(cx.str(),OX);
+    }
+  
+  return;
+}
+  
 void 
 Object::writeFLUKA(std::ostream& OX) const
   /*!
@@ -1243,13 +1275,15 @@ Object::writeFLUKA(std::ostream& OX) const
 
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-  if (placehold)
+  if (!placehold)
     {
-      const std::string objName=OR.inRange(ObjName);
+      std::string objName=OR.inRenumberRange(ObjName);
+      if (objName.empty())
+	objName="global";
       std::ostringstream cx;
       cx.precision(10);
 
-      // Name : Number_of_connected objects
+
       cx<<objName<<"_"<<ObjName<<" "<<SurList.size()<<" ";
       cx<<HRule.displayFluka()<<std::endl;
       StrFunc::writeMCNPX(cx.str(),OX);

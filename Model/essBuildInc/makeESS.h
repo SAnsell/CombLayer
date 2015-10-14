@@ -52,8 +52,8 @@ namespace moderatorSystem
 namespace essSystem
 {
   class WheelBase;
-  class SegWheel;
   class Wheel;
+  class BilbaoWheel;
   class BeRef;
   class essMod;
   class ConicModerator;
@@ -65,7 +65,7 @@ namespace essSystem
   class BeamMonitor;
   class DiskPreMod;
   class Bunker;
-
+  class F5Collimator;
   class ODIN;
   class LOKI;
   class VOR;
@@ -129,6 +129,8 @@ class makeESS
 
   std::shared_ptr<Bunker> ABunker;  ///< Right bunker [A unit]
   std::shared_ptr<Bunker> BBunker;  ///< Right bunker [B unit]
+
+  std::vector<std::shared_ptr<F5Collimator>> F5array; ///< collimators for F5 tallies
   
   void topFlightLines(Simulation&);
   void lowFlightLines(Simulation&);
@@ -148,6 +150,8 @@ class makeESS
   
   void makeBeamLine(Simulation&,
 		    const mainSystem::inputParam&);
+
+  void buildF5Collimator(Simulation&, size_t);
 
   void optionSummary(Simulation&);
 

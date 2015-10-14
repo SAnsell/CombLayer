@@ -38,6 +38,7 @@ class testInputParam
 private:
 
   //Tests 
+  int testCntVec3D();
   int testDefValue();
   int testFlagDef();
   int testGetValue();

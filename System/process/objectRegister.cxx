@@ -306,7 +306,8 @@ objectRegister::getInternalObject(const std::string& Name)  const
 	{
 	  const attachSystem::FixedGroup* FGPtr=
 	    dynamic_cast<const attachSystem::FixedGroup*>(mcx->second.get());
-	  return (FGPtr->hasKey(tail)) ? &(FGPtr->getKey(tail)) : 0;
+	  if (FGPtr)
+	    return (FGPtr->hasKey(tail)) ? &(FGPtr->getKey(tail)) : 0;
 	}
       // Fall through here to test whole name:
     }
@@ -325,6 +326,7 @@ objectRegister::getObject(const std::string& Name) const
   */
 {
   ELog::RegMethod RegA("objectRegister","getObject(const)");
+
   const attachSystem::FixedComp* FCPtr = getInternalObject(Name);
   return dynamic_cast<const T*>(FCPtr);
 }
@@ -368,6 +370,63 @@ objectRegister::getObject(const std::string& Name) const
   return 0;
 }
 
+int
+objectRegister::getRenumberCell(const std::string& Name,
+				const int Index) const
+  /*!
+    Get the start cell of an object
+    \param Name :: Name of the object to get
+    \param Index :: Offset number
+    \return Cell number
+  */
+{
+  MTYPE::const_iterator mc;
+  if (Index>=0)
+    {
+      std::ostringstream cx;
+      cx<<Name<<Index;
+      mc=renumMap.find(cx.str());
+    }
+  else
+    mc=renumMap.find(Name);
+  if (mc!=renumMap.end())
+    return mc->second.first;
+  return 0;
+}
+
+std::string
+objectRegister::inRenumberRange(const int Index) const
+  /*!
+    Get the range of an object
+    \param Name :: Name of the object to get
+    \param Index :: Offset number
+    \return string
+   */
+{
+  static std::string prev;
+   MTYPE::const_iterator mc;
+  // normally same as previous search
+  if (!prev.empty())
+    {
+      mc=renumMap.find(prev);
+      if (mc!=renumMap.end() && 
+	  Index>=mc->second.first && 
+	  Index<=mc->second.second)
+	return mc->first;
+    }
+  for(mc=renumMap.begin();mc!=renumMap.end();mc++)
+    {
+      const std::pair<int,int>& IP=mc->second;
+      if (Index>=IP.first && Index<=IP.second)
+	{
+	  prev=mc->first;
+	  return mc->first;
+	}
+    }
+  return std::string("");
+}
+
+  
 void
 objectRegister::setRenumber(const std::string& key,
 			    const int startN,const int endN)
@@ -379,15 +438,13 @@ objectRegister::setRenumber(const std::string& key,
   */
 {
   ELog::RegMethod RegA("objectRegister","setRenumber");
-
   if (regionMap.find(key)!=regionMap.end())
     {
       MTYPE::iterator mc=renumMap.find(key);
       if (mc!=renumMap.end())
-	mc->second=std::pair<int,int>(startN,1+startN-endN);
+	mc->second=std::pair<int,int>(startN,endN);
       else
-	renumMap.insert(MTYPE::value_type
-			(key,std::pair<int,int>(startN,1+startN-endN)));
+	renumMap.emplace(key,std::pair<int,int>(startN,endN));
     }
       
   return;

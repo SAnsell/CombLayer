@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   lensModel/LensSource.cxx
  *
@@ -46,9 +46,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "doubleErr.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -207,8 +204,8 @@ LensSource::createSource(SDef::Source& sourceCard) const
     }
   sourceCard.setData("dir",D1);  
 
-  const int NEnergy(10);
-  const double energy[10][56]={
+  const size_t NEnergy(10);
+  const double energy[NEnergy][56]={
     {
     1.0e-02,6.000E-02,1.200E-01,1.800E-01,2.400E-01,3.000E-01,
     3.600E-01,4.200E-01,4.800E-01,5.400E-01,6.000E-01,
@@ -340,7 +337,7 @@ LensSource::createSource(SDef::Source& sourceCard) const
     5.100E+00,5.200E+00,5.300E+00,5.400E+00,5.500E+00
     },
   };
-  const double eProb[10][56]={
+  const double eProb[NEnergy][56]={
     {
     0.0,1.959E+00,1.763E+00,1.567E+00,1.404E+00,1.273E+00,
     1.110E+00,1.054E+00,1.121E+00,1.169E+00,1.197E+00,
@@ -477,11 +474,11 @@ LensSource::createSource(SDef::Source& sourceCard) const
   SDef::SrcData D2(4);
 
   SDef::DSIndex DI4(std::string("dir"));
-  for(int index=0;index<NEnergy;index++)
+  for(size_t index=0;index<NEnergy;index++)
     {
       SDef::SrcInfo SI('h');
       SDef::SrcProb SP;  
-      for(unsigned int i=0;i<sizeof(energy[index])/sizeof(double);i++)
+      for(size_t i=0;i<sizeof(energy[index])/sizeof(double);i++)
 	{
 	  SI.addData(energy[index][i]);
 	  SP.addData(eProb[index][i]);
@@ -493,4 +490,4 @@ LensSource::createSource(SDef::Source& sourceCard) const
   return;
 }
   
-} // NAMESPACE shutterSystem
+} // NAMESPACE SDef

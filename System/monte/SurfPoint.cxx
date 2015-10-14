@@ -340,9 +340,9 @@ SurfPoint::displayFluka() const
 {
   std::stringstream cx;
   if (sign>0)
-    cx<<"+s"<<keyN;
-  else
     cx<<"-s"<<keyN;
+  else
+    cx<<"+s"<<keyN;
 
   return cx.str();
 }

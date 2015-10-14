@@ -55,12 +55,13 @@ class VacuumPipe :
   double radius;                ///< void height [top only]
   double length;                ///< void length [total]
 
-  double feThick;               ///< fe thick
+  double feThick;               ///< pipe thickness
 
-  double flangeRadius;           ///< Joining Flange thick
+  double flangeRadius;          ///< Joining Flange thick
   double flangeLength;          ///< Joining Flange length
   
-  int feMat;                    ///< Fe material layer
+  int voidMat;                  ///< Void material 
+  int feMat;                    ///< Pipe material 
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
