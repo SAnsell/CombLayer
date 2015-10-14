@@ -63,7 +63,7 @@ DREAMvariables(FuncDataBase& Control)
   ELog::RegMethod RegA("DREAMvariables[F]","DREAMvariables");
 
   // Bender in section so use cut system
-  Control.addVariable("dreamFAXStep",-2.0);        // Centre of thermal
+  Control.addVariable("dreamFAXStep",0.0);        // Centre of thermal [-2]
   Control.addVariable("dreamFAYStep",0.0);       
   Control.addVariable("dreamFAZStep",0.0);       
   Control.addVariable("dreamFAXYAngle",0.0);

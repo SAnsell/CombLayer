@@ -646,7 +646,7 @@ createESSInputs(inputParam& IParam)
   
   //  IParam.setValue("sdefEnergy",2503.0);    
   IParam.setValue("sdefType",std::string("ess"));  
-  IParam.setValue("targetType",std::string("Wheel"));
+  IParam.setValue("targetType",std::string("Bilbao"));
 
   ///\todo change to database list [ordered]
   IParam.regFlag("essDB","essDB");

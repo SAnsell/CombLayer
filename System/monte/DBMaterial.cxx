@@ -1002,9 +1002,32 @@ DBMaterial::initMaterial()
 		   "be.60t lwtr.01t", MLib);
   setMaterial(MObj);
 
+  // Material #120: helium liquid
+  // Low density tungsten
 
-  // CLONE Materials:
-  cloneMaterial("Stainless304","SS316L");
+  MObj.setMaterial(120, "Tungsten_15.1g",
+		   "74180.50c  0.001200000 "
+		   "74182.71c  0.265000000 "
+		   "74183.71c  0.143100000 "
+		   "74184.71c  0.306400000 "
+		   "74186.71c  0.284300000 ",
+		   "",MLib);
+  MObj.setDensity(-15.1);
+  setMaterial(MObj);
+
+  // Homogeneous mixture of Iron and 10% volume H2O
+  MObj.setMaterial(2610, "Iron_10H2O",
+                   " 1001.70c 0.077534884 "
+                   " 8016.70c 0.038767442 "
+                   " 26054.70c 0.051652129 "
+                   " 26056.70c 0.810827964 "
+                   " 26057.70c 0.018725554 "
+                   " 26058.70c 0.002492027 ", "lwtr.01t", MLib);
+  MObj.setDensity(-7.17);
+  setMaterial(MObj);
+
+  
+  // CLONE Materials: 
   cloneMaterial("CastIron","Iron");
   cloneMaterial("Aluminium","Aluminium20K");
 
