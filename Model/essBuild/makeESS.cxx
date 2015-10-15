@@ -361,27 +361,44 @@ void makeESS::buildF5Collimator(Simulation& System, const mainSystem::inputParam
   ELog::RegMethod RegA("makeESS", "buildF5Collimator");
   ModelSupport::objectRegister& OR = ModelSupport::objectRegister::Instance();
 
-  const std::string moderator(IParam.getValue<std::string>("f5-collimators", 0));
-  const std::string range(IParam.getValue<std::string>("f5-collimators", 1));
-
-  const size_t nColl = IParam.itemCnt("f5-collimators",0)-2; // number of collimators to build (-2 due to Mod and Range)
-  ELog::EM << moderator << " " << range << " " << nColl << ELog::endDiag;
-  //  return;
+  std::string strtmp, moderator, range;
+  const size_t nitems = IParam.itemCnt("f5-collimators",0); // number of parameters in -f5-collimator
   double theta(0.0);
-  for (size_t i=0; i<nColl; i++)
+  size_t colIndex(0);
+  ELog::EM << "Use StrFunc::convert instead of atoi in the loop below. Check its return value." << ELog::endCrit;
+  for (size_t i=0; i<nitems; i++)
     {
-      theta = IParam.getValue<double>("f5-collimators", i+2);
-      std::cout << theta << std::endl;
-      std::shared_ptr<F5Collimator> F5(new F5Collimator(StrFunc::makeString("F", i*10+5).c_str()));
-      OR.addObject(F5);
-      F5->setTheta(theta);
-      F5->setRange(range);
-      F5->setFocalPoints(TopFocalPoints);
-      F5->addInsertCell(74123); // !!! 74123=voidCell // SA: how to exclude F5 from any cells?
-      F5->createAll(System, World::masterOrigin());
+      strtmp = IParam.getValue<std::string>("f5-collimators", i);
+      if ( (strtmp=="top") || (strtmp=="low") )
+	{
+	  moderator = strtmp;
+	  range = IParam.getValue<std::string>("f5-collimators", ++i);
+	  for (size_t j=i+1; j<nitems; j++)
+	    {
+	      strtmp = IParam.getValue<std::string>("f5-collimators", j);
+	      if ((strtmp=="top") || (strtmp=="low"))
+		break;
+	      // do real work here
+	      theta = atoi(strtmp.c_str()); // !!! use StrFunc::convert here !!! 
+
+	      std::shared_ptr<F5Collimator> F5(new F5Collimator(StrFunc::makeString("F", colIndex*10+5).c_str())); colIndex++;
+	      OR.addObject(F5);
+	      F5->setTheta(theta);
+	      F5->setRange(range);
+
+	      if (moderator=="top")
+		F5->setFocalPoints(TopFocalPoints);
+	      else if (moderator=="low")
+		F5->setFocalPoints(LowFocalPoints);
+
+	      F5->addInsertCell(74123); // !!! 74123=voidCell // SA: how to exclude F5 from any cells?
+	      F5->createAll(System, World::masterOrigin());
+
+	      attachSystem::addToInsertSurfCtrl(System, *ABunker, *F5);
+	      F5array.push_back(F5);
       
-      attachSystem::addToInsertSurfCtrl(System, *ABunker, *F5);
-      F5array.push_back(F5);
+	    }
+	}
     }
 
   return;

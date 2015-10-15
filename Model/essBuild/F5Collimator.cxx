@@ -166,13 +166,13 @@ namespace essSystem
       {
 	// link point (defined by theta)
 	if (theta<90)
-	  Control.setVariable<int>(keyName+"LinkPoint", 6);
+	  Control.setVariable<int>(keyName+"LinkPoint", zStep>0 ? 6 : 7); // these maths depend on the XYangle of the moderator
 	else if (theta<180)
-	  Control.setVariable<int>(keyName+"LinkPoint", 9);
+	  Control.setVariable<int>(keyName+"LinkPoint", zStep>0 ? 9 : 8);
 	else if (theta<270)
-	  Control.setVariable<int>(keyName+"LinkPoint", 8);
+	  Control.setVariable<int>(keyName+"LinkPoint", zStep>0 ? 8 : 9);
 	else // if theta>270
-	  Control.setVariable<int>(keyName+"LinkPoint", 7);
+	  Control.setVariable<int>(keyName+"LinkPoint", zStep>0 ? 7 : 6);
 	LinkPointCentered = false;
       }
     else if (range=="thermal")
@@ -187,29 +187,29 @@ namespace essSystem
 	const double alpha = acos(vtmp.dotProd(Y)/vtmp.abs())*180/M_PI;
 	if (theta<=90-alpha)
 	  {
-	    Control.setVariable<int>(keyName+"LinkPoint", 2);
+	    Control.setVariable<int>(keyName+"LinkPoint", zStep>0 ? 2 : 3);  // these maths depend on the XYangle of the moderator
 	  }
 	else if (abs(theta-90)<alpha)
 	  {
-	    Control.setVariable<int>(keyName+"LinkPoint", 1);
+	    Control.setVariable<int>(keyName+"LinkPoint", zStep>0 ? 1 : 0);
 	    LinkPointCentered = true;
 	  }
 	else if ((theta>=90+alpha) && (theta<180))
 	  {
-	    Control.setVariable<int>(keyName+"LinkPoint", 5);
+	    Control.setVariable<int>(keyName+"LinkPoint", zStep>0 ? 5 : 4);
 	  }
 	else if ((theta>=180) && (theta<=270-alpha))
 	  {
-	    Control.setVariable<int>(keyName+"LinkPoint", 4);
+	    Control.setVariable<int>(keyName+"LinkPoint", zStep>0 ? 4 : 5);
 	  }
 	else if (abs(theta-270)<alpha)
 	  {
-	    Control.setVariable<int>(keyName+"LinkPoint", 0);
+	    Control.setVariable<int>(keyName+"LinkPoint", zStep>0 ? 0 : 1);
 	    LinkPointCentered = true;
 	  }
 	else if (theta>=270+alpha)
 	  {
-	    Control.setVariable<int>(keyName+"LinkPoint", 7);
+	    Control.setVariable<int>(keyName+"LinkPoint", zStep>0 ? 7 : 2);
 	  }
       }
     else
@@ -236,8 +236,15 @@ namespace essSystem
 
     // Calculate angle BOC by the law of cosines:
     double BOC = acos((2*pow(OB.abs(), 2) - pow(viewWidth, 2))/(2*pow(OB.abs(), 2)));
-    if ((LinkPoint==5) || (LinkPoint==6) || (LinkPoint==7) || (LinkPoint==8))
-      BOC *= -1;
+    // these maths depend on the XYangle of the moderator:
+    if (zStep>0) {// top moderator
+      if ((LinkPoint==5) || (LinkPoint==6) || (LinkPoint==7) || (LinkPoint==8))
+	BOC *= -1;
+    } else { // low moderator
+      if ((LinkPoint==7) || (LinkPoint==9) || (LinkPoint==2) || (LinkPoint==4))
+	BOC *= -1;
+    }
+
     Geometry::Vec3D OC(OB);
     Geometry::Quaternion::calcQRotDeg(BOC*180/M_PI,Z).rotate(OC);
 
