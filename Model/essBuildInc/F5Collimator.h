@@ -20,12 +20,19 @@ namespace essSystem
 	double length;                   ///< Width  along x
 	double width;                   ///< Width  along y
 	double wall;                    ///< Wall thickness
+	double viewWidth;               ///< View width in horizontal direction (distance between points B and C)
 
-	int GluePoint;              ///< Glue point number (currently number defines quadrant as in butterfly.svgz). Not used if <0
+	int LinkPoint;              ///< Link point number (currently number-6 defines the quadrant as in butterfly.svgz). Not used if <0. Calculated if setTheta is used.
+	double radius;              ///< Radius for cylindrical coordinates. Defined via 'F5Radius' in essVariables
+	double theta;               ///< Theta as defined on page 183 of TDR. If theta is set vis setTheta, [xyz]Step are calculated.
+
+	std::vector<Geometry::Vec3D> vecFP; ///< vector of focal points
+	std::string range; ///< Wavelengh range {cold, thermal} - to define which focal points to use
 	
 	// Functions:
 
 	void populate(FuncDataBase&);
+	void populateWithTheta(FuncDataBase&);
 	void createUnitVector(const attachSystem::FixedComp&);
 
 	void createSurfaces();
@@ -39,6 +46,9 @@ namespace essSystem
 	F5Collimator& operator=(const F5Collimator&);
 	virtual ~F5Collimator();
 
+	void setTheta(double t);
+	inline void setFocalPoints(std::vector<Geometry::Vec3D> vec) { vecFP = vec; }
+	inline void setRange(std::string val) { range = val; }
 	int getMainCell() const { return colIndex+1; }
 	virtual void addToInsertChain(attachSystem::ContainedComp&) const; 
 	void createAll(Simulation&,const attachSystem::FixedComp&);

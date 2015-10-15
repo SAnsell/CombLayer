@@ -82,6 +82,7 @@
 #include "ModBase.h"
 #include "H2Wing.h"
 #include "MidWaterDivider.h"
+#include "SurInter.h"
 
 namespace essSystem
 {
@@ -90,7 +91,7 @@ MidWaterDivider::MidWaterDivider(const std::string& baseKey,
 				 const std::string& extraKey) :
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0,0),
-  attachSystem::FixedComp(baseKey+extraKey,8),
+  attachSystem::FixedComp(baseKey+extraKey,10),
   baseName(baseKey),
   divIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
   cellIndex(divIndex+1)
@@ -201,7 +202,7 @@ MidWaterDivider::createUnitVector(const attachSystem::FixedComp& FC)
 }
 
 void
-MidWaterDivider::createLinks()
+MidWaterDivider::createLinks(const H2Wing &LA, const H2Wing &RA)
   /*!
     Construct links for the triangle moderator
     The normal 1-3 and 5-6 are plane,
@@ -211,6 +212,65 @@ MidWaterDivider::createLinks()
   ELog::RegMethod RegA("MidWaterDivider","createLinks");
 
   // Loop over corners that are bound by convex
+  const double LStep(midYStep+wallThick/sin(midAngle/2.0));
+  const Geometry::Plane *pz = ModelSupport::buildPlane(SMap, divIndex+5, Origin, Z);
+
+  const Geometry::Plane *p103 = SMap.realPtr<Geometry::Plane>(divIndex+103);
+  const Geometry::Plane *p104 = SMap.realPtr<Geometry::Plane>(divIndex+104);
+  //FixedComp::setConnect(0, Origin+X*LStep, X); // x+
+  FixedComp::setConnect(0, SurInter::getPoint(p103, p104, pz), X);
+  ELog::EM << "Why x and y are swapped when the commented line is called instead of the line above? Are the plane numbers correct?" << ELog::endCrit;
+  FixedComp::setLinkSurf(0, -SMap.realSurf(divIndex+103));
+  FixedComp::addLinkSurf(0, SMap.realSurf(divIndex+104));
+
+  const Geometry::Plane *p123 = SMap.realPtr<Geometry::Plane>(divIndex+123);
+  const Geometry::Plane *p124 = SMap.realPtr<Geometry::Plane>(divIndex+124);
+  //  FixedComp::setConnect(1, Origin-X*LStep, -X); // x-
+  FixedComp::setConnect(1, SurInter::getPoint(p123, p124, pz), -X);
+  ELog::EM << "Why x and y are swapped when the commented line is called instead of the line above? Are the plane numbers correct?" << ELog::endCrit;
+  FixedComp::setLinkSurf(1, -SMap.realSurf(divIndex+123));
+  FixedComp::addLinkSurf(1, SMap.realSurf(divIndex+124));
+
+  // minor links
+  const Geometry::Plane *pWater, *pWing;
+  int iWater; // mid water surface index
+
+  // === Intersections of water divider and outer/inner H2Wing surfaces ===
+  //     Inner link points are used by F5Collimators
+  // !!! Signs of surfaces for outer and inner link points must be different - check this!!!
+
+  for (int i=0; i<2; i++) // 0=outer H2Wing surface, 1=inner H2Wing surface
+    {
+      // x+y+
+      iWater = divIndex+131;
+      pWater = SMap.realPtr<Geometry::Plane>(iWater);
+      pWing = SMap.realPtr<Geometry::Plane>(LA.getLinkSurf(0+i*8));
+      FixedComp::setConnect(2+i*4, SurInter::getPoint(pWater, pWing, pz), pWing->getNormal());
+      FixedComp::setLinkSurf(2+i*4, SMap.realSurf(iWater));
+
+      // x-y+
+      iWater = divIndex+111;
+      pWater = SMap.realPtr<Geometry::Plane>(iWater);
+      pWing = SMap.realPtr<Geometry::Plane>(LA.getLinkSurf(2+i*8));
+      FixedComp::setConnect(3+i*4, SurInter::getPoint(pWater, pWing, pz), pWing->getNormal());
+      FixedComp::setLinkSurf(3+i*4, SMap.realSurf(iWater));
+
+      // x-y-
+      iWater = divIndex+112;
+      pWater = SMap.realPtr<Geometry::Plane>(iWater);
+      pWing = SMap.realPtr<Geometry::Plane>(RA.getLinkSurf(0+i*8));
+      FixedComp::setConnect(4+i*4, SurInter::getPoint(pWater, pWing, pz), pWing->getNormal());
+      FixedComp::setLinkSurf(4+i*4, -SMap.realSurf(iWater));
+  
+      // x+y-
+      iWater = divIndex+132;
+      pWater = SMap.realPtr<Geometry::Plane>(iWater);
+      pWing = SMap.realPtr<Geometry::Plane>(RA.getLinkSurf(2+i*8));
+      FixedComp::setConnect(5+i*4, SurInter::getPoint(pWater, pWing, pz), pWing->getNormal());
+      FixedComp::setLinkSurf(5+i*4, -SMap.realSurf(iWater));
+    }
+  //  !!! check if surface signs in setLinkSurf are ok. Since there are always 2 surfaces, use addLinkSurf for link points 2-5  in the same way as it is done for 0-1 !!!
+  // postponed until I understand surfaces in the link points 0 and 1 - I think 0 should use surfaces 123 and 124, and 1 - 103 and 104
 
   return;
 }
@@ -272,15 +332,15 @@ MidWaterDivider::createSurfaces()
 
   
   ModelSupport::buildPlane(SMap,divIndex+111,
-			   Origin+leftNorm*(length+wallThick),leftNorm);
+			   Origin+leftNorm*(length+wallThick),leftNorm); // x-y+
   ModelSupport::buildPlane(SMap,divIndex+112,
-			   Origin+rightNorm*(length+wallThick),rightNorm);
+			   Origin+rightNorm*(length+wallThick),rightNorm); // x-y-
 
   // Length below [note reverse of normals]
   ModelSupport::buildPlane(SMap,divIndex+131,
-			   Origin-rightNorm*(wallThick+length),-rightNorm);
+			   Origin-rightNorm*(wallThick+length),-rightNorm); // x+y+
   ModelSupport::buildPlane(SMap,divIndex+132,
-			   Origin-leftNorm*(wallThick+length),-leftNorm);
+			   Origin-leftNorm*(wallThick+length),-leftNorm); // x+y-
 
 
   return;
@@ -456,7 +516,7 @@ MidWaterDivider::createAll(Simulation& System,
   createSurfaces();
   createObjects(System,LA,RA);
   cutOuterWing(System,LA,RA);
-  createLinks();
+  createLinks(LA, RA);
   insertObjects(System);       
   return;
 }

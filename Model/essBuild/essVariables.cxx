@@ -144,6 +144,7 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("one",1.0);      // one
 
   Control.addVariable("EngineeringActive",0);      // NO engineering
+  Control.addVariable("F5Radius", 1000);      // Radial location of all F5 tallies (valid with -f5-collimators argument)
 
   Control.addVariable("LSupplyNSegIn",2);
   // Central point:
@@ -1400,32 +1401,290 @@ EssBunkerVariables(FuncDataBase& Control)
 void
 F5Variables(FuncDataBase& Control)
 /*!
-  Create variables for all F5 collimators
+  Create DUMMY variables for all F5 collimators
  */
 {
-    Control.addVariable("F5Length", 440);
-    Control.addVariable("F5XB", 10.58);
-    Control.addVariable("F5YB", -14.2);
-    Control.addVariable("F5ZB", 14.4);
-    Control.addVariable("F5XC", 10.47);
-    Control.addVariable("F5YC", -8.20);
-    Control.addVariable("F5ZC", 14.4);
-    Control.addVariable("F5ZG", 11.4);
-    Control.addVariable("F5X", 999.84);
-    Control.addVariable("F5Y", -17.45);
-    Control.addVariable("F5Z", 12.9);
+    Control.addVariable("F5Length", 440.0);
+    Control.addVariable("F5ViewWidth", 6);
+    Control.addVariable("F5LinkPoint", 0.0);
+    Control.addVariable("F5XB", 11.0);
+    Control.addVariable("F5YB", -14.0);
+    Control.addVariable("F5ZB", 14.0);
+    Control.addVariable("F5XC", 11.0);
+    Control.addVariable("F5YC", -8.0);
+    Control.addVariable("F5ZC", 14.0);
+    Control.addVariable("F5ZG", 11.0);
+    Control.addVariable("F5X", 999.0);
+    Control.addVariable("F5Y", -18.0);
+    Control.addVariable("F5Z", 13.0);
 
-    Control.addVariable("F15Length", 440);
-    Control.addVariable("F15XB", 10.58);
-    Control.addVariable("F15YB", -14.2);
-    Control.addVariable("F15ZB", 14.4);
-    Control.addVariable("F15XC", 10.47);
-    Control.addVariable("F15YC", -8.20);
-    Control.addVariable("F15ZC", 14.4);
-    Control.addVariable("F15ZG", 11.4);
-    Control.addVariable("F15X", -999.84);
-    Control.addVariable("F15Y", -17.45);
-    Control.addVariable("F15Z", 12.9);
+    Control.addVariable("F15Length", 440.0);
+    Control.addVariable("F15ViewWidth", 6);
+    Control.addVariable("F15LinkPoint", 0.0);
+    Control.addVariable("F15XB", 11.0);
+    Control.addVariable("F15YB", -14.0);
+    Control.addVariable("F15ZB", 14.0);
+    Control.addVariable("F15XC", 11.0);
+    Control.addVariable("F15YC", -8.0);
+    Control.addVariable("F15ZC", 14.0);
+    Control.addVariable("F15ZG", 11.0);
+    Control.addVariable("F15X", -999.0);
+    Control.addVariable("F15Y", -18.0);
+    Control.addVariable("F15Z", 13.0);
+
+    Control.addVariable("F25Length", 440.0);
+    Control.addVariable("F25ViewWidth", 6);
+    Control.addVariable("F25LinkPoint", 0.0);
+    Control.addVariable("F25XB", 11.0);
+    Control.addVariable("F25YB", -14.0);
+    Control.addVariable("F25ZB", 14.0);
+    Control.addVariable("F25XC", 11.0);
+    Control.addVariable("F25YC", -8.0);
+    Control.addVariable("F25ZC", 14.0);
+    Control.addVariable("F25ZG", 11.0);
+    Control.addVariable("F25X", -999.0);
+    Control.addVariable("F25Y", -18.0);
+    Control.addVariable("F25Z", 13.0);
+
+
+    Control.addVariable("F35Length", 440.0);
+    Control.addVariable("F35ViewWidth", 6);
+    Control.addVariable("F35LinkPoint", 0.0);
+    Control.addVariable("F35XB", 11.0);
+    Control.addVariable("F35YB", -14.0);
+    Control.addVariable("F35ZB", 14.0);
+    Control.addVariable("F35XC", 11.0);
+    Control.addVariable("F35YC", -8.0);
+    Control.addVariable("F35ZC", 14.0);
+    Control.addVariable("F35ZG", 11.0);
+    Control.addVariable("F35X", -999.0);
+    Control.addVariable("F35Y", -18.0);
+    Control.addVariable("F35Z", 13.0);
+
+    Control.addVariable("F45Length", 440.0);
+    Control.addVariable("F45ViewWidth", 6);
+    Control.addVariable("F45LinkPoint", 0.0);
+    Control.addVariable("F45XB", 11.0);
+    Control.addVariable("F45YB", -14.0);
+    Control.addVariable("F45ZB", 14.0);
+    Control.addVariable("F45XC", 11.0);
+    Control.addVariable("F45YC", -8.0);
+    Control.addVariable("F45ZC", 14.0);
+    Control.addVariable("F45ZG", 11.0);
+    Control.addVariable("F45X", -999.0);
+    Control.addVariable("F45Y", -18.0);
+    Control.addVariable("F45Z", 13.0);
+
+    Control.addVariable("F55Length", 440.0);
+    Control.addVariable("F55ViewWidth", 6);
+    Control.addVariable("F55LinkPoint", 0.0);
+    Control.addVariable("F55XB", 11.0);
+    Control.addVariable("F55YB", -14.0);
+    Control.addVariable("F55ZB", 14.0);
+    Control.addVariable("F55XC", 11.0);
+    Control.addVariable("F55YC", -8.0);
+    Control.addVariable("F55ZC", 14.0);
+    Control.addVariable("F55ZG", 11.0);
+    Control.addVariable("F55X", -999.0);
+    Control.addVariable("F55Y", -18.0);
+    Control.addVariable("F55Z", 13.0);
+
+    Control.addVariable("F65Length", 440.0);
+    Control.addVariable("F65ViewWidth", 6);
+    Control.addVariable("F65LinkPoint", 0.0);
+    Control.addVariable("F65XB", 11.0);
+    Control.addVariable("F65YB", -14.0);
+    Control.addVariable("F65ZB", 14.0);
+    Control.addVariable("F65XC", 11.0);
+    Control.addVariable("F65YC", -8.0);
+    Control.addVariable("F65ZC", 14.0);
+    Control.addVariable("F65ZG", 11.0);
+    Control.addVariable("F65X", -999.0);
+    Control.addVariable("F65Y", -18.0);
+    Control.addVariable("F65Z", 13.0);
+
+    Control.addVariable("F75Length", 440.0);
+    Control.addVariable("F75ViewWidth", 6);
+    Control.addVariable("F75LinkPoint", 0.0);
+    Control.addVariable("F75XB", 11.0);
+    Control.addVariable("F75YB", -14.0);
+    Control.addVariable("F75ZB", 14.0);
+    Control.addVariable("F75XC", 11.0);
+    Control.addVariable("F75YC", -8.0);
+    Control.addVariable("F75ZC", 14.0);
+    Control.addVariable("F75ZG", 11.0);
+    Control.addVariable("F75X", -999.0);
+    Control.addVariable("F75Y", -18.0);
+    Control.addVariable("F75Z", 13.0);
+
+    Control.addVariable("F85Length", 440.0);
+    Control.addVariable("F85ViewWidth", 6);
+    Control.addVariable("F85LinkPoint", 0.0);
+    Control.addVariable("F85XB", 11.0);
+    Control.addVariable("F85YB", -14.0);
+    Control.addVariable("F85ZB", 14.0);
+    Control.addVariable("F85XC", 11.0);
+    Control.addVariable("F85YC", -8.0);
+    Control.addVariable("F85ZC", 14.0);
+    Control.addVariable("F85ZG", 11.0);
+    Control.addVariable("F85X", -999.0);
+    Control.addVariable("F85Y", -18.0);
+    Control.addVariable("F85Z", 13.0);
+
+    Control.addVariable("F95Length", 440.0);
+    Control.addVariable("F95ViewWidth", 6);
+    Control.addVariable("F95LinkPoint", 0.0);
+    Control.addVariable("F95XB", 11.0);
+    Control.addVariable("F95YB", -14.0);
+    Control.addVariable("F95ZB", 14.0);
+    Control.addVariable("F95XC", 11.0);
+    Control.addVariable("F95YC", -8.0);
+    Control.addVariable("F95ZC", 14.0);
+    Control.addVariable("F95ZG", 11.0);
+    Control.addVariable("F95X", -999.0);
+    Control.addVariable("F95Y", -18.0);
+    Control.addVariable("F95Z", 13.0);
+
+    Control.addVariable("F105Length", 440.0);
+    Control.addVariable("F105ViewWidth", 6);
+    Control.addVariable("F105LinkPoint", 0.0);
+    Control.addVariable("F105XB", 11.0);
+    Control.addVariable("F105YB", -14.0);
+    Control.addVariable("F105ZB", 14.0);
+    Control.addVariable("F105XC", 11.0);
+    Control.addVariable("F105YC", -8.0);
+    Control.addVariable("F105ZC", 14.0);
+    Control.addVariable("F105ZG", 11.0);
+    Control.addVariable("F105X", 999.0);
+    Control.addVariable("F105Y", -18.0);
+    Control.addVariable("F105Z", 13.0);
+
+    Control.addVariable("F115Length", 440.0);
+    Control.addVariable("F115ViewWidth", 6);
+    Control.addVariable("F115LinkPoint", 0.0);
+    Control.addVariable("F115XB", 11.0);
+    Control.addVariable("F115YB", -14.0);
+    Control.addVariable("F115ZB", 14.0);
+    Control.addVariable("F115XC", 11.0);
+    Control.addVariable("F115YC", -8.0);
+    Control.addVariable("F115ZC", 14.0);
+    Control.addVariable("F115ZG", 11.0);
+    Control.addVariable("F115X", -999.0);
+    Control.addVariable("F115Y", -18.0);
+    Control.addVariable("F115Z", 13.0);
+
+    Control.addVariable("F125Length", 440.0);
+    Control.addVariable("F125ViewWidth", 6);
+    Control.addVariable("F125LinkPoint", 0.0);
+    Control.addVariable("F125XB", 11.0);
+    Control.addVariable("F125YB", -14.0);
+    Control.addVariable("F125ZB", 14.0);
+    Control.addVariable("F125XC", 11.0);
+    Control.addVariable("F125YC", -8.0);
+    Control.addVariable("F125ZC", 14.0);
+    Control.addVariable("F125ZG", 11.0);
+    Control.addVariable("F125X", -999.0);
+    Control.addVariable("F125Y", -18.0);
+    Control.addVariable("F125Z", 13.0);
+
+
+    Control.addVariable("F135Length", 440.0);
+    Control.addVariable("F135ViewWidth", 6);
+    Control.addVariable("F135LinkPoint", 0.0);
+    Control.addVariable("F135XB", 11.0);
+    Control.addVariable("F135YB", -14.0);
+    Control.addVariable("F135ZB", 14.0);
+    Control.addVariable("F135XC", 11.0);
+    Control.addVariable("F135YC", -8.0);
+    Control.addVariable("F135ZC", 14.0);
+    Control.addVariable("F135ZG", 11.0);
+    Control.addVariable("F135X", -999.0);
+    Control.addVariable("F135Y", -18.0);
+    Control.addVariable("F135Z", 13.0);
+
+    Control.addVariable("F145Length", 440.0);
+    Control.addVariable("F145ViewWidth", 6);
+    Control.addVariable("F145LinkPoint", 0.0);
+    Control.addVariable("F145XB", 11.0);
+    Control.addVariable("F145YB", -14.0);
+    Control.addVariable("F145ZB", 14.0);
+    Control.addVariable("F145XC", 11.0);
+    Control.addVariable("F145YC", -8.0);
+    Control.addVariable("F145ZC", 14.0);
+    Control.addVariable("F145ZG", 11.0);
+    Control.addVariable("F145X", -999.0);
+    Control.addVariable("F145Y", -18.0);
+    Control.addVariable("F145Z", 13.0);
+
+    Control.addVariable("F155Length", 440.0);
+    Control.addVariable("F155ViewWidth", 6);
+    Control.addVariable("F155LinkPoint", 0.0);
+    Control.addVariable("F155XB", 11.0);
+    Control.addVariable("F155YB", -14.0);
+    Control.addVariable("F155ZB", 14.0);
+    Control.addVariable("F155XC", 11.0);
+    Control.addVariable("F155YC", -8.0);
+    Control.addVariable("F155ZC", 14.0);
+    Control.addVariable("F155ZG", 11.0);
+    Control.addVariable("F155X", -999.0);
+    Control.addVariable("F155Y", -18.0);
+    Control.addVariable("F155Z", 13.0);
+
+    Control.addVariable("F165Length", 440.0);
+    Control.addVariable("F165ViewWidth", 6);
+    Control.addVariable("F165LinkPoint", 0.0);
+    Control.addVariable("F165XB", 11.0);
+    Control.addVariable("F165YB", -14.0);
+    Control.addVariable("F165ZB", 14.0);
+    Control.addVariable("F165XC", 11.0);
+    Control.addVariable("F165YC", -8.0);
+    Control.addVariable("F165ZC", 14.0);
+    Control.addVariable("F165ZG", 11.0);
+    Control.addVariable("F165X", -999.0);
+    Control.addVariable("F165Y", -18.0);
+    Control.addVariable("F165Z", 13.0);
+
+    Control.addVariable("F175Length", 440.0);
+    Control.addVariable("F175ViewWidth", 6);
+    Control.addVariable("F175LinkPoint", 0.0);
+    Control.addVariable("F175XB", 11.0);
+    Control.addVariable("F175YB", -14.0);
+    Control.addVariable("F175ZB", 14.0);
+    Control.addVariable("F175XC", 11.0);
+    Control.addVariable("F175YC", -8.0);
+    Control.addVariable("F175ZC", 14.0);
+    Control.addVariable("F175ZG", 11.0);
+    Control.addVariable("F175X", -999.0);
+    Control.addVariable("F175Y", -18.0);
+    Control.addVariable("F175Z", 13.0);
+
+    Control.addVariable("F185Length", 440.0);
+    Control.addVariable("F185ViewWidth", 6);
+    Control.addVariable("F185LinkPoint", 0.0);
+    Control.addVariable("F185XB", 11.0);
+    Control.addVariable("F185YB", -14.0);
+    Control.addVariable("F185ZB", 14.0);
+    Control.addVariable("F185XC", 11.0);
+    Control.addVariable("F185YC", -8.0);
+    Control.addVariable("F185ZC", 14.0);
+    Control.addVariable("F185ZG", 11.0);
+    Control.addVariable("F185X", -999.0);
+    Control.addVariable("F185Y", -18.0);
+    Control.addVariable("F185Z", 13.0);
+
+    Control.addVariable("F195Length", 440.0);
+    Control.addVariable("F195ViewWidth", 6);
+    Control.addVariable("F195LinkPoint", 0.0);
+    Control.addVariable("F195XB", 11.0);
+    Control.addVariable("F195YB", -14.0);
+    Control.addVariable("F195ZB", 14.0);
+    Control.addVariable("F195XC", 11.0);
+    Control.addVariable("F195YC", -8.0);
+    Control.addVariable("F195ZC", 14.0);
+    Control.addVariable("F195ZG", 11.0);
+    Control.addVariable("F195X", -999.0);
+    Control.addVariable("F195Y", -18.0);
+    Control.addVariable("F195Z", 13.0);
 }
   
 void
