@@ -363,6 +363,9 @@ void makeESS::buildF5Collimator(Simulation& System, const mainSystem::inputParam
 
   std::string strtmp, moderator, range;
   const size_t nitems = IParam.itemCnt("f5-collimators",0); // number of parameters in -f5-collimator
+
+  if (!nitems) return;
+
   double theta(0.0);
   size_t colIndex(0);
   ELog::EM << "Use StrFunc::convert instead of atoi in the loop below. Check its return value." << ELog::endCrit;
