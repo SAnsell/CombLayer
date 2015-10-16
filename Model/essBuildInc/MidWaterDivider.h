@@ -70,7 +70,7 @@ class MidWaterDivider :
   void createSurfaces();
   void createObjects(Simulation&,const H2Wing&,const H2Wing&);
   void cutOuterWing(Simulation&,const H2Wing&,const H2Wing&) const;
-  void createLinks();
+  void createLinks(const H2Wing&, const H2Wing&);
 
 
  public:

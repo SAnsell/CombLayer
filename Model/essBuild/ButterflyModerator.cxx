@@ -343,23 +343,51 @@ ButterflyModerator::createAll(Simulation& System,
   return;
 }
 
-std::string
-ButterflyModerator::getSideSurface() const
-/*
-  Return side surface string
-  \todo // SA: Use union of link points as it is faster
-*/
-{
-  std::string side("");
-  HeadRule HR;
-  HR.procString(LeftUnit->getSideSurface());
-  HR.addUnion(RightUnit->getSideSurface());
-  HR.addUnion(MidWater->getSideSurface());
-  HR.addUnion(LeftWater->getSideSurface());
-  HR.addUnion(RightWater->getSideSurface());
-  HR.makeComplement();
-  return HR.display();
-}
+  std::string
+  ButterflyModerator::getSideSurface() const
+  /*
+    Return side surface string
+    \todo // SA: Use union of link points as it is faster
+  */
+  {
+    std::string side("");
+    HeadRule HR;
+    HR.procString(LeftUnit->getSideSurface());
+    HR.addUnion(RightUnit->getSideSurface());
+    HR.addUnion(MidWater->getSideSurface());
+    HR.addUnion(LeftWater->getSideSurface());
+    HR.addUnion(RightWater->getSideSurface());
+    HR.makeComplement();
+    return HR.display();
+  }
 
+  Geometry::Vec3D ButterflyModerator::getFocalPoint(int i) const
+  /*
+    Return focal point coordinates for collimator setup
+    \param i :: link point number of MidWater
+  */
+  {
+    return MidWater->getLinkPt(i);
+  }
+
+  std::vector<Geometry::Vec3D> ButterflyModerator::getFocalPoints() const
+  /*
+    Return array of focal points + 
+    Last two items defining zmin and zmax
+  */
+  {
+    std::vector<Geometry::Vec3D> vec;
+
+    for (int i=0; i<10; i++)
+      vec.push_back(MidWater->getLinkPt(i));
+
+    Geometry::Vec3D zmin(0, 0, Origin[2]-LeftUnit->getHeight()/2.0);
+    Geometry::Vec3D zmax(0, 0, Origin[2]+LeftUnit->getHeight()/2.0);
+
+    vec.push_back(zmin);
+    vec.push_back(zmax);
+
+    return vec;
+  }
 
 }  // NAMESPACE essSystem

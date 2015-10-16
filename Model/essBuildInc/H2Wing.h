@@ -102,6 +102,7 @@ class H2Wing :
   void createAll(Simulation&,const attachSystem::FixedComp&);
 
   inline const std::string getSideSurface() const { return sideSurface; }
+  double getHeight() const { return height; }
 };
 
 }

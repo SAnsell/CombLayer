@@ -69,6 +69,8 @@ class ButterflyModerator :
 
   inline std::string getExcludeStr() const { return ExcludeStr; }
   std::string getSideSurface() const;
+  Geometry::Vec3D getFocalPoint(int i) const;
+  std::vector<Geometry::Vec3D> getFocalPoints() const;
 };
 
 }

@@ -74,7 +74,7 @@
 #include "beamlineConstructor.h"
 #include "WheelBase.h"
 #include "Wheel.h"
-#include "SegWheel.h"
+#include "BilbaoWheel.h"
 #include "BeRef.h"
 #include "ProtonTube.h"
 #include "BeamMonitor.h"
@@ -186,16 +186,16 @@ makeESS::makeTarget(Simulation& System,
   if (targetType=="help")
     {
       ELog::EM<<"Target Type [Target]:"<<ELog::endBasic;
-      ELog::EM<<"  -- Wheel       : Simple wheel form"<<ELog::endBasic;
-      ELog::EM<<"  -- SegWheel    : Segmented wheel"<<ELog::endBasic;
+      ELog::EM<<"  -- Wheel     : Simple wheel form"<<ELog::endBasic;
+      ELog::EM<<"  -- Bilbao    : Bilbao wheel"<<ELog::endBasic;
       return;
     }
 
 
   if (targetType=="Wheel")
     Target=std::shared_ptr<WheelBase>(new Wheel("Wheel"));
-  else if (targetType=="SegWheel")
-    Target=std::shared_ptr<WheelBase>(new SegWheel("SegWheel"));
+  else if (targetType=="Bilbao")
+    Target=std::shared_ptr<WheelBase>(new BilbaoWheel("BilbaoWheel"));
   else
     throw ColErr::InContainerError<std::string>
       (targetType,"Unknown target type");
@@ -263,6 +263,7 @@ makeESS::buildLowButterfly(Simulation& System)
   LowMod=std::shared_ptr<constructSystem::ModBase>(BM);
   OR.addObject(LowMod);
   LowMod->createAll(System,*Reflector,LowPreMod.get(),6);
+  LowFocalPoints = BM->getFocalPoints();
   return;
 }
 
@@ -280,11 +281,15 @@ makeESS::buildTopButterfly(Simulation& System)
 
   std::shared_ptr<ButterflyModerator> BM
     (new essSystem::ButterflyModerator("TopFly"));
+
   BM->setRadiusX(Reflector->getRadius());
   TopMod=std::shared_ptr<constructSystem::ModBase>(BM);
   OR.addObject(TopMod);
   
   TopMod->createAll(System,*Reflector,TopPreMod.get(),6);
+
+  TopFocalPoints = BM->getFocalPoints();
+
   return;
 }
       
@@ -335,14 +340,70 @@ void makeESS::buildF5Collimator(Simulation& System, size_t nF5)
 
   for (size_t i=0; i<nF5; i++) {
     std::shared_ptr<F5Collimator> F5(new F5Collimator(StrFunc::makeString("F", i*10+5).c_str()));
-
     OR.addObject(F5);
+    F5->setFocalPoints(TopFocalPoints);
     F5->addInsertCell(74123); // !!! 74123=voidCell // SA: how to exclude F5 from any cells?
     F5->createAll(System, World::masterOrigin());
 
     attachSystem::addToInsertSurfCtrl(System, *ABunker, *F5);
     F5array.push_back(F5);
   }
+
+  return;
+}
+
+void makeESS::buildF5Collimator(Simulation& System, const mainSystem::inputParam& IParam)
+/*!
+  Build F5 collimators
+  \param System :: Stardard simulation
+  \param IParam :: command line parameters. Example: --f5-collimators {top,low} {cold,thermal} theta1 theta2 theta3 ...
+ */
+{
+  ELog::RegMethod RegA("makeESS", "buildF5Collimator");
+  ModelSupport::objectRegister& OR = ModelSupport::objectRegister::Instance();
+
+  std::string strtmp, moderator, range;
+  const size_t nitems = IParam.itemCnt("f5-collimators",0); // number of parameters in -f5-collimator
+
+  if (!nitems) return;
+
+  double theta(0.0);
+  size_t colIndex(0);
+  ELog::EM << "Use StrFunc::convert instead of atoi in the loop below. Check its return value." << ELog::endCrit;
+  for (size_t i=0; i<nitems; i++)
+    {
+      strtmp = IParam.getValue<std::string>("f5-collimators", i);
+      if ( (strtmp=="top") || (strtmp=="low") )
+	{
+	  moderator = strtmp;
+	  range = IParam.getValue<std::string>("f5-collimators", ++i);
+	  for (size_t j=i+1; j<nitems; j++)
+	    {
+	      strtmp = IParam.getValue<std::string>("f5-collimators", j);
+	      if ((strtmp=="top") || (strtmp=="low"))
+		break;
+	      // do real work here
+	      theta = atoi(strtmp.c_str()); // !!! use StrFunc::convert here !!! 
+
+	      std::shared_ptr<F5Collimator> F5(new F5Collimator(StrFunc::makeString("F", colIndex*10+5).c_str())); colIndex++;
+	      OR.addObject(F5);
+	      F5->setTheta(theta);
+	      F5->setRange(range);
+
+	      if (moderator=="top")
+		F5->setFocalPoints(TopFocalPoints);
+	      else if (moderator=="low")
+		F5->setFocalPoints(LowFocalPoints);
+
+	      F5->addInsertCell(74123); // !!! 74123=voidCell // SA: how to exclude F5 from any cells?
+	      F5->createAll(System, World::masterOrigin());
+
+	      attachSystem::addToInsertSurfCtrl(System, *ABunker, *F5);
+	      F5array.push_back(F5);
+      
+	    }
+	}
+    }
 
   return;
 }
@@ -545,7 +606,8 @@ makeESS::build(Simulation& System,
 
   makeBeamLine(System,IParam);
 
-  buildF5Collimator(System, nF5);
+  //  buildF5Collimator(System, nF5);
+  buildF5Collimator(System, IParam);
   return;
 }
 
