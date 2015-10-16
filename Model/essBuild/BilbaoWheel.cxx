@@ -501,8 +501,8 @@ BilbaoWheel::createObjects(Simulation& System)
     {
       if (matTYPE[i]!=3)
 	{
-	Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -17M 5 -6 ");
-	System.addCell(MonteCarlo::Qhull(cellIndex++,matNum[matTYPE[i]],mainTemp,Out));  
+	  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -17M 5 -6 ");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,matNum[matTYPE[i]],mainTemp,Out));  
 	}
       else // build the sectors
 	{
@@ -537,21 +537,6 @@ BilbaoWheel::createObjects(Simulation& System)
   int backIndex(wheelIndex);
   const std::string TopBase=
     ModelSupport::getComposite(SMap,wheelIndex," 35 -36 (-5:6) ");
-  
-  for(size_t i=0;i<nLayers;i++)
-    {
-      if (matTYPE[i]==1)
-	{
-	  if (i)  // otherwize this space has zero size
-	    {
-	      Out=ModelSupport::getComposite(SMap,frontIndex,backIndex,
-					     " 7 -7M ");
-	      //    System.addCell(MonteCarlo::Qhull(cellIndex++,heMat*0, mainTemp,Out+TopBase));
-	    }
-	  frontIndex=backIndex+10;
-	}
-      backIndex+=10;
-    }
   
   // front coolant:
   Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -517 35 -36");
@@ -609,19 +594,19 @@ BilbaoWheel::createLinks()
 
   FixedComp::setConnect(0,Origin-Y*innerRadius,-Y);
   FixedComp::setLinkSurf(0,SMap.realSurf(wheelIndex+537));
-  FixedComp::addLinkSurf(0,-SMap.realSurf(wheelIndex+1));
+  FixedComp::setBridgeSurf(0,-SMap.realSurf(wheelIndex+1));
 
   FixedComp::setConnect(1,Origin+Y*innerRadius,Y);
   FixedComp::setLinkSurf(1,SMap.realSurf(wheelIndex+537));
-  FixedComp::addLinkSurf(1,SMap.realSurf(wheelIndex+1));
+  FixedComp::setBridgeSurf(1,SMap.realSurf(wheelIndex+1));
 
   FixedComp::setConnect(2,Origin-Y*voidRadius,-Y);
   FixedComp::setLinkSurf(2,SMap.realSurf(wheelIndex+1037));
-  FixedComp::addLinkSurf(2,-SMap.realSurf(wheelIndex+1));
+  FixedComp::setBridgeSurf(2,-SMap.realSurf(wheelIndex+1));
 
   FixedComp::setConnect(3,Origin+Y*voidRadius,Y);
   FixedComp::setLinkSurf(3,SMap.realSurf(wheelIndex+1037));
-  FixedComp::addLinkSurf(3,SMap.realSurf(wheelIndex+1));
+  FixedComp::setBridgeSurf(3,SMap.realSurf(wheelIndex+1));
 
   const double H=wheelHeight()/2.0;
   FixedComp::setConnect(4,Origin-Z*H,-Z);

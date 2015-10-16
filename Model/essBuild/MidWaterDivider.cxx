@@ -215,8 +215,6 @@ MidWaterDivider::createLinks()
   return;
 }
   
-
-
 void
 MidWaterDivider::createSurfaces()
   /*!
