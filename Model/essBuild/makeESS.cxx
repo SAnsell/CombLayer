@@ -489,6 +489,16 @@ makeESS::buildPreWings(Simulation& System)
   OR.addObject(TopCapWing);
   TopCapWing->createAll(System, *TopCapMod, 10, false, false, *TopMod);
   attachSystem::addToInsertSurfCtrl(System, *TopCapMod, *TopCapWing);
+
+  LowPreWing = std::shared_ptr<PreModWing>(new PreModWing("LowPreWing"));
+  OR.addObject(LowPreWing);
+  LowPreWing->createAll(System, *LowPreMod, 9, true, false, *LowMod);
+  attachSystem::addToInsertSurfCtrl(System, *LowPreMod, *LowPreWing);
+
+  LowCapWing = std::shared_ptr<PreModWing>(new PreModWing("LowCapWing"));
+  OR.addObject(LowCapWing);
+  LowCapWing->createAll(System, *LowCapMod, 10, true, true, *LowMod);
+  attachSystem::addToInsertSurfCtrl(System, *LowCapMod, *LowCapWing);
 }
 
   

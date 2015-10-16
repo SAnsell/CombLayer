@@ -316,9 +316,9 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("LowAFlightZangle",0.0);  // Angle out
   Control.addVariable("LowAFlightAngleXY1",60.0);  // Angle out
   Control.addVariable("LowAFlightAngleXY2",60.0);  // Angle out
-  Control.addVariable("LowAFlightAngleZTop",0.8); // Step up angle
-  Control.addVariable("LowAFlightAngleZBase",0.8);  // Step down angle
-  Control.addVariable("LowAFlightHeight",6.5);     // Full height = LowFlyTotalHeight
+  Control.addVariable("LowAFlightAngleZTop",0.95); // Step up angle
+  Control.addVariable("LowAFlightAngleZBase",0.95);  // Step down angle
+  Control.addVariable("LowAFlightHeight",5.44);     // Full height = LowFlyTotalHeight
   Control.addVariable("LowAFlightWidth",10.7);     // Full width
   Control.addVariable("LowAFlightNLiner",1);      // Liner
   Control.addVariable("LowAFlightLinerThick1",0.4);      // Liner
@@ -1203,6 +1203,15 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopPreWingTiltAngle");
   Control.addVariable("TopPreWingTiltRadius", 20.0);
 
+  Control.addVariable("LowPreWingMat", "H2O");
+  Control.addVariable("LowPreWingThick", 0.8);
+  Control.addVariable("LowPreWingWallMat", "Aluminium");
+  Control.addVariable("LowPreWingWallThick", 0.3);
+  Control.Parse("LowAFlightAngleZTop");
+  Control.addVariable("LowPreWingTiltAngle");
+  Control.addVariable("LowPreWingTiltRadius", 20.0);
+
+
   Control.addVariable("TopCapWingMat", "H2O");
   Control.addVariable("TopCapWingThick", 0.8);
   Control.addVariable("TopCapWingWallMat", "Aluminium");
@@ -1210,6 +1219,14 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.Parse("TopAFlightAngleZBase");
   Control.addVariable("TopCapWingTiltAngle");
   Control.addVariable("TopCapWingTiltRadius", 20.1);
+
+  Control.addVariable("LowCapWingMat", "H2O");
+  Control.addVariable("LowCapWingThick", 0.8);
+  Control.addVariable("LowCapWingWallMat", "Aluminium");
+  Control.addVariable("LowCapWingWallThick", 0.3);
+  Control.Parse("LowAFlightAngleZBase");
+  Control.addVariable("LowCapWingTiltAngle");
+  Control.addVariable("LowCapWingTiltRadius", 20.1);
 
   Control.Parse("LowPreModFlowGuideWallThick");
   Control.addVariable("TopPreModFlowGuideWallThick");
