@@ -49,6 +49,18 @@
 namespace tallySystem
 {
 
+F5Calc::F5Calc()
+{}
+
+
+F5Calc::~F5Calc()
+  /*!
+    Destructor
+  */
+{}
+  
+  
+  
 void
 F5Calc::SetTally(double lx,double ly,double lz)
 {
@@ -75,10 +87,6 @@ F5Calc::SetLength(const double laf)
   
   const double mf=F5.Distance(M);
   A=F5+(M-F5)*(af/mf);
-  // // check if A belongs to MF5:
-  // double deltaXY = (A.x-M.x)*(F5.y-M.y) - (A.y-M.y)*(F5.x-M.x);
-  // double deltaXZ = (A.x-M.x)*(F5.z-M.z) - (A.z-M.z)*(F5.x-M.x);
-  // double epsilon = 1E-5;
   return;
 }
 
@@ -112,7 +120,7 @@ F5Calc::GetZAngle()
   lNV2=lNV*(lM-M);
   lNV2.makeUnit();
 
-  CalculateProjectionOntoPlane(lNV2,M,F5,lF5_Projected); 
+  lF5_Projected=CalculateProjectionOntoPlane(lNV2,M,F5); 
   
   const double lAngle=(180.0/M_PI)*
     fabs(atan(F5.Distance(lF5_Projected))/
@@ -139,7 +147,7 @@ double F5Calc::GetXYAngle()
 }
 
 double
-F5Calc::GetHalfSizeX()
+F5Calc::GetHalfSizeX() const
   /*!
     This is a horrible way to to this -- use standard pythgerous.
    */
@@ -159,61 +167,39 @@ F5Calc::GetHalfSizeX()
 };
   
 double
-F5Calc::GetHalfSizeZ()
+F5Calc::GetHalfSizeZ() const
 {
-  return B.Distance(B2)/2.0*af/F5.distance(M);
+  return B.Distance(B2)/2.0*af/F5.Distance(M);
 }
 
-void
+Geometry::Vec3D
 F5Calc::CalculateNormalVector(const Geometry::Vec3D& O,
 			      const Geometry::Vec3D& P1,
-			      const Geometry::Vec3D& P2) const ;
+			      const Geometry::Vec3D& P2) const
    // STATIC
 {
   // bizare way to do cross product normals
-  const Geometry::Vec3D pA=O-P3;
-  const Geometry::Vec3D pB=O-P2;
-  return (pA*pB).makeUnit();
-  
-  // P4.x=(P1.y-P3.y)*(P1.z-P2.z)-(P1.z-P3.z)*(P1.y-P2.y);
-  // P4.y=(P1.z-P3.z)*(P1.x-P2.x)-(P1.x-P3.x)*(P1.z-P2.z);
-  // P4.z=(P1.x-P3.x)*(P1.y-P2.y)-(P1.y-P3.y)*(P1.x-P2.x);
-
-  // P4.makeUnit();
-  return;
+  const Geometry::Vec3D pA=O-P2;
+  const Geometry::Vec3D pB=O-P1;
+  return (pA*pB).unit();
 }
 
 
-void
+Geometry::Vec3D
 F5Calc::CalculateProjectionOntoPlane
-(Geometry::Vec3D NV,Geometry::Vec3D M,Geometry::Vec3D P,Geometry::Vec3D &P2)
-  {
-    //NV is the normal vector of the plane
-    //M is a point on the plane
-    //P is a point which projection (P2) is calculated on the plane
+    (const Geometry::Vec3D& NV,const Geometry::Vec3D& M,
+     const Geometry::Vec3D& P) const
+/*!
+ \param NV :: the normal vector of the plane
+ \param M :: a point on the plane
+ \param P :: a point which projection (P2) is calculated on the plane
+*/
+{
 
-    const double lDistance=
-      fabs(NV.x*(M.x-P.x)+NV.y*(M.y-P.y)+NV.z*(M.z-P.z))/sqrt(pow(NV.x,2.0)+pow(NV.y,2.0)+pow(NV.z,2.0));
-
+    const double lDistance=fabs(NV.dotProd(M-P)/NV.abs());
     //Calculate the possible projections
-    Geometry::Vec3D lProjection1,lProjection2;
-    lProjection1=P+NV*lDistance;
-    lProjection2=P+NV*lDistance;
-
-    //The smaller distance is the correct projection
-    if(CalculateDistance(M,lProjection1)<=CalculateDistance(M,lProjection2))
-      {
-	P2.x=lProjection1.x;
-	P2.y=lProjection1.y;
-	P2.z=lProjection1.z;
-      }
-    else
-      {
-	P2.x=lProjection2.x;
-	P2.y=lProjection2.y;
-	P2.z=lProjection2.z;
-      }
-    return;
-  }
-
+    return P+NV*lDistance;
 }
+
+  
+}  //NAMESPACE tallySystem !!!!!!

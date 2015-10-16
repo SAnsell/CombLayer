@@ -219,9 +219,7 @@ BilbaoWheel::populate(const FuncDataBase& Control)
   voidRadius=Control.EvalVar<double>(keyName+"VoidRadius");
   aspectRatio=Control.EvalVar<double>(keyName+"AspectRatio");
 
-  nSectors=Control.EvalVar<int>(keyName+"NSectors");
-  if (nSectors<1)
-    ELog::EM << "NSectors must be >= 1" << ELog::endErr;
+  nSectors=Control.EvalVar<size_t>(keyName+"NSectors");
   secSepThick=Control.EvalVar<double>(keyName+"SectorSepThick");
   secSepMat=ModelSupport::EvalMat<int>(Control,keyName+"SectorSepMat");  
 
@@ -456,7 +454,7 @@ BilbaoWheel::createSurfaces()
   double thetaDeg,theta;
   const double dTheta = 360.0/nSectors;
   int SIsec(wheelIndex+5000);
-  for (int j=0; j<nSectors; j++)
+  for(size_t j=0;j<nSectors;j++)
     {
       thetaDeg = j*dTheta;
       theta = thetaDeg*M_PI/180.0;
@@ -502,39 +500,46 @@ BilbaoWheel::createObjects(Simulation& System)
       if (matTYPE[i]!=3)
 	{
 	  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -17M 5 -6 ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,matNum[matTYPE[i]],mainTemp,Out));  
+	  System.addCell(MonteCarlo::Qhull
+			 (cellIndex++,matNum[matTYPE[i]],mainTemp,Out));  
 	}
       else // build the sectors
 	{
 	  SIsec = wheelIndex+5000;
 	  if (nSectors==1) // no sectors requested
 	    {
-	      Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -17M 5 -6 ");
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,matNum[matTYPE[i]],mainTemp,Out));
+	      Out=ModelSupport::getComposite
+		(SMap,wheelIndex,SI," 7M -17M 5 -6 ");
+	      System.addCell(MonteCarlo::Qhull
+			     (cellIndex++,matNum[matTYPE[i]],mainTemp,Out));
 	    }
-	  else for (int j=0; j<nSectors; j++)
+	  else
 	    {
-	      Out1=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -17M 5 -6 ");
-	      // Tungsten
-	      SI1 = (j!=nSectors-1) ? SIsec+10 : wheelIndex+5000;
-	      Out = ModelSupport::getComposite(SMap, SIsec, SI1, " 4 -3M ");
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,matNum[matTYPE[i]],mainTemp,
-					       Out1+Out));
-
-	      // Pieces of steel between Tungsten sectors
-	      // -1 is needed since planes 3 and -4 cross Tunsten in two places,
-	      //     so we need to select only one
-	      Out = ModelSupport::getComposite(SMap, SIsec, " 3 -4 -1 ");
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,secSepMat,mainTemp,Out1+Out));
-
-	      SIsec+=10;
+	      for (size_t j=0;j<nSectors;j++)
+		{
+		  Out1=ModelSupport::getComposite
+		    (SMap,wheelIndex,SI," 7M -17M 5 -6 ");
+		  // Tungsten
+		  SI1 = (j!=nSectors-1) ? SIsec+10 : wheelIndex+5000;
+		  Out = ModelSupport::getComposite(SMap,SIsec,SI1," 4 -3M ");
+		  System.addCell(MonteCarlo::Qhull
+				 (cellIndex++,matNum[matTYPE[i]],mainTemp,
+				Out1+Out));
+		  
+		  // Pieces of steel between Tungsten sectors
+		  // -1 is needed since planes 3 and -4 cross Tunsten in two places,
+		  //     so we need to select only one
+		  Out = ModelSupport::getComposite(SMap, SIsec, " 3 -4 -1 ");
+		  System.addCell(MonteCarlo::Qhull
+				 (cellIndex++,secSepMat,mainTemp,Out1+Out));
+		  
+		  SIsec+=10;
+		}
 	    }
 	}
       SI+=10;
     }
   // Now make sections for the coolant
-  int frontIndex(wheelIndex);
-  int backIndex(wheelIndex);
   const std::string TopBase=
     ModelSupport::getComposite(SMap,wheelIndex," 35 -36 (-5:6) ");
   

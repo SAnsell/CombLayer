@@ -62,7 +62,7 @@ class BilbaoWheel : public WheelBase
   double voidRadius;             ///< Final outer radius
   double aspectRatio;            ///< Defines curvature in the yz view
 
-  int nSectors;                  ///< Number of sectors in Tungsten
+  size_t nSectors;                  ///< Number of sectors in Tungsten
   double secSepThick;            ///< Thickness of sector separator
   int secSepMat;                 ///< Material of sector separator
 
