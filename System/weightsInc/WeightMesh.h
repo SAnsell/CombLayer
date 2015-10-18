@@ -50,18 +50,32 @@ class WeightMesh
   Geometry::Vec3D Axis;        ///< Axis
   Geometry::Vec3D Vec;         ///< Orthog Axis
 
-  // NOTE : in cylindric Y/Z are rotations e.g 0->0.5 and 0->1
-  std::vector<double> X;     ///< X/R coordinates
-  std::vector<double> Y;     ///< Y/Z/phi coordinates
-  std::vector<double> Z;     ///< Z/theta coordinates
+  std::vector<double> X;     ///< X/R coordinates [+origin]
+  std::vector<double> Y;     ///< Y/Z/phi coordinates [+origin]
+  std::vector<double> Z;     ///< Z/theta coordinates [+origin]
 
-  /// Mesh values  [Note many for different energy arrangements ???]
-  boost::multi_array<double,3> Mesh;
+  std::vector<size_t> XFine;    ///< Number of fine X bins 
+  std::vector<size_t> YFine;    ///< Number of fine Y bins 
+  std::vector<size_t> ZFine;    ///< Number of fine z bins 
 
+  size_t NX;                    ///< Total number of X
+  size_t NY;                    ///< Total number of Y
+  size_t NZ;                    ///< Total number of Z
+  
   std::string getType() const;
+  
+  static double getCoordinate(const std::vector<double>&,
+			      const std::vector<size_t>&,
+			      const size_t);
+
+
+  static void writeLine(std::ostream&,const double,size_t&);
+  static void writeLine(std::ostream&,const int,size_t&);
+
   
  public:
 
+  
   WeightMesh();
   WeightMesh(const WeightMesh&);
   WeightMesh& operator=(const WeightMesh&);
@@ -70,16 +84,18 @@ class WeightMesh
   Geometry::Vec3D point(const size_t,const size_t,const size_t) const;
 
   void setMeshType(const GeomENUM&);
+  void setMesh(const std::vector<double>&,const std::vector<double>&,
+	       const std::vector<double>&,const std::vector<size_t>&,
+	       const std::vector<size_t>&,const std::vector<size_t>&);
+	       
   /// Set reference point
   void setRefPt(const Geometry::Vec3D& Pt) { RefPoint=Pt; } 
-  void setCylinder(const Geometry::Vec3D&,const Geometry::Vec3D&,
-		   const Geometry::Vec3D&,const double,
-		   const size_t,const size_t,const size_t);
 
   
   void zeroCell(const int) { }      ///< Non-important return
   void write(std::ostream&) const;
   void writeWWINP() const;
+
 };
 
 }  

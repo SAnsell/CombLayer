@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   weights/BasicWWE.cxx
  *
@@ -62,8 +62,9 @@
 #include "TallyCreate.h"
 #include "PointWeights.h"
 #include "TempWeights.h"
+#include "WWGconstruct.h"
 #include "BasicWWE.h"
-#include "WWG.h"
+
 
 namespace WeightSystem
 {
@@ -88,7 +89,10 @@ simulationWeights(Simulation& System,
 
   // WEIGHTS:
   if (IParam.flag("wWWG") )
-    WeightSystem::createWWG(System,IParam);
+    {
+      WWGconstruct WConstruct;
+      WConstruct.createWWG(System,IParam);
+    }
   else
     {
       const std::string WType=IParam.getValue<std::string>("weightType");

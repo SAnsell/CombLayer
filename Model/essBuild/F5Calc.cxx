@@ -72,6 +72,9 @@ void
 F5Calc::SetPoints(const Geometry::Vec3D& lB,
 		  const Geometry::Vec3D& lC,
 		  const Geometry::Vec3D& lB2)
+   /*!
+     Simple seter
+   */
 {
   B = lB;
   C = lC;

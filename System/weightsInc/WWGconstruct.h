@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   weightsInc/WWG.h
+ * File:   weightsInc/WWGConstructor.h
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef WeightSystem_WWG_h
-#define WeightSystem_WWG_h
+#ifndef WeightSystem_WWGConstructor_h
+#define WeightSystem_WWGConstructor_h
 
 namespace attachSystem
 {
@@ -32,21 +32,31 @@ class Simulation;
 namespace WeightSystem
 {
 
-class WWG
+      
+/*!
+  \class WWGConstruct
+  \version 1.0
+  \author S. Ansell
+  \date April 2012
+  \brief WWG constructor
+
+  Provides linkage to its outside on FixedComp[0]
+*/
+
+class WWGconstruct
 {
- private:
+  public:
 
-  WeightMesh Grid;   ///< Mesh Grid
+  WWGconstruct();
+  WWGconstruct(const WWGconstruct&);
+  WWGconstruct& operator=(const WWGconstruct&);
+  virtual ~WWGconstruct() {}  ///< Destructor
 
- public:
 
-  void write(const std::string&) const;
-  
+  void createWWG(Simulation&,const mainSystem::inputParam&);
 };
- 
 
 }
 
-
 #endif
- 
+  

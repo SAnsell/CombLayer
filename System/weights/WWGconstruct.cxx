@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MNCPX Input builder
  
- * File:   weights/BasicWWG.cxx
+ * File:   weights/WWGconstruct.cxx
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -52,29 +52,32 @@
 #include "Object.h"
 #include "Qhull.h"
 #include "weightManager.h"
-#include "WForm.h"
-#include "WItem.h"
-#include "WCells.h"
-#include "WeightModification.h"
 #include "Simulation.h"
 #include "objectRegister.h"
 #include "inputParam.h"
-#include "TallyCreate.h"
+#include "WeightMesh.h"
 #include "WWG.h"
+#include "WWGconstruct.h"
 
 namespace WeightSystem
 {
 
+WWGconstruct::WWGconstruct()
+  /*!
+    Constructor
+  */
+{}
+  
 void
-createWWG(Simulation& System,
-	  const mainSystem::inputParam& IParam)
+WWGconstruct::createWWG(Simulation& System,
+			const mainSystem::inputParam& IParam)
   /*!
     Set WWG weights based 
     \param System :: Simulation
     \param IParam :: input stream
    */
 {
-  ELog::RegMethod RegA("WWG","createWWG");
+  ELog::RegMethod RegA("WWGconstruct","createWWG");
   
 
   return;
