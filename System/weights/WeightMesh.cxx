@@ -33,7 +33,6 @@
 #include <functional>
 #include <algorithm>
 #include <memory>
-#include <boost/multi_array.hpp>
 #include <boost/format.hpp>
 
 #include "Exception.h"
@@ -55,7 +54,11 @@ namespace WeightSystem
 {
 
 WeightMesh::WeightMesh() : 
-  tallyN(1),type(XYZ),NX(0),NY(0),NZ(0)		   
+  tallyN(1),type(XYZ),
+  RefPoint(0,0,0),Or igin(0,0,0),
+  RefPoint(0,0.1,0),
+  NX(0),NY(0),NZ(0),
+  
   /*!
     Constructor [makes XYZ mesh]
   */
@@ -169,8 +172,8 @@ WeightMesh::point(const size_t a,const size_t b,const size_t c) const
     throw ColErr::IndexError<size_t>(c,NZ,"Z-coordinate");
 
   const double xc=getCoordinate(X,XFine,a);
-  const double yc=getCoordinate(X,XFine,a);
-  const double zc=getCoordinate(X,XFine,a);
+  const double yc=getCoordinate(Y,YFine,b);
+  const double zc=getCoordinate(Z,ZFine,c);
   return Geometry::Vec3D(xc,yc,zc);
 }
 

@@ -278,12 +278,18 @@ createInputs(inputParam& IParam)
 
   IParam.regItem("w","weight");
   IParam.regItem("WP","weightPt");
-  IParam.regMulti("wWWG","wWWG",25,0);
   IParam.regMulti("wExt","wExt",25,0);
   IParam.regMulti("wPWT","wPWT",25,0);    
   IParam.regItem("WTemp","weightTemp",1);
   IParam.regDefItem<std::string>("WType","weightType",1,"basic");
 
+
+  IParam.regMulti("wWWG","wWWG",25,0);
+  IParam.regMulti("wXMesh","wwgXMesh",25,3);
+  IParam.regMulti("wYMesh","wwgYMesh",25,3);
+  IParam.regMulti("wZMesh","wwgZMesh",25,3);
+  
+  
   IParam.regDefItem<std::string>("X","xmlout",1,"Model.xml");
   IParam.regMulti("x","xml",10000,1);
   
@@ -659,6 +665,8 @@ createESSInputs(inputParam& IParam)
 				 1,std::string("void"));
   IParam.regDefItem<std::string>("bunker","bunkerType",1,std::string("null"));
   IParam.regMulti("beamlines","beamlines",1000);
+  IParam.regDefItem<int>("nF5", "nF5", 1,0);
+
   
   IParam.setDesc("essDB","Allows the use of the ESS material database");
   
@@ -670,6 +678,10 @@ createESSInputs(inputParam& IParam)
   IParam.setDesc("iradLine","Build an irradiation line [void for none]");
   IParam.setDesc("beamlines","Build beamlines [void for none]");
   IParam.setDesc("bunker","Build bunker [void for none [A-D]");
+  IParam.setDesc("nF5","Number of F5 collimators to build. \n"
+		 "  -- The collimators will be named as F5, F15, etc.\n"
+		 "  -- The corresponding variables must exist.");
+
   return;
 }
 

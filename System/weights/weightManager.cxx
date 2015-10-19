@@ -88,16 +88,16 @@ weightManager::Instance()
   return A;
 }
 
-WeightMesh*
-weightManager::getMesh()
+WWG*
+weightManager::getWWG()
   /*!
     Create/access mesh
     \return Mesh
    */
 {
-  ELog::RegMethod RegA("weightManager","getMesh");
+  ELog::RegMethod RegA("weightManager","getWWG");
   if (!WWGPtr)
-    WWGPtr=new WeightMesh();
+    WWGPtr=new WWG;
   return WWGPtr;
 }
 

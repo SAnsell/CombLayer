@@ -40,6 +40,13 @@ class WWG
 
  public:
 
+  void setXMesh(const std::vector<double>&,
+		const std::vector<int>&);
+  void setYMesh(const std::vector<double>&,
+		const std::vector<int>&);
+  void setZMesh(const std::vector<double>&,
+		const std::vector<int>&);
+    
   void write(const std::string&) const;
   
 };

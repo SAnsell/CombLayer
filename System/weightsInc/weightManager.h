@@ -28,6 +28,7 @@ namespace WeightSystem
 {
   class WForm;
   class WeightMesh;
+  class WWG;
 /*!
   \class weightManager
   \version 1.0
@@ -41,8 +42,8 @@ class weightManager
  public:
 
   typedef std::map<char,WForm*> CtrlTYPE;  ///< WControl map  
-  CtrlTYPE WMap;              ///< Map of weight systems
-  WeightMesh* WWGPtr;      ///< Weight mesh
+  CtrlTYPE WMap;                           ///< Map of weight systems
+  WWG* WWGPtr;                             ///< Weight mesh
     
  private:  
 
@@ -58,7 +59,7 @@ class weightManager
   ~weightManager();
   
   WForm* getParticle(const char);
-  WeightMesh* getMesh();
+  WeightMesh* getWWG();
   template<typename T> void addParticle(const char);
   
   void renumberCell(const int,const int);  

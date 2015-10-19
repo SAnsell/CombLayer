@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   weights/WWGconstruct.cxx
  *
@@ -78,7 +78,38 @@ WWGconstruct::createWWG(Simulation& System,
    */
 {
   ELog::RegMethod RegA("WWGconstruct","createWWG");
+
+  WeightSystem::weightManager& WM=
+    WeightSystem::weightManager::Instance();
+
+  const std::string XYZ[3]={"X","Y","Z"};
+  size_t NXM[3];
   
+  const size_t NItems=IParam.itemCnt("wwgMesh",Index);
+  for(size_t index=0;index<3;index++)
+    {
+      NXM[index]=IParam.itemCnt("wwg"+XYZ[index]+"Mesh",Index);
+      if (NXM<3)
+	throw ColErr::IndexError<size_t>
+	  (NItems,3,"Insufficient items for wwg"+XYZ[index]+"Mesh "
+	   ": X_0 : N_0 : X1 : N1 ...");
+
+      WWG WM
+  
+
+
+  WM.createWWG();
+  
+  if (NItems<3)
+    throw ColErr::IndexError<size_t>
+      (NItems,3,"Insufficient items for wwgMesh");
+
+  
+  const std::string PType(IParam.getValue<std::string>("tally",Index,1)); 
+  
+  const masterRotate& MR=masterRotate::Instance();
+  std::string revStr;
+
 
   return;
 }
