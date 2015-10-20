@@ -324,7 +324,6 @@ inputParam::itemCnt(const std::string& K,const size_t setIndex) const
 {
   ELog::RegMethod RegA("inputParam","itemCnt");
   const IItem* IPtr=getIndex(K);
-  if (!setIndex && !IPtr->getNSets()) return 0;
   return IPtr->getNItems(setIndex);
 }
 

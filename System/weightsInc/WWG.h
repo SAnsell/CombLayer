@@ -40,14 +40,15 @@ class WWG
 
  public:
 
-  void setXMesh(const std::vector<double>&,
-		const std::vector<int>&);
-  void setYMesh(const std::vector<double>&,
-		const std::vector<int>&);
-  void setZMesh(const std::vector<double>&,
-		const std::vector<int>&);
-    
-  void write(const std::string&) const;
+  WWG();
+
+  /// access to grid
+  WeightMesh& getGrid() { return Grid; }
+  /// access to grid
+  const WeightMesh& getGrid() const { return Grid; }
+  
+  void write(std::ostream&) const;
+  void writeWWINP(const std::string&) const;
   
 };
  

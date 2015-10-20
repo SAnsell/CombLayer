@@ -55,10 +55,8 @@ namespace WeightSystem
 
 WeightMesh::WeightMesh() : 
   tallyN(1),type(XYZ),
-  RefPoint(0,0,0),Or igin(0,0,0),
-  RefPoint(0,0.1,0),
-  NX(0),NY(0),NZ(0),
-  
+  RefPoint(0,0.1,0),Origin(0,0,0),
+  Vec(0,0.1,0),NX(0),NY(0),NZ(0)
   /*!
     Constructor [makes XYZ mesh]
   */
@@ -78,10 +76,10 @@ WeightMesh::setMeshType(const GeomENUM& A)
 
 void 
 WeightMesh::setMesh(const std::vector<double>& XV,
-		    const std::vector<double>& YV,
-		    const std::vector<double>& ZV,
 		    const std::vector<size_t>& XN,
+		    const std::vector<double>& YV,
 		    const std::vector<size_t>& YN,
+		    const std::vector<double>& ZV,
 		    const std::vector<size_t>& ZN)
   /*!
     Ugly way to set the mesh from the WWG constructor
@@ -178,24 +176,20 @@ WeightMesh::point(const size_t a,const size_t b,const size_t c) const
 }
 
 void
-WeightMesh::writeWWINP() const
+WeightMesh::writeWWINP(std::ostream& OX) const
   /*!
     Write out to a mesh to a wwinp file
     Currently ONLY works correctly with a rectangular file
+    \paramOX :: Output stream
   */
 {
-  ELog::RegMethod RegA("WeightMesh","write");
-
-  std::ofstream OX;
-  OX.open("wwinp");
+  ELog::RegMethod RegA("WeightMesh","writeWWINP");
 
   
   boost::format TopFMT("%10i%10i%10i%10i%28sn");
   const std::string date("10/07/15 15:37:51");
   OX<<(TopFMT % tallyN % 1 % 1 % 10 % date);
 
-
-  OX.close();
   return;
 }
 
@@ -254,7 +248,7 @@ WeightMesh::write(std::ostream& OX) const
 
   std::ostringstream cx;
   cx<<"mesh "<<getType()<<" origin "<<Origin
-    <<" axs "<<Axis<<" vec "<<Vec<<" ref "<<RefPoint;
+    <<" ref "<<RefPoint;
   StrFunc::writeMCNPX(cx.str(),OX);
 
   // imesh :

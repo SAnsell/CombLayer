@@ -59,7 +59,7 @@ class weightManager
   ~weightManager();
   
   WForm* getParticle(const char);
-  WeightMesh* getWWG();
+  WWG& getWWG();
   template<typename T> void addParticle(const char);
   
   void renumberCell(const int,const int);  
