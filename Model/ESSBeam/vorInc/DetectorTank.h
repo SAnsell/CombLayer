@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/PinHole.h
+ * File:   essBuildInc/DetectorTank.h
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -19,67 +19,59 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef essSystem_PinHole_h
-#define essSystem_PinHole_h
+#ifndef essSystem_DetectorTank_h
+#define essSystem_DetectorTank_h
 
 class Simulation;
 
-namespace constructSystem
-{
-  class RotaryCollimator;
-  class Jaws;
-}
-
 namespace essSystem
 {
-  
+
 /*!
-  \class PinHole
+  \class DetectorTank
   \version 1.0
   \author S. Ansell
-  \date June 2015
-  \brief Container class for multi-collimator system
+  \date July 2015
+  \brief DetectorTank [insert object]
 */
 
-class PinHole : public attachSystem::ContainedComp,
+class DetectorTank : public attachSystem::ContainedComp,
   public attachSystem::FixedOffset,
   public attachSystem::CellMap
 {
  private:
+  
+  const int tankIndex;          ///< Index of surface offset
+  int cellIndex;                ///< Cell index
 
-  const int pinIndex;             ///< SurfIndex offset
-  int cellIndex;                  ///< cell index
+  double innerRadius;           ///< Radius of sample area
+  double outerRadius;           ///< outer detector radius
+  double midAngle;              ///< dividing angle
+  double height;                ///< Height of tank
 
-  /// First collimator
-  std::shared_ptr<constructSystem::RotaryCollimator> CollA;
-  /// Second collimator
-  std::shared_ptr<constructSystem::RotaryCollimator> CollB;
+  double innerThick;            ///< Thickness of inner zone
+  double frontThick;            ///< Thickness of front wall
+  double backThick;             ///< Side thickness
+  double roofThick;             ///< roof/base thick
 
-  /// JAW X Axis
-  std::shared_ptr<constructSystem::Jaws> JawX;
-  /// JAW ZX (+45deg)
-  std::shared_ptr<constructSystem::Jaws> JawXZ;
-
-
-  double radius;           ///< Excloseing radius
-  double length;           ///< Enclosing length
+  int wallMat;                  ///< Material for walls
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
+
   void createSurfaces();
-  void createObjects(Simulation&);
   void createLinks();
-    
+  void createObjects(Simulation&);
+
  public:
 
-  PinHole(const std::string&);
-  PinHole(const PinHole&);
-  PinHole& operator=(const PinHole&);
-  virtual ~PinHole();
+  DetectorTank(const std::string&);
+  DetectorTank(const DetectorTank&);
+  DetectorTank& operator=(const DetectorTank&);
+  ~DetectorTank();
 
-  void createAll(Simulation&,
-		 const attachSystem::FixedComp&,
+  void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 
 };

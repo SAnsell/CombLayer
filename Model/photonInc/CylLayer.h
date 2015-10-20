@@ -33,7 +33,8 @@ struct LInfo
   double thick;                ///< Thickness
   std::vector<double> Radii;   ///< Radii
   std::vector<int> Mat;        ///< Material
-
+  std::vector<double> Temp;    ///< Temperature
+  
   void resize(const size_t);
 
 };

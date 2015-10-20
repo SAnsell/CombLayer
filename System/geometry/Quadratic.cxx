@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   geometry/Quadratic.cxx
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@
 #include <map>
 #include <string>
 #include <algorithm>
-#include <boost/multi_array.hpp>
+#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "BaseVisit.h"
@@ -46,6 +46,7 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
+#include "masterWrite.h"
 #include "Quaternion.h"
 #include "PolyFunction.h"
 #include "PolyVar.h"
@@ -323,12 +324,11 @@ Quadratic::distance(const Geometry::Vec3D& Pt) const
 
   double Out= -1;
   Geometry::Vec3D xvec;
-  std::vector<double>::const_iterator vc;
-  for(vc=TRange.begin();vc!=TRange.end();vc++)
+  for(const double& val : TRange)
     {
-      const double daI=1.0+2* (*vc) *da;
-      const double dbI=1.0+2* (*vc) *db;
-      const double dcI=1.0+2* (*vc) *dc;
+      const double daI=1.0+2* val *da;
+      const double dbI=1.0+2* val *db;
+      const double dcI=1.0+2* val *dc;
       if ((daI*daI)>Geometry::zeroTol && (dbI*dbI)>Geometry::zeroTol &&
 	  (dcI*dcI)>Geometry::zeroTol)
         {
@@ -336,7 +336,7 @@ Quadratic::distance(const Geometry::Vec3D& Pt) const
 	  DI[0][0]=1.0/daI;
 	  DI[1][1]=1.0/dbI;
 	  DI[2][2]=1.0/dcI;
-	  xvec = R*(DI*(alpha-beta* *vc));  // care here: to avoid 9*9 +9*3 in favour of 9*3+9*3 ops.
+	  xvec = R*(DI*(alpha-beta* val));  // care here: to avoid 9*9 +9*3 in favour of 9*3+9*3 ops.
 	  const double Dist=xvec.Distance(Pt);
 	  if (Out<0 || Out>Dist)
 	    Out=Dist;
@@ -554,9 +554,30 @@ Quadratic::normalizeGEQ(const size_t index)
 }
 
 void
+Quadratic::writeFLUKA(std::ostream& OX) const
+  /*!
+    Writes out  an Fluka surface description [free format]
+    \param OX :: Output stream (required for multiple std::endl)
+  */
+{
+  ELog::RegMethod RegA("Quadratic","writeFLUKA");
+  masterWrite& MW=masterWrite::Instance();
+  
+  std::ostringstream cx;
+  Surface::writeHeader(cx);
+  cx.precision(Geometry::Nprecision);
+  cx<<"QUA s"<<getName();
+  // write all 10 items in order: as xy xz yz coeffients
+  for(const double& val : BaseEqn)
+    cx<<" "<<MW.Num(val);
+  StrFunc::writeMCNPX(cx.str(),OX);
+  return;
+}
+
+void
 Quadratic::write(std::ostream& OX) const
   /*!
-    Writes out  an MCNPX surface description 
+    Writes out  an MCNP surface description 
     Note : Swap since base equation is swapped in gq output 
     (mcnp 4c manual pg. 3-14)
     \param OX :: Output stream (required for multiple std::endl)

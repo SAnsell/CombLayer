@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuildInc/ODIN.h
+ * File:   ESSBeam/odin/ODIN.h
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -78,7 +78,7 @@ class ODIN
 
   /// Chopper pit for first outer bunker chopper
   std::shared_ptr<constructSystem::ChopperPit> PitA;
-  /// Guide from Chopper to exterior
+  /// Guide to Chopper to exterior
   std::shared_ptr<beamlineSystem::GuideLine> GuidePitAFront;
   /// Guide from Chopper to exterior
   std::shared_ptr<beamlineSystem::GuideLine> GuidePitABack;
@@ -95,7 +95,8 @@ class ODIN
   std::shared_ptr<beamlineSystem::GuideLine> GuidePitBFront;
   /// Guide from Chopper to exterior [Hutch side]
   std::shared_ptr<beamlineSystem::GuideLine> GuidePitBBack;
-
+  /// Guide from Chopper to exterior
+  std::shared_ptr<constructSystem::DiskChopper> ChopperB;
   /// Guide from chopper B to exterior
   std::shared_ptr<beamlineSystem::GuideLine> GuideF;
 

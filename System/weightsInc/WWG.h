@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuildInc/NMX.h
+ * File:   weightsInc/WWG.h
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -19,66 +19,41 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef essSystem_NMX_h
-#define essSystem_NMX_h
+#ifndef WeightSystem_WWG_h
+#define WeightSystem_WWG_h
 
 namespace attachSystem
 {
   class FixedComp;
-  class TwinComp;
-  class CellMap;
 }
 
-namespace constructSystem
-{  
-  class Jaws;
-  class DiskChopper;
-  class ChopperPit;
-  class RotaryCollimator;
-  class VacuumBox;
-  class ChopperHousing;
-}
+class Simulation;
 
-namespace essSystem
-{  
-  class GuideItem;
-  class LokiHut;
-  class VacTank;
+namespace WeightSystem
+{
 
-  /*!
-    \class NMX
-    \version 1.0
-    \author S. Ansell
-    \date July 2014
-    \brief NMX beamline constructor for the ESS
-  */
-  
-class NMX
+class WWG
 {
  private:
 
-  /// Main Beam Axis [for construction]
-  std::shared_ptr<attachSystem::FixedComp> nmxAxis;
+  WeightMesh Grid;   ///< Mesh Grid
 
-  /// tapper in insert bay
-  std::shared_ptr<beamlineSystem::GuideLine> GuideA;
-  /// Bender in insert bay
-  std::shared_ptr<beamlineSystem::GuideLine> BendA;
-  
-  void setBeamAxis(const GuideItem&,const bool);
-  
  public:
-  
-  NMX();
-  NMX(const NMX&);
-  NMX& operator=(const NMX&);
-  ~NMX();
-  
-  void build(Simulation&,const GuideItem&,
-	     const Bunker&,const int);
 
+  void setXMesh(const std::vector<double>&,
+		const std::vector<int>&);
+  void setYMesh(const std::vector<double>&,
+		const std::vector<int>&);
+  void setZMesh(const std::vector<double>&,
+		const std::vector<int>&);
+    
+  void write(const std::string&) const;
+  
 };
+ 
 
 }
 
+
 #endif
+ 

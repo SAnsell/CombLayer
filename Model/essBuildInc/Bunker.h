@@ -31,7 +31,7 @@ namespace essSystem
   \class Bunker
   \version 1.0
   \author S. Ansell
-  \date April 2013
+  \date April 2015
   \brief Bulk around Reflector
 */
 
@@ -39,11 +39,16 @@ class Bunker : public attachSystem::ContainedComp,
   public attachSystem::FixedComp,public attachSystem::CellMap
 {
  private:
-  
+   
   const int bnkIndex;           ///< Index of surface offset
-  int cellIndex;                 ///< Cell index
+  int cellIndex;                ///< Cell index
 
-  Geometry::Vec3D rotCentre;     ///< Rotation centre
+  bool leftWallFlag;            ///< Build left wall
+  bool rightWallFlag;           ///< Build right wall
+  
+  
+  Geometry::Vec3D rotCentre;    ///< Rotation centre
+
   
   double leftPhase;              ///< Sector phase left
   double rightPhase;             ///< Sector phase right
@@ -52,6 +57,7 @@ class Bunker : public attachSystem::ContainedComp,
   double rightAngle;             ///< Extent of right ange
 
   size_t nSectors;               ///< Number of sector divisions
+  std::vector<double> sectPhase; ///< sector angles
   
   double innerRadius;            ///< inner radius [calculated]
   double wallRadius;             ///< Wall radius
@@ -63,6 +69,7 @@ class Bunker : public attachSystem::ContainedComp,
   double roofThick;              ///< Roof thickness
   double floorThick;             ///< Floor thickness
 
+  int voidMat;                   ///< void material 
   int wallMat;                   ///< wall material
 
   // Layers
@@ -85,7 +92,6 @@ class Bunker : public attachSystem::ContainedComp,
 
   void createSideLinks(const Geometry::Vec3D&,const Geometry::Vec3D&,
 		       const Geometry::Vec3D&,const Geometry::Vec3D&);
-
   
  public:
 
@@ -97,6 +103,8 @@ class Bunker : public attachSystem::ContainedComp,
   std::string calcSegment(const Simulation&,
 			  const Geometry::Vec3D&,
 			  const Geometry::Vec3D&) const;
+  
+  void setCutWall(const bool,const bool);
   
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const attachSystem::FixedComp&,

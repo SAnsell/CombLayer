@@ -275,8 +275,6 @@ MidWaterDivider::createLinks(const H2Wing &LA, const H2Wing &RA)
   return;
 }
   
-
-
 void
 MidWaterDivider::createSurfaces()
   /*!

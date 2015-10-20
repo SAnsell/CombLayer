@@ -367,7 +367,7 @@ buildEllipticCyl(surfRegister& SMap,const int N,
     \return New cylinder pointer
    */
 {
-  ELog::RegMethod("generateSurf","buildCylinder");
+  ELog::RegMethod("generateSurf","buildEllipticCyl");
 
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
 

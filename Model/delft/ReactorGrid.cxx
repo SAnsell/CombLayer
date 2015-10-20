@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   delft/ReactorGrid.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -243,7 +243,7 @@ ReactorGrid::getElementNumber(const std::string& Name)
   if (Name.size()!=2 && Name.size()!=3)
     throw ColErr::InvalidLine(Name,"Name wrong size",Name.size());
   std::pair<size_t,size_t> Out;
-  Out.first=toupper(Name[0])-static_cast<size_t>('A');
+  Out.first=static_cast<size_t>(std::toupper(Name[0])-std::toupper('A'));
   if (!StrFunc::convert(Name.substr(1),Out.second))
     throw ColErr::InvalidLine(Name,"Name number not understood");
   return Out;

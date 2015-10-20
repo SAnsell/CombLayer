@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   log/NameStack.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,6 +38,7 @@ NameStack::NameStack() :
 
 NameStack::NameStack(const NameStack& A) :
   key(A.key),Class(A.Class),Method(A.Method),
+  Extra(A.Extra),extraLevel(A.extraLevel),
   indentLevel(A.indentLevel)
   /*!
     Copy Constructor
@@ -58,6 +59,8 @@ NameStack::operator=(const NameStack& A)
       key=A.key;
       Class=A.Class;
       Method=A.Method;
+      Extra=A.Extra;
+      extraLevel=A.extraLevel;
       indentLevel=A.indentLevel;
     }
   return *this;
@@ -72,6 +75,8 @@ NameStack::clear()
   key.erase(key.begin(),key.end());
   Class.clear();
   Method.clear();
+  Extra.clear();
+  extraLevel=0;
   indentLevel=0;
   return;
 }
@@ -89,7 +94,7 @@ NameStack::addComp(const std::string& CN,
   Method.push_back(MN);
   return;
 }
-
+  
 void
 NameStack::popBack() 
   /*!
@@ -98,12 +103,39 @@ NameStack::popBack()
 {
   if (!Class.empty())
     {
+      if (extraLevel==Class.size())
+	{
+	  Extra.clear();
+	  extraLevel=0;
+	}
       Class.pop_back();
       Method.pop_back();
     }
   return;
 }
 
+void
+NameStack::setExtra(const std::string& A)
+  /*!
+    Set the extra string
+    \param A :: Extra component
+   */
+{
+  Extra=A;
+  extraLevel=Class.size();
+  return;
+}
+
+const std::string&
+NameStack::getExtra() const
+  /*!
+    Accessor
+    \return Extra item 
+  */
+{
+  return Extra;
+}
+  
 std::string
 NameStack::getBase() const 
   /*!
@@ -152,6 +184,11 @@ NameStack::getFull() const
       Out+="#";
       Out+=*vc+"::"+*ac;
     }
+  if (!Extra.empty())
+    {
+      Out+="# Info:"+Extra;
+    }
+  
   return Out;
 }
 
@@ -168,9 +205,14 @@ NameStack::getFullTree() const
   std::string Out=*vc+"::"+*ac;
   for(ac++,vc++;vc!=Class.end();vc++,ac++,indent+=2)
     {
-      Out+="\n";
+      Out+='\n';
       Out+=std::string(indent,' ');
       Out+=*vc+"::"+*ac;
+    }
+  if (!Extra.empty())
+    {
+      Out+='\n';
+      Out+=std::string(indent,' ')+" Info:"+Extra;
     }
   return Out;
 }

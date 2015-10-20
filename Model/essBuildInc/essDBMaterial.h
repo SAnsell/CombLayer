@@ -31,6 +31,7 @@ namespace scatterSystem
 namespace ModelSupport
 {
 
+  void cloneESSMaterial();
   void addESSMaterial();
 }
 

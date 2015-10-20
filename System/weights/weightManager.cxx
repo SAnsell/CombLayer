@@ -32,6 +32,7 @@
 #include <functional>
 #include <algorithm>
 #include <memory>
+#include <boost/multi_array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -53,6 +54,7 @@
 #include "WForm.h"
 #include "WItem.h"
 #include "WCells.h"
+#include "WeightMesh.h"
 #include "weightManager.h"
 
 
@@ -86,6 +88,20 @@ weightManager::Instance()
   return A;
 }
 
+WWG*
+weightManager::getWWG()
+  /*!
+    Create/access mesh
+    \return Mesh
+   */
+{
+  ELog::RegMethod RegA("weightManager","getWWG");
+  if (!WWGPtr)
+    WWGPtr=new WWG;
+  return WWGPtr;
+}
+
+  
 WForm*
 weightManager::getParticle(const char c)
   /*!
@@ -177,8 +193,14 @@ weightManager::write(std::ostream& OX) const
   */
 {
   ELog::RegMethod RegA("weightManager","write");
+  
   for(const CtrlTYPE::value_type& wf : WMap)
     wf.second->write(OX);
+  if (WWGPtr)
+    {
+      WWGPtr->write(OX);
+      WWGPtr->writeWWINP();
+    }
   return;
 }
 

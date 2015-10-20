@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/RentrantBS.h
+ * File:   constructInc/DHut.h
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef essSystem_RentrantBS_h
-#define essSystem_RentrantBS_h
+#ifndef essSystem_DHut_h
+#define essSystem_DHut_h
 
 class Simulation;
 
@@ -28,45 +28,38 @@ namespace essSystem
 {
   
 /*!
-  \class RentrantBS
+  \class DHut
   \version 1.0
   \author S. Ansell
-  \date July 2015
-  \brief Rentrant beam stop
+  \date January 2015
+  \brief DHut unit  
 */
 
-class RentrantBS :
-  public attachSystem::FixedOffset,
+class DHut :
+  public attachSystem::FixedOffsetGroup,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap
   
 {
  private:
   
-  const int bstopIndex;          ///< Index of surface offset
-  int cellIndex;                 ///< Cell index  
+  const int hutIndex;           ///< Index of surface offset
+  int cellIndex;                ///< Cell index  
 
-  double width;                  ///< Total 
-  double height;                 ///< Height [+ve Z]
-  double depth;                  ///< Depht [-ve Z]
-  double length;                 ///< Length 
+  double voidHeight;            ///< void height [top only]
+  double voidWidth;             ///< void width [total]
+  double voidDepth;             ///< void depth [low only]
+  double voidLength;            ///< void length [total]
+  double voidFrontCut;          ///< void cut on front
+  double voidFrontStep;         ///< void length down (Y)
+  double voidBackCut;           ///< void cut on X
+  double voidBackStep;          ///< void cut on Y
+
+  double feThick;               ///< Fe Thickness
+  double concThick;             ///< Wall thickness
   
-  double feRadius;               ///< Radius of cylinder
-  double feLength;               ///< Length [From full cu]
-
-  double outerRadius;             ///< First cut section [void]
-  double outerFeRadius;           ///< First cut section [Steel[
-  double outerFeStep;             ///< Step in [if radius bigger
-  double outerCut;                ///< First cut length [void]
-
-  double innerRadius;
-  double innerFeRadius;
-  double innerFeStep;             ///< Step in [if radius bigger tha
-  double innerCut;
-
   int feMat;                  ///< Fe layer material 
   int concMat;                ///< Second layer material
-
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
@@ -76,10 +69,10 @@ class RentrantBS :
 
  public:
 
-  RentrantBS(const std::string&);
-  RentrantBS(const RentrantBS&);
-  RentrantBS& operator=(const RentrantBS&);
-  virtual ~RentrantBS();
+  DHut(const std::string&);
+  DHut(const DHut&);
+  DHut& operator=(const DHut&);
+  virtual ~DHut();
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

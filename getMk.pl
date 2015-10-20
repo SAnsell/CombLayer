@@ -31,6 +31,7 @@ my @modelLibDir=qw( bibBuild bnctBuild build chip
                     gammaBuild imat lensModel moderator 
                     muon pipeBuild photon sinbadBuild snsBuild t1Build 
                     t1Engineer t1Upgrade t3Model zoom );
+
 my @modelNames= @modelLibDir;
 
 
@@ -65,6 +66,7 @@ my @modelInclude = qw( bibBuildInc bnctBuildInc buildInc chipInc
                        moderatorInc muonInc pipeBuildInc photonInc
                        sinbadBuildInc snsBuildInc t1BuildInc t1EngineerInc 
                        t1UpgradeInc t3ModelInc zoomInc );
+
 
 ## SYSTEM Directory
 my @systemInclude = qw(
@@ -101,19 +103,14 @@ $gM->addMasterProgs(\@masterprog,\@controlflags);
 $gM->addCoreItems(\@core,\@coreInc);
 $gM->addLibs(\@libnames,\@sublibdir,\@libflags);
 
+$gM->addSubDirLibs("Model/ESSBeam");
 $gM->addDirLibs("Model",\@modelNames,\@modelLibDir,\@libflags);
 $gM->addDirLibs("System",\@systemNames,\@systemLibDir,\@libflags);
 
 $gM->addIncDir(\@incdir);
 $gM->addIncSubDir("System",\@systemInclude);
 $gM->addIncSubDir("Model",\@modelInclude);
-
-# my @libnames=("mcnpx","build","funcBase","geometry",  0,1,2,3
-#	      "log","monte","mersenne","poly",          4,5,6,7,
-#	      "process","support","test","lensModel");                  
-
-
-# $gM->addDepUnit("bilbau",   ["bibBuild","delft","visit","src","physics","input","source","monte","funcBase","log","tally","construct","crystal","transport","scatMat","md5","endf","process","world","work","monte","geometry","mersenne","src","xml","poly","support","weights","global","attachComp","visit","build"]);
+$gM->addSubIncDir("Model/ESSBeam");
 
 
 $gM->addDepUnit("bilbau", ["bibBuild","build","visit","chip","t1Upgrade",
@@ -254,7 +251,7 @@ $gM->addDepUnit("cuBuild",  ["cuBlock","delft","visit","src","physics",
 
 $gM->addDepUnit("ess",      ["essBuild","visit","src","simMC",
 			     "beamline","physics","support",
-			     "input","source","monte","funcBase","log",
+			     "input","instrument","source","monte","funcBase","log",
 			     "tally","construct","crystal","transport",
 			     "scatMat","md5","endf","process","world","work",
 			     "monte","geometry","mersenne","src","xml","poly",

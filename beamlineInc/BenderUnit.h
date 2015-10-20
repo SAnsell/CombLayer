@@ -80,11 +80,13 @@ class BenderUnit : public ShapeUnit
   Geometry::Vec3D getBegAxis() const { return AYVec; }
   // Accessor to end axis
   Geometry::Vec3D getEndAxis() const { return BYVec; }
+  
+  virtual std::string getString(const ModelSupport::surfRegister&,
+				const size_t) const;
+  virtual std::string getExclude(const ModelSupport::surfRegister&,
+				 const size_t) const;
 
-  std::string getString(const size_t) const;
-  std::string getExclude(const size_t) const;
-
-  virtual void createSurfaces(ModelSupport::surfRegister&,const int,
+  virtual void createSurfaces(ModelSupport::surfRegister&,
 		      const std::vector<double>&);
 };
 

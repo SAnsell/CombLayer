@@ -95,13 +95,10 @@
 #include "ConicModerator.h"
 #include "essDBMaterial.h"
 #include "makeESSBL.h"
+
 // F5 collimators:
 #include "F5Calc.h"
 #include "F5Collimator.h"
-// BEAMLINES:
-#include "ODIN.h"
-#include "LOKI.h"
-#include "NMX.h"
 
 #include "makeESS.h"
 
@@ -132,7 +129,8 @@ makeESS::makeESS() :
   BulkLowAFL(new moderatorSystem::FlightLine("BulkLAFlight")),
   ShutterBayObj(new ShutterBay("ShutterBay")),
 
-  ABunker(new Bunker("ABunker"))
+  ABunker(new Bunker("ABunker")),
+  BBunker(new Bunker("BBunker"))
  /*!
     Constructor
  */
@@ -148,8 +146,10 @@ makeESS::makeESS() :
   
   OR.addObject(LowAFL);
   OR.addObject(LowBFL);
+
   OR.addObject(TopPreMod);
   OR.addObject(TopCapMod);
+
 
   OR.addObject(TopAFL);
   OR.addObject(TopBFL);
@@ -159,6 +159,7 @@ makeESS::makeESS() :
 
   OR.addObject(ShutterBayObj);
   OR.addObject(ABunker);
+  OR.addObject(BBunker);
 }
 
 
@@ -225,12 +226,12 @@ makeESS::createGuides(Simulation& System)
       GB->addInsertCell("Outer",ShutterBayObj->getMainCell());
       GB->setCylBoundary(Bulk->getLinkSurf(2),
 			 ShutterBayObj->getLinkSurf(2));
-      
+
       if (i<2)
 	GB->createAll(System,*LowMod);  
       else
 	GB->createAll(System,*TopMod);
-      
+      attachSystem::addToInsertForced(System,*GB,Target->getCC("Wheel"));      
       GBArray.push_back(GB);
       attachSystem::addToInsertForced(System,*GB, Target->getCC("Wheel"));
     }
@@ -238,7 +239,6 @@ makeESS::createGuides(Simulation& System)
   GBArray[0]->outerMerge(System,*GBArray[3]);
   for(size_t i=0;i<4;i++)
     GBArray[i]->createGuideItems(System);
-
 
 
   return;
@@ -269,7 +269,7 @@ makeESS::buildLowButterfly(Simulation& System)
 void
 makeESS::buildTopButterfly(Simulation& System)
   /*!
-    Build the upper butterfly moderator
+    Build the top butterfly moderator
     \param System :: Stardard simulation
   */
 {
@@ -445,10 +445,14 @@ makeESS::makeBeamLine(Simulation& System,
 	  const std::string BL=IParam.getValue<std::string>("beamlines",j,i-1);
 	  const std::string Btype=IParam.getValue<std::string>("beamlines",j,i);
 	  // FIND BUNKER HERE:::
-	  
 	  makeESSBL BLfactory(BL,Btype);
-	  BLfactory.build(System,*ABunker);
-	    
+	  std::pair<int,int> BLNum=makeESSBL::getBeamNum(BL);
+	  if ((BLNum.first==1 && BLNum.second>8) ||
+	      (BLNum.first==4 && BLNum.second<=8) )
+	    BLfactory.build(System,*ABunker);
+	  else if ((BLNum.first==1 && BLNum.second<=8) ||
+	      (BLNum.first==4 && BLNum.second>8) )
+	    BLfactory.build(System,*BBunker);
 	}
     }
   return;
@@ -466,10 +470,19 @@ makeESS::makeBunker(Simulation& System,
   ELog::RegMethod RegA("makeESS","makeBunker");
 
   ELog::EM<<"Bunker == "<<bunkerType<<ELog::endDiag;
+
   
   ABunker->addInsertCell(74123);
+  ABunker->setCutWall(1,0);
   ABunker->createAll(System,*LowMod,*GBArray[0],2,true);
 
+
+  BBunker->addInsertCell(74123);
+  BBunker->createAll(System,*LowMod,*GBArray[0],2,true);
+
+  BBunker->insertComponent(System,"leftWall",*ABunker);
+  BBunker->insertComponent(System,"roof",*ABunker);
+  BBunker->insertComponent(System,"floor",*ABunker);
   return;
 }
 
@@ -488,7 +501,10 @@ makeESS::build(Simulation& System,
 
   int voidCell(74123);
   // Add extra materials to the DBdatabase
-  ModelSupport::addESSMaterial();
+  if (IParam.flag("essDB"))
+    ModelSupport::addESSMaterial();
+  else
+    ModelSupport::cloneESSMaterial();
 
   const std::string lowPipeType=IParam.getValue<std::string>("lowPipe");
   const std::string lowModType=IParam.getValue<std::string>("lowMod");
@@ -519,16 +535,19 @@ makeESS::build(Simulation& System,
   TopPreMod->createAll(System,World::masterOrigin(),0,false,
 		       Target->wheelHeight()/2.0,
 		       Reflector->getRadius());
-
+  
   buildLowButterfly(System);
   buildTopButterfly(System);
   const double LMHeight=attachSystem::calcLinkDistance(*LowMod,5,6);
   const double TMHeight=attachSystem::calcLinkDistance(*TopMod,5,6);
+  
   // Cap moderator DOES not span whole unit
-  LowCapMod->createAll(System,*LowMod,6,false,
-   		       0.0,Reflector->getRadius());
   TopCapMod->createAll(System,*TopMod,6,false,
    		       0.0,Reflector->getRadius());
+
+  LowCapMod->createAll(System,*LowMod,6,false,
+   		       0.0,Reflector->getRadius());
+
   Reflector->createAll(System,World::masterOrigin(),
 		       Target->wheelHeight(),
 		       LowPreMod->getHeight()+LMHeight+LowCapMod->getHeight(),

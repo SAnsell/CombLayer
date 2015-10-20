@@ -1,7 +1,7 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
- * File:   chip/WallCut.cxx
+ * File:   construct/WallCut.cxx
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *

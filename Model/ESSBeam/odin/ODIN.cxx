@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuild/ODIN.cxx
+ * File:   ESSBeam/odin/ODIN.cxx
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -108,6 +108,7 @@ ODIN::ODIN() :
   PitB(new constructSystem::ChopperPit("odinPitB")),
   GuidePitBFront(new beamlineSystem::GuideLine("odinGPitBFront")),
   GuidePitBBack(new beamlineSystem::GuideLine("odinGPitBBack")),
+  ChopperB(new constructSystem::DiskChopper("odinChopperB")),
   GuideF(new beamlineSystem::GuideLine("odinGF")),
 
   PitC(new constructSystem::ChopperPit("odinPitC")),
@@ -149,6 +150,7 @@ ODIN::ODIN() :
   OR.addObject(PitB);
   OR.addObject(GuidePitBFront);
   OR.addObject(GuidePitBBack);
+  OR.addObject(ChopperB);
   OR.addObject(GuideF);
 
   OR.addObject(PitC);
@@ -210,7 +212,7 @@ ODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
   ELog::EM<<"\nBuilding ODIN on : "<<GItem.getKeyName()<<ELog::endDiag;
   ELog::EM<<"REVERSE Z on axis"<<ELog::endDebug;
   setBeamAxis(GItem,1);
-  
+
   BladeChopper->addInsertCell(bunkerObj.getCell("MainVoid"));
   BladeChopper->setCentreFlag(3);  // Z direction
   // beam direction from GIetm
@@ -229,7 +231,12 @@ ODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
   GuideB->createAll(System,T0Chopper->getKey("Main"),2,
 		    T0Chopper->getKey("Beam"),2);
 
-  BInsert->setInsertCell(bunkerObj.getCells("MainWall10"));
+  // Make bunker insert
+  const attachSystem::FixedComp& GFC(GuideB->getKey("Guide0"));
+  const std::string BSector=
+    bunkerObj.calcSegment(System,GFC.getSignedLinkPt(2),
+			  GFC.getSignedLinkAxis(2));  
+  BInsert->setInsertCell(bunkerObj.getCells(BSector));
   BInsert->createAll(System,GuideB->getKey("Guide0"),2,bunkerObj);
 
   // Guide in the bunker insert
@@ -237,15 +244,12 @@ ODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
   GuideC->addEndCut(bunkerObj.getSignedLinkString(-2));
   GuideC->createAll(System,*BInsert,-1,*BInsert,-1);
 
-
-
   GuideD->addInsertCell(voidCell);
   GuideD->createAll(System,*BInsert,2,GuideC->getKey("Guide0"),2);
 
   //
   // First chopper pit out of bunker
   // Guide guide String
-  const attachSystem::FixedComp& GOuter=GuideD->getKey("Shield");
   HeadRule GuideCut=
     attachSystem::unionLink(GuideD->getKey("Shield"),{2,3,4,5,6});
   PitA->addInsertCell(voidCell);
@@ -281,10 +285,13 @@ ODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
   // SECOND CHOPPER PIT:
   // First chopper pit out of bunker
   // Guide guide String
-  const attachSystem::FixedComp& GOuterB=GuideE->getKey("Shield");
   GuideCut=attachSystem::unionLink(GuideE->getKey("Shield"),{2,3,4,5,6});
   PitB->addInsertCell(voidCell);
   PitB->createAll(System,GuideE->getKey("Guide0"),2,GuideCut.display());
+
+  ChopperB->addInsertCell(PitB->getCell("Void"));
+  ChopperB->setCentreFlag(-3);  // -Z direction
+  ChopperB->createAll(System,*PitB,0);
 
   ELog::EM<<"PitB == "<<PitB->getCentre()
 	  <<" :: "<<PitB->getCentre().abs()<<ELog::endDebug;

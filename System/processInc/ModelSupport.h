@@ -38,6 +38,8 @@ namespace ModelSupport
   std::string getComposite(const surfRegister&,const int,const std::string&);
   std::string getComposite(const surfRegister&,const int,const int,
 			   const std::string&);
+  std::string getComposite(const surfRegister&,const int,const int,
+			   const int,const std::string&);
 
   std::string getComposite(const surfRegister&,const int,const int);
   std::string getComposite(const surfRegister&,const int,const int,const int);
@@ -46,9 +48,10 @@ namespace ModelSupport
 
 
 
-  std::string getSetComposite(const surfRegister&,const int,const std::string&);
   std::string getSetComposite(const surfRegister&,const int,
-			      const int ,const std::string&);
+			      const std::string&);
+  std::string getSetComposite(const surfRegister&,const int,
+			      const int,const std::string&);
 
 }
 

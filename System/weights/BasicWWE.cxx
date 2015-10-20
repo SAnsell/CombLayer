@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   weights/BasicWWE.cxx
  *
@@ -62,7 +62,9 @@
 #include "TallyCreate.h"
 #include "PointWeights.h"
 #include "TempWeights.h"
+#include "WWGconstruct.h"
 #include "BasicWWE.h"
+
 
 namespace WeightSystem
 {
@@ -81,26 +83,32 @@ simulationWeights(Simulation& System,
   System.populateCells();
   System.createObjSurfMap();
 
-  // WEIGHTS:
+    // WEIGHTS:
   if (IParam.flag("weight") || IParam.flag("tallyWeight"))
     System.calcAllVertex();
 
-  const std::string WType=IParam.getValue<std::string>("weightType");
-  setWeights(System,WType);
-  if (IParam.flag("weight"))
+  // WEIGHTS:
+  if (IParam.flag("wWWG") )
     {
-      Geometry::Vec3D AimPoint;
-      if (IParam.flag("weightPt"))
-	AimPoint=IParam.getValue<Geometry::Vec3D>("weightPt");
-      else 
-	tallySystem::getFarPoint(System,AimPoint);
-      setPointWeights(System,AimPoint,IParam.getValue<double>("weight"));
+      WWGconstruct WConstruct;
+      WConstruct.createWWG(System,IParam);
     }
-  if (IParam.flag("weightTemp"))
+  else
     {
-      scaleTempWeights(System,10.0);
+      const std::string WType=IParam.getValue<std::string>("weightType");
+      setWeights(System,WType);
+      if (IParam.flag("weight"))
+	{
+	  Geometry::Vec3D AimPoint;
+	  if (IParam.flag("weightPt"))
+	    AimPoint=IParam.getValue<Geometry::Vec3D>("weightPt");
+	  else 
+	    tallySystem::getFarPoint(System,AimPoint);
+	  setPointWeights(System,AimPoint,IParam.getValue<double>("weight"));
+	}
+      if (IParam.flag("weightTemp"))
+	scaleTempWeights(System,10.0);
     }
-
   if (IParam.flag("tallyWeight"))
     tallySystem::addPointPD(System);
 

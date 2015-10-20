@@ -137,25 +137,9 @@ basicConstruct::inputCntVec3D
     throw ColErr::IndexError<size_t>(NItems,INum,
 				     "Insufficient items for tally");
 
-  // can we have three
-  bool isolatedFlag(INum+3>NItems);
-    
-  Geometry::Vec3D Out;  
-  double V(0.0);
-  for(size_t i=0;i<3;i++)
-    {
-      const std::string& OutItem=
-	IParam.getValue<std::string>("tally",Index,INum+i);
-      if (StrFunc::convert(OutItem,Out))
-	{
-	  INum++;
-	  return Out;
-	}
-      if (!isolatedFlag || !StrFunc::convert(OutItem,V))
-	ELog::EM<<ErrMessage<<ELog::endErr;
-      
-      Out[i]=V;
-    }
+  RegA.setTrack(ErrMessage);
+  Geometry::Vec3D Out=
+    IParam.getCntVec3D("tally",Index,INum);
   return Out;
 }
 

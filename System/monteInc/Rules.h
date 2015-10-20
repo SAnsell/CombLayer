@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   monteInc/Rules.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -130,7 +130,8 @@ class Rule
   virtual std::string display() const=0;
   virtual std::string display(const Geometry::Vec3D&) const=0;
   virtual std::string displayAddress() const=0;
-  virtual void displayVec(std::vector<Token>&) const =0;  
+  virtual void displayVec(std::vector<Token>&) const =0;
+  virtual std::string displayFluka() const =0;
   ///\endcond ABSTRACT
 };
 
@@ -189,7 +190,8 @@ class Intersection : public Rule
   virtual std::string display(const Geometry::Vec3D&) const;
   virtual std::string displayAddress() const;
   virtual void displayVec(std::vector<Token>&) const;
-
+  virtual std::string displayFluka() const;
+  
 };
 
 
@@ -246,6 +248,8 @@ class Union : public Rule
   virtual std::string display(const Geometry::Vec3D&) const;
   virtual std::string displayAddress() const;
   virtual void displayVec(std::vector<Token>&) const;
+  virtual std::string displayFluka() const;
+  
   int simplify();      ///< apply general intersection simplification
 
 };
@@ -311,6 +315,7 @@ class SurfPoint : public Rule
   virtual std::string displayAddress() const;  
   virtual void displayVec(std::vector<Token>&) const;
 
+  virtual std::string displayFluka() const;
 };
 
 /*!
@@ -372,7 +377,7 @@ class CompObj : public Rule
   virtual std::string display(const Geometry::Vec3D&) const;
   virtual std::string displayAddress() const;  
   virtual void displayVec(std::vector<Token>&) const;
-
+  virtual std::string displayFluka() const;
 };
 
 /*!
@@ -429,7 +434,7 @@ class CompGrp : public Rule
   virtual std::string display(const Geometry::Vec3D&) const;
   virtual std::string displayAddress() const;  
   virtual void displayVec(std::vector<Token>&) const;
-
+  virtual std::string displayFluka() const;
 };
 
 /*!
@@ -483,7 +488,7 @@ class BoolValue : public Rule
   virtual std::string display(const Geometry::Vec3D&) const;
   virtual std::string displayAddress() const;  
   virtual void displayVec(std::vector<Token>&) const;
-
+  virtual std::string displayFluka() const;
 };
 
 /*!
@@ -537,7 +542,7 @@ class ContGrp : public Rule
   virtual std::string display(const Geometry::Vec3D&) const;
   virtual std::string displayAddress() const;  
   virtual void displayVec(std::vector<Token>&) const;
-
+  virtual std::string displayFluka() const;
 };
 
 /*!
@@ -597,7 +602,7 @@ class ContObj : public Rule
   virtual std::string display(const Geometry::Vec3D&) const;
   virtual std::string displayAddress() const;  
   void displayVec(std::vector<Token>&) const;
-
+  virtual std::string displayFluka() const;
 };
 
 

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   geometry/General.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,6 +47,19 @@
 
 namespace Geometry
 {
+
+std::ostream&
+operator<<(std::ostream& OX,const General& A)
+  /*!
+    Output stream
+    \param OX :: output stream
+    \param A :: General surface to write
+    \return Output stream
+  */
+{
+  A.write(OX);
+  return OX;
+}
 
 General::General() : Quadratic()
   /*!
@@ -135,22 +148,22 @@ General::setSurface(const std::string& Pstr)
 
   if (tolower(item[0])=='g')
     {
+      // Note swapped values since MCNPX
+      // uses xy yz xz [
       for(size_t i=0;i<10;i++)
 	Quadratic::BaseEqn[i]=num[i];
       std::swap(Quadratic::BaseEqn[4],Quadratic::BaseEqn[5]);
     }
   else
     {
-      // Note swapped values since MCNPX
-      // uses xy yz xz
       Quadratic::BaseEqn[0]=num[0];
       Quadratic::BaseEqn[1]=num[1];
       Quadratic::BaseEqn[2]=num[2];
       Quadratic::BaseEqn[3]=0.0;;
       Quadratic::BaseEqn[4]=0.0;;
       Quadratic::BaseEqn[5]=0.0;;
-      Quadratic::BaseEqn[7]=2*(num[3]-num[7]*num[0]);
-      Quadratic::BaseEqn[6]=2*(num[4]-num[8]*num[1]);
+      Quadratic::BaseEqn[6]=2*(num[3]-num[7]*num[0]);  
+      Quadratic::BaseEqn[7]=2*(num[4]-num[8]*num[1]);
       Quadratic::BaseEqn[8]=2*(num[5]-num[9]*num[2]);
       Quadratic::BaseEqn[9]=num[0]*num[7]*num[7]+
 	num[1]*num[8]*num[8]+num[2]*num[9]*num[9]-

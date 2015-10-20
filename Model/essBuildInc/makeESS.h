@@ -67,6 +67,8 @@ namespace essSystem
   class Bunker;
   class F5Collimator;
   class ODIN;
+  class LOKI;
+  class VOR;
   /*!
     \class makeESS
     \version 1.0
@@ -109,6 +111,7 @@ class makeESS
   std::shared_ptr<CylPreMod> TopPre;          ///< Toper Mod (Pre)
 
   /// Top supply 
+
   std::shared_ptr<constructSystem::SupplyPipe> TopSupplyPipe; 
   std::shared_ptr<constructSystem::SupplyPipe> TopReturnPipe;  ///< Top supply
 
@@ -124,7 +127,8 @@ class makeESS
   std::vector<std::shared_ptr<beamlineSystem::beamlineConstructor> > 
     BLArray;  
 
-  std::shared_ptr<Bunker> ABunker;  ///< Right bunker
+  std::shared_ptr<Bunker> ABunker;  ///< Right bunker [A unit]
+  std::shared_ptr<Bunker> BBunker;  ///< Right bunker [B unit]
 
   std::vector<std::shared_ptr<F5Collimator>> F5array; ///< collimators for F5 tallies
   std::vector<Geometry::Vec3D> TopFocalPoints; ///< top moderator focal points
@@ -139,7 +143,6 @@ class makeESS
 
   void buildTopButterfly(Simulation&);
   void buildLowerPipe(Simulation&,const std::string&);
-
 
   void buildTopPreMod(Simulation&);
   void buildToperPipe(Simulation&,const std::string&);

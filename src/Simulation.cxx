@@ -244,7 +244,8 @@ Simulation::deleteTally()
   TItem.erase(TItem.begin(),TItem.end());
   return;
 }
- 
+
+
 int
 Simulation::readTransform(std::istream& IX)
   /*!
@@ -765,6 +766,8 @@ Simulation::substituteAllSurface(const int KeyN,const int NsurfN)
   for(tc=TItem.begin();tc!=TItem.end();tc++)
     tc->second->renumberSurf(KeyN,NsurfN);
 
+  PhysPtr->substituteSurface(KeyN,NsurfN);
+  
   return 0;
 }
 
@@ -1554,7 +1557,7 @@ Simulation::writeMaterial(std::ostream& OX) const
 
 {
   OX<<"c -------------------------------------------------------"<<std::endl;
-  OX<<"c --------------- MATERIAL CARDS --------------------------"<<std::endl;
+  OX<<"c --------------- MATERIAL CARDS ------------------------"<<std::endl;
   OX<<"c -------------------------------------------------------"<<std::endl;
   ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();  
   DB.resetActive();
@@ -1577,6 +1580,8 @@ Simulation::writeWeights(std::ostream& OX) const
   */
 
 {
+  ELog::RegMethod RegA("Simulation","writeWeights");
+  
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();  
   OX<<"c -------------------------------------------------------"<<std::endl;
@@ -1640,18 +1645,20 @@ Simulation::writePhysics(std::ostream& OX) const
 }
 
 void
-Simulation::writeVariables(std::ostream& OX) const
+Simulation::writeVariables(std::ostream& OX,
+			   const char commentChar) const
   /*!
     Write all the variables in standard MCNPX output format
     \param OX :: Output stream
   */
 {
   ELog::RegMethod RegA("Simulation","writeVaraibles");
-  OX<<"c --------------- VERSION NUMBER ------------------------"<<std::endl;
-  OX<<"c  === "<<version::Instance().getIncrement()<<" === "<<std::endl;
-  OX<<"c -------------------------------------------------------"<<std::endl;
-  OX<<"c --------------- VARIABLE CARDS ------------------------"<<std::endl;
-  OX<<"c -------------------------------------------------------"<<std::endl;
+  OX<<commentChar<<" ---------- VERSION NUMBER ------------------"<<std::endl;
+  OX<<commentChar<<"  ========= "<<version::Instance().getIncrement()
+    <<" ========== "<<std::endl;
+  OX<<commentChar<<" ----------------------------------------------"<<std::endl;
+  OX<<commentChar<<" --------------- VARIABLE CARDS ---------------"<<std::endl;
+  OX<<commentChar<<" ----------------------------------------------"<<std::endl;
   const varList& Ptr= DB.getVarList();
   varList::varStore::const_iterator vc;
   for(vc=Ptr.begin();vc!=Ptr.end();vc++)
@@ -1660,11 +1667,10 @@ Simulation::writeVariables(std::ostream& OX) const
       if (vc->second->isActive())
 	{
 	  vc->second->getValue(Val);
-	  OX<<"c "<<vc->first<<" "
+	  OX<<commentChar<<" "<<vc->first<<" "
 	    <<Val<<std::endl;
 	}
-    }
-  
+    }  
   return;
 }
   
@@ -1737,7 +1743,7 @@ Simulation::write(const std::string& Fname) const
 void
 Simulation::writeHTape() const
   /*!
-    Write out the all the f4 tallys
+    Write out the all the f4 tallys 
   */
 {
   ELog::RegMethod RegA("Simulation","writeHTape");
@@ -1995,14 +2001,14 @@ Simulation::renumberCells(const std::vector<int>& cOffset,
   int nNum(0);
   int index(1);
 
-  std::string oldUnit;
+  std::string oldUnit,keyUnit;
   int startNum(0);
   // This is ordered:
   OTYPE::const_iterator vc;  
   for(vc=OList.begin();vc!=OList.end();vc++)
     {
       const int cNum=vc->second->getName();
-      const std::string keyUnit=OR.inRange(cNum);
+      keyUnit=OR.inRange(cNum);
       // Determine inf the cell is within cRange:
       size_t j=0;
       while(j<cOffset.size())
@@ -2034,7 +2040,8 @@ Simulation::renumberCells(const std::vector<int>& cOffset,
 	}
       if (keyUnit!=oldUnit)
 	{
-	  OR.setRenumber(oldUnit,startNum,nNum-1);
+	  if (startNum)
+	    OR.setRenumber(oldUnit,startNum,nNum-1);
 	  oldUnit=keyUnit;
 	  startNum=nNum;
 	}
@@ -2043,6 +2050,11 @@ Simulation::renumberCells(const std::vector<int>& cOffset,
 	      <<" Object:"<<keyUnit<<ELog::endBasic;
     }
 
+  // Last item
+  OR.setRenumber(keyUnit,startNum,nNum);
+
+
+  
   OList=newMap;
   return;
 }

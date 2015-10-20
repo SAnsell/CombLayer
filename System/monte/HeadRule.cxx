@@ -1322,6 +1322,21 @@ HeadRule::makeComplement()
   return;
 }
 
+HeadRule
+HeadRule::complement() const
+  /*!
+    Make the rule a complement 
+    and return that object
+    \return #(this)
+   */
+{
+  ELog::RegMethod RegA("HeadRule","complement");
+
+  HeadRule A(*this);
+  A.makeComplement();
+  return A;
+}
+
 std::string 
 HeadRule::display() const
   /*!
@@ -1335,6 +1350,21 @@ HeadRule::display() const
   return (HeadNode->type()== -1) ? 
     "("+HeadNode->display()+")" :
     " "+HeadNode->display()+" ";
+}
+
+std::string 
+HeadRule::displayFluka() const
+  /*!
+    Write out rule for fluka
+    \return string of Rule
+  */
+{
+  if (!HeadNode) return "";
+  
+  // union test
+  return (HeadNode->type()== -1) ? 
+    "|"+HeadNode->displayFluka()+"|" :
+    " "+HeadNode->displayFluka()+" ";
 }
 
 
@@ -1937,9 +1967,6 @@ HeadRule::Intersects(const HeadRule& A) const
 	  boundarySet.insert(BSurf->getName());		  
 	  for(const Geometry::Surface* CSurf : BVec)
 	    {
-	      ELog::EM<<"A == "<<*ASurf;
-	      ELog::EM<<"B == "<<*BSurf;
-	      ELog::EM<<"C == "<<*CSurf<<ELog::endDiag;
 	      Out=SurInter::processPoint(ASurf,BSurf,CSurf);
 	      for(const Geometry::Vec3D& vc : Out)
 		{

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuild/LOKI.cxx
+ * File:   ESSBeam/loki/LOKI.cxx
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -96,8 +96,8 @@
 namespace essSystem
 {
 
-LOKI::LOKI() :
-  lokiAxis(new attachSystem::FixedComp("lokiAxis",4)),
+LOKI::LOKI() : 
+  lokiAxis(new attachSystem::FixedOffset("lokiAxis",4)),
   BendA(new beamlineSystem::GuideLine("lokiBA")),
   VacBoxA(new constructSystem::VacuumBox("lokiVacA")),
   GuideA(new beamlineSystem::GuideLine("lokiGA")),
@@ -202,23 +202,30 @@ LOKI::~LOKI()
 {}
 
 void
-LOKI::setBeamAxis(const GuideItem& GItem,
+LOKI::setBeamAxis(const FuncDataBase& Control,
+		  const GuideItem& GItem,
 		  const bool reverseZ)
   /*!
     Set the primary direction object
+    \param Control :: Data base of info on variables
     \param GItem :: Guide Item to 
    */
 {
   ELog::RegMethod RegA("LOKI","setBeamAxis");
 
+  lokiAxis->populate(Control);
   lokiAxis->createUnitVector(GItem);
   lokiAxis->setLinkCopy(0,GItem.getKey("Main"),0);
   lokiAxis->setLinkCopy(1,GItem.getKey("Main"),1);
+
   lokiAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
   lokiAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
-
-  if (reverseZ)
-    lokiAxis->reverseZ();
+  // BEAM needs to be rotated:
+  lokiAxis->linkAngleRotate(3);
+  lokiAxis->linkAngleRotate(4);
+  
+    if (reverseZ)
+      lokiAxis->reverseZ();
   return;
 }
   
@@ -239,15 +246,10 @@ LOKI::build(Simulation& System,
   ELog::RegMethod RegA("LOKI","build");
   ELog::EM<<"\nBuilding LOKI on : "<<GItem.getKeyName()<<ELog::endDiag;
 
-  setBeamAxis(GItem,1);
+  setBeamAxis(System.getDataBase(),GItem,0);
   BendA->addInsertCell(GItem.getCells("Void"));
   BendA->addInsertCell(bunkerObj.getCell("MainVoid"));
-  //  BendA->addEndCut(GItem.getKey("Beam").getSignedLinkString(-2));
-  BendA->createAll(System,GItem.getKey("Beam"),-1,
-		   GItem.getKey("Beam"),-1);
-
-  //  ELog::EM<<"LOW MODERATOR REVERSE"<<ELog::endDebug;
-  //  BendA->getKey("Guide0").reverseZ();
+  BendA->createAll(System,*lokiAxis,-3,*lokiAxis,-3); // beam front reversed
   
   // First straight section
   VacBoxA->addInsertCell(bunkerObj.getCell("MainVoid"));
@@ -305,7 +307,6 @@ LOKI::build(Simulation& System,
 
   BendB->addInsertCell(VacBoxB->getCells("Void"));
   BendB->insertObjects(System);
-
   
   // Straigh section to single 10m chopper
   GuideC->addInsertCell(bunkerObj.getCell("MainVoid"));
@@ -380,18 +381,19 @@ LOKI::build(Simulation& System,
   const attachSystem::FixedComp& GFC(GridA->getKey("Beam"));
   const std::string BSector=
     bunkerObj.calcSegment(System,GFC.getSignedLinkPt(2),
-			  GFC.getSignedLinkAxis(2));  
-  CollA->setInsertCell(bunkerObj.getCells(BSector));
+			  GFC.getSignedLinkAxis(2));
+  CollA->addInsertCell(bunkerObj.getCells(BSector));
   CollA->addInsertCell(bunkerObj.getCell("MainVoid"));
   CollA->addInsertCell(voidCell);
   CollA->createAll(System,GFC,2);
 
   // Second grid cutter
-  GridB->addInsertCell(voidCell);
+  GridB->addInsertCell(bunkerObj.getCells(BSector));
   GridB->createAll(System,CollA->getKey("Beam"),2);
 
   // First collimator
   CollB->addInsertCell(voidCell);
+  CollB->addInsertCell(bunkerObj.getCells(BSector));
   CollB->createAll(System,GridB->getKey("Beam"),2);
   // Second grid cutter
   GridC->addInsertCell(voidCell);

@@ -134,7 +134,7 @@ makeD4C::build(Simulation* SimPtr,
   BellObj->setInsertCell(74123);
   BellObj->createAll(*SimPtr,World::masterOrigin());
   CellObj->setInsertCell(BellObj->innerCell());
-  CellObj->createAll(*SimPtr,*BellObj);
+  CellObj->createAll(*SimPtr,*BellObj,0);
   SimMonte* SM=dynamic_cast<SimMonte*>(SimPtr);
   for(size_t i=0;i<NDet;i++)
     {

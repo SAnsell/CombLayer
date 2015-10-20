@@ -160,7 +160,7 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinGBZStep",0.0);       
   Control.addVariable("odinGBXYAngle",0.0);       
   Control.addVariable("odinGBZAngle",0.0);       
-  Control.addVariable("odinGBLength",220.0);       
+  Control.addVariable("odinGBLength",475.0);       
   Control.addVariable("odinGBHeight",50.0);       
   Control.addVariable("odinGBDepth",50.0);       
   Control.addVariable("odinGBLeftWidth",20.0);       
@@ -181,18 +181,17 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinGB0HeightEnd",3.0);
   Control.addVariable("odinGB0WidthStart",7.0);
   Control.addVariable("odinGB0WidthEnd",10.0);
-  Control.addVariable("odinGB0Length",220.0);
+  Control.addVariable("odinGB0Length",475.0);
   Control.addVariable("odinGB0ZAngle",0.0);
 
   // BEAM INSERT:
-  Control.addVariable("odinBInsertHeight",14.0);
-  Control.addVariable("odinBInsertWidth",14.0);
+  Control.addVariable("odinBInsertHeight",20.0);
+  Control.addVariable("odinBInsertWidth",28.0);
   Control.addVariable("odinBInsertTopWall",1.0);
   Control.addVariable("odinBInsertLowWall",1.0);
   Control.addVariable("odinBInsertLeftWall",1.0);
   Control.addVariable("odinBInsertRightWall",1.0);
   Control.addVariable("odinBInsertWallMat","Stainless304");       
-
 
   // GUDE IN the beam insert
   Control.addVariable("odinGCXStep",0.0);       
@@ -208,6 +207,7 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinGCFeMat","Void");       
   Control.addVariable("odinGCNShapes",1);       
   Control.addVariable("odinGCNShapeLayers",3);
+  Control.addVariable("odinGCActiveShield",0);
 
   Control.addVariable("odinGCLayerThick1",0.4);  // glass thick
   Control.addVariable("odinGCLayerThick2",1.5);
@@ -221,6 +221,7 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinGC0Width",9.0);
   Control.addVariable("odinGC0Length",220.0);
   Control.addVariable("odinGC0ZAngle",0.0);
+
 
   // GUIDE  Bunker wall to PIT A
   Control.addVariable("odinGDXStep",0.0);       
@@ -413,7 +414,30 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinPitBConcFront",50.0);
   Control.addVariable("odinPitBConcBack",50.0);
   Control.addVariable("odinPitBConcMat","Concrete");
-  
+
+  // Chopper A : Single 1.2m disk chopper [6 phases]
+  Control.addVariable("odinChopperBXStep",0.0);
+  Control.addVariable("odinChopperBYStep",0.0);
+  Control.addVariable("odinChopperBZStep",0.0);
+  Control.addVariable("odinChopperBXYangle",0.0);
+  Control.addVariable("odinChopperBZangle",0.0);
+
+  Control.addVariable("odinChopperBGap",3.0);
+  Control.addVariable("odinChopperBInnerRadius",45.0);
+  Control.addVariable("odinChopperBOuterRadius",63.0);
+  Control.addVariable("odinChopperBNDisk",1);
+
+  Control.addVariable("odinChopperB0Thick",2.0);
+  Control.addVariable("odinChopperBInnerMat","Aluminium");
+  Control.addVariable("odinChopperBOuterMat","Inconnel");
+
+  Control.addVariable("odinChopperBNBlades",2);
+  Control.addVariable("odinChopperB0PhaseAngle0",-20.0);
+  Control.addVariable("odinChopperB0OpenAngle0",160.0);
+
+  Control.addVariable("odinChopperB0PhaseAngle1",160.0);
+  Control.addVariable("odinChopperB0OpenAngle1",160.0);
+
   // GUDE IN the beam insert
   Control.addVariable("odinGPitBFrontXStep",0.0);       
   Control.addVariable("odinGPitBFrontYStep",0.0);       

@@ -59,6 +59,7 @@ namespace mainSystem
   void createDelftInputs(inputParam&);
   void createEPBInputs(inputParam&);
   void createESSInputs(inputParam&);
+  void createFilterInputs(inputParam&);
   void createFullInputs(inputParam&);
   void createGammaInputs(inputParam&);
   void createLensInputs(inputParam&);

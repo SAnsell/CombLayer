@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   monte/Object.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@
 #include <string>
 #include <sstream>
 #include <algorithm>
+#include <memory>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -58,6 +59,7 @@
 #include "Token.h"
 #include "neutron.h"
 #include "RuleCheck.h"
+#include "objectRegister.h"
 #include "Object.h"
 
 #include "Debug.h"
@@ -780,39 +782,6 @@ Object::createLogicOpp()
   //  static int cnt(0);
 
   logicOppSurf=HRule.getOppositeSurfaces();
-  /*  
-  if (!logicOppSurf.empty())
-    {
-      cnt++;
-      if (cnt==2)
-	{
-	  ELog::EM<<"Org Cell ="<<*this<<ELog::endDebug;
-	  RuleCheck RC;
-	  RC.setTopRule(HRule.getTopRule());
-
-	  Rule* NewRule=
-	    RC.removeDuplicate(SurSet,1270031);
-	  if (NewRule)
-	    {
-	      ELog::EM<<"DEE"<<NewRule->display()<<ELog::endDebug;
-	      delete TopRule;
-	      TopRule=NewRule;
-	    }
-
-	  std::set<int>::const_iterator sx;
-	  for(sx=SurSet.begin();sx!=SurSet.end();sx++)
-	    if (*sx>0 && SurSet.find(-*sx)!=SurSet.end())
-	      ELog::EM<<"Set == "<<*sx<<ELog::endDiag;
-	      
-
-	  ELog::EM<<"Cell ="<<*this<<ELog::endDebug;
-	  std::set<const Geometry::Surface*>::const_iterator sc;
-	  for(sc=logicOppSurf.begin();sc!=logicOppSurf.end();sc++)
-	    ELog::EM<<(*sc)->getName()<<ELog::endDiag;
-	  
-	  ELog::EM<<ELog::endErr;
-	}
-  */
   return;
 }
 
@@ -1262,11 +1231,72 @@ Object::write(std::ostream& OX) const
   return;
 }
 
+void
+Object::writeFLUKAmat(std::ostream& OX) const
+  /*!
+    Write the object material assignment to a standard stream
+    in standard FLUKA output format.
+    \param OX :: Output stream (required for multiple std::endl)
+  */
+{
+  ELog::RegMethod RegA("Object","writeFLUKAmat");
+
+  
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+  if (!placehold)
+    {
+      std::string objName=OR.inRenumberRange(ObjName);
+      if (objName.empty())
+	objName="global";
+      std::ostringstream cx;
+      cx<<"ASSIGNMA    ";
+      if (!MatN)
+	cx<<" VACUUM";
+      else
+	cx<<"    M"<<MatN;
+      
+      cx<<"    "<<objName<<"_"<<ObjName;
+      StrFunc::writeMCNPX(cx.str(),OX);
+    }
+  
+  return;
+}
+  
+void 
+Object::writeFLUKA(std::ostream& OX) const
+  /*!
+    Write the object to a standard stream
+    in standard FLUKA output format.
+    \param OX :: Output stream (required for multiple std::endl)
+  */
+{
+  ELog::RegMethod RegA("Object","writeFLUKA");
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+  if (!placehold)
+    {
+      std::string objName=OR.inRenumberRange(ObjName);
+      if (objName.empty())
+	objName="global";
+      std::ostringstream cx;
+      cx.precision(10);
+
+
+      cx<<objName<<"_"<<ObjName<<" "<<SurList.size()<<" ";
+      cx<<HRule.displayFluka()<<std::endl;
+      StrFunc::writeMCNPX(cx.str(),OX);
+    }
+  
+  return;
+}
+
 void 
 Object::writePHITS(std::ostream& OX) const
   /*!
     Write the object to a standard stream
-    in standard MCNPX output format.
+    in standard PHITS output format.
     \param OX :: Output stream (required for multiple std::endl)
   */
 {

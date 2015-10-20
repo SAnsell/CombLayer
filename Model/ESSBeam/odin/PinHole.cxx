@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essModel/PinHole.cxx
+ * File:   ESSBeam/odin/PinHole.cxx
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -268,4 +268,4 @@ PinHole::createAll(Simulation& System,
   return;
 }
   
-}  // NAMESPACE constructSystem
+}  // NAMESPACE essSystem

@@ -163,6 +163,7 @@ ButterflyModerator::createUnitVector(const attachSystem::FixedComp& axisFC,
   */
 {
   ELog::RegMethod RegA("ButterflyModerator","createUnitVector");
+
   ModBase::createUnitVector(axisFC,orgFC,sideIndex);
   applyShift(0,0,totalHeight/2.0);
   

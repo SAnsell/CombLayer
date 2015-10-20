@@ -55,6 +55,7 @@
 #include "surfIndex.h"
 #include "Simulation.h"
 #include "SimPHITS.h"
+#include "SimFLUKA.h"
 #include "neutron.h"
 #include "Detector.h"
 #include "DetGroup.h"
@@ -208,7 +209,7 @@ createInputs(inputParam& IParam)
   std::vector<std::string> RItems(10,"");
 
   IParam.regFlag("a","axis");
-  IParam.regItem("angle","angle");
+  IParam.regItem("angle","angle",1,4);
   IParam.regDefItem<int>("c","cellRange",2,0,0);
   IParam.regItem("C","ECut");
   IParam.regFlag("cinder","cinder");
@@ -232,6 +233,7 @@ createInputs(inputParam& IParam)
   IParam.regItem("memStack","memStack");
   IParam.regDefItem<int>("n","nps",1,10000);
   IParam.regFlag("p","PHITS");
+  IParam.regFlag("fluka","FLUKA");
   IParam.regFlag("mcnp6","MCNP6");
   IParam.regFlag("Monte","Monte");
   IParam.regDefItem<double>("photon","photon",1,0.001);
@@ -281,6 +283,13 @@ createInputs(inputParam& IParam)
   IParam.regItem("WTemp","weightTemp",1);
   IParam.regDefItem<std::string>("WType","weightType",1,"basic");
 
+
+  IParam.regMulti("wWWG","wWWG",25,0);
+  IParam.regMulti("wXMesh","wwgXMesh",25,3);
+  IParam.regMulti("wYMesh","wwgYMesh",25,3);
+  IParam.regMulti("wZMesh","wwgZMesh",25,3);
+  
+  
   IParam.regDefItem<std::string>("X","xmlout",1,"Model.xml");
   IParam.regMulti("x","xml",10000,1);
   
@@ -309,7 +318,8 @@ createInputs(inputParam& IParam)
   IParam.setDesc("memStack","Memstack verbrosity value");
   IParam.setDesc("n","Number of starting particles");
   IParam.setDesc("MCNP6","MCNP6 output");
-  IParam.setDesc("p","PHITS output");
+  IParam.setDesc("FLUKA","FLUKA output");
+  IParam.setDesc("PHITS","PHITS output");
   IParam.setDesc("Monte","MonteCarlo capable simulation");
   IParam.setDesc("photon","Photon Cut energy");
   IParam.setDesc("photonModel","Photon Model Energy [min]");
@@ -472,6 +482,22 @@ void createFullInputs(inputParam& IParam)
 }
 
 void
+createFilterInputs(inputParam& IParam)
+  /*!
+    Create Photon-neutron source input
+    \param IParam :: Initial input
+  */
+{
+  ELog::RegMethod RegA("MainProcess::","createFilterInputs");
+  createInputs(IParam);
+  
+
+  IParam.setValue("sdefType",std::string("Beam"));
+  IParam.setFlag("voidUnMask");  
+  return;
+}
+
+void
 createGammaInputs(inputParam& IParam)
   /*!
     Create Gamma expt model
@@ -614,7 +640,8 @@ void createPipeInputs(inputParam& IParam)
   return;
 }
 
-void createESSInputs(inputParam& IParam)
+void
+createESSInputs(inputParam& IParam)
   /*!
     Set the specialise inputs for TS2
     \param IParam :: Input Parameters
@@ -627,6 +654,9 @@ void createESSInputs(inputParam& IParam)
   IParam.setValue("sdefType",std::string("ess"));  
   IParam.setValue("targetType",std::string("Bilbao"));
 
+  ///\todo change to database list [ordered]
+  IParam.regFlag("essDB","essDB");
+  
   IParam.regDefItem<std::string>("lowMod","lowModType",1,std::string("lowMod"));
   IParam.regDefItem<std::string>("topMod","topModType",1,std::string("topMod"));
   IParam.regDefItem<std::string>("lowPipe","lowPipeType",1,std::string("side"));
@@ -635,6 +665,10 @@ void createESSInputs(inputParam& IParam)
 				 1,std::string("void"));
   IParam.regDefItem<std::string>("bunker","bunkerType",1,std::string("null"));
   IParam.regMulti("beamlines","beamlines",1000);
+  IParam.regDefItem<int>("nF5", "nF5", 1,0);
+
+  
+  IParam.setDesc("essDB","Allows the use of the ESS material database");
   
   IParam.setDesc("beamlines","Creates beamlines on the main model");
   IParam.setDesc("lowMod","Type of low moderator to be built");
@@ -644,6 +678,10 @@ void createESSInputs(inputParam& IParam)
   IParam.setDesc("iradLine","Build an irradiation line [void for none]");
   IParam.setDesc("beamlines","Build beamlines [void for none]");
   IParam.setDesc("bunker","Build bunker [void for none [A-D]");
+  IParam.setDesc("nF5","Number of F5 collimators to build. \n"
+		 "  -- The collimators will be named as F5, F15, etc.\n"
+		 "  -- The corresponding variables must exist.");
+
   return;
 }
 
@@ -876,6 +914,8 @@ createSimulation(inputParam& IParam,
   Simulation* SimPtr;
   if (IParam.flag("PHITS"))
       SimPtr=new SimPHITS;
+  else if (IParam.flag("FLUKA"))
+      SimPtr=new SimFLUKA;
   else if (IParam.flag("Monte"))
     SimPtr=new SimMonte; 
   else 

@@ -316,7 +316,7 @@ CellMap::insertComponent(Simulation& System,
     Insert a component into a cell
     \param System :: Simulation to obtain cell from
     \param Key :: KeyName for cell
-    \param CC :: Contained Componenet
+    \param CC :: Contained Component ot insert 
    */
 {
   ELog::RegMethod RegA("CellMap","insertComponent(CC)");

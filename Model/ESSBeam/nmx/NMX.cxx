@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuild/NMX.cxx
+ * File:   ESSBeam/nmx/NMX.cxx
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -77,10 +77,12 @@
 #include "GuideLine.h"
 #include "DiskChopper.h"
 #include "VacuumBox.h"
+#include "VacuumPipe.h"
 #include "ChopperHousing.h"
 #include "Bunker.h"
 #include "BunkerInsert.h"
 #include "ChopperPit.h"
+#include "LineShield.h"
 
 #include "NMX.h"
 
@@ -88,9 +90,14 @@ namespace essSystem
 {
 
 NMX::NMX() :
-  nmxAxis(new attachSystem::FixedComp("nmxAxis",4)),
+  nmxAxis(new attachSystem::FixedOffset("nmxAxis",4)),
   GuideA(new beamlineSystem::GuideLine("nmxGA")),
-  BendA(new beamlineSystem::GuideLine("nmxBA"))
+  VPipeA(new constructSystem::VacuumPipe("nmxPipeA")),
+  VPipeB(new constructSystem::VacuumPipe("nmxPipeB")),
+  BendA(new beamlineSystem::GuideLine("nmxBA")),
+  BInsert(new BunkerInsert("nmxBInsert")),
+  FocusWall(new beamlineSystem::GuideLine("nmxFWall")),
+  ShieldA(new constructSystem::LineShield("nmxShieldA"))
   /*!
     Constructor
  */
@@ -105,6 +112,11 @@ NMX::NMX() :
   OR.addObject(nmxAxis);
 
   OR.addObject(GuideA);
+  OR.addObject(VPipeA);
+  OR.addObject(VPipeB);
+  OR.addObject(BendA);
+  OR.addObject(BInsert);
+  OR.addObject(FocusWall);
 }
 
 
@@ -116,20 +128,27 @@ NMX::~NMX()
 {}
 
 void
-NMX::setBeamAxis(const GuideItem& GItem,
-		  const bool reverseZ)
+NMX::setBeamAxis(const FuncDataBase& Control,
+		 const GuideItem& GItem,
+		 const bool reverseZ)
   /*!
     Set the primary direction object
+    \param Control :: Data base of info on variables
     \param GItem :: Guide Item to 
    */
 {
   ELog::RegMethod RegA("NMX","setBeamAxis");
 
+  nmxAxis->populate(Control);
   nmxAxis->createUnitVector(GItem);
   nmxAxis->setLinkCopy(0,GItem.getKey("Main"),0);
   nmxAxis->setLinkCopy(1,GItem.getKey("Main"),1);
   nmxAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
   nmxAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
+
+  // BEAM needs to be rotated:
+  nmxAxis->linkAngleRotate(3);
+  nmxAxis->linkAngleRotate(4);
 
   if (reverseZ)
     nmxAxis->reverseZ();
@@ -153,22 +172,51 @@ NMX::build(Simulation& System,
   ELog::RegMethod RegA("NMX","build");
   ELog::EM<<"\nBuilding NMX on : "<<GItem.getKeyName()<<ELog::endDiag;
 
-  setBeamAxis(GItem,1);
-  
+  setBeamAxis(System.getDataBase(),GItem,1);
+
   GuideA->addInsertCell(GItem.getCells("Void"));
-  GuideA->addInsertCell(bunkerObj.getCell("MainVoid"));
-  //  BendA->addEndCut(GItem.getKey("Beam").getSignedLinkString(-2));
-  GuideA->createAll(System,GItem.getKey("Beam"),-1,
-		     GItem.getKey("Beam"),-1);
-  GuideA->getKey("Guide0").reverseZ();
+  GuideA->addEndCut(GItem.getKey("Beam"),-2);
+  GuideA->createAll(System,*nmxAxis,-3,*nmxAxis,-3); // beam front reversed
+
+  // PIPE out of monolith
+
+  VPipeA->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeA->setFront(GItem.getKey("Beam"),2);
+  VPipeA->setDivider(GItem.getKey("Beam"),2);  
+  VPipeA->createAll(System,GuideA->getKey("Guide0"),2);
 
 
-  BendA->addInsertCell(bunkerObj.getCells("MainVoid"));
+  VPipeB->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeB->setFront(*VPipeA,2);
+  VPipeB->setBack(bunkerObj,1);
+  VPipeB->createAll(System,*VPipeA,2);
+
+  BendA->addInsertCell(VPipeA->getCells("Void"));
+  BendA->addInsertCell(VPipeB->getCells("Void"));
   BendA->createAll(System,GuideA->getKey("Guide0"),2,
 		   GuideA->getKey("Guide0"),2);
-  
 
   
+  // First collimator [In WALL]
+  //  const attachSystem::FixedComp& GFC(BendA->getKey("Guide0"));
+  const attachSystem::FixedComp& GFC(*VPipeB);
+  const std::string BSector=
+    bunkerObj.calcSegment(System,GFC.getSignedLinkPt(2),
+			  GFC.getSignedLinkAxis(2));
+
+  BInsert->setInsertCell(bunkerObj.getCells(BSector));
+  BInsert->createAll(System,GFC,2,bunkerObj);
+
+  FocusWall->addInsertCell(BInsert->getCell("Void"));
+  FocusWall->createAll(System,*BInsert,-1,
+			 BendA->getKey("Guide0"),2);
+
+  // Section to 17m
+  ShieldA->addInsertCell(voidCell);
+  ShieldA->setFront(bunkerObj,2);
+  ShieldA->setDivider(bunkerObj,2);
+  ShieldA->createAll(System,*BInsert,2);
+
   return;
 }
 

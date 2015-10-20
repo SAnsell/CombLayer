@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   geometry/EllipticCyl.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,6 +55,19 @@
 
 namespace Geometry
 {
+
+std::ostream&
+operator<<(std::ostream& OX,const EllipticCyl& A)
+  /*!
+    Output stream
+    \param OX :: output stream
+    \param A :: EllipticCly to write
+    \return Output stream
+  */
+{
+  A.write(OX);
+  return OX;
+}
 
 EllipticCyl::EllipticCyl() : 
   Quadratic(),Centre(),Normal(0,0,1),LAxis(1,0,0),
