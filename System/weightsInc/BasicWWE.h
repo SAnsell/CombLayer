@@ -48,6 +48,8 @@ namespace WeightSystem
   void setWeightsMidE(Simulation&);
   void setWeightsHighE(Simulation&);
 
+  void setWeightsBunker(Simulation&);
+
 }
 
 

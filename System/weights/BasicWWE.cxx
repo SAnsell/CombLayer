@@ -130,9 +130,12 @@ setWeights(Simulation& System,const std::string& Type)
     setWeightsHighE(System);
   else if (Type=="mid")
     setWeightsMidE(System);
+  else if (Type=="bunker")
+    setWeightsBunker(System);
   else if (Type=="help")
     {
       ELog::EM<<"Basic weight energy types == \n"
+	"Bunker -- HighEnergy/Bunker\n"
 	"High -- High energy\n"
 	"Mid -- Mid/old point energy\n"
 	"Basic -- Cold spectrum energy"<<ELog::endBasic;
@@ -261,4 +264,34 @@ setWeightsBasic(Simulation& System)
   return;
 }
 
-}  // NAMESPACE shutterSystem
+
+
+void
+setWeightsBunker(Simulation& System)
+  /*!
+    Function to set up the weights system.
+    This is for the bunker shielding at 
+    \param System :: Simulation component
+  */
+{
+  ELog::RegMethod RegA("BasicWWE","setWeightsBunker");
+  std::vector<double> Eval={1e-5,0.01,1,10,100,5e7};
+  std::vector<double> WT={1.0,1.0,1.0,1.0,1.0,1.0};
+  std::set<std::string> EmptySet;
+  setWeights(System,Eval,WT,EmptySet);
+
+  const ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  
+  const int BStart=OR.getRenumberCell("ABunker");
+  const int BRange=OR.getRenumberRange("ABunker");
+  ELog::EM<<"B == "<<BStart<<" "<<BRange<<ELog::endDiag;
+  
+  
+  return;
+}
+
+
+  
+}  // NAMESPACE weightSystem
