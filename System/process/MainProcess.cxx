@@ -666,6 +666,7 @@ createESSInputs(inputParam& IParam)
   IParam.regDefItem<std::string>("bunker","bunkerType",1,std::string("null"));
   IParam.regMulti("beamlines","beamlines",1000);
   IParam.regDefItem<int>("nF5", "nF5", 1,0);
+  IParam.regMulti("f5-collimators","f5collimators",30);
 
   
   IParam.setDesc("essDB","Allows the use of the ESS material database");
@@ -681,6 +682,8 @@ createESSInputs(inputParam& IParam)
   IParam.setDesc("nF5","Number of F5 collimators to build. \n"
 		 "  -- The collimators will be named as F5, F15, etc.\n"
 		 "  -- The corresponding variables must exist.");
+  IParam.setDesc("f5-collimators","Space separated list of theta angles"
+		 "for F5 collimators (theta is defined on page 183 of TDR)");
 
   return;
 }
