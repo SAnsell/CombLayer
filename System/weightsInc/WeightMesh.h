@@ -84,17 +84,15 @@ class WeightMesh
   Geometry::Vec3D point(const size_t,const size_t,const size_t) const;
 
   void setMeshType(const GeomENUM&);
-  void setMesh(const std::vector<double>&,const std::vector<double>&,
+  void setMesh(const std::vector<double>&,const std::vector<size_t>&,
 	       const std::vector<double>&,const std::vector<size_t>&,
-	       const std::vector<size_t>&,const std::vector<size_t>&);
+	       const std::vector<double>&,const std::vector<size_t>&);
 	       
   /// Set reference point
   void setRefPt(const Geometry::Vec3D& Pt) { RefPoint=Pt; } 
-
   
-  void zeroCell(const int) { }      ///< Non-important return
   void write(std::ostream&) const;
-  void writeWWINP() const;
+  void writeWWINP(std::ostream&) const;
 
 };
 

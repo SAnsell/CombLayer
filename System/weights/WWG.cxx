@@ -57,69 +57,43 @@
 #include "inputParam.h"
 #include "WeightMesh.h"
 #include "WWG.h"
-#include "WWGconstruct.h"
+#include "WWG.h"
 
 namespace WeightSystem
 {
 
-WWGconstruct::WWGconstruct()
+WWG::WWG()
   /*!
     Constructor
   */
 {}
-  
+
+
 void
-WWGconstruct::createWWG(Simulation& System,
-			const mainSystem::inputParam& IParam)
+WWG::write(std::ostream& OX) const
   /*!
-    Set WWG weights based 
-    \param System :: Simulation
-    \param IParam :: input stream
+    Wreit to the MCNP file
    */
 {
-  ELog::RegMethod RegA("WWGconstruct","createWWG");
+  ELog::RegMethod RegA("WWG","write");
 
-  WeightSystem::weightManager& WM=
-    WeightSystem::weightManager::Instance();
-
-  const std::string XYZ[3]={"X","Y","Z"};
-
-  WWG& wwg=WM.getWWG();
-  const size_t NItems=IParam.itemCnt("wwgMesh",0);
-
-  std::vector<std::vector<double>> boundaryVal(3);
-  std::vector<std::vector<size_t>> bCnt(3);
-      
-  for(size_t index=0;index<3;index++)
-    {
-      const std::string itemName("wwg"+XYZ[index]+"Mesh");
-      const size_t NXM=IParam.itemCnt(itemName,0);
-      if (NXM<3 || !(NXM % 2) )
-	throw ColErr::IndexError<size_t>
-	  (NItems,3,"Insufficient items for "+itemName+
-	   ": X_0 : N_0 : X1 : N1 ...");
-
-      for(size_t i=0;i<NXM;i++)
-	{
-	  if (i % 2)   // Odd : Integer
-	    bCnt[index].push_back
-	      (IParam.getValue<size_t>(itemName,i));
-	  else
-	    boundaryVal[index].push_back
-	      (IParam.getValue<double>(itemName,i));
-	}
-    }
-  wwg.getGrid().setMesh(boundaryVal[0],bCnt[0],
-			boundaryVal[1],bCnt[1],
-			boundaryVal[2],bCnt[2]);
-  
-  // if (NItems<3)
-  //   throw ColErr::IndexError<size_t>
-  //     (NItems,3,"Insufficient items for wwgMesh");
-
- 
-
+  Grid.write(OX);
   return;
 }
+  
+void
+WWG::writeWWINP(const std::string& FName) const
+  /*!
+    Write out separate WWINP file
+    \
+  */
+{
+  std::ofstream OX;
+  OX.open(FName.c_str());
 
+  Grid.writeWWINP(OX);
+  return;
+}
+  
+  
 }  // NAMESPACE WeightSystem

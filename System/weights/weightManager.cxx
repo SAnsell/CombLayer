@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   weights/weightManager.cxx
  *
@@ -55,6 +55,7 @@
 #include "WItem.h"
 #include "WCells.h"
 #include "WeightMesh.h"
+#include "WWG.h"
 #include "weightManager.h"
 
 
@@ -88,17 +89,17 @@ weightManager::Instance()
   return A;
 }
 
-WWG*
+WWG&
 weightManager::getWWG()
   /*!
     Create/access mesh
     \return Mesh
-   */
+  */
 {
   ELog::RegMethod RegA("weightManager","getWWG");
   if (!WWGPtr)
     WWGPtr=new WWG;
-  return WWGPtr;
+  return *WWGPtr;
 }
 
   
@@ -196,11 +197,14 @@ weightManager::write(std::ostream& OX) const
   
   for(const CtrlTYPE::value_type& wf : WMap)
     wf.second->write(OX);
+
   if (WWGPtr)
     {
+      WWGPtr->writeWWINP("wwinp");
       WWGPtr->write(OX);
-      WWGPtr->writeWWINP();
+      //      WWGPtr->writeWWINP();
     }
+  
   return;
 }
 
