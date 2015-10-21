@@ -533,7 +533,7 @@ EllipticCyl::distance(const Geometry::Vec3D& A) const
   y[0]=fabs(LAxis.dotProd(Pt));
   y[1]=fabs(CAxis.dotProd(Pt));
   e[0]=ARadius;
-  e[1]=ARadius;
+  e[1]=BRadius;
   if (BRadius>ARadius)
     {
       std::swap(y[0],y[1]);

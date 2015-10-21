@@ -441,10 +441,10 @@ BilbaoWheel::createSurfaces()
 				   X,caseRadius,caseRadius);
 
   GA->normalizeGEQ(0);
-  ELog::EM<<"XXN ="<<*GA<<ELog::endDiag;
-  ELog::EM<<"ASPECT ="<<1/aspectRatio<<ELog::endDiag;
+  //  ELog::EM<<"XXN ="<<*GA<<ELog::endDiag;
+  //  ELog::EM<<"ASPECT ="<<1/aspectRatio<<ELog::endDiag;
   ECPtr->normalizeGEQ(0);
-  ELog::EM<<"YY ="<<*ECPtr<<ELog::endDiag;
+  //  ELog::EM<<"YY ="<<*ECPtr<<ELog::endDiag;
 
 
   

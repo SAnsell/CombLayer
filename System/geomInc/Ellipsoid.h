@@ -43,7 +43,7 @@ class Ellipsoid : public Quadratic
  private:
   
   Geometry::Vec3D Centre;        ///< Geometry::Vec3D for centre
-  Geometry::Vec3D AAxis ;        ///< Direction of First tri-axis
+  Geometry::Vec3D AAxis;         ///< Direction of First tri-axis
   Geometry::Vec3D BAxis;         ///< Direction of Second tri-axis
   Geometry::Vec3D CAxis;         ///< Direction of Third triaxis
 
@@ -51,6 +51,9 @@ class Ellipsoid : public Quadratic
   double BRadius;       ///< Radius of Mid
   double CRadius;       ///< Radius of Short
 
+  static void orderRadii(Geometry::Vec3D*,double*);
+  static double firstOctant(const double[3],const double[3]);
+  static double solveTBar(const double[3],const double[3]);
   
  public:
 
@@ -81,20 +84,17 @@ class Ellipsoid : public Quadratic
 
   int setSurface(const std::string&);
   int setEllipsoid(const Geometry::Vec3D&,const Geometry::Vec3D&,
-		     const Geometry::Vec3D&,const double,const double);
-  void setCentre(const Geometry::Vec3D&);              
-  int calcXYZNorm();
-		 
+		   const Geometry::Vec3D&,const double,
+		   const double,const double);
+  void setCentre(const Geometry::Vec3D&);              		 
   void setRadii(const double,const double,const double);
 
   
   /// Return centre point       
   const Geometry::Vec3D& getCentre() const { return Centre; }   
-  /// Return Normal
-  const Geometry::Vec3D& getNormal() const { return Normal; }   
   double getARadius() const { return ARadius; }  ///< Get A radius
   double getBRadius() const { return BRadius; }  ///< Get B radius
-  double getCRadius() const { return BRadius; }  ///< Get C radius
+  double getCRadius() const { return CRadius; }  ///< Get C radius
   ///< Long axis
   const Geometry::Vec3D& getAAxis() const 
     { return AAxis; }       
@@ -102,7 +102,7 @@ class Ellipsoid : public Quadratic
   const Geometry::Vec3D& getBAxis() const 
     { return BAxis; }       
   ///< Short axis
-  const Geometry::Vec3D& getBAxis() const 
+  const Geometry::Vec3D& getCAxis() const 
     { return CAxis; }       
 
   void setBaseEqn();
