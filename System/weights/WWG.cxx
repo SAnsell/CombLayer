@@ -32,6 +32,7 @@
 #include <string>
 #include <algorithm>
 #include <memory>
+#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -44,6 +45,7 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
+#include "support.h"
 #include "Rules.h"
 #include "varList.h"
 #include "Code.h"
@@ -57,18 +59,28 @@
 #include "inputParam.h"
 #include "WeightMesh.h"
 #include "WWG.h"
-#include "WWG.h"
 
 namespace WeightSystem
 {
 
-WWG::WWG()
+WWG::WWG() :
+  EBin({1e8})
   /*!
     Constructor
   */
 {}
 
-
+void
+WWG::setEnergyBin(const std::vector<double>& EB)
+  /*!
+    Set the energy bins
+  */
+{
+  EBin=EB;
+  return;
+}
+  
+  
 void
 WWG::write(std::ostream& OX) const
   /*!
@@ -85,15 +97,19 @@ void
 WWG::writeWWINP(const std::string& FName) const
   /*!
     Write out separate WWINP file
-    \
+    \param FNAme :: Output filename
   */
 {
   std::ofstream OX;
   OX.open(FName.c_str());
 
-  Grid.writeWWINP(OX);
+  Grid.writeWWINP(OX,EBin.size());
+  size_t itemCnt=0;
+  for(const double& E : EBin)
+    StrFunc::writeLine(OX,E,itemCnt,6);
+  OX.close();
+		       
   return;
-}
-  
+}  
   
 }  // NAMESPACE WeightSystem

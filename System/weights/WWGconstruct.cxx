@@ -85,7 +85,7 @@ WWGconstruct::createWWG(Simulation& System,
   const std::string XYZ[3]={"X","Y","Z"};
 
   WWG& wwg=WM.getWWG();
-  const size_t NItems=IParam.itemCnt("wwgMesh",0);
+  //  const size_t NItems=IParam.itemCnt("wwgMesh",0);
 
   std::vector<std::vector<double>> boundaryVal(3);
   std::vector<std::vector<size_t>> bCnt(3);
@@ -94,9 +94,10 @@ WWGconstruct::createWWG(Simulation& System,
     {
       const std::string itemName("wwg"+XYZ[index]+"Mesh");
       const size_t NXM=IParam.itemCnt(itemName,0);
+
       if (NXM<3 || !(NXM % 2) )
 	throw ColErr::IndexError<size_t>
-	  (NItems,3,"Insufficient items for "+itemName+
+	  (NXM,3,"Insufficient items for "+itemName+
 	   ": X_0 : N_0 : X1 : N1 ...");
 
       for(size_t i=0;i<NXM;i++)
@@ -109,9 +110,25 @@ WWGconstruct::createWWG(Simulation& System,
 	      (IParam.getValue<double>(itemName,i));
 	}
     }
+
   wwg.getGrid().setMesh(boundaryVal[0],bCnt[0],
 			boundaryVal[1],bCnt[1],
 			boundaryVal[2],bCnt[2]);
+
+  // ENERGY BOUNDARY
+  if (IParam.flag("wwgE"))
+    {
+      std::vector<double> EBin;
+      const size_t ECnt=IParam.itemCnt("wwgE",0);
+
+      for(size_t i=0;i<ECnt;i++)
+	EBin.push_back
+	  (IParam.getValue<double>("wwgE",i));
+      if (EBin.back()<1e5)
+	EBin.push_back(1e5);
+      wwg.setEnergyBin(EBin);
+    }
+  
   
   // if (NItems<3)
   //   throw ColErr::IndexError<size_t>

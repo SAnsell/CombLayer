@@ -285,9 +285,10 @@ createInputs(inputParam& IParam)
 
 
   IParam.regMulti("wWWG","wWWG",25,0);
-  IParam.regMulti("wXMesh","wwgXMesh",25,3);
-  IParam.regMulti("wYMesh","wwgYMesh",25,3);
-  IParam.regMulti("wZMesh","wwgZMesh",25,3);
+  IParam.regMulti("wwgE","wwgE",25,0);
+  IParam.regMulti("wwgXMesh","wwgXMesh",25,3);
+  IParam.regMulti("wwgYMesh","wwgYMesh",25,3);
+  IParam.regMulti("wwgZMesh","wwgZMesh",25,3);
   
   
   IParam.regDefItem<std::string>("X","xmlout",1,"Model.xml");

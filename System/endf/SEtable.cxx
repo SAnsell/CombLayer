@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   endf/SEtable.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -102,7 +102,7 @@ SEtable::addEnergy(const double energy,const double sigma)
     }
   else
     {
-      size_t dist=vc-E.begin();
+      const long int dist=vc-E.begin();
       E.insert(vc,energy);
       sTot.insert(sTot.begin()+dist,sigma);
     }
@@ -126,8 +126,10 @@ SEtable::STotal(const double energy) const
     return sTot.front();
   if (energy>=E.back())
     return sTot.back();
-  const long int eInt=mathFunc::binSearch(E.begin(),E.end(),energy);
+  const size_t eInt=static_cast<size_t>
+    (mathFunc::binSearch(E.begin(),E.end(),energy));
   // Linear interpolation:
+
   const double frac=energy-E[eInt]/(E[eInt+1]-E[eInt]);
   return frac*sTot[eInt+1]+(1-frac)*sTot[eInt];
 }

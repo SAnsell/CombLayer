@@ -34,18 +34,27 @@ namespace WeightSystem
 
 class WWG
 {
+ public:
+
+  static void writeLine(std::ostream&,const double,size_t&);
+  static void writeLine(std::ostream&,const int,size_t&);
+
  private:
 
+  std::vector<double> EBin;      ///< Energy bins
   WeightMesh Grid;   ///< Mesh Grid
 
  public:
 
+  
   WWG();
 
   /// access to grid
   WeightMesh& getGrid() { return Grid; }
   /// access to grid
   const WeightMesh& getGrid() const { return Grid; }
+
+  void setEnergyBin(const std::vector<double>&);
   
   void write(std::ostream&) const;
   void writeWWINP(const std::string&) const;

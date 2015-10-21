@@ -67,11 +67,6 @@ class WeightMesh
   static double getCoordinate(const std::vector<double>&,
 			      const std::vector<size_t>&,
 			      const size_t);
-
-
-  static void writeLine(std::ostream&,const double,size_t&);
-  static void writeLine(std::ostream&,const int,size_t&);
-
   
  public:
 
@@ -92,7 +87,7 @@ class WeightMesh
   void setRefPt(const Geometry::Vec3D& Pt) { RefPoint=Pt; } 
   
   void write(std::ostream&) const;
-  void writeWWINP(std::ostream&) const;
+  void writeWWINP(std::ostream&,const size_t) const;
 
 };
 
