@@ -243,8 +243,6 @@ Qhull::calcCentreOfMass()
 	}
       CofM/=static_cast<double>(VList.size());
     }
-  if (this->getName()==207)
-    ELog::EM<<"Centr of Mass == "<<CofM<<ELog::endDebug;
   return;
 }
 

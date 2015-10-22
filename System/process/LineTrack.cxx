@@ -64,6 +64,10 @@
 #include "Object.h"
 #include "Qhull.h"
 #include "ObjSurfMap.h"
+#include "Zaid.h"
+#include "MXcards.h"
+#include "Material.h"
+#include "DBMaterial.h"
 #include "ObjTrackItem.h"
 #include "neutron.h"
 #include "Simulation.h"
@@ -137,6 +141,7 @@ LineTrack::clearAll()
   return;
 }
 
+  
 void
 LineTrack::calculate(const Simulation& ASim)
   /*!
@@ -331,9 +336,25 @@ LineTrack::write(std::ostream& OX) const
     \param OX :: Output stream
   */
 {
+
+  const ModelSupport::DBMaterial& DB=
+    ModelSupport::DBMaterial::Instance();
+
   OX<<"Pts == "<<InitPt<<"::"<<EndPt<<std::endl;
+
+  double sumSigma(0.0);
   for(size_t i=0;i<Cells.size();i++)
-    OX<<"  "<<Cells[i]<<" : "<<Track[i]<<std::endl;
+    {
+      const int matN=(!ObjVec[i]) ? -1 : ObjVec[i]->getMat();
+      const MonteCarlo::Material& matInfo=DB.getMaterial(matN);
+      const double density=matInfo.getAtomDensity();
+      const double A=matInfo.getMeanA();
+      const double sigma=Track[i]*density*std::pow(A,0.66);
+      OX<<"  "<<Cells[i]<<" : "<<Track[i]<<" "<<
+	matN<<" "<<sigma<<std::endl;
+      sumSigma+=sigma;
+    }
+  OX<<"Len == "<<TDist<<" "<<sumSigma<<std::endl;
   return;
 }
 

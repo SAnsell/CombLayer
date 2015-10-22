@@ -454,7 +454,7 @@ makeESS::build(Simulation& System,
   const std::string iradLine=IParam.getValue<std::string>("iradLineType");
   const std::string bunker=IParam.getValue<std::string>("bunkerType");
 
-  const size_t nF5 = IParam.getValue<int>("nF5");
+  const size_t nF5 = IParam.getValue<size_t>("nF5");
 
   if (StrFunc::checkKey("help",lowPipeType,lowModType,targetType) ||
       StrFunc::checkKey("help",iradLine,topModType,""))

@@ -140,4 +140,4 @@ setPointWeights(Simulation& System,
   return;
 }
 
-}   // NAMESPACE zoomSystem
+}   // NAMESPACE WeightSystem

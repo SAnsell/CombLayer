@@ -1147,11 +1147,10 @@ Simulation::calcAllVertex()
 {
   ELog::RegMethod RegA("Simulation","calcVertex");
   OTYPE::iterator mc;
-  int debugOutput(0);
+
   for(mc=OList.begin();mc!=OList.end();mc++)
     {
       // This point may be outside of the point
-      debugOutput++;
       if (!mc->second->calcVertex())   
 	mc->second->calcMidVertex();
     }

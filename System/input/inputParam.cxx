@@ -434,6 +434,25 @@ inputParam::getValue(const std::string& K,
 Geometry::Vec3D
 inputParam::getCntVec3D(const std::string& K,
 			const size_t setIndex,
+			size_t& itemIndex,
+			const std::string& ErrMessage) const
+  /*!
+    Get a value based on key
+    \param K :: Key to seach
+    \param setIndex :: set Value
+    \param itemIndex :: Index value [updated by 3/1]
+    \param ErrMessage :: Error message
+    \return Value
+   */
+{
+  ELog::RegMethod RegA("inputParam","getCntVec3D(Err)");
+  RegA.setTrack(ErrMessage);  
+  return getCntVec3D(K,setIndex,itemIndex);
+}
+
+Geometry::Vec3D
+inputParam::getCntVec3D(const std::string& K,
+			const size_t setIndex,
 			size_t& itemIndex) const
   /*!
     Get a value based on key

@@ -573,7 +573,26 @@ Material::getMacroDensity() const
   AW/=sumDens;
   return atomDensity*AW/RefCon::avogadro;
 }
-   
+
+
+double
+Material::getMeanA() const
+  /*!
+    Return the mean A value 
+  */
+{
+  double AW(0.0);
+  double sumDens(0.0);
+  for(const Zaid& ZC : zaidVec)
+    {
+      AW+=ZC.getAtomicMass()*ZC.getDensity();
+      sumDens+=ZC.getDensity();
+    }
+  if (sumDens<1e-10) return 0.0;
+  AW/=sumDens;
+  return AW;
+}
+  
 void
 Material::calcAtomicDensity() 
   /*!

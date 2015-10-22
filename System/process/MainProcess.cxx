@@ -281,14 +281,14 @@ createInputs(inputParam& IParam)
   IParam.regMulti("wExt","wExt",25,0);
   IParam.regMulti("wPWT","wPWT",25,0);    
   IParam.regItem("WTemp","weightTemp",1);
-  IParam.regDefItem<std::string>("WType","weightType",1,"basic");
+  IParam.regItem("WType","weightType",1,10);
 
 
   IParam.regMulti("wWWG","wWWG",25,0);
   IParam.regMulti("wwgE","wwgE",25,0);
-  IParam.regMulti("wwgXMesh","wwgXMesh",25,3);
-  IParam.regMulti("wwgYMesh","wwgYMesh",25,3);
-  IParam.regMulti("wwgZMesh","wwgZMesh",25,3);
+  IParam.regItem("wwgXMesh","wwgXMesh",3,125);
+  IParam.regItem("wwgYMesh","wwgYMesh",3,125);
+  IParam.regItem("wwgZMesh","wwgZMesh",3,125);
   
   
   IParam.regDefItem<std::string>("X","xmlout",1,"Model.xml");
