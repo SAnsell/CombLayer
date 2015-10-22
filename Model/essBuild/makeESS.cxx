@@ -500,12 +500,6 @@ makeESS::build(Simulation& System,
   ELog::RegMethod RegA("makeESS","build");
 
   int voidCell(74123);
-  // Add extra materials to the DBdatabase
-  if (IParam.flag("essDB"))
-    ModelSupport::addESSMaterial();
-  else
-    ModelSupport::cloneESSMaterial();
-
   const std::string lowPipeType=IParam.getValue<std::string>("lowPipe");
   const std::string lowModType=IParam.getValue<std::string>("lowMod");
   const std::string topModType=IParam.getValue<std::string>("topMod");
@@ -514,6 +508,16 @@ makeESS::build(Simulation& System,
   const std::string targetType=IParam.getValue<std::string>("targetType");
   const std::string iradLine=IParam.getValue<std::string>("iradLineType");
   const std::string bunker=IParam.getValue<std::string>("bunkerType");
+  const std::string materials=IParam.getValue<std::string>("materials");
+
+  // Add extra materials to the DBdatabase
+  if (materials=="neutronics")
+    ModelSupport::addESSMaterial();
+  else if (materials=="shielding")
+    ModelSupport::cloneESSMaterial();
+  else
+    ELog::EM << "Material database '" << materials << "' not defined" << ELog::endErr;
+
 
   const size_t nF5 = IParam.getValue<int>("nF5");
 

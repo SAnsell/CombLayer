@@ -655,7 +655,7 @@ createESSInputs(inputParam& IParam)
   IParam.setValue("targetType",std::string("Bilbao"));
 
   ///\todo change to database list [ordered]
-  IParam.regFlag("essDB","essDB");
+  IParam.regDefItem<std::string>("materials","materialDatabase",1,std::string("shielding"));
   
   IParam.regDefItem<std::string>("lowMod","lowModType",1,std::string("lowMod"));
   IParam.regDefItem<std::string>("topMod","topModType",1,std::string("topMod"));
@@ -669,8 +669,7 @@ createESSInputs(inputParam& IParam)
   IParam.regMulti("f5-collimators","f5collimators",30);
 
   
-  IParam.setDesc("essDB","Allows the use of the ESS material database");
-  
+  IParam.setDesc("materials","Set the material database to use (shielding or neutronics)");
   IParam.setDesc("beamlines","Creates beamlines on the main model");
   IParam.setDesc("lowMod","Type of low moderator to be built");
   IParam.setDesc("topMod","Type of top moderator to be built");
