@@ -351,7 +351,7 @@ LineTrack::write(std::ostream& OX) const
       const double A=matInfo.getMeanA();
       const double sigma=Track[i]*density*std::pow(A,0.66);
       OX<<"  "<<Cells[i]<<" : "<<Track[i]<<" "<<
-	matN<<" "<<sigma<<std::endl;
+	matN<<" "<<sigma<<" ("<<density*std::pow(A,0.66)<<")"<<std::endl;
       sumSigma+=sigma;
     }
   OX<<"Len == "<<TDist<<" "<<sumSigma<<std::endl;

@@ -56,6 +56,7 @@
 #include "WItem.h"
 #include "WCells.h"
 #include "WeightModification.h"
+#include "CellWeight.h"
 #include "Simulation.h"
 #include "objectRegister.h"
 #include "inputParam.h"
@@ -190,6 +191,7 @@ setWeights(Simulation& System,const std::vector<double>& Eval,
   WF->setEnergy(Eval);
   System.populateWCells();
   WF->balanceScale(WT);
+
   const Simulation::OTYPE& Cells=System.getCells();
   Simulation::OTYPE::const_iterator oc;
   for(oc=Cells.begin();oc!=Cells.end();oc++)
@@ -290,6 +292,7 @@ setWeightsBunker(Simulation& System,
   */
 {
   ELog::RegMethod RegA("BasicWWE","setWeightsBunker");
+  
   std::vector<double> Eval={1e-5,0.01,1,10,100,5e7};
   std::vector<double> WT={1.0,1.0,1.0,1.0,1.0,1.0};
   std::set<std::string> EmptySet;
@@ -300,6 +303,8 @@ setWeightsBunker(Simulation& System,
 
   const ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
+
+  ModelSupport::CellWeight CTrack;
   
   const int BStart=OR.getRenumberCell("ABunker");
   const int BRange=OR.getRenumberRange("ABunker");
@@ -311,14 +316,13 @@ setWeightsBunker(Simulation& System,
       const MonteCarlo::Qhull* CellPtr=System.findQhull(i);
       if (CellPtr)
 	{
-	  const int cN=CellPtr->getName();
+	  const int cN=CellPtr->getName();  // this should be i !!
 	  OTrack.addUnit(System,cN,CellPtr->getCofM());
-	  ELog::EM<<"Total == "<<OTrack.getAttnSum(cN)
-		  <<ELog::endDiag;
+	  CTrack.addTracks(cN,OTrack.getAttnSum(cN));
 	}
       
     }
-  OTrack.write(ELog::EM.Estream());
+  CTrack.write(ELog::EM.Estream());
   ELog::EM<<ELog::endDiag;
   return;
 }

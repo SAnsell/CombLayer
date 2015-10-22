@@ -58,7 +58,6 @@
 #include "MXcards.h"
 #include "Material.h"
 #include "DBMaterial.h"
-#include "ObjTrackItem.h"
 #include "LineTrack.h"
 #include "ObjectTrackAct.h"
 
@@ -205,6 +204,22 @@ ObjectTrackAct::getAttnSum(const int objN) const
 	}
     }
   return sum;
+}
+
+double
+ObjectTrackAct::getDistance(const int objN) const
+  /*!
+    Calculate the sum of the distance
+    \param objN :: Cell number to use
+    \return sum of distance in non-void
+  */
+{
+  ELog::RegMethod RegA("ObjectTrackAct","getDistance");
+
+  std::map<int,LineTrack>::const_iterator mc=Items.find(objN);
+  if (mc==Items.end())
+    throw ColErr::InContainerError<int>(objN,"objN in Items");
+  return mc->second.getTotalDist();
 }
 
 void 

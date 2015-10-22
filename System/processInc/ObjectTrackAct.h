@@ -78,6 +78,7 @@ class ObjectTrackAct
 
   double getMatSum(const int) const;
   double getAttnSum(const int) const;
+  double getDistance(const int) const;
   /// Debug function effectivley
   //  const std::map<int,ObjTrackItem>& getMap() const { return Items; }
 
