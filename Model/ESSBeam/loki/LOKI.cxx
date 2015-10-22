@@ -247,6 +247,7 @@ LOKI::build(Simulation& System,
   ELog::EM<<"\nBuilding LOKI on : "<<GItem.getKeyName()<<ELog::endDiag;
 
   setBeamAxis(System.getDataBase(),GItem,0);
+  ELog::EM<<"SET LOKI AXIS"<<ELog::endDiag;
   BendA->addInsertCell(GItem.getCells("Void"));
   BendA->addInsertCell(bunkerObj.getCell("MainVoid"));
   BendA->createAll(System,*lokiAxis,-3,*lokiAxis,-3); // beam front reversed

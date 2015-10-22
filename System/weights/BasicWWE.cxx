@@ -311,8 +311,10 @@ setWeightsBunker(Simulation& System,
       const MonteCarlo::Qhull* CellPtr=System.findQhull(i);
       if (CellPtr)
 	{
-	  OTrack.addUnit(System,CellPtr->getName(),
-			 CellPtr->getCofM());
+	  const int cN=CellPtr->getName();
+	  OTrack.addUnit(System,cN,CellPtr->getCofM());
+	  ELog::EM<<"Total == "<<OTrack.getAttnSum(cN)
+		  <<ELog::endDiag;
 	}
       
     }

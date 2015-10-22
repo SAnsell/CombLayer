@@ -91,6 +91,7 @@
 #include "GuideBay.h"
 #include "DiskPreMod.h"
 #include "Bunker.h"
+#include "Curtain.h"
 
 #include "ConicModerator.h"
 #include "essDBMaterial.h"
@@ -130,7 +131,9 @@ makeESS::makeESS() :
   ShutterBayObj(new ShutterBay("ShutterBay")),
 
   ABunker(new Bunker("ABunker")),
-  BBunker(new Bunker("BBunker"))
+  BBunker(new Bunker("BBunker")),
+  TopCurtain(new Curtain("Curtain"))
+  
  /*!
     Constructor
  */
@@ -160,6 +163,7 @@ makeESS::makeESS() :
   OR.addObject(ShutterBayObj);
   OR.addObject(ABunker);
   OR.addObject(BBunker);
+  OR.addObject(TopCurtain);
 }
 
 
@@ -332,16 +336,17 @@ void makeESS::buildF5Collimator(Simulation& System, size_t nF5)
   ELog::RegMethod RegA("makeESS", "buildF5Collimator");
   ModelSupport::objectRegister& OR = ModelSupport::objectRegister::Instance();
 
-  for (size_t i=0; i<nF5; i++) {
-    std::shared_ptr<F5Collimator> F5(new F5Collimator(StrFunc::makeString("F", i*10+5).c_str()));
-
-    OR.addObject(F5);
-    F5->addInsertCell(74123); // !!! 74123=voidCell // SA: how to exclude F5 from any cells?
-    F5->createAll(System, World::masterOrigin());
-
-    attachSystem::addToInsertSurfCtrl(System, *ABunker, *F5);
-    F5array.push_back(F5);
-  }
+  for (size_t i=0; i<nF5; i++)
+    {
+      std::shared_ptr<F5Collimator> F5(new F5Collimator(StrFunc::makeString("F", i*10+5).c_str()));
+      
+      OR.addObject(F5);
+      F5->addInsertCell(74123); // !!! 74123=voidCell // SA: how to exclude F5 from any cells?
+      F5->createAll(System,World::masterOrigin());
+      
+      attachSystem::addToInsertSurfCtrl(System,*ABunker,*F5);
+      F5array.push_back(F5);
+    }
 
   return;
 }
@@ -422,6 +427,15 @@ makeESS::makeBunker(Simulation& System,
   BBunker->insertComponent(System,"leftWall",*ABunker);
   BBunker->insertComponent(System,"roof",*ABunker);
   BBunker->insertComponent(System,"floor",*ABunker);
+
+  TopCurtain->addInsertCell("Top",74123);
+  TopCurtain->addInsertCell("Lower",BBunker->getCells("roof"));
+  TopCurtain->addInsertCell("Lower",ABunker->getCells("roof"));
+  TopCurtain->addInsertCell("Lower",ABunker->getCells("MainVoid"));
+  TopCurtain->addInsertCell("Lower",BBunker->getCells("MainVoid"));
+  //  TopCurtain->createAll(System,*GBArray[0],2,1,true);
+  TopCurtain->createAll(System,*ShutterBayObj,6,2,*GBArray[0],2,true);
+
   return;
 }
 

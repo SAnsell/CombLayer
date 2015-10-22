@@ -1420,6 +1420,14 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("BBunkerWallMat4","Steel71");
   Control.addVariable("BBunkerWallMat9","Tungsten");
 
+  Control.addVariable("CurtainLeftPhase",-65.0);
+  Control.addVariable("CurtainRightPhase",65.0);
+  Control.addVariable("CurtainWallThick",80.0);
+  Control.addVariable("CurtainInnerStep",25.0);
+  Control.addVariable("CurtainTopRaise",60.0);
+  Control.addVariable("CurtainHeight",250.0);
+  Control.addVariable("CurtainDepth",300.0);
+  Control.addVariable("CurtainWallMat","Concrete");
   
   return;
 }
