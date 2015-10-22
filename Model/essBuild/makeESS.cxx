@@ -447,7 +447,7 @@ makeESS::build(Simulation& System,
   const std::string targetType=IParam.getValue<std::string>("targetType");
   const std::string iradLine=IParam.getValue<std::string>("iradLineType");
   const std::string bunker=IParam.getValue<std::string>("bunkerType");
-  const std::string materials=IParam.getValue<std::string>("materials");
+  const std::string materials=IParam.getValue<std::string>("matDB");
 
   // Add extra materials to the DBMaterials
   if (materials=="neutronics")

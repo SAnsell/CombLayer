@@ -667,7 +667,7 @@ createESSInputs(inputParam& IParam)
   IParam.regDefItem<int>("nF5", "nF5", 1,0);
 
   
-  IParam.setDesc("materials","Set the material database to use (shielding or neutronics)");
+  IParam.setDesc("matDB","Set the material database to use (shielding or neutronics)");
   IParam.setDesc("beamlines","Creates beamlines on the main model");
   IParam.setDesc("lowMod","Type of low moderator to be built");
   IParam.setDesc("topMod","Type of top moderator to be built");
