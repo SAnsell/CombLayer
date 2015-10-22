@@ -394,6 +394,30 @@ objectRegister::getRenumberCell(const std::string& Name,
   return 0;
 }
 
+int
+objectRegister::getRenumberRange(const std::string& Name,
+				 const int Index) const
+  /*!
+    Get the range of cells of an object
+    \param Name :: Name of the object to get
+    \param Index :: Offset number
+    \return Cell number
+  */
+{
+  MTYPE::const_iterator mc;
+  if (Index>=0)
+    {
+      std::ostringstream cx;
+      cx<<Name<<Index;
+      mc=renumMap.find(cx.str());
+    }
+  else
+    mc=renumMap.find(Name);
+  if (mc!=renumMap.end())
+    return mc->second.second;
+  return 0;
+}
+
 std::string
 objectRegister::inRenumberRange(const int Index) const
   /*!
