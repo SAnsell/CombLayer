@@ -312,9 +312,29 @@ sub writeTail
 
   my $pdir=`pwd`;
   $pdir=$1 if ($pdir=~/.*\/(.*)/);
+
+  my $wordString;
+  print $DX "add_custom_target(words ",
+    " COMMAND grep -v -e \'^[[:space:][:cntrl:]]*\$\$\' \n";
+  foreach my $item (keys (%{$self->{srcDir}}))
+    {
+      ## Care here because we want local tar file
+      my $val=$self->{srcDir}{$item};
+      print $DX "     \./",$val,"/*.cxx \n";
+    }
+  foreach my $item (@{$self->{incDir}})
+    {
+      print $DX "     \./",$item,"/*.h \n";
+    }
+  print $DX "     \./Main/*.cxx \n";
+  print $DX "     \./CMake.pl  \n";
+  print $DX "     .//CMakeList.pm \n";
+  print $DX " | wc )\n";
+  print $DX "\n";
+
   
-  my $tarString;
   
+  my $tarString;  
   print $DX "add_custom_target(tar ",
     " COMMAND tar zcvf \${PROJECT_SOURCE_DIR}/",$pdir.".tgz \n";
 
