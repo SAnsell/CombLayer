@@ -449,16 +449,23 @@ makeESS::build(Simulation& System,
   const std::string bunker=IParam.getValue<std::string>("bunkerType");
   const std::string materials=IParam.getValue<std::string>("materials");
 
-  // Add extra materials to the DBdatabase
+  // Add extra materials to the DBMaterials
   if (materials=="neutronics")
     ModelSupport::addESSMaterial();
   else if (materials=="shielding")
     ModelSupport::cloneESSMaterial();
+  else if (materials=="help")
+    {
+      ELog::EM<<"Materials database setups:\n"
+	" -- shielding [S.Ansell original naming]\n"
+	" -- shielding [ESS Target division naming]"<<ELog::endDiag;
+      throw ColErr::ExitAbort("help");
+    }	
   else
-    ELog::EM << "Material database '" << materials << "' not defined" << ELog::endErr;
+    throw ColErr::InContainerError<std::string>(materials,
+						"Materials Data Base type");
 
-
-  const size_t nF5 = IParam.getValue<int>("nF5");
+  const size_t nF5 = IParam.getValue<size_t>("nF5");
 
   if (StrFunc::checkKey("help",lowPipeType,lowModType,targetType) ||
       StrFunc::checkKey("help",iradLine,topModType,""))
