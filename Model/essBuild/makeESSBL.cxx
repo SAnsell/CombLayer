@@ -215,7 +215,6 @@ makeESSBL::build(Simulation& System,
     {
       // NMX beamline
       ELog::EM<<"Building "<<beamName<<ELog::endDiag;
-      ELog::EM<<"Building DREAM"<<ELog::endDiag;
       DREAM dreamBL;
       dreamBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }

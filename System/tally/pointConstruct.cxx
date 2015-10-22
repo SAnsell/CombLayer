@@ -197,7 +197,7 @@ pointConstruct::processPoint(Simulation& System,
 
       size_t itemIndex(4);
       const Geometry::Vec3D DVec=
-	inputCntVec3D(IParam,Index,itemIndex,"Offset");
+	IParam.getCntVec3D("tally",Index,itemIndex,"Offset");
       const long int linkNumber=getLinkIndex(snd);
       
       processPointFree(System,place,linkNumber,DVec);

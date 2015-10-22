@@ -25,6 +25,7 @@
 #include <cmath>
 #include <complex> 
 #include <vector>
+#include <set>
 #include <map> 
 #include <string>
 #include <algorithm>
@@ -41,6 +42,10 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
+#include "Zaid.h"
+#include "MXcards.h"
+#include "Material.h"
+#include "DBMaterial.h"
 #include "ObjTrackItem.h"
 
 
@@ -105,14 +110,12 @@ ObjTrackItem::addDistance(const int MatN,const double D)
 {
   ELog::RegMethod RegA("ObjTrackItem","addDistance");
 
+  
   typedef std::map<int,double> MTYPE;
-  MTYPE::iterator mc=MTrack.find(MatN);
-  if (mc==MTrack.end())
-    {
-      std::pair<MTYPE::iterator,bool> Res=
-	MTrack.insert(MTYPE::value_type(MatN,0.0));
-      mc=Res.first;
-    }
+  std::pair<MTYPE::iterator,bool> Res=
+    MTrack.emplace(MatN,0.0);
+  MTYPE::iterator mc=Res.first;
+  
   // Test if exceeded aim point
   if (aimDist-(TDist+D)<1e-6)
     {
@@ -140,7 +143,7 @@ ObjTrackItem::getMatSum() const
       sum+=mc->second;
   return sum;
 }
-
+  
 void
 ObjTrackItem::write(std::ostream& OX) const
   /*!

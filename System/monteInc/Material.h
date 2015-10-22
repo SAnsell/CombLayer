@@ -102,6 +102,7 @@ class Material
   /// Get atomic density
   double getAtomDensity() const { return atomDensity; }
   double getMacroDensity() const;
+  double getMeanA() const;
   void setENDF7();
   void setDensity(const double);
   bool hasZaid(const int,const int,const char) const;

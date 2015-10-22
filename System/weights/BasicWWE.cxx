@@ -63,6 +63,9 @@
 #include "PointWeights.h"
 #include "TempWeights.h"
 #include "WWGconstruct.h"
+
+#include "LineTrack.h"
+#include "ObjectTrackAct.h"
 #include "BasicWWE.h"
 
 
@@ -95,8 +98,7 @@ simulationWeights(Simulation& System,
     }
   else
     {
-      const std::string WType=IParam.getValue<std::string>("weightType");
-      setWeights(System,WType);
+      setWeightType(System,IParam);
       if (IParam.flag("weight"))
 	{
 	  Geometry::Vec3D AimPoint;
@@ -116,23 +118,39 @@ simulationWeights(Simulation& System,
 }
 
 void
-setWeights(Simulation& System,const std::string& Type)
+setWeightType(Simulation& System,
+	   const mainSystem::inputParam& IParam)
   /*!
     set the basic weight either for low energy to high energy
     \param Type :: simulation type (basic/high/mid)
+    \param IParam Input point
   */
 {
   ELog::RegMethod RegA("BasicWWE","setWeights");
 
+
+
+  const std::string Type=IParam.flag("weightType") ?
+    IParam.getValue<std::string>("weightType") : "basic";
+  
+      
   if (Type=="basic")
     setWeightsBasic(System);
   else if (Type=="high")
     setWeightsHighE(System);
   else if (Type=="mid")
     setWeightsMidE(System);
+  else if (Type=="bunker")
+    {
+      size_t itemIndex(1);
+      const Geometry::Vec3D sPoint=
+	IParam.getCntVec3D("weightType",0,itemIndex,"Source Point");
+      setWeightsBunker(System,sPoint);
+    }
   else if (Type=="help")
     {
       ELog::EM<<"Basic weight energy types == \n"
+	"Bunker -- HighEnergy/Bunker\n"
 	"High -- High energy\n"
 	"Mid -- Mid/old point energy\n"
 	"Basic -- Cold spectrum energy"<<ELog::endBasic;
@@ -261,4 +279,48 @@ setWeightsBasic(Simulation& System)
   return;
 }
 
-}  // NAMESPACE shutterSystem
+void
+setWeightsBunker(Simulation& System,
+		 const Geometry::Vec3D& sourcePoint)
+  /*!
+    Function to set up the weights system.
+    This is for the bunker shielding at 
+    \param System :: Simulation component
+    \param sourcePoint :: point to calculate tracks from
+  */
+{
+  ELog::RegMethod RegA("BasicWWE","setWeightsBunker");
+  std::vector<double> Eval={1e-5,0.01,1,10,100,5e7};
+  std::vector<double> WT={1.0,1.0,1.0,1.0,1.0,1.0};
+  std::set<std::string> EmptySet;
+  setWeights(System,Eval,WT,EmptySet);
+
+  // In case not calculated
+  System.calcAllVertex();
+
+  const ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+  
+  const int BStart=OR.getRenumberCell("ABunker");
+  const int BRange=OR.getRenumberRange("ABunker");
+  ELog::EM<<"B == "<<BStart<<" "<<BRange<<ELog::endDiag;
+
+  ModelSupport::ObjectTrackAct OTrack(sourcePoint);
+  for(int i=BStart;i<BRange;i++)
+    {
+      const MonteCarlo::Qhull* CellPtr=System.findQhull(i);
+      if (CellPtr)
+	{
+	  OTrack.addUnit(System,CellPtr->getName(),
+			 CellPtr->getCofM());
+	}
+      
+    }
+  OTrack.write(ELog::EM.Estream());
+  ELog::EM<<ELog::endDiag;
+  return;
+}
+
+
+  
+}  // NAMESPACE weightSystem

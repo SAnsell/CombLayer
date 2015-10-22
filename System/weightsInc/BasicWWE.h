@@ -43,10 +43,12 @@ namespace WeightSystem
 		  const std::vector<double>&,
 		  const std::set<std::string>&);
 
-  void setWeights(Simulation&,const std::string&);
+  void setWeightType(Simulation&,const mainSystem::inputParam&);
   void setWeightsBasic(Simulation&);
   void setWeightsMidE(Simulation&);
   void setWeightsHighE(Simulation&);
+
+  void setWeightsBunker(Simulation&,const Geometry::Vec3D&);
 
 }
 

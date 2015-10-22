@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   support/support.cxx
  *
@@ -33,6 +33,7 @@
 #include <string>
 #include <algorithm>
 #include <functional>
+#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "MatrixBase.h"
@@ -1066,9 +1067,70 @@ splitParts(const std::string& Line,const char delim)
   return Out;
 
 }
+
+template<typename T>
+void
+writeLine(std::ostream& OX,const T& V,
+	  size_t& itemCnt,const size_t lineCut)
+  /*!
+    Write the line in the WWG format of 13.6g
+    \param OX :: Output stream
+    \param V :: Value
+    \param itemCnt :: Item value
+    \param lineCut :: Value to cut line
+   */
+{
+  static boost::format DblFMT("%13.4f");
+  static boost::format SciFMT("%13.4e");
+
+  const double VUnit=static_cast<double>(V);
+
+  const double AVal(std::fabs(VUnit));
+  if (AVal>9.9e4 || (AVal<1e-5 && AVal>1e-38))
+    OX<<(SciFMT % VUnit);
+  else
+    OX<<(DblFMT % VUnit);
+  
+  itemCnt++;
+  if (itemCnt==lineCut)
+    {
+      OX<<std::endl;
+      itemCnt=0;
+    }
+  return;
+}
+
+template<>
+void
+writeLine(std::ostream& OX,const Geometry::Vec3D& Vec,
+	  size_t& itemCnt,const size_t lineCut)
+  /*!
+    Write the line in the WWG format of 13.6g
+    \param OX :: Output stream
+    \param V :: Value
+    \param itemCnt :: Item value
+    \param lineCut :: Value to cut line
+   */
+{
+  for(size_t i=0;i<3;i++)
+    writeLine(OX,Vec[i],itemCnt,lineCut);
+  return;
+}
+  
+
+
   
 /// \cond TEMPLATE 
 
+template void writeLine(std::ostream&,const double&,
+			size_t&,const size_t);
+template void writeLine(std::ostream&,const int&,
+			size_t&,const size_t);
+template void writeLine(std::ostream&,const long int&,
+			size_t&,const size_t);
+template void writeLine(std::ostream&,const size_t&,
+			size_t&,const size_t);
+  
 template int itemize(std::string&,std::string&,double&);
 template int itemize(std::string&,std::string&,int&);
 

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   weightsInc/WWG.h
+ * File:   testInclude/testEllipsoid.h
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -19,51 +19,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef WeightSystem_WWG_h
-#define WeightSystem_WWG_h
+#ifndef testEllipsoid_h
+#define testEllipsoid_h 
 
-namespace attachSystem
+/*!
+  \class testEllipsoid
+  \brief Tests the class elipticCyl class
+  \author S. Ansell
+  \date October 2015
+  \version 1.0
+
+  Test the distance of a point to the cylinder
+*/
+
+class testEllipsoid 
 {
-  class FixedComp;
-}
+private:
 
-class Simulation;
+  Geometry::Ellipsoid A;      ///< Cylinder object to create/work on 
 
-namespace WeightSystem
-{
-
-class WWG
-{
- public:
-
-  static void writeLine(std::ostream&,const double,size_t&);
-  static void writeLine(std::ostream&,const int,size_t&);
-
- private:
-
-  std::vector<double> EBin;      ///< Energy bins
-  WeightMesh Grid;   ///< Mesh Grid
-
- public:
-
-  
-  WWG();
-
-  /// access to grid
-  WeightMesh& getGrid() { return Grid; }
-  /// access to grid
-  const WeightMesh& getGrid() const { return Grid; }
-
-  void setEnergyBin(const std::vector<double>&);
-  
-  void write(std::ostream&) const;
-  void writeWWINP(const std::string&) const;
-  
-};
+  //Tests 
+  int testDistance();
+  int testGeneral();
+  int testMirror();
+  int testSet();
+  int testTransform();
  
+public:
 
-}
+  testEllipsoid();
+  ~testEllipsoid();
 
+  int applyTest(const int);     
+};
 
 #endif
- 

@@ -106,6 +106,9 @@ class inputParam
 
   Geometry::Vec3D getCntVec3D(const std::string&,
 			      const size_t,size_t&) const;
+  Geometry::Vec3D getCntVec3D(const std::string&,
+			      const size_t,size_t&,
+			      const std::string&) const;
   
   bool compNoCaseValue(const std::string&,const std::string&) const;
   template<typename T>

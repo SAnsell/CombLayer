@@ -117,9 +117,9 @@ meshConstruct::processMesh(Simulation& System,
       const std::string doseType=
 	inputItem<std::string>(IParam,Index,itemIndex++,"Dose type");
       Geometry::Vec3D APt=
-	inputCntVec3D(IParam,Index,itemIndex,"Low Corner");
+	IParam.getCntVec3D("tally",Index,itemIndex,"Low Corner");
       Geometry::Vec3D BPt=
-	inputCntVec3D(IParam,Index,itemIndex,"High Corner");
+	IParam.getCntVec3D("tally",Index,itemIndex,"High Corner");
       
       // Rotation:
       std::string revStr;
