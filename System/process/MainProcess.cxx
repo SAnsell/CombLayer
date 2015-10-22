@@ -654,8 +654,7 @@ createESSInputs(inputParam& IParam)
   IParam.setValue("sdefType",std::string("ess"));  
   IParam.setValue("targetType",std::string("Bilbao"));
 
-  ///\todo change to database list [ordered]
-  IParam.regDefItem<std::string>("materials","materialDatabase",1,std::string("shielding"));
+  IParam.regDefItem<std::string>("matDB","materialDatabase",1,std::string("shielding"));
   
   IParam.regDefItem<std::string>("lowMod","lowModType",1,std::string("lowMod"));
   IParam.regDefItem<std::string>("topMod","topModType",1,std::string("topMod"));
