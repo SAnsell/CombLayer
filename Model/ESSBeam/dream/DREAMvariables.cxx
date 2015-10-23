@@ -79,7 +79,7 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamFALayerThick2",1.5);
 
   Control.addVariable("dreamFALayerMat0","Void");
-  Control.addVariable("dreamFALayerMat1","Glass");
+  Control.addVariable("dreamFALayerMat1","Aluminium");
   Control.addVariable("dreamFALayerMat2","Void");       
 
   Control.addVariable("dreamFA0TypeID","Tapper");
@@ -107,6 +107,7 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamVacAFlangeWall",1.0);      // GUESS
   Control.addVariable("dreamVacAFlangeLength",10.0);   // GUESS
   Control.addVariable("dreamVacAFeMat","Stainless304");
+  Control.addVariable("dreamVacAVoidMat","Void");
 
   // VACUUM PIPES:
   Control.addVariable("dreamPipeARadius",8.0);
@@ -134,7 +135,7 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamFBLayerThick2",1.5);
 
   Control.addVariable("dreamFBLayerMat0","Void");
-  Control.addVariable("dreamFBLayerMat1","Glass");
+  Control.addVariable("dreamFBLayerMat1","Aluminium");
   Control.addVariable("dreamFBLayerMat2","Void");       
   
   Control.addVariable("dreamFB0TypeID","Tapper");
@@ -227,7 +228,7 @@ DREAMvariables(FuncDataBase& Control)
 
   Control.addVariable("dreamT0DiskA0Thick",5.4);  // to include B4C
   Control.addVariable("dreamT0DiskAInnerMat","Inconnel");
-  Control.addVariable("dreamT0DiskAOuterMat","Void");
+  Control.addVariable("dreamT0DiskAOuterMat","Tungsten");
   
   Control.addVariable("dreamT0DiskANBlades",2);
   Control.addVariable("dreamT0DiskA0PhaseAngle0",95.0);
@@ -319,7 +320,7 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamFCLayerThick2",1.5);
 
   Control.addVariable("dreamFCLayerMat0","Void");
-  Control.addVariable("dreamFCLayerMat1","Glass");
+  Control.addVariable("dreamFCLayerMat1","Aluminium");
   Control.addVariable("dreamFCLayerMat2","Void");       
   
   Control.addVariable("dreamFC0TypeID","Tapper");
@@ -402,7 +403,7 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamFDLayerThick2",1.5);
 
   Control.addVariable("dreamFDLayerMat0","Void");
-  Control.addVariable("dreamFDLayerMat1","Glass");
+  Control.addVariable("dreamFDLayerMat1","Aluminium");
   Control.addVariable("dreamFDLayerMat2","Void");       
   
   Control.addVariable("dreamFD0TypeID","Tapper");
@@ -487,7 +488,7 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamFELayerThick2",1.5);
 
   Control.addVariable("dreamFELayerMat0","Void");
-  Control.addVariable("dreamFELayerMat1","Glass");
+  Control.addVariable("dreamFELayerMat1","Aluminium");
   Control.addVariable("dreamFELayerMat2","Void");       
   
   Control.addVariable("dreamFE0TypeID","Tapper");
@@ -575,7 +576,7 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamFFLayerThick2",1.5);
 
   Control.addVariable("dreamFFLayerMat0","Void");
-  Control.addVariable("dreamFFLayerMat1","Glass");
+  Control.addVariable("dreamFFLayerMat1","Aluminium");
   Control.addVariable("dreamFFLayerMat2","Void");       
   
   Control.addVariable("dreamFF0TypeID","Tapper");
@@ -619,7 +620,7 @@ DREAMvariables(FuncDataBase& Control)
 
   Control.addVariable("dreamT0DiskD0Thick",5.4);  // to include B4C
   Control.addVariable("dreamT0DiskDInnerMat","Inconnel");
-  Control.addVariable("dreamT0DiskDOuterMat","Void");
+  Control.addVariable("dreamT0DiskDOuterMat","Tungsten");
   
   Control.addVariable("dreamT0DiskDNBlades",2);
   Control.addVariable("dreamT0DiskD0PhaseAngle0",95.0);

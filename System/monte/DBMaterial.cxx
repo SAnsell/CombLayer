@@ -477,8 +477,8 @@ DBMaterial::initMaterial()
 		   "smeth.03t",MLib);
   setMaterial(MObj);
 
-    // Material #65 Regular concrete [half density]
-    // Regular concrete at 2.339/2 g/cc [supposedly]
+  // Material #65 Regular concrete [half density]
+  // Regular concrete at 2.339/2 g/cc [supposedly]
   MObj.setMaterial(65,"HalfConcrete","1001.70c 3.88277E-03 "
 		   "1002.24c 0.582505E-06 "
 		   "8016.24c  2.19249E-02 11023.60c 0.523890E-03 "

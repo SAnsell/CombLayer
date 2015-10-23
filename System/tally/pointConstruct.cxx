@@ -126,9 +126,9 @@ pointConstruct::processPoint(Simulation& System,
   if (PType=="free")
     {
       std::vector<Geometry::Vec3D> EmptyVec;
-      Geometry::Vec3D PPoint=
-	inputItem<Geometry::Vec3D>(IParam,Index,2,"Point for point detector");
-
+      size_t itemIndex(2);
+      Geometry::Vec3D PPoint=IParam.getCntVec3D
+	("tally",Index,itemIndex,"Point for point detector");
       const int flag=checkItem<std::string>(IParam,Index,5,revStr);
       if (!flag || revStr!="r")
 	PPoint=MR.reverseRotate(PPoint);

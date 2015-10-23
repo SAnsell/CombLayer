@@ -429,13 +429,18 @@ makeESS::makeBunker(Simulation& System,
   BBunker->insertComponent(System,"floor",*ABunker);
 
   TopCurtain->addInsertCell("Top",74123);
-  TopCurtain->addInsertCell("Lower",BBunker->getCells("roof"));
   TopCurtain->addInsertCell("Lower",ABunker->getCells("roof"));
+  TopCurtain->addInsertCell("Lower",BBunker->getCells("roof"));
+  TopCurtain->addInsertCell("Top",ABunker->getCells("roof"));
+  TopCurtain->addInsertCell("Top",BBunker->getCells("roof"));
+    
   TopCurtain->addInsertCell("Lower",ABunker->getCells("MainVoid"));
   TopCurtain->addInsertCell("Lower",BBunker->getCells("MainVoid"));
   //  TopCurtain->createAll(System,*GBArray[0],2,1,true);
-  TopCurtain->createAll(System,*ShutterBayObj,6,2,*GBArray[0],2,true);
+  TopCurtain->createAll(System,*ShutterBayObj,6,4,*GBArray[0],2,true);
 
+  //  TopCurtain->insertComponent(System,"topVoid",*ABunker);
+  //  TopCurtain->insertComponent(System,"topVoid",*BBunker);
   return;
 }
 

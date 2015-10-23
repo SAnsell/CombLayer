@@ -140,9 +140,28 @@ CellWeight::updateWM() const
   // quick way to get length of array
   std::vector<double> DVec=WF->getEnergy();
 
+  double maxW(0.0);
+  double minW(1e38);
+  double aveW(0.0);
+  int cnt(0);
   for(const std::map<int,CellItem>::value_type& cv : Cells)
     {
       const double W=(exp(-cv.second.weight*sigmaScale));
+      if (W>maxW) maxW=W;
+      if (W<minW && minW>1e-38) minW=W;
+      aveW+=W;
+      cnt++;
+    }
+  aveW/=cnt;
+  // Work on minW first:
+  const double factor=(minW>minW<1e-7) ?
+    log(1e-8)/log(minW) : 1.0;
+      
+
+
+  for(const std::map<int,CellItem>::value_type& cv : Cells)
+    {
+      const double W=(exp(-cv.second.weight*sigmaScale*factor));
       std::fill(DVec.begin(),DVec.end(),W);
       WF->setWeights(cv.first,DVec);
     }

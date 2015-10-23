@@ -419,7 +419,7 @@ Bunker::createObjects(Simulation& System,
   // External
   Out=ModelSupport::getComposite(SMap,bnkIndex,lwIndex,rwIndex,
 				 " 1 -17 3M -4N 15 -16 ");
-  addOuterSurf(Out);
+  addOuterSurf(Out+Inner);
         
   return;
 }

@@ -124,6 +124,20 @@ Curtain::populate(const FuncDataBase& Control)
   depth=Control.EvalVar<double>(keyName+"Depth");
     
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
+
+  nTopLayers=Control.EvalVar<size_t>(keyName+"NTopLayers");
+  nMidLayers=Control.EvalVar<size_t>(keyName+"NMidLayers");
+  nBaseLayers=Control.EvalVar<size_t>(keyName+"NBaseLayers");
+
+  //  ModelSupport::populateDivide(Control,nLayers,keyName+"WallMat",
+  //			       wallMat,wallMatVec);
+  ModelSupport::populateDivideLen(Control,nTopLayers,keyName+"TopLen",
+				  height-topRaise,topFrac);
+  ModelSupport::populateDivideLen(Control,nMidLayers,keyName+"MidLen",
+				  topRaise,midFrac);
+  ModelSupport::populateDivideLen(Control,nBaseLayers,keyName+"BaseLen",
+				  depth,baseFrac);
+
   return;
 }
   
@@ -222,13 +236,12 @@ Curtain::createObjects(Simulation& System,
   Out=ModelSupport::getComposite(SMap,curIndex," 7 -17 3 -4 15 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
   setCell("topWall",cellIndex-1);
-  // Top section vpid
-  Out=ModelSupport::getComposite(SMap,curIndex," 17 -27 3 -4 15 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-  addCell("topWall",cellIndex-1);
+  // Top section void
+  //  Out=ModelSupport::getComposite(SMap,curIndex," 17 -27 3 -4 15 -6 ");
+  //  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  //  addCell("topVoid",cellIndex-1);
 
   // Mid section
-  ELog::EM<<"Top surf == "<<topSurf<<ELog::endDiag;
   Out=ModelSupport::getComposite(SMap,curIndex," 7 -27 3 -4 -15 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+topSurf));
   setCell("midWall",cellIndex-1);
@@ -237,25 +250,98 @@ Curtain::createObjects(Simulation& System,
   Out=ModelSupport::getComposite(SMap,curIndex," -27 3 -4 5 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,
 				   Out+topBase+sideSurf));
-  
-  setCell("lowWall",cellIndex-1);
+  setCell("baseWall",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,curIndex," 7 -27 3 -4 5 -6");
+  Out=ModelSupport::getComposite(SMap,curIndex," 7 -17 3 -4 5 -6");
   addOuterSurf("Top",Out);
-  Out=ModelSupport::getComposite(SMap,curIndex,"-27 3 -4 5 ");
+  Out=ModelSupport::getComposite(SMap,curIndex,"-27 3 -4 5 -15 ");
   addOuterSurf("Lower",Out);
 
   return;
 }
 
 void 
-Curtain::layerProcess(Simulation& System)
+Curtain::layerProcess(Simulation& System,
+		      const attachSystem::FixedComp& FC,  
+		      const long int topIndex)
   /*!
     Processes the splitting of the surfaces into a multilayer system
     \param System :: Simulation to work on
+    \param FC :: Side of bulk shield + divider(?)
+    \param topIndex :: top index
+
   */
 {
   ELog::RegMethod RegA("Curtain","layerProcess");
+  std::string OutA,OutB;
+  
+  if (nTopLayers>1)
+    {
+      std::string OutA,OutB;
+      ModelSupport::surfDivide DA;
+            
+      for(size_t i=1;i<nTopLayers;i++)
+	{
+	  DA.addFrac(topFrac[i-1]);
+	  DA.addMaterial(wallMat);
+	}
+      DA.addMaterial(wallMat);
+      
+      DA.setCellN(getCell("topWall"));
+      DA.setOutNum(cellIndex,curIndex+1001);
+      ModelSupport::mergeTemplate<Geometry::Plane,
+				  Geometry::Plane> surroundRule;
+      surroundRule.setSurfPair(SMap.realSurf(curIndex+15),
+			       SMap.realSurf(curIndex+6));
+      
+      OutA=ModelSupport::getComposite(SMap,curIndex," 15 ");
+      OutB=ModelSupport::getComposite(SMap,curIndex," -6 ");
+      
+      surroundRule.setInnerRule(OutA);
+      surroundRule.setOuterRule(OutB);
+      
+      DA.addRule(&surroundRule);
+      DA.activeDivideTemplate(System);
+      cellIndex=DA.getCellNum();
+      //      removeCell("topWall");
+      //      setCells(cellName,firstCell,cellIndex-1);
+
+    }
+  if (nBaseLayers>1)
+    {
+      const int topSurf=FC.getSignedLU(topIndex).getLinkSurf();
+      ELog::EM<<"Top surf == "<<topSurf<<ELog::endDiag;
+      ModelSupport::surfDivide DA;
+            
+      for(size_t i=1;i<nTopLayers;i++)
+	{
+	  DA.addFrac(topFrac[i-1]);
+	  DA.addMaterial(wallMat);
+	}
+      DA.addMaterial(wallMat);
+      
+      DA.setCellN(getCell("baseWall"));
+      DA.setOutNum(cellIndex,curIndex+1101);
+      ModelSupport::mergeTemplate<Geometry::Plane,
+				  Geometry::Plane> surroundRule;
+      surroundRule.setSurfPair(SMap.realSurf(curIndex+5),
+			       SMap.realSurf(topSurf));
+      
+      OutA=ModelSupport::getComposite(SMap,curIndex," 5 ");
+      OutB=FC.getSignedLinkString(-topIndex);
+	//      OutB=ModelSupport::getComposite(SMap,curIndex,
+	//			      );
+      
+      surroundRule.setInnerRule(OutA);
+      surroundRule.setOuterRule(OutB);
+      
+      DA.addRule(&surroundRule);
+      DA.activeDivideTemplate(System);
+      cellIndex=DA.getCellNum();
+      //      removeCell("topWall");
+      //      setCells(cellName,firstCell,cellIndex-1);
+
+    }
   // Steel layers
   //  layerSpecial(System);
 
@@ -302,7 +388,7 @@ Curtain::createAll(Simulation& System,
   createSurfaces();
   createLinks();
   createObjects(System,FC,topIndex,sideIndex);
-  layerProcess(System);
+  layerProcess(System,FC,topIndex);
   insertObjects(System);              
 
   return;

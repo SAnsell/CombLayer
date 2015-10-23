@@ -312,6 +312,8 @@ setWeightsObject(Simulation& System,const std::string& Key,
   
   const int BStart=OR.getRenumberCell(Key);
   const int BRange=OR.getRenumberRange(Key);
+  if (BStart==0)
+    throw ColErr::InContainerError<std::string>(Key,"Object name not found");
 
   ModelSupport::ObjectTrackAct OTrack(sourcePoint);
   for(int i=BStart;i<=BRange;i++)
@@ -330,6 +332,8 @@ setWeightsObject(Simulation& System,const std::string& Key,
 	  //	  for(size_t i=0;i<cellN.size();i++)
 	  //	    CTrack.addTracks(cellN[i],attnN[i]);
 	  CTrack.updateWM();
+	  ELog::EM<<CTrack<<ELog::endDiag;
+		  
 	}
       
     }

@@ -56,6 +56,13 @@ class Curtain : public attachSystem::ContainedGroup,
   double depth;                  ///< Floor depth
   double height;                 ///< Roof height
 
+  size_t nTopLayers;             ///< Number of top layers
+  size_t nMidLayers;             ///< Number of top layers
+  size_t nBaseLayers;             ///< Number of top layers
+  std::vector<double> topFrac;    ///< Layer divider
+  std::vector<double> midFrac;    ///< Layer divider
+  std::vector<double> baseFrac;   ///< Layer divider
+  
   int wallMat;                   ///< wall material  
   
   void populate(const FuncDataBase&);
@@ -69,7 +76,9 @@ class Curtain : public attachSystem::ContainedGroup,
   void createObjects(Simulation&,const attachSystem::FixedComp&,
 		     const long int,const long int);
 
-  void layerProcess(Simulation&);
+  void layerProcess(Simulation&,const attachSystem::FixedComp&,
+		    const long int);
+
   
  public:
 
