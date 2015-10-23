@@ -48,7 +48,8 @@ namespace WeightSystem
   void setWeightsMidE(Simulation&);
   void setWeightsHighE(Simulation&);
 
-  void setWeightsBunker(Simulation&,const Geometry::Vec3D&);
+  void setWeightsObject(Simulation&,const std::string&,
+			const Geometry::Vec3D&);
 
 }
 

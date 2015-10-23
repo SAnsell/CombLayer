@@ -222,6 +222,20 @@ ObjectTrackAct::getDistance(const int objN) const
   return mc->second.getTotalDist();
 }
 
+void
+ObjectTrackAct::createAttenPath(std::vector<int>& cellN,
+				std::vector<double>& attnD) const
+  /*!
+    Calculate the sum of the distance
+    \
+  */
+{
+  ELog::RegMethod RegA("ObjectTrackAct","createAttenPath");
+  for(const std::map<int,LineTrack>::value_type& mc : Items)
+    mc.second.createAttenPath(cellN,attnD);
+  return;
+}
+
 void 
 ObjectTrackAct::write(std::ostream& OX) const
   /*!

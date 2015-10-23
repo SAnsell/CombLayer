@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   process/CellWeight.cxx
+ * File:   weight/CellWeight.cxx
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -57,7 +57,7 @@
 
 #include "debugMethod.h"
 
-namespace ModelSupport
+namespace WeightSystem
 {
 
 std::ostream&
@@ -142,7 +142,8 @@ CellWeight::updateWM() const
 
   for(const std::map<int,CellItem>::value_type& cv : Cells)
     {
-      std::fill(DVec.begin(),DVec.end(),0.876);
+      const double W=(exp(-cv.second.weight*sigmaScale));
+      std::fill(DVec.begin(),DVec.end(),W);
       WF->setWeights(cv.first,DVec);
     }
   return;
@@ -159,7 +160,7 @@ CellWeight::write(std::ostream& OX) const
   for(const std::map<int,CellItem>::value_type& cv : Cells)
     OX<<cv.first<<" "<<cv.second.weight<<" "<<cv.second.number<<std::endl;
   return;
-}
+} 
 
   
-} // Namespace ModelSupport
+} // Namespace WeightSystem

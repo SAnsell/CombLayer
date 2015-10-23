@@ -130,31 +130,35 @@ setWeightType(Simulation& System,
   ELog::RegMethod RegA("BasicWWE","setWeights");
 
 
-
   const std::string Type=IParam.flag("weightType") ?
     IParam.getValue<std::string>("weightType") : "basic";
   
-      
+  
   if (Type=="basic")
     setWeightsBasic(System);
   else if (Type=="high")
     setWeightsHighE(System);
   else if (Type=="mid")
     setWeightsMidE(System);
-  else if (Type=="bunker")
+  else if (Type=="object")
     {
-      size_t itemIndex(1);
+      const size_t itemCnt=IParam.itemCnt("weightType",0);
+      if (itemCnt<3)
+	throw ColErr::IndexError<size_t>(itemCnt,2,"weightType incomplete");
+      const std::string OName=
+	IParam.getValue<std::string>("weightType",0,1);
+      size_t itemIndex(2);
       const Geometry::Vec3D sPoint=
 	IParam.getCntVec3D("weightType",0,itemIndex,"Source Point");
-      setWeightsBunker(System,sPoint);
+      setWeightsObject(System,OName,sPoint);
     }
   else if (Type=="help")
     {
       ELog::EM<<"Basic weight energy types == \n"
-	"Bunker -- HighEnergy/Bunker\n"
-	"High -- High energy\n"
-	"Mid -- Mid/old point energy\n"
-	"Basic -- Cold spectrum energy"<<ELog::endBasic;
+	"object [name Vec3D] -- HighEnergy Object name and source point \n"
+	"high -- High energy\n"
+	"mid -- Mid/old point energy\n"
+	"basic -- Cold spectrum energy"<<ELog::endBasic;
       throw ColErr::ExitAbort("End Help");
     }
   else
@@ -282,7 +286,7 @@ setWeightsBasic(Simulation& System)
 }
 
 void
-setWeightsBunker(Simulation& System,
+setWeightsObject(Simulation& System,const std::string& Key,
 		 const Geometry::Vec3D& sourcePoint)
   /*!
     Function to set up the weights system.
@@ -291,7 +295,7 @@ setWeightsBunker(Simulation& System,
     \param sourcePoint :: point to calculate tracks from
   */
 {
-  ELog::RegMethod RegA("BasicWWE","setWeightsBunker");
+  ELog::RegMethod RegA("BasicWWE","setWeightsObject");
   
   std::vector<double> Eval={1e-5,0.01,1,10,100,5e7};
   std::vector<double> WT={1.0,1.0,1.0,1.0,1.0,1.0};
@@ -304,26 +308,31 @@ setWeightsBunker(Simulation& System,
   const ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  ModelSupport::CellWeight CTrack;
+  CellWeight CTrack;
   
-  const int BStart=OR.getRenumberCell("ABunker");
-  const int BRange=OR.getRenumberRange("ABunker");
-  ELog::EM<<"B == "<<BStart<<" "<<BRange<<ELog::endDiag;
+  const int BStart=OR.getRenumberCell(Key);
+  const int BRange=OR.getRenumberRange(Key);
 
   ModelSupport::ObjectTrackAct OTrack(sourcePoint);
-  for(int i=BStart;i<BRange;i++)
+  for(int i=BStart;i<=BRange;i++)
     {
       const MonteCarlo::Qhull* CellPtr=System.findQhull(i);
       if (CellPtr)
 	{
+	  std::vector<int> cellN;
+	  std::vector<double> attnN;
 	  const int cN=CellPtr->getName();  // this should be i !!
 	  OTrack.addUnit(System,cN,CellPtr->getCofM());
+	  // either this :
 	  CTrack.addTracks(cN,OTrack.getAttnSum(cN));
+	  // or
+	  //	  OTrack.createAttenPath(cellN,attnN);
+	  //	  for(size_t i=0;i<cellN.size();i++)
+	  //	    CTrack.addTracks(cellN[i],attnN[i]);
+	  CTrack.updateWM();
 	}
       
     }
-  CTrack.write(ELog::EM.Estream());
-  ELog::EM<<ELog::endDiag;
   return;
 }
 

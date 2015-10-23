@@ -84,7 +84,8 @@ class LineTrack
   Geometry::Vec3D getPoint(const size_t) const;
   /// access total distance
   double getTotalDist() const { return aimDist; }
-  
+
+  void createAttenPath(std::vector<int>&,std::vector<double>&) const;
   void write(std::ostream&) const;
 };
 

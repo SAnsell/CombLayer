@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   processInc/CellWeight.h
+ * File:   weightInc/CellWeight.h
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -19,12 +19,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef ModelSupport_CellWeight_h
-#define ModelSupport_CellWeight_h
+#ifndef WeightSystem_CellWeight_h
+#define WeightSystem_CellWeight_h
 
-
-
-namespace ModelSupport
+namespace WeightSystem
 {
 
 struct CellItem
@@ -60,7 +58,6 @@ class CellWeight
   CellWeight(const CellWeight&);
   CellWeight& operator=(const CellWeight&);    
   ~CellWeight() {}          ///< Destructor
-
 
   void addTracks(const int,const double);
   void updateWM() const;

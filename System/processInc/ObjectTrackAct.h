@@ -81,7 +81,7 @@ class ObjectTrackAct
   double getDistance(const int) const;
   /// Debug function effectivley
   //  const std::map<int,ObjTrackItem>& getMap() const { return Items; }
-
+  void createAttenPath(std::vector<int>&,std::vector<double>&) const;
   void write(std::ostream&) const;
 
 };

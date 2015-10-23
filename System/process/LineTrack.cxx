@@ -330,6 +330,35 @@ LineTrack::getPoint(const size_t Index) const
 }
 
 void
+LineTrack::createAttenPath(std::vector<int>& cVec,
+			   std::vector<double>& aVec) const
+  /*!
+    Calculate track components
+    \param cVec :: Cell vector
+    \param aVec :: Attenuation 
+  */
+{
+  const ModelSupport::DBMaterial& DB=
+    ModelSupport::DBMaterial::Instance();
+
+  double sumSigma(0.0);
+  for(size_t i=0;i<Cells.size();i++)
+    {
+      const int matN=(!ObjVec[i]) ? -1 : ObjVec[i]->getMat();
+      if (matN>0)
+	{
+	  const MonteCarlo::Material& matInfo=DB.getMaterial(matN);
+	  const double density=matInfo.getAtomDensity();
+	  const double A=matInfo.getMeanA();
+	  const double sigma=Track[i]*density*std::pow(A,0.66);
+	  cVec.push_back(ObjVec[i]->getName());
+	  aVec.push_back(sigma);
+	}
+    }
+  return;
+}
+
+  void
 LineTrack::write(std::ostream& OX) const
   /*!
     Write out the track
