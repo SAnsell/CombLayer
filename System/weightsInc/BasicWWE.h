@@ -36,20 +36,45 @@ class Simulation;
 */
 
 namespace WeightSystem
-{ 
-  void simulationWeights(Simulation&,const mainSystem::inputParam&);
-			
-  void setWeights(Simulation&,const std::vector<double>&,
-		  const std::vector<double>&,
-		  const std::set<std::string>&);
+{
 
-  void setWeightType(Simulation&,const mainSystem::inputParam&);
-  void setWeightsBasic(Simulation&);
-  void setWeightsMidE(Simulation&);
-  void setWeightsHighE(Simulation&);
+/*!
+  \class baseWeightState 
+  \verison 1.0
+  \author S. Ansell
+  \date October 2015
+  \brief Tempory state for weight building
+ */
+  
+class basicWeightState
+{
+ private:
+
+  std::vector<double> energyBand;      ///< Energy band
+  std::vector<double> WT;              ///< Weights
+
+  void setLowEBand();
+  void setMidEBand();
+  void setHighEBand();
+  void setFlatWeight();
+
+  void setWeights(Simulation&,const std::vector<double>&,
+		  const std::vector<double>&);
+
+  void setWeightType(Simulation&,const mainSystem::inputParam&);  
 
   void setWeightsObject(Simulation&,const std::string&,
 			const Geometry::Vec3D&);
+  
+ public:
+  
+  void simulationWeights(Simulation&,const mainSystem::inputParam&);
+  
+};
+  
+
+			
+
 
 }
 

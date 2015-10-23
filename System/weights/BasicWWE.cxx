@@ -73,10 +73,18 @@
 namespace WeightSystem
 {
 
+basicWeightState::basicWeightState() 
+{
+  setHighEBand();
+}
+
 void
-simulationWeights(Simulation& System,
-		 const mainSystem::inputParam& IParam)
-  /*!
+
+  
+void
+basicWeightState::simulationWeights(Simulation& System,
+				    const mainSystem::inputParam& IParam)
+/*!
     Set individual weights based on temperature/cell
     \param System :: Simulation
     \param IParam :: input stream
@@ -119,39 +127,30 @@ simulationWeights(Simulation& System,
 }
 
 void
-setWeightType(Simulation& System,
-	   const mainSystem::inputParam& IParam)
+basicWeightState::setWeightType(Simulation& System,
+				const mainSystem::inputParam& IParam)
   /*!
-    set the basic weight either for low energy to high energy
+    Set the basic weight either for low energy to high energy
     \param Type :: simulation type (basic/high/mid)
     \param IParam Input point
   */
 {
-  ELog::RegMethod RegA("BasicWWE","setWeights");
+  ELog::RegMethod RegA("BasicWeightState","setWeightsType");
 
 
   const std::string Type=IParam.flag("weightType") ?
     IParam.getValue<std::string>("weightType") : "basic";
+
+  const std::string CellType=IParam.flag("weightCell") ?
+    IParam.getValue<std::string>("weightCell") : "flat";
   
   
-  if (Type=="basic")
-    setWeightsBasic(System);
+  if (Type=="basic" || Type=="low")
+    setLowEBand(System);
   else if (Type=="high")
-    setWeightsHighE(System);
+    setHighEBand(System);
   else if (Type=="mid")
-    setWeightsMidE(System);
-  else if (Type=="object")
-    {
-      const size_t itemCnt=IParam.itemCnt("weightType",0);
-      if (itemCnt<3)
-	throw ColErr::IndexError<size_t>(itemCnt,2,"weightType incomplete");
-      const std::string OName=
-	IParam.getValue<std::string>("weightType",0,1);
-      size_t itemIndex(2);
-      const Geometry::Vec3D sPoint=
-	IParam.getCntVec3D("weightType",0,itemIndex,"Source Point");
-      setWeightsObject(System,OName,sPoint);
-    }
+    setMidEBand(System);
   else if (Type=="help")
     {
       ELog::EM<<"Basic weight energy types == \n"
@@ -161,6 +160,23 @@ setWeightType(Simulation& System,
 	"basic -- Cold spectrum energy"<<ELog::endBasic;
       throw ColErr::ExitAbort("End Help");
     }
+    
+  if (CellType=="object")
+    {
+      const size_t itemCnt=IParam.itemCnt("weightCell",0);
+      if (itemCnt<3)
+	throw ColErr::IndexError<size_t>(itemCnt,2,"weightCell incomplete");
+      const std::string OName=
+	IParam.getValue<std::string>("weightCell",0,1);
+      size_t itemIndex(2);
+      const Geometry::Vec3D sPoint=
+	IParam.getCntVec3D("weightCell",0,itemIndex,"Source Point");
+      setWeightsObject(System,OName,sPoint);
+    }
+  else if (CellType=="flat")
+    {
+      setWeights(System);
+    }
   else
     throw ColErr::InContainerError<std::string>(Type,"Unknown weight type");
 
@@ -168,20 +184,14 @@ setWeightType(Simulation& System,
 }
 
 void
-setWeights(Simulation& System,const std::vector<double>& Eval,
-	   const std::vector<double>& WT,
-	   const std::set<std::string>& excludeBoundary)
+basicWeightState::setWeights(Simulation& System)
   /*!
     Function to set up the weights system.
     It replaces the old file read system.
     \param System :: Simulation component
-    \param Eval :: Energy bins
-    \param WT :: Weight scale
-    \param excludeBoundary :: excluded boundary
   */
 {
-  ELog::RegMethod RegA("BasicWWE","setWeights(Simulation,vec,vec)");
-
+  ELog::RegMethod RegA("BasicWeightState","setWeights(Simulation)");
 
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();  
@@ -217,16 +227,6 @@ setWeightsHighE(Simulation& System)
 {
   ELog::RegMethod RegA("BasicWWE","setWeightsHighE");
   std::vector<double> Eval(6);
-  Eval[0]=1e-4;
-  Eval[1]=0.01;
-  Eval[2]=1;
-  Eval[3]=10;
-  Eval[4]=100;
-  Eval[5]=5e7;
-
-  std::vector<double> WT(6);
-  WT[0]=0.002;WT[1]=0.007;WT[2]=0.02;
-  WT[3]=0.07;WT[4]= 0.2;WT[5]=0.7;
   std::set<std::string> EmptySet;
   setWeights(System,Eval,WT,EmptySet);
 
@@ -234,60 +234,54 @@ setWeightsHighE(Simulation& System)
 }
 
 void
-setWeightsMidE(Simulation& System)
+basicWeightState::setLowEBand()
+  /*!
+    Function to set up the weights system.
+  */
+{
+  ELog::RegMethod RegA("basicWeightState","setLowEBand");
+
+  energyBand={1.4678e-10,3.1622e-10,6.8130e-10;
+	      1.4678e-9,3.1622e-9,5e7}
+  WT={0.02,0.07,0.1,0.1,0.2,0.7};
+  return;
+}
+
+void
+basicWeightState::setMidEBand();
   /*!
     Function to set up the weights system.
     It replaces the old file read system.
     \param System :: Simulation component
   */
 {
-  ELog::RegMethod RegA("BasicWWE","setWeightsMidE");
-  std::vector<double> Eval(6);
-  Eval[0]=1e-9;
-  Eval[1]=1e-5;
-  Eval[2]=1e-3;
-  Eval[3]=1e-1;
-  Eval[4]=1;
-  Eval[5]=1000;
-
-  std::vector<double> WT(6);
-  WT[0]=0.9;WT[1]=0.8;WT[2]=0.5;
-  WT[3]=0.5;WT[4]= 0.5;WT[5]=0.7;
-  std::set<std::string> EmptySet;
-  setWeights(System,Eval,WT,EmptySet);
-
+  ELog::RegMethod RegA("BasicWWE","setMidEBand");
+  
+  energyBand={1e-9,1e-5,1e03,1e-1,1,1000};
+  WT={0.9,0.8,0.5,0,5,0,7};
   return;
 }
 
 void
-setWeightsBasic(Simulation& System)
+basicWeightState::setHighEBand();
   /*!
     Function to set up the weights system.
     It replaces the old file read system.
     \param System :: Simulation component
   */
 {
-  ELog::RegMethod RegA("BasicWWE","setWeights(Simulation)");
-  std::vector<double> Eval(6);
-  Eval[0]=1.4678e-10;
-  Eval[1]=3.1622e-10;
-  Eval[2]=6.8130e-10;
-  Eval[3]=1.4678e-9;
-  Eval[4]=3.1622e-9;
-  Eval[5]=5e7;
-
-  std::vector<double> WT(6);
-  WT[0]=0.02;WT[1]=0.07;WT[2]=0.1;
-  WT[3]=0.1;WT[4]= 0.2;WT[5]=0.7;
-
-  std::set<std::string> EmptySet;
-  setWeights(System,Eval,WT,EmptySet);
+  ELog::RegMethod RegA("BasicWWE","setHihgEBand");
+  
+  energyBand={1e-4,0.01,1.0,10,100,5e7};
+  WT={0.02,0.07,0.2,0.7,0.7};
+  
   return;
 }
 
 void
-setWeightsObject(Simulation& System,const std::string& Key,
-		 const Geometry::Vec3D& sourcePoint)
+basicWeightState::setWeightsObject(Simulation& System,
+				   const std::string& Key,
+				   const Geometry::Vec3D& sourcePoint)
   /*!
     Function to set up the weights system.
     This is for the bunker shielding at 
@@ -297,10 +291,7 @@ setWeightsObject(Simulation& System,const std::string& Key,
 {
   ELog::RegMethod RegA("BasicWWE","setWeightsObject");
   
-  std::vector<double> Eval={1e-5,0.01,1,10,100,5e7};
-  std::vector<double> WT={1.0,1.0,1.0,1.0,1.0,1.0};
-  std::set<std::string> EmptySet;
-  setWeights(System,Eval,WT,EmptySet);
+  setWeights(System,Eval,WT);
 
   // In case not calculated
   System.calcAllVertex();
