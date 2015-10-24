@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   support/stringCombine.cxx
  *
@@ -30,18 +30,15 @@
 #include <vector>
 #include <list>
 #include <string>
-#include <algorithm>
-#include <functional>
+#include <iterator>
+
 
 #include "Exception.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Quaternion.h"
 #include "doubleErr.h"
-#include "mathSupport.h"
-#include "support.h"
-
+#include "stringCombine.h"
 /*! 
   \file stringCombine.cxx 
 */
@@ -73,6 +70,20 @@ makeString(const std::string& V)
   */
 {
   return V;
+}
+
+template<template<typename T,typename A> class V,typename T,typename A> 
+std::string
+makeString(const V<T,A>& Vec)
+  /*!
+    Turn V into a string (using ostringstream)
+    \param Vec :: Vec/List to convert
+    \return String
+  */
+{
+  std::ostringstream cx;
+  std::copy(Vec.begin(),Vec.end(),std::ostream_iterator<T>(cx," "));
+  return cx.str();
 }
 
 template<typename T,typename U>
@@ -133,6 +144,8 @@ template std::string makeString(const std::string&,const int&);
 template std::string makeString(const std::string&,const double&);
 template std::string makeString(const std::string&,const size_t&);
 template std::string makeString(const std::string&,const long int&);
+
+  
 template std::string makeString(const char*,const int&);
 template std::string makeString(const char*,const size_t&);
 

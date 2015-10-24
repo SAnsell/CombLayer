@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   zoom/ZoomBend.cxx
  *
@@ -638,8 +638,6 @@ ZoomBend::createAll(Simulation& System,
 
   // Adjust bY for exit
 
-  const masterRotate& MR=masterRotate::Instance();  
-  
   bY=normalOut;
   bZ=zOut;
   return;
