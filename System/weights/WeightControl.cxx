@@ -114,116 +114,6 @@ WeightControl::setLowEBand()
   return;
 }
 
-  
-
-void
-WeightControl::setWeight(Simulation& System,
-			 const mainSystem::inputParam& IParam)
-  /*!
-    set the basic weight either for low energy to high energy
-    \param Type :: simulation type (basic/high/mid)
-    \param IParam Input point
-  */
-{
-  ELog::RegMethod RegA("WeightControl","setWeights");
-
-
-  const std::string Type=IParam.flag("weightType") ?
-    IParam.getValue<std::string>("weightType") : "basic";
-  
-  
-  if (Type=="basic")
-    setLowEBand();
-  else if (Type=="high")
-    setHighEBand();
-  else if (Type=="mid")
-    setMidEBand();
-
-
-
-  else if (Type=="object")
-    {
-      const size_t itemCnt=IParam.itemCnt("weightType",0);
-      if (itemCnt<3)
-	throw ColErr::IndexError<size_t>(itemCnt,2,"weightType incomplete");
-      const std::string OName=
-	IParam.getValue<std::string>("weightType",0,1);
-      size_t itemIndex(2);
-      const Geometry::Vec3D sPoint=
-	IParam.getCntVec3D("weightType",0,itemIndex,"Source Point");
-      setWeightsObject(System,OName,sPoint);
-    }
-  else if (Type=="help")
-    {
-      ELog::EM<<"Basic weight energy types == \n"
-	"object [name Vec3D] -- HighEnergy Object name and source point \n"
-	"high -- High energy\n"
-	"mid -- Mid/old point energy\n"
-	"basic -- Cold spectrum energy"<<ELog::endBasic;
-      throw ColErr::ExitAbort("End Help");
-    }
-  else
-    throw ColErr::InContainerError<std::string>(Type,"Unknown weight type");
-
-  return;
-}
-
-void
-setWeights(Simulation& System,const std::vector<double>& Eval,
-	   const std::vector<double>& WT,
-	   const std::set<std::string>& excludeBoundary)
-  /*!
-    Function to set up the weights system.
-    It replaces the old file read system.
-    \param System :: Simulation component
-    \param Eval :: Energy bins
-    \param WT :: Weight scale
-    \param excludeBoundary :: excluded boundary
-  */
-{
-  ELog::RegMethod RegA("WeightControl","setWeights(Simulation,vec,vec)");
-
-
-  WeightSystem::weightManager& WM=
-    WeightSystem::weightManager::Instance();  
-
-  WM.addParticle<WeightSystem::WCells>('n');
-  WeightSystem::WCells* WF=
-    dynamic_cast<WeightSystem::WCells*>(WM.getParticle('n'));
-  if (!WF)
-    throw ColErr::InContainerError<std::string>("n","WCell - WM");
-
-  WF->setEnergy(Eval);
-  System.populateWCells();
-  WF->balanceScale(WT);
-
-  const Simulation::OTYPE& Cells=System.getCells();
-  Simulation::OTYPE::const_iterator oc;
-  for(oc=Cells.begin();oc!=Cells.end();oc++)
-    {
-      if(!oc->second->getImp())
-	WF->maskCell(oc->first);      
-    }
-  WF->maskCell(1);
-  return;
-}
-
-
-void
-setWeightsMidE(Simulation& System)
-  /*!
-    Function to set up the weights system.
-    It replaces the old file read system.
-    \param System :: Simulation component
-  */
-{
-  ELog::RegMethod RegA("WeightControl","setWeightsMidE");
-  std::vector<double> Eval(6);
-  std::set<std::string> EmptySet;
-  setWeights(System,Eval,WT,EmptySet);
-
-  return;
-}
 
 void
 weightControl::procType(const mainSystem::inputParam& IParam)
@@ -266,134 +156,85 @@ weightControl::procType(const mainSystem::inputParam& IParam)
   return;
 }
 
+
 void
 weightControl::procSource(const mainSystem::inputParam& IParam)
   /*!
-    PRocess the source weight point
+    Process the source weight point
     \param IParam :: Input parame
   */
 {
-  ELog::RegMethod RegA("weightControl","procSouce");
+  ELog::RegMethod RegA("weightControl","procSource");
 
   size_t itemCnt(1);
   sourcePt=IParam.getCntVec3D("weightSource",0,itemCnt,"weightSource Vec3D");
   return;
 }
-    
-  const std::string Type=IParam.getValue<std::string>("weightType");
-  
-  if (Type=="basic")
-    setWeightsBasic(System);
-  else if (Type=="high")
-    setWeightsHighE(System);
-  else if (Type=="mid")
-    setWeightsMidE(System);
-  else if (Type=="energy")
-    {
-      const size_t itemCnt=IParam.itemCnt("weightType",0);
-      std::vector<double> E;
-      std::vector<double> W;
-      for(i=1;i<itemCnt;i+=2)
-	{
-	  E.push_back(IParam.getValue<double>("weightType",i));
-	  W.push_back(IParam.getValue<double>("weightType",i));
-	}
-      EBand=E;
-      WT=W;
-    }
-  else if (Type=="help")
-    {
-      ELog::EM<<"weightType ::: \n"
-	"high : Set High energy default band\n"
-	"mid : Set mid energy default band\n"
-	"low : Set low energy default band\n"
-	"energy [E1 W1 E2 W2 ...] : Set energy bands" 
-	ELog::endDiag;
-    }
-  return;
-}
+
+
+
 
 
 void
-WeightControl::procObject(Simulation& System,
+WeightControl::procObject(const Simulation& System,
+			  const mainSystem::inputParam& IParam)
 
   /*!
     Function to set up the weights system.
-    This is for the bunker shielding at 
+    This is for the object tracked from a point
     \param System :: Simulation component
-    \param sourcePoint :: point to calculate tracks from
+    \param IParam :: input stream
   */
 {
-  ELog::RegMethod RegA("WeightControl","setWeightsObject");
+  ELog::RegMethod RegA("WeightControl","procObject");
 
-  const size_t nSet=IParam.get
   const ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-
-  CellWeight CTrack;  
-  const int BStart=OR.getRenumberCell(Key);
-  const int BRange=OR.getRenumberRange(Key);
-  if (BStart==0)
-    throw ColErr::InContainerError<std::string>(Key,"Object name not found");
-
-  ModelSupport::ObjectTrackAct OTrack(sourcePoint);
-  for(int i=BStart;i<=BRange;i++)
+    
+  const size_t nSet=IParam.setCnt("weightObject");
+  
+  for(size_t iSet=0;iSet<nSet;iSet++)
     {
-      const MonteCarlo::Qhull* CellPtr=System.findQhull(i);
-      if (CellPtr)
-	{
-	  std::vector<int> cellN;
-	  std::vector<double> attnN;
-	  const int cN=CellPtr->getName();  // this should be i !!
-	  OTrack.addUnit(System,cN,CellPtr->getCofM());
-	  // either this :
-	  CTrack.addTracks(cN,OTrack.getAttnSum(cN));
-	  // or
-	  //	  OTrack.createAttenPath(cellN,attnN);
-	  //	  for(size_t i=0;i<cellN.size();i++)
-	  //	    CTrack.addTracks(cellN[i],attnN[i]);
-	  CTrack.updateWM();
-	  ELog::EM<<CTrack<<ELog::endDiag;
-		  
-	}
+      const std::string key=
+	IParam.getValue<std::string>(weightObject,iSet,0);
+
+      CellWeight CTrack;  
+      const int BStart=OR.getRenumberCell(Key);
+      const int BRange=OR.getRenumberRange(Key);
+      if (BStart==0)
+	throw ColErr::InContainerError<std::string>(Key,"Object name not found");
       
+      ModelSupport::ObjectTrackAct OTrack(sourcePoint);
+      for(int i=BStart;i<=BRange;i++)
+	{
+	  const MonteCarlo::Qhull* CellPtr=System.findQhull(i);
+	  if (CellPtr)
+	    {
+	      std::vector<int> cellN;
+	      std::vector<double> attnN;
+	      const int cN=CellPtr->getName();  // this should be i !!
+	      OTrack.addUnit(System,cN,CellPtr->getCofM());
+	      // either this :
+	      CTrack.addTracks(cN,OTrack.getAttnSum(cN));
+	      // or
+	      //	  OTrack.createAttenPath(cellN,attnN);
+	      //	  for(size_t i=0;i<cellN.size();i++)
+	      //	    CTrack.addTracks(cellN[i],attnN[i]);
+	      CTrack.updateWM();
+	      ELog::EM<<CTrack<<ELog::endDiag;
+	      
+	    }
+	  
+	}
     }
   return;
 }
 
 
-  
 
-  else if (Type=="object")
-    {
-      const size_t itemCnt=IParam.itemCnt("weightType",0);
-      if (itemCnt<3)
-	throw ColErr::IndexError<size_t>(itemCnt,2,"weightType incomplete");
-      const std::string OName=
-	IParam.getValue<std::string>("weightType",0,1);
-      size_t itemIndex(2);
-      const Geometry::Vec3D sPoint=
-	IParam.getCntVec3D("weightType",0,itemIndex,"Source Point");
-      setWeightsObject(System,OName,sPoint);
-    }
-  else if (Type=="help")
-    {
-      ELog::EM<<"Basic weight energy types == \n"
-	"object [name Vec3D] -- HighEnergy Object name and source point \n"
-	"high -- High energy\n"
-	"mid -- Mid/old point energy\n"
-	"basic -- Cold spectrum energy"<<ELog::endBasic;
-      throw ColErr::ExitAbort("End Help");
-    }
-  else
-    throw ColErr::InContainerError<std::string>(Type,"Unknown weight type");
+    
 
   
-  
-  return;
-}
-  
-
 
 void
 WeightControl::processWeights(Simulation& System,
@@ -446,6 +287,11 @@ WeightControl::processWeights(Simulation& System,
   return;
 }
 
-  
+
+
+
+
+
+		       
 }  // NAMESPACE weightSystem
 
