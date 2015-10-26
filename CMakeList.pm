@@ -266,10 +266,9 @@ sub writeGLOB
   {
       my $val=$self->{srcDir}{$item};
       
-    print $DX "file(GLOB ",$item," \"\${PROJECT_SOURCE_DIR}\/",
-    $val."\/\*.cxx\")\n";
-    print $DX "add_library(lib".$item." SHARED \$\{".$item."\})\n";
-
+      print $DX "file(GLOB ",$item," \"\${PROJECT_SOURCE_DIR}\/",
+      $val."\/\*.cxx\")\n";
+      print $DX "add_library(lib".$item." SHARED \$\{".$item."\})\n";
   }
   print $DX "## END GLOBS \n\n";
 
@@ -313,7 +312,36 @@ sub writeTail
   my $pdir=`pwd`;
   $pdir=$1 if ($pdir=~/.*\/(.*)/);
 
-  my $wordString;
+  print $DX "set(ALLCXX \n";
+  foreach my $item (keys (%{$self->{srcDir}}))
+    {
+      my $val=$self->{srcDir}{$item};
+      print $DX "     \./",$val,"/*.cxx \n";
+    }
+  print $DX "     \./Main/*.cxx )\n";
+
+  print $DX "set(ALLHXX \n";
+  foreach my $item (@{$self->{incDir}})
+    {
+      print $DX "     \./",$item,"/*.h \n";
+    }
+  print $DX "      )\n";
+
+  print $DX "set(ASRC \${ALLHXX} \${ALLCXX} )\n";
+  
+## DOXYGEN
+  
+  print $DX "add_custom_target(doxygen ",
+    " COMMAND  echo \"INPUT= \" ",
+  " \`ls \${ASRC}\` | doxygen - )\n";
+
+##      " COMMAND cat Doxyfile; echo \"INPUT= \" ",
+##  	" \`ls \${ASRC}\`  | doxygen \- )\n";
+
+
+## WORDS
+
+  my $wordString;  
   print $DX "add_custom_target(words ",
     " COMMAND grep -v -e \'^[[:space:][:cntrl:]]*\$\$\' \n";
   foreach my $item (keys (%{$self->{srcDir}}))
@@ -332,8 +360,7 @@ sub writeTail
   print $DX " | wc )\n";
   print $DX "\n";
 
-  
-  
+    
   my $tarString;  
   print $DX "add_custom_target(tar ",
     " COMMAND tar zcvf \${PROJECT_SOURCE_DIR}/",$pdir.".tgz \n";
