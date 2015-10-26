@@ -334,7 +334,7 @@ setDefaultPhysics(Simulation& System,
 
   const FuncDataBase& Control=System.getDataBase();
   
-  std::string PList("h / d t s a");
+  std::string PList("n h / d t s a");
   const double maxEnergy=Control.EvalDefVar<double>("sdefEnergy",2000.0);
   const double elcEnergy=IParam.getValue<double>("electron");
   const double phtEnergy=IParam.getValue<double>("photon");

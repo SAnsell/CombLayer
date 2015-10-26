@@ -49,9 +49,10 @@ namespace ModelSupport
   class ObjSurfMap;
 }
 
-namespace weightsSystem
+namespace WeightSystem
 {
   class WeightMesh;
+  class WeightControl;
 }
 
 namespace MonteCarlo
@@ -103,7 +104,8 @@ class Simulation
 
   TallyTYPE TItem;                        ///< Tally Items
   physicsSystem::PhysicsCards* PhysPtr;   ///< Physics Cards
-
+  WeightSystem::WeightControl* WCtrlPtr;  ///< Weight control pointer
+  
   // METHODS:
 
   void deleteObjects();
@@ -148,6 +150,8 @@ class Simulation
   int isValidCell(const int,const Geometry::Vec3D&) const;
 
 
+  
+
   MonteCarlo::Qhull* findQhull(const int);         
   const MonteCarlo::Qhull* findQhull(const int) const; 
   MonteCarlo::Object* findCell(const Geometry::Vec3D&,
@@ -165,7 +169,8 @@ class Simulation
   /// Gets the data base
   const FuncDataBase& getDataBase() const { return DB; }
   /// Get PhysicsCards
-  physicsSystem::PhysicsCards& getPC() { return *PhysPtr; }    
+  physicsSystem::PhysicsCards& getPC() { return *PhysPtr; }
+  /// Access weight control
   const OTYPE& getCells() const { return OList; } ///< Get cells
   OTYPE& getCells() { return OList; } ///< Get cells
   Geometry::Transform* createSourceTransform();

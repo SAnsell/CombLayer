@@ -320,6 +320,30 @@ WCells::setWeights(const int CN,const std::vector<double>& WT)
   return;
 }
 
+void
+WCells::scaleWeights(const int CN,const std::vector<double>& WT)
+  /*!
+    Sets all the cells to a specific weight
+    \param CN :: Cell number 
+    \param WT :: Basic weight values toscale in all cells
+  */
+{
+  ELog::RegMethod RegA("WCells","setWeights");
+
+  if (WT.size()!=Energy.size())
+    throw ColErr::MisMatch<size_t>(WT.size(),Energy.size(),
+				     "WCells::setWeights");
+
+  ItemTYPE::iterator vc;
+  for(vc=WVal.begin();vc!=WVal.end() &&
+	vc->second.getCellNumber()!=CN;vc++) ;
+  if (vc==WVal.end())
+    throw ColErr::InContainerError<int>(CN,"Cell number");
+
+  vc->second.scaleWeight(WT);
+  return;
+}
+
 
 void
 WCells::rescale(const double TCut,const double SF)

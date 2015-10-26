@@ -421,6 +421,33 @@ PhysicsCards::addPhysImp(const std::string& Type,const std::string& Particle)
   return ImpCards.back();
 }
 
+void
+PhysicsCards::removePhysImp(const std::string& Type,
+			    const std::string& Particle)
+  /*!
+    Removes a given type/ particle  importance
+    \param Type :: Type to use [imp:vol etc]
+    \param Particle :: Particle to add [n,p,e] etc
+    \return PhysImp item
+  */
+{
+  ELog::RegMethod RegA("PhysicsCards","removePhysImp");
+
+  for(PhysImp& PI : ImpCards)
+    {
+      if (PI.isType(Type))
+	PI.removeParticle(Particle);
+    }
+  // Remove singular:
+  ImpCards.erase
+    (std::remove_if
+     (ImpCards.begin(),ImpCards.end(),
+      [](const PhysImp& PI) { return PI.particleCount()==0; }),
+     ImpCards.end());
+
+  return;
+}
+
   
 
 template<typename T>
@@ -784,8 +811,7 @@ PhysicsCards::setMode(std::string Particles)
       while(StrFunc::section(Particles,item))
 	{
 	  mode.addElm(item);
-	  if (item!="n")
-	    addPhysImp("imp",item);
+	  addPhysImp("imp",item);
 	}
     }
   return;

@@ -171,6 +171,19 @@ WItem::setWeight(const std::vector<double>& WT)
 }
 
 void
+WItem::scaleWeight(const std::vector<double>& WT)
+  /*!
+    Scals all the cells to a specific weight
+    \param WT :: New weights (size is already checked)
+  */
+{
+  std::transform(Val.begin(),Val.end(),WT.begin(),
+		 Val.begin(),std::multiplies<double>());
+
+  return;
+}
+
+void
 WItem::setWeight(const size_t Index,const double V)
   /*!
     Sets all the cells to a specific weight

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   weights/BasicWWE.cxx
+ * File:   weights/WeightControl.cxx
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -63,6 +63,7 @@
 #include "TallyCreate.h"
 #include "PointWeights.h"
 #include "TempWeights.h"
+#include "ImportControl.h"
 #include "WWGconstruct.h"
 
 #include "LineTrack.h"
@@ -73,13 +74,50 @@
 namespace WeightSystem
 {
   
-WeightControl::WeightControl()
+WeightControl::WeightControl() :
+  sourceFlag(0),tallyFlag(0)
   /*
-    Constructor
+    Constructorg
    */
 {
   setHighEBand();
 }
+
+WeightControl::WeightControl(const WeightControl& A) : 
+  EBand(A.EBand),WT(A.WT),sourceFlag(A.sourceFlag),
+  tallyFlag(A.tallyFlag),sourcePt(A.sourcePt),
+  tallyPt(A.tallyPt)
+  /*!
+    Copy constructor
+    \param A :: WeightControl to copy
+  */
+{}
+
+WeightControl&
+WeightControl::operator=(const WeightControl& A)
+  /*!
+    Assignment operator
+    \param A :: WeightControl to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      EBand=A.EBand;
+      WT=A.WT;
+      sourceFlag=A.sourceFlag;
+      tallyFlag=A.tallyFlag;
+      sourcePt=A.sourcePt;
+      tallyPt=A.tallyPt;
+    }
+  return *this;
+}
+
+WeightControl::~WeightControl()
+  /*!
+    Destructor
+   */
+{}
 
 void
 WeightControl::setHighEBand()
@@ -116,30 +154,32 @@ WeightControl::setLowEBand()
 
 
 void
-weightControl::procType(const mainSystem::inputParam& IParam)
+WeightControl::procType(const mainSystem::inputParam& IParam)
   /*!
-    Process the type of weight system
-    \param IParam :: I
+    Process the type of energy system 
+    \param IParam :: input param
   */
 {
   ELog::RegMethod RegA("weightControl","procType");
   const std::string Type=IParam.getValue<std::string>("weightType");
   
   if (Type=="basic")
-    setWeightsBasic(System);
+    setLowEBand();
   else if (Type=="high")
-    setWeightsHighE(System);
+    setHighEBand();
   else if (Type=="mid")
-    setWeightsMidE(System);
+    setMidEBand();
+  else if (Type=="flat")
+    setMidEBand();
   else if (Type=="energy")
     {
       const size_t itemCnt=IParam.itemCnt("weightType",0);
       std::vector<double> E;
       std::vector<double> W;
-      for(i=1;i<itemCnt;i+=2)
+      for(size_t i=1;i<itemCnt;i+=2)
 	{
 	  E.push_back(IParam.getValue<double>("weightType",i));
-	  W.push_back(IParam.getValue<double>("weightType",i));
+	  W.push_back(IParam.getValue<double>("weightType",i+1));
 	}
       EBand=E;
       WT=W;
@@ -150,7 +190,7 @@ weightControl::procType(const mainSystem::inputParam& IParam)
 	"high : Set High energy default band\n"
 	"mid : Set mid energy default band\n"
 	"low : Set low energy default band\n"
-	"energy [E1 W1 E2 W2 ...] : Set energy bands" 
+	"energy [E1 W1 E2 W2 ...] : Set energy bands"<<
 	ELog::endDiag;
     }
   return;
@@ -158,7 +198,7 @@ weightControl::procType(const mainSystem::inputParam& IParam)
 
 
 void
-weightControl::procSource(const mainSystem::inputParam& IParam)
+WeightControl::procSource(const mainSystem::inputParam& IParam)
   /*!
     Process the source weight point
     \param IParam :: Input parame
@@ -166,14 +206,26 @@ weightControl::procSource(const mainSystem::inputParam& IParam)
 {
   ELog::RegMethod RegA("weightControl","procSource");
 
-  size_t itemCnt(1);
+  size_t itemCnt(0);
   sourcePt=IParam.getCntVec3D("weightSource",0,itemCnt,"weightSource Vec3D");
+  sourceFlag=1;
   return;
 }
 
+void
+WeightControl::procTallyPoint(const mainSystem::inputParam& IParam)
+  /*!
+    Process the source weight point
+    \param IParam :: Input parame
+  */
+{
+  ELog::RegMethod RegA("weightControl","procTally");
 
-
-
+  size_t itemCnt(0);
+  tallyPt=IParam.getCntVec3D("weightTally",0,itemCnt,"weightTally Vec3D");
+  tallyFlag=1;
+  return;
+}
 
 void
 WeightControl::procObject(const Simulation& System,
@@ -195,46 +247,44 @@ WeightControl::procObject(const Simulation& System,
   
   for(size_t iSet=0;iSet<nSet;iSet++)
     {
-      const std::string key=
-	IParam.getValue<std::string>(weightObject,iSet,0);
+      const std::string Key=
+	IParam.getValue<std::string>("weightObject",iSet,0);
 
       CellWeight CTrack;  
       const int BStart=OR.getRenumberCell(Key);
       const int BRange=OR.getRenumberRange(Key);
       if (BStart==0)
-	throw ColErr::InContainerError<std::string>(Key,"Object name not found");
-      
-      ModelSupport::ObjectTrackAct OTrack(sourcePoint);
-      for(int i=BStart;i<=BRange;i++)
+	throw ColErr::InContainerError<std::string>
+	  (Key,"Object name not found");
+      // SOURCE Point
+      if (sourceFlag)
 	{
-	  const MonteCarlo::Qhull* CellPtr=System.findQhull(i);
-	  if (CellPtr)
+	  ModelSupport::ObjectTrackAct OTrack(sourcePt);
+	  for(int i=BStart;i<=BRange;i++)
 	    {
-	      std::vector<int> cellN;
-	      std::vector<double> attnN;
-	      const int cN=CellPtr->getName();  // this should be i !!
-	      OTrack.addUnit(System,cN,CellPtr->getCofM());
-	      // either this :
-	      CTrack.addTracks(cN,OTrack.getAttnSum(cN));
-	      // or
-	      //	  OTrack.createAttenPath(cellN,attnN);
-	      //	  for(size_t i=0;i<cellN.size();i++)
-	      //	    CTrack.addTracks(cellN[i],attnN[i]);
-	      CTrack.updateWM();
-	      ELog::EM<<CTrack<<ELog::endDiag;
-	      
+	      const MonteCarlo::Qhull* CellPtr=System.findQhull(i);
+	      if (CellPtr)
+		{
+		  std::vector<int> cellN;
+		  std::vector<double> attnN;
+		  const int cN=CellPtr->getName();  // this should be i !!
+		  OTrack.addUnit(System,cN,CellPtr->getCofM());
+		  // either this :
+		  CTrack.addTracks(cN,OTrack.getAttnSum(cN));
+		  CTrack.updateWM();
+		  ELog::EM<<CTrack<<ELog::endDiag;
+		}
 	    }
-	  
 	}
+      if (tallyFlag)
+	{
+	  ELog::EM<<"Do stuff here "<<ELog::endDiag;
+	}
+      if (!tallyFlag && !sourceFlag)
+	ELog::EM<<"No source/tally set for weightObject"<<ELog::endCrit;
     }
   return;
 }
-
-
-
-    
-
-  
 
 void
 WeightControl::processWeights(Simulation& System,
@@ -250,46 +300,71 @@ WeightControl::processWeights(Simulation& System,
 
   System.populateCells();
   System.createObjSurfMap();
+  // requirements for vertex:
+  if (IParam.flag("weightObject") ||
+      IParam.flag("tallyWeight") )
+    System.calcAllVertex();
 
+  if (IParam.flag("weight"))
+    setWeights(System);
+  
   if (IParam.flag("weightType"))
     procType(IParam);
   if (IParam.flag("weightSource"))
     procSource(IParam);
-  
-  // WEIGHTS:
-  if (IParam.flag("weight") || IParam.flag("tallyWeight"))
-    System.calcAllVertex();
-
-  // WEIGHTS:
-  if (IParam.flag("wWWG") )
+  if (IParam.flag("weightObject"))
+    procObject(System,IParam);
+  if (IParam.flag("wWWG"))
     {
       WWGconstruct WConstruct;
       WConstruct.createWWG(System,IParam);
+      removePhysImp(System,"n");
     }
-  else
-    {
-      setWeightType(System,IParam);
-      if (IParam.flag("weight"))
-	{
-	  Geometry::Vec3D AimPoint;
-	  if (IParam.flag("weightPt"))
-	    AimPoint=IParam.getValue<Geometry::Vec3D>("weightPt");
-	  else 
-	    tallySystem::getFarPoint(System,AimPoint);
-	  setPointWeights(System,AimPoint,IParam.getValue<double>("weight"));
-	}
-      if (IParam.flag("weightTemp"))
-	scaleTempWeights(System,10.0);
-    }
+  if (IParam.flag("weightTemp"))
+    scaleTempWeights(System,10.0);
   if (IParam.flag("tallyWeight"))
     tallySystem::addPointPD(System);
 
+  
   return;
 }
 
+void
+WeightControl::setWeights(Simulation& System)
+   /*!
+    Function to set up the weights system.
+    It replaces the old file read system.
+    \param System :: Simulation component
+  */
+{
+  ELog::RegMethod RegA("WeightControl","setWeights(Simulation)");
 
+  WeightSystem::weightManager& WM=
+    WeightSystem::weightManager::Instance();  
 
+  WM.addParticle<WeightSystem::WCells>('n');
+  WeightSystem::WCells* WF=
+    dynamic_cast<WeightSystem::WCells*>(WM.getParticle('n'));
+  if (!WF)
+    throw ColErr::InContainerError<std::string>("n","WCell - WM");
 
+  WF->setEnergy(EBand);
+  System.populateWCells();
+  WF->balanceScale(WT);
+
+  const Simulation::OTYPE& Cells=System.getCells();
+  Simulation::OTYPE::const_iterator oc;
+  for(oc=Cells.begin();oc!=Cells.end();oc++)
+    {
+      if(!oc->second->getImp())
+	WF->maskCell(oc->first);      
+    }
+  WF->maskCell(1);
+
+  // remove neutron imp:
+  removePhysImp(System,"n");
+  return;
+}
 
 
 		       

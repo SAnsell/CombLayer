@@ -38,6 +38,7 @@ namespace WeightSystem
   void ExtField(Simulation&,const mainSystem::inputParam&);
   void PWT(Simulation&,const mainSystem::inputParam&);
   void SBias(Simulation&,const mainSystem::inputParam&);
+  void removePhysImp(Simulation&,const std::string&);
 }
 
 

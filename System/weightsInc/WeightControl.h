@@ -43,7 +43,7 @@ namespace WeightSystem
     \version 1.0
     \author S. Ansell
     \date October 2015
-    \breif Input to Weights controler
+    \brief Input to Weights controler
   */
   
 class WeightControl
@@ -53,7 +53,10 @@ class WeightControl
   std::vector<double> EBand;     ///< Energy bandk
   std::vector<double> WT;        ///< Weight scalar
 
-  Geometry::Vec3D sourcePt;     ///< Source Point
+  bool sourceFlag;               ///< Set point/tally flags
+  bool tallyFlag;                ///< Set point/tally flags
+  Geometry::Vec3D sourcePt;      ///< Source Point
+  Geometry::Vec3D tallyPt;       ///< Tally Point
 
   void setHighEBand();
   void setMidEBand();
@@ -61,15 +64,12 @@ class WeightControl
 
   void procType(const mainSystem::inputParam&);
   void procSource(const mainSystem::inputParam&);
+  void procTallyPoint(const mainSystem::inputParam&);
+  void procObject(const Simulation&,
+		  const mainSystem::inputParam&);
   
 			
-  void setWeights(Simulation&,const std::vector<double>&,
-		  const std::vector<double>&,
-		  const std::set<std::string>&);
-
-
-  void setWeightsObject(Simulation&,const std::string&,
-			const Geometry::Vec3D&);
+  void setWeights(Simulation&);
 
 
  public:

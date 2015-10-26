@@ -101,6 +101,8 @@ class PhysicsCards
   PhysImp& getPhysImp(const std::string&,const std::string&);
 
   PhysImp& addPhysImp(const std::string&,const std::string&);
+  void removePhysImp(const std::string&,const std::string&);
+  
   template<typename T>
   T* addPhysCard(const std::string&,const std::string&);
   const PhysCard* getPhysCard(const std::string&,const std::string&) const;

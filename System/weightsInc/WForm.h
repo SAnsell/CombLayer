@@ -84,6 +84,7 @@ class WForm
 
   virtual void setWeights(const int,const size_t,const double) =0;
   virtual void setWeights(const int,const std::vector<double>&) =0;
+  virtual void scaleWeights(const int,const std::vector<double>&) =0;
   virtual void maskCell(const int) =0;
   virtual void populateCells(const std::map<int,MonteCarlo::Qhull*>&) =0;
   virtual void renumberCell(const int,const int) =0;
