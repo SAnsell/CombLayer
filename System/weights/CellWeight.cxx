@@ -155,10 +155,8 @@ CellWeight::updateWM() const
   aveW/=cnt;
   // Work on minW first:
   const double factor=(minW>minW<1e-7) ?
-    log(1e-8)/log(minW) : 1.0;
+    log(1e-7)/log(minW) : 1.0;
       
-
-
   for(const std::map<int,CellItem>::value_type& cv : Cells)
     {
       const double W=(exp(-cv.second.weight*sigmaScale*factor));
