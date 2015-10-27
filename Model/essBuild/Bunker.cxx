@@ -219,7 +219,6 @@ Bunker::populate(const FuncDataBase& Control)
 
   loadFile=Control.EvalDefVar<std::string>(keyName+"LoadFile","");
   outFile=Control.EvalDefVar<std::string>(keyName+"OutFile","");
-  ELog::EM<<"Out file == "<<outFile<<" == "<<ELog::endDiag;
 
   return;
 }
@@ -500,11 +499,10 @@ Bunker::createMainWall(Simulation& System)
 		ModelSupport::getComposite(SMap,bnkIndex," -17 ") :
 		ModelSupport::getComposite(SMap,wallIndex," -1 ");
 	      wallIndex++;
-	      
-
-	      
+	      	      
 	      Out=divider+ACut+BCut+AVert+BVert+AWall+BWall;
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+	      const int Mat=BMWPtr->getMaterial(i,j,k,wallMat);
+	      System.addCell(MonteCarlo::Qhull(cellIndex++,Mat,0.0,Out));
 	      setCell("MainWall"+StrFunc::makeString(i),cellIndex-1);
 	    }
 	}

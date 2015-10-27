@@ -1393,6 +1393,7 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("ABunkerWallLen2",10.0);
   Control.addVariable("ABunkerWallLen8",1.0);
 
+  Control.addVariable("ABunkerLoadFile","ABunkerDef.xml");
   Control.addVariable("ABunkerOutFile","ABunker.xml");
 
   //

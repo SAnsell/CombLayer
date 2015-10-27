@@ -145,6 +145,8 @@ template std::string makeString(const std::string&,const double&);
 template std::string makeString(const std::string&,const size_t&);
 template std::string makeString(const std::string&,const long int&);
 
+template std::string makeString(const std::vector<int>&);
+
   
 template std::string makeString(const char*,const int&);
 template std::string makeString(const char*,const size_t&);

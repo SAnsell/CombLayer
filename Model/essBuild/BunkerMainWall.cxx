@@ -126,8 +126,6 @@ BunkerMainWall::loadXML(const std::string& FName)
 {
   ELog::RegMethod RegA("BunkerMainWall","loadXML");
   
-
-
   XML::XMLcollect CO;
   if (FName.empty() || CO.loadXML(FName))
     return 0;
@@ -144,13 +142,24 @@ BunkerMainWall::loadXML(const std::string& FName)
 
   while(AR)
     {
-      const size_t SN=AR->getDefItem<size_t>("Sector",0);    
-      const size_t VN=AR->getDefItem<size_t>("Vertical",0);
-      const size_t RN=AR->getDefItem<size_t>("Radial",0);
-      MatName= AR->getNamedItem<std::string>("Material");
-      MatName=StrFunc::fullBlock(MatName);
-      const size_t HN=BunkerMainWall::hash(SN,VN,RN);
-      MatMap.insert(std::map<size_t,std::string>::value_type(HN,MatName));
+      std::vector<size_t> SVec,VVec,RVec;
+      std::string SStr=AR->getItem<std::string>("Sector");    
+      std::string VStr=AR->getItem<std::string>("Vertical");
+      std::string RStr=AR->getItem<std::string>("Radial");
+
+      StrFunc::sectionRange(SStr,SVec);
+      StrFunc::sectionRange(VStr,VVec);
+      StrFunc::sectionRange(RStr,RVec);
+
+      for(const size_t SN : SVec)
+	for(const size_t VN : VVec)
+	  for(const size_t RN : RVec)
+	    {
+	      MatName= AR->getNamedItem<std::string>("Material");
+	      MatName=StrFunc::fullBlock(MatName);
+	      const size_t HN=BunkerMainWall::hash(SN,VN,RN);
+	      MatMap.insert(std::map<size_t,std::string>::value_type(HN,MatName));
+	    }
       CO.deleteObj(AR);      
       AR=CO.findObj("WallMat");
     }
