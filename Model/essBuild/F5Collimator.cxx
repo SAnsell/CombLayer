@@ -162,6 +162,10 @@ namespace essSystem
 
     tallySystem::point gC,gB,gB2;
     bool LinkPointCentered = false; // defines if the link point is located in the center of the viewing area
+    int thermalAlgorithm = 1; // 0=old; 1=new
+    if (thermalAlgorithm>1)
+      ELog::EM << "thermalAlgorithm must be either 0 (old) or 1 (new)" << ELog::endErr;
+
     if (range=="cold")
       {
 	// link point (defined by theta)
@@ -187,7 +191,10 @@ namespace essSystem
 	const double alpha = acos(vtmp.dotProd(Y)/vtmp.abs())*180/M_PI;
 	if (theta<=90-alpha)
 	  {
-	    Control.setVariable<int>(keyName+"LinkPoint", zStep>0 ? 2 : 3);  // these maths depend on the XYangle of the moderator
+	    if (thermalAlgorithm==0)
+	      Control.setVariable<int>(keyName+"LinkPoint", zStep>0 ? 2 : 3);  // these maths depend on the XYangle of the moderator
+	    else
+	      Control.setVariable<int>(keyName+"LinkPoint", zStep>0 ? 5 : 4);  // these maths depend on the XYangle of the moderator
 	  }
 	else if (abs(theta-90)<alpha)
 	  {
@@ -196,11 +203,17 @@ namespace essSystem
 	  }
 	else if ((theta>=90+alpha) && (theta<180))
 	  {
-	    Control.setVariable<int>(keyName+"LinkPoint", zStep>0 ? 5 : 4);
+	    if (thermalAlgorithm==0)
+	      Control.setVariable<int>(keyName+"LinkPoint", zStep>0 ? 5 : 4);
+	    else
+	      Control.setVariable<int>(keyName+"LinkPoint", zStep>0 ? 2 : 3);
 	  }
 	else if ((theta>=180) && (theta<=270-alpha))
 	  {
-	    Control.setVariable<int>(keyName+"LinkPoint", zStep>0 ? 4 : 5);
+	    if (thermalAlgorithm==0)
+	      Control.setVariable<int>(keyName+"LinkPoint", zStep>0 ? 4 : 5);
+	    else
+	      Control.setVariable<int>(keyName+"LinkPoint", zStep>0 ? 7 : 2);
 	  }
 	else if (abs(theta-270)<alpha)
 	  {
@@ -209,7 +222,10 @@ namespace essSystem
 	  }
 	else if (theta>=270+alpha)
 	  {
-	    Control.setVariable<int>(keyName+"LinkPoint", zStep>0 ? 7 : 2);
+	    if (thermalAlgorithm==0)
+	      Control.setVariable<int>(keyName+"LinkPoint", zStep>0 ? 7 : 2);
+	    else
+	      Control.setVariable<int>(keyName+"LinkPoint", zStep>0 ? 4 : 5);
 	  }
       }
     else
