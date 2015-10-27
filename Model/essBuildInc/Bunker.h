@@ -26,7 +26,8 @@ class Simulation;
 
 namespace essSystem
 {
-
+  class BunkerMainWall;
+  
 /*!
   \class Bunker
   \version 1.0
@@ -36,7 +37,8 @@ namespace essSystem
 */
 
 class Bunker : public attachSystem::ContainedComp,
-  public attachSystem::FixedComp,public attachSystem::CellMap
+  public attachSystem::FixedComp,
+  public attachSystem::CellMap
 {
  private:
    
@@ -58,7 +60,13 @@ class Bunker : public attachSystem::ContainedComp,
 
   size_t nSectors;               ///< Number of sector divisions
   std::vector<double> sectPhase; ///< sector angles
-  
+
+  size_t nVert;                  ///< Number of vertical divisions
+  std::vector<double> vertFrac;  ///< Vertical fraction
+
+  size_t nLayers;                ///< number of layers
+  std::vector<double> wallFrac;  ///< guide Layer thicknesss (fractions)
+
   double innerRadius;            ///< inner radius [calculated]
   double wallRadius;             ///< Wall radius
   double floorDepth;             ///< Floor depth
@@ -73,10 +81,12 @@ class Bunker : public attachSystem::ContainedComp,
   int wallMat;                   ///< wall material
 
   // Layers
-  size_t nLayers;                ///< number of layers
-  std::vector<double> wallFrac;  ///< guide Layer thicknesss (fractions)
   std::vector<int> wallMatVec;   ///< guide Layer materials
-  
+
+  // Bunker Material distribution:
+  std::string loadFile;            ///< Bunker input file
+  std::string outFile;             ///< Bunker output file
+  BunkerMainWall* BMWPtr;          ///< Bunker main wall
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
@@ -92,6 +102,8 @@ class Bunker : public attachSystem::ContainedComp,
 
   void createSideLinks(const Geometry::Vec3D&,const Geometry::Vec3D&,
 		       const Geometry::Vec3D&,const Geometry::Vec3D&);
+
+  void createMainWall(Simulation&);
   
  public:
 

@@ -57,7 +57,7 @@ class PhysicsCards
   bool nImpOut;                           ///< are neutron imp needed
   std::list<int> printNum;                ///< print numbers
   std::string prdmp;                      ///< prdmp string
-  std::vector<PhysImp> ImpCa-rds;          ///< Importance cards
+  std::vector<PhysImp> ImpCards;          ///< Importance cards
   std::vector<PhysCard*> PCards;          ///< Physics cards
   LSwitchCard LEA;                        ///< LEA/LCA Card
 
