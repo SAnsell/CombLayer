@@ -372,7 +372,7 @@ void makeESS::buildF5Collimator(Simulation& System, const mainSystem::inputParam
   for (size_t i=0; i<nitems; i++)
     {
       strtmp = IParam.getValue<std::string>("f5-collimators", i);
-      if ( (strtmp=="top") || (strtmp=="low") )
+      if ( (strtmp=="TopFly") || (strtmp=="LowFly") )
 	{
 	  moderator = strtmp;
 	  range = IParam.getValue<std::string>("f5-collimators", ++i);
@@ -389,9 +389,9 @@ void makeESS::buildF5Collimator(Simulation& System, const mainSystem::inputParam
 	      F5->setTheta(theta);
 	      F5->setRange(range);
 
-	      if (moderator=="top")
+	      if (moderator=="TopFly")
 		F5->setFocalPoints(TopFocalPoints);
-	      else if (moderator=="low")
+	      else if (moderator=="LowFly")
 		F5->setFocalPoints(LowFocalPoints);
 
 	      F5->addInsertCell(74123); // !!! 74123=voidCell // SA: how to exclude F5 from any cells?
