@@ -71,6 +71,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "CellMap.h"
 #include "MXcards.h"
@@ -87,6 +88,7 @@
 
 #include "World.h"
 #include "BunkerMainWall.h"
+#include "BunkerInsert.h"
 #include "Bunker.h"
 
 namespace essSystem
@@ -500,10 +502,11 @@ Bunker::createMainWall(Simulation& System)
 		ModelSupport::getComposite(SMap,wallIndex," -1 ");
 	      wallIndex++;
 	      	      
-	      Out=divider+ACut+BCut+AVert+BVert+AWall+BWall;
-	      const int Mat=BMWPtr->getMaterial(i,j,k,wallMat);
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,Mat,0.0,Out));
-	      setCell("MainWall"+StrFunc::makeString(i),cellIndex-1);
+	      Out=ACut+BCut+AVert+BVert+AWall+BWall;
+	      const int Mat=BMWPtr->getMaterial(i+1,j+1,k+1,wallMat);
+	      System.addCell(MonteCarlo::Qhull(cellIndex++,Mat,0.0,
+					       Out+divider));
+	      addCell("MainWall",cellIndex-1);
 	    }
 	}
     }
@@ -651,7 +654,75 @@ Bunker::setCutWall(const bool lFlag,const bool rFlag)
   rightWallFlag=rFlag;
   return;
 }
+
+void
+Bunker::cutInsert(Simulation& System,const BunkerInsert& BI) const
+  /*!
+    Loops over all teh points and cuts those that full within
+    the scope of the Insert
+    \param BI :: Insert to use
+  */
+{
+  ELog::RegMethod RegA("Bunker","cutInsert");
+
+  for(size_t i=0;i<nSectors;i++)
+    for(size_t j=0;j<nVert;j++)
+      for(size_t k=0;k<nLayers;k++)
+	{
+	  const std::vector<Geometry::Vec3D>& Pts =
+	    BMWPtr->getPoints(i,j,k);
+	  const int res=BI.objectCut(Pts);	  
+	}
+  return;
+}
+
+void
+Bunker::addCalcPoint(const size_t i,const size_t j,
+		     const size_t k,
+		     std::string OrderSurf)
+  /*!
+    Process the string to calculate the corner points 
+    \param i :: Index 
+    \param j :: Index 
+    \param k :: Index 
+    \param OrderSurf :: Very highly order list of surface
+   */
+{
+  ELog::RegMethod RegA("Bunker","AddCalcPoint");
   
+  int side[2];
+  int cyl[2];
+  int vert[2];
+  StrFunc::section(OrderSurf,side[0]);
+  StrFunc::section(OrderSurf,side[1]);
+  StrFunc::section(OrderSurf,vert[0]);
+  StrFunc::section(OrderSurf,vert[1]);
+  StrFunc::section(OrderSurf,cyl[0]);
+  StrFunc::section(OrderSurf,cyl[1]);
+
+  Geometry::Plane* SPtr[2];
+  Geometry::Cylinder* CPtr[2];
+  Geometry::Plane* VPtr[2];
+
+  SPtr[0]=SMap.realPtr<Geometry::Plane>(side[0]);
+  SPtr[1]=SMap.realPtr<Geometry::Plane>(side[1]);
+  CPtr[0]=SMap.realPtr<Geometry::Cylinder>(cyl[0]);
+  CPtr[1]=SMap.realPtr<Geometry::Cylinder>(cyl[1]);
+  VPtr[0]=SMap.realPtr<Geometry::Plane>(vert[0]);
+  VPtr[1]=SMap.realPtr<Geometry::Plane>(vert[1]);
+
+  std::vector<Geometry::Vec3D> OutPts;
+  for(size_t i=0;i<2;i++)
+    for(size_t j=0;j<2;j++)
+      for(size_t k=0;k<2;k++)
+	OutPts.push_back(SurInter::getPoint(SPtr[0],VPtr[0],CPtr[0],Origin));
+
+  BMWPtr->setPoints(i,j,k,OutPts);
+  
+  return; 
+}
+
+
 
   
 void

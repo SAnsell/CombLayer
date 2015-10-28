@@ -60,7 +60,7 @@ class CellWeight
   ~CellWeight() {}          ///< Destructor
 
   void addTracks(const int,const double);
-  void updateWM() const;
+  void updateWM(const double) const;
   void write(std::ostream&) const;
 };
 

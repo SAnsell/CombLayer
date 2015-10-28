@@ -123,10 +123,11 @@ CellWeight::addTracks(const int cN,const double value)
 }
 
 void
-CellWeight::updateWM() const
+CellWeight::updateWM(const double eCut) const
   /*!
     Update WM
-   */
+    \param eCut :: Energy cut [-ve to scale below ] 
+  */
 {
   ELog::RegMethod RegA("CellWeight","updateWM");
 
@@ -138,7 +139,9 @@ CellWeight::updateWM() const
     throw ColErr::InContainerError<std::string>("n","neutron has no WForm");
 
   // quick way to get length of array
-  std::vector<double> DVec=WF->getEnergy();
+  const std::vector<double> EVec=WF->getEnergy();
+  std::vector<double> DVec;
+  
 
   double maxW(0.0);
   double minW(1e38);
@@ -160,8 +163,15 @@ CellWeight::updateWM() const
   for(const std::map<int,CellItem>::value_type& cv : Cells)
     {
       const double W=(exp(-cv.second.weight*sigmaScale*factor));
-      std::fill(DVec.begin(),DVec.end(),W);
-      WF->setWeights(cv.first,DVec);
+      for(const double E : EVec)
+	{
+	  if (eCut<-1e-10)
+	    DVec.push_back(( E >= -eCut) ? 1.0 : W);
+	  else
+	    DVec.push_back((E>=eCut) ? W : 1.0);
+	  ELog::EM<<"Energy == "<<E<<ELog::endDiag;
+	}
+      WF->scaleWeights(cv.first,DVec);
     }
   return;
 }

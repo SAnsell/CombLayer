@@ -44,7 +44,10 @@ class BunkerMainWall
 {
  private:
 
-  std::map<size_t,std::string> MatMap;         ///< Hash key : mat type 
+  std::map<size_t,std::string> MatMap;         ///< Hash key : mat type
+  ///< Hash key : CornerPoints
+  std::map<size_t,std::vector<Geometry::Vec3D>> PointMap;
+
 
   static size_t hash(const size_t,const size_t,
 		     const size_t);
@@ -66,7 +69,12 @@ class BunkerMainWall
   const std::string& getMatString
     (const size_t,const size_t,const size_t) const;
 
-  
+  void setPoints(const size_t,const size_t,
+		 const size_t,const std::vector<Geometry::Vec3D>&);
+  const std::vector<Geometry::Vec3D>&
+    getPoints(const size_t,const size_t,const size_t) const;
+
+
   int loadXML(const std::string&);
   void writeXML(const std::string&,const size_t,
 		const size_t,const size_t) const ;

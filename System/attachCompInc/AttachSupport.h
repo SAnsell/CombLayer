@@ -30,6 +30,7 @@ namespace attachSystem
 {
 
 class FixedComp;
+class CellMap;
 class ContainedComp;
 
 long int getLinkNumber(const std::string&);
@@ -58,8 +59,11 @@ void addToInsertControl(Simulation&,const int,const int,
 // On surface intersects
 void addToInsertSurfCtrl(Simulation&,const FixedComp&,
 			ContainedComp&);
+void addToInsertSurfCtrl(Simulation&,const CellMap&,const std::string&,
+			 ContainedComp&);
 void addToInsertSurfCtrl(Simulation&,const int,const int,
 			ContainedComp&);
+void addToInsertSurfCtrl(Simulation&,const int,ContainedComp&);
 void addToInsertOuterSurfCtrl(Simulation&,const FixedComp&,
 			ContainedComp&);
 void addToInsertOuterSurfCtrl(Simulation&,

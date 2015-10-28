@@ -54,6 +54,7 @@
 #include "XMLcollect.h"
 #include "MaterialSupport.h"
 
+
 #include "BunkerMainWall.h"
 
 namespace essSystem
@@ -86,7 +87,7 @@ BunkerMainWall::BunkerMainWall(const std::string& defMat)
 }
 
 BunkerMainWall::BunkerMainWall(const BunkerMainWall& A) : 
-  MatMap(A.MatMap)
+  MatMap(A.MatMap),PointMap(A.PointMap)
   /*!
     Copy constructor
     \param A :: BunkerMainWall to copy
@@ -104,6 +105,7 @@ BunkerMainWall::operator=(const BunkerMainWall& A)
   if (this!=&A)
     {
       MatMap=A.MatMap;
+      PointMap=A.PointMap;
     }
   return *this;
 }
@@ -167,6 +169,26 @@ BunkerMainWall::loadXML(const std::string& FName)
 }
 
 void
+BunkerMainWall::setPoints(const size_t SectIndex,
+			  const size_t VIndex,
+			  const size_t RIndex,
+			  const std::vector<Geometry::Vec3D>& Corners)
+  /*!
+    Sets a point system
+    \param SectIndex :: Sector index
+    \param VIndex :: Vertical index
+    \param RIndex :: Cylinder index
+    \param Corner :: corner points to add
+  */
+{
+  const size_t HN=BunkerMainWall::hash(SectIndex,VIndex,RIndex);
+  PointMap.emplace(HN,Corners);
+  return;
+}
+
+
+  
+void
 BunkerMainWall::setMaterial(const size_t SectIndex,
 			    const size_t VIndex,
 			    const size_t RIndex,
@@ -182,7 +204,7 @@ BunkerMainWall::setMaterial(const size_t SectIndex,
   ELog::RegMethod RegA("BunkerMainWall","setMaterial");
   
   const size_t HN=BunkerMainWall::hash(SectIndex,VIndex,RIndex);
-  MatMap.insert(std::map<size_t,std::string>::value_type(HN,MatName));
+  MatMap.emplace(HN,MatName);
   return;
 }
   
@@ -246,6 +268,33 @@ BunkerMainWall::getMatString(const size_t SectIndex,
   return (mc!=MatMap.end()) ? mc->second : empty;
 }
 
+
+const std::vector<Geometry::Vec3D>&
+BunkerMainWall::getPoints(const size_t SectIndex,
+			  const size_t VIndex,
+			  const size_t RIndex) const
+  /*!
+    Get the set of points on a system
+    \param SectIndex :: Sector indext
+    \param VIndex :: Vertical index
+    \param RIndex :: Cylinder index
+    \return Points
+  */
+{
+  ELog::RegMethod RegA("BunkerMainWall","getPoints");
+
+  const size_t HN=BunkerMainWall::hash(SectIndex,VIndex,RIndex);
+  
+  std::map<size_t,std::vector<Geometry::Vec3D>>::const_iterator mc=
+    PointMap.find(HN);
+  if (mc==PointMap.end())
+    throw ColErr::InContainerError<size_t>(HN,"Hash index");
+    
+  return mc->second;
+}
+
+
+  
 void
 BunkerMainWall::writeXML(const std::string& FName,
 			 const size_t nSectors,
@@ -294,9 +343,7 @@ BunkerMainWall::writeXML(const std::string& FName,
   activeXOut.writeXML(WFile);
   WFile.close();
 
-  return;
-  
-  
-}
+  return;  
+}  
 
 } // NAMESPACE essSystem

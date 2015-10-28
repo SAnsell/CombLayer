@@ -27,6 +27,7 @@ class Simulation;
 namespace essSystem
 {
   class BunkerMainWall;
+  class BunkerInsert;
   
 /*!
   \class Bunker
@@ -60,7 +61,7 @@ class Bunker : public attachSystem::ContainedComp,
 
   size_t nSectors;               ///< Number of sector divisions
   std::vector<double> sectPhase; ///< sector angles
-
+  
   size_t nVert;                  ///< Number of vertical divisions
   std::vector<double> vertFrac;  ///< Vertical fraction
 
@@ -87,6 +88,7 @@ class Bunker : public attachSystem::ContainedComp,
   std::string loadFile;            ///< Bunker input file
   std::string outFile;             ///< Bunker output file
   BunkerMainWall* BMWPtr;          ///< Bunker main wall
+
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
@@ -104,6 +106,8 @@ class Bunker : public attachSystem::ContainedComp,
 		       const Geometry::Vec3D&,const Geometry::Vec3D&);
 
   void createMainWall(Simulation&);
+  void addCalcPoint(const size_t,const size_t,const size_t,
+		    std::string);
   
  public:
 
@@ -117,7 +121,8 @@ class Bunker : public attachSystem::ContainedComp,
 			  const Geometry::Vec3D&) const;
   
   void setCutWall(const bool,const bool);
-  
+
+  void cutInsert(Simulation&,const BunkerInsert&) const;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const attachSystem::FixedComp&,
 		 const long int,const bool);

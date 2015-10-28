@@ -54,6 +54,7 @@ class BunkerInsert : public attachSystem::ContainedComp,
 
   int wallMat;                   ///< wall material
 
+  HeadRule outCut;               ///< Cut volume for items
     
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
@@ -63,6 +64,8 @@ class BunkerInsert : public attachSystem::ContainedComp,
   void createLinks(const attachSystem::FixedComp&);
   void createObjects(Simulation&,const std::string&);
 
+  void addCalcPoint();
+  
  public:
 
   BunkerInsert(const std::string&);
@@ -70,8 +73,9 @@ class BunkerInsert : public attachSystem::ContainedComp,
   BunkerInsert& operator=(const BunkerInsert&);
   virtual ~BunkerInsert();
 
+  int objectCut(const std::vector<Geometry::Vec3D>&) const;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int,const Bunker&);
+		 const long int,const attachSystem::FixedComp&);
 
 };
 

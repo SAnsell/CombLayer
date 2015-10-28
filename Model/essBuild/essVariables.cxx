@@ -1365,6 +1365,7 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("ABunkerRightAngle",0.0);
   Control.addVariable("ABunkerNSectors",8);
   Control.addVariable("ABunkerNVert",8);
+  Control.addVariable("ABunkerNLayers",24);
   
   Control.addVariable("ABunkerWallRadius",1300.0);
   Control.addVariable("ABunkerFloorDepth",100.0);
@@ -1378,7 +1379,7 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("ABunkerVoidMat","Void");
   Control.addVariable("ABunkerWallMat","Steel71");
 
-  Control.addVariable("ABunkerNLayers",12);
+
   Control.addVariable("ABunkerWallMat1","B4C");
   Control.addVariable("ABunkerWallMat2","Lead");
   Control.addVariable("ABunkerWallMat3","CastIron");
@@ -1389,10 +1390,9 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("ABunkerWallMat8","B4C");
   Control.addVariable("ABunkerWallMat9","Concrete");
   
-  Control.addVariable("ABunkerWallLen1",5.0);
+  Control.addVariable("ABunkerWallLen1",0.5);
   Control.addVariable("ABunkerWallLen2",10.0);
-  Control.addVariable("ABunkerWallLen8",1.0);
-
+ 
   Control.addVariable("ABunkerLoadFile","ABunkerDef.xml");
   Control.addVariable("ABunkerOutFile","ABunker.xml");
 
@@ -1405,7 +1405,10 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("BBunkerRightAngle",0.0);
   Control.addVariable("BBunkerNSectors",8);
   Control.addVariable("BBunkerNVert",8);
-    
+  Control.addVariable("BBunkerNLayers",24);
+  Control.addVariable("BBunkerWallLen1",0.5);
+  Control.addVariable("BBunkerWallLen2",10.0);
+  
   Control.addVariable("BBunkerWallRadius",1700.0);
   Control.addVariable("BBunkerFloorDepth",100.0);
   Control.addVariable("BBunkerRoofHeight",345.0);
@@ -1418,7 +1421,6 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("BBunkerVoidMat","Void");
   Control.addVariable("BBunkerWallMat","Steel71");
 
-  Control.addVariable("BBunkerNLayers",9);
   Control.addVariable("BBunkerWallMat1","Tungsten");
   Control.addVariable("BBunkerWallMat2","Tungsten");
   Control.addVariable("BBunkerWallMat3","Stainless304");
@@ -1436,7 +1438,10 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("CurtainNTopLayers",7);
   Control.addVariable("CurtainNMidLayers",2);
   Control.addVariable("CurtainNBaseLayers",7);
-  
+
+  Control.addVariable("BBunkerLoadFile","BBunkerDef.xml");
+  Control.addVariable("BBunkerOutFile","BBunker.xml");
+
   return;
 }
 

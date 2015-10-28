@@ -413,11 +413,12 @@ DREAM::build(Simulation& System,
   // IN WALL
   // Make bunker insert
   const attachSystem::FixedComp& GFC(FocusFinal->getKey("Guide0"));
-  const std::string BSector=
-    bunkerObj.calcSegment(System,GFC.getSignedLinkPt(-1),
-			  GFC.getSignedLinkAxis(-1));  
-  BInsert->setInsertCell(bunkerObj.getCells(BSector));
+  // const std::string BSector=
+  //   bunkerObj.calcSegment(System,GFC.getSignedLinkPt(-1),
+  // 			  GFC.getSignedLinkAxis(-1));  
+  //  BInsert->setInsertCell(bunkerObj.getCells(BSector));
   BInsert->createAll(System,GFC,-1,bunkerObj);
+  attachSystem::addToInsertSurfCtrl(System,bunkerObj,"MainWall",*BInsert);  
 
   FocusWall->addInsertCell(BInsert->getCell("Void"));
   FocusWall->createAll(System,*BInsert,-1,

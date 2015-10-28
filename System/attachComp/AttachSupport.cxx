@@ -63,6 +63,7 @@
 #include "FixedComp.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+#include "CellMap.h"
 #include "objectRegister.h"
 #include "Qhull.h"
 #include "Simulation.h"
@@ -482,6 +483,30 @@ addToInsertSurfCtrl(Simulation& System,
 }
 
 void
+addToInsertSurfCtrl(Simulation& System,
+		    const attachSystem::CellMap& BaseCell,
+		    const std::string& cellName,
+		    attachSystem::ContainedComp& CC)
+  /*!
+    Adds this object to the containedComp to be inserted.
+    FC is the fixed object that is to be inserted -- linkpoints
+    must be set. It is tested against all the ojbect with
+    this object .
+    \param System :: Simulation to use
+    \param BaseCell :: CellMap for cell numbers
+    \param CC :: ContainedComp object to add to this
+  */
+{
+  ELog::RegMethod RegA("AttachSupport","addToInsertSurfCtrl(cellmap,CC)");
+  
+
+  std::vector<int> cellN=BaseCell.getCells(cellName);
+  for(const int cn : cellN)
+    addToInsertSurfCtrl(System,cn,CC);
+  return;
+}
+
+void
 addToInsertOuterSurfCtrl(Simulation& System,
 			 const attachSystem::FixedComp& BaseFC,
 			 attachSystem::ContainedComp& CC)
@@ -496,6 +521,7 @@ addToInsertOuterSurfCtrl(Simulation& System,
   */
 {
   ELog::RegMethod RegA("AttachSupport","addToInsertOuterSurfCtrl(FC,CC)");
+  
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
   const attachSystem::ContainedComp* BaseCC=
@@ -508,6 +534,39 @@ addToInsertOuterSurfCtrl(Simulation& System,
   const int cellR=OR.getRange(BaseFC.getKeyName());
   addToInsertOuterSurfCtrl(System,cellN,cellN+cellR,*BaseCC,CC);
 
+  return;
+}
+
+void
+addToInsertSurfCtrl(Simulation& System,
+		    const int cellA,
+		    attachSystem::ContainedComp& CC)
+ /*!
+   Adds this object to the containedComp to be inserted.
+   FC is the fixed object that is to be inserted -- linkpoints
+   must be set. It is tested against all the ojbect with
+   this object .
+   \param System :: Simulation to use
+   \param CellA :: cell number [to test]
+   \param CC :: ContainedComp object to add to this
+  */
+{
+  ELog::RegMethod RegA("AttachSupport","addToInsertSurfCtrl(int,int,CC)");
+
+  const std::vector<Geometry::Surface*> SVec=CC.getSurfaces();
+
+  MonteCarlo::Qhull* CRPtr=System.findQhull(cellA);
+  if (!CRPtr) return;
+  
+  CRPtr->populate();
+  CRPtr->createSurfaceList();
+  const std::vector<const Geometry::Surface*>&
+    CellSVec=CRPtr->getSurList();
+  
+  if (checkIntersect(CC,*CRPtr,CellSVec))
+    CC.addInsertCell(cellA);
+
+  CC.insertObjects(System);
   return;
 }
 
@@ -530,8 +589,6 @@ addToInsertSurfCtrl(Simulation& System,
 
   const std::vector<Geometry::Surface*> SVec=CC.getSurfaces();
 
-  std::vector<Geometry::Vec3D> Out;		
-  std::vector<Geometry::Vec3D>::const_iterator vc;
 
   for(int i=cellA+1;i<=cellB;i++)
     {
@@ -574,8 +631,6 @@ addToInsertOuterSurfCtrl(Simulation& System,
 
   const std::vector<Geometry::Surface*> SVec=CC.getSurfaces();
 
-  std::vector<Geometry::Vec3D> Out;		
-  std::vector<Geometry::Vec3D>::const_iterator vc;
 
   // Populate and createSurface list MUST have been called      
   const std::vector<const Geometry::Surface*>

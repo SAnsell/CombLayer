@@ -244,11 +244,16 @@ WeightControl::procObject(const Simulation& System,
     ModelSupport::objectRegister::Instance();
     
   const size_t nSet=IParam.setCnt("weightObject");
-  
+  double eCut(0.0);
   for(size_t iSet=0;iSet<nSet;iSet++)
     {
+      const size_t nItem=IParam.itemCnt("weightObject",iSet);
+      size_t index(0);
+      if (nItem>1)
+	eCut=IParam.getValue<double>("weightObject",iSet,index++);
+
       const std::string Key=
-	IParam.getValue<std::string>("weightObject",iSet,0);
+	IParam.getValue<std::string>("weightObject",iSet,index);
 
       CellWeight CTrack;  
       const int BStart=OR.getRenumberCell(Key);
@@ -271,8 +276,7 @@ WeightControl::procObject(const Simulation& System,
 		  OTrack.addUnit(System,cN,CellPtr->getCofM());
 		  // either this :
 		  CTrack.addTracks(cN,OTrack.getAttnSum(cN));
-		  CTrack.updateWM();
-		  ELog::EM<<CTrack<<ELog::endDiag;
+		  CTrack.updateWM(eCut);
 		}
 	    }
 	}
