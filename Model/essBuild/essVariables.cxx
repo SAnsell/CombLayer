@@ -512,8 +512,8 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("TopAFlightAngleXY2", 60.0);  // Angle out
   Control.addVariable("TopAFlightXYangle", 180.0);
   Control.addVariable("TopAFlightZangle", 0.0);
-  Control.addVariable("TopAFlightAngleZTop", 1.455);  // Step down angle
-  Control.addVariable("TopAFlightAngleZBase", 1.455); // Step up angle
+  Control.addVariable("TopAFlightAngleZTop", 1.0);  // Step down angle !!! 1.455 is too much - fight line cuts the Bilbao target wheel
+  Control.addVariable("TopAFlightAngleZBase", 1.0); // Step up angle
   //  Control.Parse("TopFlyTotalHeight");
   Control.addVariable("TopAFlightHeight", 2);     // Full height = TopFlyTotalHeight
   Control.addVariable("TopAFlightWidth", 10.7);     // Full width
