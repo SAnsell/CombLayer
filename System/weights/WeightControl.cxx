@@ -276,9 +276,9 @@ WeightControl::procObject(const Simulation& System,
 		  OTrack.addUnit(System,cN,CellPtr->getCofM());
 		  // either this :
 		  CTrack.addTracks(cN,OTrack.getAttnSum(cN));
-		  CTrack.updateWM(eCut);
 		}
 	    }
+	  CTrack.updateWM(eCut);
 	}
       if (tallyFlag)
 	{

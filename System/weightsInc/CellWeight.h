@@ -33,7 +33,7 @@ struct CellItem
   /// Constructor
   CellItem(const double W) : weight(W), number(1.0) {}
   CellItem(const CellItem& A) :
-  weight(A.weight),number(A.number) {}
+    weight(A.weight),number(A.number) {}
 };
   
   
@@ -49,8 +49,8 @@ class CellWeight
 {
  private:
   
-  const double sigmaScale;
-  std::map<int,CellItem> Cells;
+  const double sigmaScale;             ///< Scale for sigma
+  std::map<int,CellItem> Cells;        ///< Cells and track info
 
  public:
 

@@ -328,7 +328,7 @@ WCells::scaleWeights(const int CN,const std::vector<double>& WT)
     \param WT :: Basic weight values toscale in all cells
   */
 {
-  ELog::RegMethod RegA("WCells","setWeights");
+  ELog::RegMethod RegA("WCells","scaleWeights");
 
   if (WT.size()!=Energy.size())
     throw ColErr::MisMatch<size_t>(WT.size(),Energy.size(),
