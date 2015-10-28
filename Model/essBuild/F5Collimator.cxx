@@ -146,6 +146,7 @@ namespace essSystem
     length=Control.EvalVar<double>(keyName+"Length"); // along x
     wall=Control.EvalDefVar<double>(keyName+"WallThick", 0.5);
     viewWidth=Control.EvalVar<double>(keyName+"ViewWidth");
+    delta = Control.EvalDefVar<double>(keyName+"Delta", 0.0);
 
     // xyz coordinates of F5 tally
     Control.setVariable<double>(keyName+"X", radius*sin(theta*M_PI/180.0));
@@ -303,7 +304,7 @@ namespace essSystem
     SetTally(xStep, yStep, zStep);
     SetPoints(gB, gC, gB2);
     SetLength(length);
-    xyAngle = GetXYAngle();
+    xyAngle = GetXYAngle()+delta;
     zAngle  = GetZAngle();
     width = 2*GetHalfSizeX();
     height = 2*GetHalfSizeZ();

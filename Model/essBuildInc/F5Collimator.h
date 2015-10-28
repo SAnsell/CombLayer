@@ -14,6 +14,7 @@ namespace essSystem
 	double yStep;                   ///< Y step (point detector y coordinate)
 	double zStep;                   ///< Z step (point detector z coordinate)
 	double xyAngle;                 ///< XY Angle
+	double delta;                   ///< angle used to manually fine-tune the calculated xyAngle. Zero by default. Used only with -f5-collimators.
 	double zAngle;                  ///< Z Angle
 
 	double height;                  ///< Height along z
