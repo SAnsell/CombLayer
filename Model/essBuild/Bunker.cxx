@@ -223,6 +223,8 @@ Bunker::populate(const FuncDataBase& Control)
   nRoof=Control.EvalVar<size_t>(keyName+"NRoof");
   ModelSupport::populateDivideLen(Control,nRoof,keyName+"RoofLen",
 				  roofMat,roofFrac);
+  ModelSupport::populateDivide(Control,nRoof,keyName+"RoofMat",
+			       roofMat,roofMatVec);
 
   
   loadFile=Control.EvalDefVar<std::string>(keyName+"LoadFile","");

@@ -309,17 +309,13 @@ WeightControl::procObject(const Simulation& System,
 	  (Key,"Object name not found");
       
       // SOURCE Point
-      if (sourceFlag&& tallyFlag) sF/=2.0;
-      
+      if (sourceFlag && tallyFlag) sF/=2.0;
+      ELog::EM<<"sf == "<<sF
       if (sourceFlag)
 	calcTrack(System,sourcePt,BStart,BRange,eCut,sF,minW);
       if (tallyFlag)
 	calcTrack(System,tallyPt,BStart,BRange,eCut,sF,minW);
-      
-      if (tallyFlag)
-	{
-	  ELog::EM<<"Do stuff here "<<ELog::endDiag;
-	}
+
       if (!tallyFlag && !sourceFlag)
 	ELog::EM<<"No source/tally set for weightObject"<<ELog::endCrit;
     }
