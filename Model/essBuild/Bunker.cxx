@@ -204,6 +204,7 @@ Bunker::populate(const FuncDataBase& Control)
 
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
+  roofMat=ModelSupport::EvalMat<int>(Control,keyName+"RoofMat");
 
   
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");
@@ -219,6 +220,11 @@ Bunker::populate(const FuncDataBase& Control)
   ModelSupport::populateRange(Control,nVert,keyName+"VertLen",
 			      -floorDepth,roofHeight,vertFrac);
 
+  nRoof=Control.EvalVar<size_t>(keyName+"NRoof");
+  ModelSupport::populateDivideLen(Control,nRoof,keyName+"RoofLen",
+				  roofMat,roofFrac);
+
+  
   loadFile=Control.EvalDefVar<std::string>(keyName+"LoadFile","");
   outFile=Control.EvalDefVar<std::string>(keyName+"OutFile","");
 
@@ -530,45 +536,41 @@ Bunker::layerProcess(Simulation& System)
   // Steel layers
   //  layerSpecial(System);
 
-  if (nLayers>1)
+  if (nRoof>1)
     {
       std::string OutA,OutB;
       ModelSupport::surfDivide DA;
             
-      for(size_t i=1;i<nLayers;i++)
+      for(size_t i=1;i<nRoof;i++)
 	{
-	  DA.addFrac(wallFrac[i-1]);
-	  DA.addMaterial(wallMatVec[i-1]);
+	  DA.addFrac(roofFrac[i-1]);
+	  DA.addMaterial(roofMatVec[i-1]);
 	}
-      DA.addMaterial(wallMatVec.back());
+      DA.addMaterial(roofMatVec.back());
 
-      for(size_t i=0;i<nSectors;i++)
-	{
-	  // Cell Specific:
-	  const int firstCell(cellIndex);
-	  const std::string cellName("MainWall"+StrFunc::makeString(i));
-	  DA.setCellN(getCell(cellName));
-	  DA.setOutNum(cellIndex,bnkIndex+1001);
-
-	  ModelSupport::mergeTemplate<Geometry::Cylinder,
-				      Geometry::Cylinder> surroundRule;
-	  
-	  surroundRule.setSurfPair(SMap.realSurf(bnkIndex+7),
-				   SMap.realSurf(bnkIndex+17));
-	  
-	  OutA=ModelSupport::getComposite(SMap,bnkIndex," 7 ");
-	  OutB=ModelSupport::getComposite(SMap,bnkIndex," -17 ");
-	  
-	  surroundRule.setInnerRule(OutA);
-	  surroundRule.setOuterRule(OutB);
-	  
-	  DA.addRule(&surroundRule);
-	  DA.activeDivideTemplate(System);
-	  
-	  cellIndex=DA.getCellNum();
-	  removeCell(cellName);
-	  setCells(cellName,firstCell,cellIndex-1);
-	}
+      // Cell Specific:
+      const int firstCell(cellIndex);
+      DA.setCellN(getCell("roof"));
+      DA.setOutNum(cellIndex,bnkIndex+5001);
+      
+      ModelSupport::mergeTemplate<Geometry::Plane,
+				  Geometry::Plane> surroundRule;
+      
+      surroundRule.setSurfPair(SMap.realSurf(bnkIndex+6),
+			       SMap.realSurf(bnkIndex+16));
+      
+      OutA=ModelSupport::getComposite(SMap,bnkIndex," 6 ");
+      OutB=ModelSupport::getComposite(SMap,bnkIndex," -16 ");
+      
+      surroundRule.setInnerRule(OutA);
+      surroundRule.setOuterRule(OutB);
+      
+      DA.addRule(&surroundRule);
+      DA.activeDivideTemplate(System);
+      
+      cellIndex=DA.getCellNum();
+      removeCell("roof");
+      setCells("roof",firstCell,cellIndex-1);
     }
   return;
 }
@@ -747,7 +749,7 @@ Bunker::createAll(Simulation& System,
   createSurfaces();
   createLinks();
   createObjects(System,FC,linkIndex);
-  //  layerProcess(System);
+  layerProcess(System);
   insertObjects(System);              
 
   return;

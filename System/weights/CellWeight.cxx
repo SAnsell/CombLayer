@@ -74,7 +74,8 @@ operator<<(std::ostream& OX,const CellWeight& A)
 }
 
 CellWeight::CellWeight()  :
-  sigmaScale(0.06914)
+  sigmaScale(0.06914),scaleFactor(1.0),
+  minWeight(1e-7)
   /*! 
     Constructor 
   */
@@ -149,7 +150,7 @@ CellWeight::updateWM(const double eCut) const
   int cnt(0);
   for(const std::map<int,CellItem>::value_type& cv : Cells)
     {
-      const double W=(exp(-cv.second.weight*sigmaScale));
+      const double W=(exp(-cv.second.weight*sigmaScale*scaleFactor));
       if (W>maxW) maxW=W;
       if (W<minW && minW>1e-38) minW=W;
       aveW+=W;
@@ -157,12 +158,12 @@ CellWeight::updateWM(const double eCut) const
     }
   aveW/=cnt;
   // Work on minW first:
-  const double factor=(minW>minW<1e-7) ?
-    log(1e-7)/log(minW) : 1.0;
+  const double factor=(minW>minW<minWeight) ?
+    log(minWeight)/log(minW) : 1.0;
 
   for(const std::map<int,CellItem>::value_type& cv : Cells)
     {
-      const double W=(exp(-cv.second.weight*sigmaScale*factor));
+      const double W=(exp(-cv.second.weight*sigmaScale*scaleFactor*factor));
       for(size_t i=0;i<EVec.size();i++)
 	{
 	  if (eCut<-1e-10 && EVec[i] <= -eCut)

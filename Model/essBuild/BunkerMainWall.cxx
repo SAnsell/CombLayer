@@ -160,7 +160,11 @@ BunkerMainWall::loadXML(const std::string& FName)
 	      MatName= AR->getNamedItem<std::string>("Material");
 	      MatName=StrFunc::fullBlock(MatName);
 	      const size_t HN=BunkerMainWall::hash(SN,VN,RN);
-	      MatMap.insert(std::map<size_t,std::string>::value_type(HN,MatName));
+	      std::map<size_t,std::string>::iterator mc=MatMap.find(HN);
+	      if (mc!=MatMap.end())
+		mc->second=MatName;
+	      else
+		MatMap.emplace(HN,MatName);
 	    }
       CO.deleteObj(AR);      
       AR=CO.findObj("WallMat");

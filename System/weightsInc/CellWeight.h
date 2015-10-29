@@ -50,6 +50,8 @@ class CellWeight
  private:
   
   const double sigmaScale;             ///< Scale for sigma
+  double scaleFactor;                  ///< Scaling factor
+  double minWeight;                    ///< Min weight
   std::map<int,CellItem> Cells;        ///< Cells and track info
 
  public:
@@ -59,6 +61,8 @@ class CellWeight
   CellWeight& operator=(const CellWeight&);    
   ~CellWeight() {}          ///< Destructor
 
+  void setScaleFactor(const double F) { scaleFactor=F; }
+  void setMinWeight(const double W) { minWeight=W; }
   void addTracks(const int,const double);
   void updateWM(const double) const;
   void write(std::ostream&) const;

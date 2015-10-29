@@ -68,6 +68,10 @@ class Bunker : public attachSystem::ContainedComp,
   size_t nLayers;                ///< number of layers
   std::vector<double> wallFrac;  ///< guide Layer thicknesss (fractions)
 
+  size_t nRoof;                  ///< number of layers
+  std::vector<double> roofFrac;  ///< guide Layer thicknesss (fractions)
+  std::vector<int> roofMatVec;   ///< guide Layer thicknesss (fractions)
+
   double innerRadius;            ///< inner radius [calculated]
   double wallRadius;             ///< Wall radius
   double floorDepth;             ///< Floor depth
@@ -80,6 +84,7 @@ class Bunker : public attachSystem::ContainedComp,
 
   int voidMat;                   ///< void material 
   int wallMat;                   ///< wall material
+  int roofMat;                   ///< roof material
 
   // Layers
   std::vector<int> wallMatVec;   ///< guide Layer materials

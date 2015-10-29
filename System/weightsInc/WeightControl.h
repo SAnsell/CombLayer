@@ -70,7 +70,9 @@ class WeightControl
   
 			
   void setWeights(Simulation&);
-
+  void calcTrack(const Simulation&,const Geometry::Vec3D&,
+		 const int,const int,
+		 const double,const double,const double);
 
  public:
 
