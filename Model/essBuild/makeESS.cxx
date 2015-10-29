@@ -571,12 +571,7 @@ makeESS::build(Simulation& System,
 
   // Build flightlines after bulk
   double TopFLHeight = TopCapMod->getZFlightLine()-TopPreMod->getZFlightLine();  // !!! \todo bool argument must be removed
-  // Now TopFLHeight assumes the flight line start at R=tiltRadius, but actually they start in the origin (according to the link point arguments in TopAFL->createAll above)
-  // So, we need to correct for that:
-  //  TopFLHeight *= TopCapMod->getTiltRadius()/Reflector->getRadius();
-  //  TopAFL->setHeight(TopFLHeight);
   TopAFL->createAll(System,*TopMod,0,*Reflector,4,*Bulk,-3);
-  //TopBFL->setHeight(TopFLHeight);
   TopBFL->createAll(System,*TopMod,0,*Reflector,3,*Bulk,-3);
 
   LowAFL->createAll(System,*LowMod,0,*Reflector,4,*Bulk,-3);
