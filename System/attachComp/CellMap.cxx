@@ -385,13 +385,17 @@ CellMap::insertComponent(Simulation& System,
    */
 {
   ELog::RegMethod RegA("CellMap","insertComponent");
-    
-  const int cellNum=getCell(Key);
-  MonteCarlo::Qhull* outerObj=System.findQhull(cellNum);
-  if (!outerObj)
-    throw ColErr::InContainerError<int>(cellNum,"Cell["+Key+"] not present");
+
+  const std::vector<int> CVec=getCells(Key);
   
-  outerObj->addSurfString(exclude);  
+  for(const int cellNum : CVec)
+    {
+      MonteCarlo::Qhull* outerObj=System.findQhull(cellNum);
+      if (!outerObj)
+	throw ColErr::InContainerError<int>(cellNum,
+					    "Cell["+Key+"] not present");
+      outerObj->addSurfString(exclude);
+    }
   return;
 }
 

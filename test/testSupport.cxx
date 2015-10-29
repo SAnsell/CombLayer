@@ -210,7 +210,7 @@ testSupport::testConvert()
     }
   return 0;
 }
-
+ 
 int
 testSupport::testConvPartNum()
   /*!
@@ -469,7 +469,6 @@ testSupport::testSectionRange()
   std::vector<TTYPE> Tests;
 
   int resultFlag;       // Section return
-  bool checkFlag;       // Output matches
 
   Tests.push_back(TTYPE("1:10 ",10,4,5));
   Tests.push_back(TTYPE("1:10:2 ",5,4,9));

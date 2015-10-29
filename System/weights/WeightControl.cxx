@@ -228,6 +228,49 @@ WeightControl::procTallyPoint(const mainSystem::inputParam& IParam)
 }
 
 void
+WeightControl::calcTrack(const Simulation& System,
+			 const Geometry::Vec3D& Pt,
+			 const int BStart,const int BEnd,
+			 const double eCut,const double sF,
+			 const double mW)
+  /*!
+    Calculate a given track 
+    \param System :: Simulation to use
+    \param Pt :: point for outgoing track
+    \param BStart :: Cell to start
+    \param BEnd :: Final cell to track
+    \param eCut :: Energy cut [MeV]
+    \param sF :: Scale fraction of attenuation path
+    \param mW :: mininum weight for splitting
+   */
+{
+  ELog::RegMethod RegA("WeightControl","calcTrack");
+  
+  CellWeight CTrack;
+
+  // SOURCE Point
+  ModelSupport::ObjectTrackAct OTrack(Pt);
+  for(int i=BStart;i<=BEnd;i++)
+    {
+      const MonteCarlo::Qhull* CellPtr=System.findQhull(i);
+      if (CellPtr)
+	{
+	  std::vector<int> cellN;
+	  std::vector<double> attnN;
+	  const int cN=CellPtr->getName();  // this should be i !!
+	  OTrack.addUnit(System,cN,CellPtr->getCofM());
+	  // either this :
+	  CTrack.addTracks(cN,OTrack.getAttnSum(cN));
+	}
+    }
+  CTrack.setScaleFactor(sF);
+  CTrack.setMinWeight(mW);
+  CTrack.updateWM(eCut);
+  return;
+}
+
+  
+void
 WeightControl::procObject(const Simulation& System,
 			  const mainSystem::inputParam& IParam)
 
@@ -244,42 +287,35 @@ WeightControl::procObject(const Simulation& System,
     ModelSupport::objectRegister::Instance();
     
   const size_t nSet=IParam.setCnt("weightObject");
-  double eCut(0.0);
+  double eCut(0.0),sF(1.0),minW(1e-7);
   for(size_t iSet=0;iSet<nSet;iSet++)
     {
       const size_t nItem=IParam.itemCnt("weightObject",iSet);
-      size_t index(0);
+
       if (nItem>1)
-	eCut=IParam.getValue<double>("weightObject",iSet,index++);
+	eCut=IParam.getValue<double>("weightObject",iSet,1);
+      if (nItem>2)
+	sF=IParam.getValue<double>("weightObject",iSet,2);
+      if (nItem>3)
+	minW=IParam.getValue<double>("weightObject",iSet,3);
 
       const std::string Key=
-	IParam.getValue<std::string>("weightObject",iSet,index);
+	IParam.getValue<std::string>("weightObject",iSet,0);
 
-      CellWeight CTrack;  
       const int BStart=OR.getRenumberCell(Key);
       const int BRange=OR.getRenumberRange(Key);
       if (BStart==0)
 	throw ColErr::InContainerError<std::string>
 	  (Key,"Object name not found");
+      
       // SOURCE Point
+      if (sourceFlag&& tallyFlag) sF/=2.0;
+      
       if (sourceFlag)
-	{
-	  ModelSupport::ObjectTrackAct OTrack(sourcePt);
-	  for(int i=BStart;i<=BRange;i++)
-	    {
-	      const MonteCarlo::Qhull* CellPtr=System.findQhull(i);
-	      if (CellPtr)
-		{
-		  std::vector<int> cellN;
-		  std::vector<double> attnN;
-		  const int cN=CellPtr->getName();  // this should be i !!
-		  OTrack.addUnit(System,cN,CellPtr->getCofM());
-		  // either this :
-		  CTrack.addTracks(cN,OTrack.getAttnSum(cN));
-		}
-	    }
-	  CTrack.updateWM(eCut);
-	}
+	calcTrack(System,sourcePt,BStart,BRange,eCut,sF,minW);
+      if (tallyFlag)
+	calcTrack(System,tallyPt,BStart,BRange,eCut,sF,minW);
+      
       if (tallyFlag)
 	{
 	  ELog::EM<<"Do stuff here "<<ELog::endDiag;
@@ -316,6 +352,8 @@ WeightControl::processWeights(Simulation& System,
     procType(IParam);
   if (IParam.flag("weightSource"))
     procSource(IParam);
+  if (IParam.flag("weightTally"))
+    procTallyPoint(IParam);
   if (IParam.flag("weightObject"))
     procObject(System,IParam);
   if (IParam.flag("wWWG"))

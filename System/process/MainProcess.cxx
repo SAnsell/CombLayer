@@ -283,6 +283,7 @@ createInputs(inputParam& IParam)
   IParam.regItem("WTemp","weightTemp",1);
   IParam.regItem("WType","weightType",1,10);
   IParam.regItem("WSource","weightSource",1,10);
+  IParam.regItem("WTally","weightTally",1,10);
   IParam.regMulti("WObject","weightObject",100,1);
 
 

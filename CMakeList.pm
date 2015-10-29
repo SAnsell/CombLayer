@@ -222,15 +222,8 @@ sub writeHeader
 
   
   print $DX "set(CMAKE_CXX_COMPILER ",$self->{ccomp},")\n";
-  print $DX "add_definitions(",$self->{cflag},")\n";
-
-
-
-  print $DX "add_definitions(",$self->{optimise},")\n"
-      if ($self->{optimise});
-  print $DX "add_definitions(",$self->{debug},")\n"
-      if ($self->{debug});
-
+  print $DX "set(CMAKE_CXX_FLAGS \"",$self->{cflag}.$self->{optimise}.$self->{debug},"\")\n";
+  print $DX "set(CMAKE_CXX_RELEASE_FLAGS \"",$self->{cflag}." -O2 ".$self->{debug},"\")\n";
 
   print $DX "set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ./lib)\n";
   
