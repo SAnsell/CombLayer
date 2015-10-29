@@ -63,6 +63,45 @@ F5Collimator::F5Collimator(const std::string& Key) :
     theta = -1111;
 }
 
+  F5Collimator::F5Collimator(const F5Collimator& A) : 
+  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+    tallySystem::F5Calc(A),
+    colIndex(A.colIndex), cellIndex(A.cellIndex),
+    delta(A.delta),height(A.height),length(A.length),width(A.width),
+    wall(A.wall),viewWidth(A.viewWidth),LinkPoint(A.LinkPoint),
+    radius(A.radius),theta(A.theta),vecFP(A.vecFP),range(A.range)
+  {
+  }
+
+  F5Collimator&
+  F5Collimator::operator=(const F5Collimator& A)
+  {
+    if (this!=&A)
+      {
+	attachSystem::ContainedComp::operator=(A);
+	attachSystem::FixedComp::operator=(A);
+	tallySystem::F5Calc::operator=(A);
+	cellIndex=A.cellIndex;
+	delta=A.delta;
+	height=A.height;
+	length=A.length;
+	width=A.width;
+	wall=A.wall;
+	viewWidth=A.viewWidth;
+	LinkPoint=A.LinkPoint;
+	radius=A.radius;
+	theta=A.theta;
+	vecFP=A.vecFP;
+	range=A.range;
+      }
+    return *this;
+  }
+
+  F5Collimator*
+  F5Collimator::clone() const
+  {
+    return new F5Collimator(*this);
+  }
 
 F5Collimator::~F5Collimator()
 /*!
