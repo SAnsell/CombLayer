@@ -43,8 +43,9 @@ namespace essSystem
 
       public:
 	F5Collimator(const std::string&);
-	//F5Collimator(const F5Collimator&);
+	F5Collimator(const F5Collimator&);
 	F5Collimator& operator=(const F5Collimator&);
+	virtual F5Collimator* clone() const;
 	virtual ~F5Collimator();
 
 	void setTheta(double t);
