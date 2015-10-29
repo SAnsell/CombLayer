@@ -180,8 +180,19 @@ BasicFlightLine::createSurfaces()
 
   ModelSupport::buildPlane(SMap,flightIndex+3,Origin-X*(width/2.0),xDircA);
   ModelSupport::buildPlane(SMap,flightIndex+4,Origin+X*(width/2.0),xDircB);
-  ModelSupport::buildCone(SMap,flightIndex+5,Origin-Z*(height/2.0),Z,90-anglesZ[0],Origin[2]>0 ? -1 : 1); // SA: this is weird, but I do not know a better way to do it (same applies to all cones below)
-  ModelSupport::buildCone(SMap,flightIndex+6,Origin+Z*(height/2.0),Z,90-anglesZ[1],Origin[2]>0 ? 1 : -1);
+
+  // The following ifs check whether the flight line should be tappered
+  // and builds either cone or plane
+  if (anglesZ[0]>Geometry::zeroTol)
+    ModelSupport::buildCone(SMap,flightIndex+5,Origin-Z*(height/2.0),Z,90-anglesZ[0],Origin[2]>0 ? -1 : 1); // SA: this is weird, but I do not know a better way to do it (same applies to all cones below)
+  else
+    ModelSupport::buildPlane(SMap,flightIndex+5,Origin-Z*(height/2.0),zDircA);
+
+  if (anglesZ[1]>Geometry::zeroTol)
+    ModelSupport::buildCone(SMap,flightIndex+6,Origin+Z*(height/2.0),Z,90-anglesZ[1],Origin[2]>0 ? 1 : -1);
+  else
+    ModelSupport::buildPlane(SMap,flightIndex+6,Origin+Z*(height/2.0),zDircB);
+
 
   double layT(0.0);
   for(size_t i=0;i<nLayer;i++)
@@ -193,8 +204,17 @@ BasicFlightLine::createSurfaces()
 			       Origin-X*(width/2.0)-xDircA*layT,xDircA);
       ModelSupport::buildPlane(SMap,flightIndex+II*10+14,
 			       Origin+X*(width/2.0)+xDircB*layT,xDircB);
-      ModelSupport::buildCone(SMap,flightIndex+II*10+15,Origin-Z*(height/2.0+layT),Z,90-anglesZ[0],Origin[2]>0 ? -1 : 1);
-      ModelSupport::buildCone(SMap,flightIndex+II*10+16,Origin+Z*(height/2.0+layT),Z,90-anglesZ[1],Origin[2]>0 ?  1 : -1);
+
+      if (anglesZ[0]>Geometry::zeroTol)
+	ModelSupport::buildCone(SMap,flightIndex+II*10+15,Origin-Z*(height/2.0+layT),Z,90-anglesZ[0],Origin[2]>0 ? -1 : 1);
+      else
+	ModelSupport::buildPlane(SMap,flightIndex+II*10+15, Origin-Z*(height/2.0)-zDircA*layT,zDircA);
+
+      if (anglesZ[1]>Geometry::zeroTol)
+	ModelSupport::buildCone(SMap,flightIndex+II*10+16,Origin+Z*(height/2.0+layT),Z,90-anglesZ[1],Origin[2]>0 ?  1 : -1);
+      else
+	ModelSupport::buildPlane(SMap,flightIndex+II*10+16,Origin+Z*(height/2.0)+zDircB*layT,zDircB);
+
     }
 
   // CREATE LINKS
@@ -248,11 +268,17 @@ BasicFlightLine::createObjects(Simulation& System,
 
   const int layerIndex=flightIndex+static_cast<int>(nLayer)*10;  
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,layerIndex," 3 -4 5 6 ");
+  if (anglesZ[1]>Geometry::zeroTol)
+    Out=ModelSupport::getComposite(SMap,layerIndex," 3 -4 5 6 ");
+  else
+    Out=ModelSupport::getComposite(SMap,layerIndex," 3 -4 5 -6 ");
   addOuterSurf("outer",Out);
 
   // Inner Void
-  Out=ModelSupport::getComposite(SMap,flightIndex," 3 -4 5 6 ");
+  if (anglesZ[1]>Geometry::zeroTol)
+    Out=ModelSupport::getComposite(SMap,flightIndex," 3 -4 5 6 ");
+  else
+    Out=ModelSupport::getComposite(SMap,flightIndex," 3 -4 5 -6 ");
   addOuterSurf("inner",Out);
 
 
@@ -264,8 +290,12 @@ BasicFlightLine::createObjects(Simulation& System,
   for(size_t i=0;i<nLayer;i++)
     {
       const int II(static_cast<int>(i));
-      Out=ModelSupport::getComposite(SMap,flightIndex+10*II,
-				     "13 -14 15 16 (-3:4:-5:-6) ");
+      if (anglesZ[1]>Geometry::zeroTol)
+	Out=ModelSupport::getComposite(SMap,flightIndex+10*II,
+				       "13 -14 15 16 (-3:4:-5:-6) ");
+      else
+	Out=ModelSupport::getComposite(SMap,flightIndex+10*II,
+				       "13 -14 15 -16 (-3:4:-5:6) ");
       Out+=innerCut+outerCut;
       System.addCell(MonteCarlo::Qhull(cellIndex++,lMat[i],0.0,Out));
     }
