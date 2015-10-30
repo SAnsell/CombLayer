@@ -176,8 +176,11 @@ LineTrack::calculate(const Simulation& ASim)
 	  nOut.moveForward(aDist);
 	  
 	  OPtr=OSMPtr->findNextObject(SN,nOut.Pos,OPtr->getName());
-	  //	  if (OPtr==0)
-	  //	    calculateError(ASim);
+	  if (!OPtr)
+	    {
+	      ELog::EM<<"INIT POINT == "<<InitPt<<ELog::endDiag;
+	      calculateError(ASim);
+	    }
 	  if (!OPtr || aDist<Geometry::zeroTol)
 	    OPtr=ASim.findCell(nOut.Pos,0);
 	}

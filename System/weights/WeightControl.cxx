@@ -310,7 +310,7 @@ WeightControl::procObject(const Simulation& System,
       
       // SOURCE Point
       if (sourceFlag && tallyFlag) sF/=2.0;
-      ELog::EM<<"sf == "<<sF
+      ELog::EM<<"sf == "<<sF<<ELog::endDiag;
       if (sourceFlag)
 	calcTrack(System,sourcePt,BStart,BRange,eCut,sF,minW);
       if (tallyFlag)
