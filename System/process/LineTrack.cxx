@@ -200,7 +200,6 @@ LineTrack::calculateError(const Simulation& ASim)
   ELog::RegMethod RegA("LineTrack","calculate");
   ELog::debugMethod DegA;
   ELog::EM<<"START OF ERROR CODE"<<ELog::endDiag;
-  ELog::EM<<"START OF ERROR CODE"<<ELog::endDiag;
   ELog::EM<<"-------------------"<<ELog::endDiag;
   
   double aDist(0);                         // Length of track
@@ -251,6 +250,7 @@ LineTrack::calculateError(const Simulation& ASim)
 	      ELog::EM<<"Common surf "<<SN<<ELog::endDiag;
 	      if (OPtr)
 		ELog::EM<<"Found CEll: "<<*OPtr<<ELog::endDiag;
+	      ELog::EM<<"Initial point not in model:"<<InitPt<<ELog::endErr;
 	      OPtr=OSMPtr->findNextObject(SN,nOut.Pos,prevOPtr->getName());
 	      if (OPtr)
 		{
@@ -344,7 +344,6 @@ LineTrack::createAttenPath(std::vector<int>& cVec,
   const ModelSupport::DBMaterial& DB=
     ModelSupport::DBMaterial::Instance();
 
-  double sumSigma(0.0);
   for(size_t i=0;i<Cells.size();i++)
     {
       const int matN=(!ObjVec[i]) ? -1 : ObjVec[i]->getMat();
@@ -361,7 +360,7 @@ LineTrack::createAttenPath(std::vector<int>& cVec,
   return;
 }
 
-  void
+void
 LineTrack::write(std::ostream& OX) const
   /*!
     Write out the track

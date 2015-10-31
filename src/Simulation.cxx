@@ -1145,7 +1145,9 @@ Simulation::calcAllVertex()
      in the Qhull. The number of vertexes found are returned. 
   */
 {
-  ELog::RegMethod RegA("Simulation","calcVertex");
+  ELog::RegMethod RegA("Simulation","calcAllVertex");
+
+
   OTYPE::iterator mc;
 
   for(mc=OList.begin();mc!=OList.end();mc++)

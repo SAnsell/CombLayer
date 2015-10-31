@@ -1103,7 +1103,6 @@ template int FuncDataBase::EvalDefVar(const std::string&,const int&) const;
 
 template size_t 
 FuncDataBase::EvalDefVar(const std::string&,const size_t&) const;
-
 template Geometry::Vec3D 
 FuncDataBase::EvalDefVar(const std::string&,const Geometry::Vec3D&) const;
 template std::string
@@ -1137,7 +1136,16 @@ template Geometry::Vec3D FuncDataBase::EvalPair(const std::string&,
 						const std::string&,
 						const std::string&) const;
 
+
+
+
 // EVALDEFPAIR
+
+
+template double FuncDataBase::EvalDefPair
+(const std::string&,const std::string&,const double&) const;
+template int FuncDataBase::EvalDefPair
+(const std::string&,const std::string&,const int&) const;
 
 template double FuncDataBase::EvalDefPair
 (const std::string&,const std::string&,

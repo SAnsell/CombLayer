@@ -259,6 +259,7 @@ WeightControl::calcTrack(const Simulation& System,
 	  std::vector<double> attnN;
 	  const int cN=CellPtr->getName();  // this should be i !!
 	  OTrack.addUnit(System,cN,CellPtr->getCofM());
+	  
 	  // either this :
 	  CTrack.addTracks(cN,OTrack.getAttnSum(cN));
 	}
@@ -323,6 +324,44 @@ WeightControl::procObject(const Simulation& System,
 }
 
 void
+WeightControl::procRebase(const Simulation& ,
+			  const mainSystem::inputParam& IParam)
+
+  /*!
+    Rebase a weight syste
+    \param System :: Simulation component
+    \param IParam :: input stream
+  */
+{
+  ELog::RegMethod RegA("WeightControl","procRebase");
+
+  WeightSystem::weightManager& WM=
+    WeightSystem::weightManager::Instance();  
+
+  const size_t nItem=IParam.itemCnt("weightRebase",0);
+  const std::string type=IParam.getValue<std::string>("weightRebase",0,0);
+
+  if (type=="Cell" || type=="cell")
+    {
+      const int cellN=IParam.getValue<int>("weightRebase",0,1);
+      const size_t index=(nItem>2) ? 
+	IParam.getValue<size_t>("weightRebase",0,2)+1 : 0;
+
+      WeightSystem::WCells* WF=
+	dynamic_cast<WeightSystem::WCells*>(WM.getParticle('n'));
+      const std::vector<double>& baseVec=WF->getWeights(cellN);
+      if (baseVec.size()<index)
+	throw ColErr::IndexError<size_t>(index,baseVec.size(),"Index range");
+      
+      const double scaleW = (index) ? baseVec[index-1] : baseVec.back();
+      ELog::EM<<"RESCALE == "<<scaleW<<ELog::endDiag;
+      WF->rescale(1e38,1/scaleW);
+    }
+
+  return;
+}
+
+void
 WeightControl::processWeights(Simulation& System,
 			      const mainSystem::inputParam& IParam)
   /*!
@@ -332,17 +371,19 @@ WeightControl::processWeights(Simulation& System,
     \param IParam :: input stream
   */
 {
-  ELog::RegMethod RegA("WeightControl","simulationWeights");
+  ELog::RegMethod RegA("WeightControl","processWeights");
 
   System.populateCells();
   System.createObjSurfMap();
+  
+  if (IParam.flag("weight"))
+    {
+      setWeights(System);
+    }
   // requirements for vertex:
   if (IParam.flag("weightObject") ||
       IParam.flag("tallyWeight") )
     System.calcAllVertex();
-
-  if (IParam.flag("weight"))
-    setWeights(System);
   
   if (IParam.flag("weightType"))
     procType(IParam);
@@ -352,6 +393,8 @@ WeightControl::processWeights(Simulation& System,
     procTallyPoint(IParam);
   if (IParam.flag("weightObject"))
     procObject(System,IParam);
+  if (IParam.flag("weightRebase"))
+    procRebase(System,IParam);
   if (IParam.flag("wWWG"))
     {
       WWGconstruct WConstruct;
@@ -404,6 +447,14 @@ WeightControl::setWeights(Simulation& System)
   return;
 }
 
+void
+WeightControl::help() const
+  /*!
+    Write out the help
+  */
+{
+  ELog::RegMethod RegA("WeightControl","help");
+}
 
 		       
 }  // NAMESPACE weightSystem

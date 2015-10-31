@@ -285,6 +285,7 @@ createInputs(inputParam& IParam)
   IParam.regItem("WSource","weightSource",1,10);
   IParam.regItem("WTally","weightTally",1,10);
   IParam.regMulti("WObject","weightObject",100,1);
+  IParam.regMulti("WRebase","weightRebase",100,1);
 
 
   IParam.regMulti("wWWG","wWWG",25,0);
@@ -362,6 +363,8 @@ createInputs(inputParam& IParam)
   IParam.setDesc("wPWT","Photon Bias [set -wPWT help]");
   IParam.setDesc("WType","Initial model for weights [help for info]");
   IParam.setDesc("WTemp","Temperature correction for weights");
+  IParam.setDesc("WRebase","Rebase the weights based on a cell");
+  IParam.setDesc("WObject","Reconstruct weights base on cells");
   IParam.setDesc("WP","Weight bias Point");
 
   IParam.setDesc("x","XML input file");

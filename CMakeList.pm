@@ -197,7 +197,7 @@ sub setParameters
 	  $self->{cxx11}="" if ($Ostr=~/-std/);
 	}
     }
-  $self->{gsl}*=$nogsl;
+#  $self->{gsl}*=$nogsl;
 
   print STDERR "INIT Opt=",$self->{optimise},"\n";
   print STDERR "INIT Deb=",$self->{debug},"\n";

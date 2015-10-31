@@ -62,10 +62,14 @@ class WeightControl
   void setMidEBand();
   void setLowEBand();
 
+  void help() const;
+  
   void procType(const mainSystem::inputParam&);
   void procSource(const mainSystem::inputParam&);
   void procTallyPoint(const mainSystem::inputParam&);
   void procObject(const Simulation&,
+		  const mainSystem::inputParam&);
+  void procRebase(const Simulation&,
 		  const mainSystem::inputParam&);
   
 			

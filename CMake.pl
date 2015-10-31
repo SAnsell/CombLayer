@@ -56,6 +56,7 @@ my @incdir=qw( include beamlineInc globalInc instrumentInc
 
 
 my $gM=new CMakeList;
+$gM->setParameters(\@ARGV);
 $gM->addMasterProgs(\@masterprog);
 $gM->addIncDir("",\@incdir);
 $gM->findSubIncDir("System");
