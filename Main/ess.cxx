@@ -143,9 +143,10 @@ main(int argc,char* argv[])
 	  SimPtr->removeDeadSurfaces(0);         
 	  ModelSupport::setDefaultPhysics(*SimPtr,IParam);
 
-	  const int renumCellWork=tallySelection(*SimPtr,IParam);
-	  const std::string rotFlag=ModelSupport::setDefRotation(IParam);
+	  ModelSupport::setDefRotation(IParam);
 	  SimPtr->masterRotation();
+	  const int renumCellWork=tallySelection(*SimPtr,IParam);
+
 	  if (createVTK(IParam,SimPtr,Oname))
 	    {
 	      delete SimPtr;

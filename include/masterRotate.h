@@ -60,8 +60,14 @@ class masterRotate : public localRotate
   virtual Geometry::Vec3D calcRotate(const Geometry::Vec3D&) const;
   virtual Geometry::Vec3D calcAxisRotate(const Geometry::Vec3D&) const;
 
+  virtual Geometry::Vec3D forceCalcRotate(const Geometry::Vec3D&) const;
+  virtual Geometry::Vec3D forceCalcAxisRotate(const Geometry::Vec3D&) const;
+
   virtual Geometry::Vec3D reverseRotate(const Geometry::Vec3D&) const;
   virtual Geometry::Vec3D reverseAxisRotate(const Geometry::Vec3D&) const;
+
+  virtual Geometry::Vec3D forceReverseRotate(const Geometry::Vec3D&) const;
+  virtual Geometry::Vec3D forceReverseAxisRotate(const Geometry::Vec3D&) const;
 
   virtual void applyFull(MonteCarlo::Object*) const;
   virtual void applyFull(Geometry::Surface*) const;

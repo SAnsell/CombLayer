@@ -123,15 +123,20 @@ pointConstruct::processPoint(Simulation& System,
   const masterRotate& MR=masterRotate::Instance();
   std::string revStr;
 
-  if (PType=="free")
+  if (PType=="free" || PType=="Free")
     {
       std::vector<Geometry::Vec3D> EmptyVec;
       size_t itemIndex(2);
       Geometry::Vec3D PPoint=IParam.getCntVec3D
 	("tally",Index,itemIndex,"Point for point detector");
-      const int flag=checkItem<std::string>(IParam,Index,5,revStr);
-      if (!flag || revStr!="r")
-	PPoint=MR.reverseRotate(PPoint);
+      const int flag=IParam.checkItem<std::string>
+	("tally",Index,itemIndex,revStr);
+
+      if (flag && (revStr=="r" || revStr=="R"))
+	{
+	  PPoint=MR.forceReverseRotate(PPoint);
+	  ELog::EM<<"Remapped point == "<<PPoint<<ELog::endDiag;
+	}
       processPointFree(System,PPoint,EmptyVec);
     }
 
