@@ -143,23 +143,26 @@ pointConstruct::processPoint(Simulation& System,
   else if (PType=="freeWindow")
     {
       size_t windowIndex(6);
+      size_t itemIndex(2);
       Geometry::Vec3D PPoint=
-	inputItem<Geometry::Vec3D>(IParam,Index,2,"Point for point detector");
-      int flag=checkItem<std::string>(IParam,Index,5,revStr);
-      if (!flag || revStr!="r")
+	IParam.getCntVec3D("tally",Index,itemIndex,"Point for point detector");
+      int flag=IParam.checkItem<std::string>
+	("tally",Index,itemIndex,revStr);
+      if (flag && (revStr=="r" || revStr=="R"))
 	{
-	  PPoint=MR.reverseRotate(PPoint);
-	  windowIndex--;
+	  itemIndex++;
+	  PPoint=MR.forceReverseRotate(PPoint);
 	}
       
       std::vector<Geometry::Vec3D> WindowPts(4);
-      for(size_t i=0;i<4;windowIndex+=3,i++)
-	WindowPts[i]=
-	  inputItem<Geometry::Vec3D>(IParam,Index,windowIndex,"Window point");
+      for(size_t i=0;i<4;i++)
+	WindowPts[i]=IParam.getCntVec3D
+	  ("tally",Index,itemIndex,"Window point "+StrFunc::makeString(i+1));
+	  (IParam,Index,windowIndex,"Window point");
       
       flag=checkItem<std::string>(IParam,Index,5,revStr);
-      if (!flag || revStr!="r")
-	PPoint=MR.reverseRotate(PPoint);
+      if (flag && (revStr=="r" || revStr=="R"))
+	PPoint=MR.forceReverseRotate(PPoint);
       
       processPointFree(System,PPoint,WindowPts);
     }

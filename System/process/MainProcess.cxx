@@ -335,6 +335,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("SI","Source Index value [1:2]");
   IParam.setDesc("SObj","Source Initialization Object");
   IParam.setDesc("sdefType","Source Type (TS1/TS2)");
+  IParam.setDesc("sdefVoid","Remove sdef card [to use source.F]");
   IParam.setDesc("physModel","Physics Model"); 
   IParam.setDesc("SP","Source start point");
   IParam.setDesc("SV","Sourece direction vector");
@@ -348,7 +349,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("Txml","Tally xml file");
   IParam.setDesc("targetType","Name of target type");
   IParam.setDesc("u","Units in cm");
-  IParam.setDesc("um","Unset void area (from imp=0)");
+  IParam.setDesc("um","Unset spherical void area (from imp=0)");
   IParam.setDesc("void","Adds the void card to the simulation");
   IParam.setDesc("volume","Create volume about point/radius for f4 tally");
   IParam.setDesc("volCells","Cells [object/range]");
