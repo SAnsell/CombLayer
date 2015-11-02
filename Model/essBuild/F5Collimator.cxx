@@ -182,6 +182,7 @@ F5Collimator::populateWithTheta(FuncDataBase& Control)
   length=Control.EvalVar<double>(keyName+"Length"); // along x
   wall=Control.EvalDefVar<double>(keyName+"WallThick", 0.5);
   viewWidth=Control.EvalVar<double>(keyName+"ViewWidth");
+  delta = Control.EvalDefVar<double>(keyName+"Delta", 0.0);
 
   // xyz coordinates of F5 tally
   Control.setVariable<double>(keyName+"X", radius*sin(theta*M_PI/180.0));
@@ -198,6 +199,10 @@ F5Collimator::populateWithTheta(FuncDataBase& Control)
 
   Geometry::Vec3D gC,gB,gB2;
   bool LinkPointCentered = false; // defines if the link point is located in the center of the viewing area
+  int thermalAlgorithm = 1; // 0=old; 1=new
+  if (thermalAlgorithm>1)
+    ELog::EM << "thermalAlgorithm must be either 0 (old) or 1 (new)" << ELog::endErr;
+
   if (range=="cold")
     {
       // link point (defined by theta)
@@ -223,7 +228,10 @@ F5Collimator::populateWithTheta(FuncDataBase& Control)
       const double alpha = acos(vtmp.dotProd(Y)/vtmp.abs())*180/M_PI;
       if (theta<=90-alpha)
 	{
-	  Control.setVariable<int>(keyName+"LinkPoint", zStep>0 ? 2 : 3);  // these maths depend on the XYangle of the moderator
+	  if (thermalAlgorithm==0)
+	    Control.setVariable<int>(keyName+"LinkPoint", zStep>0 ? 2 : 3);  // these maths depend on the XYangle of the moderator
+	  else
+	    Control.setVariable<int>(keyName+"LinkPoint", zStep>0 ? 5 : 4);  // these maths depend on the XYangle of the moderator
 	}
       else if (abs(theta-90)<alpha)
 	{
@@ -232,11 +240,17 @@ F5Collimator::populateWithTheta(FuncDataBase& Control)
 	}
       else if ((theta>=90+alpha) && (theta<180))
 	{
-	  Control.setVariable<int>(keyName+"LinkPoint", zStep>0 ? 5 : 4);
+	  if (thermalAlgorithm==0)
+	    Control.setVariable<int>(keyName+"LinkPoint", zStep>0 ? 5 : 4);
+	  else
+	    Control.setVariable<int>(keyName+"LinkPoint", zStep>0 ? 2 : 3);
 	}
       else if ((theta>=180) && (theta<=270-alpha))
 	{
-	  Control.setVariable<int>(keyName+"LinkPoint", zStep>0 ? 4 : 5);
+	  if (thermalAlgorithm==0)
+	    Control.setVariable<int>(keyName+"LinkPoint", zStep>0 ? 4 : 5);
+	  else
+	    Control.setVariable<int>(keyName+"LinkPoint", zStep>0 ? 7 : 2);
 	}
       else if (abs(theta-270)<alpha)
 	{
@@ -245,7 +259,10 @@ F5Collimator::populateWithTheta(FuncDataBase& Control)
 	}
       else if (theta>=270+alpha)
 	{
-	  Control.setVariable<int>(keyName+"LinkPoint", zStep>0 ? 7 : 2);
+	  if (thermalAlgorithm==0)
+	    Control.setVariable<int>(keyName+"LinkPoint", zStep>0 ? 7 : 2);
+	  else
+	    Control.setVariable<int>(keyName+"LinkPoint", zStep>0 ? 4 : 5);
 	}
     }
   else
@@ -323,7 +340,7 @@ F5Collimator::populateWithTheta(FuncDataBase& Control)
   SetTally(xStep, yStep, zStep);
   SetPoints(gB, gC, gB2);
   SetLength(length);
-  xyAngle = GetXYAngle();
+  xyAngle = GetXYAngle()+delta;
   zAngle  = GetZAngle();
   width = 2*GetHalfSizeX();
   height = 2*GetHalfSizeZ();

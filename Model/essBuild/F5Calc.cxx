@@ -52,7 +52,24 @@ namespace tallySystem
 F5Calc::F5Calc()
 {}
 
+F5Calc::F5Calc(const F5Calc& a):
+B(a.B), C(a.C), B2(a.B2), F5(a.F5), A(a.A), M(a.M)
+{
+}
 
+F5Calc&
+F5Calc::operator=(const F5Calc& a)
+{
+  if (this!=&a)
+    {
+      B=a.B;
+      C=a.C;
+      B2=a.B2;
+      F5=a.F5;
+      A=a.A;
+      M=a.M;
+    }
+}
 F5Calc::~F5Calc()
   /*!
     Destructor
