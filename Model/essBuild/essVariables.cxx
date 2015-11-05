@@ -1189,9 +1189,9 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowCapModDepth0", 0.5);
   Control.addVariable("LowCapModRadius0",19.5);
   Control.addVariable("LowCapModMat0","H2O");
-  Control.addVariable("LowCapModHeight1",0.6); // SA: do not change
+  Control.addVariable("LowCapModHeight1",0.3);
   Control.addVariable("LowCapModDepth1",0.0);
-  Control.addVariable("LowCapModThick1",0.6); // SA: do not change
+  Control.addVariable("LowCapModThick1",0.3);
   Control.addVariable("LowCapModMat1","Aluminium");
   Control.addVariable("LowCapModHeight2",0.0);
   Control.addVariable("LowCapModDepth2",0.0);
@@ -1221,9 +1221,9 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopCapModDepth0", 0.5);
   Control.addVariable("TopCapModRadius0",19.5);
   Control.addVariable("TopCapModMat0","H2O");
-  Control.addVariable("TopCapModHeight1",0.6); // SA: do not change it
+  Control.addVariable("TopCapModHeight1",0.3);
   Control.addVariable("TopCapModDepth1",0.0);
-  Control.addVariable("TopCapModThick1",0.6); // SA: do not change
+  Control.addVariable("TopCapModThick1",0.3);
   Control.addVariable("TopCapModMat1","Aluminium");
   Control.addVariable("TopCapModHeight2",0.0);
   Control.addVariable("TopCapModDepth2",0.0);
