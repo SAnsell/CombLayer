@@ -112,7 +112,7 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelSteelMat","SS316L785");
   Control.addVariable("BilbaoWheelHeMat","Helium");
   Control.addVariable("BilbaoWheelSS316LVoidMat","M2644"); // !!! use appropriate name
-  Control.addVariable("BilbaoWheelInnerMat","SS316Lvoid80");
+  Control.addVariable("BilbaoWheelInnerMat","SS316L785");
 
   Control.addVariable("BilbaoWheelNLayers",3);
 
@@ -1243,7 +1243,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowCapModMat0","H2O");
   Control.addVariable("LowCapModHeight1",0.3);
   Control.addVariable("LowCapModDepth1",0.0);
-  Control.addVariable("LowCapModThick1",0.3);
+  Control.addVariable("LowCapModRadius1",0.3);
   Control.addVariable("LowCapModMat1","Aluminium");
   Control.addVariable("LowCapModHeight2",0.0);
   Control.addVariable("LowCapModDepth2",0.0);
@@ -1271,7 +1271,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopCapModMat0","H2O");
   Control.addVariable("TopCapModHeight1",0.3);
   Control.addVariable("TopCapModDepth1",0.0);
-  Control.addVariable("TopCapModThick1",0.3);
+  Control.addVariable("TopCapModRadius1",0.3);
   Control.addVariable("TopCapModMat1","Aluminium");
   Control.addVariable("TopCapModHeight2",0.0);
   Control.addVariable("TopCapModDepth2",0.0);
