@@ -215,15 +215,31 @@ PreModWing::createSurfaces()
     {
       ModelSupport::buildPlane(SMap,modIndex+5,Origin+Z*(thick),Z);  
       ModelSupport::buildPlane(SMap,modIndex+6,Origin+Z*(thick+wallThick),Z);  
-      ModelSupport::buildCone(SMap, modIndex+8, Origin+Z*(thick+h), Z, 90-tiltAngle, -1);
-      ModelSupport::buildCone(SMap, modIndex+9, Origin+Z*(thick+wallThick+h), Z, 90-tiltAngle, -1);
+      if (tiltAngle>Geometry::zeroTol)
+	{
+	  ModelSupport::buildCone(SMap, modIndex+8, Origin+Z*(thick+h), Z, 90-tiltAngle, -1);
+	  ModelSupport::buildCone(SMap, modIndex+9, Origin+Z*(thick+wallThick+h), Z, 90-tiltAngle, -1);
+	}
+      else
+	{
+	  ModelSupport::buildPlane(SMap, modIndex+8, Origin+Z*(thick+h), Z);
+	  ModelSupport::buildPlane(SMap, modIndex+9, Origin+Z*(thick+wallThick+h), Z);
+	}
     }
   else
     {
       ModelSupport::buildPlane(SMap,modIndex+5,Origin-Z*(thick),Z);  
       ModelSupport::buildPlane(SMap,modIndex+6,Origin-Z*(thick+wallThick),Z);  
-      ModelSupport::buildCone(SMap, modIndex+8, Origin-Z*(thick+h), Z, 90-tiltAngle, 1);
-      ModelSupport::buildCone(SMap, modIndex+9, Origin-Z*(thick+wallThick+h), Z, 90-tiltAngle, 1);
+      if (tiltAngle>Geometry::zeroTol)
+	{
+	  ModelSupport::buildCone(SMap, modIndex+8, Origin-Z*(thick+h), Z, 90-tiltAngle, 1);
+	  ModelSupport::buildCone(SMap, modIndex+9, Origin-Z*(thick+wallThick+h), Z, 90-tiltAngle, 1);
+	}
+      else
+	{
+	  ModelSupport::buildPlane(SMap, modIndex+8, Origin-Z*(thick+h), -Z);
+	  ModelSupport::buildPlane(SMap, modIndex+9, Origin-Z*(thick+wallThick+h), -Z);
+	}
     }
 
   return; 
