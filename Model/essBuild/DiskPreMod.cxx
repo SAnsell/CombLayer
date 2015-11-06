@@ -561,8 +561,8 @@ DiskPreMod::createAll(Simulation& System,
 
   insertObjects(System);
 
-  if (engActive) 
-    InnerComp->createAll(System,*this,7);
+  //if (engActive) 
+  //    InnerComp->createAll(System,*this,7);
   
 
   return;
