@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   essBuild/BlockAddition.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -402,7 +402,7 @@ BlockAddition::createLinks()
   ELog::RegMethod RegA("BlockAddition","createLinks");
   
   FixedComp::setConnect(0,Origin,-Y);
-  FixedComp::setLinkSurf(0,SMap.realSurf(blockIndex+1));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(blockIndex+1));
 
   if (nLayers)
     {

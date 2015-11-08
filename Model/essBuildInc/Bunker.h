@@ -113,6 +113,7 @@ class Bunker : public attachSystem::ContainedComp,
   void createMainWall(Simulation&);
   void addCalcPoint(const size_t,const size_t,const size_t,
 		    std::string);
+  void joinWall(Simulation&);
   
  public:
 

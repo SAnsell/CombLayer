@@ -132,6 +132,7 @@ class HeadRule
   void addUnion(const Rule*);
 
   int level(const int) const;
+  HeadRule getLevel(const size_t) const;
   size_t countNLevel(const size_t) const;
 
   bool Intersects(const HeadRule&) const;

@@ -97,7 +97,7 @@ namespace essSystem
 Bunker::Bunker(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::FixedComp(Key,12),
   attachSystem::CellMap(),
-  bnkIndex(ModelSupport::objectRegister::Instance().cell(Key)),
+  bnkIndex(ModelSupport::objectRegister::Instance().cell(Key,-1,20000)),
   cellIndex(bnkIndex+1),leftWallFlag(1),rightWallFlag(1),
   BMWPtr(0)
   /*!
@@ -727,6 +727,12 @@ Bunker::addCalcPoint(const size_t i,const size_t j,
 }
 
 
+void
+Bunker::joinWall(Simulation& System)
+{
+  
+}
+
 
   
 void
@@ -739,9 +745,9 @@ Bunker::createAll(Simulation& System,
     Generic function to create everything
     \param System :: Simulation item
     \param MainCentre :: Rotatioin Centre
-    \param reverseZ :: Reverse Z direction
     \param FC :: Central origin
     \param linkIndex :: linkIndex number
+    \param reverseZ :: Reverse Z direction
   */
 {
   ELog::RegMethod RegA("Bunker","createAll");

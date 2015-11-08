@@ -98,6 +98,54 @@ Curtain::Curtain(const std::string& Key)  :
   */
 {}
 
+Curtain::Curtain(const Curtain& A) : 
+  attachSystem::ContainedGroup(A),attachSystem::FixedComp(A),
+  attachSystem::CellMap(A),
+  curIndex(A.curIndex),cellIndex(A.cellIndex),wallRadius(A.wallRadius),
+  leftPhase(A.leftPhase),rightPhase(A.rightPhase),
+  innerStep(A.innerStep),wallThick(A.wallThick),
+  topRaise(A.topRaise),depth(A.depth),height(A.height),
+  nTopLayers(A.nTopLayers),nMidLayers(A.nMidLayers),
+  nBaseLayers(A.nBaseLayers),topFrac(A.topFrac),
+  midFrac(A.midFrac),baseFrac(A.baseFrac),wallMat(A.wallMat)
+  /*!
+    Copy constructor
+    \param A :: Curtain to copy
+  */
+{}
+
+Curtain&
+Curtain::operator=(const Curtain& A)
+  /*!
+    Assignment operator
+    \param A :: Curtain to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::ContainedGroup::operator=(A);
+      attachSystem::FixedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      cellIndex=A.cellIndex;
+      wallRadius=A.wallRadius;
+      leftPhase=A.leftPhase;
+      rightPhase=A.rightPhase;
+      innerStep=A.innerStep;
+      wallThick=A.wallThick;
+      topRaise=A.topRaise;
+      depth=A.depth;
+      height=A.height;
+      nTopLayers=A.nTopLayers;
+      nMidLayers=A.nMidLayers;
+      nBaseLayers=A.nBaseLayers;
+      topFrac=A.topFrac;
+      midFrac=A.midFrac;
+      baseFrac=A.baseFrac;
+      wallMat=A.wallMat;
+    }
+  return *this;
+}
 
 Curtain::~Curtain() 
   /*!

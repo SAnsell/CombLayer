@@ -1135,6 +1135,7 @@ HeadRule::countNLevel(const size_t LN) const
   return (nLevel) ? nLevel : 1;
 }
 
+
 int
 HeadRule::level(const int SN) const
   /*!

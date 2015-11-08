@@ -297,8 +297,7 @@ BunkerMainWall::getPoints(const size_t SectIndex,
   return mc->second;
 }
 
-
-  
+			   
 void
 BunkerMainWall::writeXML(const std::string& FName,
 			 const size_t nSectors,
