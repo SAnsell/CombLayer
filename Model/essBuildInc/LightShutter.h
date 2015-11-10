@@ -35,7 +35,7 @@ namespace essSystem
   \brief Bulk around Reflector
 */
 
-class LightShutter : public attachSystem::ContainedGroup,
+class LightShutter : public attachSystem::ContainedComp,
   public attachSystem::FixedOffset,public attachSystem::CellMap
 {
  private:
@@ -43,11 +43,11 @@ class LightShutter : public attachSystem::ContainedGroup,
   const int lightIndex;           ///< Index of surface offset
   int cellIndex;                ///< Cell index  
 
-  double length;
-  double width;
-  double height;                ///< Total length including void
+  double length;                ///< Total length including void
+  double width;                 ///< Width
+  double height;                ///< height
 
-  double wallThick;
+  double wallThick;             ///< Thickness of wall
 
   int mainMat;                   ///< main material
   int wallMat;                   ///< wall material  
@@ -58,7 +58,7 @@ class LightShutter : public attachSystem::ContainedGroup,
   
   void createSurfaces();
   void createLinks();
-  void createObjects(Simulation&)
+  void createObjects(Simulation&);
 
   
  public:
@@ -69,7 +69,7 @@ class LightShutter : public attachSystem::ContainedGroup,
   virtual ~LightShutter();
   
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int;
+		 const long int);
 
 };
 

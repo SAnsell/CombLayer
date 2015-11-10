@@ -71,8 +71,8 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
-#include "ContainedGroup.h"
 #include "CellMap.h"
 #include "surfDBase.h"
 #include "surfDIter.h"
@@ -80,14 +80,13 @@
 #include "SurInter.h"
 #include "mergeTemplate.h"
 
-#include "World.h"
 #include "LightShutter.h"
 
 namespace essSystem
 {
 
 LightShutter::LightShutter(const std::string& Key)  :
-  attachSystem::ContainedComp()
+  attachSystem::ContainedComp(),
   attachSystem::FixedOffset(Key,6),
   attachSystem::CellMap(),
   lightIndex(ModelSupport::objectRegister::Instance().cell(Key)),
@@ -164,7 +163,7 @@ LightShutter::createSurfaces()
   ModelSupport::buildPlane(SMap,lightIndex+14,
 			   Origin+X*(width/2.0+wallThick),X);
   ModelSupport::buildPlane(SMap,lightIndex+15,
-			   Origin-Z*(height/2.0+walllThick),Z);
+			   Origin-Z*(height/2.0+wallThick),Z);
   ModelSupport::buildPlane(SMap,lightIndex+16,
 			   Origin+Z*(height/2.0+wallThick),Z);
   
@@ -181,6 +180,7 @@ LightShutter::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("LightShutter","createObjects");
 
+  std::string Out;
   // Tugnsten middle
   Out=ModelSupport::getComposite(SMap,lightIndex," 1 -2 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
@@ -245,7 +245,7 @@ LightShutter::createAll(Simulation& System,
   createUnitVector(FC,sideIndex);
   createSurfaces();
   createLinks();
-  createObjects(System,FC,topIndex,sideIndex);
+  createObjects(System);
   insertObjects(System);              
 
   return;

@@ -796,37 +796,19 @@ Rcomp::display() const
 {
   std::stringstream cx;
 
+  std::string mid(" ");
   for(const int SN : Units)
     {
-      cx<<
-      if (!Intersect && ic!=Units.begin())
-	cx<<'+';
-      std::set<int>
-  for(ic=Units.begin();ic!=Units.end();ic++)
-    {
-      signSplit(*ic,sign,val);
-      if (val<27)
-	cx<<static_cast<char>(static_cast<int>('a')+(val-1));
-      else if (val<53)
-	cx<<static_cast<char>(static_cast<int>('A')+(val-27));
-      else
-	cx<<"%"<<val-52;
-      if (sign<0)
-	cx<<'\'';
+      cx<<mid<<SN;
+      if (!Intersect) mid=":";
     }
   // Now do composites
-  std::vector<Rcomp>::const_iterator vc;
-  for(vc=Comp.begin();vc!=Comp.end();vc++)
+  for(const Rcomp& RC : Comp)
     {
-      if (!Intersect && (vc!=Comp.begin() || !Units.empty()))
-	cx<<'+';
-      //      if ( join && (*vc)->type() )
-      if ( !vc->Intersect )
-	cx<<'('<<vc->display()<<')';
-      else
-	//	cx<<'('<<vc->display()<<')';
-	cx<<vc->display();
+      cx<<mid<<"("<<RC.display()<<")";
+      if (!Intersect) mid=":";
     }
+
   return cx.str();
 }
 

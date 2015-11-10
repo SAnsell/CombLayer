@@ -1192,6 +1192,7 @@ template class ColErr::EmptyValue<Geometry::Edge*>;
 template class ColErr::EmptyValue<void>;
 template class ColErr::EmptyValue<int>;
 template class ColErr::EmptyValue<long int>;
+template class ColErr::EmptyValue<size_t>;
 template class ColErr::EmptyValue<unsigned int>;
 template class ColErr::EmptyValue<unsigned int*>;
 template class ColErr::EmptyValue<int*>;

@@ -84,9 +84,9 @@ setDefUnits(FuncDataBase& Control,
 	  ELog::EM<<"Options : "<<ELog::endDiag;
 	  ELog::EM<<"  Main : Everything that works"<<ELog::endDiag;
 	  ELog::EM<<"  PortsOnly  : Nothing beyond beamport "<<ELog::endDiag;
-	  ELog::EM<<"  Test  : Single beamline [for BL devel] "<<ELog::endDiag;
-	  throw ColErr::InContainerError<std::string>
-	    (Key,"Iparam.defaultConfig");	  
+	  ELog::EM<<"  Single  beamLine : Single beamline [for BL devel] "
+		  <<ELog::endDiag;
+	  throw ColErr::ExitAbort("Iparam.defaultConfig");	  
 	}
       else 
 	{
