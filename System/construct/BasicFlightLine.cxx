@@ -120,7 +120,7 @@ BasicFlightLine::populate(const FuncDataBase& Control)
   anglesZ[1]=Control.EvalVar<double>(keyName+"AngleZBase");
 
   if (height<Geometry::zeroTol) {
-    ELog::EM << "height<0 - this 'if' made memory problems before commenting out - fix this" << ELog::endDiag;
+    //    ELog::EM << "height<0 - this 'if' made memory problems before commenting out - fix this" << ELog::endDiag;
     // height=Control.EvalVar<double>(keyName+"Height"); // otherwise it was set by setHeight()
   }
 
