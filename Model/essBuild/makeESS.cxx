@@ -380,7 +380,7 @@ void makeESS::buildF5Collimator(Simulation& System, const mainSystem::inputParam
 	  for (size_t j=i+1; j<nitems; j++)
 	    {
 	      strtmp = IParam.getValue<std::string>("f5-collimators", j);
-	      if ((strtmp=="top") || (strtmp=="low"))
+	      if ((strtmp=="TopFly") || (strtmp=="LowFly"))
 		break;
 	      // do real work here
 	      theta = atoi(strtmp.c_str()); // !!! use StrFunc::convert here !!! 
@@ -583,6 +583,10 @@ makeESS::build(Simulation& System,
   attachSystem::addToInsertForced(System,*Bulk,LowBFL->getCC("outer"));
   attachSystem::addToInsertForced(System,*Bulk,TopAFL->getCC("outer"));
   attachSystem::addToInsertForced(System,*Bulk,TopBFL->getCC("outer"));
+
+  // ELog::EM << "Remove me - it's slow" << ELog::endDiag;
+  // attachSystem::addToInsertForced(System,*Target,TopAFL->getCC("outer"));
+  // attachSystem::addToInsertForced(System,*Target,TopBFL->getCC("outer"));
 
 
   // Full surround object
