@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   construct/TiltedFlightLine.cxx
+ * File:   construct/TaperedFlightLine.cxx
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -76,12 +76,12 @@
 #include "ContainedGroup.h"
 #include "CellMap.h"
 #include "surfExpand.h"
-#include "TiltedFlightLine.h"
+#include "TaperedFlightLine.h"
 
 namespace moderatorSystem
 {
 
-TiltedFlightLine::TiltedFlightLine(const std::string& Key)  :
+TaperedFlightLine::TaperedFlightLine(const std::string& Key)  :
   attachSystem::ContainedGroup("inner","outer"),
   attachSystem::FixedComp(Key,12),
   flightIndex(ModelSupport::objectRegister::Instance().cell(Key)),
@@ -92,20 +92,20 @@ TiltedFlightLine::TiltedFlightLine(const std::string& Key)  :
   */
 {}
 
-TiltedFlightLine::~TiltedFlightLine() 
+TaperedFlightLine::~TaperedFlightLine() 
  /*!
    Destructor
  */
 {}
 
 void
-TiltedFlightLine::populate(const FuncDataBase& Control)
+TaperedFlightLine::populate(const FuncDataBase& Control)
  /*!
    Populate all the variables
    \param Control :: Database to use
  */
 {
-  ELog::RegMethod RegA("TiltedFlightLine","populate");
+  ELog::RegMethod RegA("TaperedFlightLine","populate");
   
   // First get inner widths:
   xStep=Control.EvalVar<double>(keyName+"XStep");
@@ -143,7 +143,7 @@ TiltedFlightLine::populate(const FuncDataBase& Control)
 }
   
 void
-TiltedFlightLine::createUnitVector(const attachSystem::FixedComp& FC,
+TaperedFlightLine::createUnitVector(const attachSystem::FixedComp& FC,
 				  const long int sideIndex)
   /*!
     Create the unit vectors
@@ -154,7 +154,7 @@ TiltedFlightLine::createUnitVector(const attachSystem::FixedComp& FC,
     \param sideIndex :: Index for centre and axis
   */
 {
-  ELog::RegMethod RegA("TiltedFlightLine","createUnitVector");
+  ELog::RegMethod RegA("TaperedFlightLine","createUnitVector");
   FixedComp::createUnitVector(FC,sideIndex);
 
   applyShift(xStep,0,zStep);
@@ -163,12 +163,12 @@ TiltedFlightLine::createUnitVector(const attachSystem::FixedComp& FC,
 }
 
 void
-TiltedFlightLine::createSurfaces()
+TaperedFlightLine::createSurfaces()
   /*!
     Create All the surfaces
   */
 {
-  ELog::RegMethod RegA("TiltedFlightLine","createSurfaces");
+  ELog::RegMethod RegA("TaperedFlightLine","createSurfaces");
 
   // Sides: Layers:
   Geometry::Vec3D xDircA(X);   
@@ -249,7 +249,7 @@ TiltedFlightLine::createSurfaces()
 }
 
 void
-TiltedFlightLine::createObjects(Simulation& System,
+TaperedFlightLine::createObjects(Simulation& System,
 			       const attachSystem::FixedComp& innerFC,
 			       const long int innerIndex,
 			       const attachSystem::FixedComp& outerFC,
@@ -263,7 +263,7 @@ TiltedFlightLine::createObjects(Simulation& System,
     \param outerIndex :: Link point [if zero none] 
   */
 {
-  ELog::RegMethod RegA("TiltedFlightLine","createObjects");
+  ELog::RegMethod RegA("TaperedFlightLine","createObjects");
   
 
 
@@ -308,7 +308,7 @@ TiltedFlightLine::createObjects(Simulation& System,
 }
 
 void
-TiltedFlightLine::createAll(Simulation& System,
+TaperedFlightLine::createAll(Simulation& System,
 			   const attachSystem::FixedComp& originFC,
 			   const long int originIndex,
 			   const attachSystem::FixedComp& innerFC,
@@ -326,7 +326,7 @@ TiltedFlightLine::createAll(Simulation& System,
 
   */
 {
-  ELog::RegMethod RegA("TiltedFlightLine","createAll");
+  ELog::RegMethod RegA("TaperedFlightLine","createAll");
   populate(System.getDataBase());
   createUnitVector(originFC,originIndex);
   createSurfaces();

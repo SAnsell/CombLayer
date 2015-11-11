@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef moderatorSystem_TiltedFlightLine_h
-#define moderatorSystem_TiltedFlightLine_h
+#ifndef moderatorSystem_TaperedFlightLine_h
+#define moderatorSystem_TaperedFlightLine_h
 
 class Simulation;
 
@@ -28,14 +28,15 @@ namespace moderatorSystem
 {
 
 /*!
-  \class TiltedFlightLine
+  \class TaperedFlightLine
   \version 1.0
   \author S. Ansell, K. Batkov
   \date Oct 2015
-  \brief TiltedFlightLine [insert object]
+  \brief TaperedFlightLine [insert object]
 */
 
-class TiltedFlightLine : public attachSystem::ContainedGroup,
+// SA: check if the logick of inheritance is correct. Maybe derive from BasicFlightLine???
+class TaperedFlightLine : public attachSystem::ContainedGroup, 
   public attachSystem::FixedComp,
   public attachSystem::CellMap
 {
@@ -75,10 +76,10 @@ class TiltedFlightLine : public attachSystem::ContainedGroup,
 
  public:
 
-  TiltedFlightLine(const std::string&);
-  TiltedFlightLine(const TiltedFlightLine&);
-  TiltedFlightLine& operator=(const TiltedFlightLine&);
-  ~TiltedFlightLine();
+  TaperedFlightLine(const std::string&);
+  TaperedFlightLine(const TaperedFlightLine&);
+  TaperedFlightLine& operator=(const TaperedFlightLine&);
+  ~TaperedFlightLine();
 
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,const long int,

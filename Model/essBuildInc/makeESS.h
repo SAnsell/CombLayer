@@ -37,7 +37,7 @@ namespace constructSystem
 
 namespace moderatorSystem
 {
-  class TiltedFlightLine;
+  class TaperedFlightLine;
   class FlightLine;
 }
 
@@ -91,8 +91,8 @@ class makeESS
   std::shared_ptr<DiskPreMod> LowPreMod;         ///< Lower mod 
   std::shared_ptr<DiskPreMod> LowCapMod;         ///< Upper mod
 
-  std::shared_ptr<moderatorSystem::TiltedFlightLine> LowAFL;  ///< Lower Mode FL
-  std::shared_ptr<moderatorSystem::TiltedFlightLine> LowBFL;  ///< Lower Mode FL
+  std::shared_ptr<moderatorSystem::TaperedFlightLine> LowAFL;  ///< Lower Mode FL
+  std::shared_ptr<moderatorSystem::TaperedFlightLine> LowBFL;  ///< Lower Mode FL
   std::shared_ptr<CylPreMod> LowPre;          ///< Lower Mod (Pre)
 
   /// Lower supply 
@@ -105,8 +105,8 @@ class makeESS
   std::shared_ptr<DiskPreMod> TopPreMod;         ///< Top mod 
   std::shared_ptr<DiskPreMod> TopCapMod;         ///< Lower mod
 
-  std::shared_ptr<moderatorSystem::TiltedFlightLine> TopAFL;  ///< Top Mode FL
-  std::shared_ptr<moderatorSystem::TiltedFlightLine> TopBFL;  ///< Top Mode FL
+  std::shared_ptr<moderatorSystem::TaperedFlightLine> TopAFL;  ///< Top Mode FL
+  std::shared_ptr<moderatorSystem::TaperedFlightLine> TopBFL;  ///< Top Mode FL
   std::shared_ptr<CylPreMod> TopPre;          ///< Toper Mod (Pre)
 
   std::shared_ptr<PreModWing> LowPreWing; ///< Low premoderator wing

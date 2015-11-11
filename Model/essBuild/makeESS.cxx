@@ -65,7 +65,7 @@
 #include "LayerComp.h"
 #include "CellMap.h"
 #include "World.h"
-#include "TiltedFlightLine.h"
+#include "TaperedFlightLine.h"
 #include "FlightLine.h"
 #include "AttachSupport.h"
 #include "pipeUnit.h"
@@ -117,8 +117,8 @@ makeESS::makeESS() :
   LowPreMod(new DiskPreMod("LowPreMod")),
   LowCapMod(new DiskPreMod("LowCapMod")),
   
-  LowAFL(new moderatorSystem::TiltedFlightLine("LowAFlight")),
-  LowBFL(new moderatorSystem::TiltedFlightLine("LowBFlight")),
+  LowAFL(new moderatorSystem::TaperedFlightLine("LowAFlight")),
+  LowBFL(new moderatorSystem::TaperedFlightLine("LowBFlight")),
 
   LowSupplyPipe(new constructSystem::SupplyPipe("LSupply")),
   LowReturnPipe(new constructSystem::SupplyPipe("LReturn")),
@@ -126,8 +126,8 @@ makeESS::makeESS() :
   TopPreMod(new DiskPreMod("TopPreMod")),
   TopCapMod(new DiskPreMod("TopCapMod")),
 
-  TopAFL(new moderatorSystem::TiltedFlightLine("TopAFlight")),
-  TopBFL(new moderatorSystem::TiltedFlightLine("TopBFlight")),
+  TopAFL(new moderatorSystem::TaperedFlightLine("TopAFlight")),
+  TopBFL(new moderatorSystem::TaperedFlightLine("TopBFlight")),
 
   Bulk(new BulkModule("Bulk")),
   BulkLowAFL(new moderatorSystem::FlightLine("BulkLAFlight")),
