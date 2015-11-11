@@ -64,7 +64,7 @@ namespace essSystem
   class ProtonTube;
   class GuideBay;
   class BeamMonitor;
-  class DiskPreMod;
+  class TaperedDiskPreMod;
   class Bunker;
   class F5Collimator;
   class ODIN;
@@ -88,8 +88,8 @@ class makeESS
   // Butterly
   /// Primary Lower Mod 
   std::shared_ptr<constructSystem::ModBase> LowMod;
-  std::shared_ptr<DiskPreMod> LowPreMod;         ///< Lower mod 
-  std::shared_ptr<DiskPreMod> LowCapMod;         ///< Upper mod
+  std::shared_ptr<TaperedDiskPreMod> LowPreMod;         ///< Lower mod 
+  std::shared_ptr<TaperedDiskPreMod> LowCapMod;         ///< Upper mod
 
   std::shared_ptr<moderatorSystem::TaperedFlightLine> LowAFL;  ///< Lower Mode FL
   std::shared_ptr<moderatorSystem::TaperedFlightLine> LowBFL;  ///< Lower Mode FL
@@ -102,8 +102,8 @@ class makeESS
   // Butterly
   /// Primary Upper Mod 
   std::shared_ptr<constructSystem::ModBase> TopMod;
-  std::shared_ptr<DiskPreMod> TopPreMod;         ///< Top mod 
-  std::shared_ptr<DiskPreMod> TopCapMod;         ///< Lower mod
+  std::shared_ptr<TaperedDiskPreMod> TopPreMod;         ///< Top mod 
+  std::shared_ptr<TaperedDiskPreMod> TopCapMod;         ///< Lower mod
 
   std::shared_ptr<moderatorSystem::TaperedFlightLine> TopAFL;  ///< Top Mode FL
   std::shared_ptr<moderatorSystem::TaperedFlightLine> TopBFL;  ///< Top Mode FL

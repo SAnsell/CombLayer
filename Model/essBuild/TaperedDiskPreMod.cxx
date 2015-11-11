@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuild/DiskPreMod.cxx
+ * File:   essBuild/TaperedDiskPreMod.cxx
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -70,16 +70,18 @@
 #include "CellMap.h"
 #include "ContainedComp.h"
 #include "CylFlowGuide.h"
-#include "DiskPreMod.h"
-
+#include "TaperedDiskPreMod.h"
+#include "Cone.h"
+#include "Plane.h"
+#include "Cylinder.h"
 
 namespace essSystem
 {
 
-DiskPreMod::DiskPreMod(const std::string& Key) :
+TaperedDiskPreMod::TaperedDiskPreMod(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0),
-  attachSystem::FixedComp(Key,9),
+  attachSystem::FixedComp(Key,11),
   attachSystem::CellMap(),  
   modIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(modIndex+1),NWidth(0),
@@ -95,7 +97,7 @@ DiskPreMod::DiskPreMod(const std::string& Key) :
   OR.addObject(InnerComp);
 }
 
-DiskPreMod::DiskPreMod(const DiskPreMod& A) : 
+TaperedDiskPreMod::TaperedDiskPreMod(const TaperedDiskPreMod& A) : 
   attachSystem::ContainedComp(A),
   attachSystem::LayerComp(A),attachSystem::FixedComp(A),
   attachSystem::CellMap(A),
@@ -105,15 +107,15 @@ DiskPreMod::DiskPreMod(const DiskPreMod& A) :
   InnerComp(A.InnerComp->clone())
   /*!
     Copy constructor
-    \param A :: DiskPreMod to copy
+    \param A :: TaperedDiskPreMod to copy
   */
 {}
 
-DiskPreMod&
-DiskPreMod::operator=(const DiskPreMod& A)
+TaperedDiskPreMod&
+TaperedDiskPreMod::operator=(const TaperedDiskPreMod& A)
   /*!
     Assignment operator
-    \param A :: DiskPreMod to copy
+    \param A :: TaperedDiskPreMod to copy
     \return *this
   */
 {
@@ -135,17 +137,17 @@ DiskPreMod::operator=(const DiskPreMod& A)
   return *this;
 }
 
-DiskPreMod*
-DiskPreMod::clone() const
+TaperedDiskPreMod*
+TaperedDiskPreMod::clone() const
   /*!
     Clone self 
     \return new (this)
    */
 {
-  return new DiskPreMod(*this);
+  return new TaperedDiskPreMod(*this);
 }
 
-DiskPreMod::~DiskPreMod()
+TaperedDiskPreMod::~TaperedDiskPreMod()
   /*!
     Destructor
   */
@@ -153,7 +155,7 @@ DiskPreMod::~DiskPreMod()
   
 
 void
-DiskPreMod::populate(const FuncDataBase& Control,
+TaperedDiskPreMod::populate(const FuncDataBase& Control,
 		     const double zShift,
 		     const double outRadius)
   /*!
@@ -163,7 +165,7 @@ DiskPreMod::populate(const FuncDataBase& Control,
     \param outRadius :: Outer radius of reflector [for void fill]
   */
 {
-  ELog::RegMethod RegA("DiskPreMod","populate");
+  ELog::RegMethod RegA("TaperedDiskPreMod","populate");
 
   ///< \todo Make this part of IParam NOT a variable
   engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
@@ -209,11 +211,15 @@ DiskPreMod::populate(const FuncDataBase& Control,
       W+=width[NWidth];
       NWidth++;
     } 
+
+  tiltAngle = Control.EvalDefVar<double>(keyName+"TiltAngle", 0.0); // must correspond to ZBase of the corresponding flight line !!! remove default or set it to zero
+  tiltRadius = Control.EvalDefVar<double>(keyName+"TiltRadius", 10.0); // must correspond to ZBase of the corresponding flight line !!! remove default or set it to zero
+
   return;
 }
 
 void
-DiskPreMod::createUnitVector(const attachSystem::FixedComp& refCentre,
+TaperedDiskPreMod::createUnitVector(const attachSystem::FixedComp& refCentre,
 			     const long int sideIndex,const bool zRotate)
   /*!
     Create the unit vectors
@@ -222,7 +228,7 @@ DiskPreMod::createUnitVector(const attachSystem::FixedComp& refCentre,
     \param zRotate :: rotate Zaxis
   */
 {
-  ELog::RegMethod RegA("DiskPreMod","createUnitVector");
+  ELog::RegMethod RegA("TaperedDiskPreMod","createUnitVector");
   attachSystem::FixedComp::createUnitVector(refCentre);
   Origin=refCentre.getSignedLinkPt(sideIndex);
   if (zRotate)
@@ -238,22 +244,33 @@ DiskPreMod::createUnitVector(const attachSystem::FixedComp& refCentre,
 
 
 void
-DiskPreMod::createSurfaces()
+TaperedDiskPreMod::createSurfaces()
   /*!
     Create planes for the silicon and Polyethene layers
+    \param tiltSide :: top/bottom side to tilt
   */
 {
-  ELog::RegMethod RegA("DiskPreMod","createSurfaces");
+  ELog::RegMethod RegA("TaperedDiskPreMod","createSurfaces");
 
   // Divide plane
   ModelSupport::buildPlane(SMap,modIndex+1,Origin,X);  
   ModelSupport::buildPlane(SMap,modIndex+2,Origin,Y);  
 
+  const double h = tiltRadius * tan(tiltAngle*M_PI/180.0); // cone must be shifted for the tilting to start at Y=tiltRadius
 
   int SI(modIndex);
   for(size_t i=0;i<nLayers;i++)
     {
       ModelSupport::buildCylinder(SMap,SI+7,Origin,Z,radius[i]);  
+      // tilting:
+      if (tiltAngle>Geometry::zeroTol)
+	{
+	  ModelSupport::buildCylinder(SMap,SI+8,Origin,Z,tiltRadius);  
+	  if (tiltSide)
+	    ModelSupport::buildCone(SMap, SI+9, Origin+Z*(depth[i]+h), Z, 90-tiltAngle, -1);
+	  else
+	    ModelSupport::buildCone(SMap, SI+9, Origin-Z*(depth[i]+h), Z, 90-tiltAngle, 1);
+	}
       ModelSupport::buildPlane(SMap,SI+5,Origin-Z*depth[i],Z);  
       ModelSupport::buildPlane(SMap,SI+6,Origin+Z*height[i],Z);
       if (i<NWidth)
@@ -269,15 +286,16 @@ DiskPreMod::createSurfaces()
 }
 
 void
-DiskPreMod::createObjects(Simulation& System)
+TaperedDiskPreMod::createObjects(Simulation& System)
   /*!
     Create the disc component
     \param System :: Simulation to add results
+    \param tiltSide :: top/bottom side to tilt
   */
 {
-  ELog::RegMethod RegA("DiskPreMod","createObjects");
+  ELog::RegMethod RegA("TaperedDiskPreMod","createObjects");
 
-  std::string Out;
+  std::string Out, Out1;
 
   int SI(modIndex);
   // Process even number of surfaces:
@@ -293,18 +311,34 @@ DiskPreMod::createObjects(Simulation& System)
 	  Width.makeComplement();
 	  widthUnit=ModelSupport::getComposite(SMap,SI," -3 4 ");
 	}
-      Out=ModelSupport::getComposite(SMap,SI," -7 5 -6 ");
 
-	
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],
-				       Out+widthUnit+
-				       Inner.display()+Width.display()));
+      if (tiltAngle>Geometry::zeroTol)
+	{
+	  Out = ModelSupport::getComposite(SMap, SI, " ((-8 5 -6) : (8 -7 5 -9 -6)) ");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i], Out+widthUnit+Inner.display()+Width.display()));
+	  if (i==nLayers-1)
+	    {
+	      if (tiltSide)
+		Out1 = ModelSupport::getComposite(SMap, SI, " -7 -6 9 ");
+	      else
+		Out1 = ModelSupport::getComposite(SMap, SI, " -7  5 9 ");
+	      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0, Out1+widthUnit+Width.display()));
+	      }
+	    }
+      else
+	{
+	  Out=ModelSupport::getComposite(SMap,SI," -7 5 -6 ");
+      
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i], Out+widthUnit+Inner.display()+Width.display()));
+	}
+
       if (!i)
 	CellMap::setCell("Inner", cellIndex-1);
 
-      SI+=10;
       Inner.procString(Out);
       Inner.makeComplement();
+
+      SI+=10;
     }
 
   SI-=10;
@@ -324,7 +358,7 @@ DiskPreMod::createObjects(Simulation& System)
 }
 
 void
-DiskPreMod::createLinks()
+TaperedDiskPreMod::createLinks()
   /*!
     Creates a full attachment set
     First two are in the -/+Y direction and have a divider
@@ -332,9 +366,9 @@ DiskPreMod::createLinks()
     The mid two are -/+Z direction
   */
 {  
-  ELog::RegMethod RegA("DiskPreMod","createLinks");
+  ELog::RegMethod RegA("TaperedDiskPreMod","createLinks");
 
-  const int SI(modIndex+static_cast<int>(nLayers-1)*10);
+  int SI(modIndex+static_cast<int>(nLayers-1)*10);
   FixedComp::setConnect(0,Origin-Y*radius[nLayers-1],-Y);
   FixedComp::setLinkSurf(0,SMap.realSurf(SI+7));
   FixedComp::setBridgeSurf(0,-SMap.realSurf(modIndex+2));
@@ -368,11 +402,19 @@ DiskPreMod::createLinks()
   FixedComp::setConnect(8,Origin+Z*height[0],-Z);
   FixedComp::setLinkSurf(8,-SMap.realSurf(modIndex+6));
 
+  // outer again
+  SI=modIndex+static_cast<int>(nLayers-3)*10;
+  FixedComp::setConnect(9,Origin-Z*depth[nLayers-3],-Z);
+  FixedComp::setLinkSurf(9,-SMap.realSurf(SI+6));
+
+  FixedComp::setConnect(10,Origin+Z*height[nLayers-3],Z);
+  FixedComp::setLinkSurf(10,SMap.realSurf(SI+5));
+
   return;
 }
 
 Geometry::Vec3D
-DiskPreMod::getSurfacePoint(const size_t layerIndex,
+TaperedDiskPreMod::getSurfacePoint(const size_t layerIndex,
 			   const size_t sideIndex) const
   /*!
     Given a side and a layer calculate the link point
@@ -381,7 +423,7 @@ DiskPreMod::getSurfacePoint(const size_t layerIndex,
     \return Surface point
   */
 {
-  ELog::RegMethod RegA("DiskPreMod","getSurfacePoint");
+  ELog::RegMethod RegA("TaperedDiskPreMod","getSurfacePoint");
 
   if (layerIndex>nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
@@ -409,7 +451,7 @@ DiskPreMod::getSurfacePoint(const size_t layerIndex,
 
 
 int
-DiskPreMod::getLayerSurf(const size_t layerIndex,
+TaperedDiskPreMod::getLayerSurf(const size_t layerIndex,
 			const size_t sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
@@ -441,7 +483,7 @@ DiskPreMod::getLayerSurf(const size_t layerIndex,
 }
 
 std::string
-DiskPreMod::getLayerString(const size_t layerIndex,
+TaperedDiskPreMod::getLayerString(const size_t layerIndex,
 			 const size_t sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
@@ -450,7 +492,7 @@ DiskPreMod::getLayerString(const size_t layerIndex,
     \return Surface string
   */
 {
-  ELog::RegMethod RegA("DiskPreMod","getLinkString");
+  ELog::RegMethod RegA("TaperedDiskPreMod","getLinkString");
 
   if (layerIndex>nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
@@ -488,12 +530,13 @@ DiskPreMod::getLayerString(const size_t layerIndex,
 
 
 void
-DiskPreMod::createAll(Simulation& System,
+TaperedDiskPreMod::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,
 		      const long int sideIndex,
 		      const bool zRotate,
 		      const double VOffset,
-		      const double ORad)
+		      const double ORad,
+		      const bool ts)
   /*!
     Extrenal build everything
     \param System :: Simulation
@@ -502,9 +545,12 @@ DiskPreMod::createAll(Simulation& System,
     \param zRotate :: Rotate to -ve Z
     \param VOffset :: Vertical offset from target
     \param ORad :: Outer radius of zone
+    \param tiltSide :: top/bottom side to be tilted
    */
 {
-  ELog::RegMethod RegA("DiskPreMod","createAll");
+  ELog::RegMethod RegA("TaperedDiskPreMod","createAll");
+
+  tiltSide = ts;
 
   populate(System.getDataBase(),VOffset,ORad);
   createUnitVector(FC,sideIndex,zRotate);
@@ -515,11 +561,39 @@ DiskPreMod::createAll(Simulation& System,
 
   insertObjects(System);
 
-  if (engActive) 
-    InnerComp->createAll(System,*this,7);
+  //if (engActive) 
+  //    InnerComp->createAll(System,*this,7);
   
 
   return;
 }
+
+  const double TaperedDiskPreMod::getZFlightLine() const
+  /*!
+    Return z-coordinate of intersection with flight line
+    To be used for flight line height calculation, e.g.
+    height = TopCapMod->getZFlightLine()-TopPreMod->getZFlightLine();
+
+    \todo
+    We use tan() instead of probably a more clever way to do it with surface intersection (SurInter::getPoint),
+    but for some reason intersection with cone gives a wrong result.
+    It seems the method SurInter::getPoint does not take into account that a cone in MCNP is made of two surfaces.
+   */
+  {
+    const double z = tiltSide ? (Origin+Z*height[nLayers-1])[2] : (Origin-Z*depth[nLayers-1])[2];
+    const double R = radius[nLayers-1]-tiltRadius;
+    const double x = R * tan(tiltAngle*M_PI/180.0);
+    return tiltSide ? z-x : z+x;
+
+    // // this is how the same could have been done with SurInter::gePoint:
+    // const int SI(modIndex+static_cast<int>(nLayers-1)*10);
+    // const Geometry::Cone *tiltCone = SMap.realPtr<Geometry::Cone>(SI+9);
+    // const Geometry::Plane *yPlane =  SMap.realPtr<Geometry::Plane>(modIndex+2);
+    // const Geometry::Cylinder *outerCyl = SMap.realPtr<Geometry::Cylinder>(SI+7);
+
+    // Geometry::Vec3D nearPt(radius[nLayers-1], 0.0, z);
+    // Geometry::Vec3D p = SurInter::getPoint(yPlane, outerCyl, tiltCone, nearPt);
+    // return p[3];
+  }
 
 }  // NAMESPACE essSystem 

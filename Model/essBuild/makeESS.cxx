@@ -90,7 +90,7 @@
 #include "BulkModule.h"
 #include "ShutterBay.h"
 #include "GuideBay.h"
-#include "DiskPreMod.h"
+#include "TaperedDiskPreMod.h"
 #include "Bunker.h"
 
 #include "ConicModerator.h"
@@ -114,8 +114,8 @@ makeESS::makeESS() :
   PBeam(new ProtonTube("ProtonTube")),
   BMon(new BeamMonitor("BeamMonitor")),
 
-  LowPreMod(new DiskPreMod("LowPreMod")),
-  LowCapMod(new DiskPreMod("LowCapMod")),
+  LowPreMod(new TaperedDiskPreMod("LowPreMod")),
+  LowCapMod(new TaperedDiskPreMod("LowCapMod")),
   
   LowAFL(new moderatorSystem::TaperedFlightLine("LowAFlight")),
   LowBFL(new moderatorSystem::TaperedFlightLine("LowBFlight")),
@@ -123,8 +123,8 @@ makeESS::makeESS() :
   LowSupplyPipe(new constructSystem::SupplyPipe("LSupply")),
   LowReturnPipe(new constructSystem::SupplyPipe("LReturn")),
 
-  TopPreMod(new DiskPreMod("TopPreMod")),
-  TopCapMod(new DiskPreMod("TopCapMod")),
+  TopPreMod(new TaperedDiskPreMod("TopPreMod")),
+  TopCapMod(new TaperedDiskPreMod("TopCapMod")),
 
   TopAFL(new moderatorSystem::TaperedFlightLine("TopAFlight")),
   TopBFL(new moderatorSystem::TaperedFlightLine("TopBFlight")),

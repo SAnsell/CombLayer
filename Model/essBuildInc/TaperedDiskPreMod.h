@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuildInc/DiskPreMod.h
+ * File:   essBuildInc/TaperedDiskPreMod.h
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef essSystem_DiskPreMod_h
-#define essSystem_DiskPreMod_h
+#ifndef essSystem_TaperedDiskPreMod_h
+#define essSystem_TaperedDiskPreMod_h
 
 class Simulation;
 
@@ -28,14 +28,14 @@ namespace essSystem
 {
   class CylFlowGuide;
 /*!
-  \class DiskPreMod
-  \author S. Ansell
+  \class TaperedDiskPreMod
+  \author S. Ansell, K. Batkov
   \version 1.0
-  \date May 2015
-  \brief Specialized for a cylinder pre-mod under moderator
+  \date Aug 2015
+  \brief Similar to DiskPreMod but with a possibility of tapering
 */
 
-class DiskPreMod : public attachSystem::ContainedComp,
+class TaperedDiskPreMod : public attachSystem::ContainedComp,
     public attachSystem::LayerComp,
     public attachSystem::FixedComp,
     public attachSystem::CellMap
@@ -57,9 +57,12 @@ class DiskPreMod : public attachSystem::ContainedComp,
 
   size_t NWidth;                      ///< Number of widths active
   int engActive;                  ///< Engineering active flag
-  /// Flow guide pattern inside DiskPreMod (engineering detail)
+  /// Flow guide pattern inside TaperedDiskPreMod (engineering detail)
   std::shared_ptr<CylFlowGuide> InnerComp; 
-  
+
+  bool   tiltSide;                    ///< true ? top : bottom   side to be tilted
+  double tiltAngle;                   ///< tilting angle
+  double tiltRadius;                  ///< radius where tilting starts
   
   void populate(const FuncDataBase&,const double,const double);
   void createUnitVector(const attachSystem::FixedComp&,const long int,
@@ -71,11 +74,11 @@ class DiskPreMod : public attachSystem::ContainedComp,
 
  public:
 
-  DiskPreMod(const std::string&);
-  DiskPreMod(const DiskPreMod&);
-  DiskPreMod& operator=(const DiskPreMod&);
-  virtual DiskPreMod* clone() const;
-  virtual ~DiskPreMod();
+  TaperedDiskPreMod(const std::string&);
+  TaperedDiskPreMod(const TaperedDiskPreMod&);
+  TaperedDiskPreMod& operator=(const TaperedDiskPreMod&);
+  virtual TaperedDiskPreMod* clone() const;
+  virtual ~TaperedDiskPreMod();
 
   virtual Geometry::Vec3D getSurfacePoint(const size_t,const size_t) const;
   virtual int getLayerSurf(const size_t,const size_t) const;
@@ -87,8 +90,10 @@ class DiskPreMod : public attachSystem::ContainedComp,
     { return (depth.empty()) ? 0.0 : depth.back()+height.back(); }
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int,const bool,const double,const double);
+		 const long int,const bool,const double,const double, const bool);
 
+  const double getZFlightLine() const;
+  const double getTiltRadius() const {return tiltRadius;}
 };
 
 }
