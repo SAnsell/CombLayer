@@ -285,8 +285,7 @@ PreModWing::createObjects(Simulation& System, const attachSystem::FixedComp& Pre
       (ambientCell,"ButterflyModerator ambient void cell not found");
   
   const ButterflyModerator *BM = dynamic_cast<const ButterflyModerator*>(&Mod);
-  BM->getSideSurface();
-  const std::string Exclude = BM->getSideSurface();;//BM->getExcludeStr(); 
+  const std::string Exclude = BM->getSideSurface();//BM->getExcludeStr(); 
 
   // BM outer cylinder side surface
   HeadRule HR;
@@ -297,11 +296,10 @@ PreModWing::createObjects(Simulation& System, const attachSystem::FixedComp& Pre
   std::string Out;
   HeadRule wingExclude;
 
-  std::string PreString = Pre.getLinkString(linkPoint);
+  std::string PreString;
   HR.procString(Pre.getLinkString(linkPoint));
   HR.makeComplement();
   PreString = HR.display();
-  //  ELog::EM << "PreString: " << PreString << ELog::endCrit;
 
   if (tiltSide)
     Out=ModelSupport::getComposite(SMap,modIndex," -5 -7 ") + PreString;
