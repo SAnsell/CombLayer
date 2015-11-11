@@ -225,8 +225,8 @@ PreModWing::createSurfaces()
 
   const int tiltSign = tiltSide ? 1 : -1;
 
-  ModelSupport::buildPlane(SMap,modIndex+5,Origin+Z*(thick)*tiltSign,Z);  
-  ModelSupport::buildPlane(SMap,modIndex+6,Origin+Z*(thick+wallThick)*tiltSign,Z);  
+  ModelSupport::buildPlane(SMap,modIndex+5,Origin+Z*(thick)*tiltSign,Z*tiltSign);  
+  ModelSupport::buildPlane(SMap,modIndex+6,Origin+Z*(thick+wallThick)*tiltSign,Z*tiltSign);  
   if (tiltAngle>Geometry::zeroTol)
     {
       ModelSupport::buildCone(SMap, modIndex+8, Origin+Z*(thick+h)*tiltSign, Z, 90-tiltAngle, -tiltSign);
@@ -285,17 +285,11 @@ PreModWing::createObjects(Simulation& System, const attachSystem::FixedComp& Pre
   HR.makeComplement();
   PreString = HR.display();
 
-  if (tiltSide)
-    Out=ModelSupport::getComposite(SMap,modIndex," -5 -7 ") + PreString;
-  else
-    Out=ModelSupport::getComposite(SMap,modIndex," 5 -7 ") + PreString;
+  Out=ModelSupport::getComposite(SMap,modIndex," -5 -7 ") + PreString;
   wingExclude.procString(Out);
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out+Exclude));
 
-  if (tiltSide)
-    Out=ModelSupport::getComposite(SMap,modIndex," 5 -6 -7 ") + PreString;
-  else
-      Out=ModelSupport::getComposite(SMap,modIndex," 6 -5 -7 ") + PreString;
+  Out=ModelSupport::getComposite(SMap,modIndex," 5 -6 -7 ") + PreString;
   wingExclude.addUnion(Out);
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Exclude));
   
