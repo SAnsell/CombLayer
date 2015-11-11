@@ -99,7 +99,11 @@ PreModWing::PreModWing(const PreModWing& A) :
   attachSystem::ContainedComp(A),
   attachSystem::FixedComp(A),
   attachSystem::CellMap(A),
-  modIndex(A.modIndex),cellIndex(A.cellIndex)
+  modIndex(A.modIndex),cellIndex(A.cellIndex),
+  engActive(A.engActive),thick(A.thick),mat(A.mat),
+  wallThick(A.wallThick),wallMat(A.wallMat),
+  tiltSide(A.tiltSide),tiltAngle(A.tiltAngle),
+  tiltRadius(A.tiltRadius)
   /*!
     Copy constructor
     \param A :: PreModWing to copy
@@ -120,6 +124,14 @@ PreModWing::operator=(const PreModWing& A)
       attachSystem::FixedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       cellIndex=A.cellIndex;
+      engActive=A.engActive;
+      thick=A.thick;
+      mat=A.mat;
+      wallThick=A.wallThick;
+      wallMat=A.wallMat;
+      tiltSide=A.tiltSide;
+      tiltAngle=A.tiltAngle;
+      tiltRadius=A.tiltRadius;
    }
   return *this;
 }
