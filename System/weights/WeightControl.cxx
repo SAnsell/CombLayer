@@ -156,7 +156,7 @@ WeightControl::setLowEBand()
 void
 WeightControl::procType(const mainSystem::inputParam& IParam)
   /*!
-    Process the type of energy system 
+    Extract hte type from the input to process of energy system 
     \param IParam :: input param
   */
 {
@@ -186,15 +186,26 @@ WeightControl::procType(const mainSystem::inputParam& IParam)
     }
   else if (Type=="help")
     {
-      ELog::EM<<"weightType ::: \n"
-	"high : Set High energy default band\n"
-	"mid : Set mid energy default band\n"
-	"low : Set low energy default band\n"
-	"energy [E1 W1 E2 W2 ...] : Set energy bands"<<
-	ELog::endDiag;
+      procTypeHelp();
     }
   return;
 }
+
+void
+WeightControl::procTypeHelp() const
+  /*!
+    Write the Type help
+  */
+{
+  ELog::EM<<"weightType ::: \n"
+    "high : Set High energy default band\n"
+    "mid : Set mid energy default band\n"
+    "low : Set low energy default band\n"
+    "energy [E1 W1 E2 W2 ...] : Set energy bands"<<
+    ELog::endDiag;
+  return;
+}
+
 
 
 void
@@ -407,6 +418,7 @@ WeightControl::processWeights(Simulation& System,
     tallySystem::addPointPD(System);
 
   
+  
   return;
 }
 
@@ -454,6 +466,19 @@ WeightControl::help() const
   */
 {
   ELog::RegMethod RegA("WeightControl","help");
+  ELog::EM<<"Weight help :: "<<ELog::endDiag;
+
+
+  ELog::EM<<"-- WeightType -- ::"<<ELog::endDiag;
+  procTypeHelp();
+  ELog::EM<<"-- weightSource --::"<<ELog::endDiag;
+  ELog::EM<<"-- weightTally --::"<<ELog::endDiag;
+  ELog::EM<<"-- weightObject --::"<<ELog::endDiag;
+  ELog::EM<<"-- weightRebase --::"<<ELog::endDiag;
+  ELog::EM<<"-- wWWG --::"<<ELog::endDiag;
+  ELog::EM<<"-- weightTemp --::"<<ELog::endDiag;
+  ELog::EM<<"-- tallyWeight --::"<<ELog::endDiag;
+  return;
 }
 
 		       

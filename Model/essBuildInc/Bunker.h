@@ -49,7 +49,6 @@ class Bunker : public attachSystem::ContainedComp,
   bool leftWallFlag;            ///< Build left wall
   bool rightWallFlag;           ///< Build right wall
   
-  
   Geometry::Vec3D rotCentre;    ///< Rotation centre
 
   
@@ -86,6 +85,7 @@ class Bunker : public attachSystem::ContainedComp,
   int wallMat;                   ///< wall material
   int roofMat;                   ///< roof material
 
+  double midZ;                   ///< Mid z point
   // Layers
   std::vector<int> wallMatVec;   ///< guide Layer materials
 

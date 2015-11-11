@@ -271,8 +271,8 @@ EdgeWater::getSurfacePoint(const size_t,
 }
 
 int
-EdgeWater::getLayerSurf(const size_t layerIndex,
-			const size_t sideIndex) const
+EdgeWater::getLayerSurf(const size_t ,
+			const size_t ) const
   /*!
     Given a side and a layer calculate the link point
     \param layerIndex :: layer, 0 is inner moderator [0-3]
@@ -285,8 +285,8 @@ EdgeWater::getLayerSurf(const size_t layerIndex,
 }
 
 std::string
-EdgeWater::getLayerString(const size_t layerIndex,
-			  const size_t sideIndex) const
+EdgeWater::getLayerString(const size_t,
+			  const size_t) const
   /*!
     Given a side and a layer calculate the link point
     \param layerIndex :: layer, 0 is inner moderator [0-6]
@@ -296,7 +296,8 @@ EdgeWater::getLayerString(const size_t layerIndex,
 {
   ELog::RegMethod RegA("EdgeWater","getLayerString");
 
-  throw ColErr::IndexError<size_t>(sideIndex,12,"sideIndex");
+  throw ColErr::AbsObjMethod("Not implemented yet");
+
 }
 
 

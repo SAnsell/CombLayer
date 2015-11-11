@@ -217,8 +217,9 @@ Bunker::populate(const FuncDataBase& Control)
 			      leftPhase,rightPhase,sectPhase);
 
   nVert=Control.EvalVar<size_t>(keyName+"NVert");
-  ModelSupport::populateRange(Control,nVert,keyName+"VertLen",
-			      -floorDepth,roofHeight,vertFrac);
+  midZ=Control.EvalDefVar<double>(keyName+"MidZ",0.0);
+  ModelSupport::populateQuadRange(Control,nVert,keyName+"VertLen",
+				  -floorDepth,midZ,roofHeight,vertFrac);
 
   nRoof=Control.EvalVar<size_t>(keyName+"NRoof");
   ModelSupport::populateDivideLen(Control,nRoof,keyName+"RoofLen",
@@ -343,12 +344,17 @@ Bunker::createSurfaces()
       Geometry::Quaternion::calcQRotDeg(sectPhase[i]+angle,-Z).rotate(DDir);
       ModelSupport::buildPlane(SMap,divIndex,DPosition,DDir);
     }
+  //
   // VERTICAL BOUNDARY:
+  // Planes are built on a non-even boundary:
+  // 
+  // 
   divIndex=bnkIndex+2000;
   for(size_t i=1;i<nVert;i++)
     {
       divIndex++;
       ModelSupport::buildPlane(SMap,divIndex,Origin+Z*vertFrac[i],Z);
+      ELog::EM<<"V["<<i<<"]="<<vertFrac[i]<<" "<<floorDepth<<ELog::endDiag;
     }
   // INWARD BOUNDARY:
   divIndex=bnkIndex+3000;
@@ -662,7 +668,7 @@ Bunker::setCutWall(const bool lFlag,const bool rFlag)
 void
 Bunker::cutInsert(Simulation& System,const BunkerInsert& BI) const
   /*!
-    Loops over all teh points and cuts those that full within
+    Loops over all the points and cuts those that full within
     the scope of the Insert
     \param BI :: Insert to use
   */

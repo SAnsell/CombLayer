@@ -166,6 +166,7 @@
 #include "testSolveValues.h"
 #include "testSource.h"
 #include "testSupport.h"
+#include "testSurfDIter.h"
 #include "testSurfDivide.h"
 #include "testSurfEqual.h"
 #include "testSurfExpand.h"
@@ -937,12 +938,13 @@ processTest(const int type,const int extra)
       std::cout<<"testPipeLine        (10)"<<std::endl;
       std::cout<<"testPipeUnit        (11)"<<std::endl;
       std::cout<<"testSimpleObj       (12)"<<std::endl;
-      std::cout<<"testSurfDivide      (13)"<<std::endl;
-      std::cout<<"testSurfEqual       (14)"<<std::endl;
-      std::cout<<"testSurfExpand      (15)"<<std::endl;
-      std::cout<<"testSurfRegister    (16)"<<std::endl;
-      std::cout<<"testVolumes         (17)"<<std::endl;
-      std::cout<<"testWrapper         (18)"<<std::endl;
+      std::cout<<"testSurfDIter       (13)"<<std::endl;
+      std::cout<<"testSurfDivide      (14)"<<std::endl;
+      std::cout<<"testSurfEqual       (15)"<<std::endl;
+      std::cout<<"testSurfExpand      (16)"<<std::endl;
+      std::cout<<"testSurfRegister    (17)"<<std::endl;
+      std::cout<<"testVolumes         (18)"<<std::endl;
+      std::cout<<"testWrapper         (19)"<<std::endl;
     }
   int index(1);
   if(type==index || type<0)
@@ -992,15 +994,7 @@ processTest(const int type,const int extra)
       if (X) return X;
     }
   index++;
-  
-  if(type==index || type<0)
-    {
-      testObjTrackItem A;
-      const int X=A.applyTest(extra);
-      if (X) return X;
-    }
-  index++;
-  
+    
   if(type==index || type<0)
     {
       testObjTrackItem A;
@@ -1050,6 +1044,14 @@ processTest(const int type,const int extra)
     }
   index++;
   
+  if(type==index || type<0)
+    {
+      testSurfDIter A;
+      const int X=A.applyTest(extra);
+      if (X) return X;
+    }
+  index++;
+
   if(type==index || type<0)
     {
       testSurfDivide A;

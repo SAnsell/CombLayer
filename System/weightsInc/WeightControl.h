@@ -65,6 +65,8 @@ class WeightControl
   void help() const;
   
   void procType(const mainSystem::inputParam&);
+  void procTypeHelp() const;
+  
   void procSource(const mainSystem::inputParam&);
   void procTallyPoint(const mainSystem::inputParam&);
   void procObject(const Simulation&,
