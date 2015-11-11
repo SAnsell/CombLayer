@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/BasicFlightLine.h
+ * File:   constructInc/TiltedFlightLine.h
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef moderatorSystem_BasicFlightLine_h
-#define moderatorSystem_BasicFlightLine_h
+#ifndef moderatorSystem_TiltedFlightLine_h
+#define moderatorSystem_TiltedFlightLine_h
 
 class Simulation;
 
@@ -28,14 +28,14 @@ namespace moderatorSystem
 {
 
 /*!
-  \class BasicFlightLine
+  \class TiltedFlightLine
   \version 1.0
-  \author S. Ansell
-  \date April 2011
-  \brief BasicFlightLine [insert object]
+  \author S. Ansell, K. Batkov
+  \date Oct 2015
+  \brief TiltedFlightLine [insert object]
 */
 
-class BasicFlightLine : public attachSystem::ContainedGroup,
+class TiltedFlightLine : public attachSystem::ContainedGroup,
   public attachSystem::FixedComp,
   public attachSystem::CellMap
 {
@@ -49,8 +49,6 @@ class BasicFlightLine : public attachSystem::ContainedGroup,
   double xyAngle;               ///< XY plance rotation
   double zAngle;                ///< Z axis rotation
 
-  double masterXY;              ///< Master rotation of general axis(XY)
-  double masterZ;               ///< Master rotation of general axis(Z)
   double anglesXY[2];           ///< Rotation in the XY plane 
   double anglesZ[2];            ///< Rotation in the Z plane
   
@@ -77,16 +75,17 @@ class BasicFlightLine : public attachSystem::ContainedGroup,
 
  public:
 
-  BasicFlightLine(const std::string&);
-  BasicFlightLine(const BasicFlightLine&);
-  BasicFlightLine& operator=(const BasicFlightLine&);
-  ~BasicFlightLine();
+  TiltedFlightLine(const std::string&);
+  TiltedFlightLine(const TiltedFlightLine&);
+  TiltedFlightLine& operator=(const TiltedFlightLine&);
+  ~TiltedFlightLine();
 
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,const long int,
 		 const attachSystem::FixedComp&,const long int,
 		 const attachSystem::FixedComp&,const long int);
 
+  void setHeight(double h) {height = h;}
   
 };
 

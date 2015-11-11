@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   construct/BasicFlightLine.cxx
+ * File:   construct/TiltedFlightLine.cxx
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -57,6 +57,7 @@
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
+#include "Cone.h"
 #include "Line.h"
 #include "Rules.h"
 #include "varList.h"
@@ -75,12 +76,12 @@
 #include "ContainedGroup.h"
 #include "CellMap.h"
 #include "surfExpand.h"
-#include "BasicFlightLine.h"
+#include "TiltedFlightLine.h"
 
 namespace moderatorSystem
 {
 
-BasicFlightLine::BasicFlightLine(const std::string& Key)  :
+TiltedFlightLine::TiltedFlightLine(const std::string& Key)  :
   attachSystem::ContainedGroup("inner","outer"),
   attachSystem::FixedComp(Key,12),
   flightIndex(ModelSupport::objectRegister::Instance().cell(Key)),
@@ -91,27 +92,26 @@ BasicFlightLine::BasicFlightLine(const std::string& Key)  :
   */
 {}
 
-BasicFlightLine::~BasicFlightLine() 
+TiltedFlightLine::~TiltedFlightLine() 
  /*!
    Destructor
  */
 {}
 
 void
-BasicFlightLine::populate(const FuncDataBase& Control)
+TiltedFlightLine::populate(const FuncDataBase& Control)
  /*!
    Populate all the variables
    \param Control :: Database to use
  */
 {
-  ELog::RegMethod RegA("BasicFlightLine","populate");
+  ELog::RegMethod RegA("TiltedFlightLine","populate");
   
   // First get inner widths:
   xStep=Control.EvalVar<double>(keyName+"XStep");
   zStep=Control.EvalVar<double>(keyName+"ZStep");
-
-  masterXY=Control.EvalDefVar<double>(keyName+"MasterXY",0.0);
-  masterZ=Control.EvalDefVar<double>(keyName+"MasterZ",0.0);
+  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
+  zAngle=Control.EvalVar<double>(keyName+"Zangle");
 
   anglesXY[0]=Control.EvalVar<double>(keyName+"AngleXY1");
   anglesXY[1]=Control.EvalVar<double>(keyName+"AngleXY2");
@@ -119,7 +119,12 @@ BasicFlightLine::populate(const FuncDataBase& Control)
   anglesZ[0]=Control.EvalVar<double>(keyName+"AngleZTop");
   anglesZ[1]=Control.EvalVar<double>(keyName+"AngleZBase");
 
-  height=Control.EvalVar<double>(keyName+"Height");
+  if (height<Geometry::zeroTol) {
+    //    ELog::EM << "height<0 - this 'if' made memory problems before commenting out - fix this" << ELog::endDiag;
+    // height=Control.EvalVar<double>(keyName+"Height"); // otherwise it was set by setHeight()
+  }
+
+  height=Control.EvalVar<double>(keyName+"Height"); // otherwise it was set by setHeight()
   width=Control.EvalVar<double>(keyName+"Width");
 
   innerMat=ModelSupport::EvalDefMat<int>(Control,keyName+"InnerMat",0);
@@ -138,7 +143,7 @@ BasicFlightLine::populate(const FuncDataBase& Control)
 }
   
 void
-BasicFlightLine::createUnitVector(const attachSystem::FixedComp& FC,
+TiltedFlightLine::createUnitVector(const attachSystem::FixedComp& FC,
 				  const long int sideIndex)
   /*!
     Create the unit vectors
@@ -149,7 +154,7 @@ BasicFlightLine::createUnitVector(const attachSystem::FixedComp& FC,
     \param sideIndex :: Index for centre and axis
   */
 {
-  ELog::RegMethod RegA("BasicFlightLine","createUnitVector");
+  ELog::RegMethod RegA("TiltedFlightLine","createUnitVector");
   FixedComp::createUnitVector(FC,sideIndex);
 
   applyShift(xStep,0,zStep);
@@ -158,12 +163,12 @@ BasicFlightLine::createUnitVector(const attachSystem::FixedComp& FC,
 }
 
 void
-BasicFlightLine::createSurfaces()
+TiltedFlightLine::createSurfaces()
   /*!
     Create All the surfaces
   */
 {
-  ELog::RegMethod RegA("BasicFlightLine","createSurfaces");
+  ELog::RegMethod RegA("TiltedFlightLine","createSurfaces");
 
   // Sides: Layers:
   Geometry::Vec3D xDircA(X);   
@@ -179,8 +184,19 @@ BasicFlightLine::createSurfaces()
 
   ModelSupport::buildPlane(SMap,flightIndex+3,Origin-X*(width/2.0),xDircA);
   ModelSupport::buildPlane(SMap,flightIndex+4,Origin+X*(width/2.0),xDircB);
-  ModelSupport::buildPlane(SMap,flightIndex+5,Origin-Z*(height/2.0),zDircA);
-  ModelSupport::buildPlane(SMap,flightIndex+6,Origin+Z*(height/2.0),zDircB);
+
+  // The following ifs check whether the flight line should be tappered
+  // and builds either cone or plane
+  if (anglesZ[0]>Geometry::zeroTol)
+    ModelSupport::buildCone(SMap,flightIndex+5,Origin-Z*(height/2.0),Z,90-anglesZ[0],Origin[2]>0 ? -1 : 1); // SA: this is weird, but I do not know a better way to do it (same applies to all cones below)
+  else
+    ModelSupport::buildPlane(SMap,flightIndex+5,Origin-Z*(height/2.0),zDircA);
+
+  if (anglesZ[1]>Geometry::zeroTol)
+    ModelSupport::buildCone(SMap,flightIndex+6,Origin+Z*(height/2.0),Z,90-anglesZ[1],Origin[2]>0 ? 1 : -1);
+  else
+    ModelSupport::buildPlane(SMap,flightIndex+6,Origin+Z*(height/2.0),zDircB);
+
 
   double layT(0.0);
   for(size_t i=0;i<nLayer;i++)
@@ -192,10 +208,17 @@ BasicFlightLine::createSurfaces()
 			       Origin-X*(width/2.0)-xDircA*layT,xDircA);
       ModelSupport::buildPlane(SMap,flightIndex+II*10+14,
 			       Origin+X*(width/2.0)+xDircB*layT,xDircB);
-      ModelSupport::buildPlane(SMap,flightIndex+II*10+15,
-			       Origin-Z*(height/2.0)-zDircA*layT,zDircA);
-      ModelSupport::buildPlane(SMap,flightIndex+II*10+16,
-			       Origin+Z*(height/2.0)+zDircB*layT,zDircB);
+
+      if (anglesZ[0]>Geometry::zeroTol)
+	ModelSupport::buildCone(SMap,flightIndex+II*10+15,Origin-Z*(height/2.0+layT),Z,90-anglesZ[0],Origin[2]>0 ? -1 : 1);
+      else
+	ModelSupport::buildPlane(SMap,flightIndex+II*10+15, Origin-Z*(height/2.0)-zDircA*layT,zDircA);
+
+      if (anglesZ[1]>Geometry::zeroTol)
+	ModelSupport::buildCone(SMap,flightIndex+II*10+16,Origin+Z*(height/2.0+layT),Z,90-anglesZ[1],Origin[2]>0 ?  1 : -1);
+      else
+	ModelSupport::buildPlane(SMap,flightIndex+II*10+16,Origin+Z*(height/2.0)+zDircB*layT,zDircB);
+
     }
 
   // CREATE LINKS
@@ -226,7 +249,7 @@ BasicFlightLine::createSurfaces()
 }
 
 void
-BasicFlightLine::createObjects(Simulation& System,
+TiltedFlightLine::createObjects(Simulation& System,
 			       const attachSystem::FixedComp& innerFC,
 			       const long int innerIndex,
 			       const attachSystem::FixedComp& outerFC,
@@ -240,7 +263,7 @@ BasicFlightLine::createObjects(Simulation& System,
     \param outerIndex :: Link point [if zero none] 
   */
 {
-  ELog::RegMethod RegA("BasicFlightLine","createObjects");
+  ELog::RegMethod RegA("TiltedFlightLine","createObjects");
   
 
 
@@ -249,11 +272,17 @@ BasicFlightLine::createObjects(Simulation& System,
 
   const int layerIndex=flightIndex+static_cast<int>(nLayer)*10;  
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,layerIndex," 3 -4 5 -6 ");
+  if (anglesZ[1]>Geometry::zeroTol)
+    Out=ModelSupport::getComposite(SMap,layerIndex," 3 -4 5 6 ");
+  else
+    Out=ModelSupport::getComposite(SMap,layerIndex," 3 -4 5 -6 ");
   addOuterSurf("outer",Out);
 
   // Inner Void
-  Out=ModelSupport::getComposite(SMap,flightIndex," 3 -4 5 -6 ");
+  if (anglesZ[1]>Geometry::zeroTol)
+    Out=ModelSupport::getComposite(SMap,flightIndex," 3 -4 5 6 ");
+  else
+    Out=ModelSupport::getComposite(SMap,flightIndex," 3 -4 5 -6 ");
   addOuterSurf("inner",Out);
 
 
@@ -265,17 +294,21 @@ BasicFlightLine::createObjects(Simulation& System,
   for(size_t i=0;i<nLayer;i++)
     {
       const int II(static_cast<int>(i));
-      Out=ModelSupport::getComposite(SMap,flightIndex+10*II,
-				     "13 -14 15 -16 (-3:4:-5:6) ");
+      if (anglesZ[1]>Geometry::zeroTol)
+	Out=ModelSupport::getComposite(SMap,flightIndex+10*II,
+				       "13 -14 15 16 (-3:4:-5:-6) ");
+      else
+	Out=ModelSupport::getComposite(SMap,flightIndex+10*II,
+				       "13 -14 15 -16 (-3:4:-5:6) ");
       Out+=innerCut+outerCut;
       System.addCell(MonteCarlo::Qhull(cellIndex++,lMat[i],0.0,Out));
-    }      
+    }
   
   return;
 }
 
 void
-BasicFlightLine::createAll(Simulation& System,
+TiltedFlightLine::createAll(Simulation& System,
 			   const attachSystem::FixedComp& originFC,
 			   const long int originIndex,
 			   const attachSystem::FixedComp& innerFC,
@@ -293,7 +326,7 @@ BasicFlightLine::createAll(Simulation& System,
 
   */
 {
-  ELog::RegMethod RegA("BasicFlightLine","createAll");
+  ELog::RegMethod RegA("TiltedFlightLine","createAll");
   populate(System.getDataBase());
   createUnitVector(originFC,originIndex);
   createSurfaces();
