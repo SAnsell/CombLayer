@@ -299,7 +299,7 @@ PreModWing::createObjects(Simulation& System, const attachSystem::FixedComp& Pre
 
   Out=ModelSupport::getComposite(SMap,modIndex," 7 8 -9 ");
   wingExclude.addUnion(Out);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Exclude + BMouterCyl));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Exclude + BMouterCyl + PreString)); // here
 
   wingExclude.makeComplement();
   AmbientVoid->addSurfString(wingExclude.display());
