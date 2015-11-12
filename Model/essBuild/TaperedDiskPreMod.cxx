@@ -312,16 +312,20 @@ TaperedDiskPreMod::createObjects(Simulation& System)
 
       if (tiltAngle>Geometry::zeroTol)
 	{
-	  if (tiltRadius<radius[i])
+	  if (radius[i]>tiltRadius)
 	    {
-	      Out = ModelSupport::getComposite(SMap, SI, " ((-8 5 -6) : (8 -7 5 -9 -6)) ");
+	      Out = ModelSupport::getComposite(SMap, SI, " ((-8 5 -6) : (8 -7 5 -9 -6)) "); // need this to define Inner. below
+	      Out1 = ModelSupport::getComposite(SMap, SI, " -8 5 -6 ");
+	      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i], Out1+widthUnit+Inner.display()+Width.display()));
 	    }
 	  else
 	    {
-	      Out = ModelSupport::getComposite(SMap, SI, " ((-7 5 -6) : (8 -7 5 -9 -6)) ");
+	      Out = ModelSupport::getComposite(SMap, SI, " ((-7 5 -6) : (8 -7 5 -9 -6)) "); // need this to define Inner. below
+	      Out1 = ModelSupport::getComposite(SMap, SI, " -7 5 -6 ");
+	      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i], Out1+Inner.display()));
 	    }
-	  //	  Out = ModelSupport::getComposite(SMap, SI, " (8 -7 5 -9 -6) ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i], Out+widthUnit+Inner.display()+Width.display()));
+	  Out1 = ModelSupport::getComposite(SMap, SI, " 8 -7 5 -9 -6 ");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i], Out1+widthUnit+Inner.display()+Width.display()));
 	  if (i==nLayers-1)
 	    {
 	      if (tiltSide)
