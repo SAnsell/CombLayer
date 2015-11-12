@@ -38,9 +38,9 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "support.h"
+#include "splineSupport.h"
 #include "stringCombine.h"
 #include "Element.h"
-
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -299,79 +299,7 @@ populateRange(const FuncDataBase& Control,const size_t N,
     }
   return;
 }
-
-double
-calcSplinePt(const std::vector<double>& ABC)
-{
-  return 0.9;
-}
-	     
-
-  
-void
-calcSplineMatrix(const double AVal,
-		 const double MVal,
-		 const double BVal,
-		 const double APt,
-		 const double MPt,
-		 const double BPt,
-		 std::vector<double>& abCoeff)
-  /*!
-    Calcualate matrix for cubic interpolation
-    Matrix form $[
-      a11 a12 0
-      a21 a22 a23
-      
-
-    \param N :: Number of items
-    \param  :: Lower number [can be bigger than N/2]
-    \param ABC :: Coefficeints
-  */
-{
-  ELog::RegMethod RegA("","calcSplineMatrix");
-
-  Geometry::Matrix<double> MA(3,3);
-
-  const double x1_x0=MPt-APt;
-  const double x2_x1=BPt-MPt;
-
-  const double y1_y0=MVal-AVal;
-  const double y2_y1=BVal-MVal;
-  
-  MA[0][0]=2.0 / x1_x0;
-  MA[0][1]=1.0 / x1_x0;
-  MA[0][2]=0.0;
-  
-  MA[1][0]=1.0 / x1_x0;
-  MA[1][1]=2.0*(1.0/x1_x0 + 2.0/x2_x1);
-  MA[1][2]=1.0/x2_x1;
-
-  MA[2][0]=0.0;
-  MA[2][1]=1.0/x2_x1;
-  MA[2][2]=2.0/x2_x1;
-
-  Geometry::Matrix<double> MB(MA);  
-  MA.Invert();
     
-  // Top/Mid/Base
-  const std::vector<double> TMB=
-    { 3.0*(y1_y0)/(x1_x0*x1_x0),
-      3.0*( (y1_y0)/(x1_x0*x1_x0) +
-	    (y2_y1)/(x2_x1*x2_x1) ),
-      3.0*(y2_y1)/(x2_x1*x2_x1) };
-      
-  std::vector<double> KCoeff=MA*TMB;
-  for(const double& A : KCoeff)
-    ELog::EM<<"ABC "<<A<<ELog::endDiag;
-
-  abCoeff.resize(4);
-  abCoeff[0]=KCoeff[0]*(x1_x0)-(y1-y0);
-  abCoeff[1]=-KCoeff[1]*(x1_x0)+(y1-y0);
-  abCoeff[2]=KCoeff[1]*(x2_x1)-(y2-y1);
-  abCoeff[3]=-KCoeff[2]*(x2_x1)+(y2-y1);
-  return;
-}
-  
 void
 populateQuadRange(const FuncDataBase& Control,const size_t N,
 		  const std::string& Name,
@@ -400,8 +328,13 @@ populateQuadRange(const FuncDataBase& Control,const size_t N,
   if (N>0)
     {
       Vec.resize(N+1);
-      std::vector<size_t> setValues;
+      std::set<size_t> setValues;
+      std::vector<double> X;     // For spline
+      std::vector<double> Y;
+      
       Vec[0]=ARange;        // To deal with the first point
+      X.push_back(0.0);
+      Y.push_back(ARange);
       for(size_t i=1;i<N;i++)
 	{
 	  const std::string NName=Name+StrFunc::makeString(i);
@@ -409,35 +342,34 @@ populateQuadRange(const FuncDataBase& Control,const size_t N,
 	    {
 	      const double fA=Control.EvalVar<double>(NName);
 	      Vec[i]=fA;
-	      setValues.push_back(i);
+	      X.push_back(static_cast<double>(i));
+	      Y.push_back(fA);
+	      setValues.insert(i);
 	    }
 	  else if (i==N/2)
 	    {
 	      Vec[i]=MPoint;
-	      setValues.push_back(i);
+	      setValues.insert(i);
+	      X.push_back(static_cast<double>(i));
+	      Y.push_back(MPoint);
 	    }
 	}      
       Vec[N]=BRange;
-      setValues.push_back(N);
+      Y.push_back(BRange);
+      X.push_back(static_cast<double>(N));
 
-            
-      double aVal(ARange);
-      size_t aPt(0);
+      // Here : setValues acts as spline X
+      // Vec  : acts as spline Y
+      std::vector< mathSupport::SplinePt<double> > SP;
+      mathSupport::calcSpline(X,Y,SP);
 
-      // First quad:
-      std::vector<double> abCoeff;
-
-      for(const size_t index : setValues)
+      for(size_t i=1;i<N;i++)
 	{
-	  if (index>N/2)
-	    {
-	      
-	      for(size_t j=aPt+1;j<index;j++)
-		Vec[j]=calcCoeff(j,aPt,N/2,N,abCoeff);
-	    }
-	  aPt=index;
-	  aVal=Vec[index];
+	  if (setValues.find(i)==setValues.end())
+	    Vec[i]=mathSupport::evalSpline
+	      (X,SP,static_cast<double>(i));
 	}
+      
     }
   return;
 }
