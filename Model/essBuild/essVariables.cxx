@@ -515,7 +515,7 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("TopAFlightAngleZTop", 1.0);  // Step down angle !!! 1.455 is too much - fight line cuts the Bilbao target wheel
   Control.addVariable("TopAFlightAngleZBase", 1.0); // Step up angle
   //  Control.Parse("TopFlyTotalHeight");
-  Control.addVariable("TopAFlightHeight", 2);     // Full height = TopFlyTotalHeight
+  Control.addVariable("TopAFlightHeight", 2.9);     // Full height = TopFlyTotalHeight
   Control.addVariable("TopAFlightWidth", 10.7);     // Full width
   Control.addVariable("TopAFlightNLiner", 1);      // Liner
   Control.addVariable("TopAFlightLinerThick1", 0.3);      // Liner
@@ -1196,7 +1196,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopPreModTiltRadius", 20.0);
 
   Control.addVariable("TopPreWingMat", "H2O");
-  Control.addVariable("TopPreWingThick", 0.8);
+  Control.addVariable("TopPreWingThick", 0.5);
   Control.addVariable("TopPreWingWallMat", "Aluminium");
   Control.addVariable("TopPreWingWallThick", 0.3);
   Control.Parse("TopAFlightAngleZTop");
@@ -1213,7 +1213,7 @@ EssButterflyModerator(FuncDataBase& Control)
 
 
   Control.addVariable("TopCapWingMat", "H2O");
-  Control.addVariable("TopCapWingThick", 0.8);
+  Control.addVariable("TopCapWingThick", 0.5);
   Control.addVariable("TopCapWingWallMat", "Aluminium");
   Control.addVariable("TopCapWingWallThick", 0.3);
   Control.Parse("TopAFlightAngleZBase");
