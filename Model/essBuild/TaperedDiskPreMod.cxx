@@ -257,6 +257,7 @@ TaperedDiskPreMod::createSurfaces()
   ModelSupport::buildPlane(SMap,modIndex+2,Origin,Y);  
 
   const double h = tiltRadius * tan(tiltAngle*M_PI/180.0); // cone must be shifted for the tilting to start at Y=tiltRadius
+  const int tiltSign = tiltSide ? 1 : -1;
 
   int SI(modIndex);
   for(size_t i=0;i<nLayers;i++)
@@ -266,10 +267,7 @@ TaperedDiskPreMod::createSurfaces()
       if (tiltAngle>Geometry::zeroTol)
 	{
 	  ModelSupport::buildCylinder(SMap,SI+8,Origin,Z,tiltRadius);  
-	  if (tiltSide)
-	    ModelSupport::buildCone(SMap, SI+9, Origin+Z*(depth[i]+h), Z, 90-tiltAngle, -1);
-	  else
-	    ModelSupport::buildCone(SMap, SI+9, Origin-Z*(depth[i]+h), Z, 90-tiltAngle, 1);
+	  ModelSupport::buildCone(SMap, SI+9, Origin+Z*(depth[i]+h)*tiltSign, Z, 90-tiltAngle, -tiltSign);
 	}
       ModelSupport::buildPlane(SMap,SI+5,Origin-Z*depth[i],Z);  
       ModelSupport::buildPlane(SMap,SI+6,Origin+Z*height[i],Z);
