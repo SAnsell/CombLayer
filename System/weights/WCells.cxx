@@ -344,6 +344,26 @@ WCells::scaleWeights(const int CN,const std::vector<double>& WT)
   return;
 }
 
+void
+WCells::scaleWeights(const int CN,const double& WT) 
+  /*!
+    Sets all the cells to a specific weight
+    \param CN :: Cell number 
+    \param WT :: Single value to scale all cells
+  */
+{
+  ELog::RegMethod RegA("WCells","scaleWeights");
+
+  ItemTYPE::iterator vc;
+  for(vc=WVal.begin();vc!=WVal.end() &&
+	vc->second.getCellNumber()!=CN;vc++) ;
+  if (vc==WVal.end())
+    throw ColErr::InContainerError<int>(CN,"Cell number");
+
+  vc->second.scaleWeight(WT);
+  return;
+}
+
 
 void
 WCells::rescale(const double TCut,const double SF)

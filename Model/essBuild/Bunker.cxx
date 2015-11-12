@@ -345,7 +345,7 @@ Bunker::createSurfaces()
       ModelSupport::buildPlane(SMap,divIndex,DPosition,DDir);
     }
   //
-  // VERTICAL BOUNDARY:
+  // VERTICAL BOUNDARY: 
   // Planes are built on a non-even boundary:
   // 
   // 
@@ -354,7 +354,6 @@ Bunker::createSurfaces()
     {
       divIndex++;
       ModelSupport::buildPlane(SMap,divIndex,Origin+Z*vertFrac[i],Z);
-      ELog::EM<<"V["<<i<<"]="<<vertFrac[i]<<" "<<floorDepth<<ELog::endDiag;
     }
   // INWARD BOUNDARY:
   divIndex=bnkIndex+3000;

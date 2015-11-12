@@ -429,6 +429,8 @@ makeESS::makeBunker(Simulation& System,
   BBunker->insertComponent(System,"floor",*ABunker);
 
   TopCurtain->addInsertCell("Top",74123);
+  TopCurtain->addInsertCell("Lower",74123);
+  TopCurtain->addInsertCell("Mid",74123);
   TopCurtain->addInsertCell("Lower",ABunker->getCells("roof"));
   TopCurtain->addInsertCell("Lower",BBunker->getCells("roof"));
   TopCurtain->addInsertCell("Top",ABunker->getCells("roof"));

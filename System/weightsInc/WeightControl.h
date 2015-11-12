@@ -52,16 +52,24 @@ class WeightControl
   
   std::vector<double> EBand;     ///< Energy bandk
   std::vector<double> WT;        ///< Weight scalar
-
+  
+  std::set<std::string> objectList;  ///< Object list
+  
   bool sourceFlag;               ///< Set point/tally flags
   bool tallyFlag;                ///< Set point/tally flags
   Geometry::Vec3D sourcePt;      ///< Source Point
   Geometry::Vec3D tallyPt;       ///< Tally Point
-
+  
   void setHighEBand();
   void setMidEBand();
   void setLowEBand();
 
+  void scaleObject(const Simulation&,const std::string&,
+		   const double,const double);
+  void scaleAllObjects(const Simulation&,const double,const double);
+  double findMax(const Simulation&,const std::string&,
+		 const size_t,const double) const;
+	       
   void help() const;
   
   void procType(const mainSystem::inputParam&);
@@ -73,7 +81,7 @@ class WeightControl
 		  const mainSystem::inputParam&);
   void procRebase(const Simulation&,
 		  const mainSystem::inputParam&);
-  
+  void procRebaseHelp() const;
 			
   void setWeights(Simulation&);
   void calcTrack(const Simulation&,const Geometry::Vec3D&,

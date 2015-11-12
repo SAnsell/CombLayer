@@ -108,7 +108,8 @@ void
 CellWeight::addTracks(const int cN,const double value)
   /*!
     Adds an average track contribution
-    \param ASim :: Simulation to use						
+    \param cN :: cell number
+    \param value :: vlaue of weight
   */
 {
   ELog::RegMethod RegA("CellWeight","addTracks");
@@ -158,7 +159,7 @@ CellWeight::updateWM(const double eCut) const
     }
   aveW/=cnt;
   // Work on minW first:
-  const double factor=(minW>minW<minWeight) ?
+  const double factor=(minW>minWeight) ?
     log(minWeight)/log(minW) : 1.0;
 
   for(const std::map<int,CellItem>::value_type& cv : Cells)

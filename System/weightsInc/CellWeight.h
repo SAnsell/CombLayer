@@ -27,13 +27,14 @@ namespace WeightSystem
 
 struct CellItem
 {
+  int vCell;         ///< Void cell
   double weight;
   double number;
 
   /// Constructor
-  CellItem(const double W) : weight(W), number(1.0) {}
+  CellItem(const double W) : vCell(0),weight(W), number(1.0) {}
   CellItem(const CellItem& A) :
-    weight(A.weight),number(A.number) {}
+    vCell(A.vCell),weight(A.weight),number(A.number) {}
 };
   
   

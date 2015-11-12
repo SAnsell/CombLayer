@@ -206,6 +206,22 @@ WeightControl::procTypeHelp() const
   return;
 }
 
+void
+WeightControl::procRebaseHelp() const
+  /*!
+    Write the Rebase help
+  */
+{
+  ELog::EM<<"weightRebase ::: \n"
+    "cell cellNumber {index} {eCut} : scale weightObject  \n"
+    "                                : cells by WWN[cell/index] to \n"
+    "                                : give value in cell.\n"
+    "object Name {index} {eCut} : scale object cells by WWN [cell/index] to \n"
+    "                                : give value in cell."
+	  <<ELog::endDiag;
+  return;
+}
+
 
 
 void
@@ -261,10 +277,15 @@ WeightControl::calcTrack(const Simulation& System,
 
   // SOURCE Point
   ModelSupport::ObjectTrackAct OTrack(Pt);
+  int step(1+(BEnd-BStart)/10);
+  if (step<10) step=100000;
   for(int i=BStart;i<=BEnd;i++)
     {
+      if (!(i % step))
+	ELog::EM<<"Cell = "<<i<<" Range == ["<<BStart<<":"<<BEnd<<"]"
+		<<ELog::endDiag;
       const MonteCarlo::Qhull* CellPtr=System.findQhull(i);
-      if (CellPtr)
+      if (CellPtr && CellPtr->getMat())
 	{
 	  std::vector<int> cellN;
 	  std::vector<double> attnN;
@@ -313,7 +334,7 @@ WeightControl::procObject(const Simulation& System,
 
       const std::string Key=
 	IParam.getValue<std::string>("weightObject",iSet,0);
-
+      objectList.insert(Key);
       const int BStart=OR.getRenumberCell(Key);
       const int BRange=OR.getRenumberRange(Key);
       if (BStart==0)
@@ -322,7 +343,7 @@ WeightControl::procObject(const Simulation& System,
       
       // SOURCE Point
       if (sourceFlag && tallyFlag) sF/=2.0;
-      ELog::EM<<"sf == "<<sF<<ELog::endDiag;
+
       if (sourceFlag)
 	calcTrack(System,sourcePt,BStart,BRange,eCut,sF,minW);
       if (tallyFlag)
@@ -335,9 +356,137 @@ WeightControl::procObject(const Simulation& System,
 }
 
 void
-WeightControl::procRebase(const Simulation& ,
-			  const mainSystem::inputParam& IParam)
+WeightControl::scaleObject(const Simulation& System,
+			   const std::string& objKey,
+			   const double SW,
+			   const double eCut)
+  /*!
+    Scale all individual object by the scale weight.
+    \param objKey :: Object key name
+    \param SW :: Scale weight
+    \param eCut :: min energy to use
+  */
+{
+  ELog::RegMethod RegA("WeightControl","scaleObject");
+  
+  const ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
 
+  WeightSystem::weightManager& WM=
+    WeightSystem::weightManager::Instance();  
+
+  WeightSystem::WCells* WF=
+    dynamic_cast<WeightSystem::WCells*>(WM.getParticle('n'));
+
+  if (!WF)
+    throw ColErr::InContainerError<std::string>("n","neutron has no WCell");
+
+  // Note : going to use this set as energy scale values
+  std::vector<double> WEng=WF->getEnergy();
+
+  for(double& EW : WEng)
+    {
+      if (eCut>0.0)
+	EW= (EW>eCut) ? 1.0/SW : 1.0;
+      else
+	EW= (EW<-eCut) ? 1.0/SW : 1.0;
+      ELog::EM<<"EW == "<<EW<<ELog::endDiag;
+    }  
+  const int BStart=OR.getRenumberCell(objKey);
+  const int BRange=OR.getRenumberRange(objKey);
+  if (BStart!=0)
+    {
+      for(int i=BStart;i<=BRange;i++)
+	{
+	  const MonteCarlo::Qhull* CellPtr=System.findQhull(i);
+	  if (CellPtr && CellPtr->getMat())
+	    WF->scaleWeights(i,WEng);
+	}
+    }
+  return;
+}
+  
+void
+WeightControl::scaleAllObjects(const Simulation& System,
+			       const double SW,const double eCut) 
+  /*!
+    Scale all individual object by the scale weight.
+    \param SW :: Scale weight
+  */
+{
+  ELog::RegMethod RegA("WeightControl","scaleAllObjects");
+
+
+  for(const std::string& objName : objectList)
+    scaleObject(System,objName,SW,eCut);
+  return;
+}
+
+double
+WeightControl::findMax(const Simulation& System,
+		       const std::string& objKey,
+		       const size_t index,
+		       const double eCut) const
+  /*!
+    Find the maximum value in a cell
+    \param System :: Simulation for cell materials
+    \param objKey :: Object Name
+    \param index ;: index value [+1 option / 0 all]
+    \param eCut :: energy cut value
+    \return value for max
+  */
+{
+  ELog::RegMethod RegA("WeightControl","findMax");
+  
+  const ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  WeightSystem::weightManager& WM=
+    WeightSystem::weightManager::Instance();  
+
+  WeightSystem::WForm* WF=WM.getParticle('n');
+  if (!WF)
+    throw ColErr::InContainerError<std::string>("n","neutron has no WForm");
+  const std::vector<double>& WEng=WF->getEnergy();
+  const long int eIndex=
+    std::lower_bound(WEng.begin(),WEng.end(),std::abs(eCut))-WEng.begin();
+  const int BStart=OR.getRenumberCell(objKey);
+  const int BRange=OR.getRenumberRange(objKey);
+  double maxVal(0.0);
+
+	  
+  if (BStart!=0)
+    {
+      int cellN(0);
+      double M(1.0);
+      for(int i=BStart;i<=BRange;i++)
+	{
+	  const MonteCarlo::Qhull* CellPtr=System.findQhull(i);
+	  if (CellPtr && CellPtr->getMat())
+	    {
+	      const std::vector<double> WVec=WF->getWeights(i);
+	      if (!index && eCut>0.0)
+		M= *std::max_element(WVec.begin()+eIndex,WVec.end());
+	      else if (!index)
+		M= *std::max_element(WVec.begin(),WVec.begin()+eIndex);
+	      else
+		M=WVec[index-1];
+	      if (M>maxVal)
+		{
+		  maxVal=M;
+		  cellN=i;
+		}
+	    }
+	}
+      ELog::EM<<"Cell = "<<cellN<<" "<<maxVal<<ELog::endDiag;
+    }
+
+  return maxVal;
+}
+ 
+void
+WeightControl::procRebase(const Simulation& System,
+			  const mainSystem::inputParam& IParam)
   /*!
     Rebase a weight syste
     \param System :: Simulation component
@@ -356,7 +505,9 @@ WeightControl::procRebase(const Simulation& ,
     {
       const int cellN=IParam.getValue<int>("weightRebase",0,1);
       const size_t index=(nItem>2) ? 
-	IParam.getValue<size_t>("weightRebase",0,2)+1 : 0;
+	IParam.getValue<size_t>("weightRebase",0,2) : 0;
+      const double eCut=(nItem>3) ? 
+	IParam.getValue<double>("weightRebase",0,3) : 0.0;
 
       WeightSystem::WCells* WF=
 	dynamic_cast<WeightSystem::WCells*>(WM.getParticle('n'));
@@ -365,8 +516,20 @@ WeightControl::procRebase(const Simulation& ,
 	throw ColErr::IndexError<size_t>(index,baseVec.size(),"Index range");
       
       const double scaleW = (index) ? baseVec[index-1] : baseVec.back();
-      ELog::EM<<"RESCALE == "<<scaleW<<ELog::endDiag;
-      WF->rescale(1e38,1/scaleW);
+      scaleAllObjects(System,scaleW,eCut);
+    }
+  // get maximum for the cells in a range
+  else if (type=="Object" || type=="object")
+    {
+      const std::string objName=
+	IParam.getValue<std::string>("weightRebase",0,1);
+      const size_t index=(nItem>2) ? 
+	IParam.getValue<size_t>("weightRebase",0,2) : 0;
+      const double eCut=(nItem>3) ? 
+	IParam.getValue<double>("weightRebase",0,3) : 0.0;
+
+      const double scaleW=findMax(System,objName,index,eCut);
+      scaleObject(System,objName,scaleW,eCut);
     }
 
   return;
@@ -404,8 +567,6 @@ WeightControl::processWeights(Simulation& System,
     procTallyPoint(IParam);
   if (IParam.flag("weightObject"))
     procObject(System,IParam);
-  if (IParam.flag("weightRebase"))
-    procRebase(System,IParam);
   if (IParam.flag("wWWG"))
     {
       WWGconstruct WConstruct;
@@ -416,6 +577,8 @@ WeightControl::processWeights(Simulation& System,
     scaleTempWeights(System,10.0);
   if (IParam.flag("tallyWeight"))
     tallySystem::addPointPD(System);
+  if (IParam.flag("weightRebase"))
+    procRebase(System,IParam);
 
   
   
@@ -475,6 +638,7 @@ WeightControl::help() const
   ELog::EM<<"-- weightTally --::"<<ELog::endDiag;
   ELog::EM<<"-- weightObject --::"<<ELog::endDiag;
   ELog::EM<<"-- weightRebase --::"<<ELog::endDiag;
+  procRebaseHelp();
   ELog::EM<<"-- wWWG --::"<<ELog::endDiag;
   ELog::EM<<"-- weightTemp --::"<<ELog::endDiag;
   ELog::EM<<"-- tallyWeight --::"<<ELog::endDiag;

@@ -60,6 +60,7 @@ class WItem
   void setWeight(const size_t,const double);
   void setWeight(const std::vector<double>&);
   void scaleWeight(const std::vector<double>&);
+  void scaleWeight(const double&);
   void rescale(const double,const double);
   void rescale(const int,const int,const double);
   void mask();
