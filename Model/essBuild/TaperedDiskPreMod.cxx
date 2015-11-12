@@ -312,7 +312,15 @@ TaperedDiskPreMod::createObjects(Simulation& System)
 
       if (tiltAngle>Geometry::zeroTol)
 	{
-	  Out = ModelSupport::getComposite(SMap, SI, " ((-8 5 -6) : (8 -7 5 -9 -6)) ");
+	  if (tiltRadius<radius[i])
+	    {
+	      Out = ModelSupport::getComposite(SMap, SI, " ((-8 5 -6) : (8 -7 5 -9 -6)) ");
+	    }
+	  else
+	    {
+	      Out = ModelSupport::getComposite(SMap, SI, " ((-7 5 -6) : (8 -7 5 -9 -6)) ");
+	    }
+	  //	  Out = ModelSupport::getComposite(SMap, SI, " (8 -7 5 -9 -6) ");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i], Out+widthUnit+Inner.display()+Width.display()));
 	  if (i==nLayers-1)
 	    {
