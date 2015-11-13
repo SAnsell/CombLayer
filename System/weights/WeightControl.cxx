@@ -257,15 +257,14 @@ WeightControl::procTallyPoint(const mainSystem::inputParam& IParam)
 void
 WeightControl::calcTrack(const Simulation& System,
 			 const Geometry::Vec3D& Pt,
-			 const int BStart,const int BEnd,
+			 const vector<int> cellVec,
 			 const double eCut,const double sF,
 			 const double mW)
   /*!
     Calculate a given track 
     \param System :: Simulation to use
     \param Pt :: point for outgoing track
-    \param BStart :: Cell to start
-    \param BEnd :: Final cell to track
+    \param cellVec :: Cells to track
     \param eCut :: Energy cut [MeV]
     \param sF :: Scale fraction of attenuation path
     \param mW :: mininum weight for splitting
@@ -277,21 +276,26 @@ WeightControl::calcTrack(const Simulation& System,
 
   // SOURCE Point
   ModelSupport::ObjectTrackAct OTrack(Pt);
-  int step(1+(BEnd-BStart)/10);
-  if (step<10) step=100000;
-  for(int i=BStart;i<=BEnd;i++)
+  size_t step(cellVec.size()/10);
+  
+  int reportN=cellVec[step];
+  
+  for(const int cellN : cellVec)
     {
-      if (!(i % step))
-	ELog::EM<<"Cell = "<<i<<" Range == ["<<BStart<<":"<<BEnd<<"]"
-		<<ELog::endDiag;
-      const MonteCarlo::Qhull* CellPtr=System.findQhull(i);
+      if (cellN==reportN)
+	{
+	  ELog::EM<<"Cell = "<<cellN<<" Range == ["<<cellVec.front()
+		  <<":"<<cellVec.back()<<"]"
+		  <<ELog::endDiag;
+	  step+=cellVec.size()/10;
+	  reportN=cellVec[step];
+	}
+      const MonteCarlo::Qhull* CellPtr=System.findQhull(cellN);
       if (CellPtr && CellPtr->getMat())
 	{
-	  std::vector<int> cellN;
 	  std::vector<double> attnN;
-	  const int cN=CellPtr->getName();  // this should be i !!
+	  const int cN=CellPtr->getName();  // this should be cellN ??
 	  OTrack.addUnit(System,cN,CellPtr->getCofM());
-	  
 	  // either this :
 	  CTrack.addTracks(cN,OTrack.getAttnSum(cN));
 	}
@@ -316,8 +320,6 @@ WeightControl::procObject(const Simulation& System,
 {
   ELog::RegMethod RegA("WeightControl","procObject");
 
-  const ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
     
   const size_t nSet=IParam.setCnt("weightObject");
   double eCut(0.0),sF(1.0),minW(1e-7);
@@ -335,19 +337,15 @@ WeightControl::procObject(const Simulation& System,
       const std::string Key=
 	IParam.getValue<std::string>("weightObject",iSet,0);
       objectList.insert(Key);
-      const int BStart=OR.getRenumberCell(Key);
-      const int BRange=OR.getRenumberRange(Key);
-      if (BStart==0)
-	throw ColErr::InContainerError<std::string>
-	  (Key,"Object name not found");
+      const std::vector<int> objCells=getObjectRange(Key);
       
       // SOURCE Point
       if (sourceFlag && tallyFlag) sF/=2.0;
 
       if (sourceFlag)
-	calcTrack(System,sourcePt,BStart,BRange,eCut,sF,minW);
+	calcTrack(System,sourcePt,objCells,eCut,sF,minW);
       if (tallyFlag)
-	calcTrack(System,tallyPt,BStart,BRange,eCut,sF,minW);
+	calcTrack(System,tallyPt,objCells,eCut,sF,minW);
 
       if (!tallyFlag && !sourceFlag)
 	ELog::EM<<"No source/tally set for weightObject"<<ELog::endCrit;
@@ -355,6 +353,46 @@ WeightControl::procObject(const Simulation& System,
   return;
 }
 
+std::vector<int>
+WeightControl::getObjectRange(const std::string& objName) const
+  /*!
+    Calculate the object cells range based on the name
+    Processes down to cellMap items if objName is of the 
+    form objecName:cellMapName
+    \param objName :: Object name
+    \return vector of item
+  */
+{
+  ELog::RegMethod RegA("WeightContorl","getRange");
+
+  const ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  std::string::size_type pos=objName.find(":");
+  
+  if (pos==std::string::npos || !pos)
+    {
+      const int BStart=OR.getRenumberCell(objName);
+      const int BRange=OR.getRenumberRange(objName);
+      if (BStart==0)
+	throw ColErr::InContainerError<std::string>
+	  (objName,"Object name not found");
+      std::vector<int> Out(1+BRange-BStart);
+      std::iota(Out.begin(),Out.end(),BStart);
+      return Out;
+    }
+  
+  const std::string itemName=objName.substr(0,pos-1);
+  const std::string cellName=objName.substr(pos+1);
+  const attachSystem::CellMap* CPtr=
+    OR.getObject<attachSystem::CellMap>(itemName);
+  if (!CPtr)
+    throw ColErr::InContainerError<std::string>
+      (Key,"Object name not found");
+  return CPtr->getCells(cellName);
+}
+
+  
 void
 WeightControl::scaleObject(const Simulation& System,
 			   const std::string& objKey,
@@ -391,17 +429,13 @@ WeightControl::scaleObject(const Simulation& System,
       else
 	EW= (EW<-eCut) ? 1.0/SW : 1.0;
       ELog::EM<<"EW == "<<EW<<ELog::endDiag;
-    }  
-  const int BStart=OR.getRenumberCell(objKey);
-  const int BRange=OR.getRenumberRange(objKey);
-  if (BStart!=0)
+    }
+  std::vector<int> cellVec=getObjectRange(objKey);
+  for(const int cellN : cellVec)
     {
-      for(int i=BStart;i<=BRange;i++)
-	{
-	  const MonteCarlo::Qhull* CellPtr=System.findQhull(i);
-	  if (CellPtr && CellPtr->getMat())
-	    WF->scaleWeights(i,WEng);
-	}
+      const MonteCarlo::Qhull* CellPtr=System.findQhull(i);
+      if (CellPtr && CellPtr->getMat())
+	WF->scaleWeights(i,WEng);
     }
   return;
 }

@@ -211,7 +211,6 @@ Bunker::populate(const FuncDataBase& Control)
   ModelSupport::populateAddRange(Control,nLayers,keyName+"WallLen",
   			      wallRadius,wallRadius+wallThick,wallFrac);
 
-
   nSectors=Control.EvalVar<size_t>(keyName+"NSectors");
   ModelSupport::populateRange(Control,nSectors+1,keyName+"SectAngle",
 			      leftPhase,rightPhase,sectPhase);
@@ -221,6 +220,14 @@ Bunker::populate(const FuncDataBase& Control)
   ModelSupport::populateQuadRange(Control,nVert,keyName+"VertLen",
 				  -floorDepth,midZ,roofHeight,vertFrac);
 
+  // SIDE LAYERS:
+
+  nSide=Control.EvalVar<size_t>(keyName+"NSide");
+  ModelSupport::populateAddRange(Control,nSide,keyName+"SideThick",
+				 0.0,sideThick,sideFrac);
+
+
+  
   nRoof=Control.EvalVar<size_t>(keyName+"NRoof");
   ModelSupport::populateDivideLen(Control,nRoof,keyName+"RoofLen",
 				  roofMat,roofFrac);

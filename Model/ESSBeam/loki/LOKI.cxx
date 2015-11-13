@@ -379,23 +379,23 @@ LOKI::build(Simulation& System,
   GridA->createAll(System,GuideE->getKey("Guide0"),2);
 
   // First collimator [In WALL]
+
   const attachSystem::FixedComp& GFC(GridA->getKey("Beam"));
-  const std::string BSector=
-    bunkerObj.calcSegment(System,GFC.getSignedLinkPt(2),
-			  GFC.getSignedLinkAxis(2));
-  CollA->addInsertCell(bunkerObj.getCells(BSector));
+
   CollA->addInsertCell(bunkerObj.getCell("MainVoid"));
   CollA->addInsertCell(voidCell);
   CollA->createAll(System,GFC,2);
-
+  attachSystem::addToInsertSurfCtrl(System,bunkerObj,"MainWall",*CollA);  
+  
   // Second grid cutter
-  GridB->addInsertCell(bunkerObj.getCells(BSector));
+  //GridB->addInsertCell(bunkerObj.getCells(BSector));
   GridB->createAll(System,CollA->getKey("Beam"),2);
-
-  // First collimator
+  attachSystem::addToInsertSurfCtrl(System,bunkerObj,"MainWall",*GridB);
+  
+  // Second collimator
   CollB->addInsertCell(voidCell);
-  CollB->addInsertCell(bunkerObj.getCells(BSector));
   CollB->createAll(System,GridB->getKey("Beam"),2);
+  attachSystem::addToInsertSurfCtrl(System,bunkerObj,"MainWall",*CollB);
   // Second grid cutter
   GridC->addInsertCell(voidCell);
   GridC->createAll(System,CollB->getKey("Beam"),2);

@@ -69,7 +69,8 @@ class WeightControl
   void scaleAllObjects(const Simulation&,const double,const double);
   double findMax(const Simulation&,const std::string&,
 		 const size_t,const double) const;
-	       
+  std::set<int> getObjectRange(const std::string&) const;
+  
   void help() const;
   
   void procType(const mainSystem::inputParam&);
@@ -85,7 +86,7 @@ class WeightControl
 			
   void setWeights(Simulation&);
   void calcTrack(const Simulation&,const Geometry::Vec3D&,
-		 const int,const int,
+		 const std::vector<int>&,
 		 const double,const double,const double);
 
  public:
