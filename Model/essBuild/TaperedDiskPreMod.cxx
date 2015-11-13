@@ -104,6 +104,7 @@ TaperedDiskPreMod::TaperedDiskPreMod(const TaperedDiskPreMod& A) :
   modIndex(A.modIndex),cellIndex(A.cellIndex),radius(A.radius),
   height(A.height),depth(A.depth),width(A.width),
   mat(A.mat),temp(A.temp),
+  tiltSide(A.tiltSide),tiltAngle(A.tiltAngle),tiltRadius(A.tiltRadius),
   InnerComp(A.InnerComp->clone())
   /*!
     Copy constructor
@@ -132,6 +133,9 @@ TaperedDiskPreMod::operator=(const TaperedDiskPreMod& A)
       width=A.width;
       mat=A.mat;
       temp=A.temp;
+      tiltSide=A.tiltSide;
+      tiltAngle=A.tiltAngle;
+      tiltRadius=A.tiltRadius;
       *InnerComp=*A.InnerComp;
    }
   return *this;
@@ -161,7 +165,7 @@ TaperedDiskPreMod::populate(const FuncDataBase& Control,
   /*!
     Populate all the variables
     \param Control :: Variable table to use
-    \param zShift :: Default offset height a
+    \param zShift :: Default offset height
     \param outRadius :: Outer radius of reflector [for void fill]
   */
 {
@@ -556,6 +560,7 @@ TaperedDiskPreMod::createAll(Simulation& System,
     \param VOffset :: Vertical offset from target
     \param ORad :: Outer radius of zone
     \param tiltSide :: top/bottom side to be tilted
+    \param ts :: tilting side
    */
 {
   ELog::RegMethod RegA("TaperedDiskPreMod","createAll");

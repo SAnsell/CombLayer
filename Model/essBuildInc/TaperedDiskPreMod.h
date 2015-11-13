@@ -61,7 +61,7 @@ class TaperedDiskPreMod : public attachSystem::ContainedComp,
   std::shared_ptr<CylFlowGuide> InnerComp; 
 
   bool   tiltSide;                    ///< true ? top : bottom   side to be tilted
-  double tiltAngle;                   ///< tilting angle
+  double tiltAngle;                   ///< tapering angle
   double tiltRadius;                  ///< radius where tilting starts
   
   void populate(const FuncDataBase&,const double,const double);
