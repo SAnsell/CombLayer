@@ -51,11 +51,9 @@ class TaperedDiskPreMod : public attachSystem::ContainedComp,
   std::vector<double> radius;         ///< cylinder radii [additive]
   std::vector<double> height;         ///< Full heights [additive]
   std::vector<double> depth;          ///< full depths [additive]
-  std::vector<double> width;          ///< Widths [additive]
   std::vector<int> mat;               ///< Materials 
   std::vector<double> temp;           ///< Temperatures
 
-  size_t NWidth;                      ///< Number of widths active
   int engActive;                  ///< Engineering active flag
   /// Flow guide pattern inside TaperedDiskPreMod (engineering detail)
   std::shared_ptr<CylFlowGuide> InnerComp; 

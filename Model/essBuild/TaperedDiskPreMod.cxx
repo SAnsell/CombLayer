@@ -84,7 +84,7 @@ TaperedDiskPreMod::TaperedDiskPreMod(const std::string& Key) :
   attachSystem::FixedComp(Key,11),
   attachSystem::CellMap(),  
   modIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(modIndex+1),NWidth(0),
+  cellIndex(modIndex+1),
   InnerComp(new CylFlowGuide(Key+"FlowGuide"))
 
   /*!
@@ -102,7 +102,7 @@ TaperedDiskPreMod::TaperedDiskPreMod(const TaperedDiskPreMod& A) :
   attachSystem::LayerComp(A),attachSystem::FixedComp(A),
   attachSystem::CellMap(A),
   modIndex(A.modIndex),cellIndex(A.cellIndex),radius(A.radius),
-  height(A.height),depth(A.depth),width(A.width),
+  height(A.height),depth(A.depth),
   mat(A.mat),temp(A.temp),
   tiltSide(A.tiltSide),tiltAngle(A.tiltAngle),tiltRadius(A.tiltRadius),
   InnerComp(A.InnerComp->clone())
@@ -130,7 +130,6 @@ TaperedDiskPreMod::operator=(const TaperedDiskPreMod& A)
       radius=A.radius;
       height=A.height;
       depth=A.depth;
-      width=A.width;
       mat=A.mat;
       temp=A.temp;
       tiltSide=A.tiltSide;
@@ -181,7 +180,6 @@ TaperedDiskPreMod::populate(const FuncDataBase& Control,
   double R(0.0);
   double H(0.0);
   double D(0.0);
-  double W(0.0);
   double T;
   int M;
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");   
@@ -192,7 +190,6 @@ TaperedDiskPreMod::populate(const FuncDataBase& Control,
       D+=Control.EvalVar<double>(keyName+"Depth"+NStr);
       R+=Control.EvalPair<double>(keyName+"Radius"+NStr,
 				  keyName+"Thick"+NStr);
-      W+=Control.EvalDefVar<double>(keyName+"Width"+NStr,0.0);
       M=ModelSupport::EvalMat<int>(Control,keyName+"Mat"+NStr);   
       const std::string TStr=keyName+"Temp"+NStr;
       T=(!M || !Control.hasVariable(TStr)) ?
@@ -201,23 +198,12 @@ TaperedDiskPreMod::populate(const FuncDataBase& Control,
       radius.push_back(R);
       height.push_back(H);
       depth.push_back(D);
-      width.push_back(W);
       mat.push_back(M);
       temp.push_back(T);
     }
 
-  // Find first Width that has not increase from last:
-  W=0.0;
-  NWidth=0;
-  while(NWidth<width.size() &&
-	(width[NWidth]-W)>Geometry::zeroTol)
-    {
-      W+=width[NWidth];
-      NWidth++;
-    } 
-
   tiltAngle = Control.EvalDefVar<double>(keyName+"TiltAngle", 0.0); // must correspond to ZBase of the corresponding flight line !!! remove default or set it to zero
-  tiltRadius = Control.EvalDefVar<double>(keyName+"TiltRadius", 10.0); // must correspond to ZBase of the corresponding flight line !!! remove default or set it to zero
+  tiltRadius = Control.EvalDefVar<double>(keyName+"TiltRadius", 10.0);
 
   return;
 }
@@ -275,11 +261,6 @@ TaperedDiskPreMod::createSurfaces()
 	}
       ModelSupport::buildPlane(SMap,SI+5,Origin-Z*depth[i],Z);  
       ModelSupport::buildPlane(SMap,SI+6,Origin+Z*height[i],Z);
-      if (i<NWidth)
-	{
-	  ModelSupport::buildPlane(SMap,SI+3,Origin-X*(width[i]/2.0),X);
-	  ModelSupport::buildPlane(SMap,SI+4,Origin+X*(width[i]/2.0),X);
-	}
       SI+=10;
     }
   if (radius.empty() || radius.back()<outerRadius-Geometry::zeroTol)
@@ -302,25 +283,15 @@ TaperedDiskPreMod::createObjects(Simulation& System)
   int SI(modIndex);
   // Process even number of surfaces:
   HeadRule Inner;
-  HeadRule Width;
-  std::string widthUnit;
   for(size_t i=0;i<nLayers;i++)
     {
-      if (i<NWidth)
-	{
-	  // previous width:
-	  Width.procString(widthUnit);
-	  Width.makeComplement();
-	  widthUnit=ModelSupport::getComposite(SMap,SI," -3 4 ");
-	}
-
       if (tiltAngle>Geometry::zeroTol)
 	{
 	  if (radius[i]>tiltRadius)
 	    {
 	      Out = ModelSupport::getComposite(SMap, SI, " ((-8 5 -6) : (8 -7 5 -9 -6)) "); // need this to define Inner. below
 	      Out1 = ModelSupport::getComposite(SMap, SI, " -8 5 -6 ");
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i], Out1+widthUnit+Inner.display()+Width.display()));
+	      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i], Out1+Inner.display()));
 	    }
 	  else
 	    {
@@ -329,21 +300,21 @@ TaperedDiskPreMod::createObjects(Simulation& System)
 	      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i], Out1+Inner.display()));
 	    }
 	  Out1 = ModelSupport::getComposite(SMap, SI, " 8 -7 5 -9 -6 ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i], Out1+widthUnit+Inner.display()+Width.display()));
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i], Out1+Inner.display()));
 	  if (i==nLayers-1)
 	    {
 	      if (tiltSide)
 		Out1 = ModelSupport::getComposite(SMap, SI, " -7 -6 9 ");
 	      else
 		Out1 = ModelSupport::getComposite(SMap, SI, " -7  5 9 ");
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0, Out1+widthUnit+Width.display()));
+	      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0, Out1));
 	      }
 	    }
       else
 	{
 	  Out=ModelSupport::getComposite(SMap,SI," -7 5 -6 ");
       
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i], Out+widthUnit+Inner.display()+Width.display()));
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i], Out+Inner.display()));
 	}
 
       if (!i)
@@ -449,10 +420,8 @@ TaperedDiskPreMod::getSurfacePoint(const size_t layerIndex,
     case 1:
       return Origin+Y*(radius[layerIndex]);
     case 2:
-      return (layerIndex<NWidth) ? 
-	Origin-X*(width[layerIndex]/2.0) :
-	Origin-X*radius[layerIndex];
-    
+      throw ColErr::AbsObjMethod("Not implemented yet. Width should have been here.");
+      return 0;
     case 3:
       return Origin+X*(radius[layerIndex]);
     case 4:
