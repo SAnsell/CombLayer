@@ -121,7 +121,7 @@ Bunker::Bunker(const Bunker& A) :
   wallThick(A.wallThick),sideThick(A.sideThick),
   roofThick(A.roofThick),floorThick(A.floorThick),
   voidMat(A.voidMat),wallMat(A.wallMat),
-  wallMatVec(A.wallMatVec),loadFile(A.loadFile),
+  loadFile(A.loadFile),
   outFile(A.outFile),
   BMWPtr((A.BMWPtr) ? new BunkerMainWall(*A.BMWPtr) : 0)
   /*!
@@ -167,7 +167,6 @@ Bunker::operator=(const Bunker& A)
       floorThick=A.floorThick;
       voidMat=A.voidMat;
       wallMat=A.wallMat;
-      wallMatVec=A.wallMatVec;
       *BMWPtr= *A.BMWPtr;
     }
   return *this;
@@ -270,6 +269,16 @@ Bunker::createUnitVector(const attachSystem::FixedComp& MainCentre,
       Z*=-1;
     }
       
+  return;
+}
+
+void
+Bunker::createWallSurfaces(const Geometry::Vec3D& AWall,
+			   const Geometry::Vec3D& AWallDir) 
+  /*!
+    Create the wall Surface if divided
+  */
+{
   return;
 }
   

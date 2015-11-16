@@ -100,8 +100,6 @@ class Bunker : public attachSystem::ContainedComp,
   int roofMat;                   ///< roof material
 
   double midZ;                   ///< Mid z point
-  // Layers
-  std::vector<int> wallMatVec;   ///< guide Layer materials
 
   // Bunker Material distribution:
   std::string loadFile;            ///< Bunker input file
@@ -111,6 +109,8 @@ class Bunker : public attachSystem::ContainedComp,
   BunkerMainWall* BLeftPtr;          ///< Bunker side wall
   BunkerMainWall* BRightPtr;          ///< Bunker side wall
 
+  void createWallSurfaces(const Geometry::Vec3D&,
+			  const Geometry::Vec3D&);
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,

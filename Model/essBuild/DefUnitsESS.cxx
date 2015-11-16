@@ -116,15 +116,20 @@ setESSFull(defaultConfig& A)
   A.setOption("lowWaterDisk","On");
   A.setOption("topWaterDisk","On");
   A.setOption("topWaterDisk","On");
+
   A.setMultiOption("beamlines",0,"G1BLine1 ODIN");
   A.setMultiOption("beamlines",1,"G1BLine3 LOKI");
   A.setMultiOption("beamlines",2,"G1BLine5 NMX");
   A.setMultiOption("beamlines",3,"G1BLine6 VOR");
+  A.setMultiOption("beamlines",4,"G4BLine19 DREAM");
 
+  ELog::EM<<"Making G1Bline1Active "<<ELog::endDiag;
   A.setVar("G1BLine1Active",1);
   A.setVar("G1BLine3Active",1);
   A.setVar("G1BLine5Active",1);
   A.setVar("G1BLine6Active",1);
+
+  A.setVar("G4BLine18Active",1);
 
   return;
 }
@@ -176,7 +181,7 @@ setESSSingle(defaultConfig& A,const std::string& beamItem)
     throw ColErr::InContainerError<std::string>(beamItem,"BeamItem");
 
   // ODIN
-  A.setVar("G1BLine1Active",1);
+  A.setVar("G1BLine2Active",1);
   
   A.setVar("G4BLine4Active",1);
   A.setVar("G4BLine4Filled",1);
@@ -185,6 +190,7 @@ setESSSingle(defaultConfig& A,const std::string& beamItem)
   // DREAM
   A.setVar("G4BLine19Active",1);
   A.setVar("G4BLine19Filled",1);
+
   A.setVar("G4BLine17Filled",1);
   A.setVar("G4BLine17Active",1);
   A.setVar("G4BLine11Filled",1);
@@ -212,9 +218,13 @@ setESS(defaultConfig& A)
   A.setMultiOption("beamlines",1,"G4BLine4 LOKI");
   A.setMultiOption("beamlines",2,"G4BLine7 VOR");
   A.setMultiOption("beamlines",3,"G4BLine12 NMX");
-  A.setMultiOption("beamlines",4,"G4BLine17 DREAM");
+  A.setMultiOption("beamlines",4,"G4BLine19 DREAM");
 
   // odin : No action
+
+  // ODIN
+  //  A.setVar("G4BLine4Active",1);  
+  //  A.setVar("G4BLine4Filled",1);
 
   // LOKI
   A.setVar("G4BLine4Active",1);  
@@ -229,8 +239,8 @@ setESS(defaultConfig& A)
   A.setVar("G4BLine12Filled",1);
 
   // DREAM
-  A.setVar("G4BLine17Filled",1);
-  A.setVar("G4BLine17Active",1);
+  A.setVar("G4BLine19Filled",1);
+  A.setVar("G4BLine19Active",1);
   
   return;
 }
