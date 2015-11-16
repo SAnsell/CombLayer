@@ -76,12 +76,13 @@ class Bunker : public attachSystem::ContainedComp,
   std::vector<int> roofMatVec;   ///< guide Layer thicknesss (fractions)
 
   // SIDES:
+  int sideFlag;                      ///< Which sides are divided [left/right]
   size_t nSide;                      ///< number of side layers
   std::vector<double> sideFrac;      ///< guide Layer thicknesss (fractions)
   size_t nSideVert;                  ///< number of side vert layers
   std::vector<double> sideVertFrac;  ///< side vert thicknesss (fractions)
-  size_t nSideLen;                   ///< layers going low R to high R
-  std::vector<double> sideLenFrac;   ///< side low-high R thicknesss (fractions)
+  size_t nSideThick;                 ///< layers going low R to high R
+  std::vector<double> sideThickFrac; ///< side low-high thicknesss (fractions)
 
   
   double innerRadius;            ///< inner radius [calculated]

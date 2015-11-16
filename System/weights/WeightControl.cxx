@@ -49,6 +49,7 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "CellMap.h"
 #include "Object.h"
 #include "Qhull.h"
 #include "weightManager.h"
@@ -257,7 +258,7 @@ WeightControl::procTallyPoint(const mainSystem::inputParam& IParam)
 void
 WeightControl::calcTrack(const Simulation& System,
 			 const Geometry::Vec3D& Pt,
-			 const vector<int> cellVec,
+			 const std::vector<int>& cellVec,
 			 const double eCut,const double sF,
 			 const double mW)
   /*!
@@ -363,7 +364,7 @@ WeightControl::getObjectRange(const std::string& objName) const
     \return vector of item
   */
 {
-  ELog::RegMethod RegA("WeightContorl","getRange");
+  ELog::RegMethod RegA("WeightContorl","getObjectRange");
 
   const ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
@@ -377,7 +378,7 @@ WeightControl::getObjectRange(const std::string& objName) const
       if (BStart==0)
 	throw ColErr::InContainerError<std::string>
 	  (objName,"Object name not found");
-      std::vector<int> Out(1+BRange-BStart);
+      std::vector<int> Out(static_cast<size_t>(1+BRange-BStart));
       std::iota(Out.begin(),Out.end(),BStart);
       return Out;
     }
@@ -388,7 +389,7 @@ WeightControl::getObjectRange(const std::string& objName) const
     OR.getObject<attachSystem::CellMap>(itemName);
   if (!CPtr)
     throw ColErr::InContainerError<std::string>
-      (Key,"Object name not found");
+      (objName,"Object name not found");
   return CPtr->getCells(cellName);
 }
 
@@ -407,9 +408,6 @@ WeightControl::scaleObject(const Simulation& System,
 {
   ELog::RegMethod RegA("WeightControl","scaleObject");
   
-  const ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();  
 
@@ -433,9 +431,9 @@ WeightControl::scaleObject(const Simulation& System,
   std::vector<int> cellVec=getObjectRange(objKey);
   for(const int cellN : cellVec)
     {
-      const MonteCarlo::Qhull* CellPtr=System.findQhull(i);
+      const MonteCarlo::Qhull* CellPtr=System.findQhull(cellN);
       if (CellPtr && CellPtr->getMat())
-	WF->scaleWeights(i,WEng);
+	WF->scaleWeights(cellN,WEng);
     }
   return;
 }

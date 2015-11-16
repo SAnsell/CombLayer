@@ -225,6 +225,12 @@ Bunker::populate(const FuncDataBase& Control)
   nSide=Control.EvalVar<size_t>(keyName+"NSide");
   ModelSupport::populateAddRange(Control,nSide,keyName+"SideThick",
 				 0.0,sideThick,sideFrac);
+  nSideVert=Control.EvalVar<size_t>(keyName+"NSideVert");
+  ModelSupport::populateQuadRange(Control,nSideVert,keyName+"SideVert",
+				  -floorDepth,midZ,roofHeight,sideVertFrac);
+  nSideThick=Control.EvalVar<size_t>(keyName+"NSideThick");
+  ModelSupport::populateAddRange(Control,nSideVert,keyName+"SideThick",
+				 0,wallThick,sideThickFrac);
 
 
   
@@ -294,7 +300,8 @@ Bunker::createSurfaces()
   // Divider
   ModelSupport::buildPlane(SMap,bnkIndex+1,rotCentre,Y);
   ModelSupport::buildCylinder(SMap,bnkIndex+7,rotCentre,Z,wallRadius);
-    
+
+
   ModelSupport::buildPlane(SMap,bnkIndex+3,AWall,AWallDir);
   ModelSupport::buildPlane(SMap,bnkIndex+4,BWall,BWallDir);
   
@@ -372,6 +379,8 @@ Bunker::createSurfaces()
   return;
 }
 
+
+  
 void
 Bunker::createSideLinks(const Geometry::Vec3D& AWall,
 			const Geometry::Vec3D& BWall,

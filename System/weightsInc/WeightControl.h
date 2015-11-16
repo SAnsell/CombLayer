@@ -69,7 +69,7 @@ class WeightControl
   void scaleAllObjects(const Simulation&,const double,const double);
   double findMax(const Simulation&,const std::string&,
 		 const size_t,const double) const;
-  std::set<int> getObjectRange(const std::string&) const;
+  std::vector<int> getObjectRange(const std::string&) const;
   
   void help() const;
   

@@ -233,11 +233,9 @@ ODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
 
   // Make bunker insert
   const attachSystem::FixedComp& GFC(GuideB->getKey("Guide0"));
-  const std::string BSector=
-    bunkerObj.calcSegment(System,GFC.getSignedLinkPt(2),
-			  GFC.getSignedLinkAxis(2));  
-  BInsert->setInsertCell(bunkerObj.getCells(BSector));
-  BInsert->createAll(System,GuideB->getKey("Guide0"),2,bunkerObj);
+  BInsert->createAll(System,GFC,2,bunkerObj);   // changed from -1
+  attachSystem::addToInsertSurfCtrl(System,bunkerObj,"MainWall",*BInsert);  
+
 
   // Guide in the bunker insert
   GuideC->addInsertCell(BInsert->getCell("Void"));

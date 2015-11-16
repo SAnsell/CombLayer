@@ -362,7 +362,7 @@ populateQuadRange(const FuncDataBase& Control,const size_t N,
       // Vec  : acts as spline Y
       std::vector< mathSupport::SplinePt<double> > SP;
       mathSupport::calcSpline(X,Y,SP);
-
+      
       for(size_t i=1;i<N;i++)
 	{
 	  if (setValues.find(i)==setValues.end())

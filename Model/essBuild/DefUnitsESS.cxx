@@ -153,6 +153,7 @@ setESSSingle(defaultConfig& A,const std::string& beamItem)
     Default configuration for ESS for testing single beamlines
     for building
     \param A :: Paramter for default config
+    \parma beamItem :: Additional value for beamline name
    */
 {
   ELog::RegMethod RegA("DefUnitsESS[F]","setESS");
@@ -162,23 +163,32 @@ setESSSingle(defaultConfig& A,const std::string& beamItem)
   if (beamItem=="NMX")
     A.setMultiOption("beamlines",0,"G4BLine17 NMX");
   else if (beamItem=="DREAM")
-    A.setMultiOption("beamlines",0,"G4BLine11 DREAM");
+    A.setMultiOption("beamlines",0,"G4BLine19 DREAM");
   else if (beamItem=="VOR")
     A.setMultiOption("beamlines",0,"G1BLine5 VOR");
   else if (beamItem=="LOKI")
     A.setMultiOption("beamlines",0,"G4BLine4 LOKI");
   else if (beamItem=="ESTIA")
     A.setMultiOption("beamlines",0,"G4BLine11 ESTIA");
+  else if (beamItem=="ODIN")
+    A.setMultiOption("beamlines",0,"G1BLine1 ODIN");
   else
     throw ColErr::InContainerError<std::string>(beamItem,"BeamItem");
-    
+
+  // ODIN
+  A.setVar("G1BLine1Active",1);
+  
   A.setVar("G4BLine4Active",1);
   A.setVar("G4BLine4Filled",1);
 
+
   // DREAM
+  A.setVar("G4BLine19Active",1);
+  A.setVar("G4BLine19Filled",1);
   A.setVar("G4BLine17Filled",1);
   A.setVar("G4BLine17Active",1);
   A.setVar("G4BLine11Filled",1);
+
   A.setVar("G4BLine11Active",1);
   A.setVar("G1BLine5Active",1);
   A.setVar("G1BLine5Filled",1);
