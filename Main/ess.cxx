@@ -100,8 +100,6 @@ main(int argc,char* argv[])
   mainSystem::activateLogging(RControl);
   std::string Oname;
   std::vector<std::string> Names;  
-  std::map<std::string,std::string> Values;  
-  std::map<std::string,std::string> AddValues;  
 
   Simulation* SimPtr(0);
   try
@@ -123,57 +121,49 @@ main(int argc,char* argv[])
       // Definitions section 
       int MCIndex(0);
       const int multi=IParam.getValue<int>("multi");
-      while(MCIndex<multi)
+      
+      SimPtr->resetAll();
+      
+      essSystem::makeESS ESSObj;
+      World::createOuterObjects(*SimPtr);
+      ESSObj.build(*SimPtr,IParam);
+      SDef::sourceSelection(*SimPtr,IParam);
+      
+      SimPtr->removeComplements();
+      SimPtr->removeDeadSurfaces(0);         
+      ModelSupport::setDefaultPhysics(*SimPtr,IParam);
+      
+      ModelSupport::setDefRotation(IParam);
+      SimPtr->masterRotation();
+      const int renumCellWork=tallySelection(*SimPtr,IParam);
+      
+      if (createVTK(IParam,SimPtr,Oname))
 	{
-	  if (MCIndex)
-	    {
-	      ELog::EM.setActive(4);    // write error only
-	      ELog::FM.setActive(4);    
-	      ELog::RN.setActive(0);    
-	    }
-
-	  SimPtr->resetAll();
-
-	  essSystem::makeESS ESSObj;
-	  World::createOuterObjects(*SimPtr);
-	  ESSObj.build(*SimPtr,IParam);
-	  SDef::sourceSelection(*SimPtr,IParam);
-
-	  SimPtr->removeComplements();
-	  SimPtr->removeDeadSurfaces(0);         
-	  ModelSupport::setDefaultPhysics(*SimPtr,IParam);
-
-	  ModelSupport::setDefRotation(IParam);
-	  SimPtr->masterRotation();
-	  const int renumCellWork=tallySelection(*SimPtr,IParam);
-
-	  if (createVTK(IParam,SimPtr,Oname))
-	    {
-	      delete SimPtr;
-	      ModelSupport::objectRegister::Instance().reset();
-	      return 0;
-	    }
-	  if (IParam.flag("endf"))
-	    SimPtr->setENDF7();
-
-	  SimProcess::importanceSim(*SimPtr,IParam);
-	  SimProcess::inputPatternSim(*SimPtr,IParam); // energy cut etc
-
-	  if (renumCellWork)
-	    tallyRenumberWork(*SimPtr,IParam);
-	  tallyModification(*SimPtr,IParam);
-
-	  if (IParam.flag("cinder"))
-	    SimPtr->setForCinder();
-
-	  // Ensure we done loop
-	  do
-	    {
-	      SimProcess::writeIndexSim(*SimPtr,Oname,MCIndex);
-	      MCIndex++;
-	    }
-	  while(MCIndex<multi);
+	  delete SimPtr;
+	  ModelSupport::objectRegister::Instance().reset();
+	  return 0;
 	}
+      if (IParam.flag("endf"))
+	SimPtr->setENDF7();
+      
+      SimProcess::importanceSim(*SimPtr,IParam);
+      SimProcess::inputPatternSim(*SimPtr,IParam); // energy cut etc
+      
+      if (renumCellWork)
+	tallyRenumberWork(*SimPtr,IParam);
+      tallyModification(*SimPtr,IParam);
+      
+      if (IParam.flag("cinder"))
+	SimPtr->setForCinder();
+      
+      // Ensure we done loop
+      do
+	{
+	  SimProcess::writeIndexSim(*SimPtr,Oname,MCIndex);
+	  MCIndex++;
+	}
+      while(MCIndex<multi);
+      
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
       ModelSupport::calcVolumes(SimPtr,IParam);
       ModelSupport::objectRegister::Instance().write("ObjectRegister.txt");

@@ -123,13 +123,12 @@ setESSFull(defaultConfig& A)
   A.setMultiOption("beamlines",3,"G1BLine6 VOR");
   A.setMultiOption("beamlines",4,"G4BLine19 DREAM");
 
-  ELog::EM<<"Making G1Bline1Active "<<ELog::endDiag;
   A.setVar("G1BLine1Active",1);
   A.setVar("G1BLine3Active",1);
   A.setVar("G1BLine5Active",1);
   A.setVar("G1BLine6Active",1);
 
-  A.setVar("G4BLine18Active",1);
+  A.setVar("G4BLine19Active",1);
 
   return;
 }
@@ -163,41 +162,47 @@ setESSSingle(defaultConfig& A,const std::string& beamItem)
 {
   ELog::RegMethod RegA("DefUnitsESS[F]","setESS");
 
+  
   A.setOption("lowMod","Butterfly");
+
   
   if (beamItem=="NMX")
-    A.setMultiOption("beamlines",0,"G4BLine17 NMX");
+    {
+      A.setMultiOption("beamlines",0,"G4BLine17 NMX");
+      A.setVar("G4BLine17Active",1);
+      A.setVar("G4BLine17Filled",1);
+    }
   else if (beamItem=="DREAM")
-    A.setMultiOption("beamlines",0,"G4BLine19 DREAM");
+    {
+      A.setMultiOption("beamlines",0,"G4BLine19 DREAM");
+      A.setVar("G4BLine19Active",1);
+      A.setVar("G4BLine19Filled",1);
+    }
   else if (beamItem=="VOR")
-    A.setMultiOption("beamlines",0,"G1BLine5 VOR");
+    {
+      A.setMultiOption("beamlines",0,"G1BLine5 VOR");
+      A.setVar("G1BLine5Active",1);
+    }      
   else if (beamItem=="LOKI")
-    A.setMultiOption("beamlines",0,"G4BLine4 LOKI");
+    {
+      A.setMultiOption("beamlines",0,"G4BLine4 LOKI");
+      A.setVar("G4BLine4Active",1);
+    }
   else if (beamItem=="ESTIA")
-    A.setMultiOption("beamlines",0,"G4BLine11 ESTIA");
+    {
+      A.setMultiOption("beamlines",0,"G4BLine11 ESTIA");
+      A.setVar("G4BLine11Active",1);
+    }
   else if (beamItem=="ODIN")
-    A.setMultiOption("beamlines",0,"G1BLine1 ODIN");
+    {
+      A.setMultiOption("beamlines",0,"G1BLine1 ODIN");
+      A.setVar("G1BLine1Active",1);
+    }
   else
     throw ColErr::InContainerError<std::string>(beamItem,"BeamItem");
 
   // ODIN
-  A.setVar("G1BLine2Active",1);
-  
-  A.setVar("G4BLine4Active",1);
-  A.setVar("G4BLine4Filled",1);
 
-
-  // DREAM
-  A.setVar("G4BLine19Active",1);
-  A.setVar("G4BLine19Filled",1);
-
-  A.setVar("G4BLine17Filled",1);
-  A.setVar("G4BLine17Active",1);
-  A.setVar("G4BLine11Filled",1);
-
-  A.setVar("G4BLine11Active",1);
-  A.setVar("G1BLine5Active",1);
-  A.setVar("G1BLine5Filled",1);
   
   ELog::EM<<"TEST of "<<beamItem<<" Only "<<ELog::endDiag;
   return;

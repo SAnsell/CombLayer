@@ -640,8 +640,8 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("ABunkerLeftAngle",0.0);
   Control.addVariable("ABunkerRightAngle",0.0);
   Control.addVariable("ABunkerNSectors",9);
-  Control.addVariable("ABunkerNVert",24);
-  Control.addVariable("ABunkerNLayers",24);
+  Control.addVariable("ABunkerNVert",5);
+  Control.addVariable("ABunkerNLayers",5);
   Control.addVariable("ABunkerNRoof",5);
 
   Control.addVariable("ABunkerNSide",5);
@@ -694,7 +694,7 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("BBunkerRoofHeight",190.0);
 
   Control.addVariable("BBunkerWallThick",320.0);
-  Control.addVariable("BBunkerSideThick",150.0);
+  Control.addVariable("BBunkerSideThick",80.0);
   Control.addVariable("BBunkerRoofThick",200.0);
   Control.addVariable("BBunkerFloorThick",100.0);
 

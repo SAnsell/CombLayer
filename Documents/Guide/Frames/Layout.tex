@@ -1,5 +1,13 @@
-The basic program structure is 
+The basic program structure is given by figure \ref{MainLayout}.  The
+main program structure is normally copied from an existing project and
+the areas are constructed by the user. It is normal to add inputs
+(from the command line), variables that your project is going to use,
+and then build the geometry constructor via a call to a makeProject
+command.  There are other ways to construct the system but this allows
+a degree of autonomy from tallies/variance reduction and producing an
+appropiate output.
 
+\begin{figure}[!htp]
 \begin{tikzpicture}
 
   \coordinate (Main) at (0,0);
@@ -8,6 +16,8 @@ The basic program structure is
   \coordinate (Project) at (3,-6);
   \coordinate (Object) at (6,-8);
   \coordinate (Tally) at (3,-10);
+  \coordinate (Variance) at (3,-12);
+  \coordinate (Output) at (3,-14);
 
   \tikzstyle{fbox}=[draw=blue,very thick,
                     shape=rectangle,rounded corners=0.5em,
@@ -28,7 +38,7 @@ The basic program structure is
 
   \node[fbox] (MainBox) at (Main) { \bf \large Main Program } ;
 
-  \node[obox] (InputBox) at (Input) { \bf \large ProjectInputs };
+  \node[fbox] (InputBox) at (Input) { \bf \large ProjectInputs };
   \draw[->,very thick,color=red,>=triangle 60] (MainBox) |- 
                    node[left]{} (InputBox) ;
 
@@ -45,20 +55,155 @@ The basic program structure is
   \draw[->,very thick,color=red,>=triangle 60] (ProjectBox) |- 
                    node[left]{} (ObjectBox) ;
 
-  \node[fbox] (TallyBox) at (Tally) { \bf \large Tally/Variance };
+  \node[obox] (TallyBox) at (Tally) { \bf \large Tallies };
   \draw[->,very thick,color=red,>=triangle 60] (MainBox) |- 
                    node[left]{} (TallyBox) ;
 
-%  \shade[left color=blue!50,line width=0.5cm] (3,1.5) circle (2.0cm);
-%  \shade[left color=red,line width=0.5cm] (var) circle (1.30cm);
-%  \shade[left color=green,line width=0.5cm] (tally) circle (1.30cm);
+  \node[obox] (VarianceBox) at (Variance) { \bf \large Variance Reduction };
+  \draw[->,very thick,color=red,>=triangle 60] (MainBox) |- 
+                   node[left]{} (VarianceBox) ;
 
-%  \node at (weight) { {\bf \large Variance} };
-%  \node at (var) { {\bf \large Variables} };
-%  \node at (tally) { {\bf \large Tallies} };
-
-
-
-%\node
+  \node[obox] (OutputBox) at (Output) { \bf \large Output };
+  \draw[->,very thick,color=red,>=triangle 60] (MainBox) |- 
+                   node[left]{} (OutputBox) ;
 \end{tikzpicture}
+\caption{The main program calling sequence is shown. The parts
+  in orange, are expected to be constructed by the user. Bespoke objects
+  can be added for a project but it is not necessary.  }
+\label{MainLayout}
+\end{figure}
+
+
+\subsection{Main}
+
+The main function for CombLayer follows a relatively linear template.
+Consider the example
+
+\begin{lstlisting}[language=C++]{Name=MainProg}{floatplacement=H}
+
+int 
+main(int argc,char* argv[])
+{
+  int exitFlag(0);                // Value on exit
+  ELog::RegMethod RControl("","main");
+  mainSystem::activateLogging(RControl);
+  std::string Oname;
+  std::vector<std::string> Names;  
+  std::map<std::string,std::string> Values;  
+
+  // PROCESS INPUT:
+  InputControl::mainVector(argc,argv,Names);
+  mainSystem::inputParam IParam;
+  %%{\tcgg{\bf createPipeInputs(IParam);}@
+
+  Simulation* SimPtr=createSimulation(IParam,Names,Oname);
+  if (!SimPtr) return -1;
+
+  // The big variable setting
+  %%{\tcgg{\bf setVariable::PipeVariables(SimPtr-$>$getDataBase());} @
+  InputModifications(SimPtr,IParam,Names);
+  
+  // Definitions section 
+  int MCIndex(0);
+  const int multi=IParam.getValue<int>("multi");
+  try
+    {
+      SimPtr->resetAll();
+      
+     %%{\tcgg{\bf pipeSystem::makePipe pipeObj;}@
+
+      World::createOuterObjects(*SimPtr);
+     %%{\tcgg{\bf pipeObj.build(SimPtr,IParam)}; @  
+      SDef::sourceSelection(*SimPtr,IParam);
+      
+      SimPtr->removeComplements();
+      SimPtr->removeDeadSurfaces(0);         
+      ModelSupport::setDefaultPhysics(*SimPtr,IParam);
+      
+      const int renumCellWork=tallySelection(*SimPtr,IParam);
+      SimPtr->masterRotation();
+      if (createVTK(IParam,SimPtr,Oname))
+	{
+	  delete SimPtr;
+	  ModelSupport::objectRegister::Instance().reset();
+	  ModelSupport::surfIndex::Instance().reset();
+	  return 0;
+	}
+      
+      if (IParam.flag("endf"))
+        SimPtr->setENDF7();
+      
+      SimProcess::importanceSim(*SimPtr,IParam);
+      SimProcess::inputPatternSim(*SimPtr,IParam); // energy cut etc
+      
+      if (renumCellWork)
+	tallyRenumberWork(*SimPtr,IParam);
+      tallyModification(*SimPtr,IParam);
+      
+      if (IParam.flag("cinder"))
+	SimPtr->setForCinder();
+            
+      // Ensure we done loop
+      do
+	{
+	  SimProcess::writeIndexSim(*SimPtr,Oname,MCIndex);
+	  MCIndex++;
+	}
+      while(MCIndex<multi);
+      
+      exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
+      ModelSupport::calcVolumes(SimPtr,IParam);
+      ModelSupport::objectRegister::Instance().write("ObjectRegister.txt");
+    }
+  catch (ColErr::ExitAbort& EA)
+    {
+      if (!EA.pathFlag())
+	ELog::EM<<"Exiting from "<<EA.what()<<ELog::endCrit;
+      exitFlag=-2;
+    }
+  catch (ColErr::ExBase& A)
+    {
+      ELog::EM<<"EXCEPTION FAILURE :: "
+	      <<A.what()<<ELog::endCrit;
+      exitFlag= -1;
+    }
+  %%{\it delete SimPtr;} @
+  ModelSupport::objectRegister::Instance().reset();
+  ModelSupport::surfIndex::Instance().reset();
+
+  return exitFlag;
+}
+\end{lstlisting}
+
+The Main program given in listing \ref{MainProg} highlights the areas
+that the user should be creating. The remainder of the main() function
+deals with trapping exceptions, loggin and building variance reduction
+and tallies into the model.
+
+(i) {\bf createPipeInputs} is a 
+function to define which command line options [above the standard ones]
+this model should support. It doesn't do anything with them, just a
+list of options, number of arguements they can take and any default
+values that the options should take. All options defined here are
+access from the command line option with a {\it -} sign. E.g. {\it -r} as a
+renumber operation. In this form of the program, if the main program
+is run without any options, a list and very brief description of each
+option is shown (e.g. execute {\it ./pipe}).
+
+If no additional options are required, a call to
+{\it createInputs(IParam)} would be expected. Significant restructuring
+would need to take place to avoid that call.
+
+(ii) \tcgg{setVariable::PipeVariables} is the method that registers
+and sets a default value for all the variables that the model will
+use. 
+
+(iii) \tcgg{makePipe pipeObj} and \tcgg{pipeObj.buid(SimPtr,IParam)} are the
+main geometry building calls. Typically 100\% of the geometry is built
+in this zone. It is not a place for tallies, variance reduction and other
+non-geometry items.
+
+(iii) 
+
+
 

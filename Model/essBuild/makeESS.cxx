@@ -380,14 +380,30 @@ makeESS::makeBeamLine(Simulation& System,
   ELog::RegMethod RegA("makeESS","makeBeamLine");
 
   const size_t NSet=IParam.setCnt("beamlines");
-
+  FuncDataBase& Control=System.getDataBase();
+  
   for(size_t j=0;j<NSet;j++)
     {
       const size_t NItems=IParam.itemCnt("beamlines",0);
-      for(size_t i=1;i<NItems;i+=2)
+      size_t index=1;
+      while(index<NItems)  // min of two items
 	{
-	  const std::string BL=IParam.getValue<std::string>("beamlines",j,i-1);
-	  const std::string Btype=IParam.getValue<std::string>("beamlines",j,i);
+	  const std::string BL=
+	    IParam.getValue<std::string>("beamlines",j,index-1);
+	  const std::string Btype=
+	    IParam.getValue<std::string>("beamlines",j,index);
+	  index+=2;
+
+	  Control.addVariable(BL+"Active",1);
+	  int fillFlag(0);
+	  if (IParam.checkItem<int>("beamlines",j,index+1,fillFlag))
+	    {
+	      // setting is CONTROLED as value from variable taken
+	      // otherwise
+	      Control.addVariable(BL+"Filled",fillFlag);
+	      index++;
+	    }
+	  
 	  // FIND BUNKER HERE:::
 	  makeESSBL BLfactory(BL,Btype);
 	  std::pair<int,int> BLNum=makeESSBL::getBeamNum(BL);
