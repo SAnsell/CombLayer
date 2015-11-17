@@ -105,21 +105,86 @@ LayerDivide3D::~LayerDivide3D()
     Destructor
   */
 {}
+
+
+void
+LayerDivide3D::processSurface(const std::pair<int,int>& WallSurf,
+			      const std::vector<double>& Len)
+{
+  ELog::RegMethod RegA("LayerDivide3D","processSurface");
+
+  const Geometry::Surface* APtr=SMap.realSurfPtr(WallSurf.first);
+  const Geometry::Surface* BPtr=SMap.realSurfPtr(WallSurf.second); 
+  return;
+}
+
+void
+LayerDivide3D::addCalcPoint(const size_t i,const size_t j,
+		     const size_t k,
+		     std::string OrderSurf)
+  /*!
+    Process the string to calculate the corner points 
+    \param i :: Index 
+    \param j :: Index 
+    \param k :: Index 
+    \param OrderSurf :: Very highly order list of surface
+   */
+{
+  ELog::RegMethod RegA("LayerDivide3D","AddCalcPoint");
+  
+  int side[2];
+  int cyl[2];
+  int vert[2];
+  
+  StrFunc::section(OrderSurf,side[0]);
+  StrFunc::section(OrderSurf,side[1]);
+  StrFunc::section(OrderSurf,vert[0]);
+  StrFunc::section(OrderSurf,vert[1]);
+  StrFunc::section(OrderSurf,cyl[0]);
+  StrFunc::section(OrderSurf,cyl[1]);
+
+  Geometry::Plane* SPtr[2];
+  Geometry::Cylinder* CPtr[2];
+  Geometry::Plane* VPtr[2];
+
+  SPtr[0]=SMap.realPtr<Geometry::Plane>(side[0]);
+  SPtr[1]=SMap.realPtr<Geometry::Plane>(side[1]);
+  CPtr[0]=SMap.realPtr<Geometry::Cylinder>(cyl[0]);
+  CPtr[1]=SMap.realPtr<Geometry::Cylinder>(cyl[1]);
+  VPtr[0]=SMap.realPtr<Geometry::Plane>(vert[0]);
+  VPtr[1]=SMap.realPtr<Geometry::Plane>(vert[1]);
+
+  std::vector<Geometry::Vec3D> OutPts;
+  for(size_t i=0;i<2;i++)
+    for(size_t j=0;j<2;j++)
+      for(size_t k=0;k<2;k++)
+	OutPts.push_back(SurInter::getPoint(SPtr[0],VPtr[0],CPtr[0],Centre));
+
+  DGPtr->setPoints(i,j,k,OutPts);
+  
+  return; 
+}
   
 
 void
-LayerDivide3D::createMainWall(Simulation& System)
+LayerDivide3D::divideCell(Simulation& System,const int cellN)
   /*!
     Create a tesselated main wall
+    \param System ::Simution to use
+    \param cellN :: Cell number
   */
 {
-  ELog::RegMethod RegA("LayerDivide3D","createMainWall");
+  ELog::RegMethod RegA("LayerDivide3D","divideCell");
 
-  ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();
+  ModelSupport::DBMaterial& DB=
+    ModelSupport::DBMaterial::Instance();
 
   if (!DGPtr)
     DGPtr=new DivideGrid(DB.getKey(0));
   DGPtr->loadXML(loadFile,objName);
+
+  processSurfaces();
+  
   /*  
 
   const std::string divider=
@@ -174,56 +239,5 @@ LayerDivide3D::createMainWall(Simulation& System)
 */  
   return;
 }
-
-	  
-  
-
-void
-LayerDivide3D::addCalcPoint(const size_t i,const size_t j,
-		     const size_t k,
-		     std::string OrderSurf)
-  /*!
-    Process the string to calculate the corner points 
-    \param i :: Index 
-    \param j :: Index 
-    \param k :: Index 
-    \param OrderSurf :: Very highly order list of surface
-   */
-{
-  ELog::RegMethod RegA("LayerDivide3D","AddCalcPoint");
-  
-  int side[2];
-  int cyl[2];
-  int vert[2];
-  
-  StrFunc::section(OrderSurf,side[0]);
-  StrFunc::section(OrderSurf,side[1]);
-  StrFunc::section(OrderSurf,vert[0]);
-  StrFunc::section(OrderSurf,vert[1]);
-  StrFunc::section(OrderSurf,cyl[0]);
-  StrFunc::section(OrderSurf,cyl[1]);
-
-  Geometry::Plane* SPtr[2];
-  Geometry::Cylinder* CPtr[2];
-  Geometry::Plane* VPtr[2];
-
-  SPtr[0]=SMap.realPtr<Geometry::Plane>(side[0]);
-  SPtr[1]=SMap.realPtr<Geometry::Plane>(side[1]);
-  CPtr[0]=SMap.realPtr<Geometry::Cylinder>(cyl[0]);
-  CPtr[1]=SMap.realPtr<Geometry::Cylinder>(cyl[1]);
-  VPtr[0]=SMap.realPtr<Geometry::Plane>(vert[0]);
-  VPtr[1]=SMap.realPtr<Geometry::Plane>(vert[1]);
-
-  std::vector<Geometry::Vec3D> OutPts;
-  for(size_t i=0;i<2;i++)
-    for(size_t j=0;j<2;j++)
-      for(size_t k=0;k<2;k++)
-	OutPts.push_back(SurInter::getPoint(SPtr[0],VPtr[0],CPtr[0],Centre));
-
-  DGPtr->setPoints(i,j,k,OutPts);
-  
-  return; 
-}
-  
 
 }  // NAMESPACE ModelSupport

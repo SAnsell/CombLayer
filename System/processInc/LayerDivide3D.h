@@ -70,17 +70,8 @@ class LayerDivide3D
 			const attachSystem::FixedComp&,
 			const long int,const bool);
 
-  void createSurfaces();
-  void createLinks();
-  void createObjects(Simulation&,const attachSystem::FixedComp&,
-		     const long int);
+  
 
-  void layerProcess(Simulation&);
-
-  void createSideLinks(const Geometry::Vec3D&,const Geometry::Vec3D&,
-		       const Geometry::Vec3D&,const Geometry::Vec3D&);
-
-  void createMainWall(Simulation&);
   void addCalcPoint(const size_t,const size_t,const size_t,
 		    std::string);
   
@@ -91,7 +82,10 @@ class LayerDivide3D
   LayerDivide3D& operator=(const LayerDivide3D&);
   virtual ~LayerDivide3D();
 
+  void setSurfPair(const size_t,const int,const int);
 
+  void divideCell(Simulation&);
+    
 };
 
 }
