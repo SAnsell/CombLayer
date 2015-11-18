@@ -114,7 +114,9 @@ LayerDivide3D::processSurface(const std::pair<int,int>& WallSurf,
   ELog::RegMethod RegA("LayerDivide3D","processSurface");
 
   const Geometry::Surface* APtr=SMap.realSurfPtr(WallSurf.first);
-  const Geometry::Surface* BPtr=SMap.realSurfPtr(WallSurf.second); 
+  const Geometry::Surface* BPtr=SMap.realSurfPtr(WallSurf.second);
+  ELog::EM<<"Surf a == "<<APtr->getName()<<ELog::endDiag;
+  ELog::EM<<"Surf b == "<<BPtr->getName()<<ELog::endDiag;
   return;
 }
 
@@ -165,7 +167,14 @@ LayerDivide3D::addCalcPoint(const size_t i,const size_t j,
   return; 
 }
   
+void
+LayerDivide3D::setSurfPair(const size_t Index,
+			   const int sA,const int sB)
+{
+  ELog::RegMethod RegA("","setSurfPair");
+			  
 
+  
 void
 LayerDivide3D::divideCell(Simulation& System,const int cellN)
   /*!
@@ -183,8 +192,9 @@ LayerDivide3D::divideCell(Simulation& System,const int cellN)
     DGPtr=new DivideGrid(DB.getKey(0));
   DGPtr->loadXML(loadFile,objName);
 
-  processSurfaces();
-  
+  processSurface(AWall,ALen);
+
+
   /*  
 
   const std::string divider=
