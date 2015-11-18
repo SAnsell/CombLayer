@@ -110,13 +110,16 @@ LayerDivide3D::~LayerDivide3D()
 void
 LayerDivide3D::processSurface(const std::pair<int,int>& WallSurf,
 			      const std::vector<double>& Len)
+  /*!
+    Process the surfaces and convert them into merged layers
+   */
 {
   ELog::RegMethod RegA("LayerDivide3D","processSurface");
 
   const Geometry::Surface* APtr=SMap.realSurfPtr(WallSurf.first);
   const Geometry::Surface* BPtr=SMap.realSurfPtr(WallSurf.second);
-  ELog::EM<<"Surf a == "<<APtr->getName()<<ELog::endDiag;
-  ELog::EM<<"Surf b == "<<BPtr->getName()<<ELog::endDiag;
+  ELog::EM<<"APtr - "<<APtr->getName()<<ELog::endDiag;
+  ELog::EM<<"BPtr - "<<BPtr->getName()<<ELog::endDiag;
   return;
 }
 
@@ -167,14 +170,7 @@ LayerDivide3D::addCalcPoint(const size_t i,const size_t j,
   return; 
 }
   
-void
-LayerDivide3D::setSurfPair(const size_t Index,
-			   const int sA,const int sB)
-{
-  ELog::RegMethod RegA("","setSurfPair");
-			  
 
-  
 void
 LayerDivide3D::divideCell(Simulation& System,const int cellN)
   /*!
@@ -187,14 +183,13 @@ LayerDivide3D::divideCell(Simulation& System,const int cellN)
 
   ModelSupport::DBMaterial& DB=
     ModelSupport::DBMaterial::Instance();
-
+    processSurface(AWall,ALen);
   if (!DGPtr)
     DGPtr=new DivideGrid(DB.getKey(0));
   DGPtr->loadXML(loadFile,objName);
 
   processSurface(AWall,ALen);
-
-
+  
   /*  
 
   const std::string divider=

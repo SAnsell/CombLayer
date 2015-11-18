@@ -90,7 +90,6 @@
 #include "BunkerMainWall.h"
 #include "BunkerInsert.h"
 #include "Bunker.h"
-#include "LayerDivider3D.h"
 
 namespace essSystem
 {
@@ -280,8 +279,6 @@ Bunker::createWallSurfaces(const Geometry::Vec3D& AWall,
     Create the wall Surface if divided
   */
 {
-  ModelSupport::LayerDivide3D LD("subWall");
-  LD.setSurfPair(0,
   return;
 }
   
