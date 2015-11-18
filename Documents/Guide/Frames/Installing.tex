@@ -1,0 +1,42 @@
+\section{Installation}
+
+CombLayer is predominately written for the Linux platform using C++
+compilers that support C++11 or greater. The code is available from
+https://github.com/SAnsell/CombLayer, either as a download of a zip file or
+by cloning/pulling the git repository.
+
+\subsection{Requirments}
+
+CombLayer needs to have the Gnu Scietific Library [GSL] and the
+boost::regex system along with the STL libraries from your c++
+compiler. The GSL can be avoided with the NS flag in the make script
+but some functionality will be lost, particularly in the choice
+of variance reduction methods.
+
+Additionally, the primary build system uses cmake. There is another
+that just uses make but is significantly more time-consuming.
+
+Functional documentation is supported using Doxygen and the construction
+of new cmake text files can be done via PERL scripts.
+
+Currenly it is know that gcc version 4.6 and above can compile
+CombLayer as can clang (all tested versions). gcc 4.4 which is often
+the default on RedHat systems (2015) does not work.
+
+\subsection{Basic build method}
+
+If a clean directory is made and then the .zip file is uncompressed, the
+following commands should build a version of CombLayer.
+
+\begin{verbatim}
+./CMake.pl
+cmake ./
+make
+\end{verbatim}
+
+This should make a number of executables, e.g. ess / simple etc. These
+can be used to make a simple model with commands like {\it ./simple -r
+AA}. This will produce ans output file AA1.x which is an MCNP model.
+
+
+

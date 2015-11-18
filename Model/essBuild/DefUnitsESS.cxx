@@ -84,9 +84,9 @@ setDefUnits(FuncDataBase& Control,
 	  ELog::EM<<"Options : "<<ELog::endDiag;
 	  ELog::EM<<"  Main : Everything that works"<<ELog::endDiag;
 	  ELog::EM<<"  PortsOnly  : Nothing beyond beamport "<<ELog::endDiag;
-	  ELog::EM<<"  Test  : Single beamline [for BL devel] "<<ELog::endDiag;
-	  throw ColErr::InContainerError<std::string>
-	    (Key,"Iparam.defaultConfig");	  
+	  ELog::EM<<"  Single  beamLine : Single beamline [for BL devel] "
+		  <<ELog::endDiag;
+	  throw ColErr::ExitAbort("Iparam.defaultConfig");	  
 	}
       else 
 	{
@@ -116,15 +116,19 @@ setESSFull(defaultConfig& A)
   A.setOption("lowWaterDisk","On");
   A.setOption("topWaterDisk","On");
   A.setOption("topWaterDisk","On");
+
   A.setMultiOption("beamlines",0,"G1BLine1 ODIN");
   A.setMultiOption("beamlines",1,"G1BLine3 LOKI");
   A.setMultiOption("beamlines",2,"G1BLine5 NMX");
   A.setMultiOption("beamlines",3,"G1BLine6 VOR");
+  A.setMultiOption("beamlines",4,"G4BLine19 DREAM");
 
   A.setVar("G1BLine1Active",1);
   A.setVar("G1BLine3Active",1);
   A.setVar("G1BLine5Active",1);
   A.setVar("G1BLine6Active",1);
+
+  A.setVar("G4BLine19Active",1);
 
   return;
 }
@@ -153,35 +157,52 @@ setESSSingle(defaultConfig& A,const std::string& beamItem)
     Default configuration for ESS for testing single beamlines
     for building
     \param A :: Paramter for default config
+    \parma beamItem :: Additional value for beamline name
    */
 {
   ELog::RegMethod RegA("DefUnitsESS[F]","setESS");
 
+  
   A.setOption("lowMod","Butterfly");
+
   
   if (beamItem=="NMX")
-    A.setMultiOption("beamlines",0,"G4BLine17 NMX");
+    {
+      A.setMultiOption("beamlines",0,"G4BLine17 NMX");
+      A.setVar("G4BLine17Active",1);
+      A.setVar("G4BLine17Filled",1);
+    }
   else if (beamItem=="DREAM")
-    A.setMultiOption("beamlines",0,"G4BLine11 DREAM");
+    {
+      A.setMultiOption("beamlines",0,"G4BLine19 DREAM");
+      A.setVar("G4BLine19Active",1);
+      A.setVar("G4BLine19Filled",1);
+    }
   else if (beamItem=="VOR")
-    A.setMultiOption("beamlines",0,"G1BLine5 VOR");
+    {
+      A.setMultiOption("beamlines",0,"G1BLine5 VOR");
+      A.setVar("G1BLine5Active",1);
+    }      
   else if (beamItem=="LOKI")
-    A.setMultiOption("beamlines",0,"G4BLine4 LOKI");
+    {
+      A.setMultiOption("beamlines",0,"G4BLine4 LOKI");
+      A.setVar("G4BLine4Active",1);
+    }
   else if (beamItem=="ESTIA")
-    A.setMultiOption("beamlines",0,"G4BLine11 ESTIA");
+    {
+      A.setMultiOption("beamlines",0,"G4BLine11 ESTIA");
+      A.setVar("G4BLine11Active",1);
+    }
+  else if (beamItem=="ODIN")
+    {
+      A.setMultiOption("beamlines",0,"G1BLine1 ODIN");
+      A.setVar("G1BLine1Active",1);
+    }
   else
     throw ColErr::InContainerError<std::string>(beamItem,"BeamItem");
-    
-  A.setVar("G4BLine4Active",1);
-  A.setVar("G4BLine4Filled",1);
 
-  // DREAM
-  A.setVar("G4BLine17Filled",1);
-  A.setVar("G4BLine17Active",1);
-  A.setVar("G4BLine11Filled",1);
-  A.setVar("G4BLine11Active",1);
-  A.setVar("G1BLine5Active",1);
-  A.setVar("G1BLine5Filled",1);
+  // ODIN
+
   
   ELog::EM<<"TEST of "<<beamItem<<" Only "<<ELog::endDiag;
   return;
@@ -202,9 +223,13 @@ setESS(defaultConfig& A)
   A.setMultiOption("beamlines",1,"G4BLine4 LOKI");
   A.setMultiOption("beamlines",2,"G4BLine7 VOR");
   A.setMultiOption("beamlines",3,"G4BLine12 NMX");
-  A.setMultiOption("beamlines",4,"G4BLine17 DREAM");
+  A.setMultiOption("beamlines",4,"G4BLine19 DREAM");
 
   // odin : No action
+
+  // ODIN
+  //  A.setVar("G4BLine4Active",1);  
+  //  A.setVar("G4BLine4Filled",1);
 
   // LOKI
   A.setVar("G4BLine4Active",1);  
@@ -219,8 +244,8 @@ setESS(defaultConfig& A)
   A.setVar("G4BLine12Filled",1);
 
   // DREAM
-  A.setVar("G4BLine17Filled",1);
-  A.setVar("G4BLine17Active",1);
+  A.setVar("G4BLine19Filled",1);
+  A.setVar("G4BLine19Active",1);
   
   return;
 }

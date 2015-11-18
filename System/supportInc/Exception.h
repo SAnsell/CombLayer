@@ -74,7 +74,7 @@ class ExBase : public std::exception
   const std::string& getErr() const { return ErrLn; }
 };
 
-
+ 
 /*!
   \class IndexError
   \brief Exception for index errors
@@ -83,7 +83,6 @@ class ExBase : public std::exception
   \version 1.0
 
   Called when an index falls out of range
-
 */
 template<typename T>
 class IndexError : public ExBase
@@ -101,6 +100,35 @@ class IndexError : public ExBase
   IndexError(const IndexError& A);
   IndexError& operator=(const IndexError&);
   virtual ~IndexError() throw() {}   ///< Destructor 
+
+};
+
+
+/*!
+  \class SizeError
+  \brief Exception for index errors
+  \author Stuart Ansell
+  \date November 2015
+  \version 1.0
+
+  Called when an index falls out of range
+*/
+template<typename T>
+class SizeError : public ExBase
+{
+ private:
+
+  const T Val;     ///< Actual value called 
+  const T minVal;  ///< Minimum value
+
+  void setOutLine();
+
+ public:
+
+  SizeError(const T&,const T&,const std::string&);
+  SizeError(const SizeError& A);
+  SizeError& operator=(const SizeError&);
+  virtual ~SizeError() throw() {}   ///< Destructor 
 
 };
 

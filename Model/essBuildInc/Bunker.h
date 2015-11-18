@@ -26,7 +26,9 @@ class Simulation;
 
 namespace essSystem
 {
-
+  class BunkerMainWall;
+  class BunkerInsert;
+  
 /*!
   \class Bunker
   \version 1.0
@@ -36,7 +38,8 @@ namespace essSystem
 */
 
 class Bunker : public attachSystem::ContainedComp,
-  public attachSystem::FixedComp,public attachSystem::CellMap
+  public attachSystem::FixedComp,
+  public attachSystem::CellMap
 {
  private:
    
@@ -45,7 +48,6 @@ class Bunker : public attachSystem::ContainedComp,
 
   bool leftWallFlag;            ///< Build left wall
   bool rightWallFlag;           ///< Build right wall
-  
   
   Geometry::Vec3D rotCentre;    ///< Rotation centre
 
@@ -56,8 +58,32 @@ class Bunker : public attachSystem::ContainedComp,
   double leftAngle;              ///< Extent of left angle
   double rightAngle;             ///< Extent of right ange
 
+
+  // MAIN WALL
+  
   size_t nSectors;               ///< Number of sector divisions
   std::vector<double> sectPhase; ///< sector angles
+  
+  size_t nVert;                  ///< Number of vertical divisions
+  std::vector<double> vertFrac;  ///< Vertical fraction
+
+  size_t nLayers;                ///< number of outgoing layers
+  std::vector<double> wallFrac;  ///< thicknesss (fractions)
+
+  // ROOF
+  size_t nRoof;                  ///< number of layers
+  std::vector<double> roofFrac;  ///< guide Layer thicknesss (fractions)
+  std::vector<int> roofMatVec;   ///< guide Layer thicknesss (fractions)
+
+  // SIDES:
+  int sideFlag;                      ///< Which sides are divided [left/right]
+  size_t nSide;                      ///< number of side layers
+  std::vector<double> sideFrac;      ///< guide Layer thicknesss (fractions)
+  size_t nSideVert;                  ///< number of side vert layers
+  std::vector<double> sideVertFrac;  ///< side vert thicknesss (fractions)
+  size_t nSideThick;                 ///< layers going low R to high R
+  std::vector<double> sideThickFrac; ///< side low-high thicknesss (fractions)
+
   
   double innerRadius;            ///< inner radius [calculated]
   double wallRadius;             ///< Wall radius
@@ -71,12 +97,20 @@ class Bunker : public attachSystem::ContainedComp,
 
   int voidMat;                   ///< void material 
   int wallMat;                   ///< wall material
+  int roofMat;                   ///< roof material
 
-  // Layers
-  size_t nLayers;                ///< number of layers
-  std::vector<double> wallFrac;  ///< guide Layer thicknesss (fractions)
-  std::vector<int> wallMatVec;   ///< guide Layer materials
-  
+  double midZ;                   ///< Mid z point
+
+  // Bunker Material distribution:
+  std::string loadFile;            ///< Bunker input file
+  std::string outFile;             ///< Bunker output file
+  BunkerMainWall* BMWPtr;          ///< Bunker main wall
+
+  BunkerMainWall* BLeftPtr;          ///< Bunker side wall
+  BunkerMainWall* BRightPtr;          ///< Bunker side wall
+
+  void createWallSurfaces(const Geometry::Vec3D&,
+			  const Geometry::Vec3D&);
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
@@ -92,6 +126,11 @@ class Bunker : public attachSystem::ContainedComp,
 
   void createSideLinks(const Geometry::Vec3D&,const Geometry::Vec3D&,
 		       const Geometry::Vec3D&,const Geometry::Vec3D&);
+
+  void createMainWall(Simulation&);
+  void addCalcPoint(const size_t,const size_t,const size_t,
+		    std::string);
+  void joinWall(Simulation&);
   
  public:
 
@@ -105,7 +144,8 @@ class Bunker : public attachSystem::ContainedComp,
 			  const Geometry::Vec3D&) const;
   
   void setCutWall(const bool,const bool);
-  
+
+  void cutInsert(Simulation&,const BunkerInsert&) const;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const attachSystem::FixedComp&,
 		 const long int,const bool);

@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   process/defaultConfig.cxx
  *
@@ -202,8 +202,11 @@ defaultConfig::process(FuncDataBase& Control,
 
   // Multi set
   for(const TTYPE& TI : multiSet)
-    IParam.setMultiValue(std::get<0>(TI),std::get<1>(TI),
-		      std::get<2>(TI));
+    {
+      if (!IParam.flag(std::get<0>(TI)))
+	IParam.setMultiValue(std::get<0>(TI),std::get<1>(TI),
+			     std::get<2>(TI));
+    }
 
   return;
 }

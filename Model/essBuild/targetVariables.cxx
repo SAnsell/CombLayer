@@ -1,0 +1,333 @@
+/********************************************************************* 
+  CombLayer : MCNP(X) Input builder
+ 
+ * File:   essBuild/targetVariables.cxx
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell/Konstantin Batkov
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ *
+ ****************************************************************************/
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
+#include <cmath>
+#include <complex>
+#include <list>
+#include <vector>
+#include <set>
+#include <map>
+#include <string>
+#include <algorithm>
+#include <iterator>
+#include <memory>
+
+#include "Exception.h"
+#include "FileReport.h"
+#include "NameStack.h"
+#include "RegMethod.h"
+#include "GTKreport.h"
+#include "OutputLog.h"
+#include "support.h"
+#include "stringCombine.h"
+#include "MatrixBase.h"
+#include "Matrix.h"
+#include "Vec3D.h"
+#include "Code.h"
+#include "varList.h"
+#include "FuncDataBase.h"
+#include "variableSetup.h"
+
+namespace setVariable
+{
+
+void
+EssWheel(FuncDataBase& Control)
+  /*!
+    Variables that are used for the segmented wheel
+    \param Control :: Segment variables
+   */
+{
+  Control.addVariable("BilbaoWheelEngineeringActive", 1);
+  Control.addVariable("BilbaoWheelShaftHeight",435.0);
+
+  Control.addVariable("BilbaoWheelNShaftLayers",5);
+  Control.addVariable("BilbaoWheelShaftRadius1",14.0);
+  Control.addVariable("BilbaoWheelShaftMat1","Iron");
+  Control.addVariable("BilbaoWheelShaftRadius2",15.0);
+  Control.addVariable("BilbaoWheelShaftMat2","Iron");
+  Control.addVariable("BilbaoWheelShaftRadius3",17.0);
+  Control.addVariable("BilbaoWheelShaftMat3",0);
+  Control.addVariable("BilbaoWheelShaftRadius4",20.0);
+  Control.addVariable("BilbaoWheelShaftMat4","Iron");
+  Control.addVariable("BilbaoWheelShaftRadius5",22.0);
+  Control.addVariable("BilbaoWheelShaftMat5",0);
+
+
+
+  Control.addVariable("BilbaoWheelXStep",0.0);
+  Control.addVariable("BilbaoWheelYStep",112.0);
+  Control.addVariable("BilbaoWheelZStep",0.0);
+  Control.addVariable("BilbaoWheelXYangle",5.0);
+  Control.addVariable("BilbaoWheelZangle",0.0);
+  Control.addVariable("BilbaoWheelTargetHeight",8.0);
+  Control.addVariable("BilbaoWheelVoidTungstenThick", 0.1);
+  Control.addVariable("BilbaoWheelSteelTungstenThick", 0.2);
+  Control.addVariable("BilbaoWheelTemp",300.0);
+  Control.addVariable("BilbaoWheelCoolantThick",0.5);
+  Control.addVariable("BilbaoWheelCaseThick",1.0);
+  Control.addVariable("BilbaoWheelCaseThickIn",1.5);
+  Control.addVariable("BilbaoWheelVoidThick",0.7);
+
+  Control.addVariable("BilbaoWheelInnerRadius",45);
+  Control.addVariable("BilbaoWheelCoolantRadiusIn",64.07);
+  Control.addVariable("BilbaoWheelCoolantRadiusOut",128.95);
+  Control.addVariable("BilbaoWheelCaseRadius",129.15);
+  Control.addVariable("BilbaoWheelVoidRadius",131.15);
+  Control.addVariable("BilbaoWheelAspectRatio", 0.00138);
+  Control.addVariable("BilbaoWheelNSectors", 36);
+  Control.addVariable("BilbaoWheelSectorSepThick", 1.0);
+  Control.addVariable("BilbaoWheelSectorSepMat", "SS316L785");
+
+  Control.addVariable("BilbaoWheelWMat","Tungsten151");
+  Control.addVariable("BilbaoWheelSteelMat","SS316L785");
+  Control.addVariable("BilbaoWheelHeMat","Helium");
+  Control.addVariable("BilbaoWheelSS316LVoidMat","M2644"); // !!! use appropriate name
+  Control.addVariable("BilbaoWheelInnerMat","SS316L785");
+
+  Control.addVariable("BilbaoWheelNLayers",3);
+
+  Control.addVariable("BilbaoWheelRadius1",48);
+  Control.addVariable("BilbaoWheelMatTYPE1",1); // SS316L
+
+  Control.addVariable("BilbaoWheelRadius2",85.0);
+  Control.addVariable("BilbaoWheelMatTYPE2",1);
+
+  Control.addVariable("BilbaoWheelRadius3",125.0);
+  Control.addVariable("BilbaoWheelMatTYPE3",3);
+
+
+
+ 
+  Control.addVariable("WheelShaftNLayers",3);
+  Control.addVariable("WheelShaftHeight",435.0);
+  Control.addVariable("WheelShaftRadius",32.0);
+  Control.addVariable("WheelShaftCoolThick",1.0);
+  Control.addVariable("WheelShaftCladThick",0.5);
+  Control.addVariable("WheelShaftVoidThick",0.8);
+
+  Control.addVariable("WheelCladShaftMat","Iron");
+  Control.addVariable("WheelMainShaftMat","Iron");
+
+  Control.addVariable("WheelXStep",0.0);  
+  Control.addVariable("WheelYStep",113.0);  
+  Control.addVariable("WheelZStep",0.0);
+  Control.addVariable("WheelXYangle",0.0); 
+  Control.addVariable("WheelZangle",0.0);
+  Control.addVariable("WheelTargetHeight",8.0);
+  Control.addVariable("WheelTemp",600.0);
+  Control.addVariable("WheelCoolantThickIn",0.65);
+  Control.addVariable("WheelCoolantThickOut",0.15);
+  Control.addVariable("WheelCaseThick",0.5);
+  Control.addVariable("WheelVoidThick",1.0);
+
+  Control.addVariable("WheelInnerRadius",84.27);
+  Control.addVariable("WheelCoolantRadiusIn",114.5);
+  Control.addVariable("WheelCoolantRadiusOut",124.8);
+  Control.addVariable("WheelCaseRadius",125.0);
+  Control.addVariable("WheelVoidRadius",126.0);
+
+  Control.addVariable("WheelWMat","Tungsten");
+  Control.addVariable("WheelSteelMat","SS316L");
+  Control.addVariable("WheelHeMat",0);
+  Control.addVariable("WheelInnerMat","SS316L");
+
+  Control.addVariable("WheelNLayers",24);
+
+  Control.addVariable("WheelRadius1",85.65);
+  Control.addVariable("WheelMatTYPE1",2);
+
+  Control.addVariable("WheelRadius2",97.02);
+  Control.addVariable("WheelMatTYPE2",3);
+
+  Control.addVariable("WheelRadius3",97.52);
+  Control.addVariable("WheelMatTYPE3",2);
+
+  Control.addVariable("WheelRadius4",102.37);
+  Control.addVariable("WheelMatTYPE4",3);
+
+  Control.addVariable("WheelRadius5",102.77);    // WRONG
+  Control.addVariable("WheelMatTYPE5",2);
+
+  Control.addVariable("WheelRadius6",106.97);
+  Control.addVariable("WheelMatTYPE6",3);
+
+  Control.addVariable("WheelRadius7",107.29);
+  Control.addVariable("WheelMatTYPE7",2);
+
+  Control.addVariable("WheelRadius8",110.49);
+  Control.addVariable("WheelMatTYPE8",3);
+
+  Control.addVariable("WheelRadius9",110.78);
+  Control.addVariable("WheelMatTYPE9",2);
+
+  Control.addVariable("WheelRadius10",112.78);
+  Control.addVariable("WheelMatTYPE10",3);
+
+  Control.addVariable("WheelRadius11",113.05);
+  Control.addVariable("WheelMatTYPE11",2);
+
+  Control.addVariable("WheelRadius12",114.65);
+  Control.addVariable("WheelMatTYPE12",3); 
+
+  Control.addVariable("WheelRadius13",114.9);
+  Control.addVariable("WheelMatTYPE13",2); 
+
+  Control.addVariable("WheelRadius14",116.5);
+  Control.addVariable("WheelMatTYPE14",3); 
+
+  Control.addVariable("WheelRadius15",116.75);
+  Control.addVariable("WheelMatTYPE15",2); 
+
+  Control.addVariable("WheelRadius16",118.35);
+  Control.addVariable("WheelMatTYPE16",3); 
+
+  Control.addVariable("WheelRadius17",118.6);
+  Control.addVariable("WheelMatTYPE17",2); 
+
+  Control.addVariable("WheelRadius18",120);
+  Control.addVariable("WheelMatTYPE18",3); 
+
+  Control.addVariable("WheelRadius19",120.25);
+  Control.addVariable("WheelMatTYPE19",2); 
+
+  Control.addVariable("WheelRadius20",121.65);
+  Control.addVariable("WheelMatTYPE20",3); 
+
+  Control.addVariable("WheelRadius21",121.9);
+  Control.addVariable("WheelMatTYPE21",2); 
+
+  Control.addVariable("WheelRadius22",123.1);
+  Control.addVariable("WheelMatTYPE22",3); 
+
+  Control.addVariable("WheelRadius23",123.35);
+  Control.addVariable("WheelMatTYPE23",2); 
+
+  Control.addVariable("WheelRadius24",124.55);
+  Control.addVariable("WheelMatTYPE24",3); 
+
+  
+  return;
+}
+
+void
+EssProtonBeam(FuncDataBase& Control)
+  /*!
+    Set proton beam variables
+    \param Control :: DataBase for variables
+  */
+{
+  Control.addVariable("ProtonTubeXStep",0.0);  
+  Control.addVariable("ProtonTubeYStep",0.0);  
+  Control.addVariable("ProtonTubeZStep",0.0);
+  Control.addVariable("ProtonTubeXYangle",0.0); 
+  Control.addVariable("ProtonTubeZangle",0.0);
+
+  Control.addVariable("ProtonTubeNSection",4);
+
+  Control.addVariable("ProtonTubeRadius1",11.5);
+  Control.addVariable("ProtonTubeLength1",120.0); //from mod centre leftside
+  Control.addVariable("ProtonTubeZcut1",5.35); //cut Z planes
+  Control.addVariable("ProtonTubeWallThick1",0.0);
+  Control.addVariable("ProtonTubeInnerMat1","helium");  // mat : 2000
+  Control.addVariable("ProtonTubeWallMat1","CastIron"); // mat : 26316
+
+  Control.addVariable("ProtonTubeRadius2",10.5);
+  Control.addVariable("ProtonTubeLength2",200.0);
+  Control.addVariable("ProtonTubeZcut2",0.0); 
+  Control.addVariable("ProtonTubeWallThick2",1.0);
+  Control.addVariable("ProtonTubeInnerMat2","helium");  // mat : 2000
+  Control.addVariable("ProtonTubeWallMat2","CastIron"); // mat : 26316
+
+  Control.addVariable("ProtonTubeRadius3",10.5);
+  Control.addVariable("ProtonTubeLength3",127.5);
+  Control.addVariable("ProtonTubeZcut3",0.0);
+  Control.addVariable("ProtonTubeWallThick3",1.0);
+  Control.addVariable("ProtonTubeInnerMat3","helium");   // mat : 2000
+  Control.addVariable("ProtonTubeWallMat3","CastIron");  // mat : 26316
+
+  Control.addVariable("ProtonTubeRadius4",10.5);
+  // Control.addVariable("ProtonTubeLength4",147.5);
+  Control.addVariable("ProtonTubeLength4",152.5);
+  Control.addVariable("ProtonTubeZcut4",0.0);
+  Control.addVariable("ProtonTubeWallThick4",1.0);
+  Control.addVariable("ProtonTubeInnerMat4","Void");
+  Control.addVariable("ProtonTubeWallMat4","CastIron");  // mat: 26316
+
+
+  Control.addVariable("BeamMonitorXStep",0.0);
+  Control.addVariable("BeamMonitorYStep",450.0);
+  Control.addVariable("BeamMonitorZStep",0.0);
+  Control.addVariable("BeamMonitorXYangle",0.0);
+  Control.addVariable("BeamMonitorZangle",0.0);
+  
+  Control.addVariable("BeamMonitorBoxSide",70.0);
+  Control.addVariable("BeamMonitorBoxNSections",5); //other are symmetric
+
+  Control.addVariable("BeamMonitorBoxRadius1",11.5);
+  Control.addVariable("BeamMonitorBoxThick1",2.5);
+  Control.addVariable("BeamMonitorBoxMat1","helium");  // mat:2000
+  Control.addVariable("BeamMonitorBoxRadius2",32.5);
+  Control.addVariable("BeamMonitorBoxThick2",10.0);
+  Control.addVariable("BeamMonitorBoxMat2","CastIron");  // mat: 26000
+  Control.addVariable("BeamMonitorBoxRadius3",20.0);
+  Control.addVariable("BeamMonitorBoxThick3",2.5);
+  Control.addVariable("BeamMonitorBoxMat3","CastIron");  // mat 26316
+  Control.addVariable("BeamMonitorBoxRadius4",17.5);
+  Control.addVariable("BeamMonitorBoxThick4",17.5);
+  Control.addVariable("BeamMonitorBoxMat4","CastIron");  // mat 26316
+  Control.addVariable("BeamMonitorBoxRadius5",25.0);
+  Control.addVariable("BeamMonitorBoxThick5",5.0);
+  Control.addVariable("BeamMonitorBoxMat5","Aluminium");  // mat 13060
+
+  Control.addVariable("BeamMonitorBoxSide5",50.0);
+  Control.addVariable("BeamMonitorBoxHeightA5",14.60);
+  Control.addVariable("BeamMonitorBoxHeightB5",8.60);
+  Control.addVariable("BeamMonitorBoxHeightC5",7.5);
+  Control.addVariable("BeamMonitorBoxHeightD5",7.0);
+
+  Control.addVariable("BeamMonitorBoxWidthA5",21.40);
+  Control.addVariable("BeamMonitorBoxWidthB5",20.30);
+  Control.addVariable("BeamMonitorBoxWidthC5",19.80);
+
+  Control.addVariable("BeamMonitorBoxThickA5",3.2);
+  Control.addVariable("BeamMonitorBoxThickB5",0.5);
+  Control.addVariable("BeamMonitorBoxThickC5",0.2);
+
+  Control.addVariable("BeamMonitorBoxTubeN",33);
+  Control.addVariable("BeamMonitorBoxTubeRadius",0.27);
+  Control.addVariable("BeamMonitorBoxTubeThick",0.03);
+
+  // Control.addVariable("BeamMonitorBoxTubeThick",0.03);
+  Control.addVariable("BeamMonitorBoxTubeHeMat","helium");
+  Control.addVariable("BeamMonitorBoxTubeAlMat","Aluminium");
+  Control.addVariable("BeamMonitorBoxExtHeMat","helium");
+
+
+  Control.addVariable("ProtonBeamViewRadius",4.0);
+  return;
+}
+  
+}  // NAMESPACE setVariable

@@ -170,6 +170,45 @@ BunkerInsert::createSurfaces()
 
   return;
 }
+  
+int
+BunkerInsert::objectCut(const std::vector<Geometry::Vec3D>& Corners) const
+  /*!
+    Determine if Pts are within or within completely the bunker unit
+    \param Pts :: Point to check
+    \retval 0 :: No intercept
+    \retval -1 :: Partial inside
+    \retval 1 :: Full inside 
+   */
+{
+  ELog::RegMethod RegA("BunkerInsert","objectCut");
+
+  int good(0);
+  int fail(0);
+  for(const Geometry::Vec3D& Pt : Corners)
+    {
+      if (outCut.isValid(Pt))
+	good=1;
+      else
+	fail=1;
+      if (good & fail) return -1;
+    }
+  return (!fail) ? 1 : 0;
+}
+
+void
+BunkerInsert::addCalcPoint()
+  /*!
+    Process the string to calculate the corner points 
+   */
+{
+  ELog::RegMethod RegA("BunkerInsert","addCalcPoint");
+
+  std::vector<Geometry::Vec3D> Pts;
+  outCut.calcSurfSurfIntersection(Pts);
+  ELog::EM<<"CALLED addCalPoint"<<ELog::endDiag;
+  return; 
+}
 
   
 void
@@ -194,11 +233,15 @@ BunkerInsert::createObjects(Simulation& System,
   
   Out=ModelSupport::getComposite(SMap,insIndex," 1 13 -14 15 -16 ");
   addOuterSurf(Out);
+
+  // Create cut unit:
+  Out=ModelSupport::getComposite(SMap,insIndex," 13 -14 15 -16 ");
+  outCut.procString(Out+BCell);
+  outCut.populateSurf();
   
+
   return;
 }
-
-
   
 void
 BunkerInsert::createLinks(const attachSystem::FixedComp& BUnit)
@@ -242,7 +285,7 @@ void
 BunkerInsert::createAll(Simulation& System,
 			const attachSystem::FixedComp& FC,
 			const long int orgIndex,
-			const Bunker& bunkerObj)
+			const attachSystem::FixedComp& bunkerObj)
 
 /*!
     Generic function to create everything

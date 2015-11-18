@@ -71,16 +71,26 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "CellMap.h"
+#include "MXcards.h"
+#include "Zaid.h"
+#include "Material.h"
+#include "DBMaterial.h"
+
 #include "surfDBase.h"
 #include "surfDIter.h"
 #include "surfDivide.h"
 #include "SurInter.h"
+
 #include "mergeTemplate.h"
 
 #include "World.h"
+#include "BunkerMainWall.h"
+#include "BunkerInsert.h"
 #include "Bunker.h"
+#include "LayerDivider3D.h"
 
 namespace essSystem
 {
@@ -88,8 +98,9 @@ namespace essSystem
 Bunker::Bunker(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::FixedComp(Key,12),
   attachSystem::CellMap(),
-  bnkIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(bnkIndex+1),leftWallFlag(1),rightWallFlag(1)
+  bnkIndex(ModelSupport::objectRegister::Instance().cell(Key,-1,20000)),
+  cellIndex(bnkIndex+1),leftWallFlag(1),rightWallFlag(1),
+  BMWPtr(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -104,13 +115,16 @@ Bunker::Bunker(const Bunker& A) :
   rotCentre(A.rotCentre),leftPhase(A.leftPhase),
   rightPhase(A.rightPhase),leftAngle(A.leftAngle),
   rightAngle(A.rightAngle),nSectors(A.nSectors),
+  sectPhase(A.sectPhase),nVert(A.nVert),vertFrac(A.vertFrac),
+  nLayers(A.nLayers),wallFrac(A.wallFrac),
   innerRadius(A.innerRadius),wallRadius(A.wallRadius),
   floorDepth(A.floorDepth),roofHeight(A.roofHeight),
   wallThick(A.wallThick),sideThick(A.sideThick),
   roofThick(A.roofThick),floorThick(A.floorThick),
   voidMat(A.voidMat),wallMat(A.wallMat),
-  nLayers(A.nLayers),wallFrac(A.wallFrac),
-  wallMatVec(A.wallMatVec)
+  loadFile(A.loadFile),
+  outFile(A.outFile),
+  BMWPtr((A.BMWPtr) ? new BunkerMainWall(*A.BMWPtr) : 0)
   /*!
     Copy constructor
     \param A :: Bunker to copy
@@ -139,6 +153,11 @@ Bunker::operator=(const Bunker& A)
       leftAngle=A.leftAngle;
       rightAngle=A.rightAngle;
       nSectors=A.nSectors;
+      sectPhase=A.sectPhase;
+      nVert=A.nVert;
+      vertFrac=A.vertFrac;
+      nLayers=A.nLayers;
+      wallFrac=A.wallFrac;
       innerRadius=A.innerRadius;
       wallRadius=A.wallRadius;
       floorDepth=A.floorDepth;
@@ -149,13 +168,10 @@ Bunker::operator=(const Bunker& A)
       floorThick=A.floorThick;
       voidMat=A.voidMat;
       wallMat=A.wallMat;
-      nLayers=A.nLayers;
-      wallFrac=A.wallFrac;
-      wallMatVec=A.wallMatVec;
+      *BMWPtr= *A.BMWPtr;
     }
   return *this;
 }
-
 
 Bunker::~Bunker() 
   /*!
@@ -177,10 +193,6 @@ Bunker::populate(const FuncDataBase& Control)
   leftAngle=Control.EvalVar<double>(keyName+"LeftAngle");
   rightAngle=Control.EvalVar<double>(keyName+"RightAngle");
 
-  nSectors=Control.EvalVar<size_t>(keyName+"NSectors");
-  ModelSupport::populateRange(Control,nSectors+1,keyName+"SectAngle",
-			      leftPhase,rightPhase,sectPhase);
-
   wallRadius=Control.EvalVar<double>(keyName+"WallRadius");
   floorDepth=Control.EvalVar<double>(keyName+"FloorDepth");
   roofHeight=Control.EvalVar<double>(keyName+"RoofHeight");
@@ -192,13 +204,46 @@ Bunker::populate(const FuncDataBase& Control)
 
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
+  roofMat=ModelSupport::EvalMat<int>(Control,keyName+"RoofMat");
 
+  
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");
+  ModelSupport::populateAddRange(Control,nLayers,keyName+"WallLen",
+  			      wallRadius,wallRadius+wallThick,wallFrac);
 
-  ModelSupport::populateDivide(Control,nLayers,keyName+"WallMat",
-			       wallMat,wallMatVec);
-  ModelSupport::populateDivideLen(Control,nLayers,keyName+"WallLen",
-				  wallThick,wallFrac);
+  nSectors=Control.EvalVar<size_t>(keyName+"NSectors");
+  ModelSupport::populateRange(Control,nSectors+1,keyName+"SectAngle",
+			      leftPhase,rightPhase,sectPhase);
+
+  nVert=Control.EvalVar<size_t>(keyName+"NVert");
+  midZ=Control.EvalDefVar<double>(keyName+"MidZ",0.0);
+  ModelSupport::populateQuadRange(Control,nVert,keyName+"VertLen",
+				  -floorDepth,midZ,roofHeight,vertFrac);
+
+  // SIDE LAYERS:
+
+  nSide=Control.EvalVar<size_t>(keyName+"NSide");
+  ModelSupport::populateAddRange(Control,nSide,keyName+"SideThick",
+				 0.0,sideThick,sideFrac);
+  nSideVert=Control.EvalVar<size_t>(keyName+"NSideVert");
+  ModelSupport::populateQuadRange(Control,nSideVert,keyName+"SideVert",
+				  -floorDepth,midZ,roofHeight,sideVertFrac);
+  nSideThick=Control.EvalVar<size_t>(keyName+"NSideThick");
+  ModelSupport::populateAddRange(Control,nSideVert,keyName+"SideThick",
+				 0,wallThick,sideThickFrac);
+
+
+  
+  nRoof=Control.EvalVar<size_t>(keyName+"NRoof");
+  ModelSupport::populateDivideLen(Control,nRoof,keyName+"RoofLen",
+				  roofMat,roofFrac);
+  ModelSupport::populateDivide(Control,nRoof,keyName+"RoofMat",
+			       roofMat,roofMatVec);
+
+  
+  loadFile=Control.EvalDefVar<std::string>(keyName+"LoadFile","");
+  outFile=Control.EvalDefVar<std::string>(keyName+"OutFile","");
+
   return;
 }
   
@@ -225,6 +270,18 @@ Bunker::createUnitVector(const attachSystem::FixedComp& MainCentre,
       Z*=-1;
     }
       
+  return;
+}
+
+void
+Bunker::createWallSurfaces(const Geometry::Vec3D& AWall,
+			   const Geometry::Vec3D& AWallDir) 
+  /*!
+    Create the wall Surface if divided
+  */
+{
+  ModelSupport::LayerDivide3D LD("subWall");
+  LD.setSurfPair(0,
   return;
 }
   
@@ -255,7 +312,8 @@ Bunker::createSurfaces()
   // Divider
   ModelSupport::buildPlane(SMap,bnkIndex+1,rotCentre,Y);
   ModelSupport::buildCylinder(SMap,bnkIndex+7,rotCentre,Z,wallRadius);
-    
+
+
   ModelSupport::buildPlane(SMap,bnkIndex+3,AWall,AWallDir);
   ModelSupport::buildPlane(SMap,bnkIndex+4,BWall,BWallDir);
   
@@ -288,7 +346,7 @@ Bunker::createSurfaces()
   const double phaseDiff(rightPhase-leftPhase);
   const double angleDiff(rightAngle-leftAngle);
 
-  int divIndex(bnkIndex+500);
+  int divIndex(bnkIndex+1000);
 
   double phase(leftPhase);
   double angle(leftAngle);
@@ -312,10 +370,29 @@ Bunker::createSurfaces()
       Geometry::Quaternion::calcQRotDeg(sectPhase[i]+angle,-Z).rotate(DDir);
       ModelSupport::buildPlane(SMap,divIndex,DPosition,DDir);
     }
-      
+  //
+  // VERTICAL BOUNDARY: 
+  // Planes are built on a non-even boundary:
+  // 
+  // 
+  divIndex=bnkIndex+2000;
+  for(size_t i=1;i<nVert;i++)
+    {
+      divIndex++;
+      ModelSupport::buildPlane(SMap,divIndex,Origin+Z*vertFrac[i],Z);
+    }
+  // INWARD BOUNDARY:
+  divIndex=bnkIndex+3000;
+  for(size_t i=1;i<nLayers;i++)
+    {
+      divIndex++;
+      ModelSupport::buildCylinder(SMap,divIndex,rotCentre,Z,wallFrac[i]);
+    }
   return;
 }
 
+
+  
 void
 Bunker::createSideLinks(const Geometry::Vec3D& AWall,
 			const Geometry::Vec3D& BWall,
@@ -375,55 +452,114 @@ Bunker::createObjects(Simulation& System,
   int rwIndex(bnkIndex);
   if (leftWallFlag)
     {
-      Out=ModelSupport::getComposite(SMap,bnkIndex," 1 -7 -3 13 5 -6 ");
+      Out=ModelSupport::getComposite(SMap,bnkIndex," 1 -17 -3 13 5 -6 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Inner));
       setCell("leftWall",cellIndex-1);
       lwIndex+=10;
     }
   if (rightWallFlag)
     {
-      Out=ModelSupport::getComposite(SMap,bnkIndex," 1 -7 4 -14 5 -6 ");
+      Out=ModelSupport::getComposite(SMap,bnkIndex," 1 -17 4 -14 5 -6 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Inner));
       setCell("rightWall",cellIndex-1);
       rwIndex+=10;
     }
   
   Out=ModelSupport::getComposite(SMap,bnkIndex,lwIndex,rwIndex,
-				 " 1 -7 3M -4N -5 15 ");
+				 " 1 -17 3M -4N -5 15 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Inner));
   setCell("floor",cellIndex-1);
   
   Out=ModelSupport::getComposite(SMap,bnkIndex,lwIndex,rwIndex,
-				 " 1 -7 3M -4N 6 -16 ");
+				 " 1 -17 3M -4N 6 -16 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Inner));
   setCell("roof",cellIndex-1);
-  
-  int divIndex(bnkIndex+500);
-  for(size_t i=0;i<nSectors;i++)
-    {
-      const std::string ACut=(!i) ?
-	ModelSupport::getComposite(SMap,lwIndex," 3 ") :
-	ModelSupport::getComposite(SMap,divIndex-1," 1M ");
-      const std::string BCut=(i+1 == nSectors) ?
-	ModelSupport::getComposite(SMap,rwIndex," -4 ") :
-	ModelSupport::getComposite(SMap,divIndex," -1M ");
-        Out=ModelSupport::getComposite(SMap,bnkIndex," 1 -17 7  15 -16 ");
-      Out+=ACut+BCut;
-	  
-      divIndex++;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
-      setCell("MainWall"+StrFunc::makeString(i),cellIndex-1);
-    }
+
+
+  createMainWall(System);
 
 
   // External
   Out=ModelSupport::getComposite(SMap,bnkIndex,lwIndex,rwIndex,
 				 " 1 -17 3M -4N 15 -16 ");
-  addOuterSurf(Out);
+  addOuterSurf(Out+Inner);
         
   return;
 }
 
+
+void
+Bunker::createMainWall(Simulation& System)
+  /*!
+    Create a tesselated main wall
+  */
+{
+  ELog::RegMethod RegA("Bunker","createMainWall");
+
+  ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();
+
+  if (!BMWPtr)
+    BMWPtr=new BunkerMainWall(DB.getKey(wallMat));
+  BMWPtr->loadXML(loadFile);
+  
+  const int lwIndex(bnkIndex);  // index for wall 
+  const int rwIndex(bnkIndex);
+
+  const std::string divider=
+    ModelSupport::getComposite(SMap,bnkIndex," 1 ");
+  std::string Out;
+  int secIndex(bnkIndex+1000);
+
+  for(size_t i=0;i<nSectors;i++)
+    {
+      const std::string ACut=(!i) ?
+	ModelSupport::getComposite(SMap,lwIndex," 3 ") :
+	ModelSupport::getComposite(SMap,secIndex-1," 1 ");
+      const std::string BCut=(i+1 == nSectors) ?
+	ModelSupport::getComposite(SMap,rwIndex," -4 ") :
+	ModelSupport::getComposite(SMap,secIndex," -1 ");
+      secIndex++;
+
+      int vertIndex(bnkIndex+2000);
+      for(size_t j=0;j<nVert;j++)
+	{
+	  const std::string AVert=(!j) ?
+	    ModelSupport::getComposite(SMap,bnkIndex," 5 ") :
+	    ModelSupport::getComposite(SMap,vertIndex-1," 1 ");
+	  const std::string BVert=(j+1 == nVert) ?
+	    ModelSupport::getComposite(SMap,bnkIndex," -6 ") :
+	    ModelSupport::getComposite(SMap,vertIndex," -1 ");
+	  vertIndex++;  // +1 already in system due to 1M
+
+	  
+	  int wallIndex(bnkIndex+3000);
+	  for(size_t k=0;k<nLayers;k++)
+	    {
+	      const std::string AWall=(!k) ?
+		ModelSupport::getComposite(SMap,bnkIndex," 7 ") :
+		ModelSupport::getComposite(SMap,wallIndex-1," 1 ");
+	      const std::string BWall=(k+1 == nLayers) ?
+		ModelSupport::getComposite(SMap,bnkIndex," -17 ") :
+		ModelSupport::getComposite(SMap,wallIndex," -1 ");
+	      wallIndex++;
+	      	      
+	      Out=ACut+BCut+AVert+BVert+AWall+BWall;
+	      const int Mat=BMWPtr->getMaterial(i+1,j+1,k+1,wallMat);
+	      System.addCell(MonteCarlo::Qhull(cellIndex++,Mat,0.0,
+					       Out+divider));
+	      addCell("MainWall",cellIndex-1);
+	    }
+	}
+    }
+
+  if (!outFile.empty())
+    BMWPtr->writeXML(outFile,nSectors,nVert,nLayers);
+  
+  return;
+}
+
+	  
+  
 void 
 Bunker::layerProcess(Simulation& System)
   /*!
@@ -435,45 +571,41 @@ Bunker::layerProcess(Simulation& System)
   // Steel layers
   //  layerSpecial(System);
 
-  if (nLayers>1)
+  if (nRoof>1)
     {
       std::string OutA,OutB;
       ModelSupport::surfDivide DA;
             
-      for(size_t i=1;i<nLayers;i++)
+      for(size_t i=1;i<nRoof;i++)
 	{
-	  DA.addFrac(wallFrac[i-1]);
-	  DA.addMaterial(wallMatVec[i-1]);
+	  DA.addFrac(roofFrac[i-1]);
+	  DA.addMaterial(roofMatVec[i-1]);
 	}
-      DA.addMaterial(wallMatVec.back());
+      DA.addMaterial(roofMatVec.back());
 
-      for(size_t i=0;i<nSectors;i++)
-	{
-	  // Cell Specific:
-	  const int firstCell(cellIndex);
-	  const std::string cellName("MainWall"+StrFunc::makeString(i));
-	  DA.setCellN(getCell(cellName));
-	  DA.setOutNum(cellIndex,bnkIndex+1001);
-
-	  ModelSupport::mergeTemplate<Geometry::Cylinder,
-				      Geometry::Cylinder> surroundRule;
-	  
-	  surroundRule.setSurfPair(SMap.realSurf(bnkIndex+7),
-				   SMap.realSurf(bnkIndex+17));
-	  
-	  OutA=ModelSupport::getComposite(SMap,bnkIndex," 7 ");
-	  OutB=ModelSupport::getComposite(SMap,bnkIndex," -17 ");
-	  
-	  surroundRule.setInnerRule(OutA);
-	  surroundRule.setOuterRule(OutB);
-	  
-	  DA.addRule(&surroundRule);
-	  DA.activeDivideTemplate(System);
-	  
-	  cellIndex=DA.getCellNum();
-	  removeCell(cellName);
-	  setCells(cellName,firstCell,cellIndex-1);
-	}
+      // Cell Specific:
+      const int firstCell(cellIndex);
+      DA.setCellN(getCell("roof"));
+      DA.setOutNum(cellIndex,bnkIndex+5001);
+      
+      ModelSupport::mergeTemplate<Geometry::Plane,
+				  Geometry::Plane> surroundRule;
+      
+      surroundRule.setSurfPair(SMap.realSurf(bnkIndex+6),
+			       SMap.realSurf(bnkIndex+16));
+      
+      OutA=ModelSupport::getComposite(SMap,bnkIndex," 6 ");
+      OutB=ModelSupport::getComposite(SMap,bnkIndex," -16 ");
+      
+      surroundRule.setInnerRule(OutA);
+      surroundRule.setOuterRule(OutB);
+      
+      DA.addRule(&surroundRule);
+      DA.activeDivideTemplate(System);
+      
+      cellIndex=DA.getCellNum();
+      removeCell("roof");
+      setCells("roof",firstCell,cellIndex-1);
     }
   return;
 }
@@ -559,7 +691,81 @@ Bunker::setCutWall(const bool lFlag,const bool rFlag)
   rightWallFlag=rFlag;
   return;
 }
+
+void
+Bunker::cutInsert(Simulation& System,const BunkerInsert& BI) const
+  /*!
+    Loops over all the points and cuts those that full within
+    the scope of the Insert
+    \param BI :: Insert to use
+  */
+{
+  ELog::RegMethod RegA("Bunker","cutInsert");
+
+  for(size_t i=0;i<nSectors;i++)
+    for(size_t j=0;j<nVert;j++)
+      for(size_t k=0;k<nLayers;k++)
+	{
+	  const std::vector<Geometry::Vec3D>& Pts =
+	    BMWPtr->getPoints(i,j,k);
+	  const int res=BI.objectCut(Pts);	  
+	}
+  return;
+}
+
+void
+Bunker::addCalcPoint(const size_t i,const size_t j,
+		     const size_t k,
+		     std::string OrderSurf)
+  /*!
+    Process the string to calculate the corner points 
+    \param i :: Index 
+    \param j :: Index 
+    \param k :: Index 
+    \param OrderSurf :: Very highly order list of surface
+   */
+{
+  ELog::RegMethod RegA("Bunker","AddCalcPoint");
   
+  int side[2];
+  int cyl[2];
+  int vert[2];
+  StrFunc::section(OrderSurf,side[0]);
+  StrFunc::section(OrderSurf,side[1]);
+  StrFunc::section(OrderSurf,vert[0]);
+  StrFunc::section(OrderSurf,vert[1]);
+  StrFunc::section(OrderSurf,cyl[0]);
+  StrFunc::section(OrderSurf,cyl[1]);
+
+  Geometry::Plane* SPtr[2];
+  Geometry::Cylinder* CPtr[2];
+  Geometry::Plane* VPtr[2];
+
+  SPtr[0]=SMap.realPtr<Geometry::Plane>(side[0]);
+  SPtr[1]=SMap.realPtr<Geometry::Plane>(side[1]);
+  CPtr[0]=SMap.realPtr<Geometry::Cylinder>(cyl[0]);
+  CPtr[1]=SMap.realPtr<Geometry::Cylinder>(cyl[1]);
+  VPtr[0]=SMap.realPtr<Geometry::Plane>(vert[0]);
+  VPtr[1]=SMap.realPtr<Geometry::Plane>(vert[1]);
+
+  std::vector<Geometry::Vec3D> OutPts;
+  for(size_t i=0;i<2;i++)
+    for(size_t j=0;j<2;j++)
+      for(size_t k=0;k<2;k++)
+	OutPts.push_back(SurInter::getPoint(SPtr[0],VPtr[0],CPtr[0],Origin));
+
+  BMWPtr->setPoints(i,j,k,OutPts);
+  
+  return; 
+}
+
+
+void
+Bunker::joinWall(Simulation& System)
+{
+  
+}
+
 
   
 void
@@ -572,9 +778,9 @@ Bunker::createAll(Simulation& System,
     Generic function to create everything
     \param System :: Simulation item
     \param MainCentre :: Rotatioin Centre
-    \param reverseZ :: Reverse Z direction
     \param FC :: Central origin
     \param linkIndex :: linkIndex number
+    \param reverseZ :: Reverse Z direction
   */
 {
   ELog::RegMethod RegA("Bunker","createAll");

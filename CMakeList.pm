@@ -197,7 +197,7 @@ sub setParameters
 	  $self->{cxx11}="" if ($Ostr=~/-std/);
 	}
     }
-  $self->{gsl}*=$nogsl;
+#  $self->{gsl}*=$nogsl;
 
   print STDERR "INIT Opt=",$self->{optimise},"\n";
   print STDERR "INIT Deb=",$self->{debug},"\n";
@@ -222,15 +222,8 @@ sub writeHeader
 
   
   print $DX "set(CMAKE_CXX_COMPILER ",$self->{ccomp},")\n";
-  print $DX "add_definitions(",$self->{cflag},")\n";
-
-
-
-  print $DX "add_definitions(",$self->{optimise},")\n"
-      if ($self->{optimise});
-  print $DX "add_definitions(",$self->{debug},")\n"
-      if ($self->{debug});
-
+  print $DX "set(CMAKE_CXX_FLAGS \"",$self->{cflag}.$self->{optimise}.$self->{debug},"\")\n";
+  print $DX "set(CMAKE_CXX_RELEASE_FLAGS \"",$self->{cflag}." -O2 ".$self->{debug},"\")\n";
 
   print $DX "set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ./lib)\n";
   
@@ -266,10 +259,9 @@ sub writeGLOB
   {
       my $val=$self->{srcDir}{$item};
       
-    print $DX "file(GLOB ",$item," \"\${PROJECT_SOURCE_DIR}\/",
-    $val."\/\*.cxx\")\n";
-    print $DX "add_library(lib".$item." SHARED \$\{".$item."\})\n";
-
+      print $DX "file(GLOB ",$item," \"\${PROJECT_SOURCE_DIR}\/",
+      $val."\/\*.cxx\")\n";
+      print $DX "add_library(lib".$item." SHARED \$\{".$item."\})\n";
   }
   print $DX "## END GLOBS \n\n";
 
@@ -313,7 +305,36 @@ sub writeTail
   my $pdir=`pwd`;
   $pdir=$1 if ($pdir=~/.*\/(.*)/);
 
-  my $wordString;
+  print $DX "set(ALLCXX \n";
+  foreach my $item (keys (%{$self->{srcDir}}))
+    {
+      my $val=$self->{srcDir}{$item};
+      print $DX "     \./",$val,"/*.cxx \n";
+    }
+  print $DX "     \./Main/*.cxx )\n";
+
+  print $DX "set(ALLHXX \n";
+  foreach my $item (@{$self->{incDir}})
+    {
+      print $DX "     \./",$item,"/*.h \n";
+    }
+  print $DX "      )\n";
+
+  print $DX "set(ASRC \${ALLHXX} \${ALLCXX} )\n";
+  
+## DOXYGEN
+  
+  print $DX "add_custom_target(doxygen ",
+    " COMMAND  echo \"INPUT= \" ",
+  " \`ls \${ASRC}\` | doxygen - )\n";
+
+##      " COMMAND cat Doxyfile; echo \"INPUT= \" ",
+##  	" \`ls \${ASRC}\`  | doxygen \- )\n";
+
+
+## WORDS
+
+  my $wordString;  
   print $DX "add_custom_target(words ",
     " COMMAND grep -v -e \'^[[:space:][:cntrl:]]*\$\$\' \n";
   foreach my $item (keys (%{$self->{srcDir}}))
@@ -332,8 +353,7 @@ sub writeTail
   print $DX " | wc )\n";
   print $DX "\n";
 
-  
-  
+    
   my $tarString;  
   print $DX "add_custom_target(tar ",
     " COMMAND tar zcvf \${PROJECT_SOURCE_DIR}/",$pdir.".tgz \n";

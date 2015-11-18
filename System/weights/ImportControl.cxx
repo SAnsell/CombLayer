@@ -77,6 +77,21 @@ namespace WeightSystem
 {
 
 void
+removePhysImp(Simulation& System,const std::string& pType)
+  /*!
+    Removes neutron importance
+    \param System :: Simulation
+    \param pType :: Particle type
+  */
+{
+  ELog::RegMethod RegA("ImportControl[F]","removePhysImp");
+
+  System.getPC().removePhysImp("imp",pType);
+  return;
+}
+
+  
+void
 zeroImp(Simulation& System,const int initCell,
 	const int cellRange)
   /*!

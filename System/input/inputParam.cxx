@@ -470,6 +470,38 @@ inputParam::getCntVec3D(const std::string& K,
   return IPtr->getCntVec3D(setIndex,itemIndex);
 }
 
+template<typename T>
+int
+inputParam::checkItem(const std::string& K,
+		      const size_t setIndex,
+		      const size_t itemIndex,
+		      T& Out) const
+/*!
+  Get a value based on key
+  \param K :: Key to seach
+  \param setIndex :: set Value
+  \param itemIndex :: Index value
+  \param Out :: returned value if found
+  \return 1 on success / 0 on failure
+*/
+
+{
+  ELog::RegMethod RegA("inputParam","checkItem(setIndex,index)");
+
+  const IItem* IPtr=getIndex(K);
+  if (!IPtr) return 0;
+  try
+    {
+      Out=IPtr->getObj<T>(setIndex,itemIndex);
+    }
+  catch(ColErr::IndexError<size_t>&)
+    {
+      return 0;
+    }
+  return 1;
+}
+
+  
 bool
 inputParam::compNoCaseValue(const std::string& K,
 			    const std::string& Value) const
@@ -1029,6 +1061,15 @@ template std::string inputParam::getValue(const std::string&,const size_t,const 
 template Geometry::Vec3D inputParam::getValue(const std::string&,const size_t,const size_t) const;
 
 
+template int inputParam::checkItem(const std::string&,const size_t,
+				   const size_t,double&) const;
+template int inputParam::checkItem(const std::string&,const size_t,
+				   const size_t,int&) const;
+template int inputParam::checkItem(const std::string&,const size_t,
+				   const size_t,size_t&) const;
+template int inputParam::checkItem(const std::string&,const size_t,
+				   const size_t,std::string&) const;
+  
 template double
 inputParam::getFlagDef(const std::string&,const FuncDataBase& Control,
 		       const std::string&,const size_t) const;

@@ -27,6 +27,7 @@ class FuncDataBase;
 namespace ModelSupport
 {
 
+  
 void populateDivideLen(const FuncDataBase&,const size_t,
 		       const std::string&,const double,
 		       std::vector<double>&);
@@ -40,9 +41,17 @@ void populateDivide(const FuncDataBase&,const size_t,
 void populateDivide(const FuncDataBase&,const size_t,
 		    const std::string&,const int,std::vector<int>&);
 
+ void populateAddRange(const FuncDataBase&,const size_t,
+		    const std::string&,const double,
+		    const double,std::vector<double>&);
  void populateRange(const FuncDataBase&,const size_t,
 		    const std::string&,const double,
 		    const double,std::vector<double>&);
+ void populateQuadRange(const FuncDataBase&,const size_t,
+			const std::string&,const double,
+			const double,const double,
+			std::vector<double>&);
+
 
  
 }

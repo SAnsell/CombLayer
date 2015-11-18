@@ -76,9 +76,9 @@ class Matrix : public MatrixBase<T>
   Matrix<T> operator-(const MatrixBase<T>&) const;    
 
   Matrix<T> operator*(const MatrixBase<T>&) const; 
-  Matrix<T> operator*(const T&) const;
   std::vector<T> operator*(const std::vector<T>&) const;
-
+  Matrix<T> operator*(const T&) const;
+  
   Vec3D operator*(const Vec3D&) const; 
   Matrix<T>& operator*=(const MatrixBase<T>&); 
   Matrix<T>& operator*=(const T&);             
@@ -99,7 +99,8 @@ class Matrix : public MatrixBase<T>
    /// Polynomanal and inversion by Faddeev method.
   std::vector<T> Faddeev(Matrix<T>&);   
 
-  int GaussJordan(Matrix<T>&);      ///< Create a Gauss-Jordan Invertion
+  int GaussJordan(Matrix<T>&); 
+
 
 }; 
 

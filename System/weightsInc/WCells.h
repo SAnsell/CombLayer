@@ -66,6 +66,9 @@ class WCells : public WForm
   void setWeights(const std::vector<double>&);
   void setWeights(const int,const std::vector<double>&);
   void setWeights(const int,const size_t,const double);
+  void scaleWeights(const int,const std::vector<double>&);
+  void scaleWeights(const int,const double&);
+    
   void rescale(const double,const double);
   void rescale(const int,const int,const double);
   void balanceScale(const std::vector<double>&);

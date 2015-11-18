@@ -1,5 +1,6 @@
 
 \subsection{EXT Command}
+\label{ExtCommand}
 
 MCNP(X) provides the EXT card for biasing the direction of the
 particles after collisions. The card can be configured with a
@@ -20,20 +21,13 @@ command takes a sequence of additional values which are split into a
 the cells that are to be biased. This can be give with the commands:
 
 \begin{itemize}
-\item{ {\bf all} : Apply to all non-void cells.}
-\item{ {\bf Object [name]} : Apply to all objects within the object name.}
-\item{ {\bf Cells [N1 N2...]} : Apply to given cell numbers [pre-renumber].}
-\item{ {\bf Range [N1  N2]} : Apply to all cell numbers between N1 and N2.}
+\item{ {\bf all} : Apply to all non-void cells}
+\item{ {\bf Object [name]} : Apply to all objects within the object name}
+\item{ {\bf  Cell [Range]} : Apply to all objects within the range  }
 \end{itemize}
 
-The {\it type} section depends on the type of EXT command required. The options are
+Name can be a compound name of type objectName:CellMapName. This would
+just select those cells within the cellMap unit of the particular
+object.
 
-\begin{itemize}
-\item{ {\bf simple} : Simple $\Sigma_C/\Sigma_T$ scaling.}
-\item{ {\bf simpleVec [Vec]} : Simple $\Sigma_C/\Sigma_T$ scaling.} 
-\item{ {\bf Object [name]} : Apply to all objects within the object name.}
-\item{ {\bf Cells [N1 N2...]} : Apply to given cell numbers [pre-renumber].}
-\item{ {\bf Range [N1  N2]} : Apply to all cell numbers between N1 and N2. } 
-\end{itemize}
-
-
+The type

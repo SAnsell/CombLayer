@@ -282,6 +282,10 @@ createInputs(inputParam& IParam)
   IParam.regMulti("wPWT","wPWT",25,0);    
   IParam.regItem("WTemp","weightTemp",1);
   IParam.regItem("WType","weightType",1,10);
+  IParam.regItem("WSource","weightSource",1,10);
+  IParam.regItem("WTally","weightTally",1,10);
+  IParam.regMulti("WObject","weightObject",100,1);
+  IParam.regMulti("WRebase","weightRebase",100,1);
 
 
   IParam.regMulti("wWWG","wWWG",25,0);
@@ -331,6 +335,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("SI","Source Index value [1:2]");
   IParam.setDesc("SObj","Source Initialization Object");
   IParam.setDesc("sdefType","Source Type (TS1/TS2)");
+  IParam.setDesc("sdefVoid","Remove sdef card [to use source.F]");
   IParam.setDesc("physModel","Physics Model"); 
   IParam.setDesc("SP","Source start point");
   IParam.setDesc("SV","Sourece direction vector");
@@ -344,7 +349,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("Txml","Tally xml file");
   IParam.setDesc("targetType","Name of target type");
   IParam.setDesc("u","Units in cm");
-  IParam.setDesc("um","Unset void area (from imp=0)");
+  IParam.setDesc("um","Unset spherical void area (from imp=0)");
   IParam.setDesc("void","Adds the void card to the simulation");
   IParam.setDesc("volume","Create volume about point/radius for f4 tally");
   IParam.setDesc("volCells","Cells [object/range]");
@@ -359,6 +364,8 @@ createInputs(inputParam& IParam)
   IParam.setDesc("wPWT","Photon Bias [set -wPWT help]");
   IParam.setDesc("WType","Initial model for weights [help for info]");
   IParam.setDesc("WTemp","Temperature correction for weights");
+  IParam.setDesc("WRebase","Rebase the weights based on a cell");
+  IParam.setDesc("WObject","Reconstruct weights base on cells");
   IParam.setDesc("WP","Weight bias Point");
 
   IParam.setDesc("x","XML input file");

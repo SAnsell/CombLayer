@@ -61,6 +61,7 @@ class VacuumBox :
   double flangeLength;        ///< Joining Flange length
   double flangeWall;          ///< Joining Flange thickness
   
+  int voidMat;                ///< void material
   int feMat;                  ///< Fe material layer
   
   void populate(const FuncDataBase&);

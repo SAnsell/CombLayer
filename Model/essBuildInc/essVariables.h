@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   weightsInc/BasicWWE.h
+ * File:   buildInc/variableSetup.h
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -19,39 +19,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef WeightSystem_BasicWWE_h
-#define WeightSystem_BasicWWE_h
-
-///\file 
-
-class Simulation;
+#ifndef essVariables_h
+#define essVariables_h
 
 
-/*!
-  \namespace WeightSystem
-  \brief Adds a layer of shutters to the Target/Reflect/Moderatr
-  \author S. Ansell
-  \version 1.0
-  \date April 2009
-*/
+namespace mainSystem
+{
+  class inputParam;
+}
 
-namespace WeightSystem
-{ 
-  void simulationWeights(Simulation&,const mainSystem::inputParam&);
-			
-  void setWeights(Simulation&,const std::vector<double>&,
-		  const std::vector<double>&,
-		  const std::set<std::string>&);
+namespace setVariable
+{
+  // Structure
+  void EssBeamLinesVariables(FuncDataBase&);
+  void EssBunkerVariables(FuncDataBase&);
+  void EssButterflyModerator(FuncDataBase&);
+  void EssWheel(FuncDataBase&);
+  void EssProtonBeam(FuncDataBase&);
+  void F5Variables(FuncDataBase&);
 
-  void setWeightType(Simulation&,const mainSystem::inputParam&);
-  void setWeightsBasic(Simulation&);
-  void setWeightsMidE(Simulation&);
-  void setWeightsHighE(Simulation&);
-
-  void setWeightsBunker(Simulation&,const Geometry::Vec3D&);
+  // ESS Beamlines
+  void ODINvariables(FuncDataBase&);
+  void ESTIAvariables(FuncDataBase&);
+  void DREAMvariables(FuncDataBase&);
+  void LOKIvariables(FuncDataBase&);
+  void NMXvariables(FuncDataBase&);
+  void VORvariables(FuncDataBase&);
 
 }
 
-
 #endif
- 

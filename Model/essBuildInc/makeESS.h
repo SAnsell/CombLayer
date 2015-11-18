@@ -65,6 +65,7 @@ namespace essSystem
   class BeamMonitor;
   class DiskPreMod;
   class Bunker;
+  class Curtain;
   class F5Collimator;
   class ODIN;
   class LOKI;
@@ -129,8 +130,10 @@ class makeESS
 
   std::shared_ptr<Bunker> ABunker;  ///< Right bunker [A unit]
   std::shared_ptr<Bunker> BBunker;  ///< Right bunker [B unit]
+  std::shared_ptr<Curtain> TopCurtain;  ///< Conc-curtain
 
-  std::vector<std::shared_ptr<F5Collimator>> F5array; ///< collimators for F5 tallies
+  /// collimators for F5 tallies
+  std::vector<std::shared_ptr<F5Collimator>> F5array; 
   
   void topFlightLines(Simulation&);
   void lowFlightLines(Simulation&);

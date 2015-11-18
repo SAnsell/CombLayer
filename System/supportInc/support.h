@@ -100,6 +100,9 @@ splitParts(const std::string&,const char delim);
 template<template<typename T,typename Alloc> class V,typename T,typename Alloc> 
 int sliceVector(V<T,Alloc>&,const T&,const T&);
 
+template<typename T>
+int sectionRange(std::string&,std::vector<T>&);
+
 /// Convert a VAX number to x86 little eindien
 float getVAXnum(const float);
 

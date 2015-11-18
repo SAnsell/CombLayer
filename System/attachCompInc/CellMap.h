@@ -22,8 +22,11 @@
 #ifndef attachSystem_CellMap_h
 #define attachSystem_CellMap_h
 
+class Simulation;
+
 namespace attachSystem
 {
+  class FixedComp;
   class ContainedComp;
 
 /*!

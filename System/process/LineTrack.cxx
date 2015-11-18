@@ -176,8 +176,11 @@ LineTrack::calculate(const Simulation& ASim)
 	  nOut.moveForward(aDist);
 	  
 	  OPtr=OSMPtr->findNextObject(SN,nOut.Pos,OPtr->getName());
-	  //	  if (OPtr==0)
-	  //	    calculateError(ASim);
+	  if (!OPtr)
+	    {
+	      ELog::EM<<"INIT POINT == "<<InitPt<<ELog::endDiag;
+	      calculateError(ASim);
+	    }
 	  if (!OPtr || aDist<Geometry::zeroTol)
 	    OPtr=ASim.findCell(nOut.Pos,0);
 	}
@@ -196,7 +199,6 @@ LineTrack::calculateError(const Simulation& ASim)
 {
   ELog::RegMethod RegA("LineTrack","calculate");
   ELog::debugMethod DegA;
-  ELog::EM<<"START OF ERROR CODE"<<ELog::endDiag;
   ELog::EM<<"START OF ERROR CODE"<<ELog::endDiag;
   ELog::EM<<"-------------------"<<ELog::endDiag;
   
@@ -248,6 +250,7 @@ LineTrack::calculateError(const Simulation& ASim)
 	      ELog::EM<<"Common surf "<<SN<<ELog::endDiag;
 	      if (OPtr)
 		ELog::EM<<"Found CEll: "<<*OPtr<<ELog::endDiag;
+	      ELog::EM<<"Initial point not in model:"<<InitPt<<ELog::endErr;
 	      OPtr=OSMPtr->findNextObject(SN,nOut.Pos,prevOPtr->getName());
 	      if (OPtr)
 		{
@@ -330,6 +333,34 @@ LineTrack::getPoint(const size_t Index) const
 }
 
 void
+LineTrack::createAttenPath(std::vector<int>& cVec,
+			   std::vector<double>& aVec) const
+  /*!
+    Calculate track components
+    \param cVec :: Cell vector
+    \param aVec :: Attenuation 
+  */
+{
+  const ModelSupport::DBMaterial& DB=
+    ModelSupport::DBMaterial::Instance();
+
+  for(size_t i=0;i<Cells.size();i++)
+    {
+      const int matN=(!ObjVec[i]) ? -1 : ObjVec[i]->getMat();
+      if (matN>0)
+	{
+	  const MonteCarlo::Material& matInfo=DB.getMaterial(matN);
+	  const double density=matInfo.getAtomDensity();
+	  const double A=matInfo.getMeanA();
+	  const double sigma=Track[i]*density*std::pow(A,0.66);
+	  cVec.push_back(ObjVec[i]->getName());
+	  aVec.push_back(sigma);
+	}
+    }
+  return;
+}
+
+void
 LineTrack::write(std::ostream& OX) const
   /*!
     Write out the track
@@ -351,7 +382,7 @@ LineTrack::write(std::ostream& OX) const
       const double A=matInfo.getMeanA();
       const double sigma=Track[i]*density*std::pow(A,0.66);
       OX<<"  "<<Cells[i]<<" : "<<Track[i]<<" "<<
-	matN<<" "<<sigma<<std::endl;
+	matN<<" "<<sigma<<" ("<<density*std::pow(A,0.66)<<")"<<std::endl;
       sumSigma+=sigma;
     }
   OX<<"Len == "<<TDist<<" "<<sumSigma<<std::endl;

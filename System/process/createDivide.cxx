@@ -90,14 +90,14 @@ createDividerSurf(const int N,const Geometry::Vec3D& Z,
   if (PtA.size()!=1)
     {
       ELog::EM<<"Failed to intersect "<<*APn<<" with "<<*BPn<<ELog::endErr;
-      throw ColErr::ExBase(0,RegA.getFull());
+      throw ColErr::ExBase(0,"Intersect failure");
     }
   const Geometry::Vec3D PA=PtA.front();
   PtA=SurInter::makePoint(&ZPlane,CPn,DPn);
   if (PtA.size()!=1)
     {
       ELog::EM<<"Failed to intersect "<<*CPn<<" with "<<*DPn<<ELog::endErr;
-      throw ColErr::ExBase(1,RegA.getFull());
+      throw ColErr::ExBase(1,"Intersect failure");
     }
   const Geometry::Vec3D PB=PtA.front();
 

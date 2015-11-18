@@ -141,7 +141,7 @@ Qhull::calcIntersections()
       for(kc=jc+1;kc!=SurList.end();kc++)
         {
 	  // This adds intersections to the VList
-	  cnt+=getIntersect(*ic,*jc,*kc);	  
+	  cnt+=getIntersect(*ic,*jc,*kc);
 	}
   // return number of item found
   return cnt;
@@ -164,22 +164,26 @@ Qhull::getIntersect(const Geometry::Surface* SurfX,
 {
   ELog::RegMethod RegA("Qhull","getIntersect");
 
+  const int AS=SurfX->getName();
+  const int BS=SurfY->getName();
+  const int CS=SurfZ->getName();
+
   std::vector<Geometry::Vec3D> PntOut=
     SurInter::processPoint(SurfX,SurfY,SurfZ);
-  
-  std::vector<Geometry::Vec3D>::const_iterator vc;
+
   int Ncnt(0);
-  for(vc=PntOut.begin();vc!=PntOut.end();vc++)
+  std::set<int> ExSN={AS,BS,CS};
+	
+  for(const Geometry::Vec3D& VC : PntOut)
     {
-      if (isValid(*vc) &&         // Is point in/on the object
-	  isOnSide(*vc) &&        // Is point on a side 
-	  vc->abs()<1e5)          // Tracked onto the very large points
+      if (isValid(VC,ExSN) &&         // Is point in/on the object
+	  VC.abs()<1e8)          // Tracked onto the very large points
 	{
 	  SurfVertex tmp;
 	  tmp.addSurface(const_cast<Geometry::Surface*>(SurfX));
 	  tmp.addSurface(const_cast<Geometry::Surface*>(SurfY));
 	  tmp.addSurface(const_cast<Geometry::Surface*>(SurfZ));
-	  tmp.setPoint(*vc);
+	  tmp.setPoint(VC);
 	  VList.push_back(tmp);
 	  Ncnt++;
 	}
@@ -304,15 +308,18 @@ Qhull::calcVertex()
   */
 {
   ELog::RegMethod RegA("Qhull","calcVertex");
-
+  
   createSurfaceList();
   populate();
   calcIntersections();
   if (!VList.empty())  
     calcCentreOfMass();
+    
   return static_cast<int>(VList.size());
 }
 
+
+  
 Geometry::Matrix<double>
 Qhull::getRotation(const unsigned int M,const unsigned int A,
 		   const unsigned int B,const unsigned int C) const

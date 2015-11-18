@@ -256,11 +256,8 @@ VOR::build(Simulation& System,
 
   // Make bunker insert
   const attachSystem::FixedComp& GFC(FocusB->getKey("Guide0"));
-  const std::string BSector=
-    bunkerObj.calcSegment(System,GFC.getSignedLinkPt(-1),
-			  GFC.getSignedLinkAxis(-1));  
-  BInsert->setInsertCell(bunkerObj.getCells(BSector));
   BInsert->createAll(System,FocusB->getKey("Guide0"),-1,bunkerObj);
+  attachSystem::addToInsertSurfCtrl(System,bunkerObj,"MainWall",*BInsert);
 
   //  FocusB->addInsertCell(BInsert->getCell("Void"));
   BInsert->insertComponent(System,"Void",*FocusB);
