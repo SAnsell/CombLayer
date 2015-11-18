@@ -83,7 +83,7 @@ EssWheel(FuncDataBase& Control)
 
 
   Control.addVariable("BilbaoWheelXStep",0.0);
-  Control.addVariable("BilbaoWheelYStep",112.0);
+  Control.addVariable("BilbaoWheelYStep",112.2);
   Control.addVariable("BilbaoWheelZStep",0.0);
   Control.addVariable("BilbaoWheelXYangle",5.0);
   Control.addVariable("BilbaoWheelZangle",0.0);
