@@ -74,6 +74,10 @@ class LayerDivide3D
 
   void addCalcPoint(const size_t,const size_t,const size_t,
 		    std::string);
+
+
+  void processSurface(const std::pair<int,int>&,
+		      const std::vector<double>&);
   
  public:
 
@@ -84,7 +88,7 @@ class LayerDivide3D
 
   void setSurfPair(const size_t,const int,const int);
 
-  void divideCell(Simulation&);
+  void divideCell(Simulation&,const int);
     
 };
 
