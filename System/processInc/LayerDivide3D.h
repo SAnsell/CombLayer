@@ -76,7 +76,8 @@ class LayerDivide3D
 		    std::string);
 
 
-  void processSurface(const std::pair<int,int>&,
+  void processSurface(const size_t,
+		      const std::pair<int,int>&,
 		      const std::vector<double>&);
   
  public:

@@ -106,9 +106,6 @@ class Bunker : public attachSystem::ContainedComp,
   std::string outFile;             ///< Bunker output file
   BunkerMainWall* BMWPtr;          ///< Bunker main wall
 
-  BunkerMainWall* BLeftPtr;          ///< Bunker side wall
-  BunkerMainWall* BRightPtr;          ///< Bunker side wall
-
   void createWallSurfaces(const Geometry::Vec3D&,
 			  const Geometry::Vec3D&);
   

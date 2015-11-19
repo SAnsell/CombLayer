@@ -71,7 +71,6 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "CellMap.h"
 #include "MXcards.h"
@@ -82,7 +81,6 @@
 #include "surfDIter.h"
 #include "surfDivide.h"
 #include "SurInter.h"
-#include "mergeTemplate.h"
 #include "DivideGrid.h"
 #include "LayerDivide3D.h"
 
@@ -108,25 +106,35 @@ LayerDivide3D::~LayerDivide3D()
 
 
 void
-LayerDivide3D::processSurface(const std::pair<int,int>& WallSurf,
-			      const std::vector<double>& Len)
+LayerDivide3D::processSurface(const size_t Index,
+			      const std::pair<int,int>& WallSurf,
+			      const std::vector<double>& lenFraction)
   /*!
     Process the surfaces and convert them into merged layers
-   */
+    \param WallSurf :: Surface numbers
+    \param lenFraction :: Lengths to divide between FRACtions 
+  */
 {
   ELog::RegMethod RegA("LayerDivide3D","processSurface");
+  //
+  // Currently we only can deal with two types of surface [ plane/plane
+  // and plane/cylinder
 
-  const Geometry::Surface* APtr=SMap.realSurfPtr(WallSurf.first);
-  const Geometry::Surface* BPtr=SMap.realSurfPtr(WallSurf.second);
-  ELog::EM<<"APtr - "<<APtr->getName()<<ELog::endDiag;
-  ELog::EM<<"BPtr - "<<BPtr->getName()<<ELog::endDiag;
+  const Geometry::Surface* aSurf=SMap.realSurfPtr(WallSurf.first);
+  const Geometry::Surface* bSurf=SMap.realSurfPtr(WallSurf.second);
+  
+  int surfN(divIndex+1000*static_cast<int>(Index)+1);
+  for(const double L : lenFraction)
+    {
+      ModelSupport::surfDBase::generalSurf(aSurf,bSurf,L,surfN);
+    }	
   return;
 }
 
 void
 LayerDivide3D::addCalcPoint(const size_t i,const size_t j,
-		     const size_t k,
-		     std::string OrderSurf)
+			    const size_t k,
+			    std::string OrderSurf)
   /*!
     Process the string to calculate the corner points 
     \param i :: Index 
@@ -135,7 +143,7 @@ LayerDivide3D::addCalcPoint(const size_t i,const size_t j,
     \param OrderSurf :: Very highly order list of surface
    */
 {
-  ELog::RegMethod RegA("LayerDivide3D","AddCalcPoint");
+  ELog::RegMethod RegA("LayerDivide3D","addCalcPoint");
   
   int side[2];
   int cyl[2];
@@ -169,7 +177,34 @@ LayerDivide3D::addCalcPoint(const size_t i,const size_t j,
   
   return; 
 }
-  
+
+void
+LayerDivide3D::setSurfPair(const size_t index,const int ASurf,
+			   const int BSurf)
+  /*!
+    Set a give pair of surfaces  for division
+    \param index :: Type index 0 to 2
+    \param ASurf :: surface nubmer
+   */
+{
+  ELog::RegMethod RegA("LayerDivide3D","setSurfPair");
+
+  switch (index)
+    {
+    case 0:
+      AWall=std::pair<int,int>(ASurf,BSurf);
+      return;
+    case 1:
+      BWall=std::pair<int,int>(ASurf,BSurf);
+      return;
+    case 2:
+      CWall=std::pair<int,int>(ASurf,BSurf);
+      return;
+    default:
+      throw ColErr::InContainerError<size_t>(index,"Index out of range");
+    }  
+  return;
+}
 
 void
 LayerDivide3D::divideCell(Simulation& System,const int cellN)
@@ -183,12 +218,14 @@ LayerDivide3D::divideCell(Simulation& System,const int cellN)
 
   ModelSupport::DBMaterial& DB=
     ModelSupport::DBMaterial::Instance();
-    processSurface(AWall,ALen);
+
+  
+  processSurface(0,AWall,ALen);
   if (!DGPtr)
     DGPtr=new DivideGrid(DB.getKey(0));
   DGPtr->loadXML(loadFile,objName);
 
-  processSurface(AWall,ALen);
+  processSurface(0,AWall,ALen);
   
   /*  
 

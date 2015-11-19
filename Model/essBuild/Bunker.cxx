@@ -238,8 +238,6 @@ Bunker::populate(const FuncDataBase& Control)
   nRoof=Control.EvalVar<size_t>(keyName+"NRoof");
   ModelSupport::populateDivideLen(Control,nRoof,keyName+"RoofLen",
 				 roofThick,roofFrac);
-  for(const double& dx : roofFrac)
-    ELog::EM<<"Item == "<<dx<<ELog::endDiag;
   ModelSupport::populateDivide(Control,nRoof,keyName+"RoofMat",
 			       roofMat,roofMatVec);
 
@@ -500,10 +498,10 @@ Bunker::createMainWall(Simulation& System)
   ModelSupport::LayerDivide3D LD3("testDiv");
 
   ELog::EM<<"ASDFSAFDSAF"<<ELog::endDiag;
+  LD3.setSurfPair(0,SMap.realSurf(bnkIndex+3),
+		  SMap.realSurf(bnkIndex+4));
   LD3.divideCell(System,30);
-  LD3.setSurfPair(0,SMap.realPtr(bnkIndex+3),
-		  SMap.realPtr(bnkIndex+4));
-  
+  ELog::EM<<"ASDFSAFDSAF"<<ELog::endDiag;
   ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();
 
   if (!BMWPtr)

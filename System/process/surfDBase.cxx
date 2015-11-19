@@ -77,7 +77,7 @@ operator<<(std::ostream& OX,const surfDBase& A)
   A.write(OX);
   return OX;
 }
-
+  
 template<>
 Geometry::Surface*
 surfDBase::createSurf<Geometry::Plane,Geometry::Plane>
@@ -165,6 +165,48 @@ surfDBase::createSurf<Geometry::Cylinder,Geometry::Cylinder>
     SurI.createUniqSurf<Geometry::Cylinder>(newItem++);
   CPtr->setCylinder(CentB,NormB,RB);
   return SurI.addSurface(CPtr);
+}
+
+  
+Geometry::Surface*
+surfDBase::generalSurf(const Geometry::Surface* pSurf,
+		       const Geometry::Surface* sSurf,
+		       const double fraction,int& newItem)
+  /*!
+    Selector for createSurf based on the type of aSurf/bSurf
+    \param pSurf :: primary surface
+    \param sSurf :: secondary surface
+    \param newItem :: Plane number to start with
+    \param fraction :: Weight between the two surface
+    \return surface number created
+   */
+{
+  ELog::RegMethod RegA("surfDBase","generalSurf");
+
+  const Geometry::Plane* pPlane=
+    dynamic_cast<const Geometry::Plane*>(pSurf);
+  if (pPlane)
+    {
+      const Geometry::Plane* sPlane=
+	dynamic_cast<const Geometry::Plane*>(sSurf);
+      if (sPlane)
+	return createSurf<Geometry::Plane,Geometry::Plane>
+	  (pPlane,sPlane,fraction,newItem);
+    }
+
+  const Geometry::Cylinder* pCyl=
+    dynamic_cast<const Geometry::Cylinder*>(pSurf);
+  if (pPlane)
+    {
+      const Geometry::Cylinder* sCyl=
+	dynamic_cast<const Geometry::Cylinder*>(sSurf);
+      if (sCyl)
+	return createSurf<Geometry::Cylinder,Geometry::Cylinder>
+	  (pCyl,sCyl,fraction,newItem);
+    }
+  ELog::EM<<"Unsupported type convertion from "<<pSurf->getName()<<" "
+	  <<sSurf->getName()<<ELog::endErr;
+  return 0;
 }
 
 int
