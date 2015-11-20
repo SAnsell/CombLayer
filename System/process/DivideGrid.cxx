@@ -199,16 +199,16 @@ DivideGrid::setPoints(const size_t AIndex,
   
 void
 DivideGrid::setMaterial(const size_t AIndex,
-			const size_t BIndex,
-			const size_t CIndex,
-			const std::string& MatName)
- /*!
+			    const size_t BIndex,
+			    const size_t CIndex,
+			    const std::string& MatName)
+  /*!
     Sets a given material element
     \param AIndex :: Sector index
     \param BIndex :: Vertical index
     \param cIndex :: Cylinder index
     \param MatName :: Material to set
- */
+   */
 {
   ELog::RegMethod RegA("DivideGrid","setMaterial");
   

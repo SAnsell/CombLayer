@@ -64,19 +64,21 @@ class LayerDivide3D
 
   std::string objName; 
   std::string loadFile; 
-
-  void processSurface(const std::pair<int,int>&,
-		      const std::vector<double>&);
-
+  
+  void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const attachSystem::FixedComp&,
 			const long int,const bool);
 
   
+
   void addCalcPoint(const size_t,const size_t,const size_t,
 		    std::string);
 
-  void processSurfaces();
+
+  void processSurface(const size_t,
+		      const std::pair<int,int>&,
+		      const std::vector<double>&);
   
  public:
 

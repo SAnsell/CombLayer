@@ -52,11 +52,16 @@ class surfDBase
 				  const std::vector<Token>&);
   static void removeToken(std::vector<Token>&,const int);
 
-  template<typename T,typename U>
-    static Geometry::Surface* createSurf(const T*,const U*,
-			const double,int&);
+
 
  public:  
+
+  template<typename T,typename U>
+    static Geometry::Surface* createSurf(const T*,const U*,
+					 const double,int&);
+  static Geometry::Surface* generalSurf
+    (const Geometry::Surface*,const Geometry::Surface*,
+     const double,int&);
 
   ///\cond ABSTRACT
   surfDBase() {}                     
@@ -71,8 +76,8 @@ class surfDBase
   virtual int createSurf(const double,int&) =0;
   virtual void processInnerOuter(const int,std::vector<Token>&) const =0;
   virtual void process(const double,const double,HeadRule&) {}
-  ///\endcond ABSTRACT
   virtual void write(std::ostream&) const { }
+  ///\endcond ABSTRACT
 };
 
 std::ostream&

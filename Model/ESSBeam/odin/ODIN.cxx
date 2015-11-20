@@ -69,6 +69,7 @@
 #include "SecondTrack.h"
 #include "TwinComp.h"
 #include "LayerComp.h"
+#include "BaseMap.h"
 #include "CellMap.h"
 #include "World.h"
 #include "AttachSupport.h"

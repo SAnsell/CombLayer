@@ -73,6 +73,7 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
 #include "CellMap.h"
 #include "MXcards.h"
 #include "Zaid.h"
@@ -90,7 +91,8 @@
 #include "BunkerMainWall.h"
 #include "BunkerInsert.h"
 #include "Bunker.h"
-#include "LayerDivider3D.h"
+
+#include "LayerDivide3D.h"
 
 namespace essSystem
 {
@@ -236,7 +238,7 @@ Bunker::populate(const FuncDataBase& Control)
   
   nRoof=Control.EvalVar<size_t>(keyName+"NRoof");
   ModelSupport::populateDivideLen(Control,nRoof,keyName+"RoofLen",
-				  roofMat,roofFrac);
+				 roofThick,roofFrac);
   ModelSupport::populateDivide(Control,nRoof,keyName+"RoofMat",
 			       roofMat,roofMatVec);
 
@@ -280,8 +282,6 @@ Bunker::createWallSurfaces(const Geometry::Vec3D& AWall,
     Create the wall Surface if divided
   */
 {
-  ModelSupport::LayerDivide3D LD("subWall");
-  LD.setSurfPair(0,
   return;
 }
   
@@ -496,11 +496,20 @@ Bunker::createMainWall(Simulation& System)
 {
   ELog::RegMethod RegA("Bunker","createMainWall");
 
+  ModelSupport::LayerDivide3D LD3("testDiv");
+
+  ELog::EM<<"ASDFSAFDSAF"<<ELog::endDiag;
+  LD3.setSurfPair(0,SMap.realSurf(bnkIndex+3),
+		  SMap.realSurf(bnkIndex+4));
+  LD3.divideCell(System,30);
+  ELog::EM<<"ASDFSAFDSAF"<<ELog::endDiag;
   ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();
 
   if (!BMWPtr)
     BMWPtr=new BunkerMainWall(DB.getKey(wallMat));
   BMWPtr->loadXML(loadFile);
+
+  
   
   const int lwIndex(bnkIndex);  // index for wall 
   const int rwIndex(bnkIndex);

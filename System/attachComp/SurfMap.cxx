@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   attachComp/CellMap.cxx
+ * File:   attachComp/SurfMap.cxx
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -66,30 +66,30 @@
 #include "AttachSupport.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
-#include "CellMap.h"
+#include "SurfMap.h"
 
 namespace attachSystem
 {
 
-CellMap::CellMap() : BaseMap()
+SurfMap::SurfMap() : BaseMap()
  /*!
     Constructor 
   */
 {}
 
-CellMap::CellMap(const CellMap& A) : 
+SurfMap::SurfMap(const SurfMap& A) : 
   BaseMap(A)
   /*!
     Copy constructor
-    \param A :: CellMap to copy
+    \param A :: SurfMap to copy
   */
 {}
 
-CellMap&
-CellMap::operator=(const CellMap& A)
+SurfMap&
+SurfMap::operator=(const SurfMap& A)
   /*!
     Assignment operator
-    \param A :: CellMap to copy
+    \param A :: SurfMap to copy
     \return *this
   */
 {
@@ -101,7 +101,7 @@ CellMap::operator=(const CellMap& A)
 }
   
 void
-CellMap::insertComponent(Simulation& System,
+SurfMap::insertComponent(Simulation& System,
 			  const std::string& Key,
 			  const ContainedComp& CC) const
   /*!
@@ -111,14 +111,14 @@ CellMap::insertComponent(Simulation& System,
     \param CC :: Contained Component ot insert 
    */
 {
-  ELog::RegMethod RegA("CellMap","insertComponent(CC)");
+  ELog::RegMethod RegA("SurfMap","insertComponent(CC)");
   if (CC.hasOuterSurf())
     insertComponent(System,Key,CC.getExclude());
   return;
 }
 
 void
-CellMap::insertComponent(Simulation& System,
+SurfMap::insertComponent(Simulation& System,
 			  const std::string& Key,
 			  const HeadRule& HR) const
   /*!
@@ -128,14 +128,14 @@ CellMap::insertComponent(Simulation& System,
     \param HR :: Contained Componenet
    */
 {
-  ELog::RegMethod RegA("CellMap","insertComponent(HR)");
+  ELog::RegMethod RegA("SurfMap","insertComponent(HR)");
   if (HR.hasRule())
     insertComponent(System,Key,HR.display());
   return;
 }
 
 void
-CellMap::insertComponent(Simulation& System,
+SurfMap::insertComponent(Simulation& System,
 			 const std::string& Key,
 			 const FixedComp& FC,
 			 const long int sideIndex) const
@@ -146,7 +146,7 @@ CellMap::insertComponent(Simulation& System,
     \param FC :: FixedComp for link surface
    */
 {
-  ELog::RegMethod RegA("CellMap","insertComponent(FC)");
+  ELog::RegMethod RegA("SurfMap","insertComponent(FC)");
 
   if (sideIndex>0)
     {
@@ -166,7 +166,7 @@ CellMap::insertComponent(Simulation& System,
 
   
 void
-CellMap::insertComponent(Simulation& System,
+SurfMap::insertComponent(Simulation& System,
 			  const std::string& Key,
 			  const std::string& exclude) const
   /*!
@@ -176,16 +176,16 @@ CellMap::insertComponent(Simulation& System,
     \param CC :: Contained Componenet
    */
 {
-  ELog::RegMethod RegA("CellMap","insertComponent");
+  ELog::RegMethod RegA("SurfMap","insertComponent");
 
-  const std::vector<int> CVec=getCells(Key);
+  const std::vector<int> CVec=getSurfs(Key);
   
   for(const int cellNum : CVec)
     {
       MonteCarlo::Qhull* outerObj=System.findQhull(cellNum);
       if (!outerObj)
 	throw ColErr::InContainerError<int>(cellNum,
-					    "Cell["+Key+"] not present");
+					    "Surf["+Key+"] not present");
       outerObj->addSurfString(exclude);
     }
   return;
@@ -193,40 +193,40 @@ CellMap::insertComponent(Simulation& System,
 
 
 void
-CellMap::deleteCell(Simulation& System,
+SurfMap::deleteSurf(Simulation& System,
 		    const std::string& Key,
 		    const size_t Index) 
   /*!
     Delete a cell
     \param System :: Simulation to obtain cell from
     \param Key :: KeyName for cell
-    \param Index :: Cell index
+    \param Index :: Surf index
   */
 {
-  ELog::RegMethod RegA("CellMap","deleteCell");
+  ELog::RegMethod RegA("SurfMap","deleteSurf");
 
-  const int CN=BaseMap::removeItem(Key,Index);
+  const int CN=BaseItem::removeSurf(Key,Index);
 
   if (!CN)
     throw ColErr::InContainerError<int>(CN,"Key["+Key+"] zero cell");
   
-  System.removeCell(CN);
+  System.removeSurf(CN);
   return;
 }
 
 std::pair<int,double>
-CellMap::deleteCellWithData(Simulation& System,
+SurfMap::deleteSurfWithData(Simulation& System,
 			    const std::string& Key,
 			    const size_t Index) 
 /*!
     Delete a cell and then return material  
     \param System :: Simulation to obtain cell from
     \param Key :: KeyName for cell
-    \param Index :: Cell index
+    \param Index :: Surf index
     \return materialNumber : temperature
   */
 {
-  ELog::RegMethod RegA("CellMap","deleteCell");
+  ELog::RegMethod RegA("SurfMap","deleteSurf");
 
   const int CN=BaseMap::removeItem(Key,Index);
 
@@ -234,10 +234,10 @@ CellMap::deleteCellWithData(Simulation& System,
     throw ColErr::InContainerError<int>(CN,"Key["+Key+"] zero cell");
   const MonteCarlo::Object* ObjPtr=System.findQhull(CN);
   if (!ObjPtr)
-    throw ColErr::InContainerError<int>(CN,"Cell Ptr zero");
+    throw ColErr::InContainerError<int>(CN,"Surf Ptr zero");
 
   std::pair<int,double> Out(ObjPtr->getMat(),ObjPtr->getTemp());
-  System.removeCell(CN);  // too complex to handle from ObjPtr
+  System.removeSurf(CN);  // too complex to handle from ObjPtr
   return Out;
 }
 
