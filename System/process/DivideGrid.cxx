@@ -54,7 +54,6 @@
 #include "XMLcollect.h"
 #include "MaterialSupport.h"
 
-
 #include "DivideGrid.h"
 
 namespace ModelSupport
@@ -62,8 +61,8 @@ namespace ModelSupport
 
 size_t 
 DivideGrid::hash(const size_t AIndex,
-		     const size_t BIndex,
-		     const size_t CIndex)
+		 const size_t BIndex,
+		 const size_t CIndex)
   /*!
     Calculate the hash from the input data [NOTE: Some of the 
     data is general so must accept zeros

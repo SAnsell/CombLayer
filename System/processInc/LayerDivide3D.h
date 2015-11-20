@@ -62,8 +62,8 @@ class LayerDivide3D
   
   DivideGrid* DGPtr;             ///< Main divider [if used]
 
-  std::string objName; 
-  std::string loadFile; 
+  std::string objName;           ///< XML component name
+  std::string loadFile;          ///< File to load
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,

@@ -1027,6 +1027,7 @@ DBMaterial::initMaterial()
   setMaterial(MObj);
 
   // Carston concrete
+  // Number density 0.0824808 / B4C fraction : 
   MObj.setMaterial(122,"CarstonConc",
 		    "1001.70c 0.0229186 1002.70c 1.236284e-06 "
 		   "5010.70c 0.00011870 5011.70c 0.00047781 "

@@ -220,16 +220,20 @@ LayerDivide3D::divideCell(Simulation& System,const int cellN)
   ModelSupport::DBMaterial& DB=
     ModelSupport::DBMaterial::Instance();
 
-  
+
+  const MonteCarlo::Object* CPtr=System.findQhull(cellN);
+  if (!CPtr)
+    throw ColErr::InContainerError<int>(cellN,"cellN");
+     
   processSurface(0,AWall,ALen);
+  processSurface(1,BWall,BLen);
+  processSurface(2,CWall,CLen);
+  
   if (!DGPtr)
-    DGPtr=new DivideGrid(DB.getKey(0));
+    DGPtr=new DivideGrid(DB.getKey(CPtr->getMat()));
   DGPtr->loadXML(loadFile,objName);
 
-  processSurface(0,AWall,ALen);
-  
   /*  
-
   const std::string divider=
     ModelSupport::getComposite(SMap,divIndex," 1 ");
   std::string Out;

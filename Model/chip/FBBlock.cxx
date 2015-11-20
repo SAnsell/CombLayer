@@ -75,6 +75,7 @@
 #include "ContainedComp.h"
 #include "SecondTrack.h"
 #include "TwinComp.h"
+#include "BaseMap.h"
 #include "CellMap.h"
 #include "boxValues.h"
 #include "boxUnit.h"

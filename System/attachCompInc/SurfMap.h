@@ -33,23 +33,13 @@ namespace attachSystem
   \class SurfMap
   \version 1.0
   \author S. Ansell
-  \date March 2015
+  \date November 2015
   \brief Surf mapping by name [experimental]
 */
 
-class SurfMap  
+class SurfMap : public BaseMap
 {
- private:
 
-  /// Name to lists
-  typedef std::map<std::string,int> LCTYPE;
-  ///  Lists
-  typedef std::vector<std::vector<int>> SEQTYPE;
-
-  
-  LCTYPE Surfs;          ///< Named cells
-  SEQTYPE SplitUnits;    ///< Split named cells
-  
  public:
 
   SurfMap();         
@@ -65,8 +55,8 @@ class SurfMap
   void setSurf(const std::string& K,const size_t Index,const int CN)
     { BaseMap::setItem(K,Index,CN); }
 
-  void setSurfs(const std::string& K,const int CNA,const int CNB);
-  { BaseMap::setItems(K,Index,CNA,CNB); }
+  void setSurfs(const std::string& K,const int CNA,const int CNB)
+    { BaseMap::setItems(K,CNA,CNB); }
 
   /// Rename function
   void addSurf(const std::string& K,const int CN)
@@ -74,23 +64,14 @@ class SurfMap
 
   /// Rename function
   int getSurf(const std::string& K) const
-    { return BaseMap::getSurf(K); }
+    { return BaseMap::getItem(K); }
   /// Rename function
   int getSurf(const std::string& K,const size_t Index) const
-    { return BaseMap::getSurf(K,Index); }
+    { return BaseMap::getItem(K,Index); }
 
-  std::vector<int> getSurfs(const std::string& K) const;
+  std::vector<int> getSurfs(const std::string& K) const
     { return BaseMap::getItems(K); }
     
-  int removeSurf(const std::string&,const size_t Index=0);
-    {  BaseMap::removeItem(K,Index); }
-
-
-    
- void deleteSurf(Simulation&,const std::string&,const size_t =0);
-  std::pair<int,double>
-    deleteSurfWithData(Simulation&,const std::string&,const size_t =0);
-
 };
 
 }

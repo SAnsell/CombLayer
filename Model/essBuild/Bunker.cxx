@@ -475,9 +475,14 @@ Bunker::createObjects(Simulation& System,
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Inner));
   setCell("roof",cellIndex-1);
 
+  // Main wall not divided
+  Out=ModelSupport::getComposite(SMap,bnkIndex,lwIndex,rwIndex,
+				 " 1 -17 3M -4N 6 -16 ");
+    
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Inner));
+  setCell("roof",cellIndex-1);
 
   createMainWall(System);
-
 
   // External
   Out=ModelSupport::getComposite(SMap,bnkIndex,lwIndex,rwIndex,
@@ -492,6 +497,7 @@ void
 Bunker::createMainWall(Simulation& System)
   /*!
     Create a tesselated main wall
+    \param System :: Simulation system
   */
 {
   ELog::RegMethod RegA("Bunker","createMainWall");
@@ -501,15 +507,13 @@ Bunker::createMainWall(Simulation& System)
   ELog::EM<<"ASDFSAFDSAF"<<ELog::endDiag;
   LD3.setSurfPair(0,SMap.realSurf(bnkIndex+3),
 		  SMap.realSurf(bnkIndex+4));
-  LD3.divideCell(System,30);
+  LD3.divideCell(System,getCell("frontWall"));
   ELog::EM<<"ASDFSAFDSAF"<<ELog::endDiag;
   ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();
 
   if (!BMWPtr)
     BMWPtr=new BunkerMainWall(DB.getKey(wallMat));
   BMWPtr->loadXML(loadFile);
-
-  
   
   const int lwIndex(bnkIndex);  // index for wall 
   const int rwIndex(bnkIndex);
