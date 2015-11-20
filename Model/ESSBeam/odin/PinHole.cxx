@@ -70,6 +70,7 @@
 #include "FixedOffset.h"
 #include "FixedGroup.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
 #include "CellMap.h"
 #include "HoleShape.h"
 #include "RotaryCollimator.h"

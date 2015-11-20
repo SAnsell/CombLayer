@@ -66,6 +66,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
 #include "CellMap.h"
 #include "BeRefInnerStructure.h"
 #include "BeRef.h"

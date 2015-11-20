@@ -73,6 +73,7 @@
 #include "FixedComp.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+#include "BaseMap.h"
 #include "CellMap.h"
 #include "surfDBase.h"
 #include "surfDIter.h"

@@ -49,6 +49,7 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
+#include "BaseMap.h"
 #include "CellMap.h"
 #include "Object.h"
 #include "Qhull.h"

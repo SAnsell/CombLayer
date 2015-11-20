@@ -70,6 +70,7 @@
 #include "SecondTrack.h"
 #include "TwinComp.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
 #include "CellMap.h"
 #include "LayerComp.h"
 #include "ModBase.h"

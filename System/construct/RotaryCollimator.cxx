@@ -73,6 +73,7 @@
 #include "FixedComp.h"
 #include "FixedGroup.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
 #include "CellMap.h"
 #include "SurInter.h"
 #include "HoleShape.h"
