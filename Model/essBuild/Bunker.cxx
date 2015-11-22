@@ -476,11 +476,10 @@ Bunker::createObjects(Simulation& System,
   setCell("roof",cellIndex-1);
 
   // Main wall not divided
-  Out=ModelSupport::getComposite(SMap,bnkIndex,lwIndex,rwIndex,
-				 " 1 -17 3M -4N 6 -16 ");
-    
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Inner));
-  setCell("roof",cellIndex-1);
+  Out=ModelSupport::getComposite(SMap,bnkIndex,
+				 " 1 7 -17 3 -4 5 -6 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  setCell("frontWall",cellIndex-1);
 
   createMainWall(System);
 
@@ -505,8 +504,16 @@ Bunker::createMainWall(Simulation& System)
   ModelSupport::LayerDivide3D LD3("testDiv");
 
   ELog::EM<<"ASDFSAFDSAF"<<ELog::endDiag;
+  std::vector<double> F;
   LD3.setSurfPair(0,SMap.realSurf(bnkIndex+3),
 		  SMap.realSurf(bnkIndex+4));
+  LD3.setSurfPair(1,SMap.realSurf(bnkIndex+3),
+		  SMap.realSurf(bnkIndex+4));
+  LD3.setSurfPair(2,SMap.realSurf(bnkIndex+3),
+		  SMap.realSurf(bnkIndex+4));
+  for(const double L : sectPhase)
+    F.push_back((L-leftPhase)/(rightPhase-leftPhase));
+  LD3.setFractions(0,F);
   LD3.divideCell(System,getCell("frontWall"));
   ELog::EM<<"ASDFSAFDSAF"<<ELog::endDiag;
   ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();

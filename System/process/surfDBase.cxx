@@ -119,7 +119,9 @@ surfDBase::createSurf<Geometry::Plane,Geometry::Plane>
   DB+=(1.0-fraction)*DA;
   
   // This needs to be checked / minimized
-  Geometry::Plane* TP=SurI.createUniqSurf<Geometry::Plane>(newItem++);
+  ELog::EM<<"Calling "<<newItem<<ELog::endDiag;
+  Geometry::Plane* TP=
+    SurI.createUniqSurf<Geometry::Plane>(newItem++);
   TP->setPlane(NormB*normNeg,DB*normNeg);
   return SurI.addSurface(TP);
 }

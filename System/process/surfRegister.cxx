@@ -165,10 +165,10 @@ surfRegister::process(std::vector<int>& VecList) const
 Geometry::Plane*
 surfRegister::createMirrorPlane(const Geometry::Surface* SPtr) const
   /*!
-    REverses the plane              [CREATES MEMORY TO BE MANAGED]
+    Reverses the plane              [CREATES MEMORY TO BE MANAGED]
     \param SPtr :: Surface Pointer
     \return Reversed Plane [if possible]
-   */
+  */
 {
   ELog::RegMethod RegA("surfRegister","createMirrorPlane");
 

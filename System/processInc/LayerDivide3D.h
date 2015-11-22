@@ -36,31 +36,29 @@ namespace ModelSupport
   \brief Bulk divider to produce 3D grid in a cell
 */
 
-class LayerDivide3D 
+class LayerDivide3D  : public attachSystem::FixedComp
 {
  private:
 
-  const std::string keyName;       ///< Key name
-  ModelSupport::surfRegister SMap; ///< Surface register
   Geometry::Vec3D Centre;          ///< Centre point
   
   const int divIndex;           ///< Index of surface offset
   int cellIndex;                ///< Cell index
 
-  size_t nALen;                  ///< Number of sector divisions
-  std::vector<double> ALen;      ///< Thickness in A direction
+  std::vector<double> AFrac;     ///< Fractions in A direction
+  std::vector<double> BFrac;     ///< Fractions of B direction
+  std::vector<double> CFrac;     ///< Fractions in C direction 
 
-  size_t nBLen;                  ///< Number of vertical divisions
-  std::vector<double> BLen;      ///< Thickness of B direction
-
-  size_t nCLen;                  ///< number layer in C direction
-  std::vector<double> CLen;      ///< thicknesss (fractions)
-
+  size_t ALen;                   ///< Number of A Segments
+  size_t BLen;                   ///< Number of B Segments
+  size_t CLen;                   ///< Number of C segments
+  
   std::pair<int,int> AWall;      ///< A wall surf numbers
   std::pair<int,int> BWall;      ///< B wall surf numbers
   std::pair<int,int> CWall;      ///< C wall surf numbers
-  
-  DivideGrid* DGPtr;             ///< Main divider [if used]
+
+  std::string divider;           ///< divider string [if any]
+  DivideGrid* DGPtr;             ///< Main divider materials
 
   std::string objName;           ///< XML component name
   std::string loadFile;          ///< File to load
@@ -71,14 +69,14 @@ class LayerDivide3D
 			const long int,const bool);
 
   
+  void checkDivide() const;
+  
+  void addCalcPoint(const size_t,const size_t,const size_t);
 
-  void addCalcPoint(const size_t,const size_t,const size_t,
-		    std::string);
 
-
-  void processSurface(const size_t,
-		      const std::pair<int,int>&,
-		      const std::vector<double>&);
+  size_t processSurface(const size_t,
+		     const std::pair<int,int>&,
+		     const std::vector<double>&);
   
  public:
 
@@ -88,6 +86,7 @@ class LayerDivide3D
   virtual ~LayerDivide3D();
 
   void setSurfPair(const size_t,const int,const int);
+  void setFractions(const size_t,const std::vector<double>&);
 
   void divideCell(Simulation&,const int);
     

@@ -61,8 +61,7 @@ class DivideGrid
   DivideGrid& operator=(const DivideGrid&);
   virtual ~DivideGrid();
 
-  int getMaterial(const size_t,const size_t,const size_t,
-		  const int) const;
+  int getMaterial(const size_t,const size_t,const size_t) const;
   
   const std::string& getMatString(const size_t,const size_t,
 				  const size_t,const size_t) const;

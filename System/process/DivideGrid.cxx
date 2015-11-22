@@ -219,15 +219,14 @@ DivideGrid::setMaterial(const size_t AIndex,
 int
 DivideGrid::getMaterial(const size_t AIndex,
 			const size_t BIndex,
-			const size_t CIndex,
-			const int defMat) const
+			const size_t CIndex) const
+
   /*!
     Calculate the hash from the input data [NOTE: Some of the 
     data is general so must accept zeros
     \param AIndex :: Sector index
     \param BIndex :: Vertical index
     \param CIndex :: Cylinder index
-    \param defMat :: Default material if nothing set
     \return Material Number
   */
 {
@@ -237,7 +236,7 @@ DivideGrid::getMaterial(const size_t AIndex,
     getMatString(AIndex,BIndex,CIndex);
 
   return (MName.size()) ? 
-    ModelSupport::EvalMatName(MName) : defMat;
+    ModelSupport::EvalMatName(MName) : 0;
 }
 
 const std::string&
