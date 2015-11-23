@@ -119,7 +119,6 @@ surfDBase::createSurf<Geometry::Plane,Geometry::Plane>
   DB+=(1.0-fraction)*DA;
   
   // This needs to be checked / minimized
-  ELog::EM<<"Calling "<<newItem<<ELog::endDiag;
   Geometry::Plane* TP=
     SurI.createUniqSurf<Geometry::Plane>(newItem++);
   TP->setPlane(NormB*normNeg,DB*normNeg);
@@ -198,7 +197,7 @@ surfDBase::generalSurf(const Geometry::Surface* pSurf,
 
   const Geometry::Cylinder* pCyl=
     dynamic_cast<const Geometry::Cylinder*>(pSurf);
-  if (pPlane)
+  if (pCyl)
     {
       const Geometry::Cylinder* sCyl=
 	dynamic_cast<const Geometry::Cylinder*>(sSurf);

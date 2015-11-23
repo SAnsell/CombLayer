@@ -76,7 +76,8 @@ DivideGrid::hash(const size_t AIndex,
   return 65536UL*AIndex+256UL*BIndex+CIndex;
 }
 
-DivideGrid::DivideGrid(const std::string& defMat)
+DivideGrid::DivideGrid(const std::string& defMat) :
+  IJKnames({"Sector","Vertical","Radial"})
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param defMat :: default material
@@ -117,6 +118,23 @@ DivideGrid::~DivideGrid()
   */
 {}
 
+void
+DivideGrid::setKeyNames(const std::string& AN,
+			const std::string& BN,
+			const std::string& CN)
+  /*!
+    Set the key names for each sector
+    \param AN :: I index name
+    \param BN :: J index name
+    \param CN :: K index name
+   */
+{
+  IJKnames[0]=AN;
+  IJKnames[1]=BN;
+  IJKnames[2]=CN;
+  return;
+}
+  
 int
 DivideGrid::loadXML(const std::string& FName,
 		    const std::string& objName) 
@@ -135,17 +153,18 @@ DivideGrid::loadXML(const std::string& FName,
     return 0;
 
 
-  ELog::EM<<"Load mat "<<FName<<ELog::endDiag;
-
   MatMap.clear();
   // Check parameters;
   XML::XMLobject* AR;
   // Parse for variables:
   AR=CO.findObj(objName);
   std::string MatName;
+  if (!AR)
+    throw ColErr::InContainerError<std::string>(objName,"ObjName not in XML");
 
   while(AR)
     {
+
       std::vector<size_t> SVec,VVec,RVec;
       std::string SStr=AR->getItem<std::string>(IJKnames[0]);    
       std::string VStr=AR->getItem<std::string>(IJKnames[1]);
@@ -153,10 +172,11 @@ DivideGrid::loadXML(const std::string& FName,
 
       // Input form is for type A:B:C / A,B,C
       // Take input and convert the range into number
+      ELog::EM<<"SStr == "<<SStr<<ELog::endDiag;
       StrFunc::sectionRange(SStr,SVec);
       StrFunc::sectionRange(VStr,VVec);
       StrFunc::sectionRange(RStr,RVec);
-
+      ELog::EM<<"SStr == "<<SStr<<ELog::endDiag;
       for(const size_t SN : SVec)
 	for(const size_t VN : VVec)
 	  for(const size_t RN : RVec)
@@ -165,6 +185,8 @@ DivideGrid::loadXML(const std::string& FName,
 	      MatName=StrFunc::fullBlock(MatName);
 	      const size_t HN=DivideGrid::hash(SN,VN,RN);
 	      std::map<size_t,std::string>::iterator mc=MatMap.find(HN);
+	      ELog::EM<<"HASH["<<SN<<"]["<<VN<<"]["<<RN<<"] == "
+		      <<HN<<ELog::endDiag;
 	      if (mc!=MatMap.end())
 		mc->second=MatName;
 	      else
@@ -241,9 +263,9 @@ DivideGrid::getMaterial(const size_t AIndex,
 
 const std::string&
 DivideGrid::getMatString(const size_t AIndex,
-			     const size_t BIndex,
-			     const size_t CIndex) const
-/*!
+			 const size_t BIndex,
+			 const size_t CIndex) const
+  /*!
     Calculate the hash from the input data [NOTE: Some of the 
     data is general so must accept zeros] 
     \param AIndex :: Sector indext
@@ -257,17 +279,19 @@ DivideGrid::getMatString(const size_t AIndex,
 
   // Need to check a sequence of possibles :
   // Only those that make sense
-  size_t HN[6];
+  size_t HN[8];
   HN[0]=DivideGrid::hash(AIndex,BIndex,CIndex);
-  HN[1]=DivideGrid::hash(AIndex,0,CIndex);
-  HN[2]=DivideGrid::hash(AIndex,BIndex,0);
+  HN[1]=DivideGrid::hash(AIndex,BIndex,0);
+  HN[2]=DivideGrid::hash(AIndex,0,CIndex);
   HN[3]=DivideGrid::hash(0,BIndex,CIndex);
-  HN[4]=DivideGrid::hash(0,0,CIndex);
-  HN[5]=DivideGrid::hash(0,0,0);
+  HN[4]=DivideGrid::hash(AIndex,0,0);
+  HN[5]=DivideGrid::hash(0,BIndex,0);
+  HN[6]=DivideGrid::hash(0,0,CIndex);
+  HN[7]=DivideGrid::hash(0,0,0);
 
   std::map<size_t,std::string>::const_iterator mc=
     MatMap.end();
-  for(size_t i=0;i<6 && mc==MatMap.end();i++)
+  for(size_t i=0;i<8 && mc==MatMap.end();i++)
     mc=MatMap.find(HN[i]);
 
   return (mc!=MatMap.end()) ? mc->second : empty;
@@ -276,8 +300,8 @@ DivideGrid::getMatString(const size_t AIndex,
 
 const std::vector<Geometry::Vec3D>&
 DivideGrid::getPoints(const size_t AIndex,
-			  const size_t BIndex,
-			  const size_t CIndex) const
+		      const size_t BIndex,
+		      const size_t CIndex) const
   /*!
     Get the set of points on a system
     \param AIndex :: Sector indext
@@ -302,17 +326,17 @@ DivideGrid::getPoints(const size_t AIndex,
 void
 DivideGrid::writeXML(const std::string& FName,
 		     const std::string& objName,
-		     const size_t nSectors,
-		     const size_t nVerts,
-		     const size_t nLayers) const
+		     const size_t nA,
+		     const size_t nB,
+		     const size_t nC) const
   
   /*!
     Carries out the actual writing of an XML file
 
     \param FName :: Filename for output
-    \param nSector :: number of angular sectors
-    \param nVerts :: number of Vertical components
-    \param nLayers :: number of radial components
+    \param nA :: number of angular sectors
+    \param nB :: number of Vertical components
+    \param nC :: number of radial components
 
    */
 {
@@ -327,10 +351,10 @@ DivideGrid::writeXML(const std::string& FName,
   XML::XMLcollect activeXOut;
 
   activeXOut.addGrp("DivideGrid");
-
-  for(size_t i=0;i<nSectors;i++)
-    for(size_t j=0;j<nVerts;j++)
-      for(size_t k=0;k<nLayers;k++)
+  ELog::EM<<"NA - == "<<nA<<" "<<nB<<" "<<nC<<ELog::endDiag;
+  for(size_t i=0;i<nA;i++)
+    for(size_t j=0;j<nB;j++)
+      for(size_t k=0;k<nC;k++)
 	{
 	  const std::string& MStr=getMatString(i+1,j+1,k+1);
 	  if (!MStr.empty())

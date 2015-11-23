@@ -62,6 +62,7 @@ class LayerDivide3D  : public attachSystem::FixedComp
 
   std::string objName;           ///< XML component name
   std::string loadFile;          ///< File to load
+  std::string outputFile;        ///< File to write
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
@@ -87,7 +88,9 @@ class LayerDivide3D  : public attachSystem::FixedComp
 
   void setSurfPair(const size_t,const int,const int);
   void setFractions(const size_t,const std::vector<double>&);
-
+  void setXMLdata(const std::string&,const std::string&,
+		  const std::string&);
+  
   void divideCell(Simulation&,const int);
     
 };

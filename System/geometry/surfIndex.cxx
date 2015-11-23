@@ -183,8 +183,6 @@ surfIndex::insertSurface(Geometry::Surface* SPtr)
   STYPE::iterator vc=SMap.find(SPtr->getName());
   if (vc!=SMap.end())
     {
-      ELog::EM<<"SPtr "<<SMap.size()<<ELog::endDiag;
-      ELog::EM<<(SMap.end()==SMap.find(3750001))<<ELog::endDiag;
       throw ColErr::InContainerError<int>
 	(SPtr->getName(),"SPtr name");
     }

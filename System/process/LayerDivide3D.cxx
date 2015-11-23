@@ -96,7 +96,9 @@ LayerDivide3D::LayerDivide3D(const std::string& Key)  :
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
   */
-{}
+{
+  ELog::EM<<"Key == "<<Key<<ELog::endDiag;
+}
 
 
 LayerDivide3D::~LayerDivide3D() 
@@ -130,6 +132,8 @@ LayerDivide3D::processSurface(const size_t Index,
   //     the sign of first/second is not handled in realSurfPtr.
   // 
   // mirror planes only work with planes(!)
+  ELog::EM<<"First surf == "<<WallSurf.first<<" "<<WallSurf.second
+	  <<ELog::endDiag;
   if (WallSurf.first<0)
     {
       Geometry::Surface* PX=
@@ -154,9 +158,8 @@ LayerDivide3D::processSurface(const size_t Index,
     {
       Geometry::Surface* PX=
 	ModelSupport::surfDBase::generalSurf(aSurf,bSurf,lenFraction[i],surfN);
-      ELog::EM<<"Registering "<<surfN-1<<" "<<PX->getName()<<ELog::endDiag;
-      SMap.registerSurf(surfN-1,PX);
-      ELog::EM<<"Registering DDD "<<surfN-1<<" "<<PX->getName()<<ELog::endDiag;
+      SMap.addToIndex(surfN-1,PX->getName());
+      //      SMap.registerSurf(surfN-1,PX);
       segCount++;
       
     }
@@ -240,7 +243,6 @@ LayerDivide3D::setFractions(const size_t index,
     Set the fractions
     \param index :: Type index 0 to 2
     \param FV :: Fraction
-
    */
 {
   ELog::RegMethod RegA("LayerDivide3D","setFractions");
@@ -262,6 +264,24 @@ LayerDivide3D::setFractions(const size_t index,
   return;
 }
 
+void
+LayerDivide3D::setXMLdata(const std::string& xmlFile,
+			  const std::string& xmlItem,
+			  const std::string& xmlOut)
+  /*!
+    Simple setter and getter for LayerDivide3D
+    \param xmlFile :: XML input file
+    \param xmlFile :: XML item
+    \param xmlOut :: XML output file name
+  */
+{
+  loadFile=xmlFile;
+  objName=xmlItem;
+  outputFile=xmlOut;
+  return;
+}
+
+  
 void
 LayerDivide3D::checkDivide() const
   /*!
@@ -301,7 +321,7 @@ LayerDivide3D::divideCell(Simulation& System,const int cellN)
   ALen=processSurface(0,AWall,AFrac);
   BLen=processSurface(1,BWall,BFrac);
   CLen=processSurface(2,CWall,CFrac);
-  ELog::EM<<"Len === "<<ALen<<" "<<BLen<<" "<<CLen<<ELog::endDiag;
+
   if (!DGPtr)
     DGPtr=new DivideGrid(DB.getKey(CPtr->getMat()));
   DGPtr->loadXML(loadFile,objName);
@@ -310,16 +330,15 @@ LayerDivide3D::divideCell(Simulation& System,const int cellN)
   int aIndex(divIndex);
   for(size_t i=0;i<ALen;i++,aIndex++)
     {
-      ELog::EM<<"a = "<<i+2<<ELog::endDiag;
-
       const std::string ACut=ModelSupport::getComposite(SMap,aIndex,"1 -2");
       int bIndex(divIndex+1000);
-
+      
       for(size_t j=0;j<BLen;j++,bIndex++)
 	{
 	  const std::string BCut=
 	    ModelSupport::getComposite(SMap,bIndex," 1 -2 ")+ACut;
 	  int cIndex(divIndex+2000);
+	  
 	  for(size_t k=0;k<CLen;k++,cIndex++)
 	    {
 	      const std::string CCut=
@@ -331,9 +350,9 @@ LayerDivide3D::divideCell(Simulation& System,const int cellN)
       	    }
 	}
     }
-
-  //  if (!outFile.empty())
-  //    BMWPtr->writeXML(outFile,nSectors,nVert,nLayers);
+  System.removeCell(cellN);
+  if (DGPtr && !outputFile.empty())
+    DGPtr->writeXML(outputFile,objName,ALen,BLen,CLen);
 
   return;
 }

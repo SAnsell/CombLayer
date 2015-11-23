@@ -75,8 +75,10 @@ class DivideGrid
   const std::vector<Geometry::Vec3D>&
     getPoints(const size_t,const size_t,const size_t) const;
 
-
+  void setKeyNames(const std::string&,const std::string&,
+		   const std::string&);
   int loadXML(const std::string&,const std::string&);
+  
   void writeXML(const std::string&,const std::string&,
 		const size_t,const size_t,const size_t) const ;
 };
