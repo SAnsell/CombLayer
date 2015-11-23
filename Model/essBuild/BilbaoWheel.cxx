@@ -506,7 +506,7 @@ BilbaoWheel::createObjects(Simulation& System)
 					     " 7 -7M ");
 	      //    System.addCell(MonteCarlo::Qhull(cellIndex++,heMat*0, mainTemp,Out+TopBase));
 	    }
-	  ELog::EM<<"++ Index = "<<wheelIndex<<ELog::endDiag;
+	  //	  ELog::EM<<"++ Index = "<<wheelIndex<<ELog::endDiag;
 	  frontIndex=backIndex+10;
 	}
       backIndex+=10;

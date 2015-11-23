@@ -251,6 +251,7 @@ EdgeWater::createObjects(Simulation& System,
   
   Out=ModelSupport::getComposite(SMap,edgeIndex," 11 -12 ");
   addOuterSurf(Out+divider);
+  sideSurface = Out+divider;
   return;
 }
 

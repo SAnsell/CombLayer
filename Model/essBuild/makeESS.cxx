@@ -65,7 +65,7 @@
 #include "LayerComp.h"
 #include "CellMap.h"
 #include "World.h"
-#include "BasicFlightLine.h"
+#include "TaperedFlightLine.h"
 #include "FlightLine.h"
 #include "AttachSupport.h"
 #include "pipeUnit.h"
@@ -85,11 +85,12 @@
 #include "ButterflyModerator.h"
 #include "BlockAddition.h"
 #include "CylPreMod.h"
+#include "PreModWing.h"
 #include "SupplyPipe.h"
 #include "BulkModule.h"
 #include "ShutterBay.h"
 #include "GuideBay.h"
-#include "DiskPreMod.h"
+#include "TaperedDiskPreMod.h"
 #include "Bunker.h"
 
 #include "ConicModerator.h"
@@ -113,20 +114,20 @@ makeESS::makeESS() :
   PBeam(new ProtonTube("ProtonTube")),
   BMon(new BeamMonitor("BeamMonitor")),
 
-  LowPreMod(new DiskPreMod("LowPreMod")),
-  LowCapMod(new DiskPreMod("LowCapMod")),
+  LowPreMod(new TaperedDiskPreMod("LowPreMod")),
+  LowCapMod(new TaperedDiskPreMod("LowCapMod")),
   
-  LowAFL(new moderatorSystem::BasicFlightLine("LowAFlight")),
-  LowBFL(new moderatorSystem::BasicFlightLine("LowBFlight")),
+  LowAFL(new moderatorSystem::TaperedFlightLine("LowAFlight")),
+  LowBFL(new moderatorSystem::TaperedFlightLine("LowBFlight")),
 
   LowSupplyPipe(new constructSystem::SupplyPipe("LSupply")),
   LowReturnPipe(new constructSystem::SupplyPipe("LReturn")),
 
-  TopPreMod(new DiskPreMod("TopPreMod")),
-  TopCapMod(new DiskPreMod("TopCapMod")),
+  TopPreMod(new TaperedDiskPreMod("TopPreMod")),
+  TopCapMod(new TaperedDiskPreMod("TopCapMod")),
 
-  TopAFL(new moderatorSystem::BasicFlightLine("TopAFlight")),
-  TopBFL(new moderatorSystem::BasicFlightLine("TopBFlight")),
+  TopAFL(new moderatorSystem::TaperedFlightLine("TopAFlight")),
+  TopBFL(new moderatorSystem::TaperedFlightLine("TopBFlight")),
 
   Bulk(new BulkModule("Bulk")),
   BulkLowAFL(new moderatorSystem::FlightLine("BulkLAFlight")),
@@ -262,6 +263,7 @@ makeESS::buildLowButterfly(Simulation& System)
   LowMod=std::shared_ptr<constructSystem::ModBase>(BM);
   OR.addObject(LowMod);
   LowMod->createAll(System,*Reflector,LowPreMod.get(),6);
+  LowFocalPoints = BM->getFocalPoints();
   return;
 }
 
@@ -279,11 +281,15 @@ makeESS::buildTopButterfly(Simulation& System)
 
   std::shared_ptr<ButterflyModerator> BM
     (new essSystem::ButterflyModerator("TopFly"));
+
   BM->setRadiusX(Reflector->getRadius());
   TopMod=std::shared_ptr<constructSystem::ModBase>(BM);
   OR.addObject(TopMod);
   
   TopMod->createAll(System,*Reflector,TopPreMod.get(),6);
+
+  TopFocalPoints = BM->getFocalPoints();
+
   return;
 }
       
@@ -334,14 +340,70 @@ void makeESS::buildF5Collimator(Simulation& System, size_t nF5)
 
   for (size_t i=0; i<nF5; i++) {
     std::shared_ptr<F5Collimator> F5(new F5Collimator(StrFunc::makeString("F", i*10+5).c_str()));
-
     OR.addObject(F5);
+    F5->setFocalPoints(TopFocalPoints);
     F5->addInsertCell(74123); // !!! 74123=voidCell // SA: how to exclude F5 from any cells?
     F5->createAll(System, World::masterOrigin());
 
     attachSystem::addToInsertSurfCtrl(System, *ABunker, *F5);
     F5array.push_back(F5);
   }
+
+  return;
+}
+
+void makeESS::buildF5Collimator(Simulation& System, const mainSystem::inputParam& IParam)
+/*!
+  Build F5 collimators
+  \param System :: Stardard simulation
+  \param IParam :: command line parameters. Example: --f5-collimators {top,low} {cold,thermal} theta1 theta2 theta3 ...
+ */
+{
+  ELog::RegMethod RegA("makeESS", "buildF5Collimator");
+  ModelSupport::objectRegister& OR = ModelSupport::objectRegister::Instance();
+
+  std::string strtmp, moderator, range;
+  const size_t nitems = IParam.itemCnt("f5-collimators",0); // number of parameters in -f5-collimator
+
+  if (!nitems) return;
+
+  double theta(0.0);
+  size_t colIndex(0);
+  //  ELog::EM << "Use StrFunc::convert instead of atoi in the loop below. Check its return value." << ELog::endCrit;
+  for (size_t i=0; i<nitems; i++)
+    {
+      strtmp = IParam.getValue<std::string>("f5-collimators", i);
+      if ( (strtmp=="TopFly") || (strtmp=="LowFly") )
+	{
+	  moderator = strtmp;
+	  range = IParam.getValue<std::string>("f5-collimators", ++i);
+	  for (size_t j=i+1; j<nitems; j++)
+	    {
+	      strtmp = IParam.getValue<std::string>("f5-collimators", j);
+	      if ((strtmp=="TopFly") || (strtmp=="LowFly"))
+		break;
+	      // do real work here
+	      theta = atoi(strtmp.c_str()); // !!! use StrFunc::convert here !!! 
+
+	      std::shared_ptr<F5Collimator> F5(new F5Collimator(StrFunc::makeString("F", colIndex*10+5).c_str())); colIndex++;
+	      OR.addObject(F5);
+	      F5->setTheta(theta);
+	      F5->setRange(range);
+
+	      if (moderator=="TopFly")
+		F5->setFocalPoints(TopFocalPoints);
+	      else if (moderator=="LowFly")
+		F5->setFocalPoints(LowFocalPoints);
+
+	      F5->addInsertCell(74123); // !!! 74123=voidCell // SA: how to exclude F5 from any cells?
+	      F5->createAll(System, World::masterOrigin());
+
+	      attachSystem::addToInsertSurfCtrl(System, *ABunker, *F5);
+	      F5array.push_back(F5);
+      
+	    }
+	}
+    }
 
   return;
 }
@@ -412,6 +474,33 @@ makeESS::makeBunker(Simulation& System,
   return;
 }
 
+void
+makeESS::buildPreWings(Simulation& System)
+{
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+  
+  TopPreWing = std::shared_ptr<PreModWing>(new PreModWing("TopPreWing"));
+  OR.addObject(TopPreWing);
+  TopPreWing->createAll(System, *TopPreMod, 9, false, true, *TopMod);
+  attachSystem::addToInsertSurfCtrl(System, *TopPreMod, *TopPreWing);
+
+  TopCapWing = std::shared_ptr<PreModWing>(new PreModWing("TopCapWing"));
+  OR.addObject(TopCapWing);
+  TopCapWing->createAll(System, *TopCapMod, 10, false, false, *TopMod);
+  attachSystem::addToInsertSurfCtrl(System, *TopCapMod, *TopCapWing);
+
+  LowPreWing = std::shared_ptr<PreModWing>(new PreModWing("LowPreWing"));
+  OR.addObject(LowPreWing);
+  LowPreWing->createAll(System, *LowPreMod, 9, true, false, *LowMod);
+  attachSystem::addToInsertSurfCtrl(System, *LowPreMod, *LowPreWing);
+
+  LowCapWing = std::shared_ptr<PreModWing>(new PreModWing("LowCapWing"));
+  OR.addObject(LowCapWing);
+  LowCapWing->createAll(System, *LowCapMod, 10, true, true, *LowMod);
+  attachSystem::addToInsertSurfCtrl(System, *LowCapMod, *LowCapWing);
+}
+
   
 void 
 makeESS::build(Simulation& System,
@@ -453,11 +542,11 @@ makeESS::build(Simulation& System,
   // lower moderator
   LowPreMod->createAll(System,World::masterOrigin(),0,true,
 		       Target->wheelHeight()/2.0,
-		       Reflector->getRadius());
+		       Reflector->getRadius(), false);
 
   TopPreMod->createAll(System,World::masterOrigin(),0,false,
 		       Target->wheelHeight()/2.0,
-		       Reflector->getRadius());
+		       Reflector->getRadius(), true);
 
   buildLowButterfly(System);
   buildTopButterfly(System);
@@ -465,13 +554,15 @@ makeESS::build(Simulation& System,
   const double TMHeight=attachSystem::calcLinkDistance(*TopMod,5,6);
   // Cap moderator DOES not span whole unit
   LowCapMod->createAll(System,*LowMod,6,false,
-   		       0.0,Reflector->getRadius());
+   		       0.0,Reflector->getRadius(), true);
   TopCapMod->createAll(System,*TopMod,6,false,
-   		       0.0,Reflector->getRadius());
+   		       0.0,Reflector->getRadius(), false);
   Reflector->createAll(System,World::masterOrigin(),
 		       Target->wheelHeight(),
 		       LowPreMod->getHeight()+LMHeight+LowCapMod->getHeight(),
 		       TopPreMod->getHeight()+TMHeight+TopCapMod->getHeight());
+
+  buildPreWings(System);
 
   Reflector->insertComponent(System,"targetVoid",*Target,1);
   Reflector->deleteCell(System,"lowVoid");
@@ -479,6 +570,7 @@ makeESS::build(Simulation& System,
   Bulk->createAll(System,*Reflector,*Reflector);
 
   // Build flightlines after bulk
+  double TopFLHeight = TopCapMod->getZFlightLine()-TopPreMod->getZFlightLine();  // !!! \todo bool argument must be removed
   TopAFL->createAll(System,*TopMod,0,*Reflector,4,*Bulk,-3);
   TopBFL->createAll(System,*TopMod,0,*Reflector,3,*Bulk,-3);
 
@@ -491,6 +583,10 @@ makeESS::build(Simulation& System,
   attachSystem::addToInsertForced(System,*Bulk,LowBFL->getCC("outer"));
   attachSystem::addToInsertForced(System,*Bulk,TopAFL->getCC("outer"));
   attachSystem::addToInsertForced(System,*Bulk,TopBFL->getCC("outer"));
+
+  // ELog::EM << "Remove me - it's slow" << ELog::endDiag;
+  // attachSystem::addToInsertForced(System,*Target,TopAFL->getCC("outer"));
+  // attachSystem::addToInsertForced(System,*Target,TopBFL->getCC("outer"));
 
 
   // Full surround object
@@ -519,7 +615,8 @@ makeESS::build(Simulation& System,
 
   makeBeamLine(System,IParam);
 
-  buildF5Collimator(System, nF5);
+  //  buildF5Collimator(System, nF5);
+  buildF5Collimator(System, IParam);
   return;
 }
 
