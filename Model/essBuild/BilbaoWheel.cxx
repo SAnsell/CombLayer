@@ -69,7 +69,9 @@
 #include "ContainedGroup.h"
 #include "General.h"
 #include "Plane.h"
+#include "CellMap.h"
 #include "WheelBase.h"
+#include "BilbaoWheelInnerStructure.h"
 #include "BilbaoWheel.h"
 
 
@@ -77,7 +79,8 @@ namespace essSystem
 {
 
 BilbaoWheel::BilbaoWheel(const std::string& Key) :
-  WheelBase(Key)
+  WheelBase(Key), attachSystem::CellMap(),
+  InnerComp(new BilbaoWheelInnerStructure(Key + "InnerStructure"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -85,9 +88,10 @@ BilbaoWheel::BilbaoWheel(const std::string& Key) :
 {}
 
 BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) : 
-  WheelBase(A),
+  WheelBase(A),attachSystem::CellMap(A),
   xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  xyAngle(A.xyAngle),zAngle(A.zAngle),engActive(A.engActive),targetHeight(A.targetHeight),
+  xyAngle(A.xyAngle),zAngle(A.zAngle),engActive(A.engActive),
+  targetHeight(A.targetHeight),
   voidTungstenThick(A.voidTungstenThick),steelTungstenThick(A.steelTungstenThick),
   caseThickIn(A.caseThickIn),coolantThick(A.coolantThick),
   caseThick(A.caseThick),voidThick(A.voidThick),
@@ -485,6 +489,9 @@ BilbaoWheel::createObjects(Simulation& System)
 	      Out = ModelSupport::getComposite(SMap, SIsec, " 3 -4 -1 ");
 	      System.addCell(MonteCarlo::Qhull(cellIndex++,secSepMat,mainTemp,Out1+Out));
 
+	      if (j==0)
+		CellMap::setCell("Sector0",cellIndex-1);
+
 	      SIsec+=10;
 	    }
 	}
@@ -613,7 +620,10 @@ BilbaoWheel::createAll(Simulation& System,
   makeShaftObjects(System);
 
   createLinks();
-  insertObjects(System);       
+  insertObjects(System);  
+
+  if (engActive)
+    InnerComp->createAll(System, *this);
 
   return;
 }

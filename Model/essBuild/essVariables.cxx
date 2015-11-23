@@ -125,6 +125,15 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelRadius3",125.0);
   Control.addVariable("BilbaoWheelMatTYPE3",3);
 
+  // Inner structure - engineering details
+  Control.addVariable("BilbaoWheelInnerStructureBrickLength",3);
+  Control.addVariable("BilbaoWheelInnerStructureBrickWidth",1);
+  Control.addVariable("BilbaoWheelInnerStructureBrickMat",0);
+
+  Control.addVariable("BilbaoWheelInnerStructureBrickGapLength",0.2);
+  Control.addVariable("BilbaoWheelInnerStructureBrickGapWidth",0.2);
+  Control.addVariable("BilbaoWheelInnerStructureBrickGapMat",0);
+
   return;
 }
 

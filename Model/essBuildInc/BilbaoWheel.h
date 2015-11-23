@@ -35,7 +35,10 @@ namespace essSystem
   \brief Bilbao-type wheel for ESS
 */
 
-class BilbaoWheel : public WheelBase
+class BilbaoWheelInnerStructure;
+
+class BilbaoWheel : public WheelBase,
+    public attachSystem::CellMap
 {
  private:
   
@@ -46,6 +49,7 @@ class BilbaoWheel : public WheelBase
   double zAngle;                  ///< zAngle step
 
   int engActive;                 ///< Engineering active flag
+  std::shared_ptr<BilbaoWheelInnerStructure> InnerComp; ///< Inner components
   
   double targetHeight;           ///< Total height of target
   double voidTungstenThick;      ///< Void thickness below/above Tungsten
