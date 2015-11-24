@@ -68,6 +68,7 @@
 #include "FixedComp.h"
 #include "ContainedComp.h"
 #include "CellMap.h"
+#include "Plane.h"
 #include "BilbaoWheelInnerStructure.h"
 
 namespace essSystem
@@ -202,15 +203,26 @@ namespace essSystem
   double thetarad(0.0);
   const double dTheta = 360.0/nSectors;
   int SIsec(insIndex+5000);
+  Geometry::Plane *p[nSectors*2];
+  int i=0; // plane counter
   for (int j=0; j<nSectors; j++)
     {
       theta = j*dTheta;
       thetarad = theta*M_PI/180.0;
       ModelSupport::buildPlaneRotAxis(SMap, SIsec+1, Origin, X, Z, theta+90); // invisible divider
-      ModelSupport::buildPlaneRotAxis(SMap, SIsec+3, Origin-X*(secSepThick/2.0*cos(thetarad))-Y*(secSepThick/2.0*sin(thetarad)), X, Z, theta);
-      ModelSupport::buildPlaneRotAxis(SMap, SIsec+4, Origin+X*(secSepThick/2.0*cos(thetarad))+Y*(secSepThick/2.0*sin(thetarad)), X, Z, theta);
+      p[i++] = ModelSupport::buildPlaneRotAxis(SMap, SIsec+3, Origin-X*(secSepThick/2.0*cos(thetarad))-Y*(secSepThick/2.0*sin(thetarad)), X, Z, theta);
+      p[i++] = ModelSupport::buildPlaneRotAxis(SMap, SIsec+4, Origin+X*(secSepThick/2.0*cos(thetarad))+Y*(secSepThick/2.0*sin(thetarad)), X, Z, theta);
 
       SIsec += 10;
+    }
+  // bricks
+  i=0;
+  for (int j=0; j<nSectors; j++)
+    {
+      if (j==0)
+	createBrickSurfaces(Wheel, p[i+2], p[i+1]);
+      //	createBrickSurfaces(Wheel, p[i], p[nSectors-2]);
+      i+=2;
     }
 
 
@@ -236,16 +248,16 @@ namespace essSystem
     const double innerTemp = MatInfo.second;
 
     const std::string vertStr = Wheel.getLinkString(6) + Wheel.getLinkString(7); // top+bottom
-    const std::string sideStr = Wheel.getLinkString(8) + Wheel.getLinkString(9); // min+max radii
+    const std::string cylStr = Wheel.getLinkString(8) + Wheel.getLinkString(9); // min+max radii
 
-    //    System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,vertStr+sideStr));
+    //    System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,vertStr+cylStr));
     
 
-    int SI(insIndex);
+    //    int SI(insIndex);
     int SIsec(insIndex+5000), SI1;
     std::string Out;
     if (nSectors==1)
-      System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,vertStr+sideStr)); // same as "Inner" cell from BilbaoWheel
+      System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,vertStr+cylStr)); // same as "Inner" cell from BilbaoWheel
     else 
       {
 	for (int j=0; j<nSectors; j++)
@@ -253,15 +265,20 @@ namespace essSystem
 	    // Tungsten
 	    SI1 = (j!=nSectors-1) ? SIsec+10 : insIndex+5000;
 	    Out = ModelSupport::getComposite(SMap, SIsec, SI1, " 4 -3M ");
-	    System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,
-					     Out+vertStr+sideStr));
+	    if (j!=0)
+		System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,
+						 Out+vertStr+cylStr));
+	    else
+	      createBricks(System, Wheel, 
+			   ModelSupport::getComposite(SMap, SIsec," 4 "), // side plane
+			   ModelSupport::getComposite(SMap, SI1, " -3 ")); // another side plane
 	    
 	    // Pieces of steel between Tungsten sectors
 	    // -1 is needed since planes 3 and -4 cross Tunsten in two places,
 	    //     so we need to select only one
 	    Out = ModelSupport::getComposite(SMap, SIsec, " 3 -4 -1 ");
-	    System.addCell(MonteCarlo::Qhull(cellIndex++,secSepMat,innerTemp,Out+vertStr+sideStr));
-	    
+	    System.addCell(MonteCarlo::Qhull(cellIndex++,secSepMat,innerTemp,Out+vertStr+cylStr));
+
 	    SIsec+=10;
 	  }
       }
@@ -269,6 +286,113 @@ namespace essSystem
 
 
     return; 
+  }
+
+  void
+  BilbaoWheelInnerStructure::createBrickSurfaces(const attachSystem::FixedComp& Wheel,
+						 const Geometry::Plane *pSide1,
+						 const Geometry::Plane *pSide2)
+  /*
+    Creates surfaces for individual Tungsten bricks
+    pSide1 :: wheel segment side plane
+    pSide2 :: wheel segment side plane
+   */
+  {
+    const Geometry::Surface *innerCyl = SMap.realSurfPtr(Wheel.getLinkSurf(8));
+    const Geometry::Surface *outerCyl = SMap.realSurfPtr(Wheel.getLinkSurf(9));
+
+    const Geometry::Plane *pz = ModelSupport::buildPlane(SMap,insIndex+5,Origin,Z);
+    Geometry::Vec3D nearPt(0, -10, 0);
+    Geometry::Vec3D p1 = SurInter::getPoint(pSide1, outerCyl, pz, nearPt);
+    Geometry::Vec3D p2 = SurInter::getPoint(pSide2, outerCyl, pz, nearPt);
+    Geometry::Vec3D p3 = p2 + Geometry::Vec3D(0.0, 0.0, 1.0);
+
+    int SI(insIndex+6000);
+    // first (outermost) layer
+    Geometry::Plane *prad1 = 0; // first radial plane of the bricks
+    Geometry::Plane *phor1 = 0; // first perpendicular to radial plane of the bricks
+    const int Nlayers=4;
+    for (int i=0; i<Nlayers; i++)
+      {
+	if (i==0)
+	  {
+	    prad1 = ModelSupport::buildPlane(SMap, SI+5, p1, p2, p3, Geometry::Vec3D(0.0, 0.0, 0.0));
+	  }
+	else
+	  {
+	    ModelSupport::buildShiftedPlane(SMap, SI+5, prad1, -(brickLen+brickGapLen)*i);
+	  }
+
+	ModelSupport::buildShiftedPlane(SMap, SI+6, prad1, -(brickLen*(i+1)+brickGapLen*i));
+
+	int SJ(SI);
+	for (int j=0; j<2; j++)
+	  {
+	    if ((i==0) && (j==0))
+	      phor1 = ModelSupport::buildRotatedPlane(SMap, SJ+1, prad1, 90, Z, p2);
+	    else
+	      ModelSupport::buildShiftedPlane(SMap, SJ+1, phor1, j*(brickWidth+brickGapWidth));
+
+	    ModelSupport::buildShiftedPlane(SMap, SJ+2, phor1, j*(brickWidth+brickGapWidth)+brickWidth);
+
+	    SJ += 2;
+	  }
+
+	SI += 100;
+      }
+  }
+
+  void
+  BilbaoWheelInnerStructure::createBricks(Simulation& System, attachSystem::FixedComp& Wheel,
+					  const std::string side1, const std::string side2)
+  /*
+    Create cells for bricks in the given sector
+   */
+  {
+    const std::string sideStr = side1 + side2;
+    const std::string vertStr = Wheel.getLinkString(6) + Wheel.getLinkString(7); // top+bottom
+    const std::string innerCyl = Wheel.getLinkString(8);
+    const std::string outerCyl = Wheel.getLinkString(9);
+
+    std::string Out,Out1;
+    int SI(insIndex+6000);
+    // He layer in front of the bricks
+    Out = ModelSupport::getComposite(SMap, SI, " 5 ");
+    System.addCell(MonteCarlo::Qhull(cellIndex++, brickGapMat, 0, Out+vertStr+outerCyl));
+    
+    // bricks
+    const int Nlayers = 4;
+    std::string layerStr;
+    for (int i=0; i<Nlayers; i++)
+      {
+	Out = ModelSupport::getComposite(SMap, SI, " -5  6 ");
+	layerStr = Out;
+	if (i!=0) // otherwise we add bricks (tmp)
+	  System.addCell(MonteCarlo::Qhull(cellIndex++, brickMat, 0, Out+vertStr+sideStr));
+	else {
+	    int SJ(SI);
+	    for (int j=0; j<1; j++)
+	      {
+		Out1 = ModelSupport::getComposite(SMap, SJ, " 1 -2 ");
+		if (j==0)
+		  Out1 = Out1 + side1;
+		System.addCell(MonteCarlo::Qhull(cellIndex++, brickMat, 0, Out1+layerStr+vertStr));
+
+		Out1 = ModelSupport::getComposite(SMap, SJ, SJ+2, " 2 -1M ");
+		System.addCell(MonteCarlo::Qhull(cellIndex++, brickGapMat, 0, Out1+layerStr+vertStr));
+
+		SJ += 2;
+	      }
+	  }
+
+	if (i==Nlayers-1) 
+	  Out = ModelSupport::getComposite(SMap, SI, SI+100, " -6  ") + innerCyl;
+	else
+	  Out = ModelSupport::getComposite(SMap, SI, SI+100, " -6 5M ");
+	System.addCell(MonteCarlo::Qhull(cellIndex++, brickGapMat, 0, Out+vertStr+sideStr));
+	
+	SI += 100;
+      }
   }
 
   void

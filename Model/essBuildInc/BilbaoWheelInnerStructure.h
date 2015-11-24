@@ -60,6 +60,11 @@ class BilbaoWheelInnerStructure : public attachSystem::ContainedComp,
   void createObjects(Simulation&, attachSystem::FixedComp&);
   void createLinks();
 
+  void createBrickSurfaces(const attachSystem::FixedComp&,
+			   const Geometry::Plane*, const Geometry::Plane*);
+  void createBricks(Simulation&, attachSystem::FixedComp&,
+		    const std::string, const std::string);
+
  public:
 
   BilbaoWheelInnerStructure(const std::string&);

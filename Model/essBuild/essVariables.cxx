@@ -122,11 +122,11 @@ EssWheel(FuncDataBase& Control)
   // Inner structure - engineering details
   Control.addVariable("BilbaoWheelInnerStructureBrickLength",3);
   Control.addVariable("BilbaoWheelInnerStructureBrickWidth",1);
-  Control.addVariable("BilbaoWheelInnerStructureBrickMat",0);
+  Control.addVariable("BilbaoWheelInnerStructureBrickMat","Tungsten");
 
   Control.addVariable("BilbaoWheelInnerStructureBrickGapLength",0.2);
   Control.addVariable("BilbaoWheelInnerStructureBrickGapWidth",0.2);
-  Control.addVariable("BilbaoWheelInnerStructureBrickGapMat",0);
+  Control.addVariable("BilbaoWheelInnerStructureBrickGapMat","Helium"); // shoud be the same as BilbaoWheelHeMat
 
   Control.addVariable("BilbaoWheelInnerStructureNSectors", 36);
   Control.addVariable("BilbaoWheelInnerStructureSectorSepThick", 1.0);
