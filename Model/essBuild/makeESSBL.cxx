@@ -73,12 +73,14 @@
 #include "Bunker.h"
 #include "GuideLine.h"
 #include "GuideItem.h"
+#include "essVariables.h"
 
 #include "ODIN.h"
 #include "ESTIA.h"
 #include "LOKI.h"
 #include "NMX.h"
 #include "DREAM.h"
+#include "shortDREAM.h"
 #include "VOR.h"
 
 #include "beamlineConstructor.h"
@@ -217,6 +219,13 @@ makeESSBL::build(Simulation& System,
       // NMX beamline
       ELog::EM<<"Building "<<beamName<<ELog::endDiag;
       DREAM dreamBL;
+      dreamBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+    }
+  else if (beamName=="SHORTDREAM")
+    {
+      // short sector dream
+      ELog::EM<<"Building "<<beamName<<ELog::endDiag;
+      shortDREAM dreamBL;
       dreamBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="JSANS" || beamName=="JRef")

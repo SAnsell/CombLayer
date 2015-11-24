@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   buildInc/variableSetup.h
+ * File:   essBuildInc/essVariables.h
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -45,6 +45,9 @@ namespace setVariable
   void LOKIvariables(FuncDataBase&);
   void NMXvariables(FuncDataBase&);
   void VORvariables(FuncDataBase&);
+
+  // MODIFIED ESS Beamlines
+  void shortDREAMvariables(FuncDataBase&);
 
 }
 

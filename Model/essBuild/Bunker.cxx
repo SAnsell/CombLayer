@@ -212,18 +212,30 @@ Bunker::populate(const FuncDataBase& Control)
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");
   ModelSupport::populateAddRange(Control,nLayers,keyName+"WallLen",
   			      wallRadius,wallRadius+wallThick,wallFrac);
+  for(size_t i=0;i<wallFrac.size();i++)
+    wallFrac[i]=(wallFrac[i]-wallRadius)/wallThick;
 
   nSectors=Control.EvalVar<size_t>(keyName+"NSectors");
-  ModelSupport::populateRange(Control,nSectors+1,keyName+"SectAngle",
+  ModelSupport::populateRange(Control,nSectors,keyName+"SectAngle",
 			      leftPhase,rightPhase,sectPhase);
 
+  nSegment=Control.EvalDefVar<size_t>(keyName+"NSegment",0);  
+  ModelSupport::populateRange(Control,nSegment,keyName+"SegDivide",
+			      0,1.0,segDivide);
+
+  // BOOLEAN NUMBER!!!!!!!
+  activeSegment=Control.EvalDefVar<size_t>(keyName+"ActiveSegment",0);
+  
   nVert=Control.EvalVar<size_t>(keyName+"NVert");
   midZ=Control.EvalDefVar<double>(keyName+"MidZ",0.0);
   ModelSupport::populateQuadRange(Control,nVert,keyName+"VertLen",
 				  -floorDepth,midZ,roofHeight,vertFrac);
+  for(size_t i=0;i<vertFrac.size();i++)
+    vertFrac[i]=(vertFrac[i]+floorDepth)/(floorDepth+roofHeight);
 
   // SIDE LAYERS:
-
+  
+  sideFlag=Control.EvalDefVar<int>(keyName+"SideFlag",0);
   nSide=Control.EvalVar<size_t>(keyName+"NSide");
   ModelSupport::populateAddRange(Control,nSide,keyName+"SideThick",
 				 0.0,sideThick,sideFrac);
@@ -233,7 +245,7 @@ Bunker::populate(const FuncDataBase& Control)
   nSideThick=Control.EvalVar<size_t>(keyName+"NSideThick");
   ModelSupport::populateAddRange(Control,nSideVert,keyName+"SideThick",
 				 0,wallThick,sideThickFrac);
-
+  
 
   
   nRoof=Control.EvalVar<size_t>(keyName+"NRoof");
@@ -276,8 +288,8 @@ Bunker::createUnitVector(const attachSystem::FixedComp& MainCentre,
 }
 
 void
-Bunker::createWallSurfaces(const Geometry::Vec3D& AWall,
-			   const Geometry::Vec3D& AWallDir) 
+Bunker::createWallSurfaces(const Geometry::Vec3D& ,
+			   const Geometry::Vec3D& ) 
   /*!
     Create the wall Surface if divided
   */
@@ -315,7 +327,6 @@ Bunker::createSurfaces()
 
 
   ModelSupport::buildPlane(SMap,bnkIndex+3,AWall,AWallDir);
-  ELog::EM<<"Plane == "<<bnkIndex+4<<ELog::endDiag;
   ModelSupport::buildPlane(SMap,bnkIndex+4,BWall,BWallDir);
   
   ModelSupport::buildPlane(SMap,bnkIndex+5,Origin-Z*floorDepth,Z);
@@ -468,11 +479,8 @@ Bunker::createObjects(Simulation& System,
     {
       Out=ModelSupport::getComposite(SMap,bnkIndex,divIndex,
 				     " 1 7 -17 1M -2M 5 -6 ");
-      ELog::EM<<"Cell == "<<i<<" / "<<divIndex+2<<ELog::endDiag;
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
       addCell("frontWall",cellIndex-1);
-
-      ELog::EM<<"Cell == "<<i<<" / "<<nSectors<<ELog::endDiag;
       divIndex++;
     }
   createMainWall(System);
@@ -494,35 +502,30 @@ Bunker::createMainWall(Simulation& System)
   */
 {
   ELog::RegMethod RegA("Bunker","createMainWall");
-  return;
-  ModelSupport::LayerDivide3D LD3(keyName+"mainWall");
 
-  std::vector<double> F;
-  LD3.setSurfPair(0,SMap.realSurf(bnkIndex+3),
-		  SMap.realSurf(bnkIndex+4));
-  LD3.setSurfPair(1,SMap.realSurf(bnkIndex+5),
+  size_t AS=activeSegment;  // binary system
+  
+  for(size_t i=0;AS && i<nSectors;i++)
+    {
+      if (AS & 1)
+        {
+	  ModelSupport::LayerDivide3D LD3(keyName+"mainWall"+StrFunc::makeString(i));
+	  LD3.setSurfPair(0,SMap.realSurf(bnkIndex+1001+static_cast<int>(i)),
+			  SMap.realSurf(bnkIndex+1002+static_cast<int>(i)));
+	  
+	  LD3.setSurfPair(1,SMap.realSurf(bnkIndex+5),
 		  SMap.realSurf(bnkIndex+6));
-  LD3.setSurfPair(2,SMap.realSurf(bnkIndex+7),
-		  SMap.realSurf(bnkIndex+17));
-  
-  for(const double L : sectPhase)
-    F.push_back((L-leftPhase)/(rightPhase-leftPhase));
-  LD3.setFractions(0,F);
-
-
-  F.clear();
-  for(const double L : vertFrac)
-    F.push_back((L+floorDepth)/(roofHeight+floorDepth));
-  LD3.setFractions(1,F);
-  
-  F.clear();
-  for(const double L : wallFrac)
-    F.push_back((L-wallRadius)/wallThick);
-  LD3.setFractions(2,F);
-
-  LD3.setXMLdata(keyName+"Def.xml","WallMat",keyName+".xml");
-  LD3.divideCell(System,getCell("frontWall"));
-
+	  LD3.setSurfPair(2,SMap.realSurf(bnkIndex+7),
+			  SMap.realSurf(bnkIndex+17));
+	  LD3.setFractions(0,segDivide);
+	  LD3.setFractions(1,vertFrac);
+	  LD3.setFractions(2,wallFrac);
+	  
+	  LD3.setXMLdata(keyName+"Def.xml","WallMat",keyName+".xml");
+	  LD3.divideCell(System,getCell("frontWall",i));
+	}
+      AS>>=1;
+    }
   return;
 }
 
@@ -626,7 +629,7 @@ Bunker::calcSegment(const Simulation& System,
   ELog::RegMethod RegA("Bunker","calcSegment");
   for(size_t i=0;i<nSectors;i++)
     {
-      const std::string SName="MainWall"+StrFunc::makeString(i);
+      const std::string SName="frontWall"+StrFunc::makeString(i);
       const int cN=getCell(SName);
       const MonteCarlo::Object* SUnit=System.findQhull(cN);
       if (SUnit)

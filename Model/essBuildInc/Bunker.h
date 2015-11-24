@@ -60,10 +60,13 @@ class Bunker : public attachSystem::ContainedComp,
 
 
   // MAIN WALL
-  
+  size_t activeSegment;          ///< Active segment
   size_t nSectors;               ///< Number of sector divisions
   std::vector<double> sectPhase; ///< sector angles
-  
+
+  size_t nSegment;               ///< Number of sections in a segment
+  std::vector<double> segDivide; ///< Segment divider
+
   size_t nVert;                  ///< Number of vertical divisions
   std::vector<double> vertFrac;  ///< Vertical fraction
 
@@ -76,6 +79,7 @@ class Bunker : public attachSystem::ContainedComp,
   std::vector<int> roofMatVec;   ///< guide Layer thicknesss (fractions)
 
   // SIDES:
+
   int sideFlag;                      ///< Which sides are divided [left/right]
   size_t nSide;                      ///< number of side layers
   std::vector<double> sideFrac;      ///< guide Layer thicknesss (fractions)

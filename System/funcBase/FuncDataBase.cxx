@@ -872,6 +872,21 @@ FuncDataBase::addVariable(const std::string& Name,const char* V)
 
 template<typename T>
 void
+FuncDataBase::addParse(const std::string& Name,const std::string& VParse)
+  /*!
+    Adds this function if the Code system has been 
+    executed
+    \param Name :: Name of the variable
+    \param V :: Variable to add
+  */
+{
+  Parse(VParse);
+  VList.addVar<T>(Name,Eval<T>());
+  return;
+}
+
+template<typename T>
+void
 FuncDataBase::setVariable(const std::string& Name,const T& V)
   /*!
     Set the varable to the value given
@@ -1174,6 +1189,9 @@ template int FuncDataBase::EvalTriple
 (const std::string&,const std::string&,
  const std::string&,const std::string&) const;
 
+// PARSE
+template
+void FuncDataBase::addParse<double>(const std::string&,const std::string&);
 
 
 /// \endcond TEMPLATE

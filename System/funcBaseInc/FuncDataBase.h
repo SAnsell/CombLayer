@@ -105,12 +105,16 @@ class FuncDataBase
   T EvalTriple(const std::string&,const std::string&,
 	       const std::string&,const std::string&) const;      
   
-  
-  /// Add variable
+
+  template<typename T>
+  void addParse(const std::string&,const std::string&);
+
+  // Add variable
   template<typename T>
   void addVariable(const std::string&,const T&);
   void addVariable(const std::string&,const char*);
   void addVariable(const std::string&);
+
   template<typename T>
   void setVariable(const std::string&,const T&);
   void setVariable(const std::string&);

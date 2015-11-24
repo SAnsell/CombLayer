@@ -172,11 +172,12 @@ DivideGrid::loadXML(const std::string& FName,
 
       // Input form is for type A:B:C / A,B,C
       // Take input and convert the range into number
-      ELog::EM<<"SStr == "<<SStr<<ELog::endDiag;
+
       StrFunc::sectionRange(SStr,SVec);
       StrFunc::sectionRange(VStr,VVec);
       StrFunc::sectionRange(RStr,RVec);
-      ELog::EM<<"SStr == "<<SStr<<ELog::endDiag;
+
+
       for(const size_t SN : SVec)
 	for(const size_t VN : VVec)
 	  for(const size_t RN : RVec)
@@ -185,8 +186,6 @@ DivideGrid::loadXML(const std::string& FName,
 	      MatName=StrFunc::fullBlock(MatName);
 	      const size_t HN=DivideGrid::hash(SN,VN,RN);
 	      std::map<size_t,std::string>::iterator mc=MatMap.find(HN);
-	      ELog::EM<<"HASH["<<SN<<"]["<<VN<<"]["<<RN<<"] == "
-		      <<HN<<ELog::endDiag;
 	      if (mc!=MatMap.end())
 		mc->second=MatName;
 	      else

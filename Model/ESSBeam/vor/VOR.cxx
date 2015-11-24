@@ -216,6 +216,7 @@ VOR::build(Simulation& System,
 
   setBeamAxis(GItem,0);
   FocusA->addInsertCell(GItem.getCells("Void"));
+  const std::vector<int> cN=GItem.getCells("Void");
   FocusA->addInsertCell(bunkerObj.getCell("MainVoid"));
   //  FocusA->addEndCut(GItem.getKey("Beam").getSignedLinkString(-2));
   FocusA->createAll(System,GItem.getKey("Beam"),-1,
@@ -258,7 +259,7 @@ VOR::build(Simulation& System,
   // Make bunker insert
   const attachSystem::FixedComp& GFC(FocusB->getKey("Guide0"));
   BInsert->createAll(System,FocusB->getKey("Guide0"),-1,bunkerObj);
-  attachSystem::addToInsertSurfCtrl(System,bunkerObj,"MainWall",*BInsert);
+  attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);
 
   //  FocusB->addInsertCell(BInsert->getCell("Void"));
   BInsert->insertComponent(System,"Void",*FocusB);

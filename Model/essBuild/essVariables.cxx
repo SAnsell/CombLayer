@@ -603,6 +603,7 @@ EssVariables(FuncDataBase& Control)
   EssBeamLinesVariables(Control);
   ODINvariables(Control);
   DREAMvariables(Control);
+  shortDREAMvariables(Control);
   ESTIAvariables(Control);
   LOKIvariables(Control);
   NMXvariables(Control);
@@ -642,13 +643,16 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("ABunkerNSectors",9);
   Control.addVariable("ABunkerNVert",24);
   Control.addVariable("ABunkerNLayers",24);
+  Control.addVariable("ABunkerNSegment",5);
+  Control.addVariable("ABunkerActiveSegment",0);
+
   Control.addVariable("ABunkerNRoof",5);
 
   Control.addVariable("ABunkerNSide",5);
   Control.addVariable("ABunkerNSideVert",5);
   Control.addVariable("ABunkerNSideThick",5);
   
-  Control.addVariable("ABunkerWallRadius",1300.0);
+  Control.addVariable("ABunkerWallRadius",1150.0);
   Control.addVariable("ABunkerFloorDepth",120.0);
   Control.addVariable("ABunkerRoofHeight",190.0);
 
@@ -699,7 +703,7 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("BBunkerWallLen1",0.5);
   Control.addVariable("BBunkerWallLen2",10.0);
   
-  Control.addVariable("BBunkerWallRadius",1700.0);
+  Control.addVariable("BBunkerWallRadius",2450.0);
   Control.addVariable("BBunkerFloorDepth",120.0);
   Control.addVariable("BBunkerRoofHeight",190.0);
 
