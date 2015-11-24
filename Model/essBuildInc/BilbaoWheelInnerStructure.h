@@ -49,15 +49,15 @@ class BilbaoWheelInnerStructure : public attachSystem::ContainedComp,
   double brickGapWidth;           ///< Distance between bricks in normal to radial direction
   int    brickGapMat;             ///< Material of gap between bricks
 
-  // !!! dummy names reserved for other variables
-  //  int    BeMat;                   ///< Inner Be material
-  //  int    BeWallMat;               ///< Inner Be wall material
+  int    nSectors;                ///< Number of sectors in Tungsten
+  double secSepThick;             ///< Thickness of sector separator
+  int    secSepMat;               ///< Material of sector separator
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
 
   void createSurfaces(const attachSystem::FixedComp&);
-  void createObjects(Simulation&, const attachSystem::FixedComp&);
+  void createObjects(Simulation&, attachSystem::FixedComp&);
   void createLinks();
 
  public:
@@ -68,7 +68,7 @@ class BilbaoWheelInnerStructure : public attachSystem::ContainedComp,
   virtual BilbaoWheelInnerStructure* clone() const;
   virtual ~BilbaoWheelInnerStructure();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&);
+  void createAll(Simulation&,attachSystem::FixedComp&);
 
 };
 

@@ -94,9 +94,10 @@ namespace essSystem
     brickMat(A.brickMat),
     brickGapLen(A.brickGapLen),
     brickGapWidth(A.brickGapWidth),
-    brickGapMat(A.brickGapMat)
-    //    BeMat(A.BeMat),
-    //    BeWallMat(A.BeWallMat)
+    brickGapMat(A.brickGapMat),
+    nSectors(A.nSectors),
+    secSepThick(A.secSepThick),
+    secSepMat(A.secSepMat)
     /*!
       Copy constructor
       \param A :: BilbaoWheelInnerStructure to copy
@@ -122,8 +123,9 @@ namespace essSystem
 	brickGapLen=A.brickGapLen;
 	brickGapWidth=A.brickGapWidth;
 	brickGapMat=A.brickGapMat;
-	//	BeMat=A.BeMat;
-	//	BeWallMat=A.BeWallMat;
+	nSectors=A.nSectors;
+	secSepThick=A.secSepThick;
+	secSepMat=A.secSepMat;
       }
     return *this;
   }
@@ -162,8 +164,11 @@ namespace essSystem
     brickGapWidth=Control.EvalVar<double>(keyName+"BrickGapWidth");
     brickGapMat=ModelSupport::EvalMat<int>(Control,keyName+"BrickGapMat");
 
-    //    BeMat=ModelSupport::EvalMat<int>(Control,keyName+"BeMat");
-    //    BeWallMat=ModelSupport::EvalMat<int>(Control,keyName+"BeWallMat");
+    nSectors=Control.EvalVar<int>(keyName+"NSectors");
+    if (nSectors<1)
+      ELog::EM << "NSectors must be >= 1" << ELog::endErr;
+    secSepThick=Control.EvalVar<double>(keyName+"SectorSepThick");
+    secSepMat=ModelSupport::EvalMat<int>(Control,keyName+"SectorSepMat");  
 
     return;
   }
@@ -190,23 +195,30 @@ namespace essSystem
   {
     ELog::RegMethod RegA("BilbaoWheelInnerStructure","createSurfaces");
 
-    const double BilbaoWheelZBottom = Wheel.getLinkPt(6)[2];
-    const double BilbaoWheelZTop = Wheel.getLinkPt(7)[2];
+    //    const double BilbaoWheelZTop = Wheel.getLinkPt(7)[2];
 
-    ModelSupport::buildPlane(SMap, insIndex+5, Origin+Z*(BilbaoWheelZBottom+brickLen), Z);
-    ModelSupport::buildPlane(SMap, insIndex+6, Origin+Z*(BilbaoWheelZTop-brickLen), Z);
+  // segmentation
+  double theta(0.0);
+  double thetarad(0.0);
+  const double dTheta = 360.0/nSectors;
+  int SIsec(insIndex+5000);
+  for (int j=0; j<nSectors; j++)
+    {
+      theta = j*dTheta;
+      thetarad = theta*M_PI/180.0;
+      ModelSupport::buildPlaneRotAxis(SMap, SIsec+1, Origin, X, Z, theta+90); // invisible divider
+      ModelSupport::buildPlaneRotAxis(SMap, SIsec+3, Origin-X*(secSepThick/2.0*cos(thetarad))-Y*(secSepThick/2.0*sin(thetarad)), X, Z, theta);
+      ModelSupport::buildPlaneRotAxis(SMap, SIsec+4, Origin+X*(secSepThick/2.0*cos(thetarad))+Y*(secSepThick/2.0*sin(thetarad)), X, Z, theta);
 
-    ModelSupport::buildPlane(SMap, insIndex+15, Origin+Z*(BilbaoWheelZBottom+brickLen+brickWidth), Z);
-    ModelSupport::buildPlane(SMap, insIndex+16, Origin+Z*(BilbaoWheelZTop-brickLen-brickWidth), Z);
+      SIsec += 10;
+    }
 
-    ModelSupport::buildCylinder(SMap, insIndex+7, Origin, Z, brickGapWidth);
-    ModelSupport::buildCylinder(SMap, insIndex+17, Origin, Z, brickGapWidth+brickGapLen);
 
     return; 
   }
 
   void
-  BilbaoWheelInnerStructure::createObjects(Simulation& System, const attachSystem::FixedComp& Wheel)
+  BilbaoWheelInnerStructure::createObjects(Simulation& System, attachSystem::FixedComp& Wheel)
   /*!
     Create the objects
     \param System :: Simulation to add results
@@ -215,25 +227,46 @@ namespace essSystem
   {
     ELog::RegMethod RegA("BilbaoWheelInnerStructure","createObjects");
     
-    const attachSystem::CellMap* CM = dynamic_cast<const attachSystem::CellMap*>(&Wheel);
-    MonteCarlo::Object* LowBeObj(0);
-    MonteCarlo::Object* TopBeObj(0);
-    int lowBeCell(0);
-    int topBeCell(0);
+    attachSystem::CellMap* CM = dynamic_cast<attachSystem::CellMap*>(&Wheel);
+    if (!CM)
+      throw ColErr::DynamicConv("FixedComp","CellMap",Wheel.getKeyName());
 
-    if (CM)
-      {
-	lowBeCell=CM->getCell("lowBe");
-	LowBeObj=System.findQhull(lowBeCell);
+    const std::pair<int,double> MatInfo=CM->deleteCellWithData(System, "Inner");
+    const int innerMat = MatInfo.first;
+    const double innerTemp = MatInfo.second;
 
-	topBeCell=CM->getCell("topBe");
-	TopBeObj=System.findQhull(topBeCell);
-      }
-    if (!LowBeObj)
-      throw ColErr::InContainerError<int>(topBeCell,"Wheel lowBe cell not found");
-    if (!TopBeObj)
-      throw ColErr::InContainerError<int>(topBeCell,"Wheel topBe cell not found");
+    const std::string vertStr = Wheel.getLinkString(6) + Wheel.getLinkString(7); // top+bottom
+    const std::string sideStr = Wheel.getLinkString(8) + Wheel.getLinkString(9); // min+max radii
+
+    //    System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,vertStr+sideStr));
     
+
+    int SI(insIndex);
+    int SIsec(insIndex+5000), SI1;
+    std::string Out;
+    if (nSectors==1)
+      System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,vertStr+sideStr)); // same as "Inner" cell from BilbaoWheel
+    else 
+      {
+	for (int j=0; j<nSectors; j++)
+	  {
+	    // Tungsten
+	    SI1 = (j!=nSectors-1) ? SIsec+10 : insIndex+5000;
+	    Out = ModelSupport::getComposite(SMap, SIsec, SI1, " 4 -3M ");
+	    System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,
+					     Out+vertStr+sideStr));
+	    
+	    // Pieces of steel between Tungsten sectors
+	    // -1 is needed since planes 3 and -4 cross Tunsten in two places,
+	    //     so we need to select only one
+	    Out = ModelSupport::getComposite(SMap, SIsec, " 3 -4 -1 ");
+	    System.addCell(MonteCarlo::Qhull(cellIndex++,secSepMat,innerTemp,Out+vertStr+sideStr));
+	    
+	    SIsec+=10;
+	  }
+      }
+
+
 
     return; 
   }
@@ -252,7 +285,7 @@ namespace essSystem
 
   void
   BilbaoWheelInnerStructure::createAll(Simulation& System,
-				 const attachSystem::FixedComp& FC)
+				       attachSystem::FixedComp& FC)
   /*!
     Extrenal build everything
     \param System :: Simulation

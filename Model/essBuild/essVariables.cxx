@@ -67,7 +67,6 @@ EssWheel(FuncDataBase& Control)
     \param Control :: Segment variables
    */
 {
-  Control.addVariable("BilbaoWheelEngineeringActive", 1);
   Control.addVariable("BilbaoWheelShaftHeight",435.0);
 
   Control.addVariable("BilbaoWheelNShaftLayers",5);
@@ -81,8 +80,6 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelShaftMat4","Iron");
   Control.addVariable("BilbaoWheelShaftRadius5",22.0);
   Control.addVariable("BilbaoWheelShaftMat5",0);
-
-
 
   Control.addVariable("BilbaoWheelXStep",0.0);
   Control.addVariable("BilbaoWheelYStep",112.2);
@@ -104,9 +101,6 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelCaseRadius",129.15);
   Control.addVariable("BilbaoWheelVoidRadius",131.15);
   Control.addVariable("BilbaoWheelAspectRatio", 0.00138);
-  Control.addVariable("BilbaoWheelNSectors", 36);
-  Control.addVariable("BilbaoWheelSectorSepThick", 1.0);
-  Control.addVariable("BilbaoWheelSectorSepMat", "SS316L785");
 
   Control.addVariable("BilbaoWheelWMat","Tungsten151");
   Control.addVariable("BilbaoWheelSteelMat","SS316L785");
@@ -133,6 +127,10 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelInnerStructureBrickGapLength",0.2);
   Control.addVariable("BilbaoWheelInnerStructureBrickGapWidth",0.2);
   Control.addVariable("BilbaoWheelInnerStructureBrickGapMat",0);
+
+  Control.addVariable("BilbaoWheelInnerStructureNSectors", 36);
+  Control.addVariable("BilbaoWheelInnerStructureSectorSepThick", 1.0);
+  Control.addVariable("BilbaoWheelInnerStructureSectorSepMat", "SS316L785");
 
   return;
 }

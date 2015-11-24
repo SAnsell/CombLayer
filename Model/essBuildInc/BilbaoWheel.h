@@ -38,7 +38,7 @@ namespace essSystem
 class BilbaoWheelInnerStructure;
 
 class BilbaoWheel : public WheelBase,
-    public attachSystem::CellMap
+  public attachSystem::CellMap
 {
  private:
   
