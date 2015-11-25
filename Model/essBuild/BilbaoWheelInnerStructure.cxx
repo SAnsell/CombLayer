@@ -313,10 +313,11 @@ namespace essSystem
     int SI(insIndex+6000);
     // first (outermost) layer
     Geometry::Plane *prad1 = 0; // first radial plane of the bricks
-    const int Nlayers=4;
-    for (int i=0; i<Nlayers; i++)
+    Geometry::Vec3D p4; // intersection of radial plane and inner cylinder:
+    int iLayer=0;
+    while (p4.abs()<Geometry::zeroTol) // while we are between outer and inner cylinders
       {
-	if (i==0)
+	if (iLayer==0)
 	  {
 	    prad1 = ModelSupport::buildPlane(SMap, SI+5, p1, p2, p3,
 					     Geometry::Vec3D(0.0, 0.0, 0.0));
@@ -324,13 +325,21 @@ namespace essSystem
 	else
 	  {
 	    // plane which goes after brick and gap
-	    ModelSupport::buildShiftedPlane(SMap, SI+5, prad1, -(brickLen+brickGapLen)*i);
+	    ModelSupport::buildShiftedPlane(SMap, SI+5, prad1, -(brickLen+brickGapLen)*iLayer);
 	  }
 
 	// back side of the brick
 	Geometry::Plane *ptmp = ModelSupport::buildShiftedPlane(SMap, SI+6, prad1,
-								-(brickLen*(i+1)+brickGapLen*i));
-
+								-((brickLen+brickGapLen)*iLayer+brickLen));
+	try
+	  {
+	    p4 = SurInter::getPoint(ptmp, innerCyl, pz, nearPt);
+	  }
+	catch (ColErr::IndexError<size_t>& IE)
+	  {
+	    //	    std::cout << "did not intersept" << std::endl;
+	  }
+	iLayer++;
 	SI += 10;
       }
 
