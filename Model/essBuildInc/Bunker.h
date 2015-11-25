@@ -128,7 +128,6 @@ class Bunker : public attachSystem::ContainedComp,
   void createSideLinks(const Geometry::Vec3D&,const Geometry::Vec3D&,
 		       const Geometry::Vec3D&,const Geometry::Vec3D&);
 
-  void createMainWall(Simulation&);
   void addCalcPoint(const size_t,const size_t,const size_t,
 		    std::string);
   void joinWall(Simulation&);
@@ -150,6 +149,7 @@ class Bunker : public attachSystem::ContainedComp,
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const attachSystem::FixedComp&,
 		 const long int,const bool);
+  void createMainWall(Simulation&);
 
 };
 

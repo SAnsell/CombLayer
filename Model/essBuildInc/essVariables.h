@@ -48,6 +48,7 @@ namespace setVariable
 
   // MODIFIED ESS Beamlines
   void shortDREAMvariables(FuncDataBase&);
+  void shortODINvariables(FuncDataBase&);
 
 }
 

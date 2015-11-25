@@ -25,6 +25,7 @@
 namespace attachSystem
 {
   class FixedComp;
+  class CopiedComp;
   class TwinComp;
   class CellMap;
 }
@@ -60,7 +61,7 @@ namespace essSystem
     \brief shortDREAM beamline constructor for the ESS
   */
   
-class shortDREAM
+class shortDREAM : public attachSystem::CopiedComp
 {
  private:
 
@@ -191,7 +192,7 @@ class shortDREAM
   
  public:
   
-  shortDREAM();
+  shortDREAM(const std::string&);
   shortDREAM(const shortDREAM&);
   shortDREAM& operator=(const shortDREAM&);
   ~shortDREAM();

@@ -202,7 +202,7 @@ NMX::build(Simulation& System,
   //  const attachSystem::FixedComp& GFC(BendA->getKey("Guide0"));
   const attachSystem::FixedComp& GFC(*VPipeB);
   BInsert->createAll(System,GFC,2,bunkerObj);
-  attachSystem::addToInsertSurfCtrl(System,bunkerObj,"MainWall",*BInsert);
+  attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);
   
   FocusWall->addInsertCell(BInsert->getCell("Void"));
   FocusWall->createAll(System,*BInsert,-1,

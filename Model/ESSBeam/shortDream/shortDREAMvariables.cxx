@@ -352,7 +352,7 @@ shortDREAMvariables(FuncDataBase& Control)
   Control.addVariable("shortDreamBandADisk0PhaseAngle1",275.0);
   Control.addVariable("shortDreamBandADisk0OpenAngle1",25.0);
 
-  Control.addVariable("shortDreamVacCYStep",213.0);    
+  Control.addVariable("shortDreamVacCYStep",153.0);  // -60    
   Control.addVariable("shortDreamVacCVoidHeight",20.0);
   Control.addVariable("shortDreamVacCVoidDepth",19.0);
   Control.addVariable("shortDreamVacCVoidWidth",87.0);
@@ -391,7 +391,7 @@ shortDREAMvariables(FuncDataBase& Control)
   Control.addVariable("shortDreamFDZStep",0.0);       
   Control.addVariable("shortDreamFDXYAngle",0.0);       
   Control.addVariable("shortDreamFDZAngle",0.0);
-  Control.addVariable("shortDreamFDLength",210.0);       
+  Control.addVariable("shortDreamFDLength",150.0);       
   
   Control.addVariable("shortDreamFDBeamYStep",1.0);
  
@@ -411,7 +411,8 @@ shortDREAMvariables(FuncDataBase& Control)
   Control.addVariable("shortDreamFD0HeightEnd",4.97);
   Control.addVariable("shortDreamFD0WidthStart",2.24);
   Control.addVariable("shortDreamFD0WidthEnd",3.05);
-  Control.addVariable("shortDreamFD0Length",210.0);
+  Control.addParse<double>("shortDreamFD0Length","shortDreamFDLength");
+
 
   // ------------------------------------------
   // Band Pass/C : for the band pass chopper

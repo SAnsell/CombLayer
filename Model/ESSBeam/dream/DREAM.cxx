@@ -253,7 +253,9 @@ DREAM::buildChopperBlock(Simulation& System,
     \param System :: Simulation 
     \param bunkerObj :: Object
     \param prevFC :: FixedComponent for like point [uses side 2]
+    \param prevVacBox :: 
     \param GL :: Guide Line 
+    \parma Pipe :: Pip surrounding block
   */
 {
   ELog::RegMethod RegA("DREAM","buildChopperBlock");

@@ -119,18 +119,31 @@ setESSFull(defaultConfig& A)
   A.setOption("lowMod","Butterfly");
   A.setOption("topMod","Butterfly");
 
-  A.setMultiOption("beamlines",0,"G1BLine19 ODIN");
-  A.setMultiOption("beamlines",1,"G1BLine17 LOKI");
-  A.setMultiOption("beamlines",2,"G1BLine15 NMX");
-  A.setMultiOption("beamlines",3,"G1BLine6 VOR");
-  A.setMultiOption("beamlines",4,"G4BLine19 DREAM");
+  const std::map<std::string,std::string> beamDef=
+    {
+      {"NMX","G4BLine18"},
+      {"SHORTDREAM","G4BLine9"},
+      {"SHORTODIN","G4BLine6"},
+      {"DREAM","G4BLine17"},
+      {"VOR","G4BLine2"},   // also 17  
+      {"LOKI","G4BLine4"},
+      {"ODIN","G4BLine15"},
+      {"ESTIA","G4BLine11"}
+    };     
+  const std::set<std::string> beamFilled=
+    {"NMX","DREAM","VOR","SHORTDREAM","LOKI"};
 
-  A.setVar("G1BLine1Active",1);
-  A.setVar("G1BLine3Active",1);
-  A.setVar("G1BLine5Active",1);
-  A.setVar("G1BLine6Active",1);
-
-  A.setVar("G4BLine19Active",1);
+  size_t index(0);
+  std::map<std::string,std::string>::const_iterator mc;
+  for(mc=beamDef.begin();mc!=beamDef.end();mc++)
+    {
+      A.setMultiOption("beamlines",index,mc->second+" "+mc->first);
+      A.setVar(mc->second+"Active",1);
+      if (beamFilled.find(mc->first)!=beamFilled.end())
+	A.setVar(mc->second+"Filled",1);
+      index++;
+    }
+  
 
   return;
 }
@@ -172,16 +185,17 @@ setESSSingle(defaultConfig& A,
 
   A.setOption("lowMod","Butterfly");
   const std::map<std::string,std::string> beamDef=
-    {{"NMX","G4BLine1"},
+    {{"NMX","G4BLine15"},
      {"SHORTDREAM","G4BLine9"},
+     {"SHORTODIN","G4BLine6"},
      {"DREAM","G4BLine17"},
      {"VOR","G4BLine2"},   // also 17  
-     {"LOKI","G4BLine15"},
+     {"LOKI","G4BLine4"},
      {"ODIN","G4BLine13"},
      {"ESTIA","G4BLine11"}
     };     
   const std::set<std::string> beamFilled=
-    {"NMX","DREAM","VOR","SHORTDREAM"};
+    {"NMX","DREAM","VOR","SHORTDREAM","LOKI"};
   
   std::map<std::string,std::string>::const_iterator mc=
     beamDef.find(beamItem);

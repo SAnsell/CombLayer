@@ -235,7 +235,7 @@ ODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
   // Make bunker insert
   const attachSystem::FixedComp& GFC(GuideB->getKey("Guide0"));
   BInsert->createAll(System,GFC,2,bunkerObj);   // changed from -1
-  attachSystem::addToInsertSurfCtrl(System,bunkerObj,"MainWall",*BInsert);  
+  attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);  
 
 
   // Guide in the bunker insert

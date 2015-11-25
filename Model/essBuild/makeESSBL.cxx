@@ -61,6 +61,7 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "CopiedComp.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
@@ -81,6 +82,7 @@
 #include "NMX.h"
 #include "DREAM.h"
 #include "shortDREAM.h"
+#include "shortODIN.h"
 #include "VOR.h"
 
 #include "beamlineConstructor.h"
@@ -188,6 +190,13 @@ makeESSBL::build(Simulation& System,
       ODIN OdinBL;
       OdinBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
+  else if (beamName=="SHORTODIN")
+    {
+      ELog::EM<<"Building "<<beamName<<ELog::endDiag;
+      // Odin beamline
+      shortODIN OdinBL;
+      OdinBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+    }
   else if (beamName=="ESTIA")
     {
       ELog::EM<<"Building "<<beamName<<ELog::endDiag;
@@ -225,7 +234,7 @@ makeESSBL::build(Simulation& System,
     {
       // short sector dream
       ELog::EM<<"Building "<<beamName<<ELog::endDiag;
-      shortDREAM dreamBL;
+      shortDREAM dreamBL("shortDream");
       dreamBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="JSANS" || beamName=="JRef")
@@ -238,7 +247,10 @@ makeESSBL::build(Simulation& System,
       RefA->addInsertCell(voidCell);
       RefA->createAll(System,*mainFCPtr,2,*mainFCPtr,2);
     }
-
+  else
+    {
+      ELog::EM<<"NON-UNDERSTOOD BEAMLINE : "<<beamName<<ELog::endErr;
+    }
   return;
 }
 
