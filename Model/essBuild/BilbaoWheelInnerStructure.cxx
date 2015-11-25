@@ -356,27 +356,27 @@ namespace essSystem
 
     // tangential (perpendicular to radial) planes
     // only 2 layers are needed since other layers use the same planes
-    Geometry::Plane *phor1 = 0; // first tangential plane of the bricks
+    Geometry::Plane *ptan1 = 0; // first tangential plane of the bricks
     int SJ(insIndex+6000);
     for (int i=0; i<50; i++)
       {
 	// 1st layer
 	if (i==0)
-	  phor1 = ModelSupport::buildRotatedPlane(SMap, SJ+1, prad1, 90, Z, p2);
+	  ptan1 = ModelSupport::buildRotatedPlane(SMap, SJ+1, prad1, 90, Z, p2);
 	else // after brick and gap
-	  ModelSupport::buildShiftedPlane(SMap, SJ+1, phor1,
+	  ModelSupport::buildShiftedPlane(SMap, SJ+1, ptan1,
 					  i*(brickWidth+brickGapWidth)); 
 	
 	// after brick
-	Geometry::Plane *ptmp = ModelSupport::buildShiftedPlane(SMap, SJ+2, phor1,
+	Geometry::Plane *ptmp = ModelSupport::buildShiftedPlane(SMap, SJ+2, ptan1,
 					i*(brickWidth+brickGapWidth)+brickWidth);
 	
 	// 2nd layer
 	// after brick
-	ModelSupport::buildShiftedPlane(SMap, SJ+11, phor1,
+	ModelSupport::buildShiftedPlane(SMap, SJ+11, ptan1,
 					(2*i+1)*(brickWidth+brickGapWidth)/2.0-brickWidth-brickGapWidth);
 	// after brick and gap
-	ModelSupport::buildShiftedPlane(SMap, SJ+12, phor1,
+	ModelSupport::buildShiftedPlane(SMap, SJ+12, ptan1,
 					(2*i+1)*(brickWidth+brickGapWidth)/2.0+brickWidth-brickWidth-brickGapWidth);
 
 	SJ += 20;
@@ -408,28 +408,27 @@ namespace essSystem
     std::string layerStr;
     for (int i=0; i<nBrickLayers; i++)
       {
-	Out = ModelSupport::getComposite(SMap, SI, " -5  6 ");
-	layerStr = Out;
-	if (i>40) // otherwise we add bricks (tmp)
-	  System.addCell(MonteCarlo::Qhull(cellIndex++, brickMat, 0, Out+vertStr+sideStr));
-	else {
+	layerStr = ModelSupport::getComposite(SMap, SI, " -5  6 ");
+	//	if (i>2) // otherwise we add bricks (tmp)
+        //System.addCell(MonteCarlo::Qhull(cellIndex++, brickMat, 0, Out+vertStr+sideStr));
+	//	else {
 	  int SJ(insIndex+6000);
-	  for (int j=0; j<18; j++)
+	  for (int j=0; j<27; j++) // !!! TMP
 	    {
 	      int bOffset = i%2 ? SJ+10 : SJ;
 	      Out1 = ModelSupport::getComposite(SMap, bOffset, " 1 -2 ");
-	      if (j==0)
-		Out1 = Out1 + side1;
+	      //	      if (j==0)
+	      //		Out1 = Out1 + side1;
 	      System.addCell(MonteCarlo::Qhull(cellIndex++, brickMat, 0,
-					       Out1+layerStr+vertStr));
+					       Out1+layerStr+vertStr+sideStr));  // !!! sideStr is tmp
 	      
 	      Out1 = ModelSupport::getComposite(SMap, bOffset, bOffset+20, " 2 -1M ");
 	      System.addCell(MonteCarlo::Qhull(cellIndex++, brickGapMat, 0,
-					       Out1+layerStr+vertStr));
+					       Out1+layerStr+vertStr+sideStr)); // !!! sideStr is TMP
 	      
 	      SJ += 20;
 	    }
-	}
+	  //}
 
 	if (i==nBrickLayers-1) 
 	  Out = ModelSupport::getComposite(SMap, SI, SI+10, " -6  ") + innerCyl;
