@@ -98,7 +98,9 @@ namespace essSystem
     brickGapMat(A.brickGapMat),
     nSectors(A.nSectors),
     secSepThick(A.secSepThick),
-    secSepMat(A.secSepMat)
+    secSepMat(A.secSepMat),
+    nBrickLayers(A.nBrickLayers),
+    nBricks(A.nBricks)
     /*!
       Copy constructor
       \param A :: BilbaoWheelInnerStructure to copy
@@ -127,6 +129,8 @@ namespace essSystem
 	nSectors=A.nSectors;
 	secSepThick=A.secSepThick;
 	secSepMat=A.secSepMat;
+	nBrickLayers=A.nBrickLayers;
+	nBricks=A.nBricks;
       }
     return *this;
   }
@@ -315,7 +319,7 @@ namespace essSystem
     Geometry::Plane *prad1 = 0; // first radial plane of the bricks
     Geometry::Vec3D p4; // intersection of radial plane and inner cylinder:
     int iLayer=0;
-    while (p4.abs()<Geometry::zeroTol) // while we are between outer and inner cylinders
+    for (;;) // while we are between outer and inner cylinders
       {
 	if (iLayer==0)
 	  {
@@ -339,13 +343,20 @@ namespace essSystem
 	  {
 	    //	    std::cout << "did not intersept" << std::endl;
 	  }
+
+	if (p4.abs()>Geometry::zeroTol) // if back of the brick crosses inner surface
+	  {
+	    nBrickLayers = iLayer;
+	    break;
+	  }
+
 	iLayer++;
 	SI += 10;
       }
 
-    //  perpendicular to radial planes
+    // tangential (perpendicular to radial) planes
     // only 2 layers are needed since other layers use the same planes
-    Geometry::Plane *phor1 = 0; // first perpendicular to radial plane of the bricks
+    Geometry::Plane *phor1 = 0; // first tangential plane of the bricks
     int SJ(insIndex+6000);
     for (int i=0; i<50; i++)
       {
@@ -357,16 +368,16 @@ namespace essSystem
 					  i*(brickWidth+brickGapWidth)); 
 	
 	// after brick
-	ModelSupport::buildShiftedPlane(SMap, SJ+2, phor1,
+	Geometry::Plane *ptmp = ModelSupport::buildShiftedPlane(SMap, SJ+2, phor1,
 					i*(brickWidth+brickGapWidth)+brickWidth);
 	
 	// 2nd layer
 	// after brick
 	ModelSupport::buildShiftedPlane(SMap, SJ+11, phor1,
-					(2*i+1)*(brickWidth+brickGapWidth)/2.0);
+					(2*i+1)*(brickWidth+brickGapWidth)/2.0-brickWidth-brickGapWidth);
 	// after brick and gap
 	ModelSupport::buildShiftedPlane(SMap, SJ+12, phor1,
-					(2*i+1)*(brickWidth+brickGapWidth)/2.0+brickWidth);
+					(2*i+1)*(brickWidth+brickGapWidth)/2.0+brickWidth-brickWidth-brickGapWidth);
 
 	SJ += 20;
       }
@@ -383,6 +394,7 @@ namespace essSystem
 
     const std::string sideStr = side1 + side2;
     const std::string vertStr = Wheel.getLinkString(6) + Wheel.getLinkString(7); // top+bottom
+
     const std::string innerCyl = Wheel.getLinkString(8);
     const std::string outerCyl = Wheel.getLinkString(9);
 
@@ -393,17 +405,16 @@ namespace essSystem
     System.addCell(MonteCarlo::Qhull(cellIndex++, brickGapMat, 0, Out+vertStr+outerCyl));
 
     // bricks
-    const int Nlayers = 4;
     std::string layerStr;
-    for (int i=0; i<Nlayers; i++)
+    for (int i=0; i<nBrickLayers; i++)
       {
 	Out = ModelSupport::getComposite(SMap, SI, " -5  6 ");
 	layerStr = Out;
-	if (i>2) // otherwise we add bricks (tmp)
+	if (i>40) // otherwise we add bricks (tmp)
 	  System.addCell(MonteCarlo::Qhull(cellIndex++, brickMat, 0, Out+vertStr+sideStr));
 	else {
 	  int SJ(insIndex+6000);
-	  for (int j=0; j<17; j++)
+	  for (int j=0; j<18; j++)
 	    {
 	      int bOffset = i%2 ? SJ+10 : SJ;
 	      Out1 = ModelSupport::getComposite(SMap, bOffset, " 1 -2 ");
@@ -420,7 +431,7 @@ namespace essSystem
 	    }
 	}
 
-	if (i==Nlayers-1) 
+	if (i==nBrickLayers-1) 
 	  Out = ModelSupport::getComposite(SMap, SI, SI+10, " -6  ") + innerCyl;
 	else
 	  Out = ModelSupport::getComposite(SMap, SI, SI+10, " -6 5M ");

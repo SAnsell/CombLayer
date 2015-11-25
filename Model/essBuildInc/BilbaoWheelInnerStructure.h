@@ -53,6 +53,9 @@ class BilbaoWheelInnerStructure : public attachSystem::ContainedComp,
   double secSepThick;             ///< Thickness of sector separator
   int    secSepMat;               ///< Material of sector separator
 
+  int    nBrickLayers      ;      ///< number of radial brick layers
+  std::vector<int>  nBricks;      ///< number of bricks in each radial layer
+
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
 
