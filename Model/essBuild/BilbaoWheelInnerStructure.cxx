@@ -298,6 +298,8 @@ namespace essSystem
     pSide2 :: wheel segment side plane
    */
   {
+    ELog::RegMethod RegA("BilbaoWheelInnerStructure","createBrickSurfaces");
+
     const Geometry::Surface *innerCyl = SMap.realSurfPtr(Wheel.getLinkSurf(8));
     const Geometry::Surface *outerCyl = SMap.realSurfPtr(Wheel.getLinkSurf(9));
 
@@ -307,38 +309,57 @@ namespace essSystem
     Geometry::Vec3D p2 = SurInter::getPoint(pSide2, outerCyl, pz, nearPt);
     Geometry::Vec3D p3 = p2 + Geometry::Vec3D(0.0, 0.0, 1.0);
 
+    // radial planes
     int SI(insIndex+6000);
     // first (outermost) layer
     Geometry::Plane *prad1 = 0; // first radial plane of the bricks
-    Geometry::Plane *phor1 = 0; // first perpendicular to radial plane of the bricks
     const int Nlayers=4;
     for (int i=0; i<Nlayers; i++)
       {
 	if (i==0)
 	  {
-	    prad1 = ModelSupport::buildPlane(SMap, SI+5, p1, p2, p3, Geometry::Vec3D(0.0, 0.0, 0.0));
+	    prad1 = ModelSupport::buildPlane(SMap, SI+5, p1, p2, p3,
+					     Geometry::Vec3D(0.0, 0.0, 0.0));
 	  }
 	else
 	  {
+	    // plane which goes after brick and gap
 	    ModelSupport::buildShiftedPlane(SMap, SI+5, prad1, -(brickLen+brickGapLen)*i);
 	  }
 
-	ModelSupport::buildShiftedPlane(SMap, SI+6, prad1, -(brickLen*(i+1)+brickGapLen*i));
+	// back side of the brick
+	Geometry::Plane *ptmp = ModelSupport::buildShiftedPlane(SMap, SI+6, prad1,
+								-(brickLen*(i+1)+brickGapLen*i));
 
-	int SJ(SI);
-	for (int j=0; j<2; j++)
-	  {
-	    if ((i==0) && (j==0))
-	      phor1 = ModelSupport::buildRotatedPlane(SMap, SJ+1, prad1, 90, Z, p2);
-	    else
-	      ModelSupport::buildShiftedPlane(SMap, SJ+1, phor1, j*(brickWidth+brickGapWidth));
+	SI += 10;
+      }
 
-	    ModelSupport::buildShiftedPlane(SMap, SJ+2, phor1, j*(brickWidth+brickGapWidth)+brickWidth);
+    //  perpendicular to radial planes
+    // only 2 layers are needed since other layers use the same planes
+    Geometry::Plane *phor1 = 0; // first perpendicular to radial plane of the bricks
+    int SJ(insIndex+6000);
+    for (int i=0; i<50; i++)
+      {
+	// 1st layer
+	if (i==0)
+	  phor1 = ModelSupport::buildRotatedPlane(SMap, SJ+1, prad1, 90, Z, p2);
+	else // after brick and gap
+	  ModelSupport::buildShiftedPlane(SMap, SJ+1, phor1,
+					  i*(brickWidth+brickGapWidth)); 
+	
+	// after brick
+	ModelSupport::buildShiftedPlane(SMap, SJ+2, phor1,
+					i*(brickWidth+brickGapWidth)+brickWidth);
+	
+	// 2nd layer
+	// after brick
+	ModelSupport::buildShiftedPlane(SMap, SJ+11, phor1,
+					(2*i+1)*(brickWidth+brickGapWidth)/2.0);
+	// after brick and gap
+	ModelSupport::buildShiftedPlane(SMap, SJ+12, phor1,
+					(2*i+1)*(brickWidth+brickGapWidth)/2.0+brickWidth);
 
-	    SJ += 2;
-	  }
-
-	SI += 100;
+	SJ += 20;
       }
   }
 
@@ -349,6 +370,8 @@ namespace essSystem
     Create cells for bricks in the given sector
    */
   {
+    ELog::RegMethod RegA("BilbaoWheelInnerStructure","createBricks");
+
     const std::string sideStr = side1 + side2;
     const std::string vertStr = Wheel.getLinkString(6) + Wheel.getLinkString(7); // top+bottom
     const std::string innerCyl = Wheel.getLinkString(8);
@@ -359,7 +382,7 @@ namespace essSystem
     // He layer in front of the bricks
     Out = ModelSupport::getComposite(SMap, SI, " 5 ");
     System.addCell(MonteCarlo::Qhull(cellIndex++, brickGapMat, 0, Out+vertStr+outerCyl));
-    
+
     // bricks
     const int Nlayers = 4;
     std::string layerStr;
@@ -367,31 +390,34 @@ namespace essSystem
       {
 	Out = ModelSupport::getComposite(SMap, SI, " -5  6 ");
 	layerStr = Out;
-	if (i!=0) // otherwise we add bricks (tmp)
+	if (i>2) // otherwise we add bricks (tmp)
 	  System.addCell(MonteCarlo::Qhull(cellIndex++, brickMat, 0, Out+vertStr+sideStr));
 	else {
-	    int SJ(SI);
-	    for (int j=0; j<1; j++)
-	      {
-		Out1 = ModelSupport::getComposite(SMap, SJ, " 1 -2 ");
-		if (j==0)
-		  Out1 = Out1 + side1;
-		System.addCell(MonteCarlo::Qhull(cellIndex++, brickMat, 0, Out1+layerStr+vertStr));
-
-		Out1 = ModelSupport::getComposite(SMap, SJ, SJ+2, " 2 -1M ");
-		System.addCell(MonteCarlo::Qhull(cellIndex++, brickGapMat, 0, Out1+layerStr+vertStr));
-
-		SJ += 2;
-	      }
-	  }
+	  int SJ(insIndex+6000);
+	  for (int j=0; j<17; j++)
+	    {
+	      int bOffset = i%2 ? SJ+10 : SJ;
+	      Out1 = ModelSupport::getComposite(SMap, bOffset, " 1 -2 ");
+	      if (j==0)
+		Out1 = Out1 + side1;
+	      System.addCell(MonteCarlo::Qhull(cellIndex++, brickMat, 0,
+					       Out1+layerStr+vertStr));
+	      
+	      Out1 = ModelSupport::getComposite(SMap, bOffset, bOffset+20, " 2 -1M ");
+	      System.addCell(MonteCarlo::Qhull(cellIndex++, brickGapMat, 0,
+					       Out1+layerStr+vertStr));
+	      
+	      SJ += 20;
+	    }
+	}
 
 	if (i==Nlayers-1) 
-	  Out = ModelSupport::getComposite(SMap, SI, SI+100, " -6  ") + innerCyl;
+	  Out = ModelSupport::getComposite(SMap, SI, SI+10, " -6  ") + innerCyl;
 	else
-	  Out = ModelSupport::getComposite(SMap, SI, SI+100, " -6 5M ");
+	  Out = ModelSupport::getComposite(SMap, SI, SI+10, " -6 5M ");
 	System.addCell(MonteCarlo::Qhull(cellIndex++, brickGapMat, 0, Out+vertStr+sideStr));
 	
-	SI += 100;
+	SI += 10;
       }
   }
 
