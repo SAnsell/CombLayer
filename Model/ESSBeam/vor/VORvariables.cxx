@@ -227,22 +227,22 @@ VORvariables(FuncDataBase& Control)
   // Centre position is GuideD Length + Radius [12m] + void Depth/2 + front
   Control.addVariable("vorPitAVoidHeight",167.0);
   Control.addVariable("vorPitAVoidDepth",36.0);
-  Control.addVariable("vorPitAVoidWidth",246.0);
+  Control.addVariable("vorPitAVoidWidth",166.0);
   Control.addVariable("vorPitAVoidLength",22.0);
   
-  Control.addVariable("vorPitAFeHeight",70.0);
-  Control.addVariable("vorPitAFeDepth",60.0);
-  Control.addVariable("vorPitAFeWidth",60.0);
-  Control.addVariable("vorPitAFeFront",45.0);
-  Control.addVariable("vorPitAFeBack",70.0);
+  Control.addVariable("vorPitAFeHeight",20.0);
+  Control.addVariable("vorPitAFeDepth",20.0);
+  Control.addVariable("vorPitAFeWidth",15.0);
+  Control.addVariable("vorPitAFeFront",25.0);
+  Control.addVariable("vorPitAFeBack",20.0);
   Control.addVariable("vorPitAFeMat","Stainless304");
 
   
-  Control.addVariable("vorPitAConcHeight",50.0);
-  Control.addVariable("vorPitAConcDepth",50.0);
-  Control.addVariable("vorPitAConcWidth",50.0);
-  Control.addVariable("vorPitAConcFront",50.0);
-  Control.addVariable("vorPitAConcBack",50.0);
+  Control.addVariable("vorPitAConcHeight",30.0);
+  Control.addVariable("vorPitAConcDepth",30.0);
+  Control.addVariable("vorPitAConcWidth",30.0);
+  Control.addVariable("vorPitAConcFront",30.0);
+  Control.addVariable("vorPitAConcBack",30.0);
   Control.addVariable("vorPitAConcMat","Concrete");
 
   Control.addVariable("vorPitAColletHeight",15.0);

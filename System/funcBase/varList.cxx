@@ -194,14 +194,16 @@ varList::copyVar(const std::string& Key,const std::string& other)
   */
 {
   ELog::RegMethod RegA("varList","copyVar");
+
   if (Key==other) return;
   
   std::map<std::string,FItem*>::iterator ac;
   std::map<std::string,FItem*>::const_iterator bc;
 
   bc=varName.find(other);
-  if (bc!=varName.end())
+  if (bc==varName.end())
     throw ColErr::InContainerError<std::string>(other,"Var item not found");
+
   ac=varName.find(Key);
   if (ac!=varName.end())
     {

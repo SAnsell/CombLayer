@@ -85,6 +85,7 @@ void
 CopiedComp::process(FuncDataBase& Control) const
   /*!
     Modify the control base to keep a copy
+    \param Control :: DataBase of variables
   */
 {
   ELog::RegMethod regA("CopiedComp","process");
@@ -94,21 +95,16 @@ CopiedComp::process(FuncDataBase& Control) const
   std::vector<std::string>::const_iterator mc=
     std::lower_bound(keyVec.begin(),keyVec.end(),baseName,
   		     StrFunc::stringSearch());
-  ELog::EM<<"TOP Item == "<<*mc<<ELog::endDiag;
+
   StrFunc::stringSearch SItem;
   while(mc!=keyVec.end() && !SItem(baseName,*mc))
     {
       const std::string mainPart=newName+
 	mc->substr(baseName.size());
       if (!Control.hasVariable(mainPart))
-	{
-	  ELog::EM<<"MItem == "<<mainPart<<ELog::endDiag;
-	  Control.copyVar(*mc,mainPart);
-	}
+	Control.copyVar(mainPart,*mc);
       mc++;
     }
-
-  //  for(;StrFunc::stringSearch::operator()(basename,B)
   return;
 }
 

@@ -159,7 +159,7 @@ shortDREAM::shortDREAM(const std::string& keyName) :
     ModelSupport::objectRegister::Instance();
 
   // This is necessary:
-  OR.cell("shortDreamAxis");
+  OR.cell(newName+"Axis");
   OR.addObject(dreamAxis);
 
   OR.addObject(FocusA);
@@ -306,6 +306,7 @@ shortDREAM::build(Simulation& System,
   // For output stream
   ELog::RegMethod RegA("shortDREAM","build");
 
+  ELog::EM<<"PROCESS CALL"<<ELog::endDiag;
   CopiedComp::process(System.getDataBase());
   
   ELog::EM<<"\nBuilding DREAM on : "<<GItem.getKeyName()<<ELog::endDiag;

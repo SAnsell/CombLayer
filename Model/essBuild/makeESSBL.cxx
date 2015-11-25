@@ -237,6 +237,13 @@ makeESSBL::build(Simulation& System,
       shortDREAM dreamBL("shortDream");
       dreamBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
+  else if (beamName=="SHORTDREAM2")
+    {
+      // short sector dream
+      ELog::EM<<"Building "<<beamName<<ELog::endDiag;
+      shortDREAM dreamBL("shortDream2");
+      dreamBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+    }
   else if (beamName=="JSANS" || beamName=="JRef")
     {
       
