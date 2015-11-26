@@ -343,7 +343,7 @@ MDB.resetMaterial(MObj);
 		   "74184.71c  0.306400000 "
 		   "74186.71c  0.284300000 ",
 		   "",MLib);
-  MObj.setDensity(-19.3);
+  MObj.setDensity(-19.298); // density at 300 K according to the Material handbook + see comment 10 lines below
   MDB.resetMaterial(MObj);  
 
 
