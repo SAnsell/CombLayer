@@ -100,6 +100,7 @@ namespace essSystem
     nSectors(A.nSectors),
     secSepThick(A.secSepThick),
     secSepMat(A.secSepMat),
+    nBrickSectors(A.nBrickSectors),
     nBrickLayers(A.nBrickLayers),
     nBricks(A.nBricks)
     /*!
@@ -131,6 +132,7 @@ namespace essSystem
 	nSectors=A.nSectors;
 	secSepThick=A.secSepThick;
 	secSepMat=A.secSepMat;
+	nBrickSectors=A.nBrickSectors;
 	nBrickLayers=A.nBrickLayers;
 	nBricks=A.nBricks;
       }
@@ -176,6 +178,8 @@ namespace essSystem
       ELog::EM << "NSectors must be >= 1" << ELog::endErr;
     secSepThick=Control.EvalVar<double>(keyName+"SectorSepThick");
     secSepMat=ModelSupport::EvalMat<int>(Control,keyName+"SectorSepMat");  
+
+    nBrickSectors=Control.EvalVar<int>(keyName+"NBrickSectors");
 
     nSteelLayers=Control.EvalVar<int>(keyName+"NSteelLayers");
     brickSteelMat=ModelSupport::EvalMat<int>(Control,keyName+"BrickSteelMat");  
@@ -231,13 +235,13 @@ namespace essSystem
   Geometry::Plane *pmin, *pmax;
   for (int j=0; j<nSectors; j++)
     {
-      std::cout << j << std::endl;
+      //      std::cout << j << std::endl;
       pmin = p[i+2];
       pmax = p[i+1];
       if (j==nSectors-1)
 	pmin=p[1];
       
-      if (j<5)
+      if (j<nBrickSectors)
 	createBrickSurfaces(Wheel, p[i+2], p[i+1], j);
       //	createBrickSurfaces(Wheel, p[i], p[nSectors-2]);
       i+=2;
@@ -284,7 +288,7 @@ namespace essSystem
 	    // Tungsten
 	    SI1 = (j!=nSectors-1) ? SIsec+10 : insIndex+0;
 	    Out = ModelSupport::getComposite(SMap, SIsec, SI1, " 4 -3M ");
-	    if (j>2)
+	    if (j>=nBrickSectors)
 		System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,temp,
 						 Out+vertStr+cylStr));
 	    else

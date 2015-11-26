@@ -54,6 +54,7 @@ class BilbaoWheelInnerStructure : public attachSystem::ContainedComp,
   double secSepThick;             ///< Thickness of sector separator
   int    secSepMat;               ///< Material of sector separator
 
+  int    nBrickSectors;           ///< number of sectors filled with bricks
   int    nBrickLayers;            ///< number of radial brick layers
   std::vector<int>  nBricks;      ///< number of bricks in each radial layer
   int    nSteelLayers;            ///< number of brick layers made of steel (counting from internal cylinder)
