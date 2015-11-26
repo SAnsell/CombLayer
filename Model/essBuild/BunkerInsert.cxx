@@ -76,6 +76,7 @@
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "SurfMap.h"
 #include "surfDBase.h"
 #include "surfDIter.h"
 #include "surfDivide.h"

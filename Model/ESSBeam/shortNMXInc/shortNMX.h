@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef essSystem_NMX_h
-#define essSystem_NMX_h
+#ifndef essSystem_shortNMX_h
+#define essSystem_shortNMX_h
 
 namespace attachSystem
 {

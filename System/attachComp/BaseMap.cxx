@@ -196,6 +196,49 @@ BaseMap::setItems(const std::string& Key,const int CNA,const int CNB)
 }
 
 void
+BaseMap::addItems(const std::string& Key,
+		  const std::vector<int>& inpVec)
+  /*!
+    Insert a set of cells
+    \param Key :: Keyname
+    \param inpVec :: Input vector
+  */
+{
+  ELog::RegMethod RegA("BaseMap","setItems");
+
+  if (inpVec.empty()) return;
+  
+  LCTYPE::iterator mc=Items.find(Key);
+  if (mc==Items.end())
+    {
+
+      if (inpVec.size()==1)
+	Items.insert(LCTYPE::value_type(Key,inpVec.front()));
+      else
+	{
+	  SplitUnits.push_back(inpVec);
+	  Items.insert(LCTYPE::value_type
+		       (Key,-static_cast<int>(SplitUnits.size())));
+	}      
+      return;
+    }
+      
+  if (mc->second>=0)           // +1 case [one item]
+    {
+      SplitUnits.push_back(inpVec);
+      SplitUnits.back().push_back(mc->second);
+      mc->second = -static_cast<int>(SplitUnits.size());
+      return;
+    }
+  
+  // mc->second :: -ve
+  const size_t SI(static_cast<size_t>(-mc->second)-1);
+  std::move(inpVec.begin(),inpVec.end(),
+	    std::back_inserter(SplitUnits[SI]));
+  return; 
+}
+
+void
 BaseMap::addItem(const std::string& Key,const int CN)
   /*!
     Insert a cell 
@@ -288,7 +331,35 @@ BaseMap::getItems(const std::string& Key) const
       Out.push_back(CN);
   return Out;
 }
-  
+
+std::vector<int>
+BaseMap::getItems() const
+  /*!
+    Returns a vector of cells: 
+    Note a bit of care is needed over the case on a single value
+    \return vector
+   */
+{
+  ELog::RegMethod RegA("BaseMap","getItems()");
+
+  std::vector<int> Out;
+
+  for(const LCTYPE::value_type& mc : Items)
+    {
+      if (mc.second>=0)
+	Out.push_back(mc.second);
+      else
+	{
+	  const size_t SU(static_cast<size_t>(-mc.second-1));
+	  for(const int& CN : SplitUnits[SU])
+	    if (CN)
+	      Out.push_back(CN);
+	}
+    }
+
+  return Out;
+}
+
 
 
   

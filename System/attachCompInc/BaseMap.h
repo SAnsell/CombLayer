@@ -62,8 +62,12 @@ class BaseMap
   int getItem(const std::string&) const;
   int getItem(const std::string&,const size_t) const;
 
-  void setItems(const std::string&,const int,const int);  
+  void setItems(const std::string&,const int,const int);
+
+  void addItems(const std::string&,const std::vector<int>&);  
+
   std::vector<int> getItems(const std::string&) const;
+  std::vector<int> getItems() const;
   
   int removeItem(const std::string&,const size_t =0);
   

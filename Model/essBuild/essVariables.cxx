@@ -645,7 +645,7 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("ABunkerNVert",24);
   Control.addVariable("ABunkerNLayers",24);
   Control.addVariable("ABunkerNSegment",5);
-  Control.addVariable("ABunkerActiveSegment",0);
+  Control.addVariable("ABunkerActiveSegment",4);
 
   Control.addVariable("ABunkerNRoof",5);
 

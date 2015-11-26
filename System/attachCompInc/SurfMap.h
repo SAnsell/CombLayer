@@ -61,6 +61,9 @@ class SurfMap : public BaseMap
   /// Rename function
   void addSurf(const std::string& K,const int CN)
     { BaseMap::addItem(K,CN); }
+  /// Rename function
+  void addSurfs(const std::string& K,const std::vector<int>& CN)
+    { BaseMap::addItems(K,CN); }
 
   /// Rename function
   int getSurf(const std::string& K) const
@@ -71,6 +74,9 @@ class SurfMap : public BaseMap
 
   std::vector<int> getSurfs(const std::string& K) const
     { return BaseMap::getItems(K); }
+
+  std::vector<int> getSurfs() const
+    { return BaseMap::getItems(); }
     
 };
 

@@ -65,6 +65,7 @@
 #include "LayerComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "SurfMap.h"
 #include "World.h"
 #include "BasicFlightLine.h"
 #include "FlightLine.h"

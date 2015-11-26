@@ -74,14 +74,13 @@
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "SurfMap.h"
 #include "MXcards.h"
 #include "Zaid.h"
 #include "Material.h"
 #include "DBMaterial.h"
-#include "surfDBase.h"
-#include "surfDIter.h"
-#include "surfDivide.h"
 #include "SurInter.h"
+#include "surfDBase.h"
 #include "DivideGrid.h"
 #include "LayerDivide3D.h"
 
@@ -96,9 +95,7 @@ LayerDivide3D::LayerDivide3D(const std::string& Key)  :
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
   */
-{
-  ELog::EM<<"Key == "<<Key<<ELog::endDiag;
-}
+{}
 
 
 LayerDivide3D::~LayerDivide3D() 
@@ -132,8 +129,9 @@ LayerDivide3D::processSurface(const size_t Index,
   //     the sign of first/second is not handled in realSurfPtr.
   // 
   // mirror planes only work with planes(!)
-  ELog::EM<<"First surf == "<<WallSurf.first<<" "<<WallSurf.second
-	  <<ELog::endDiag;
+  std::string surGroup="ASurf";
+  surGroup[0]+=Index;
+
   if (WallSurf.first<0)
     {
       Geometry::Surface* PX=
@@ -151,6 +149,7 @@ LayerDivide3D::processSurface(const size_t Index,
   
   int surfN(divIndex+1000*static_cast<int>(Index)+1);
   SMap.addMatch(surfN,WallSurf.first);
+  attachSystem::SurfMap::addSurf(surGroup,surfN);
   surfN++;
   size_t segCount(1);
   // inner index
@@ -159,12 +158,13 @@ LayerDivide3D::processSurface(const size_t Index,
       Geometry::Surface* PX=
 	ModelSupport::surfDBase::generalSurf(aSurf,bSurf,lenFraction[i],surfN);
       SMap.addToIndex(surfN-1,PX->getName());
+      attachSystem::SurfMap::addSurf(surGroup,surfN);
       //      SMap.registerSurf(surfN-1,PX);
       segCount++;
-      
+
     }
   SMap.addMatch(surfN,WallSurf.second);
-
+  attachSystem::SurfMap::addSurf(surGroup,surfN);
 
   return segCount;;
 }
@@ -347,6 +347,7 @@ LayerDivide3D::divideCell(Simulation& System,const int cellN)
 	      
 	      System.addCell(MonteCarlo::Qhull(cellIndex++,Mat,0.0,
 					       CCut+divider));
+	      attachSystem::CellMap::addCell("LD3",cellIndex-1);
       	    }
 	}
     }
