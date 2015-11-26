@@ -97,6 +97,7 @@ BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) :
   caseThick(A.caseThick),voidThick(A.voidThick),
   innerRadius(A.innerRadius),caseRadius(A.caseRadius),
   voidRadius(A.voidRadius),aspectRatio(A.aspectRatio),
+  mainTemp(A.mainTemp),
   nLayers(A.nLayers),radius(A.radius),
   matTYPE(A.matTYPE),shaftHeight(A.shaftHeight),nShaftLayers(A.nShaftLayers),
   wMat(A.wMat),heMat(A.heMat),steelMat(A.steelMat),ssVoidMat(A.ssVoidMat)
@@ -134,6 +135,7 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
       caseRadius=A.caseRadius;
       voidRadius=A.voidRadius;
       aspectRatio=A.aspectRatio;
+      mainTemp=A.mainTemp;
       nLayers=A.nLayers;
       radius=A.radius;
       matTYPE=A.matTYPE;
@@ -201,6 +203,8 @@ BilbaoWheel::populate(const FuncDataBase& Control)
   caseRadius=Control.EvalVar<double>(keyName+"CaseRadius");  
   voidRadius=Control.EvalVar<double>(keyName+"VoidRadius");
   aspectRatio=Control.EvalVar<double>(keyName+"AspectRatio");
+
+  mainTemp=Control.EvalVar<double>(keyName+"Temperature");
 
   targetHeight=Control.EvalVar<double>(keyName+"TargetHeight");
   voidTungstenThick=Control.EvalVar<double>(keyName+"VoidTungstenThick");

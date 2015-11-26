@@ -42,6 +42,7 @@ class BilbaoWheelInnerStructure : public attachSystem::ContainedComp,
   const int insIndex;             ///< Index of surface offset
   int cellIndex;                  ///< Cell index
 
+  double temp;                    ///< Temperature (obtained from Inner cell of BilbaoWheel)
   double brickLen;                ///< Tungsten brick length (in radial direction)
   double brickWidth;              ///< Tungsten brick width
   int    brickMat;                ///< Tungsten brick material

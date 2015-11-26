@@ -90,6 +90,7 @@ namespace essSystem
     attachSystem::FixedComp(A),
     insIndex(A.insIndex),
     cellIndex(A.cellIndex),
+    temp(A.temp),
     brickLen(A.brickLen),
     brickWidth(A.brickWidth),
     brickMat(A.brickMat),
@@ -119,6 +120,7 @@ namespace essSystem
       {
 	attachSystem::ContainedComp::operator=(A);
 	attachSystem::FixedComp::operator=(A);
+	temp=A.temp;
 	cellIndex=A.cellIndex;
 	brickLen=A.brickLen;
 	brickWidth=A.brickWidth;
@@ -261,12 +263,12 @@ namespace essSystem
 
     const std::pair<int,double> MatInfo=CM->deleteCellWithData(System, "Inner");
     const int innerMat = MatInfo.first;
-    const double innerTemp = MatInfo.second;
+    temp = MatInfo.second;
 
     const std::string vertStr = Wheel.getLinkString(6) + Wheel.getLinkString(7); // top+bottom
     const std::string cylStr = Wheel.getLinkString(8) + Wheel.getLinkString(9); // min+max radii
 
-    //    System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,vertStr+cylStr));
+    //    System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,temp,vertStr+cylStr));
     
 
     //    int SI(insIndex);
@@ -274,7 +276,7 @@ namespace essSystem
     ELog::EM << "SIsec: " << SIsec << ELog::endDiag;
     std::string Out;
     if (nSectors==1)
-      System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,vertStr+cylStr)); // same as "Inner" cell from BilbaoWheel
+      System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,temp,vertStr+cylStr)); // same as "Inner" cell from BilbaoWheel
     else 
       {
 	for (int j=0; j<nSectors; j++)
@@ -282,8 +284,8 @@ namespace essSystem
 	    // Tungsten
 	    SI1 = (j!=nSectors-1) ? SIsec+10 : insIndex+0;
 	    Out = ModelSupport::getComposite(SMap, SIsec, SI1, " 4 -3M ");
-	    if (j>4)
-		System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,
+	    if (j>2)
+		System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,temp,
 						 Out+vertStr+cylStr));
 	    else
 	      createBricks(System, Wheel, 
@@ -294,7 +296,7 @@ namespace essSystem
 	    // -1 is needed since planes 3 and -4 cross Tunsten in two places,
 	    //     so we need to select only one
 	    Out = ModelSupport::getComposite(SMap, SIsec, " 3 -4 -1 ");
-	    System.addCell(MonteCarlo::Qhull(cellIndex++,secSepMat,innerTemp,Out+vertStr+cylStr));
+	    System.addCell(MonteCarlo::Qhull(cellIndex++,secSepMat,temp,Out+vertStr+cylStr));
 
 	    SIsec+=10;
 	  }
@@ -423,7 +425,7 @@ namespace essSystem
     ELog::EM << "SI: " << SI << ELog::endDiag;
     // He layer in front of the bricks
     Out = ModelSupport::getComposite(SMap, SI, " 5 ");
-    System.addCell(MonteCarlo::Qhull(cellIndex++, brickGapMat, 0, Out+vertStr+outerCyl));
+    System.addCell(MonteCarlo::Qhull(cellIndex++, brickGapMat, temp, Out+vertStr+outerCyl));
 
     // bricks
     std::string layerStr;
@@ -431,7 +433,7 @@ namespace essSystem
       {
 	layerStr = ModelSupport::getComposite(SMap, SI, " -5  6 ");
 	//	if (i>2) // otherwise we add bricks (tmp)
-        //System.addCell(MonteCarlo::Qhull(cellIndex++, brickMat, 0, Out+vertStr+sideStr));
+        //System.addCell(MonteCarlo::Qhull(cellIndex++, brickMat, temp, Out+vertStr+sideStr));
 	//	else {
 	  int SJ(insIndex+1000*(sector+1));
 	  for (int j=0; j<27; j++) // !!! TMP
@@ -441,11 +443,11 @@ namespace essSystem
 	      //	      if (j==0)
 	      //		Out1 = Out1 + side1;
 	      System.addCell(MonteCarlo::Qhull(cellIndex++,
-			    i<nBrickLayers-nSteelLayers ? brickMat : brickSteelMat, 0,
+			    i<nBrickLayers-nSteelLayers ? brickMat : brickSteelMat, temp,
 					       Out1+layerStr+vertStr+sideStr));  // !!! sideStr is tmp
 	      
 	      Out1 = ModelSupport::getComposite(SMap, bOffset, bOffset+20, " 2 -1M ");
-	      System.addCell(MonteCarlo::Qhull(cellIndex++, brickGapMat, 0,
+	      System.addCell(MonteCarlo::Qhull(cellIndex++, brickGapMat, temp,
 					       Out1+layerStr+vertStr+sideStr)); // !!! sideStr is TMP
 	      
 	      SJ += 20;
@@ -456,7 +458,7 @@ namespace essSystem
 	  Out = ModelSupport::getComposite(SMap, SI, SI+10, " -6  ") + innerCyl;
 	else
 	  Out = ModelSupport::getComposite(SMap, SI, SI+10, " -6 5M ");
-	System.addCell(MonteCarlo::Qhull(cellIndex++, brickGapMat, 0, Out+vertStr+sideStr));
+	System.addCell(MonteCarlo::Qhull(cellIndex++, brickGapMat, temp, Out+vertStr+sideStr));
 	
 	SI += 10;
       }
