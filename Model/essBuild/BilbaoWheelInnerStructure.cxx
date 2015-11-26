@@ -201,12 +201,14 @@ namespace essSystem
     ELog::RegMethod RegA("BilbaoWheelInnerStructure","createSurfaces");
 
     //    const double BilbaoWheelZTop = Wheel.getLinkPt(7)[2];
+    ModelSupport::buildPlane(SMap,insIndex+5,Origin,Z);
 
   // segmentation
   double theta(0.0);
   double thetarad(0.0);
   const double dTheta = 360.0/nSectors;
-  int SIsec(insIndex+5000);
+  int SIsec(insIndex+0);
+  ELog::EM << "SIsec: " << SIsec << ELog::endDiag;
   Geometry::Plane *p[nSectors*2];
   int i=0; // plane counter
   for (int j=0; j<nSectors; j++)
@@ -221,10 +223,17 @@ namespace essSystem
     }
   // bricks
   i=0;
+  Geometry::Plane *pmin, *pmax;
   for (int j=0; j<nSectors; j++)
     {
-      if (j==0)
-	createBrickSurfaces(Wheel, p[i+2], p[i+1]);
+      std::cout << j << std::endl;
+      pmin = p[i+2];
+      pmax = p[i+1];
+      if (j==nSectors-1)
+	pmin=p[1];
+      
+      if (j<5)
+	createBrickSurfaces(Wheel, p[i+2], p[i+1], j);
       //	createBrickSurfaces(Wheel, p[i], p[nSectors-2]);
       i+=2;
     }
@@ -258,7 +267,8 @@ namespace essSystem
     
 
     //    int SI(insIndex);
-    int SIsec(insIndex+5000), SI1;
+    int SIsec(insIndex+0), SI1;
+    ELog::EM << "SIsec: " << SIsec << ELog::endDiag;
     std::string Out;
     if (nSectors==1)
       System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,vertStr+cylStr)); // same as "Inner" cell from BilbaoWheel
@@ -267,15 +277,15 @@ namespace essSystem
 	for (int j=0; j<nSectors; j++)
 	  {
 	    // Tungsten
-	    SI1 = (j!=nSectors-1) ? SIsec+10 : insIndex+5000;
+	    SI1 = (j!=nSectors-1) ? SIsec+10 : insIndex+0;
 	    Out = ModelSupport::getComposite(SMap, SIsec, SI1, " 4 -3M ");
-	    if (j!=0)
+	    if (j>4)
 		System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,
 						 Out+vertStr+cylStr));
 	    else
 	      createBricks(System, Wheel, 
 			   ModelSupport::getComposite(SMap, SIsec," 4 "), // side plane
-			   ModelSupport::getComposite(SMap, SI1, " -3 ")); // another side plane
+			   ModelSupport::getComposite(SMap, SI1, " -3 "), j); // another side plane
 	    
 	    // Pieces of steel between Tungsten sectors
 	    // -1 is needed since planes 3 and -4 cross Tunsten in two places,
@@ -295,11 +305,13 @@ namespace essSystem
   void
   BilbaoWheelInnerStructure::createBrickSurfaces(const attachSystem::FixedComp& Wheel,
 						 const Geometry::Plane *pSide1,
-						 const Geometry::Plane *pSide2)
+						 const Geometry::Plane *pSide2,
+						 const int sector)
   /*
     Creates surfaces for individual Tungsten bricks
     pSide1 :: wheel segment side plane
     pSide2 :: wheel segment side plane
+    sector :: number of sector for surface index offset
    */
   {
     ELog::RegMethod RegA("BilbaoWheelInnerStructure","createBrickSurfaces");
@@ -307,14 +319,15 @@ namespace essSystem
     const Geometry::Surface *innerCyl = SMap.realSurfPtr(Wheel.getLinkSurf(8));
     const Geometry::Surface *outerCyl = SMap.realSurfPtr(Wheel.getLinkSurf(9));
 
-    const Geometry::Plane *pz = ModelSupport::buildPlane(SMap,insIndex+5,Origin,Z);
+    const Geometry::Plane *pz = SMap.realPtr<Geometry::Plane>(insIndex+5);
     Geometry::Vec3D nearPt(0, -10, 0);
     Geometry::Vec3D p1 = SurInter::getPoint(pSide1, outerCyl, pz, nearPt);
     Geometry::Vec3D p2 = SurInter::getPoint(pSide2, outerCyl, pz, nearPt);
     Geometry::Vec3D p3 = p2 + Geometry::Vec3D(0.0, 0.0, 1.0);
 
     // radial planes
-    int SI(insIndex+6000);
+    int SI(insIndex+1000*(sector+1));
+    ELog::EM << "SI: " << SI << ELog::endDiag;
     // first (outermost) layer
     Geometry::Plane *prad1 = 0; // first radial plane of the bricks
     Geometry::Vec3D p4; // intersection of radial plane and inner cylinder:
@@ -323,6 +336,7 @@ namespace essSystem
       {
 	if (iLayer==0)
 	  {
+	    //std::cout << "here" << sector << " " << " " << SI << " " << iLayer << std::endl;
 	    prad1 = ModelSupport::buildPlane(SMap, SI+5, p1, p2, p3,
 					     Geometry::Vec3D(0.0, 0.0, 0.0));
 	  }
@@ -347,6 +361,7 @@ namespace essSystem
 	if (p4.abs()>Geometry::zeroTol) // if back of the brick crosses inner surface
 	  {
 	    nBrickLayers = iLayer;
+	    ELog::EM << "Number of birck layers: " << nBrickLayers << ELog::endDiag;
 	    break;
 	  }
 
@@ -357,7 +372,8 @@ namespace essSystem
     // tangential (perpendicular to radial) planes
     // only 2 layers are needed since other layers use the same planes
     Geometry::Plane *ptan1 = 0; // first tangential plane of the bricks
-    int SJ(insIndex+6000);
+    int SJ(insIndex+1000*(sector+1));
+    ELog::EM << "SJ: " << SJ << ELog::endDiag;
     for (int i=0; i<50; i++)
       {
 	// 1st layer
@@ -385,7 +401,8 @@ namespace essSystem
 
   void
   BilbaoWheelInnerStructure::createBricks(Simulation& System, attachSystem::FixedComp& Wheel,
-					  const std::string side1, const std::string side2)
+					  const std::string side1, const std::string side2,
+					  const int sector)
   /*
     Create cells for bricks in the given sector
    */
@@ -399,7 +416,8 @@ namespace essSystem
     const std::string outerCyl = Wheel.getLinkString(9);
 
     std::string Out,Out1;
-    int SI(insIndex+6000);
+    int SI(insIndex+1000*(sector+1));
+    ELog::EM << "SI: " << SI << ELog::endDiag;
     // He layer in front of the bricks
     Out = ModelSupport::getComposite(SMap, SI, " 5 ");
     System.addCell(MonteCarlo::Qhull(cellIndex++, brickGapMat, 0, Out+vertStr+outerCyl));
@@ -412,7 +430,7 @@ namespace essSystem
 	//	if (i>2) // otherwise we add bricks (tmp)
         //System.addCell(MonteCarlo::Qhull(cellIndex++, brickMat, 0, Out+vertStr+sideStr));
 	//	else {
-	  int SJ(insIndex+6000);
+	  int SJ(insIndex+1000*(sector+1));
 	  for (int j=0; j<27; j++) // !!! TMP
 	    {
 	      int bOffset = i%2 ? SJ+10 : SJ;
