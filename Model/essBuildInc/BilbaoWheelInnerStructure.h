@@ -72,6 +72,9 @@ class BilbaoWheelInnerStructure : public attachSystem::ContainedComp,
   void createBricks(Simulation&, attachSystem::FixedComp&,
 		    const std::string, const std::string, const int);
 
+  // polar angle of the given sector's centre. Clockwise starting from -Y
+  inline double getSectorAngle(int i) const { return (2*(i+1)-1)*M_PI/nSectors * 180.0/M_PI; }
+
  public:
 
   BilbaoWheelInnerStructure(const std::string&);

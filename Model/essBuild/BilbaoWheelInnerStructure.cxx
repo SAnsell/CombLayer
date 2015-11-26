@@ -77,13 +77,15 @@ namespace essSystem
   BilbaoWheelInnerStructure::BilbaoWheelInnerStructure(const std::string& Key) :
     attachSystem::ContainedComp(),
     attachSystem::FixedComp(Key,6),
-    insIndex(ModelSupport::objectRegister::Instance().cell(Key)),
+    insIndex(ModelSupport::objectRegister::Instance().cell(Key, -1, 1E+8)),
     cellIndex(insIndex+1)
     /*!
       Constructor
       \param Key :: Name of construction key
     */
-  {}
+  {
+    std::cerr  << "Check max number of surfaces in BilbaoWheelInnerStructure constructor" << std::endl;
+  }
 
   BilbaoWheelInnerStructure::BilbaoWheelInnerStructure(const BilbaoWheelInnerStructure& A) : 
     attachSystem::ContainedComp(A),
@@ -240,9 +242,9 @@ namespace essSystem
       pmax = p[i+1];
       if (j==nSectors-1)
 	pmin=p[1];
-      
+
       if (j<nBrickSectors)
-	createBrickSurfaces(Wheel, p[i+2], p[i+1], j);
+	createBrickSurfaces(Wheel, pmin, pmax, j);
       //	createBrickSurfaces(Wheel, p[i], p[nSectors-2]);
       i+=2;
     }
@@ -329,7 +331,13 @@ namespace essSystem
     const Geometry::Surface *outerCyl = SMap.realSurfPtr(Wheel.getLinkSurf(9));
 
     const Geometry::Plane *pz = SMap.realPtr<Geometry::Plane>(insIndex+5);
-    Geometry::Vec3D nearPt(0, -10, 0);
+
+    const double sectorAngle = getSectorAngle(sector)*M_PI/180.0;
+    Geometry::Vec3D nearPt(125*sin(sectorAngle), -125*cos(sectorAngle), 0);
+    nearPt += Origin;
+    
+
+    std::cout << "nearPt: " << sectorAngle*180.0/M_PI << "\t" << nearPt << std::endl;
     Geometry::Vec3D p1 = SurInter::getPoint(pSide1, outerCyl, pz, nearPt);
     Geometry::Vec3D p2 = SurInter::getPoint(pSide2, outerCyl, pz, nearPt);
     Geometry::Vec3D p3 = p2 + Geometry::Vec3D(0.0, 0.0, 1.0);
