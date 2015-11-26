@@ -71,10 +71,10 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "SurfMap.h"
 
 #include "World.h"
 #include "Bunker.h"
@@ -87,8 +87,8 @@ namespace essSystem
 RoofPillars::RoofPillars(const std::string& Key)  :
   attachSystem::FixedComp(Key,0),
   attachSystem::CellMap(),
-  pillarIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(bnkIndex+1)
+  rodIndex(ModelSupport::objectRegister::Instance().cell(Key)),
+  cellIndex(rodIndex+1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -141,9 +141,9 @@ RoofPillars::createSurfaces()
   ELog::RegMethod RegA("RoofPillars","createSurface");
 
   int RI(rodIndex);
-  for(const Geomtery::Vec3D& Pt : CentPoint)
+  for(const Geometry::Vec3D& Pt : CentPoint)
     {
-      ModelSupport::buildCylinder(SMap,RI+7,Origin+CentPoint,Z,radius);
+      ModelSupport::buildCylinder(SMap,RI+7,Origin+Pt,Z,radius);
     }
 
   return;
@@ -164,7 +164,7 @@ RoofPillars::createObjects(Simulation& System)
   std::string Out;
 
   int RI(rodIndex);
-  for(const size_t i=0;i<CentPoint.size();i++)
+  for(size_t i=0;i<CentPoint.size();i++)
     {
       Out=ModelSupport::getComposite(SMap,rodIndex,RI,"1 -2 -7M");
       System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
@@ -203,10 +203,9 @@ RoofPillars::createAll(Simulation& System,
   ELog::RegMethod RegA("RoofPillars","createAll");
 
   populate(System.getDataBase());
-  createUnitVector(MainCentre,FC,linkIndex);
+  createUnitVector(bunkerObj,0);
   createSurfaces();
-  createObjects(System,FC,linkIndex);
-  insertObjects(System);              
+  createObjects(System);
 
   return;
 }
