@@ -132,6 +132,9 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelInnerStructureSectorSepThick", 1.0);
   Control.addVariable("BilbaoWheelInnerStructureSectorSepMat", "SS316L785");
 
+  Control.addVariable("BilbaoWheelInnerStructureNSteelLayers", 3);
+  Control.addVariable("BilbaoWheelInnerStructureBrickSteelMat", "SS316L");
+
   return;
 }
 

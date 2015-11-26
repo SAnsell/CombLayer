@@ -175,6 +175,9 @@ namespace essSystem
     secSepThick=Control.EvalVar<double>(keyName+"SectorSepThick");
     secSepMat=ModelSupport::EvalMat<int>(Control,keyName+"SectorSepMat");  
 
+    nSteelLayers=Control.EvalVar<int>(keyName+"NSteelLayers");
+    brickSteelMat=ModelSupport::EvalMat<int>(Control,keyName+"BrickSteelMat");  
+
     return;
   }
 
@@ -437,7 +440,8 @@ namespace essSystem
 	      Out1 = ModelSupport::getComposite(SMap, bOffset, " 1 -2 ");
 	      //	      if (j==0)
 	      //		Out1 = Out1 + side1;
-	      System.addCell(MonteCarlo::Qhull(cellIndex++, brickMat, 0,
+	      System.addCell(MonteCarlo::Qhull(cellIndex++,
+			    i<nBrickLayers-nSteelLayers ? brickMat : brickSteelMat, 0,
 					       Out1+layerStr+vertStr+sideStr));  // !!! sideStr is tmp
 	      
 	      Out1 = ModelSupport::getComposite(SMap, bOffset, bOffset+20, " 2 -1M ");
