@@ -39,7 +39,8 @@ namespace essSystem
 
 class Bunker : public attachSystem::ContainedComp,
   public attachSystem::FixedComp,
-  public attachSystem::CellMap
+  public attachSystem::CellMap,
+  public attachSystem::SurfMap
 {
  private:
    

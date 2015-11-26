@@ -321,6 +321,8 @@ WeightControl::procObject(const Simulation& System,
   */
 {
   ELog::RegMethod RegA("WeightControl","procObject");
+  const ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
 
     
   const size_t nSet=IParam.setCnt("weightObject");
@@ -339,7 +341,7 @@ WeightControl::procObject(const Simulation& System,
       const std::string Key=
 	IParam.getValue<std::string>("weightObject",iSet,0);
       objectList.insert(Key);
-      const std::vector<int> objCells=getObjectRange(Key);
+      const std::vector<int> objCells=OR.getObjectRange(Key);
       
       // SOURCE Point
       if (sourceFlag && tallyFlag) sF/=2.0;
@@ -355,44 +357,6 @@ WeightControl::procObject(const Simulation& System,
   return;
 }
 
-std::vector<int>
-WeightControl::getObjectRange(const std::string& objName) const
-  /*!
-    Calculate the object cells range based on the name
-    Processes down to cellMap items if objName is of the 
-    form objecName:cellMapName
-    \param objName :: Object name
-    \return vector of item
-  */
-{
-  ELog::RegMethod RegA("WeightContorl","getObjectRange");
-
-  const ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
-  std::string::size_type pos=objName.find(":");
-  
-  if (pos==std::string::npos || !pos)
-    {
-      const int BStart=OR.getRenumberCell(objName);
-      const int BRange=OR.getRenumberRange(objName);
-      if (BStart==0)
-	throw ColErr::InContainerError<std::string>
-	  (objName,"Object name not found");
-      std::vector<int> Out(static_cast<size_t>(1+BRange-BStart));
-      std::iota(Out.begin(),Out.end(),BStart);
-      return Out;
-    }
-  
-  const std::string itemName=objName.substr(0,pos-1);
-  const std::string cellName=objName.substr(pos+1);
-  const attachSystem::CellMap* CPtr=
-    OR.getObject<attachSystem::CellMap>(itemName);
-  if (!CPtr)
-    throw ColErr::InContainerError<std::string>
-      (objName,"Object name not found");
-  return CPtr->getCells(cellName);
-}
 
   
 void
@@ -408,6 +372,9 @@ WeightControl::scaleObject(const Simulation& System,
   */
 {
   ELog::RegMethod RegA("WeightControl","scaleObject");
+
+  const ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
   
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();  
@@ -429,7 +396,7 @@ WeightControl::scaleObject(const Simulation& System,
 	EW= (EW<-eCut) ? 1.0/SW : 1.0;
       ELog::EM<<"EW == "<<EW<<ELog::endDiag;
     }
-  std::vector<int> cellVec=getObjectRange(objKey);
+  std::vector<int> cellVec=OR.getObjectRange(objKey);
   for(const int cellN : cellVec)
     {
       const MonteCarlo::Qhull* CellPtr=System.findQhull(cellN);
@@ -483,38 +450,35 @@ WeightControl::findMax(const Simulation& System,
   const std::vector<double>& WEng=WF->getEnergy();
   const long int eIndex=
     std::lower_bound(WEng.begin(),WEng.end(),std::abs(eCut))-WEng.begin();
-  const int BStart=OR.getRenumberCell(objKey);
-  const int BRange=OR.getRenumberRange(objKey);
-  double maxVal(0.0);
 
-	  
-  if (BStart!=0)
+  std::vector<int> cellRange=OR.getObjectRange(objKey);
+  
+  
+  double maxVal(0.0);
+  int cellN(0);
+  double M(1.0);
+  for(const int CN : cellRange)
     {
-      int cellN(0);
-      double M(1.0);
-      for(int i=BStart;i<=BRange;i++)
+      const MonteCarlo::Qhull* CellPtr=System.findQhull(CN);
+      if (CellPtr && CellPtr->getMat())
 	{
-	  const MonteCarlo::Qhull* CellPtr=System.findQhull(i);
-	  if (CellPtr && CellPtr->getMat())
+	  const std::vector<double> WVec=WF->getWeights(CN);
+	  if (!index && eCut>0.0)
+	    M= *std::max_element(WVec.begin()+eIndex,WVec.end());
+	  else if (!index)
+	    M= *std::max_element(WVec.begin(),WVec.begin()+eIndex);
+	  else
+	    M=WVec[index-1];
+	  if (M>maxVal)
 	    {
-	      const std::vector<double> WVec=WF->getWeights(i);
-	      if (!index && eCut>0.0)
-		M= *std::max_element(WVec.begin()+eIndex,WVec.end());
-	      else if (!index)
-		M= *std::max_element(WVec.begin(),WVec.begin()+eIndex);
-	      else
-		M=WVec[index-1];
-	      if (M>maxVal)
-		{
-		  maxVal=M;
-		  cellN=i;
-		}
+	      maxVal=M;
+	      cellN=CN;
 	    }
 	}
-      ELog::EM<<"Cell = "<<cellN<<" "<<maxVal<<ELog::endDiag;
     }
-
-  return maxVal;
+  ELog::EM<<"Max Cell = "<<cellN<<" "<<maxVal<<ELog::endDiag;
+  
+  return (cellN) ? maxVal : 1.0;
 }
  
 void

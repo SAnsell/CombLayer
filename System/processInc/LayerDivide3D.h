@@ -36,7 +36,9 @@ namespace ModelSupport
   \brief Bulk divider to produce 3D grid in a cell
 */
 
-class LayerDivide3D  : public attachSystem::FixedComp
+class LayerDivide3D  : public attachSystem::FixedComp,
+    public attachSystem::CellMap,
+    public attachSystem::SurfMap
 {
  private:
 

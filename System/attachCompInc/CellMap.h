@@ -55,13 +55,16 @@ class CellMap  : public BaseMap
   /// Renmae function
   void setCell(const std::string& K,const size_t Index,const int CN)
     { BaseMap::setItem(K,Index,CN); }
-
+  
   void setCells(const std::string& K,const int CNA,const int CNB)
    { BaseMap::setItems(K,CNA,CNB); }
 
   /// Rename function
   void addCell(const std::string& K,const int CN)
     { BaseMap::addItem(K,CN); }
+  /// Rename function
+  void addCells(const std::string& K,const std::vector<int>& CN)
+    { BaseMap::addItems(K,CN); }
 
   /// Rename function
   int getCell(const std::string& K) const
@@ -72,9 +75,13 @@ class CellMap  : public BaseMap
 
   std::vector<int> getCells(const std::string& K) const
     { return BaseMap::getItems(K); }
+
+  std::vector<int> getCells() const
+    { return BaseMap::getItems(); }
     
   int removeCell(const std::string& K,const size_t Index=0)
     {  return BaseMap::removeItem(K,Index); }
+
 
   void insertComponent(Simulation&,const std::string&,
 		       const ContainedComp&) const;

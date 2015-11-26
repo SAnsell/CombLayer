@@ -66,11 +66,9 @@
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
-#include "LayerComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "SurfMap.h"
 #include "World.h"
 #include "AttachSupport.h"
 #include "GuideItem.h"
@@ -85,7 +83,7 @@
 #include "ChopperPit.h"
 #include "LineShield.h"
 
-#include "NMX.h"
+#include "shortNMX.h"
 
 namespace essSystem
 {

@@ -75,6 +75,7 @@
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "SurfMap.h"
 #include "MXcards.h"
 #include "Zaid.h"
 #include "Material.h"
@@ -84,7 +85,6 @@
 #include "surfDIter.h"
 #include "surfDivide.h"
 #include "SurInter.h"
-
 #include "mergeTemplate.h"
 
 #include "World.h"
@@ -99,7 +99,7 @@ namespace essSystem
 
 Bunker::Bunker(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::FixedComp(Key,12),
-  attachSystem::CellMap(),
+  attachSystem::CellMap(),attachSystem::SurfMap(),
   bnkIndex(ModelSupport::objectRegister::Instance().cell(Key,-1,20000)),
   cellIndex(bnkIndex+1),leftWallFlag(1),rightWallFlag(1),
   BMWPtr(0)
@@ -509,7 +509,8 @@ Bunker::createMainWall(Simulation& System)
     {
       if (AS & 1)
         {
-	  ModelSupport::LayerDivide3D LD3(keyName+"mainWall"+StrFunc::makeString(i));
+	  ModelSupport::LayerDivide3D LD3(keyName+"mainWall"+
+					  StrFunc::makeString(i));
 	  LD3.setSurfPair(0,SMap.realSurf(bnkIndex+1001+static_cast<int>(i)),
 			  SMap.realSurf(bnkIndex+1002+static_cast<int>(i)));
 	  
@@ -523,6 +524,10 @@ Bunker::createMainWall(Simulation& System)
 	  
 	  LD3.setXMLdata(keyName+"Def.xml","WallMat",keyName+".xml");
 	  LD3.divideCell(System,getCell("frontWall",i));
+
+	  addSurfs("Sector"+StrFunc::makeString(i),LD3.getSurfs());
+	  addCells("Sector"+StrFunc::makeString(i),LD3.getCells());
+	  ELog::EM<<"Processing sector "<<i<<ELog::endDiag;
 	}
       AS>>=1;
     }
