@@ -77,14 +77,13 @@ namespace essSystem
   BilbaoWheelInnerStructure::BilbaoWheelInnerStructure(const std::string& Key) :
     attachSystem::ContainedComp(),
     attachSystem::FixedComp(Key,6),
-    insIndex(ModelSupport::objectRegister::Instance().cell(Key, -1, 1E+8)),
+    insIndex(ModelSupport::objectRegister::Instance().cell(Key, -1, 1E+5)), // max number of surfaces
     cellIndex(insIndex+1)
     /*!
       Constructor
       \param Key :: Name of construction key
     */
   {
-    std::cerr  << "Check max number of surfaces in BilbaoWheelInnerStructure constructor" << std::endl;
   }
 
   BilbaoWheelInnerStructure::BilbaoWheelInnerStructure(const BilbaoWheelInnerStructure& A) : 
@@ -182,6 +181,8 @@ namespace essSystem
     secSepMat=ModelSupport::EvalMat<int>(Control,keyName+"SectorSepMat");  
 
     nBrickSectors=Control.EvalVar<int>(keyName+"NBrickSectors");
+    if (nBrickSectors>nSectors)
+      throw ColErr::RangeError<double>(nBrickSectors, 0, nSectors, "nBrickSectors can not exceed nSectors:");
 
     nSteelLayers=Control.EvalVar<int>(keyName+"NSteelLayers");
     brickSteelMat=ModelSupport::EvalMat<int>(Control,keyName+"BrickSteelMat");  
@@ -219,7 +220,6 @@ namespace essSystem
   double thetarad(0.0);
   const double dTheta = 360.0/nSectors;
   int SIsec(insIndex+0);
-  ELog::EM << "SIsec: " << SIsec << ELog::endDiag;
   Geometry::Plane *p[nSectors*2];
   int i=0; // plane counter
   for (int j=0; j<nSectors; j++)
@@ -279,7 +279,6 @@ namespace essSystem
 
     //    int SI(insIndex);
     int SIsec(insIndex+0), SI1;
-    ELog::EM << "SIsec: " << SIsec << ELog::endDiag;
     std::string Out;
     if (nSectors==1)
       System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,temp,vertStr+cylStr)); // same as "Inner" cell from BilbaoWheel
@@ -335,16 +334,13 @@ namespace essSystem
     const double sectorAngle = getSectorAngle(sector)*M_PI/180.0;
     Geometry::Vec3D nearPt(125*sin(sectorAngle), -125*cos(sectorAngle), 0);
     nearPt += Origin;
-    
 
-    std::cout << "nearPt: " << sectorAngle*180.0/M_PI << "\t" << nearPt << std::endl;
     Geometry::Vec3D p1 = SurInter::getPoint(pSide1, outerCyl, pz, nearPt);
     Geometry::Vec3D p2 = SurInter::getPoint(pSide2, outerCyl, pz, nearPt);
     Geometry::Vec3D p3 = p2 + Geometry::Vec3D(0.0, 0.0, 1.0);
 
     // radial planes
     int SI(insIndex+1000*(sector+1));
-    ELog::EM << "SI: " << SI << ELog::endDiag;
     // first (outermost) layer
     Geometry::Plane *prad1 = 0; // first radial plane of the bricks
     Geometry::Vec3D p4; // intersection of radial plane and inner cylinder:
@@ -378,7 +374,7 @@ namespace essSystem
 	if (p4.abs()>Geometry::zeroTol) // if back of the brick crosses inner surface
 	  {
 	    nBrickLayers = iLayer;
-	    ELog::EM << "Number of birck layers: " << nBrickLayers << ELog::endDiag;
+	    //	    ELog::EM << "Number of birck layers: " << nBrickLayers << ELog::endDiag;
 	    break;
 	  }
 
@@ -390,7 +386,6 @@ namespace essSystem
     // only 2 layers are needed since other layers use the same planes
     Geometry::Plane *ptan1 = 0; // first tangential plane of the bricks
     int SJ(insIndex+1000*(sector+1));
-    ELog::EM << "SJ: " << SJ << ELog::endDiag;
     for (int i=0; i<50; i++)
       {
 	// 1st layer
@@ -434,37 +429,35 @@ namespace essSystem
 
     std::string Out,Out1;
     int SI(insIndex+1000*(sector+1));
-    ELog::EM << "SI: " << SI << ELog::endDiag;
     // He layer in front of the bricks
     Out = ModelSupport::getComposite(SMap, SI, " 5 ");
     System.addCell(MonteCarlo::Qhull(cellIndex++, brickGapMat, temp, Out+vertStr+outerCyl));
+
+
+    ELog::EM << "TODO: Side surfaces (sideStr) are added to all brick cells, while this is needed only for the bricks connecting with these surfaces." << ELog::endCrit;
+    ELog::EM << "TODO: Bricks outside of the given sector are created (but effectively not active due to sideStr). All this reduces performance." << ELog::endCrit;
 
     // bricks
     std::string layerStr;
     for (int i=0; i<nBrickLayers; i++)
       {
 	layerStr = ModelSupport::getComposite(SMap, SI, " -5  6 ");
-	//	if (i>2) // otherwise we add bricks (tmp)
-        //System.addCell(MonteCarlo::Qhull(cellIndex++, brickMat, temp, Out+vertStr+sideStr));
-	//	else {
-	  int SJ(insIndex+1000*(sector+1));
-	  for (int j=0; j<27; j++) // !!! TMP
-	    {
-	      int bOffset = i%2 ? SJ+10 : SJ;
-	      Out1 = ModelSupport::getComposite(SMap, bOffset, " 1 -2 ");
-	      //	      if (j==0)
-	      //		Out1 = Out1 + side1;
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,
-			    i<nBrickLayers-nSteelLayers ? brickMat : brickSteelMat, temp,
-					       Out1+layerStr+vertStr+sideStr));  // !!! sideStr is tmp
+	int SJ(insIndex+1000*(sector+1));
+	for (int j=0; j<27; j++) // !!! TMP
+	  {
+	    int bOffset = i%2 ? SJ+10 : SJ;
+	    Out1 = ModelSupport::getComposite(SMap, bOffset, " 1 -2 ");
+
+	    System.addCell(MonteCarlo::Qhull(cellIndex++,
+					     i<nBrickLayers-nSteelLayers ? brickMat : brickSteelMat, temp,
+					     Out1+layerStr+vertStr+sideStr));  // !!! sideStr is tmp
 	      
-	      Out1 = ModelSupport::getComposite(SMap, bOffset, bOffset+20, " 2 -1M ");
-	      System.addCell(MonteCarlo::Qhull(cellIndex++, brickGapMat, temp,
-					       Out1+layerStr+vertStr+sideStr)); // !!! sideStr is TMP
+	    Out1 = ModelSupport::getComposite(SMap, bOffset, bOffset+20, " 2 -1M ");
+	    System.addCell(MonteCarlo::Qhull(cellIndex++, brickGapMat, temp,
+					     Out1+layerStr+vertStr+sideStr)); // !!! sideStr is TMP
 	      
-	      SJ += 20;
-	    }
-	  //}
+	    SJ += 20;
+	  }
 
 	if (i==nBrickLayers-1) 
 	  Out = ModelSupport::getComposite(SMap, SI, SI+10, " -6  ") + innerCyl;

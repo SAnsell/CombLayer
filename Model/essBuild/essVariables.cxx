@@ -84,7 +84,7 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelXStep",0.0);
   Control.addVariable("BilbaoWheelYStep",112.2);
   Control.addVariable("BilbaoWheelZStep",0.0);
-  Control.addVariable("BilbaoWheelXYangle",5.0);
+  Control.addVariable("BilbaoWheelXYangle",-15.0);
   Control.addVariable("BilbaoWheelZangle",0.0);
   Control.addVariable("BilbaoWheelTargetHeight",8.0);
   Control.addVariable("BilbaoWheelVoidTungstenThick", 0.1);
@@ -130,7 +130,7 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelInnerStructureBrickGapMat","Helium"); // shoud be the same as BilbaoWheelHeMat
 
   Control.addVariable("BilbaoWheelInnerStructureNSectors", 36);
-  Control.addVariable("BilbaoWheelInnerStructureNBrickSectors", 1);
+  Control.addVariable("BilbaoWheelInnerStructureNBrickSectors", 3);
   Control.addVariable("BilbaoWheelInnerStructureSectorSepThick", 1.0);
   Control.addVariable("BilbaoWheelInnerStructureSectorSepMat", "SS316L785");
 
