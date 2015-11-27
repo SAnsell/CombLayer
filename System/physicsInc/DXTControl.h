@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   weightsInc/ImportControl.h
+ * File:   physicsInc/DXTControl.h
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -19,29 +19,43 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef WeightSystem_ImportControl_h
-#define WeightSystem_ImportControl_h
+#ifndef physicsSystem_DXTControl_h
+#define physicsSystem_DXTControl_h
 
-///\file 
-
-namespace mainSystem
+namespace physicsSystem
 {
-  class inputParam;
+ 
+/*!
+  \class DXTControl
+  \version 2.0
+  \date November 2015
+  \author S.Ansell
+  \brief Dxtran sphere controller
+*/
+
+class DXTControl 
+{
+ private:
+
+  std::string particle;                    ///< Particle flag
+  std::vector<int> rotateFlag;             ///< Items needing rotation
+  std::vector<Geometry::Vec3D> Centres;    ///< Centres of dxtran 
+  std::vector<double> Radii;               ///< Radii
+  
+ public:
+   
+  DXTControl();
+  DXTControl(const DXTControl&);
+  DXTControl& operator=(const DXTControl&);
+  virtual ~DXTControl();
+
+  void clear();
+  void setUnit(const Geometry::Vec3D&,const double,const bool);
+  
+  void write(std::ostream&) const;
+  
+};
+
 }
-
-class Simulation;
-
-namespace WeightSystem
-{ 
-  void zeroImp(Simulation&,const int,const int);
-  void simulationImp(Simulation&,const mainSystem::inputParam&);
-  void ExtField(Simulation&,const mainSystem::inputParam&);
-  void DXT(Simulation&,const mainSystem::inputParam&);
-  void PWT(Simulation&,const mainSystem::inputParam&);
-  void SBias(Simulation&,const mainSystem::inputParam&);
-  void removePhysImp(Simulation&,const std::string&);
-}
-
 
 #endif
- 

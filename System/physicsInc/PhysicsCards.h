@@ -27,6 +27,7 @@ namespace physicsSystem
   class dbcnCard;
   class ExtControl;
   class PWTControl;
+  class DXTControl;
   
 /*!
   \class PhysicsCards
@@ -66,6 +67,7 @@ class PhysicsCards
   PhysImp Volume;                         ///< Volume stack
   std::unique_ptr<ExtControl> ExtCard;    ///< Exponent control system
   std::unique_ptr<PWTControl> PWTCard;    ///< Photon Weight
+  std::unique_ptr<DXTControl> DXTCard;    ///< Dxtran spheres
   
   void deletePCards();
     
@@ -111,10 +113,12 @@ class PhysicsCards
   /// Access kcode card
   SDef::KCode& getKCodeCard() { return kcodeCard; }
 
-  // Access ExpControl card
+  /// Access ExpControl card
   ExtControl& getExtCard() { return *ExtCard; }
-  // Access PWTControl card
+  /// Access PWTControl card
   PWTControl& getPWTCard() { return *PWTCard; }
+  /// Access DXTControl card
+  DXTControl& getDXTCard() { return *DXTCard; }
   
   // ALL Particle/Type
   int processCard(const std::string&);

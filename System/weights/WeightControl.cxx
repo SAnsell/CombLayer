@@ -290,7 +290,7 @@ WeightControl::calcTrack(const Simulation& System,
 		  <<":"<<cellVec.back()<<"]"
 		  <<ELog::endDiag;
 	  step+=cellVec.size()/50;
-	  reportN=cellVec[step];
+	  reportN=(cellVec.size()>step) ? 0 : cellVec[step];
 	}
       const MonteCarlo::Qhull* CellPtr=System.findQhull(cellN);
       if (CellPtr && CellPtr->getMat())

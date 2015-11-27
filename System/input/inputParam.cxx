@@ -471,6 +471,38 @@ inputParam::getCntVec3D(const std::string& K,
 }
 
 template<typename T>
+T
+inputParam::outputItem(const std::string& K,
+		       const size_t setIndex,
+		       const size_t itemIndex,
+		       const std::string& ErrMessage) const
+  /*!
+    Get a value based on key
+    \param K :: Key to seach
+    \param setIndex :: set Value
+    \param itemIndex :: Index value
+    \param ErrMessage :: Error message for exception
+    \return Value
+*/
+
+{
+  ELog::RegMethod RegA("inputParam","outputItem(setIndex,index)");
+
+  const IItem* IPtr=getIndex(K);
+  if (!IPtr) return 0;
+  try
+    {
+      return IPtr->getObj<T>(setIndex,itemIndex);
+    }
+  catch(ColErr::IndexError<size_t>&)
+    {
+    }
+  throw ColErr::InContainerError<std::string>
+    (K+"["+StrFunc::makeString(setIndex)+"]::"+
+     StrFunc::makeString(itemIndex),ErrMessage);
+}
+
+  template<typename T>
 int
 inputParam::checkItem(const std::string& K,
 		      const size_t setIndex,
@@ -1067,8 +1099,21 @@ template int inputParam::checkItem(const std::string&,const size_t,
 				   const size_t,int&) const;
 template int inputParam::checkItem(const std::string&,const size_t,
 				   const size_t,size_t&) const;
-template int inputParam::checkItem(const std::string&,const size_t,
+ template int inputParam::checkItem(const std::string&,const size_t,
 				   const size_t,std::string&) const;
+  
+template double
+inputParam::outputItem(const std::string&,const size_t,
+		       const size_t,const std::string&) const;
+template int
+inputParam::outputItem(const std::string&,const size_t,
+		       const size_t,const std::string&) const;
+template size_t
+inputParam::outputItem(const std::string&,const size_t,
+		       const size_t,const std::string&) const;
+template std::string
+inputParam::outputItem(const std::string&,const size_t,
+		       const size_t,const std::string&) const;
   
 template double
 inputParam::getFlagDef(const std::string&,const FuncDataBase& Control,

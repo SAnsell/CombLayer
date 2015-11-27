@@ -1,7 +1,7 @@
 /********************************************************************* 
-  CombLayer : MCNP(X) Input builder
+  Comb-Layer : MCNP(X) Input builder
  
- * File:   weightsInc/ImportControl.h
+ * File:   physicsInc/DXTConstructor.h
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -19,29 +19,48 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef WeightSystem_ImportControl_h
-#define WeightSystem_ImportControl_h
+#ifndef physicsSystem_DXTConstructor_h
+#define physicsSystem_DXTConstructor_h
 
-///\file 
-
-namespace mainSystem
+namespace attachSystem
 {
-  class inputParam;
+  class FixedComp;
 }
+
 
 class Simulation;
 
-namespace WeightSystem
-{ 
-  void zeroImp(Simulation&,const int,const int);
-  void simulationImp(Simulation&,const mainSystem::inputParam&);
-  void ExtField(Simulation&,const mainSystem::inputParam&);
-  void DXT(Simulation&,const mainSystem::inputParam&);
-  void PWT(Simulation&,const mainSystem::inputParam&);
-  void SBias(Simulation&,const mainSystem::inputParam&);
-  void removePhysImp(Simulation&,const std::string&);
-}
+namespace physicsSystem
+{
+  class DXTControl;
+  
+/*!
+  \class DXTConstructor
+  \version 1.0
+  \author S. Ansell
+  \date May 2015
+  \brief Processes and method of producing DXT card input
+*/
 
+class DXTConstructor 
+{
+ private:
+
+  
+  void writeHelp(std::ostream&) const;
+    
+ public:
+
+  DXTConstructor();
+  DXTConstructor(const DXTConstructor&);
+  DXTConstructor& operator=(const DXTConstructor&);
+  ~DXTConstructor() {}  ///< Destructor
+
+  void processUnit(Simulation&,const mainSystem::inputParam&,
+		   const size_t);
+};
+
+}
 
 #endif
  
