@@ -443,7 +443,7 @@ makeESS::makeBunker(Simulation& System,
   BBunker->createAll(System,*LowMod,*GBArray[0],2,true);
 
   BBunker->insertComponent(System,"leftWall",*ABunker);
-  BBunker->insertComponent(System,"roof",*ABunker);
+  BBunker->insertComponent(System,"roof",0,*ABunker);
   BBunker->insertComponent(System,"floor",*ABunker);
 
   TopCurtain->addInsertCell("Top",74123);

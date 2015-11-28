@@ -76,8 +76,8 @@ class Bunker : public attachSystem::ContainedComp,
 
   // ROOF
   size_t nRoof;                  ///< number of layers
-  std::vector<double> roofFrac;  ///< guide Layer thicknesss (fractions)
-  std::vector<int> roofMatVec;   ///< guide Layer thicknesss (fractions)
+  size_t nRoofRaidal;            ///< number of radial layers
+  std::vector<double> roofFrac;  ///< radial layer
 
   // SIDES:
 

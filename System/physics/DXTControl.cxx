@@ -61,7 +61,7 @@ DXTControl::DXTControl() :
 DXTControl::DXTControl(const DXTControl& A) :
   particle(A.particle),
   rotateFlag(A.rotateFlag),Centres(A.Centres),
-  Radii(A.Radii)
+  RadiiInner(A.RadiiInner),RadiiOuter(A.RadiiOuter)
   /*!
     Copy constructor
     \param A :: DXTControl to copy
@@ -81,7 +81,8 @@ DXTControl::operator=(const DXTControl& A)
       particle=A.particle;
       rotateFlag=A.rotateFlag;
       Centres=A.Centres;
-      Radii=A.Radii;
+      RadiiInner=A.RadiiInner;
+      RadiiOuter=A.RadiiOuter;
     }
   return *this;
 }
@@ -100,14 +101,15 @@ DXTControl::clear()
 {
   rotateFlag.clear();
   Centres.clear();
-  Radii.clear();
+  RadiiInner.clear();
+  RadiiOuter.clear();
   return;
 }
 
 
 void
 DXTControl::setUnit(const Geometry::Vec3D& Pt,
-		    const double R,
+		    const double RI,const double RO,
 		    const bool rFlag)
   /*!
     Add a ext component
@@ -119,7 +121,8 @@ DXTControl::setUnit(const Geometry::Vec3D& Pt,
   ELog::RegMethod RegA("DXTControl","setUnit");
 
   Centres.push_back(Pt);
-  Radii.push_back(R);
+  RadiiInner.push_back(RI);
+  RadiiOuter.push_back(RO);
   rotateFlag.push_back(rFlag);
 
   return;
@@ -139,7 +142,7 @@ DXTControl::write(std::ostream& OX) const
   std::ostringstream cx;
   cx<<"dxt:"<<particle<<" ";
   for(size_t i=0;i<Centres.size();i++)
-    cx<<Centres[i]<<" "<<Radii[i]<<" ";
+    cx<<Centres[i]<<" "<<RadiiOuter[i]<<" "<<RadiiInner[i];
   
   StrFunc::writeMCNPX(cx.str(),OX);
    

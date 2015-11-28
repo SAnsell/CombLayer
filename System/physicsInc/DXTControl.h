@@ -40,7 +40,8 @@ class DXTControl
   std::string particle;                    ///< Particle flag
   std::vector<int> rotateFlag;             ///< Items needing rotation
   std::vector<Geometry::Vec3D> Centres;    ///< Centres of dxtran 
-  std::vector<double> Radii;               ///< Radii
+  std::vector<double> RadiiInner;          ///< Radii
+  std::vector<double> RadiiOuter;          ///< Radii
   
  public:
    
@@ -50,7 +51,7 @@ class DXTControl
   virtual ~DXTControl();
 
   void clear();
-  void setUnit(const Geometry::Vec3D&,const double,const bool);
+  void setUnit(const Geometry::Vec3D&,const double,const double,const bool);
   
   void write(std::ostream&) const;
   

@@ -125,6 +125,7 @@ DXTConstructor::processUnit(Simulation& System,
       return;
     }
   DXTControl& DXT=System.getPC().getDXTCard();
+  double RI,RO;
   if (StrItem[0]=="Object" || StrItem[0]=="object")
     {
       const std::string place=
@@ -135,19 +136,21 @@ DXTConstructor::processUnit(Simulation& System,
       if (!attachSystem::getAttachPoint(place,linkPt,PPoint,YAxis))
 	throw ColErr::InContainerError<std::string>
 	  (place,"Fixed Object not found");
-      const double R=
-	IParam.outputItem<double>("wDXT",Index,4,"radius not given");
-      DXT.setUnit(PPoint,R,1);
+      RI=IParam.outputItem<double>("wDXT",Index,4,"radius not given");
+      if (!IParam.checkItem("wDXT",Index,5,RO))
+	RO=RI;
+      DXT.setUnit(PPoint,RI,RO,1);
     }
   else if (StrItem[0]=="free" || StrItem[0]=="Free")
     {
       size_t itemIndex(1);
       const Geometry::Vec3D PPoint=
 	IParam.getCntVec3D("wDXT",Index,itemIndex,"Point position not given");
-      ELog::EM<<"point == "<<PPoint<<ELog::endDiag;
-      const double R=
-	IParam.outputItem<double>("wDXT",Index,itemIndex,"radius not given");
-      DXT.setUnit(PPoint,R,0);
+
+      RI=IParam.outputItem<double>("wDXT",Index,itemIndex,"radius not given");
+      if (!IParam.checkItem("wDXT",Index,itemIndex+1,RO))
+	RO=RI;
+      DXT.setUnit(PPoint,RI,RO,0);
     }
 
 

@@ -502,7 +502,7 @@ inputParam::outputItem(const std::string& K,
      StrFunc::makeString(itemIndex),ErrMessage);
 }
 
-  template<typename T>
+template<typename T>
 int
 inputParam::checkItem(const std::string& K,
 		      const size_t setIndex,

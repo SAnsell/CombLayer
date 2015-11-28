@@ -112,8 +112,31 @@ CellMap::insertComponent(Simulation& System,
    */
 {
   ELog::RegMethod RegA("CellMap","insertComponent(CC)");
+  
   if (CC.hasOuterSurf())
     insertComponent(System,Key,CC.getExclude());
+
+  return;
+}
+
+void
+CellMap::insertComponent(Simulation& System,
+			 const std::string& Key,
+			 const size_t index,
+			 const ContainedComp& CC) const
+  /*!
+    Insert a component into a cell
+    \param System :: Simulation to obtain cell from
+    \param Key :: KeyName for cell
+    \param index :: index value
+    \param CC :: Contained Component ot insert 
+   */
+{
+  ELog::RegMethod RegA("CellMap","insertComponent(CC,index)");
+  
+  if (CC.hasOuterSurf())
+    insertComponent(System,Key,index,CC.getExclude());
+
   return;
 }
 
@@ -167,8 +190,8 @@ CellMap::insertComponent(Simulation& System,
   
 void
 CellMap::insertComponent(Simulation& System,
-			  const std::string& Key,
-			  const std::string& exclude) const
+			 const std::string& Key,
+			 const std::string& exclude) const
   /*!
     Insert a component into a cell
     \param System :: Simulation to obtain cell from
@@ -188,6 +211,34 @@ CellMap::insertComponent(Simulation& System,
 					    "Cell["+Key+"] not present");
       outerObj->addSurfString(exclude);
     }
+  return;
+}
+
+void
+CellMap::insertComponent(Simulation& System,
+			 const std::string& Key,
+			 const size_t index,
+			 const std::string& exclude) const
+  /*!
+    Insert a component into a cell
+    \param System :: Simulation to obtain cell from
+    \param Key :: KeyName for cell
+    \param index :: Index to use
+    \param CC :: Contained Componenet
+   */
+{
+  ELog::RegMethod RegA("CellMap","insertComponent");
+
+  const int cellNum=getCell(Key,index);
+
+  if (Key=="roof")
+    ELog::EM<<"Key === "<<Key<<" "<<cellNum<<ELog::endDiag;
+
+  MonteCarlo::Qhull* outerObj=System.findQhull(cellNum);
+  if (!outerObj)
+    throw ColErr::InContainerError<int>(cellNum,
+					"Cell["+Key+"] not present");
+  outerObj->addSurfString(exclude);
   return;
 }
 

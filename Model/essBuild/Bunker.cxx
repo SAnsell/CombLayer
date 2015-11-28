@@ -249,6 +249,10 @@ Bunker::populate(const FuncDataBase& Control)
 
   
   nRoof=Control.EvalVar<size_t>(keyName+"NRoof");
+  nRoofRadial=Control.EvalDefVar<size_t>(keyName+"NRoofRadial",0);
+  // BOOLEAN NUMBER!!!!!!!
+  activeRoof=Control.EvalDefVar<size_t>(keyName+"ActiveRoof",0);
+
   ModelSupport::populateDivideLen(Control,nRoof,keyName+"RoofLen",
 				 roofThick,roofFrac);
   ModelSupport::populateDivide(Control,nRoof,keyName+"RoofMat",
@@ -467,16 +471,35 @@ Bunker::createObjects(Simulation& System,
 				 " 1 -17 3M -4N -5 15 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Inner));
   setCell("floor",cellIndex-1);
-  
-  Out=ModelSupport::getComposite(SMap,bnkIndex,lwIndex,rwIndex,
-				 " 1 -17 3M -4N 6 -16 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Inner));
-  setCell("roof",cellIndex-1);
 
+  // Divide the roof into sector as well
+  
+  //  Out=ModelSupport::getComposite(SMap,bnkIndex,lwIndex,rwIndex,
+  //				 " 1 -17 3M -4N 6 -16 ");
+  //  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Inner));
+  //setCell("roof",cellIndex-1);
+    
   // Main wall not divided
   int divIndex(bnkIndex+1000);
   for(size_t i=0;i<nSectors;i++)
     {
+      // Divide the roof into sector as well
+      Out=ModelSupport::getComposite(SMap,bnkIndex," 1 -17 6 -16 ");
+      if (i)
+	Out+=ModelSupport::getComposite(SMap,divIndex," 1 ");
+      else
+	Out+=ModelSupport::getComposite(SMap,lwIndex," 3 ");
+
+      if (i+1!=nSectors)
+	Out+=ModelSupport::getComposite(SMap,divIndex," -2 ");
+      else
+	Out+=ModelSupport::getComposite(SMap,rwIndex," -4 ");
+
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Inner));
+      ELog::EM<<"Adding cell to roof"<<cellIndex<<ELog::endDiag;
+      addCell("roof",cellIndex-1);
+
+
       Out=ModelSupport::getComposite(SMap,bnkIndex,divIndex,
 				     " 1 7 -17 1M -2M 5 -6 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
@@ -493,7 +516,47 @@ Bunker::createObjects(Simulation& System,
   return;
 }
 
+void
+Bunker::createMainRoof(Simulation& System)
+  /*!
+    Create a tesselated main wall
+    \param System :: Simulation syst em
+  */
+{
+  ELog::RegMethod RegA("Bunker","createMainWall");
 
+  size_t AS=activeSegment;  // binary system
+  
+  for(size_t i=0;AS && i<nSectors;i++)
+    {
+      if (AS & 1)
+        {
+	  ModelSupport::LayerDivide3D LD3(keyName+"mainWall"+
+					  StrFunc::makeString(i));
+	  LD3.setSurfPair(0,SMap.realSurf(bnkIndex+1001+static_cast<int>(i)),
+			  SMap.realSurf(bnkIndex+1002+static_cast<int>(i)));
+	  
+	  LD3.setSurfPair(1,SMap.realSurf(bnkIndex+5),
+		  SMap.realSurf(bnkIndex+6));
+	  LD3.setSurfPair(2,SMap.realSurf(bnkIndex+7),
+			  SMap.realSurf(bnkIndex+17));
+	  LD3.setFractions(0,segDivide);
+	  LD3.setFractions(1,vertFrac);
+	  LD3.setFractions(2,wallFrac);
+	  
+	  LD3.setXMLdata(keyName+"Def.xml","WallMat",keyName+".xml");
+	  LD3.divideCell(System,getCell("frontWall",i));
+
+	  addSurfs("Sector"+StrFunc::makeString(i),LD3.getSurfs());
+	  addCells("Sector"+StrFunc::makeString(i),LD3.getCells());
+	  ELog::EM<<"Processing sector "<<i<<ELog::endDiag;
+	}
+      AS>>=1;
+    }
+  return;
+}
+
+  
 void
 Bunker::createMainWall(Simulation& System)
   /*!
@@ -545,7 +608,7 @@ Bunker::layerProcess(Simulation& System)
   ELog::RegMethod RegA("Bunker","layerProcess");
   // Steel layers
   //  layerSpecial(System);
-
+  return;
   if (nRoof>1)
     {
       std::string OutA,OutB;
@@ -664,27 +727,6 @@ Bunker::setCutWall(const bool lFlag,const bool rFlag)
 
   leftWallFlag=lFlag;
   rightWallFlag=rFlag;
-  return;
-}
-
-void
-Bunker::cutInsert(Simulation& System,const BunkerInsert& BI) const
-  /*!
-    Loops over all the points and cuts those that full within
-    the scope of the Insert
-    \param BI :: Insert to use
-  */
-{
-  ELog::RegMethod RegA("Bunker","cutInsert");
-
-  for(size_t i=0;i<nSectors;i++)
-    for(size_t j=0;j<nVert;j++)
-      for(size_t k=0;k<nLayers;k++)
-	{
-	  const std::vector<Geometry::Vec3D>& Pts =
-	    BMWPtr->getPoints(i,j,k);
-	  const int res=BI.objectCut(Pts);	  
-	}
   return;
 }
 
