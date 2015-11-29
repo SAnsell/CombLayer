@@ -287,6 +287,7 @@ createInputs(inputParam& IParam)
   IParam.regMulti("WObject","weightObject",100,1);
   IParam.regMulti("WRebase","weightRebase",100,1);
   IParam.regMulti("wDXT","weightDxtran",100,1);
+  IParam.regMulti("wDD","weightDD",100,1);
 
 
   IParam.regMulti("wWWG","wWWG",25,0);

@@ -42,6 +42,9 @@ class DXTControl
   std::vector<Geometry::Vec3D> Centres;    ///< Centres of dxtran 
   std::vector<double> RadiiInner;          ///< Radii
   std::vector<double> RadiiOuter;          ///< Radii
+
+  std::vector<double> DDk;                 ///< K value for DD cutting
+  std::vector<double> DDm;                 ///< M value for DD if k>0.0
   
  public:
    
@@ -52,6 +55,7 @@ class DXTControl
 
   void clear();
   void setUnit(const Geometry::Vec3D&,const double,const double,const bool);
+  void setDD(const double,const double);
   
   void write(std::ostream&) const;
   

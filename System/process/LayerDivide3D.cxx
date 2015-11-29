@@ -111,8 +111,9 @@ LayerDivide3D::processSurface(const size_t Index,
 			      const std::vector<double>& lenFraction)
   /*!
     Process the surfaces and convert them into merged layers
+    \param Index :: A/B/C surface
     \param WallSurf :: Surface numbers
-    \param lenFraction :: Lengths to divide between FRACtions 
+    \param lenFraction :: Lengths to divide into fractions 
     \return segment count
   */
 {
@@ -120,7 +121,7 @@ LayerDivide3D::processSurface(const size_t Index,
   //
   // Currently we only can deal with two types of surface [ plane/plane
   // and plane/cylinder
-
+  
   Geometry::Surface* aSurf=SMap.realSurfPtr(WallSurf.first);
   Geometry::Surface* bSurf=SMap.realSurfPtr(WallSurf.second);
   //
@@ -152,8 +153,19 @@ LayerDivide3D::processSurface(const size_t Index,
   attachSystem::SurfMap::addSurf(surGroup,surfN);
   surfN++;
   size_t segCount(1);
+  
+  if (lenFraction.empty()) 
+    {
+      SMap.addMatch(surfN,WallSurf.second);
+      attachSystem::SurfMap::addSurf(surGroup,surfN);
+      return 1;
+    }
+  
   // inner index
-  for(size_t i=1;i+1<lenFraction.size();i++)
+  const size_t startIndex((lenFraction.front()>Geometry::zeroTol) ? 0 : 1);
+  const size_t endIndex(((lenFraction.back()-1.0)<Geometry::zeroTol) ?
+    lenFraction.size()+1 : lenFraction.size());
+  for(size_t i=startIndex;i+1<endIndex;i++)
     {
       Geometry::Surface* PX=
 	ModelSupport::surfDBase::generalSurf(aSurf,bSurf,lenFraction[i],surfN);
@@ -317,7 +329,8 @@ LayerDivide3D::divideCell(Simulation& System,const int cellN)
   const MonteCarlo::Object* CPtr=System.findQhull(cellN);
   if (!CPtr)
     throw ColErr::InContainerError<int>(cellN,"cellN");
-     
+
+
   ALen=processSurface(0,AWall,AFrac);
   BLen=processSurface(1,BWall,BFrac);
   CLen=processSurface(2,CWall,CFrac);

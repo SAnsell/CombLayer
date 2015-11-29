@@ -58,6 +58,8 @@ class DXTConstructor
 
   void processUnit(Simulation&,const mainSystem::inputParam&,
 		   const size_t);
+  void processDD(Simulation&,const mainSystem::inputParam&,
+		   const size_t);
 };
 
 }

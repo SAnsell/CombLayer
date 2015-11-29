@@ -127,6 +127,22 @@ DXTControl::setUnit(const Geometry::Vec3D& Pt,
 
   return;
 }
+
+void
+DXTControl::setDD(const double DK,const double DM)
+  /*!
+    Add a ext component
+    \param DK :: K number
+    \param DM :: Modification number
+  */
+{
+  ELog::RegMethod RegA("DXTControl","setUnit");
+
+  DDk.push_back(DK);
+  DDm.push_back(DM);
+
+  return;
+}
     
 void
 DXTControl::write(std::ostream& OX) const
@@ -143,8 +159,14 @@ DXTControl::write(std::ostream& OX) const
   cx<<"dxt:"<<particle<<" ";
   for(size_t i=0;i<Centres.size();i++)
     cx<<Centres[i]<<" "<<RadiiOuter[i]<<" "<<RadiiInner[i];
-  
   StrFunc::writeMCNPX(cx.str(),OX);
+
+  cx.str("");
+  cx<<"dd1 ";
+  for(size_t i=0;i<DDk.size();i++)
+    cx<<DDk[i]<<" "<<DDm[i]<<" ";
+    StrFunc::writeMCNPX(cx.str(),OX);
+
    
   return;
 }

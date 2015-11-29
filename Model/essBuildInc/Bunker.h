@@ -75,9 +75,14 @@ class Bunker : public attachSystem::ContainedComp,
   std::vector<double> wallFrac;  ///< thicknesss (fractions)
 
   // ROOF
-  size_t nRoof;                  ///< number of layers
-  size_t nRoofRaidal;            ///< number of radial layers
-  std::vector<double> roofFrac;  ///< radial layer
+  size_t activeRoof;              ///< Activeity for roof segments
+  size_t nRoofVert;               ///< number of layers
+  size_t nRoofRadial;             ///< number of radial layers
+  size_t nRoofSide;               ///< number of radial layers
+  std::vector<double> roofVert;    ///< Roof fractions
+  std::vector<double> roofRadial;  ///< Roof fractions
+  std::vector<double> roofSide;    ///< Roof fractions 
+  std::vector<int> roofMatVec;     ///< radial layer
 
   // SIDES:
 
@@ -109,7 +114,6 @@ class Bunker : public attachSystem::ContainedComp,
   // Bunker Material distribution:
   std::string loadFile;            ///< Bunker input file
   std::string outFile;             ///< Bunker output file
-  BunkerMainWall* BMWPtr;          ///< Bunker main wall
 
   void createWallSurfaces(const Geometry::Vec3D&,
 			  const Geometry::Vec3D&);
@@ -129,10 +133,10 @@ class Bunker : public attachSystem::ContainedComp,
   void createSideLinks(const Geometry::Vec3D&,const Geometry::Vec3D&,
 		       const Geometry::Vec3D&,const Geometry::Vec3D&);
 
-  void addCalcPoint(const size_t,const size_t,const size_t,
-		    std::string);
-  void joinWall(Simulation&);
-  
+
+  void createMainWall(Simulation&);
+  void createMainRoof(Simulation&,const int);
+
  public:
 
   Bunker(const std::string&);
@@ -150,7 +154,6 @@ class Bunker : public attachSystem::ContainedComp,
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const attachSystem::FixedComp&,
 		 const long int,const bool);
-  void createMainWall(Simulation&);
 
 };
 

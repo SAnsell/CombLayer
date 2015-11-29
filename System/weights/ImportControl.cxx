@@ -241,13 +241,16 @@ DXT(Simulation& System,
   ELog::RegMethod RegA("ImportControl[F]","DXT");
 
   // currently only first item / get all
+  physicsSystem::DXTConstructor A;
   std::vector<std::string> StrItem;
   const size_t NGrp=IParam.setCnt("wDXT");
   for(size_t grpIndex=0;grpIndex<NGrp;grpIndex++)
-    {
-      physicsSystem::DXTConstructor A;
-      A.processUnit(System,IParam,grpIndex);
-    }
+    A.processUnit(System,IParam,grpIndex);
+
+  const size_t NGrpD=IParam.setCnt("wDD");
+  for(size_t grpIndex=0;grpIndex<NGrpD;grpIndex++)
+    A.processDD(System,IParam,grpIndex);
+
   return;
 }
 

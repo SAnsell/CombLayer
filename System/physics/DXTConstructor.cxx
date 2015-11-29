@@ -96,15 +96,44 @@ DXTConstructor::DXTConstructor()
 {}
 
 void
-DXTConstructor::processUnit(Simulation& System,
-			    const mainSystem::inputParam& IParam,
-			    const size_t Index) 
-/*!
-    Add ext component 
+DXTConstructor::processDD(Simulation& System,
+			  const mainSystem::inputParam& IParam,
+			  const size_t Index) 
+  /*!
+    Add a simpel dd card
     \param System :: Simulation to get physics/fixed points
     \param IParam :: Main input parameters
     \param Index :: index of the -wDXT card
    */
+{
+  ELog::RegMethod RegA("DXTConstructor","processDD");
+
+  const size_t NParam=IParam.itemCnt("wDD",Index);
+  if (NParam<2)
+    throw ColErr::IndexError<size_t>(NParam,2,"Insufficient items wDXT");
+
+  // Get all values:
+  DXTControl& DXT=System.getPC().getDXTCard();
+  for(size_t j=1;j<NParam;j+=2)
+    {
+      
+      const double DDk=IParam.getValue<double>("wDD",Index,j-1);
+      const double DDm=IParam.getValue<double>("wDD",Index,j);
+      DXT.setDD(DDk,DDm);
+    }
+  return;
+}
+ 
+void
+DXTConstructor::processUnit(Simulation& System,
+			    const mainSystem::inputParam& IParam,
+			    const size_t Index) 
+ /*!
+   Add dxtran component 
+   \param System :: Simulation to get physics/fixed points
+   \param IParam :: Main input parameters
+   \param Index :: index of the -wDXT card
+ */
 {
   ELog::RegMethod RegA("DXTConstructor","processPoint");
 
@@ -152,8 +181,7 @@ DXTConstructor::processUnit(Simulation& System,
 	RO=RI;
       DXT.setUnit(PPoint,RI,RO,0);
     }
-
-
+  
   return;
 }
 
@@ -168,6 +196,7 @@ DXTConstructor::writeHelp(std::ostream& OX) const
       " :: \n"
       "   object [objectName] linkNumber radius \n"
       "   free Vec3D radius \n";
+    OX<<"-wDDD [Kvalue Dvalue] \n";
   return;
 }
 

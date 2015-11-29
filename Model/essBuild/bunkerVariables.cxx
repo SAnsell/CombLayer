@@ -73,8 +73,11 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("ABunkerNLayers",24);
   Control.addVariable("ABunkerNSegment",5);
   Control.addVariable("ABunkerActiveSegment",4);
+  Control.addVariable("ABunkerActiveRoof",4);
 
-  Control.addVariable("ABunkerNRoof",5);
+  Control.addVariable("ABunkerNRoofVert",5);
+  Control.addVariable("ABunkerNRoofSide",1);
+  Control.addVariable("ABunkerNRoofRadial",12);
 
   Control.addVariable("ABunkerNSide",5);
   Control.addVariable("ABunkerNSideVert",5);
@@ -122,7 +125,10 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("BBunkerNSectors",9);
   Control.addVariable("BBunkerNVert",1);
   Control.addVariable("BBunkerNLayers",1);
-  Control.addVariable("BBunkerNRoof",5);
+
+  Control.addVariable("BBunkerNRoofVert",5);
+  Control.addVariable("BBunkerNRoofSide",1);
+  Control.addVariable("BBunkerNRoofRadial",4);
 
   Control.addVariable("BBunkerNSide",5);
   Control.addVariable("BBunkerNSideVert",5);
