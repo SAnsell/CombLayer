@@ -68,7 +68,7 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("ABunkerRightPhase",0.0);
   Control.addVariable("ABunkerLeftAngle",0.0);
   Control.addVariable("ABunkerRightAngle",0.0);
-  Control.addVariable("ABunkerNSectors",9);
+  Control.addVariable("ABunkerNSectors",10);
   Control.addVariable("ABunkerNVert",24);
   Control.addVariable("ABunkerNLayers",24);
   Control.addVariable("ABunkerNSegment",5);
@@ -96,18 +96,24 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("ABunkerWallMat","Steel71");
   Control.addVariable("ABunkerRoofMat","Aluminium");
 
-  Control.addVariable("ABunkerRoofLen0",30.0);
-  Control.addVariable("ABunkerRoofLen1",30.0);
-  Control.addVariable("ABunkerRoofLen2",70.0);
-  Control.addVariable("ABunkerRoofLen3",35.0);
-  Control.addVariable("ABunkerRoofLen4",30.0);
+  Control.addVariable("ABunkerRoofVert1",30.0);
+  Control.addVariable("ABunkerRoofVert2",40.0);
+  Control.addVariable("ABunkerRoofVert3",70.0);
+  Control.addVariable("ABunkerRoofVert4",35.0);
+  Control.addVariable("ABunkerRoofVert5",20.0);
 
 
-  Control.addVariable("ABunkerWallMat1","CarstenConc");
-  Control.addVariable("ABunkerWallMat2","CastIron");
-  Control.addVariable("ABunkerWallMat3","CastenConc");
-  Control.addVariable("ABunkerWallMat4","CastIron");
-  Control.addVariable("ABunkerWallMat5","CarstenConc");
+  Control.addVariable("ABunkerRoofMat0","CarstonConc");
+  Control.addVariable("ABunkerRoofMat1","CastIron");
+  Control.addVariable("ABunkerRoofMat2","CarstonConc");
+  Control.addVariable("ABunkerRoofMat3","CastIron");
+  Control.addVariable("ABunkerRoofMat4","CarstonConc");
+
+  Control.addVariable("ABunkerWallMat0","CarstenConc");
+  Control.addVariable("ABunkerWallMat1","CastIron");
+  Control.addVariable("ABunkerWallMat2","CastenConc");
+  Control.addVariable("ABunkerWallMat3","CastIron");
+  Control.addVariable("ABunkerWallMat4","CarstenConc");
   
   Control.addVariable("ABunkerWallLen1",0.5);
   Control.addVariable("ABunkerWallLen2",10.0);

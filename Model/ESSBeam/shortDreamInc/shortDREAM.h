@@ -65,6 +65,9 @@ class shortDREAM : public attachSystem::CopiedComp
 {
  private:
 
+  /// Stop at [0:Complete / 1:Mono Wall / 2:Inner Bunker / 3:Outer Bunker ]
+  int stopPoint;  
+  
   /// Main Beam Axis [for construction]
   std::shared_ptr<attachSystem::FixedComp> dreamAxis;
 

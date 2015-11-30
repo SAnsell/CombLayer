@@ -350,7 +350,6 @@ DivideGrid::writeXML(const std::string& FName,
   XML::XMLcollect activeXOut;
 
   activeXOut.addGrp("DivideGrid");
-  ELog::EM<<"NA - == "<<nA<<" "<<nB<<" "<<nC<<ELog::endDiag;
   for(size_t i=0;i<nA;i++)
     for(size_t j=0;j<nB;j++)
       for(size_t k=0;k<nC;k++)

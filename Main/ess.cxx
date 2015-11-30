@@ -148,7 +148,7 @@ main(int argc,char* argv[])
       
       SimProcess::importanceSim(*SimPtr,IParam);
       SimProcess::inputPatternSim(*SimPtr,IParam); // energy cut etc
-      
+
       if (renumCellWork)
 	tallyRenumberWork(*SimPtr,IParam);
       tallyModification(*SimPtr,IParam);

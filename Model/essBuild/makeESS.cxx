@@ -430,9 +430,6 @@ makeESS::makeBunker(Simulation& System,
   */
 {
   ELog::RegMethod RegA("makeESS","makeBunker");
-
-  ELog::EM<<"Bunker == "<<bunkerType<<ELog::endDiag;
-
   
   ABunker->addInsertCell(74123);
   ABunker->setCutWall(1,0);

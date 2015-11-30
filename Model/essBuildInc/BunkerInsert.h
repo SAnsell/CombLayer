@@ -53,6 +53,7 @@ class BunkerInsert : public attachSystem::ContainedComp,
   double rightWall;              ///< Right wall thickness
 
   int wallMat;                   ///< wall material
+  int voidMat;                   ///< void material
 
   HeadRule outCut;               ///< Cut volume for items
     

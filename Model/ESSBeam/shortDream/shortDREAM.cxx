@@ -95,6 +95,7 @@ namespace essSystem
 
 shortDREAM::shortDREAM(const std::string& keyName) :
   attachSystem::CopiedComp("shortDream",keyName),
+  stopPoint(0),
   dreamAxis(new attachSystem::FixedComp(newName+"Axis",4)),
   FocusA(new beamlineSystem::GuideLine(newName+"FA")),
   VacBoxA(new constructSystem::VacuumBox(newName+"VacA")),
@@ -149,8 +150,9 @@ shortDREAM::shortDREAM(const std::string& keyName) :
   ShieldB(new constructSystem::LineShield(newName+"ShieldB")),
   VPipeOutB(new constructSystem::VacuumPipe(newName+"PipeOutB")),
   FocusOutB(new beamlineSystem::GuideLine(newName+"FOutB"))
-/*!
-    Constructor
+ /*!
+   Constructor
+   \param SP :: Stop point
  */
 {
   ELog::RegMethod RegA("shortDREAM","shortDREAM");
@@ -305,11 +307,11 @@ shortDREAM::build(Simulation& System,
 {
   // For output stream
   ELog::RegMethod RegA("shortDREAM","build");
-
-  ELog::EM<<"PROCESS CALL"<<ELog::endDiag;
+  const FuncDataBase& Control=System.getDataBase();
   CopiedComp::process(System.getDataBase());
+  stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
   
-  ELog::EM<<"\nBuilding DREAM on : "<<GItem.getKeyName()<<ELog::endDiag;
+  ELog::EM<<"\nBuilding shortDREAM on : "<<GItem.getKeyName()<<ELog::endDiag;
   
   setBeamAxis(GItem,1);
   FocusA->addInsertCell(GItem.getCells("Void"));
@@ -317,6 +319,8 @@ shortDREAM::build(Simulation& System,
   FocusA->createAll(System,GItem.getKey("Beam"),-1,
 		    GItem.getKey("Beam"),-1);
 
+  if (stopPoint==1) return;                      // STOP At bunker edge
+  
   // First section out of monolyth
   VacBoxA->addInsertCell(bunkerObj.getCell("MainVoid"));
   VacBoxA->createAll(System,FocusA->getKey("Guide0"),2);
@@ -416,17 +420,21 @@ shortDREAM::build(Simulation& System,
   FocusFinal->createAll(System,T0DiskD->getKey("Beam"),2,
 			T0DiskD->getKey("Beam"),2);
 
-  // IN WALL
+
+  if (stopPoint==2) return;                      // STOP At bunker edge
+
+    // IN WALL
   // Make bunker insert
   const attachSystem::FixedComp& GFC(FocusFinal->getKey("Guide0"));
   BInsert->createAll(System,GFC,-1,bunkerObj);
-  ELog::EM<<"Bunker == "<<bunkerObj.getKeyName()<<ELog::endDiag;
   attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);  
 
   FocusWall->addInsertCell(BInsert->getCell("Void"));
   FocusWall->createAll(System,*BInsert,-1,
 			 FocusFinal->getKey("Guide0"),2);
 
+
+  if (stopPoint==3) return;                      // STOP At bunker edge
   // Section to 17m
   
   ShieldA->addInsertCell(voidCell);

@@ -179,32 +179,27 @@ makeESSBL::build(Simulation& System,
     
   if (!mainGIPtr)
     throw ColErr::InContainerError<std::string>(shutterName,"shutterObject");
-
 	
   if (beamName=="ODIN")
     {
-      ELog::EM<<"Building "<<beamName<<ELog::endDiag;
       // Odin beamline
       ODIN OdinBL;
       OdinBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="SHORTODIN")
     {
-      ELog::EM<<"Building "<<beamName<<ELog::endDiag;
       // Odin beamline
       shortODIN OdinBL;
       OdinBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="ESTIA")
     {
-      ELog::EM<<"Building "<<beamName<<ELog::endDiag;
       ESTIA estiaBL;
       estiaBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="LOKI")
     {
       // LOKI beamline
-      ELog::EM<<"Building "<<beamName<<ELog::endDiag;
       LOKI LokiBL;
       LokiBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
@@ -223,23 +218,21 @@ makeESSBL::build(Simulation& System,
     }
   else if (beamName=="DREAM")
     {
-      // NMX beamline
-      ELog::EM<<"Building "<<beamName<<ELog::endDiag;
-      DREAM dreamBL;
+      // DREAM beamline
+      DREAM dreamBL("dream");
       dreamBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="SHORTDREAM")
     {
       // short sector dream
-      ELog::EM<<"Building "<<beamName<<ELog::endDiag;
-      shortDREAM dreamBL("shortDream");
+      DREAM dreamBL("shortDream");
+      //      shortDREAM dreamBL("shortDream");
       dreamBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="SHORTDREAM2")
     {
       // short sector dream
-      ELog::EM<<"Building "<<beamName<<ELog::endDiag;
-      shortDREAM dreamBL("shortDream2");
+      DREAM dreamBL("shortDream2");
       dreamBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="JSANS" || beamName=="JRef")

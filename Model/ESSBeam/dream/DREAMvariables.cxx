@@ -62,6 +62,9 @@ DREAMvariables(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("DREAMvariables[F]","DREAMvariables");
 
+  // extent of beamline
+  Control.addVariable("dreamStopPoint",0);
+  
   // Bender in section so use cut system
   Control.addVariable("dreamFAXStep",0.0);        // Centre of thermal [-2]
   Control.addVariable("dreamFAYStep",0.0);       
@@ -228,7 +231,7 @@ DREAMvariables(FuncDataBase& Control)
 
   Control.addVariable("dreamT0DiskA0Thick",5.4);  // to include B4C
   Control.addVariable("dreamT0DiskAInnerMat","Inconnel");
-  Control.addVariable("dreamT0DiskAOuterMat","Tungsten");
+  Control.addVariable("dreamT0DiskAOuterMat","Void");
   
   Control.addVariable("dreamT0DiskANBlades",2);
   Control.addVariable("dreamT0DiskA0PhaseAngle0",95.0);
@@ -249,13 +252,13 @@ DREAMvariables(FuncDataBase& Control)
 
   Control.addVariable("dreamT0DiskB0Thick",5.4);  // to include B4C
   Control.addVariable("dreamT0DiskBInnerMat","Inconnel");
-  Control.addVariable("dreamT0DiskBOuterMat","Void");
+  Control.addVariable("dreamT0DiskBOuterMat","Tungsten");
   
   Control.addVariable("dreamT0DiskBNBlades",2);
   Control.addVariable("dreamT0DiskB0PhaseAngle0",95.0);
-  Control.addVariable("dreamT0DiskB0OpenAngle0",35.0);
+  Control.addVariable("dreamT0DiskB0OpenAngle0",145.0);
   Control.addVariable("dreamT0DiskB0PhaseAngle1",275.0);
-  Control.addVariable("dreamT0DiskB0OpenAngle1",25.0);
+  Control.addVariable("dreamT0DiskB0OpenAngle1",125.0);
 
   // T0 Blade chopper house
   Control.addVariable("dreamT0DiskAHouseYStep",2.6);
@@ -411,7 +414,7 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamFD0HeightEnd",4.97);
   Control.addVariable("dreamFD0WidthStart",2.24);
   Control.addVariable("dreamFD0WidthEnd",3.05);
-  Control.addVariable("dreamFD0Length",210.0);
+  Control.addParse<double>("dreamFD0Length","dreamFDLength");
 
   // ------------------------------------------
   // Band Pass/C : for the band pass chopper
@@ -455,7 +458,7 @@ DREAMvariables(FuncDataBase& Control)
 
   Control.addVariable("dreamBandBHouseYStep",0.0);
   Control.addVariable("dreamBandBHouseVoidHeight",38.0);
-  Control.addVariable("dreamBandBHouseVoidDepth",22.0);
+  Control.addVariable("dreamBandBHouseVoidDepth",20.0);
   Control.addVariable("dreamBandBHouseVoidThick",3.0);
   Control.addVariable("dreamBandBHouseVoidWidth",80.0);
   Control.addVariable("dreamBandBHouseWallThick",1.0);
@@ -497,6 +500,7 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamFE0WidthStart",2.24);
   Control.addVariable("dreamFE0WidthEnd",3.05);
   Control.addVariable("dreamFE0Length",440.0);
+  Control.addParse<double>("dreamFE0Length","dreamFELength");
 
   // ------------------------------------------
   // T0DiskC : for the second T0 pair
@@ -584,8 +588,7 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamFF0HeightEnd",4.97);
   Control.addVariable("dreamFF0WidthStart",2.24);
   Control.addVariable("dreamFF0WidthEnd",3.05);
-  Control.addVariable("dreamFF0Length",40.0);
-
+  Control.addParse<double>("dreamFF0Length","dreamFFLength");
 
 
   // ---------------------------------

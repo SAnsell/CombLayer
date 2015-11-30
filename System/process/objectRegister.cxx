@@ -54,6 +54,7 @@
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "SurfMap.h"
 #include "LayerComp.h"
 #include "objectRegister.h"
 
@@ -596,6 +597,9 @@ template const attachSystem::LayerComp*
 template const attachSystem::CellMap* 
   objectRegister::getObject(const std::string&) const;
 
+template const attachSystem::SurfMap* 
+  objectRegister::getObject(const std::string&) const;
+
 template attachSystem::FixedComp* 
   objectRegister::getObject(const std::string&);
 
@@ -615,6 +619,9 @@ template attachSystem::SecondTrack*
   objectRegister::getObject(const std::string&);
 
 template attachSystem::CellMap* 
+  objectRegister::getObject(const std::string&);
+
+template attachSystem::SurfMap* 
   objectRegister::getObject(const std::string&);
 
 ///\endcond TEMPLATE  

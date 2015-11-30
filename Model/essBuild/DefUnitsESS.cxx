@@ -124,15 +124,14 @@ setESSFull(defaultConfig& A)
       {"NMX","G4BLine18"},
       {"SHORTDREAM","G4BLine9"},
       {"SHORTDREAM2","G4BLine1"},
-      {"SHORTODIN","G4BLine6"},
+      {"SHORTODIN","G4BLine7"},
       {"DREAM","G4BLine17"},
-      {"VOR","G4BLine2"},   // also 17  
-      {"LOKI","G4BLine4"},
-      {"ODIN","G4BLine15"},
-      {"ESTIA","G4BLine11"}
+      {"VOR","G4BLine3"},   // also 17  
+      {"LOKI","G4BLine5"},
+      {"ODIN","G4BLine15"}
     };     
   const std::set<std::string> beamFilled=
-    {"NMX","DREAM","VOR","SHORTDREAM","LOKI"};
+    {"NMX","DREAM","VOR","SHORTDREAM","SHORTDREAM2","LOKI"};
 
   size_t index(0);
   std::map<std::string,std::string>::const_iterator mc;

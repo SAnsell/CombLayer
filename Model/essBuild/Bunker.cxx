@@ -202,7 +202,7 @@ Bunker::populate(const FuncDataBase& Control)
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   roofMat=ModelSupport::EvalMat<int>(Control,keyName+"RoofMat");
-
+  
   
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");
   ModelSupport::populateAddRange(Control,nLayers,keyName+"WallLen",
@@ -528,7 +528,7 @@ Bunker::createMainRoof(Simulation& System,const int innerSurf)
   const int lwIndex((leftWallFlag) ? bnkIndex+10 : bnkIndex);
   const int rwIndex((rightWallFlag) ? bnkIndex+10 : bnkIndex);
   int divIndex(bnkIndex+1000);
-  ELog::EM<<"Processing ROOF sector "<<innerSurf<<ELog::endDiag;
+
   for(size_t i=0;AS && i<nSectors;i++)
     {
       if (AS & 1)
@@ -630,12 +630,13 @@ Bunker::layerProcess(Simulation& System)
 	  DA.addMaterial(roofMatVec[i-1]);
 	}
       DA.addMaterial(roofMatVec.back());
-      size_t AS=activeSegment;  // binary system
+      size_t AS=activeRoof;  // binary system
       int BNIndex(bnkIndex+5001);
       for(size_t iSector=0;iSector<nSectors;iSector++)
 	{
 	  if (!(AS & 1))  // only process roof sections not give
 	    {
+	      
 	      // Cell Specific:
 	      const int firstCell(cellIndex);
 	      DA.setCellN(getCell("roof"+StrFunc::makeString(iSector)));
