@@ -334,16 +334,26 @@ MDB.resetMaterial(MObj);
   MDB.resetMaterial(MObj);
 
 
-  // ESS M74000 - same ase 74001 but at 300 K
-  // T = 300 K
+  // Tungsten at 300 K
   MObj.setMaterial(7400, "Tungsten",
+		   "74180.50c  0.001200000 "
+		   "74182.70c  0.265000000 "
+		   "74183.70c  0.143100000 "
+		   "74184.70c  0.306400000 "
+		   "74186.70c  0.284300000 ",
+		   "",MLib);
+  MObj.setDensity(-19.298); // density at 300 K according to the Material handbook
+  MDB.resetMaterial(MObj);  
+
+  // Tungsten at 600 K
+  MObj.setMaterial(7401, "Tungsten600K",
 		   "74180.50c  0.001200000 "
 		   "74182.71c  0.265000000 "
 		   "74183.71c  0.143100000 "
 		   "74184.71c  0.306400000 "
 		   "74186.71c  0.284300000 ",
 		   "",MLib);
-  MObj.setDensity(-19.298); // density at 300 K according to the Material handbook + see comment 10 lines below
+  MObj.setDensity(-19.298); // density at 300 K according to the Material handbook. YJL says at 600K we should use the same density
   MDB.resetMaterial(MObj);  
 
 
@@ -352,12 +362,10 @@ MDB.resetMaterial(MObj);
   // The length X width of one brick is 3 cm X 1 cm and the gap between bricks is 0.2 cm.
   // Hence, the filling factor of the infinite square lattice is:
   // 3*1/(3+0.2)/(1+0.2) = 0.78125
-  // Natural Tungsten density is 19.298 19.3 g/cm3 [Material book] at 300 K,
+  // Natural Tungsten density is 19.298 \approx 19.3 g/cm3 [Material book] at 300 K,
   // therefore the density of homogenised material is 15.0766 \approx 15.1 g/cm3 
-  // We need to use density at 300 K despite of the fact that during the operation the temperature will be ~600 K since the Tungsten bricks are placed inside
-  // containers which do not allow them to expand.
 
-  MObj.setMaterial(7401, "Tungsten151",
+  MObj.setMaterial(7451, "Tungsten151",
 		   "74180.50c  0.001200000 "
 		   "74182.71c  0.265000000 "
 		   "74183.71c  0.143100000 "
@@ -368,7 +376,7 @@ MDB.resetMaterial(MObj);
   MDB.resetMaterial(MObj);
 
   // Bilbao M30001 - same ase 7400 but at 15.6 g/cm3
-  MObj.setMaterial(7402, "Tungsten156",
+  MObj.setMaterial(7456, "Tungsten156",
 		   "74180.50c  0.001200000 "
 		   "74182.71c  0.265000000 "
 		   "74183.71c  0.143100000 "
