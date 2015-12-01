@@ -131,11 +131,19 @@ surfaceConstruct::processSurface(Simulation& System,
   if (pType=="surfMap")
     {
       const std::string object=
-	inputItem<std::string>(IParam,Index,2,"position not given");
+	IParam.outputItem<std::string>
+	("tally",Index,2,"Object component not given");
       const std::string surfItem=
-	inputItem<std::string>(IParam,Index,3,"Surf Item");
+	IParam.outputItem<std::string>
+	("tally",Index,3,"SurfMap set key not give");
+      // This should be a range:
       const long int surfIndex=
-	inputItem<long int>(IParam,Index,4,"Index not correct");
+	IParam.outputItem<std::string>
+	("tally",Index,4,"position not given");
+      
+      Geometry::Vec3D Axis;
+      size_t itemIndex(5);
+      IParam.checkCntVec3D(K,Index,itemIndex,Axis);
       
       return processSurfMap(System,object,surfItem,surfIndex);
     }
@@ -212,7 +220,6 @@ surfaceConstruct::processSurfMap(Simulation& System,
 				 const std::string& SObject,
 				 const std::string& SurfUnit,
 				 const long int linkPt) const
-
   /*!
     Process a surface tally on a registered object
     \param System :: Simulation to add tallies
@@ -226,9 +233,6 @@ surfaceConstruct::processSurfMap(Simulation& System,
 
   ModelSupport::surfIndex& SurI=
     ModelSupport::surfIndex::Instance();
-
-
-
   
   const int tNum=System.nextTallyNum(1);
   if (linkPt)

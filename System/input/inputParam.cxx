@@ -578,6 +578,36 @@ inputParam::checkItem(const std::string& K,
   return 1;
 }
 
+int
+inputParam::checkCntVec3D(const std::string& K,
+			  const size_t setIndex,
+			  size_t& itemIndex,
+			  Geometry::Vec3D& Out) const
+  /*!
+    Get a value based on key
+    \param K :: Key to seach
+    \param setIndex :: set Value
+    \param itemIndex :: Index value
+    \param Out :: returned value if found
+    \return 1 on success / 0 on failure
+  */
+
+{
+  ELog::RegMethod RegA("inputParam","checkCntVec3(setIndex,index)");
+
+  const IItem* IPtr=getIndex(K);
+  if (!IPtr) return 0;
+  try
+    {
+      Out=IPtr->getCntVec3D(setIndex,itemIndex);
+    }
+  catch(ColErr::IndexError<size_t>&)
+    {
+      return 0;
+    }
+  return 1;
+}
+
   
 bool
 inputParam::compNoCaseValue(const std::string& K,
