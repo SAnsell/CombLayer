@@ -67,7 +67,6 @@ EssWheel(FuncDataBase& Control)
     \param Control :: Segment variables
    */
 {
-  Control.addVariable("BilbaoWheelEngineeringActive", 1);
   Control.addVariable("BilbaoWheelShaftHeight",435.0);
 
   Control.addVariable("BilbaoWheelNShaftLayers",5);
@@ -82,12 +81,10 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelShaftRadius5",22.0);
   Control.addVariable("BilbaoWheelShaftMat5",0);
 
-
-
   Control.addVariable("BilbaoWheelXStep",0.0);
   Control.addVariable("BilbaoWheelYStep",112.2);
   Control.addVariable("BilbaoWheelZStep",0.0);
-  Control.addVariable("BilbaoWheelXYangle",5.0);
+  Control.addVariable("BilbaoWheelXYangle",-15.0);
   Control.addVariable("BilbaoWheelZangle",0.0);
   Control.addVariable("BilbaoWheelTargetHeight",8.0);
   Control.addVariable("BilbaoWheelVoidTungstenThick", 0.1);
@@ -104,9 +101,7 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelCaseRadius",129.15);
   Control.addVariable("BilbaoWheelVoidRadius",131.15);
   Control.addVariable("BilbaoWheelAspectRatio", 0.00138);
-  Control.addVariable("BilbaoWheelNSectors", 36);
-  Control.addVariable("BilbaoWheelSectorSepThick", 1.0);
-  Control.addVariable("BilbaoWheelSectorSepMat", "SS316L785");
+  Control.addVariable("BilbaoWheelTemperature", 600);
 
   Control.addVariable("BilbaoWheelWMat","Tungsten151");
   Control.addVariable("BilbaoWheelSteelMat","SS316L785");
@@ -124,6 +119,23 @@ EssWheel(FuncDataBase& Control)
 
   Control.addVariable("BilbaoWheelRadius3",125.0);
   Control.addVariable("BilbaoWheelMatTYPE3",3);
+
+  // Inner structure - engineering details
+  Control.addVariable("BilbaoWheelInnerStructureBrickLength",3);
+  Control.addVariable("BilbaoWheelInnerStructureBrickWidth",1);
+  Control.addVariable("BilbaoWheelInnerStructureBrickMat","Tungsten600K");
+
+  Control.addVariable("BilbaoWheelInnerStructureBrickGapLength",0.2);
+  Control.addVariable("BilbaoWheelInnerStructureBrickGapWidth",0.2);
+  Control.addVariable("BilbaoWheelInnerStructureBrickGapMat","Helium"); // shoud be the same as BilbaoWheelHeMat
+
+  Control.addVariable("BilbaoWheelInnerStructureNSectors", 36);
+  Control.addVariable("BilbaoWheelInnerStructureNBrickSectors", 3);
+  Control.addVariable("BilbaoWheelInnerStructureSectorSepThick", 1.0);
+  Control.addVariable("BilbaoWheelInnerStructureSectorSepMat", "SS316L785");
+
+  Control.addVariable("BilbaoWheelInnerStructureNSteelLayers", 3);
+  Control.addVariable("BilbaoWheelInnerStructureBrickSteelMat", "SS316L");
 
   return;
 }
