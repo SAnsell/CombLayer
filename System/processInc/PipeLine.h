@@ -68,10 +68,12 @@ class PipeLine
   PipeLine& operator=(const PipeLine&);
   ~PipeLine();
 
+  /// Number of point in pipe
+  size_t nPoints() const { return Pts.size(); }
   /// Debug accessor
   const std::vector<Geometry::Vec3D>& getPt() const
     { return Pts; }
-      
+  
   void setPoints(const std::vector<Geometry::Vec3D>&);  
   void addPoint(const Geometry::Vec3D&);
   void addSurfPoint(const Geometry::Vec3D&,const std::string&);

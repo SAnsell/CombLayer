@@ -129,6 +129,9 @@ makeESS::makeESS() :
   TopAFL(new moderatorSystem::TaperedFlightLine("TopAFlight")),
   TopBFL(new moderatorSystem::TaperedFlightLine("TopBFlight")),
 
+  TopSupplyPipe(new constructSystem::SupplyPipe("TSupply")),
+  TopConnectPipe(new constructSystem::SupplyPipe("TConnect")),
+
   Bulk(new BulkModule("Bulk")),
   BulkLowAFL(new moderatorSystem::FlightLine("BulkLAFlight")),
   ShutterBayObj(new ShutterBay("ShutterBay")),
@@ -152,6 +155,9 @@ makeESS::makeESS() :
   OR.addObject(TopPreMod);
   OR.addObject(TopCapMod);
 
+  OR.addObject(TopSupplyPipe);
+  OR.addObject(TopConnectPipe);
+  
   OR.addObject(TopAFL);
   OR.addObject(TopBFL);
 
@@ -293,6 +299,52 @@ makeESS::buildTopButterfly(Simulation& System)
   return;
 }
       
+void 
+makeESS::buildTopPipe(Simulation& System,
+		      const std::string& pipeType)
+  /*!
+    Process the top moderator pipes
+    \param System :: Simulation 
+    \param pipeType :: pipeType 
+  */
+{
+  ELog::RegMethod RegA("makeESS","buildTopPipe");
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  if (pipeType=="help")
+    {
+      ELog::EM<<"Top Pipe Configuration [lowPipe]"<<ELog::endBasic;
+      ELog::EM<<"-- {Any} : Standard TDR edge and centre"<<ELog::endBasic;
+      ELog::EM<<"-- Top : Two pipes from the top"<<ELog::endBasic;
+      return;
+    }
+
+  const attachSystem::FixedComp* FPtr=
+    OR.getObject<attachSystem::FixedComp>("TopFlyLeftLobe");
+  if (!FPtr)
+    throw ColErr::InContainerError<std::string>("TopFlyLeftLobe",
+						"FixedComp not found");
+
+  
+  TopSupplyPipe->setAngleSeg(12);
+  TopSupplyPipe->setOption("Top"); 
+
+  // layer level is depth into the object layers [0=> inner]
+  // linkPt is normal link point in fixedcomp
+  // layerLevel : linkPoint
+  TopSupplyPipe->createAll(System,*FPtr,0,2,2);
+
+
+  TopConnectPipe->setAngleSeg(12);
+  TopConnectPipe->setOption("Top"); 
+  TopConnectPipe->createAll(System,*TopSupplyPipe,2);
+
+
+  return;
+}
+
 void 
 makeESS::buildLowerPipe(Simulation& System,
 			const std::string& pipeType)
@@ -617,6 +669,9 @@ makeESS::build(Simulation& System,
 
   //  buildF5Collimator(System, nF5);
   buildF5Collimator(System, IParam);
+
+
+  buildTopPipe(System,"");
   return;
 }
 

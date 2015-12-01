@@ -204,6 +204,9 @@ EssVariables(FuncDataBase& Control)
 
   // low mod return pipe
 
+  pipeVariables(Control);
+  
+  
   Control.addVariable("LReturnNSegIn",1);
   Control.addVariable("LReturnPPt0",Geometry::Vec3D(0,0,0));
   Control.addVariable("LReturnPPt1",Geometry::Vec3D(0,30,0));

@@ -60,15 +60,18 @@ class SupplyPipe : public attachSystem::FixedComp
 
   void populate(const Simulation&);
   void createUnitVector(const attachSystem::FixedComp&,const size_t,
-			const size_t);
+			const long int);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const long int);
   void insertInlet(const attachSystem::FixedComp&,
-		   const size_t);
+		   const long int);
   void addExtra(const attachSystem::LayerComp&,
 		const size_t,const size_t);
   void addOuterPoints();
   void addExtraLayer(const attachSystem::LayerComp&,const size_t);
 
   void setActive();
+  void createLinks();
 
  public:
 
@@ -91,7 +94,10 @@ class SupplyPipe : public attachSystem::FixedComp
   void addInsertCell(const size_t,const int);
   
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const size_t,const size_t,const size_t);
+		 const long int);
+
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const size_t,const long int,const long int);
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const size_t,const size_t,const size_t,

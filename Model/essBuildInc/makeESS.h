@@ -115,7 +115,8 @@ class makeESS
   std::shared_ptr<PreModWing> TopCapWing; ///< Top cap premoderator wing
 
   /// Top supply 
-  std::shared_ptr<constructSystem::SupplyPipe> TopSupplyPipe; 
+  std::shared_ptr<constructSystem::SupplyPipe> TopSupplyPipe;
+  std::shared_ptr<constructSystem::SupplyPipe> TopConnectPipe; 
   std::shared_ptr<constructSystem::SupplyPipe> TopReturnPipe;  ///< Top supply
 
   std::shared_ptr<BulkModule> Bulk;      ///< Main bulk module
@@ -135,7 +136,7 @@ class makeESS
   std::vector<std::shared_ptr<F5Collimator>> F5array; ///< collimators for F5 tallies
   std::vector<Geometry::Vec3D> TopFocalPoints; ///< top moderator focal points
   std::vector<Geometry::Vec3D> LowFocalPoints; ///< low moderator focal points
-  
+ 
   void topFlightLines(Simulation&);
   void lowFlightLines(Simulation&);
   void createGuides(Simulation&);
@@ -148,7 +149,7 @@ class makeESS
 
 
   void buildTopPreMod(Simulation&);
-  void buildToperPipe(Simulation&,const std::string&);
+  void buildTopPipe(Simulation&,const std::string&);
 
   void makeTarget(Simulation&,const std::string&);
   void makeBunker(Simulation&,const std::string&);

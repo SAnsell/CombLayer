@@ -534,17 +534,50 @@ H2Wing::createObjects(Simulation& System)
 }
 
 Geometry::Vec3D
-H2Wing::getSurfacePoint(const size_t,
-			const size_t) const
+H2Wing::getSurfacePoint(const size_t layerIndex,
+			const size_t sideIndex) const
   /*!
     Given a side and a layer calculate the link point
     \param layerIndex :: layer, 0 is inner moderator [0-6]
-    \param sideIndex :: Side [0-3] // mid sides   
+    \param sideIndex :: 
+           -- Side [0-2] are corners  /
+           -- Side [3-9] are 
+ 
     \return Surface point
   */
 {
   ELog::RegMethod RegA("H2Wing","getSurfacePoint");
-  throw ColErr::AbsObjMethod("Not implemented yet");
+
+  if (layerIndex>=nLayers)
+    throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layerIndex");
+  
+  // Loop over corners that are bound by convex
+  std::array<Geometry::Vec3D,3> CPts;
+  std::array<Geometry::Vec3D,3> NPts;
+  double PDepth(0.0);
+  double VH(0.0), VD(0.0);
+
+  for(size_t i=1;i<layerIndex;i++)
+    {
+      PDepth+=Thick[i];
+      VH += Height[i];
+      VD += Depth[i];
+    }
+  cornerSet(PDepth,CPts,NPts);
+
+  switch(sideIndex)
+    {
+    case 0:
+    case 1:
+    case 2:
+      return (CPts[sideIndex]+CPts[(sideIndex+1)%3])/2.0;
+    case 4:
+      return Origin-Z*(VD+height/2.0);
+    case 5:
+      Origin+Z*(VH+height/2.0);
+    }
+
+  throw ColErr::IndexError<size_t>(sideIndex,6,"sideIndex");
 }
 
 int

@@ -82,7 +82,9 @@ namespace setVariable
   void ODINvariables(FuncDataBase&);
   void LOKIvariables(FuncDataBase&);
   void NMXvariables(FuncDataBase&);
-  
+
+
+  void pipeVariables(FuncDataBase&);
 }
 
 #endif
