@@ -131,6 +131,7 @@ makeESS::makeESS() :
 
   TopSupplyPipe(new constructSystem::SupplyPipe("TSupply")),
   TopConnectPipe(new constructSystem::SupplyPipe("TConnect")),
+  TopInvarPipe(new constructSystem::SupplyPipe("TInvar")),
 
   Bulk(new BulkModule("Bulk")),
   BulkLowAFL(new moderatorSystem::FlightLine("BulkLAFlight")),
@@ -157,6 +158,7 @@ makeESS::makeESS() :
 
   OR.addObject(TopSupplyPipe);
   OR.addObject(TopConnectPipe);
+  OR.addObject(TopInvarPipe);
   
   OR.addObject(TopAFL);
   OR.addObject(TopBFL);
@@ -340,6 +342,10 @@ makeESS::buildTopPipe(Simulation& System,
   TopConnectPipe->setAngleSeg(12);
   TopConnectPipe->setOption("Top"); 
   TopConnectPipe->createAll(System,*TopSupplyPipe,2);
+
+  TopInvarPipe->setAngleSeg(12);
+  TopInvarPipe->setOption("Top"); 
+  TopInvarPipe->createAll(System,*TopConnectPipe,2);
 
 
   return;

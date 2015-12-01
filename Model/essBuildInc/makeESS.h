@@ -117,6 +117,7 @@ class makeESS
   /// Top supply 
   std::shared_ptr<constructSystem::SupplyPipe> TopSupplyPipe;
   std::shared_ptr<constructSystem::SupplyPipe> TopConnectPipe; 
+  std::shared_ptr<constructSystem::SupplyPipe> TopInvarPipe; 
   std::shared_ptr<constructSystem::SupplyPipe> TopReturnPipe;  ///< Top supply
 
   std::shared_ptr<BulkModule> Bulk;      ///< Main bulk module
