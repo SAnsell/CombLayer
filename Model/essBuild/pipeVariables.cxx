@@ -63,7 +63,7 @@ pipeVariables(FuncDataBase& Control)
   Control.addVariable("TSupplyTopPPt0",Geometry::Vec3D(1.9, 0, 0));
   Control.addVariable("TSupplyTopPPt1",Geometry::Vec3D(1.9, 2.0, 0));
   Control.addVariable("TSupplyTopPPt2",Geometry::Vec3D(3.286, 3.0, 0));
-  Control.addVariable("TSupplyTopPPt3",Geometry::Vec3D(3.286, 4.2, 0));
+  Control.addVariable("TSupplyTopPPt3",Geometry::Vec3D(3.186, 4.2, 0));
 
   Control.addVariable("TSupplyNRadii",4);
   Control.addVariable("TSupplyRadius0",1.0);
