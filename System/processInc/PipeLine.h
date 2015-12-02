@@ -41,12 +41,12 @@ class PipeLine
 
   const std::string keyName;       ///< KeyName
   
-  size_t nCylinder;                   ///< Number of pre-cylinders
+  size_t nCylinder;                ///< Number of pre-cylinders
   std::vector<cylValues> CV;       ///< Cylinder Values [ one for each radius]
 
   std::vector<Geometry::Vec3D> Pts;      ///< Points in pipe
 
-  std::map<size_t,HeadRule> layerSurf;  ///< Outgoing surface
+  std::map<size_t,HeadRule> layerSurf;   ///< Outgoing surface
   std::map<size_t,HeadRule> commonSurf;  ///< common surface
 
   std::map<size_t,std::set<int> > segExtra;  ///< Extra components to add
@@ -54,7 +54,8 @@ class PipeLine
 
   size_t nAngle;                     ///< NAngle
   std::vector<pipeUnit*> PUnits;     ///< pipeUnits (1 less than Pts)
-
+  std::string startSurf;             ///< Start surface
+  
   void forcedInsertCells(const size_t);
   
   void clearPUnits();
@@ -83,7 +84,12 @@ class PipeLine
   void setActive(const size_t,const size_t);
   void setNAngle(const size_t);
 
+  void setStartSurf(const std::string&);
   void addInsertCell(const size_t,const int);
+  const Geometry::Vec3D& getAxis(const size_t) const;
+  const HeadRule& getCap(const size_t,const int) const;
+  const pipeUnit& first() const;
+  const pipeUnit& last() const; 
   
   void createAll(Simulation&);
     
