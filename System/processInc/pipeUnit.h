@@ -107,7 +107,8 @@ class pipeUnit : public attachSystem::FixedComp,
   /// Access Axis
   const Geometry::Vec3D& getAxis() const { return Axis; }
   const Geometry::Vec3D& getPt(const int) const;
-
+  const HeadRule& getCap(const int) const;
+  
   void clearInsertSet();
   void addInsertSet(const std::set<int>&);
   

@@ -281,10 +281,6 @@ SupplyPipe::insertInlet(const attachSystem::FixedComp& FC,
       Coaxial.addSurfPoint
 	(PtZ,LC->getLayerString(lIndex,SI),commonStr);
     }
-  
-  //  for(size_t i=0;i<Radii.size();i++)
-  //    Coaxial.addRadius(Radii[i],Mat[i],Temp[i]);
-  
   return;
 }
 
@@ -362,7 +358,6 @@ SupplyPipe::setActive()
   */
 {
   ELog::RegMethod RegA("SupplyPipe","setActive");
-  ELog::EM<<"Active flag == "<<ActiveFlag.size()<<ELog::endDiag;
   
   for(size_t i=0;i<ActiveFlag.size();i++)
     Coaxial.setActive(i,ActiveFlag[i]);  
@@ -372,14 +367,21 @@ SupplyPipe::setActive()
 void
 SupplyPipe::createLinks()
   /*!
-    HORRIFIC HACK
-   */
+    Create the links for the first/last pipe
+  */
 {
   ELog::RegMethod RegA("SupplyPipe","createLinks");
 
-  ELog::EM<<"Y == "<<Y<<ELog::endDiag;
   FixedComp::setConnect(0,Origin,-Y);
   FixedComp::setConnect(1,Coaxial.getPt().back(),Y);
+
+  HeadRule EndCap(Coaxial.first().getCap(0));
+  EndCap.makeComplement();
+  FixedComp::setLinkSurf(0,EndCap);
+
+  EndCap=Coaxial.last().getCap(1);
+  EndCap.makeComplement();
+  FixedComp::setLinkSurf(1,EndCap);
 
   return;
 }
@@ -404,6 +406,8 @@ SupplyPipe::createAll(Simulation& System,
   setActive();
 
   Coaxial.setNAngle(nAngle);
+  if (!startSurf.empty())
+    Coaxial.setStartSurf(startSurf);
   Coaxial.createAll(System);
   createLinks();
   return;
@@ -433,7 +437,10 @@ SupplyPipe::createAll(Simulation& System,
   setActive();
 
   Coaxial.setNAngle(nAngle);
+  if (!startSurf.empty())
+    Coaxial.setStartSurf(startSurf);
   Coaxial.createAll(System);
+  
   createLinks();
   return;
 }
@@ -469,6 +476,8 @@ SupplyPipe::createAll(Simulation& System,
   setActive();
 
   Coaxial.setNAngle(nAngle);
+  if (!startSurf.empty())
+    Coaxial.setStartSurf(startSurf);
   Coaxial.createAll(System);
   createLinks();
   return;

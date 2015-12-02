@@ -112,6 +112,7 @@ PipeLine::operator=(const PipeLine& A)
       layerSurf=A.layerSurf;
       commonSurf=A.commonSurf;
       activeFlags=A.activeFlags;
+      startSurf=A.startSurf;
       clearPUnits();
     }
   return *this;
@@ -370,7 +371,11 @@ PipeLine::createUnits(Simulation& System)
 
   
   // Actually build the units
-  
+  if (!startSurf.empty())
+    {
+      HeadRule ARule(startSurf);
+      PUnits[0]->setASurf(ARule);
+    }
   for(size_t i=0;i<PUnits.size();i++)
     {
       forcedInsertCells(i);
@@ -391,6 +396,76 @@ PipeLine::setNAngle(const size_t NA)
   return;
 }
 
+const HeadRule&
+PipeLine::getCap(const size_t index,const int side) const
+  /*!
+    Access the end cap rules
+    \param index :: index to point
+    \param size :: 0 / 1 for front/back
+    \return HeadRule
+  */  
+{
+  ELog::RegMethod RegA("PipeLine","getCap");
+  if (index>=PUnits.size())
+    throw ColErr::IndexError<size_t>(index,PUnits.size(),
+				     "index >= PUnits.size()");
+  return PUnits[index]->getCap(side);
+}
+
+const Geometry::Vec3D&
+PipeLine::getAxis(const size_t index) const
+  /*!
+    Access the axis of a give pipe unit
+    \param index :: index to point
+    \return Axis unit vector
+  */
+{
+  ELog::RegMethod RegA("PipeLine","getAxis");
+
+  if (index>=PUnits.size())
+    throw ColErr::IndexError<size_t>(index,PUnits.size(),
+				     "index >= PUnits.size()");
+  return PUnits[index]->getAxis();
+}
+
+const pipeUnit&
+PipeLine::first() const
+  /*!
+    Access the first pipe unit
+    \return first PUnit
+  */
+{
+  ELog::RegMethod RegA("PipeLine","first");
+  if (PUnits.empty())
+    throw ColErr::InContainerError<size_t>(0,"PUnits.empty()");
+  return *(PUnits.front());
+}
+
+const pipeUnit&
+PipeLine::last() const
+  /*!
+    Access the last pipe unit
+    \return last PUnit
+   */
+{
+  ELog::RegMethod RegA("PipeLine","last");
+  if (PUnits.empty())
+    throw ColErr::InContainerError<size_t>(0,"PUnits.empty()");
+  return *(PUnits.back());
+}
+
+void
+PipeLine::setStartSurf(const std::string& startS)
+  /*!
+    Simple setter for start surf
+    \param startS :: Start surface
+   */
+{
+  ELog::RegMethod RegA("PipeLine","setStartSurf");
+
+  startSurf=startS;
+  return;
+}
   
 void
 PipeLine::createAll(Simulation& System)
