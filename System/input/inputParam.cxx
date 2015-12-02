@@ -1218,6 +1218,9 @@ inputParam::outputItem(const std::string&,const size_t,
 template size_t
 inputParam::outputItem(const std::string&,const size_t,
 		       const size_t,const std::string&) const;
+template long int
+inputParam::outputItem(const std::string&,const size_t,
+		       const size_t,const std::string&) const;
 template std::string
 inputParam::outputItem(const std::string&,const size_t,
 		       const size_t,const std::string&) const;

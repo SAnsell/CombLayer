@@ -138,12 +138,12 @@ surfaceConstruct::processSurface(Simulation& System,
 	("tally",Index,3,"SurfMap set key not give");
       // This should be a range:
       const long int surfIndex=
-	IParam.outputItem<std::string>
+	IParam.outputItem<long int>
 	("tally",Index,4,"position not given");
       
       Geometry::Vec3D Axis;
       size_t itemIndex(5);
-      IParam.checkCntVec3D(K,Index,itemIndex,Axis);
+      IParam.checkCntVec3D("tally",Index,itemIndex,Axis);
       
       return processSurfMap(System,object,surfItem,surfIndex);
     }
