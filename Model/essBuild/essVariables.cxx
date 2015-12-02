@@ -527,7 +527,8 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("TopAFlightAngleXY2", 60.0);  // Angle out
   Control.addVariable("TopAFlightXYangle", 180.0);
   Control.addVariable("TopAFlightZangle", 0.0);
-  Control.addVariable("TopAFlightAngleZTop", 1.33);  // Step down angle !!! 1.455 is too much - fight line cuts the Bilbao target wheel ESS-0032315.3
+  ELog::EM << "TopAFlightAngleZTop must be 1.3 but we use 1.1 - otherwise it cuts the tharget wheel" << ELog::endCrit;
+  Control.addVariable("TopAFlightAngleZTop", 1.1);  // Step down angle !!! 1.455 is too much - fight line cuts the Bilbao target wheel ESS-0032315.3
   Control.addVariable("TopAFlightAngleZBase", 1.33); // Step up angle ESS-0032315.3
   //  Control.Parse("TopFlyTotalHeight");
   Control.addVariable("TopAFlightHeight", 2.9);     // Full height = TopFlyTotalHeight
