@@ -71,7 +71,7 @@ pipeVariables(FuncDataBase& Control)
   Control.addVariable("TSupplyRadius2",1.5);
   Control.addVariable("TSupplyRadius3",1.8);
 
-  Control.addVariable("TSupplyMat0","LH05ortho");
+  Control.addVariable("TSupplyMat0","HPARA"); // email from LZ 27 Nov 2015
   
   Control.addVariable("TSupplyMat1","Aluminium20K");
   Control.addVariable("TSupplyMat2","Void");
@@ -102,7 +102,7 @@ pipeVariables(FuncDataBase& Control)
   Control.Parse("TSupplyRadius3");
   Control.addVariable("TConnectRadius3");
 
-  Control.addVariable("TConnectMat0","LH05ortho");
+  Control.addVariable("TConnectMat0","HPARA"); // email from LZ 27 Nov 2015
   Control.addVariable("TConnectMat1","SS316L");
   Control.addVariable("TConnectMat2","Void");
   Control.addVariable("TConnectMat3","SS316L");
@@ -132,7 +132,7 @@ pipeVariables(FuncDataBase& Control)
   Control.Parse("TSupplyRadius3");
   Control.addVariable("TInvarRadius3");
 
-  Control.addVariable("TInvarMat0","LH05ortho");
+  Control.addVariable("TInvarMat0","HPARA"); // email from LZ 27 Nov 2015
   Control.addVariable("TInvarMat1","Invar36");
   Control.addVariable("TInvarMat2","Void");
   Control.addVariable("TInvarMat3","Invar36");
