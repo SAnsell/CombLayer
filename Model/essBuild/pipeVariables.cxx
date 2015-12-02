@@ -60,20 +60,20 @@ pipeVariables(FuncDataBase& Control)
   // top mod return pipe
 
   Control.addVariable("TSupplyTopNSegIn",3);
-  Control.addVariable("TSupplyTopPPt0",Geometry::Vec3D(1.6, 0, 0));
-  Control.addVariable("TSupplyTopPPt1",Geometry::Vec3D(1.6, 1.5, 0));
-  Control.addVariable("TSupplyTopPPt2",Geometry::Vec3D(3.5, 5, 0));
-  Control.addVariable("TSupplyTopPPt3",Geometry::Vec3D(3.5, 6.8, 0));
+  Control.addVariable("TSupplyTopPPt0",Geometry::Vec3D(1.9, 0, 0));
+  Control.addVariable("TSupplyTopPPt1",Geometry::Vec3D(1.9, 2.0, 0));
+  Control.addVariable("TSupplyTopPPt2",Geometry::Vec3D(3.286, 3.0, 0));
+  Control.addVariable("TSupplyTopPPt3",Geometry::Vec3D(3.286, 4.2, 0));
 
   Control.addVariable("TSupplyNRadii",4);
-  Control.addVariable("TSupplyRadius0",0.5);
-  Control.addVariable("TSupplyRadius1",0.8);
-  Control.addVariable("TSupplyRadius2",1.2);
-  Control.addVariable("TSupplyRadius3",1.5);
+  Control.addVariable("TSupplyRadius0",1.0);
+  Control.addVariable("TSupplyRadius1",1.2);
+  Control.addVariable("TSupplyRadius2",1.5);
+  Control.addVariable("TSupplyRadius3",1.8);
 
   Control.addVariable("TSupplyMat0","LH05ortho");
   
-  Control.addVariable("TSupplyMat1","Aluminium");
+  Control.addVariable("TSupplyMat1","Aluminium20K");
   Control.addVariable("TSupplyMat2","Void");
   Control.addVariable("TSupplyMat3","Aluminium");
   Control.addVariable("TSupplyMat4","Void");
@@ -88,8 +88,8 @@ pipeVariables(FuncDataBase& Control)
   Control.addVariable("TSupplyActive1",15);
 
   Control.addVariable("TConnectTopNSegIn",1);
-  Control.addVariable("TConnectTopPPt0",Geometry::Vec3D(0,0,0));
-  Control.addVariable("TConnectTopPPt1",Geometry::Vec3D(0,1,0));
+  Control.addVariable("TConnectTopPPt0",Geometry::Vec3D(0, 0.0, 0));
+  Control.addVariable("TConnectTopPPt1",Geometry::Vec3D(0, 2.5, 0));
 
   Control.Parse("TSupplyNRadii");
   Control.addVariable("TConnectNRadii");
@@ -118,8 +118,8 @@ pipeVariables(FuncDataBase& Control)
 
   Control.addVariable("TInvarTopNSegIn",2);
   Control.addVariable("TInvarTopPPt0",Geometry::Vec3D(0, 0,  0));
-  Control.addVariable("TInvarTopPPt1",Geometry::Vec3D(0, 20, 0));
-  Control.addVariable("TInvarTopPPt2",Geometry::Vec3D(0, 20, 400));
+  Control.addVariable("TInvarTopPPt1",Geometry::Vec3D(0, 9.34, 0));
+  Control.addVariable("TInvarTopPPt2",Geometry::Vec3D(0, 9.34, 400));
 
   Control.Parse("TSupplyNRadii");
   Control.addVariable("TInvarNRadii");
