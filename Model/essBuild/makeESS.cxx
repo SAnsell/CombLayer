@@ -131,7 +131,7 @@ makeESS::makeESS() :
 
   TopSupplyLeftAl(new constructSystem::SupplyPipe("TSupplyLeftAl")),
   TopSupplyLeftConnect(new constructSystem::SupplyPipe("TSupplyLeftConnect")),
-  TopSupplyInvar(new constructSystem::SupplyPipe("TSupplyLeftInvar")),
+  TopSupplyLeftInvar(new constructSystem::SupplyPipe("TSupplyLeftInvar")),
 
   Bulk(new BulkModule("Bulk")),
   BulkLowAFL(new moderatorSystem::FlightLine("BulkLAFlight")),
@@ -158,7 +158,7 @@ makeESS::makeESS() :
 
   OR.addObject(TopSupplyLeftAl);
   OR.addObject(TopSupplyLeftConnect);
-  OR.addObject(TopSupplyInvar);
+  OR.addObject(TopSupplyLeftInvar);
   
   OR.addObject(TopAFL);
   OR.addObject(TopBFL);
@@ -338,15 +338,15 @@ makeESS::buildTopPipe(Simulation& System,
   // layerLevel : linkPoint
   TopSupplyLeftAl->createAll(System,*FPtr,0,2,2);
 
-
   TopSupplyLeftConnect->setAngleSeg(12);
-  TopSupplyLeftConnect->setOption("Top"); 
+  TopSupplyLeftConnect->setOption("Top");
+  TopSupplyLeftConnect->setStartSurf(TopSupplyLeftAl->getSignedLinkString(2));
   TopSupplyLeftConnect->createAll(System,*TopSupplyLeftAl,2);
 
-  TopSupplyInvar->setAngleSeg(12);
-  TopSupplyInvar->setOption("Top"); 
-  TopSupplyInvar->createAll(System,*TopSupplyLeftConnect,2);
-
+  TopSupplyLeftInvar->setAngleSeg(12);
+  TopSupplyLeftInvar->setOption("Top");
+  TopSupplyLeftInvar->setStartSurf(TopSupplyLeftConnect->getSignedLinkString(2));
+  TopSupplyLeftInvar->createAll(System,*TopSupplyLeftConnect,2);
 
   return;
 }
@@ -573,7 +573,6 @@ makeESS::build(Simulation& System,
   ELog::RegMethod RegA("makeESS","build");
 
   int voidCell(74123);
-  // Add extra materials to the DBdatabase
   ModelSupport::addESSMaterial();
 
   const std::string lowPipeType=IParam.getValue<std::string>("lowPipe");
