@@ -120,9 +120,6 @@ makeESS::makeESS() :
   LowAFL(new moderatorSystem::TaperedFlightLine("LowAFlight")),
   LowBFL(new moderatorSystem::TaperedFlightLine("LowBFlight")),
 
-  LowSupplyPipe(new constructSystem::SupplyPipe("LSupply")),
-  LowReturnPipe(new constructSystem::SupplyPipe("LReturn")),
-
   TopPreMod(new TaperedDiskPreMod("TopPreMod")),
   TopCapMod(new TaperedDiskPreMod("TopCapMod")),
 
@@ -132,6 +129,10 @@ makeESS::makeESS() :
   TopSupplyLeftAl(new constructSystem::SupplyPipe("TSupplyLeftAl")),
   TopSupplyLeftConnect(new constructSystem::SupplyPipe("TSupplyLeftConnect")),
   TopSupplyLeftInvar(new constructSystem::SupplyPipe("TSupplyLeftInvar")),
+
+  TopReturnLeftAl(new constructSystem::SupplyPipe("TReturnLeftAl")),
+  TopReturnLeftConnect(new constructSystem::SupplyPipe("TReturnLeftConnect")),
+  TopReturnLeftInvar(new constructSystem::SupplyPipe("TReturnLeftInvar")),
 
   Bulk(new BulkModule("Bulk")),
   BulkLowAFL(new moderatorSystem::FlightLine("BulkLAFlight")),
@@ -159,6 +160,18 @@ makeESS::makeESS() :
   OR.addObject(TopSupplyLeftAl);
   OR.addObject(TopSupplyLeftConnect);
   OR.addObject(TopSupplyLeftInvar);
+
+  //  OR.addObject(TopSupplyRightAl);
+  //  OR.addObject(TopSupplyRightConnect);
+  //  OR.addObject(TopSupplyRightInvar);
+
+  OR.addObject(TopReturnLeftAl);
+  OR.addObject(TopReturnLeftConnect);
+  OR.addObject(TopReturnLeftInvar);
+
+  // OR.addObject(TopReturnRightAl);
+  // OR.addObject(TopReturnRightConnect);
+  // OR.addObject(TopReturnRightInvar);
   
   OR.addObject(TopAFL);
   OR.addObject(TopBFL);
@@ -302,7 +315,7 @@ makeESS::buildTopButterfly(Simulation& System)
 }
       
 void 
-makeESS::buildTopPipe(Simulation& System,
+makeESS::buildTopPipes(Simulation& System,
 		      const std::string& pipeType)
   /*!
     Process the top moderator pipes
@@ -310,16 +323,16 @@ makeESS::buildTopPipe(Simulation& System,
     \param pipeType :: pipeType 
   */
 {
-  ELog::RegMethod RegA("makeESS","buildTopPipe");
+  ELog::RegMethod RegA("makeESS","buildTopPipes");
 
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
   if (pipeType=="help")
     {
-      ELog::EM<<"Top Pipe Configuration [lowPipe]"<<ELog::endBasic;
-      ELog::EM<<"-- {Any} : Standard TDR edge and centre"<<ELog::endBasic;
-      ELog::EM<<"-- Top : Two pipes from the top"<<ELog::endBasic;
+      ELog::EM<<"Top Pipe Configuration"<<ELog::endBasic;
+      //      ELog::EM<<"-- {Any} : Standard TDR edge and centre"<<ELog::endBasic;
+      //      ELog::EM<<"-- Top : Two pipes from the top"<<ELog::endBasic;
       return;
     }
 
@@ -329,9 +342,9 @@ makeESS::buildTopPipe(Simulation& System,
     throw ColErr::InContainerError<std::string>("TopFlyLeftLobe",
 						"FixedComp not found");
 
-  
+
   TopSupplyLeftAl->setAngleSeg(12);
-  TopSupplyLeftAl->setOption("Top"); 
+  TopSupplyLeftAl->setOption(pipeType); 
 
   // layer level is depth into the object layers [0=> inner]
   // linkPt is normal link point in fixedcomp
@@ -339,20 +352,37 @@ makeESS::buildTopPipe(Simulation& System,
   TopSupplyLeftAl->createAll(System,*FPtr,0,2,2);
 
   TopSupplyLeftConnect->setAngleSeg(12);
-  TopSupplyLeftConnect->setOption("Top");
+  TopSupplyLeftConnect->setOption(pipeType);
   TopSupplyLeftConnect->setStartSurf(TopSupplyLeftAl->getSignedLinkString(2));
   TopSupplyLeftConnect->createAll(System,*TopSupplyLeftAl,2);
 
   TopSupplyLeftInvar->setAngleSeg(12);
-  TopSupplyLeftInvar->setOption("Top");
+  TopSupplyLeftInvar->setOption(pipeType);
   TopSupplyLeftInvar->setStartSurf(TopSupplyLeftConnect->getSignedLinkString(2));
   TopSupplyLeftInvar->createAll(System,*TopSupplyLeftConnect,2);
+
+  // top mod right
+
+  TopReturnLeftAl->setAngleSeg(12);
+  TopReturnLeftAl->setOption(pipeType); 
+  TopReturnLeftAl->createAll(System,*FPtr,0,2,2);
+
+  TopReturnLeftConnect->setAngleSeg(12);
+  TopReturnLeftConnect->setOption(pipeType);
+  TopReturnLeftConnect->setStartSurf(TopReturnLeftAl->getSignedLinkString(2));
+  TopReturnLeftConnect->createAll(System,*TopReturnLeftAl,2);
+
+  TopReturnLeftInvar->setAngleSeg(12);
+  TopReturnLeftInvar->setOption(pipeType);
+  TopReturnLeftInvar->setStartSurf(TopReturnLeftConnect->getSignedLinkString(2));
+  TopReturnLeftInvar->createAll(System,*TopReturnLeftConnect,2);
+
 
   return;
 }
 
 void 
-makeESS::buildLowerPipe(Simulation& System,
+makeESS::buildLowPipes(Simulation& System,
 			const std::string& pipeType)
   /*!
     Process the lower moderator pipe
@@ -361,29 +391,6 @@ makeESS::buildLowerPipe(Simulation& System,
   */
 {
   ELog::RegMethod RegA("makeESS","processLowPipe");
-  
-  if (pipeType=="help")
-    {
-      ELog::EM<<"Lower Pipe Configuration [lowPipe]"<<ELog::endBasic;
-      ELog::EM<<"-- {Any} : Standard TDR edge and centre"<<ELog::endBasic;
-      ELog::EM<<"-- Top : Two pipes from the top"<<ELog::endBasic;
-      return;
-    }
-
-  LowReturnPipe->setAngleSeg(12);
-  if (pipeType=="Top")
-    {
-      LowSupplyPipe->setOption("Top");
-      LowReturnPipe->setOption("Top");
-      LowSupplyPipe->createAll(System,*LowMod,0,6,4,*LowPre,2);
-      LowReturnPipe->createAll(System,*LowMod,0,5,4,*LowPre,2);
-    }
-  else
-    {
-      ELog::EM<<"Low supply pipe"<<ELog::endDiag;
-      //      LowSupplyPipe->createAll(System,*LowMod,0,6,4,*LowPre,2);
-      //      LowReturnPipe->createAll(System,*LowMod,0,3,2,*LowPre,4);
-    }
   return;
 }
 
@@ -476,7 +483,7 @@ makeESS::optionSummary(Simulation& System)
   ELog::RegMethod RegA("makeESS","optionSummary");
   
   makeTarget(System,"help");
-  buildLowerPipe(System,"help");
+  buildLowPipes(System,"help");
   
   return;
 }
@@ -676,7 +683,7 @@ makeESS::build(Simulation& System,
   buildF5Collimator(System, IParam);
 
 
-  buildTopPipe(System,"");
+  buildTopPipes(System,"");
   return;
 }
 

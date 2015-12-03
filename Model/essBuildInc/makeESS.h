@@ -95,10 +95,6 @@ class makeESS
   std::shared_ptr<moderatorSystem::TaperedFlightLine> LowBFL;  ///< Lower Mode FL
   std::shared_ptr<CylPreMod> LowPre;          ///< Lower Mod (Pre)
 
-  /// Lower supply 
-  std::shared_ptr<constructSystem::SupplyPipe> LowSupplyPipe; 
-  std::shared_ptr<constructSystem::SupplyPipe> LowReturnPipe;  ///< Lower supply
-
   // Butterly
   /// Primary Upper Mod 
   std::shared_ptr<constructSystem::ModBase> TopMod;
@@ -114,11 +110,14 @@ class makeESS
   std::shared_ptr<PreModWing> LowCapWing; ///< Low cap premoderator wing
   std::shared_ptr<PreModWing> TopCapWing; ///< Top cap premoderator wing
 
-  /// Top supply 
-  std::shared_ptr<constructSystem::SupplyPipe> TopSupplyLeftAl;
-  std::shared_ptr<constructSystem::SupplyPipe> TopSupplyLeftConnect; 
-  std::shared_ptr<constructSystem::SupplyPipe> TopSupplyLeftInvar; 
-  std::shared_ptr<constructSystem::SupplyPipe> TopReturnPipe;  ///< Top supply
+  /// Pipes
+  std::shared_ptr<constructSystem::SupplyPipe> TopSupplyLeftAl, TopSupplyRightAl;
+  std::shared_ptr<constructSystem::SupplyPipe> TopSupplyLeftConnect, TopSupplyRightConnect;
+  std::shared_ptr<constructSystem::SupplyPipe> TopSupplyLeftInvar, TopSupplyRightInvar;
+
+  std::shared_ptr<constructSystem::SupplyPipe> TopReturnLeftAl, TopReturnRightAl;
+  std::shared_ptr<constructSystem::SupplyPipe> TopReturnLeftConnect, TopReturnRightConnect;
+  std::shared_ptr<constructSystem::SupplyPipe> TopReturnLeftInvar, TopReturnRightInvar;
 
   std::shared_ptr<BulkModule> Bulk;      ///< Main bulk module
   std::shared_ptr<moderatorSystem::FlightLine> BulkLowAFL;  ///< Lower Mode FL
@@ -146,11 +145,9 @@ class makeESS
   void buildLowPreMod(Simulation&);
 
   void buildTopButterfly(Simulation&);
-  void buildLowerPipe(Simulation&,const std::string&);
 
-
-  void buildTopPreMod(Simulation&);
-  void buildTopPipe(Simulation&,const std::string&);
+  void buildTopPipes(Simulation&,const std::string&);
+  void buildLowPipes(Simulation&,const std::string&);
 
   void makeTarget(Simulation&,const std::string&);
   void makeBunker(Simulation&,const std::string&);
