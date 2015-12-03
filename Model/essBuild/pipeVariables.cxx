@@ -99,35 +99,6 @@ pipeVariables(FuncDataBase& Control)
   Control.addVariable("TSupplyLeftAlActive0",3);
   Control.addVariable("TSupplyLeftAlActive1",15);
 
-  for (int i=0; i<nRad; i++)
-    {
-      std::string stri = StrFunc::makeString(i);
-      Control.addVariable("TSupplyLeftAlRadius" + stri, R[i]);
-      Control.addVariable("TSupplyLeftAlMat" + stri,  matAl[i]); 
-      Control.addVariable("TSupplyLeftAlTemp" + stri,temp[i]);
-
-      Control.addVariable("TSupplyLeftConnectRadius" + stri, R[i]);
-      Control.addVariable("TSupplyLeftConnectMat" + stri, matConnect[i]);
-      Control.addVariable("TSupplyLeftConnectTemp" + stri, temp[i]);
-
-      Control.addVariable("TSupplyLeftInvarRadius" + stri, R[i]);
-      Control.addVariable("TSupplyLeftInvarMat" + stri, matInvar[i]);
-      Control.addVariable("TSupplyLeftInvarTemp" + stri, temp[i]);
-  
-      Control.addVariable("TReturnLeftAlRadius" + stri, R[i]);
-      Control.addVariable("TReturnLeftAlMat" + stri,  matAl[i]); 
-      Control.addVariable("TReturnLeftAlTemp" + stri,temp[i]);
-
-      Control.addVariable("TReturnLeftConnectRadius" + stri, R[i]);
-      Control.addVariable("TReturnLeftConnectMat" + stri, matConnect[i]);
-      Control.addVariable("TReturnLeftConnectTemp" + stri, temp[i]);
-
-      Control.addVariable("TReturnLeftInvarRadius" + stri, R[i]);
-      Control.addVariable("TReturnLeftInvarMat" + stri, matInvar[i]);
-      Control.addVariable("TReturnLeftInvarTemp" + stri, temp[i]);
-    }
-
-
   Control.addVariable("TSupplyLeftConnectNSegIn",1);
   Control.addVariable("TSupplyLeftConnectPPt0",Geometry::Vec3D(0, 0.0, 0));
   Control.addVariable("TSupplyLeftConnectPPt1",Geometry::Vec3D(0, 2.5, 0));
@@ -140,9 +111,8 @@ pipeVariables(FuncDataBase& Control)
   Control.addVariable("TSupplyLeftInvarPPt1",Geometry::Vec3D(0, 9.34, 0));
   Control.addVariable("TSupplyLeftInvarPPt2",Geometry::Vec3D(0, 9.34, 400));
   Control.addVariable("TSupplyLeftInvarNRadii", nRad);
-  Control.addVariable("TSupplyLeftInvarActive0",3);
+  Control.addVariable("TSupplyLeftInvarActive0",3); // !!! why TReturnLeftInvarActive flags are different? I think only activ0=15 is needed
   Control.addVariable("TSupplyLeftInvarActive1",15);
-
 
   // TReturnLeft
 
@@ -170,8 +140,35 @@ pipeVariables(FuncDataBase& Control)
   Control.addVariable("TReturnLeftInvarPPt1",Geometry::Vec3D(0, 9.34, 0));
   Control.addVariable("TReturnLeftInvarPPt2",Geometry::Vec3D(0, 9.34, 400));
   Control.addVariable("TReturnLeftInvarNRadii", nRad);
-  Control.addVariable("TReturnLeftInvarActive0",3);
-  Control.addVariable("TReturnLeftInvarActive1",15);
+  Control.addVariable("TReturnLeftInvarActive0",15);
+
+  for (int i=0; i<nRad; i++)
+    {
+      std::string stri = StrFunc::makeString(i);
+      Control.addVariable("TSupplyLeftAlRadius" + stri, R[i]);
+      Control.addVariable("TSupplyLeftAlMat" + stri,  matAl[i]); 
+      Control.addVariable("TSupplyLeftAlTemp" + stri,temp[i]);
+
+      Control.addVariable("TSupplyLeftConnectRadius" + stri, R[i]);
+      Control.addVariable("TSupplyLeftConnectMat" + stri, matConnect[i]);
+      Control.addVariable("TSupplyLeftConnectTemp" + stri, temp[i]);
+
+      Control.addVariable("TSupplyLeftInvarRadius" + stri, R[i]);
+      Control.addVariable("TSupplyLeftInvarMat" + stri, matInvar[i]);
+      Control.addVariable("TSupplyLeftInvarTemp" + stri, temp[i]);
+  
+      Control.addVariable("TReturnLeftAlRadius" + stri, R[i]);
+      Control.addVariable("TReturnLeftAlMat" + stri,  matAl[i]); 
+      Control.addVariable("TReturnLeftAlTemp" + stri,temp[i]);
+
+      Control.addVariable("TReturnLeftConnectRadius" + stri, R[i]);
+      Control.addVariable("TReturnLeftConnectMat" + stri, matConnect[i]);
+      Control.addVariable("TReturnLeftConnectTemp" + stri, temp[i]);
+
+      Control.addVariable("TReturnLeftInvarRadius" + stri, R[i]);
+      Control.addVariable("TReturnLeftInvarMat" + stri, matInvar[i]);
+      Control.addVariable("TReturnLeftInvarTemp" + stri, temp[i]);
+    }
 
 
   return;
