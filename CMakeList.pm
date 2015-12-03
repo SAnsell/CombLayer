@@ -230,7 +230,7 @@ sub writeHeader
   print $DX "set(CMAKE_CXX_COMPILER ",$self->{ccomp},")\n";
   print $DX "set(CMAKE_CXX_FLAGS \"",$self->{cflag}.$self->{optimise}.$self->{debug},"\")\n";
   print $DX "set(CMAKE_CXX_RELEASE_FLAGS \"",$self->{cflag}." -O2 ".$self->{debug},"\")\n";
-
+  
   print $DX "set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ./lib)\n";
 
   foreach my $item (@{$self->{definitions}})
@@ -238,7 +238,11 @@ sub writeHeader
     print $DX "add_definitions(-D",$item,")\n";
   }
   print $DX "\n";
-
+  print $DX "if(\"\${CMAKE_CXX_COMPILER_ID}\" STREQUAL \"Clang\")\n";
+  print $DX "set(CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS \"";
+  print $DX "\${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} ";
+  print $DX "-undefined dynamic_lookup\")\n";
+  print $DX "endif()\n";
   return;
 }
  
