@@ -142,6 +142,22 @@ makeESS::makeESS() :
   TopReturnRightConnect(new constructSystem::SupplyPipe("TReturnRightConnect")),
   TopReturnRightInvar(new constructSystem::SupplyPipe("TReturnRightInvar")),
 
+  LowSupplyLeftAl(new constructSystem::SupplyPipe("LSupplyLeftAl")),
+  LowSupplyLeftConnect(new constructSystem::SupplyPipe("LSupplyLeftConnect")),
+  LowSupplyLeftInvar(new constructSystem::SupplyPipe("LSupplyLeftInvar")),
+
+  LowReturnLeftAl(new constructSystem::SupplyPipe("LReturnLeftAl")),
+  LowReturnLeftConnect(new constructSystem::SupplyPipe("LReturnLeftConnect")),
+  LowReturnLeftInvar(new constructSystem::SupplyPipe("LReturnLeftInvar")),
+
+  LowSupplyRightAl(new constructSystem::SupplyPipe("LSupplyRightAl")),
+  LowSupplyRightConnect(new constructSystem::SupplyPipe("LSupplyRightConnect")),
+  LowSupplyRightInvar(new constructSystem::SupplyPipe("LSupplyRightInvar")),
+
+  LowReturnRightAl(new constructSystem::SupplyPipe("LReturnRightAl")),
+  LowReturnRightConnect(new constructSystem::SupplyPipe("LReturnRightConnect")),
+  LowReturnRightInvar(new constructSystem::SupplyPipe("LReturnRightInvar")),
+
   Bulk(new BulkModule("Bulk")),
   BulkLowAFL(new moderatorSystem::FlightLine("BulkLAFlight")),
   ShutterBayObj(new ShutterBay("ShutterBay")),
@@ -168,18 +184,28 @@ makeESS::makeESS() :
   OR.addObject(TopSupplyLeftAl);
   OR.addObject(TopSupplyLeftConnect);
   OR.addObject(TopSupplyLeftInvar);
-
   OR.addObject(TopSupplyRightAl);
   OR.addObject(TopSupplyRightConnect);
   OR.addObject(TopSupplyRightInvar);
-
   OR.addObject(TopReturnLeftAl);
   OR.addObject(TopReturnLeftConnect);
   OR.addObject(TopReturnLeftInvar);
+  OR.addObject(TopReturnRightAl);
+  OR.addObject(TopReturnRightConnect);
+  OR.addObject(TopReturnRightInvar);
 
-  //  OR.addObject(TopReturnRightAl);
-  //  OR.addObject(TopReturnRightConnect);
-  //  OR.addObject(TopReturnRightInvar);
+  OR.addObject(LowSupplyLeftAl);
+  OR.addObject(LowSupplyLeftConnect);
+  OR.addObject(LowSupplyLeftInvar);
+  OR.addObject(LowSupplyRightAl);
+  OR.addObject(LowSupplyRightConnect);
+  OR.addObject(LowSupplyRightInvar);
+  OR.addObject(LowReturnLeftAl);
+  OR.addObject(LowReturnLeftConnect);
+  OR.addObject(LowReturnLeftInvar);
+  OR.addObject(LowReturnRightAl);
+  OR.addObject(LowReturnRightConnect);
+  OR.addObject(LowReturnRightInvar);
   
   OR.addObject(TopAFL);
   OR.addObject(TopBFL);
@@ -375,7 +401,7 @@ void
 makeESS::buildTopPipes(Simulation& System,
 		      const std::string& pipeType)
   /*!
-    Process the top moderator pipes
+    Process the upper moderator pipes
     \param System :: Simulation 
     \param pipeType :: pipeType 
   */
@@ -410,6 +436,13 @@ makeESS::buildLowPipes(Simulation& System,
   */
 {
   ELog::RegMethod RegA("makeESS","processLowPipe");
+
+  buildH2Pipe(System, "LowFlyLeftLobe", pipeType, LowSupplyLeftAl, LowSupplyLeftConnect, LowSupplyLeftInvar);
+  buildH2Pipe(System, "LowFlyLeftLobe", pipeType, LowReturnLeftAl, LowReturnLeftConnect, LowReturnLeftInvar);
+
+  buildH2Pipe(System, "LowFlyRightLobe", pipeType, LowSupplyRightAl, LowSupplyRightConnect, LowSupplyRightInvar);
+  buildH2Pipe(System, "LowFlyRightLobe", pipeType, LowReturnRightAl, LowReturnRightConnect, LowReturnRightInvar);
+
   return;
 }
 
@@ -702,6 +735,7 @@ makeESS::build(Simulation& System,
 
 
   buildTopPipes(System,"");
+  buildLowPipes(System,"");
   return;
 }
 

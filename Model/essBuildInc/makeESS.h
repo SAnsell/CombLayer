@@ -119,6 +119,14 @@ class makeESS
   std::shared_ptr<constructSystem::SupplyPipe> TopReturnLeftConnect, TopReturnRightConnect;
   std::shared_ptr<constructSystem::SupplyPipe> TopReturnLeftInvar, TopReturnRightInvar;
 
+  std::shared_ptr<constructSystem::SupplyPipe> LowSupplyLeftAl, LowSupplyRightAl;
+  std::shared_ptr<constructSystem::SupplyPipe> LowSupplyLeftConnect, LowSupplyRightConnect;
+  std::shared_ptr<constructSystem::SupplyPipe> LowSupplyLeftInvar, LowSupplyRightInvar;
+
+  std::shared_ptr<constructSystem::SupplyPipe> LowReturnLeftAl, LowReturnRightAl;
+  std::shared_ptr<constructSystem::SupplyPipe> LowReturnLeftConnect, LowReturnRightConnect;
+  std::shared_ptr<constructSystem::SupplyPipe> LowReturnLeftInvar, LowReturnRightInvar;
+
   std::shared_ptr<BulkModule> Bulk;      ///< Main bulk module
   std::shared_ptr<moderatorSystem::FlightLine> BulkLowAFL;  ///< Lower Mode FL
 
