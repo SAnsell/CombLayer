@@ -16,6 +16,7 @@ sub new
     boostLib => "-L/opt/local/lib -lboost_regex",
     
     masterProg => undef,
+    definitions => undef,
     depLists => undef,
     optimise => "",
     debug => "",
@@ -27,6 +28,7 @@ sub new
   
   bless $self,$class;
   $self->{masterProg}=[ ];
+  $self->{definitions}=[ ];
   $self->{incDir}=[ ];
   $self->{srcDir}={ };
   
@@ -189,6 +191,7 @@ sub setParameters
       foreach my $Ostr (@Flags)
         {
 	  $self->{optimise}.=" -O2 " if ($Ostr eq "-O");
+	  push(@{$self->{definitions}},"NO_REGEX") if ($Ostr eq "-NR");
 	  $self->{optimise}.=" -pg " if ($Ostr eq "-p"); ## Gprof
 	  $self->{gcov}=1 if ($Ostr eq "-C");
 	  $self->{debug}="" if ($Ostr eq "-g");
@@ -218,7 +221,7 @@ sub writeHeader
   my $self=shift;
   my $DX=shift;   ## FILEGLOB
 
-  print $DX "cmake_minimum_required(VERSION 3.2)\n\n";
+  print $DX "cmake_minimum_required(VERSION 2.8)\n\n";
 
   
   print $DX "set(CMAKE_CXX_COMPILER ",$self->{ccomp},")\n";
@@ -226,7 +229,11 @@ sub writeHeader
   print $DX "set(CMAKE_CXX_RELEASE_FLAGS \"",$self->{cflag}." -O2 ".$self->{debug},"\")\n";
 
   print $DX "set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ./lib)\n";
-  
+
+  foreach my $item (@{$self->{definitions}})
+  {
+    print $DX "add_definitions(-D",$item,")\n";
+  }
   print $DX "\n";
 
   return;
