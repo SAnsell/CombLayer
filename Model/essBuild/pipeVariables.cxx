@@ -58,6 +58,7 @@ pipeVariables(FuncDataBase& Control)
 {
   
   const int nRad = 4;
+  const double invarPipeHeight = 30;
   std::vector<double> R;
   R.push_back(1.0);
   R.push_back(1.2);
@@ -107,7 +108,7 @@ pipeVariables(FuncDataBase& Control)
   Control.addVariable("TSupplyLeftInvarNSegIn",2);
   Control.addVariable("TSupplyLeftInvarPPt0",Geometry::Vec3D(0, 0,  0));
   Control.addVariable("TSupplyLeftInvarPPt1",Geometry::Vec3D(0, 9.34, 0));
-  Control.addVariable("TSupplyLeftInvarPPt2",Geometry::Vec3D(0, 9.34, 30));
+  Control.addVariable("TSupplyLeftInvarPPt2",Geometry::Vec3D(0, 9.34, invarPipeHeight));
   Control.addVariable("TSupplyLeftInvarNRadii", nRad);
   Control.addVariable("TSupplyLeftInvarActive0",15);
 
@@ -132,7 +133,7 @@ pipeVariables(FuncDataBase& Control)
   Control.addVariable("TReturnLeftInvarNSegIn");
   Control.addVariable("TReturnLeftInvarPPt0",Geometry::Vec3D(0, 0,  0));
   Control.addVariable("TReturnLeftInvarPPt1",Geometry::Vec3D(0, 9.34, 0));
-  Control.addVariable("TReturnLeftInvarPPt2",Geometry::Vec3D(0, 9.34, 30));
+  Control.addVariable("TReturnLeftInvarPPt2",Geometry::Vec3D(0, 9.34, invarPipeHeight));
   Control.addVariable("TReturnLeftInvarNRadii", nRad);
   Control.addVariable("TReturnLeftInvarActive0",15);
 
@@ -155,7 +156,7 @@ pipeVariables(FuncDataBase& Control)
   Control.addVariable("TSupplyRightInvarNSegIn",2);
   Control.addVariable("TSupplyRightInvarPPt0",Geometry::Vec3D(0, 0,  0));
   Control.addVariable("TSupplyRightInvarPPt1",Geometry::Vec3D(0, 9.34, 0));
-  Control.addVariable("TSupplyRightInvarPPt2",Geometry::Vec3D(0, 9.34, 30));
+  Control.addVariable("TSupplyRightInvarPPt2",Geometry::Vec3D(0, 9.34, invarPipeHeight));
   Control.addVariable("TSupplyRightInvarNRadii", nRad);
   Control.addVariable("TSupplyRightInvarActive0",15);
 
@@ -177,7 +178,7 @@ pipeVariables(FuncDataBase& Control)
   Control.addVariable("TReturnRightInvarNSegIn",2);
   Control.addVariable("TReturnRightInvarPPt0",Geometry::Vec3D(0, 0,  0));
   Control.addVariable("TReturnRightInvarPPt1",Geometry::Vec3D(0, 9.34, 0));
-  Control.addVariable("TReturnRightInvarPPt2",Geometry::Vec3D(0, 9.34, 30));
+  Control.addVariable("TReturnRightInvarPPt2",Geometry::Vec3D(0, 9.34, invarPipeHeight));
   Control.addVariable("TReturnRightInvarNRadii", nRad);
   Control.addVariable("TReturnRightInvarActive0",15);
 
@@ -200,7 +201,7 @@ pipeVariables(FuncDataBase& Control)
   Control.addVariable("LSupplyLeftInvarNSegIn",2);
   Control.addVariable("LSupplyLeftInvarPPt0",Geometry::Vec3D(0, 0,  0));
   Control.addVariable("LSupplyLeftInvarPPt1",Geometry::Vec3D(0, 9.34, 0));
-  Control.addVariable("LSupplyLeftInvarPPt2",Geometry::Vec3D(0, 9.34, 30));
+  Control.addVariable("LSupplyLeftInvarPPt2",Geometry::Vec3D(0, 9.34, invarPipeHeight));
   Control.addVariable("LSupplyLeftInvarNRadii", nRad);
   Control.addVariable("LSupplyLeftInvarActive0",15);
 
@@ -225,7 +226,7 @@ pipeVariables(FuncDataBase& Control)
   Control.addVariable("LReturnLeftInvarNSegIn");
   Control.addVariable("LReturnLeftInvarPPt0",Geometry::Vec3D(0, 0,  0));
   Control.addVariable("LReturnLeftInvarPPt1",Geometry::Vec3D(0, 9.34, 0));
-  Control.addVariable("LReturnLeftInvarPPt2",Geometry::Vec3D(0, 9.34, 30));
+  Control.addVariable("LReturnLeftInvarPPt2",Geometry::Vec3D(0, 9.34, invarPipeHeight));
   Control.addVariable("LReturnLeftInvarNRadii", nRad);
   Control.addVariable("LReturnLeftInvarActive0",15);
 
@@ -248,7 +249,7 @@ pipeVariables(FuncDataBase& Control)
   Control.addVariable("LSupplyRightInvarNSegIn",2);
   Control.addVariable("LSupplyRightInvarPPt0",Geometry::Vec3D(0, 0,  0));
   Control.addVariable("LSupplyRightInvarPPt1",Geometry::Vec3D(0, 9.34, 0));
-  Control.addVariable("LSupplyRightInvarPPt2",Geometry::Vec3D(0, 9.34, 30));
+  Control.addVariable("LSupplyRightInvarPPt2",Geometry::Vec3D(0, 9.34, invarPipeHeight));
   Control.addVariable("LSupplyRightInvarNRadii", nRad);
   Control.addVariable("LSupplyRightInvarActive0",15);
 
@@ -270,7 +271,7 @@ pipeVariables(FuncDataBase& Control)
   Control.addVariable("LReturnRightInvarNSegIn",2);
   Control.addVariable("LReturnRightInvarPPt0",Geometry::Vec3D(0, 0,  0));
   Control.addVariable("LReturnRightInvarPPt1",Geometry::Vec3D(0, 9.34, 0));
-  Control.addVariable("LReturnRightInvarPPt2",Geometry::Vec3D(0, 9.34, 30));
+  Control.addVariable("LReturnRightInvarPPt2",Geometry::Vec3D(0, 9.34, invarPipeHeight));
   Control.addVariable("LReturnRightInvarNRadii", nRad);
   Control.addVariable("LReturnRightInvarActive0",15);
 
