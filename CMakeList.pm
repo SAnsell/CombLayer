@@ -20,7 +20,8 @@ sub new
     depLists => undef,
     optimise => "",
     debug => "",
-
+    noregex => 0,
+    
     incLib => undef,           ## Array of all our includes used
     srcDir => undef,           ## Array of all our cxx directories
     incDir => undef            ## Array of all our includes used
@@ -192,12 +193,14 @@ sub setParameters
         {
 	  $self->{optimise}.=" -O2 " if ($Ostr eq "-O");
 	  push(@{$self->{definitions}},"NO_REGEX") if ($Ostr eq "-NR");
+	  $self->{noregex}=1 if ($Ostr eq "-NR");
 	  $self->{optimise}.=" -pg " if ($Ostr eq "-p"); ## Gprof
 	  $self->{gcov}=1 if ($Ostr eq "-C");
 	  $self->{debug}="" if ($Ostr eq "-g");
 	  $self->{bcomp}=$1 if ($Ostr=~/-gcc=(.*)/);
 	  $self->{ccomp}=$1 if ($Ostr=~/-g\+\+=(.*)/);
 	  $self->{cxx11}="" if ($Ostr=~/-std/);
+	  
 	}
     }
 #  $self->{gsl}*=$nogsl;
@@ -292,7 +295,10 @@ sub writeExcutables
         {
 	  print $DX "target_link_libraries(",$item,"  lib",$dItem,")\n";
         }
-      print $DX "target_link_libraries(",$item," boost_regex)\n";
+      if (!$self->{noregex})
+      {
+	print $DX "target_link_libraries(",$item," boost_regex)\n";
+      }
       print $DX "target_link_libraries(",$item," stdc++)\n ";
       print $DX "target_link_libraries(",$item," gsl)\n";
       print $DX "target_link_libraries(",$item," gslcblas)\n";
