@@ -340,11 +340,13 @@ makeESS::buildTopPipe(Simulation& System,
 
 
   TopConnectPipe->setAngleSeg(12);
-  TopConnectPipe->setOption("Top"); 
+  TopConnectPipe->setOption("Top");
+  TopConnectPipe->setStartSurf(TopSupplyPipe->getSignedLinkString(2));
   TopConnectPipe->createAll(System,*TopSupplyPipe,2);
 
   TopInvarPipe->setAngleSeg(12);
-  TopInvarPipe->setOption("Top"); 
+  TopInvarPipe->setOption("Top");
+  TopInvarPipe->setStartSurf(TopConnectPipe->getSignedLinkString(2));
   TopInvarPipe->createAll(System,*TopConnectPipe,2);
 
 
@@ -573,7 +575,6 @@ makeESS::build(Simulation& System,
   ELog::RegMethod RegA("makeESS","build");
 
   int voidCell(74123);
-  // Add extra materials to the DBdatabase
   ModelSupport::addESSMaterial();
 
   const std::string lowPipeType=IParam.getValue<std::string>("lowPipe");
