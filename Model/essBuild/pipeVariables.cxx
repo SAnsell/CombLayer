@@ -57,7 +57,7 @@ void
 pipeVariables(FuncDataBase& Control)
 {
   
-  const int nRad = 4;
+  const int nRad = 2;
   std::vector<double> R;
   R.push_back(1.0);
   R.push_back(1.2);
@@ -140,7 +140,8 @@ pipeVariables(FuncDataBase& Control)
   Control.addVariable("TSupplyLeftInvarPPt1",Geometry::Vec3D(0, 9.34, 0));
   Control.addVariable("TSupplyLeftInvarPPt2",Geometry::Vec3D(0, 9.34, 400));
   Control.addVariable("TSupplyLeftInvarNRadii", nRad);
-  Control.addVariable("TSupplyLeftInvarActive0",15);
+  Control.addVariable("TSupplyLeftInvarActive0",3);
+  Control.addVariable("TSupplyLeftInvarActive1",15);
 
 
   // TReturnLeft
@@ -169,7 +170,8 @@ pipeVariables(FuncDataBase& Control)
   Control.addVariable("TReturnLeftInvarPPt1",Geometry::Vec3D(0, 9.34, 0));
   Control.addVariable("TReturnLeftInvarPPt2",Geometry::Vec3D(0, 9.34, 400));
   Control.addVariable("TReturnLeftInvarNRadii", nRad);
-  Control.addVariable("TReturnLeftInvarActive0",15);
+  Control.addVariable("TReturnLeftInvarActive0",3);
+  Control.addVariable("TReturnLeftInvarActive1",15);
 
 
   return;
