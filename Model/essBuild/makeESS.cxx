@@ -134,6 +134,14 @@ makeESS::makeESS() :
   TopReturnLeftConnect(new constructSystem::SupplyPipe("TReturnLeftConnect")),
   TopReturnLeftInvar(new constructSystem::SupplyPipe("TReturnLeftInvar")),
 
+  TopSupplyRightAl(new constructSystem::SupplyPipe("TSupplyRightAl")),
+  TopSupplyRightConnect(new constructSystem::SupplyPipe("TSupplyRightConnect")),
+  TopSupplyRightInvar(new constructSystem::SupplyPipe("TSupplyRightInvar")),
+
+  TopReturnRightAl(new constructSystem::SupplyPipe("TReturnRightAl")),
+  TopReturnRightConnect(new constructSystem::SupplyPipe("TReturnRightConnect")),
+  TopReturnRightInvar(new constructSystem::SupplyPipe("TReturnRightInvar")),
+
   Bulk(new BulkModule("Bulk")),
   BulkLowAFL(new moderatorSystem::FlightLine("BulkLAFlight")),
   ShutterBayObj(new ShutterBay("ShutterBay")),
@@ -161,17 +169,17 @@ makeESS::makeESS() :
   OR.addObject(TopSupplyLeftConnect);
   OR.addObject(TopSupplyLeftInvar);
 
-  //  OR.addObject(TopSupplyRightAl);
-  //  OR.addObject(TopSupplyRightConnect);
-  //  OR.addObject(TopSupplyRightInvar);
+  OR.addObject(TopSupplyRightAl);
+  OR.addObject(TopSupplyRightConnect);
+  OR.addObject(TopSupplyRightInvar);
 
   OR.addObject(TopReturnLeftAl);
   OR.addObject(TopReturnLeftConnect);
   OR.addObject(TopReturnLeftInvar);
 
-  // OR.addObject(TopReturnRightAl);
-  // OR.addObject(TopReturnRightConnect);
-  // OR.addObject(TopReturnRightInvar);
+  //  OR.addObject(TopReturnRightAl);
+  //  OR.addObject(TopReturnRightConnect);
+  //  OR.addObject(TopReturnRightInvar);
   
   OR.addObject(TopAFL);
   OR.addObject(TopBFL);
@@ -313,7 +321,56 @@ makeESS::buildTopButterfly(Simulation& System)
 
   return;
 }
-      
+
+void
+makeESS::buildH2Pipe(Simulation& System, std::string lobeName, std::string pipeType,
+		    std::shared_ptr<constructSystem::SupplyPipe> pipeAl,
+		    std::shared_ptr<constructSystem::SupplyPipe> pipeConnect,
+		    std::shared_ptr<constructSystem::SupplyPipe> pipeInvar
+		    )
+{
+  /*
+    Build a pipe connected to a Butterfly lobe
+    \param System :: Simulation
+    \param lobeName :: Butterfly moderator lobe name
+    \param pipeType :: type of the pipe [currently ignored]
+    \param pipeAl  :: first piece of the pipe
+    \param pipeConnect  :: second piece of the pipe
+    \param pipeInvar  :: third piece of the pipe
+    The pieces can be made from different materials.
+   */
+  ELog::RegMethod RegA("makeESS", "buildH2Pipe");
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  const attachSystem::FixedComp* lobe=
+    OR.getObject<attachSystem::FixedComp>(lobeName);
+  if (!lobe)
+    throw ColErr::InContainerError<std::string>(lobeName,
+						"FixedComp not found");
+
+
+  pipeAl->setAngleSeg(12);
+  pipeAl->setOption(pipeType); 
+  // createAll arguments:
+  // layer level is depth into the object layers [0=> inner]
+  // linkPt is normal link point in fixedcomp [2]
+  // layerLevel : linkPoint [2]
+  pipeAl->createAll(System,*lobe,0,2,2);
+
+  pipeConnect->setAngleSeg(12);
+  pipeConnect->setOption(pipeType);
+  pipeConnect->setStartSurf(pipeAl->getSignedLinkString(2));
+  pipeConnect->createAll(System,*pipeAl,2);
+
+  pipeInvar->setAngleSeg(12);
+  pipeInvar->setOption(pipeType);
+  pipeInvar->setStartSurf(pipeConnect->getSignedLinkString(2));
+  pipeInvar->createAll(System,*pipeConnect,2);
+}
+
+
 void 
 makeESS::buildTopPipes(Simulation& System,
 		      const std::string& pipeType)
@@ -325,8 +382,6 @@ makeESS::buildTopPipes(Simulation& System,
 {
   ELog::RegMethod RegA("makeESS","buildTopPipes");
 
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
 
   if (pipeType=="help")
     {
@@ -336,47 +391,11 @@ makeESS::buildTopPipes(Simulation& System,
       return;
     }
 
-  const attachSystem::FixedComp* FPtr=
-    OR.getObject<attachSystem::FixedComp>("TopFlyLeftLobe");
-  if (!FPtr)
-    throw ColErr::InContainerError<std::string>("TopFlyLeftLobe",
-						"FixedComp not found");
+  buildH2Pipe(System, "TopFlyLeftLobe", pipeType, TopSupplyLeftAl, TopSupplyLeftConnect, TopSupplyLeftInvar);
+  buildH2Pipe(System, "TopFlyLeftLobe", pipeType, TopReturnLeftAl, TopReturnLeftConnect, TopReturnLeftInvar);
 
-
-  TopSupplyLeftAl->setAngleSeg(12);
-  TopSupplyLeftAl->setOption(pipeType); 
-
-  // layer level is depth into the object layers [0=> inner]
-  // linkPt is normal link point in fixedcomp
-  // layerLevel : linkPoint
-  TopSupplyLeftAl->createAll(System,*FPtr,0,2,2);
-
-  TopSupplyLeftConnect->setAngleSeg(12);
-  TopSupplyLeftConnect->setOption(pipeType);
-  TopSupplyLeftConnect->setStartSurf(TopSupplyLeftAl->getSignedLinkString(2));
-  TopSupplyLeftConnect->createAll(System,*TopSupplyLeftAl,2);
-
-  TopSupplyLeftInvar->setAngleSeg(12);
-  TopSupplyLeftInvar->setOption(pipeType);
-  TopSupplyLeftInvar->setStartSurf(TopSupplyLeftConnect->getSignedLinkString(2));
-  TopSupplyLeftInvar->createAll(System,*TopSupplyLeftConnect,2);
-
-  // top mod right
-
-  TopReturnLeftAl->setAngleSeg(12);
-  TopReturnLeftAl->setOption(pipeType); 
-  TopReturnLeftAl->createAll(System,*FPtr,0,2,2);
-
-  TopReturnLeftConnect->setAngleSeg(12);
-  TopReturnLeftConnect->setOption(pipeType);
-  TopReturnLeftConnect->setStartSurf(TopReturnLeftAl->getSignedLinkString(2));
-  TopReturnLeftConnect->createAll(System,*TopReturnLeftAl,2);
-
-  TopReturnLeftInvar->setAngleSeg(12);
-  TopReturnLeftInvar->setOption(pipeType);
-  TopReturnLeftInvar->setStartSurf(TopReturnLeftConnect->getSignedLinkString(2));
-  TopReturnLeftInvar->createAll(System,*TopReturnLeftConnect,2);
-
+  buildH2Pipe(System, "TopFlyRightLobe", pipeType, TopSupplyRightAl, TopSupplyRightConnect, TopSupplyRightInvar);
+  buildH2Pipe(System, "TopFlyRightLobe", pipeType, TopReturnRightAl, TopReturnRightConnect, TopReturnRightInvar);
 
   return;
 }

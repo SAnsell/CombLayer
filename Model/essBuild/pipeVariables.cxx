@@ -111,8 +111,7 @@ pipeVariables(FuncDataBase& Control)
   Control.addVariable("TSupplyLeftInvarPPt1",Geometry::Vec3D(0, 9.34, 0));
   Control.addVariable("TSupplyLeftInvarPPt2",Geometry::Vec3D(0, 9.34, 400));
   Control.addVariable("TSupplyLeftInvarNRadii", nRad);
-  Control.addVariable("TSupplyLeftInvarActive0",3); // !!! why TReturnLeftInvarActive flags are different? I think only activ0=15 is needed
-  Control.addVariable("TSupplyLeftInvarActive1",15);
+  Control.addVariable("TSupplyLeftInvarActive0",15);
 
   // TReturnLeft
 
@@ -142,6 +141,52 @@ pipeVariables(FuncDataBase& Control)
   Control.addVariable("TReturnLeftInvarNRadii", nRad);
   Control.addVariable("TReturnLeftInvarActive0",15);
 
+  // TOP MOD RIGHT
+  Control.addVariable("TSupplyRightAlNSegIn",3);
+  Control.addVariable("TSupplyRightAlPPt0",Geometry::Vec3D(1.9, 0, 0));
+  Control.addVariable("TSupplyRightAlPPt1",Geometry::Vec3D(1.9, 2.0, 0));
+  Control.addVariable("TSupplyRightAlPPt2",Geometry::Vec3D(3.286, 3.0, 0));
+  Control.addVariable("TSupplyRightAlPPt3",Geometry::Vec3D(3.286, 4.2, 0));
+  Control.addVariable("TSupplyRightAlNRadii",nRad);
+  Control.addVariable("TSupplyRightAlActive0",3);
+  Control.addVariable("TSupplyRightAlActive1",15);
+
+  Control.addVariable("TSupplyRightConnectNSegIn",1);
+  Control.addVariable("TSupplyRightConnectPPt0",Geometry::Vec3D(0, 0.0, 0));
+  Control.addVariable("TSupplyRightConnectPPt1",Geometry::Vec3D(0, 2.5, 0));
+  Control.addVariable("TSupplyRightConnectNRadii", nRad);
+  Control.addVariable("TSupplyRightConnectActive0",15);
+
+  Control.addVariable("TSupplyRightInvarNSegIn",2);
+  Control.addVariable("TSupplyRightInvarPPt0",Geometry::Vec3D(0, 0,  0));
+  Control.addVariable("TSupplyRightInvarPPt1",Geometry::Vec3D(0, 9.34, 0));
+  Control.addVariable("TSupplyRightInvarPPt2",Geometry::Vec3D(0, 9.34, 400));
+  Control.addVariable("TSupplyRightInvarNRadii", nRad);
+  Control.addVariable("TSupplyRightInvarActive0",15);
+
+  Control.addVariable("TReturnRightAlNSegIn",3);
+  Control.addVariable("TReturnRightAlPPt0",Geometry::Vec3D(-1.9, 0, 0));
+  Control.addVariable("TReturnRightAlPPt1",Geometry::Vec3D(-1.9, 2.0, 0));
+  Control.addVariable("TReturnRightAlPPt2",Geometry::Vec3D(-3.286, 3.0, 0));
+  Control.addVariable("TReturnRightAlPPt3",Geometry::Vec3D(-3.286, 4.2, 0));
+  Control.addVariable("TReturnRightAlNRadii",nRad);
+  Control.addVariable("TReturnRightAlActive0",3);
+  Control.addVariable("TReturnRightAlActive1",15);
+
+  Control.addVariable("TReturnRightConnectNSegIn",1);
+  Control.addVariable("TReturnRightConnectPPt0",Geometry::Vec3D(0, 0.0, 0));
+  Control.addVariable("TReturnRightConnectPPt1",Geometry::Vec3D(0, 2.5, 0));
+  Control.addVariable("TReturnRightConnectNRadii", nRad);
+  Control.addVariable("TReturnRightConnectActive0",15);
+
+  Control.addVariable("TReturnRightInvarNSegIn",2);
+  Control.addVariable("TReturnRightInvarPPt0",Geometry::Vec3D(0, 0,  0));
+  Control.addVariable("TReturnRightInvarPPt1",Geometry::Vec3D(0, 9.34, 0));
+  Control.addVariable("TReturnRightInvarPPt2",Geometry::Vec3D(0, 9.34, 400));
+  Control.addVariable("TReturnRightInvarNRadii", nRad);
+  Control.addVariable("TReturnRightInvarActive0",15);
+
+
   for (int i=0; i<nRad; i++)
     {
       std::string stri = StrFunc::makeString(i);
@@ -168,6 +213,32 @@ pipeVariables(FuncDataBase& Control)
       Control.addVariable("TReturnLeftInvarRadius" + stri, R[i]);
       Control.addVariable("TReturnLeftInvarMat" + stri, matInvar[i]);
       Control.addVariable("TReturnLeftInvarTemp" + stri, temp[i]);
+
+      // TOP RIGHT
+
+      Control.addVariable("TSupplyRightAlRadius" + stri, R[i]);
+      Control.addVariable("TSupplyRightAlMat" + stri,  matAl[i]); 
+      Control.addVariable("TSupplyRightAlTemp" + stri,temp[i]);
+
+      Control.addVariable("TSupplyRightConnectRadius" + stri, R[i]);
+      Control.addVariable("TSupplyRightConnectMat" + stri, matConnect[i]);
+      Control.addVariable("TSupplyRightConnectTemp" + stri, temp[i]);
+
+      Control.addVariable("TSupplyRightInvarRadius" + stri, R[i]);
+      Control.addVariable("TSupplyRightInvarMat" + stri, matInvar[i]);
+      Control.addVariable("TSupplyRightInvarTemp" + stri, temp[i]);
+
+      Control.addVariable("TReturnRightAlRadius" + stri, R[i]);
+      Control.addVariable("TReturnRightAlMat" + stri,  matAl[i]); 
+      Control.addVariable("TReturnRightAlTemp" + stri,temp[i]);
+
+      Control.addVariable("TReturnRightConnectRadius" + stri, R[i]);
+      Control.addVariable("TReturnRightConnectMat" + stri, matConnect[i]);
+      Control.addVariable("TReturnRightConnectTemp" + stri, temp[i]);
+
+      Control.addVariable("TReturnRightInvarRadius" + stri, R[i]);
+      Control.addVariable("TReturnRightInvarMat" + stri, matInvar[i]);
+      Control.addVariable("TReturnRightInvarTemp" + stri, temp[i]);
     }
 
 
