@@ -653,7 +653,6 @@ makeESS::build(Simulation& System,
   Bulk->createAll(System,*Reflector,*Reflector);
 
   // Build flightlines after bulk
-  double TopFLHeight = TopCapMod->getZFlightLine()-TopPreMod->getZFlightLine();  // !!! \todo bool argument must be removed
   TopAFL->createAll(System,*TopMod,0,*Reflector,4,*Bulk,-3);
   TopBFL->createAll(System,*TopMod,0,*Reflector,3,*Bulk,-3);
 
