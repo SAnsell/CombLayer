@@ -52,7 +52,9 @@
 #include "FixedGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+#include "BaseMap.h"
 #include "CellMap.h"
+#include "SurfMap.h"
 #include "LayerComp.h"
 #include "objectRegister.h"
 
@@ -474,6 +476,72 @@ objectRegister::setRenumber(const std::string& key,
       
   return;
 }
+
+int
+objectRegister::calcRenumber(const int CN) const
+  /*!
+    Take a cell number and calculate the renumber [not ideal]
+    \param CN :: oirignal cell number
+   */
+{
+  const std::string key=inRange(CN);
+  if (key.empty())
+    return CN;
+
+
+  MTYPE::const_iterator Amc=regionMap.find(key);
+  MTYPE::const_iterator Bmc=renumMap.find(key);
+  if (Bmc==renumMap.end())
+    return CN;
+
+  const int Cdiff=CN-Amc->second.first;
+  return Bmc->second.first+Cdiff;
+}
+
+std::vector<int>
+objectRegister::getObjectRange(const std::string& objName) const
+  /*!
+    Calculate the object cells range based on the name
+    Processes down to cellMap items if objName is of the 
+    form objecName:cellMapName
+    \param objName :: Object name
+    \return vector of item
+  */
+{
+  ELog::RegMethod RegA("objectRegister","getObjectRange");
+
+  const ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  std::string::size_type pos=objName.find(":");
+  
+  if (pos==std::string::npos || !pos)
+    {
+      const int BStart=OR.getRenumberCell(objName);
+      const int BRange=OR.getRenumberRange(objName);
+      if (BStart==0)
+	throw ColErr::InContainerError<std::string>
+	  (objName,"Object name not found");
+      std::vector<int> Out(static_cast<size_t>(1+BRange-BStart));
+      std::iota(Out.begin(),Out.end(),BStart);
+      return Out;
+    }
+  
+  const std::string itemName=objName.substr(0,pos);
+  const std::string cellName=objName.substr(pos+1);
+  const attachSystem::CellMap* CPtr=
+    OR.getObject<attachSystem::CellMap>(itemName);
+  if (!CPtr)
+    throw ColErr::InContainerError<std::string>
+      (itemName,"Object name not found:"+objName);
+  std::vector<int> Out=CPtr->getCells(cellName);
+  for(int& CN : Out)
+    CN=OR.calcRenumber(CN);
+  
+  return Out;
+}
+
+
   
 void
 objectRegister::write(const std::string& OFile) const
@@ -504,7 +572,6 @@ objectRegister::write(const std::string& OFile) const
 	}
     }
   return;
-  
 }
 
 ///\cond TEMPLATE
@@ -530,6 +597,9 @@ template const attachSystem::LayerComp*
 template const attachSystem::CellMap* 
   objectRegister::getObject(const std::string&) const;
 
+template const attachSystem::SurfMap* 
+  objectRegister::getObject(const std::string&) const;
+
 template attachSystem::FixedComp* 
   objectRegister::getObject(const std::string&);
 
@@ -549,6 +619,9 @@ template attachSystem::SecondTrack*
   objectRegister::getObject(const std::string&);
 
 template attachSystem::CellMap* 
+  objectRegister::getObject(const std::string&);
+
+template attachSystem::SurfMap* 
   objectRegister::getObject(const std::string&);
 
 ///\endcond TEMPLATE  

@@ -1,0 +1,461 @@
+/********************************************************************* 
+  CombLayer : MCNP(X) Input builder
+ 
+ * File:   ESSBeam/odin/ODIN.cxx
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ *
+ ****************************************************************************/
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
+#include <utility>
+#include <cmath>
+#include <complex>
+#include <list>
+#include <vector>
+#include <set>
+#include <map>
+#include <string>
+#include <algorithm>
+#include <iterator>
+#include <memory>
+
+#include "Exception.h"
+#include "FileReport.h"
+#include "NameStack.h"
+#include "RegMethod.h"
+#include "GTKreport.h"
+#include "OutputLog.h"
+#include "BaseVisit.h"
+#include "BaseModVisit.h"
+#include "MatrixBase.h"
+#include "Matrix.h"
+#include "Vec3D.h"
+#include "stringCombine.h"
+#include "inputParam.h"
+#include "Surface.h"
+#include "surfIndex.h"
+#include "surfRegister.h"
+#include "objectRegister.h"
+#include "Rules.h"
+#include "Code.h"
+#include "varList.h"
+#include "FuncDataBase.h"
+#include "HeadRule.h"
+#include "Simulation.h"
+#include "debugMethod.h"
+#include "LinkUnit.h"
+#include "FixedComp.h"
+#include "FixedOffset.h"
+#include "FixedGroup.h"
+#include "FixedOffsetGroup.h"
+#include "ContainedComp.h"
+#include "ContainedGroup.h"
+#include "SecondTrack.h"
+#include "BaseMap.h"
+#include "CellMap.h"
+#include "SurfMap.h"
+#include "World.h"
+#include "AttachSupport.h"
+#include "Jaws.h"
+#include "GuideLine.h"
+#include "DiskChopper.h"
+#include "VacuumBox.h"
+#include "VacuumPipe.h"
+#include "ChopperHousing.h"
+#include "Bunker.h"
+#include "BunkerInsert.h"
+#include "ChopperPit.h"
+#include "Hut.h"
+#include "HoleShape.h"
+#include "RotaryCollimator.h"
+#include "PinHole.h"
+#include "RentrantBS.h"
+#include "shortODIN.h"
+
+namespace essSystem
+{
+
+shortODIN::shortODIN() :
+  odinAxis(new attachSystem::FixedComp("shortOdinAxis",4)),
+  VacBoxA(new constructSystem::VacuumBox("shortOdinVacA")),
+  VPipeA(new constructSystem::VacuumPipe("shortOdinPipeA")),
+  FocusB(new beamlineSystem::GuideLine("shortOdinFB")),
+  BladeChopper(new constructSystem::DiskChopper("shortOdinBlade")),
+  
+  VacBoxB(new constructSystem::VacuumBox("shortOdinVacB")),
+  T0House(new constructSystem::ChopperHousing("shortOdinT0House")),
+  VPipeB(new constructSystem::VacuumPipe("shortOdinPipeB")),
+  FocusC(new beamlineSystem::GuideLine("shortOdinFC")),
+  T0Chopper(new constructSystem::DiskChopper("shortOdinTZero")),
+
+  VPipeFinal(new constructSystem::VacuumPipe("shortOdinPipeFinal")),
+  FocusFinal(new beamlineSystem::GuideLine("shortOdinFFinal")),
+  
+  GuideA(new beamlineSystem::GuideLine("shortOdinGA")),
+
+  GuideB(new beamlineSystem::GuideLine("shortOdinGB")),
+  BInsert(new BunkerInsert("shortOdinBInsert")),
+  GuideC(new beamlineSystem::GuideLine("shortOdinGC")),
+  GuideD(new beamlineSystem::GuideLine("shortOdinGD")),
+
+  PitA(new constructSystem::ChopperPit("shortOdinPitA")),
+  GuidePitAFront(new beamlineSystem::GuideLine("shortOdinGPitAFront")),
+  GuidePitABack(new beamlineSystem::GuideLine("shortOdinGPitABack")),
+  ChopperA(new constructSystem::DiskChopper("shortOdinChopperA")),
+
+  GuideE(new beamlineSystem::GuideLine("shortOdinGE")),
+
+  PitB(new constructSystem::ChopperPit("shortOdinPitB")),
+  GuidePitBFront(new beamlineSystem::GuideLine("shortOdinGPitBFront")),
+  GuidePitBBack(new beamlineSystem::GuideLine("shortOdinGPitBBack")),
+  ChopperB(new constructSystem::DiskChopper("shortOdinChopperB")),
+  GuideF(new beamlineSystem::GuideLine("shortOdinGF")),
+
+  PitC(new constructSystem::ChopperPit("shortOdinPitC")),
+  GuidePitCFront(new beamlineSystem::GuideLine("shortOdinGPitCFront")),
+  GuidePitCBack(new beamlineSystem::GuideLine("shortOdinGPitCBack")),
+  GuideG(new beamlineSystem::GuideLine("shortOdinGG")),
+
+  Cave(new essSystem::Hut("shortOdinCave")),
+  GuideH(new beamlineSystem::GuideLine("shortOdinGH")),
+  PinA(new PinHole("shortOdinPin")),
+
+  BeamStop(new RentrantBS("shortOdinBeamStop"))
+ /*!
+    Constructor
+ */
+{
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  OR.cell("shortOdinAxis");
+  OR.addObject(odinAxis);
+  
+  OR.addObject(BladeChopper);
+  OR.addObject(GuideA);
+  OR.addObject(T0Chopper);
+  OR.addObject(T0House);
+  OR.addObject(VPipeA);
+  OR.addObject(VacBoxA);
+  OR.addObject(VacBoxB);
+  OR.addObject(GuideB);
+  OR.addObject(BInsert);
+  
+  OR.addObject(GuideC);
+  OR.addObject(GuideD);
+
+  OR.addObject(PitA);
+  OR.addObject(GuidePitAFront);
+  OR.addObject(GuidePitABack);
+  OR.addObject(ChopperA);
+    
+  OR.addObject(GuideE);
+
+  OR.addObject(PitB);
+  OR.addObject(GuidePitBFront);
+  OR.addObject(GuidePitBBack);
+  OR.addObject(ChopperB);
+  OR.addObject(GuideF);
+
+  OR.addObject(PitC);
+  OR.addObject(GuidePitCFront);
+  OR.addObject(GuidePitCBack);
+  OR.addObject(GuideG);
+
+  OR.addObject(Cave);
+  OR.addObject(GuideH);
+  OR.addObject(PinA);
+  OR.addObject(BeamStop);
+  
+}
+
+shortODIN::~shortODIN()
+  /*!
+    Destructor
+  */
+{}
+
+void
+shortODIN::setBeamAxis(const attachSystem::FixedGroup& GItem,
+		  const bool reverseZ)
+  /*!
+    Set the primary direction object
+    \param GItem :: Primary beam object
+    \param reverseZ :: Reverse Z direction
+  */
+{
+  ELog::RegMethod RegA("shortODIN","setBeamAxis");
+
+  odinAxis->createUnitVector(GItem);
+  odinAxis->setLinkCopy(0,GItem.getKey("Main"),0);
+  odinAxis->setLinkCopy(1,GItem.getKey("Main"),1);
+
+  odinAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
+  odinAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
+
+  if (reverseZ)
+    odinAxis->reverseZ();
+  return;
+}
+
+void
+shortODIN::buildChopperBlock(Simulation& System,
+			 const Bunker& bunkerObj,
+			 const attachSystem::FixedComp& prevFC,
+			 const constructSystem::VacuumBox& prevVacBox,
+			 constructSystem::VacuumBox& VacBox,
+			 beamlineSystem::GuideLine& GL,
+			 constructSystem::DiskChopper& Disk,
+			 constructSystem::ChopperHousing& House,
+			 constructSystem::VacuumPipe& Pipe)
+  /*!
+    Build a chopper block [about to move to some higher level]
+    \param System :: Simulation 
+    \param bunkerObj :: Object
+    \param prevFC :: FixedComponent for like point [uses side 2]
+    \param GL :: Guide Line 
+  */
+{
+  ELog::RegMethod RegA("SHORTDREAM","buildChopperBlock");
+  
+  // Box for BandA Disk
+  VacBox.addInsertCell(bunkerObj.getCell("MainVoid"));
+  VacBox.createAll(System,prevFC,2);
+
+  // Double disk T0 chopper
+  Disk.addInsertCell(VacBox.getCell("Void",0));
+  Disk.setCentreFlag(3);  // Z direction
+  Disk.createAll(System,VacBox,0);
+
+  // Double disk chopper housing
+  House.addInsertCell(VacBox.getCells("Void"));
+  House.addInsertCell(VacBox.getCells("Box"));  // soon to become lid
+  House.addInsertCell(bunkerObj.getCell("MainVoid"));
+  House.createAll(System,Disk.getKey("Main"),0);
+  House.insertComponent(System,"Void",Disk);
+
+  Pipe.addInsertCell(bunkerObj.getCell("MainVoid"));
+  Pipe.setFront(prevVacBox,2);
+  Pipe.setBack(VacBox,1);
+  Pipe.createAll(System,prevVacBox,2);
+  
+  GL.addInsertCell(Pipe.getCells("Void"));
+  GL.addInsertCell(prevVacBox.getCells("Void"));
+  GL.addInsertCell(VacBox.getCells("Void"));
+  GL.createAll(System,prevFC,2,prevFC,2);
+  return;
+} 
+
+  
+void 
+shortODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
+	    const Bunker& bunkerObj,const int voidCell)
+  /*!
+    Carry out the full build
+    \param System :: Simulation system
+    \param GItem :: Guide Item 
+    \param BunkerObj :: Bunker component [for inserts]
+    \param voidCell :: Void cell
+   */
+{
+  // For output stream
+  ELog::RegMethod RegA("shortODIN","build");
+  ELog::debugMethod DA;
+
+  ELog::EM<<"\nBuilding shortODIN on : "<<GItem.getKeyName()<<ELog::endDiag;
+  setBeamAxis(GItem,1);
+  
+  // First section out of monolyth
+  VacBoxA->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VacBoxA->createAll(System,GItem.getKey("Beam"),2);
+  // PIPE
+
+  VPipeA->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeA->setFront(GItem.getKey("Beam"),2);
+  VPipeA->setBack(*VacBoxA,1);
+  VPipeA->setDivider(GItem.getKey("Beam"),2);
+  VPipeA->createAll(System,GItem.getKey("Beam"),2);
+
+  FocusB->addInsertCell(VPipeA->getCells("Void"));
+  FocusB->addInsertCell(VacBoxA->getCells("Void"));
+  FocusB->createAll(System,GItem.getKey("Beam"),2,
+		    GItem.getKey("Beam"),2);
+
+  BladeChopper->addInsertCell(VacBoxA->getCell("Void",0));
+  BladeChopper->setCentreFlag(3);  // Z direction
+  BladeChopper->createAll(System,FocusB->getKey("Guide0"),2);
+
+  // Double disk chopper housing
+  //  DDiskHouse->addInsertCell(VacBoxA->getCells("Void"));
+  //  DDiskHouse->addInsertCell(VacBoxA->getCells("Box"));  // soon to become lid
+
+  buildChopperBlock(System,bunkerObj,
+		    BladeChopper->getKey("Beam"),*VacBoxA,
+		    *VacBoxB,*FocusC,
+		    *T0Chopper,*T0House,
+		    *VPipeB);
+
+
+  // CONNECT TO  WALL
+  VPipeFinal->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeFinal->setFront(*VacBoxB,2);
+  VPipeFinal->setBack(bunkerObj,1);
+  VPipeFinal->createAll(System,*VacBoxB,2);
+
+  FocusFinal->addInsertCell(VPipeFinal->getCell("Void"));
+  FocusFinal->addInsertCell(VacBoxB->getCells("Void"));
+  FocusFinal->addEndCut(bunkerObj.getSignedLinkString(1));
+  FocusFinal->createAll(System,T0Chopper->getKey("Beam"),2,
+			T0Chopper->getKey("Beam"),2);
+
+  // Make bunker insert
+  const attachSystem::FixedComp& GFC(FocusFinal->getKey("Guide0"));
+  BInsert->createAll(System,GFC,2,bunkerObj);   // changed from -1
+  attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);  
+
+
+  // Guide in the bunker insert
+  GuideC->addInsertCell(BInsert->getCell("Void"));
+  GuideC->addEndCut(bunkerObj.getSignedLinkString(-2));
+  GuideC->createAll(System,*BInsert,-1,*BInsert,-1);
+  
+  GuideD->addInsertCell(voidCell);
+  GuideD->createAll(System,*BInsert,2,GuideC->getKey("Guide0"),2);
+
+  //
+  // First chopper pit out of bunker
+  // Guide guide String
+  HeadRule GuideCut=
+    attachSystem::unionLink(GuideD->getKey("Shield"),{2,3,4,5,6});
+  PitA->addInsertCell(voidCell);
+  PitA->createAll(System,GuideD->getKey("Guide0"),2,GuideCut.display());
+
+  ELog::EM<<"PitA == "<<PitA->getCentre()
+	  <<" :: "<<PitA->getCentre().abs()<<ELog::endDebug;
+  
+  GuidePitAFront->addInsertCell(PitA->getCells("MidLayer"));
+  GuidePitAFront->addEndCut(PitA->getKey("Inner").getSignedLinkString(1));
+  GuidePitAFront->createAll(System,GuideD->getKey("Guide0"),2,
+			    GuideD->getKey("Guide0"),2);
+
+  ChopperA->addInsertCell(PitA->getCell("Void"));
+  ChopperA->setCentreFlag(-3);  // -Z direction
+  ChopperA->createAll(System,*PitA,0);
+  
+  GuideE->addInsertCell(voidCell);
+  GuideE->addInsertCell(PitA->getCells("MidLayer"));
+  GuideE->addInsertCell(PitA->getCell("Outer"));
+  GuideE->createAll(System,PitA->getKey("Mid"),2,PitA->getKey("Mid"),2);
+
+  // runs backwards from guide to chopper
+  GuidePitABack->addInsertCell(PitA->getCells("MidLayer"));
+  GuidePitABack->addInsertCell(PitA->getCells("Collet"));
+  GuidePitABack->addEndCut(PitA->getKey("Inner").getSignedLinkString(2));
+  GuidePitABack->createAll(System,GuideE->getKey("Guide0"),-1,
+			    GuideE->getKey("Guide0"),-1);
+
+  ELog::EM<<"GuideE exit point == "<<
+    GuideE->getKey("Guide0").getSignedLinkPt(2).abs()<<ELog::endDebug;
+
+  // SECOND CHOPPER PIT:
+  // First chopper pit out of bunker
+  // Guide guide String
+  GuideCut=attachSystem::unionLink(GuideE->getKey("Shield"),{2,3,4,5,6});
+  PitB->addInsertCell(voidCell);
+  PitB->createAll(System,GuideE->getKey("Guide0"),2,GuideCut.display());
+
+  ChopperB->addInsertCell(PitB->getCell("Void"));
+  ChopperB->setCentreFlag(-3);  // -Z direction
+  ChopperB->createAll(System,*PitB,0);
+
+  ELog::EM<<"PitB == "<<PitB->getCentre()
+	  <<" :: "<<PitB->getCentre().abs()<<ELog::endDebug;
+
+  GuidePitBFront->addInsertCell(PitB->getCells("MidLayer"));
+  GuidePitBFront->addEndCut(PitB->getKey("Inner").getSignedLinkString(1));
+  GuidePitBFront->createAll(System,GuideE->getKey("Guide0"),2,
+			    GuideE->getKey("Guide0"),2);
+
+  GuideF->addInsertCell(voidCell);
+  GuideF->addInsertCell(PitB->getCells("MidLayer"));
+  GuideF->addInsertCell(PitB->getCell("Outer"));
+  GuideF->createAll(System,PitB->getKey("Mid"),2,PitB->getKey("Mid"),2);
+
+  // runs backwards from guide to chopper
+  GuidePitBBack->addInsertCell(PitB->getCells("MidLayer"));
+  GuidePitBBack->addInsertCell(PitB->getCells("Collet"));
+  GuidePitBBack->addEndCut(PitB->getKey("Inner").getSignedLinkString(2));
+  GuidePitBBack->createAll(System,GuideF->getKey("Guide0"),-1,
+			    GuideF->getKey("Guide0"),-1);
+
+  //
+  // THIRD CHOPPER PIT:
+  //
+  const attachSystem::FixedComp& GOuterC=GuideF->getKey("Shield");
+  GuideCut.reset();
+  for(size_t i=1;i<6;i++)
+    GuideCut.addUnion(GOuterC.getLinkString(i));
+  PitC->addInsertCell(voidCell);
+  PitC->createAll(System,GuideF->getKey("Guide0"),2,GuideCut.display());
+
+  ELog::EM<<"PitC == "<<PitC->getCentre()
+	  <<" :: "<<PitC->getCentre().abs()<<ELog::endDebug;
+
+  GuidePitCFront->addInsertCell(PitC->getCell("MidLayer"));
+  GuidePitCFront->addEndCut(PitC->getKey("Inner").getSignedLinkString(1));
+  GuidePitCFront->createAll(System,GuideF->getKey("Guide0"),2,
+			    GuideF->getKey("Guide0"),2);
+
+
+  GuideG->addInsertCell(voidCell);
+  GuideG->addInsertCell(PitC->getCell("MidLayer"));
+  GuideG->addInsertCell(PitC->getCell("Outer"));
+  GuideG->createAll(System,PitC->getKey("Mid"),2,PitC->getKey("Mid"),2);
+
+  // runs backwards from guide to chopper
+  GuidePitCBack->addInsertCell(PitC->getCell("MidLayer"));
+  GuidePitCBack->addInsertCell(PitC->getCells("Collet"));
+  GuidePitCBack->addEndCut(PitC->getKey("Inner").getSignedLinkString(2));
+  GuidePitCBack->createAll(System,GuideG->getKey("Guide0"),-1,
+			    GuideG->getKey("Guide0"),-1);
+  
+
+  GuideCut=attachSystem::unionLink(GuideG->getKey("Shield"),{3,4,5,6});
+  Cave->addInsertCell(voidCell);  
+  Cave->createAll(System,GuideG->getKey("Guide0"),2,GuideCut.display());
+
+  // runs through wall and into void 
+  GuideH->addInsertCell(Cave->getCell("VoidNose"));
+  GuideH->addInsertCell(Cave->getCell("FeNose"));
+  GuideH->createAll(System,GuideG->getKey("Guide0"),2,
+		    GuideG->getKey("Guide0"),2);
+
+
+  PinA->addInsertCell(Cave->getCell("VoidNose"));
+  PinA->createAll(System,GuideH->getKey("Guide0"),2);
+
+  
+  BeamStop->addInsertCell(Cave->getCell("VoidMain"));
+  BeamStop->createAll(System,GuideH->getKey("Guide0"),2);
+
+  return;
+}
+
+}   // NAMESPACE essSystem
+

@@ -764,8 +764,9 @@ Simulation::substituteAllSurface(const int KeyN,const int NsurfN)
 
   TallyTYPE::iterator tc;
   for(tc=TItem.begin();tc!=TItem.end();tc++)
-    tc->second->renumberSurf(KeyN,NsurfN);
-
+    {
+      tc->second->renumberSurf(KeyN,NsurfN);
+    }
   PhysPtr->substituteSurface(KeyN,NsurfN);
   
   return 0;

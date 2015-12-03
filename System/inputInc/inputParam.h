@@ -102,6 +102,10 @@ class inputParam
   T getValue(const std::string&,const size_t =0) const;
   template<typename T>
   T getValue(const std::string&,const size_t,const size_t) const;
+  template<typename T>
+  T getDefValue(const T&,const std::string&,const size_t =0) const;
+  template<typename T>
+    T getDefValue(const T&,const std::string&,const size_t,const size_t) const;
 
 
   Geometry::Vec3D getCntVec3D(const std::string&,
@@ -110,8 +114,11 @@ class inputParam
 			      const size_t,size_t&,
 			      const std::string&) const;
   template<typename T>
+  T outputItem(const std::string&,const size_t,
+	 const size_t,const std::string&) const;
+  template<typename T>
   int checkItem(const std::string&,const size_t,const size_t,T&) const;
-  int checkCntVec3D(const std::string&,const size_t,const size_t,
+  int checkCntVec3D(const std::string&,const size_t,
 		    size_t&,Geometry::Vec3D&) const;
   
   

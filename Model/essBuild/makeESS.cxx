@@ -63,7 +63,9 @@
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "LayerComp.h"
+#include "BaseMap.h"
 #include "CellMap.h"
+#include "SurfMap.h"
 #include "World.h"
 #include "BasicFlightLine.h"
 #include "FlightLine.h"
@@ -407,11 +409,11 @@ makeESS::makeBeamLine(Simulation& System,
 	  // FIND BUNKER HERE:::
 	  makeESSBL BLfactory(BL,Btype);
 	  std::pair<int,int> BLNum=makeESSBL::getBeamNum(BL);
-	  if ((BLNum.first==1 && BLNum.second>8) ||
-	      (BLNum.first==4 && BLNum.second<=8) )
+	  if ((BLNum.first==1 && BLNum.second>9) ||
+	      (BLNum.first==4 && BLNum.second<=9) )
 	    BLfactory.build(System,*ABunker);
-	  else if ((BLNum.first==1 && BLNum.second<=8) ||
-	      (BLNum.first==4 && BLNum.second>8) )
+	  else if ((BLNum.first==1 && BLNum.second<=9) ||
+	      (BLNum.first==4 && BLNum.second>9) )
 	    BLfactory.build(System,*BBunker);
 	}
     }
@@ -428,9 +430,6 @@ makeESS::makeBunker(Simulation& System,
   */
 {
   ELog::RegMethod RegA("makeESS","makeBunker");
-
-  ELog::EM<<"Bunker == "<<bunkerType<<ELog::endDiag;
-
   
   ABunker->addInsertCell(74123);
   ABunker->setCutWall(1,0);
@@ -441,7 +440,7 @@ makeESS::makeBunker(Simulation& System,
   BBunker->createAll(System,*LowMod,*GBArray[0],2,true);
 
   BBunker->insertComponent(System,"leftWall",*ABunker);
-  BBunker->insertComponent(System,"roof",*ABunker);
+  BBunker->insertComponent(System,"roof0",*ABunker);
   BBunker->insertComponent(System,"floor",*ABunker);
 
   TopCurtain->addInsertCell("Top",74123);

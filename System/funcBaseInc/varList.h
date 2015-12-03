@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   funcBaseInc/varList.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,6 +62,8 @@ class varList
   FItem* findVar(const std::string&);
   FItem* findVar(const int);
 
+  void copyVar(const std::string&,const std::string&);
+  
   int selectValue(const int,Geometry::Vec3D&,double&) const;
 
   template<typename T>
@@ -82,7 +84,8 @@ class varList
 
   template<typename T>
   FItem* createFType(const int,const T&);
-  
+
+  std::vector<std::string> getKeys() const;
   void writeActive(std::ostream&) const;
   void writeAll(std::ostream&) const;
 

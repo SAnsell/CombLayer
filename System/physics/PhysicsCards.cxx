@@ -60,6 +60,7 @@
 #include "EUnit.h"
 #include "ExtControl.h"
 #include "PWTControl.h"
+#include "DXTControl.h"
 #include "PhysicsCards.h"
 
 namespace physicsSystem
@@ -69,7 +70,7 @@ PhysicsCards::PhysicsCards() :
   nps(10000),histp(0),dbCard(new dbcnCard),
   voidCard(0),nImpOut(0),prdmp("1e7 1e7 0 2 1e7"),
   Volume("vol"),ExtCard(new ExtControl),
-  PWTCard(new PWTControl)
+  PWTCard(new PWTControl),DXTCard(new DXTControl)
   /*!
     Constructor
   */
@@ -83,7 +84,8 @@ PhysicsCards::PhysicsCards(const PhysicsCards& A) :
   PCards(),LEA(A.LEA),sdefCard(A.sdefCard),
   Volume(A.Volume),
   ExtCard(new ExtControl(*A.ExtCard)),
-  PWTCard(new PWTControl(*A.PWTCard))
+  PWTCard(new PWTControl(*A.PWTCard)),
+  DXTCard(new DXTControl(*A.DXTCard))
   /*!
     Copy constructor
     \param A :: PhysicsCards to copy
@@ -118,6 +120,7 @@ PhysicsCards::operator=(const PhysicsCards& A)
       Volume=A.Volume;
       *ExtCard= *A.ExtCard;
       *PWTCard= *A.PWTCard;
+      *DXTCard= *A.DXTCard;
 
       deletePCards();
       for(const PhysCard* PC : A.PCards)
@@ -875,6 +878,7 @@ PhysicsCards::write(std::ostream& OX,
     StrFunc::writeMCNPX(PC,OX);
 
   ExtCard->write(OX,cellOutOrder,voidCells);
+  DXTCard->write(OX);
   
   LEA.write(OX);
   sdefCard.write(OX);

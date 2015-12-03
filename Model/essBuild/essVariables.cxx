@@ -603,6 +603,8 @@ EssVariables(FuncDataBase& Control)
   EssBeamLinesVariables(Control);
   ODINvariables(Control);
   DREAMvariables(Control);
+  shortDREAMvariables(Control);
+  shortODINvariables(Control);
   ESTIAvariables(Control);
   LOKIvariables(Control);
   NMXvariables(Control);
@@ -621,102 +623,6 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("portSourceEStart",3.0);
   Control.addVariable("portSourceEEnd",4.0);
   Control.addVariable("portSourceNE",2);
-
-
-  return;
-}
-
-void
-EssBunkerVariables(FuncDataBase& Control)
-  /*!
-    Create all the bunker variables
-    \param Control :: DataBase
-  */
-{
-  ELog::RegMethod RegA("essVariables[F]","EssBunkerVariables");
-
-  Control.addVariable("ABunkerLeftPhase",-65.0);
-  Control.addVariable("ABunkerRightPhase",0.0);
-  Control.addVariable("ABunkerLeftAngle",0.0);
-  Control.addVariable("ABunkerRightAngle",0.0);
-  Control.addVariable("ABunkerNSectors",9);
-  Control.addVariable("ABunkerNVert",5);
-  Control.addVariable("ABunkerNLayers",5);
-  Control.addVariable("ABunkerNRoof",5);
-
-  Control.addVariable("ABunkerNSide",5);
-  Control.addVariable("ABunkerNSideVert",5);
-  Control.addVariable("ABunkerNSideThick",5);
-  
-  Control.addVariable("ABunkerWallRadius",1300.0);
-  Control.addVariable("ABunkerFloorDepth",120.0);
-  Control.addVariable("ABunkerRoofHeight",190.0);
-
-  Control.addVariable("ABunkerWallThick",320.0);
-  Control.addVariable("ABunkerSideThick",80.0);
-  Control.addVariable("ABunkerRoofThick",200.0);
-  Control.addVariable("ABunkerFloorThick",100.0);
-
-  Control.addVariable("ABunkerVoidMat","Void");
-  Control.addVariable("ABunkerWallMat","Steel71");
-  Control.addVariable("ABunkerRoofMat","Aluminium");
-
-
-  Control.addVariable("ABunkerWallMat1","B4C");
-  
-  Control.addVariable("ABunkerWallLen1",0.5);
-  Control.addVariable("ABunkerWallLen2",10.0);
- 
-  Control.addVariable("ABunkerLoadFile","ABunkerDef.xml");
-  Control.addVariable("ABunkerOutFile","ABunker.xml");
-
-  //
-  // RIGHT BUNKER : B PART
-  //
-  Control.addVariable("BBunkerLeftPhase",0.0);
-  Control.addVariable("BBunkerRightPhase",65.0);
-  Control.addVariable("BBunkerLeftAngle",0.0);
-  Control.addVariable("BBunkerRightAngle",0.0);
-  Control.addVariable("BBunkerNSectors",9);
-  Control.addVariable("BBunkerNVert",1);
-  Control.addVariable("BBunkerNLayers",1);
-  Control.addVariable("BBunkerNRoof",5);
-
-  Control.addVariable("BBunkerNSide",5);
-  Control.addVariable("BBunkerNSideVert",5);
-  Control.addVariable("BBunkerNSideThick",5);
-  
-  Control.addVariable("BBunkerWallLen1",0.5);
-  Control.addVariable("BBunkerWallLen2",10.0);
-  
-  Control.addVariable("BBunkerWallRadius",1700.0);
-  Control.addVariable("BBunkerFloorDepth",120.0);
-  Control.addVariable("BBunkerRoofHeight",190.0);
-
-  Control.addVariable("BBunkerWallThick",320.0);
-  Control.addVariable("BBunkerSideThick",80.0);
-  Control.addVariable("BBunkerRoofThick",200.0);
-  Control.addVariable("BBunkerFloorThick",100.0);
-
-  Control.addVariable("BBunkerVoidMat","Void");
-  Control.addVariable("BBunkerWallMat","Steel71");
-  Control.addVariable("BBunkerRoofMat","CarstonConc");
-
-  Control.addVariable("BBunkerLoadFile","BBunkerDef.xml");
-  Control.addVariable("BBunkerOutFile","BBunker.xml");
-
-  
-  Control.addVariable("CurtainLeftPhase",-65.0);
-  Control.addVariable("CurtainRightPhase",65.0);
-  Control.addVariable("CurtainWallThick",80.0);
-  Control.addVariable("CurtainInnerStep",25.0);
-  Control.addVariable("CurtainTopRaise",60.0);
-  Control.addVariable("CurtainHeight",250.0);
-  Control.addVariable("CurtainDepth",300.0);
-  Control.addVariable("CurtainWallMat","Concrete");
-  Control.addVariable("CurtainNTopLayers",7);
-  Control.addVariable("CurtainNMidLayers",2);
-  Control.addVariable("CurtainNBaseLayers",7);
 
 
   return;

@@ -50,6 +50,7 @@
 #include "support.h"
 #include "stringCombine.h"
 #include "surfRegister.h"
+#include "surfIndex.h"
 #include "objectRegister.h"
 #include "Rules.h"
 #include "HeadRule.h"
@@ -58,6 +59,8 @@
 #include "FuncDataBase.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "BaseMap.h"
+#include "SurfMap.h"
 #include "Simulation.h"
 #include "inputParam.h"
 #include "NRange.h"
@@ -125,6 +128,25 @@ surfaceConstruct::processSurface(Simulation& System,
       const long int linkNumber=getLinkIndex(snd);
       return processSurfObject(System,place,linkNumber,excludeSurf);
     }
+  if (pType=="surfMap")
+    {
+      const std::string object=
+	IParam.outputItem<std::string>
+	("tally",Index,2,"Object component not given");
+      const std::string surfItem=
+	IParam.outputItem<std::string>
+	("tally",Index,3,"SurfMap set key not give");
+      // This should be a range:
+      const long int surfIndex=
+	IParam.outputItem<long int>
+	("tally",Index,4,"position not given");
+      
+      Geometry::Vec3D Axis;
+      size_t itemIndex(5);
+      IParam.checkCntVec3D("tally",Index,itemIndex,Axis);
+      
+      return processSurfMap(System,object,surfItem,surfIndex);
+    }
 
   if (pType=="viewObject")
     {
@@ -188,6 +210,47 @@ surfaceConstruct::processSurfObject(Simulation& System,
 	}
       const int signV((linkPt>0) ? 1 : -1);
       addF1Tally(System,tNum,signV*masterPlane,surfN);
+      return 1;
+    }
+  return 0;
+}
+
+int
+surfaceConstruct::processSurfMap(Simulation& System,
+				 const std::string& SObject,
+				 const std::string& SurfUnit,
+				 const long int linkPt) const
+  /*!
+    Process a surface tally on a registered object
+    \param System :: Simulation to add tallies
+    \param FObject :: SurfMap
+    \param linkPt :: Link point [-ve for beam object]
+  */
+{
+  ELog::RegMethod RegA("surfaceConstruct","processSurfMap");
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  ModelSupport::surfIndex& SurI=
+    ModelSupport::surfIndex::Instance();
+  
+  const int tNum=System.nextTallyNum(1);
+  if (linkPt)
+    {
+      const attachSystem::SurfMap* SPtr=
+	OR.getObject<attachSystem::SurfMap>(SObject);
+      if (!SPtr)
+	throw ColErr::InContainerError<std::string>
+	  (SObject,"Fixed Object not found");
+
+      const int side=(linkPt>0) ? 1 : -1;
+      const size_t index=(linkPt>0) ? static_cast<size_t>(linkPt-1) :
+	static_cast<size_t>(-linkPt-1);
+
+      const int surf=SPtr->getSurf(SurfUnit,index);
+
+      const int signV((linkPt>0) ? 1 : -1);
+      addF1Tally(System,tNum,side*surf);
       return 1;
     }
   return 0;

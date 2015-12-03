@@ -395,6 +395,51 @@ inputParam::getFull(const std::string& K,const size_t setIndex) const
 
 template<typename T>
 T
+inputParam::getDefValue(const T& DefVal,
+			const std::string& K,
+			const size_t itemIndex) const
+  /*!
+    Get a value based on key
+    \param DefVal :: Default value
+    \param K :: Key to seach
+    \param itemIndex :: Index value
+    \return Value
+   */
+{
+  ELog::RegMethod RegA("inputParam","getDefValue(index)");
+  return getDefValue<T>(DefVal,K,0,itemIndex);
+}
+
+template<typename T>
+T
+inputParam::getDefValue(const T& DefVal,
+			const std::string& K,
+			const size_t setIndex,
+			const size_t itemIndex) const
+  /*!
+    Get a value based on key.
+    Note: that this still throws if it is impossible to convert
+    the value into the correct type
+    \param DefVal :: Default value to return 
+    \param K :: Key to seach
+    \param setIndex :: set Value
+    \param itemIndex :: Index value
+    \return Value
+   */
+{
+  ELog::RegMethod RegA("inputParam","getDefValue(setIndex,index)");
+
+  const IItem* IPtr=getIndex(K);
+  if (!IPtr)
+    return DefVal;
+  const size_t NItems=IPtr->getNItems(setIndex);
+  ELog::EM<<"NITem == "<<NItems<<ELog::endDiag;
+  return (NItems>itemIndex) ?
+    IPtr->getObj<T>(setIndex,itemIndex) : DefVal;
+}
+  
+template<typename T>
+T
 inputParam::getValue(const std::string& K,
 		     const size_t itemIndex) const
   /*!
@@ -471,6 +516,38 @@ inputParam::getCntVec3D(const std::string& K,
 }
 
 template<typename T>
+T
+inputParam::outputItem(const std::string& K,
+		       const size_t setIndex,
+		       const size_t itemIndex,
+		       const std::string& ErrMessage) const
+  /*!
+    Get a value based on key
+    \param K :: Key to seach
+    \param setIndex :: set Value
+    \param itemIndex :: Index value
+    \param ErrMessage :: Error message for exception
+    \return Value
+*/
+
+{
+  ELog::RegMethod RegA("inputParam","outputItem(setIndex,index)");
+
+  const IItem* IPtr=getIndex(K);
+  if (!IPtr) return 0;
+  try
+    {
+      return IPtr->getObj<T>(setIndex,itemIndex);
+    }
+  catch(ColErr::IndexError<size_t>&)
+    {
+    }
+  throw ColErr::InContainerError<std::string>
+    (K+"["+StrFunc::makeString(setIndex)+"]::"+
+     StrFunc::makeString(itemIndex),ErrMessage);
+}
+
+template<typename T>
 int
 inputParam::checkItem(const std::string& K,
 		      const size_t setIndex,
@@ -493,6 +570,36 @@ inputParam::checkItem(const std::string& K,
   try
     {
       Out=IPtr->getObj<T>(setIndex,itemIndex);
+    }
+  catch(ColErr::IndexError<size_t>&)
+    {
+      return 0;
+    }
+  return 1;
+}
+
+int
+inputParam::checkCntVec3D(const std::string& K,
+			  const size_t setIndex,
+			  size_t& itemIndex,
+			  Geometry::Vec3D& Out) const
+  /*!
+    Get a value based on key
+    \param K :: Key to seach
+    \param setIndex :: set Value
+    \param itemIndex :: Index value
+    \param Out :: returned value if found
+    \return 1 on success / 0 on failure
+  */
+
+{
+  ELog::RegMethod RegA("inputParam","checkCntVec3(setIndex,index)");
+
+  const IItem* IPtr=getIndex(K);
+  if (!IPtr) return 0;
+  try
+    {
+      Out=IPtr->getCntVec3D(setIndex,itemIndex);
     }
   catch(ColErr::IndexError<size_t>&)
     {
@@ -1044,6 +1151,21 @@ template void inputParam::setValue(const std::string&,const int&,const size_t,co
 template void inputParam::setValue(const std::string&,const std::string&,const size_t,const size_t);
 template void inputParam::setValue(const std::string&,const Geometry::Vec3D&,const size_t,const size_t);
 
+template double inputParam::getDefValue
+  (const double&,const std::string&,const size_t) const;
+template int inputParam::getDefValue
+  (const int&,const std::string&,const size_t) const;
+template size_t inputParam::getDefValue
+  (const size_t&,const std::string&,const size_t) const;
+template unsigned int inputParam::getDefValue
+  (const unsigned int&,const std::string&,const size_t) const;
+template long int inputParam::getDefValue
+  (const long int&,const std::string&,const size_t) const;
+template std::string inputParam::getDefValue
+  (const std::string&,const std::string&,const size_t) const;
+template Geometry::Vec3D inputParam::getDefValue
+  (const Geometry::Vec3D&,const std::string&,const size_t) const;
+  
 template double inputParam::getValue(const std::string&,const size_t) const;
 template int inputParam::getValue(const std::string&,const size_t) const;
 template size_t inputParam::getValue(const std::string&,const size_t) const;
@@ -1061,14 +1183,47 @@ template std::string inputParam::getValue(const std::string&,const size_t,const 
 template Geometry::Vec3D inputParam::getValue(const std::string&,const size_t,const size_t) const;
 
 
+template double inputParam::getDefValue
+  (const double&,const std::string&,const size_t,const size_t) const;
+template int inputParam::getDefValue
+  (const int&,const std::string&,const size_t,const size_t) const;
+template size_t inputParam::getDefValue
+(const size_t&,const std::string&,const size_t,const size_t) const;
+template unsigned int inputParam::getDefValue
+  (const unsigned int&,const std::string&,const size_t,const size_t) const;
+template long int inputParam::getDefValue
+  (const long int&,const std::string&,const size_t,const size_t) const;
+template std::string inputParam::getDefValue
+  (const std::string&,const std::string&,const size_t,const size_t) const;
+template Geometry::Vec3D inputParam::getDefValue
+  (const Geometry::Vec3D&,const std::string&,const size_t,const size_t) const;
+
+  
+
 template int inputParam::checkItem(const std::string&,const size_t,
 				   const size_t,double&) const;
 template int inputParam::checkItem(const std::string&,const size_t,
 				   const size_t,int&) const;
 template int inputParam::checkItem(const std::string&,const size_t,
 				   const size_t,size_t&) const;
-template int inputParam::checkItem(const std::string&,const size_t,
+ template int inputParam::checkItem(const std::string&,const size_t,
 				   const size_t,std::string&) const;
+  
+template double
+inputParam::outputItem(const std::string&,const size_t,
+		       const size_t,const std::string&) const;
+template int
+inputParam::outputItem(const std::string&,const size_t,
+		       const size_t,const std::string&) const;
+template size_t
+inputParam::outputItem(const std::string&,const size_t,
+		       const size_t,const std::string&) const;
+template long int
+inputParam::outputItem(const std::string&,const size_t,
+		       const size_t,const std::string&) const;
+template std::string
+inputParam::outputItem(const std::string&,const size_t,
+		       const size_t,const std::string&) const;
   
 template double
 inputParam::getFlagDef(const std::string&,const FuncDataBase& Control,

@@ -39,7 +39,8 @@ namespace essSystem
 
 class Bunker : public attachSystem::ContainedComp,
   public attachSystem::FixedComp,
-  public attachSystem::CellMap
+  public attachSystem::CellMap,
+  public attachSystem::SurfMap
 {
  private:
    
@@ -60,10 +61,13 @@ class Bunker : public attachSystem::ContainedComp,
 
 
   // MAIN WALL
-  
+  size_t activeSegment;          ///< Active segment
   size_t nSectors;               ///< Number of sector divisions
   std::vector<double> sectPhase; ///< sector angles
-  
+
+  size_t nSegment;               ///< Number of sections in a segment
+  std::vector<double> segDivide; ///< Segment divider
+
   size_t nVert;                  ///< Number of vertical divisions
   std::vector<double> vertFrac;  ///< Vertical fraction
 
@@ -71,11 +75,17 @@ class Bunker : public attachSystem::ContainedComp,
   std::vector<double> wallFrac;  ///< thicknesss (fractions)
 
   // ROOF
-  size_t nRoof;                  ///< number of layers
-  std::vector<double> roofFrac;  ///< guide Layer thicknesss (fractions)
-  std::vector<int> roofMatVec;   ///< guide Layer thicknesss (fractions)
+  size_t activeRoof;              ///< Activeity for roof segments
+  size_t nRoofVert;               ///< number of layers
+  size_t nRoofRadial;             ///< number of radial layers
+  size_t nRoofSide;               ///< number of radial layers
+  std::vector<double> roofVert;    ///< Roof fractions
+  std::vector<double> roofRadial;  ///< Roof fractions
+  std::vector<double> roofSide;    ///< Roof fractions 
+  std::vector<int> roofMatVec;     ///< radial layer
 
   // SIDES:
+
   int sideFlag;                      ///< Which sides are divided [left/right]
   size_t nSide;                      ///< number of side layers
   std::vector<double> sideFrac;      ///< guide Layer thicknesss (fractions)
@@ -104,10 +114,6 @@ class Bunker : public attachSystem::ContainedComp,
   // Bunker Material distribution:
   std::string loadFile;            ///< Bunker input file
   std::string outFile;             ///< Bunker output file
-  BunkerMainWall* BMWPtr;          ///< Bunker main wall
-
-  BunkerMainWall* BLeftPtr;          ///< Bunker side wall
-  BunkerMainWall* BRightPtr;          ///< Bunker side wall
 
   void createWallSurfaces(const Geometry::Vec3D&,
 			  const Geometry::Vec3D&);
@@ -127,11 +133,10 @@ class Bunker : public attachSystem::ContainedComp,
   void createSideLinks(const Geometry::Vec3D&,const Geometry::Vec3D&,
 		       const Geometry::Vec3D&,const Geometry::Vec3D&);
 
+
   void createMainWall(Simulation&);
-  void addCalcPoint(const size_t,const size_t,const size_t,
-		    std::string);
-  void joinWall(Simulation&);
-  
+  void createMainRoof(Simulation&,const int);
+
  public:
 
   Bunker(const std::string&);

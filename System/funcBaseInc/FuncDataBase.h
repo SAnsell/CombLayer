@@ -105,12 +105,17 @@ class FuncDataBase
   T EvalTriple(const std::string&,const std::string&,
 	       const std::string&,const std::string&) const;      
   
+
+  template<typename T>
+  void addParse(const std::string&,const std::string&);
+  void copyVar(const std::string&,const std::string&);
   
-  /// Add variable
+  // Add variable
   template<typename T>
   void addVariable(const std::string&,const T&);
   void addVariable(const std::string&,const char*);
   void addVariable(const std::string&);
+
   template<typename T>
   void setVariable(const std::string&,const T&);
   void setVariable(const std::string&);
@@ -123,6 +128,8 @@ class FuncDataBase
   /// Debug print function
   void printByteCode(std::ostream& OX) const { Build.printByteCode(OX); }
 
+  /// access keys
+  std::vector<std::string> getKeys() const { return VList.getKeys(); }
   std::string variableHash() const;
 
 };

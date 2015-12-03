@@ -24,7 +24,7 @@
 
 namespace StrFunc
 {
-
+  
 template<typename T>
 std::string stringWrite(const T& A) 
   /*!

@@ -142,7 +142,6 @@ pointConstruct::processPoint(Simulation& System,
 
   else if (PType=="freeWindow")
     {
-      size_t windowIndex(6);
       size_t itemIndex(2);
       Geometry::Vec3D PPoint=
 	IParam.getCntVec3D("tally",Index,itemIndex,"Point for point detector");
@@ -158,7 +157,6 @@ pointConstruct::processPoint(Simulation& System,
       for(size_t i=0;i<4;i++)
 	WindowPts[i]=IParam.getCntVec3D
 	  ("tally",Index,itemIndex,"Window point "+StrFunc::makeString(i+1));
-	  (IParam,Index,windowIndex,"Window point");
       
       flag=checkItem<std::string>(IParam,Index,5,revStr);
       if (flag && (revStr=="r" || revStr=="R"))
@@ -188,7 +186,8 @@ pointConstruct::processPoint(Simulation& System,
   else if (PType=="object")
     {
       const std::string place=
-	inputItem<std::string>(IParam,Index,2,"position not given");
+	IParam.outputItem<std::string>("tally",Index,2,"position not given");
+      
       const std::string snd=
 	inputItem<std::string>(IParam,Index,3,"front/back/side not give");
       const double D=

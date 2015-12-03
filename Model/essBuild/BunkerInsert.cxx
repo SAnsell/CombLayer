@@ -74,7 +74,9 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
 #include "CellMap.h"
+#include "SurfMap.h"
 #include "surfDBase.h"
 #include "surfDIter.h"
 #include "surfDivide.h"
@@ -124,6 +126,7 @@ BunkerInsert::populate(const FuncDataBase& Control)
   rightWall=Control.EvalVar<double>(keyName+"RightWall");
 
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
+  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   
   return;
 }
@@ -224,7 +227,7 @@ BunkerInsert::createObjects(Simulation& System,
   
   std::string Out;
   Out=ModelSupport::getComposite(SMap,insIndex," 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+BCell));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,voidMat,0.0,Out+BCell));
   setCell("Void",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,insIndex,

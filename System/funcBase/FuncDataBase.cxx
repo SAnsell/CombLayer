@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   funcBase/FuncDataBase.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -872,6 +872,35 @@ FuncDataBase::addVariable(const std::string& Name,const char* V)
 
 template<typename T>
 void
+FuncDataBase::addParse(const std::string& Name,const std::string& VParse)
+  /*!
+    Adds this function if the Code system has been 
+    executed
+    \param Name :: Name of the variable
+    \param V :: Variable to add
+  */
+{
+  Parse(VParse);
+  VList.addVar<T>(Name,Eval<T>());
+  return;
+}
+
+
+void
+FuncDataBase::copyVar(const std::string& Name,const std::string& otherVar)
+  /*!
+    Adds this function if the Code system has been 
+    executed
+    \param Name :: Name of the variable
+    \param otherVar :: Othe variables
+  */
+{
+  VList.copyVar(Name,otherVar);
+  return;
+}
+
+template<typename T>
+void
 FuncDataBase::setVariable(const std::string& Name,const T& V)
   /*!
     Set the varable to the value given
@@ -1174,6 +1203,9 @@ template int FuncDataBase::EvalTriple
 (const std::string&,const std::string&,
  const std::string&,const std::string&) const;
 
+// PARSE
+template
+void FuncDataBase::addParse<double>(const std::string&,const std::string&);
 
 
 /// \endcond TEMPLATE
