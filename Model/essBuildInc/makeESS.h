@@ -115,9 +115,9 @@ class makeESS
   std::shared_ptr<PreModWing> TopCapWing; ///< Top cap premoderator wing
 
   /// Top supply 
-  std::shared_ptr<constructSystem::SupplyPipe> TopSupplyPipe;
-  std::shared_ptr<constructSystem::SupplyPipe> TopConnectPipe; 
-  std::shared_ptr<constructSystem::SupplyPipe> TopInvarPipe; 
+  std::shared_ptr<constructSystem::SupplyPipe> TopSupplyLeftAl;
+  std::shared_ptr<constructSystem::SupplyPipe> TopSupplyLeftConnect; 
+  std::shared_ptr<constructSystem::SupplyPipe> TopSupplyInvar; 
   std::shared_ptr<constructSystem::SupplyPipe> TopReturnPipe;  ///< Top supply
 
   std::shared_ptr<BulkModule> Bulk;      ///< Main bulk module

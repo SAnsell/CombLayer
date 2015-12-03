@@ -59,90 +59,90 @@ pipeVariables(FuncDataBase& Control)
   
   // top mod return pipe
 
-  Control.addVariable("TSupplyTopNSegIn",3);
-  Control.addVariable("TSupplyTopPPt0",Geometry::Vec3D(1.9, 0, 0));
-  Control.addVariable("TSupplyTopPPt1",Geometry::Vec3D(1.9, 2.0, 0));
-  Control.addVariable("TSupplyTopPPt2",Geometry::Vec3D(3.286, 3.0, 0));
-  Control.addVariable("TSupplyTopPPt3",Geometry::Vec3D(3.186, 4.2, 0));
+  Control.addVariable("TSupplyLeftAlTopNSegIn",3);
+  Control.addVariable("TSupplyLeftAlTopPPt0",Geometry::Vec3D(1.9, 0, 0));
+  Control.addVariable("TSupplyLeftAlTopPPt1",Geometry::Vec3D(1.9, 2.0, 0));
+  Control.addVariable("TSupplyLeftAlTopPPt2",Geometry::Vec3D(3.286, 3.0, 0));
+  Control.addVariable("TSupplyLeftAlTopPPt3",Geometry::Vec3D(3.286, 4.2, 0));
 
-  Control.addVariable("TSupplyNRadii",4);
-  Control.addVariable("TSupplyRadius0",1.0);
-  Control.addVariable("TSupplyRadius1",1.2);
-  Control.addVariable("TSupplyRadius2",1.5);
-  Control.addVariable("TSupplyRadius3",1.8);
+  Control.addVariable("TSupplyLeftAlNRadii",4);
+  Control.addVariable("TSupplyLeftAlRadius0",1.0);
+  Control.addVariable("TSupplyLeftAlRadius1",1.2);
+  Control.addVariable("TSupplyLeftAlRadius2",1.5);
+  Control.addVariable("TSupplyLeftAlRadius3",1.8);
 
-  Control.addVariable("TSupplyMat0","HPARA"); // email from LZ 27 Nov 2015
+  Control.addVariable("TSupplyLeftAlMat0","HPARA"); // email from LZ 27 Nov 2015
   
-  Control.addVariable("TSupplyMat1","Aluminium20K");
-  Control.addVariable("TSupplyMat2","Void");
-  Control.addVariable("TSupplyMat3","Aluminium");
-  Control.addVariable("TSupplyMat4","Void");
-  Control.addVariable("TSupplyMat5","Aluminium");
-  Control.addVariable("TSupplyMat6","Void");
-  Control.addVariable("TSupplyMat7","Aluminium");
+  Control.addVariable("TSupplyLeftAlMat1","Aluminium20K");
+  Control.addVariable("TSupplyLeftAlMat2","Void");
+  Control.addVariable("TSupplyLeftAlMat3","Aluminium");
+  Control.addVariable("TSupplyLeftAlMat4","Void");
+  Control.addVariable("TSupplyLeftAlMat5","Aluminium");
+  Control.addVariable("TSupplyLeftAlMat6","Void");
+  Control.addVariable("TSupplyLeftAlMat7","Aluminium");
 
-  Control.addVariable("TSupplyTemp0",25.0);
-  Control.addVariable("TSupplyTemp1",25.0);
+  Control.addVariable("TSupplyLeftAlTemp0",25.0);
+  Control.addVariable("TSupplyLeftAlTemp1",25.0);
 
-  Control.addVariable("TSupplyActive0",3);
-  Control.addVariable("TSupplyActive1",15);
+  Control.addVariable("TSupplyLeftAlActive0",3);
+  Control.addVariable("TSupplyLeftAlActive1",15);
 
-  Control.addVariable("TConnectTopNSegIn",1);
-  Control.addVariable("TConnectTopPPt0",Geometry::Vec3D(0, 0.0, 0));
-  Control.addVariable("TConnectTopPPt1",Geometry::Vec3D(0, 2.5, 0));
+  Control.addVariable("TSupplyLeftConnectTopNSegIn",1);
+  Control.addVariable("TSupplyLeftConnectTopPPt0",Geometry::Vec3D(0, 0.0, 0));
+  Control.addVariable("TSupplyLeftConnectTopPPt1",Geometry::Vec3D(0, 2.5, 0));
 
-  Control.Parse("TSupplyNRadii");
-  Control.addVariable("TConnectNRadii");
-  Control.Parse("TSupplyRadius0");
-  Control.addVariable("TConnectRadius0");
-  Control.Parse("TSupplyRadius1");
-  Control.addVariable("TConnectRadius1");
-  Control.Parse("TSupplyRadius2");
-  Control.addVariable("TConnectRadius2");
-  Control.Parse("TSupplyRadius3");
-  Control.addVariable("TConnectRadius3");
+  Control.Parse("TSupplyLeftAlNRadii");
+  Control.addVariable("TSupplyLeftConnectNRadii");
+  Control.Parse("TSupplyLeftAlRadius0");
+  Control.addVariable("TSupplyLeftConnectRadius0");
+  Control.Parse("TSupplyLeftAlRadius1");
+  Control.addVariable("TSupplyLeftConnectRadius1");
+  Control.Parse("TSupplyLeftAlRadius2");
+  Control.addVariable("TSupplyLeftConnectRadius2");
+  Control.Parse("TSupplyLeftAlRadius3");
+  Control.addVariable("TSupplyLeftConnectRadius3");
 
-  Control.addVariable("TConnectMat0","HPARA"); // email from LZ 27 Nov 2015
-  Control.addVariable("TConnectMat1","SS316L");
-  Control.addVariable("TConnectMat2","Void");
-  Control.addVariable("TConnectMat3","SS316L");
-  Control.addVariable("TConnectMat4","Void");
-  Control.addVariable("TConnectMat5","SS316L");
-  Control.addVariable("TConnectMat6","Void");
-  Control.addVariable("TConnectMat7","SS316L");
-  Control.addVariable("TConnectTemp0",20.0);
-  Control.addVariable("TConnectTemp1",20.0);
-  Control.addVariable("TConnectActive0",15);
+  Control.addVariable("TSupplyLeftConnectMat0","HPARA"); // email from LZ 27 Nov 2015
+  Control.addVariable("TSupplyLeftConnectMat1","SS316L");
+  Control.addVariable("TSupplyLeftConnectMat2","Void");
+  Control.addVariable("TSupplyLeftConnectMat3","SS316L");
+  Control.addVariable("TSupplyLeftConnectMat4","Void");
+  Control.addVariable("TSupplyLeftConnectMat5","SS316L");
+  Control.addVariable("TSupplyLeftConnectMat6","Void");
+  Control.addVariable("TSupplyLeftConnectMat7","SS316L");
+  Control.addVariable("TSupplyLeftConnectTemp0",20.0);
+  Control.addVariable("TSupplyLeftConnectTemp1",20.0);
+  Control.addVariable("TSupplyLeftConnectActive0",15);
 
   // invar pipe
 
-  Control.addVariable("TInvarTopNSegIn",2);
-  Control.addVariable("TInvarTopPPt0",Geometry::Vec3D(0, 0,  0));
-  Control.addVariable("TInvarTopPPt1",Geometry::Vec3D(0, 9.34, 0));
-  Control.addVariable("TInvarTopPPt2",Geometry::Vec3D(0, 9.34, 400));
+  Control.addVariable("TSupplyLeftInvarTopNSegIn",2);
+  Control.addVariable("TSupplyLeftInvarTopPPt0",Geometry::Vec3D(0, 0,  0));
+  Control.addVariable("TSupplyLeftInvarTopPPt1",Geometry::Vec3D(0, 9.34, 0));
+  Control.addVariable("TSupplyLeftInvarTopPPt2",Geometry::Vec3D(0, 9.34, 400));
 
-  Control.Parse("TSupplyNRadii");
-  Control.addVariable("TInvarNRadii");
-  Control.Parse("TSupplyRadius0");
-  Control.addVariable("TInvarRadius0");
-  Control.Parse("TSupplyRadius1");
-  Control.addVariable("TInvarRadius1");
-  Control.Parse("TSupplyRadius2");
-  Control.addVariable("TInvarRadius2");
-  Control.Parse("TSupplyRadius3");
-  Control.addVariable("TInvarRadius3");
+  Control.Parse("TSupplyLeftAlNRadii");
+  Control.addVariable("TSupplyLeftInvarNRadii");
+  Control.Parse("TSupplyLeftAlRadius0");
+  Control.addVariable("TSupplyLeftInvarRadius0");
+  Control.Parse("TSupplyLeftAlRadius1");
+  Control.addVariable("TSupplyLeftInvarRadius1");
+  Control.Parse("TSupplyLeftAlRadius2");
+  Control.addVariable("TSupplyLeftInvarRadius2");
+  Control.Parse("TSupplyLeftAlRadius3");
+  Control.addVariable("TSupplyLeftInvarRadius3");
 
-  Control.addVariable("TInvarMat0","HPARA"); // email from LZ 27 Nov 2015
-  Control.addVariable("TInvarMat1","Invar36");
-  Control.addVariable("TInvarMat2","Void");
-  Control.addVariable("TInvarMat3","Invar36");
-  Control.addVariable("TInvarMat4","Void");
-  Control.addVariable("TInvarMat5","Invar36");
-  Control.addVariable("TInvarMat6","Void");
-  Control.addVariable("TInvarMat7","Invar36");
-  Control.addVariable("TInvarTemp0",20.0);
-  Control.addVariable("TInvarTemp1",20.0);
-  Control.addVariable("TInvarActive0",15);
+  Control.addVariable("TSupplyLeftInvarMat0","HPARA"); // email from LZ 27 Nov 2015
+  Control.addVariable("TSupplyLeftInvarMat1","Invar36");
+  Control.addVariable("TSupplyLeftInvarMat2","Void");
+  Control.addVariable("TSupplyLeftInvarMat3","Invar36");
+  Control.addVariable("TSupplyLeftInvarMat4","Void");
+  Control.addVariable("TSupplyLeftInvarMat5","Invar36");
+  Control.addVariable("TSupplyLeftInvarMat6","Void");
+  Control.addVariable("TSupplyLeftInvarMat7","Invar36");
+  Control.addVariable("TSupplyLeftInvarTemp0",20.0);
+  Control.addVariable("TSupplyLeftInvarTemp1",20.0);
+  Control.addVariable("TSupplyLeftInvarActive0",15);
 
   return;
 }

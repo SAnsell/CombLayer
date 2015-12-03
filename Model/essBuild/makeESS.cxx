@@ -129,9 +129,9 @@ makeESS::makeESS() :
   TopAFL(new moderatorSystem::TaperedFlightLine("TopAFlight")),
   TopBFL(new moderatorSystem::TaperedFlightLine("TopBFlight")),
 
-  TopSupplyPipe(new constructSystem::SupplyPipe("TSupply")),
-  TopConnectPipe(new constructSystem::SupplyPipe("TConnect")),
-  TopInvarPipe(new constructSystem::SupplyPipe("TInvar")),
+  TopSupplyLeftAl(new constructSystem::SupplyPipe("TSupplyLeftAl")),
+  TopSupplyLeftConnect(new constructSystem::SupplyPipe("TSupplyLeftConnect")),
+  TopSupplyInvar(new constructSystem::SupplyPipe("TSupplyLeftInvar")),
 
   Bulk(new BulkModule("Bulk")),
   BulkLowAFL(new moderatorSystem::FlightLine("BulkLAFlight")),
@@ -156,9 +156,9 @@ makeESS::makeESS() :
   OR.addObject(TopPreMod);
   OR.addObject(TopCapMod);
 
-  OR.addObject(TopSupplyPipe);
-  OR.addObject(TopConnectPipe);
-  OR.addObject(TopInvarPipe);
+  OR.addObject(TopSupplyLeftAl);
+  OR.addObject(TopSupplyLeftConnect);
+  OR.addObject(TopSupplyInvar);
   
   OR.addObject(TopAFL);
   OR.addObject(TopBFL);
@@ -330,22 +330,22 @@ makeESS::buildTopPipe(Simulation& System,
 						"FixedComp not found");
 
   
-  TopSupplyPipe->setAngleSeg(12);
-  TopSupplyPipe->setOption("Top"); 
+  TopSupplyLeftAl->setAngleSeg(12);
+  TopSupplyLeftAl->setOption("Top"); 
 
   // layer level is depth into the object layers [0=> inner]
   // linkPt is normal link point in fixedcomp
   // layerLevel : linkPoint
-  TopSupplyPipe->createAll(System,*FPtr,0,2,2);
+  TopSupplyLeftAl->createAll(System,*FPtr,0,2,2);
 
 
-  TopConnectPipe->setAngleSeg(12);
-  TopConnectPipe->setOption("Top"); 
-  TopConnectPipe->createAll(System,*TopSupplyPipe,2);
+  TopSupplyLeftConnect->setAngleSeg(12);
+  TopSupplyLeftConnect->setOption("Top"); 
+  TopSupplyLeftConnect->createAll(System,*TopSupplyLeftAl,2);
 
-  TopInvarPipe->setAngleSeg(12);
-  TopInvarPipe->setOption("Top"); 
-  TopInvarPipe->createAll(System,*TopConnectPipe,2);
+  TopSupplyInvar->setAngleSeg(12);
+  TopSupplyInvar->setOption("Top"); 
+  TopSupplyInvar->createAll(System,*TopSupplyLeftConnect,2);
 
 
   return;
