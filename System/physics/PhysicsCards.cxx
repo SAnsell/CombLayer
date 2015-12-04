@@ -210,7 +210,7 @@ PhysicsCards::processCard(const std::string& Line)
   ELog::RegMethod RegA("PhysicsCards","processCard");
   if(Line.empty())
     return 0;  
-
+  
   int extCell(0);
   std::string Comd=Line;
   StrFunc::stripComment(Comd);
@@ -313,7 +313,6 @@ PhysicsCards::processCard(const std::string& Line)
 	}
       return 1;
     }
-
   pos=Comd.find("cut:");
   if (pos!=std::string::npos)
     {
@@ -329,10 +328,9 @@ PhysicsCards::processCard(const std::string& Line)
 	  // ensure no empty particles
 	  part.erase(
 		     remove_if(part.begin(),part.end(),
-			       std::bind<bool>(&std::string::empty,
-					       std::placeholders::_1)),
-		     part.end());
-	  
+			       [](const std::string& A) { return A.empty(); } 
+                     ));
+
 	  for(const std::string& PStr : part)
 	    PC->addElm(PStr);
 	  // Strip and process numbers / j
@@ -351,6 +349,8 @@ PhysicsCards::processCard(const std::string& Line)
 	}
       return 1;
     }
+  return 1;
+/*
   // ext card
   pos=Comd.find("ext:");
   if (pos!=std::string::npos)
@@ -378,6 +378,7 @@ PhysicsCards::processCard(const std::string& Line)
   // Component:
   Basic.push_back(Line);
   return 1;
+*/
 }
 
 void

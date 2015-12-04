@@ -32,6 +32,7 @@
 #include <iterator>
 #include <functional>
 #include <algorithm>
+#include <numeric>
 #include <memory>
 #include <boost/format.hpp>
 
