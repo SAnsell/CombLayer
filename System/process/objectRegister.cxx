@@ -31,6 +31,7 @@
 #include <set>
 #include <string>
 #include <algorithm>
+#include <numeric>
 #include <boost/format.hpp>
 
 #include "Exception.h"

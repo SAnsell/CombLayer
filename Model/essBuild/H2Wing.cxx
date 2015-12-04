@@ -30,7 +30,9 @@
 #include <set>
 #include <map>
 #include <string>
+#include <array>
 #include <algorithm>
+#include <numeric>
 #include <memory>
 
 #include "Exception.h"

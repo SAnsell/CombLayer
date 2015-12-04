@@ -31,6 +31,7 @@
 #include <set>
 #include <map>
 #include <string>
+#include <array>
 #include <algorithm>
 #include <iterator>
 #include <memory>
