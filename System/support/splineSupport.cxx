@@ -43,7 +43,6 @@
   \file splineSupport.cxx 
 */
 
-
 namespace mathSupport
 {
   
@@ -113,8 +112,8 @@ evalSpline(const std::vector<T>& XP,
     {
       typename std::vector<T>::const_iterator vc=
 	std::lower_bound(XP.begin(),XP.end(),X);
-      index=(vc-XP.begin());
-      index--;
+      index=static_cast<size_t>(vc-XP.begin());
+      if (index) index--;
     }
   const T t=X-XP[index];
   const SplinePt<T>& SP(SPvec[index]);
