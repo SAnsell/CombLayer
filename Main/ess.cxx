@@ -116,7 +116,7 @@ main(int argc,char* argv[])
       setVariable::EssVariables(SimPtr->getDataBase());
       mainSystem::setDefUnits(SimPtr->getDataBase(),IParam);
       InputModifications(SimPtr,IParam,Names);
-
+      mainSystem::setMaterialsDataBase(IParam);
       
       // Definitions section 
       int MCIndex(0);

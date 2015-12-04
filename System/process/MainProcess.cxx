@@ -62,6 +62,7 @@
 #include "SimMonte.h"
 #include "variableSetup.h"
 #include "defaultConfig.h"
+#include "DBModify.h"
 #include "MainProcess.h"
 
 namespace mainSystem
@@ -958,7 +959,39 @@ InputModifications(Simulation* SimPtr,inputParam& IParam,
 }
 
 void
+setMaterialsDataBase(const inputParam& IParam)
+  /*!
+    Set the different data base option for mateirals
+    \param IParam :: Input param
+  */
+{
+  ELog::RegMethod RegA("MainProcess","setMaterialsDataBase");
+
+  const std::string materials=IParam.getValue<std::string>("matDB");
+  
+  // Add extra materials to the DBMaterials
+  if (materials=="neutronics")
+    ModelSupport::addESSMaterial();
+  else if (materials=="shielding")
+    ModelSupport::cloneESSMaterial();
+  else if (materials=="help")
+    {
+      ELog::EM<<"Materials database setups:\n"
+	" -- shielding [S.Ansell original naming]\n"
+	" -- neutronics [ESS Target division naming]"<<ELog::endDiag;
+      throw ColErr::ExitAbort("help");
+    }	
+  else
+    throw ColErr::InContainerError<std::string>(materials,
+						"Materials Data Base type");
+}
+  
+void
 exitDelete(Simulation* SimPtr)
+ /*!
+   Final deletion including singletons
+   \param Simulation to delete
+ */
 {
   delete SimPtr;
   ModelSupport::objectRegister::Instance().reset();

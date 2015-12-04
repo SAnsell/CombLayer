@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
- * File:   essBuildInc/essDBMaterial.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * File:   monteInc/DBModify.h
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef ModelSupport_essDBMaterial_h
-#define ModelSupport_essDBMaterial_h
+#ifndef ModelSupport_DBModify_h
+#define ModelSupport_DBModify_h
 
 
 namespace scatterSystem
@@ -33,6 +33,7 @@ namespace ModelSupport
 
   void cloneESSMaterial();
   void addESSMaterial();
+  void basicMaterial();
 }
 
 #endif

@@ -97,7 +97,6 @@
 #include "Curtain.h"
 
 #include "ConicModerator.h"
-#include "essDBMaterial.h"
 #include "makeESSBL.h"
 
 // F5 collimators:
@@ -484,23 +483,7 @@ makeESS::build(Simulation& System,
   const std::string targetType=IParam.getValue<std::string>("targetType");
   const std::string iradLine=IParam.getValue<std::string>("iradLineType");
   const std::string bunker=IParam.getValue<std::string>("bunkerType");
-  const std::string materials=IParam.getValue<std::string>("matDB");
 
-  // Add extra materials to the DBMaterials
-  if (materials=="neutronics")
-    ModelSupport::addESSMaterial();
-  else if (materials=="shielding")
-    ModelSupport::cloneESSMaterial();
-  else if (materials=="help")
-    {
-      ELog::EM<<"Materials database setups:\n"
-	" -- shielding [S.Ansell original naming]\n"
-	" -- shielding [ESS Target division naming]"<<ELog::endDiag;
-      throw ColErr::ExitAbort("help");
-    }	
-  else
-    throw ColErr::InContainerError<std::string>(materials,
-						"Materials Data Base type");
 
   const size_t nF5 = IParam.getValue<size_t>("nF5");
 
