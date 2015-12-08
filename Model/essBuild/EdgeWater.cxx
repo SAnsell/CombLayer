@@ -80,6 +80,7 @@
 #include "AttachSupport.h"
 #include "geomSupport.h"
 #include "ModBase.h"
+#include "SurInter.h"
 #include "H2Wing.h"
 #include "EdgeWater.h"
 
@@ -169,6 +170,8 @@ EdgeWater::populate(const FuncDataBase& Control)
 
   sideWaterThick=Control.EvalVar<double>(keyName+"SideWaterThick");
   sideWaterMat=Control.EvalDefVar<double>(keyName+"SideWaterMat", 110);
+  sideWaterCutAngle=Control.EvalDefVar<int>(keyName+"SideWaterCutAngle", 30);
+  sideWaterCutDist=Control.EvalDefVar<double>(keyName+"SideWaterCutDist", 10);
 
   modMat=ModelSupport::EvalMat<int>(Control,keyName+"ModMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -211,9 +214,10 @@ EdgeWater::createLinks()
 
 
 void
-EdgeWater::createSurfaces()
+EdgeWater::createSurfaces(const std::string& divider)
   /*!
     Create All the surfaces
+    \param :: divider - Lobe side surface
   */
 {
   ELog::RegMethod RegA("EdgeWater","createSurface");
@@ -222,6 +226,7 @@ EdgeWater::createSurfaces()
 
   ModelSupport::buildPlane(SMap,edgeIndex+1,Origin-Y*(width/2.0),Y);
   ModelSupport::buildPlane(SMap,edgeIndex+2,Origin+Y*(width/2.0),Y);
+  Geometry::Plane *pz = ModelSupport::buildPlane(SMap,edgeIndex+5,Origin,Z);
 
   ModelSupport::buildPlane(SMap,edgeIndex+11,
 			   Origin-Y*(wallThick+width/2.0),Y);
@@ -237,6 +242,25 @@ EdgeWater::createSurfaces()
 			   Origin-Y*(wallThick+width/2.0+sideWaterThick+wallThick),Y);
   ModelSupport::buildPlane(SMap,edgeIndex+32,
 			   Origin+Y*(wallThick+width/2.0+sideWaterThick+wallThick),Y);
+
+  // inclined / cut pieces
+  HeadRule HR(divider);
+  //const Geometry::Surface *sDiv = HR.getSurfaces().front(); // !!! why this does not work ???
+  const Geometry::Plane *sDiv = SMap.realPtr<Geometry::Plane>(HR.getSurfaceNumbers().front());
+  const Geometry::Vec3D nDiv = sDiv->getNormal();
+  const int nSign = nDiv.dotProd(X) > 0 ? 1 : -1;
+
+  Geometry::Vec3D pt11 = SurInter::getPoint(sDiv, SMap.realPtr<Geometry::Plane>(edgeIndex+11), pz);
+  Geometry::Vec3D pt12 = SurInter::getPoint(sDiv, SMap.realPtr<Geometry::Plane>(edgeIndex+12), pz);
+
+  Geometry::Plane *p13 = ModelSupport::buildPlaneRotAxis
+    (SMap, edgeIndex+13, pt11, nDiv, Z*nSign, sideWaterCutAngle);
+
+  Geometry::Plane *p14 = ModelSupport::buildPlaneRotAxis
+    (SMap, edgeIndex+14, pt12, nDiv, Z*nSign, -sideWaterCutAngle);
+
+  ModelSupport::buildShiftedPlane(SMap, edgeIndex+23, p13, wallThick);
+  ModelSupport::buildShiftedPlane(SMap, edgeIndex+24, p14, wallThick);
 
   return;
 }
@@ -268,20 +292,38 @@ EdgeWater::createObjects(Simulation& System,
 				   modTemp,Out+container+divider));
 
   // Side water
-  Out=ModelSupport::getComposite(SMap,edgeIndex," 21 -11");
+  Out=ModelSupport::getComposite(SMap,edgeIndex," 21 -11 23 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,sideWaterMat,
 				   modTemp,Out+container+divider));
-  Out=ModelSupport::getComposite(SMap,edgeIndex," 12 -22");
+  Out=ModelSupport::getComposite(SMap,edgeIndex," 12 -22 24 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,sideWaterMat,
 				   modTemp,Out+container+divider));
 
   // Side Al
-  Out=ModelSupport::getComposite(SMap,edgeIndex," 31 -21 ");
+  Out=ModelSupport::getComposite(SMap,edgeIndex," 31 -21 23 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,
    				   modTemp,Out+container+divider));
-  Out=ModelSupport::getComposite(SMap,edgeIndex," 22 -32 ");
+  Out=ModelSupport::getComposite(SMap,edgeIndex," 22 -32 24 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,
 				   modTemp,Out+container+divider));
+
+  // inclined Al
+  Out=ModelSupport::getComposite(SMap,edgeIndex," 13 -23 31 -11 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,
+ 				   modTemp,Out+container+divider));
+
+  Out=ModelSupport::getComposite(SMap,edgeIndex," 14 -24 -32 12 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,
+				   modTemp,Out+container+divider));
+
+  // void behind inclined Al
+  Out=ModelSupport::getComposite(SMap,edgeIndex," -13 31 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,
+ 				   0.0,Out+container+divider));
+
+  Out=ModelSupport::getComposite(SMap,edgeIndex," -14 -32 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,
+  				   0.0,Out+container+divider));
   
   Out=ModelSupport::getComposite(SMap,edgeIndex," 31 -32 ");
   addOuterSurf(Out+divider);
@@ -351,7 +393,7 @@ EdgeWater::createAll(Simulation& System,
 
   populate(System.getDataBase());
   createUnitVector(FC);
-  createSurfaces();
+  createSurfaces(divider);
   createObjects(System,divider,container);
 
   createLinks();

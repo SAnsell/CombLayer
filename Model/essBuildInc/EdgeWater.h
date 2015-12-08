@@ -50,6 +50,8 @@ class EdgeWater :
   double wallThick;
   double sideWaterThick;    ///< Side water thickness
   int    sideWaterMat;      ///< Side water material
+  double sideWaterCutAngle; ///< Side water cut angle
+  double sideWaterCutDist;  ///< Distance from divider where cut starts
 
   int modMat;               ///< Water material
   int wallMat;              ///< Wall material
@@ -60,7 +62,7 @@ class EdgeWater :
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
 
-  void createSurfaces();
+  void createSurfaces(const std::string&);
   void createObjects(Simulation&,const std::string&,const std::string&);
   void createLinks();
 
