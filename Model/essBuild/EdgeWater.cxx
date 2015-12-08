@@ -169,9 +169,9 @@ EdgeWater::populate(const FuncDataBase& Control)
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
 
   sideWaterThick=Control.EvalVar<double>(keyName+"SideWaterThick");
-  sideWaterMat=Control.EvalDefVar<double>(keyName+"SideWaterMat", 110);
-  sideWaterCutAngle=Control.EvalDefVar<int>(keyName+"SideWaterCutAngle", 30);
-  sideWaterCutOffset=Control.EvalDefVar<double>(keyName+"SideWaterCutDist", 1.0);
+  sideWaterMat=ModelSupport::EvalMat<int>(Control,keyName+"SideWaterMat");
+  sideWaterCutAngle=Control.EvalVar<double>(keyName+"SideWaterCutAngle");
+  sideWaterCutOffset=Control.EvalVar<double>(keyName+"SideWaterCutDist");
 
   modMat=ModelSupport::EvalMat<int>(Control,keyName+"ModMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
