@@ -171,7 +171,7 @@ EdgeWater::populate(const FuncDataBase& Control)
   sideWaterThick=Control.EvalVar<double>(keyName+"SideWaterThick");
   sideWaterMat=Control.EvalDefVar<double>(keyName+"SideWaterMat", 110);
   sideWaterCutAngle=Control.EvalDefVar<int>(keyName+"SideWaterCutAngle", 30);
-  sideWaterCutDist=Control.EvalDefVar<double>(keyName+"SideWaterCutDist", 10);
+  sideWaterCutOffset=Control.EvalDefVar<double>(keyName+"SideWaterCutDist", 1.0);
 
   modMat=ModelSupport::EvalMat<int>(Control,keyName+"ModMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -250,8 +250,8 @@ EdgeWater::createSurfaces(const std::string& divider)
   const Geometry::Vec3D nDiv = sDiv->getNormal();
   const int nSign = nDiv.dotProd(X) > 0 ? 1 : -1;
 
-  Geometry::Vec3D pt11 = SurInter::getPoint(sDiv, SMap.realPtr<Geometry::Plane>(edgeIndex+11), pz);
-  Geometry::Vec3D pt12 = SurInter::getPoint(sDiv, SMap.realPtr<Geometry::Plane>(edgeIndex+12), pz);
+  Geometry::Vec3D pt11 = SurInter::getPoint(sDiv, SMap.realPtr<Geometry::Plane>(edgeIndex+11), pz)-Y*sideWaterCutOffset;
+  Geometry::Vec3D pt12 = SurInter::getPoint(sDiv, SMap.realPtr<Geometry::Plane>(edgeIndex+12), pz)+Y*sideWaterCutOffset;
 
   Geometry::Plane *p13 = ModelSupport::buildPlaneRotAxis
     (SMap, edgeIndex+13, pt11, nDiv, Z*nSign, sideWaterCutAngle);
