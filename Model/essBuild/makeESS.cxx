@@ -377,6 +377,9 @@ makeESS::buildH2Pipe(Simulation& System, std::string lobeName, std::string pipeT
 						"FixedComp not found");
 
 
+  System.populateCells();
+  System.validateObjSurfMap();
+
   pipeAl->setAngleSeg(12);
   pipeAl->setOption(pipeType); 
   // createAll arguments:
@@ -385,15 +388,21 @@ makeESS::buildH2Pipe(Simulation& System, std::string lobeName, std::string pipeT
   // layerLevel : linkPoint [2]
   pipeAl->createAll(System,*lobe,0,2,2);
 
+  System.populateCells();
+  System.validateObjSurfMap();
+
   pipeConnect->setAngleSeg(12);
   pipeConnect->setOption(pipeType);
   pipeConnect->setStartSurf(pipeAl->getSignedLinkString(2));
   pipeConnect->createAll(System,*pipeAl,2);
 
-  // pipeInvar->setAngleSeg(12);
-  // pipeInvar->setOption(pipeType);
-  // pipeInvar->setStartSurf(pipeConnect->getSignedLinkString(2));
-  // pipeInvar->createAll(System,*pipeConnect,2);
+  System.populateCells();
+  System.validateObjSurfMap();
+
+  pipeInvar->setAngleSeg(12);
+  pipeInvar->setOption(pipeType);
+  pipeInvar->setStartSurf(pipeConnect->getSignedLinkString(2));
+  pipeInvar->createAll(System,*pipeConnect,2);
 }
 
 
