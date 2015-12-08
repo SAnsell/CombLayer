@@ -390,10 +390,10 @@ makeESS::buildH2Pipe(Simulation& System, std::string lobeName, std::string pipeT
   pipeConnect->setStartSurf(pipeAl->getSignedLinkString(2));
   pipeConnect->createAll(System,*pipeAl,2);
 
-  pipeInvar->setAngleSeg(12);
-  pipeInvar->setOption(pipeType);
-  pipeInvar->setStartSurf(pipeConnect->getSignedLinkString(2));
-  pipeInvar->createAll(System,*pipeConnect,2);
+  // pipeInvar->setAngleSeg(12);
+  // pipeInvar->setOption(pipeType);
+  // pipeInvar->setStartSurf(pipeConnect->getSignedLinkString(2));
+  // pipeInvar->createAll(System,*pipeConnect,2);
 }
 
 

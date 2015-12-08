@@ -103,7 +103,10 @@ EdgeWater::EdgeWater(const EdgeWater& A) :
   attachSystem::ContainedComp(A),
   attachSystem::LayerComp(A),attachSystem::FixedComp(A),
   edgeIndex(A.edgeIndex),cellIndex(A.cellIndex),
-  width(A.width),wallThick(A.wallThick),modMat(A.modMat),
+  width(A.width),wallThick(A.wallThick),
+  sideWaterThick(A.sideWaterThick),
+  sideWaterMat(A.sideWaterMat),
+  modMat(A.modMat),
   wallMat(A.wallMat),modTemp(A.modTemp)
   /*!
     Copy constructor
@@ -127,6 +130,8 @@ EdgeWater::operator=(const EdgeWater& A)
       cellIndex=A.cellIndex;
       width=A.width;
       wallThick=A.wallThick;
+      sideWaterThick=A.sideWaterThick;
+      sideWaterMat=A.sideWaterMat;
       modMat=A.modMat;
       wallMat=A.wallMat;
       modTemp=A.modTemp;
@@ -161,6 +166,9 @@ EdgeWater::populate(const FuncDataBase& Control)
 
   width=Control.EvalVar<double>(keyName+"Width");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
+
+  sideWaterThick=Control.EvalVar<double>(keyName+"SideWaterThick");
+  sideWaterMat=Control.EvalDefVar<double>(keyName+"SideWaterMat", 110);
 
   modMat=ModelSupport::EvalMat<int>(Control,keyName+"ModMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -220,6 +228,16 @@ EdgeWater::createSurfaces()
   ModelSupport::buildPlane(SMap,edgeIndex+12,
 			   Origin+Y*(wallThick+width/2.0),Y);
 
+  ModelSupport::buildPlane(SMap,edgeIndex+21,
+			   Origin-Y*(wallThick+width/2.0+sideWaterThick),Y);
+  ModelSupport::buildPlane(SMap,edgeIndex+22,
+			   Origin+Y*(wallThick+width/2.0+sideWaterThick),Y);
+
+  ModelSupport::buildPlane(SMap,edgeIndex+31,
+			   Origin-Y*(wallThick+width/2.0+sideWaterThick+wallThick),Y);
+  ModelSupport::buildPlane(SMap,edgeIndex+32,
+			   Origin+Y*(wallThick+width/2.0+sideWaterThick+wallThick),Y);
+
   return;
 }
  
@@ -248,8 +266,24 @@ EdgeWater::createObjects(Simulation& System,
   Out=ModelSupport::getComposite(SMap,edgeIndex," 2 -12");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,
 				   modTemp,Out+container+divider));
+
+  // Side water
+  Out=ModelSupport::getComposite(SMap,edgeIndex," 21 -11");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,sideWaterMat,
+				   modTemp,Out+container+divider));
+  Out=ModelSupport::getComposite(SMap,edgeIndex," 12 -22");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,sideWaterMat,
+				   modTemp,Out+container+divider));
+
+  // Side Al
+  Out=ModelSupport::getComposite(SMap,edgeIndex," 31 -21 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,
+   				   modTemp,Out+container+divider));
+  Out=ModelSupport::getComposite(SMap,edgeIndex," 22 -32 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,
+				   modTemp,Out+container+divider));
   
-  Out=ModelSupport::getComposite(SMap,edgeIndex," 11 -12 ");
+  Out=ModelSupport::getComposite(SMap,edgeIndex," 31 -32 ");
   addOuterSurf(Out+divider);
   sideSurface = Out+divider;
   return;

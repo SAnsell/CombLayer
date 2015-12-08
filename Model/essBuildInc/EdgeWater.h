@@ -48,6 +48,8 @@ class EdgeWater :
 
   double width;
   double wallThick;
+  double sideWaterThick;    ///< Side water thickness
+  int    sideWaterMat;      ///< Side water material
 
   int modMat;               ///< Water material
   int wallMat;              ///< Wall material

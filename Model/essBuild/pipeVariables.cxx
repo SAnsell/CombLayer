@@ -57,8 +57,8 @@ void
 pipeVariables(FuncDataBase& Control)
 {
   
-  const int nRad = 4;
-  const double invarPipeHeight = 30;
+  const int nRad = 2;
+  const double invarPipeHeight = 2;
   std::vector<double> R;
   R.push_back(1.0);
   R.push_back(1.2);
