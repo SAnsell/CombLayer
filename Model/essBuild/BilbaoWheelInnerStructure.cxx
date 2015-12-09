@@ -396,7 +396,7 @@ namespace essSystem
 					  i*(brickWidth+brickGapWidth)); 
 	
 	// after brick
-	Geometry::Plane *ptmp = ModelSupport::buildShiftedPlane(SMap, SJ+2, ptan1,
+	ModelSupport::buildShiftedPlane(SMap, SJ+2, ptan1,
 					i*(brickWidth+brickGapWidth)+brickWidth);
 	
 	// 2nd layer
@@ -421,6 +421,12 @@ namespace essSystem
   {
     ELog::RegMethod RegA("BilbaoWheelInnerStructure","createBricks");
 
+    HeadRule HR;
+    HR.procString(side1);
+    const Geometry::Plane* plSide1 = SMap.realPtr<Geometry::Plane>(HR.getSurfaceNumbers().front());
+    HR.procString(side2);
+    const Geometry::Plane* plSide2 = SMap.realPtr<Geometry::Plane>(HR.getSurfaceNumbers().front());
+
     const std::string sideStr = side1 + side2;
     const std::string vertStr = Wheel.getLinkString(6) + Wheel.getLinkString(7); // top+bottom
 
@@ -437,6 +443,10 @@ namespace essSystem
     ELog::EM << "TODO: Side surfaces (sideStr) are added to all brick cells, while this is needed only for the bricks connecting with these surfaces." << ELog::endCrit;
     ELog::EM << "TODO: Bricks outside of the given sector are created (but effectively not active due to sideStr). All this reduces performance." << ELog::endCrit;
 
+    // Calculate birck edge intersection
+    std::vector<Geometry::Vec3D> Pts;
+    std::vector<int> SNum;
+
     // bricks
     std::string layerStr;
     for (int i=0; i<nBrickLayers; i++)
@@ -451,6 +461,10 @@ namespace essSystem
 	    System.addCell(MonteCarlo::Qhull(cellIndex++,
 					     i<nBrickLayers-nSteelLayers ? brickMat : brickSteelMat, temp,
 					     Out1+layerStr+vertStr+sideStr));  // !!! sideStr is tmp
+
+	    HR.procString(Out1+layerStr+vertStr+sideStr);
+	    int nIntersected = HR.calcSurfIntersection(Origin, Z, Pts, SNum);
+	    ELog::EM << HR.display() << " " << nIntersected << ELog::endDiag;
 	      
 	    Out1 = ModelSupport::getComposite(SMap, bOffset, bOffset+20, " 2 -1M ");
 	    System.addCell(MonteCarlo::Qhull(cellIndex++, brickGapMat, temp,
