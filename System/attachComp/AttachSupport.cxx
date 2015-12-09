@@ -337,19 +337,17 @@ addToInsertControl(Simulation& System,
   for(int i=cellA+1;i<=cellB;i++)
     {
       MonteCarlo::Qhull* CRPtr=System.findQhull(i);
-      if (i==cellA+1 && !CRPtr)
-	throw ColErr::InContainerError<int>(i,"Object not build");
-      else if (!CRPtr)
-	break;
-
-      CRPtr->populate();
-      for(size_t j=0;j<NPoint;j++)
+      if (CRPtr)
 	{
-	  const Geometry::Vec3D& Pt=FC.getLinkPt(j);
-	  if (CRPtr->isValid(Pt))
+	  CRPtr->populate();
+	  for(size_t j=0;j<NPoint;j++)
 	    {
-	      CRPtr->addSurfString(excludeStr);
-	      break;
+	      const Geometry::Vec3D& Pt=FC.getLinkPt(j);
+	      if (CRPtr->isValid(Pt))
+		{
+		  CRPtr->addSurfString(excludeStr);
+		  break;
+		}
 	    }
 	}
     }
@@ -398,59 +396,57 @@ addToInsertLineCtrl(Simulation& System,
   for(int i=cellN+1;i<=cellN+cellR;i++)
     {
       MonteCarlo::Qhull* CRPtr=System.findQhull(i);
-      if (i==cellN+1 && !CRPtr)
-	throw ColErr::InContainerError<int>(i,"Object not build");
-      else if (!CRPtr)
-	break;
-            
-      CRPtr->populate();
-      CRPtr->createSurfaceList();
-      const std::vector<const Geometry::Surface*>& SurList=
-	CRPtr->getSurList();
-
-      // Check link points first:
-      int cellInter(0);
-      for(size_t j=0;!cellInter && j<NPoint;j++)
+      if (CRPtr)
 	{
-	  const Geometry::Vec3D& IP=InsertFC.getLinkPt(j);
-	  if (CRPtr->isValid(IP))
-	    cellInter=1;
-	}
-      // Check line intersection:
-      for(size_t j=0;!cellInter && j<NPoint;j++)
-	{
-	  const Geometry::Vec3D& IP=InsertFC.getLinkPt(j);
-	  for(size_t k=j+1;!cellInter && k<NPoint;k++)
+	  CRPtr->populate();
+	  CRPtr->createSurfaceList();
+	  const std::vector<const Geometry::Surface*>& SurList=
+	    CRPtr->getSurList();
+	  
+	  // Check link points first:
+	  int cellInter(0);
+	  for(size_t j=0;!cellInter && j<NPoint;j++)
 	    {
-	      Geometry::Vec3D UV=InsertFC.getLinkPt(k)-IP;
-	      const double LLen=UV.makeUnit();
-	      if (LLen>Geometry::zeroTol)
+	      const Geometry::Vec3D& IP=InsertFC.getLinkPt(j);
+	      if (CRPtr->isValid(IP))
+		cellInter=1;
+	    }
+	  // Check line intersection:
+	  for(size_t j=0;!cellInter && j<NPoint;j++)
+	    {
+	      const Geometry::Vec3D& IP=InsertFC.getLinkPt(j);
+	      for(size_t k=j+1;!cellInter && k<NPoint;k++)
 		{
-		  MonteCarlo::LineIntersectVisit LI(IP,UV);
-		  std::vector<const Geometry::Surface*>::const_iterator vc;
-		  for(vc=SurList.begin();vc!=SurList.end();vc++)
-		    (*vc)->acceptVisitor(LI);
-		  
-		  const std::vector<double>& distVec(LI.getDistance());
-		  const std::vector<Geometry::Vec3D>& dPts(LI.getPoints());
-		  const std::vector<const Geometry::Surface*>& 
-		    surfPts=LI.getSurfIndex();
-		  
-		  for(size_t dI=0;dI<dPts.size();dI++)
+		  Geometry::Vec3D UV=InsertFC.getLinkPt(k)-IP;
+		  const double LLen=UV.makeUnit();
+		  if (LLen>Geometry::zeroTol)
 		    {
-		      if ((distVec[dI]>0.0 && distVec[dI]<LLen) &&
-			  CRPtr->isValid(dPts[dI],surfPts[dI]->getName()))
+		      MonteCarlo::LineIntersectVisit LI(IP,UV);
+		      std::vector<const Geometry::Surface*>::const_iterator vc;
+		      for(vc=SurList.begin();vc!=SurList.end();vc++)
+			(*vc)->acceptVisitor(LI);
+		      
+		      const std::vector<double>& distVec(LI.getDistance());
+		      const std::vector<Geometry::Vec3D>& dPts(LI.getPoints());
+		      const std::vector<const Geometry::Surface*>& 
+			surfPts=LI.getSurfIndex();
+		      
+		      for(size_t dI=0;dI<dPts.size();dI++)
 			{
-			  cellInter=1;
-			  break;
+			  if ((distVec[dI]>0.0 && distVec[dI]<LLen) &&
+			      CRPtr->isValid(dPts[dI],surfPts[dI]->getName()))
+			    {
+			      cellInter=1;
+			      break;
+			    }
 			}
 		    }
 		}
 	    }
-	}
-      if (cellInter)
-	{
-	  CRPtr->addSurfString(excludeStr);
+	  if (cellInter)
+	    {
+	      CRPtr->addSurfString(excludeStr);
+	    }
 	}
     }
 
@@ -594,18 +590,16 @@ addToInsertSurfCtrl(Simulation& System,
   for(int i=cellA+1;i<=cellB;i++)
     {
       MonteCarlo::Qhull* CRPtr=System.findQhull(i);
-      if (i==cellA+1 && !CRPtr)
-	throw ColErr::InContainerError<int>(i,"Object not build");
-      else if (!CRPtr)
-	break;
-      
-      CRPtr->populate();
-      CRPtr->createSurfaceList();
-      const std::vector<const Geometry::Surface*>&
-	CellSVec=CRPtr->getSurList();
-      
-      if (checkIntersect(CC,*CRPtr,CellSVec))
-	CC.addInsertCell(i);
+      if (CRPtr)
+	{
+	  CRPtr->populate();
+	  CRPtr->createSurfaceList();
+	  const std::vector<const Geometry::Surface*>&
+	    CellSVec=CRPtr->getSurList();
+	  
+	  if (checkIntersect(CC,*CRPtr,CellSVec))
+	    CC.addInsertCell(i);
+	}
     }
   CC.insertObjects(System);
   return;
@@ -640,12 +634,7 @@ addToInsertOuterSurfCtrl(Simulation& System,
   for(int i=cellA+1;i<=cellB;i++)
     {
       MonteCarlo::Qhull* CRPtr=System.findQhull(i);
-      if (i==cellA+1 && !CRPtr)
-	throw ColErr::InContainerError<int>(i,"Object not build");
-      else if (!CRPtr)
-	break;
-
-      if (checkIntersect(CC,*CRPtr,CellSVec))
+      if (CRPtr && checkIntersect(CC,*CRPtr,CellSVec))
 	CC.addInsertCell(i);
     }
 
@@ -821,13 +810,12 @@ addToInsertForced(Simulation& System,
   for(int i=cellA+1;i<=cellB;i++)
     {
       MonteCarlo::Qhull* CRPtr=System.findQhull(i);
-      if (i==cellA+1 && !CRPtr)
-	throw ColErr::InContainerError<int>(i,"Object not built");
-      else if (!CRPtr)
-	break;
-      CRPtr->populate();
-      CRPtr->createSurfaceList();
-      CC.addInsertCell(i);
+      if (CRPtr)
+	{
+	  CRPtr->populate();
+	  CRPtr->createSurfaceList();
+	  CC.addInsertCell(i);
+	}
     }
 
   CC.insertObjects(System);
