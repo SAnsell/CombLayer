@@ -368,13 +368,12 @@ namespace essSystem
 	  }
 	catch (ColErr::IndexError<size_t>& IE)
 	  {
-	    //	    std::cout << "did not intersept" << std::endl;
+	    //	    std::cout << "does not intersept" << std::endl;
 	  }
 
 	if (p4.abs()>Geometry::zeroTol) // if back of the brick crosses inner surface
 	  {
 	    nBrickLayers = iLayer;
-	    //	    ELog::EM << "Number of birck layers: " << nBrickLayers << ELog::endDiag;
 	    break;
 	  }
 
@@ -431,12 +430,10 @@ namespace essSystem
     if (!plSide->onSurface(Org))
       ELog::EM << "Origin of line is not on the surface" << ELog::endErr;
 
-    //	    ELog::EM << Unit << " normal: " << plSide1->getNormal() << " distance scaled : " << Org  << " onSurface: " << plSide1->onSurface(Org) << ELog::endDiag;
-
     size_t n = HR.calcSurfIntersection(Org, Unit, Pts, SNum);
     double dist = -1.0;
     if (n>1)
-      dist = Pts[0].Distance(Pts[1]);
+      dist = Pts[0].Distance(Pts[1])+0.01; // 0.01 is a "safety" summand to get rid of the bricks where we cross in the corner. For some reason, 1st layer is not built without this number.
     return dist;
   }
 
@@ -495,7 +492,7 @@ namespace essSystem
 	    // brick
 	    Out1 = ModelSupport::getComposite(SMap, bOffset, " 1 -2 ");
 	    dist = sideIntersect(Out1+layerStr, plSide1);
-	    if (dist>0)
+	    if (dist>Geometry::zeroTol)
 	      {
 		firstBrick = true;
 		if (dist>=brickLen) // side plane of the brick is not intersected
@@ -505,7 +502,7 @@ namespace essSystem
 	      } else 
 	      {
 		dist = sideIntersect(Out1+layerStr, plSide2);
-		if (dist>0)
+		if (dist>Geometry::zeroTol)
 		  {
 		    lastBrick = true;
 		    Out1 = ModelSupport::getComposite(SMap, bOffset, " 1 ");
@@ -527,7 +524,7 @@ namespace essSystem
 	    mat = brickGapMat;
 	    Out1 = ModelSupport::getComposite(SMap, bOffset, bOffset+20, " 2 -1M ");
 	    dist = sideIntersect(Out1+layerStr, plSide1);
-	    if (dist>0) 
+	    if (dist>Geometry::zeroTol) 
 	      {
 		firstBrick = true;
 		if (dist>=brickLen) // side plane of the brick is not intersected
@@ -537,7 +534,7 @@ namespace essSystem
 	      } else
 	      {
 		dist = sideIntersect(Out1+layerStr, plSide2);
-		if (dist>0)
+		if (dist>Geometry::zeroTol)
 		  {
 		    lastBrick = true;
 		    Out1 = ModelSupport::getComposite(SMap, bOffset, " 2 ");
