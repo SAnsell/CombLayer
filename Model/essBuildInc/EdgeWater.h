@@ -39,7 +39,8 @@ namespace essSystem
 class EdgeWater : 
   public attachSystem::ContainedComp,
   public attachSystem::LayerComp,
-  public attachSystem::FixedComp
+    public attachSystem::FixedComp,
+    public attachSystem::CellMap
 {
  private:
 

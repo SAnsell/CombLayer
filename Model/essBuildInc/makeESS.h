@@ -154,7 +154,7 @@ class makeESS
 
   void buildTopButterfly(Simulation&);
 
-  void buildH2Pipe(Simulation&, std::string, std::string,
+  void buildH2Pipe(Simulation&, std::string, std::string, std::string,
 		   std::shared_ptr<constructSystem::SupplyPipe>,
 		   std::shared_ptr<constructSystem::SupplyPipe>,
 		   std::shared_ptr<constructSystem::SupplyPipe>);

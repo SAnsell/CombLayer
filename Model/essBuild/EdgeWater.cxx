@@ -91,6 +91,7 @@ EdgeWater::EdgeWater(const std::string& key) :
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0,0),
   attachSystem::FixedComp(key,6),
+  attachSystem::CellMap(),
   edgeIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
   cellIndex(edgeIndex+1)
   /*!
@@ -287,17 +288,21 @@ EdgeWater::createObjects(Simulation& System,
   Out=ModelSupport::getComposite(SMap,edgeIndex," 11 -1");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,
 				   modTemp,Out+container+divider));
+  CellMap::setCell("InnerAlTop",  cellIndex-1);
   Out=ModelSupport::getComposite(SMap,edgeIndex," 2 -12");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,
 				   modTemp,Out+container+divider));
+  CellMap::setCell("InnerAlLow",  cellIndex-1);
 
   // Side water
   Out=ModelSupport::getComposite(SMap,edgeIndex," 21 -11 23 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,sideWaterMat,
 				   modTemp,Out+container+divider));
+  CellMap::setCell("SideWaterTop",  cellIndex-1);
   Out=ModelSupport::getComposite(SMap,edgeIndex," 12 -22 24 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,sideWaterMat,
 				   modTemp,Out+container+divider));
+  CellMap::setCell("SideWaterLow",  cellIndex-1);
 
   // Side Al
   Out=ModelSupport::getComposite(SMap,edgeIndex," 31 -21 23 ");

@@ -349,7 +349,7 @@ makeESS::buildTopButterfly(Simulation& System)
 }
 
 void
-makeESS::buildH2Pipe(Simulation& System, std::string lobeName, std::string pipeType,
+makeESS::buildH2Pipe(Simulation& System, std::string lobeName, std::string waterName, std::string pipeType,
 		    std::shared_ptr<constructSystem::SupplyPipe> pipeAl,
 		    std::shared_ptr<constructSystem::SupplyPipe> pipeConnect,
 		    std::shared_ptr<constructSystem::SupplyPipe> pipeInvar
@@ -376,9 +376,35 @@ makeESS::buildH2Pipe(Simulation& System, std::string lobeName, std::string pipeT
     throw ColErr::InContainerError<std::string>(lobeName,
 						"FixedComp not found");
 
+  const attachSystem::FixedComp* water=
+    OR.getObject<attachSystem::FixedComp>(waterName);
+  if (!water)
+    throw ColErr::InContainerError<std::string>(waterName,
+						"FixedComp not found");
+  const attachSystem::CellMap* CM =  dynamic_cast<const attachSystem::CellMap*>(water);
+
 
   System.populateCells();
   System.validateObjSurfMap();
+
+  // !!! this is extremaly slow. add only cells which are really needed.
+  // !!! Actually since cold Al/H can't connect with warm Al or water,
+  // !!! instead of doing this horrific thing I need to enlarge void around pipes.
+  pipeAl->addInsertCell(0, CM->getCell("InnerAlTop"));
+  pipeConnect->addInsertCell(0, CM->getCell("InnerAlTop"));
+  pipeInvar->addInsertCell(0, CM->getCell("InnerAlTop"));
+
+  pipeAl->addInsertCell(0, CM->getCell("InnerAlLow"));
+  pipeConnect->addInsertCell(0, CM->getCell("InnerAlLow"));
+  pipeInvar->addInsertCell(0, CM->getCell("InnerAlLow"));
+
+  pipeAl->addInsertCell(0, CM->getCell("SideWaterTop"));
+  pipeConnect->addInsertCell(0, CM->getCell("SideWaterTop"));
+  pipeInvar->addInsertCell(0, CM->getCell("SideWaterTop"));
+
+  pipeAl->addInsertCell(0, CM->getCell("SideWaterLow"));
+  pipeConnect->addInsertCell(0, CM->getCell("SideWaterLow"));
+  pipeInvar->addInsertCell(0, CM->getCell("SideWaterLow"));
 
   pipeAl->setAngleSeg(12);
   pipeAl->setOption(pipeType); 
@@ -426,11 +452,11 @@ makeESS::buildTopPipes(Simulation& System,
       return;
     }
 
-  buildH2Pipe(System, "TopFlyLeftLobe", pipeType, TopSupplyLeftAl, TopSupplyLeftConnect, TopSupplyLeftInvar);
-  buildH2Pipe(System, "TopFlyLeftLobe", pipeType, TopReturnLeftAl, TopReturnLeftConnect, TopReturnLeftInvar);
+  buildH2Pipe(System, "TopFlyLeftLobe", "TopFlyLeftWater", pipeType, TopSupplyLeftAl, TopSupplyLeftConnect, TopSupplyLeftInvar);
+  buildH2Pipe(System, "TopFlyLeftLobe", "TopFlyLeftWater", pipeType, TopReturnLeftAl, TopReturnLeftConnect, TopReturnLeftInvar);
 
-  buildH2Pipe(System, "TopFlyRightLobe", pipeType, TopSupplyRightAl, TopSupplyRightConnect, TopSupplyRightInvar);
-  buildH2Pipe(System, "TopFlyRightLobe", pipeType, TopReturnRightAl, TopReturnRightConnect, TopReturnRightInvar);
+  buildH2Pipe(System, "TopFlyRightLobe", "TopFlyRightWater", pipeType, TopSupplyRightAl, TopSupplyRightConnect, TopSupplyRightInvar);
+  buildH2Pipe(System, "TopFlyRightLobe", "TopFlyRightWater", pipeType, TopReturnRightAl, TopReturnRightConnect, TopReturnRightInvar);
 
   return;
 }
@@ -446,11 +472,11 @@ makeESS::buildLowPipes(Simulation& System,
 {
   ELog::RegMethod RegA("makeESS","processLowPipe");
 
-  buildH2Pipe(System, "LowFlyLeftLobe", pipeType, LowSupplyLeftAl, LowSupplyLeftConnect, LowSupplyLeftInvar);
-  buildH2Pipe(System, "LowFlyLeftLobe", pipeType, LowReturnLeftAl, LowReturnLeftConnect, LowReturnLeftInvar);
+  buildH2Pipe(System, "LowFlyLeftLobe", "LowFlyLeftWater", pipeType, LowSupplyLeftAl, LowSupplyLeftConnect, LowSupplyLeftInvar);
+  buildH2Pipe(System, "LowFlyLeftLobe", "LowFlyLeftWater", pipeType, LowReturnLeftAl, LowReturnLeftConnect, LowReturnLeftInvar);
 
-  buildH2Pipe(System, "LowFlyRightLobe", pipeType, LowSupplyRightAl, LowSupplyRightConnect, LowSupplyRightInvar);
-  buildH2Pipe(System, "LowFlyRightLobe", pipeType, LowReturnRightAl, LowReturnRightConnect, LowReturnRightInvar);
+  buildH2Pipe(System, "LowFlyRightLobe", "LowFlyLeftWater", pipeType, LowSupplyRightAl, LowSupplyRightConnect, LowSupplyRightInvar);
+  buildH2Pipe(System, "LowFlyRightLobe", "LowFlyLeftWater", pipeType, LowReturnRightAl, LowReturnRightConnect, LowReturnRightInvar);
 
   return;
 }
