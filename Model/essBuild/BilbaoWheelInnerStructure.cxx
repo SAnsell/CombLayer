@@ -411,6 +411,32 @@ namespace essSystem
       }
   }
 
+  size_t
+  BilbaoWheelInnerStructure::sideIntersect(const std::string& surf, const Geometry::Plane *plSide)
+  /*
+    Calculates intersect of a brick (void between bricks) and one of the sector side surfaces.
+    Return number of intersection points
+   */
+  {
+    std::vector<Geometry::Vec3D> Pts;
+    std::vector<int> SNum;
+    const Geometry::Plane *pz = SMap.realPtr<Geometry::Plane>(insIndex+5);
+
+    HeadRule HR(surf);
+    HR.populateSurf();
+
+    Geometry::Vec3D Org = Origin+plSide->getNormal()*fabs(plSide->distance(Origin));
+    Geometry::Vec3D Unit = -plSide->crossProd(*pz);
+
+    if (!plSide->onSurface(Org))
+      ELog::EM << "Origin of line is not on the surface" << ELog::endErr;
+
+    //	    ELog::EM << Unit << " normal: " << plSide1->getNormal() << " distance scaled : " << Org  << " onSurface: " << plSide1->onSurface(Org) << ELog::endDiag;
+
+    return  HR.calcSurfIntersection(Org, Unit, Pts, SNum);
+  }
+
+
   void
   BilbaoWheelInnerStructure::createBricks(Simulation& System, attachSystem::FixedComp& Wheel,
 					  const std::string side1, const std::string side2,
@@ -426,8 +452,9 @@ namespace essSystem
     const Geometry::Plane* plSide1 = SMap.realPtr<Geometry::Plane>(HR.getSurfaceNumbers().front());
     HR.procString(side2);
     const Geometry::Plane* plSide2 = SMap.realPtr<Geometry::Plane>(HR.getSurfaceNumbers().front());
+    const Geometry::Plane *pz = SMap.realPtr<Geometry::Plane>(insIndex+5);
 
-    const std::string sideStr = side1 + side2;
+    std::string sideStr = side1 + side2;
     const std::string vertStr = Wheel.getLinkString(6) + Wheel.getLinkString(7); // top+bottom
 
     const std::string innerCyl = Wheel.getLinkString(8);
@@ -443,9 +470,9 @@ namespace essSystem
     ELog::EM << "TODO: Side surfaces (sideStr) are added to all brick cells, while this is needed only for the bricks connecting with these surfaces." << ELog::endCrit;
     ELog::EM << "TODO: Bricks outside of the given sector are created (but effectively not active due to sideStr). All this reduces performance." << ELog::endCrit;
 
-    // Calculate birck edge intersection
-    std::vector<Geometry::Vec3D> Pts;
-    std::vector<int> SNum;
+    int mat(0);
+    bool firstBrick(false);
+    bool lastBrick(false);
 
     // bricks
     std::string layerStr;
@@ -455,16 +482,23 @@ namespace essSystem
 	int SJ(insIndex+1000*(sector+1));
 	for (int j=0; j<27; j++) // !!! TMP
 	  {
-	    int bOffset = i%2 ? SJ+10 : SJ;
+	    int bOffset = i%2 ? SJ+10 : SJ; // alternate planes for odd/even brick layers
 	    Out1 = ModelSupport::getComposite(SMap, bOffset, " 1 -2 ");
 
+	    mat = i<nBrickLayers-nSteelLayers ? brickMat : brickSteelMat;
+
+	    // calculate intersection with side1
+	    //	    size_t nIntersected = sideIntersect(Out1+layerStr, plSide1);
+	    if (sideIntersect(Out1+layerStr, plSide1)) {
+	      firstBrick = true;
+	      sideStr = side1;
+	      mat = 0;
+	    }
+
 	    System.addCell(MonteCarlo::Qhull(cellIndex++,
-					     i<nBrickLayers-nSteelLayers ? brickMat : brickSteelMat, temp,
+					     mat, temp,
 					     Out1+layerStr+vertStr+sideStr));  // !!! sideStr is tmp
 
-	    HR.procString(Out1+layerStr+vertStr+sideStr);
-	    int nIntersected = HR.calcSurfIntersection(Origin, Z, Pts, SNum);
-	    ELog::EM << HR.display() << " " << nIntersected << ELog::endDiag;
 	      
 	    Out1 = ModelSupport::getComposite(SMap, bOffset, bOffset+20, " 2 -1M ");
 	    System.addCell(MonteCarlo::Qhull(cellIndex++, brickGapMat, temp,
@@ -478,7 +512,7 @@ namespace essSystem
 	else
 	  Out = ModelSupport::getComposite(SMap, SI, SI+10, " -6 5M ");
 	System.addCell(MonteCarlo::Qhull(cellIndex++, brickGapMat, temp, Out+vertStr+sideStr));
-	
+
 	SI += 10;
       }
   }
