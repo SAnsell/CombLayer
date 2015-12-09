@@ -75,7 +75,7 @@ class BilbaoWheelInnerStructure : public attachSystem::ContainedComp,
   // polar angle of the given sector's centre. Clockwise starting from -Y
   inline double getSectorAngle(int i) const { return (2*(i+1)-1)*M_PI/nSectors * 180.0/M_PI; }
 
-  size_t sideIntersect(const std::string&, const Geometry::Plane*);
+  double sideIntersect(const std::string&, const Geometry::Plane*);
 
  public:
 
