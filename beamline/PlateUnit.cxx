@@ -50,14 +50,20 @@
 #include "surfRegister.h"
 #include "Surface.h"
 #include "generateSurf.h"
+#include "ModelSupport.h"
 #include "ShapeUnit.h"
 #include "PlateUnit.h"
+
+#include "Rules.h"
+#include "Quadratic.h"
+#include "Plane.h"
+#include "HeadRule.h"
 
 namespace beamlineSystem
 {
 
 PlateUnit::PlateUnit(const int ON,const int LS)  :
-  ShapeUnit(ON,LS),CHPtr(0),nCorner(0)
+  ShapeUnit(ON,LS),CHPtr(0),nCorner(0),rotateFlag(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param LS :: Layer separation
@@ -68,7 +74,8 @@ PlateUnit::PlateUnit(const int ON,const int LS)  :
 PlateUnit::PlateUnit(const PlateUnit& A) : 
   ShapeUnit(A),
   CHPtr(A.CHPtr),XVec(A.XVec),YVec(A.YVec),ZVec(A.ZVec),
-  nCorner(A.nCorner),APts(A.APts),BPts(A.BPts),
+  nCorner(A.nCorner),rotateFlag(A.rotateFlag),
+  APts(A.APts),BPts(A.BPts),
   nonConvex(A.nonConvex)
   /*!
     Copy constructor
@@ -91,6 +98,7 @@ PlateUnit::operator=(const PlateUnit& A)
       YVec=A.YVec;
       ZVec=A.ZVec;
       nCorner=A.nCorner;
+      rotateFlag=A.rotateFlag;
       APts=A.APts;
       BPts=A.BPts;
       nonConvex=A.nonConvex;
@@ -126,6 +134,7 @@ PlateUnit::clear()
   delete CHPtr;
   CHPtr=0;
   nCorner=0;
+  rotateFlag=0;
   cells.clear();
   APts.clear();
   BPts.clear();
@@ -151,7 +160,7 @@ PlateUnit::findFirstPoint(const Geometry::Vec3D& testPt,
    Find the first point in BVec that equals testPt
    \param testPt :: First point to find
    \param BVec :: Vector of look up
-   \return 
+   \return position in BVec 
   */
 {
   ELog::RegMethod RegA("PlateUnit","findFirstPt");
@@ -212,6 +221,7 @@ PlateUnit::constructConvex()
       const Geometry::Vec3D N(AX*YVec);
       if (N.dotProd(Cent)>0)
 	{
+	  rotateFlag=1;
 	  // rotate : could you c++11 construct rotate
 	  for(size_t i=1;i<(nCorner+1)/2;i++)
 	    {
@@ -263,7 +273,8 @@ PlateUnit::setXAxis(const Geometry::Vec3D& X,
   ZVec=XVec*YVec;
   if (ZVec.dotProd(Z)<0)
     ZVec*=-1.0;
-
+  ZVec.unit();
+  
   return;
 }
 
@@ -286,7 +297,7 @@ PlateUnit::addPairPoint(const Geometry::Vec3D& PA,
 			const Geometry::Vec3D& PB)
   /*!
     Add extra point
-    \param PA :: A  Point
+    \param PA :: A Point
     \param PB :: B Point
    */
 {
@@ -298,141 +309,66 @@ PlateUnit::addPairPoint(const Geometry::Vec3D& PA,
 }
 
 Geometry::Vec3D
-PlateUnit::frontPt(const size_t Index) const
+PlateUnit::frontPt(const size_t Index,const double T) const
   /*!
     Calculate the real point based on the offest
-    \param Index :: Index poitn
+    \param Index :: Index point
+    \param T :: Offset distance (T)
     \return real point 
    */
 {
-  const Geometry::Vec3D& CPT(APts[(Index % nCorner)]);
+  const Geometry::Vec3D& CPT(APts[Index % nCorner]);
 
-  return begPt+XVec*CPT.X()+ZVec*CPT.Z();
+  const double XScale(1.0+T/fabs(CPT.X()));
+  const double ZScale(1.0+T/fabs(CPT.Z()));
+
+  return begPt+XVec*(CPT.X()*XScale)+ZVec*(CPT.Z()*ZScale);
 }
 
 Geometry::Vec3D
-PlateUnit::backPt(const size_t Index) const
+PlateUnit::backPt(const size_t Index,const double T) const
   /*!
     Calculate the real point based on the offest
     \param Index :: Index point
     \return real point 
    */
 {
-  const Geometry::Vec3D& CPT(BPts[(Index % nCorner)]);
-  return endPt+XVec*CPT.X()+ZVec*CPT.Z();
+  const Geometry::Vec3D& CPT(BPts[Index % nCorner]);
+
+  const double XScale(1.0+T/fabs(CPT.X()));
+  const double ZScale(1.0+T/fabs(CPT.Z()));
+
+  return endPt+XVec*(CPT.X()*XScale)+ZVec*(CPT.Z()*ZScale);
 }
-  
-
-std::pair<Geometry::Vec3D,Geometry::Vec3D>
-PlateUnit::frontPair(const size_t IndexA,const size_t IndexB,
-		     const double scale) const
-  /*!
-    Given two corners which define a normal to line.
-    Step out by the distance scale.
-    -- Converts both points into normal origin/X/Y
-    \param IndexA :: First corner
-    \param IndexB :: Second corner
-    \param scale :: Distance out from the surface
-    \return shifted points
-  */
-{
-  ELog::RegMethod RegA("PlateUnit","frontPair");
-
-  Geometry::Vec3D APoint=frontPt(IndexA);
-  Geometry::Vec3D BPoint=frontPt(IndexB);
-  return scaledPair(APoint,BPoint,scale);
-}
-
-std::pair<Geometry::Vec3D,Geometry::Vec3D>
-PlateUnit::backPair(const size_t IndexA,const size_t IndexB,
-		    const double scale) const
-/*!
-    Given two corners which define a normal to line.
-    Step out by the distance scale.
-    -- Converts both points into normal origin/X/Y
-    \param IndexA :: First corner
-    \param IndexB :: Second corner
-    \param scale :: Distance out from the surface
-    \return shifted points
-  */
-{
-  ELog::RegMethod RegA("PlateUnit","backPair");
-
-  Geometry::Vec3D APoint=backPt(IndexA);
-  Geometry::Vec3D BPoint=backPt(IndexB);
-  return scaledPair(APoint,BPoint,scale);
-}
-
-std::pair<Geometry::Vec3D,Geometry::Vec3D>
-PlateUnit::scaledPair(const Geometry::Vec3D& APoint,
-		      const Geometry::Vec3D& BPoint,
-		      const double scale) const
-  /*!
-    Determine a scaled pair
-    \param APoint :: First point 
-    \param BPoint :: Second point 
-    \return pair unit
-  */
-{
-  ELog::RegMethod RegA("PlateUnit","scaledPair");
-  std::pair<Geometry::Vec3D,Geometry::Vec3D> Out(APoint,BPoint);
-  // Note points go inward
-      
-  if (fabs(scale)>Geometry::zeroTol)
-    {
-      Geometry::Vec3D ASide=(BPoint-APoint).unit();
-      ASide=YVec*ASide;
-      Out.first-=ASide*scale;
-      Out.second-=ASide*scale;
-    }
-  return Out;
-}
-
-Geometry::Vec3D 
-PlateUnit::sideNorm(const std::pair<Geometry::Vec3D,
-		    Geometry::Vec3D>& touchPair) const
-  /*!
-    Calculate the normal leaving the side of the triangle
-    \param touchPair :: Pair of points making up surface (with +Z)
-    \return Normal
-  */
-{
-  ELog::RegMethod RegA("PlateUnit","sideNorm");
-
-  // Now get cross vector
-  const Geometry::Vec3D ASide=(touchPair.second-touchPair.first).unit();
-  return YVec*ASide;
-}
-
+ 
 void
 PlateUnit::createSurfaces(ModelSupport::surfRegister& SMap,
-			  const int indexOffset,
 			  const std::vector<double>& Thick)
   /*!
     Build the surfaces for the track
     \param SMap :: SMap to use
-    \param indexOffset :: Index offset
     \param Thick :: Thickness for each layer
    */
 {
   ELog::RegMethod RegA("PlateUnit","createSurfaces");
 
+  
   for(size_t j=0;j<Thick.size();j++)
     {
       // Start from 1
-      int SN(indexOffset+offset+
-	     static_cast<int>(j)*layerSep+1);
+      int SN(shapeIndex+layerSep*static_cast<int>(j)+1);
 
       for(size_t i=0;i<nCorner;i++)
 	{
-	  const std::pair<Geometry::Vec3D,Geometry::Vec3D> PX=
-	    frontPair(i,i+1,Thick[j]);
-	  const std::pair<Geometry::Vec3D,Geometry::Vec3D> PY=
-	    backPair(i,i+1,Thick[j]);
-	  ModelSupport::buildPlane(SMap,SN,
-				   PX.first,PX.second,
-				   PY.first,
-				   sideNorm(PX));
+	  const Geometry::Vec3D PA=frontPt(i,Thick[j]);
+	  const Geometry::Vec3D PB=frontPt(i+1,Thick[j]);
+	  const Geometry::Vec3D BA=backPt(i,Thick[j]);
+	  Geometry::Vec3D Norm=(BA-PA)*(PB-PA);
+	  Norm.makeUnit();
+	  
+	  if (!rotateFlag)
+	    Norm*=-1;
+	  ModelSupport::buildPlane(SMap,SN,PA,PB,BA,Norm);
 	  SN++;
 	}
     }   
@@ -453,9 +389,11 @@ PlateUnit::inHull(const Geometry::Vec3D& testPt) const
 }
 
 std::string
-PlateUnit::getString(const size_t layerN) const
+PlateUnit::getString(const ModelSupport::surfRegister& SMap,
+		      const size_t layerN) const
   /*!
     Write string for layer number
+    \param SMap :: Surface register
     \param layerN :: Layer number
     \return inward string
   */
@@ -466,7 +404,8 @@ PlateUnit::getString(const size_t layerN) const
 
   std::ostringstream cx;
   bool bFlag(0);
-  const int lValue(offset+static_cast<int>(layerN)*layerSep);
+  // Start from 1
+  int SN(layerSep*static_cast<int>(layerN)+1);
   for(size_t i=0;i<nCorner;i++)
     {
       if (nonConvex[i] || nonConvex[(i+1) % nCorner])
@@ -479,32 +418,27 @@ PlateUnit::getString(const size_t layerN) const
 	  cx<< ((bFlag) ? ") " : " ");
 	  bFlag=0;
 	}
-      cx<<lValue+static_cast<int>(i+1);
+      cx<<SN++;
     }
   if (bFlag) cx<<")";
-  return cx.str();
+
+  return ModelSupport::getComposite(SMap,shapeIndex,cx.str());
 }
 
 std::string
-PlateUnit::getExclude(const size_t layerN) const
+PlateUnit::getExclude(const ModelSupport::surfRegister& SMap,
+		       const size_t layerN) const
   /*!
     Write string for layer number
+    \param SMap :: Surface register
     \param layerN :: Layer number
     \return inward string
   */
 {
   ELog::RegMethod RegA("PlateUnit","getExclude");
-  
-  if (!nCorner) return "";
-  std::ostringstream cx;
-  cx<<" ( ";
-  cx<<-(offset+static_cast<int>(layerN*layerSep+1));
-  for(size_t i=1;i<nCorner;i++)
-    cx<<" : "<<-(offset+static_cast<int>(layerN*layerSep+i+1));
-
-  cx<<" ) ";
-  return cx.str();
+  HeadRule Out(getString(SMap,layerN));
+  Out.makeComplement();
+  return Out.display();
 }
-
   
 }  // NAMESPACE beamlineSystem

@@ -91,7 +91,8 @@ class MBrect : public Surface
   void mirror(const Geometry::Plane&);
 
   void print() const;
-  void write(std::ostream&) const;        ///< Write in MCNPX form
+  void write(std::ostream&) const;       
+  virtual void writeFLUKA(std::ostream&) const;       
 
 };
 

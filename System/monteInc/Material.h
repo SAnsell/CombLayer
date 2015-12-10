@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   monteInc/Material.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -101,6 +101,8 @@ class Material
 		 const std::string&);
   /// Get atomic density
   double getAtomDensity() const { return atomDensity; }
+  double getMacroDensity() const;
+  double getMeanA() const;
   void setENDF7();
   void setDensity(const double);
   bool hasZaid(const int,const int,const char) const;
@@ -110,7 +112,8 @@ class Material
   void listComponent() const;
   void print() const;
   void write(std::ostream&) const;               
-  void writeCinder(std::ostream&) const;               
+  void writeCinder(std::ostream&) const;
+  void writeFLUKA(std::ostream&) const;               
   
 };
 

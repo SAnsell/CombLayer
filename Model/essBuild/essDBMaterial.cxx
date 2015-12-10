@@ -53,6 +53,27 @@
 namespace ModelSupport
 {
 
+void cloneESSMaterial()
+  /*!
+    Clone ESS materials if not using the ESS Database materials
+  */
+{
+  ELog::RegMethod RegA("essDBMaterial[F]","cloneESSMaterial");
+
+  ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();
+  
+  DB.cloneMaterial("Tungsten_15.1g","Tungsten151");
+  DB.cloneMaterial("Iron_10H2O","Iron10H2O");
+  DB.cloneMaterial("Void","Helium");
+  DB.cloneMaterial("Void","M2644");
+  DB.cloneMaterial("Stainless304","SS316L");
+  DB.cloneMaterial("Stainless304","SS316L785");
+
+  return;
+}
+  
+
+  
 void addESSMaterial()
   /*!
      Initialize the database of materials

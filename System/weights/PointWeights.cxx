@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   weights/PointWeights.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -89,7 +89,6 @@ setPointWeights(Simulation& System,
   if (!WF)
     throw ColErr::InContainerError<std::string>("n","WCell - WM");
 
-
   ELog::EM<<"Number of cells "<<WF->getEnergy().size()<<ELog::endDebug;
   const std::vector<double>& EngBin=WF->getEnergy();
   
@@ -141,4 +140,4 @@ setPointWeights(Simulation& System,
   return;
 }
 
-}   // NAMESPACE zoomSystem
+}   // NAMESPACE WeightSystem

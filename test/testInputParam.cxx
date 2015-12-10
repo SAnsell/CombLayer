@@ -83,6 +83,7 @@ testInputParam::applyTest(const int extra)
   typedef int (testInputParam::*testPtr)();
   testPtr TPtr[]=
     {
+      &testInputParam::testCntVec3D,
       &testInputParam::testDefValue,
       &testInputParam::testFlagDef,
       &testInputParam::testGetValue,
@@ -96,6 +97,7 @@ testInputParam::applyTest(const int extra)
     };
   const std::string TestName[]=
     {
+      "CntVec3D",
       "DefValue",
       "FlagDef",
       "GetValue",
@@ -129,6 +131,52 @@ testInputParam::applyTest(const int extra)
 	    return retValue;
 	}
     }
+  return 0;
+}
+
+int
+testInputParam::testCntVec3D()
+  /*!
+    Test the default regisitration
+    \return 0 on success
+  */
+{
+  ELog::RegMethod RegA("testInputParam","testCntVec3D");
+  
+  inputParam A;
+  A.regMulti("d","dbl");
+
+  std::vector<std::string> Names=
+    { "-k", "-d", "Vec3D(3,4,5)", "-d", "6","-3","5","8",
+      "-d","5" "Vec3D(1,2,3)"};
+
+  typedef std::tuple<size_t,size_t,Geometry::Vec3D,size_t> TTYPE;
+  std::vector<TTYPE> Tests =
+    {
+      TTYPE(0,0,Geometry::Vec3D(3,4,5),1),
+      TTYPE(1,1,Geometry::Vec3D(-3,5,8),4)
+
+
+    } ;
+
+  
+  A.processMainInput(Names);
+
+  for(const TTYPE& tc : Tests)
+    {
+      const size_t part=std::get<0>(tc);
+      size_t index=std::get<1>(tc);
+      Geometry::Vec3D OutA=A.getCntVec3D("d",part,index);
+      if (std::get<2>(tc)!=OutA ||
+	  index!=std::get<3>(tc))
+	{
+	  ELog::EM<<"Out =="<<OutA<<ELog::endDiag;
+	  ELog::EM<<"Cnt =="<<index<<ELog::endDiag;
+	  return -1;
+	}  
+    }
+
+     
   return 0;
 }
 

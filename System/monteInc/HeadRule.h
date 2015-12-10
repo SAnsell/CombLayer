@@ -116,6 +116,7 @@ class HeadRule
   void removeCommon();
   
   void makeComplement();
+  HeadRule complement() const;
 
   int procString(const std::string&);
 
@@ -138,6 +139,7 @@ class HeadRule
   std::string displayAddress() const;
   void displayVec(std::vector<Token>&) const;  
 
+  std::string displayFluka() const;
 };  
 
 std::ostream&

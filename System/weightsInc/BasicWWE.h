@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   weightsInc/BasicWWE.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,10 +43,12 @@ namespace WeightSystem
 		  const std::vector<double>&,
 		  const std::set<std::string>&);
 
-  void setWeights(Simulation&,const std::string&);
+  void setWeightType(Simulation&,const mainSystem::inputParam&);
   void setWeightsBasic(Simulation&);
   void setWeightsMidE(Simulation&);
   void setWeightsHighE(Simulation&);
+
+  void setWeightsBunker(Simulation&,const Geometry::Vec3D&);
 
 }
 

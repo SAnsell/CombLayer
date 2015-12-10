@@ -47,18 +47,21 @@ class VacuumPipe :
 
   bool activeFront;             ///< Flag for front active
   bool activeBack;              ///< Flag for back active
+  bool activeDivide;              ///< Flag for back active
   HeadRule frontSurf;           ///< Front surfaces [if used]
   HeadRule backSurf;            ///< Back surfaces [if used]
+  HeadRule divideSurf;          ///< divider surfaces [if used]
   
   double radius;                ///< void height [top only]
   double length;                ///< void length [total]
 
-  double feThick;               ///< fe thick
+  double feThick;               ///< pipe thickness
 
-  double flangeRadius;           ///< Joining Flange thick
+  double flangeRadius;          ///< Joining Flange thick
   double flangeLength;          ///< Joining Flange length
   
-  int feMat;                    ///< Fe material layer
+  int voidMat;                  ///< Void material 
+  int feMat;                    ///< Pipe material 
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
@@ -78,6 +81,7 @@ class VacuumPipe :
 
   void setFront(const attachSystem::FixedComp&,const long int);
   void setBack(const attachSystem::FixedComp&,const long int);
+  void setDivider(const attachSystem::FixedComp&,const long int);
   
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

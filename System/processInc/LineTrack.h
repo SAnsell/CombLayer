@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   processInc/LineTrack.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,7 +82,6 @@ class LineTrack
   const std::vector<MonteCarlo::Object*>& getObjVec() const
     { return ObjVec; }
   Geometry::Vec3D getPoint(const size_t) const;
-
 
   void write(std::ostream&) const;
 };

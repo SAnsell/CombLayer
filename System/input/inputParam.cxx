@@ -324,7 +324,6 @@ inputParam::itemCnt(const std::string& K,const size_t setIndex) const
 {
   ELog::RegMethod RegA("inputParam","itemCnt");
   const IItem* IPtr=getIndex(K);
-  if (!setIndex && !IPtr->getNSets()) return 0;
   return IPtr->getNItems(setIndex);
 }
 
@@ -428,6 +427,47 @@ inputParam::getValue(const std::string& K,
   if (!IPtr)
     throw ColErr::EmptyValue<void>(K+":IPtr");
   return IPtr->getObj<T>(setIndex,itemIndex);
+}
+  
+
+
+Geometry::Vec3D
+inputParam::getCntVec3D(const std::string& K,
+			const size_t setIndex,
+			size_t& itemIndex,
+			const std::string& ErrMessage) const
+  /*!
+    Get a value based on key
+    \param K :: Key to seach
+    \param setIndex :: set Value
+    \param itemIndex :: Index value [updated by 3/1]
+    \param ErrMessage :: Error message
+    \return Value
+   */
+{
+  ELog::RegMethod RegA("inputParam","getCntVec3D(Err)");
+  RegA.setTrack(ErrMessage);  
+  return getCntVec3D(K,setIndex,itemIndex);
+}
+
+Geometry::Vec3D
+inputParam::getCntVec3D(const std::string& K,
+			const size_t setIndex,
+			size_t& itemIndex) const
+  /*!
+    Get a value based on key
+    \param K :: Key to seach
+    \param setIndex :: set Value
+    \param itemIndex :: Index value [updated by 3/1]
+    \return Value
+   */
+{
+  ELog::RegMethod RegA("inputParam","getCntVec3D(setIndex,index)");
+  const IItem* IPtr=getIndex(K);
+  if (!IPtr)
+    throw ColErr::EmptyValue<void>(K+":IPtr");
+  
+  return IPtr->getCntVec3D(setIndex,itemIndex);
 }
 
 bool
@@ -715,7 +755,7 @@ inputParam::regDefItem(const std::string& K,const std::string& LK,
   checkKeys(K,LK);
 
   IItem* IPtr=new IItem(K,LK);
-  IPtr->setMaxN(1,0,10000);
+  IPtr->setMaxN(1,0,1);
 
   Keys.insert(MTYPE::value_type(K,IPtr));
   if (!LK.empty())
@@ -743,10 +783,10 @@ inputParam::regDefItem(const std::string& K,const std::string& LK,
   ELog::RegMethod RegA("inputParam","regDefItem<T>(A,B)");
   checkKeys(K,LK);
   if (reqData<2)
-    throw ColErr::IndexError<size_t>(reqData,2,"reqData");
+    throw ColErr::IndexError<size_t>(reqData,2,"reqData in:"+K);
 
   IItem* IPtr=new IItem(K,LK);
-  IPtr->setMaxN(1,0,10000);
+  IPtr->setMaxN(1,0,2);
   
   Keys.insert(MTYPE::value_type(K,IPtr));
   if (!LK.empty())
@@ -779,7 +819,7 @@ inputParam::regDefItem(const std::string& K,const std::string& LK,
     throw ColErr::IndexError<size_t>(reqData,3,"reqData");
 
   IItem* IPtr=new IItem(K,LK);
-  IPtr->setMaxN(1,0,10000);
+  IPtr->setMaxN(1,0,3);
   Keys.insert(MTYPE::value_type(K,IPtr));
   if (!LK.empty())
     Names.insert(MTYPE::value_type(LK,IPtr));
@@ -828,7 +868,6 @@ inputParam::processMainInput(std::vector<std::string>& Names)
       // Did we find anything:
       if (IPtr)       // Index found
 	{
-
 	  const size_t NReq=IPtr->getReqItems();
 	  const size_t NMax=IPtr->getMaxItems();
 	  size_t processNumber(0);
@@ -853,8 +892,7 @@ inputParam::processMainInput(std::vector<std::string>& Names)
 			}
 		    }
 		}
-	    }
-	  
+	    }	  
 	  if (processNumber<NReq)   
 	    ELog::EM<<"Item "<<SubName<<" failed at "
 		    <<processNumber<<" ("<<NMax<<") ["<<NReq<<"]"<<ELog::endErr;
@@ -989,7 +1027,6 @@ template unsigned int inputParam::getValue(const std::string&,const size_t,const
 template long int inputParam::getValue(const std::string&,const size_t,const size_t) const;
 template std::string inputParam::getValue(const std::string&,const size_t,const size_t) const;
 template Geometry::Vec3D inputParam::getValue(const std::string&,const size_t,const size_t) const;
-
 
 
 template double

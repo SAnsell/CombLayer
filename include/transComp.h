@@ -75,7 +75,7 @@ class transRot : public transComp
   
   Geometry::Vec3D Axis;         ///< Main axis of rotation
   Geometry::Vec3D Offset;       ///< Offset 
-  double Angle;                 ///< Angle
+  double Angle;                 ///< Angle [deg]
   
   Geometry::Quaternion QVec;         ///< Quaternion of rotation
   Geometry::Matrix<double> MRot;     ///< Matrix of rotation

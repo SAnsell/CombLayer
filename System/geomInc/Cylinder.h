@@ -97,6 +97,7 @@ class Cylinder : public Quadratic
   void displace(const Geometry::Vec3D&);
 
   virtual void write(std::ostream&) const;
+  virtual void writeFLUKA(std::ostream&) const;
   virtual void print() const;
 
 };

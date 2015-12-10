@@ -104,8 +104,8 @@ TaperedDiskPreMod::TaperedDiskPreMod(const TaperedDiskPreMod& A) :
   modIndex(A.modIndex),cellIndex(A.cellIndex),radius(A.radius),
   height(A.height),depth(A.depth),
   mat(A.mat),temp(A.temp),
-  tiltSide(A.tiltSide),tiltAngle(A.tiltAngle),tiltRadius(A.tiltRadius),
-  InnerComp(A.InnerComp->clone())
+  InnerComp(A.InnerComp->clone()),
+  tiltSide(A.tiltSide),tiltAngle(A.tiltAngle),tiltRadius(A.tiltRadius)
   /*!
     Copy constructor
     \param A :: TaperedDiskPreMod to copy
@@ -421,7 +421,6 @@ TaperedDiskPreMod::getSurfacePoint(const size_t layerIndex,
       return Origin+Y*(radius[layerIndex]);
     case 2:
       throw ColErr::AbsObjMethod("Not implemented yet. Width should have been here.");
-      return 0;
     case 3:
       return Origin+X*(radius[layerIndex]);
     case 4:
@@ -552,7 +551,7 @@ TaperedDiskPreMod::createAll(Simulation& System,
   return;
 }
 
-  const double TaperedDiskPreMod::getZFlightLine() const
+  double TaperedDiskPreMod::getZFlightLine() const
   /*!
     Return z-coordinate of intersection with flight line
     To be used for flight line height calculation, e.g.

@@ -167,28 +167,27 @@ surfaceConstruct::processSurfObject(Simulation& System,
     ModelSupport::objectRegister::Instance();
   
   const int tNum=System.nextTallyNum(1);
-  if (linkPt>0)
+  if (linkPt)
     {
       const attachSystem::FixedComp* TPtr=
 	OR.getObject<attachSystem::FixedComp>(FObject);
-
       if (!TPtr)
 	throw ColErr::InContainerError<std::string>
 	  (FObject,"Fixed Object not found");
-      size_t iLP=static_cast<size_t>(linkPt-1);
-      int masterPlane=  
+
+      
+      const size_t iLP=(linkPt>0) ?
+	static_cast<size_t>(linkPt-1) : static_cast<size_t>(-1-linkPt);
+      const int masterPlane=  
 	TPtr->getMasterSurf(iLP);
       std::vector<int> surfN;
       for(size_t i=0;i<linkN.size();i++)
 	{
 	  const long int LIndex=getLinkIndex(linkN[i]);
-	  if (LIndex>0)
-	    surfN.push_back(TPtr->getLinkSurf(static_cast<size_t>(LIndex-1)));
-	  else
-	    surfN.push_back(-TPtr->getLinkSurf(static_cast<size_t>(-LIndex-1)));
+	  surfN.push_back(TPtr->getSignedLinkSurf(LIndex));
 	}
-      
-      addF1Tally(System,tNum,masterPlane,surfN);
+      const int signV((linkPt>0) ? 1 : -1);
+      addF1Tally(System,tNum,signV*masterPlane,surfN);
       return 1;
     }
   return 0;
@@ -203,7 +202,8 @@ surfaceConstruct::writeHelp(std::ostream& OX) const
 {
   OX<<"Surface tally options:\n"
     <<"object linkName\n"
-    <<"object objectName front/back \n";
+    <<"object objectName front/back \n"
+    <<"viewObject objectName front/back/N {1-4 designator} \n";
   return;
 }
 

@@ -109,7 +109,7 @@ EdgeWater::EdgeWater(const EdgeWater& A) :
     Copy constructor
     \param A :: EdgeWater to copy
   */
-{}
+{} 
 
 EdgeWater&
 EdgeWater::operator=(const EdgeWater& A)
@@ -287,7 +287,7 @@ EdgeWater::getLayerSurf(const size_t layerIndex,
 
 std::string
 EdgeWater::getLayerString(const size_t layerIndex,
-		       const size_t sideIndex) const
+			  const size_t sideIndex) const
   /*!
     Given a side and a layer calculate the link point
     \param layerIndex :: layer, 0 is inner moderator [0-6]

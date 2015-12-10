@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   monte/RuleItems.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,12 +41,9 @@
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
-#include "Triple.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Transform.h"
-#include "Track.h"
 #include "Surface.h"
 #include "Rules.h"
 #include "Token.h"
@@ -334,6 +331,19 @@ CompObj::displayAddress() const
   return cx.str();
 }
 
+
+std::string
+CompObj::displayFluka() const
+  /*!
+    Display the union in the form
+    |N M| where N,M are the downward rules
+    \returns bracket string 
+  */
+{
+  ELog::RegMethod RegA("CompObj","displayFluka");
+  throw ColErr::AbsObjMethod("CompObj::displayFluka");
+}
+
 // -----------------------------------------------
 // BOOLVALUE
 // -----------------------------------------------
@@ -583,6 +593,18 @@ BoolValue::displayAddress() const
   return cx.str();
 }
   
+
+std::string
+BoolValue::displayFluka() const
+  /*!
+    Display the union in the form
+    |N M| where N,M are the downward rules
+    \returns bracket string 
+  */
+{
+  ELog::RegMethod RegA("BoolValue","displayFluka");
+  throw ColErr::AbsObjMethod("BoolValue::displayFluka");
+}
 
 //----------------------------------------
 //       COMPGRP
@@ -901,6 +923,18 @@ CompGrp::displayAddress() const
 }
 
 
+std::string
+CompGrp::displayFluka() const
+  /*!
+    Display the union in the form
+    |N M| where N,M are the downward rules
+    \returns bracket string 
+  */
+{
+  ELog::RegMethod RegA("","");
+  throw ColErr::AbsObjMethod("CompGrp::displayFluka");
+}
+
 //----------------------------------------
 //       CONTGRP
 //----------------------------------------
@@ -1197,6 +1231,19 @@ ContGrp::displayAddress() const
   return cx.str();
 }
 
+
+std::string
+ContGrp::displayFluka() const
+  /*!
+    Display the union in the form
+    |N M| where N,M are the downward rules
+    \returns bracket string 
+  */
+{
+  ELog::RegMethod RegA("","");
+  throw ColErr::AbsObjMethod("ContGrp::displayFluka");
+}
+
 //----------------------------------------
 //       CONTOBJ
 //----------------------------------------
@@ -1473,8 +1520,15 @@ ContObj::displayAddress() const
   return cx.str();
 }
 
-
-/// \Cond TEMPLATE
-template class DTriple<Rule*,int,Rule*>;
-/// \Endcond TEMPLATE
+std::string
+ContObj::displayFluka() const
+  /*!
+    Display the union in the form
+    |N M| where N,M are the downward rules
+    \returns bracket string 
+  */
+{
+  ELog::RegMethod RegA("","");
+  throw ColErr::AbsObjMethod("ContObj::displayFluka");
+}
 

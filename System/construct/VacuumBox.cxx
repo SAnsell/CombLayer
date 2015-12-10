@@ -76,9 +76,11 @@
 namespace constructSystem
 {
 
-VacuumBox::VacuumBox(const std::string& Key) : 
+VacuumBox::VacuumBox(const std::string& Key,
+		       const bool flag) : 
   attachSystem::FixedOffset(Key,6),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
+  centreConstruct(flag),
   vacIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(vacIndex+1)
   /*!
@@ -142,7 +144,8 @@ VacuumBox::createUnitVector(const attachSystem::FixedComp& FC,
   FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
   // after rotation
-  Origin+=Y*(flangeLength+voidLength/2.0);
+  if (!centreConstruct)
+    Origin+=Y*(flangeLength+voidLength/2.0);
   return;
 }
 

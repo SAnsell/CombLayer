@@ -30,10 +30,13 @@
 #include <stack>
 #include <string>
 #include <algorithm>
+#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
 #include "GTKreport.h"
+#include "NameStack.h"
+#include "RegMethod.h"
 #include "OutputLog.h"
 #include "support.h"
 #include "MatrixBase.h"
@@ -42,6 +45,7 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "Surface.h"
+#include "masterWrite.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Sphere.h"
@@ -329,6 +333,26 @@ Sphere::setBaseEqn()
   return;
 }
 
+void 
+Sphere::writeFLUKA(std::ostream& OX) const
+  /*! 
+    Object of write is to output a Fluka file [free format]
+    \param OX :: Output stream (required for multiple std::endl)  
+  */
+{
+  ELog::RegMethod RegA("Sphere","writeFLUKA");
+  
+  masterWrite& MW=masterWrite::Instance();
+  std::ostringstream cx;
+  Surface::writeHeader(cx);
+  cx<<"SPH s"<<getName()<<" "
+    <<MW.Num(Centre)<<" "
+    <<MW.Num(Radius);
+  StrFunc::writeMCNPX(cx.str(),OX);
+  return;
+}
+
+  
 void 
 Sphere::write(std::ostream& OX) const
   /*! 

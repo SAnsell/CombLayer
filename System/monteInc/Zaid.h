@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   monteInc/Zaid.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,10 +34,10 @@ class Zaid
 {
  private:
   
-  int index;      ///< Index number
-  int tag;        ///< 2 digit tag
-  char type;      ///< Type letter
-  double density; ///< Number density
+  int index;           ///< Index number
+  int tag;             ///< 2 digit tag
+  char type;           ///< Type letter
+  double density;      ///< Number density
   
  public:
   

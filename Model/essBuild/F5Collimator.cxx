@@ -11,6 +11,7 @@
 #include <string>
 #include <algorithm>
 #include <boost/shared_ptr.hpp>
+#include <memory>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -109,7 +110,8 @@ namespace essSystem
   */
   {}
 
-  void F5Collimator::populate(FuncDataBase& Control)
+  void
+  F5Collimator::populate(FuncDataBase& Control)
   /*!
     Populate all the variables for collimators without link points
     \param Control :: Variable table to use
@@ -126,21 +128,21 @@ namespace essSystem
 
     LinkPoint = Control.EvalDefVar<int>(keyName+"LinkPoint", -1);
 
-    tallySystem::point gC,gB,gB2;
+    Geometry::Vec3D gC,gB,gB2;
 
-    gB.x=Control.EvalDefVar<double>(keyName+"XB", 0);
-    gB.y=Control.EvalDefVar<double>(keyName+"YB", 0);
-    gB.z=Control.EvalDefVar<double>(keyName+"ZB", 0);
+    gB[0]=Control.EvalDefVar<double>(keyName+"XB", 0);
+    gB[1]=Control.EvalDefVar<double>(keyName+"YB", 0);
+    gB[2]=Control.EvalDefVar<double>(keyName+"ZB", 0);
 
-    gC.x=Control.EvalDefVar<double>(keyName+"XC", 0);
-    gC.y=Control.EvalDefVar<double>(keyName+"YC", 0);
-    gC.z=Control.EvalDefVar<double>(keyName+"ZC", 0);
+    gC[0]=Control.EvalDefVar<double>(keyName+"XC", 0);
+    gC[1]=Control.EvalDefVar<double>(keyName+"YC", 0);
+    gC[2]=Control.EvalDefVar<double>(keyName+"ZC", 0);
 
-    gB2.z = Control.EvalDefVar<double>(keyName+"ZG", 0);
+    gB2[2] = Control.EvalDefVar<double>(keyName+"ZG", 0);
     
 
-    gB2.x = gB.x;
-    gB2.y = gB.y;
+    gB2[0] = gB[0];
+    gB2[1] = gB[1];
 
     SetTally(xStep, yStep, zStep);
     SetPoints(gB, gC, gB2);
@@ -196,7 +198,7 @@ namespace essSystem
     zStep=Control.EvalVar<double>(keyName+"Z");
 
 
-    tallySystem::point gC,gB,gB2;
+    Geometry::Vec3D gC,gB,gB2;
     bool LinkPointCentered = false; // defines if the link point is located in the center of the viewing area
     int thermalAlgorithm = 1; // 0=old; 1=new
     if (thermalAlgorithm>1)
@@ -322,19 +324,18 @@ namespace essSystem
 
     Control.setVariable<double>(keyName+"ZG", zmin);
 
-    gB.x=Control.EvalDefVar<double>(keyName+"XB", 0);
-    gB.y=Control.EvalDefVar<double>(keyName+"YB", 0);
-    gB.z=Control.EvalDefVar<double>(keyName+"ZB", 0);
+    gB[0]=Control.EvalDefVar<double>(keyName+"XB", 0);
+    gB[1]=Control.EvalDefVar<double>(keyName+"YB", 0);
+    gB[2]=Control.EvalDefVar<double>(keyName+"ZB", 0);
 
-    gC.x=Control.EvalDefVar<double>(keyName+"XC", 0);
-    gC.y=Control.EvalDefVar<double>(keyName+"YC", 0);
-    gC.z=Control.EvalDefVar<double>(keyName+"ZC", 0);
+    gC[0]=Control.EvalDefVar<double>(keyName+"XC", 0);
+    gC[1]=Control.EvalDefVar<double>(keyName+"YC", 0);
+    gC[2]=Control.EvalDefVar<double>(keyName+"ZC", 0);
 
-    gB2.z = Control.EvalDefVar<double>(keyName+"ZG", 0);
-    
+    gB2[2] = Control.EvalDefVar<double>(keyName+"ZG", 0);
 
-    gB2.x = gB.x;
-    gB2.y = gB.y;
+    gB2[0] = gB[0];
+    gB2[1] = gB[1];
 
     SetTally(xStep, yStep, zStep);
     SetPoints(gB, gC, gB2);

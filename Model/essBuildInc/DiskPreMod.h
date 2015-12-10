@@ -55,6 +55,7 @@ class DiskPreMod : public attachSystem::ContainedComp,
   std::vector<int> mat;               ///< Materials 
   std::vector<double> temp;           ///< Temperatures
 
+  
   size_t NWidth;                      ///< Number of widths active
   int engActive;                  ///< Engineering active flag
   /// Flow guide pattern inside DiskPreMod (engineering detail)

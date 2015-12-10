@@ -246,7 +246,10 @@ BasicFlightLine::createObjects(Simulation& System,
 
   const std::string innerCut=innerFC.getSignedLinkString(innerIndex);
   const std::string outerCut=outerFC.getSignedLinkString(outerIndex);
-
+  
+  setLinkSignedCopy(0,innerFC,innerIndex);
+  setLinkSignedCopy(1,outerFC,outerIndex);
+  
   const int layerIndex=flightIndex+static_cast<int>(nLayer)*10;  
   std::string Out;
   Out=ModelSupport::getComposite(SMap,layerIndex," 3 -4 5 -6 ");
@@ -274,6 +277,7 @@ BasicFlightLine::createObjects(Simulation& System,
   return;
 }
 
+  
 void
 BasicFlightLine::createAll(Simulation& System,
 			   const attachSystem::FixedComp& originFC,

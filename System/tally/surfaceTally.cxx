@@ -234,22 +234,23 @@ surfaceTally::renumberSurf(const int oldN,const int newN)
   ELog::RegMethod RegA("surfaceTally","renumberCell");
 
   SurfFlag.changeItem(oldN,newN);
-  std::vector<int>::iterator vc=
-    std::find(SurfList.begin(),SurfList.end(),oldN);
-  if (vc!=SurfList.end())
-    *vc=newN;
+  
+  std::replace_if(SurfList.begin(),SurfList.end(),
+		  [&oldN](const int& x) { return (x==oldN); },
+		  newN);
+  std::replace_if(SurfList.begin(),SurfList.end(),
+		  [&oldN](const int& x) { return (x== -oldN); },
+		  -newN);
 
-
-  vc=std::find(FSfield.begin(),FSfield.end(),oldN);
-  if (vc!=FSfield.end())
-    *vc=newN;
-
-  vc=std::find(FSfield.begin(),FSfield.end(),-oldN);
-  if (vc!=FSfield.end())
-    *vc= -newN;
-
+  std::replace_if(FSfield.begin(),FSfield.end(),
+		  [&oldN](const int& x) { return (x==oldN); },
+		  newN);
+  std::replace_if(FSfield.begin(),FSfield.end(),
+		  [&oldN](const int& x) { return ( x == -oldN); },
+		  -newN);
   return;
 }
+  
 
 void
 surfaceTally::write(std::ostream& OX) const

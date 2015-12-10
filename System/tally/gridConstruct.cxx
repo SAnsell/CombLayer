@@ -163,12 +163,12 @@ gridConstruct::processGrid(Simulation& System,
       const std::string snd=
 	inputItem<std::string>(IParam,Index,3,"front/back/side not give");
       Geometry::Vec3D TOrigin=
-	inputCntVec3D(IParam,Index,offsetIndex,"Centre point offset");
+	IParam.getCntVec3D("tally",Index,offsetIndex,"Centre point offset");
       Geometry::Vec3D XVec=
-	inputCntVec3D(IParam,Index,offsetIndex,"XVector scale");
+	IParam.getCntVec3D("tally",Index,offsetIndex,"XVector scale");
 
       Geometry::Vec3D YVec=
-	inputCntVec3D(IParam,Index,offsetIndex,"YVector scale");
+	IParam.getCntVec3D("tally",Index,offsetIndex,"YVector scale");
       ELog::EM<<"TOgin == "<<XVec<<ELog::endDiag;
       ELog::EM<<"OI == "<<offsetIndex<<ELog::endDiag;
 

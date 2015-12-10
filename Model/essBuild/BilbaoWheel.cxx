@@ -50,6 +50,7 @@
 #include "Surface.h"
 #include "surfIndex.h"
 #include "Quadratic.h"
+#include "EllipticCyl.h"
 #include "Rules.h"
 #include "varList.h"
 #include "Code.h"
@@ -92,21 +93,27 @@ BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) :
   xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
   xyAngle(A.xyAngle),zAngle(A.zAngle),engActive(A.engActive),
   targetHeight(A.targetHeight),
-  voidTungstenThick(A.voidTungstenThick),steelTungstenThick(A.steelTungstenThick),
+  voidTungstenThick(A.voidTungstenThick),
+  steelTungstenThick(A.steelTungstenThick),
   caseThickIn(A.caseThickIn),coolantThick(A.coolantThick),
   caseThick(A.caseThick),voidThick(A.voidThick),
-  innerRadius(A.innerRadius),caseRadius(A.caseRadius),
-  voidRadius(A.voidRadius),aspectRatio(A.aspectRatio),
-  mainTemp(A.mainTemp),
-  nLayers(A.nLayers),radius(A.radius),
-  matTYPE(A.matTYPE),shaftHeight(A.shaftHeight),nShaftLayers(A.nShaftLayers),
-  wMat(A.wMat),heMat(A.heMat),steelMat(A.steelMat),ssVoidMat(A.ssVoidMat)
+  innerRadius(A.innerRadius),
+  coolantRadiusIn(A.coolantRadiusIn),
+  coolantRadiusOut(A.coolantRadiusOut),
+  caseRadius(A.caseRadius),voidRadius(A.voidRadius),
+  aspectRatio(A.aspectRatio),
+  mainTemp(A.mainTemp),nLayers(A.nLayers),radius(A.radius),
+  matTYPE(A.matTYPE),shaftHeight(A.shaftHeight),
+  nShaftLayers(A.nShaftLayers),shaftRadius(A.shaftRadius),
+  shaftMat(A.shaftMat),wMat(A.wMat),heMat(A.heMat),
+  steelMat(A.steelMat),ssVoidMat(A.ssVoidMat),
+  innerMat(A.innerMat)
   /*!
     Copy constructor
     \param A :: BilbaoWheel to copy
   */
 {}
-  
+
 BilbaoWheel&
 BilbaoWheel::operator=(const BilbaoWheel& A)
   /*!
@@ -132,6 +139,8 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
       caseThick=A.caseThick;
       voidThick=A.voidThick;
       innerRadius=A.innerRadius;
+      coolantRadiusIn=A.coolantRadiusIn;
+      coolantRadiusOut=A.coolantRadiusOut;
       caseRadius=A.caseRadius;
       voidRadius=A.voidRadius;
       aspectRatio=A.aspectRatio;
@@ -141,10 +150,13 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
       matTYPE=A.matTYPE;
       shaftHeight=A.shaftHeight;
       nShaftLayers=A.nShaftLayers;
+      shaftRadius=A.shaftRadius;
+      shaftMat=A.shaftMat;
       wMat=A.wMat;
       heMat=A.heMat;
       steelMat=A.steelMat;
       ssVoidMat=A.ssVoidMat;
+      innerMat=A.innerMat;
     }
   return *this;
 }
@@ -185,16 +197,18 @@ BilbaoWheel::populate(const FuncDataBase& Control)
 
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");   
   double R;
+  int M;
   for(size_t i=0;i<nLayers;i++)
     {
-      R=Control.EvalVar<double>(StrFunc::makeString(keyName+"Radius",i+1));   
-      if (i && R<=radius.back())
+      const std::string nStr=StrFunc::makeString(i+1);
+      R=Control.EvalVar<double>(keyName+"Radius"+nStr);
+      M = Control.EvalVar<int>(keyName+"MatTYPE"+nStr);   
+
+      if (i && R-radius.back()<Geometry::zeroTol)
 	ELog::EM<<"Radius["<<i+1<<"] not ordered "
 		<<R<<" "<<radius.back()<<ELog::endErr;
-
       radius.push_back(R);
-      matTYPE.push_back(Control.EvalVar<int>
-			(StrFunc::makeString(keyName+"MatTYPE",i+1)));   
+      matTYPE.push_back(M);
     }
 
   innerRadius=Control.EvalVar<double>(keyName+"InnerRadius");  
@@ -205,7 +219,6 @@ BilbaoWheel::populate(const FuncDataBase& Control)
   aspectRatio=Control.EvalVar<double>(keyName+"AspectRatio");
 
   mainTemp=Control.EvalVar<double>(keyName+"Temperature");
-
   targetHeight=Control.EvalVar<double>(keyName+"TargetHeight");
   voidTungstenThick=Control.EvalVar<double>(keyName+"VoidTungstenThick");
   steelTungstenThick=Control.EvalVar<double>(keyName+"SteelTungstenThick");
@@ -217,13 +230,14 @@ BilbaoWheel::populate(const FuncDataBase& Control)
   nShaftLayers=Control.EvalVar<size_t>(keyName+"NShaftLayers"); 
   for (size_t i=0; i<nShaftLayers; i++)
     {
-      R = Control.EvalVar<double>(StrFunc::makeString(keyName+"ShaftRadius",i+1));   
-      if (i && R<=shaftRadius.back())
+      const std::string nStr=StrFunc::makeString(i+1);
+      R = Control.EvalVar<double>(keyName+"ShaftRadius"+nStr);
+      M = ModelSupport::EvalMat<int>(Control,keyName+"ShaftMat"+nStr);
+      if (i && R-shaftRadius.back()<Geometry::zeroTol)
 	ELog::EM<<"ShaftRadius["<<i+1<<"] not ordered "
 		<<R<<" "<<shaftRadius.back()<<ELog::endErr;
       shaftRadius.push_back(R);
-      shaftMat.push_back(ModelSupport::EvalMat<int>(Control, 
-						    StrFunc::makeString(keyName+"ShaftMat",i+1)));
+      shaftMat.push_back(M);
     }
 
 
@@ -272,13 +286,15 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,wheelIndex,"-7 5 -6");	  
   System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,mainTemp,Out));
 
-  // steel
-  Out=ModelSupport::getComposite(SMap,wheelIndex," -1027 45 -46 (-35 : 36 2017)" );  // inner shroud above/below
+  // steel : inner shroud above/below
+  Out=ModelSupport::getComposite
+    (SMap,wheelIndex," -1027 45 -46 (-35 : 36 2017)" ); 
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
   // void
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " -1027 55 -56 (-45 : 46 2027)" );	
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
+  Out=ModelSupport::getComposite
+    (SMap,wheelIndex, " -1027 55 -56 (-45 : 46 2027)" );	
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
   // shaft
   int SI(wheelIndex);
@@ -286,13 +302,15 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
     {
       if (i==0)
 	{
-	  Out=ModelSupport::getComposite(SMap,SI,wheelIndex," -2007 6M -2006M ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,shaftMat[i],mainTemp,Out));
+	  Out=ModelSupport::getComposite
+	    (SMap,SI,wheelIndex," -2007 6M -2006M ");
+	  System.addCell(MonteCarlo::Qhull
+			 (cellIndex++,shaftMat[i],mainTemp,Out));
 	}
       else
 	{
-	  Out=ModelSupport::getComposite(SMap,SI,SI-10, " -2007 2007M 26 ");
-	  Out += ModelSupport::getComposite(wheelIndex, " -2006 ");
+	  Out=ModelSupport::getComposite
+	    (SMap,SI,SI-10,wheelIndex," -2007 2007M 26 -2006N ");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,shaftMat[i],mainTemp,Out));
 	}
       if (i==nShaftLayers-1)
@@ -308,15 +326,16 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
 
 std::string
 BilbaoWheel::getSQSurface(const double R, const double e)
-{
+
   /*
     Return MCNP(X) surface card for SQ ellipsoids
   */
+{
   std::string surf = "sq " + StrFunc::makeString(1./pow(R,2)) + " " +
     StrFunc::makeString(1./pow(R,2)) + " " +
     StrFunc::makeString(e) + " 0 0 0 -1 " +
-    StrFunc::makeString(Origin[1]) + " " + // Y SA: why X and Y are swapped? 
-    StrFunc::makeString(Origin[0]) + " " + // X 
+    StrFunc::makeString(Origin[0]) + " " + // X
+    StrFunc::makeString(Origin[1]) + " " + // Y 
     StrFunc::makeString(Origin[2]);        // Z
 
   return surf;
@@ -413,6 +432,16 @@ BilbaoWheel::createSurfaces()
   GA->setSurface(getSQSurface(caseRadius, aspectRatio));
   SMap.registerSurf(GA);
 
+  Geometry::EllipticCyl* ECPtr=
+    ModelSupport::buildEllipticCyl(SMap,wheelIndex+528,Origin,Z,
+				   X,caseRadius,caseRadius);
+
+  GA->normalizeGEQ(0);
+  //  ELog::EM<<"XXN ="<<*GA<<ELog::endDiag;
+  //  ELog::EM<<"ASPECT ="<<1/aspectRatio<<ELog::endDiag;
+  ECPtr->normalizeGEQ(0);
+  //  ELog::EM<<"YY ="<<*ECPtr<<ELog::endDiag;
+  
   ModelSupport::buildCylinder(SMap,wheelIndex+537,Origin,Z,voidRadius);  
 
   return; 
@@ -530,19 +559,19 @@ BilbaoWheel::createLinks()
 
   FixedComp::setConnect(0,Origin-Y*innerRadius,-Y);
   FixedComp::setLinkSurf(0,SMap.realSurf(wheelIndex+537));
-  FixedComp::addLinkSurf(0,-SMap.realSurf(wheelIndex+1));
+  FixedComp::setBridgeSurf(0,-SMap.realSurf(wheelIndex+1));
 
   FixedComp::setConnect(1,Origin+Y*innerRadius,Y);
   FixedComp::setLinkSurf(1,SMap.realSurf(wheelIndex+537));
-  FixedComp::addLinkSurf(1,SMap.realSurf(wheelIndex+1));
+  FixedComp::setBridgeSurf(1,SMap.realSurf(wheelIndex+1));
 
   FixedComp::setConnect(2,Origin-Y*voidRadius,-Y);
   FixedComp::setLinkSurf(2,SMap.realSurf(wheelIndex+1037));
-  FixedComp::addLinkSurf(2,-SMap.realSurf(wheelIndex+1));
+  FixedComp::setBridgeSurf(2,-SMap.realSurf(wheelIndex+1));
 
   FixedComp::setConnect(3,Origin+Y*voidRadius,Y);
   FixedComp::setLinkSurf(3,SMap.realSurf(wheelIndex+1037));
-  FixedComp::addLinkSurf(3,SMap.realSurf(wheelIndex+1));
+  FixedComp::setBridgeSurf(3,SMap.realSurf(wheelIndex+1));
 
   const double H=wheelHeight()/2.0;
   FixedComp::setConnect(4,Origin-Z*H,-Z);

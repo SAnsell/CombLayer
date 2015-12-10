@@ -87,10 +87,6 @@ class inputParam
   template<typename T>
   void regDefItem(const std::string&,const std::string&,
 		  const size_t,const T&,const T&,const T&);
-
-
-
-
   
   size_t dataCnt(const std::string&) const;
 
@@ -107,6 +103,13 @@ class inputParam
   template<typename T>
   T getValue(const std::string&,const size_t,const size_t) const;
 
+
+  Geometry::Vec3D getCntVec3D(const std::string&,
+			      const size_t,size_t&) const;
+  Geometry::Vec3D getCntVec3D(const std::string&,
+			      const size_t,size_t&,
+			      const std::string&) const;
+  
   bool compNoCaseValue(const std::string&,const std::string&) const;
   template<typename T>
   bool compValue(const std::string&,const T&) const;

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   monte/RuleItems.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -266,7 +266,7 @@ Intersection::displayVec(std::vector<Token>& TVec) const
   */
 {
   if (!A || !B)
-    throw ColErr::ExBase(2,"Intersection::display incomplete type");
+    throw ColErr::ExBase(2,"Intersection::displayVec incomplete type");
 
   
   if (A->type()==-1)
@@ -336,6 +336,30 @@ Intersection::display() const
     out+="( "+B->display()+" )";
   else
     out+=B->display();
+  return out;
+}
+
+std::string
+Intersection::displayFluka() const
+  /*!
+    Displaces a bracket wrapped object
+    \return Bracketed string
+  */
+{
+  std::string out;
+  if (!A || !B)
+    throw ColErr::ExBase(2,"Intersection::displayFluka incomplete type");
+  if (A->type()==-1)
+    out="( "+A->displayFluka()+" )";
+  else
+    out=A->displayFluka();
+
+  out+=" ";
+  
+  if (B->type()==-1)
+    out+="( "+B->displayFluka()+" )";
+  else
+    out+=B->displayFluka();
   return out;
 }
 

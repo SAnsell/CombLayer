@@ -64,6 +64,7 @@ class GammaSource :
   
   void populate(const FuncDataBase& Control);
   int populateEnergy(std::string,std::string);
+  int populateEFile(const std::string&,const int,const int);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
   void calcPosition();
@@ -78,7 +79,7 @@ class GammaSource :
 
   /// Set cut energy
   void setCutEnergy(const double E) { cutEnergy=E; }
-  void loadEnergy(const std::string&);
+
 
   void createAll(const FuncDataBase&,SDef::Source&);
   void createAll(const FuncDataBase&,const attachSystem::FixedComp&,

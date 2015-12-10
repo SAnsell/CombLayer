@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   instrument/CylSample.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -157,14 +157,17 @@ CylSample::populate(const FuncDataBase& Control)
 }
 
 void
-CylSample::createUnitVector(const attachSystem::FixedComp& FC)
+CylSample::createUnitVector(const attachSystem::FixedComp& FC,
+			    const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Fixed Component
+    \param sideIndex :: signed direction to link
   */
 {
   ELog::RegMethod RegA("CylSample","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC);
+  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
+  
   applyShift(xStep,yStep,zStep);
   applyAngleRotate(xyAngle,zAngle);
 
@@ -229,17 +232,19 @@ CylSample::createLinks()
 
 void
 CylSample::createAll(Simulation& System,
-		     const attachSystem::FixedComp& FC)
+		     const attachSystem::FixedComp& FC,
+		     const long int sideIndex)
   /*!
     Extrenal build everything
     \param System :: Simulation
     \param FC :: FixedComponent for origin
+    \param sideIndex :: Side index
    */
 {
   ELog::RegMethod RegA("CylSample","createAll");
   populate(System.getDataBase());
 
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

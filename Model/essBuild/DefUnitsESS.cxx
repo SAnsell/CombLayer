@@ -46,6 +46,7 @@
 #include "InputControl.h"
 #include "inputParam.h"
 #include "support.h"
+#include "stringCombine.h"
 #include "defaultConfig.h"
 #include "DefUnitsESS.h"
 
@@ -66,13 +67,24 @@ setDefUnits(FuncDataBase& Control,
   defaultConfig A("");
   if (IParam.flag("defaultConfig"))
     {
+      const size_t ICnt=IParam.itemCnt("defaultConfig",0);
       const std::string Key=IParam.getValue<std::string>("defaultConfig");
+
+      const std::string sndItem=(ICnt>1) ? 
+	IParam.getValue<std::string>("defaultConfig",1) : "";
+      
       if (Key=="Main")
 	setESS(A);
+      else if (Key=="PortsOnly")
+	setESSPortsOnly(A);
+      else if (Key=="Single")
+	setESSSingle(A,sndItem);
       else if (Key=="help")
 	{
 	  ELog::EM<<"Options : "<<ELog::endDiag;
-	  ELog::EM<<"  Main  "<<ELog::endDiag;
+	  ELog::EM<<"  Main : Everything that works"<<ELog::endDiag;
+	  ELog::EM<<"  PortsOnly  : Nothing beyond beamport "<<ELog::endDiag;
+	  ELog::EM<<"  Test  : Single beamline [for BL devel] "<<ELog::endDiag;
 	  throw ColErr::InContainerError<std::string>
 	    (Key,"Iparam.defaultConfig");	  
 	}
@@ -107,11 +119,71 @@ setESSFull(defaultConfig& A)
   A.setMultiOption("beamlines",0,"G1BLine1 ODIN");
   A.setMultiOption("beamlines",1,"G1BLine3 LOKI");
   A.setMultiOption("beamlines",2,"G1BLine5 NMX");
+  A.setMultiOption("beamlines",3,"G1BLine6 VOR");
 
   A.setVar("G1BLine1Active",1);
   A.setVar("G1BLine3Active",1);
   A.setVar("G1BLine5Active",1);
+  A.setVar("G1BLine6Active",1);
+
+  return;
+}
+
+void
+setESSPortsOnly(defaultConfig& A)
+  /*!
+    Default configuration for ESS for beamports only
+    \param A :: Paramter for default config
+   */
+{
+  ELog::RegMethod RegA("DefUnitsESS[F]","setESS");
+
+  A.setOption("lowMod","Butterfly");
+
+  for(size_t i=0;i<19;i++)
+    A.setVar("G1BLine"+StrFunc::makeString(i+1)+"Active",1);
+
+  ELog::EM<<"Port Only "<<ELog::endDiag;
+  return;
+}
+
+void
+setESSSingle(defaultConfig& A,const std::string& beamItem)
+  /*!
+    Default configuration for ESS for testing single beamlines
+    for building
+    \param A :: Paramter for default config
+   */
+{
+  ELog::RegMethod RegA("DefUnitsESS[F]","setESS");
+
+  A.setOption("lowMod","Butterfly");
   
+  if (beamItem=="NMX")
+    A.setMultiOption("beamlines",0,"G4BLine17 NMX");
+  else if (beamItem=="DREAM")
+    A.setMultiOption("beamlines",0,"G4BLine11 DREAM");
+  else if (beamItem=="VOR")
+    A.setMultiOption("beamlines",0,"G1BLine5 VOR");
+  else if (beamItem=="LOKI")
+    A.setMultiOption("beamlines",0,"G4BLine4 LOKI");
+  else if (beamItem=="ESTIA")
+    A.setMultiOption("beamlines",0,"G4BLine11 ESTIA");
+  else
+    throw ColErr::InContainerError<std::string>(beamItem,"BeamItem");
+    
+  A.setVar("G4BLine4Active",1);
+  A.setVar("G4BLine4Filled",1);
+
+  // DREAM
+  A.setVar("G4BLine17Filled",1);
+  A.setVar("G4BLine17Active",1);
+  A.setVar("G4BLine11Filled",1);
+  A.setVar("G4BLine11Active",1);
+  A.setVar("G1BLine5Active",1);
+  A.setVar("G1BLine5Filled",1);
+  
+  ELog::EM<<"TEST of "<<beamItem<<" Only "<<ELog::endDiag;
   return;
 }
 
@@ -125,15 +197,31 @@ setESS(defaultConfig& A)
   ELog::RegMethod RegA("DefUnitsESS[F]","setESS");
 
   A.setOption("lowMod","Butterfly");
-  A.setMultiOption("beamlines",0,"G1BLine1 ODIN");
-  A.setMultiOption("beamlines",1,"G4BLine3 LOKI");
-  A.setMultiOption("beamlines",2,"G1BLine5 NMX");
 
-  A.setVar("G1BLine1Active",1);
-  A.setVar("G4BLine3Active",1);
-  A.setVar("G4BLine3Filled",1);
-  A.setVar("G1BLine5Active",1);
-     
+  A.setMultiOption("beamlines",0,"G1BLine19 ODIN");
+  A.setMultiOption("beamlines",1,"G4BLine4 LOKI");
+  A.setMultiOption("beamlines",2,"G4BLine7 VOR");
+  A.setMultiOption("beamlines",3,"G4BLine12 NMX");
+  A.setMultiOption("beamlines",4,"G4BLine17 DREAM");
+
+  // odin : No action
+
+  // LOKI
+  A.setVar("G4BLine4Active",1);  
+  A.setVar("G4BLine4Filled",1);
+
+  // VOR
+  A.setVar("G4BLine7Filled",1);
+  A.setVar("G4BLine7Active",1);
+
+  // NMX
+  A.setVar("G4BLine12Active",1); 
+  A.setVar("G4BLine12Filled",1);
+
+  // DREAM
+  A.setVar("G4BLine17Filled",1);
+  A.setVar("G4BLine17Active",1);
+  
   return;
 }
 

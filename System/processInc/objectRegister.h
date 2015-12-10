@@ -47,7 +47,7 @@ class objectRegister
   /// Storage of component pointers
   typedef std::shared_ptr<attachSystem::FixedComp> CTYPE;
   /// Index of them
-  typedef std::map<std::string,CTYPE > cMapTYPE;
+  typedef std::map<std::string,CTYPE> cMapTYPE;
 
   int cellNumber;                  ///< Current new cell number
   MTYPE regionMap;                 ///< Index of kept object number
@@ -61,6 +61,11 @@ class objectRegister
   objectRegister& operator=(const objectRegister&);
   ///\endcond SINGLETON
 
+  const attachSystem::FixedComp*
+    getInternalObject(const std::string&) const;
+  attachSystem::FixedComp*
+    getInternalObject(const std::string&);
+  
  public:
   
   ~objectRegister();
@@ -74,6 +79,7 @@ class objectRegister
 
   int getRenumberCell(const std::string&,const int =-1) const;
   int getRenumberRange(const std::string&,const int =-1) const;
+  std::string inRenumberRange(const int) const;
 
   
   void addObject(const std::string&,const CTYPE&);

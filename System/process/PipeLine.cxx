@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   process/PipeLine.cxx
  *
@@ -408,4 +408,4 @@ PipeLine::createAll(Simulation& System)
 }
 
   
-}  // NAMESPACE moderatorSystem
+}  // NAMESPACE ModelSystem

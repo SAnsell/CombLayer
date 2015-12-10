@@ -182,7 +182,6 @@ PWTControl::write(std::ostream& OX,
   bool active(0);
   for(const int CN : cellOutOrder)
     {
-      
       // Get renumber :
       int CNActive(CN);
       std::map<int,int>::const_iterator rmc=renumberMap.find(CN);
