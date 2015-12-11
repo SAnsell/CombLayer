@@ -67,6 +67,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
 #include "CellMap.h"
 #include "Plane.h"
 #include "BilbaoWheelInnerStructure.h"

@@ -70,6 +70,7 @@
 #include "ContainedGroup.h"
 #include "General.h"
 #include "Plane.h"
+#include "BaseMap.h"
 #include "CellMap.h"
 #include "WheelBase.h"
 #include "BilbaoWheelInnerStructure.h"
