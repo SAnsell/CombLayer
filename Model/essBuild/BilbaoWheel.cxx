@@ -197,7 +197,7 @@ BilbaoWheel::populate(const FuncDataBase& Control)
   zAngle=Control.EvalVar<double>(keyName+"Zangle");
 
   engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
-  nSectors=Control.EvalDefVar<size_t>(keyName+"NSectors",36);
+  nSectors=Control.EvalDefVar<size_t>(keyName+"NSectors",3);
 
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");   
   double R;
