@@ -198,7 +198,10 @@ BilbaoWheel::populate(const FuncDataBase& Control)
 
   engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
 
-  nSectors=Control.EvalDefVar<size_t>(keyName+"NSectors",3);   
+  nSectors=Control.EvalDefVar<size_t>(keyName+"NSectors",36);
+  if (nSectors<2)
+    throw ColErr::RangeError<double>(nSectors, 2, 1000, "NSectors must be >= 2");
+
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");   
   double R;
   int M;
@@ -353,44 +356,42 @@ BilbaoWheel::create3DSurfaces()
 {
   ELog::RegMethod RegA("BilbaoWheel","create3DSurfaces");
 
-  size_t SI(wheelIndex+3000);
-
-  //  ModelSupport::buildPlane(SMap,insIndex+5,Origin,Z);
+  int SI(wheelIndex+3000);
 
   double theta(0.0);
   const double dTheta = 360.0/nSectors;
 
-  for (int j=0; j<nSectors; j++)
+  for (size_t j=0; j<nSectors; j++)
     {
       theta = j*dTheta;
       ModelSupport::buildPlaneRotAxis(SMap, SI+1, Origin, X, Z, theta);
       SI += 10;
     }
-
+  // add 1st surface again with reversed normal - to simplify building cells
+  SMap.addMatch(SI+1,SMap.realSurf(wheelIndex+3001));
   return; 
 }
 
 
 void
-BilbaoWheel::divide3D()
-/*
-  Divide wheel by sectors with LayerDivide3D
+BilbaoWheel::divide3D(Simulation& System, std::string& sides, int mat)
+/*!
+  Divide wheel by sectors to help cell splitting
+  \param SI :: cylindrical surface offset
  */
 {
   ELog::RegMethod RegA("BilbaoWheel","divide3D");
 
-  size_t SI(wheelIndex+3000);
-
-  for (size_t i=0; i<nSectors; i++)
+  int SJ(wheelIndex+3000);
+  std::string Out;
+  for(size_t j=0;j<nSectors;j++)
     {
-      //      ModelSupport::LayerDivide3D LD3(keyName+"Seg"+
-      //			      StrFunc::makeString(i));
-      // const int LW=(i) ? divIndex+1 : lwIndex+3;
-      // const int RW=(i+1!=nSectors) ? divIndex+2 : rwIndex+4;	
-      
-
+      //      Out=ModelSupport::getComposite(SMap,wheelIndex,SI,SJ," 7M -17M 5 -6 1N -11N");
+      Out=ModelSupport::getComposite(SMap, SJ, " 1 -11 ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out+sides));  
+      SJ+=10;
     }
-
+  
 }
 
 void
@@ -522,8 +523,11 @@ BilbaoWheel::createObjects(Simulation& System)
   int nInner(0); // number of inner cells (must be 1)
   for(size_t i=0;i<nLayers;i++)
     {
-      Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -17M 5 -6 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,matNum[matTYPE[i]],mainTemp,Out));  
+      if (matTYPE[i]!=1)
+	{
+	  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -17M 5 -6 ");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,matNum[matTYPE[i]],mainTemp,Out));  
+	}
 
       if (matTYPE[i]==3) {
 	  CellMap::setCell("Inner",cellIndex-1);
@@ -532,7 +536,8 @@ BilbaoWheel::createObjects(Simulation& System)
 	    ELog::EM << "More than one spallation layer" << ELog::endErr;
       } else if (matTYPE[i]==1)
 	{
-	  divide3D();
+	  std::string sides = ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -17M 5 -6 ");
+	  divide3D(System, sides, matNum[matTYPE[i]]);
 	}
 
       SI+=10;

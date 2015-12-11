@@ -99,7 +99,7 @@ class BilbaoWheel : public WheelBase,
   std::string getSQSurface(const double R, const double e);
 
   void create3DSurfaces();
-  void divide3D();
+  void divide3D(Simulation&, std::string&, int);
 
   public:
 
