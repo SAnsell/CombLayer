@@ -544,28 +544,6 @@ BilbaoWheel::createObjects(Simulation& System)
       SI+=10;
     }
 
-  // Now make sections for the coolant
-  int frontIndex(wheelIndex);
-  int backIndex(wheelIndex);
-  const std::string TopBase=
-    ModelSupport::getComposite(SMap,wheelIndex," 35 -36 (-5:6) ");
-  
-  for(size_t i=0;i<nLayers;i++)
-    {
-      if (matTYPE[i]==1)
-	{
-	  if (i)  // otherwize this space has zero size
-	    {
-	      Out=ModelSupport::getComposite(SMap,frontIndex,backIndex,
-					     " 7 -7M ");
-	      //    System.addCell(MonteCarlo::Qhull(cellIndex++,heMat*0, mainTemp,Out+TopBase));
-	    }
-	  //	  ELog::EM<<"++ Index = "<<wheelIndex<<ELog::endDiag;
-	  frontIndex=backIndex+10;
-	}
-      backIndex+=10;
-    }
-  
   // front coolant:
   Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -517 35 -36");
   System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,mainTemp,Out));
