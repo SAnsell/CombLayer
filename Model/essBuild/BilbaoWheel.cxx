@@ -546,7 +546,7 @@ BilbaoWheel::createObjects(Simulation& System)
 
   // front coolant:
   Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -517 35 -36");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,mainTemp,Out));
+  divideRadial(System, Out, heMat);
 
   // Void above/below W
   Out=ModelSupport::getComposite(SMap,wheelIndex,SI,
@@ -564,11 +564,10 @@ BilbaoWheel::createObjects(Simulation& System)
 				 " -7M 35 -36 (-25 : 26 2007)" );	// He above/below W
   System.addCell(MonteCarlo::Qhull(cellIndex++,ssVoidMat,mainTemp,Out));
 
-
   // Metal surround [ UNACCEPTABLE JUNK CELL]
   // Metal front:
   Out=ModelSupport::getComposite(SMap,wheelIndex,"-527 517 35 -36");	
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+  divideRadial(System, Out, steelMat);
 
   // forward Main sections:
   Out=ModelSupport::getComposite(SMap,wheelIndex,"-527 1027 -126 36");	 // outer above W
@@ -580,7 +579,7 @@ BilbaoWheel::createObjects(Simulation& System)
   // Void surround
   Out=ModelSupport::getComposite(SMap,wheelIndex,
 				 "1027 55 -56 -537 (-125:126:527)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  divideRadial(System, Out, 0);
   
   Out=ModelSupport::getComposite(SMap,wheelIndex,"-537 55 -56");	
   addOuterSurf("Wheel",Out);
