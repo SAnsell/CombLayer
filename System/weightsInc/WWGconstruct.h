@@ -37,10 +37,10 @@ namespace WeightSystem
   \class WWGConstruct
   \version 1.0
   \author S. Ansell
-  \date April 2012
+  \date October 2015
   \brief WWG constructor
 
-  Provides linkage to its outside on FixedComp[0]
+  Construct a WWG system wwinp output
 */
 
 class WWGconstruct

@@ -29,7 +29,7 @@ namespace WeightSystem
 /*!
   \class WeightMesh
   \version 1.0
-  \date April 2010
+  \date October 2015
   \author S. Ansell
   \brief A WW-Mesh for neutron importance
 

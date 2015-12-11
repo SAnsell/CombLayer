@@ -42,8 +42,9 @@ class WWG
  private:
 
   std::vector<double> EBin;      ///< Energy bins
-  WeightMesh Grid;   ///< Mesh Grid
-
+  WeightMesh Grid;               ///< Mesh Grid
+  std::vector<double> WMesh;     ///< linearized weight mesh
+  
  public:
 
   
