@@ -102,7 +102,8 @@ BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) :
   coolantRadiusOut(A.coolantRadiusOut),
   caseRadius(A.caseRadius),voidRadius(A.voidRadius),
   aspectRatio(A.aspectRatio),
-  mainTemp(A.mainTemp),nLayers(A.nLayers),radius(A.radius),
+  mainTemp(A.mainTemp),nSectors(A.nSectors),
+  nLayers(A.nLayers),radius(A.radius),
   matTYPE(A.matTYPE),shaftHeight(A.shaftHeight),
   nShaftLayers(A.nShaftLayers),shaftRadius(A.shaftRadius),
   shaftMat(A.shaftMat),wMat(A.wMat),heMat(A.heMat),
@@ -145,6 +146,7 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
       voidRadius=A.voidRadius;
       aspectRatio=A.aspectRatio;
       mainTemp=A.mainTemp;
+      nSectors=A.nSectors;
       nLayers=A.nLayers;
       radius=A.radius;
       matTYPE=A.matTYPE;
@@ -195,6 +197,7 @@ BilbaoWheel::populate(const FuncDataBase& Control)
 
   engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
 
+  nSectors=Control.EvalDefVar<size_t>(keyName+"NSectors",3);   
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");   
   double R;
   int M;
@@ -342,6 +345,54 @@ BilbaoWheel::getSQSurface(const double R, const double e)
 }
 
 void
+BilbaoWheel::create3DSurfaces()
+/*!
+  Create planes for the inner structure iside BilbaoWheel
+*/
+{
+  ELog::RegMethod RegA("BilbaoWheel","create3DSurfaces");
+
+  size_t SI(wheelIndex+3000);
+
+  //  ModelSupport::buildPlane(SMap,insIndex+5,Origin,Z);
+
+  double theta(0.0);
+  const double dTheta = 360.0/nSectors;
+
+  for (int j=0; j<nSectors; j++)
+    {
+      theta = j*dTheta;
+      ModelSupport::buildPlaneRotAxis(SMap, SI+1, Origin, X, Z, theta);
+      SI += 10;
+    }
+
+  return; 
+}
+
+
+void
+BilbaoWheel::divide3D()
+/*
+  Divide wheel by sectors with LayerDivide3D
+ */
+{
+  ELog::RegMethod RegA("BilbaoWheel","divide3D");
+
+  size_t SI(wheelIndex+3000);
+
+  for (size_t i=0; i<nSectors; i++)
+    {
+      //      ModelSupport::LayerDivide3D LD3(keyName+"Seg"+
+      //			      StrFunc::makeString(i));
+      // const int LW=(i) ? divIndex+1 : lwIndex+3;
+      // const int RW=(i+1!=nSectors) ? divIndex+2 : rwIndex+4;	
+      
+
+    }
+
+}
+
+void
 BilbaoWheel::createUnitVector(const attachSystem::FixedComp& FC)
   /*!
     Create the unit vectors
@@ -444,6 +495,8 @@ BilbaoWheel::createSurfaces()
   
   ModelSupport::buildCylinder(SMap,wheelIndex+537,Origin,Z,voidRadius);  
 
+  create3DSurfaces();
+
   return; 
 }
 
@@ -476,7 +529,10 @@ BilbaoWheel::createObjects(Simulation& System)
 	  nInner++;
 	  if (nInner>1)
 	    ELog::EM << "More than one spallation layer" << ELog::endErr;
-      }
+      } else if (matTYPE[i]==1)
+	{
+	  divide3D();
+	}
 
       SI+=10;
     }
