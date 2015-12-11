@@ -73,6 +73,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "LayerComp.h"
+#include "BaseMap.h"
 #include "CellMap.h"
 #include "LayerInfo.h"
 #include "ContainedComp.h"

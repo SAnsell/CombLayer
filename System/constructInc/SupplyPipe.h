@@ -58,17 +58,22 @@ class SupplyPipe : public attachSystem::FixedComp
   std::vector<Geometry::Vec3D> PPts;   ///< Pipe points
   size_t nAngle;                       ///< Number of angle segments
 
+  std::string startSurf;               ///< Start surfaces [if needed]
+  
   void populate(const Simulation&);
   void createUnitVector(const attachSystem::FixedComp&,const size_t,
-			const size_t);
+			const long int);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const long int);
   void insertInlet(const attachSystem::FixedComp&,
-		   const size_t);
+		   const long int);
   void addExtra(const attachSystem::LayerComp&,
 		const size_t,const size_t);
   void addOuterPoints();
   void addExtraLayer(const attachSystem::LayerComp&,const size_t);
 
   void setActive();
+  void createLinks();
 
  public:
 
@@ -80,6 +85,9 @@ class SupplyPipe : public attachSystem::FixedComp
   /// Set the option name
   void setOption(const std::string& ON) 
   {  optName=keyName+ON; }
+  /// Set the start option
+  void setStartSurf(const std::string& SS) 
+  {  startSurf=SS; }
   /// Set angle segments
   void setAngleSeg(const size_t N) { nAngle=N; }
   /// Set wallOffset
@@ -91,7 +99,10 @@ class SupplyPipe : public attachSystem::FixedComp
   void addInsertCell(const size_t,const int);
   
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const size_t,const size_t,const size_t);
+		 const long int);
+
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const size_t,const long int,const long int);
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const size_t,const size_t,const size_t,

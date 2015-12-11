@@ -67,10 +67,9 @@
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
-#include "LayerComp.h"
+#include "BaseMap.h"
 #include "CellMap.h"
+#include "SurfMap.h"
 #include "World.h"
 #include "AttachSupport.h"
 #include "GuideItem.h"
@@ -215,6 +214,7 @@ VOR::build(Simulation& System,
 
   setBeamAxis(GItem,0);
   FocusA->addInsertCell(GItem.getCells("Void"));
+  const std::vector<int> cN=GItem.getCells("Void");
   FocusA->addInsertCell(bunkerObj.getCell("MainVoid"));
   //  FocusA->addEndCut(GItem.getKey("Beam").getSignedLinkString(-2));
   FocusA->createAll(System,GItem.getKey("Beam"),-1,
@@ -256,11 +256,8 @@ VOR::build(Simulation& System,
 
   // Make bunker insert
   const attachSystem::FixedComp& GFC(FocusB->getKey("Guide0"));
-  const std::string BSector=
-    bunkerObj.calcSegment(System,GFC.getSignedLinkPt(-1),
-			  GFC.getSignedLinkAxis(-1));  
-  BInsert->setInsertCell(bunkerObj.getCells(BSector));
   BInsert->createAll(System,FocusB->getKey("Guide0"),-1,bunkerObj);
+  attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);
 
   //  FocusB->addInsertCell(BInsert->getCell("Void"));
   BInsert->insertComponent(System,"Void",*FocusB);

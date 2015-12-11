@@ -66,6 +66,7 @@
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "BaseMap.h"
 #include "CellMap.h"
 #include "ContainedComp.h"
 #include "LayerComp.h"

@@ -69,8 +69,9 @@
 #include "ContainedGroup.h"
 #include "SecondTrack.h"
 #include "TwinComp.h"
-#include "LayerComp.h"
+#include "BaseMap.h"
 #include "CellMap.h"
+#include "SurfMap.h"
 #include "World.h"
 #include "AttachSupport.h"
 #include "GuideItem.h"
@@ -245,8 +246,8 @@ LOKI::build(Simulation& System,
   // For output stream
   ELog::RegMethod RegA("LOKI","build");
   ELog::EM<<"\nBuilding LOKI on : "<<GItem.getKeyName()<<ELog::endDiag;
-
   setBeamAxis(System.getDataBase(),GItem,0);
+
   BendA->addInsertCell(GItem.getCells("Void"));
   BendA->addInsertCell(bunkerObj.getCell("MainVoid"));
   BendA->createAll(System,*lokiAxis,-3,*lokiAxis,-3); // beam front reversed
@@ -378,23 +379,24 @@ LOKI::build(Simulation& System,
   GridA->createAll(System,GuideE->getKey("Guide0"),2);
 
   // First collimator [In WALL]
+
   const attachSystem::FixedComp& GFC(GridA->getKey("Beam"));
-  const std::string BSector=
-    bunkerObj.calcSegment(System,GFC.getSignedLinkPt(2),
-			  GFC.getSignedLinkAxis(2));
-  CollA->addInsertCell(bunkerObj.getCells(BSector));
+
   CollA->addInsertCell(bunkerObj.getCell("MainVoid"));
   CollA->addInsertCell(voidCell);
   CollA->createAll(System,GFC,2);
-
+  attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*CollA);  
+  
   // Second grid cutter
-  GridB->addInsertCell(bunkerObj.getCells(BSector));
+  //GridB->addInsertCell(bunkerObj.getCells(BSector));
   GridB->createAll(System,CollA->getKey("Beam"),2);
-
-  // First collimator
+  attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*GridB);
+  
+  // Second collimator
   CollB->addInsertCell(voidCell);
-  CollB->addInsertCell(bunkerObj.getCells(BSector));
   CollB->createAll(System,GridB->getKey("Beam"),2);
+  attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*CollB);
+
   // Second grid cutter
   GridC->addInsertCell(voidCell);
   GridC->createAll(System,CollB->getKey("Beam"),2);

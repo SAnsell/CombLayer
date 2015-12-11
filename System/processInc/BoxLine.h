@@ -34,7 +34,7 @@ class surfRegister;
   \version 1.0
   \author S. Ansell
   \date October 2011
-  \brief A section of pip
+  \brief A section of pipe
 */
 
 class BoxLine 

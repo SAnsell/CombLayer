@@ -82,7 +82,10 @@ class LineTrack
   const std::vector<MonteCarlo::Object*>& getObjVec() const
     { return ObjVec; }
   Geometry::Vec3D getPoint(const size_t) const;
+  /// access total distance
+  double getTotalDist() const { return aimDist; }
 
+  void createAttenPath(std::vector<int>&,std::vector<double>&) const;
   void write(std::ostream&) const;
 };
 

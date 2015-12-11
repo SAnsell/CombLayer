@@ -1,3 +1,37 @@
 
+\definecolor{SlateBlue}{rgb}{0.1,0.1,1.00}
+\definecolor{SlateGreen}{rgb}{0.1,0.8,0.3}
+\definecolor{darkred}{rgb}{0.8,0,0}
+\newcommand{\tcg}[1]{
+   \textcolor{green}{#1}}
+\newcommand{\tcr}[1]{
+   \textcolor{red}{#1}}
+\newcommand{\tcb}[1]{
+   \textcolor{blue}{#1}}
+\newcommand{\tcbb}[1]{
+   \textcolor{SlateBlue}{#1}}
+\newcommand{\tcgg}[1]{
+   \textcolor{SlateGreen}{#1}}
+
+
+\definecolor{mygray}{rgb}{0.4,0.4,0.4}
+\definecolor{mygreen}{rgb}{0,0.8,0.6}
+\definecolor{myorange}{rgb}{1.0,0.4,0}
+
+\lstset{
+  basicstyle=\footnotesize\sffamily\color{black},
+  commentstyle=\color{red},
+  frame=false,
+  numbers=left,
+  numbersep=5pt,
+  numberstyle=\tiny\color{mygray},
+  keywordstyle=\color{blue},
+  showspaces=false,
+  showstringspaces=false,
+  stringstyle=\color{myorange},
+  tabsize=8,
+  otherkeywords={std},
+  escapeinside={\%\%}{\@}
+}
 \newcommand {\prog}[1]{{\it #1}}
 \newcommand {\vb}[1]{\begin{\verbatim}{#1}\end{verbatim}}

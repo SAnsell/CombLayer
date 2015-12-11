@@ -184,6 +184,49 @@ varList::findVar(const std::string& Key)
   return 0;
 }
 
+
+void
+varList::copyVar(const std::string& Key,const std::string& other) 
+  /*!
+    Copy a variable into the var system [with new number]
+    \param Key :: Keyname 
+    \param other :: variable to copy
+  */
+{
+  ELog::RegMethod RegA("varList","copyVar");
+
+  if (Key==other) return;
+  
+  std::map<std::string,FItem*>::iterator ac;
+  std::map<std::string,FItem*>::const_iterator bc;
+
+  bc=varName.find(other);
+  if (bc==varName.end())
+    throw ColErr::InContainerError<std::string>(other,"Var item not found");
+
+  ac=varName.find(Key);
+  if (ac!=varName.end())
+    {
+      const int I=ac->second->getIndex();
+      delete ac->second;
+
+      std::map<int,FItem*>::iterator ic;
+      ic=varItem.find(I);
+      varName.erase(ac);
+      varItem.erase(ic);
+    }
+  FItem* Ptr=bc->second->clone();
+  Ptr->setIndex(varNum);
+  varNum++;
+    // Now insert into master lists
+  varName.insert(std::pair<std::string,FItem*>(Key,Ptr));
+  varItem.insert(std::pair<int,FItem*>(Ptr->getIndex(),Ptr));
+
+  return;
+}
+
+
+
 int 
 varList::selectValue(const int Key,Geometry::Vec3D& oVec,
 		     double& oDbl) const
@@ -346,6 +389,22 @@ varList::createFType<Code>(const int I,const Code& V)
   */
 { 
   return new FFunc(this,I,V); 
+}
+
+std::vector<std::string>
+varList::getKeys() const
+  /*!
+    Generate the keys for the variables. Sorted
+    \return sorted vector of names
+  */
+{
+  std::vector<std::string> keyValue;
+  for(const varStore::value_type& mc : varName)
+    {
+      keyValue.push_back(mc.first);
+    }
+  std::sort(keyValue.begin(),keyValue.end());
+  return keyValue;
 }
 
 void

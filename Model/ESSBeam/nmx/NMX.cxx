@@ -67,9 +67,9 @@
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "SecondTrack.h"
-#include "TwinComp.h"
-#include "LayerComp.h"
+#include "BaseMap.h"
 #include "CellMap.h"
+#include "SurfMap.h"
 #include "World.h"
 #include "AttachSupport.h"
 #include "GuideItem.h"
@@ -200,13 +200,9 @@ NMX::build(Simulation& System,
   // First collimator [In WALL]
   //  const attachSystem::FixedComp& GFC(BendA->getKey("Guide0"));
   const attachSystem::FixedComp& GFC(*VPipeB);
-  const std::string BSector=
-    bunkerObj.calcSegment(System,GFC.getSignedLinkPt(2),
-			  GFC.getSignedLinkAxis(2));
-
-  BInsert->setInsertCell(bunkerObj.getCells(BSector));
   BInsert->createAll(System,GFC,2,bunkerObj);
-
+  attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);
+  
   FocusWall->addInsertCell(BInsert->getCell("Void"));
   FocusWall->createAll(System,*BInsert,-1,
 			 BendA->getKey("Guide0"),2);

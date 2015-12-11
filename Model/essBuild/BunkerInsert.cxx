@@ -74,7 +74,9 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
 #include "CellMap.h"
+#include "SurfMap.h"
 #include "surfDBase.h"
 #include "surfDIter.h"
 #include "surfDivide.h"
@@ -124,6 +126,7 @@ BunkerInsert::populate(const FuncDataBase& Control)
   rightWall=Control.EvalVar<double>(keyName+"RightWall");
 
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
+  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   
   return;
 }
@@ -170,6 +173,45 @@ BunkerInsert::createSurfaces()
 
   return;
 }
+  
+int
+BunkerInsert::objectCut(const std::vector<Geometry::Vec3D>& Corners) const
+  /*!
+    Determine if Pts are within or within completely the bunker unit
+    \param Pts :: Point to check
+    \retval 0 :: No intercept
+    \retval -1 :: Partial inside
+    \retval 1 :: Full inside 
+   */
+{
+  ELog::RegMethod RegA("BunkerInsert","objectCut");
+
+  int good(0);
+  int fail(0);
+  for(const Geometry::Vec3D& Pt : Corners)
+    {
+      if (outCut.isValid(Pt))
+	good=1;
+      else
+	fail=1;
+      if (good & fail) return -1;
+    }
+  return (!fail) ? 1 : 0;
+}
+
+void
+BunkerInsert::addCalcPoint()
+  /*!
+    Process the string to calculate the corner points 
+   */
+{
+  ELog::RegMethod RegA("BunkerInsert","addCalcPoint");
+
+  std::vector<Geometry::Vec3D> Pts;
+  outCut.calcSurfSurfIntersection(Pts);
+  ELog::EM<<"CALLED addCalPoint"<<ELog::endDiag;
+  return; 
+}
 
   
 void
@@ -185,7 +227,7 @@ BunkerInsert::createObjects(Simulation& System,
   
   std::string Out;
   Out=ModelSupport::getComposite(SMap,insIndex," 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+BCell));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,voidMat,0.0,Out+BCell));
   setCell("Void",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,insIndex,
@@ -194,11 +236,15 @@ BunkerInsert::createObjects(Simulation& System,
   
   Out=ModelSupport::getComposite(SMap,insIndex," 1 13 -14 15 -16 ");
   addOuterSurf(Out);
+
+  // Create cut unit:
+  Out=ModelSupport::getComposite(SMap,insIndex," 13 -14 15 -16 ");
+  outCut.procString(Out+BCell);
+  outCut.populateSurf();
   
+
   return;
 }
-
-
   
 void
 BunkerInsert::createLinks(const attachSystem::FixedComp& BUnit)
@@ -242,7 +288,7 @@ void
 BunkerInsert::createAll(Simulation& System,
 			const attachSystem::FixedComp& FC,
 			const long int orgIndex,
-			const Bunker& bunkerObj)
+			const attachSystem::FixedComp& bunkerObj)
 
 /*!
     Generic function to create everything

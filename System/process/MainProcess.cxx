@@ -62,6 +62,7 @@
 #include "SimMonte.h"
 #include "variableSetup.h"
 #include "defaultConfig.h"
+#include "DBModify.h"
 #include "MainProcess.h"
 
 namespace mainSystem
@@ -282,6 +283,12 @@ createInputs(inputParam& IParam)
   IParam.regMulti("wPWT","wPWT",25,0);    
   IParam.regItem("WTemp","weightTemp",1);
   IParam.regItem("WType","weightType",1,10);
+  IParam.regItem("WSource","weightSource",1,10);
+  IParam.regItem("WTally","weightTally",1,10);
+  IParam.regMulti("WObject","weightObject",100,1);
+  IParam.regMulti("WRebase","weightRebase",100,1);
+  IParam.regMulti("wDXT","weightDxtran",100,1);
+  IParam.regMulti("wDD","weightDD",100,1);
 
 
   IParam.regMulti("wWWG","wWWG",25,0);
@@ -331,6 +338,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("SI","Source Index value [1:2]");
   IParam.setDesc("SObj","Source Initialization Object");
   IParam.setDesc("sdefType","Source Type (TS1/TS2)");
+  IParam.setDesc("sdefVoid","Remove sdef card [to use source.F]");
   IParam.setDesc("physModel","Physics Model"); 
   IParam.setDesc("SP","Source start point");
   IParam.setDesc("SV","Sourece direction vector");
@@ -344,7 +352,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("Txml","Tally xml file");
   IParam.setDesc("targetType","Name of target type");
   IParam.setDesc("u","Units in cm");
-  IParam.setDesc("um","Unset void area (from imp=0)");
+  IParam.setDesc("um","Unset spherical void area (from imp=0)");
   IParam.setDesc("void","Adds the void card to the simulation");
   IParam.setDesc("volume","Create volume about point/radius for f4 tally");
   IParam.setDesc("volCells","Cells [object/range]");
@@ -356,9 +364,12 @@ createInputs(inputParam& IParam)
 
   IParam.setDesc("w","weightBias");
   IParam.setDesc("wExt","Extraction biasisng [see: -wExt help]");
+  IParam.setDesc("wDXT","Dxtran sphere addition [set -wDXT help] ");
   IParam.setDesc("wPWT","Photon Bias [set -wPWT help]");
   IParam.setDesc("WType","Initial model for weights [help for info]");
   IParam.setDesc("WTemp","Temperature correction for weights");
+  IParam.setDesc("WRebase","Rebase the weights based on a cell");
+  IParam.setDesc("WObject","Reconstruct weights base on cells");
   IParam.setDesc("WP","Weight bias Point");
 
   IParam.setDesc("x","XML input file");
@@ -951,7 +962,39 @@ InputModifications(Simulation* SimPtr,inputParam& IParam,
 }
 
 void
+setMaterialsDataBase(const inputParam& IParam)
+  /*!
+    Set the different data base option for mateirals
+    \param IParam :: Input param
+  */
+{
+  ELog::RegMethod RegA("MainProcess","setMaterialsDataBase");
+
+  const std::string materials=IParam.getValue<std::string>("matDB");
+  
+  // Add extra materials to the DBMaterials
+  if (materials=="neutronics")
+    ModelSupport::addESSMaterial();
+  else if (materials=="shielding")
+    ModelSupport::cloneESSMaterial();
+  else if (materials=="help")
+    {
+      ELog::EM<<"Materials database setups:\n"
+	" -- shielding [S.Ansell original naming]\n"
+	" -- neutronics [ESS Target division naming]"<<ELog::endDiag;
+      throw ColErr::ExitAbort("help");
+    }	
+  else
+    throw ColErr::InContainerError<std::string>(materials,
+						"Materials Data Base type");
+}
+  
+void
 exitDelete(Simulation* SimPtr)
+ /*!
+   Final deletion including singletons
+   \param Simulation to delete
+ */
 {
   delete SimPtr;
   ModelSupport::objectRegister::Instance().reset();

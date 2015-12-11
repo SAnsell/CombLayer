@@ -16,10 +16,12 @@ sub new
     boostLib => "-L/opt/local/lib -lboost_regex",
     
     masterProg => undef,
+    definitions => undef,
     depLists => undef,
     optimise => "",
     debug => "",
-
+    noregex => 0,
+    
     incLib => undef,           ## Array of all our includes used
     srcDir => undef,           ## Array of all our cxx directories
     incDir => undef            ## Array of all our includes used
@@ -27,6 +29,7 @@ sub new
   
   bless $self,$class;
   $self->{masterProg}=[ ];
+  $self->{definitions}=[ ];
   $self->{incDir}=[ ];
   $self->{srcDir}={ };
   
@@ -189,15 +192,18 @@ sub setParameters
       foreach my $Ostr (@Flags)
         {
 	  $self->{optimise}.=" -O2 " if ($Ostr eq "-O");
+	  push(@{$self->{definitions}},"NO_REGEX") if ($Ostr eq "-NR");
+	  $self->{noregex}=1 if ($Ostr eq "-NR");
 	  $self->{optimise}.=" -pg " if ($Ostr eq "-p"); ## Gprof
 	  $self->{gcov}=1 if ($Ostr eq "-C");
 	  $self->{debug}="" if ($Ostr eq "-g");
 	  $self->{bcomp}=$1 if ($Ostr=~/-gcc=(.*)/);
 	  $self->{ccomp}=$1 if ($Ostr=~/-g\+\+=(.*)/);
 	  $self->{cxx11}="" if ($Ostr=~/-std/);
+	  
 	}
     }
-  $self->{gsl}*=$nogsl;
+#  $self->{gsl}*=$nogsl;
 
   print STDERR "INIT Opt=",$self->{optimise},"\n";
   print STDERR "INIT Deb=",$self->{debug},"\n";
@@ -218,24 +224,25 @@ sub writeHeader
   my $self=shift;
   my $DX=shift;   ## FILEGLOB
 
-  print $DX "cmake_minimum_required(VERSION 3.2)\n\n";
+  print $DX "cmake_minimum_required(VERSION 2.8)\n\n";
 
   
   print $DX "set(CMAKE_CXX_COMPILER ",$self->{ccomp},")\n";
-  print $DX "add_definitions(",$self->{cflag},")\n";
-
-
-
-  print $DX "add_definitions(",$self->{optimise},")\n"
-      if ($self->{optimise});
-  print $DX "add_definitions(",$self->{debug},")\n"
-      if ($self->{debug});
-
-
-  print $DX "set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ./lib)\n";
+  print $DX "set(CMAKE_CXX_FLAGS \"",$self->{cflag}.$self->{optimise}.$self->{debug},"\")\n";
+  print $DX "set(CMAKE_CXX_RELEASE_FLAGS \"",$self->{cflag}." -O2 ".$self->{debug},"\")\n";
   
-  print $DX "\n";
+  print $DX "set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ./lib)\n";
 
+  foreach my $item (@{$self->{definitions}})
+  {
+    print $DX "add_definitions(-D",$item,")\n";
+  }
+  print $DX "\n";
+  print $DX "if(\"\${CMAKE_CXX_COMPILER_ID}\" STREQUAL \"Clang\")\n";
+  print $DX "set(CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS \"";
+  print $DX "\${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} ";
+  print $DX "-undefined dynamic_lookup\")\n";
+  print $DX "endif()\n";
   return;
 }
  
@@ -266,10 +273,9 @@ sub writeGLOB
   {
       my $val=$self->{srcDir}{$item};
       
-    print $DX "file(GLOB ",$item," \"\${PROJECT_SOURCE_DIR}\/",
-    $val."\/\*.cxx\")\n";
-    print $DX "add_library(lib".$item." SHARED \$\{".$item."\})\n";
-
+      print $DX "file(GLOB ",$item," \"\${PROJECT_SOURCE_DIR}\/",
+      $val."\/\*.cxx\")\n";
+      print $DX "add_library(lib".$item." SHARED \$\{".$item."\})\n";
   }
   print $DX "## END GLOBS \n\n";
 
@@ -293,7 +299,10 @@ sub writeExcutables
         {
 	  print $DX "target_link_libraries(",$item,"  lib",$dItem,")\n";
         }
-      print $DX "target_link_libraries(",$item," boost_regex)\n";
+      if (!$self->{noregex})
+      {
+	print $DX "target_link_libraries(",$item," boost_regex)\n";
+      }
       print $DX "target_link_libraries(",$item," stdc++)\n ";
       print $DX "target_link_libraries(",$item," gsl)\n";
       print $DX "target_link_libraries(",$item," gslcblas)\n";
@@ -313,7 +322,36 @@ sub writeTail
   my $pdir=`pwd`;
   $pdir=$1 if ($pdir=~/.*\/(.*)/);
 
-  my $wordString;
+  print $DX "set(ALLCXX \n";
+  foreach my $item (keys (%{$self->{srcDir}}))
+    {
+      my $val=$self->{srcDir}{$item};
+      print $DX "     \./",$val,"/*.cxx \n";
+    }
+  print $DX "     \./Main/*.cxx )\n";
+
+  print $DX "set(ALLHXX \n";
+  foreach my $item (@{$self->{incDir}})
+    {
+      print $DX "     \./",$item,"/*.h \n";
+    }
+  print $DX "      )\n";
+
+  print $DX "set(ASRC \${ALLHXX} \${ALLCXX} )\n";
+  
+## DOXYGEN
+  
+  print $DX "add_custom_target(doxygen ",
+    " COMMAND  echo \"INPUT= \" ",
+  " \`ls \${ASRC}\` | doxygen - )\n";
+
+##      " COMMAND cat Doxyfile; echo \"INPUT= \" ",
+##  	" \`ls \${ASRC}\`  | doxygen \- )\n";
+
+
+## WORDS
+
+  my $wordString;  
   print $DX "add_custom_target(words ",
     " COMMAND grep -v -e \'^[[:space:][:cntrl:]]*\$\$\' \n";
   foreach my $item (keys (%{$self->{srcDir}}))
@@ -332,8 +370,7 @@ sub writeTail
   print $DX " | wc )\n";
   print $DX "\n";
 
-  
-  
+    
   my $tarString;  
   print $DX "add_custom_target(tar ",
     " COMMAND tar zcvf \${PROJECT_SOURCE_DIR}/",$pdir.".tgz \n";

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuild/essDBMaterial.cxx
+ * File:   monte/DBModify.cxx
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -48,7 +48,7 @@
 #include "MXcards.h"
 #include "Material.h"
 #include "DBMaterial.h"
-#include "essDBMaterial.h"
+#include "DBModify.h"
 
 namespace ModelSupport
 {
@@ -71,9 +71,7 @@ void cloneESSMaterial()
 
   return;
 }
-  
-
-  
+    
 void addESSMaterial()
   /*!
      Initialize the database of materials

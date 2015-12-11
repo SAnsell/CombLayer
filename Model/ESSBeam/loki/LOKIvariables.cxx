@@ -271,7 +271,7 @@ LOKIvariables(FuncDataBase& Control)
   Control.addVariable("lokiBBZAngle",0.0);
   Control.addVariable("lokiBBBeamXYAngle",0.0);       
 
-  Control.addVariable("lokiBBLength",220.0);       
+  Control.addVariable("lokiBBLength",110.0);         // from 220
   Control.addVariable("lokiBBNShapes",1);       
   Control.addVariable("lokiBBNShapeLayers",3);
   Control.addVariable("lokiBBActiveShield",0);
@@ -288,7 +288,7 @@ LOKIvariables(FuncDataBase& Control)
   Control.addVariable("lokiBB0BHeight",3.0);
   Control.addVariable("lokiBB0AWidth",3.0);
   Control.addVariable("lokiBB0BWidth",3.0);
-  Control.addVariable("lokiBB0Length",220.0);
+  Control.addParse<double>("lokiBB0Length","lokiBBLength");
   Control.addVariable("lokiBB0AngDir",180.0);
   Control.addVariable("lokiBB0Radius",3680.0);
 
@@ -624,7 +624,7 @@ LOKIvariables(FuncDataBase& Control)
   Control.addVariable("lokiCollBYStep",1.0);
   Control.addVariable("lokiCollBRotDepth",0.0);
   Control.addVariable("lokiCollBRadius",40.0);
-  Control.addVariable("lokiCollBThick",200.0);
+  Control.addVariable("lokiCollBThick",300.0);
 
   Control.addVariable("lokiCollBInnerWall",1.0);
   Control.addVariable("lokiCollBInnerWallMat","Void");
@@ -772,11 +772,10 @@ LOKIvariables(FuncDataBase& Control)
   Control.addVariable("lokiGuideCB0TypeID","Rectangle");
   Control.addVariable("lokiGuideCB0Height",3.0);
   Control.addVariable("lokiGuideCB0Width",3.0);
-  Control.addVariable("lokiGuideCB0Length",400.0);   
   Control.addVariable("lokiGuideCB0ZAngle",0.0);
-
+  Control.addParse<double>("lokiGuideCB0Length","lokiGuideCBLength");
   
-  // Guide in Collimator B
+  // Guide in Collimator C
   Control.addVariable("lokiGuideCCXStep",0.0);       
   Control.addVariable("lokiGuideCCYStep",0.0);       
   Control.addVariable("lokiGuideCCZStep",0.0);       
@@ -883,7 +882,7 @@ LOKIvariables(FuncDataBase& Control)
   Control.addVariable("lokiPipeAFeMat","Stainless304");
 
   Control.addVariable("lokiPipeBRadius",8.0);
-  Control.addVariable("lokiPipeBLength",100.0);
+  Control.addVariable("lokiPipeBLength",80.0);
   Control.addVariable("lokiPipeBFeThick",1.0);
   Control.addVariable("lokiPipeBFlangeRadius",12.0);
   Control.addVariable("lokiPipeBFlangeLength",1.0);

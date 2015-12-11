@@ -764,8 +764,9 @@ Simulation::substituteAllSurface(const int KeyN,const int NsurfN)
 
   TallyTYPE::iterator tc;
   for(tc=TItem.begin();tc!=TItem.end();tc++)
-    tc->second->renumberSurf(KeyN,NsurfN);
-
+    {
+      tc->second->renumberSurf(KeyN,NsurfN);
+    }
   PhysPtr->substituteSurface(KeyN,NsurfN);
   
   return 0;
@@ -1145,7 +1146,9 @@ Simulation::calcAllVertex()
      in the Qhull. The number of vertexes found are returned. 
   */
 {
-  ELog::RegMethod RegA("Simulation","calcVertex");
+  ELog::RegMethod RegA("Simulation","calcAllVertex");
+
+
   OTYPE::iterator mc;
 
   for(mc=OList.begin();mc!=OList.end();mc++)

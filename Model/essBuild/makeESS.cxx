@@ -31,6 +31,7 @@
 #include <set>
 #include <map>
 #include <string>
+#include <array>
 #include <algorithm>
 #include <iterator>
 #include <memory>
@@ -63,7 +64,9 @@
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "LayerComp.h"
+#include "BaseMap.h"
 #include "CellMap.h"
+#include "SurfMap.h"
 #include "World.h"
 #include "TaperedFlightLine.h"
 #include "FlightLine.h"
@@ -92,9 +95,9 @@
 #include "GuideBay.h"
 #include "TaperedDiskPreMod.h"
 #include "Bunker.h"
+#include "Curtain.h"
 
 #include "ConicModerator.h"
-#include "essDBMaterial.h"
 #include "makeESSBL.h"
 
 // F5 collimators:
@@ -131,7 +134,9 @@ makeESS::makeESS() :
   ShutterBayObj(new ShutterBay("ShutterBay")),
 
   ABunker(new Bunker("ABunker")),
-  BBunker(new Bunker("BBunker"))
+  BBunker(new Bunker("BBunker")),
+  TopCurtain(new Curtain("Curtain"))
+  
  /*!
     Constructor
  */
@@ -161,6 +166,7 @@ makeESS::makeESS() :
   OR.addObject(ShutterBayObj);
   OR.addObject(ABunker);
   OR.addObject(BBunker);
+  OR.addObject(TopCurtain);
 }
 
 
@@ -437,22 +443,38 @@ makeESS::makeBeamLine(Simulation& System,
   ELog::RegMethod RegA("makeESS","makeBeamLine");
 
   const size_t NSet=IParam.setCnt("beamlines");
-
+  FuncDataBase& Control=System.getDataBase();
+  
   for(size_t j=0;j<NSet;j++)
     {
       const size_t NItems=IParam.itemCnt("beamlines",0);
-      for(size_t i=1;i<NItems;i+=2)
+      size_t index=1;
+      while(index<NItems)  // min of two items
 	{
-	  const std::string BL=IParam.getValue<std::string>("beamlines",j,i-1);
-	  const std::string Btype=IParam.getValue<std::string>("beamlines",j,i);
+	  const std::string BL=
+	    IParam.getValue<std::string>("beamlines",j,index-1);
+	  const std::string Btype=
+	    IParam.getValue<std::string>("beamlines",j,index);
+	  index+=2;
+
+	  Control.addVariable(BL+"Active",1);
+	  int fillFlag(0);
+	  if (IParam.checkItem<int>("beamlines",j,index+1,fillFlag))
+	    {
+	      // setting is CONTROLED as value from variable taken
+	      // otherwise
+	      Control.addVariable(BL+"Filled",fillFlag);
+	      index++;
+	    }
+	  
 	  // FIND BUNKER HERE:::
 	  makeESSBL BLfactory(BL,Btype);
 	  std::pair<int,int> BLNum=makeESSBL::getBeamNum(BL);
-	  if ((BLNum.first==1 && BLNum.second>8) ||
-	      (BLNum.first==4 && BLNum.second<=8) )
+	  if ((BLNum.first==1 && BLNum.second>9) ||
+	      (BLNum.first==4 && BLNum.second<=9) )
 	    BLfactory.build(System,*ABunker);
-	  else if ((BLNum.first==1 && BLNum.second<=8) ||
-	      (BLNum.first==4 && BLNum.second>8) )
+	  else if ((BLNum.first==1 && BLNum.second<=9) ||
+	      (BLNum.first==4 && BLNum.second>9) )
 	    BLfactory.build(System,*BBunker);
 	}
     }
@@ -469,9 +491,6 @@ makeESS::makeBunker(Simulation& System,
   */
 {
   ELog::RegMethod RegA("makeESS","makeBunker");
-
-  ELog::EM<<"Bunker == "<<bunkerType<<ELog::endDiag;
-
   
   ABunker->addInsertCell(74123);
   ABunker->setCutWall(1,0);
@@ -482,8 +501,24 @@ makeESS::makeBunker(Simulation& System,
   BBunker->createAll(System,*LowMod,*GBArray[0],2,true);
 
   BBunker->insertComponent(System,"leftWall",*ABunker);
-  BBunker->insertComponent(System,"roof",*ABunker);
+  BBunker->insertComponent(System,"roof0",*ABunker);
   BBunker->insertComponent(System,"floor",*ABunker);
+
+  TopCurtain->addInsertCell("Top",74123);
+  TopCurtain->addInsertCell("Lower",74123);
+  TopCurtain->addInsertCell("Mid",74123);
+  TopCurtain->addInsertCell("Lower",ABunker->getCells("roof"));
+  TopCurtain->addInsertCell("Lower",BBunker->getCells("roof"));
+  TopCurtain->addInsertCell("Top",ABunker->getCells("roof"));
+  TopCurtain->addInsertCell("Top",BBunker->getCells("roof"));
+    
+  TopCurtain->addInsertCell("Lower",ABunker->getCells("MainVoid"));
+  TopCurtain->addInsertCell("Lower",BBunker->getCells("MainVoid"));
+  //  TopCurtain->createAll(System,*GBArray[0],2,1,true);
+  TopCurtain->createAll(System,*ShutterBayObj,6,4,*GBArray[0],2,true);
+
+  //  TopCurtain->insertComponent(System,"topVoid",*ABunker);
+  //  TopCurtain->insertComponent(System,"topVoid",*BBunker);
   return;
 }
 
@@ -536,23 +571,7 @@ makeESS::build(Simulation& System,
   const std::string targetType=IParam.getValue<std::string>("targetType");
   const std::string iradLine=IParam.getValue<std::string>("iradLineType");
   const std::string bunker=IParam.getValue<std::string>("bunkerType");
-  const std::string materials=IParam.getValue<std::string>("matDB");
 
-  // Add extra materials to the DBMaterials
-  if (materials=="neutronics")
-    ModelSupport::addESSMaterial();
-  else if (materials=="shielding")
-    ModelSupport::cloneESSMaterial();
-  else if (materials=="help")
-    {
-      ELog::EM<<"Materials database setups:\n"
-	" -- shielding [S.Ansell original naming]\n"
-	" -- shielding [ESS Target division naming]"<<ELog::endDiag;
-      throw ColErr::ExitAbort("help");
-    }	
-  else
-    throw ColErr::InContainerError<std::string>(materials,
-						"Materials Data Base type");
 
   //  const size_t nF5 = IParam.getValue<size_t>("nF5");
 

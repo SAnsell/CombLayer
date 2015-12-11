@@ -162,6 +162,64 @@ IndexError<T>::setOutLine()
   return;
 }
 
+//---------------------------------------
+//           SizeError class
+//---------------------------------------
+
+template<typename T>
+SizeError<T>::SizeError(const T& V,const T& B,
+		       const std::string& Place) :
+  ExBase(0,Place),Val(V),minVal(B)
+  /*!
+    Constructor 
+    \param V :: Valued access
+    \param B :: Max value allowed
+    \param Place :: Description string
+   */
+{
+  setOutLine();
+}
+
+template<typename T> 
+SizeError<T>::SizeError(const SizeError<T>& A) :
+  ExBase(A),Val(A.Val),minVal(A.minVal)
+  /*!
+    Copy constructor
+    \param A :: Object to copy
+  */
+{}
+
+template<typename T>
+SizeError<T>&
+SizeError<T>::operator=(const SizeError<T>& A) 
+  /*!
+    Assignment operator
+    \param A :: Object to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      ExBase::operator=(A);
+    }
+  return *this;
+}
+
+
+template<typename T>
+void
+SizeError<T>::setOutLine()
+  /*!
+    Writes out the range and limits
+    to the outline
+  */
+{
+  std::stringstream cx;
+  cx<<"SizeError:"<<ExBase::getErr()<<" "<<Val<<" less than "<<minVal;
+  OutLine=cx.str();
+  return;
+}
+
 //-------------------------
 // FileError
 //-------------------------
@@ -1192,6 +1250,7 @@ template class ColErr::EmptyValue<Geometry::Edge*>;
 template class ColErr::EmptyValue<void>;
 template class ColErr::EmptyValue<int>;
 template class ColErr::EmptyValue<long int>;
+template class ColErr::EmptyValue<size_t>;
 template class ColErr::EmptyValue<unsigned int>;
 template class ColErr::EmptyValue<unsigned int*>;
 template class ColErr::EmptyValue<int*>;
@@ -1208,6 +1267,7 @@ template class ColErr::IndexError<int>;
 template class ColErr::IndexError<unsigned int>;
 template class ColErr::IndexError<long int>;
 template class ColErr::IndexError<size_t>;
+template class ColErr::SizeError<size_t>;
 template class ColErr::InContainerError<Geometry::Vec3D>;
 template class ColErr::InContainerError<std::string>;
 template class ColErr::InContainerError<int>;

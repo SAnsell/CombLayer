@@ -197,7 +197,7 @@ weightManager::write(std::ostream& OX) const
   
   for(const CtrlTYPE::value_type& wf : WMap)
     wf.second->write(OX);
-  ELog::EM<<"TESTING FOR WWGPtr "<<ELog::endDiag;
+
   if (WWGPtr)
     {
       ELog::EM<<"FOUND WWGPtr "<<ELog::endDiag;

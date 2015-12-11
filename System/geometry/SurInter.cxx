@@ -248,6 +248,7 @@ processPoint(const Geometry::Surface* ASPtr,
 	    ELog::EM<<"Null surface passed Index:"<<i<<ELog::endErr;
 	  return Out;
 	}
+      
       PVec[planeN]=dynamic_cast<const Geometry::Plane*>(SVec[i]);
       if (PVec[planeN]) 
 	planeN++;

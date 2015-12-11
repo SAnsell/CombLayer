@@ -60,9 +60,12 @@ namespace essSystem
     \brief DREAM beamline constructor for the ESS
   */
   
-class DREAM
+class DREAM : public attachSystem::CopiedComp
 {
  private:
+
+  /// Stop at [0:Complete / 1:Mono Wall / 2:Inner Bunker / 3:Outer Bunker ]
+  int stopPoint;  
 
   /// Main Beam Axis [for construction]
   std::shared_ptr<attachSystem::FixedComp> dreamAxis;
@@ -191,7 +194,7 @@ class DREAM
   
  public:
   
-  DREAM();
+  DREAM(const std::string&);
   DREAM(const DREAM&);
   DREAM& operator=(const DREAM&);
   ~DREAM();

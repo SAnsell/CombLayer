@@ -48,7 +48,6 @@ class surfRegister
   typedef std::map<int,int> MTYPE;       ///< Storage type
   MTYPE Index;                           ///< Index of kept surfaces
 
-  void addToIndex(const int,const int);
 
  public:
   
@@ -59,6 +58,8 @@ class surfRegister
 
   void reset();      
   void addMatch(const int,const int);
+  void addToIndex(const int,const int);
+    
   int registerSurf(const int,Geometry::Surface*);
   int registerSurf(Geometry::Surface*);
 

@@ -507,7 +507,7 @@ testHeadRule::testLevel()
   ELog::RegMethod RegA("testHeadRule","testLevel");
 
   createSurfaces();
-
+  // object : surf : level found
   typedef std::tuple<std::string,int,int> TTYPE;
   std::vector<TTYPE> Tests;
   Tests.push_back(TTYPE("1 -2 3 -4 (5:-6) ",5,1));
@@ -523,6 +523,45 @@ testHeadRule::testLevel()
 	{
 	  ELog::EM<<"Failed to set tmp :"<<std::get<0>(tc)
 		  <<ELog::endDebug;
+	  return -1;
+	}
+      const int Res=tmp.level(std::get<1>(tc));
+      if (Res!=std::get<2>(tc))
+	{
+	  ELog::EM<<"A == "<<A.display()<<ELog::endDebug;
+	  ELog::EM<<"Res["<<std::get<2>(tc)<<"] == "<<Res<<ELog::endDebug;
+	  return -1;
+	}
+    }
+  return 0;
+}
+
+int
+testHeadRule::testGetLevel()
+  /*!
+    Check the validity of a head rule level 
+    \return 0 :: success / -ve on error
+   */
+{
+  ELog::RegMethod RegA("testHeadRule","testGetLevel");
+
+  createSurfaces();
+  // object : surf : level found
+  typedef std::tuple<std::string,int,int> TTYPE;
+  std::vector<TTYPE> Tests;
+  Tests.push_back(TTYPE("1 -2 3 -4 (5:-6) ",5,1));
+  Tests.push_back(TTYPE("1 -2 3 -4 (5:-6) ",4,0));
+  Tests.push_back(TTYPE("1 -2 3 -4 (5:-6) ",7,-1));
+  Tests.push_back(TTYPE("1 -2 3 -4 (5:-6:(7 -8)) ",8,2));
+  
+  HeadRule A;
+  for(const TTYPE& tc : Tests)
+    {
+      HeadRule tmp;
+      if (!tmp.procString(std::get<0>(tc)))
+	{
+	  ELog::EM<<"Failed to set tmp :"<<std::get<0>(tc)
+		  <<ELog::endDiag;
 	  return -1;
 	}
       const int Res=tmp.level(std::get<1>(tc));

@@ -73,6 +73,7 @@
 #include "FixedComp.h"
 #include "FixedGroup.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
 #include "CellMap.h"
 #include "SurInter.h"
 #include "HoleShape.h"
@@ -249,7 +250,6 @@ RotaryCollimator::createSurfaces()
   // Front/Back
   ModelSupport::buildPlane(SMap,colIndex+1,Origin,Y);
   ModelSupport::buildPlane(SMap,colIndex+2,Origin+Y*thick,Y);
-
   // Master Cylinder
   ModelSupport::buildCylinder(SMap,colIndex+7,Origin,Y,radius);
 

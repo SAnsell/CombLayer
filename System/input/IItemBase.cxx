@@ -341,7 +341,6 @@ IItem::getObj(const size_t setIndex,const size_t itemIndex) const
 				  typeid(T).name(),Key+":convert error");
 
   return ObjValue;
-      
 }
 
 template<>

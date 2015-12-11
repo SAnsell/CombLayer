@@ -30,6 +30,7 @@
 #include <set>
 #include <map>
 #include <string>
+#include <array>
 #include <algorithm>
 #include <memory>
 
@@ -76,6 +77,7 @@
 #include "FixedComp.h"
 #include "ContainedComp.h"
 #include "LayerComp.h"
+#include "BaseMap.h"
 #include "CellMap.h"
 #include "AttachSupport.h"
 #include "geomSupport.h"

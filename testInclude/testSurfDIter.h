@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
- * File:   essBuildInc/essDBMaterial.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * File:   testInclude/testSurfDIter.h
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,20 +19,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef ModelSupport_essDBMaterial_h
-#define ModelSupport_essDBMaterial_h
+#ifndef testSurfDIter_h
+#define testSurfDIter_h 
 
+/*!
+  \class testSurfDIter
+  \brief Tests the SurfExpand class
+  \author S. Ansell
+  \date December 2009
+  \version 1.0
+  
+  Test of the surf Expand system
+*/
 
-namespace scatterSystem
+class testSurfDIter 
 {
-  class neutMaterial;
-}
+ private:
 
-namespace ModelSupport
-{
+  //Tests 
+  int testPopulateQuadRange();
 
-  void cloneESSMaterial();
-  void addESSMaterial();
-}
+
+ public:
+
+  testSurfDIter();
+  ~testSurfDIter();
+
+  int applyTest(const int);     
+};
 
 #endif

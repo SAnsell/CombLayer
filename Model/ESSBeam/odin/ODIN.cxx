@@ -66,10 +66,9 @@
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
-#include "LayerComp.h"
+#include "BaseMap.h"
 #include "CellMap.h"
+#include "SurfMap.h"
 #include "World.h"
 #include "AttachSupport.h"
 #include "Jaws.h"
@@ -233,11 +232,9 @@ ODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
 
   // Make bunker insert
   const attachSystem::FixedComp& GFC(GuideB->getKey("Guide0"));
-  const std::string BSector=
-    bunkerObj.calcSegment(System,GFC.getSignedLinkPt(2),
-			  GFC.getSignedLinkAxis(2));  
-  BInsert->setInsertCell(bunkerObj.getCells(BSector));
-  BInsert->createAll(System,GuideB->getKey("Guide0"),2,bunkerObj);
+  BInsert->createAll(System,GFC,2,bunkerObj);   // changed from -1
+  attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);  
+
 
   // Guide in the bunker insert
   GuideC->addInsertCell(BInsert->getCell("Void"));
@@ -254,9 +251,6 @@ ODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
     attachSystem::unionLink(GuideD->getKey("Shield"),{2,3,4,5,6});
   PitA->addInsertCell(voidCell);
   PitA->createAll(System,GuideD->getKey("Guide0"),2,GuideCut.display());
-
-  ELog::EM<<"PitA == "<<PitA->getCentre()
-	  <<" :: "<<PitA->getCentre().abs()<<ELog::endDebug;
   
   GuidePitAFront->addInsertCell(PitA->getCells("MidLayer"));
   GuidePitAFront->addEndCut(PitA->getKey("Inner").getSignedLinkString(1));

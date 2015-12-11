@@ -244,7 +244,7 @@ DelftKaeriModel(mainSystem::inputParam& IParam,
 void
 DelftNukemModel(mainSystem::inputParam& IParam,
 		FuncDataBase& Control)
-  /*!
+ /*!
     Function to set system for a given form of reactor.
     This is the compact model from 
     \param IParam :: Input paramter

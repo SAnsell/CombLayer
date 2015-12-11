@@ -67,8 +67,10 @@
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
-#include "LayerComp.h"
+#include "CopiedComp.h"
+#include "BaseMap.h"
 #include "CellMap.h"
+#include "SurfMap.h"
 #include "World.h"
 #include "AttachSupport.h"
 #include "GuideItem.h"
@@ -91,61 +93,62 @@
 namespace essSystem
 {
 
-DREAM::DREAM() :
-  dreamAxis(new attachSystem::FixedComp("dreamAxis",4)),
-  FocusA(new beamlineSystem::GuideLine("dreamFA")),
-  VacBoxA(new constructSystem::VacuumBox("dreamVacA")),
-  VPipeA(new constructSystem::VacuumPipe("dreamPipeA")),
-  FocusB(new beamlineSystem::GuideLine("dreamFB")),
-  DDisk(new constructSystem::DiskChopper("dreamDBlade")),
-  DDiskHouse(new constructSystem::ChopperHousing("dreamDBladeHouse")),
-  SDisk(new constructSystem::DiskChopper("dreamSBlade")),
-  SDiskHouse(new constructSystem::ChopperHousing("dreamSBladeHouse")),
-  T0DiskA(new constructSystem::DiskChopper("dreamT0DiskA")),
+DREAM::DREAM(const std::string& keyName) :
+  attachSystem::CopiedComp("dream",keyName),
+  dreamAxis(new attachSystem::FixedComp(newName+"Axis",4)),
+  FocusA(new beamlineSystem::GuideLine(newName+"FA")),
+  VacBoxA(new constructSystem::VacuumBox(newName+"VacA")),
+  VPipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
+  FocusB(new beamlineSystem::GuideLine(newName+"FB")),
+  DDisk(new constructSystem::DiskChopper(newName+"DBlade")),
+  DDiskHouse(new constructSystem::ChopperHousing(newName+"DBladeHouse")),
+  SDisk(new constructSystem::DiskChopper(newName+"SBlade")),
+  SDiskHouse(new constructSystem::ChopperHousing(newName+"SBladeHouse")),
+  T0DiskA(new constructSystem::DiskChopper(newName+"T0DiskA")),
 
-  T0DiskAHouse(new constructSystem::ChopperHousing("dreamT0DiskAHouse")),
-  VacBoxB(new constructSystem::VacuumBox("dreamVacB",1)),
-  VPipeB(new constructSystem::VacuumPipe("dreamPipeB")),
-  T0DiskB(new constructSystem::DiskChopper("dreamT0DiskB")),  
-  T0DiskBHouse(new constructSystem::ChopperHousing("dreamT0DiskBHouse")),
-  FocusC(new beamlineSystem::GuideLine("dreamFC")),
+  T0DiskAHouse(new constructSystem::ChopperHousing(newName+"T0DiskAHouse")),
+  VacBoxB(new constructSystem::VacuumBox(newName+"VacB",1)),
+  VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
+  T0DiskB(new constructSystem::DiskChopper(newName+"T0DiskB")),  
+  T0DiskBHouse(new constructSystem::ChopperHousing(newName+"T0DiskBHouse")),
+  FocusC(new beamlineSystem::GuideLine(newName+"FC")),
 
-  VacBoxC(new constructSystem::VacuumBox("dreamVacC",1)),
-  BandADisk(new constructSystem::DiskChopper("dreamBandADisk")),  
-  BandAHouse(new constructSystem::ChopperHousing("dreamBandAHouse")),
-  VPipeC(new constructSystem::VacuumPipe("dreamPipeC")),
-  FocusD(new beamlineSystem::GuideLine("dreamFD")),
+  VacBoxC(new constructSystem::VacuumBox(newName+"VacC",1)),
+  BandADisk(new constructSystem::DiskChopper(newName+"BandADisk")),  
+  BandAHouse(new constructSystem::ChopperHousing(newName+"BandAHouse")),
+  VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
+  FocusD(new beamlineSystem::GuideLine(newName+"FD")),
 
-  VacBoxD(new constructSystem::VacuumBox("dreamVacD",1)),
-  BandBDisk(new constructSystem::DiskChopper("dreamBandBDisk")),  
-  BandBHouse(new constructSystem::ChopperHousing("dreamBandBHouse")),
-  VPipeD(new constructSystem::VacuumPipe("dreamPipeD")),
-  FocusE(new beamlineSystem::GuideLine("dreamFE")),
+  VacBoxD(new constructSystem::VacuumBox(newName+"VacD",1)),
+  BandBDisk(new constructSystem::DiskChopper(newName+"BandBDisk")),  
+  BandBHouse(new constructSystem::ChopperHousing(newName+"BandBHouse")),
+  VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
+  FocusE(new beamlineSystem::GuideLine(newName+"FE")),
 
-  VacBoxE(new constructSystem::VacuumBox("dreamVacE",1)),
-  T0DiskC(new constructSystem::DiskChopper("dreamT0DiskC")),  
-  T0HouseC(new constructSystem::ChopperHousing("dreamT0DiskCHouse")),
-  VPipeE(new constructSystem::VacuumPipe("dreamPipeE")),
-  FocusF(new beamlineSystem::GuideLine("dreamFF")),
+  VacBoxE(new constructSystem::VacuumBox(newName+"VacE",1)),
+  T0DiskC(new constructSystem::DiskChopper(newName+"T0DiskC")),  
+  T0HouseC(new constructSystem::ChopperHousing(newName+"T0DiskCHouse")),
+  VPipeE(new constructSystem::VacuumPipe(newName+"PipeE")),
+  FocusF(new beamlineSystem::GuideLine(newName+"FF")),
 
-  VacBoxF(new constructSystem::VacuumBox("dreamVacF",1)),
-  T0DiskD(new constructSystem::DiskChopper("dreamT0DiskD")),  
-  T0HouseD(new constructSystem::ChopperHousing("dreamT0DiskDHouse")),
-  VPipeF(new constructSystem::VacuumPipe("dreamPipeF")),
-  FocusG(new beamlineSystem::GuideLine("dreamFG")),
+  VacBoxF(new constructSystem::VacuumBox(newName+"VacF",1)),
+  T0DiskD(new constructSystem::DiskChopper(newName+"T0DiskD")),  
+  T0HouseD(new constructSystem::ChopperHousing(newName+"T0DiskDHouse")),
+  VPipeF(new constructSystem::VacuumPipe(newName+"PipeF")),
+  FocusG(new beamlineSystem::GuideLine(newName+"FG")),
 
-  VPipeFinal(new constructSystem::VacuumPipe("dreamPipeFinal")),
-  FocusFinal(new beamlineSystem::GuideLine("dreamFFinal")),
-  BInsert(new BunkerInsert("dreamBInsert")),
-  FocusWall(new beamlineSystem::GuideLine("dreamFWall")),
+  VPipeFinal(new constructSystem::VacuumPipe(newName+"PipeFinal")),
+  FocusFinal(new beamlineSystem::GuideLine(newName+"FFinal")),
+  BInsert(new BunkerInsert(newName+"BInsert")),
+  FocusWall(new beamlineSystem::GuideLine(newName+"FWall")),
 
-  ShieldA(new constructSystem::LineShield("dreamShieldA")),
-  VPipeOutA(new constructSystem::VacuumPipe("dreamPipeOutA")),
-  FocusOutA(new beamlineSystem::GuideLine("dreamFOutA")),
+  ShieldA(new constructSystem::LineShield(newName+"ShieldA")),
+  VPipeOutA(new constructSystem::VacuumPipe(newName+"PipeOutA")),
+  FocusOutA(new beamlineSystem::GuideLine(newName+"FOutA")),
 
-  ShieldB(new constructSystem::LineShield("dreamShieldB")),
-  VPipeOutB(new constructSystem::VacuumPipe("dreamPipeOutB")),
-  FocusOutB(new beamlineSystem::GuideLine("dreamFOutB"))
+  ShieldB(new constructSystem::LineShield(newName+"ShieldB")),
+  VPipeOutB(new constructSystem::VacuumPipe(newName+"PipeOutB")),
+  FocusOutB(new beamlineSystem::GuideLine(newName+"FOutB"))
 /*!
     Constructor
  */
@@ -155,8 +158,8 @@ DREAM::DREAM() :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  // This is necessary:
-  OR.cell("dreamAxis");
+  // This is necessary as not directly constructed:
+  OR.cell(newName+"Axis");
   OR.addObject(dreamAxis);
 
   OR.addObject(FocusA);
@@ -252,7 +255,9 @@ DREAM::buildChopperBlock(Simulation& System,
     \param System :: Simulation 
     \param bunkerObj :: Object
     \param prevFC :: FixedComponent for like point [uses side 2]
+    \param prevVacBox :: 
     \param GL :: Guide Line 
+    \parma Pipe :: Pip surrounding block
   */
 {
   ELog::RegMethod RegA("DREAM","buildChopperBlock");
@@ -305,12 +310,18 @@ DREAM::build(Simulation& System,
 
   ELog::EM<<"\nBuilding DREAM on : "<<GItem.getKeyName()<<ELog::endDiag;
 
+  const FuncDataBase& Control=System.getDataBase();
+  CopiedComp::process(System.getDataBase());
+  stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
+
   setBeamAxis(GItem,1);
   FocusA->addInsertCell(GItem.getCells("Void"));
   FocusA->addEndCut(GItem.getKey("Beam").getSignedLinkString(-2));
   FocusA->createAll(System,GItem.getKey("Beam"),-1,
 		    GItem.getKey("Beam"),-1);
 
+  if (stopPoint==1) return;                      // STOP At bunker edge
+  
   // First section out of monolyth
   VacBoxA->addInsertCell(bunkerObj.getCell("MainVoid"));
   VacBoxA->createAll(System,FocusA->getKey("Guide0"),2);
@@ -410,19 +421,18 @@ DREAM::build(Simulation& System,
   FocusFinal->createAll(System,T0DiskD->getKey("Beam"),2,
 			T0DiskD->getKey("Beam"),2);
 
+  if (stopPoint==2) return;                      // STOP At bunker edge
   // IN WALL
   // Make bunker insert
   const attachSystem::FixedComp& GFC(FocusFinal->getKey("Guide0"));
-  const std::string BSector=
-    bunkerObj.calcSegment(System,GFC.getSignedLinkPt(-1),
-			  GFC.getSignedLinkAxis(-1));  
-  BInsert->setInsertCell(bunkerObj.getCells(BSector));
   BInsert->createAll(System,GFC,-1,bunkerObj);
+  attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);  
 
   FocusWall->addInsertCell(BInsert->getCell("Void"));
   FocusWall->createAll(System,*BInsert,-1,
 			 FocusFinal->getKey("Guide0"),2);
 
+    if (stopPoint==3) return;                      // STOP At bunker edge
   // Section to 17m
   
   ShieldA->addInsertCell(voidCell);

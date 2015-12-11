@@ -221,7 +221,7 @@ meshConstruct::getDoseConversion()
     Return the dose string  for a mshtr
     Uses the FTD files values [Flux to Dose conversion].
     - These values are in mrem/hour. You need a conversion factor
-    of 360 to go to 1uSv/hour from particles/sec.
+    of 10 to go to 1uSv/hour from particles/sec.
     \return FTD string
   */
 {

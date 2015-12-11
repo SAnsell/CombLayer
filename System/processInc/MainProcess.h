@@ -76,7 +76,7 @@ namespace mainSystem
   void renumberCells(Simulation&,const inputParam&);
 
   void setVariables(Simulation&,const inputParam&,std::vector<std::string>&);
-
+  void setMaterialsDataBase(const inputParam&);
 
   int extractName(std::vector<std::string>&,std::string&);
 

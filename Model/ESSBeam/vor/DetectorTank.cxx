@@ -72,6 +72,7 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
 #include "CellMap.h"
 #include "DetectorTank.h"
 

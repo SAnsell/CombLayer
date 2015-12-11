@@ -79,14 +79,6 @@ namespace setVariable
 
   void siSimulation(FuncDataBase&);
 
-  // ESS Beamlines
-  void ODINvariables(FuncDataBase&);
-  void ESTIAvariables(FuncDataBase&);
-  void DREAMvariables(FuncDataBase&);
-  void LOKIvariables(FuncDataBase&);
-  void NMXvariables(FuncDataBase&);
-  void VORvariables(FuncDataBase&);
-
 }
 
 #endif
