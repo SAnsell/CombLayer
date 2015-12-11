@@ -197,10 +197,7 @@ BilbaoWheel::populate(const FuncDataBase& Control)
   zAngle=Control.EvalVar<double>(keyName+"Zangle");
 
   engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
-
   nSectors=Control.EvalDefVar<size_t>(keyName+"NSectors",36);
-  if (nSectors<2)
-    throw ColErr::RangeError<double>(nSectors, 2, 1000, "NSectors must be >= 2");
 
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");   
   double R;
@@ -349,15 +346,16 @@ BilbaoWheel::getSQSurface(const double R, const double e)
 }
 
 void
-BilbaoWheel::create3DSurfaces()
+BilbaoWheel::createRadialSurfaces()
 /*!
   Create planes for the inner structure iside BilbaoWheel
 */
 {
-  ELog::RegMethod RegA("BilbaoWheel","create3DSurfaces");
+  ELog::RegMethod RegA("BilbaoWheel","createRadialSurfaces");
+
+  if (nSectors<2) return;
 
   int SI(wheelIndex+3000);
-
   double theta(0.0);
   const double dTheta = 360.0/nSectors;
 
@@ -374,13 +372,21 @@ BilbaoWheel::create3DSurfaces()
 
 
 void
-BilbaoWheel::divide3D(Simulation& System, std::string& sides, int mat)
+BilbaoWheel::divideRadial(Simulation& System, std::string& sides, int mat)
 /*!
   Divide wheel by sectors to help cell splitting
-  \param SI :: cylindrical surface offset
+  \param System :: Simulation
+  \param sides :: top/bottom and side cylinders
+  \param mat :: material
  */
 {
-  ELog::RegMethod RegA("BilbaoWheel","divide3D");
+  ELog::RegMethod RegA("BilbaoWheel","divideRadial");
+
+  if (nSectors<2)
+    {
+      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,sides));
+      return;
+    }
 
   int SJ(wheelIndex+3000);
   std::string Out;
@@ -497,7 +503,7 @@ BilbaoWheel::createSurfaces()
   
   ModelSupport::buildCylinder(SMap,wheelIndex+537,Origin,Z,voidRadius);  
 
-  create3DSurfaces();
+  createRadialSurfaces();
 
   return; 
 }
@@ -523,22 +529,17 @@ BilbaoWheel::createObjects(Simulation& System)
   int nInner(0); // number of inner cells (must be 1)
   for(size_t i=0;i<nLayers;i++)
     {
-      if (matTYPE[i]!=1)
-	{
-	  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -17M 5 -6 ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,matNum[matTYPE[i]],mainTemp,Out));  
-	}
+      Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -17M 5 -6 ");
 
-      if (matTYPE[i]==3) {
+      if ((matTYPE[i]==3) && (engActive))
+	{
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,matNum[matTYPE[i]],mainTemp,Out));  
 	  CellMap::setCell("Inner",cellIndex-1);
 	  nInner++;
 	  if (nInner>1)
 	    ELog::EM << "More than one spallation layer" << ELog::endErr;
-      } else if (matTYPE[i]==1)
-	{
-	  std::string sides = ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -17M 5 -6 ");
-	  divide3D(System, sides, matNum[matTYPE[i]]);
-	}
+	} else
+	  divideRadial(System, Out, matNum[matTYPE[i]]);
 
       SI+=10;
     }
