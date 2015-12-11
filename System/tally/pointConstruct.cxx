@@ -481,6 +481,8 @@ pointConstruct::writeHelp(std::ostream& OX) const
   OX<<
     "free Vec3D -- point detector at point\n"
     "object ObjName link dist -- point detector at "
+        " point relative to object\n"
+    "objOffset ObjName link Vec3D -- point detector at "
     " point relative to object\n"
     "freeWindow Vec3D Vec3D Vec3D Vec3D Vec3D -- \n"
     "   Point + four coordinates of the window\n"

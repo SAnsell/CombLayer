@@ -69,11 +69,11 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("ABunkerLeftAngle",0.0);
   Control.addVariable("ABunkerRightAngle",0.0);
   Control.addVariable("ABunkerNSectors",10);
-  Control.addVariable("ABunkerNVert",24);
-  Control.addVariable("ABunkerNLayers",24);
+  Control.addVariable("ABunkerNVert",1);
+  Control.addVariable("ABunkerNLayers",1);
   Control.addVariable("ABunkerNSegment",5);
-  Control.addVariable("ABunkerActiveSegment",4);
-  Control.addVariable("ABunkerActiveRoof",4);
+  Control.addVariable("ABunkerActiveSegment",0);
+  Control.addVariable("ABunkerActiveRoof",0);
 
   Control.addVariable("ABunkerNRoofVert",5);
   Control.addVariable("ABunkerNRoofSide",1);
