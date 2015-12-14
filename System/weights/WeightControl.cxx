@@ -79,7 +79,7 @@ namespace WeightSystem
 WeightControl::WeightControl() :
   sourceFlag(0),tallyFlag(0)
   /*
-    Constructorg
+    Constructor
    */
 {
   setHighEBand();
@@ -366,6 +366,7 @@ WeightControl::scaleObject(const Simulation& System,
 			   const double eCut)
   /*!
     Scale all individual object by the scale weight.
+    \param System :: Simulation model
     \param objKey :: Object key name
     \param SW :: Scale weight
     \param eCut :: min energy to use
@@ -411,7 +412,9 @@ WeightControl::scaleAllObjects(const Simulation& System,
 			       const double SW,const double eCut) 
   /*!
     Scale all individual object by the scale weight.
+    \param System :: Simulation model
     \param SW :: Scale weight
+    \param eCut :: Scale only eneries beyond value [-ve below/+ve above]
   */
 {
   ELog::RegMethod RegA("WeightControl","scaleAllObjects");
@@ -432,7 +435,7 @@ WeightControl::findMax(const Simulation& System,
     \param System :: Simulation for cell materials
     \param objKey :: Object Name
     \param index ;: index value [+1 option / 0 all]
-    \param eCut :: energy cut value
+    \param eCut :: Scale only eneries beyond value [-ve below/+ve above]
     \return value for max
   */
 {

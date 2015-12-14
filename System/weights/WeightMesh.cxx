@@ -181,12 +181,13 @@ WeightMesh::writeWWINP(std::ostream& OX,const size_t NEBin) const
   /*!
     Write out to a mesh to a wwinp file
     Currently ONLY works correctly with a rectangular file
-    \paramOX :: Output stream
+    \param OX :: Output stream
+    \param NEBin :: Number of energy bins
   */
 {
   ELog::RegMethod RegA("WeightMesh","writeWWINP");
 
-  
+
   boost::format TopFMT("%10i%10i%10i%10i%28s\n");
   const std::string date("10/07/15 15:37:51");
   OX<<(TopFMT % tallyN % 1 % 1 % 10 % date);

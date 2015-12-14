@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   weights/WWGconstruct.cxx
+ * File:   weights/WWGx.cxx
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -74,6 +74,7 @@ void
 WWG::setEnergyBin(const std::vector<double>& EB)
   /*!
     Set the energy bins
+    \param EB :: Energy bins [MeV]
   */
 {
   EBin=EB;
@@ -84,7 +85,8 @@ WWG::setEnergyBin(const std::vector<double>& EB)
 void
 WWG::write(std::ostream& OX) const
   /*!
-    Wreit to the MCNP file
+    Write to the MCNP file [only grid]
+    \param OX :: Output stream
    */
 {
   ELog::RegMethod RegA("WWG","write");
@@ -97,7 +99,7 @@ void
 WWG::writeWWINP(const std::string& FName) const
   /*!
     Write out separate WWINP file
-    \param FNAme :: Output filename
+    \param FName :: Output filename
   */
 {
   std::ofstream OX;

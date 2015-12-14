@@ -32,6 +32,7 @@ class Simulation;
 namespace WeightSystem
 {
 
+  
 class WWG
 {
  public:
@@ -44,7 +45,7 @@ class WWG
   std::vector<double> EBin;      ///< Energy bins
   WeightMesh Grid;               ///< Mesh Grid
   std::vector<double> WMesh;     ///< linearized weight mesh
-  
+
  public:
 
   

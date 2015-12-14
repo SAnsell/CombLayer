@@ -74,7 +74,7 @@ class ObjectTrackAct
   /// Set target point
   void setTarget(const Geometry::Vec3D& Pt) { TargetPt=Pt; }
 
-  void addUnit(const Simulation&,const int,Geometry::Vec3D);
+  void addUnit(const Simulation&,const int,const Geometry::Vec3D&);
 
   double getMatSum(const int) const;
   double getAttnSum(const int) const;

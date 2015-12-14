@@ -121,7 +121,7 @@ ObjectTrackAct::clearAll()
 
 void
 ObjectTrackAct::addUnit(const Simulation& System,const int objN,
-			Geometry::Vec3D IPt)
+			const Geometry::Vec3D& IPt)
   /*!
     Create a target track between the IPt and the target point
     \param System :: Simulation to use

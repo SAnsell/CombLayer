@@ -45,7 +45,13 @@ namespace WeightSystem
 
 class WWGconstruct
 {
-  public:
+ private:
+
+  void calcTrack(const Simulation&,const WWG&,
+		 const Geometry::Vec3D&,const double,
+		 const double,const double);
+  
+ public:
 
   WWGconstruct();
   WWGconstruct(const WWGconstruct&);

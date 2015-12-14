@@ -76,6 +76,9 @@ class WeightMesh
   WeightMesh& operator=(const WeightMesh&);
   virtual ~WeightMesh() {}   ///< Destructor
 
+  size_t getXSize() const { return NX; }
+  size_t getYSize() const { return NY; }
+  size_t getZSize() const { return NZ; }
   Geometry::Vec3D point(const size_t,const size_t,const size_t) const;
 
   void setMeshType(const GeomENUM&);

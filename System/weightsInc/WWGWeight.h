@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   weightInc/CellWeight.h
+ * File:   weightInc/WWGWeight.h
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -19,60 +19,60 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef WeightSystem_CellWeight_h
-#define WeightSystem_CellWeight_h
+#ifndef WeightSystem_WWGWeight_h
+#define WeightSystem_WWGWeight_h
 
 namespace WeightSystem
 {
 
-struct CellItem
+struct WWGItem
 {
-  int vCell;              ///< Void cell
+  size_t cX;              ///< Index
   double weight;          ///< weight for the cell
   double number;          ///< number of tracks
 
   /// Constructor
-  CellItem(const double W) : vCell(0),weight(W), number(1.0) {}
+  WWGItem(const double W) : cX(0),weight(W), number(1.0) {}
   /// Copy construct
-  CellItem(const CellItem& A) :
-    vCell(A.vCell),weight(A.weight),number(A.number) {}
+  WWGItem(const WWGItem& A) :
+    cX(A.vWWG),weight(A.weight),number(A.number) {}
 };
   
 /*!
-  \class CellWeight
+  \class WWGWeight
   \version 1.0
   \author S. Ansell
   \date November 2015
   \brief Tracks cell weight in cells
 */
   
-class CellWeight
+class WWGWeight
 {
  private:
   
   const double sigmaScale;             ///< Scale for sigma
   double scaleFactor;                  ///< Scaling factor
   double minWeight;                    ///< Min weight
-  std::map<int,CellItem> Cells;        ///< Cells and track info
+  std::map<int,WWGItem> Cells;        ///< Cells and track info
 
  public:
 
-  CellWeight();
-  CellWeight(const CellWeight&);
-  CellWeight& operator=(const CellWeight&);    
-  ~CellWeight() {}          ///< Destructor
+  WWGWeight();
+  WWGWeight(const WWGWeight&);
+  WWGWeight& operator=(const WWGWeight&);    
+  ~WWGWeight() {}          ///< Destructor
 
   /// set the scale factor
   void setScaleFactor(const double F) { scaleFactor=F; }
   /// set min cell weight
   void setMinWeight(const double W) { minWeight=W; }
-  void addTracks(const int,const double);
+  void addTracks(const size_t,const double);
   void updateWM(const double) const;
   void write(std::ostream&) const;
 };
 
 
-std::ostream& operator<<(std::ostream&,const CellWeight&);
+std::ostream& operator<<(std::ostream&,const WWGWeight&);
 
 }
 
