@@ -108,6 +108,9 @@ EdgeWater::EdgeWater(const EdgeWater& A) :
   width(A.width),wallThick(A.wallThick),
   sideWaterThick(A.sideWaterThick),
   sideWaterMat(A.sideWaterMat),
+  insWaterLength(A.insWaterLength),
+  insWaterHeight(A.insWaterHeight),
+  insWaterThick(A.insWaterThick),
   modMat(A.modMat),
   wallMat(A.wallMat),modTemp(A.modTemp)
   /*!
@@ -134,6 +137,9 @@ EdgeWater::operator=(const EdgeWater& A)
       wallThick=A.wallThick;
       sideWaterThick=A.sideWaterThick;
       sideWaterMat=A.sideWaterMat;
+      insWaterLength=A.insWaterLength;
+      insWaterHeight=A.insWaterHeight;
+      insWaterThick=A.insWaterThick;
       modMat=A.modMat;
       wallMat=A.wallMat;
       modTemp=A.modTemp;
@@ -173,6 +179,10 @@ EdgeWater::populate(const FuncDataBase& Control)
   sideWaterMat=ModelSupport::EvalMat<int>(Control,keyName+"SideWaterMat");
   sideWaterCutAngle=Control.EvalVar<double>(keyName+"SideWaterCutAngle");
   sideWaterCutOffset=Control.EvalVar<double>(keyName+"SideWaterCutDist");
+
+  insWaterLength=Control.EvalDefVar<double>(keyName+"InsWaterLength", 20.0);
+  insWaterHeight=Control.EvalDefVar<double>(keyName+"InsWaterHeight", 3.0);
+  insWaterThick=Control.EvalDefVar<double>(keyName+"InsWaterThick", 3.0);
 
   modMat=ModelSupport::EvalMat<int>(Control,keyName+"ModMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -263,6 +273,33 @@ EdgeWater::createSurfaces(const std::string& divider)
   ModelSupport::buildShiftedPlane(SMap, edgeIndex+23, p13, wallThick);
   ModelSupport::buildShiftedPlane(SMap, edgeIndex+24, p14, wallThick);
 
+  // WATER INSERT
+  ModelSupport::buildPlane(SMap,edgeIndex+105,
+			   Origin-Z*(insWaterHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,edgeIndex+106,
+			   Origin+Z*(insWaterHeight/2.0),Z);
+
+  ModelSupport::buildPlane(SMap,edgeIndex+115,
+			   Origin-Z*(insWaterHeight/2.0+wallThick),Z);
+  ModelSupport::buildPlane(SMap,edgeIndex+116,
+			   Origin+Z*(insWaterHeight/2.0+wallThick),Z);
+
+  const double insDirection = sDiv->getNormal()[1];
+  ModelSupport::buildPlane(SMap,edgeIndex+103,
+			   Origin+X*(insWaterLength*insDirection),X*insDirection);
+  ModelSupport::buildPlane(SMap,edgeIndex+113,
+			   Origin+X*((insWaterLength-wallThick)*insDirection),X*insDirection);
+
+  ModelSupport::buildPlane(SMap, edgeIndex+101,
+			   Origin-Y*(insWaterThick/2.0),Y);
+  ModelSupport::buildPlane(SMap, edgeIndex+102,
+			   Origin+Y*(insWaterThick/2.0),Y);
+
+  ModelSupport::buildPlane(SMap, edgeIndex+111,
+			   Origin-Y*(insWaterThick/2.0+wallThick),Y);
+  ModelSupport::buildPlane(SMap, edgeIndex+112,
+			   Origin+Y*(insWaterThick/2.0+wallThick),Y);
+
   return;
 }
  
@@ -279,30 +316,65 @@ EdgeWater::createObjects(Simulation& System,
   ELog::RegMethod RegA("EdgeWater","createObjects");
 
   std::string Out;
+
+  //  Out=ModelSupport::getComposite(SMap,edgeIndex," 1 -2 -5 ");
+  //  System.addCell(MonteCarlo::Qhull(cellIndex++,0,
+  //				   modTemp,Out+container+divider));
+
   
-  Out=ModelSupport::getComposite(SMap,edgeIndex," 1 -2 ");
+  Out=ModelSupport::getComposite(SMap,edgeIndex," 1 -2 (-115:116) "); // top/bottom water - no insert here
+  System.addCell(MonteCarlo::Qhull(cellIndex++,sideWaterMat,
+				   modTemp,Out+container+divider));
+
+  Out=ModelSupport::getComposite(SMap,edgeIndex," 1 -2 105 -106 -113 "); // water in the vertical middle
   System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,
 				   modTemp,Out+container+divider));
+
+  Out=ModelSupport::getComposite(SMap,edgeIndex," 1 -2 115 -116 -113 (-105:106) "); // water in the vertical middle
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,
+				   modTemp,Out+divider));
+
+  Out=ModelSupport::getComposite(SMap,edgeIndex," 1 -2 105 -106 113 (-111:112) "); // water around insert (side)
+  System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,
+   				   modTemp,Out+container));
+
+  Out=ModelSupport::getComposite(SMap,edgeIndex," 1 -2 -105 115 113 (-111:112) ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,
+   				   modTemp,Out+container));
+
+  Out=ModelSupport::getComposite(SMap,edgeIndex," 1 -2 106 -116 113 (-111:112) ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,
+   				   modTemp,Out+container));
+
+  Out=ModelSupport::getComposite(SMap,edgeIndex," 115 -116 113 111 -112 (-105:106:-103:-101:102) "); 
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,
+   				   modTemp,Out+container));
+
+  Out=ModelSupport::getComposite(SMap,edgeIndex," 105 -106 103 101 -102 "); // water insert
+  System.addCell(MonteCarlo::Qhull(cellIndex++,sideWaterMat,
+				   modTemp,Out+container));
+
+
   
   // Two walls : otherwise divider container
   Out=ModelSupport::getComposite(SMap,edgeIndex," 11 -1");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,
 				   modTemp,Out+container+divider));
-  CellMap::setCell("InnerAlTop",  cellIndex-1);
+  CellMap::setCell("InnerAlSupply",  cellIndex-1);
   Out=ModelSupport::getComposite(SMap,edgeIndex," 2 -12");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,
 				   modTemp,Out+container+divider));
-  CellMap::setCell("InnerAlLow",  cellIndex-1);
+  CellMap::setCell("InnerAlReturn",  cellIndex-1);
 
   // Side water
   Out=ModelSupport::getComposite(SMap,edgeIndex," 21 -11 23 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,sideWaterMat,
 				   modTemp,Out+container+divider));
-  CellMap::setCell("SideWaterTop",  cellIndex-1);
+  CellMap::setCell("SideWaterSupply",  cellIndex-1);
   Out=ModelSupport::getComposite(SMap,edgeIndex," 12 -22 24 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,sideWaterMat,
 				   modTemp,Out+container+divider));
-  CellMap::setCell("SideWaterLow",  cellIndex-1);
+  CellMap::setCell("SideWaterReturn",  cellIndex-1);
 
   // Side Al
   Out=ModelSupport::getComposite(SMap,edgeIndex," 31 -21 23 ");

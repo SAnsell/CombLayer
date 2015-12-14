@@ -390,21 +390,21 @@ makeESS::buildH2Pipe(Simulation& System, std::string lobeName, std::string water
   // !!! this is extremaly slow. add only cells which are really needed.
   // !!! Actually since cold Al/H can't connect with warm Al or water,
   // !!! instead of doing this horrific thing I need to enlarge void around pipes.
-  pipeAl->addInsertCell(0, CM->getCell("InnerAlTop"));
-  pipeConnect->addInsertCell(0, CM->getCell("InnerAlTop"));
-  pipeInvar->addInsertCell(0, CM->getCell("InnerAlTop"));
+  pipeAl->addInsertCell(0, CM->getCell("InnerAlSupply"));
+  pipeConnect->addInsertCell(0, CM->getCell("InnerAlSupply"));
+  pipeInvar->addInsertCell(0, CM->getCell("InnerAlSupply"));
 
-  pipeAl->addInsertCell(0, CM->getCell("InnerAlLow"));
-  pipeConnect->addInsertCell(0, CM->getCell("InnerAlLow"));
-  pipeInvar->addInsertCell(0, CM->getCell("InnerAlLow"));
+  pipeAl->addInsertCell(0, CM->getCell("InnerAlReturn"));
+  pipeConnect->addInsertCell(0, CM->getCell("InnerAlReturn"));
+  pipeInvar->addInsertCell(0, CM->getCell("InnerAlReturn"));
 
-  pipeAl->addInsertCell(0, CM->getCell("SideWaterTop"));
-  pipeConnect->addInsertCell(0, CM->getCell("SideWaterTop"));
-  pipeInvar->addInsertCell(0, CM->getCell("SideWaterTop"));
+  pipeAl->addInsertCell(0, CM->getCell("SideWaterSupply"));
+  pipeConnect->addInsertCell(0, CM->getCell("SideWaterSupply"));
+  pipeInvar->addInsertCell(0, CM->getCell("SideWaterSupply"));
 
-  pipeAl->addInsertCell(0, CM->getCell("SideWaterLow"));
-  pipeConnect->addInsertCell(0, CM->getCell("SideWaterLow"));
-  pipeInvar->addInsertCell(0, CM->getCell("SideWaterLow"));
+  pipeAl->addInsertCell(0, CM->getCell("SideWaterReturn"));
+  pipeConnect->addInsertCell(0, CM->getCell("SideWaterReturn"));
+  pipeInvar->addInsertCell(0, CM->getCell("SideWaterReturn"));
 
   pipeAl->setAngleSeg(12);
   pipeAl->setOption(pipeType); 
