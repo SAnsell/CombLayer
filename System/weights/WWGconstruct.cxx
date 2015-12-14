@@ -56,6 +56,9 @@
 #include "objectRegister.h"
 #include "inputParam.h"
 #include "WeightMesh.h"
+#include "LineTrack.h"
+#include "ObjectTrackAct.h"
+#include "WWGWeight.h"
 #include "WWG.h"
 #include "WWGconstruct.h"
 
@@ -90,6 +93,7 @@ WWGconstruct::calcTrack(const Simulation& System,
 
   const WeightMesh& WMesh=wwg.getGrid();  
 
+  WWGWeight CTrack;
   // SOURCE Point
   ModelSupport::ObjectTrackAct OTrack(SourcePt);
 
@@ -97,8 +101,8 @@ WWGconstruct::calcTrack(const Simulation& System,
   const size_t NY=WMesh.getYSize();
   const size_t NZ=WMesh.getZSize();
 
-  std::vector<double> WMesh;
-  int CN(1);         // Index to reference point
+  std::vector<double> WVec;
+  int cN(1);         // Index to reference point
   for(size_t i=0;i<NX;i++)
     for(size_t j=0;j<NY;j++)
       for(size_t k=0;k<NZ;k++)
@@ -106,19 +110,17 @@ WWGconstruct::calcTrack(const Simulation& System,
 	  const Geometry::Vec3D Pt=WMesh.point(i,j,k);
 	  std::vector<double> attnN;
 	  OTrack.addUnit(System,cN,Pt);
-	  WMesh.push_back(OTrack.getAttnSum(cN));
+	  WVec.push_back(OTrack.getAttnSum(cN));
+	  cN++;
 	}
-    }
-  
-  
-
+    
 
   CTrack.setScaleFactor(sF);
   CTrack.setMinWeight(mW);
 
   // POPULATE HERE:::::
   
-  CTrack.updateWM(eCut);
+  //  CTrack.updateWM(eCut);
   return;
 }
 
@@ -136,7 +138,7 @@ WWGconstruct::createWWG(Simulation& System,
 
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();
-
+ 
   const std::string XYZ[3]={"X","Y","Z"};
 
   WWG& wwg=WM.getWWG();

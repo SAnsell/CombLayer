@@ -35,7 +35,7 @@ struct WWGItem
   WWGItem(const double W) : cX(0),weight(W), number(1.0) {}
   /// Copy construct
   WWGItem(const WWGItem& A) :
-    cX(A.vWWG),weight(A.weight),number(A.number) {}
+    cX(A.cX),weight(A.weight),number(A.number) {}
 };
   
 /*!
@@ -53,7 +53,7 @@ class WWGWeight
   const double sigmaScale;             ///< Scale for sigma
   double scaleFactor;                  ///< Scaling factor
   double minWeight;                    ///< Min weight
-  std::map<int,WWGItem> Cells;        ///< Cells and track info
+  std::map<size_t,WWGItem> Cells;        ///< Cells and track info
 
  public:
 

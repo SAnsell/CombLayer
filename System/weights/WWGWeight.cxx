@@ -103,7 +103,7 @@ WWGWeight::operator=(const WWGWeight& A)
   
 void
 WWGWeight::addTracks(const size_t cX,
-		     const size_t const double value)
+		     const double value)
   /*!
     Adds an average track contribution
     \param cN :: cell number
@@ -111,9 +111,10 @@ WWGWeight::addTracks(const size_t cX,
   */
 {
   ELog::RegMethod RegA("WWGWeight","addTracks");
-  std::map<int,WWGItem>::iterator mc=Cells.find(cN);
+
+  std::map<size_t,WWGItem>::iterator mc=Cells.find(cX);
   if (mc==Cells.end())
-    Cells.emplace(cN,CellItem(value));
+    Cells.emplace(cX,WWGItem(value));
   else
     {
       mc->second.weight+=value;
@@ -131,15 +132,8 @@ WWGWeight::updateWM(const double eCut) const
 {
   ELog::RegMethod RegA("WWGWeight","updateWM");
 
-  WeightSystem::weightManager& WM=
-    WeightSystem::weightManager::Instance();  
 
-  WeightSystem::WForm* WF=WM.getParticle('n');
-  if (!WF)
-    throw ColErr::InContainerError<std::string>("n","neutron has no WForm");
-
-  // quick way to get length of array
-  const std::vector<double> EVec=WF->getEnergy();
+  const std::vector<double> EVec(1);
   std::vector<double> DVec=EVec;
   std::fill(DVec.begin(),DVec.end(),1.0);
   
@@ -147,7 +141,7 @@ WWGWeight::updateWM(const double eCut) const
   double minW(1e38);
   double aveW(0.0);
   int cnt(0);
-  for(const std::map<int,WWGItem>::value_type& cv : Cells)
+  for(const std::map<size_t,WWGItem>::value_type& cv : Cells)
     {
       const double W=(exp(-cv.second.weight*sigmaScale*scaleFactor));
       if (W>maxW) maxW=W;
@@ -160,7 +154,7 @@ WWGWeight::updateWM(const double eCut) const
   const double factor=(minW>minWeight) ?
     log(minWeight)/log(minW) : 1.0;
 
-  for(const std::map<int,WWGItem>::value_type& cv : Cells)
+  for(const std::map<size_t,WWGItem>::value_type& cv : Cells)
     {
       const double W=(exp(-cv.second.weight*sigmaScale*scaleFactor*factor));
       for(size_t i=0;i<EVec.size();i++)
@@ -170,7 +164,7 @@ WWGWeight::updateWM(const double eCut) const
 	  else if (EVec[i]>=eCut)
 	    DVec[i]=W;
 	}
-      WF->scaleWeights(cv.first,DVec);
+      //      WF->scaleWeights(cv.first,DVec);
     }
   return;
 }
