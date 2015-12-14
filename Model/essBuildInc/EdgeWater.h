@@ -54,7 +54,7 @@ class EdgeWater :
   double sideWaterCutAngle;  ///< Side water cut angle
   double sideWaterCutOffset; ///< Distance from intersection with divider where cut starts
   double insWaterLength;        ///< water insert length
-  double insWaterHeight;        ///< water insert height
+  double insWaterHeight;        ///< water insert height. if negative, spans over full height
   double insWaterThick;         ///< water insert thick
 
   int modMat;               ///< Water material

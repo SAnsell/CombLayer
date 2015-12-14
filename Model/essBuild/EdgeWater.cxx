@@ -181,7 +181,7 @@ EdgeWater::populate(const FuncDataBase& Control)
   sideWaterCutOffset=Control.EvalVar<double>(keyName+"SideWaterCutDist");
 
   insWaterLength=Control.EvalDefVar<double>(keyName+"InsWaterLength", 20.0);
-  insWaterHeight=Control.EvalDefVar<double>(keyName+"InsWaterHeight", 3.0);
+  insWaterHeight=Control.EvalDefVar<double>(keyName+"InsWaterHeight", -3.0);
   insWaterThick=Control.EvalDefVar<double>(keyName+"InsWaterThick", 3.0);
 
   modMat=ModelSupport::EvalMat<int>(Control,keyName+"ModMat");
@@ -321,39 +321,59 @@ EdgeWater::createObjects(Simulation& System,
   //  System.addCell(MonteCarlo::Qhull(cellIndex++,0,
   //				   modTemp,Out+container+divider));
 
-  
-  Out=ModelSupport::getComposite(SMap,edgeIndex," 1 -2 (-115:116) "); // top/bottom water - no insert here
-  System.addCell(MonteCarlo::Qhull(cellIndex++,sideWaterMat,
-				   modTemp,Out+container+divider));
 
-  Out=ModelSupport::getComposite(SMap,edgeIndex," 1 -2 105 -106 -113 "); // water in the vertical middle
-  System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,
-				   modTemp,Out+container+divider));
+  if (insWaterHeight>0)
+    {
+      Out=ModelSupport::getComposite(SMap,edgeIndex," 1 -2 (-115:116) "); // top/bottom water - no insert here
+      System.addCell(MonteCarlo::Qhull(cellIndex++,sideWaterMat,
+				       modTemp,Out+container+divider));
 
-  Out=ModelSupport::getComposite(SMap,edgeIndex," 1 -2 115 -116 -113 (-105:106) "); // water in the vertical middle
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,
-				   modTemp,Out+divider));
+      Out=ModelSupport::getComposite(SMap,edgeIndex," 1 -2 105 -106 -113 "); // water in the vertical middle
+      System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,
+				       modTemp,Out+container+divider));
 
-  Out=ModelSupport::getComposite(SMap,edgeIndex," 1 -2 105 -106 113 (-111:112) "); // water around insert (side)
-  System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,
-   				   modTemp,Out+container));
+      Out=ModelSupport::getComposite(SMap,edgeIndex," 1 -2 115 -116 -113 (-105:106) "); // water in the vertical middle
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,
+				       modTemp,Out+divider));
 
-  Out=ModelSupport::getComposite(SMap,edgeIndex," 1 -2 -105 115 113 (-111:112) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,
-   				   modTemp,Out+container));
+      Out=ModelSupport::getComposite(SMap,edgeIndex," 1 -2 105 -106 113 (-111:112) "); // water around insert (side)
+      System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,
+				       modTemp,Out+container));
 
-  Out=ModelSupport::getComposite(SMap,edgeIndex," 1 -2 106 -116 113 (-111:112) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,
-   				   modTemp,Out+container));
+      Out=ModelSupport::getComposite(SMap,edgeIndex," 1 -2 -105 115 113 (-111:112) ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,
+				       modTemp,Out+container));
 
-  Out=ModelSupport::getComposite(SMap,edgeIndex," 115 -116 113 111 -112 (-105:106:-103:-101:102) "); 
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,
-   				   modTemp,Out+container));
+      Out=ModelSupport::getComposite(SMap,edgeIndex," 1 -2 106 -116 113 (-111:112) ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,
+				       modTemp,Out+container));
 
-  Out=ModelSupport::getComposite(SMap,edgeIndex," 105 -106 103 101 -102 "); // water insert
-  System.addCell(MonteCarlo::Qhull(cellIndex++,sideWaterMat,
-				   modTemp,Out+container));
+      Out=ModelSupport::getComposite(SMap,edgeIndex," 115 -116 113 111 -112 (-105:106:-103:-101:102) "); 
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,
+				       modTemp,Out+container));
 
+      Out=ModelSupport::getComposite(SMap,edgeIndex," 105 -106 103 101 -102 "); // water insert
+      System.addCell(MonteCarlo::Qhull(cellIndex++,sideWaterMat,
+				       modTemp,Out+container));
+    } else // water insert spans over all vertical space
+    {
+      Out=ModelSupport::getComposite(SMap,edgeIndex," 1 -2 -113 "); // water in the vertical middle
+      System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,
+				       modTemp,Out+container+divider));
+      
+      Out=ModelSupport::getComposite(SMap,edgeIndex," 1 -2 113 (-111:112) "); // water around insert (side)
+      System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,
+				       modTemp,Out+container));
+
+
+      Out=ModelSupport::getComposite(SMap,edgeIndex," 113 111 -112 (-103:-101:102) "); 
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,
+				       modTemp,Out+container));
+
+      Out=ModelSupport::getComposite(SMap,edgeIndex," 103 101 -102 "); // water insert
+      System.addCell(MonteCarlo::Qhull(cellIndex++,sideWaterMat,
+				       modTemp,Out+container));
+    }
 
   
   // Two walls : otherwise divider container
