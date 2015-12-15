@@ -149,6 +149,7 @@ WWGWeight::updateWM(const double eCut) const
       aveW+=W;
       cnt++;
     }
+
   aveW/=cnt;
   // Work on minW first:
   const double factor=(minW>minWeight) ?

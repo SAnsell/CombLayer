@@ -66,7 +66,6 @@
 #include "PointWeights.h"
 #include "TempWeights.h"
 #include "ImportControl.h"
-#include "WWGconstruct.h"
 
 #include "LineTrack.h"
 #include "ObjectTrackAct.h"
@@ -569,8 +568,10 @@ WeightControl::processWeights(Simulation& System,
     procObject(System,IParam);
   if (IParam.flag("wWWG"))
     {
-      WWGconstruct WConstruct;
+      wwgMesh(IParam);  // mesh needs to be set [throw on error]
+      wwgEng(IParam);
       WConstruct.createWWG(System,IParam);
+
       removePhysImp(System,"n");
     }
   if (IParam.flag("weightTemp"))
@@ -579,12 +580,154 @@ WeightControl::processWeights(Simulation& System,
     tallySystem::addPointPD(System);
   if (IParam.flag("weightRebase"))
     procRebase(System,IParam);
-
-  
   
   return;
 }
 
+void
+WeightControl::wwgEnergy(const mainSystem::inputParam& IParam)
+  /*!
+    Modify the energy grid if explicitly given as an wwgE card.
+    If not an a weightType has been set then use that -- else
+    just one energy grid.
+    \param IParam :: Input parameters    
+  */
+{
+  ELog::RegMethod RegA("WeightControl","wwgEnergy");
+
+    // ENERGY BOUNDARY
+  if (IParam.flag("wwgE"))
+    {
+      std::vector<double> EBin;
+      const size_t ECnt=IParam.itemCnt("wwgE",0);
+
+      for(size_t i=0;i<ECnt;i++)
+	EBin.push_back
+	  (IParam.getValue<double>("wwgE",i));
+      if (EBin.back()<1e5)
+	EBin.push_back(1e5);
+      wwg.setEnergyBin(EBin);
+    }
+
+  return;
+}
+  
+void
+WeightControl::wwgMesh(const mainSystem::inputParam& IParam)
+  /*!
+    Process wwg Mesh
+    \param IParam :: Input parameters
+  */
+{
+  ELog::RegMethod RegA("WeightControl","wwgMesh");
+
+  
+  WeightSystem::weightManager& WM=
+    WeightSystem::weightManager::Instance();
+  WWG& wwg=WM.getWWG();
+  
+  std::vector<std::vector<double>> boundaryVal(3);
+  std::vector<std::vector<size_t>> bCnt(3);
+      
+  for(size_t index=0;index<3;index++)
+    {
+      const std::string itemName("wwg"+XYZ[index]+"Mesh");
+      const size_t NXM=IParam.itemCnt(itemName,0);
+
+      if (NXM<3 || !(NXM % 2) )
+	throw ColErr::IndexError<size_t>
+	  (NXM,3,"Insufficient items for "+itemName+
+	   ": X_0 : N_0 : X1 : N1 ...");
+
+      for(size_t i=0;i<NXM;i++)
+	{
+	  if (i % 2)   // Odd : Integer
+	    bCnt[index].push_back
+	      (IParam.getValue<size_t>(itemName,i));
+	  else
+	    boundaryVal[index].push_back
+	      (IParam.getValue<double>(itemName,i));
+	}
+    }
+
+  wwg.getGrid().setMesh(boundaryVal[0],bCnt[0],
+			boundaryVal[1],bCnt[1],
+			boundaryVal[2],bCnt[2]);
+
+}
+
+void
+WeightControl::createWWG(Simulation& System,
+			 const mainSystem::inputParam& IParam)
+  /*!
+    Set WWG weights based 
+    \param System :: Simulation
+    \param IParam :: input stream
+   */
+{
+  ELog::RegMethod RegA("WWGconstruct","createWWG");
+
+  WeightSystem::weightManager& WM=
+    WeightSystem::weightManager::Instance();
+ 
+  const std::string XYZ[3]={"X","Y","Z"};
+
+  WWG& wwg=WM.getWWG();
+  //  const size_t NItems=IParam.itemCnt("wwgMesh",0);
+
+  std::vector<std::vector<double>> boundaryVal(3);
+  std::vector<std::vector<size_t>> bCnt(3);
+      
+  for(size_t index=0;index<3;index++)
+    {
+      const std::string itemName("wwg"+XYZ[index]+"Mesh");
+      const size_t NXM=IParam.itemCnt(itemName,0);
+
+      if (NXM<3 || !(NXM % 2) )
+	throw ColErr::IndexError<size_t>
+	  (NXM,3,"Insufficient items for "+itemName+
+	   ": X_0 : N_0 : X1 : N1 ...");
+
+      for(size_t i=0;i<NXM;i++)
+	{
+	  if (i % 2)   // Odd : Integer
+	    bCnt[index].push_back
+	      (IParam.getValue<size_t>(itemName,i));
+	  else
+	    boundaryVal[index].push_back
+	      (IParam.getValue<double>(itemName,i));
+	}
+    }
+
+  wwg.getGrid().setMesh(boundaryVal[0],bCnt[0],
+			boundaryVal[1],bCnt[1],
+			boundaryVal[2],bCnt[2]);
+
+  // ENERGY BOUNDARY
+  if (IParam.flag("wwgE"))
+    {
+      std::vector<double> EBin;
+      const size_t ECnt=IParam.itemCnt("wwgE",0);
+
+      for(size_t i=0;i<ECnt;i++)
+	EBin.push_back
+	  (IParam.getValue<double>("wwgE",i));
+      if (EBin.back()<1e5)
+	EBin.push_back(1e5);
+      wwg.setEnergyBin(EBin);
+    }
+  
+  
+  // if (NItems<3)
+  //   throw ColErr::IndexError<size_t>
+  //     (NItems,3,"Insufficient items for wwgMesh");
+
+ 
+
+  return;
+}
+
+  
 void
 WeightControl::setWeights(Simulation& System)
    /*!

@@ -49,7 +49,7 @@ namespace WeightSystem
 class WeightControl
 {
  private:
-  
+
   std::vector<double> EBand;     ///< Energy bandk
   std::vector<double> WT;        ///< Weight scalar
   
@@ -82,12 +82,16 @@ class WeightControl
   void procRebase(const Simulation&,
 		  const mainSystem::inputParam&);
   void procRebaseHelp() const;
-			
+
+  
   void setWeights(Simulation&);
   void calcTrack(const Simulation&,const Geometry::Vec3D&,
 		 const std::vector<int>&,
 		 const double,const double,const double);
 
+  // WWG stuff
+  void wwgMesh(const mainSystem::inputParam&);
+  
  public:
 
   WeightControl();
