@@ -352,6 +352,8 @@ void makeESS::buildF5Collimator(Simulation& System, size_t nF5)
     F5->createAll(System, World::masterOrigin());
 
     attachSystem::addToInsertSurfCtrl(System, *ABunker, *F5);
+    attachSystem::addToInsertSurfCtrl(System, *BBunker, *F5);
+
     F5array.push_back(F5);
   }
 
@@ -405,6 +407,7 @@ void makeESS::buildF5Collimator(Simulation& System, const mainSystem::inputParam
 	      F5->createAll(System, World::masterOrigin());
 
 	      attachSystem::addToInsertSurfCtrl(System, *ABunker, *F5);
+	      attachSystem::addToInsertSurfCtrl(System, *BBunker, *F5);
 	      F5array.push_back(F5);
       
 	    }
