@@ -31,7 +31,7 @@ namespace essSystem
   \author K. Batkov
   \version 1.1
   \date August 2015
-  \brief Inner structure of Be reflector (engineering details)
+  \brief Inner structure of flow guide (engineering details)
 */
 
 class CylFlowGuide : public attachSystem::ContainedComp,
