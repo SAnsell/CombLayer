@@ -569,7 +569,7 @@ WeightControl::processWeights(Simulation& System,
   if (IParam.flag("wWWG"))
     {
       wwgMesh(IParam);  // mesh needs to be set [throw on error]
-      wwgEng(IParam);
+      wwgEnergy(IParam);
       WConstruct.createWWG(System,IParam);
 
       removePhysImp(System,"n");
