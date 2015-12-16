@@ -357,22 +357,30 @@ EdgeWater::createObjects(Simulation& System,
 				       modTemp,Out+container));
     } else // water insert spans over all vertical space
     {
-      Out=ModelSupport::getComposite(SMap,edgeIndex," 1 -2 -113 "); // water in the vertical middle
-      System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,
-				       modTemp,Out+container+divider));
+      if (insWaterLength>0)
+	{
+	  Out=ModelSupport::getComposite(SMap,edgeIndex," 1 -2 -113 "); // water in the vertical middle
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,
+					   modTemp,Out+container+divider));
       
-      Out=ModelSupport::getComposite(SMap,edgeIndex," 1 -2 113 (-111:112) "); // water around insert (side)
-      System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,
-				       modTemp,Out+container));
+	  Out=ModelSupport::getComposite(SMap,edgeIndex," 1 -2 113 (-111:112) "); // water around insert (side)
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,
+					   modTemp,Out+container));
 
 
-      Out=ModelSupport::getComposite(SMap,edgeIndex," 113 111 -112 (-103:-101:102) "); 
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,
-				       modTemp,Out+container));
+	  Out=ModelSupport::getComposite(SMap,edgeIndex," 113 111 -112 (-103:-101:102) "); 
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,
+					   modTemp,Out+container));
 
-      Out=ModelSupport::getComposite(SMap,edgeIndex," 103 101 -102 "); // water insert
-      System.addCell(MonteCarlo::Qhull(cellIndex++,sideWaterMat,
-				       modTemp,Out+container));
+	  Out=ModelSupport::getComposite(SMap,edgeIndex," 103 101 -102 "); // water insert
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,sideWaterMat,
+					   modTemp,Out+container));
+	} else // no water insert is build
+	{
+	  Out=ModelSupport::getComposite(SMap,edgeIndex," 1 -2 ");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,
+					   modTemp,Out+container+divider));
+	}
     }
 
   
