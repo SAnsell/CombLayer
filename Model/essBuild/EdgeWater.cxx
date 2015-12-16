@@ -180,7 +180,7 @@ EdgeWater::populate(const FuncDataBase& Control)
   sideWaterCutAngle=Control.EvalVar<double>(keyName+"SideWaterCutAngle");
   sideWaterCutOffset=Control.EvalVar<double>(keyName+"SideWaterCutDist");
 
-  insWaterLength=Control.EvalDefVar<double>(keyName+"InsWaterLength", 20.0);
+  insWaterLength=Control.EvalDefVar<double>(keyName+"InsWaterLength", 18.3);
   insWaterHeight=Control.EvalDefVar<double>(keyName+"InsWaterHeight", -3.0);
   insWaterThick=Control.EvalDefVar<double>(keyName+"InsWaterThick", 3.0);
 
