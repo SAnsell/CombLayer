@@ -35,7 +35,8 @@ namespace essSystem
 */
 
 class CylFlowGuide : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+  public attachSystem::FixedComp,
+  public attachSystem::CellMap
 {
  private:
   

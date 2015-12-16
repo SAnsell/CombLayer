@@ -78,6 +78,7 @@ namespace essSystem
 CylFlowGuide::CylFlowGuide(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::FixedComp(Key,0),
+  attachSystem::CellMap(),
   insIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(insIndex+1)
   /*!
@@ -89,6 +90,7 @@ CylFlowGuide::CylFlowGuide(const std::string& Key) :
 CylFlowGuide::CylFlowGuide(const CylFlowGuide& A) : 
   attachSystem::ContainedComp(A),
   attachSystem::FixedComp(A),
+  attachSystem::CellMap(A),
   insIndex(A.insIndex),
   cellIndex(A.cellIndex),
   wallThick(A.wallThick),
@@ -108,20 +110,21 @@ CylFlowGuide::operator=(const CylFlowGuide& A)
     \param A :: CylFlowGuide to copy
     \return *this
   */
-  {
-    if (this!=&A)
-      {
-	attachSystem::ContainedComp::operator=(A);
-	attachSystem::FixedComp::operator=(A);
-	cellIndex=A.cellIndex;
-	wallThick=A.wallThick;
-	wallMat=A.wallMat;
-	gapWidth=A.gapWidth;
-	nBaffles=A.nBaffles;
-      }
-    return *this;
-  }
-
+{
+  if (this!=&A)
+    {
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::FixedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      cellIndex=A.cellIndex;
+      wallThick=A.wallThick;
+      wallMat=A.wallMat;
+      gapWidth=A.gapWidth;
+      nBaffles=A.nBaffles;
+    }
+  return *this;
+}
+  
 CylFlowGuide*
 CylFlowGuide::clone() const
  /*!
@@ -138,7 +141,6 @@ CylFlowGuide::~CylFlowGuide()
   */
 {}
   
-
 void
 CylFlowGuide::populate(const FuncDataBase& Control)
   /*!
@@ -217,8 +219,8 @@ CylFlowGuide::createSurfaces()
 
 void
 CylFlowGuide::createObjects(Simulation& System,
-				   attachSystem::FixedComp& FC,
-				   const size_t sideIndex)
+                            attachSystem::FixedComp& FC,
+                            const size_t sideIndex)
 /*!
     Create the objects
     \param System :: Simulation to add results
@@ -239,7 +241,8 @@ CylFlowGuide::createObjects(Simulation& System,
   const std::string vertStr = FC.getLinkString(sideIndex+1)+
     FC.getLinkString(sideIndex+2);
   const std::string sideStr = FC.getLinkString(sideIndex);
-  
+
+  const int initCellIndex(cellIndex);
   // central plate
   Out=ModelSupport::getComposite(SMap,insIndex," 3 -4 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,innerTemp,
@@ -247,6 +250,7 @@ CylFlowGuide::createObjects(Simulation& System,
 
   // side plates
   int SI(insIndex);
+
   for (size_t i=0;i<nBaffles;i++)
     {
       // Baffles
@@ -255,17 +259,20 @@ CylFlowGuide::createObjects(Simulation& System,
 	  Out = ModelSupport::getComposite(SMap,SI,insIndex," 1 -2 -14M ");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,innerTemp,
 					   Out+vertStr+sideStr));
-	  
+          
 	  Out = ModelSupport::getComposite(SMap,SI,insIndex," 1 -2 14M -3M ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,Out+vertStr));
-	  
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,
+                                           Out+vertStr));
+          
 	  Out = ModelSupport::getComposite(SMap,SI,insIndex," 1 -2 24M ");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,innerTemp,
 					   Out+vertStr+sideStr));
-	  
+
+                    
 	  Out = ModelSupport::getComposite(SMap,SI,insIndex," 1 -2 -24M 4M ");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,
 					   Out+vertStr+sideStr));
+
 	}
       else 
 	{
@@ -314,6 +321,9 @@ CylFlowGuide::createObjects(Simulation& System,
   Out = ModelSupport::getComposite(SMap,SI-10,insIndex," 2 4M ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,innerTemp,Out+vertStr+sideStr));
 
+  // Add cell map info:
+  CellMap::setCells("InnerGuide",initCellIndex,cellIndex-1);
+  
   return; 
 }
   
