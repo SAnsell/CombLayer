@@ -341,7 +341,6 @@ IItem::getObj(const size_t setIndex,const size_t itemIndex) const
 				  typeid(T).name(),Key+":convert error");
 
   return ObjValue;
-      
 }
 
 template<>
@@ -389,6 +388,45 @@ IItem::getObj(const size_t setIndex,const size_t itemIndex) const
   return DItems[setIndex][itemIndex];
 }
 
+
+Geometry::Vec3D
+IItem::getCntVec3D(const size_t setIndex,size_t& itemIndex) const
+  /*!
+    Get Object
+    \param setIndex :: Index
+    \param itemIndex :: item count
+    \return Object
+  */
+{ 
+  ELog::RegMethod RegA("IItem","getCntVec3D");
+
+  if (setIndex >= DItems.size())
+    throw ColErr::IndexError<size_t>(setIndex,DItems.size(),Key+":setIndex");
+
+  const size_t NItems=DItems[setIndex].size();
+  if (itemIndex>=NItems)
+    throw ColErr::IndexError<size_t>
+      (itemIndex,NItems,Key+":itemIndex");
+
+  Geometry::Vec3D Value;
+  if (StrFunc::convert(DItems[setIndex][itemIndex],Value))
+    {
+      itemIndex++;
+      return Value;
+    }
+
+  if (itemIndex+3>NItems ||
+      !StrFunc::convert(DItems[setIndex][itemIndex],Value[0]) ||
+      !StrFunc::convert(DItems[setIndex][itemIndex+1],Value[1]) ||
+      !StrFunc::convert(DItems[setIndex][itemIndex+2],Value[2]) )
+    throw ColErr::TypeMatch(DItems[setIndex][itemIndex],
+				  "Geomtery::Vec3D",Key+":convert error");
+
+  itemIndex+=3;
+  return Value;
+}
+
+  
 size_t
 IItem::addSet()
   /*!

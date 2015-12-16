@@ -43,10 +43,9 @@ class Surface
 {
  private:
   
-  int Name;        ///< Surface number (MNCPX identifier)
+  int Name;        ///< Surface number (MCNP identifier)
   int TransN;      ///< Transform number (-ve means applied)
 
-  //  double eqnValue(const Geometry::Vec3D&) const;
 
  protected:
   
@@ -97,6 +96,7 @@ class Surface
   virtual void rotate(const Geometry::Matrix<double>&) =0;
   virtual void mirror(const Geometry::Plane&) =0; 
   virtual void write(std::ostream&) const =0;
+  virtual void writeFLUKA(std::ostream&) const =0;
   /// \endcond ABSTRACT
 
   virtual void rotate(const Geometry::Quaternion&);

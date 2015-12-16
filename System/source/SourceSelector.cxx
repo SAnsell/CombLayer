@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   source/SourceSelector.cxx
  *
@@ -116,7 +116,7 @@ processSDefFile(const mainSystem::inputParam& IParam,
 		const std::string& DObj,
 		SDef::Source& sourceCard)
   /*!
-    process the case of an sdefFile [spectrum] -- use 
+    Process the case of an sdefFile [spectrum] -- use 
     the void sdef card
     \param IParam :: input Parameters
     \param Control :: dataBase for variables
@@ -196,11 +196,12 @@ sourceSelection(Simulation& System,
     \param IParam :: Input parameter
   */
 {
-  ELog::RegMethod RegA("SourceSelector","sourceSelection");
+  ELog::RegMethod RegA("SourceSelector[F]","sourceSelection");
+  
   const FuncDataBase& Control=System.getDataBase();
   SDef::Source& sourceCard=System.getPC().getSDefCard();
   const masterRotate& MR = masterRotate::Instance();
-  ModelSupport::objectRegister& OR=
+  const ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
   const std::string DObj=IParam.getValue<std::string>("sdefObj",0);
@@ -209,7 +210,9 @@ sourceSelection(Simulation& System,
   const attachSystem::FixedComp* FCPtr=
     OR.getObject<attachSystem::FixedComp>(DObj);
   const long int linkIndex=getLinkIndex(DSnd);
-  
+
+
+
   if (IParam.flag("sdefVoid"))
     {
       sourceCard.deactivate();
@@ -224,7 +227,8 @@ sourceSelection(Simulation& System,
     }
   
   const std::string sdefType=IParam.getValue<std::string>("sdefType");
-
+  ELog::EM<<"SDEF == "<<sdefType<<ELog::endDiag;
+  
   if (sdefType=="TS1")
     SDef::createTS1Source(Control,sourceCard);
   else if (sdefType=="TS1Gauss") 
@@ -241,6 +245,9 @@ sourceSelection(Simulation& System,
     SDef::createBilbaoSource(Control,sourceCard);
   else if (sdefType=="ess")
     SDef::createESSSource(Control,sourceCard);
+  else if (sdefType=="essPort")
+    SDef::createESSPortSource(Control,FCPtr,linkIndex,
+			      sourceCard);
   else if (sdefType=="D4C")
     SDef::createD4CSource(Control,sourceCard);
   else if (sdefType=="Sinbad" || sdefType=="sinbad")
@@ -258,6 +265,14 @@ sourceSelection(Simulation& System,
 	SDef::createGammaSource(Control,"pointSource",
 				sourceCard);
     }
+  else if (sdefType=="Beam" || sdefType=="beam")
+    {
+      if (FCPtr)
+	SDef::createBeamSource(Control,"beamSource",
+			       *FCPtr,linkIndex,sourceCard);
+      else
+	SDef::createBeamSource(Control,"beamSource",sourceCard);
+    }
   else if (sdefType=="LENS" || sdefType=="lens")
     {
       const attachSystem::FixedComp* PC=
@@ -270,7 +285,7 @@ sourceSelection(Simulation& System,
     }
   else if (sdefType=="TS2")
     {
-  // Basic TS2 source
+      // Basic TS2 source
       if(IParam.hasKey("horr") && IParam.flag("horr"))
 	sourceCard.setTransform(System.createSourceTransform());
   
@@ -290,6 +305,7 @@ sourceSelection(Simulation& System,
 	"Bilbao :: Bilbao beam proton\n"
 	"Laser :: Laser D/T fussion source\n"
 	"Point :: Test point source\n"
+	"Beam :: Test Beam [Radial] source \n"
 	"D4C :: D4C neutron beam"<<ELog::endBasic;
     }
 	

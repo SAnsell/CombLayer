@@ -69,6 +69,7 @@ class neutron
   double eLoss(const neutron&) const;
   void addCollision();
   void setObject(const Object* OP) { OPtr=OP; }
+
   // Output stuff
   void write(std::ostream&) const;
 

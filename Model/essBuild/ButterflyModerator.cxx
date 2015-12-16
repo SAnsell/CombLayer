@@ -8,6 +8,7 @@
 #include <vector>
 #include <set>
 #include <map>
+#include <array>
 #include <string>
 #include <algorithm>
 #include <memory>
@@ -47,6 +48,7 @@
 #include "FixedComp.h"
 #include "ContainedComp.h"
 #include "LayerComp.h"
+#include "BaseMap.h"
 #include "CellMap.h"
 #include "ModBase.h"
 #include "H2Wing.h"
@@ -165,6 +167,7 @@ ButterflyModerator::createUnitVector(const attachSystem::FixedComp& axisFC,
   */
 {
   ELog::RegMethod RegA("ButterflyModerator","createUnitVector");
+
   ModBase::createUnitVector(axisFC,orgFC,sideIndex);
   applyShift(0,0,totalHeight/2.0);
   

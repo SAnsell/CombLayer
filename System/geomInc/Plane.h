@@ -89,9 +89,9 @@ class Plane : public Quadratic
   int side(const Geometry::Vec3D&) const;
   int onSurface(const Geometry::Vec3D&) const;
   // stuff for finding intersections etc.
-  double dotProd(const Plane&) const;      ///< returns normal dot product
-  Geometry::Vec3D crossProd(const Plane&) const;      ///< returns normal cross product
-  double distance(const Geometry::Vec3D&) const;      ///< distance from a point
+  double dotProd(const Plane&) const;   
+  Geometry::Vec3D crossProd(const Plane&) const;      
+  double distance(const Geometry::Vec3D&) const;
   
   int isEqual(const Plane&) const;
   int planeType() const;         ///< are we aligned on an axis
@@ -111,7 +111,7 @@ class Plane : public Quadratic
 
   void print() const;
   void write(std::ostream&) const;  
-
+  virtual void writeFLUKA(std::ostream&) const;
 };
 
 std::ostream&

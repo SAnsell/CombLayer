@@ -76,6 +76,7 @@
 #include "FixedGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+#include "BaseMap.h"
 #include "CellMap.h"
 #include "World.h"
 #include "GuideItem.h"
@@ -86,7 +87,7 @@ namespace essSystem
 GuideItem::GuideItem(const std::string& Key,const size_t Index)  :
   attachSystem::ContainedGroup("Inner","Outer"),
   attachSystem::FixedGroup(Key+StrFunc::makeString(Index),
-			   "Main",6,"Beam",2),
+			   "Main",6,"Beam",6),
   attachSystem::CellMap(),
   baseName(Key),
   guideIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
@@ -108,7 +109,7 @@ GuideItem::GuideItem(const GuideItem& A) :
   beamZStep(A.beamZStep),beamXYAngle(A.beamXYAngle),
   beamZAngle(A.beamZAngle),beamWidth(A.beamWidth),
   beamHeight(A.beamHeight),nSegment(A.nSegment),
-  height(A.height),width(A.width),length(A.length),
+  height(A.height),depth(A.depth),width(A.width),length(A.length),
   mat(A.mat),innerCyl(A.innerCyl),outerCyl(A.outerCyl),
   RInner(A.RInner),ROuter(A.ROuter)
   /*!
@@ -145,6 +146,7 @@ GuideItem::operator=(const GuideItem& A)
       beamHeight=A.beamHeight;
       nSegment=A.nSegment;
       height=A.height;
+      depth=A.depth;
       width=A.width;
       length=A.length;
       mat=A.mat;
@@ -210,7 +212,11 @@ GuideItem::populate(const FuncDataBase& Control)
   beamHeight=Control.EvalPair<double>(keyName,baseName,"BeamHeight");
   beamWidth=Control.EvalPair<double>(keyName,baseName,"BeamWidth");
 
-  double W,H,L(RInner);
+  sideGap=Control.EvalPair<double>(keyName,baseName,"SideGap");
+  topGap=Control.EvalPair<double>(keyName,baseName,"TopGap");
+  baseGap=Control.EvalPair<double>(keyName,baseName,"BaseGap");
+
+  double D,W,H,L(RInner);
   nSegment=Control.EvalPair<size_t>(keyName,baseName,"NSegment");
   for(size_t i=0;i<nSegment;i++)
     {
@@ -218,6 +224,8 @@ GuideItem::populate(const FuncDataBase& Control)
 				  StrFunc::makeString("Width",i+1));
       H=Control.EvalPair<double>(keyName,baseName,
 				 StrFunc::makeString("Height",i+1));
+      D=Control.EvalPair<double>(keyName,baseName,
+				 StrFunc::makeString("Depth",i+1));
       if (i!=nSegment-1)
 	{
 	  L+=Control.EvalPair<double>(keyName,baseName,
@@ -225,6 +233,7 @@ GuideItem::populate(const FuncDataBase& Control)
 	  length.push_back(L);
 	}
       height.push_back(H);
+      depth.push_back(D);
       width.push_back(W);
     }
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat",baseName+"Mat");
@@ -308,24 +317,30 @@ GuideItem::createSurfaces()
   for(size_t i=0;i<nSegment;i++)
     {
       if (i!=nSegment-1)
-	ModelSupport::buildCylinder(SMap,GI+17,Origin,Z,length[i]);
+	ModelSupport::buildCylinder(SMap,GI+57,Origin,Z,length[i]);
 
       ModelSupport::buildPlane(SMap,GI+3,Origin-X*(width[i]/2.0),X);
       ModelSupport::buildPlane(SMap,GI+4,Origin+X*(width[i]/2.0),X);
-      ModelSupport::buildPlane(SMap,GI+5,Origin-Z*(height[i]/2.0),Z);
-      ModelSupport::buildPlane(SMap,GI+6,Origin+Z*(height[i]/2.0),Z);
-      GI+=10;
+      ModelSupport::buildPlane(SMap,GI+5,Origin-Z*depth[i],Z);
+      ModelSupport::buildPlane(SMap,GI+6,Origin+Z*height[i],Z);
+
+      ModelSupport::buildPlane(SMap,GI+13,Origin-X*(-sideGap+width[i]/2.0),X);
+      ModelSupport::buildPlane(SMap,GI+14,Origin+X*(-sideGap+width[i]/2.0),X);
+      ModelSupport::buildPlane(SMap,GI+15,Origin-Z*(-baseGap+depth[i]),Z);
+      ModelSupport::buildPlane(SMap,GI+16,Origin+Z*(-topGap+height[i]),Z);
+
+      GI+=50;
     }
   SMap.addMatch(GI+7,outerCyl);
 
   // Beamline :: 
-  ModelSupport::buildPlane(SMap,guideIndex+103,
+  ModelSupport::buildPlane(SMap,guideIndex+1103,
 			   beamOrigin-bX*(beamWidth/2.0),bX);
-  ModelSupport::buildPlane(SMap,guideIndex+104,
+  ModelSupport::buildPlane(SMap,guideIndex+1104,
 			   beamOrigin+bX*(beamWidth/2.0),bX);
-  ModelSupport::buildPlane(SMap,guideIndex+105,
+  ModelSupport::buildPlane(SMap,guideIndex+1105,
 			   beamOrigin-bZ*(beamHeight/2.0),bZ);
-  ModelSupport::buildPlane(SMap,guideIndex+106,
+  ModelSupport::buildPlane(SMap,guideIndex+1106,
 			   beamOrigin+bZ*(beamHeight/2.0),bZ);
   
   
@@ -349,7 +364,7 @@ GuideItem::getPlane(const int SN) const
 std::string
 GuideItem::getEdgeStr(const GuideItem* GPtr) const
   /*!
-    Given another GuideItem determine the end point collision stirng
+    Given another GuideItem determine the end point collision string
     \param GPtr :: Other object Ptr [0 for none]
     \return Edge string (3 side)
    */
@@ -393,35 +408,56 @@ GuideItem::createObjects(Simulation& System,const GuideItem* GPtr)
   int GI(guideIndex);
   for(size_t i=0;i<nSegment;i++)
     {
+      // Outer layer
       if (i==0)
 	{
-	  Out=ModelSupport::getComposite(SMap,guideIndex,"1 7 3 -4 5 -6 -17");
+	  Out=ModelSupport::getComposite(SMap,guideIndex,"1 7 3 -4 5 -6 -57");
 	  Out+=edgeStr;
 	}
-      else if (i!=nSegment-1)
-	Out=ModelSupport::getComposite(SMap,GI-10,guideIndex,
-				       "1M 17 13 -14 15 -16 -27");
       else 
-	Out=ModelSupport::getComposite(SMap,GI-10,guideIndex,
-				       "1M 17 13 -14 15 -16 -27");
+	Out=ModelSupport::getComposite(SMap,GI,guideIndex,"1M 7 3 -4 5 -6 -57");
+
       if (!i)
 	addOuterSurf("Inner",Out);
       else 
 	addOuterUnionSurf("Outer",Out);
+
+
+
+      // Add inner boundary
+      Out+=ModelSupport::getComposite(SMap,GI," (-13:14:-15:16) ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      // Inner metal:
+      
+      
+
       if (!filled)
 	Out+=ModelSupport::getComposite(SMap,guideIndex,
-					"(-103:104:-105:106) ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
-      if (filled) addCell("Void",cellIndex-1);
+					"(-1103:1104:-1105:1106) ");
+      if (i==0)
+	{
+	  Out=ModelSupport::getComposite
+	    (SMap,guideIndex,"1 7 13 -14 15 -16 -57");
+	  Out+=edgeStr;
+	}
+      else 
+	Out=ModelSupport::getComposite
+	  (SMap,GI,guideIndex,"1M 7 13 -14 15 -16 -57");
 
-      GI+=10;
+      if (!filled)
+	Out+=ModelSupport::getComposite
+	  (SMap,guideIndex,"(-1103:1104:-1105:1106) ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));      
+      if (filled) addCell("Void",cellIndex-1);
+      GI+=50;
     }      
   // Inner void
   if (!filled)
     {
       Out=ModelSupport::getComposite(SMap,guideIndex,GI,
-				     "1 7 -7M 103 -104 105 -106 ");
+				     "1 7 -7M 1103 -1104 1105 -1106 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      
       setCell("Void",cellIndex-1);
     }
 
@@ -469,11 +505,25 @@ GuideItem::createLinks()
   beamFC.setLinkSurf(0,-SMap.realSurf(guideIndex+7));
   beamFC.addBridgeSurf(0,SMap.realSurf(guideIndex+1));
 
-  const int GI=10*static_cast<int>(nSegment)+guideIndex;
+  const int GI=50*static_cast<int>(nSegment)+guideIndex;
   beamFC.setConnect(1,beamExit,bY);
   beamFC.setLinkSurf(1,SMap.realSurf(GI+7));
   beamFC.addBridgeSurf(1,SMap.realSurf(guideIndex+1));
+  if (!filled)
+    {
+      const Geometry::Vec3D MidPt((beamOrigin+bY*RInner+beamExit)/2.0);
+      beamFC.setConnect(2,MidPt-bX*(beamWidth/2.0),-bX);
+      beamFC.setConnect(3,MidPt+bX*(beamWidth/2.0),bX);
+      beamFC.setConnect(4,MidPt-bZ*(beamWidth/2.0),-bZ);
+      beamFC.setConnect(5,MidPt+bZ*(beamWidth/2.0),bZ);
 
+      beamFC.setLinkSurf(2,-SMap.realSurf(guideIndex+1103));
+      beamFC.setLinkSurf(3,SMap.realSurf(guideIndex+1104));
+      beamFC.setLinkSurf(4,-SMap.realSurf(guideIndex+1105));
+      beamFC.setLinkSurf(5,SMap.realSurf(guideIndex+1106));
+    }
+    
+    
 
   // Main provides 2 things : target centre tracking:
   Origin-=Geometry::Vec3D(0,0,Origin[2]);     // TARGET CENTRE

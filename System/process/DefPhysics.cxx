@@ -71,6 +71,8 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "SecondTrack.h"
+#include "AttachSupport.h"
+#include "LinkSupport.h"
 #include "Object.h"
 #include "Qhull.h"
 #include "Source.h"
@@ -167,7 +169,6 @@ setDefRotation(const mainSystem::inputParam& IParam)
   masterRotate& MR = masterRotate::Instance();
   if (IParam.flag("axis"))
     {
-
       // Move X to Z:
       MR.addRotation(Geometry::Vec3D(0,1,0),
 		     Geometry::Vec3D(0,0,0),
@@ -179,12 +180,14 @@ setDefRotation(const mainSystem::inputParam& IParam)
       MR.addMirror(Geometry::Plane
 		   (1,0,Geometry::Vec3D(0,0,0),
 		    Geometry::Vec3D(1,0,0)));
-
     }
   if (IParam.flag("angle"))
     {
-      std::string AItem=
+      const std::string AItem=
 	IParam.getValue<std::string>("angle");
+      const std::string BItem=(IParam.itemCnt("angle",0)>1) ?
+	IParam.getValue<std::string>("angle",1) : "";
+
       if (AItem=="chipIR" || AItem=="ChipIR")
 	MR.addRotation(Geometry::Vec3D(0,0,1),
 		       Geometry::Vec3D(0,0,0),
@@ -195,21 +198,32 @@ setDefRotation(const mainSystem::inputParam& IParam)
 			 Geometry::Vec3D(0,0,0),
 			 45.00-180.0);
 	}
-      else if (AItem=="ODIN" || AItem=="odin" ||
-	       AItem=="LOKI" || AItem=="loki")
+      else if (AItem=="object" || AItem=="Object")
 	{
-	  std::transform(AItem.begin(),AItem.end(),
-	    AItem.begin(),::tolower);
-	  
 	  const attachSystem::FixedComp* GIPtr=
-	    OR.getObject<attachSystem::FixedComp>(AItem+"Axis");
+	    OR.getObject<attachSystem::FixedComp>(BItem);
 	  if (!GIPtr)
 	    throw ColErr::InContainerError<std::string>
-	      (AItem+"Axis","Fixed component");
+	      (BItem,"Fixed component");
+	  const std::string CItem=IParam.getDefValue<std::string>("2","angle",2);
+	  const long int axisIndex=attachSystem::getLinkIndex(CItem);
 	  // Y is beam direction -- Alignment along X
-	  const double angle=180.0*acos(GIPtr->getY()[0])/M_PI;
-	  MR.addRotation(GIPtr->getZ(),Geometry::Vec3D(0,0,0),
-			 angle);
+	  const Geometry::Vec3D AxisVec=
+	    GIPtr->getSignedLinkAxis(axisIndex);
+	  const double angle=180.0*acos(AxisVec[0])/M_PI;
+	  MR.addRotation(GIPtr->getZ(),Geometry::Vec3D(0,0,0),angle);
+	  // Z rotation.
+	  ELog::EM<<"AXIS == "<<AxisVec<<ELog::endDiag;
+		  
+	  const double angleZ=90.0-180.0*acos(-AxisVec[2])/M_PI;
+	  MR.addRotation(GIPtr->getX(),Geometry::Vec3D(0,0,0),-angleZ);
+	}
+      else if (AItem=="free" || AItem=="FREE")
+	{
+	  const double rotAngle=
+	    IParam.getValue<double>("angle",1);
+	  MR.addRotation(Geometry::Vec3D(0,0,1),Geometry::Vec3D(0,0,0),
+			 -rotAngle);		  
 	}
       else 
 	retFlag=AItem;
@@ -293,8 +307,8 @@ setDefaultPhysics(Simulation& System,
 
   const FuncDataBase& Control=System.getDataBase();
   
-  std::string PList("h / d t s a");
-  const double maxEnergy=Control.EvalDefVar<double>("sdefEnergy",800.0);
+  std::string PList("n h / d t s a");
+  const double maxEnergy=Control.EvalDefVar<double>("sdefEnergy",2000.0);
   const double elcEnergy=IParam.getValue<double>("electron");
   const double phtEnergy=IParam.getValue<double>("photon");
   const double phtModel=IParam.getValue<double>("photonModel");

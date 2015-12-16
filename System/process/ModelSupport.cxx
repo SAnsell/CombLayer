@@ -122,6 +122,71 @@ getComposite(const int Offset,const std::string& BaseString)
 }
 
 std::string
+getComposite(const surfRegister& SMap,const int offset,
+	     const int minorOffset,const int secondOffset,
+	     const std::string& baseString)
+  /*!
+    Given a base string add an offset to the numbers
+    If a number is preceeded by T then it is a true number.
+    Use T-4000 etc.
+    \param SMap :: Surf register 
+    \param Offset :: Offset nubmer to add
+    \param minorOffset :: minor Offset nubmer to add [M]
+    \param secondOffset :: second Offset nubmer to add [N]
+    \param BaseString :: BaseString number
+    \return String with offset components
+   */
+{
+  std::ostringstream cx;
+  
+  int cellN;
+  int TrueNum,MinorNum,SecondNum;
+  std::string segment=spcDelimString(baseString);
+  std::string OutUnit;
+  cx<<" ";
+  while(StrFunc::section(segment,OutUnit))
+    {
+      const size_t oL=OutUnit.length();
+      if (oL)
+	{
+	  TrueNum=MinorNum=SecondNum=0;
+	  if (OutUnit[oL-1]=='T')
+	    {
+	      OutUnit[oL-1]=' ';
+	      TrueNum=1;
+	    }
+	  else if (OutUnit[oL-1]=='M')
+	    {
+	      OutUnit[oL-1]=' ';
+	      MinorNum=1;
+	    }
+	  else if (OutUnit[oL-1]=='N')
+	    {
+	      OutUnit[oL-1]=' ';
+	      SecondNum=1;
+	    }
+	  if (StrFunc::convert(OutUnit,cellN))
+	    {
+	      if (TrueNum)
+		cx<<SMap.realSurf(cellN);
+	      else if (MinorNum)
+		cx<<((cellN>0) ? SMap.realSurf(cellN+minorOffset) 
+		     : SMap.realSurf(cellN-minorOffset))<<" ";
+	      else if (SecondNum)
+		cx<<((cellN>0) ? SMap.realSurf(cellN+secondOffset) 
+		     : SMap.realSurf(cellN-secondOffset))<<" ";
+	      else
+		cx<<((cellN>0) ? SMap.realSurf(cellN+offset) 
+		     : SMap.realSurf(cellN-offset))<<" ";
+	    }
+	  else
+	    cx<<OutUnit<<" ";
+	}
+    }
+  return cx.str();
+}
+
+std::string
 getComposite(const surfRegister& SMap,const int Offset,
 	     const int MinorOffset,
 	     const std::string& BaseString)

@@ -68,6 +68,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "LayerComp.h"
+#include "BaseMap.h"
 #include "CellMap.h"
 #include "ContainedComp.h"
 #include "ModBase.h"
@@ -198,7 +199,8 @@ ModBase::getSideIndex(const size_t I) const
   /*!
     Accessor to flight sides
     \param I :: Index for side
-   */
+    \return flight surface index 
+  */
 {
   return (I>=flightSides.size()) ? 0 : flightSides[I];
 }

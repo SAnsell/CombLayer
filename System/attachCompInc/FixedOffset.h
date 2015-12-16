@@ -40,11 +40,11 @@ class FixedOffset  : public FixedComp
 
   double preXYAngle;     ///< pre-shift xy Angle
   double preZAngle;      ///< pre-shift z Angle
-  double xStep;       ///< x step
-  double yStep;       ///< y step
-  double zStep;       ///< z step
-  double xyAngle;     ///< xy Angle
-  double zAngle;      ///< z Angle
+  double xStep;          ///< x step
+  double yStep;          ///< y step
+  double zStep;          ///< z step
+  double xyAngle;        ///< xy Angle
+  double zAngle;         ///< z Angle
   
  public:
 
@@ -55,6 +55,8 @@ class FixedOffset  : public FixedComp
 
   virtual void populate(const FuncDataBase&);
   void applyOffset();
+  void linkAngleRotate(const long int);
+  
 };
 
 }

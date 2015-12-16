@@ -307,9 +307,16 @@ pipeUnit::createSurfaces()
   ELog::RegMethod RegA("pipeUnit","createSurface");
 
   if (!ASurf.hasRule())
-    ModelSupport::buildPlane(SMap,surfIndex+5,APt,ANorm);  
+    {
+      ModelSupport::buildPlane(SMap,surfIndex+5,APt,ANorm);
+      ASurf=HeadRule(StrFunc::makeString(SMap.realSurf(surfIndex+5)));
+    }
   if (!BSurf.hasRule())
-    ModelSupport::buildPlane(SMap,surfIndex+6,BPt,BNorm);
+    {
+      ModelSupport::buildPlane(SMap,surfIndex+6,BPt,BNorm);
+      BSurf=HeadRule(StrFunc::makeString(SMap.realSurf(surfIndex+6)));
+    }
+
   // Create cylinders
   
   size_t bitIndex(1);    // Index for flag bit [Which to build]
@@ -333,13 +340,22 @@ pipeUnit::createCaps() const
 {
   ELog::RegMethod RegA("pipeUnit","createCap");
 
-  std::string Out=ModelSupport::getSetComposite(SMap,surfIndex," 5 6 ");
-  Out+=ASurf.display()+" "+BSurf.display();        // A/BSurf self test
-  return Out;
+  return ASurf.display()+" "+BSurf.display(); 
 }
   
 
+const HeadRule&
+pipeUnit::getCap(const int side) const
+  /*!
+    Get the end cap head rule
+    \param side :: side value (true => end)
+    \return cap rule
+   */
+{
+  return (side) ? BSurf : ASurf;
+}
 
+  
 void
 pipeUnit::createOuterObject()
   /*!

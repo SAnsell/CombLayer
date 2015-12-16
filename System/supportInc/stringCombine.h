@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   supportInc/stringCombine.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,9 @@
 
 namespace StrFunc
 {
+
+  template<template<typename T,typename A> class V,typename T,typename A> 
+    std::string makeString(const V<T,A>&);
 
   template<typename T> 
     std::string makeString(const T&);

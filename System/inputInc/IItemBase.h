@@ -98,6 +98,8 @@ class IItem
   template<typename T> T getObj(const size_t) const;
   template<typename T> T getObj() const;
 
+  Geometry::Vec3D getCntVec3D(const size_t,size_t&) const;
+  
   size_t addSet();
   bool addObject(const std::string&);
   

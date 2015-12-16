@@ -23,6 +23,7 @@
 #include <iomanip>
 #include <fstream>
 #include <sstream>
+#include <cmath>
 #include <vector>
 #include <list>
 #include <set>
@@ -121,7 +122,7 @@ PWTControl::setUnit(const MapSupport::Range<int>& cellN,
     \param V :: value
   */
 {
-  ELog::RegMethod RegA("PWTControl","addUnit");
+  ELog::RegMethod RegA("PWTControl","setUnit");
   MapItem.insert(MTYPE::value_type(RTYPE(cellN),V));
   return;
 }
@@ -182,7 +183,6 @@ PWTControl::write(std::ostream& OX,
   bool active(0);
   for(const int CN : cellOutOrder)
     {
-      
       // Get renumber :
       int CNActive(CN);
       std::map<int,int>::const_iterator rmc=renumberMap.find(CN);

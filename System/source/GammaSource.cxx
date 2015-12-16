@@ -123,44 +123,41 @@ GammaSource::~GammaSource()
   */
 {}
 
-void
-GammaSource::loadEnergy(const std::string& FName)
+int
+GammaSource::populateEFile(const std::string& FName,
+			   const int colE,const int colP)
   /*!
     Load a distribution table
     - Care is taken to add an extra energy with zero 
     weight onto the table since we are using a
     \param FName :: filename 
+    return 0 on failure / 1 on success
   */
 {
   ELog::RegMethod RegA("GammaSource","loadEnergy");
 
-  const double current(60.0);
-  const int eCol(1);
-  const int iCol(11);
+  const int eCol(colE);
+  const int iCol(colP);
   
   Energy.clear();
   EWeight.clear();
   
   WorkData A;
-  if (A.load(FName,eCol,iCol,0))
-    {
-      ELog::EM<<"Failed to read file:"<<FName<<ELog::endErr;
-      return;
-    }  
+  if (FName.empty() || A.load(FName,eCol,iCol,0))
+    return 0;
 
-  A.xScale(1e-6);
+
+  A.xScale(1e-6);   // convert to MeV
   A.binDivide(1.0);
-  //  DError::doubleErr IV=A.integrate(cutEnergy,1e38);
   DError::doubleErr IV=A.integrate(cutEnergy,1e38);
-  weight=IV.getVal()/(current*6.24150636309e12);
   // Normalize A:
   A/=IV;
 
   Energy=A.getXdata();
-  if (Energy.size()<2 || weight<1e-12)
+  if (Energy.size()<2)
     {
       ELog::EM<<"Failed to read energy/data from file:"<<FName<<ELog::endErr;
-      return;
+      return 0;
     }
   Energy.push_back(2.0*Energy.back()-Energy[Energy.size()-2]);
   const std::vector<DError::doubleErr>& Yvec=A.getYdata();
@@ -170,8 +167,7 @@ GammaSource::loadEnergy(const std::string& FName)
   for(vc=Yvec.begin();vc!=Yvec.end();vc++)
     EWeight.push_back(vc->getVal());
   EWeight.push_back(0.0);
-
-  return;
+  return (EWeight.empty()) ? 0 : 1;
 }
 
 int
@@ -238,8 +234,11 @@ GammaSource::populate(const FuncDataBase& Control)
     Control.EvalDefVar<std::string>(keyName+"Energy","");
   const std::string EPList=
     Control.EvalDefVar<std::string>(keyName+"EProb","");
+  const std::string EFile=
+    Control.EvalDefVar<std::string>(keyName+"EFile","");
 
-  if (!populateEnergy(EList,EPList))
+  if (!populateEnergy(EList,EPList) &&
+      !populateEFile(EFile,1,11))
     {
       double E=Control.EvalVar<double>(keyName+"EStart"); 
       const size_t nE=Control.EvalVar<size_t>(keyName+"NE"); 

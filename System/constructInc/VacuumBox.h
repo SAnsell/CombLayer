@@ -41,7 +41,8 @@ class VacuumBox :
   public attachSystem::CellMap
 {
  private:
-  
+
+  const bool centreConstruct;   ///< Construct on the centre line
   const int vacIndex;           ///< Index of surface offset
   int cellIndex;                ///< Cell index  
 
@@ -60,6 +61,7 @@ class VacuumBox :
   double flangeLength;        ///< Joining Flange length
   double flangeWall;          ///< Joining Flange thickness
   
+  int voidMat;                ///< void material
   int feMat;                  ///< Fe material layer
   
   void populate(const FuncDataBase&);
@@ -70,7 +72,7 @@ class VacuumBox :
 
  public:
 
-  VacuumBox(const std::string&);
+  VacuumBox(const std::string&,const bool =0);
   VacuumBox(const VacuumBox&);
   VacuumBox& operator=(const VacuumBox&);
   virtual ~VacuumBox();

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   processInc/ObjectTrackAct.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -77,9 +77,11 @@ class ObjectTrackAct
   void addUnit(const Simulation&,const int,Geometry::Vec3D);
 
   double getMatSum(const int) const;
+  double getAttnSum(const int) const;
+  double getDistance(const int) const;
   /// Debug function effectivley
   //  const std::map<int,ObjTrackItem>& getMap() const { return Items; }
-
+  void createAttenPath(std::vector<int>&,std::vector<double>&) const;
   void write(std::ostream&) const;
 
 };

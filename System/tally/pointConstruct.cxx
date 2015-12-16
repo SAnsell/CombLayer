@@ -123,38 +123,44 @@ pointConstruct::processPoint(Simulation& System,
   const masterRotate& MR=masterRotate::Instance();
   std::string revStr;
 
-  if (PType=="free")
+  if (PType=="free" || PType=="Free")
     {
       std::vector<Geometry::Vec3D> EmptyVec;
-      Geometry::Vec3D PPoint=
-	inputItem<Geometry::Vec3D>(IParam,Index,2,"Point for point detector");
+      size_t itemIndex(2);
+      Geometry::Vec3D PPoint=IParam.getCntVec3D
+	("tally",Index,itemIndex,"Point for point detector");
+      const int flag=IParam.checkItem<std::string>
+	("tally",Index,itemIndex,revStr);
 
-      const int flag=checkItem<std::string>(IParam,Index,5,revStr);
-      if (!flag || revStr!="r")
-	PPoint=MR.reverseRotate(PPoint);
+      if (flag && (revStr=="r" || revStr=="R"))
+	{
+	  PPoint=MR.forceReverseRotate(PPoint);
+	  ELog::EM<<"Remapped point == "<<PPoint<<ELog::endDiag;
+	}
       processPointFree(System,PPoint,EmptyVec);
     }
 
   else if (PType=="freeWindow")
     {
-      size_t windowIndex(6);
+      size_t itemIndex(2);
       Geometry::Vec3D PPoint=
-	inputItem<Geometry::Vec3D>(IParam,Index,2,"Point for point detector");
-      int flag=checkItem<std::string>(IParam,Index,5,revStr);
-      if (!flag || revStr!="r")
+	IParam.getCntVec3D("tally",Index,itemIndex,"Point for point detector");
+      int flag=IParam.checkItem<std::string>
+	("tally",Index,itemIndex,revStr);
+      if (flag && (revStr=="r" || revStr=="R"))
 	{
-	  PPoint=MR.reverseRotate(PPoint);
-	  windowIndex--;
+	  itemIndex++;
+	  PPoint=MR.forceReverseRotate(PPoint);
 	}
       
       std::vector<Geometry::Vec3D> WindowPts(4);
-      for(size_t i=0;i<4;windowIndex+=3,i++)
-	WindowPts[i]=
-	  inputItem<Geometry::Vec3D>(IParam,Index,windowIndex,"Window point");
+      for(size_t i=0;i<4;i++)
+	WindowPts[i]=IParam.getCntVec3D
+	  ("tally",Index,itemIndex,"Window point "+StrFunc::makeString(i+1));
       
       flag=checkItem<std::string>(IParam,Index,5,revStr);
-      if (!flag || revStr!="r")
-	PPoint=MR.reverseRotate(PPoint);
+      if (flag && (revStr=="r" || revStr=="R"))
+	PPoint=MR.forceReverseRotate(PPoint);
       
       processPointFree(System,PPoint,WindowPts);
     }
@@ -180,13 +186,28 @@ pointConstruct::processPoint(Simulation& System,
   else if (PType=="object")
     {
       const std::string place=
-	inputItem<std::string>(IParam,Index,2,"position not given");
+	IParam.outputItem<std::string>("tally",Index,2,"position not given");
+      
       const std::string snd=
 	inputItem<std::string>(IParam,Index,3,"front/back/side not give");
       const double D=
 	inputItem<double>(IParam,Index,4,"Distance not given");
       const long int linkNumber=getLinkIndex(snd);
       processPointFree(System,place,linkNumber,D);
+    }
+  else if (PType=="objOffset")
+    {
+      const std::string place=
+	inputItem<std::string>(IParam,Index,2,"position not given");
+      const std::string snd=
+	inputItem<std::string>(IParam,Index,3,"front/back/side not give");
+
+      size_t itemIndex(4);
+      const Geometry::Vec3D DVec=
+	IParam.getCntVec3D("tally",Index,itemIndex,"Offset");
+      const long int linkNumber=getLinkIndex(snd);
+      
+      processPointFree(System,place,linkNumber,DVec);
     }
   else
     {
@@ -282,7 +303,7 @@ pointConstruct::processPointFree(Simulation& System,
 {
   ELog::RegMethod RegA("pointConstruct","processPointFree(String)");
 
-  ModelSupport::objectRegister& OR=
+  const ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
   const attachSystem::FixedComp* TPtr=
@@ -293,21 +314,46 @@ pointConstruct::processPointFree(Simulation& System,
       (FObject,"Fixed Object not found");
   
   const int tNum=System.nextTallyNum(5);
-  Geometry::Vec3D TPoint;
-  if (linkPt>0)
-    {
-      const size_t iLP=static_cast<size_t>(linkPt-1);
-      TPoint=TPtr->getLinkPt(iLP)+TPtr->getLinkAxis(iLP)*OD;
-    }
-  else if (linkPt<0)
-    {
-      const size_t iLP=static_cast<size_t>(1-linkPt);
-      TPoint=TPtr->getLinkPt(iLP)-TPtr->getLinkAxis(iLP)*OD;
-    }
-  else   // origin case
-    {
-      TPoint=TPtr->getCentre()+TPtr->getY()*OD;
-    }
+  Geometry::Vec3D TPoint=TPtr->getSignedLinkPt(linkPt);
+  TPoint+=TPtr->getSignedLinkAxis(linkPt)*OD;
+
+  std::vector<Geometry::Vec3D> EmptyVec;
+  addF5Tally(System,tNum,TPoint,EmptyVec);
+  
+  return;
+}
+
+void
+pointConstruct::processPointFree(Simulation& System,
+				 const std::string& FObject,
+				 const long int linkPt,
+				 const Geometry::Vec3D& DVec) const
+/*!
+  Process a point tally in a registered object
+  \param System :: Simulation to add tallies
+  \param FObject :: Fixed/Twin name
+  \param linkPt :: Link point [-ve for beam object]
+  \param DVec :: Out distance Distance
+*/
+{
+  ELog::RegMethod RegA("pointConstruct","processPointFree(Vec)");
+
+  const ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  const attachSystem::FixedComp* TPtr=
+    OR.getObject<attachSystem::FixedComp>(FObject);
+  
+  if (!TPtr)
+    throw ColErr::InContainerError<std::string>
+      (FObject,"Fixed Object not found");
+  
+  const int tNum=System.nextTallyNum(5);
+  Geometry::Vec3D TPoint=TPtr->getSignedLinkPt(linkPt);
+  
+  Geometry::Vec3D XDir,YDir,ZDir;
+  TPtr->calcLinkAxis(linkPt,XDir,YDir,ZDir);
+  TPoint+=XDir*DVec[0]+YDir*DVec[1]+ZDir*DVec[2];
 
   std::vector<Geometry::Vec3D> EmptyVec;
   addF5Tally(System,tNum,TPoint,EmptyVec);
@@ -435,6 +481,8 @@ pointConstruct::writeHelp(std::ostream& OX) const
   OX<<
     "free Vec3D -- point detector at point\n"
     "object ObjName link dist -- point detector at "
+        " point relative to object\n"
+    "objOffset ObjName link Vec3D -- point detector at "
     " point relative to object\n"
     "freeWindow Vec3D Vec3D Vec3D Vec3D Vec3D -- \n"
     "   Point + four coordinates of the window\n"

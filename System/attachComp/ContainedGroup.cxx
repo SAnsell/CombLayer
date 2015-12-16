@@ -446,6 +446,21 @@ ContainedGroup::setAllInsertCell(const int CN)
   return;
 }
 
+void 
+ContainedGroup::addInsertCell(const std::string& Key,
+			      const std::vector<int>& CN)
+  /*!
+    Adds a cell to the insert list
+    \param Key :: Key name for rule
+    \param CN :: Cell numbers
+  */
+{
+  ELog::RegMethod RegA("ContainedGroup","addInsertCell");
+  getCC(Key).addInsertCell(CN);
+  return;
+}
+
+  
 void
 ContainedGroup::insertObjects(Simulation& System)
   /*!

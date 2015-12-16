@@ -73,6 +73,7 @@
 #include "FixedComp.h"
 #include "LayerComp.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
 #include "CellMap.h"
 #include "surfDBase.h"
 #include "mergeTemplate.h"

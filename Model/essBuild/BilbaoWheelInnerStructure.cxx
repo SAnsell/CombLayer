@@ -67,6 +67,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
 #include "CellMap.h"
 #include "Plane.h"
 #include "BilbaoWheelInnerStructure.h"
@@ -368,13 +369,12 @@ namespace essSystem
 	  }
 	catch (ColErr::IndexError<size_t>& IE)
 	  {
-	    //	    std::cout << "did not intersept" << std::endl;
+	    //	    std::cout << "does not intersept" << std::endl;
 	  }
 
 	if (p4.abs()>Geometry::zeroTol) // if back of the brick crosses inner surface
 	  {
 	    nBrickLayers = iLayer;
-	    //	    ELog::EM << "Number of birck layers: " << nBrickLayers << ELog::endDiag;
 	    break;
 	  }
 
@@ -396,7 +396,7 @@ namespace essSystem
 					  i*(brickWidth+brickGapWidth)); 
 	
 	// after brick
-	Geometry::Plane *ptmp = ModelSupport::buildShiftedPlane(SMap, SJ+2, ptan1,
+	ModelSupport::buildShiftedPlane(SMap, SJ+2, ptan1,
 					i*(brickWidth+brickGapWidth)+brickWidth);
 	
 	// 2nd layer
@@ -411,6 +411,34 @@ namespace essSystem
       }
   }
 
+  double
+  BilbaoWheelInnerStructure::sideIntersect(const std::string& surf, const Geometry::Plane *plSide)
+  /*
+    Calculates intersect of a brick (void between bricks) and one of the sector side surfaces.
+    Return number of intersection points
+   */
+  {
+    std::vector<Geometry::Vec3D> Pts;
+    std::vector<int> SNum;
+    const Geometry::Plane *pz = SMap.realPtr<Geometry::Plane>(insIndex+5);
+
+    HeadRule HR(surf);
+    HR.populateSurf();
+
+    Geometry::Vec3D Org = Origin-plSide->getNormal()*plSide->distance(Origin);
+    Geometry::Vec3D Unit = -plSide->crossProd(*pz);
+
+    if (!plSide->onSurface(Org))
+      ELog::EM << "Origin of line is not on the surface" << ELog::endErr;
+
+    size_t n = HR.calcSurfIntersection(Org, Unit, Pts, SNum);
+    double dist = -1.0;
+    if (n>1)
+      dist = Pts[0].Distance(Pts[1])+0.01; // 0.01 is a "safety" summand to get rid of the bricks where we cross in the corner. For some reason, 1st layer is not built without this number.
+    return dist;
+  }
+
+
   void
   BilbaoWheelInnerStructure::createBricks(Simulation& System, attachSystem::FixedComp& Wheel,
 					  const std::string side1, const std::string side2,
@@ -421,7 +449,14 @@ namespace essSystem
   {
     ELog::RegMethod RegA("BilbaoWheelInnerStructure","createBricks");
 
-    const std::string sideStr = side1 + side2;
+    HeadRule HR;
+    HR.procString(side1);
+    const Geometry::Plane* plSide1 = SMap.realPtr<Geometry::Plane>(HR.getSurfaceNumbers().front());
+    HR.procString(side2);
+    const Geometry::Plane* plSide2 = SMap.realPtr<Geometry::Plane>(HR.getSurfaceNumbers().front());
+    const Geometry::Plane *pz = SMap.realPtr<Geometry::Plane>(insIndex+5);
+
+    std::string sideStr = side1 + side2;
     const std::string vertStr = Wheel.getLinkString(6) + Wheel.getLinkString(7); // top+bottom
 
     const std::string innerCyl = Wheel.getLinkString(8);
@@ -434,8 +469,12 @@ namespace essSystem
     System.addCell(MonteCarlo::Qhull(cellIndex++, brickGapMat, temp, Out+vertStr+outerCyl));
 
 
-    ELog::EM << "TODO: Side surfaces (sideStr) are added to all brick cells, while this is needed only for the bricks connecting with these surfaces." << ELog::endCrit;
-    ELog::EM << "TODO: Bricks outside of the given sector are created (but effectively not active due to sideStr). All this reduces performance." << ELog::endCrit;
+    ELog::EM << "TODO: simplification of these multiple IFs needed" << ELog::endCrit;
+
+    int mat(0);
+    bool firstBrick(false);
+    bool lastBrick(false);
+    double dist; // distance b/w two intersection points
 
     // bricks
     std::string layerStr;
@@ -443,19 +482,83 @@ namespace essSystem
       {
 	layerStr = ModelSupport::getComposite(SMap, SI, " -5  6 ");
 	int SJ(insIndex+1000*(sector+1));
+	firstBrick = false;
+	lastBrick = false;
 	for (int j=0; j<27; j++) // !!! TMP
 	  {
-	    int bOffset = i%2 ? SJ+10 : SJ;
-	    Out1 = ModelSupport::getComposite(SMap, bOffset, " 1 -2 ");
+	    int bOffset = i%2 ? SJ+10 : SJ; // alternate planes for odd/even brick layers
 
-	    System.addCell(MonteCarlo::Qhull(cellIndex++,
-					     i<nBrickLayers-nSteelLayers ? brickMat : brickSteelMat, temp,
-					     Out1+layerStr+vertStr+sideStr));  // !!! sideStr is tmp
-	      
+	    mat = i<nBrickLayers-nSteelLayers ? brickMat : brickSteelMat;
+
+	    // brick
+	    Out1 = ModelSupport::getComposite(SMap, bOffset, " 1 -2 ");
+	    dist = sideIntersect(Out1+layerStr, plSide1);
+	    if (dist>Geometry::zeroTol)
+	      {
+		firstBrick = true;
+		if (dist>=brickLen) // side plane of the brick is not intersected
+		  Out1 = ModelSupport::getComposite(SMap, bOffset, " -2 ");
+		sideStr = side1;
+		mat = brickSteelMat;
+	      } else 
+	      {
+		dist = sideIntersect(Out1+layerStr, plSide2);
+		if (dist>Geometry::zeroTol)
+		  {
+		    lastBrick = true;
+		    Out1 = ModelSupport::getComposite(SMap, bOffset, " 1 ");
+		    sideStr = side2;
+		    mat = brickSteelMat;
+		  } else
+		  {
+		    sideStr = "";
+		  }
+	      }
+
+	    if (firstBrick)
+	      System.addCell(MonteCarlo::Qhull(cellIndex++,
+					       mat, temp,
+					       Out1+layerStr+vertStr+sideStr));  // !!! sideStr is tmp
+	    if (lastBrick) break;
+
+	    // gap
+	    mat = brickGapMat;
 	    Out1 = ModelSupport::getComposite(SMap, bOffset, bOffset+20, " 2 -1M ");
-	    System.addCell(MonteCarlo::Qhull(cellIndex++, brickGapMat, temp,
-					     Out1+layerStr+vertStr+sideStr)); // !!! sideStr is TMP
-	      
+	    dist = sideIntersect(Out1+layerStr, plSide1);
+	    if (dist>Geometry::zeroTol) 
+	      {
+		firstBrick = true;
+		if (dist>=brickLen) // side plane of the brick is not intersected
+		  Out1 = ModelSupport::getComposite(SMap, bOffset+20, " -1M ");
+		sideStr = side1;
+		mat = brickSteelMat;
+	      } else
+	      {
+		dist = sideIntersect(Out1+layerStr, plSide2);
+		if (dist>Geometry::zeroTol)
+		  {
+		    lastBrick = true;
+		    Out1 = ModelSupport::getComposite(SMap, bOffset, " 2 ");
+		    sideStr = side2;
+		    mat = brickSteelMat;
+		  } else
+		  {
+		    if (lastBrick) // set in bricks
+		      {
+			sideStr = side2;
+			ELog::EM << "Last brick set in bricks" << ELog::endCrit;
+		      }
+		    else
+		      sideStr = "";
+		  }
+	      }
+
+	    if (firstBrick)
+	      System.addCell(MonteCarlo::Qhull(cellIndex++, mat, temp,
+					       Out1+layerStr+vertStr+sideStr));
+
+	    if (lastBrick) break;
+      
 	    SJ += 20;
 	  }
 
@@ -463,8 +566,8 @@ namespace essSystem
 	  Out = ModelSupport::getComposite(SMap, SI, SI+10, " -6  ") + innerCyl;
 	else
 	  Out = ModelSupport::getComposite(SMap, SI, SI+10, " -6 5M ");
-	System.addCell(MonteCarlo::Qhull(cellIndex++, brickGapMat, temp, Out+vertStr+sideStr));
-	
+	System.addCell(MonteCarlo::Qhull(cellIndex++, brickGapMat, temp, Out+vertStr+side1+side2));
+
 	SI += 10;
       }
   }

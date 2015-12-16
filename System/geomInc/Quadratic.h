@@ -95,6 +95,7 @@ class Quadratic : public Surface
 
   void normalizeGEQ(const size_t);
   virtual void write(std::ostream&) const;
+  virtual void writeFLUKA(std::ostream&) const;
   virtual void print() const;
   
   virtual void writeXML(const std::string&) const;

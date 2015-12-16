@@ -48,6 +48,8 @@ class makeESSBL :
   const std::string beamName;                 ///< Name of beamline
   
  public:
+
+  static std::pair<int,int> getBeamNum(const std::string&);
   
   makeESSBL(const std::string&,const std::string&);
   makeESSBL(const makeESSBL&);

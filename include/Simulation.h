@@ -49,6 +49,12 @@ namespace ModelSupport
   class ObjSurfMap;
 }
 
+namespace WeightSystem
+{
+  class WeightMesh;
+  class WeightControl;
+}
+
 namespace MonteCarlo
 {
   class Object;
@@ -70,11 +76,15 @@ namespace MonteCarlo
 
 class Simulation
 {
+ protected:
+
+  typedef std::map<int,Geometry::Transform> TransTYPE; ///< Transform type
+ 
  public:
 
+  // UGLY
   typedef std::map<int,MonteCarlo::Qhull*> OTYPE;      ///< Object type
   typedef std::map<int,tallySystem::Tally*> TallyTYPE; ///< Tally type
-  typedef std::map<int,Geometry::Transform> TransTYPE; ///< Transform type
 
  protected:
 
@@ -86,14 +96,15 @@ class Simulation
   FuncDataBase DB;                      ///< DataBase of variables
   ModelSupport::ObjSurfMap* OSMPtr;     ///< Object surface map [if required]
 
-  TransTYPE TList;        ///< Transforms List (key=Transform)
+  TransTYPE TList;                      ///< Transforms List (key=Transform)
 
   OTYPE OList;   ///< List of objects  (allow to become hulls)
-  std::vector<int> cellOutOrder;    ///< List of cells [output order]
-  std::set<int> voidCells;          ///< List of void cells
+  std::vector<int> cellOutOrder;        ///< List of cells [output order]
+  std::set<int> voidCells;              ///< List of void cells
 
-  TallyTYPE TItem;  ///< Tally Items
+  TallyTYPE TItem;                        ///< Tally Items
   physicsSystem::PhysicsCards* PhysPtr;   ///< Physics Cards
+  WeightSystem::WeightControl* WCtrlPtr;  ///< Weight control pointer
   
   // METHODS:
 
@@ -111,7 +122,7 @@ class Simulation
   void writeTransform(std::ostream&) const;
   void writeTally(std::ostream&) const;
   void writePhysics(std::ostream&) const;
-  void writeVariables(std::ostream&) const;
+  void writeVariables(std::ostream&,const char ='c') const;
 
   // The Cinder Write stuff
   void writeCinderMat() const;
@@ -139,6 +150,8 @@ class Simulation
   int isValidCell(const int,const Geometry::Vec3D&) const;
 
 
+  
+
   MonteCarlo::Qhull* findQhull(const int);         
   const MonteCarlo::Qhull* findQhull(const int) const; 
   MonteCarlo::Object* findCell(const Geometry::Vec3D&,
@@ -156,7 +169,8 @@ class Simulation
   /// Gets the data base
   const FuncDataBase& getDataBase() const { return DB; }
   /// Get PhysicsCards
-  physicsSystem::PhysicsCards& getPC() { return *PhysPtr; }    
+  physicsSystem::PhysicsCards& getPC() { return *PhysPtr; }
+  /// Access weight control
   const OTYPE& getCells() const { return OList; } ///< Get cells
   OTYPE& getCells() { return OList; } ///< Get cells
   Geometry::Transform* createSourceTransform();
@@ -208,13 +222,13 @@ class Simulation
   /// Access surface map
   const ModelSupport::ObjSurfMap* getOSM() const;
 
-
   // Tally processing
 
   bool isMCNP6() { return (mcnpType==1) ? 1 : 0; }  ///< get a state
   void setMcnpType(const int T) { mcnpType=T; }  ///< Set type
   void removeAllTally();
   int removeTally(const int);
+
 
   int addTally(const tallySystem::Tally&);
   tallySystem::Tally* getTally(const int) const;
@@ -232,9 +246,10 @@ class Simulation
   void renumberCells(const std::vector<int>&,const std::vector<int>&);
   void renumberSurfaces(const std::vector<int>&,const std::vector<int>&);
   void prepareWrite();
-  void write(const std::string&) const;  
   void writeCinder() const;          
 
+  virtual void write(const std::string&) const;  
+    
   // Debug stuff
   
   void printVertex(const int) const;

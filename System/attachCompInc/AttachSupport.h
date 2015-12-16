@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   attachCompInc/AttachSupport.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,8 +30,11 @@ namespace attachSystem
 {
 
 class FixedComp;
+class CellMap;
 class ContainedComp;
 
+long int getLinkNumber(const std::string&);
+ 
 void addUnion(const MonteCarlo::Object&,Rule*&);
 void addUnion(const int,const Geometry::Surface*,Rule*&);
 
@@ -56,8 +59,11 @@ void addToInsertControl(Simulation&,const int,const int,
 // On surface intersects
 void addToInsertSurfCtrl(Simulation&,const FixedComp&,
 			ContainedComp&);
+void addToInsertSurfCtrl(Simulation&,const CellMap&,const std::string&,
+			 ContainedComp&);
 void addToInsertSurfCtrl(Simulation&,const int,const int,
 			ContainedComp&);
+void addToInsertSurfCtrl(Simulation&,const int,ContainedComp&);
 void addToInsertOuterSurfCtrl(Simulation&,const FixedComp&,
 			ContainedComp&);
 void addToInsertOuterSurfCtrl(Simulation&,

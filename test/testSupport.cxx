@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testSupport.cxx
  *
@@ -44,6 +44,7 @@
 #include "OutputLog.h"
 #include "mathSupport.h"
 #include "support.h"
+#include "stringCombine.h"
 #include "regexSupport.h"
 
 #include "testFunc.h"
@@ -83,6 +84,7 @@ testSupport::applyTest(const int extra)
       &testSupport::testFullBlock,
       &testSupport::testItemize,
       &testSupport::testSection,
+      &testSupport::testSectionRange,
       &testSupport::testSectPartNum,
       &testSupport::testSingleLine,
       &testSupport::testStrComp,
@@ -100,6 +102,7 @@ testSupport::applyTest(const int extra)
       "FullBlock",
       "Itemize",
       "Section",
+      "SectionRange",
       "SectPartNum",
       "SingleLine",
       "StrComp",
@@ -207,7 +210,7 @@ testSupport::testConvert()
     }
   return 0;
 }
-
+ 
 int
 testSupport::testConvPartNum()
   /*!
@@ -444,6 +447,55 @@ testSupport::testSection()
 		  <<ELog::endDiag;
 	  ELog::EM<<"Final string :"<<std::get<2>(tc)<<ELog::endDiag;
 	  ELog::EM<<"Found string :"<<TLine<<ELog::endDiag;
+	  return -1;
+	}
+      cnt++;
+    }
+  return 0;
+}
+
+int
+testSupport::testSectionRange()
+  /*!
+    Applies a test to section
+    \retval -1 :: failed to section a string
+    \retval 0 on success
+  */
+{
+  ELog::RegMethod RegA("testSupport","testSection");
+
+  // Init string : NResults : index : results
+  typedef std::tuple<std::string,size_t,size_t,int> TTYPE;
+  std::vector<TTYPE> Tests;
+
+  int resultFlag;       // Section return
+
+  Tests.push_back(TTYPE("1:10 ",10,4,5));
+  Tests.push_back(TTYPE("1:10:2 ",5,4,9));
+  Tests.push_back(TTYPE("8,12,7 ",3,1,12));
+  Tests.push_back(TTYPE("6,x12,7 ",0,2,12));
+
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
+    {
+      std::vector<int> Out;
+      std::string TLine=std::get<0>(tc);
+
+      resultFlag=sectionRange(TLine,Out);
+      const size_t index(std::get<2>(tc));
+      if (Out.size()!=std::get<1>(tc) ||
+	  (!Out.empty() && Out[index]!=std::get<3>(tc)))
+	{
+	  ELog::EM<<"TEST :: "<<cnt<<ELog::endDiag;
+	  ELog::EM<<"String :"<<std::get<0>(tc)<<ELog::endDiag;
+
+	  ELog::EM<<"Result == "<<resultFlag<<ELog::endDiag;
+	  ELog::EM<<"Size["<<Out.size()<<"] == "<<Out.size() <<ELog::endDiag;
+	  ELog::EM<<"Index["<<std::get<3>(tc)<<"] == "<<Out[index]
+		  <<ELog::endDiag;
+	  ELog::EM<<"Output[Int] == "<<StrFunc::makeString(Out)
+		  <<ELog::endDiag;
+
 	  return -1;
 	}
       cnt++;

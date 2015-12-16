@@ -54,12 +54,12 @@
 #include "Qhull.h"
 #include "ObjSurfMap.h"
 #include "Simulation.h"
-#include "ObjTrackItem.h"
+#include "Zaid.h"
+#include "MXcards.h"
+#include "Material.h"
+#include "DBMaterial.h"
 #include "LineTrack.h"
 #include "ObjectTrackAct.h"
-
-#include "localRotate.h"
-#include "masterRotate.h"
 
 namespace ModelSupport
 {
@@ -154,7 +154,7 @@ ObjectTrackAct::getMatSum(const int objN) const
 
   std::map<int,LineTrack>::const_iterator mc=Items.find(objN);
   if (mc==Items.end())
-    throw ColErr::InContainerError<int>(objN,RegA.getFull());
+    throw ColErr::InContainerError<int>(objN,"objN in Items");
   
   // Get Two Paired Vectors
   const std::vector<MonteCarlo::Object*>& OVec=
@@ -166,6 +166,74 @@ ObjectTrackAct::getMatSum(const int objN) const
     if (OVec[i]->getMat()!=0)
       sum+=TVec[i];
   return sum;
+}
+
+double
+ObjectTrackAct::getAttnSum(const int objN) const
+  /*!
+    Calculate the sum in the material
+    \param objN :: Cell number to use
+    \return sum of distance in non-void
+  */
+{
+  ELog::RegMethod RegA("ObjectTrackAct","getAttnSum");
+
+  const ModelSupport::DBMaterial& DB=
+    ModelSupport::DBMaterial::Instance();
+
+  std::map<int,LineTrack>::const_iterator mc=Items.find(objN);
+  if (mc==Items.end())
+    throw ColErr::InContainerError<int>(objN,"objN in Items");
+  
+  // Get Two Paired Vectors
+  const std::vector<MonteCarlo::Object*>& OVec=
+    mc->second.getObjVec();
+  const std::vector<double>& TVec=
+    mc->second.getTrack();
+  
+  double sum(0.0);
+  for(size_t i=0;i<TVec.size();i++)
+    {
+      const int matN=OVec[i]->getMat();
+      if (matN)
+	{
+	  const MonteCarlo::Material& matInfo=DB.getMaterial(matN);
+	  const double density=matInfo.getAtomDensity();
+	  const double AMean=matInfo.getMeanA();
+	  sum+=TVec[i]*std::pow(AMean,0.66)*density;
+	}
+    }
+  return sum;
+}
+
+double
+ObjectTrackAct::getDistance(const int objN) const
+  /*!
+    Calculate the sum of the distance
+    \param objN :: Cell number to use
+    \return sum of distance in non-void
+  */
+{
+  ELog::RegMethod RegA("ObjectTrackAct","getDistance");
+
+  std::map<int,LineTrack>::const_iterator mc=Items.find(objN);
+  if (mc==Items.end())
+    throw ColErr::InContainerError<int>(objN,"objN in Items");
+  return mc->second.getTotalDist();
+}
+
+void
+ObjectTrackAct::createAttenPath(std::vector<int>& cellN,
+				std::vector<double>& attnD) const
+  /*!
+    Calculate the sum of the distance
+    \
+  */
+{
+  ELog::RegMethod RegA("ObjectTrackAct","createAttenPath");
+  for(const std::map<int,LineTrack>::value_type& mc : Items)
+    mc.second.createAttenPath(cellN,attnD);
+  return;
 }
 
 void 
@@ -180,7 +248,7 @@ ObjectTrackAct::write(std::ostream& OX) const
   OX<<"WRITE"<<std::endl;
   std::map<int,LineTrack>::const_iterator mc;
   for(mc=Items.begin();mc!=Items.end();mc++)
-    OX<<mc->first<<": "<<mc->second<<std::endl;
+    OX<<mc->first<<" : "<<mc->second<<std::endl;
   return;
 }
   

@@ -50,6 +50,7 @@
 #include "surfRegister.h"
 #include "Surface.h"
 #include "generateSurf.h"
+#include "ModelSupport.h"
 #include "ShapeUnit.h"
 #include "BenderUnit.h"
 
@@ -272,7 +273,6 @@ BenderUnit::calcWidthCent(const bool plusSide) const
 
 void
 BenderUnit::createSurfaces(ModelSupport::surfRegister& SMap,
-			  const int indexOffset,
 			  const std::vector<double>& Thick)
   /*!
     Build the surfaces for the track
@@ -286,15 +286,16 @@ BenderUnit::createSurfaces(ModelSupport::surfRegister& SMap,
   Geometry::Vec3D MCentre= calcWidthCent(0);
   // Make divider plane +ve required
   const double maxThick=Thick.back()+(aWidth+bWidth);
-  ModelSupport::buildPlane(SMap,indexOffset+offset+1,
+
+
+  ModelSupport::buildPlane(SMap,shapeIndex+1,
 			   begPt+RPlane*maxThick,
 			   endPt+RPlane*maxThick,
 			   endPt+RPlane*maxThick+RAxis,
 			   -RPlane);
   for(size_t j=0;j<Thick.size();j++)
     {
-      const int SN(indexOffset+offset+
-		   static_cast<int>(j)*layerSep);
+      const int SN(shapeIndex+static_cast<int>(j)*layerSep);
       ModelSupport::buildPlane(SMap,SN+5,
 			       begPt-RAxis*(aHeight/2.0+Thick[j]),
 			       begPt-RAxis*(aHeight/2.0+Thick[j])+RPlane,
@@ -315,27 +316,28 @@ BenderUnit::createSurfaces(ModelSupport::surfRegister& SMap,
 }
 
 std::string
-BenderUnit::getString(const size_t layerN) const
+BenderUnit::getString(const ModelSupport::surfRegister& SMap,
+		      const size_t layerN) const
   /*!
     Write string for layer number
+    \param SMap :: Surface register
     \param layerN :: Layer number
     \return inward string
   */
 {
   ELog::RegMethod RegA("BenderUnit","getString");
-  
-  std::ostringstream cx;
-  const int SN(offset+static_cast<int>(layerN)*layerSep);
 
-  cx<<offset+1<<" "<<(SN+5)<<" "<<-(SN+6)<<" "<<(SN+7)<<" "<<-(SN+8)<<" ";
-
-  return cx.str();
+  const int SN(static_cast<int>(layerN)*layerSep);
+  return ModelSupport::getComposite
+    (SMap,shapeIndex+SN,shapeIndex," 1M 5 -6 7 -8 ");
 }
 
 std::string
-BenderUnit::getExclude(const size_t layerN) const
+BenderUnit::getExclude(const ModelSupport::surfRegister& SMap,
+		       const size_t layerN) const
   /*!
     Write string for layer number
+    \param SMap :: Surface register
     \param layerN :: Layer number
     \return inward string
   */
@@ -344,11 +346,8 @@ BenderUnit::getExclude(const size_t layerN) const
   
   std::ostringstream cx;
 
-  const int SN(offset+static_cast<int>(layerN)*layerSep);
-
-  cx<<" ( "<<-(SN+5)<<":"<<(SN+6)<<":"
-    <<-(SN+7)<<":"<<(SN+8)<<") ";
-  return cx.str();
+  const int SN(static_cast<int>(layerN)*layerSep);
+  return ModelSupport::getComposite(SMap,shapeIndex+SN," (-5:6:-7:8) ");
 }
 
   

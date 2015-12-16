@@ -31,6 +31,7 @@
 #include <map>
 #include <string>
 #include <algorithm>
+#include <numeric>
 #include <memory>
 
 #include "Exception.h"
@@ -83,6 +84,8 @@
 #include "BenderUnit.h"
 #include "GuideLine.h"
 
+#include "debugMethod.h"
+
 namespace beamlineSystem
 {
 
@@ -91,7 +94,7 @@ GuideLine::GuideLine(const std::string& Key) :
   attachSystem::FixedGroup(Key,"Shield",6,"GuideOrigin",0),
   SUItem(200),SULayer(20),
   guideIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(guideIndex+1),nShapeLayers(0),activeEnd(0),  
+  cellIndex(guideIndex+1),nShapeLayers(0),activeEnd(0),
   nShapes(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -197,16 +200,15 @@ GuideLine::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("GuideLine","populate");
 
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYAngle");
-  zAngle=Control.EvalVar<double>(keyName+"ZAngle");
+  xStep=Control.EvalDefVar<double>(keyName+"XStep",0.0);
+  yStep=Control.EvalDefVar<double>(keyName+"YStep",0.0);
+  zStep=Control.EvalDefVar<double>(keyName+"ZStep",0.0);
+  xyAngle=Control.EvalDefVar<double>(keyName+"XYAngle",0.0);
+  zAngle=Control.EvalDefVar<double>(keyName+"ZAngle",0.0);
 
   beamXStep=Control.EvalDefVar<double>(keyName+"BeamXStep",xStep);
   beamYStep=Control.EvalDefVar<double>(keyName+"BeamYStep",yStep);
   beamZStep=Control.EvalDefVar<double>(keyName+"BeamZStep",zStep);
-
   beamXYAngle=Control.EvalDefVar<double>(keyName+"BeamXYAngle",xyAngle);
   beamZAngle=Control.EvalDefVar<double>(keyName+"BeamZAngle",xyAngle);
 
@@ -221,8 +223,6 @@ GuideLine::populate(const FuncDataBase& Control)
       rightWidth=Control.EvalVar<double>(keyName+"RightWidth");
       feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
     }
-
-
   nShapes=Control.EvalVar<size_t>(keyName+"NShapes");
   nShapeLayers=Control.EvalVar<size_t>(keyName+"NShapeLayers");
   
@@ -242,7 +242,6 @@ GuideLine::populate(const FuncDataBase& Control)
   // set frontcut based on offset:
   beamFrontCut=(fabs(beamYStep)>Geometry::zeroTol) ? 1 : 0;
   frontCut=(fabs(yStep)>Geometry::zeroTol) ? 1 : 0;
-      
   return;
 }
 
@@ -282,47 +281,6 @@ GuideLine::addGuideUnit(const size_t index,
 }
 
 void
-GuideLine::addGuideUnit(const size_t index,
-			const Geometry::Vec3D& POrigin,
-			const Geometry::Vec3D& outX,
-			const Geometry::Vec3D& outY,
-			const Geometry::Vec3D& outZ,
-			const double bX,const double bZ,
-			const double bXYang,const double bZang)
-  /*!
-    Set the guide unit to the fixed system
-    The direction/rotation are applied to previous fixed unit
-    out track.
-
-    \param Index :: index for the unit
-    \param POrigin :: Previous Origin [link on]
-    \param outX :: X out outgoing component
-    \param outY :: Y out outgoing component
-    \param outZ :: Z out outgoing component
-    \param bX :: X shift on origin
-    \param bZ :: Z shift on origin
-    \param bXYang :: xy Angle rotation [deg]
-    \param bZang :: z Angle rotation [deg]
-  */
-{
-  ELog::RegMethod RegA("GuideLine","addGuideUnit(outX,outY,outZ)");
-
-  const std::string GKey="Guide"+StrFunc::makeString(index);
-
-  attachSystem::FixedComp& guideFC=FixedGroup::addKey(GKey,2);
-  
-  const std::string PGKey=(index) ? 
-    "Guide"+StrFunc::makeString(index-1) :  "GuideOrigin";
-
-  attachSystem::FixedComp& prevFC=FixedGroup::getKey(PGKey);
-  guideFC.createUnitVector(prevFC,POrigin);
-  guideFC.applyShift(bX,0.0,bZ);
-  guideFC.applyAngleRotate(bXYang,bZang);
-
-  return;
-}
-
-void
 GuideLine::checkRectangle(const double W,const double H) const
   /*!
     Check the rectangle size relative to the outside values
@@ -337,7 +295,6 @@ GuideLine::checkRectangle(const double W,const double H) const
       const double TThick=
 	std::accumulate(layerThick.begin(),layerThick.end(),0.0);
       
-
       if ((TThick+W/2.0)>leftWidth || (TThick+W/2.0)>rightWidth)
 	ELog::EM<<"Guide["<<keyName<<"] rectangle width/thick "<<W<<":"<<TThick
 		<<" > ("<<leftWidth<<":"<<rightWidth<<")"<<ELog::endErr;
@@ -392,10 +349,10 @@ GuideLine::processShape(const FuncDataBase& Control)
 
       // Simple rectangle projection:
       // ALL PROJECTIONS IN ROTATED DISTANCE
+      const int GINumber(guideIndex+SUItem*static_cast<int>(index+1));
       if (typeID=="Rectangle")   
 	{
-
-	  PlateUnit* SU=new PlateUnit(SUItem*static_cast<int>(index+1),SULayer);
+	  PlateUnit* SU=new PlateUnit(GINumber,SULayer);
 	  const double H=Control.EvalVar<double>(keyName+NStr+"Height");
 	  const double W=Control.EvalVar<double>(keyName+NStr+"Width");
 
@@ -411,8 +368,8 @@ GuideLine::processShape(const FuncDataBase& Control)
 	  checkRectangle(W,H);
 	}
       else if (typeID=="Tapper")   
-	{	
-	  PlateUnit* SU=new PlateUnit(SUItem*static_cast<int>(index+1),SULayer);
+	{
+	  PlateUnit* SU=new PlateUnit(GINumber,SULayer);
 	  const double HA=Control.EvalVar<double>(keyName+NStr+"HeightStart");
 	  const double WA=Control.EvalVar<double>(keyName+NStr+"WidthStart");
 	  const double HB=Control.EvalVar<double>(keyName+NStr+"HeightEnd");
@@ -435,8 +392,7 @@ GuideLine::processShape(const FuncDataBase& Control)
 	}
       else if (typeID=="Bend")
 	{
-	  BenderUnit* BU=
-	    new BenderUnit(SUItem*static_cast<int>(index+1),SULayer);
+	  BenderUnit* BU=new BenderUnit(GINumber,SULayer);
 
 	  const double HA=Control.EvalVar<double>(keyName+NStr+"AHeight");
 	  const double HB=Control.EvalDefVar<double>(keyName+NStr+"BHeight",HA);
@@ -502,7 +458,7 @@ GuideLine::createSurfaces()
   */
 {
   ELog::RegMethod RegA("GuideLine","createSurface");
-  
+
   FixedGroup::setDefault("Shield");
   const attachSystem::FixedComp& beamFC=
     FixedGroup::getKey("GuideOrigin");
@@ -526,13 +482,14 @@ GuideLine::createSurfaces()
     }
   // Note we ignore the length component of the last item 
   // and use the guide closer
-
+  int GI(guideIndex+1000);
   for(size_t i=0;i<nShapes;i++)
     {
       if (i)
-	ModelSupport::buildPlane(SMap,guideIndex+10+static_cast<int>(i),
+	ModelSupport::buildPlane(SMap,GI+static_cast<int>(i),
 				   shapeUnits[i]->getBegin(),Y);
-      shapeUnits[i]->createSurfaces(SMap,guideIndex,layerThick);
+      shapeUnits[i]->createSurfaces(SMap,layerThick);
+      GI+=100;
     }
     
   return;
@@ -592,16 +549,17 @@ GuideLine::createObjects(Simulation& System,
       // front
       const std::string front= (!i) ? startSurf : 
 	ModelSupport::getComposite(SMap,frontNum," 1 ");
+      
       back=shapeBackSurf(i);
       for(size_t j=0;j<nShapeLayers;j++)
 	{
-	  shapeLayer=ModelSupport::getComposite(SMap,guideIndex,
-						shapeUnits[i]->getString(j));
+	  // Note that shapeUnits has own offset but
+	  shapeLayer=shapeUnits[i]->getString(SMap,j);
+
 	  Out=shapeLayer;
 	  Out+=front+back;
 	  if (j)
-	    Out+=ModelSupport::getComposite
-	      (SMap,guideIndex,shapeUnits[i]->getExclude(j-1));
+	    Out+=shapeUnits[i]->getExclude(SMap,j-1);
 
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,layerMat[j],0.0,Out));
 	}
@@ -613,8 +571,9 @@ GuideLine::createObjects(Simulation& System,
       excludeCell.addUnion(ExOut);
       frontNum++;
     }
+
   if (activeShield)
-    {
+    {	    
       // Outer steel
       if (!activeEnd)
 	Out=ModelSupport::getComposite(SMap,guideIndex," -2 3 -4 5 -6 ");
@@ -631,6 +590,7 @@ GuideLine::createObjects(Simulation& System,
     }
   else
     {
+	
       if (activeEnd)
 	addOuterSurf(startSurf+excludeCell.display());
       else
@@ -689,11 +649,12 @@ GuideLine::createMainLinks(const attachSystem::FixedComp& mainFC,
 }
 
 Geometry::Vec3D
-GuideLine::calcActiveEndIntercept(const ShapeUnit* shapePtr) 
+GuideLine::calcActiveEndIntercept() 
   /*!
     Determine the active end point intercept
-    with the list link point
-    \param shapePtr :: ShapeUnit of last point
+    with the list link point.
+    Note that it is not constant because it needs to
+    populate the surfaces of the endCut HeadRule.
   */
 {
   ELog::RegMethod RegA("GuideLine","calcActiveEndIntercept");
@@ -741,10 +702,10 @@ GuideLine::createUnitLinks()
 	guideFC.setConnect(1,shapeUnits[i]->getEnd(),
 			   shapeUnits[i]->getEndAxis());     
       else
-	guideFC.setConnect(1,calcActiveEndIntercept(shapeUnits[i]),
+	guideFC.setConnect(1,calcActiveEndIntercept(),
 			   shapeUnits[i]->getEndAxis());     
 
-      // decide which point to used 
+      // [FRONT] decide which point to used 
       if (!i && !beamFrontCut && !frontCut)
 	guideFC.setLinkCopy(0,shieldFC,0);       
       else if (!i && beamFrontCut)
@@ -754,12 +715,16 @@ GuideLine::createUnitLinks()
       else 
 	guideFC.setLinkSurf(0,-SMap.realSurf(SN));       
 
-      // END Link Pts
-      if (i==nShapes-1)
+      // [END] 
+      if (i==nShapes-1 && activeEnd)
+	{
+	  guideFC.setLinkSurf(1,endCut.complement());
+	  guideFC.setBridgeSurf(1,endCutBridge);
+	}
+      else if (i==nShapes-1)
 	guideFC.setLinkSurf(1,SMap.realSurf(guideIndex+2));
       else
 	guideFC.setLinkSurf(1,SMap.realSurf(SN+1));       
-
       SN++;
     }
   return;
@@ -782,6 +747,24 @@ GuideLine::addEndCut(const std::string& EC)
       activeEnd=1;
       endCut.procString(EC);
     }
+  return;
+}
+
+void
+GuideLine::addEndCut(const FixedComp& EC,const long int sideIndex)
+  /*!
+    Add an end cut system
+    \param EC :: End cut
+    \param sideIndex :: side intec
+  */
+{
+  ELog::RegMethod RegA("GuideLine","addEndCut");
+
+
+  activeEnd=1;
+  endCut=EC.getSignedMainRule(sideIndex);
+  endCutBridge=EC.getSignedCommonRule(sideIndex);
+
   return;
 }
 

@@ -55,12 +55,14 @@
 #include "surfIndex.h"
 #include "Simulation.h"
 #include "SimPHITS.h"
+#include "SimFLUKA.h"
 #include "neutron.h"
 #include "Detector.h"
 #include "DetGroup.h"
 #include "SimMonte.h"
 #include "variableSetup.h"
 #include "defaultConfig.h"
+#include "DBModify.h"
 #include "MainProcess.h"
 
 namespace mainSystem
@@ -208,7 +210,7 @@ createInputs(inputParam& IParam)
   std::vector<std::string> RItems(10,"");
 
   IParam.regFlag("a","axis");
-  IParam.regItem("angle","angle");
+  IParam.regItem("angle","angle",1,4);
   IParam.regDefItem<int>("c","cellRange",2,0,0);
   IParam.regItem("C","ECut");
   IParam.regFlag("cinder","cinder");
@@ -232,6 +234,7 @@ createInputs(inputParam& IParam)
   IParam.regItem("memStack","memStack");
   IParam.regDefItem<int>("n","nps",1,10000);
   IParam.regFlag("p","PHITS");
+  IParam.regFlag("fluka","FLUKA");
   IParam.regFlag("mcnp6","MCNP6");
   IParam.regFlag("Monte","Monte");
   IParam.regDefItem<double>("photon","photon",1,0.001);
@@ -279,8 +282,22 @@ createInputs(inputParam& IParam)
   IParam.regMulti("wExt","wExt",25,0);
   IParam.regMulti("wPWT","wPWT",25,0);    
   IParam.regItem("WTemp","weightTemp",1);
-  IParam.regDefItem<std::string>("WType","weightType",1,"basic");
+  IParam.regItem("WType","weightType",1,10);
+  IParam.regItem("WSource","weightSource",1,10);
+  IParam.regItem("WTally","weightTally",1,10);
+  IParam.regMulti("WObject","weightObject",100,1);
+  IParam.regMulti("WRebase","weightRebase",100,1);
+  IParam.regMulti("wDXT","weightDxtran",100,1);
+  IParam.regMulti("wDD","weightDD",100,1);
 
+
+  IParam.regMulti("wWWG","wWWG",25,0);
+  IParam.regMulti("wwgE","wwgE",25,0);
+  IParam.regItem("wwgXMesh","wwgXMesh",3,125);
+  IParam.regItem("wwgYMesh","wwgYMesh",3,125);
+  IParam.regItem("wwgZMesh","wwgZMesh",3,125);
+  
+  
   IParam.regDefItem<std::string>("X","xmlout",1,"Model.xml");
   IParam.regMulti("x","xml",10000,1);
   
@@ -309,7 +326,8 @@ createInputs(inputParam& IParam)
   IParam.setDesc("memStack","Memstack verbrosity value");
   IParam.setDesc("n","Number of starting particles");
   IParam.setDesc("MCNP6","MCNP6 output");
-  IParam.setDesc("p","PHITS output");
+  IParam.setDesc("FLUKA","FLUKA output");
+  IParam.setDesc("PHITS","PHITS output");
   IParam.setDesc("Monte","MonteCarlo capable simulation");
   IParam.setDesc("photon","Photon Cut energy");
   IParam.setDesc("photonModel","Photon Model Energy [min]");
@@ -320,6 +338,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("SI","Source Index value [1:2]");
   IParam.setDesc("SObj","Source Initialization Object");
   IParam.setDesc("sdefType","Source Type (TS1/TS2)");
+  IParam.setDesc("sdefVoid","Remove sdef card [to use source.F]");
   IParam.setDesc("physModel","Physics Model"); 
   IParam.setDesc("SP","Source start point");
   IParam.setDesc("SV","Sourece direction vector");
@@ -333,7 +352,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("Txml","Tally xml file");
   IParam.setDesc("targetType","Name of target type");
   IParam.setDesc("u","Units in cm");
-  IParam.setDesc("um","Unset void area (from imp=0)");
+  IParam.setDesc("um","Unset spherical void area (from imp=0)");
   IParam.setDesc("void","Adds the void card to the simulation");
   IParam.setDesc("volume","Create volume about point/radius for f4 tally");
   IParam.setDesc("volCells","Cells [object/range]");
@@ -345,9 +364,12 @@ createInputs(inputParam& IParam)
 
   IParam.setDesc("w","weightBias");
   IParam.setDesc("wExt","Extraction biasisng [see: -wExt help]");
+  IParam.setDesc("wDXT","Dxtran sphere addition [set -wDXT help] ");
   IParam.setDesc("wPWT","Photon Bias [set -wPWT help]");
   IParam.setDesc("WType","Initial model for weights [help for info]");
   IParam.setDesc("WTemp","Temperature correction for weights");
+  IParam.setDesc("WRebase","Rebase the weights based on a cell");
+  IParam.setDesc("WObject","Reconstruct weights base on cells");
   IParam.setDesc("WP","Weight bias Point");
 
   IParam.setDesc("x","XML input file");
@@ -468,6 +490,22 @@ void createFullInputs(inputParam& IParam)
 
   IParam.setValue("targetType",std::string("t2Target"));  
   IParam.setValue("sdefType",std::string("TS2"));  
+  return;
+}
+
+void
+createFilterInputs(inputParam& IParam)
+  /*!
+    Create Photon-neutron source input
+    \param IParam :: Initial input
+  */
+{
+  ELog::RegMethod RegA("MainProcess::","createFilterInputs");
+  createInputs(IParam);
+  
+
+  IParam.setValue("sdefType",std::string("Beam"));
+  IParam.setFlag("voidUnMask");  
   return;
 }
 
@@ -614,7 +652,8 @@ void createPipeInputs(inputParam& IParam)
   return;
 }
 
-void createESSInputs(inputParam& IParam)
+void
+createESSInputs(inputParam& IParam)
   /*!
     Set the specialise inputs for TS2
     \param IParam :: Input Parameters
@@ -627,6 +666,8 @@ void createESSInputs(inputParam& IParam)
   IParam.setValue("sdefType",std::string("ess"));  
   IParam.setValue("targetType",std::string("Bilbao"));
 
+  IParam.regDefItem<std::string>("matDB","materialDatabase",1,std::string("shielding"));
+  
   IParam.regDefItem<std::string>("lowMod","lowModType",1,std::string("lowMod"));
   IParam.regDefItem<std::string>("topMod","topModType",1,std::string("topMod"));
   IParam.regDefItem<std::string>("lowPipe","lowPipeType",1,std::string("side"));
@@ -635,7 +676,11 @@ void createESSInputs(inputParam& IParam)
 				 1,std::string("void"));
   IParam.regDefItem<std::string>("bunker","bunkerType",1,std::string("null"));
   IParam.regMulti("beamlines","beamlines",1000);
+  IParam.regDefItem<int>("nF5", "nF5", 1,0);
+  IParam.regMulti("f5-collimators","f5collimators",30);
+
   
+  IParam.setDesc("matDB","Set the material database to use (shielding or neutronics)");
   IParam.setDesc("beamlines","Creates beamlines on the main model");
   IParam.setDesc("lowMod","Type of low moderator to be built");
   IParam.setDesc("topMod","Type of top moderator to be built");
@@ -644,6 +689,12 @@ void createESSInputs(inputParam& IParam)
   IParam.setDesc("iradLine","Build an irradiation line [void for none]");
   IParam.setDesc("beamlines","Build beamlines [void for none]");
   IParam.setDesc("bunker","Build bunker [void for none [A-D]");
+  IParam.setDesc("nF5","Number of F5 collimators to build. \n"
+		 "  -- The collimators will be named as F5, F15, etc.\n"
+		 "  -- The corresponding variables must exist.");
+  IParam.setDesc("f5-collimators","Space separated list of theta angles for F5 collimators \n" 
+		 "(theta is defined on page 183 of the ESS TDR)");
+
   return;
 }
 
@@ -876,6 +927,8 @@ createSimulation(inputParam& IParam,
   Simulation* SimPtr;
   if (IParam.flag("PHITS"))
       SimPtr=new SimPHITS;
+  else if (IParam.flag("FLUKA"))
+      SimPtr=new SimFLUKA;
   else if (IParam.flag("Monte"))
     SimPtr=new SimMonte; 
   else 
@@ -909,7 +962,39 @@ InputModifications(Simulation* SimPtr,inputParam& IParam,
 }
 
 void
+setMaterialsDataBase(const inputParam& IParam)
+  /*!
+    Set the different data base option for mateirals
+    \param IParam :: Input param
+  */
+{
+  ELog::RegMethod RegA("MainProcess","setMaterialsDataBase");
+
+  const std::string materials=IParam.getValue<std::string>("matDB");
+  
+  // Add extra materials to the DBMaterials
+  if (materials=="neutronics")
+    ModelSupport::addESSMaterial();
+  else if (materials=="shielding")
+    ModelSupport::cloneESSMaterial();
+  else if (materials=="help")
+    {
+      ELog::EM<<"Materials database setups:\n"
+	" -- shielding [S.Ansell original naming]\n"
+	" -- neutronics [ESS Target division naming]"<<ELog::endDiag;
+      throw ColErr::ExitAbort("help");
+    }	
+  else
+    throw ColErr::InContainerError<std::string>(materials,
+						"Materials Data Base type");
+}
+  
+void
 exitDelete(Simulation* SimPtr)
+ /*!
+   Final deletion including singletons
+   \param Simulation to delete
+ */
 {
   delete SimPtr;
   ModelSupport::objectRegister::Instance().reset();

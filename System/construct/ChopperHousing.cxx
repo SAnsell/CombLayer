@@ -69,6 +69,7 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
 #include "CellMap.h"
 
 #include "ChopperHousing.h"
@@ -86,6 +87,44 @@ ChopperHousing::ChopperHousing(const std::string& Key) :
     \param Key :: KeyName
   */
 {}
+
+ChopperHousing::ChopperHousing(const ChopperHousing& A) : 
+  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),
+  houseIndex(A.houseIndex),cellIndex(A.cellIndex),
+  voidHeight(A.voidHeight),voidWidth(A.voidWidth),
+  voidDepth(A.voidDepth),voidThick(A.voidThick),
+  wallThick(A.wallThick),wallMat(A.wallMat)
+  /*!
+    Copy constructor
+    \param A :: ChopperHousing to copy
+  */
+{}
+
+ChopperHousing&
+ChopperHousing::operator=(const ChopperHousing& A)
+  /*!
+    Assignment operator
+    \param A :: ChopperHousing to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedOffset::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      cellIndex=A.cellIndex;
+      voidHeight=A.voidHeight;
+      voidWidth=A.voidWidth;
+      voidDepth=A.voidDepth;
+      voidThick=A.voidThick;
+      wallThick=A.wallThick;
+      wallMat=A.wallMat;
+    }
+  return *this;
+}
+
 
 ChopperHousing::~ChopperHousing() 
   /*!

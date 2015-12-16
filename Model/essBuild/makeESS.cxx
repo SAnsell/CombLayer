@@ -31,6 +31,7 @@
 #include <set>
 #include <map>
 #include <string>
+#include <array>
 #include <algorithm>
 #include <iterator>
 #include <memory>
@@ -63,7 +64,9 @@
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "LayerComp.h"
+#include "BaseMap.h"
 #include "CellMap.h"
+#include "SurfMap.h"
 #include "World.h"
 #include "TaperedFlightLine.h"
 #include "FlightLine.h"
@@ -92,17 +95,14 @@
 #include "GuideBay.h"
 #include "TaperedDiskPreMod.h"
 #include "Bunker.h"
+#include "Curtain.h"
 
 #include "ConicModerator.h"
-#include "essDBMaterial.h"
 #include "makeESSBL.h"
+
 // F5 collimators:
 #include "F5Calc.h"
 #include "F5Collimator.h"
-// BEAMLINES:
-#include "ODIN.h"
-#include "LOKI.h"
-#include "NMX.h"
 
 #include "makeESS.h"
 
@@ -133,7 +133,10 @@ makeESS::makeESS() :
   BulkLowAFL(new moderatorSystem::FlightLine("BulkLAFlight")),
   ShutterBayObj(new ShutterBay("ShutterBay")),
 
-  ABunker(new Bunker("ABunker"))
+  ABunker(new Bunker("ABunker")),
+  BBunker(new Bunker("BBunker")),
+  TopCurtain(new Curtain("Curtain"))
+  
  /*!
     Constructor
  */
@@ -149,8 +152,10 @@ makeESS::makeESS() :
   
   OR.addObject(LowAFL);
   OR.addObject(LowBFL);
+
   OR.addObject(TopPreMod);
   OR.addObject(TopCapMod);
+
 
   OR.addObject(TopAFL);
   OR.addObject(TopBFL);
@@ -160,6 +165,8 @@ makeESS::makeESS() :
 
   OR.addObject(ShutterBayObj);
   OR.addObject(ABunker);
+  OR.addObject(BBunker);
+  OR.addObject(TopCurtain);
 }
 
 
@@ -226,12 +233,12 @@ makeESS::createGuides(Simulation& System)
       GB->addInsertCell("Outer",ShutterBayObj->getMainCell());
       GB->setCylBoundary(Bulk->getLinkSurf(2),
 			 ShutterBayObj->getLinkSurf(2));
-      
+
       if (i<2)
 	GB->createAll(System,*LowMod);  
       else
 	GB->createAll(System,*TopMod);
-      
+      attachSystem::addToInsertForced(System,*GB,Target->getCC("Wheel"));      
       GBArray.push_back(GB);
       attachSystem::addToInsertForced(System,*GB, Target->getCC("Wheel"));
     }
@@ -239,7 +246,6 @@ makeESS::createGuides(Simulation& System)
   GBArray[0]->outerMerge(System,*GBArray[3]);
   for(size_t i=0;i<4;i++)
     GBArray[i]->createGuideItems(System);
-
 
 
   return;
@@ -270,7 +276,7 @@ makeESS::buildLowButterfly(Simulation& System)
 void
 makeESS::buildTopButterfly(Simulation& System)
   /*!
-    Build the upper butterfly moderator
+    Build the top butterfly moderator
     \param System :: Stardard simulation
   */
 {
@@ -437,19 +443,39 @@ makeESS::makeBeamLine(Simulation& System,
   ELog::RegMethod RegA("makeESS","makeBeamLine");
 
   const size_t NSet=IParam.setCnt("beamlines");
-
+  FuncDataBase& Control=System.getDataBase();
+  
   for(size_t j=0;j<NSet;j++)
     {
       const size_t NItems=IParam.itemCnt("beamlines",0);
-      for(size_t i=1;i<NItems;i+=2)
+      size_t index=1;
+      while(index<NItems)  // min of two items
 	{
-	  const std::string BL=IParam.getValue<std::string>("beamlines",j,i-1);
-	  const std::string Btype=IParam.getValue<std::string>("beamlines",j,i);
-	  // FIND BUNKER HERE:::
+	  const std::string BL=
+	    IParam.getValue<std::string>("beamlines",j,index-1);
+	  const std::string Btype=
+	    IParam.getValue<std::string>("beamlines",j,index);
+	  index+=2;
+
+	  Control.addVariable(BL+"Active",1);
+	  int fillFlag(0);
+	  if (IParam.checkItem<int>("beamlines",j,index+1,fillFlag))
+	    {
+	      // setting is CONTROLED as value from variable taken
+	      // otherwise
+	      Control.addVariable(BL+"Filled",fillFlag);
+	      index++;
+	    }
 	  
+	  // FIND BUNKER HERE:::
 	  makeESSBL BLfactory(BL,Btype);
-	  BLfactory.build(System,*ABunker);
-	    
+	  std::pair<int,int> BLNum=makeESSBL::getBeamNum(BL);
+	  if ((BLNum.first==1 && BLNum.second>9) ||
+	      (BLNum.first==4 && BLNum.second<=9) )
+	    BLfactory.build(System,*ABunker);
+	  else if ((BLNum.first==1 && BLNum.second<=9) ||
+	      (BLNum.first==4 && BLNum.second>9) )
+	    BLfactory.build(System,*BBunker);
 	}
     }
   return;
@@ -465,12 +491,34 @@ makeESS::makeBunker(Simulation& System,
   */
 {
   ELog::RegMethod RegA("makeESS","makeBunker");
-
-  ELog::EM<<"Bunker == "<<bunkerType<<ELog::endDiag;
   
   ABunker->addInsertCell(74123);
+  ABunker->setCutWall(1,0);
   ABunker->createAll(System,*LowMod,*GBArray[0],2,true);
 
+
+  BBunker->addInsertCell(74123);
+  BBunker->createAll(System,*LowMod,*GBArray[0],2,true);
+
+  BBunker->insertComponent(System,"leftWall",*ABunker);
+  BBunker->insertComponent(System,"roof0",*ABunker);
+  BBunker->insertComponent(System,"floor",*ABunker);
+
+  TopCurtain->addInsertCell("Top",74123);
+  TopCurtain->addInsertCell("Lower",74123);
+  TopCurtain->addInsertCell("Mid",74123);
+  TopCurtain->addInsertCell("Lower",ABunker->getCells("roof"));
+  TopCurtain->addInsertCell("Lower",BBunker->getCells("roof"));
+  TopCurtain->addInsertCell("Top",ABunker->getCells("roof"));
+  TopCurtain->addInsertCell("Top",BBunker->getCells("roof"));
+    
+  TopCurtain->addInsertCell("Lower",ABunker->getCells("MainVoid"));
+  TopCurtain->addInsertCell("Lower",BBunker->getCells("MainVoid"));
+  //  TopCurtain->createAll(System,*GBArray[0],2,1,true);
+  TopCurtain->createAll(System,*ShutterBayObj,6,4,*GBArray[0],2,true);
+
+  //  TopCurtain->insertComponent(System,"topVoid",*ABunker);
+  //  TopCurtain->insertComponent(System,"topVoid",*BBunker);
   return;
 }
 
@@ -515,9 +563,6 @@ makeESS::build(Simulation& System,
   ELog::RegMethod RegA("makeESS","build");
 
   int voidCell(74123);
-  // Add extra materials to the DBdatabase
-  ModelSupport::addESSMaterial();
-
   const std::string lowPipeType=IParam.getValue<std::string>("lowPipe");
   const std::string lowModType=IParam.getValue<std::string>("lowMod");
   const std::string topModType=IParam.getValue<std::string>("topMod");
@@ -527,7 +572,8 @@ makeESS::build(Simulation& System,
   const std::string iradLine=IParam.getValue<std::string>("iradLineType");
   const std::string bunker=IParam.getValue<std::string>("bunkerType");
 
-  const size_t nF5 = IParam.getValue<int>("nF5");
+
+  //  const size_t nF5 = IParam.getValue<size_t>("nF5");
 
   if (StrFunc::checkKey("help",lowPipeType,lowModType,targetType) ||
       StrFunc::checkKey("help",iradLine,topModType,""))
@@ -547,11 +593,11 @@ makeESS::build(Simulation& System,
   TopPreMod->createAll(System,World::masterOrigin(),0,false,
 		       Target->wheelHeight()/2.0,
 		       Reflector->getRadius(), true);
-
   buildLowButterfly(System);
   buildTopButterfly(System);
   const double LMHeight=attachSystem::calcLinkDistance(*LowMod,5,6);
   const double TMHeight=attachSystem::calcLinkDistance(*TopMod,5,6);
+  
   // Cap moderator DOES not span whole unit
   LowCapMod->createAll(System,*LowMod,6,false,
    		       0.0,Reflector->getRadius(), true);

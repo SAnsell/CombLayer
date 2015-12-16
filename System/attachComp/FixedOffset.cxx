@@ -112,6 +112,8 @@ FixedOffset::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("FixedOffset","populate");
 
+  preXYAngle=Control.EvalDefVar<double>(keyName+"PreXYAngle",0.0);
+  preZAngle=Control.EvalDefVar<double>(keyName+"PreZAngle",0.0);
   xStep=Control.EvalDefVar<double>(keyName+"XStep",0.0);
   yStep=Control.EvalDefVar<double>(keyName+"YStep",0.0);
   zStep=Control.EvalDefVar<double>(keyName+"ZStep",0.0);
@@ -134,7 +136,19 @@ FixedOffset::applyOffset()
   return;
 }
 
-  
+
+void
+FixedOffset::linkAngleRotate(const long int sideIndex)
+  /*!
+    Apply a rotation to a link point axis
+    \param sideIndex :: link point index [signed]
+   */
+{
+  ELog::RegMethod RegA("FixedOffset","applyOffset");
+
+  FixedComp::linkAngleRotate(sideIndex,xyAngle,zAngle);
+  return;
+}
 
 
 

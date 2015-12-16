@@ -470,16 +470,16 @@ Vec3D::masterDir(const double Tol) const
   return idx;
 }
 
-int 
+size_t 
 Vec3D::principleDir() const
   /*! 
      Calculates the index of the primary direction
      \retval range 0,1,2 :: direction of maximum 
   */
 {
-  int maxI=0;
+  size_t maxI=0;
   double maxV=0.0;
-  for(int i=0;i<3;i++)
+  for(size_t i=0;i<3;i++)
     if (fabs(this->operator[](i))>maxV)
       {
 	maxV=fabs(this->operator[](i));
@@ -533,7 +533,7 @@ Vec3D::unit() const
 Geometry::Vec3D
 Vec3D::component(const Geometry::Vec3D& A) const
   /*!
-    Make a component vector along the dirction
+    Make a component vector along the direction
     of A.
     \param A :: Vector to give principle direction 
     \return :: the vector as a unit form
@@ -690,7 +690,7 @@ Vec3D::reBase(const Vec3D& A,const Vec3D& B,const Vec3D& C)
   /*! 
      Re-express this point components of A,B,C.
      Assuming that A,B,C are form an basis set (which
-     does not have to be othonormal.
+     does not have to be othonormal).
      \f[
      \left( a_0 b_0 c_0 \right) \left( \alpha \right) = \left( X \right)
      \f]

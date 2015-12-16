@@ -46,6 +46,7 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
+#include "support.h"
 #include "stringCombine.h"
 #include "inputParam.h"
 #include "Surface.h"
@@ -60,21 +61,28 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "CopiedComp.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+#include "BaseMap.h"
 #include "CellMap.h"
-#include "LayerComp.h"
+#include "SurfMap.h"
 #include "FixedGroup.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
 #include "ShapeUnit.h"
 #include "Bunker.h"
 #include "GuideLine.h"
 #include "GuideItem.h"
+#include "essVariables.h"
 
 #include "ODIN.h"
+#include "ESTIA.h"
 #include "LOKI.h"
 #include "NMX.h"
+#include "DREAM.h"
+#include "shortDREAM.h"
+#include "shortODIN.h"
+#include "VOR.h"
+
 #include "beamlineConstructor.h"
 #include "makeESSBL.h"
 
@@ -122,8 +130,35 @@ makeESSBL::~makeESSBL()
   */
 {}
 
+std::pair<int,int>
+makeESSBL::getBeamNum(const std::string& Name)
+  /*!
+    Process to determine the range of the beamline
+    \param Name :: beamline name in form GxBLineyy
+    \return pair of sector/Index
+   */
+{
+  ELog::RegMethod RegA("makeESSBL","getBeamNum");
+  
+  if (Name.length()<8)
+    throw ColErr::InvalidLine(Name,"Name not in from : GxBLineyy");
+  std::pair<int,int> Out(0,0);
+  std::string BN(Name);
+  BN[0]=' ';
+  BN.replace(2,5,"     ");
+  if (!StrFunc::section(BN,Out.first) ||
+      !StrFunc::section(BN,Out.second))
+    {
+
+      throw ColErr::InvalidLine(Name,"Name processable in from : GxBLineyy");
+    }
+  return Out;
+}
+  
+  
 void 
-makeESSBL::build(Simulation& System,const Bunker& bunkerObj)
+makeESSBL::build(Simulation& System,
+		 const Bunker& bunkerObj)
   /*!
     Carry out the full build
     \param SimPtr :: Simulation system
@@ -144,12 +179,23 @@ makeESSBL::build(Simulation& System,const Bunker& bunkerObj)
     
   if (!mainGIPtr)
     throw ColErr::InContainerError<std::string>(shutterName,"shutterObject");
-
+	
   if (beamName=="ODIN")
     {
       // Odin beamline
       ODIN OdinBL;
       OdinBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+    }
+  else if (beamName=="SHORTODIN")
+    {
+      // Odin beamline
+      shortODIN OdinBL;
+      OdinBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+    }
+  else if (beamName=="ESTIA")
+    {
+      ESTIA estiaBL;
+      estiaBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="LOKI")
     {
@@ -160,11 +206,38 @@ makeESSBL::build(Simulation& System,const Bunker& bunkerObj)
   else if (beamName=="NMX")
     {
       // NMX beamline
+      ELog::EM<<"Building "<<beamName<<ELog::endDiag;
       NMX nmxBL;
       nmxBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
+  else if (beamName=="VOR")
+    {
+      ELog::EM<<"Building "<<beamName<<ELog::endDiag;
+      VOR vorBL;
+      vorBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+    }
+  else if (beamName=="DREAM")
+    {
+      // DREAM beamline
+      DREAM dreamBL("dream");
+      dreamBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+    }
+  else if (beamName=="SHORTDREAM")
+    {
+      // short sector dream
+      DREAM dreamBL("shortDream");
+      //      shortDREAM dreamBL("shortDream");
+      dreamBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+    }
+  else if (beamName=="SHORTDREAM2")
+    {
+      // short sector dream
+      DREAM dreamBL("shortDream2");
+      dreamBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+    }
   else if (beamName=="JSANS" || beamName=="JRef")
     {
+      
       ///< Guide line [refl]
       std::shared_ptr<beamlineSystem::GuideLine>
 	RefA(new beamlineSystem::GuideLine(beamName));
@@ -172,7 +245,10 @@ makeESSBL::build(Simulation& System,const Bunker& bunkerObj)
       RefA->addInsertCell(voidCell);
       RefA->createAll(System,*mainFCPtr,2,*mainFCPtr,2);
     }
-
+  else
+    {
+      ELog::EM<<"NON-UNDERSTOOD BEAMLINE : "<<beamName<<ELog::endErr;
+    }
   return;
 }
 

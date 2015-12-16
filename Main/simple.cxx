@@ -117,59 +117,47 @@ main(int argc,char* argv[])
   int exitFlag(0);                // Value on exit
   ELog::RegMethod RControl("","main");
   mainSystem::activateLogging(RControl);
-
-  ELog::FM<<"Version == "<<version::Instance().getVersion()+1<<ELog::endDiag;
-
-  std::vector<std::string> Names;  
-  std::map<std::string,std::string> Values;  
-  std::map<std::string,double> IterVal;           // Variable to iterate 
+  std::string Oname;
   std::string Fname;
-  // PROCESS INPUT:
-  InputControl::mainVector(argc,argv,Names);
+  std::vector<std::string> Names;
 
-  mainSystem::inputParam IParam;
-  createInputs(IParam);
-  std::string Oname=InputControl::getFileName(Names);
-  Simulation* SimPtr=createSimulation(IParam,Names,Fname);
-  IParam.processMainInput(Names);
-
-  // DEBUG
-  if (IParam.flag("debug"))
-    ELog::EM.setActive(IParam.getValue<unsigned int>("debug"));
-
-  const int iteractive(IterVal.empty() ? 0 : 1);    // Do we need to get new inf
-  RNG.seed(static_cast<unsigned int>(IParam.getValue<long int>("random")));
-  //The big variable setting
-  mainSystem::setVariables(*SimPtr,IParam,Names);
-
-  // Definitions section 
-  int MCIndex(0);
-  const int multi=IParam.getValue<int>("multi");
+  Simulation* SimPtr(0);
   try
     {
+      // PROCESS INPUT:
+      InputControl::mainVector(argc,argv,Names);
+      mainSystem::inputParam IParam;
+      createInputs(IParam);
+      Simulation* SimPtr=createSimulation(IParam,Names,Oname);
+      
+      // The big variable setting
+      setVariable::EssVariables(SimPtr->getDataBase());
+      mainSystem::setDefUnits(SimPtr->getDataBase(),IParam);
+      InputModifications(SimPtr,IParam,Names);
+      
+      // Definitions section 
+      int MCIndex(0);
+      const int multi=IParam.getValue<int>("multi");
       while(MCIndex<multi)
-        {
+	{
 	  if (MCIndex)
 	    {
 	      ELog::EM.setActive(4);    // write error only
 	      ELog::FM.setActive(4);    
 	      ELog::RN.setActive(0);    
-	      if (iteractive)
-		mainSystem::incRunTimeVariable
-		  (SimPtr->getDataBase(),IterVal);
 	    }
-
 	  SimPtr->resetAll();
+	  
 	  SimPtr->readMaster(Fname);
 	  SDef::sourceSelection(*SimPtr,IParam);
 	  
 	  SimPtr->removeComplements();
 	  SimPtr->removeDeadSurfaces(0);         
 	  ModelSupport::setDefaultPhysics(*SimPtr,IParam);
-
+	  
 	  const int renumCellWork=tallySelection(*SimPtr,IParam);
 	  SimPtr->masterRotation();
-
+	  
 	  if (createVTK(IParam,SimPtr,Oname))
 	    {
 	      delete SimPtr;
@@ -177,28 +165,25 @@ main(int argc,char* argv[])
 	      ModelSupport::surfIndex::Instance().reset();
 	      return 0;
 	    }
-
+	  
 	  if (IParam.flag("endf"))
 	    SimPtr->setENDF7();
-
+	  
 	  SimProcess::importanceSim(*SimPtr,IParam);
 	  SimProcess::inputPatternSim(*SimPtr,IParam); // energy cut etc
-
+	  
 	  if (renumCellWork)
 	    tallyRenumberWork(*SimPtr,IParam);
 	  tallyModification(*SimPtr,IParam);
-
+	  
 	  if (IParam.flag("cinder"))
 	    SimPtr->setForCinder();
-
+	  
 	  // Ensure we done loop
-	  do
-	    {
-	      SimProcess::writeIndexSim(*SimPtr,Oname,MCIndex);
-	      MCIndex++;
-	    }
-	  while(!iteractive && MCIndex<multi);
+	  SimProcess::writeIndexSim(*SimPtr,Oname,MCIndex);
+	  MCIndex++;
 	}
+      
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
       ModelSupport::calcVolumes(SimPtr,IParam);
       ModelSupport::objectRegister::Instance().write("ObjectRegister.txt");
@@ -220,5 +205,5 @@ main(int argc,char* argv[])
   ModelSupport::surfIndex::Instance().reset();
   masterRotate::Instance().reset();
   return exitFlag;
-
+  
 }

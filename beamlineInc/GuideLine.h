@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   beamlineInc/GuideLine.h
  *
@@ -55,11 +55,11 @@ class GuideLine : public attachSystem::ContainedComp,
   double xyAngle;               ///< Shielding Rotation angle
   double zAngle;                ///< Shielding Rotation angle
 
-  double beamXStep;                 ///< Shielding X Step
-  double beamYStep;                 ///< Shielding Y Step
-  double beamZStep;                 ///< Shielding Z Step
-  double beamXYAngle;               ///< Shielding Rotation angle
-  double beamZAngle;                ///< Shielding Rotation angle
+  double beamXStep;             ///< Shielding X Step
+  double beamYStep;             ///< Shielding Y Step
+  double beamZStep;             ///< Shielding Z Step
+  double beamXYAngle;           ///< Shielding Rotation angle
+  double beamZAngle;            ///< Shielding Z-Rotation angle
 
   bool frontCut;                ///< Construct+Use plane cut
   bool beamFrontCut;            ///< Construct+Use beam plane tu
@@ -73,10 +73,12 @@ class GuideLine : public attachSystem::ContainedComp,
 
   size_t nShapeLayers;              ///< Number of shapeLayers
   std::vector<double> layerThick;   ///< Thickness [inner->outer]
-  std::vector<int> layerMat;         ///< Mat 
+  std::vector<int> layerMat;        ///< Mat 
 
   int activeEnd;               ///< Active end cut
   HeadRule endCut;             ///< Extra end rule cut [if required]
+  HeadRule endCutBridge;       ///< Extra end rule cut [if required]
+
   
   size_t nShapes;              ///< Number of shape segments
   /// Shape units
@@ -92,11 +94,6 @@ class GuideLine : public attachSystem::ContainedComp,
   void addGuideUnit(const size_t,const Geometry::Vec3D&,
 		    const double,const double,
 		    const double,const double);
-  void addGuideUnit(const size_t,const Geometry::Vec3D&,
-		    const Geometry::Vec3D&,const Geometry::Vec3D&,
-		    const Geometry::Vec3D&,
-		    const double,const double,
-		    const double,const double);
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int,
@@ -110,7 +107,7 @@ class GuideLine : public attachSystem::ContainedComp,
   void createUnitLinks();
 
   void checkRectangle(const double,const double) const;
-  Geometry::Vec3D calcActiveEndIntercept(const ShapeUnit*);
+  Geometry::Vec3D calcActiveEndIntercept();
   
  public:
 
@@ -120,6 +117,7 @@ class GuideLine : public attachSystem::ContainedComp,
   virtual ~GuideLine();
 
   void addEndCut(const std::string&);
+  void addEndCut(const attachSystem::FixedComp&,const long int);
   
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
 			 const long int,const attachSystem::FixedComp&,

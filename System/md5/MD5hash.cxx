@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   md5/MD5hash.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -134,6 +134,9 @@ MD5hash::getNextUnit(const std::string& A)
  /*!
    Get the next unit
    \param A :: String we are processing
+   \retval 1 :: final unit
+   \retval 0 :: normal continuation 
+   \retval -1 :: error in space
   */
 {
   ELog::RegMethod RegA("MD5hash","getNextUnit");
@@ -142,7 +145,7 @@ MD5hash::getNextUnit(const std::string& A)
 
   size_t i;
   for(i=0;i<N;i++)
-    Item.Cell[i]=A[i+cNum];
+    Item.Cell[i]=static_cast<unsigned char>(A[i+cNum]);
   if (i<64)
     {
       Item.Cell[i]=0x80;        // Always possible

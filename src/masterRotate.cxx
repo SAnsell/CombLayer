@@ -83,6 +83,17 @@ masterRotate::calcRotate(const Geometry::Vec3D& V) const
   return (globalApplied) ? V : localRotate::calcRotate(V);
 }
 
+Geometry::Vec3D
+masterRotate::forceCalcRotate(const Geometry::Vec3D& V) const
+  /*!
+    Rotate a vector
+    \param V :: Vector to rotate
+    \return Vector rotated
+  */
+{
+  return localRotate::calcRotate(V);
+}
+
 
 Geometry::Vec3D
 masterRotate::calcAxisRotate(const Geometry::Vec3D& V) const
@@ -93,6 +104,17 @@ masterRotate::calcAxisRotate(const Geometry::Vec3D& V) const
   */
 {
   return (globalApplied) ? V : localRotate::calcAxisRotate(V);
+}
+
+Geometry::Vec3D
+masterRotate::forceCalcAxisRotate(const Geometry::Vec3D& V) const
+  /*!
+    Rotate a vector
+    \param V :: Vector to rotate
+    \return Vector rotated
+  */
+{
+  return localRotate::calcAxisRotate(V);
 }
 
 
@@ -108,6 +130,17 @@ masterRotate::reverseRotate(const Geometry::Vec3D& V) const
     localRotate::reverseRotate(V);
 }
 
+Geometry::Vec3D
+masterRotate::forceReverseRotate(const Geometry::Vec3D& V) const
+  /*!
+    Rotate a vector
+    \param V :: Vector to rotate
+    \return Vector rotated
+  */
+{
+  return localRotate::reverseRotate(V);
+}
+
 
 Geometry::Vec3D
 masterRotate::reverseAxisRotate(const Geometry::Vec3D& V) const
@@ -119,6 +152,17 @@ masterRotate::reverseAxisRotate(const Geometry::Vec3D& V) const
 {
   return (globalApplied) ? V : 
     localRotate::reverseAxisRotate(V);
+}
+
+Geometry::Vec3D
+masterRotate::forceReverseAxisRotate(const Geometry::Vec3D& V) const
+  /*!
+    Rotate a vector
+    \param V :: Vector to rotate
+    \return Vector rotated
+  */
+{
+  return localRotate::reverseAxisRotate(V);
 }
 
 void

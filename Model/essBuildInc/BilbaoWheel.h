@@ -68,6 +68,7 @@ class BilbaoWheel : public WheelBase,
 
   double mainTemp;               ///< Main temperature 
   
+  size_t nSectors;               ///< number of sectors for LayerDivide3D
   size_t nLayers;                ///< number of radial layers
   std::vector<double> radius;    ///< cylinder radii
   std::vector<int> matTYPE;      ///< Material type
@@ -96,6 +97,9 @@ class BilbaoWheel : public WheelBase,
   void makeShaftSurfaces();
   void makeShaftObjects(Simulation&);
   std::string getSQSurface(const double R, const double e);
+
+  void createRadialSurfaces();
+  void divideRadial(Simulation&, std::string&, int);
 
   public:
 

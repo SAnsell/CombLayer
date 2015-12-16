@@ -84,6 +84,7 @@
 #include "SecondTrack.h"
 #include "TwinComp.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
 #include "CellMap.h"
 #include "GeneralShutter.h"
 #include "HoleUnit.h"

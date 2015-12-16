@@ -1,7 +1,7 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
- * File:   t1Upgrade/CylLayer.cxx
+ * File:   photon/CylLayer.cxx
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -84,6 +84,7 @@ LInfo::resize(const size_t N)
     throw ColErr::IndexError<size_t>(N,0,"N size cant be zero");
   Radii.resize(N-1);
   Mat.resize(N);
+  Temp.resize(N);
   return;
 }
       
@@ -192,6 +193,8 @@ CylLayer::populate(const FuncDataBase& Control)
 	      
 	      LI.Mat[j]=ModelSupport::EvalMat<int>(Control,KN+"Mat"+subNum,
 						   keyName+"Mat"+subNum);
+	      LI.Temp[j]=Control.EvalDefPair<double>
+		(KN+"Temp"+subNum,keyName+"Temp"+subNum,0.0);
 	    }
 	  LVec.push_back(LI);
 	}
@@ -274,13 +277,14 @@ CylLayer::createObjects(Simulation& System)
       else 
 	Out=ModelSupport::getComposite(SMap,subIndex," -7 ");
 	    
-      System.addCell(MonteCarlo::Qhull(cellIndex++,LI.Mat[0],0.0,Out+layOut));
+      System.addCell(MonteCarlo::Qhull(cellIndex++,LI.Mat[0],LI.Temp[0],
+				       Out+layOut));
       // Inner bound cells:
       for(size_t i=1;i<LI.nDisk-1;i++)
 	{
 	  Out=ModelSupport::getComposite(SMap,subIndex," 7 -17 ");
 	  System.addCell(MonteCarlo::Qhull
-			 (cellIndex++,LI.Mat[i],0.0,Out+layOut));
+			 (cellIndex++,LI.Mat[i],LI.Temp[i],Out+layOut));
 	  subIndex+=10;
 	}
       // Outer cell [if required]:
@@ -288,7 +292,8 @@ CylLayer::createObjects(Simulation& System)
 	{
 	  Out=ModelSupport::getComposite(SMap,subIndex,layerIndex," 7 -8M ");
 	  System.addCell(MonteCarlo::Qhull
-			 (cellIndex++,LI.Mat.back(),0.0,Out+layOut));
+			 (cellIndex++,LI.Mat.back(),LI.Temp.back(),
+			  Out+layOut));
 	}
       index+=100;
     }
@@ -315,19 +320,19 @@ CylLayer::createLinks()
   FixedComp::setLinkSurf(0,-SMap.realSurf(layerIndex+1));
 
   FixedComp::setConnect(1,Origin+Y*tThick,Y);
-  FixedComp::setLinkSurf(1,-SMap.realSurf(NL+2));
+  FixedComp::setLinkSurf(1,-SMap.realSurf(NL+101));
 
   FixedComp::setConnect(2,Origin+Y*(tThick/2.0)-X*outerRadius,-X);
-  FixedComp::setLinkSurf(2,SMap.realSurf(layerIndex+18));
+  FixedComp::setLinkSurf(2,SMap.realSurf(layerIndex+8));
   
   FixedComp::setConnect(3,Origin+Y*(tThick/2.0)+X*outerRadius,X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(layerIndex+18));
+  FixedComp::setLinkSurf(3,SMap.realSurf(layerIndex+8));
   
   FixedComp::setConnect(4,Origin+Y*(tThick/2.0)-Z*outerRadius,-Z);
-  FixedComp::setLinkSurf(4,SMap.realSurf(layerIndex+18));
+  FixedComp::setLinkSurf(4,SMap.realSurf(layerIndex+8));
 
   FixedComp::setConnect(5,Origin+Y*(tThick/2.0)+Z*outerRadius,Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(layerIndex+18));
+  FixedComp::setLinkSurf(5,SMap.realSurf(layerIndex+8));
 
   return;
 }

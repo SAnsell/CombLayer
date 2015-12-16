@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   weights/WeightMesh.cxx
  *
@@ -32,8 +32,9 @@
 #include <iterator>
 #include <functional>
 #include <algorithm>
+#include <numeric>
 #include <memory>
-#include <boost/multi_array.hpp>
+#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -47,51 +48,19 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "WForm.h"
 #include "WeightMesh.h"
 
 namespace WeightSystem
 {
 
 WeightMesh::WeightMesh() : 
-  WForm(),type(XYZ)			   
+  tallyN(1),type(XYZ),
+  RefPoint(0,0.1,0),Origin(0,0,0),
+  Vec(0,0.1,0),NX(0),NY(0),NZ(0)
   /*!
-    Cconstructor [makes XYZ mesh]
+    Constructor [makes XYZ mesh]
   */
 {}
-
-WeightMesh::WeightMesh(const WeightMesh& A) : 
-  WForm(),type(A.type),RefPoint(A.RefPoint),Origin(A.Origin),
-  Axis(A.Axis),Vec(A.Vec),X(A.X),Y(A.Y),Z(A.Z),Mesh(A.Mesh)
-  /*!
-    Copy constructor
-    \param A :: WeightMesh to copy
-  */
-{}
-
-WeightMesh&
-WeightMesh::operator=(const WeightMesh& A)
-  /*!
-    Assignment operator
-    \param A :: WeightMesh to copy
-    \return *this
-  */
-{
-  if (this!=&A)
-    {
-      WForm::operator=(A);
-      type=A.type;
-      RefPoint=A.RefPoint;
-      Origin=A.Origin;
-      Axis=A.Axis;
-      Vec=A.Vec;
-      X=A.X;
-      Y=A.Y;
-      Z=A.Z;
-      Mesh=A.Mesh;
-    }
-  return *this;
-}
 
 void
 WeightMesh::setMeshType(const GeomENUM& A)
@@ -104,49 +73,34 @@ WeightMesh::setMeshType(const GeomENUM& A)
   return;
 }
 
+
 void 
-WeightMesh::setCylinder(const Geometry::Vec3D& Base,
-			const Geometry::Vec3D& Top,
-			const Geometry::Vec3D& uRVec,
-			const double Radius,const size_t NR,
-			const size_t NZ,const size_t NT)
+WeightMesh::setMesh(const std::vector<double>& XV,
+		    const std::vector<size_t>& XN,
+		    const std::vector<double>& YV,
+		    const std::vector<size_t>& YN,
+		    const std::vector<double>& ZV,
+		    const std::vector<size_t>& ZN)
   /*!
-    Sets up a cyclindrical mesh
-    \param Base :: Base point in Cylinder
-    \param Top :: Top Point in Cylinder
-    \param uRVec :: Vector along radius to call 0 angle 
-    \param Radius :: Radius of cylinder
-    \param NR :: number of radii components
-    \param NZ :: number of radii components
-    \param NT :: number of radii components
-   */
+    Ugly way to set the mesh from the WWG constructor
+    \param XV :: X-bounaries
+    \param YV :: Y-bounaries
+    \param ZV :: Z-bounaries
+    \param XN :: X-bounaries sizes
+    \param YN :: Y-bounaries sizes
+    \param ZN :: Z-bounaries sizes
+  */
 {
-  ELog::RegMethod RegA("WeightMesh","setCylinder");
-  
-  type=Cyl;
-  Origin=Base;
-  Axis=(Top-Base).unit();
-  Vec=uRVec.unit();
-
-  if (!(NR*NZ*NT))
-    {
-      ELog::EM<<"Incorrect values in Input ranges : "
-	      <<NR<<" "<<NZ<<" "<<NT<<ELog::endErr;
-      throw ColErr::ExitAbort("NR/NZ/NT failure");
-    }
-
-  const double dR=Radius/NR;
-  for(size_t i=0;i<=NR;i++)
-    X.push_back(dR*i);
-
-  const double dL=((Top-Base).abs())/NZ;
-  for(size_t i=0;i<=NZ;i++)
-    Y.push_back(dL*i);
-
-  const double dT=1.0/NT;
-  for(size_t i=0;i<=NT;i++)
-    Z.push_back(dT*i);
-  
+  X=XV;
+  Y=YV;
+  Z=ZV;
+  XFine=XN;
+  YFine=YN;
+  ZFine=ZN;
+  NX=std::accumulate(XFine.begin(),XFine.end(),0UL);
+  NY=std::accumulate(YFine.begin(),YFine.end(),0UL);
+  NZ=std::accumulate(ZFine.begin(),ZFine.end(),0UL);
+  Origin=Geometry::Vec3D(X.front(),Y.front(),Z.front());
   return;
 }
 
@@ -169,6 +123,33 @@ WeightMesh::getType() const
   throw ColErr::InContainerError<int>(type,"WeghtMesh::getType");
 }
 
+double
+WeightMesh::getCoordinate(const std::vector<double>& Vec,
+			  const std::vector<size_t>& NF,
+			  const size_t Index)
+  /*!
+    Get coordinate from the vector set 
+    Outer Boundary test of Index MUST have been done
+    on entry to this code.
+    \param Vec :: Boundary conditions
+    \param NF :: Number in each boundary
+    \param Index :: index value
+    \return positions [Origin non - offset
+   */
+{
+  size_t sum(0);
+  size_t I(0);
+  while(Index>sum)
+    {
+      sum+=NF[I];
+      I++;
+    }
+
+  return Vec[Index]+static_cast<double>(Index-sum)*
+    (Vec[I+1]-Vec[I])/NF[I];
+}
+  
+  
 Geometry::Vec3D
 WeightMesh::point(const size_t a,const size_t b,const size_t c) const
   /*!
@@ -181,30 +162,75 @@ WeightMesh::point(const size_t a,const size_t b,const size_t c) const
 {
   ELog::RegMethod RegA ("WeightMesh","point");
 
-  if (a >= X.size())
-    throw ColErr::IndexError<size_t>(a,X.size(),"X-coordinate");
-  if (b >= Y.size())
-    throw ColErr::IndexError<size_t>(b,Y.size(),"Y-coordinate");
-  if (c >= Z.size())
-    throw ColErr::IndexError<size_t>(c,Z.size(),"Z-coordinate");
+  if (a>NX)
+  if (a >= NX)
+    throw ColErr::IndexError<size_t>(a,NX,"X-coordinate");
+  if (b >= NY)
+    throw ColErr::IndexError<size_t>(b,NY,"Y-coordinate");
+  if (c >= NZ)
+    throw ColErr::IndexError<size_t>(c,NZ,"Z-coordinate");
 
-  const double xc=X[a];
-  const double yc=Y[b];
-  const double zc=Z[c];
-  switch (type)
-    {
-    case XYZ:
-      return Geometry::Vec3D(xc,yc,zc);
-    case Cyl:
-      // Stuff with axis... etc...
-      return Geometry::Vec3D(xc,yc,zc);
-    case Sph:
-      // Stuff with axis... etc...
-      return Geometry::Vec3D(xc,yc,zc);
-    }
+  const double xc=getCoordinate(X,XFine,a);
+  const double yc=getCoordinate(Y,YFine,b);
+  const double zc=getCoordinate(Z,ZFine,c);
   return Geometry::Vec3D(xc,yc,zc);
 }
 
+void
+WeightMesh::writeWWINP(std::ostream& OX,const size_t NEBin) const
+  /*!
+    Write out to a mesh to a wwinp file
+    Currently ONLY works correctly with a rectangular file
+    \paramOX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("WeightMesh","writeWWINP");
+
+  
+  boost::format TopFMT("%10i%10i%10i%10i%28s\n");
+  const std::string date("10/07/15 15:37:51");
+  OX<<(TopFMT % tallyN % 1 % 1 % 10 % date);
+
+  // Energy bins
+  OX<<std::setw(10)<<NEBin<<std::endl;
+
+  // Write Mesh:
+  size_t itemCnt(0);
+  StrFunc::writeLine(OX,NX,itemCnt,6);
+  StrFunc::writeLine(OX,NY,itemCnt,6);
+  StrFunc::writeLine(OX,NZ,itemCnt,6);
+  StrFunc::writeLine(OX,Origin,itemCnt,6);
+
+  StrFunc::writeLine(OX,XFine.size(),itemCnt,4);
+  StrFunc::writeLine(OX,YFine.size(),itemCnt,4);
+  StrFunc::writeLine(OX,ZFine.size(),itemCnt,4);
+  StrFunc::writeLine(OX,1.0,itemCnt,4);
+
+  // loop over X/Y/Z
+  for(size_t index=0;index<3;index++)
+    {
+      const std::vector<double>& Vec=
+	((!index) ? X : (index==1) ? Y : Z);
+      const std::vector<size_t>& iVec=
+	((!index) ? XFine : (index==1) ? YFine : ZFine);
+
+      itemCnt=0;
+      StrFunc::writeLine(OX,Vec[0],itemCnt,6);
+
+      for(size_t i=0;i<iVec.size();i++)
+	{
+	  StrFunc::writeLine(OX,iVec[i],itemCnt,6);
+	  StrFunc::writeLine(OX,Vec[i+1],itemCnt,6);
+	  StrFunc::writeLine(OX,1.0,itemCnt,6);
+		  
+	}
+      if (itemCnt) OX<<std::endl;
+    }
+  
+  return;
+}
+
+  
 void
 WeightMesh::write(std::ostream& OX) const
   /*!
@@ -212,28 +238,32 @@ WeightMesh::write(std::ostream& OX) const
     \param OX :: output stream
   */
 {
+  ELog::RegMethod RegA("WeightMesh","write");
+
   std::ostringstream cx;
-  cx<<"mesh "<<getType()<<" origin "<<Origin
-    <<" axs "<<Axis<<" vec "<<Vec<<" ref "<<RefPoint;
+  cx<<"mesh   geom="<<getType()<<" origin="<<Origin
+    <<" ref="<<RefPoint;
   StrFunc::writeMCNPX(cx.str(),OX);
 
   // imesh :
   char c[3]={'i','j','k'};
   std::vector<double>::const_iterator vc;
-  for(int i=0;i<3;i++)
+  for(size_t i=0;i<3;i++)
     {
       const std::vector<double>& Vec=
 	((!i) ? X : (i==1) ? Y : Z);
+      const std::vector<size_t>& iVec=
+	((!i) ? XFine : (i==1) ? YFine : ZFine);
       
       cx.str("");
       cx<<c[i]<<"mesh ";
-      for(vc=X.begin();vc!=X.end();vc++)
-	cx<<*vc<<" ";
-      StrFunc::writeMCNPX(cx.str(),OX);
+      for(size_t i=1;i<Vec.size();i++)
+	cx<<Vec[i]<<" ";
       cx<<c[i]<<"ints";
-      for(size_t index=0;index<Vec.size();index++)
-	cx<<" 1";
-      StrFunc::writeMCNPX(cx.str(),OX);
+      for(const size_t& iVal : iVec)
+	cx<<" "<<iVal;
+      
+      StrFunc::writeMCNPXcont(cx.str(),OX);
     }
   return;
 }

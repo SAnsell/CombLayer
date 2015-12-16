@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   process/objectRegister.cxx
  *
@@ -31,6 +31,7 @@
 #include <set>
 #include <string>
 #include <algorithm>
+#include <numeric>
 #include <boost/format.hpp>
 
 #include "Exception.h"
@@ -52,6 +53,9 @@
 #include "FixedGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+#include "BaseMap.h"
+#include "CellMap.h"
+#include "SurfMap.h"
 #include "LayerComp.h"
 #include "objectRegister.h"
 
@@ -255,6 +259,67 @@ objectRegister::hasObject(const std::string& Name) const
   return (mc!=Components.end()) ? 1 : 0;
 }
 
+attachSystem::FixedComp*
+objectRegister::getInternalObject(const std::string& Name) 
+  /*!
+    Find a FixedComp [if it exists] (from group name if used)
+    \param Name :: Name [divided by : if group:head]
+    \return ObjectPtr / 0 
+  */
+{
+  ELog::RegMethod RegA("objectRegister","getInternalObject");
+
+  const std::string::size_type pos=Name.find(":");
+
+  if (pos!=0 && pos!=std::string::npos)
+    {
+      const std::string head=Name.substr(0,pos);
+      const std::string tail=Name.substr(pos+1);
+      cMapTYPE::iterator mcx=Components.find(head);
+      if (mcx!=Components.end())
+	{
+	  attachSystem::FixedGroup* FGPtr=
+	    dynamic_cast<attachSystem::FixedGroup*>(mcx->second.get());
+	  return (FGPtr->hasKey(tail)) ? &(FGPtr->getKey(tail)) : 0;
+	}
+      // Fall through here to test whole name:
+    }
+  
+  cMapTYPE::iterator mc=Components.find(Name);
+  return (mc!=Components.end()) ? mc->second.get() : 0;
+}
+
+const attachSystem::FixedComp*
+objectRegister::getInternalObject(const std::string& Name)  const
+  /*!
+    Find a FixedComp [if it exists] (from group name if used)
+    \param Name :: Name [divided by : if group:head]
+    \return ObjectPtr / 0 
+  */
+{
+  ELog::RegMethod RegA("objectRegister","getInternalObject(const)");
+
+  const std::string::size_type pos=Name.find(":");
+
+  if (pos!=0 && pos!=std::string::npos)
+    {
+      const std::string head=Name.substr(0,pos);
+      const std::string tail=Name.substr(pos+1);
+      cMapTYPE::const_iterator mcx=Components.find(head);
+      if (mcx!=Components.end())
+	{
+	  const attachSystem::FixedGroup* FGPtr=
+	    dynamic_cast<const attachSystem::FixedGroup*>(mcx->second.get());
+	  if (FGPtr)
+	    return (FGPtr->hasKey(tail)) ? &(FGPtr->getKey(tail)) : 0;
+	}
+      // Fall through here to test whole name:
+    }
+  
+  cMapTYPE::const_iterator mc=Components.find(Name);
+  return (mc!=Components.end()) ? mc->second.get() : 0;
+}
+
 template<typename T>
 const T*
 objectRegister::getObject(const std::string& Name) const
@@ -266,9 +331,8 @@ objectRegister::getObject(const std::string& Name) const
 {
   ELog::RegMethod RegA("objectRegister","getObject(const)");
 
-  cMapTYPE::const_iterator mc=Components.find(Name);
-  return (mc!=Components.end()) 
-    ? dynamic_cast<const T*>(mc->second.get()) : 0;
+  const attachSystem::FixedComp* FCPtr = getInternalObject(Name);
+  return dynamic_cast<const T*>(FCPtr);
 }
 
 template<typename T>
@@ -281,10 +345,8 @@ objectRegister::getObject(const std::string& Name)
   */
 {
   ELog::RegMethod RegA("objectRegister","getObject");
-
-  cMapTYPE::iterator mc=Components.find(Name);
-  return (mc!=Components.end()) 
-    ? dynamic_cast<T*>(mc->second.get()) : 0;
+  attachSystem::FixedComp* FCPtr = getInternalObject(Name);
+  return dynamic_cast<T*>(FCPtr);
 }
 
 
@@ -312,6 +374,87 @@ objectRegister::getObject(const std::string& Name) const
   return 0;
 }
 
+int
+objectRegister::getRenumberCell(const std::string& Name,
+				const int Index) const
+  /*!
+    Get the start cell of an object
+    \param Name :: Name of the object to get
+    \param Index :: Offset number
+    \return Cell number
+  */
+{
+  MTYPE::const_iterator mc;
+  if (Index>=0)
+    {
+      std::ostringstream cx;
+      cx<<Name<<Index;
+      mc=renumMap.find(cx.str());
+    }
+  else
+    mc=renumMap.find(Name);
+  if (mc!=renumMap.end())
+    return mc->second.first;
+  return 0;
+}
+
+int
+objectRegister::getRenumberRange(const std::string& Name,
+				 const int Index) const
+  /*!
+    Get the range of cells of an object
+    \param Name :: Name of the object to get
+    \param Index :: Offset number
+    \return Cell number
+  */
+{
+  MTYPE::const_iterator mc;
+  if (Index>=0)
+    {
+      std::ostringstream cx;
+      cx<<Name<<Index;
+      mc=renumMap.find(cx.str());
+    }
+  else
+    mc=renumMap.find(Name);
+  if (mc!=renumMap.end())
+    return mc->second.second;
+  return 0;
+}
+
+std::string
+objectRegister::inRenumberRange(const int Index) const
+  /*!
+    Get the range of an object
+    \param Name :: Name of the object to get
+    \param Index :: Offset number
+    \return string
+   */
+{
+  static std::string prev;
+   MTYPE::const_iterator mc;
+  // normally same as previous search
+  if (!prev.empty())
+    {
+      mc=renumMap.find(prev);
+      if (mc!=renumMap.end() && 
+	  Index>=mc->second.first && 
+	  Index<=mc->second.second)
+	return mc->first;
+    }
+  for(mc=renumMap.begin();mc!=renumMap.end();mc++)
+    {
+      const std::pair<int,int>& IP=mc->second;
+      if (Index>=IP.first && Index<=IP.second)
+	{
+	  prev=mc->first;
+	  return mc->first;
+	}
+    }
+  return std::string("");
+}
+
+  
 void
 objectRegister::setRenumber(const std::string& key,
 			    const int startN,const int endN)
@@ -323,19 +466,83 @@ objectRegister::setRenumber(const std::string& key,
   */
 {
   ELog::RegMethod RegA("objectRegister","setRenumber");
-
   if (regionMap.find(key)!=regionMap.end())
     {
       MTYPE::iterator mc=renumMap.find(key);
       if (mc!=renumMap.end())
-	mc->second=std::pair<int,int>(startN,1+startN-endN);
+	mc->second=std::pair<int,int>(startN,endN);
       else
-	renumMap.insert(MTYPE::value_type
-			(key,std::pair<int,int>(startN,1+startN-endN)));
+	renumMap.emplace(key,std::pair<int,int>(startN,endN));
     }
       
   return;
 }
+
+int
+objectRegister::calcRenumber(const int CN) const
+  /*!
+    Take a cell number and calculate the renumber [not ideal]
+    \param CN :: oirignal cell number
+   */
+{
+  const std::string key=inRange(CN);
+  if (key.empty())
+    return CN;
+
+
+  MTYPE::const_iterator Amc=regionMap.find(key);
+  MTYPE::const_iterator Bmc=renumMap.find(key);
+  if (Bmc==renumMap.end())
+    return CN;
+
+  const int Cdiff=CN-Amc->second.first;
+  return Bmc->second.first+Cdiff;
+}
+
+std::vector<int>
+objectRegister::getObjectRange(const std::string& objName) const
+  /*!
+    Calculate the object cells range based on the name
+    Processes down to cellMap items if objName is of the 
+    form objecName:cellMapName
+    \param objName :: Object name
+    \return vector of item
+  */
+{
+  ELog::RegMethod RegA("objectRegister","getObjectRange");
+
+  const ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  std::string::size_type pos=objName.find(":");
+  
+  if (pos==std::string::npos || !pos)
+    {
+      const int BStart=OR.getRenumberCell(objName);
+      const int BRange=OR.getRenumberRange(objName);
+      if (BStart==0)
+	throw ColErr::InContainerError<std::string>
+	  (objName,"Object name not found");
+      std::vector<int> Out(static_cast<size_t>(1+BRange-BStart));
+      std::iota(Out.begin(),Out.end(),BStart);
+      return Out;
+    }
+  
+  const std::string itemName=objName.substr(0,pos);
+  const std::string cellName=objName.substr(pos+1);
+  const attachSystem::CellMap* CPtr=
+    OR.getObject<attachSystem::CellMap>(itemName);
+  if (!CPtr)
+    throw ColErr::InContainerError<std::string>
+      (itemName,"Object name not found:"+objName);
+  std::vector<int> Out=CPtr->getCells(cellName);
+  for(int& CN : Out)
+    CN=OR.calcRenumber(CN);
+  
+  return Out;
+}
+
+
   
 void
 objectRegister::write(const std::string& OFile) const
@@ -366,7 +573,6 @@ objectRegister::write(const std::string& OFile) const
 	}
     }
   return;
-  
 }
 
 ///\cond TEMPLATE
@@ -389,6 +595,12 @@ template const attachSystem::SecondTrack*
 template const attachSystem::LayerComp* 
   objectRegister::getObject(const std::string&) const;
 
+template const attachSystem::CellMap* 
+  objectRegister::getObject(const std::string&) const;
+
+template const attachSystem::SurfMap* 
+  objectRegister::getObject(const std::string&) const;
+
 template attachSystem::FixedComp* 
   objectRegister::getObject(const std::string&);
 
@@ -407,6 +619,11 @@ template attachSystem::TwinComp*
 template attachSystem::SecondTrack* 
   objectRegister::getObject(const std::string&);
 
+template attachSystem::CellMap* 
+  objectRegister::getObject(const std::string&);
+
+template attachSystem::SurfMap* 
+  objectRegister::getObject(const std::string&);
 
 ///\endcond TEMPLATE  
 

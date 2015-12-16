@@ -46,6 +46,7 @@
 #include "InputControl.h"
 #include "inputParam.h"
 #include "support.h"
+#include "stringCombine.h"
 #include "defaultConfig.h"
 #include "DefUnitsESS.h"
 
@@ -66,15 +67,33 @@ setDefUnits(FuncDataBase& Control,
   defaultConfig A("");
   if (IParam.flag("defaultConfig"))
     {
+      const size_t ICnt=IParam.itemCnt("defaultConfig",0);
       const std::string Key=IParam.getValue<std::string>("defaultConfig");
+
+      const std::string sndItem=(ICnt>1) ? 
+	IParam.getValue<std::string>("defaultConfig",1) : "";
+      const std::string extraItem=(ICnt>2) ? 
+	IParam.getValue<std::string>("defaultConfig",2) : "";
+      const int filled=(ICnt>3) ? 
+	IParam.getValue<int>("defaultConfig",3) : 0;
+      
       if (Key=="Main")
 	setESS(A);
+      else if (Key=="Full")
+	setESSFull(A);
+      else if (Key=="PortsOnly")
+	setESSPortsOnly(A);
+      else if (Key=="Single")
+	setESSSingle(A,sndItem,extraItem,filled);
       else if (Key=="help")
 	{
 	  ELog::EM<<"Options : "<<ELog::endDiag;
-	  ELog::EM<<"  Main  "<<ELog::endDiag;
-	  throw ColErr::InContainerError<std::string>
-	    (Key,"Iparam.defaultConfig");	  
+	  ELog::EM<<"  Main : Everything that works"<<ELog::endDiag;
+	  ELog::EM<<"  Full : Beamline on every port"<<ELog::endDiag;
+	  ELog::EM<<"  PortsOnly  : Nothing beyond beamport "<<ELog::endDiag;
+	  ELog::EM<<"  Single  beamLine : Single beamline [for BL devel] "
+		  <<ELog::endDiag;
+	  throw ColErr::ExitAbort("Iparam.defaultConfig");	  
 	}
       else 
 	{
@@ -99,19 +118,113 @@ setESSFull(defaultConfig& A)
 
   A.setOption("lowMod","Butterfly");
   A.setOption("topMod","Butterfly");
-  A.setOption("lowModFlowGuide","On");
-  A.setOption("topModFlowGuide","On");
-  A.setOption("lowWaterDisk","On");
-  A.setOption("topWaterDisk","On");
-  A.setOption("topWaterDisk","On");
-  A.setMultiOption("beamlines",0,"G1BLine1 ODIN");
-  A.setMultiOption("beamlines",1,"G1BLine3 LOKI");
-  A.setMultiOption("beamlines",2,"G1BLine5 NMX");
 
-  A.setVar("G1BLine1Active",1);
-  A.setVar("G1BLine3Active",1);
-  A.setVar("G1BLine5Active",1);
+  const std::map<std::string,std::string> beamDef=
+    {
+      {"NMX","G4BLine18"},
+      {"SHORTDREAM","G4BLine9"},
+      {"SHORTDREAM2","G4BLine1"},
+      {"SHORTODIN","G4BLine7"},
+      {"DREAM","G4BLine17"},
+      {"VOR","G4BLine3"},   // also 17  
+      {"LOKI","G4BLine5"},
+      {"ODIN","G4BLine15"}
+    };     
+  const std::set<std::string> beamFilled=
+    {"NMX","DREAM","VOR","SHORTDREAM","SHORTDREAM2","LOKI"};
+
+  size_t index(0);
+  std::map<std::string,std::string>::const_iterator mc;
+  for(mc=beamDef.begin();mc!=beamDef.end();mc++)
+    {
+      A.setMultiOption("beamlines",index,mc->second+" "+mc->first);
+      A.setVar(mc->second+"Active",1);
+      if (beamFilled.find(mc->first)!=beamFilled.end())
+	A.setVar(mc->second+"Filled",1);
+      index++;
+    }
   
+
+  return;
+}
+
+void
+setESSPortsOnly(defaultConfig& A)
+  /*!
+    Default configuration for ESS for beamports only
+    \param A :: Paramter for default config
+   */
+{
+  ELog::RegMethod RegA("DefUnitsESS[F]","setESS");
+
+  A.setOption("lowMod","Butterfly");
+
+  for(size_t i=0;i<19;i++)
+    A.setVar("G1BLine"+StrFunc::makeString(i+1)+"Active",1);
+
+  ELog::EM<<"Port Only "<<ELog::endDiag;
+  return;
+}
+
+void
+setESSSingle(defaultConfig& A,
+	     const std::string& beamItem,
+	     const std::string& portItem,
+	     int filled)
+
+  /*!
+    Default configuration for ESS for testing single beamlines
+    for building
+    \param A :: Paramter for default config
+    \param beamItem :: Additional value for beamline name
+    \param portItem :: Additional value for port number/item
+    \param active :: Active flag
+   */
+{
+  ELog::RegMethod RegA("DefUnitsESS[F]","setESS");
+
+  A.setOption("lowMod","Butterfly");
+  const std::map<std::string,std::string> beamDef=
+    {{"NMX","G4BLine15"},
+     {"SHORTDREAM","G4BLine9"},
+     {"SHORTODIN","G4BLine6"},
+     {"DREAM","G4BLine17"},
+     {"VOR","G4BLine2"},   // also 17  
+     {"LOKI","G4BLine4"},
+     {"ODIN","G4BLine13"},
+     {"ESTIA","G4BLine11"}
+    };     
+  const std::set<std::string> beamFilled=
+    {"NMX","DREAM","VOR","SHORTDREAM","LOKI"};
+  
+  std::map<std::string,std::string>::const_iterator mc=
+    beamDef.find(beamItem);
+  if (filled<0)  // deactivation if set
+    filled=0;
+  else if (!filled && beamFilled.find(beamItem)!=beamFilled.end())
+    filled=1;
+    
+  if (mc!=beamDef.end())
+    {
+      if (portItem.empty())
+	{
+	  A.setMultiOption("beamlines",0,mc->second+" "+beamItem);
+	  A.setVar(mc->second+"Active",1);
+	  if (filled)
+	    A.setVar(mc->second+"Filled",1);
+	}
+      else
+	{
+	  A.setMultiOption("beamlines",0,portItem+" "+beamItem);
+	  A.setVar(portItem+"Active",1);
+	  if (filled)
+	    A.setVar(portItem+"Filled",1);
+	}
+    }
+  else
+    throw ColErr::InContainerError<std::string>(beamItem,"BeamItem");
+
+  ELog::EM<<"TEST of "<<beamItem<<" Only "<<ELog::endDiag;
   return;
 }
 
@@ -125,15 +238,35 @@ setESS(defaultConfig& A)
   ELog::RegMethod RegA("DefUnitsESS[F]","setESS");
 
   A.setOption("lowMod","Butterfly");
-  A.setMultiOption("beamlines",0,"G1BLine1 ODIN");
-  A.setMultiOption("beamlines",1,"G4BLine3 LOKI");
-  A.setMultiOption("beamlines",2,"G1BLine5 NMX");
 
-  A.setVar("G1BLine1Active",1);
-  A.setVar("G4BLine3Active",1);
-  A.setVar("G4BLine3Filled",1);
-  A.setVar("G1BLine5Active",1);
-     
+  A.setMultiOption("beamlines",0,"G1BLine19 ODIN");
+  A.setMultiOption("beamlines",1,"G4BLine4 LOKI");
+  A.setMultiOption("beamlines",2,"G4BLine7 VOR");
+  A.setMultiOption("beamlines",3,"G4BLine12 NMX");
+  A.setMultiOption("beamlines",4,"G4BLine19 DREAM");
+
+  // odin : No action
+
+  // ODIN
+  //  A.setVar("G4BLine4Active",1);  
+  //  A.setVar("G4BLine4Filled",1);
+
+  // LOKI
+  A.setVar("G4BLine4Active",1);  
+  A.setVar("G4BLine4Filled",1);
+
+  // VOR
+  A.setVar("G4BLine7Filled",1);
+  A.setVar("G4BLine7Active",1);
+
+  // NMX
+  A.setVar("G4BLine12Active",1); 
+  A.setVar("G4BLine12Filled",1);
+
+  // DREAM
+  A.setVar("G4BLine19Filled",1);
+  A.setVar("G4BLine19Active",1);
+  
   return;
 }
 

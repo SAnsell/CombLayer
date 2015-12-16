@@ -1135,6 +1135,7 @@ HeadRule::countNLevel(const size_t LN) const
   return (nLevel) ? nLevel : 1;
 }
 
+
 int
 HeadRule::level(const int SN) const
   /*!
@@ -1322,6 +1323,21 @@ HeadRule::makeComplement()
   return;
 }
 
+HeadRule
+HeadRule::complement() const
+  /*!
+    Make the rule a complement 
+    and return that object
+    \return #(this)
+   */
+{
+  ELog::RegMethod RegA("HeadRule","complement");
+
+  HeadRule A(*this);
+  A.makeComplement();
+  return A;
+}
+
 std::string 
 HeadRule::display() const
   /*!
@@ -1335,6 +1351,21 @@ HeadRule::display() const
   return (HeadNode->type()== -1) ? 
     "("+HeadNode->display()+")" :
     " "+HeadNode->display()+" ";
+}
+
+std::string 
+HeadRule::displayFluka() const
+  /*!
+    Write out rule for fluka
+    \return string of Rule
+  */
+{
+  if (!HeadNode) return "";
+  
+  // union test
+  return (HeadNode->type()== -1) ? 
+    "|"+HeadNode->displayFluka()+"|" :
+    " "+HeadNode->displayFluka()+" ";
 }
 
 
@@ -1736,6 +1767,41 @@ HeadRule::trackSurf(const Geometry::Vec3D& Org,
 }
 
 size_t
+HeadRule::calcSurfSurfIntersection(std::vector<Geometry::Vec3D>& Pts) const
+  /*!
+    Calculate the surf-surf-surf intersecitons
+   */
+{
+  ELog::RegMethod RegA("HeadRule","calcSurfSurfIntersection");
+  
+  const std::vector<const Geometry::Surface*> SurfList=
+    this->getSurfaces();
+  for(size_t i=0;i<SurfList.size();i++)
+    for(size_t j=0;j<SurfList.size();j++)
+      for(size_t k=0;k<SurfList.size();k++)
+	{
+	  const Geometry::Surface* SurfX(SurfList[i]);
+	  const Geometry::Surface* SurfY(SurfList[j]);
+	  const Geometry::Surface* SurfZ(SurfList[k]);
+	  std::vector<Geometry::Vec3D> PntOut=
+	    SurInter::processPoint(SurfX,SurfY,SurfZ);
+	  if (!PntOut.empty())
+	    {
+	      std::set<int> exclude;
+	      exclude.insert(SurfX->getName());
+	      exclude.insert(SurfY->getName());
+	      exclude.insert(SurfZ->getName());
+	      for(const Geometry::Vec3D& testPt : PntOut)
+		if (isValid(testPt,exclude))
+		  Pts.push_back(testPt);
+	    }
+	}
+  
+  return Pts.size();
+}
+
+
+size_t
 HeadRule::calcSurfIntersection(const Geometry::Vec3D& Org,
 			       const Geometry::Vec3D& Unit,
 			       std::vector<Geometry::Vec3D>& Pts,
@@ -1937,9 +2003,6 @@ HeadRule::Intersects(const HeadRule& A) const
 	  boundarySet.insert(BSurf->getName());		  
 	  for(const Geometry::Surface* CSurf : BVec)
 	    {
-	      ELog::EM<<"A == "<<*ASurf;
-	      ELog::EM<<"B == "<<*BSurf;
-	      ELog::EM<<"C == "<<*CSurf<<ELog::endDiag;
 	      Out=SurInter::processPoint(ASurf,BSurf,CSurf);
 	      for(const Geometry::Vec3D& vc : Out)
 		{

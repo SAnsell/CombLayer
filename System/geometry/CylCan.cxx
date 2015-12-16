@@ -457,7 +457,6 @@ CylCan::write(std::ostream& OX) const
   */
 {
   std::ostringstream cx;
-  Surface::writeHeader(cx);
   cx.precision(Geometry::Nprecision);
   
   cx<<"rcc "<<OPt<<" "<<unitD*length<<" "<<radius;
@@ -465,4 +464,19 @@ CylCan::write(std::ostream& OX) const
   return;
 }
 
+void
+CylCan::writeFLUKA(std::ostream&) const
+  /*!
+    Write out the cone class in an mcnpx
+    format.
+    \param  :: Output Stream (required for multiple std::endl)
+  */
+{
+  ELog::EM<<"Unsupported output"<<ELog::endErr;
+  return;
+}
+
+
+  
+  
 }  // NAMESPACE Geometry

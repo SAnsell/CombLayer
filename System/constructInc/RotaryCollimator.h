@@ -52,12 +52,12 @@ class RotaryCollimator : public attachSystem::ContainedComp,
   double rotDepth;          ///< Distance to main rotation centre
 
   double radius;            ///< Full radius
-  double thick;             ///< Thickness
+  double thick;             ///< Thickness [length]
 
   int defMat;               ///< Default Material 
 
   size_t holeIndex;         ///< Index of the hole 
-  double holeAngOffset;     ///< Hole Angle offest
+  double holeAngOffset;     ///< Hole Angle offset
   
   double innerWall;          ///< Inner wall thickness
   int innerWallMat;          ///< Inner wall Material

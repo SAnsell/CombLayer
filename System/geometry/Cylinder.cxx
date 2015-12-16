@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   geometry/Cylinder.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,7 @@
 #include <stack>
 #include <string>
 #include <algorithm>
+#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -47,6 +48,7 @@
 #include "Quaternion.h"
 #include "Line.h"
 #include "Surface.h"
+#include "masterWrite.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
@@ -506,6 +508,54 @@ Cylinder::write(std::ostream& OX) const
       cx<< Radius;
     }
 
+  StrFunc::writeMCNPX(cx.str(),OX);
+  return;
+}
+
+void
+Cylinder::writeFLUKA(std::ostream& OX) const
+  /*! 
+    Write out the cylinder for MCNPX
+    \param OX :: output stream
+  */
+{
+  ELog::RegMethod RegA("Cylinder","writeFLUKA");
+
+  masterWrite& MW=masterWrite::Instance();
+  const int Ndir=Normal.masterDir(Geometry::zeroTol);
+  
+  if (Ndir==0)
+    {
+      // general surface
+      Quadratic::writeFLUKA(OX);
+      return;
+    }
+
+  std::ostringstream cx;
+
+  Surface::writeHeader(cx);
+  cx.precision(Geometry::Nprecision);  
+  if (Ndir==-1 || Ndir==1)
+    {
+      cx<<"XCC s"<<getName()<<" " 
+	<<MW.Num(Centre[1])<<" "
+	<<MW.Num(Centre[2])<<" "
+	<<MW.Num(Radius);
+    }
+  else if (Ndir==-2 || Ndir==2)
+    {
+      cx<<"YCC s"<<getName()<<" "
+	<<MW.Num(Centre[0])<<" "
+	<<MW.Num(Centre[2])<<" "
+	<<MW.Num(Radius);
+    }
+  else if (Ndir==-3 || Ndir==3)
+    {
+      cx<<"ZCC s"<<getName()<<" "
+	<<MW.Num(Centre[0])<<" "
+	<<MW.Num(Centre[1])<<" "
+	<<MW.Num(Radius);
+    }
   StrFunc::writeMCNPX(cx.str(),OX);
   return;
 }

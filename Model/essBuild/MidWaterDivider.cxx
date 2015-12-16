@@ -30,6 +30,7 @@
 #include <set>
 #include <map>
 #include <string>
+#include <array>
 #include <algorithm>
 #include <memory>
 
@@ -76,6 +77,7 @@
 #include "FixedComp.h"
 #include "ContainedComp.h"
 #include "LayerComp.h"
+#include "BaseMap.h"
 #include "CellMap.h"
 #include "AttachSupport.h"
 #include "geomSupport.h"
@@ -275,8 +277,6 @@ MidWaterDivider::createLinks(const H2Wing &LA, const H2Wing &RA)
   return;
 }
   
-
-
 void
 MidWaterDivider::createSurfaces()
   /*!

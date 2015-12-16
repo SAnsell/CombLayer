@@ -59,6 +59,7 @@ namespace mainSystem
   void createDelftInputs(inputParam&);
   void createEPBInputs(inputParam&);
   void createESSInputs(inputParam&);
+  void createFilterInputs(inputParam&);
   void createFullInputs(inputParam&);
   void createGammaInputs(inputParam&);
   void createLensInputs(inputParam&);
@@ -75,7 +76,7 @@ namespace mainSystem
   void renumberCells(Simulation&,const inputParam&);
 
   void setVariables(Simulation&,const inputParam&,std::vector<std::string>&);
-
+  void setMaterialsDataBase(const inputParam&);
 
   int extractName(std::vector<std::string>&,std::string&);
 

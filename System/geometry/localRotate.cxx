@@ -79,7 +79,7 @@ localRotate::addRotation(const Geometry::Vec3D& A,
     Push back a rotation
     \param A :: Axis to rotate about
     \param O :: Offset
-    \param ang :: Angle
+    \param ang :: Angle [deg]
    */
 {
   Transforms.push_back(TPtr(new transRot(A,O,ang)));

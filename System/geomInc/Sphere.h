@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   geomInc/Sphere.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -84,6 +84,7 @@ class Sphere : public Quadratic
   double getRadius() const { return Radius; }          ///< Get Radius
   void setBaseEqn();
 
+  void writeFLUKA(std::ostream&) const;
   void write(std::ostream&) const; 
 
 };

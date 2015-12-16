@@ -114,52 +114,6 @@ basicConstruct::inputItem<Geometry::Vec3D>
   return Out;
 }
 
-
-
-Geometry::Vec3D
-basicConstruct::inputCntVec3D
-(const mainSystem::inputParam& IParam,const size_t Index,
- size_t& INum,const std::string& ErrMessage) const
-  /*!
-    Takes a particular component out of inputParam from the tally 
-    key name 
-    \param IParam :: Main input parameters
-    \param Index :: -T option
-    \param INum :: Offset to start from [updated by 3/1]
-    \param ErrMessage to display
-    \return Value
-  */
-{
-  ELog::RegMethod RegA("basicConstruct","inputItem");
-
-  const size_t NItems=IParam.itemCnt("tally",Index);
-  if (INum+1>NItems)
-    throw ColErr::IndexError<size_t>(NItems,INum,
-				     "Insufficient items for tally");
-
-  // can we have three
-  bool isolatedFlag(INum+3>NItems);
-    
-  Geometry::Vec3D Out;  
-  double V(0.0);
-  for(size_t i=0;i<3;i++)
-    {
-      const std::string& OutItem=
-	IParam.getValue<std::string>("tally",Index,INum+i);
-      if (StrFunc::convert(OutItem,Out))
-	{
-	  INum++;
-	  return Out;
-	}
-      if (!isolatedFlag || !StrFunc::convert(OutItem,V))
-	ELog::EM<<ErrMessage<<ELog::endErr;
-      
-      Out[i]=V;
-    }
-  return Out;
-}
-
-
 template<typename T>
 T 
 basicConstruct::inputItem(const mainSystem::inputParam& IParam,

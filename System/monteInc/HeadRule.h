@@ -92,6 +92,8 @@ class HeadRule
   size_t calcSurfIntersection
     (const Geometry::Vec3D&,const Geometry::Vec3D&,
      std::vector<Geometry::Vec3D>&,std::vector<int>&) const;
+  size_t calcSurfSurfIntersection
+    (std::vector<Geometry::Vec3D>&) const;
 
   std::set<const Geometry::Surface*> getOppositeSurfaces() const;
   std::vector<const Geometry::Surface*> getSurfaces() const;
@@ -116,6 +118,7 @@ class HeadRule
   void removeCommon();
   
   void makeComplement();
+  HeadRule complement() const;
 
   int procString(const std::string&);
 
@@ -129,6 +132,7 @@ class HeadRule
   void addUnion(const Rule*);
 
   int level(const int) const;
+  HeadRule getLevel(const size_t) const;
   size_t countNLevel(const size_t) const;
 
   bool Intersects(const HeadRule&) const;
@@ -138,6 +142,7 @@ class HeadRule
   std::string displayAddress() const;
   void displayVec(std::vector<Token>&) const;  
 
+  std::string displayFluka() const;
 };  
 
 std::ostream&

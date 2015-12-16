@@ -69,6 +69,7 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
 #include "CellMap.h"
 
 #include "VacuumBox.h"
@@ -76,9 +77,11 @@
 namespace constructSystem
 {
 
-VacuumBox::VacuumBox(const std::string& Key) : 
+VacuumBox::VacuumBox(const std::string& Key,
+		       const bool flag) : 
   attachSystem::FixedOffset(Key,6),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
+  centreConstruct(flag),
   vacIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(vacIndex+1)
   /*!
@@ -122,6 +125,7 @@ VacuumBox::populate(const FuncDataBase& Control)
   flangeLength=Control.EvalVar<double>(keyName+"FlangeLength");
   flangeWall=Control.EvalVar<double>(keyName+"FlangeWall");
   
+  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
 
   return;
@@ -142,7 +146,8 @@ VacuumBox::createUnitVector(const attachSystem::FixedComp& FC,
   FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
   // after rotation
-  Origin+=Y*(flangeLength+voidLength/2.0);
+  if (!centreConstruct)
+    Origin+=Y*(flangeLength+voidLength/2.0);
   return;
 }
 
@@ -207,15 +212,15 @@ VacuumBox::createObjects(Simulation& System)
 
   // Void 
   Out=ModelSupport::getComposite(SMap,vacIndex,"1 -2 3 -4 5 -6");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,voidMat,0.0,Out));
   addCell("Void",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,vacIndex,"101 -1 -107 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,voidMat,0.0,Out));
   addCell("Void",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,vacIndex," 2 -102 -107 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,voidMat,0.0,Out));
   addCell("Void",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,vacIndex,

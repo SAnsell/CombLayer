@@ -60,6 +60,7 @@
 #include "EUnit.h"
 #include "ExtControl.h"
 #include "PWTControl.h"
+#include "DXTControl.h"
 #include "PhysicsCards.h"
 
 namespace physicsSystem
@@ -69,7 +70,7 @@ PhysicsCards::PhysicsCards() :
   nps(10000),histp(0),dbCard(new dbcnCard),
   voidCard(0),nImpOut(0),prdmp("1e7 1e7 0 2 1e7"),
   Volume("vol"),ExtCard(new ExtControl),
-  PWTCard(new PWTControl)
+  PWTCard(new PWTControl),DXTCard(new DXTControl)
   /*!
     Constructor
   */
@@ -83,7 +84,8 @@ PhysicsCards::PhysicsCards(const PhysicsCards& A) :
   PCards(),LEA(A.LEA),sdefCard(A.sdefCard),
   Volume(A.Volume),
   ExtCard(new ExtControl(*A.ExtCard)),
-  PWTCard(new PWTControl(*A.PWTCard))
+  PWTCard(new PWTControl(*A.PWTCard)),
+  DXTCard(new DXTControl(*A.DXTCard))
   /*!
     Copy constructor
     \param A :: PhysicsCards to copy
@@ -118,6 +120,7 @@ PhysicsCards::operator=(const PhysicsCards& A)
       Volume=A.Volume;
       *ExtCard= *A.ExtCard;
       *PWTCard= *A.PWTCard;
+      *DXTCard= *A.DXTCard;
 
       deletePCards();
       for(const PhysCard* PC : A.PCards)
@@ -207,7 +210,7 @@ PhysicsCards::processCard(const std::string& Line)
   ELog::RegMethod RegA("PhysicsCards","processCard");
   if(Line.empty())
     return 0;  
-
+  
   int extCell(0);
   std::string Comd=Line;
   StrFunc::stripComment(Comd);
@@ -310,7 +313,6 @@ PhysicsCards::processCard(const std::string& Line)
 	}
       return 1;
     }
-
   pos=Comd.find("cut:");
   if (pos!=std::string::npos)
     {
@@ -326,10 +328,9 @@ PhysicsCards::processCard(const std::string& Line)
 	  // ensure no empty particles
 	  part.erase(
 		     remove_if(part.begin(),part.end(),
-			       std::bind<bool>(&std::string::empty,
-					       std::placeholders::_1)),
-		     part.end());
-	  
+			       [](const std::string& A) { return A.empty(); } 
+                     ));
+
 	  for(const std::string& PStr : part)
 	    PC->addElm(PStr);
 	  // Strip and process numbers / j
@@ -348,6 +349,8 @@ PhysicsCards::processCard(const std::string& Line)
 	}
       return 1;
     }
+  return 1;
+/*
   // ext card
   pos=Comd.find("ext:");
   if (pos!=std::string::npos)
@@ -375,6 +378,7 @@ PhysicsCards::processCard(const std::string& Line)
   // Component:
   Basic.push_back(Line);
   return 1;
+*/
 }
 
 void
@@ -419,6 +423,33 @@ PhysicsCards::addPhysImp(const std::string& Type,const std::string& Particle)
   ImpCards.push_back(PhysImp(Type));
   ImpCards.back().addElm(Particle);
   return ImpCards.back();
+}
+
+void
+PhysicsCards::removePhysImp(const std::string& Type,
+			    const std::string& Particle)
+  /*!
+    Removes a given type/ particle  importance
+    \param Type :: Type to use [imp:vol etc]
+    \param Particle :: Particle to add [n,p,e] etc
+    \return PhysImp item
+  */
+{
+  ELog::RegMethod RegA("PhysicsCards","removePhysImp");
+
+  for(PhysImp& PI : ImpCards)
+    {
+      if (PI.isType(Type))
+	PI.removeParticle(Particle);
+    }
+  // Remove singular:
+  ImpCards.erase
+    (std::remove_if
+     (ImpCards.begin(),ImpCards.end(),
+      [](const PhysImp& PI) { return PI.particleCount()==0; }),
+     ImpCards.end());
+
+  return;
 }
 
   
@@ -784,8 +815,7 @@ PhysicsCards::setMode(std::string Particles)
       while(StrFunc::section(Particles,item))
 	{
 	  mode.addElm(item);
-	  if (item!="n")
-	    addPhysImp("imp",item);
+	  addPhysImp("imp",item);
 	}
     }
   return;
@@ -849,6 +879,7 @@ PhysicsCards::write(std::ostream& OX,
     StrFunc::writeMCNPX(PC,OX);
 
   ExtCard->write(OX,cellOutOrder,voidCells);
+  DXTCard->write(OX);
   
   LEA.write(OX);
   sdefCard.write(OX);

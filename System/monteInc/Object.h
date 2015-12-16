@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   monteInc/Object.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,6 +68,7 @@ class Object
  protected:
   
   int objSurfValid;                 ///< Object surface valid
+
   /// Full surfaces (make a map including complementary object ?)
   std::vector<const Geometry::Surface*> SurList;  
   std::set<int> SurSet;              ///< set of surfaces in cell [signed]
@@ -187,8 +188,10 @@ class Object
   std::string headStr() const;
   std::string str() const;
   std::string pointStr(const Geometry::Vec3D&) const;
-  void write(std::ostream&) const;          ///< MCNPX output
-  void writePHITS(std::ostream&) const;     ///< PHITS output
+  void write(std::ostream&) const;         
+  void writePHITS(std::ostream&) const;    
+  void writeFLUKA(std::ostream&) const;    
+  void writeFLUKAmat(std::ostream&) const;    
 
   void checkPointers() const;
 

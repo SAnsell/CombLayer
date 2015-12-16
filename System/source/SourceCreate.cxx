@@ -60,7 +60,10 @@
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
+#include "BeamSource.h"
 #include "GammaSource.h"
+#include "SurfNormSource.h"
 #include "LensSource.h"
 #include "SourceCreate.h"
 
@@ -156,7 +159,7 @@ createESSSource(const FuncDataBase& Control,Source& sourceCard)
   ELog::RegMethod RegA("SourceCreate","createESSSource");
 
   const double E=Control.EvalDefVar<double>("sdefEnergy",2000.0);
-  const double yStart=Control.EvalDefVar<double>("sdefYPos",-10.0);
+  const double yStart=Control.EvalDefVar<double>("sdefYPos",-30.0);
 
   sourceCard.setActive();
   sourceCard.setComp("dir",1.0);
@@ -212,6 +215,33 @@ createESSSource(const FuncDataBase& Control,Source& sourceCard)
 
   return;
 }
+
+void
+createESSPortSource(const FuncDataBase& Control,
+		    const attachSystem::FixedComp* FCPtr,
+		    const long int sideIndex,
+		    Source& sourceCard)
+  /*!
+    Create a port source on a set of beam ports
+    \param Control :: Control system
+    \param FC :: link surface for cylinder 
+    \param sideIndex ::surface number
+    \param sourceCard :: Source system
+    
+  */
+{
+  ELog::RegMethod RegA("SourceCreate","createESSPortSource");
+
+  if (!FCPtr)
+    throw ColErr::EmptyValue<void>("Pointer to FixedComp not filled");
+
+  SurfNormSource SX("portSource");
+  
+  SX.createAll(Control,*FCPtr,sideIndex,sourceCard);
+
+  return;
+}
+
 
 void
 createD4CSource(const FuncDataBase& Control,Source& sourceCard)
@@ -337,6 +367,24 @@ createTS1Source(const FuncDataBase& Control,Source& sourceCard)
 }
 
 void
+createBeamSource(const FuncDataBase& Control,
+		  const std::string& keyName,Source& Card)
+  /*!
+    Create the photon source for gamma-nuclea spectrum
+    nuclear experiment source
+    \param Control :: Variables data base
+    \param keyName :: keyname for Gamma source
+    \param Card :: Source system
+   */
+{
+  ELog::RegMethod RegA("SourceCreate","createBeamSource");
+
+  BeamSource GX(keyName);
+  GX.createAll(Control,Card);
+  return;
+}
+  
+void
 createGammaSource(const FuncDataBase& Control,
 		  const std::string& keyName,Source& Card)
   /*!
@@ -352,6 +400,7 @@ createGammaSource(const FuncDataBase& Control,
   GX.createAll(Control,Card);
   return;
 }
+
 
 
 void
@@ -373,6 +422,30 @@ createGammaSource(const FuncDataBase& Control,
   GX.createAll(Control,FC,linkIndex,Card);
   return;
 }
+
+void
+createBeamSource(const FuncDataBase& Control,
+		  const std::string& keyName,
+		  const attachSystem::FixedComp& FC,
+		  const long int linkIndex,
+		  Source& Card)
+  /*!
+    Create the point source -- currently a copy of the photo
+    nuclear experiment source
+    \param Control :: Variables data base
+    \param keyName :: keyname for source
+    \param FC :: Link point
+    \param linkIndex :: Link point [signed] 
+    \param Card :: Source system
+  */
+{
+  ELog::RegMethod RegA("SourceCreate","createBeamSource(FC,link)");
+  BeamSource GX(keyName);
+
+  GX.createAll(Control,FC,linkIndex,Card);
+  return;
+}
+
 
 void
 createLensSource(const FuncDataBase& Control,Source& Card,

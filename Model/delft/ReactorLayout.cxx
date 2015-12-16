@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   delft/ReactorLayout.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -244,7 +244,7 @@ DelftKaeriModel(mainSystem::inputParam& IParam,
 void
 DelftNukemModel(mainSystem::inputParam& IParam,
 		FuncDataBase& Control)
-  /*!
+ /*!
     Function to set system for a given form of reactor.
     This is the compact model from 
     \param IParam :: Input paramter

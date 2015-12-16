@@ -39,6 +39,7 @@ namespace setVariable
   void DelftModel(FuncDataBase&);
   void EssVariables(FuncDataBase&);
   void EPBVariables(FuncDataBase&);
+  void FilterVariables(FuncDataBase&);
   void gammaVariables(FuncDataBase&);
   void LensModel(FuncDataBase&);
   void IMatVariables(FuncDataBase&);
@@ -78,11 +79,6 @@ namespace setVariable
 
   void siSimulation(FuncDataBase&);
 
-  // ESS Beamlines
-  void ODINvariables(FuncDataBase&);
-  void LOKIvariables(FuncDataBase&);
-  void NMXvariables(FuncDataBase&);
-  
 }
 
 #endif

@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   tallyInc/pointConstruct.h
  *
@@ -59,6 +59,8 @@ class pointConstruct : virtual public basicConstruct
 			const std::vector<Geometry::Vec3D>&) const;
   void processPointFree(Simulation&,const std::string&,
 			  const long int,const double) const;
+  void processPointFree(Simulation&,const std::string&,
+			const long int,const Geometry::Vec3D&) const;
   void processPointWindow(Simulation&,const std::string&,
 			  long int,const double,
 			  const double,const double) const;
