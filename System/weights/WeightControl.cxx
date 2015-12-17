@@ -69,7 +69,12 @@
 
 #include "LineTrack.h"
 #include "ObjectTrackAct.h"
+#include "WeightMesh.h"
+#include "WWG.h"
 #include "WeightControl.h"
+
+
+
 
 
 namespace WeightSystem
@@ -255,6 +260,88 @@ WeightControl::procTallyPoint(const mainSystem::inputParam& IParam)
   return;
 }
 
+void
+WeightControl::cTrack(const Simulation& System,
+                      const Geometry::Vec3D& SourcePt,
+                      const std::vector<Geometry::Vec3D>& Pts,
+                      const std::vector<long int>& index,
+                      ItemWeight* CTrackPtr)
+  /*!
+    Calculate a specific trac from sourcePoint to  postion
+    \param System :: Simulation to use    
+    \param SourcePt :: point for outgoing track
+    \param CTrackPtr :: Item Weight to add tracks to
+  */
+{
+  ELog::RegMethod RegA("Weight","cTrack");
+  // SOURCE Point
+  ModelSupport::ObjectTrackAct OTrack(SourcePt);
+  std::vector<double> WVec;
+  int cN(1);         // Index to reference point
+  for(size_t i=0;i<NX;i++)
+    for(size_t j=0;j<NY;j++)
+      for(size_t k=0;k<NZ;k++)
+	{
+	  const Geometry::Vec3D Pt=WMesh.point(i,j,k);
+	  std::vector<double> attnN;
+	  OTrack.addUnit(System,cN,Pt);
+	  WVec.push_back(OTrack.getAttnSum(cN));
+	  cN++;
+	}
+    
+  CTrack.setScaleFactor(sF);
+  CTrack.setMinWeight(mW);
+  
+}
+  
+void
+WeightControl::calcTrack(const Simulation& System,
+			const WWG& wwg,
+			const Geometry::Vec3D& SourcePt,
+			const double eCut,const double sF,
+			const double mW)
+  /*!
+    Calculate a given track from source point outward
+    \param System :: Simulation to use
+    \param wwg :: WWG to use [for mesh]
+    \param SourcePt :: point for outgoing track
+    \param eCut :: Energy cut [MeV]
+    \param sF :: Scale fraction of attenuation path
+    \param mW :: mininum weight for splitting
+   */
+{
+  ELog::RegMethod RegA("WeightControl","calcTrack");
+
+  const WeightMesh& WMesh=wwg.getGrid();  
+
+  WWGWeight CTrack;
+
+  const size_t NX=WMesh.getXSize();
+  const size_t NY=WMesh.getYSize();
+  const size_t NZ=WMesh.getZSize();
+
+  std::vector<double> WVec;
+  int cN(1);         // Index to reference point
+  for(size_t i=0;i<NX;i++)
+    for(size_t j=0;j<NY;j++)
+      for(size_t k=0;k<NZ;k++)
+	{
+	  const Geometry::Vec3D Pt=WMesh.point(i,j,k);
+	  std::vector<double> attnN;
+	  OTrack.addUnit(System,cN,Pt);
+	  WVec.push_back(OTrack.getAttnSum(cN));
+	  cN++;
+	}
+    
+  CTrack.setScaleFactor(sF);
+  CTrack.setMinWeight(mW);
+
+  // POPULATE HERE:::::
+  
+  //  CTrack.updateWM(eCut);
+  return;
+}
+  
 void
 WeightControl::calcTrack(const Simulation& System,
 			 const Geometry::Vec3D& Pt,
@@ -570,7 +657,7 @@ WeightControl::processWeights(Simulation& System,
     {
       wwgMesh(IParam);  // mesh needs to be set [throw on error]
       wwgEnergy(IParam);
-      WConstruct.createWWG(System,IParam);
+      wwgCreate(System);
 
       removePhysImp(System,"n");
     }
@@ -594,6 +681,10 @@ WeightControl::wwgEnergy(const mainSystem::inputParam& IParam)
   */
 {
   ELog::RegMethod RegA("WeightControl","wwgEnergy");
+
+  WeightSystem::weightManager& WM=
+    WeightSystem::weightManager::Instance();
+  WWG& wwg=WM.getWWG();
 
     // ENERGY BOUNDARY
   if (IParam.flag("wwgE"))
@@ -625,7 +716,8 @@ WeightControl::wwgMesh(const mainSystem::inputParam& IParam)
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();
   WWG& wwg=WM.getWWG();
-  
+
+  const std::string XYZ[3]={"X","Y","Z"};
   std::vector<std::vector<double>> boundaryVal(3);
   std::vector<std::vector<size_t>> bCnt(3);
       
@@ -657,12 +749,10 @@ WeightControl::wwgMesh(const mainSystem::inputParam& IParam)
 }
 
 void
-WeightControl::createWWG(Simulation& System,
-			 const mainSystem::inputParam& IParam)
+WeightControl::wwgCreate(Simulation& System)
   /*!
     Set WWG weights based 
     \param System :: Simulation
-    \param IParam :: input stream
    */
 {
   ELog::RegMethod RegA("WWGconstruct","createWWG");
@@ -670,52 +760,9 @@ WeightControl::createWWG(Simulation& System,
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();
  
-  const std::string XYZ[3]={"X","Y","Z"};
-
   WWG& wwg=WM.getWWG();
   //  const size_t NItems=IParam.itemCnt("wwgMesh",0);
 
-  std::vector<std::vector<double>> boundaryVal(3);
-  std::vector<std::vector<size_t>> bCnt(3);
-      
-  for(size_t index=0;index<3;index++)
-    {
-      const std::string itemName("wwg"+XYZ[index]+"Mesh");
-      const size_t NXM=IParam.itemCnt(itemName,0);
-
-      if (NXM<3 || !(NXM % 2) )
-	throw ColErr::IndexError<size_t>
-	  (NXM,3,"Insufficient items for "+itemName+
-	   ": X_0 : N_0 : X1 : N1 ...");
-
-      for(size_t i=0;i<NXM;i++)
-	{
-	  if (i % 2)   // Odd : Integer
-	    bCnt[index].push_back
-	      (IParam.getValue<size_t>(itemName,i));
-	  else
-	    boundaryVal[index].push_back
-	      (IParam.getValue<double>(itemName,i));
-	}
-    }
-
-  wwg.getGrid().setMesh(boundaryVal[0],bCnt[0],
-			boundaryVal[1],bCnt[1],
-			boundaryVal[2],bCnt[2]);
-
-  // ENERGY BOUNDARY
-  if (IParam.flag("wwgE"))
-    {
-      std::vector<double> EBin;
-      const size_t ECnt=IParam.itemCnt("wwgE",0);
-
-      for(size_t i=0;i<ECnt;i++)
-	EBin.push_back
-	  (IParam.getValue<double>("wwgE",i));
-      if (EBin.back()<1e5)
-	EBin.push_back(1e5);
-      wwg.setEnergyBin(EBin);
-    }
   
   
   // if (NItems<3)

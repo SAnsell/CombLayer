@@ -73,56 +73,7 @@ WWGconstruct::WWGconstruct()
 
 
 
-void
-WWGconstruct::calcTrack(const Simulation& System,
-			const WWG& wwg,
-			const Geometry::Vec3D& SourcePt,
-			const double eCut,const double sF,
-			const double mW)
-  /*!
-    Calculate a given track from source point outward
-    \param System :: Simulation to use
-    \param wwg :: WWG to use [for mesh]
-    \param SourcePt :: point for outgoing track
-    \param eCut :: Energy cut [MeV]
-    \param sF :: Scale fraction of attenuation path
-    \param mW :: mininum weight for splitting
-   */
-{
-  ELog::RegMethod RegA("WeightControl","calcTrack");
 
-  const WeightMesh& WMesh=wwg.getGrid();  
-
-  WWGWeight CTrack;
-  // SOURCE Point
-  ModelSupport::ObjectTrackAct OTrack(SourcePt);
-
-  const size_t NX=WMesh.getXSize();
-  const size_t NY=WMesh.getYSize();
-  const size_t NZ=WMesh.getZSize();
-
-  std::vector<double> WVec;
-  int cN(1);         // Index to reference point
-  for(size_t i=0;i<NX;i++)
-    for(size_t j=0;j<NY;j++)
-      for(size_t k=0;k<NZ;k++)
-	{
-	  const Geometry::Vec3D Pt=WMesh.point(i,j,k);
-	  std::vector<double> attnN;
-	  OTrack.addUnit(System,cN,Pt);
-	  WVec.push_back(OTrack.getAttnSum(cN));
-	  cN++;
-	}
-    
-
-  CTrack.setScaleFactor(sF);
-  CTrack.setMinWeight(mW);
-
-  // POPULATE HERE:::::
-  
-  //  CTrack.updateWM(eCut);
-  return;
-}
 
   
 void
@@ -139,7 +90,7 @@ WWGconstruct::createWWG(Simulation& System,
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();
  
-  const std::string XYZ[3]={"X","Y","Z"};
+
 
   WWG& wwg=WM.getWWG();
   //  const size_t NItems=IParam.itemCnt("wwgMesh",0);

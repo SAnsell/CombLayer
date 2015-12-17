@@ -92,6 +92,7 @@ class WeightControl
   // WWG stuff
   void wwgMesh(const mainSystem::inputParam&);
   void wwgEnergy(const mainSystem::inputParam&);
+  void wwgCreate(Simulation&);
   
  public:
 

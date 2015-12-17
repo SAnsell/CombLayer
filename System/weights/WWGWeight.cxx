@@ -47,39 +47,24 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "WeightMesh.h"
-#include "WWG.h"
 #include "weightManager.h"
 
+#include "ItemWeight.h"
 #include "WWGWeight.h"
-
-#include "debugMethod.h"
 
 namespace WeightSystem
 {
 
-std::ostream&
-operator<<(std::ostream& OX,const WWGWeight& A)
-  /*!
-    Write out to a stream
-    \param OX :: Output stream
-    \param A :: WWGWeight to write
-    \return Stream
-  */
-{
-  A.write(OX);
-  return OX;
-}
 
 WWGWeight::WWGWeight()  :
-  sigmaScale(0.06914),scaleFactor(1.0),
-  minWeight(1e-7)
+  ItemWeigth()
   /*! 
     Constructor 
   */
 {}
 
 WWGWeight::WWGWeight(const WWGWeight& A)  :
-  sigmaScale(A.sigmaScale),Cells(A.Cells)
+  ItemWeight(A)
   /*! 
     Copy Constructor 
     \param A :: WWGWeight to copy
@@ -96,92 +81,11 @@ WWGWeight::operator=(const WWGWeight& A)
 {
   if (this!=&A)
     {
-      Cells=A.Cells;
+      ItemWeight::operator=(A);
     }
   return *this;
 }
   
-void
-WWGWeight::addTracks(const size_t cX,
-		     const double value)
-  /*!
-    Adds an average track contribution
-    \param cN :: cell number
-    \param value :: vlaue of weight
-  */
-{
-  ELog::RegMethod RegA("WWGWeight","addTracks");
-
-  std::map<size_t,WWGItem>::iterator mc=Cells.find(cX);
-  if (mc==Cells.end())
-    Cells.emplace(cX,WWGItem(value));
-  else
-    {
-      mc->second.weight+=value;
-      mc->second.number+=1.0;
-    }
-  return;
-}
-
-void
-WWGWeight::updateWM(const double eCut) const
-  /*!
-    Update WM
-    \param eCut :: Energy cut [-ve to scale below ] 
-  */
-{
-  ELog::RegMethod RegA("WWGWeight","updateWM");
-
-
-  const std::vector<double> EVec(1);
-  std::vector<double> DVec=EVec;
-  std::fill(DVec.begin(),DVec.end(),1.0);
   
-  double maxW(0.0);
-  double minW(1e38);
-  double aveW(0.0);
-  int cnt(0);
-  for(const std::map<size_t,WWGItem>::value_type& cv : Cells)
-    {
-      const double W=(exp(-cv.second.weight*sigmaScale*scaleFactor));
-      if (W>maxW) maxW=W;
-      if (W<minW && minW>1e-38) minW=W;
-      aveW+=W;
-      cnt++;
-    }
-
-  aveW/=cnt;
-  // Work on minW first:
-  const double factor=(minW>minWeight) ?
-    log(minWeight)/log(minW) : 1.0;
-
-  for(const std::map<size_t,WWGItem>::value_type& cv : Cells)
-    {
-      const double W=(exp(-cv.second.weight*sigmaScale*scaleFactor*factor));
-      for(size_t i=0;i<EVec.size();i++)
-	{
-	  if (eCut<-1e-10 && EVec[i] <= -eCut)
-	    DVec[i]=W;
-	  else if (EVec[i]>=eCut)
-	    DVec[i]=W;
-	}
-      //      WF->scaleWeights(cv.first,DVec);
-    }
-  return;
-}
-  
-
-void
-WWGWeight::write(std::ostream& OX) const
-  /*!
-    Write out the track
-    \param OX :: Output stream
-  */
-{
-  for(const std::map<int,WWGItem>::value_type& cv : Cells)
-    OX<<cv.first<<" "<<cv.second.weight<<" "<<cv.second.number<<std::endl;
-  return;
-} 
-
   
 } // Namespace WeightSystem

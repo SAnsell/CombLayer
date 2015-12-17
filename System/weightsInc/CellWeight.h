@@ -24,19 +24,6 @@
 
 namespace WeightSystem
 {
-
-struct CellItem
-{
-  int vCell;              ///< Void cell
-  double weight;          ///< weight for the cell
-  double number;          ///< number of tracks
-
-  /// Constructor
-  CellItem(const double W) : vCell(0),weight(W), number(1.0) {}
-  /// Copy construct
-  CellItem(const CellItem& A) :
-    vCell(A.vCell),weight(A.weight),number(A.number) {}
-};
   
 /*!
   \class CellWeight
@@ -46,33 +33,18 @@ struct CellItem
   \brief Tracks cell weight in cells
 */
   
-class CellWeight
+class CellWeight : public ItemWeight
 {
- private:
-  
-  const double sigmaScale;             ///< Scale for sigma
-  double scaleFactor;                  ///< Scaling factor
-  double minWeight;                    ///< Min weight
-  std::map<int,CellItem> Cells;        ///< Cells and track info
 
  public:
 
   CellWeight();
   CellWeight(const CellWeight&);
   CellWeight& operator=(const CellWeight&);    
-  ~CellWeight() {}          ///< Destructor
+  virtual ~CellWeight() {}          ///< Destructor
 
-  /// set the scale factor
-  void setScaleFactor(const double F) { scaleFactor=F; }
-  /// set min cell weight
-  void setMinWeight(const double W) { minWeight=W; }
-  void addTracks(const int,const double);
   void updateWM(const double) const;
-  void write(std::ostream&) const;
 };
-
-
-std::ostream& operator<<(std::ostream&,const CellWeight&);
 
 }
 
