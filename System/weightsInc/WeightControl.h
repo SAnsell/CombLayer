@@ -85,6 +85,11 @@ class WeightControl
 
   
   void setWeights(Simulation&);
+  void cTrack(const Simulation&,const Geometry::Vec3D&,
+	      const std::vector<Geometry::Vec3D>&,
+	      const std::vector<long int>&,
+	      ItemWeight*);
+
   void calcTrack(const Simulation&,const Geometry::Vec3D&,
 		 const std::vector<int>&,
 		 const double,const double,const double);

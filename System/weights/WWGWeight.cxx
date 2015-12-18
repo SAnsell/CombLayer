@@ -57,7 +57,7 @@ namespace WeightSystem
 
 
 WWGWeight::WWGWeight()  :
-  ItemWeigth()
+  ItemWeight()
   /*! 
     Constructor 
   */

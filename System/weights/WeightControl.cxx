@@ -58,6 +58,7 @@
 #include "WItem.h"
 #include "WCells.h"
 #include "WeightModification.h"
+#include "ItemWeight.h"
 #include "CellWeight.h"
 #include "Simulation.h"
 #include "objectRegister.h"
@@ -277,21 +278,17 @@ WeightControl::cTrack(const Simulation& System,
   // SOURCE Point
   ModelSupport::ObjectTrackAct OTrack(SourcePt);
   std::vector<double> WVec;
-  int cN(1);         // Index to reference point
-  for(size_t i=0;i<NX;i++)
-    for(size_t j=0;j<NY;j++)
-      for(size_t k=0;k<NZ;k++)
-	{
-	  const Geometry::Vec3D Pt=WMesh.point(i,j,k);
-	  std::vector<double> attnN;
-	  OTrack.addUnit(System,cN,Pt);
-	  WVec.push_back(OTrack.getAttnSum(cN));
-	  cN++;
-	}
+
+  long int cN(index.empty() ? : 1 : index.back());
     
-  CTrack.setScaleFactor(sF);
-  CTrack.setMinWeight(mW);
-  
+  for(size_t i=0;i<Pts.size;i++)
+    {
+      const long int unit(i>=index.size() ? cN++ : index[i]);
+      std::vector<double> attnN;
+      OTrack.addUnit(System,unit,Pts[i]);
+      WVec.push_back(OTrack.getAttnSum(unit));
+    } 
+  return;
 }
   
 void

@@ -43,7 +43,6 @@ class WWGWeight : public ItemWeight
   WWGWeight& operator=(const WWGWeight&);    
   virtual ~WWGWeight() {}          ///< Destructor
 
-  void updateWM(const double) const;
 };
 
 }
