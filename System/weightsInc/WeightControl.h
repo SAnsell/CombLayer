@@ -37,7 +37,8 @@ class Simulation;
 
 namespace WeightSystem
 {
-
+  class ItemWeight;
+  
   /*!
     \class WegthControl
     \version 1.0
@@ -88,23 +89,28 @@ class WeightControl
   void cTrack(const Simulation&,const Geometry::Vec3D&,
 	      const std::vector<Geometry::Vec3D>&,
 	      const std::vector<long int>&,
-	      ItemWeight*);
+	      ItemWeight&);
 
-  void calcTrack(const Simulation&,const Geometry::Vec3D&,
-		 const std::vector<int>&,
-		 const double,const double,const double);
 
+  
   // WWG stuff
   void wwgMesh(const mainSystem::inputParam&);
   void wwgEnergy(const mainSystem::inputParam&);
   void wwgCreate(Simulation&);
-  
+
+  void calcWWGTrack(const Simulation&,const Geometry::Vec3D&,
+		    const double,const double,const double);
+  void calcTrack(const Simulation&,const Geometry::Vec3D&,
+		 const std::vector<int>&,
+		 const double,const double,const double);
+
  public:
 
   WeightControl();
   WeightControl(const WeightControl&);
   WeightControl& operator=(const WeightControl&);
   ~WeightControl();
+
   
   void processWeights(Simulation&,const mainSystem::inputParam&);
     

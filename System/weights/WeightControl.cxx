@@ -72,11 +72,8 @@
 #include "ObjectTrackAct.h"
 #include "WeightMesh.h"
 #include "WWG.h"
+#include "WWGWeight.h"
 #include "WeightControl.h"
-
-
-
-
 
 namespace WeightSystem
 {
@@ -266,37 +263,39 @@ WeightControl::cTrack(const Simulation& System,
                       const Geometry::Vec3D& SourcePt,
                       const std::vector<Geometry::Vec3D>& Pts,
                       const std::vector<long int>& index,
-                      ItemWeight* CTrackPtr)
+                      ItemWeight& CTrack)
   /*!
     Calculate a specific trac from sourcePoint to  postion
     \param System :: Simulation to use    
     \param SourcePt :: point for outgoing track
-    \param CTrackPtr :: Item Weight to add tracks to
+    \param Pts :: Point on track
+    \param index :: cellnumber / index number
+    \param CTrack :: Item Weight to add tracks to
   */
 {
   ELog::RegMethod RegA("Weight","cTrack");
   // SOURCE Point
+
   ModelSupport::ObjectTrackAct OTrack(SourcePt);
   std::vector<double> WVec;
 
-  long int cN(index.empty() ? : 1 : index.back());
+  long int cN(index.empty() ? 1 : index.back());
     
-  for(size_t i=0;i<Pts.size;i++)
+  for(size_t i=0;i<Pts.size();i++)
     {
       const long int unit(i>=index.size() ? cN++ : index[i]);
       std::vector<double> attnN;
       OTrack.addUnit(System,unit,Pts[i]);
-      WVec.push_back(OTrack.getAttnSum(unit));
+      CTrack.addTracks(cN,OTrack.getAttnSum(cN));
     } 
   return;
 }
   
 void
-WeightControl::calcTrack(const Simulation& System,
-			const WWG& wwg,
-			const Geometry::Vec3D& SourcePt,
-			const double eCut,const double sF,
-			const double mW)
+WeightControl::calcWWGTrack(const Simulation& System,
+			    const Geometry::Vec3D& SourcePt,
+			    const double eCut,const double sF,
+			    const double mW)
   /*!
     Calculate a given track from source point outward
     \param System :: Simulation to use
@@ -309,33 +308,38 @@ WeightControl::calcTrack(const Simulation& System,
 {
   ELog::RegMethod RegA("WeightControl","calcTrack");
 
+  WeightSystem::weightManager& WM=
+    WeightSystem::weightManager::Instance();
+
+  WWG& wwg=WM.getWWG();
   const WeightMesh& WMesh=wwg.getGrid();  
 
-  WWGWeight CTrack;
+  WWGWeight wSet;          // ItemWeight object
 
   const size_t NX=WMesh.getXSize();
   const size_t NY=WMesh.getYSize();
   const size_t NZ=WMesh.getZSize();
 
-  std::vector<double> WVec;
-  int cN(1);         // Index to reference point
+  long int cN(1);         // Index to reference point
+
+  std::vector<Geometry::Vec3D> Pts;
+  std::vector<long int> index;
   for(size_t i=0;i<NX;i++)
     for(size_t j=0;j<NY;j++)
       for(size_t k=0;k<NZ;k++)
 	{
-	  const Geometry::Vec3D Pt=WMesh.point(i,j,k);
-	  std::vector<double> attnN;
-	  OTrack.addUnit(System,cN,Pt);
-	  WVec.push_back(OTrack.getAttnSum(cN));
-	  cN++;
+	  Pts.push_back(WMesh.point(i,j,k));
+	  index.push_back(cN++);
 	}
+
+  cTrack(System,SourcePt,Pts,index,wSet);
     
-  CTrack.setScaleFactor(sF);
-  CTrack.setMinWeight(mW);
+  wSet.setScaleFactor(sF);
+  wSet.setMinWeight(mW);
 
   // POPULATE HERE:::::
   
-  //  CTrack.updateWM(eCut);
+  //  wSet.updateWM(eCut);
   return;
 }
   

@@ -62,7 +62,7 @@ namespace WeightSystem
 
 
 CellWeight::CellWeight()  :
-  ItemWeigth()
+  ItemWeight()
   /*! 
     Constructor 
   */

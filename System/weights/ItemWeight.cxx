@@ -113,7 +113,8 @@ ItemWeight::addTracks(const int cN,const double value)
   */
 {
   ELog::RegMethod RegA("ItemWeight","addTracks");
-  std::map<int,CellItem>::iterator mc=Cells.find(cN);
+  
+  std::map<long int,CellItem>::iterator mc=Cells.find(cN);
   if (mc==Cells.end())
     Cells.emplace(cN,CellItem(value));
   else

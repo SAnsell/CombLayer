@@ -56,10 +56,12 @@ class ObjectTrackAct
 {
  private:
 
+  /// Storage type for line units
+  typedef std::map<long int,LineTrack> itemTYPE;
   /// Target point
   Geometry::Vec3D TargetPt;  
   /// Main data information set [Object : ItemTrack]
-  std::map<int,LineTrack> Items; 
+  itemTYPE Items; 
   
  public:
 
@@ -74,14 +76,14 @@ class ObjectTrackAct
   /// Set target point
   void setTarget(const Geometry::Vec3D& Pt) { TargetPt=Pt; }
 
-  void addUnit(const Simulation&,const int,const Geometry::Vec3D&);
+  void addUnit(const Simulation&,const long int,const Geometry::Vec3D&);
 
-  double getMatSum(const int) const;
-  double getAttnSum(const int) const;
-  double getDistance(const int) const;
+  double getMatSum(const long int) const;
+  double getAttnSum(const long int) const;
+  double getDistance(const long int) const;
   /// Debug function effectivley
   //  const std::map<int,ObjTrackItem>& getMap() const { return Items; }
-  void createAttenPath(std::vector<int>&,std::vector<double>&) const;
+  void createAttenPath(std::vector<long int>&,std::vector<double>&) const;
   void write(std::ostream&) const;
 
 };
