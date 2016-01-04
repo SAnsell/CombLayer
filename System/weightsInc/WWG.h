@@ -33,7 +33,7 @@ namespace WeightSystem
 {
 
   
-class WWG
+class WWG 
 {
  public:
 
@@ -42,14 +42,26 @@ class WWG
 
  private:
 
+  char ptype;          ///< Particle type
+  double wupn;         ///< Max weight before upsplitting
+  double wsurv;        ///< survival possiblitiy
+  int maxsp;           ///< max split
+  int mwhere;          ///< Check weight -1:col 0:all 1:surf
+  int mtime;           ///< Flag to inditace energy(0)/time(1)
+  int switchn;         ///< read from wwinp file
+  
   std::vector<double> EBin;      ///< Energy bins
   WeightMesh Grid;               ///< Mesh Grid
   std::vector<double> WMesh;     ///< linearized weight mesh
 
+  void writeHead(std::ostream&) const;
+  
  public:
 
   
   WWG();
+  WWG(const WWG&);
+  WWG& operator=(const WWG&);
 
   /// access to grid
   WeightMesh& getGrid() { return Grid; }

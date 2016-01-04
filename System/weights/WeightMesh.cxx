@@ -62,6 +62,46 @@ WeightMesh::WeightMesh() :
   */
 {}
 
+WeightMesh::WeightMesh(const WeightMesh& A) : 
+  tallyN(A.tallyN),type(A.type),RefPoint(A.RefPoint),
+  Origin(A.Origin),Axis(A.Axis),Vec(A.Vec),X(A.X),Y(A.Y),
+  Z(A.Z),XFine(A.XFine),YFine(A.YFine),ZFine(A.ZFine),
+  NX(A.NX),NY(A.NY),NZ(A.NZ)
+  /*!
+    Copy constructor
+    \param A :: WeightMesh to copy
+  */
+{}
+
+WeightMesh&
+WeightMesh::operator=(const WeightMesh& A)
+  /*!
+    Assignment operator
+    \param A :: WeightMesh to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      tallyN=A.tallyN;
+      type=A.type;
+      RefPoint=A.RefPoint;
+      Origin=A.Origin;
+      Axis=A.Axis;
+      Vec=A.Vec;
+      X=A.X;
+      Y=A.Y;
+      Z=A.Z;
+      XFine=A.XFine;
+      YFine=A.YFine;
+      ZFine=A.ZFine;
+      NX=A.NX;
+      NY=A.NY;
+      NZ=A.NZ;
+    }
+  return *this;
+}
+
 void
 WeightMesh::setMeshType(const GeomENUM& A)
   /*!

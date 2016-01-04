@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   weights/WWGx.cxx
+ * File:   weights/WWG.cxx
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -64,11 +64,48 @@ namespace WeightSystem
 {
 
 WWG::WWG() :
+  ptype('n'),wupn(8.0),wsurv(1.4),maxsp(5),
+  mwhere(-1),mtime(0),switchn(-1),
   EBin({1e8})
   /*!
-    Constructor
+    Constructor : 
+    set mwhere[-1] - collisions only 
   */
 {}
+
+WWG::WWG(const WWG& A) : 
+  ptype(A.ptype),wupn(A.wupn),wsurv(A.wsurv),maxsp(A.maxsp),
+  mwhere(A.mwhere),mtime(A.mtime),switchn(A.switchn),
+  EBin(A.EBin),Grid(A.Grid),WMesh(A.WMesh)
+  /*!
+    Copy constructor
+    \param A :: WWG to copy
+  */
+{}
+
+WWG&
+WWG::operator=(const WWG& A)
+  /*!
+    Assignment operator
+    \param A :: WWG to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      ptype=A.ptype;
+      wupn=A.wupn;
+      wsurv=A.wsurv;
+      maxsp=A.maxsp;
+      mwhere=A.mwhere;
+      mtime=A.mtime;
+      switchn=A.switchn;
+      EBin=A.EBin;
+      Grid=A.Grid;
+      WMesh=A.WMesh;
+    }
+  return *this;
+}
 
 void
 WWG::setEnergyBin(const std::vector<double>& EB)
@@ -81,7 +118,35 @@ WWG::setEnergyBin(const std::vector<double>& EB)
   return;
 }
   
+void 
+WWG::writeHead(std::ostream& OX) const
+  /*!
+    Write out the header section from the file
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("WWG","writeHead");
   
+  std::ostringstream cx;
+  
+  cx.str("");  
+  cx<<"wwp:"<<ptype<<" ";
+  cx<<wupn<<" "<<wsurv<<" "<<maxsp<<" "<<mwhere
+    <<" "<<switchn<<" "<<mtime;
+  StrFunc::writeMCNPX(cx.str(),OX);
+
+  if (EBin.size()>15)
+    throw ColErr::RangeError<size_t>(EBin.size(),0,15,
+                                     "MCNP Energy Bin size limit");
+  cx.str("");
+  cx<<"wwge:"<<ptype<<" ";
+  for(const double E : EBin)
+    cx<<E<<" ";
+  StrFunc::writeMCNPX(cx.str(),OX);
+  
+  return;
+}
+
 void
 WWG::write(std::ostream& OX) const
   /*!
@@ -90,7 +155,7 @@ WWG::write(std::ostream& OX) const
    */
 {
   ELog::RegMethod RegA("WWG","write");
-
+  writeHead(OX);
   Grid.write(OX);
   return;
 }

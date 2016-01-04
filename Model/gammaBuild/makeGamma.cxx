@@ -74,15 +74,13 @@
 #include "NordBall.h"
 #include "makeGamma.h"
 
-#include "Debug.h"
-
 namespace gammaSystem
 {
 
 makeGamma::makeGamma() :
   brick(new constructSystem::BlockMod("Brick")),
-  tallyVol(new constructSystem::voidCylVolume("VoidTally")),
-  NDet(0)
+  NDet(0),
+  tallyVol(new constructSystem::voidCylVolume("VoidTally"))
   /*!
     Constructor
   */
@@ -92,6 +90,33 @@ makeGamma::makeGamma() :
 
   OR.addObject(brick);
   OR.addObject(tallyVol);
+}
+
+makeGamma::makeGamma(const makeGamma& A) : 
+  brick(A.brick),NDet(A.NDet),Dets(A.Dets),
+  tallyVol(A.tallyVol)
+  /*!
+    Copy constructor
+    \param A :: makeGamma to copy
+  */
+{}
+
+makeGamma&
+makeGamma::operator=(const makeGamma& A)
+  /*!
+    Assignment operator
+    \param A :: makeGamma to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      brick=A.brick;
+      NDet=A.NDet;
+      Dets=A.Dets;
+      tallyVol=A.tallyVol;
+    }
+  return *this;
 }
 
 makeGamma::~makeGamma()
@@ -123,14 +148,14 @@ makeGamma::makeDetectors(Simulation& System)
       NBPtr->createAll(System,World::masterOrigin());
       
       OR.addObject(NBPtr);
-      
     }
+  return;
 }
 			  
 
 void 
 makeGamma::build(Simulation* SimPtr,
-		 const mainSystem::inputParam& IParam)
+		 const mainSystem::inputParam&)
   /*!
     Carry out the full build
     \param SimPtr :: Simulation system

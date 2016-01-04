@@ -306,7 +306,7 @@ WeightControl::calcWWGTrack(const Simulation& System,
     \param mW :: mininum weight for splitting
    */
 {
-  ELog::RegMethod RegA("WeightControl","calcTrack");
+  ELog::RegMethod RegA("WeightControl","calcWWGTrack");
 
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();
@@ -656,8 +656,19 @@ WeightControl::processWeights(Simulation& System,
     procObject(System,IParam);
   if (IParam.flag("wWWG"))
     {
+      double sF(1.0);   // scale factor
+      double minW(0.0);  // min weight
+      wwgGetFactors(IParam,sF,minW);            
       wwgMesh(IParam);  // mesh needs to be set [throw on error]
       wwgEnergy(IParam);
+
+            if (nItem>1)
+	eCut=IParam.getValue<double>("weightObject",iSet,1);
+      if (nItem>2)
+	sF=IParam.getValue<double>("weightObject",iSet,2);
+      if (nItem>3)
+	minW=IParam.getValue<double>("weightObject",iSet,3);
+
       wwgCreate(System);
 
       removePhysImp(System,"n");
@@ -705,6 +716,33 @@ WeightControl::wwgEnergy(const mainSystem::inputParam& IParam)
 }
   
 void
+WeightControl::wwgGetFactors(const mainSystem::inputParam& IParam)
+  /*!
+    Process wwg Mesh
+    \param IParam :: Input parameters
+  */
+{
+  ELog::RegMethod RegA("WeightControl","wwgMesh");
+
+  double sF(1.0);    // scale factor
+  double minW(0.0);  // min weight
+  WeightSystem::weightManager& WM=
+    WeightSystem::weightManager::Instance();
+  WWG& wwg=WM.getWWG();
+
+  const std::string itemName("wwgFactor");
+  const size_t NSF=IParam.itemCnt(itemName,0);
+
+  if (NSF)
+    sF=IParam.getValue<double>("wwgFactor",0);
+  if (NSF>1)
+    minW=IParam.getValue<double>("wwgFactor",1);
+
+  wwg.setFactors(sf,minW);
+  return;
+}
+
+void
 WeightControl::wwgMesh(const mainSystem::inputParam& IParam)
   /*!
     Process wwg Mesh
@@ -747,6 +785,7 @@ WeightControl::wwgMesh(const mainSystem::inputParam& IParam)
 			boundaryVal[1],bCnt[1],
 			boundaryVal[2],bCnt[2]);
 
+  return;
 }
 
 void
@@ -760,8 +799,19 @@ WeightControl::wwgCreate(Simulation& System)
 
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();
- 
+
+  // SOURCE Point
+  if (sourceFlag && tallyFlag) sF/=2.0;
+  
+  if (sourceFlag)
+    calcWWGTrack(System,sourcePt,eCut,sF,minW);
+  if (tallyFlag)
+    calcWWGTrack(System,tallyPt,eCut,sF,minW);
+  
+  calcWWGTrack(System,SourcePt,
+               eCut,sF,mw,)
   WWG& wwg=WM.getWWG();
+  
   //  const size_t NItems=IParam.itemCnt("wwgMesh",0);
 
   
