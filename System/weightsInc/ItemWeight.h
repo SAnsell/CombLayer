@@ -53,10 +53,7 @@ class ItemWeight
   /// storage for cells
   typedef std::map<long int,CellItem> CMapTYPE;
 
-  
   const double sigmaScale;             ///< Scale for sigma
-  double scaleFactor;                  ///< Scaling factor
-  double minWeight;                    ///< Min weight
   CMapTYPE Cells;        ///< Cells and track info
 
  public:
@@ -66,10 +63,6 @@ class ItemWeight
   ItemWeight& operator=(const ItemWeight&);    
   virtual ~ItemWeight() {}          ///< Destructor
 
-  /// set the scale factor
-  void setScaleFactor(const double F) { scaleFactor=F; }
-  /// set min cell weight
-  void setMinWeight(const double W) { minWeight=W; }
   void addTracks(const long int,const double);
   void write(std::ostream&) const;
 };

@@ -48,7 +48,7 @@
 #include "Vec3D.h"
 #include "WeightMesh.h"
 #include "weightManager.h"
-
+#include "WWG.h"
 #include "ItemWeight.h"
 #include "WWGWeight.h"
 
@@ -86,6 +86,75 @@ WWGWeight::operator=(const WWGWeight& A)
   return *this;
 }
   
+void
+WWGWeight::updateWM(WWG& wwg,
+                    const double eCut,
+                    const double scaleFactor,
+                    const double minWeight)
+  /*!
+    Update the master mesh 
+    It assumes that the mesh size and WWGWeight are compatable.
+    \param wwg :: Weight window generator
+    \param eCut :: Cut energy [MeV] (uses fractional if on boundary)
+    \param scaleFactor :: Scale factor for weight track
+   */
+{
+  ELog::RegMethod RegA("WWGWeight","updateWM");
+
+  // quick way to get length of array
+  // note that zero value is assumed but not infinity
+  std::vector<double> EBin=wwg.getEBin();    
+  std::vector<double> DVec=EBin;
+  std::fill(DVec.begin(),DVec.end(),1.0);
+  
+  double maxW(0.0);
+  double minW(1e38);
+  double aveW(0.0);
+  int cnt(0);
+  for(const CMapTYPE::value_type& cv : Cells)
+    {
+      const double W=(exp(-cv.second.weight*sigmaScale*scaleFactor));
+      if (W>maxW) maxW=W;
+      if (W<minW && minW>1e-38) minW=W;
+      aveW+=W;
+      cnt++;
+    }
+  aveW/=cnt;
+  // Work on minW first:
+  const double factor=(minW>minWeight) ?
+    log(minWeight)/log(minW) : 1.0;
+
+  const WeightMesh& WGrid=wwg.getGrid();
+
+  const size_t NX=WGrid.getXSize();
+  const size_t NY=WGrid.getYSize();
+  const size_t NZ=WGrid.getZSize();
+  long int cN(1);
+  for(size_t i=0;i<NX;i++)
+    for(size_t j=0;j<NY;j++)
+      for(size_t k=0;k<NZ;k++)
+	{
+          CMapTYPE::const_iterator cv=Cells.find(cN);
+          if (cv==Cells.end())
+            throw ColErr::InContainerError<long int>(cN,"Cells");
+          
+          const double W=(exp(- cv->second.weight*sigmaScale*
+                              scaleFactor*factor));
+          for(size_t i=0;i<EBin.size();i++)
+            {
+              if (eCut<-1e-10 && EBin[i] <= -eCut)
+                DVec[i]=W;
+              else if (EBin[i]>=eCut)
+                DVec[i]=W;
+            }
+          /// SET WEIGHTS:
+          wwg.scaleMeshItem(cN,DVec);
+        }
+            
+
+
+  return;
+}
   
   
 } // Namespace WeightSystem

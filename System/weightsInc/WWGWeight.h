@@ -24,13 +24,14 @@
 
 namespace WeightSystem
 {
+  class WWG;
   
 /*!
   \class WWGWeight
   \version 1.0
   \author S. Ansell
   \date November 2015
-  \brief Tracks cell weight in cells
+  \brief Tracks cell weight in WWG mesh
 */
   
 class WWGWeight : public ItemWeight
@@ -43,6 +44,7 @@ class WWGWeight : public ItemWeight
   WWGWeight& operator=(const WWGWeight&);    
   virtual ~WWGWeight() {}          ///< Destructor
 
+  void updateWM(WWG&,const double,const double,const double);
 };
 
 }

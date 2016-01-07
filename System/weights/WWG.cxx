@@ -148,6 +148,19 @@ WWG::writeHead(std::ostream& OX) const
 }
 
 void
+WWG::scaleMeshItem(const long int index,
+                   const std::vector<double>& DVec)
+  /*!
+    Scale a given mesh index [based on second index]
+    \param index :: index for i,j,k
+    \param DVec :: scaling vector for energy bins
+  */
+{
+  ELog::RegMethod RegA("WWG","scaleMeshItem");
+  return;
+}
+  
+void
 WWG::write(std::ostream& OX) const
   /*!
     Write to the MCNP file [only grid]

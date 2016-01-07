@@ -92,10 +92,14 @@ CellWeight::operator=(const CellWeight& A)
 }
   
 void
-CellWeight::updateWM(const double eCut) const
+CellWeight::updateWM(const double eCut,
+                     const double scaleFactor,
+                     const double minWeight) const
   /*!
     Update WM
     \param eCut :: Energy cut [-ve to scale below ] 
+    \param scaleFactor :: Scalefactor for density equivilent
+    \param minWeight :: min weight scale factor
   */
 {
   ELog::RegMethod RegA("CellWeight","updateWM");
@@ -139,7 +143,7 @@ CellWeight::updateWM(const double eCut) const
 	  else if (EVec[i]>=eCut)
 	    DVec[i]=W;
 	}
-      WF->scaleWeights(cv.first,DVec);
+      WF->scaleWeights(static_cast<int>(cv.first),DVec);
     }
   return;
 }

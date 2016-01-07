@@ -51,6 +51,9 @@ class WeightControl
 {
  private:
 
+  double energyCut;              ///< Energy cut [MeV]
+  double scaleFactor;            ///< Scale factor
+  double minWeight;              ///< Min weight
   std::vector<double> EBand;     ///< Energy bandk
   std::vector<double> WT;        ///< Weight scalar
   
@@ -74,8 +77,10 @@ class WeightControl
   void help() const;
   
   void procType(const mainSystem::inputParam&);
+  void procParam(const mainSystem::inputParam&,const std::string&,
+		const size_t,const size_t);
   void procTypeHelp() const;
-  
+
   void procSource(const mainSystem::inputParam&);
   void procTallyPoint(const mainSystem::inputParam&);
   void procObject(const Simulation&,
@@ -101,11 +106,10 @@ class WeightControl
   void wwgEnergy(const mainSystem::inputParam&);
   void wwgCreate(Simulation&);
 
-  void calcWWGTrack(const Simulation&,const Geometry::Vec3D&,
-		    const double,const double,const double);
-  void calcTrack(const Simulation&,const Geometry::Vec3D&,
-		 const std::vector<int>&,
-		 const double,const double,const double);
+  void calcWWGTrack(const Simulation&,const Geometry::Vec3D&);
+  void calcCellTrack(const Simulation&,const Geometry::Vec3D&,
+		     const std::vector<int>&);
+
 
  public:
 

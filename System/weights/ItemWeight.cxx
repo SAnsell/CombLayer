@@ -74,8 +74,7 @@ operator<<(std::ostream& OX,const ItemWeight& A)
 }
 
 ItemWeight::ItemWeight()  :
-  sigmaScale(0.06914),scaleFactor(1.0),
-  minWeight(1e-7)
+  sigmaScale(0.06914)
   /*! 
     Constructor 
   */

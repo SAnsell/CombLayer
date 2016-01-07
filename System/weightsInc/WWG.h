@@ -52,7 +52,8 @@ class WWG
   
   std::vector<double> EBin;      ///< Energy bins
   WeightMesh Grid;               ///< Mesh Grid
-  std::vector<double> WMesh;     ///< linearized weight mesh
+
+  std::vector<std::vector<double>> WMesh;     ///< linearized weight mesh
 
   void writeHead(std::ostream&) const;
   
@@ -67,9 +68,12 @@ class WWG
   WeightMesh& getGrid() { return Grid; }
   /// access to grid
   const WeightMesh& getGrid() const { return Grid; }
-
+  /// Access to EBin
+  const std::vector<double>& getEBin() const { return EBin; }
   void setEnergyBin(const std::vector<double>&);
-  
+
+
+  void scaleMeshItem(const long int,const std::vector<double>&);
   void write(std::ostream&) const;
   void writeWWINP(const std::string&) const;
   
