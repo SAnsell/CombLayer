@@ -388,12 +388,11 @@ TaperedDiskPreMod::createLinks()
   FixedComp::setLinkSurf(8,-SMap.realSurf(modIndex+6));
 
   // outer again
-  ELog::EM << "HERE: " << keyName << " " << nLayers-3 << ELog::endDiag;
-  SI=modIndex+static_cast<int>(nLayers-3)*10;
-  FixedComp::setConnect(9,Origin-Z*depth[nLayers-3],-Z);
+  SI=modIndex+static_cast<int>(nLayers-2)*10;
+  FixedComp::setConnect(9,Origin-Z*depth[nLayers-2],-Z);
   FixedComp::setLinkSurf(9,-SMap.realSurf(SI+6));
 
-  FixedComp::setConnect(10,Origin+Z*height[nLayers-3],Z);
+  FixedComp::setConnect(10,Origin+Z*height[nLayers-2],Z);
   FixedComp::setLinkSurf(10,SMap.realSurf(SI+5));
 
   return;
