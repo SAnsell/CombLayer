@@ -108,13 +108,37 @@ WWG::operator=(const WWG& A)
 }
 
 void
+WWG::resetMesh()
+  /*!
+    Resize the mesh
+   */
+{
+  const size_t GSize=Grid.size();
+  if (GSize && !EBin.empty())
+    {
+      WMesh.resize(GSize);
+      const size_t ESize(EBin.size());
+      for(std::vector<double>& MUnit : WMesh)
+        {
+          MUnit.resize(ESize);
+          std::fill(MUnit.begin(),MUnit.end(),1.0);
+        }
+    }
+  else 
+    WMesh.clear();
+  
+  return;
+}
+  
+void
 WWG::setEnergyBin(const std::vector<double>& EB)
   /*!
-    Set the energy bins
+    Set the energy bins and resize the WMesh
     \param EB :: Energy bins [MeV]
   */
 {
   EBin=EB;
+  resetMesh();
   return;
 }
   
@@ -157,6 +181,18 @@ WWG::scaleMeshItem(const long int index,
   */
 {
   ELog::RegMethod RegA("WWG","scaleMeshItem");
+
+  
+  const size_t ID(static_cast<size_t>(index));
+  if (ID>=WMesh.size())
+    throw ColErr::IndexError<size_t>(ID,WMesh.size(),"WMesh!=ID");
+  if (DVec.size()!=WMesh[ID].size())
+    throw ColErr::IndexError<size_t>(WMesh[ID].size(),DVec.size(),
+                                         "DVec!=WMesh");
+
+  for(size_t i=0;i<DVec.size();i++)
+    WMesh[ID][i]*=DVec[i];
+  
   return;
 }
   

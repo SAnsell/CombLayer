@@ -756,7 +756,6 @@ WeightControl::wwgMesh(const mainSystem::inputParam& IParam)
   wwg.getGrid().setMesh(boundaryVal[0],bCnt[0],
 			boundaryVal[1],bCnt[1],
 			boundaryVal[2],bCnt[2]);
-
   return;
 }
 
@@ -771,6 +770,8 @@ WeightControl::wwgCreate(Simulation& System)
 
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();
+  WWG& wwg=WM.getWWG();
+  wwg.resetMesh();
   
   if (sourceFlag)
     calcWWGTrack(System,sourcePt);

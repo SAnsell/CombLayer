@@ -76,6 +76,7 @@ class WeightMesh
   WeightMesh& operator=(const WeightMesh&);
   virtual ~WeightMesh() {}   ///< Destructor
 
+  size_t size() const { return NX*NY*NZ; } 
   size_t getXSize() const { return NX; }
   size_t getYSize() const { return NY; }
   size_t getZSize() const { return NZ; }

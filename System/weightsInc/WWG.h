@@ -71,9 +71,11 @@ class WWG
   /// Access to EBin
   const std::vector<double>& getEBin() const { return EBin; }
   void setEnergyBin(const std::vector<double>&);
+  void resetMesh();
 
 
   void scaleMeshItem(const long int,const std::vector<double>&);
+  
   void write(std::ostream&) const;
   void writeWWINP(const std::string&) const;
   
