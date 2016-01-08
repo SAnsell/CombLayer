@@ -451,9 +451,12 @@ makeESS::buildTopPipes(Simulation& System,
       //      ELog::EM<<"-- Top : Two pipes from the top"<<ELog::endBasic;
       return;
     }
-
-  buildH2Pipe(System, "TopFlyLeftLobe", "TopFlyLeftWater", pipeType, TopSupplyLeftAl, TopSupplyLeftConnect, TopSupplyLeftInvar);
-  buildH2Pipe(System, "TopFlyLeftLobe", "TopFlyLeftWater", pipeType, TopReturnLeftAl, TopReturnLeftConnect, TopReturnLeftInvar);
+  ELog::EM<<"ASDFASDF "<<ELog::endDiag;
+  buildH2Pipe(System, "TopFlyLeftLobe", "TopFlyLeftWater", pipeType, TopSupplyLeftAl,
+              TopSupplyLeftConnect, TopSupplyLeftInvar);
+  ELog::EM<<"ASDFASDF "<<ELog::endDiag;
+  buildH2Pipe(System, "TopFlyLeftLobe", "TopFlyLeftWater", pipeType, TopReturnLeftAl,
+              TopReturnLeftConnect, TopReturnLeftInvar);
 
   buildH2Pipe(System, "TopFlyRightLobe", "TopFlyRightWater", pipeType, TopSupplyRightAl, TopSupplyRightConnect, TopSupplyRightInvar);
   buildH2Pipe(System, "TopFlyRightLobe", "TopFlyRightWater", pipeType, TopReturnRightAl, TopReturnRightConnect, TopReturnRightInvar);

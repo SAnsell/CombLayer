@@ -154,43 +154,40 @@ PipeLine::setPoints(const std::vector<Geometry::Vec3D>& V)
 }
 
 void 
-PipeLine::addPoint(const Geometry::Vec3D& Pt)
+PipeLine::addPoint(const Geometry::Vec3D& newPt)
   /*!
     Add an additional point
-    \param Pt :: Point to add
+    \param newPt :: Point to add
    */
 {
   ELog::RegMethod RegA("PipeLine","addPoint");
+
   if (Pts.empty() || Pts.back()!=Pt)
     {
       const size_t Index(Pts.size());
       if (Index>1)
 	{
-	  const Geometry::Vec3D AAxis=(Pts[Index-1]-Pts[Index]).unit();
-	  const Geometry::Vec3D BAxis=(Pt-Pts[Index]).unit();
-	  // // safety checks:
-	  if (isnan(AAxis.abs()) || AAxis.abs()<Geometry::zeroTol)
-	    ELog::EM << keyName << " AAxis: " << AAxis << ";\tabs=" << AAxis.abs() << ELog::endCrit;
-	  if (isnan(BAxis.abs()) || BAxis.abs()<Geometry::zeroTol)
-	    ELog::EM << keyName << " BAxis: " << BAxis << ";\tabs="  << BAxis.abs() << ELog::endCrit;
+          const Geometry::Vec3D AAxis=(Pts[Index-2]-Pts[Index-1]).unit();
+	  const Geometry::Vec3D BAxis=(newPt-Pts[Index-1]).unit();
 
+          // This is to test if the axis reverses on itself
 	  if (AAxis.dotProd(BAxis)>1.0-Geometry::zeroTol)
 	    {
 	      ELog::EM<<"Points reversed at index "<<Index<<ELog::endCrit;
-	      ELog::EM<<"PtA "<<Pts[Index-1]<<ELog::endCrit;
-	      ELog::EM<<"PtB "<<Pts[Index]<<ELog::endCrit;
-	      ELog::EM<<"PtNwe "<<Pt<<ELog::endErr;
+	      ELog::EM<<"PtA "<<Pts[Index-2]<<ELog::endCrit;
+	      ELog::EM<<"PtB "<<Pts[Index-1]<<ELog::endCrit;
+	      ELog::EM<<"PtNew "<<newPt<<ELog::endErr;
 	      return;
 	    }
 	}
-      Pts.push_back(Pt);
+      Pts.push_back(newPt);
       if (Pts.size()>1)
 	activeFlags.push_back(0);
     }
   else
     {
-      ELog::EM<<"Adding Identical Point "<<Pts.size()<<":"
-	      <<Pt<<ELog::endErr;
+      ELog::EM<<"Adding Singular Point "<<Pts.size()<<":"
+	      <<newPt<<ELog::endErr;
     }
   return;
 }
