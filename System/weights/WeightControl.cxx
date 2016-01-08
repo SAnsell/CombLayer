@@ -316,8 +316,9 @@ WeightControl::cTrack(const Simulation& System,
     {
       const long int unit(i>=index.size() ? cN++ : index[i]);
       std::vector<double> attnN;
+      ELog::EM<<"Point["<<i<<"] == "<<Pts[i]<<ELog::endDiag;
       OTrack.addUnit(System,unit,Pts[i]);
-      CTrack.addTracks(cN,OTrack.getAttnSum(cN));
+      CTrack.addTracks(cN,OTrack.getAttnSum(unit));
     } 
   return;
 }
@@ -356,6 +357,8 @@ WeightControl::calcWWGTrack(const Simulation& System,
       for(size_t k=0;k<NZ;k++)
 	{
 	  Pts.push_back(WGrid.point(i,j,k));
+          ELog::EM<<"I == "<<i<<":"<<j<<":"<<k
+                  <<" == "<<Pts.back()<<ELog::endDiag;
 	  index.push_back(cN++);
 	}
 
@@ -723,7 +726,6 @@ WeightControl::wwgMesh(const mainSystem::inputParam& IParam)
 {
   ELog::RegMethod RegA("WeightControl","wwgMesh");
 
-  
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();
   WWG& wwg=WM.getWWG();

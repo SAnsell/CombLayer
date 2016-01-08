@@ -202,7 +202,6 @@ WeightMesh::point(const size_t a,const size_t b,const size_t c) const
 {
   ELog::RegMethod RegA ("WeightMesh","point");
 
-  if (a>NX)
   if (a >= NX)
     throw ColErr::IndexError<size_t>(a,NX,"X-coordinate");
   if (b >= NY)
@@ -226,7 +225,6 @@ WeightMesh::writeWWINP(std::ostream& OX,const size_t NEBin) const
   */
 {
   ELog::RegMethod RegA("WeightMesh","writeWWINP");
-
 
   boost::format TopFMT("%10i%10i%10i%10i%28s\n");
   const std::string date("10/07/15 15:37:51");

@@ -195,7 +195,7 @@ WWG::scaleMeshItem(const long int index,
   
   return;
 }
-  
+
 void
 WWG::write(std::ostream& OX) const
   /*!
@@ -206,6 +206,7 @@ WWG::write(std::ostream& OX) const
   ELog::RegMethod RegA("WWG","write");
   writeHead(OX);
   Grid.write(OX);
+      
   return;
 }
   
@@ -223,6 +224,15 @@ WWG::writeWWINP(const std::string& FName) const
   size_t itemCnt=0;
   for(const double& E : EBin)
     StrFunc::writeLine(OX,E,itemCnt,6);
+  if (itemCnt!=0)
+    OX<<std::endl;
+
+  // MESH:
+  itemCnt=0;
+  for(const std::vector<double>& CV : WMesh)
+    for(const double W : CV)
+      StrFunc::writeLine(OX,W,itemCnt,6);
+    
   OX.close();
 		       
   return;
