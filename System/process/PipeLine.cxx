@@ -162,7 +162,7 @@ PipeLine::addPoint(const Geometry::Vec3D& newPt)
 {
   ELog::RegMethod RegA("PipeLine","addPoint");
 
-  if (Pts.empty() || Pts.back()!=Pt)
+  if (Pts.empty() || Pts.back()!=newPt)
     {
       const size_t Index(Pts.size());
       if (Index>1)
