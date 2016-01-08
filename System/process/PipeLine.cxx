@@ -168,6 +168,12 @@ PipeLine::addPoint(const Geometry::Vec3D& Pt)
 	{
 	  const Geometry::Vec3D AAxis=(Pts[Index-1]-Pts[Index]).unit();
 	  const Geometry::Vec3D BAxis=(Pt-Pts[Index]).unit();
+	  // // safety checks:
+	  if (isnan(AAxis.abs()) || AAxis.abs()<Geometry::zeroTol)
+	    ELog::EM << keyName << " AAxis: " << AAxis << ";\tabs=" << AAxis.abs() << ELog::endCrit;
+	  if (isnan(BAxis.abs()) || BAxis.abs()<Geometry::zeroTol)
+	    ELog::EM << keyName << " BAxis: " << BAxis << ";\tabs="  << BAxis.abs() << ELog::endCrit;
+
 	  if (AAxis.dotProd(BAxis)>1.0-Geometry::zeroTol)
 	    {
 	      ELog::EM<<"Points reversed at index "<<Index<<ELog::endCrit;
