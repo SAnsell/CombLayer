@@ -177,6 +177,7 @@
 #include "testVec3D.h"
 #include "testVarNameOrder.h"
 #include "testVolumes.h"
+#include "testWeightMesh.h"
 #include "testWorkData.h"
 #include "testWrapper.h"
 #include "testXML.h"
@@ -897,6 +898,7 @@ physicsTest(const int type,const int extra)
       TestFunc::Instance().reportTest(std::cout);
       std::cout<<"testDBCN          (1)"<<std::endl;
       std::cout<<"testExtControl    (2)"<<std::endl;
+      std::cout<<"testWeightMesh    (3)"<<std::endl;
     }
   if(type==1 || type<0)
     {
@@ -907,6 +909,12 @@ physicsTest(const int type,const int extra)
   if(type==2 || type<0)
     {
       testExtControl A;
+      const int X=A.applyTest(extra);
+      if (X) return X;
+    }
+  if(type==3 || type<0)
+    {
+      testWeightMesh A;
       const int X=A.applyTest(extra);
       if (X) return X;
     }

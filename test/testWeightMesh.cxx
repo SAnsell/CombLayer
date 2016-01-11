@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testWeightMesh.cxx
  *
@@ -150,7 +150,11 @@ testWeightMesh::createXYZ(WeightMesh& WMesh,
 }
 
 int
-testWeightMesh::testSum()
+testWeightMesh::testPoint()
+  /*!
+    Test and individual point
+    \return -ve on error / 0 on success
+   */
 {
   ELog::RegMethod RegA("testWeightMesh","testSum");
 
@@ -159,13 +163,9 @@ testWeightMesh::testSum()
   std::vector<TTYPE> Tests=
     {
       TTPYE{"-120 3 120.0","0 3 240.0","-120 3 120",
-            
-      
+            3,3,3,Geometry::Vec3D(0,0,0)}
     };
 
-  Tests=
-
-  
   WeightMesh A;
 
   std::vector
