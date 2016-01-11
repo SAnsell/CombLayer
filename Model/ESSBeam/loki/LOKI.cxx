@@ -225,8 +225,8 @@ LOKI::setBeamAxis(const FuncDataBase& Control,
   lokiAxis->linkAngleRotate(3);
   lokiAxis->linkAngleRotate(4);
   
-    if (reverseZ)
-      lokiAxis->reverseZ();
+  if (reverseZ)
+    lokiAxis->reverseZ();
   return;
 }
   
@@ -385,17 +385,21 @@ LOKI::build(Simulation& System,
   CollA->addInsertCell(bunkerObj.getCell("MainVoid"));
   CollA->addInsertCell(voidCell);
   CollA->createAll(System,GFC,2);
-  attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*CollA);  
-  
+  attachSystem::addToInsertControl(System,bunkerObj,"frontWall",
+                                   CollA->getKey("Beam"),*CollA);  
+
   // Second grid cutter
   //GridB->addInsertCell(bunkerObj.getCells(BSector));
   GridB->createAll(System,CollA->getKey("Beam"),2);
-  attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*GridB);
+  attachSystem::addToInsertControl(System,bunkerObj,"frontWall",
+                                   GridB->getKey("Beam"),*GridB);  
   
   // Second collimator
   CollB->addInsertCell(voidCell);
   CollB->createAll(System,GridB->getKey("Beam"),2);
-  attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*CollB);
+
+  attachSystem::addToInsertControl(System,bunkerObj,"frontWall",
+                                   CollB->getKey("Beam"),*CollB);  
 
   // Second grid cutter
   GridC->addInsertCell(voidCell);
@@ -432,7 +436,7 @@ LOKI::build(Simulation& System,
   CollC->addInsertCell(Cave->getCell("Void"));
   CollC->insertObjects(System);
 
-    // Final definin apperature
+    // Final definive apperature
   GridD->addInsertCell(Cave->getCell("Void"));
   GridD->createAll(System,CollC->getKey("Beam"),2);
 

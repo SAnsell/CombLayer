@@ -206,12 +206,14 @@ setDefRotation(const mainSystem::inputParam& IParam)
 	    throw ColErr::InContainerError<std::string>
 	      (BItem,"Fixed component");
 	  const std::string CItem=IParam.getDefValue<std::string>("2","angle",2);
+          const int ZFlag=IParam.getDefValue<int>(1,"angle",3);
 	  const long int axisIndex=attachSystem::getLinkIndex(CItem);
 	  // Y is beam direction -- Alignment along X
 	  const Geometry::Vec3D AxisVec=
 	    GIPtr->getSignedLinkAxis(axisIndex);
 	  const double angle=180.0*acos(AxisVec[0])/M_PI;
-	  MR.addRotation(GIPtr->getZ(),Geometry::Vec3D(0,0,0),angle);
+	  MR.addRotation(GIPtr->getZ(),
+                         Geometry::Vec3D(0,0,0),ZFlag*angle);
 	  // Z rotation.
 	  ELog::EM<<"AXIS == "<<AxisVec<<ELog::endDiag;
 		  
