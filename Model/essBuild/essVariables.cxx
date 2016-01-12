@@ -592,10 +592,10 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("GuideBay2XYangle",180.0); 
   Control.addVariable("GuideBay3XYangle",0.0); 
   Control.addVariable("GuideBay4XYangle",180.0); 
-  Control.addVariable("GuideBay1NItems",19);  
-  Control.addVariable("GuideBay2NItems",19);  
-  Control.addVariable("GuideBay3NItems",19);  
-  Control.addVariable("GuideBay4NItems",19);
+  Control.addVariable("GuideBay1NItems",21);  
+  Control.addVariable("GuideBay2NItems",21);  
+  Control.addVariable("GuideBay3NItems",21);  
+  Control.addVariable("GuideBay4NItems",21);
 
   Control.addVariable("GuideBay4InnerDepth",5.8);
   
@@ -698,25 +698,28 @@ EssBeamLinesVariables(FuncDataBase& Control)
       Control.addVariable(baseKey+"Height2",22.0);
       Control.addVariable(baseKey+"Depth2",22.0);
       Control.addVariable(baseKey+"Length1",170.0);
-      Control.addVariable(baseKey+"1XYangle",54.0); 
-      Control.addVariable(baseKey+"2XYangle",48.0); 
-      Control.addVariable(baseKey+"3XYangle",42.0); 
-      Control.addVariable(baseKey+"4XYangle",36.0); 
-      Control.addVariable(baseKey+"5XYangle",30.0); 
-      Control.addVariable(baseKey+"6XYangle",24); 
-      Control.addVariable(baseKey+"7XYangle",18.0); 
-      Control.addVariable(baseKey+"8XYangle",12.0); 
-      Control.addVariable(baseKey+"9XYangle",6.0); 
-      Control.addVariable(baseKey+"10XYangle",0.0); 
-      Control.addVariable(baseKey+"11XYangle",-6.0); 
-      Control.addVariable(baseKey+"12XYangle",-12.0); 
-      Control.addVariable(baseKey+"13XYangle",-18.0); 
-      Control.addVariable(baseKey+"14XYangle",-24.0);
-      Control.addVariable(baseKey+"15XYangle",-30.0); 
-      Control.addVariable(baseKey+"16XYangle",-36.0); 
-      Control.addVariable(baseKey+"17XYangle",-42.0);
-      Control.addVariable(baseKey+"18XYangle",-48.0);
-      Control.addVariable(baseKey+"19XYangle",-54.0);
+      Control.addVariable(baseKey+"1XYangle",90.0-30.0); 
+      Control.addVariable(baseKey+"2XYangle",90.0-35.3); 
+      Control.addVariable(baseKey+"3XYangle",90.0-42.0); 
+      Control.addVariable(baseKey+"4XYangle",90.0-47.3); 
+      Control.addVariable(baseKey+"5XYangle",90.0-54.0); 
+      Control.addVariable(baseKey+"6XYangle",90.0-59.3); 
+      Control.addVariable(baseKey+"7XYangle",90.0-66.0); 
+      Control.addVariable(baseKey+"8XYangle",90.0-71.3); 
+      Control.addVariable(baseKey+"9XYangle",90.0-78.0);
+      Control.addVariable(baseKey+"10XYangle",90.0-83.3); 
+      Control.addVariable(baseKey+"11XYangle",90.0-90.0);
+
+      Control.addVariable(baseKey+"12XYangle",-90.0+84.0);
+      Control.addVariable(baseKey+"13XYangle",-90.0+78.0);
+      Control.addVariable(baseKey+"14XYangle",-90.0+72.0);
+      Control.addVariable(baseKey+"15XYangle",-90.0+66.0);
+      Control.addVariable(baseKey+"16XYangle",-90.0+60.0);
+      Control.addVariable(baseKey+"17XYangle",-90.0+54.0);
+      Control.addVariable(baseKey+"18XYangle",-90.0+48.0);
+      Control.addVariable(baseKey+"19XYangle",-90.0+42.0);
+      Control.addVariable(baseKey+"20XYangle",-90.0+36.0);
+      Control.addVariable(baseKey+"21XYangle",-90.0+30.0);
       Control.addVariable(baseKey+"Filled",0);
       Control.addVariable(baseKey+"Active",0);
 

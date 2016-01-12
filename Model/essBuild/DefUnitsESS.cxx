@@ -158,8 +158,7 @@ setESSPortsOnly(defaultConfig& A)
   ELog::RegMethod RegA("DefUnitsESS[F]","setESS");
 
   A.setOption("lowMod","Butterfly");
-
-  for(size_t i=0;i<19;i++)
+  for(size_t i=0;i<21;i++)
     A.setVar("G1BLine"+StrFunc::makeString(i+1)+"Active",1);
 
   ELog::EM<<"Port Only "<<ELog::endDiag;
