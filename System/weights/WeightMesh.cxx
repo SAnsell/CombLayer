@@ -62,6 +62,46 @@ WeightMesh::WeightMesh() :
   */
 {}
 
+WeightMesh::WeightMesh(const WeightMesh& A) : 
+  tallyN(A.tallyN),type(A.type),RefPoint(A.RefPoint),
+  Origin(A.Origin),Axis(A.Axis),Vec(A.Vec),X(A.X),Y(A.Y),
+  Z(A.Z),XFine(A.XFine),YFine(A.YFine),ZFine(A.ZFine),
+  NX(A.NX),NY(A.NY),NZ(A.NZ)
+  /*!
+    Copy constructor
+    \param A :: WeightMesh to copy
+  */
+{}
+
+WeightMesh&
+WeightMesh::operator=(const WeightMesh& A)
+  /*!
+    Assignment operator
+    \param A :: WeightMesh to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      tallyN=A.tallyN;
+      type=A.type;
+      RefPoint=A.RefPoint;
+      Origin=A.Origin;
+      Axis=A.Axis;
+      Vec=A.Vec;
+      X=A.X;
+      Y=A.Y;
+      Z=A.Z;
+      XFine=A.XFine;
+      YFine=A.YFine;
+      ZFine=A.ZFine;
+      NX=A.NX;
+      NY=A.NY;
+      NZ=A.NZ;
+    }
+  return *this;
+}
+
 void
 WeightMesh::setMeshType(const GeomENUM& A)
   /*!
@@ -137,15 +177,17 @@ WeightMesh::getCoordinate(const std::vector<double>& Vec,
     \return positions [Origin non - offset
    */
 {
-  size_t sum(0);
+  size_t offset(NF[0]);
   size_t I(0);
-  while(Index>sum)
+  while(Index>offset)
     {
-      sum+=NF[I];
+      offset+=NF[I];
       I++;
     }
-
-  return Vec[Index]+static_cast<double>(Index-sum)*
+  offset-=NF[I];
+         
+  
+  return Vec[I]+static_cast<double>(Index-offset)*
     (Vec[I+1]-Vec[I])/NF[I];
 }
   
@@ -162,7 +204,6 @@ WeightMesh::point(const size_t a,const size_t b,const size_t c) const
 {
   ELog::RegMethod RegA ("WeightMesh","point");
 
-  if (a>NX)
   if (a >= NX)
     throw ColErr::IndexError<size_t>(a,NX,"X-coordinate");
   if (b >= NY)
@@ -186,7 +227,6 @@ WeightMesh::writeWWINP(std::ostream& OX,const size_t NEBin) const
   */
 {
   ELog::RegMethod RegA("WeightMesh","writeWWINP");
-
 
   boost::format TopFMT("%10i%10i%10i%10i%28s\n");
   const std::string date("10/07/15 15:37:51");

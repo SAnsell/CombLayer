@@ -641,7 +641,7 @@ createTS2Source(const FuncDataBase& Control,Source& sourceCard)
 
 
 void
-createSinbadSource(const FuncDataBase& Control,Source& sourceCard)
+createSinbadSource(const FuncDataBase&,Source& sourceCard)
   /*!
     Create a fisson source for a cylinder/rectangular unit 
     \param Control :: Funcdat data base for values

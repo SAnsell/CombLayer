@@ -371,7 +371,7 @@ ProtonFlight::exitWindow(const double Dist,
 void
 ProtonFlight::createAll(Simulation& System,
 			const attachSystem::FixedComp& FC,
-			const int sideIndex)
+			const int)
   /*!
     Generic function to create everything
     \param System :: Simulation item

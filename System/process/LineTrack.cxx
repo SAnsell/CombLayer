@@ -333,7 +333,7 @@ LineTrack::getPoint(const size_t Index) const
 }
 
 void
-LineTrack::createAttenPath(std::vector<int>& cVec,
+LineTrack::createAttenPath(std::vector<long int>& cVec,
 			   std::vector<double>& aVec) const
   /*!
     Calculate track components

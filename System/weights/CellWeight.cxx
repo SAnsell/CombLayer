@@ -62,7 +62,7 @@ namespace WeightSystem
 
 
 CellWeight::CellWeight()  :
-  ItemWeigth()
+  ItemWeight()
   /*! 
     Constructor 
   */
@@ -92,10 +92,14 @@ CellWeight::operator=(const CellWeight& A)
 }
   
 void
-CellWeight::updateWM(const double eCut) const
+CellWeight::updateWM(const double eCut,
+                     const double scaleFactor,
+                     const double minWeight) const
   /*!
     Update WM
     \param eCut :: Energy cut [-ve to scale below ] 
+    \param scaleFactor :: Scalefactor for density equivilent
+    \param minWeight :: min weight scale factor
   */
 {
   ELog::RegMethod RegA("CellWeight","updateWM");
@@ -126,7 +130,7 @@ CellWeight::updateWM(const double eCut) const
     }
   aveW/=cnt;
   // Work on minW first:
-  const double factor=(minW>minWeight) ?
+  const double factor=(minW<minWeight) ?
     log(minWeight)/log(minW) : 1.0;
 
   for(const CMapTYPE::value_type& cv : Cells)
@@ -139,10 +143,10 @@ CellWeight::updateWM(const double eCut) const
 	  else if (EVec[i]>=eCut)
 	    DVec[i]=W;
 	}
-      WF->scaleWeights(cv.first,DVec);
+      WF->scaleWeights(static_cast<int>(cv.first),DVec);
     }
   return;
 }
   
   
-} // Namespace WeightSystem
+} // namespace WeightSystem

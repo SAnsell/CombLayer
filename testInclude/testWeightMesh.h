@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MCNP(X) Input builder
+  CombLayer : MNCPX Input builder
  
- * File:   weightInc/WWGWeight.h
- *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * File:   testInclude/testWeightMesh.h
+*
+ * Copyright (c) 2004-2013 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,34 +19,41 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef WeightSystem_WWGWeight_h
-#define WeightSystem_WWGWeight_h
+#ifndef testWeightMesh_h
+#define testWeightMesh_h 
 
 namespace WeightSystem
 {
-  class WWG;
-  
-/*!
-  \class WWGWeight
-  \version 1.0
-  \author S. Ansell
-  \date November 2015
-  \brief Tracks cell weight in WWG mesh
-*/
-  
-class WWGWeight : public ItemWeight
-{
-
- public:
-
-  WWGWeight();
-  WWGWeight(const WWGWeight&);
-  WWGWeight& operator=(const WWGWeight&);    
-  virtual ~WWGWeight() {}          ///< Destructor
-
-  void updateWM(WWG&,const double,const double,const double);
-};
-
+class WeightMesh;
 }
+
+/*!
+  \class testWeightMesh
+  \brief Tests the class Cylinder class
+  \author S. Ansell
+  \date Nov. 2005
+  \version 1.0
+
+  Test the distance of a point to the cone
+*/
+
+class testWeightMesh 
+{
+private:
+
+
+  void createXYZ(WeightSystem::WeightMesh&,
+		 const std::string&,const std::string&,
+		 const std::string&) const;
+  //Tests 
+  int testPoint();
+ 
+public:
+
+  testWeightMesh();
+  ~testWeightMesh();
+
+  int applyTest(const int);     
+};
 
 #endif

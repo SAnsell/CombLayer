@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testLineTrack.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -277,7 +277,7 @@ testLineTrack::testLine()
 
 int
 testLineTrack::checkResult(const LineTrack& LT,
-			   const int CSum,const double TSum) const
+			   const long int CSum,const double TSum) const
   /*!
     Check the result from the test
     \param LT :: LineTrack to test
@@ -288,7 +288,7 @@ testLineTrack::checkResult(const LineTrack& LT,
 {
   ELog::RegMethod RegA("testLineTrack","checkResults");
 
-  const std::vector<int>& cells=LT.getCells();
+  const std::vector<long int>& cells=LT.getCells();
   const std::vector<double>& tLen=LT.getTrack();
   const std::vector<MonteCarlo::Object*>& oVec=LT.getObjVec();
   int cValue(0);

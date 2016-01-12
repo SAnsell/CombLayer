@@ -74,8 +74,7 @@ operator<<(std::ostream& OX,const ItemWeight& A)
 }
 
 ItemWeight::ItemWeight()  :
-  sigmaScale(0.06914),scaleFactor(1.0),
-  minWeight(1e-7)
+  sigmaScale(0.06914)
   /*! 
     Constructor 
   */
@@ -105,7 +104,7 @@ ItemWeight::operator=(const ItemWeight& A)
 }
   
 void
-ItemWeight::addTracks(const int cN,const double value)
+ItemWeight::addTracks(const long int cN,const double value)
   /*!
     Adds an average track contribution
     \param cN :: cell number
@@ -113,7 +112,8 @@ ItemWeight::addTracks(const int cN,const double value)
   */
 {
   ELog::RegMethod RegA("ItemWeight","addTracks");
-  std::map<int,CellItem>::iterator mc=Cells.find(cN);
+  
+  std::map<long int,CellItem>::iterator mc=Cells.find(cN);
   if (mc==Cells.end())
     Cells.emplace(cN,CellItem(value));
   else
@@ -124,59 +124,6 @@ ItemWeight::addTracks(const int cN,const double value)
   return;
 }
 
-void
-ItemWeight::updateWM(const double eCut) const
-  /*!
-    Update WM
-    \param eCut :: Energy cut [-ve to scale below ] 
-  */
-{
-  ELog::RegMethod RegA("ItemWeight","updateWM");
-
-  WeightSystem::weightManager& WM=
-    WeightSystem::weightManager::Instance();  
-
-  WeightSystem::WForm* WF=WM.getParticle('n');
-  if (!WF)
-    throw ColErr::InContainerError<std::string>("n","neutron has no WForm");
-
-  // quick way to get length of array
-  const std::vector<double> EVec=WF->getEnergy();
-  std::vector<double> DVec=EVec;
-  std::fill(DVec.begin(),DVec.end(),1.0);
-  
-  double maxW(0.0);
-  double minW(1e38);
-  double aveW(0.0);
-  int cnt(0);
-  for(const std::map<int,CellItem>::value_type& cv : Cells)
-    {
-      const double W=(exp(-cv.second.weight*sigmaScale*scaleFactor));
-      if (W>maxW) maxW=W;
-      if (W<minW && minW>1e-38) minW=W;
-      aveW+=W;
-      cnt++;
-    }
-  aveW/=cnt;
-  // Work on minW first:
-  const double factor=(minW>minWeight) ?
-    log(minWeight)/log(minW) : 1.0;
-
-  for(const std::map<int,CellItem>::value_type& cv : Cells)
-    {
-      const double W=(exp(-cv.second.weight*sigmaScale*scaleFactor*factor));
-      for(size_t i=0;i<EVec.size();i++)
-	{
-	  if (eCut<-1e-10 && EVec[i] <= -eCut)
-	    DVec[i]=W;
-	  else if (EVec[i]>=eCut)
-	    DVec[i]=W;
-	}
-      WF->scaleWeights(cv.first,DVec);
-    }
-  return;
-}
-  
 
 void
 ItemWeight::write(std::ostream& OX) const

@@ -43,7 +43,8 @@ class CellWeight : public ItemWeight
   CellWeight& operator=(const CellWeight&);    
   virtual ~CellWeight() {}          ///< Destructor
 
-  void updateWM(const double) const;
+  void updateWM(const double,const double,
+		const double) const;
 };
 
 }
