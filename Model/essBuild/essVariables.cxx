@@ -792,11 +792,11 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("BeRefInnerStructureBaseLen4", 0.258*2+0.075+0.075);
   Control.addVariable("BeRefInnerStructureBaseLen5", 0.258*2+0.075+0.075+0.258);
   Control.addVariable("BeRefInnerStructureMat0", "Beryllium");
-  Control.addVariable("BeRefInnerStructureMat1", "H2O");
+  Control.addVariable("BeRefInnerStructureMat1", "Be30H2O");
   Control.addVariable("BeRefInnerStructureMat2", "Beryllium");
-  Control.addVariable("BeRefInnerStructureMat3", "H2O");
+  Control.addVariable("BeRefInnerStructureMat3", "Be30H2O");
   Control.addVariable("BeRefInnerStructureMat4", "Beryllium");
-  Control.addVariable("BeRefInnerStructureMat5", "H2O");
+  Control.addVariable("BeRefInnerStructureMat5", "Be30H2O");
 
 
   Control.addVariable("TopBeRefWaterDiscNLayers",2);
