@@ -451,10 +451,8 @@ makeESS::buildTopPipes(Simulation& System,
       //      ELog::EM<<"-- Top : Two pipes from the top"<<ELog::endBasic;
       return;
     }
-  ELog::EM<<"ASDFASDF "<<ELog::endDiag;
   buildH2Pipe(System, "TopFlyLeftLobe", "TopFlyLeftWater", pipeType, TopSupplyLeftAl,
               TopSupplyLeftConnect, TopSupplyLeftInvar);
-  ELog::EM<<"ASDFASDF "<<ELog::endDiag;
   buildH2Pipe(System, "TopFlyLeftLobe", "TopFlyLeftWater", pipeType, TopReturnLeftAl,
               TopReturnLeftConnect, TopReturnLeftInvar);
 
@@ -681,7 +679,7 @@ makeESS::build(Simulation& System,
   const std::string iradLine=IParam.getValue<std::string>("iradLineType");
   const std::string bunker=IParam.getValue<std::string>("bunkerType");
 
-  const size_t nF5 = IParam.getValue<int>("nF5");
+  //  const size_t nF5 = IParam.getValue<int>("nF5");
 
   if (StrFunc::checkKey("help",lowPipeType,lowModType,targetType) ||
       StrFunc::checkKey("help",iradLine,topModType,""))
