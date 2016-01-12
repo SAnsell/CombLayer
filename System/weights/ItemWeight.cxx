@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   weight/CellWeight.cxx
+ * File:   weight/ItemWeight.cxx
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -50,55 +50,88 @@
 #include "WItem.h"
 #include "WCells.h"
 #include "WeightMesh.h"
+#include "WWG.h"
 #include "weightManager.h"
 
 #include "ItemWeight.h"
-#include "CellWeight.h"
 
 #include "debugMethod.h"
 
 namespace WeightSystem
 {
 
+std::ostream&
+operator<<(std::ostream& OX,const ItemWeight& A)
+  /*!
+    Write out to a stream
+    \param OX :: Output stream
+    \param A :: ItemWeight to write
+    \return Stream
+  */
+{
+  A.write(OX);
+  return OX;
+}
 
-CellWeight::CellWeight()  :
-  ItemWeigth()
+ItemWeight::ItemWeight()  :
+  sigmaScale(0.06914),scaleFactor(1.0),
+  minWeight(1e-7)
   /*! 
     Constructor 
   */
 {}
 
-CellWeight::CellWeight(const CellWeight& A)  :
-  ItemWeight(A)
+ItemWeight::ItemWeight(const ItemWeight& A)  :
+  sigmaScale(A.sigmaScale),Cells(A.Cells)
   /*! 
     Copy Constructor 
-    \param A :: CellWeight to copy
+    \param A :: ItemWeight to copy
   */
 {}
 
-CellWeight&
-CellWeight::operator=(const CellWeight& A)
+ItemWeight&
+ItemWeight::operator=(const ItemWeight& A)
   /*! 
     Assignment operator
-    \param A :: CellWeight to copy
+    \param A :: ItemWeight to copy
     \return *this
   */
 {
   if (this!=&A)
     {
-      ItemWeight::operator=(A);
+      Cells=A.Cells;
     }
   return *this;
 }
   
 void
-CellWeight::updateWM(const double eCut) const
+ItemWeight::addTracks(const int cN,const double value)
+  /*!
+    Adds an average track contribution
+    \param cN :: cell number
+    \param value :: vlaue of weight
+  */
+{
+  ELog::RegMethod RegA("ItemWeight","addTracks");
+  std::map<int,CellItem>::iterator mc=Cells.find(cN);
+  if (mc==Cells.end())
+    Cells.emplace(cN,CellItem(value));
+  else
+    {
+      mc->second.weight+=value;
+      mc->second.number+=1.0;
+    }
+  return;
+}
+
+void
+ItemWeight::updateWM(const double eCut) const
   /*!
     Update WM
     \param eCut :: Energy cut [-ve to scale below ] 
   */
 {
-  ELog::RegMethod RegA("CellWeight","updateWM");
+  ELog::RegMethod RegA("ItemWeight","updateWM");
 
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();  
@@ -116,7 +149,7 @@ CellWeight::updateWM(const double eCut) const
   double minW(1e38);
   double aveW(0.0);
   int cnt(0);
-  for(const CMapTYPE::value_type& cv : Cells)
+  for(const std::map<int,CellItem>::value_type& cv : Cells)
     {
       const double W=(exp(-cv.second.weight*sigmaScale*scaleFactor));
       if (W>maxW) maxW=W;
@@ -129,7 +162,7 @@ CellWeight::updateWM(const double eCut) const
   const double factor=(minW>minWeight) ?
     log(minWeight)/log(minW) : 1.0;
 
-  for(const CMapTYPE::value_type& cv : Cells)
+  for(const std::map<int,CellItem>::value_type& cv : Cells)
     {
       const double W=(exp(-cv.second.weight*sigmaScale*scaleFactor*factor));
       for(size_t i=0;i<EVec.size();i++)
@@ -144,5 +177,18 @@ CellWeight::updateWM(const double eCut) const
   return;
 }
   
+
+void
+ItemWeight::write(std::ostream& OX) const
+  /*!
+    Write out the track
+    \param OX :: Output stream
+  */
+{
+  for(const std::map<long int,CellItem>::value_type& cv : Cells)
+    OX<<cv.first<<" "<<cv.second.weight<<" "<<cv.second.number<<std::endl;
+  return;
+} 
+
   
 } // Namespace WeightSystem
