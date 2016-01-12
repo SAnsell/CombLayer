@@ -28,9 +28,9 @@ namespace essSystem
 {
 /*!
   \class BeRefInnerStructure
-  \author K. Batkov
-  \version 1.0
-  \date Aug 2015
+  \author Konstantin Batkov
+  \version 2.0
+  \date Jan 2016
   \brief Inner structure of Be reflector (engineering details)
 */
 
@@ -52,7 +52,7 @@ class BeRefInnerStructure : public attachSystem::ContainedComp,
   void createSurfaces(const attachSystem::FixedComp&);
   void createObjects(Simulation&, const attachSystem::FixedComp&);
   void createLinks();
-  void layerProcess(Simulation&, const attachSystem::FixedComp&);
+  void layerProcess(Simulation&, const attachSystem::FixedComp&, const std::string&, const int&, const int&);
 
  public:
 

@@ -72,7 +72,6 @@
 // for layerProcess:
 #include "surfDIter.h"
 #include "surfDivide.h"
-//#include "SurInter.h"
 #include "surfDBase.h"
 #include "mergeTemplate.h"
 
@@ -188,6 +187,10 @@ namespace essSystem
   */
   {
     ELog::RegMethod RegA("BeRefInnerStructure","createObjects");
+
+    layerProcess(System, Reflector, "topBe", 10, 7);
+    layerProcess(System, Reflector, "lowBe", 9, 6);
+
     return;
   }
 
@@ -204,37 +207,35 @@ namespace essSystem
   }
 
   void
-  BeRefInnerStructure::layerProcess(Simulation& System, const attachSystem::FixedComp& Reflector)
+  BeRefInnerStructure::layerProcess(Simulation& System, const attachSystem::FixedComp& Reflector, const std::string& cellName, const int& lpS, const int& lsS)
   /*!
     Processes the splitting of the surfaces into a multilayer system
     \param System :: Simulation to work on
+    \param Reflector :: FC object
+    \param cellName :: top or bottom Be cell
+    \param lpS :: link pont of primary surface
+    \param lsS :: link point of secondary surface
   */
   {
     ELog::RegMethod RegA("BeRefInnerStructure","layerProcess");
     if (nLayers>1)
       {
+	const int pS = Reflector.getLinkSurf(lpS);
+	const int sS = Reflector.getLinkSurf(lsS);
 
 	const attachSystem::CellMap* CM = dynamic_cast<const attachSystem::CellMap*>(&Reflector);
-	MonteCarlo::Object* LowBeObj(0);
-	MonteCarlo::Object* TopBeObj(0);
-	int lowBeCell(0);
-	int topBeCell(0);
+	MonteCarlo::Object* beObj(0);
+	int beCell(0);
 
 	if (CM)
 	  {
-	    lowBeCell=CM->getCell("lowBe");
-	    LowBeObj=System.findQhull(lowBeCell);
-
-	    topBeCell=CM->getCell("topBe");
-	    TopBeObj=System.findQhull(topBeCell);
+	    beCell=CM->getCell(cellName);
+	    beObj=System.findQhull(beCell);
 	  }
-	if (!LowBeObj)
-	  throw ColErr::InContainerError<int>(topBeCell,"Reflector lowBe cell not found");
-	if (!TopBeObj)
-	  throw ColErr::InContainerError<int>(topBeCell,"Reflector topBe cell not found");
 
+	if (!beObj)
+	  throw ColErr::InContainerError<int>(beCell,"Reflector topBe cell not found");
 
-	std::string OutA, OutB;
 	ModelSupport::surfDivide DA;
 	for(size_t i=1;i<nLayers;i++)
 	  {
@@ -243,23 +244,24 @@ namespace essSystem
 	  }
 	DA.addMaterial(mat.back());
 
-	DA.setCellN(topBeCell);
+	DA.setCellN(beCell);
 	DA.setOutNum(cellIndex, insIndex+10000);
 
 	ModelSupport::mergeTemplate<Geometry::Plane,
 				    Geometry::Plane> surroundRule;
-	const int pS = Reflector.getLinkSurf(10); // primary surface
-	const int sS = Reflector.getLinkSurf(7); // secondary surface
+
 	surroundRule.setSurfPair(SMap.realSurf(pS),
 				 SMap.realSurf(sS));
-	OutA = " " + std::to_string(pS);
-	OutB = " -" + std::to_string(sS);
-	//	ELog::EM << OutA << ";" << OutB << ELog::endDiag;
+
+	std::string OutA = Reflector.getLinkString(lpS);
+	std::string OutB = Reflector.getLinkComplement(lsS);
 
 	surroundRule.setInnerRule(OutA);
 	surroundRule.setOuterRule(OutB);
+
 	DA.addRule(&surroundRule);
 	DA.activeDivideTemplate(System);
+
 	cellIndex=DA.getCellNum();
       }
   }
@@ -281,7 +283,6 @@ namespace essSystem
     createSurfaces(FC);
     createObjects(System, FC);
     createLinks();
-    layerProcess(System, FC);
 
     insertObjects(System);       
     return;
