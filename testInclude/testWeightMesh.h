@@ -22,7 +22,10 @@
 #ifndef testWeightMesh_h
 #define testWeightMesh_h 
 
+namespace WeightSystem
+{
 class WeightMesh;
+}
 
 /*!
   \class testWeightMesh
@@ -39,6 +42,9 @@ class testWeightMesh
 private:
 
 
+  void createXYZ(WeightSystem::WeightMesh&,
+		 const std::string&,const std::string&,
+		 const std::string&) const;
   //Tests 
   int testPoint();
  

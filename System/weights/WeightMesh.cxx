@@ -177,15 +177,17 @@ WeightMesh::getCoordinate(const std::vector<double>& Vec,
     \return positions [Origin non - offset
    */
 {
-  size_t sum(0);
+  size_t offset(NF[0]);
   size_t I(0);
-  while(Index>sum)
+  while(Index>offset)
     {
-      sum+=NF[I];
+      offset+=NF[I];
       I++;
     }
-
-  return Vec[Index]+static_cast<double>(Index-sum)*
+  offset-=NF[I];
+         
+  
+  return Vec[I]+static_cast<double>(Index-offset)*
     (Vec[I+1]-Vec[I])/NF[I];
 }
   

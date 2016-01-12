@@ -110,7 +110,7 @@ testWeightMesh::applyTest(const int extra)
 }
 
 void
-testWeightMesh::createXYZ(WeightMesh& WMesh,
+testWeightMesh::createXYZ(WeightSystem::WeightMesh& WMesh,
                           const std::string& XVal,
                           const std::string& YVal,
                           const std::string& ZVal) const
@@ -140,12 +140,12 @@ testWeightMesh::createXYZ(WeightMesh& WMesh,
 	    bCnt[index].push_back(static_cast<size_t>(V));
 	  else
 	    boundaryVal[index].push_back(V);
+          i++;
 	}
     }
-
-  wwg.getGrid().setMesh(boundaryVal[0],bCnt[0],
-			boundaryVal[1],bCnt[1],
-			boundaryVal[2],bCnt[2]);
+  WMesh.setMesh(boundaryVal[0],bCnt[0],
+                boundaryVal[1],bCnt[1],
+                boundaryVal[2],bCnt[2]);
   return;
 }
 
@@ -159,17 +159,33 @@ testWeightMesh::testPoint()
   ELog::RegMethod RegA("testWeightMesh","testSum");
 
   typedef std::tuple<std::string,std::string,std::string,
-                     size_t,size_t,size_t,Geomtery::Vec3D> TTYPE;
+                     size_t,size_t,size_t,Geometry::Vec3D> TTYPE;
   std::vector<TTYPE> Tests=
     {
-      TTPYE{"-120 3 120.0","0 3 240.0","-120 3 120",
-            3,3,3,Geometry::Vec3D(0,0,0)}
+      TTYPE{"-120 3 120.0","0 3 240.0","-120 3 120",
+            1,1,2,Geometry::Vec3D(-40,80,40)}
     };
 
-  WeightMesh A;
+  WeightSystem::WeightMesh A;
 
-  std::vector
-  A.setMesh
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
+    {
+      createXYZ(A,std::get<0>(tc),std::get<1>(tc),std::get<2>(tc));
+      const size_t i(std::get<3>(tc)),j(std::get<4>(tc)),
+        k(std::get<5>(tc));
+      const Geometry::Vec3D Pt=A.point(i,j,k);
+      const Geometry::Vec3D Res=std::get<6>(tc);
+      
+      if (Pt.Distance(Res)>1e-5)
+        {
+          ELog::EM<<"Failed on test "<<cnt<<ELog::endDiag;
+          ELog::EM<<"Index "<<i<<":"<<j<<":"<<k<<ELog::endDiag;
+          ELog::EM<<"Point  "<<Pt<<ELog::endDiag;
+          ELog::EM<<"Expect "<<Res<<ELog::endDiag;
+          return -1;
+        }
+    }
   
   return 0;
 
