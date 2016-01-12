@@ -59,7 +59,7 @@ pipeVariables(FuncDataBase& Control)
   
   const int nRad = 2;
   const double invarPipeHeight = 30;
-  const double invarPipeLength = 10.5;
+  const double invarPipeLength = 12.5;
   const double AlPPt3X = 3.597;
   const double AlPPt3Y = 11.0;
   const double connectPipeLength = 2.0;
