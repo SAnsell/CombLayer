@@ -121,15 +121,16 @@ WWGWeight::updateWM(WWG& wwg,
     }
   aveW/=cnt;
   // Work on minW first:
-  const double factor=(minW>minWeight) ?
+  const double factor=(minW<minWeight) ?
     log(minWeight)/log(minW) : 1.0;
-
+  ELog::EM<<"Min W = "<<minW<<" "<<factor<<ELog::endDiag;
   const WeightMesh& WGrid=wwg.getGrid();
 
   const size_t NX=WGrid.getXSize();
   const size_t NY=WGrid.getYSize();
   const size_t NZ=WGrid.getZSize();
   long int cN(1);
+
   for(size_t i=0;i<NX;i++)
     for(size_t j=0;j<NY;j++)
       for(size_t k=0;k<NZ;k++)
@@ -138,8 +139,10 @@ WWGWeight::updateWM(WWG& wwg,
           if (cv==Cells.end())
             throw ColErr::InContainerError<long int>(cN,"Cells");
           
-          const double W=(exp(- cv->second.weight*sigmaScale*
-                              scaleFactor*factor));
+          double W=(exp(-cv->second.weight*sigmaScale*
+                        scaleFactor*factor));
+          if (W<minW) W=minW;
+                
           for(size_t i=0;i<EBin.size();i++)
             {
               if (eCut<-1e-10 && EBin[i] <= -eCut)
@@ -148,7 +151,8 @@ WWGWeight::updateWM(WWG& wwg,
                 DVec[i]=W;
             }
           /// SET WEIGHTS:
-          wwg.scaleMeshItem(cN,DVec);
+          wwg.scaleMeshItem(cN-1,DVec);
+          cN++;
         }
             
 

@@ -130,7 +130,7 @@ CellWeight::updateWM(const double eCut,
     }
   aveW/=cnt;
   // Work on minW first:
-  const double factor=(minW>minWeight) ?
+  const double factor=(minW<minWeight) ?
     log(minWeight)/log(minW) : 1.0;
 
   for(const CMapTYPE::value_type& cv : Cells)
@@ -149,4 +149,4 @@ CellWeight::updateWM(const double eCut,
 }
   
   
-} // Namespace WeightSystem
+} // namespace WeightSystem

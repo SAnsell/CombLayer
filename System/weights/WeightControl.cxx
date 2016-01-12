@@ -304,21 +304,20 @@ WeightControl::cTrack(const Simulation& System,
     \param CTrack :: Item Weight to add tracks to
   */
 {
-  ELog::RegMethod RegA("Weight","cTrack");
+  ELog::RegMethod RegA("WeightControl","cTrack");
   // SOURCE Point
 
   ModelSupport::ObjectTrackAct OTrack(initPt);
   std::vector<double> WVec;
 
   long int cN(index.empty() ? 1 : index.back());
-    
+  ELog::EM<<"Point size == "<<Pts.size()<<ELog::endDiag;
   for(size_t i=0;i<Pts.size();i++)
     {
       const long int unit(i>=index.size() ? cN++ : index[i]);
       std::vector<double> attnN;
-      ELog::EM<<"Point["<<i<<"] == "<<Pts[i]<<ELog::endDiag;
       OTrack.addUnit(System,unit,Pts[i]);
-      CTrack.addTracks(cN,OTrack.getAttnSum(unit));
+      CTrack.addTracks(unit,OTrack.getAttnSum(unit));
     } 
   return;
 }
@@ -329,9 +328,7 @@ WeightControl::calcWWGTrack(const Simulation& System,
   /*!
     Calculate a given track from source point outward
     \param System :: Simulation to use
-    \param wwg :: WWG to use [for mesh]
-    \param initPt :: point for outgoing track
-    \param eCut :: Energy cut [MeV]
+    \param initPt :: initial point for track
    */
 {
   ELog::RegMethod RegA("WeightControl","calcWWGTrack");
@@ -357,8 +354,6 @@ WeightControl::calcWWGTrack(const Simulation& System,
       for(size_t k=0;k<NZ;k++)
 	{
 	  Pts.push_back(WGrid.point(i,j,k));
-          ELog::EM<<"I == "<<i<<":"<<j<<":"<<k
-                  <<" == "<<Pts.back()<<ELog::endDiag;
 	  index.push_back(cN++);
 	}
 
