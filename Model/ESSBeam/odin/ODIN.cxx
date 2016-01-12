@@ -258,7 +258,7 @@ ODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
 			    GuideD->getKey("Guide0"),2);
 
   ChopperA->addInsertCell(PitA->getCell("Void"));
-  ChopperA->setCentreFlag(-3);  // -Z direction
+  ChopperA->setCentreFlag(3);  // -Z direction
   ChopperA->createAll(System,*PitA,0);
   
   GuideE->addInsertCell(voidCell);
@@ -284,7 +284,7 @@ ODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
   PitB->createAll(System,GuideE->getKey("Guide0"),2,GuideCut.display());
 
   ChopperB->addInsertCell(PitB->getCell("Void"));
-  ChopperB->setCentreFlag(-3);  // -Z direction
+  ChopperB->setCentreFlag(3);  // -Z direction
   ChopperB->createAll(System,*PitB,0);
 
   ELog::EM<<"PitB == "<<PitB->getCentre()

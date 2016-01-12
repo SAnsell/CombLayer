@@ -48,7 +48,7 @@
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
-#include "variableSetup.h"
+#include "essVariables.h"
 
 namespace setVariable
 {
@@ -72,7 +72,27 @@ shortDREAMvariables(FuncDataBase& Control)
   Control.addVariable("shortDreamVacDYStep",165.0);
   
   return;
+}
 
+void
+shortDREAM2variables(FuncDataBase& Control)
+  /*!
+    Create all the beamline variables for vor
+    \param Control :: DataBase
+  */
+{
+  ELog::RegMethod RegA("SHORTDREAMvariables[F]","SHORTDREAM2variables");
+
+
+  Control.addVariable("shortDream2FDLength",150.0);       
+  Control.addVariable("shortDream2PipeDLength",40.0);
+  Control.addVariable("shortDream2FELength",140.0);      //
+  Control.addParse<double>("shortDream2FD0Length","shortDream2FDLength");
+  Control.addParse<double>("shortDream2FE0Length","shortDream2FELength");
+  Control.addVariable("shortDream2VacCYStep",153.0);  // -60
+  Control.addVariable("shortDream2VacDYStep",165.0);
+  
+  return;
 }
  
 }  // NAMESPACE setVariable
