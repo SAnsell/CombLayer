@@ -111,21 +111,17 @@ class makeESS
   std::shared_ptr<PreModWing> TopCapWing; ///< Top cap premoderator wing
 
   /// Pipes
-  std::shared_ptr<constructSystem::SupplyPipe> TopSupplyLeftAl, TopSupplyRightAl;
-  std::shared_ptr<constructSystem::SupplyPipe> TopSupplyLeftConnect, TopSupplyRightConnect;
-  std::shared_ptr<constructSystem::SupplyPipe> TopSupplyLeftInvar, TopSupplyRightInvar;
+  std::shared_ptr<constructSystem::SupplyPipe> TopSupplyLeftAl,  TopSupplyLeftConnect,  TopSupplyLeftInvar;
+  std::shared_ptr<constructSystem::SupplyPipe> TopReturnLeftAl,  TopReturnLeftConnect,  TopReturnLeftInvar;
 
-  std::shared_ptr<constructSystem::SupplyPipe> TopReturnLeftAl, TopReturnRightAl;
-  std::shared_ptr<constructSystem::SupplyPipe> TopReturnLeftConnect, TopReturnRightConnect;
-  std::shared_ptr<constructSystem::SupplyPipe> TopReturnLeftInvar, TopReturnRightInvar;
+  std::shared_ptr<constructSystem::SupplyPipe> TopSupplyRightAl, TopSupplyRightConnect, TopSupplyRightInvar;
+  std::shared_ptr<constructSystem::SupplyPipe> TopReturnRightAl, TopReturnRightConnect, TopReturnRightInvar;
 
-  std::shared_ptr<constructSystem::SupplyPipe> LowSupplyLeftAl, LowSupplyRightAl;
-  std::shared_ptr<constructSystem::SupplyPipe> LowSupplyLeftConnect, LowSupplyRightConnect;
-  std::shared_ptr<constructSystem::SupplyPipe> LowSupplyLeftInvar, LowSupplyRightInvar;
+  std::shared_ptr<constructSystem::SupplyPipe> LowSupplyLeftAl,  LowSupplyLeftConnect,  LowSupplyLeftInvar;
+  std::shared_ptr<constructSystem::SupplyPipe> LowReturnLeftAl,  LowReturnLeftConnect,  LowReturnLeftInvar;
 
-  std::shared_ptr<constructSystem::SupplyPipe> LowReturnLeftAl, LowReturnRightAl;
-  std::shared_ptr<constructSystem::SupplyPipe> LowReturnLeftConnect, LowReturnRightConnect;
-  std::shared_ptr<constructSystem::SupplyPipe> LowReturnLeftInvar, LowReturnRightInvar;
+  std::shared_ptr<constructSystem::SupplyPipe> LowSupplyRightAl, LowSupplyRightConnect, LowSupplyRightInvar;
+  std::shared_ptr<constructSystem::SupplyPipe> LowReturnRightAl, LowReturnRightConnect, LowReturnRightInvar;
 
   std::shared_ptr<BulkModule> Bulk;      ///< Main bulk module
   std::shared_ptr<moderatorSystem::FlightLine> BulkLowAFL;  ///< Lower Mode FL
