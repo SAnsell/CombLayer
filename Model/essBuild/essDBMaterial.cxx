@@ -351,7 +351,7 @@ MObj.setMaterial(2660, "Invar36",
   // Beryllium
   // Reference: Material data compilation table
   MObj.setMaterial(4000, "Beryllium",
-                 " 04009.70C  1.0 ", "BE.10T", MLib);
+                 " 04009.70c  1.0 ", "BE.10T", MLib);
   MObj.setMXitem(4009, 70, 'c', "h", "model");
   MObj.setDensity(-1.85);
   MDB.resetMaterial(MObj);
