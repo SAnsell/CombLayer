@@ -242,14 +242,17 @@ PreModWing::createSurfaces()
 }
 
 void
-PreModWing::createObjects(Simulation& System, const attachSystem::FixedComp& Pre, const long int linkPoint, 
+PreModWing::createObjects(Simulation& System,
+			  const attachSystem::FixedComp& Pre, const long int preLP, 
 			  const attachSystem::FixedComp& Mod)
 
   /*!
     Create the disc component
     \param System :: Simulation to add results
     \param Mod :: butterfly moderator (to get it's side surface)
-    \param Pre :: attachment top/bottom point
+    \param Pre :: attachment top/bottom object
+    \param preLP :: link point of thae attachemt object
+    \param Mod :: Moderator
   */
 {
   ELog::RegMethod RegA("PreModWing","createObjects");
@@ -266,10 +269,11 @@ PreModWing::createObjects(Simulation& System, const attachSystem::FixedComp& Pre
     }
   if (!AmbientVoid)
     throw ColErr::InContainerError<int>
-      (ambientCell,"ButterflyModerator ambient void cell not found");
+      (ambientCell,"ButterflyModerator ambientVoid cell not found");
   
   const ButterflyModerator *BM = dynamic_cast<const ButterflyModerator*>(&Mod);
-  const std::string Exclude = BM->getSideSurface();//BM->getExcludeStr(); 
+  const std::string excludeBM = BM->getSideSurface();//BM->getExcludeStr(); 
+  const std::string excludeBMLeftRightWater = BM->getLeftRightWaterSideSurface();
 
   // BM outer cylinder side surface
   HeadRule HR;
@@ -278,33 +282,35 @@ PreModWing::createObjects(Simulation& System, const attachSystem::FixedComp& Pre
   const std::string BMouterCyl = HR.display();
 
   std::string Out;
-  HeadRule wingExclude;
 
   std::string PreString;
-  HR.procString(Pre.getLinkString(linkPoint));
+  HR.procString(Pre.getLinkString(preLP));
   HR.makeComplement();
   PreString = HR.display();
 
   Out=ModelSupport::getComposite(SMap,modIndex," -5 -7 ") + PreString;
-  wingExclude.procString(Out);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out+Exclude));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out+excludeBM));
 
-  Out=ModelSupport::getComposite(SMap,modIndex," 5 -6 -7 ") + PreString;
-  wingExclude.addUnion(Out);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Exclude));
+  Out=ModelSupport::getComposite(SMap,modIndex," 5 -6 -7 ");// + PreString;
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+excludeBM));
   
   Out=ModelSupport::getComposite(SMap,modIndex," 7 -8 ") + PreString;
-  wingExclude.addUnion(Out);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out+Exclude + BMouterCyl));
+  // Originally I excluded all moderator by +excludeBM string, but actually this particular cell
+  // only crosses its left+right water cells, so I use +BM->getLeftRightWaterSideSurface()
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,
+				   Out+excludeBMLeftRightWater+BMouterCyl));
 
-  Out=ModelSupport::getComposite(SMap,modIndex," 7 8 -9 ");
-  wingExclude.addUnion(Out);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Exclude + BMouterCyl + PreString)); // here
+  Out=ModelSupport::getComposite(SMap,modIndex," 7 8 -9 ") + PreString;
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,
+				   Out + excludeBMLeftRightWater + BMouterCyl)); // same trick with excludeBMLeftRightWater as in the previous cell
 
+  HeadRule wingExclude;
+  Out=ModelSupport::getComposite(SMap,modIndex," (-6 -7):(7 -9) ") + PreString;
+  wingExclude.procString(Out);
   wingExclude.makeComplement();
   AmbientVoid->addSurfString(wingExclude.display());
 
-  Out=ModelSupport::getComposite(SMap,modIndex," -9 ") + PreString+Exclude+BMouterCyl;
+  Out=ModelSupport::getComposite(SMap,modIndex," -9 ") + PreString+excludeBM+BMouterCyl;
   addOuterSurf(Out);
   return; 
 }
@@ -326,7 +332,7 @@ PreModWing::createLinks()
 
 void
 PreModWing::createAll(Simulation& System,
-		      const attachSystem::FixedComp& Pre, const long int linkPoint,
+		      const attachSystem::FixedComp& Pre, const long int preLP,
 		      const bool zRotate,
 		      const bool ts,
 		      const attachSystem::FixedComp& Mod)
@@ -334,7 +340,7 @@ PreModWing::createAll(Simulation& System,
     Extrenal build everything
     \param System :: Simulation
     \param Pre :: Attachment point
-    \param linkPoint :: z-surface of Pre
+    \param preLP :: z-surface of Pre
     \param zRotate :: true if must be flipped
     \param ts :: tilt side
     \param Mod :: Butterfly moderator
@@ -345,10 +351,10 @@ PreModWing::createAll(Simulation& System,
   tiltSide = ts;
 
   populate(System.getDataBase());
-  createUnitVector(Pre, linkPoint, zRotate);
+  createUnitVector(Pre, preLP, zRotate);
 
   createSurfaces();
-  createObjects(System, Pre, linkPoint, Mod);
+  createObjects(System, Pre, preLP, Mod);
   createLinks();
 
 

@@ -366,6 +366,21 @@ ButterflyModerator::createAll(Simulation& System,
     return HR.display();
   }
 
+  std::string
+  ButterflyModerator::getLeftRightWaterSideSurface() const
+  /*
+    Return left+right water side surface string
+    \todo // SA: Use union of link points as it is faster
+  */
+  {
+    std::string side("");
+    HeadRule HR;
+    HR.procString(LeftWater->getSideSurface());
+    HR.addUnion(RightWater->getSideSurface());
+    HR.makeComplement();
+    return HR.display();
+  }
+
   Geometry::Vec3D ButterflyModerator::getFocalPoint(int i) const
   /*
     Return focal point coordinates for collimator setup
