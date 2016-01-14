@@ -127,8 +127,8 @@ DBMaterial::initMaterial()
 
 
   MObj.setMaterial(1,"MachineTugnsten",
-		   "26000.55c 0.001773 28000.50c 0.003935 74182.24c 0.0165487 "
-		   "74183.24c 0.0089819772 74184.24c 0.0192722  74186.24c "
+		   "26000.55c 0.001773 28000.50c 0.003935 74182.70c 0.0165487 "
+		   "74183.70c 0.0089819772 74184.70c 0.0192722  74186.70c "
 		   " 0.018014274","",MLib);
   setMaterial(MObj);
   // Density --> 7.65g/cc
@@ -291,8 +291,8 @@ DBMaterial::initMaterial()
   setMaterial(MObj);
 // Material #38 Solid Pure Tungsten (0.063057)
   MObj.setMaterial(38,"Tungsten",
-		   "74182.24c 0.016871 74183.24c 0.00911077 "
-		   "74184.24c 0.019507618 74186.24c 0.018100573 ","",MLib);
+		   "74182.70c 0.016871 74183.70c 0.00911077 "
+		   "74184.70c 0.019507618 74186.70c 0.018100573 ","",MLib);
   setMaterial(MObj);
 
   // Material #39: Aluminum 2024
@@ -310,7 +310,7 @@ DBMaterial::initMaterial()
 
   // Material #41 Silicon
   MObj.setMaterial(41,"SiPowder",
-		   "14028.70c 0.0460848 14029.24c 0.00234 "
+		   "14028.70c 0.0460848 14029.70c 0.00234 "
 		   "14030.24c 0.0015403","",MLib);
   setMaterial(MObj);
 
@@ -365,7 +365,7 @@ DBMaterial::initMaterial()
   // Regular concrete at 2.339 g/cc [supposedly]
   MObj.setMaterial(49,"Concrete",
 		   "1001.70c  7.76555E-03 1002.70c  1.16501E-06 "
-		   "8016.70c  4.38499E-02 11023.60c 1.04778E-03 "
+		   "8016.70c  4.38499E-02 11023.70c 1.04778E-03 "
 		   "12000.60c 1.48662E-04 13027.24c 2.38815E-03 "
 		   "14028.70c 1.58026E-02 16032.60c 5.63433E-05 "
 		   "19000.60c 6.93104E-04 20000.60c 2.91501E-03 "
@@ -378,7 +378,7 @@ DBMaterial::initMaterial()
   MObj.setMaterial(50,"HDConcrete",
 		   "1001.70c  9.03819E-03 1002.70c  1.35593E-06 "
 		   "8016.70c  4.92287E-02 8017.60c  1.97389E-05 "
-		   "11023.60c 1.02944E-05 12000.60c 2.09352E-04 "
+		   "11023.70c 1.02944E-05 12000.60c 2.09352E-04 "
 		   "13027.24c 4.86813E-04 14028.70c 1.69797E-03 "
 		   "15031.24c 7.64087E-06 16000.60c 8.11907E-05 "
 		   "19000.60c 1.21062E-05 20000.60c 2.47130E-03 "
@@ -482,7 +482,7 @@ DBMaterial::initMaterial()
   // Regular concrete at 2.339/2 g/cc [supposedly]
   MObj.setMaterial(65,"HalfConcrete","1001.70c 3.88277E-03 "
 		   "1002.70c 0.582505E-06 "
-		   "8016.70c  2.19249E-02 11023.60c 0.523890E-03 "
+		   "8016.70c  2.19249E-02 11023.70c 0.523890E-03 "
 		   "12000.60c 0.74331E-04 13027.24c 1.194075E-03 "
 		   "14028.70c 0.79013E-02 16032.60c 2.817165E-05 "
 		   "19000.60c 3.46551E-04 20000.60c 1.457500E-03 "
@@ -543,7 +543,7 @@ DBMaterial::initMaterial()
 		   "20043.70c 3.787750e-06 20044.70c 5.852775e-05 "
 		   "20046.70c 1.122296e-07 20048.70c 5.246735e-06 "
 		   "11023.70c 6.423108e-03  8016.70c 4.307240e-02 "
-		   "14028.70c 1.708774e-02 14029.24c 8.676740e-04 "
+		   "14028.70c 1.708774e-02 14029.70c 8.676740e-04 "
 		   "14030.70c 5.719771e-04 ","",MLib);
   setMaterial(MObj);
 
@@ -679,15 +679,15 @@ DBMaterial::initMaterial()
 
   // Material #81 Silicon with no-bragg (20K)
   MObj.setMaterial(81,"Silicon20K","14028.70c 0.0460848 "
-		   "14029.24c 0.00234 14030.24c 0.0015403","si.81t",MLib);
+		   "14029.70c 0.00234 14030.24c 0.0015403","si.81t",MLib);
   setMaterial(MObj);
   // Material #82 Silicon with no-bragg (77K)
   MObj.setMaterial(82,"Silicon80K","14028.70c 0.0460848 "
-		   "14029.24c 0.00234 14030.24c 0.0015403","si.82t",MLib);
+		   "14029.70c 0.00234 14030.24c 0.0015403","si.82t",MLib);
   setMaterial(MObj);
   // Material #83 Silicon with no-bragg (300K)
   MObj.setMaterial(83,"Silicon300K","14028.70c 0.0460848 "
-		   "14029.24c 0.00234 14030.24c 0.0015403","si.83t",MLib);
+		   "14029.70c 0.00234 14030.24c 0.0015403","si.83t",MLib);
   setMaterial(MObj);
 
   // Material #84 Mercury

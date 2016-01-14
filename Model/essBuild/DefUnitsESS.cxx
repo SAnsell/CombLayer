@@ -126,7 +126,7 @@ setESSFull(defaultConfig& A)
       {"SHORTDREAM2","G4BLine1"},
       {"SHORTODIN","G4BLine7"},
       {"DREAM","G4BLine17"},
-      {"VOR","G4BLine2"},   // also 17  
+      {"VOR","G4BLine3"},   // also 17  
       {"LOKI","G4BLine5"},
       {"ODIN","G4BLine15"}
     };     
