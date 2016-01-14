@@ -632,25 +632,27 @@ makeESS::buildPreWings(Simulation& System)
 {
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
+
+  enum Side {bottom, top};
   
   TopPreWing = std::shared_ptr<PreModWing>(new PreModWing("TopPreWing"));
   OR.addObject(TopPreWing);
-  TopPreWing->createAll(System, *TopPreMod, 9, false, true, *TopMod);
+  TopPreWing->createAll(System, *TopPreMod, 9, false, top, *TopMod);
   attachSystem::addToInsertSurfCtrl(System, *TopPreMod, *TopPreWing);
 
   TopCapWing = std::shared_ptr<PreModWing>(new PreModWing("TopCapWing"));
   OR.addObject(TopCapWing);
-  TopCapWing->createAll(System, *TopCapMod, 10, false, false, *TopMod);
+  TopCapWing->createAll(System, *TopCapMod, 10, false, bottom, *TopMod);
   attachSystem::addToInsertSurfCtrl(System, *TopCapMod, *TopCapWing);
 
   LowPreWing = std::shared_ptr<PreModWing>(new PreModWing("LowPreWing"));
   OR.addObject(LowPreWing);
-  LowPreWing->createAll(System, *LowPreMod, 9, true, false, *LowMod);
+  LowPreWing->createAll(System, *LowPreMod, 9, true, bottom, *LowMod);
   attachSystem::addToInsertSurfCtrl(System, *LowPreMod, *LowPreWing);
 
   LowCapWing = std::shared_ptr<PreModWing>(new PreModWing("LowCapWing"));
   OR.addObject(LowCapWing);
-  LowCapWing->createAll(System, *LowCapMod, 10, true, true, *LowMod);
+  LowCapWing->createAll(System, *LowCapMod, 10, true, top, *LowMod);
   attachSystem::addToInsertSurfCtrl(System, *LowCapMod, *LowCapWing);
 }
 
