@@ -88,6 +88,14 @@ void addESSMaterial()
   MObj.setDensity(-1.0);
   MDB.resetMaterial(MObj);
 
+  // Mix of water and 4.7% vol Al as calculated by Marc (email from LZ 15.01.16)
+  MObj.setMaterial(147, "H2OAl47",
+		   " 1001.70c 0.647478328682 "
+		   " 13027.70c 0.0287825069767 "
+		   " 8016.70c 0.323739164341 ", "lwtr.10t al27.12t", MLib);
+  MObj.setDensity(-1.0799);
+  MDB.resetMaterial(MObj);
+
   // Natural Helium. Density -1.74E-4 g/cm3
   // Temperature: 300 K
   // Reference: Material Data Compilation 21 Sep 2015
