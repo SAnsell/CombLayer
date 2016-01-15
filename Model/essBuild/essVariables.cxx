@@ -955,7 +955,11 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowFlyZStep",0.0);
   Control.addVariable("LowFlyXYangle",90.0);
   Control.addVariable("LowFlyZangle",180.0);
-  Control.addVariable("LowFlyTotalHeight",7.8); // to center it at -15.3 as in ESS-0032315.3 (mind 4 mm cold Al thick)
+  Control.addVariable("LowFlyTotalHeight",8.1); // to center it at -15.3 as in ESS-0032315.3 (mind 4 mm cold Al thick)
+
+  Control.addVariable("LowFlyWallMat","Aluminium");
+  Control.addVariable("LowFlyWallDepth",0.0);
+  Control.addVariable("LowFlyWallHeight",0.3);
   
   Control.addVariable("LowFlyLeftLobeXStep",1.0);  
   Control.addVariable("LowFlyLeftLobeYStep",0.0);  
@@ -1071,8 +1075,12 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopFlyZStep",0.0);
   Control.addVariable("TopFlyXYangle",90.0);
   Control.addVariable("TopFlyZangle",0.0);
-  Control.addVariable("TopFlyTotalHeight",4.6);
-  
+  Control.addVariable("TopFlyTotalHeight",4.9);
+
+  Control.addVariable("TopFlyWallMat","Aluminium");
+  Control.addVariable("TopFlyWallDepth",0.0);
+  Control.addVariable("TopFlyWallHeight",0.3);
+
   Control.addVariable("TopFlyLeftLobeXStep",1.0);  
   Control.addVariable("TopFlyLeftLobeYStep",0.0);  
 

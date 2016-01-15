@@ -59,7 +59,10 @@ class H2Wing :
   std::array<Geometry::Vec3D,3> Pts;    ///< Corner Points
   std::array<double,3> radius;  ///< corner radii
   double height;                ///< height of moderator cell
-  double totalHeight;           ///< total height modertoa
+  double totalHeight;           ///< total height moderator
+
+  double bfDepth;               ///< BF moderator lower wall thick
+  double bfHeight;              ///< BF moderator upper wall thick
   
   int modMat;                   ///< LH2
   double modTemp;               ///< LH2 temperature [K]
