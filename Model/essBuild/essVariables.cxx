@@ -1187,7 +1187,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowPreModHeight0",1.5);
   Control.addVariable("LowPreModDepth0",1.5);
   Control.addVariable("LowPreModRadius0",30.0);
-  Control.addVariable("LowPreModMat0","H2O");
+  Control.addVariable("LowPreModMat0","H2OAl47"); // email from LZ 15 Jan 2016
   Control.addVariable("LowPreModHeight1",0);
   Control.addVariable("LowPreModDepth1",0);
   Control.addVariable("LowPreModRadius1",0.3);
@@ -1213,7 +1213,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopPreModHeight0",1.5);
   Control.addVariable("TopPreModDepth0",1.5);
   Control.addVariable("TopPreModRadius0",30.0);
-  Control.addVariable("TopPreModMat0","H2O");
+  Control.addVariable("TopPreModMat0","H2OAl47"); // email from LZ 15 Jan 2016
   Control.addVariable("TopPreModHeight1",0);
   Control.addVariable("TopPreModDepth1",0);
   Control.addVariable("TopPreModRadius1",0.3);
