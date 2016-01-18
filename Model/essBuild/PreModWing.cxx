@@ -251,7 +251,7 @@ PreModWing::createObjects(Simulation& System,
     \param System :: Simulation to add results
     \param Mod :: butterfly moderator (to get it's side rule)
     \param Pre :: attachment top/bottom object
-    \param preLP :: link point of thae attachemt object
+    \param preLP :: link point of the attachemt object
     \param Mod :: Moderator
   */
 {
