@@ -62,7 +62,7 @@ class MidWaterDivider :
 
   double totalHeight;       ///< Total height of system
 
-  std::string sideSurface;      ///< Side surface
+  std::string sideRule;      ///< Side rule
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
@@ -86,7 +86,7 @@ class MidWaterDivider :
   virtual int getLayerSurf(const size_t,const size_t) const;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const H2Wing&,const H2Wing&);
-  inline const std::string getSideSurface() const { return sideSurface; }
+  inline const std::string getSideRule() const { return sideRule; }
 
 };
 

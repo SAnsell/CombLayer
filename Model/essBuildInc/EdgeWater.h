@@ -61,7 +61,7 @@ class EdgeWater :
   int wallMat;              ///< Wall material
   double modTemp;           ///< Moderator temperature
 
-  std::string sideSurface;      ///< Side surface
+  std::string sideRule;      ///< Side rule
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
@@ -84,7 +84,7 @@ class EdgeWater :
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const std::string&,const std::string&);
-  inline const std::string getSideSurface() const { return sideSurface; }
+  inline const std::string getSideRule() const { return sideRule; }
 };
 
 }

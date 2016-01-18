@@ -529,7 +529,7 @@ H2Wing::createObjects(Simulation& System)
 				     "-1 -2 -3 5 -6 (21:-7) (22:-8) (23:-9)");
   addOuterSurf(OutA);
 
-  sideSurface=ModelSupport::getComposite(SMap,triOffset,
+  sideRule=ModelSupport::getComposite(SMap,triOffset,
 				     "-1 -2 -3 (21:-7) (22:-8) (23:-9)");
 
   return;

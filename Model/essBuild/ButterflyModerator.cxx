@@ -210,9 +210,9 @@ ButterflyModerator::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("ButterflyModerator","createObjects");
   
-  const std::string sideSurf=getSideSurface(); // ContainedComp::getExclude();
+  const std::string sideRule=getSideRule(); // ContainedComp::getExclude();
 
-  HeadRule HR(sideSurf);
+  HeadRule HR(sideRule);
   HR.makeComplement();
 
   std::string Out;
@@ -230,7 +230,7 @@ ButterflyModerator::createObjects(Simulation& System)
     }
 
   Out=ModelSupport::getComposite(SMap,flyIndex," -7 5 -6 ");  
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+sideSurf));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+sideRule));
   setCell("ambientVoid", cellIndex-1);
 
   clearRules();
@@ -378,34 +378,34 @@ ButterflyModerator::createAll(Simulation& System,
 }
 
   std::string
-  ButterflyModerator::getSideSurface() const
+  ButterflyModerator::getSideRule() const
   /*
-    Return side surface string
+    Return side rule
     \todo // SA: Use union of link points as it is faster
   */
   {
     std::string side("");
     HeadRule HR;
-    HR.procString(LeftUnit->getSideSurface());
-    HR.addUnion(RightUnit->getSideSurface());
-    HR.addUnion(MidWater->getSideSurface());
-    HR.addUnion(LeftWater->getSideSurface());
-    HR.addUnion(RightWater->getSideSurface());
+    HR.procString(LeftUnit->getSideRule());
+    HR.addUnion(RightUnit->getSideRule());
+    HR.addUnion(MidWater->getSideRule());
+    HR.addUnion(LeftWater->getSideRule());
+    HR.addUnion(RightWater->getSideRule());
     HR.makeComplement();
     return HR.display();
   }
 
   std::string
-  ButterflyModerator::getLeftRightWaterSideSurface() const
+  ButterflyModerator::getLeftRightWaterSideRule() const
   /*
-    Return left+right water side surface string
+    Return left+right water side rule
     \todo // SA: Use union of link points as it is faster
   */
   {
     std::string side("");
     HeadRule HR;
-    HR.procString(LeftWater->getSideSurface());
-    HR.addUnion(RightWater->getSideSurface());
+    HR.procString(LeftWater->getSideRule());
+    HR.addUnion(RightWater->getSideRule());
     HR.makeComplement();
     return HR.display();
   }

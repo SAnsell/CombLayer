@@ -398,7 +398,7 @@ MidWaterDivider::createObjects(Simulation& System,
   HeadRule HR;
   HR.procString(ContainedComp::getExclude());
   HR.makeComplement();
-  sideSurface = HR.display();
+  sideRule = HR.display();
   return;
 }
 

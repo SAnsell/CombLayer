@@ -249,7 +249,7 @@ PreModWing::createObjects(Simulation& System,
   /*!
     Create the disc component
     \param System :: Simulation to add results
-    \param Mod :: butterfly moderator (to get it's side surface)
+    \param Mod :: butterfly moderator (to get it's side rule)
     \param Pre :: attachment top/bottom object
     \param preLP :: link point of thae attachemt object
     \param Mod :: Moderator
@@ -272,8 +272,8 @@ PreModWing::createObjects(Simulation& System,
       (ambientCell,"ButterflyModerator ambientVoid cell not found");
   
   const ButterflyModerator *BM = dynamic_cast<const ButterflyModerator*>(&Mod);
-  const std::string excludeBM = BM->getSideSurface();//BM->getExcludeStr(); 
-  const std::string excludeBMLeftRightWater = BM->getLeftRightWaterSideSurface();
+  const std::string excludeBM = BM->getSideRule();//BM->getExcludeStr(); 
+  const std::string excludeBMLeftRightWater = BM->getLeftRightWaterSideRule();
 
   // BM outer cylinder side surface
   HeadRule HR;
@@ -296,7 +296,7 @@ PreModWing::createObjects(Simulation& System,
   
   Out=ModelSupport::getComposite(SMap,modIndex," 7 -8 ") + PreString;
   // Originally I excluded all moderator by +excludeBM string, but actually this particular cell
-  // only crosses its left+right water cells, so I use +BM->getLeftRightWaterSideSurface()
+  // only crosses its left+right water cells, so I use +BM->getLeftRightWaterSideRule()
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,
 				   Out+excludeBMLeftRightWater+BMouterCyl));
 

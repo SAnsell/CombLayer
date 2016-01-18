@@ -68,8 +68,8 @@ class ButterflyModerator :
 		 const attachSystem::FixedComp*,
 		 const long int);
 
-  std::string getSideSurface() const;
-  std::string getLeftRightWaterSideSurface() const;
+  std::string getSideRule() const;
+  std::string getLeftRightWaterSideRule() const;
 
   Geometry::Vec3D getFocalPoint(int i) const;
   std::vector<Geometry::Vec3D> getFocalPoints() const;
