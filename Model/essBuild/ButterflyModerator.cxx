@@ -438,8 +438,9 @@ ButterflyModerator::createAll(Simulation& System,
     for (int i=0; i<10; i++)
       vec.push_back(MidWater->getLinkPt(i));
 
-    Geometry::Vec3D zmin(0, 0, Origin[2]-LeftUnit->getHeight()/2.0);
-    Geometry::Vec3D zmax(0, 0, Origin[2]+LeftUnit->getHeight()/2.0);
+    Geometry::Vec3D zmin(0, 0, LeftUnit->getCentre()[2]-LeftUnit->getHeight()/2.0);
+    Geometry::Vec3D zmax(0, 0, LeftUnit->getCentre()[2]+LeftUnit->getHeight()/2.0);
+
 
     vec.push_back(zmin);
     vec.push_back(zmax);
