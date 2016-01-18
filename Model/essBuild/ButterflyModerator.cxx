@@ -227,6 +227,14 @@ ButterflyModerator::createObjects(Simulation& System)
     {
       Out=ModelSupport::getComposite(SMap,flyIndex," -7 16 -6 ");  
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+HR.display()));
+      // otherwise split complicated cell by parts:
+      /*      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+LeftWater->getSideRule()));
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+RightWater->getSideRule()));
+      HeadRule bfHR;
+      bfHR.procString(LeftUnit->getSideRule());
+      bfHR.addUnion(RightUnit->getSideRule());
+      bfHR.addUnion(MidWater->getSideRule());
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+bfHR.display()));*/
     }
 
   Out=ModelSupport::getComposite(SMap,flyIndex," -7 5 -6 ");  
