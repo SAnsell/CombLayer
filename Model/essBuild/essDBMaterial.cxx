@@ -67,15 +67,15 @@ void addESSMaterial()
   MonteCarlo::Material MObj;
   // ESS materials
 
-  MObj.setMaterial(1001,"HPARA"," 1001.70c 1.0 ","hpara.10t", MLib);
+  MObj.setMaterial(101,"HPARA"," 1001.70c 1.0 ","hpara.10t", MLib);
   MObj.setDensity(-7.0e-2);
   MDB.resetMaterial(MObj);
   
-  MObj.setMaterial(1002,"HORTHO"," 1004.70c 1.0 ","hortho.10t", MLib);
+  MObj.setMaterial(102,"HORTHO"," 1004.70c 1.0 ","hortho.10t", MLib);
   MObj.setDensity(-7.0e-2);
   MDB.resetMaterial(MObj);
 
-  MObj.setMaterial(1003, "LH05ortho", " 1001.70c 99.5 "
+  MObj.setMaterial(103, "LH05ortho", " 1001.70c 99.5 "
                    "1004.70c 0.5 ","hpara.10t hortho.10t", MLib);
   MObj.setDensity(-7.0e-2*(0.07/0.0689677));
   // 0.07/0.0689677 because CL for some reason changes the density !!! todo !!!
