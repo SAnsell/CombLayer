@@ -53,14 +53,6 @@
 
 namespace setVariable
 {
-  void EssBeamLinesVariables(FuncDataBase&);
-  void EssBunkerVariables(FuncDataBase&);
-  void EssReflectorVariables(FuncDataBase&);
-  void EssSANSVariables(FuncDataBase&);
-  void EssButterflyModerator(FuncDataBase&);
-  void ESSWheel(FuncDataBase&);
-  void F5Variables(FuncDataBase&);
-
 
 void
 EssVariables(FuncDataBase& Control)
@@ -126,9 +118,6 @@ EssVariables(FuncDataBase& Control)
 
   // low mod return pipe
 
-  pipeVariables(Control);
-  
-  
   Control.addVariable("LReturnNSegIn",1);
   Control.addVariable("LReturnPPt0",Geometry::Vec3D(0,0,0));
   Control.addVariable("LReturnPPt1",Geometry::Vec3D(0,30,0));
@@ -449,8 +438,6 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("TopAFlightAngleXY2", 60.0);  // Angle out
   Control.addVariable("TopAFlightXYangle", 180.0);
   Control.addVariable("TopAFlightZangle", 0.0);
-  ELog::EM << "TopAFlightAngleZTop must be 1.3 but we use 1.1 - otherwise it cuts the tharget wheel" << ELog::endCrit;
-
   Control.addVariable("TopAFlightAngleZTop", 1.1);  // Step down angle !!! 1.455 is too much - fight line cuts the Bilbao target wheel ESS-0032315.3
   Control.addVariable("TopAFlightAngleZBase", 1.33); // Step up angle ESS-0032315.3
   //  Control.Parse("TopFlyTotalHeight");
@@ -484,9 +471,9 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("BeRefZStep",0.0);
   Control.addVariable("BeRefXYangle",0.0); 
   Control.addVariable("BeRefZangle",0.0);
-  Control.addVariable("BeRefRadius",35);
-  Control.addVariable("BeRefHeight",74.6); // 20 cm height of Be WITH THE GIVEN HEIGHTS OF CUP MODERATORS AND TARGET-MODERATOR DISTANCES
-  Control.addVariable("BeRefWallThick",3); // measured by a liner from the Yannnick's BeRef slides 2015-11-11, page #3
+  Control.addVariable("BeRefRadius",34.3);
+  Control.addVariable("BeRefHeight",74.2);
+  Control.addVariable("BeRefWallThick",0.3);
   Control.addVariable("BeRefWallThickLow",0.0);
   Control.addVariable("BeRefTargetSepThick",13.0);
   Control.addVariable("BeRefLowVoidThick",2.3);
@@ -495,7 +482,7 @@ EssVariables(FuncDataBase& Control)
   //  Control.addVariable("BeRefRefMat","Be300K");
 
 
-  Control.addVariable("BeRefWallMat","SS316L"); // Marc said 12 Jan 2016
+  Control.addVariable("BeRefWallMat","Aluminium");
   Control.addVariable("BeRefTargSepMat","Void");
 
   ///< TODO : Fix double variable dependency !!!
@@ -509,20 +496,6 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("BeRefInnerStructureBeMat", "Be10H2O");
   Control.addVariable("BeRefInnerStructureBeWallThick", 0.3);
   Control.addVariable("BeRefInnerStructureBeWallMat", "Aluminium");
-
-  Control.addVariable("BeRefInnerStructureNLayers", 6);
-  Control.addVariable("BeRefInnerStructureBaseLen1", (20-1.5*3)/3); // 20 is total Be height, 1.5 is pipe diameter
-  Control.addVariable("BeRefInnerStructureBaseLen2", 1.5);
-  Control.addVariable("BeRefInnerStructureBaseLen3", (20-1.5*3)/3);
-  Control.addVariable("BeRefInnerStructureBaseLen4", 1.5);
-  Control.addVariable("BeRefInnerStructureBaseLen5", (20-1.5*3)/3);
-  Control.addVariable("BeRefInnerStructureMat0", "Beryllium");
-  Control.addVariable("BeRefInnerStructureMat1", "Be30H2O");
-  Control.addVariable("BeRefInnerStructureMat2", "Beryllium");
-  Control.addVariable("BeRefInnerStructureMat3", "Be30H2O");
-  Control.addVariable("BeRefInnerStructureMat4", "Beryllium");
-  Control.addVariable("BeRefInnerStructureMat5", "Be30H2O");
-
 
   Control.addVariable("TopBeRefWaterDiscNLayers",2);
   Control.addVariable("TopBeRefWaterDiscHeight0",0.3);
@@ -680,6 +653,7 @@ EssVariables(FuncDataBase& Control)
   return;
 }
 
+  
 void
 EssReflectorVariables(FuncDataBase& Control)
   /*!
