@@ -88,7 +88,16 @@ void addESSMaterial()
   MObj.setDensity(-1.0);
   MDB.resetMaterial(MObj);
 
-  // Mix of water and 4.7% vol Al as calculated by Marc (email from LZ 15.01.16)
+  // Mix of water and 10% vol Be
+  MObj.setMaterial(141, "H2OBe10",
+		   " 04009.70c 0.12046753633 "
+                   " 1001.70c 0.58635497578 "
+                   " 8016.70c 0.29317748789 ", "lwtr.10t be.10t", MLib);
+  MObj.setMXitem(4009, 70, 'c', "h", "model");
+  MObj.setDensity(-1.085);
+  MDB.resetMaterial(MObj);
+
+  // Mix of water and 4.7% vol Al as calculated by Marc (email from LZ 15.01.16) - checked by AT
   MObj.setMaterial(147, "H2OAl47",
 		   " 1001.70c 0.647478328682 "
 		   " 13027.70c 0.0287825069767 "
