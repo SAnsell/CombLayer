@@ -43,6 +43,7 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
+#include "stringCombine.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
 #include "HeadRule.h"
@@ -384,18 +385,18 @@ objectRegister::getRenumberCell(const std::string& Name,
     \return Cell number
   */
 {
-  MTYPE::const_iterator mc;
+  // NOTE: renumber not always complete as zero cell objects not present
+  std::string FullName=Name;
   if (Index>=0)
-    {
-      std::ostringstream cx;
-      cx<<Name<<Index;
-      mc=renumMap.find(cx.str());
-    }
-  else
-    mc=renumMap.find(Name);
+    FullName+=StrFunc::makeString(Index);
+  MTYPE::const_iterator mc;
+  mc=renumMap.find(FullName);
+  
   if (mc!=renumMap.end())
     return mc->second.first;
-  return 0;
+  // maybe we have object but it is actually zero celled
+  mc=regionMap.find(FullName);
+  return (mc!=regionMap.end()) ? mc->second.first : 0;
 }
 
 int
@@ -521,8 +522,11 @@ objectRegister::getObjectRange(const std::string& objName) const
       const int BStart=OR.getRenumberCell(objName);
       const int BRange=OR.getRenumberRange(objName);
       if (BStart==0)
-	throw ColErr::InContainerError<std::string>
-	  (objName,"Object name not found");
+        throw ColErr::InContainerError<std::string>
+          (objName,"Object name not found");
+
+      if (BStart>BRange)
+        return std::vector<int>();
       std::vector<int> Out(static_cast<size_t>(1+BRange-BStart));
       std::iota(Out.begin(),Out.end(),BStart);
       return Out;

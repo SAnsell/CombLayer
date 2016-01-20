@@ -183,7 +183,7 @@ makeESSBL::build(Simulation& System,
   if (beamName=="ODIN")
     {
       // Odin beamline
-      ODIN OdinBL;
+      ODIN OdinBL("odin");
       OdinBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="SHORTODIN")
@@ -226,7 +226,6 @@ makeESSBL::build(Simulation& System,
     {
       // short sector dream
       DREAM dreamBL("shortDream");
-      //      shortDREAM dreamBL("shortDream");
       dreamBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="SHORTDREAM2")

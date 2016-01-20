@@ -430,16 +430,23 @@ WeightControl::procObject(const Simulation& System,
 
     
   const size_t nSet=IParam.setCnt("weightObject");
-
+  ELog::EM<<"Number of set == "<<nSet<<ELog::endDiag;
+  // default values:
+  procParam(IParam,"weightControl",0,0);
   for(size_t iSet=0;iSet<nSet;iSet++)
     {
+      
       const std::string Key=
 	IParam.getValue<std::string>("weightObject",iSet,0);
-      procParam(IParam,"weigthControl",iSet,1);
+      ELog::EM<<"I["<<iSet<<"]="<<Key<<ELog::endDiag;
+      // local values:
+      procParam(IParam,"weightObject",iSet,1);
 
+        
       objectList.insert(Key);
       const std::vector<int> objCells=OR.getObjectRange(Key);
-      
+      if (objCells.empty())
+        ELog::EM<<"Cell["<<Key<<"] empty on renumber"<<ELog::endWarn;
       if (sourceFlag)
 	calcCellTrack(System,sourcePt,objCells);
       if (tallyFlag)
@@ -489,7 +496,6 @@ WeightControl::scaleObject(const Simulation& System,
 	EW= (EW>eCut) ? 1.0/SW : 1.0;
       else
 	EW= (EW<-eCut) ? 1.0/SW : 1.0;
-      ELog::EM<<"EW == "<<EW<<ELog::endDiag;
     }
   std::vector<int> cellVec=OR.getObjectRange(objKey);
   for(const int cellN : cellVec)
@@ -554,11 +560,13 @@ WeightControl::findMax(const Simulation& System,
   double maxVal(0.0);
   int cellN(0);
   double M(1.0);
+  size_t foundCellCnt(0);
   for(const int CN : cellRange)
     {
       const MonteCarlo::Qhull* CellPtr=System.findQhull(CN);
       if (CellPtr && CellPtr->getMat())
 	{
+          foundCellCnt++;
 	  const std::vector<double> WVec=WF->getWeights(CN);
 	  if (!index && eCut>0.0)
 	    M= *std::max_element(WVec.begin()+eIndex,WVec.end());
@@ -573,7 +581,9 @@ WeightControl::findMax(const Simulation& System,
 	    }
 	}
     }
-  ELog::EM<<"Max Cell = "<<cellN<<" "<<maxVal<<ELog::endDiag;
+  
+  ELog::EM<<"Max Cell["<<objKey<<"] = "
+          <<cellN<<" "<<maxVal<<"=="<<foundCellCnt<<ELog::endDiag;
   
   return (cellN) ? maxVal : 1.0;
 }
