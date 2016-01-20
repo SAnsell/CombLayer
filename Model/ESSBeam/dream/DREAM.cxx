@@ -95,6 +95,7 @@ namespace essSystem
 
 DREAM::DREAM(const std::string& keyName) :
   attachSystem::CopiedComp("dream",keyName),
+  stopPoint(0),
   dreamAxis(new attachSystem::FixedComp(newName+"Axis",4)),
   FocusA(new beamlineSystem::GuideLine(newName+"FA")),
   VacBoxA(new constructSystem::VacuumBox(newName+"VacA")),

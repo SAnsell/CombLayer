@@ -213,7 +213,7 @@ makeESSBL::build(Simulation& System,
   else if (beamName=="VOR")
     {
       ELog::EM<<"Building "<<beamName<<ELog::endDiag;
-      VOR vorBL;
+      VOR vorBL("vor");
       vorBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="DREAM")
