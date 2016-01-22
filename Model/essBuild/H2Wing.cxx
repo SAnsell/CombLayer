@@ -690,6 +690,12 @@ H2Wing::createAll(Simulation& System,
 
   if (engActive)
     InnerComp->createAll(System,*this);
+
+  // target-moderator distance check
+  if ((fabs(Origin[2]-13.7)>Geometry::zeroTol) && // TopFly
+      (fabs(Origin[2]+15.3)>Geometry::zeroTol))   // LowFly
+    ELog::EM << "Target-moderator distance is wrong for " << keyName << ": " << Origin[2] << ELog::endErr;
+
   return;
 }
   
