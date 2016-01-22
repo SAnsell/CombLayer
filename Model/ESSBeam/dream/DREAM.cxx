@@ -321,7 +321,7 @@ DREAM::build(Simulation& System,
   FocusA->createAll(System,GItem.getKey("Beam"),-1,
 		    GItem.getKey("Beam"),-1);
 
-  if (stopPoint==1) return;                      // STOP At bunker edge
+  if (stopPoint==1) return;                      // STOP At monolith edge
   
   // First section out of monolyth
   VacBoxA->addInsertCell(bunkerObj.getCell("MainVoid"));

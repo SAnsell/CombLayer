@@ -255,10 +255,12 @@ VOR::build(Simulation& System,
 
   FocusB->addInsertCell(VPipeB->getCell("Void"));
   FocusB->addInsertCell(VacBoxA->getCells("Void"));
-  FocusB->addEndCut(bunkerObj.getSignedLinkString(-2));
+  if (stopPoint==2)
+    FocusB->addEndCut(bunkerObj.getSignedLinkString(1));
+  else
+    FocusB->addEndCut(bunkerObj.getSignedLinkString(-2));
   FocusB->createAll(System,DDisk->getKey("Beam"),2,
 		    DDisk->getKey("Beam"),2);
-
   if (stopPoint==2) return;
     
   // Make bunker insert

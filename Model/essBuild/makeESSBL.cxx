@@ -200,7 +200,7 @@ makeESSBL::build(Simulation& System,
   else if (beamName=="LOKI")
     {
       // LOKI beamline
-      LOKI LokiBL;
+      LOKI LokiBL("loki");
       LokiBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="NMX")
