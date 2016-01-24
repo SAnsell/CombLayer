@@ -189,7 +189,7 @@ makeESSBL::build(Simulation& System,
   else if (beamName=="SHORTODIN")
     {
       // Odin beamline
-      shortODIN OdinBL;
+      ODIN OdinBL("shortOdin");
       OdinBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="ESTIA")

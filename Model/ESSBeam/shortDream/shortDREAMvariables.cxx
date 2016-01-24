@@ -83,7 +83,6 @@ shortDREAM2variables(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("SHORTDREAMvariables[F]","SHORTDREAM2variables");
 
-
   Control.addVariable("shortDream2FDLength",150.0);       
   Control.addVariable("shortDream2PipeDLength",40.0);
   Control.addVariable("shortDream2FELength",140.0);      //
