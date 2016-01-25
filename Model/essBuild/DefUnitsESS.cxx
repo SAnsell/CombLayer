@@ -121,13 +121,20 @@ setESSFull(defaultConfig& A)
 
   const std::map<std::string,std::string> beamDef=
     {
-      {"NMX","G4BLine18"},
-      {"SHORTDREAM","G4BLine9"},
-      {"SHORTDREAM2","G4BLine1"},
-      {"SHORTODIN","G4BLine7"},
+      //      {"NMX","G4BLine18"},
+      //      {"SHORTDREAM","G4BLine9"},
+      //      {"SHORTDREAM2","G4BLine1"},
+      //      {"SHORTODIN","G4BLine7"},
+      //      {"DREAM","G4BLine17"},
+      //      {"VOR","G4BLine3"},   // also 17  
+      //      {"LOKI","G4BLine5"},
+      //      {"ODIN","G4BLine15"}
+      {"VOR","G4BLine1"},   // also 17
+      {"SHORTDREAM","G4BLine3"},
+      {"SHORTODIN","G4BLine5"},
+      {"LOKI","G4BLine7"},
+      {"SHORTDREAM2","G4BLine9"},
       {"DREAM","G4BLine17"},
-      {"VOR","G4BLine3"},   // also 17  
-      {"LOKI","G4BLine5"},
       {"ODIN","G4BLine15"}
     };     
   const std::set<std::string> beamFilled=
