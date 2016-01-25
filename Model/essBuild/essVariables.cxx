@@ -1256,14 +1256,14 @@ EssButterflyModerator(FuncDataBase& Control)
 
 
   Control.addVariable("TopCapWingMat", "H2OAl47");
-  Control.addVariable("TopCapWingThick", 0.45); // ESS-0032315.3
+  Control.addVariable("TopCapWingThick", 0.75); // ESS-0032315.3
   Control.addVariable("TopCapWingWallMat", "Aluminium");
   Control.addVariable("TopCapWingWallThick", 0.3);
   Control.addVariable("TopCapWingTiltAngle", 1.33); // ESS-0032315.3
   Control.addVariable("TopCapWingTiltRadius", 39.0/2); // = 19.5  ESS-0032315.3
 
   Control.addVariable("LowCapWingMat", "H2OAl47");
-  Control.addVariable("LowCapWingThick", 0.55);  // ESS-0032315.3
+  Control.addVariable("LowCapWingThick", 0.85);  // ESS-0032315.3
   Control.addVariable("LowCapWingWallMat", "Aluminium");
   Control.addVariable("LowCapWingWallThick", 0.3);
   Control.addVariable("LowCapWingTiltAngle", 0.9); // ESS-0032315.3
