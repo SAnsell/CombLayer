@@ -349,7 +349,8 @@ Bunker::createSurfaces()
   ModelSupport::buildPlane(SMap,bnkIndex+16,
 			   Origin+Z*(roofHeight+roofThick),Z);
 
-
+  setSurf("floorInner",SMap.realSurf(bnkIndex+5));
+  setSurf("roofInner",SMap.realSurf(bnkIndex+6));
   // CREATE Sector boundary lines
   // Note negative subtraction as moving +ve to -ve
 

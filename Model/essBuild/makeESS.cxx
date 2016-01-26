@@ -94,6 +94,7 @@
 #include "GuideBay.h"
 #include "DiskPreMod.h"
 #include "Bunker.h"
+#include "RoofPillars.h"
 #include "Curtain.h"
 
 #include "ConicModerator.h"
@@ -134,6 +135,8 @@ makeESS::makeESS() :
 
   ABunker(new Bunker("ABunker")),
   BBunker(new Bunker("BBunker")),
+  ABunkerPillars(new RoofPillars("ABunkerPillars")),
+  BBunkerPillars(new RoofPillars("BBunkerPillars")),
   TopCurtain(new Curtain("Curtain"))
   
  /*!
@@ -165,6 +168,8 @@ makeESS::makeESS() :
   OR.addObject(ShutterBayObj);
   OR.addObject(ABunker);
   OR.addObject(BBunker);
+  OR.addObject(ABunkerPillars);
+  OR.addObject(BBunkerPillars);
   OR.addObject(TopCurtain);
 }
 
@@ -353,6 +358,18 @@ void makeESS::buildF5Collimator(Simulation& System, size_t nF5)
   return;
 }
 
+void
+makeESS::buildPillars(Simulation& System)
+  /*!
+    Build the pillars in the bunker
+    \param System :: Simulation
+   */
+{
+  ELog::RegMethod RegA("makeESS","buildPillars");
+  ABunkerPillars->createAll(System,*ABunker);
+  return;
+}
+  
 void
 makeESS::optionSummary(Simulation& System)
   /*!
