@@ -67,6 +67,8 @@ void addESSMaterial()
   MonteCarlo::Material MObj;
   // ESS materials
 
+  // According to Fig. 7 in 10.1103/PhysRevB.91.180301, this cross section actually had 0.5% ortho-H,
+  // therefore using this material is the same as adding 0.5 ortho-H
   MObj.setMaterial(101,"HPARA"," 1001.70c 1.0 ","hpara.10t", MLib);
   MObj.setDensity(-7.0e-2);
   MDB.resetMaterial(MObj);

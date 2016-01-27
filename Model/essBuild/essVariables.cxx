@@ -1092,7 +1092,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopFlyLeftLobeRadius2",2.506);
   Control.addVariable("TopFlyLeftLobeRadius3",2.506);
 
-  Control.addVariable("TopFlyLeftLobeModMat","HPARA"); // email from LZ 27 Nov 2015
+  Control.addVariable("TopFlyLeftLobeModMat","HPARA"); // email from LZ 27 Nov 2015; actually it already contains 0.5% ortho-H (see material definition in essDBMaterials)
   Control.addVariable("TopFlyLeftLobeModTemp",20.0);
 
   Control.addVariable("TopFlyLeftLobeNLayers",4);
@@ -1136,7 +1136,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopFlyRightLobeRadius2",2.506);
   Control.addVariable("TopFlyRightLobeRadius3",2.506);
 
-  Control.addVariable("TopFlyRightLobeModMat","HPARA"); // email from LZ 27 Nov 2015
+  Control.addVariable("TopFlyRightLobeModMat","HPARA"); // email from LZ 27 Nov 2015; actually it already contains 0.5% ortho-H (see material definition in essDBMaterials)
   Control.addVariable("TopFlyRightLobeModTemp",20.0);
 
   Control.addVariable("TopFlyRightLobeNLayers",4);
