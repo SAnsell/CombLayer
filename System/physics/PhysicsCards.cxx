@@ -211,7 +211,6 @@ PhysicsCards::processCard(const std::string& Line)
   if(Line.empty())
     return 0;  
   
-  int extCell(0);
   std::string Comd=Line;
   StrFunc::stripComment(Comd);
   Comd=StrFunc::fullBlock(Comd);
@@ -821,6 +820,17 @@ PhysicsCards::setMode(std::string Particles)
   return;
 }
 
+void
+PhysicsCards::rotateMaster()
+  /*!
+    Apply the global rotation sytem
+    to the physics cards that need it.
+  */
+{
+  return;
+}
+
+  
 void
 PhysicsCards::setPrintNum(std::string Numbers) 
   /*!

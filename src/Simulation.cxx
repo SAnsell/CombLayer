@@ -2176,6 +2176,10 @@ Simulation::masterRotation()
   OTYPE::iterator oc;
   for(oc=OList.begin();oc!=OList.end();oc++)
     MR.applyFull(oc->second);
+
+  // Physics units [dxtrans and others]
+  PhysPtr->rotateMaster();
+
   
   // Source:
   SDef::Source& sdef=PhysPtr->getSDefCard();

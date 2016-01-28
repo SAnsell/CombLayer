@@ -411,7 +411,6 @@ class tolEqual
 };
 
 
-
 } // NAMESPACE mathSupport
 #endif
 

@@ -67,8 +67,7 @@ class RoofPillars : public attachSystem::FixedComp,
   RoofPillars(const RoofPillars&);
   RoofPillars& operator=(const RoofPillars&);
   virtual ~RoofPillars();
-
-
+  
   void setSimpleSurf(const int,const int);
   void createAll(Simulation&,const Bunker&);
 

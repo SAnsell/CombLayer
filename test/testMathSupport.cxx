@@ -41,6 +41,7 @@
 #include "mathSupport.h"
 #include "polySupport.h"
 #include "ClebschGordan.h"
+#include "permSort.h"
 
 #include "testFunc.h"
 #include "testMathSupport.h"
@@ -86,6 +87,7 @@ testMathSupport::applyTest(const int extra)
       &testMathSupport::testOrder,
       &testMathSupport::testPairCombine,
       &testMathSupport::testPairSort,
+      &testMathSupport::testPermSort,
       &testMathSupport::testPolInterp
     };
   const std::string TestName[]=
@@ -102,6 +104,7 @@ testMathSupport::applyTest(const int extra)
       "Order",
       "PairCombine",
       "PairSort",
+      "PermSort",
       "PolInterp"
     };
   
@@ -402,6 +405,39 @@ testMathSupport::testIndexSort()
   if (sumI!=45)
     return -2;
 
+  return 0;
+}
+
+int
+testMathSupport::testPermSort()
+  /*!
+    Simple test of the indexSort system
+    \return -ve on error 
+  */
+{
+  ELog::RegMethod RegA("testMathSupport","testIndexSort");
+  
+  MTRand Rand(123456L);
+
+  std::vector<double> V(30);
+  std::generate(V.begin(),V.end(),
+		std::bind<double(MTRand::*)()>(&MTRand::rand,Rand));
+
+
+  const std::vector<size_t> Index=
+    sortPermutation(V,
+		    [](const double& a,const double& b)
+		    { return (a<b); } );
+
+  //  sortPermuation(V,Index);
+  for(size_t i=1;i<V.size();i++)
+    {
+      if (V[i-1]>V[i])
+        {
+          ELog::EM<<"Failure at["<<i<<"] "<<V[Index[i]]<<ELog::endDebug;
+          return -1;
+        }
+    }
   return 0;
 }
 

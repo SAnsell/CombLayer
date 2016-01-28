@@ -121,6 +121,17 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("ABunkerLoadFile","ABunkerDef.xml");
   Control.addVariable("ABunkerOutFile","ABunker.xml");
 
+  // PILLARS:
+  
+  Control.addVariable("ABunkerPillarsRadius",8.0);
+  Control.addVariable("ABunkerPillarsMat","Stainless304");
+  Control.addVariable("ABunkerPillarsNRadius",1);
+  Control.addVariable("ABunkerPillarsNSector",5);
+  Control.addVariable("ABunkerPillarsR_0S_0",0.0);
+  Control.addVariable("ABunkerPillarsR_0S_1",10.0);
+  Control.addVariable("ABunkerPillarsR_0S_2",20.0);
+  Control.addVariable("ABunkerPillarsR_0S_3",30.0);
+  
   //
   // RIGHT BUNKER : B PART
   //

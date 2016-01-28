@@ -23,6 +23,7 @@
 #include <cmath>
 #include <complex>
 #include <vector>
+#include <map>
 #include <iterator>
 #include <algorithm>
 #include <numeric>
@@ -30,6 +31,7 @@
 
 #include "Exception.h"
 #include "doubleErr.h"
+#include "MapRange.h"
 #include "mathSupport.h"
 
 /*! 
@@ -296,6 +298,7 @@ norm(const std::vector<T>& Vec)
 			    )
 	      );
 }
+
 
 template<typename T,typename U>
 void
@@ -732,6 +735,9 @@ template void indexSort(const std::vector<int>&,std::vector<int>&);
 template void indexSort(const std::vector<std::string>&,std::vector<int>&);
 template void indexSort(const std::vector<double>&,std::vector<size_t>&);
 template void indexSort(const std::vector<int>&,std::vector<size_t>&);
+
+//template void indexSort(const std::vector<MapSupport::Range<int>>&,
+//                        std::vector<size_t>&);
 
 template double norm(const std::vector<double>&);
 

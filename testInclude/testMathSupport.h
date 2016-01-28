@@ -52,7 +52,8 @@ private:
   int testNormalDist();  
   int testOrder();
   int testPairCombine();   
-  int testPairSort();   
+  int testPairSort();
+  int testPermSort();
   int testPolInterp();   
   int testQuadratic();
 

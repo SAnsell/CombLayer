@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   essBuildInc/BeRef.h
  *
@@ -46,7 +46,8 @@ class BeRef : public attachSystem::ContainedComp,
   int cellIndex;                  ///< Cell index
 
   int engActive;                  ///< Engineering active flag
-  std::shared_ptr<BeRefInnerStructure> InnerComp;   ///< Inner components inside Reflector (eng detail)
+  /// Inner components inside Reflector (eng detail)
+  std::shared_ptr<BeRefInnerStructure> InnerComp;   
 
   double xStep;                   ///< X step
   double yStep;                   ///< Y step

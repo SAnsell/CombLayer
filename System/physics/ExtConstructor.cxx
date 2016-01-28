@@ -98,7 +98,7 @@ namespace physicsSystem
 ExtConstructor::ExtConstructor() 
   /// Constructor
 {}
-
+  
 bool
 ExtConstructor::procZone(std::vector<std::string>& StrItem)
   /*!
@@ -107,7 +107,7 @@ ExtConstructor::procZone(std::vector<std::string>& StrItem)
     \return true on success 
   */
 {
-  ELog::RegMethod RegA("ExtConstuctor","procZone");
+  ELog::RegMethod RegA("ExtConstructor","procZone");
 
   const size_t NS(StrItem.size());
   long int cut(0);

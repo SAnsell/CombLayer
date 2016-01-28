@@ -124,7 +124,7 @@ RoofPillars::populate(const FuncDataBase& Control)
           const std::string NSec=StrFunc::makeString(j);
           // degrees:
           const double angle=M_PI*Control.EvalVar<double>
-            (keyName+"Radius"+Num+"Sector"+NSec)/180.0;
+            (keyName+"R_"+Num+"S_"+NSec)/180.0;
           CentPoint.push_back(Geometry::Vec3D(cos(angle),sin(angle),0.0));
         }          
     }

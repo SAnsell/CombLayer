@@ -39,6 +39,8 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
+#include "BaseVisit.h"
+#include "BaseModVisit.h"
 #include "support.h"
 #include "stringCombine.h"
 #include "MapRange.h"
@@ -47,6 +49,12 @@
 #include "Vec3D.h"
 #include "Triple.h"
 #include "NRange.h"
+#include "Surface.h"
+#include "Quadratic.h"
+#include "Plane.h"
+#include "localRotate.h"
+#include "masterRotate.h"
+
 #include "DXTControl.h"
 
 namespace physicsSystem
@@ -106,8 +114,7 @@ DXTControl::clear()
   RadiiOuter.clear();
   return;
 }
-
-
+  
 void
 DXTControl::setUnit(const Geometry::Vec3D& Pt,
 		    const double RI,const double RO,
@@ -144,7 +151,7 @@ DXTControl::setDD(const double DK,const double DM)
 
   return;
 }
-    
+
 void
 DXTControl::write(std::ostream& OX) const
   /*!
@@ -155,11 +162,19 @@ DXTControl::write(std::ostream& OX) const
   */
 {
   ELog::RegMethod RegA("DXTControl","write");
+  const masterRotate& MR=masterRotate::Instance(); 
 
   std::ostringstream cx;
   cx<<"dxt:"<<particle<<" ";
   for(size_t i=0;i<Centres.size();i++)
-    cx<<Centres[i]<<" "<<RadiiOuter[i]<<" "<<RadiiInner[i];
+    {
+      if (rotateFlag[i])
+        cx<<MR.forceCalcRotate(Centres[i]);
+      else
+        cx<<Centres[i];
+      
+      cx<<" "<<RadiiOuter[i]<<" "<<RadiiInner[i];
+    }
   StrFunc::writeMCNPX(cx.str(),OX);
 
   cx.str("");

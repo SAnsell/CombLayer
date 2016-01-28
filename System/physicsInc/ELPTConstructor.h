@@ -1,7 +1,7 @@
 /********************************************************************* 
-  CombLayer : MCNP(X) Input builder
+  Comb-Layer : MCNP(X) Input builder
  
- * File:   weightsInc/ImportControl.h
+ * File:   physicsInc/ELPTConstructor.h
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -19,30 +19,50 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef WeightSystem_ImportControl_h
-#define WeightSystem_ImportControl_h
+#ifndef physicsSystem_ELPTConstructor_h
+#define physicsSystem_ELPTConstructor_h
 
-///\file 
-
-namespace mainSystem
+namespace attachSystem
 {
-  class inputParam;
+  class FixedComp;
 }
+
 
 class Simulation;
 
-namespace WeightSystem
-{ 
-  void zeroImp(Simulation&,const int,const int);
-  void simulationImp(Simulation&,const mainSystem::inputParam&);
-  void ExtField(Simulation&,const mainSystem::inputParam&);
-  void EnergyCellCut(Simulation&,const mainSystem::inputParam&);
-  void DXT(Simulation&,const mainSystem::inputParam&);
-  void PWT(Simulation&,const mainSystem::inputParam&);
-  void SBias(Simulation&,const mainSystem::inputParam&);
-  void removePhysImp(Simulation&,const std::string&);
-}
+namespace physicsSystem
+{
+  class ExtControl;
+  
+/*!
+  \class ELPTConstructor
+  \version 1.0
+  \author S. Ansell
+  \date February 2016
+  \brief Processes input to produce ELPT energy cut card
 
+*/
+
+class ELPTConstructor 
+{
+ private:
+
+  ZoneUnit<double> ZUnits;
+  
+  void writeHelp(std::ostream&) const;
+    
+ public:
+
+  ELPTConstructor();
+  ELPTConstructor(const ELPTConstructor&);
+  ELPTConstructor& operator=(const ELPTConstructor&);
+  ~ELPTConstructor() {}  ///< Destructor
+
+  void processUnit(Simulation&,const mainSystem::inputParam&,
+		   const size_t);
+};
+
+}
 
 #endif
  
