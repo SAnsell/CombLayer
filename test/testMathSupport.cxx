@@ -41,6 +41,7 @@
 #include "mathSupport.h"
 #include "polySupport.h"
 #include "ClebschGordan.h"
+#include "MapRange.h"
 #include "permSort.h"
 
 #include "testFunc.h"
@@ -425,8 +426,7 @@ testMathSupport::testPermSort()
 
 
   const std::vector<size_t> Index=
-    sortPermutation(V,
-		    [](const double& a,const double& b)
+    sortPermutation(V,[](const double& a,const double& b)
 		    { return (a<b); } );
 
   //  sortPermuation(V,Index);
