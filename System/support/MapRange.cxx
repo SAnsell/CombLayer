@@ -10,6 +10,19 @@ namespace MapSupport
 {
 
 template<typename T>
+std::ostream&
+operator<<(std::ostream& OX,const Range<T>& A)
+  /*!
+    Standard stream operator
+    \param OX :: output stream
+    \param A :: Range item
+   */
+{
+  A.write(OX);
+  return OX;
+}
+
+template<typename T>
 Range<T>::Range(const T& V) :
   low(V),high(V)
   /*!
@@ -65,10 +78,22 @@ Range<T>::combine(const Range<T>& A)
   return *this;
 }
 
+template<typename T>
+void
+Range<T>::write(std::ostream& OX) const
+  /*!
+    Output function
+    \param OX :: Output stream
+   */
+{
+  OX<<low<<" "<<high;
+  return;
+}
 
-/// \cond TEMPLATE
+/// \cond TEMPLATE 
 
 template class Range<int>;
+template std::ostream& operator<<(std::ostream&,const Range<int>&);
 
 /// \endcond TEMPLATE
 

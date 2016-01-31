@@ -23,6 +23,7 @@
 #include <iomanip>
 #include <fstream>
 #include <cmath>
+#include <utility>
 #include <string>
 #include <vector>
 #include <complex>
@@ -416,25 +417,25 @@ testMathSupport::testPermSort()
     \return -ve on error 
   */
 {
-  ELog::RegMethod RegA("testMathSupport","testIndexSort");
+  ELog::RegMethod RegA("testMathSupport","testPermSort");
   
   MTRand Rand(123456L);
 
   std::vector<double> V(30);
   std::generate(V.begin(),V.end(),
-		std::bind<double(MTRand::*)()>(&MTRand::rand,Rand));
-
-
-  const std::vector<size_t> Index=
-    sortPermutation(V,[](const double& a,const double& b)
-		    { return (a<b); } );
-
-  //  sortPermuation(V,Index);
+  		std::bind<double(MTRand::*)()>(&MTRand::rand,Rand));
+  
+  std::vector<size_t> Index=
+    mathSupport::sortPermutation(V,[](const double& a,
+                                      const double& b)
+                                 { return (a<b); } );
+  mathSupport::applyPermutation(V,Index);
+  
   for(size_t i=1;i<V.size();i++)
     {
       if (V[i-1]>V[i])
         {
-          ELog::EM<<"Failure at["<<i<<"] "<<V[Index[i]]<<ELog::endDebug;
+          ELog::EM<<"Item["<<i<<"] "<<V[i-1]<<" "<<V[i]<<ELog::endDebug;
           return -1;
         }
     }

@@ -291,12 +291,10 @@ norm(const std::vector<T>& Vec)
   \returns \f$ \sqrt{V.V} \f$
 */
 {
-  return sqrt(inner_product(Vec.begin(),Vec.end(),Vec.begin(),
-			    0.0,
-			    std::plus<double>(), 
-			    std::multiplies<double>()
-			    )
-	      );
+  T Sum(0);
+  for(const T& A : Vec)
+    Sum+= A*A;
+  return sqrt(Sum);
 }
 
 

@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   testInclude/testFunc.h
  *
@@ -56,6 +56,7 @@ public:
   static void regSector(const std::string&);
   static void regTest(const std::string&);
 
+  
   void setGroup(const std::string&);
   void setSector(const std::string&);
   void setTest(const std::string&);
@@ -68,8 +69,11 @@ public:
   void writeList(std::ostream&,const size_t,const std::string[]) const;
   static void bracketTest(const std::string&,
 			  std::ostream&);
-  
+
+  static void writeTests(const std::vector<std::string>&);
 };
+
+// ADDITION
 
 #endif
 

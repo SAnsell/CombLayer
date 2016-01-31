@@ -72,6 +72,7 @@
 #include "LinkSupport.h"
 #include "Simulation.h"
 #include "inputParam.h"
+#include "permSort.h"
 #include "ZoneUnit.h" 
 
 
@@ -83,6 +84,19 @@ ZoneUnit<T>::ZoneUnit()
   /// Constructor
 {}
 
+template<typename T>
+size_t
+ZoneUnit<T>::findItem(const int cellN) const
+  /*!
+    Returns the index + 1 if cellN is found
+    \param cellN :: Number to check
+    \return 0 if nothing found / index+1 
+   */
+{
+  
+  return 0;
+}
+  
 template<typename T>
 bool
 ZoneUnit<T>::procZone(std::vector<std::string>& StrItem)
@@ -102,12 +116,13 @@ ZoneUnit<T>::procZone(std::vector<std::string>& StrItem)
       Zones.push_back(MapSupport::Range<int>(0,100000000));
       cut=1;
     }
-  else if (NS>=2 && StrItem[0]=="Object")
+  else if (NS>=2 && (StrItem[0]=="Object" || StrItem[0]=="object"))
     {
       const ModelSupport::objectRegister& OR= 
 	ModelSupport::objectRegister::Instance();
       const int cellN=OR.getCell(StrItem[1]);
       const int rangeN=OR.getRange(StrItem[1]);
+      ELog::EM<<"Cells == "<<cellN<<" "<<rangeN<<ELog::endDiag;
       if (cellN==0)
 	throw ColErr::InContainerError<std::string>(StrItem[1],"Object name");
       Zones.push_back(MapSupport::Range<int>(cellN,cellN+rangeN));
@@ -160,11 +175,16 @@ ZoneUnit<T>::sortZone()
   if (Zones.size()!=ZoneData.size())
     throw ColErr::MisMatch<size_t>(Zones.size(),ZoneData.size(),
                                    "Zone!=ZoneData");
-      
-  std::vector<size_t> ZIndex(Zones.size());
-  std::iota(ZIndex.begin(),ZIndex.end(),0);
-  //  indexSort(Zones,ZIndex);
 
+  
+  const std::vector<size_t> ZIndex=
+    mathSupport::sortPermutation
+    (Zones,[](const MapSupport::Range<int>& a,const MapSupport::Range<int>& b)
+     { return (a<b); } );
+
+  mathSupport::applyPermutation(Zones,ZIndex);
+  mathSupport::applyPermutation(ZoneData,ZIndex);
+  
   return;
 }
 

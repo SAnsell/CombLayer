@@ -53,8 +53,12 @@ public:
 
   bool overlap(const Range<T>&,const T& =T(0)) const;
   Range<T>& combine(const Range<T>&);
+  void write(std::ostream&) const;
 }; 
 
+template<typename T>
+std::ostream&
+operator<<(std::ostream&,const Range<T>&);
 
 } // NAMESPACE MapSupport
 

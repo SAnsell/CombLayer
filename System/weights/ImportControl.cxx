@@ -3,7 +3,7 @@
  
  * File:   weights/ImportControl.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,9 +69,11 @@
 #include "Simulation.h"
 #include "objectRegister.h"
 #include "inputParam.h"
+#include "ZoneUnit.h"
 #include "ExtConstructor.h"
 #include "PWTConstructor.h"
 #include "DXTConstructor.h"
+#include "ELPTConstructor.h"
 #include "ImportControl.h"
 
 namespace WeightSystem
@@ -196,11 +198,11 @@ EnergyCellCut(Simulation& System,
 
   // currently only first item / get all
   std::vector<std::string> StrItem;
-  const size_t NGrp=IParam.setCnt("wExt");
+  const size_t NGrp=IParam.setCnt("wECut");
 
   for(size_t grpIndex=0;grpIndex<NGrp;grpIndex++)
     {
-      physicsSystem::ExtConstructor A;
+      physicsSystem::ELPTConstructor A;
       A.processUnit(System,IParam,grpIndex);
     }
   return;
@@ -301,6 +303,7 @@ PWT(Simulation& System,
     }
   return;
 }
+
 
 
   

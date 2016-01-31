@@ -101,14 +101,14 @@ void
 ELPTConstructor::processUnit(Simulation& System,
 			    const mainSystem::inputParam& IParam,
 			    const size_t Index) 
-/*!
+  /*!
     Add ext component 
     \param System :: Simulation to get physics/fixed points
     \param IParam :: Main input parameters
     \param Index :: index of the -wECut card
-   */
+  */
 {
-  ELog::RegMethod RegA("ELPTConstructor","processPoint");
+  ELog::RegMethod RegA("ELPTConstructor","processUnit");
   double ECutValue(0.0);  /// ENERGY cut value;
   
   const size_t NParam=IParam.itemCnt("wECut",Index);
@@ -122,30 +122,34 @@ ELPTConstructor::processUnit(Simulation& System,
       ELog::EM<<ELog::endBasic;
       return;
     }
+  const std::string particleStr=FStr;
   if (NParam<2)
     throw ColErr::IndexError<size_t>(NParam,3,"particle not give");
-  std::string PStr=IParam.getValue<std::string>("wECut",Index,1);  
+  FStr=IParam.getValue<std::string>("wECut",Index,1);  
 
   // Get all other values:
   std::vector<std::string> StrItem;
-
-  std::string Str=IParam.getValue<std::string>("wECut",Index,0);
   for(size_t j=2;j<NParam;j++)
     StrItem.push_back
       (IParam.getValue<std::string>("wECut",Index,j));
 
-
   if (!StrFunc::section(FStr,ECutValue) ||
       !ZUnits.procZone(StrItem))
     throw ColErr::InvalidLine
-      ("procZone ==> StrItems","-wECut "+IParam.getFull("wExt",Index),0);	
+      ("procZone ==> StrItems","-wECut "+IParam.getFull("wECut",Index),0);	
 
   ZUnits.sortZone();
 
-  /*
-  PC.addPhysImp("elpt",PStr);
-  */
-  
+  physicsSystem::PhysicsCards& PC=System.getPC();
+  physicsSystem::PhysImp& ECImp=PC.addPhysImp("elpt",particleStr);
+  // care here : ECImp coule be a new particle value
+  if (ECImp.isEmpty()) 
+    {
+      const std::vector<int> cellOrder=
+	System.getCellVector();
+      // Default is no cutting:
+      ECImp.setCells(cellOrder,0.0);
+    }      
 
   // ExtControl& EC=System.getPC().getExtCard();
     
@@ -164,7 +168,7 @@ ELPTConstructor::writeHelp(std::ostream& OX) const
   */
 {
 
-    OX<<"-wECut ZONE : TYPE \n"
+    OX<<"-wECut particle ECut  \n"
       "ZONE :: \n"
       "   All / object [objectName] / Cells {numbers}(s) / [cellNumber] \n"
       " min-particle energy in cell\n";

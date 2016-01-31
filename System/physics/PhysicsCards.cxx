@@ -438,7 +438,7 @@ PhysicsCards::removePhysImp(const std::string& Type,
 
   for(PhysImp& PI : ImpCards)
     {
-      if (PI.isType(Type))
+      if (PI.getType()==Type)
 	PI.removeParticle(Particle);
     }
   // Remove singular:
@@ -546,7 +546,7 @@ PhysicsCards::setCellNumbers(const std::vector<int>& cellInfo,
   if(cellInfo.size()!=impValue.size())
     throw ColErr::MisMatch<size_t>(cellInfo.size(),
 				   impValue.size(),
-				   "PhysicsCards.setCellNumbers");
+				   "cellInfo != impValue");
   for(PhysImp& PI : ImpCards)
     PI.setAllCells(cellInfo,impValue);
 
@@ -572,7 +572,7 @@ PhysicsCards::setCells(const std::string& Type,
   
   for(PhysImp& PI : ImpCards)
       {
-	if (PI.isType(Type))
+	if (PI.getType()==Type)
 	  PI.setCells(cellInfo,defValue);
       }    
   return;
@@ -595,7 +595,7 @@ PhysicsCards::setCells(const std::string& Type,
   
   for(PhysImp& PI : ImpCards)
     {
-      if (PI.isType(Type))
+      if (PI.getType()==Type)
 	PI.setValue(cellID,defValue);
     }    
   return;
@@ -620,7 +620,7 @@ PhysicsCards::setCells(const std::string& Type,
 
   for(PhysImp& PI : ImpCards)
     {
-      if (PI.isType(Type) &&
+      if (PI.getType()==Type &&
 	  PI.hasElm(Particle))
 	{
 	  PI.setValue(cellID,V);
@@ -664,11 +664,11 @@ PhysicsCards::getValue(const std::string& Type,
 }
 
 PhysImp&
-PhysicsCards::getPhysImp(const std::string& type,
+PhysicsCards::getPhysImp(const std::string& Type,
 			 const std::string& particle)
   /*!
     Return the PhysImp for a particle type
-    \param type :: Importance type
+    \param Type :: Importance type
     \param particle :: particular particle (in list)
     \throw InContainerError if pType is not found
     \return importance of the cell
@@ -679,21 +679,21 @@ PhysicsCards::getPhysImp(const std::string& type,
   std::vector<PhysImp>::iterator vc;
   for(PhysImp& PI : ImpCards)
     {
-      if (PI.isType(type) &&
+      if (PI.getType()==Type &&
 	  PI.hasElm(particle))
 	return PI;
     }
   throw ColErr::InContainerError<std::string>
-        (type+"/"+particle,"type/particle not found");
+        (Type+"/"+particle,"type/particle not found");
 }
 
 
 const PhysImp&
-PhysicsCards::getPhysImp(const std::string& type,
+PhysicsCards::getPhysImp(const std::string& Type,
 			 const std::string& particle) const
   /*!
     Return the PhysImp for a particle type
-    \param type :: type of importance
+    \param Type :: type of importance
     \param particle :: particle type
     \throw InContainerError if pType is not found
     \return importance of the cell
@@ -704,13 +704,13 @@ PhysicsCards::getPhysImp(const std::string& type,
   std::vector<PhysImp>::const_iterator vc;
   for(const PhysImp& PI : ImpCards)
     {
-      if (PI.isType(type) &&
+      if (PI.getType()==Type &&
 	  PI.hasElm(particle))
 	return PI;
     }
   
   throw ColErr::InContainerError<std::string>
-    (type+"/"+particle,"type/particle not found");
+    (Type+"/"+particle,"type/particle not found");
 }
   
 void

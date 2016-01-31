@@ -40,6 +40,7 @@ namespace physicsSystem
   \author S. Ansell
   \date February 2016
   \brief Adds zone (ranged int) support 
+  \tparam 
 */
 template<typename T>
 class ZoneUnit 
@@ -58,6 +59,10 @@ class ZoneUnit
   ZoneUnit(const ZoneUnit&);
   ZoneUnit& operator=(const ZoneUnit&);
   ~ZoneUnit() {}  ///< Destructor
+
+  size_t findItem(const int) const;
+  bool inRange(const int,T&) const;
+  
 };
 
 }
