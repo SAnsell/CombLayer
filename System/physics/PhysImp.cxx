@@ -188,10 +188,10 @@ PhysImp::updateCells(const ZoneUnit<double>& ZU)
   ELog::RegMethod RegA("PhysImp","updateCells");
 
   double V;
-  for(std::map<int,double>::value_type MC : impNum)
+  for(std::map<int,double>::value_type& MC : impNum)
     {
       if (ZU.inRange(MC.first,V))
-	MC.second=V;
+        MC.second=V;
     }
   return;
 }

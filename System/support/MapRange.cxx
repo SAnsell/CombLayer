@@ -43,12 +43,24 @@ Range<T>::Range(const T& LV,const T& HV) :
 
 template<typename T>
 bool
+Range<T>::valid(const T& V) const
+  /*!
+    Simple determination if V is with the range
+    \param V :: Value to check
+    \return true if within range
+   */
+{
+  return (V>=low && V<=high);
+}
+
+template<typename T>
+bool
 Range<T>::overlap(const Range<T>& A,
 		  const T& proximity) const
   /*!
     Determine if a range overlaps
     \param A :: Range to check
-    \param proximity :: vlaue 
+    \param proximity :: value  that is (close enough)
   */
 {
   if ((A.low-proximity <= high)

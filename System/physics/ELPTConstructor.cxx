@@ -137,11 +137,12 @@ ELPTConstructor::processUnit(Simulation& System,
       !ZUnits.procZone(StrItem))
     throw ColErr::InvalidLine
       ("procZone ==> StrItems","-wECut "+IParam.getFull("wECut",Index),0);	
-
+  ZUnits.addData(ECutValue);
   ZUnits.sortZone();
 
   physicsSystem::PhysicsCards& PC=System.getPC();
   physicsSystem::PhysImp& ECImp=PC.addPhysImp("elpt",particleStr);
+  
   // care here : ECImp coule be a new particle value
   if (ECImp.isEmpty()) 
     {
@@ -150,13 +151,8 @@ ELPTConstructor::processUnit(Simulation& System,
       // Default is no cutting:
       ECImp.setCells(cellOrder,0.0);
     }      
-
-  // ExtControl& EC=System.getPC().getExtCard();
-    
-  // if (!procType(StrItem,EC))
-  //   throw ColErr::InvalidLine
-  //     ("procType ==> StrItems","-wECut "+IParam.getFull("wExt",Index),0);	
-
+  
+  ECImp.updateCells(ZUnits);
   return;
 }
   

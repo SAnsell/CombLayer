@@ -3,7 +3,7 @@
  
  * File:   physics/ZoneUnit.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -93,7 +93,15 @@ ZoneUnit<T>::findItem(const int cellN) const
     \return 0 if nothing found / index+1 
    */
 {
-  
+  std::vector<MapSupport::Range<int>>::const_iterator vc=
+    std::lower_bound(Zones.begin(),Zones.end(),
+                     MapSupport::Range<int>(cellN));
+  if (vc!=Zones.end())
+    {
+      const size_t index=static_cast<size_t>(vc-Zones.begin());
+      if (vc->valid(cellN))
+        return index+1;
+    }
   return 0;
 }
   
@@ -188,6 +196,38 @@ ZoneUnit<T>::sortZone()
   return;
 }
 
+template<typename T>
+void
+ZoneUnit<T>::addData(const T& Value)
+  /*!
+    Add a specific value to the back of ZoneData
+    \param Value :: new data value 
+  */
+{
+  ZoneData.push_back(Value);
+  return;
+}
+
+template<typename T>
+bool
+ZoneUnit<T>::inRange(const int cellN,T& Value) const
+  /*!
+    Given a cellN find the ZoneUnit that overlap and 
+    return the value.
+    \param cellN :: Number to search
+    \param Value :: Value that is set if cellN valid
+    \return true if in a ZoneUnit
+   */
+{
+  const size_t index=findItem(cellN);
+  if (index)
+    {
+      Value=ZoneData[index-1];
+      return 1;
+    }
+  return 0;
+}
+  
 /// \cond TEMPLATE
   
 template class ZoneUnit<double>;
