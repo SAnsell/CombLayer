@@ -162,8 +162,10 @@ DXTControl::write(std::ostream& OX) const
   */
 {
   ELog::RegMethod RegA("DXTControl","write");
-  const masterRotate& MR=masterRotate::Instance(); 
+  // No work:
+  if (Centres.empty()) return;
 
+  const masterRotate& MR=masterRotate::Instance(); 
   std::ostringstream cx;
   cx<<"dxt:"<<particle<<" ";
   for(size_t i=0;i<Centres.size();i++)
