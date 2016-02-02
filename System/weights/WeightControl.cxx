@@ -182,10 +182,12 @@ WeightControl::procType(const mainSystem::inputParam& IParam)
   else if (Type=="energy")
     {
       const size_t itemCnt=IParam.itemCnt("weightType",0);
+      ELog::EM<<"I == "<<itemCnt<<ELog::endDiag;
       std::vector<double> E;
       std::vector<double> W;
       for(size_t i=1;i<itemCnt;i+=2)
 	{
+          ELog::EM<<"I == "<<i<<ELog::endDiag;
 	  E.push_back(IParam.getValue<double>("weightType",i));
 	  W.push_back(IParam.getValue<double>("weightType",i+1));
 	}
