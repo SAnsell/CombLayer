@@ -182,17 +182,16 @@ WeightControl::procType(const mainSystem::inputParam& IParam)
   else if (Type=="energy")
     {
       const size_t itemCnt=IParam.itemCnt("weightType",0);
-      ELog::EM<<"I == "<<itemCnt<<ELog::endDiag;
       std::vector<double> E;
       std::vector<double> W;
       for(size_t i=1;i<itemCnt;i+=2)
 	{
-          ELog::EM<<"I == "<<i<<ELog::endDiag;
 	  E.push_back(IParam.getValue<double>("weightType",i));
 	  W.push_back(IParam.getValue<double>("weightType",i+1));
 	}
       EBand=E;
       WT=W;
+      
     }
   else if (Type=="help")
     {
@@ -656,17 +655,17 @@ WeightControl::processWeights(Simulation& System,
   System.populateCells();
   System.createObjSurfMap();
   
+  
+  if (IParam.flag("weightType"))
+    procType(IParam);
   if (IParam.flag("weight"))
-    {
       setWeights(System);
-    }
+      
   // requirements for vertex:
   if (IParam.flag("weightObject") ||
       IParam.flag("tallyWeight") )
     System.calcAllVertex();
   
-  if (IParam.flag("weightType"))
-    procType(IParam);
   if (IParam.flag("weightSource"))
     procSource(IParam);
   if (IParam.flag("weightTally"))
@@ -810,6 +809,7 @@ WeightControl::setWeights(Simulation& System)
   if (!WF)
     throw ColErr::InContainerError<std::string>("n","WCell - WM");
 
+  ELog::EM<<"SETTING BAND"<<ELog::endDiag;
   WF->setEnergy(EBand);
   System.populateWCells();
   WF->balanceScale(WT);
