@@ -2,14 +2,21 @@
 \usepackage{relsize}
 \usepackage{tikz} % ,pgf,pgfarrows,pgfnodes,pgfautomata,pgfheaps,pgfshade}
 \usetikzlibrary{shapes,decorations,shadings,positioning,arrows}
-\usepackage{amsmath}
+\usepackage{amsmath,enumerate}
 \usepackage{listings}
 \usepackage[absolute,overlay]{textpos}
 
+\usepackage[colorlinks=true,linkcolor=red,pagecolor=red,citecolor=blue,urlcolor=blue,breaklinks=true,hyperfootnotes=false,pdftitle={CombLayer Guide},pdfauthor={Stuart Ansell},pdfkeywords={CombLayer,MCNP,MCNPX}]{hyperref}
+\renewcommand*{\rmdefault}{cmss} 
+
 \input{Frames/functions}
 
-\begin{document}
+\title{CombLayer Guide}
+\author{Stuart Ansell}
 
+\begin{document}
+\maketitle
+\tableofcontents
 
 \input{Frames/Introduction}
 \input{Frames/Layout}

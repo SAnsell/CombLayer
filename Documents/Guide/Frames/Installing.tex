@@ -1,42 +1,45 @@
 \section{Installation}
 
-CombLayer is predominately written for the Linux platform using C++
-compilers that support C++11 or greater. The code is available from
-https://github.com/SAnsell/CombLayer, either as a download of a zip file or
+CombLayer is predominately written for the Linux platform using {\tt C++}
+compilers that support {\tt C++11} or greater. The code is available from \\
+\href{https://github.com/SAnsell/CombLayer}{https://github.com/SAnsell/CombLayer}, \\ either as a download of a {\tt zip} file or
 by cloning/pulling the git repository.
 
 \subsection{Requirments}
 
-CombLayer needs to have the Gnu Scietific Library [GSL] and the
-boost::regex system along with the STL libraries from your c++
-compiler. The GSL can be avoided with the NS flag in the make script
+CombLayer needs to have the GNU Scietific Library [GSL] and the
+{\tt boost::regex} system along with the STL libraries from your {\tt C++}
+compiler. The GSL can be avoided with the {\tt -NS} flag in the {\tt getMk.pl} \checkme{or CMake.pl?} script
 but some functionality will be lost, particularly in the choice
 of variance reduction methods.
 
-Additionally, the primary build system uses cmake. There is another
-that just uses make but is significantly more time-consuming.
+Additionally, the primary build system uses {\tt cmake}. There is another
+that just uses {\tt make} but is significantly more time-consuming.
 
-Functional documentation is supported using Doxygen and the construction
+Functional documentation is supported using {\tt Doxygen} and the construction
 of new cmake text files can be done via PERL scripts.
 
-Currenly it is know that gcc version 4.6 and above can compile
-CombLayer as can clang (all tested versions). gcc 4.4 which is often
+Currenly it is know that {\tt gcc} version 4.6 and above can compile
+CombLayer as can {\tt clang} (all tested versions). {\tt gcc} 4.4 which is often
 the default on RedHat systems (2015) does not work.
 
 \subsection{Basic build method}
 
-If a clean directory is made and then the .zip file is uncompressed, the
+If a clean directory is made and then the {\tt .zip} file is uncompressed, the
 following commands should build a version of CombLayer.
 
-\begin{verbatim}
-./CMake.pl
-cmake ./
-make
-\end{verbatim}
+\begin{bash}
+  ./CMake.pl
+  cmake ./
+  make
+\end{bash}
 
-This should make a number of executables, e.g. ess / simple etc. These
-can be used to make a simple model with commands like {\it ./simple -r
-AA}. This will produce ans output file AA1.x which is an MCNP model.
+This should make a number of executables, e.g. {\tt ess}, {\tt simple}, {\tt fullBuild} etc. These
+can be used to make a simple model with commands like
+\begin{bash}
+  ./simple -r AA
+\end{bash}
+This will produce an output file {\tt AA1.x} which is a MCNP model.
 
 
 

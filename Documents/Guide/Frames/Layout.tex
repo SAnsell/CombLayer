@@ -180,7 +180,8 @@ that the user should be creating. The remainder of the main() function
 deals with trapping exceptions, loggin and building variance reduction
 and tallies into the model.
 
-(i) {\bf createPipeInputs} is a 
+\begin{enumerate}[(i)]
+\item {\bf createPipeInputs} is a 
 function to define which command line options [above the standard ones]
 this model should support. It doesn't do anything with them, just a
 list of options, number of arguements they can take and any default
@@ -193,17 +194,14 @@ option is shown (e.g. execute {\it ./pipe}).
 If no additional options are required, a call to
 {\it createInputs(IParam)} would be expected. Significant restructuring
 would need to take place to avoid that call.
-
-(ii) \tcgg{setVariable::PipeVariables} is the method that registers
+\item \tcgg{setVariable::PipeVariables} is the method that registers
 and sets a default value for all the variables that the model will
 use. 
-
-(iii) \tcgg{makePipe pipeObj} and \tcgg{pipeObj.buid(SimPtr,IParam)} are the
+\item \tcgg{makePipe pipeObj} and \tcgg{pipeObj.buid(SimPtr,IParam)} are the
 main geometry building calls. Typically 100\% of the geometry is built
 in this zone. It is not a place for tallies, variance reduction and other
 non-geometry items.
-
-(iii) 
+\end{enumerate}
 
 
 
