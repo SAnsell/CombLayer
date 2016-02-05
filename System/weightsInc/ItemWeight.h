@@ -63,6 +63,7 @@ class ItemWeight
   ItemWeight& operator=(const ItemWeight&);    
   virtual ~ItemWeight() {}          ///< Destructor
 
+  void clear();
   void addTracks(const long int,const double);
   void write(std::ostream&) const;
 };

@@ -124,7 +124,16 @@ ItemWeight::addTracks(const long int cN,const double value)
   return;
 }
 
-
+void
+ItemWeight::clear()
+  /*!
+    Remove everything from the weight
+   */
+{
+  Cells.erase(Cells.begin(),Cells.end());
+  return;
+}
+  
 void
 ItemWeight::write(std::ostream& OX) const
   /*!

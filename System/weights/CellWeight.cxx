@@ -94,7 +94,8 @@ CellWeight::operator=(const CellWeight& A)
 void
 CellWeight::updateWM(const double eCut,
                      const double scaleFactor,
-                     const double minWeight) const
+                     const double minWeight,
+                     const double weightPower) const
   /*!
     Update WM
     \param eCut :: Energy cut [-ve to scale below ] 
@@ -116,34 +117,101 @@ CellWeight::updateWM(const double eCut,
   std::vector<double> DVec=EVec;
   std::fill(DVec.begin(),DVec.end(),1.0);
   
-  double maxW(0.0);
   double minW(1e38);
-  double aveW(0.0);
-  int cnt(0);
   for(const CMapTYPE::value_type& cv : Cells)
     {
-      const double W=(exp(-cv.second.weight*sigmaScale*scaleFactor));
-      if (W>maxW) maxW=W;
-      if (W<minW && minW>1e-38) minW=W;
-      aveW+=W;
-      cnt++;
+      double W=exp(-cv.second.weight*sigmaScale*scaleFactor);
+      if (W>1e-20)
+        {
+          W=std::pow(W,weightPower);
+          if (W<minW) minW=W;
+        }
     }
-  aveW/=cnt;
   // Work on minW first:
   const double factor=(minW<minWeight) ?
     log(minWeight)/log(minW) : 1.0;
-
+  
   for(const CMapTYPE::value_type& cv : Cells)
     {
-      const double W=(exp(-cv.second.weight*sigmaScale*scaleFactor*factor));
-      for(size_t i=0;i<EVec.size();i++)
-	{
-	  if (eCut<-1e-10 && EVec[i] <= -eCut)
-	    DVec[i]=W;
-	  else if (EVec[i]>=eCut)
-	    DVec[i]=W;
-	}
-      WF->scaleWeights(static_cast<int>(cv.first),DVec);
+      double W=(exp(-cv.second.weight*sigmaScale*scaleFactor*factor));
+      if (W<minWeight) W=1.0;    // avoid sqrt(-ve number etc)
+      W=std::pow(W,weightPower);
+      if (W>=minWeight)
+        {
+          for(size_t i=0;i<EVec.size();i++)
+            {
+              if (eCut<-1e-10 && EVec[i] <= -eCut)
+                DVec[i]=W;
+              else if (EVec[i]>=eCut)
+                DVec[i]=W;
+            }
+          WF->scaleWeights(static_cast<int>(cv.first),DVec);
+        }
+    }
+  return;
+}
+
+void
+CellWeight::invertWM(const double eCut,
+                     const double scaleFactor,
+                     const double minWeight,
+                     const double weightPower) const
+  /*!
+    Update WM with an adjoint
+    \param eCut :: Energy cut [-ve to scale below ] 
+    \param scaleFactor :: Scalefactor for density equivilent
+    \param minWeight :: min weight scale factor
+    \param weightPower :: scale power factor on W
+  */
+{
+  ELog::RegMethod RegA("CellWeight","updateWM");
+
+  WeightSystem::weightManager& WM=
+    WeightSystem::weightManager::Instance();  
+
+  WeightSystem::WForm* WF=WM.getParticle('n');
+  if (!WF)
+    throw ColErr::InContainerError<std::string>("n","neutron has no WForm");
+
+  // quick way to get length of array
+  const std::vector<double> EVec=WF->getEnergy();
+  std::vector<double> DVec=EVec;
+  std::fill(DVec.begin(),DVec.end(),1.0);
+  
+  double minW(1e38);
+  for(const CMapTYPE::value_type& cv : Cells)
+    {
+      double W=exp(-cv.second.weight*sigmaScale*scaleFactor);
+      if (W>1e-20)
+        {
+          W=std::pow(W,weightPower);
+          if (W<minW) minW=W;
+        }
+    }
+  // Work on minW first:
+  double factor(1.0);
+  if (minW<minWeight)
+    {
+      ELog::EM<<"Min W == "<<minWeight<<" "<<minW<<ELog::endDiag;
+      factor= log(minWeight)/log(minW);
+      minW=minWeight;
+    }
+  for(const CMapTYPE::value_type& cv : Cells)
+    {
+      double W=(exp(-cv.second.weight*sigmaScale*scaleFactor*factor));
+      if (W>1e-20)
+        {
+          W=std::pow(W,weightPower);
+          W=minW/W;
+          for(size_t i=0;i<EVec.size();i++)
+            {
+              if (eCut<-1e-10 && EVec[i] <= -eCut)
+                DVec[i]=W;
+              else if (EVec[i]>=eCut)
+                DVec[i]=W;
+            }
+          WF->scaleWeights(static_cast<int>(cv.first),DVec);
+        }
     }
   return;
 }

@@ -44,6 +44,7 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
+#include "support.h"
 #include "Rules.h"
 #include "varList.h"
 #include "Code.h"
@@ -79,8 +80,8 @@ namespace WeightSystem
 {
   
 WeightControl::WeightControl() :
-  scaleFactor(1.0),minWeight(0.0),
-  sourceFlag(0),tallyFlag(0)
+  scaleFactor(1.0),minWeight(0.0),weightPower(0.5),
+  activePtIndex(0)
   /*
     Constructor
    */
@@ -90,9 +91,9 @@ WeightControl::WeightControl() :
 
 WeightControl::WeightControl(const WeightControl& A) :
   scaleFactor(A.scaleFactor),minWeight(A.minWeight),
-  EBand(A.EBand),WT(A.WT),sourceFlag(A.sourceFlag),
-  tallyFlag(A.tallyFlag),sourcePt(A.sourcePt),
-  tallyPt(A.tallyPt)
+  weightPower(A.weightPower),EBand(A.EBand),WT(A.WT),
+  objectList(A.objectList),activePtIndex(A.activePtIndex),
+  sourcePt(A.sourcePt),tallyPt(A.tallyPt)
   /*!
     Copy constructor
     \param A :: WeightControl to copy
@@ -109,12 +110,14 @@ WeightControl::operator=(const WeightControl& A)
 {
   if (this!=&A)
     {
+      energyCut=A.energyCut;
       scaleFactor=A.scaleFactor;
       minWeight=A.minWeight;
+      weightPower=A.weightPower;
       EBand=A.EBand;
       WT=A.WT;
-      sourceFlag=A.sourceFlag;
-      tallyFlag=A.tallyFlag;
+      objectList=A.objectList;
+      activePtIndex=A.activePtIndex;
       sourcePt=A.sourcePt;
       tallyPt=A.tallyPt;
     }
@@ -156,11 +159,41 @@ WeightControl::setLowEBand()
   */
 {
   EBand={ 1e-9,  1e-7, 1e-3, 1e-1, 100, 5e7};
-  WT={    0.2,  0.7,  0.8,  0.9,  0.9, 1.0};
+  WT={ 0.2,  0.7,  0.8,  0.9,  0.9, 1.0 };
   return;
 }
 
-  
+void
+WeightControl::processPtString(std::string ptStr) 
+  /*!
+    Process a point with PtStr 
+    -- Note that this is a check of the string.
+    
+    \param ptStr :: String to process
+  */
+{
+  ELog::RegMethod RegA("WeightControl","processPtString");
+  ELog::EM<<"Process string "<<ptStr<<ELog::endDiag;
+  if (!ptStr.empty())
+    {
+      const char SP=static_cast<char>(std::toupper(ptStr[0]));
+      if (SP!='T' && SP!='S')  // fail
+        throw ColErr::InvalidLine(ptStr,"PtStr");
+
+      ptStr[0]=' ';
+      activePtIndex=0;
+      const long int typeFlag((SP=='S') ? 1 : -1);
+      StrFunc::sectPartNum(ptStr,activePtIndex);
+      activePtIndex=(activePtIndex+1)*typeFlag;
+      if (!ptStr.empty() && ptStr[0]=='P')
+        {
+          ptStr[0]=' ';
+          StrFunc::section(ptStr,weightPower);
+        }
+    }
+  return;
+}
+    
 void
 WeightControl::procType(const mainSystem::inputParam& IParam)
   /*!
@@ -215,6 +248,8 @@ WeightControl::procTypeHelp() const
   return;
 }
 
+
+  
 void
 WeightControl::procParam(const mainSystem::inputParam& IParam,
                          const std::string& unitName,const size_t iSet,
@@ -231,7 +266,15 @@ WeightControl::procParam(const mainSystem::inputParam& IParam,
 
   const size_t nItem=IParam.itemCnt(unitName,iSet);
 
+  
   size_t index(iOffset);
+  if (index<nItem)
+    {
+      const std::string PIndex=
+        IParam.getValue<std::string>(unitName,iSet,index++);
+      processPtString(PIndex);
+    }      
+  
   if (index<nItem)
     energyCut=IParam.getValue<double>(unitName,iSet,index++);
   if (index<nItem)
@@ -258,7 +301,21 @@ WeightControl::procRebaseHelp() const
   return;
 }
 
-
+void
+WeightControl::procObjectHelp() const
+  /*!
+    Write the Rebase help
+  */
+{
+  ELog::EM<<"weightObject ::: \n"
+    "objectName:{cell name} TSItem energyCut densityScalar minWeight \n"
+    " -- TSItem :: String  [TS](index)P{value} \n"
+    "       --- T/S :: tally/source to use \n"
+    "       --- index :: index [from zero] of source/tally point\n"
+    "       --- P{value} :: Optional value for the power [default 0.5]"
+	  <<ELog::endDiag;
+  return;
+}
 
 void
 WeightControl::procSource(const mainSystem::inputParam& IParam)
@@ -269,24 +326,47 @@ WeightControl::procSource(const mainSystem::inputParam& IParam)
 {
   ELog::RegMethod RegA("weightControl","procSource");
 
-  size_t itemCnt(0);
-  sourcePt=IParam.getCntVec3D("weightSource",0,itemCnt,"weightSource Vec3D");
-  sourceFlag=1;
+  sourcePt.clear();
+  const size_t NSource=IParam.setCnt("weightSource");
+  for(size_t index=0;index<NSource;index++)
+    {
+      const size_t NItem=IParam.itemCnt("weightSource",index);
+      size_t itemCnt(0);
+      while(NItem>itemCnt)
+        {
+          const Geometry::Vec3D TPoint=
+            IParam.getCntVec3D("weightSource",index,itemCnt,
+                               "weightSource Vec3D");
+          sourcePt.push_back(TPoint);
+        }
+    }
+  
   return;
 }
 
 void
 WeightControl::procTallyPoint(const mainSystem::inputParam& IParam)
   /*!
-    Process the source weight point
+    Process the tally weight points
     \param IParam :: Input parame
   */
 {
   ELog::RegMethod RegA("weightControl","procTally");
 
-  size_t itemCnt(0);
-  tallyPt=IParam.getCntVec3D("weightTally",0,itemCnt,"weightTally Vec3D");
-  tallyFlag=1;
+  tallyPt.clear();
+  const size_t NTally=IParam.setCnt("weightTally");
+  for(size_t index=0;index<NTally;index++)
+    {
+      const size_t NItem=IParam.itemCnt("weightTally",index);
+      size_t itemCnt(0);
+      while(NItem>itemCnt)
+        {
+          const Geometry::Vec3D TPoint=
+            IParam.getCntVec3D("weightTally",index,itemCnt,
+                               "weightTally Vec3D");
+          tallyPt.push_back(TPoint);
+        }
+    }
   return;
 }
 
@@ -312,7 +392,6 @@ WeightControl::cTrack(const Simulation& System,
   std::vector<double> WVec;
 
   long int cN(index.empty() ? 1 : index.back());
-  ELog::EM<<"Point size == "<<Pts.size()<<ELog::endDiag;
   for(size_t i=0;i<Pts.size();i++)
     {
       const long int unit(i>=index.size() ? cN++ : index[i]);
@@ -368,18 +447,21 @@ WeightControl::calcWWGTrack(const Simulation& System,
    
 void
 WeightControl::calcCellTrack(const Simulation& System,
-			 const Geometry::Vec3D& Pt,
-			 const std::vector<int>& cellVec)
+                             const Geometry::Vec3D& Pt,
+                             const std::vector<int>& cellVec,
+                             CellWeight& CTrack)
   /*!
     Calculate a given track 
     \param System :: Simulation to use
     \param Pt :: point for outgoing track
     \param cellVec :: Cells to track
+    \param CTrack :: Cell Weights for output 
    */
 {
   ELog::RegMethod RegA("WeightControl","calcCellTrack");
-  
-  CellWeight CTrack;
+
+  // CTRack needs to be clean
+  CTrack.clear();
 
   // SOURCE Point
   ModelSupport::ObjectTrackAct OTrack(Pt);
@@ -407,9 +489,6 @@ WeightControl::calcCellTrack(const Simulation& System,
 	  CTrack.addTracks(cN,OTrack.getAttnSum(cN));
 	}
     }
-  //  CTrack.setScaleFactor(scaleFactor);
-  //  CTrack.setMinWeight(minWeight);
-  CTrack.updateWM(energyCut,scaleFactor,minWeight);
   return;
 }
 
@@ -421,6 +500,8 @@ WeightControl::procObject(const Simulation& System,
   /*!
     Function to set up the weights system.
     This is for the object tracked from a point
+
+    weightObject lists : object / cell / 
     \param System :: Simulation component
     \param IParam :: input stream
   */
@@ -448,12 +529,22 @@ WeightControl::procObject(const Simulation& System,
       const std::vector<int> objCells=OR.getObjectRange(Key);
       if (objCells.empty())
         ELog::EM<<"Cell["<<Key<<"] empty on renumber"<<ELog::endWarn;
-      if (sourceFlag)
-	calcCellTrack(System,sourcePt,objCells);
-      if (tallyFlag)
-	calcCellTrack(System,tallyPt,objCells);
-      
-      if (!tallyFlag && !sourceFlag)
+
+      if (activePtIndex>0)
+        {
+          const size_t PI(static_cast<size_t>(activePtIndex-1));
+          CellWeight CW;
+          calcCellTrack(System,sourcePt[PI],objCells,CW);
+          CW.updateWM(energyCut,scaleFactor,minWeight,weightPower);
+        }
+      else if (activePtIndex<0)
+        {
+          const size_t PI(static_cast<size_t>(-activePtIndex-1));
+          CellWeight CW;
+          calcCellTrack(System,tallyPt[PI],objCells,CW);
+          CW.invertWM(energyCut,scaleFactor,minWeight,weightPower);
+        }
+      else 
 	ELog::EM<<"No source/tally set for weightObject"<<ELog::endCrit;
     }
   return;
@@ -781,10 +872,11 @@ WeightControl::wwgCreate(Simulation& System)
   WWG& wwg=WM.getWWG();
   wwg.resetMesh();
   
-  if (sourceFlag)
-    calcWWGTrack(System,sourcePt);
-  if (tallyFlag)
-    calcWWGTrack(System,tallyPt);
+  for(const Geometry::Vec3D& Pt : sourcePt)
+    calcWWGTrack(System,Pt);
+
+  for(const Geometry::Vec3D& Pt : tallyPt)
+    calcWWGTrack(System,Pt);
    
   return;
 }
@@ -843,6 +935,7 @@ WeightControl::help() const
   ELog::EM<<"-- weightSource --::"<<ELog::endDiag;
   ELog::EM<<"-- weightTally --::"<<ELog::endDiag;
   ELog::EM<<"-- weightObject --::"<<ELog::endDiag;
+  procObjectHelp();
   ELog::EM<<"-- weightRebase --::"<<ELog::endDiag;
   procRebaseHelp();
   ELog::EM<<"-- wWWG --::"<<ELog::endDiag;

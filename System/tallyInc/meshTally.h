@@ -74,6 +74,7 @@ class meshTally : public Tally
  
   virtual void rotateMaster();
   int addLine(const std::string&);
+  void writeCoordinates(std::ostream&) const;
   virtual void write(std::ostream&) const;
   
 };

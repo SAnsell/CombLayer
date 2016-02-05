@@ -517,7 +517,7 @@ sectPartNum(std::string& A,T& out)
   /*!
     Takes a character string and evaluates 
     the first [typename T] object. The string is then 
-    erase upt to the end of number.
+    erase up to the end of number.
     The diffierence between this and section is that
     it allows trailing characters after the number. 
     \param out :: place for output
@@ -1212,6 +1212,7 @@ template int section(std::string&,DError::doubleErr&);
 
 template int sectPartNum(std::string&,double&);
 template int sectPartNum(std::string&,int&);
+template int sectPartNum(std::string&,long int&);
 template int sectPartNum(std::string&,size_t&);
 template int sectionMCNPX(std::string&,double&);
 
