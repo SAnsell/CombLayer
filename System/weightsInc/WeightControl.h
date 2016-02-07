@@ -60,8 +60,11 @@ class WeightControl
   std::vector<double> WT;        ///< Weight scalar
   
   std::set<std::string> objectList;  ///< Object list to this cut [local]
-  
+
+  bool activePlane;                           ///< Active plane
   long int activePtIndex;                     ///< Point+1 in use [-ve == tally]
+
+  std::vector<Geometry::Plane> planePt;       ///< Plane points
   std::vector<Geometry::Vec3D> sourcePt;      ///< Source Points
   std::vector<Geometry::Vec3D> tallyPt;       ///< Tally Points
   
@@ -82,7 +85,8 @@ class WeightControl
 		const size_t,const size_t);
   void procTypeHelp() const;
 
-  void procSource(const mainSystem::inputParam&);
+  void procSourcePoint(const mainSystem::inputParam&);
+  void procPlanePoint(const mainSystem::inputParam&);
   void procTallyPoint(const mainSystem::inputParam&);
   void procObject(const Simulation&,
 		  const mainSystem::inputParam&);

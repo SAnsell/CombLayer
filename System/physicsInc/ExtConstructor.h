@@ -47,13 +47,8 @@ class ExtConstructor
 {
  private:
 
-  /// Ranges to build
-  std::vector<MapSupport::Range<int>> Zones;
+  ZoneUnit<double> ZUnits;
 
-  static bool getVector(const std::vector<std::string>&,
-			const size_t,Geometry::Vec3D&);
-  void sortZone();
-  bool procZone(std::vector<std::string>&);
   bool procType(std::vector<std::string>&,ExtControl&);
   
   void writeHelp(std::ostream&) const;

@@ -147,4 +147,42 @@ getAttachPoint(const std::string& FCName,
   return 1;
 }
 
+bool
+getPoint(const std::vector<std::string>& StrItem,
+	 const size_t index,
+	 Geometry::Vec3D& Pt)
+/*!
+    Get a vector based on a StrItem  ether using a
+    a name unit or a value.
+    \param StrItem :: List of strings
+    \param index :: Place to start in list
+    \param Pt :: Point found
+    \return 1 on success / 0 on failure
+   */
+{
+  ELog::RegMethod RegA("LinkSupport[F]","getPont");
+
+  const size_t NS(StrItem.size());
+  // Simple Vec3D(a,b,c)
+  if (NS>=index && StrFunc::convert(StrItem[index],Pt) )
+    return 1;
+
+  // Test of FixedPoint link
+  if (NS >= index+2)
+    {
+      Geometry::Vec3D YAxis;  
+      if (attachSystem::getAttachPoint
+	  (StrItem[index],StrItem[index+1],Pt,YAxis))
+	return 1;
+    }
+  
+  // Simple vector
+  if (NS >= index+3 && StrFunc::convert(StrItem[index],Pt[0])
+	   && StrFunc::convert(StrItem[index+1],Pt[1])
+	   && StrFunc::convert(StrItem[index+2],Pt[2]) )
+    return 1;
+
+  return 0;
+}
+
 }  // NAMESPACE attachSystem

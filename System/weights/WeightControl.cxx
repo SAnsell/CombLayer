@@ -44,6 +44,9 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
+#include "Surface.h"
+#include "Quadratic.h"
+#include "Plane.h"
 #include "support.h"
 #include "Rules.h"
 #include "varList.h"
@@ -168,21 +171,33 @@ WeightControl::processPtString(std::string ptStr)
   /*!
     Process a point with PtStr 
     -- Note that this is a check of the string.
-    
+
+    The input string is of the form
+    [TS]{P}Index
+    - T/S designated source / tally
+    - P [optional] indicates that a plane is used not a point
+    - [index] : number of source/plane/tally point
+    - {P}power : P + power of weight [optional]
     \param ptStr :: String to process
   */
 {
   ELog::RegMethod RegA("WeightControl","processPtString");
-  ELog::EM<<"Process string "<<ptStr<<ELog::endDiag;
-  if (!ptStr.empty())
+
+  if (ptStr.size()>1)
     {
       const char SP=static_cast<char>(std::toupper(ptStr[0]));
       if (SP!='T' && SP!='S')  // fail
         throw ColErr::InvalidLine(ptStr,"PtStr");
-
+      
       ptStr[0]=' ';
       activePtIndex=0;
       const long int typeFlag((SP=='S') ? 1 : -1);
+      activePlane=0;
+      if (ptStr[1]=='P')
+	{
+	  activePlane=1;
+	  ptStr[1]=' ';
+	}	
       StrFunc::sectPartNum(ptStr,activePtIndex);
       activePtIndex=(activePtIndex+1)*typeFlag;
       if (!ptStr.empty() && ptStr[0]=='P')
@@ -318,25 +333,66 @@ WeightControl::procObjectHelp() const
 }
 
 void
-WeightControl::procSource(const mainSystem::inputParam& IParam)
+WeightControl::procPlanePoint(const mainSystem::inputParam& IParam)
   /*!
-    Process the source weight point
-    \param IParam :: Input parame
+    Determine inf the next component cat be a plane
+    \param IParam :: Input parameters
   */
 {
-  ELog::RegMethod RegA("weightControl","procSource");
+  ELog::RegMethod RegA("WeightControl","procPlanePoint");
 
+  const std::string wKey("weightPlane");
+  
+  planePt.clear();
+  const size_t NPlane=IParam.setCnt(wKey);
+  for(size_t index=0;index<NPlane;index++)
+    {
+      const size_t NItem=IParam.itemCnt(wKey,index);
+      size_t itemCnt(0);
+      while(NItem>itemCnt)
+        {
+	  const Geometry::Vec3D PPoint=
+	    IParam.getCntVec3D(wKey,index,itemCnt,
+			       wKey+" Vec3D");
+	  const Geometry::Vec3D Norm=
+	    IParam.getCntVec3D(wKey,index,itemCnt,
+			       wKey+" Vec3D");
+
+          planePt.push_back(Geometry::Plane(0,0,PPoint,Norm));
+        }
+    }
+
+    {
+      // Plane as a point and normal:
+      
+
+    }
+  return;
+}
+
+
+void
+WeightControl::procSourcePoint(const mainSystem::inputParam& IParam)
+  /*!
+    Process the source weight point
+    \param IParam :: Input param
+  */
+{
+  ELog::RegMethod RegA("weightControl","procSourcePoint");
+
+  const std::string wKey("weightSource");
+  
   sourcePt.clear();
-  const size_t NSource=IParam.setCnt("weightSource");
+  const size_t NSource=IParam.setCnt(wKey);
   for(size_t index=0;index<NSource;index++)
     {
-      const size_t NItem=IParam.itemCnt("weightSource",index);
+      const size_t NItem=IParam.itemCnt(wKey,index);
       size_t itemCnt(0);
       while(NItem>itemCnt)
         {
           const Geometry::Vec3D TPoint=
-            IParam.getCntVec3D("weightSource",index,itemCnt,
-                               "weightSource Vec3D");
+            IParam.getCntVec3D(wKey,index,itemCnt,
+                               wKey+" Vec3D");
           sourcePt.push_back(TPoint);
         }
     }
@@ -512,7 +568,6 @@ WeightControl::procObject(const Simulation& System,
 
     
   const size_t nSet=IParam.setCnt("weightObject");
-  ELog::EM<<"Number of set == "<<nSet<<ELog::endDiag;
   // default values:
   procParam(IParam,"weightControl",0,0);
   for(size_t iSet=0;iSet<nSet;iSet++)
@@ -520,7 +575,6 @@ WeightControl::procObject(const Simulation& System,
       
       const std::string Key=
 	IParam.getValue<std::string>("weightObject",iSet,0);
-      ELog::EM<<"I["<<iSet<<"]="<<Key<<ELog::endDiag;
       // local values:
       procParam(IParam,"weightObject",iSet,1);
 
@@ -758,9 +812,13 @@ WeightControl::processWeights(Simulation& System,
     System.calcAllVertex();
   
   if (IParam.flag("weightSource"))
-    procSource(IParam);
+    procSourcePoint(IParam);
   if (IParam.flag("weightTally"))
     procTallyPoint(IParam);
+  if (IParam.flag("weightPlane"))
+    procPlanePoint(IParam);
+    
+  
   if (IParam.flag("weightObject"))
     procObject(System,IParam);
   if (IParam.flag("wWWG"))

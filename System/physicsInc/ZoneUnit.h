@@ -51,7 +51,10 @@ class ZoneUnit
   std::vector<MapSupport::Range<int>> Zones;
   /// Data associated with the zone
   std::vector<T> ZoneData;
-  
+
+  static MapSupport::Range<int>
+    createMapRange(std::vector<int>&);
+
   void sortZone();
   bool procZone(std::vector<std::string>&);
   void addData(const T&);

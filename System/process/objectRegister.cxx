@@ -97,7 +97,8 @@ objectRegister::Instance()
 }
 
 int
-objectRegister::getCell(const std::string& Name,const int Index) const
+objectRegister::getCell(const std::string& Name,
+			const int Index) const
   /*!
     Get the start cell of an object
     \param Name :: Name of the object to get
