@@ -286,6 +286,7 @@ createInputs(inputParam& IParam)
   IParam.regItem("WTemp","weightTemp",1);
   IParam.regItem("WType","weightType",1,30);
   IParam.regItem("WSource","weightSource",1,10);
+  IParam.regItem("WPlane","weightPlane",1,30);
   IParam.regItem("WTally","weightTally",1,10);
   IParam.regMulti("WObject","weightObject",100,1);
   IParam.regMulti("WRebase","weightRebase",100,1);
