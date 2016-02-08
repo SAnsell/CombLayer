@@ -1042,7 +1042,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowFlyMidWaterCutLayer",3);
   Control.addVariable("LowFlyMidWaterMidYStep",4.635);
   Control.addVariable("LowFlyMidWaterMidAngle",90);
-  Control.addVariable("LowFlyMidWaterLength",10.98);
+  Control.addVariable("LowFlyMidWaterLength",11.4);
  
 
   Control.addVariable("LowFlyMidWaterWallThick",0.2);
