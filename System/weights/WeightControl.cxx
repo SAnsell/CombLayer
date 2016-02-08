@@ -991,6 +991,7 @@ WeightControl::help() const
   ELog::EM<<"-- WeightType -- ::"<<ELog::endDiag;
   procTypeHelp();
   ELog::EM<<"-- weightSource --::"<<ELog::endDiag;
+  ELog::EM<<"-- weightPlane --::"<<ELog::endDiag;
   ELog::EM<<"-- weightTally --::"<<ELog::endDiag;
   ELog::EM<<"-- weightObject --::"<<ELog::endDiag;
   procObjectHelp();
