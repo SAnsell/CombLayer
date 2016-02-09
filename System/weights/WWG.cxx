@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   weights/WWGconstruct.cxx
+ * File:   weights/WWG.cxx
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -64,32 +64,149 @@ namespace WeightSystem
 {
 
 WWG::WWG() :
+  ptype('n'),wupn(8.0),wsurv(1.4),maxsp(5),
+  mwhere(-1),mtime(0),switchn(-1),
   EBin({1e8})
   /*!
-    Constructor
+    Constructor : 
+    set mwhere[-1] - collisions only 
   */
 {}
 
-void
-WWG::setEnergyBin(const std::vector<double>& EB)
+WWG::WWG(const WWG& A) : 
+  ptype(A.ptype),wupn(A.wupn),wsurv(A.wsurv),maxsp(A.maxsp),
+  mwhere(A.mwhere),mtime(A.mtime),switchn(A.switchn),
+  EBin(A.EBin),Grid(A.Grid),WMesh(A.WMesh)
   /*!
-    Set the energy bins
+    Copy constructor
+    \param A :: WWG to copy
+  */
+{}
+
+WWG&
+WWG::operator=(const WWG& A)
+  /*!
+    Assignment operator
+    \param A :: WWG to copy
+    \return *this
   */
 {
-  EBin=EB;
+  if (this!=&A)
+    {
+      ptype=A.ptype;
+      wupn=A.wupn;
+      wsurv=A.wsurv;
+      maxsp=A.maxsp;
+      mwhere=A.mwhere;
+      mtime=A.mtime;
+      switchn=A.switchn;
+      EBin=A.EBin;
+      Grid=A.Grid;
+      WMesh=A.WMesh;
+    }
+  return *this;
+}
+
+void
+WWG::resetMesh()
+  /*!
+    Resize the mesh
+   */
+{
+  const size_t GSize=Grid.size();
+  if (GSize && !EBin.empty())
+    {
+      WMesh.resize(GSize);
+      const size_t ESize(EBin.size());
+      for(std::vector<double>& MUnit : WMesh)
+        {
+          MUnit.resize(ESize);
+          std::fill(MUnit.begin(),MUnit.end(),1.0);
+        }
+    }
+  else 
+    WMesh.clear();
+  
   return;
 }
   
+void
+WWG::setEnergyBin(const std::vector<double>& EB)
+  /*!
+    Set the energy bins and resize the WMesh
+    \param EB :: Energy bins [MeV]
+  */
+{
+  EBin=EB;
+  resetMesh();
+  return;
+}
   
+void 
+WWG::writeHead(std::ostream& OX) const
+  /*!
+    Write out the header section from the file
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("WWG","writeHead");
+  
+  std::ostringstream cx;
+  
+  cx.str("");  
+  cx<<"wwp:"<<ptype<<" ";
+  cx<<wupn<<" "<<wsurv<<" "<<maxsp<<" "<<mwhere
+    <<" "<<switchn<<" "<<mtime;
+  StrFunc::writeMCNPX(cx.str(),OX);
+
+  if (EBin.size()>15)
+    throw ColErr::RangeError<size_t>(EBin.size(),0,15,
+                                     "MCNP Energy Bin size limit");
+  cx.str("");
+  cx<<"wwge:"<<ptype<<" ";
+  for(const double E : EBin)
+    cx<<E<<" ";
+  StrFunc::writeMCNPX(cx.str(),OX);
+  
+  return;
+}
+
+void
+WWG::scaleMeshItem(const long int index,
+                   const std::vector<double>& DVec)
+  /*!
+    Scale a given mesh index [based on second index]
+    \param index :: index for i,j,k
+    \param DVec :: scaling vector for energy bins
+  */
+{
+  ELog::RegMethod RegA("WWG","scaleMeshItem");
+
+  
+  const size_t ID(static_cast<size_t>(index));
+  if (ID>=WMesh.size())
+    throw ColErr::IndexError<size_t>(ID,WMesh.size(),"WMesh!=ID");
+  if (DVec.size()!=WMesh[ID].size())
+    throw ColErr::IndexError<size_t>(WMesh[ID].size(),DVec.size(),
+                                         "DVec!=WMesh");
+
+  for(size_t i=0;i<DVec.size();i++)
+    WMesh[ID][i]*=DVec[i];
+  
+  return;
+}
+
 void
 WWG::write(std::ostream& OX) const
   /*!
-    Wreit to the MCNP file
+    Write to the MCNP file [only grid]
+    \param OX :: Output stream
    */
 {
   ELog::RegMethod RegA("WWG","write");
-
+  writeHead(OX);
   Grid.write(OX);
+      
   return;
 }
   
@@ -97,7 +214,7 @@ void
 WWG::writeWWINP(const std::string& FName) const
   /*!
     Write out separate WWINP file
-    \param FNAme :: Output filename
+    \param FName :: Output filename
   */
 {
   std::ofstream OX;
@@ -107,6 +224,15 @@ WWG::writeWWINP(const std::string& FName) const
   size_t itemCnt=0;
   for(const double& E : EBin)
     StrFunc::writeLine(OX,E,itemCnt,6);
+  if (itemCnt!=0)
+    OX<<std::endl;
+
+  // MESH:
+  itemCnt=0;
+  for(const std::vector<double>& CV : WMesh)
+    for(const double W : CV)
+      StrFunc::writeLine(OX,W,itemCnt,6);
+    
   OX.close();
 		       
   return;

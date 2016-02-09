@@ -202,7 +202,7 @@ Bunker::populate(const FuncDataBase& Control)
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   roofMat=ModelSupport::EvalMat<int>(Control,keyName+"RoofMat");
   
-  
+
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");
   ModelSupport::populateAddRange(Control,nLayers,keyName+"WallLen",
   			      wallRadius,wallRadius+wallThick,wallFrac);
@@ -349,7 +349,8 @@ Bunker::createSurfaces()
   ModelSupport::buildPlane(SMap,bnkIndex+16,
 			   Origin+Z*(roofHeight+roofThick),Z);
 
-
+  setSurf("floorInner",SMap.realSurf(bnkIndex+5));
+  setSurf("roofInner",SMap.realSurf(bnkIndex+6));
   // CREATE Sector boundary lines
   // Note negative subtraction as moving +ve to -ve
 
@@ -547,11 +548,11 @@ Bunker::createMainRoof(Simulation& System,const int innerSurf)
 	  LD3.setFractions(0,roofRadial);
 	  LD3.setFractions(1,roofVert);
 	  LD3.setFractions(2,roofSide);
-    
+	  ELog::EM<<"Read == "<<keyName<<"Def.xml"<<ELog::endDiag;
 	  LD3.setXMLdata(keyName+"Def.xml","RoofMat",keyName+".xml");
 
 	  LD3.divideCell(System,getCell("roof"+StrFunc::makeString(i)));
-
+	  ELog::EM<<"Read == "<<keyName<<"Def.xml"<<ELog::endDiag;
       
 	  removeCell("roof"+StrFunc::makeString(i));
 	  addSurfs("roof"+StrFunc::makeString(i),LD3.getSurfs());

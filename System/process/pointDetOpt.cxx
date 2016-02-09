@@ -70,6 +70,7 @@
 #include "Simulation.h"
 #include "LineTrack.h"
 #include "ObjectTrackAct.h"
+#include "ObjectTrackPoint.h"
 #include "pointDetOpt.h"
 
 #include "debugMethod.h"

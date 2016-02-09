@@ -79,26 +79,21 @@ testVec3D::applyTest(const int extra)
       &testVec3D::testDotProd,
       &testVec3D::testRead
     };
-  const std::string TestName[]=
+  const std::vector<std::string> TestName=
     {
       "DotProd",
       "Read"
     };
   
   const int TSize(sizeof(TPtr)/sizeof(testPtr));
-  if (!extra)
+  if (!extra) 
     {
-      std::ios::fmtflags flagIO=std::cout.setf(std::ios::left);
-      for(int i=0;i<TSize;i++)
-        {
-	  std::cout<<std::setw(30)<<TestName[i]<<"("<<i+1<<")"<<std::endl;
-	}
-      std::cout.flags(flagIO);
+      TestFunc::writeTests(TestName);
       return 0;
     }
-  for(int i=0;i<TSize;i++)
+  for(size_t i=0;i<TSize;i++)
     {
-      if (extra<0 || extra==i+1)
+      if (extra<0 || static_cast<size_t>(extra)==i+1)
         {
 	  TestFunc::regTest(TestName[i]);
 	  const int retValue= (this->*TPtr[i])();

@@ -25,7 +25,10 @@
 ///\file 
 
 class Simulation;
-
+namespace Geometry
+{
+  class Plane;
+}
 
 /*!
   \namespace WeightSystem
@@ -37,9 +40,11 @@ class Simulation;
 
 namespace WeightSystem
 {
-
+  class ItemWeight;
+  class CellWeight;
+  
   /*!
-    \class WegthControl
+    \class WeigthControl
     \version 1.0
     \author S. Ansell
     \date October 2015
@@ -49,16 +54,22 @@ namespace WeightSystem
 class WeightControl
 {
  private:
-  
+
+  double energyCut;              ///< Energy cut [MeV]
+  double scaleFactor;            ///< Scale factor
+  double minWeight;              ///< Min weight
+  double weightPower;            ///< makes weight W^power
   std::vector<double> EBand;     ///< Energy bandk
   std::vector<double> WT;        ///< Weight scalar
   
-  std::set<std::string> objectList;  ///< Object list
-  
-  bool sourceFlag;               ///< Set point/tally flags
-  bool tallyFlag;                ///< Set point/tally flags
-  Geometry::Vec3D sourcePt;      ///< Source Point
-  Geometry::Vec3D tallyPt;       ///< Tally Point
+  std::set<std::string> objectList;  ///< Object list to this cut [local]
+
+  bool activePlane;                           ///< Active plane
+  long int activePtIndex;                     ///< Point+1 in use [-ve == tally]
+
+  std::vector<Geometry::Plane> planePt;       ///< Plane points
+  std::vector<Geometry::Vec3D> sourcePt;      ///< Source Points
+  std::vector<Geometry::Vec3D> tallyPt;       ///< Tally Points
   
   void setHighEBand();
   void setMidEBand();
@@ -73,20 +84,44 @@ class WeightControl
   void help() const;
   
   void procType(const mainSystem::inputParam&);
+  void procParam(const mainSystem::inputParam&,const std::string&,
+		const size_t,const size_t);
   void procTypeHelp() const;
-  
-  void procSource(const mainSystem::inputParam&);
+
+  void procSourcePoint(const mainSystem::inputParam&);
+  void procPlanePoint(const mainSystem::inputParam&);
   void procTallyPoint(const mainSystem::inputParam&);
   void procObject(const Simulation&,
 		  const mainSystem::inputParam&);
   void procRebase(const Simulation&,
 		  const mainSystem::inputParam&);
+  void processPtString(std::string);
   void procRebaseHelp() const;
-			
+  void procObjectHelp() const;
+  
+  
   void setWeights(Simulation&);
-  void calcTrack(const Simulation&,const Geometry::Vec3D&,
-		 const std::vector<int>&,
-		 const double,const double,const double);
+  void cTrack(const Simulation&,const Geometry::Vec3D&,
+	      const std::vector<Geometry::Vec3D>&,
+	      const std::vector<long int>&,
+	      ItemWeight&);
+
+
+  
+  // WWG stuff
+  void wwgGetFactors(const mainSystem::inputParam&,
+		     double&,double&) const;
+
+  void wwgMesh(const mainSystem::inputParam&);
+  void wwgEnergy(const mainSystem::inputParam&);
+  void wwgCreate(Simulation&);
+
+  void calcWWGTrack(const Simulation&,const Geometry::Vec3D&);
+  void calcCellTrack(const Simulation&,const Geometry::Vec3D&,
+		     const std::vector<int>&,CellWeight&);
+  void calcCellTrack(const Simulation&,const Geometry::Plane&,
+		     const std::vector<int>&,CellWeight&);
+
 
  public:
 
@@ -94,6 +129,7 @@ class WeightControl
   WeightControl(const WeightControl&);
   WeightControl& operator=(const WeightControl&);
   ~WeightControl();
+
   
   void processWeights(Simulation&,const mainSystem::inputParam&);
     

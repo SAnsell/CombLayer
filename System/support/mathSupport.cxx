@@ -23,6 +23,7 @@
 #include <cmath>
 #include <complex>
 #include <vector>
+#include <map>
 #include <iterator>
 #include <algorithm>
 #include <numeric>
@@ -30,6 +31,7 @@
 
 #include "Exception.h"
 #include "doubleErr.h"
+#include "MapRange.h"
 #include "mathSupport.h"
 
 /*! 
@@ -289,13 +291,12 @@ norm(const std::vector<T>& Vec)
   \returns \f$ \sqrt{V.V} \f$
 */
 {
-  return sqrt(inner_product(Vec.begin(),Vec.end(),Vec.begin(),
-			    0.0,
-			    std::plus<double>(), 
-			    std::multiplies<double>()
-			    )
-	      );
+  T Sum(0);
+  for(const T& A : Vec)
+    Sum+= A*A;
+  return sqrt(Sum);
 }
+
 
 template<typename T,typename U>
 void
@@ -732,6 +733,9 @@ template void indexSort(const std::vector<int>&,std::vector<int>&);
 template void indexSort(const std::vector<std::string>&,std::vector<int>&);
 template void indexSort(const std::vector<double>&,std::vector<size_t>&);
 template void indexSort(const std::vector<int>&,std::vector<size_t>&);
+
+//template void indexSort(const std::vector<MapSupport::Range<int>>&,
+//                        std::vector<size_t>&);
 
 template double norm(const std::vector<double>&);
 

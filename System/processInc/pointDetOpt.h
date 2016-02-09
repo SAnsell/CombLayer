@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   processInc/pointDetOpt.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,8 +36,8 @@ class pointDetOpt
 {
  private:
   
-  double energy;            ///< Energy of neutron to test:
-  ObjectTrackAct OA;        ///< Object information 
+  double energy;              ///< Energy of neutron to test:
+  ObjectTrackPoint OA;        ///< Object information 
   
  public:
   

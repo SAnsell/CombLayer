@@ -280,10 +280,13 @@ createInputs(inputParam& IParam)
   IParam.regItem("w","weight");
   IParam.regItem("WP","weightPt");
   IParam.regMulti("wExt","wExt",25,0);
-  IParam.regMulti("wPWT","wPWT",25,0);    
+  IParam.regMulti("wECut","wECut",100,0);
+  IParam.regMulti("wPWT","wPWT",25,0);
+  IParam.regItem("WControl","weightControl",1,10);
   IParam.regItem("WTemp","weightTemp",1);
-  IParam.regItem("WType","weightType",1,10);
+  IParam.regItem("WType","weightType",1,30);
   IParam.regItem("WSource","weightSource",1,10);
+  IParam.regItem("WPlane","weightPlane",1,30);
   IParam.regItem("WTally","weightTally",1,10);
   IParam.regMulti("WObject","weightObject",100,1);
   IParam.regMulti("WRebase","weightRebase",100,1);
@@ -371,6 +374,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("WRebase","Rebase the weights based on a cell");
   IParam.setDesc("WObject","Reconstruct weights base on cells");
   IParam.setDesc("WP","Weight bias Point");
+  IParam.setDesc("weightControl","Sets: energyCut scaleFactor minWeight");
 
   IParam.setDesc("x","XML input file");
   IParam.setDesc("X","XML output file");

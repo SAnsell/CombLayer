@@ -121,13 +121,20 @@ setESSFull(defaultConfig& A)
 
   const std::map<std::string,std::string> beamDef=
     {
-      {"NMX","G4BLine18"},
-      {"SHORTDREAM","G4BLine9"},
-      {"SHORTDREAM2","G4BLine1"},
-      {"SHORTODIN","G4BLine7"},
+      //      {"NMX","G4BLine18"},
+      //      {"SHORTDREAM","G4BLine9"},
+      //      {"SHORTDREAM2","G4BLine1"},
+      //      {"SHORTODIN","G4BLine7"},
+      //      {"DREAM","G4BLine17"},
+      //      {"VOR","G4BLine3"},   // also 17  
+      //      {"LOKI","G4BLine5"},
+      //      {"ODIN","G4BLine15"}
+      {"VOR","G4BLine1"},   // also 17
+      {"SHORTDREAM","G4BLine3"},
+      {"SHORTODIN","G4BLine5"},
+      {"LOKI","G4BLine7"},
+      {"SHORTDREAM2","G4BLine9"},
       {"DREAM","G4BLine17"},
-      {"VOR","G4BLine3"},   // also 17  
-      {"LOKI","G4BLine5"},
       {"ODIN","G4BLine15"}
     };     
   const std::set<std::string> beamFilled=
@@ -158,8 +165,7 @@ setESSPortsOnly(defaultConfig& A)
   ELog::RegMethod RegA("DefUnitsESS[F]","setESS");
 
   A.setOption("lowMod","Butterfly");
-
-  for(size_t i=0;i<19;i++)
+  for(size_t i=0;i<21;i++)
     A.setVar("G1BLine"+StrFunc::makeString(i+1)+"Active",1);
 
   ELog::EM<<"Port Only "<<ELog::endDiag;
@@ -187,11 +193,11 @@ setESSSingle(defaultConfig& A,
   const std::map<std::string,std::string> beamDef=
     {{"NMX","G4BLine15"},
      {"SHORTDREAM","G4BLine9"},
-     {"SHORTODIN","G4BLine6"},
+     {"SHORTODIN","G1BLine16"},
      {"DREAM","G4BLine17"},
-     {"VOR","G4BLine2"},   // also 17  
+     {"VOR","G4BLine1"},   // also 17  
      {"LOKI","G4BLine4"},
-     {"ODIN","G4BLine13"},
+     {"ODIN","G1BLine4"},   // Note reverse because on G1
      {"ESTIA","G4BLine11"}
     };     
   const std::set<std::string> beamFilled=
@@ -237,36 +243,34 @@ setESS(defaultConfig& A)
 {
   ELog::RegMethod RegA("DefUnitsESS[F]","setESS");
 
+
   A.setOption("lowMod","Butterfly");
+  A.setOption("topMod","Butterfly");
 
-  A.setMultiOption("beamlines",0,"G1BLine19 ODIN");
-  A.setMultiOption("beamlines",1,"G4BLine4 LOKI");
-  A.setMultiOption("beamlines",2,"G4BLine7 VOR");
-  A.setMultiOption("beamlines",3,"G4BLine12 NMX");
-  A.setMultiOption("beamlines",4,"G4BLine19 DREAM");
+  const std::map<std::string,std::string> beamDef=
+    {
+      {"NMX","G4BLine17"},
+      {"DREAM","G4BLine14"},
+      {"VOR","G4BLine7"},   // also 17  
+      {"LOKI","G4BLine4"},
+      {"ODIN","G4BLine19"}
+    };     
+  const std::set<std::string> beamFilled=
+    {"NMX","DREAM","VOR","LOKI"};
 
-  // odin : No action
 
-  // ODIN
-  //  A.setVar("G4BLine4Active",1);  
-  //  A.setVar("G4BLine4Filled",1);
-
-  // LOKI
-  A.setVar("G4BLine4Active",1);  
-  A.setVar("G4BLine4Filled",1);
-
-  // VOR
-  A.setVar("G4BLine7Filled",1);
-  A.setVar("G4BLine7Active",1);
-
-  // NMX
-  A.setVar("G4BLine12Active",1); 
-  A.setVar("G4BLine12Filled",1);
-
-  // DREAM
-  A.setVar("G4BLine19Filled",1);
-  A.setVar("G4BLine19Active",1);
   
+  size_t index(0);
+  std::map<std::string,std::string>::const_iterator mc;
+  for(mc=beamDef.begin();mc!=beamDef.end();mc++)
+    {
+      A.setMultiOption("beamlines",index,mc->second+" "+mc->first);
+      A.setVar(mc->second+"Active",1);
+      if (beamFilled.find(mc->first)!=beamFilled.end())
+	A.setVar(mc->second+"Filled",1);
+      index++;
+    }
+   
   return;
 }
 

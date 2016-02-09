@@ -31,6 +31,9 @@ class FixedComp;
 long int getLinkIndex(const std::string&);
 int getAttachPoint(const std::string&,const std::string&,
 		    Geometry::Vec3D&,Geometry::Vec3D&);
+
+bool getPoint(const std::vector<std::string>&,
+	      const size_t,Geometry::Vec3D&);
  
 }
 

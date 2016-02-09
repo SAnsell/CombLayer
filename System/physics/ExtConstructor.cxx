@@ -87,6 +87,7 @@
 #include "NRange.h"
 #include "PhysicsCards.h"
 
+#include "ZoneUnit.h"
 #include "EUnit.h"
 #include "ExtControl.h"
 #include "ExtConstructor.h" 
@@ -98,102 +99,7 @@ namespace physicsSystem
 ExtConstructor::ExtConstructor() 
   /// Constructor
 {}
-
-bool
-ExtConstructor::procZone(std::vector<std::string>& StrItem)
-  /*!
-    Process the zone information
-    \param StrItem :: List of item from the input [Used items erased]
-    \return true on success 
-  */
-{
-  ELog::RegMethod RegA("ExtConstuctor","procZone");
-
-  const size_t NS(StrItem.size());
-  long int cut(0);
-  int cNum,dNum;
-  if (NS>=1 && (StrItem[0]=="All" || StrItem[0]=="all"))
-    {
-      Zones.push_back(MapSupport::Range<int>(0,100000000));
-      cut=1;
-    }
-  else if (NS>=2 && StrItem[0]=="Object")
-    {
-      const ModelSupport::objectRegister& OR= 
-	ModelSupport::objectRegister::Instance();
-      const int cellN=OR.getCell(StrItem[1]);
-      const int rangeN=OR.getRange(StrItem[1]);
-      if (cellN==0)
-	throw ColErr::InContainerError<std::string>(StrItem[1],"Object name");
-      Zones.push_back(MapSupport::Range<int>(cellN,cellN+rangeN));
-      cut=2;
-    }
-  else if (NS>=2 && StrItem[0]=="Cells")
-    {
-      size_t index(1);
-      while(index<NS &&
-	    StrFunc::convert(StrItem[index],cNum))
-	{
-	  Zones.push_back(MapSupport::Range<int>(cNum,cNum));
-	  index++;
-	}
-      if (index!=1) cut=static_cast<long int>(index);
-    }
-  else if (NS>=3 && StrItem[0]=="Range")
-    {
-      if (StrFunc::convert(StrItem[1],cNum) &&
-	  StrFunc::convert(StrItem[2],dNum) )
-	{
-	  Zones.push_back(MapSupport::Range<int>(cNum,dNum));	
-	  cut=3;
-	}
-    }
   
-  if (!cut)
-    return 0;
-      
-  StrItem.erase(StrItem.begin(),StrItem.begin()+cut);
-  return 1;
-}
-
-bool
-ExtConstructor::getVector(const std::vector<std::string>& StrItem,
-			  const size_t index,
-			  Geometry::Vec3D& Pt)
-  /*!
-    Get a vector based on a StrItem / iether using a
-    a name unit or a value.
-    \param StrItem :: List of strings
-    \param index :: Place to start in list
-    \param Pt :: Point found
-    \return 1 on success / 0 on failure
-   */
-{
-  ELog::RegMethod RegA("ExtConstructor","getVector");
-
-  const size_t NS(StrItem.size());
-  // Simple Vec3D(a,b,c)
-  if (NS>=index && StrFunc::convert(StrItem[index],Pt) )
-    return 1;
-
-  // Test of FixedPoint link
-  if (NS >= index+2)
-    {
-      Geometry::Vec3D YAxis;  
-      if (attachSystem::getAttachPoint
-	  (StrItem[index],StrItem[index+1],Pt,YAxis))
-	return 1;
-    }
-  
-  // Simple vector
-  if (NS >= index+3 && StrFunc::convert(StrItem[index],Pt[0])
-	   && StrFunc::convert(StrItem[index+1],Pt[1])
-	   && StrFunc::convert(StrItem[index+2],Pt[2]) )
-    return 1;
-
-  return 0;
-}
-
   
 bool
 ExtConstructor::procType(std::vector<std::string>& StrItem,
@@ -222,16 +128,16 @@ ExtConstructor::procType(std::vector<std::string>& StrItem,
 
   if (NS>=1 && (StrItem[0]=="simple"))
     {
-      for(const MapSupport::Range<int>& RUnit : Zones)
+      for(const MapSupport::Range<int>& RUnit : ZUnits.Zones)
 	EX.addUnit(RUnit,minus+"S");
       return 1;
     }
   else if (NS>=2 && StrItem[0]=="simpleVec" &&
-	   ExtConstructor::getVector(StrItem,1,Pt))
+	   attachSystem::getPoint(StrItem,1,Pt))
     {
       const size_t VNum=EX.addVect(Pt);
       const std::string EStr=minus+"SV"+StrFunc::makeString(VNum);
-      for(const MapSupport::Range<int>& RUnit : Zones)
+      for(const MapSupport::Range<int>& RUnit : ZUnits.Zones)
 	EX.addUnit(RUnit,EStr);
       return 1;
     }
@@ -240,36 +146,23 @@ ExtConstructor::procType(std::vector<std::string>& StrItem,
     {
       if (scalar<0.0) minus="-";
       const std::string EStr=minus+StrFunc::makeString(fabs(scalar));
-      for(const MapSupport::Range<int>& RUnit : Zones)
+      for(const MapSupport::Range<int>& RUnit : ZUnits.Zones)
 	EX.addUnit(RUnit,EStr);
       return 1;
     }
   else if (NS>=3 && StrItem[0]=="scaleVec" &&
 	    StrFunc::convert(StrItem[1],scalar) &&
-	   ExtConstructor::getVector(StrItem,2,Pt))
+	   attachSystem::getPoint(StrItem,2,Pt))
      {
        if (scalar<0.0) minus="-";
        const size_t VNum=EX.addVect(Pt);
        const std::string EStr=minus+
 	 StrFunc::makeString(fabs(scalar))+"V"+StrFunc::makeString(VNum);
-       for(const MapSupport::Range<int>& RUnit : Zones)
+       for(const MapSupport::Range<int>& RUnit : ZUnits.Zones)
 	 EX.addUnit(RUnit,EStr);
        return 1;
     }
   return 0;
-}
-
-  
-void
-ExtConstructor::sortZone()
-  /*!
-    This is going to sort and concaternate the zones
-  */
-{
-  ELog::RegMethod RegA("ExtConstructor","sortZone");
-  
-  std::sort(Zones.begin(),Zones.end());
-  return;
 }
 
 
@@ -303,11 +196,11 @@ ExtConstructor::processUnit(Simulation& System,
       return;
     }
   
-  if (!procZone(StrItem))
+  if (!ZUnits.procZone(StrItem))
     throw ColErr::InvalidLine
       ("procZone ==> StrItems","-wExt "+IParam.getFull("wExt",Index),0);	
 
-  sortZone();
+  ZUnits.sortZone();
   ExtControl& EC=System.getPC().getExtCard();
     
   if (!procType(StrItem,EC))

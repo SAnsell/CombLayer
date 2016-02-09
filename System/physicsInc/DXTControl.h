@@ -56,7 +56,7 @@ class DXTControl
   void clear();
   void setUnit(const Geometry::Vec3D&,const double,const double,const bool);
   void setDD(const double,const double);
-  
+
   void write(std::ostream&) const;
   
 };

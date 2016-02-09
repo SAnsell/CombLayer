@@ -51,10 +51,15 @@ public:
   operator<(const Range<T>& A) const
     { return  (high < A.low) ? 1 : 0; }
 
+  bool valid(const T&) const;
   bool overlap(const Range<T>&,const T& =T(0)) const;
   Range<T>& combine(const Range<T>&);
+  void write(std::ostream&) const;
 }; 
 
+template<typename T>
+std::ostream&
+operator<<(std::ostream&,const Range<T>&);
 
 } // NAMESPACE MapSupport
 

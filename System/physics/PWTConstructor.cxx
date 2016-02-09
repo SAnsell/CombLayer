@@ -200,7 +200,7 @@ PWTConstructor::procType(std::vector<std::string>& StrItem,
   /*!
     Process the Type information
     \param StrItem :: List of item from the input [Used items erased]
-    \param EX :: Control card to place data [and zone]
+    \param PWT :: Control card to place data [and zone]
     \return true on success 
   */
 {

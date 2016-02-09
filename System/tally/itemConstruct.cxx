@@ -168,7 +168,8 @@ itemConstruct::addBeamLineItem(Simulation& System,
 
   size_t iLP((viewSurface>=0) ? static_cast<size_t>(viewSurface) : 
 	     static_cast<size_t>(-viewSurface-1));
-   int VSign((viewSurface<0) ? -1 : 1);
+
+  //int VSign((viewSurface<0) ? -1 : 1);
 
   const attachSystem::FixedComp* ModPtr;
   const attachSystem::FixedComp* ShutterPtr;
@@ -235,7 +236,7 @@ itemConstruct::addBeamLineItem(Simulation& System,
 
 void
 itemConstruct::writeHelp(std::ostream& OX) const
-/*!
+  /*!
     Write out help
     \param Output stream
   */

@@ -3,7 +3,7 @@
  
  * File:   geomInc/Plane.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -92,6 +92,7 @@ class Plane : public Quadratic
   double dotProd(const Plane&) const;   
   Geometry::Vec3D crossProd(const Plane&) const;      
   double distance(const Geometry::Vec3D&) const;
+  Geometry::Vec3D closestPt(const Geometry::Vec3D&) const;
   
   int isEqual(const Plane&) const;
   int planeType() const;         ///< are we aligned on an axis

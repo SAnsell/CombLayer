@@ -183,13 +183,13 @@ makeESSBL::build(Simulation& System,
   if (beamName=="ODIN")
     {
       // Odin beamline
-      ODIN OdinBL;
+      ODIN OdinBL("odin");
       OdinBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="SHORTODIN")
     {
       // Odin beamline
-      shortODIN OdinBL;
+      ODIN OdinBL("shortOdin");
       OdinBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="ESTIA")
@@ -200,7 +200,7 @@ makeESSBL::build(Simulation& System,
   else if (beamName=="LOKI")
     {
       // LOKI beamline
-      LOKI LokiBL;
+      LOKI LokiBL("loki");
       LokiBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="NMX")
@@ -213,7 +213,7 @@ makeESSBL::build(Simulation& System,
   else if (beamName=="VOR")
     {
       ELog::EM<<"Building "<<beamName<<ELog::endDiag;
-      VOR vorBL;
+      VOR vorBL("vor");
       vorBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="DREAM")
@@ -226,7 +226,6 @@ makeESSBL::build(Simulation& System,
     {
       // short sector dream
       DREAM dreamBL("shortDream");
-      //      shortDREAM dreamBL("shortDream");
       dreamBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="SHORTDREAM2")

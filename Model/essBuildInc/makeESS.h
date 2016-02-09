@@ -66,6 +66,7 @@ namespace essSystem
   class BeamMonitor;
   class TaperedDiskPreMod;
   class Bunker;
+  class RoofPillars;
   class Curtain;
   class F5Collimator;
   class ODIN;
@@ -136,6 +137,10 @@ class makeESS
 
   std::shared_ptr<Bunker> ABunker;  ///< Right bunker [A unit]
   std::shared_ptr<Bunker> BBunker;  ///< Right bunker [B unit]
+  ///< Right bunker Pillars [A]
+  std::shared_ptr<RoofPillars> ABunkerPillars;
+  ///< Right bunker Pillars [B]
+  std::shared_ptr<RoofPillars> BBunkerPillars; 
   std::shared_ptr<Curtain> TopCurtain;  ///< Conc-curtain
 
   std::vector<std::shared_ptr<F5Collimator>> F5array; ///< collimators for F5 tallies
@@ -161,10 +166,13 @@ class makeESS
   void makeBeamLine(Simulation&,
 		    const mainSystem::inputParam&);
 
+
   void buildF5Collimator(Simulation&, size_t); // when -nF5 is used
   void buildF5Collimator(Simulation&, const mainSystem::inputParam&); // when -TopCC is used
 
   void buildPreWings(Simulation&);
+
+  void buildPillars(Simulation&);
 
   void optionSummary(Simulation&);
 

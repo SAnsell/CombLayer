@@ -141,7 +141,7 @@ class PhysicsCards
 
   long int getRND() const;
 
-
+  void rotateMaster();
   void substituteCell(const int,const int);
   void substituteSurface(const int,const int); 
 

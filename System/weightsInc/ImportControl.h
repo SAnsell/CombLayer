@@ -36,6 +36,7 @@ namespace WeightSystem
   void zeroImp(Simulation&,const int,const int);
   void simulationImp(Simulation&,const mainSystem::inputParam&);
   void ExtField(Simulation&,const mainSystem::inputParam&);
+  void EnergyCellCut(Simulation&,const mainSystem::inputParam&);
   void DXT(Simulation&,const mainSystem::inputParam&);
   void PWT(Simulation&,const mainSystem::inputParam&);
   void SBias(Simulation&,const mainSystem::inputParam&);

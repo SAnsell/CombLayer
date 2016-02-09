@@ -44,13 +44,14 @@ class RoofPillars : public attachSystem::FixedComp,
   const int rodIndex;           ///< Index of surface offset
   int cellIndex;                ///< Cell index
 
+  HeadRule TopSurf;             ///< Top surface  [roof]
+  HeadRule BaseSurf;            ///< Base surface [floor]
   /// Relative point for each centre
   std::vector<Geometry::Vec3D> CentPoint;
 
   double radius;                ///< Radius for each support
   int mat;                      ///< Matieral
-  
-  
+    
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
@@ -58,7 +59,7 @@ class RoofPillars : public attachSystem::FixedComp,
   void createSurfaces();
   void createLinks();
   void createObjects(Simulation&);
-
+  void insertPillars(Simulation&,const attachSystem::CellMap&);
   
  public:
 
@@ -66,8 +67,8 @@ class RoofPillars : public attachSystem::FixedComp,
   RoofPillars(const RoofPillars&);
   RoofPillars& operator=(const RoofPillars&);
   virtual ~RoofPillars();
-
-
+  
+  void setSimpleSurf(const int,const int);
   void createAll(Simulation&,const Bunker&);
 
 };

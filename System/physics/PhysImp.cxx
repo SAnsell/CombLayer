@@ -42,6 +42,9 @@
 #include "mathSupport.h"
 #include "Triple.h"
 #include "NRange.h"
+#include "MapSupport.h"
+#include "MapRange.h"
+#include "ZoneUnit.h"
 #include "PhysImp.h"
 
 namespace physicsSystem
@@ -175,7 +178,24 @@ PhysImp::modifyCells(const std::vector<int>& cellOrder,const double defValue)
   return;
 }
 
+void
+PhysImp::updateCells(const ZoneUnit<double>& ZU)
+  /*!
+    Given a zone unit update cells within the zone unit
+    \param ZU :: ZoneUnit to update
+  */
+{
+  ELog::RegMethod RegA("PhysImp","updateCells");
 
+  double V;
+  for(std::map<int,double>::value_type& MC : impNum)
+    {
+      if (ZU.inRange(MC.first,V))
+        MC.second=V;
+    }
+  return;
+}
+  
 void
 PhysImp::setCells(const std::vector<int>& cellOrder,const double defValue)
   /*!
@@ -247,17 +267,6 @@ PhysImp::hasElm(const std::string& E) const
   return (vc==particles.end()) ? 0 : 1;
 }
 
-int
-PhysImp::isType(const std::string& T) const
-  /*!
-    Finds if tyep type is T
-    \param T :: Particle string to find
-    \return 0 :: failure , 1 :: success
-  */
-{
-  return (type==T) ? 1 : 0;
-}
-
 double
 PhysImp::getValue(const int cellN) const
   /*!
@@ -284,12 +293,11 @@ PhysImp::renumberCell(const int oldCellN,const int newCellN)
 {
   ELog::RegMethod RegA("PhysImp","renumberCell");
   if (oldCellN==newCellN) return;
-
+  
   typedef std::map<int,double> ITYPE;
   ITYPE::iterator mc;
   if (impNum.find(newCellN)!=impNum.end())
-    throw ColErr::InContainerError<int>(oldCellN,"New cell not found"+
-					RegA.getFull());
+    throw ColErr::InContainerError<int>(oldCellN,"New cell not found");
   mc=impNum.find(oldCellN);
   if (mc==impNum.end())
     throw ColErr::InContainerError<int>(oldCellN,"Old cell not found "+

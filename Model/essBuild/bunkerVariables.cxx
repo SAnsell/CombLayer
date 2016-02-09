@@ -75,7 +75,7 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("ABunkerActiveSegment",0);
   Control.addVariable("ABunkerActiveRoof",0);
 
-  Control.addVariable("ABunkerNRoofVert",5);
+  Control.addVariable("ABunkerNRoofVert",20);
   Control.addVariable("ABunkerNRoofSide",1);
   Control.addVariable("ABunkerNRoofRadial",12);
 
@@ -96,18 +96,14 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("ABunkerWallMat","Steel71");
   Control.addVariable("ABunkerRoofMat","Aluminium");
 
-  Control.addVariable("ABunkerRoofVert1",30.0);
-  Control.addVariable("ABunkerRoofVert2",40.0);
-  Control.addVariable("ABunkerRoofVert3",70.0);
-  Control.addVariable("ABunkerRoofVert4",35.0);
-  Control.addVariable("ABunkerRoofVert5",20.0);
+  Control.addVariable("ABunkerRoofVert1",10.0);
 
 
   Control.addVariable("ABunkerRoofMat0","CarstonConc");
-  Control.addVariable("ABunkerRoofMat1","CastIron");
-  Control.addVariable("ABunkerRoofMat2","CarstonConc");
   Control.addVariable("ABunkerRoofMat3","CastIron");
-  Control.addVariable("ABunkerRoofMat4","CarstonConc");
+  Control.addVariable("ABunkerRoofMat7","CarstonConc");
+  Control.addVariable("ABunkerRoofMat14","CastIron");
+  Control.addVariable("ABunkerRoofMat16","CarstonConc");
 
   Control.addVariable("ABunkerWallMat0","CarstenConc");
   Control.addVariable("ABunkerWallMat1","CastIron");
@@ -121,6 +117,17 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("ABunkerLoadFile","ABunkerDef.xml");
   Control.addVariable("ABunkerOutFile","ABunker.xml");
 
+  // PILLARS:
+  
+  Control.addVariable("ABunkerPillarsRadius",8.0);
+  Control.addVariable("ABunkerPillarsMat","Stainless304");
+  Control.addVariable("ABunkerPillarsNRadius",1);
+  Control.addVariable("ABunkerPillarsNSector",5);
+  Control.addVariable("ABunkerPillarsR_0S_0",0.0);
+  Control.addVariable("ABunkerPillarsR_0S_1",10.0);
+  Control.addVariable("ABunkerPillarsR_0S_2",20.0);
+  Control.addVariable("ABunkerPillarsR_0S_3",30.0);
+  
   //
   // RIGHT BUNKER : B PART
   //

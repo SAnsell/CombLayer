@@ -158,15 +158,16 @@ DXTConstructor::processUnit(Simulation& System,
   if (StrItem[0]=="Object" || StrItem[0]=="object")
     {
       const std::string place=
-	IParam.outputItem<std::string>("wDXT",Index,2,"position not given");
+	IParam.outputItem<std::string>("wDXT",Index,1,"position not given");
+      
       const std::string linkPt=
-	IParam.outputItem<std::string>("wDXT",Index,3,"position not given");
+	IParam.outputItem<std::string>("wDXT",Index,2,"position not given");
       Geometry::Vec3D PPoint,YAxis;
       if (!attachSystem::getAttachPoint(place,linkPt,PPoint,YAxis))
 	throw ColErr::InContainerError<std::string>
 	  (place,"Fixed Object not found");
-      RI=IParam.outputItem<double>("wDXT",Index,4,"radius not given");
-      if (!IParam.checkItem("wDXT",Index,5,RO))
+      RI=IParam.outputItem<double>("wDXT",Index,3,"radius not given");
+      if (!IParam.checkItem("wDXT",Index,4,RO))
 	RO=RI;
       DXT.setUnit(PPoint,RI,RO,1);
     }
@@ -196,7 +197,7 @@ DXTConstructor::writeHelp(std::ostream& OX) const
       " :: \n"
       "   object [objectName] linkNumber radius \n"
       "   free Vec3D radius \n";
-    OX<<"-wDDD [Kvalue Dvalue] \n";
+    OX<<"-wDD [Kvalue Dvalue] \n";
   return;
 }
 

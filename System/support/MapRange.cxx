@@ -10,6 +10,19 @@ namespace MapSupport
 {
 
 template<typename T>
+std::ostream&
+operator<<(std::ostream& OX,const Range<T>& A)
+  /*!
+    Standard stream operator
+    \param OX :: output stream
+    \param A :: Range item
+   */
+{
+  A.write(OX);
+  return OX;
+}
+
+template<typename T>
 Range<T>::Range(const T& V) :
   low(V),high(V)
   /*!
@@ -30,12 +43,24 @@ Range<T>::Range(const T& LV,const T& HV) :
 
 template<typename T>
 bool
+Range<T>::valid(const T& V) const
+  /*!
+    Simple determination if V is with the range
+    \param V :: Value to check
+    \return true if within range
+   */
+{
+  return (V>=low && V<=high);
+}
+
+template<typename T>
+bool
 Range<T>::overlap(const Range<T>& A,
 		  const T& proximity) const
   /*!
     Determine if a range overlaps
     \param A :: Range to check
-    \param proximity :: vlaue 
+    \param proximity :: value  that is (close enough)
   */
 {
   if ((A.low-proximity <= high)
@@ -65,10 +90,22 @@ Range<T>::combine(const Range<T>& A)
   return *this;
 }
 
+template<typename T>
+void
+Range<T>::write(std::ostream& OX) const
+  /*!
+    Output function
+    \param OX :: Output stream
+   */
+{
+  OX<<low<<" "<<high;
+  return;
+}
 
-/// \cond TEMPLATE
+/// \cond TEMPLATE 
 
 template class Range<int>;
+template std::ostream& operator<<(std::ostream&,const Range<int>&);
 
 /// \endcond TEMPLATE
 

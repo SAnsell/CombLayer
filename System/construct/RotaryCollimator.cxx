@@ -84,7 +84,7 @@ namespace constructSystem
 
 RotaryCollimator::RotaryCollimator(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedGroup(Key,"Main",6,"Beam",2),
+  attachSystem::FixedGroup(Key,"Main",2,"Beam",2),
   attachSystem::CellMap(),
   colIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(colIndex+1),holeIndex(0),nHole(0),nLayers(0)

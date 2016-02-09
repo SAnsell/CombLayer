@@ -95,6 +95,7 @@ namespace essSystem
 
 DREAM::DREAM(const std::string& keyName) :
   attachSystem::CopiedComp("dream",keyName),
+  stopPoint(0),
   dreamAxis(new attachSystem::FixedComp(newName+"Axis",4)),
   FocusA(new beamlineSystem::GuideLine(newName+"FA")),
   VacBoxA(new constructSystem::VacuumBox(newName+"VacA")),
@@ -320,7 +321,7 @@ DREAM::build(Simulation& System,
   FocusA->createAll(System,GItem.getKey("Beam"),-1,
 		    GItem.getKey("Beam"),-1);
 
-  if (stopPoint==1) return;                      // STOP At bunker edge
+  if (stopPoint==1) return;                      // STOP At monolith edge
   
   // First section out of monolyth
   VacBoxA->addInsertCell(bunkerObj.getCell("MainVoid"));

@@ -53,7 +53,7 @@ class LineTrack
 
   double TDist;                     ///< Total distance
   
-  std::vector<int> Cells;                   ///< Cells in order
+  std::vector<long int> Cells;                   ///< Cells in order
   std::vector<MonteCarlo::Object*> ObjVec;  ///< Object pointer
   std::vector<double> Track;                ///< Track length
 
@@ -73,7 +73,7 @@ class LineTrack
   void calculate(const Simulation&);
   void calculateError(const Simulation&);
   /// Access Cells
-  const std::vector<int>& getCells() const
+  const std::vector<long int>& getCells() const
     { return Cells; }
   /// Access Track lengths
   const std::vector<double>& getTrack() const
@@ -85,7 +85,7 @@ class LineTrack
   /// access total distance
   double getTotalDist() const { return aimDist; }
 
-  void createAttenPath(std::vector<int>&,std::vector<double>&) const;
+  void createAttenPath(std::vector<long int>&,std::vector<double>&) const;
   void write(std::ostream&) const;
 };
 

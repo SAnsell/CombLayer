@@ -209,7 +209,11 @@ meshConstruct::rectangleMesh(Simulation& System,const int type,
       ELog::EM<<"Using unknown keyword :"<<KeyWords<<ELog::endErr;
     }
 
-  ELog::EM<<"Adding tally "<<MT<<ELog::endTrace;
+  ELog::EM<<"Adding tally "<<ELog::endTrace;
+  ELog::EM<<"Coordinates  : "<<ELog::endTrace;
+  MT.writeCoordinates(ELog::EM.Estream());
+  ELog::EM<<ELog::endTrace;
+
   System.addTally(MT);
 
   return;

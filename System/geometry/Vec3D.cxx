@@ -147,18 +147,18 @@ Vec3D::operator()(const Matrix<T>& A) const
     \return Vec3D of matrix
   */
 {
-  std::pair<int,int> Asize=A.size();
+  std::pair<size_t,size_t> Asize=A.size();
   if (Asize.first*Asize.second<1)
     return Vec3D(0,0,0);
   Vec3D Out;
   if (Asize.first>Asize.second) 
     {
-      for(int i=0;i<3;i++)
+      for(size_t i=0;i<3;i++)
 	Out[i]=(i<Asize.first) ? A[i][0] : 0.0;
     }
   else
     {
-      for(int i=0;i<3;i++)
+      for(size_t i=0;i<3;i++)
 	Out[i]=(i<Asize.second) ? A[0][i] : 0.0;
     }
   return Out;
