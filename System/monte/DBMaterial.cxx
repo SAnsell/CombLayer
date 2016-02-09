@@ -1033,6 +1033,11 @@ DBMaterial::createMaterial(const std::string& MName)
 	      createOrthoParaMix(MName,PFrac/100.0);
 	      return 1;
 	    }
+	  if (AKey=="ParaOrthoNeutronics")
+	    {
+	      createOrthoParaNeutronicsMix(MName,PFrac/100.0);
+	      return 1;
+	    }
 	  if (AKey=="UBurn")
 	    {
 	      createMix(MName,"U3Si2","U3Si2Burnt",PFrac/100.0);
@@ -1092,6 +1097,43 @@ DBMaterial::createOrthoParaMix(const std::string& Name,
     {
       Unit+=" 1004.70c "+StrFunc::makeString(H2density*(1.0-PFrac));
       SQW+="orthh.99t ";
+    }
+  
+  MObj.setMaterial(matNum,Name,Unit,SQW,MLib);
+  setMaterial(MObj);
+  return matNum;
+}
+
+int
+DBMaterial::createOrthoParaNeutronicsMix(const std::string& Name,
+			       const double PFrac)
+  /*!
+    Creates an ortho/Para Mixture as used in the ESS neutronics group
+    \param Name :: Name of object
+    \param PFrac :: fraction of Para
+    \return current number
+   */
+{
+  ELog::RegMethod RegA("DBMaterial","createOrthoParaNeutronicsMix");
+
+  const int matNum(getFreeNumber());
+  const double H2density(0.0418277);
+  if (PFrac<-1e-5 || PFrac>1.00001)
+    throw ColErr::RangeError<double>(PFrac,0.0,1.0,"Para fraction");
+
+  MonteCarlo::Material MObj;
+  std::string Unit;
+  std::string SQW;
+  const std::string MLib="hlib=.70h pnlib=70u";
+  if (PFrac>1e-5)
+    {
+      Unit+=" 1001.70c "+StrFunc::makeString(H2density*PFrac);
+      SQW+="hpara.10t ";
+    }
+  if (1.0-PFrac>1e-5)
+    {
+      Unit+=" 1004.70c "+StrFunc::makeString(H2density*(1.0-PFrac));
+      SQW+="hortho.10t ";
     }
   
   MObj.setMaterial(matNum,Name,Unit,SQW,MLib);

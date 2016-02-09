@@ -80,7 +80,7 @@ void addESSMaterial()
   MObj.setMaterial(103, "LH05ortho", " 1001.70c 99.5 "
                    "1004.70c 0.5 ","hpara.10t hortho.10t", MLib);
   MObj.setDensity(-7.0e-2*(0.07/0.0689677));
-  // 0.07/0.0689677 because CL for some reason changes the density !!! todo !!!
+  // 0.07/0.0689677 because CL for some reason changes the density. This correction works for 0.5% ortho only !!! todo !!!
   MDB.resetMaterial(MObj);
 
   // Generic light water
