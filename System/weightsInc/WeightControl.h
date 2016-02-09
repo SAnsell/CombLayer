@@ -25,7 +25,10 @@
 ///\file 
 
 class Simulation;
-
+namespace Geometry
+{
+  class Plane;
+}
 
 /*!
   \namespace WeightSystem
@@ -115,6 +118,8 @@ class WeightControl
 
   void calcWWGTrack(const Simulation&,const Geometry::Vec3D&);
   void calcCellTrack(const Simulation&,const Geometry::Vec3D&,
+		     const std::vector<int>&,CellWeight&);
+  void calcCellTrack(const Simulation&,const Geometry::Plane&,
 		     const std::vector<int>&,CellWeight&);
 
 
