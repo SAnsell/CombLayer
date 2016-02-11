@@ -617,7 +617,6 @@ WeightControl::procObject(const Simulation& System,
   procParam(IParam,"weightControl",0,0);
   for(size_t iSet=0;iSet<nSet;iSet++)
     {
-      
       const std::string Key=
 	IParam.getValue<std::string>("weightObject",iSet,0);
       // local values:
@@ -641,10 +640,9 @@ WeightControl::procObject(const Simulation& System,
       else if (activePlane)
         {
 	  const size_t PI(static_cast<size_t>(-activePtIndex-1));
-          ELog::EM<<"PI == "<<activePtIndex<<" "<<PI<<ELog::endDiag;
           if (PI>=planePt.size())
-            throw ColErr::IndexError<size_t>(PI,planePt.size(),
-                                             "planePt.size() < activePtIndex");
+            throw ColErr::IndexError<size_t>
+              (PI,planePt.size(),"planePt.size() < activePtIndex");
           CellWeight CW;
           calcCellTrack(System,planePt[PI],objCells,CW);
           CW.invertWM(energyCut,scaleFactor,minWeight,weightPower);

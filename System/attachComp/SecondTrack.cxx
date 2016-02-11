@@ -135,7 +135,7 @@ SecondTrack::setBeamExit(const Geometry::Vec3D& C,
     \param A :: Axis
   */
 {
-  ELog::RegMethod RegA("SecondComp","setBeamSurf");
+  ELog::RegMethod RegA("SecondComp","setBeamExit");
 
   LExit.setAxis(A);
   LExit.setConnectPt(C);
@@ -176,7 +176,7 @@ SecondTrack::getExitString() const
     \return String of link
   */
 {
-  ELog::RegMethod RegA("SecondTrack","getLinkSurf");
+  ELog::RegMethod RegA("SecondTrack","getExitString");
   
   return LExit.getLinkString();
 }
@@ -202,6 +202,25 @@ SecondTrack::applyBeamAngleRotate(const double xyAngle,
   return;
 }
   
+void
+SecondTrack::applyRotation(const localRotate& LC)
+  /*!
+    Apply a rotation to the basis set
+    \param LC :: local rotate
+    \param Angle :: rotation angle
+  */
+{
+  ELog::RegMethod RegA("SecondTrack","applyRotation(localRotate)");
+
+  LC.applyFullAxis(bX);
+  LC.applyFullAxis(bY);
+  LC.applyFullAxis(bZ);
+
+  LC.applyFull(bEnter);
+  LC.applyFull(bExit);
+  return;
+}
+
 void
 SecondTrack::applyRotation(const Geometry::Vec3D& Axis,
 			   const double Angle)

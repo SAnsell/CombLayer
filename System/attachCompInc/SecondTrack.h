@@ -2,8 +2,8 @@
   CombLayer : MCNP(X) Input builder
  
  * File:   attachCompInc/SecondTrack.h
-*
- * Copyright (c) 2004-2015 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -79,6 +79,7 @@ class SecondTrack
   const Geometry::Vec3D& getExitAxis() const;
   std::string getExitString() const;
 
+  virtual void applyRotation(const localRotate&);
   virtual void applyRotation(const Geometry::Vec3D&,const double);
   virtual void applyBeamAngleRotate(const double,const double);
 };

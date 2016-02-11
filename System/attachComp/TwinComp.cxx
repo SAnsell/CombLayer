@@ -138,8 +138,22 @@ TwinComp::createUnitVector(const TwinComp& TT)
   
 
 void
+TwinComp::applyRotation(const localRotate& LR)
+  /*!
+    Apply a rotation to the basis set
+    \param LR :: localRotate
+  */
+{
+  ELog::RegMethod RegA("TwinComp","applyRotation");
+
+  FixedComp::applyRotation(LR);
+  SecondTrack::applyRotation(LR);
+  return;
+}
+
+void
 TwinComp::applyRotation(const Geometry::Vec3D& Axis,
-			 const double Angle)
+                        const double Angle)
   /*!
     Apply a rotation to the basis set
     \param Axis :: rotation axis 
