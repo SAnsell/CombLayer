@@ -72,6 +72,7 @@ class masterRotate : public localRotate
   virtual void applyFull(MonteCarlo::Object*) const;
   virtual void applyFull(Geometry::Surface*) const;
   virtual void applyFull(Geometry::Vec3D&) const;
+  virtual void applyFullAxis(Geometry::Vec3D&) const;
 
   void setGlobal() { globalApplied=1; }
   void clearGlobal() { globalApplied=0; }

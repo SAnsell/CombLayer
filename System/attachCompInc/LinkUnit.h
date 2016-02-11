@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/LinkUnit.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@
 #define attachSystem_LinkUnit_h
 
 class Rule;
+class localRotate;
 
 namespace attachSystem
 {
@@ -98,7 +99,8 @@ class LinkUnit
   void addBridgeSurf(const int);
   void addBridgeSurf(const std::string&);
   void addBridgeSurf(const HeadRule&);
-  
+
+  void applyRotation(const localRotate&);
 };
 
 }

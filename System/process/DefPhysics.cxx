@@ -215,7 +215,7 @@ setDefRotation(const mainSystem::inputParam& IParam)
 	  MR.addRotation(GIPtr->getZ(),
                          Geometry::Vec3D(0,0,0),ZFlag*angle);
 	  // Z rotation.
-	  ELog::EM<<"AXIS["<<ZFlag<<"] == "<<AxisVec<<ELog::endDiag;
+	  ELog::EM<<"ROTATION AXIS["<<ZFlag<<"] == "<<AxisVec<<ELog::endDiag;
 		  
 	  const double angleZ=90.0-180.0*acos(-AxisVec[2])/M_PI;
 	  MR.addRotation(GIPtr->getX(),Geometry::Vec3D(0,0,0),-angleZ);

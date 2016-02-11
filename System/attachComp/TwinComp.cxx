@@ -181,7 +181,7 @@ TwinComp::report() const
 {
   // NO ELog -- so reporting can 
   const masterRotate& MR=masterRotate::Instance();
-  ELog::EM<<"------------------------------------"<<ELog::endDebug;
+  ELog::EM<<"------------------------------------"<<ELog::endTrace;
   ELog::EM<<"Origin =="<<MR.calcRotate(Origin)<<ELog::endTrace;
   ELog::EM<<"X      =="<<MR.calcAxisRotate(X)<<ELog::endTrace;
   ELog::EM<<"Y      =="<<MR.calcAxisRotate(Y)<<ELog::endTrace;

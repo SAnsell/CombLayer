@@ -203,3 +203,16 @@ masterRotate::applyFull(Geometry::Vec3D& Pt) const
     localRotate::applyFull(Pt);
   return;
 }
+
+void
+masterRotate::applyFullAxis(Geometry::Vec3D& Axis) const
+  /*!
+    Apply full rotations:
+    \param Axis :: Apply axis rotation
+   */
+{
+  if (!globalApplied)
+    localRotate::applyFullAxis(Axis);
+
+  return;
+}
