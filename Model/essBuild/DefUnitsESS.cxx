@@ -3,7 +3,7 @@
  
  * File:   essBuild/DefUnitsESS.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -106,7 +106,6 @@ setDefUnits(FuncDataBase& Control,
   return;
 }
 
-
 void
 setESSFull(defaultConfig& A)
   /*!
@@ -191,7 +190,7 @@ setESSSingle(defaultConfig& A,
 
   A.setOption("lowMod","Butterfly");
   const std::map<std::string,std::string> beamDef=
-    {{"NMX","G4BLine15"},
+    {{"NMX","G4BLine21"},
      {"SHORTDREAM","G4BLine9"},
      {"SHORTODIN","G1BLine16"},
      {"DREAM","G4BLine17"},

@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/nmx/NMXvariables.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -100,7 +100,7 @@ NMXvariables(FuncDataBase& Control)
   Control.addVariable("nmxGA0ZAngle",0.0);
     
   Control.addVariable("nmxBAXStep",0.0);       
-  Control.addVariable("nmxBAYStep",0.0);       
+  Control.addVariable("nmxBAYStep",50.0);       
   Control.addVariable("nmxBAZStep",0.0);       
   Control.addVariable("nmxBAXYAngle",0.0);
   Control.addVariable("nmxBAZAngle",0.0);
@@ -128,6 +128,7 @@ NMXvariables(FuncDataBase& Control)
   Control.addParse<double>("nmxBA0Length","nmxBALength");
 
   // VACUUM PIPES:
+  Control.addVariable("nmxPipeAYStep",50.0);
   Control.addVariable("nmxPipeARadius",12.0);
   Control.addVariable("nmxPipeALength",700.0);
   Control.addVariable("nmxPipeAFeThick",1.0);

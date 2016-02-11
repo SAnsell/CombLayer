@@ -3,7 +3,7 @@
  
  * File:   essBuild/makeESSBL.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -207,7 +207,7 @@ makeESSBL::build(Simulation& System,
     {
       // NMX beamline
       ELog::EM<<"Building "<<beamName<<ELog::endDiag;
-      NMX nmxBL;
+      NMX nmxBL("nmx");
       nmxBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="VOR")
