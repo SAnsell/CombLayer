@@ -19,7 +19,7 @@
 \definecolor{myorange}{rgb}{1.0,0.4,0}
 
 \lstset{
-  basicstyle=\footnotesize\sffamily\color{black},
+  basicstyle=\small\sffamily\color{black},
   commentstyle=\color{red},
   frame=false,
   numbers=left,
@@ -31,7 +31,18 @@
   stringstyle=\color{myorange},
   tabsize=8,
   otherkeywords={std},
-  escapeinside={\%\%}{\@}
+  escapeinside={\%\%}{\@},
+  xleftmargin=0.0\linewidth
 }
 \newcommand {\prog}[1]{{\it #1}}
 \newcommand {\vb}[1]{\begin{\verbatim}{#1}\end{verbatim}}
+\newcommand {\alert}[1]{\textcolor{red}{#1}}
+\newcommand {\checkme}[1]{\alert{#1}\marginpar{\alert{$\leftarrow$\,check me}}}
+\lstnewenvironment{bash}{\lstset{language=bash,numbers=none,backgroundcolor=\color{yellow!20},frame=tb}}{}
+
+\setlength{\parindent}{0in}
+\setlength{\parskip}{0.1in}
+\setlength{\textwidth}{6.5in}
+\setlength{\textheight}{9.0in}
+\setlength{\oddsidemargin}{0.0in} 
+\setlength{\evensidemargin}{0.0in} 

@@ -296,6 +296,7 @@ createInputs(inputParam& IParam)
 
   IParam.regMulti("wWWG","wWWG",25,0);
   IParam.regMulti("wwgE","wwgE",25,0);
+  IParam.regMulti("wwgCalc","wwgCalc",100,1);
   IParam.regItem("wwgXMesh","wwgXMesh",3,125);
   IParam.regItem("wwgYMesh","wwgYMesh",3,125);
   IParam.regItem("wwgZMesh","wwgZMesh",3,125);

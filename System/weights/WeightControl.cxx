@@ -992,7 +992,12 @@ WeightControl::wwgCreate(Simulation& System)
     WeightSystem::weightManager::Instance();
   WWG& wwg=WM.getWWG();
   wwg.resetMesh();
-  
+
+  const size_t NSetCnt=IParam.setCnt("wwgCalc");
+  for(size_t index=0;index<NSetCnt;index++)
+    {
+      const size_t itemCnt=IParam.itemCnt("wwgCalc",index);
+      
   for(const Geometry::Vec3D& Pt : sourcePt)
     calcWWGTrack(System,Pt);
 

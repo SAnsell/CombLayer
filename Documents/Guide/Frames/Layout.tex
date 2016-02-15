@@ -1,11 +1,15 @@
+\section{Layout}
+\label{Sec:Layout}
+
 The basic program structure is given by figure \ref{MainLayout}.  The
 main program structure is normally copied from an existing project and
-the areas are constructed by the user. It is normal to add inputs
-(from the command line), variables that your project is going to use,
-and then build the geometry constructor via a call to a makeProject
-command.  There are other ways to construct the system but this allows
-a degree of autonomy from tallies/variance reduction and producing an
-appropiate output.
+the areas are constructed by the user. It is normal flow is to to call
+functions that: (i) define new input options to enter parameters from the
+command line, (ii) variables that your project is going to use,
+(iii)  build the geometry via a call to a makeProject functoin (iv)
+set up tallies (v) generate variance reduction.There are other ways
+to construct the system but this allows a degree of autonomy from
+tallies/variance reduction and producing an appropiate output.
 
 \begin{figure}[!htp]
 \begin{tikzpicture}
@@ -173,6 +177,7 @@ main(int argc,char* argv[])
 
   return exitFlag;
 }
+\label{MainProg}
 \end{lstlisting}
 
 The Main program given in listing \ref{MainProg} highlights the areas
@@ -180,7 +185,8 @@ that the user should be creating. The remainder of the main() function
 deals with trapping exceptions, loggin and building variance reduction
 and tallies into the model.
 
-(i) {\bf createPipeInputs} is a 
+\begin{enumerate}[(i)]
+\item {\bf createPipeInputs} is a 
 function to define which command line options [above the standard ones]
 this model should support. It doesn't do anything with them, just a
 list of options, number of arguements they can take and any default
@@ -193,17 +199,14 @@ option is shown (e.g. execute {\it ./pipe}).
 If no additional options are required, a call to
 {\it createInputs(IParam)} would be expected. Significant restructuring
 would need to take place to avoid that call.
-
-(ii) \tcgg{setVariable::PipeVariables} is the method that registers
+\item \tcgg{setVariable::PipeVariables} is the method that registers
 and sets a default value for all the variables that the model will
 use. 
-
-(iii) \tcgg{makePipe pipeObj} and \tcgg{pipeObj.buid(SimPtr,IParam)} are the
+\item \tcgg{makePipe pipeObj} and \tcgg{pipeObj.buid(SimPtr,IParam)} are the
 main geometry building calls. Typically 100\% of the geometry is built
 in this zone. It is not a place for tallies, variance reduction and other
 non-geometry items.
-
-(iii) 
+\end{enumerate}
 
 
 

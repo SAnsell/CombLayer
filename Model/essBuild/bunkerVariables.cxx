@@ -173,7 +173,7 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("CurtainInnerStep",25.0);
   Control.addVariable("CurtainTopRaise",60.0);
   Control.addVariable("CurtainHeight",250.0);
-  Control.addVariable("CurtainDepth",180.0);
+  Control.addVariable("CurtainDepth",100.0);
   Control.addVariable("CurtainWallMat","Concrete");
   Control.addVariable("CurtainNTopLayers",7);
   Control.addVariable("CurtainNMidLayers",2);
