@@ -636,7 +636,6 @@ Bunker::layerProcess(Simulation& System)
 	{
 	  if (!(AS & 1))  // only process roof sections not give
 	    {
-	      
 	      // Cell Specific:
 	      const int firstCell(cellIndex);
 	      DA.setCellN(getCell("roof"+StrFunc::makeString(iSector)));

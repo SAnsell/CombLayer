@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/NMX.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,9 +50,12 @@ namespace essSystem
     \brief NMX beamline constructor for the ESS
   */
   
-class NMX
+class NMX : public attachSystem::CopiedComp
 {
  private:
+
+  /// Stop at [0:Complete / 1:Mono Wall / 2:Inner Bunker / 3:Outer Bunker ]
+  int stopPoint;  
 
   /// Main Beam Axis [for construction]
   std::shared_ptr<attachSystem::FixedOffset> nmxAxis;
@@ -80,7 +83,7 @@ class NMX
   
  public:
   
-  NMX();
+  NMX(const std::string&);
   NMX(const NMX&);
   NMX& operator=(const NMX&);
   ~NMX();

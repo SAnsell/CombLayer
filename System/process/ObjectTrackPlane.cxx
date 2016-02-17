@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   process/ObjectTrackPoint.cxx
+ * File:   process/ObjectTrackPlane.cxx
  *
  * Copyright (c) 2004-2016 by Stuart Ansell
  *
@@ -42,6 +42,9 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
+#include "Surface.h"
+#include "Quadratic.h"
+#include "Plane.h"
 #include "varList.h"
 #include "Code.h"
 #include "FItem.h"
@@ -60,45 +63,45 @@
 #include "DBMaterial.h"
 #include "LineTrack.h"
 #include "ObjectTrackAct.h"
-#include "ObjectTrackPoint.h"
+#include "ObjectTrackPlane.h"
 
 namespace ModelSupport
 {
 
-ObjectTrackPoint::ObjectTrackPoint(const Geometry::Vec3D& PtA) :
-  ObjectTrackAct(),TargetPt(PtA)
+ObjectTrackPlane::ObjectTrackPlane(const Geometry::Plane& PtA) :
+  ObjectTrackAct(),TargetPlane(PtA)
   /*! 
     Constructor 
   */
 {}
 
-ObjectTrackPoint::ObjectTrackPoint(const ObjectTrackPoint& A) :
-  ObjectTrackAct(A),TargetPt(A.TargetPt)
+ObjectTrackPlane::ObjectTrackPlane(const ObjectTrackPlane& A) :
+  ObjectTrackAct(A),TargetPlane(A.TargetPlane)
    /*! 
     Copy Constructor 
-    \param A :: ObjectTrackPoint to copy
+    \param A :: ObjectTrackPlane to copy
   */
 {}
 
 
-ObjectTrackPoint&
-ObjectTrackPoint::operator=(const ObjectTrackPoint& A) 
+ObjectTrackPlane&
+ObjectTrackPlane::operator=(const ObjectTrackPlane& A) 
    /*! 
      Assignment operator
-    \param A :: ObjectTrackPoint to copy
+    \param A :: ObjectTrackPlane to copy
     \return *this
   */
 {
   if (this!=&A)
     {
       ObjectTrackAct::operator=(A);
-      TargetPt=A.TargetPt;
+      TargetPlane=A.TargetPlane;
     }
   return *this;
 }
 
 void
-ObjectTrackPoint::addUnit(const Simulation& System,
+ObjectTrackPlane::addUnit(const Simulation& System,
 			const long int objN,
 			const Geometry::Vec3D& IPt)
   /*!
@@ -108,27 +111,28 @@ ObjectTrackPoint::addUnit(const Simulation& System,
     \param IPt :: initial point
   */
 {
-  ELog::RegMethod RegA("ObjectTrackPoint","addUnit");
+  ELog::RegMethod RegA("ObjectTrackPlane","addUnit");
 
   // Remove old track
   std::map<long int,LineTrack>::iterator mc=Items.find(objN);
   if (mc!=Items.end())
     Items.erase(mc);
 
-  LineTrack A(IPt,TargetPt);
+  Geometry::Vec3D TP=TargetPlane.closestPt(IPt);
+  LineTrack A(IPt,TP);
   A.calculate(System);
   Items.insert(std::map<long int,LineTrack>::value_type(objN,A));
   return;
 }  
 
 void 
-ObjectTrackPoint::write(std::ostream& OX) const
+ObjectTrackPlane::write(std::ostream& OX) const
   /*!
     Write out track (mainly debug)
     \param OX :: Output stream
    */
 {
-  ELog::RegMethod RegA("ObjectTrackPoint","write");
+  ELog::RegMethod RegA("ObjectTrackPlane","write");
 
   OX<<"WRITE"<<std::endl;
   std::map<long int,LineTrack>::const_iterator mc;

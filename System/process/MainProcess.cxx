@@ -285,9 +285,9 @@ createInputs(inputParam& IParam)
   IParam.regItem("WControl","weightControl",1,10);
   IParam.regItem("WTemp","weightTemp",1);
   IParam.regItem("WType","weightType",1,30);
-  IParam.regItem("WSource","weightSource",1,10);
-  IParam.regItem("WPlane","weightPlane",1,30);
-  IParam.regItem("WTally","weightTally",1,10);
+  IParam.regMulti("WSource","weightSource",30,1);
+  IParam.regMulti("WPlane","weightPlane",30,2);
+  IParam.regMulti("WTally","weightTally",30,1);
   IParam.regMulti("WObject","weightObject",100,1);
   IParam.regMulti("WRebase","weightRebase",100,1);
   IParam.regMulti("wDXT","weightDxtran",100,1);
@@ -296,6 +296,7 @@ createInputs(inputParam& IParam)
 
   IParam.regMulti("wWWG","wWWG",25,0);
   IParam.regMulti("wwgE","wwgE",25,0);
+  IParam.regMulti("wwgCalc","wwgCalc",100,1);
   IParam.regItem("wwgXMesh","wwgXMesh",3,125);
   IParam.regItem("wwgYMesh","wwgYMesh",3,125);
   IParam.regItem("wwgZMesh","wwgZMesh",3,125);

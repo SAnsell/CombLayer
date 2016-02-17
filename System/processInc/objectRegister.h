@@ -82,8 +82,7 @@ class objectRegister
   std::string inRenumberRange(const int) const;
 
   int calcRenumber(const int) const;
-  
-  
+    
   void addObject(const std::string&,const CTYPE&);
   void addObject(const CTYPE&);
   template<typename T> const T*
@@ -95,6 +94,7 @@ class objectRegister
 
   std::vector<int> getObjectRange(const std::string&) const;
   void reset();
+  void rotateMaster();
   void write(const std::string&) const;
   
 };

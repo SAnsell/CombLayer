@@ -3,7 +3,7 @@
  
  * File:   weights/WeightControl.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -75,6 +75,7 @@
 #include "LineTrack.h"
 #include "ObjectTrackAct.h"
 #include "ObjectTrackPoint.h"
+#include "ObjectTrackPlane.h"
 #include "WeightMesh.h"
 #include "WWG.h"
 #include "WWGWeight.h"
@@ -499,25 +500,24 @@ WeightControl::calcWWGTrack(const Simulation& System,
    
 void
 WeightControl::calcCellTrack(const Simulation& System,
-                             const Geometry::Plane& Pt,
+                             const Geometry::Plane& curPlane,
                              const std::vector<int>& cellVec,
                              CellWeight& CTrack)
   /*!
     Calculate a given track 
     \param System :: Simulation to use
-    \param Pt :: point for outgoing track
+    \param curPlane :: current plane
     \param cellVec :: Cells to track
     \param CTrack :: Cell Weights for output 
    */
 {
-  ELog::RegMethod RegA("WeightControl","calcCellTrack");
+  ELog::RegMethod RegA("WeightControl","calcCellTrack<Plane>");
 
   // CTRack needs to be clean
   CTrack.clear();
 
   // SOURCE Point
-  ELog::EM<<"PALCEHOLDER"<<ELog::endErr;
-  ModelSupport::ObjectTrackPoint OTrack(Geometry::Vec3D(0,0,0));
+  ModelSupport::ObjectTrackPlane OTrack(curPlane);
   size_t step(cellVec.size()/10);
   
   int reportN=cellVec[step];
@@ -532,6 +532,7 @@ WeightControl::calcCellTrack(const Simulation& System,
 	  step+=cellVec.size()/50;
 	  reportN=(cellVec.size()>step) ? 0 : cellVec[step];
 	}
+      
       const MonteCarlo::Qhull* CellPtr=System.findQhull(cellN);
       if (CellPtr && CellPtr->getMat())
 	{
@@ -558,7 +559,7 @@ WeightControl::calcCellTrack(const Simulation& System,
     \param CTrack :: Cell Weights for output 
    */
 {
-  ELog::RegMethod RegA("WeightControl","calcCellTrack");
+  ELog::RegMethod RegA("WeightControl","calcCellTrack<Vec3D>");
 
   // CTRack needs to be clean
   CTrack.clear();
@@ -616,7 +617,6 @@ WeightControl::procObject(const Simulation& System,
   procParam(IParam,"weightControl",0,0);
   for(size_t iSet=0;iSet<nSet;iSet++)
     {
-      
       const std::string Key=
 	IParam.getValue<std::string>("weightObject",iSet,0);
       // local values:
@@ -627,14 +627,26 @@ WeightControl::procObject(const Simulation& System,
       if (objCells.empty())
         ELog::EM<<"Cell["<<Key<<"] empty on renumber"<<ELog::endWarn;
 
-      if (activePlane)
+      if (activePlane && activePtIndex>0)
 	{
 	  const size_t PI(static_cast<size_t>(activePtIndex-1));
+          if (PI>=planePt.size())
+            throw ColErr::IndexError<size_t>(PI,planePt.size(),
+                                             "planePt.size() < activePtIndex");
           CellWeight CW;
           calcCellTrack(System,planePt[PI],objCells,CW);
           CW.updateWM(energyCut,scaleFactor,minWeight,weightPower);
-
 	}
+      else if (activePlane)
+        {
+	  const size_t PI(static_cast<size_t>(-activePtIndex-1));
+          if (PI>=planePt.size())
+            throw ColErr::IndexError<size_t>
+              (PI,planePt.size(),"planePt.size() < activePtIndex");
+          CellWeight CW;
+          calcCellTrack(System,planePt[PI],objCells,CW);
+          CW.invertWM(energyCut,scaleFactor,minWeight,weightPower);
+        }
       else if (activePtIndex>0)
         {
           const size_t PI(static_cast<size_t>(activePtIndex-1));
@@ -980,7 +992,12 @@ WeightControl::wwgCreate(Simulation& System)
     WeightSystem::weightManager::Instance();
   WWG& wwg=WM.getWWG();
   wwg.resetMesh();
-  
+
+  const size_t NSetCnt=IParam.setCnt("wwgCalc");
+  for(size_t index=0;index<NSetCnt;index++)
+    {
+      const size_t itemCnt=IParam.itemCnt("wwgCalc",index);
+      
   for(const Geometry::Vec3D& Pt : sourcePt)
     calcWWGTrack(System,Pt);
 

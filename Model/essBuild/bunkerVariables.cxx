@@ -101,7 +101,7 @@ EssBunkerVariables(FuncDataBase& Control)
 
   Control.addVariable("ABunkerRoofMat0","CarstonConc");
   Control.addVariable("ABunkerRoofMat3","CastIron");
-  Control.addVariable("ABunkerRoofMat7","CarstonConc");
+  Control.addVariable("ABunkerRoofMat6","CarstonConc");
   Control.addVariable("ABunkerRoofMat14","CastIron");
   Control.addVariable("ABunkerRoofMat16","CarstonConc");
 
@@ -169,11 +169,11 @@ EssBunkerVariables(FuncDataBase& Control)
   
   Control.addVariable("CurtainLeftPhase",-65.0);
   Control.addVariable("CurtainRightPhase",65.0);
-  Control.addVariable("CurtainWallThick",80.0);
+  Control.addVariable("CurtainWallThick",20.0);
   Control.addVariable("CurtainInnerStep",25.0);
   Control.addVariable("CurtainTopRaise",60.0);
   Control.addVariable("CurtainHeight",250.0);
-  Control.addVariable("CurtainDepth",300.0);
+  Control.addVariable("CurtainDepth",100.0);
   Control.addVariable("CurtainWallMat","Concrete");
   Control.addVariable("CurtainNTopLayers",7);
   Control.addVariable("CurtainNMidLayers",2);

@@ -135,8 +135,9 @@ main(int argc,char* argv[])
       
       ModelSupport::setDefRotation(IParam);
       SimPtr->masterRotation();
-      const int renumCellWork=tallySelection(*SimPtr,IParam);
       
+      const int renumCellWork=tallySelection(*SimPtr,IParam);
+      ELog::EM<<"renumber == "<<renumCellWork<<ELog::endDiag;
       if (createVTK(IParam,SimPtr,Oname))
 	{
 	  delete SimPtr;

@@ -43,6 +43,9 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
+#include "Quaternion.h"
+#include "localRotate.h"
+#include "masterRotate.h"
 #include "stringCombine.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -547,6 +550,20 @@ objectRegister::getObjectRange(const std::string& objName) const
   return Out;
 }
 
+void
+objectRegister::rotateMaster()
+  /*!
+    Apply the rotation to the object component
+   */
+{
+  ELog::RegMethod RegA("objectRegister","rotateMaster");
+  const masterRotate& MR=masterRotate::Instance();
+  
+  for(cMapTYPE::value_type& AUnit : Components)
+    AUnit.second->applyRotation(MR);
+
+  return;
+}
 
   
 void

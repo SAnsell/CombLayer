@@ -46,6 +46,7 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
+#include "localRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -1272,6 +1273,28 @@ FixedComp::calcLinkAxis(const long int sideIndex,
   return;
 }
 
+void
+FixedComp::applyRotation(const localRotate& LR)
+  /*!
+    Apply rotation
+    \param LR :: Local rotation system
+  */
+{
+  ELog::RegMethod RegA("FixedComp","applyRotation(localRotate)");
+
+  LR.applyFullAxis(X);
+  LR.applyFullAxis(Y);
+  LR.applyFullAxis(Z);
+  LR.applyFullAxis(beamAxis);
+  
+  LR.applyFull(Origin);
+  LR.applyFull(beamOrigin);
+
+  for(LinkUnit& linkItem : LU)
+    linkItem.applyRotation(LR);
+  
+  return;
+}
   
 int
 FixedComp::getMasterSurf(const size_t outIndex) const

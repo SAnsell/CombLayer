@@ -319,7 +319,7 @@ pointConstruct::processPointFree(Simulation& System,
 
   std::vector<Geometry::Vec3D> EmptyVec;
   addF5Tally(System,tNum,TPoint,EmptyVec);
-  
+  ELog::EM<<"Adding point at "<<TPoint<<ELog::endDiag;
   return;
 }
 

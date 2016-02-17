@@ -2163,6 +2163,9 @@ Simulation::masterRotation()
 {
   ELog::RegMethod RegA("Simulation","masterRotation");
 
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
   masterRotate& MR = masterRotate::Instance();
   
   const ModelSupport::surfIndex::STYPE& SurMap=
@@ -2188,16 +2191,17 @@ Simulation::masterRotation()
       {
 	sdef.setTransform(createSourceTransform());
 	if (sdef.rotateMaster())
-	  {
-	    ELog::EM<<"Failed on setting source term rotate"<<ELog::endErr;
-	  }
+          ELog::EM<<"Failed on setting source term rotate"<<ELog::endErr;
       }
   // Applyotations to tallies
   std::map<int,tallySystem::Tally*>::iterator mc;
   for(mc=TItem.begin();mc!=TItem.end();mc++)
     mc->second->rotateMaster();
 
+  OR.rotateMaster();
+  
   MR.setGlobal();
+
   return;
 }
 

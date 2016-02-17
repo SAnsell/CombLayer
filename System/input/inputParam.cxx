@@ -433,7 +433,7 @@ inputParam::getDefValue(const T& DefVal,
   if (!IPtr)
     return DefVal;
   const size_t NItems=IPtr->getNItems(setIndex);
-  ELog::EM<<"NITem == "<<NItems<<ELog::endDiag;
+
   return (NItems>itemIndex) ?
     IPtr->getObj<T>(setIndex,itemIndex) : DefVal;
 }

@@ -3,7 +3,7 @@
  
  * File:   essBuild/essVariables.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2016 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -2312,7 +2312,7 @@ EssBeamLinesVariables(FuncDataBase& Control)
       Control.addVariable(baseKey+"Height2",22.0);
       Control.addVariable(baseKey+"Depth2",22.0);
       Control.addVariable(baseKey+"Length1",170.0);
-      Control.addVariable(baseKey+"1XYangle",90.0-30.0); 
+      Control.addVariable(baseKey+"1XYangle",90.0-30.0);   // N1
       Control.addVariable(baseKey+"2XYangle",90.0-35.3); 
       Control.addVariable(baseKey+"3XYangle",90.0-42.0); 
       Control.addVariable(baseKey+"4XYangle",90.0-47.3); 
@@ -2333,7 +2333,7 @@ EssBeamLinesVariables(FuncDataBase& Control)
       Control.addVariable(baseKey+"18XYangle",-90.0+48.0);
       Control.addVariable(baseKey+"19XYangle",-90.0+42.0);
       Control.addVariable(baseKey+"20XYangle",-90.0+36.0);
-      Control.addVariable(baseKey+"21XYangle",-90.0+30.0);
+      Control.addVariable(baseKey+"21XYangle",-90.0+30.0);  // W1
       Control.addVariable(baseKey+"Filled",0);
       Control.addVariable(baseKey+"Active",0);
 

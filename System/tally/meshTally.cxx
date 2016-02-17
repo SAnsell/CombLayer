@@ -300,7 +300,6 @@ meshTally::write(std::ostream& OX) const
   masterWrite& MW=masterWrite::Instance();
   if (isActive())
     {
-      const char abc[]="abc";
       const char typeLetter[]="rcs";
       OX<<"tmesh"<<std::endl;
 
