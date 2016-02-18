@@ -70,8 +70,9 @@ class WWG
   const WeightMesh& getGrid() const { return Grid; }
   /// Access to EBin
   const std::vector<double>& getEBin() const { return EBin; }
-  void setEnergyBin(const std::vector<double>&);
-  void resetMesh();
+  void setEnergyBin(const std::vector<double>&,
+		    const std::vector<double>&);
+  void resetMesh(const std::vector<double>&);
 
 
   void scaleMeshItem(const long int,const std::vector<double>&);
