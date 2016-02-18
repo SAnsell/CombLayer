@@ -33,7 +33,6 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
-#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -103,49 +102,32 @@ heatConstruct::processHeat(Simulation& System,
   ELog::RegMethod RegA("heatConstruct","processHeat");
 
   const size_t NItems=IParam.itemCnt("tally",Index);
-  ELog::EM<<"NItem == "<<NItems<<ELog::endDiag;
   if (NItems<3)
     throw ColErr::IndexError<size_t>(NItems,3,
 				     "Insufficient items for tally");
+  // PARTICLE TYPE
+  const std::string PType(IParam.getValue<std::string>("tally",Index,1)); 
+  const std::string MType(IParam.getValue<std::string>("tally",Index,2));
+  const std::string cellKey(IParam.getValue<std::string>("tally",Index,3)); 
 
-  const std::string pType(IParam.getValue<std::string>("tally",Index,1)); 
-  const std::string MType(IParam.getValue<std::string>("tally",Index,2)); 
-  
-  // Process a Ranged Heat:
-
-  boost::format Cmt("tally: %d Mat %d Range(%d,%d)");
-
-  const ModelSupport::DBMaterial& DB=
-    ModelSupport::DBMaterial::Instance();
-
-  // Get Material number:
   int matN(0);
-  if (DB.hasKey(MType))
-    matN=DB.getIndex(MType);
-  else if (!StrFunc::convert(MType,matN))
-    {
-      ELog::EM<<"No material number for :"<<MType<<ELog::endErr;
-      return;
-    }
+  if (!StrFunc::convert(MType,matN))
+    matN=ModelSupport::DBMaterial::Instance().getIndex(MType);
 
-  if (matN<0) matN=-2;
-    
-  int RA,RB;
-  // if flag true : then valid range
-  const bool flag=
-    convertRegion(IParam,"tally",Index,3,RA,RB);
-  if (flag)
-    {
-      const int nTally=System.nextTallyNum(6);
-      const std::vector<int> cells=getCellSelection(System,matN,RA,RB);
+  const int nTally=System.nextTallyNum(6);
+  const std::vector<int> cells=
+    getCellSelection(System,matN,cellKey);
       
       
-      tallySystem::addF6Tally(System,nTally,pType,cells);
-      tallySystem::Tally* TX=System.getTally(nTally); 
-      TX->setPrintField("e f");
-      const std::string Comment=(Cmt % nTally % matN % RA % RB ).str();
-      TX->setComment(Comment);
-    }
+  tallySystem::addF6Tally(System,nTally,PType,cells);
+  tallySystem::Tally* TX=System.getTally(nTally); 
+  TX->setPrintField("e f");
+  const std::string Comment=
+    "tally: "+StrFunc::makeString(nTally)+
+    " mat : "+StrFunc::makeString(matN)+":"+
+    cellKey;
+  TX->setComment(Comment);
+
   return;
 }
 

@@ -46,6 +46,7 @@
 #include "Quaternion.h"
 #include "localRotate.h"
 #include "masterRotate.h"
+#include "support.h"
 #include "stringCombine.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -516,40 +517,60 @@ objectRegister::getObjectRange(const std::string& objName) const
 {
   ELog::RegMethod RegA("objectRegister","getObjectRange");
 
-  const ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
   std::string::size_type pos=objName.find(":");
-  
-  if (pos==std::string::npos || !pos)
+  // CELL Range ::  objectName:cellName
+  if (pos!=std::string::npos)
     {
-      const int BStart=OR.getRenumberCell(objName);
-      const int BRange=OR.getRenumberRange(objName);
-      if (BStart==0)
-        throw ColErr::InContainerError<std::string>
-          (objName,"Object name not found");
-
-      if (BStart>BRange)
-        return std::vector<int>();
-      std::vector<int> Out(static_cast<size_t>(1+BRange-BStart));
-      std::iota(Out.begin(),Out.end(),BStart);
+      const std::string itemName=objName.substr(0,pos);
+      const std::string cellName=objName.substr(pos+1);
+      const attachSystem::CellMap* CPtr=
+        getObject<attachSystem::CellMap>(itemName);
+      if (!CPtr)
+        throw ColErr::InContainerError<std::string>(itemName,"objectName:");
+      
+      std::vector<int> Out=CPtr->getCells(cellName);
+      for(int& CN : Out)
+        CN=calcRenumber(CN);
       return Out;
     }
-  
-  const std::string itemName=objName.substr(0,pos);
-  const std::string cellName=objName.substr(pos+1);
-  const attachSystem::CellMap* CPtr=
-    OR.getObject<attachSystem::CellMap>(itemName);
-  if (!CPtr)
+
+  // Simple number range
+  pos=objName.find("-");
+  if (pos!=std::string::npos)
+    {
+      long int ANum,BNum;
+      const std::string AName=objName.substr(0,pos);
+      const std::string BName=objName.substr(pos+1);
+      if (!StrFunc::convert(AName,ANum) ||
+          !StrFunc::convert(BName,BNum) )
+        throw ColErr::InContainerError<std::string>
+          (objName,"objectName does not convert to numbers");
+      if (ANum>BNum)
+        std::swap(ANum,BNum);
+      std::vector<int> Out(static_cast<size_t>(1+BNum-ANum));
+      std::iota(Out.begin(),Out.end(),ANum);
+      for(int& CN : Out)
+        CN=calcRenumber(CN);      
+      return Out;
+    }
+
+
+  // Just an object name:
+  const int BStart=getRenumberCell(objName);
+  const int BRange=getRenumberRange(objName);
+  if (BStart==0)
     throw ColErr::InContainerError<std::string>
-      (itemName,"Object name not found:"+objName);
-  std::vector<int> Out=CPtr->getCells(cellName);
-  for(int& CN : Out)
-    CN=OR.calcRenumber(CN);
+      (objName,"Object name not found");
   
+  if (BStart>BRange)
+    return std::vector<int>();
+  std::vector<int> Out(static_cast<size_t>(1+BRange-BStart));
+  std::iota(Out.begin(),Out.end(),BStart);
+  for(int& CN : Out)
+    CN=calcRenumber(CN);
   return Out;
 }
-
+  
 void
 objectRegister::rotateMaster()
   /*!

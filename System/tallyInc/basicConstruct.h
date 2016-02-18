@@ -71,8 +71,8 @@ class basicConstruct
 		   const size_t) const;
 
   std::vector<int> getCellSelection(const Simulation&,
-				    const int,const int,
-				    const int) const;
+				    const int,
+				    const std::string&) const;
 
  public:
 

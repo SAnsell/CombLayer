@@ -332,43 +332,54 @@ basicConstruct::convertRegion(const mainSystem::inputParam& IParam,
   return outFlag;
 }
 
+
+  
 std::vector<int>
 basicConstruct::getCellSelection(const Simulation& System,
-				 const int matN,const int RA,
-				 const int RB) const
+                                 const int matN,
+                                 const std::string& keyName) const 
+
   /*!
-    Extract all the cells with a material between RA and RB
+    Extract all the cells with a material based on matN and keyName
     \param System :: Simulation for build [needed for nonVoidcells ] 
-    \param matN :: Material number or -1 
-           : all materials 
-	   : -2 all non zero materials
-	   : > 1000 materials containing zaid
-    \param RA :: First number
-    \param RB :: Last number
+    \param matN :: Material number
+           -1 : all materials 
+	   -2 : all non zero materials
+	   > 1000 : materials containing zaid
+    \param keyName :: keyName
    */
 {
   ELog::RegMethod RegA("basicConstruct","getCellSelection");
 
-  std::vector<int> cells;
-  if (matN==-2)
-    cells=System.getNonVoidCellVector();
-  else if (matN<0)
-    cells=System.getCellVector();
-  else if (matN>1000)
-    cells=System.getCellWithZaid(matN);
-  else
-    cells=System.getCellWithMaterial(matN);
+  const ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
 
-  // REMOVE range: [ -- add all]
-  std::vector<int>::iterator lc=
-    lower_bound(cells.begin(),cells.end(),RA);
-  if (lc!=cells.begin()) 
-    cells.erase(cells.begin(),lc);
-  lc=lower_bound(cells.begin(),cells.end(),RB);
-  if (lc!=cells.end()) lc++;
-  cells.erase(lc,cells.end());
+  std::vector<int> cells;
   
-  return cells;
+  // NOTE that getting all the cells from OR is insane
+  if (keyName=="allNonVoid" || keyName=="AllNonVoid")
+    cells=System.getNonVoidCellVector();
+  else if (keyName=="All" || keyName=="all")
+    cells=System.getCellVector();
+  else
+    cells=OR.getObjectRange(keyName);
+
+  // Make no material selection:
+  if (matN<0) return cells;
+
+  // PROCESS mat:
+  std::vector<int> Out;
+  std::vector<int> matCell;
+  
+  if (matN>1000)
+    matCell=System.getCellWithZaid(matN);
+  else
+    matCell=System.getCellWithZaid(matN);
+  
+  std::set_intersection(cells.begin(),cells.end(),
+                        matCell.begin(),matCell.end(),
+                        std::back_inserter(Out));
+  return Out;
 }
 
   // TEMPLATE INSTANCES:

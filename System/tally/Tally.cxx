@@ -409,7 +409,7 @@ void
 Tally::setCinderEnergy(const std::string&)
   /*!
     Set the energyTab line
-    \param pType :: Particle type
+    \param pType :: Particle type [not used]
   */
 {
   ELog::RegMethod RegA("Tally","setCinderEnergy");

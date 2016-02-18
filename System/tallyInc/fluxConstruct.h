@@ -47,7 +47,10 @@ class fluxConstruct : virtual public basicConstruct
 {
  private:
   
-
+  std::vector<int> getCell(const Simulation&,
+			   const mainSystem::inputParam&,
+			   const size_t,
+			   const int);
  public:
 
   fluxConstruct();
@@ -57,8 +60,6 @@ class fluxConstruct : virtual public basicConstruct
 
   int processFlux(Simulation&,const mainSystem::inputParam&,
 		  const size_t,const bool) const;
-  int processFluxCell(Simulation&,const mainSystem::inputParam&,
-		      const size_t,const bool) const;
 
   virtual void writeHelp(std::ostream&) const;
 };

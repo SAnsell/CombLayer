@@ -3,7 +3,7 @@
  
  * File:   tally/pointConstruct.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -187,7 +187,6 @@ pointConstruct::processPoint(Simulation& System,
     {
       const std::string place=
 	IParam.outputItem<std::string>("tally",Index,2,"position not given");
-      
       const std::string snd=
 	inputItem<std::string>(IParam,Index,3,"front/back/side not give");
       const double D=
@@ -293,13 +292,13 @@ pointConstruct::processPointFree(Simulation& System,
 				 const std::string& FObject,
 				 const long int linkPt,
 				 const double OD) const
-/*!
-  Process a point tally in a registered object
-  \param System :: Simulation to add tallies
-  \param FObject :: Fixed/Twin name
-  \param linkPt :: Link point [-ve for beam object]
-  \param OD :: Out distance Distance
-*/
+  /*!
+    Process a point tally in a registered object
+    \param System :: Simulation to add tallies
+    \param FObject :: Fixed/Twin name
+    \param linkPt :: Link point [-ve for beam object]
+    \param OD :: Out distance Distance
+  */
 {
   ELog::RegMethod RegA("pointConstruct","processPointFree(String)");
 
