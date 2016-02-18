@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   geometry/ArbPoly.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -216,7 +216,7 @@ ArbPoly::setSurface(const std::string& Pstr)
 
   size_t NC(8);                          // Number of expected corners ==8 
   StrFunc::convert(Btype.substr(3),NC);
-  if (NC<=3 | NC>maxSurfaces)
+  if (NC<=3 || NC>maxSurfaces)
     return -4;
 
   std::vector<Geometry::Vec3D> Corners(NC);
@@ -426,14 +426,12 @@ ArbPoly::inLoop(const Vec3D& Pt,const size_t Index) const
 	dotSum+=angle;
     }
   
-  int res;
-  if (line && fabs(dotSum-M_PI)<Geometry::zeroTol*nSurface)
-    res=2;
-  else if (fabs(dotSum-2.0*M_PI)<Geometry::zeroTol*nSurface)
-    res=1;
-  else 
-    res=0;
-  return res;
+
+  if (fabs(dotSum-M_PI)<Geometry::zeroTol*static_cast<double>(nSurface))
+    return (line) ? 2 : 1;
+
+  // inner point to be discarded
+  return 0;
 }
 
 void
