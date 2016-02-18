@@ -97,10 +97,11 @@ CellWeight::updateWM(const double eCut,
                      const double minWeight,
                      const double weightPower) const
   /*!
-    Update WM
+    Multiply weight mesh by factors in CellWeight.
     \param eCut :: Energy cut [-ve to scale below ] 
     \param scaleFactor :: Scalefactor for density equivilent
     \param minWeight :: min weight scale factor
+    \param weightPower :: power for final factor W**power
   */
 {
   ELog::RegMethod RegA("CellWeight","updateWM");
@@ -116,21 +117,15 @@ CellWeight::updateWM(const double eCut,
   const std::vector<double> EVec=WF->getEnergy();
   std::vector<double> DVec=EVec;
   std::fill(DVec.begin(),DVec.end(),1.0);
-  
-  double minW(1e38);
-  for(const CMapTYPE::value_type& cv : Cells)
-    {
-      double W=exp(-cv.second.weight*sigmaScale*scaleFactor);
-      if (W>1e-20)
-        {
-          W=std::pow(W,weightPower);
-          if (W<minW) minW=W;
-        }
-    }
+
+    
   // Work on minW first:
+  const double minW=
+    calcMinWeight(scaleFactor,minWeight,weightPower);
   const double factor=(minW<minWeight) ?
     log(minWeight)/log(minW) : 1.0;
-  
+
+
   for(const CMapTYPE::value_type& cv : Cells)
     {
       double W=(exp(-cv.second.weight*sigmaScale*scaleFactor*factor));
@@ -177,25 +172,17 @@ CellWeight::invertWM(const double eCut,
   const std::vector<double> EVec=WF->getEnergy();
   std::vector<double> DVec=EVec;
   std::fill(DVec.begin(),DVec.end(),1.0);
-  
-  double minW(1e38);
-  for(const CMapTYPE::value_type& cv : Cells)
-    {
-      double W=exp(-cv.second.weight*sigmaScale*scaleFactor);
-      if (W>1e-20)
-        {
-          W=std::pow(W,weightPower);
-          if (W<minW) minW=W;
-        }
-    }
-  // Work on minW first:
+
+  double minW=
+    calcMinWeight(scaleFactor,minWeight,weightPower);
   double factor(1.0);
   if (minW<minWeight)
     {
-      ELog::EM<<"Min W == "<<minWeight<<" "<<minW<<ELog::endDiag;
       factor= log(minWeight)/log(minW);
       minW=minWeight;
     }
+
+  
   for(const CMapTYPE::value_type& cv : Cells)
     {
       double W=(exp(-cv.second.weight*sigmaScale*scaleFactor*factor));

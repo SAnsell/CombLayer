@@ -108,9 +108,10 @@ WWG::operator=(const WWG& A)
 }
 
 void
-WWG::resetMesh()
+WWG::resetMesh(const std::vector<double>& W)
   /*!
     Resize the mesh
+    \param W :: Weight 
    */
 {
   const size_t GSize=Grid.size();
@@ -118,10 +119,13 @@ WWG::resetMesh()
     {
       WMesh.resize(GSize);
       const size_t ESize(EBin.size());
+      std::vector<double>::const_iterator  vc=
+        W.begin();
       for(std::vector<double>& MUnit : WMesh)
         {
+          const double wVal=(vc!=W.end()) ? (*vc++) : 1.0;
           MUnit.resize(ESize);
-          std::fill(MUnit.begin(),MUnit.end(),1.0);
+          std::fill(MUnit.begin(),MUnit.end(),wVal);
         }
     }
   else 
@@ -131,14 +135,18 @@ WWG::resetMesh()
 }
   
 void
-WWG::setEnergyBin(const std::vector<double>& EB)
+WWG::setEnergyBin(const std::vector<double>& EB,
+                  const std::vector<double>& DefWeight)
   /*!
     Set the energy bins and resize the WMesh
     \param EB :: Energy bins [MeV]
+    \param InitWeight :: Initial weight
   */
 {
   EBin=EB;
-  resetMesh();
+  if (EBin.empty() || EBin.back()<1e5)
+    EBin.push_back(1e5);
+  resetMesh(DefWeight);
   return;
 }
   

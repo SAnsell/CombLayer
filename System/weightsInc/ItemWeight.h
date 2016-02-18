@@ -3,7 +3,7 @@
  
  * File:   weightInc/ItemWeight.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,7 +54,10 @@ class ItemWeight
   typedef std::map<long int,CellItem> CMapTYPE;
 
   const double sigmaScale;             ///< Scale for sigma
-  CMapTYPE Cells;        ///< Cells and track info
+  CMapTYPE Cells;                      ///< Cells and track info
+
+  double calcMinWeight
+    (const double,const double,const double)  const;
 
  public:
 
@@ -62,7 +65,7 @@ class ItemWeight
   ItemWeight(const ItemWeight&);
   ItemWeight& operator=(const ItemWeight&);    
   virtual ~ItemWeight() {}          ///< Destructor
-
+  
   void clear();
   void addTracks(const long int,const double);
   void write(std::ostream&) const;

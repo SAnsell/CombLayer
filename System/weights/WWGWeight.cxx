@@ -3,7 +3,7 @@
  
  * File:   weight/WWGWeight.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -90,13 +90,16 @@ void
 WWGWeight::updateWM(WWG& wwg,
                     const double eCut,
                     const double scaleFactor,
-                    const double minWeight)
+                    const double minWeight,
+                    const double weightPower) const
   /*!
-    Update the master mesh 
+    Mulitiply the wwg:master mesh by factors in WWGWeight
     It assumes that the mesh size and WWGWeight are compatable.
     \param wwg :: Weight window generator
     \param eCut :: Cut energy [MeV] (uses fractional if on boundary)
     \param scaleFactor :: Scale factor for weight track
+    \param minWeight :: min weight scale factor
+    \param weightPower :: power for final factor W**power
    */
 {
   ELog::RegMethod RegA("WWGWeight","updateWM");
@@ -106,24 +109,15 @@ WWGWeight::updateWM(WWG& wwg,
   std::vector<double> EBin=wwg.getEBin();    
   std::vector<double> DVec=EBin;
   std::fill(DVec.begin(),DVec.end(),1.0);
-  
-  double maxW(0.0);
-  double minW(1e38);
-  double aveW(0.0);
-  int cnt(0);
-  for(const CMapTYPE::value_type& cv : Cells)
-    {
-      const double W=(exp(-cv.second.weight*sigmaScale*scaleFactor));
-      if (W>maxW) maxW=W;
-      if (W<minW && minW>1e-38) minW=W;
-      aveW+=W;
-      cnt++;
-    }
-  aveW/=cnt;
-  // Work on minW first:
+
+    // Work on minW first:
+  const double minW=
+    calcMinWeight(scaleFactor,minWeight,weightPower);
   const double factor=(minW<minWeight) ?
     log(minWeight)/log(minW) : 1.0;
+
   ELog::EM<<"Min W = "<<minW<<" "<<factor<<ELog::endDiag;
+  
   const WeightMesh& WGrid=wwg.getGrid();
 
   const size_t NX=WGrid.getXSize();
@@ -138,27 +132,93 @@ WWGWeight::updateWM(WWG& wwg,
           CMapTYPE::const_iterator cv=Cells.find(cN);
           if (cv==Cells.end())
             throw ColErr::InContainerError<long int>(cN,"Cells");
-          
-          double W=(exp(-cv->second.weight*sigmaScale*
-                        scaleFactor*factor));
-          if (W<minW) W=minW;
-                
-          for(size_t i=0;i<EBin.size();i++)
+
+          double W=(exp(-cv->second.weight*sigmaScale*scaleFactor*factor));
+          if (W<minWeight) W=1.0;    // avoid sqrt(-ve number etc)
+          W=std::pow(W,weightPower);
+          if (W>=minWeight)
             {
-              if (eCut<-1e-10 && EBin[i] <= -eCut)
-                DVec[i]=W;
-              else if (EBin[i]>=eCut)
-                DVec[i]=W;
+              for(size_t i=0;i<EBin.size();i++)
+                {
+                  if (eCut<-1e-10 && EBin[i] <= -eCut)
+                    DVec[i]=W;
+                  else if (EBin[i]>=eCut)
+                    DVec[i]=W;
+                }
+              wwg.scaleMeshItem(cN-1,DVec);              
             }
-          /// SET WEIGHTS:
-          wwg.scaleMeshItem(cN-1,DVec);
-          cN++;
         }
-            
-
-
+  
   return;
 }
+
+
+void
+WWGWeight::invertWM(WWG& wwg,
+                    const double eCut,
+                    const double scaleFactor,
+                    const double minWeight,
+                    const double weightPower) const
+  /*!
+    Mulitiply the wwg:master mesh by factors in WWGWeight
+    Invertion [adjoint] system
+    It assumes that the mesh size and WWGWeight are compatable.
+    \param wwg :: Weight window generator
+    \param eCut :: Cut energy [MeV] (uses fractional if on boundary)
+    \param scaleFactor :: Scale factor for weight track
+    \param minWeight :: min weight scale factor
+    \param weightPower :: power for final factor W**power
+   */
+{
+  ELog::RegMethod RegA("WWGWeight","invertWM");
+
+  // quick way to get length of array
+  // note that zero value is assumed but not infinity
+  std::vector<double> EBin=wwg.getEBin();    
+  std::vector<double> DVec=EBin;
+  std::fill(DVec.begin(),DVec.end(),1.0);
+
+    // Work on minW first:
+  const double minW=
+    calcMinWeight(scaleFactor,minWeight,weightPower);
+  const double factor=(minW<minWeight) ?
+    log(minWeight)/log(minW) : 1.0;
+
+  ELog::EM<<"Min W = "<<minW<<" "<<factor<<ELog::endDiag;
   
+  const WeightMesh& WGrid=wwg.getGrid();
+
+  const size_t NX=WGrid.getXSize();
+  const size_t NY=WGrid.getYSize();
+  const size_t NZ=WGrid.getZSize();
+  long int cN(1);
+
+  for(size_t i=0;i<NX;i++)
+    for(size_t j=0;j<NY;j++)
+      for(size_t k=0;k<NZ;k++)
+	{
+          CMapTYPE::const_iterator cv=Cells.find(cN);
+          if (cv==Cells.end())
+            throw ColErr::InContainerError<long int>(cN,"Cells");
+
+          double W=(exp(-cv->second.weight*sigmaScale*scaleFactor*factor));
+          if (W<minWeight) W=1.0;    // avoid sqrt(-ve number etc)
+          W=std::pow(W,weightPower);
+          if (W>=minWeight)
+            {
+              for(size_t i=0;i<EBin.size();i++)
+                {
+                  if (eCut<-1e-10 && EBin[i] <= -eCut)
+                    DVec[i]=W;
+                  else if (EBin[i]>=eCut)
+                    DVec[i]=W;
+                }
+              wwg.scaleMeshItem(cN-1,DVec);              
+            }
+        }
+  
+  return;
+}
+
   
 } // Namespace WeightSystem

@@ -124,6 +124,35 @@ ItemWeight::addTracks(const long int cN,const double value)
   return;
 }
 
+double
+ItemWeight::calcMinWeight(const double scaleFactor,
+                          const double minWeight,
+                          const double weightPower) const
+  /*!
+    Calculate the adjustment factor to get to the correct
+    minimum weight.
+    \param scaleFactor :: Scalefactor for density equivilent
+    \param minWeight :: min weight scale factor
+    \param weightPower :: power for final factor W**power
+    \return factor for exponent
+   */
+{
+  double minW(1e38);
+  for(const CMapTYPE::value_type& cv : Cells)
+    {
+      double W=exp(-cv.second.weight*sigmaScale*scaleFactor);
+      if (W>1e-20)
+        {
+          W=std::pow(W,weightPower);
+          if (W<minW) minW=W;
+        }
+    }
+  // Work on minW first:
+  const double factor=(minW<minWeight) ?
+    log(minWeight)/log(minW) : 1.0;
+  return factor;
+}
+  
 void
 ItemWeight::clear()
   /*!
