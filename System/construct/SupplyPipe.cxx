@@ -3,7 +3,7 @@
  
  * File:   essBuild/SupplyPipe.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -255,7 +255,7 @@ SupplyPipe::insertInlet(const attachSystem::FixedComp& FC,
   
   Geometry::Vec3D PtZ=LC->getSurfacePoint(0,SI);
   PtZ+=layerOffset;
-  const int commonSurf=LC->getCommonSurf(lSideIndex);
+  const int commonSurf=LC->getCommonSurf(SI);
   const std::string commonStr=(commonSurf) ? 		       
     StrFunc::makeString(commonSurf) : "";
   if (PtZ!=Pt)
@@ -445,8 +445,6 @@ SupplyPipe::createAll(Simulation& System,
   return;
 }
 
-
-  
 void
 SupplyPipe::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,
@@ -469,8 +467,12 @@ SupplyPipe::createAll(Simulation& System,
   ELog::RegMethod RegA("SupplyPipe","createAll<LC>");
   populate(System);
 
-  createUnitVector(FC,orgLayerIndex,orgSideIndex);
-  insertInlet(FC,exitSideIndex);
+  createUnitVector(FC,orgLayerIndex,
+                   static_cast<long int>(orgSideIndex));
+  const long int exitLongSideIndex=
+    static_cast<long int>(exitSideIndex);
+      
+  insertInlet(FC,exitLongSideIndex);
   addExtraLayer(LC,extraSide);
   addOuterPoints();
   setActive();
