@@ -303,6 +303,20 @@ BaseMap::getItem(const std::string& Key,const size_t Index) const
   return SplitUnits[SI][Index];
 }
 
+std::vector<std::string>
+BaseMap::getNames() const
+  /*!
+    Get a list of the names in the cell
+    Mainly debugging use
+    \return vector of names
+   */
+{
+  std::vector<std::string> Out;
+  for(const LCTYPE::value_type lUnit : Items)
+    Out.push_back(lUnit.first);
+  return Out;
+}
+  
 std::vector<int>
 BaseMap::getItems(const std::string& Key) const
   /*!

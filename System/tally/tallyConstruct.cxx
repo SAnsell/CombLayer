@@ -202,7 +202,7 @@ tallyConstruct::tallySelection(Simulation& System,
       else if (TType=="mesh")
 	meshPtr->processMesh(System,IParam,i);
       else if (TType=="flux")
-	workFlag+=fluxPtr->processFlux(System,IParam,i,0);
+	workFlag+=fluxPtr->processFlux(System,IParam,i);
       else if (TType=="fission")
 	workFlag+=fissionPtr->processPower(System,IParam,i,0);
       else if (TType=="heat")
@@ -240,7 +240,7 @@ tallyConstruct::tallyRenumber(Simulation& System,
 	IParam.getValue<std::string>("tally",i,0);
 
       if (TType=="flux")
-	fluxPtr->processFlux(System,IParam,i,1);
+	fluxPtr->processFlux(System,IParam,i);
       else if (TType=="heat")
 	heatPtr->processHeat(System,IParam,i);
     }

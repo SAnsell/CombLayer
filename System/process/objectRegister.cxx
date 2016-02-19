@@ -357,6 +357,7 @@ objectRegister::getObject(const std::string& Name) const
   */
 {
   ELog::RegMethod RegA("objectRegister","getObject(containedComp)");
+  
   const std::string::size_type pos=Name.find(":");
   if (pos==std::string::npos || !pos || pos==Name.size()-1)
     {
@@ -499,10 +500,12 @@ objectRegister::getObjectRange(const std::string& objName) const
 
   std::string::size_type pos=objName.find(":");
   // CELL Range ::  objectName:cellName
-  if (pos!=std::string::npos)
+  if (pos!=0 && pos!=std::string::npos)
     {
+
       const std::string itemName=objName.substr(0,pos);
       const std::string cellName=objName.substr(pos+1);
+        
       const attachSystem::CellMap* CPtr=
         getObject<attachSystem::CellMap>(itemName);
       if (!CPtr)

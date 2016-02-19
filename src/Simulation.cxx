@@ -1871,25 +1871,30 @@ Simulation::getCellInputVector() const
 }
 
 std::vector<int>
-Simulation::getCellWithMaterial(const int Mnumber) const
+Simulation::getCellWithMaterial(const int matN) const
   /*!
     Ugly function to return the current
     vector of cells with a particular material type
-    \param Mnumber :: Material number
+    \param matN :: Material number [-1 : all not void / -2 all]
     \return vector of cell numbers (ordered)
     \todo Make this with a transform, not a loop.
   */
 {
   ELog::RegMethod RegA("Simulation","getCellWithMaterial");
+  
   std::vector<int> cellOrder;
-  OTYPE::const_iterator mc;
-  for(mc=OList.begin();mc!=OList.end();mc++)
-    {
-      if (mc->second->getMat()==Mnumber && 
-	  !mc->second->isPlaceHold())
-	cellOrder.push_back(mc->first);
-    }
 
+  for(const OTYPE::value_type& cellItem : OList)
+    {
+      const MonteCarlo::Qhull* QPtr=cellItem.second;
+      if (!QPtr->isPlaceHold() &&
+          (matN==-2 ||                            // all
+          (matN==-1 && QPtr->getMat()) ||         // not void
+           (QPtr->getMat()==matN) ) )             // match
+        {
+          cellOrder.push_back(cellItem.first);
+        }
+    }
   sort(cellOrder.begin(),cellOrder.end());
   return cellOrder;
 }

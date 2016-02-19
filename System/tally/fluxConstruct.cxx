@@ -94,14 +94,12 @@ fluxConstruct::operator=(const fluxConstruct&)
 int
 fluxConstruct::processFlux(Simulation& System,
 			   const mainSystem::inputParam& IParam,
-			   const size_t Index,
-			   const bool renumberFlag) const
+			   const size_t Index) const
   /*!
     Add heat tally (s) as needed
     \param System :: Simulation to add tallies
     \param IParam :: Main input parameters
     \param Index :: index of the -T card
-    \param renumberFlag :: Is this a renumber call
   */
 {
   ELog::RegMethod RegA("fluxConstruct","processFlux");
