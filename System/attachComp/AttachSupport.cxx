@@ -3,7 +3,7 @@
  
  * File:   attachComp/AttachSupport.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -85,7 +85,11 @@ void createAddition(const int,Rule*,Rule*&);
 long int
 getLinkNumber(const std::string& Name)
   /*!
-    Get a link number
+    Get a link number. Input is either a name 
+    - Orign : Origin [0]
+    - front : link point 1
+    - back : link point 2 
+    \param Name :: Link name / number 
   */
 {
   ELog::RegMethod RegA("AttachSupport[F]","getLinkNumber");
@@ -101,7 +105,7 @@ getLinkNumber(const std::string& Name)
       else if (Name=="back")
 	linkPt=2;
       else 
-	throw ColErr::InContainerError<std::string>(Name,"String");
+	throw ColErr::InContainerError<std::string>(Name,"Name");
     }
   return linkPt;
 }
@@ -125,8 +129,9 @@ void
 addUnion(const int SN,const Geometry::Surface* SPtr,
 	 Rule*& outRule)
   /*!
-    Given an Rule: intersect into it another object
-    \param Obj :: Object add 
+    Given an Rule: uninio into it another rule
+    \param SN :: Rule number
+    \param SPtr :: Surface to add at point
     \param outRule :: Rule to modify
   */
 {
@@ -171,7 +176,7 @@ createAddition(const int InterFlag,Rule* NRptr,
     Function to actually do the addition of a rule to 
     avoid code repeat.
     \param InterFlag :: Intersection / Union [ 1 : -1 ] : 0 for new 
-    \param NRPtr :: New Rule pointer to add
+    \param NRptr :: New Rule pointer to add
     \param outRule :: Rule system to modify
    */
 {
@@ -226,24 +231,25 @@ addToInsertControl(Simulation& System,
 		   const attachSystem::FixedComp& OuterFC,
 		   const attachSystem::FixedComp& InsertFC,
 		   const std::string& groupName)
-/*!
-  Adds this object to the containedComp to be inserted.
-  FC is the fixed object that is to be inserted -- linkpoints
-  must be set. It is tested against all the ojbect with
-  this object .
-  \param System :: Simulation to use
-  \param OuterFC :: Object into which we are going to insert
-  \param InsertFC :: FixedComp with the points
-  \param groupName :: Contained Group to use
-*/
+  /*!
+    Adds this object to the containedComp to be inserted.
+    FC is the fixed object that is to be inserted -- linkpoints
+    must be set. It is tested against all the ojbect with
+    this object .
+    \param System :: Simulation to use
+    \param OuterFC :: Object into which we are going to insert
+    \param InsertFC :: FixedComp with the points
+    \param groupName :: Contained Group to use
+  */
 {
   ELog::RegMethod RegA("AttachSupport","addToInsertControl(FC,FC,string)");
+  
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
   const std::string outerName=OuterFC.getKeyName();
   const int cellN=OR.getCell(outerName);
-  const int cellR=OR.getRange(outerName);
+  const int cellL=OR.getLast(outerName);
   attachSystem::ContainedGroup* CGPtr=
     OR.getObject<attachSystem::ContainedGroup>(InsertFC.getKeyName());
   
@@ -251,7 +257,7 @@ addToInsertControl(Simulation& System,
     throw ColErr::CastError<void>(0,"Cannot convert "+
 				  InsertFC.getKeyName()+"to containedGroup");
 
-  addToInsertControl(System,cellN,cellN+cellR,InsertFC,
+  addToInsertControl(System,cellN,cellL,InsertFC,
 		     CGPtr->getCC(groupName));
 
   return;
@@ -277,13 +283,13 @@ addToInsertControl(Simulation& System,
 
   const std::string outerName=OuterFC.getKeyName();
   const int cellN=OR.getCell(outerName);
-  const int cellR=OR.getRange(outerName);
+  const int cellL=OR.getLast(outerName);
   attachSystem::ContainedComp* CCPtr=
     OR.getObject<attachSystem::ContainedComp>(InsertFC.getKeyName());
   if (!CCPtr)
     throw ColErr::CastError<void>(0,"Cannot convert "+
 				  InsertFC.getKeyName()+"to contained Comp");
-  addToInsertControl(System,cellN,cellN+cellR,InsertFC,*CCPtr);
+  addToInsertControl(System,cellN,cellL,InsertFC,*CCPtr);
 
   return;
 }
@@ -308,7 +314,8 @@ addToInsertControl(Simulation& System,
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
   const int cellN=OR.getCell(OName);
-  addToInsertControl(System,cellN,cellN+OR.getRange(OName),FC,CC);
+  const int cellL=OR.getLast(OName);
+  addToInsertControl(System,cellN,cellL,FC,CC);
 
   return;
 }
@@ -323,7 +330,8 @@ addToInsertControl(Simulation& System,
     Insert the object if any of the link points are within
     the cells provided by BaseObj(cellName).
     \param System :: Simulation to use
-    \param BaseObj :: CellMap 
+    \param BaseObj :: CellMap key name
+    \param cellName :: subname of cell from CellMap
     \param FC :: FixedComp with the points
     \param CC :: ContainedComp 
   */
@@ -360,7 +368,7 @@ addToInsertControl(Simulation& System,
 		   const int cellA,const int cellB,
 		   const attachSystem::FixedComp& FC,
 		   const attachSystem::ContainedComp& CC)
-/*!
+  /*!
     Adds this object to the containedComp to be inserted.
     FC is the fixed object that is to be inserted -- linkpoints
     must be set. It is tested against all the ojbect with
@@ -416,8 +424,8 @@ addToInsertSurfCtrl(Simulation& System,
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
   const int cellN=OR.getCell(BaseFC.getKeyName());
-  const int cellR=OR.getRange(BaseFC.getKeyName());
-  addToInsertSurfCtrl(System,cellN,cellN+cellR,CC);
+  const int cellL=OR.getLast(BaseFC.getKeyName());
+  addToInsertSurfCtrl(System,cellN,cellL,CC);
 
   return;
 }
@@ -434,6 +442,7 @@ addToInsertSurfCtrl(Simulation& System,
     this object .
     \param System :: Simulation to use
     \param BaseCell :: CellMap for cell numbers
+    \param cellName :: cell item from CellMap
     \param CC :: ContainedComp object to add to this
   */
 {
@@ -471,8 +480,8 @@ addToInsertOuterSurfCtrl(Simulation& System,
       (BaseFC.getKeyName(),"getObject from base");
   
   const int cellN=OR.getCell(BaseFC.getKeyName());
-  const int cellR=OR.getRange(BaseFC.getKeyName());
-  addToInsertOuterSurfCtrl(System,cellN,cellN+cellR,*BaseCC,CC);
+  const int cellL=OR.getLast(BaseFC.getKeyName());
+  addToInsertOuterSurfCtrl(System,cellN,cellL,*BaseCC,CC);
 
   return;
 }
@@ -742,9 +751,10 @@ addToInsertForced(Simulation& System,
 		  attachSystem::ContainedComp& CC)
  /*!
    Force CC into the BaseFC objects
-  \param System :: Simulation to use
-  \param BaseFC :: FixedComp object to have CC inserted into it.
-  \param CC :: ContainedComp object to add to the BaseFC
+   \param System :: Simulation to use
+   \param cellA :: First cell to use
+   \param cellB :: last cell to use
+   \param CC :: ContainedComp object to add to the BaseFC
  */
 {
   ELog::RegMethod RegA("AttachSupport","addToInsertForce(int,int,CC)");
@@ -782,8 +792,8 @@ addToInsertForced(Simulation& System,
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
   const int cellN=OR.getCell(BaseFC.getKeyName());
-  const int cellR=OR.getRange(BaseFC.getKeyName());
-  addToInsertForced(System,cellN,cellN+cellR,CC);
+  const int cellL=OR.getLast(BaseFC.getKeyName());
+  addToInsertForced(System,cellN,cellL,CC);
   return;
 }  
 

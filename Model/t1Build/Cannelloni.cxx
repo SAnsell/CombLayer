@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1Build/Cannelloni.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -85,7 +85,7 @@ namespace ts1System
 
 Cannelloni::Cannelloni(const std::string& Key) :
   constructSystem::TargetBase(Key,3),
-  tarIndex(ModelSupport::objectRegister::Instance().cell(Key,-1,20000)),
+  tarIndex(ModelSupport::objectRegister::Instance().cell(Key,20000)),
   cellIndex(tarIndex+1),frontPlate(0),backPlate(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -305,7 +305,6 @@ void
 Cannelloni::createLinks()
   /*!
     Create all the links
-    \todo swap link 0 to be link 2 
   */
 {
   ELog::RegMethod RegA("Cannelloni","createLinks");
@@ -577,7 +576,5 @@ Cannelloni::createAll(Simulation& System,
 
   return;
 }
-
-
   
-}  // NAMESPACE TMRsystem
+}  // NAMESPACE ts1System

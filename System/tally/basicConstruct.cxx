@@ -3,7 +3,7 @@
  
  * File:   tally/basicConstruct.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -292,7 +292,7 @@ basicConstruct::convertRegion(const mainSystem::inputParam& IParam,
   RA=OR.getCell(region);
   if (RA) 
     {
-      RB=RA+OR.getRange(region);
+      RB=OR.getLast(region);
       return outFlag;
     }
 
@@ -373,8 +373,8 @@ basicConstruct::getCellSelection(const Simulation& System,
   
   if (matN>1000)
     matCell=System.getCellWithZaid(matN);
-  else
-    matCell=System.getCellWithZaid(matN);
+  else  
+    matCell=System.getCellWithMaterial(matN);
   
   std::set_intersection(cells.begin(),cells.end(),
                         matCell.begin(),matCell.end(),

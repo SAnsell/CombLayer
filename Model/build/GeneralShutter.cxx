@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   build/GeneralShutter.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -86,7 +86,7 @@ namespace shutterSystem
 GeneralShutter::GeneralShutter(const size_t ID,const std::string& Key) : 
   TwinComp(Key,8),ContainedComp(),shutterNumber(ID),
   surfIndex(ModelSupport::objectRegister::Instance().
-	    cell(Key,static_cast<int>(ID),20000)),
+	    cell(Key+StrFunc::makeString(ID),20000)),
   cellIndex(surfIndex+1),populated(0),divideSurf(0),
   DPlane(0),closed(0),reversed(0),upperCell(0),
   lowerCell(0),innerVoidCell(0)
@@ -398,7 +398,7 @@ GeneralShutter::getViewOrigin() const
   /*!
     Calculate view origin			
     \return Effective centre
-   */
+  */
 {
   // view effectively down void hence -ve void added
   const double zShift=(closed % 2) ? closedZShift : openZShift;
@@ -646,11 +646,11 @@ GeneralShutter::createObjects(Simulation& System)
       System.addCell(IVHo);
       // Surrounder
       Out=ModelSupport::getComposite(SMap,surfIndex,
-				     "-25 26 (125 : -126 : -13 : 14) 3 -4 7 -100 ")+dSurf;
+		     "-25 26 (125 : -126 : -13 : 14) 3 -4 7 -100 ")+dSurf;
       System.addCell(MonteCarlo::Qhull(cellIndex++,shutterMat,0.0,Out));
 
       Out=ModelSupport::getComposite(SMap,surfIndex,
-				     "-25 26 (225 : -226 : -113 : 114) 3 -4 100 -17 ")+dSurf;
+	     "-25 26 (225 : -226 : -113 : 114) 3 -4 100 -17 ")+dSurf;
       System.addCell(MonteCarlo::Qhull(cellIndex++,shutterMat,0.0,Out));
     }
   else
@@ -663,7 +663,7 @@ GeneralShutter::createObjects(Simulation& System)
       System.addCell(IVH);
 
       Out=ModelSupport::getComposite(SMap,surfIndex,
-				     " -25 26 (125 : -126 : -13 : 14) 3 -4 7 -17 ")+dSurf;
+	     " -25 26 (125 : -126 : -13 : 14) 3 -4 7 -17 ")+dSurf;
       System.addCell(MonteCarlo::Qhull(cellIndex++,shutterMat,0.0,Out));
     }  
 

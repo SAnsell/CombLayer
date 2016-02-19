@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   tally/fissionConstruct.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -122,7 +122,7 @@ fissionConstruct::processPower(Simulation& System,
   // returns 0 if failed to find
   const int cellOffset=OR.getCell(CellRegion);
   const int cellRange=(cellOffset) ? 
-    OR.getRange(CellRegion) : 1000000;
+    OR.getRange(CellRegion) : 100000;
   
   size_t nCount((cellOffset) ? 3 : 2);
   

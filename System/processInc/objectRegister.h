@@ -72,13 +72,17 @@ class objectRegister
 
   static objectRegister& Instance();
 
-  int cell(const std::string&,const int = -1,const int = 10000);
-  int getCell(const std::string&,const int =-1) const;
-  int getRange(const std::string&,const int =-1) const;
+  int cell(const std::string&,const int = 10000);
+  int getCell(const std::string&) const;
+  int getLast(const std::string&) const;
+  int getRange(const std::string&) const;
+  
   std::string inRange(const int) const;
 
-  int getRenumberCell(const std::string&,const int =-1) const;
-  int getRenumberRange(const std::string&,const int =-1) const;
+  int getRenumberCell(const std::string&) const;
+  int getRenumberLast(const std::string&) const;
+  int getRenumberRange(const std::string&) const;
+  
   std::string inRenumberRange(const int) const;
 
   int calcRenumber(const int) const;

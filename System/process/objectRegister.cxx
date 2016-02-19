@@ -3,7 +3,7 @@
  
  * File:   process/objectRegister.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -101,58 +101,54 @@ objectRegister::Instance()
 }
 
 int
-objectRegister::getCell(const std::string& Name,
-			const int Index) const
+objectRegister::getCell(const std::string& Name) const
   /*!
     Get the start cell of an object
     \param Name :: Name of the object to get
-    \param Index :: Offset number
-    \return Cell number
+    \return Cell number of first cell in range
   */
 {
   MTYPE::const_iterator mc;
-  if (Index>=0)
-    {
-      std::ostringstream cx;
-      cx<<Name<<Index;
-      mc=regionMap.find(cx.str());
-    }
-  else
-    mc=regionMap.find(Name);
-  if (mc!=regionMap.end())
-    return mc->second.first;
-  return 0;
+  mc=regionMap.find(Name);
+  return (mc!=regionMap.end())
+    ? mc->second.first : 0;
 }
 
 int
-objectRegister::getRange(const std::string& Name,const int Index) const
+objectRegister::getRange(const std::string& Name) const
   /*!
     Get the range of an object
     \param Name :: Name of the object to get
-    \param Index :: Offset number
     \return Range
    */
 {
-  MTYPE::const_iterator mc;
-  if (Index>=0)
-    {
-      std::ostringstream cx;
-      cx<<Name<<Index;
-      mc=regionMap.find(cx.str());
-    }
-  else
-    mc=regionMap.find(Name);
-  if (mc!=regionMap.end())
-    return mc->second.second;
-  return 0;
+  MTYPE::const_iterator mc=
+    regionMap.find(Name);
+
+  return (mc!=regionMap.end()) ?
+    (mc->second.second-mc->second.first) : 0;
 }
 
+int
+objectRegister::getLast(const std::string& Name) const
+  /*!
+    Get the last cell in the range of an object
+    \param Name :: Name of the object to get
+    \return Range
+   */
+{
+  MTYPE::const_iterator mc=
+    regionMap.find(Name);
+
+  return (mc!=regionMap.end()) ?
+    mc->second.second : 0;
+}
+  
 std::string
 objectRegister::inRange(const int Index) const
   /*!
-    Get the range of an object
-    \param Name :: Name of the object to get
-    \param Index :: Offset number
+    Determine in the cell in within range
+    \param Index :: cell number to test
     \return string
    */
 {
@@ -163,13 +159,13 @@ objectRegister::inRange(const int Index) const
 
   if (mc!=regionMap.end() && 
       Index>=mc->second.first && 
-      Index<=mc->second.first+mc->second.second)
+      Index<=mc->second.second)
     return mc->first;
     
   for(mc=regionMap.begin();mc!=regionMap.end();mc++)
     {
       const std::pair<int,int>& IP=mc->second;
-      if (Index>=IP.first && Index<=IP.first+IP.second)
+      if (Index>=IP.first && Index<=IP.second)
 	{
 	  prev=mc->first;
 	  return mc->first;
@@ -179,31 +175,25 @@ objectRegister::inRange(const int Index) const
 }
 
 int
-objectRegister::cell(const std::string& Name,const int Index,const int size)
+objectRegister::cell(const std::string& Name,const int size)
   /*!
     Add a component and get a new cell number 
     \param Name :: Name of the unit
-    \param Index :: Index on number [-ve not used]
     \param size :: Size of unit to register
     \return the start number of the cellvalue
   */
 {
   ELog::RegMethod RegA("objectRegister","cell");
 
-  std::ostringstream cx;
-  cx<<Name;
-  if (Index>=0)
-    cx<<Index;
 
-  MTYPE::const_iterator mc=regionMap.find(cx.str());  
+  MTYPE::const_iterator mc=regionMap.find(Name);  
   if (mc!=regionMap.end())
     {
       if (mc->second.second<size)
-	ELog::EM<<"Insufficient space reserved for "<<cx.str()<<ELog::endErr;
+	ELog::EM<<"Insufficient space reserved for "<<Name<<ELog::endErr;
       return mc->second.first;
     }
-  regionMap.insert(MTYPE::value_type(cx.str(),
-				     std::pair<int,int>(cellNumber,size)));
+  regionMap.emplace(Name,std::pair<int,int>(cellNumber,cellNumber+size));
   cellNumber+=size;
   return cellNumber-size;
 }
@@ -381,64 +371,53 @@ objectRegister::getObject(const std::string& Name) const
 }
 
 int
-objectRegister::getRenumberCell(const std::string& Name,
-				const int Index) const
+objectRegister::getRenumberCell(const std::string& Name) const
   /*!
-    Get the start cell of an object
+    Get the start cell of an object [renumbered]
     \param Name :: Name of the object to get
-    \param Index :: Offset number
     \return Cell number
   */
 {
-  // NOTE: renumber not always complete as zero cell objects not present
-  std::string FullName=Name;
-  if (Index>=0)
-    FullName+=StrFunc::makeString(Index);
   MTYPE::const_iterator mc;
-  mc=renumMap.find(FullName);
+  mc=renumMap.find(Name);
   
   if (mc!=renumMap.end())
     return mc->second.first;
   // maybe we have object but it is actually zero celled
-  mc=regionMap.find(FullName);
+  mc=regionMap.find(Name);
   return (mc!=regionMap.end()) ? mc->second.first : 0;
 }
 
 int
-objectRegister::getRenumberRange(const std::string& Name,
-				 const int Index) const
+objectRegister::getRenumberRange(const std::string& Name) const
   /*!
     Get the range of cells of an object
     \param Name :: Name of the object to get
-    \param Index :: Offset number
     \return Cell number
   */
 {
-  MTYPE::const_iterator mc;
-  if (Index>=0)
-    {
-      std::ostringstream cx;
-      cx<<Name<<Index;
-      mc=renumMap.find(cx.str());
-    }
-  else
-    mc=renumMap.find(Name);
+  // NOTE: renumber not always complete as zero cell objects not present
+  MTYPE::const_iterator mc=
+    renumMap.find(Name);
+  
   if (mc!=renumMap.end())
     return mc->second.second;
-  return 0;
+  // maybe we have object but it is actually zero celled
+  mc=regionMap.find(Name);
+  return (mc!=regionMap.end()) ? mc->second.second : 0;
 }
 
 std::string
 objectRegister::inRenumberRange(const int Index) const
   /*!
     Get the range of an object
-    \param Name :: Name of the object to get
     \param Index :: Offset number
-    \return string
+    \return string of object
    */
 {
   static std::string prev;
-   MTYPE::const_iterator mc;
+  
+  MTYPE::const_iterator mc;
   // normally same as previous search
   if (!prev.empty())
     {
@@ -489,6 +468,7 @@ objectRegister::calcRenumber(const int CN) const
   /*!
     Take a cell number and calculate the renumber [not ideal]
     \param CN :: oirignal cell number
+    \return correct offset nubmer
    */
 {
   const std::string key=inRange(CN);
@@ -550,21 +530,21 @@ objectRegister::getObjectRange(const std::string& objName) const
       std::vector<int> Out(static_cast<size_t>(1+BNum-ANum));
       std::iota(Out.begin(),Out.end(),ANum);
       for(int& CN : Out)
-        CN=calcRenumber(CN);      
+        CN=calcRenumber(CN);
       return Out;
     }
 
-
   // Just an object name:
-  const int BStart=getRenumberCell(objName);
-  const int BRange=getRenumberRange(objName);
+  const int BStart=getCell(objName);
+  const int BRange=getRange(objName);
+  ELog::EM<<"CELL KEY "<<objName<<" "<<BStart<<" "<<BRange<<ELog::endDiag;
   if (BStart==0)
     throw ColErr::InContainerError<std::string>
       (objName,"Object name not found");
   
-  if (BStart>BRange)
+  if (!BRange)
     return std::vector<int>();
-  std::vector<int> Out(static_cast<size_t>(1+BRange-BStart));
+  std::vector<int> Out(static_cast<size_t>(BRange));
   std::iota(Out.begin(),Out.end(),BStart);
   for(int& CN : Out)
     CN=calcRenumber(CN);

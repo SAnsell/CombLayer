@@ -46,6 +46,7 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "support.h"
+#include "stringCombine.h"
 #include "MapRange.h"
 #include "Triple.h"
 #include "NRange.h"
@@ -169,12 +170,13 @@ simulationImp(Simulation& System,
 	    {
 	      if (i!=bNum)
 		{
-		  std::list<std::string>::const_iterator vc;
-		  for(vc=BlockName.begin();vc!=BlockName.end();vc++)
+                  const std::string bNum=StrFunc::makeString(i);
+                  for(const std::string& bName : BlockName)
 		    {
 		      // Zero everything in catorgoies:
-		      int cellNum=OR.getCell(*vc,i)+1;
-		      const int cellRange=OR.getRange(*vc,i);
+		      int cellNum=
+                        OR.getCell(bName+bNum)+1;
+		      const int cellRange=OR.getRange(bName+bNum);
 		      zeroImp(System,cellNum,cellRange);
 		    }
 		}

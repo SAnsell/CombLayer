@@ -89,7 +89,7 @@ namespace ModelSupport
 
 LayerDivide3D::LayerDivide3D(const std::string& Key)  :
   FixedComp(Key,0),
-  divIndex(ModelSupport::objectRegister::Instance().cell(Key,-1,20000)),
+  divIndex(ModelSupport::objectRegister::Instance().cell(Key,20000)),
   cellIndex(divIndex+1),DGPtr(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.

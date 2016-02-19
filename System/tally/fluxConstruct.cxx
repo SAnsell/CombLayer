@@ -107,7 +107,7 @@ fluxConstruct::processFlux(Simulation& System,
   ELog::RegMethod RegA("fluxConstruct","processFlux");
 
   const size_t NItems=IParam.itemCnt("tally",Index);
-  if (NItems<3)
+  if (NItems<4)
     throw ColErr::IndexError<size_t>(NItems,3,
 				     "Insufficient items for tally");
   // PARTICLE TYPE
@@ -119,14 +119,17 @@ fluxConstruct::processFlux(Simulation& System,
   int matN(0);
   if (!StrFunc::convert(MType,matN))
     {
-      // Failed to convert to a number :: Must convert
-      // the string to a material number [else throws]
-      matN=ModelSupport::DBMaterial::Instance().getIndex(MType);
+      if (MType=="All" || MType=="all")
+	matN=-1;
+      else if (MType=="AllVoid" || MType=="allVoid")
+	matN=-2;
+      else
+	matN=ModelSupport::DBMaterial::Instance().getIndex(MType);
     }
   
   const std::vector<int> cells=
     getCellSelection(System,matN,cellKey);
-
+  ELog::EM<<"Cells == "<<cells.size()<<ELog::endDiag;
 
   const int nTally=System.nextTallyNum(4);
   tallySystem::addF4Tally(System,nTally,PType,cells);
