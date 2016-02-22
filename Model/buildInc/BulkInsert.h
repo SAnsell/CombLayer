@@ -42,6 +42,7 @@ class BulkInsert : public attachSystem::TwinComp,
 {
  protected:
 
+  const std::string baseName;         ///< Base name
   const size_t shutterNumber;         ///< number of the shutter
   const int surfIndex;                ///< Index of the surface
   int cellIndex;                      ///< Index of the cells
@@ -81,7 +82,7 @@ class BulkInsert : public attachSystem::TwinComp,
   // FUNCTIONS:
   //--------------
 
-  void populate(const Simulation&,
+  void populate(const FuncDataBase&,
 		const shutterSystem::GeneralShutter&);
   void createUnitVector(const shutterSystem::GeneralShutter&);
   void createSurfaces();

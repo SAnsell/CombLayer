@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   build/BulkShield.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -356,7 +356,7 @@ BulkShield::createShutters(Simulation& System,
 void
 BulkShield::createBulkInserts(Simulation& System,
 			      const mainSystem::inputParam& IParam)
-  /*!
+/*!
     Construct and build all the bulk insert
     \param System :: Simulation to use
     \param IParam :: Input parameters
@@ -375,22 +375,24 @@ BulkShield::createBulkInserts(Simulation& System,
   for(size_t i=0;i<numberBeamLines;i++)
     {
       std::shared_ptr<BulkInsert> BItem;
-      
       if (i==chipShutter && chipFlag)
-	BItem=std::shared_ptr<BulkInsert>
-	       (new ChipIRInsert(i,"bulkInsert","chipInsert"));
+	{
+	  BItem=std::shared_ptr<BulkInsert>
+	    (new ChipIRInsert(i,"bulkInsert","chipInsert"));
+	}
       else if (i==imatShutter && imatFlag)
 	BItem=std::shared_ptr<BulkInsert>
 	  (new IMatBulkInsert(i,"bulkInsert","imatInsert"));
       else
 	BItem=std::shared_ptr<BulkInsert>(new BulkInsert(i,"bulkInsert"));
 
+
       BItem->setLayers(innerCell,outerCell);
       BItem->setExternal(SMap.realSurf(bulkIndex+17),
 			 SMap.realSurf(bulkIndex+27),
 			 SMap.realSurf(bulkIndex+37) );
       BItem->createAll(System,*GData[static_cast<size_t>(i)]);    
-      OR.addObject(BItem->getKeyName()+StrFunc::makeString(i),BItem);
+      OR.addObject(BItem->getKeyName(),BItem);
       BData.push_back(BItem);
     }
   return;
