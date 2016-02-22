@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   tally/Tally.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -414,24 +414,22 @@ Tally::setCinderEnergy(const std::string&)
 {
   ELog::RegMethod RegA("Tally","setCinderEnergy");
 
-  const double NEpts[]= { 1.e-11,5.e-9,1.e-8,1.5e-8,2.e-8,2.5e-8,
-			  3.0e-8,3.5e-8,4.2e-8,5.e-8,5.8e-8,6.7e-8,
-			  8.0e-8,1.0e-7,1.52e-7,2.51e-7,4.14e-7,6.83e-7,
-			  1.125e-6,1.855e-6,3.059e-6,5.043e-6,
-			  8.315e-6,1.371e-5,2.26e-5,3.727e-5,6.144e-5,
-			  1.013e-4,1.67e-4,2.754e-4,4.54e-4,
-			  7.485e-4,1.234e-3,2.035e-3,2.404e-3,2.840e-3,
-			  3.355e-3,5.531e-3,9.119e-3,1.503e-2,
-			  1.989e-2,2.554e-2,4.087e-2,6.738e-2,1.111e-1,
-			  1.832e-1,3.02e-1,3.887e-1,4.979e-1,
-			  0.639279,0.82085,1.10803,1.35335,1.73774,2.2313,
-			  2.86505,3.67879,4.96585,6.065,
-			  10.0,14.9182,16.9046,20.0,25.0};
+  const std::vector<double> EPts
+    ({ 1.e-11,5.e-9,1.e-8,1.5e-8,2.e-8,2.5e-8,
+        3.0e-8,3.5e-8,4.2e-8,5.e-8,5.8e-8,6.7e-8,
+        8.0e-8,1.0e-7,1.52e-7,2.51e-7,4.14e-7,6.83e-7,
+        1.125e-6,1.855e-6,3.059e-6,5.043e-6,
+        8.315e-6,1.371e-5,2.26e-5,3.727e-5,6.144e-5,
+        1.013e-4,1.67e-4,2.754e-4,4.54e-4,
+        7.485e-4,1.234e-3,2.035e-3,2.404e-3,2.840e-3,
+        3.355e-3,5.531e-3,9.119e-3,1.503e-2,
+        1.989e-2,2.554e-2,4.087e-2,6.738e-2,1.111e-1,
+        1.832e-1,3.02e-1,3.887e-1,4.979e-1,
+        0.639279,0.82085,1.10803,1.35335,1.73774,2.2313,
+        2.86505,3.67879,4.96585,6.065,
+        10.0,14.9182,16.9046,20.0,25.0});
 
-  std::vector<double> Out;
-  copy(NEpts,NEpts+sizeof(NEpts)/sizeof(double),
-       std::insert_iterator<std::vector<double> >(Out,Out.begin()));
-  Etab.setVector(Out);
+  Etab.setVector(EPts);
   if (Etab.empty())
     ELog::EM<<"Etab empty"<<ELog::endErr;
   return;
