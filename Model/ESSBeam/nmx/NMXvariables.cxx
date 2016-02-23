@@ -106,7 +106,7 @@ NMXvariables(FuncDataBase& Control)
   Control.addVariable("nmxBAZAngle",0.0);
   Control.addVariable("nmxBABeamXYAngle",0.0);       
 
-  Control.addVariable("nmxBALength",1899.0);       
+  Control.addVariable("nmxBALength",1849.0);       
   Control.addVariable("nmxBANShapes",1);       
   Control.addVariable("nmxBANShapeLayers",3);
   Control.addVariable("nmxBAActiveShield",0);
@@ -135,7 +135,7 @@ NMXvariables(FuncDataBase& Control)
   Control.addVariable("nmxPipeAFlangeRadius",14.0);
   Control.addVariable("nmxPipeAFlangeLength",1.0);
   Control.addVariable("nmxPipeAFeMat","Aluminium");
-  Control.addVariable("nmxPipeAVoidMat","CastIron");
+  Control.addVariable("nmxPipeAVoidMat","Void");
   
   // VACUUM PIPES:
   Control.addVariable("nmxPipeBXYAngle",-1.2);   // from -0.8
@@ -145,7 +145,7 @@ NMXvariables(FuncDataBase& Control)
   Control.addVariable("nmxPipeBFlangeRadius",16.0);
   Control.addVariable("nmxPipeBFlangeLength",1.0);
   Control.addVariable("nmxPipeBFeMat","Aluminium");
-  Control.addVariable("nmxPipeBVoidMat","CastIron");
+  Control.addVariable("nmxPipeBVoidMat","Void");
 
   // BEAM INSERT:
   Control.addVariable("nmxBInsertHeight",20.0);
@@ -196,10 +196,8 @@ NMXvariables(FuncDataBase& Control)
   Control.addVariable("nmxShieldAWallLen1",10.0);
   Control.addVariable("nmxShieldAWallMat1","CastIron");
   Control.addVariable("nmxShieldAWallMat5","Concrete");
-
   Control.addVariable("nmxShieldARoofLen1",10.0);
   Control.addVariable("nmxShieldAFloorLen1",10.0);
-
 
   return;
 }

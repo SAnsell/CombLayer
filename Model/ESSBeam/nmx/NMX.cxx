@@ -199,8 +199,8 @@ NMX::build(Simulation& System,
 		   GuideA->getKey("Guide0"),2);
 
   if (stopPoint==2) return;                      // STOP At bunker edge
+
   // First collimator [In WALL]
-  //  const attachSystem::FixedComp& GFC(BendA->getKey("Guide0"));
   const attachSystem::FixedComp& GFC(*VPipeB);
   BInsert->createAll(System,GFC,2,bunkerObj);
   attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);
@@ -214,7 +214,7 @@ NMX::build(Simulation& System,
   ShieldA->addInsertCell(voidCell);
   ShieldA->setFront(bunkerObj,2);
   ShieldA->setDivider(bunkerObj,2);
-  ShieldA->createAll(System,*BInsert,2);
+  ShieldA->createAll(System,FocusWall->getKey("Guide0"),2);
 
   return;
 }
