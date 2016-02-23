@@ -273,6 +273,45 @@ NList<Unit>::addComp(const std::vector<Unit>& Obj)
 
 template<typename Unit>
 void
+NList<Unit>::splitComp()
+  /*!
+    Take the outer bracket appart
+  */
+{
+  ELog::RegMethod RegA("NList","splitComp");
+  
+  const CompUnit LeftB(1,0,"(");
+  const CompUnit RightB(1,0,")");
+      
+  typename std::vector<CompUnit>::iterator ac;    
+  // Search for match brackets
+  ac=find(Items.begin(),Items.end(),LeftB);
+  if (ac==Items.end()) return;
+
+  typename std::vector<CompUnit>::iterator bc(ac+1);
+  size_t bCnt(1);
+  do
+    {
+      if (*bc==RightB)
+        bCnt--;
+      else if (*bc==LeftB)
+        bCnt++;
+    }
+  while(bCnt && ++bc!=Items.end());
+
+  if (!bCnt)
+    {
+      std::rotate(ac,ac+1,Items.end());
+      std::rotate(bc,bc+1,Items.end());
+      Items.pop_back();
+      Items.pop_back();
+    }
+  return;    
+}
+
+  
+template<typename Unit>
+void
 NList<Unit>::addComp(const Unit& Obj) 
   /*!
     Adds a component to the list of type int/double

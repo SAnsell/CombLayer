@@ -122,8 +122,10 @@ tallyModification(Simulation& System,
             " by the factor \n"
 	    " -- movePoint {tallyNumber Vec3D} : Add Vec3D to tally\n"
 	    " -- single {tallyNumber} : Split cell/surface tally into "
-	    " individual sum [rather than total] \n";
-	  ELog::EM<<ELog::endBasic;
+	    " individual sum [rather than total] \n"
+            " -- format {tallyNumber} [string] : Set the format card \n";
+
+          ELog::EM<<ELog::endBasic;
 	  ELog::EM<<ELog::endErr;
 	  errFlag=0;
 	}
@@ -295,6 +297,15 @@ tallyModification(Simulation& System,
 		tallySystem::divideF5Tally(System,0,xPts,yPts);
 	      errFlag=0;
 	    }
+	}
+      else if (key=="format")
+	{
+	  int tNumber(0);
+          size_t index(0);
+	  if (nV>=4 && StrFunc::convert(StrItem[0],tNumber))
+            index++;
+          tallySystem::setFormat(System,tNumber,StrItem[index]);
+          errFlag=0;
 	}
       if (errFlag)
 	ELog::EM<<"Failed to process TMod : "<<key<<ELog::endErr;

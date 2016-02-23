@@ -86,6 +86,7 @@ class Tally
   int setAngle(const std::string&);
   int setEnergy(const std::string&);
   int setModify(const std::string&);
+  int setFormat(const std::string&);
   int setSpecial(const std::string&);
   /// Set the coment
   int setComment(const std::string&);

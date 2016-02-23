@@ -3,7 +3,7 @@
  
  * File:   tally/TallyCreate.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1107,7 +1107,7 @@ setSingle(Simulation& Sim,const int tNumber)
 
 int
 setTime(Simulation& Sim,const int tNumber,
-	     const std::string& tPart)
+        const std::string& tPart)
   /*!
     Set the energy of a tally
     \param Sim :: Simulation
@@ -1130,6 +1130,36 @@ setTime(Simulation& Sim,const int tNumber,
 	}
     }
 
+  return fnum;
+}
+
+int
+setFormat(Simulation& Sim,const int tNumber,
+          const std::string& fPart)
+  /*!
+    Set the format of a tally.
+    \param Sim :: Simulation
+    \param tNumber :: tally nubmer [-ve for type / 0 for all]
+    \param fPart :: format string [MCNP format]
+    \return number of tallies split
+   */
+{
+  ELog::RegMethod RegA("TallyCreate","setTime");
+
+  Simulation::TallyTYPE& tmap=Sim.getTallyMap();
+  int fnum(0);
+  Simulation::TallyTYPE::iterator mc;
+  for(mc=tmap.begin();mc!=tmap.end();mc++)
+    {
+      if (tNumber==0 ||
+          mc->first==tNumber ||
+          (tNumber<0 && (mc->first % 10)== -tNumber))
+	{
+	  if (mc->second->setFormat(fPart))
+	    fnum++;
+	}
+    }
+  
   return fnum;
 }
 

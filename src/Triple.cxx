@@ -228,6 +228,22 @@ Triple<T>::operator[](const size_t A) const
 */
 
 template<typename F,typename S,typename T>
+std::ostream&
+operator<<(std::ostream& OX,const DTriple<F,S,T>& A)
+  /*!
+    Write out a triple item [assuming each part has
+    a << operator ]
+    \param OX :: Output stream 
+    \param A :: DTriple item 
+    \return OX :: Stream 
+  */
+{
+  A.write(OX);
+  return OX;
+}
+
+
+template<typename F,typename S,typename T>
 DTriple<F,S,T>::DTriple() 
   /*!
     Standard Constructor
@@ -354,6 +370,18 @@ DTriple<F,S,T>::operator>(const DTriple<F,S,T>& A) const
   return A.operator<(*this);
 }
 
+template<typename F,typename S,typename T>
+void
+DTriple<F,S,T>::write(std::ostream& OX) const
+  /*! 
+    Write object to a stream
+    \param OX :: Output stream
+  */
+{
+  OX<<first<<" "<<second<<" "<<third;
+  return;
+}
+
 /// \cond TEMPLATE
 
 class Rule;
@@ -382,5 +410,10 @@ template class Triple<size_t>;
 template class Triple<double>;
 template class Triple<std::string>;
 template class Triple<Geometry::Vec3D>;
+
+template std::ostream&
+operator<<(std::ostream&,const DTriple<int,int,std::string>&);
+template std::ostream&
+operator<<(std::ostream&,const DTriple<int,double,std::string>&);
 
 /// \endcond TEMPLATE

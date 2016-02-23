@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   tallyInc/TallyCreate.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -84,7 +84,9 @@ namespace tallySystem
 			 const std::string&,const std::string&);
   int setEnergy(Simulation&,const int,const std::string&);
   int setTime(Simulation&,const int,const std::string&);
+  int setFormat(Simulation&,const int,const std::string&);
   int setSingle(Simulation&,const int);
+  
 
   void deleteTallyType(Simulation&,const int);
   void deleteTally(Simulation&,const int);
