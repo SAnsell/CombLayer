@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   tally/textTally.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -114,7 +114,7 @@ textTally::addLine(const std::string& LX)
 
 
 void
-textTally::renumberCell(const int oldN,const int newN)
+textTally::renumberCell(const int ,const int )
   /*!
     Renumber the cell based on the old/New numbers
     \param oldN :: Old number to find
@@ -127,7 +127,7 @@ textTally::renumberCell(const int oldN,const int newN)
 
 
 void
-textTally::renumberSurf(const int oldN,const int newN)
+textTally::renumberSurf(const int,const int )
   /*!
     Renumber the cell based on the old/New numbers
     \param oldN :: Old number to find
