@@ -377,6 +377,35 @@ Tally::setModify(const std::string& FVec)
 }
 
 int
+Tally::setFormat(const std::string& FVec)
+  /*!
+    Set the timeTab line
+    \param FVec :: vector of the modification
+    \return 1 on success/0 on failure
+  */
+{
+  // special case for empty:
+  if (FVec=="empty" || FVec=="void")
+    {
+      printField.clear();
+      return 1;
+    }
+  
+  const std::vector<std::string> eParts=
+    StrFunc::splitParts(FVec,' ');
+
+  std::vector<char> newField;
+  for(const std::string& Item : eParts)
+    {
+      if (Item.size()>1)
+        return 0;
+      newField.push_back(Item[0]);
+    }
+  printField=newField;
+  return 1;
+}
+
+int
 Tally::setSpecial(const std::string& SLine)
   /*!
     Set the special line
@@ -478,17 +507,6 @@ Tally::addLine(const std::string& LX)
       Treatment=Line;
       return 0;
     }
-
-  if (FUnit.first=="fq")                   /// Print card
-    {
-      std::string pItem;
-      printField.clear();
-      while(StrFunc::section(Line,pItem) && pItem.size()==1)
-        {
-	  printField.push_back(pItem[0]);
-	}
-      return 0;
-    }     
   
   if (FUnit.first=="f")
     {

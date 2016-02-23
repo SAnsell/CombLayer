@@ -127,7 +127,6 @@ fluxConstruct::processFlux(Simulation& System,
   
   const std::vector<int> cells=
     getCellSelection(System,matN,cellKey);
-  ELog::EM<<"Cells == "<<cells.size()<<ELog::endDiag;
 
   const int nTally=System.nextTallyNum(4);
   tallySystem::addF4Tally(System,nTally,PType,cells);
