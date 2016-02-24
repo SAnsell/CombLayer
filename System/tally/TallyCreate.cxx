@@ -1145,8 +1145,8 @@ setFormat(Simulation& Sim,const int tNumber,
     \return number of tallies split
    */
 {
-  ELog::RegMethod RegA("TallyCreate","setTime");
-
+  ELog::RegMethod RegA("TallyCreate","setFormat");
+  
   Simulation::TallyTYPE& tmap=Sim.getTallyMap();
   int fnum(0);
   Simulation::TallyTYPE::iterator mc;

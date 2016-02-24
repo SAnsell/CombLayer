@@ -682,8 +682,8 @@ EssBeamLinesVariables(FuncDataBase& Control)
       Control.addVariable(baseKey+"BeamZAngle",0.0);
       Control.addVariable(baseKey+"BeamXStep",0.0);
       Control.addVariable(baseKey+"BeamZStep",0.0);  
-      Control.addVariable(baseKey+"BeamHeight",3.0);
-      Control.addVariable(baseKey+"BeamWidth",7.6);
+      Control.addVariable(baseKey+"BeamHeight",6.0);
+      Control.addVariable(baseKey+"BeamWidth",6.0);
       Control.addVariable(baseKey+"NSegment",2);
       Control.addVariable(baseKey+"SideGap",0.6);
       Control.addVariable(baseKey+"BaseGap",0.1);

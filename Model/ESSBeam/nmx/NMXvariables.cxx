@@ -124,7 +124,7 @@ NMXvariables(FuncDataBase& Control)
   Control.addVariable("nmxBA0AWidth",3.0);
   Control.addVariable("nmxBA0BWidth",3.0);
   Control.addVariable("nmxBA0AngDir",0.0);
-  Control.addVariable("nmxBA0Radius",60000.0);
+  Control.addVariable("nmxBA0Radius",120000.0);
   Control.addParse<double>("nmxBA0Length","nmxBALength");
 
   // VACUUM PIPES:
