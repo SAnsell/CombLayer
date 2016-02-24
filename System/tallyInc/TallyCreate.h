@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef TallyCreate_h
-#define TallyCreate_h
+#ifndef tallySystem_TallyCreate_h
+#define tallySystem_TallyCreate_h
 
 class Simulation;
 
@@ -79,9 +79,11 @@ namespace tallySystem
 
   void writePlanes(const int,const int,const std::vector<int>&);
 
-  int getFarPoint(const Simulation&,Geometry::Vec3D&);
   int changeParticleType(Simulation&,const int,
 			 const std::string&,const std::string&);
+
+  int getFarPoint(const Simulation&,Geometry::Vec3D&);
+  int setParticleType(Simulation&,const int,const std::string&);
   int setEnergy(Simulation&,const int,const std::string&);
   int setTime(Simulation&,const int,const std::string&);
   int setFormat(Simulation&,const int,const std::string&);

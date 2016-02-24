@@ -1095,8 +1095,8 @@ setSingle(Simulation& Sim,const int tNumber)
   Simulation::TallyTYPE::iterator mc;
   for(mc=tmap.begin();mc!=tmap.end();mc++)
     {
-      if ( ((mc->first % 10)==4  || (mc->first % 10)==2) &&
-	   (tNumber==0 || mc->first==tNumber))
+      if (tNumber==0 || mc->first==tNumber ||
+          (tNumber<0 && (mc->first % 10) == -tNumber))
 	{
 	  if (mc->second->makeSingle())
 	    fnum++;
@@ -1123,8 +1123,9 @@ setTime(Simulation& Sim,const int tNumber,
   Simulation::TallyTYPE::iterator mc;
   for(mc=tmap.begin();mc!=tmap.end();mc++)
     {
-      if (tNumber==0 || mc->first==tNumber)
-	{
+      if (tNumber==0 || mc->first==tNumber ||
+          (tNumber<0 && (mc->first % 10) == -tNumber))
+        {
 	  if (mc->second->setTime(tPart))
 	    fnum++;
 	}
@@ -1151,8 +1152,7 @@ setFormat(Simulation& Sim,const int tNumber,
   Simulation::TallyTYPE::iterator mc;
   for(mc=tmap.begin();mc!=tmap.end();mc++)
     {
-      if (tNumber==0 ||
-          mc->first==tNumber ||
+      if (tNumber==0 || mc->first==tNumber ||
           (tNumber<0 && (mc->first % 10)== -tNumber))
 	{
 	  if (mc->second->setFormat(fPart))
@@ -1163,6 +1163,35 @@ setFormat(Simulation& Sim,const int tNumber,
   return fnum;
 }
 
+
+int
+setParticleType(Simulation& Sim,const int tNumber,
+                const std::string& nPart) 
+  /*!
+    Get the last tally point based on the tallynumber
+    Can use the mesh centre if no point tallies exist
+    \param Sim :: System to access tally tables
+    \param tNumber :: Tally number [0 for all]
+    \param nPart :: New Particle
+    \return tally number [0 on fail]
+  */
+{
+  ELog::RegMethod RegA("TallyCreate","setParticleType");
+
+  Simulation::TallyTYPE& tmap=Sim.getTallyMap();
+  int fnum(0);
+  Simulation::TallyTYPE::iterator mc;
+  for(mc=tmap.begin();mc!=tmap.end();mc++)
+    {
+      if (tNumber==0 || mc->first==tNumber ||
+          (tNumber<0 && (mc->first % 10) == -tNumber))
+	{
+          mc->second->setParticles(nPart);
+          fnum++;
+	}
+    }
+  return fnum;
+}
 
 int
 changeParticleType(Simulation& Sim,const int tNumber,
@@ -1185,7 +1214,8 @@ changeParticleType(Simulation& Sim,const int tNumber,
   Simulation::TallyTYPE::iterator mc;
   for(mc=tmap.begin();mc!=tmap.end();mc++)
     {
-      if (tNumber==0 || mc->first==tNumber)
+      if (tNumber==0 || mc->first==tNumber ||
+          (tNumber<0 && (mc->first % 10) == -tNumber))
 	{
 	  std::string PStr=mc->second->getParticles();
 	  std::string::size_type pos=PStr.find(oPart);
@@ -1197,7 +1227,6 @@ changeParticleType(Simulation& Sim,const int tNumber,
 	    }
 	}
     }
-
   return fnum;
 }
 

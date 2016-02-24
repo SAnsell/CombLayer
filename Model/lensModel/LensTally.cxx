@@ -3,7 +3,7 @@
  
  * File:   lensModel/LensTally.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -83,10 +83,10 @@ namespace lensSystem
 {
 
 void 
-addPointTally(Simulation& System,
-	      const lensSystem::FlightCluster& FC,
-	      const int FN,
-	      const double dist)
+addPointTally(Simulation&,
+	      const lensSystem::FlightCluster&,
+	      const size_t,
+	      const double)
   /*!
     Set the different positions for the intensity.
     \param Sim :: Simulation system
@@ -126,7 +126,7 @@ addPointTally(Simulation& System,
 int
 addSurfTally(Simulation& System,
 	     const lensSystem::FlightCluster& FC,
-	     const int FN,const double Dist)
+	     const size_t FN,const double Dist)
   /*!
     Set the different positions for the intensity.
     Based on surface crossing tallies by inserting a plate
@@ -140,10 +140,11 @@ addSurfTally(Simulation& System,
   ELog::RegMethod RegA("LensTally","addSurfTally<FlightCluster>");
    
   const attachSystem::FixedComp& FL=FC.getLine(FN);
+  
   const Geometry::Vec3D& Y=FL.getLinkAxis(1);
   const Geometry::Vec3D& Org=FL.getCentre();
   
-  int TNum=tallySystem::getLastTallyNumber(System,FN);
+  int TNum=tallySystem::getLastTallyNumber(System,1);
   TNum=(TNum) ? TNum+10 : 1;
 
   std::ostringstream cx;

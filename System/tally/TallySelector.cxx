@@ -3,7 +3,7 @@
  
  * File:   tally/TallySelector.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -129,56 +129,45 @@ tallyModification(Simulation& System,
 	  ELog::EM<<ELog::endErr;
 	  errFlag=0;
 	}
-      else if(key=="particle" && (nV==3 || nV==4))
+      else if(key=="particle" && nV>=3)
 	{
 	  int tNumber(0);
-	  const size_t flag((nV==4) ? 1 : 0);
-	  if (flag && !StrFunc::convert(StrItem[0],tNumber))
+	  if (!StrFunc::convert(StrItem[0],tNumber))
 	    ELog::EM<<"Failed to convert tally number "<<ELog::endErr;	  
-	  ELog::EM<<"Changing particle "<<StrItem[flag]<<" "
-		  <<StrItem[flag+1]<<ELog::endDebug;
-	  tallySystem::changeParticleType(System,tNumber,
-					      StrItem[flag],
-					      StrItem[flag+1]);
+	  tallySystem::setParticleType(System,tNumber,StrItem[1]);
 	  errFlag=0;
 	}
-      else if (key=="energy")
+      else if (key=="energy" && nV>=3)
 	{
 	  int tNumber(0);
-	  if (nV>=2)
-	    {
-	      const std::string TN=
-		IParam.getValue<std::string>("TMod",i,1);
-	      if (!StrFunc::convert(StrItem[0],tNumber))
-		ELog::EM<<"Failed to understand TNumber :"
-			<<StrItem[0]<<ELog::endErr;
-	      else
-		{
-		  if (tallySystem::setEnergy(System,tNumber,StrItem[1]))
-		    {
-		      ELog::EM<<"Error setting tally energy "<<
-			StrItem[1]<<ELog::endErr;
-		    }
-		  errFlag=0;
-		}
-	    }
+          const std::string TN=
+            IParam.getValue<std::string>("TMod",i,1);
+          if (!StrFunc::convert(StrItem[0],tNumber))
+            ELog::EM<<"Failed to understand TNumber :"
+                    <<StrItem[0]<<ELog::endErr;
+          else
+            {
+              if (tallySystem::setEnergy(System,tNumber,StrItem[1]))
+                {
+                  ELog::EM<<"Error setting tally energy "<<
+                    StrItem[1]<<ELog::endErr;
+                }
+              errFlag=0;
+            }
 	}
-      else if (key=="single")
+      else if (key=="single" && nV>=3)
 	{
 	  int tNumber(0);
-	  if (nV>=2)
-	    {
-	      errFlag=0;
-	      for(size_t j=1;j<nV && !errFlag;j++)
-		{
-		  if (!StrFunc::convert(StrItem[j-1],tNumber))
-		    ELog::EM<<"Failed to understand TNumber :"	      
-			    <<StrItem[j-1]<<ELog::endErr;
-		  errFlag=(tallySystem::setSingle(System,tNumber)) ? 0 : 1;
-		}
-	    }
+          errFlag=0;
+          for(size_t j=1;j<nV && !errFlag;j++)
+            {
+              if (!StrFunc::convert(StrItem[j-1],tNumber))
+                ELog::EM<<"Failed to understand TNumber :"	      
+                        <<StrItem[j-1]<<ELog::endErr;
+              errFlag=(tallySystem::setSingle(System,tNumber)) ? 0 : 1;
+            }
 	}
-      else if (key=="movePoint" && nV>=2)
+      else if (key=="movePoint" && nV>=3)
 	{
 	  int tNumber(0);
 	  if (!StrFunc::convert(StrItem[0],tNumber))
@@ -206,12 +195,11 @@ tallyModification(Simulation& System,
 	  errFlag=0;
 	  tallySystem::moveF5Tally(System,tNumber,offsetPt);
 	  ELog::EM<<"Move Point == "<<offsetPt<<ELog::endDiag;
-	  
 	}
       else if ((key=="scaleWindow" ||
 		key=="scaleXWindow" ||
 		key=="scaleYWindow")
-	       && nV==3)
+	       && nV>=3)
 	{
 	  int tNumber(0);
 	  double scale(1.0);
@@ -231,43 +219,31 @@ tallyModification(Simulation& System,
 	    }
 	}
 
-      else if (key=="time")
+      else if (key=="time" && nV>=3)
 	{
 	  int tNumber(0);
-	  if (nV>=2)
-	    {
-	      const std::string TN=
-		IParam.getValue<std::string>("TMod",i,1);
-	      if (!StrFunc::convert(StrItem[0],tNumber))
-		ELog::EM<<"Failed to understand TNumber :"
-			<<StrItem[0]<<ELog::endErr;
-	      else
-		{
-		  if (tallySystem::setTime(System,tNumber,StrItem[1]))
-		    {
-		      ELog::EM<<"Error setting tally time "<<
-			StrItem[1]<<ELog::endErr;
-		    }
-		  errFlag=0;
-		}
-	    }
-	}
-      else if (key=="nowindow")
+          const std::string TN=
+            IParam.getValue<std::string>("TMod",i,1);
+          if (!StrFunc::convert(StrItem[0],tNumber))
+            ELog::EM<<"Failed to understand TNumber :"
+                    <<StrItem[0]<<ELog::endErr;
+          if (tallySystem::setTime(System,tNumber,StrItem[1]))
+            ELog::EM<<"Error setting tally time "<<
+              StrItem[1]<<ELog::endErr;
+          errFlag=0;
+        }
+      else if (key=="nowindow" && nV>=2)
 	{
 	  int tNumber(0);
-	  if (nV==2)
-	    {
-	      const std::string TN=
-		IParam.getValue<std::string>("TMod",i,1);
-	      if (!StrFunc::convert(TN,tNumber))
-		ELog::EM<<"Failed to understand TNumber :"<<TN<<ELog::endErr;
-	      else
-		tallySystem::removeF5Window(System,tNumber);
-
-	      errFlag=0;
-	    }
+          const std::string TN=
+            IParam.getValue<std::string>("TMod",i,1);
+          if (!StrFunc::convert(TN,tNumber))
+            ELog::EM<<"Failed to understand TNumber :"<<TN<<ELog::endErr;
+          else
+            tallySystem::removeF5Window(System,tNumber);          
+          errFlag=0;
 	}
-      else if (key=="divide")
+      else if (key=="divide" && nV>=4)
 	{
 	  int tNumber(0);
 	  int xPts,yPts;
