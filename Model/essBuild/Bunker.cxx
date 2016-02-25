@@ -446,7 +446,6 @@ Bunker::createObjects(Simulation& System,
   Out=ModelSupport::getComposite(SMap,bnkIndex,"1 -7 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,voidMat,0.0,Out+Inner));
   setCell("MainVoid",cellIndex-1);
-
   // process left wall:
   //  std::string leftWallStr=procLeftWall(System);
 

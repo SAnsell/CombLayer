@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   attachComp/LinkSupport.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -131,19 +131,71 @@ getAttachPoint(const std::string& FCName,
   // All these calls throw on error
   if (index<0)
     {
-      Pt=FC->getLinkPt(static_cast<size_t>(-index));
-      YAxis=-FC->getLinkAxis(static_cast<size_t>(-index));
+      Pt=FC->getLinkPt(static_cast<size_t>(-1-index));
+      YAxis=-FC->getLinkAxis(static_cast<size_t>(-1-index));
     }
   else if (index>0)
     {
-      Pt=FC->getLinkPt(static_cast<size_t>(index));
-      YAxis=-FC->getLinkAxis(static_cast<size_t>(index));
+      Pt=FC->getLinkPt(static_cast<size_t>(index-1));
+      YAxis=-FC->getLinkAxis(static_cast<size_t>(index-1));
     }
   else
     {
       Pt=FC->getCentre();
       YAxis=-FC->getY();
     }
+  return 1;
+}
+
+int
+getAttachPointWithXYZ(const std::string& FCName,
+                      const std::string& linkName,
+                      Geometry::Vec3D& Pt,
+                      Geometry::Vec3D& XAxis,
+                      Geometry::Vec3D& YAxis,
+                      Geometry::Vec3D& ZAxis)
+  /*!
+    Takes the linkName and the fixed object and converts
+    this into the direction and point.
+    - Note that link points are +1 offset and 
+    \param FCName :: Name for the fixed object
+    \param linkName :: Name/number for the link point
+    \param Pt :: Link point [out]
+    \param XAxis :: X Out
+    \param YAxis :: Y Out
+    \param ZAxis :: Z Out
+    \return 1 on success / 0 on fail
+  */
+{
+  ELog::RegMethod RegA("LinkSupport","getAttachPointWithXYZ");
+
+  const ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  const FixedComp* FC=
+    OR.getObject<attachSystem::FixedComp>(FCName);
+  if (!FC) return 0;
+
+  const long int index=getLinkIndex(linkName);
+  // All these calls throw on error
+  if (index<0)
+    {
+      Pt=FC->getLinkPt(static_cast<size_t>(-1-index));
+      YAxis=-FC->getLinkAxis(static_cast<size_t>(-1-index));
+    }
+  else if (index>0)
+    {
+      Pt=FC->getLinkPt(static_cast<size_t>(index-1));
+      YAxis=-FC->getLinkAxis(static_cast<size_t>(index-1));
+    }
+  else
+    {
+      Pt=FC->getCentre();
+      YAxis=-FC->getY();
+    }
+  
+  ZAxis=FC->getZ();
+  XAxis= -(YAxis*ZAxis).unit();
   return 1;
 }
 

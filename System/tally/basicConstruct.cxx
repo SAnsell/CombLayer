@@ -355,7 +355,7 @@ basicConstruct::getCellSelection(const Simulation& System,
     ModelSupport::objectRegister::Instance();
 
   std::vector<int> cells;
-  
+
   // NOTE that getting all the cells from OR is insane
   if (keyName=="allNonVoid" || keyName=="AllNonVoid")
     cells=System.getNonVoidCellVector();
@@ -363,7 +363,6 @@ basicConstruct::getCellSelection(const Simulation& System,
     cells=System.getCellVector();
   else
     cells=OR.getObjectRange(keyName);
-
 
   // PROCESS mat:
   std::vector<int> Out;
@@ -373,7 +372,6 @@ basicConstruct::getCellSelection(const Simulation& System,
     matCell=System.getCellWithZaid(matN);
   else  
     matCell=System.getCellWithMaterial(matN);
-
   std::set_intersection(cells.begin(),cells.end(),
                         matCell.begin(),matCell.end(),
                         std::back_inserter(Out));

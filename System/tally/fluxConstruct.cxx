@@ -127,6 +127,10 @@ fluxConstruct::processFlux(Simulation& System,
   
   const std::vector<int> cells=
     getCellSelection(System,matN,cellKey);
+  if (cells.empty())
+    throw ColErr::InContainerError<std::string>
+      (cellKey+":"+StrFunc::makeString(MType),"cell/mat not present in model");
+  
 
   const int nTally=System.nextTallyNum(4);
   tallySystem::addF4Tally(System,nTally,PType,cells);
