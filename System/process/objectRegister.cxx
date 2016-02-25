@@ -502,18 +502,25 @@ objectRegister::getObjectRange(const std::string& objName) const
   // CELL Range ::  objectName:cellName
   if (pos!=0 && pos!=std::string::npos)
     {
-
       const std::string itemName=objName.substr(0,pos);
       const std::string cellName=objName.substr(pos+1);
-        
+      
       const attachSystem::CellMap* CPtr=
         getObject<attachSystem::CellMap>(itemName);
       if (!CPtr)
         throw ColErr::InContainerError<std::string>(itemName,"objectName:");
       
       std::vector<int> Out=CPtr->getCells(cellName);
+      if (Out.empty())
+        {
+          ELog::EM<<"Possible names == "<<ELog::endDiag;
+          std::vector<std::string> NAME=
+            CPtr->getNames();
+        }
+      
       for(int& CN : Out)
         CN=calcRenumber(CN);
+
       return Out;
     }
 

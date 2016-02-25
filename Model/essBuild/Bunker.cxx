@@ -582,8 +582,9 @@ Bunker::createMainWall(Simulation& System)
       if (AS & 1)
         {
 	  const int CN=getCell("frontWall",i);
-	  ModelSupport::LayerDivide3D LD3(keyName+"mainWall"+
+	  ModelSupport::LayerDivide3D LD3(keyName+"MainWall"+
 					  StrFunc::makeString(i));
+          ELog::EM<<"CellMAP "<<LD3.getKeyName()<<ELog::endDiag;
 	  LD3.setSurfPair(0,SMap.realSurf(bnkIndex+1001+static_cast<int>(i)),
 			  SMap.realSurf(bnkIndex+1002+static_cast<int>(i)));
 	  
@@ -597,7 +598,6 @@ Bunker::createMainWall(Simulation& System)
 	  
 	  LD3.setXMLdata(keyName+"Def.xml","WallMat",keyName+".xml");
 	  LD3.divideCell(System,CN);
-
 	  removeCell("frontWall",i);
 	  addSurfs(CName,LD3.getSurfs());
 	  addCells(CName,LD3.getCells());
