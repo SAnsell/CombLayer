@@ -82,6 +82,7 @@
 #include "shortDREAM.h"
 #include "shortODIN.h"
 #include "VOR.h"
+#include "simpleITEM.h"
 
 #include "beamlineConstructor.h"
 #include "makeESSBL.h"
@@ -233,6 +234,12 @@ makeESSBL::build(Simulation& System,
       // short sector dream
       DREAM dreamBL("shortDream2");
       dreamBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+    }
+  else if (beamName=="SIMPLE")
+    {
+      // LOKI beamline
+      simpleITEM simpleBL("simple");
+      simpleBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="JSANS" || beamName=="JRef")
     {

@@ -82,7 +82,7 @@ setDefUnits(FuncDataBase& Control,
       else if (Key=="Full")
 	setESSFull(A);
       else if (Key=="PortsOnly")
-	setESSPortsOnly(A);
+	setESSPortsOnly(A,extraItem);
       else if (Key=="Single")
 	setESSSingle(A,sndItem,extraItem,filled);
       else if (Key=="help")
@@ -90,7 +90,7 @@ setDefUnits(FuncDataBase& Control,
 	  ELog::EM<<"Options : "<<ELog::endDiag;
 	  ELog::EM<<"  Main : Everything that works"<<ELog::endDiag;
 	  ELog::EM<<"  Full : Beamline on every port"<<ELog::endDiag;
-	  ELog::EM<<"  PortsOnly  : Nothing beyond beamport "<<ELog::endDiag;
+	  ELog::EM<<"  PortsOnly [lower/upper] : Nothing beyond beamport "<<ELog::endDiag;
 	  ELog::EM<<"  Single  beamLine : Single beamline [for BL devel] "
 		  <<ELog::endDiag;
 	  throw ColErr::ExitAbort("Iparam.defaultConfig");	  
@@ -149,25 +149,27 @@ setESSFull(defaultConfig& A)
 	A.setVar(mc->second+"Filled",1);
       index++;
     }
-  
-
   return;
 }
 
 void
-setESSPortsOnly(defaultConfig& A)
+setESSPortsOnly(defaultConfig& A,const std::string& lvl)
   /*!
     Default configuration for ESS for beamports only
     \param A :: Paramter for default config
+    \param lvl :: level value (lower/uppper)
    */
 {
   ELog::RegMethod RegA("DefUnitsESS[F]","setESS");
 
   A.setOption("lowMod","Butterfly");
+  const std::string GNum=
+    (lvl == "lower") ? "G1BLine" : "G4BLine";
+  
   for(size_t i=0;i<21;i++)
-    A.setVar("G1BLine"+StrFunc::makeString(i+1)+"Active",1);
+    A.setVar(GNum+StrFunc::makeString(i+1)+"Active",1);
 
-  ELog::EM<<"Port Only "<<ELog::endDiag;
+  ELog::EM<<"Port Only on sectors:"<<GNum<<ELog::endDiag;
   return;
 }
 
@@ -194,7 +196,8 @@ setESSSingle(defaultConfig& A,
      {"SHORTDREAM","G4BLine9"},
      {"SHORTODIN","G1BLine16"},
      {"DREAM","G4BLine17"},
-     {"VOR","G4BLine1"},   // also 17  
+     {"VOR","G4BLine1"},   // also 17
+     {"SIMPLE","G4BLine4"},
      {"LOKI","G4BLine4"},
      {"ODIN","G1BLine4"},   // Note reverse because on G1
      {"ESTIA","G4BLine11"}

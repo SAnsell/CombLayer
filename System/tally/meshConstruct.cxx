@@ -258,7 +258,7 @@ const std::string&
 meshConstruct::getPhotonDoseConversion()
   /*!
     Return the dose string  for a mshtr
-    Uses the FtD files values. Tihs is the H*(10) values which are higher
+    Uses the FtD files values. This is the H*(10) values which are higher
     than the FtD values!
     - These values are in mrem/hour. You need a conversion factor
     of 360 to go to 1uSv/hour from particles/sec.

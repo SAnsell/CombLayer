@@ -3,7 +3,7 @@
  
  * File:   tally/heatConstruct.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -110,15 +110,26 @@ heatConstruct::processHeat(Simulation& System,
   const std::string MType(IParam.getValue<std::string>("tally",Index,2));
   const std::string cellKey(IParam.getValue<std::string>("tally",Index,3)); 
 
+  // Get Material number:
   int matN(0);
   if (!StrFunc::convert(MType,matN))
-    matN=ModelSupport::DBMaterial::Instance().getIndex(MType);
+    {
+      if (MType=="All" || MType=="all")
+	matN=-1;
+      else if (MType=="AllVoid" || MType=="allVoid")
+	matN=-2;
+      else
+	matN=ModelSupport::DBMaterial::Instance().getIndex(MType);
+    }
 
-  const int nTally=System.nextTallyNum(6);
   const std::vector<int> cells=
     getCellSelection(System,matN,cellKey);
-      
-      
+  if (cells.empty())
+    throw ColErr::InContainerError<std::string>
+      (cellKey+":"+StrFunc::makeString(MType),"cell/mat not present in model");
+
+
+  const int nTally=System.nextTallyNum(6);
   tallySystem::addF6Tally(System,nTally,PType,cells);
   tallySystem::Tally* TX=System.getTally(nTally); 
   TX->setPrintField("e f");

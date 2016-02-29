@@ -106,7 +106,7 @@ fluxConstruct::processFlux(Simulation& System,
 
   const size_t NItems=IParam.itemCnt("tally",Index);
   if (NItems<4)
-    throw ColErr::IndexError<size_t>(NItems,3,
+    throw ColErr::IndexError<size_t>(NItems,4,
 				     "Insufficient items for tally");
   // PARTICLE TYPE
   const std::string PType(IParam.getValue<std::string>("tally",Index,1)); 

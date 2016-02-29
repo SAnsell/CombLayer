@@ -138,6 +138,7 @@ DXTConstructor::processUnit(Simulation& System,
   ELog::RegMethod RegA("DXTConstructor","processPoint");
 
   const size_t NParam=IParam.itemCnt("wDXT",Index);
+  ELog::EM<<"Dxtran unit "<<Index<<ELog::endDiag;
   if (NParam<1)
     throw ColErr::IndexError<size_t>(NParam,3,"Insufficient items wDXT");
 
@@ -162,7 +163,7 @@ DXTConstructor::processUnit(Simulation& System,
              (place,linkPt,PPoint,XAxis,YAxis,ZAxis) )        
 	throw ColErr::InContainerError<std::string>
 	  (place,"Fixed Object not found");
-      
+      ELog::EM<<"DXT Point = "<<linkPt<<ELog::endDiag;
       size_t itemCnt(3);
       if (dxtName=="objOffset")
         {
@@ -175,7 +176,7 @@ DXTConstructor::processUnit(Simulation& System,
       RI=IParam.outputItem<double>("wDXT",Index,itemCnt,"radius not given");
       if (!IParam.checkItem("wDXT",Index,itemCnt+1,RO))
 	RO=RI;
-      DXT.setUnit(PPoint,RI,RO,1);
+      DXT.setUnit(PPoint,RI,RO,0);
     }
   else if (dxtName=="free")
     {

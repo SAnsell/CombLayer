@@ -131,6 +131,12 @@ DBMaterial::initMaterial()
 		   "74183.70c 0.0089819772 74184.70c 0.0192722  74186.70c "
 		   " 0.018014274","",MLib);
   setMaterial(MObj);
+  // Material #4 : Methane + 10% Al.
+  MObj.setMaterial(4,"CH4inFoam",
+		   "6000.70c 0.0167364 1001.70c 0.066945 13027.24c 0.0060185",
+		   "smeth.26t al.20t",MLib);
+  setMaterial(MObj);
+
   // Density --> 7.65g/cc
   MObj.setMaterial(3,"Stainless304",
 		   "6000.70c 3.18640e-4 14028.70c 1.70336e-3 "
@@ -150,11 +156,6 @@ DBMaterial::initMaterial()
 		   "30000.70c 0.000145 ","al.20t",MLib);
   setMaterial(MObj);
 
-  // Material #4 : Methane + 10% Al.
-  MObj.setMaterial(4,"CH4inFoam",
-		   "6000.70c 0.0167364 1001.70c 0.066945 13027.24c 0.0060185",
-		   "smeth.26t al.20t",MLib);
-  setMaterial(MObj);
   // Material #6: Gadolinium
   // Total atom density 0.03044578 - 7.95 grams per cc
   MObj.setMaterial(6,"Gadolinium",
