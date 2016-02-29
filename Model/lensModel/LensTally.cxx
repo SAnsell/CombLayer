@@ -149,7 +149,7 @@ addSurfTally(Simulation& System,
 
   std::ostringstream cx;
   cx<<"Plate"<<FN<<"_"<<TNum;
-  ModelSupport::insertPlate Pt(cx.str());
+  constructSystem::insertPlate Pt(cx.str());
   
   // 10x10x10 box 
   Pt.setValues(10.0,1.0,10.0,0);

@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/simpleITEM.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,6 +30,11 @@ namespace attachSystem
   class CellMap;
 }
 
+namespace constructSystem
+{
+  class insertPlate;
+}
+
 namespace essSystem
 {  
   class GuideItem;
@@ -51,6 +56,9 @@ class simpleITEM : public attachSystem::CopiedComp
   
   /// Main Beam Axis [for construction]
   std::shared_ptr<attachSystem::FixedOffset> simpleAxis;
+
+  /// Simple plate
+  std::shared_ptr<constructSystem::insertPlate> Plate;
 
   void setBeamAxis(const FuncDataBase&,const GuideItem&,const bool);
   

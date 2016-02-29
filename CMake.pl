@@ -78,7 +78,8 @@ $gM->addDepUnit("ess",      ["essBuild","visit","src","simMC",
 			     "monte","geometry","mersenne","src","xml","poly",
 			     "weights","global","attachComp",
 			     "visit","odin","loki","nmx","vor","dream",
-                             "estia","shortDream","shortOdin","longLoki"
+                             "estia","shortDream","shortOdin","longLoki",
+			     "simpleItem"
 			      ]);
 
 $gM->addDepUnit("filter", ["filter","photon","visit","src","simMC",

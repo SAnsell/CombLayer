@@ -3,7 +3,7 @@
  
  * File:   construct/insertPlate.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,14 +72,15 @@
 #include "ContainedComp.h"
 #include "insertPlate.h"
 
-namespace ModelSupport
+namespace constructSystem
 {
 
 insertPlate::insertPlate(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
   ptIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(ptIndex+31),populated(0),
-  zAngle(0.0),xyAngle(0.0),defMat(0)
+  cellIndex(ptIndex+1),populated(0),
+  xStep(0.0),yStep(0.0),  zStep(0.0),
+  xyAngle(0.0),zAngle(0.0),defMat(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -89,7 +90,8 @@ insertPlate::insertPlate(const std::string& Key)  :
 insertPlate::insertPlate(const insertPlate& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
   ptIndex(A.ptIndex),cellIndex(A.cellIndex),
-  populated(A.populated),zAngle(A.zAngle),xyAngle(A.xyAngle),
+  populated(A.populated),xStep(A.xStep),yStep(A.yStep),
+  zStep(A.zStep),xyAngle(A.xyAngle),zAngle(A.zAngle),
   width(A.width),height(A.height),depth(A.depth),defMat(A.defMat)
   /*!
     Copy constructor
@@ -111,8 +113,11 @@ insertPlate::operator=(const insertPlate& A)
       attachSystem::FixedComp::operator=(A);
       cellIndex=A.cellIndex;
       populated=A.populated;
-      zAngle=A.zAngle;
+      xStep=A.xStep;
+      yStep=A.yStep;
+      zStep=A.zStep;
       xyAngle=A.xyAngle;
+      zAngle=A.zAngle;
       width=A.width;
       height=A.height;
       depth=A.depth;
@@ -136,14 +141,36 @@ insertPlate::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("insertPlate","populate");
   
-  zAngle=Control.EvalVar<double>(keyName+"ZAngle");
-  xyAngle=Control.EvalVar<double>(keyName+"XYAngle");
+
+  zStep=Control.EvalDefVar<double>(keyName+"XStep",0.0);
+  yStep=Control.EvalDefVar<double>(keyName+"YStep",0.0);
+  zStep=Control.EvalDefVar<double>(keyName+"ZStep",0.0);
+  xyAngle=Control.EvalDefVar<double>(keyName+"XYAngle",0.0);
+  zAngle=Control.EvalDefVar<double>(keyName+"ZAngle",0.0);
   
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
   depth=Control.EvalVar<double>(keyName+"Depth");
   defMat=ModelSupport::EvalMat<int>(Control,keyName+"DefMat");
   populated=1;
+  return;
+}
+
+void
+insertPlate::createUnitVector(const attachSystem::FixedComp& FC,
+			      const long int lIndex)
+  /*!
+    Create the unit vectors
+    \param FC :: Fixed coordinate system
+    \param lIndex :: link index
+  */
+{
+  ELog::RegMethod RegA("insertPlate","createUnitVector(FC,index)");
+
+
+  FixedComp::createUnitVector(FC,lIndex);
+  applyShift(xStep,yStep,zStep);
+  applyAngleRotate(xyAngle,zAngle);
   return;
 }
 
@@ -182,18 +209,10 @@ insertPlate::createUnitVector(const Geometry::Vec3D& OG,
   X=XUnit.unit();
   Y=YUnit.unit();
   Z=ZUnit.unit();
-  
-  const Geometry::Quaternion Qz=
-    Geometry::Quaternion::calcQRotDeg(zAngle,X);
-  const Geometry::Quaternion Qxy=
-    Geometry::Quaternion::calcQRotDeg(xyAngle,Z);
-  Qz.rotate(Y);
-  Qz.rotate(Z);
-  Qxy.rotate(Y);
-  Qxy.rotate(X);
-  Qxy.rotate(Z);
 
   Origin=OG;
+  applyShift(xStep,yStep,zStep);
+  applyAngleRotate(xyAngle,zAngle);
 
   return;
 }
@@ -335,6 +354,7 @@ insertPlate::createAll(Simulation& System,const Geometry::Vec3D& OG,
   /*!
     Generic function to create everything
     \param System :: Simulation item
+    \param OG :: Offset origin							
     \param FC :: Linear component to set axis etc
   */
 {
@@ -345,31 +365,26 @@ insertPlate::createAll(Simulation& System,const Geometry::Vec3D& OG,
   mainAll(System);
   return;
 }
-  
 
 void
-insertPlate::createAll(Simulation& System,const Geometry::Vec3D& OG,
-		       const Geometry::Vec3D& Xunit,
-		       const Geometry::Vec3D& Yunit,
-		       const Geometry::Vec3D& Zunit)
-
+insertPlate::createAll(Simulation& System,
+		       const attachSystem::FixedComp& FC,
+		       const long int lIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
-    \param OG :: Origin
-    \param XUnit :: X-direction
-    \param YUnit :: Y-direction
-    \param ZUnit :: Z-direction
+    \param FC :: Linear component to set axis etc
+    \param lIndex :: link Index
   */
 {
-  ELog::RegMethod RegA("insertPlate","createAll<vec>");
-  
-  if (!populated)
+  ELog::RegMethod RegA("insertPlate","createAll");
+  if (!populated) 
     populate(System.getDataBase());  
-  createUnitVector(OG,Xunit,Yunit,Zunit);
+  createUnitVector(FC,lIndex);
   mainAll(System);
-
   return;
 }
   
-}  // NAMESPACE shutterSystem
+
+  
+}  // NAMESPACE constructSystem

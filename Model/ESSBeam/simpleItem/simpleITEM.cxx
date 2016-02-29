@@ -78,8 +78,9 @@
 #include "GuideItem.h"
 #include "Bunker.h"
 #include "BunkerInsert.h"
+#include "insertPlate.h"
 
-#include "SimpleComp.h"
+#include "simpleITEM.h"
 
 namespace essSystem
 {
@@ -87,7 +88,7 @@ namespace essSystem
 simpleITEM::simpleITEM(const std::string& keyN) :
   attachSystem::CopiedComp("simple",keyN),stopPoint(0),
   simpleAxis(new attachSystem::FixedOffset(newName+"Axis",4)),
-  BendA(new beamlineSystem::GuideLine(newName+"BA")),
+  Plate(new constructSystem::insertPlate(newName+"Plate"))
   /*!
     Constructor
     \param keyN :: keyName
@@ -101,6 +102,7 @@ simpleITEM::simpleITEM(const std::string& keyN) :
   // This necessary:
   OR.cell(newName+"Axis");
   OR.addObject(simpleAxis);
+  OR.addObject(Plate);
 }
 
 
@@ -165,8 +167,11 @@ simpleITEM::build(Simulation& System,
   
 
   if (stopPoint==1) return;                // STOP At monolith edge
-  
 
+  Plate->addInsertCell(bunkerObj.getCell("MainVoid"));
+  Plate->createAll(System,GItem,1);
+
+  
   return;
 }
 

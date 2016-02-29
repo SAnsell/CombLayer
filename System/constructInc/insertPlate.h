@@ -19,12 +19,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef ModelSupport_insertPlate_h
-#define ModelSupport_insertPlate_h
+#ifndef constructSystem_insertPlate_h
+#define constructSystem_insertPlate_h
 
 class Simulation;
 
-namespace ModelSupport
+namespace constructSystem
 {
 /*!
   \class insertPlate
@@ -44,10 +44,13 @@ class insertPlate : public attachSystem::ContainedComp,
   
   const int ptIndex;             ///< Index of surface offset
   int cellIndex;                 ///< Cell index
-  int populated;                 ///< 1:var
+  int populated;                 ///< externally set values
 
-  double zAngle;            ///< Z angle rotation
+  double xStep;             ///< X offset
+  double yStep;             ///< Y offset
+  double zStep;             ///< Z offset
   double xyAngle;           ///< XY angle rotation
+  double zAngle;            ///< Z angle rotation
 
   double width;             ///< Full Width
   double height;            ///< Full Height
@@ -59,10 +62,13 @@ class insertPlate : public attachSystem::ContainedComp,
   void createUnitVector(const Geometry::Vec3D&,
 			const attachSystem::FixedComp&);
 
+  void createUnitVector(const attachSystem::FixedComp&,
+			const long int);
   void createUnitVector(const Geometry::Vec3D&,
 			const Geometry::Vec3D&,
 			const Geometry::Vec3D&,
 			const Geometry::Vec3D&);
+
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -83,11 +89,10 @@ class insertPlate : public attachSystem::ContainedComp,
   void setAngles(const double,const double);
   void createAll(Simulation&,const Geometry::Vec3D&,
 		 const attachSystem::FixedComp&);
-  void createAll(Simulation&,const Geometry::Vec3D&,
-		 const Geometry::Vec3D&,
-		 const Geometry::Vec3D&,
-		 const Geometry::Vec3D&);
 
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
+  
 };
 
 }
