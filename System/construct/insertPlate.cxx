@@ -267,10 +267,7 @@ insertPlate::createObjects(Simulation& System)
   std::string Out=
     ModelSupport::getComposite(SMap,ptIndex,"1 -2 3 -4 5 -6");
   addOuterSurf(Out);
-  if (defMat<0)
-    System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out)); 
-  else
-    System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out)); 
+  System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out)); 
   return;
 }
 
@@ -285,29 +282,33 @@ insertPlate::findObjects(const Simulation& System)
 {
   ELog::RegMethod RegA("insertPlate","findObjects");
 
-  std::set<int> ICells;
-  // Process all the corners
-  MonteCarlo::Object* OPtr(System.findCell(Origin,0));
-  if (OPtr)
-    ICells.insert(OPtr->getName());
-  for(int i=0;i<8;i++)
+  if (getInsertCells().empty())
     {
-      const double mX((i%2) ? -1.0 : 1.0);
-      const double mY(((i>>1)%2) ? -1.0 : 1.0);
-      const double mZ(((i>>2)%2) ? -1.0 : 1.0);
-
-      Geometry::Vec3D TP(Origin);
-      TP+=X*(mX*depth/2.0);
-      TP+=Y*(mY*depth/2.0);
-      TP+=Z*(mZ*depth/2.0);
-      OPtr=System.findCell(TP,OPtr);
+  
+      std::set<int> ICells;
+      // Process all the corners
+      MonteCarlo::Object* OPtr(System.findCell(Origin,0));
       if (OPtr)
-	ICells.insert(OPtr->getName());
+        ICells.insert(OPtr->getName());
+      for(int i=0;i<8;i++)
+        {
+          const double mX((i%2) ? -1.0 : 1.0);
+          const double mY(((i>>1)%2) ? -1.0 : 1.0);
+          const double mZ(((i>>2)%2) ? -1.0 : 1.0);
+          
+          Geometry::Vec3D TP(Origin);
+          TP+=X*(mX*depth/2.0);
+          TP+=Y*(mY*depth/2.0);
+          TP+=Z*(mZ*depth/2.0);
+          OPtr=System.findCell(TP,OPtr);
+          if (OPtr)
+            ICells.insert(OPtr->getName());
+        }
+      
+      for(const int IC : ICells)
+        attachSystem::ContainedComp::addInsertCell(IC);
     }
-
-  for(const int IC : ICells)
-    attachSystem::ContainedComp::addInsertCell(IC);
-
+  
   return;
 }
 

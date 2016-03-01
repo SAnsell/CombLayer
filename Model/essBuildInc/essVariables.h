@@ -50,7 +50,11 @@ namespace setVariable
   void shortDREAMvariables(FuncDataBase&);
   void shortDREAM2variables(FuncDataBase&);
   void shortODINvariables(FuncDataBase&);
+  void longLOKIvariables(FuncDataBase&);
 
+  // SIMPLE TEST ITEMS
+  void simpleITEMvariables(FuncDataBase&);
 }
+
 
 #endif

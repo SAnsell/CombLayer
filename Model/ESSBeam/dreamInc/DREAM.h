@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/DREAM.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,7 +70,7 @@ class DREAM : public attachSystem::CopiedComp
   /// Main Beam Axis [for construction]
   std::shared_ptr<attachSystem::FixedComp> dreamAxis;
 
-  /// Elliptic forcus in bulkshield [m5]
+  /// Elliptic focus in bulkshield [m5]
   std::shared_ptr<beamlineSystem::GuideLine> FocusA;
   
   /// Vac box for first chopper

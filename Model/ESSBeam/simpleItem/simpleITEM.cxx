@@ -168,8 +168,9 @@ simpleITEM::build(Simulation& System,
 
   if (stopPoint==1) return;                // STOP At monolith edge
 
+  ELog::EM<<"Bunker unit = "<<bunkerObj.getKeyName()<<ELog::endDiag;
   Plate->addInsertCell(bunkerObj.getCell("MainVoid"));
-  Plate->createAll(System,GItem,1);
+  Plate->createAll(System,GItem.getKey("Beam"),2);
 
   
   return;

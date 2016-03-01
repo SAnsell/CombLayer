@@ -367,7 +367,7 @@ GuideLine::processShape(const FuncDataBase& Control)
 
 	  checkRectangle(W,H);
 	}
-      else if (typeID=="Tapper")   
+      else if (typeID=="Tapper" || typeID=="Taper")   
 	{
 	  PlateUnit* SU=new PlateUnit(GINumber,SULayer);
 	  const double HA=Control.EvalVar<double>(keyName+NStr+"HeightStart");

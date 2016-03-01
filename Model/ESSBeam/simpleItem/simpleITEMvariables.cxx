@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:    ESSBeam/dream/DREAMvariables.cxx
+ * File:   ESSBeam/simpleItem/SIMPLEITEMvariables.cxx
  *
  * Copyright (c) 2004-2016 by Stuart Ansell
  *
@@ -54,44 +54,28 @@ namespace setVariable
 {
 
 void
-shortDREAMvariables(FuncDataBase& Control)
+simpleITEMvariables(FuncDataBase& Control)
   /*!
-    Create all the beamline variables for vor
+    Create all the beamline variables for simpleITEM
     \param Control :: DataBase
   */
 {
-  ELog::RegMethod RegA("SHORTDREAMvariables[F]","SHORTDREAMvariables");
-
-
-  Control.addVariable("shortDreamFDLength",150.0);       
-  Control.addVariable("shortDreamPipeDLength",40.0);
-  Control.addVariable("shortDreamFELength",140.0);      //
-  Control.addParse<double>("shortDreamFD0Length","shortDreamFDLength");
-  Control.addParse<double>("shortDreamFE0Length","shortDreamFELength");
-  Control.addVariable("shortDreamVacCYStep",153.0);  // -60
-  Control.addVariable("shortDreamVacDYStep",165.0);
+  ELog::RegMethod RegA("simpleITEMvariables[F]","SIMPLEITEMvariables");
   
-  return;
-}
+  Control.addVariable("simpleAxisXStep",0.0);
+  Control.addVariable("simpleAxisYStep",0.0);
+  Control.addVariable("simpleAxisZStep",0.0);
+  Control.addVariable("simpleAxisXYAngle",0.0);   // rotation 
+  Control.addVariable("simpleAxisZAngle",0.0);
 
-void
-shortDREAM2variables(FuncDataBase& Control)
-  /*!
-    Create all the beamline variables for vor
-    \param Control :: DataBase
-  */
-{
-  ELog::RegMethod RegA("SHORTDREAMvariables[F]","SHORTDREAM2variables");
+  Control.addVariable("simplePlateYStep",100.0);
+  Control.addVariable("simplePlateWidth",8.0);
+  Control.addVariable("simplePlateHeight",8.0);
+  Control.addVariable("simplePlateDepth",0.5);
+  Control.addVariable("simplePlateDefMat","Lead");
 
-  Control.addVariable("shortDream2FDLength",150.0);       
-  Control.addVariable("shortDream2PipeDLength",40.0);
-  Control.addVariable("shortDream2FELength",140.0);      //
-  Control.addParse<double>("shortDream2FD0Length","shortDream2FDLength");
-  Control.addParse<double>("shortDream2FE0Length","shortDream2FELength");
-  Control.addVariable("shortDream2VacCYStep",153.0);  // -60
-  Control.addVariable("shortDream2VacDYStep",165.0);
-  
-  return;
-}
  
+  return;
+}
+
 }  // NAMESPACE setVariable
