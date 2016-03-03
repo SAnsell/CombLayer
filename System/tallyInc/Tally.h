@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   tallyInc/Tally.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,6 +53,7 @@ class Tally
   
   int IDnum;                             ///< ID number 
   std::vector<std::string> Particles;    ///< Particle list ( : list) 
+  NList<double> SDfield;                 ///< sd card [scalar division]
   
   /// Access energy
   const NRange& getEnergy() const { return Etab; } 
@@ -92,6 +93,8 @@ class Tally
   int setComment(const std::string&);
   int setPrintField(std::string);
   void setCinderEnergy(const std::string&); 
+  virtual int setSDField(const double);
+  virtual int setSDField(const std::string&);
   
   /// set tally ID
   void setKey(const int K) { IDnum=K; }

@@ -56,6 +56,7 @@
 #include "FuncDataBase.h"
 #include "Simulation.h"
 #include "inputParam.h"
+#include "NList.h"
 #include "NRange.h"
 #include "pairRange.h"
 #include "Tally.h"

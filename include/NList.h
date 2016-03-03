@@ -50,7 +50,7 @@ class NList
   */
   typedef DTriple<int,Unit,std::string> CompUnit;   
   
-  std::vector<CompUnit> Items;                     ///< List of number Items
+  std::vector<CompUnit> Items;         ///< List of number Items
 
  public:
 
@@ -75,9 +75,9 @@ class NList
   void splitComp();
   int changeItem(const Unit&,const Unit&);
   
-  int processString(const std::string&);    ///< process string
-  std::vector<Unit> actualItems() const;           ///< Just the items
-  void write(std::ostream&) const;                ///< Write out the range 
+  int processString(const std::string&);  
+  std::vector<Unit> actualItems() const;  
+  void write(std::ostream&) const;        
 
 };
 

@@ -233,7 +233,7 @@ addF4Tally(Simulation& System,const int tallyNum,
 {
   tallySystem::cellFluxTally TX(tallyNum);
   TX.setParticles(pType);                  /// F4 tally on neutrons
-  TX.setSD(1.0);                           /// Weight to 1.0
+  TX.setSDField(1.0);                           /// Weight to 1.0
   TX.setActive(1);                         /// Turn it on
   TX.addCells(Units);
   TX.setCinderEnergy(pType);
@@ -257,7 +257,7 @@ addF7Tally(Simulation& System,const int tallyNum,
 {
   tallySystem::fissionTally TX(tallyNum);
   TX.setParticles("n");                  /// F4 tally on neutrons
-  TX.setSD(1.0);                           /// Weight to 1.0
+  TX.setSDField(1.0);                           /// Weight to 1.0
   TX.setActive(1);                         /// Turn it on
   TX.addCells(Units);
   System.addTally(TX);
@@ -1160,6 +1160,35 @@ setFormat(Simulation& Sim,const int tNumber,
 	}
     }
   
+  return fnum;
+}
+
+int
+setSDField(Simulation& Sim,const int tNumber,
+          const std::string& fPart)
+  /*!
+    Set the format of a tally.
+    \param Sim :: Simulation
+    \param tNumber :: tally nubmer [-ve for type / 0 for all]
+    \param fPart :: format string [MCNP format]
+    \return number of tallies split
+   */
+{
+  ELog::RegMethod RegA("TallyCreate","setSDField");
+  
+  Simulation::TallyTYPE& tmap=Sim.getTallyMap();
+  int fnum(0);
+  Simulation::TallyTYPE::iterator mc;
+  for(mc=tmap.begin();mc!=tmap.end();mc++)
+    {
+      if (tNumber==0 || mc->first==tNumber ||
+          (tNumber<0 && (mc->first % 10)== -tNumber))
+	{
+	  if (mc->second->setSDField(fPart))
+	    fnum++;
+	}
+    }
+
   return fnum;
 }
 

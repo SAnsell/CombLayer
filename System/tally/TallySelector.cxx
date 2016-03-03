@@ -228,6 +228,10 @@ tallyModification(Simulation& System,
 	{
           tallySystem::setFormat(System,tNumber,StrItem[1]);
 	}
+      else if (key=="setSD" && nV>=3)
+	{
+          tallySystem::setSDField(System,tNumber,StrItem[1]);
+	}
       else 
         ELog::EM<<"Failed to process TMod : "<<key<<ELog::endErr;
     }

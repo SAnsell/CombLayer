@@ -127,6 +127,8 @@ class PhysicsCards
   // Special for type: vol
   void setVolume(const std::vector<int>&,const double =1.0);
   void setVolume(const int,const double);
+  void clearVolume();
+  
   void setPWT(const std::vector<int>&,const double =1.0);
   void setPWT(const int,const double);
   void setNPS(const int N) { nps=N; }      ///< Set the Number of particles

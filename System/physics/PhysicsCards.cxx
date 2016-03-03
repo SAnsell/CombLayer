@@ -3,7 +3,7 @@
  
  * File:   physics/PhysicsCards.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -712,9 +712,20 @@ PhysicsCards::getPhysImp(const std::string& Type,
   throw ColErr::InContainerError<std::string>
     (Type+"/"+particle,"type/particle not found");
 }
-  
+
 void
-PhysicsCards::setVolume(const std::vector<int>& cellInfo,const double defValue)
+PhysicsCards::clearVolume()
+  /*!
+    Remove the volume card
+  */
+{
+  Volume.clear();
+  return;
+}
+
+void
+PhysicsCards::setVolume(const std::vector<int>& cellInfo,
+			const double defValue)
   /*!
     Process the list of the valid cells 
     setting the volume list

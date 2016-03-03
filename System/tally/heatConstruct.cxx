@@ -62,6 +62,7 @@
 #include "Material.h"
 #include "DBMaterial.h"
 #include "inputParam.h"
+#include "NList.h"
 #include "NRange.h"
 #include "Tally.h"
 #include "TallyCreate.h"

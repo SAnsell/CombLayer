@@ -60,8 +60,7 @@ cellFluxTally::cellFluxTally(const int ID) :
 {}
 
 cellFluxTally::cellFluxTally(const cellFluxTally& A) :
-  Tally(A),cellList(A.cellList),FSfield(A.FSfield),
-  SDfield(A.SDfield)
+  Tally(A),cellList(A.cellList),FSfield(A.FSfield)
   /*!
     Copy Constructore
     \param A :: cellFluxTally object to copy
@@ -91,7 +90,6 @@ cellFluxTally::operator=(const cellFluxTally& A)
       Tally::operator=(A);
       cellList=A.cellList;
       FSfield=A.FSfield;
-      SDfield=A.SDfield;
     }
   return *this;
 }
@@ -102,19 +100,6 @@ cellFluxTally::~cellFluxTally()
   */
 {}
 
-void
-cellFluxTally::setSD(const double V)
-  /*!
-    Sets a constant value for all FS fields.
-    \param V :: Item to add
-  */
-{
-  SDfield.clear();
-  const int N=FSfield.count();
-  for(int i=0;i<N || i<1;i++)
-    SDfield.addComp(V);
-  return;
-}
 
 std::vector<int>
 cellFluxTally::getCells() const
@@ -169,6 +154,21 @@ cellFluxTally::addLine(const std::string& LX)
   return Tally::addLine(LX);
 }
 
+int
+cellFluxTally::setSDField(const double V)
+  /*!
+    Sets a constant value for all FS fields.
+    \param V :: Item to add
+  */
+{
+  SDfield.clear();
+  const int N=FSfield.count();
+  for(int i=0;i<N || i<1;i++)
+    SDfield.addComp(V);
+  return 1;
+}
+
+  
 void
 cellFluxTally::clearCells() 
   /*!
@@ -221,7 +221,9 @@ cellFluxTally::makeSingle()
   */
 {
   ELog::RegMethod RegA("cellFluxTally","makeSingle");
+
   const std::vector<int> cells=cellList.actualItems();
+
   std::vector<double> sd=SDfield.actualItems();
   cellList.clear();
   cellList.addUnits(cells);
@@ -323,12 +325,6 @@ cellFluxTally::write(std::ostream& OX)  const
   if (!FSfield.empty())
     {
       cx<<"fs"<<IDnum<<" "<<FSfield;
-      StrFunc::writeMCNPX(cx.str(),OX);
-      cx.str("");
-    }
-  if (!SDfield.empty())
-    {
-      cx<<"sd"<<IDnum<<" "<<SDfield;
       StrFunc::writeMCNPX(cx.str(),OX);
       cx.str("");
     }

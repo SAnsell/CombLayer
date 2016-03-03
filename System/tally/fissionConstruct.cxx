@@ -48,6 +48,7 @@
 #include "Vec3D.h"
 #include "Triple.h"
 #include "support.h"
+#include "NList.h"
 #include "NRange.h"
 #include "Tally.h"
 #include "TallyCreate.h"

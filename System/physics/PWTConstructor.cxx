@@ -49,6 +49,7 @@
 #include "Triple.h"
 #include "support.h"
 #include "stringCombine.h"
+#include "NList.h"
 #include "NRange.h"
 #include "Tally.h"
 #include "TallyCreate.h"

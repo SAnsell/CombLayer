@@ -38,7 +38,6 @@ class cellFluxTally : public Tally
   
   NList<int>  cellList;                  ///< List of cells
   NList<double> FSfield;                 ///< fs card 
-  NList<double> SDfield;                 ///< sd card [scalar division]
 
  public:
   
@@ -52,12 +51,12 @@ class cellFluxTally : public Tally
       { return "cellFluxTally"; }
 
       
-  void setSD(const double);
   void addCells(const std::vector<int>&);   
   void addIndividualCells(const std::vector<int>&);   
   std::vector<int> getCells() const;
   void clearCells();
-
+  virtual int setSDField(const double);
+  
   virtual int addLine(const std::string&); 
   virtual void renumberCell(const int,const int);
   virtual int makeSingle();

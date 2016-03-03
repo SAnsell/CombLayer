@@ -43,8 +43,8 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Triple.h"
-#include "NRange.h"
 #include "NList.h"
+#include "NRange.h"
 #include "Tally.h"
 
 namespace tallySystem
@@ -434,6 +434,43 @@ Tally::setPrintField(std::string PField)
   return static_cast<int>(printField.size());
 }
 
+int
+Tally::setSDField(const std::string& NItems)
+  /*!
+    Set sd field
+    \param NItems :: list of items
+    \return 1 on success
+   */
+{
+  ELog::RegMethod RegA("Tally","setSDField");
+  SDfield.clear();
+
+  if (StrFunc::isEmpty(NItems))
+    return 1;
+  // Items to process
+  
+  if (!SDfield.processString(NItems))
+    {
+      ELog::EM<<"Failed to process SDField :"<<NItems<<ELog::endErr;
+      return 0;
+    }
+
+  return 1;
+}
+  
+int
+Tally::setSDField(const double V)
+  /*!
+    Sets a constant value for all FS fields.
+    \param V :: Item to add
+    \return success
+  */
+{
+  SDfield.clear();
+  SDfield.addComp(V);
+  return 1;
+}
+
 void
 Tally::setCinderEnergy(const std::string&)
   /*!
@@ -634,7 +671,13 @@ Tally::writeFields(std::ostream& OX) const
       StrFunc::writeMCNPX(cx.str(),OX);
       cx.str("");
     }
-  
+  if (!SDfield.empty())
+    {
+      cx<<"sd"<<IDnum<<" "<<SDfield;
+      StrFunc::writeMCNPX(cx.str(),OX);
+      cx.str("");
+    }
+
   return;
 }
 

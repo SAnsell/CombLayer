@@ -1325,13 +1325,11 @@ Simulation::setForCinder()
     been set. Set the system to have unit volumes
     The card is required regardless of its existance in 
     the mcnpx input deck.
+    \param volClearFlag :: To clear/not clear volumes
   */
 {
   ELog::RegMethod RegA("Simuation","setForCinder");
 
-  const std::vector<int> CL=getCellVector();
-  PhysPtr->setVolume(CL,1.0);
-  PhysPtr->setVolume(1,0);  // set cell 1 to zero volume
   PhysPtr->setHist(1);      // add histp card
   return;
 }

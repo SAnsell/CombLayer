@@ -137,7 +137,13 @@ simulationImp(Simulation& System,
       System.findQhull(74123)->setImp(0);
       System.getPC().setCells("imp",74123,0);  // outer void to z	
     }
-
+  
+  if (IParam.flag("volCard"))
+    {
+      ELog::EM<<"CLEAR"<<ELog::endDiag;
+      System.getPC().clearVolume();
+    }
+  
   // WEIGHTS:
   if (IParam.flag("imp") )
     {
