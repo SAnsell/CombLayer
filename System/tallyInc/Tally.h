@@ -95,6 +95,8 @@ class Tally
   void setCinderEnergy(const std::string&); 
   virtual int setSDField(const double);
   virtual int setSDField(const std::string&);
+  virtual int mergeTally(const Tally&)
+  { return 0; }
   
   /// set tally ID
   void setKey(const int K) { IDnum=K; }

@@ -214,6 +214,20 @@ cellFluxTally::renumberCell(const int oldCell,const int newCell)
 }
 
 int
+cellFluxTally:mergeTally(const cellFluxTally& CT)
+  /*!
+    Join the cells of a tally to this tally
+    \param CT :: Other tally to joing
+  */
+{
+  ELog::RegMethod RegA("cellFluxTally","mergeTally");
+
+  
+  return 1;
+}
+
+  
+int
 cellFluxTally::makeSingle()
   /*!
     Convert the cell flux into a set of single calculation

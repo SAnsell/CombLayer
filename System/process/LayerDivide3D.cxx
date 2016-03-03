@@ -3,7 +3,7 @@
  
  * File:   essBuild/LayerDivide3D.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -343,7 +343,10 @@ LayerDivide3D::divideCell(Simulation& System,const int cellN)
   int aIndex(divIndex);
   for(size_t i=0;i<ALen;i++,aIndex++)
     {
-      const std::string ACut=ModelSupport::getComposite(SMap,aIndex,"1 -2");
+      const std::string layerNum(StrFunc::makeString(i));
+      const std::string ACut=
+        ModelSupport::getComposite(SMap,aIndex,"1 -2");
+      
       int bIndex(divIndex+1000);
       
       for(size_t j=0;j<BLen;j++,bIndex++)
@@ -360,7 +363,8 @@ LayerDivide3D::divideCell(Simulation& System,const int cellN)
 	      
 	      System.addCell(MonteCarlo::Qhull(cellIndex++,Mat,0.0,
 					       CCut+divider));
-	      attachSystem::CellMap::addCell("LD3",cellIndex-1);
+	      attachSystem::CellMap::addCell
+                ("LD3:"+layerNum,cellIndex-1);
       	    }
 	}
     }

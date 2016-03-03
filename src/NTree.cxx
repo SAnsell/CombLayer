@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
- * File:   src/NList.cxx
+ * File:   src/NTree.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,81 +39,78 @@
 #include "OutputLog.h"
 #include "Triple.h"
 #include "support.h"
-#include "NList.h"
+#include "NTree.h"
 
 
-template<typename Unit>
+
 std::ostream&
-tallySystem::operator<<(std::ostream& OX,const tallySystem::NList<Unit>& NR)
+operator<<(std::ostream& OX,const NTree& NT)
   /*!
-    Write NList to a stream (used condenced
+    Write NTree to a stream (used condenced
     format)
-    \param NR :: NList unit
+    \param NT :: NTree unit
     \param OX :: output stream
     \return OX in modified state
   */
 {
-  NR.write(OX);
+  NT.write(OX);
   return OX;
 }
 
-namespace tallySystem
-{
-
-template<typename Unit>
-NList<Unit>::NList() 
+NTree::NTree() 
   /*!
     Default constructor
   */
-{ }
+{}
 
-template<typename Unit>
-NList<Unit>::NList(const NList& A) : 
-  Items(A.Items)
+NTree::NTree(const NTree& A) : 
+  itemType(A.itemType),numInt(A.numInt),numDbl(A.numDbl),
+  repeats(A.repeats),subTree(A.subTree)
   /*!
-    Copy Constructor
-    \param A :: NList object to copy
+    Copy constructor
+    \param A :: NTree to copy
   */
-{ }
+{}
 
-template<typename Unit>
-NList<Unit>::NList(const std::string& N)
+
+NTree::NTree(const std::string& N)
   /*!
     Constructor based on a simple string
     \param N :: String to pass
   */
 { 
   const int errN=processString(N);
-  if(errN)
-    throw ColErr::InvalidLine(N,"NList::constructor");
+  if (errN)
+    throw ColErr::InvalidLine(N,"NTree::constructor");
 }
 
-template<typename Unit>
-NList<Unit>&
-NList<Unit>::operator=(const NList<Unit>& A)
+NTree&
+NTree::operator=(const NTree& A)
   /*!
-    Assignment operator=
-    \param A :: Object to copy
+    Assignment operator
+    \param A :: NTree to copy
     \return *this
   */
 {
-  if(&A!=this)
+  if (this!=&A)
     {
-      Items=A.Items;
+      itemType=A.itemType;
+      numInt=A.numInt;
+      numDbl=A.numDbl;
+      repeats=A.repeats;
+      subTree=A.subTree;
     }
   return *this;
 }
 
-template<typename Unit>
-NList<Unit>::~NList()
+NTree::~NTree()
   /*!
     Destructor
   */
-{ }
+{}
 
-template<typename Unit>
 int 
-NList<Unit>::processString(const std::string& N)
+NTree::processString(const std::string& N)
   /*!
     Process a string of the type 
       - {(} 3 -4 5 item=56 T C {)}
@@ -127,11 +124,12 @@ NList<Unit>::processString(const std::string& N)
     \retval -3 :: Error with item= part
   */
 {
-  if(N.empty())
-    return -1;
+  if(N.empty()) return -1;
   // Work with part of the string first
 
-  Items.clear();
+  clearAll();
+
+
   std::string MS(N);
   // Change all ( and ) into <spc>)<spc>'
   std::string::size_type pos(0);
@@ -199,9 +197,8 @@ NList<Unit>::processString(const std::string& N)
   return 0;
 }
 
-template<typename Unit>
 int
-NList<Unit>::count() const
+NTree::count() const
   /*!
     Counts the number of terms (bracketed)
     \return Number of units found 
@@ -236,25 +233,23 @@ NList<Unit>::count() const
 }
 
 
-template<typename Unit>
 void
-NList<Unit>::addUnits(const std::vector<Unit>& Obj) 
+NTree::addUnits(const std::vector& Obj) 
   /*!
-    Adds units to the list of type vector<Unit>
+    Adds units to the list of type vector
     to but not included as fullcomponent
     \param Obj :: vecotr object to add to the list
   */
 {
-  typename std::vector<Unit>::const_iterator vc;
+  typename std::vector::const_iterator vc;
   for(vc=Obj.begin();vc!=Obj.end();vc++)
     Items.push_back(CompUnit(0,*vc,""));
 
   return;
 }
 
-template<typename Unit>
 void
-NList<Unit>::addComp(const std::vector<Unit>& Obj) 
+NTree::addComp(const std::vector& Obj) 
   /*!
     Adds a component to the list of type vector<int/double>
     to be included in a bracket form. E.g. ( 4 5 6 7)
@@ -263,7 +258,7 @@ NList<Unit>::addComp(const std::vector<Unit>& Obj)
 {
   Items.push_back(CompUnit(1,0,"("));
 
-  typename std::vector<Unit>::const_iterator vc;
+  typename std::vector::const_iterator vc;
   for(vc=Obj.begin();vc!=Obj.end();vc++)
     Items.push_back(CompUnit(0,*vc,""));
 
@@ -273,12 +268,12 @@ NList<Unit>::addComp(const std::vector<Unit>& Obj)
 
 template<typename Unit>
 void
-NList<Unit>::splitComp()
+NTree::splitComp()
   /*!
     Take the outer bracket appart
   */
 {
-  ELog::RegMethod RegA("NList","splitComp");
+  ELog::RegMethod RegA("NTree","splitComp");
   
   const CompUnit LeftB(1,0,"(");
   const CompUnit RightB(1,0,")");
@@ -310,9 +305,8 @@ NList<Unit>::splitComp()
 }
 
   
-template<typename Unit>
 void
-NList<Unit>::addComp(const Unit& Obj) 
+NTree::addComp(const Unit& Obj) 
   /*!
     Adds a component to the list of type int/double
     \param Obj :: object to add to the list
@@ -322,9 +316,8 @@ NList<Unit>::addComp(const Unit& Obj)
   return;
 }
 
-template<typename Unit>
 void
-NList<Unit>::addComp(const std::string& Obj) 
+NTree::addComp(const std::string& Obj) 
   /*!
     Adds a string component to the list
     \param Obj :: object to add to the list
@@ -334,16 +327,15 @@ NList<Unit>::addComp(const std::string& Obj)
   return;
 }
 
-template<typename Unit>
-std::vector<Unit>
-NList<Unit>::actualItems() const
+std::vector
+NTree::actualItems() const
   /*!
     Express just the actual items
     \return list of items
   */
 {
   typename std::vector<CompUnit>::const_iterator vc;
-  std::vector<Unit> Out;
+  std::vector Out;
   for(vc=Items.begin();vc!=Items.end();vc++)
     if (vc->first==0)
       Out.push_back(vc->second);
@@ -351,9 +343,8 @@ NList<Unit>::actualItems() const
   return Out;
 }
 
-template<typename Unit>
 int
-NList<Unit>::changeItem(const Unit& oldI,const Unit& newI)
+NTree::changeItem(const Unit& oldI,const Unit& newI)
   /*!
     Change an actual Item
     \param oldI :: Old value
@@ -373,9 +364,8 @@ NList<Unit>::changeItem(const Unit& oldI,const Unit& newI)
   return 0;
 }
 
-template<typename Unit>
 void
-NList<Unit>::write(std::ostream& OX) const
+NTree::write(std::ostream& OX) const
   /*!
     Write out the Range to a stream
     \param OX :: string stream to write out
@@ -393,17 +383,5 @@ NList<Unit>::write(std::ostream& OX) const
   return;
 }
 
-
-/// \cond TEMPLATE 
-
-template class NList<int>;
-template class NList<double>;
-
-template std::ostream&
-operator<<(std::ostream&,const NList<double>&);
-template std::ostream&
-operator<<(std::ostream&,const NList<int>&);
-
-/// \endcond TEMPLATE 
-
 }
+

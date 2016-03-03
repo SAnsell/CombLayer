@@ -56,6 +56,8 @@ class cellFluxTally : public Tally
   std::vector<int> getCells() const;
   void clearCells();
   virtual int setSDField(const double);
+  virtual int mergeTally(const cellFluxTally&);
+
   
   virtual int addLine(const std::string&); 
   virtual void renumberCell(const int,const int);

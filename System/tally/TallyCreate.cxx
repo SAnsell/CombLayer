@@ -1163,6 +1163,53 @@ setFormat(Simulation& Sim,const int tNumber,
   return fnum;
 }
 
+void
+mergeTally(Simulation& Sim,const int aNumber,
+           const int bNumber)
+  /*!
+    Merge the tallys together into one [if makes sence]
+    \param Sim :: Simulation
+    \param aNumber :: tally nubmer 
+    \param bNumber :: tally nubmer [-ve for type / 0 for all]
+    \param  :: format string [MCNP format]
+  */
+{
+  ELog::RegMethod RegA("TallyCreate","mergeTally");  
+
+  Simulation::TallyTYPE& tmap=Sim.getTallyMap();
+
+  // First tally needs to be explicit
+  Simulation::TallyTYPE::iterator ac=tmap.find(aNumber);
+  if (ac==tmap.end())
+    throw ColErr::InContainerError<int>(aNumber,"tally not present");
+
+  std::set<int> removalSet;
+  const int tType(aNumber % 10);
+  Simulation::TallyTYPE::iterator bc;
+  for(bc=tmap.begin();bc!=tmap.end();bc++)
+    {
+      const int tNum(bc->first);
+      if ( tType==(tNum % 10) &&
+           tNum!=bNumber &&
+           (bNumber==0 || tNum==bNumber ||
+            (bNumber<0 && (tNum % 10)== -bNumber)) )
+        {
+          if (bc->second->mergeTally(*ac->second))
+            removalSet.insert(bc->first);
+        }
+    }
+
+  for(const int Item : removalSet)
+    {
+      Simulation::TallyTYPE::iterator ac=
+        tmap.find(Item);
+      tmap.erase(ac);
+    }
+  return;
+}
+
+  
+  
 int
 setSDField(Simulation& Sim,const int tNumber,
           const std::string& fPart)

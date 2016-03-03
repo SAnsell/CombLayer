@@ -228,6 +228,17 @@ tallyModification(Simulation& System,
 	{
           tallySystem::setFormat(System,tNumber,StrItem[1]);
 	}
+      else if (key=="merge" && nV>=3)
+	{
+          int bTnumber;
+          if (!StrFunc::convert(StrItem[1],bTNumber))
+            {
+              ELog::EM<<"Failed to convert to a tally number"
+                      <<StrItem[0]<<":"<<StrItem[1]<<ELog::endErr;
+              return;
+            }
+          tallySystem::mergeTally(System,tNumber,bTnumber);
+	}
       else if (key=="setSD" && nV>=3)
 	{
           tallySystem::setSDField(System,tNumber,StrItem[1]);

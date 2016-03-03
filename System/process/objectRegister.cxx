@@ -547,7 +547,6 @@ objectRegister::getObjectRange(const std::string& objName) const
   // Just an object name:
   const int BStart=getCell(objName);
   const int BRange=getRange(objName);
-  ELog::EM<<"CELL KEY "<<objName<<" "<<BStart<<" "<<BRange<<ELog::endDiag;
   if (BStart==0)
     throw ColErr::InContainerError<std::string>
       (objName,"Object name not found");

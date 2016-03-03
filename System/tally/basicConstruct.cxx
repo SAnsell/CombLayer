@@ -355,7 +355,6 @@ basicConstruct::getCellSelection(const Simulation& System,
     ModelSupport::objectRegister::Instance();
 
   std::vector<int> cells;
-  ELog::EM<<"CellName -== "<<keyName<<ELog::endDiag;
   // NOTE that getting all the cells from OR is insane
   if (keyName=="allNonVoid" || keyName=="AllNonVoid")
     cells=System.getNonVoidCellVector();

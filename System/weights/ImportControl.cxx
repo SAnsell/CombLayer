@@ -140,7 +140,6 @@ simulationImp(Simulation& System,
   
   if (IParam.flag("volCard"))
     {
-      ELog::EM<<"CLEAR"<<ELog::endDiag;
       System.getPC().clearVolume();
     }
   
