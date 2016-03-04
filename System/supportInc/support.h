@@ -3,7 +3,7 @@
  
  * File:   supportInc/support.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -75,6 +75,7 @@ template<typename T>
 int setValues(const std::string&,const std::vector<int>&,
 	      std::vector<T>&);
 
+int sectionBracet(std::string&,std::string&);
 template<typename T> int sectPartNum(std::string&,T&);
 template<typename T> int section(std::string&,T&);
 /// Convert and cut a string for MCNPX

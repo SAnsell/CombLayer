@@ -214,13 +214,21 @@ cellFluxTally::renumberCell(const int oldCell,const int newCell)
 }
 
 int
-cellFluxTally:mergeTally(const cellFluxTally& CT)
+cellFluxTally::mergeTally(const Tally& CT)
   /*!
     Join the cells of a tally to this tally
-    \param CT :: Other tally to joing
+    \param CT :: Other tally to join
+    \return 1 on success
   */
 {
   ELog::RegMethod RegA("cellFluxTally","mergeTally");
+
+  const cellFluxTally* CPtr=
+    dynamic_cast<const cellFluxTally*>(&CT);
+  if (!CPtr) return 0;
+  
+  //  const std::vector<int> cells=cellList.actualItems();
+  //  const std::vector<int> otherCells=CPtr->actualItems();
 
   
   return 1;

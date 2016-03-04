@@ -109,6 +109,20 @@ NTree::~NTree()
   */
 {}
 
+void
+NTree::clearAll()
+  /*!
+    Erase the whole tree
+   */
+{
+  itemType.clear();
+  numInt.erase(numInt.begin(),numInt.end());
+  numDbl.erase(numDbl.begin(),numDbl.end());
+  repeats.erase(repeats.begin(),repeats.end());
+  subTree.erase(subTree.begin(),subTree.end());
+  return;
+}
+
 int 
 NTree::processString(const std::string& N)
   /*!
@@ -127,9 +141,30 @@ NTree::processString(const std::string& N)
   if(N.empty()) return -1;
   // Work with part of the string first
 
+  // Check brackets create sub units
   clearAll();
+  long int bCnt(1);
+  while(i<N.size() && bCnt>0)
+    {
+      if (N[i]=='(') bCnt++;
+      if (N[i]==')') bCnt--;
+      i++;
+    }
+  if (bCnt!=1)
+    throw ColErr::InvalidLine(N,"bracket mis-match",0);
 
+  std::string fullUnit=
+    StrFunc::fullBlock(N);
 
+  while(!fullUnit.empty())
+    {
+      if (fullBlock[0]=='(')  // bracket unit
+        {
+          
+  
+  
+      
+  
   std::string MS(N);
   // Change all ( and ) into <spc>)<spc>'
   std::string::size_type pos(0);

@@ -511,6 +511,38 @@ fullBlock(const std::string& A)
   return A.substr(posA,posB-posA);
 }
 
+int
+sectionBracket(std::string& A,std::string& out)
+  /*!
+    Given a string of type (.(.).)
+    extract the full bracket section and remove from the string
+    \param A :: string to intpu
+    \param out :: string for output
+    \return 1 if bracket closes correctly
+   */
+{
+  std::string NStr(A);
+  std::string::size_type pos(0);
+  pos=NStr.find_first_of("(",pos);
+  if(pos!=std::string::npos)
+    {
+      int bCnt(1);
+      std::string::size_type posIndex(pos+1);
+      for(;bCnt && posIndex<NStr.size();posIndex++)
+        {
+          if (NStr[posIndex]=='(') bCnt++;
+          if (NStr[posIndex]==')') bCnt--;
+        }
+      if (!bCnt)
+        {
+          out=NStr.substr(pos+1,posIndex-(pos+2));
+          A.erase(pos,posIndex-pos);
+        }
+      return 1;
+    }
+  return 0;
+}
+  
 template<typename T>
 int
 sectPartNum(std::string& A,T& out)

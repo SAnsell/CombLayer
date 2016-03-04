@@ -231,7 +231,7 @@ tallyModification(Simulation& System,
       else if (key=="merge" && nV>=3)
 	{
           int bTnumber;
-          if (!StrFunc::convert(StrItem[1],bTNumber))
+          if (!StrFunc::convert(StrItem[1],bTnumber))
             {
               ELog::EM<<"Failed to convert to a tally number"
                       <<StrItem[0]<<":"<<StrItem[1]<<ELog::endErr;

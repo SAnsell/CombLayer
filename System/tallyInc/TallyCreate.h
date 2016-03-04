@@ -89,8 +89,9 @@ namespace tallySystem
   int setFormat(Simulation&,const int,const std::string&);
   int setSDField(Simulation&,const int,const std::string&);
   int setSingle(Simulation&,const int);
+  int setFormat(Simulation&,const int,const std::string&);
   
-
+  void mergeTally(Simulation&,const int,const int);
   void deleteTallyType(Simulation&,const int);
   void deleteTally(Simulation&,const int);
 

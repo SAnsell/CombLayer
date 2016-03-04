@@ -55,6 +55,8 @@ class NTree
   std::map<size_t,size_t> repeats;            ///< repeat units
   std::map<size_t,NTree> subTree;             ///< sub trees
 
+  void clearAll();
+	     
  public:
 
   NTree();
