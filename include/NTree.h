@@ -22,6 +22,7 @@
 #ifndef NTree_h
 #define NTree_h
 
+
 /*!
   \class NTree
   \brief Ranges of integer/values  
@@ -38,22 +39,24 @@ class NTree
 {
  private:
 
-  /*!
-    Types 
-    - 0: null-op  [no write]
-    - 1: j
-    - 2: number [integer]
-    - 4: number [double]
-    - 8: repeat
-    - 16: interval
-    - 32: log
-    - 64: NTree
-  */
-  std::vector<size_t> itemType;
-  std::map<size_t,long int> numInt;           ///< num Inter
-  std::map<size_t,double> numDbl;             ///< double number
-  std::map<size_t,size_t> repeats;            ///< repeat units
-  std::map<size_t,NTree> subTree;             ///< sub trees
+  /// Type of item
+  enum class IType : size_t 
+   { 
+     nullOp = 0,         // No write
+       j = 1,            // skip,
+       integer = 2,
+       dble = 4 ,
+       repeat = 8,
+       interval = 16,
+       log = 32,
+       ntree = 64
+    };
+
+  std::vector<size_t> itemType;               ///< order item type
+  std::map<size_t,long int> numInt;           ///< [pos] num Inter
+  std::map<size_t,double> numDbl;             ///< [pos] double number
+  std::map<size_t,size_t> repeats;            ///< [pos] repeat units
+  std::map<size_t,NTree> subTree;             ///< [pos] sub trees
 
   void clearAll();
 	     
@@ -71,21 +74,18 @@ class NTree
   size_t count() const;  
   
   
-  void addComp(const std::vector<double>&);
-  void addComp(const std::vector<int>&);
+  void addUnits(const std::vector<double>&);
+  void addUnits(const std::vector<int>&);
+
   void addComp(const double&);
   void addComp(const int&);
   void addComp(const std::string&);
 
 
-  void addUnits(const std::vector<Unit>&);
-
-  void splitComp();
-  int changeItem(const Unit&,const Unit&);
-  
   int processString(const std::string&);  
   std::vector<double> actualValues() const;
-  
+
+  std::string str() const;
   void write(std::ostream&) const;        
 
 };
@@ -93,6 +93,6 @@ class NTree
 std::ostream&
 operator<<(std::ostream&,const NTree&);
 
-}   // NAMESPACE  tallySystem
+
 
 #endif

@@ -144,6 +144,7 @@ NTree::processString(const std::string& N)
   // Check brackets create sub units
   clearAll();
   long int bCnt(1);
+  size_t i(0);
   while(i<N.size() && bCnt>0)
     {
       if (N[i]=='(') bCnt++;
@@ -156,11 +157,9 @@ NTree::processString(const std::string& N)
   std::string fullUnit=
     StrFunc::fullBlock(N);
 
-  while(!fullUnit.empty())
-    {
-      if (fullBlock[0]=='(')  // bracket unit
-        {
-          
+  
+  while(fullUnit.empty
+  
   
   
       
@@ -269,108 +268,86 @@ NTree::count() const
 
 
 void
-NTree::addUnits(const std::vector& Obj) 
+NTree::addUnits(const std::vector<double>& DValues) 
   /*!
     Adds units to the list of type vector
     to but not included as fullcomponent
-    \param Obj :: vecotr object to add to the list
+    \param IValues :: vector of values to add to the integers
   */
 {
-  typename std::vector::const_iterator vc;
-  for(vc=Obj.begin();vc!=Obj.end();vc++)
-    Items.push_back(CompUnit(0,*vc,""));
-
-  return;
-}
-
-void
-NTree::addComp(const std::vector& Obj) 
-  /*!
-    Adds a component to the list of type vector<int/double>
-    to be included in a bracket form. E.g. ( 4 5 6 7)
-    \param Obj :: vecotr object to add to the list
-  */
-{
-  Items.push_back(CompUnit(1,0,"("));
-
-  typename std::vector::const_iterator vc;
-  for(vc=Obj.begin();vc!=Obj.end();vc++)
-    Items.push_back(CompUnit(0,*vc,""));
-
-  Items.push_back(CompUnit(1,0,")"));
-  return;
-}
-
-template<typename Unit>
-void
-NTree::splitComp()
-  /*!
-    Take the outer bracket appart
-  */
-{
-  ELog::RegMethod RegA("NTree","splitComp");
-  
-  const CompUnit LeftB(1,0,"(");
-  const CompUnit RightB(1,0,")");
-      
-  typename std::vector<CompUnit>::iterator ac;    
-  // Search for match brackets
-  ac=find(Items.begin(),Items.end(),LeftB);
-  if (ac==Items.end()) return;
-
-  typename std::vector<CompUnit>::iterator bc(ac+1);
-  size_t bCnt(1);
-  do
+  for(const double D : DValues)
     {
-      if (*bc==RightB)
-        bCnt--;
-      else if (*bc==LeftB)
-        bCnt++;
+      numDbl.emplace(itemType.size(),D);
+      itemType.push_back(IType::dbl);
     }
-  while(bCnt && ++bc!=Items.end());
+  return;
+}
 
-  if (!bCnt)
+void
+NTree::addUnits(const std::vector<int>& IValues) 
+  /*!
+    Adds units to the list of type vector
+    to but not included as fullcomponent
+    \param DValues :: vector of values to add to the 
+  */
+{
+  for(const int I : IValues)
     {
-      std::rotate(ac,ac+1,Items.end());
-      std::rotate(bc,bc+1,Items.end());
-      Items.pop_back();
-      Items.pop_back();
+      numInt.emplace(itemType.size(),I);
+      itemType.push_back(IType::integer);
     }
-  return;    
+  return;
 }
-
-  
+ 
 void
-NTree::addComp(const Unit& Obj) 
+NTree::addComp(const double& DVal) 
   /*!
-    Adds a component to the list of type int/double
-    \param Obj :: object to add to the list
+    Adds units to the list of type vector
+    to but not included as fullcomponent
+    \param DVal :: vector of values to add to the 
   */
 {
-  Items.push_back(CompUnit(0,Obj,""));
+  numDbl.emplace(itemType.size(),D);
+  itemType.push_back(IType::dbl);
   return;
 }
 
 void
-NTree::addComp(const std::string& Obj) 
+NTree::addComp(const int& IVal) 
   /*!
-    Adds a string component to the list
-    \param Obj :: object to add to the list
+    Adds units to the list of type vector
+    to but not included as fullcomponent
+    \param IVal :: vector of values to add to the 
   */
 {
-  Items.push_back(CompUnit(1,0,Obj));
+  numInt.emplace(itemType.size(),I);
+  itemType.push_back(IType::integer);
   return;
 }
 
-std::vector
-NTree::actualItems() const
+void
+NTree::addComp(const std::string& Item) 
+  /*!
+    Adds units to the list of type vector
+    to but not included as fullcomponent
+    \param Itm :: string to process
+  */
+{
+  return;
+}
+
+
+
+
+std::vector<double>
+NTree::actualDbl() const
   /*!
     Express just the actual items
     \return list of items
   */
 {
-  typename std::vector<CompUnit>::const_iterator vc;
-  std::vector Out;
+
+  std::vector<double> Out;
   for(vc=Items.begin();vc!=Items.end();vc++)
     if (vc->first==0)
       Out.push_back(vc->second);
@@ -378,27 +355,50 @@ NTree::actualItems() const
   return Out;
 }
 
-int
-NTree::changeItem(const Unit& oldI,const Unit& newI)
+std::string
+NTree::str() const
   /*!
-    Change an actual Item
-    \param oldI :: Old value
-    \param newI :: New value
-    \return 1 on succes / 0 on failure
+    Write out the Range to a string
   */
 {
-  typename std::vector<CompUnit>::iterator vc;
-  for(vc=Items.begin();vc!=Items.end();vc++)
-    {
-      if (vc->first==0 && vc->second==oldI)
+  ELog::RegMethod RegA("NTree","str");
+  
+  std::stringstream cx;
+  for(size_t index=0;i<itemType.size();indeX++)
+    {x
+      const size_t& iT(itemType[index]);
+      switch(it)
 	{
-	  vc->second=newI;
-	  return 1;
+	case IType::j:
+	  cx<<"j ";
+	  break;
+	case IType::integer:
+	  cx<<numInt[index]<<" ";
+	  break;
+	case IType::dble:
+	  cx<<numDbl[index]<<" ";
+	  break;
+	case IType::repeat:
+	  cx<<repeats[index]<<"r ";
+	  break;
+	case IType::interval:
+	  cx<<repeats[index]<<"i ";
+	  break;
+	case IType::log:
+	  cx<<repeats[index]<<"log ";
+	  break;
+	case IType::ntree:
+	  cx<<"( "<<subTree[index].str()<<") ";
+	  break;
+	default:
+	  throw ColErr::InContainerError<size_t>(iT,"Item not known");
 	}
     }
-  return 0;
+  return cx.str();
 }
 
+
+ 
 void
 NTree::write(std::ostream& OX) const
   /*!
@@ -406,17 +406,9 @@ NTree::write(std::ostream& OX) const
     \param OX :: string stream to write out
   */
 {
-  typename std::vector<CompUnit>::const_iterator vc;
-  for(vc=Items.begin();vc!=Items.end();vc++)
-    {
-      if (!vc->first)
-	OX<<vc->second;
-      else
-	OX<<vc->third;
-      OX<<" ";
-    }
+  OX<<str();
   return;
 }
 
-}
+
 
