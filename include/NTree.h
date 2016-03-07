@@ -49,17 +49,21 @@ class NTree
        repeat = 8,
        interval = 16,
        log = 32,
-       ntree = 64
+       modifier = 64,
+       ntree = 128
     };
 
-  std::vector<size_t> itemType;               ///< order item type
+  std::vector<IType> itemType;               ///< order item type
   std::map<size_t,long int> numInt;           ///< [pos] num Inter
   std::map<size_t,double> numDbl;             ///< [pos] double number
+  std::map<size_t,std::string> modifier;      ///< [pos] Allowed modifiers
   std::map<size_t,size_t> repeats;            ///< [pos] repeat units
   std::map<size_t,NTree> subTree;             ///< [pos] sub trees
 
   void clearAll();
-	     
+
+  std::vector<double> getInterval(const size_t) const;
+  
  public:
 
   NTree();
@@ -77,8 +81,8 @@ class NTree
   void addUnits(const std::vector<double>&);
   void addUnits(const std::vector<int>&);
 
-  void addComp(const double&);
-  void addComp(const int&);
+  void addComp(const double);
+  void addComp(const long int);
   void addComp(const std::string&);
 
 
@@ -90,8 +94,8 @@ class NTree
 
 };
 
-std::ostream&
-operator<<(std::ostream&,const NTree&);
+//std::ostream&
+//operator<<(std::ostream&,const NTree&);
 
 
 

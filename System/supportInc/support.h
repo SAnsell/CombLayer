@@ -75,7 +75,7 @@ template<typename T>
 int setValues(const std::string&,const std::vector<int>&,
 	      std::vector<T>&);
 
-int sectionBracet(std::string&,std::string&);
+int sectionBracket(std::string&,std::string&);
 template<typename T> int sectPartNum(std::string&,T&);
 template<typename T> int section(std::string&,T&);
 /// Convert and cut a string for MCNPX

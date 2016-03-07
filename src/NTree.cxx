@@ -39,10 +39,11 @@
 #include "OutputLog.h"
 #include "Triple.h"
 #include "support.h"
+#include "stringCombine.h"
 #include "NTree.h"
 
 
-
+/*
 std::ostream&
 operator<<(std::ostream& OX,const NTree& NT)
   /*!
@@ -51,22 +52,22 @@ operator<<(std::ostream& OX,const NTree& NT)
     \param NT :: NTree unit
     \param OX :: output stream
     \return OX in modified state
-  */
+  * /
 {
   NT.write(OX);
   return OX;
 }
-
+*/
 NTree::NTree() 
   /*!
     Default constructor
   */
 {}
 
-NTree::NTree(const NTree& A) : 
+NTree::NTree(const NTree& A) :
   itemType(A.itemType),numInt(A.numInt),numDbl(A.numDbl),
-  repeats(A.repeats),subTree(A.subTree)
-  /*!
+  modifier(A.modifier),repeats(A.repeats),subTree(A.subTree)
+   /*!
     Copy constructor
     \param A :: NTree to copy
   */
@@ -97,6 +98,7 @@ NTree::operator=(const NTree& A)
       itemType=A.itemType;
       numInt=A.numInt;
       numDbl=A.numDbl;
+      modifier=A.modifier;
       repeats=A.repeats;
       subTree=A.subTree;
     }
@@ -108,6 +110,71 @@ NTree::~NTree()
     Destructor
   */
 {}
+
+std::vector<double>
+NTree::getInterval(const size_t index) const
+  /*!
+    Given a value determine the log interval values
+    between index-1 and index+1 [which must be double/int]
+    \param index :: Index to the log/interval repeat
+    \return Vector of values 
+  */
+{
+  ELog::RegMethod RegA("NTree","getLogInterval");
+
+  if (index<1 || index+1>=itemType.size())
+    throw ColErr::IndexError<size_t>(index,itemType.size(),"index");
+
+  if (itemType[index-1]!=IType::dble || itemType[index-1]!=IType::integer)
+    throw ColErr::TypeMatch
+      (StrFunc::makeString(static_cast<size_t>(itemType[index-1])),
+       StrFunc::makeString(index-1),"Not Double/Int");
+  if (itemType[index-1]!=IType::dble || itemType[index-1]!=IType::integer)
+    throw ColErr::TypeMatch
+      (StrFunc::makeString(static_cast<size_t>(itemType[index-1])),
+       StrFunc::makeString(index-1),"Not Double/Int");
+  if (itemType[index+1]!=IType::dble || itemType[index+1]!=IType::integer)
+    throw ColErr::TypeMatch
+      (StrFunc::makeString(static_cast<size_t>(itemType[index+1])),
+       StrFunc::makeString(index+1),"Not Double/Int");
+
+  const double DA= (itemType[index-1]==IType::dble) ?
+    numDbl.find(index-1)->second :
+    static_cast<double>(numInt.find(index-1)->second); 
+  
+  const double DB= (itemType[index-1]==IType::dble) ?
+    numDbl.find(index-1)->second :
+    static_cast<double>(numInt.find(index-1)->second); 
+
+  std::vector<double> Out;
+  const size_t NR=repeats.find(index)->second;
+  if (itemType[index]==IType::log)
+    {
+      // Check negative??
+      const double LDA=std::log(std::abs(DA));
+      const double LDB=std::log(std::abs(DB));
+      const double step((LDB-LDA)/(NR+1));
+      double V(LDA);
+      for(size_t i=0;i<NR;i++)
+	{
+	  V+=step;
+	  Out.push_back(exp(V));
+	}
+    }
+
+  else  // Interval
+    {
+      const double step((DB-DA)/(NR+1));
+      double V(DA);
+      for(size_t i=0;i<NR;i++)
+	{
+	  V+=step;
+	  Out.push_back(V);
+	}
+    }
+  return Out;
+}
+
 
 void
 NTree::clearAll()
@@ -157,127 +224,84 @@ NTree::processString(const std::string& N)
   std::string fullUnit=
     StrFunc::fullBlock(N);
 
+  std::string BPart;
   std::string Part;
-  while(StrFunc::section(fullUnit,Part))
+  long int IItem;
+  double DItem;
+  while(StrFunc::sectionBracket(fullUnit,BPart)  ||
+	StrFunc::section(fullUnit,Part))
     {
+      size_t NCnt(1);
+      StrFunc::sectPartNum(Part,NCnt);
+      StrFunc::lowerString(Part);  
       // Bracket [Note must over cut Part]]: 
-      if (Part[0]=='(' &&
-	  StrFunc::sectionBracket(fullUnit,Part) )
+      if (!BPart.empty())
 	{
+	  // New tree:
 	  NTree BItem;
-	  if (BItem.processString(Part))
-	    {
-	      
-	      
-	  if (
-	}
+	  if (!BItem.processString(Part))
+	    throw ColErr::InvalidLine(Part+"::"+N,"BTree item failed");
 
-    }
-  
-  
-  
-      
-  
-  std::string MS(N);
-  // Change all ( and ) into <spc>)<spc>'
-  std::string::size_type pos(0);
-  pos=MS.find_first_of(")(",pos);
-  while(pos!=std::string::npos)
-    {
-      if (MS[pos]=='(')
-	MS.replace(pos,1," ( ");
+	  subTree.emplace(itemType.size(),BItem);
+	  itemType.push_back(IType::ntree);
+	}
+      else if (Part=="log")
+	{
+	  repeats.emplace(itemType.size(),NCnt);
+	  itemType.push_back(IType::log);
+	}
+      else if (Part=="i")
+	{
+	  repeats.emplace(itemType.size(),NCnt);
+	  itemType.push_back(IType::interval);
+	}
+      else if (Part=="r")
+	{
+	  repeats.emplace(itemType.size(),NCnt);
+	  itemType.push_back(IType::repeat);
+	}
+      else if (Part=="j")
+	{
+	  repeats.emplace(itemType.size(),NCnt);
+	  itemType.push_back(IType::j);
+	}
+      else if (Part=="c" || Part=="t")
+	{
+	  modifier.emplace(itemType.size(),Part);
+	  itemType.push_back(IType::modifier);
+	}
+      else if (StrFunc::section(Part,IItem))
+	{
+	  numInt.emplace(itemType.size(),IItem);
+	  itemType.push_back(IType::integer);
+	}
+      else if (StrFunc::section(Part,DItem))
+	{
+	  numInt.emplace(itemType.size(),DItem);
+	  itemType.push_back(IType::dble);
+	}
       else
-	MS.replace(pos,1," ) ");
-      pos+=3;
-      pos=MS.find_first_of(")(",pos);
-    }
+	throw ColErr::InvalidLine
+	  (Part+"::"+N,"Item failed");
 
-  // From now on in we have a string type (definately)
-  // check if the next number is a number or doesn't
-  // exist.
-  Unit Value;
-  std::string Comp;
-  
-  while(StrFunc::section(MS,Comp))
-    {
-      // First determine if it is "T" or "C"
-      if (Comp=="(" || Comp==")")
-        {
-	  Items.push_back(CompUnit(1,0,Comp));
-	}
-      else if (Comp=="T" || Comp=="C")
-        {
-	  Items.push_back(CompUnit(1,0,Comp));
-	}
-      else if (StrFunc::section(Comp,Value))   // Found a number 
-        {
-	  Items.push_back(CompUnit(0,Value,""));
-	}
-      else              // Maybe a = string 
-        {
-	  std::string AssignString;
-	  std::string::size_type pos=Comp.find("=");
-	  if (pos==std::string::npos)
-	    {
-	      AssignString=Comp;
-	      if (!StrFunc::section(MS,Comp))    // No further bit so must be bad
-		return -2;
-	      pos=Comp.find("=");
-	      if (pos==std::string::npos)        // No = so must be fail
-		return -2;
-	      AssignString+="=";
-	      Comp.erase(0,pos+1);               // Dump up to the '='
-	    }
-	  else
-	    {
-	      AssignString=Comp.substr(0,pos+1);
-	    }
-
-	  Comp.erase(0,pos+1);               // Dump up to the '='
-	  if (Comp.empty() && !StrFunc::section(MS,Comp))      // No bit to add
-	    return -2;
-	  if (!StrFunc::section(Comp,Value))
-	    return -3;
-	  Items.push_back(CompUnit(1,0,AssignString));
-	  Items.push_back(CompUnit(0,Value,""));
-	}
+      BPart="";
     }
   return 0;
 }
 
-int
+size_t
 NTree::count() const
   /*!
     Counts the number of terms (bracketed)
     \return Number of units found 
   */
 {
-  if (Items.empty())
-    return 0;
-  typename  std::vector<CompUnit>::const_iterator vc;
-  int count(0);
-  int brack(0);
-  for(vc=Items.begin();vc!=Items.end();vc++)
-    {
-      if (vc->first==1)
-        {
-	  if (vc->third=="(")
-	    {
-	      if (!brack)
-		count++;
-	      brack++;
-	    }
-	  else if (vc->third==")")
-	    brack--;
-	  else if (brack==0 && vc->third!="C") 
-	    count++;
-	}
-      else if (!brack)
-        {
-	  count++;
-	}
-    }
-  return count;
+  ELog::RegMethod RegA("NTree","count");
+  if (itemType.empty()) return 0;
+  
+  return
+    static_cast<size_t>(std::count(itemType.begin(),
+				   itemType.end(),IType::ntree))+1;
 }
 
 
@@ -292,7 +316,7 @@ NTree::addUnits(const std::vector<double>& DValues)
   for(const double D : DValues)
     {
       numDbl.emplace(itemType.size(),D);
-      itemType.push_back(IType::dbl);
+      itemType.push_back(IType::dble);
     }
   return;
 }
@@ -314,57 +338,89 @@ NTree::addUnits(const std::vector<int>& IValues)
 }
  
 void
-NTree::addComp(const double& DVal) 
+NTree::addComp(const double DVal) 
   /*!
     Adds units to the list of type vector
     to but not included as fullcomponent
     \param DVal :: vector of values to add to the 
   */
 {
-  numDbl.emplace(itemType.size(),D);
-  itemType.push_back(IType::dbl);
+  numDbl.emplace(itemType.size(),DVal);
+  itemType.push_back(IType::dble);
   return;
 }
 
 void
-NTree::addComp(const int& IVal) 
+NTree::addComp(const long int IVal) 
   /*!
     Adds units to the list of type vector
     to but not included as fullcomponent
     \param IVal :: vector of values to add to the 
   */
 {
-  numInt.emplace(itemType.size(),I);
+  numInt.emplace(itemType.size(),IVal);
   itemType.push_back(IType::integer);
   return;
 }
 
 void
-NTree::addComp(const std::string& Item) 
+NTree::addComp(const std::string&) 
   /*!
     Adds units to the list of type vector
     to but not included as fullcomponent
     \param Itm :: string to process
   */
 {
+  
   return;
 }
 
 
-
-
 std::vector<double>
-NTree::actualDbl() const
+NTree::actualValues() const
   /*!
     Express just the actual items
     \return list of items
   */
 {
-
+  ELog::RegMethod RegA("NTree","actualDbl");
+  
   std::vector<double> Out;
-  for(vc=Items.begin();vc!=Items.end();vc++)
-    if (vc->first==0)
-      Out.push_back(vc->second);
+  for(size_t index=0;index<itemType.size();index++)
+    {
+      const IType& IT(itemType[index]);
+      switch(IT)
+	{
+	case IType::dble:
+	  Out.push_back(numDbl.find(index)->second);
+	  break;
+	case IType::integer:
+	  Out.push_back(static_cast<double>(numInt.find(index)->second));
+	  break;
+	case IType::repeat:
+	  {
+	    const double DBack(Out.back());
+	    const size_t NR(repeats.find(index)->second);
+	    for(size_t i=0;i<NR;i++)		
+	      Out.push_back(DBack);
+	    break;
+	  }
+	case IType::interval:
+	  {
+	    std::vector<double> OutX=
+	      getInterval(index);
+	    Out.insert(Out.end(),OutX.begin(),OutX.end());
+	  }
+	case IType::log:
+	  {
+	    std::vector<double> OutX=
+	      getInterval(index);
+	    Out.insert(Out.end(),OutX.begin(),OutX.end());
+	  }
+	default:
+	  break;
+	}
+    }
 
   return Out;
 }
@@ -378,34 +434,43 @@ NTree::str() const
   ELog::RegMethod RegA("NTree","str");
   
   std::stringstream cx;
-  for(size_t index=0;i<itemType.size();indeX++)
-    {x
-      const size_t& iT(itemType[index]);
-      switch(it)
+  for(size_t index=0;index<itemType.size();index++)
+    {
+      const IType& iT(itemType[index]);
+      switch(iT)
 	{
 	case IType::j:
 	  cx<<"j ";
 	  break;
 	case IType::integer:
-	  cx<<numInt[index]<<" ";
+	  cx<<numInt.find(index)->second<<" ";
 	  break;
 	case IType::dble:
-	  cx<<numDbl[index]<<" ";
+	  cx<<numDbl.find(index)->second<<" ";
 	  break;
 	case IType::repeat:
-	  cx<<repeats[index]<<"r ";
+	  {
+	    const size_t NR(repeats.find(index)->second);
+	    if (NR>1) cx<<NR;
+	    cx<<"r ";
+	  }
 	  break;
 	case IType::interval:
-	  cx<<repeats[index]<<"i ";
+	  {
+	    const size_t NR(repeats.find(index)->second);
+	    if (NR>1) cx<<NR;
+	    cx<<"i ";
+	  }
 	  break;
-	case IType::log:
-	  cx<<repeats[index]<<"log ";
+	case IType::modifier:
+	  cx<<modifier.find(index)->second<<" ";
 	  break;
 	case IType::ntree:
-	  cx<<"( "<<subTree[index].str()<<") ";
+	  cx<<"( "<<subTree.find(index)->second.str()<<") ";
 	  break;
 	default:
-	  throw ColErr::InContainerError<size_t>(iT,"Item not known");
+	  throw ColErr::InContainerError<size_t>
+	    (static_cast<size_t>(iT),"Item not known");
 	}
     }
   return cx.str();
