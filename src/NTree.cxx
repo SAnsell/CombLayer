@@ -157,8 +157,22 @@ NTree::processString(const std::string& N)
   std::string fullUnit=
     StrFunc::fullBlock(N);
 
-  
-  while(fullUnit.empty
+  std::string Part;
+  while(StrFunc::section(fullUnit,Part))
+    {
+      // Bracket [Note must over cut Part]]: 
+      if (Part[0]=='(' &&
+	  StrFunc::sectionBracket(fullUnit,Part) )
+	{
+	  NTree BItem;
+	  if (BItem.processString(Part))
+	    {
+	      
+	      
+	  if (
+	}
+
+    }
   
   
   
