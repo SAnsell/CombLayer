@@ -3,7 +3,7 @@
  
  * File:   essBuild/BunkerInsert.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -279,7 +279,12 @@ BunkerInsert::createLinks(const attachSystem::FixedComp& BUnit)
   const size_t indexB=SurInter::closestPt(Pts,Origin);
   FixedComp::setConnect(1,Pts[indexB],Y);
 
-  
+
+  FixedComp::setConnect(2,Origin-X*(width/2.0),X);
+  FixedComp::setConnect(3,Origin+X*(width/2.0),X);
+  FixedComp::setConnect(4,Origin-Z*(height/2,0),Z);
+  FixedComp::setConnect(5,Origin+Z*(height/2,0),Z);
+    
   return;
 }
 

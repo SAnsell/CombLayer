@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/vor/DetectorTank.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -230,7 +230,7 @@ DetectorTank::createObjects(Simulation& System)
   //  addCell("Steel",cellIndex-1);
   
 
-  Out=ModelSupport::getComposite(SMap,tankIndex,"5 -6 ((11 -18) : -17)");
+  Out=ModelSupport::getComposite(SMap,tankIndex,"5 -16 ((11 -18) : -17)");
   addOuterSurf(Out);
   
   return;

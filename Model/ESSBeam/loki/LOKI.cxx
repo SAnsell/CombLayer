@@ -320,7 +320,7 @@ LOKI::build(Simulation& System,
   BendB->addInsertCell(VacBoxB->getCells("Void"));
   BendB->insertObjects(System);
   
-  // Straigh section to single 10m chopper
+  // Straight section to single 10m chopper
   GuideC->addInsertCell(bunkerObj.getCell("MainVoid"));
   GuideC->addInsertCell(VacBoxB->getCells("Void"));
   GuideC->createAll(System,BendB->getKey("Guide0"),2,

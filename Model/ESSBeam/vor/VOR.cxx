@@ -266,7 +266,8 @@ VOR::build(Simulation& System,
   // Make bunker insert
   const attachSystem::FixedComp& GFC(FocusB->getKey("Guide0"));
   BInsert->createAll(System,FocusB->getKey("Guide0"),-1,bunkerObj);
-  attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);
+  attachSystem::addToInsertLineCtrl(System,bunkerObj,"frontWall",
+				    *BInsert,*BInsert);
 
   //  FocusB->addInsertCell(BInsert->getCell("Void"));
   BInsert->insertComponent(System,"Void",*FocusB);

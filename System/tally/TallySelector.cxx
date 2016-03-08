@@ -93,6 +93,7 @@ tallyModification(Simulation& System,
 {
   ELog::RegMethod RegA("TallySelector","tallyModification");
   const size_t nP=IParam.setCnt("TMod");
+
   for(size_t i=0;i<nP;i++)
     {
       std::vector<std::string> StrItem;
@@ -100,6 +101,7 @@ tallyModification(Simulation& System,
       const size_t nV=IParam.itemCnt("TMod",i);
       const std::string key=
 	IParam.getValue<std::string>("TMod",i,0);
+      ELog::EM<<"NV == "<<nV<<ELog::endDiag;
       for(size_t j=1;j<nV;j++)
 	StrItem.push_back
 	  (IParam.getValue<std::string>("TMod",i,j));
@@ -130,7 +132,7 @@ tallyModification(Simulation& System,
 	}
 
       int tNumber(0);
-      if (!StrFunc::convert(StrItem[0],tNumber))
+      if (nV<2 || !StrFunc::convert(StrItem[0],tNumber))
         ELog::EM<<"Failed to convert tally number "<<ELog::endErr;	  
       
       if(key=="particle" && nV>=3)
@@ -201,6 +203,7 @@ tallyModification(Simulation& System,
 
       else if (key=="time" && nV>=3)
 	{
+	  ELog::EM<<"NV == "<<nV<<ELog::endDiag;
           if (tallySystem::setTime(System,tNumber,StrItem[1]))
             ELog::EM<<"Error setting tally time "<<
               StrItem[1]<<ELog::endErr;

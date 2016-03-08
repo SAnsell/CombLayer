@@ -623,7 +623,7 @@ DREAMvariables(FuncDataBase& Control)
 
   Control.addVariable("dreamT0DiskD0Thick",5.4);  // to include B4C
   Control.addVariable("dreamT0DiskDInnerMat","Inconnel");
-  Control.addVariable("dreamT0DiskDOuterMat","Tungsten");
+  Control.addVariable("dreamT0DiskDOuterMat","Void");
   
   Control.addVariable("dreamT0DiskDNBlades",2);
   Control.addVariable("dreamT0DiskD0PhaseAngle0",95.0);
