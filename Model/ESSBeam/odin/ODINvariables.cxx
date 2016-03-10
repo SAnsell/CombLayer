@@ -3,7 +3,7 @@
  
  * File:   essBuild/ODINvariables.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -709,7 +709,7 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinPinCollAHoleIndex",0);
   Control.addVariable("odinPinCollAHoleAngOff",0.0);
 
-  Control.addVariable("odinPinCollADefMat","Tungsten");
+  Control.addVariable("odinPinCollADefMat","Inconnel");
   // collimator holes:
   Control.addVariable("odinPinCollANHole",3);
   Control.addVariable("odinPinCollAHole0Shape",1);

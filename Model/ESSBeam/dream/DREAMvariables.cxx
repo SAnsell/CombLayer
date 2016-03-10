@@ -78,11 +78,11 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamFANShapeLayers",3);
   Control.addVariable("dreamFAActiveShield",0);
 
-  Control.addVariable("dreamFALayerThick1",0.4);  // glass thick
+  Control.addVariable("dreamFALayerThick1",1.0);  // glass thick
   Control.addVariable("dreamFALayerThick2",1.5);
 
   Control.addVariable("dreamFALayerMat0","Void");
-  Control.addVariable("dreamFALayerMat1","Aluminium");
+  Control.addVariable("dreamFALayerMat1","Copper");
   Control.addVariable("dreamFALayerMat2","Void");       
 
   Control.addVariable("dreamFA0TypeID","Tapper");

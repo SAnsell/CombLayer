@@ -120,7 +120,7 @@ NTree::getInterval(const size_t index) const
     \return Vector of values 
   */
 {
-  ELog::RegMethod RegA("NTree","getLogInterval");
+  ELog::RegMethod RegA("NTree","getInterval");
 
   if (index<1 || index+1>=itemType.size())
     throw ColErr::IndexError<size_t>(index,itemType.size(),"index");
