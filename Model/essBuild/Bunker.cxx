@@ -669,7 +669,6 @@ Bunker::layerProcess(Simulation& System)
       addCells("roof",getCells("roof"+StrFunc::makeString(iSector)));
       addCells("frontWall",getCells("sector"+StrFunc::makeString(iSector)));
     }
-  ELog::EM<<"LAYER PROCESS "<<ELog::endDiag;
   return;
 }
 

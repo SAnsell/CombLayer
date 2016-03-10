@@ -855,6 +855,35 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamShieldBRoofLen1",10.0);
   Control.addVariable("dreamShieldBFloorLen1",10.0);
 
+
+  // CAVE:
+  // HUT:
+  Control.addVariable("dreamCaveYStep",0.0);
+  Control.addVariable("dreamCaveVoidFront",60.0);
+  Control.addVariable("dreamCaveVoidHeight",300.0);
+  Control.addVariable("dreamCaveVoidDepth",183.0);
+  Control.addVariable("dreamCaveVoidWidth",400.0);
+  Control.addVariable("dreamCaveVoidLength",1600.0);
+
+
+  Control.addVariable("dreamCaveFeFront",25.0);
+  Control.addVariable("dreamCaveFeLeftWall",15.0);
+  Control.addVariable("dreamCaveFeRightWall",15.0);
+  Control.addVariable("dreamCaveFeRoof",15.0);
+  Control.addVariable("dreamCaveFeFloor",15.0);
+  Control.addVariable("dreamCaveFeBack",15.0);
+
+  Control.addVariable("dreamCaveConcFront",35.0);
+  Control.addVariable("dreamCaveConcLeftWall",35.0);
+  Control.addVariable("dreamCaveConcRightWall",35.0);
+  Control.addVariable("dreamCaveConcRoof",35.0);
+  Control.addVariable("dreamCaveConcFloor",50.0);
+  Control.addVariable("dreamCaveConcBack",35.0);
+
+  Control.addVariable("dreamCaveFeMat","Stainless304");
+  Control.addVariable("dreamCaveConcMat","Concrete");
+
+  
   return;
 }
  

@@ -83,7 +83,7 @@
 #include "Bunker.h"
 #include "BunkerInsert.h"
 #include "ChopperPit.h"
-#include "DHut.h"
+#include "DreamHut.h"
 #include "DetectorTank.h"
 #include "CylSample.h"
 #include "LineShield.h"
@@ -149,7 +149,9 @@ DREAM::DREAM(const std::string& keyName) :
 
   ShieldB(new constructSystem::LineShield(newName+"ShieldB")),
   VPipeOutB(new constructSystem::VacuumPipe(newName+"PipeOutB")),
-  FocusOutB(new beamlineSystem::GuideLine(newName+"FOutB"))
+  FocusOutB(new beamlineSystem::GuideLine(newName+"FOutB")),
+
+  Cave(new DreamHut(newName+"Cave"))
 /*!
     Constructor
  */
@@ -212,6 +214,8 @@ DREAM::DREAM(const std::string& keyName) :
   OR.addObject(ShieldA);
   OR.addObject(VPipeOutA);
   OR.addObject(FocusOutA);
+
+  OR.addObject(Cave);
 }
 
 DREAM::~DREAM()
@@ -463,7 +467,11 @@ DREAM::build(Simulation& System,
   FocusOutB->addInsertCell(VPipeOutB->getCell("Void"));
   FocusOutB->createAll(System,FocusOutA->getKey("Guide0"),2,
 		       FocusOutA->getKey("Guide0"),2);
-  
+
+  Cave->addInsertCell(voidCell);
+  Cave->createAll(System,FocusOutB->getKey("Guide0"),2);
+  Cave->insertComponent(System,"FrontWall",*ShieldB);
+  Cave->insertComponent(System,"Void",*ShieldB);
   return;
 }
 

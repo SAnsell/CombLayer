@@ -49,7 +49,7 @@ namespace constructSystem
 namespace essSystem
 {  
   class GuideItem;
-  class DHut;
+  class DreamHut;
   class DetectorTank;
 
   /*!
@@ -107,8 +107,6 @@ class DREAM : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::ChopperHousing> T0DiskBHouse;
   /// Elliptic guide between T0 fragments
   std::shared_ptr<beamlineSystem::GuideLine> FocusC;
-
-
 
   /// Vac box for second chopper set
   std::shared_ptr<constructSystem::VacuumBox> VacBoxC;
@@ -178,6 +176,11 @@ class DREAM : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutB;
   /// Guide leaving the bunker wall
   std::shared_ptr<beamlineSystem::GuideLine> FocusOutB;  
+
+
+  /// Cave 
+  std::shared_ptr<DreamHut> Cave;
+
 
   static void
     buildChopperBlock(Simulation&,const Bunker&,
