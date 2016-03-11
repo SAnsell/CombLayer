@@ -101,7 +101,6 @@ tallyModification(Simulation& System,
       const size_t nV=IParam.itemCnt("TMod",i);
       const std::string key=
 	IParam.getValue<std::string>("TMod",i,0);
-      ELog::EM<<"NV == "<<nV<<ELog::endDiag;
       for(size_t j=1;j<nV;j++)
 	StrItem.push_back
 	  (IParam.getValue<std::string>("TMod",i,j));

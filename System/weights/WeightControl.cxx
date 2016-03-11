@@ -655,7 +655,7 @@ WeightControl::procObject(const Simulation& System,
   const ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-    
+
   const size_t nSet=IParam.setCnt("weightObject");
   // default values:
   procParam(IParam,"weightControl",0,0);
@@ -663,14 +663,18 @@ WeightControl::procObject(const Simulation& System,
     {
       const std::string Key=
 	IParam.getValue<std::string>("weightObject",iSet,0);
+      ELog::EM<<"PROC OBJECT "<<Key<<ELog::endDiag;
       // local values:
       procParam(IParam,"weightObject",iSet,1);
+
 
       objectList.insert(Key);
       const std::vector<int> objCells=OR.getObjectRange(Key);
       if (objCells.empty())
         ELog::EM<<"Cell["<<Key<<"] empty on renumber"<<ELog::endWarn;
 
+      ELog::EM<<"ACTIVE "<<Key<<" "<<activePlane
+              <<" "<<activePtIndex<<ELog::endDiag;
       if (activePlane && activePtIndex>0)
 	{
 	  const size_t PI(static_cast<size_t>(activePtIndex-1));
@@ -694,6 +698,10 @@ WeightControl::procObject(const Simulation& System,
       else if (activePtIndex>0)
         {
           const size_t PI(static_cast<size_t>(activePtIndex-1));
+          if (PI>=sourcePt.size())
+            throw ColErr::IndexError<size_t>
+              (PI,sourcePt.size(),"sourcePt.size() < activePtIndex");
+
           CellWeight CW;
           calcCellTrack(System,sourcePt[PI],objCells,CW);
           CW.updateWM(energyCut,scaleFactor,minWeight,weightPower);
@@ -701,6 +709,10 @@ WeightControl::procObject(const Simulation& System,
       else if (activePtIndex<0)
         {
           const size_t PI(static_cast<size_t>(-activePtIndex-1));
+          if (PI>=tallyPt.size())
+            throw ColErr::IndexError<size_t>
+              (PI,tallyPt.size(),"tallyPt.size() < activePtIndex");
+
           CellWeight CW;
           calcCellTrack(System,tallyPt[PI],objCells,CW);
           CW.invertWM(energyCut,scaleFactor,minWeight,weightPower);
@@ -708,6 +720,7 @@ WeightControl::procObject(const Simulation& System,
       else 
 	ELog::EM<<"No source/tally set for weightObject"<<ELog::endCrit;
     }
+  ELog::EM<<"PROC OBJECT "<<ELog::endDiag;
   return;
 }
 
@@ -906,8 +919,7 @@ WeightControl::processWeights(Simulation& System,
 
   System.populateCells();
   System.createObjSurfMap();
-  
-  
+
   if (IParam.flag("weightType"))
     procType(IParam);
   if (IParam.flag("weight"))
@@ -925,9 +937,9 @@ WeightControl::processWeights(Simulation& System,
   if (IParam.flag("weightPlane"))
     procPlanePoint(IParam);
     
-  
   if (IParam.flag("weightObject"))
     procObject(System,IParam);
+        
   if (IParam.flag("wWWG"))
     {
       procParam(IParam,"wWWG",0,0);
@@ -936,13 +948,14 @@ WeightControl::processWeights(Simulation& System,
       wwgCreate(System,IParam);
       removePhysImp(System,"n");
     }
+
   if (IParam.flag("weightTemp"))
     scaleTempWeights(System,10.0);
   if (IParam.flag("tallyWeight"))
     tallySystem::addPointPD(System);
   if (IParam.flag("weightRebase"))
     procRebase(System,IParam);
-  
+
   return;
 }
 

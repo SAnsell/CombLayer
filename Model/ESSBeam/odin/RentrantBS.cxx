@@ -187,6 +187,8 @@ RentrantBS::createSurfaces()
   ModelSupport::buildPlane(SMap,bstopIndex+301,
 			   Origin+Y*(feLength+innerCut+outerCut),Y);
 
+  // B4C Layer
+  
   return;
 }
 

@@ -79,15 +79,16 @@ importanceSim(Simulation& System,const mainSystem::inputParam& IParam)
   System.createObjSurfMap();
 
   WeightSystem::simulationImp(System,IParam);
+
   WeightSystem::ExtField(System,IParam);
+
+        
   WeightSystem::DXT(System,IParam);
   WeightSystem::PWT(System,IParam);
   WeightSystem::EnergyCellCut(System,IParam);
   mainSystem::renumberCells(System,IParam);
-
   WeightSystem::WeightControl WC;
   WC.processWeights(System,IParam);
-
   
   return;
 }
