@@ -1069,8 +1069,9 @@ setEnergy(Simulation& Sim,const int tNumber,
   Simulation::TallyTYPE::iterator mc;
   for(mc=tmap.begin();mc!=tmap.end();mc++)
     {
-      if (tNumber==0 || mc->first==tNumber)
-	{
+      if (tNumber==0 || mc->first==tNumber ||
+          (tNumber<0 && (mc->first % 10) == -tNumber))
+        {
 	  if (mc->second->setEnergy(ePart))
 	    fnum++;
 	}
