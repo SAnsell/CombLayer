@@ -152,7 +152,7 @@ DXTControl::setDD(const double DK,const double DM)
 
   return;
 }
-
+  
 void
 DXTControl::write(std::ostream& OX) const
   /*!

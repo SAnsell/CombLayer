@@ -87,7 +87,6 @@
 #include "DXTControl.h"
 #include "DXTConstructor.h" 
 
-
 namespace physicsSystem
 {
 
@@ -169,8 +168,9 @@ DXTConstructor::processUnit(Simulation& System,
         {
           const Geometry::Vec3D DVec=
             IParam.getCntVec3D("wDXT",Index,itemCnt,"Offset");
+		    
           PPoint+=XAxis*DVec[0]+YAxis*DVec[1]+ZAxis*DVec[2];
-          ELog::EM<<"DXT Centre Point == "<<PPoint<<ELog::endDiag;
+	  ELog::EM<<"DXT Centre Point == "<<PPoint<<ELog::endDiag;
         }
       
       RI=IParam.outputItem<double>("wDXT",Index,itemCnt,"radius not given");

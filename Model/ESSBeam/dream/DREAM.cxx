@@ -327,7 +327,7 @@ DREAM::build(Simulation& System,
 
   if (stopPoint==1) return;                      // STOP At monolith edge
   
-  // First section out of monolyth
+  // First section out of monolith
   VacBoxA->addInsertCell(bunkerObj.getCell("MainVoid"));
   VacBoxA->createAll(System,FocusA->getKey("Guide0"),2);
   // PIPE
