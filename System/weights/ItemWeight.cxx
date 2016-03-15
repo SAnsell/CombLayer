@@ -147,10 +147,7 @@ ItemWeight::calcMinWeight(const double scaleFactor,
           if (W<minW) minW=W;
         }
     }
-  // Work on minW first:
-  const double factor=(minW<minWeight) ?
-    log(minWeight)/log(minW) : 1.0;
-  return factor;
+  return minW;
 }
   
 void

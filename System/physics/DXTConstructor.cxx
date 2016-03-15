@@ -96,11 +96,14 @@ DXTConstructor::DXTConstructor()
 {}
 
 void
+DXTConstructor::process
+  
+void
 DXTConstructor::processDD(Simulation& System,
 			  const mainSystem::inputParam& IParam,
 			  const size_t Index) 
   /*!
-    Add a simpel dd card
+    Add a simple dd card
     \param System :: Simulation to get physics/fixed points
     \param IParam :: Main input parameters
     \param Index :: index of the -wDXT card
@@ -207,6 +210,7 @@ DXTConstructor::writeHelp(std::ostream& OX) const
       " radius {radiusOuter} \n"
       "   free Vec3D radius \n";
     OX<<"-wDD [Kvalue Dvalue] \n";
+    OX<<"-wDXT  \n";
   return;
 }
 

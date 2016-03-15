@@ -68,7 +68,6 @@
 #include "objectRegister.h"
 #include "inputParam.h"
 #include "TallyCreate.h"
-#include "PointWeights.h"
 #include "TempWeights.h"
 #include "ImportControl.h"
 
@@ -667,14 +666,11 @@ WeightControl::procObject(const Simulation& System,
       // local values:
       procParam(IParam,"weightObject",iSet,1);
 
-
       objectList.insert(Key);
       const std::vector<int> objCells=OR.getObjectRange(Key);
       if (objCells.empty())
         ELog::EM<<"Cell["<<Key<<"] empty on renumber"<<ELog::endWarn;
 
-      ELog::EM<<"ACTIVE "<<Key<<" "<<activePlane
-              <<" "<<activePtIndex<<ELog::endDiag;
       if (activePlane && activePtIndex>0)
 	{
 	  const size_t PI(static_cast<size_t>(activePtIndex-1));
@@ -701,7 +697,7 @@ WeightControl::procObject(const Simulation& System,
           if (PI>=sourcePt.size())
             throw ColErr::IndexError<size_t>
               (PI,sourcePt.size(),"sourcePt.size() < activePtIndex");
-
+          ELog::EM<<"Point index == "<<sourcePt[PI]<<ELog::endDiag;
           CellWeight CW;
           calcCellTrack(System,sourcePt[PI],objCells,CW);
           CW.updateWM(energyCut,scaleFactor,minWeight,weightPower);
@@ -720,7 +716,6 @@ WeightControl::procObject(const Simulation& System,
       else 
 	ELog::EM<<"No source/tally set for weightObject"<<ELog::endCrit;
     }
-  ELog::EM<<"PROC OBJECT "<<ELog::endDiag;
   return;
 }
 

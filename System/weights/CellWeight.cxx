@@ -176,20 +176,23 @@ CellWeight::invertWM(const double eCut,
   double minW=
     calcMinWeight(scaleFactor,minWeight,weightPower);
   double factor(1.0);
+  const double mOld=minW;
   if (minW<minWeight)
     {
       factor= log(minWeight)/log(minW);
       minW=minWeight;
     }
-
+  
   
   for(const CMapTYPE::value_type& cv : Cells)
     {
       double W=(exp(-cv.second.weight*sigmaScale*scaleFactor*factor));
-      if (W>1e-20)
+      double WA=(exp(-cv.second.weight*sigmaScale*scaleFactor));
+      if (WA>1e-20)
         {
           W=std::pow(W,weightPower);
-          W=minW/W;
+          if (W<minW) continue;
+
           for(size_t i=0;i<EVec.size();i++)
             {
               if (eCut<-1e-10 && EVec[i] <= -eCut)

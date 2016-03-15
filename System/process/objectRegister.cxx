@@ -87,8 +87,10 @@ objectRegister::reset()
   */
 {
   Components.erase(Components.begin(),Components.end());
+  activeCells.clear();
   return;
 }
+  
 objectRegister& 
 objectRegister::Instance() 
   /*!
@@ -174,6 +176,51 @@ objectRegister::inRange(const int Index) const
   return std::string("");
 }
 
+void
+objectRegister::addActiveCell(const int cellN)
+  /*!
+    Adds an active cell
+    \param cellN :: cell number
+  */
+{
+  activeCells.insert(cellN);
+  return;
+}
+
+void
+objectRegister::removeActiveCell(const int cellN)
+  /*!
+    Deletes an active cell
+    \param cellN :: cell number
+  */
+{
+  activeCells.erase(cellN);
+  return;
+}
+
+void
+objectRegister::renumberActiveCell(const int oldCellN,
+                                   const int newCellN)
+  /*!
+    Renumber the active set
+    \param oldCellN :: old cell number
+    \param newCellN :: new cell number
+  */
+{
+  return;
+  ELog::RegMethod RegA("objectRegister","renumberActive");
+  
+  std::set<int>::iterator sc=activeCells.find(oldCellN);
+  if (sc==activeCells.end())
+    throw ColErr::InContainerError<int>(oldCellN,"Cell number");
+
+  activeCells.erase(sc);
+  activeCells.insert(newCellN);
+
+  return;
+}
+
+  
 int
 objectRegister::cell(const std::string& Name,const int size)
   /*!
@@ -460,10 +507,9 @@ objectRegister::setRenumber(const std::string& key,
       else
 	renumMap.emplace(key,std::pair<int,int>(startN,endN));
     }
-      
   return;
 }
-
+  
 int
 objectRegister::calcRenumber(const int CN) const
   /*!
@@ -513,9 +559,13 @@ objectRegister::getObjectRange(const std::string& objName) const
       std::vector<int> Out=CPtr->getCells(cellName);
       if (Out.empty())
         {
-          ELog::EM<<"Possible names == "<<ELog::endDiag;
+          ELog::EM<<"EMPTY NAME::Possible names == "<<ELog::endDiag;
           std::vector<std::string> NAME=
             CPtr->getNames();
+          
+          throw ColErr::InContainerError<std::string>
+            (objName,"Object empty");
+
         }
       
       for(int& CN : Out)
@@ -544,6 +594,16 @@ objectRegister::getObjectRange(const std::string& objName) const
       return Out;
     }
 
+  // SPECIALS:
+  if (objName=="All" || objName=="all")
+    {
+      std::vector<int> Out;
+      for(const int CN : activeCells)
+        Out.push_back(calcRenumber(CN));
+      ELog::EM<<"All size == "<<Out.size()<<ELog::endDiag;
+      return Out;
+    }
+  
   // Just an object name:
   const int BStart=getCell(objName);
   const int BRange=getRange(objName);

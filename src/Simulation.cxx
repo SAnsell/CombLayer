@@ -435,6 +435,8 @@ Simulation::addCell(const int cellNumber,const MonteCarlo::Qhull& A)
   */
 {
   ELog::RegMethod RegA("Simulation","addCell(int,Qhull)");
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
 
   OTYPE::iterator mpt=OList.find(cellNumber);
   
@@ -469,6 +471,7 @@ Simulation::addCell(const int cellNumber,const MonteCarlo::Qhull& A)
       
   // Add Volume unit [default]:
   PhysPtr->setVolume(cellNumber,1.0);
+  OR.addActiveCell(cellNumber);
   // Add surfaces to OSMPtr:
   //  OSMPtr->addSurfaces(QHptr);
 
@@ -2037,6 +2040,7 @@ Simulation::renumberCells(const std::vector<int>& cOffset,
       vc->second->setName(nNum);      
       newMap.insert(OTYPE::value_type(nNum,vc->second));
       WM.renumberCell(cNum,nNum);
+      OR.renumberActiveCell(cNum,nNum);
       if (!vc->second->isPlaceHold())
 	{
 	  PhysPtr->substituteCell(cNum,nNum);
