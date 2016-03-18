@@ -8,7 +8,7 @@ use strict;
 ## EXECUTABLES
 my @masterprog=("fullBuild","ess","pipe","sinbad","t1Real",
 		"sns","reactor","t1MarkII","t1Eng","t3Expt",
-		"filter","testMain"); 
+		"filter","singleItem","testMain"); 
 
 
 
@@ -37,8 +37,8 @@ my @modelInclude = qw( bibBuildInc bnctBuildInc buildInc chipInc
                        cuBlockInc d4cModelInc delftInc epbBuildInc 
                        essBuildInc gammaBuildInc imatInc lensModelInc 
                        moderatorInc muonInc pipeBuildInc photonInc
-                       sinbadBuildInc snsBuildInc t1BuildInc t1EngineerInc 
-                       t1UpgradeInc t3ModelInc zoomInc );
+                       singleItemBuildInc sinbadBuildInc snsBuildInc t1BuildInc 
+                       t1EngineerInc t1UpgradeInc t3ModelInc zoomInc );
 
 
 ## SYSTEM Directory
@@ -186,6 +186,14 @@ $gM->addDepUnit("pipe", ["pipeBuild","visit","src","simMC",
 			 "tally","geometry","mersenne","src","world",
 			 "work","xml","poly","support","weights",
 			 "md5","global","attachComp","visit","poly"]);
+
+$gM->addDepUnit("singleItem", ["singleItemBuild","visit","src","simMC",
+			       "construct","physics","input","process",
+			       "transport","scatMat","endf","crystal",
+			       "source","monte","funcBase","log","monte",
+			       "tally","geometry","mersenne","src","world",
+			       "work","xml","poly","support","weights",
+			       "md5","global","attachComp","visit","poly"]);
 
 $gM->addDepUnit("ts1layer", ["build","visit","chip","moderator","build",
 			     "zoom","src","physics","input","process",

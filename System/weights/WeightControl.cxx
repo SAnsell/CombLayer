@@ -941,7 +941,7 @@ WeightControl::processWeights(Simulation& System,
       wwgMesh(IParam);      // create mesh [wwgXMesh etc]
       wwgEnergy();          // set default energy grid
       wwgCreate(System,IParam);
-      removePhysImp(System,"n");
+            
     }
 
   if (IParam.flag("weightTemp"))
@@ -1096,7 +1096,6 @@ WeightControl::setWeights(Simulation& System)
   if (!WF)
     throw ColErr::InContainerError<std::string>("n","WCell - WM");
 
-  ELog::EM<<"SETTING BAND"<<ELog::endDiag;
   WF->setEnergy(EBand);
   System.populateWCells();
   WF->balanceScale(WT);
@@ -1111,6 +1110,7 @@ WeightControl::setWeights(Simulation& System)
   WF->maskCell(1);
 
   // remove neutron imp:
+
   removePhysImp(System,"n");
   return;
 }

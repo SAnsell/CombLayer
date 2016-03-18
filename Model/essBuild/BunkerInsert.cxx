@@ -282,8 +282,8 @@ BunkerInsert::createLinks(const attachSystem::FixedComp& BUnit)
 
   FixedComp::setConnect(2,Origin-X*(width/2.0),X);
   FixedComp::setConnect(3,Origin+X*(width/2.0),X);
-  FixedComp::setConnect(4,Origin-Z*(height/2,0),Z);
-  FixedComp::setConnect(5,Origin+Z*(height/2,0),Z);
+  FixedComp::setConnect(4,Origin-Z*(height/2.0),Z);
+  FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
     
   return;
 }

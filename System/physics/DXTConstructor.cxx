@@ -94,9 +94,6 @@ namespace physicsSystem
 DXTConstructor::DXTConstructor() 
   /// Constructor
 {}
-
-void
-DXTConstructor::process
   
 void
 DXTConstructor::processDD(Simulation& System,

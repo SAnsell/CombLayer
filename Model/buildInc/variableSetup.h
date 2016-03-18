@@ -47,6 +47,7 @@ namespace setVariable
   void PipeVariables(FuncDataBase&);
   void PhotonVariables(FuncDataBase&);
   void SinbadVariables(FuncDataBase&);
+  void SingleItemVariables(FuncDataBase&);
   void SNSVariables(FuncDataBase&);
 
   void RefBolts(FuncDataBase&);
