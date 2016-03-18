@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuild/Bunker.cxx
+ * File:   essBuild/RoofPillars.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -125,7 +125,8 @@ RoofPillars::populate(const FuncDataBase& Control)
           // degrees:
           const double angle=M_PI*Control.EvalVar<double>
             (keyName+"R_"+Num+"S_"+NSec)/180.0;
-          CentPoint.push_back(Geometry::Vec3D(cos(angle),sin(angle),0.0));
+          CentPoint.push_back
+            (Geometry::Vec3D(radius*cos(angle),radius*sin(angle),0.0));
         }          
     }
   
@@ -175,8 +176,11 @@ RoofPillars::createSurfaces()
 
   int RI(rodIndex);
   for(const Geometry::Vec3D& Pt : CentPoint)
-    ModelSupport::buildCylinder(SMap,RI+7,Origin+Pt,Z,radius);
-
+    {
+      ModelSupport::buildCylinder(SMap,RI+7,Origin+Pt,Z,radius);
+      RI+=10;
+    }
+      
   return;
 }
 

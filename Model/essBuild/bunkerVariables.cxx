@@ -3,7 +3,7 @@
  
  * File:   essBuild/bunkerVariables.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2016 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -127,6 +127,7 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("ABunkerPillarsR_0S_1",10.0);
   Control.addVariable("ABunkerPillarsR_0S_2",20.0);
   Control.addVariable("ABunkerPillarsR_0S_3",30.0);
+  Control.addVariable("ABunkerPillarsR_0S_4",40.0);
   
   //
   // RIGHT BUNKER : B PART

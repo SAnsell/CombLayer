@@ -571,7 +571,7 @@ makeESS::build(Simulation& System,
 
   createGuides(System);
   makeBunker(System,bunker);
-
+  buildPillars(System);
   // PROTON BEAMLINE
   
 
