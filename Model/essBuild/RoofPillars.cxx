@@ -119,14 +119,18 @@ RoofPillars::populate(const FuncDataBase& Control)
       const std::string Num=StrFunc::makeString(i);
       const size_t nSector=Control.EvalPair<size_t>
         (keyName+"NSector"+Num,keyName+"NSector");
+      const double rotRadius=Control.EvalPair<double>
+        (keyName+"R"+Num,keyName+"R");
+      
       for(size_t j=0;j<nSector;j++)
         {
           const std::string NSec=StrFunc::makeString(j);
           // degrees:
-          const double angle=M_PI*Control.EvalVar<double>
-            (keyName+"R_"+Num+"S_"+NSec)/180.0;
+          const double angle=M_PI*Control.EvalPair<double>
+            (keyName+"R_"+Num+"S_"+NSec,keyName+"RS_"+NSec)/180.0;
           CentPoint.push_back
-            (Geometry::Vec3D(radius*cos(angle),radius*sin(angle),0.0));
+            (Geometry::Vec3D(rotRadius*sin(angle),rotRadius*cos(angle),0.0));
+          
         }          
     }
   
@@ -147,8 +151,7 @@ RoofPillars::createUnitVector(const attachSystem::FixedComp& MainCentre,
   FixedComp::createUnitVector(MainCentre,sideIndex);
   for(Geometry::Vec3D& Pt : CentPoint)
     Pt=X*Pt.X()+Y*Pt.Y()+Z*Pt.Z();
-  
-    
+
   return;
 }
 
@@ -161,8 +164,41 @@ RoofPillars::setSimpleSurf(const int FS,const int RS)
   */
 {
   ELog::RegMethod RegA("RoofPillars","setSimpleSurf");
+  
   TopSurf.procString(StrFunc::makeString(FS));
   BaseSurf.procString(StrFunc::makeString(RS));
+  return;
+}
+
+void
+RoofPillars::setTopSurf(const attachSystem::FixedComp& FC,
+                        const long int sideIndex)
+  /*!
+    Set the roof/base surfaces [simple system]
+    \param FS :: Floor surface
+    \param RS :: Roof surface
+  */
+{
+  ELog::RegMethod RegA("RoofPillars","setTopSurf");
+  
+  TopSurf=FC.getSignedFullRule(sideIndex);
+
+  return;
+}
+
+void
+RoofPillars::setBaseSurf(const attachSystem::FixedComp& FC,
+                        const long int sideIndex)
+  /*!
+    Set the roof/base surfaces [simple system]
+    \param FS :: Floor surface
+    \param RS :: Roof surface
+  */
+{
+  ELog::RegMethod RegA("RoofPillars","setBaseSurf");
+  
+  BaseSurf=FC.getSignedFullRule(sideIndex);
+
   return;
 }
   
@@ -216,17 +252,23 @@ RoofPillars::insertPillars(Simulation& System,
   /*!
     Insert the pillers into the bunker void
     \param System :: Simulation 
-    \param bObj :: bunker object
+    \param bObj :: Bunker void [cells]
    */
 {
   ELog::RegMethod RegA("RoofPillars","insertPillars");
 
+  const std::string Base=
+    TopSurf.display()+BaseSurf.display();
+    
   std::string Out;
   int RI(rodIndex);
   for(size_t i=0;i<CentPoint.size();i++)
     {
-      Out=ModelSupport::getComposite(SMap,RI," 7 ");
-      bObj.insertComponent(System,"mainVoid",Out);
+      Out=ModelSupport::getComposite(SMap,RI," -7 ")+
+        Base;
+      HeadRule HR(Out);
+      HR.makeComplement();
+      bObj.insertComponent(System,"MainVoid",HR);
       RI+=10;
     }
   return;
@@ -258,7 +300,9 @@ RoofPillars::createAll(Simulation& System,
   ELog::RegMethod RegA("RoofPillars","createAll");
 
   populate(System.getDataBase());
-  createUnitVector(bunkerObj,0);
+  createUnitVector(bunkerObj,7);
+  setBaseSurf(bunkerObj,11);
+  setTopSurf(bunkerObj,12);
   createSurfaces();
   createObjects(System);
   insertPillars(System,bunkerObj);

@@ -196,12 +196,14 @@ CellMap::insertComponent(Simulation& System,
     Insert a component into a cell
     \param System :: Simulation to obtain cell from
     \param Key :: KeyName for cell
-    \param CC :: Contained Componenet
+    \param exclude :: Excluded key
    */
 {
   ELog::RegMethod RegA("CellMap","insertComponent");
 
   const std::vector<int> CVec=getCells(Key);
+  if (CVec.empty())
+    throw ColErr::InContainerError<std::string>(Key,"Cell["+Key+"] not present");
   
   for(const int cellNum : CVec)
     {
@@ -224,15 +226,12 @@ CellMap::insertComponent(Simulation& System,
     \param System :: Simulation to obtain cell from
     \param Key :: KeyName for cell
     \param index :: Index to use
-    \param CC :: Contained Componenet
+    \param exclude :: Excluded key
    */
 {
   ELog::RegMethod RegA("CellMap","insertComponent");
 
   const int cellNum=getCell(Key,index);
-
-  if (Key=="roof")
-    ELog::EM<<"Key === "<<Key<<" "<<cellNum<<ELog::endDiag;
 
   MonteCarlo::Qhull* outerObj=System.findQhull(cellNum);
   if (!outerObj)
