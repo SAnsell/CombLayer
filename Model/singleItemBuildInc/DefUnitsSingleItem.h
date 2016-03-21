@@ -1,8 +1,8 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   weightsInc/PointWeights.h
-*
+ * File:   t1UpgradeInc/DefUnitsSingleItem.h
+ *
  * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,14 +19,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef WeightsSystem_PointWeights_h
-#define WeightsSystem_PointWeights_h
+#ifndef mainSystem_DefUnitsSingleItem_h
+#define mainSystem_DefUnitsSingleItem_h
 
-///\file 
+class Simulation;
+class FuncDataBase;
 
-namespace WeightSystem
+namespace mainSystem
 {
-  void setPointWeights(Simulation&,const Geometry::Vec3D&,const double);
-}  
+  class inputParam;
+
+  void setDefUnits(FuncDataBase&,inputParam&);
+}
+
 
 #endif
+ 

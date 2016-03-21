@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/RoofPillars.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,7 +48,7 @@ class RoofPillars : public attachSystem::FixedComp,
   HeadRule BaseSurf;            ///< Base surface [floor]
   /// Relative point for each centre
   std::vector<Geometry::Vec3D> CentPoint;
-
+  
   double radius;                ///< Radius for each support
   int mat;                      ///< Matieral
     
@@ -69,6 +69,9 @@ class RoofPillars : public attachSystem::FixedComp,
   virtual ~RoofPillars();
   
   void setSimpleSurf(const int,const int);
+  void setTopSurf(const attachSystem::FixedComp&,const long int);
+  void setBaseSurf(const attachSystem::FixedComp&,const long int);
+
   void createAll(Simulation&,const Bunker&);
 
 };

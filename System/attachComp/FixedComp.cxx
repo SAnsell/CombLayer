@@ -1168,6 +1168,24 @@ FixedComp::applyRotation(const Geometry::Vec3D& Axis,
 }
 
 HeadRule
+FixedComp::getSignedFullRule(const long int sideIndex) const
+  /*!
+    Get the main full rule.
+    \param Index :: Index for LinkUnit
+    \return Main HeadRule
+   */
+{
+  ELog::RegMethod RegA("FixedComp","getSignedMainRule"); 
+
+  const LinkUnit& LObj=getSignedLU(sideIndex);
+  HeadRule Out=(sideIndex>0) ? 
+    LObj.getMainRule() :
+    LObj.getMainRule().complement();
+  Out.addIntersection(LObj.getCommonRule());
+  return Out;
+}
+
+HeadRule
 FixedComp::getSignedMainRule(const long int sideIndex) const
   /*!
     Get the main rule.
@@ -1182,6 +1200,7 @@ FixedComp::getSignedMainRule(const long int sideIndex) const
     LObj.getMainRule() :
     LObj.getMainRule().complement();
 }
+
 
 const HeadRule&
 FixedComp::getMainRule(const size_t Index) const

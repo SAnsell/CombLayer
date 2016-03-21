@@ -662,7 +662,7 @@ void createPipeInputs(inputParam& IParam)
 void
 createESSInputs(inputParam& IParam)
   /*!
-    Set the specialise inputs for TS2
+    Set the specialise inputs for the ESS
     \param IParam :: Input Parameters
   */
 {
@@ -673,7 +673,8 @@ createESSInputs(inputParam& IParam)
   IParam.setValue("sdefType",std::string("ess"));  
   IParam.setValue("targetType",std::string("Bilbao"));
 
-  IParam.regDefItem<std::string>("matDB","materialDatabase",1,std::string("shielding"));
+  IParam.regDefItem<std::string>("matDB","materialDatabase",1,
+                                 std::string("shielding"));
   
   IParam.regDefItem<std::string>("lowMod","lowModType",1,std::string("lowMod"));
   IParam.regDefItem<std::string>("topMod","topModType",1,std::string("topMod"));
@@ -702,6 +703,19 @@ createESSInputs(inputParam& IParam)
   return;
 }
 
+void
+createSingleItemInputs(inputParam& IParam)
+  /*!
+    Set the specialise inputs for single test item
+    \param IParam :: Input Parameters
+  */
+{
+  ELog::RegMethod RegA("MainProcess::","createSingleItemInputs");
+  createInputs(IParam);
+  return;
+}
+
+  
 void createEPBInputs(inputParam& IParam)
   /*!
     Set the specialise inputs for ESS EPB magnets

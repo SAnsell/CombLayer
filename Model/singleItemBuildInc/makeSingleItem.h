@@ -1,8 +1,8 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   weightsInc/PointWeights.h
-*
+ * File:   singleItemInc/makeSingleItem.h
+ *
  * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,14 +19,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef WeightsSystem_PointWeights_h
-#define WeightsSystem_PointWeights_h
+#ifndef singleItemSystem_makeSINGLEITEM_h
+#define singleItemSystem_makeSINGLEITEM_h
 
-///\file 
+/*!
+  \namespace singleItemSystem
+  \brief General singleItem stuff
+  \version 1.0
+  \date March 2016
+  \author S. Ansell
+*/
 
-namespace WeightSystem
+namespace singleItemSystem
 {
-  void setPointWeights(Simulation&,const Geometry::Vec3D&,const double);
-}  
+  
+class makeSingleItem
+{
+ private:
+  
+
+  
+
+ public:
+  
+  makeSingleItem();
+  makeSingleItem(const makeSingleItem&);
+  makeSingleItem& operator=(const makeSingleItem&);
+  ~makeSingleItem();
+  
+  void build(Simulation&,const mainSystem::inputParam&);
+
+};
+
+}
 
 #endif

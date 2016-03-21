@@ -695,6 +695,10 @@ Bunker::createLinks()
   FixedComp::setConnect(5,Origin+Z*(roofHeight+roofThick),Z);
   FixedComp::setLinkSurf(5,SMap.realSurf(bnkIndex+16));
 
+  // Rotation centre:
+  FixedComp::setConnect(6,rotCentre,Y);
+  FixedComp::setLinkSurf(6,0);
+
   // Inner
   FixedComp::setConnect(7,rotCentre+Y*wallRadius,-Y);
   FixedComp::setLinkSurf(7,-SMap.realSurf(bnkIndex+7));

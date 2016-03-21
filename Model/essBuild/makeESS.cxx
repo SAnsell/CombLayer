@@ -447,7 +447,8 @@ makeESS::makeBunker(Simulation& System,
   */
 {
   ELog::RegMethod RegA("makeESS","makeBunker");
-  
+
+
   ABunker->addInsertCell(74123);
   ABunker->setCutWall(1,0);
   ABunker->createAll(System,*LowMod,*GBArray[0],2,true);
@@ -460,21 +461,35 @@ makeESS::makeBunker(Simulation& System,
   BBunker->insertComponent(System,"roof0",*ABunker);
   BBunker->insertComponent(System,"floor",*ABunker);
 
-  TopCurtain->addInsertCell("Top",74123);
-  TopCurtain->addInsertCell("Lower",74123);
-  TopCurtain->addInsertCell("Mid",74123);
-  TopCurtain->addInsertCell("Lower",ABunker->getCells("roof"));
-  TopCurtain->addInsertCell("Lower",BBunker->getCells("roof"));
-  TopCurtain->addInsertCell("Top",ABunker->getCells("roof"));
-  TopCurtain->addInsertCell("Top",BBunker->getCells("roof"));
-    
-  TopCurtain->addInsertCell("Lower",ABunker->getCells("MainVoid"));
-  TopCurtain->addInsertCell("Lower",BBunker->getCells("MainVoid"));
-  //  TopCurtain->createAll(System,*GBArray[0],2,1,true);
-  TopCurtain->createAll(System,*ShutterBayObj,6,4,*GBArray[0],2,true);
+  if (bunkerType.find("noPillar")==std::string::npos)
+    buildPillars(System);
 
-  //  TopCurtain->insertComponent(System,"topVoid",*ABunker);
-  //  TopCurtain->insertComponent(System,"topVoid",*BBunker);
+  if (bunkerType.find("noCurtain")==std::string::npos)
+    {
+      TopCurtain->addInsertCell("Top",74123);
+      TopCurtain->addInsertCell("Lower",74123);
+      TopCurtain->addInsertCell("Mid",74123);
+      TopCurtain->addInsertCell("Lower",ABunker->getCells("roof"));
+      TopCurtain->addInsertCell("Lower",BBunker->getCells("roof"));
+      TopCurtain->addInsertCell("Top",ABunker->getCells("roof"));
+      TopCurtain->addInsertCell("Top",BBunker->getCells("roof"));
+      
+      TopCurtain->addInsertCell("Lower",ABunker->getCells("MainVoid"));
+      TopCurtain->addInsertCell("Lower",BBunker->getCells("MainVoid"));
+      //  TopCurtain->createAll(System,*GBArray[0],2,1,true);
+      TopCurtain->createAll(System,*ShutterBayObj,6,4,*GBArray[0],2,true);
+      
+      //  TopCurtain->insertComponent(System,"topVoid",*ABunker);
+      //  TopCurtain->insertComponent(System,"topVoid",*BBunker);
+    }
+  if (bunkerType.find("help")!=std::string::npos)
+    {
+      ELog::EM<<"bunkerType :: \n"
+              <<"  noCurtain -- Disallow the curtain\n"
+              <<"  noPillar -- Disallow the pillars\n"
+              <<ELog::endBasic;
+    }
+        
   return;
 }
 

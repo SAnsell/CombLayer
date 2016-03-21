@@ -52,7 +52,7 @@ class objectRegister
   int cellNumber;                  ///< Current new cell number
   MTYPE regionMap;                 ///< Index of kept object number
   MTYPE renumMap;                  ///< Index of renumbered units
-
+  std::set<int> activeCells;       ///< Active cells
   cMapTYPE Components;             ///< Pointer to real objects
 
   ///\cond SINGLETON
@@ -95,7 +95,16 @@ class objectRegister
     getObject(const std::string&);
   bool hasObject(const std::string&) const;
   void setRenumber(const std::string&,const int,const int);
-
+  
+  void addActiveCell(const int);
+  void removeActiveCell(const int);
+  void renumberActiveCell(const int,const int);
+  /// get active cells
+  const std::set<int>& getActiveCells() const
+     { return activeCells; }
+    
+    
+  
   std::vector<int> getObjectRange(const std::string&) const;
   void reset();
   void rotateMaster();

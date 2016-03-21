@@ -3,7 +3,7 @@
  
  * File:   essBuild/bunkerVariables.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2016 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -119,14 +119,25 @@ EssBunkerVariables(FuncDataBase& Control)
 
   // PILLARS:
   
-  Control.addVariable("ABunkerPillarsRadius",8.0);
+  Control.addVariable("ABunkerPillarsRadius",6.0);
   Control.addVariable("ABunkerPillarsMat","Stainless304");
-  Control.addVariable("ABunkerPillarsNRadius",1);
-  Control.addVariable("ABunkerPillarsNSector",5);
-  Control.addVariable("ABunkerPillarsR_0S_0",0.0);
-  Control.addVariable("ABunkerPillarsR_0S_1",10.0);
-  Control.addVariable("ABunkerPillarsR_0S_2",20.0);
-  Control.addVariable("ABunkerPillarsR_0S_3",30.0);
+  Control.addVariable("ABunkerPillarsNRadius",2);
+  Control.addVariable("ABunkerPillarsNSector",11); // default
+  Control.addVariable("ABunkerPillarsR0",600.0);
+  Control.addVariable("ABunkerPillarsR1",900.0);
+  Control.addVariable("ABunkerPillarsRS_0",-3.0);
+  Control.addVariable("ABunkerPillarsRS_1",-9.0);
+  Control.addVariable("ABunkerPillarsRS_2",-15.0);
+  Control.addVariable("ABunkerPillarsRS_3",-21.0);
+  Control.addVariable("ABunkerPillarsRS_4",-27.0);
+  Control.addVariable("ABunkerPillarsRS_5",-33.0);
+  Control.addVariable("ABunkerPillarsRS_6",-39.0);
+  Control.addVariable("ABunkerPillarsRS_7",-45.0);
+  Control.addVariable("ABunkerPillarsRS_8",-51.0);
+  Control.addVariable("ABunkerPillarsRS_9",-57.0);
+  Control.addVariable("ABunkerPillarsRS_10",-63.0);
+
+
   
   //
   // RIGHT BUNKER : B PART
