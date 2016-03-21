@@ -528,21 +528,21 @@ BilbaoWheel::createLinks()
   ELog::RegMethod RegA("BilbaoWheel","createLinks");
   // set Links :: Inner links:
 
-  FixedComp::setConnect(0,Origin-Y*innerRadius,-Y);
+  FixedComp::setConnect(0,Origin-Y*voidRadius,-Y);
   FixedComp::setLinkSurf(0,SMap.realSurf(wheelIndex+537));
   FixedComp::addLinkSurf(0,-SMap.realSurf(wheelIndex+1));
 
-  FixedComp::setConnect(1,Origin+Y*innerRadius,Y);
+  FixedComp::setConnect(1,Origin+Y*voidRadius,Y);
   FixedComp::setLinkSurf(1,SMap.realSurf(wheelIndex+537));
   FixedComp::addLinkSurf(1,SMap.realSurf(wheelIndex+1));
 
-  FixedComp::setConnect(2,Origin-Y*voidRadius,-Y);
-  FixedComp::setLinkSurf(2,SMap.realSurf(wheelIndex+1037));
-  FixedComp::addLinkSurf(2,-SMap.realSurf(wheelIndex+1));
+  FixedComp::setConnect(2,Origin-X*voidRadius,-X);
+  FixedComp::setLinkSurf(2,SMap.realSurf(wheelIndex+537));
+  FixedComp::addLinkSurf(2,-SMap.realSurf(wheelIndex+2));
 
-  FixedComp::setConnect(3,Origin+Y*voidRadius,Y);
-  FixedComp::setLinkSurf(3,SMap.realSurf(wheelIndex+1037));
-  FixedComp::addLinkSurf(3,SMap.realSurf(wheelIndex+1));
+  FixedComp::setConnect(3,Origin+X*voidRadius,X);
+  FixedComp::setLinkSurf(3,SMap.realSurf(wheelIndex+537));
+  FixedComp::addLinkSurf(3,SMap.realSurf(wheelIndex+2));
 
   const double H=wheelHeight()/2.0;
   FixedComp::setConnect(4,Origin-Z*H,-Z);
