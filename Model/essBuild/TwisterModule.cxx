@@ -89,11 +89,11 @@ TwisterModule::TwisterModule(const TwisterModule& A) :
   attachSystem::CellMap(A),  
   tIndex(A.tIndex),cellIndex(A.cellIndex),xStep(A.xStep),
   yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
-  zAngle(A.zAngle),radius(A.radius),height(A.height),
-  wallThick(A.wallThick),wallThickLow(A.wallThickLow),lowVoidThick(A.lowVoidThick),
-  topVoidThick(A.topVoidThick),targSepThick(A.targSepThick),
-  refMat(A.refMat),wallMat(A.wallMat),
-  targSepMat(A.targSepMat)
+  zAngle(A.zAngle),shaftRadius(A.shaftRadius),shaftHeight(A.shaftHeight),
+  shaftWallThick(A.shaftWallThick),plugFrameHeight(A.plugFrameHeight),
+  plugFrameDepth(A.plugFrameDepth),plugFrameRadius(A.plugFrameRadius),
+  plugFrameWallMat(A.plugFrameWallMat),plugFrameMat(A.plugFrameMat),
+  shaftMat(A.shaftMat),shaftWallMat(A.shaftWallMat)
   /*!
     Copy constructor
     \param A :: TwisterModule to copy
@@ -119,16 +119,16 @@ TwisterModule::operator=(const TwisterModule& A)
       zStep=A.zStep;
       xyAngle=A.xyAngle;
       zAngle=A.zAngle;
-      radius=A.radius;
-      height=A.height;
-      wallThick=A.wallThick;
-      wallThickLow=A.wallThickLow;
-      lowVoidThick=A.lowVoidThick;
-      topVoidThick=A.topVoidThick;
-      targSepThick=A.targSepThick;
-      refMat=A.refMat;
-      wallMat=A.wallMat;
-      targSepMat=A.targSepMat;
+      shaftRadius=A.shaftRadius;
+      shaftHeight=A.shaftHeight;
+      shaftWallThick=A.shaftWallThick;
+      plugFrameHeight=A.plugFrameHeight;
+      plugFrameDepth=A.plugFrameDepth;
+      plugFrameRadius=A.plugFrameRadius;
+      plugFrameWallMat=A.plugFrameWallMat;
+      plugFrameMat=A.plugFrameMat;
+      shaftMat=A.shaftMat;
+      shaftWallMat=A.shaftWallMat;
     }
   return *this;
 }
@@ -171,9 +171,9 @@ TwisterModule::populate(const FuncDataBase& Control)
   xyAngle=Control.EvalVar<double>(keyName+"XYangle");
   zAngle=Control.EvalVar<double>(keyName+"Zangle");
   
-  radius=Control.EvalVar<double>(keyName+"ShaftRadius");   
-  height=Control.EvalVar<double>(keyName+"ShaftHeight");   
-  wallThick=Control.EvalVar<double>(keyName+"ShaftWallThick");
+  shaftRadius=Control.EvalVar<double>(keyName+"ShaftRadius");   
+  shaftHeight=Control.EvalVar<double>(keyName+"ShaftHeight");   
+  shaftWallThick=Control.EvalVar<double>(keyName+"ShaftWallThick");
   
   return;
 }
@@ -203,11 +203,11 @@ TwisterModule::createSurfaces()
 
   // DIVIDER PLANES:
 
-  ModelSupport::buildPlane(SMap,tIndex+5,Origin-Z*height/2.0,Z);
-  ModelSupport::buildPlane(SMap,tIndex+6,Origin+Z*height/2.0,Z);  
+  ModelSupport::buildPlane(SMap,tIndex+5,Origin-Z*shaftHeight/2.0,Z);
+  ModelSupport::buildPlane(SMap,tIndex+6,Origin+Z*shaftHeight/2.0,Z);  
   
-  ModelSupport::buildCylinder(SMap,tIndex+7,Origin,Z,radius);  
-  ModelSupport::buildCylinder(SMap,tIndex+17,Origin,Z,radius+wallThick);  
+  ModelSupport::buildCylinder(SMap,tIndex+7,Origin,Z,shaftRadius);  
+  ModelSupport::buildCylinder(SMap,tIndex+17,Origin,Z,shaftRadius+shaftWallThick);  
 
   
   return; 
@@ -225,7 +225,7 @@ TwisterModule::createObjects(Simulation& System)
   std::string Out;
   // low segment
   Out=ModelSupport::getComposite(SMap,tIndex," -7 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,shaftMat,0.0,Out));
   //  setCell("lowBe",cellIndex-1);
   addOuterSurf(Out);
   return; 
@@ -240,42 +240,36 @@ TwisterModule::createLinks()
   */
 {
   return;
-  FixedComp::setConnect(0,Origin+Y*radius,-Y);
+  FixedComp::setConnect(0,Origin+Y*shaftRadius,-Y);
   FixedComp::setLinkSurf(0,SMap.realSurf(tIndex+17));
   FixedComp::addLinkSurf(0,-SMap.realSurf(tIndex+1));
 
-  FixedComp::setConnect(1,Origin+Y*radius,Y);
+  FixedComp::setConnect(1,Origin+Y*shaftRadius,Y);
   FixedComp::setLinkSurf(1,SMap.realSurf(tIndex+17));
   FixedComp::addLinkSurf(1,SMap.realSurf(tIndex+1));
 
-  FixedComp::setConnect(2,Origin+Y*radius,-X);
+  FixedComp::setConnect(2,Origin+Y*shaftRadius,-X);
   FixedComp::setLinkSurf(2,SMap.realSurf(tIndex+17));
   FixedComp::addLinkSurf(2,-SMap.realSurf(tIndex+2));
   
-  FixedComp::setConnect(3,Origin+Y*radius,-X);
+  FixedComp::setConnect(3,Origin+Y*shaftRadius,-X);
   FixedComp::setLinkSurf(3,SMap.realSurf(tIndex+17));
   FixedComp::addLinkSurf(3,SMap.realSurf(tIndex+2));
   
-  FixedComp::setConnect(4,Origin-Z*(height/2.0+wallThick),-Z);
+  FixedComp::setConnect(4,Origin-Z*(shaftHeight/2.0+shaftWallThick),-Z);
   FixedComp::setLinkSurf(4,-SMap.realSurf(tIndex+15));
 
-  FixedComp::setConnect(5,Origin+Z*(height/2.0+wallThick),Z);
+  FixedComp::setConnect(5,Origin+Z*(shaftHeight/2.0+shaftWallThick),Z);
   FixedComp::setLinkSurf(5,SMap.realSurf(tIndex+16));
 
-  FixedComp::setConnect(6,Origin-Z*(height/2.0),-Z);
+  FixedComp::setConnect(6,Origin-Z*(shaftHeight/2.0),-Z);
   FixedComp::setLinkSurf(6,-SMap.realSurf(tIndex+5));
 
-  FixedComp::setConnect(7,Origin+Z*(height/2.0),Z);
+  FixedComp::setConnect(7,Origin+Z*(shaftHeight/2.0),Z);
   FixedComp::setLinkSurf(7,SMap.realSurf(tIndex+6));
 
-  FixedComp::setConnect(8,Origin+Y*(radius),-Y);
+  FixedComp::setConnect(8,Origin+Y*(shaftRadius),-Y);
   FixedComp::setLinkSurf(8,-SMap.realSurf(tIndex+7));
-
-  FixedComp::setConnect(9,Origin-Z*(lowVoidThick+targSepThick/2.0+wallThickLow),-Z);
-  FixedComp::setLinkSurf(9,-SMap.realSurf(tIndex+105));
-
-  FixedComp::setConnect(10,Origin+Z*(lowVoidThick+targSepThick/2.0+wallThickLow),Z);
-  FixedComp::setLinkSurf(10,SMap.realSurf(tIndex+106));
 
   return;
 }

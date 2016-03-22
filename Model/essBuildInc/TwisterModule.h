@@ -51,19 +51,19 @@ class TwisterModule : public attachSystem::ContainedComp,
   double xyAngle;                 ///< XY Angle
   double zAngle;                  ///< Z Angle
 
-  double radius;                  ///< Radius
-  double height;                  ///< Height
-  double wallThick;               ///< Wall thickness
-  double wallThickLow;            ///< Wall thickness of the side near the target wheel. Separated from wallThick in order to optimise wrapping with CapMod
+  double shaftRadius;                  ///< ShaftRadius
+  double shaftHeight;                  ///< ShaftHeight
+  double shaftWallThick;               ///< Wall thickness
 
-  double lowVoidThick;            ///< Low void segment
-  double topVoidThick;            ///< Top void segment
+  double plugFrameRadius;            ///< plug frame outer radius
+  double plugFrameHeight;            ///< plug frame height
+  double plugFrameDepth;            ///< plug frame depth
 
-  double targSepThick;            ///< Steel seperator at target level
 
-  int refMat;                     ///< reflector material
-  int wallMat;                    ///< wall Material
-  int targSepMat;                 ///< Separator Mat
+  int plugFrameWallMat;           ///< plug frame wall material
+  int plugFrameMat;               ///< plug frame material
+  int shaftMat;                   ///< shaft material
+  int shaftWallMat;               ///< shaft wall material
 
   // Functions:
 
