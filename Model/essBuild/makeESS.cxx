@@ -88,6 +88,7 @@
 #include "PreModWing.h"
 #include "SupplyPipe.h"
 #include "BulkModule.h"
+#include "TwisterModule.h"
 #include "ShutterBay.h"
 #include "GuideBay.h"
 #include "TaperedDiskPreMod.h"
@@ -160,6 +161,7 @@ makeESS::makeESS() :
 
   Bulk(new BulkModule("Bulk")),
   BulkLowAFL(new moderatorSystem::FlightLine("BulkLAFlight")),
+  Twister(new TwisterModule("Twister")),
   ShutterBayObj(new ShutterBay("ShutterBay")),
 
   ABunker(new Bunker("ABunker"))
@@ -212,6 +214,7 @@ makeESS::makeESS() :
 
   OR.addObject(Bulk);
   OR.addObject(BulkLowAFL);
+  OR.addObject(Twister);
 
   OR.addObject(ShutterBayObj);
   OR.addObject(ABunker);
@@ -767,6 +770,12 @@ makeESS::build(Simulation& System,
 
   makeBeamLine(System,IParam);
 
+  Twister->createAll(System,*Bulk);
+  attachSystem::addToInsertSurfCtrl(System, *Bulk, *Twister);
+  attachSystem::addToInsertSurfCtrl(System, *Twister, PBeam->getCC("Sector0"));
+
+
+  
   //  buildF5Collimator(System, nF5);
   buildF5Collimator(System, IParam);
 

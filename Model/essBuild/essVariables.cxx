@@ -871,6 +871,20 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("BulkLAFlightNLiner",0);       // Liner
 
 
+  // Twister
+  Control.addVariable("TwisterXStep",0.0);
+  Control.addVariable("TwisterYStep",-65.0);
+  Control.addVariable("TwisterZStep",0.0);
+  Control.addVariable("TwisterXYangle",0.0);
+  Control.addVariable("TwisterZangle",0.0);
+  Control.addVariable("TwisterShaftRadius",10.0);
+  Control.addVariable("TwisterShaftHeight",30.0);
+  Control.addVariable("TwisterShaftWallThick",1.0);
+  Control.addVariable("TwisterPlugFrameHeight",60.0);
+  Control.addVariable("TwisterPlugFrameDepth",60.0);
+
+  
+
   // SHUTTER BAY
   Control.addVariable("ShutterBayXStep",0.0);  
   Control.addVariable("ShutterBayYStep",0.0);  
