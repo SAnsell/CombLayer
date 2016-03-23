@@ -59,9 +59,14 @@ class VacuumPipe :
 
   double flangeRadius;          ///< Joining Flange thick
   double flangeLength;          ///< Joining Flange length
+
+  int windowActive;             ///< Flag on window activity
+  double windowThick;           ///< Joining Flange length
+  double windowRadius;          ///< Joining Flange length
   
-  int voidMat;                  ///< Void material 
+  int voidMat;                  ///< Void material
   int feMat;                    ///< Pipe material 
+  int windowMat;                ///< Window material 
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);

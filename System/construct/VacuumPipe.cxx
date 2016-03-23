@@ -161,8 +161,9 @@ VacuumPipe::populate(const FuncDataBase& Control)
   flangeRadius=Control.EvalVar<double>(keyName+"FlangeRadius");
   flangeLength=Control.EvalVar<double>(keyName+"FlangeLength");
   
+  windowActive=Control.EvalDefVar<int>(keyName+"WindowActive",0);
   windowThick=Control.EvalDefVar<double>(keyName+"WindowThick",0.0);
-  windowExtra=Control.EvalDefVar<double>(keyName+"WindowExtra",0.0);
+  windowRadius=Control.EvalDefVar<double>(keyName+"WindowRadius",0.0);
   windowMat=ModelSupport::EvalDefMat<int>(Control,keyName+"WindowMat",0);
   
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
