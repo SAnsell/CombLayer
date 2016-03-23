@@ -3,7 +3,7 @@
  
  * File:   construct/VacuumPipe.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -160,6 +160,10 @@ VacuumPipe::populate(const FuncDataBase& Control)
   feThick=Control.EvalVar<double>(keyName+"FeThick");
   flangeRadius=Control.EvalVar<double>(keyName+"FlangeRadius");
   flangeLength=Control.EvalVar<double>(keyName+"FlangeLength");
+  
+  windowThick=Control.EvalDefVar<double>(keyName+"WindowThick",0.0);
+  windowExtra=Control.EvalDefVar<double>(keyName+"WindowExtra",0.0);
+  windowMat=ModelSupport::EvalDefMat<int>(Control,keyName+"WindowMat",0);
   
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");

@@ -43,6 +43,7 @@ namespace constructSystem
   class RotaryCollimator;
   class VacuumBox;
   class VacuumPipe;
+  class VacuumWindow;
   class ChopperHousing;
 }
 

@@ -126,14 +126,14 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("ABunkerPillarsR0",600.0);
   Control.addVariable("ABunkerPillarsR1",900.0);
   Control.addVariable("ABunkerPillarsRS_0",-3.0);
-  Control.addVariable("ABunkerPillarsRS_1",-9.0);
-  Control.addVariable("ABunkerPillarsRS_2",-15.0);
+  Control.addVariable("ABunkerPillarsRS_1",-6.0);
+  Control.addVariable("ABunkerPillarsRS_2",-18.0);
   Control.addVariable("ABunkerPillarsRS_3",-21.0);
   Control.addVariable("ABunkerPillarsRS_4",-27.0);
   Control.addVariable("ABunkerPillarsRS_5",-33.0);
   Control.addVariable("ABunkerPillarsRS_6",-39.0);
-  Control.addVariable("ABunkerPillarsRS_7",-45.0);
-  Control.addVariable("ABunkerPillarsRS_8",-51.0);
+  Control.addVariable("ABunkerPillarsRS_7",-42.0);
+  Control.addVariable("ABunkerPillarsRS_8",-54.0);
   Control.addVariable("ABunkerPillarsRS_9",-57.0);
   Control.addVariable("ABunkerPillarsRS_10",-63.0);
 
