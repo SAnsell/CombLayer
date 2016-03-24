@@ -88,11 +88,12 @@ TwisterModule::TwisterModule(const TwisterModule& A) :
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
   attachSystem::CellMap(A),  
   tIndex(A.tIndex),cellIndex(A.cellIndex),xStep(A.xStep),
-  yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
-  zAngle(A.zAngle),shaftRadius(A.shaftRadius),shaftHeight(A.shaftHeight),
-  shaftWallThick(A.shaftWallThick),plugFrameHeight(A.plugFrameHeight),
-  plugFrameDepth(A.plugFrameDepth),plugFrameRadius(A.plugFrameRadius),
-  plugFrameWallMat(A.plugFrameWallMat),plugFrameMat(A.plugFrameMat),
+  yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),zAngle(A.zAngle),
+  shaftRadius(A.shaftRadius),shaftHeight(A.shaftHeight),shaftWallThick(A.shaftWallThick),
+  plugFrameRadius(A.plugFrameRadius),plugFrameHeight(A.plugFrameHeight),
+  plugFrameDepth(A.plugFrameDepth),plugFrameAngle(A.plugFrameAngle),
+  plugFrameWallThick(A.plugFrameWallThick),
+  plugFrameMat(A.plugFrameMat),plugFrameWallMat(A.plugFrameWallMat),
   shaftMat(A.shaftMat),shaftWallMat(A.shaftWallMat)
   /*!
     Copy constructor
@@ -122,11 +123,15 @@ TwisterModule::operator=(const TwisterModule& A)
       shaftRadius=A.shaftRadius;
       shaftHeight=A.shaftHeight;
       shaftWallThick=A.shaftWallThick;
+
+      plugFrameRadius=A.plugFrameRadius;
       plugFrameHeight=A.plugFrameHeight;
       plugFrameDepth=A.plugFrameDepth;
-      plugFrameRadius=A.plugFrameRadius;
-      plugFrameWallMat=A.plugFrameWallMat;
+      plugFrameAngle=A.plugFrameAngle;
+      plugFrameWallThick=A.plugFrameWallThick;
+
       plugFrameMat=A.plugFrameMat;
+      plugFrameWallMat=A.plugFrameWallMat;
       shaftMat=A.shaftMat;
       shaftWallMat=A.shaftWallMat;
     }
@@ -155,9 +160,6 @@ TwisterModule::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: Variable table to use
-    \param targetThick :: thickness of the target
-    \param topVThick :: thickness of the premod-void
-    \param lowVThick :: thickness of the premod-void
   */
 {
   ELog::RegMethod RegA("TwisterModule","populate");
@@ -175,6 +177,17 @@ TwisterModule::populate(const FuncDataBase& Control)
   shaftHeight=Control.EvalVar<double>(keyName+"ShaftHeight");   
   shaftWallThick=Control.EvalVar<double>(keyName+"ShaftWallThick");
   
+  plugFrameRadius=Control.EvalVar<double>(keyName+"PlugFrameRadius");   
+  plugFrameHeight=Control.EvalVar<double>(keyName+"PlugFrameHeight");   
+  plugFrameDepth=Control.EvalVar<double>(keyName+"PlugFrameDepth");
+  plugFrameAngle=Control.EvalVar<double>(keyName+"PlugFrameAngle");
+
+  plugFrameMat=ModelSupport::EvalMat<int>(Control,keyName+"PlugFrameMat");
+  plugFrameWallMat=ModelSupport::EvalMat<int>(Control,keyName+"PlugFrameWallMat");
+
+  shaftMat=ModelSupport::EvalMat<int>(Control,keyName+"ShaftMat");
+  shaftWallMat=ModelSupport::EvalMat<int>(Control,keyName+"ShaftWallMat");
+
   return;
 }
 
@@ -201,13 +214,15 @@ TwisterModule::createSurfaces()
 {
   ELog::RegMethod RegA("TwisterModule","createSurfaces");
 
-  // DIVIDER PLANES:
-
-  ModelSupport::buildPlane(SMap,tIndex+5,Origin-Z*shaftHeight/2.0,Z);
-  ModelSupport::buildPlane(SMap,tIndex+6,Origin+Z*shaftHeight/2.0,Z);  
+  ModelSupport::buildPlane(SMap,tIndex+5,Origin-Z*plugFrameDepth,Z);
+  ModelSupport::buildPlane(SMap,tIndex+6,Origin+Z*(plugFrameHeight+shaftHeight),Z);
   
-  ModelSupport::buildCylinder(SMap,tIndex+7,Origin,Z,shaftRadius);  
-  ModelSupport::buildCylinder(SMap,tIndex+17,Origin,Z,shaftRadius+shaftWallThick);  
+  ModelSupport::buildCylinder(SMap,tIndex+7,Origin,Z,shaftRadius);
+  ModelSupport::buildCylinder(SMap,tIndex+17,Origin,Z,shaftRadius+shaftWallThick);
+
+  ModelSupport::buildCylinder(SMap,tIndex+27,Origin,Z,plugFrameRadius);
+  ModelSupport::buildCylinder(SMap,tIndex+37,Origin,Z,plugFrameRadius+plugFrameWallThick);
+
 
   
   return; 
@@ -223,10 +238,18 @@ TwisterModule::createObjects(Simulation& System)
   ELog::RegMethod RegA("TwisterModule","createObjects");
 
   std::string Out;
-  // low segment
+  // shaft
   Out=ModelSupport::getComposite(SMap,tIndex," -7 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,shaftMat,0.0,Out));
+
+  Out=ModelSupport::getComposite(SMap,tIndex," -17 7 5 -6 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,shaftWallMat,0.0,Out));
   //  setCell("lowBe",cellIndex-1);
+
+  Out=ModelSupport::getComposite(SMap,tIndex," -27 17 5 -6 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,plugFrameMat,0.0,Out));
+
+  Out=ModelSupport::getComposite(SMap,tIndex," -27 5 -6 ");
   addOuterSurf(Out);
   return; 
 

@@ -878,13 +878,15 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("TwisterXYangle",0.0);
   Control.addVariable("TwisterZangle",0.0);
   Control.addVariable("TwisterShaftRadius",10.0);
-  Control.addVariable("TwisterShaftHeight",30.0);
+  Control.addVariable("TwisterShaftHeight",120.0);
   Control.addVariable("TwisterShaftMat","Void");
   Control.addVariable("TwisterShaftWallThick",1.0);
   Control.addVariable("TwisterShaftWallMat","Void");
-  Control.addVariable("TwisterPlugFrameRadius",102.0);
+  Control.addVariable("TwisterPlugFrameRadius",102.0+10);
+  Control.addVariable("TwisterPlugFrameWallThick",3.0);
   Control.addVariable("TwisterPlugFrameHeight",60.0);
   Control.addVariable("TwisterPlugFrameDepth",60.0);
+  Control.addVariable("TwisterPlugFrameAngle",75.0);
   Control.addVariable("TwisterPlugFrameMat","Void");
   Control.addVariable("TwisterPlugFrameWallThick",3.0);
   Control.addVariable("TwisterPlugFrameWallMat","Void");

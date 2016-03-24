@@ -51,17 +51,18 @@ class TwisterModule : public attachSystem::ContainedComp,
   double xyAngle;                 ///< XY Angle
   double zAngle;                  ///< Z Angle
 
-  double shaftRadius;                  ///< ShaftRadius
-  double shaftHeight;                  ///< ShaftHeight
-  double shaftWallThick;               ///< Wall thickness
+  double shaftRadius;             ///< Shaft radius
+  double shaftHeight;             ///< Shaft height
+  double shaftWallThick;          ///< Shaft wall thickness
 
-  double plugFrameRadius;            ///< plug frame outer radius
-  double plugFrameHeight;            ///< plug frame height
-  double plugFrameDepth;            ///< plug frame depth
+  double plugFrameRadius;         ///< plug frame outer radius
+  double plugFrameHeight;         ///< plug frame height
+  double plugFrameDepth;          ///< plug frame depth
+  double plugFrameAngle;          ///< plug frame opening angle
+  double plugFrameWallThick;      ///< plug frame wall thickness
 
-
-  int plugFrameWallMat;           ///< plug frame wall material
   int plugFrameMat;               ///< plug frame material
+  int plugFrameWallMat;           ///< plug frame wall material
   int shaftMat;                   ///< shaft material
   int shaftWallMat;               ///< shaft wall material
 

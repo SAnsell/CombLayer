@@ -161,7 +161,6 @@ makeESS::makeESS() :
 
   Bulk(new BulkModule("Bulk")),
   BulkLowAFL(new moderatorSystem::FlightLine("BulkLAFlight")),
-  Twister(new TwisterModule("Twister")),
   ShutterBayObj(new ShutterBay("ShutterBay")),
 
   ABunker(new Bunker("ABunker"))
@@ -214,7 +213,6 @@ makeESS::makeESS() :
 
   OR.addObject(Bulk);
   OR.addObject(BulkLowAFL);
-  OR.addObject(Twister);
 
   OR.addObject(ShutterBayObj);
   OR.addObject(ABunker);
@@ -659,6 +657,28 @@ makeESS::buildPreWings(Simulation& System)
   attachSystem::addToInsertSurfCtrl(System, *LowCapMod, *LowCapWing);
 }
 
+void
+makeESS::buildTwister(Simulation& System)
+{
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  Twister = std::shared_ptr<TwisterModule>(new TwisterModule("Twister"));
+  OR.addObject(Twister);
+
+  Twister->createAll(System,*Bulk);
+  attachSystem::addToInsertForced(System, *Bulk, *Twister);
+  attachSystem::addToInsertSurfCtrl(System, *Twister, PBeam->getCC("Sector0"));
+  attachSystem::addToInsertSurfCtrl(System, *Twister, PBeam->getCC("Sector1")); ELog::EM << "remove this line after R is set correctly " << ELog::endDiag;
+  attachSystem::addToInsertControl(System, *Twister, *Reflector);
+  attachSystem::addToInsertForced(System,*Twister,TopAFL->getCC("outer"));
+  attachSystem::addToInsertForced(System,*Twister,TopBFL->getCC("outer"));
+  attachSystem::addToInsertForced(System,*Twister,LowAFL->getCC("outer"));
+  attachSystem::addToInsertForced(System,*Twister,LowBFL->getCC("outer"));
+  attachSystem::addToInsertForced(System,*Twister, Target->getCC("Wheel"));
+
+
+}
   
 void 
 makeESS::build(Simulation& System,
@@ -770,18 +790,15 @@ makeESS::build(Simulation& System,
 
   makeBeamLine(System,IParam);
 
-  Twister->createAll(System,*Bulk);
-  attachSystem::addToInsertSurfCtrl(System, *Bulk, *Twister);
-  attachSystem::addToInsertSurfCtrl(System, *Twister, PBeam->getCC("Sector0"));
-
+  buildTwister(System);
 
   
   //  buildF5Collimator(System, nF5);
   buildF5Collimator(System, IParam);
 
 
-  buildTopPipes(System,"");
-  buildLowPipes(System,"");
+  //  buildTopPipes(System,"");
+  //  buildLowPipes(System,"");
   return;
 }
 

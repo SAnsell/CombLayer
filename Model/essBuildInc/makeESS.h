@@ -169,6 +169,7 @@ class makeESS
   void buildF5Collimator(Simulation&, const mainSystem::inputParam&); // when -TopCC is used
 
   void buildPreWings(Simulation&);
+  void buildTwister(Simulation&);
 
   void optionSummary(Simulation&);
 
