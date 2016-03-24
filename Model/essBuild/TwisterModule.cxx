@@ -215,6 +215,9 @@ TwisterModule::createSurfaces()
 {
   ELog::RegMethod RegA("TwisterModule","createSurfaces");
 
+  // dividing plane
+  ModelSupport::buildPlane(SMap,tIndex+2,Origin,Y);
+
   ModelSupport::buildPlane(SMap,tIndex+5,Origin-Z*plugFrameDepth,Z);
   ModelSupport::buildPlane(SMap,tIndex+6,Origin+Z*plugFrameHeight,Z);
   ModelSupport::buildPlane(SMap,tIndex+16,Origin+Z*(plugFrameHeight+plugFrameWallThick+shaftHeight),Z);
@@ -228,6 +231,11 @@ TwisterModule::createSurfaces()
   ModelSupport::buildCylinder(SMap,tIndex+27,Origin,Z,plugFrameRadius);
   ModelSupport::buildCylinder(SMap,tIndex+37,Origin,Z,plugFrameRadius+plugFrameWallThick);
 
+  ModelSupport::buildPlaneRotAxis(SMap,tIndex+1,Origin,X,-Z,plugFrameAngle/2.0);
+  ModelSupport::buildPlaneRotAxis(SMap,tIndex+11,Origin,X,-Z,-plugFrameAngle/2.0);
+
+  ModelSupport::buildPlaneRotAxis(SMap,tIndex+21,Origin+X*shaftWallThick,X,-Z,plugFrameAngle/2.0);
+  ModelSupport::buildPlaneRotAxis(SMap,tIndex+31,Origin-X*shaftWallThick,X,-Z,-plugFrameAngle/2.0);
 
   
   return; 
@@ -252,7 +260,16 @@ TwisterModule::createObjects(Simulation& System)
   setCell("lowBe",cellIndex-1);
 
   // plug frame
-  Out=ModelSupport::getComposite(SMap,tIndex," -27 5 -6 17");
+  Out=ModelSupport::getComposite(SMap,tIndex," -27 5 -6 17 -1 11"); //  inside sector
+  System.addCell(MonteCarlo::Qhull(cellIndex++,plugFrameMat,0.0,Out));
+
+  Out=ModelSupport::getComposite(SMap,tIndex," -27 5 -6 17 2 -21 1"); //  inside sector wall
+  System.addCell(MonteCarlo::Qhull(cellIndex++,plugFrameMat,0.0,Out));
+
+  Out=ModelSupport::getComposite(SMap,tIndex," -27 5 -6 17 (21:-31)"); // outside sector
+  System.addCell(MonteCarlo::Qhull(cellIndex++,plugFrameMat,0.0,Out));
+
+  Out=ModelSupport::getComposite(SMap,tIndex," -27 5 -6 17 2 31 -11"); //  inside sector wall
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugFrameMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,tIndex," -37 25 -26 (27:-5:6) 17 ");
