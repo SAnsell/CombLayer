@@ -181,6 +181,7 @@ TwisterModule::populate(const FuncDataBase& Control)
   plugFrameHeight=Control.EvalVar<double>(keyName+"PlugFrameHeight");   
   plugFrameDepth=Control.EvalVar<double>(keyName+"PlugFrameDepth");
   plugFrameAngle=Control.EvalVar<double>(keyName+"PlugFrameAngle");
+  plugFrameWallThick=Control.EvalVar<double>(keyName+"PlugFrameWallThick");
 
   plugFrameMat=ModelSupport::EvalMat<int>(Control,keyName+"PlugFrameMat");
   plugFrameWallMat=ModelSupport::EvalMat<int>(Control,keyName+"PlugFrameWallMat");
@@ -215,8 +216,12 @@ TwisterModule::createSurfaces()
   ELog::RegMethod RegA("TwisterModule","createSurfaces");
 
   ModelSupport::buildPlane(SMap,tIndex+5,Origin-Z*plugFrameDepth,Z);
-  ModelSupport::buildPlane(SMap,tIndex+6,Origin+Z*(plugFrameHeight+shaftHeight),Z);
-  
+  ModelSupport::buildPlane(SMap,tIndex+6,Origin+Z*plugFrameHeight,Z);
+  ModelSupport::buildPlane(SMap,tIndex+16,Origin+Z*(plugFrameHeight+plugFrameWallThick+shaftHeight),Z);
+
+  ModelSupport::buildPlane(SMap,tIndex+25,Origin-Z*(plugFrameDepth+plugFrameWallThick),Z);
+  ModelSupport::buildPlane(SMap,tIndex+26,Origin+Z*(plugFrameHeight+plugFrameWallThick),Z);
+
   ModelSupport::buildCylinder(SMap,tIndex+7,Origin,Z,shaftRadius);
   ModelSupport::buildCylinder(SMap,tIndex+17,Origin,Z,shaftRadius+shaftWallThick);
 
@@ -239,17 +244,21 @@ TwisterModule::createObjects(Simulation& System)
 
   std::string Out;
   // shaft
-  Out=ModelSupport::getComposite(SMap,tIndex," -7 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,tIndex," -7 25 -16 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,shaftMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,tIndex," -17 7 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,tIndex," -17 7 25 -16 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,shaftWallMat,0.0,Out));
-  //  setCell("lowBe",cellIndex-1);
+  setCell("lowBe",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,tIndex," -27 17 5 -6 ");
+  // plug frame
+  Out=ModelSupport::getComposite(SMap,tIndex," -27 5 -6 17");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugFrameMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,tIndex," -27 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,tIndex," -37 25 -26 (27:-5:6) 17 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,plugFrameWallMat,0.0,Out));
+
+  Out=ModelSupport::getComposite(SMap,tIndex," (-17 26 -16) : (-37 25 -26) ");
   addOuterSurf(Out);
   return; 
 
