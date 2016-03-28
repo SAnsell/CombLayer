@@ -161,7 +161,7 @@ VacuumPipe::populate(const FuncDataBase& Control)
   flangeRadius=Control.EvalVar<double>(keyName+"FlangeRadius");
   flangeLength=Control.EvalVar<double>(keyName+"FlangeLength");
   
-  windowActive=Control.EvalDefVar<int>(keyName+"WindowActive",0);
+  activeWindow=Control.EvalDefVar<int>(keyName+"WindowActive",0);
   windowThick=Control.EvalDefVar<double>(keyName+"WindowThick",0.0);
   windowRadius=Control.EvalDefVar<double>(keyName+"WindowRadius",0.0);
   windowMat=ModelSupport::EvalDefMat<int>(Control,keyName+"WindowMat",0);
@@ -194,12 +194,14 @@ VacuumPipe::createUnitVector(const attachSystem::FixedComp& FC,
 void
 VacuumPipe::getShiftedSurf(const HeadRule& HR,
 			   const int index,
-			   const int dFlag)
+			   const int dFlag,
+			   const double length)
   /*!
     Support function to calculate the shifted surface
     \param HR :: HeadRule to extract plane surf
     \param index :: offset index
     \param dFlag :: direction flag
+    \param length :: length to shift by
    */
 {
   ELog::RegMethod RegA("VacuumPipe","getShiftedSurf");
@@ -215,10 +217,10 @@ VacuumPipe::getShiftedSurf(const HeadRule& HR,
 	{
 	  if (SN*dFlag>0)
 	    ModelSupport::buildShiftedPlane
-	      (SMap,vacIndex+index,PPtr,dFlag*flangeLength);
+	      (SMap,vacIndex+index,PPtr,dFlag*length);
 	  else
 	    ModelSupport::buildShiftedPlaneReversed
-	      (SMap,vacIndex+index,PPtr,dFlag*flangeLength);
+	      (SMap,vacIndex+index,PPtr,dFlag*length);
 	  
 	  return;
 	}
@@ -229,7 +231,7 @@ VacuumPipe::getShiftedSurf(const HeadRule& HR,
 	{
 	  if (SN>0)
 	    ModelSupport::buildCylinder
-	      (SMap,vacIndex+index,CPtr->getCentre()+Y*flangeLength,
+	      (SMap,vacIndex+index,CPtr->getCentre()+Y*length,
 	       CPtr->getNormal(),CPtr->getRadius());
 	  else
 	    ModelSupport::buildCylinder
@@ -248,24 +250,62 @@ VacuumPipe::createSurfaces()
   */
 {
   ELog::RegMethod RegA("VacuumPipe","createSurfaces");
-
+  
+  // middle of the flange
+  const double midFlange((length-flangeLength)/2.0);
+  
   // Inner void
   if (activeFront)
-    getShiftedSurf(frontSurf,101,1);
+    {
+      getShiftedSurf(frontSurf,101,1,flangeLength);
+      if (activeWindow & 1)
+	{
+	  getShiftedSurf(frontSurf,1001,1,
+			 (flangeLength-windowThick)/2.0);
+	  getShiftedSurf(frontSurf,1002,1,
+			 (flangeLength+windowThick)/2.0);
+	}
+    }
   else
     {
       ModelSupport::buildPlane(SMap,vacIndex+1,Origin-Y*(length/2.0),Y);
       ModelSupport::buildPlane(SMap,vacIndex+101,
 			       Origin-Y*(length/2.0-flangeLength),Y);
+      if (activeWindow & 1)
+	{
+
+	  ModelSupport::buildPlane(SMap,vacIndex+1001,
+				   Origin-Y*(midFlange+windowThick/2.0),Y);
+	  ModelSupport::buildPlane(SMap,vacIndex+1002,
+				   Origin-Y*(midFlange-windowThick/2.0),Y);
+	}	    
     }
     // Inner void
   if (activeBack)
-    getShiftedSurf(backSurf,102,-1);
+    {
+      getShiftedSurf(backSurf,102,-1,flangeLength);
+      if (activeWindow & 2)
+	{
+	  getShiftedSurf(backSurf,1101,-1,
+			 (flangeLength-windowThick)/2.0);
+	  getShiftedSurf(backSurf,1102,-1,
+			 (flangeLength+windowThick)/2.0);
+	}
+    }
   else
     {
       ModelSupport::buildPlane(SMap,vacIndex+2,Origin+Y*(length/2.0),Y);
       ModelSupport::buildPlane(SMap,vacIndex+102,
 			       Origin+Y*(length/2.0-flangeLength),Y);
+      if (activeWindow & 2)
+	{
+
+	  ModelSupport::buildPlane(SMap,vacIndex+2001,
+				   Origin+Y*(midFlange+windowThick/2.0),Y);
+	  ModelSupport::buildPlane(SMap,vacIndex+2002,
+				   Origin+Y*(midFlange-windowThick/2.0),Y);
+	}	    
+
     }
   
   ModelSupport::buildCylinder(SMap,vacIndex+7,Origin,Y,radius);
@@ -274,6 +314,8 @@ VacuumPipe::createSurfaces()
 
   ModelSupport::buildCylinder(SMap,vacIndex+107,Origin,Y,flangeRadius);
 
+  if (activeWindow)
+    ModelSupport::buildCylinder(SMap,vacIndex+1007,Origin,Y,windowRadius);
   
   return;
 }
@@ -302,9 +344,25 @@ VacuumPipe::createObjects(Simulation& System)
 
   const std::string FBStr=frontStr+backStr+divStr;
 
+  std::string windowFrontExclude;
+  std::string windowBackExclude;
+  if (activeWindow & 2)
+    { 
+      Out=ModelSupport::getComposite(SMap,vacIndex,"-1007 1102 -1101");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,windowMat,0.0,
+				       Out+divStr));
+      addCell("Window",cellIndex-1);
+      HeadRule WHR(Out);
+      WHR.makeComplement();
+      windowBackExclude=WHR.display();
+    }
+
+  
   // Void 
   Out=ModelSupport::getComposite(SMap,vacIndex," -7 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,voidMat,0.0,Out+FBStr));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,voidMat,0.0,
+				   Out+FBStr+
+				   windowFrontExclude+windowBackExclude));
   addCell("Void",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,vacIndex,"101 -102 -17 7");
@@ -318,9 +376,10 @@ VacuumPipe::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,vacIndex,"102 -107 7");
   System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out+
-				   backStr+divStr));
+				   backStr+divStr+windowBExclude));
   addCell("Steel",cellIndex-1);
 
+  
   // outer void:
   Out=ModelSupport::getComposite(SMap,vacIndex,"101 -102 -107 17");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+divStr));
@@ -330,6 +389,8 @@ VacuumPipe::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,vacIndex,"-107 ");
   addOuterSurf(Out+FBStr);
 
+  
+  
   return;
 }
 

@@ -47,7 +47,7 @@ class VacuumPipe :
 
   bool activeFront;             ///< Flag for front active
   bool activeBack;              ///< Flag for back active
-  bool activeDivide;              ///< Flag for back active
+  bool activeDivide;            ///< Flag for back active
   HeadRule frontSurf;           ///< Front surfaces [if used]
   HeadRule backSurf;            ///< Back surfaces [if used]
   HeadRule divideSurf;          ///< divider surfaces [if used]
@@ -60,7 +60,7 @@ class VacuumPipe :
   double flangeRadius;          ///< Joining Flange thick
   double flangeLength;          ///< Joining Flange length
 
-  int windowActive;             ///< Flag on window activity
+  int activeWindow;             ///< Flag on window activity
   double windowThick;           ///< Joining Flange length
   double windowRadius;          ///< Joining Flange length
   
@@ -74,7 +74,7 @@ class VacuumPipe :
   void createObjects(Simulation&);
   void createLinks();
 
-  void getShiftedSurf(const HeadRule&,const int,const int);
+  void getShiftedSurf(const HeadRule&,const int,const int,const double);
   
  public:
 

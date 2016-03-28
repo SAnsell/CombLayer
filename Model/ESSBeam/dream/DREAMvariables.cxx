@@ -119,6 +119,11 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamPipeAFlangeRadius",12.0);
   Control.addVariable("dreamPipeAFlangeLength",1.0);
   Control.addVariable("dreamPipeAFeMat","Stainless304");
+  Control.addVariable("dreamPipeAWindowActive",2);
+  Control.addVariable("dreamPipeAWindowRadius",10.0);
+  Control.addVariable("dreamPipeAWindowThick",0.5);
+  Control.addVariable("dreamPipeAWindowMat","Silicon300K");
+  
 
   // 5.5m to the first chopper:
   Control.addVariable("dreamFBXStep",0.0);       
