@@ -226,7 +226,7 @@ TwisterModule::createSurfaces()
   ModelSupport::buildCylinder(SMap,tIndex+17,Origin,Z,shaftRadius+shaftWallThick);
 
   ModelSupport::buildCylinder(SMap,tIndex+27,Origin,Z,plugFrameRadius);
-  ModelSupport::buildCylinder(SMap,tIndex+37,Origin,Z,plugFrameRadius+plugFrameWallThick);
+  ModelSupport::buildCylinder(SMap,tIndex+37,Origin,Z,plugFrameRadius-plugFrameWallThick);
 
   // sector walls
   const double angle = plugFrameAngle/2.0*M_PI/180;
@@ -270,25 +270,25 @@ TwisterModule::createObjects(Simulation& System)
   setCell("lowBe",cellIndex-1);
 
   // plug frame
-  Out=ModelSupport::getComposite(SMap,tIndex," -27 5 -6 17 2 -1 11"); //  inside sector
+  Out=ModelSupport::getComposite(SMap,tIndex," -37 5 -6 17 2 -1 11"); //  inside sector
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugFrameMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,tIndex," -27 5 -6 17 2 -21 1"); //  inside sector wall x+
+  Out=ModelSupport::getComposite(SMap,tIndex," -37 5 -6 17 2 -21 1"); //  inside sector wall x+
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugFrameWallMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,tIndex," -27 5 -6 17 (-2:21:-31)"); // outside sector
+  Out=ModelSupport::getComposite(SMap,tIndex," -37 5 -6 17 (-2:21:-31)"); // outside sector
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugFrameMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,tIndex," -27 5 -6 17 2 31 -11"); //  inside sector wall x-
+  Out=ModelSupport::getComposite(SMap,tIndex," -37 5 -6 17 2 31 -11"); //  inside sector wall x-
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugFrameWallMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,tIndex," -37 25 -26 (27:-5:6) 17 (-2:21:-31)"); // outer wall outside sector
+  Out=ModelSupport::getComposite(SMap,tIndex," -27 25 -26 (37:-5:6) 17 (-2:21:-31)"); // outer wall outside sector
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugFrameWallMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,tIndex," -37 25 -26 (27:-5:6) 17 2 -21 31 "); // outer wall inside sector
+  Out=ModelSupport::getComposite(SMap,tIndex," -27 25 -26 (37:-5:6) 17 2 -21 31 "); // outer wall inside sector
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugFrameWallMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,tIndex," (-17 26 -16) : (-37 25 -26) ");
+  Out=ModelSupport::getComposite(SMap,tIndex," (-17 26 -16) : (-27 25 -26) ");
   addOuterSurf(Out);
 
   return; 
