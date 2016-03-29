@@ -300,9 +300,9 @@ VacuumPipe::createSurfaces()
       if (activeWindow & 2)
 	{
 
-	  ModelSupport::buildPlane(SMap,vacIndex+2001,
+	  ModelSupport::buildPlane(SMap,vacIndex+1101,
 				   Origin+Y*(midFlange+windowThick/2.0),Y);
-	  ModelSupport::buildPlane(SMap,vacIndex+2002,
+	  ModelSupport::buildPlane(SMap,vacIndex+1102,
 				   Origin+Y*(midFlange-windowThick/2.0),Y);
 	}	    
 
@@ -346,6 +346,16 @@ VacuumPipe::createObjects(Simulation& System)
 
   std::string windowFrontExclude;
   std::string windowBackExclude;
+  if (activeWindow & 1)      // FRONT
+    { 
+      Out=ModelSupport::getComposite(SMap,vacIndex,"-1007 1001 -1002 ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,windowMat,0.0,
+				       Out+divStr));
+      addCell("Window",cellIndex-1);
+      HeadRule WHR(Out);
+      WHR.makeComplement();
+      windowFrontExclude=WHR.display();
+    }
   if (activeWindow & 2)
     { 
       Out=ModelSupport::getComposite(SMap,vacIndex,"-1007 1102 -1101");
@@ -371,12 +381,12 @@ VacuumPipe::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,vacIndex,"-101 -107 7");
   System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out+
-				   frontStr+divStr));
+				   frontStr+divStr+windowFrontExclude));
   addCell("Steel",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,vacIndex,"102 -107 7");
   System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out+
-				   backStr+divStr+windowBExclude));
+				   backStr+divStr+windowBackExclude));
   addCell("Steel",cellIndex-1);
 
   

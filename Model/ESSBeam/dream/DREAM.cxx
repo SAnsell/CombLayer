@@ -327,22 +327,24 @@ DREAM::build(Simulation& System,
 		    GItem.getKey("Beam"),-1);
 
   if (stopPoint==1) return;                      // STOP At monolith edge
-  
+
+  VPipeA->addInsertCell(bunkerObj.getCell("MainVoid"));
+  //  VPipeA->setFront(GItem.getKey("Beam"),2);
+  //  VPipeA->setBack(*VacBoxA,1);
+  //  VPipeA->setDivider(GItem.getKey("Beam"),2);
+  VPipeA->createAll(System,GItem.getKey("Beam"),2);
+
+  FocusB->addInsertCell(VPipeA->getCells("Void"));
+  FocusB->createAll(System,FocusA->getKey("Guide0"),2,
+		    FocusA->getKey("Guide0"),2);
+
   // First section out of monolith
   VacBoxA->addInsertCell(bunkerObj.getCell("MainVoid"));
   VacBoxA->createAll(System,FocusA->getKey("Guide0"),2);
   // PIPE
+  return;
 
-  VPipeA->addInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeA->setFront(GItem.getKey("Beam"),2);
-  VPipeA->setBack(*VacBoxA,1);
-  VPipeA->setDivider(GItem.getKey("Beam"),2);
-  VPipeA->createAll(System,GItem.getKey("Beam"),2);
-
-  FocusB->addInsertCell(VPipeA->getCells("Void"));
-  FocusB->addInsertCell(VacBoxA->getCells("Void"));
-  FocusB->createAll(System,FocusA->getKey("Guide0"),2,
-		    FocusA->getKey("Guide0"),2);
+  return ;
 
   // Double disk chopper
   DDisk->addInsertCell(VacBoxA->getCell("Void",0));

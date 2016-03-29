@@ -94,7 +94,7 @@ DREAMvariables(FuncDataBase& Control)
 
   // VACBOX A : 6.10m target centre
   //  Length 100.7 + Width [87.0] + Height [39.0] void Depth/2 + front
-  Control.addVariable("dreamVacAYStep",40.0);
+  Control.addVariable("dreamVacAYStep",60.0);
     
   Control.addVariable("dreamVacAVoidHeight",20.0);
   Control.addVariable("dreamVacAVoidDepth",19.0);
@@ -113,13 +113,14 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamVacAVoidMat","Void");
 
   // VACUUM PIPES:
+  Control.addVariable("dreamPipeAYStep",2.0);   // step + flange
   Control.addVariable("dreamPipeARadius",8.0);
-  Control.addVariable("dreamPipeALength",300.0);
+  Control.addVariable("dreamPipeALength",46.0);
   Control.addVariable("dreamPipeAFeThick",1.0);
   Control.addVariable("dreamPipeAFlangeRadius",12.0);
   Control.addVariable("dreamPipeAFlangeLength",1.0);
   Control.addVariable("dreamPipeAFeMat","Stainless304");
-  Control.addVariable("dreamPipeAWindowActive",2);
+  Control.addVariable("dreamPipeAWindowActive",3);
   Control.addVariable("dreamPipeAWindowRadius",10.0);
   Control.addVariable("dreamPipeAWindowThick",0.5);
   Control.addVariable("dreamPipeAWindowMat","Silicon300K");
@@ -127,13 +128,13 @@ DREAMvariables(FuncDataBase& Control)
 
   // 5.5m to the first chopper:
   Control.addVariable("dreamFBXStep",0.0);       
-  Control.addVariable("dreamFBYStep",0.2);       
+  Control.addVariable("dreamFBYStep",0.0);       
   Control.addVariable("dreamFBZStep",0.0);       
   Control.addVariable("dreamFBXYAngle",0.0);       
   Control.addVariable("dreamFBZAngle",0.0);
-  Control.addVariable("dreamFBLength",50.0);       
+  Control.addVariable("dreamFBLength",44.0);       
   
-  Control.addVariable("dreamFBBeamYStep",1.0);
+  Control.addVariable("dreamFBBeamYStep",4.0);
  
   Control.addVariable("dreamFBNShapes",1);       
   Control.addVariable("dreamFBNShapeLayers",3);
@@ -151,7 +152,7 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamFB0HeightEnd",4.6);
   Control.addVariable("dreamFB0WidthStart",1.88);
   Control.addVariable("dreamFB0WidthEnd",2.06);
-  Control.addVariable("dreamFB0Length",50.0);
+  Control.copyVar("dreamFB0Length","dreamFBLength");
 
   
   // Double Blade chopper
