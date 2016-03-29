@@ -217,10 +217,10 @@ TwisterModule::createSurfaces()
 
   ModelSupport::buildPlane(SMap,tIndex+5,Origin-Z*plugFrameDepth,Z);
   ModelSupport::buildPlane(SMap,tIndex+6,Origin+Z*plugFrameHeight,Z);
-  ModelSupport::buildPlane(SMap,tIndex+16,Origin+Z*(plugFrameHeight+plugFrameWallThick+shaftHeight),Z);
+  ModelSupport::buildPlane(SMap,tIndex+16,Origin+Z*(plugFrameHeight+shaftHeight),Z);
 
-  ModelSupport::buildPlane(SMap,tIndex+25,Origin-Z*(plugFrameDepth+plugFrameWallThick),Z);
-  ModelSupport::buildPlane(SMap,tIndex+26,Origin+Z*(plugFrameHeight+plugFrameWallThick),Z);
+  ModelSupport::buildPlane(SMap,tIndex+25,Origin-Z*(plugFrameDepth-plugFrameWallThick),Z);
+  ModelSupport::buildPlane(SMap,tIndex+26,Origin+Z*(plugFrameHeight-plugFrameWallThick),Z);
 
   ModelSupport::buildCylinder(SMap,tIndex+7,Origin,Z,shaftRadius);
   ModelSupport::buildCylinder(SMap,tIndex+17,Origin,Z,shaftRadius+shaftWallThick);
@@ -262,33 +262,33 @@ TwisterModule::createObjects(Simulation& System)
 
   std::string Out;
   // shaft
-  Out=ModelSupport::getComposite(SMap,tIndex," -7 25 -16 ");
+  Out=ModelSupport::getComposite(SMap,tIndex," -7 5 -16 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,shaftMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,tIndex," -17 7 25 -16 ");
+  Out=ModelSupport::getComposite(SMap,tIndex," -17 7 5 -16 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,shaftWallMat,0.0,Out));
   setCell("lowBe",cellIndex-1);
 
   // plug frame
-  Out=ModelSupport::getComposite(SMap,tIndex," -37 5 -6 17 2 -1 11"); //  inside sector
+  Out=ModelSupport::getComposite(SMap,tIndex," -37 25 -26 17 2 -1 11"); //  inside sector
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugFrameMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,tIndex," -37 5 -6 17 2 -21 1"); //  inside sector wall x+
+  Out=ModelSupport::getComposite(SMap,tIndex," -37 25 -26 17 2 -21 1"); //  inside sector wall x+
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugFrameWallMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,tIndex," -37 5 -6 17 (-2:21:-31)"); // outside sector
+  Out=ModelSupport::getComposite(SMap,tIndex," -37 25 -26 17 (-2:21:-31)"); // outside sector
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugFrameMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,tIndex," -37 5 -6 17 2 31 -11"); //  inside sector wall x-
+  Out=ModelSupport::getComposite(SMap,tIndex," -37 25 -26 17 2 31 -11"); //  inside sector wall x-
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugFrameWallMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,tIndex," -27 25 -26 (37:-5:6) 17 (-2:21:-31)"); // outer wall outside sector
+  Out=ModelSupport::getComposite(SMap,tIndex," -27 5 -6 (37:-25:26) 17 (-2:21:-31)"); // outer wall outside sector
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugFrameWallMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,tIndex," -27 25 -26 (37:-5:6) 17 2 -21 31 "); // outer wall inside sector
+  Out=ModelSupport::getComposite(SMap,tIndex," -27 5 -6 (37:-25:26) 17 2 -21 31 "); // outer wall inside sector
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugFrameWallMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,tIndex," (-17 26 -16) : (-27 25 -26) ");
+  Out=ModelSupport::getComposite(SMap,tIndex," (-17 6 -16) : (-27 5 -6) ");
   addOuterSurf(Out);
 
   return; 
