@@ -276,13 +276,10 @@ TwisterModule::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,tIndex," -37 25 -26 17 2 -21 1"); //  inside sector wall x+
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugFrameWallMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,tIndex," -37 25 -26 17 (-2:21:-31)"); // outside sector
+  Out=ModelSupport::getComposite(SMap,tIndex," -27 5 -6 17 (-2:21:-31)"); // outside sector
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugFrameMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,tIndex," -37 25 -26 17 2 31 -11"); //  inside sector wall x-
-  System.addCell(MonteCarlo::Qhull(cellIndex++,plugFrameWallMat,0.0,Out));
-
-  Out=ModelSupport::getComposite(SMap,tIndex," -27 5 -6 (37:-25:26) 17 (-2:21:-31)"); // outer wall outside sector
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugFrameWallMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,tIndex," -27 5 -6 (37:-25:26) 17 2 -21 31 "); // outer wall inside sector
