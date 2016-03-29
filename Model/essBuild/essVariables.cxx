@@ -878,18 +878,18 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("TwisterXYangle",10.0);
   Control.addVariable("TwisterZangle",0.0);
   Control.addVariable("TwisterShaftRadius",18.5);
-  Control.addVariable("TwisterShaftHeight",120.0);
-  Control.addVariable("TwisterShaftMat","Void");
+  Control.addVariable("TwisterShaftHeight",120.0+222.4);
+  Control.addVariable("TwisterShaftMat","Iron10H2O");
   Control.addVariable("TwisterShaftWallThick",3.0);
-  Control.addVariable("TwisterShaftWallMat","Void");
+  Control.addVariable("TwisterShaftWallMat","Iron10H2O");
   Control.addVariable("TwisterPlugFrameRadius",105.0);
   Control.addVariable("TwisterPlugFrameWallThick",3.0);
-  Control.addVariable("TwisterPlugFrameHeight",60.0);
-  Control.addVariable("TwisterPlugFrameDepth",60.0);
+  Control.addVariable("TwisterPlugFrameHeight",57.6);
+  Control.addVariable("TwisterPlugFrameDepth",60.6);
   Control.addVariable("TwisterPlugFrameAngle",38.0);
-  Control.addVariable("TwisterPlugFrameMat","Void");
+  Control.addVariable("TwisterPlugFrameMat","Iron10H2O");
   Control.addVariable("TwisterPlugFrameWallThick",3.0);
-  Control.addVariable("TwisterPlugFrameWallMat","Void");
+  Control.addVariable("TwisterPlugFrameWallMat","Iron10H2O");
   
 
   // SHUTTER BAY

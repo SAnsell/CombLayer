@@ -668,6 +668,7 @@ makeESS::buildTwister(Simulation& System)
 
   Twister->createAll(System,*Bulk);
   attachSystem::addToInsertForced(System, *Bulk, *Twister);
+  attachSystem::addToInsertForced(System, *ShutterBayObj, *Twister);
   attachSystem::addToInsertSurfCtrl(System, *Twister, PBeam->getCC("Sector0"));
   attachSystem::addToInsertSurfCtrl(System, *Twister, PBeam->getCC("Sector1")); ELog::EM << "remove this line after R is set correctly " << ELog::endDiag;
   attachSystem::addToInsertControl(System, *Twister, *Reflector);
