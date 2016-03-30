@@ -122,8 +122,10 @@ tallyModification(Simulation& System,
             " by the factor \n"
 	    " -- movePoint {tallyNumber Vec3D} : Add Vec3D to tally\n"
 	    " -- single {tallyNumber} : Split cell/surface tally into "
-	    " individual sum [rather than total] \n"
+	    " individual sum [rather than total with ( ) "
+            "surrouding cell numbers] \n"
             " -- format {tallyNumber} [string] : Set the format card \n";
+            " -- setSD {tallyNumber} [string] : Set the sd format card \n";
 
           ELog::EM<<ELog::endBasic;
 	  ELog::EM<<ELog::endErr;

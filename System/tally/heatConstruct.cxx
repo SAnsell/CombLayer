@@ -151,9 +151,11 @@ heatConstruct::writeHelp(std::ostream& OX) const
     \param OX :: Output stream
   */
 {
-  OX<<"Heat tally options:\n"
-    "Particle MatN range ANumber BNumber\n"
-    "Particle MatN cellRange";
+  OX<<"Heat (tally options):\n"
+    "Particle MatN/Name/All range ANumber BNumber\n"
+    "Particle MatN/Name/All number ANumber,BNumber [NOT YET IMPLEMENTED]\n"
+    "Particle MatN/Name/All objectName \n" 
+    "addition tallyNum (As above) [NOT YET IMPLEMENTED]\n";
   return;
 }
   

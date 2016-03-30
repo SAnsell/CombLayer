@@ -341,10 +341,6 @@ DREAM::build(Simulation& System,
   // First section out of monolith
   VacBoxA->addInsertCell(bunkerObj.getCell("MainVoid"));
   VacBoxA->createAll(System,FocusA->getKey("Guide0"),2);
-  // PIPE
-  return;
-
-  return ;
 
   // Double disk chopper
   DDisk->addInsertCell(VacBoxA->getCell("Void",0));
@@ -382,6 +378,7 @@ DREAM::build(Simulation& System,
   T0DiskAHouse->createAll(System,T0DiskA->getKey("Main"),0);
   T0DiskAHouse->insertComponent(System,"Void",*T0DiskA);
 
+  return;
 
   buildChopperBlock(System,bunkerObj,
 		    T0DiskA->getKey("Beam"),*VacBoxA,
