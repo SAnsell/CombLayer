@@ -791,15 +791,15 @@ makeESS::build(Simulation& System,
 
   makeBeamLine(System,IParam);
 
-  buildTwister(System);
-
+  if (IParam.flag("eng"))
+    buildTwister(System);
   
   //  buildF5Collimator(System, nF5);
   buildF5Collimator(System, IParam);
 
 
-  //  buildTopPipes(System,"");
-  //  buildLowPipes(System,"");
+  buildTopPipes(System,"");
+  buildLowPipes(System,"");
   return;
 }
 
