@@ -881,7 +881,11 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("TwisterShaftHeight",120.0+222.4);
   Control.addVariable("TwisterShaftMat","Iron10H2O");
   Control.addVariable("TwisterShaftWallThick",3.0);
-  Control.addVariable("TwisterShaftWallMat","Iron10H2O");
+  Control.addVariable("TwisterShaftWallMat","Iron10H2O"); 
+  Control.addVariable("TwisterShaftNoseRadius",4);
+  Control.addVariable("TwisterShaftNoseHeight",54.4);
+  Control.addVariable("TwisterShaftNoseWallThick",12.2);
+ 
   Control.addVariable("TwisterPlugFrameRadius",105.0);
   Control.addVariable("TwisterPlugFrameWallThick",3.0);
   Control.addVariable("TwisterPlugFrameHeight",57.6);
