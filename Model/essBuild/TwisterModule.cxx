@@ -90,7 +90,7 @@ TwisterModule::TwisterModule(const TwisterModule& A) :
   tIndex(A.tIndex),cellIndex(A.cellIndex),xStep(A.xStep),
   yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),zAngle(A.zAngle),
   shaftRadius(A.shaftRadius),shaftHeight(A.shaftHeight),shaftWallThick(A.shaftWallThick),
-  shaftNoseRadius(A.shaftNoseRadius),shaftNoseHeight(A.shaftNoseHeight),shaftNoseWallThick(A.shaftNoseWallThick),
+  shaftBearingRadius(A.shaftBearingRadius),shaftBearingHeight(A.shaftBearingHeight),shaftBearingWallThick(A.shaftBearingWallThick),
   plugFrameRadius(A.plugFrameRadius),plugFrameHeight(A.plugFrameHeight),
   plugFrameDepth(A.plugFrameDepth),plugFrameAngle(A.plugFrameAngle),
   plugFrameWallThick(A.plugFrameWallThick),
@@ -124,9 +124,9 @@ TwisterModule::operator=(const TwisterModule& A)
       shaftRadius=A.shaftRadius;
       shaftHeight=A.shaftHeight;
       shaftWallThick=A.shaftWallThick;
-      shaftNoseRadius=A.shaftNoseRadius;
-      shaftNoseHeight=A.shaftNoseHeight;
-      shaftNoseWallThick=A.shaftNoseWallThick;
+      shaftBearingRadius=A.shaftBearingRadius;
+      shaftBearingHeight=A.shaftBearingHeight;
+      shaftBearingWallThick=A.shaftBearingWallThick;
 
       plugFrameRadius=A.plugFrameRadius;
       plugFrameHeight=A.plugFrameHeight;
@@ -181,9 +181,9 @@ TwisterModule::populate(const FuncDataBase& Control)
   shaftHeight=Control.EvalVar<double>(keyName+"ShaftHeight");   
   shaftWallThick=Control.EvalVar<double>(keyName+"ShaftWallThick");
 
-  shaftNoseRadius=Control.EvalVar<double>(keyName+"ShaftNoseRadius");
-  shaftNoseHeight=Control.EvalVar<double>(keyName+"ShaftNoseHeight");
-  shaftNoseWallThick=Control.EvalVar<double>(keyName+"ShaftNoseWallThick");
+  shaftBearingRadius=Control.EvalVar<double>(keyName+"ShaftBearingRadius");
+  shaftBearingHeight=Control.EvalVar<double>(keyName+"ShaftBearingHeight");
+  shaftBearingWallThick=Control.EvalVar<double>(keyName+"ShaftBearingWallThick");
 
   plugFrameRadius=Control.EvalVar<double>(keyName+"PlugFrameRadius");   
   plugFrameHeight=Control.EvalVar<double>(keyName+"PlugFrameHeight");   
@@ -256,10 +256,10 @@ TwisterModule::createSurfaces()
 				  Origin-Y*R*sin(angle)-X*R*cos(angle),
 				  X,-Z,-plugFrameAngle/2.0);
 
-  // shaft nose
-  ModelSupport::buildPlane(SMap,tIndex+35,Origin-Z*(plugFrameDepth+shaftNoseHeight),Z);
-  ModelSupport::buildCylinder(SMap,tIndex+47,Origin,Z,shaftNoseRadius);
-  ModelSupport::buildCylinder(SMap,tIndex+57,Origin,Z,shaftNoseRadius+shaftNoseWallThick);
+  // shaft bearing
+  ModelSupport::buildPlane(SMap,tIndex+35,Origin-Z*(plugFrameDepth+shaftBearingHeight),Z);
+  ModelSupport::buildCylinder(SMap,tIndex+47,Origin,Z,shaftBearingRadius);
+  ModelSupport::buildCylinder(SMap,tIndex+57,Origin,Z,shaftBearingRadius+shaftBearingWallThick);
   
 
   return; 
@@ -302,7 +302,7 @@ TwisterModule::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,tIndex," -17 47 5 -25 "); // bottom wall of the shaft
   System.addCell(MonteCarlo::Qhull(cellIndex++,shaftWallMat,0.0,Out));
 
-  // shaft nose
+  // shaft bearing
   Out=ModelSupport::getComposite(SMap,tIndex, " -47 35 -25 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,shaftMat,0.0,Out));
 

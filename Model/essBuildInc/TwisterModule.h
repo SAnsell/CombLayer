@@ -54,9 +54,9 @@ class TwisterModule : public attachSystem::ContainedComp,
   double shaftRadius;             ///< Shaft radius
   double shaftHeight;             ///< Shaft height
   double shaftWallThick;          ///< Shaft wall thickness
-  double shaftNoseRadius;              ///< shaft nose radius
-  double shaftNoseHeight;              ///< shaft nose height
-  double shaftNoseWallThick;      ///< shaft nose side wall thick
+  double shaftBearingRadius;              ///< shaft bearing radius
+  double shaftBearingHeight;              ///< shaft bearing height
+  double shaftBearingWallThick;      ///< shaft bearing side wall thick
   
   double plugFrameRadius;         ///< plug frame outer radius
   double plugFrameHeight;         ///< plug frame height
