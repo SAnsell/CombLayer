@@ -83,6 +83,7 @@
 #include "Bunker.h"
 #include "BunkerInsert.h"
 #include "ChopperPit.h"
+#include "ChopperUnit.h"
 #include "DreamHut.h"
 #include "DetectorTank.h"
 #include "CylSample.h"
@@ -99,9 +100,11 @@ DREAM::DREAM(const std::string& keyName) :
   dreamAxis(new attachSystem::FixedComp(newName+"Axis",4)),
   
   FocusA(new beamlineSystem::GuideLine(newName+"FA")),
+  ChopperA(new constructSystem::ChopperUnit(newName+"ChopperA")),
   VacBoxA(new constructSystem::VacuumBox(newName+"VacA")),
   VPipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
   FocusB(new beamlineSystem::GuideLine(newName+"FB")),
+
   DDisk(new constructSystem::DiskChopper(newName+"DBlade")),
   DDiskHouse(new constructSystem::ChopperHousing(newName+"DBladeHouse")),
   SDisk(new constructSystem::DiskChopper(newName+"SBlade")),
@@ -167,6 +170,7 @@ DREAM::DREAM(const std::string& keyName) :
   OR.addObject(dreamAxis);
 
   OR.addObject(FocusA);
+  OR.addObject(ChopperA);
   OR.addObject(VacBoxA);
   OR.addObject(VPipeA);
   
@@ -329,15 +333,20 @@ DREAM::build(Simulation& System,
   if (stopPoint==1) return;                      // STOP At monolith edge
 
   VPipeA->addInsertCell(bunkerObj.getCell("MainVoid"));
-  //  VPipeA->setFront(GItem.getKey("Beam"),2);
-  //  VPipeA->setBack(*VacBoxA,1);
-  //  VPipeA->setDivider(GItem.getKey("Beam"),2);
   VPipeA->createAll(System,GItem.getKey("Beam"),2);
 
   FocusB->addInsertCell(VPipeA->getCells("Void"));
   FocusB->createAll(System,FocusA->getKey("Guide0"),2,
 		    FocusA->getKey("Guide0"),2);
 
+  // NEW TEST SECTION:
+  ChopperA->addInsertCell(bunkerObj.getCell("MainVoid"));
+  ChopperA->createAll(System,FocusA->getKey("Guide0"),2);
+
+  // END TEST SECTION:
+  return;
+
+  
   // First section out of monolith
   VacBoxA->addInsertCell(bunkerObj.getCell("MainVoid"));
   VacBoxA->createAll(System,FocusA->getKey("Guide0"),2);

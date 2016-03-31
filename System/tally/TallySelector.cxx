@@ -124,7 +124,7 @@ tallyModification(Simulation& System,
 	    " -- single {tallyNumber} : Split cell/surface tally into "
 	    " individual sum [rather than total with ( ) "
             "surrouding cell numbers] \n"
-            " -- format {tallyNumber} [string] : Set the format card \n";
+            " -- format {tallyNumber} [string] : Set the format card \n"
             " -- setSD {tallyNumber} [string] : Set the sd format card \n";
 
           ELog::EM<<ELog::endBasic;

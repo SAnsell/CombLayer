@@ -45,6 +45,7 @@ namespace constructSystem
   class VacuumPipe;
   class VacuumWindow;
   class ChopperHousing;
+  class ChopperUnit;
 }
 
 namespace essSystem
@@ -73,6 +74,10 @@ class DREAM : public attachSystem::CopiedComp
 
   /// Elliptic focus in bulkshield [m5]
   std::shared_ptr<beamlineSystem::GuideLine> FocusA;
+
+  /// Vac box for first chopper
+  std::shared_ptr<constructSystem::ChopperUnit> ChopperA;
+  
   
   /// Vac box for first chopper
   std::shared_ptr<constructSystem::VacuumBox> VacBoxA;
@@ -80,10 +85,13 @@ class DREAM : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::VacuumPipe> VPipeA;
   /// Elliptic guide from 5.5 to 6metre
   std::shared_ptr<beamlineSystem::GuideLine> FocusB;
+  /// Double disk chopper Housing
+  std::shared_ptr<constructSystem::ChopperHousing> DDiskHouse;
+  
   /// Double disk chopper
   std::shared_ptr<constructSystem::DiskChopper> DDisk;
   /// Double disk chopper Housing
-  std::shared_ptr<constructSystem::ChopperHousing> DDiskHouse;
+  //  std::shared_ptr<constructSystem::ChopperHousing> DDiskHouse;
   
   /// Single disk chopper
   std::shared_ptr<constructSystem::DiskChopper> SDisk;

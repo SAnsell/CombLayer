@@ -92,6 +92,24 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamFA0WidthEnd",2.0);
   Control.addVariable("dreamFA0Length",350.0);
 
+
+  // VACBOX A : 6.10m target centre
+  //  Length 100.7 + Width [87.0] + Height [39.0] void Depth/2 + front
+  Control.addVariable("dreamChopperAYStep",60.0);
+  Control.addVariable("dreamChopperAMainZStep",28.0);   // drawing [5962.2]
+  Control.addVariable("dreamChopperAHeight",86.5);
+  Control.addVariable("dreamChopperAWidth",86.5);
+  Control.addVariable("dreamChopperALength",9.0);  // drawing [5960.2]
+  Control.addVariable("dreamChopperAShortWidth",50.5);
+  Control.addVariable("dreamChopperAMainRadius",38.122); // estimate
+  Control.addVariable("dreamChopperAMainThick",3.55);  // estimate 
+  
+  Control.addVariable("dreamChopperAWallMat","Stainless304");
+  Control.addVariable("dreamChopperAWallMat","Stainless304");
+  Control.addVariable("dreamChopperAVoidMat","Void");
+
+
+  
   // VACBOX A : 6.10m target centre
   //  Length 100.7 + Width [87.0] + Height [39.0] void Depth/2 + front
   Control.addVariable("dreamVacAYStep",60.0);

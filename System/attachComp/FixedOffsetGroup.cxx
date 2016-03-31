@@ -63,6 +63,26 @@
 namespace attachSystem
 {
 
+void
+offset::copy(double& XS,double& YS,double& ZS,
+             double& XYA,double& ZA) const
+  /*!
+    Copy data to external variables
+    \param XS :: XStep value
+    \param YS :: YStep value    
+    \param ZS :: ZStep value
+    \param XYA :: XYAngle value
+    \param ZA :: ZAngle value
+  */
+{
+  XS=xStep;
+  YS=yStep;
+  ZS=zStep;
+  XYA=xyAngle;
+  ZA=zAngle;
+  return;
+}
+  
 FixedOffsetGroup::FixedOffsetGroup(const std::string& mainKey,
 				   const std::string& KN,
 				   const size_t NL) :
@@ -116,6 +136,27 @@ FixedOffsetGroup::FixedOffsetGroup(const std::string& mainKey,
 {}
 
 void
+FixedOffsetGroup::populateOffset(const FuncDataBase& Control,
+                                 const std::string& keyItem,
+                                 offset& GO)
+  /*!
+    Populate the variables
+    \param Control :: Control data base
+   */
+{
+  ELog::RegMethod RegA("FixedOffsetGroup","populate");
+
+  
+  GO.xStep=Control.EvalDefVar<double>(keyItem+"XStep",0.0);
+  GO.yStep=Control.EvalDefVar<double>(keyItem+"YStep",0.0);
+  GO.zStep=Control.EvalDefVar<double>(keyItem+"ZStep",0.0);
+  GO.xyAngle=Control.EvalDefVar<double>(keyItem+"XYAngle",0.0);
+  GO.zAngle=Control.EvalDefVar<double>(keyItem+"ZAngle",0.0);
+  
+  return;
+}
+
+void
 FixedOffsetGroup::populate(const FuncDataBase& Control)
   /*!
     Populate the variables
@@ -124,11 +165,20 @@ FixedOffsetGroup::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("FixedOffsetGroup","populate");
 
+  for(FTYPE::value_type& FCmc : FMap)
+    {
+      offset GO;
+      populateOffset(Control,FCmc.second->getKeyName(),GO);
+      GOffset.emplace(FCmc.first,GO);
+    }
+  
+ 
   xStep=Control.EvalDefVar<double>(keyName+"XStep",0.0);
   yStep=Control.EvalDefVar<double>(keyName+"YStep",0.0);
   zStep=Control.EvalDefVar<double>(keyName+"ZStep",0.0);
   xyAngle=Control.EvalDefVar<double>(keyName+"XYAngle",0.0);
   zAngle=Control.EvalDefVar<double>(keyName+"ZAngle",0.0);
+  
   return;
 }
   
@@ -142,8 +192,13 @@ FixedOffsetGroup::applyOffset()
 
   for(FTYPE::value_type& FCmc : FMap)
     {
-      FCmc.second->applyShift(xStep,yStep,zStep);
-      FCmc.second->applyAngleRotate(xyAngle,zAngle);
+      std::map<std::string,offset>::const_iterator mc=GOffset.find(FCmc.first);
+      if (mc==GOffset.end())
+        throw ColErr::InContainerError<std::string>
+          (FCmc.first,"Offset not found");
+      const offset& GO=mc->second;
+      FCmc.second->applyShift(xStep+GO.xStep,yStep+GO.yStep,zStep+GO.zStep);
+      FCmc.second->applyAngleRotate(xyAngle+GO.xyAngle,zAngle+GO.zAngle);
     }
   return;
 }
