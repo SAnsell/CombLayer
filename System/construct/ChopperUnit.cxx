@@ -47,6 +47,7 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
+#include "Quaternion.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -119,8 +120,23 @@ ChopperUnit::populate(const FuncDataBase& Control)
   mainThick=Control.EvalVar<double>(keyName+"MainThick");
 
   portRadius=Control.EvalVar<double>(keyName+"PortRadius");
+
   motorRadius=Control.EvalVar<double>(keyName+"MotorRadius");
+  motorOuter=Control.EvalVar<double>(keyName+"MotorOuter");
+  motorStep=Control.EvalVar<double>(keyName+"MotorStep");
+  motorNBolt=Control.EvalVar<size_t>(keyName+"MotorNBolt");
+  motorBoltRad=Control.EvalVar<double>(keyName+"MotorBoltRadius");
+  motorBoltAngOff=Control.EvalDefVar<double>(keyName+"MotorBoltAngOff",0.0);
+
+  portRadius=Control.EvalVar<double>(keyName+"PortRadius");
+  portOuter=Control.EvalVar<double>(keyName+"PortOuter");
+  portStep=Control.EvalVar<double>(keyName+"PortStep");
+  portBoltRad=Control.EvalVar<double>(keyName+"PortBoltRadius");
+  portNBolt=Control.EvalVar<size_t>(keyName+"PortNBolt");
+  portBoltAngOff=Control.EvalDefVar<double>(keyName+"PortBoltAngOff",0.0);
+
   
+  boltMat=ModelSupport::EvalMat<int>(Control,keyName+"BoltMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
   return;
@@ -201,14 +217,106 @@ ChopperUnit::createSurfaces()
   ModelSupport::buildPlane(SMap,houseIndex+12,Origin+Y*(mainThick/2.0),Y);
   ModelSupport::buildCylinder(SMap,houseIndex+17,Origin,Y,mainRadius);
 
+  // MOTOR [100]
+  ModelSupport::buildCylinder(SMap,houseIndex+1007,Origin,Y,motorRadius);
+  ModelSupport::buildCylinder(SMap,houseIndex+1017,Origin,Y,motorOuter);
+
   // Construct beamport:
   setDefault("Beam");
+  ModelSupport::buildCylinder(SMap,houseIndex+2007,Origin,Y,portRadius);
+  ModelSupport::buildCylinder(SMap,houseIndex+2017,Origin,Y,portOuter);
 
-  ModelSupport::buildCylinder(SMap,houseIndex+27,Origin,Y,portRadius);
   
   return;
 }
 
+void
+ChopperUnit::createRing(Simulation& System,
+                        const int surfOffset,
+                        const Geometry::Vec3D& Centre,
+                        const std::string& FBStr,
+                        const std::string& EdgeStr,
+                        const double BRad,
+                        const size_t NBolts,
+                        const double radius,
+                        const double angOff)
+  /*!
+    Create the ring of bolts : 
+    Only works if NBolts != 1.
+    Assumes that surface surfOffset+7/17 have been created
+    
+    \param System :: Simulation
+    \param surfOffset :: Start of surface offset
+    \param centre :: Centre of dist
+    \param EdgeStr :: Edges of ring/area
+    \param FBStr :: Front/Back plates
+    \param BRad :: Bolt Rad
+    \param NBolts :: Number of bolts
+    \param radius :: radius of bolt
+    \param angOff :: angle offset
+  */
+{
+  ELog::RegMethod RegA("ChopperUnit","createRing");
+   // Construct surfaces:
+
+  std::string Out;
+  if (NBolts>1)
+    {
+      const double angleR=360.0/static_cast<double>(NBolts);
+      Geometry::Vec3D DPAxis(X);
+      Geometry::Vec3D BAxis(Z*BRad);
+      const Geometry::Quaternion QStartSeg=
+        Geometry::Quaternion::calcQRotDeg(angOff,Y);
+      const Geometry::Quaternion QHalfSeg=
+        Geometry::Quaternion::calcQRotDeg(angleR/2.0,Y);
+      const Geometry::Quaternion QSeg=
+        Geometry::Quaternion::calcQRotDeg(angleR,Y);
+      
+      // half a segment rotation to start:
+      QStartSeg.rotate(DPAxis);
+      QStartSeg.rotate(BAxis);
+      QHalfSeg.rotate(DPAxis);
+      
+      int boltIndex(surfOffset+100);
+      for(size_t i=0;i<NBolts;i++)
+        {
+          const Geometry::Vec3D boltC(Centre+BAxis);
+          
+          ModelSupport::buildCylinder(SMap,boltIndex+7,boltC,Y,radius);
+          ModelSupport::buildPlane(SMap,boltIndex+3,Centre,DPAxis);
+          QSeg.rotate(DPAxis);
+          QSeg.rotate(BAxis);
+          boltIndex+=10;
+        }
+      
+      // reset
+      int prevBoltIndex(boltIndex-10);
+      boltIndex=surfOffset+100;
+      for(size_t i=0;i<NBolts;i++)
+        {
+          Out=ModelSupport::getComposite(SMap,boltIndex," -7 ");
+          System.addCell(MonteCarlo::Qhull(cellIndex++,boltMat,0.0,Out+FBStr));
+          addCell("Bolts",cellIndex-1);
+          
+          Out=ModelSupport::getComposite(SMap,prevBoltIndex,boltIndex,
+                                         " 3  -3M 7M ");
+          
+          System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,
+                                           Out+FBStr+EdgeStr));
+          
+          addCell("Wall",cellIndex-1);
+          prevBoltIndex=boltIndex;
+          boltIndex+=10;
+       }
+    }
+  else
+    {
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,FBStr+EdgeStr));
+      addCell("Wall",cellIndex-1);
+    }
+  return;
+}
+  
 void
 ChopperUnit::createObjects(Simulation& System)
   /*!
@@ -218,25 +326,76 @@ ChopperUnit::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("ChopperUnit","createObjects");
 
-  std::string Out;
+  const attachSystem::FixedComp& Main=getKey("Main");
+  const attachSystem::FixedComp& Beam=getKey("Beam");
+  const double CentreDist=Main.getCentre().Distance(Beam.getCentre());
+  
+  std::string Out,FBStr,EdgeStr;
 
-  // Void 
-  Out=ModelSupport::getComposite(SMap,houseIndex,
-                                 "1 -2 3 -4 5 -6 7 8 9 10 (-11:12:17)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
-  addCell("Wall",cellIndex-1);
-
-  // Wall
+    // Main void
   Out=ModelSupport::getComposite(SMap,houseIndex,"11 -12 -17");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   addCell("Void",cellIndex-1);
 
-  // Outer
-  Out=ModelSupport::getComposite(SMap,houseIndex,"1 -2 3 -4 5 -6 7 8 9 10");
-  addOuterSurf(Out);
+  // Port [Front/back]
+  Out=ModelSupport::getComposite(SMap,houseIndex,"1 -11 -2007");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  addCell("PortVoid",cellIndex-1);
 
+  Out=ModelSupport::getComposite(SMap,houseIndex,"12 -2 -2007");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  addCell("PortVoid",cellIndex-1);
+
+  FBStr=ModelSupport::getComposite(SMap,houseIndex," 1 -11 ");
+  EdgeStr=ModelSupport::getComposite(SMap,houseIndex+2000," 7 -17 ");
+  createRing(System,houseIndex+2000,Beam.getCentre(),FBStr,EdgeStr,
+             (portRadius+portOuter)/2.0,portNBolt,portBoltRad,
+             portBoltAngOff);
+
+  Out=ModelSupport::getComposite(SMap,houseIndex,"12 -2 -2017 2007");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  addCell("Port",cellIndex-1);
+
+  // If needed create the port material unit
+  if (CentreDist+portOuter>mainRadius)
+    {
+      Out=ModelSupport::getComposite(SMap,houseIndex,"11 -12 17 -2017");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+      addCell("Wall",cellIndex-1);
+    }
+
+    
+  // Motor [front/back]
+  Out=ModelSupport::getComposite(SMap,houseIndex,"1 -11 -1007");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  addCell("MotorVoid",cellIndex-1);
+
+  Out=ModelSupport::getComposite(SMap,houseIndex,"12 -2 -1007");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  addCell("MotorVoid",cellIndex-1);
+
+  // Divide surfaces
+  FBStr=ModelSupport::getComposite(SMap,houseIndex," 1 -11 ");
+  EdgeStr=ModelSupport::getComposite(SMap,houseIndex+1000," 7 -17 ");
+  createRing(System,houseIndex+1000,Main.getCentre(),FBStr,EdgeStr,
+             (motorRadius+motorOuter)/2.0,motorNBolt,motorBoltRad,
+             motorBoltAngOff);
 
   
+  FBStr=ModelSupport::getComposite(SMap,houseIndex," 12 -2 ");
+  createRing(System,houseIndex+1500,Main.getCentre(),FBStr,EdgeStr,
+             (motorRadius+motorOuter)/2.0,motorNBolt,motorBoltRad,
+             motorBoltAngOff);
+
+  // Main block
+  Out=ModelSupport::getComposite(SMap,houseIndex,
+                "1 -2 3 -4 5 -6 7 8 9 10 1017 2017 (-11:12:17)");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  addCell("Wall",cellIndex-1);
+
+  // Outer
+  Out=ModelSupport::getComposite(SMap,houseIndex,"1 -2 3 -4 5 -6 7 8 9 10");
+  addOuterSurf(Out);  
   
   return;
 }

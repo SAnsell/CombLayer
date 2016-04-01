@@ -3,7 +3,7 @@
  
  * File:   constructInc/ChopperUnit.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,9 +58,25 @@ class ChopperUnit :
   double mainRadius;        ///< main innner radius
   double mainThick;         ///< main inner thickness
 
-  double motorRadius;           ///< P
-  double portRadius;            ///< Port radius
+  double motorRadius;           ///< motor port radius
+  double motorOuter;           ///< Extrernal radius of motor port
+  double motorStep;             ///< motor flange step
   
+  double portRadius;            ///< Port radius
+  double portOuter;            ///< Port flange [outer radius
+  double portStep;              ///< Port step [unused]
+
+  size_t portNBolt;            ///< number of port bolts
+  double portBoltRad;          ///< Bolt radius
+  double portBoltAngOff;       ///< angle to start relative to 12:00
+
+  size_t motorNBolt;            ///< number of motor bolts  
+  double motorBoltRad;          ///< Bolt radius
+  double motorBoltAngOff;       ///< angle relative to 12:00
+
+
+  
+  int boltMat;                  ///< Bolt material
   int wallMat;                  ///< Wall material layer
   
   void populate(const FuncDataBase&);
@@ -69,6 +85,10 @@ class ChopperUnit :
   void createObjects(Simulation&);
   void createLinks();
 
+  void createRing(Simulation&,const int,const Geometry::Vec3D&,
+		  const std::string&,const std::string&,
+		  const double,const size_t,const double,const double);
+  
  public:
 
   ChopperUnit(const std::string&);

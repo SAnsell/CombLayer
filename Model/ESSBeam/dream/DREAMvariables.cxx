@@ -102,10 +102,24 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamChopperALength",9.0);  // drawing [5960.2]
   Control.addVariable("dreamChopperAShortWidth",50.5);
   Control.addVariable("dreamChopperAMainRadius",38.122); // estimate
-  Control.addVariable("dreamChopperAMainThick",3.55);  // estimate 
+  Control.addVariable("dreamChopperAMainThick",3.55);  // estimate
   
-  Control.addVariable("dreamChopperAWallMat","Stainless304");
-  Control.addVariable("dreamChopperAWallMat","Stainless304");
+  Control.addVariable("dreamChopperAMotorRadius",12.00); // [5691.2]
+  Control.addVariable("dreamChopperAMotorOuter",15.20); // [5691.2]
+  Control.addVariable("dreamChopperAMotorStep",0.0); // estimate
+  Control.addVariable("dreamChopperAMotorNBolt",24); 
+  Control.addVariable("dreamChopperAMotorBoltRadius",0.50); //M10 inc thread
+
+  Control.addVariable("dreamChopperAPortRadius",10.0); // [5691.2]
+  Control.addVariable("dreamChopperAPortOuter",12.65); // [5691.2]
+  Control.addVariable("dreamChopperAPortStep",0.0); // estimate
+  Control.addVariable("dreamChopperAPortNBolt",24); 
+  Control.addVariable("dreamChopperAPortBoltRadius",0.40); //M8 inc
+  Control.addVariable("dreamChopperAPortBoltAngOff",180.0/24.0); 
+ 
+  
+  Control.addVariable("dreamChopperABoltMat","Stainless304");
+  Control.addVariable("dreamChopperAWallMat","Aluminium");
   Control.addVariable("dreamChopperAVoidMat","Void");
 
 
