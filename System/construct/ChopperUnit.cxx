@@ -69,11 +69,12 @@
 #include "LinkUnit.h"  
 #include "FixedComp.h"
 #include "FixedGroup.h"
+#include "FixedOffset.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
-
+#include "RingSeal.h"
 #include "ChopperUnit.h"
 
 namespace constructSystem
@@ -83,14 +84,18 @@ ChopperUnit::ChopperUnit(const std::string& Key) :
   attachSystem::FixedOffsetGroup(Key,"Main",6,"Beam",2),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   houseIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(houseIndex+1)
+  cellIndex(houseIndex+1),
+  RS(new constructSystem::RingSeal(Key+"Ring"))
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
-{}
+{
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
 
-
+  OR.addObject(RS);
+}
 
 ChopperUnit::~ChopperUnit() 
   /*!
@@ -127,14 +132,17 @@ ChopperUnit::populate(const FuncDataBase& Control)
   motorNBolt=Control.EvalVar<size_t>(keyName+"MotorNBolt");
   motorBoltRad=Control.EvalVar<double>(keyName+"MotorBoltRadius");
   motorBoltAngOff=Control.EvalDefVar<double>(keyName+"MotorBoltAngOff",0.0);
-
+  motorSeal=Control.EvalDefVar<double>(keyName+"MotorSealThick",0.0);
+  motorSealMat=ModelSupport::EvalMat<int>(Control,keyName+"PortSealMat");
+  
   portRadius=Control.EvalVar<double>(keyName+"PortRadius");
   portOuter=Control.EvalVar<double>(keyName+"PortOuter");
   portStep=Control.EvalVar<double>(keyName+"PortStep");
   portBoltRad=Control.EvalVar<double>(keyName+"PortBoltRadius");
   portNBolt=Control.EvalVar<size_t>(keyName+"PortNBolt");
   portBoltAngOff=Control.EvalDefVar<double>(keyName+"PortBoltAngOff",0.0);
-
+  portSeal=Control.EvalDefVar<double>(keyName+"PortSealThick",0.0);
+  portSealMat=ModelSupport::EvalMat<int>(Control,keyName+"PortSealMat");
   
   boltMat=ModelSupport::EvalMat<int>(Control,keyName+"BoltMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -160,7 +168,9 @@ ChopperUnit::createUnitVector(const attachSystem::FixedComp& FC,
   Main.createUnitVector(FC,sideIndex);
   applyOffset();
   //  Main.applyShift(0.0,0,0,beamZStep);
+
   setDefault("Main");
+
   
   ELog::EM<<"Origin[M] == "<<Main.getCentre()<<ELog::endDiag;
   ELog::EM<<"Origin == "<<Beam.getCentre()<<ELog::endDiag;
@@ -226,20 +236,37 @@ ChopperUnit::createSurfaces()
   ModelSupport::buildCylinder(SMap,houseIndex+2007,Origin,Y,portRadius);
   ModelSupport::buildCylinder(SMap,houseIndex+2017,Origin,Y,portOuter);
 
+  if (portSeal>Geometry::zeroTol)
+    {
+      const double sealYDist((mainThick+length)/4.0);
+      
+      ModelSupport::buildCylinder(SMap,houseIndex+2008,
+                                  Origin,Y,portOuter-2.0*portSeal);
+      ModelSupport::buildCylinder(SMap,houseIndex+2018,
+                                  Origin,Y,portOuter-portSeal);
+      
+      ModelSupport::buildPlane(SMap,houseIndex+2001,
+                               Origin-Y*(sealYDist+portSeal/2.0),Y);
+      ModelSupport::buildPlane(SMap,houseIndex+2002,
+                               Origin-Y*(sealYDist-portSeal/2.0),Y);
+      ModelSupport::buildPlane(SMap,houseIndex+2011,
+                               Origin+Y*(sealYDist-portSeal/2.0),Y);
+      ModelSupport::buildPlane(SMap,houseIndex+2012,
+                               Origin+Y*(sealYDist+portSeal/2.0),Y);
+    }
+
   
   return;
 }
 
 void
-ChopperUnit::createRing(Simulation& System,
-                        const int surfOffset,
+ChopperUnit::createRing(Simulation& System,const int surfOffset,
                         const Geometry::Vec3D& Centre,
                         const std::string& FBStr,
                         const std::string& EdgeStr,
-                        const double BRad,
-                        const size_t NBolts,
-                        const double radius,
-                        const double angOff)
+                        const double BRad,const size_t NBolts,
+                        const double radius,const double angOff,
+			const std::string& sealUnit,const int sealMat)
   /*!
     Create the ring of bolts : 
     Only works if NBolts != 1.
@@ -254,11 +281,21 @@ ChopperUnit::createRing(Simulation& System,
     \param NBolts :: Number of bolts
     \param radius :: radius of bolt
     \param angOff :: angle offset
+    \param sealUnit :: string for the seal unit
+    \param sealMat :: material for the seal
   */
 {
   ELog::RegMethod RegA("ChopperUnit","createRing");
    // Construct surfaces:
 
+  const bool sealFlag(!sealUnit.empty());
+  std::string sealUnitComp;
+  if (sealFlag)
+    {
+      HeadRule SComp(sealUnit);
+      SComp.makeComplement();
+      sealUnitComp=SComp.display();
+    }  
   std::string Out;
   if (NBolts>1)
     {
@@ -302,10 +339,17 @@ ChopperUnit::createRing(Simulation& System,
                                          " 3  -3M 7M ");
           
           System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,
-                                           Out+FBStr+EdgeStr));
-          
-          addCell("Wall",cellIndex-1);
-          prevBoltIndex=boltIndex;
+                                           Out+FBStr+EdgeStr+sealUnitComp));
+	  addCell("Wall",cellIndex-1);
+	  if (sealFlag)
+	    {
+	      Out=ModelSupport::getComposite(SMap,prevBoltIndex,boltIndex,
+					     " 3 -3M ");
+	      System.addCell(MonteCarlo::Qhull(cellIndex++,sealMat,0.0,
+					       Out+sealUnit));
+	      addCell("Seal",cellIndex-1);
+	    }
+	  prevBoltIndex=boltIndex;
           boltIndex+=10;
        }
     }
@@ -330,7 +374,7 @@ ChopperUnit::createObjects(Simulation& System)
   const attachSystem::FixedComp& Beam=getKey("Beam");
   const double CentreDist=Main.getCentre().Distance(Beam.getCentre());
   
-  std::string Out,FBStr,EdgeStr;
+  std::string Out,FBStr,EdgeStr,SealStr;
 
     // Main void
   Out=ModelSupport::getComposite(SMap,houseIndex,"11 -12 -17");
@@ -346,17 +390,28 @@ ChopperUnit::createObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   addCell("PortVoid",cellIndex-1);
 
+  // Front ring seal
   FBStr=ModelSupport::getComposite(SMap,houseIndex," 1 -11 ");
   EdgeStr=ModelSupport::getComposite(SMap,houseIndex+2000," 7 -17 ");
+  SealStr=ModelSupport::getComposite(SMap,houseIndex+2000," 8 -18 1 -2 ");
   createRing(System,houseIndex+2000,Beam.getCentre(),FBStr,EdgeStr,
              (portRadius+portOuter)/2.0,portNBolt,portBoltRad,
-             portBoltAngOff);
+             portBoltAngOff,SealStr,portSealMat);
 
-  Out=ModelSupport::getComposite(SMap,houseIndex,"12 -2 -2017 2007");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
-  addCell("Port",cellIndex-1);
+  // back ring seal
+  FBStr=ModelSupport::getComposite(SMap,houseIndex," 12 -2 ");
+  SealStr=ModelSupport::getComposite(SMap,houseIndex+2000," 8 -18 11 -12 ");
+  createRing(System,houseIndex+2500,Beam.getCentre(),FBStr,EdgeStr,
+             (portRadius+portOuter)/2.0,portNBolt,portBoltRad,
+             portBoltAngOff,SealStr,portSealMat);
 
-  // If needed create the port material unit
+  // initially flush : not correct
+  EdgeStr=ModelSupport::getComposite(SMap,houseIndex+2000," -7 ");
+  createSquarePort(System,houseIndex+3500,Beam.getCentre(),FBStr,EdgeStr,
+                   portWidth,portHeight,portInnerMat,
+                   portNInnerBolt,portInnerBoltRad,portBoltMat);
+
+  // If needed create the port material unit in the port
   if (CentreDist+portOuter>mainRadius)
     {
       Out=ModelSupport::getComposite(SMap,houseIndex,"11 -12 17 -2017");
@@ -364,13 +419,13 @@ ChopperUnit::createObjects(Simulation& System)
       addCell("Wall",cellIndex-1);
     }
 
-    
+
   // Motor [front/back]
   Out=ModelSupport::getComposite(SMap,houseIndex,"1 -11 -1007");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   addCell("MotorVoid",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,houseIndex,"12 -2 -1007");
+  Out=ModelSupport::getComposite(SMap,houseIndex,"12 -2 -1007"); 
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   addCell("MotorVoid",cellIndex-1);
 
@@ -379,13 +434,13 @@ ChopperUnit::createObjects(Simulation& System)
   EdgeStr=ModelSupport::getComposite(SMap,houseIndex+1000," 7 -17 ");
   createRing(System,houseIndex+1000,Main.getCentre(),FBStr,EdgeStr,
              (motorRadius+motorOuter)/2.0,motorNBolt,motorBoltRad,
-             motorBoltAngOff);
-
+             motorBoltAngOff,"",0);
+  
   
   FBStr=ModelSupport::getComposite(SMap,houseIndex," 12 -2 ");
   createRing(System,houseIndex+1500,Main.getCentre(),FBStr,EdgeStr,
              (motorRadius+motorOuter)/2.0,motorNBolt,motorBoltRad,
-             motorBoltAngOff);
+             motorBoltAngOff,"",0);
 
   // Main block
   Out=ModelSupport::getComposite(SMap,houseIndex,
@@ -425,7 +480,15 @@ ChopperUnit::createLinks()
   mainFC.setLinkSurf(3,SMap.realSurf(houseIndex+4));
   mainFC.setLinkSurf(4,-SMap.realSurf(houseIndex+5));
   mainFC.setLinkSurf(5,SMap.realSurf(houseIndex+6));
-  
+
+  const Geometry::Vec3D BC(beamFC.getCentre());
+  const Geometry::Vec3D BY(beamFC.getY());
+  beamFC.setConnect(0,BC-BY*(length/2.0),-BY);
+  beamFC.setConnect(1,BC+BY*(length/2.0),BY);
+
+  beamFC.setLinkSurf(0,-SMap.realSurf(houseIndex+1));
+  beamFC.setLinkSurf(1,SMap.realSurf(houseIndex+2));
+
   return;
 }
 
@@ -449,7 +512,7 @@ ChopperUnit::createAll(Simulation& System,
   
   createLinks();
   insertObjects(System);   
-
+  RS->createAll(System,FixedGroup::getKey("Main"),0);
   return;
 }
   

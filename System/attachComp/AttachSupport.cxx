@@ -538,7 +538,6 @@ addToInsertSurfCtrl(Simulation& System,
 
   const std::vector<Geometry::Surface*> SVec=CC.getSurfaces();
 
-
   for(int i=cellA+1;i<=cellB;i++)
     {
       MonteCarlo::Qhull* CRPtr=System.findQhull(i);

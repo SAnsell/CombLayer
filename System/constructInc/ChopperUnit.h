@@ -26,6 +26,7 @@ class Simulation;
 
 namespace constructSystem
 {
+  class RingSeal;
   
 /*!
   \class ChopperUnit
@@ -62,22 +63,26 @@ class ChopperUnit :
   double motorOuter;           ///< Extrernal radius of motor port
   double motorStep;             ///< motor flange step
   
-  double portRadius;            ///< Port radius
+  double portRadius;           ///< Port radius
   double portOuter;            ///< Port flange [outer radius
-  double portStep;              ///< Port step [unused]
+  double portStep;             ///< Port step [unused]
 
-  size_t portNBolt;            ///< number of port bolts
+  size_t portNBolt;            ///< Number of port bolts
   double portBoltRad;          ///< Bolt radius
-  double portBoltAngOff;       ///< angle to start relative to 12:00
-
+  double portBoltAngOff;       ///< Angle to start relative to 12:00
+  double portSeal;             ///< Port seal
+  int portSealMat;             ///< Port Seal material
+    
   size_t motorNBolt;            ///< number of motor bolts  
   double motorBoltRad;          ///< Bolt radius
   double motorBoltAngOff;       ///< angle relative to 12:00
-
-
+  double motorSeal;             ///< Motor seal
+  int motorSealMat;             ///< Motor Seal material
   
   int boltMat;                  ///< Bolt material
   int wallMat;                  ///< Wall material layer
+
+  std::shared_ptr<RingSeal> RS; ///< ringseal for main system
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
@@ -87,7 +92,9 @@ class ChopperUnit :
 
   void createRing(Simulation&,const int,const Geometry::Vec3D&,
 		  const std::string&,const std::string&,
-		  const double,const size_t,const double,const double);
+		  const double,const size_t,const double,
+		  const double,
+		  const std::string&,const int);
   
  public:
 
