@@ -27,6 +27,7 @@ class Simulation;
 namespace constructSystem
 {
   class RingSeal;
+  class InnerPort;
   
 /*!
   \class ChopperUnit
@@ -83,6 +84,7 @@ class ChopperUnit :
   int wallMat;                  ///< Wall material layer
 
   std::shared_ptr<RingSeal> RS; ///< ringseal for main system
+  std::shared_ptr<InnerPort> IP; ///< inner port
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);

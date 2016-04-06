@@ -75,6 +75,7 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "RingSeal.h"
+#include "InnerPort.h"
 #include "ChopperUnit.h"
 
 namespace constructSystem
@@ -85,7 +86,8 @@ ChopperUnit::ChopperUnit(const std::string& Key) :
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   houseIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(houseIndex+1),
-  RS(new constructSystem::RingSeal(Key+"Ring"))
+  RS(new constructSystem::RingSeal(Key+"Ring")),
+  IP(new constructSystem::InnerPort(Key+"IPort"))
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -95,6 +97,7 @@ ChopperUnit::ChopperUnit(const std::string& Key) :
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(RS);
+  OR.addObject(IP);
 }
 
 ChopperUnit::~ChopperUnit() 
@@ -405,12 +408,6 @@ ChopperUnit::createObjects(Simulation& System)
              (portRadius+portOuter)/2.0,portNBolt,portBoltRad,
              portBoltAngOff,SealStr,portSealMat);
 
-  // initially flush : not correct
-  EdgeStr=ModelSupport::getComposite(SMap,houseIndex+2000," -7 ");
-  createSquarePort(System,houseIndex+3500,Beam.getCentre(),FBStr,EdgeStr,
-                   portWidth,portHeight,portInnerMat,
-                   portNInnerBolt,portInnerBoltRad,portBoltMat);
-
   // If needed create the port material unit in the port
   if (CentreDist+portOuter>mainRadius)
     {
@@ -418,7 +415,6 @@ ChopperUnit::createObjects(Simulation& System)
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
       addCell("Wall",cellIndex-1);
     }
-
 
   // Motor [front/back]
   Out=ModelSupport::getComposite(SMap,houseIndex,"1 -11 -1007");
@@ -448,6 +444,12 @@ ChopperUnit::createObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
   addCell("Wall",cellIndex-1);
 
+  // Add inner system
+
+  Out=ModelSupport::getComposite(SMap,houseIndex,"1 -11 -2007");
+  IP->addInnerCell(getCell("PortVoid",0));
+  IP->createAll(System,FixedGroup::getKey("Beam"),0,Out);
+  
   // Outer
   Out=ModelSupport::getComposite(SMap,houseIndex,"1 -2 3 -4 5 -6 7 8 9 10");
   addOuterSurf(Out);  
@@ -513,6 +515,7 @@ ChopperUnit::createAll(Simulation& System,
   createLinks();
   insertObjects(System);   
   RS->createAll(System,FixedGroup::getKey("Main"),0);
+
   return;
 }
   

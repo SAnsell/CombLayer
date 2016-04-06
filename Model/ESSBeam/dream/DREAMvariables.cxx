@@ -124,9 +124,25 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamChopperARingNSection",12);
   Control.addVariable("dreamChopperARingNTrack",12);
   Control.addVariable("dreamChopperARingThick",0.4);
-  Control.addVariable("dreamChopperARingRadius",40.0);
-  
+  Control.addVariable("dreamChopperARingRadius",40.0);  
   Control.addVariable("dreamChopperARingMat","Lead"); 
+
+  // strange /4 because it is average of 1/2 lengths
+  Control.addParse<double>("dreamChopperAIPortYStep",
+        "-(dreamChopperALength+dreamChopperAMainThick)/4.0");
+  
+  Control.addVariable("dreamChopperAIPortWidth",8.0);  
+  Control.addVariable("dreamChopperAIPortHeight",8.0);
+  Control.addVariable("dreamChopperAIPortLength",1.0);
+  Control.addVariable("dreamChopperAIPortLength",1.0);  
+  Control.addVariable("dreamChopperAIPortMat","Aluminium");
+  Control.addVariable("dreamChopperAIPortSealStep",0.5);
+  Control.addVariable("dreamChopperAIPortSealThick",0.3); 
+  Control.addVariable("dreamChopperAIPortSealMat","Lead");
+
+  Control.addVariable("dreamChopperAIPortNBolt",1);
+  Control.addVariable("dreamChopperAIPortBoltStep",1.0);
+  Control.addVariable("dreamChopperAIPortBoltRadius",0.3);
   
   Control.addVariable("dreamChopperABoltMat","Stainless304");
   Control.addVariable("dreamChopperAWallMat","Aluminium");

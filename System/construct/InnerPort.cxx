@@ -117,8 +117,8 @@ InnerPort::populate(const FuncDataBase& Control)
   boltRadius=Control.EvalDefVar<double>(keyName+"BoltRadius",0.0);
   boltMat=ModelSupport::EvalDefMat<int>(Control,keyName+"BoltMat",0);
   
-  sealStep=Control.EvalDefVar<double>(keyName+"Step",0.0);
-  sealThick=Control.EvalDefVar<double>(keyName+"Thick",0.0);
+  sealStep=Control.EvalDefVar<double>(keyName+"SealStep",0.0);
+  sealThick=Control.EvalDefVar<double>(keyName+"SealThick",0.0);
   sealMat=ModelSupport::EvalDefMat<int>(Control,keyName+"SealMat",0);
     
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
@@ -158,37 +158,42 @@ InnerPort::createSurfaces()
   ModelSupport::buildPlane(SMap,portIndex+4,Origin+X*(width/2.0),X);
   ModelSupport::buildPlane(SMap,portIndex+5,Origin-Z*(height/2.0),Z);
   ModelSupport::buildPlane(SMap,portIndex+6,Origin+Z*(height/2.0),Z);
-    
+
+  const double outerBolt(boltStep+boltRadius+10.0*Geometry::zeroTol);
+  
+  // Seal constructed about origin:
+  double SD(0.0);
   if (sealStep>Geometry::zeroTol)
     {
-      ModelSupport::buildPlane(SMap,portIndex+11,
-                               Origin-Y*(sealStep+length/2.0),Y);
-      ModelSupport::buildPlane(SMap,portIndex+12,Origin+Y*(sealStep+length/2.0),Y);
-      ModelSupport::buildPlane(SMap,portIndex+13,Origin-X*(sealStep+width/2.0),X);
-      ModelSupport::buildPlane(SMap,portIndex+14,Origin+X*(sealStep+width/2.0),X);
-      ModelSupport::buildPlane(SMap,portIndex+15,Origin-Z*(sealStep+height/2.0),Z);
-      ModelSupport::buildPlane(SMap,portIndex+16,Origin+Z*(sealStep+height/2.0),Z);
-  
-      const double angleR=360.0/static_cast<double>(NSection);
-      const Geometry::Quaternion QHalfSeg=
-        Geometry::Quaternion::calcQRotDeg(angleR/2.0,Y);
-      const Geometry::Quaternion QSeg=
-        Geometry::Quaternion::calcQRotDeg(angleR,Y);
-      Geometry::Vec3D DPAxis(X);
-      QHalfSeg.rotate(DPAxis);
-      int DI(portIndex);
-      for(size_t i=0;i<NSection;i++)
-        {
-          ModelSupport::buildPlane(SMap,DI+3,Origin,DPAxis);
-          QSeg.rotate(DPAxis);
-          DI+=10;
-        }
+      SD+=sealStep;
+      ModelSupport::buildPlane(SMap,portIndex+13,Origin-X*(SD+width/2.0),X);
+      ModelSupport::buildPlane(SMap,portIndex+14,Origin+X*(SD+width/2.0),X);
+      ModelSupport::buildPlane(SMap,portIndex+15,Origin-Z*(SD+height/2.0),Z);
+      ModelSupport::buildPlane(SMap,portIndex+16,Origin+Z*(SD+height/2.0),Z);
+
+      SD+=sealThick/2.0;
+      ModelSupport::buildPlane(SMap,portIndex+21,Origin-Y*sealThick/2.0,Y);
+      ModelSupport::buildPlane(SMap,portIndex+22,Origin+Y*sealThick/2.0,Y);
+      ModelSupport::buildPlane(SMap,portIndex+23,Origin-X*(SD+width/2.0),X);
+      ModelSupport::buildPlane(SMap,portIndex+24,Origin+X*(SD+width/2.0),X);
+      ModelSupport::buildPlane(SMap,portIndex+25,Origin-Z*(SD+height/2.0),Z);
+      ModelSupport::buildPlane(SMap,portIndex+26,Origin+Z*(SD+height/2.0),Z);
+    }
+  // This can be active with/without a seal
+  if (nBolt)
+    {
+      SD+=outerBolt;
+      ModelSupport::buildPlane(SMap,portIndex+33,Origin-X*(SD+width/2.0),X);
+      ModelSupport::buildPlane(SMap,portIndex+34,Origin+X*(SD+width/2.0),X);
+      ModelSupport::buildPlane(SMap,portIndex+35,Origin-Z*(SD+height/2.0),Z);
+      ModelSupport::buildPlane(SMap,portIndex+36,Origin+Z*(SD+height/2.0),Z);
     }
   return;
 }
   
 void
-InnerPort::createObjects(Simulation& System)
+InnerPort::createObjects(Simulation& System,
+			 const std::string& boundary)
   /*!
     Adds the vacuum box
     \param System :: Simulation to create objects in
@@ -197,35 +202,188 @@ InnerPort::createObjects(Simulation& System)
   ELog::RegMethod RegA("InnerPort","createObjects");
 
   
-  std::string Out,SealStr;
+  std::string Out;
 
-  SealStr=ModelSupport::getComposite(SMap,portIndex," 1 -2 7 -17");
-  if (NSection>1)
-    {
-      // start from segment:1 and do seg:0 at end 
-      int prevRingIndex(portIndex);
-      for(size_t i=1;i<NSection-1;i++)
-        {
-          Out=ModelSupport::getComposite(SMap,prevRingIndex," 3 -13 ");
-          System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out+SealStr));
-          addCell("Ring",cellIndex-1);
-          prevRingIndex+=10;
-        }
+  Out=ModelSupport::getComposite(SMap,portIndex,"1 -2 3 -4 5 -6");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  addCell("Void",cellIndex-1);
 
-      Out=ModelSupport::getComposite(SMap,prevRingIndex,portIndex,
-                                     " 3 -3M ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out+SealStr));
-      addCell("Ring",cellIndex-1);
-    }
-  else  // one ring
+  if (sealStep>Geometry::zeroTol)
     {
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,SealStr));
-      addCell("Ring",cellIndex-1);
+
+      // Seal [4 segments]:
+      Out=ModelSupport::getComposite(SMap,portIndex,"21 -22 23 -13 25 -26");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,sealMat,0.0,Out));
+      addCell("Seal",cellIndex-1);
+      
+      Out=ModelSupport::getComposite(SMap,portIndex,"21 -22 14 -24 25 -26");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,sealMat,0.0,Out));
+      addCell("Seal",cellIndex-1);
+      
+      Out=ModelSupport::getComposite(SMap,portIndex,"21 -22 13 -14 -15 25");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,sealMat,0.0,Out));
+      addCell("Seal",cellIndex-1);
+      
+      Out=ModelSupport::getComposite(SMap,portIndex,"21 -22 13 -14 16 -26");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,sealMat,0.0,Out));
+      addCell("Seal",cellIndex-1);
+
+      // surrounding seal [front/back]
+      Out=ModelSupport::getComposite(SMap,portIndex,
+                                     "1 -21 23 -24 25 -26 (-13:14:-15:16) ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+      addCell("Main",cellIndex-1);
+
+      Out=ModelSupport::getComposite(SMap,portIndex,
+                                     "22 -2 23 -24 25 -26 (-13:14:-15:16) ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+      addCell("Main",cellIndex-1);
+
+      // Inner seal Mat:
+      
+      Out=ModelSupport::getComposite(SMap,portIndex,
+                                     "1 -2 13 -14 15 -16 (-3:4:-5:6)");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+      addCell("Main",cellIndex-1);
+      
+       // Metal surrounding seal
+      const int boltIndex((nBolt) ? portIndex+30 : portIndex+20);
+      Out=ModelSupport::getComposite(SMap,portIndex,boltIndex,
+                                     " 1 -2 (-3M:4M:-5M:6M) " );
+      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out+boundary));
+      addCell("Outer",cellIndex-1);
     }
-  addOuterSurf(SealStr);    
+  else // No seal
+    {
+      const int boltIndex((nBolt) ? portIndex+30 : portIndex);
+      Out=ModelSupport::getComposite(SMap,portIndex,boltIndex,
+                                     " 1 -2 (-3M:4M:-5M:6M) " );
+      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out+boundary));
+      addCell("Outer",cellIndex-1);
+    }
+
+  // Main container:
+  Out=ModelSupport::getComposite(SMap,portIndex," 1 -2 ");
+  addOuterSurf(Out);    
+    
   return;
 }
 
+
+void
+InnerPort::createBolts(Simulation& System)
+  /*!
+    Create the bolts and the divided pattern in the cells
+    \param System :: Simulation component
+   */
+{
+  ELog::RegMethod RegA("InnerPort","createBolts");
+  if (!nBolt) return;
+  
+  std::string Out;
+
+  const double SD((sealStep>Geometry::zeroTol) ? 
+    sealStep+sealThick : 0.0);
+
+  const double VOffset(height/2.0+SD);
+  const double HOffset(width/2.0+SD);
+  const Geometry::Vec3D XStep(X*(width/static_cast<double>(nBolt+1)));
+  const Geometry::Vec3D ZStep(Z*(height/static_cast<double>(nBolt+1)));
+
+  int boltIndex(portIndex+500);
+
+  for(size_t xIndex=0;xIndex<1;xIndex++)
+    for(size_t zIndex=0;zIndex<1;zIndex++)
+      {
+        const double xSign((xIndex) ? -1.0 : 1.0);
+        const double zSign((zIndex) ? -1.0 : 1.0);
+        Geometry::Vec3D boltC
+          (Origin+X*(xSign*HOffset)+Z*(zSign*VOffset));
+
+        const Geometry::Vec3D& ActiveStep
+          ((zIndex)  ? XStep*xSign : ZStep*zSign);
+        // skip a point for divider
+        int BI(boltIndex);
+        for(size_t i=1;i<nBolt;i++)
+          {
+            boltC+=ActiveStep;
+            ModelSupport::buildCylinder(SMap,BI+7,boltC,Y,boltRadius);
+            ModelSupport::buildPlane
+              (SMap,BI+3,boltC+ActiveStep/2.0,ActiveStep);
+            BI+=10;
+          }
+        boltC+=XStep;
+        ModelSupport::buildCylinder(SMap,BI+7,boltC,Y,boltRadius);
+
+        boltIndex+=500;
+      }
+
+  std::list<int> nearPlane({35,33,36,34});
+  std::list<int> farPlane({36,34,35,33});
+  // CREATE Objects:
+  boltIndex=portIndex+500;
+  for(size_t xIndex=0;xIndex<1;xIndex++)
+    for(size_t zIndex=0;zIndex<1;zIndex++)
+      {
+        const int signV((xIndex) ? 1 : -1);
+        
+        int BI(boltIndex);
+        // Note the -3 so that 3N etc works
+        int layerI(signV*(nearPlane.front()+portIndex-3));
+        for(size_t i=1;i<nBolt;i++)
+          {
+            Out=ModelSupport::getComposite(SMap,portIndex,BI,"1 -2 -7M");
+            System.addCell(MonteCarlo::Qhull(cellIndex++,boltMat,0.0,Out));
+            addCell("Bolt",cellIndex-1);
+            Out=ModelSupport::getComposite(SMap,portIndex,BI,layerI,
+                                           " 1 -2 7M  3N -3M ");
+            System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+            addCell("Main",cellIndex-1);
+
+            layerI=signV*BI;
+            BI+=10;
+          }
+        
+        Out=ModelSupport::getComposite(SMap,portIndex,BI,"1 -2 -7M");
+        System.addCell(MonteCarlo::Qhull(cellIndex++,boltMat,0.0,Out));
+        addCell("Bolt",cellIndex-1);
+
+        ELog::EM<<"Added bolt"<<ELog::endDiag;
+        // Note the -3 so that 3N etc works
+        const int farI(signV*(farPlane.front()+portIndex-3));
+        ELog::EM<<"Added bolt FAR:"<<farI<<ELog::endDiag;
+        //        Out=ModelSupport::getComposite(SMap,portIndex,BI,"1 -2 7M");
+        //        Out+=ModelSupport::getComposite(SMap,layerI,farI," 3 -3M ");
+        Out=ModelSupport::getComposite(SMap,layerI,farI," 3 ");
+        ELog::EM<<"Added bolt OUT == "<<Out<<ELog::endDiag;
+        System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+        addCell("Main",cellIndex-1);
+
+        nearPlane.pop_front();
+        farPlane.pop_front();
+
+        boltIndex+=500;
+      }
+  
+
+  
+  return;
+}
+
+  
+void
+InnerPort::addInnerCell(const int CN)
+  /*!
+    Add inner cell
+    \param CN :: Cell Number
+  */
+{
+  ELog::RegMethod RegA("InnerPort","addInnerCell");
+
+  activeCells.insert(CN);
+  return;
+}
+  
 void
 InnerPort::generateInsert(Simulation& System)
   /*!
@@ -234,7 +392,8 @@ InnerPort::generateInsert(Simulation& System)
   */
 {
   ELog::RegMethod RegA("InnerPort","generateInsert");
-  
+
+  /*
   const size_t maxN(std::max<size_t>(NTrack,12));
   const double angleR=360.0/static_cast<double>(maxN);
   const Geometry::Quaternion QSeg=
@@ -252,8 +411,8 @@ InnerPort::generateInsert(Simulation& System)
       cellActive.insert(OPtr->getName());
       QSeg.rotate(BAxis);
     }
-  
-  for(const int CN : cellActive)
+  */
+  for(const int CN : activeCells)
     addInsertCell(CN);
 
   return;
@@ -270,19 +429,19 @@ InnerPort::createLinks()
 {
   ELog::RegMethod RegA("InnerPort","createLinks");
 
-  setConnect(0,Origin-Y*(thick/2.0),-Y);
-  setConnect(1,Origin+Y*(thick/2.0),Y);
-  setConnect(2,Origin-X*(radius+deltaRad/2.0),-X);
-  setConnect(3,Origin+X*(radius+deltaRad/2.0),X);
-  setConnect(4,Origin-Z*(radius+deltaRad/2.0),-Z);
-  setConnect(5,Origin+Z*(radius+deltaRad/2.0),Z);
+  setConnect(0,Origin-Y*(length/2.0),-Y);
+  setConnect(1,Origin+Y*(length/2.0),Y);
+  setConnect(2,Origin-X*(width/2.0),-X);
+  setConnect(3,Origin+X*(width/2.0),X);
+  setConnect(4,Origin-Z*(height/2.0),-Z);
+  setConnect(5,Origin+Z*(height/2.0),Z);
 
   setLinkSurf(0,-SMap.realSurf(portIndex+1));
   setLinkSurf(1,SMap.realSurf(portIndex+2));
-  setLinkSurf(2,SMap.realSurf(portIndex+17));
-  setLinkSurf(3,SMap.realSurf(portIndex+17));
-  setLinkSurf(4,SMap.realSurf(portIndex+17));
-  setLinkSurf(5,SMap.realSurf(portIndex+17));
+  setLinkSurf(2,-SMap.realSurf(portIndex+3));
+  setLinkSurf(3,SMap.realSurf(portIndex+3));
+  setLinkSurf(4,-SMap.realSurf(portIndex+5));
+  setLinkSurf(5,SMap.realSurf(portIndex+6));
   
   return;
 }
@@ -307,8 +466,8 @@ InnerPort::createAll(Simulation& System,
   createUnitVector(beamFC,FIndex);
   generateInsert(System);       // Done here so that cells not invalid
   createSurfaces();    
-  createObjects(System);
-  
+  createObjects(System,boundary);
+  createBolts(System);
   createLinks();
   insertObjects(System);   
 

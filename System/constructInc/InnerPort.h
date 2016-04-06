@@ -48,9 +48,9 @@ class InnerPort :
   const int portIndex;         ///< Index of surface offset
   int cellIndex;                ///< Cell index  
 
-  double width;        ///< main innner radius
-  double height;       ///< main innner radius
-  double length;       ///< main innner radius
+  double width;        ///< width of void
+  double height;       ///< height of void
+  double length;       ///< thickness of void
 
   size_t nBolt;        ///< Number of bolts
   double boltStep;     ///< Step from inner surf
@@ -68,9 +68,10 @@ class InnerPort :
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
-  void createObjects(Simulation&);
+  void createObjects(Simulation&,const std::string&);
   void createLinks();
   void generateInsert(Simulation&);
+  void createBolts(Simulation&);
   
  public:
 
@@ -81,7 +82,7 @@ class InnerPort :
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int,const std::string&);
-  void addCell(const int);
+  void addInnerCell(const int);
 
 };
 
