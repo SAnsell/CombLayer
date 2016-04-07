@@ -280,7 +280,7 @@ InnerPort::createBolts(Simulation& System)
   ELog::RegMethod RegA("InnerPort","createBolts");
   if (!nBolt) return;
   
-  std::string Out;
+  std::string Out,OutComp,OutSide;
 
   const double SD((sealStep>Geometry::zeroTol) ? 
     sealStep+sealThick : 0.0);
@@ -291,33 +291,61 @@ InnerPort::createBolts(Simulation& System)
   const Geometry::Vec3D ZStep(Z*(height/static_cast<double>(nBolt+1)));
 
   int boltIndex(portIndex+500);
+  // only two sides of planes [vertical / horrizontal ]
+  Geometry::Vec3D cutH=Origin-X*HOffset-Z*VOffset;
+  Geometry::Vec3D cutV(cutH);
+  int BI(boltIndex);
+  for(size_t i=1;i<nBolt;i++)
+    {
+      cutH+=XStep;
+      cutV+=ZStep;
+      ModelSupport::buildPlane(SMap,BI+3,cutH,X);
+      ModelSupport::buildPlane(SMap,BI+5,cutV,Z);
+      cutH+=XStep;
+      cutV+=ZStep;
+      BI+=10;
+    }
+  Geometry::Vec3D boltC(Origin-X*HOffset-Z*VOffset);
+  boltIndex=portIndex+1000;
+  for(size_t sideI=0;sideI<4;sideI++)
+    {
+      const double xSign((sideI<2) ? -1.0 : 1.0);
+      const double zSign((sideI % 3) ? -1.0 : 1.0);
+      const double dirSign((sideI % 2) ? -1.0 : 1.0);
+      
+      Geometry::Vec3D boltC(Origin+X*(xSign*HOffset)+Z*(zSign*VOffset));
+      const Geometry::Vec3D& ActiveStep
+        ((sideI % 2)  ? ZStep*dirSign : XStep*dirSign);
+      
+      BI=boltIndex;
+      boltC+= ActiveStep/2.0;
+      for(size_t i=0;i<nBolt;i++)
+        {
+          ModelSupport::buildCylinder(SMap,BI+7,boltC,Y,boltRadius);
+          boltC+=ActiveStep;
+          BI+=10;
+        }
+      boltIndex+=1000;
+    }
+  // Now creat objects:
+  // simple a - b :
+  BI=portIndex+1000;
+  Out=ModelSupport::getComposite(SMap,portIndex,BI,"1 -2 -7M");
+  OutComp=ModelSupport::getComposite(SMap,portIndex,BI," 1 -2 7M ");
+  OutSide=ModelSupport::getComposite(SMap,portIndex," -23 33 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,boltMat,0.0,Out));
+  addCell("Bolt",cellIndex-1);
 
-  for(size_t xIndex=0;xIndex<1;xIndex++)
-    for(size_t zIndex=0;zIndex<1;zIndex++)
-      {
-        const double xSign((xIndex) ? -1.0 : 1.0);
-        const double zSign((zIndex) ? -1.0 : 1.0);
-        Geometry::Vec3D boltC
-          (Origin+X*(xSign*HOffset)+Z*(zSign*VOffset));
+  int leftIndex(portIndex+35-1);
+  int rightIndex(portIndex+36-1);
+  Out=ModelSupport::getComposite(SMap,leftIndex,rightIndex," 1 -1M ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out+OutComp+OutSide));
+  addCell("Main",cellIndex-1);
 
-        const Geometry::Vec3D& ActiveStep
-          ((zIndex)  ? XStep*xSign : ZStep*zSign);
-        // skip a point for divider
-        int BI(boltIndex);
-        for(size_t i=1;i<nBolt;i++)
-          {
-            boltC+=ActiveStep;
-            ModelSupport::buildCylinder(SMap,BI+7,boltC,Y,boltRadius);
-            ModelSupport::buildPlane
-              (SMap,BI+3,boltC+ActiveStep/2.0,ActiveStep);
-            BI+=10;
-          }
-        boltC+=XStep;
-        ModelSupport::buildCylinder(SMap,BI+7,boltC,Y,boltRadius);
+  
+  return;
 
-        boltIndex+=500;
-      }
-
+  
   std::list<int> nearPlane({35,33,36,34});
   std::list<int> farPlane({36,34,35,33});
   // CREATE Objects:
@@ -352,9 +380,8 @@ InnerPort::createBolts(Simulation& System)
         // Note the -3 so that 3N etc works
         const int farI(signV*(farPlane.front()+portIndex-3));
         ELog::EM<<"Added bolt FAR:"<<farI<<ELog::endDiag;
-        //        Out=ModelSupport::getComposite(SMap,portIndex,BI,"1 -2 7M");
-        //        Out+=ModelSupport::getComposite(SMap,layerI,farI," 3 -3M ");
-        Out=ModelSupport::getComposite(SMap,layerI,farI," 3 ");
+        Out=ModelSupport::getComposite(SMap,portIndex,BI,"1 -2 7M");
+        Out+=ModelSupport::getComposite(SMap,layerI,farI," 3 -3M ");
         ELog::EM<<"Added bolt OUT == "<<Out<<ELog::endDiag;
         System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
         addCell("Main",cellIndex-1);
