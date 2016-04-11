@@ -140,10 +140,11 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamChopperAIPortSealThick",0.3); 
   Control.addVariable("dreamChopperAIPortSealMat","Lead");
 
-  Control.addVariable("dreamChopperAIPortNBolt",1);
+  Control.addVariable("dreamChopperAIPortNBolt",8);
   Control.addVariable("dreamChopperAIPortBoltStep",1.0);
   Control.addVariable("dreamChopperAIPortBoltRadius",0.3);
-  
+  Control.addVariable("dreamChopperAIPortBoltMat","Stainless304");
+    
   Control.addVariable("dreamChopperABoltMat","Stainless304");
   Control.addVariable("dreamChopperAWallMat","Aluminium");
   Control.addVariable("dreamChopperAVoidMat","Void");

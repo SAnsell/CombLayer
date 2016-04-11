@@ -282,13 +282,19 @@ InnerPort::createBolts(Simulation& System)
   
   std::string Out,OutComp,OutSide;
 
-  const double SD((sealStep>Geometry::zeroTol) ? 
-    sealStep+sealThick : 0.0);
-
+  const double NBDbl((nBolt>1) ? static_cast<double>(nBolt) : 1.0);
+  // surf +2x
+  const double SD((sealStep>Geometry::zeroTol) ?  
+    sealStep+sealThick/2.0 : 0.0);
+  // surf +3x
+  const double outerBolt(boltStep+boltRadius+10.0*Geometry::zeroTol);
+  
   const double VOffset(height/2.0+SD);
   const double HOffset(width/2.0+SD);
-  const Geometry::Vec3D XStep(X*(width/static_cast<double>(nBolt+1)));
-  const Geometry::Vec3D ZStep(Z*(height/static_cast<double>(nBolt+1)));
+  const double VMid(height/2.0+SD+outerBolt/2.0);
+  const double HMid(width/2.0+SD+outerBolt/2.0);
+  const Geometry::Vec3D XStep(X*((2*SD+width)/NBDbl));
+  const Geometry::Vec3D ZStep(Z*((2*SD+height)/NBDbl));
 
   int boltIndex(portIndex+500);
   // only two sides of planes [vertical / horrizontal ]
@@ -301,22 +307,21 @@ InnerPort::createBolts(Simulation& System)
       cutV+=ZStep;
       ModelSupport::buildPlane(SMap,BI+3,cutH,X);
       ModelSupport::buildPlane(SMap,BI+5,cutV,Z);
-      cutH+=XStep;
-      cutV+=ZStep;
       BI+=10;
     }
-  Geometry::Vec3D boltC(Origin-X*HOffset-Z*VOffset);
+  Geometry::Vec3D boltC;
   boltIndex=portIndex+1000;
   for(size_t sideI=0;sideI<4;sideI++)
     {
       const double xSign((sideI<2) ? -1.0 : 1.0);
-      const double zSign((sideI % 3) ? -1.0 : 1.0);
-      const double dirSign((sideI % 2) ? -1.0 : 1.0);
+      const double zSign((sideI % 3) ? 1.0 : -1.0);
+
+      boltC= (sideI % 2) ?
+        Origin+X*(xSign*HOffset)+Z*(zSign*VMid) :
+        Origin+X*(xSign*HMid)+Z*(zSign*VOffset);
       
-      Geometry::Vec3D boltC(Origin+X*(xSign*HOffset)+Z*(zSign*VOffset));
       const Geometry::Vec3D& ActiveStep
-        ((sideI % 2)  ? ZStep*dirSign : XStep*dirSign);
-      
+        ((sideI % 2)  ? -XStep*xSign : -ZStep*xSign);
       BI=boltIndex;
       boltC+= ActiveStep/2.0;
       for(size_t i=0;i<nBolt;i++)
@@ -329,71 +334,49 @@ InnerPort::createBolts(Simulation& System)
     }
   // Now creat objects:
   // simple a - b :
+
+  const std::vector<std::string> surfSide
+    ({"-23 33" , " 26 -36 "," 24 -34 ", " -25 35 "});
+  const std::vector<int> leftSide({35,23,36,24});
+  const std::vector<int> rightSide({36,24,35,23});
+  const std::vector<int> planeSide({4,2,4,2});
+
   BI=portIndex+1000;
-  Out=ModelSupport::getComposite(SMap,portIndex,BI,"1 -2 -7M");
-  OutComp=ModelSupport::getComposite(SMap,portIndex,BI," 1 -2 7M ");
-  OutSide=ModelSupport::getComposite(SMap,portIndex," -23 33 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,boltMat,0.0,Out));
-  addCell("Bolt",cellIndex-1);
+  for(size_t sideI=0;sideI<4;sideI++)
+    {
+      OutSide=ModelSupport::getComposite(SMap,portIndex,surfSide[sideI]);
 
-  int leftIndex(portIndex+35-1);
-  int rightIndex(portIndex+36-1);
-  Out=ModelSupport::getComposite(SMap,leftIndex,rightIndex," 1 -1M ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out+OutComp+OutSide));
-  addCell("Main",cellIndex-1);
+      int leftIndex(portIndex+leftSide[sideI]-1);
+      int rightIndex;
+      int PI((sideI>1) ?
+             portIndex+500+((static_cast<int>(nBolt)-2)*10) :
+             portIndex+500);   // plane index
+      if (sideI>1) leftIndex*=-1;
+      
+      BI=portIndex+1000*(static_cast<int>(sideI)+1);
+      for(size_t i=0;i<nBolt;i++)
+        {
+          Out=ModelSupport::getComposite(SMap,portIndex,BI,"1 -2 -7M");
+          System.addCell(MonteCarlo::Qhull(cellIndex++,boltMat,0.0,Out));
+          addCell("Bolt",cellIndex-1);
+          
+          rightIndex=(i!=nBolt-1) ?
+            (PI+planeSide[sideI]) :
+            portIndex+rightSide[sideI]-1;
+          if (sideI>1) rightIndex*=-1;
 
-  
-  return;
+          Out=ModelSupport::getComposite(SMap,leftIndex,rightIndex," 1 -1M ");
+          leftIndex=rightIndex;
+          OutComp=ModelSupport::getComposite(SMap,portIndex,BI," 1 -2 7M ");
+          System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,
+                                           Out+OutComp+OutSide));
+          addCell("Main",cellIndex-1);
+          PI+= (sideI>1) ? -10 : 10;
+          BI+=10;
+        }
+    }
 
-  
-  std::list<int> nearPlane({35,33,36,34});
-  std::list<int> farPlane({36,34,35,33});
-  // CREATE Objects:
-  boltIndex=portIndex+500;
-  for(size_t xIndex=0;xIndex<1;xIndex++)
-    for(size_t zIndex=0;zIndex<1;zIndex++)
-      {
-        const int signV((xIndex) ? 1 : -1);
-        
-        int BI(boltIndex);
-        // Note the -3 so that 3N etc works
-        int layerI(signV*(nearPlane.front()+portIndex-3));
-        for(size_t i=1;i<nBolt;i++)
-          {
-            Out=ModelSupport::getComposite(SMap,portIndex,BI,"1 -2 -7M");
-            System.addCell(MonteCarlo::Qhull(cellIndex++,boltMat,0.0,Out));
-            addCell("Bolt",cellIndex-1);
-            Out=ModelSupport::getComposite(SMap,portIndex,BI,layerI,
-                                           " 1 -2 7M  3N -3M ");
-            System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
-            addCell("Main",cellIndex-1);
-
-            layerI=signV*BI;
-            BI+=10;
-          }
-        
-        Out=ModelSupport::getComposite(SMap,portIndex,BI,"1 -2 -7M");
-        System.addCell(MonteCarlo::Qhull(cellIndex++,boltMat,0.0,Out));
-        addCell("Bolt",cellIndex-1);
-
-        ELog::EM<<"Added bolt"<<ELog::endDiag;
-        // Note the -3 so that 3N etc works
-        const int farI(signV*(farPlane.front()+portIndex-3));
-        ELog::EM<<"Added bolt FAR:"<<farI<<ELog::endDiag;
-        Out=ModelSupport::getComposite(SMap,portIndex,BI,"1 -2 7M");
-        Out+=ModelSupport::getComposite(SMap,layerI,farI," 3 -3M ");
-        ELog::EM<<"Added bolt OUT == "<<Out<<ELog::endDiag;
-        System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
-        addCell("Main",cellIndex-1);
-
-        nearPlane.pop_front();
-        farPlane.pop_front();
-
-        boltIndex+=500;
-      }
-  
-
-  
+  //  Out=ModelSupport::getComposite(SMap,leftIndex,rightIndex," 1 -1M ");  
   return;
 }
 
@@ -412,7 +395,7 @@ InnerPort::addInnerCell(const int CN)
 }
   
 void
-InnerPort::generateInsert(Simulation& System)
+InnerPort::generateInsert()
   /*!
     Create the links for the object
     \param System :: Simulation to use
@@ -420,25 +403,6 @@ InnerPort::generateInsert(Simulation& System)
 {
   ELog::RegMethod RegA("InnerPort","generateInsert");
 
-  /*
-  const size_t maxN(std::max<size_t>(NTrack,12));
-  const double angleR=360.0/static_cast<double>(maxN);
-  const Geometry::Quaternion QSeg=
-    Geometry::Quaternion::calcQRotDeg(angleR,Y);
-
-  MonteCarlo::Object* OPtr(0);
-  std::set<int> cellActive;
-  Geometry::Vec3D BAxis(Z*radius);
-  for(size_t i=0;i<maxN;i++)
-    {
-      OPtr=System.findCell(BAxis+Origin,OPtr);
-      if (!OPtr)
-        throw ColErr::InContainerError<Geometry::Vec3D>
-          (BAxis+Origin,"Cell not found");
-      cellActive.insert(OPtr->getName());
-      QSeg.rotate(BAxis);
-    }
-  */
   for(const int CN : activeCells)
     addInsertCell(CN);
 
@@ -491,7 +455,7 @@ InnerPort::createAll(Simulation& System,
   System.populateCells();
   populate(System.getDataBase());
   createUnitVector(beamFC,FIndex);
-  generateInsert(System);       // Done here so that cells not invalid
+  generateInsert();       // Done here so that cells not invalid
   createSurfaces();    
   createObjects(System,boundary);
   createBolts(System);

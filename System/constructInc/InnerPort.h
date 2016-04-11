@@ -70,7 +70,7 @@ class InnerPort :
   void createSurfaces();
   void createObjects(Simulation&,const std::string&);
   void createLinks();
-  void generateInsert(Simulation&);
+  void generateInsert();
   void createBolts(Simulation&);
   
  public:
