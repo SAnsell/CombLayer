@@ -89,8 +89,6 @@ InnerPort::InnerPort(const std::string& Key) :
   */
 {}
 
-
-
 InnerPort::~InnerPort() 
   /*!
     Destructor
@@ -192,15 +190,13 @@ InnerPort::createSurfaces()
 }
   
 void
-InnerPort::createObjects(Simulation& System,
-			 const std::string& boundary)
+InnerPort::createObjects(Simulation& System)
   /*!
     Adds the vacuum box
     \param System :: Simulation to create objects in
   */
 {
   ELog::RegMethod RegA("InnerPort","createObjects");
-
   
   std::string Out;
 
@@ -250,7 +246,8 @@ InnerPort::createObjects(Simulation& System,
       const int boltIndex((nBolt) ? portIndex+30 : portIndex+20);
       Out=ModelSupport::getComposite(SMap,portIndex,boltIndex,
                                      " 1 -2 (-3M:4M:-5M:6M) " );
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out+boundary));
+      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,
+                                       Out+boundaryHR.display()));
       addCell("Outer",cellIndex-1);
     }
   else // No seal
@@ -258,7 +255,8 @@ InnerPort::createObjects(Simulation& System,
       const int boltIndex((nBolt) ? portIndex+30 : portIndex);
       Out=ModelSupport::getComposite(SMap,portIndex,boltIndex,
                                      " 1 -2 (-3M:4M:-5M:6M) " );
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out+boundary));
+      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,
+                                       Out+boundaryHR.display()));
       addCell("Outer",cellIndex-1);
     }
 
@@ -268,7 +266,6 @@ InnerPort::createObjects(Simulation& System,
     
   return;
 }
-
 
 void
 InnerPort::createBolts(Simulation& System)
@@ -293,6 +290,9 @@ InnerPort::createBolts(Simulation& System)
   const double HOffset(width/2.0+SD);
   const double VMid(height/2.0+SD+outerBolt/2.0);
   const double HMid(width/2.0+SD+outerBolt/2.0);
+  const double VFull(height/2.0+SD+outerBolt);
+  const double HFull(width/2.0+SD+outerBolt);
+  
   const Geometry::Vec3D XStep(X*((2*SD+width)/NBDbl));
   const Geometry::Vec3D ZStep(Z*((2*SD+height)/NBDbl));
 
@@ -332,8 +332,15 @@ InnerPort::createBolts(Simulation& System)
         }
       boltIndex+=1000;
     }
-  // Now creat objects:
-  // simple a - b :
+
+  // Now create objects:
+  const std::vector<int> cornerCut=
+    {
+      calcIntersect(Origin-X*HFull-Z*VFull),
+      calcIntersect(Origin-X*HFull+Z*VFull),
+      calcIntersect(Origin+X*HFull+Z*VFull),
+      calcIntersect(Origin+X*HFull-Z*VFull)
+    };
 
   const std::vector<std::string> surfSide
     ({"-23 33" , " 26 -36 "," 24 -34 ", " -25 35 "});
@@ -368,6 +375,9 @@ InnerPort::createBolts(Simulation& System)
           Out=ModelSupport::getComposite(SMap,leftIndex,rightIndex," 1 -1M ");
           leftIndex=rightIndex;
           OutComp=ModelSupport::getComposite(SMap,portIndex,BI," 1 -2 7M ");
+          if (cornerCut[sideI])
+            OutComp+= boundaryHR.display();
+          
           System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,
                                            Out+OutComp+OutSide));
           addCell("Main",cellIndex-1);
@@ -380,6 +390,16 @@ InnerPort::createBolts(Simulation& System)
   return;
 }
 
+bool
+InnerPort::calcIntersect(const Geometry::Vec3D& Pt) const
+  /*!
+    Calculate if the Pt is within the boundary
+    \param Pt :: Point to check
+    \return true if outside the boundary
+  */
+{
+  return (!boundaryHR.isValid(Pt));
+}
   
 void
 InnerPort::addInnerCell(const int CN)
@@ -456,8 +476,12 @@ InnerPort::createAll(Simulation& System,
   populate(System.getDataBase());
   createUnitVector(beamFC,FIndex);
   generateInsert();       // Done here so that cells not invalid
-  createSurfaces();    
-  createObjects(System,boundary);
+  createSurfaces();
+
+  boundaryHR.procString(boundary);
+  boundaryHR.populateSurf();
+  
+  createObjects(System);
   createBolts(System);
   createLinks();
   insertObjects(System);   

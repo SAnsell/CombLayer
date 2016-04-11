@@ -45,7 +45,8 @@ private:
 
 public:
 
-  double thick;              ///< Thickness of disk
+  double thick;               ///< Thickness of disk
+  double innerThick;          ///< Inner Thickness of disk
   int innerMat;               ///< Inner material [non-viewed]
   int outerMat;               ///< Outer material [viewed]
 

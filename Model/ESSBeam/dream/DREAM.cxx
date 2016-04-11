@@ -343,6 +343,12 @@ DREAM::build(Simulation& System,
   ChopperA->addInsertCell(bunkerObj.getCell("MainVoid"));
   ChopperA->createAll(System,FocusA->getKey("Guide0"),2);
 
+  // Double disk chopper
+  DDisk->addInsertCell(ChopperA->getCell("Void"));
+  DDisk->setCentreFlag(3);  // Z direction
+  DDisk->setOffsetFlag(1);  // Z direction
+  DDisk->createAll(System,ChopperA->getKey("Beam"),0);
+
   // END TEST SECTION:
   return;
 
@@ -351,10 +357,6 @@ DREAM::build(Simulation& System,
   VacBoxA->addInsertCell(bunkerObj.getCell("MainVoid"));
   VacBoxA->createAll(System,FocusA->getKey("Guide0"),2);
 
-  // Double disk chopper
-  DDisk->addInsertCell(VacBoxA->getCell("Void",0));
-  DDisk->setCentreFlag(3);  // Z direction
-  DDisk->createAll(System,FocusB->getKey("Guide0"),2);
   // Double disk chopper housing
   DDiskHouse->addInsertCell(VacBoxA->getCells("Void"));
   DDiskHouse->addInsertCell(VacBoxA->getCells("Box"));  // soon to become lid

@@ -3,7 +3,7 @@
  
  * File:   construct/DiskBlades.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,7 +55,8 @@ namespace constructSystem
 {
 
 DiskBlades::DiskBlades() : 
-  nBlades(0),thick(0.0),innerMat(0),outerMat(0)
+  nBlades(0),thick(0.0),innerThick(0.0),
+  innerMat(0),outerMat(0)
   /*!
     Constructor
   */
@@ -63,7 +64,8 @@ DiskBlades::DiskBlades() :
   
 DiskBlades::DiskBlades(const DiskBlades& A) : 
   nBlades(A.nBlades),phaseAngle(A.phaseAngle),
-  openAngle(A.openAngle),thick(A.thick),innerMat(A.innerMat),
+  openAngle(A.openAngle),thick(A.thick),
+  innerThick(A.innerThick),innerMat(A.innerMat),
   outerMat(A.outerMat)
   /*!
     Copy constructor
@@ -85,6 +87,7 @@ DiskBlades::operator=(const DiskBlades& A)
       phaseAngle=A.phaseAngle;
       openAngle=A.openAngle;
       thick=A.thick;
+      innerThick=A.innerThick;
       innerMat=A.innerMat;
       outerMat=A.outerMat;
     }

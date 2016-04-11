@@ -63,16 +63,18 @@ class InnerPort :
   
   int mat;             ///< Port Seal material
 
+  HeadRule boundaryHR; ///< boundary HR
   std::set<int> activeCells;   ///< Cells containing port
+  bool calcIntersect(const Geometry::Vec3D&) const;
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
-  void createObjects(Simulation&,const std::string&);
+  void createObjects(Simulation&);
   void createLinks();
   void generateInsert();
   void createBolts(Simulation&);
-  
+
  public:
 
   InnerPort(const std::string&);

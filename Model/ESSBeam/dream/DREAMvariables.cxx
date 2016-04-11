@@ -128,28 +128,43 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamChopperARingMat","Lead"); 
 
   // strange /4 because it is average of 1/2 lengths
-  Control.addParse<double>("dreamChopperAIPortYStep",
+  Control.addParse<double>("dreamChopperAIPortAYStep",
         "-(dreamChopperALength+dreamChopperAMainThick)/4.0");
-  
-  Control.addVariable("dreamChopperAIPortWidth",8.0);  
-  Control.addVariable("dreamChopperAIPortHeight",8.0);
-  Control.addVariable("dreamChopperAIPortLength",1.0);
-  Control.addVariable("dreamChopperAIPortLength",1.0);  
-  Control.addVariable("dreamChopperAIPortMat","Aluminium");
-  Control.addVariable("dreamChopperAIPortSealStep",0.5);
-  Control.addVariable("dreamChopperAIPortSealThick",0.3); 
-  Control.addVariable("dreamChopperAIPortSealMat","Lead");
+ 
+  Control.addVariable("dreamChopperAIPortAWidth",10.0);  
+  Control.addVariable("dreamChopperAIPortAHeight",10.0);
+  Control.addVariable("dreamChopperAIPortALength",1.0);
+  Control.addVariable("dreamChopperAIPortAMat","Aluminium");
+  Control.addVariable("dreamChopperAIPortASealStep",0.5);
+  Control.addVariable("dreamChopperAIPortASealThick",0.3); 
+  Control.addVariable("dreamChopperAIPortASealMat","Lead");
 
-  Control.addVariable("dreamChopperAIPortNBolt",8);
-  Control.addVariable("dreamChopperAIPortBoltStep",1.0);
-  Control.addVariable("dreamChopperAIPortBoltRadius",0.3);
-  Control.addVariable("dreamChopperAIPortBoltMat","Stainless304");
+  Control.addVariable("dreamChopperAIPortANBolt",8);
+  Control.addVariable("dreamChopperAIPortABoltStep",1.0);
+  Control.addVariable("dreamChopperAIPortABoltRadius",0.3);
+  Control.addVariable("dreamChopperAIPortABoltMat","Stainless304");
+  
+  // PORT B
+  Control.addParse<double>("dreamChopperAIPortBYStep",
+        "(dreamChopperALength+dreamChopperAMainThick)/4.0");
+  Control.addVariable("dreamChopperAIPortBWidth",12.0);  
+  Control.addVariable("dreamChopperAIPortBHeight",12.0);
+  Control.addVariable("dreamChopperAIPortBLength",1.0);
+  Control.addVariable("dreamChopperAIPortBMat","Aluminium");
+  Control.addVariable("dreamChopperAIPortBSealStep",0.5);
+  Control.addVariable("dreamChopperAIPortBSealThick",0.3); 
+  Control.addVariable("dreamChopperAIPortBSealMat","Lead");
+
+  Control.addVariable("dreamChopperAIPortBNBolt",8);
+  Control.addVariable("dreamChopperAIPortBBoltStep",1.0);
+  Control.addVariable("dreamChopperAIPortBBoltRadius",0.3);
+  Control.addVariable("dreamChopperAIPortBBoltMat","Stainless304");
     
   Control.addVariable("dreamChopperABoltMat","Stainless304");
   Control.addVariable("dreamChopperAWallMat","Aluminium");
   Control.addVariable("dreamChopperAVoidMat","Void");
 
-
+      
   
   // VACBOX A : 6.10m target centre
   //  Length 100.7 + Width [87.0] + Height [39.0] void Depth/2 + front
@@ -216,14 +231,14 @@ DREAMvariables(FuncDataBase& Control)
   
   // Double Blade chopper
   Control.addVariable("dreamDBladeXStep",0.0);
-  Control.addVariable("dreamDBladeYStep",11.0);
+  Control.addVariable("dreamDBladeYStep",0.0);
   Control.addVariable("dreamDBladeZStep",0.0);
   Control.addVariable("dreamDBladeXYangle",0.0);
   Control.addVariable("dreamDBladeZangle",0.0);
 
   Control.addVariable("dreamDBladeGap",1.0);
-  Control.addVariable("dreamDBladeInnerRadius",30.0);
-  Control.addVariable("dreamDBladeOuterRadius",37.5);
+  Control.addVariable("dreamDBladeInnerRadius",22.5);
+  Control.addVariable("dreamDBladeOuterRadius",33.5);
   Control.addVariable("dreamDBladeNDisk",2);
 
   Control.addVariable("dreamDBlade0Thick",0.2);

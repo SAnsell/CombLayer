@@ -3,7 +3,7 @@
  
  * File:   constructInc/DiskChopper.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,6 +48,7 @@ class DiskChopper : public attachSystem::FixedGroup,
   const int chpIndex;           ///< Index of surface offset
   int cellIndex;                ///< Cell index
   int centreFlag;               ///< Centre origin / edge origin
+  int offsetFlag;               ///< Centre origin / edge origin
   
   double xStep;                 ///< Origin step
   double yStep;                 ///< Origin step
@@ -58,10 +59,10 @@ class DiskChopper : public attachSystem::FixedGroup,
   double innerRadius;           ///< Inner Non-Viewed radius 
   double outerRadius;           ///< Outer Viewed radius
   double diskGap;               ///< Gap betwen disks
-
+  
   size_t nDisk;                 ///< Number of disks
   std::vector<DiskBlades> DInfo;  ///< Info on each disk
-
+  double totalThick;            ///< total thickness
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
@@ -80,6 +81,8 @@ class DiskChopper : public attachSystem::FixedGroup,
 
   /// Access centre flag
   void setCentreFlag(const int C) { centreFlag=C; }
+  /// Access centre flag
+  void setOffsetFlag(const int O) { offsetFlag=O; }
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
   void createAllBeam(Simulation&,const attachSystem::TwinComp&,

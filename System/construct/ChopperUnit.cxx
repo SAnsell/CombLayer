@@ -87,7 +87,8 @@ ChopperUnit::ChopperUnit(const std::string& Key) :
   houseIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(houseIndex+1),
   RS(new constructSystem::RingSeal(Key+"Ring")),
-  IP(new constructSystem::InnerPort(Key+"IPort"))
+  IPA(new constructSystem::InnerPort(Key+"IPortA")),
+  IPB(new constructSystem::InnerPort(Key+"IPortB"))
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -97,7 +98,8 @@ ChopperUnit::ChopperUnit(const std::string& Key) :
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(RS);
-  OR.addObject(IP);
+  OR.addObject(IPA);
+  OR.addObject(IPB);
 }
 
 ChopperUnit::~ChopperUnit() 
@@ -137,6 +139,7 @@ ChopperUnit::populate(const FuncDataBase& Control)
   motorBoltAngOff=Control.EvalDefVar<double>(keyName+"MotorBoltAngOff",0.0);
   motorSeal=Control.EvalDefVar<double>(keyName+"MotorSealThick",0.0);
   motorSealMat=ModelSupport::EvalMat<int>(Control,keyName+"PortSealMat");
+  motorMat=ModelSupport::EvalDefMat<int>(Control,keyName+"MotorMat",0);
   
   portRadius=Control.EvalVar<double>(keyName+"PortRadius");
   portOuter=Control.EvalVar<double>(keyName+"PortOuter");
@@ -418,11 +421,11 @@ ChopperUnit::createObjects(Simulation& System)
 
   // Motor [front/back]
   Out=ModelSupport::getComposite(SMap,houseIndex,"1 -11 -1007");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,motorMat,0.0,Out));
   addCell("MotorVoid",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,houseIndex,"12 -2 -1007"); 
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,motorMat,0.0,Out));
   addCell("MotorVoid",cellIndex-1);
 
   // Divide surfaces
@@ -447,8 +450,12 @@ ChopperUnit::createObjects(Simulation& System)
   // Add inner system
 
   Out=ModelSupport::getComposite(SMap,houseIndex,"1 -11 -2007");
-  IP->addInnerCell(getCell("PortVoid",0));
-  IP->createAll(System,FixedGroup::getKey("Beam"),0,Out);
+  IPA->addInnerCell(getCell("PortVoid",0));
+  IPA->createAll(System,FixedGroup::getKey("Beam"),0,Out);
+
+  Out=ModelSupport::getComposite(SMap,houseIndex,"12 -2 -2007");
+  IPB->addInnerCell(getCell("PortVoid",1));
+  IPB->createAll(System,FixedGroup::getKey("Beam"),0,Out);
   
   // Outer
   Out=ModelSupport::getComposite(SMap,houseIndex,"1 -2 3 -4 5 -6 7 8 9 10");

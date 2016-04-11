@@ -80,11 +80,13 @@ class ChopperUnit :
   double motorSeal;             ///< Motor seal
   int motorSealMat;             ///< Motor Seal material
   
+  int motorMat;                 ///< Motor material
   int boltMat;                  ///< Bolt material
   int wallMat;                  ///< Wall material layer
 
-  std::shared_ptr<RingSeal> RS; ///< ringseal for main system
-  std::shared_ptr<InnerPort> IP; ///< inner port
+  std::shared_ptr<RingSeal> RS;   ///< ringseal for main system
+  std::shared_ptr<InnerPort> IPA; ///< inner port
+  std::shared_ptr<InnerPort> IPB; ///< inner port
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
