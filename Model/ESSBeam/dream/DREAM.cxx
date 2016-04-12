@@ -98,25 +98,36 @@ DREAM::DREAM(const std::string& keyName) :
   attachSystem::CopiedComp("dream",keyName),
   stopPoint(0),
   dreamAxis(new attachSystem::FixedComp(newName+"Axis",4)),
-  
+
   FocusA(new beamlineSystem::GuideLine(newName+"FA")),
-  ChopperA(new constructSystem::ChopperUnit(newName+"ChopperA")),
-  VacBoxA(new constructSystem::VacuumBox(newName+"VacA")),
+ 
   VPipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
   FocusB(new beamlineSystem::GuideLine(newName+"FB")),
 
+  ChopperA(new constructSystem::ChopperUnit(newName+"ChopperA")),
   DDisk(new constructSystem::DiskChopper(newName+"DBlade")),
-  DDiskHouse(new constructSystem::ChopperHousing(newName+"DBladeHouse")),
+  
+  ChopperB(new constructSystem::ChopperUnit(newName+"ChopperB")),
   SDisk(new constructSystem::DiskChopper(newName+"SBlade")),
-  SDiskHouse(new constructSystem::ChopperHousing(newName+"SBladeHouse")),
+  
+  VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
+  FocusC(new beamlineSystem::GuideLine(newName+"FC")),
+
+  ChopperC(new constructSystem::ChopperUnit(newName+"ChopperC")), 
   T0DiskA(new constructSystem::DiskChopper(newName+"T0DiskA")),
+
+
+  
+  DDiskHouse(new constructSystem::ChopperHousing(newName+"DBladeHouse")),
+
+  SDiskHouse(new constructSystem::ChopperHousing(newName+"SBladeHouse")),
+
 
   T0DiskAHouse(new constructSystem::ChopperHousing(newName+"T0DiskAHouse")),
   VacBoxB(new constructSystem::VacuumBox(newName+"VacB",1)),
-  VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
   T0DiskB(new constructSystem::DiskChopper(newName+"T0DiskB")),  
   T0DiskBHouse(new constructSystem::ChopperHousing(newName+"T0DiskBHouse")),
-  FocusC(new beamlineSystem::GuideLine(newName+"FC")),
+
 
   VacBoxC(new constructSystem::VacuumBox(newName+"VacC",1)),
   BandADisk(new constructSystem::DiskChopper(newName+"BandADisk")),  
@@ -156,7 +167,7 @@ DREAM::DREAM(const std::string& keyName) :
   FocusOutB(new beamlineSystem::GuideLine(newName+"FOutB")),
 
   Cave(new DreamHut(newName+"Cave"))
-/*!
+ /*!
     Constructor
  */
 {
@@ -170,55 +181,16 @@ DREAM::DREAM(const std::string& keyName) :
   OR.addObject(dreamAxis);
 
   OR.addObject(FocusA);
-  OR.addObject(ChopperA);
-  OR.addObject(VacBoxA);
   OR.addObject(VPipeA);
-  
-  OR.addObject(VPipeB);
   OR.addObject(FocusB);
-  OR.addObject(DDisk);
-  OR.addObject(DDiskHouse);  
+  OR.addObject(ChopperA);
+  OR.addObject(DDisk);  
+  OR.addObject(ChopperB);
   OR.addObject(SDisk);  
-  OR.addObject(SDiskHouse);
-
-  OR.addObject(T0DiskA);
-  OR.addObject(T0DiskB);  
-  OR.addObject(T0DiskAHouse);
-  OR.addObject(T0DiskBHouse);
+  OR.addObject(VPipeB);
   OR.addObject(FocusC);
-
-  OR.addObject(BandADisk);
-  OR.addObject(BandAHouse);
-  OR.addObject(VPipeC);
-  OR.addObject(VacBoxC);
-  OR.addObject(FocusD);
-
-  OR.addObject(BandBDisk);
-  OR.addObject(BandBHouse);
-  OR.addObject(VPipeD);
-  OR.addObject(VacBoxD);
-  OR.addObject(FocusE);
-
-  OR.addObject(T0DiskC);
-  OR.addObject(T0HouseC);
-  OR.addObject(VPipeE);
-  OR.addObject(VacBoxE);
-  OR.addObject(FocusF);
-
-  OR.addObject(T0DiskD);
-  OR.addObject(T0HouseD);
-  OR.addObject(VPipeF);
-  OR.addObject(VacBoxF);
-  OR.addObject(FocusG);
-
-  OR.addObject(VPipeFinal);
-  OR.addObject(FocusFinal);
-  OR.addObject(BInsert);
-  OR.addObject(FocusWall);
-
-  OR.addObject(ShieldA);
-  OR.addObject(VPipeOutA);
-  OR.addObject(FocusOutA);
+  OR.addObject(ChopperC);
+  OR.addObject(T0DiskA);
 
   OR.addObject(Cave);
 }
@@ -349,6 +321,31 @@ DREAM::build(Simulation& System,
   DDisk->setOffsetFlag(1);  // Z direction
   DDisk->createAll(System,ChopperA->getKey("Beam"),0);
 
+  // NEW TEST SECTION:
+  ChopperB->addInsertCell(bunkerObj.getCell("MainVoid"));
+  ChopperB->createAll(System,ChopperA->getKey("Main"),2);
+
+  // Double disk chopper
+  SDisk->addInsertCell(ChopperB->getCell("Void"));
+  SDisk->setCentreFlag(3);  // Z direction
+  SDisk->setOffsetFlag(1);  // Centre offset control
+  SDisk->createAll(System,ChopperB->getKey("Beam"),0);
+
+  VPipeB->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeB->createAll(System,ChopperB->getKey("Beam"),2);
+
+  FocusC->addInsertCell(VPipeB->getCells("Void"));
+  FocusC->createAll(System,*VPipeB,-1,*VPipeB,-1);
+
+    // NEW TEST SECTION:
+  ChopperC->addInsertCell(bunkerObj.getCell("MainVoid"));
+  ChopperC->createAll(System,FocusC->getKey("Guide0"),2);
+  
+  // First disk of a T0 chopper
+  T0DiskA->addInsertCell(ChopperC->getCell("Void",0));
+  T0DiskA->setCentreFlag(3);  // Z direction
+  T0DiskA->createAll(System,ChopperC->getKey("Beam"),0);
+  
   // END TEST SECTION:
   return;
 
@@ -377,10 +374,6 @@ DREAM::build(Simulation& System,
   
   SDiskHouse->insertComponent(System,"Void",*SDisk);
 
-  // Double disk T0 chopper
-  T0DiskA->addInsertCell(VacBoxA->getCell("Void",0));
-  T0DiskA->setCentreFlag(3);  // Z direction
-  T0DiskA->createAll(System,SDisk->getKey("Beam"),2);
 
     // Double disk chopper housing
   T0DiskAHouse->addInsertCell(VacBoxA->getCells("Void"));

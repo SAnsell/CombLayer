@@ -75,47 +75,55 @@ class DREAM : public attachSystem::CopiedComp
   /// Elliptic focus in bulkshield [m5]
   std::shared_ptr<beamlineSystem::GuideLine> FocusA;
 
-  /// Vac box for first chopper
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperA;
-  
-  
-  /// Vac box for first chopper
-  std::shared_ptr<constructSystem::VacuumBox> VacBoxA;
-  /// Pipe between bunker and the wall
+    /// Pipe between bunker and the wall
   std::shared_ptr<constructSystem::VacuumPipe> VPipeA;
   /// Elliptic guide from 5.5 to 6metre
   std::shared_ptr<beamlineSystem::GuideLine> FocusB;
+  
+  /// Vac box for first chopper
+  std::shared_ptr<constructSystem::ChopperUnit> ChopperA;
+  /// Double disk chopper
+  std::shared_ptr<constructSystem::DiskChopper> DDisk;
+  /// Vac box for first chopper
+  std::shared_ptr<constructSystem::ChopperUnit> ChopperB;
+  /// Double disk chopper
+  std::shared_ptr<constructSystem::DiskChopper> SDisk;
+
+  /// Pipe between bunker and the wall
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeB;
+  /// Guide between diskchoppers  / T0
+  std::shared_ptr<beamlineSystem::GuideLine> FocusC;
+
+  /// Vac box for first chopper
+  std::shared_ptr<constructSystem::ChopperUnit> ChopperC;
+  /// TO disk chopper [part A]
+  std::shared_ptr<constructSystem::DiskChopper> T0DiskA;
+  
+
+  
+  /// Vac box for first chopper
+  std::shared_ptr<constructSystem::VacuumBox> VacBoxA;
   /// Double disk chopper Housing
   std::shared_ptr<constructSystem::ChopperHousing> DDiskHouse;
   
-  /// Double disk chopper
-  std::shared_ptr<constructSystem::DiskChopper> DDisk;
   /// Double disk chopper Housing
   //  std::shared_ptr<constructSystem::ChopperHousing> DDiskHouse;
   
-  /// Single disk chopper
-  std::shared_ptr<constructSystem::DiskChopper> SDisk;
+
   /// Single disk chopper Housing
   std::shared_ptr<constructSystem::ChopperHousing> SDiskHouse;
 
 
-  /// TO disk chopper [part A]
-  std::shared_ptr<constructSystem::DiskChopper> T0DiskA;
   /// T0 disk chopper Housing
   std::shared_ptr<constructSystem::ChopperHousing> T0DiskAHouse;
 
   /// Vac box for second part of T0
   std::shared_ptr<constructSystem::VacuumBox> VacBoxB;
-
-  /// Pipe between chopper 1 and the wall
-  std::shared_ptr<constructSystem::VacuumPipe> VPipeB;
   
   /// TO disk chopper [part B]  
   std::shared_ptr<constructSystem::DiskChopper> T0DiskB;  
   /// T0 disk chopper Housing
   std::shared_ptr<constructSystem::ChopperHousing> T0DiskBHouse;
-  /// Elliptic guide between T0 fragments
-  std::shared_ptr<beamlineSystem::GuideLine> FocusC;
 
   /// Vac box for second chopper set
   std::shared_ptr<constructSystem::VacuumBox> VacBoxC;

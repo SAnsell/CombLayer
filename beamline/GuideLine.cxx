@@ -3,7 +3,7 @@
  
  * File:   beamline/GuideLine.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -699,11 +699,18 @@ GuideLine::createUnitLinks()
 			 shapeUnits[i]->getBegAxis());
 
       if (i!=nShapes-1)
-	guideFC.setConnect(1,shapeUnits[i]->getEnd(),
-			   shapeUnits[i]->getEndAxis());     
+        {
+          guideFC.setConnect(1,shapeUnits[i]->getEnd(),
+                             shapeUnits[i]->getEndAxis());
+        }
       else
-	guideFC.setConnect(1,calcActiveEndIntercept(),
-			   shapeUnits[i]->getEndAxis());     
+        {
+          guideFC.setConnect(1,calcActiveEndIntercept(),
+                             shapeUnits[i]->getEndAxis());
+          ELog::EM<<keyName<<":"<<shapeUnits[i]->getEnd()<<" "
+                  <<calcActiveEndIntercept()<<ELog::endDiag;
+        }
+
 
       // [FRONT] decide which point to used 
       if (!i && !beamFrontCut && !frontCut)
@@ -715,7 +722,9 @@ GuideLine::createUnitLinks()
       else 
 	guideFC.setLinkSurf(0,-SMap.realSurf(SN));       
 
-      // [END] 
+      // [END]
+
+
       if (i==nShapes-1 && activeEnd)
 	{
 	  guideFC.setLinkSurf(1,endCut.complement());

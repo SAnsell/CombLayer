@@ -177,9 +177,6 @@ ChopperUnit::createUnitVector(const attachSystem::FixedComp& FC,
 
   setDefault("Main");
 
-  
-  ELog::EM<<"Origin[M] == "<<Main.getCentre()<<ELog::endDiag;
-  ELog::EM<<"Origin == "<<Beam.getCentre()<<ELog::endDiag;
   return;
 }
 
@@ -498,6 +495,9 @@ ChopperUnit::createLinks()
   beamFC.setLinkSurf(0,-SMap.realSurf(houseIndex+1));
   beamFC.setLinkSurf(1,SMap.realSurf(houseIndex+2));
 
+  ELog::EM<<"OC == "<<Origin<<ELog::endDiag;
+  ELog::EM<<"BC == "<<beamFC.getSignedLinkPt(1)<<ELog::endDiag;
+  ELog::EM<<"BC == "<<beamFC.getSignedLinkPt(2)<<ELog::endDiag;
   return;
 }
 
