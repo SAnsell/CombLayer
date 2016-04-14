@@ -148,7 +148,6 @@ ChopperUnit::populate(const FuncDataBase& Control)
   portNBolt=Control.EvalVar<size_t>(keyName+"PortNBolt");
   portBoltAngOff=Control.EvalDefVar<double>(keyName+"PortBoltAngOff",0.0);
   portSeal=Control.EvalDefVar<double>(keyName+"PortSealThick",0.0);
-  portSealMat=ModelSupport::EvalMat<int>(Control,keyName+"PortSealMat");
   
   boltMat=ModelSupport::EvalMat<int>(Control,keyName+"BoltMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -495,9 +494,6 @@ ChopperUnit::createLinks()
   beamFC.setLinkSurf(0,-SMap.realSurf(houseIndex+1));
   beamFC.setLinkSurf(1,SMap.realSurf(houseIndex+2));
 
-  ELog::EM<<"OC == "<<Origin<<ELog::endDiag;
-  ELog::EM<<"BC == "<<beamFC.getSignedLinkPt(1)<<ELog::endDiag;
-  ELog::EM<<"BC == "<<beamFC.getSignedLinkPt(2)<<ELog::endDiag;
   return;
 }
 

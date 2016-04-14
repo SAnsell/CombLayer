@@ -57,7 +57,11 @@ void
 generateChopper(FuncDataBase& Control,
                 const std::string& keyName,
                 const double yStep,
-                const double length)
+                const double length,
+                const double voidLength)
+  /*!
+    Generate the chopper variables
+   */
 {
   ELog::RegMethod RegA("DREAMvariables[F]","generateChopper");
   
@@ -68,7 +72,7 @@ generateChopper(FuncDataBase& Control,
   Control.addVariable(keyName+"Length",length);  // drawing [5960.2]
   Control.addVariable(keyName+"ShortWidth",50.5);
   Control.addVariable(keyName+"MainRadius",38.122); // estimate
-  Control.addVariable(keyName+"MainThick",3.55);  // estimate
+  Control.addVariable(keyName+"MainThick",voidLength);  // estimate
   
   Control.addVariable(keyName+"MotorRadius",12.00); // [5691.2]
   Control.addVariable(keyName+"MotorOuter",15.20); // [5691.2]
@@ -96,7 +100,6 @@ generateChopper(FuncDataBase& Control,
   // strange /4 because it is average of 1/2 lengths
   const std::string kItem=
     "-("+keyName+"Length+"+keyName+"MainThick)/4.0";
-  ELog::EM<<"Key == "<<kItem<<ELog::endDiag;
   Control.addParse<double>(keyName+"IPortAYStep",kItem);
  
   Control.addVariable(keyName+"IPortAWidth",11.6);  
@@ -106,6 +109,8 @@ generateChopper(FuncDataBase& Control,
   Control.addVariable(keyName+"IPortASealStep",0.5);
   Control.addVariable(keyName+"IPortASealThick",0.3); 
   Control.addVariable(keyName+"IPortASealMat","Lead");
+  Control.addVariable(keyName+"IPortAWindow",0.3);
+  Control.addVariable(keyName+"IPortAWindowMat","Aluminium");
 
   Control.addVariable(keyName+"IPortANBolt",8);
   Control.addVariable(keyName+"IPortABoltStep",1.0);
@@ -122,6 +127,8 @@ generateChopper(FuncDataBase& Control,
   Control.addVariable(keyName+"IPortBSealStep",0.5);
   Control.addVariable(keyName+"IPortBSealThick",0.3); 
   Control.addVariable(keyName+"IPortBSealMat","Lead");
+  Control.addVariable(keyName+"IPortBWindow",0.3);
+  Control.addVariable(keyName+"IPortBWindowMat","Aluminium");
 
   Control.addVariable(keyName+"IPortBNBolt",8);
   Control.addVariable(keyName+"IPortBBoltStep",1.0);
@@ -216,7 +223,7 @@ DREAMvariables(FuncDataBase& Control)
 
   // VACBOX A : 6.10m target centre
   //  Length 100.7 + Width [87.0] + Height [39.0] void Depth/2 + front
-  generateChopper(Control,"dreamChopperA",55.0,9.0);
+  generateChopper(Control,"dreamChopperA",55.0,9.0,3.55);
   
   // Double Blade chopper
   Control.addVariable("dreamDBladeXStep",0.0);
@@ -246,7 +253,7 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamDBlade1PhaseAngle1",275.0);
   Control.addVariable("dreamDBlade1OpenAngle1",30.0);
 
-  generateChopper(Control,"dreamChopperB",5.0,9.0);
+  generateChopper(Control,"dreamChopperB",5.0,9.0,3.55);
 
   // Single Blade chopper
   Control.addVariable("dreamSBladeXStep",0.0);
@@ -309,20 +316,21 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamFC0WidthEnd",2.36);
   Control.copyVar("dreamFC0Length","dreamFCLength");
 
-  generateChopper(Control,"dreamChopperC",5.0,12.0);
+  generateChopper(Control,"dreamChopperC",9.0,14.0,8.0);
 
-    // T0 Chopper disk A
+  // T0 Chopper disk A
   Control.addVariable("dreamT0DiskAXStep",0.0);
-  Control.addVariable("dreamT0DiskAYStep",2.0);
+  Control.addVariable("dreamT0DiskAYStep",0.0);
   Control.addVariable("dreamT0DiskAZStep",0.0);
   Control.addVariable("dreamT0DiskAXYangle",0.0);
   Control.addVariable("dreamT0DiskAZangle",0.0);
 
-  Control.addVariable("dreamT0DiskAInnerRadius",28.0);
-  Control.addVariable("dreamT0DiskAOuterRadius",38.0);
+  Control.addVariable("dreamT0DiskAInnerRadius",20.0);
+  Control.addVariable("dreamT0DiskAOuterRadius",30.0);
   Control.addVariable("dreamT0DiskANDisk",1);
 
-  Control.addVariable("dreamT0DiskA0Thick",5.4);  // to include B4C
+  Control.addVariable("dreamT0DiskA0InnerThick",5.4);  // to include B4C
+  Control.addVariable("dreamT0DiskA0Thick",3.4);  // to include B4C
   Control.addVariable("dreamT0DiskAInnerMat","Inconnel");
   Control.addVariable("dreamT0DiskAOuterMat","Void");
   

@@ -60,6 +60,9 @@ class InnerPort :
   double sealStep;     ///< Step from inner surf
   double sealThick;    ///< Thickness of seal
   int sealMat;         ///< seal material
+
+  double window;       ///< window thickness
+  int windowMat;       ///< window material 
   
   int mat;             ///< Port Seal material
 

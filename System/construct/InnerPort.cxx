@@ -109,7 +109,10 @@ InnerPort::populate(const FuncDataBase& Control)
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
   length=Control.EvalVar<double>(keyName+"Length");
-  
+
+  window=Control.EvalVar<double>(keyName+"Window");
+  windowMat=ModelSupport::EvalMat<int>(Control,keyName+"WindowMat");
+
   nBolt=Control.EvalDefVar<size_t>(keyName+"NBolt",0);
   boltStep=Control.EvalDefVar<double>(keyName+"BoltStep",0.0);
   boltRadius=Control.EvalDefVar<double>(keyName+"BoltRadius",0.0);
@@ -158,7 +161,13 @@ InnerPort::createSurfaces()
   ModelSupport::buildPlane(SMap,portIndex+6,Origin+Z*(height/2.0),Z);
 
   const double outerBolt(boltStep+boltRadius+10.0*Geometry::zeroTol);
-  
+
+  if (windowMat)
+    {
+      ModelSupport::buildPlane(SMap,portIndex+101,Origin-Y*(window/2.0),Y);
+      ModelSupport::buildPlane(SMap,portIndex+102,Origin+Y*(window/2.0),Y);
+    }
+    
   // Seal constructed about origin:
   double SD(0.0);
   if (sealStep>Geometry::zeroTol)
@@ -200,10 +209,24 @@ InnerPort::createObjects(Simulation& System)
   
   std::string Out;
 
-  Out=ModelSupport::getComposite(SMap,portIndex,"1 -2 3 -4 5 -6");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-  addCell("Void",cellIndex-1);
+  if (windowMat)
+    {
+      Out=ModelSupport::getComposite(SMap,portIndex,"101 -102 3 -4 5 -6");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,windowMat,0.0,Out));
+      addCell("Window",cellIndex-1);
+      Out=ModelSupport::getComposite(SMap,portIndex,
+                                     "1 -2 3 -4 5 -6 (-101 : 102)");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      addCell("Void",cellIndex-1);
 
+    }
+  else
+    {
+      Out=ModelSupport::getComposite(SMap,portIndex,"1 -2 3 -4 5 -6");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      addCell("Void",cellIndex-1);
+    }
+  
   if (sealStep>Geometry::zeroTol)
     {
 

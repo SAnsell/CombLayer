@@ -67,13 +67,15 @@ class ChopperUnit :
   double portRadius;           ///< Port radius
   double portOuter;            ///< Port flange [outer radius
   double portStep;             ///< Port step [unused]
-
+  double portWindow;           ///< Port window thickness
+  
   size_t portNBolt;            ///< Number of port bolts
   double portBoltRad;          ///< Bolt radius
   double portBoltAngOff;       ///< Angle to start relative to 12:00
   double portSeal;             ///< Port seal
   int portSealMat;             ///< Port Seal material
-    
+  int portWindowMat;           ///< Window material
+  
   size_t motorNBolt;            ///< number of motor bolts  
   double motorBoltRad;          ///< Bolt radius
   double motorBoltAngOff;       ///< angle relative to 12:00

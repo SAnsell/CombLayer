@@ -337,13 +337,15 @@ DREAM::build(Simulation& System,
   FocusC->addInsertCell(VPipeB->getCells("Void"));
   FocusC->createAll(System,*VPipeB,-1,*VPipeB,-1);
 
+
     // NEW TEST SECTION:
   ChopperC->addInsertCell(bunkerObj.getCell("MainVoid"));
   ChopperC->createAll(System,FocusC->getKey("Guide0"),2);
-  
+
   // First disk of a T0 chopper
   T0DiskA->addInsertCell(ChopperC->getCell("Void",0));
   T0DiskA->setCentreFlag(3);  // Z direction
+  T0DiskA->setOffsetFlag(0);  // Centre offset control
   T0DiskA->createAll(System,ChopperC->getKey("Beam"),0);
   
   // END TEST SECTION:

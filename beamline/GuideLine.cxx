@@ -684,7 +684,7 @@ GuideLine::createUnitLinks()
     Creates the guide links
   */
 {
-  ELog::RegMethod RegA("GuideLin","createUnitLinks");
+  ELog::RegMethod RegA("GuideLine","createUnitLinks");
 
   attachSystem::FixedComp& shieldFC=FixedGroup::getKey("Shield");
   // Create GuideLinks
@@ -707,7 +707,8 @@ GuideLine::createUnitLinks()
         {
           guideFC.setConnect(1,calcActiveEndIntercept(),
                              shapeUnits[i]->getEndAxis());
-          ELog::EM<<keyName<<":"<<shapeUnits[i]->getEnd()<<" "
+
+          ELog::EM<<keyName<<":"<<shapeUnits[i]->getEnd()<<" :: "
                   <<calcActiveEndIntercept()<<ELog::endDiag;
         }
 

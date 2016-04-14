@@ -226,9 +226,13 @@ DiskChopper::createUnitVector(const attachSystem::FixedComp& FC,
           XYZ[1] += TD;
           beamFC.applyShift(0.0,TD,0.0);
         }
+      ELog::EM<<"Total thickness == "<<totalThick/2.0<<ELog::endDiag;
+      ELog::EM<<"Main == "<<mainFC.getCentre()<<ELog::endDiag;
       mainFC.applyShift(XYZ[0],XYZ[1],XYZ[2]);
+      ELog::EM<<"Main == "<<mainFC.getCentre()<<ELog::endDiag;
     }
-  setDefault("Main");  
+  setDefault("Main");
+
   return;
 }
 
@@ -319,18 +323,11 @@ DiskChopper::createObjects(Simulation& System)
 	  Out=ModelSupport::getComposite(SMap,chpIndex,CI-500,"2M -501M 7 -17");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 	}
-      else  // create front
-        {
-          if (DRef.innerThick-DRef.thick>Geometry::zeroTol)
-            {
-              Out=ModelSupport::getComposite(SMap,chpIndex,"11 -1 7 17");
-              System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));         
-            }
-        }
+      
       // inner layer
       Out=ModelSupport::getComposite(SMap,chpIndex,CI,"11M -12M -7");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,
-				       DRef.getInnerMat(),0.0,Out));
+      System.addCell(MonteCarlo::Qhull(cellIndex++,DRef.getInnerMat(),
+                                       0.0,Out));
       // Chopper opening
       const size_t NPhase=DRef.getNPhase();
         const std::string Main=
@@ -362,6 +359,15 @@ DiskChopper::createObjects(Simulation& System)
 	  PI+=10;
 	  PN+=10;
 	}
+
+      if (DRef.innerThick-DRef.thick>Geometry::zeroTol)
+        {
+          Out=ModelSupport::getComposite(SMap,chpIndex,"11 -1 7 -17");
+          System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));         
+          Out=ModelSupport::getComposite(SMap,chpIndex,"2 -12 7 -17");
+          System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));         
+        }
+
       CI+=500;
     }
 
