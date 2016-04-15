@@ -75,7 +75,7 @@ class DREAM : public attachSystem::CopiedComp
   /// Elliptic focus in bulkshield [m5]
   std::shared_ptr<beamlineSystem::GuideLine> FocusA;
 
-    /// Pipe between bunker and the wall
+  /// Pipe between bunker and the wall
   std::shared_ptr<constructSystem::VacuumPipe> VPipeA;
   /// Elliptic guide from 5.5 to 6metre
   std::shared_ptr<beamlineSystem::GuideLine> FocusB;
@@ -98,8 +98,11 @@ class DREAM : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::ChopperUnit> ChopperC;
   /// TO disk chopper [part A]
   std::shared_ptr<constructSystem::DiskChopper> T0DiskA;
+  /// Elliptic forcus in bulkshield [m5]
+  std::shared_ptr<beamlineSystem::GuideLine> FocusT0Mid;
+  /// TO disk chopper [part B]  
+  std::shared_ptr<constructSystem::DiskChopper> T0DiskB;  
   
-
   
   /// Vac box for first chopper
   std::shared_ptr<constructSystem::VacuumBox> VacBoxA;
@@ -120,8 +123,6 @@ class DREAM : public attachSystem::CopiedComp
   /// Vac box for second part of T0
   std::shared_ptr<constructSystem::VacuumBox> VacBoxB;
   
-  /// TO disk chopper [part B]  
-  std::shared_ptr<constructSystem::DiskChopper> T0DiskB;  
   /// T0 disk chopper Housing
   std::shared_ptr<constructSystem::ChopperHousing> T0DiskBHouse;
 
@@ -133,8 +134,6 @@ class DREAM : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::ChopperHousing> BandAHouse;
   /// Pipe between T0 and Second chopper set
   std::shared_ptr<constructSystem::VacuumPipe> VPipeC;
-  /// Elliptic forcus in bulkshield [m5]
-  std::shared_ptr<beamlineSystem::GuideLine> FocusD;
 
 
   /// Vac box for second chopper set

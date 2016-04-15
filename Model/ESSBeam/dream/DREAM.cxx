@@ -115,8 +115,9 @@ DREAM::DREAM(const std::string& keyName) :
 
   ChopperC(new constructSystem::ChopperUnit(newName+"ChopperC")), 
   T0DiskA(new constructSystem::DiskChopper(newName+"T0DiskA")),
-
-
+  FocusT0Mid(new beamlineSystem::GuideLine(newName+"FT0Mid")),
+  T0DiskB(new constructSystem::DiskChopper(newName+"T0DiskB")),
+  
   
   DDiskHouse(new constructSystem::ChopperHousing(newName+"DBladeHouse")),
 
@@ -125,7 +126,6 @@ DREAM::DREAM(const std::string& keyName) :
 
   T0DiskAHouse(new constructSystem::ChopperHousing(newName+"T0DiskAHouse")),
   VacBoxB(new constructSystem::VacuumBox(newName+"VacB",1)),
-  T0DiskB(new constructSystem::DiskChopper(newName+"T0DiskB")),  
   T0DiskBHouse(new constructSystem::ChopperHousing(newName+"T0DiskBHouse")),
 
 
@@ -133,7 +133,6 @@ DREAM::DREAM(const std::string& keyName) :
   BandADisk(new constructSystem::DiskChopper(newName+"BandADisk")),  
   BandAHouse(new constructSystem::ChopperHousing(newName+"BandAHouse")),
   VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
-  FocusD(new beamlineSystem::GuideLine(newName+"FD")),
 
   VacBoxD(new constructSystem::VacuumBox(newName+"VacD",1)),
   BandBDisk(new constructSystem::DiskChopper(newName+"BandBDisk")),  
@@ -347,7 +346,18 @@ DREAM::build(Simulation& System,
   T0DiskA->setCentreFlag(3);  // Z direction
   T0DiskA->setOffsetFlag(0);  // Centre offset control
   T0DiskA->createAll(System,ChopperC->getKey("Beam"),0);
-  
+
+  FocusT0Mid->addInsertCell(ChopperC->getCell("Void"));
+  FocusT0Mid->createAll(System,ChopperC->getKey("Beam"),0,
+                        ChopperC->getKey("Beam"),0);
+
+  // Second disk of a T0 chopper
+  T0DiskB->addInsertCell(ChopperC->getCell("Void",0));
+  T0DiskB->setCentreFlag(3);  // Z direction
+  T0DiskB->setOffsetFlag(0);  // Centre offset control
+  T0DiskB->createAll(System,ChopperC->getKey("Beam"),0);
+
+
   // END TEST SECTION:
   return;
 
@@ -393,11 +403,11 @@ DREAM::build(Simulation& System,
 		    *VPipeB);
   
   // GOING TO POSITION 2:
-  buildChopperBlock(System,bunkerObj,
-		    T0DiskB->getKey("Beam"),*VacBoxB,
-		    *VacBoxC,*FocusD,
-		    *BandADisk,*BandAHouse,
-		    *VPipeC);
+  // buildChopperBlock(System,bunkerObj,
+  //       	    T0DiskB->getKey("Beam"),*VacBoxB,
+  //       	    *VacBoxC,*FocusD,
+  //       	    *BandADisk,*BandAHouse,
+  //       	    *VPipeC);
   // GOING TO 1300 m
   buildChopperBlock(System,bunkerObj,
 		    BandADisk->getKey("Beam"),*VacBoxC,

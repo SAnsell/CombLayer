@@ -316,11 +316,11 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamFC0WidthEnd",2.36);
   Control.copyVar("dreamFC0Length","dreamFCLength");
 
-  generateChopper(Control,"dreamChopperC",9.0,14.0,8.0);
+  generateChopper(Control,"dreamChopperC",20.0,36.0,32.0);
 
   // T0 Chopper disk A
   Control.addVariable("dreamT0DiskAXStep",0.0);
-  Control.addVariable("dreamT0DiskAYStep",0.0);
+  Control.addVariable("dreamT0DiskAYStep",-12.0);
   Control.addVariable("dreamT0DiskAZStep",0.0);
   Control.addVariable("dreamT0DiskAXYangle",0.0);
   Control.addVariable("dreamT0DiskAZangle",0.0);
@@ -340,9 +340,36 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamT0DiskA0PhaseAngle1",275.0);
   Control.addVariable("dreamT0DiskA0OpenAngle1",25.0);
 
+  // TMid guide
+  Control.addVariable("dreamFT0MidXStep",0.0);       
+  Control.addVariable("dreamFT0MidYStep",0.0);       
+  Control.addVariable("dreamFT0MidZStep",0.0);       
+  Control.addVariable("dreamFT0MidXYAngle",0.0);       
+  Control.addVariable("dreamFT0MidZAngle",0.0);
+  Control.addVariable("dreamFT0MidLength",8.8);       
+  
+  Control.addVariable("dreamFT0MidBeamYStep",1.10); 
+  Control.addVariable("dreamFT0MidNShapes",1);       
+  Control.addVariable("dreamFT0MidNShapeLayers",3);
+  Control.addVariable("dreamFT0MidActiveShield",0);
+
+  Control.addVariable("dreamFT0MidLayerThick1",0.4);  // glass thick
+  Control.addVariable("dreamFT0MidLayerThick2",1.5);
+
+  Control.addVariable("dreamFT0MidLayerMat0","Void");
+  Control.addVariable("dreamFT0MidLayerMat1","Aluminium");
+  Control.addVariable("dreamFT0MidLayerMat2","Void");       
+  
+  Control.addVariable("dreamFT0Mid0TypeID","Tapper");
+  Control.addVariable("dreamFT0Mid0HeightStart",4.6);
+  Control.addVariable("dreamFT0Mid0HeightEnd",4.5);
+  Control.addVariable("dreamFT0Mid0WidthStart",2.06);
+  Control.addVariable("dreamFT0Mid0WidthEnd",2.36);
+  Control.copyVar("dreamFT0Mid0Length","dreamFT0MidLength");
+
   // T0 Chopper disk B
   Control.addVariable("dreamT0DiskBXStep",0.0);
-  Control.addVariable("dreamT0DiskBYStep",-2.0);
+  Control.addVariable("dreamT0DiskBYStep",18.0);
   Control.addVariable("dreamT0DiskBZStep",0.0);
   Control.addVariable("dreamT0DiskBXYangle",0.0);
   Control.addVariable("dreamT0DiskBZangle",0.0);
@@ -360,14 +387,6 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamT0DiskB0OpenAngle0",145.0);
   Control.addVariable("dreamT0DiskB0PhaseAngle1",275.0);
   Control.addVariable("dreamT0DiskB0OpenAngle1",125.0);
-
-
-
-
-
-
-
-
 
 
 
