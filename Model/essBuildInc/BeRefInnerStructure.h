@@ -28,29 +28,23 @@ namespace essSystem
 {
 /*!
   \class BeRefInnerStructure
-  \author K. Batkov
-  \version 1.0
-  \date Aug 2015
+  \author Konstantin Batkov
+  \version 2.0
+  \date Jan 2016
   \brief Inner structure of Be reflector (engineering details)
 */
 
 class BeRefInnerStructure : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+    public attachSystem::FixedComp, public attachSystem::CellMap
 {
  private:
   
   const int insIndex;             ///< Index of surface offset
   int cellIndex;                  ///< Cell index
 
-  double waterDiscThick;          ///< Water disc thickness
-  int    waterDiscMat;            ///< Water disc material
-  double waterDiscWallThick;      ///< Water disc wall thickness
-  int    waterDiscWallMat;        ///< Water disc wall material
-
-  double BeRadius;                ///< Inner Be radius
-  int    BeMat;                   ///< Inner Be material
-  double BeWallThick;             ///< Inner Be wall thickness
-  int    BeWallMat;               ///< Inner Be wall material
+  size_t nLayers;
+  std::vector<double> baseFrac;
+  std::vector<int> mat;  // materials
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
@@ -58,6 +52,7 @@ class BeRefInnerStructure : public attachSystem::ContainedComp,
   void createSurfaces(const attachSystem::FixedComp&);
   void createObjects(Simulation&, const attachSystem::FixedComp&);
   void createLinks();
+  void layerProcess(Simulation&, const attachSystem::FixedComp&, const std::string&, const int&, const int&);
 
  public:
 

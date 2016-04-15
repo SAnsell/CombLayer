@@ -226,6 +226,9 @@ namespace essSystem
   for (int j=0; j<nSectors; j++)
     {
       theta = j*dTheta;
+      // -dTheta is needed to shoot a proton in the center of a sector, but not between them
+      // *3/2 is needed when 3 sectors with bricks are made, so we need to put the 2nd one in the centre
+      theta -= dTheta*3.0/2.0;
       thetarad = theta*M_PI/180.0;
       ModelSupport::buildPlaneRotAxis(SMap, SIsec+1, Origin, X, Z, theta+90); // invisible divider
       p[i++] = ModelSupport::buildPlaneRotAxis(SMap, SIsec+3, Origin-X*(secSepThick/2.0*cos(thetarad))-Y*(secSepThick/2.0*sin(thetarad)), X, Z, theta);

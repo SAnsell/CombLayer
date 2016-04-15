@@ -89,9 +89,6 @@ class TaperedDiskPreMod : public attachSystem::ContainedComp,
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int,const bool,const double,const double, const bool);
-
-  double getZFlightLine() const;
-  double getTiltRadius() const {return tiltRadius;}
 };
 
 }

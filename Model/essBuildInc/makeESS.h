@@ -60,6 +60,7 @@ namespace essSystem
   class CylPreMod;
   class PreModWing;
   class BulkModule;
+  class TwisterModule;
   class ShutterBay;
   class ProtonTube;
   class GuideBay;
@@ -99,10 +100,6 @@ class makeESS
   std::shared_ptr<moderatorSystem::TaperedFlightLine> LowBFL;  ///< Lower Mode FL
   std::shared_ptr<CylPreMod> LowPre;          ///< Lower Mod (Pre)
 
-  /// Lower supply 
-  std::shared_ptr<constructSystem::SupplyPipe> LowSupplyPipe; 
-  std::shared_ptr<constructSystem::SupplyPipe> LowReturnPipe;  ///< Lower supply
-
   // Butterly
   /// Primary Upper Mod 
   std::shared_ptr<constructSystem::ModBase> TopMod;
@@ -118,12 +115,21 @@ class makeESS
   std::shared_ptr<PreModWing> LowCapWing; ///< Low cap premoderator wing
   std::shared_ptr<PreModWing> TopCapWing; ///< Top cap premoderator wing
 
-  /// Top supply 
+  /// Pipes
+  std::shared_ptr<constructSystem::SupplyPipe> TopSupplyLeftAl,  TopSupplyLeftConnect,  TopSupplyLeftInvar;
+  std::shared_ptr<constructSystem::SupplyPipe> TopReturnLeftAl,  TopReturnLeftConnect,  TopReturnLeftInvar;
 
-  std::shared_ptr<constructSystem::SupplyPipe> TopSupplyPipe; 
-  std::shared_ptr<constructSystem::SupplyPipe> TopReturnPipe;  ///< Top supply
+  std::shared_ptr<constructSystem::SupplyPipe> TopSupplyRightAl, TopSupplyRightConnect, TopSupplyRightInvar;
+  std::shared_ptr<constructSystem::SupplyPipe> TopReturnRightAl, TopReturnRightConnect, TopReturnRightInvar;
+
+  std::shared_ptr<constructSystem::SupplyPipe> LowSupplyLeftAl,  LowSupplyLeftConnect,  LowSupplyLeftInvar;
+  std::shared_ptr<constructSystem::SupplyPipe> LowReturnLeftAl,  LowReturnLeftConnect,  LowReturnLeftInvar;
+
+  std::shared_ptr<constructSystem::SupplyPipe> LowSupplyRightAl, LowSupplyRightConnect, LowSupplyRightInvar;
+  std::shared_ptr<constructSystem::SupplyPipe> LowReturnRightAl, LowReturnRightConnect, LowReturnRightInvar;
 
   std::shared_ptr<BulkModule> Bulk;      ///< Main bulk module
+  std::shared_ptr<TwisterModule> Twister;
   std::shared_ptr<moderatorSystem::FlightLine> BulkLowAFL;  ///< Lower Mode FL
 
   /// Shutterbay objects
@@ -146,7 +152,7 @@ class makeESS
   std::vector<std::shared_ptr<F5Collimator>> F5array; ///< collimators for F5 tallies
   std::vector<Geometry::Vec3D> TopFocalPoints; ///< top moderator focal points
   std::vector<Geometry::Vec3D> LowFocalPoints; ///< low moderator focal points
-  
+ 
   void topFlightLines(Simulation&);
   void lowFlightLines(Simulation&);
   void createGuides(Simulation&);
@@ -155,10 +161,12 @@ class makeESS
   void buildLowPreMod(Simulation&);
 
   void buildTopButterfly(Simulation&);
-  void buildLowerPipe(Simulation&,const std::string&);
-
-  void buildTopPreMod(Simulation&);
-  void buildToperPipe(Simulation&,const std::string&);
+  void buildH2Pipe(Simulation&, std::string, std::string, std::string,
+		   std::shared_ptr<constructSystem::SupplyPipe>,
+		   std::shared_ptr<constructSystem::SupplyPipe>,
+		   std::shared_ptr<constructSystem::SupplyPipe>);
+  void buildTopPipes(Simulation&,const std::string&);
+  void buildLowPipes(Simulation&,const std::string&);
 
   void makeTarget(Simulation&,const std::string&);
   void makeBunker(Simulation&,const std::string&);
@@ -171,6 +179,7 @@ class makeESS
   void buildF5Collimator(Simulation&, const mainSystem::inputParam&); // when -TopCC is used
 
   void buildPreWings(Simulation&);
+  void buildTwister(Simulation&);
 
   void buildPillars(Simulation&);
 

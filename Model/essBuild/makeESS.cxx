@@ -91,6 +91,7 @@
 #include "PreModWing.h"
 #include "SupplyPipe.h"
 #include "BulkModule.h"
+#include "TwisterModule.h"
 #include "ShutterBay.h"
 #include "GuideBay.h"
 #include "TaperedDiskPreMod.h"
@@ -122,14 +123,43 @@ makeESS::makeESS() :
   LowAFL(new moderatorSystem::TaperedFlightLine("LowAFlight")),
   LowBFL(new moderatorSystem::TaperedFlightLine("LowBFlight")),
 
-  LowSupplyPipe(new constructSystem::SupplyPipe("LSupply")),
-  LowReturnPipe(new constructSystem::SupplyPipe("LReturn")),
-
   TopPreMod(new TaperedDiskPreMod("TopPreMod")),
   TopCapMod(new TaperedDiskPreMod("TopCapMod")),
 
   TopAFL(new moderatorSystem::TaperedFlightLine("TopAFlight")),
   TopBFL(new moderatorSystem::TaperedFlightLine("TopBFlight")),
+
+  TopSupplyLeftAl(new constructSystem::SupplyPipe("TSupplyLeftAl")),
+  TopSupplyLeftConnect(new constructSystem::SupplyPipe("TSupplyLeftConnect")),
+  TopSupplyLeftInvar(new constructSystem::SupplyPipe("TSupplyLeftInvar")),
+
+  TopReturnLeftAl(new constructSystem::SupplyPipe("TReturnLeftAl")),
+  TopReturnLeftConnect(new constructSystem::SupplyPipe("TReturnLeftConnect")),
+  TopReturnLeftInvar(new constructSystem::SupplyPipe("TReturnLeftInvar")),
+
+  TopSupplyRightAl(new constructSystem::SupplyPipe("TSupplyRightAl")),
+  TopSupplyRightConnect(new constructSystem::SupplyPipe("TSupplyRightConnect")),
+  TopSupplyRightInvar(new constructSystem::SupplyPipe("TSupplyRightInvar")),
+
+  TopReturnRightAl(new constructSystem::SupplyPipe("TReturnRightAl")),
+  TopReturnRightConnect(new constructSystem::SupplyPipe("TReturnRightConnect")),
+  TopReturnRightInvar(new constructSystem::SupplyPipe("TReturnRightInvar")),
+
+  LowSupplyLeftAl(new constructSystem::SupplyPipe("LSupplyLeftAl")),
+  LowSupplyLeftConnect(new constructSystem::SupplyPipe("LSupplyLeftConnect")),
+  LowSupplyLeftInvar(new constructSystem::SupplyPipe("LSupplyLeftInvar")),
+
+  LowReturnLeftAl(new constructSystem::SupplyPipe("LReturnLeftAl")),
+  LowReturnLeftConnect(new constructSystem::SupplyPipe("LReturnLeftConnect")),
+  LowReturnLeftInvar(new constructSystem::SupplyPipe("LReturnLeftInvar")),
+
+  LowSupplyRightAl(new constructSystem::SupplyPipe("LSupplyRightAl")),
+  LowSupplyRightConnect(new constructSystem::SupplyPipe("LSupplyRightConnect")),
+  LowSupplyRightInvar(new constructSystem::SupplyPipe("LSupplyRightInvar")),
+
+  LowReturnRightAl(new constructSystem::SupplyPipe("LReturnRightAl")),
+  LowReturnRightConnect(new constructSystem::SupplyPipe("LReturnRightConnect")),
+  LowReturnRightInvar(new constructSystem::SupplyPipe("LReturnRightInvar")),
 
   Bulk(new BulkModule("Bulk")),
   BulkLowAFL(new moderatorSystem::FlightLine("BulkLAFlight")),
@@ -160,7 +190,32 @@ makeESS::makeESS() :
   OR.addObject(TopPreMod);
   OR.addObject(TopCapMod);
 
+  OR.addObject(TopSupplyLeftAl);
+  OR.addObject(TopSupplyLeftConnect);
+  OR.addObject(TopSupplyLeftInvar);
+  OR.addObject(TopSupplyRightAl);
+  OR.addObject(TopSupplyRightConnect);
+  OR.addObject(TopSupplyRightInvar);
+  OR.addObject(TopReturnLeftAl);
+  OR.addObject(TopReturnLeftConnect);
+  OR.addObject(TopReturnLeftInvar);
+  OR.addObject(TopReturnRightAl);
+  OR.addObject(TopReturnRightConnect);
+  OR.addObject(TopReturnRightInvar);
 
+  OR.addObject(LowSupplyLeftAl);
+  OR.addObject(LowSupplyLeftConnect);
+  OR.addObject(LowSupplyLeftInvar);
+  OR.addObject(LowSupplyRightAl);
+  OR.addObject(LowSupplyRightConnect);
+  OR.addObject(LowSupplyRightInvar);
+  OR.addObject(LowReturnLeftAl);
+  OR.addObject(LowReturnLeftConnect);
+  OR.addObject(LowReturnLeftInvar);
+  OR.addObject(LowReturnRightAl);
+  OR.addObject(LowReturnRightConnect);
+  OR.addObject(LowReturnRightInvar);
+  
   OR.addObject(TopAFL);
   OR.addObject(TopBFL);
 
@@ -304,9 +359,123 @@ makeESS::buildTopButterfly(Simulation& System)
 
   return;
 }
-      
+
+void
+makeESS::buildH2Pipe(Simulation& System, std::string lobeName, std::string waterName, std::string pipeType,
+		    std::shared_ptr<constructSystem::SupplyPipe> pipeAl,
+		    std::shared_ptr<constructSystem::SupplyPipe> pipeConnect,
+		    std::shared_ptr<constructSystem::SupplyPipe> pipeInvar
+		    )
+{
+  /*
+    Build a pipe connected to a Butterfly lobe
+    \param System :: Simulation
+    \param lobeName :: Butterfly moderator lobe name
+    \param pipeType :: type of the pipe [currently ignored]
+    \param pipeAl  :: first piece of the pipe
+    \param pipeConnect  :: second piece of the pipe
+    \param pipeInvar  :: third piece of the pipe
+    The pieces can be made from different materials.
+   */
+  ELog::RegMethod RegA("makeESS", "buildH2Pipe");
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  const attachSystem::FixedComp* lobe=
+    OR.getObject<attachSystem::FixedComp>(lobeName);
+  if (!lobe)
+    throw ColErr::InContainerError<std::string>(lobeName,
+						"FixedComp not found");
+
+  const attachSystem::FixedComp* water=
+    OR.getObject<attachSystem::FixedComp>(waterName);
+  if (!water)
+    throw ColErr::InContainerError<std::string>(waterName,
+						"FixedComp not found");
+  const attachSystem::CellMap* CM =  dynamic_cast<const attachSystem::CellMap*>(water);
+
+
+  System.populateCells();
+  System.validateObjSurfMap();
+
+  // !!! this is extremaly slow. add only cells which are really needed.
+  // !!! Actually since cold Al/H can't connect with warm Al or water,
+  // !!! instead of doing this horrific thing I need to enlarge void around pipes.
+  pipeAl->addInsertCell(0, CM->getCell("InnerAlSupply"));
+  pipeConnect->addInsertCell(0, CM->getCell("InnerAlSupply"));
+  pipeInvar->addInsertCell(0, CM->getCell("InnerAlSupply"));
+
+  pipeAl->addInsertCell(0, CM->getCell("InnerAlReturn"));
+  pipeConnect->addInsertCell(0, CM->getCell("InnerAlReturn"));
+  pipeInvar->addInsertCell(0, CM->getCell("InnerAlReturn"));
+
+  pipeAl->addInsertCell(0, CM->getCell("SideWaterSupply"));
+  pipeConnect->addInsertCell(0, CM->getCell("SideWaterSupply"));
+  pipeInvar->addInsertCell(0, CM->getCell("SideWaterSupply"));
+
+  pipeAl->addInsertCell(0, CM->getCell("SideWaterReturn"));
+  pipeConnect->addInsertCell(0, CM->getCell("SideWaterReturn"));
+  pipeInvar->addInsertCell(0, CM->getCell("SideWaterReturn"));
+
+  pipeAl->setAngleSeg(12);
+  pipeAl->setOption(pipeType); 
+  // createAll arguments:
+  // layer level is depth into the object layers [0=> inner]
+  // linkPt is normal link point in fixedcomp [2]
+  // layerLevel : linkPoint [2]
+  pipeAl->createAll(System,*lobe,0,2,2);
+
+  System.populateCells();
+  System.validateObjSurfMap();
+
+  pipeConnect->setAngleSeg(12);
+  pipeConnect->setOption(pipeType);
+  pipeConnect->setStartSurf(pipeAl->getSignedLinkString(2));
+  pipeConnect->createAll(System,*pipeAl,2);
+
+  System.populateCells();
+  System.validateObjSurfMap();
+
+  pipeInvar->setAngleSeg(12);
+  pipeInvar->setOption(pipeType);
+  pipeInvar->setStartSurf(pipeConnect->getSignedLinkString(2));
+  pipeInvar->createAll(System,*pipeConnect,2);
+}
+
+
 void 
-makeESS::buildLowerPipe(Simulation& System,
+makeESS::buildTopPipes(Simulation& System,
+		      const std::string& pipeType)
+  /*!
+    Process the upper moderator pipes
+    \param System :: Simulation 
+    \param pipeType :: pipeType 
+  */
+{
+  ELog::RegMethod RegA("makeESS","buildTopPipes");
+
+
+  if (pipeType=="help")
+    {
+      ELog::EM<<"Top Pipe Configuration"<<ELog::endBasic;
+      //      ELog::EM<<"-- {Any} : Standard TDR edge and centre"<<ELog::endBasic;
+      //      ELog::EM<<"-- Top : Two pipes from the top"<<ELog::endBasic;
+      return;
+    }
+  buildH2Pipe(System, "TopFlyLeftLobe", "TopFlyLeftWater", pipeType, TopSupplyLeftAl,
+              TopSupplyLeftConnect, TopSupplyLeftInvar);
+  buildH2Pipe(System, "TopFlyLeftLobe", "TopFlyLeftWater", pipeType, TopReturnLeftAl,
+              TopReturnLeftConnect, TopReturnLeftInvar);
+
+  buildH2Pipe(System, "TopFlyRightLobe", "TopFlyRightWater", pipeType, TopSupplyRightAl, TopSupplyRightConnect, TopSupplyRightInvar);
+  buildH2Pipe(System, "TopFlyRightLobe", "TopFlyRightWater", pipeType, TopReturnRightAl, TopReturnRightConnect, TopReturnRightInvar);
+
+  return;
+}
+
+void 
+makeESS::buildLowPipes(Simulation& System,
 			const std::string& pipeType)
   /*!
     Process the lower moderator pipe
@@ -315,29 +484,13 @@ makeESS::buildLowerPipe(Simulation& System,
   */
 {
   ELog::RegMethod RegA("makeESS","processLowPipe");
-  
-  if (pipeType=="help")
-    {
-      ELog::EM<<"Lower Pipe Configuration [lowPipe]"<<ELog::endBasic;
-      ELog::EM<<"-- {Any} : Standard TDR edge and centre"<<ELog::endBasic;
-      ELog::EM<<"-- Top : Two pipes from the top"<<ELog::endBasic;
-      return;
-    }
 
-  LowReturnPipe->setAngleSeg(12);
-  if (pipeType=="Top")
-    {
-      LowSupplyPipe->setOption("Top");
-      LowReturnPipe->setOption("Top");
-      LowSupplyPipe->createAll(System,*LowMod,0,6,4,*LowPre,2);
-      LowReturnPipe->createAll(System,*LowMod,0,5,4,*LowPre,2);
-    }
-  else
-    {
-      ELog::EM<<"Low supply pipe"<<ELog::endDiag;
-      //      LowSupplyPipe->createAll(System,*LowMod,0,6,4,*LowPre,2);
-      //      LowReturnPipe->createAll(System,*LowMod,0,3,2,*LowPre,4);
-    }
+  buildH2Pipe(System, "LowFlyLeftLobe", "LowFlyLeftWater", pipeType, LowSupplyLeftAl, LowSupplyLeftConnect, LowSupplyLeftInvar);
+  buildH2Pipe(System, "LowFlyLeftLobe", "LowFlyLeftWater", pipeType, LowReturnLeftAl, LowReturnLeftConnect, LowReturnLeftInvar);
+
+  buildH2Pipe(System, "LowFlyRightLobe", "LowFlyLeftWater", pipeType, LowSupplyRightAl, LowSupplyRightConnect, LowSupplyRightInvar);
+  buildH2Pipe(System, "LowFlyRightLobe", "LowFlyLeftWater", pipeType, LowReturnRightAl, LowReturnRightConnect, LowReturnRightInvar);
+
   return;
 }
 
@@ -445,7 +598,7 @@ makeESS::optionSummary(Simulation& System)
   ELog::RegMethod RegA("makeESS","optionSummary");
   
   makeTarget(System,"help");
-  buildLowerPipe(System,"help");
+  buildLowPipes(System,"help");
   
   return;
 }
@@ -548,28 +701,53 @@ makeESS::buildPreWings(Simulation& System)
 {
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
+
+  enum Side {bottom, top};
   
   TopPreWing = std::shared_ptr<PreModWing>(new PreModWing("TopPreWing"));
   OR.addObject(TopPreWing);
-  TopPreWing->createAll(System, *TopPreMod, 9, false, true, *TopMod);
+  TopPreWing->createAll(System, *TopPreMod, 9, false, top, *TopMod);
   attachSystem::addToInsertSurfCtrl(System, *TopPreMod, *TopPreWing);
 
   TopCapWing = std::shared_ptr<PreModWing>(new PreModWing("TopCapWing"));
   OR.addObject(TopCapWing);
-  TopCapWing->createAll(System, *TopCapMod, 10, false, false, *TopMod);
+  TopCapWing->createAll(System, *TopCapMod, 10, false, bottom, *TopMod);
   attachSystem::addToInsertSurfCtrl(System, *TopCapMod, *TopCapWing);
 
   LowPreWing = std::shared_ptr<PreModWing>(new PreModWing("LowPreWing"));
   OR.addObject(LowPreWing);
-  LowPreWing->createAll(System, *LowPreMod, 9, true, false, *LowMod);
+  LowPreWing->createAll(System, *LowPreMod, 9, true, bottom, *LowMod);
   attachSystem::addToInsertSurfCtrl(System, *LowPreMod, *LowPreWing);
 
   LowCapWing = std::shared_ptr<PreModWing>(new PreModWing("LowCapWing"));
   OR.addObject(LowCapWing);
-  LowCapWing->createAll(System, *LowCapMod, 10, true, true, *LowMod);
+  LowCapWing->createAll(System, *LowCapMod, 10, true, top, *LowMod);
   attachSystem::addToInsertSurfCtrl(System, *LowCapMod, *LowCapWing);
 }
 
+void
+makeESS::buildTwister(Simulation& System)
+{
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  Twister = std::shared_ptr<TwisterModule>(new TwisterModule("Twister"));
+  OR.addObject(Twister);
+
+  Twister->createAll(System,*Bulk);
+  attachSystem::addToInsertForced(System, *Bulk, *Twister);
+  attachSystem::addToInsertForced(System, *ShutterBayObj, *Twister);
+  attachSystem::addToInsertSurfCtrl(System, *Twister, PBeam->getCC("Sector0"));
+  attachSystem::addToInsertSurfCtrl(System, *Twister, PBeam->getCC("Sector1")); ELog::EM << "remove this line after R is set correctly " << ELog::endDiag;
+  attachSystem::addToInsertControl(System, *Twister, *Reflector);
+  attachSystem::addToInsertForced(System,*Twister,TopAFL->getCC("outer"));
+  attachSystem::addToInsertForced(System,*Twister,TopBFL->getCC("outer"));
+  attachSystem::addToInsertForced(System,*Twister,LowAFL->getCC("outer"));
+  attachSystem::addToInsertForced(System,*Twister,LowBFL->getCC("outer"));
+  attachSystem::addToInsertForced(System,*Twister, Target->getCC("Wheel"));
+
+
+}
   
 void 
 makeESS::build(Simulation& System,
@@ -584,6 +762,8 @@ makeESS::build(Simulation& System,
   ELog::RegMethod RegA("makeESS","build");
 
   int voidCell(74123);
+  ModelSupport::addESSMaterial();
+
   const std::string lowPipeType=IParam.getValue<std::string>("lowPipe");
   const std::string lowModType=IParam.getValue<std::string>("lowMod");
   const std::string topModType=IParam.getValue<std::string>("topMod");
@@ -601,8 +781,6 @@ makeESS::build(Simulation& System,
     ModelSupport::cloneESSMaterial();
   else
     ELog::EM << "Material database '" << materials << "' not defined" << ELog::endErr;
-
-
 
   //  const size_t nF5 = IParam.getValue<size_t>("nF5");
 
@@ -647,7 +825,6 @@ makeESS::build(Simulation& System,
   Bulk->createAll(System,*Reflector,*Reflector);
 
   // Build flightlines after bulk
-  double TopFLHeight = TopCapMod->getZFlightLine()-TopPreMod->getZFlightLine();  // !!! \todo bool argument must be removed
   TopAFL->createAll(System,*TopMod,0,*Reflector,4,*Bulk,-3);
   TopBFL->createAll(System,*TopMod,0,*Reflector,3,*Bulk,-3);
 
@@ -681,9 +858,8 @@ makeESS::build(Simulation& System,
   // PROTON BEAMLINE
   
 
-  PBeam->createAll(System,*Reflector,1,*ShutterBayObj,-1);
-  // attachSystem::addToInsertSurfCtrl(System,*Reflector,
-  // 				    PBeam->getCC("Sector0"));
+  PBeam->createAll(System,*Target,1,*ShutterBayObj,-1);
+  Reflector->insertComponent(System, "targetVoid", PBeam->getCC("Sector0"));
   
   attachSystem::addToInsertSurfCtrl(System,*ShutterBayObj,
 				    PBeam->getCC("Full"));
@@ -692,8 +868,16 @@ makeESS::build(Simulation& System,
 
   makeBeamLine(System,IParam);
 
+  if (IParam.flag("eng"))
+    buildTwister(System);
+  
   //  buildF5Collimator(System, nF5);
   buildF5Collimator(System, IParam);
+
+
+  ELog::EM << "pipes are tmp removed" << ELog::endDiag;
+  //  buildTopPipes(System,"");
+  //  buildLowPipes(System,"");
   return;
 }
 

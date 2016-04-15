@@ -597,14 +597,15 @@ BilbaoWheel::createLinks()
   ELog::RegMethod RegA("BilbaoWheel","createLinks");
   // set Links :: Inner links:
 
-  FixedComp::setConnect(0,Origin-Y*innerRadius,-Y);
+  FixedComp::setConnect(0,Origin-Y*voidRadius,-Y);
   FixedComp::setLinkSurf(0,SMap.realSurf(wheelIndex+537));
   FixedComp::setBridgeSurf(0,-SMap.realSurf(wheelIndex+1));
 
-  FixedComp::setConnect(1,Origin+Y*innerRadius,Y);
+  FixedComp::setConnect(1,Origin+Y*voidRadius,Y);
   FixedComp::setLinkSurf(1,SMap.realSurf(wheelIndex+537));
   FixedComp::setBridgeSurf(1,SMap.realSurf(wheelIndex+1));
 
+  //<<<<<<< HEAD
   FixedComp::setConnect(2,Origin-Y*voidRadius,-Y);
   FixedComp::setLinkSurf(2,SMap.realSurf(wheelIndex+1037));
   FixedComp::setBridgeSurf(2,-SMap.realSurf(wheelIndex+1));

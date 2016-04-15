@@ -59,7 +59,10 @@ class H2Wing :
   std::array<Geometry::Vec3D,3> Pts;    ///< Corner Points
   std::array<double,3> radius;  ///< corner radii
   double height;                ///< height of moderator cell
-  double totalHeight;           ///< total height modertoa
+  double totalHeight;           ///< total height moderator
+
+  double bfDepth;               ///< BF moderator lower wall thick
+  double bfHeight;              ///< BF moderator upper wall thick
   
   int modMat;                   ///< LH2
   double modTemp;               ///< LH2 temperature [K]
@@ -68,7 +71,7 @@ class H2Wing :
   std::vector<int> mat;         ///< Layer material
   std::vector<double> temp;     ///< Layer temperature
 
-  std::string sideSurface;      ///< Side surface
+  std::string sideRule;      ///< Side rule
 
 
   void populate(const FuncDataBase&);
@@ -101,7 +104,7 @@ class H2Wing :
   virtual int getLayerSurf(const size_t,const size_t) const;
   void createAll(Simulation&,const attachSystem::FixedComp&);
 
-  inline const std::string getSideSurface() const { return sideSurface; }
+  inline const std::string getSideRule() const { return sideRule; }
   double getHeight() const { return height; }
 };
 

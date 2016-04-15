@@ -29,10 +29,11 @@ namespace essSystem
   class CylFlowGuide;
 /*!
   \class PreModWing
-  \author K. Batkov
+  \author Konstantin Batkov
   \version 1.0
   \date Aug 2015
   \brief Premoderator wing - used for flight line tilting when the flight line height is smaller than the Butterfly moderator height.
+         Inserted into the flight line.
 */
 
 class PreModWing : public attachSystem::ContainedComp,
@@ -47,7 +48,7 @@ class PreModWing : public attachSystem::ContainedComp,
   int engActive;                  ///< engineering active flag
 
   double thick;                   ///< (water) thickness
-  int mat;                     ///< (water) material
+  int mat;                        ///< (water) material
   double wallThick;               ///< wall thickness
   int wallMat;                    ///< wall material
 

@@ -180,7 +180,9 @@ H2Wing::populate(const FuncDataBase& Control)
 
   engActive=Control.EvalTriple<int>(keyName,baseName,"","EngineeringActive");
 
-  totalHeight=Control.EvalVar<double>(baseName+"TotalHeight");
+  bfDepth = Control.EvalVar<double>(baseName+"WallDepth");
+  bfHeight = Control.EvalVar<double>(baseName+"WallHeight");
+  totalHeight=Control.EvalVar<double>(baseName+"TotalHeight")-(bfDepth+bfHeight);
   
   xStep=Control.EvalVar<double>(keyName+"XStep");
   yStep=Control.EvalVar<double>(keyName+"YStep");
@@ -224,7 +226,7 @@ H2Wing::populate(const FuncDataBase& Control)
     }
 
   // calculated relative to 
-  height=totalHeight-TH;
+  height=totalHeight-TH; // hydrogen height
   if (height<Geometry::zeroTol)
     throw ColErr::NumericalAbort("Unable to calculate a negative height.\n"
 				 "Thickness   == "+
@@ -248,7 +250,7 @@ H2Wing::createUnitVector(const attachSystem::FixedComp& FC)
   ELog::RegMethod RegA("H2Wing","createUnitVector");
 
   FixedComp::createUnitVector(FC);
-  const double dh = std::accumulate(Depth.begin(), Depth.end(), 0.0) - std::accumulate(Height.begin(), Height.end(), 0.0); // difference between total depth and total height
+  const double dh = std::accumulate(Depth.begin(), Depth.end(), 0.0) - std::accumulate(Height.begin(), Height.end(), 0.0) + bfDepth - bfHeight; // difference between total depth and total height
   applyShift(xStep,yStep, dh/2.0);
   applyAngleRotate(xyOffset,0.0);
   for(size_t i=0;i<3;i++)
@@ -530,24 +532,57 @@ H2Wing::createObjects(Simulation& System)
 				     "-1 -2 -3 5 -6 (21:-7) (22:-8) (23:-9)");
   addOuterSurf(OutA);
 
-  sideSurface=ModelSupport::getComposite(SMap,triOffset,
+  sideRule=ModelSupport::getComposite(SMap,triOffset,
 				     "-1 -2 -3 (21:-7) (22:-8) (23:-9)");
 
   return;
 }
 
 Geometry::Vec3D
-H2Wing::getSurfacePoint(const size_t,
-			const size_t) const
+H2Wing::getSurfacePoint(const size_t layerIndex,
+			const size_t sideIndex) const
   /*!
     Given a side and a layer calculate the link point
     \param layerIndex :: layer, 0 is inner moderator [0-6]
-    \param sideIndex :: Side [0-3] // mid sides   
+    \param sideIndex :: 
+           -- Side [0-2] are corners  /
+           -- Side [3-9] are 
+ 
     \return Surface point
   */
 {
   ELog::RegMethod RegA("H2Wing","getSurfacePoint");
-  throw ColErr::AbsObjMethod("Not implemented yet");
+
+  if (layerIndex>=nLayers)
+    throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layerIndex");
+  
+  // Loop over corners that are bound by convex
+  std::array<Geometry::Vec3D,3> CPts;
+  std::array<Geometry::Vec3D,3> NPts;
+  double PDepth(0.0);
+  double VH(0.0), VD(0.0);
+
+  for(size_t i=1;i<layerIndex;i++)
+    {
+      PDepth+=Thick[i];
+      VH += Height[i];
+      VD += Depth[i];
+    }
+  cornerSet(PDepth,CPts,NPts);
+
+  switch(sideIndex)
+    {
+    case 0:
+    case 1:
+    case 2:
+      return (CPts[sideIndex]+CPts[(sideIndex+1)%3])/2.0;
+    case 4:
+      return Origin-Z*(VD+height/2.0);
+    case 5:
+      Origin+Z*(VH+height/2.0);
+    }
+
+  throw ColErr::IndexError<size_t>(sideIndex,6,"sideIndex");
 }
 
 int
@@ -658,6 +693,12 @@ H2Wing::createAll(Simulation& System,
 
   if (engActive)
     InnerComp->createAll(System,*this);
+
+  // target-moderator distance check
+  if ((fabs(Origin[2]-13.7)>Geometry::zeroTol) && // TopFly
+      (fabs(Origin[2]+15.3)>Geometry::zeroTol))   // LowFly
+    ELog::EM << "Target-moderator distance is wrong for " << keyName << ": " << Origin[2] << ELog::endErr;
+
   return;
 }
   

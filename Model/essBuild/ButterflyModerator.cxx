@@ -91,8 +91,11 @@ ButterflyModerator::ButterflyModerator(const ButterflyModerator& A) :
   MidWater(A.MidWater->clone()),
   LeftWater(A.LeftWater->clone()),
   RightWater(A.LeftWater->clone()),
+  totalHeight(A.totalHeight),
   outerRadius(A.outerRadius),
-  ExcludeStr(A.ExcludeStr)
+  wallMat(A.wallMat),
+  wallDepth(A.wallDepth),
+  wallHeight(A.wallHeight)
   /*!
     Copy constructor
     \param A :: ButterflyModerator to copy
@@ -116,8 +119,11 @@ ButterflyModerator::operator=(const ButterflyModerator& A)
       *MidWater= *A.MidWater;
       *LeftWater= *A.LeftWater;
       *RightWater= *A.RightWater;
+      totalHeight=A.totalHeight;
       outerRadius=A.outerRadius;
-      ExcludeStr=A.ExcludeStr;
+      wallMat=A.wallMat;
+      wallDepth=A.wallDepth;
+      wallHeight=A.wallHeight;
     }
   return *this;
 }
@@ -150,6 +156,10 @@ ButterflyModerator::populate(const FuncDataBase& Control)
 
   ModBase::populate(Control);
   totalHeight=Control.EvalVar<double>(keyName+"TotalHeight");
+  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
+  wallDepth = Control.EvalVar<double>(keyName+"WallDepth");
+  wallHeight = Control.EvalVar<double>(keyName+"WallHeight");
+
   return;
 }
 
@@ -184,8 +194,12 @@ ButterflyModerator::createSurfaces()
   ELog::RegMethod RegA("ButterflyModerator","createSurface");
   
   ModelSupport::buildCylinder(SMap,flyIndex+7,Origin,Z,outerRadius);
+
   ModelSupport::buildPlane(SMap,flyIndex+5,Origin-Z*(totalHeight/2.0),Z);
   ModelSupport::buildPlane(SMap,flyIndex+6,Origin+Z*(totalHeight/2.0),Z);
+
+  ModelSupport::buildPlane(SMap,flyIndex+15,Origin-Z*(totalHeight/2.0-wallDepth),Z);
+  ModelSupport::buildPlane(SMap,flyIndex+16,Origin+Z*(totalHeight/2.0-wallHeight),Z);
 
   return;
 }
@@ -199,12 +213,35 @@ ButterflyModerator::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("ButterflyModerator","createObjects");
   
-  const std::string Exclude=ContainedComp::getExclude();
-  ExcludeStr = Exclude;
+  const std::string sideRule=getSideRule(); // ContainedComp::getExclude();
+
+  HeadRule HR(sideRule);
+  HR.makeComplement();
 
   std::string Out;
+
+  if (wallDepth>Geometry::zeroTol) // \todo SA: why CL can't take care about it?
+  {
+    Out=ModelSupport::getComposite(SMap,flyIndex," -7 5 -15 ");  
+    System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+HR.display()));
+  }
+
+  if (wallHeight>Geometry::zeroTol) // \todo SA: why CL can't take care about it?
+    {
+      Out=ModelSupport::getComposite(SMap,flyIndex," -7 16 -6 ");  
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+HR.display()));
+      // otherwise split complicated cell by parts:
+      /*      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+LeftWater->getSideRule()));
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+RightWater->getSideRule()));
+      HeadRule bfHR;
+      bfHR.procString(LeftUnit->getSideRule());
+      bfHR.addUnion(RightUnit->getSideRule());
+      bfHR.addUnion(MidWater->getSideRule());
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+bfHR.display()));*/
+    }
+
   Out=ModelSupport::getComposite(SMap,flyIndex," -7 5 -6 ");  
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+Exclude));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+sideRule));
   setCell("ambientVoid", cellIndex-1);
 
   clearRules();
@@ -225,28 +262,32 @@ ButterflyModerator::getCommonSurf(const size_t) const
 }
 
 int
-ButterflyModerator::getLayerSurf(const size_t,const size_t) const
+ButterflyModerator::getLayerSurf(const size_t layerIndex,
+				 const size_t sideIndex) const
   /*!
-    Only components have reference values
   */
 {
   ELog::RegMethod RegA("ButterflyModerator","getLayerSurf");
-  throw ColErr::AbsObjMethod("Not implemented yet");
+  //  throw ColErr::AbsObjMethod("Not implemented yet");
+  return LeftUnit->getLayerSurf(layerIndex, sideIndex);
+  
 }
 
 std::string
-ButterflyModerator::getLayerString(const size_t,const size_t) const
+ButterflyModerator::getLayerString(const size_t layerIndex,
+				   const size_t sideIndex) const
   /*!
     Only components have reference values
   */
 {
   ELog::RegMethod RegA("ButterflyModerator","getLayerString");
-  throw ColErr::AbsObjMethod("Not implemented yet");
+  //  throw ColErr::AbsObjMethod("Not implemented yet");
+  return LeftUnit->getLayerString(layerIndex, sideIndex);
 }
 
 Geometry::Vec3D
-ButterflyModerator::getSurfacePoint(const size_t,
-				    const size_t) const
+ButterflyModerator::getSurfacePoint(const size_t layerIndex,
+				    const size_t sideIndex) const
   /*!
     Given a side and a layer calculate the link point
     \param layerIndex :: layer, 0 is inner moderator [0-6]
@@ -255,7 +296,8 @@ ButterflyModerator::getSurfacePoint(const size_t,
   */
 {
   ELog::RegMethod RegA("ButterflyModerator","getSurfacePoint");
-  throw ColErr::AbsObjMethod("Not implemented yet");
+  //  throw ColErr::AbsObjMethod("Not implemented yet");
+  return LeftUnit->getSurfacePoint(layerIndex, sideIndex);
 }
 
 void
@@ -279,8 +321,8 @@ ButterflyModerator::createLinks()
   
   FixedComp::setLinkCopy(4,*LeftUnit,4);
   FixedComp::setLinkCopy(5,*LeftUnit,5);
-  const double LowV= LU[4].getConnectPt().Z();
-  const double HighV= LU[5].getConnectPt().Z();
+  const double LowV= LU[4].getConnectPt().Z()-wallDepth*Z[2];
+  const double HighV= LU[5].getConnectPt().Z()+wallHeight*Z[2];
   const Geometry::Vec3D LowPt(Origin.X(),Origin.Y(),LowV);
   const Geometry::Vec3D HighPt(Origin.X(),Origin.Y(),HighV);
   FixedComp::setConnect(4,LowPt,-Z);
@@ -330,7 +372,7 @@ ButterflyModerator::createAll(Simulation& System,
   
   std::string CutString=LeftUnit->getSignedLinkString(2);
   const std::string Exclude=
-    ModelSupport::getComposite(SMap,flyIndex," -7 5 -6 ");
+    ModelSupport::getComposite(SMap,flyIndex," -7 15 -16 ");
   LeftWater->createAll(System,*this,CutString,Exclude);
 
   CutString=RightUnit->getSignedLinkString(2);
@@ -347,19 +389,34 @@ ButterflyModerator::createAll(Simulation& System,
 }
 
   std::string
-  ButterflyModerator::getSideSurface() const
+  ButterflyModerator::getSideRule() const
   /*
-    Return side surface string
+    Return side rule
     \todo // SA: Use union of link points as it is faster
   */
   {
     std::string side("");
     HeadRule HR;
-    HR.procString(LeftUnit->getSideSurface());
-    HR.addUnion(RightUnit->getSideSurface());
-    HR.addUnion(MidWater->getSideSurface());
-    HR.addUnion(LeftWater->getSideSurface());
-    HR.addUnion(RightWater->getSideSurface());
+    HR.procString(LeftUnit->getSideRule());
+    HR.addUnion(RightUnit->getSideRule());
+    HR.addUnion(MidWater->getSideRule());
+    HR.addUnion(LeftWater->getSideRule());
+    HR.addUnion(RightWater->getSideRule());
+    HR.makeComplement();
+    return HR.display();
+  }
+
+  std::string
+  ButterflyModerator::getLeftRightWaterSideRule() const
+  /*
+    Return left+right water side rule
+    \todo // SA: Use union of link points as it is faster
+  */
+  {
+    std::string side("");
+    HeadRule HR;
+    HR.procString(LeftWater->getSideRule());
+    HR.addUnion(RightWater->getSideRule());
     HR.makeComplement();
     return HR.display();
   }
@@ -384,8 +441,9 @@ ButterflyModerator::createAll(Simulation& System,
     for (int i=0; i<10; i++)
       vec.push_back(MidWater->getLinkPt(i));
 
-    Geometry::Vec3D zmin(0, 0, Origin[2]-LeftUnit->getHeight()/2.0);
-    Geometry::Vec3D zmax(0, 0, Origin[2]+LeftUnit->getHeight()/2.0);
+    Geometry::Vec3D zmin(0, 0, LeftUnit->getCentre()[2]-LeftUnit->getHeight()/2.0);
+    Geometry::Vec3D zmax(0, 0, LeftUnit->getCentre()[2]+LeftUnit->getHeight()/2.0);
+
 
     vec.push_back(zmin);
     vec.push_back(zmax);

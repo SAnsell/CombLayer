@@ -39,7 +39,8 @@ namespace essSystem
 class EdgeWater : 
   public attachSystem::ContainedComp,
   public attachSystem::LayerComp,
-  public attachSystem::FixedComp
+    public attachSystem::FixedComp,
+    public attachSystem::CellMap
 {
  private:
 
@@ -48,17 +49,24 @@ class EdgeWater :
 
   double width;
   double wallThick;
+  double sideWaterThick;     ///< Side water thickness
+  int    sideWaterMat;       ///< Side water material
+  double sideWaterCutAngle;  ///< Side water cut angle
+  double sideWaterCutOffset; ///< Distance from intersection with divider where cut starts
+  double insWaterLength;        ///< water insert length. if insWaterLength<0 and insWaterHeight<0 then water insert is not built.
+  double insWaterHeight;        ///< water insert height. if negative, spans over full height
+  double insWaterThick;         ///< water insert thick
 
   int modMat;               ///< Water material
   int wallMat;              ///< Wall material
   double modTemp;           ///< Moderator temperature
 
-  std::string sideSurface;      ///< Side surface
+  std::string sideRule;      ///< Side rule
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
 
-  void createSurfaces();
+  void createSurfaces(const std::string&);
   void createObjects(Simulation&,const std::string&,const std::string&);
   void createLinks();
 
@@ -76,7 +84,7 @@ class EdgeWater :
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const std::string&,const std::string&);
-  inline const std::string getSideSurface() const { return sideSurface; }
+  inline const std::string getSideRule() const { return sideRule; }
 };
 
 }

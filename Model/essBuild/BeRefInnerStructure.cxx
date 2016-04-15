@@ -70,13 +70,19 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "BeRefInnerStructure.h"
+// for layerProcess:
+#include "surfDIter.h"
+#include "surfDivide.h"
+#include "surfDBase.h"
+#include "mergeTemplate.h"
+
 
 namespace essSystem
 {
 
   BeRefInnerStructure::BeRefInnerStructure(const std::string& Key) :
     attachSystem::ContainedComp(),
-    attachSystem::FixedComp(Key,6),
+    attachSystem::FixedComp(Key,6), attachSystem::CellMap(),
     insIndex(ModelSupport::objectRegister::Instance().cell(Key)),
     cellIndex(insIndex+1)
     /*!
@@ -90,13 +96,7 @@ namespace essSystem
     attachSystem::FixedComp(A),
     insIndex(A.insIndex),
     cellIndex(A.cellIndex),
-    waterDiscThick(A.waterDiscThick),
-    waterDiscMat(A.waterDiscMat),
-    waterDiscWallMat(A.waterDiscWallMat),
-    BeRadius(A.BeRadius),
-    BeMat(A.BeMat),
-    BeWallThick(A.BeWallThick),
-    BeWallMat(A.BeWallMat)
+    nLayers(A.nLayers)
     /*!
       Copy constructor
       \param A :: BeRefInnerStructure to copy
@@ -116,14 +116,7 @@ namespace essSystem
 	attachSystem::ContainedComp::operator=(A);
 	attachSystem::FixedComp::operator=(A);
 	cellIndex=A.cellIndex;
-	waterDiscThick=A.waterDiscThick;
-	waterDiscMat=A.waterDiscMat;
-	waterDiscWallThick=A.waterDiscWallThick;
-	waterDiscWallMat=A.waterDiscWallMat;
-	BeRadius=A.BeRadius;
-	BeMat=A.BeMat;
-	BeWallThick=A.BeWallThick;
-	BeWallMat=A.BeWallMat;
+	nLayers=A.nLayers;
       }
     return *this;
   }
@@ -154,17 +147,9 @@ namespace essSystem
   {
     ELog::RegMethod RegA("BeRefInnerStructure","populate");
 
-    waterDiscThick=Control.EvalVar<double>(keyName+"WaterDiscThick");
-    waterDiscMat=ModelSupport::EvalMat<int>(Control,keyName+"WaterDiscMat");
-
-    waterDiscWallThick=Control.EvalVar<double>(keyName+"WaterDiscWallThick");
-    waterDiscWallMat=ModelSupport::EvalMat<int>(Control,keyName+"WaterDiscWallMat");
-
-    BeRadius=Control.EvalVar<double>(keyName+"BeRadius");
-    BeMat=ModelSupport::EvalMat<int>(Control,keyName+"BeMat");
-
-    BeWallThick=Control.EvalVar<double>(keyName+"BeWallThick");
-    BeWallMat=ModelSupport::EvalMat<int>(Control,keyName+"BeWallMat");
+    nLayers=Control.EvalVar<size_t>(keyName+"NLayers");
+    ModelSupport::populateDivideLen(Control,nLayers,keyName+"BaseLen", 1.0, baseFrac); ELog::EM << "check if 1.0 is correct here" << ELog::endDiag;
+    ModelSupport::populateDivide(Control,nLayers,keyName+"Mat", 0, mat);
 
     return;
   }
@@ -191,18 +176,6 @@ namespace essSystem
   {
     ELog::RegMethod RegA("BeRefInnerStructure","createSurfaces");
 
-    const double BeRefZBottom = Reflector.getLinkPt(6)[2];
-    const double BeRefZTop = Reflector.getLinkPt(7)[2];
-
-    ModelSupport::buildPlane(SMap, insIndex+5, Origin+Z*(BeRefZBottom+waterDiscThick), Z);
-    ModelSupport::buildPlane(SMap, insIndex+6, Origin+Z*(BeRefZTop-waterDiscThick), Z);
-
-    ModelSupport::buildPlane(SMap, insIndex+15, Origin+Z*(BeRefZBottom+waterDiscThick+waterDiscWallThick), Z);
-    ModelSupport::buildPlane(SMap, insIndex+16, Origin+Z*(BeRefZTop-waterDiscThick-waterDiscWallThick), Z);
-
-    ModelSupport::buildCylinder(SMap, insIndex+7, Origin, Z, BeRadius);
-    ModelSupport::buildCylinder(SMap, insIndex+17, Origin, Z, BeRadius+BeWallThick);
-
     return; 
   }
 
@@ -215,79 +188,11 @@ namespace essSystem
   */
   {
     ELog::RegMethod RegA("BeRefInnerStructure","createObjects");
-    
-    const attachSystem::CellMap* CM = dynamic_cast<const attachSystem::CellMap*>(&Reflector);
-    MonteCarlo::Object* LowBeObj(0);
-    MonteCarlo::Object* TopBeObj(0);
-    int lowBeCell(0);
-    int topBeCell(0);
 
-    if (CM)
-      {
-	lowBeCell=CM->getCell("lowBe");
-	LowBeObj=System.findQhull(lowBeCell);
+    layerProcess(System, Reflector, "topBe", 10, 7);
+    layerProcess(System, Reflector, "lowBe", 9, 6);
 
-	topBeCell=CM->getCell("topBe");
-	TopBeObj=System.findQhull(topBeCell);
-      }
-    if (!LowBeObj)
-      throw ColErr::InContainerError<int>(topBeCell,"Reflector lowBe cell not found");
-    if (!TopBeObj)
-      throw ColErr::InContainerError<int>(topBeCell,"Reflector topBe cell not found");
-    
-    std::string Out;
-    const std::string lowBeStr = Reflector.getLinkString(6);
-    const std::string topBeStr = Reflector.getLinkString(7);
-    const std::string sideBeStr = Reflector.getLinkString(8);
-    HeadRule HR, LowBeExclude, TopBeExclude;
-
-    // Bottom Be cell
-    Out = ModelSupport::getComposite(SMap, insIndex, " -5 ");
-    HR.procString(lowBeStr);
-    HR.makeComplement();
-    System.addCell(MonteCarlo::Qhull(cellIndex++, waterDiscMat, 0, Out+sideBeStr+HR.display()));
-
-    Out = ModelSupport::getComposite(SMap, insIndex, " 5 -15 ");
-    System.addCell(MonteCarlo::Qhull(cellIndex++, waterDiscWallMat, 0, Out+sideBeStr));
-
-    Out = ModelSupport::getComposite(SMap, insIndex, " -7 15");
-    System.addCell(MonteCarlo::Qhull(cellIndex++, BeMat, 0, Out + Reflector.getLinkString(9)));
-
-    Out = ModelSupport::getComposite(SMap, insIndex, " -17 7 15 ");
-    System.addCell(MonteCarlo::Qhull(cellIndex++, BeWallMat, 0, Out + Reflector.getLinkString(9)));
-
-    Out = ModelSupport::getComposite(SMap, insIndex, " -17 15 ");
-    LowBeExclude.procString(Out);
-
-    Out = ModelSupport::getComposite(SMap, insIndex, " -15 ");
-    LowBeExclude.addUnion(Out);
-    LowBeExclude.makeComplement();
-    LowBeObj->addSurfString(LowBeExclude.display());
-    
-    // Top Be cell
-    Out = ModelSupport::getComposite(SMap, insIndex, " 6 ");
-    HR.procString(topBeStr);
-    HR.makeComplement();
-    System.addCell(MonteCarlo::Qhull(cellIndex++, waterDiscMat, 0, Out+sideBeStr+HR.display()));
-
-    Out = ModelSupport::getComposite(SMap, insIndex, " 16 -6 ");
-    System.addCell(MonteCarlo::Qhull(cellIndex++, waterDiscWallMat, 0, Out+sideBeStr));
-
-    Out = ModelSupport::getComposite(SMap, insIndex, " -7 -16");
-    System.addCell(MonteCarlo::Qhull(cellIndex++, BeMat, 0, Out + Reflector.getLinkString(10)));
-
-    Out = ModelSupport::getComposite(SMap, insIndex, " -17 7 -16 ");
-    System.addCell(MonteCarlo::Qhull(cellIndex++, BeWallMat, 0, Out + Reflector.getLinkString(10)));
-
-    Out = ModelSupport::getComposite(SMap, insIndex, " -17 -16 ");
-    TopBeExclude.procString(Out);
-
-    Out = ModelSupport::getComposite(SMap, insIndex, " 16 ");
-    TopBeExclude.addUnion(Out);
-    TopBeExclude.makeComplement();
-    TopBeObj->addSurfString(TopBeExclude.display());
-
-    return; 
+    return;
   }
 
   void
@@ -300,6 +205,66 @@ namespace essSystem
 
 
     return;
+  }
+
+  void
+  BeRefInnerStructure::layerProcess(Simulation& System, const attachSystem::FixedComp& Reflector, const std::string& cellName, const int& lpS, const int& lsS)
+  /*!
+    Processes the splitting of the surfaces into a multilayer system
+    \param System :: Simulation to work on
+    \param Reflector :: FC object
+    \param cellName :: top or bottom Be cell
+    \param lpS :: link pont of primary surface
+    \param lsS :: link point of secondary surface
+  */
+  {
+    ELog::RegMethod RegA("BeRefInnerStructure","layerProcess");
+    if (nLayers>1)
+      {
+	const int pS = Reflector.getLinkSurf(lpS);
+	const int sS = Reflector.getLinkSurf(lsS);
+
+	const attachSystem::CellMap* CM = dynamic_cast<const attachSystem::CellMap*>(&Reflector);
+	MonteCarlo::Object* beObj(0);
+	int beCell(0);
+
+	if (CM)
+	  {
+	    beCell=CM->getCell(cellName);
+	    beObj=System.findQhull(beCell);
+	  }
+
+	if (!beObj)
+	  throw ColErr::InContainerError<int>(beCell,"Reflector topBe cell not found");
+
+	ModelSupport::surfDivide DA;
+	for(size_t i=1;i<nLayers;i++)
+	  {
+	    DA.addFrac(baseFrac[i-1]);
+	    DA.addMaterial(mat[i-1]);
+	  }
+	DA.addMaterial(mat.back());
+
+	DA.setCellN(beCell);
+	DA.setOutNum(cellIndex, insIndex+10000);
+
+	ModelSupport::mergeTemplate<Geometry::Plane,
+				    Geometry::Plane> surroundRule;
+
+	surroundRule.setSurfPair(SMap.realSurf(pS),
+				 SMap.realSurf(sS));
+
+	std::string OutA = Reflector.getLinkString(lpS);
+	std::string OutB = Reflector.getLinkComplement(lsS);
+
+	surroundRule.setInnerRule(OutA);
+	surroundRule.setOuterRule(OutB);
+
+	DA.addRule(&surroundRule);
+	DA.activeDivideTemplate(System);
+
+	cellIndex=DA.getCellNum();
+      }
   }
 
   void

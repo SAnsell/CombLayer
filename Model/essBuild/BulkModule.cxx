@@ -150,7 +150,9 @@ BulkModule::populate(const Simulation& System)
   ELog::RegMethod RegA("BulkModule","populate");
   
   const FuncDataBase& Control=System.getDataBase();
-  
+
+  engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
+
   xStep=Control.EvalVar<double>(keyName+"XStep");
   yStep=Control.EvalVar<double>(keyName+"YStep");
   zStep=Control.EvalVar<double>(keyName+"ZStep");
