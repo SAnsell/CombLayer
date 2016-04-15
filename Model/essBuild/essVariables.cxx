@@ -608,7 +608,7 @@ EssVariables(FuncDataBase& Control)
   ODINvariables(Control);
   DREAMvariables(Control);
   shortDREAMvariables(Control);
-  shortDREAM2variables(Control);
+  //  shortDREAM2variables(Control);
   shortODINvariables(Control);
   ESTIAvariables(Control);
   LOKIvariables(Control);
