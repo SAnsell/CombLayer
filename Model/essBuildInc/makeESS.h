@@ -60,6 +60,7 @@ namespace essSystem
   class CylPreMod;
   class PreModWing;
   class BulkModule;
+  class TwisterModule;
   class ShutterBay;
   class ProtonTube;
   class GuideBay;
@@ -124,6 +125,7 @@ class makeESS
   std::shared_ptr<constructSystem::SupplyPipe> LowReturnRightAl, LowReturnRightConnect, LowReturnRightInvar;
 
   std::shared_ptr<BulkModule> Bulk;      ///< Main bulk module
+  std::shared_ptr<TwisterModule> Twister;
   std::shared_ptr<moderatorSystem::FlightLine> BulkLowAFL;  ///< Lower Mode FL
 
   /// Shutterbay objects
@@ -167,6 +169,7 @@ class makeESS
   void buildF5Collimator(Simulation&, const mainSystem::inputParam&); // when -TopCC is used
 
   void buildPreWings(Simulation&);
+  void buildTwister(Simulation&);
 
   void optionSummary(Simulation&);
 

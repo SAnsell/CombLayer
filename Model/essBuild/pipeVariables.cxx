@@ -56,6 +56,7 @@ namespace setVariable
 void
 pipeVariables(FuncDataBase& Control)
 {
+  ELog::RegMethod RegA("essVariables[F]","pipeVariables"); 
   
   const int nRad = 2;
   const double invarPipeHeight = 30;
@@ -283,7 +284,7 @@ pipeVariables(FuncDataBase& Control)
 
 
 
-  for (int i=0; i<nRad; i++)
+  for (size_t i=0; i<nRad; i++)
     {
       std::string stri = StrFunc::makeString(i);
 

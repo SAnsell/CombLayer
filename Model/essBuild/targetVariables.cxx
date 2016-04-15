@@ -77,7 +77,7 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelXStep",0.0);
   Control.addVariable("BilbaoWheelYStep",112.2);
   Control.addVariable("BilbaoWheelZStep",0.0);
-  Control.addVariable("BilbaoWheelXYangle",-15.0);
+  Control.addVariable("BilbaoWheelXYangle",0.0);
   Control.addVariable("BilbaoWheelZangle",0.0);
   Control.addVariable("BilbaoWheelTargetHeight",8.0);
   Control.addVariable("BilbaoWheelVoidTungstenThick", 0.1);
@@ -156,7 +156,7 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("WheelCoolantRadiusIn",114.5);
   Control.addVariable("WheelCoolantRadiusOut",124.8);
   Control.addVariable("WheelCaseRadius",125.0);
-  Control.addVariable("WheelVoidRadius",126.0);
+  Control.addVariable("WheelVoidRaodius",126.0);
 
   Control.addVariable("WheelWMat","Tungsten");
   Control.addVariable("WheelSteelMat","SS316L");
@@ -257,27 +257,27 @@ EssProtonBeam(FuncDataBase& Control)
   Control.addVariable("ProtonTubeNSection",4);
 
   Control.addVariable("ProtonTubeRadius1",11.5);
-  Control.addVariable("ProtonTubeLength1",120.0); //from mod centre leftside
-  Control.addVariable("ProtonTubeZcut1",5.35); //cut Z planes
+  Control.addVariable("ProtonTubeLength1",148.25); //from mod centre leftside
+  Control.addVariable("ProtonTubeZcut1",3.7);  // to have the same height as BeRef::targetVoid
   Control.addVariable("ProtonTubeWallThick1",0.0);
   Control.addVariable("ProtonTubeInnerMat1","helium");  // mat : 2000
   Control.addVariable("ProtonTubeWallMat1","CastIron"); // mat : 26316
 
-  Control.addVariable("ProtonTubeRadius2",10.5);
+  Control.addVariable("ProtonTubeRadius2",15.0);  // as in TSM141108V2003
   Control.addVariable("ProtonTubeLength2",200.0);
   Control.addVariable("ProtonTubeZcut2",0.0); 
   Control.addVariable("ProtonTubeWallThick2",1.0);
   Control.addVariable("ProtonTubeInnerMat2","helium");  // mat : 2000
   Control.addVariable("ProtonTubeWallMat2","CastIron"); // mat : 26316
 
-  Control.addVariable("ProtonTubeRadius3",10.5);
+  Control.addVariable("ProtonTubeRadius3",15.0);  // as in TSM141108V2003
   Control.addVariable("ProtonTubeLength3",127.5);
   Control.addVariable("ProtonTubeZcut3",0.0);
   Control.addVariable("ProtonTubeWallThick3",1.0);
   Control.addVariable("ProtonTubeInnerMat3","helium");   // mat : 2000
   Control.addVariable("ProtonTubeWallMat3","CastIron");  // mat : 26316
 
-  Control.addVariable("ProtonTubeRadius4",10.5);
+  Control.addVariable("ProtonTubeRadius4",15.0); // as in TSM141108V2003
   // Control.addVariable("ProtonTubeLength4",147.5);
   Control.addVariable("ProtonTubeLength4",152.5);
   Control.addVariable("ProtonTubeZcut4",0.0);

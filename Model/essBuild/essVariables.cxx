@@ -53,7 +53,6 @@
 
 namespace setVariable
 {
-
 void
 EssVariables(FuncDataBase& Control)
   /*!
@@ -72,6 +71,9 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("EngineeringActive",0);      // NO engineering
   Control.addVariable("F5Radius", 1000);      // Radial location of all F5 tallies (valid with -f5-collimators argument)
 
+  pipeVariables(Control);
+
+  
   Control.addVariable("LSupplyNSegIn",2);
   // Central point:
   Control.addVariable("LSupplyPPt0",Geometry::Vec3D(0,-1.0,0.0));
@@ -465,15 +467,14 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("TopBFlightLinerThick1"); 
   Control.addVariable("TopBFlightLinerMat1","Aluminium");
 
-  
   Control.addVariable("BeRefXStep",0.0);  
   Control.addVariable("BeRefYStep",0.0);  
   Control.addVariable("BeRefZStep",0.0);
   Control.addVariable("BeRefXYangle",0.0); 
   Control.addVariable("BeRefZangle",0.0);
-  Control.addVariable("BeRefRadius",34.3);
-  Control.addVariable("BeRefHeight",74.2);
-  Control.addVariable("BeRefWallThick",0.3);
+  Control.addVariable("BeRefRadius",35);
+  Control.addVariable("BeRefHeight",74.6);
+  Control.addVariable("BeRefWallThick",3);
   Control.addVariable("BeRefWallThickLow",0.0);
   Control.addVariable("BeRefTargetSepThick",13.0);
   Control.addVariable("BeRefLowVoidThick",2.3);
@@ -482,8 +483,8 @@ EssVariables(FuncDataBase& Control)
   //  Control.addVariable("BeRefRefMat","Be300K");
 
 
-  Control.addVariable("BeRefWallMat","Aluminium");
-  Control.addVariable("BeRefTargSepMat","Void");
+  Control.addVariable("BeRefWallMat","SS316L"); // Marc said 12 Jan 2016
+  Control.addVariable("BeRefTargSepMat","Iron10H2O"); // = BulkMat2
 
   ///< TODO : Fix double variable dependency !!!
   
@@ -582,6 +583,31 @@ Control.addVariable("BeRefInnerStructureMat5", "Be30H2O");
   Control.addVariable("BulkLAFlightNLiner",0);       // Liner
 
 
+  // Twister
+  Control.addVariable("TwisterXStep",11.0);
+  Control.addVariable("TwisterYStep",-62.0);
+  Control.addVariable("TwisterZStep",0.0);
+  Control.addVariable("TwisterXYangle",10.0);
+  Control.addVariable("TwisterZangle",0.0);
+  Control.addVariable("TwisterShaftRadius",18.5);
+  Control.addVariable("TwisterShaftHeight",120.0+222.4);
+  Control.addVariable("TwisterShaftMat","Iron10H2O");
+  Control.addVariable("TwisterShaftWallThick",3.0);
+  Control.addVariable("TwisterShaftWallMat","Iron10H2O"); 
+  Control.addVariable("TwisterShaftBearingRadius",4);
+  Control.addVariable("TwisterShaftBearingHeight",54.4);
+  Control.addVariable("TwisterShaftBearingWallThick",12.2);
+ 
+  Control.addVariable("TwisterPlugFrameRadius",105.0);
+  Control.addVariable("TwisterPlugFrameWallThick",3.0);
+  Control.addVariable("TwisterPlugFrameHeight",57.6);
+  Control.addVariable("TwisterPlugFrameDepth",60.6);
+  Control.addVariable("TwisterPlugFrameAngle",38.0);
+  Control.addVariable("TwisterPlugFrameMat","Iron10H2O");
+  Control.addVariable("TwisterPlugFrameWallThick",3.0);
+  Control.addVariable("TwisterPlugFrameWallMat","Iron10H2O");
+  
+
   // SHUTTER BAY
   Control.addVariable("ShutterBayXStep",0.0);  
   Control.addVariable("ShutterBayYStep",0.0);  
@@ -666,7 +692,6 @@ Control.addVariable("BeRefInnerStructureMat5", "Be30H2O");
   return;
 }
 
-  
 void
 EssReflectorVariables(FuncDataBase& Control)
   /*!

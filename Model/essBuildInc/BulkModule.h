@@ -42,6 +42,8 @@ class BulkModule : public attachSystem::ContainedComp,
   
   const int bulkIndex;           ///< Index of surface offset
   int cellIndex;                ///< Cell index
+
+  int engActive;                  ///< Engineering active flag
   
   double xStep;                 ///< Offset on X to Target
   double yStep;                 ///< Offset on Y to Target [+ve forward]

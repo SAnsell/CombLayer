@@ -103,13 +103,13 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("ABunkerRoofVert5",20.0);
 
 
-  Control.addVariable("ABunkerRoofMat0","CarstonConc");
+  Control.addVariable("ABunkerRoofMat0","Void"); //!!! must be CarstenConc");
   Control.addVariable("ABunkerRoofMat1","CastIron");
   Control.addVariable("ABunkerRoofMat2","CarstonConc");
   Control.addVariable("ABunkerRoofMat3","CastIron");
   Control.addVariable("ABunkerRoofMat4","CarstonConc");
 
-  Control.addVariable("ABunkerWallMat0","CarstenConc");
+  Control.addVariable("ABunkerWallMat0","Void"); //!!! must be CarstenConc");
   Control.addVariable("ABunkerWallMat1","CastIron");
   Control.addVariable("ABunkerWallMat2","CastenConc");
   Control.addVariable("ABunkerWallMat3","CastIron");
