@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MCNP(X) Input builder
+  CombLayer : MNCPX Input builder
  
- * File:   weightsInc/BasicWWE.h
- *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * File:   testInclude/testWeightMesh.h
+*
+ * Copyright (c) 2004-2013 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,37 +19,41 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef WeightSystem_BasicWWE_h
-#define WeightSystem_BasicWWE_h
-
-///\file 
-
-class Simulation;
-
-
-/*!
-  \namespace WeightSystem
-  \brief Adds a layer of shutters to the Target/Reflect/Moderatr
-  \author S. Ansell
-  \version 1.0
-  \date April 2009
-*/
+#ifndef testWeightMesh_h
+#define testWeightMesh_h 
 
 namespace WeightSystem
-{ 
-  void simulationWeights(Simulation&,const mainSystem::inputParam&);
-			
-  void setWeights(Simulation&,const std::vector<double>&,
-		  const std::vector<double>&,
-		  const std::set<std::string>&);
-
-  void setWeights(Simulation&,const std::string&);
-  void setWeightsBasic(Simulation&);
-  void setWeightsMidE(Simulation&);
-  void setWeightsHighE(Simulation&);
-
+{
+class WeightMesh;
 }
 
+/*!
+  \class testWeightMesh
+  \brief Tests the class Cylinder class
+  \author S. Ansell
+  \date Nov. 2005
+  \version 1.0
+
+  Test the distance of a point to the cone
+*/
+
+class testWeightMesh 
+{
+private:
+
+
+  void createXYZ(WeightSystem::WeightMesh&,
+		 const std::string&,const std::string&,
+		 const std::string&) const;
+  //Tests 
+  int testPoint();
+ 
+public:
+
+  testWeightMesh();
+  ~testWeightMesh();
+
+  int applyTest(const int);     
+};
 
 #endif
- 

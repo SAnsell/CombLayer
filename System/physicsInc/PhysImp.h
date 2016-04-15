@@ -24,7 +24,7 @@
 
 namespace physicsSystem
 {
-
+  template<typename T> class ZoneUnit;
 /*!
   \class PhysImp 
   \version 1.0
@@ -59,9 +59,12 @@ class PhysImp
   void clear();
 
   int hasElm(const std::string&) const;
-  int isType(const std::string&) const;
+  /// Type accessor
+  const std::string& getType() const { return type; }
+
   ///< Get particle count
-  size_t particleCount() const { return particles.size(); } 
+  size_t particleCount() const { return particles.size(); }
+  bool isEmpty() const { return impNum.empty(); }
   int removeParticle(const std::string&);
 
   double getValue(const int) const;
@@ -71,8 +74,9 @@ class PhysImp
   void setAllCells(const double =1.0);
   void setAllCells(const std::vector<int>&,const std::vector<double>&);
   void setCells(const std::vector<int>&,const double =1.0);
+  void updateCells(const ZoneUnit<double>&);
   void modifyCells(const std::vector<int>&,const double =1.0);
-  void removeCell(int const);
+  void removeCell(const int);
   void renumberCell(const int,const int);
 
   void write(std::ostream&,const std::vector<int>&) const;

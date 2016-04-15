@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/nmx/NMX.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,9 +67,10 @@
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "SecondTrack.h"
-#include "TwinComp.h"
-#include "LayerComp.h"
+#include "CopiedComp.h"
+#include "BaseMap.h"
 #include "CellMap.h"
+#include "SurfMap.h"
 #include "World.h"
 #include "AttachSupport.h"
 #include "GuideItem.h"
@@ -89,15 +90,17 @@
 namespace essSystem
 {
 
-NMX::NMX() :
-  nmxAxis(new attachSystem::FixedOffset("nmxAxis",4)),
-  GuideA(new beamlineSystem::GuideLine("nmxGA")),
-  VPipeA(new constructSystem::VacuumPipe("nmxPipeA")),
-  VPipeB(new constructSystem::VacuumPipe("nmxPipeB")),
-  BendA(new beamlineSystem::GuideLine("nmxBA")),
-  BInsert(new BunkerInsert("nmxBInsert")),
-  FocusWall(new beamlineSystem::GuideLine("nmxFWall")),
-  ShieldA(new constructSystem::LineShield("nmxShieldA"))
+  NMX::NMX(const std::string& keyName) :
+  attachSystem::CopiedComp("nmx",keyName),
+  stopPoint(0),
+  nmxAxis(new attachSystem::FixedOffset(keyName+"Axis",4)),
+  GuideA(new beamlineSystem::GuideLine(keyName+"GA")),
+  VPipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
+  VPipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
+  BendA(new beamlineSystem::GuideLine(keyName+"BA")),
+  BInsert(new BunkerInsert(keyName+"BInsert")),
+  FocusWall(new beamlineSystem::GuideLine(keyName+"FWall")),
+  ShieldA(new constructSystem::LineShield(keyName+"ShieldA"))
   /*!
     Constructor
  */
@@ -108,7 +111,7 @@ NMX::NMX() :
     ModelSupport::objectRegister::Instance();
 
   // This necessary:
-  OR.cell("nmxAxis");
+  OR.cell(newName+"Axis");
   OR.addObject(nmxAxis);
 
   OR.addObject(GuideA);
@@ -171,21 +174,20 @@ NMX::build(Simulation& System,
   // For output stream
   ELog::RegMethod RegA("NMX","build");
   ELog::EM<<"\nBuilding NMX on : "<<GItem.getKeyName()<<ELog::endDiag;
-
+  const FuncDataBase& Control=System.getDataBase();
+  stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
+  
   setBeamAxis(System.getDataBase(),GItem,1);
 
   GuideA->addInsertCell(GItem.getCells("Void"));
   GuideA->addEndCut(GItem.getKey("Beam"),-2);
   GuideA->createAll(System,*nmxAxis,-3,*nmxAxis,-3); // beam front reversed
-
+  if (stopPoint==1) return;                  // STOP at Monolith
   // PIPE out of monolith
 
   VPipeA->addInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeA->setFront(GItem.getKey("Beam"),2);
-  VPipeA->setDivider(GItem.getKey("Beam"),2);  
   VPipeA->createAll(System,GuideA->getKey("Guide0"),2);
-
-
+  
   VPipeB->addInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeB->setFront(*VPipeA,2);
   VPipeB->setBack(bunkerObj,1);
@@ -196,22 +198,19 @@ NMX::build(Simulation& System,
   BendA->createAll(System,GuideA->getKey("Guide0"),2,
 		   GuideA->getKey("Guide0"),2);
 
-  
+  if (stopPoint==2) return;                      // STOP At bunker edge
   // First collimator [In WALL]
   //  const attachSystem::FixedComp& GFC(BendA->getKey("Guide0"));
   const attachSystem::FixedComp& GFC(*VPipeB);
-  const std::string BSector=
-    bunkerObj.calcSegment(System,GFC.getSignedLinkPt(2),
-			  GFC.getSignedLinkAxis(2));
-
-  BInsert->setInsertCell(bunkerObj.getCells(BSector));
   BInsert->createAll(System,GFC,2,bunkerObj);
-
+  attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);
+  
   FocusWall->addInsertCell(BInsert->getCell("Void"));
   FocusWall->createAll(System,*BInsert,-1,
 			 BendA->getKey("Guide0"),2);
 
-  // Section to 17m
+  if (stopPoint==3) return;                  // STOP At bunker edge
+  // Section to 24.5m
   ShieldA->addInsertCell(voidCell);
   ShieldA->setFront(bunkerObj,2);
   ShieldA->setDivider(bunkerObj,2);

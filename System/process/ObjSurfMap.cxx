@@ -222,32 +222,32 @@ ObjSurfMap::findNextObject(const int SN,
     \param Pos :: position
     \param ObjExclude :: Excluded object
     \return Next Object Ptr / 0 on point not valid
-   */
+  */
 {
   ELog::RegMethod RegA("ObjSurfMap","findNextObject");
+
 
   const STYPE& MVec=getObjects(SN);
   STYPE::const_iterator mc;
 
-  for(mc=MVec.begin();mc!=MVec.end();mc++)
+  for(MonteCarlo::Object* MPtr : MVec)
     {
-      if ((*mc)->getName()!=objExclude && 
-	  (*mc)->isDirectionValid(Pos,SN))
-	return *mc;
+      if (MPtr->getName()!=objExclude && 
+	  MPtr->isDirectionValid(Pos,SN))
+	return MPtr;
     }
   
   // DEBUG CODE FOR FAILURE:
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
   const masterRotate& MR=masterRotate::Instance();
 
-  ELog::EM<<"Failure to find surface on "<<SN<<" "
-	  <<MR.calcRotate(Pos)<<" "<<SN<<ELog::endCrit;
-  return 0;
-
+  ELog::EM<<"Failure to find surface on "<<SN<<" :: "
+	  <<MR.calcRotate(Pos)<<ELog::endCrit;
+  if (SN != -119)
+    return 0;
 
   ELog::EM<<"EXCLUDE  "<<objExclude<<" "
-	  <<MR.calcRotate(Pos)<<" "<<SN<<ELog::endErr;
-  return 0;
+	  <<MR.calcRotate(Pos)<<" "<<SN<<ELog::endDiag;
   if (SurI.getSurf(abs(SN)))
     ELog::EM<<"Surface == "<<*SurI.getSurf(abs(SN))<<ELog::endWarn;
   else 
@@ -255,7 +255,7 @@ ObjSurfMap::findNextObject(const int SN,
 
   for(mc=MVec.begin();mc!=MVec.end();mc++)
     ELog::EM<<"Common surf Cell  == "<<(*mc)->getName()<<ELog::endDiag;
-
+  ELog::EM<<"Quit == "<<ELog::endErr;
   return 0;
 }
 

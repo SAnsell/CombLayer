@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MCNP(X) Input builder
+  Comb-Layer : MCNP(X) Input builder
  
- * File:   weightsInc/WWGConstructor.h
+ * File:   physicsInc/ZoneUnit.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,44 +19,57 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef WeightSystem_WWGConstructor_h
-#define WeightSystem_WWGConstructor_h
+#ifndef physicsSystem_ZoneUnit_h
+#define physicsSystem_ZoneUnit_h
 
 namespace attachSystem
 {
   class FixedComp;
 }
 
+
 class Simulation;
 
-namespace WeightSystem
+namespace physicsSystem
 {
 
-      
+  
 /*!
-  \class WWGConstruct
+  \class ZoneUnit
   \version 1.0
   \author S. Ansell
-  \date April 2012
-  \brief WWG constructor
-
-  Provides linkage to its outside on FixedComp[0]
+  \date February 2016
+  \brief Adds zone (ranged int) support 
+  \tparam 
 */
-
-class WWGconstruct
+template<typename T>
+class ZoneUnit 
 {
-  public:
+ public:
 
-  WWGconstruct();
-  WWGconstruct(const WWGconstruct&);
-  WWGconstruct& operator=(const WWGconstruct&);
-  virtual ~WWGconstruct() {}  ///< Destructor
+  /// Ranges to build
+  std::vector<MapSupport::Range<int>> Zones;
+  /// Data associated with the zone
+  std::vector<T> ZoneData;
 
+  static MapSupport::Range<int>
+    createMapRange(std::vector<int>&);
 
-  void createWWG(Simulation&,const mainSystem::inputParam&);
+  void sortZone();
+  bool procZone(std::vector<std::string>&);
+  void addData(const T&);
+    
+  ZoneUnit();
+  ZoneUnit(const ZoneUnit&);
+  ZoneUnit& operator=(const ZoneUnit&);
+  ~ZoneUnit() {}  ///< Destructor
+
+  size_t findItem(const int) const;
+  bool inRange(const int,T&) const;
+  
 };
 
 }
 
 #endif
-  
+ 

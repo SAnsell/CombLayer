@@ -231,4 +231,18 @@ TestFunc::bracketTest(const std::string& Fname,std::ostream& OX)
   return;
 }
 
-
+void
+TestFunc::writeTests(const std::vector<std::string>& TVec)
+  /*!
+    Write out the tests [pretty format]
+    \param TVec :: Vector of tests
+   */
+{
+  std::ios::fmtflags flagIO=std::cout.setf(std::ios::left);
+  for(size_t i=0;i<TVec.size();i++)
+    {
+      std::cout<<std::setw(30)<<TVec[i]<<"("<<i+1<<")"<<std::endl;
+    }
+  std::cout.flags(flagIO);
+  return;
+}

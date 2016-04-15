@@ -40,6 +40,7 @@
 #include "MapSupport.h"
 #include "MapRange.h"
 #include "mapIterator.h"
+#include "permSort.h"
 
 #include "testFunc.h"
 #include "testMapRange.h"
@@ -73,28 +74,26 @@ testMapRange::applyTest(const int extra)
   typedef int (testMapRange::*testPtr)();
   testPtr TPtr[]=
     {
-      &testMapRange::testFind
+      &testMapRange::testFind,
+      &testMapRange::testSort
     };
 
-  const std::string TestName[]=
+  const std::vector<std::string> TestName=
     {
-      "Find"
+      "Find",
+      "Sort"
     };
 
-  const int TSize(sizeof(TPtr)/sizeof(testPtr));
-  if (!extra)
+  const size_t TSize(sizeof(TPtr)/sizeof(testPtr));
+  if (!extra) 
     {
-      std::ios::fmtflags flagIO=std::cout.setf(std::ios::left);
-      for(int i=0;i<TSize;i++)
-        {
-	  std::cout<<std::setw(30)<<TestName[i]<<"("<<i+1<<")"<<std::endl;
-	}
-      std::cout.flags(flagIO);
+      TestFunc::writeTests(TestName);
       return 0;
     }
-  for(int i=0;i<TSize;i++)
+
+  for(size_t i=0;i<TSize;i++)
     {
-      if (extra<0 || extra==i+1)
+      if (extra<0 || static_cast<size_t>(extra)==i+1)
         {
 	  TestFunc::regTest(TestName[i]);
 	  const int retValue= (this->*TPtr[i])();
@@ -105,6 +104,37 @@ testMapRange::applyTest(const int extra)
   return 0;
 }
 
+int
+testMapRange::testSort()
+  /*!
+    Simple test of the indexSort system
+    \return -ve on error 
+  */
+{
+  ELog::RegMethod RegA("testMapRange","testSort");
+  
+  std::vector<Range<int>> MVec=
+  {
+      Range<int>(1,3),
+      Range<int>(17,18),
+      Range<int>(14,14),
+      Range<int>(7,9)
+  };
+  
+  
+  std::vector<size_t> Index=
+    mathSupport::sortPermutation(MVec,
+                                 [](const Range<int>& a,
+                                    const Range<int>& b)
+                                 { return (a<b); } );
+  mathSupport::applyPermutation(MVec,Index);
+  
+  for(size_t i=0;i<MVec.size();i++)
+    {
+      ELog::EM<<"Item["<<i<<"] "<<MVec[i]<<ELog::endDebug;
+    }
+  return 0;
+}
 
 int
 testMapRange::testFind()

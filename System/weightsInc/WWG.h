@@ -32,20 +32,50 @@ class Simulation;
 namespace WeightSystem
 {
 
-class WWG
+  
+class WWG 
 {
- private:
-
-  WeightMesh Grid;   ///< Mesh Grid
-
  public:
 
+  static void writeLine(std::ostream&,const double,size_t&);
+  static void writeLine(std::ostream&,const int,size_t&);
+
+ private:
+
+  char ptype;          ///< Particle type
+  double wupn;         ///< Max weight before upsplitting
+  double wsurv;        ///< survival possiblitiy
+  int maxsp;           ///< max split
+  int mwhere;          ///< Check weight -1:col 0:all 1:surf
+  int mtime;           ///< Flag to inditace energy(0)/time(1)
+  int switchn;         ///< read from wwinp file
+  
+  std::vector<double> EBin;      ///< Energy bins
+  WeightMesh Grid;               ///< Mesh Grid
+
+  std::vector<std::vector<double>> WMesh;     ///< linearized weight mesh
+
+  void writeHead(std::ostream&) const;
+  
+ public:
+
+  
   WWG();
+  WWG(const WWG&);
+  WWG& operator=(const WWG&);
 
   /// access to grid
   WeightMesh& getGrid() { return Grid; }
   /// access to grid
   const WeightMesh& getGrid() const { return Grid; }
+  /// Access to EBin
+  const std::vector<double>& getEBin() const { return EBin; }
+  void setEnergyBin(const std::vector<double>&,
+		    const std::vector<double>&);
+  void resetMesh(const std::vector<double>&);
+
+
+  void scaleMeshItem(const long int,const std::vector<double>&);
   
   void write(std::ostream&) const;
   void writeWWINP(const std::string&) const;

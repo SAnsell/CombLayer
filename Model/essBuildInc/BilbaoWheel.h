@@ -35,7 +35,10 @@ namespace essSystem
   \brief Bilbao-type wheel for ESS
 */
 
-class BilbaoWheel : public WheelBase
+class BilbaoWheelInnerStructure;
+
+class BilbaoWheel : public WheelBase,
+  public attachSystem::CellMap
 {
  private:
   
@@ -46,6 +49,7 @@ class BilbaoWheel : public WheelBase
   double zAngle;                  ///< zAngle step
 
   int engActive;                 ///< Engineering active flag
+  std::shared_ptr<BilbaoWheelInnerStructure> InnerComp; ///< Inner components
   
   double targetHeight;           ///< Total height of target
   double voidTungstenThick;      ///< Void thickness below/above Tungsten
@@ -62,12 +66,9 @@ class BilbaoWheel : public WheelBase
   double voidRadius;             ///< Final outer radius
   double aspectRatio;            ///< Defines curvature in the yz view
 
-  size_t nSectors;                  ///< Number of sectors in Tungsten
-  double secSepThick;            ///< Thickness of sector separator
-  int secSepMat;                 ///< Material of sector separator
-
   double mainTemp;               ///< Main temperature 
   
+  size_t nSectors;               ///< number of sectors for LayerDivide3D
   size_t nLayers;                ///< number of radial layers
   std::vector<double> radius;    ///< cylinder radii
   std::vector<int> matTYPE;      ///< Material type
@@ -96,6 +97,9 @@ class BilbaoWheel : public WheelBase
   void makeShaftSurfaces();
   void makeShaftObjects(Simulation&);
   std::string getSQSurface(const double R, const double e);
+
+  void createRadialSurfaces();
+  void divideRadial(Simulation&, std::string&, int);
 
   public:
 

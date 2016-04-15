@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   processInc/LineTrack.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,7 +53,7 @@ class LineTrack
 
   double TDist;                     ///< Total distance
   
-  std::vector<int> Cells;                   ///< Cells in order
+  std::vector<long int> Cells;                   ///< Cells in order
   std::vector<MonteCarlo::Object*> ObjVec;  ///< Object pointer
   std::vector<double> Track;                ///< Track length
 
@@ -73,7 +73,7 @@ class LineTrack
   void calculate(const Simulation&);
   void calculateError(const Simulation&);
   /// Access Cells
-  const std::vector<int>& getCells() const
+  const std::vector<long int>& getCells() const
     { return Cells; }
   /// Access Track lengths
   const std::vector<double>& getTrack() const
@@ -82,8 +82,10 @@ class LineTrack
   const std::vector<MonteCarlo::Object*>& getObjVec() const
     { return ObjVec; }
   Geometry::Vec3D getPoint(const size_t) const;
+  /// access total distance
+  double getTotalDist() const { return aimDist; }
 
-
+  void createAttenPath(std::vector<long int>&,std::vector<double>&) const;
   void write(std::ostream&) const;
 };
 

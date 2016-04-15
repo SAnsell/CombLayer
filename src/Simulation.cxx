@@ -764,8 +764,9 @@ Simulation::substituteAllSurface(const int KeyN,const int NsurfN)
 
   TallyTYPE::iterator tc;
   for(tc=TItem.begin();tc!=TItem.end();tc++)
-    tc->second->renumberSurf(KeyN,NsurfN);
-
+    {
+      tc->second->renumberSurf(KeyN,NsurfN);
+    }
   PhysPtr->substituteSurface(KeyN,NsurfN);
   
   return 0;
@@ -1145,13 +1146,14 @@ Simulation::calcAllVertex()
      in the Qhull. The number of vertexes found are returned. 
   */
 {
-  ELog::RegMethod RegA("Simulation","calcVertex");
+  ELog::RegMethod RegA("Simulation","calcAllVertex");
+
+
   OTYPE::iterator mc;
-  int debugOutput(0);
+
   for(mc=OList.begin();mc!=OList.end();mc++)
     {
       // This point may be outside of the point
-      debugOutput++;
       if (!mc->second->calcVertex())   
 	mc->second->calcMidVertex();
     }
@@ -2161,6 +2163,9 @@ Simulation::masterRotation()
 {
   ELog::RegMethod RegA("Simulation","masterRotation");
 
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
   masterRotate& MR = masterRotate::Instance();
   
   const ModelSupport::surfIndex::STYPE& SurMap=
@@ -2174,6 +2179,10 @@ Simulation::masterRotation()
   OTYPE::iterator oc;
   for(oc=OList.begin();oc!=OList.end();oc++)
     MR.applyFull(oc->second);
+
+  // Physics units [dxtrans and others]
+  PhysPtr->rotateMaster();
+
   
   // Source:
   SDef::Source& sdef=PhysPtr->getSDefCard();
@@ -2182,16 +2191,17 @@ Simulation::masterRotation()
       {
 	sdef.setTransform(createSourceTransform());
 	if (sdef.rotateMaster())
-	  {
-	    ELog::EM<<"Failed on setting source term rotate"<<ELog::endErr;
-	  }
+          ELog::EM<<"Failed on setting source term rotate"<<ELog::endErr;
       }
   // Applyotations to tallies
   std::map<int,tallySystem::Tally*>::iterator mc;
   for(mc=TItem.begin();mc!=TItem.end();mc++)
     mc->second->rotateMaster();
 
+  OR.rotateMaster();
+  
   MR.setGlobal();
+
   return;
 }
 

@@ -73,6 +73,7 @@
 #include "FixedComp.h"
 #include "FixedGroup.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
 #include "CellMap.h"
 #include "SurInter.h"
 #include "HoleShape.h"
@@ -83,7 +84,7 @@ namespace constructSystem
 
 RotaryCollimator::RotaryCollimator(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedGroup(Key,"Main",6,"Beam",2),
+  attachSystem::FixedGroup(Key,"Main",2,"Beam",2),
   attachSystem::CellMap(),
   colIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(colIndex+1),holeIndex(0),nHole(0),nLayers(0)
@@ -249,7 +250,6 @@ RotaryCollimator::createSurfaces()
   // Front/Back
   ModelSupport::buildPlane(SMap,colIndex+1,Origin,Y);
   ModelSupport::buildPlane(SMap,colIndex+2,Origin+Y*thick,Y);
-
   // Master Cylinder
   ModelSupport::buildCylinder(SMap,colIndex+7,Origin,Y,radius);
 

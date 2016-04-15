@@ -30,6 +30,7 @@ namespace attachSystem
 {
 
 class FixedComp;
+class CellMap;
 class ContainedComp;
 
 long int getLinkNumber(const std::string&);
@@ -44,8 +45,18 @@ void createAddition(const int,Rule*,Rule*&);
 
 // On FC link points
 void addToInsertLineCtrl(Simulation&,const FixedComp&,
+			 const ContainedComp&,const int);
+void addToInsertLineCtrl(Simulation&,const FixedComp&,
 			 const FixedComp&);
+void addToInsertLineCtrl(Simulation&,const CellMap&,const std::string&,
+			 const FixedComp&,const ContainedComp&);
+void addToInsertLineCtrl(Simulation&,const FixedComp&,
+			 const FixedComp&,const ContainedComp&);
 
+
+// Control
+void addToInsertControl(Simulation&,const CellMap&,const std::string&,
+			 const FixedComp&,const ContainedComp&);
 void addToInsertControl(Simulation&,const FixedComp&,
 			 const FixedComp&);
 void addToInsertControl(Simulation&,const FixedComp&,
@@ -58,8 +69,11 @@ void addToInsertControl(Simulation&,const int,const int,
 // On surface intersects
 void addToInsertSurfCtrl(Simulation&,const FixedComp&,
 			ContainedComp&);
+void addToInsertSurfCtrl(Simulation&,const CellMap&,const std::string&,
+			 ContainedComp&);
 void addToInsertSurfCtrl(Simulation&,const int,const int,
 			ContainedComp&);
+void addToInsertSurfCtrl(Simulation&,const int,ContainedComp&);
 void addToInsertOuterSurfCtrl(Simulation&,const FixedComp&,
 			ContainedComp&);
 void addToInsertOuterSurfCtrl(Simulation&,
@@ -75,6 +89,8 @@ void addToInsertForced(Simulation&,const int,const int,
 // External check system
 bool checkIntersect(const ContainedComp&,const MonteCarlo::Object&,
 		    const std::vector<const Geometry::Surface*>&);
+
+bool checkLineIntersect(const FixedComp&,const MonteCarlo::Object&);
 
 bool checkPlaneIntersect(const Geometry::Plane&,
 			 const MonteCarlo::Object&,

@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MCNP(X) Input builder
+  CombLayer : MNCPX Input builder
  
  * File:   process/PipeLine.cxx
  *
@@ -112,6 +112,7 @@ PipeLine::operator=(const PipeLine& A)
       layerSurf=A.layerSurf;
       commonSurf=A.commonSurf;
       activeFlags=A.activeFlags;
+      startSurf=A.startSurf;
       clearPUnits();
     }
   return *this;
@@ -152,38 +153,42 @@ PipeLine::setPoints(const std::vector<Geometry::Vec3D>& V)
   return;
 }
 
+
 void 
-PipeLine::addPoint(const Geometry::Vec3D& Pt)
+PipeLine::addPoint(const Geometry::Vec3D& newPt)
   /*!
     Add an additional point
-    \param Pt :: Point to add
+    \param newPt :: Point to add
    */
 {
   ELog::RegMethod RegA("PipeLine","addPoint");
-  if (Pts.empty() || Pts.back()!=Pt)
+
+  if (Pts.empty() || Pts.back()!=newPt)
     {
       const size_t Index(Pts.size());
       if (Index>1)
 	{
-	  const Geometry::Vec3D AAxis=(Pts[Index-1]-Pts[Index]).unit();
-	  const Geometry::Vec3D BAxis=(Pt-Pts[Index]).unit();
+          const Geometry::Vec3D AAxis=(Pts[Index-2]-Pts[Index-1]).unit();
+	  const Geometry::Vec3D BAxis=(newPt-Pts[Index-1]).unit();
+
+          // This is to test if the axis reverses on itself
 	  if (AAxis.dotProd(BAxis)>1.0-Geometry::zeroTol)
 	    {
 	      ELog::EM<<"Points reversed at index "<<Index<<ELog::endCrit;
-	      ELog::EM<<"PtA "<<Pts[Index-1]<<ELog::endCrit;
-	      ELog::EM<<"PtB "<<Pts[Index]<<ELog::endCrit;
-	      ELog::EM<<"PtNwe "<<Pt<<ELog::endErr;
+	      ELog::EM<<"PtA "<<Pts[Index-2]<<ELog::endCrit;
+	      ELog::EM<<"PtB "<<Pts[Index-1]<<ELog::endCrit;
+	      ELog::EM<<"PtNew "<<newPt<<ELog::endErr;
 	      return;
 	    }
 	}
-      Pts.push_back(Pt);
+      Pts.push_back(newPt);
       if (Pts.size()>1)
 	activeFlags.push_back(0);
     }
   else
     {
-      ELog::EM<<"Adding Identical Point "<<Pts.size()<<":"
-	      <<Pt<<ELog::endErr;
+      ELog::EM<<"Adding Singular Point "<<Pts.size()<<":"
+	      <<newPt<<ELog::endErr;
     }
   return;
 }
@@ -370,7 +375,11 @@ PipeLine::createUnits(Simulation& System)
 
   
   // Actually build the units
-  
+  if (!startSurf.empty())
+    {
+      HeadRule ARule(startSurf);
+      PUnits[0]->setASurf(ARule);
+    }
   for(size_t i=0;i<PUnits.size();i++)
     {
       forcedInsertCells(i);
@@ -391,6 +400,76 @@ PipeLine::setNAngle(const size_t NA)
   return;
 }
 
+const HeadRule&
+PipeLine::getCap(const size_t index,const int side) const
+  /*!
+    Access the end cap rules
+    \param index :: index to point
+    \param size :: 0 / 1 for front/back
+    \return HeadRule
+  */  
+{
+  ELog::RegMethod RegA("PipeLine","getCap");
+  if (index>=PUnits.size())
+    throw ColErr::IndexError<size_t>(index,PUnits.size(),
+				     "index >= PUnits.size()");
+  return PUnits[index]->getCap(side);
+}
+
+const Geometry::Vec3D&
+PipeLine::getAxis(const size_t index) const
+  /*!
+    Access the axis of a give pipe unit
+    \param index :: index to point
+    \return Axis unit vector
+  */
+{
+  ELog::RegMethod RegA("PipeLine","getAxis");
+
+  if (index>=PUnits.size())
+    throw ColErr::IndexError<size_t>(index,PUnits.size(),
+				     "index >= PUnits.size()");
+  return PUnits[index]->getAxis();
+}
+
+const pipeUnit&
+PipeLine::first() const
+  /*!
+    Access the first pipe unit
+    \return first PUnit
+  */
+{
+  ELog::RegMethod RegA("PipeLine","first");
+  if (PUnits.empty())
+    throw ColErr::InContainerError<size_t>(0,"PUnits.empty()");
+  return *(PUnits.front());
+}
+
+const pipeUnit&
+PipeLine::last() const
+  /*!
+    Access the last pipe unit
+    \return last PUnit
+   */
+{
+  ELog::RegMethod RegA("PipeLine","last");
+  if (PUnits.empty())
+    throw ColErr::InContainerError<size_t>(0,"PUnits.empty()");
+  return *(PUnits.back());
+}
+
+void
+PipeLine::setStartSurf(const std::string& startS)
+  /*!
+    Simple setter for start surf
+    \param startS :: Start surface
+   */
+{
+  ELog::RegMethod RegA("PipeLine","setStartSurf");
+
+  startSurf=startS;
+  return;
+}
   
 void
 PipeLine::createAll(Simulation& System)
@@ -408,4 +487,4 @@ PipeLine::createAll(Simulation& System)
 }
 
   
-}  // NAMESPACE ModelSystem
+}  // NAMESPACE moderatorSystem

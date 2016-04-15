@@ -77,6 +77,8 @@ addPlane(const int ID,const Geometry::Vec3D& Norm,
     \retval 1 :: success
   */
 {
+  ELog::RegMethod RegA("SpecialSurf[F]","addPlane");
+  
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
   std::vector<Geometry::Vec3D> Out;
   std::vector<const Geometry::Surface*> SVec;
@@ -161,6 +163,8 @@ addPlane(const int ID,const Geometry::Vec3D& Norm,
     \retval 1 :: success
   */
 {
+  ELog::RegMethod RegA("SpecialSurf[F]","addPlane");
+  
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
   Geometry::Plane* M=SurI.createUniqSurf<Geometry::Plane>(ID);
   M->setPlane(Intercept,Norm);
@@ -184,7 +188,8 @@ calcVertex(const int SA,const int SB,const int SC,
     \return Number of sides
   */
 {
-  ELog::RegMethod RegA("SpecialSurf","addPlane");
+  ELog::RegMethod RegA("SpecialSurf[F]","calcVertex");
+  
   ModelSupport::surfIndex& SurI= ModelSupport::surfIndex::Instance();
 
   Out.clear();
@@ -225,7 +230,8 @@ calcVertex(const int SA,const int SB,const int SC,
     \return Number of sides
   */
 {
-  ELog::RegMethod RegA("SpecialSurf","addPlane");
+  ELog::RegMethod RegA("SpecialSurf","calcVertex(plane)");
+  
   ModelSupport::surfIndex& SurI= ModelSupport::surfIndex::Instance();
 
   Out.clear();
@@ -297,6 +303,7 @@ checkSurface(const int surfNum,const Geometry::Vec3D& Pt)
     \retval -1 :: other side
   */
 {
+  ELog::RegMethod RegA("SpecialSurf[F]","checkSurface");
   const int pE((surfNum>0) ? surfNum : -surfNum);
   Geometry::Surface* SPtr=ModelSupport::surfIndex::Instance().getSurf(pE);
   if (!SPtr)

@@ -153,7 +153,7 @@ CylinderColl::createSurfaces()
 }
 
 void
-CylinderColl::createObjects(Simulation& System)
+CylinderColl::createObjects(Simulation&)
   /*!
     Adds the Chip guide components
     \param System :: Simulation to create objects in

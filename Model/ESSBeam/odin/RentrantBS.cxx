@@ -71,6 +71,7 @@
 #include "FixedOffset.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
 #include "CellMap.h"
 
 #include "RentrantBS.h"

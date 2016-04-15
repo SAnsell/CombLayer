@@ -166,6 +166,7 @@
 #include "testSolveValues.h"
 #include "testSource.h"
 #include "testSupport.h"
+#include "testSurfDIter.h"
 #include "testSurfDivide.h"
 #include "testSurfEqual.h"
 #include "testSurfExpand.h"
@@ -176,6 +177,7 @@
 #include "testVec3D.h"
 #include "testVarNameOrder.h"
 #include "testVolumes.h"
+#include "testWeightMesh.h"
 #include "testWorkData.h"
 #include "testWrapper.h"
 #include "testXML.h"
@@ -896,6 +898,7 @@ physicsTest(const int type,const int extra)
       TestFunc::Instance().reportTest(std::cout);
       std::cout<<"testDBCN          (1)"<<std::endl;
       std::cout<<"testExtControl    (2)"<<std::endl;
+      std::cout<<"testWeightMesh    (3)"<<std::endl;
     }
   if(type==1 || type<0)
     {
@@ -906,6 +909,12 @@ physicsTest(const int type,const int extra)
   if(type==2 || type<0)
     {
       testExtControl A;
+      const int X=A.applyTest(extra);
+      if (X) return X;
+    }
+  if(type==3 || type<0)
+    {
+      testWeightMesh A;
       const int X=A.applyTest(extra);
       if (X) return X;
     }
@@ -937,12 +946,13 @@ processTest(const int type,const int extra)
       std::cout<<"testPipeLine        (10)"<<std::endl;
       std::cout<<"testPipeUnit        (11)"<<std::endl;
       std::cout<<"testSimpleObj       (12)"<<std::endl;
-      std::cout<<"testSurfDivide      (13)"<<std::endl;
-      std::cout<<"testSurfEqual       (14)"<<std::endl;
-      std::cout<<"testSurfExpand      (15)"<<std::endl;
-      std::cout<<"testSurfRegister    (16)"<<std::endl;
-      std::cout<<"testVolumes         (17)"<<std::endl;
-      std::cout<<"testWrapper         (18)"<<std::endl;
+      std::cout<<"testSurfDIter       (13)"<<std::endl;
+      std::cout<<"testSurfDivide      (14)"<<std::endl;
+      std::cout<<"testSurfEqual       (15)"<<std::endl;
+      std::cout<<"testSurfExpand      (16)"<<std::endl;
+      std::cout<<"testSurfRegister    (17)"<<std::endl;
+      std::cout<<"testVolumes         (18)"<<std::endl;
+      std::cout<<"testWrapper         (19)"<<std::endl;
     }
   int index(1);
   if(type==index || type<0)
@@ -992,15 +1002,7 @@ processTest(const int type,const int extra)
       if (X) return X;
     }
   index++;
-  
-  if(type==index || type<0)
-    {
-      testObjTrackItem A;
-      const int X=A.applyTest(extra);
-      if (X) return X;
-    }
-  index++;
-  
+    
   if(type==index || type<0)
     {
       testObjTrackItem A;
@@ -1050,6 +1052,14 @@ processTest(const int type,const int extra)
     }
   index++;
   
+  if(type==index || type<0)
+    {
+      testSurfDIter A;
+      const int X=A.applyTest(extra);
+      if (X) return X;
+    }
+  index++;
+
   if(type==index || type<0)
     {
       testSurfDivide A;

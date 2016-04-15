@@ -90,6 +90,8 @@ void writeControl(const std::string&,std::ostream&,
 void writeMCNPX(const std::string&,std::ostream&);
 void writeMCNPXcont(const std::string&,std::ostream&);
 void writeMCNPXcomment(const std::string&,std::ostream&);
+template<typename T> void writeLine(std::ostream&,const T&,
+				     size_t&,const size_t);
 
 std::vector<std::string> StrParts(std::string);
 std::vector<std::string>
@@ -97,6 +99,9 @@ splitParts(const std::string&,const char delim);
 
 template<template<typename T,typename Alloc> class V,typename T,typename Alloc> 
 int sliceVector(V<T,Alloc>&,const T&,const T&);
+
+template<typename T>
+int sectionRange(std::string&,std::vector<T>&);
 
 /// Convert a VAX number to x86 little eindien
 float getVAXnum(const float);

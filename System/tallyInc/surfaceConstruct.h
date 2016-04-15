@@ -50,6 +50,9 @@ class surfaceConstruct : virtual public basicConstruct
   int processSurfObject(Simulation&,const std::string&,
 			const long int,
 			const std::vector<std::string>&) const;
+  int processSurfMap(Simulation&,const std::string&,
+		     const std::string&,const long int) const;
+
 
  public:
 

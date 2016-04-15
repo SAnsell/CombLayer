@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
- * File:   t1UpgradeInc/makeGamma.h
+ * File:   gammaBuildInc/makeGamma.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef t1System_makeGamma_h
-#define t1System_makeGamma_h
+#ifndef gammaSystem_makeGamma_h
+#define gammaSystem_makeGamma_h
 
 namespace constructSystem
 {
@@ -46,7 +46,7 @@ namespace gammaSystem
     \version 1.0
     \author S. Ansell
     \date November 2014
-    \brief General constructor for gamma beamline
+    \brief General constructor for photon-nuclear beamline
   */
 
 class makeGamma

@@ -13,14 +13,13 @@ can be user selected. This is its only responsibility and to ensure that the
 name is unique. 
 
 Significantly more complex is the FixedComp registration, in this case
-a \prog{boost::shared\_ptr} of FixedComp must be provided by the
+a \prog{std::shared\_ptr} of FixedComp must be provided by the
 calling method. Obviously, for a shared\_ptr the object memory must be
 allocated, i.e. an initial \verb|new object(...)| is normally called
 directly or previously. A typical structrue might be:
 
 \begin{verbatim}
-boost::shared_ptr<BeamPipe> A 
-   = new BeamPipe("LongPipe");
+std::shared_ptr<BeamPipe> A  = new BeamPipe("LongPipe");
 
 ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
@@ -35,10 +34,11 @@ Instance() method for this purpose. Then the object pointer is referenced
 to the objectRegiste with \prog{addObject}.
 
 However, hidden from view is a call to objectRegister in FixedComp's
-constructor, which must be called as all registered object must derive
+constructor, which is certain to be called as all registered object must derive
 from this class. That occures during the operator new call and results
 in the allocation of the cell/surface numerical range. If it is
 necessary to trap that error, the try/catch block must be around the
-new opertor.
+new opertor. The main exception that is possible if an existing object
+already exists with the same name.
 
 

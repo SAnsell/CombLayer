@@ -66,10 +66,10 @@
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
-#include "LayerComp.h"
+#include "CopiedComp.h"
+#include "BaseMap.h"
 #include "CellMap.h"
+#include "SurfMap.h"
 #include "World.h"
 #include "AttachSupport.h"
 #include "Jaws.h"
@@ -88,39 +88,41 @@
 namespace essSystem
 {
 
-ODIN::ODIN() :
-  odinAxis(new attachSystem::FixedComp("odinAxis",4)),
-  BladeChopper(new constructSystem::DiskChopper("odinBlade")),
-  GuideA(new beamlineSystem::GuideLine("odinGA")),
-  T0Chopper(new constructSystem::DiskChopper("odinTZero")),
-  GuideB(new beamlineSystem::GuideLine("odinGB")),
-  BInsert(new BunkerInsert("odinBInsert")),
-  GuideC(new beamlineSystem::GuideLine("odinGC")),
-  GuideD(new beamlineSystem::GuideLine("odinGD")),
+ODIN::ODIN(const std::string& keyName) :
+  attachSystem::CopiedComp("odin",keyName),
+  stopPoint(0),
+  odinAxis(new attachSystem::FixedComp(newName+"Axis",4)),
+  BladeChopper(new constructSystem::DiskChopper(newName+"Blade")),
+  GuideA(new beamlineSystem::GuideLine(newName+"GA")),
+  T0Chopper(new constructSystem::DiskChopper(newName+"TZero")),
+  GuideB(new beamlineSystem::GuideLine(newName+"GB")),
+  BInsert(new BunkerInsert(newName+"BInsert")),
+  GuideC(new beamlineSystem::GuideLine(newName+"GC")),
+  GuideD(new beamlineSystem::GuideLine(newName+"GD")),
 
-  PitA(new constructSystem::ChopperPit("odinPitA")),
-  GuidePitAFront(new beamlineSystem::GuideLine("odinGPitAFront")),
-  GuidePitABack(new beamlineSystem::GuideLine("odinGPitABack")),
-  ChopperA(new constructSystem::DiskChopper("odinChopperA")),
+  PitA(new constructSystem::ChopperPit(newName+"PitA")),
+  GuidePitAFront(new beamlineSystem::GuideLine(newName+"GPitAFront")),
+  GuidePitABack(new beamlineSystem::GuideLine(newName+"GPitABack")),
+  ChopperA(new constructSystem::DiskChopper(newName+"ChopperA")),
 
-  GuideE(new beamlineSystem::GuideLine("odinGE")),
+  GuideE(new beamlineSystem::GuideLine(newName+"GE")),
 
-  PitB(new constructSystem::ChopperPit("odinPitB")),
-  GuidePitBFront(new beamlineSystem::GuideLine("odinGPitBFront")),
-  GuidePitBBack(new beamlineSystem::GuideLine("odinGPitBBack")),
-  ChopperB(new constructSystem::DiskChopper("odinChopperB")),
-  GuideF(new beamlineSystem::GuideLine("odinGF")),
+  PitB(new constructSystem::ChopperPit(newName+"PitB")),
+  GuidePitBFront(new beamlineSystem::GuideLine(newName+"GPitBFront")),
+  GuidePitBBack(new beamlineSystem::GuideLine(newName+"GPitBBack")),
+  ChopperB(new constructSystem::DiskChopper(newName+"ChopperB")),
+  GuideF(new beamlineSystem::GuideLine(newName+"GF")),
 
-  PitC(new constructSystem::ChopperPit("odinPitC")),
-  GuidePitCFront(new beamlineSystem::GuideLine("odinGPitCFront")),
-  GuidePitCBack(new beamlineSystem::GuideLine("odinGPitCBack")),
-  GuideG(new beamlineSystem::GuideLine("odinGG")),
+  PitC(new constructSystem::ChopperPit(newName+"PitC")),
+  GuidePitCFront(new beamlineSystem::GuideLine(newName+"GPitCFront")),
+  GuidePitCBack(new beamlineSystem::GuideLine(newName+"GPitCBack")),
+  GuideG(new beamlineSystem::GuideLine(newName+"GG")),
 
-  Cave(new essSystem::Hut("odinCave")),
-  GuideH(new beamlineSystem::GuideLine("odinGH")),
-  PinA(new PinHole("odinPin")),
+  Cave(new essSystem::Hut(newName+"Cave")),
+  GuideH(new beamlineSystem::GuideLine(newName+"GH")),
+  PinA(new PinHole(newName+"Pin")),
 
-  BeamStop(new RentrantBS("odinBeamStop"))
+  BeamStop(new RentrantBS(newName+"BeamStop"))
  /*!
     Constructor
  */
@@ -128,7 +130,7 @@ ODIN::ODIN() :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  OR.cell("odinAxis");
+  OR.cell(newName+"Axis");
   OR.addObject(odinAxis);
   
   OR.addObject(BladeChopper);
@@ -210,12 +212,17 @@ ODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
   ELog::debugMethod DA;
 
   ELog::EM<<"\nBuilding ODIN on : "<<GItem.getKeyName()<<ELog::endDiag;
-  ELog::EM<<"REVERSE Z on axis"<<ELog::endDebug;
+
+  const FuncDataBase& Control=System.getDataBase();
+  CopiedComp::process(System.getDataBase());
+  stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
   setBeamAxis(GItem,1);
 
+  if (stopPoint==1) return;
+    
   BladeChopper->addInsertCell(bunkerObj.getCell("MainVoid"));
   BladeChopper->setCentreFlag(3);  // Z direction
-  // beam direction from GIetm
+  // beam direction from GItem
   BladeChopper->createAll(System,*odinAxis,4);
 
   GuideA->addInsertCell(bunkerObj.getCell("MainVoid"));
@@ -231,13 +238,13 @@ ODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
   GuideB->createAll(System,T0Chopper->getKey("Main"),2,
 		    T0Chopper->getKey("Beam"),2);
 
+  if (stopPoint==2) return;
+  
   // Make bunker insert
   const attachSystem::FixedComp& GFC(GuideB->getKey("Guide0"));
-  const std::string BSector=
-    bunkerObj.calcSegment(System,GFC.getSignedLinkPt(2),
-			  GFC.getSignedLinkAxis(2));  
-  BInsert->setInsertCell(bunkerObj.getCells(BSector));
-  BInsert->createAll(System,GuideB->getKey("Guide0"),2,bunkerObj);
+  BInsert->createAll(System,GFC,2,bunkerObj);   // changed from -1
+  attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);  
+
 
   // Guide in the bunker insert
   GuideC->addInsertCell(BInsert->getCell("Void"));
@@ -247,6 +254,7 @@ ODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
   GuideD->addInsertCell(voidCell);
   GuideD->createAll(System,*BInsert,2,GuideC->getKey("Guide0"),2);
 
+  if (stopPoint==3) return;
   //
   // First chopper pit out of bunker
   // Guide guide String
@@ -254,9 +262,6 @@ ODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
     attachSystem::unionLink(GuideD->getKey("Shield"),{2,3,4,5,6});
   PitA->addInsertCell(voidCell);
   PitA->createAll(System,GuideD->getKey("Guide0"),2,GuideCut.display());
-
-  ELog::EM<<"PitA == "<<PitA->getCentre()
-	  <<" :: "<<PitA->getCentre().abs()<<ELog::endDebug;
   
   GuidePitAFront->addInsertCell(PitA->getCells("MidLayer"));
   GuidePitAFront->addEndCut(PitA->getKey("Inner").getSignedLinkString(1));
@@ -264,7 +269,7 @@ ODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
 			    GuideD->getKey("Guide0"),2);
 
   ChopperA->addInsertCell(PitA->getCell("Void"));
-  ChopperA->setCentreFlag(-3);  // -Z direction
+  ChopperA->setCentreFlag(3);  // -Z direction
   ChopperA->createAll(System,*PitA,0);
   
   GuideE->addInsertCell(voidCell);
@@ -290,7 +295,7 @@ ODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
   PitB->createAll(System,GuideE->getKey("Guide0"),2,GuideCut.display());
 
   ChopperB->addInsertCell(PitB->getCell("Void"));
-  ChopperB->setCentreFlag(-3);  // -Z direction
+  ChopperB->setCentreFlag(3);  // -Z direction
   ChopperB->createAll(System,*PitB,0);
 
   ELog::EM<<"PitB == "<<PitB->getCentre()

@@ -1,3 +1,48 @@
 
+\definecolor{SlateBlue}{rgb}{0.1,0.1,1.00}
+\definecolor{SlateGreen}{rgb}{0.1,0.8,0.3}
+\definecolor{darkred}{rgb}{0.8,0,0}
+\newcommand{\tcg}[1]{
+   \textcolor{green}{#1}}
+\newcommand{\tcr}[1]{
+   \textcolor{red}{#1}}
+\newcommand{\tcb}[1]{
+   \textcolor{blue}{#1}}
+\newcommand{\tcbb}[1]{
+   \textcolor{SlateBlue}{#1}}
+\newcommand{\tcgg}[1]{
+   \textcolor{SlateGreen}{#1}}
+
+
+\definecolor{mygray}{rgb}{0.4,0.4,0.4}
+\definecolor{mygreen}{rgb}{0,0.8,0.6}
+\definecolor{myorange}{rgb}{1.0,0.4,0}
+
+\lstset{
+  basicstyle=\small\sffamily\color{black},
+  commentstyle=\color{red},
+  frame=false,
+  numbers=left,
+  numbersep=5pt,
+  numberstyle=\tiny\color{mygray},
+  keywordstyle=\color{blue},
+  showspaces=false,
+  showstringspaces=false,
+  stringstyle=\color{myorange},
+  tabsize=8,
+  otherkeywords={std},
+  escapeinside={\%\%}{\@},
+  xleftmargin=0.0\linewidth
+}
 \newcommand {\prog}[1]{{\it #1}}
 \newcommand {\vb}[1]{\begin{\verbatim}{#1}\end{verbatim}}
+\newcommand {\alert}[1]{\textcolor{red}{#1}}
+\newcommand {\checkme}[1]{\alert{#1}\marginpar{\alert{$\leftarrow$\,check me}}}
+\lstnewenvironment{bash}{\lstset{language=bash,numbers=none,backgroundcolor=\color{yellow!20},frame=tb}}{}
+
+\setlength{\parindent}{0in}
+\setlength{\parskip}{0.1in}
+\setlength{\textwidth}{6.5in}
+\setlength{\textheight}{9.0in}
+\setlength{\oddsidemargin}{0.0in} 
+\setlength{\evensidemargin}{0.0in} 

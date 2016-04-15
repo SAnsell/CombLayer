@@ -30,7 +30,9 @@
 #include <set>
 #include <map>
 #include <string>
+#include <array>
 #include <algorithm>
+#include <numeric>
 #include <memory>
 
 #include "Exception.h"
@@ -76,6 +78,7 @@
 #include "FixedComp.h"
 #include "ContainedComp.h"
 #include "LayerComp.h"
+#include "BaseMap.h"
 #include "CellMap.h"
 #include "AttachSupport.h"
 #include "geomSupport.h"
@@ -526,6 +529,9 @@ H2Wing::createObjects(Simulation& System)
   OutA=ModelSupport::getComposite(SMap,triOffset,
 				     "-1 -2 -3 5 -6 (21:-7) (22:-8) (23:-9)");
   addOuterSurf(OutA);
+
+  sideSurface=ModelSupport::getComposite(SMap,triOffset,
+				     "-1 -2 -3 (21:-7) (22:-8) (23:-9)");
 
   return;
 }

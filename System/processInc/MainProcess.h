@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   processInc/MainProcess.h
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef MainProcess_h
-#define MainProcess_h
+#ifndef mainSystem_MainProcess_h
+#define mainSystem_MainProcess_h
 
 class Simulation;
 class FuncDataBase;
@@ -76,7 +76,7 @@ namespace mainSystem
   void renumberCells(Simulation&,const inputParam&);
 
   void setVariables(Simulation&,const inputParam&,std::vector<std::string>&);
-
+  void setMaterialsDataBase(const inputParam&);
 
   int extractName(std::vector<std::string>&,std::string&);
 

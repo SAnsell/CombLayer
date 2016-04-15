@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   processInc/ObjectTrackAct.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ namespace ModelSupport
   \version 1.0
   \author S. Ansell
   \date November 2010
-  \brief Object to Point 
+  \brief Object to Point / Plane etc
 
   This takes a simulation after each vertex point has been calculated
   for the given object.
@@ -52,35 +52,33 @@ namespace ModelSupport
   -- Support calculations based on the ObjTrackItem.
 */
 
+
 class ObjectTrackAct
 {
- private:
+ protected:
 
-  /// Target point
-  Geometry::Vec3D TargetPt;  
+  /// Storage type for line units
+  typedef std::map<long int,LineTrack> itemTYPE;
   /// Main data information set [Object : ItemTrack]
-  std::map<int,LineTrack> Items; 
+  itemTYPE Items; 
   
  public:
 
-  ObjectTrackAct(const Geometry::Vec3D&);
+  ObjectTrackAct();
   ObjectTrackAct(const ObjectTrackAct&);
   ObjectTrackAct& operator=(const ObjectTrackAct&);  
   /// Destructor
-  ~ObjectTrackAct() {}
+  virtual ~ObjectTrackAct() {}
 
   void clearAll();
-  //  void addDistance(const int,const int,const double);
-  /// Set target point
-  void setTarget(const Geometry::Vec3D& Pt) { TargetPt=Pt; }
 
-  void addUnit(const Simulation&,const int,Geometry::Vec3D);
-
-  double getMatSum(const int) const;
+  double getMatSum(const long int) const;
+  double getAttnSum(const long int) const;
+  double getDistance(const long int) const;
   /// Debug function effectivley
   //  const std::map<int,ObjTrackItem>& getMap() const { return Items; }
-
-  void write(std::ostream&) const;
+  void createAttenPath(std::vector<long int>&,std::vector<double>&) const;
+  virtual void write(std::ostream&) const =0;
 
 };
 

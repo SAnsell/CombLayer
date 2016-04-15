@@ -8,6 +8,7 @@
 #include <vector>
 #include <set>
 #include <map>
+#include <array>
 #include <string>
 #include <algorithm>
 #include <memory>
@@ -47,6 +48,7 @@
 #include "FixedComp.h"
 #include "ContainedComp.h"
 #include "LayerComp.h"
+#include "BaseMap.h"
 #include "CellMap.h"
 #include "ModBase.h"
 #include "H2Wing.h"
@@ -89,7 +91,8 @@ ButterflyModerator::ButterflyModerator(const ButterflyModerator& A) :
   MidWater(A.MidWater->clone()),
   LeftWater(A.LeftWater->clone()),
   RightWater(A.LeftWater->clone()),
-  outerRadius(A.outerRadius)
+  outerRadius(A.outerRadius),
+  ExcludeStr(A.ExcludeStr)
   /*!
     Copy constructor
     \param A :: ButterflyModerator to copy
@@ -114,6 +117,7 @@ ButterflyModerator::operator=(const ButterflyModerator& A)
       *LeftWater= *A.LeftWater;
       *RightWater= *A.RightWater;
       outerRadius=A.outerRadius;
+      ExcludeStr=A.ExcludeStr;
     }
   return *this;
 }
@@ -196,10 +200,12 @@ ButterflyModerator::createObjects(Simulation& System)
   ELog::RegMethod RegA("ButterflyModerator","createObjects");
   
   const std::string Exclude=ContainedComp::getExclude();
+  ExcludeStr = Exclude;
 
   std::string Out;
   Out=ModelSupport::getComposite(SMap,flyIndex," -7 5 -6 ");  
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+Exclude));
+  setCell("ambientVoid", cellIndex-1);
 
   clearRules();
   addOuterSurf(Out);
@@ -340,20 +346,38 @@ ButterflyModerator::createAll(Simulation& System,
   return;
 }
 
+  std::string
+  ButterflyModerator::getSideSurface() const
+  /*
+    Return side surface string
+    \todo // SA: Use union of link points as it is faster
+  */
+  {
+    std::string side("");
+    HeadRule HR;
+    HR.procString(LeftUnit->getSideSurface());
+    HR.addUnion(RightUnit->getSideSurface());
+    HR.addUnion(MidWater->getSideSurface());
+    HR.addUnion(LeftWater->getSideSurface());
+    HR.addUnion(RightWater->getSideSurface());
+    HR.makeComplement();
+    return HR.display();
+  }
+
   Geometry::Vec3D ButterflyModerator::getFocalPoint(int i) const
   /*
     Return focal point coordinates for collimator setup
     \param i :: link point number of MidWater
-   */
+  */
   {
     return MidWater->getLinkPt(i);
   }
 
-std::vector<Geometry::Vec3D> ButterflyModerator::getFocalPoints() const
+  std::vector<Geometry::Vec3D> ButterflyModerator::getFocalPoints() const
   /*
     Return array of focal points + 
     Last two items defining zmin and zmax
-   */
+  */
   {
     std::vector<Geometry::Vec3D> vec;
 
@@ -368,6 +392,5 @@ std::vector<Geometry::Vec3D> ButterflyModerator::getFocalPoints() const
 
     return vec;
   }
-
 
 }  // NAMESPACE essSystem

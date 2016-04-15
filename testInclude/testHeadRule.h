@@ -44,6 +44,7 @@ private:
   int testFindNodes();
   int testFindTopNodes();
   int testGetComponent();
+  int testGetLevel();
   int testInterceptRule();
   int testLevel();
   int testPartEqual();

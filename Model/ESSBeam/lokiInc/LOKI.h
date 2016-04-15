@@ -55,10 +55,13 @@ namespace essSystem
     \brief LOKI beamline constructor for the ESS
   */
   
-class LOKI
+class LOKI : public attachSystem::CopiedComp
 {
  private:
 
+  /// Stop at [0:Complete / 1:Mono Wall / 2:Inner Bunker / 3:Outer Bunker ]
+  int stopPoint;
+  
   /// Main Beam Axis [for construction]
   std::shared_ptr<attachSystem::FixedOffset> lokiAxis;
 
@@ -137,8 +140,8 @@ class LOKI
   std::shared_ptr<VacTank> VTank;
 
   /// Vacuum Pipes
-  std::shared_ptr<constructSystem::VacuumPipe> VPipeA;
-  std::shared_ptr<constructSystem::VacuumPipe> VPipeB;
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeA;  
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeB;   
   std::shared_ptr<constructSystem::VacuumPipe> VPipeC;
   std::shared_ptr<constructSystem::VacuumPipe> VPipeD;
   
@@ -146,7 +149,7 @@ class LOKI
   
  public:
   
-  LOKI();
+  LOKI(const std::string&);
   LOKI(const LOKI&);
   LOKI& operator=(const LOKI&);
   ~LOKI();

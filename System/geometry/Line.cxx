@@ -410,7 +410,7 @@ Line::intersect(std::vector<Geometry::Vec3D>& PntOut,
   const double gamma2=CObj.getCosAngle()*CObj.getCosAngle();
   // Failed on side
 
-
+  ///\todo BUG HERE
   if ((CObj.getCutFlag()>0 && AdotB<0) ||
       (CObj.getCutFlag()<0 && AdotB>0))
     return 0;

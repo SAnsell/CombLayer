@@ -67,6 +67,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "LayerComp.h"
+#include "BaseMap.h"
 #include "CellMap.h"
 #include "ContainedComp.h"
 #include "CylFlowGuide.h"
@@ -84,7 +85,6 @@ DiskPreMod::DiskPreMod(const std::string& Key) :
   modIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(modIndex+1),NWidth(0),
   InnerComp(new CylFlowGuide(Key+"FlowGuide"))
-
   /*!
     Constructor
     \param Key :: Name of construction key

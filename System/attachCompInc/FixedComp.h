@@ -22,6 +22,8 @@
 #ifndef attachSystem_FixedComp_h
 #define attachSystem_FixedComp_h
 
+class localRotate;
+
 namespace attachSystem
 {
 /*!
@@ -166,8 +168,9 @@ class FixedComp
 		      Geometry::Vec3D&,Geometry::Vec3D&) const;
   void calcLinkAxis(const long int,Geometry::Vec3D&,
 		    Geometry::Vec3D&,Geometry::Vec3D&) const;
-		    
-  void applyRotation(const Geometry::Vec3D&,const double);
+
+  virtual void applyRotation(const localRotate&);
+  virtual void applyRotation(const Geometry::Vec3D&,const double);
   void setExit(const Geometry::Vec3D&,const Geometry::Vec3D&);
 
 };

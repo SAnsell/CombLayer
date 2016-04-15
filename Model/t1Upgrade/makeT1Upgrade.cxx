@@ -30,6 +30,7 @@
 #include <set>
 #include <map>
 #include <string>
+#include <array>
 #include <algorithm>
 #include <iterator>
 #include <memory>
@@ -68,6 +69,7 @@
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "LayerComp.h"
+#include "BaseMap.h"
 #include "CellMap.h"
 #include "GroupOrigin.h"
 #include "FlightLine.h"

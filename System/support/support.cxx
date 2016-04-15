@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   support/support.cxx
  *
@@ -33,6 +33,7 @@
 #include <string>
 #include <algorithm>
 #include <functional>
+#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "MatrixBase.h"
@@ -516,7 +517,7 @@ sectPartNum(std::string& A,T& out)
   /*!
     Takes a character string and evaluates 
     the first [typename T] object. The string is then 
-    erase upt to the end of number.
+    erase up to the end of number.
     The diffierence between this and section is that
     it allows trailing characters after the number. 
     \param out :: place for output
@@ -545,6 +546,67 @@ sectPartNum(std::string& A,T& out)
 }
 
 
+template<typename T>
+int 
+sectionRange(std::string& A,std::vector<T>& out)
+  /*!
+    Take a string of parts 
+      -- A,B,C  .. list
+      -- A:B:C  a stepped item list [C optional]
+    the component between A:B
+    \param A :: String to process
+    \param out :: place for output
+    \returns 1 on success 0 on failure
+   */ 
+{
+  if (A.empty()) return 0;
+
+  std::vector<std::string> Comp;
+  std::string::size_type pos=A.find(',');
+  while(pos!=std::string::npos)
+    {
+      Comp.push_back(A.substr(0,pos));
+      A.erase(0,pos+1);
+      pos=A.find(',');
+    }
+
+  if (!isEmpty(A))
+    Comp.push_back(A);
+
+  for(std::string& Unit : Comp)
+    {
+      T Val[3];
+      pos=0;
+      size_t i;
+      for(i=0;pos!=std::string::npos && i<3;i++)
+	{
+	  pos=Unit.find(':');
+	  if (!StrFunc::convert(Unit.substr(0,pos),Val[i]))
+	    {
+	      out.clear();
+	      return 0;
+	    }
+	  Unit.erase(0,pos+1);
+	}
+      if (i==1)
+	out.push_back(Val[0]);
+      else
+	{
+	  do
+	    {
+	      out.push_back(Val[0]);
+	      if (i==3)
+		Val[0]+=Val[2];
+	      else
+		Val[0]++;
+	    }
+	  while(Val[0]<=Val[1]);
+	}
+    }
+  return 1;
+}
+
+  
 template<typename T>
 int 
 section(char* cA,T& out)
@@ -1066,12 +1128,78 @@ splitParts(const std::string& Line,const char delim)
   return Out;
 
 }
+
+template<typename T>
+void
+writeLine(std::ostream& OX,const T& V,
+	  size_t& itemCnt,const size_t lineCut)
+  /*!
+    Write the line in the WWG format of 13.6g
+    \param OX :: Output stream
+    \param V :: Value
+    \param itemCnt :: Item value
+    \param lineCut :: Value to cut line
+   */
+{
+  static boost::format DblFMT("%13.4f");
+  static boost::format SciFMT("%13.4e");
+
+  const double VUnit=static_cast<double>(V);
+
+  const double AVal(std::fabs(VUnit));
+  if (AVal>9.9e4 || (AVal<1e-5 && AVal>1e-38))
+    OX<<(SciFMT % VUnit);
+  else
+    OX<<(DblFMT % VUnit);
+  
+  itemCnt++;
+  if (itemCnt==lineCut)
+    {
+      OX<<std::endl;
+      itemCnt=0;
+    }
+  return;
+}
+
+template<>
+void
+writeLine(std::ostream& OX,const Geometry::Vec3D& Vec,
+	  size_t& itemCnt,const size_t lineCut)
+  /*!
+    Write the line in the WWG format of 13.6g
+    \param OX :: Output stream
+    \param V :: Value
+    \param itemCnt :: Item value
+    \param lineCut :: Value to cut line
+   */
+{
+  for(size_t i=0;i<3;i++)
+    writeLine(OX,Vec[i],itemCnt,lineCut);
+  return;
+}
+  
+
+
   
 /// \cond TEMPLATE 
 
+template void writeLine(std::ostream&,const double&,
+			size_t&,const size_t);
+template void writeLine(std::ostream&,const int&,
+			size_t&,const size_t);
+template void writeLine(std::ostream&,const long int&,
+			size_t&,const size_t);
+template void writeLine(std::ostream&,const size_t&,
+			size_t&,const size_t);
+  
 template int itemize(std::string&,std::string&,double&);
 template int itemize(std::string&,std::string&,int&);
 
+  
+template int sectionRange(std::string&,std::vector<double>&);
+template int sectionRange(std::string&,std::vector<int>&);
+template int sectionRange(std::string&,std::vector<size_t>&);
+  
 template int section(std::string&,double&);
 template int section(std::string&,Geometry::Vec3D&);
 template int section(std::string&,float&);
@@ -1084,6 +1212,7 @@ template int section(std::string&,DError::doubleErr&);
 
 template int sectPartNum(std::string&,double&);
 template int sectPartNum(std::string&,int&);
+template int sectPartNum(std::string&,long int&);
 template int sectPartNum(std::string&,size_t&);
 template int sectionMCNPX(std::string&,double&);
 

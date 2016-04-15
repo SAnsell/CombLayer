@@ -31,6 +31,7 @@
 #include <map>
 #include <string>
 #include <algorithm>
+#include <numeric>
 #include <memory>
 
 #include "Exception.h"
@@ -444,7 +445,6 @@ GuideLine::createUnitVector(const attachSystem::FixedComp& mainFC,
   guideFC.createUnitVector(beamFC,beamLP);
   guideFC.applyShift(beamXStep,beamYStep,beamZStep);
   guideFC.applyAngleRotate(beamXYAngle,beamZAngle);
-
 
   setDefault("GuideOrigin");
   return;

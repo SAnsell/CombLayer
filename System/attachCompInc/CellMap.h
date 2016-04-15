@@ -22,8 +22,11 @@
 #ifndef attachSystem_CellMap_h
 #define attachSystem_CellMap_h
 
+class Simulation;
+
 namespace attachSystem
 {
+
   class ContainedComp;
 
 /*!
@@ -34,16 +37,9 @@ namespace attachSystem
   \brief Cell mapping by name [experimental]
 */
 
-class CellMap  
+class CellMap  : public BaseMap
 {
  private:
-
-  typedef std::map<std::string,int> LCTYPE;
-  typedef std::vector<std::vector<int>> SEQTYPE;
-
-  
-  LCTYPE Cells;   ///< Named cells
-  SEQTYPE SplitUnits;    ///< Split named cells
   
  public:
 
@@ -51,31 +47,60 @@ class CellMap
   CellMap(const CellMap&);
   CellMap& operator=(const CellMap&);
   virtual ~CellMap() {}     ///< Destructor
-  
-  void setCell(const std::string&,const int);
-  void setCell(const std::string&,const size_t,const int);
-  void addCell(const std::string&,const int);
-  int getCell(const std::string&) const;
-  int getCell(const std::string&,const size_t) const;
 
-  void setCells(const std::string&,const int,const int);  
-  std::vector<int> getCells(const std::string&) const;
+  /// Renmae function
+  void setCell(const std::string& K,const int CN)
+    { BaseMap::setItem(K,CN); }
+      
+  /// Renmae function
+  void setCell(const std::string& K,const size_t Index,const int CN)
+    { BaseMap::setItem(K,Index,CN); }
+  
+  void setCells(const std::string& K,const int CNA,const int CNB)
+   { BaseMap::setItems(K,CNA,CNB); }
+
+  /// Rename function
+  void addCell(const std::string& K,const int CN)
+    { BaseMap::addItem(K,CN); }
+  /// Rename function
+  void addCells(const std::string& K,const std::vector<int>& CN)
+    { BaseMap::addItems(K,CN); }
+
+  /// Rename function
+  int getCell(const std::string& K) const
+    { return BaseMap::getItem(K); }
+  /// Rename function
+  int getCell(const std::string& K,const size_t Index) const
+    { return BaseMap::getItem(K,Index); }
+
+  std::vector<int> getCells(const std::string& K) const
+    { return BaseMap::getItems(K); }
+
+  std::vector<int> getCells() const
+    { return BaseMap::getItems(); }
+    
+  int removeCell(const std::string& K,const size_t Index=0)
+    {  return BaseMap::removeItem(K,Index); }
+
 
   void insertComponent(Simulation&,const std::string&,
+		       const ContainedComp&) const;
+  void insertComponent(Simulation&,const std::string&,const size_t,
 		       const ContainedComp&) const;
   void insertComponent(Simulation&,const std::string&,
 		       const HeadRule&) const;
   void insertComponent(Simulation&,const std::string&,
 		       const std::string&) const;
+  void insertComponent(Simulation&,const std::string&,const size_t,
+		       const std::string&) const;
   void insertComponent(Simulation&,const std::string&,
 		       const FixedComp&,const long int) const;
 
-  void deleteCell(Simulation&,const std::string&,const size_t =0);
+    
+ void deleteCell(Simulation&,const std::string&,const size_t =0);
   std::pair<int,double>
     deleteCellWithData(Simulation&,const std::string&,const size_t =0);
-  
-  int removeCell(const std::string&,const size_t =0);
-  
+
 };
 
 }

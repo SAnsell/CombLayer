@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/nmx/NMXvariables.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -76,7 +76,7 @@ NMXvariables(FuncDataBase& Control)
   Control.addVariable("nmxGAZStep",0.0);       
   Control.addVariable("nmxGAXYAngle",0.0);
   Control.addVariable("nmxGAZAngle",0.0);
-  Control.addVariable("nmxGABeamXYAngle",0.0);       
+  Control.addVariable("nmxGABeamXYAngle",-1.0);       
 
   Control.addVariable("nmxGALength",350.0);       
   Control.addVariable("nmxGANShapes",1);       
@@ -98,44 +98,15 @@ NMXvariables(FuncDataBase& Control)
   Control.addVariable("nmxGA0WidthEnd",3.0);
   Control.addVariable("nmxGA0Length",350.0);
   Control.addVariable("nmxGA0ZAngle",0.0);
-
-  Control.addVariable("nmxGAXStep",0.0);       
-  Control.addVariable("nmxGAYStep",0.0);       
-  Control.addVariable("nmxGAZStep",0.0);       
-  Control.addVariable("nmxGAXYAngle",0.0);
-  Control.addVariable("nmxGAZAngle",0.0);
-  Control.addVariable("nmxGABeamXYAngle",0.0);       
-
-  Control.addVariable("nmxGALength",350.0);       
-  Control.addVariable("nmxGANShapes",1);       
-  Control.addVariable("nmxGANShapeLayers",3);
-  Control.addVariable("nmxGAActiveShield",0);
-
-  Control.addVariable("nmxGALayerThick1",0.4);  // glass thick
-  Control.addVariable("nmxGALayerThick2",1.5);
-
-  Control.addVariable("nmxGALayerMat0","Void");
-  Control.addVariable("nmxGALayerMat1","Copper");
-  Control.addVariable("nmxGALayerMat2","Void");       
-
-  Control.addVariable("nmxGA0TypeID","Tapper");
-
-  Control.addVariable("nmxGA0HeightStart",3.0);
-  Control.addVariable("nmxGA0HeightEnd",4.5);
-  Control.addVariable("nmxGA0WidthStart",3.0);
-  Control.addVariable("nmxGA0WidthEnd",3.0);
-  Control.addVariable("nmxGA0Length",350.0);
-  Control.addVariable("nmxGA0ZAngle",0.0);
-
-  
+    
   Control.addVariable("nmxBAXStep",0.0);       
-  Control.addVariable("nmxBAYStep",0.0);       
+  Control.addVariable("nmxBAYStep",50.0);       
   Control.addVariable("nmxBAZStep",0.0);       
   Control.addVariable("nmxBAXYAngle",0.0);
   Control.addVariable("nmxBAZAngle",0.0);
   Control.addVariable("nmxBABeamXYAngle",0.0);       
 
-  Control.addVariable("nmxBALength",1149.0);       
+  Control.addVariable("nmxBALength",1899.0);       
   Control.addVariable("nmxBANShapes",1);       
   Control.addVariable("nmxBANShapeLayers",3);
   Control.addVariable("nmxBAActiveShield",0);
@@ -152,25 +123,26 @@ NMXvariables(FuncDataBase& Control)
   Control.addVariable("nmxBA0BHeight",4.50);
   Control.addVariable("nmxBA0AWidth",3.0);
   Control.addVariable("nmxBA0BWidth",3.0);
-  Control.addVariable("nmxBA0Length",1149.0);
   Control.addVariable("nmxBA0AngDir",0.0);
   Control.addVariable("nmxBA0Radius",60000.0);
+  Control.addParse<double>("nmxBA0Length","nmxBALength");
 
   // VACUUM PIPES:
-  Control.addVariable("nmxPipeARadius",9.0);
+  Control.addVariable("nmxPipeAYStep",50.0);
+  Control.addVariable("nmxPipeARadius",12.0);
   Control.addVariable("nmxPipeALength",700.0);
   Control.addVariable("nmxPipeAFeThick",1.0);
-  Control.addVariable("nmxPipeAFlangeRadius",12.0);
+  Control.addVariable("nmxPipeAFlangeRadius",14.0);
   Control.addVariable("nmxPipeAFlangeLength",1.0);
   Control.addVariable("nmxPipeAFeMat","Aluminium");
   Control.addVariable("nmxPipeAVoidMat","CastIron");
   
   // VACUUM PIPES:
-  Control.addVariable("nmxPipeBXYAngle",-1.8);   // from -0.8
-  Control.addVariable("nmxPipeBRadius",10.0);
+  Control.addVariable("nmxPipeBXYAngle",-1.2);   // from -0.8
+  Control.addVariable("nmxPipeBRadius",12.0);
   Control.addVariable("nmxPipeBLength",500.0);
   Control.addVariable("nmxPipeBFeThick",1.0);
-  Control.addVariable("nmxPipeBFlangeRadius",12.0);
+  Control.addVariable("nmxPipeBFlangeRadius",16.0);
   Control.addVariable("nmxPipeBFlangeLength",1.0);
   Control.addVariable("nmxPipeBFeMat","Aluminium");
   Control.addVariable("nmxPipeBVoidMat","CastIron");

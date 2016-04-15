@@ -66,6 +66,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
 #include "CellMap.h"
 #include "BeRefInnerStructure.h"
 #include "BeRef.h"
@@ -90,15 +91,16 @@ BeRef::BeRef(const std::string& Key) :
 
 BeRef::BeRef(const BeRef& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  attachSystem::CellMap(A),  
+  attachSystem::CellMap(A),
+  engActive(A.engActive),InnerComp(A.InnerComp->clone()),
   refIndex(A.refIndex),cellIndex(A.cellIndex),xStep(A.xStep),
   yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
   zAngle(A.zAngle),radius(A.radius),height(A.height),
-  wallThick(A.wallThick),wallThickLow(A.wallThickLow),lowVoidThick(A.lowVoidThick),
+  wallThick(A.wallThick),wallThickLow(A.wallThickLow),
+  lowVoidThick(A.lowVoidThick),
   topVoidThick(A.topVoidThick),targSepThick(A.targSepThick),
   refMat(A.refMat),wallMat(A.wallMat),
-  targSepMat(A.targSepMat),
-  InnerComp(A.InnerComp->clone())
+  targSepMat(A.targSepMat)
   /*!
     Copy constructor
     \param A :: BeRef to copy
@@ -119,6 +121,8 @@ BeRef::operator=(const BeRef& A)
       attachSystem::FixedComp::operator=(A);
       CellMap::operator=(A);
       cellIndex=A.cellIndex;
+      engActive=A.engActive;
+      *InnerComp = *A.InnerComp;
       xStep=A.xStep;
       yStep=A.yStep;
       zStep=A.zStep;
@@ -134,13 +138,11 @@ BeRef::operator=(const BeRef& A)
       refMat=A.refMat;
       wallMat=A.wallMat;
       targSepMat=A.targSepMat;
-      *InnerComp = *A.InnerComp;
+
     }
   return *this;
 }
   
-
-
 BeRef::~BeRef()
   /*!
     Destructor

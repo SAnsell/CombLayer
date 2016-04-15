@@ -32,6 +32,7 @@
 #include <iterator>
 #include <functional>
 #include <algorithm>
+#include <numeric>
 #include <memory>
 #include <boost/format.hpp>
 
@@ -47,7 +48,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "WForm.h"
 #include "WeightMesh.h"
 
 namespace WeightSystem
@@ -61,6 +61,46 @@ WeightMesh::WeightMesh() :
     Constructor [makes XYZ mesh]
   */
 {}
+
+WeightMesh::WeightMesh(const WeightMesh& A) : 
+  tallyN(A.tallyN),type(A.type),RefPoint(A.RefPoint),
+  Origin(A.Origin),Axis(A.Axis),Vec(A.Vec),X(A.X),Y(A.Y),
+  Z(A.Z),XFine(A.XFine),YFine(A.YFine),ZFine(A.ZFine),
+  NX(A.NX),NY(A.NY),NZ(A.NZ)
+  /*!
+    Copy constructor
+    \param A :: WeightMesh to copy
+  */
+{}
+
+WeightMesh&
+WeightMesh::operator=(const WeightMesh& A)
+  /*!
+    Assignment operator
+    \param A :: WeightMesh to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      tallyN=A.tallyN;
+      type=A.type;
+      RefPoint=A.RefPoint;
+      Origin=A.Origin;
+      Axis=A.Axis;
+      Vec=A.Vec;
+      X=A.X;
+      Y=A.Y;
+      Z=A.Z;
+      XFine=A.XFine;
+      YFine=A.YFine;
+      ZFine=A.ZFine;
+      NX=A.NX;
+      NY=A.NY;
+      NZ=A.NZ;
+    }
+  return *this;
+}
 
 void
 WeightMesh::setMeshType(const GeomENUM& A)
@@ -100,6 +140,7 @@ WeightMesh::setMesh(const std::vector<double>& XV,
   NX=std::accumulate(XFine.begin(),XFine.end(),0UL);
   NY=std::accumulate(YFine.begin(),YFine.end(),0UL);
   NZ=std::accumulate(ZFine.begin(),ZFine.end(),0UL);
+  Origin=Geometry::Vec3D(X.front(),Y.front(),Z.front());
   return;
 }
 
@@ -136,15 +177,17 @@ WeightMesh::getCoordinate(const std::vector<double>& Vec,
     \return positions [Origin non - offset
    */
 {
-  size_t sum(0);
+  size_t offset(NF[0]);
   size_t I(0);
-  while(Index>sum)
+  while(Index>offset)
     {
-      sum+=NF[I];
+      offset+=NF[I];
       I++;
     }
-
-  return Vec[Index]+static_cast<double>(Index-sum)*
+  offset-=NF[I];
+         
+  
+  return Vec[I]+static_cast<double>(Index-offset)*
     (Vec[I+1]-Vec[I])/NF[I];
 }
   
@@ -161,7 +204,6 @@ WeightMesh::point(const size_t a,const size_t b,const size_t c) const
 {
   ELog::RegMethod RegA ("WeightMesh","point");
 
-  if (a>NX)
   if (a >= NX)
     throw ColErr::IndexError<size_t>(a,NX,"X-coordinate");
   if (b >= NY)
@@ -176,66 +218,59 @@ WeightMesh::point(const size_t a,const size_t b,const size_t c) const
 }
 
 void
-WeightMesh::writeWWINP(std::ostream& OX) const
+WeightMesh::writeWWINP(std::ostream& OX,const size_t NEBin) const
   /*!
     Write out to a mesh to a wwinp file
     Currently ONLY works correctly with a rectangular file
-    \paramOX :: Output stream
+    \param OX :: Output stream
+    \param NEBin :: Number of energy bins
   */
 {
   ELog::RegMethod RegA("WeightMesh","writeWWINP");
 
-  
-  boost::format TopFMT("%10i%10i%10i%10i%28sn");
+  boost::format TopFMT("%10i%10i%10i%10i%28s\n");
   const std::string date("10/07/15 15:37:51");
   OX<<(TopFMT % tallyN % 1 % 1 % 10 % date);
 
+  // Energy bins
+  OX<<std::setw(10)<<NEBin<<std::endl;
+
+  // Write Mesh:
+  size_t itemCnt(0);
+  StrFunc::writeLine(OX,NX,itemCnt,6);
+  StrFunc::writeLine(OX,NY,itemCnt,6);
+  StrFunc::writeLine(OX,NZ,itemCnt,6);
+  StrFunc::writeLine(OX,Origin,itemCnt,6);
+
+  StrFunc::writeLine(OX,XFine.size(),itemCnt,4);
+  StrFunc::writeLine(OX,YFine.size(),itemCnt,4);
+  StrFunc::writeLine(OX,ZFine.size(),itemCnt,4);
+  StrFunc::writeLine(OX,1.0,itemCnt,4);
+
+  // loop over X/Y/Z
+  for(size_t index=0;index<3;index++)
+    {
+      const std::vector<double>& Vec=
+	((!index) ? X : (index==1) ? Y : Z);
+      const std::vector<size_t>& iVec=
+	((!index) ? XFine : (index==1) ? YFine : ZFine);
+
+      itemCnt=0;
+      StrFunc::writeLine(OX,Vec[0],itemCnt,6);
+
+      for(size_t i=0;i<iVec.size();i++)
+	{
+	  StrFunc::writeLine(OX,iVec[i],itemCnt,6);
+	  StrFunc::writeLine(OX,Vec[i+1],itemCnt,6);
+	  StrFunc::writeLine(OX,1.0,itemCnt,6);
+		  
+	}
+      if (itemCnt) OX<<std::endl;
+    }
+  
   return;
 }
 
-void
-WeightMesh::writeLine(std::ostream& OX,const double V,
-		      size_t& itemCnt)
-  /*!
-    Write the line in the WWG format of 13.6g
-    \param OX :: Output stream
-    \param V :: Value
-    \param itemCnt :: Item value
-   */
-{
-  static boost::format DblFMT("%13.6g");
-  
-  OX<<(DblFMT % V);
-  itemCnt++;
-  if (itemCnt==6)
-    {
-      OX<<std::endl;
-      itemCnt=0;
-    }
-  return;
-}
-  
-void
-WeightMesh::writeLine(std::ostream& OX,const int V,
-		      size_t& itemCnt)
-  /*!
-    Write the line in the WWG format of 13.6g
-    \param OX :: Output stream
-    \param V :: Value
-    \param itemCnt :: Item value
-   */
-{
-  static boost::format DblFMT("%13.6g");
-  
-  OX<<(DblFMT % V);
-  itemCnt++;
-  if (itemCnt==6)
-    {
-      OX<<std::endl;
-      itemCnt=0;
-    }
-  return;
-}
   
 void
 WeightMesh::write(std::ostream& OX) const
@@ -247,27 +282,29 @@ WeightMesh::write(std::ostream& OX) const
   ELog::RegMethod RegA("WeightMesh","write");
 
   std::ostringstream cx;
-  cx<<"mesh "<<getType()<<" origin "<<Origin
-    <<" ref "<<RefPoint;
+  cx<<"mesh   geom="<<getType()<<" origin="<<Origin
+    <<" ref="<<RefPoint;
   StrFunc::writeMCNPX(cx.str(),OX);
 
   // imesh :
   char c[3]={'i','j','k'};
   std::vector<double>::const_iterator vc;
-  for(int i=0;i<3;i++)
+  for(size_t i=0;i<3;i++)
     {
       const std::vector<double>& Vec=
 	((!i) ? X : (i==1) ? Y : Z);
+      const std::vector<size_t>& iVec=
+	((!i) ? XFine : (i==1) ? YFine : ZFine);
       
       cx.str("");
       cx<<c[i]<<"mesh ";
-      for(const double& val : Vec)
-	cx<<val<<" ";
-      StrFunc::writeMCNPX(cx.str(),OX);
+      for(size_t i=1;i<Vec.size();i++)
+	cx<<Vec[i]<<" ";
       cx<<c[i]<<"ints";
-      for(size_t index=0;index<Vec.size();index++)
-	cx<<" 1";
-      StrFunc::writeMCNPX(cx.str(),OX);
+      for(const size_t& iVal : iVec)
+	cx<<" "<<iVal;
+      
+      StrFunc::writeMCNPXcont(cx.str(),OX);
     }
   return;
 }

@@ -3,7 +3,7 @@
  
  * File:   geometry/Plane.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -495,6 +495,17 @@ Plane::distance(const Geometry::Vec3D& A) const
   */
 {
   return A.dotProd(NormV)-Dist;
+}
+
+Geometry::Vec3D
+Plane::closestPt(const Geometry::Vec3D& A) const
+  /*!
+    Determine the closet point on the plane from A
+    \param A :: point to compare with the plane
+    \returns distance tot he point 
+  */
+{
+  return A-NormV*(A.dotProd(NormV)-Dist);
 }
 
 double

@@ -62,6 +62,7 @@
 #include "SimMonte.h"
 #include "variableSetup.h"
 #include "defaultConfig.h"
+#include "DBModify.h"
 #include "MainProcess.h"
 
 namespace mainSystem
@@ -279,15 +280,26 @@ createInputs(inputParam& IParam)
   IParam.regItem("w","weight");
   IParam.regItem("WP","weightPt");
   IParam.regMulti("wExt","wExt",25,0);
-  IParam.regMulti("wPWT","wPWT",25,0);    
+  IParam.regMulti("wECut","wECut",100,0);
+  IParam.regMulti("wPWT","wPWT",25,0);
+  IParam.regItem("WControl","weightControl",1,10);
   IParam.regItem("WTemp","weightTemp",1);
-  IParam.regDefItem<std::string>("WType","weightType",1,"basic");
+  IParam.regItem("WType","weightType",1,30);
+  IParam.regMulti("WSource","weightSource",30,1);
+  IParam.regMulti("WPlane","weightPlane",30,2);
+  IParam.regMulti("WTally","weightTally",30,1);
+  IParam.regMulti("WObject","weightObject",100,1);
+  IParam.regMulti("WRebase","weightRebase",100,1);
+  IParam.regMulti("wDXT","weightDxtran",100,1);
+  IParam.regMulti("wDD","weightDD",100,1);
 
 
   IParam.regMulti("wWWG","wWWG",25,0);
-  IParam.regMulti("wXMesh","wwgXMesh",25,3);
-  IParam.regMulti("wYMesh","wwgYMesh",25,3);
-  IParam.regMulti("wZMesh","wwgZMesh",25,3);
+  IParam.regMulti("wwgE","wwgE",25,0);
+  IParam.regMulti("wwgCalc","wwgCalc",100,1);
+  IParam.regItem("wwgXMesh","wwgXMesh",3,125);
+  IParam.regItem("wwgYMesh","wwgYMesh",3,125);
+  IParam.regItem("wwgZMesh","wwgZMesh",3,125);
   
   
   IParam.regDefItem<std::string>("X","xmlout",1,"Model.xml");
@@ -330,6 +342,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("SI","Source Index value [1:2]");
   IParam.setDesc("SObj","Source Initialization Object");
   IParam.setDesc("sdefType","Source Type (TS1/TS2)");
+  IParam.setDesc("sdefVoid","Remove sdef card [to use source.F]");
   IParam.setDesc("physModel","Physics Model"); 
   IParam.setDesc("SP","Source start point");
   IParam.setDesc("SV","Sourece direction vector");
@@ -343,7 +356,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("Txml","Tally xml file");
   IParam.setDesc("targetType","Name of target type");
   IParam.setDesc("u","Units in cm");
-  IParam.setDesc("um","Unset void area (from imp=0)");
+  IParam.setDesc("um","Unset spherical void area (from imp=0)");
   IParam.setDesc("void","Adds the void card to the simulation");
   IParam.setDesc("volume","Create volume about point/radius for f4 tally");
   IParam.setDesc("volCells","Cells [object/range]");
@@ -355,10 +368,14 @@ createInputs(inputParam& IParam)
 
   IParam.setDesc("w","weightBias");
   IParam.setDesc("wExt","Extraction biasisng [see: -wExt help]");
+  IParam.setDesc("wDXT","Dxtran sphere addition [set -wDXT help] ");
   IParam.setDesc("wPWT","Photon Bias [set -wPWT help]");
   IParam.setDesc("WType","Initial model for weights [help for info]");
   IParam.setDesc("WTemp","Temperature correction for weights");
+  IParam.setDesc("WRebase","Rebase the weights based on a cell");
+  IParam.setDesc("WObject","Reconstruct weights base on cells");
   IParam.setDesc("WP","Weight bias Point");
+  IParam.setDesc("weightControl","Sets: energyCut scaleFactor minWeight");
 
   IParam.setDesc("x","XML input file");
   IParam.setDesc("X","XML output file");
@@ -654,8 +671,7 @@ createESSInputs(inputParam& IParam)
   IParam.setValue("sdefType",std::string("ess"));  
   IParam.setValue("targetType",std::string("Bilbao"));
 
-  ///\todo change to database list [ordered]
-  IParam.regDefItem<std::string>("materials","materialDatabase",1,std::string("shielding"));
+  IParam.regDefItem<std::string>("matDB","materialDatabase",1,std::string("shielding"));
   
   IParam.regDefItem<std::string>("lowMod","lowModType",1,std::string("lowMod"));
   IParam.regDefItem<std::string>("topMod","topModType",1,std::string("topMod"));
@@ -669,7 +685,7 @@ createESSInputs(inputParam& IParam)
   IParam.regMulti("f5-collimators","f5collimators",30);
 
   
-  IParam.setDesc("materials","Set the material database to use (shielding or neutronics)");
+  IParam.setDesc("matDB","Set the material database to use (shielding or neutronics)");
   IParam.setDesc("beamlines","Creates beamlines on the main model");
   IParam.setDesc("lowMod","Type of low moderator to be built");
   IParam.setDesc("topMod","Type of top moderator to be built");
@@ -951,7 +967,39 @@ InputModifications(Simulation* SimPtr,inputParam& IParam,
 }
 
 void
+setMaterialsDataBase(const inputParam& IParam)
+  /*!
+    Set the different data base option for mateirals
+    \param IParam :: Input param
+  */
+{
+  ELog::RegMethod RegA("MainProcess","setMaterialsDataBase");
+
+  const std::string materials=IParam.getValue<std::string>("matDB");
+  
+  // Add extra materials to the DBMaterials
+  if (materials=="neutronics")
+    ModelSupport::addESSMaterial();
+  else if (materials=="shielding")
+    ModelSupport::cloneESSMaterial();
+  else if (materials=="help")
+    {
+      ELog::EM<<"Materials database setups:\n"
+	" -- shielding [S.Ansell original naming]\n"
+	" -- neutronics [ESS Target division naming]"<<ELog::endDiag;
+      throw ColErr::ExitAbort("help");
+    }	
+  else
+    throw ColErr::InContainerError<std::string>(materials,
+						"Materials Data Base type");
+}
+  
+void
 exitDelete(Simulation* SimPtr)
+ /*!
+   Final deletion including singletons
+   \param Simulation to delete
+ */
 {
   delete SimPtr;
   ModelSupport::objectRegister::Instance().reset();

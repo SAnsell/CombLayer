@@ -3,7 +3,7 @@
  
  * File:   tally/meshConstruct.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -117,9 +117,9 @@ meshConstruct::processMesh(Simulation& System,
       const std::string doseType=
 	inputItem<std::string>(IParam,Index,itemIndex++,"Dose type");
       Geometry::Vec3D APt=
-	inputCntVec3D(IParam,Index,itemIndex,"Low Corner");
+	IParam.getCntVec3D("tally",Index,itemIndex,"Low Corner");
       Geometry::Vec3D BPt=
-	inputCntVec3D(IParam,Index,itemIndex,"High Corner");
+	IParam.getCntVec3D("tally",Index,itemIndex,"High Corner");
       
       // Rotation:
       std::string revStr;
@@ -209,7 +209,11 @@ meshConstruct::rectangleMesh(Simulation& System,const int type,
       ELog::EM<<"Using unknown keyword :"<<KeyWords<<ELog::endErr;
     }
 
-  ELog::EM<<"Adding tally "<<MT<<ELog::endTrace;
+  ELog::EM<<"Adding tally "<<ELog::endTrace;
+  ELog::EM<<"Coordinates  : "<<ELog::endTrace;
+  MT.writeCoordinates(ELog::EM.Estream());
+  ELog::EM<<ELog::endTrace;
+
   System.addTally(MT);
 
   return;
@@ -221,7 +225,7 @@ meshConstruct::getDoseConversion()
     Return the dose string  for a mshtr
     Uses the FTD files values [Flux to Dose conversion].
     - These values are in mrem/hour. You need a conversion factor
-    of 360 to go to 1uSv/hour from particles/sec.
+    of 10 to go to 1uSv/hour from particles/sec.
     \return FTD string
   */
 {

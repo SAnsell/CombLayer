@@ -35,6 +35,8 @@ class ButterflyModerator :
   double totalHeight;                     ///< Total height
   double outerRadius;                     ///< Main outer radius
 
+  std::string ExcludeStr;                 ///< exclude string (contains H2Wings, MidWater and both EdgeWater regions)
+
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const attachSystem::FixedComp*,
@@ -65,6 +67,8 @@ class ButterflyModerator :
 		 const attachSystem::FixedComp*,
 		 const long int);
 
+  inline std::string getExcludeStr() const { return ExcludeStr; }
+  std::string getSideSurface() const;
   Geometry::Vec3D getFocalPoint(int i) const;
   std::vector<Geometry::Vec3D> getFocalPoints() const;
 };

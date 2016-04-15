@@ -80,6 +80,7 @@
 #include "SpecialSurf.h"
 #include "LineTrack.h"
 #include "ObjectTrackAct.h"
+#include "ObjectTrackPoint.h"
 #include "pointDetOpt.h"
 #include "basicConstruct.h" 
 #include "meshConstruct.h" 

@@ -49,6 +49,8 @@ class BasicFlightLine : public attachSystem::ContainedGroup,
   double xyAngle;               ///< XY plance rotation
   double zAngle;                ///< Z axis rotation
 
+  double masterXY;              ///< Master rotation of general axis(XY)
+  double masterZ;               ///< Master rotation of general axis(Z)
   double anglesXY[2];           ///< Rotation in the XY plane 
   double anglesZ[2];            ///< Rotation in the Z plane
   

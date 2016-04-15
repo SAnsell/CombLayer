@@ -69,6 +69,7 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
 #include "CellMap.h"
 
 #include "VacuumBox.h"
@@ -124,6 +125,7 @@ VacuumBox::populate(const FuncDataBase& Control)
   flangeLength=Control.EvalVar<double>(keyName+"FlangeLength");
   flangeWall=Control.EvalVar<double>(keyName+"FlangeWall");
   
+  voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
 
   return;
@@ -210,15 +212,15 @@ VacuumBox::createObjects(Simulation& System)
 
   // Void 
   Out=ModelSupport::getComposite(SMap,vacIndex,"1 -2 3 -4 5 -6");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,voidMat,0.0,Out));
   addCell("Void",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,vacIndex,"101 -1 -107 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,voidMat,0.0,Out));
   addCell("Void",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,vacIndex," 2 -102 -107 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,voidMat,0.0,Out));
   addCell("Void",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,vacIndex,

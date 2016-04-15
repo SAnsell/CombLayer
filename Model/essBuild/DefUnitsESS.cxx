@@ -3,7 +3,7 @@
  
  * File:   essBuild/DefUnitsESS.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,21 +72,28 @@ setDefUnits(FuncDataBase& Control,
 
       const std::string sndItem=(ICnt>1) ? 
 	IParam.getValue<std::string>("defaultConfig",1) : "";
+      const std::string extraItem=(ICnt>2) ? 
+	IParam.getValue<std::string>("defaultConfig",2) : "";
+      const int filled=(ICnt>3) ? 
+	IParam.getValue<int>("defaultConfig",3) : 0;
       
       if (Key=="Main")
 	setESS(A);
+      else if (Key=="Full")
+	setESSFull(A);
       else if (Key=="PortsOnly")
 	setESSPortsOnly(A);
       else if (Key=="Single")
-	setESSSingle(A,sndItem);
+	setESSSingle(A,sndItem,extraItem,filled);
       else if (Key=="help")
 	{
 	  ELog::EM<<"Options : "<<ELog::endDiag;
 	  ELog::EM<<"  Main : Everything that works"<<ELog::endDiag;
+	  ELog::EM<<"  Full : Beamline on every port"<<ELog::endDiag;
 	  ELog::EM<<"  PortsOnly  : Nothing beyond beamport "<<ELog::endDiag;
-	  ELog::EM<<"  Test  : Single beamline [for BL devel] "<<ELog::endDiag;
-	  throw ColErr::InContainerError<std::string>
-	    (Key,"Iparam.defaultConfig");	  
+	  ELog::EM<<"  Single  beamLine : Single beamline [for BL devel] "
+		  <<ELog::endDiag;
+	  throw ColErr::ExitAbort("Iparam.defaultConfig");	  
 	}
       else 
 	{
@@ -99,7 +106,6 @@ setDefUnits(FuncDataBase& Control,
   return;
 }
 
-
 void
 setESSFull(defaultConfig& A)
   /*!
@@ -111,20 +117,39 @@ setESSFull(defaultConfig& A)
 
   A.setOption("lowMod","Butterfly");
   A.setOption("topMod","Butterfly");
-  A.setOption("lowModFlowGuide","On");
-  A.setOption("topModFlowGuide","On");
-  A.setOption("lowWaterDisk","On");
-  A.setOption("topWaterDisk","On");
-  A.setOption("topWaterDisk","On");
-  A.setMultiOption("beamlines",0,"G1BLine1 ODIN");
-  A.setMultiOption("beamlines",1,"G1BLine3 LOKI");
-  A.setMultiOption("beamlines",2,"G1BLine5 NMX");
-  A.setMultiOption("beamlines",3,"G1BLine6 VOR");
 
-  A.setVar("G1BLine1Active",1);
-  A.setVar("G1BLine3Active",1);
-  A.setVar("G1BLine5Active",1);
-  A.setVar("G1BLine6Active",1);
+  const std::map<std::string,std::string> beamDef=
+    {
+      //      {"NMX","G4BLine18"},
+      //      {"SHORTDREAM","G4BLine9"},
+      //      {"SHORTDREAM2","G4BLine1"},
+      //      {"SHORTODIN","G4BLine7"},
+      //      {"DREAM","G4BLine17"},
+      //      {"VOR","G4BLine3"},   // also 17  
+      //      {"LOKI","G4BLine5"},
+      //      {"ODIN","G4BLine15"}
+      {"VOR","G4BLine1"},   // also 17
+      {"SHORTDREAM","G4BLine3"},
+      {"SHORTODIN","G4BLine5"},
+      {"LOKI","G4BLine7"},
+      {"SHORTDREAM2","G4BLine9"},
+      {"DREAM","G4BLine17"},
+      {"ODIN","G4BLine15"}
+    };     
+  const std::set<std::string> beamFilled=
+    {"NMX","DREAM","VOR","SHORTDREAM","SHORTDREAM2","LOKI"};
+
+  size_t index(0);
+  std::map<std::string,std::string>::const_iterator mc;
+  for(mc=beamDef.begin();mc!=beamDef.end();mc++)
+    {
+      A.setMultiOption("beamlines",index,mc->second+" "+mc->first);
+      A.setVar(mc->second+"Active",1);
+      if (beamFilled.find(mc->first)!=beamFilled.end())
+	A.setVar(mc->second+"Filled",1);
+      index++;
+    }
+  
 
   return;
 }
@@ -139,8 +164,7 @@ setESSPortsOnly(defaultConfig& A)
   ELog::RegMethod RegA("DefUnitsESS[F]","setESS");
 
   A.setOption("lowMod","Butterfly");
-
-  for(size_t i=0;i<19;i++)
+  for(size_t i=0;i<21;i++)
     A.setVar("G1BLine"+StrFunc::makeString(i+1)+"Active",1);
 
   ELog::EM<<"Port Only "<<ELog::endDiag;
@@ -148,41 +172,63 @@ setESSPortsOnly(defaultConfig& A)
 }
 
 void
-setESSSingle(defaultConfig& A,const std::string& beamItem)
+setESSSingle(defaultConfig& A,
+	     const std::string& beamItem,
+	     const std::string& portItem,
+	     int filled)
+
   /*!
     Default configuration for ESS for testing single beamlines
     for building
     \param A :: Paramter for default config
+    \param beamItem :: Additional value for beamline name
+    \param portItem :: Additional value for port number/item
+    \param active :: Active flag
    */
 {
   ELog::RegMethod RegA("DefUnitsESS[F]","setESS");
 
   A.setOption("lowMod","Butterfly");
+  const std::map<std::string,std::string> beamDef=
+    {{"NMX","G4BLine21"},
+     {"SHORTDREAM","G4BLine9"},
+     {"SHORTODIN","G1BLine16"},
+     {"DREAM","G4BLine17"},
+     {"VOR","G4BLine1"},   // also 17  
+     {"LOKI","G4BLine4"},
+     {"ODIN","G1BLine4"},   // Note reverse because on G1
+     {"ESTIA","G4BLine11"}
+    };     
+  const std::set<std::string> beamFilled=
+    {"NMX","DREAM","VOR","SHORTDREAM","LOKI"};
   
-  if (beamItem=="NMX")
-    A.setMultiOption("beamlines",0,"G4BLine17 NMX");
-  else if (beamItem=="DREAM")
-    A.setMultiOption("beamlines",0,"G4BLine11 DREAM");
-  else if (beamItem=="VOR")
-    A.setMultiOption("beamlines",0,"G1BLine5 VOR");
-  else if (beamItem=="LOKI")
-    A.setMultiOption("beamlines",0,"G4BLine4 LOKI");
-  else if (beamItem=="ESTIA")
-    A.setMultiOption("beamlines",0,"G4BLine11 ESTIA");
+  std::map<std::string,std::string>::const_iterator mc=
+    beamDef.find(beamItem);
+  if (filled<0)  // deactivation if set
+    filled=0;
+  else if (!filled && beamFilled.find(beamItem)!=beamFilled.end())
+    filled=1;
+    
+  if (mc!=beamDef.end())
+    {
+      if (portItem.empty())
+	{
+	  A.setMultiOption("beamlines",0,mc->second+" "+beamItem);
+	  A.setVar(mc->second+"Active",1);
+	  if (filled)
+	    A.setVar(mc->second+"Filled",1);
+	}
+      else
+	{
+	  A.setMultiOption("beamlines",0,portItem+" "+beamItem);
+	  A.setVar(portItem+"Active",1);
+	  if (filled)
+	    A.setVar(portItem+"Filled",1);
+	}
+    }
   else
     throw ColErr::InContainerError<std::string>(beamItem,"BeamItem");
-    
-  A.setVar("G4BLine4Active",1);
-  A.setVar("G4BLine4Filled",1);
 
-  // DREAM
-  A.setVar("G4BLine17Filled",1);
-  A.setVar("G4BLine17Active",1);
-  A.setVar("G4BLine11Filled",1);
-  A.setVar("G4BLine11Active",1);
-  A.setVar("G1BLine5Active",1);
-  A.setVar("G1BLine5Filled",1);
-  
   ELog::EM<<"TEST of "<<beamItem<<" Only "<<ELog::endDiag;
   return;
 }
@@ -196,32 +242,34 @@ setESS(defaultConfig& A)
 {
   ELog::RegMethod RegA("DefUnitsESS[F]","setESS");
 
+
   A.setOption("lowMod","Butterfly");
+  A.setOption("topMod","Butterfly");
 
-  A.setMultiOption("beamlines",0,"G1BLine19 ODIN");
-  A.setMultiOption("beamlines",1,"G4BLine4 LOKI");
-  A.setMultiOption("beamlines",2,"G4BLine7 VOR");
-  A.setMultiOption("beamlines",3,"G4BLine12 NMX");
-  A.setMultiOption("beamlines",4,"G4BLine17 DREAM");
+  const std::map<std::string,std::string> beamDef=
+    {
+      {"NMX","G4BLine17"},
+      {"DREAM","G4BLine14"},
+      {"VOR","G4BLine7"},   // also 17  
+      {"LOKI","G4BLine4"},
+      {"ODIN","G4BLine19"}
+    };     
+  const std::set<std::string> beamFilled=
+    {"NMX","DREAM","VOR","LOKI"};
 
-  // odin : No action
 
-  // LOKI
-  A.setVar("G4BLine4Active",1);  
-  A.setVar("G4BLine4Filled",1);
-
-  // VOR
-  A.setVar("G4BLine7Filled",1);
-  A.setVar("G4BLine7Active",1);
-
-  // NMX
-  A.setVar("G4BLine12Active",1); 
-  A.setVar("G4BLine12Filled",1);
-
-  // DREAM
-  A.setVar("G4BLine17Filled",1);
-  A.setVar("G4BLine17Active",1);
   
+  size_t index(0);
+  std::map<std::string,std::string>::const_iterator mc;
+  for(mc=beamDef.begin();mc!=beamDef.end();mc++)
+    {
+      A.setMultiOption("beamlines",index,mc->second+" "+mc->first);
+      A.setVar(mc->second+"Active",1);
+      if (beamFilled.find(mc->first)!=beamFilled.end())
+	A.setVar(mc->second+"Filled",1);
+      index++;
+    }
+   
   return;
 }
 

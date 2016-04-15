@@ -1,5 +1,7 @@
+\section{Link system}
+
 CombLayers geometry is composed of a set of objects that have slightly
-stronger rules than a typical MCNP(X) model. Obviously any MCNPX model
+stronger rules than a typical MCNPX model. Obviously any MCNPX model
 can be represented as a CombLayer model and in the extreme case that
 is done by defining one object to contain the MCNPX model. However, the
 little benefit would be derived from such an approach.
@@ -13,7 +15,7 @@ interact with its surroundings in a well defined manor.
 In object orientated programming, functional rules and properties are
 normally added to objects by inherritance. CombLayer follows that
 pattern. As such most geometry item classes inherit from base classes within 
-the attachSystem namespace.
+the {\tt attachSystem} namespace.
 
 \subsection{AttachSystem Namespace}
 \label{AttachSystem}
@@ -53,9 +55,9 @@ surfaces, points and directions. Each link point defines all three parts.
 For example a cube might have 6 linkUnits, and each linkUnit would
 have a point at the centre of a face, a direction that is normal to
 the face pointing outwards and a surface definition that is the
-surface pointing outwards. \[ Note that in the case that the link
+surface pointing outwards. [ Note that in the case that the link
 points define an inner volume, for example in a vacuum vessel, then
-the surfaces/normals should point towards the centre.\]
+the surfaces/normals should point towards the centre.]
 
 The actual link surface does not need to be a simple surface. In the
 case, that an external surface needs multiple surfaces to define the

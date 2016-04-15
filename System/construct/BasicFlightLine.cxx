@@ -73,6 +73,7 @@
 #include "FixedComp.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+#include "BaseMap.h"
 #include "CellMap.h"
 #include "surfExpand.h"
 #include "BasicFlightLine.h"
@@ -109,8 +110,9 @@ BasicFlightLine::populate(const FuncDataBase& Control)
   // First get inner widths:
   xStep=Control.EvalVar<double>(keyName+"XStep");
   zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
-  zAngle=Control.EvalVar<double>(keyName+"Zangle");
+
+  masterXY=Control.EvalDefVar<double>(keyName+"MasterXY",0.0);
+  masterZ=Control.EvalDefVar<double>(keyName+"MasterZ",0.0);
 
   anglesXY[0]=Control.EvalVar<double>(keyName+"AngleXY1");
   anglesXY[1]=Control.EvalVar<double>(keyName+"AngleXY2");

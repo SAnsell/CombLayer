@@ -61,6 +61,8 @@ class MidWaterDivider :
   double modTemp;           ///< Moderator temperature
 
   double totalHeight;       ///< Total height of system
+
+  std::string sideSurface;      ///< Side surface
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
@@ -84,6 +86,8 @@ class MidWaterDivider :
   virtual int getLayerSurf(const size_t,const size_t) const;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const H2Wing&,const H2Wing&);
+  inline const std::string getSideSurface() const { return sideSurface; }
+
 };
 
 }

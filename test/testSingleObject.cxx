@@ -74,6 +74,7 @@
 #include "FixedComp.h"
 #include "ContainedComp.h"
 #include "LayerComp.h"
+#include "BaseMap.h"
 #include "CellMap.h"
 #include "ConicInfo.h"
 #include "ModBase.h"
@@ -361,7 +362,7 @@ testSingleObject::checkResult(const ModelSupport::LineTrack& LT,
 {
   ELog::RegMethod RegA("testSingleObject","checkResults");
 
-  const std::vector<int>& cells=LT.getCells();
+  const std::vector<long int>& cells=LT.getCells();
   const std::vector<double>& tLen=LT.getTrack();
   const std::vector<MonteCarlo::Object*>& oVec=LT.getObjVec();
   int cValue(0);
@@ -375,6 +376,7 @@ testSingleObject::checkResult(const ModelSupport::LineTrack& LT,
     }  
   if (cValue==CSum && fabs(TSum-tValue)<1e-3)
     return 1;
+  
   ELog::EM<<"cvalue["<<CSum<<"] == "<<cValue<<ELog::endDiag;
   ELog::EM<<"tvalue["<<TSum<<"] == "<<tValue<<ELog::endDiag;
   ELog::EM<<"Cellsize "<<cells[0]<<ELog::endDiag;

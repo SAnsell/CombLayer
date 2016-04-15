@@ -1,9 +1,9 @@
-/********************************************************************* 
-  CombLayer : MNCPX Input builder
+ /********************************************************************* 
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testObjectTrackAct.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,6 +65,7 @@
 #include "ModelSupport.h"
 #include "LineTrack.h"
 #include "ObjectTrackAct.h"
+#include "ObjectTrackPoint.h"
 
 #include "testFunc.h"
 #include "testObjectTrackAct.h"
@@ -223,7 +224,7 @@ testObjectTrackAct::testPointDet()
 {
   ELog::RegMethod RegA("testObjectTrackAct","testPointDet");
 
-  ObjectTrackAct OA(Geometry::Vec3D(20,0,0));
+  ObjectTrackPoint OA(Geometry::Vec3D(20,0,0));
 
   typedef std::tuple<int,double>  TTYPE;
   std::vector<TTYPE> Tests;

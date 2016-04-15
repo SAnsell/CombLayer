@@ -40,7 +40,8 @@ private:
 
   //Tests 
   int testFind();
-
+  int testSort();
+  
 public:
 
   testMapRange();

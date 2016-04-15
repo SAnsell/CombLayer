@@ -609,6 +609,7 @@ template size_t XMLobject::getAttribute(const std::string&,const size_t&) const;
 
 template double XMLobject::getItem(const std::string&) const;
 template int XMLobject::getItem(const std::string&) const;
+template size_t XMLobject::getItem(const std::string&) const;
 template std::string XMLobject::getItem(const std::string&) const;
 template Geometry::Vec3D XMLobject::getItem(const std::string&) const;
 

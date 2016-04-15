@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MCNP(X) Input builder
+  CombLayer : MNCPX Input builder
  
  * File:   essBuild/SupplyPipe.cxx
  *
@@ -79,7 +79,7 @@ namespace constructSystem
 {
 
 SupplyPipe::SupplyPipe(const std::string& Key)  :
-  attachSystem::FixedComp(Key,0),optName(""),
+  attachSystem::FixedComp(Key,2),optName(""),
   pipeIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(pipeIndex+1),wallOffset(2),
   Coaxial(Key+"CoAx"),nAngle(12)
@@ -181,8 +181,8 @@ SupplyPipe::populate(const Simulation& System)
 
 void
 SupplyPipe::createUnitVector(const attachSystem::FixedComp& FC,
-			     const size_t layerIndex,
-			     const size_t sideIndex)
+			     const size_t  layerIndex,
+			     const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Fixed unit that it is connected to 
@@ -195,10 +195,13 @@ SupplyPipe::createUnitVector(const attachSystem::FixedComp& FC,
   const attachSystem::LayerComp* LC=
     dynamic_cast<const attachSystem::LayerComp*>(&FC);
 
+  const size_t SI((sideIndex>0) ?
+		  static_cast<size_t>(sideIndex-1) :
+		  static_cast<size_t>(-sideIndex-1));
   if (LC && sideIndex)
     {
-      Origin=LC->getSurfacePoint(layerIndex,sideIndex-1);
-      FC.selectAltAxis(sideIndex-1,X,Y,Z);
+      Origin=LC->getSurfacePoint(layerIndex,SI);
+      FC.selectAltAxis(SI,X,Y,Z);
     }
   ELog::EM<<"Side ="<<sideIndex<<" X == "<<X<<ELog::endDebug;
   ELog::EM<<"Y ="<<Y<<" Z == "<<Z<<ELog::endDebug;
@@ -206,9 +209,26 @@ SupplyPipe::createUnitVector(const attachSystem::FixedComp& FC,
   return;
 }
 
+void
+SupplyPipe::createUnitVector(const attachSystem::FixedComp& FC,
+			     const long int sideIndex)
+  /*!
+    Create the unit vectors
+    \param FC :: Fixed unit that it is connected to 
+    \param sideIndex :: Connection point to use as origin [0 for origin]
+  */
+{
+  ELog::RegMethod RegA("SupplyPipe","createUnitVector(FC,long int)");
+
+  FixedComp::createUnitVector(FC,sideIndex);
+  return;
+}
+
+
+  
 void 
 SupplyPipe::insertInlet(const attachSystem::FixedComp& FC,
-			const size_t lSideIndex)
+			const long int lSideIndex)
   /*!
     Add a pipe to the moderator system:
     \remark This should be called after the moderator has
@@ -222,12 +242,18 @@ SupplyPipe::insertInlet(const attachSystem::FixedComp& FC,
     dynamic_cast<const attachSystem::LayerComp*>(&FC);
  
   if (!LC)
-    throw ColErr::CastError<void>(0,"FixedComp to LayerComp");
+    throw ColErr::CastError<void>(0,"FixedComp toLayerComp");
   layerOffset=X*PPts[0].X()+Z*PPts[0].Z();
+
   Geometry::Vec3D Pt= Origin+layerOffset+Y*PPts[0].Y();
   // GET Z Point from layer
-  Geometry::Vec3D PtZ=LC->getSurfacePoint(0,lSideIndex);
 
+  const size_t SI((lSideIndex>0) ?
+		  static_cast<size_t>(lSideIndex-1) :
+		  static_cast<size_t>(-lSideIndex-1));
+		  
+  
+  Geometry::Vec3D PtZ=LC->getSurfacePoint(0,SI);
   PtZ+=layerOffset;
   const int commonSurf=LC->getCommonSurf(lSideIndex);
   const std::string commonStr=(commonSurf) ? 		       
@@ -239,25 +265,22 @@ SupplyPipe::insertInlet(const attachSystem::FixedComp& FC,
 
   // First find start point in layer set: [avoid inner layer]
   Coaxial.addSurfPoint
-    (PtZ,LC->getLayerString(0,lSideIndex),commonStr);
+    (PtZ,LC->getLayerString(0,SI),commonStr);
+  
   if (layerSeq.empty())
     {
-      for(size_t index=LC->getNInnerLayers(lSideIndex)+
+      for(size_t index=LC->getNInnerLayers(SI)+
 	    wallOffset;index<NL;index+=2)
 	layerSeq.push_back(index);
     }
 
   for(const size_t lIndex : layerSeq)
     {
-      PtZ=LC->getSurfacePoint(lIndex,lSideIndex);
+      PtZ=LC->getSurfacePoint(lIndex,SI);
       PtZ+=layerOffset;
       Coaxial.addSurfPoint
-	(PtZ,LC->getLayerString(lIndex,lSideIndex),commonStr);
+	(PtZ,LC->getLayerString(lIndex,SI),commonStr);
     }
-  
-  for(size_t i=0;i<Radii.size();i++)
-    Coaxial.addRadius(Radii[i],Mat[i],Temp[i]);
-  
   return;
 }
 
@@ -295,12 +318,22 @@ SupplyPipe::addOuterPoints()
   ELog::RegMethod RegA("SupplyPipe","addOuterPoints");
 
   Geometry::Vec3D Pt;
+  if (!Coaxial.nPoints())
+    {
+      Pt=Origin+X*PPts[0].X()+Y*PPts[0].Y()+Z*PPts[0].Z();
+      Coaxial.addPoint(Pt);
+    }
+
   // Outer Points
   for(size_t i=1;i<=NSegIn;i++)
     {
       Pt=Origin+X*PPts[i].X()+Y*PPts[i].Y()+Z*PPts[i].Z();
       Coaxial.addPoint(Pt);
-    } 
+    }
+    
+  for(size_t i=0;i<Radii.size();i++)
+    Coaxial.addRadius(Radii[i],Mat[i],Temp[i]);
+
   return;
 }
 
@@ -325,18 +358,67 @@ SupplyPipe::setActive()
   */
 {
   ELog::RegMethod RegA("SupplyPipe","setActive");
-
+  
   for(size_t i=0;i<ActiveFlag.size();i++)
     Coaxial.setActive(i,ActiveFlag[i]);  
   return;
 }
+
+void
+SupplyPipe::createLinks()
+  /*!
+    Create the links for the first/last pipe
+  */
+{
+  ELog::RegMethod RegA("SupplyPipe","createLinks");
+
+  FixedComp::setConnect(0,Origin,-Y);
+  FixedComp::setConnect(1,Coaxial.getPt().back(),Y);
+
+  HeadRule EndCap(Coaxial.first().getCap(0));
+  EndCap.makeComplement();
+  FixedComp::setLinkSurf(0,EndCap);
+
+  EndCap=Coaxial.last().getCap(1);
+  EndCap.makeComplement();
+  FixedComp::setLinkSurf(1,EndCap);
+
+  return;
+}
+
   
 void
 SupplyPipe::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,
+		      const long int sideIndex)
+  /*!
+    Generic function to create everything
+    \param System :: Simulation to create objects in
+    \param FC :: Fixed Base unit
+    \param sideIndex :: Link point for origin 
+  */
+{
+  ELog::RegMethod RegA("SupplyPipe","createAll");
+  populate(System);
+
+  createUnitVector(FC,sideIndex);
+  addOuterPoints();
+  setActive();
+
+  Coaxial.setNAngle(nAngle);
+  if (!startSurf.empty())
+    Coaxial.setStartSurf(startSurf);
+  Coaxial.createAll(System);
+  createLinks();
+  return;
+}
+
+void
+SupplyPipe::createAll(Simulation& System,
+		      const attachSystem::FixedComp& FC,
 		      const size_t orgLayerIndex,
-		      const size_t orgSideIndex,
-		      const size_t exitSideIndex)
+		      const long int orgSideIndex,
+		      const long int exitSideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation to create objects in
@@ -355,13 +437,16 @@ SupplyPipe::createAll(Simulation& System,
   setActive();
 
   Coaxial.setNAngle(nAngle);
+  if (!startSurf.empty())
+    Coaxial.setStartSurf(startSurf);
   Coaxial.createAll(System);
-
+  
+  createLinks();
   return;
 }
 
 
-
+  
 void
 SupplyPipe::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,
@@ -391,7 +476,10 @@ SupplyPipe::createAll(Simulation& System,
   setActive();
 
   Coaxial.setNAngle(nAngle);
-  Coaxial.createAll(System);    
+  if (!startSurf.empty())
+    Coaxial.setStartSurf(startSurf);
+  Coaxial.createAll(System);
+  createLinks();
   return;
 }
   

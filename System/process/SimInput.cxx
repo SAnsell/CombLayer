@@ -58,7 +58,7 @@
 #include "ImportControl.h"
 #include "SimValid.h"
 #include "MainProcess.h"
-#include "BasicWWE.h"
+#include "WeightControl.h"
 #include "SimInput.h"
 
 
@@ -80,9 +80,13 @@ importanceSim(Simulation& System,const mainSystem::inputParam& IParam)
 
   WeightSystem::simulationImp(System,IParam);
   WeightSystem::ExtField(System,IParam);
+  WeightSystem::DXT(System,IParam);
   WeightSystem::PWT(System,IParam);
+  WeightSystem::EnergyCellCut(System,IParam);
   mainSystem::renumberCells(System,IParam);
-  WeightSystem::simulationWeights(System,IParam);
+
+  WeightSystem::WeightControl WC;
+  WC.processWeights(System,IParam);
 
   
   return;

@@ -3,7 +3,7 @@
  
  * File:   essBuild/makeESSBL.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,23 +61,26 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "CopiedComp.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+#include "BaseMap.h"
 #include "CellMap.h"
-#include "LayerComp.h"
+#include "SurfMap.h"
 #include "FixedGroup.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
 #include "ShapeUnit.h"
 #include "Bunker.h"
 #include "GuideLine.h"
 #include "GuideItem.h"
+#include "essVariables.h"
 
 #include "ODIN.h"
 #include "ESTIA.h"
 #include "LOKI.h"
 #include "NMX.h"
 #include "DREAM.h"
+#include "shortDREAM.h"
+#include "shortODIN.h"
 #include "VOR.h"
 
 #include "beamlineConstructor.h"
@@ -176,47 +179,59 @@ makeESSBL::build(Simulation& System,
     
   if (!mainGIPtr)
     throw ColErr::InContainerError<std::string>(shutterName,"shutterObject");
-
 	
   if (beamName=="ODIN")
     {
-      ELog::EM<<"Building "<<beamName<<ELog::endDiag;
       // Odin beamline
-      ODIN OdinBL;
+      ODIN OdinBL("odin");
+      OdinBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+    }
+  else if (beamName=="SHORTODIN")
+    {
+      // Odin beamline
+      ODIN OdinBL("shortOdin");
       OdinBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="ESTIA")
     {
-      ELog::EM<<"Building "<<beamName<<ELog::endDiag;
       ESTIA estiaBL;
       estiaBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="LOKI")
     {
       // LOKI beamline
-      ELog::EM<<"Building "<<beamName<<ELog::endDiag;
-      LOKI LokiBL;
+      LOKI LokiBL("loki");
       LokiBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="NMX")
     {
       // NMX beamline
       ELog::EM<<"Building "<<beamName<<ELog::endDiag;
-      NMX nmxBL;
+      NMX nmxBL("nmx");
       nmxBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="VOR")
     {
       ELog::EM<<"Building "<<beamName<<ELog::endDiag;
-      VOR vorBL;
+      VOR vorBL("vor");
       vorBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="DREAM")
     {
-      // NMX beamline
-      ELog::EM<<"Building "<<beamName<<ELog::endDiag;
-      ELog::EM<<"Building DREAM"<<ELog::endDiag;
-      DREAM dreamBL;
+      // DREAM beamline
+      DREAM dreamBL("dream");
+      dreamBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+    }
+  else if (beamName=="SHORTDREAM")
+    {
+      // short sector dream
+      DREAM dreamBL("shortDream");
+      dreamBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+    }
+  else if (beamName=="SHORTDREAM2")
+    {
+      // short sector dream
+      DREAM dreamBL("shortDream2");
       dreamBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="JSANS" || beamName=="JRef")
@@ -229,7 +244,10 @@ makeESSBL::build(Simulation& System,
       RefA->addInsertCell(voidCell);
       RefA->createAll(System,*mainFCPtr,2,*mainFCPtr,2);
     }
-
+  else
+    {
+      ELog::EM<<"NON-UNDERSTOOD BEAMLINE : "<<beamName<<ELog::endErr;
+    }
   return;
 }
 

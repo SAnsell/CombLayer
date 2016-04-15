@@ -60,12 +60,12 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "BasicWWE.h"
 #include "MainProcess.h"
 #include "SimProcess.h"
 #include "SurInter.h"
 #include "Simulation.h"
 #include "SimPHITS.h"
+#include "SimInput.h"
 #include "mainJobs.h"
 #include "Volumes.h"
 #include "DefPhysics.h"
@@ -134,13 +134,15 @@ main(int argc,char* argv[])
 	  delftSystem::makeDelft RObj(IParam.getValue<std::string>("modType"));
 	  World::createOuterObjects(*SimPtr);
 	  RObj.build(SimPtr,IParam);
+
+	  SimPtr->removeComplements();
+	  SimPtr->removeDeadSurfaces(0);         
+
 	  ModelSupport::setDefaultPhysics(*SimPtr,IParam);
 	  RObj.setSource(SimPtr,IParam);
 
 	  const int renumCellWork=
 	    reactorTallySelection(*SimPtr,IParam);
-	  SimPtr->removeComplements();
-	  SimPtr->removeDeadSurfaces(0);         
 
 	  if (createVTK(IParam,SimPtr,Oname))
 	    {
@@ -151,12 +153,12 @@ main(int argc,char* argv[])
 	  if (IParam.flag("endf"))
 	    SimPtr->setENDF7();
 
+	  SimProcess::importanceSim(*SimPtr,IParam);
+	  SimProcess::inputPatternSim(*SimPtr,IParam); // energy cut etc
 
-	  // outer void to zero
-	  // RENUMBER:x
-	  //	  WeightSystem::simulationImp(*SimPtr,IParam);
-	  WeightSystem::simulationWeights(*SimPtr,IParam);
-	  mainSystem::renumberCells(*SimPtr,IParam);
+	  if (renumCellWork)
+	    tallyRenumberWork(*SimPtr,IParam);
+	  tallyModification(*SimPtr,IParam);
 
 	  if (IParam.flag("cinder"))
 	    SimPtr->setForCinder();

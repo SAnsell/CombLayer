@@ -3,7 +3,7 @@
  
  * File:   weights/ImportControl.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,13 +69,31 @@
 #include "Simulation.h"
 #include "objectRegister.h"
 #include "inputParam.h"
+#include "ZoneUnit.h"
 #include "ExtConstructor.h"
 #include "PWTConstructor.h"
+#include "DXTConstructor.h"
+#include "ELPTConstructor.h"
 #include "ImportControl.h"
 
 namespace WeightSystem
 {
 
+void
+removePhysImp(Simulation& System,const std::string& pType)
+  /*!
+    Removes neutron importance
+    \param System :: Simulation
+    \param pType :: Particle type
+  */
+{
+  ELog::RegMethod RegA("ImportControl[F]","removePhysImp");
+
+  System.getPC().removePhysImp("imp",pType);
+  return;
+}
+
+  
 void
 zeroImp(Simulation& System,const int initCell,
 	const int cellRange)
@@ -168,6 +186,29 @@ simulationImp(Simulation& System,
 
   
 void
+EnergyCellCut(Simulation& System,
+              const mainSystem::inputParam& IParam)
+  /*!
+    Create the energy cell cutting system [ELPT] 
+    \param System :: Simulation
+    \param IParam :: input stream
+  */
+{
+  ELog::RegMethod RegA("ImportControl[F]","EnergyCellCut");
+
+  // currently only first item / get all
+  std::vector<std::string> StrItem;
+  const size_t NGrp=IParam.setCnt("wECut");
+
+  for(size_t grpIndex=0;grpIndex<NGrp;grpIndex++)
+    {
+      physicsSystem::ELPTConstructor A;
+      A.processUnit(System,IParam,grpIndex);
+    }
+  return;
+}
+
+void
 ExtField(Simulation& System,
 	 const mainSystem::inputParam& IParam)
   /*!
@@ -214,6 +255,32 @@ SBias(Simulation& System,
 }
 
 void
+DXT(Simulation& System,
+    const mainSystem::inputParam& IParam)
+  /*!
+    Control DXT card(s) on the 
+    \param System :: Simulation
+    \param IParam :: input stream
+  */
+{
+  ELog::RegMethod RegA("ImportControl[F]","DXT");
+
+  // currently only first item / get all
+  physicsSystem::DXTConstructor A;
+  std::vector<std::string> StrItem;
+  const size_t NGrp=IParam.setCnt("wDXT");
+  for(size_t grpIndex=0;grpIndex<NGrp;grpIndex++)
+    A.processUnit(System,IParam,grpIndex);
+
+  const size_t NGrpD=IParam.setCnt("wDD");
+  for(size_t grpIndex=0;grpIndex<NGrpD;grpIndex++)
+    A.processDD(System,IParam,grpIndex);
+
+  return;
+}
+
+  
+void
 PWT(Simulation& System,
     const mainSystem::inputParam& IParam)
   /*!
@@ -236,6 +303,7 @@ PWT(Simulation& System,
     }
   return;
 }
+
 
 
   

@@ -69,8 +69,10 @@
 #include "ContainedGroup.h"
 #include "SecondTrack.h"
 #include "TwinComp.h"
-#include "LayerComp.h"
+#include "CopiedComp.h"
+#include "BaseMap.h"
 #include "CellMap.h"
+#include "SurfMap.h"
 #include "World.h"
 #include "AttachSupport.h"
 #include "GuideItem.h"
@@ -96,49 +98,51 @@
 namespace essSystem
 {
 
-LOKI::LOKI() : 
-  lokiAxis(new attachSystem::FixedOffset("lokiAxis",4)),
-  BendA(new beamlineSystem::GuideLine("lokiBA")),
-  VacBoxA(new constructSystem::VacuumBox("lokiVacA")),
-  GuideA(new beamlineSystem::GuideLine("lokiGA")),
-  DDisk(new constructSystem::DiskChopper("lokiDBlade")),
-  DDiskHouse(new constructSystem::ChopperHousing("lokiDBladeHouse")),
-  GuideInner(new beamlineSystem::GuideLine("lokiGInner")),
-  SDisk(new constructSystem::DiskChopper("lokiSBlade")),
-  SDiskHouse(new constructSystem::ChopperHousing("lokiSBladeHouse")),
-  GuideB(new beamlineSystem::GuideLine("lokiGB")),
-  BendB(new beamlineSystem::GuideLine("lokiBB")),
-  GuideC(new beamlineSystem::GuideLine("lokiGC")),
-  VacBoxB(new constructSystem::VacuumBox("lokiVacB")),
-  SingleDisk(new constructSystem::DiskChopper("loki10mBlade")),
-  SingleDiskHouse(new constructSystem::ChopperHousing("loki10mBladeHouse")),
-  GuideD(new beamlineSystem::GuideLine("lokiGD")),
-  VacBoxC(new constructSystem::VacuumBox("lokiVacC")),
-  D12mDisk(new constructSystem::DiskChopper("lokiDDisk")),
-  D12mDiskHouse(new constructSystem::ChopperHousing("lokiDDiskHouse")),
-  Guide12mInter(new beamlineSystem::GuideLine("lokiG12mI")),
-  S12mDisk(new constructSystem::DiskChopper("lokiSDisk")),
-  S12mDiskHouse(new constructSystem::ChopperHousing("lokiSDiskHouse")),
-  GuideE(new beamlineSystem::GuideLine("lokiGE")),
-  GridA(new constructSystem::RotaryCollimator("lokiGridA")),
-  CollA(new constructSystem::RotaryCollimator("lokiCollA")),
-  GridB(new constructSystem::RotaryCollimator("lokiGridB")),
-  CollB(new constructSystem::RotaryCollimator("lokiCollB")),
-  GridC(new constructSystem::RotaryCollimator("lokiGridC")),
-  CollC(new constructSystem::RotaryCollimator("lokiCollC")),
-  GridD(new constructSystem::RotaryCollimator("lokiGridD")),
-  GuideCollA(new beamlineSystem::GuideLine("lokiGuideCA")),
-  GuideCollB(new beamlineSystem::GuideLine("lokiGuideCB")),
-  GuideCollC(new beamlineSystem::GuideLine("lokiGuideCC")),
-  Cave(new LokiHut("lokiCave")),
-  CaveGuide(new beamlineSystem::GuideLine("lokiCaveGuide")),
-  VTank(new VacTank("lokiVTank")),
-  VPipeB(new constructSystem::VacuumPipe("lokiPipeB")),
-  VPipeC(new constructSystem::VacuumPipe("lokiPipeC")),
-  VPipeD(new constructSystem::VacuumPipe("lokiPipeD"))
+LOKI::LOKI(const std::string& keyN) :
+  attachSystem::CopiedComp("loki",keyN),stopPoint(0),
+  lokiAxis(new attachSystem::FixedOffset(newName+"Axis",4)),
+  BendA(new beamlineSystem::GuideLine(newName+"BA")),
+  VacBoxA(new constructSystem::VacuumBox(newName+"VacA")),
+  GuideA(new beamlineSystem::GuideLine(newName+"GA")),
+  DDisk(new constructSystem::DiskChopper(newName+"DBlade")),
+  DDiskHouse(new constructSystem::ChopperHousing(newName+"DBladeHouse")),
+  GuideInner(new beamlineSystem::GuideLine(newName+"GInner")),
+  SDisk(new constructSystem::DiskChopper(newName+"SBlade")),
+  SDiskHouse(new constructSystem::ChopperHousing(newName+"SBladeHouse")),
+  GuideB(new beamlineSystem::GuideLine(newName+"GB")),
+  BendB(new beamlineSystem::GuideLine(newName+"BB")),
+  GuideC(new beamlineSystem::GuideLine(newName+"GC")),
+  VacBoxB(new constructSystem::VacuumBox(newName+"VacB")),
+  SingleDisk(new constructSystem::DiskChopper(newName+"10mBlade")),
+  SingleDiskHouse(new constructSystem::ChopperHousing(newName+"10mBladeHouse")),
+  GuideD(new beamlineSystem::GuideLine(newName+"GD")),
+  VacBoxC(new constructSystem::VacuumBox(newName+"VacC")),
+  D12mDisk(new constructSystem::DiskChopper(newName+"DDisk")),
+  D12mDiskHouse(new constructSystem::ChopperHousing(newName+"DDiskHouse")),
+  Guide12mInter(new beamlineSystem::GuideLine(newName+"G12mI")),
+  S12mDisk(new constructSystem::DiskChopper(newName+"SDisk")),
+  S12mDiskHouse(new constructSystem::ChopperHousing(newName+"SDiskHouse")),
+  GuideE(new beamlineSystem::GuideLine(newName+"GE")),
+  GridA(new constructSystem::RotaryCollimator(newName+"GridA")),
+  CollA(new constructSystem::RotaryCollimator(newName+"CollA")),
+  GridB(new constructSystem::RotaryCollimator(newName+"GridB")),
+  CollB(new constructSystem::RotaryCollimator(newName+"CollB")),
+  GridC(new constructSystem::RotaryCollimator(newName+"GridC")),
+  CollC(new constructSystem::RotaryCollimator(newName+"CollC")),
+  GridD(new constructSystem::RotaryCollimator(newName+"GridD")),
+  GuideCollA(new beamlineSystem::GuideLine(newName+"GuideCA")),
+  GuideCollB(new beamlineSystem::GuideLine(newName+"GuideCB")),
+  GuideCollC(new beamlineSystem::GuideLine(newName+"GuideCC")),
+  Cave(new LokiHut(newName+"Cave")),
+  CaveGuide(new beamlineSystem::GuideLine(newName+"CaveGuide")),
+  VTank(new VacTank(newName+"VTank")),
+  VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
+  VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
+  VPipeD(new constructSystem::VacuumPipe(newName+"PipeD"))
   /*!
     Constructor
- */
+    \param keyN :: keyName
+  */
 {
   ELog::RegMethod RegA("LOKI","LOKI");
 
@@ -146,7 +150,7 @@ LOKI::LOKI() :
     ModelSupport::objectRegister::Instance();
 
   // This necessary:
-  OR.cell("lokiAxis");
+  OR.cell(newName+"Axis");
   OR.addObject(lokiAxis);
 
   OR.addObject(BendA);
@@ -209,6 +213,7 @@ LOKI::setBeamAxis(const FuncDataBase& Control,
     Set the primary direction object
     \param Control :: Data base of info on variables
     \param GItem :: Guide Item to 
+    \param reverseZ :: Reverse the z-direction 
    */
 {
   ELog::RegMethod RegA("LOKI","setBeamAxis");
@@ -224,8 +229,8 @@ LOKI::setBeamAxis(const FuncDataBase& Control,
   lokiAxis->linkAngleRotate(3);
   lokiAxis->linkAngleRotate(4);
   
-    if (reverseZ)
-      lokiAxis->reverseZ();
+  if (reverseZ)
+    lokiAxis->reverseZ();
   return;
 }
   
@@ -246,10 +251,17 @@ LOKI::build(Simulation& System,
   ELog::RegMethod RegA("LOKI","build");
   ELog::EM<<"\nBuilding LOKI on : "<<GItem.getKeyName()<<ELog::endDiag;
 
+  FuncDataBase& Control=System.getDataBase();
+  CopiedComp::process(Control);
+  stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
+
   setBeamAxis(System.getDataBase(),GItem,0);
+
   BendA->addInsertCell(GItem.getCells("Void"));
   BendA->addInsertCell(bunkerObj.getCell("MainVoid"));
   BendA->createAll(System,*lokiAxis,-3,*lokiAxis,-3); // beam front reversed
+
+  if (stopPoint==1) return;                // STOP At monolith edge
   
   // First straight section
   VacBoxA->addInsertCell(bunkerObj.getCell("MainVoid"));
@@ -377,24 +389,33 @@ LOKI::build(Simulation& System,
   GridA->addInsertCell(bunkerObj.getCell("MainVoid"));
   GridA->createAll(System,GuideE->getKey("Guide0"),2);
 
+  if (stopPoint==2) return;                      // STOP At bunker edge
   // First collimator [In WALL]
+
   const attachSystem::FixedComp& GFC(GridA->getKey("Beam"));
-  const std::string BSector=
-    bunkerObj.calcSegment(System,GFC.getSignedLinkPt(2),
-			  GFC.getSignedLinkAxis(2));
-  CollA->addInsertCell(bunkerObj.getCells(BSector));
+
   CollA->addInsertCell(bunkerObj.getCell("MainVoid"));
   CollA->addInsertCell(voidCell);
   CollA->createAll(System,GFC,2);
+  attachSystem::addToInsertControl(System,bunkerObj,"frontWall",
+                                   CollA->getKey("Beam"),*CollA);  
 
   // Second grid cutter
-  GridB->addInsertCell(bunkerObj.getCells(BSector));
+  //GridB->addInsertCell(bunkerObj.getCells(BSector));
   GridB->createAll(System,CollA->getKey("Beam"),2);
-
-  // First collimator
+  attachSystem::addToInsertControl(System,bunkerObj,"frontWall",
+                                   GridB->getKey("Beam"),*GridB);  
+  
+  // Second collimator
   CollB->addInsertCell(voidCell);
-  CollB->addInsertCell(bunkerObj.getCells(BSector));
   CollB->createAll(System,GridB->getKey("Beam"),2);
+
+  attachSystem::addToInsertControl(System,bunkerObj,"frontWall",
+                                   CollB->getKey("Beam"),*CollB);  
+
+  // Top outside of bunker 
+  if (stopPoint==3) return;                      
+                                                 
   // Second grid cutter
   GridC->addInsertCell(voidCell);
   GridC->createAll(System,CollB->getKey("Beam"),2);
@@ -430,7 +451,7 @@ LOKI::build(Simulation& System,
   CollC->addInsertCell(Cave->getCell("Void"));
   CollC->insertObjects(System);
 
-    // Final definin apperature
+    // Final definive apperature
   GridD->addInsertCell(Cave->getCell("Void"));
   GridD->createAll(System,CollC->getKey("Beam"),2);
 

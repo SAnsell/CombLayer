@@ -78,6 +78,38 @@ BeamSource::BeamSource(const std::string& keyName) :
   */
 {}
 
+BeamSource::BeamSource(const BeamSource& A) : 
+  attachSystem::FixedOffset(A),
+  particleType(A.particleType),cutEnergy(A.cutEnergy),
+  radius(A.radius),angleSpread(A.angleSpread),
+  weight(A.weight),Energy(A.Energy),EWeight(A.EWeight)
+  /*!
+    Copy constructor
+    \param A :: BeamSource to copy
+  */
+{}
+
+BeamSource&
+BeamSource::operator=(const BeamSource& A)
+  /*!
+    Assignment operator
+    \param A :: BeamSource to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedOffset::operator=(A);
+      particleType=A.particleType;
+      cutEnergy=A.cutEnergy;
+      radius=A.radius;
+      angleSpread=A.angleSpread;
+      weight=A.weight;
+      Energy=A.Energy;
+      EWeight=A.EWeight;
+    }
+  return *this;
+}
 
 BeamSource::~BeamSource() 
   /*!
