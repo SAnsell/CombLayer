@@ -226,10 +226,7 @@ DiskChopper::createUnitVector(const attachSystem::FixedComp& FC,
           XYZ[1] += TD;
           beamFC.applyShift(0.0,TD,0.0);
         }
-      ELog::EM<<"Total thickness == "<<totalThick/2.0<<ELog::endDiag;
-      ELog::EM<<"Main == "<<mainFC.getCentre()<<ELog::endDiag;
       mainFC.applyShift(XYZ[0],XYZ[1],XYZ[2]);
-      ELog::EM<<"Main == "<<mainFC.getCentre()<<ELog::endDiag;
     }
   setDefault("Main");
 

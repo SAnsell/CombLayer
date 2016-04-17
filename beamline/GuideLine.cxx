@@ -708,8 +708,6 @@ GuideLine::createUnitLinks()
           guideFC.setConnect(1,calcActiveEndIntercept(),
                              shapeUnits[i]->getEndAxis());
 
-          ELog::EM<<keyName<<":"<<shapeUnits[i]->getEnd()<<" :: "
-                  <<calcActiveEndIntercept()<<ELog::endDiag;
         }
 
 

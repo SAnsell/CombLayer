@@ -103,6 +103,40 @@ class DREAM : public attachSystem::CopiedComp
   /// TO disk chopper [part B]  
   std::shared_ptr<constructSystem::DiskChopper> T0DiskB;  
   
+
+  /// Pipe between T0 chopper and BandA
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeD;
+  /// Guide between diskchoppers  / T0
+  std::shared_ptr<beamlineSystem::GuideLine> FocusD;
+
+  /// Vac box for first chopper
+  std::shared_ptr<constructSystem::ChopperUnit> ChopperD;
+  /// Band Chopper
+  std::shared_ptr<constructSystem::DiskChopper> BandADisk;  
+
+
+  /// Pipe between  BandA and Band B 
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeE;
+  /// Guide between BandA and Band B
+  std::shared_ptr<beamlineSystem::GuideLine> FocusE;
+
+  /// Vac box for second band chopper
+  std::shared_ptr<constructSystem::ChopperUnit> ChopperE;  
+  /// Band Chopper 
+  std::shared_ptr<constructSystem::DiskChopper> BandBDisk;  
+
+
+    /// Pipe between  BandA and Band B 
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeF;
+  /// Guide between BandA and Band B
+  std::shared_ptr<beamlineSystem::GuideLine> FocusF;
+
+  /// Vac box for second band chopper
+  std::shared_ptr<constructSystem::ChopperUnit> ChopperF;  
+
+
+
+
   
   /// Vac box for first chopper
   std::shared_ptr<constructSystem::VacuumBox> VacBoxA;
@@ -128,8 +162,6 @@ class DREAM : public attachSystem::CopiedComp
 
   /// Vac box for second chopper set
   std::shared_ptr<constructSystem::VacuumBox> VacBoxC;
-  /// Band Chopper
-  std::shared_ptr<constructSystem::DiskChopper> BandADisk;  
   /// Band width chopper Housing
   std::shared_ptr<constructSystem::ChopperHousing> BandAHouse;
   /// Pipe between T0 and Second chopper set
@@ -138,14 +170,8 @@ class DREAM : public attachSystem::CopiedComp
 
   /// Vac box for second chopper set
   std::shared_ptr<constructSystem::VacuumBox> VacBoxD;
-  /// Band Chopper 
-  std::shared_ptr<constructSystem::DiskChopper> BandBDisk;  
   /// Band width chopper Housing
   std::shared_ptr<constructSystem::ChopperHousing> BandBHouse;
-  /// Pipe between T0 and Second chopper set
-  std::shared_ptr<constructSystem::VacuumPipe> VPipeD;
-  /// Elliptic forcus in bulkshield [m5]
-  std::shared_ptr<beamlineSystem::GuideLine> FocusE;
 
   
   /// Vac box for Second T0  chopper set
@@ -154,10 +180,6 @@ class DREAM : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::DiskChopper> T0DiskC;  
   /// Band width chopper Housing
   std::shared_ptr<constructSystem::ChopperHousing> T0HouseC;
-  /// Pipe between Pos3 and T0
-  std::shared_ptr<constructSystem::VacuumPipe> VPipeE;
-  /// Elliptic forcus in bulkshield [m5]
-  std::shared_ptr<beamlineSystem::GuideLine> FocusF;
 
     /// Vac box for Second T0  chopper set [Part B]
   std::shared_ptr<constructSystem::VacuumBox> VacBoxF;
@@ -165,8 +187,6 @@ class DREAM : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::DiskChopper> T0DiskD;  
   /// Band width chopper Housing
   std::shared_ptr<constructSystem::ChopperHousing> T0HouseD;
-  /// Pipe between Pos3 and T0
-  std::shared_ptr<constructSystem::VacuumPipe> VPipeF;
   /// Elliptic forcus in bulkshield [m5]
   std::shared_ptr<beamlineSystem::GuideLine> FocusG;
 
