@@ -134,6 +134,14 @@ class DREAM : public attachSystem::CopiedComp
   /// Vac box for second band chopper
   std::shared_ptr<constructSystem::ChopperUnit> ChopperF;  
 
+  /// Vac box for first chopper
+  std::shared_ptr<constructSystem::ChopperUnit> ChopperG;
+  /// TO disk chopper [part A]
+  std::shared_ptr<constructSystem::DiskChopper> T1DiskA;
+  /// Elliptic forcus in bulkshield [m5]
+  std::shared_ptr<beamlineSystem::GuideLine> FocusT1Mid;
+  /// TO disk chopper [part B]  
+  std::shared_ptr<constructSystem::DiskChopper> T1DiskB;  
 
 
 

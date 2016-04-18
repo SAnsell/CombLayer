@@ -174,6 +174,7 @@ generatePipe(FuncDataBase& Control,
 void
 generateT0Chopper(FuncDataBase& Control,
 		  const std::string& diskName,
+		  const std::string& midName,
 		  const std::string chopperLetter)
 {
   ELog::RegMethod RegA("DreamVARIABLES","generateT0Chopper");
@@ -203,31 +204,31 @@ generateT0Chopper(FuncDataBase& Control,
   Control.addVariable(diskName+"A0OpenAngle1",25.0);
 
   // TMid guide
-  Control.addVariable("dreamFT0MidXStep",0.0);       
-  Control.addVariable("dreamFT0MidYStep",-8.0);       
-  Control.addVariable("dreamFT0MidZStep",0.0);       
-  Control.addVariable("dreamFT0MidXYAngle",0.0);       
-  Control.addVariable("dreamFT0MidZAngle",0.0);
-  Control.addVariable("dreamFT0MidLength",16.0);       
+  Control.addVariable(midName+"XStep",0.0);       
+  Control.addVariable(midName+"YStep",-8.0);       
+  Control.addVariable(midName+"ZStep",0.0);       
+  Control.addVariable(midName+"XYAngle",0.0);       
+  Control.addVariable(midName+"ZAngle",0.0);
+  Control.addVariable(midName+"Length",16.0);       
   
-  Control.addVariable("dreamFT0MidBeamYStep",-8.0); 
-  Control.addVariable("dreamFT0MidNShapes",1);       
-  Control.addVariable("dreamFT0MidNShapeLayers",3);
-  Control.addVariable("dreamFT0MidActiveShield",0);
+  Control.addVariable(midName+"BeamYStep",-8.0); 
+  Control.addVariable(midName+"NShapes",1);       
+  Control.addVariable(midName+"NShapeLayers",3);
+  Control.addVariable(midName+"ActiveShield",0);
 
-  Control.addVariable("dreamFT0MidLayerThick1",0.4);  // glass thick
-  Control.addVariable("dreamFT0MidLayerThick2",1.5);
+  Control.addVariable(midName+"LayerThick1",0.4);  // glass thick
+  Control.addVariable(midName+"LayerThick2",1.5);
 
-  Control.addVariable("dreamFT0MidLayerMat0","Void");
-  Control.addVariable("dreamFT0MidLayerMat1","Aluminium");
-  Control.addVariable("dreamFT0MidLayerMat2","Void");       
+  Control.addVariable(midName+"LayerMat0","Void");
+  Control.addVariable(midName+"LayerMat1","Aluminium");
+  Control.addVariable(midName+"LayerMat2","Void");       
   
-  Control.addVariable("dreamFT0Mid0TypeID","Tapper");
-  Control.addVariable("dreamFT0Mid0HeightStart",4.6);
-  Control.addVariable("dreamFT0Mid0HeightEnd",4.5);
-  Control.addVariable("dreamFT0Mid0WidthStart",2.06);
-  Control.addVariable("dreamFT0Mid0WidthEnd",2.36);
-  Control.copyVar("dreamFT0Mid0Length","dreamFT0MidLength");
+  Control.addVariable(midName+"0TypeID","Tapper");
+  Control.addVariable(midName+"0HeightStart",4.6);
+  Control.addVariable(midName+"0HeightEnd",4.5);
+  Control.addVariable(midName+"0WidthStart",2.06);
+  Control.addVariable(midName+"0WidthEnd",2.36);
+  Control.copyVar(midName+"0Length",midName+"Length");
 
   // T0 Chopper disk B
   Control.addVariable(diskName+"BXStep",0.0);
@@ -407,76 +408,7 @@ DREAMvariables(FuncDataBase& Control)
   Control.copyVar("dreamFC0Length","dreamFCLength");
 
   generateChopper(Control,"dreamChopperC",20.0,36.0,32.0);
-
-  // T0 Chopper disk A
-  Control.addVariable("dreamT0DiskAXStep",0.0);
-  Control.addVariable("dreamT0DiskAYStep",-12.0);
-  Control.addVariable("dreamT0DiskAZStep",0.0);
-  Control.addVariable("dreamT0DiskAXYangle",0.0);
-  Control.addVariable("dreamT0DiskAZangle",0.0);
-
-  Control.addVariable("dreamT0DiskAInnerRadius",20.0);
-  Control.addVariable("dreamT0DiskAOuterRadius",30.0);
-  Control.addVariable("dreamT0DiskANDisk",1);
-
-  Control.addVariable("dreamT0DiskA0InnerThick",5.4);  // to include B4C
-  Control.addVariable("dreamT0DiskA0Thick",3.4);  // to include B4C
-  Control.addVariable("dreamT0DiskAInnerMat","Inconnel");
-  Control.addVariable("dreamT0DiskAOuterMat","Void");
-  
-  Control.addVariable("dreamT0DiskANBlades",2);
-  Control.addVariable("dreamT0DiskA0PhaseAngle0",95.0);
-  Control.addVariable("dreamT0DiskA0OpenAngle0",35.0);
-  Control.addVariable("dreamT0DiskA0PhaseAngle1",275.0);
-  Control.addVariable("dreamT0DiskA0OpenAngle1",25.0);
-
-  // TMid guide
-  Control.addVariable("dreamFT0MidXStep",0.0);       
-  Control.addVariable("dreamFT0MidYStep",-8.0);       
-  Control.addVariable("dreamFT0MidZStep",0.0);       
-  Control.addVariable("dreamFT0MidXYAngle",0.0);       
-  Control.addVariable("dreamFT0MidZAngle",0.0);
-  Control.addVariable("dreamFT0MidLength",16.0);       
-  
-  Control.addVariable("dreamFT0MidBeamYStep",-8.0); 
-  Control.addVariable("dreamFT0MidNShapes",1);       
-  Control.addVariable("dreamFT0MidNShapeLayers",3);
-  Control.addVariable("dreamFT0MidActiveShield",0);
-
-  Control.addVariable("dreamFT0MidLayerThick1",0.4);  // glass thick
-  Control.addVariable("dreamFT0MidLayerThick2",1.5);
-
-  Control.addVariable("dreamFT0MidLayerMat0","Void");
-  Control.addVariable("dreamFT0MidLayerMat1","Aluminium");
-  Control.addVariable("dreamFT0MidLayerMat2","Void");       
-  
-  Control.addVariable("dreamFT0Mid0TypeID","Tapper");
-  Control.addVariable("dreamFT0Mid0HeightStart",4.6);
-  Control.addVariable("dreamFT0Mid0HeightEnd",4.5);
-  Control.addVariable("dreamFT0Mid0WidthStart",2.06);
-  Control.addVariable("dreamFT0Mid0WidthEnd",2.36);
-  Control.copyVar("dreamFT0Mid0Length","dreamFT0MidLength");
-
-  // T0 Chopper disk B
-  Control.addVariable("dreamT0DiskBXStep",0.0);
-  Control.addVariable("dreamT0DiskBYStep",12.0);
-  Control.addVariable("dreamT0DiskBZStep",0.0);
-  Control.addVariable("dreamT0DiskBXYangle",0.0);
-  Control.addVariable("dreamT0DiskBZangle",0.0);
-
-  Control.addVariable("dreamT0DiskBInnerRadius",20.0);
-  Control.addVariable("dreamT0DiskBOuterRadius",30.0);
-  Control.addVariable("dreamT0DiskBNDisk",1);
-
-  Control.addVariable("dreamT0DiskB0Thick",5.4);  // to include B4C
-  Control.addVariable("dreamT0DiskBInnerMat","Inconnel");
-  Control.addVariable("dreamT0DiskBOuterMat","Tungsten");
-  
-  Control.addVariable("dreamT0DiskBNBlades",2);
-  Control.addVariable("dreamT0DiskB0PhaseAngle0",95.0);
-  Control.addVariable("dreamT0DiskB0OpenAngle0",145.0);
-  Control.addVariable("dreamT0DiskB0PhaseAngle1",275.0);
-  Control.addVariable("dreamT0DiskB0OpenAngle1",125.0);
+  generateT0Chopper(Control,"dreamT0Disk","dreamFT0Mid","C");
 
   // VACUUM PIPE: SDisk to T0 (A)
   generatePipe(Control,"dreamPipeD",130.0);
@@ -613,6 +545,10 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamFF0WidthEnd",2.36);
   Control.copyVar("dreamFF0Length","dreamFFLength");
 
+  generateT0Chopper(Control,"dreamT1Disk","dreamFT1Mid","G");
+
+
+  
   /*  
   // VACBOX A : 6.10m target centre
   //  Length 100.7 + Width [87.0] + Height [39.0] void Depth/2 + front

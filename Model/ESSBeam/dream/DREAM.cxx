@@ -134,6 +134,11 @@ DREAM::DREAM(const std::string& keyName) :
   FocusF(new beamlineSystem::GuideLine(newName+"FF")),
 
 
+  ChopperG(new constructSystem::ChopperUnit(newName+"ChopperG")), 
+  T1DiskA(new constructSystem::DiskChopper(newName+"T1DiskA")),
+  FocusT1Mid(new beamlineSystem::GuideLine(newName+"FT1Mid")),
+  T1DiskB(new constructSystem::DiskChopper(newName+"T1DiskB")),
+
 
 
 
@@ -208,6 +213,8 @@ DREAM::DREAM(const std::string& keyName) :
   OR.addObject(FocusC);
   OR.addObject(ChopperC);
   OR.addObject(T0DiskA);
+  OR.addObject(FocusT0Mid);
+  OR.addObject(T0DiskB);
   OR.addObject(VPipeD);
   OR.addObject(FocusD);
   OR.addObject(ChopperD);
@@ -217,6 +224,10 @@ DREAM::DREAM(const std::string& keyName) :
   OR.addObject(FocusE);
   OR.addObject(ChopperE);
   OR.addObject(BandBDisk);
+
+  OR.addObject(T1DiskA);
+  OR.addObject(FocusT1Mid);
+  OR.addObject(T1DiskB);
 
   OR.addObject(Cave);
 }
@@ -423,6 +434,25 @@ DREAM::build(Simulation& System,
   FocusF->addInsertCell(VPipeF->getCells("Void"));
   FocusF->createAll(System,*VPipeF,0,*VPipeF,0);
 
+      // NEW TEST SECTION:
+  ChopperG->addInsertCell(bunkerObj.getCell("MainVoid"));
+  ChopperG->createAll(System,FocusF->getKey("Guide0"),2);
+
+  // First disk of a T0 chopper
+  T1DiskA->addInsertCell(ChopperG->getCell("Void",0));
+  T1DiskA->setCentreFlag(3);  // Z direction
+  T1DiskA->setOffsetFlag(0);  // Centre offset control
+  T1DiskA->createAll(System,ChopperG->getKey("Beam"),0);
+
+  FocusT1Mid->addInsertCell(ChopperG->getCell("Void"));
+  FocusT1Mid->createAll(System,ChopperG->getKey("Beam"),0,
+                        ChopperG->getKey("Beam"),0);
+
+  // Second disk of a T0 chopper
+  T1DiskB->addInsertCell(ChopperG->getCell("Void",0));
+  T1DiskB->setCentreFlag(3);  // Z direction
+  T1DiskB->setOffsetFlag(0);  // Centre offset control
+  T1DiskB->createAll(System,ChopperG->getKey("Beam"),0);
   // END TEST SECTION:
   return;
 
