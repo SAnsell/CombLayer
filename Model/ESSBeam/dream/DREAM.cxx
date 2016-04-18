@@ -139,6 +139,8 @@ DREAM::DREAM(const std::string& keyName) :
   FocusT1Mid(new beamlineSystem::GuideLine(newName+"FT1Mid")),
   T1DiskB(new constructSystem::DiskChopper(newName+"T1DiskB")),
 
+  VPipeG(new constructSystem::VacuumPipe(newName+"PipeG")),
+  FocusG(new beamlineSystem::GuideLine(newName+"FG")),
 
 
 
@@ -173,7 +175,6 @@ DREAM::DREAM(const std::string& keyName) :
   VacBoxF(new constructSystem::VacuumBox(newName+"VacF",1)),
   T0DiskD(new constructSystem::DiskChopper(newName+"T0DiskD")),  
   T0HouseD(new constructSystem::ChopperHousing(newName+"T0DiskDHouse")),
-  FocusG(new beamlineSystem::GuideLine(newName+"FG")),
 
   VPipeFinal(new constructSystem::VacuumPipe(newName+"PipeFinal")),
   FocusFinal(new beamlineSystem::GuideLine(newName+"FFinal")),
@@ -225,9 +226,15 @@ DREAM::DREAM(const std::string& keyName) :
   OR.addObject(ChopperE);
   OR.addObject(BandBDisk);
 
+  OR.addObject(VPipeF);
+  OR.addObject(FocusF);
+
   OR.addObject(T1DiskA);
   OR.addObject(FocusT1Mid);
   OR.addObject(T1DiskB);
+
+  OR.addObject(VPipeG);
+  OR.addObject(FocusG);
 
   OR.addObject(Cave);
 }
@@ -453,7 +460,18 @@ DREAM::build(Simulation& System,
   T1DiskB->setCentreFlag(3);  // Z direction
   T1DiskB->setOffsetFlag(0);  // Centre offset control
   T1DiskB->createAll(System,ChopperG->getKey("Beam"),0);
-  // END TEST SECTION:
+
+  // Pipe to bunker wall
+  VPipeG->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeG->setBack(bunkerObj,1);
+  VPipeG->createAll(System,ChopperG->getKey("Beam"),2);
+
+  FocusG->addInsertCell(VPipeG->getCells("Void"));
+  FocusG->addEndCut(bunkerObj.getSignedLinkString(1));
+  FocusG->createAll(System,*VPipeG,0,*VPipeF,0);
+
+
+
   return;
 
   

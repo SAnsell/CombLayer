@@ -548,6 +548,36 @@ DREAMvariables(FuncDataBase& Control)
   generateT0Chopper(Control,"dreamT1Disk","dreamFT1Mid","G");
 
 
+  // VACUUM PIPE: SDisk to T0 (A)
+  generatePipe(Control,"dreamPipeG",200.0);
+ 
+   // distance to Single choppper
+  Control.addVariable("dreamFGLength",32.0);       
+  Control.addVariable("dreamFGXStep",0.0);       
+  Control.addParse<double>("dreamFGYStep","-dreamFGLength/2.0");
+  Control.copyVar("dreamFGBeamY","dreamFGYStep"); 
+  Control.addVariable("dreamFGZStep",0.0);       
+  Control.addVariable("dreamFGXYAngle",0.0);       
+  Control.addVariable("dreamFGZAngle",0.0);
+
+  Control.addVariable("dreamFGNShapes",1);       
+  Control.addVariable("dreamFGNShapeLayers",3);
+  Control.addVariable("dreamFGActiveShield",0);
+
+  Control.addVariable("dreamFGLayerThick1",0.4);  // glass thick
+  Control.addVariable("dreamFGLayerThick2",1.5);
+
+  Control.addVariable("dreamFGLayerMat0","Void");
+  Control.addVariable("dreamFGLayerMat1","Aluminium");
+  Control.addVariable("dreamFGLayerMat2","Void");       
+  
+  Control.addVariable("dreamFG0TypeID","Tapper");
+  Control.addVariable("dreamFG0HeightStart",4.6);
+  Control.addVariable("dreamFG0HeightEnd",4.5);
+  Control.addVariable("dreamFG0WidthStart",2.06);
+  Control.addVariable("dreamFG0WidthEnd",2.36);
+  Control.copyVar("dreamFG0Length","dreamFGLength");
+
   
   /*  
   // VACBOX A : 6.10m target centre

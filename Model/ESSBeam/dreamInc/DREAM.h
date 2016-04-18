@@ -143,6 +143,10 @@ class DREAM : public attachSystem::CopiedComp
   /// TO disk chopper [part B]  
   std::shared_ptr<constructSystem::DiskChopper> T1DiskB;  
 
+  /// Pipe to Wall
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeG;
+  /// Focus unit to wall
+  std::shared_ptr<beamlineSystem::GuideLine> FocusG;
 
 
   
@@ -195,8 +199,6 @@ class DREAM : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::DiskChopper> T0DiskD;  
   /// Band width chopper Housing
   std::shared_ptr<constructSystem::ChopperHousing> T0HouseD;
-  /// Elliptic forcus in bulkshield [m5]
-  std::shared_ptr<beamlineSystem::GuideLine> FocusG;
 
 
   /// Pipe to bunker Wall
