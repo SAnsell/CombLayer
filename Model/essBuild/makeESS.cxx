@@ -276,7 +276,7 @@ makeESS::buildIradComponent(Simulation& System,
     {
       const size_t NItems=IParam.itemCnt("iradObject",j);
       // is this possible?
-      if (NItems<=3)
+      if (NItems<3)
         throw ColErr::SizeError<size_t>
           (NItems,3,"IradComp["+StrFunc::makeString(j)+"]");
 
