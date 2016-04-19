@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/makeESS.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,6 +58,7 @@ namespace essSystem
   class essMod;
   class ConicModerator;
   class CylPreMod;
+  class IradCylinder;
   class BulkModule;
   class ShutterBay;
   class ProtonTube;
@@ -108,6 +109,8 @@ class makeESS
   std::shared_ptr<DiskPreMod> TopPreMod;         ///< Top mod 
   std::shared_ptr<DiskPreMod> TopCapMod;         ///< Lower mod
 
+
+  
   std::shared_ptr<moderatorSystem::BasicFlightLine> TopAFL;  ///< Top Mode FL
   std::shared_ptr<moderatorSystem::BasicFlightLine> TopBFL;  ///< Top Mode FL
   std::shared_ptr<CylPreMod> TopPre;          ///< Toper Mod (Pre)
@@ -146,6 +149,8 @@ class makeESS
 
   void buildLowButterfly(Simulation&);
   void buildLowPreMod(Simulation&);
+  void buildIradComponent(Simulation&,const mainSystem::inputParam&);
+
 
   void buildTopButterfly(Simulation&);
   void buildLowerPipe(Simulation&,const std::string&);

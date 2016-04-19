@@ -675,7 +675,7 @@ template const attachSystem::FixedComp*
 template const attachSystem::ContainedComp* 
   objectRegister::getObject(const std::string&) const;
 
-  template const attachSystem::ContainedGroup* 
+template const attachSystem::ContainedGroup* 
   objectRegister::getObject(const std::string&) const;
 
 template const attachSystem::TwinComp* 

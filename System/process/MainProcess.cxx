@@ -680,8 +680,8 @@ createESSInputs(inputParam& IParam)
   IParam.regDefItem<std::string>("topMod","topModType",1,std::string("topMod"));
   IParam.regDefItem<std::string>("lowPipe","lowPipeType",1,std::string("side"));
   IParam.regDefItem<std::string>("topPipe","topPipeType",1,std::string("side"));
-  IParam.regDefItem<std::string>("iradLine","iradLineType",
-				 1,std::string("void"));
+  IParam.regDefItem<std::string>("iradLine","iradLineType",1,std::string("void"));
+  IParam.regMulti("iradObj","iradObject",1000,3);
   IParam.regDefItem<std::string>("bunker","bunkerType",1,std::string("null"));
   IParam.regMulti("beamlines","beamlines",1000);
   IParam.regDefItem<int>("nF5", "nF5", 1,0);
@@ -694,6 +694,7 @@ createESSInputs(inputParam& IParam)
   IParam.setDesc("lowPipe","Type of low moderator pipework");
   IParam.setDesc("topPipe","Type of top moderator pipework");
   IParam.setDesc("iradLine","Build an irradiation line [void for none]");
+  IParam.setDesc("iradObj","Build an irradiation object [void for none]");
   IParam.setDesc("beamlines","Build beamlines [void for none]");
   IParam.setDesc("bunker","Build bunker [void for none [A-D]");
   IParam.setDesc("nF5","Number of F5 collimators to build. \n"
