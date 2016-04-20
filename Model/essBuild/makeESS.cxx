@@ -300,7 +300,8 @@ makeESS::buildIradComponent(Simulation& System,
           const long int linkPt=attachSystem::getLinkNumber(linkName);
           
           OR.addObject(IRadComp);
-          IRadComp->createAll(System,*FC,linkPt);      
+          IRadComp->createAll(System,*FC,linkPt);
+          attachSystem::addToInsertSurfCtrl(System,*FC,*IRadComp);
         }
     }
   return;
@@ -501,16 +502,17 @@ makeESS::makeBunker(Simulation& System,
 
 
   ABunker->addInsertCell(74123);
-  ABunker->setCutWall(1,0);
   ABunker->createAll(System,*LowMod,*GBArray[0],2,true);
 
 
   BBunker->addInsertCell(74123);
+  BBunker->setCutWall(0,1);
   BBunker->createAll(System,*LowMod,*GBArray[0],2,true);
 
-  BBunker->insertComponent(System,"leftWall",*ABunker);
-  BBunker->insertComponent(System,"roof0",*ABunker);
-  BBunker->insertComponent(System,"floor",*ABunker);
+
+  ABunker->insertComponent(System,"rightWall",*BBunker);
+  ABunker->insertComponent(System,"roof0",*BBunker);
+  ABunker->insertComponent(System,"floor",*BBunker);
 
   if (bunkerType.find("noPillar")==std::string::npos)
     buildPillars(System);

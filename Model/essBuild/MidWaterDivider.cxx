@@ -3,7 +3,7 @@
  
  * File:   essBuild/MidWaterDivider.cxx 
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -282,7 +282,6 @@ MidWaterDivider::createSurfaces()
   ModelSupport::buildPlane(SMap,divIndex+132,
 			   Origin-leftNorm*(wallThick+length),-leftNorm);
 
-
   return;
 }
  
@@ -335,7 +334,7 @@ MidWaterDivider::createObjects(Simulation& System,
 				 "-100 (-123 : 124) -131 -132 ");
   addOuterUnionSurf(Out);
   
-  
+   
   return;
 }
 

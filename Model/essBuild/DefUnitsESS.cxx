@@ -192,14 +192,14 @@ setESSSingle(defaultConfig& A,
 
   A.setOption("lowMod","Butterfly");
   const std::map<std::string,std::string> beamDef=
-    {{"NMX","G4BLine21"},
-     {"SHORTDREAM","G4BLine9"},
-     {"SHORTODIN","G1BLine16"},
-     {"DREAM","G4BLine17"},
+    {{"NMX","G4BLine1"},
+     {"SHORTDREAM","G4BLine17"},
+     {"SHORTODIN","G1BLine4"},
+     {"DREAM","G4BLine9"},
      {"VOR","G4BLine1"},   // also 17
      {"SIMPLE","G4BLine4"},
      {"LOKI","G4BLine4"},
-     {"ODIN","G1BLine4"},   // Note reverse because on G1
+     {"ODIN","G1BLine16"},   // Note reverse because on G1
      {"ESTIA","G4BLine11"}
     };     
   const std::set<std::string> beamFilled=

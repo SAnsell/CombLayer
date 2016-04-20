@@ -83,7 +83,7 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("ABunkerNSideVert",5);
   Control.addVariable("ABunkerNSideThick",5);
   
-  Control.addVariable("ABunkerWallRadius",1150.0);
+  Control.addVariable("ABunkerWallRadius",2450.0);
   Control.addVariable("ABunkerFloorDepth",120.0);
   Control.addVariable("ABunkerRoofHeight",190.0);
 
@@ -126,19 +126,17 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("ABunkerPillarsR0",600.0);
   Control.addVariable("ABunkerPillarsR1",900.0);
   Control.addVariable("ABunkerPillarsRS_0",-3.0);
-  Control.addVariable("ABunkerPillarsRS_1",-6.0);
-  Control.addVariable("ABunkerPillarsRS_2",-18.0);
+  Control.addVariable("ABunkerPillarsRS_1",-9.0);
+  Control.addVariable("ABunkerPillarsRS_2",-15.0);
   Control.addVariable("ABunkerPillarsRS_3",-21.0);
   Control.addVariable("ABunkerPillarsRS_4",-27.0);
-  Control.addVariable("ABunkerPillarsRS_5",-33.0);
+  Control.addVariable("ABunkerPillarsRS_5",-34.0);
   Control.addVariable("ABunkerPillarsRS_6",-39.0);
-  Control.addVariable("ABunkerPillarsRS_7",-42.0);
-  Control.addVariable("ABunkerPillarsRS_8",-54.0);
+  Control.addVariable("ABunkerPillarsRS_7",-46.0);
+  Control.addVariable("ABunkerPillarsRS_8",-52.0);
   Control.addVariable("ABunkerPillarsRS_9",-57.0);
   Control.addVariable("ABunkerPillarsRS_10",-63.0);
 
-
-  
   //
   // RIGHT BUNKER : B PART
   //
@@ -149,6 +147,8 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("BBunkerNSectors",9);
   Control.addVariable("BBunkerNVert",1);
   Control.addVariable("BBunkerNLayers",1);
+  Control.addVariable("BBunkerActiveSegment",0);
+  Control.addVariable("BBunkerActiveRoof",0);
 
   Control.addVariable("BBunkerNRoofVert",5);
   Control.addVariable("BBunkerNRoofSide",1);
@@ -161,13 +161,13 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("BBunkerWallLen1",0.5);
   Control.addVariable("BBunkerWallLen2",10.0);
   
-  Control.addVariable("BBunkerWallRadius",2450.0);
+  Control.addVariable("BBunkerWallRadius",1150.0);
   Control.addVariable("BBunkerFloorDepth",120.0);
   Control.addVariable("BBunkerRoofHeight",190.0);
 
   Control.addVariable("BBunkerWallThick",320.0);
   Control.addVariable("BBunkerSideThick",80.0);
-  Control.addVariable("BBunkerRoofThick",200.0);
+  Control.addVariable("BBunkerRoofThick",195.0);
   Control.addVariable("BBunkerFloorThick",100.0);
 
   Control.addVariable("BBunkerVoidMat","Void");
