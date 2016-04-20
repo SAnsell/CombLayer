@@ -78,7 +78,7 @@ namespace essSystem
 
 IradCylinder::IradCylinder(const std::string& Key) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,4),
+  attachSystem::FixedOffset(Key,6),
   attachSystem::CellMap(),
   iradIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(iradIndex+1)
@@ -155,6 +155,7 @@ IradCylinder::populate(const FuncDataBase& Control)
   FixedOffset::populate(Control);
   
   radius=Control.EvalVar<double>(keyName+"Radius");
+  length=Control.EvalVar<double>(keyName+"Length");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
   temp=Control.EvalVar<double>(keyName+"Temp");
   
@@ -188,21 +189,22 @@ IradCylinder::createSurfaces()
 {
   ELog::RegMethod RegA("IradCylinder","createSurfaces");
 
-  ModelSupport::buildPlane(SMap,iradIndex+1,Origin-Y*length,Y);
-  ModelSupport::buildPlane(SMap,iradIndex+2,Origin+Y*length,Y);
+
+  ModelSupport::buildPlane(SMap,iradIndex+1,Origin-Y*length/2.0,Y);
+  ModelSupport::buildPlane(SMap,iradIndex+2,Origin+Y*length/2.0,Y);
 
   ModelSupport::buildCylinder(SMap,iradIndex+7,Origin,Y,radius);
   ModelSupport::buildCylinder(SMap,iradIndex+17,Origin,Y,radius+wallThick);
   
   ModelSupport::buildSphere(SMap,iradIndex+8,
-                            Origin-Y*length,radius);
+                            Origin-Y*(length/2.0),radius);
   ModelSupport::buildSphere(SMap,iradIndex+18,
-                            Origin-Y*length,radius+wallThick);
+                            Origin-Y*(length/2.0),radius+wallThick);
 
   ModelSupport::buildSphere(SMap,iradIndex+9,
-                            Origin+Y*length,radius);
+                            Origin+Y*(length/2.0),radius);
   ModelSupport::buildSphere(SMap,iradIndex+19,
-                            Origin+Y*length,radius+wallThick);
+                            Origin+Y*(length/2.0),radius+wallThick);
 
   return; 
 }
@@ -242,7 +244,7 @@ IradCylinder::createObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,temp,Out));
   addCell("Wall",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,iradIndex," (1:-8) (-2:-9) -7 ");
+  Out=ModelSupport::getComposite(SMap,iradIndex," (1:-18) (-2:-19) -17 ");
   addOuterSurf(Out);
   
   return; 
@@ -255,6 +257,28 @@ IradCylinder::createLinks()
   */
 {  
   ELog::RegMethod RegA("IradCylinder","createLinks");
+
+  FixedComp::setConnect(0,Origin-Y*(length+radius+wallThick),-Y);
+  FixedComp::setLinkSurf(0,SMap.realSurf(iradIndex+18));
+  FixedComp::setBridgeSurf(0,-SMap.realSurf(iradIndex+1));
+
+  FixedComp::setConnect(1,Origin+Y*(length+radius+wallThick),Y);
+  FixedComp::setLinkSurf(1,SMap.realSurf(iradIndex+19));
+  FixedComp::setBridgeSurf(1,SMap.realSurf(iradIndex+2));
+
+  FixedComp::setConnect(2,Origin-X*(radius+wallThick),-X);
+  FixedComp::setLinkSurf(2,SMap.realSurf(iradIndex+17));
+
+  FixedComp::setConnect(3,Origin+X*(radius+wallThick),X);
+  FixedComp::setLinkSurf(3,SMap.realSurf(iradIndex+17));
+
+  FixedComp::setConnect(4,Origin-Z*(radius+wallThick),-Z);
+  FixedComp::setLinkSurf(4,SMap.realSurf(iradIndex+17));
+
+  FixedComp::setConnect(5,Origin+Z*(radius+wallThick),Z);
+  FixedComp::setLinkSurf(5,SMap.realSurf(iradIndex+17));
+
+
   return;
 }
 
