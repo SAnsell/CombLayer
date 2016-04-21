@@ -69,7 +69,7 @@ EssIradVariables(FuncDataBase& Control)
   Control.addVariable("IradCylLength",10.0);
   Control.addVariable("IradCylWallThick",0.2);
   Control.addVariable("IradCylTemp",0.0);
-  Control.addVariable("IradCylMat","Void");
+  Control.addVariable("IradCylMat","Aluminium");
   Control.addVariable("IradCylWallMat","Stainless304");
 
   Control.addVariable("IradCylSampleX",0.25);

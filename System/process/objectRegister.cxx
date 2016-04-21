@@ -550,7 +550,7 @@ objectRegister::getObjectRange(const std::string& objName) const
     {
       const std::string itemName=objName.substr(0,pos);
       const std::string cellName=objName.substr(pos+1);
-      
+
       const attachSystem::CellMap* CPtr=
         getObject<attachSystem::CellMap>(itemName);
       if (!CPtr)
