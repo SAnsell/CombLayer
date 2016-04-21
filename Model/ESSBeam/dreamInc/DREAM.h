@@ -143,10 +143,15 @@ class DREAM : public attachSystem::CopiedComp
   /// TO disk chopper [part B]  
   std::shared_ptr<constructSystem::DiskChopper> T1DiskB;  
 
-  /// Pipe to Wall
+  /// Pipe to Mid bunker space
   std::shared_ptr<constructSystem::VacuumPipe> VPipeG;
-  /// Focus unit to wall
+  /// Focus unit to mid bunker space
   std::shared_ptr<beamlineSystem::GuideLine> FocusG;
+
+  /// Pipe to Bunker Wall
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeH;
+  /// Focus unit to wall
+  std::shared_ptr<beamlineSystem::GuideLine> FocusH;
 
 
   

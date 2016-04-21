@@ -301,7 +301,7 @@ makeESS::buildIradComponent(Simulation& System,
           
           OR.addObject(IRadComp);
           IRadComp->createAll(System,*FC,linkPt);
-          attachSystem::addToInsertSurfCtrl(System,*FC,*IRadComp);
+          attachSystem::addToInsertLineCtrl(System,*FC,*IRadComp);
         }
     }
   return;

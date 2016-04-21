@@ -161,7 +161,11 @@ IradCylinder::populate(const FuncDataBase& Control)
   
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
-  
+
+  sampleX=Control.EvalVar<double>(keyName+"SampleX");
+  sampleY=Control.EvalVar<double>(keyName+"SampleY");
+  sampleZ=Control.EvalVar<double>(keyName+"SampleZ");
+    
   return;
 }
 
@@ -176,10 +180,105 @@ IradCylinder::createUnitVector(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("IradCylinder","createUnitVector");
   attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-
+  applyOffset();
   return;
 }
 
+void
+IradCylinder::createInnerObjects(Simulation& System)
+  /*!
+    Create the inner material units
+    \param System :: Simulation                                                
+   */
+{
+  ELog::RegMethod RegA("IradCylinder","createInnerObjects");
+
+  const size_t NX(2*static_cast<size_t>(radius/sampleX)+2);
+  const size_t NY(2*static_cast<size_t>(length/sampleY)+2);
+  const size_t NZ(2*static_cast<size_t>(radius/sampleZ)+2);
+
+  int DI(iradIndex+1003);  
+  for(size_t i=0;i<NX;i++)
+    {
+      ModelSupport::buildPlane(SMap,DI,Origin-X*posX,X);
+      DI+=10;
+    }
+  int DI(iradIndex+1003);  
+  while(posX<radius)
+    {
+      ModelSupport::buildPlane(SMap,DI,Origin-X*posX,X);
+      NX+=1;
+      DI+=10;
+    }
+  DI=iradIndex+1001;
+  while(posX<length)
+    {
+      ModelSupport::buildPlane(SMap,DI,Origin-Y*posY,Y);
+      ModelSupport::buildPlane(SMap,DI+1,Origin+Y*posY,Y);
+      NY+=2;
+      posY+=sampleY;
+      DI+=10;
+    }
+  DI=iradIndex+1005;
+  while(posZ<radius)
+    {
+      ModelSupport::buildPlane(SMap,DI,Origin-Z*posZ,Z);
+      ModelSupport::buildPlane(SMap,DI+1,Origin+Z*posZ,Z);
+      NZ+=2;
+      posZ+=sampleZ;
+      DI+=10;
+    }
+
+  std::string XSurfB=
+    ModelSupport::getComposite(SMap,iradIndex," 7 ");
+  std::string YSurfB(XSurfB);
+  std::string ZSurfB(XSurfB);
+  
+  HeadRule xHR,yHR,zHR;
+    
+  DI=iradIndex+1000;
+  for(size_t i=0;i<NX;i++)
+    {
+      xHR.procString(XSurfB);
+      xHR.makeComplement();
+      XSurfB=(i==NX-1) ?
+        ModelSupport::getComposite(SMap,DI+10," -3 ") :
+        ModelSupport::getComposite(SMap,iradIndex," -7 ");
+      DI+=10;
+      int DJ(iradIndex+1000);
+      for(size_t j=0;j<NY;j++)
+        {
+          yHR.procString(YSurfB);
+          yHR.makeComplement();
+          YSurfB=(j==NY-1) ?
+            ModelSupport::getComposite(SMap,DJ+10," -1 ") :
+            ModelSupport::getComposite(SMap,iradIndex," -7 ");
+          yHR.procString(YSurfB);
+          DJ+=10;
+          
+          int DK(iradIndex+1000);
+          for(size_t k=0;k<NZ;k++)
+            {
+              zHR.procString(ZSurfB);
+              zHR.makeComplement();
+              ZSurfB=(k==NZ-1) ?
+                ModelSupport::getComposite(SMap,DK+10," -5 ") :
+                ModelSupport::getComposite(SMap,iradIndex," -7 ");
+              zHR.procString(ZSurfB);
+              DK+=10;
+
+              // BUILD OBJECT:
+              std::string Out=XSurfB+YSurfB+ZSurfB+
+                xHR.display()+yHR.display()+zHR.display();
+              
+              System.addCell(MonteCarlo::Qhull(cellIndex++,mat,temp,Out));
+              addCell("Centre",cellIndex-1);
+            }
+        }
+    }
+  
+  return;
+}
 
 void
 IradCylinder::createSurfaces()
@@ -188,7 +287,6 @@ IradCylinder::createSurfaces()
   */
 {
   ELog::RegMethod RegA("IradCylinder","createSurfaces");
-
 
   ModelSupport::buildPlane(SMap,iradIndex+1,Origin-Y*length/2.0,Y);
   ModelSupport::buildPlane(SMap,iradIndex+2,Origin+Y*length/2.0,Y);
@@ -220,9 +318,9 @@ IradCylinder::createObjects(Simulation& System)
 
   std::string Out;
   // Centre
-  Out=ModelSupport::getComposite(SMap,iradIndex," 1 -2 -7 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,temp,Out));
-  addCell("Centre",cellIndex-1);
+  // Out=ModelSupport::getComposite(SMap,iradIndex," 1 -2 -7 ");
+  // System.addCell(MonteCarlo::Qhull(cellIndex++,mat,temp,Out));
+  // addCell("Centre",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,iradIndex," -1 -8 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,temp,Out));
@@ -301,6 +399,7 @@ IradCylinder::createAll(Simulation& System,
   
   createSurfaces();
   createObjects(System);
+  createInnerObjects(System);
   createLinks();
   
   insertObjects(System);       

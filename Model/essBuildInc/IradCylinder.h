@@ -51,12 +51,17 @@ class IradCylinder : public attachSystem::ContainedComp,
   int mat;                        ///< Main material
   int wallMat;                    ///< Wall material
 
+  double sampleX;                 ///< Sample X step     
+  double sampleY;                 ///< Sample Z step     
+  double sampleZ;                 ///< Sample Z step
+  
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
-
+  
   void createSurfaces();
   void createObjects(Simulation&);
+  void createInnerObjects(Simulation&);
   void createLinks();
 
  public:

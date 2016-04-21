@@ -64,13 +64,17 @@ EssIradVariables(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("essVariables[F]","EssIradVariables");
 
-  Control.addVariable("IradCylRadius",1.5);
+  Control.addVariable("IradCylZStep",-0.2);
+  Control.addVariable("IradCylRadius",0.6);
   Control.addVariable("IradCylLength",10.0);
-  Control.addVariable("IradCylWallThick",0.3);
+  Control.addVariable("IradCylWallThick",0.2);
   Control.addVariable("IradCylTemp",0.0);
   Control.addVariable("IradCylMat","Void");
-  Control.addVariable("IradCylWallMat","Aluminium");
+  Control.addVariable("IradCylWallMat","Stainless304");
 
+  Control.addVariable("IradCylSampleX",0.25);
+  Control.addVariable("IradCylSampleY",1.0);
+  Control.addVariable("IradCylSampleZ",0.25);
   return;
 }
 

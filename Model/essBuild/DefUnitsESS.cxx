@@ -196,9 +196,9 @@ setESSSingle(defaultConfig& A,
      {"SHORTDREAM","G4BLine17"},
      {"SHORTODIN","G1BLine4"},
      {"DREAM","G4BLine9"},
-     {"VOR","G4BLine1"},   // also 17
-     {"SIMPLE","G4BLine4"},
-     {"LOKI","G4BLine4"},
+     {"VOR","G4BLine21"},   // also 17
+     {"SIMPLE","G4BLine17"},
+     {"LOKI","G4BLine17"},
      {"ODIN","G1BLine16"},   // Note reverse because on G1
      {"ESTIA","G4BLine11"}
     };     

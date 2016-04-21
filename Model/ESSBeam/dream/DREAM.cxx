@@ -142,6 +142,10 @@ DREAM::DREAM(const std::string& keyName) :
   VPipeG(new constructSystem::VacuumPipe(newName+"PipeG")),
   FocusG(new beamlineSystem::GuideLine(newName+"FG")),
 
+  // pipe to bunker wall
+  VPipeH(new constructSystem::VacuumPipe(newName+"PipeH")),
+  FocusH(new beamlineSystem::GuideLine(newName+"FH")),
+
 
 
   
@@ -235,6 +239,9 @@ DREAM::DREAM(const std::string& keyName) :
 
   OR.addObject(VPipeG);
   OR.addObject(FocusG);
+
+  OR.addObject(VPipeH);
+  OR.addObject(FocusH);
 
   OR.addObject(Cave);
 }
@@ -463,107 +470,36 @@ DREAM::build(Simulation& System,
 
   // Pipe to bunker wall
   VPipeG->addInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeG->setBack(bunkerObj,1);
   VPipeG->createAll(System,ChopperG->getKey("Beam"),2);
 
   FocusG->addInsertCell(VPipeG->getCells("Void"));
-  FocusG->addEndCut(bunkerObj.getSignedLinkString(1));
-  FocusG->createAll(System,*VPipeG,0,*VPipeF,0);
+  FocusG->createAll(System,*VPipeG,0,*VPipeG,0);
 
+  // Pipe to bunker wall
+  VPipeH->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeH->setBack(bunkerObj,1);
+  VPipeH->createAll(System,FocusG->getKey("Guide0"),2);
 
+  FocusH->addInsertCell(VPipeH->getCells("Void"));
+  // FocusG->addEndCut(bunkerObj.getSignedLinkString(1));
+  FocusH->createAll(System,*VPipeH,0,*VPipeH,0);
 
-  return;
-
-  
-  // First section out of monolith
-  VacBoxA->addInsertCell(bunkerObj.getCell("MainVoid"));
-  VacBoxA->createAll(System,FocusA->getKey("Guide0"),2);
-
-  // Double disk chopper housing
-  DDiskHouse->addInsertCell(VacBoxA->getCells("Void"));
-  DDiskHouse->addInsertCell(VacBoxA->getCells("Box"));  // soon to become lid
-  DDiskHouse->addInsertCell(bunkerObj.getCell("MainVoid"));
-  DDiskHouse->createAll(System,DDisk->getKey("Main"),0);
-  DDiskHouse->insertComponent(System,"Void",*DDisk);
-
-  // Double disk chopper
-  SDisk->addInsertCell(VacBoxA->getCell("Void",0));
-  SDisk->setCentreFlag(-3);  // Z direction
-  SDisk->createAll(System,DDisk->getKey("Beam"),2);
-
-  // Double disk chopper housing
-  SDiskHouse->addInsertCell(VacBoxA->getCells("Void"));
-  SDiskHouse->addInsertCell(VacBoxA->getCells("Box"));  // soon to become lid
-  SDiskHouse->addInsertCell(bunkerObj.getCell("MainVoid"));
-  SDiskHouse->createAll(System,SDisk->getKey("Main"),0);
-  
-  SDiskHouse->insertComponent(System,"Void",*SDisk);
-
-    // Double disk chopper housing
-  T0DiskAHouse->addInsertCell(VacBoxA->getCells("Void"));
-  T0DiskAHouse->addInsertCell(VacBoxA->getCells("Box"));  // soon to become lid
-  T0DiskAHouse->addInsertCell(bunkerObj.getCell("MainVoid"));
-  T0DiskAHouse->createAll(System,T0DiskA->getKey("Main"),0);
-  T0DiskAHouse->insertComponent(System,"Void",*T0DiskA);
-
-  return;
-
-  buildChopperBlock(System,bunkerObj,
-		    T0DiskA->getKey("Beam"),*VacBoxA,
-		    *VacBoxB,*FocusC,
-		    *T0DiskB,*T0DiskBHouse,
-		    *VPipeB);
-  
-  // GOING TO POSITION 2:
-  // buildChopperBlock(System,bunkerObj,
-  //       	    T0DiskB->getKey("Beam"),*VacBoxB,
-  //       	    *VacBoxC,*FocusD,
-  //       	    *BandADisk,*BandAHouse,
-  //       	    *VPipeC);
-  // GOING TO 1300 m
-  buildChopperBlock(System,bunkerObj,
-		    BandADisk->getKey("Beam"),*VacBoxC,
-		    *VacBoxD,*FocusE,
-		    *BandBDisk,*BandBHouse,
-		    *VPipeD);
-
-  // T0 after Position 3
-  buildChopperBlock(System,bunkerObj,
-		    BandBDisk->getKey("Beam"),*VacBoxD,
-		    *VacBoxE,*FocusF,
-		    *T0DiskC,*T0HouseC,
-		    *VPipeE);
-
-  // T0 after Position 3 PartB
-  buildChopperBlock(System,bunkerObj,
-		    T0DiskC->getKey("Beam"),*VacBoxE,
-		    *VacBoxF,*FocusG,
-		    *T0DiskD,*T0HouseD,
-		    *VPipeF);
-
-
-  // CONNECT TO  WALL
-  VPipeFinal->addInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeFinal->setFront(*VacBoxF,2);
-  VPipeFinal->setBack(bunkerObj,1);
-  VPipeFinal->createAll(System,*VacBoxF,2);
-
-  FocusFinal->addInsertCell(VPipeFinal->getCell("Void"));
-  FocusFinal->addInsertCell(VacBoxF->getCells("Void"));
-  FocusFinal->addEndCut(bunkerObj.getSignedLinkString(1));
-  FocusFinal->createAll(System,T0DiskD->getKey("Beam"),2,
-			T0DiskD->getKey("Beam"),2);
 
   if (stopPoint==2) return;                      // STOP At bunker edge
   // IN WALL
   // Make bunker insert
-  const attachSystem::FixedComp& GFC(FocusFinal->getKey("Guide0"));
-  BInsert->createAll(System,GFC,-1,bunkerObj);
+  const attachSystem::FixedComp& GFC(FocusH->getKey("Guide0"));
+  BInsert->createAll(System,FocusH->getKey("Guide0"),2,bunkerObj);
   attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);  
 
   FocusWall->addInsertCell(BInsert->getCell("Void"));
-  FocusWall->createAll(System,*BInsert,-1,
-			 FocusFinal->getKey("Guide0"),2);
+  FocusWall->createAll(System,*BInsert,0,*BInsert,0);
+
+
+  return;
+
+  
+
 
     if (stopPoint==3) return;                      // STOP At bunker edge
   // Section to 17m

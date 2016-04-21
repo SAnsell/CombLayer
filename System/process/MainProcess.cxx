@@ -680,8 +680,11 @@ createESSInputs(inputParam& IParam)
   IParam.regDefItem<std::string>("topMod","topModType",1,std::string("topMod"));
   IParam.regDefItem<std::string>("lowPipe","lowPipeType",1,std::string("side"));
   IParam.regDefItem<std::string>("topPipe","topPipeType",1,std::string("side"));
-  IParam.regDefItem<std::string>("iradLine","iradLineType",1,std::string("void"));
+  IParam.regDefItem<std::string>("iradLine","iradLineType",1,
+                                 std::string("void"));
+  
   IParam.regMulti("iradObj","iradObject",1000,3);
+  
   IParam.regDefItem<std::string>("bunker","bunkerType",1,std::string("null"));
   IParam.regMulti("beamlines","beamlines",1000);
   IParam.regDefItem<int>("nF5", "nF5", 1,0);

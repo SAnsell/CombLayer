@@ -328,7 +328,6 @@ Bunker::createSurfaces()
   ModelSupport::buildPlane(SMap,bnkIndex+1,rotCentre,Y);
   ModelSupport::buildCylinder(SMap,bnkIndex+7,rotCentre,Z,wallRadius);
 
-
   ModelSupport::buildPlane(SMap,bnkIndex+3,AWall,AWallDir);
   ModelSupport::buildPlane(SMap,bnkIndex+4,BWall,BWallDir);
   
