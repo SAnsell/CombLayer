@@ -76,7 +76,8 @@ NMXvariables(FuncDataBase& Control)
   Control.addVariable("nmxGAZStep",0.0);       
   Control.addVariable("nmxGAXYAngle",0.0);
   Control.addVariable("nmxGAZAngle",0.0);
-  Control.addVariable("nmxGABeamXYAngle",-1.0);       
+  Control.addVariable("nmxGABeamXYAngle",1.0);       
+  //Control.addVariable("nmxGABeamXYAngle",-1.0);   //mod Vale 
 
   Control.addVariable("nmxGALength",350.0);       
   Control.addVariable("nmxGANShapes",1);       
@@ -87,7 +88,7 @@ NMXvariables(FuncDataBase& Control)
   Control.addVariable("nmxGALayerThick2",1.5);
 
   Control.addVariable("nmxGALayerMat0","Void");
-  Control.addVariable("nmxGALayerMat1","Glass");
+  Control.addVariable("nmxGALayerMat1","Aluminium");
   Control.addVariable("nmxGALayerMat2","Void");       
 
   Control.addVariable("nmxGA0TypeID","Tapper");
@@ -115,7 +116,7 @@ NMXvariables(FuncDataBase& Control)
   Control.addVariable("nmxBALayerThick2",1.5);
 
   Control.addVariable("nmxBALayerMat0","Void");
-  Control.addVariable("nmxBALayerMat1","Glass");
+  Control.addVariable("nmxBALayerMat1","Aluminium");
   Control.addVariable("nmxBALayerMat2","Void");       
 
   Control.addVariable("nmxBA0TypeID","Bend");
@@ -123,7 +124,7 @@ NMXvariables(FuncDataBase& Control)
   Control.addVariable("nmxBA0BHeight",4.50);
   Control.addVariable("nmxBA0AWidth",3.0);
   Control.addVariable("nmxBA0BWidth",3.0);
-  Control.addVariable("nmxBA0AngDir",0.0);
+  Control.addVariable("nmxBA0AngDir",180.0);
   Control.addVariable("nmxBA0Radius",120000.0);
   Control.addParse<double>("nmxBA0Length","nmxBALength");
 
@@ -174,7 +175,7 @@ NMXvariables(FuncDataBase& Control)
   Control.addVariable("nmxFWallLayerThick2",1.5);
 
   Control.addVariable("nmxFWallLayerMat0","Void");
-  Control.addVariable("nmxFWallLayerMat1","Glass");
+  Control.addVariable("nmxFWallLayerMat1","Aluminium");
   Control.addVariable("nmxFWallLayerMat2","Void");       
   
   Control.addVariable("nmxFWall0TypeID","Rectangle");
