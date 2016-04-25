@@ -95,6 +95,39 @@ RoofPillars::RoofPillars(const std::string& Key)  :
   */
 {}
 
+RoofPillars::RoofPillars(const RoofPillars& A) : 
+  attachSystem::FixedComp(A),attachSystem::CellMap(A),
+  rodIndex(A.rodIndex),cellIndex(A.cellIndex),
+  TopSurf(A.TopSurf),BaseSurf(A.BaseSurf),
+  CentPoint(A.CentPoint),radius(A.radius),mat(A.mat)
+  /*!
+    Copy constructor
+    \param A :: RoofPillars to copy
+  */
+{}
+
+RoofPillars&
+RoofPillars::operator=(const RoofPillars& A)
+  /*!
+    Assignment operator
+    \param A :: RoofPillars to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      cellIndex=A.cellIndex;
+      TopSurf=A.TopSurf;
+      BaseSurf=A.BaseSurf;
+      CentPoint=A.CentPoint;
+      radius=A.radius;
+      mat=A.mat;
+    }
+  return *this;
+}
+
 RoofPillars::~RoofPillars() 
   /*!
     Destructor
@@ -125,12 +158,19 @@ RoofPillars::populate(const FuncDataBase& Control)
       for(size_t j=0;j<nSector;j++)
         {
           const std::string NSec=StrFunc::makeString(j);
-          // degrees:
-          const double angle=M_PI*Control.EvalPair<double>
-            (keyName+"R_"+Num+"S_"+NSec,keyName+"RS_"+NSec)/180.0;
-          CentPoint.push_back
-            (Geometry::Vec3D(rotRadius*sin(angle),rotRadius*cos(angle),0.0));
-          
+          const int active=Control.EvalDefPair<int>
+            (keyName+"R_"+Num+"S_"+NSec+"Active",
+             keyName+"RS_"+NSec+"Active",1);
+
+          if (active)
+            {
+              // degrees:
+              const double angle=M_PI*Control.EvalPair<double>
+                (keyName+"R_"+Num+"S_"+NSec,keyName+"RS_"+NSec)/180.0;
+              CentPoint.push_back
+                (Geometry::Vec3D(rotRadius*sin(angle),
+                                 rotRadius*cos(angle),0.0));
+            }
         }          
     }
   
