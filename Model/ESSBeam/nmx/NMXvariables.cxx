@@ -112,7 +112,7 @@ NMXvariables(FuncDataBase& Control)
   Control.addVariable("nmxBANShapeLayers",3);
   Control.addVariable("nmxBAActiveShield",0);
 
-  Control.addVariable("nmxBALayerThick1",0.4);  // glass thick
+  Control.addVariable("nmxBALayerThick1",0.4);  // Aluminium  thick
   Control.addVariable("nmxBALayerThick2",1.5);
 
   Control.addVariable("nmxBALayerMat0","Void");
@@ -124,13 +124,14 @@ NMXvariables(FuncDataBase& Control)
   Control.addVariable("nmxBA0BHeight",4.50);
   Control.addVariable("nmxBA0AWidth",3.0);
   Control.addVariable("nmxBA0BWidth",3.0);
-  Control.addVariable("nmxBA0AngDir",180.0);
+  Control.addVariable("nmxBA0AngDir",0.0);
   Control.addVariable("nmxBA0Radius",120000.0);
   Control.addParse<double>("nmxBA0Length","nmxBALength");
 
   // VACUUM PIPES:
   Control.addVariable("nmxPipeAYStep",50.0);
-  Control.addVariable("nmxPipeARadius",12.0);
+  // Control.addVariable("nmxPipeARadius",12.0);
+  Control.addVariable("nmxPipeARadius",6.0);
   Control.addVariable("nmxPipeALength",700.0);
   Control.addVariable("nmxPipeAFeThick",1.0);
   Control.addVariable("nmxPipeAFlangeRadius",14.0);
@@ -140,7 +141,8 @@ NMXvariables(FuncDataBase& Control)
   
   // VACUUM PIPES:
   Control.addVariable("nmxPipeBXYAngle",-1.2);   // from -0.8
-  Control.addVariable("nmxPipeBRadius",12.0);
+  // Control.addVariable("nmxPipeBRadius",12.0);
+  Control.addVariable("nmxPipeBRadius",6.0); //small radius
   Control.addVariable("nmxPipeBLength",500.0);
   Control.addVariable("nmxPipeBFeThick",1.0);
   Control.addVariable("nmxPipeBFlangeRadius",16.0);
