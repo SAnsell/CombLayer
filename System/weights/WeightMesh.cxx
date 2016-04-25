@@ -3,7 +3,7 @@
  
  * File:   weights/WeightMesh.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -245,6 +245,7 @@ WeightMesh::writeWWINP(std::ostream& OX,const size_t NEBin) const
   StrFunc::writeLine(OX,XFine.size(),itemCnt,4);
   StrFunc::writeLine(OX,YFine.size(),itemCnt,4);
   StrFunc::writeLine(OX,ZFine.size(),itemCnt,4);
+  // what are these 1.0 for??
   StrFunc::writeLine(OX,1.0,itemCnt,4);
 
   // loop over X/Y/Z
@@ -257,7 +258,7 @@ WeightMesh::writeWWINP(std::ostream& OX,const size_t NEBin) const
 
       itemCnt=0;
       StrFunc::writeLine(OX,Vec[0],itemCnt,6);
-
+      
       for(size_t i=0;i<iVec.size();i++)
 	{
 	  StrFunc::writeLine(OX,iVec[i],itemCnt,6);

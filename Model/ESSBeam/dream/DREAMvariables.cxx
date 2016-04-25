@@ -225,10 +225,13 @@ generateT0Chopper(FuncDataBase& Control,
 		  const std::string& diskName,
 		  const std::string& midName,
 		  const std::string chopperLetter)
+  /*!
+    Generate variables for a T0 chopper
+   */
 {
   ELog::RegMethod RegA("DreamVARIABLES","generateT0Chopper");
   
-  generateChopper(Control,"dreamChopper"+chopperLetter,20.0,36.0,32.0);
+  generateChopper(Control,"dreamChopper"+chopperLetter,25.0,36.0,32.0);
 
   // T0 Chopper disk A
   Control.addVariable(diskName+"AXStep",0.0);
@@ -464,8 +467,8 @@ DREAMvariables(FuncDataBase& Control)
 
   // VACUUM PIPE: SDisk to T0 (A)
   generatePipe(Control,"dreamPipeF",40.0);
-  generateFocusTaper(Control,"dreamFF",32.0,2.06,2.36,4.6,4.5); 
-
+  generateFocusTaper(Control,"dreamFF",32.0,2.06,2.36,4.6,4.5);
+  
   generateT0Chopper(Control,"dreamT1Disk","dreamFT1Mid","G");
 
 

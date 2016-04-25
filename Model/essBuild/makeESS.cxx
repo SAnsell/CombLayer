@@ -239,19 +239,24 @@ makeESS::createGuides(Simulation& System)
       GB->addInsertCell("Outer",ShutterBayObj->getMainCell());
       GB->setCylBoundary(Bulk->getLinkSurf(2),
 			 ShutterBayObj->getLinkSurf(2));
-
+      
       if (i<2)
-	GB->createAll(System,*LowMod);  
+	GB->createAll(System,*LowMod,0);  
       else
-	GB->createAll(System,*TopMod);
+	GB->createAll(System,*TopMod,0);
       attachSystem::addToInsertForced(System,*GB,Target->getCC("Wheel"));      
       GBArray.push_back(GB);
       attachSystem::addToInsertForced(System,*GB, Target->getCC("Wheel"));
     }
   GBArray[1]->outerMerge(System,*GBArray[2]);
   GBArray[0]->outerMerge(System,*GBArray[3]);
-  for(size_t i=0;i<4;i++)
-    GBArray[i]->createGuideItems(System);
+  
+  GBArray[0]->createGuideItems(System,LowMod->getComponent("MidWater"),6,5);
+  GBArray[1]->createGuideItems(System,LowMod->getComponent("MidWater"),7,8);
+  GBArray[2]->createGuideItems(System,TopMod->getComponent("MidWater"),6,5);
+  GBArray[3]->createGuideItems(System,TopMod->getComponent("MidWater"),7,8);
+  //  GBArray[2]->createGuideItems(System,*LowMod,0,0);
+  //  GBArray[3]->createGuideItems(System,*TopMod,0,0);
 
 
   return;

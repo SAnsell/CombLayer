@@ -32,7 +32,8 @@ namespace mainSystem
   void setDefUnits(FuncDataBase&,inputParam&);
 
   void setESS(defaultConfig&);
-  void setESSPortsOnly(defaultConfig&,const std::string&);
+  void setESSPortsOnly(defaultConfig&,const std::string&,
+		       const std::string&);
   void setESSFull(defaultConfig&); 
   void setESSSingle(defaultConfig&,const std::string&,
 		    const std::string&,int);

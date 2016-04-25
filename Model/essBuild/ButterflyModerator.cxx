@@ -1,3 +1,24 @@
+/********************************************************************* 
+  CombLayer : MCNP(X) Input builder
+ 
+ * File:   essBuild/ButterflyModerator.cxx
+ *
+ * Copyright (c) 2004-2016 by Stuart Ansell
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ *
+ ****************************************************************************/
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -190,7 +211,7 @@ ButterflyModerator::createSurfaces()
 
 void
 ButterflyModerator::createObjects(Simulation& System)
-    /*!
+  /*!
     Adds the main components
     \param System :: Simulation to create objects in
   */
@@ -257,7 +278,7 @@ ButterflyModerator::getSurfacePoint(const size_t,
 void
 ButterflyModerator::createLinks()
   /*!
-    Create linkes but currently incomplete
+    Create links but currently incomplete
   */
 {
   ELog::RegMethod RegA("ButterflyModerator","createLinks");
@@ -300,6 +321,31 @@ ButterflyModerator::createExternal()
   
   return;
 }
+
+const attachSystem::FixedComp&
+ButterflyModerator::getComponent(const std::string& compName) const
+  /*!
+    Simple way to get a named component of this object
+    \param compName :: Component name
+    \return FixedComp object
+  */
+{
+  ELog::RegMethod RegA("ButterflyModerator","getComponent");
+
+  const std::string TStr=keyName+compName;
+  if (TStr==LeftUnit->getKeyName())
+    return *LeftUnit;
+  if (TStr==RightUnit->getKeyName())
+    return *RightUnit;
+  if (TStr==MidWater->getKeyName())
+    return *MidWater;
+  if (TStr==LeftWater->getKeyName())
+    return *LeftWater;
+  if (TStr==RightWater->getKeyName())
+    return *RightWater;
+  throw ColErr::InContainerError<std::string>(compName,keyName+" component");
+}
+
   
 void
 ButterflyModerator::createAll(Simulation& System,

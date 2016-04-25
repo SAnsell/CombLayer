@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/MidWaterDivider.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,7 +68,7 @@ class MidWaterDivider :
   void createSurfaces();
   void createObjects(Simulation&,const H2Wing&,const H2Wing&);
   void cutOuterWing(Simulation&,const H2Wing&,const H2Wing&) const;
-  void createLinks();
+  void createLinks(const H2Wing&,const H2Wing&);
 
 
  public:

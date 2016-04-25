@@ -68,6 +68,8 @@ class ModBase : public attachSystem::ContainedComp,
 
   std::string getComposite(const std::string&) const;
 
+  virtual const attachSystem::FixedComp&
+    getComponent(const std::string&) const;
   long int getSideIndex(const size_t) const;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
 			 const attachSystem::FixedComp* =0,

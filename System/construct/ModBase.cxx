@@ -3,7 +3,7 @@
  
  * File:   construct/ModBase.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -179,6 +179,19 @@ ModBase::createUnitVector(const attachSystem::FixedComp& axisFC,
   applyShift(xStep,yStep,zStep);
   applyAngleRotate(xyAngle,zAngle);
   return; 
+}
+
+const attachSystem::FixedComp&
+ModBase::getComponent(const std::string& compName) const
+  /*!
+    Simple way to get a named component of this object
+    \param compName :: Component name
+    \return FixedComp object
+  */
+{
+  ELog::RegMethod RegA("ModBase","getComponent");
+
+  throw ColErr::InContainerError<std::string>(compName,keyName+" component");
 }
 
   
