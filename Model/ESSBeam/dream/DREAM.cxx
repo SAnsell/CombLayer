@@ -348,7 +348,7 @@ DREAM::build(Simulation& System,
   const FuncDataBase& Control=System.getDataBase();
   CopiedComp::process(System.getDataBase());
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
-
+  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)<<ELog::endDiag;
   setBeamAxis(GItem,1);
   FocusA->addInsertCell(GItem.getCells("Void"));
   FocusA->addEndCut(GItem.getKey("Beam").getSignedLinkString(-2));

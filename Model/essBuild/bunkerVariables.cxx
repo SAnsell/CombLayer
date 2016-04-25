@@ -121,10 +121,16 @@ EssBunkerVariables(FuncDataBase& Control)
   
   Control.addVariable("ABunkerPillarsRadius",6.0);
   Control.addVariable("ABunkerPillarsMat","Stainless304");
-  Control.addVariable("ABunkerPillarsNRadius",2);
+  Control.addVariable("ABunkerPillarsNRadius",5);
   Control.addVariable("ABunkerPillarsNSector",11); // default
+  
   Control.addVariable("ABunkerPillarsR0",600.0);
   Control.addVariable("ABunkerPillarsR1",900.0);
+  Control.addVariable("ABunkerPillarsR2",1200.0);
+  Control.addVariable("ABunkerPillarsR3",1500.0);
+  Control.addVariable("ABunkerPillarsR4",1800.0);
+  Control.addVariable("ABunkerPillarsR5",2100.0);
+  
   Control.addVariable("ABunkerPillarsRS_0",-3.0);
   Control.addVariable("ABunkerPillarsRS_1",-9.0);
   Control.addVariable("ABunkerPillarsRS_2",-15.0);
@@ -137,6 +143,8 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("ABunkerPillarsRS_9",-57.0);
   Control.addVariable("ABunkerPillarsRS_10",-63.0);
 
+  Control.addVariable("ABunkerPillarsR_0S_2Active",0);
+  Control.addVariable("ABunkerPillarsR_0S_3Active",0);
   //
   // RIGHT BUNKER : B PART
   //

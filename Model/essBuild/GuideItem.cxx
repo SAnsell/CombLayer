@@ -496,13 +496,16 @@ GuideItem::createLinks()
   const Geometry::Vec3D& bY=beamFC.getY();
   const Geometry::Vec3D& bZ=beamFC.getZ();
 
+  const Geometry::Vec3D beamOrigin=beamFC.getCentre();
+
   MonteCarlo::LineIntersectVisit LI(beamOrigin,beamFC.getY());
   const Geometry::Cylinder* DPtr=
     SMap.realPtr<Geometry::Cylinder>(outerCyl);
   const Geometry::Vec3D beamExit=
     LI.getPoint(DPtr,beamOrigin+bY*length.back());
 
-
+  
+  ELog::EM<<"BEAM ORIGIN"<<beamOrigin<<ELog::endDiag;
   beamFC.setConnect(0,beamOrigin+bY*RInner,-bY);
   beamFC.setLinkSurf(0,-SMap.realSurf(guideIndex+7));
   beamFC.addBridgeSurf(0,SMap.realSurf(guideIndex+1));
