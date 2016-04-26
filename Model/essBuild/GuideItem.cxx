@@ -505,7 +505,6 @@ GuideItem::createLinks()
     LI.getPoint(DPtr,beamOrigin+bY*length.back());
 
   
-  ELog::EM<<"BEAM ORIGIN"<<beamOrigin<<ELog::endDiag;
   beamFC.setConnect(0,beamOrigin+bY*RInner,-bY);
   beamFC.setLinkSurf(0,-SMap.realSurf(guideIndex+7));
   beamFC.addBridgeSurf(0,SMap.realSurf(guideIndex+1));
