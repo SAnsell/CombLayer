@@ -145,6 +145,7 @@ EssBunkerVariables(FuncDataBase& Control)
 
   Control.addVariable("ABunkerPillarsR_0S_1Active",0);
   Control.addVariable("ABunkerPillarsR_0S_2Active",0);
+
   //
   // RIGHT BUNKER : B PART
   //
