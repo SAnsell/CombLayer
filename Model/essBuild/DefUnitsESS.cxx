@@ -76,13 +76,13 @@ setDefUnits(FuncDataBase& Control,
 	IParam.getValue<std::string>("defaultConfig",2) : "";
       const int filled=(ICnt>3) ? 
 	IParam.getValue<int>("defaultConfig",3) : 0;
-      
+
       if (Key=="Main")
 	setESS(A);
       else if (Key=="Full")
 	setESSFull(A);
       else if (Key=="PortsOnly")
-	setESSPortsOnly(A,extraItem);
+	setESSPortsOnly(A,sndItem,extraItem);
       else if (Key=="Single")
 	setESSSingle(A,sndItem,extraItem,filled);
       else if (Key=="help")
@@ -153,22 +153,54 @@ setESSFull(defaultConfig& A)
 }
 
 void
-setESSPortsOnly(defaultConfig& A,const std::string& lvl)
+setESSPortsOnly(defaultConfig& A,const std::string& lvl,
+                const std::string& lvlExtra)
   /*!
     Default configuration for ESS for beamports only
     \param A :: Paramter for default config
     \param lvl :: level value (lower/uppper)
+    \param lvlExtra :: extra level value (lower/uppper)
    */
 {
   ELog::RegMethod RegA("DefUnitsESS[F]","setESS");
 
-  A.setOption("lowMod","Butterfly");
-  const std::string GNum=
-    (lvl == "lower") ? "G1BLine" : "G4BLine";
+  static const std::map<std::string,std::string>
+    nameBay({
+        {"lower","G1BLine"},
+        {"upper","G4BLine"},
+        {"farUpper","G3BLine"},
+        {"farLower","G2BLine"}
+      });
   
-  for(size_t i=0;i<21;i++)
-    A.setVar(GNum+StrFunc::makeString(i+1)+"Active",1);
+  A.setOption("lowMod","Butterfly");
 
+  int defaultFlag(0);
+  std::string GNum;
+  std::map<std::string,std::string>::const_iterator mc=
+    nameBay.find(lvlExtra);
+  if (mc!=nameBay.end())
+    {
+      for(size_t i=0;i<21;i++)
+        A.setVar(mc->second+StrFunc::makeString(i+1)+"Active",1);
+      defaultFlag=1;
+      GNum=mc->second+" ";
+    }
+  // and take default:
+  mc=nameBay.find(lvl);
+  if (mc!=nameBay.end())
+    {
+      for(size_t i=0;i<21;i++)
+        A.setVar(mc->second+StrFunc::makeString(i+1)+"Active",1);
+      defaultFlag=1;
+      GNum+=mc->second;
+    }
+  if (!defaultFlag)
+    {
+      GNum="G4BLine";
+      for(size_t i=0;i<21;i++)
+        A.setVar("G4BLine"+StrFunc::makeString(i+1)+"Active",1);
+    }
+      
   ELog::EM<<"Port Only on sectors:"<<GNum<<ELog::endDiag;
   return;
 }

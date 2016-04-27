@@ -3,7 +3,7 @@
  
  * File:   essBuild/GuideItem.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -245,7 +245,7 @@ GuideItem::populate(const FuncDataBase& Control)
   
 void
 GuideItem::createUnitVector(const attachSystem::FixedComp& FC,
-			    const size_t sideIndex)
+			    const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Linked object
@@ -257,42 +257,30 @@ GuideItem::createUnitVector(const attachSystem::FixedComp& FC,
   attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
   attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
   
-  const attachSystem::LinkUnit& LU=FC.getLU(sideIndex);
-  
-  mainFC.createUnitVector(FC.getCentre(),-LU.getAxis(),FC.getZ());
+  mainFC.createUnitVector(FC,0);
+  //  mainFC.createUnitVector(FC.getCentre(),-LU.getAxis(),FC.getZ());
   mainFC.applyShift(xStep,yStep,zStep);
   mainFC.applyAngleRotate(xyAngle,zAngle);
 
-  beamFC=mainFC;
+  //   beamFC=mainFC;
 
-  setDefault("Main");
-  calcBeamLineTrack(FC);
+  
+  beamFC.createUnitVector(FC,sideIndex);
+  beamFC.applyShift(xStep,yStep,zStep);
+  beamFC.applyAngleRotate(xyAngle,zAngle);
 
-
-  return;
-}
-
-void
-GuideItem::calcBeamLineTrack(const attachSystem::FixedComp& FC)
-  /*!
-    Calculate the beamline values
-    \param FC :: Fixed component for object centre
-   */
-{
-  ELog::RegMethod RegA("GuideItem","calcBeamLineTrack");
-
-  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
 
   // Need to calculate impact point of beamline:
   const double yShift=sqrt(RInner*RInner-beamXStep*beamXStep)-RInner;
 
-  beamOrigin=FC.getCentre()+X*beamXStep+Y*yShift+Z*beamZStep;
+  beamFC.applyShift(beamXStep,yShift,beamZStep);
   beamFC.applyAngleRotate(beamXYAngle,beamZAngle);
-  beamFC.createUnitVector(beamOrigin,beamFC.getY(),beamFC.getZ());
-    
+  setDefault("Main");
+
+
   return;
 }
-  
+
 void
 GuideItem::createSurfaces()
   /*!
@@ -301,15 +289,25 @@ GuideItem::createSurfaces()
 {
   ELog::RegMethod RegA("GuideItem","createSurface");
 
-  ModelSupport::buildPlane(SMap,guideIndex+1,Origin,Y);    // Divider plane
+  if (dividePlane)
+    SMap.addMatch(guideIndex+1,dividePlane);
+  else
+    ModelSupport::buildPlane(SMap,guideIndex+1,Origin,Y);    // Divider plane
 
+  
+  const attachSystem::FixedComp& mainFC=
+    FixedGroup::getKey("Main");
   const attachSystem::FixedComp& beamFC=
     FixedGroup::getKey("Beam");
+
+  const Geometry::Vec3D mainOrigin=mainFC.getCentre();
+  const Geometry::Vec3D beamOrigin=beamFC.getCentre();
+
   
   const Geometry::Vec3D& bX=beamFC.getX();
   const Geometry::Vec3D& bZ=beamFC.getZ();
-  
-  SMap.addMatch(guideIndex+1,dividePlane);
+ 
+
   SMap.addMatch(guideIndex+7,innerCyl);
 
   int GI(guideIndex);
@@ -317,17 +315,19 @@ GuideItem::createSurfaces()
   for(size_t i=0;i<nSegment;i++)
     {
       if (i!=nSegment-1)
-	ModelSupport::buildCylinder(SMap,GI+57,Origin,Z,length[i]);
+	ModelSupport::buildCylinder(SMap,GI+57,mainOrigin,Z,length[i]);
 
-      ModelSupport::buildPlane(SMap,GI+3,Origin-X*(width[i]/2.0),X);
-      ModelSupport::buildPlane(SMap,GI+4,Origin+X*(width[i]/2.0),X);
-      ModelSupport::buildPlane(SMap,GI+5,Origin-Z*depth[i],Z);
-      ModelSupport::buildPlane(SMap,GI+6,Origin+Z*height[i],Z);
+      ModelSupport::buildPlane(SMap,GI+3,beamOrigin-bX*(width[i]/2.0),bX);
+      ModelSupport::buildPlane(SMap,GI+4,beamOrigin+bX*(width[i]/2.0),bX);
+      ModelSupport::buildPlane(SMap,GI+5,beamOrigin-bZ*depth[i],bZ);
+      ModelSupport::buildPlane(SMap,GI+6,beamOrigin+bZ*height[i],bZ);
 
-      ModelSupport::buildPlane(SMap,GI+13,Origin-X*(-sideGap+width[i]/2.0),X);
-      ModelSupport::buildPlane(SMap,GI+14,Origin+X*(-sideGap+width[i]/2.0),X);
-      ModelSupport::buildPlane(SMap,GI+15,Origin-Z*(-baseGap+depth[i]),Z);
-      ModelSupport::buildPlane(SMap,GI+16,Origin+Z*(-topGap+height[i]),Z);
+      ModelSupport::buildPlane
+        (SMap,GI+13,beamOrigin-bX*(-sideGap+width[i]/2.0),bX);
+      ModelSupport::buildPlane
+        (SMap,GI+14,beamOrigin+bX*(-sideGap+width[i]/2.0),bX);
+      ModelSupport::buildPlane(SMap,GI+15,beamOrigin-bZ*(-baseGap+depth[i]),bZ);
+      ModelSupport::buildPlane(SMap,GI+16,beamOrigin+bZ*(-topGap+height[i]),bZ);
 
       GI+=50;
     }
@@ -371,6 +371,8 @@ GuideItem::getEdgeStr(const GuideItem* GPtr) const
 {
   ELog::RegMethod RegA("GuideItem","getEdgeStr");
   if (!GPtr) return "";
+  const attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+  const Geometry::Vec3D beamOrigin=beamFC.getCentre();
 
   const Geometry::Plane* gP3=GPtr->getPlane(3);
   const Geometry::Plane* gP4=GPtr->getPlane(4);
@@ -490,9 +492,11 @@ GuideItem::createLinks()
 
   attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
   attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
-  const Geometry::Vec3D& bX=beamFC.getX();
+  const Geometry::Vec3D& bX=-beamFC.getX();
   const Geometry::Vec3D& bY=beamFC.getY();
   const Geometry::Vec3D& bZ=beamFC.getZ();
+
+  const Geometry::Vec3D beamOrigin=beamFC.getCentre();
 
   MonteCarlo::LineIntersectVisit LI(beamOrigin,beamFC.getY());
   const Geometry::Cylinder* DPtr=
@@ -500,7 +504,7 @@ GuideItem::createLinks()
   const Geometry::Vec3D beamExit=
     LI.getPoint(DPtr,beamOrigin+bY*length.back());
 
-
+  
   beamFC.setConnect(0,beamOrigin+bY*RInner,-bY);
   beamFC.setLinkSurf(0,-SMap.realSurf(guideIndex+7));
   beamFC.addBridgeSurf(0,SMap.realSurf(guideIndex+1));
@@ -526,9 +530,9 @@ GuideItem::createLinks()
     
 
   // Main provides 2 things : target centre tracking:
+  
   Origin-=Geometry::Vec3D(0,0,Origin[2]);     // TARGET CENTRE
-
-  MonteCarlo::LineIntersectVisit LITC(Origin,mainFC.getY());
+  MonteCarlo::LineIntersectVisit LITC(Origin,beamFC.getY());
   const Geometry::Vec3D orgExit=
     LI.getPoint(DPtr,Origin+Y*length.back());
 
@@ -546,7 +550,7 @@ GuideItem::createLinks()
 void
 GuideItem::createAll(Simulation& System,
 		     const attachSystem::FixedComp& FC,
-		     const size_t sideIndex,
+		     const long int sideIndex,
 		     const GuideItem* GPtr)
   /*!
     Generic function to create everything

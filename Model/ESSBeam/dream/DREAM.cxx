@@ -146,10 +146,10 @@ DREAM::DREAM(const std::string& keyName) :
   VPipeH(new constructSystem::VacuumPipe(newName+"PipeH")),
   FocusH(new beamlineSystem::GuideLine(newName+"FH")),
 
-
+  BInsert(new BunkerInsert(newName+"BInsert")),
+  FocusWall(new beamlineSystem::GuideLine(newName+"FWall")),
 
   
-
   
   DDiskHouse(new constructSystem::ChopperHousing(newName+"DBladeHouse")),
 
@@ -182,8 +182,6 @@ DREAM::DREAM(const std::string& keyName) :
 
   VPipeFinal(new constructSystem::VacuumPipe(newName+"PipeFinal")),
   FocusFinal(new beamlineSystem::GuideLine(newName+"FFinal")),
-  BInsert(new BunkerInsert(newName+"BInsert")),
-  FocusWall(new beamlineSystem::GuideLine(newName+"FWall")),
 
   ShieldA(new constructSystem::LineShield(newName+"ShieldA")),
   VPipeOutA(new constructSystem::VacuumPipe(newName+"PipeOutA")),
@@ -348,7 +346,9 @@ DREAM::build(Simulation& System,
   const FuncDataBase& Control=System.getDataBase();
   CopiedComp::process(System.getDataBase());
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
-
+  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
+	  <<ELog::endDiag;
+  
   setBeamAxis(GItem,1);
   FocusA->addInsertCell(GItem.getCells("Void"));
   FocusA->addEndCut(GItem.getKey("Beam").getSignedLinkString(-2));
@@ -492,8 +492,9 @@ DREAM::build(Simulation& System,
   BInsert->createAll(System,FocusH->getKey("Guide0"),2,bunkerObj);
   attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);  
 
+  // using 7 : mid point
   FocusWall->addInsertCell(BInsert->getCell("Void"));
-  FocusWall->createAll(System,*BInsert,0,*BInsert,0);
+  FocusWall->createAll(System,*BInsert,7,*BInsert,7);
 
 
   return;

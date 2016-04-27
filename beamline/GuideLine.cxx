@@ -466,6 +466,7 @@ GuideLine::createSurfaces()
   // Only need to build if not provided
   if (frontCut)
     ModelSupport::buildPlane(SMap,guideIndex+1,Origin,Y);
+
   if (beamFrontCut)
     ModelSupport::buildPlane(SMap,guideIndex+1001,
 			       beamFC.getCentre(),beamFC.getY());
@@ -473,6 +474,7 @@ GuideLine::createSurfaces()
   if (!activeEnd)
     ModelSupport::buildPlane(SMap,guideIndex+2,Origin+Y*length,Y);
 
+  
   if (activeShield)
     {
       ModelSupport::buildPlane(SMap,guideIndex+3,Origin-X*leftWidth,X);

@@ -1169,8 +1169,8 @@ writeLine(std::ostream& OX,const T& V,
     Write the line in the WWG format of 13.6g
     \param OX :: Output stream
     \param V :: Value
-    \param itemCnt :: Item value
-    \param lineCut :: Value to cut line
+    \param itemCnt :: Place in line
+    \param lineCut :: Number of unit to put in line before CR
    */
 {
   static boost::format DblFMT("%13.4f");
@@ -1201,8 +1201,8 @@ writeLine(std::ostream& OX,const Geometry::Vec3D& Vec,
     Write the line in the WWG format of 13.6g
     \param OX :: Output stream
     \param V :: Value
-    \param itemCnt :: Item value
-    \param lineCut :: Value to cut line
+    \param itemCnt :: Place in line
+    \param lineCut :: Number of unit to put in line before CR
    */
 {
   for(size_t i=0;i<3;i++)

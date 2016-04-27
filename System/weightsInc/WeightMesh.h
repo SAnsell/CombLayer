@@ -3,7 +3,7 @@
  
  * File:   weightsInc/WeightMesh.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -75,10 +75,11 @@ class WeightMesh
   WeightMesh& operator=(const WeightMesh&);
   virtual ~WeightMesh() {}   ///< Destructor
 
-  size_t size() const { return NX*NY*NZ; } 
-  size_t getXSize() const { return NX; }
-  size_t getYSize() const { return NY; }
-  size_t getZSize() const { return NZ; }
+  /// total number of cells
+  size_t size() const { return NX*NY*NZ; }
+  size_t getXSize() const { return NX; }    ///< number of X-cells
+  size_t getYSize() const { return NY; }    ///< number of Y-cells
+  size_t getZSize() const { return NZ; }    ///< number of Z-cells
   Geometry::Vec3D point(const size_t,const size_t,const size_t) const;
 
   void setMeshType(const GeomENUM&);

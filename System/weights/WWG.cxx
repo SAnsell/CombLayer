@@ -3,7 +3,7 @@
  
  * File:   weights/WWG.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -114,6 +114,8 @@ WWG::resetMesh(const std::vector<double>& W)
     \param W :: Weight 
    */
 {
+  ELog::RegMethod RegA("WWG","resetMesh");
+  
   const size_t GSize=Grid.size();
   if (GSize && !EBin.empty())
     {
@@ -140,9 +142,10 @@ WWG::setEnergyBin(const std::vector<double>& EB,
   /*!
     Set the energy bins and resize the WMesh
     \param EB :: Energy bins [MeV]
-    \param InitWeight :: Initial weight
+    \param DefWeight :: Initial weight
   */
 {
+  ELog::RegMethod RegA("WWG","setEnergyBine");
   EBin=EB;
   if (EBin.empty() || EBin.back()<1e5)
     EBin.push_back(1e5);
@@ -189,7 +192,6 @@ WWG::scaleMeshItem(const long int index,
   */
 {
   ELog::RegMethod RegA("WWG","scaleMeshItem");
-
   
   const size_t ID(static_cast<size_t>(index));
   if (ID>=WMesh.size())
