@@ -497,18 +497,17 @@ DREAM::build(Simulation& System,
   FocusWall->createAll(System,*BInsert,7,*BInsert,7);
 
 
-  return;
 
-  
-
-
-    if (stopPoint==3) return;                      // STOP At bunker edge
+  if (stopPoint==3) return;                      // STOP At bunker edge
   // Section to 17m
   
   ShieldA->addInsertCell(voidCell);
   ShieldA->setFront(bunkerObj,2);
   ShieldA->setDivider(bunkerObj,2);
   ShieldA->createAll(System,*BInsert,2);
+
+  
+
 
   VPipeOutA->addInsertCell(ShieldA->getCell("Void"));
   VPipeOutA->setFront(bunkerObj,2);
@@ -519,6 +518,9 @@ DREAM::build(Simulation& System,
   FocusOutA->addInsertCell(VPipeOutA->getCell("Void"));
   FocusOutA->createAll(System,FocusWall->getKey("Guide0"),2,
 		       FocusWall->getKey("Guide0"),2);
+
+  return;
+
 
   // Section to 34  
   ShieldB->addInsertCell(voidCell);

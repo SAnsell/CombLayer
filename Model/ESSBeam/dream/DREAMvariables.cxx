@@ -493,41 +493,6 @@ DREAMvariables(FuncDataBase& Control)
   generateFocusTaper(Control,"dreamFWall",308.0,6.0,6.0,6.0,6.0);
 
 
-  /*
-  // Guide after wall [17.5m - 3.20] for wall
-  Control.addVariable("dreamFOutAXStep",0.0);       
-  Control.addVariable("dreamFOutAYStep",1.6);
-  Control.addVariable("dreamFOutAZStep",0.0);       
-  Control.addVariable("dreamFOutAXYAngle",0.0);       
-  Control.addVariable("dreamFOutAZAngle",0.0);
-  Control.addVariable("dreamFOutALength",1750.0-320.8);       
-  
-  Control.addVariable("dreamFOutANShapes",1);       
-  Control.addVariable("dreamFOutANShapeLayers",3);
-  Control.addVariable("dreamFOutAActiveShield",0);
-
-  Control.addVariable("dreamFOutALayerThick1",0.4);  // glass thick
-  Control.addVariable("dreamFOutALayerThick2",1.5);
-
-  Control.addVariable("dreamFOutALayerMat0","Void");
-  Control.addVariable("dreamFOutALayerMat1","Glass");
-  Control.addVariable("dreamFOutALayerMat2","Void");       
-  
-  Control.addVariable("dreamFOutA0TypeID","Tapper");
-  Control.addVariable("dreamFOutA0HeightStart",4.5);
-  Control.addVariable("dreamFOutA0HeightEnd",4.97);
-  Control.addVariable("dreamFOutA0WidthStart",2.24);
-  Control.addVariable("dreamFOutA0WidthEnd",3.05);
-  Control.addVariable("dreamFOutA0Length",1750.0-320.8);
-
-  Control.addVariable("dreamPipeOutARadius",6.0);
-  Control.addVariable("dreamPipeOutALength",1750.0-320);
-  Control.addVariable("dreamPipeOutAFeThick",1.0);
-  Control.addVariable("dreamPipeOutAFlangeRadius",9.0);
-  Control.addVariable("dreamPipeOutAFlangeLength",1.0);
-  Control.addVariable("dreamPipeOutAFeMat","Stainless304");
-
-
   Control.addVariable("dreamShieldALength",1750.0-320);
   Control.addVariable("dreamShieldALeft",40.0);
   Control.addVariable("dreamShieldARight",40.0);
@@ -542,8 +507,23 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamShieldAWallMat1","CastIron");
   Control.addVariable("dreamShieldAWallMat5","Concrete");
 
+    
   Control.addVariable("dreamShieldARoofLen1",10.0);
   Control.addVariable("dreamShieldAFloorLen1",10.0);
+
+  // Guide after wall [17.5m - 3.20] for wall
+  generatePipe(Control,"dreamPipeOutA",1750.0-320);
+  Control.addVariable("dreamPipeOutARadius",6.0);
+  //  Control.addVariable("dreamPipeOutAFlangeRadius",9.0);
+  
+
+  generateFocusTaper(Control,"dreamFOutA",1750-320.8,4.5,4.97,2.24,3.05);
+  Control.addVariable("dreamFOutAYStep",1.6);
+
+  /*
+
+
+
 
 
   // Guide after wall [+17.5m] after section 1
