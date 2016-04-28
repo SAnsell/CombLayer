@@ -607,8 +607,8 @@ GuideLine::createMainLinks(const attachSystem::FixedComp& mainFC,
 			   const long int mainLP)
   /*!
     Create the linked units
-    \param mainFC :: link object 
-    \param mainLP :: link point
+    \param mainFC :: link object that constructed this object 
+    \param mainLP :: link point side used to construct object
    */
 {
   ELog::RegMethod RegA("GuideLine","createMainLinks");

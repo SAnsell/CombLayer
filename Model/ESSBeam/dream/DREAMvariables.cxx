@@ -224,14 +224,18 @@ void
 generateT0Chopper(FuncDataBase& Control,
 		  const std::string& diskName,
 		  const std::string& midName,
-		  const std::string chopperLetter)
+		  const std::string chopperName)
   /*!
     Generate variables for a T0 chopper
+    \param Control :: Variable database
+    \param diskName :: Common name of disk object (A/B)
+    \param midName :: Common name of inner focus unit
+    \param chopperName :: commond name for chopper
    */
 {
   ELog::RegMethod RegA("DreamVARIABLES","generateT0Chopper");
   
-  generateChopper(Control,"dreamChopper"+chopperLetter,25.0,36.0,32.0);
+  generateChopper(Control,chopperName,25.0,36.0,32.0);
 
   // T0 Chopper disk A
   Control.addVariable(diskName+"AXStep",0.0);
@@ -410,7 +414,7 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamFCBeamYStep",1.10); 
 
   generateChopper(Control,"dreamChopperC",20.0,36.0,32.0);
-  generateT0Chopper(Control,"dreamT0Disk","dreamFT0Mid","C");
+  generateT0Chopper(Control,"dreamT0Disk","dreamFT0Mid","dreamChopperC");
 
   // VACUUM PIPE: SDisk to T0 (A)
   generatePipe(Control,"dreamPipeD",130.0);
@@ -469,7 +473,7 @@ DREAMvariables(FuncDataBase& Control)
   generatePipe(Control,"dreamPipeF",40.0);
   generateFocusTaper(Control,"dreamFF",32.0,2.06,2.36,4.6,4.5);
   
-  generateT0Chopper(Control,"dreamT1Disk","dreamFT1Mid","G");
+  generateT0Chopper(Control,"dreamT1Disk","dreamFT1Mid","dreamChopperG");
 
 
   // VACUUM PIPE: SDisk to T0 (A)
@@ -503,63 +507,27 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamShieldANWallLayers",8);
   Control.addVariable("dreamShieldANFloorLayers",3);
   Control.addVariable("dreamShieldANRoofLayers",8);
-  Control.addVariable("dreamShieldAWallLen1",10.0);
+  Control.addVariable("dreamShieldAWallLen1",20.0);
   Control.addVariable("dreamShieldAWallMat1","CastIron");
   Control.addVariable("dreamShieldAWallMat5","Concrete");
-
-    
-  Control.addVariable("dreamShieldARoofLen1",10.0);
-  Control.addVariable("dreamShieldAFloorLen1",10.0);
+  Control.addVariable("dreamShieldARoofLen1",20.0);
+  Control.addVariable("dreamShieldAFloorLen1",20.0);
 
   // Guide after wall [17.5m - 3.20] for wall
-  generatePipe(Control,"dreamPipeOutA",1750.0-320);
+  generatePipe(Control,"dreamPipeOutA",1430.0);  //
   Control.addVariable("dreamPipeOutARadius",6.0);
-  //  Control.addVariable("dreamPipeOutAFlangeRadius",9.0);
-  
+  //  Control.addVariable("dreamPipeOutAFlangeRadius",9.0);  
 
-  generateFocusTaper(Control,"dreamFOutA",1750-320.8,4.5,4.97,2.24,3.05);
-  Control.addVariable("dreamFOutAYStep",1.6);
+  generateFocusTaper(Control,"dreamFOutA",1422,4.5,4.97,2.24,3.05);
 
-  /*
-
-
-
-
-
-  // Guide after wall [+17.5m] after section 1
-  Control.addVariable("dreamFOutBXStep",0.0);       
-  Control.addVariable("dreamFOutBYStep",0.8);       
-  Control.addVariable("dreamFOutBZStep",0.0);       
-  Control.addVariable("dreamFOutBXYAngle",0.0);       
-  Control.addVariable("dreamFOutBZAngle",0.0);
-  Control.addVariable("dreamFOutBLength",1748.2);       
-  
-  Control.addVariable("dreamFOutBBeamYStep",1.0);
- 
-  Control.addVariable("dreamFOutBNShapes",1);       
-  Control.addVariable("dreamFOutBNShapeLayers",3);
-  Control.addVariable("dreamFOutBActiveShield",0);
-
-  Control.addVariable("dreamFOutBLayerThick1",0.4);  // glass thick
-  Control.addVariable("dreamFOutBLayerThick2",1.5);
-
-  Control.addVariable("dreamFOutBLayerMat0","Void");
-  Control.addVariable("dreamFOutBLayerMat1","Glass");
-  Control.addVariable("dreamFOutBLayerMat2","Void");       
-  
-  Control.addVariable("dreamFOutB0TypeID","Rectangle");
-  Control.addVariable("dreamFOutB0Height",5.0);
-  Control.addVariable("dreamFOutB0Width",4.0);
-  Control.addVariable("dreamFOutB0Length",1748.2);
-
+  // Guide after wall [+17.5m] after section 1  
+  generatePipe(Control,"dreamPipeOutB",1750.0);
   Control.addVariable("dreamPipeOutBRadius",6.0);
-  Control.addVariable("dreamPipeOutBLength",1750.0);
-  Control.addVariable("dreamPipeOutBFeThick",1.0);
-  Control.addVariable("dreamPipeOutBFlangeRadius",9.0);
-  Control.addVariable("dreamPipeOutBFlangeLength",1.0);
-  Control.addVariable("dreamPipeOutBFeMat","Stainless304");
 
+  generateFocusTaper(Control,"dreamFOutB",1736,4.0,4.0,5.0,5.0);
+  Control.addVariable("dreamFOutBLayerMat1","Glass");
 
+  
   Control.addVariable("dreamShieldBLength",1750.0);
   Control.addVariable("dreamShieldBLeft",32.0);
   Control.addVariable("dreamShieldBRight",32.0);
@@ -570,15 +538,14 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamShieldBNWallLayers",8);
   Control.addVariable("dreamShieldBNFloorLayers",3);
   Control.addVariable("dreamShieldBNRoofLayers",8);
-  Control.addVariable("dreamShieldBWallLen1",10.0);
+  Control.addVariable("dreamShieldBWallLen1",20.0);
   Control.addVariable("dreamShieldBWallMat1","CastIron");
   Control.addVariable("dreamShieldBWallMat5","Concrete");
 
-  Control.addVariable("dreamShieldBRoofLen1",10.0);
-  Control.addVariable("dreamShieldBFloorLen1",10.0);
+  Control.addVariable("dreamShieldBRoofLen1",20.0);
+  Control.addVariable("dreamShieldBFloorLen1",20.0);
+  
 
-
-  // CAVE:
   // HUT:
   Control.addVariable("dreamCaveYStep",0.0);
   Control.addVariable("dreamCaveVoidFront",60.0);
@@ -604,7 +571,7 @@ DREAMvariables(FuncDataBase& Control)
 
   Control.addVariable("dreamCaveFeMat","Stainless304");
   Control.addVariable("dreamCaveConcMat","Concrete");
-  */
+
   
   return;
 }

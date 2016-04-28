@@ -3,7 +3,7 @@
  
  * File:   construct/LineShield.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -89,6 +89,66 @@ LineShield::LineShield(const std::string& Key) :
     \param Key :: KeyName
   */
 {}
+
+LineShield::LineShield(const LineShield& A) : 
+  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),
+  shieldIndex(A.shieldIndex),cellIndex(A.cellIndex),
+  activeFront(A.activeFront),activeBack(A.activeBack),
+  activeDivide(A.activeDivide),frontSurf(A.frontSurf),
+  backSurf(A.backSurf),divideSurf(A.divideSurf),
+  length(A.length),left(A.left),right(A.right),
+  height(A.height),depth(A.depth),defMat(A.defMat),
+  nSeg(A.nSeg),nWallLayers(A.nWallLayers),
+  wallFrac(A.wallFrac),wallMat(A.wallMat),
+  nRoofLayers(A.nRoofLayers),roofFrac(A.roofFrac),
+  roofMat(A.roofMat),nFloorLayers(A.nFloorLayers),
+  floorFrac(A.floorFrac),floorMat(A.floorMat)
+  /*!
+    Copy constructor
+    \param A :: LineShield to copy
+  */
+{}
+
+LineShield&
+LineShield::operator=(const LineShield& A)
+  /*!
+    Assignment operator
+    \param A :: LineShield to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedOffset::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      cellIndex=A.cellIndex;
+      activeFront=A.activeFront;
+      activeBack=A.activeBack;
+      activeDivide=A.activeDivide;
+      frontSurf=A.frontSurf;
+      backSurf=A.backSurf;
+      divideSurf=A.divideSurf;
+      length=A.length;
+      left=A.left;
+      right=A.right;
+      height=A.height;
+      depth=A.depth;
+      defMat=A.defMat;
+      nSeg=A.nSeg;
+      nWallLayers=A.nWallLayers;
+      wallFrac=A.wallFrac;
+      wallMat=A.wallMat;
+      nRoofLayers=A.nRoofLayers;
+      roofFrac=A.roofFrac;
+      roofMat=A.roofMat;
+      nFloorLayers=A.nFloorLayers;
+      floorFrac=A.floorFrac;
+      floorMat=A.floorMat;
+    }
+  return *this;
+}
 
 LineShield::~LineShield() 
   /*!

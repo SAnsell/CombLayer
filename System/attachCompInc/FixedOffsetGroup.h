@@ -56,6 +56,7 @@ class FixedOffsetGroup  : public FixedGroup
   double xyAngle;     ///< xy Angle
   double zAngle;      ///< z Angle  
 
+  /// Mapping of group and local offset
   std::map<std::string,offset> GOffset;
   
   static void populateOffset(const FuncDataBase&,const std::string&,

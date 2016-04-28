@@ -149,40 +149,6 @@ DREAM::DREAM(const std::string& keyName) :
   BInsert(new BunkerInsert(newName+"BInsert")),
   FocusWall(new beamlineSystem::GuideLine(newName+"FWall")),
 
-  
-  
-  DDiskHouse(new constructSystem::ChopperHousing(newName+"DBladeHouse")),
-
-  SDiskHouse(new constructSystem::ChopperHousing(newName+"SBladeHouse")),
-
-
-
-  VacBoxB(new constructSystem::VacuumBox(newName+"VacB",1)),
-  T0DiskBHouse(new constructSystem::ChopperHousing(newName+"T0DiskBHouse")),
-
-  T0DiskAHouse(new constructSystem::ChopperHousing(newName+"T0DiskAHouse")),
-  
-  VacBoxC(new constructSystem::VacuumBox(newName+"VacC",1)),
-
-
-  BandAHouse(new constructSystem::ChopperHousing(newName+"BandAHouse")),
-  VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
-
-  VacBoxD(new constructSystem::VacuumBox(newName+"VacD",1)),
-  BandBHouse(new constructSystem::ChopperHousing(newName+"BandBHouse")),
-
-  VacBoxE(new constructSystem::VacuumBox(newName+"VacE",1)),
-  T0DiskC(new constructSystem::DiskChopper(newName+"T0DiskC")),  
-  T0HouseC(new constructSystem::ChopperHousing(newName+"T0DiskCHouse")),
-
-
-  VacBoxF(new constructSystem::VacuumBox(newName+"VacF",1)),
-  T0DiskD(new constructSystem::DiskChopper(newName+"T0DiskD")),  
-  T0HouseD(new constructSystem::ChopperHousing(newName+"T0DiskDHouse")),
-
-  VPipeFinal(new constructSystem::VacuumPipe(newName+"PipeFinal")),
-  FocusFinal(new beamlineSystem::GuideLine(newName+"FFinal")),
-
   ShieldA(new constructSystem::LineShield(newName+"ShieldA")),
   VPipeOutA(new constructSystem::VacuumPipe(newName+"PipeOutA")),
   FocusOutA(new beamlineSystem::GuideLine(newName+"FOutA")),
@@ -252,7 +218,7 @@ DREAM::~DREAM()
 
 void
 DREAM::setBeamAxis(const GuideItem& GItem,
-		  const bool reverseZ)
+                   const bool reverseZ)
   /*!
     Set the primary direction object
     \param GItem :: Guide Item to 
@@ -488,7 +454,6 @@ DREAM::build(Simulation& System,
   if (stopPoint==2) return;                      // STOP At bunker edge
   // IN WALL
   // Make bunker insert
-  const attachSystem::FixedComp& GFC(FocusH->getKey("Guide0"));
   BInsert->createAll(System,FocusH->getKey("Guide0"),2,bunkerObj);
   attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);  
 
@@ -506,34 +471,28 @@ DREAM::build(Simulation& System,
   ShieldA->setDivider(bunkerObj,2);
   ShieldA->createAll(System,*BInsert,2);
 
-  
-
-
   VPipeOutA->addInsertCell(ShieldA->getCell("Void"));
   VPipeOutA->setFront(bunkerObj,2);
   VPipeOutA->setDivider(bunkerObj,2);
   VPipeOutA->setBack(*ShieldA,-2);
   VPipeOutA->createAll(System,FocusWall->getKey("Guide0"),2);
-
+  
+    
   FocusOutA->addInsertCell(VPipeOutA->getCell("Void"));
-  FocusOutA->createAll(System,FocusWall->getKey("Guide0"),2,
-		       FocusWall->getKey("Guide0"),2);
+  FocusOutA->createAll(System,*VPipeOutA,7,*VPipeOutA,7);
 
-  return;
-
-
-  // Section to 34  
+  // Section to 34m
   ShieldB->addInsertCell(voidCell);
   ShieldB->createAll(System,*ShieldA,2);
 
   VPipeOutB->addInsertCell(ShieldB->getCell("Void"));
   VPipeOutB->setFront(*ShieldB,-1);
   VPipeOutB->setBack(*ShieldB,-2);
-  VPipeOutB->createAll(System,*ShieldB,1);
+  VPipeOutB->createAll(System,*ShieldB,2);
+
 
   FocusOutB->addInsertCell(VPipeOutB->getCell("Void"));
-  FocusOutB->createAll(System,FocusOutA->getKey("Guide0"),2,
-		       FocusOutA->getKey("Guide0"),2);
+  FocusOutB->createAll(System,*VPipeOutB,7,*VPipeOutB,7);
 
   Cave->addInsertCell(voidCell);
   Cave->createAll(System,FocusOutB->getKey("Guide0"),2);

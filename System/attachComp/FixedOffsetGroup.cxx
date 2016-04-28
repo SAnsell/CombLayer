@@ -113,13 +113,13 @@ FixedOffsetGroup::FixedOffsetGroup(const std::string& mainKey,
   */
 {}
 
- FixedOffsetGroup::FixedOffsetGroup(const std::string& mainKey,
-				    const std::string& AKey,
-				    const size_t ANL,
-				    const std::string& BKey,
-				    const size_t BNL,
-				    const std::string& CKey,
-				    const size_t CNL) :
+FixedOffsetGroup::FixedOffsetGroup(const std::string& mainKey,
+                                   const std::string& AKey,
+                                   const size_t ANL,
+                                   const std::string& BKey,
+                                   const size_t BNL,
+                                   const std::string& CKey,
+                                   const size_t CNL) :
   FixedGroup(mainKey,AKey,ANL,BKey,BNL,CKey,CNL),
   xStep(0.0),yStep(0.0),zStep(0.0),
   xyAngle(0.0),zAngle(0.0)
@@ -134,6 +134,38 @@ FixedOffsetGroup::FixedOffsetGroup(const std::string& mainKey,
     \param CNL :: B Number of links
   */
 {}
+
+
+FixedOffsetGroup::FixedOffsetGroup(const FixedOffsetGroup& A) : 
+  FixedGroup(A),
+  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
+  xyAngle(A.xyAngle),zAngle(A.zAngle),GOffset(A.GOffset)
+  /*!
+    Copy constructor
+    \param A :: FixedOffsetGroup to copy
+  */
+{}
+
+FixedOffsetGroup&
+FixedOffsetGroup::operator=(const FixedOffsetGroup& A)
+  /*!
+    Assignment operator
+    \param A :: FixedOffsetGroup to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      FixedGroup::operator=(A);
+      xStep=A.xStep;
+      yStep=A.yStep;
+      zStep=A.zStep;
+      xyAngle=A.xyAngle;
+      zAngle=A.zAngle;
+      GOffset=A.GOffset;
+    }
+  return *this;
+}
 
 void
 FixedOffsetGroup::populateOffset(const FuncDataBase& Control,

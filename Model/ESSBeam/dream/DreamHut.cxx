@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essModel/DreamHut.cxx
+ * File:   dream/DreamHut.cxx
  *
  * Copyright (c) 2004-2016 by Stuart Ansell
  *
@@ -90,6 +90,60 @@ DreamHut::DreamHut(const std::string& Key) :
   */
 {}
 
+DreamHut::DreamHut(const DreamHut& A) : 
+  attachSystem::FixedOffsetGroup(A),attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),
+  hutIndex(A.hutIndex),cellIndex(A.cellIndex),
+  voidHeight(A.voidHeight),voidWidth(A.voidWidth),
+  voidDepth(A.voidDepth),voidLength(A.voidLength),
+  feFront(A.feFront),feLeftWall(A.feLeftWall),
+  feRightWall(A.feRightWall),feRoof(A.feRoof),
+  feFloor(A.feFloor),feBack(A.feBack),concFront(A.concFront),
+  concLeftWall(A.concLeftWall),concRightWall(A.concRightWall),
+  concRoof(A.concRoof),concFloor(A.concFloor),
+  concBack(A.concBack),feMat(A.feMat),concMat(A.concMat)
+  /*!
+    Copy constructor
+    \param A :: DreamHut to copy
+  */
+{}
+
+DreamHut&
+DreamHut::operator=(const DreamHut& A)
+  /*!
+    Assignment operator
+    \param A :: DreamHut to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedOffsetGroup::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      cellIndex=A.cellIndex;
+      voidHeight=A.voidHeight;
+      voidWidth=A.voidWidth;
+      voidDepth=A.voidDepth;
+      voidLength=A.voidLength;
+      feFront=A.feFront;
+      feLeftWall=A.feLeftWall;
+      feRightWall=A.feRightWall;
+      feRoof=A.feRoof;
+      feFloor=A.feFloor;
+      feBack=A.feBack;
+      concFront=A.concFront;
+      concLeftWall=A.concLeftWall;
+      concRightWall=A.concRightWall;
+      concRoof=A.concRoof;
+      concFloor=A.concFloor;
+      concBack=A.concBack;
+      feMat=A.feMat;
+      concMat=A.concMat;
+    }
+  return *this;
+}
+
 DreamHut::~DreamHut() 
   /*!
     Destructor
@@ -149,6 +203,7 @@ DreamHut::createUnitVector(const attachSystem::FixedComp& FC,
 
   Outer.createUnitVector(FC,sideIndex);
   Inner.createUnitVector(FC,sideIndex);
+
   applyOffset();
   setDefault("Inner");
   return;

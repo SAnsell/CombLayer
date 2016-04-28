@@ -71,6 +71,7 @@
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "SurInter.h"
 
 #include "VacuumPipe.h"
 
@@ -78,7 +79,7 @@ namespace constructSystem
 {
 
 VacuumPipe::VacuumPipe(const std::string& Key) : 
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedOffset(Key,7),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   vacIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(vacIndex+1),activeFront(0),activeBack(0),
@@ -413,28 +414,57 @@ VacuumPipe::createLinks()
 {
   ELog::RegMethod RegA("VacuumPipe","createLinks");
 
-  FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
-  FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
+  //stufff for intersection
+  Geometry::Vec3D endPoints[2];
+  std::vector<Geometry::Vec3D> Pts;
+  std::vector<int> SNum;
+
   FixedComp::setConnect(2,Origin-X*((radius+feThick)/2.0),-X);
   FixedComp::setConnect(3,Origin+X*((radius+feThick)/2.0),X);
   FixedComp::setConnect(4,Origin-Z*((radius+feThick)/2.0),-Z);
   FixedComp::setConnect(5,Origin+Z*((radius+feThick)/2.0),Z);
 
   if (activeFront)
-    FixedComp::setLinkSurf(0,frontSurf);      
+    {
+      FixedComp::setLinkSurf(0,frontSurf);
+      HeadRule HR(frontSurf);
+      HR.addIntersection(divideSurf);
+      HR.populateSurf();
+      HR.calcSurfIntersection(Origin,Y,Pts,SNum);
+      const size_t index=SurInter::closestPt(Pts,Origin);
+      endPoints[0]=Pts[index];
+    }
   else
-    FixedComp::setLinkSurf(0,-SMap.realSurf(vacIndex+1));      
-
+    {
+      FixedComp::setLinkSurf(0,-SMap.realSurf(vacIndex+1));
+      endPoints[0]=Origin-Y*(length/2.0);
+    }
+  FixedComp::setConnect(0,endPoints[0],-Y);
   if (activeBack)
-    FixedComp::setLinkSurf(1,backSurf);      
+    {
+      FixedComp::setLinkSurf(1,backSurf);
+      HeadRule HR(backSurf);
+      HR.addIntersection(divideSurf);
+      HR.populateSurf();
+      HR.calcSurfIntersection(Origin,Y,Pts,SNum);
+      const size_t index=SurInter::closestPt(Pts,Origin);
+      endPoints[1]=Pts[index];
+    }
   else
-    FixedComp::setLinkSurf(1,SMap.realSurf(vacIndex+2));      
-
+    {
+      FixedComp::setLinkSurf(1,SMap.realSurf(vacIndex+2));
+      endPoints[1]=Origin+Y*(length/2.0);
+    }
+  FixedComp::setConnect(1,endPoints[1],Y);
+  
   FixedComp::setLinkSurf(2,SMap.realSurf(vacIndex+7));
   FixedComp::setLinkSurf(3,SMap.realSurf(vacIndex+7));
   FixedComp::setLinkSurf(4,SMap.realSurf(vacIndex+7));
   FixedComp::setLinkSurf(5,SMap.realSurf(vacIndex+7));
-  
+
+  // MID Point: [NO SURF]
+  FixedComp::setConnect(6,(endPoints[1]+endPoints[0])/2.0,Y);
+
   return;
 }
 
