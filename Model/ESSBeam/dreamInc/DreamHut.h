@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/DreamHut.h
+ * File:   dreamInc/DreamHut.h
  *
  * Copyright (c) 2004-2016 by Stuart Ansell
  *

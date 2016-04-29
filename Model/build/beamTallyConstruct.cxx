@@ -3,7 +3,7 @@
  
  * File:   build/beamTallyConstruct.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -76,6 +76,7 @@
 #include "LinearComp.h"
 #include "PositionSupport.h"
 #include "Simulation.h"
+#include "LinkSupport.h"
 #include "inputParam.h"
 #include "cellDistance.h"
 #include "Line.h"
@@ -194,7 +195,7 @@ beamTallyConstruct::processPoint(Simulation& System,
 				       "beamline number not given");
       const std::string face=inputItem<std::string>(IParam,Index,3,
 			       "beamline face : front/back not given");
-      const long int linkNumber=getLinkIndex(face);
+      const long int linkNumber=attachSystem::getLinkIndex(face);
 
       double beamDist(1000.0);
       double windowOffset(0.0);

@@ -54,6 +54,7 @@
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
+#include "LinkSupport.h"
 #include "Simulation.h"
 #include "inputParam.h"
 
@@ -194,39 +195,9 @@ basicConstruct::getLinkIndex(const mainSystem::inputParam& IParam,
       ELog::EM<<"Tally must give a direction/LinkPt"<<ELog::endErr;
       return 0;
     }
-  return getLinkIndex(Snd);
+  return attachSystem::getLinkIndex(Snd);
 }
 
-long int
-basicConstruct::getLinkIndex(const std::string& Snd) const
-  /*!
-    Convert a name front back etc into a standard link number
-    \param Snd :: Snd link work    
-    \return link number [-ve for beamFront/beamBack]
-  */
-{
-  long int linkPt(0);
-  if (!StrFunc::convert(Snd,linkPt))
-    {
-      if (Snd=="origin") 
-	linkPt=0;
-      else if (Snd=="front") 
-	linkPt=1;
-      else if (Snd=="back")
-	linkPt=2;
-      else if (Snd=="beamFront")
-	linkPt=-1;
-      else if (Snd=="beamBack")
-	linkPt=-2;
-      else
-	{
-	  ELog::EM<<"Tally direction/LinkPt not understood("
-		  <<Snd<<")"<<ELog::endErr;
-	  return 0;
-	}
-    }
-  return linkPt;
-}
 
 int
 basicConstruct::convertRange(const std::string& Word,int& RA,int &RB)

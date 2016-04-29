@@ -73,6 +73,7 @@
 #include "SecondTrack.h"
 #include "TwinComp.h"
 #include "PositionSupport.h"
+#include "LinkSupport.h"
 #include "Simulation.h"
 #include "inputParam.h"
 #include "Line.h"
@@ -174,7 +175,7 @@ gridConstruct::processGrid(Simulation& System,
       ELog::EM<<"OI == "<<offsetIndex<<ELog::endDiag;
 
 
-      const long int linkNumber=getLinkIndex(snd);
+      const long int linkNumber=attachSystem::getLinkIndex(snd);
       if (!calcGlobalCXY(place,linkNumber,TOrigin,XVec,YVec))
 	applyMultiGrid(System,initNPD,NPD,TOrigin,XVec,YVec);
     }

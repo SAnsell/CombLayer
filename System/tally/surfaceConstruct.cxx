@@ -59,6 +59,7 @@
 #include "FuncDataBase.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "LinkSupport.h"
 #include "BaseMap.h"
 #include "SurfMap.h"
 #include "Simulation.h"
@@ -126,7 +127,7 @@ surfaceConstruct::processSurface(Simulation& System,
 	inputItem<std::string>(IParam,Index,2,"position not given");
       const std::string snd=
 	inputItem<std::string>(IParam,Index,3,"front/back/side not give");
-      const long int linkNumber=getLinkIndex(snd);
+      const long int linkNumber=attachSystem::getLinkIndex(snd);
       return processSurfObject(System,place,linkNumber,excludeSurf);
     }
   if (pType=="surfMap")
@@ -155,7 +156,7 @@ surfaceConstruct::processSurface(Simulation& System,
 	inputItem<std::string>(IParam,Index,2,"position not given");
       const std::string snd=
 	inputItem<std::string>(IParam,Index,3,"front/back/side not give");
-      const long int linkNumber=getLinkIndex(snd);
+      const long int linkNumber=attachSystem::getLinkIndex(snd);
       std::vector<int> surfN;
       const size_t maxIndex=IParam.itemCnt("tally",Index);
       for(size_t i=4;i<maxIndex;i++)
@@ -206,7 +207,7 @@ surfaceConstruct::processSurfObject(Simulation& System,
       std::vector<int> surfN;
       for(size_t i=0;i<linkN.size();i++)
 	{
-	  const long int LIndex=getLinkIndex(linkN[i]);
+	  const long int LIndex=attachSystem::getLinkIndex(linkN[i]);
 	  surfN.push_back(TPtr->getSignedLinkSurf(LIndex));
 	}
       const int signV((linkPt>0) ? 1 : -1);

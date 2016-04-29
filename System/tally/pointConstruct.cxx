@@ -72,6 +72,7 @@
 #include "FixedComp.h"
 #include "SecondTrack.h"
 #include "TwinComp.h"
+#include "LinkSupport.h"
 #include "Simulation.h"
 #include "inputParam.h"
 #include "Line.h"
@@ -180,7 +181,7 @@ pointConstruct::processPoint(Simulation& System,
 
       checkItem<double>(IParam,Index,5,timeStep);
       checkItem<double>(IParam,Index,6,windowOffset);
-      const long int linkNumber=getLinkIndex(snd);
+      const long int linkNumber=attachSystem::getLinkIndex(snd);
       processPointWindow(System,place,linkNumber,D,timeStep,windowOffset);
     }
 
@@ -189,10 +190,10 @@ pointConstruct::processPoint(Simulation& System,
       const std::string place=
 	IParam.outputItem<std::string>("tally",Index,2,"position not given");
       const std::string snd=
-	inputItem<std::string>(IParam,Index,3,"front/back/side not give");
+	inputItem<std::string>(IParam,Index,3,"front/back/side not given");
       const double D=
 	inputItem<double>(IParam,Index,4,"Distance not given");
-      const long int linkNumber=getLinkIndex(snd);
+      const long int linkNumber=attachSystem::getLinkIndex(snd);
       processPointFree(System,place,linkNumber,D);
     }
   else if (PType=="objOffset")
@@ -205,7 +206,7 @@ pointConstruct::processPoint(Simulation& System,
       size_t itemIndex(4);
       const Geometry::Vec3D DVec=
 	IParam.getCntVec3D("tally",Index,itemIndex,"Offset");
-      const long int linkNumber=getLinkIndex(snd);
+      const long int linkNumber=attachSystem::getLinkIndex(snd);
       
       processPointFree(System,place,linkNumber,DVec);
     }

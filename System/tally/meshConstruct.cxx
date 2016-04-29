@@ -48,6 +48,7 @@
 #include "Triple.h"
 #include "support.h"
 #include "stringCombine.h"
+#include "surfRegister.h"
 #include "objectRegister.h"
 #include "Rules.h"
 #include "HeadRule.h"
@@ -55,6 +56,9 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "Simulation.h"
+#include "LinkUnit.h"
+#include "FixedComp.h"
+#include "LinkSupport.h"
 #include "inputParam.h"
 #include "NList.h"
 #include "NRange.h"
@@ -90,6 +94,54 @@ meshConstruct::operator=(const meshConstruct&)
 }
 
 void
+meshConstruct::calcXYZ(const std::string& object,const std::string& linkPos,
+                            Geometry::Vec3D& APos,Geometry::Vec3D& BPos) 
+  /*!
+    Calculate the grid positions relative to an object
+    \param object :: object name
+    \param linkPos :: link position
+    \param APos :: Lower corner
+    \param BPos :: Upper corner
+   */
+{
+  ELog::RegMethod RegA("meshConstruct","calcXYZ");
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  const attachSystem::FixedComp* FC=
+    OR.getObject<attachSystem::FixedComp>(object);
+  if (!FC)
+    throw ColErr::InContainerError<std::string>(object,"Object not found");
+  const long int sideIndex=attachSystem::getLinkIndex(linkPos);
+
+  attachSystem::FixedComp A("tmpComp",0);
+  A.createUnitVector(*FC,sideIndex);
+
+  Geometry::Vec3D Pt=A.getX()*APos[0]+
+    A.getY()*APos[1]+A.getZ()*APos[2];
+  APos=Pt;
+  Pt=A.getX()*BPos[0]+
+    A.getY()*BPos[1]+A.getZ()*BPos[2];
+
+  BPos=Pt;
+
+  /*
+  for(size_t i=0;i<3;i++)
+    if (APos[i]>BPos[i])
+      std::swap(APos[i],BPos[i]);
+  */
+
+  ELog::EM<<"X == "<<A.getX()<<ELog::endDiag;
+  ELog::EM<<"Y == "<<A.getY()<<ELog::endDiag;
+  ELog::EM<<"Z == "<<A.getZ()<<ELog::endDiag;
+  ELog::EM<<"APt == "<<APos<<ELog::endDiag;
+  ELog::EM<<"BPt == "<<BPos<<ELog::endDiag;
+  return;
+}
+
+  
+void
 meshConstruct::processMesh(Simulation& System,
 			   const mainSystem::inputParam& IParam,
 			   const size_t Index) const
@@ -111,7 +163,34 @@ meshConstruct::processMesh(Simulation& System,
 
   const masterRotate& MR=masterRotate::Instance();
   
-  if (PType=="free" || PType=="heat" ||
+  if (PType=="object" || PType=="heatObject")
+    {
+      size_t itemIndex(5);
+      const std::string place=
+	IParam.outputItem<std::string>("tally",Index,2,"position not given");
+      const std::string linkName=
+	IParam.outputItem<std::string>("tally",Index,3,"front/back/side not given");      
+      const std::string doseType=
+	inputItem<std::string>(IParam,Index,4,"Dose type");
+      Geometry::Vec3D APt=
+	IParam.getCntVec3D("tally",Index,itemIndex,"Low Corner");
+      Geometry::Vec3D BPt=
+	IParam.getCntVec3D("tally",Index,itemIndex,"High Corner");
+
+      size_t Nxyz[3];
+      Nxyz[0]=inputItem<size_t>(IParam,Index,itemIndex++,"NXpts");
+      Nxyz[1]=inputItem<size_t>(IParam,Index,itemIndex++,"NYpts");
+      Nxyz[2]=inputItem<size_t>(IParam,Index,itemIndex++,"NZpts");
+
+      calcXYZ(place,linkName,APt,BPt);
+      
+      if (PType=="heatObject" || PType=="heatObjectRotated")
+        rectangleMesh(System,3,"void",APt,BPt,Nxyz);
+      else
+	rectangleMesh(System,1,doseType,APt,BPt,Nxyz);
+      return;      
+    }      
+  else if (PType=="free" || PType=="heat" ||
       PType=="freeRotated" || PType=="heatRotated")
     {
       size_t itemIndex(2);
