@@ -98,6 +98,7 @@ meshConstruct::calcXYZ(const std::string& object,const std::string& linkPos,
                             Geometry::Vec3D& APos,Geometry::Vec3D& BPos) 
   /*!
     Calculate the grid positions relative to an object
+    Note that for the mesh it must align on 
     \param object :: object name
     \param linkPos :: link position
     \param APos :: Lower corner
@@ -118,25 +119,42 @@ meshConstruct::calcXYZ(const std::string& object,const std::string& linkPos,
   attachSystem::FixedComp A("tmpComp",0);
   A.createUnitVector(*FC,sideIndex);
 
-  Geometry::Vec3D Pt=A.getX()*APos[0]+
-    A.getY()*APos[1]+A.getZ()*APos[2];
-  APos=Pt;
-  Pt=A.getX()*BPos[0]+
-    A.getY()*BPos[1]+A.getZ()*BPos[2];
-
-  BPos=Pt;
-
-  /*
+  //
+  // Construct the 8 corners of the cube:
+  // then calculate the maximum in all directions
+  //
+  std::vector<Geometry::Vec3D> Cube(8);
+  Cube[0]=APos;
+  Cube[7]=BPos;
   for(size_t i=0;i<3;i++)
-    if (APos[i]>BPos[i])
-      std::swap(APos[i],BPos[i]);
-  */
+    {
+      Cube[i+1]=APos;
+      Cube[i+1][i]=BPos[i];
+    }
+  for(size_t i=0;i<3;i++)
+    {
+      Cube[i+5]=BPos;
+      Cube[i+5][i]=APos[i];
+    }
+  
+  Geometry::Vec3D Pt=A.getX()*Cube[0][0]+
+    A.getY()*Cube[0][1]+A.getZ()*Cube[0][2];
+  Geometry::Vec3D PtMax(Pt);
+  Geometry::Vec3D PtMin(Pt);
+  for(size_t i=1;i<8;i++)
+    {
+      ELog::EM<<"C["<<i<<"]="<<Cube[i]<<ELog::endDiag;
+      Pt=A.getX()*Cube[i][0]+A.getY()*Cube[i][1]+A.getZ()*Cube[i][2];
+      for(size_t j=0;j<3;j++)
+	{
+	  if (Pt[j]>PtMax[j]) PtMax[j]=Pt[j];
+	  if (Pt[j]<PtMin[j]) PtMin[j]=Pt[j];
+	}
+    }
+  
+  APos=PtMin+A.getCentre();
+  BPos=PtMax+A.getCentre();
 
-  ELog::EM<<"X == "<<A.getX()<<ELog::endDiag;
-  ELog::EM<<"Y == "<<A.getY()<<ELog::endDiag;
-  ELog::EM<<"Z == "<<A.getZ()<<ELog::endDiag;
-  ELog::EM<<"APt == "<<APos<<ELog::endDiag;
-  ELog::EM<<"BPt == "<<BPos<<ELog::endDiag;
   return;
 }
 
@@ -375,6 +393,9 @@ meshConstruct::writeHelp(std::ostream& OX) const
 {
   OX<<
     "free dosetype Vec3D Vec3D Nx Ny Nz \n"
+    "object objectName LinkPt dosetype Vec3D Vec3D Nx Ny Nz \n"
+    "  -- Object-link point is used to construct basis set \n"
+    "     Then the Vec3D are used as the offset points \n"
     "heat Vec3D Vec3D Nx Ny Nz";
   return;
 }
