@@ -476,6 +476,7 @@ Bunker::createObjects(Simulation& System,
     
   // Main wall not divided
   int divIndex(bnkIndex+1000);
+  ELog::EM<<"SN = "<<nSectors<<ELog::endDiag;
   for(size_t i=0;i<nSectors;i++)
     {
       // Divide the roof into sector as well
@@ -492,6 +493,8 @@ Bunker::createObjects(Simulation& System,
 
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Inner));
       addCell("roof"+StrFunc::makeString(i),cellIndex-1);
+      if (i+1==nSectors)
+        addCell("roofFarEdge",cellIndex-1);
 
 
       Out=ModelSupport::getComposite(SMap,bnkIndex,divIndex,

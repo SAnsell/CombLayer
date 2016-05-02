@@ -513,9 +513,8 @@ makeESS::makeBunker(Simulation& System,
   BBunker->setCutWall(0,1);
   BBunker->createAll(System,*LowMod,*GBArray[0],2,true);
 
-
   ABunker->insertComponent(System,"rightWall",*BBunker);
-  ABunker->insertComponent(System,"roof9",*BBunker);
+  ABunker->insertComponent(System,"roofFarEdge",*BBunker);
   ABunker->insertComponent(System,"floor",*BBunker);
 
   if (bunkerType.find("noPillar")==std::string::npos)
