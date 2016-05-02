@@ -43,15 +43,21 @@ namespace tallySystem
 class meshConstruct : virtual public basicConstruct
 {
  private:
-  
+
   static const std::string& getDoseConversion();
   static const std::string& getPhotonDoseConversion();
+  static void calcXYZ(const std::string&,const std::string&,
+		      Geometry::Vec3D&,Geometry::Vec3D&) ;
+
+  int fmeshFlag;         ///< Output to FMesh
+  
 
   void rectangleMesh(Simulation&,const int,const std::string&,
 		     const Geometry::Vec3D&,const Geometry::Vec3D&,
 		     const size_t*) const;
-  static void calcXYZ(const std::string&,const std::string&,
-		      Geometry::Vec3D&,Geometry::Vec3D&) ;
+  void rectangleFMesh(Simulation&,const int,const std::string&,
+		     const Geometry::Vec3D&,const Geometry::Vec3D&,
+		     const size_t*) const;
 	       
 
 
@@ -66,7 +72,9 @@ class meshConstruct : virtual public basicConstruct
   // Point Stuff
   void processMesh(Simulation&,const mainSystem::inputParam&,
 		   const size_t) const;
-  
+
+  /// set the FMesh flag
+  void setFMeshFlag(const int I) { fmeshFlag=I; }
   virtual void writeHelp(std::ostream&) const;
 };
 

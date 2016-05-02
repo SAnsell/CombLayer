@@ -68,6 +68,7 @@
 #include "localRotate.h"
 #include "masterRotate.h"
 #include "meshTally.h"
+#include "fmeshTally.h"
 
 #include "TallySelector.h" 
 #include "basicConstruct.h" 
@@ -78,18 +79,24 @@
 namespace tallySystem
 {
 
-meshConstruct::meshConstruct() 
+meshConstruct::meshConstruct() :fmeshFlag(0)
   /// Constructor
 {}
 
-meshConstruct::meshConstruct(const meshConstruct&) 
+meshConstruct::meshConstruct(const meshConstruct& A) :
+  fmeshFlag(A.fmeshFlag)
   /// Copy Constructor
 {}
 
 meshConstruct&
-meshConstruct::operator=(const meshConstruct&) 
+meshConstruct::operator=(const meshConstruct& A) 
   /// Assignment operator
 {
+  if (this!=&A)
+    {
+      fmeshFlag=A.fmeshFlag;
+    }
+    
   return *this;
 }
 
@@ -143,7 +150,6 @@ meshConstruct::calcXYZ(const std::string& object,const std::string& linkPos,
   Geometry::Vec3D PtMin(Pt);
   for(size_t i=1;i<8;i++)
     {
-      ELog::EM<<"C["<<i<<"]="<<Cube[i]<<ELog::endDiag;
       Pt=A.getX()*Cube[i][0]+A.getY()*Cube[i][1]+A.getZ()*Cube[i][2];
       for(size_t j=0;j<3;j++)
 	{
@@ -272,6 +278,77 @@ meshConstruct::rectangleMesh(Simulation& System,const int type,
 
   // Create tally:
   meshTally MT(tallyN);
+  if (type==1)
+    MT.setParticles("n");
+  MT.setCoordinates(APt,BPt);
+  MT.setIndex(MPts);
+  MT.setActive(1);
+  if (KeyWords=="DOSE")
+    {
+      MT.setKeyWords("DOSE 1");
+      MT.setResponse(getDoseConversion());
+    }
+  else if (KeyWords=="DOSEPHOTON")
+    {
+      MT.setParticles("p");
+      MT.setKeyWords("DOSE 1");
+      MT.setResponse(getPhotonDoseConversion());
+    }
+  else if (KeyWords=="InternalDOSE")
+    {
+      MT.setKeyWords("DOSE");
+      MT.setIndexLine("40 1 2 1e6");
+    }
+  else if (KeyWords=="void")
+    {
+      MT.setKeyWords("");
+    }
+  else 
+    {
+      ELog::EM<<"Mesh keyword options:\n"
+	      <<"  DOSE :: SNS Flux to Dose conversion (mrem/hour)\n"
+	      <<"  InternalDOSE :: MCNPX Flux to Dose conversion (mrem/hour)\n"
+	      <<"  void ::  Flux \n"
+	      <<ELog::endDiag;
+      ELog::EM<<"Using unknown keyword :"<<KeyWords<<ELog::endErr;
+    }
+
+  ELog::EM<<"Adding tally "<<ELog::endTrace;
+  ELog::EM<<"Coordinates  : "<<ELog::endTrace;
+  MT.writeCoordinates(ELog::EM.Estream());
+  ELog::EM<<ELog::endTrace;
+
+  System.addTally(MT);
+
+  return;
+}
+
+void 
+meshConstruct::rectangleFMesh(Simulation& System,const int type,
+                              const std::string& KeyWords,
+                              const Geometry::Vec3D& APt,
+                              const Geometry::Vec3D& BPt,
+                              const size_t* MPts) const
+  /*!
+    An amalgamation of values to determine what sort of mesh to put
+    in the system.
+    \param System :: Simulation to add tallies
+    \param type :: type of tally [1,2,3]
+    \param KeyWords :: KeyWords to add to the tally
+    \param APt :: Lower point 
+    \param BPt :: Upper point 
+    \param MPts :: Points ot use
+  */
+{
+  ELog::RegMethod RegA("meshConstruct","rectangleMesh");
+
+  // Find next available number
+  int tallyN(type);
+  while(System.getTally(tallyN))
+    tallyN+=10;
+
+  // Create tally:
+  fmeshTally MT(tallyN);
   if (type==1)
     MT.setParticles("n");
   MT.setCoordinates(APt,BPt);
