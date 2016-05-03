@@ -210,7 +210,7 @@ CellMap::insertComponent(Simulation& System,
       MonteCarlo::Qhull* outerObj=System.findQhull(cellNum);
       if (!outerObj)
 	throw ColErr::InContainerError<int>(cellNum,
-					    "Cell["+Key+"] not present");
+					    "Cell["+Key+"] not in simlutation");
       outerObj->addSurfString(exclude);
     }
   return;

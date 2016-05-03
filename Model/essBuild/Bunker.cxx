@@ -476,7 +476,7 @@ Bunker::createObjects(Simulation& System,
     
   // Main wall not divided
   int divIndex(bnkIndex+1000);
-  ELog::EM<<"SN = "<<nSectors<<ELog::endDiag;
+
   for(size_t i=0;i<nSectors;i++)
     {
       // Divide the roof into sector as well
@@ -492,10 +492,9 @@ Bunker::createObjects(Simulation& System,
 	Out+=ModelSupport::getComposite(SMap,rwIndex," -4 ");
 
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Inner));
-      addCell("roof"+StrFunc::makeString(i),cellIndex-1);
       if (i+1==nSectors)
         addCell("roofFarEdge",cellIndex-1);
-
+      addCell("roof"+StrFunc::makeString(i),cellIndex-1);
 
       Out=ModelSupport::getComposite(SMap,bnkIndex,divIndex,
 				     " 1 7 -17 1M -2M 5 -6 ");
@@ -503,6 +502,7 @@ Bunker::createObjects(Simulation& System,
       addCell("frontWall",cellIndex-1);
       divIndex++;
     }
+
   createMainWall(System);
   createMainRoof(System,InnerSurf);
 
@@ -657,7 +657,17 @@ Bunker::layerProcess(Simulation& System)
 	      DA.activeDivideTemplate(System);
 	      
 	      cellIndex=DA.getCellNum();
-	      removeCell("roof"+StrFunc::makeString(iSector));
+
+              //
+              // This construct finds the cell number in roofN and
+              // in roofFarSide if it exists 
+	      const int CN=removeCell("roof"+StrFunc::makeString(iSector));
+              const std::string roofItem=removeCellNumber(CN);
+              if (!roofItem.empty())
+                {
+                  ELog::EM<<"Cell == "<<roofItem<<ELog::endDiag;
+                  setCells(roofItem,firstCell,cellIndex-1);
+                }
 	      setCells("roof"+StrFunc::makeString(iSector)
 		       ,firstCell,cellIndex-1);
 	      BNIndex+=300;

@@ -78,7 +78,11 @@ class CellMap  : public BaseMap
 
   std::vector<int> getCells() const
     { return BaseMap::getItems(); }
-    
+
+  std::string removeCellNumber(const int CN,const size_t Index =0)
+    { return BaseMap::removeItemNumber(CN,Index); }
+      
+  
   int removeCell(const std::string& K,const size_t Index=0)
     {  return BaseMap::removeItem(K,Index); }
 
