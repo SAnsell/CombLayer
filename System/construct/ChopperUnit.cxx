@@ -148,9 +148,11 @@ ChopperUnit::populate(const FuncDataBase& Control)
   portNBolt=Control.EvalVar<size_t>(keyName+"PortNBolt");
   portBoltAngOff=Control.EvalDefVar<double>(keyName+"PortBoltAngOff",0.0);
   portSeal=Control.EvalDefVar<double>(keyName+"PortSealThick",0.0);
+  portSealMat=ModelSupport::EvalMat<int>(Control,keyName+"PortSealMat");
   
   boltMat=ModelSupport::EvalMat<int>(Control,keyName+"BoltMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
+
 
   return;
 }

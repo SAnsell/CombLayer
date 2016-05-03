@@ -81,7 +81,7 @@ generateChopper(FuncDataBase& Control,
   Control.addVariable(keyName+"MotorNBolt",24); 
   Control.addVariable(keyName+"MotorBoltRadius",0.50); //M10 inc thread
   Control.addVariable(keyName+"MotorSealThick",0.2);  
-  Control.addVariable(keyName+"MortorSealMat","Lead");
+  Control.addVariable(keyName+"MortorSealMat","Poly");
   
   Control.addVariable(keyName+"PortRadius",10.0); // [5691.2]
   Control.addVariable(keyName+"PortOuter",12.65); // [5691.2]
@@ -90,13 +90,13 @@ generateChopper(FuncDataBase& Control,
   Control.addVariable(keyName+"PortBoltRadius",0.40); //M8 inc
   Control.addVariable(keyName+"PortBoltAngOff",180.0/24.0);
   Control.addVariable(keyName+"PortSealThick",0.2);
-  Control.addVariable(keyName+"PortSealMat","Lead");
+  Control.addVariable(keyName+"PortSealMat","Poly");
 
   Control.addVariable(keyName+"RingNSection",12);
   Control.addVariable(keyName+"RingNTrack",12);
   Control.addVariable(keyName+"RingThick",0.4);
   Control.addVariable(keyName+"RingRadius",40.0);  
-  Control.addVariable(keyName+"RingMat","Lead"); 
+  Control.addVariable(keyName+"RingMat","Poly"); 
 
   // strange /4 because it is average of 1/2 lengths
   const std::string kItem=
@@ -109,7 +109,7 @@ generateChopper(FuncDataBase& Control,
   Control.addVariable(keyName+"IPortAMat","Aluminium");
   Control.addVariable(keyName+"IPortASealStep",0.5);
   Control.addVariable(keyName+"IPortASealThick",0.3); 
-  Control.addVariable(keyName+"IPortASealMat","Lead");
+  Control.addVariable(keyName+"IPortASealMat","Poly");
   Control.addVariable(keyName+"IPortAWindow",0.3);
   Control.addVariable(keyName+"IPortAWindowMat","Aluminium");
 
@@ -127,7 +127,7 @@ generateChopper(FuncDataBase& Control,
   Control.addVariable(keyName+"IPortBMat","Aluminium");
   Control.addVariable(keyName+"IPortBSealStep",0.5);
   Control.addVariable(keyName+"IPortBSealThick",0.3); 
-  Control.addVariable(keyName+"IPortBSealMat","Lead");
+  Control.addVariable(keyName+"IPortBSealMat","Poly");
   Control.addVariable(keyName+"IPortBWindow",0.3);
   Control.addVariable(keyName+"IPortBWindowMat","Aluminium");
 
@@ -350,7 +350,7 @@ DREAMvariables(FuncDataBase& Control)
 
   generatePipe(Control,"dreamPipeA",46.0);
   generateFocusTaper(Control,"dreamFB",44.0,1.88,2.06,4.6,4.5);   
-  Control.addVariable("dreamFBBeamYStep",4.0);
+  //  Control.addVariable("dreamFBBeamYStep",4.0);
  
   // VACBOX A : 6.10m target centre
   //  Length 100.7 + Width [87.0] + Height [39.0] void Depth/2 + front

@@ -327,8 +327,7 @@ DREAM::build(Simulation& System,
   VPipeA->createAll(System,GItem.getKey("Beam"),2);
 
   FocusB->addInsertCell(VPipeA->getCells("Void"));
-  FocusB->createAll(System,FocusA->getKey("Guide0"),2,
-		    FocusA->getKey("Guide0"),2);
+  FocusB->createAll(System,*VPipeA,0,*VPipeA,0);
 
   // NEW TEST SECTION:
   ChopperA->addInsertCell(bunkerObj.getCell("MainVoid"));
@@ -452,6 +451,7 @@ DREAM::build(Simulation& System,
 
 
   if (stopPoint==2) return;                      // STOP At bunker edge
+
   // IN WALL
   // Make bunker insert
   BInsert->createAll(System,FocusH->getKey("Guide0"),2,bunkerObj);

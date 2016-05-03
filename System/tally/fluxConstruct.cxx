@@ -123,11 +123,14 @@ fluxConstruct::processFlux(Simulation& System,
       else if (MType=="AllVoid" || MType=="allVoid")
 	matN=-2;
       else
-	matN=ModelSupport::DBMaterial::Instance().getIndex(MType);
+	{
+	  matN=ModelSupport::DBMaterial::Instance().getIndex(MType);
+	}
     }
   
   const std::vector<int> cells=
     getCellSelection(System,matN,cellKey);
+
   if (cells.empty())
     throw ColErr::InContainerError<std::string>
       (cellKey+":"+StrFunc::makeString(MType),"cell/mat not present in model");
