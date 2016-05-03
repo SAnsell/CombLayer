@@ -664,10 +664,8 @@ Bunker::layerProcess(Simulation& System)
 	      const int CN=removeCell("roof"+StrFunc::makeString(iSector));
               const std::string roofItem=removeCellNumber(CN);
               if (!roofItem.empty())
-                {
-                  ELog::EM<<"Cell == "<<roofItem<<ELog::endDiag;
-                  setCells(roofItem,firstCell,cellIndex-1);
-                }
+                setCells(roofItem,firstCell,cellIndex-1);
+
 	      setCells("roof"+StrFunc::makeString(iSector)
 		       ,firstCell,cellIndex-1);
 	      BNIndex+=300;

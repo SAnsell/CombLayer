@@ -189,11 +189,11 @@ EssBunkerVariables(FuncDataBase& Control)
   
   Control.addVariable("CurtainLeftPhase",-65.0);
   Control.addVariable("CurtainRightPhase",65.0);
-  Control.addVariable("CurtainWallThick",20.0);
-  Control.addVariable("CurtainInnerStep",25.0);
+  Control.addVariable("CurtainWallThick",80.0);
+  Control.addVariable("CurtainInnerStep",0.0);
   Control.addVariable("CurtainTopRaise",60.0);
   Control.addVariable("CurtainHeight",250.0);
-  Control.addVariable("CurtainDepth",100.0);
+  Control.addVariable("CurtainDepth",129.0);     // fixed by Ben.
   Control.addVariable("CurtainWallMat","Concrete");
   Control.addVariable("CurtainNTopLayers",7);
   Control.addVariable("CurtainNMidLayers",2);
