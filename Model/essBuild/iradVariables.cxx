@@ -65,7 +65,7 @@ EssIradVariables(FuncDataBase& Control)
   ELog::RegMethod RegA("essVariables[F]","EssIradVariables");
 
   Control.addVariable("IradCylZStep",-0.2);
-  Control.addVariable("IradCylYStep",-1.35);
+  Control.addVariable("IradCylYStep",1.35);
   Control.addVariable("IradCylXYAngle",90);
   Control.addVariable("IradCylRadius",0.5);
   Control.addVariable("IradCylLength",10.0);
