@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   physicsInc/ModeCard.h
+ * File:   physicsInc/nameCard.h
  *
  * Copyright (c) 2004-2016 by Stuart Ansell
  *
@@ -19,53 +19,46 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef ModeCard_h
-#define ModeCard_h
+#ifndef physicsSystem_nameCard_h
+#define physicsSystem_nameCard_h
 
 namespace physicsSystem
 {
 
 /*!
-  \class ModeCard 
+  \class nameCard
   \version 1.0
-  \date November 2010
-  \version 1.0
-  \author S. Ansell
-  \brief Mode card [master particle list]
-
-  Keeps the master particle list:
-  - verification
-  - addition
+  \date May 2016
+  \author S.Ansell
+  \brief Named card of form name keyword = value ..
+  
   
 */
 
-class ModeCard
+class nameCard 
 {
  private:
 
-  std::list<std::string> particles;    ///< Particle list (if any)
+  std::string keyName;                     ///< Main name
+  
+  std::vector<std::string> nameOrder;      ///< Ordered list of names
+  std::map<std::string,double> DUnit;      ///< Dunits
+  std::map<std::string,long int> IUnit;      ///< Dunits
+  std::map<std::string,std::string> SUnit;      ///< Dunits
 
+  
  public:
+   
+  nameCard();
+  nameCard(const nameCard&);
+  nameCard& operator=(const nameCard&);
+  virtual ~nameCard();
 
-  ModeCard();
-  explicit ModeCard(const std::string&);
-  ModeCard(const ModeCard&);
-  ModeCard& operator=(const ModeCard&);
-  ~ModeCard();
-
-  void clear();
-
-  /// Has been set
-  bool isSet() const { return !particles.empty(); }
-  /// Get particle count
-  size_t particleCount() const { return particles.size(); } 
-
-  int hasElm(const std::string&) const;
-  int removeParticle(const std::string&);
-
-  void addElm(const std::string&);
-
-  void write(std::ostream&) const;  
+  template<typename T>
+  void setItem(const std::string&,const T&);
+  
+  void reset();
+  void write(std::ostream&) const;   
 };
 
 }

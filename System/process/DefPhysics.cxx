@@ -309,7 +309,7 @@ setDefaultPhysics(Simulation& System,
 
   const FuncDataBase& Control=System.getDataBase();
   
-  std::string PList("n h / d t s a");
+  std::string PList("h / d t s a");
   const double maxEnergy=Control.EvalDefVar<double>("sdefEnergy",2000.0);
   const double elcEnergy=IParam.getValue<double>("electron");
   const double phtEnergy=IParam.getValue<double>("photon");
@@ -318,7 +318,7 @@ setDefaultPhysics(Simulation& System,
 
   physicsSystem::PhysicsCards& PC=System.getPC();
   PC.setMode("n p "+PList+elcAdd);
-  PC.setPrintNum("10 110");
+  PC.setPrintNum("10 20 50 110");
   System.processCellsImp();
 
   PC.setCells("imp",1,0);            // Set a zero cell	  

@@ -764,8 +764,12 @@ PhysicsCards::setPWT(const int cellID,const double V)
 
 void
 PhysicsCards::setRND(const long int N)
+  /*!
+    Set the randome number seed to N
+  */
 {
-  dbCard->setComp("rndSeed",N);
+  
+  nameCard->setComp("rndSeed",N);
   return;
 }
 
@@ -874,6 +878,7 @@ PhysicsCards::write(std::ostream& OX,
   ELog::RegMethod RegA("PhyiscsCards","write");
 
   dbCard->write(OX);
+
   OX<<"nps "<<nps<<std::endl;
   if (voidCard)
     OX<<"void"<<std::endl;

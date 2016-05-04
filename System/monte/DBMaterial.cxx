@@ -312,7 +312,7 @@ DBMaterial::initMaterial()
   // Material #41 Silicon
   MObj.setMaterial(41,"SiPowder",
 		   "14028.70c 0.0460848 14029.70c 0.00234 "
-		   "14030.24c 0.0015403","",MLib);
+		   "14030.70c 0.0015403","",MLib);
   setMaterial(MObj);
 
   // Material #42 Niobium
@@ -680,15 +680,15 @@ DBMaterial::initMaterial()
 
   // Material #81 Silicon with no-bragg (20K)
   MObj.setMaterial(81,"Silicon20K","14028.70c 0.0460848 "
-		   "14029.70c 0.00234 14030.24c 0.0015403","si.81t",MLib);
+		   "14029.70c 0.00234 14030.70c 0.0015403","si.81t",MLib);
   setMaterial(MObj);
   // Material #82 Silicon with no-bragg (77K)
   MObj.setMaterial(82,"Silicon80K","14028.70c 0.0460848 "
-		   "14029.70c 0.00234 14030.24c 0.0015403","si.82t",MLib);
+		   "14029.70c 0.00234 14030.70c 0.0015403","si.82t",MLib);
   setMaterial(MObj);
   // Material #83 Silicon with no-bragg (300K)
   MObj.setMaterial(83,"Silicon300K","14028.70c 0.0460848 "
-		   "14029.70c 0.00234 14030.24c 0.0015403","si.83t",MLib);
+		   "14029.70c 0.00234 14030.70c 0.0015403","si.83t",MLib);
   setMaterial(MObj);
 
   // Material #84 Mercury
