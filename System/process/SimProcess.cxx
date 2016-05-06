@@ -3,7 +3,7 @@
  
  * File:   process/SimProcess.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -88,7 +88,7 @@ writeMany(Simulation& System,const std::string& FName,const int Number)
       cx<<FName<<i+1<<".x";
       System.write(cx.str());
       // increase the RND seed by 10
-      PC.setRND(PC.getRND()+10);
+      PC.setRND(PC.getRNDseed()+10);
     }
   return;
 }
@@ -105,7 +105,7 @@ writeIndexSim(Simulation& System,const std::string& FName,const int Number)
    */
 {
   physicsSystem::PhysicsCards& PC=System.getPC();
-  PC.setRND(PC.getRND()+Number*10);
+  PC.setRND(PC.getRNDseed()+Number*10);
   std::ostringstream cx;
   cx<<FName<<Number+1<<".x";
   System.prepareWrite();
@@ -116,7 +116,8 @@ writeIndexSim(Simulation& System,const std::string& FName,const int Number)
 }
   
 void
-writeIndexSimPHITS(Simulation& System,const std::string& FName,const int Number)
+writeIndexSimPHITS(Simulation& System,const std::string& FName,
+		   const int Number)
   /*!
     Writes out many different files, each with a new random
     number
@@ -126,7 +127,7 @@ writeIndexSimPHITS(Simulation& System,const std::string& FName,const int Number)
   */
 {
   physicsSystem::PhysicsCards& PC=System.getPC();
-  PC.setRND(PC.getRND()+Number*10);
+  PC.setRND(PC.getRNDseed()+Number*10);
   std::ostringstream cx;
   cx<<FName<<Number+1<<".x";
   System.write(cx.str());

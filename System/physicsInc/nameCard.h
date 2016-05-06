@@ -39,24 +39,42 @@ class nameCard
 {
  private:
 
-  std::string keyName;                     ///< Main name
+  /// enumeration for type
+  enum class MData { DBL = 1, INT = 2, STR = 3 };
   
-  std::vector<std::string> nameOrder;      ///< Ordered list of names
-  std::map<std::string,double> DUnit;      ///< Dunits
-  std::map<std::string,long int> IUnit;      ///< Dunits
-  std::map<std::string,std::string> SUnit;      ///< Dunits
+  std::string keyName;                     ///< Main name
+  bool active;                             ///< Active
 
+  
+  std::vector<std::string> nameOrder;      ///< Ordered list of units
+  std::map<std::string,MData> regNames;      ///< Registered names / type
+  
+  std::map<std::string,double> DUnit;      ///< Double units
+  std::map<std::string,long int> IUnit;    ///< int units
+  std::map<std::string,std::string> SUnit; ///< string units
+
+  static const std::string& getTypeName(const MData&);
+  static MData convertName(const std::string&);
   
  public:
    
-  nameCard();
+  nameCard(const std::string&);
   nameCard(const nameCard&);
   nameCard& operator=(const nameCard&);
   virtual ~nameCard();
 
+  void registerItems(const std::vector<std::string>&);
+  
   template<typename T>
   void setItem(const std::string&,const T&);
-  
+
+  template<typename T>
+  const T& getItem(const std::string&) const;
+
+
+  template<typename T>
+  void setRegItem(const std::string&,const T&);
+
   void reset();
   void write(std::ostream&) const;   
 };

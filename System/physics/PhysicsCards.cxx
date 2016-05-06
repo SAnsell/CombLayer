@@ -56,6 +56,7 @@
 #include "LSwitchCard.h"
 #include "NList.h"
 #include "NRange.h"
+#include "nameCard.h"
 #include "dbcnCard.h"
 #include "EUnit.h"
 #include "ExtControl.h"
@@ -67,18 +68,30 @@ namespace physicsSystem
 {
 
 PhysicsCards::PhysicsCards() :
-  nps(10000),histp(0),dbCard(new dbcnCard),
+  nps(10000),histp(0),
+  RAND(new nameCard("RAND")),
+  PTRAC(new nameCard("PTRAC")),
+  dbCard(new dbcnCard),
   voidCard(0),nImpOut(0),prdmp("1e7 1e7 0 2 1e7"),
   Volume("vol"),ExtCard(new ExtControl),
   PWTCard(new PWTControl),DXTCard(new DXTControl)
   /*!
     Constructor
   */
-{}
+{
+  ELog::RegMethod RegA("PhysicsCards","[Constructor]");
+  PTRAC->registerItems
+    (
+     {"BUFFER INT","FILE STR","MAX INT","MEPH INT","WRITE STR",
+      "COINC STR","EVENT STR","FILTER STR","TYPE STR",
+      "NPS STR","CELL STR","SURFACE STR","TALLY STR"}
+     );
+}
 
 PhysicsCards::PhysicsCards(const PhysicsCards& A) : 
   nps(A.nps),histp(A.histp),histpCells(A.histpCells),
-  dbCard(new dbcnCard(*dbCard)),Basic(A.Basic),mode(A.mode),
+  RAND(new nameCard(*A.RAND)),dbCard(new dbcnCard(*dbCard)),
+  Basic(A.Basic),mode(A.mode),
   voidCard(A.voidCard),nImpOut(A.nImpOut),printNum(A.printNum),
   prdmp(A.prdmp),ImpCards(A.ImpCards),
   PCards(),LEA(A.LEA),sdefCard(A.sdefCard),
@@ -106,6 +119,7 @@ PhysicsCards::operator=(const PhysicsCards& A)
   if (this!=&A)
     {
       nps=A.nps;
+      *RAND= *A.RAND;
       histp=A.histp;
       histpCells=A.histpCells;
       *dbCard = *A.dbCard;
@@ -165,6 +179,7 @@ PhysicsCards::clearAll()
   deletePCards();
   Volume.clear();
   sdefCard.clear();
+  RAND->reset();
   dbCard->reset();
   ExtCard->clear();
   PWTCard->clear();
@@ -763,23 +778,44 @@ PhysicsCards::setPWT(const int cellID,const double V)
 }
 
 void
-PhysicsCards::setRND(const long int N)
+PhysicsCards::setRND(const long int N,
+		     const long int H)
   /*!
     Set the randome number seed to N
+    \param N :: Index number
+    \param H :: History
   */
 {
-  
-  nameCard->setComp("rndSeed",N);
+  if (N) RAND->setItem("SEED",N);
+  if (H) RAND->setItem("HIST",H);
+
   return;
 }
 
-long int
-PhysicsCards::getRND() const
+void
+PhysicsCards::setPTRAC(const std::string& kY,
+		       const std::string& Val)
   /*!
-    
+    Set the ptrac card
+    \param kY :: key Value of Cardd
+    \param Val :: Value to seet
    */
 {
-  return dbCard->getComp<long int>("rndSeed");
+  ELog::RegMethod RegA("PhysicsCards","setPTRAC");
+  PTRAC->setRegItem(kY,Val);
+  return;
+}
+  
+
+  
+long int
+PhysicsCards::getRNDseed() const
+  /*!
+    Get the random number seed
+    \return seed
+   */
+{
+  return RAND->getItem<long int>("SEED");
 }
   
 void
@@ -882,7 +918,8 @@ PhysicsCards::write(std::ostream& OX,
   OX<<"nps "<<nps<<std::endl;
   if (voidCard)
     OX<<"void"<<std::endl;
-
+  
+  
   if (histp)
     {
       std::ostringstream cx;
@@ -891,6 +928,8 @@ PhysicsCards::write(std::ostream& OX,
 	cx<<" -500000000 "<<histpCells;
       StrFunc::writeMCNPX(cx.str(),OX);
     }
+  RAND->write(OX);
+  
   mode.write(OX);
   Volume.write(OX,cellOutOrder);
    for(const PhysImp& PI : ImpCards)

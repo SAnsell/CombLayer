@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   log/OutputLog.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -158,6 +158,13 @@ OutputLog<EReport>::getColour(const int Flag) const
     \return Colour string 
   */
 {
+
+  // Note on code:
+  //
+  //  1 : bold :2 underline etc
+  // 
+	  
+
   if (colourFlag) 
     {
       const unsigned int part=(Flag<=0) ? 1 : 
@@ -165,19 +172,19 @@ OutputLog<EReport>::getColour(const int Flag) const
       switch(part)
         {
 	case ELog::basic:     
-	  return std::string("\033[01;30m");   // standard
+	  return std::string("\e[1;30m");   // standard
 	case ELog::warn:
-	  return std::string("\033[22;36m");   // Yellow
+	  return std::string("\e[1;36m");   // Yellow
 	case ELog::error:
-	  return std::string("\033[0;91m");    // RED
+	  return std::string("\e[1;31m");    // RED
 	case ELog::debug:
-	  return std::string("\033[01;35m");   // purple
+	  return std::string("\e[1;35m");   // magenta
 	case ELog::diag:
-	  return std::string("\033[04;32m");  // green
+	  return std::string("\e[1;38;5;28m");  // green [256 bold]
 	case ELog::crit:
-	  return std::string("\033[01;31m");   // red
+	  return std::string("\e[1;91m");   // light red
 	case ELog::trace:
-	  return std::string("\033[0;33m");    // Brown
+	  return std::string("\e[1;38;5;21m");    // Brown
 	}
     }
   return std::string();

@@ -218,6 +218,7 @@ main(int argc,char* argv[])
   ELog::RegMethod RControl("","main");
   mainSystem::activateLogging(RControl);
   ELog::EM.setDebug(0);
+  ELog::EM.setAction(0);
 
   int retVal(0);
   if(argc>1)

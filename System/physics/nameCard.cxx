@@ -45,18 +45,19 @@ namespace physicsSystem
 {
   
 nameCard::nameCard(const std::string& KN) :
-  keyName(KN),
-  activeFlag(72,0),nameOrder(72,std::string())
+  keyName(KN),active(0)
   /*!
     Constructor
+    \param KN :: Name
   */
 {
   reset();
 }
 
 nameCard::nameCard(const nameCard& A) : 
-  activeFlag(A.activeFlag),nameOrder(A.nameOrder),
-  Comp(A.Comp)
+  keyName(A.keyName),active(A.active),
+  nameOrder(A.nameOrder),regNames(A.regNames),
+  DUnit(A.DUnit),IUnit(A.IUnit),SUnit(A.SUnit)
   /*!
     Copy constructor
     \param A :: nameCard to copy
@@ -73,12 +74,17 @@ nameCard::operator=(const nameCard& A)
 {
   if (this!=&A)
     {
-      activeFlag=A.activeFlag;
+      keyName=A.keyName;
+      active=A.active;
+      regNames=A.regNames;
       nameOrder=A.nameOrder;
-      Comp=A.Comp;
+      DUnit=A.DUnit;
+      IUnit=A.IUnit;
+      SUnit=A.SUnit;
     }
   return *this;
 }
+  
   
 nameCard::~nameCard()
   /*!
@@ -86,6 +92,61 @@ nameCard::~nameCard()
   */
 {}
 
+const std::string&
+nameCard::getTypeName(const nameCard::MData& AType)
+  /*!
+    Convert a type to a MDATA name
+    \param AType :: MData object to process
+    \return MData type
+  */
+{
+  static const std::string AList[3]=
+    { "double","integer","string" };
+  return AList[static_cast<size_t>(AType)-1];
+}
+
+nameCard::MData
+nameCard::convertName(const std::string& Item)
+  /*!
+    Convert a name to a MData type index
+    \param Item :: Item to convert
+    \return MData type
+  */
+{
+  ELog::RegMethod RegA("nameCard","convertName");
+  
+  if (Item=="DBL" || Item=="dbl" ||
+      Item=="double" || Item=="DOUBLE")
+    return MData::DBL;
+  if (Item=="INT" || Item=="int" ||
+      Item=="integer" || Item=="INTEGER")
+    return MData::INT;
+  if (Item=="STR" || Item=="str" ||
+      Item=="string" || Item=="STRING")
+    return MData::STR;
+
+  throw ColErr::InContainerError<std::string>
+    (Item,"Item no known type");
+}
+
+  
+void
+nameCard::registerItems(const std::vector<std::string>& Items)
+  /*!
+    Register Items into name
+  */
+{
+  std::string K,Type;
+  for(std::string full : Items)
+    {
+      StrFunc::section(full,K);
+      StrFunc::section(full,Type);
+      
+      regNames.emplace(K,convertName(Type));
+    }
+  return;
+}
+  
 void
 nameCard::reset()
   /*!
@@ -93,7 +154,10 @@ nameCard::reset()
   */
 {
   ELog::RegMethod RegA("nameCard","reset");
-   std::erase(dIter.begin(),dIter.end());
+  DUnit.erase(DUnit.begin(),DUnit.end());
+  IUnit.erase(IUnit.begin(),IUnit.end());
+  SUnit.erase(SUnit.begin(),SUnit.end());
+  nameOrder.clear();
   return;
 }
   
@@ -110,9 +174,10 @@ nameCard::setItem(const std::string& kN,const double& Value)
 {
   ELog::RegMethod RegA("nameCard","setItem<double>");
 
+  active=1;
   std::map<std::string,double>::iterator dIter;
   dIter=DUnit.find(kN);
-  if (iIter==DUnit.end())
+  if (dIter==DUnit.end())
     {
       DUnit.emplace(kN,Value);
       nameOrder.push_back(kN);
@@ -135,6 +200,7 @@ nameCard::setItem(const std::string& kN,const long int& Value)
 {
   ELog::RegMethod RegA("nameCard","setItem<long int>");
 
+  active=1;
   std::map<std::string,long int>::iterator iIter;
   iIter=IUnit.find(kN);
   if (iIter==IUnit.end())
@@ -162,6 +228,7 @@ nameCard::setItem(const std::string& kN,
 {
   ELog::RegMethod RegA("nameCard","setItem<string>");
 
+  active=1;
   std::map<std::string,std::string>::iterator sIter;
   sIter=SUnit.find(kN);
   if (sIter==SUnit.end())
@@ -176,7 +243,105 @@ nameCard::setItem(const std::string& kN,
   return;
 }
 
+template<>
+void
+nameCard::setRegItem(const std::string& kN,
+		     const std::string& Item)
+  /*!
+    Turn a registered item into a real item
+    \param kN :: KeyNmae
+    \param Item :: value [convertable]
+   */
+{
+  ELog::RegMethod RegA("nameCard","setRegUnit");
 
+  std::map<std::string,MData>::const_iterator mc=
+    regNames.find(kN);
+  if (mc==regNames.end())
+    throw ColErr::InContainerError<std::string>
+      (kN,"keyName not registered");
+  const MData AType=mc->second;
+  if (AType==MData::DBL)
+    {
+      double V;
+      if (StrFunc::convert(Item,V))
+	{
+	  setItem(kN,V);
+	  return;
+	}
+    }
+  else if (AType==MData::INT)
+    {
+      long int V;
+      if (StrFunc::convert(Item,V))
+	{
+	  setItem(kN,V);
+	  return;
+	}
+    }
+  else if (AType==MData::STR)
+    {
+      setItem(kN,Item);
+      return;
+    }
+  throw ColErr::InContainerError<std::string>
+    (Item," Key = "+kN+" unconverted to "+getTypeName(AType));
+}
+  
+
+template<>
+const double&
+nameCard::getItem<double>(const std::string& kN) const
+  /*!
+    Set an item based on the type
+    \param kN :: Index number to return
+   */
+{
+  ELog::RegMethod RegA("nameCard","getItem<double>");
+
+  std::map<std::string,double>::const_iterator dIter;
+  dIter=DUnit.find(kN);
+  if (dIter==DUnit.end())
+    throw ColErr::InContainerError<std::string>(kN,"Key(double)");
+
+  return dIter->second;
+}
+
+template<>
+const long int& 
+nameCard::getItem<long int>(const std::string& kN)  const
+  /*!
+    Set an item based on the type
+    \param kN :: Index number to return
+   */
+{
+  ELog::RegMethod RegA("nameCard","getItem<long int>");
+
+  std::map<std::string,long int>::const_iterator iIter;
+  iIter=IUnit.find(kN);
+  if (iIter==IUnit.end())
+    throw ColErr::InContainerError<std::string>(kN,"Key(long int)");
+
+  return iIter->second;
+}
+
+template<>
+const std::string&
+nameCard::getItem<std::string>(const std::string& kN) const
+  /*!
+    Set an item based on the type
+    \param kN :: Index number to return
+   */
+{
+  ELog::RegMethod RegA("nameCard","getItem<string>");
+
+  std::map<std::string,std::string>::const_iterator sIter;
+  sIter=SUnit.find(kN);
+  if (sIter==SUnit.end())
+    throw ColErr::InContainerError<std::string>(kN,"Key(string)");
+
+  return sIter->second;
+}
   
 void
 nameCard::write(std::ostream& OX) const
@@ -187,12 +352,13 @@ nameCard::write(std::ostream& OX) const
 {
   ELog::RegMethod RegA("nameCard","write");
 
+  if (!active) return;
+  
   std::map<std::string,double>::const_iterator dIter;
   std::map<std::string,long int>::const_iterator iIter;
   std::map<std::string,std::string>::const_iterator sIter;
 
   std::ostringstream cx;
-
   
   cx<<keyName<<" ";
   for(const std::string& K : nameOrder)
@@ -222,19 +388,6 @@ nameCard::write(std::ostream& OX) const
   return;
 }
 
-///\cond TEMPLATE
-  
-template
-void nameCard::setComp(const std::string&,const double&);
-template
-void nameCard::setComp(const std::string&,const long int&);
-
-template
-const double& nameCard::getComp(const std::string&) const; 
-template
-const long int& nameCard::getComp(const std::string&) const;
-
-///\endcond TEMPLATE
 
 } // NAMESPACE physicsCards
       
