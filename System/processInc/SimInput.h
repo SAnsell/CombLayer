@@ -24,6 +24,11 @@
 
 class Simulation;
 
+namespace physicsSystem
+{
+  class PhysicsCards;
+}
+
 namespace mainSystem
 {
   class inputParam;
@@ -35,6 +40,8 @@ namespace SimProcess
   void importanceSim(Simulation&,const mainSystem::inputParam&);
   void inputProcessForSim(Simulation&,const mainSystem::inputParam&);
   int processExitChecks(Simulation&,const mainSystem::inputParam&);
+  void processPTrack(const mainSystem::inputParam&,
+		     physicsSystem::PhysicsCards&);
   
 }  // namespace SimProcess
 

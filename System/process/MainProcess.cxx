@@ -239,6 +239,7 @@ createInputs(inputParam& IParam)
   IParam.regFlag("Monte","Monte");
   IParam.regDefItem<double>("photon","photon",1,0.001);
   IParam.regDefItem<double>("photonModel","photonModel",1,100.0);
+  IParam.regItem("PTRAC","ptrac");
   IParam.regDefItemList<std::string>("r","renum",10,RItems);
   IParam.regFlag("sdefVoid","sdefVoid");
   IParam.regDefItem<std::string>("sdefType","sdefType",1,"");

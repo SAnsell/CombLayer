@@ -64,6 +64,9 @@ class nameCard
   virtual ~nameCard();
 
   void registerItems(const std::vector<std::string>&);
+
+  /// set active
+  void setActive(const bool A) { active=A; }
   
   template<typename T>
   void setItem(const std::string&,const T&);

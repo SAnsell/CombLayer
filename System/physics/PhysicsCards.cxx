@@ -793,8 +793,19 @@ PhysicsCards::setRND(const long int N,
 }
 
 void
+PhysicsCards::setPTRACactive(const bool F)
+  /*!
+    Set the PTRAC active 
+    \param F :: Flag value
+  */
+{
+  PTRAC->setActive(F);
+}
+  
+template<typename T>
+void
 PhysicsCards::setPTRAC(const std::string& kY,
-		       const std::string& Val)
+		       const T& Val)
   /*!
     Set the ptrac card
     \param kY :: key Value of Cardd
@@ -805,8 +816,6 @@ PhysicsCards::setPTRAC(const std::string& kY,
   PTRAC->setRegItem(kY,Val);
   return;
 }
-  
-
   
 long int
 PhysicsCards::getRNDseed() const
@@ -880,7 +889,6 @@ PhysicsCards::rotateMaster()
 {
   return;
 }
-
   
 void
 PhysicsCards::setPrintNum(std::string Numbers) 
@@ -929,6 +937,7 @@ PhysicsCards::write(std::ostream& OX,
       StrFunc::writeMCNPX(cx.str(),OX);
     }
   RAND->write(OX);
+  PTRAC->write(OX);
   
   mode.write(OX);
   Volume.write(OX,cellOutOrder);
@@ -965,9 +974,24 @@ PhysicsCards::write(std::ostream& OX,
   return;
 }
 
+///\cond TEMPLATE
+  
+template void
+PhysicsCards::setPTRAC(const std::string&,
+                       const std::string&);
+template void
+PhysicsCards::setPTRAC(const std::string&,
+                       const double&);
+template void
+PhysicsCards::setPTRAC(const std::string&,
+                       const long int&);
+
+  
 template PStandard*
 PhysicsCards::addPhysCard(const std::string&,const std::string&);
 
-} // NAMESPACE PhysicsCards	
+///\endcond TEMPLATE
+  
+} // NAMESPACE physicsSystem
       
    

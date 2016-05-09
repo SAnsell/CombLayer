@@ -253,7 +253,7 @@ nameCard::setRegItem(const std::string& kN,
     \param Item :: value [convertable]
    */
 {
-  ELog::RegMethod RegA("nameCard","setRegUnit");
+  ELog::RegMethod RegA("nameCard","setRegUnit<string>");
 
   std::map<std::string,MData>::const_iterator mc=
     regNames.find(kN);
@@ -285,6 +285,82 @@ nameCard::setRegItem(const std::string& kN,
       return;
     }
   throw ColErr::InContainerError<std::string>
+    (Item," Key = "+kN+" unconverted to "+getTypeName(AType));
+}
+
+template<>
+void
+nameCard::setRegItem(const std::string& kN,
+		     const long int& Item)
+  /*!
+    Turn a registered item into a real item
+    \param kN :: KeyNmae
+    \param Item :: value [convertable]
+   */
+{
+  ELog::RegMethod RegA("nameCard","setRegUnit<int>");
+
+  std::map<std::string,MData>::const_iterator mc=
+    regNames.find(kN);
+  if (mc==regNames.end())
+    throw ColErr::InContainerError<std::string>
+      (kN,"keyName not registered");
+
+  const MData AType=mc->second;
+  if (AType==MData::DBL)
+    {
+      setItem(kN,static_cast<double>(Item));
+      return;
+    }
+  else if (AType==MData::INT)
+    {
+      setItem(kN,Item);
+      return;
+    }
+  else if (AType==MData::STR)
+    {
+      setItem(kN,StrFunc::makeString(Item));
+      return;
+    }
+  throw ColErr::InContainerError<long int>
+    (Item," Key = "+kN+" unconverted to "+getTypeName(AType));
+}
+
+template<>
+void
+nameCard::setRegItem(const std::string& kN,
+		     const double& Item)
+  /*!
+    Turn a registered item into a real item
+    \param kN :: KeyNmae
+    \param Item :: value [convertable]
+   */
+{
+  ELog::RegMethod RegA("nameCard","setRegUnit<double>");
+
+  std::map<std::string,MData>::const_iterator mc=
+    regNames.find(kN);
+  if (mc==regNames.end())
+    throw ColErr::InContainerError<std::string>
+      (kN,"keyName not registered");
+
+  const MData AType=mc->second;
+  if (AType==MData::DBL)
+    {
+      setItem(kN,Item);
+      return;
+    }
+  else if (AType==MData::INT)
+    {
+      setItem(kN,static_cast<long int>(Item));
+      return;
+    }
+  else if (AType==MData::STR)
+    {
+      setItem(kN,StrFunc::makeString(Item));
+      return;
+    }
+  throw ColErr::InContainerError<double>
     (Item," Key = "+kN+" unconverted to "+getTypeName(AType));
 }
   
@@ -352,6 +428,7 @@ nameCard::write(std::ostream& OX) const
 {
   ELog::RegMethod RegA("nameCard","write");
 
+  ELog::EM<<"Writing "<<keyName<<ELog::endDiag;
   if (!active) return;
   
   std::map<std::string,double>::const_iterator dIter;
@@ -389,6 +466,6 @@ nameCard::write(std::ostream& OX) const
 }
 
 
-} // NAMESPACE physicsCards
+} // NAMESPACE physicsSystem
       
    

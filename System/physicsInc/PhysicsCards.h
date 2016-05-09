@@ -137,8 +137,10 @@ class PhysicsCards
   void setPWT(const int,const double);
   void setNPS(const int N) { nps=N; }      ///< Set the Number of particles
   void setRND(const long int,const long int =0);
-  void setPTRAC(const std::string&,const long int);
-  void setPTRAC(const std::string&,const std::string&);
+  template<typename T>
+  void setPTRAC(const std::string&,const T&);
+  void setPTRACactive(const bool);
+
   void setEnergyCut(const double);  
   void setMode(std::string);
   void setVoidCard(const bool V) { voidCard=V; }   ///< Set the void card

@@ -55,6 +55,20 @@
 #include "Object.h"
 #include "Qhull.h"
 #include "Simulation.h"
+#include "Triple.h"
+#include "NList.h"
+#include "NRange.h"
+#include "SrcData.h"
+#include "SrcItem.h"
+#include "DSTerm.h"
+#include "Source.h"
+#include "KCode.h"
+#include "ModeCard.h"
+#include "PhysImp.h"
+#include "PhysCard.h"
+#include "PStandard.h"
+#include "LSwitchCard.h"
+#include "PhysicsCards.h"
 #include "ImportControl.h"
 #include "SimValid.h"
 #include "MainProcess.h"
@@ -140,7 +154,34 @@ inputProcessForSim(Simulation& System,
   if (IParam.flag("endf"))
     System.setENDF7();
 
+  if (IParam.flag("ptrac"))
+    processPTrack(IParam,System.getPC());
+  
   return;
 }
 
+void
+processPTrack(const mainSystem::inputParam& IParam,
+              physicsSystem::PhysicsCards& PCard)
+  /*!
+    Process the input
+    \param IParam :: Input deck
+    \param PCard :: Physics card
+   */
+{
+  ELog::RegMethod RegA("SimInput[F]","processPTrack");
+
+
+  const size_t NItems=IParam.itemCnt("ptrac",0);
+  for(size_t index=1;index<NItems;index+=2)
+    {
+      const std::string key=IParam.getValue<std::string>("ptrac",0,index-1);
+      const std::string Val=IParam.getValue<std::string>("ptrac",0,index);
+      PCard.setPTRAC(key,Val);
+    }
+  PCard.setPTRACactive(1);
+  return;
+}
+
+  
 }  // NAMESPACE SimProcess

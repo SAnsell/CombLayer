@@ -1274,6 +1274,7 @@ template class ColErr::InContainerError<int>;
 template class ColErr::InContainerError<long int>;
 template class ColErr::InContainerError<unsigned long int>;
 template class ColErr::InContainerError<char>;
+template class ColErr::InContainerError<double>;
 template class ColErr::MisMatch<double>;
 template class ColErr::MisMatch<int>;
 template class ColErr::MisMatch<unsigned int>;
