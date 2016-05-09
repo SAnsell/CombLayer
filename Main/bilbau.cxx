@@ -3,7 +3,7 @@
  
  * File:   Main/bilbau.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -189,15 +189,7 @@ main(int argc,char* argv[])
 	  if (IParam.flag("endf"))
 	    SimPtr->setENDF7();
 	  SimProcess::importanceSim(*SimPtr,IParam);
-
-	  SimProcess::inputPatternSim(*SimPtr,IParam); // energy cut etc
-
-	  if (IParam.flag("cinder"))
-	    SimPtr->setForCinder();
-
-	  // Cut energy tallies:
-	  if (IParam.flag("ECut"))
-	    SimPtr->setEnergy(IParam.getValue<double>("ECut"));
+	  SimProcess::inputProcessForSim(*SimPtr,IParam); // energy cut etc
 
 	  if (renumCellWork)
 	    tallyRenumberWork(*SimPtr,IParam);

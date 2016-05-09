@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   Main/muBeam.cxx
  *
@@ -151,7 +151,7 @@ main(int argc,char* argv[])
 	    SimPtr->setENDF7();
 
 	  SimProcess::importanceSim(*SimPtr,IParam);
-	  SimProcess::inputPatternSim(*SimPtr,IParam); // energy cut etc
+	  SimProcess::inputProcessForSim(*SimPtr,IParam); // energy cut etc
 
 	  // Ensure we done loop
 	  do

@@ -120,7 +120,8 @@ processExitChecks(Simulation& System,const mainSystem::inputParam& IParam)
 
 
 void
-inputPatternSim(Simulation& System,const mainSystem::inputParam& IParam)
+inputProcessForSim(Simulation& System,
+                const mainSystem::inputParam& IParam)
   /*!
     Check the validity of the simulation
     \param System :: Simuation object 
@@ -135,7 +136,10 @@ inputPatternSim(Simulation& System,const mainSystem::inputParam& IParam)
   // Cut energy tallies:
   if (IParam.flag("ECut"))
     System.setEnergy(IParam.getValue<double>("ECut"));
-  
+
+  if (IParam.flag("endf"))
+    System.setENDF7();
+
   return;
 }
 

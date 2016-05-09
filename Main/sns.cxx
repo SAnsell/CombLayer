@@ -3,7 +3,7 @@
  
  * File:   Main/sns.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -142,30 +142,21 @@ main(int argc,char* argv[])
 	  SimPtr->removeDeadSurfaces(0);         
 
 	  ModelSupport::setDefaultPhysics(*SimPtr,IParam);
-	  const int renumCellWork=tallySelection(*SimPtr,IParam);
 	  SimPtr->masterRotation();
-	  if (createVTK(IParam,SimPtr,Oname))
-	    {
-	      delete SimPtr;
-	      ModelSupport::objectRegister::Instance().reset();
-	      return 0;
-	    }
-	  if (IParam.flag("endf"))
-	    SimPtr->setENDF7();
-
-	  SimProcess::importanceSim(*SimPtr,IParam);
-	  SimProcess::inputPatternSim(*SimPtr,IParam); // energy cut etc
-
-	  if (renumCellWork)
-	    tallyRenumberWork(*SimPtr,IParam);
-	  tallyModification(*SimPtr,IParam);
-
-	  if (IParam.flag("cinder"))
-	    SimPtr->setForCinder();
-
-	  // // Cut energy tallies:
-	  // if (IParam.flag("ECut"))
-	  //   SimPtr->setEnergy(IParam.getValue<double>("ECut"));
+          
+          const int renumCellWork=tallySelection(*SimPtr,IParam);
+          if (createVTK(IParam,SimPtr,Oname))
+            {
+              delete SimPtr;
+              ModelSupport::objectRegister::Instance().reset();
+              return 0;
+            }
+          
+          SimProcess::importanceSim(*SimPtr,IParam);
+          SimProcess::inputProcessForSim(*SimPtr,IParam); // energy cut etc
+          if (renumCellWork)
+            tallyRenumberWork(*SimPtr,IParam);
+          tallyModification(*SimPtr,IParam);
 
 	  // Ensure we done loop
 	  do

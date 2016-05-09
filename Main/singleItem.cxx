@@ -135,7 +135,7 @@ main(int argc,char* argv[])
       
       ModelSupport::setDefRotation(IParam);
       SimPtr->masterRotation();
-      
+
       const int renumCellWork=tallySelection(*SimPtr,IParam);
       if (createVTK(IParam,SimPtr,Oname))
 	{
@@ -143,18 +143,12 @@ main(int argc,char* argv[])
 	  ModelSupport::objectRegister::Instance().reset();
 	  return 0;
 	}
-      if (IParam.flag("endf"))
-	SimPtr->setENDF7();
-
       
       SimProcess::importanceSim(*SimPtr,IParam);
-      SimProcess::inputPatternSim(*SimPtr,IParam); // energy cut etc
+      SimProcess::inputProcessForSim(*SimPtr,IParam); // energy cut etc
       if (renumCellWork)
 	tallyRenumberWork(*SimPtr,IParam);
       tallyModification(*SimPtr,IParam);
-      
-      if (IParam.flag("cinder"))
-	SimPtr->setForCinder();
       
       // Ensure we done loop
       do

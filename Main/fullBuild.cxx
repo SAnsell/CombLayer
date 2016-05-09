@@ -3,7 +3,7 @@
  
  * File:   Main/fullBuild.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -174,7 +174,6 @@ main(int argc,char* argv[])
 	  //	  TMRSystem::setAllTally(Sim,SInfo);
 
 	  const int renumCellWork=beamTallySelection(*SimPtr,IParam);
-
 	  if (!rotFlag.empty())
 	    {
 	      ModelSupport::setItemRotate(World::masterTS2Origin(),rotFlag);
@@ -183,23 +182,19 @@ main(int argc,char* argv[])
 	  SimPtr->masterRotation();
   //	  tallySystem::addHeatBlock(*SimPtr,heatCells);
 	  
-
-	  if (IParam.flag("endf"))
-	    SimPtr->setENDF7();
-
-
-	  // NOTE : This flag must be set in tally== beamline standard
-	  SimProcess::importanceSim(*SimPtr,IParam);
-	  SimProcess::inputPatternSim(*SimPtr,IParam); // energy cut etc
-	  if (createVTK(IParam,SimPtr,Oname))
-	    {
-	      mainSystem::exitDelete(SimPtr);
-	      return 0;
-	    }
-
-	  if (renumCellWork)
-	    tallyRenumberWork(*SimPtr,IParam);
-	  tallyModification(*SimPtr,IParam);
+          if (createVTK(IParam,SimPtr,Oname))
+            {
+              delete SimPtr;
+              ModelSupport::objectRegister::Instance().reset();
+              return 0;
+            }
+          
+          SimProcess::importanceSim(*SimPtr,IParam);
+          SimProcess::inputProcessForSim(*SimPtr,IParam); // energy cut etc
+          if (renumCellWork)
+            tallyRenumberWork(*SimPtr,IParam);
+          tallyModification(*SimPtr,IParam);
+          
 
 	  // Ensure we done loop
 	  do
