@@ -289,6 +289,22 @@ IItem::setObj(const std::string& V)
   return;
 }
 
+
+const std::vector<std::string>&
+IItem::getObjectItems(const size_t setIndex) const
+  /*!
+    Get Object [assuming setIndex/itemIndex ==0]
+    \return vector of strings 
+  */
+{ 
+  ELog::RegMethod RegA("IItem","getObjectItems");
+
+  if (setIndex >= DItems.size())
+    throw ColErr::IndexError<size_t>(setIndex,DItems.size(),Key+":setIndex");
+
+  return DItems[setIndex];
+}
+
   
 template<typename T>
 T
@@ -392,7 +408,7 @@ IItem::getObj(const size_t setIndex,const size_t itemIndex) const
 Geometry::Vec3D
 IItem::getCntVec3D(const size_t setIndex,size_t& itemIndex) const
   /*!
-    Get Object
+    Get a simple Vec3D [cannot be a link component]
     \param setIndex :: Index
     \param itemIndex :: item count
     \return Object
@@ -425,7 +441,6 @@ IItem::getCntVec3D(const size_t setIndex,size_t& itemIndex) const
   itemIndex+=3;
   return Value;
 }
-
   
 size_t
 IItem::addSet()

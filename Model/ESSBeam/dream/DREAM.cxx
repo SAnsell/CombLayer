@@ -238,58 +238,6 @@ DREAM::setBeamAxis(const GuideItem& GItem,
   return;
 }
 
-void
-DREAM::buildChopperBlock(Simulation& System,
-			 const Bunker& bunkerObj,
-			 const attachSystem::FixedComp& prevFC,
-			 const constructSystem::VacuumBox& prevVacBox,
-			 constructSystem::VacuumBox& VacBox,
-			 beamlineSystem::GuideLine& GL,
-			 constructSystem::DiskChopper& Disk,
-			 constructSystem::ChopperHousing& House,
-			 constructSystem::VacuumPipe& Pipe)
-  /*!
-    Build a chopper block [about to move to some higher level]
-    \param System :: Simulation 
-    \param bunkerObj :: Object
-    \param prevFC :: FixedComponent for like point [uses side 2]
-    \param prevVacBox :: 
-    \param GL :: Guide Line 
-    
-    \parma Pipe :: Pip surrounding block
-  */
-{
-  ELog::RegMethod RegA("DREAM","buildChopperBlock");
-  
-  // Box for BandA Disk
-  VacBox.addInsertCell(bunkerObj.getCell("MainVoid"));
-  VacBox.createAll(System,prevFC,2);
-
-  // Double disk T0 chopper
-  Disk.addInsertCell(VacBox.getCell("Void",0));
-  Disk.setCentreFlag(3);  // Z direction
-  Disk.createAll(System,VacBox,0);
-
-  // Double disk chopper housing
-  House.addInsertCell(VacBox.getCells("Void"));
-  House.addInsertCell(VacBox.getCells("Box"));  // soon to become lid
-  House.addInsertCell(bunkerObj.getCell("MainVoid"));
-  House.createAll(System,Disk.getKey("Main"),0);
-  House.insertComponent(System,"Void",Disk);
-
-  Pipe.addInsertCell(bunkerObj.getCell("MainVoid"));
-  Pipe.setFront(prevVacBox,2);
-  Pipe.setBack(VacBox,1);
-  Pipe.createAll(System,prevVacBox,2);
-  
-  GL.addInsertCell(Pipe.getCells("Void"));
-  GL.addInsertCell(prevVacBox.getCells("Void"));
-  GL.addInsertCell(VacBox.getCells("Void"));
-  GL.createAll(System,prevFC,2,prevFC,2);
-  return;
-} 
-
-
   
 void 
 DREAM::build(Simulation& System,

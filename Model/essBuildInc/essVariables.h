@@ -43,6 +43,7 @@ namespace setVariable
   void ODINvariables(FuncDataBase&);
   void ESTIAvariables(FuncDataBase&);
   void DREAMvariables(FuncDataBase&);
+  void CSPECvariables(FuncDataBase&);
   void LOKIvariables(FuncDataBase&);
   void NMXvariables(FuncDataBase&);
   void VORvariables(FuncDataBase&);

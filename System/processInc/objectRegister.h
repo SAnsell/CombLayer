@@ -102,9 +102,7 @@ class objectRegister
   /// get active cells
   const std::set<int>& getActiveCells() const
      { return activeCells; }
-    
-    
-  
+
   std::vector<int> getObjectRange(const std::string&) const;
   void reset();
   void rotateMaster();

@@ -89,7 +89,6 @@ class inputParam
 		  const size_t,const T&,const T&,const T&);
   
   size_t dataCnt(const std::string&) const;
-
   size_t setCnt(const std::string&) const;
   size_t itemCnt(const std::string&,const size_t) const;
 
@@ -107,6 +106,9 @@ class inputParam
   template<typename T>
     T getDefValue(const T&,const std::string&,const size_t,const size_t) const;
 
+
+  const std::vector<std::string>&
+    getObjectItems(const std::string&,const size_t) const;
 
   Geometry::Vec3D getCntVec3D(const std::string&,
 			      const size_t,size_t&) const;

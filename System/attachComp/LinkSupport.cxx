@@ -199,7 +199,7 @@ getAttachPointWithXYZ(const std::string& FCName,
   return 1;
 }
 
-bool
+size_t 
 getPoint(const std::vector<std::string>& StrItem,
 	 const size_t index,
 	 Geometry::Vec3D& Pt)
@@ -212,7 +212,7 @@ getPoint(const std::vector<std::string>& StrItem,
     \return 1 on success / 0 on failure
    */
 {
-  ELog::RegMethod RegA("LinkSupport[F]","getPont");
+  ELog::RegMethod RegA("LinkSupport[F]","getPoint");
 
   const size_t NS(StrItem.size());
   // Simple Vec3D(a,b,c)
@@ -225,14 +225,14 @@ getPoint(const std::vector<std::string>& StrItem,
       Geometry::Vec3D YAxis;  
       if (attachSystem::getAttachPoint
 	  (StrItem[index],StrItem[index+1],Pt,YAxis))
-	return 1;
+	return 2;
     }
   
   // Simple vector
   if (NS >= index+3 && StrFunc::convert(StrItem[index],Pt[0])
 	   && StrFunc::convert(StrItem[index+1],Pt[1])
 	   && StrFunc::convert(StrItem[index+2],Pt[2]) )
-    return 1;
+    return 3;
 
   return 0;
 }

@@ -79,6 +79,7 @@
 #include "LOKI.h"
 #include "NMX.h"
 #include "DREAM.h"
+#include "CSPEC.h"
 #include "shortDREAM.h"
 #include "shortODIN.h"
 #include "VOR.h"
@@ -222,6 +223,12 @@ makeESSBL::build(Simulation& System,
       // DREAM beamline
       DREAM dreamBL("dream");
       dreamBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+    }
+  else if (beamName=="CSPEC")
+    {
+      // DREAM beamline
+      CSPEC cspecBL("cspec");
+      cspecBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="SHORTDREAM")
     {

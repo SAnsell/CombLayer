@@ -67,6 +67,7 @@
 #include "Simulation.h"
 #include "objectRegister.h"
 #include "inputParam.h"
+#include "PositionSupport.h"
 #include "TallyCreate.h"
 #include "TempWeights.h"
 #include "ImportControl.h"
@@ -88,7 +89,7 @@ WeightControl::WeightControl() :
   activePtIndex(0)
   /*
     Constructor
-   */
+  */
 {
   setHighEBand();
 }
@@ -368,8 +369,10 @@ WeightControl::procPlanePoint(const mainSystem::inputParam& IParam)
       while(NItem>itemCnt)
         {
 	  const Geometry::Vec3D PPoint=
-	    IParam.getCntVec3D(wKey,index,itemCnt,
-			       wKey+" Vec3D");
+            attachSystem::getCntVec3D(IParam,wKey,index,itemCnt);
+
+          //          IParam.getCntVec3D(wKey,index,itemCnt,
+          //			       wKey+" Vec3D");
 	  const Geometry::Vec3D Norm=
 	    IParam.getCntVec3D(wKey,index,itemCnt,
 			       wKey+" Vec3D");

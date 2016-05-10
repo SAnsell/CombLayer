@@ -515,6 +515,26 @@ inputParam::getCntVec3D(const std::string& K,
   return IPtr->getCntVec3D(setIndex,itemIndex);
 }
 
+const std::vector<std::string>&
+inputParam::getObjectItems(const std::string& K,
+                           const size_t setIndex) const
+  /*!
+    Accessor to the raw string
+    \param K :: Key to seach
+    \param setIndex :: set Value
+    \return Set of raw-strings
+  */
+{
+  ELog::RegMethod Rega("inputParam","getObjectItems");
+
+  const IItem* IPtr=getIndex(K);
+  if (!IPtr)
+    throw ColErr::EmptyValue<void>(K+":IPtr");
+  
+  return IPtr->getObjectItems(setIndex);
+}
+
+  
 template<typename T>
 T
 inputParam::outputItem(const std::string& K,

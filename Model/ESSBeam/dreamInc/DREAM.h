@@ -172,24 +172,8 @@ class DREAM : public attachSystem::CopiedComp
   /// Guide leaving the bunker wall
   std::shared_ptr<beamlineSystem::GuideLine> FocusOutB;  
 
-
-
-
-
   /// Cave 
   std::shared_ptr<DreamHut> Cave;
-
-
-  static void
-    buildChopperBlock(Simulation&,const Bunker&,
-		      const attachSystem::FixedComp&,
-		      const constructSystem::VacuumBox&,
-		      constructSystem::VacuumBox&,
-		      beamlineSystem::GuideLine&,
-		      constructSystem::DiskChopper&,
-		      constructSystem::ChopperHousing&,
-		      constructSystem::VacuumPipe&);
-
   
   void setBeamAxis(const GuideItem&,const bool);
   

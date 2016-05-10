@@ -603,6 +603,7 @@ EssVariables(FuncDataBase& Control)
   EssBeamLinesVariables(Control);
   ODINvariables(Control);
   DREAMvariables(Control);
+  CSPECvariables(Control);
   shortDREAMvariables(Control);
   shortDREAM2variables(Control);
   shortODINvariables(Control);
