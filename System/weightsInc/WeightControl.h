@@ -70,7 +70,6 @@ class WeightControl
 
   std::vector<Geometry::Plane> planePt;       ///< Plane points
   std::vector<Geometry::Vec3D> sourcePt;      ///< Source Points
-  std::vector<Geometry::Vec3D> tallyPt;       ///< Tally Points
   
   void setHighEBand();
   void setMidEBand();
@@ -91,7 +90,6 @@ class WeightControl
 
   void procSourcePoint(const mainSystem::inputParam&);
   void procPlanePoint(const mainSystem::inputParam&);
-  void procTallyPoint(const mainSystem::inputParam&);
   void procObject(const Simulation&,
 		  const mainSystem::inputParam&);
   void procRebase(const Simulation&,

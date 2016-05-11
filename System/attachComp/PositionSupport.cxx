@@ -119,7 +119,7 @@ getCntVec3D(const mainSystem::inputParam& IParam,
     }
 
   // Flat numbers:
-  if (itemIndex+3<NItems &&
+  if (itemIndex+3<=NItems &&
       StrFunc::convert(DItems[itemIndex],Value[0]) &&
       StrFunc::convert(DItems[itemIndex+1],Value[1]) &&
       StrFunc::convert(DItems[itemIndex+2],Value[2]) )
@@ -128,7 +128,7 @@ getCntVec3D(const mainSystem::inputParam& IParam,
       return Value;
     }
   // object name 
-  if (itemIndex+3<NItems && DItems[itemIndex]=="object")
+  if (itemIndex+3<=NItems && DItems[itemIndex]=="object")
     {
       const attachSystem::FixedComp* TPtr=
         OR.getObject<attachSystem::FixedComp>(DItems[itemIndex+1]);
@@ -143,7 +143,7 @@ getCntVec3D(const mainSystem::inputParam& IParam,
     }
 
   // objOffset name 
-  if (itemIndex+4<NItems && DItems[itemIndex]=="objOffset")
+  if (itemIndex+4<=NItems && DItems[itemIndex]=="objOffset")
     {
       const attachSystem::FixedComp* TPtr=
         OR.getObject<attachSystem::FixedComp>(DItems[itemIndex+1]);
@@ -174,11 +174,10 @@ getCntVec3D(const mainSystem::inputParam& IParam,
       Value+=XDir*DVec[0]+YDir*DVec[1]+ZDir*DVec[2];
       return Value;
     }
-
-
   // implied object name 
-  if (itemIndex+2<NItems)
+  if (itemIndex+2<=NItems)
     {
+      ELog::EM<<"Item == "<<DItems[itemIndex]<<ELog::endDiag;
       const attachSystem::FixedComp* TPtr=
         OR.getObject<attachSystem::FixedComp>(DItems[itemIndex]);
       if (!TPtr)
@@ -186,6 +185,7 @@ getCntVec3D(const mainSystem::inputParam& IParam,
           (DItems[itemIndex],"Fixed Object not found");      
       const long int linkNumber=attachSystem::getLinkIndex(DItems[itemIndex+1]);
       Value=TPtr->getSignedLinkPt(linkNumber);
+      ELog::EM<<"Item == "<<DItems[itemIndex]<<" "<<Value<<ELog::endDiag;
       itemIndex+=2;
       return Value;
     }

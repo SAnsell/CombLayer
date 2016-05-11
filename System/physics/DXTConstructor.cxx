@@ -137,7 +137,7 @@ DXTConstructor::processUnit(Simulation& System,
   ELog::RegMethod RegA("DXTConstructor","processPoint");
 
   const size_t NParam=IParam.itemCnt("wDXT",Index);
-  ELog::EM<<"Dxtran unit "<<Index<<ELog::endDiag;
+
   if (NParam<1)
     throw ColErr::IndexError<size_t>(NParam,3,"Insufficient items wDXT");
 
