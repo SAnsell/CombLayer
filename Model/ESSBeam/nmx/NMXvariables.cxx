@@ -91,7 +91,7 @@ NMXvariables(FuncDataBase& Control)
   Control.addVariable("nmxGALayerMat1","Aluminium");
   Control.addVariable("nmxGALayerMat2","Void");       
 
-  Control.addVariable("nmxGA0TypeID","Tapper");
+  Control.addVariable("nmxGA0TypeID","Taper");
 
   Control.addVariable("nmxGA0HeightStart",3.0);
   Control.addVariable("nmxGA0HeightEnd",4.5);

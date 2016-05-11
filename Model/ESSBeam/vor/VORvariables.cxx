@@ -82,7 +82,7 @@ VORvariables(FuncDataBase& Control)
   Control.addVariable("vorFALayerMat1","Glass");
   Control.addVariable("vorFALayerMat2","Void");       
 
-  Control.addVariable("vorFA0TypeID","Tapper");
+  Control.addVariable("vorFA0TypeID","Taper");
   Control.addVariable("vorFA0HeightStart",3.16);
   Control.addVariable("vorFA0HeightEnd",5.905);
   Control.addVariable("vorFA0WidthStart",2.114);
@@ -173,7 +173,7 @@ VORvariables(FuncDataBase& Control)
   Control.addVariable("vorFBLayerMat1","Glass");
   Control.addVariable("vorFBLayerMat2","Void");       
   
-  Control.addVariable("vorFB0TypeID","Tapper");
+  Control.addVariable("vorFB0TypeID","Taper");
   Control.addVariable("vorFB0HeightStart",5.92);
   Control.addVariable("vorFB0HeightEnd",6.224);
   Control.addVariable("vorFB0WidthStart",3.87);
@@ -216,7 +216,7 @@ VORvariables(FuncDataBase& Control)
   Control.addVariable("vorFBextraLayerMat3","Stainless304");       
 
   // This values are pro-rated relative to the FocusB guide 
-  Control.addVariable("vorFBextra0TypeID","Tapper");
+  Control.addVariable("vorFBextra0TypeID","Taper");
   Control.addVariable("vorFBextra0HeightStart",6.1226);
   Control.addVariable("vorFBextra0HeightEnd",6.224);
   Control.addVariable("vorFBextra0WidthStart",4.0233);
@@ -354,7 +354,7 @@ VORvariables(FuncDataBase& Control)
   Control.addVariable("vorFCLayerMat2","Void");       
   Control.addVariable("vorFCLayerMat3","Stainless304");
   
-  Control.addVariable("vorFC0TypeID","Tapper");
+  Control.addVariable("vorFC0TypeID","Taper");
   Control.addVariable("vorFC0HeightStart",6.216);
   Control.addVariable("vorFC0HeightEnd",4.2255);
   Control.addVariable("vorFC0WidthStart",4.098);
@@ -463,7 +463,7 @@ VORvariables(FuncDataBase& Control)
   Control.addVariable("vorFDLayerMat2","Void");       
   Control.addVariable("vorFDLayerMat3","Stainless304");
   
-  Control.addVariable("vorFD0TypeID","Tapper");
+  Control.addVariable("vorFD0TypeID","Taper");
   Control.addVariable("vorFD0WidthStart",2.9013);
   Control.addVariable("vorFD0WidthEnd",2.4061);
   Control.addVariable("vorFD0HeightStart",4.22);
@@ -526,7 +526,7 @@ VORvariables(FuncDataBase& Control)
   Control.addVariable("vorFELayerMat2","Void");       
   Control.addVariable("vorFELayerMat3","Stainless304");
   
-  Control.addVariable("vorFE0TypeID","Tapper");
+  Control.addVariable("vorFE0TypeID","Taper");
   Control.addVariable("vorFE0WidthStart",2.3672);
   Control.addVariable("vorFE0WidthEnd",1.6829);
   Control.addVariable("vorFE0HeightStart",3.311);
