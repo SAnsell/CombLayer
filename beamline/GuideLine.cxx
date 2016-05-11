@@ -409,6 +409,25 @@ GuideLine::processShape(const FuncDataBase& Control)
 	  //	  BU->setEndPts(Origin,Origin+Y*L);      	  
 	  shapeUnits.push_back(BU);
 	}
+      else if (typeID=="DoubleBend")
+	{
+	  BenderUnit* BU=new DBenderUnit(GINumber,SULayer);
+
+	  const double HA=Control.EvalVar<double>(keyName+NStr+"AHeight");
+	  const double HB=Control.EvalDefVar<double>(keyName+NStr+"BHeight",HA);
+	  const double WA=Control.EvalVar<double>(keyName+NStr+"AWidth");
+	  const double WB=Control.EvalDefVar<double>(keyName+NStr+"BWidth",WA);
+	  // angular rotation of bend direciton from +Z
+	  const double bendAngDir=
+	    Control.EvalVar<double>(keyName+NStr+"AngDir");
+	  const double radius=
+	    Control.EvalVar<double>(keyName+NStr+"Radius");
+
+	  BU->setValues(HA,HB,WA,WB,L,radius,bendAngDir);
+	  BU->setOriginAxis(Origin,X,Y,Z);
+	  //	  BU->setEndPts(Origin,Origin+Y*L);      	  
+	  shapeUnits.push_back(BU);
+	}
 
       else
 	{

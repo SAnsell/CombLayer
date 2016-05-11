@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   beamlineInc/BenderUnit.h
+ * File:   beamlineInc/DBenderUnit.h
  *
  * Copyright (c) 2004-2016 by Stuart Ansell
  *
@@ -19,30 +19,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef beamlineSystem_BenderUnit_h
-#define beamlineSystem_BenderUnit_h
+#ifndef beamlineSystem_DBenderUnit_h
+#define beamlineSystem_DBenderUnit_h
 
 
 namespace beamlineSystem
 {
 
 /*!
-  \class BenderUnit
+  \class DBenderUnit
   \version 1.0
   \author S. Ansell
   \date September 2014
   \brief Points associated with tracked beamline bender
 */
 
-class BenderUnit : public ShapeUnit
+class DDBenderUnit : public ShapeUnit
 {
  private:
 
-  Geometry::Vec3D RCent;      ///< Rotation centre
-  Geometry::Vec3D RAxis;      ///< Rotation axis
-  Geometry::Vec3D RPlane;     ///< Rotation Centre direction
+  Geometry::Vec3D RCentA;      ///< Rotation centre
+  Geometry::Vec3D RCentB;      ///< Rotation centre
+  Geometry::Vec3D RAxisA;      ///< Rotation axis
+  Geometry::Vec3D RAxisB;      ///< Rotation axis
+  Geometry::Vec3D RPlaneA;     ///< Rotation Centre direction
+  Geometry::Vec3D RPlaneB;     ///< Rotation Centre direction
 
-  double Radius;              ///< Primary rotation ratius
+  double RadiusA;              ///< Primary rotation ratius
+  double RadiusB;              ///< Primary rotation ratius
   double aHeight;             ///< Height across rotation plane [start]
   double bHeight;             ///< Across rotation plane [end]
   double aWidth;              ///< In rotation plane [start]
@@ -62,11 +66,11 @@ class BenderUnit : public ShapeUnit
   
  public:
 
-  BenderUnit(const int,const int);
-  BenderUnit(const BenderUnit&);
-  BenderUnit& operator=(const BenderUnit&);
-  virtual BenderUnit* clone() const;
-  virtual ~BenderUnit();
+  DBenderUnit(const int,const int);
+  DBenderUnit(const DBenderUnit&);
+  DBenderUnit& operator=(const DBenderUnit&);
+  virtual DBenderUnit* clone() const;
+  virtual ~DBenderUnit();
 
   void setValues(const double,const double,const double,
 		 const double,const double);
