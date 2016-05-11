@@ -117,6 +117,7 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelMatTYPE3",3);
 
   // Inner structure - engineering details
+  Control.addVariable("BilbaoWheelInnerStructureXYangle",0.0);
   Control.addVariable("BilbaoWheelInnerStructureBrickLength",3);
   Control.addVariable("BilbaoWheelInnerStructureBrickWidth",1);
   Control.addVariable("BilbaoWheelInnerStructureBrickMat","Tungsten600K");

@@ -92,6 +92,7 @@ namespace essSystem
     attachSystem::FixedComp(A),
     insIndex(A.insIndex),
     cellIndex(A.cellIndex),
+    xyAngle(A.xyAngle),
     temp(A.temp),
     brickLen(A.brickLen),
     brickWidth(A.brickWidth),
@@ -123,6 +124,7 @@ namespace essSystem
       {
 	attachSystem::ContainedComp::operator=(A);
 	attachSystem::FixedComp::operator=(A);
+	xyAngle=A.xyAngle;
 	temp=A.temp;
 	cellIndex=A.cellIndex;
 	brickLen=A.brickLen;
@@ -167,6 +169,8 @@ namespace essSystem
   {
     ELog::RegMethod RegA("BilbaoWheelInnerStructure","populate");
 
+    xyAngle=Control.EvalVar<double>(keyName+"XYangle");
+
     brickLen=Control.EvalVar<double>(keyName+"BrickLength");
     brickWidth=Control.EvalVar<double>(keyName+"BrickWidth");
     brickMat=ModelSupport::EvalMat<int>(Control,keyName+"BrickMat");
@@ -200,6 +204,8 @@ namespace essSystem
   {
     ELog::RegMethod RegA("BilbaoWheelInnerStructure","createUnitVector");
     attachSystem::FixedComp::createUnitVector(FC);
+
+    applyAngleRotate(xyAngle,0.0);
 
     return;
   }
@@ -457,7 +463,8 @@ namespace essSystem
     const Geometry::Plane* plSide1 = SMap.realPtr<Geometry::Plane>(HR.getSurfaceNumbers().front());
     HR.procString(side2);
     const Geometry::Plane* plSide2 = SMap.realPtr<Geometry::Plane>(HR.getSurfaceNumbers().front());
-    const Geometry::Plane *pz = SMap.realPtr<Geometry::Plane>(insIndex+5);
+    //    const Geometry::Plane *pz =
+    SMap.realPtr<Geometry::Plane>(insIndex+5);
 
     std::string sideStr = side1 + side2;
     const std::string vertStr = Wheel.getLinkString(6) + Wheel.getLinkString(7); // top+bottom

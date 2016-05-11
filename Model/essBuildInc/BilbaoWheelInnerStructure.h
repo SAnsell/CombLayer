@@ -42,6 +42,8 @@ class BilbaoWheelInnerStructure : public attachSystem::ContainedComp,
   const int insIndex;             ///< Index of surface offset
   int cellIndex;                  ///< Cell index
 
+  double xyAngle;                ///< xy angle (mainly used to place the sector with bricks in the correct place). Can't rotate the wheel by itself since ProtonTube uses its coordinate system (\todo fix it)
+
   double temp;                    ///< Temperature (obtained from Inner cell of BilbaoWheel)
   double brickLen;                ///< Tungsten brick length (in radial direction)
   double brickWidth;              ///< Tungsten brick width
