@@ -499,11 +499,11 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("BeRefInnerStructureBeWallMat", "Aluminium");
 
 Control.addVariable("BeRefInnerStructureNLayers", 6);
- Control.addVariable("BeRefInnerStructureBaseLen1", 0.258); ELog::EM << "fix me: check with BeRef geometry" << ELog::endDiag;
+ Control.addVariable("BeRefInnerStructureBaseLen1", 0.258);
 Control.addVariable("BeRefInnerStructureBaseLen2", 0.075);
 Control.addVariable("BeRefInnerStructureBaseLen3", 0.258);
 Control.addVariable("BeRefInnerStructureBaseLen4", 0.075);
-//Control.addVariable("BeRefInnerStructureBaseLen5", 0.258);
+Control.addVariable("BeRefInnerStructureBaseLen5", 0.258);
 Control.addVariable("BeRefInnerStructureMat0", "Beryllium");
 Control.addVariable("BeRefInnerStructureMat1", "Be30H2O");
 Control.addVariable("BeRefInnerStructureMat2", "Beryllium");
