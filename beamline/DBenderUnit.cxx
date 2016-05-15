@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   beamline/BenderUnit.cxx 
+ * File:   beamline/DBenderUnit.cxx 
  *
  * Copyright (c) 2004-2016 by Stuart Ansell
  *
@@ -52,13 +52,12 @@
 #include "generateSurf.h"
 #include "ModelSupport.h"
 #include "ShapeUnit.h"
-#include "BenderUnit.h"
+#include "DBenderUnit.h"
 
 namespace beamlineSystem
 {
 
-
-BenderUnit::BenderUnit(const int ON,const int LS)  :
+DBenderUnit::DBenderUnit(const int ON,const int LS)  :
   ShapeUnit(ON,LS)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -67,121 +66,68 @@ BenderUnit::BenderUnit(const int ON,const int LS)  :
   */
 {}
 
-BenderUnit::BenderUnit(const BenderUnit& A) : 
-  ShapeUnit(A),
-  RCent(A.RCent),RAxis(A.RAxis),RPlane(A.RPlane),Radius(A.Radius),
-  aHeight(A.aHeight),bHeight(A.bHeight),aWidth(A.aWidth),
-  bWidth(A.bWidth),Length(A.Length),rotAng(A.rotAng),
-  AXVec(A.AXVec),AYVec(A.AYVec),AZVec(A.AZVec),BXVec(A.BXVec),
-  BYVec(A.BYVec),BZVec(A.BZVec)
-  /*!
-    Copy constructor
-    \param A :: BenderUnit to copy
-  */
-{}
 
-BenderUnit&
-BenderUnit::operator=(const BenderUnit& A)
-  /*!
-    Assignment operator
-    \param A :: BenderUnit to copy
-    \return *this
-  */
-{
-  if (this!=&A)
-    {
-      ShapeUnit::operator=(A);
-      RCent=A.RCent;
-      RAxis=A.RAxis;
-      RPlane=A.RPlane;
-      Radius=A.Radius;
-      aHeight=A.aHeight;
-      bHeight=A.bHeight;
-      aWidth=A.aWidth;
-      bWidth=A.bWidth;
-      Length=A.Length;
-      rotAng=A.rotAng;
-      AXVec=A.AXVec;
-      AYVec=A.AYVec;
-      AZVec=A.AZVec;
-      BXVec=A.BXVec;
-      BYVec=A.BYVec;
-      BZVec=A.BZVec;
-    }
-  return *this;
-}
-
-BenderUnit::~BenderUnit() 
+DBenderUnit::~DBenderUnit() 
   /*!
     Destructor
    */
 {}
 
-BenderUnit*
-BenderUnit::clone() const 
+DBenderUnit*
+DBenderUnit::clone() const 
   /*!
     Clone funciton
     \return *this
    */
 {
-  return new BenderUnit(*this);
+  return new DBenderUnit(*this);
 }
 
 void
-BenderUnit::setValues(const double H,const double W,
-		      const double L,const double Rad,
-		      const double BA)
-  /*!
-    Quick setting of values
-    \param H :: Height
-    \param W :: Width
-    \param L :: Length
-    \param Rad :: Rad
-    \param BA :: Bend angle relative to Z axis [deg]
+DBenderUnit::setApperture(const double VA,const double VB,
+			  const double HA,const double HB)
+   /*!
+     Set axis and endpoints using a rotation 
+     \param VA :: vertial first apperature
+     \param VB :: vertial second apperature
+     \param HA :: horrizontal first apperature
+     \param HB :: horrizontal second apperature
    */
 {
-  ELog::RegMethod RegA("BenderUnit","setValues");
-  
-  Radius=Rad;
-  aHeight=H;
-  bHeight=H;
-  aWidth=W;
-  bWidth=W;
-  Length=L;
-  rotAng=BA;
+  aHeight=VA;
+  bHeight=VB;
+  aWidth=HA;
+  bWidth=HB;
   return;
 }
 
 void
-BenderUnit::setValues(const double HA,const double HB,
-		      const double WA,const double WB,
-		      const double L,const double Rad,
-		      const double BA)
-  /*!
-    Quick setting of values
-    \param HA :: Height [start]
-    \param HB :: Height [End]
-    \param WA :: Width [start]
-    \param WB :: Width [end]
-    \param L :: Length
-    \param Rad :: Rad
-    \param BA :: Bend angle relative to Z axis [deg]
+DBenderUnit::setRadii(const double RA,const double RB)
+   /*!
+     Set radii
+     \param RA :: Primary 
+     \param RB :: 
    */
 {
-  ELog::RegMethod RegA("BenderUnit","setValues");
+  RadiusA=RA;
+  RadiusB=RB;
+  return;
+}
   
-  Radius=Rad;
-  aHeight=HA;
-  bHeight=HB;
-  aWidth=WA;
-  bWidth=WB;
+void
+DBenderUnit::setLength(const double L)
+  /*!
+    Set the length 
+    \param L :: length 
+  */
+{
   Length=L;
-  rotAng=BA;
   return;
 }
 
+  
 void
-BenderUnit::setOriginAxis(const Geometry::Vec3D& O,
+DBenderUnit::setOriginAxis(const Geometry::Vec3D& O,
 			  const Geometry::Vec3D& XAxis,
 			  const Geometry::Vec3D& YAxis,
 			  const Geometry::Vec3D& ZAxis)
@@ -193,7 +139,7 @@ BenderUnit::setOriginAxis(const Geometry::Vec3D& O,
      \param ZAxis :: Input Z Axis
     */
 {
-  ELog::RegMethod RegA("BenderUnit","setOriginAxis");
+  ELog::RegMethod RegA("DBenderUnit","setOriginAxis");
 
   begPt=O;
   endPt=O;
@@ -207,29 +153,41 @@ BenderUnit::setOriginAxis(const Geometry::Vec3D& O,
   BZVec=ZAxis;
 
   // Now calculate RAxis:
-  RAxis=ZAxis;
-  const Geometry::Quaternion Qz=
-    Geometry::Quaternion::calcQRotDeg(rotAng,YAxis);
-  Qz.rotate(RAxis);
 
-  
-  RPlane=YAxis*RAxis;
-  RCent=begPt+RPlane*Radius;
+  Geometry::Vec3D RAxisA=ZAxis;
+  Geometry::Vec3D RAxisB=ZAxis;
+  const Geometry::Quaternion Qa=
+    Geometry::Quaternion::calcQRotDeg(rotAng,YAxis);
+  Qa.rotate(RAxisA);
+
+
+  const Geometry::Quaternion Qb=
+    Geometry::Quaternion::calcQRotDeg(sndAng,YAxis);
+  Qb.rotate(RAxisB);
+
+
+  Geometry::Vec3D RPlaneA=YAxis*RAxisA;
+  Geometry::Vec3D RPlaneB=YAxis*RAxisB;
+
+  Geometry::Vec3D RCentA=begPt+RPlaneA*RadiusA;
+  Geometry::Vec3D RCentB=begPt+RPlaneA*RadiusB;  
+
   
   // calc angle and rotation:
-  const double theta = Length/Radius;
-  endPt+=RPlane*(2*Radius*pow(sin(theta/2.0),2.0))+AYVec*(Radius*sin(theta));
-  const Geometry::Quaternion Qxy=
-    Geometry::Quaternion::calcQRot(-theta,RAxis);
-
+  const double thetaA = asin(Length/RadiusA);
+  const double thetaB = asin(Length/RadiusB);
+  endPt+=YAxis*Length+RPlaneA*Length/tan(thetaA)+
+    RPlaneB*Length/tan(thetaB);
+  
   Qxy.rotate(BXVec);
   Qxy.rotate(BYVec);
   Qxy.rotate(BZVec);
+
   return;
 }
 
 Geometry::Vec3D
-BenderUnit::calcWidthCent(const bool plusSide) const
+DBenderUnit::calcWidthCent(const bool plusSide) const
   /*!
     Calculate the shifted centre based on the difference in
     widths. Keeps the original width point correct (symmetric round
@@ -239,11 +197,12 @@ BenderUnit::calcWidthCent(const bool plusSide) const
     \return new centre
   */
 {
-  ELog::RegMethod RegA("BenderUnit","calcWidthCent");
+  ELog::RegMethod RegA("DBenderUnit","calcWidthCent");
 
+  
   const double DW=(bWidth-aWidth)/2.0;
   const double pSign=(plusSide) ? -1.0 : 1.0;
-
+  
   const Geometry::Vec3D nEndPt=endPt+BXVec*(pSign*DW);
   const Geometry::Vec3D midPt=(nEndPt+begPt)/2.0;
   const Geometry::Vec3D LDir=((nEndPt-begPt)*RAxis).unit();
@@ -266,13 +225,63 @@ BenderUnit::calcWidthCent(const bool plusSide) const
   if (fabs(OutValues.second.imag())<Geometry::zeroTol &&
       OutValues.second.real()>0.0)
     return midPt+LDir*OutValues.second.real();
+  */  
+  return Geometry::Vec3D(0,0,0);
+    //    returnRCent;
+}
+
+Geometry::Vec3D
+DBenderUnit::calcHeightCent(const bool plusSide) const
+  /*!
+    Calculate the shifted centre based on the difference in
+    widths. Keeps the original width point correct (symmetric round
+    origin point) -- then track the exit track + / - round the centre line
+    bend.
+    \param plusSide :: to use the positive / negative side
+    \return new centre
+  */
+{
+  ELog::RegMethod RegA("DBenderUnit","calcHeightCent");
+
+  const double DH=(plusSide) ? -(bHeight-aHeight)/2.0 :
+    (bHeight-aHeight)/2.0;
+
+  begPt+=(RadiusA+DH)*
   
-  return RCent;
+  
+  const double DH=(bHeight-aHeight)/2.0;
+  const double pSign=(plusSide) ? -1.0 : 1.0;
+  
+  const Geometry::Vec3D nEndPt=endPt+BZVec*(pSign*DW);
+  const Geometry::Vec3D midPt=(nEndPt+begPt)/2.0;
+  const Geometry::Vec3D LDir=((nEndPt-begPt)*RAxis).unit();
+    
+  const Geometry::Vec3D AMid=(nEndPt-begPt)/2.0;
+  std::pair<std::complex<double>,
+	    std::complex<double> > OutValues;
+  const size_t NAns=solveQuadratic(1.0,2.0*AMid.dotProd(LDir),
+				   AMid.dotProd(AMid)-RadiusB*RadiusB,
+				   OutValues);
+  if (!NAns) 
+    {
+      ELog::EM<<"Failed to find quadratic solution for bender"<<ELog::endErr;
+      return RCent;
+    }
+
+  if (fabs(OutValues.first.imag())<Geometry::zeroTol &&
+      OutValues.first.real()>0.0)
+    return midPt+LDir*OutValues.first.real();
+  if (fabs(OutValues.second.imag())<Geometry::zeroTol &&
+      OutValues.second.real()>0.0)
+    return midPt+LDir*OutValues.second.real();
+  */  
+  return Geometry::Vec3D(0,0,0);
+    //    returnRCent;
 }
 
 
 void
-BenderUnit::createSurfaces(ModelSupport::surfRegister& SMap,
+DBenderUnit::createSurfaces(ModelSupport::surfRegister& SMap,
 			  const std::vector<double>& Thick)
   /*!
     Build the surfaces for the track
@@ -281,7 +290,8 @@ BenderUnit::createSurfaces(ModelSupport::surfRegister& SMap,
     \param Thick :: Thickness for each layer
    */
 {
-  ELog::RegMethod RegA("BenderUnit","createSurfaces");
+  ELog::RegMethod RegA("DBenderUnit","createSurfaces");
+  /*
   Geometry::Vec3D PCentre= calcWidthCent(1);
   Geometry::Vec3D MCentre= calcWidthCent(0);
   // Make divider plane +ve required
@@ -312,11 +322,12 @@ BenderUnit::createSurfaces(ModelSupport::surfRegister& SMap,
       ModelSupport::buildCylinder(SMap,SN+8,PCentre,
 				  RAxis,Radius+(Thick[j]+aWidth/2.0));
     }
+  */
   return;
 }
 
 std::string
-BenderUnit::getString(const ModelSupport::surfRegister& SMap,
+DBenderUnit::getString(const ModelSupport::surfRegister& SMap,
 		      const size_t layerN) const
   /*!
     Write string for layer number
@@ -325,7 +336,7 @@ BenderUnit::getString(const ModelSupport::surfRegister& SMap,
     \return inward string
   */
 {
-  ELog::RegMethod RegA("BenderUnit","getString");
+  ELog::RegMethod RegA("DBenderUnit","getString");
 
   const int SN(static_cast<int>(layerN)*layerSep);
   return ModelSupport::getComposite
@@ -333,7 +344,7 @@ BenderUnit::getString(const ModelSupport::surfRegister& SMap,
 }
 
 std::string
-BenderUnit::getExclude(const ModelSupport::surfRegister& SMap,
+DBenderUnit::getExclude(const ModelSupport::surfRegister& SMap,
 		       const size_t layerN) const
   /*!
     Write string for layer number
@@ -342,7 +353,7 @@ BenderUnit::getExclude(const ModelSupport::surfRegister& SMap,
     \return inward string
   */
 {
-  ELog::RegMethod RegA("BenderUnit","getExclude");
+  ELog::RegMethod RegA("DBenderUnit","getExclude");
   
   std::ostringstream cx;
 

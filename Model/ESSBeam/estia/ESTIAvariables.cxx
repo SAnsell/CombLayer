@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/estia/ESTIAvariables.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -81,7 +81,7 @@ ESTIAvariables(FuncDataBase& Control)
   Control.addVariable("estiaFMonoLayerMat1","Glass");
   Control.addVariable("estiaFMonoLayerMat2","Void");       
 
-  Control.addVariable("estiaFMono0TypeID","Tapper");
+  Control.addVariable("estiaFMono0TypeID","Taper");
   Control.addVariable("estiaFMono0HeightStart",2.0); // guess
   Control.addVariable("estiaFMono0HeightEnd",5.2);
   Control.addVariable("estiaFMono0WidthStart",8.0); // NOT Centred
@@ -112,7 +112,7 @@ ESTIAvariables(FuncDataBase& Control)
   Control.addVariable("estiaFALayerMat1","Glass");
   Control.addVariable("estiaFALayerMat2","Void");       
 
-  Control.addVariable("estiaFA0TypeID","Tapper");
+  Control.addVariable("estiaFA0TypeID","Taper");
   Control.addVariable("estiaFA0HeightStart",4.8); // guess
   Control.addVariable("estiaFA0HeightEnd",5.2);
   Control.addVariable("estiaFA0WidthStart",10.15); // NOT Centred

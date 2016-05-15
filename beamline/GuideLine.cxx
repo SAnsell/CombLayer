@@ -82,6 +82,7 @@
 #include "ShapeUnit.h"
 #include "PlateUnit.h"
 #include "BenderUnit.h"
+#include "DBenderUnit.h"
 #include "GuideLine.h"
 
 #include "debugMethod.h"
@@ -405,6 +406,30 @@ GuideLine::processShape(const FuncDataBase& Control)
 	    Control.EvalVar<double>(keyName+NStr+"Radius");
 
 	  BU->setValues(HA,HB,WA,WB,L,radius,bendAngDir);
+	  BU->setOriginAxis(Origin,X,Y,Z);
+	  //	  BU->setEndPts(Origin,Origin+Y*L);      	  
+	  shapeUnits.push_back(BU);
+	}
+      else if (typeID=="DoubleBend")
+	{
+	  DBenderUnit* BU=new DBenderUnit(GINumber,SULayer);
+
+	  const double HA=Control.EvalVar<double>(keyName+NStr+"AHeight");
+	  const double HB=Control.EvalDefVar<double>(keyName+NStr+"BHeight",HA);
+	  const double WA=Control.EvalVar<double>(keyName+NStr+"AWidth");
+	  const double WB=Control.EvalDefVar<double>(keyName+NStr+"BWidth",WA);
+	  // angular rotation of bend direciton from +Z
+	  const double RadA=
+	    Control.EvalVar<double>(keyName+NStr+"RadiusA");
+	  const double RadB=
+	    Control.EvalVar<double>(keyName+NStr+"RadiusB");
+	  const double bendAngDir=
+	    Control.EvalVar<double>(keyName+NStr+"AngDir");
+
+	  BU->setApperture(HA,HB,WA,WB);
+	  BU->setRadii(RadA,RadB);
+	  BU->setLength(L);
+	  BU->setRotAngle(bendAngDir);
 	  BU->setOriginAxis(Origin,X,Y,Z);
 	  //	  BU->setEndPts(Origin,Origin+Y*L);      	  
 	  shapeUnits.push_back(BU);

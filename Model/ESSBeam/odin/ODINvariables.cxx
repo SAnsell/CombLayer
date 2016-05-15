@@ -122,7 +122,7 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinGALayerMat1","Glass");
   Control.addVariable("odinGALayerMat2","Void");       
 
-  Control.addVariable("odinGA0TypeID","Tapper");
+  Control.addVariable("odinGA0TypeID","Taper");
   Control.addVariable("odinGA0HeightStart",3.0);
   Control.addVariable("odinGA0HeightEnd",3.0);
   Control.addVariable("odinGA0WidthStart",7.0);
@@ -176,7 +176,7 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinGBLayerMat1","Glass");
   Control.addVariable("odinGBLayerMat2","Void");       
 
-  Control.addVariable("odinGB0TypeID","Tapper");
+  Control.addVariable("odinGB0TypeID","Taper");
   Control.addVariable("odinGB0HeightStart",3.0);
   Control.addVariable("odinGB0HeightEnd",3.0);
   Control.addVariable("odinGB0WidthStart",7.0);

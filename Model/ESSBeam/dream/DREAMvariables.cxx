@@ -209,7 +209,7 @@ generateFocusTaper(FuncDataBase& Control,
   Control.addVariable(keyName+"LayerMat1","Aluminium");
   Control.addVariable(keyName+"LayerMat2","Void");       
   
-  Control.addVariable(keyName+"0TypeID","Tapper");
+  Control.addVariable(keyName+"0TypeID","Taper");
   Control.addVariable(keyName+"0HeightStart",VS);
   Control.addVariable(keyName+"0HeightEnd",VE);
   Control.addVariable(keyName+"0WidthStart",HS);
@@ -279,7 +279,7 @@ generateT0Chopper(FuncDataBase& Control,
   Control.addVariable(midName+"LayerMat1","Aluminium");
   Control.addVariable(midName+"LayerMat2","Void");       
   
-  Control.addVariable(midName+"0TypeID","Tapper");
+  Control.addVariable(midName+"0TypeID","Taper");
   Control.addVariable(midName+"0HeightStart",4.6);
   Control.addVariable(midName+"0HeightEnd",4.5);
   Control.addVariable(midName+"0WidthStart",2.06);
@@ -341,7 +341,7 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamFALayerMat1","Copper");
   Control.addVariable("dreamFALayerMat2","Void");       
 
-  Control.addVariable("dreamFA0TypeID","Tapper");
+  Control.addVariable("dreamFA0TypeID","Taper");
   Control.addVariable("dreamFA0HeightStart",3.5); // guess
   Control.addVariable("dreamFA0HeightEnd",4.5);
   Control.addVariable("dreamFA0WidthStart",8.0); // NOT Centred

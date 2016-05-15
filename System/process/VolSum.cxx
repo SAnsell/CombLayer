@@ -75,7 +75,7 @@ namespace ModelSupport
 VolSum::VolSum(const Geometry::Vec3D& OPt,
 	       const Geometry::Vec3D& AxisRange) : 
   Origin(OPt),X(fabs(AxisRange[0]),0,0),
-  Y(fabs(AxisRange[1]),0,0),Z(fabs(AxisRange[2]),0,0),
+  Y(0,fabs(AxisRange[1]),0),Z(0,0,fabs(AxisRange[2])),
   fullVol(0.0),totalDist(0),nTracks(0)
   /*!
     Constructor
