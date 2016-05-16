@@ -40,11 +40,17 @@ class DBenderUnit : public ShapeUnit
 
   Geometry::Vec3D RCentA;      ///< Rotation centre
   Geometry::Vec3D RCentB;      ///< Rotation centre
-  Geometry::Vec3D RAxisA;      ///< Rotation axis
-  Geometry::Vec3D RAxisB;      ///< Rotation axis
-  Geometry::Vec3D RPlaneA;     ///< Rotation Centre direction
-  Geometry::Vec3D RPlaneB;     ///< Rotation Centre direction
+  Geometry::Vec3D RAxisA;      ///< Rotation axis [horr p;ane ]
+  Geometry::Vec3D RAxisB;      ///< Rotation axis [vert plane]
+  
+  Geometry::Vec3D RPlaneFrontA;    ///< Towards Centre direction
+  Geometry::Vec3D RPlaneFrontB;    ///< Towards Centre direction
+  Geometry::Vec3D RPlaneBackA;     ///< Towards Centre direction
+  Geometry::Vec3D RPlaneBackB;     ///< Towards Centre direction
 
+  Geometry::Vec3D endPtA;          ///< A plane endpoint 
+  Geometry::Vec3D endPtB;          ///< B plane end point
+  
   double RadiusA;             ///< Primary rotation ratius
   double RadiusB;             ///< Primary rotation ratius
   double aHeight;             ///< Height across rotation plane [start]
@@ -53,17 +59,18 @@ class DBenderUnit : public ShapeUnit
   double bWidth;              ///< In rotation plane [end]
   double Length;              ///< Length of section
   double rotAng;              ///< Rotation of Z bend axis for bend
-  double sndAng;              ///< Rotation of Z bend axis for bend
+  double sndAng;              ///< Rotation of X bend axis for bend
 
   Geometry::Vec3D AXVec;    ///< Current XVector [Front]
   Geometry::Vec3D AYVec;    ///< Current YVector [Front]
   Geometry::Vec3D AZVec;    ///< Current ZVector [Front]
 
-  Geometry::Vec3D BXVec;    ///< Current XVector [Back]
+  Geometry::Vec3D BXVec;    ///< Current XVector [Back] 
   Geometry::Vec3D BYVec;    ///< Current YVector [Back]
   Geometry::Vec3D BZVec;    ///< Current ZVector [Back]
 
   Geometry::Vec3D calcWidthCent(const bool) const;
+  Geometry::Vec3D calcHeightCent(const bool) const;
   
  public:
 
@@ -76,8 +83,10 @@ class DBenderUnit : public ShapeUnit
   void setApperture(const double,const double,
 		    const double,const double);
   void setRadii(const double,const double);
+    
   void setLength(const double);
-  void setRotAngle(const double);
+  void setRotAngle(const double A,const double B)
+  { rotAng=A; sndAng=B; }
   
   void setOriginAxis(const Geometry::Vec3D&,const Geometry::Vec3D&,
 		     const Geometry::Vec3D&,const Geometry::Vec3D&);

@@ -425,11 +425,13 @@ GuideLine::processShape(const FuncDataBase& Control)
 	    Control.EvalVar<double>(keyName+NStr+"RadiusB");
 	  const double bendAngDir=
 	    Control.EvalVar<double>(keyName+NStr+"AngDir");
+	  const double sndAngDir=
+	    Control.EvalDefVar<double>(keyName+NStr+"SndDir",bendAngDir+90.0);
 
 	  BU->setApperture(HA,HB,WA,WB);
 	  BU->setRadii(RadA,RadB);
 	  BU->setLength(L);
-	  BU->setRotAngle(bendAngDir);
+	  BU->setRotAngle(bendAngDir,sndAngDir);
 	  BU->setOriginAxis(Origin,X,Y,Z);
 	  //	  BU->setEndPts(Origin,Origin+Y*L);      	  
 	  shapeUnits.push_back(BU);
