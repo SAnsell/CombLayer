@@ -57,7 +57,6 @@
 namespace beamlineSystem
 {
 
-
 DBenderUnit::DBenderUnit(const int ON,const int LS)  :
   ShapeUnit(ON,LS)
   /*!
@@ -69,11 +68,15 @@ DBenderUnit::DBenderUnit(const int ON,const int LS)  :
 
 DBenderUnit::DBenderUnit(const DBenderUnit& A) : 
   ShapeUnit(A),
-  RCent(A.RCent),RAxis(A.RAxis),RPlane(A.RPlane),Radius(A.Radius),
+  RCentA(A.RCentA),RCentB(A.RCentB),RAxisA(A.RAxisA),
+  RAxisB(A.RAxisB),RPlaneFrontA(A.RPlaneFrontA),
+  RPlaneFrontB(A.RPlaneFrontB),RPlaneBackA(A.RPlaneBackA),
+  RPlaneBackB(A.RPlaneBackB),endPtA(A.endPtA),
+  endPtB(A.endPtB),RadiusA(A.RadiusA),RadiusB(A.RadiusB),
   aHeight(A.aHeight),bHeight(A.bHeight),aWidth(A.aWidth),
   bWidth(A.bWidth),Length(A.Length),rotAng(A.rotAng),
-  AXVec(A.AXVec),AYVec(A.AYVec),AZVec(A.AZVec),BXVec(A.BXVec),
-  BYVec(A.BYVec),BZVec(A.BZVec)
+  sndAng(A.sndAng),AXVec(A.AXVec),AYVec(A.AYVec),
+  AZVec(A.AZVec),BXVec(A.BXVec),BYVec(A.BYVec),BZVec(A.BZVec)
   /*!
     Copy constructor
     \param A :: DBenderUnit to copy
@@ -91,16 +94,25 @@ DBenderUnit::operator=(const DBenderUnit& A)
   if (this!=&A)
     {
       ShapeUnit::operator=(A);
-      RCent=A.RCent;
-      RAxis=A.RAxis;
-      RPlane=A.RPlane;
-      Radius=A.Radius;
+      RCentA=A.RCentA;
+      RCentB=A.RCentB;
+      RAxisA=A.RAxisA;
+      RAxisB=A.RAxisB;
+      RPlaneFrontA=A.RPlaneFrontA;
+      RPlaneFrontB=A.RPlaneFrontB;
+      RPlaneBackA=A.RPlaneBackA;
+      RPlaneBackB=A.RPlaneBackB;
+      endPtA=A.endPtA;
+      endPtB=A.endPtB;
+      RadiusA=A.RadiusA;
+      RadiusB=A.RadiusB;
       aHeight=A.aHeight;
       bHeight=A.bHeight;
       aWidth=A.aWidth;
       bWidth=A.bWidth;
       Length=A.Length;
       rotAng=A.rotAng;
+      sndAng=A.sndAng;
       AXVec=A.AXVec;
       AYVec=A.AYVec;
       AZVec=A.AZVec;
@@ -128,58 +140,48 @@ DBenderUnit::clone() const
 }
 
 void
-DBenderUnit::setValues(const double H,const double W,
-		      const double L,const double Rad,
-		      const double BA)
-  /*!
-    Quick setting of values
-    \param H :: Height
-    \param W :: Width
-    \param L :: Length
-    \param Rad :: Rad
-    \param BA :: Bend angle relative to Z axis [deg]
+DBenderUnit::setApperture(const double VA,const double VB,
+			  const double HA,const double HB)
+   /*!
+     Set axis and endpoints using a rotation 
+     \param VA :: vertial first apperature
+     \param VB :: vertial second apperature
+     \param HA :: horrizontal first apperature
+     \param HB :: horrizontal second apperature
    */
 {
-  ELog::RegMethod RegA("DBenderUnit","setValues");
-  
-  Radius=Rad;
-  aHeight=H;
-  bHeight=H;
-  aWidth=W;
-  bWidth=W;
-  Length=L;
-  rotAng=BA;
+  aHeight=VA;
+  bHeight=VB;
+  aWidth=HA;
+  bWidth=HB;
   return;
 }
 
 void
-DBenderUnit::setValues(const double HA,const double HB,
-		      const double WA,const double WB,
-		      const double L,const double Rad,
-		      const double BA)
-  /*!
-    Quick setting of values
-    \param HA :: Height [start]
-    \param HB :: Height [End]
-    \param WA :: Width [start]
-    \param WB :: Width [end]
-    \param L :: Length
-    \param Rad :: Rad
-    \param BA :: Bend angle relative to Z axis [deg]
+DBenderUnit::setRadii(const double RA,const double RB)
+   /*!
+     Set radii
+     \param RA :: Primary radius
+     \param RB :: Secondary raidus
    */
 {
-  ELog::RegMethod RegA("DBenderUnit","setValues");
+  RadiusA=RA;
+  RadiusB=RB;
+  return;
+}
   
-  Radius=Rad;
-  aHeight=HA;
-  bHeight=HB;
-  aWidth=WA;
-  bWidth=WB;
+void
+DBenderUnit::setLength(const double L)
+  /*!
+    Set the length 
+    \param L :: length 
+  */
+{
   Length=L;
-  rotAng=BA;
   return;
 }
 
+  
 void
 DBenderUnit::setOriginAxis(const Geometry::Vec3D& O,
 			  const Geometry::Vec3D& XAxis,
@@ -202,29 +204,47 @@ DBenderUnit::setOriginAxis(const Geometry::Vec3D& O,
   AZVec=ZAxis;
   // Now calc. exit point
 
-  BXVec=XAxis;
-  BYVec=YAxis;
-  BZVec=ZAxis;
-
   // Now calculate RAxis:
-  RAxis=ZAxis;
-  const Geometry::Quaternion Qz=
+
+  RAxisA=ZAxis;
+  RAxisB=ZAxis;
+  const Geometry::Quaternion Qa=
     Geometry::Quaternion::calcQRotDeg(rotAng,YAxis);
-  Qz.rotate(RAxis);
+  Qa.rotate(RAxisA);
 
-  
-  RPlane=YAxis*RAxis;
-  RCent=begPt+RPlane*Radius;
-  
+  const Geometry::Quaternion Qb=
+    Geometry::Quaternion::calcQRotDeg(sndAng,YAxis);
+  Qb.rotate(RAxisB);
+
+  RPlaneFrontA=YAxis*RAxisA;
+  RPlaneFrontB=YAxis*RAxisB;
+
+  RCentA=begPt+RPlaneFrontA*RadiusA;
+  RCentB=begPt+RPlaneFrontB*RadiusB;
+
   // calc angle and rotation:
-  const double theta = Length/Radius;
-  endPt+=RPlane*(2*Radius*pow(sin(theta/2.0),2.0))+AYVec*(Radius*sin(theta));
-  const Geometry::Quaternion Qxy=
-    Geometry::Quaternion::calcQRot(-theta,RAxis);
+  const double thetaA = asin(Length/RadiusA);
+  const double thetaB = asin(Length/RadiusB);
+  endPt+=YAxis*Length+RPlaneFrontA*(Length*tan(thetaA))+
+    RPlaneFrontB*(Length*tan(thetaB));
+  endPtA=begPt+YAxis*Length+RPlaneFrontA*(Length*tan(thetaA));
+  endPtB=begPt+YAxis*Length+ RPlaneFrontB*(Length*tan(thetaB));
 
-  Qxy.rotate(BXVec);
-  Qxy.rotate(BYVec);
-  Qxy.rotate(BZVec);
+  // Cacluate the new direction [outgoing]
+  const Geometry::Quaternion QaxisA=
+    Geometry::Quaternion::calcQRotDeg(thetaA,RAxisA);
+
+  const Geometry::Quaternion QaxisB=
+    Geometry::Quaternion::calcQRotDeg(thetaB,RAxisB);
+  RPlaneBackA=RPlaneFrontA;
+  RPlaneBackB=RPlaneFrontB;
+    
+  QaxisA.rotate(BYVec);  
+  QaxisB.rotate(BYVec);
+
+  QaxisA.rotate(RPlaneBackA);  
+  QaxisB.rotate(RPlaneBackB);
+  
   return;
 }
 
@@ -243,33 +263,74 @@ DBenderUnit::calcWidthCent(const bool plusSide) const
 
   const double DW=(bWidth-aWidth)/2.0;
   const double pSign=(plusSide) ? -1.0 : 1.0;
-
-  const Geometry::Vec3D nEndPt=endPt+BXVec*(pSign*DW);
+  
+  const Geometry::Vec3D nEndPt=endPtA+RPlaneBackA*(pSign*DW);
   const Geometry::Vec3D midPt=(nEndPt+begPt)/2.0;
-  const Geometry::Vec3D LDir=((nEndPt-begPt)*RAxis).unit();
+  const Geometry::Vec3D LDir=((nEndPt-begPt)*RAxisA).unit();
     
   const Geometry::Vec3D AMid=(nEndPt-begPt)/2.0;
   std::pair<std::complex<double>,
 	    std::complex<double> > OutValues;
   const size_t NAns=solveQuadratic(1.0,2.0*AMid.dotProd(LDir),
-				   AMid.dotProd(AMid)-Radius*Radius,
+				   AMid.dotProd(AMid)-RadiusA*RadiusA,
 				   OutValues);
-  if (!NAns) 
+  
+  if (NAns) 
     {
-      ELog::EM<<"Failed to find quadratic solution for bender"<<ELog::endErr;
-      return RCent;
+      if (fabs(OutValues.first.imag())<Geometry::zeroTol &&
+          OutValues.first.real()>0.0)
+        return midPt+LDir*OutValues.first.real();
+      
+      if (fabs(OutValues.second.imag())<Geometry::zeroTol &&
+          OutValues.second.real()>0.0)
+        return midPt+LDir*OutValues.second.real();
     }
 
-  if (fabs(OutValues.first.imag())<Geometry::zeroTol &&
-      OutValues.first.real()>0.0)
-    return midPt+LDir*OutValues.first.real();
-  if (fabs(OutValues.second.imag())<Geometry::zeroTol &&
-      OutValues.second.real()>0.0)
-    return midPt+LDir*OutValues.second.real();
-  
-  return RCent;
+  ELog::EM<<"Failed to find quadratic solution for bender"<<ELog::endErr;
+  return RCentA;
 }
 
+Geometry::Vec3D
+DBenderUnit::calcHeightCent(const bool plusSide) const
+  /*!
+    Calculate the shifted centre based on the difference in
+    widths. Keeps the original width point correct (symmetric round
+    origin point) -- then track the exit track + / - round the centre line
+    bend.
+    \param plusSide :: to use the positive / negative side
+    \return new centre
+  */
+{
+  ELog::RegMethod RegA("DBenderUnit","calcHeightCent");
+
+  const double DW=(bHeight-aHeight)/2.0;
+  const double pSign=(plusSide) ? -1.0 : 1.0;
+  
+  const Geometry::Vec3D nEndPt=endPtB+RPlaneBackB*(pSign*DW);
+  const Geometry::Vec3D midPt=(nEndPt+begPt)/2.0;
+  const Geometry::Vec3D LDir=((nEndPt-begPt)*RAxisB).unit();
+    
+  const Geometry::Vec3D AMid=(nEndPt-begPt)/2.0;
+  std::pair<std::complex<double>,
+	    std::complex<double> > OutValues;
+  const size_t NAns=solveQuadratic(1.0,2.0*AMid.dotProd(LDir),
+				   AMid.dotProd(AMid)-RadiusB*RadiusB,
+				   OutValues);
+  
+  if (NAns) 
+    {
+      if (fabs(OutValues.first.imag())<Geometry::zeroTol &&
+          OutValues.first.real()>0.0)
+        return midPt+LDir*OutValues.first.real();
+      
+      if (fabs(OutValues.second.imag())<Geometry::zeroTol &&
+          OutValues.second.real()>0.0)
+        return midPt+LDir*OutValues.second.real();
+    }
+
+  ELog::EM<<"Failed to find quadratic solution for bender"<<ELog::endErr;
+  return RCentB;
+}
 
 void
 DBenderUnit::createSurfaces(ModelSupport::surfRegister& SMap,
@@ -282,36 +343,45 @@ DBenderUnit::createSurfaces(ModelSupport::surfRegister& SMap,
    */
 {
   ELog::RegMethod RegA("DBenderUnit","createSurfaces");
-  Geometry::Vec3D PCentre= calcWidthCent(1);
-  Geometry::Vec3D MCentre= calcWidthCent(0);
-  // Make divider plane +ve required
-  const double maxThick=Thick.back()+(aWidth+bWidth);
 
+  // plus/minus points
+  const Geometry::Vec3D PWCentre= calcWidthCent(1);
+  const Geometry::Vec3D MWCentre= calcWidthCent(0);
 
-  ModelSupport::buildPlane(SMap,shapeIndex+1,
-			   begPt+RPlane*maxThick,
-			   endPt+RPlane*maxThick,
-			   endPt+RPlane*maxThick+RAxis,
-			   -RPlane);
+  const Geometry::Vec3D PHCentre= calcHeightCent(1);
+  const Geometry::Vec3D MHCentre= calcHeightCent(0);
+
+  // Make divider plane width required
+  const double maxWidth=Thick.back()+(aWidth+bWidth);
+  ModelSupport::buildPlane(SMap,shapeIndex+1001,
+			   begPt+RPlaneFrontA*maxWidth,
+			   endPt+RPlaneFrontA*maxWidth,
+			   endPt+RPlaneFrontA*maxWidth+RAxisA,
+			   -RPlaneFrontA);
+  // Make divider plane heightx required
+  const double maxHeight=Thick.back()+(aHeight+bHeight);
+  ModelSupport::buildPlane(SMap,shapeIndex+1002,
+			   begPt+RPlaneFrontB*maxHeight,
+			   endPt+RPlaneFrontB*maxHeight,
+			   endPt+RPlaneFrontB*maxHeight+RAxisB,
+			   -RPlaneFrontB);
+
+  // Widths
   for(size_t j=0;j<Thick.size();j++)
     {
       const int SN(shapeIndex+static_cast<int>(j)*layerSep);
-      ModelSupport::buildPlane(SMap,SN+5,
-			       begPt-RAxis*(aHeight/2.0+Thick[j]),
-			       begPt-RAxis*(aHeight/2.0+Thick[j])+RPlane,
-			       endPt-RAxis*(bHeight/2.0+Thick[j]),
-			       RAxis);
-      ModelSupport::buildPlane(SMap,SN+6,
-			       begPt+RAxis*(aHeight/2.0+Thick[j]),
-			       begPt+RAxis*(aHeight/2.0+Thick[j])+RPlane,
-			       endPt+RAxis*(bHeight/2.0+Thick[j]),
-			       RAxis);
 
-      ModelSupport::buildCylinder(SMap,SN+7,MCentre,
-				  RAxis,Radius-(Thick[j]+aWidth/2.0));
-      ModelSupport::buildCylinder(SMap,SN+8,PCentre,
-				  RAxis,Radius+(Thick[j]+aWidth/2.0));
+      ModelSupport::buildCylinder(SMap,SN+5,MHCentre,
+				  RAxisB,RadiusB-(Thick[j]+aHeight/2.0));
+      ModelSupport::buildCylinder(SMap,SN+6,PHCentre,
+				  RAxisB,RadiusB+(Thick[j]+aHeight/2.0));
+
+      ModelSupport::buildCylinder(SMap,SN+7,MWCentre,
+				  RAxisA,RadiusB-(Thick[j]+aWidth/2.0));
+      ModelSupport::buildCylinder(SMap,SN+8,PWCentre,
+				  RAxisA,RadiusB+(Thick[j]+aWidth/2.0));
     }
+
   return;
 }
 
@@ -329,7 +399,7 @@ DBenderUnit::getString(const ModelSupport::surfRegister& SMap,
 
   const int SN(static_cast<int>(layerN)*layerSep);
   return ModelSupport::getComposite
-    (SMap,shapeIndex+SN,shapeIndex," 1M 5 -6 7 -8 ");
+    (SMap,shapeIndex+SN,shapeIndex," 1001M 1002M 5 -6 7 -8 ");
 }
 
 std::string
