@@ -610,6 +610,7 @@ EssVariables(FuncDataBase& Control)
   ESTIAvariables(Control);
   LOKIvariables(Control);
   NMXvariables(Control);
+  VESPAvariables(Control);
   VORvariables(Control);
   simpleITEMvariables(Control);
       

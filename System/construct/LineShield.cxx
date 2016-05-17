@@ -232,7 +232,7 @@ LineShield::createSurfaces()
   // Inner void
   if (!activeFront)
     ModelSupport::buildPlane(SMap,shieldIndex+1,Origin-Y*(length/2.0),Y);
-
+      
   if (!activeBack)
     ModelSupport::buildPlane(SMap,shieldIndex+2,Origin+Y*(length/2.0),Y);
 
@@ -306,7 +306,6 @@ LineShield::createObjects(Simulation& System)
   int WI,RI,FI;    
   for(size_t index=0;index<nSeg;index++)
     {
-	
       FBStr=((index) ?
 	     ModelSupport::getComposite(SMap,SI," 2 ") :
 	     frontStr+divStr);

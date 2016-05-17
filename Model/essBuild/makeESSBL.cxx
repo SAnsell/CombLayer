@@ -80,6 +80,7 @@
 #include "NMX.h"
 #include "DREAM.h"
 #include "CSPEC.h"
+#include "VESPA.h"
 #include "shortDREAM.h"
 #include "shortODIN.h"
 #include "VOR.h"
@@ -229,6 +230,12 @@ makeESSBL::build(Simulation& System,
       // DREAM beamline
       CSPEC cspecBL("cspec");
       cspecBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+    }
+  else if (beamName=="VESPA")
+    {
+      // DREAM beamline
+      VESPA vespaBL("vespa");
+      vespaBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="SHORTDREAM")
     {

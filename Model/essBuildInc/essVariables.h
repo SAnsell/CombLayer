@@ -47,6 +47,7 @@ namespace setVariable
   void LOKIvariables(FuncDataBase&);
   void NMXvariables(FuncDataBase&);
   void VORvariables(FuncDataBase&);
+  void VESPAvariables(FuncDataBase&);
 
   // MODIFIED ESS Beamlines
   void shortDREAMvariables(FuncDataBase&);

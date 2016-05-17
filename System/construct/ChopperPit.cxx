@@ -153,7 +153,7 @@ ChopperPit::createUnitVector(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("ChopperPit","createUnitVector");
 
-  yStep=voidLength/2.0+feFront;
+  yStep+=voidLength/2.0+feFront;
 
   attachSystem::FixedComp& Outer=getKey("Outer");
   attachSystem::FixedComp& Mid=getKey("Mid");
@@ -317,6 +317,7 @@ ChopperPit::createLinks()
 	  
   // Fe system [front face is link surf]
 
+  midFC.setConnect(0,Origin-Y*(feFront+voidLength/2.0),-Y);
   midFC.setConnect(1,Origin+Y*(feBack+voidLength/2.0),Y);
   midFC.setConnect(2,Origin-X*(feWidth+voidWidth/2.0),-X);
   midFC.setConnect(3,Origin+X*(feWidth+voidWidth/2.0),X);

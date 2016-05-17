@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuildInc/makeESSBL.h
+ * File:   essInc/ShieldGenerator.h
  *
  * Copyright (c) 2004-2016 by Stuart Ansell
  *
@@ -19,47 +19,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef essSystem_makeESSBL_h
-#define essSystem_makeESSBL_h
+#ifndef essSystem_ShieldGenerator_h
+#define essSystem_ShieldGenerator_h
 
-namespace beamlineSystem
-{
-  class GuideLine;
-}
+class Simulation;
 
 namespace essSystem
 {
-  class GuideBay;
 
-  /*!
-    \class makeESSBL
-    \version 1.0
-    \author S. Ansell
-    \date April 2014
-    \brief Simple beamline constructor for ESS
-  */
-  
-class makeESSBL : 
-  public  beamlineSystem::beamlineConstructor
+/*!
+  \class ShieldGenerator
+  \version 1.0
+  \author S. Ansell
+  \date May 2016
+  \brief ShieldGenerator for variables
+*/
+
+class ShieldGenerator
 {
  private:
-
-  const std::string shutterName;              ///< Shutter name
-  const std::string beamName;                 ///< Name of beamline
   
+
  public:
 
-  static std::pair<int,int> getBeamNum(const std::string&);
+  ShieldGenerator();
+  ShieldGenerator(const ShieldGenerator&);
+  ShieldGenerator& operator=(const ShieldGenerator&);
+  ~ShieldGenerator();
   
-  makeESSBL(const std::string&,const std::string&);
-  makeESSBL(const makeESSBL&);
-  makeESSBL& operator=(const makeESSBL&);
-  virtual ~makeESSBL();  
-  
-  virtual void build(Simulation&,const essSystem::Bunker&);
-
 };
 
 }
 
 #endif
+ 
