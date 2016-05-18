@@ -370,31 +370,32 @@ VESPA::build(Simulation& System,
   //
   // OUTSIDE:
   //
-  ShieldA->addInsertCell(voidCell);
-  ShieldA->setFront(bunkerObj,2);
-  ShieldA->setDivider(bunkerObj,2);
-  ShieldA->createAll(System,*BInsert,2);
 
-  VPipeOutA->addInsertCell(ShieldA->getCell("Void"));
   VPipeOutA->setFront(bunkerObj,2);
   VPipeOutA->setDivider(bunkerObj,2);
-  VPipeOutA->setBack(*ShieldA,-2);
   VPipeOutA->createAll(System,FocusWall->getKey("Guide0"),2);
   
   FocusOutA->addInsertCell(VPipeOutA->getCell("Void"));
   FocusOutA->createAll(System,*VPipeOutA,7,*VPipeOutA,7);
 
+
+  PitB->addInsertCell(voidCell);
+  PitB->createAll(System,FocusOutA->getKey("Guide0"),2);
+
+  ShieldA->addInsertCell(voidCell);
+  ShieldA->setFront(bunkerObj,2);
+  ShieldA->setBack(PitB->getKey("Mid"),1);
+  ShieldA->setDivider(bunkerObj,2);
+  ShieldA->createAll(System,*BInsert,2);
+  ShieldA->insertComponent(System,"Void",*VPipeOutA);
+  
   HeadRule GuideCut=
     attachSystem::unionLink(*ShieldA,{2,3,4,5,6});
-  PitB->addInsertCell(voidCell);
-  PitB->createAll(System,FocusOutA->getKey("Guide0"),2,
-                  GuideCut.display());
-  
-  ShieldA->addInsertCell(PitB->getCells("Outer"));
-  ShieldA->addInsertCell(PitB->getCells("MidLayer"));
-  ShieldA->addInsertCell(PitB->getCells("Void"));
+  ELog::EM<<"Guide Cut == "<<GuideCut.display()<<ELog::endDiag;
+  PitB->insertComponent(System,"Outer",GuideCut);
+  PitB->insertComponent(System,"MidLayer",*VPipeOutA);
+  PitB->insertComponent(System,"Void",*VPipeOutA);
 
-  ShieldA->insertObjects(System);
 
   // First Chopper
   ChopperOutB->addInsertCell(PitB->getCells("Void"));
@@ -421,9 +422,6 @@ VESPA::build(Simulation& System,
   FocusOutB->addInsertCell(VPipeOutB->getCell("Void"));
   FocusOutB->createAll(System,*VPipeOutB,7,*VPipeOutB,7);
 
-
-
-
   // Mid section array:
   ShieldArray[0]->addInsertCell(voidCell);
   ShieldArray[0]->setFront(*ShieldB,2);
@@ -442,7 +440,6 @@ VESPA::build(Simulation& System,
       VPipeArray[i]->createAll(System,*ShieldArray[i-1],2);
       FocusArray[i]->addInsertCell(VPipeArray[i]->getCell("Void"));
       FocusArray[i]->createAll(System,*VPipeArray[i],7,*VPipeArray[i],7);
-
     }
 
   return;

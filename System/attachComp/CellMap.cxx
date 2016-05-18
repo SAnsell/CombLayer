@@ -203,8 +203,9 @@ CellMap::insertComponent(Simulation& System,
 
   const std::vector<int> CVec=getCells(Key);
   if (CVec.empty())
-    throw ColErr::InContainerError<std::string>(Key,"Cell["+Key+"] not present");
-  
+    throw ColErr::InContainerError<std::string>
+      (Key,"Cell["+Key+"] not present");
+
   for(const int cellNum : CVec)
     {
       MonteCarlo::Qhull* outerObj=System.findQhull(cellNum);

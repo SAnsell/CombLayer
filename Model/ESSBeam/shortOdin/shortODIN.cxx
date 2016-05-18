@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   ESSBeam/odin/ODIN.cxx
+ * File:   ESSBeam/odin/shortODIN.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -344,7 +344,7 @@ shortODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
   HeadRule GuideCut=
     attachSystem::unionLink(GuideD->getKey("Shield"),{2,3,4,5,6});
   PitA->addInsertCell(voidCell);
-  PitA->createAll(System,GuideD->getKey("Guide0"),2,GuideCut.display());
+  PitA->createAll(System,GuideD->getKey("Guide0"),2);
 
   ELog::EM<<"PitA == "<<PitA->getCentre()
 	  <<" :: "<<PitA->getCentre().abs()<<ELog::endDebug;
@@ -378,7 +378,7 @@ shortODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
   // Guide guide String
   GuideCut=attachSystem::unionLink(GuideE->getKey("Shield"),{2,3,4,5,6});
   PitB->addInsertCell(voidCell);
-  PitB->createAll(System,GuideE->getKey("Guide0"),2,GuideCut.display());
+  PitB->createAll(System,GuideE->getKey("Guide0"),2);
 
   ChopperB->addInsertCell(PitB->getCell("Void"));
   ChopperB->setCentreFlag(-3);  // -Z direction
@@ -412,7 +412,7 @@ shortODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
   for(size_t i=1;i<6;i++)
     GuideCut.addUnion(GOuterC.getLinkString(i));
   PitC->addInsertCell(voidCell);
-  PitC->createAll(System,GuideF->getKey("Guide0"),2,GuideCut.display());
+  PitC->createAll(System,GuideF->getKey("Guide0"),2);
 
   ELog::EM<<"PitC == "<<PitC->getCentre()
 	  <<" :: "<<PitC->getCentre().abs()<<ELog::endDebug;

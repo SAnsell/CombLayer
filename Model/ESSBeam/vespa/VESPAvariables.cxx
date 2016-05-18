@@ -581,10 +581,10 @@ VESPAvariables(FuncDataBase& Control)
   // Guide after wall [17.5m - 3.20] for wall
   generatePipe(Control,"vespaPipeOutA",435.0);  //
   Control.addVariable("vespaPipeOutARadius",9.0);
-  generateFocusTaper(Control,"vespaFOutA",431.0,9.0,11.0,8.5,10.0);
+  generateFocusTaper(Control,"vespaFOutA",420.0,9.0,11.0,8.5,10.0);
 
 
-  Control.addVariable("vespaPitBYStep",-36.5);
+  Control.addVariable("vespaPitBYStep",-60.5);
 
   Control.addVariable("vespaPitBVoidHeight",167.0);
   Control.addVariable("vespaPitBVoidDepth",36.0);

@@ -46,6 +46,8 @@ class BaseMap
   LCTYPE Items;          ///< Named cell 
 
   void removeVecUnit(const std::string&,const int);
+
+  std::string getFCKeyName() const;
   
  public:
 

@@ -312,7 +312,7 @@ LineShield::createObjects(Simulation& System)
       FBStr+= ((index+1!=nSeg) ?
 	       ModelSupport::getComposite(SMap,SI," -12 ") :
 	       backStr+divStr);
-      SI+=10;
+      SI+=10; 
 
       // Inner is a single component
       // Walls are contained:
@@ -389,21 +389,39 @@ LineShield::createLinks()
   FixedComp::setConnect(4,Origin-Z*depth,-Z);
   FixedComp::setConnect(5,Origin+Z*height,Z);
 
+  const int WI(shieldIndex+(static_cast<int>(nWallLayers)-1)*10);
+  const int RI(shieldIndex+(static_cast<int>(nRoofLayers)-1)*10);
+  const int FI(shieldIndex+(static_cast<int>(nFloorLayers)-1)*10);
+
   if (!activeFront)
     {
       FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
       FixedComp::setLinkSurf(0,-SMap.realSurf(shieldIndex+1));      
     }
+  else
+    {
+      HeadRule fComp(frontSurf);
+      fComp.makeComplement();
+      FixedComp::setLinkSurf(0,fComp.display());
+      if (activeDivide)
+	FixedComp::setBridgeSurf(0,divideSurf);
+    }
+  
   if (!activeBack)
     {
       FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
       FixedComp::setLinkSurf(1,SMap.realSurf(shieldIndex+2));      
     }
-
-  FixedComp::setLinkSurf(2,-SMap.realSurf(shieldIndex+3));
-  FixedComp::setLinkSurf(3,SMap.realSurf(shieldIndex+4));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(shieldIndex+5));
-  FixedComp::setLinkSurf(5,SMap.realSurf(shieldIndex+6));
+  else
+    {
+      HeadRule bComp(backSurf);
+      bComp.makeComplement();
+      FixedComp::setLinkSurf(1,bComp.display());
+    }
+  FixedComp::setLinkSurf(2,-SMap.realSurf(WI+3));
+  FixedComp::setLinkSurf(3,SMap.realSurf(WI+4));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(FI+5));
+  FixedComp::setLinkSurf(5,SMap.realSurf(RI+6));
   
   return;
 }

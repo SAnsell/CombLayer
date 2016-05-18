@@ -187,6 +187,8 @@ ChopperPit::createSurfaces()
   ModelSupport::buildPlane(SMap,pitIndex+6,Origin+Z*voidHeight,Z);  
 
   // Fe system [front face is link surf]
+  ModelSupport::buildPlane(SMap,pitIndex+11,
+			   Origin-Y*(feFront+voidLength/2.0),Y);
   ModelSupport::buildPlane(SMap,pitIndex+12,
 			   Origin+Y*(feBack+voidLength/2.0),Y);
   ModelSupport::buildPlane(SMap,pitIndex+13,
@@ -232,24 +234,15 @@ ChopperPit::createSurfaces()
 }
 
 void
-ChopperPit::createObjects(Simulation& System,
-			  const attachSystem::FixedComp& FC,
-			  const long int sideIndex,
-			  const std::string& cutRule)
+ChopperPit::createObjects(Simulation& System)
   /*!
     Adds the zoom chopper box
     \param System :: Simulation to create objects in
-    \param FC :: FixedComp of front face
-    \param sideIndex :: Fixed link point of object [signed]
-    \param cutRule :: Exclude from the front cut 
    */
 {
   ELog::RegMethod RegA("ChopperPit","createObjects");
 
   std::string Out;
-
-  HeadRule frontFace(FC.getSignedLinkString(sideIndex));
-
   // Void 
   Out=ModelSupport::getComposite(SMap,pitIndex,"1 -2 3 -4 5 -6");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
@@ -264,20 +257,16 @@ ChopperPit::createObjects(Simulation& System,
       setCell("Collet",cellIndex-1);
     }
   
-  Out=ModelSupport::getComposite(SMap,pitIndex,
-				 " -12 13 -14 15 -16 (-1:2:-3:4:-5:6)");
+  Out=ModelSupport::getComposite
+    (SMap,pitIndex,"11 -12 13 -14 15 -16 (-1:2:-3:4:-5:6)");
   Collet.makeComplement();
   Out+=Collet.display();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out+
-				   frontFace.display()));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
   addCell("MidLayer",cellIndex-1);
   
   // Make full exclude:
-  Out=ModelSupport::getComposite(SMap,pitIndex," -12 13 -14 15 -16 ");
-  frontFace.addIntersection(Out);
-  frontFace.makeComplement();
-  Out=ModelSupport::getComposite(SMap,pitIndex," 21 -22 23 -24 25 -26 ");
-  Out+=frontFace.display()+" "+cutRule;
+  Out=ModelSupport::getComposite
+    (SMap,pitIndex,"21 -22 23 -24 25 -26 (-11:12:-13:14:-15:16)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
   setCell("Outer",cellIndex-1);
 
@@ -355,8 +344,7 @@ ChopperPit::createLinks()
 void
 ChopperPit::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,
-		      const long int FIndex,
-		      const std::string& cutRule)
+		      const long int FIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
@@ -371,7 +359,7 @@ ChopperPit::createAll(Simulation& System,
   createUnitVector(FC,FIndex);
 
   createSurfaces();    
-  createObjects(System,FC,FIndex,cutRule);
+  createObjects(System);
   
   createLinks();
   insertObjects(System);   

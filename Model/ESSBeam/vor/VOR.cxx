@@ -283,8 +283,8 @@ VOR::build(Simulation& System,
   HeadRule GuideCut=
     attachSystem::unionLink(FocusBExtra->getKey("Shield"),{2,3,4,5,6});
   PitA->addInsertCell(voidCell);
-  PitA->createAll(System,FocusBExtra->getKey("Guide0"),2,GuideCut.display());
-
+  PitA->createAll(System,FocusBExtra->getKey("Guide0"),2);
+  PitA->insertComponent(System,"Outer",GuideCut);
   
   GuidePitAFront->addInsertCell(PitA->getCells("MidLayer"));
   GuidePitAFront->addEndCut(PitA->getKey("Inner").getSignedLinkString(1));
@@ -313,8 +313,8 @@ VOR::build(Simulation& System,
   HeadRule GuideCutB=
     attachSystem::unionLink(FocusC->getKey("Shield"),{2,3,4,5,6});
   PitB->addInsertCell(voidCell);
-  PitB->createAll(System,FocusC->getKey("Guide0"),2,GuideCutB.display());
-  
+  PitB->createAll(System,FocusC->getKey("Guide0"),2);
+  PitB->insertComponent(System,"Outer",GuideCutB);
 
   GuidePitBFront->addInsertCell(PitB->getCells("MidLayer"));
   GuidePitBFront->addEndCut(PitB->getKey("Inner").getSignedLinkString(1));

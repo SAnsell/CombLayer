@@ -261,7 +261,9 @@ ODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
   HeadRule GuideCut=
     attachSystem::unionLink(GuideD->getKey("Shield"),{2,3,4,5,6});
   PitA->addInsertCell(voidCell);
-  PitA->createAll(System,GuideD->getKey("Guide0"),2,GuideCut.display());
+  PitA->createAll(System,GuideD->getKey("Guide0"),2);
+  PitA->insertComponent(System,"Outer",GuideCut);
+
   
   GuidePitAFront->addInsertCell(PitA->getCells("MidLayer"));
   GuidePitAFront->addEndCut(PitA->getKey("Inner").getSignedLinkString(1));
@@ -292,8 +294,9 @@ ODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
   // Guide guide String
   GuideCut=attachSystem::unionLink(GuideE->getKey("Shield"),{2,3,4,5,6});
   PitB->addInsertCell(voidCell);
-  PitB->createAll(System,GuideE->getKey("Guide0"),2,GuideCut.display());
-
+  PitB->createAll(System,GuideE->getKey("Guide0"),2);
+  PitB->insertComponent(System,"Outer",GuideCut);
+  
   ChopperB->addInsertCell(PitB->getCell("Void"));
   ChopperB->setCentreFlag(3);  // -Z direction
   ChopperB->createAll(System,*PitB,0);
@@ -322,12 +325,12 @@ ODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
   // THIRD CHOPPER PIT:
   //
   const attachSystem::FixedComp& GOuterC=GuideF->getKey("Shield");
-  GuideCut.reset();
-  for(size_t i=1;i<6;i++)
-    GuideCut.addUnion(GOuterC.getLinkString(i));
+  GuideCut=
+    attachSystem::unionLink(GOuterC,{2,3,4,5,6});
   PitC->addInsertCell(voidCell);
-  PitC->createAll(System,GuideF->getKey("Guide0"),2,GuideCut.display());
-
+  PitC->createAll(System,GuideF->getKey("Guide0"),2);
+  PitC->insertComponent(System,"Outer",GuideCut);
+  
   ELog::EM<<"PitC == "<<PitC->getCentre()
 	  <<" :: "<<PitC->getCentre().abs()<<ELog::endDebug;
 

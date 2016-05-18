@@ -46,6 +46,10 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
+#include "surfRegister.h"
+#include "HeadRule.h"
+#include "LinkUnit.h"
+#include "FixedComp.h"
 #include "BaseMap.h"
 
 namespace attachSystem
@@ -80,6 +84,18 @@ BaseMap::operator=(const BaseMap& A)
   return *this;
 }
 
+std::string
+BaseMap::getFCKeyName() const
+  /*!
+    Get the FixedComp keyname if this is a FixedComp
+    \return FC name / "Not-FC"
+   */
+{
+  const attachSystem::FixedComp* FCPtr=
+    dynamic_cast<const attachSystem::FixedComp*>(this);
+  return (FCPtr) ? FCPtr->getKeyName() : "Not-FC";
+}
+  
 void
 BaseMap::setItem(const std::string& Key,const int CN)
   /*!
@@ -246,7 +262,8 @@ BaseMap::getItem(const std::string& Key,const size_t Index) const
     throw ColErr::InContainerError<std::string>(Key,"Key not present");
 
   if (Index>=mc->second.size())
-    throw ColErr::IndexError<size_t>(Index,0,"Key["+Key+"] index error");
+    throw ColErr::IndexError<size_t>(Index,0,
+                                     "Object:"+getFCKeyName()+" Key["+Key+"] index error");
   return mc->second[Index];
 }
 

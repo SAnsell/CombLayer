@@ -75,8 +75,7 @@ class ChopperPit :
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
-  void createObjects(Simulation&,const attachSystem::FixedComp&,
-		     const long int,const std::string&);
+  void createObjects(Simulation&);
   void createLinks();
 
  public:
@@ -87,7 +86,7 @@ class ChopperPit :
   virtual ~ChopperPit();
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int,const std::string&);
+		 const long int);
 
 };
 

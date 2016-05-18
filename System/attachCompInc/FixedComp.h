@@ -23,6 +23,8 @@
 #define attachSystem_FixedComp_h
 
 class localRotate;
+class HeadRule;
+
 
 namespace attachSystem
 {
