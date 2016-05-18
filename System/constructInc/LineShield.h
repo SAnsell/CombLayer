@@ -74,6 +74,8 @@ class LineShield :
   std::vector<double> floorFrac;      ///< Layer thicknesss 
   std::vector<int> floorMat;          ///< Layer materials
 
+
+  void removeFrontOverLap();
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);

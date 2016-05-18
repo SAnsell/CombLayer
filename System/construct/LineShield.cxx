@@ -157,6 +157,43 @@ LineShield::~LineShield()
 {}
 
 void
+LineShield::removeFrontOverLap()
+  /*!
+    Remove segments that are completly covered by the
+    active front.
+  */
+{
+  ELog::RegMethod RegA("LineShield","removeFrontOverLap");
+
+  if (activeFront)
+    {
+      size_t index(1);
+      const double segStep(length/static_cast<double>(nSeg));
+      // note : starts one step ahead of front.
+      Geometry::Vec3D SP(Origin-Y*(length/2.0-segStep));
+      frontSurf.populateSurf();
+      while(index<nSeg && !frontSurf.isValid(SP))
+        {
+          ELog::EM<<"SP == "<<SP<<ELog::endDiag;
+          ELog::EM<<"Front == "<<frontSurf.display()<<ELog::endDiag;
+          SP+=Y*segStep;
+          index++;
+        }
+      index--;
+      if (index>0)
+        {
+          length-=segStep*index;
+          nSeg-=index;
+          Origin+=Y*(index*segStep/2.0);
+          ELog::EM<<"Removal["<<keyName<<"] of Active segment == "
+                  <<index<<ELog::endDiag;
+        }
+    }
+  
+  return;
+}
+  
+void
 LineShield::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
@@ -236,6 +273,9 @@ LineShield::createSurfaces()
   if (!activeBack)
     ModelSupport::buildPlane(SMap,shieldIndex+2,Origin+Y*(length/2.0),Y);
 
+  if (activeFront)
+    removeFrontOverLap();
+  
   const double segStep(length/static_cast<double>(nSeg));
   double segLen(-length/2.0);
   int SI(shieldIndex+10);

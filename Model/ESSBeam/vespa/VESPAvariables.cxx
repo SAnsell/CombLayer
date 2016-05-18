@@ -659,7 +659,7 @@ VESPAvariables(FuncDataBase& Control)
   Control.addVariable("vespaShieldBRoofLen1",20.0);
   Control.addVariable("vespaShieldBFloorLen1",20.0);
   // TO BE FIXED
-  Control.addVariable("vespaShieldBYStep",100.0);
+  Control.addVariable("vespaShieldBYStep",0.0);
 
   for(size_t i=0;i<4;i++)
     {
