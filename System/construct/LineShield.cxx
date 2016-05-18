@@ -174,8 +174,6 @@ LineShield::removeFrontOverLap()
       frontSurf.populateSurf();
       while(index<nSeg && !frontSurf.isValid(SP))
         {
-          ELog::EM<<"SP == "<<SP<<ELog::endDiag;
-          ELog::EM<<"Front == "<<frontSurf.display()<<ELog::endDiag;
           SP+=Y*segStep;
           index++;
         }

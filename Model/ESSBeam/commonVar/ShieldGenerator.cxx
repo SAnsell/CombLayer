@@ -78,46 +78,267 @@
 #include "surfExpand.h"
 #include "ShieldGenerator.h"
 
-namespace essSystem
+namespace setVariable
 {
 
-ShieldGenerator::ShieldGenerator() 
+ShieldGenerator::ShieldGenerator() :
+  defMat("Stainless304")
   /*!
     Constructor BUT ALL variable are left unpopulated.
   */
 {}
 
+ShieldGenerator::ShieldGenerator(const ShieldGenerator& A) : 
+  defMat(A.defMat),wallLen(A.wallLen),roofLen(A.roofLen),
+  floorLen(A.floorLen),wallMat(A.wallMat),roofMat(A.roofMat),
+  floorMat(A.floorMat)
+  /*!
+    Copy constructor
+    \param A :: ShieldGenerator to copy
+  */
+{}
+
+ShieldGenerator&
+ShieldGenerator::operator=(const ShieldGenerator& A)
+  /*!
+    Assignment operator
+    \param A :: ShieldGenerator to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      defMat=A.defMat;
+      wallLen=A.wallLen;
+      roofLen=A.roofLen;
+      floorLen=A.floorLen;
+      wallMat=A.wallMat;
+      roofMat=A.roofMat;
+      floorMat=A.floorMat;
+    }
+  return *this;
+}
+
+  
 ShieldGenerator::~ShieldGenerator() 
  /*!
    Destructor
  */
 {}
 
-  /*
 void
-ShieldGenerator::generatorShield
-  (FuncDataBase& Control,const double length,
-   const double side,const double height,
-   const size_t NLayer,const size_t 
- )
+ShieldGenerator::addWall(const size_t index,const double Len,
+                         const std::string& matName)
+  /*!
+    Add a layer to the wall
+    \param index :: index values
+    \param Len :: length
+    \param matName :: Material name
+  */
 {
+  ELog::RegMethod RegA("ShieldGenerator","addWall");
+  wallLen.emplace(index,Len);
+  wallMat.emplace(index,matName);
+  return;
+}
 
-    Control.addVariable("dreamShieldALength",1750.0-320);
-  Control.addVariable("dreamShieldALeft",40.0);
-  Control.addVariable("dreamShieldARight",40.0);
-  Control.addVariable("dreamShieldAHeight",40.0);
-  Control.addVariable("dreamShieldADepth",40.0);
-  Control.addVariable("dreamShieldADefMat","Stainless304");
-  Control.addVariable("dreamShieldANSeg",8);
-  Control.addVariable("dreamShieldANWallLayers",8);
-  Control.addVariable("dreamShieldANFloorLayers",3);
-  Control.addVariable("dreamShieldANRoofLayers",8);
-  Control.addVariable("dreamShieldAWallLen1",20.0);
-  Control.addVariable("dreamShieldAWallMat1","CastIron");
-  Control.addVariable("dreamShieldAWallMat5","Concrete");
-  Control.addVariable("dreamShieldARoofLen1",20.0);
-  Control.addVariable("dreamShieldAFloorLen1",20.0);
+void
+ShieldGenerator::addRoof(const size_t index,const double Len,
+                         const std::string& matName)
+  /*!
+    Add a layer to the roof
+    \param index :: index values
+    \param Len :: length
+    \param matName :: Material name
+  */
+{
+  ELog::RegMethod RegA("ShieldGenerator","addRoof");
+  roofLen.emplace(index,Len);
+  roofMat.emplace(index,matName);
+  return;
+}
+
+void
+ShieldGenerator::addFloor(const size_t index,const double Len,
+                         const std::string& matName)
+  /*!
+    Add a layer to the floor
+    \param index :: index values
+    \param Len :: length
+    \param matName :: Material name
+  */
+{
+  ELog::RegMethod RegA("ShieldGenerator","addFloor");
+  floorLen.emplace(index,Len);
+  floorMat.emplace(index,matName);
+  return;
+}
+
+void
+ShieldGenerator::addWallLen(const size_t index,const double Len)
+  /*!
+    Add a layer to the wall
+    \param index :: index values
+    \param Len :: length
+  */
+{
+  ELog::RegMethod RegA("ShieldGenerator","addWallLen");
+  wallLen.emplace(index,Len);
+  return;
+}
+
+void
+ShieldGenerator::addRoofLen(const size_t index,const double Len)
+  /*!
+    Add a layer to the roof
+    \param index :: index values
+    \param Len :: length
+  */
+{
+  ELog::RegMethod RegA("ShieldGenerator","addRoofLen");
+  roofLen.emplace(index,Len);
+  return;
+}
+
+void
+ShieldGenerator::addFloorLen(const size_t index,const double Len)
+  /*!
+    Add a layer to the floor
+    \param index :: index values
+    \param Len :: length
+  */
+{
+  ELog::RegMethod RegA("ShieldGenerator","addFloorLen");
+  floorLen.emplace(index,Len);
+  return;
+}
+
+  
+void
+ShieldGenerator::addWallMat(const size_t index,
+                             const std::string& matName)
+  /*!
+    Add a mat layer to the wall
+    \param index :: index values
+    \param matName :: Material name
+  */
+{
+  ELog::RegMethod RegA("ShieldGenerator","addWallMat");
+  wallMat.emplace(index,matName);
+  return;
+}
+  
+void
+ShieldGenerator::addRoofMat(const size_t index,
+                             const std::string& matName)
+  /*!
+    Add a mat layer to the roof
+    \param index :: index values
+    \param matName :: Material name
+  */
+{
+  ELog::RegMethod RegA("ShieldGenerator","addRoofMat");
+  roofMat.emplace(index,matName);
+  return;
+}
+
+void
+ShieldGenerator::addFloorMat(const size_t index,
+                             const std::string& matName)
+  /*!
+    Add a mat layer to the floor
+    \param index :: index values
+    \param matName :: Material name
+  */
+{
+  ELog::RegMethod RegA("ShieldGenerator","addFloorMat");
+  floorMat.emplace(index,matName);
+  return;
+}
+
+  
+
+void
+ShieldGenerator::processLayers
+(FuncDataBase& Control,const std::string& keyName) const
+  /*!
+    Set the individual layers
+    \param Control :: Database to add variables 
+    \param keyName :: head name for variable
+  */
+{
+  ELog::RegMethod RegA("ShieldGenerator","processLayers");
+  
+  for(const MLTYPE::value_type& LItem : wallLen)
+    {
+      Control.addVariable
+        (keyName+"WallLen"+StrFunc::makeString(LItem.first),LItem.second);
+    }
+  for(const MLTYPE::value_type& LItem : floorLen)
+    {
+      Control.addVariable
+        (keyName+"FloorLen"+StrFunc::makeString(LItem.first),LItem.second);
+    }
+  for(const MLTYPE::value_type& LItem : roofLen)
+    {
+      Control.addVariable
+        (keyName+"RoofLen"+StrFunc::makeString(LItem.first),LItem.second);
+    }
+  
+
+  for(const MSTYPE::value_type& LItem : wallMat)
+    {
+      Control.addVariable
+        (keyName+"WallMat"+StrFunc::makeString(LItem.first),LItem.second);
+    }
+  for(const MSTYPE::value_type& LItem : floorMat)
+    {
+      Control.addVariable
+        (keyName+"FloorMat"+StrFunc::makeString(LItem.first),LItem.second);
+    }
+  for(const MSTYPE::value_type& LItem : roofMat)
+    {
+      Control.addVariable
+        (keyName+"RoofMat"+StrFunc::makeString(LItem.first),LItem.second);
+    }
+  return;
+}
+  
+void
+ShieldGenerator::generateShield
+( FuncDataBase& Control,const std::string& keyName,
+  const double length,
+  const double side,const double height,
+  const double depth,const size_t NSeg,const size_t NLayer)  const
+  /*!
+    Primary funciton for setting the variables
+    \param Control :: Database to add variables 
+    \param keyName :: head name for variable
+    \param length :: overall length
+    \param side :: full extent at sides
+    \param height :: Full height
+    \param depth :: Full depth
+    \param NSeg :: number of segments
+    \param NLayer :: number of layers
+  */
+{
+  ELog::RegMethod RegA("ShieldGenerator","generatorShield");
+  
+  Control.addVariable(keyName+"Length",length);
+  Control.addVariable(keyName+"Left",side);
+  Control.addVariable(keyName+"Right",side);
+  Control.addVariable(keyName+"Height",height);
+  Control.addVariable(keyName+"Depth",depth);
+  Control.addVariable(keyName+"DefMat",defMat);
+  Control.addVariable(keyName+"NSeg",NSeg);
+  Control.addVariable(keyName+"NWallLayers",NLayer);
+  Control.addVariable(keyName+"NFloorLayers",NLayer);
+  Control.addVariable(keyName+"NRoofLayers",NLayer);
+  
+  processLayers(Control,keyName);
+  
+  return;
 
 }
-  */  
-}  // NAMESPACE essSystem
+
+}  // NAMESPACE setVariable

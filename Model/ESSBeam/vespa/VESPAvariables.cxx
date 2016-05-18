@@ -49,6 +49,7 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "essVariables.h"
+#include "ShieldGenerator.h"
 
 namespace setVariable
 {
@@ -561,22 +562,14 @@ VESPAvariables(FuncDataBase& Control)
   // Guide in wall
   generateFocusTaper(Control,"vespaFWall",308.0,9.0,9.0,8.5,8.5);
 
-
-  Control.addVariable("vespaShieldALength",450.0);
-  Control.addVariable("vespaShieldALeft",40.0);
-  Control.addVariable("vespaShieldARight",40.0);
-  Control.addVariable("vespaShieldAHeight",40.0);
-  Control.addVariable("vespaShieldADepth",40.0);
-  Control.addVariable("vespaShieldADefMat","Stainless304");
-  Control.addVariable("vespaShieldANSeg",4);
-  Control.addVariable("vespaShieldANWallLayers",8);
-  Control.addVariable("vespaShieldANFloorLayers",3);
-  Control.addVariable("vespaShieldANRoofLayers",8);
-  Control.addVariable("vespaShieldAWallLen1",20.0);
-  Control.addVariable("vespaShieldAWallMat1","CastIron");
-  Control.addVariable("vespaShieldAWallMat5","Concrete");
-  Control.addVariable("vespaShieldARoofLen1",20.0);
-  Control.addVariable("vespaShieldAFloorLen1",20.0);
+  setVariable::ShieldGenerator SGen;
+  SGen.addWall(1,20.0,"CastIron");
+  SGen.addRoof(1,20.0,"CastIron");
+  SGen.addFloor(1,20.0,"CastIron");
+  SGen.addFloorMat(5,"Concrete");
+  SGen.addRoofMat(5,"Concrete");
+  SGen.addWallMat(5,"Concrete");
+  SGen.generateShield(Control,"vespaShieldA",450.0,40.0,40.0,40.0,4,8);
 
   // Guide after wall [17.5m - 3.20] for wall
   generatePipe(Control,"vespaPipeOutA",435.0);  //
