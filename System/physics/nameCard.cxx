@@ -418,6 +418,23 @@ nameCard::getItem<std::string>(const std::string& kN) const
 
   return sIter->second;
 }
+
+void
+nameCard::writeHelp(std::ostream& OX) const
+  /*!
+    Write out options for card
+    \param OX :: output stream
+   */
+{
+  OX<<"Card :: "<<keyName<<" "<<active<<"\n";
+  OX<<"------------------------------------\n";
+  for(const std::map<std::string,MData>::value_type& RN : regNames)
+    OX<<" --  "<<RN.first<<" ["<<getTypeName(RN.second)<<"]\n";
+  return;
+}
+  
+  
+
   
 void
 nameCard::write(std::ostream& OX) const

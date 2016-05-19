@@ -154,6 +154,8 @@ class VESPA : public attachSystem::CopiedComp
   /// Segment from PitB to Pit C
   std::vector<std::shared_ptr<beamlineSystem::GuideLine>> FocusArray;
   
+  /// Shield for Chopper Out-C
+  std::shared_ptr<constructSystem::ChopperPit> PitC;
 
   
   void setBeamAxis(const GuideItem&,const bool);

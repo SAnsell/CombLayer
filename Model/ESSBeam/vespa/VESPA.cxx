@@ -141,8 +141,10 @@ VESPA::VESPA(const std::string& keyName) :
 
   ShieldB(new constructSystem::LineShield(newName+"ShieldB")),
   VPipeOutB(new constructSystem::VacuumPipe(newName+"PipeOutB")),
-  FocusOutB(new beamlineSystem::GuideLine(newName+"FOutB"))
-
+  FocusOutB(new beamlineSystem::GuideLine(newName+"FOutB")),
+  
+  PitC(new constructSystem::ChopperPit(newName+"PitC"))
+  
  /*!
     Constructor
  */

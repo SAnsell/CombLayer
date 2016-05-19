@@ -675,7 +675,6 @@ WeightControl::procObject(const Simulation& System,
           if (PI>=sourcePt.size())
             throw ColErr::IndexError<size_t>
               (PI,sourcePt.size(),"sourcePt.size() < activePtIndex");
-          ELog::EM<<"Point index == "<<sourcePt[PI]<<ELog::endDiag;
           CellWeight CW;
           calcCellTrack(System,sourcePt[PI],objCells,CW);
           CW.updateWM(energyCut,scaleFactor,minWeight,weightPower);

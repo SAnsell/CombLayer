@@ -3,7 +3,7 @@
  
  * File:   process/SimInput.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,7 @@
 #include <string>
 #include <algorithm>
 #include <iterator>
+#include <array>
 #include <memory>
 
 #include "Exception.h"
@@ -173,6 +174,12 @@ processPTrack(const mainSystem::inputParam& IParam,
 
 
   const size_t NItems=IParam.itemCnt("ptrac",0);
+  if (NItems && IParam.getValue<std::string>("ptrac",0,0)=="help")
+    {
+      PCard.writeHelp("ptrac");
+      return;
+    }
+  
   for(size_t index=1;index<NItems;index+=2)
     {
       const std::string key=IParam.getValue<std::string>("ptrac",0,index-1);

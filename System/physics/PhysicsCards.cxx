@@ -909,6 +909,25 @@ PhysicsCards::setPrintNum(std::string Numbers)
   return;
 }
 
+void
+PhysicsCards::writeHelp(const std::string& keyName) const
+  /*!
+    Write out help about a physics card
+    \param keyName :: Card name
+  */
+{
+  ELog::RegMethod RegA("PhysicsCards","writeHelp");
+
+  if (keyName=="ptrac")
+    PTRAC->writeHelp(ELog::EM.Estream());
+  else if (keyName=="rand")
+    RAND->writeHelp(ELog::EM.Estream());
+
+  ELog::EM<<ELog::endDiag;
+  return;
+}
+  
+   
 void 
 PhysicsCards::write(std::ostream& OX,
 		    const std::vector<int>& cellOutOrder,

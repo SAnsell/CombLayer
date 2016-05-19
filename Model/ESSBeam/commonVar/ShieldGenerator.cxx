@@ -84,7 +84,7 @@ namespace setVariable
 ShieldGenerator::ShieldGenerator() :
   defMat("Stainless304")
   /*!
-    Constructor BUT ALL variable are left unpopulated.
+    Constructor and defaults
   */
 {}
 

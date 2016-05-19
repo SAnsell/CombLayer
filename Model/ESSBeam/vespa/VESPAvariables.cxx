@@ -636,23 +636,7 @@ VESPAvariables(FuncDataBase& Control)
   Control.addVariable("vespaPipeOutBRadius",9.0);
   generateFocusTaper(Control,"vespaFOutB",746.0,9.0,11.0,8.5,10.0);
 
-  Control.addVariable("vespaShieldBLength",770.0);
-  Control.addVariable("vespaShieldBLeft",40.0);
-  Control.addVariable("vespaShieldBRight",40.0);
-  Control.addVariable("vespaShieldBHeight",40.0);
-  Control.addVariable("vespaShieldBDepth",40.0);
-  Control.addVariable("vespaShieldBDefMat","Stainless304");
-  Control.addVariable("vespaShieldBNSeg",10);
-  Control.addVariable("vespaShieldBNWallLayers",8);
-  Control.addVariable("vespaShieldBNFloorLayers",3);
-  Control.addVariable("vespaShieldBNRoofLayers",8);
-  Control.addVariable("vespaShieldBWallLen1",20.0);
-  Control.addVariable("vespaShieldBWallMat1","CastIron");
-  Control.addVariable("vespaShieldBWallMat5","Concrete");
-  Control.addVariable("vespaShieldBRoofLen1",20.0);
-  Control.addVariable("vespaShieldBFloorLen1",20.0);
-  // TO BE FIXED
-  Control.addVariable("vespaShieldBYStep",0.0);
+  SGen.generateShield(Control,"vespaShieldB",770.0,40.0,40.0,40.0,4,8);
 
   for(size_t i=0;i<4;i++)
     {
@@ -662,27 +646,13 @@ VESPAvariables(FuncDataBase& Control)
         vacName("vespaVPipeArray"+StrFunc::makeString(i));
       const std::string
         focusName("vespaFocusArray"+StrFunc::makeString(i));
-      Control.addVariable(shieldName+"Length",600.0);
-      Control.addVariable(shieldName+"Left",40.0);
-      Control.addVariable(shieldName+"Right",40.0);
-      Control.addVariable(shieldName+"Height",40.0);
-      Control.addVariable(shieldName+"Depth",40.0);
-      Control.addVariable(shieldName+"DefMat","Stainless304");
-      Control.addVariable(shieldName+"NSeg",10);
-      Control.addVariable(shieldName+"NWallLayers",8);
-      Control.addVariable(shieldName+"NFloorLayers",3);
-      Control.addVariable(shieldName+"NRoofLayers",8);
-      Control.addVariable(shieldName+"WallLen1",20.0);
-      Control.addVariable(shieldName+"WallMat1","CastIron");
-      Control.addVariable(shieldName+"WallMat5","Concrete");
-      Control.addVariable(shieldName+"RoofLen1",20.0);
-      Control.addVariable(shieldName+"FloorLen1",20.0);
 
+      SGen.generateShield(Control,shieldName,600.0,40.0,40.0,40.0,4,8);
       generatePipe(Control,vacName,598.0);  //
       generateRectangle(Control,focusName,594.0,10.0,10.0);
     }
 
-
+  
   
   /*
   //  Control.addVariable("vespaPipeOutAFlangeRadius",9.0);  

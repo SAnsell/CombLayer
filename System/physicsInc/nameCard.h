@@ -79,7 +79,10 @@ class nameCard
   void setRegItem(const std::string&,const T&);
 
   void reset();
-  void write(std::ostream&) const;   
+  void writeHelp(std::ostream&) const;
+  
+  void write(std::ostream&) const;
+  
 };
 
 }

@@ -155,6 +155,8 @@ class PhysicsCards
   void substituteCell(const int,const int);
   void substituteSurface(const int,const int); 
 
+  void writeHelp(const std::string&) const;
+  
   void write(std::ostream&,const std::vector<int>&,
 	     const std::set<int>&) const;   
 };
