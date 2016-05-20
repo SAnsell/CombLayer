@@ -53,7 +53,7 @@ class PhysicsCards
 
   std::unique_ptr<nameCard> RAND;      ///< RAND card [MCNP6]
   std::unique_ptr<nameCard> PTRAC;     ///< Particle Track card [MCNP6]
-  std::unique_ptr<dbcnCard> dbCard;    ///< Reference to the dbcnCard
+  std::unique_ptr<nameCard> dbCard;    ///< Reference to the dbcnCard
   
   std::vector<std::string> Basic;      ///< Basic cards (stripped of Variables)
 
@@ -139,6 +139,8 @@ class PhysicsCards
   void setRND(const long int,const long int =0);
   template<typename T>
   void setPTRAC(const std::string&,const T&);
+  template<typename T>
+  void setDBCN(const std::string&,const T&);
   void setPTRACactive(const bool);
 
   void setEnergyCut(const double);  

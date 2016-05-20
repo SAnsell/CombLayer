@@ -25,6 +25,7 @@
 #include <sstream>
 #include <vector>
 #include <list>
+#include <set>
 #include <map>
 #include <string>
 #include <algorithm>
@@ -44,8 +45,9 @@
 namespace physicsSystem
 {
   
-nameCard::nameCard(const std::string& KN) :
-  keyName(KN),active(0)
+nameCard::nameCard(const std::string& KN,
+                     const int wT) :
+  keyName(KN),writeType(wT),active(0)
   /*!
     Constructor
     \param KN :: Name
@@ -55,7 +57,7 @@ nameCard::nameCard(const std::string& KN) :
 }
 
 nameCard::nameCard(const nameCard& A) : 
-  keyName(A.keyName),active(A.active),
+  keyName(A.keyName),writeType(A.writeType),active(A.active),
   nameOrder(A.nameOrder),regNames(A.regNames),
   DUnit(A.DUnit),IUnit(A.IUnit),SUnit(A.SUnit)
   /*!
@@ -100,8 +102,8 @@ nameCard::getTypeName(const nameCard::MData& AType)
     \return MData type
   */
 {
-  static const std::string AList[3]=
-    { "double","integer","string" };
+  static const std::string AList[4]=
+    { "double","integer","string", "default" };
   return AList[static_cast<size_t>(AType)-1];
 }
 
@@ -124,28 +126,15 @@ nameCard::convertName(const std::string& Item)
   if (Item=="STR" || Item=="str" ||
       Item=="string" || Item=="STRING")
     return MData::STR;
+  if (Item=="J" || Item=="j" ||
+      Item=="DEFAULT" || Item=="default")
+    return MData::J;
 
   throw ColErr::InContainerError<std::string>
     (Item,"Item no known type");
 }
 
   
-void
-nameCard::registerItems(const std::vector<std::string>& Items)
-  /*!
-    Register Items into name
-  */
-{
-  std::string K,Type;
-  for(std::string full : Items)
-    {
-      StrFunc::section(full,K);
-      StrFunc::section(full,Type);
-      
-      regNames.emplace(K,convertName(Type));
-    }
-  return;
-}
   
 void
 nameCard::reset()
@@ -154,22 +143,43 @@ nameCard::reset()
   */
 {
   ELog::RegMethod RegA("nameCard","reset");
+
+  JUnit.erase(JUnit.begin(),JUnit.end());
   DUnit.erase(DUnit.begin(),DUnit.end());
   IUnit.erase(IUnit.begin(),IUnit.end());
   SUnit.erase(SUnit.begin(),SUnit.end());
-  nameOrder.clear();
+
   return;
 }
   
-  
 
+void
+nameCard::setDefItem(const std::string& kN) 
+  /*!
+    Set an item based on the type
+    \param kN :: Index number to return
+   */
+{
+  ELog::RegMethod RegA("nameCard","setDefItem");
+
+  std::set<std::string>::const_iterator jIter;
+
+  jIter=JUnit.find(kN);
+  if (jIter==JUnit.end())
+    JUnit.insert(kN);
+
+  return;
+}
+
+
+  
 template<>
 void
 nameCard::setItem(const std::string& kN,const double& Value) 
   /*!
     Set an item based on the type
     \param kN :: Index number to return
-    \\parma Value :: vale to set
+    \param Value :: vale to set
    */
 {
   ELog::RegMethod RegA("nameCard","setItem<double>");
@@ -186,6 +196,8 @@ nameCard::setItem(const std::string& kN,const double& Value)
     {
       dIter->second=Value;
     }
+  // remove from def list if present
+  JUnit.erase(kN);
   return;
 }
 
@@ -212,6 +224,9 @@ nameCard::setItem(const std::string& kN,const long int& Value)
     {
       iIter->second=Value;
     }
+  // remove from def list if present
+  JUnit.erase(kN);
+
   return;
 }
 
@@ -229,6 +244,12 @@ nameCard::setItem(const std::string& kN,
   ELog::RegMethod RegA("nameCard","setItem<string>");
 
   active=1;
+  if (Value=="J" || Value=="j")
+    {
+      setDefItem(kN);
+      return;
+    }
+  
   std::map<std::string,std::string>::iterator sIter;
   sIter=SUnit.find(kN);
   if (sIter==SUnit.end())
@@ -240,6 +261,8 @@ nameCard::setItem(const std::string& kN,
     {
       sIter->second=Value;
     }
+  // remove from def list if present
+  JUnit.erase(kN);
   return;
 }
 
@@ -417,6 +440,27 @@ nameCard::getItem<std::string>(const std::string& kN) const
     throw ColErr::InContainerError<std::string>(kN,"Key(string)");
 
   return sIter->second;
+}
+void
+nameCard::registerItems(const std::vector<std::string>& Items)
+  /*!
+    Register Items into name
+    \param Items :: list of items and maybe defaults
+  */
+{
+  std::string K,Type;
+  for(std::string full : Items)
+    {
+      if (StrFunc::section(full,K) &&
+          StrFunc::section(full,Type))
+        {
+          regNames.emplace(K,convertName(Type));
+          if (!StrFunc::isEmpty(full))
+            setRegItem<std::string>(K,full);
+          nameOrder.push_back(K);
+        }
+    }
+  return;
 }
 
 void

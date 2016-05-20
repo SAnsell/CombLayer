@@ -40,14 +40,17 @@ class nameCard
  private:
 
   /// enumeration for type
-  enum class MData { DBL = 1, INT = 2, STR = 3 };
+  enum class MData { DBL = 1, INT = 2, STR = 3, J = 4 };
   
   std::string keyName;                     ///< Main name
+  int writeType;                           ///< Write out type [name / flat]
   bool active;                             ///< Active
 
   
   std::vector<std::string> nameOrder;      ///< Ordered list of units
   std::map<std::string,MData> regNames;      ///< Registered names / type
+
+  std::set<std::string> JUnit;             ///< Default items [superseeds]
   
   std::map<std::string,double> DUnit;      ///< Double units
   std::map<std::string,long int> IUnit;    ///< int units
@@ -58,7 +61,7 @@ class nameCard
   
  public:
    
-  nameCard(const std::string&);
+  nameCard(const std::string&,const int);
   nameCard(const nameCard&);
   nameCard& operator=(const nameCard&);
   virtual ~nameCard();
@@ -67,6 +70,8 @@ class nameCard
 
   /// set active
   void setActive(const bool A) { active=A; }
+
+  void setDefItem(const std::string&);
   
   template<typename T>
   void setItem(const std::string&,const T&);
