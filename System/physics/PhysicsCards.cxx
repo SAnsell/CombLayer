@@ -94,7 +94,7 @@ PhysicsCards::PhysicsCards() :
 
   dbCard->registerItems
     ({
-     "rndSeed INT 123456781L",  "debugPrint INT",
+     "rndSeed INT 1234567871",  "debugPrint INT",
      "eventStart INT",          "eventEnd INT",
      "maxEvents INT",           "detUnderFlowLimit DBL",
      "printSurfCalcFlag INT",   "histStart INT",

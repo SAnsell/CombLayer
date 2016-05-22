@@ -58,6 +58,9 @@ class nameCard
 
   static const std::string& getTypeName(const MData&);
   static MData convertName(const std::string&);
+
+  void writeWithName(std::ostream&) const;
+  void writeFlat(std::ostream&) const;
   
  public:
    

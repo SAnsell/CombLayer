@@ -188,14 +188,9 @@ nameCard::setItem(const std::string& kN,const double& Value)
   std::map<std::string,double>::iterator dIter;
   dIter=DUnit.find(kN);
   if (dIter==DUnit.end())
-    {
-      DUnit.emplace(kN,Value);
-      nameOrder.push_back(kN);
-    }
+    DUnit.emplace(kN,Value);
   else
-    {
-      dIter->second=Value;
-    }
+    dIter->second=Value;
   // remove from def list if present
   JUnit.erase(kN);
   return;
@@ -216,14 +211,10 @@ nameCard::setItem(const std::string& kN,const long int& Value)
   std::map<std::string,long int>::iterator iIter;
   iIter=IUnit.find(kN);
   if (iIter==IUnit.end())
-    {
-      IUnit.emplace(kN,Value);
-      nameOrder.push_back(kN);
-    }
+    IUnit.emplace(kN,Value);
   else
-    {
-      iIter->second=Value;
-    }
+    iIter->second=Value;
+
   // remove from def list if present
   JUnit.erase(kN);
 
@@ -253,14 +244,10 @@ nameCard::setItem(const std::string& kN,
   std::map<std::string,std::string>::iterator sIter;
   sIter=SUnit.find(kN);
   if (sIter==SUnit.end())
-    {
-      SUnit.emplace(kN,Value);
-      nameOrder.push_back(kN);
-    }
+    SUnit.emplace(kN,Value);
   else
-    {
-      sIter->second=Value;
-    }
+    sIter->second=Value;
+
   // remove from def list if present
   JUnit.erase(kN);
   return;
@@ -481,7 +468,64 @@ nameCard::writeHelp(std::ostream& OX) const
 
   
 void
-nameCard::write(std::ostream& OX) const
+nameCard::writeFlat(std::ostream& OX) const
+  /*!
+    Write out the card in a flat form
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("nameCard","writeFlat");
+
+  std::set<std::string>::const_iterator jIter;
+  std::map<std::string,double>::const_iterator dIter;
+  std::map<std::string,long int>::const_iterator iIter;
+  std::map<std::string,std::string>::const_iterator sIter;
+
+  std::ostringstream cx;
+  
+  cx<<keyName;
+  size_t jCnt(0);
+  for(const std::string& K : nameOrder)
+    {
+      jIter=JUnit.find(K);
+      if (jIter!=JUnit.end())
+	jCnt++;
+      else
+	{
+	  if (jCnt)
+	    {
+	      if (jCnt>0) cx<<jCnt;
+	      cx<<"j";
+	      jCnt=0;
+	    }
+
+	  iIter=IUnit.find(K);
+	  if (iIter!=IUnit.end())
+	    {
+	      cx<<iIter->second<<" ";
+	      continue;
+	    }
+	  dIter=DUnit.find(K);
+	  if (iIter!=IUnit.end())
+	    {
+	      cx<<dIter->second<<" ";
+	      continue;
+	    }
+	  sIter=SUnit.find(K);
+	  if (iIter!=IUnit.end())
+	    {
+	      cx<<sIter->second<<" ";
+	      continue;
+	    }
+	}
+    }
+  // Notice abandon final 'j's
+  StrFunc::writeMCNPX(cx.str(),OX);
+  return;
+}
+
+void
+nameCard::writeWithName(std::ostream& OX) const
   /*!
     Write out the card
     \param OX :: Output stream
@@ -489,9 +533,6 @@ nameCard::write(std::ostream& OX) const
 {
   ELog::RegMethod RegA("nameCard","write");
 
-  ELog::EM<<"Writing "<<keyName<<ELog::endDiag;
-  if (!active) return;
-  
   std::map<std::string,double>::const_iterator dIter;
   std::map<std::string,long int>::const_iterator iIter;
   std::map<std::string,std::string>::const_iterator sIter;
@@ -523,6 +564,24 @@ nameCard::write(std::ostream& OX) const
     }
   
   StrFunc::writeMCNPX(cx.str(),OX);
+  return;
+}
+
+void
+nameCard::write(std::ostream& OX) const
+  /*!
+    Write out the card
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("nameCard","write");
+
+  ELog::EM<<"Writing "<<keyName<<ELog::endDiag;
+  if (!active) return;
+  if (writeType)
+    writeFlat(OX);
+  else
+    writeWithName(OX);
   return;
 }
 
