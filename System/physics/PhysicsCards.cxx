@@ -336,29 +336,15 @@ PhysicsCards::processCard(const std::string& Line)
   if (pos!=std::string::npos)
     {
       long int RS;
-      size_t kType;
-      double D;
       std::string keyName;
       Comd.erase(0,pos+4);
       if (StrFunc::convert(Comd,RS))
-	dbCard->setItem("rndSeed",RS);
-      /*
-        else if (StrFunc::section(Comd,keyName) &&
-	       (kType=dbCard->keyType(keyName)) )
-               {
-	  if (kType==1 && StrFunc::section(Comd,RS))
-	    dbCard->setComp(keyName,RS);
-	  else if (StrFunc::section(Comd,D))
-	    dbCard->setComp(keyName,RS);
-	  else
-	    ELog::EM<<"DBCN ["<<keyName<<"] error  == "
-		    <<Comd<<ELog::endErr;
-	}
+	dbCard->setRegItem("rndSeed",RS);
       else
 	{
 	  ELog::EM<<"DBCN [rnd] error  == "<<Comd<<ELog::endErr;
 	}
- */
+
       return 1;
     }
   pos=Comd.find("cut:");
@@ -820,8 +806,8 @@ PhysicsCards::setRND(const long int N,
     \param H :: History
   */
 {
-  if (N) RAND->setItem("SEED",N);
-  if (H) RAND->setItem("HIST",H);
+  if (N) RAND->setRegItem("SEED",N);
+  if (H) RAND->setRegItem("HIST",H);
 
   return;
 }

@@ -76,10 +76,10 @@ nameCard::operator=(const nameCard& A)
 {
   if (this!=&A)
     {
-      keyName=A.keyName;
       active=A.active;
       regNames=A.regNames;
       nameOrder=A.nameOrder;
+      JUnit=A.JUnit;
       DUnit=A.DUnit;
       IUnit=A.IUnit;
       SUnit=A.SUnit;
@@ -171,8 +171,6 @@ nameCard::setDefItem(const std::string& kN)
   return;
 }
 
-
-  
 template<>
 void
 nameCard::setItem(const std::string& kN,const double& Value) 
@@ -374,6 +372,23 @@ nameCard::setRegItem(const std::string& kN,
     (Item," Key = "+kN+" unconverted to "+getTypeName(AType));
 }
   
+template<typename T>
+void
+nameCard::setRegIndex(const size_t index,const T& Val)
+  /*!
+    Set an item based on the index value
+    \param index :: index position
+    \param Val :: value to set
+   */
+{
+  ELog::RegMethod RegA("nameCard","setRegIndex");
+
+  if (index>=nameOrder.size())
+    throw ColErr::IndexError<size_t>(index,nameOrder.size(),"index");
+  setRegItem(nameOrder[index],Val);
+  return;
+}
+
 
 template<>
 const double&

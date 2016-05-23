@@ -42,8 +42,8 @@ class nameCard
   /// enumeration for type
   enum class MData { DBL = 1, INT = 2, STR = 3, J = 4 };
   
-  std::string keyName;                     ///< Main name
-  int writeType;                           ///< Write out type [name / flat]
+  const std::string keyName;               ///< Main name
+  const int writeType;                     ///< Write out type [name / flat
   bool active;                             ///< Active
 
   
@@ -62,6 +62,9 @@ class nameCard
   void writeWithName(std::ostream&) const;
   void writeFlat(std::ostream&) const;
   
+  template<typename T>
+  void setItem(const std::string&,const T&);
+
  public:
    
   nameCard(const std::string&,const int);
@@ -76,13 +79,14 @@ class nameCard
 
   void setDefItem(const std::string&);
   
-  template<typename T>
-  void setItem(const std::string&,const T&);
 
   template<typename T>
   const T& getItem(const std::string&) const;
 
 
+  template<typename T>
+  void setRegIndex(const size_t,const T&);
+  
   template<typename T>
   void setRegItem(const std::string&,const T&);
 
