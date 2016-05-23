@@ -2,7 +2,7 @@
   CombLayer : MCNP(X) Input builder
  
  * File:   processInc/SimInput.h
-*
+ *
  * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
@@ -42,6 +42,9 @@ namespace SimProcess
   int processExitChecks(Simulation&,const mainSystem::inputParam&);
   void processPTrack(const mainSystem::inputParam&,
 		     physicsSystem::PhysicsCards&);
+  void processEvent(const std::string&,
+		    const mainSystem::inputParam&,
+		    physicsSystem::PhysicsCards&);
   
 }  // namespace SimProcess
 

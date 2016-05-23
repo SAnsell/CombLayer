@@ -157,6 +157,9 @@ inputProcessForSim(Simulation& System,
 
   if (IParam.flag("ptrac"))
     processPTrack(IParam,System.getPC());
+
+  if (IParam.flag("event"))
+    processEvent(IParam,System.getPC());
   
   return;
 }
@@ -172,7 +175,6 @@ processPTrack(const mainSystem::inputParam& IParam,
 {
   ELog::RegMethod RegA("SimInput[F]","processPTrack");
 
-
   const size_t NItems=IParam.itemCnt("ptrac",0);
   if (NItems && IParam.getValue<std::string>("ptrac",0,0)=="help")
     {
@@ -187,6 +189,35 @@ processPTrack(const mainSystem::inputParam& IParam,
       PCard.setPTRAC(key,Val);
     }
   PCard.setPTRACactive(1);
+  return;
+}
+
+void
+processEvent(const std::string typeName,
+             const mainSystem::inputParam& IParam,
+             physicsSystem::PhysicsCards& PCard)
+  /*!
+    Process the input
+    \param IParam :: Input deck
+    \param PCard :: Physics card
+  */
+{
+  ELog::RegMethod RegA("SimInput[F]","processEvent");
+
+  const size_t NItems=IParam.itemCnt(typeName,0);
+  if (NItems && IParam.getValue<std::string>(typeName,0,0)=="help")
+    {
+      PCard.writeHelp(typeName);
+      return;
+    }
+  
+  for(size_t index=1;index<NItems;index+=2)
+    {
+      const std::string key=IParam.getValue<std::string>(type|Namex,0,index-1);
+      const std::string Val=IParam.getValue<std::string>(typeName,0,index);
+      PCard.setDBCN(key,Val);
+    }
+  PCard.setDBCNactive(1);
   return;
 }
 

@@ -548,7 +548,8 @@ createPhotonInputs(inputParam& IParam)
   return;
 }
 
-void createTS1Inputs(inputParam& IParam)
+void
+createTS1Inputs(inputParam& IParam)
   /*!
     Set the specialise inputs for TS1
     \param IParam :: Input Parameters
@@ -575,7 +576,8 @@ void createTS1Inputs(inputParam& IParam)
   return;
 }
 
-void createBilbauInputs(inputParam& IParam)
+void
+createBilbauInputs(inputParam& IParam)
   /*!
     Set the specialise inputs for TS2
     \param IParam :: Input Parameters
@@ -591,7 +593,8 @@ void createBilbauInputs(inputParam& IParam)
   return;
 }
 
-void createBNCTInputs(inputParam& IParam)
+void
+createBNCTInputs(inputParam& IParam)
   /*!
     Set the specialise inputs for Boron capture beamline
     \param IParam :: Input Parameters
@@ -604,7 +607,8 @@ void createBNCTInputs(inputParam& IParam)
   return;
 }
 
-void createD4CInputs(inputParam& IParam)
+void
+createD4CInputs(inputParam& IParam)
   /*!
     Set the specialise inputs for D4C beamline
     \param IParam :: Input Parameters
@@ -623,7 +627,8 @@ void createD4CInputs(inputParam& IParam)
   return;
 }
 
-void createTS3ExptInputs(inputParam& IParam)
+void
+createTS3ExptInputs(inputParam& IParam)
   /*!
     Set the specialise inputs for TS3 Model
     \param IParam :: Input Parameters
@@ -636,7 +641,8 @@ void createTS3ExptInputs(inputParam& IParam)
   return;
 }
 
-void createCuInputs(inputParam& IParam)
+void
+createCuInputs(inputParam& IParam)
   /*!
     Set the specialise inputs for TS2
     \param IParam :: Input Parameters
@@ -649,7 +655,8 @@ void createCuInputs(inputParam& IParam)
   return;
 }
 
-void createPipeInputs(inputParam& IParam)
+void
+createPipeInputs(inputParam& IParam)
   /*!
     Set the specialise inputs for TS2
     \param IParam :: Input Parameters
@@ -723,7 +730,8 @@ createSingleItemInputs(inputParam& IParam)
 }
 
   
-void createEPBInputs(inputParam& IParam)
+void
+createEPBInputs(inputParam& IParam)
   /*!
     Set the specialise inputs for ESS EPB magnets
     \param IParam :: Input Parameters
@@ -736,7 +744,8 @@ void createEPBInputs(inputParam& IParam)
   return;
 }
 
-void createSNSInputs(inputParam& IParam)
+void
+createSNSInputs(inputParam& IParam)
   /*!
     Set the specialise inputs for SNS
     \param IParam :: Input Parameters
@@ -749,7 +758,8 @@ void createSNSInputs(inputParam& IParam)
   return;
 }
 
-void createMuonInputs(inputParam& IParam)
+void
+createMuonInputs(inputParam& IParam)
   /*!
     Set the specialise inputs for EPB on TS2
     \param IParam :: Input Parameters

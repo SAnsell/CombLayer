@@ -821,6 +821,16 @@ PhysicsCards::setPTRACactive(const bool F)
 {
   PTRAC->setActive(F);
 }
+
+void
+PhysicsCards::setDBCNactive(const bool F)
+  /*!
+    Set the PTRAC active 
+    \param F :: Flag value
+  */
+{
+  DBCN->setActive(F);
+}
   
 template<typename T>
 void
@@ -958,6 +968,8 @@ PhysicsCards::writeHelp(const std::string& keyName) const
     PTRAC->writeHelp(ELog::EM.Estream());
   else if (keyName=="rand")
     RAND->writeHelp(ELog::EM.Estream());
+  else if (keyName=="event" || keyName=="dbcn")
+    dbCard->writeHelp(ELog::EM.Estream());
 
   ELog::EM<<ELog::endDiag;
   return;

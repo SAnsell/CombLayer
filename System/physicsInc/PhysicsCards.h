@@ -141,6 +141,7 @@ class PhysicsCards
   void setPTRAC(const std::string&,const T&);
   template<typename T>
   void setDBCN(const std::string&,const T&);
+  void setDBCNactive(const bool);
   void setPTRACactive(const bool);
 
   void setEnergyCut(const double);  
