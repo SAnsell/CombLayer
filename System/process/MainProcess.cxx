@@ -221,6 +221,7 @@ createInputs(inputParam& IParam)
   IParam.regMulti("eng","engineering",10000,0);
   IParam.regItem("E","exclude");
   IParam.regDefItem<double>("electron","electron",1,-1.0);
+  IParam.regItem("event","EVENT");
   IParam.regFlag("help","help");
   IParam.regMulti("i","iterate",10000,1);
   IParam.regItem("I","isolate");
@@ -318,7 +319,8 @@ createInputs(inputParam& IParam)
   IParam.setDesc("e","Convert materials to ENDF-VII");
   IParam.setDesc("electron","Add electron physics at Energy");
   IParam.setDesc("engineering","Select engineering detail {components}");
-  IParam.setDesc("E","exclude part of the simualtion [chipir/zoom]");
+  IParam.setDesc("E","exclude part of the simualtion [e.g. chipir/zoom]");
+  IParam.setDesc("event","Event processing : ");
   IParam.setDesc("help","Help on the diff options for building [only TS1] ");
   IParam.setDesc("i","iterate on variables");
   IParam.setDesc("I","Isolate component");
