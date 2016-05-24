@@ -159,7 +159,10 @@ inputProcessForSim(Simulation& System,
     processPTrack(IParam,System.getPC());
 
   if (IParam.flag("event"))
-    processEvent(IParam,System.getPC());
+    processEvent("event",IParam,System.getPC());
+
+  if (IParam.flag("dbcn"))
+    processEvent("dbcn",IParam,System.getPC());
   
   return;
 }
@@ -193,11 +196,12 @@ processPTrack(const mainSystem::inputParam& IParam,
 }
 
 void
-processEvent(const std::string typeName,
+processEvent(const std::string& typeName,
              const mainSystem::inputParam& IParam,
              physicsSystem::PhysicsCards& PCard)
   /*!
     Process the input
+    \param typeName :: name [event/dbcn]
     \param IParam :: Input deck
     \param PCard :: Physics card
   */
@@ -213,7 +217,7 @@ processEvent(const std::string typeName,
   
   for(size_t index=1;index<NItems;index+=2)
     {
-      const std::string key=IParam.getValue<std::string>(type|Namex,0,index-1);
+      const std::string key=IParam.getValue<std::string>(typeName,0,index-1);
       const std::string Val=IParam.getValue<std::string>(typeName,0,index);
       PCard.setDBCN(key,Val);
     }

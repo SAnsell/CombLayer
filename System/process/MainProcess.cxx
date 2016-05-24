@@ -215,6 +215,7 @@ createInputs(inputParam& IParam)
   IParam.regItem("C","ECut");
   IParam.regFlag("cinder","cinder");
   IParam.regItem("d","debug");
+  IParam.regItem("dbcn","dbcn");
   IParam.regItem("defaultConfig","defaultConfig");
   IParam.regDefItem<std::string>("dc","doseCalc",1,"InternalDOSE");
   IParam.regFlag("e","endf");
@@ -314,6 +315,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("ECut","Cut energy");
   IParam.setDesc("cinder","Outer Cinder files");
   IParam.setDesc("d","debug flag");
+  IParam.setDesc("dbcn","DBCN card values");
   IParam.setDesc("dc","Dose flag (internalDOSE/DOSE)");
   IParam.setDesc("defaultConfig","Set up a default configuration");
   IParam.setDesc("e","Convert materials to ENDF-VII");

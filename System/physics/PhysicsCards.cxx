@@ -829,7 +829,7 @@ PhysicsCards::setDBCNactive(const bool F)
     \param F :: Flag value
   */
 {
-  DBCN->setActive(F);
+  dbCard->setActive(F);
 }
   
 template<typename T>
