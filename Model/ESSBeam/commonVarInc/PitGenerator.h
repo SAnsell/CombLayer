@@ -42,8 +42,7 @@ class PitGenerator
   double voidHeight;             ///< void height
   double voidDepth;              ///< void depth
   double voidWidth;              ///< void widht
-  double voidLenght;              ///< void widht
-
+  double voidLength;              ///< void widht
   
   double feHeight;             ///< inner height
   double feDepth;              ///< inner depth
@@ -69,18 +68,6 @@ class PitGenerator
   PitGenerator& operator=(const PitGenerator&);
   ~PitGenerator();
 
-  void addFloor(const size_t,const double,const std::string&);
-  void addRoof(const size_t,const double,const std::string&);
-  void addWall(const size_t,const double,const std::string&);
-
-  void addWallLen(const size_t,const double);
-  void addRoofLen(const size_t,const double);
-  void addFloorLen(const size_t,const double);
-
-  void addWallMat(const size_t,const std::string&);
-  void addRoofMat(const size_t,const std::string&);
-  void addFloorMat(const size_t,const std::string&);
-  
   void generatePit(FuncDataBase&,const std::string&,
 		      const double,const double,const double,const double,
 		      const size_t,const size_t)  const;
