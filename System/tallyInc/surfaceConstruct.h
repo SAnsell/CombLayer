@@ -34,7 +34,7 @@ namespace tallySystem
 {
 
 /*!
-  \class surfaceConstruct
+  \class surfaceConstruct 
   \version 1.0
   \author S. Ansell
   \date April 2012
@@ -46,6 +46,8 @@ namespace tallySystem
 class surfaceConstruct : virtual public basicConstruct
 {
  private:
+
+  int idType;    ///< type of surface construct
   
   int processSurfObject(Simulation&,const std::string&,
 			const long int,
@@ -53,6 +55,8 @@ class surfaceConstruct : virtual public basicConstruct
   int processSurfMap(Simulation&,const std::string&,
 		     const std::string&,const long int) const;
 
+  int processSurface(Simulation&,const mainSystem::inputParam&,
+		    const size_t) const;
 
  public:
 
@@ -61,8 +65,11 @@ class surfaceConstruct : virtual public basicConstruct
   surfaceConstruct& operator=(const surfaceConstruct&);
   virtual ~surfaceConstruct() {}  ///< Destructor
 
-  int processSurface(Simulation&,const mainSystem::inputParam&,
-		    const size_t) const;
+
+  int processSurfaceCurrent(Simulation&,const mainSystem::inputParam&,
+			    const size_t);
+  int processSurfaceFlux(Simulation&,const mainSystem::inputParam&,
+			 const size_t);
 
   virtual void writeHelp(std::ostream&) const;
 };

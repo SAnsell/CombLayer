@@ -76,33 +76,39 @@
 namespace tallySystem
 {
 
-surfaceConstruct::surfaceConstruct() 
+surfaceConstruct::surfaceConstruct() :
+  idType(1)
   /*!
     Constructor
   */
 {}
 
-surfaceConstruct::surfaceConstruct(const surfaceConstruct&) 
+surfaceConstruct::surfaceConstruct(const surfaceConstruct& A) :
+  idType(A.idType)
   /*! 
     Copy Constructor
   */
 {}
 
 surfaceConstruct&
-surfaceConstruct::operator=(const surfaceConstruct&) 
+surfaceConstruct::operator=(const surfaceConstruct& A)  
   /*! 
     Assignment operator
+    \param A :: surface Construct
+    \return *this
   */
 {
+  if (this!=&A)
+    idType=A.idType;
   return *this;
-}
-
+}  
+  
 int
 surfaceConstruct::processSurface(Simulation& System,
 			   const mainSystem::inputParam& IParam,
 			   const size_t Index) const
   /*!
-    Add surface tally (s) as needed
+    Add surface tally as needed
     \param System :: Simulation to add tallies
     \param IParam :: Main input parameters
     \param Index :: index of the -T card
@@ -190,7 +196,7 @@ surfaceConstruct::processSurfObject(Simulation& System,
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
   
-  const int tNum=System.nextTallyNum(1);
+  const int tNum=System.nextTallyNum(idType);
   if (linkPt)
     {
       const attachSystem::FixedComp* TPtr=
@@ -225,7 +231,8 @@ surfaceConstruct::processSurfMap(Simulation& System,
   /*!
     Process a surface tally on a registered object
     \param System :: Simulation to add tallies
-    \param FObject :: SurfMap
+    \param SObject :: SurfMap object for surfaces
+    \param SurfUnit :: Object within surfMap
     \param linkPt :: Link point [-ve for beam object]
   */
 {
@@ -236,7 +243,7 @@ surfaceConstruct::processSurfMap(Simulation& System,
   ModelSupport::surfIndex& SurI=
     ModelSupport::surfIndex::Instance();
   
-  const int tNum=System.nextTallyNum(1);
+  const int tNum=System.nextTallyNum(idType);
   if (linkPt)
     {
       const attachSystem::SurfMap* SPtr=
@@ -251,13 +258,46 @@ surfaceConstruct::processSurfMap(Simulation& System,
 
       const int surf=SPtr->getSurf(SurfUnit,index);
 
-      const int signV((linkPt>0) ? 1 : -1);
       addF1Tally(System,tNum,side*surf);
       return 1;
     }
   return 0;
 }
 
+int
+surfaceConstruct::processSurfaceCurrent(Simulation& System,
+                                        const mainSystem::inputParam& IParam,
+                                        const size_t Index) 
+/*!
+    Add surface tally (s) as needed
+    \param System :: Simulation to add tallies
+    \param IParam :: Main input parameters
+    \param Index :: index of the -T card
+  */
+{
+  ELog::RegMethod RegA("surfaceConstruct","processSurfaceCurrent");
+  idType=1;
+  return processSurface(System,IParam,Index);
+}
+
+int
+surfaceConstruct::processSurfaceFlux(Simulation& System,
+                                     const mainSystem::inputParam& IParam,
+                                     const size_t Index) 
+/*!
+    Add surface tally (s) as needed
+    \param System :: Simulation to add tallies
+    \param IParam :: Main input parameters
+    \param Index :: index of the -T card
+  */
+{
+  ELog::RegMethod RegA("surfaceConstruct","processSurfaceCurrent");
+  idType=2;
+  return processSurface(System,IParam,Index);
+}
+
+
+  
 void
 surfaceConstruct::writeHelp(std::ostream& OX) const
   /*!
@@ -268,6 +308,7 @@ surfaceConstruct::writeHelp(std::ostream& OX) const
   OX<<"Surface tally options:\n"
     <<"object linkName\n"
     <<"object objectName front/back \n"
+    <<"surfMap objectName front/back/N {1-4 designator} \n"
     <<"viewObject objectName front/back/N {1-4 designator} \n";
   return;
 }

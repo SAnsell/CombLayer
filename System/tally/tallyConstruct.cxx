@@ -211,7 +211,9 @@ tallyConstruct::tallySelection(Simulation& System,
       else if (TType=="item")
 	itemPtr->processItem(System,IParam,i);
       else if (TType=="surface")
-	workFlag+=surfPtr->processSurface(System,IParam,i);
+	workFlag+=surfPtr->processSurfaceCurrent(System,IParam,i);
+      else if (TType=="surfFlux")
+	workFlag+=surfPtr->processSurfaceFlux(System,IParam,i);
       else
 	ELog::EM<<"Unable to understand tally type :"<<TType<<ELog::endErr;
     }
