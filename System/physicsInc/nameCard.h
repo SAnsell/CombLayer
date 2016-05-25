@@ -58,13 +58,16 @@ class nameCard
 
   static const std::string& getTypeName(const MData&);
   static MData convertName(const std::string&);
-
+  static void writeJ(std::ostream&,size_t&);
+  
   void writeWithName(std::ostream&) const;
   void writeFlat(std::ostream&) const;
   
   template<typename T>
   void setItem(const std::string&,const T&);
 
+
+  
  public:
    
   nameCard(const std::string&,const int);

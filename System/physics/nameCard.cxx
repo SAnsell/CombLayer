@@ -480,7 +480,23 @@ nameCard::writeHelp(std::ostream& OX) const
 }
   
   
+void
+nameCard::writeJ(std::ostream& OX,size_t& jCnt)
+  /*!
+    Write out a list of j to the stream 
+    \param OX :: Output stream
+    \param jCnt :: count for j
+   */
+{
+  if (jCnt)
+    {
+      if (jCnt>1) OX<<jCnt;
+      OX<<"j ";
+      jCnt=0;
+    }
 
+  return;
+}
   
 void
 nameCard::writeFlat(std::ostream& OX) const
@@ -498,41 +514,34 @@ nameCard::writeFlat(std::ostream& OX) const
 
   std::ostringstream cx;
   
-  cx<<keyName;
+  cx<<keyName<<" ";
   size_t jCnt(0);
   for(const std::string& K : nameOrder)
     {
-      jIter=JUnit.find(K);
-      if (jIter!=JUnit.end())
-	jCnt++;
-      else
-	{
-	  if (jCnt)
-	    {
-	      if (jCnt>0) cx<<jCnt;
-	      cx<<"j";
-	      jCnt=0;
-	    }
-
-	  iIter=IUnit.find(K);
-	  if (iIter!=IUnit.end())
-	    {
-	      cx<<iIter->second<<" ";
-	      continue;
-	    }
-	  dIter=DUnit.find(K);
-	  if (iIter!=IUnit.end())
-	    {
-	      cx<<dIter->second<<" ";
-	      continue;
-	    }
-	  sIter=SUnit.find(K);
-	  if (iIter!=IUnit.end())
-	    {
-	      cx<<sIter->second<<" ";
-	      continue;
-	    }
-	}
+      
+      iIter=IUnit.find(K);
+      if (iIter!=IUnit.end())
+        {
+          writeJ(cx,jCnt);
+          cx<<iIter->second<<" ";
+          continue;
+        }
+      dIter=DUnit.find(K);
+      if (iIter!=IUnit.end())
+        {
+          writeJ(cx,jCnt);
+          cx<<dIter->second<<" ";
+          continue;
+        }
+      sIter=SUnit.find(K);
+      if (iIter!=IUnit.end())
+        {
+          writeJ(cx,jCnt);
+          cx<<sIter->second<<" ";
+          continue;
+        }
+      // Must be a j:
+      jCnt++;              
     }
   // Notice abandon final 'j's
   StrFunc::writeMCNPX(cx.str(),OX);
