@@ -57,7 +57,7 @@
 #include "Simulation.h"
 #include "objectRegister.h"
 #include "inputParam.h"
-#include "WeightMesh.h"
+#include "Mesh3D.h"
 #include "WWG.h"
 
 namespace WeightSystem

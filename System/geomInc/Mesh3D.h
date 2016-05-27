@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   weightsInc/WeightMesh.h
+ * File:   weightsInc/Mesh3D.h
  *
  * Copyright (c) 2004-2016 by Stuart Ansell
  *
@@ -19,22 +19,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef WeightSystem_WeightMesh_h
-#define WeightSystem_WeightMesh_h
+#ifndef Geometry_Mesh3D_h
+#define Geometry_Mesh3D_h
 
-
-namespace WeightSystem
+namespace Geometry
 {
 
 /*!
-  \class WeightMesh
+  \class Mesh3D
   \version 1.0
   \date October 2015
   \author S. Ansell
-  \brief A WW-Mesh for neutron importance
+  \brief A WW-Mesh 
 */
 
-class WeightMesh 
+class Mesh3D 
 {
  private:
 
@@ -70,10 +69,10 @@ class WeightMesh
  public:
 
   
-  WeightMesh();
-  WeightMesh(const WeightMesh&);
-  WeightMesh& operator=(const WeightMesh&);
-  virtual ~WeightMesh() {}   ///< Destructor
+  Mesh3D();
+  Mesh3D(const Mesh3D&);
+  Mesh3D& operator=(const Mesh3D&);
+  virtual ~Mesh3D() {}   ///< Destructor
 
   /// total number of cells
   size_t size() const { return NX*NY*NZ; }

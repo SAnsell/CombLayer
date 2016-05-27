@@ -406,7 +406,6 @@ GuideItem::createObjects(Simulation& System,const GuideItem* GPtr)
   const std::string edgeStr=getEdgeStr(GPtr);
   std::string Out;  
 
-
   int GI(guideIndex);
   for(size_t i=0;i<nSegment;i++)
     {
@@ -430,9 +429,6 @@ GuideItem::createObjects(Simulation& System,const GuideItem* GPtr)
       Out+=ModelSupport::getComposite(SMap,GI," (-13:14:-15:16) ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
       // Inner metal:
-      
-      
-
       if (!filled)
 	Out+=ModelSupport::getComposite(SMap,guideIndex,
 					"(-1103:1104:-1105:1106) ");

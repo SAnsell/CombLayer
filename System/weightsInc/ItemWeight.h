@@ -57,7 +57,7 @@ class ItemWeight
   CMapTYPE Cells;                      ///< Cells and track info
 
   double calcMinWeight
-    (const double,const double,const double)  const;
+    (const double,const double)  const;
 
  public:
 

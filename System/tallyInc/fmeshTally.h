@@ -58,7 +58,6 @@ class fmeshTally : public Tally
 
   int requireRotation;           ///< rotation to the mesh
   
-
   void writeMesh(std::ostream&) const;
   
  public:

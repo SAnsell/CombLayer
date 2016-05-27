@@ -51,7 +51,7 @@ class WWG
   int switchn;         ///< read from wwinp file
   
   std::vector<double> EBin;      ///< Energy bins
-  WeightMesh Grid;               ///< Mesh Grid
+  Geometry::Mesh3D Grid;         ///< Mesh Grid
 
   std::vector<std::vector<double>> WMesh;     ///< linearized weight mesh
 
@@ -65,9 +65,9 @@ class WWG
   WWG& operator=(const WWG&);
 
   /// access to grid
-  WeightMesh& getGrid() { return Grid; }
+  Geometry::Mesh3D& getGrid() { return Grid; }
   /// access to grid
-  const WeightMesh& getGrid() const { return Grid; }
+  const Geometry::Mesh3D& getGrid() const { return Grid; }
   /// Access to EBin
   const std::vector<double>& getEBin() const { return EBin; }
   void setEnergyBin(const std::vector<double>&,

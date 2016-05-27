@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   weights/WeightMesh.cxx
+ * File:   geometry/Mesh3D.cxx
  *
  * Copyright (c) 2004-2016 by Stuart Ansell
  *
@@ -48,12 +48,12 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "WeightMesh.h"
+#include "Mesh3D.h"
 
-namespace WeightSystem
+namespace Geometry
 {
 
-WeightMesh::WeightMesh() : 
+Mesh3D::Mesh3D() : 
   tallyN(1),type(XYZ),
   RefPoint(0,0.1,0),Origin(0,0,0),
   Vec(0,0.1,0),NX(0),NY(0),NZ(0)
@@ -62,22 +62,22 @@ WeightMesh::WeightMesh() :
   */
 {}
 
-WeightMesh::WeightMesh(const WeightMesh& A) : 
+Mesh3D::Mesh3D(const Mesh3D& A) : 
   tallyN(A.tallyN),type(A.type),RefPoint(A.RefPoint),
   Origin(A.Origin),Axis(A.Axis),Vec(A.Vec),X(A.X),Y(A.Y),
   Z(A.Z),XFine(A.XFine),YFine(A.YFine),ZFine(A.ZFine),
   NX(A.NX),NY(A.NY),NZ(A.NZ)
   /*!
     Copy constructor
-    \param A :: WeightMesh to copy
+    \param A :: Mesh3D to copy
   */
 {}
 
-WeightMesh&
-WeightMesh::operator=(const WeightMesh& A)
+Mesh3D&
+Mesh3D::operator=(const Mesh3D& A)
   /*!
     Assignment operator
-    \param A :: WeightMesh to copy
+    \param A :: Mesh3D to copy
     \return *this
   */
 {
@@ -103,7 +103,7 @@ WeightMesh::operator=(const WeightMesh& A)
 }
 
 void
-WeightMesh::setMeshType(const GeomENUM& A)
+Mesh3D::setMeshType(const GeomENUM& A)
   /*!
     Set the type
     \param A :: Type
@@ -115,7 +115,7 @@ WeightMesh::setMeshType(const GeomENUM& A)
 
 
 void 
-WeightMesh::setMesh(const std::vector<double>& XV,
+Mesh3D::setMesh(const std::vector<double>& XV,
 		    const std::vector<size_t>& XN,
 		    const std::vector<double>& YV,
 		    const std::vector<size_t>& YN,
@@ -145,7 +145,7 @@ WeightMesh::setMesh(const std::vector<double>& XV,
 }
 
 std::string
-WeightMesh::getType() const
+Mesh3D::getType() const
   /*!
     Returns the type fo the mess as a string
     \return type-string
@@ -164,7 +164,7 @@ WeightMesh::getType() const
 }
 
 double
-WeightMesh::getCoordinate(const std::vector<double>& Vec,
+Mesh3D::getCoordinate(const std::vector<double>& Vec,
 			  const std::vector<size_t>& NF,
 			  const size_t Index)
   /*!
@@ -193,7 +193,7 @@ WeightMesh::getCoordinate(const std::vector<double>& Vec,
   
   
 Geometry::Vec3D
-WeightMesh::point(const size_t a,const size_t b,const size_t c) const
+Mesh3D::point(const size_t a,const size_t b,const size_t c) const
   /*!
     Determine the 3d Vector corresponding the mesh point (a,b,c)
     \param a :: x index
@@ -202,7 +202,7 @@ WeightMesh::point(const size_t a,const size_t b,const size_t c) const
     \return Vec3D point 
   */
 {
-  ELog::RegMethod RegA ("WeightMesh","point");
+  ELog::RegMethod RegA ("Mesh3D","point");
 
   if (a >= NX)
     throw ColErr::IndexError<size_t>(a,NX,"X-coordinate");
@@ -218,7 +218,7 @@ WeightMesh::point(const size_t a,const size_t b,const size_t c) const
 }
 
 void
-WeightMesh::writeWWINP(std::ostream& OX,const size_t NEBin) const
+Mesh3D::writeWWINP(std::ostream& OX,const size_t NEBin) const
   /*!
     Write out to a mesh to a wwinp file
     Currently ONLY works correctly with a rectangular file
@@ -226,7 +226,7 @@ WeightMesh::writeWWINP(std::ostream& OX,const size_t NEBin) const
     \param NEBin :: Number of energy bins
   */
 {
-  ELog::RegMethod RegA("WeightMesh","writeWWINP");
+  ELog::RegMethod RegA("Mesh3D","writeWWINP");
 
   boost::format TopFMT("%10i%10i%10i%10i%28s\n");
   const std::string date("10/07/15 15:37:51");
@@ -274,16 +274,16 @@ WeightMesh::writeWWINP(std::ostream& OX,const size_t NEBin) const
 
   
 void
-WeightMesh::write(std::ostream& OX) const
+Mesh3D::write(std::ostream& OX) const
   /*!
     Write out to a mesh
     \param OX :: output stream
   */
 {
-  ELog::RegMethod RegA("WeightMesh","write");
+  ELog::RegMethod RegA("Mesh3D","write");
 
   std::ostringstream cx;
-  cx<<"mesh   geom="<<getType()<<" origin="<<Origin
+  cx<<"mesh  geom="<<getType()<<" origin="<<Origin
     <<" ref="<<RefPoint;
   StrFunc::writeMCNPX(cx.str(),OX);
 
@@ -310,4 +310,4 @@ WeightMesh::write(std::ostream& OX) const
   return;
 }
 
-}   // NAMESPACE WeightSystem
+}   // NAMESPACE Geometry

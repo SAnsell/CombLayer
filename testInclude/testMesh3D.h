@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
- * File:   testInclude/testWeightMesh.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * File:   testInclude/testMesh3D.h
+ *
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,16 +19,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef testWeightMesh_h
-#define testWeightMesh_h 
+#ifndef testMesh3D_h
+#define testMesh3D_h 
 
-namespace WeightSystem
+namespace Geometry
 {
-class WeightMesh;
+  class Mesh3D;
 }
 
 /*!
-  \class testWeightMesh
+  \class testMesh3D
   \brief Tests the class Cylinder class
   \author S. Ansell
   \date Nov. 2005
@@ -37,12 +37,12 @@ class WeightMesh;
   Test the distance of a point to the cone
 */
 
-class testWeightMesh 
+class testMesh3D 
 {
 private:
 
 
-  void createXYZ(WeightSystem::WeightMesh&,
+  void createXYZ(Geometry::Mesh3D&,
 		 const std::string&,const std::string&,
 		 const std::string&) const;
   //Tests 
@@ -50,8 +50,8 @@ private:
  
 public:
 
-  testWeightMesh();
-  ~testWeightMesh();
+  testMesh3D();
+  ~testMesh3D();
 
   int applyTest(const int);     
 };

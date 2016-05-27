@@ -76,7 +76,7 @@
 #include "ObjectTrackAct.h"
 #include "ObjectTrackPoint.h"
 #include "ObjectTrackPlane.h"
-#include "WeightMesh.h"
+#include "Mesh3D.h"
 #include "WWG.h"
 #include "WWGWeight.h"
 #include "WeightControl.h"
@@ -428,7 +428,7 @@ WeightControl::calcPoints(std::vector<Geometry::Vec3D>& Pts,
     WeightSystem::weightManager::Instance();
 
   WWG& wwg=WM.getWWG();
-  const WeightMesh& WGrid=wwg.getGrid();  
+  const Geometry::Mesh3D& WGrid=wwg.getGrid();  
 
   const size_t NX=WGrid.getXSize();
   const size_t NY=WGrid.getYSize();

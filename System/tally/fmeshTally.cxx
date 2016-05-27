@@ -121,7 +121,7 @@ fmeshTally::setType(const int T)
 void
 fmeshTally::setKeyWords(const std::string&)
   /*!
-    Set the mesh keyworkds
+    Set the mesh keywords
     \param K :: Keyword to add
   */
 {
@@ -225,6 +225,38 @@ fmeshTally::write(std::ostream& OX) const
     \param OX :: Output stream
    */
 {
+  masterWrite& MW=masterWrite::Instance();
+  if (isActive())
+    {
+
+      std::ostringstream cx;
+      cx<<"fmesh"<<IDnum;
+      writeParticles(cx);
+      //GEOMETRY:
+      cx<<"GEOM="<<geomType<<" ";
+      cx<<"ORIGIN="<<MW.Num(Origin)<<" ";
+      
+      //      std::vector<double>::const_iterator vc;
+      //      for(vc=kIndex.begin();vc!=kIndex.end();vc++)
+      //	cx<<MW.Num(*vc)<<" ";
+      
+      StrFunc::writeMCNPX(cx.str(),OX);
+      if (!getEnergy().empty())
+	{
+	  cx.str("");
+	  cx<<"ergsh"<<IDnum<<" "<<getEnergy();
+	  StrFunc::writeMCNPX(cx.str(),OX);
+	}					 
+      // if (!mshmf.empty())
+      //   {
+      //     cx.str("");
+      //     cx<<"mshmf"<<IDnum<<" "<<mshmf;
+      //     StrFunc::writeMCNPX(cx.str(),OX);
+      //   }
+      writeCoordinates(OX);
+      OX<<"endmd"<<std::endl;
+    }
+
   return;
 }
 

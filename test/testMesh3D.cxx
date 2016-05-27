@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   test/testWeightMesh.cxx
+ * File:   test/testMesh3D.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,26 +43,25 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "doubleErr.h"
-#include "WeightMesh.h"
+#include "Mesh3D.h"
 
 #include "testFunc.h"
-#include "testWeightMesh.h"
+#include "testMesh3D.h"
 
-
-testWeightMesh::testWeightMesh() 
+testMesh3D::testMesh3D() 
   /*!
     Constructor
   */
 {}
 
-testWeightMesh::~testWeightMesh() 
+testMesh3D::~testMesh3D() 
   /*!
     Destructor
   */
 {}
 
 int 
-testWeightMesh::applyTest(const int extra)
+testMesh3D::applyTest(const int extra)
   /*!
     Applies all the tests and returns 
     the error number
@@ -71,13 +70,13 @@ testWeightMesh::applyTest(const int extra)
     \retval 0 All succeeded
   */
 {
-  ELog::RegMethod RegA("testWeightMesh","applyTest");
-  TestFunc::regSector("testWeightMesh");
+  ELog::RegMethod RegA("testMesh3D","applyTest");
+  TestFunc::regSector("testMesh3D");
   
-  typedef int (testWeightMesh::*testPtr)();
+  typedef int (testMesh3D::*testPtr)();
   testPtr TPtr[]=
     {
-      &testWeightMesh::testPoint
+      &testMesh3D::testPoint
     };
   const std::string TestName[]=
     {
@@ -110,7 +109,7 @@ testWeightMesh::applyTest(const int extra)
 }
 
 void
-testWeightMesh::createXYZ(WeightSystem::WeightMesh& WMesh,
+testMesh3D::createXYZ(Geometry::Mesh3D& WMesh,
                           const std::string& XVal,
                           const std::string& YVal,
                           const std::string& ZVal) const
@@ -122,7 +121,7 @@ testWeightMesh::createXYZ(WeightSystem::WeightMesh& WMesh,
     \param ZVal :: String of z coordinates
   */
 {
-  ELog::RegMethod RegA("testWeightMesh","createXYZ");
+  ELog::RegMethod RegA("testMesh3D","createXYZ");
 
   
   std::string XYZ[3]={XVal,YVal,ZVal};
@@ -150,13 +149,13 @@ testWeightMesh::createXYZ(WeightSystem::WeightMesh& WMesh,
 }
 
 int
-testWeightMesh::testPoint()
+testMesh3D::testPoint()
   /*!
     Test and individual point
     \return -ve on error / 0 on success
    */
 {
-  ELog::RegMethod RegA("testWeightMesh","testSum");
+  ELog::RegMethod RegA("testMesh3D","testSum");
 
   typedef std::tuple<std::string,std::string,std::string,
                      size_t,size_t,size_t,Geometry::Vec3D> TTYPE;
@@ -166,7 +165,7 @@ testWeightMesh::testPoint()
             1,1,2,Geometry::Vec3D(-40,80,40)}
     };
 
-  WeightSystem::WeightMesh A;
+  Geometry::Mesh3D A;
 
   int cnt(1);
   for(const TTYPE& tc : Tests)

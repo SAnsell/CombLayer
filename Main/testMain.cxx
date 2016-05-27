@@ -3,7 +3,7 @@
  
  * File:   Main/testMain.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -139,6 +139,7 @@
 #include "testMatrix.h"
 #include "testMD5.h"
 #include "testMersenne.h"
+#include "testMesh3D.h"
 #include "testNeutron.h"
 #include "testNList.h"
 #include "testNRange.h"
@@ -177,7 +178,6 @@
 #include "testVec3D.h"
 #include "testVarNameOrder.h"
 #include "testVolumes.h"
-#include "testWeightMesh.h"
 #include "testWorkData.h"
 #include "testWrapper.h"
 #include "testXML.h"
@@ -593,6 +593,7 @@ geometryTest(const int type,const int extra)
       "testGeomSupport",
       "testLine",
       "testMasterRotate",
+      "testMesh3D",
       "testQuaternion",
       "testPlane",
       "testRecTriangle",
@@ -665,6 +666,13 @@ geometryTest(const int type,const int extra)
 	  testMasterRotate A;
 	  X=A.applyTest(extra);
 	}
+      
+      if(index==testNum++)
+	{
+	  testMesh3D A;
+	  X=A.applyTest(extra);
+	}
+
       if(index==testNum++)
 	{
 	  testQuaternion A;
@@ -899,7 +907,6 @@ physicsTest(const int type,const int extra)
       TestFunc::Instance().reportTest(std::cout);
       std::cout<<"testDBCN          (1)"<<std::endl;
       std::cout<<"testExtControl    (2)"<<std::endl;
-      std::cout<<"testWeightMesh    (3)"<<std::endl;
     }
   if(type==1 || type<0)
     {
@@ -910,12 +917,6 @@ physicsTest(const int type,const int extra)
   if(type==2 || type<0)
     {
       testExtControl A;
-      const int X=A.applyTest(extra);
-      if (X) return X;
-    }
-  if(type==3 || type<0)
-    {
-      testWeightMesh A;
       const int X=A.applyTest(extra);
       if (X) return X;
     }
