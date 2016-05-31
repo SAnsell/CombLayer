@@ -75,7 +75,6 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedGroup.h"
-#include "LinearComp.h"
 #include "ContainedComp.h"
 #include "SecondTrack.h"
 #include "TwinComp.h"
@@ -189,9 +188,18 @@ BunkerFeed::createUnitVector(const Bunker& BUnit,
   Geometry::Vec3D DPos,DX,DY,DZ;
   BUnit.calcSegPosition(segIndex,DPos,DX,DY,DZ);
   attachSystem::FixedComp::createUnitVector(DPos,DX,DY,DZ);
-  ELog::EM<<"DPos == "<<DPos<<ELog::endDiag;
-  
-  //  FixedComp::createUnitVector(FC,sideIndex);
+  return;
+}
+
+void
+BunkerFeed::moveToLayer(const std::string& PosName)
+  /*!
+    Move the Origin to the layer name
+    \param PosName :: Position name
+   */
+{
+  ELog::RegMethod RegA("BunkerFeed","moveToLayer");
+
   return;
 }
   
@@ -236,18 +244,21 @@ BunkerFeed::insertColl(Simulation& System,
 void
 BunkerFeed::createAll(Simulation& System,
                       const Bunker& bunkerObj,
-                      const size_t segNumber)
+                      const size_t segNumber,
+                      const std::string& feedName)
   /*!
     Generic function to create everything
     \param System :: Simulation to create objects in
     \param bunkerObj :: Bunker Object
     \param segNumber :: segment number
+    \param feedName :: Feed direction name
   */
 {
   ELog::RegMethod RegA("BunkerFeed","createAll");
   
   populate(System.getDataBase());
   createUnitVector(bunkerObj,segNumber);
+  moveToLayer(feedName);
   insertColl(System,bunkerObj); 
 
   //  insertPipes(System);       

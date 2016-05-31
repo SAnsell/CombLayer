@@ -62,7 +62,8 @@ class BunkerFeed :
   void populate(const FuncDataBase&);
   void createUnitVector(const Bunker&,const size_t);
   void insertColl(Simulation&,const Bunker&);
-
+  void moveToLayer(const std::string&);
+  
  public:
 
   BunkerFeed(const std::string&,const size_t);
@@ -70,7 +71,8 @@ class BunkerFeed :
   BunkerFeed& operator=(const BunkerFeed&);
   ~BunkerFeed();
   
-  void createAll(Simulation&,const Bunker&,const size_t);
+  void createAll(Simulation&,const Bunker&,
+		 const size_t,const std::string&);
 
 };
 

@@ -286,7 +286,7 @@ Bunker::createUnitVector(const attachSystem::FixedComp& MainCentre,
       X*=-1;
       Z*=-1;
     }
-      
+
   return;
 }
 
@@ -321,7 +321,6 @@ Bunker::calcSegPosition(const size_t segIndex,
   const double angleDiff(rightAngle-leftAngle);
   
   const double phaseStep((rightPhase-leftPhase)/nSectors);
-  const double angleStep((rightAngle-leftAngle)/nSectors);
 
   const double phase=leftPhase+phaseStep*(static_cast<double>(segIndex)-1);
   const double midPhaseStep((segIndex+1<nSectors) ?
@@ -336,11 +335,13 @@ Bunker::calcSegPosition(const size_t segIndex,
   DPosition+=rotCentre;
       
   DX=X;
-  DX=Y;      
+  DY=Y;
+  DZ=Z;
   Geometry::Quaternion::calcQRotDeg(sectPhase[segIndex]+angle,-Z).rotate(DX);
   Geometry::Quaternion::calcQRotDeg(sectPhase[segIndex]+angle,-Z).rotate(DY);
-  DZ=Z;
-  
+
+  DPosition+=DY*(wallRadius-innerRadius);
+
   return;
 }
 

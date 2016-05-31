@@ -461,7 +461,7 @@ makeESS::buildBunkerFeedThrough(Simulation& System,
           std::shared_ptr<BunkerFeed> BF
             (new BunkerFeed("BunkerFeed",j));
           OR.addObject(BF);
-          BF->createAll(System,*BPtr,segNumber);  
+          BF->createAll(System,*BPtr,segNumber,feedName);  
           
           bFeedArray.push_back(BF);
           //  attachSystem::addToInsertForced(System,*GB, Target->getCC("Wheel"));

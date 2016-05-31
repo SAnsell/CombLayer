@@ -200,6 +200,14 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("CurtainNBaseLayers",7);
 
 
+  Control.addVariable("BunkerFeedOffset",Geometry::Vec3D(0,0,0));
+  Control.addVariable("BunkerFeedHeight",6.0);
+  Control.addVariable("BunkerFeedWidth",6.0);
+  Control.addVariable("BunkerFeedTrack0",Geometry::Vec3D(0,0,0));
+  Control.addVariable("BunkerFeedTrack1",Geometry::Vec3D(0,0,-10));
+  Control.addVariable("BunkerFeedTrack2",Geometry::Vec3D(0,100,-10));
+
+  
   return;
 }
 
