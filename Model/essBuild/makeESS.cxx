@@ -97,6 +97,7 @@
 #include "DiskPreMod.h"
 #include "Bunker.h"
 #include "RoofPillars.h"
+#include "BunkerFeed.h"
 #include "Curtain.h"
 
 #include "ConicModerator.h"
@@ -266,9 +267,11 @@ void
 makeESS::buildIradComponent(Simulation& System,
                             const mainSystem::inputParam& IParam)
   /*!
-    Build the Iradiation component 
+    Build the Iradiation component. It is an object
+    within a moderator (typically). Currently not saves in 
+    the class set.
     \param System :: Simulation
-    \param IParam :: Name of Irad component
+    \param IParam :: Name of Irad component + location
    */
 {
   ELog::RegMethod RegA("makeESS","buildIradComponent");
@@ -415,6 +418,60 @@ void makeESS::buildF5Collimator(Simulation& System, size_t nF5)
   return;
 }
 
+
+void
+makeESS::buildBunkerFeedThrough(Simulation& System,
+                                const mainSystem::inputParam& IParam)
+  /*!
+    Build the underground feedThroughs
+    \param System :: Simulation
+    \param IParam :: Input data
+  */
+{
+  ELog::RegMethod RegA("makeESS","buildBunkerFeedThrough");
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  const size_t NSet=IParam.setCnt("bunkerFeed");
+  FuncDataBase& Control=System.getDataBase();
+  
+  for(size_t j=0;j<NSet;j++)
+    {
+      const size_t NItems=IParam.itemCnt("bunkerFeed",j);
+      if (NItems>=3)
+        {
+          const std::string bunkerName=
+            IParam.getValue<std::string>("bunkerFeed",j,0);
+          const std::string feedName=
+            IParam.getValue<std::string>("bunkerFeed",j,1);
+          const size_t segNumber=
+            IParam.getValue<size_t>("bunkerFeed",j,2);
+
+          // bunkerA/etc should be a map
+          std::shared_ptr<Bunker> BPtr;
+          if (bunkerName=="BunkerA")
+            BPtr=ABunker;
+          else if (bunkerName=="BunkerB")
+            BPtr=BBunker;
+          else
+            throw ColErr::InContainerError<std::string>
+              (bunkerName,"bunkerName not know");
+          
+          std::shared_ptr<BunkerFeed> BF
+            (new BunkerFeed("BunkerFeed",j));
+          OR.addObject(BF);
+          BF->createAll(System,*BPtr,segNumber);  
+          
+          bFeedArray.push_back(BF);
+          //  attachSystem::addToInsertForced(System,*GB, Target->getCC("Wheel"));
+          
+        }
+    }
+
+  return;
+}
+  
 void
 makeESS::buildPillars(Simulation& System)
   /*!
@@ -496,7 +553,7 @@ makeESS::makeBeamLine(Simulation& System,
 
 void
 makeESS::makeBunker(Simulation& System,
-		    const std::string& bunkerType)
+                    const mainSystem::inputParam& IParam)
   /*!
     Make the bunker system
     \param System :: Simulation 
@@ -504,12 +561,14 @@ makeESS::makeBunker(Simulation& System,
   */
 {
   ELog::RegMethod RegA("makeESS","makeBunker");
-
-
-  ABunker->addInsertCell(74123);
+  const int voidCell(74123);
+  const std::string bunkerType=
+    IParam.getValue<std::string>("bunkerType");
+  
+  ABunker->addInsertCell(voidCell);
   ABunker->createAll(System,*LowMod,*GBArray[0],2,true);
 
-  BBunker->addInsertCell(74123);
+  BBunker->addInsertCell(voidCell);
   BBunker->setCutWall(0,1);
   BBunker->createAll(System,*LowMod,*GBArray[0],2,true);
 
@@ -519,6 +578,9 @@ makeESS::makeBunker(Simulation& System,
 
   if (bunkerType.find("noPillar")==std::string::npos)
     buildPillars(System);
+
+  if (IParam.flag("bunkerFeed"))
+    buildBunkerFeedThrough(System,IParam);
 
   if (bunkerType.find("noCurtain")==std::string::npos)
     {
@@ -570,7 +632,7 @@ makeESS::build(Simulation& System,
   
   const std::string targetType=IParam.getValue<std::string>("targetType");
   const std::string iradLine=IParam.getValue<std::string>("iradLineType");
-  const std::string bunker=IParam.getValue<std::string>("bunkerType");
+
 
   const size_t nF5 = IParam.getValue<size_t>("nF5");
 
@@ -641,7 +703,7 @@ makeESS::build(Simulation& System,
 
 
   createGuides(System);
-  makeBunker(System,bunker);
+  makeBunker(System,IParam);
 
   // PROTON BEAMLINE
   

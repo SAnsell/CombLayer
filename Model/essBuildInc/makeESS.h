@@ -72,6 +72,7 @@ namespace essSystem
   class ODIN;
   class LOKI;
   class VOR;
+  class BunkerFeed;
   /*!
     \class makeESS
     \version 1.0
@@ -128,12 +129,11 @@ class makeESS
   /// Array of Guidies
   std::vector<std::shared_ptr<GuideBay> > GBArray;  
 
-  /// Array of beamlines constructors:
-  std::vector<std::shared_ptr<beamlineSystem::beamlineConstructor> > 
-    BLArray;  
-
   std::shared_ptr<Bunker> ABunker;  ///< Right bunker [A unit]
-  std::shared_ptr<Bunker> BBunker;  ///< Right bunker [B unit]
+  std::shared_ptr<Bunker> BBunker;  ///< Left bunker [B unit]
+  /// A bunker freed thorugh
+  std::vector<std::shared_ptr<BunkerFeed> > bFeedArray;
+
   ///< Right bunker Pillars [A]
   std::shared_ptr<RoofPillars> ABunkerPillars;
   ///< Right bunker Pillars [B]
@@ -159,12 +159,14 @@ class makeESS
   void buildToperPipe(Simulation&,const std::string&);
 
   void makeTarget(Simulation&,const std::string&);
-  void makeBunker(Simulation&,const std::string&);
+  void makeBunker(Simulation&,const mainSystem::inputParam&);
   
   void makeBeamLine(Simulation&,
 		    const mainSystem::inputParam&);
 
   void buildPillars(Simulation&);
+  void buildBunkerFeedThrough(Simulation&,
+			      const mainSystem::inputParam&);
 
 
   void buildF5Collimator(Simulation&, size_t);

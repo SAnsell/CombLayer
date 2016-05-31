@@ -37,12 +37,12 @@ class Mesh3D
 {
  private:
 
-  int tallyN;                  ///< Tally number required
-  
   /// Types of weight mess
   enum GeomENUM { XYZ=1,Cyl=2,Sph=3 };
   
   GeomENUM type;               ///< Type of mesh
+
+  size_t writeFlag;            ///< 
   Geometry::Vec3D RefPoint;    ///< Reference point
   Geometry::Vec3D Origin;      ///< Origin
   Geometry::Vec3D Axis;        ///< Axis
@@ -87,10 +87,12 @@ class Mesh3D
 	       const std::vector<double>&,const std::vector<size_t>&);
 	       
   /// Set reference point
-  void setRefPt(const Geometry::Vec3D& Pt) { RefPoint=Pt; } 
+  void setRefPt(const Geometry::Vec3D& Pt)
+  { writeFlag ^= 1; RefPoint=Pt; } 
+  
   
   void write(std::ostream&) const;
-  void writeWWINP(std::ostream&,const size_t) const;
+  void writeWWINP(std::ostream&,const int,const size_t) const;
 
 };
 

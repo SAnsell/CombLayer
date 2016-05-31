@@ -291,14 +291,59 @@ Bunker::createUnitVector(const attachSystem::FixedComp& MainCentre,
 }
 
 void
-Bunker::createWallSurfaces(const Geometry::Vec3D& ,
-			   const Geometry::Vec3D& ) 
+Bunker::createWallSurfaces(const Geometry::Vec3D&,
+			   const Geometry::Vec3D&) 
   /*!
     Create the wall Surface if divided
   */
 {
   return;
 }
+
+void
+Bunker::calcSegPosition(const size_t segIndex,
+                        Geometry::Vec3D& DPosition,
+                        Geometry::Vec3D& DX,
+                        Geometry::Vec3D& DY,
+                        Geometry::Vec3D& DZ) const
+  /*!
+    Calculate the position of the mid segments
+    \param segIndex :: segment index
+    \param DPosition :: Position of centre of wall [inner]
+    \param DX :: Direction of X 
+    \param DY :: Direction of Y
+    \param DZ :: Direction of Z
+  */
+{
+  ELog::RegMethod RegA("Bunker","calcSegPosition");
+
+  const double phaseDiff(rightPhase-leftPhase);
+  const double angleDiff(rightAngle-leftAngle);
+  
+  const double phaseStep((rightPhase-leftPhase)/nSectors);
+  const double angleStep((rightAngle-leftAngle)/nSectors);
+
+  const double phase=leftPhase+phaseStep*(static_cast<double>(segIndex)-1);
+  const double midPhaseStep((segIndex+1<nSectors) ?
+                            (sectPhase[segIndex+1]-sectPhase[segIndex+1])/2.0 :
+                            (sectPhase[segIndex]-sectPhase[segIndex-1])/2.0 );
+                            
+  const double F= (midPhaseStep-leftPhase)/phaseDiff;
+  const double angle= leftAngle+F*angleDiff;
+  
+  DPosition=Origin-rotCentre;
+  Geometry::Quaternion::calcQRotDeg(sectPhase[segIndex],-Z).rotate(DPosition);
+  DPosition+=rotCentre;
+      
+  DX=X;
+  DX=Y;      
+  Geometry::Quaternion::calcQRotDeg(sectPhase[segIndex]+angle,-Z).rotate(DX);
+  Geometry::Quaternion::calcQRotDeg(sectPhase[segIndex]+angle,-Z).rotate(DY);
+  DZ=Z;
+  
+  return;
+}
+
   
 void
 Bunker::createSurfaces()
@@ -364,7 +409,6 @@ Bunker::createSurfaces()
   int divIndex(bnkIndex+1001);
 
   double phase(leftPhase);
-  double angle(leftAngle);
   const double phaseStep((rightPhase-leftPhase)/nSectors);
   const double angleStep((rightAngle-leftAngle)/nSectors);
 
@@ -373,10 +417,8 @@ Bunker::createSurfaces()
     {
       divIndex++;
       phase+=phaseStep;
-      angle+=angleStep;
-
       const double F= (sectPhase[i]-leftPhase)/phaseDiff;
-      angle= leftAngle+F*angleDiff;
+      const double angle= leftAngle+F*angleDiff;
             
       Geometry::Vec3D DPosition(Origin-rotCentre);
       Geometry::Quaternion::calcQRotDeg(sectPhase[i],-Z).rotate(DPosition);
@@ -726,7 +768,7 @@ Bunker::calcSegment(const Simulation& System,
 		    const Geometry::Vec3D& TPoint,
 		    const Geometry::Vec3D& Axis) const
   /*!
-    Determine the segment that a point falls int
+    Determine the segment that a point falls in
     \param TPoint :: Point to check
     \param Axis :: Direction 
     \return Segment string

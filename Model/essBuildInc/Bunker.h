@@ -144,8 +144,10 @@ class Bunker : public attachSystem::ContainedComp,
   Bunker& operator=(const Bunker&);
   virtual ~Bunker();
 
-  std::string calcSegment(const Simulation&,
-			  const Geometry::Vec3D&,
+  void calcSegPosition(const size_t,Geometry::Vec3D&,
+		       Geometry::Vec3D&,Geometry::Vec3D&,
+		       Geometry::Vec3D&) const;
+  std::string calcSegment(const Simulation&,const Geometry::Vec3D&,
 			  const Geometry::Vec3D&) const;
   
   void setCutWall(const bool,const bool);

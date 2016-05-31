@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   delftInc/SpaceBlock.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,7 +60,7 @@ class SpaceBlock :  public attachSystem::FixedComp,
 
   int populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
-			const size_t);
+			const long int);
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -74,7 +74,7 @@ class SpaceBlock :  public attachSystem::FixedComp,
   virtual ~SpaceBlock();
 
   int createAll(Simulation&,const attachSystem::FixedComp&,
-		const size_t);
+		const long int);
 
 };
 

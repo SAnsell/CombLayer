@@ -338,7 +338,10 @@ GeneralShutter::createUnitVector(const attachSystem::FixedComp* FCPtr)
   else
     {
       attachSystem::FixedComp::createUnitVector
-	(Y*voidXoffset,Geometry::Vec3D(0,0,-1),Geometry::Vec3D(-1,0,0));
+	(Y*voidXoffset,
+         Geometry::Vec3D(0,0,-1),
+         Geometry::Vec3D(0,1,0),
+         Geometry::Vec3D(-1,0,0));
     }
 
   return;
@@ -356,7 +359,8 @@ GeneralShutter::applyRotations(const double ZOffset)
   XYAxis=Y;
   Geometry::Quaternion::calcQRotDeg(xyAngle,Z).rotate(XYAxis);
   // Create X 
-  attachSystem::FixedComp::createUnitVector(Y*voidXoffset,XYAxis,Z);
+  attachSystem::FixedComp::createUnitVector(Y*voidXoffset,
+                                            XYAxis*Z,XYAxis,Z);
 
   BeamAxis=XYAxis;
   zSlope=Z;

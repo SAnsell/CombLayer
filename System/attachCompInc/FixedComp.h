@@ -72,7 +72,7 @@ class FixedComp
   void createUnitVector(const FixedComp&,const Geometry::Vec3D&);
   void createUnitVector(const FixedComp&,const long int);
   void createUnitVector(const Geometry::Vec3D&,const Geometry::Vec3D&,
-			const Geometry::Vec3D&);
+			const Geometry::Vec3D&,const Geometry::Vec3D&);
 
   void setCentre(const Geometry::Vec3D&);
   void applyShift(const double,const double,const double);

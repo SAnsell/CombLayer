@@ -695,6 +695,7 @@ createESSInputs(inputParam& IParam)
   IParam.regDefItem<std::string>("iradLine","iradLineType",1,
                                  std::string("void"));
   
+  IParam.regMulti("bunkerFeed","bunkerFeed",1000,1);
   IParam.regMulti("iradObj","iradObject",1000,3);
   
   IParam.regDefItem<std::string>("bunker","bunkerType",1,std::string("null"));
@@ -703,6 +704,7 @@ createESSInputs(inputParam& IParam)
 
   
   IParam.setDesc("matDB","Set the material database to use (shielding or neutronics)");
+  IParam.setDesc("bunkerFeed","Creates feedthroughs in bunker");
   IParam.setDesc("beamlines","Creates beamlines on the main model");
   IParam.setDesc("lowMod","Type of low moderator to be built");
   IParam.setDesc("topMod","Type of top moderator to be built");

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   moderator/Decoupled.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -438,7 +438,7 @@ Decoupled::createAll(Simulation& System,
   createLinks();
   insertObjects(System);       
   VP->addInsertCell(methCell);
-  VP->createAll(System,*this,7);
+  VP->createAll(System,*this,8);
 
   return;
 }

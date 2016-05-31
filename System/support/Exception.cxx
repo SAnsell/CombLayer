@@ -326,6 +326,56 @@ EmptyValue<T>::setOutLine()
   return;
 }
 
+//-------------------------
+// EmptyContainer
+//-------------------------
+
+EmptyContainer::EmptyContainer(const std::string& Place) :
+  ExBase(Place)
+  /*!
+    Constructor
+    \param Place :: Function description
+  */
+{
+  setOutLine();
+}
+
+EmptyContainer::EmptyContainer(const EmptyContainer& A) :
+  ExBase(A)
+  /*!
+    Copy constructor
+    \param A :: EmptyContainer
+  */
+{}
+
+EmptyContainer&
+EmptyContainer::operator=(const EmptyContainer& A) 
+  /*!
+    Assignment operator
+    \param A :: Object to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      ExBase::operator=(A);
+    }
+  return *this;
+}
+
+void
+EmptyContainer::setOutLine()
+  /*!
+    Writes out the range and limits
+    to OutLine
+  */
+{
+  std::stringstream cx;
+  cx<<getErr()<<" EmptyContainer ";
+  OutLine=cx.str();
+  return;
+}
+
 
 //-------------------------
 // InContainerError

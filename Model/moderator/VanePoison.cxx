@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   moderator/VanePoison.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -164,7 +164,7 @@ VanePoison::populate(const Simulation& System)
 
 void
 VanePoison::createUnitVector(const attachSystem::FixedComp& FC,
-			     const size_t linkPt)
+			     const long int linkPt)
   /*!
     Create the unit vectors
     - Y Points down the VanePoison direction
@@ -176,10 +176,8 @@ VanePoison::createUnitVector(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("VanePoison","createUnitVector");
 
-  FixedComp::createUnitVector(FC.getLinkPt(linkPt),
-			      FC.getLinkAxis(linkPt),
-			      FC.getZ());
-  Origin+=X*xOffset+Y*yOffset+Z*zOffset;
+  FixedComp::createUnitVector(FC,linkPt);
+  applyShift(xOffset,yOffset,zOffset);
   return;
 }
 
@@ -244,7 +242,7 @@ VanePoison::createSurfaces()
 void
 VanePoison::createObjects(Simulation& System,
 			  const attachSystem::FixedComp& FC,
-			  const size_t linkPt)
+			  const long int linkPt)
   /*!
     Adds the Chip guide components
     \param System :: Simulation to create objects in
@@ -257,7 +255,7 @@ VanePoison::createObjects(Simulation& System,
 
   yFront= (fabs(yOffset)>Geometry::zeroTol) ?
     ModelSupport::getComposite(SMap,vaneIndex," 11 ") :
-    FC.getLinkString(linkPt);
+    FC.getSignedLinkString(linkPt);
   yBack=ModelSupport::getComposite(SMap,vaneIndex," -12 ");
   if (zLength>0.0)
     {
@@ -309,10 +307,11 @@ VanePoison::createObjects(Simulation& System,
 void
 VanePoison::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,
-		      const size_t linkIndex)
+		      const long int linkIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
+    \param FC :: link system
   */
 {
   ELog::RegMethod RegA("VanePoison","createAll");

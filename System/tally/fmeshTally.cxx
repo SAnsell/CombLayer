@@ -45,6 +45,7 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
+#include "Mesh3D.h"
 #include "Triple.h"
 #include "localRotate.h"
 #include "masterRotate.h"
@@ -52,6 +53,7 @@
 #include "NList.h"
 #include "NRange.h"
 #include "pairRange.h"
+
 #include "Tally.h"
 #include "fmeshTally.h"
 

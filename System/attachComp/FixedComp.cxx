@@ -212,16 +212,16 @@ FixedComp::createUnitVector(const FixedComp& FC,
   const LinkUnit& LU=FC.getLU(linkIndex);
   const double signV((sideIndex>0) ? 1.0 : -1.0);
 
-  const Geometry::Vec3D yTest=LU.getAxis();
+  const Geometry::Vec3D yTest=LU.getAxis()*signV;
   Geometry::Vec3D zTest=FC.getZ();
   if (fabs(zTest.dotProd(yTest))>1.0-Geometry::zeroTol)
     zTest=FC.getX();
 
-  createUnitVector(LU.getConnectPt(),
-		   yTest*signV,zTest);
+  createUnitVector(LU.getConnectPt(),yTest*zTest,yTest,zTest);
   return;
 }
-  
+
+  /*
 void
 FixedComp::createUnitVector(const Geometry::Vec3D& OG,
 			    const Geometry::Vec3D& BeamAxis,
@@ -231,14 +231,40 @@ FixedComp::createUnitVector(const Geometry::Vec3D& OG,
     \param OG :: Origin
     \param BeamAxis :: Beamline axis line
     \param ZAxis :: Direction for Z
+  * /
+{
+  ELog::RegMethod RegA("FixedComp","createUnitVector(Vec3D,Vec3D,Vec3D))");
+
+  //Geometry::Vec3D(-1,0,0);          // Gravity axis [up]
+  Z=ZAxis.unit();
+  Y=BeamAxis.unit();
+  X=(Y*Z);                            // horrizontal axis [across]
+
+  Origin=OG;
+  beamOrigin=OG;
+  beamAxis=Y;
+  return;
+}
+  */
+void
+FixedComp::createUnitVector(const Geometry::Vec3D& OG,
+			    const Geometry::Vec3D& XAxis,
+                            const Geometry::Vec3D& YAxis,
+			    const Geometry::Vec3D& ZAxis)
+  /*!
+    Create the unit vectors [using beam directions]
+    \param OG :: Origin
+    \param XAxis :: Direction for X
+    \param YAxis :: Direction for Y
+    \param ZAxis :: Direction for Z
   */
 {
   ELog::RegMethod RegA("FixedComp","createUnitVector(Vec3D,Vec3D,Vec3D))");
 
   //Geometry::Vec3D(-1,0,0);          // Gravity axis [up]
-  Z=ZAxis;
-  Y=BeamAxis.unit();
-  X=(Y*Z);                            // horrizontal axis [across]
+  X=XAxis.unit();
+  Y=YAxis.unit();
+  Z=ZAxis.unit();
 
   Origin=OG;
   beamOrigin=OG;
@@ -1097,7 +1123,7 @@ FixedComp::getExitNorm() const
 size_t
 FixedComp::findLinkAxis(const Geometry::Vec3D& AX) const
   /*!
-    Determine the Axis of the line direction
+    Determine the closest direciton to the given axis
     \param AX :: Axis point to test
     \return index value
   */

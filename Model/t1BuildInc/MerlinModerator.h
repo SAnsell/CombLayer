@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1BuildInc/MerlinModerator.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef moderatorSystem_MerlinModerator_h
-#define moderatorSystem_MerlinModerator_h
+#ifndef t1System_MerlinModerator_h
+#define t1System_MerlinModerator_h
 
 class Simulation;
 
@@ -56,7 +56,7 @@ class MerlinModerator : public attachSystem::ContainedComp,
   double vacThick;              ///< Outer void
 
   size_t nPoison;                  ///< Number of poison layers
-  size_t vaneSide;                 ///< Side for vanes 0 -- none :P 
+  long int vaneSide;               ///< Side for vanes 0 -- none :P 
   std::vector<double> poisonYStep; ///< Poison Offset to origin
   std::vector<double> poisonThick; ///< Poison (Gadolinium) thickness
 
@@ -69,7 +69,7 @@ class MerlinModerator : public attachSystem::ContainedComp,
 
   void applyModification();
   Geometry::Vec3D getSurfacePoint(const size_t,const size_t) const;
-  void populate(const Simulation&);
+  void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
 
   void createSurfaces();

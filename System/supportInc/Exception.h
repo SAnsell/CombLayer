@@ -76,6 +76,29 @@ class ExBase : public std::exception
 
  
 /*!
+  \class EmptyContainer
+  \brief Exception for a container in an empty state
+  \author Stuart Ansell
+  \date May 2016
+  \version 1.0
+*/
+
+class EmptyContainer : public ExBase
+{
+ private:
+
+  void setOutLine();
+
+ public:
+
+  EmptyContainer(const std::string&);
+  EmptyContainer(const EmptyContainer&);
+  EmptyContainer& operator=(const EmptyContainer&);
+  virtual ~EmptyContainer() throw() {}   ///< Destructor 
+
+};
+
+/*!
   \class IndexError
   \brief Exception for index errors
   \author Stuart Ansell

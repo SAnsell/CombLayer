@@ -600,7 +600,6 @@ nameCard::write(std::ostream& OX) const
 {
   ELog::RegMethod RegA("nameCard","write");
 
-  ELog::EM<<"Writing "<<keyName<<ELog::endDiag;
   if (!active) return;
   if (writeType)
     writeFlat(OX);

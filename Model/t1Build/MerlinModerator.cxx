@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1Build/MerlinModerator.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -144,15 +144,13 @@ MerlinModerator::~MerlinModerator()
 {}
 
 void
-MerlinModerator::populate(const Simulation& System)
+MerlinModerator::populate(const FuncDataBase& Control)
  /*!
    Populate all the variables
-   \param System :: Simulation to use
+   \param Control :: Database to use
  */
 {
   ELog::RegMethod RegA("MerlinModerator","populate");
-  
-  const FuncDataBase& Control=System.getDataBase();
 
   // Master values
   xStep=Control.EvalVar<double>(keyName+"XStep");
@@ -168,7 +166,7 @@ MerlinModerator::populate(const Simulation& System)
   vacThick=Control.EvalVar<double>(keyName+"VacThick");
 
   nPoison=Control.EvalVar<size_t>(keyName+"NPoison");
-  vaneSide=Control.EvalVar<size_t>(keyName+"VaneSide");
+  vaneSide=Control.EvalVar<long int>(keyName+"VaneSide");
   double ys,t;
   for(size_t i=0;i<nPoison;i++)
     {
@@ -184,7 +182,6 @@ MerlinModerator::populate(const Simulation& System)
   alMat=ModelSupport::EvalMat<int>(Control,keyName+"AlMat");
   waterMat=ModelSupport::EvalMat<int>(Control,keyName+"WaterMat");
   poisonMat=ModelSupport::EvalMat<int>(Control,keyName+"PoisonMat");
-
 
   applyModification();
   return;
@@ -399,7 +396,8 @@ MerlinModerator::createVanes(Simulation& System)
   OR.addObject(VaneObj);
 
   VaneObj->addInsertCell(mainCell);
-  VaneObj->createAll(System,*this,5+vaneSide);
+  const long int VS(vaneSide>0 ? vaneSide+6 : vaneSide-6);
+  VaneObj->createAll(System,*this,VS);
 
   return;
 }
@@ -414,7 +412,7 @@ MerlinModerator::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("MerlinModerator","createAll");
-  populate(System);
+  populate(System.getDataBase());
 
   createUnitVector(FC);
   createSurfaces();

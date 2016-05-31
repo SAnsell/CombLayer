@@ -54,7 +54,7 @@ namespace Geometry
 {
 
 Mesh3D::Mesh3D() : 
-  tallyN(1),type(XYZ),
+  type(XYZ),writeFlag(0),
   RefPoint(0,0.1,0),Origin(0,0,0),
   Vec(0,0.1,0),NX(0),NY(0),NZ(0)
   /*!
@@ -63,7 +63,7 @@ Mesh3D::Mesh3D() :
 {}
 
 Mesh3D::Mesh3D(const Mesh3D& A) : 
-  tallyN(A.tallyN),type(A.type),RefPoint(A.RefPoint),
+  type(A.type),writeFlag(A.writeFlag),RefPoint(A.RefPoint),
   Origin(A.Origin),Axis(A.Axis),Vec(A.Vec),X(A.X),Y(A.Y),
   Z(A.Z),XFine(A.XFine),YFine(A.YFine),ZFine(A.ZFine),
   NX(A.NX),NY(A.NY),NZ(A.NZ)
@@ -83,8 +83,8 @@ Mesh3D::operator=(const Mesh3D& A)
 {
   if (this!=&A)
     {
-      tallyN=A.tallyN;
       type=A.type;
+      writeFlag=A.writeFlag;
       RefPoint=A.RefPoint;
       Origin=A.Origin;
       Axis=A.Axis;
@@ -218,11 +218,13 @@ Mesh3D::point(const size_t a,const size_t b,const size_t c) const
 }
 
 void
-Mesh3D::writeWWINP(std::ostream& OX,const size_t NEBin) const
+Mesh3D::writeWWINP(std::ostream& OX,const int tallyN,
+                   const size_t NEBin) const
   /*!
     Write out to a mesh to a wwinp file
     Currently ONLY works correctly with a rectangular file
     \param OX :: Output stream
+    \param tallyN :: tally number
     \param NEBin :: Number of energy bins
   */
 {
@@ -283,8 +285,8 @@ Mesh3D::write(std::ostream& OX) const
   ELog::RegMethod RegA("Mesh3D","write");
 
   std::ostringstream cx;
-  cx<<"mesh  geom="<<getType()<<" origin="<<Origin
-    <<" ref="<<RefPoint;
+  cx<<"mesh  geom="<<getType()<<" origin="<<Origin;
+  if (writeFlag & 1) cx<<" ref="<<RefPoint;
   StrFunc::writeMCNPX(cx.str(),OX);
 
   // imesh :

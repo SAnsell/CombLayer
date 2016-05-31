@@ -230,7 +230,7 @@ WWG::writeWWINP(const std::string& FName) const
   std::ofstream OX;
   OX.open(FName.c_str());
 
-  Grid.writeWWINP(OX,EBin.size());
+  Grid.writeWWINP(OX,1,EBin.size());
   size_t itemCnt=0;
   for(const double& E : EBin)
     StrFunc::writeLine(OX,E,itemCnt,6);
