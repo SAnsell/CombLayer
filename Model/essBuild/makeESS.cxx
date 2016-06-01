@@ -738,7 +738,7 @@ makeESS::buildTwister(Simulation& System)
   attachSystem::addToInsertForced(System, *Bulk, *Twister);
   attachSystem::addToInsertForced(System, *ShutterBayObj, *Twister);
   attachSystem::addToInsertSurfCtrl(System, *Twister, PBeam->getCC("Sector0"));
-  attachSystem::addToInsertSurfCtrl(System, *Twister, PBeam->getCC("Sector1")); ELog::EM << "remove this line after R is set correctly " << ELog::endDiag;
+  attachSystem::addToInsertSurfCtrl(System, *Twister, PBeam->getCC("Sector1")); // \todo kbat ELog::EM << "remove this line after R is set correctly " << ELog::endDiag;
   attachSystem::addToInsertControl(System, *Twister, *Reflector);
   attachSystem::addToInsertForced(System,*Twister,TopAFL->getCC("outer"));
   attachSystem::addToInsertForced(System,*Twister,TopBFL->getCC("outer"));
@@ -875,9 +875,9 @@ makeESS::build(Simulation& System,
   buildF5Collimator(System, IParam);
 
 
-  ELog::EM << "pipes are tmp removed" << ELog::endDiag;
-  //  buildTopPipes(System,"");
-  //  buildLowPipes(System,"");
+  //ELog::EM << "pipes are tmp removed since they do not work anymore with newer CombLayer" << ELog::endDiag;
+  //buildTopPipes(System,"");
+  //buildLowPipes(System,"");
   return;
 }
 

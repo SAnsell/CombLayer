@@ -356,7 +356,7 @@ MDB.resetMaterial(MObj);
 
 // Invar36
 // Reference: e-mail from Esben 30 Sep 2015
- ELog::EM << "Add MX/MT cards for Invar" << ELog::endCrit;
+//\todo kbat ELog::EM << "Add MX/MT cards for Invar" << ELog::endCrit;
 MObj.setMaterial(2660, "Invar36",
                  " 06000.70c  0.001000000 "
                  " 14028.70c 0.003227805 "

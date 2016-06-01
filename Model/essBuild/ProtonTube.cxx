@@ -307,7 +307,7 @@ ProtonTube::createAll(Simulation& System,
     }
   if (bIndex)
     {
-      ELog::EM << "which one to use??? check with BeRef geometry" << ELog::endDiag;
+      // \todo kbat ELog::EM << "which one to use??? check with BeRef geometry" << ELog::endDiag;
       //<<<<<<< HEAD
       //const size_t lIndex(static_cast<size_t>(std::abs(bIndex)-1));
       //=======
