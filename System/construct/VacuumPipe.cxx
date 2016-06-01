@@ -426,7 +426,7 @@ VacuumPipe::createLinks()
 
   if (activeFront)
     {
-      FixedComp::setLinkSurf(0,frontSurf);
+      FixedComp::setLinkSurf(0,frontSurf.complement());
       HeadRule HR(frontSurf);
       HR.addIntersection(divideSurf);
       HR.populateSurf();
@@ -442,7 +442,7 @@ VacuumPipe::createLinks()
   FixedComp::setConnect(0,endPoints[0],-Y);
   if (activeBack)
     {
-      FixedComp::setLinkSurf(1,backSurf);
+      FixedComp::setLinkSurf(1,backSurf.complement());
       HeadRule HR(backSurf);
       HR.addIntersection(divideSurf);
       HR.populateSurf();

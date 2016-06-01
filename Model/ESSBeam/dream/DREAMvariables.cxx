@@ -342,14 +342,14 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamFALayerMat2","Void");       
 
   Control.addVariable("dreamFA0TypeID","Taper");
-  Control.addVariable("dreamFA0HeightStart",3.5); // guess
+  Control.addVariable("dreamFA0HeightStart",2.5); // guess
   Control.addVariable("dreamFA0HeightEnd",4.5);
   Control.addVariable("dreamFA0WidthStart",8.0); // NOT Centred
   Control.addVariable("dreamFA0WidthEnd",2.0);
   Control.addVariable("dreamFA0Length",350.0);
 
   generatePipe(Control,"dreamPipeA",46.0);
-  generateFocusTaper(Control,"dreamFB",44.0,1.88,2.06,4.6,4.5);   
+  generateFocusTaper(Control,"dreamFB",44.0,2.5,2.5,4.5,4.5);   
   //  Control.addVariable("dreamFBBeamYStep",4.0);
  
   // VACBOX A : 6.10m target centre
@@ -410,7 +410,7 @@ DREAMvariables(FuncDataBase& Control)
   
   // VACUUM PIPE: SDisk to T0 (A)
   generatePipe(Control,"dreamPipeB",10.0);
-  generateFocusTaper(Control,"dreamFC",8.8,2.06,2.36,4.6,4.5);   
+  //  generateFocusTaper(Control,"dreamFC",8.8,2.06,2.36,4.6,4.5);   
   Control.addVariable("dreamFCBeamYStep",1.10); 
 
   generateChopper(Control,"dreamChopperC",20.0,36.0,32.0);
@@ -524,11 +524,10 @@ DREAMvariables(FuncDataBase& Control)
   generatePipe(Control,"dreamPipeOutB",1750.0);
   Control.addVariable("dreamPipeOutBRadius",6.0);
 
-  generateFocusTaper(Control,"dreamFOutB",1736,4.0,4.0,5.0,5.0);
+  generateFocusTaper(Control,"dreamFOutB",2836,4.0,4.0,5.0,5.0);
   Control.addVariable("dreamFOutBLayerMat1","Glass");
-
   
-  Control.addVariable("dreamShieldBLength",1750.0);
+  Control.addVariable("dreamShieldBLength",2850.0);
   Control.addVariable("dreamShieldBLeft",32.0);
   Control.addVariable("dreamShieldBRight",32.0);
   Control.addVariable("dreamShieldBHeight",32.0);
@@ -572,6 +571,13 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamCaveFeMat","Stainless304");
   Control.addVariable("dreamCaveConcMat","Concrete");
 
+  // Guide after wall [+17.5m] after section 1  
+  generatePipe(Control,"dreamPipeCaveA",500.0);
+  Control.addVariable("dreamPipeCaveABRadius",6.0);
+  Control.addVariable("dreamPipeCaveAYStep",0.0);
+
+  generateFocusTaper(Control,"dreamFCaveA",496,4.0,4.0,5.0,5.0);
+  Control.addVariable("dreamFCaveALayerMat1","Glass");
   
   return;
 }

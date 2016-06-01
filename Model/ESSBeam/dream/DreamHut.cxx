@@ -197,7 +197,7 @@ DreamHut::createUnitVector(const attachSystem::FixedComp& FC,
   ELog::RegMethod RegA("DreamHut","createUnitVector");
 
   // add nosecone + half centre
-  yStep+=voidLength/2.0;
+  yStep+=voidLength/2.0+feFront;
   attachSystem::FixedComp& Outer=getKey("Outer");
   attachSystem::FixedComp& Inner=getKey("Inner");
 

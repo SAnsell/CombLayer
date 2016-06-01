@@ -157,7 +157,11 @@ DREAM::DREAM(const std::string& keyName) :
   VPipeOutB(new constructSystem::VacuumPipe(newName+"PipeOutB")),
   FocusOutB(new beamlineSystem::GuideLine(newName+"FOutB")),
 
-  Cave(new DreamHut(newName+"Cave"))
+  Cave(new DreamHut(newName+"Cave")),
+
+  VPipeCaveA(new constructSystem::VacuumPipe(newName+"PipeCaveA")),
+  FocusCaveA(new beamlineSystem::GuideLine(newName+"FCaveA"))
+
  /*!
     Constructor
  */
@@ -208,6 +212,9 @@ DREAM::DREAM(const std::string& keyName) :
   OR.addObject(FocusH);
 
   OR.addObject(Cave);
+  OR.addObject(VPipeCaveA);
+  OR.addObject(FocusCaveA);
+
 }
 
 DREAM::~DREAM()
@@ -300,12 +307,14 @@ DREAM::build(Simulation& System,
   VPipeB->addInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeB->createAll(System,ChopperB->getKey("Beam"),2);
 
-  FocusC->addInsertCell(VPipeB->getCells("Void"));
-  FocusC->createAll(System,*VPipeB,-1,*VPipeB,-1);
+  //  FocusC->addInsertCell(VPipeB->getCells("Void"));
+  // FocusC->createAll(System,*VPipeB,-1,*VPipeB,-1);
   
     // NEW TEST SECTION:
   ChopperC->addInsertCell(bunkerObj.getCell("MainVoid"));
-  ChopperC->createAll(System,FocusC->getKey("Guide0"),2);
+  //  ChopperC->createAll(System,FocusC->getKey("Guide0"),2);
+  ChopperC->createAll(System,*VPipeB,2);
+
 
   // First disk of a T0 chopper
   T0DiskA->addInsertCell(ChopperC->getCell("Void",0));
@@ -433,6 +442,7 @@ DREAM::build(Simulation& System,
   ShieldB->addInsertCell(voidCell);
   ShieldB->createAll(System,*ShieldA,2);
 
+
   VPipeOutB->addInsertCell(ShieldB->getCell("Void"));
   VPipeOutB->setFront(*ShieldB,-1);
   VPipeOutB->setBack(*ShieldB,-2);
@@ -443,9 +453,23 @@ DREAM::build(Simulation& System,
   FocusOutB->createAll(System,*VPipeOutB,7,*VPipeOutB,7);
 
   Cave->addInsertCell(voidCell);
-  Cave->createAll(System,FocusOutB->getKey("Guide0"),2);
+  Cave->createAll(System,*ShieldB,2);
   Cave->insertComponent(System,"FrontWall",*ShieldB);
-  Cave->insertComponent(System,"Void",*ShieldB);
+
+  VPipeCaveA->addInsertCell(Cave->getCell("FrontWall"));
+  VPipeCaveA->addInsertCell(Cave->getCell("Void"));
+  VPipeCaveA->setFront(*VPipeOutB,2);
+  VPipeCaveA->createAll(System,*VPipeOutB,2);
+  FocusCaveA->addInsertCell(VPipeCaveA->getCell("Void"));
+  FocusCaveA->createAll(System,*VPipeCaveA,7,*VPipeCaveA,7);
+
+  
+
+                            
+  
+
+
+
   return;
 }
 

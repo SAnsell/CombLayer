@@ -174,7 +174,12 @@ class DREAM : public attachSystem::CopiedComp
 
   /// Cave 
   std::shared_ptr<DreamHut> Cave;
-  
+
+  /// Pipe entering cave
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeCaveA;
+  /// Guide in cave 
+  std::shared_ptr<beamlineSystem::GuideLine> FocusCaveA;  
+
   void setBeamAxis(const GuideItem&,const bool);
   
  public:
