@@ -434,7 +434,7 @@ makeESS::buildBunkerFeedThrough(Simulation& System,
     ModelSupport::objectRegister::Instance();
 
   const size_t NSet=IParam.setCnt("bunkerFeed");
-  FuncDataBase& Control=System.getDataBase();
+
   
   for(size_t j=0;j<NSet;j++)
     {
@@ -450,9 +450,9 @@ makeESS::buildBunkerFeedThrough(Simulation& System,
 
           // bunkerA/etc should be a map
           std::shared_ptr<Bunker> BPtr;
-          if (bunkerName=="BunkerA")
+          if (bunkerName=="BunkerA" || bunkerName=="ABunker")
             BPtr=ABunker;
-          else if (bunkerName=="BunkerB")
+          else if (bunkerName=="BunkerB" || bunkerName=="BBunker")
             BPtr=BBunker;
           else
             throw ColErr::InContainerError<std::string>

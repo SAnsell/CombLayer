@@ -71,20 +71,16 @@
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "SimProcess.h"
-#include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedGroup.h"
 #include "ContainedComp.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "boxValues.h"
 #include "boxUnit.h"
 #include "BoxLine.h"
-#include "HoleUnit.h"
+#include "SurInter.h"
 #include "Bunker.h"
 #include "BunkerFeed.h"
 
@@ -179,7 +175,7 @@ BunkerFeed::createUnitVector(const Bunker& BUnit,
                              const size_t segIndex)
   /*!
     Create the unit vectors
-    \param FC :: Fixed unit that it is connected to 
+    \param BUnit :: Bunker unit
     \param segIndex :: Segment number
   */
 {
@@ -192,21 +188,31 @@ BunkerFeed::createUnitVector(const Bunker& BUnit,
 }
 
 void
-BunkerFeed::moveToLayer(const std::string& PosName)
+BunkerFeed::moveToLayer(const Bunker& BUnit,
+                        const std::string& PosName)
   /*!
     Move the Origin to the layer name
+    \param BUnit :: Bunker unit
     \param PosName :: Position name
    */
 {
   ELog::RegMethod RegA("BunkerFeed","moveToLayer");
+  if (PosName=="Floor")
+    {
+      const int SN=BUnit.getSurf("floorInner");
+      const Geometry::Surface* SPtr=
+        SMap.realSurfPtr(SN);
+      Origin=SurInter::getLinePoint(Origin,Z,SPtr,Origin);
+      ELog::EM<<"Point== "<<Origin<<ELog::endDiag;
+    }
 
   return;
 }
   
 
-void 
-BunkerFeed::insertColl(Simulation& System,
-                       const Bunker& BUnit)
+  void 
+  BunkerFeed::insertColl(Simulation& System,
+                         const Bunker& BUnit)
   /*!
     Add a feed pipe to the collimator area
     \param System :: Simulation to add pipe to
@@ -258,7 +264,7 @@ BunkerFeed::createAll(Simulation& System,
   
   populate(System.getDataBase());
   createUnitVector(bunkerObj,segNumber);
-  moveToLayer(feedName);
+  moveToLayer(bunkerObj,feedName);
   insertColl(System,bunkerObj); 
 
   //  insertPipes(System);       

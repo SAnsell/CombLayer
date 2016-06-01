@@ -3,7 +3,7 @@
  
  * File:   geometry/SurInter.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,6 +65,7 @@
 #include "Circle.h"
 #include "Ellipse.h"
 #include "HeadRule.h"
+#include "LineIntersectVisit.h"
 #include "SurInter.h"
 
 #include "Debug.h"
@@ -72,6 +73,25 @@
 namespace SurInter
 {
 
+
+Geometry::Vec3D
+getLinePoint(const Geometry::Vec3D& Origin,
+             const Geometry::Vec3D& Axis,
+	     const Geometry::Surface* SPtr,
+             const Geometry::Vec3D& NPoint)
+  /*!
+    Calculate the line though a surface
+    \param Origin :: Origin of the line
+    \param Axis :: axis direction
+    \param SPtr :: surface point
+    \param NPoint :: nearest point
+    \return Point on intersect
+  */
+{
+  MonteCarlo::LineIntersectVisit trackLine(Origin,Axis);
+  return trackLine.getPoint(SPtr,NPoint);
+}
+   
 template<>
 Geometry::Intersect*
 calcIntersect(const Geometry::Plane& PlnA,
