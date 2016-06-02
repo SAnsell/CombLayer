@@ -212,7 +212,6 @@ MidWaterDivider::createLinks(const H2Wing &LA, const H2Wing &RA)
   ELog::RegMethod RegA("MidWaterDivider","createLinks");
 
   // Loop over corners that are bound by convex
-  const double LStep(midYStep+wallThick/sin(midAngle/2.0));
   const Geometry::Plane *pz = ModelSupport::buildPlane(SMap, divIndex+5, Origin, Z);
 
   const Geometry::Plane *p103 = SMap.realPtr<Geometry::Plane>(divIndex+103);
@@ -316,20 +315,18 @@ MidWaterDivider::createSurfaces()
 
   
   // Aluminum layers [+100]
+  Geometry::Vec3D leftNormAl(X);
+  Geometry::Quaternion::calcQRotDeg(midAngle/2.0,Z).rotate(leftNormAl);  
+  Geometry::Vec3D rightNormAl(X);
+  Geometry::Quaternion::calcQRotDeg(-midAngle/2.0,Z).rotate(rightNormAl);  
+
   // +Y section
-  const double LStep(midYStep+wallThick/sin(midAngle/2.0));
-  ModelSupport::buildPlaneRotAxis
-    (SMap,divIndex+103,Origin+Y*LStep,X,-Z,-midAngle/2.0);
-  ModelSupport::buildPlaneRotAxis
-    (SMap,divIndex+104,Origin+Y*LStep,X,-Z,midAngle/2.0);
+  ModelSupport::buildPlane(SMap,divIndex+103,Origin+Y*midYStep+leftNormAl*wallThick, leftNormAl);
+  ModelSupport::buildPlane(SMap,divIndex+104,Origin+Y*midYStep-rightNormAl*wallThick, rightNormAl);
 
   // -Y section
-
-  ModelSupport::buildPlaneRotAxis
-    (SMap,divIndex+123,Origin-Y*LStep,-X,-Z,-midAngle/2.0);
-  ModelSupport::buildPlaneRotAxis
-    (SMap,divIndex+124,Origin-Y*LStep,-X,-Z,midAngle/2.0);
-
+  ModelSupport::buildPlane(SMap,divIndex+123,Origin-Y*midYStep+rightNormAl*wallThick, rightNormAl);
+  ModelSupport::buildPlane(SMap,divIndex+124,Origin-Y*midYStep-leftNormAl*wallThick, leftNormAl);
   
   ModelSupport::buildPlane(SMap,divIndex+111,
 			   Origin+leftNorm*(length+wallThick),leftNorm); // x-y+
