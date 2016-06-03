@@ -62,7 +62,12 @@ generateChopper(FuncDataBase& Control,
                 const double voidLength)
   /*!
     Generate the chopper variables
-   */
+    \param Control :: FuncDatabase to add variables to
+    \param keyName :: basename for chopper
+    \param yStep :: Origin step
+    \param length :: Main length of chopper [outer]
+    \param voidLength :: inner void length of chopper 
+  */
 {
   ELog::RegMethod RegA("DREAMvariables[F]","generateChopper");
   
@@ -354,11 +359,11 @@ DREAMvariables(FuncDataBase& Control)
  
   // VACBOX A : 6.10m target centre
   //  Length 100.7 + Width [87.0] + Height [39.0] void Depth/2 + front
-  generateChopper(Control,"dreamChopperA",55.0,9.0,3.55);
+  generateChopper(Control,"dreamChopperA",55.0,12.0,6.55);
   
   // Double Blade chopper
   Control.addVariable("dreamDBladeXStep",0.0);
-  Control.addVariable("dreamDBladeYStep",0.0);
+  Control.addVariable("dreamDBladeYStep",-2.0);
   Control.addVariable("dreamDBladeZStep",0.0);
   Control.addVariable("dreamDBladeXYangle",0.0);
   Control.addVariable("dreamDBladeZangle",0.0);
@@ -384,11 +389,10 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamDBlade1PhaseAngle1",275.0);
   Control.addVariable("dreamDBlade1OpenAngle1",30.0);
 
-  generateChopper(Control,"dreamChopperB",5.0,9.0,3.55);
 
   // Single Blade chopper
   Control.addVariable("dreamSBladeXStep",0.0);
-  Control.addVariable("dreamSBladeYStep",0.0);
+  Control.addVariable("dreamSBladeYStep",1.0);
   Control.addVariable("dreamSBladeZStep",0.0);
   Control.addVariable("dreamSBladeXYangle",0.0);
   Control.addVariable("dreamSBladeZangle",0.0);
@@ -407,28 +411,22 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamSBlade0PhaseAngle1",275.0);
   Control.addVariable("dreamSBlade0OpenAngle1",30.0);
 
+    // VACUUM PIPE: SDisk to T0 (A)
+  generatePipe(Control,"dreamPipeC",260.0);
+  generateFocusTaper(Control,"dreamFC",258.8,2.06,2.36,4.6,4.5);   
+  //  Control.addVariable("dreamFCBeamYStep",1.10); 
+
+  // Band chopoper
+  generateChopper(Control,"dreamChopperB",8.0,14.0,6.0);
   
-  // VACUUM PIPE: SDisk to T0 (A)
-  generatePipe(Control,"dreamPipeB",10.0);
-  //  generateFocusTaper(Control,"dreamFC",8.8,2.06,2.36,4.6,4.5);   
-  Control.addVariable("dreamFCBeamYStep",1.10); 
-
-  generateChopper(Control,"dreamChopperC",20.0,36.0,32.0);
-  generateT0Chopper(Control,"dreamT0Disk","dreamFT0Mid","dreamChopperC");
-
-  // VACUUM PIPE: SDisk to T0 (A)
-  generatePipe(Control,"dreamPipeD",130.0);
-  generateFocusTaper(Control,"dreamFD",122.0,2.06,2.36,4.6,4.5); 
-
-  generateChopper(Control,"dreamChopperD",10.0,9.0,3.55);
-
   Control.addVariable("dreamBandADiskXStep",0.0);
   Control.addVariable("dreamBandADiskYStep",0.5);
   Control.addVariable("dreamBandADiskZStep",0.0);
   Control.addVariable("dreamBandADiskXYangle",0.0);
   Control.addVariable("dreamBandADiskZangle",0.0);
 
-  Control.addVariable("dreamBandADiskInnerRadius",22.0);
+  // NOTE needs to be 750mm diameter!!!!
+  Control.addVariable("dreamBandADiskInnerRadius",22.0);  
   Control.addVariable("dreamBandADiskOuterRadius",30.0);
   Control.addVariable("dreamBandADiskNDisk",1);
 
@@ -442,12 +440,15 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamBandADisk0PhaseAngle1",275.0);
   Control.addVariable("dreamBandADisk0OpenAngle1",25.0);
 
+  
+  generateChopper(Control,"dreamChopperC",20.0,36.0,32.0);
+  generateT0Chopper(Control,"dreamT0Disk","dreamFT0Mid","dreamChopperC");
 
   // VACUUM PIPE: SDisk to T0 (A)
-  generatePipe(Control,"dreamPipeE",160.0);
-  generateFocusTaper(Control,"dreamFE",152.0,2.06,2.36,4.6,4.5); 
+  generatePipe(Control,"dreamPipeD",430.0);
+  generateFocusTaper(Control,"dreamFD",422.0,2.06,2.36,4.6,4.5); 
 
-  generateChopper(Control,"dreamChopperE",10.0,9.0,3.55);
+  generateChopper(Control,"dreamChopperD",10.0,9.0,3.55);
 
   Control.addVariable("dreamBandBDiskXStep",0.0);
   Control.addVariable("dreamBandBDiskYStep",0.5);
@@ -469,11 +470,18 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamBandBDisk0PhaseAngle1",275.0);
   Control.addVariable("dreamBandBDisk0OpenAngle1",25.0);
 
+  generateChopper(Control,"dreamChopperE",20.0,36.0,32.0);
+  generateT0Chopper(Control,"dreamT1Disk","dreamFT1Mid","dreamChopperE");
+
   // VACUUM PIPE: SDisk to T0 (A)
-  generatePipe(Control,"dreamPipeF",40.0);
-  generateFocusTaper(Control,"dreamFF",32.0,2.06,2.36,4.6,4.5);
-  
-  generateT0Chopper(Control,"dreamT1Disk","dreamFT1Mid","dreamChopperG");
+  generatePipe(Control,"dreamPipeE",500.0);
+  generateFocusTaper(Control,"dreamFE",492.0,2.06,2.36,4.6,4.5); 
+
+  // VACUUM PIPE: SDisk to T0 (A)
+  generatePipe(Control,"dreamPipeF",500.0);
+  generateFocusTaper(Control,"dreamFF",492.0,2.06,2.36,4.6,4.5); 
+
+
 
 
   // VACUUM PIPE: SDisk to T0 (A)

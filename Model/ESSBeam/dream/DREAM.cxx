@@ -106,12 +106,14 @@ DREAM::DREAM(const std::string& keyName) :
 
   ChopperA(new constructSystem::ChopperUnit(newName+"ChopperA")),
   DDisk(new constructSystem::DiskChopper(newName+"DBlade")),
+  SDisk(new constructSystem::DiskChopper(newName+"SBlade")),
+
+  VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
+  FocusC(new beamlineSystem::GuideLine(newName+"FC")),
   
   ChopperB(new constructSystem::ChopperUnit(newName+"ChopperB")),
-  SDisk(new constructSystem::DiskChopper(newName+"SBlade")),
+  BandADisk(new constructSystem::DiskChopper(newName+"BandADisk")),  
   
-  VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
-  FocusC(new beamlineSystem::GuideLine(newName+"FC")),
 
   ChopperC(new constructSystem::ChopperUnit(newName+"ChopperC")), 
   T0DiskA(new constructSystem::DiskChopper(newName+"T0DiskA")),
@@ -122,7 +124,6 @@ DREAM::DREAM(const std::string& keyName) :
   FocusD(new beamlineSystem::GuideLine(newName+"FD")),
   
   ChopperD(new constructSystem::ChopperUnit(newName+"ChopperD")),
-  BandADisk(new constructSystem::DiskChopper(newName+"BandADisk")),  
 
   VPipeE(new constructSystem::VacuumPipe(newName+"PipeE")),
   FocusE(new beamlineSystem::GuideLine(newName+"FE")),
@@ -133,8 +134,6 @@ DREAM::DREAM(const std::string& keyName) :
   VPipeF(new constructSystem::VacuumPipe(newName+"PipeF")),
   FocusF(new beamlineSystem::GuideLine(newName+"FF")),
 
-
-  ChopperG(new constructSystem::ChopperUnit(newName+"ChopperG")), 
   T1DiskA(new constructSystem::DiskChopper(newName+"T1DiskA")),
   FocusT1Mid(new beamlineSystem::GuideLine(newName+"FT1Mid")),
   T1DiskB(new constructSystem::DiskChopper(newName+"T1DiskB")),
@@ -182,7 +181,7 @@ DREAM::DREAM(const std::string& keyName) :
   OR.addObject(DDisk);  
   OR.addObject(ChopperB);
   OR.addObject(SDisk);  
-  OR.addObject(VPipeB);
+  OR.addObject(VPipeC);
   OR.addObject(FocusC);
   OR.addObject(ChopperC);
   OR.addObject(T0DiskA);
@@ -294,27 +293,29 @@ DREAM::build(Simulation& System,
   DDisk->setOffsetFlag(1);  // Z direction
   DDisk->createAll(System,ChopperA->getKey("Beam"),0);
 
-  // NEW TEST SECTION:
-  ChopperB->addInsertCell(bunkerObj.getCell("MainVoid"));
-  ChopperB->createAll(System,ChopperA->getKey("Main"),2);
-
   // Double disk chopper
-  SDisk->addInsertCell(ChopperB->getCell("Void"));
+  SDisk->addInsertCell(ChopperA->getCell("Void"));
   SDisk->setCentreFlag(3);  // Z direction
   SDisk->setOffsetFlag(1);  // Centre offset control
-  SDisk->createAll(System,ChopperB->getKey("Beam"),0);
+  SDisk->createAll(System,ChopperA->getKey("Beam"),0);
 
-  VPipeB->addInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeB->createAll(System,ChopperB->getKey("Beam"),2);
+  VPipeC->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeC->createAll(System,ChopperA->getKey("Beam"),2);
+  FocusC->addInsertCell(VPipeC->getCells("Void"));
+  FocusC->createAll(System,*VPipeC,0,*VPipeC,0);
 
-  //  FocusC->addInsertCell(VPipeB->getCells("Void"));
-  // FocusC->createAll(System,*VPipeB,-1,*VPipeB,-1);
-  
-    // NEW TEST SECTION:
+  // NEW TEST SECTION:
+  ChopperB->addInsertCell(bunkerObj.getCell("MainVoid"));
+  ChopperB->createAll(System,*VPipeC,2);
+  // Double disk chopper
+  BandADisk->addInsertCell(ChopperB->getCell("Void"));
+  BandADisk->setCentreFlag(3);  // Z direction
+  BandADisk->setOffsetFlag(1);  // Centre offset control
+  BandADisk->createAll(System,ChopperB->getKey("Beam"),0);
+
+  // NEW TEST SECTION:
   ChopperC->addInsertCell(bunkerObj.getCell("MainVoid"));
-  //  ChopperC->createAll(System,FocusC->getKey("Guide0"),2);
-  ChopperC->createAll(System,*VPipeB,2);
-
+  ChopperC->createAll(System,ChopperB->getKey("Beam"),2);
 
   // First disk of a T0 chopper
   T0DiskA->addInsertCell(ChopperC->getCell("Void",0));
@@ -331,87 +332,66 @@ DREAM::build(Simulation& System,
   T0DiskB->setCentreFlag(3);  // Z direction
   T0DiskB->setOffsetFlag(0);  // Centre offset control
   T0DiskB->createAll(System,ChopperC->getKey("Beam"),0);
-  
+
+
   VPipeD->addInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeD->createAll(System,ChopperC->getKey("Beam"),2);
 
   FocusD->addInsertCell(VPipeD->getCells("Void"));
   FocusD->createAll(System,*VPipeD,0,*VPipeD,0);
+  
+
+  //  FocusC->addInsertCell(VPipeC->getCells("Void"));
+  // FocusC->createAll(System,*VPipeC,-1,*VPipeC,-1);
 
   // NEW TEST SECTION:
   ChopperD->addInsertCell(bunkerObj.getCell("MainVoid"));
   ChopperD->createAll(System,FocusD->getKey("Guide0"),2);
 
   // Double disk chopper
-  BandADisk->addInsertCell(ChopperD->getCell("Void"));
-  BandADisk->setCentreFlag(3);  // Z direction
-  BandADisk->setOffsetFlag(1);  // Centre offset control
-  BandADisk->createAll(System,ChopperD->getKey("Beam"),0);
-
-  VPipeE->addInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeE->createAll(System,ChopperD->getKey("Beam"),2);
-
-  FocusE->addInsertCell(VPipeE->getCells("Void"));
-  FocusE->createAll(System,*VPipeE,0,*VPipeE,0);
-
-  // NEW TEST SECTION:
-  ChopperE->addInsertCell(bunkerObj.getCell("MainVoid"));
-  ChopperE->createAll(System,FocusE->getKey("Guide0"),2);
-
-  // Double disk chopper
-  BandBDisk->addInsertCell(ChopperE->getCell("Void"));
+  BandBDisk->addInsertCell(ChopperD->getCell("Void"));
   BandBDisk->setCentreFlag(3);  // Z direction
   BandBDisk->setOffsetFlag(1);  // Centre offset control
-  BandBDisk->createAll(System,ChopperE->getKey("Beam"),0);
+  BandBDisk->createAll(System,ChopperD->getKey("Beam"),0);
 
+
+  // Second T0 Chopper::
+  ChopperE->addInsertCell(bunkerObj.getCell("MainVoid"));
+  ChopperE->createAll(System,ChopperD->getKey("Beam"),2);
+
+  // First disk of a T0 chopper
+  T1DiskA->addInsertCell(ChopperE->getCell("Void",0));
+  T1DiskA->setCentreFlag(3);  // Z direction
+  T1DiskA->setOffsetFlag(0);  // Centre offset control
+  T1DiskA->createAll(System,ChopperE->getKey("Beam"),0);
+
+  FocusT1Mid->addInsertCell(ChopperE->getCell("Void"));
+  FocusT1Mid->createAll(System,ChopperE->getKey("Beam"),0,
+                        ChopperE->getKey("Beam"),0);
+
+  // Second disk of a T0 chopper
+  T1DiskB->addInsertCell(ChopperE->getCell("Void",0));
+  T1DiskB->setCentreFlag(3);  // Z direction
+  T1DiskB->setOffsetFlag(0);  // Centre offset control
+  T1DiskB->createAll(System,ChopperE->getKey("Beam"),0);
+
+  VPipeE->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeE->createAll(System,ChopperE->getKey("Beam"),2);
+  
+  FocusE->addInsertCell(VPipeE->getCells("Void"));
+  FocusE->createAll(System,*VPipeE,0,*VPipeE,0);
+  // move guide
   VPipeF->addInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeF->createAll(System,ChopperE->getKey("Beam"),2);
-
+  VPipeF->createAll(System,*VPipeE,2);
+  // VPipeH->setBack(bunkerObj,1);
+  
   FocusF->addInsertCell(VPipeF->getCells("Void"));
   FocusF->createAll(System,*VPipeF,0,*VPipeF,0);
 
-      // NEW TEST SECTION:
-  ChopperG->addInsertCell(bunkerObj.getCell("MainVoid"));
-  ChopperG->createAll(System,FocusF->getKey("Guide0"),2);
-
-  // First disk of a T0 chopper
-  T1DiskA->addInsertCell(ChopperG->getCell("Void",0));
-  T1DiskA->setCentreFlag(3);  // Z direction
-  T1DiskA->setOffsetFlag(0);  // Centre offset control
-  T1DiskA->createAll(System,ChopperG->getKey("Beam"),0);
-
-  FocusT1Mid->addInsertCell(ChopperG->getCell("Void"));
-  FocusT1Mid->createAll(System,ChopperG->getKey("Beam"),0,
-                        ChopperG->getKey("Beam"),0);
-
-  // Second disk of a T0 chopper
-  T1DiskB->addInsertCell(ChopperG->getCell("Void",0));
-  T1DiskB->setCentreFlag(3);  // Z direction
-  T1DiskB->setOffsetFlag(0);  // Centre offset control
-  T1DiskB->createAll(System,ChopperG->getKey("Beam"),0);
-
-  // Pipe to bunker wall
-  VPipeG->addInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeG->createAll(System,ChopperG->getKey("Beam"),2);
-
-  FocusG->addInsertCell(VPipeG->getCells("Void"));
-  FocusG->createAll(System,*VPipeG,0,*VPipeG,0);
-
-  // Pipe to bunker wall
-  VPipeH->addInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeH->setBack(bunkerObj,1);
-  VPipeH->createAll(System,FocusG->getKey("Guide0"),2);
-
-  FocusH->addInsertCell(VPipeH->getCells("Void"));
-  // FocusG->addEndCut(bunkerObj.getSignedLinkString(1));
-  FocusH->createAll(System,*VPipeH,0,*VPipeH,0);
-
-
   if (stopPoint==2) return;                      // STOP At bunker edge
-
   // IN WALL
   // Make bunker insert
-  BInsert->createAll(System,FocusH->getKey("Guide0"),2,bunkerObj);
+  BInsert->createAll(System,FocusF->getKey("Guide0"),2,bunkerObj);
   attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);  
 
   // using 7 : mid point
@@ -462,14 +442,7 @@ DREAM::build(Simulation& System,
   VPipeCaveA->createAll(System,*VPipeOutB,2);
   FocusCaveA->addInsertCell(VPipeCaveA->getCell("Void"));
   FocusCaveA->createAll(System,*VPipeCaveA,7,*VPipeCaveA,7);
-
-  
-
-                            
-  
-
-
-
+                        
   return;
 }
 

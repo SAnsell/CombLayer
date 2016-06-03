@@ -84,17 +84,19 @@ class DREAM : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::ChopperUnit> ChopperA;
   /// Double disk chopper
   std::shared_ptr<constructSystem::DiskChopper> DDisk;
-  /// Vac box for first chopper
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperB;
   /// Double disk chopper
   std::shared_ptr<constructSystem::DiskChopper> SDisk;
 
   /// Pipe between bunker and the wall
-  std::shared_ptr<constructSystem::VacuumPipe> VPipeB;
-  /// Guide between diskchoppers  / T0
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeC;
+  /// Elliptic guide from 6m to band/t0 chopper
   std::shared_ptr<beamlineSystem::GuideLine> FocusC;
 
-  /// Vac box for first chopper
+  /// Vac box for BandPass chopper
+  std::shared_ptr<constructSystem::ChopperUnit> ChopperB;
+  /// Band Chopper
+  std::shared_ptr<constructSystem::DiskChopper> BandADisk;  
+  /// Vac box for T0 chopper
   std::shared_ptr<constructSystem::ChopperUnit> ChopperC;
   /// TO disk chopper [part A]
   std::shared_ptr<constructSystem::DiskChopper> T0DiskA;
@@ -102,29 +104,27 @@ class DREAM : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusT0Mid;
   /// TO disk chopper [part B]  
   std::shared_ptr<constructSystem::DiskChopper> T0DiskB;  
-  
-
   /// Pipe between T0 chopper and BandA
   std::shared_ptr<constructSystem::VacuumPipe> VPipeD;
   /// Guide between diskchoppers  / T0
   std::shared_ptr<beamlineSystem::GuideLine> FocusD;
-
-  /// Vac box for first chopper
+  /// Vac box for second band pass
   std::shared_ptr<constructSystem::ChopperUnit> ChopperD;
-  /// Band Chopper
-  std::shared_ptr<constructSystem::DiskChopper> BandADisk;  
-
-
-  /// Pipe between  BandA and Band B 
-  std::shared_ptr<constructSystem::VacuumPipe> VPipeE;
-  /// Guide between BandA and Band B
-  std::shared_ptr<beamlineSystem::GuideLine> FocusE;
-
-  /// Vac box for second band chopper
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperE;  
   /// Band Chopper 
   std::shared_ptr<constructSystem::DiskChopper> BandBDisk;  
-
+  /// Vac box for second band chopper
+  std::shared_ptr<constructSystem::ChopperUnit> ChopperE;
+  /// TO disk chopper [part A]
+  std::shared_ptr<constructSystem::DiskChopper> T1DiskA;
+  /// Elliptic forcus in bulkshield [m5]
+  std::shared_ptr<beamlineSystem::GuideLine> FocusT1Mid;
+  /// TO disk chopper [part B]  
+  std::shared_ptr<constructSystem::DiskChopper> T1DiskB;  
+  /// Pipe between  T0 and bunker wall
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeE;
+  /// Guide between T0 and bunker wall
+  std::shared_ptr<beamlineSystem::GuideLine> FocusE;
+  
 
     /// Pipe between  BandA and Band B 
   std::shared_ptr<constructSystem::VacuumPipe> VPipeF;
@@ -134,14 +134,6 @@ class DREAM : public attachSystem::CopiedComp
   /// Vac box for second band chopper
   std::shared_ptr<constructSystem::ChopperUnit> ChopperF;  
 
-  /// Vac box for first chopper
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperG;
-  /// TO disk chopper [part A]
-  std::shared_ptr<constructSystem::DiskChopper> T1DiskA;
-  /// Elliptic forcus in bulkshield [m5]
-  std::shared_ptr<beamlineSystem::GuideLine> FocusT1Mid;
-  /// TO disk chopper [part B]  
-  std::shared_ptr<constructSystem::DiskChopper> T1DiskB;  
 
   /// Pipe to Mid bunker space
   std::shared_ptr<constructSystem::VacuumPipe> VPipeG;

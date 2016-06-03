@@ -256,9 +256,6 @@ makeESS::createGuides(Simulation& System)
   GBArray[1]->createGuideItems(System,LowMod->getComponent("MidWater"),7,8);
   GBArray[2]->createGuideItems(System,TopMod->getComponent("MidWater"),6,5);
   GBArray[3]->createGuideItems(System,TopMod->getComponent("MidWater"),7,8);
-  //  GBArray[2]->createGuideItems(System,*LowMod,0,0);
-  //  GBArray[3]->createGuideItems(System,*TopMod,0,0);
-
 
   return;
 }
