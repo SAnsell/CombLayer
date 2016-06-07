@@ -50,99 +50,13 @@
 #include "FuncDataBase.h"
 #include "essVariables.h"
 #include "ShieldGenerator.h"
+#include "FocusGenerator.h"
+#include "ChopperGenerator.h"
 
 namespace setVariable
 {
 
-  
-void
-generateChopper(FuncDataBase& Control,
-                const std::string& keyName,
-                const double yStep,
-                const double length,
-                const double voidLength)
-  /*!
-    Generate the chopper variables
-   */
-{
-  ELog::RegMethod RegA("VESPAvariables[F]","generateChopper");
-  
-  Control.addVariable(keyName+"YStep",yStep);
-  Control.addVariable(keyName+"MainZStep",28.0);   // drawing [5962.2]
-  Control.addVariable(keyName+"Height",86.5);
-  Control.addVariable(keyName+"Width",86.5);
-  Control.addVariable(keyName+"Length",length);  // drawing [5960.2]
-  Control.addVariable(keyName+"ShortWidth",50.5);
-  Control.addVariable(keyName+"MainRadius",38.122); // estimate
-  Control.addVariable(keyName+"MainThick",voidLength);  // estimate
-  
-  Control.addVariable(keyName+"MotorRadius",12.00); // [5691.2]
-  Control.addVariable(keyName+"MotorOuter",15.20); // [5691.2]
-  Control.addVariable(keyName+"MotorStep",0.0); // estimate
-  Control.addVariable(keyName+"MotorNBolt",24); 
-  Control.addVariable(keyName+"MotorBoltRadius",0.50); //M10 inc thread
-  Control.addVariable(keyName+"MotorSealThick",0.2);  
-  Control.addVariable(keyName+"MortorSealMat","Poly");
-  
-  Control.addVariable(keyName+"PortRadius",10.0); // [5691.2]
-  Control.addVariable(keyName+"PortOuter",12.65); // [5691.2]
-  Control.addVariable(keyName+"PortStep",0.0); // estimate
-  Control.addVariable(keyName+"PortNBolt",24); 
-  Control.addVariable(keyName+"PortBoltRadius",0.40); //M8 inc
-  Control.addVariable(keyName+"PortBoltAngOff",180.0/24.0);
-  Control.addVariable(keyName+"PortSealThick",0.2);
-  Control.addVariable(keyName+"PortSealMat","Poly");
-
-  Control.addVariable(keyName+"RingNSection",12);
-  Control.addVariable(keyName+"RingNTrack",12);
-  Control.addVariable(keyName+"RingThick",0.4);
-  Control.addVariable(keyName+"RingRadius",40.0);  
-  Control.addVariable(keyName+"RingMat","Poly"); 
-
-  // strange /4 because it is average of 1/2 lengths
-  const std::string kItem=
-    "-("+keyName+"Length+"+keyName+"MainThick)/4.0";
-  Control.addParse<double>(keyName+"IPortAYStep",kItem);
  
-  Control.addVariable(keyName+"IPortAWidth",11.6);  
-  Control.addVariable(keyName+"IPortAHeight",11.6);
-  Control.addVariable(keyName+"IPortALength",1.0);
-  Control.addVariable(keyName+"IPortAMat","Aluminium");
-  Control.addVariable(keyName+"IPortASealStep",0.5);
-  Control.addVariable(keyName+"IPortASealThick",0.3); 
-  Control.addVariable(keyName+"IPortASealMat","Poly");
-  Control.addVariable(keyName+"IPortAWindow",0.3);
-  Control.addVariable(keyName+"IPortAWindowMat","Aluminium");
-
-  Control.addVariable(keyName+"IPortANBolt",8);
-  Control.addVariable(keyName+"IPortABoltStep",1.0);
-  Control.addVariable(keyName+"IPortABoltRadius",0.3);
-  Control.addVariable(keyName+"IPortABoltMat","Stainless304");
-  
-  // PORT B
-  Control.addParse<double>(keyName+"IPortBYStep",
-        "("+keyName+"Length+"+keyName+"MainThick)/4.0");
-  Control.addVariable(keyName+"IPortBWidth",12.0);  
-  Control.addVariable(keyName+"IPortBHeight",12.0);
-  Control.addVariable(keyName+"IPortBLength",1.0);
-  Control.addVariable(keyName+"IPortBMat","Aluminium");
-  Control.addVariable(keyName+"IPortBSealStep",0.5);
-  Control.addVariable(keyName+"IPortBSealThick",0.3); 
-  Control.addVariable(keyName+"IPortBSealMat","Poly");
-  Control.addVariable(keyName+"IPortBWindow",0.3);
-  Control.addVariable(keyName+"IPortBWindowMat","Aluminium");
-
-  Control.addVariable(keyName+"IPortBNBolt",8);
-  Control.addVariable(keyName+"IPortBBoltStep",1.0);
-  Control.addVariable(keyName+"IPortBBoltRadius",0.3);
-  Control.addVariable(keyName+"IPortBBoltMat","Stainless304");
-    
-  Control.addVariable(keyName+"BoltMat","Stainless304");
-  Control.addVariable(keyName+"WallMat","Aluminium");
-  Control.addVariable(keyName+"VoidMat","Void");
-  return;
-}
-
 void
 generatePipe(FuncDataBase& Control,
 	     const std::string& keyName,
@@ -171,54 +85,6 @@ generatePipe(FuncDataBase& Control,
   return;
 }
 
-void
-generateFocusTaper(FuncDataBase& Control,
-                   const std::string& keyName,
-                   const double length,
-                   const double HS,const double HE,
-                   const double VS,const double VE)
-                   
-  /*!
-    Create general focused taper
-    \param Control :: Data Base for variables
-    \param keyName :: main name
-    \param length :: length of pipe
-    \param HS :: Start of horrizontal
-    \param HE :: End of horrizontal
-    \param VS :: Start of horrizontal
-    \param VE :: End of horrizontal
-   */
-{
-  ELog::RegMethod RegA("VESPAvariables[F]","generateFocusTaper");
-
-  Control.addVariable(keyName+"Length",length);       
-  Control.addVariable(keyName+"XStep",0.0);       
-  Control.addParse<double>(keyName+"YStep","-"+keyName+"Length/2.0");
-  Control.copyVar(keyName+"BeamY",keyName+"YStep"); 
-  Control.addVariable(keyName+"ZStep",0.0);       
-  Control.addVariable(keyName+"XYAngle",0.0);       
-  Control.addVariable(keyName+"ZAngle",0.0);
-
-  Control.addVariable(keyName+"NShapes",1);       
-  Control.addVariable(keyName+"NShapeLayers",3);
-  Control.addVariable(keyName+"ActiveShield",0);
-
-  Control.addVariable(keyName+"LayerThick1",0.4);  // glass thick
-  Control.addVariable(keyName+"LayerThick2",1.5);
-
-  Control.addVariable(keyName+"LayerMat0","Void");
-  Control.addVariable(keyName+"LayerMat1","Aluminium");
-  Control.addVariable(keyName+"LayerMat2","Void");       
-  
-  Control.addVariable(keyName+"0TypeID","Taper");
-  Control.addVariable(keyName+"0HeightStart",VS);
-  Control.addVariable(keyName+"0HeightEnd",VE);
-  Control.addVariable(keyName+"0WidthStart",HS);
-  Control.addVariable(keyName+"0WidthEnd",HE);
-  Control.copyVar(keyName+"0Length",keyName+"Length");
-
-  return;
-}
 
 void
 generateRectangle(FuncDataBase& Control,
@@ -227,7 +93,7 @@ generateRectangle(FuncDataBase& Control,
                   const double H,const double V)
                    
   /*!
-    Create general focused taper
+    Create general rectangle
     \param Control :: Data Base for variables
     \param keyName :: main name
     \param length :: length of pipe
@@ -249,7 +115,7 @@ generateRectangle(FuncDataBase& Control,
   Control.addVariable(keyName+"NShapeLayers",3);
   Control.addVariable(keyName+"ActiveShield",0);
 
-  Control.addVariable(keyName+"LayerThick1",0.4);  // glass thick
+  Control.addVariable(keyName+"LayerThick1",0.5);  // glass thick
   Control.addVariable(keyName+"LayerThick2",1.5);
 
   Control.addVariable(keyName+"LayerMat0","Void");
@@ -279,8 +145,9 @@ generateT0Chopper(FuncDataBase& Control,
    */
 {
   ELog::RegMethod RegA("VespaVARIABLES","generateT0Chopper");
-  
-  generateChopper(Control,chopperName,25.0,36.0,32.0);
+
+  setVariable::ChopperGenerator CGen;
+  CGen.generateChopper(Control,chopperName,25.0,36.0,32.0);
 
   // T0 Chopper disk A
   Control.addVariable(diskName+"AXStep",0.0);
@@ -363,6 +230,8 @@ VESPAvariables(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("VESPAvariables[F]","VESPAvariables");
 
+  setVariable::FocusGenerator FGen;
+  
   // extent of beamline
   Control.addVariable("vespaStopPoint",0);
   
@@ -394,12 +263,12 @@ VESPAvariables(FuncDataBase& Control)
   Control.addVariable("vespaFA0Length",350.0);
 
   generatePipe(Control,"vespaPipeA",46.0);
-  generateFocusTaper(Control,"vespaFB",44.0,4.0,3.5,7.6,8.0);   
-  //  Control.addVariable("vespaFBBeamYStep",4.0);
+  FGen.generateTaper(Control,"vespaFB",44.0,4.0,3.5,7.6,8.0);   
   
   // VACBOX A : 6.10m target centre
   //  Length 100.7 + Width [87.0] + Height [39.0] void Depth/2 + front
-  generateChopper(Control,"vespaChopperA",8.0,12.0,5.55);
+  setVariable::ChopperGenerator CGen;
+  CGen.generateChopper(Control,"vespaChopperA",8.0,12.0,5.55);
   
   // Double Blade chopper
   Control.addVariable("vespaWFMBladeAXStep",0.0);
@@ -434,13 +303,13 @@ VESPAvariables(FuncDataBase& Control)
   Control.addVariable("vespaWFMBladeA1OpenAngle2",57.32);
 
   generatePipe(Control,"vespaPipeC",20.0);
-  generateFocusTaper(Control,"vespaFC",16.0,3.7,4.0,8.0,8.0);   
+  FGen.generateTaper(Control,"vespaFC",16.0,3.7,4.0,8.0,8.0);   
   //  Control.addVariable("vespaFBBeamYStep",4.0);
 
 
   // VACBOX A : 6.10m target centre
   //  Length 100.7 + Width [87.0] + Height [39.0] void Depth/2 + front
-  generateChopper(Control,"vespaChopperB",9.0,12.0,5.55);
+  CGen.generateChopper(Control,"vespaChopperB",9.0,12.0,5.55);
   
   // Double Blade chopper
   Control.addVariable("vespaWFMBladeBXStep",0.0);
@@ -481,7 +350,7 @@ VESPAvariables(FuncDataBase& Control)
 
     // VACBOX A : 6.10m target centre
   //  Length 100.7 + Width [87.0] + Height [39.0] void Depth/2 + front
-  generateChopper(Control,"vespaChopperC",9.0,12.0,5.55);
+  CGen.generateChopper(Control,"vespaChopperC",9.0,12.0,5.55);
   
   // Double Blade chopper
   Control.addVariable("vespaWFMBladeCXStep",0.0);
@@ -516,11 +385,12 @@ VESPAvariables(FuncDataBase& Control)
   Control.addVariable("vespaWFMBladeC1OpenAngle2",57.32);
 
   generatePipe(Control,"vespaPipeE",270.0);
-  generateFocusTaper(Control,"vespaFE",266.0,4.0,7.5,8.0,7.5);   
+  FGen.generateTaper(Control,"vespaFE",266.0,4.0,7.5,8.0,7.5);   
   //  Control.addVariable("vespaFBBeamYStep",4.0);
 
-  // VACBOX 
-  generateChopper(Control,"vespaChopperD",9.0,12.0,5.55);
+  // VACBOX
+  CGen.generateChopper(Control,"vespaChopperD",9.0,12.0,5.55);
+
 
   // Double Blade chopper
   Control.addVariable("vespaFOCBladeAXStep",0.0);
@@ -547,7 +417,8 @@ VESPAvariables(FuncDataBase& Control)
   Control.addVariable("vespaFOCBladeA1OpenAngle0",320.12);
 
   generatePipe(Control,"vespaPipeF",135.0);
-  generateFocusTaper(Control,"vespaFF",130.0,8.0,7.5,9.0,8.5);  // NOT CORRECT
+  FGen.generateTaper(Control,"vespaFF",130.0,8.0,7.5,9.0,8.5);  // NOT CORRECT
+
   //  Control.addVariable("vespaFBBeamYStep",4.0);
   
   // BEAM INSERT:
@@ -560,7 +431,7 @@ VESPAvariables(FuncDataBase& Control)
   Control.addVariable("vespaBInsertWallMat","Stainless304");       
 
   // Guide in wall
-  generateFocusTaper(Control,"vespaFWall",308.0,9.0,9.0,8.5,8.5);
+  FGen.generateTaper(Control,"vespaFWall",308.0,9.0,9.0,8.5,8.5);
 
   setVariable::ShieldGenerator SGen;
   SGen.addWall(1,20.0,"CastIron");
@@ -574,7 +445,7 @@ VESPAvariables(FuncDataBase& Control)
   // Guide after wall [17.5m - 3.20] for wall
   generatePipe(Control,"vespaPipeOutA",435.0);  //
   Control.addVariable("vespaPipeOutARadius",9.0);
-  generateFocusTaper(Control,"vespaFOutA",420.0,9.0,11.0,8.5,10.0);
+  FGen.generateTaper(Control,"vespaFOutA",420.0,9.0,11.0,8.5,10.0);
 
 
   Control.addVariable("vespaPitBYStep",-60.5);
@@ -604,8 +475,7 @@ VESPAvariables(FuncDataBase& Control)
   Control.addVariable("vespaPitBColletLength",5.0);
   Control.addVariable("vespaPitBColletMat","Tungsten");
 
-  generateChopper(Control,"vespaChopperOutB",18.0,12.0,5.55);
-  
+  CGen.generateChopper(Control,"vespaChopperOutB",18.0,12.0,5.55);
   // Double Blade chopper
   Control.addVariable("vespaFOCBladeBXStep",0.0);
   Control.addVariable("vespaFOCBladeBYStep",0.0);
@@ -634,7 +504,7 @@ VESPAvariables(FuncDataBase& Control)
   // Guide after wall [17.5m - 3.20] for wall
   generatePipe(Control,"vespaPipeOutB",850.0);  //
   Control.addVariable("vespaPipeOutBRadius",9.0);
-  generateFocusTaper(Control,"vespaFOutB",746.0,9.0,11.0,8.5,10.0);
+  FGen.generateTaper(Control,"vespaFOutB",746.0,9.0,11.0,8.5,10.0);
 
   SGen.generateShield(Control,"vespaShieldB",770.0,40.0,40.0,40.0,4,8);
 
@@ -654,64 +524,6 @@ VESPAvariables(FuncDataBase& Control)
 
   
   
-  /*
-  //  Control.addVariable("vespaPipeOutAFlangeRadius",9.0);  
-
-
-
-  // Guide after wall [+17.5m] after section 1  
-  generatePipe(Control,"vespaPipeOutB",1750.0);
-  Control.addVariable("vespaPipeOutBRadius",6.0);
-
-  generateFocusTaper(Control,"vespaFOutB",1736,4.0,4.0,5.0,5.0);
-  Control.addVariable("vespaFOutBLayerMat1","Glass");
-
-  
-  Control.addVariable("vespaShieldBLength",1750.0);
-  Control.addVariable("vespaShieldBLeft",32.0);
-  Control.addVariable("vespaShieldBRight",32.0);
-  Control.addVariable("vespaShieldBHeight",32.0);
-  Control.addVariable("vespaShieldBDepth",32.0);
-  Control.addVariable("vespaShieldBDefMat","Stainless304");
-  Control.addVariable("vespaShieldBNSeg",8);
-  Control.addVariable("vespaShieldBNWallLayers",8);
-  Control.addVariable("vespaShieldBNFloorLayers",3);
-  Control.addVariable("vespaShieldBNRoofLayers",8);
-  Control.addVariable("vespaShieldBWallLen1",20.0);
-  Control.addVariable("vespaShieldBWallMat1","CastIron");
-  Control.addVariable("vespaShieldBWallMat5","Concrete");
-
-  Control.addVariable("vespaShieldBRoofLen1",20.0);
-  Control.addVariable("vespaShieldBFloorLen1",20.0);
-  
-
-  // HUT:
-  Control.addVariable("vespaCaveYStep",0.0);
-  Control.addVariable("vespaCaveVoidFront",60.0);
-  Control.addVariable("vespaCaveVoidHeight",300.0);
-  Control.addVariable("vespaCaveVoidDepth",183.0);
-  Control.addVariable("vespaCaveVoidWidth",400.0);
-  Control.addVariable("vespaCaveVoidLength",1600.0);
-
-
-  Control.addVariable("vespaCaveFeFront",25.0);
-  Control.addVariable("vespaCaveFeLeftWall",15.0);
-  Control.addVariable("vespaCaveFeRightWall",15.0);
-  Control.addVariable("vespaCaveFeRoof",15.0);
-  Control.addVariable("vespaCaveFeFloor",15.0);
-  Control.addVariable("vespaCaveFeBack",15.0);
-
-  Control.addVariable("vespaCaveConcFront",35.0);
-  Control.addVariable("vespaCaveConcLeftWall",35.0);
-  Control.addVariable("vespaCaveConcRightWall",35.0);
-  Control.addVariable("vespaCaveConcRoof",35.0);
-  Control.addVariable("vespaCaveConcFloor",50.0);
-  Control.addVariable("vespaCaveConcBack",35.0);
-
-  Control.addVariable("vespaCaveFeMat","Stainless304");
-  Control.addVariable("vespaCaveConcMat","Concrete");
-
-*/  
   return;
 }
  

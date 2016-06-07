@@ -393,7 +393,6 @@ VESPA::build(Simulation& System,
   
   HeadRule GuideCut=
     attachSystem::unionLink(*ShieldA,{2,3,4,5,6});
-  ELog::EM<<"Guide Cut == "<<GuideCut.display()<<ELog::endDiag;
   PitB->insertComponent(System,"Outer",GuideCut);
   PitB->insertComponent(System,"MidLayer",*VPipeOutA);
   PitB->insertComponent(System,"Void",*VPipeOutA);

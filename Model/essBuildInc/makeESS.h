@@ -131,6 +131,8 @@ class makeESS
 
   std::shared_ptr<Bunker> ABunker;  ///< Right bunker [A unit]
   std::shared_ptr<Bunker> BBunker;  ///< Left bunker [B unit]
+  std::shared_ptr<Bunker> CBunker;  ///< Opposite Right bunker [A unit]
+  std::shared_ptr<Bunker> DBunker;  ///< Opposite bunker [B unit]
   /// A bunker freed thorugh
   std::vector<std::shared_ptr<BunkerFeed> > bFeedArray;
 

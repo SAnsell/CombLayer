@@ -121,9 +121,9 @@ class Bunker : public attachSystem::ContainedComp,
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const attachSystem::FixedComp&,
-			const long int,const bool);
+			const long int,const bool,const bool);
 
-  void createSurfaces();
+  void createSurfaces(const bool);
   void createLinks();
   void createObjects(Simulation&,const attachSystem::FixedComp&,
 		     const long int);
@@ -155,7 +155,7 @@ class Bunker : public attachSystem::ContainedComp,
   void cutInsert(Simulation&,const BunkerInsert&) const;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const attachSystem::FixedComp&,
-		 const long int,const bool);
+		 const long int,const bool,const bool);
 
 };
 

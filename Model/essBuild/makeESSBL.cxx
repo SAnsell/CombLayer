@@ -76,14 +76,17 @@
 
 #include "ODIN.h"
 #include "ESTIA.h"
+#include "FREIA.h"
 #include "LOKI.h"
 #include "NMX.h"
 #include "DREAM.h"
 #include "CSPEC.h"
 #include "VESPA.h"
+#include "VOR.h"
+
 #include "shortDREAM.h"
 #include "shortODIN.h"
-#include "VOR.h"
+
 #include "simpleITEM.h"
 
 #include "beamlineConstructor.h"
@@ -199,6 +202,11 @@ makeESSBL::build(Simulation& System,
     {
       ESTIA estiaBL;
       estiaBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+    }
+  else if (beamName=="ESTIA")
+    {
+      FREIA freiaBL("freia");
+      freiaBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="LOKI")
     {

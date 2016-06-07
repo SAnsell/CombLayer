@@ -268,12 +268,13 @@ void
 Bunker::createUnitVector(const attachSystem::FixedComp& MainCentre,
 			 const attachSystem::FixedComp& FC,
 			 const long int sideIndex,
-			 const bool reverseZ)
+			 const bool reverseX,const bool reverseZ)
   /*!
     Create the unit vectors
     \param MainCentre :: Main rotation centre
     \param FC :: Linked object
     \param sideIndex :: Side for linkage centre
+    \param reverseX :: reverse X direction
     \param reverseZ :: reverse Z direction
   */
 {
@@ -281,12 +282,9 @@ Bunker::createUnitVector(const attachSystem::FixedComp& MainCentre,
 
   rotCentre=MainCentre.getCentre();
   FixedComp::createUnitVector(FC,sideIndex);
-  if (reverseZ)
-    {
-      X*=-1;
-      Z*=-1;
-    }
-
+  if (reverseX) X*=-1;
+  if (reverseZ) Z*=-1;
+  ELog::EM<<keyName<<" = "<<X<<"::  "<<Y<<" :: "<<Z<<ELog::endDiag;
   return;
 }
 
@@ -347,27 +345,30 @@ Bunker::calcSegPosition(const size_t segIndex,
 
   
 void
-Bunker::createSurfaces()
+Bunker::createSurfaces(const bool revX)
   /*!
     Create All the surfaces
   */
 {
   ELog::RegMethod RegA("Bunker","createSurface");
 
+  const Geometry::Vec3D ZRotAxis((revX) ? Z : -Z);
   innerRadius=rotCentre.Distance(Origin);
 
   Geometry::Vec3D AWallDir(X);
   Geometry::Vec3D BWallDir(X);
   // rotation of axis:
-  Geometry::Quaternion::calcQRotDeg(leftAngle+leftPhase,-Z).rotate(AWallDir);
-  Geometry::Quaternion::calcQRotDeg(rightAngle+rightPhase,-Z).rotate(BWallDir);
+  Geometry::Quaternion::calcQRotDeg(leftAngle+leftPhase,-ZRotAxis).
+    rotate(AWallDir);
+  Geometry::Quaternion::calcQRotDeg(rightAngle+rightPhase,-ZRotAxis).
+    rotate(BWallDir);
   // rotation of phase points:
 
   // Points on wall
   Geometry::Vec3D AWall(Origin-rotCentre);
   Geometry::Vec3D BWall(Origin-rotCentre);
-  Geometry::Quaternion::calcQRotDeg(-leftPhase,Z).rotate(AWall);
-  Geometry::Quaternion::calcQRotDeg(-rightPhase,Z).rotate(BWall);
+  Geometry::Quaternion::calcQRotDeg(-leftPhase,ZRotAxis).rotate(AWall);
+  Geometry::Quaternion::calcQRotDeg(-rightPhase,ZRotAxis).rotate(BWall);
   AWall+=rotCentre;
   BWall+=rotCentre;
   // Divider
@@ -422,11 +423,13 @@ Bunker::createSurfaces()
       const double angle= leftAngle+F*angleDiff;
             
       Geometry::Vec3D DPosition(Origin-rotCentre);
-      Geometry::Quaternion::calcQRotDeg(sectPhase[i],-Z).rotate(DPosition);
+      Geometry::Quaternion::calcQRotDeg(sectPhase[i],-ZRotAxis).
+	rotate(DPosition);
       DPosition+=rotCentre;
       
       Geometry::Vec3D DDir(X);      
-      Geometry::Quaternion::calcQRotDeg(sectPhase[i]+angle,-Z).rotate(DDir);
+      Geometry::Quaternion::calcQRotDeg(sectPhase[i]+angle,-ZRotAxis).
+	rotate(DDir);
       ModelSupport::buildPlane(SMap,divIndex,DPosition,DDir);
     }
   divIndex++;
@@ -817,7 +820,7 @@ Bunker::createAll(Simulation& System,
 		  const attachSystem::FixedComp& MainCentre,
 		  const attachSystem::FixedComp& FC,
 		  const long int linkIndex,
-		  const bool reverseZ)
+		  const bool reverseX,const bool reverseZ)
   /*!
     Generic function to create everything
     \param System :: Simulation item
@@ -830,8 +833,8 @@ Bunker::createAll(Simulation& System,
   ELog::RegMethod RegA("Bunker","createAll");
 
   populate(System.getDataBase());
-  createUnitVector(MainCentre,FC,linkIndex,reverseZ);
-  createSurfaces();
+  createUnitVector(MainCentre,FC,linkIndex,reverseX,reverseZ);
+  createSurfaces(reverseX);
   createLinks();
   createObjects(System,FC,linkIndex);
   layerProcess(System);

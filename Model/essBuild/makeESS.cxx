@@ -136,8 +136,11 @@ makeESS::makeESS() :
   BulkLowAFL(new moderatorSystem::FlightLine("BulkLAFlight")),
   ShutterBayObj(new ShutterBay("ShutterBay")),
 
+
   ABunker(new Bunker("ABunker")),
   BBunker(new Bunker("BBunker")),
+  CBunker(new Bunker("CBunker")),
+  DBunker(new Bunker("DBunker")),
   ABunkerPillars(new RoofPillars("ABunkerPillars")),
   BBunkerPillars(new RoofPillars("BBunkerPillars")),
   TopCurtain(new Curtain("Curtain"))
@@ -171,6 +174,8 @@ makeESS::makeESS() :
   OR.addObject(ShutterBayObj);
   OR.addObject(ABunker);
   OR.addObject(BBunker);
+  OR.addObject(CBunker);
+  OR.addObject(DBunker);
   OR.addObject(ABunkerPillars);
   OR.addObject(BBunkerPillars);
   OR.addObject(TopCurtain);
@@ -451,6 +456,10 @@ makeESS::buildBunkerFeedThrough(Simulation& System,
             BPtr=ABunker;
           else if (bunkerName=="BunkerB" || bunkerName=="BBunker")
             BPtr=BBunker;
+          else if (bunkerName=="BunkerC" || bunkerName=="CBunker")
+            BPtr=CBunker;
+          else if (bunkerName=="BunkerD" || bunkerName=="DBunker")
+            BPtr=DBunker;
           else
             throw ColErr::InContainerError<std::string>
               (bunkerName,"bunkerName not know");
@@ -537,12 +546,22 @@ makeESS::makeBeamLine(Simulation& System,
 	  // FIND BUNKER HERE:::
 	  makeESSBL BLfactory(BL,Btype);
 	  std::pair<int,int> BLNum=makeESSBL::getBeamNum(BL);
+
 	  if ((BLNum.first==1 && BLNum.second>9) ||
 	      (BLNum.first==4 && BLNum.second<=9) )
 	    BLfactory.build(System,*ABunker);
+
 	  else if ((BLNum.first==1 && BLNum.second<=9) ||
 	      (BLNum.first==4 && BLNum.second>9) )
 	    BLfactory.build(System,*BBunker);
+
+	  else if ((BLNum.first==2 && BLNum.second>9) ||
+	      (BLNum.first==3 && BLNum.second<=9) )
+	    BLfactory.build(System,*CBunker);
+
+	  else if ((BLNum.first==3 && BLNum.second<=9) ||
+	      (BLNum.first==3 && BLNum.second>9) )
+	    BLfactory.build(System,*DBunker);
 	}
     }
   return;
@@ -563,15 +582,28 @@ makeESS::makeBunker(Simulation& System,
     IParam.getValue<std::string>("bunkerType");
   
   ABunker->addInsertCell(voidCell);
-  ABunker->createAll(System,*LowMod,*GBArray[0],2,true);
+  ABunker->createAll(System,*LowMod,*GBArray[0],2,true,true);
 
   BBunker->addInsertCell(voidCell);
   BBunker->setCutWall(0,1);
-  BBunker->createAll(System,*LowMod,*GBArray[0],2,true);
+  BBunker->createAll(System,*LowMod,*GBArray[0],2,true,true);
 
   ABunker->insertComponent(System,"rightWall",*BBunker);
   ABunker->insertComponent(System,"roofFarEdge",*BBunker);
   ABunker->insertComponent(System,"floor",*BBunker);
+
+  // Other side if needed :
+  
+  CBunker->addInsertCell(voidCell);
+  CBunker->createAll(System,*LowMod,*GBArray[1],2,false,true);
+
+  DBunker->addInsertCell(voidCell);
+  DBunker->setCutWall(0,1);
+  DBunker->createAll(System,*LowMod,*GBArray[1],2,false,true);
+
+  CBunker->insertComponent(System,"rightWall",*DBunker);
+  CBunker->insertComponent(System,"roofFarEdge",*DBunker);
+  CBunker->insertComponent(System,"floor",*DBunker);
 
   if (bunkerType.find("noPillar")==std::string::npos)
     buildPillars(System);

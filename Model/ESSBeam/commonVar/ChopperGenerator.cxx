@@ -53,7 +53,7 @@
 #include "FuncDataBase.h"
 #include "ChopperGenerator.h"
 
-namespace essSystem
+namespace setVariable
 {
 
 ChopperGenerator::ChopperGenerator() :
@@ -93,8 +93,8 @@ ChopperGenerator::generateChopper(FuncDataBase& Control,
   
   Control.addVariable(keyName+"YStep",yStep);
   Control.addVariable(keyName+"MainZStep",mainZStep);   // drawing [5962.2]
-  Control.addVariable(keyName+"Height",width);
-  Control.addVariable(keyName+"Width",height);
+  Control.addVariable(keyName+"Height",height);
+  Control.addVariable(keyName+"Width",width);
   Control.addVariable(keyName+"Length",length);  // drawing [5960.2]
   Control.addVariable(keyName+"ShortWidth",shortWidth);
   Control.addVariable(keyName+"MainRadius",mainRadius); // estimate
@@ -169,4 +169,4 @@ ChopperGenerator::generateChopper(FuncDataBase& Control,
 
 
   
-}  // NAMESPACE essSystem
+}  // NAMESPACE setVariable

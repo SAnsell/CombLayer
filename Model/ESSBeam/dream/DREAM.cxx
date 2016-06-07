@@ -114,7 +114,6 @@ DREAM::DREAM(const std::string& keyName) :
   ChopperB(new constructSystem::ChopperUnit(newName+"ChopperB")),
   BandADisk(new constructSystem::DiskChopper(newName+"BandADisk")),  
   
-
   ChopperC(new constructSystem::ChopperUnit(newName+"ChopperC")), 
   T0DiskA(new constructSystem::DiskChopper(newName+"T0DiskA")),
   FocusT0Mid(new beamlineSystem::GuideLine(newName+"FT0Mid")),
@@ -125,26 +124,19 @@ DREAM::DREAM(const std::string& keyName) :
   
   ChopperD(new constructSystem::ChopperUnit(newName+"ChopperD")),
 
-  VPipeE(new constructSystem::VacuumPipe(newName+"PipeE")),
-  FocusE(new beamlineSystem::GuideLine(newName+"FE")),
-
-  ChopperE(new constructSystem::ChopperUnit(newName+"ChopperE")),
   BandBDisk(new constructSystem::DiskChopper(newName+"BandBDisk")),  
-
-  VPipeF(new constructSystem::VacuumPipe(newName+"PipeF")),
-  FocusF(new beamlineSystem::GuideLine(newName+"FF")),
+  ChopperE(new constructSystem::ChopperUnit(newName+"ChopperE")),
 
   T1DiskA(new constructSystem::DiskChopper(newName+"T1DiskA")),
   FocusT1Mid(new beamlineSystem::GuideLine(newName+"FT1Mid")),
   T1DiskB(new constructSystem::DiskChopper(newName+"T1DiskB")),
 
-  VPipeG(new constructSystem::VacuumPipe(newName+"PipeG")),
-  FocusG(new beamlineSystem::GuideLine(newName+"FG")),
+  VPipeE(new constructSystem::VacuumPipe(newName+"PipeE")),
+  FocusE(new beamlineSystem::GuideLine(newName+"FE")),
 
-  // pipe to bunker wall
-  VPipeH(new constructSystem::VacuumPipe(newName+"PipeH")),
-  FocusH(new beamlineSystem::GuideLine(newName+"FH")),
-
+  VPipeF(new constructSystem::VacuumPipe(newName+"PipeF")),
+  FocusF(new beamlineSystem::GuideLine(newName+"FF")),
+  
   BInsert(new BunkerInsert(newName+"BInsert")),
   FocusWall(new beamlineSystem::GuideLine(newName+"FWall")),
 
@@ -204,11 +196,6 @@ DREAM::DREAM(const std::string& keyName) :
   OR.addObject(FocusT1Mid);
   OR.addObject(T1DiskB);
 
-  OR.addObject(VPipeG);
-  OR.addObject(FocusG);
-
-  OR.addObject(VPipeH);
-  OR.addObject(FocusH);
 
   OR.addObject(Cave);
   OR.addObject(VPipeCaveA);

@@ -131,20 +131,6 @@ class DREAM : public attachSystem::CopiedComp
   /// Guide between BandA and Band B
   std::shared_ptr<beamlineSystem::GuideLine> FocusF;
 
-  /// Vac box for second band chopper
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperF;  
-
-
-  /// Pipe to Mid bunker space
-  std::shared_ptr<constructSystem::VacuumPipe> VPipeG;
-  /// Focus unit to mid bunker space
-  std::shared_ptr<beamlineSystem::GuideLine> FocusG;
-
-  /// Pipe to Bunker Wall
-  std::shared_ptr<constructSystem::VacuumPipe> VPipeH;
-  /// Focus unit to wall
-  std::shared_ptr<beamlineSystem::GuideLine> FocusH;
-
   /// Bunker insert
   std::shared_ptr<essSystem::BunkerInsert> BInsert;
   /// Guide running to bunker wall

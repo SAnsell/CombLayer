@@ -76,11 +76,12 @@ $gM->addDepUnit("ess",      ["essBuild","visit","src","simMC",
 			     "crystal","transport","scatMat","md5",
 			     "endf","process","world","work",
 			     "monte","geometry","mersenne","src","xml","poly",
-			     "weights","global","attachComp",
-			     "visit","odin","loki","nmx","vor","dream",
-                             "estia","shortDream","shortOdin","longLoki",
-			     "cspec","vespa","commonVar","simpleItem"
-			      ]);
+			     "weights","global","attachComp","visit",
+                             "cspec","dream","estia","freia",
+			     "loki","nmx","odin","vor","vespa",
+			     "shortDream","shortOdin","longLoki",
+			     "commonVar","simpleItem"
+    	 	             ]);
 
 $gM->addDepUnit("filter", ["filter","photon","visit","src","simMC",
 			   "construct","physics","input","process",
