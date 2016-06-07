@@ -66,10 +66,12 @@ class BaseMap
     
   int getItem(const std::string&) const;
   int getItem(const std::string&,const size_t) const;
-
+  const std::string& getName(const int) const;
+    
   std::vector<std::string> getNames() const;
   std::vector<int> getItems(const std::string&) const;
   std::vector<int> getItems() const;
+
 
   std::string removeItemNumber(const int,const size_t =0);
   int removeItem(const std::string&,const size_t =0);

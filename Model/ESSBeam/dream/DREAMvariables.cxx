@@ -415,7 +415,7 @@ DREAMvariables(FuncDataBase& Control)
 
     // VACUUM PIPE: SDisk to T0 (A)
   generatePipe(Control,"dreamPipeC",260.0);
-  generateFocusTaper(Control,"dreamFC",258.8,2.06,2.36,4.6,4.5);   
+  generateFocusTaper(Control,"dreamFC",252.0,2.06,2.36,4.6,4.5);   
   //  Control.addVariable("dreamFCBeamYStep",1.10); 
 
   // Band chopoper

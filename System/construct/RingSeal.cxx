@@ -89,6 +89,42 @@ RingSeal::RingSeal(const std::string& Key) :
   */
 {}
 
+RingSeal::RingSeal(const RingSeal& A) : 
+  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),
+  ringIndex(A.ringIndex),cellIndex(A.cellIndex),
+  NSection(A.NSection),NTrack(A.NTrack),radius(A.radius),
+  deltaRad(A.deltaRad),thick(A.thick),mat(A.mat)
+  /*!
+    Copy constructor
+    \param A :: RingSeal to copy
+  */
+{}
+
+RingSeal&
+RingSeal::operator=(const RingSeal& A)
+  /*!
+    Assignment operator
+    \param A :: RingSeal to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedOffset::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      cellIndex=A.cellIndex;
+      NSection=A.NSection;
+      NTrack=A.NTrack;
+      radius=A.radius;
+      deltaRad=A.deltaRad;
+      thick=A.thick;
+      mat=A.mat;
+    }
+  return *this;
+}
+
 
 
 RingSeal::~RingSeal() 
@@ -187,7 +223,7 @@ RingSeal::createObjects(Simulation& System)
     {
       // start from segment:1 and do seg:0 at end 
       int prevRingIndex(ringIndex);
-      for(size_t i=1;i<NSection-1;i++)
+      for(size_t i=1;i<NSection;i++)
         {
           Out=ModelSupport::getComposite(SMap,prevRingIndex," 3 -13 ");
           System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out+SealStr));

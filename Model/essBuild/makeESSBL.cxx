@@ -186,28 +186,28 @@ makeESSBL::build(Simulation& System,
   if (!mainGIPtr)
     throw ColErr::InContainerError<std::string>(shutterName,"shutterObject");
 	
-  if (beamName=="ODIN")
+  if (beamName=="CSPEC")
     {
-      // Odin beamline
-      ODIN OdinBL("odin");
-      OdinBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+      // DREAM beamline
+      CSPEC cspecBL("cspec");
+      cspecBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
-  else if (beamName=="SHORTODIN")
+  else if (beamName=="DREAM")
     {
-      // Odin beamline
-      ODIN OdinBL("shortOdin");
-      OdinBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+      // DREAM beamline
+      DREAM dreamBL("dream");
+      dreamBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="ESTIA")
     {
       ESTIA estiaBL;
       estiaBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
-  else if (beamName=="ESTIA")
+  else if (beamName=="FREIA")
     {
       FREIA freiaBL("freia");
       freiaBL.build(System,*mainGIPtr,bunkerObj,voidCell);
-    }
+    }  
   else if (beamName=="LOKI")
     {
       // LOKI beamline
@@ -221,29 +221,29 @@ makeESSBL::build(Simulation& System,
       NMX nmxBL("nmx");
       nmxBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
-  else if (beamName=="VOR")
+  else if (beamName=="ODIN")
     {
-      ELog::EM<<"Building "<<beamName<<ELog::endDiag;
-      VOR vorBL("vor");
-      vorBL.build(System,*mainGIPtr,bunkerObj,voidCell);
-    }
-  else if (beamName=="DREAM")
-    {
-      // DREAM beamline
-      DREAM dreamBL("dream");
-      dreamBL.build(System,*mainGIPtr,bunkerObj,voidCell);
-    }
-  else if (beamName=="CSPEC")
-    {
-      // DREAM beamline
-      CSPEC cspecBL("cspec");
-      cspecBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+      // Odin beamline
+      ODIN OdinBL("odin");
+      OdinBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="VESPA")
     {
       // DREAM beamline
       VESPA vespaBL("vespa");
       vespaBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+    }
+  else if (beamName=="VOR")
+    {
+      ELog::EM<<"Building "<<beamName<<ELog::endDiag;
+      VOR vorBL("vor");
+      vorBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+    }
+  else if (beamName=="SHORTODIN")
+    {
+      // Odin beamline
+      ODIN OdinBL("shortOdin");
+      OdinBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="SHORTDREAM")
     {

@@ -348,6 +348,31 @@ BaseMap::removeVecUnit(const std::string& kName,
 }
 
   
+const std::string&
+BaseMap::getName(const int cellN) const
+  /*!
+    Given a cell number find the string(s) associated 
+    with it 
+    \param cellN :: Cell number to find
+    \return empty string on failure to find / string name
+   */
+{
+  ELog::RegMethod RegA("BaseMap","getName");
+  // Quick check for cellN in base names
+  size_t indexCnt(0);
+  for(const LCTYPE::value_type& IV : Items)
+    {
+      //      const std::string kUnit(IV.first); // care might delete it!!
+      const std::vector<int>& SRef(IV.second);
+      std::vector<int>::const_iterator vc=
+        std::find(SRef.begin(),SRef.end(),cellN);
+
+      if (vc!=SRef.end())
+        return IV.first;
+    }
+  return "";  // failed
+}
+
 std::string
 BaseMap::removeItemNumber(const int cellN,
                           const size_t Index)

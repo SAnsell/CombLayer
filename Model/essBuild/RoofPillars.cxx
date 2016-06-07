@@ -99,7 +99,8 @@ RoofPillars::RoofPillars(const RoofPillars& A) :
   attachSystem::FixedComp(A),attachSystem::CellMap(A),
   rodIndex(A.rodIndex),cellIndex(A.cellIndex),
   TopSurf(A.TopSurf),BaseSurf(A.BaseSurf),
-  CentPoint(A.CentPoint),radius(A.radius),mat(A.mat)
+  CentName(A.CentName),CentPoint(A.CentPoint),
+  radius(A.radius),mat(A.mat)
   /*!
     Copy constructor
     \param A :: RoofPillars to copy
@@ -121,6 +122,7 @@ RoofPillars::operator=(const RoofPillars& A)
       cellIndex=A.cellIndex;
       TopSurf=A.TopSurf;
       BaseSurf=A.BaseSurf;
+      CentName=A.CentName;
       CentPoint=A.CentPoint;
       radius=A.radius;
       mat=A.mat;
@@ -167,6 +169,7 @@ RoofPillars::populate(const FuncDataBase& Control)
               // degrees:
               const double angle=M_PI*Control.EvalPair<double>
                 (keyName+"R_"+Num+"S_"+NSec,keyName+"RS_"+NSec)/180.0;
+              CentName.push_back("R_"+Num+"S_"+NSec);
               CentPoint.push_back
                 (Geometry::Vec3D(rotRadius*sin(angle),
                                  rotRadius*cos(angle),0.0));
@@ -214,9 +217,9 @@ void
 RoofPillars::setTopSurf(const attachSystem::FixedComp& FC,
                         const long int sideIndex)
   /*!
-    Set the roof/base surfaces [simple system]
-    \param FS :: Floor surface
-    \param RS :: Roof surface
+    Set the roof surfaces [simple system]
+    \param FC :: FixedComp for side
+    \param sideIndex :: side
   */
 {
   ELog::RegMethod RegA("RoofPillars","setTopSurf");
@@ -230,9 +233,9 @@ void
 RoofPillars::setBaseSurf(const attachSystem::FixedComp& FC,
                         const long int sideIndex)
   /*!
-    Set the roof/base surfaces [simple system]
-    \param FS :: Floor surface
-    \param RS :: Roof surface
+    Set the base surfaces [simple system]
+    \param FC :: FixedComp for side
+    \param sideIndex :: side
   */
 {
   ELog::RegMethod RegA("RoofPillars","setBaseSurf");
@@ -279,7 +282,7 @@ RoofPillars::createObjects(Simulation& System)
       Out=ModelSupport::getComposite(SMap,RI," -7 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,
                                        Out+Base));
-      addCell("Pillar",cellIndex-1);
+      addCell("Pillar"+CentName[i],cellIndex-1);
       RI+=10;
     }
         
@@ -325,8 +328,6 @@ RoofPillars::createLinks()
 
   return;
 }
-
-
   
 void
 RoofPillars::createAll(Simulation& System,

@@ -46,6 +46,8 @@ class RoofPillars : public attachSystem::FixedComp,
 
   HeadRule TopSurf;             ///< Top surface  [roof]
   HeadRule BaseSurf;            ///< Base surface [floor]
+  /// Name for each centre
+  std::vector<std::string> CentName;
   /// Relative point for each centre
   std::vector<Geometry::Vec3D> CentPoint;
   

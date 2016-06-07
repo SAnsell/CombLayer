@@ -96,6 +96,8 @@
 #include "ObjSurfMap.h"
 #include "PhysicsCards.h"
 #include "ReadFunctions.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "SimTrack.h"
 #include "Simulation.h"
 
@@ -2011,6 +2013,7 @@ Simulation::renumberCells(const std::vector<int>& cOffset,
 
   std::string oldUnit,keyUnit;
   int startNum(0);
+  const attachSystem::CellMap* CMapPtr(0);
   // This is ordered:
   OTYPE::const_iterator vc;  
   for(vc=OList.begin();vc!=OList.end();vc++)
@@ -2053,10 +2056,23 @@ Simulation::renumberCells(const std::vector<int>& cOffset,
 	    OR.setRenumber(oldUnit,startNum,nNum-1);
 	  oldUnit=keyUnit;
 	  startNum=nNum;
+          CMapPtr=OR.getObject<attachSystem::CellMap>(keyUnit);
 	}
-
+      
       ELog::RN<<"Cell Changed :"<<cNum<<" "<<nNum
-	      <<" Object:"<<keyUnit<<ELog::endBasic;
+	      <<" Object:"<<keyUnit;
+      if (CMapPtr)
+        {
+          const std::string& cName=
+            CMapPtr->getName(cNum);
+          if (!cName.empty())
+            ELog::RN<<" ("<<cName<<")";
+          const std::string& xName=
+            CMapPtr->getName(nNum);
+          if (!xName.empty())
+            ELog::EM<<"Found "<<xName<<" "<<cNum<<" "<<nNum<<ELog::endCrit;
+         }
+      ELog::RN<<ELog::endBasic;
     }
 
   // Last item

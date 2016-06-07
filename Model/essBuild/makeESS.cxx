@@ -546,6 +546,7 @@ makeESS::makeBeamLine(Simulation& System,
 	  // FIND BUNKER HERE:::
 	  makeESSBL BLfactory(BL,Btype);
 	  std::pair<int,int> BLNum=makeESSBL::getBeamNum(BL);
+          ELog::EM<<"BLNum == "<<BLNum.first<<" "<<BLNum.second<<ELog::endDiag;
 
 	  if ((BLNum.first==1 && BLNum.second>9) ||
 	      (BLNum.first==4 && BLNum.second<=9) )
@@ -557,11 +558,11 @@ makeESS::makeBeamLine(Simulation& System,
 
 	  else if ((BLNum.first==2 && BLNum.second>9) ||
 	      (BLNum.first==3 && BLNum.second<=9) )
-	    BLfactory.build(System,*CBunker);
-
-	  else if ((BLNum.first==3 && BLNum.second<=9) ||
-	      (BLNum.first==3 && BLNum.second>9) )
 	    BLfactory.build(System,*DBunker);
+
+	  else if ((BLNum.first==2 && BLNum.second<=9) ||
+	      (BLNum.first==3 && BLNum.second>9) )
+	    BLfactory.build(System,*CBunker);
 	}
     }
   return;

@@ -268,7 +268,8 @@ void
 Bunker::createUnitVector(const attachSystem::FixedComp& MainCentre,
 			 const attachSystem::FixedComp& FC,
 			 const long int sideIndex,
-			 const bool reverseX,const bool reverseZ)
+			 const bool reverseX,
+                         const bool reverseZ)
   /*!
     Create the unit vectors
     \param MainCentre :: Main rotation centre
@@ -284,7 +285,6 @@ Bunker::createUnitVector(const attachSystem::FixedComp& MainCentre,
   FixedComp::createUnitVector(FC,sideIndex);
   if (reverseX) X*=-1;
   if (reverseZ) Z*=-1;
-  ELog::EM<<keyName<<" = "<<X<<"::  "<<Y<<" :: "<<Z<<ELog::endDiag;
   return;
 }
 

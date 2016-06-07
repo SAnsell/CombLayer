@@ -102,6 +102,82 @@ ChopperUnit::ChopperUnit(const std::string& Key) :
   OR.addObject(IPB);
 }
 
+ChopperUnit::ChopperUnit(const ChopperUnit& A) : 
+  attachSystem::FixedOffsetGroup(A),attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),
+  houseIndex(A.houseIndex),cellIndex(A.cellIndex),
+  height(A.height),width(A.width),depth(A.depth),
+  length(A.length),shortHeight(A.shortHeight),
+  shortWidth(A.shortWidth),mainRadius(A.mainRadius),
+  mainThick(A.mainThick),motorRadius(A.motorRadius),
+  motorOuter(A.motorOuter),motorStep(A.motorStep),
+  portRadius(A.portRadius),portOuter(A.portOuter),
+  portStep(A.portStep),portWindow(A.portWindow),
+  portNBolt(A.portNBolt),portBoltRad(A.portBoltRad),
+  portBoltAngOff(A.portBoltAngOff),portSeal(A.portSeal),
+  portSealMat(A.portSealMat),portWindowMat(A.portWindowMat),
+  motorNBolt(A.motorNBolt),motorBoltRad(A.motorBoltRad),
+  motorBoltAngOff(A.motorBoltAngOff),motorSeal(A.motorSeal),
+  motorSealMat(A.motorSealMat),motorMat(A.motorMat),
+  boltMat(A.boltMat),wallMat(A.wallMat),
+  RS(new RingSeal(*A.RS)),IPA(new InnerPort(*A.IPA)),
+  IPB(new InnerPort(*A.IPB))
+  /*!
+    Copy constructor
+    \param A :: ChopperUnit to copy
+  */
+{}
+
+ChopperUnit&
+ChopperUnit::operator=(const ChopperUnit& A)
+  /*!
+    Assignment operator
+    \param A :: ChopperUnit to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedOffsetGroup::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      cellIndex=A.cellIndex;
+      height=A.height;
+      width=A.width;
+      depth=A.depth;
+      length=A.length;
+      shortHeight=A.shortHeight;
+      shortWidth=A.shortWidth;
+      mainRadius=A.mainRadius;
+      mainThick=A.mainThick;
+      motorRadius=A.motorRadius;
+      motorOuter=A.motorOuter;
+      motorStep=A.motorStep;
+      portRadius=A.portRadius;
+      portOuter=A.portOuter;
+      portStep=A.portStep;
+      portWindow=A.portWindow;
+      portNBolt=A.portNBolt;
+      portBoltRad=A.portBoltRad;
+      portBoltAngOff=A.portBoltAngOff;
+      portSeal=A.portSeal;
+      portSealMat=A.portSealMat;
+      portWindowMat=A.portWindowMat;
+      motorNBolt=A.motorNBolt;
+      motorBoltRad=A.motorBoltRad;
+      motorBoltAngOff=A.motorBoltAngOff;
+      motorSeal=A.motorSeal;
+      motorSealMat=A.motorSealMat;
+      motorMat=A.motorMat;
+      boltMat=A.boltMat;
+      wallMat=A.wallMat;
+      *RS=*A.RS;
+      *IPA=*A.IPA;
+      *IPB=*A.IPB;
+    }
+  return *this;
+}
+
 ChopperUnit::~ChopperUnit() 
   /*!
     Destructor
@@ -152,7 +228,6 @@ ChopperUnit::populate(const FuncDataBase& Control)
   
   boltMat=ModelSupport::EvalMat<int>(Control,keyName+"BoltMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
-
 
   return;
 }

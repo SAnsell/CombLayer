@@ -89,6 +89,56 @@ InnerPort::InnerPort(const std::string& Key) :
   */
 {}
 
+InnerPort::InnerPort(const InnerPort& A) : 
+  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),  
+  portIndex(A.portIndex),cellIndex(A.cellIndex),
+  width(A.width),height(A.height),length(A.length),
+  nBolt(A.nBolt),boltStep(A.boltStep),
+  boltRadius(A.boltRadius),boltMat(A.boltMat),
+  sealStep(A.sealStep),sealThick(A.sealThick),
+  sealMat(A.sealMat),window(A.window),windowMat(A.windowMat),
+  mat(A.mat),boundaryHR(A.boundaryHR),
+  activeCells(A.activeCells)
+  /*!
+    Copy constructor
+    \param A :: InnerPort to copy
+  */
+{}
+
+InnerPort&
+InnerPort::operator=(const InnerPort& A)
+  /*!
+    Assignment operator
+    \param A :: InnerPort to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedOffset::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      cellIndex=A.cellIndex;
+      width=A.width;
+      height=A.height;
+      length=A.length;
+      nBolt=A.nBolt;
+      boltStep=A.boltStep;
+      boltRadius=A.boltRadius;
+      boltMat=A.boltMat;
+      sealStep=A.sealStep;
+      sealThick=A.sealThick;
+      sealMat=A.sealMat;
+      window=A.window;
+      windowMat=A.windowMat;
+      mat=A.mat;
+      boundaryHR=A.boundaryHR;
+      activeCells=A.activeCells;
+    }
+  return *this;
+}
+
 InnerPort::~InnerPort() 
   /*!
     Destructor
