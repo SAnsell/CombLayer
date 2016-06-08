@@ -181,6 +181,37 @@ setDefRotation(const mainSystem::inputParam& IParam)
 		   (1,0,Geometry::Vec3D(0,0,0),
 		    Geometry::Vec3D(1,0,0)));
     }
+
+  if (IParam.flag("offset"))
+    {
+      const std::string AItem=
+	IParam.getValue<std::string>("offset");
+      const std::string BItem=(IParam.itemCnt("offset",0)>1) ?
+	IParam.getValue<std::string>("offset",1) : "";
+
+      if (AItem=="object" || AItem=="Object")
+	{
+	  const attachSystem::FixedComp* GIPtr=
+	    OR.getObject<attachSystem::FixedComp>(BItem);
+	  if (!GIPtr)
+	    throw ColErr::InContainerError<std::string>
+	      (BItem,"Fixed component");
+	  const std::string CItem=
+            IParam.getDefValue<std::string>("0","offset",2);
+          const long int linkIndex=attachSystem::getLinkIndex(CItem);
+          ELog::EM<<"Offset at "<<GIPtr->getSignedLinkPt(linkIndex)
+                  <<ELog::endDiag;
+	  MR.addDisplace(-GIPtr->getSignedLinkPt(linkIndex));
+	}
+      else if (AItem=="free" || AItem=="FREE")
+	{
+          size_t itemIndex(1);
+          const Geometry::Vec3D OffsetPos=
+            IParam.getCntVec3D("offset",0,itemIndex,"Offset need vec3D");
+	  MR.addDisplace(-OffsetPos);
+	}
+    }
+  
   if (IParam.flag("angle"))
     {
       const std::string AItem=
@@ -230,7 +261,6 @@ setDefRotation(const mainSystem::inputParam& IParam)
       else 
 	retFlag=AItem;
     }
-
   if (IParam.compValue("isolate",std::string("chipIR")))
     {
       MR.addRotation(Geometry::Vec3D(1,0,0),

@@ -58,8 +58,9 @@ namespace setVariable
 
 ChopperGenerator::ChopperGenerator() :
   mainZStep(28.0),height(86.5),width(86.5),
-  shortWidth(50.5),mainRadius(38.122),
-  windowThick(0.3),
+  shortWidth(50.5),shortHeight(50.5),
+  mainRadius(38.122),
+  windowThick(0.3),ringRadius(40.0),
   wallMat("Aluminium"),
   sealMat("Poly"),windowMat("Aluminium")
   /*!
@@ -68,12 +69,78 @@ ChopperGenerator::ChopperGenerator() :
   */
 {}
 
+ChopperGenerator::ChopperGenerator(const ChopperGenerator& A) : 
+  mainZStep(A.mainZStep),height(A.height),width(A.width),
+  shortWidth(A.shortWidth),shortHeight(A.shortHeight),
+  mainRadius(A.mainRadius),windowThick(A.windowThick),
+  ringRadius(A.ringRadius),wallMat(A.wallMat),
+  sealMat(A.sealMat),windowMat(A.windowMat)
+  /*!
+    Copy constructor
+    \param A :: ChopperGenerator to copy
+  */
+{}
+
+ChopperGenerator&
+ChopperGenerator::operator=(const ChopperGenerator& A)
+  /*!
+    Assignment operator
+    \param A :: ChopperGenerator to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      mainZStep=A.mainZStep;
+      height=A.height;
+      width=A.width;
+      shortWidth=A.shortWidth;
+      shortHeight=A.shortHeight;
+      mainRadius=A.mainRadius;
+      windowThick=A.windowThick;
+      ringRadius=A.ringRadius;
+      wallMat=A.wallMat;
+      sealMat=A.sealMat;
+      windowMat=A.windowMat;
+    }
+  return *this;
+}
+
 ChopperGenerator::~ChopperGenerator() 
  /*!
    Destructor
  */
 {}
 
+void
+ChopperGenerator::setMainRadius(const double R)
+  /*!
+    Set the void space radius for the chopper
+    \param R :: Radius
+  */
+{
+  ringRadius*=R/mainRadius;
+  mainZStep*=R/mainRadius;
+  mainRadius=R;
+  return;
+}
+
+void
+ChopperGenerator::setFrame(const double H,const double W)
+  /*!
+    Set the main width/height
+    \param H :: height [largest vertical]
+    \param W :: width [largest horizontal]
+   */
+{
+  shortHeight*=H/height;
+  shortWidth*=W/width;
+  height=H;
+  width=W;
+
+
+  return;
+}
 
 void
 ChopperGenerator::generateChopper(FuncDataBase& Control,
@@ -96,6 +163,7 @@ ChopperGenerator::generateChopper(FuncDataBase& Control,
   Control.addVariable(keyName+"Height",height);
   Control.addVariable(keyName+"Width",width);
   Control.addVariable(keyName+"Length",length);  // drawing [5960.2]
+  Control.addVariable(keyName+"ShortHeight",shortHeight);
   Control.addVariable(keyName+"ShortWidth",shortWidth);
   Control.addVariable(keyName+"MainRadius",mainRadius); // estimate
   Control.addVariable(keyName+"MainThick",voidLength);  // estimate
@@ -120,7 +188,7 @@ ChopperGenerator::generateChopper(FuncDataBase& Control,
   Control.addVariable(keyName+"RingNSection",12);
   Control.addVariable(keyName+"RingNTrack",12);
   Control.addVariable(keyName+"RingThick",0.4);
-  Control.addVariable(keyName+"RingRadius",40.0);  
+  Control.addVariable(keyName+"RingRadius",ringRadius);  
   Control.addVariable(keyName+"RingMat",sealMat); 
 
   // strange /4 because it is average of 1/2 lengths

@@ -174,6 +174,8 @@ FixedOffsetGroup::populateOffset(const FuncDataBase& Control,
   /*!
     Populate the variables
     \param Control :: Control data base
+    \param keyItem :: name of unit
+    \param GO :: offset parameter
    */
 {
   ELog::RegMethod RegA("FixedOffsetGroup","populate");

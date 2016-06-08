@@ -44,9 +44,12 @@ class FocusGenerator
 
   
   double substrateThick;   ///< substrate thickness
-  double voidThick;       ///< clearance thickness
-
+  double voidThick;        ///< clearance thickness
+  bool yStepActive;        ///< Y step active
+  double yStep;            ///< Y step
+  
   std::string guideMat;    ///< Main guide material
+
   
  public:
 
@@ -61,6 +64,13 @@ class FocusGenerator
   /// set thickness
   void setThickness(const double S,const double V)
   { substrateThick=S;voidThick=V; }
+
+  /// set the y step
+  void setYOffset(const double D)
+  { yStep=D; yStepActive=1; }
+  /// clear the y step
+  void clearYOffset()
+  { yStepActive=0; }
   
   void generateTaper(FuncDataBase&,
 		     const std::string&,const double,

@@ -90,10 +90,12 @@ FocusGenerator::generateTaper(FuncDataBase& Control,
    */
 {
   ELog::RegMethod RegA("FocusGenerator","generateTaper");
-
   Control.addVariable(keyName+"Length",length);       
   Control.addVariable(keyName+"XStep",0.0);       
-  Control.addParse<double>(keyName+"YStep","-"+keyName+"Length/2.0");
+  if (!yStepActive)
+    Control.addParse<double>(keyName+"YStep","-"+keyName+"Length/2.0");
+  else
+    Control.addVariable<double>(keyName+"YStep",yStep);
   Control.copyVar(keyName+"BeamY",keyName+"YStep"); 
   Control.addVariable(keyName+"ZStep",0.0);       
   Control.addVariable(keyName+"XYAngle",0.0);       
@@ -142,15 +144,22 @@ FocusGenerator::generateBender(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("FocusGenerator","generateBender");
   
-  // Bender in section so use cut system  
+  // Bender in section so use cut system
+  Control.addVariable(keyName+"Length",length);
+    
   Control.addVariable(keyName+"XStep",0.0);       
-  Control.addVariable(keyName+"YStep",0.0);       
+  if (!yStepActive)
+    Control.addParse<double>(keyName+"YStep","-"+keyName+"Length/2.0");
+  else
+    Control.addVariable<double>(keyName+"YStep",yStep);
+  Control.copyVar(keyName+"BeamY",keyName+"YStep"); 
+
   Control.addVariable(keyName+"ZStep",0.0);       
   Control.addVariable(keyName+"XYAngle",0.0);
   Control.addVariable(keyName+"ZAngle",0.0);
   Control.addVariable(keyName+"BeamXYAngle",0.0);       
 
-  Control.addVariable(keyName+"Length",length);       
+
   Control.addVariable(keyName+"NShapes",1);       
   Control.addVariable(keyName+"NShapeLayers",3);
   Control.addVariable(keyName+"ActiveShield",0);

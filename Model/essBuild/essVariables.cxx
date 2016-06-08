@@ -54,7 +54,6 @@
 namespace setVariable
 {
 
-
 void
 EssVariables(FuncDataBase& Control)
   /*!
@@ -601,19 +600,22 @@ EssVariables(FuncDataBase& Control)
   
   EssProtonBeam(Control);
   EssBeamLinesVariables(Control);
-  ODINvariables(Control);
-  DREAMvariables(Control);
+
   CSPECvariables(Control);
-  shortDREAMvariables(Control);
-  shortDREAM2variables(Control);
-  shortODINvariables(Control);
+  DREAMvariables(Control);
   ESTIAvariables(Control);
-  LOKIvariables(Control);
+  FREIAvariables(Control);
+  LOKIvariables(Control); 
   NMXvariables(Control);
+  ODINvariables(Control);
   VESPAvariables(Control);
   VORvariables(Control);
   simpleITEMvariables(Control);
-      
+
+  shortDREAMvariables(Control);
+  shortDREAM2variables(Control);
+  shortODINvariables(Control);
+  
   EssButterflyModerator(Control);
   EssWheel(Control);
   EssBunkerVariables(Control);

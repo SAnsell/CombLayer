@@ -70,15 +70,32 @@ class FREIA : public attachSystem::CopiedComp
   int stopPoint;  
 
   /// Main Beam Axis [for construction]
-  std::shared_ptr<attachSystem::FixedComp> freiaAxis;
+  std::shared_ptr<attachSystem::FixedOffset> freiaAxis;
 
   /// Elliptic focus in monolith [m5]
-  std::shared_ptr<beamlineSystem::GuideLine> FocusA;
-  /// Bender int monolith
   std::shared_ptr<beamlineSystem::GuideLine> BendA;
 
+  /// Pipe in gamma shield
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeB;
+  /// Bender int monolith
+  std::shared_ptr<beamlineSystem::GuideLine> BendB;
 
-  void setBeamAxis(const GuideItem&,const bool);
+  /// Pipe in gamma shield
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeC;
+  /// Bender int monolith
+  std::shared_ptr<beamlineSystem::GuideLine> BendC;
+
+  /// Vac box for first chopper
+  std::shared_ptr<constructSystem::ChopperUnit> ChopperA;
+  /// Double disk chopper
+  std::shared_ptr<constructSystem::DiskChopper> DDisk;
+
+  /// Vac box for first chopper
+  std::shared_ptr<constructSystem::ChopperUnit> ChopperB;
+  /// Double disk chopper
+  std::shared_ptr<constructSystem::DiskChopper> WFMDisk;
+
+  void setBeamAxis(const FuncDataBase&,const GuideItem&,const bool);
   
  public:
   

@@ -96,10 +96,21 @@ namespace essSystem
 FREIA::FREIA(const std::string& keyName) :
   attachSystem::CopiedComp("freia",keyName),
   stopPoint(0),
-  freiaAxis(new attachSystem::FixedComp(newName+"Axis",4)),
+  freiaAxis(new attachSystem::FixedOffset(newName+"Axis",4)),
 
-  FocusA(new beamlineSystem::GuideLine(newName+"FA")),
-  BendA(new beamlineSystem::GuideLine(newName+"BA"))
+  BendA(new beamlineSystem::GuideLine(newName+"BA")),
+
+  VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
+  BendB(new beamlineSystem::GuideLine(newName+"BB")),
+
+  VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
+  BendC(new beamlineSystem::GuideLine(newName+"BC")),
+
+  ChopperA(new constructSystem::ChopperUnit(newName+"ChopperA")),
+  DDisk(new constructSystem::DiskChopper(newName+"DBlade")),
+
+  ChopperB(new constructSystem::ChopperUnit(newName+"ChopperB")),
+  WFMDisk(new constructSystem::DiskChopper(newName+"WFMBlade"))
 
  /*!
     Constructor
@@ -114,8 +125,17 @@ FREIA::FREIA(const std::string& keyName) :
   OR.cell(newName+"Axis");
   OR.addObject(freiaAxis);
 
-  OR.addObject(FocusA);
   OR.addObject(BendA);
+
+  OR.addObject(VPipeB);
+  OR.addObject(BendB);
+
+  OR.addObject(VPipeC);
+  OR.addObject(BendC);
+
+  OR.addObject(ChopperA);
+  OR.addObject(DDisk);  
+  
 
 }
 
@@ -126,7 +146,8 @@ FREIA::~FREIA()
 {}
 
 void
-FREIA::setBeamAxis(const GuideItem& GItem,
+FREIA::setBeamAxis(const FuncDataBase& Control,
+                   const GuideItem& GItem,
                    const bool reverseZ)
   /*!
     Set the primary direction object
@@ -136,6 +157,7 @@ FREIA::setBeamAxis(const GuideItem& GItem,
 {
   ELog::RegMethod RegA("FREIA","setBeamAxis");
 
+  freiaAxis->populate(Control);
   freiaAxis->createUnitVector(GItem);
   freiaAxis->setLinkCopy(0,GItem.getKey("Main"),0);
   freiaAxis->setLinkCopy(1,GItem.getKey("Main"),1);
@@ -171,19 +193,50 @@ FREIA::build(Simulation& System,
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
   ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
 	  <<ELog::endDiag;
+  setBeamAxis(Control,GItem,1);
   
-  setBeamAxis(GItem,1);
-  FocusA->addInsertCell(GItem.getCells("Void"));
-  FocusA->createAll(System,GItem.getKey("Beam"),-1,
-		    GItem.getKey("Beam"),-1);
-
   BendA->addInsertCell(GItem.getCells("Void"));
-
   BendA->addEndCut(GItem.getKey("Beam").getSignedLinkString(-2));
-  BendA->createAll(System,FocusA->getKey("Guide0"),2,
-		   FocusA->getKey("Guide0"),2);
+  BendA->createAll(System,*freiaAxis,-3,*freiaAxis,-3);
 
-  if (stopPoint==1) return;                      // STOP At monolith edge
+  if (stopPoint==1) return;                      // STOP At monolith
+                                                 // edge
+
+  VPipeB->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeB->createAll(System,BendA->getKey("Guide0"),2);
+
+  BendB->addInsertCell(VPipeB->getCells("Void"));
+  //  BendB->createAll(System,BendA->getKey("Guide0"),2,
+  //                   BendA->getKey("Guide0"),2);
+  BendB->createAll(System,*VPipeB,0,*VPipeB,0);
+  
+  VPipeC->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeC->createAll(System,BendB->getKey("Guide0"),2);
+
+  BendC->addInsertCell(VPipeC->getCells("Void"));
+  BendC->createAll(System,*VPipeC,0,*VPipeC,0);
+  
+  // First (green chopper)
+  ChopperA->addInsertCell(bunkerObj.getCell("MainVoid"));
+  ChopperA->createAll(System,BendC->getKey("Guide0"),2);
+  return;
+
+  // Double disk chopper
+  DDisk->addInsertCell(ChopperA->getCell("Void"));
+  DDisk->setCentreFlag(3);  // Z direction
+  DDisk->setOffsetFlag(1);  // Z direction
+  DDisk->createAll(System,ChopperA->getKey("Beam"),0);
+
+    // First (green chopper)
+  ChopperB->addInsertCell(bunkerObj.getCell("MainVoid"));
+  ChopperB->createAll(System,ChopperA->getKey("Beam"),2);
+
+  // Double disk chopper
+  WFMDisk->addInsertCell(ChopperA->getCell("Void"));
+  WFMDisk->setCentreFlag(3);  // Z direction
+  WFMDisk->setOffsetFlag(1);  // Z direction
+  WFMDisk->createAll(System,ChopperB->getKey("Beam"),0);
+
   return;
 }
 

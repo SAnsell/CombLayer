@@ -54,8 +54,8 @@ class ChopperUnit :
   double width;             ///< width [across]
   double depth;             ///< depth 
   double length;            ///< length [total]
-  double shortHeight;       ///< Short height
-  double shortWidth;        ///< Short width
+  double shortHeight;       ///< half corner (for diamond)
+  double shortWidth;        ///< half corner (for diamond)
   
   double mainRadius;        ///< main innner radius
   double mainThick;         ///< main inner thickness

@@ -42,9 +42,11 @@ class ChopperGenerator
   double mainZStep;        ///< Offset of centre axis [drawing 5962.2]
   double height;           ///< Full height
   double width;            ///< Full width
-  double shortWidth;       ///< ???
+  double shortWidth;       ///< corner cut width
+  double shortHeight;       ///< corner cut height
   double mainRadius;       ///< full chopper void radius
   double windowThick;      ///< window material thickness
+  double ringRadius;       ///< Radius of the rinng 
 
   std::string wallMat;     ///< Main body material
   std::string sealMat;     ///< seal material
@@ -57,13 +59,15 @@ class ChopperGenerator
   ChopperGenerator& operator=(const ChopperGenerator&);
   ~ChopperGenerator();
 
+
+  void setFrame(const double,const double);  
+  void setMainRadius(const double);
+
+
   void generateChopper(FuncDataBase&,
 		       const std::string&,
 		       const double,const double,
 		       const double);
-  
-
-  
 };
 
 }

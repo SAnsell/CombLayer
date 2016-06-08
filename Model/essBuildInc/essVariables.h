@@ -40,12 +40,13 @@ namespace setVariable
   void F5Variables(FuncDataBase&);
 
   // ESS Beamlines
-  void ODINvariables(FuncDataBase&);
-  void ESTIAvariables(FuncDataBase&);
-  void DREAMvariables(FuncDataBase&);
   void CSPECvariables(FuncDataBase&);
+  void DREAMvariables(FuncDataBase&);
+  void ESTIAvariables(FuncDataBase&);
+  void FREIAvariables(FuncDataBase&);
   void LOKIvariables(FuncDataBase&);
   void NMXvariables(FuncDataBase&);
+  void ODINvariables(FuncDataBase&);
   void VORvariables(FuncDataBase&);
   void VESPAvariables(FuncDataBase&);
 

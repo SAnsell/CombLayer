@@ -222,7 +222,7 @@ setESSSingle(defaultConfig& A,
     \param active :: Active flag
    */
 {
-  ELog::RegMethod RegA("DefUnitsESS[F]","setESS");
+  ELog::RegMethod RegA("DefUnitsESS[F]","setESSSingle");
 
   A.setOption("lowMod","Butterfly");
   const std::map<std::string,std::string> beamDef=
@@ -236,10 +236,11 @@ setESSSingle(defaultConfig& A,
      {"SIMPLE","G4BLine17"},
      {"LOKI","G4BLine17"},
      {"ODIN","G1BLine16"},   // Note reverse because on G1
-     {"ESTIA","G4BLine11"}
+     {"ESTIA","G4BLine11"},
+     {"FREIA","G4BLine15"}      // N5
     };     
   const std::set<std::string> beamFilled=
-    {"NMX","CSPEC","DREAM","VESPA","VOR","SHORTDREAM","LOKI"};
+    {"CSPEC","DREAM","FREIA","LOKI","NMX","VESPA","VOR","SHORTDREAM",};
   
   std::map<std::string,std::string>::const_iterator mc=
     beamDef.find(beamItem);

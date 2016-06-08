@@ -239,6 +239,7 @@ createInputs(inputParam& IParam)
   IParam.regFlag("fluka","FLUKA");
   IParam.regFlag("mcnp6","MCNP6");
   IParam.regFlag("Monte","Monte");
+  IParam.regItem("offset","offset",1,4);
   IParam.regDefItem<double>("photon","photon",1,0.001);
   IParam.regDefItem<double>("photonModel","photonModel",1,100.0);
   IParam.regItem("PTRAC","ptrac");
@@ -339,6 +340,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("FLUKA","FLUKA output");
   IParam.setDesc("PHITS","PHITS output");
   IParam.setDesc("Monte","MonteCarlo capable simulation");
+  IParam.setDesc("offset","Displace to component [name]");
   IParam.setDesc("photon","Photon Cut energy");
   IParam.setDesc("photonModel","Photon Model Energy [min]");
   IParam.setDesc("r","Renubmer cells");
