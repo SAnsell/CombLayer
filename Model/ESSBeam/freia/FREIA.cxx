@@ -193,12 +193,12 @@ FREIA::build(Simulation& System,
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
   ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
 	  <<ELog::endDiag;
-  setBeamAxis(Control,GItem,1);
+  setBeamAxis(Control,GItem,0);
+
   
   BendA->addInsertCell(GItem.getCells("Void"));
   BendA->addEndCut(GItem.getKey("Beam").getSignedLinkString(-2));
   BendA->createAll(System,*freiaAxis,-3,*freiaAxis,-3);
-
   if (stopPoint==1) return;                      // STOP At monolith
                                                  // edge
 
@@ -206,8 +206,6 @@ FREIA::build(Simulation& System,
   VPipeB->createAll(System,BendA->getKey("Guide0"),2);
 
   BendB->addInsertCell(VPipeB->getCells("Void"));
-  //  BendB->createAll(System,BendA->getKey("Guide0"),2,
-  //                   BendA->getKey("Guide0"),2);
   BendB->createAll(System,*VPipeB,0,*VPipeB,0);
   
   VPipeC->addInsertCell(bunkerObj.getCell("MainVoid"));
@@ -219,7 +217,6 @@ FREIA::build(Simulation& System,
   // First (green chopper)
   ChopperA->addInsertCell(bunkerObj.getCell("MainVoid"));
   ChopperA->createAll(System,BendC->getKey("Guide0"),2);
-  return;
 
   // Double disk chopper
   DDisk->addInsertCell(ChopperA->getCell("Void"));

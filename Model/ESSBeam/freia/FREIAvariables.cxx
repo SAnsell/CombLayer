@@ -71,7 +71,6 @@ generatePipe(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("FREIAvariables[F]","generatePipe");
     // VACUUM PIPES:
-  ELog::EM<<"Called Pipe"<<ELog::endDiag;
   Control.addVariable(keyName+"YStep",2.0);   // step + flange
   Control.addVariable(keyName+"Radius",radius);
   Control.addVariable(keyName+"Length",length);
@@ -126,7 +125,7 @@ FREIAvariables(FuncDataBase& Control)
 
   // Double Blade chopper
   Control.addVariable("freiaDBladeXStep",0.0);
-  Control.addVariable("freiaDBladeYStep",-2.0);
+  Control.addVariable("freiaDBladeYStep",0.0);
   Control.addVariable("freiaDBladeZStep",0.0);
   Control.addVariable("freiaDBladeXYangle",0.0);
   Control.addVariable("freiaDBladeZangle",0.0);

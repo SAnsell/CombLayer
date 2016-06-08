@@ -231,6 +231,13 @@ VESPAvariables(FuncDataBase& Control)
   ELog::RegMethod RegA("VESPAvariables[F]","VESPAvariables");
 
   setVariable::FocusGenerator FGen;
+  setVariable::ShieldGenerator SGen;
+  SGen.addWall(1,20.0,"CastIron");
+  SGen.addRoof(1,20.0,"CastIron");
+  SGen.addFloor(1,20.0,"CastIron");
+  SGen.addFloorMat(5,"Concrete");
+  SGen.addRoofMat(5,"Concrete");
+  SGen.addWallMat(5,"Concrete");
   
   // extent of beamline
   Control.addVariable("vespaStopPoint",0);
@@ -433,13 +440,6 @@ VESPAvariables(FuncDataBase& Control)
   // Guide in wall
   FGen.generateTaper(Control,"vespaFWall",308.0,9.0,9.0,8.5,8.5);
 
-  setVariable::ShieldGenerator SGen;
-  SGen.addWall(1,20.0,"CastIron");
-  SGen.addRoof(1,20.0,"CastIron");
-  SGen.addFloor(1,20.0,"CastIron");
-  SGen.addFloorMat(5,"Concrete");
-  SGen.addRoofMat(5,"Concrete");
-  SGen.addWallMat(5,"Concrete");
   SGen.generateShield(Control,"vespaShieldA",450.0,40.0,40.0,40.0,4,8);
 
   // Guide after wall [17.5m - 3.20] for wall
