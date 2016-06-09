@@ -152,16 +152,17 @@ FREIAvariables(FuncDataBase& Control)
   Control.addVariable("freiaDBlade1OpenAngle1",30.0);
 
   CGen.setMainRadius(81.0);
-  CGen.generateChopper(Control,"freiaChopperB",25.0, 52.0,40.0);
-
+  CGen.setFrame(175.0,175.0);
+  CGen.generateChopper(Control,"freiaChopperB",50.0,46.0,40.0);
+  
   // Double Blade chopper
   Control.addVariable("freiaWFMBladeXStep",0.0);
-  Control.addVariable("freiaWFMBladeYStep",-2.0);
+  Control.addVariable("freiaWFMBladeYStep",0.0);
   Control.addVariable("freiaWFMBladeZStep",0.0);
   Control.addVariable("freiaWFMBladeXYangle",0.0);
   Control.addVariable("freiaWFMBladeZangle",0.0);
 
-  Control.addVariable("freiaWFMBladeGap",36.1);
+  Control.addVariable("freiaWFMBladeGap",16.1);  // 36
   Control.addVariable("freiaWFMBladeInnerRadius",40.0);
   Control.addVariable("freiaWFMBladeOuterRadius",75.0);
   Control.addVariable("freiaWFMBladeNDisk",2);

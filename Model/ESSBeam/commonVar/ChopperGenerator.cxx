@@ -65,7 +65,6 @@ ChopperGenerator::ChopperGenerator() :
   sealMat("Poly"),windowMat("Aluminium")
   /*!
     Constructor BUT ALL variable are left unpopulated.
-    \param Key :: Name for item in search
   */
 {}
 
@@ -138,7 +137,6 @@ ChopperGenerator::setFrame(const double H,const double W)
   height=H;
   width=W;
 
-
   return;
 }
 
@@ -151,6 +149,7 @@ ChopperGenerator::generateChopper(FuncDataBase& Control,
   /*!
     Generate the chopper variables
     \param Control :: Functional data base
+    \param keyName :: Base name for chopper variables
     \param yStep :: main y-step
     \param length :: total length
     \param voidLength :: inner space length

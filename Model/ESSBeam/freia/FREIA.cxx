@@ -194,7 +194,6 @@ FREIA::build(Simulation& System,
   ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
 	  <<ELog::endDiag;
   setBeamAxis(Control,GItem,0);
-
   
   BendA->addInsertCell(GItem.getCells("Void"));
   BendA->addEndCut(GItem.getKey("Beam").getSignedLinkString(-2));
@@ -229,7 +228,7 @@ FREIA::build(Simulation& System,
   ChopperB->createAll(System,ChopperA->getKey("Beam"),2);
 
   // Double disk chopper
-  WFMDisk->addInsertCell(ChopperA->getCell("Void"));
+  WFMDisk->addInsertCell(ChopperB->getCell("Void"));
   WFMDisk->setCentreFlag(3);  // Z direction
   WFMDisk->setOffsetFlag(1);  // Z direction
   WFMDisk->createAll(System,ChopperB->getKey("Beam"),0);
