@@ -617,7 +617,7 @@ void
 Bunker::createMainWall(Simulation& System)
   /*!
     Create a tesselated main wall
-    \param System :: Simulation syst em
+    \param System :: Simulation system
   */
 {
   ELog::RegMethod RegA("Bunker","createMainWall");

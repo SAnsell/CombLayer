@@ -95,6 +95,11 @@ class FREIA : public attachSystem::CopiedComp
   /// Double disk chopper
   std::shared_ptr<constructSystem::DiskChopper> WFMDisk;
 
+  /// Pipe between chopper pairs
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeD;
+  /// Bender int monolith
+  std::shared_ptr<beamlineSystem::GuideLine> FocusD;
+
   void setBeamAxis(const FuncDataBase&,const GuideItem&,const bool);
   
  public:

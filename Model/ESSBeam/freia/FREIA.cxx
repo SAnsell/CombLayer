@@ -110,7 +110,10 @@ FREIA::FREIA(const std::string& keyName) :
   DDisk(new constructSystem::DiskChopper(newName+"DBlade")),
 
   ChopperB(new constructSystem::ChopperUnit(newName+"ChopperB")),
-  WFMDisk(new constructSystem::DiskChopper(newName+"WFMBlade"))
+  WFMDisk(new constructSystem::DiskChopper(newName+"WFMBlade")),
+
+  VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
+  FocusD(new beamlineSystem::GuideLine(newName+"FD"))
 
  /*!
     Constructor
@@ -136,6 +139,8 @@ FREIA::FREIA(const std::string& keyName) :
   OR.addObject(ChopperA);
   OR.addObject(DDisk);  
   
+  OR.addObject(VPipeD);
+  OR.addObject(FocusD);
 
 }
 
@@ -183,7 +188,6 @@ FREIA::build(Simulation& System,
     \param voidCell :: Void cell
    */
 {
-  // For output stream
   ELog::RegMethod RegA("FREIA","build");
 
   ELog::EM<<"\nBuilding FREIA on : "<<GItem.getKeyName()<<ELog::endDiag;
@@ -233,6 +237,13 @@ FREIA::build(Simulation& System,
   WFMDisk->setOffsetFlag(1);  // Z direction
   WFMDisk->createAll(System,ChopperB->getKey("Beam"),0);
 
+  VPipeD->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeD->createAll(System,ChopperB->getKey("Beam"),2);
+
+  FocusD->addInsertCell(VPipeD->getCells("Void"));
+  FocusD->createAll(System,*VPipeD,0,*VPipeD,0);
+
+  
   return;
 }
 

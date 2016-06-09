@@ -183,6 +183,9 @@ FREIAvariables(FuncDataBase& Control)
   Control.addVariable("freiaWFMBlade1PhaseAngle1",275.0);
   Control.addVariable("freiaWFMBlade1OpenAngle1",30.0);
 
+  generatePipe(Control,"freiaPipeD",200.0,12.0);
+  FGen.generateTaper(Control,"freiaFD",196.0, 4.0,4.0,
+                     10.0,3.0);
   
   return;
 }
