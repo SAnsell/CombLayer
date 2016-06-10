@@ -3,7 +3,7 @@
  
  * File:   construct/RotaryCollimator.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -339,7 +339,7 @@ RotaryCollimator::createLinks()
 }
   
 void 
-RotaryCollimator::layerProcess(Simulation& System)
+RotaryCollimator::layerProcess(Simulation&)
   /*!
     Processes the splitting of the surfaces into a multilayer system
     This has to deal with the three layers that invade cells:

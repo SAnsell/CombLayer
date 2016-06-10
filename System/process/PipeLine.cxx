@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   process/PipeLine.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -174,7 +174,8 @@ PipeLine::addPoint(const Geometry::Vec3D& newPt)
           // This is to test if the axis reverses on itself
 	  if (AAxis.dotProd(BAxis)>1.0-Geometry::zeroTol)
 	    {
-	      ELog::EM<<"Points reversed at index "<<Index<<ELog::endCrit;
+	      ELog::EM<<"["<<keyName<<"] Points reversed at index "
+		      <<Index<<ELog::endCrit;
 	      ELog::EM<<"PtA "<<Pts[Index-2]<<ELog::endCrit;
 	      ELog::EM<<"PtB "<<Pts[Index-1]<<ELog::endCrit;
 	      ELog::EM<<"PtNew "<<newPt<<ELog::endErr;
@@ -463,7 +464,7 @@ PipeLine::setStartSurf(const std::string& startS)
   /*!
     Simple setter for start surf
     \param startS :: Start surface
-   */
+  */
 {
   ELog::RegMethod RegA("PipeLine","setStartSurf");
 
@@ -474,7 +475,7 @@ PipeLine::setStartSurf(const std::string& startS)
 void
 PipeLine::createAll(Simulation& System)
   /*!
-    Global creation of the hutch
+    Global creation of pipe
     \param System :: Simulation to add vessel to
   */
 {

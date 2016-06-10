@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1Build/WaterPipe.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -85,6 +85,7 @@ WaterPipe::WaterPipe(const std::string& Key)  :
     \param Key :: Name for item in search
   */
 {}
+  
 WaterPipe::WaterPipe(const WaterPipe& A) : 
   attachSystem::FixedComp(A),
   pipeIndex(A.pipeIndex),cellIndex(A.cellIndex),
@@ -139,15 +140,13 @@ WaterPipe::~WaterPipe()
 {}
 
 void
-WaterPipe::populate(const Simulation& System)
+WaterPipe::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: DataBase to use
   */
 {
   ELog::RegMethod RegA("WaterPipe","populate");
-  
-  const FuncDataBase& Control=System.getDataBase();
   
   const std::string iKey(keyName+"In");
   const std::string oKey(keyName+"Out");
@@ -170,14 +169,13 @@ WaterPipe::populate(const Simulation& System)
   watMat=ModelSupport::EvalMat<int>(Control,keyName+"WaterMat"); 
   steelMat=ModelSupport::EvalMat<int>(Control,keyName+"SteelMat"); 
 
-
   return;
 }
   
 
 void
 WaterPipe::createUnitVector(const attachSystem::FixedComp& CUnit,
-			     const size_t sideIndex)
+			    const long int sideIndex)
   /*!
     Create the unit vectors
     - X Across the moderator
@@ -189,15 +187,13 @@ WaterPipe::createUnitVector(const attachSystem::FixedComp& CUnit,
   ELog::RegMethod RegA("WaterPipe","createUnitVector");
 
   FixedComp::createUnitVector(CUnit);
-  Origin=CUnit.getLinkPt(sideIndex);
-  //  Z=CUnit.getLinkAxis(sideIndex);
+  Origin=CUnit.getSignedLinkPt(sideIndex);
 
   return;
 }
 
 void 
-WaterPipe::insertPipes(Simulation& System)
-		       
+WaterPipe::insertPipes(Simulation& System)		       
   /*!
     Add a pipe to the water systems
     \param System :: Simulation to add pipe to
@@ -208,7 +204,6 @@ WaterPipe::insertPipes(Simulation& System)
   // Inner Points
   Inlet.addPoint(Origin+X*iXStep+Y*iYStep);
   Inlet.addPoint(Origin+X*iXStep+Y*iYStep+Z*ifullLen);
-
   // Outer Points
   Outlet.addPoint(Origin+X*oXStep+Y*oYStep);
   Outlet.addPoint(Origin+X*oXStep+Y*oYStep+Z*ofullLen);
@@ -232,12 +227,12 @@ WaterPipe::insertPipes(Simulation& System)
 void
 WaterPipe::createAll(Simulation& System,
 		     const attachSystem::FixedComp& FUnit,
-		     const size_t sideIndex)
+		     const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation to create objects in
     \param FUnit :: Fixed Base unit
-    \param sideIndex :: FixUnit
+    \param sideIndex :: Side index [signed]
   */
 {
   ELog::RegMethod RegA("WaterPipe","createAll");
@@ -245,7 +240,7 @@ WaterPipe::createAll(Simulation& System,
   System.populateCells();
   System.validateObjSurfMap();
 
-  populate(System);
+  populate(System.getDataBase());
   createUnitVector(FUnit,sideIndex);
   insertPipes(System);
   

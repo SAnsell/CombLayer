@@ -137,16 +137,13 @@ SupplyPipe::~SupplyPipe()
 {}
 
 void
-SupplyPipe::populate(const Simulation& System)
+SupplyPipe::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param System :: Simulation to use
   */
 {
   ELog::RegMethod RegA("SupplyPipe","populate");
-  
-  const FuncDataBase& Control=System.getDataBase();
-  
   
   std::string numStr;
   NSegIn=Control.EvalPair<size_t>(optName+"NSegIn",keyName+"NSegIn");
@@ -181,7 +178,7 @@ SupplyPipe::populate(const Simulation& System)
 
 void
 SupplyPipe::createUnitVector(const attachSystem::FixedComp& FC,
-			     const size_t  layerIndex,
+			     const size_t layerIndex,
 			     const long int sideIndex)
   /*!
     Create the unit vectors
@@ -198,11 +195,15 @@ SupplyPipe::createUnitVector(const attachSystem::FixedComp& FC,
   const size_t SI((sideIndex>0) ?
 		  static_cast<size_t>(sideIndex-1) :
 		  static_cast<size_t>(-sideIndex-1));
-  if (LC && sideIndex)
+  if (LC)
     {
       Origin=LC->getSurfacePoint(layerIndex,sideIndex);
-      FC.selectAltAxis(SI,X,Y,Z);
+      if (sideIndex) FC.selectAltAxis(SI,X,Y,Z);
     }
+  else
+    throw ColErr::DynamicConv("FixedComp","LayerComp","FC:"+FC.getKeyName());
+
+      
   ELog::EM<<"Side ="<<sideIndex<<" X == "<<X<<ELog::endDebug;
   ELog::EM<<"Y ="<<Y<<" Z == "<<Z<<ELog::endDebug;
   ELog::EM<<"Origin = "<<Origin<<ELog::endDebug;
@@ -261,7 +262,7 @@ SupplyPipe::insertInlet(const attachSystem::FixedComp& FC,
   if (PtZ!=Pt)
     Coaxial.addPoint(Pt);
   
-  const size_t NL(LC->getNLayers(lSideIndex));
+  const size_t NL(LC->getNLayers(SI));
 
   // First find start point in layer set: [avoid inner layer]
   Coaxial.addSurfPoint
@@ -279,14 +280,14 @@ SupplyPipe::insertInlet(const attachSystem::FixedComp& FC,
       PtZ=LC->getSurfacePoint(lIndex,lSideIndex);
       PtZ+=layerOffset;
       Coaxial.addSurfPoint
-	(PtZ,LC->getLayerString(lIndex,lSideIndex),commonStr);
+	(PtZ,LC->getLayerString(lIndex,SI),commonStr);
     }
   return;
 }
 
 void
 SupplyPipe::addExtraLayer(const attachSystem::LayerComp& LC,
-			  const size_t lSideIndex)
+			  const long int lSideIndex)
   /*!
     Add extra Layer for a pre-mod or such
     \param LC :: LayerComp Point [pre-mod for example]
@@ -294,18 +295,24 @@ SupplyPipe::addExtraLayer(const attachSystem::LayerComp& LC,
    */
 {
   ELog::RegMethod RegA("SupplyPipe","addExtraLayer");
+
   
-  const int commonSurf=LC.getCommonSurf(lSideIndex);
-  const size_t NL(LC.getNLayers(lSideIndex));
-
-  const std::string commonStr=(commonSurf) ? 		       
-    StrFunc::makeString(commonSurf) : "";
-  const Geometry::Vec3D PtZ=
-    LC.getSurfacePoint(NL-1,lSideIndex)+
-    layerOffset;
-  Coaxial.addSurfPoint
-    (PtZ,LC.getLayerString(NL-1,lSideIndex),commonStr);
-
+  const size_t SI((lSideIndex>0) ?
+                  static_cast<size_t>(lSideIndex-1) :
+                  static_cast<size_t>(-1-lSideIndex));
+  
+  const int commonSurf=LC.getCommonSurf(SI);
+  const size_t NL(LC.getNLayers(SI));
+  if (NL)
+    {
+      const std::string commonStr=(commonSurf) ? 		       
+	StrFunc::makeString(commonSurf) : "";
+      const Geometry::Vec3D PtZ=
+	LC.getSurfacePoint(NL-1,lSideIndex)+
+	layerOffset;
+      Coaxial.addSurfPoint
+	(PtZ,LC.getLayerString(NL-1,SI),commonStr);
+    }
   return;
 }
 
@@ -399,7 +406,7 @@ SupplyPipe::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("SupplyPipe","createAll");
-  populate(System);
+  populate(System.getDataBase());
 
   createUnitVector(FC,sideIndex);
   addOuterPoints();
@@ -429,9 +436,11 @@ SupplyPipe::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("SupplyPipe","createAll");
-  populate(System);
-
+  populate(System.getDataBase());
+  return;
   createUnitVector(FC,orgLayerIndex,orgSideIndex);
+  ELog::EM<<"Origin == "<<Origin<<ELog::endDiag;
+  ELog::EM<<"Z == "<<Z<<ELog::endDiag;
   insertInlet(FC,exitSideIndex);
   addOuterPoints();
   setActive();
@@ -449,15 +458,15 @@ void
 SupplyPipe::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,
 		      const size_t orgLayerIndex,
-		      const size_t orgSideIndex,
-		      const size_t exitSideIndex,
+		      const long int orgSideIndex,
+		      const long int exitSideIndex,
 		      const attachSystem::LayerComp& LC,
-		      const size_t extraSide)
+		      const long int extraSide)
   /*!
     Generic function to create everything
     \param System :: Simulation to create objects in
     \param FC :: Fixed Base unit
-    \param orgLayerIndex :: Link point for origin  [0 for origin]
+    \param orgLayerIndex :: Surface Layer for 
     \param orgSideIndex :: Link point for X,Y,Z axis [0 for origin]
     \param exitSideIndex :: layer to pass pipe out via
     \param ExtraLC :: Point to extra Layer Object if exist [pre-mod]
@@ -465,14 +474,11 @@ SupplyPipe::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("SupplyPipe","createAll<LC>");
-  populate(System);
-
-  createUnitVector(FC,orgLayerIndex,
-                   static_cast<long int>(orgSideIndex));
-  const long int exitLongSideIndex=
-    static_cast<long int>(exitSideIndex);
+  populate(System.getDataBase());
+  
+  createUnitVector(FC,orgLayerIndex,orgSideIndex);
       
-  insertInlet(FC,exitLongSideIndex);
+  insertInlet(FC,exitSideIndex);
   addExtraLayer(LC,extraSide);
   addOuterPoints();
   setActive();

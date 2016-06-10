@@ -369,7 +369,7 @@ makeESS::buildLowerPipe(Simulation& System,
     \param pipeType :: pipeType 
   */
 {
-  ELog::RegMethod RegA("makeESS","processLowPipe");
+  ELog::RegMethod RegA("makeESS","buildLowerPipe");
   
   if (pipeType=="help")
     {
@@ -384,8 +384,8 @@ makeESS::buildLowerPipe(Simulation& System,
     {
       LowSupplyPipe->setOption("Top");
       LowReturnPipe->setOption("Top");
-      LowSupplyPipe->createAll(System,*LowMod,0,6,4,*LowPre,2);
-      LowReturnPipe->createAll(System,*LowMod,0,5,4,*LowPre,2);
+      LowSupplyPipe->createAll(System,*LowMod,0,6,5,*LowPre,3);
+      LowReturnPipe->createAll(System,*LowMod,0,5,5,*LowPre,3);
     }
   else
     {
@@ -748,7 +748,6 @@ makeESS::build(Simulation& System,
 				    PBeam->getCC("Full"));
 
   makeBeamLine(System,IParam);
-
   buildF5Collimator(System, nF5);
   return;
 }

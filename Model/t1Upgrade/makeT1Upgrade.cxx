@@ -557,7 +557,6 @@ makeT1Upgrade::buildWaterPipe(Simulation& System,
     {
       WaterPipeObj->setWallOffset(1);
       WaterPipeObj->createAll(System,*TriMod,0,2,1);  
-      
       WaterReturnObj->setWallOffset(1);
       WaterReturnObj->createAll(System,*TriMod,0,2,1);  
     }

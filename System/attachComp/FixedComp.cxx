@@ -1151,6 +1151,7 @@ FixedComp::selectAltAxis(const size_t Index,Geometry::Vec3D& XOut,
     From a given index find the optimal X,Y,Z axis to use for the
     output: YOut is compared with beam to find closes axis.
     \param Index :: Link surface to use
+ 
     \param XOut :: X axis
     \param YOut :: Y axis [ beam ]
     \param ZOut :: Z axis 

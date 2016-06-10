@@ -394,7 +394,7 @@ BlockMod::getSurfacePoint(const size_t layerIndex,
     case 5:
       return Origin+Z*(height[layerIndex]/2.0);
     }
-  throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
+  throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex ");
 }
 
 int
