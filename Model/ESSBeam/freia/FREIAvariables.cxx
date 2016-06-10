@@ -190,28 +190,28 @@ FREIAvariables(FuncDataBase& Control)
   CGen.setFrame(175.0,175.0);
   CGen.generateChopper(Control,"freiaChopperC",12.0,12.0,8.0);
 
-  // Double Blade chopper
-  Control.addVariable("freiaWFMBladeXStep",0.0);
-  Control.addVariable("freiaWFMBladeYStep",0.0);
-  Control.addVariable("freiaWFMBladeZStep",0.0);
-  Control.addVariable("freiaWFMBladeXYangle",0.0);
-  Control.addVariable("freiaWFMBladeZangle",0.0);
+  // FOC chopper
+  Control.addVariable("freiaFOC1BladeXStep",0.0);
+  Control.addVariable("freiaFOC1BladeYStep",0.0);
+  Control.addVariable("freiaFOC1BladeZStep",0.0);
+  Control.addVariable("freiaFOC1BladeXYangle",0.0);
+  Control.addVariable("freiaFOC1BladeZangle",0.0);
 
-  Control.addVariable("freiaWFMBladeGap",36.1);  // 36
-  Control.addVariable("freiaWFMBladeInnerRadius",40.0);
-  Control.addVariable("freiaWFMBladeOuterRadius",75.0);
-  Control.addVariable("freiaWFMBladeNDisk",2);
+  Control.addVariable("freiaFOC1BladeGap",36.1);  // 36
+  Control.addVariable("freiaFOC1BladeInnerRadius",40.0);
+  Control.addVariable("freiaFOC1BladeOuterRadius",75.0);
+  Control.addVariable("freiaFOC1BladeNDisk",1);
 
-  Control.addVariable("freiaWFMBlade0Thick",0.2);
-  Control.addVariable("freiaWFMBlade1Thick",0.2);
-  Control.addVariable("freiaWFMBladeInnerMat","Inconnel");
-  Control.addVariable("freiaWFMBladeOuterMat","B4C");
+  Control.addVariable("freiaFOC1Blade0Thick",0.2);
+  Control.addVariable("freiaFOC1Blade1Thick",0.2);
+  Control.addVariable("freiaFOC1BladeInnerMat","Inconnel");
+  Control.addVariable("freiaFOC1BladeOuterMat","B4C");
   
-  Control.addVariable("freiaWFMBladeNBlades",1);
-  Control.addVariable("freiaWFMBlade0PhaseAngle0",95.0);
-  Control.addVariable("freiaWFMBlade0OpenAngle0",30.0);
-  Control.addVariable("freiaWFMBlade0PhaseAngle1",275.0);
-  Control.addVariable("freiaWFMBlade0OpenAngle1",30.0);
+  Control.addVariable("freiaFOC1BladeNBlades",2);
+  Control.addVariable("freiaFOC1Blade0PhaseAngle0",95.0);
+  Control.addVariable("freiaFOC1Blade0OpenAngle0",30.0);
+  Control.addVariable("freiaFOC1Blade0PhaseAngle1",275.0);
+  Control.addVariable("freiaFOC1Blade0OpenAngle1",30.0);
 
   return;
 }

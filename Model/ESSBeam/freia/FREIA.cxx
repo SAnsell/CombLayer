@@ -116,7 +116,7 @@ FREIA::FREIA(const std::string& keyName) :
   FocusD(new beamlineSystem::GuideLine(newName+"FD")),
 
   ChopperC(new constructSystem::ChopperUnit(newName+"ChopperC")),
-  FOCDiskC(new constructSystem::DiskChopper(newName+"FOC1BladeC"))
+  FOCDiskC(new constructSystem::DiskChopper(newName+"FOC1Blade"))
 
  /*!
     Constructor
@@ -255,6 +255,11 @@ FREIA::build(Simulation& System,
   // 8.5m FOC chopper
   ChopperC->addInsertCell(bunkerObj.getCell("MainVoid"));
   ChopperC->createAll(System,FocusD->getKey("Guide0"),2);
+  // Double disk chopper
+  FOCDiskC->addInsertCell(ChopperC->getCell("Void"));
+  FOCDiskC->setCentreFlag(3);  // Z direction
+  FOCDiskC->setOffsetFlag(1);  // Z direction
+  FOCDiskC->createAll(System,ChopperC->getKey("Beam"),0);
 
   
   return;
