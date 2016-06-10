@@ -186,7 +186,33 @@ FREIAvariables(FuncDataBase& Control)
   FGen.generateBender(Control,"freiaFD",136.0,4.0,4.0,20.0,16.0,
                       7000.0,180.0);
 
+  CGen.setMainRadius(81.0);
+  CGen.setFrame(175.0,175.0);
+  CGen.generateChopper(Control,"freiaChopperC",12.0,12.0,8.0);
+
+  // Double Blade chopper
+  Control.addVariable("freiaWFMBladeXStep",0.0);
+  Control.addVariable("freiaWFMBladeYStep",0.0);
+  Control.addVariable("freiaWFMBladeZStep",0.0);
+  Control.addVariable("freiaWFMBladeXYangle",0.0);
+  Control.addVariable("freiaWFMBladeZangle",0.0);
+
+  Control.addVariable("freiaWFMBladeGap",36.1);  // 36
+  Control.addVariable("freiaWFMBladeInnerRadius",40.0);
+  Control.addVariable("freiaWFMBladeOuterRadius",75.0);
+  Control.addVariable("freiaWFMBladeNDisk",2);
+
+  Control.addVariable("freiaWFMBlade0Thick",0.2);
+  Control.addVariable("freiaWFMBlade1Thick",0.2);
+  Control.addVariable("freiaWFMBladeInnerMat","Inconnel");
+  Control.addVariable("freiaWFMBladeOuterMat","B4C");
   
+  Control.addVariable("freiaWFMBladeNBlades",1);
+  Control.addVariable("freiaWFMBlade0PhaseAngle0",95.0);
+  Control.addVariable("freiaWFMBlade0OpenAngle0",30.0);
+  Control.addVariable("freiaWFMBlade0PhaseAngle1",275.0);
+  Control.addVariable("freiaWFMBlade0OpenAngle1",30.0);
+
   return;
 }
  
