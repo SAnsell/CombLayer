@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1Build/CH4Pipe.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -180,7 +180,7 @@ CH4Pipe::populate(const Simulation& System)
 
 void
 CH4Pipe::createUnitVector(const attachSystem::FixedComp& CUnit,
-			     const size_t sideIndex)
+                          const long int sideIndex)
   /*!
     Create the unit vectors
     - X Across the moderator
@@ -192,14 +192,15 @@ CH4Pipe::createUnitVector(const attachSystem::FixedComp& CUnit,
   ELog::RegMethod RegA("CH4Pipe","createUnitVector");
 
   FixedComp::createUnitVector(CUnit);
-  Origin=CUnit.getLinkPt(sideIndex);
+  Origin=CUnit.getSignedLinkPt(sideIndex);
 
   return;
 }
 
 void 
-CH4Pipe::insertOuter(Simulation& System,const attachSystem::FixedComp& FC,
-		    const size_t sideIndex)
+CH4Pipe::insertOuter(Simulation& System,
+                     const attachSystem::FixedComp& FC,
+                     const long int sideIndex)
   /*!
     Add a pipe to the hydrogen system:
     \param System :: Simulation to add pipe to
@@ -250,12 +251,12 @@ CH4Pipe::insertOuter(Simulation& System,const attachSystem::FixedComp& FC,
 void
 CH4Pipe::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FUnit,
-		      const size_t sideIndex)
+		      const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation to create objects in
     \param FUnit :: Fixed Base unit
-    \param sideIndex :: FixUnit
+    \param sideIndex :: side for pipe creation
   */
 {
   ELog::RegMethod RegA("CH4Pipe","createAll");

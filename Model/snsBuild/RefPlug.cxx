@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   snsBuild/RefPlug.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -295,23 +295,26 @@ RefPlug::createLinks()
 
 Geometry::Vec3D
 RefPlug::getSurfacePoint(const size_t layerIndex,
-			      const size_t sideIndex) const
+                         const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link point
-    \param sideIndex :: Side [0-5]
     \param layerIndex :: layer, 0 is inner moderator [0-6]
+    \param sideIndex :: Side [0-6]
     \return Surface point
   */
 {
   ELog::RegMethod RegA("RefPlug","getSurfacePoint");
 
-  if (sideIndex>5) 
-    throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
+  if (!sideIndex) return Origin;
   if (layerIndex>=nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
 
+  const size_t SI((sideIndex>0) ?
+                  static_cast<size_t>(sideIndex-1) :
+                  static_cast<size_t>(-1-sideIndex));
+
   // Modification map:
-  switch(sideIndex)
+  switch(SI)
     {
     case 0:
       return Origin-Y*radius[layerIndex];
@@ -326,7 +329,7 @@ RefPlug::getSurfacePoint(const size_t layerIndex,
     case 5:
       return Origin+Z*height;
     }
-  throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
+  throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
 }
 
 std::string

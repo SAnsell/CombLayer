@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1Upgrade/CylPreSimple.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -418,7 +418,7 @@ CylPreSimple::createLinks()
 
 Geometry::Vec3D
 CylPreSimple::getSurfacePoint(const size_t layerIndex,
-			   const size_t sideIndex) const
+                              const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link point
     \param sideIndex :: Side [0-5]
@@ -428,12 +428,16 @@ CylPreSimple::getSurfacePoint(const size_t layerIndex,
 {
   ELog::RegMethod RegA("CylPreSimple","getSurfacePoint");
 
+  const size_t SI((sideIndex>0) ?
+                  static_cast<size_t>(sideIndex-1) :
+                  static_cast<size_t>(-1-sideIndex));
+  
   if (layerIndex>nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
 
   if (layerIndex>0)
     {
-      switch(sideIndex)
+      switch(SI)
 	{
 	case 0:
 	  return Origin-Y*(radius[layerIndex-1]);
@@ -451,7 +455,7 @@ CylPreSimple::getSurfacePoint(const size_t layerIndex,
     }
   else
     {
-      switch(sideIndex)
+      switch(SI)
 	{
 	case 0:
 	  return Origin-Y*innerRadius;
@@ -468,7 +472,7 @@ CylPreSimple::getSurfacePoint(const size_t layerIndex,
 
 	}
     }
-  throw ColErr::IndexError<size_t>(sideIndex,6,"sideIndex ");
+  throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex ");
 }
 
 

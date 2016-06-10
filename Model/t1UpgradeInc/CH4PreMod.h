@@ -79,7 +79,7 @@ class CH4PreMod : public CH4PreModBase
 
   virtual size_t getNLayers(const size_t) const;
   virtual Geometry::Vec3D 
-    getSurfacePoint(const size_t,const size_t) const;
+    getSurfacePoint(const size_t,const long int) const;
   virtual int 
     getLayerSurf(const size_t,const size_t) const;
   virtual std::string 

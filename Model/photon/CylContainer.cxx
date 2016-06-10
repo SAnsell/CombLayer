@@ -3,7 +3,7 @@
  
  * File:   photon/CylContainer.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -287,7 +287,7 @@ CylContainer::createLinks()
 
 Geometry::Vec3D
 CylContainer::getSurfacePoint(const size_t layerIndex,
-			const size_t sideIndex) const
+                              const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link point
     \param sideIndex :: Side [0-5]
@@ -297,13 +297,16 @@ CylContainer::getSurfacePoint(const size_t layerIndex,
 {
   ELog::RegMethod RegA("CylContainer","getSurfacePoint");
 
-  if (sideIndex>5) 
-    throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
+  if (!sideIndex) return Origin;
+  const size_t SI((sideIndex>0) ?
+                  static_cast<size_t>(sideIndex-1) :
+                  static_cast<size_t>(-1-sideIndex));
+
   if (layerIndex>=nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
 
   // Modification map:
-  switch(sideIndex)
+  switch(SI)
     {
     case 0:
       return Origin-Y*(height[layerIndex]/2.0);
@@ -318,7 +321,7 @@ CylContainer::getSurfacePoint(const size_t layerIndex,
     case 5:
       return Origin+Z*radius[layerIndex];
     }
-  throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
+  throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex ");
 }
 
 int

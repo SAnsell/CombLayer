@@ -3,7 +3,7 @@
  
  * File:   constructInc/BlockMod.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -76,7 +76,7 @@ class BlockMod : public constructSystem::ModBase
   /// Accessor to the main H2 body
   virtual int getMainBody() const { return modIndex+1; }
 
-  virtual Geometry::Vec3D getSurfacePoint(const size_t,const size_t) const;
+  virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
   virtual int getLayerSurf(const size_t,const size_t) const;
   virtual int getCommonSurf(const size_t) const;
   virtual std::string getLayerString(const size_t,const size_t) const;

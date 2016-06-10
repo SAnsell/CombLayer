@@ -447,7 +447,7 @@ MidWaterDivider::cutOuterWing(Simulation& System,
   
 Geometry::Vec3D
 MidWaterDivider::getSurfacePoint(const size_t,
-			const size_t) const
+			const long int) const
   /*!
     Given a side and a layer calculate the link point
     \param layerIndex :: layer, 0 is inner moderator [0-6]
@@ -460,8 +460,8 @@ MidWaterDivider::getSurfacePoint(const size_t,
 }
 
 int
-MidWaterDivider::getLayerSurf(const size_t layerIndex,
-		     const size_t sideIndex) const
+MidWaterDivider::getLayerSurf(const size_t,
+                              const size_t) const
   /*!
     Given a side and a layer calculate the link point
     \param layerIndex :: layer, 0 is inner moderator [0-3]
@@ -474,8 +474,8 @@ MidWaterDivider::getLayerSurf(const size_t layerIndex,
 }
 
 std::string
-MidWaterDivider::getLayerString(const size_t layerIndex,
-		       const size_t sideIndex) const
+MidWaterDivider::getLayerString(const size_t,
+                                const size_t) const
   /*!
     Given a side and a layer calculate the link point
     \param layerIndex :: layer, 0 is inner moderator [0-6]
@@ -484,8 +484,7 @@ MidWaterDivider::getLayerString(const size_t layerIndex,
   */
 {
   ELog::RegMethod RegA("MidWaterDivider","getLayerString");
-
-  throw ColErr::IndexError<size_t>(sideIndex,12,"sideIndex");
+  throw ColErr::AbsObjMethod("Not implemented yet");
 }
 
 

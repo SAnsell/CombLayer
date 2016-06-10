@@ -263,7 +263,7 @@ ButterflyModerator::getLayerString(const size_t,const size_t) const
 
 Geometry::Vec3D
 ButterflyModerator::getSurfacePoint(const size_t,
-				    const size_t) const
+				    const long int) const
   /*!
     Given a side and a layer calculate the link point
     \param layerIndex :: layer, 0 is inner moderator [0-6]

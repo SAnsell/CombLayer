@@ -68,7 +68,7 @@ class MerlinModerator : public attachSystem::ContainedComp,
   int mainCell;                      ///< Main water cell
 
   void applyModification();
-  Geometry::Vec3D getSurfacePoint(const size_t,const size_t) const;
+  Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
 

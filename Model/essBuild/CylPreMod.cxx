@@ -3,7 +3,7 @@
  
  * File:   essBuild/CylPreMod.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -508,7 +508,7 @@ CylPreMod::createLinks()
 
 Geometry::Vec3D
 CylPreMod::getSurfacePoint(const size_t layerIndex,
-			   const size_t sideIndex) const
+			   const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link point
     \param sideIndex :: Side [0-5]
@@ -521,9 +521,14 @@ CylPreMod::getSurfacePoint(const size_t layerIndex,
   if (layerIndex>nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
 
+  if (!sideIndex) return Origin;
+  const size_t SI((sideIndex>0) ?
+                  static_cast<size_t>(sideIndex-1) :
+                  static_cast<size_t>(-1-sideIndex));
+
   if (layerIndex>0)
     {
-      switch(sideIndex)
+      switch(SI)
 	{
 	case 0:
 	  return Origin-Y*(radius[layerIndex-1]);
@@ -541,7 +546,7 @@ CylPreMod::getSurfacePoint(const size_t layerIndex,
     }
   else
     {
-      switch(sideIndex)
+      switch(SI)
 	{
 	case 0:
 	  return Origin-Y*innerRadius;
@@ -555,10 +560,9 @@ CylPreMod::getSurfacePoint(const size_t layerIndex,
 	  return Origin-X*innerRadius;
 	case 5:
 	  return Origin+X*innerRadius;
-
 	}
     }
-  throw ColErr::IndexError<size_t>(sideIndex,6,"sideIndex ");
+  throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex ");
 }
 
 

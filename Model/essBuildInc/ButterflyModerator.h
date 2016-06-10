@@ -74,7 +74,7 @@ class ButterflyModerator :
   virtual ButterflyModerator* clone() const;
   virtual ~ButterflyModerator();
   
-  virtual Geometry::Vec3D getSurfacePoint(const size_t,const size_t) const;
+  virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
   virtual int getLayerSurf(const size_t,const size_t) const;
   virtual std::string getLayerString(const size_t,const size_t) const;
   virtual int getCommonSurf(const size_t) const;

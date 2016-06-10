@@ -3,7 +3,7 @@
  
  * File:   essBuild/EdgeWater.cxx 
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -260,7 +260,7 @@ EdgeWater::createObjects(Simulation& System,
   
 Geometry::Vec3D
 EdgeWater::getSurfacePoint(const size_t,
-			const size_t) const
+			const long int) const
   /*!
     Given a side and a layer calculate the link point
     \param layerIndex :: layer, 0 is inner moderator [0-6]

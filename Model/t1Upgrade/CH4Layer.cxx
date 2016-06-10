@@ -3,7 +3,7 @@
  
  * File:   t1Upgrade/CH4Layer.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -473,7 +473,7 @@ CH4Layer::createObjects(Simulation& System)
 
 Geometry::Vec3D
 CH4Layer::getSurfacePoint(const size_t layerIndex,
-			  const size_t sideIndex) const
+			  const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link point
     \param sideIndex :: Side [0-5]
@@ -483,13 +483,17 @@ CH4Layer::getSurfacePoint(const size_t layerIndex,
 {
   ELog::RegMethod RegA("CH4Layer","getSurfacePoint");
 
-  if (sideIndex>5) 
-    throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
+  const size_t SI((sideIndex>0) ?
+                  static_cast<size_t>(sideIndex-1) :
+                  static_cast<size_t>(-1-sideIndex));
+
+  if (SI>5) 
+    throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex ");
   if (layerIndex>=LVec.size()) 
     throw ColErr::IndexError<size_t>(layerIndex,LVec.size(),"layerIndex");
 
   const Geometry::Vec3D XYZ[6]={-Y,Y,-X,X,-Z,Z};
-  return Origin+XYZ[sideIndex]*LVec[layerIndex].Item(sideIndex);
+  return Origin+XYZ[SI]*LVec[layerIndex].Item(SI);
 }
 
 std::string

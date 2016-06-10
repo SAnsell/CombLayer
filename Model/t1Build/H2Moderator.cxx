@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1Build/H2Moderator.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -361,13 +361,12 @@ H2Moderator::createLinks()
   ELog::RegMethod RegA("H2Moderator","createLinks");
 
   // set Links:
-  FixedComp::setConnect(0,getSurfacePoint(5,0),-Y);
-  FixedComp::setConnect(1,getSurfacePoint(5,1),Y);
-  FixedComp::setConnect(2,getSurfacePoint(5,2),-X);
-  FixedComp::setConnect(3,getSurfacePoint(5,3),X);
-  ELog::EM<<"H2 Point == "<<getSurfacePoint(5,4)<<ELog::endDebug;
-  FixedComp::setConnect(4,getSurfacePoint(5,4),-Z);
-  FixedComp::setConnect(5,getSurfacePoint(5,5),Z);
+  FixedComp::setConnect(0,getSurfacePoint(0,6),-Y);
+  FixedComp::setConnect(1,getSurfacePoint(1,6),Y);
+  FixedComp::setConnect(2,getSurfacePoint(2,6),-X);
+  FixedComp::setConnect(3,getSurfacePoint(3,6),X);
+  FixedComp::setConnect(4,getSurfacePoint(4,6),-Z);
+  FixedComp::setConnect(5,getSurfacePoint(5,6),Z);
 
   FixedComp::setLinkSurf(0,-SMap.realSurf(h2Index+61));
   FixedComp::setLinkSurf(1,SMap.realSurf(h2Index+62));
@@ -381,18 +380,21 @@ H2Moderator::createLinks()
 
 Geometry::Vec3D
 H2Moderator::getSurfacePoint(const size_t layerIndex,
-			     const size_t sideIndex) const
+			     const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link point
-    \param sideIndex :: Side [0-5]
     \param layerIndex :: layer, 0 is inner moderator [0-6]
+    \param sideIndex :: Side [0-6]
+    
     \return Surface point
   */
 {
   ELog::RegMethod RegA("H2Moderator","getSurfacePoint");
-
-  if (sideIndex>5) 
-    throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
+  if (!sideIndex) return Origin;
+  const size_t SI((sideIndex>0) ?
+                  static_cast<size_t>(sideIndex-1) :
+                  static_cast<size_t>(-1-sideIndex));
+    
   if (layerIndex>=nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
 
@@ -403,11 +405,11 @@ H2Moderator::getSurfacePoint(const size_t layerIndex,
   double T(0.0);
   for(size_t i=0;i<layerIndex;i++)
     {
-      mc=modLayer.find(i*10+sideIndex+1);
+      mc=modLayer.find(i*10+SI+1);
       T+=(mc!=modLayer.end()) ? mc->second : layer[i];
     }
 
-  switch(sideIndex)
+  switch(SI)
     {
     case 0:
       return Origin-Y*(depth/2.0+T);
@@ -422,7 +424,7 @@ H2Moderator::getSurfacePoint(const size_t layerIndex,
     case 5:
       return Origin+Z*(height/2.0+T);
     }
-  throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
+  throw ColErr::IndexError<long int>(sideIndex,5,"sideIndex ");
 }
 
 std::string

@@ -3,7 +3,7 @@
  
  * File:   t1Upgrade/InnerLayer.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -276,7 +276,7 @@ InnerLayer::createObjects(Simulation& System)
 
 Geometry::Vec3D
 InnerLayer::getSurfacePoint(const size_t layerIndex,
-			    const size_t sideIndex) const
+			    const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link point
     \param sideIndex :: Side [0-5]

@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/EdgeWater.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,7 +69,7 @@ class EdgeWater :
   virtual EdgeWater* clone() const;
   virtual ~EdgeWater();
 
-  virtual Geometry::Vec3D getSurfacePoint(const size_t,const size_t) const;
+  virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
   virtual std::string getLayerString(const size_t,const size_t) const;
   virtual int getLayerSurf(const size_t,const size_t) const;
 

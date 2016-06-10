@@ -3,7 +3,7 @@
  
  * File:   moderator/VacVessel.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -291,66 +291,66 @@ VacVessel::createSurfaces()
 
   // Inner Layers:
   ModelSupport::buildCylinder(SMap,vacIndex+1,
-			      getSurfacePoint(0,0)-Y*vacPosRadius,
+			      getSurfacePoint(0,1)-Y*vacPosRadius,
 			      Z,vacPosRadius);
   ModelSupport::buildCylinder(SMap,vacIndex+2,
-			      getSurfacePoint(1,0)+Y*vacNegRadius,
+			      getSurfacePoint(0,2)+Y*vacNegRadius,
 			      Z,vacNegRadius);
-  ModelSupport::buildPlane(SMap,vacIndex+3,getSurfacePoint(2,0),X);
-  ModelSupport::buildPlane(SMap,vacIndex+4,getSurfacePoint(3,0),X);
-  ModelSupport::buildPlane(SMap,vacIndex+5,getSurfacePoint(4,0),Z);
-  ModelSupport::buildPlane(SMap,vacIndex+6,getSurfacePoint(5,0),Z);
+  ModelSupport::buildPlane(SMap,vacIndex+3,getSurfacePoint(0,3),X);
+  ModelSupport::buildPlane(SMap,vacIndex+4,getSurfacePoint(0,4),X);
+  ModelSupport::buildPlane(SMap,vacIndex+5,getSurfacePoint(0,5),Z);
+  ModelSupport::buildPlane(SMap,vacIndex+6,getSurfacePoint(0,6),Z);
 
 
   // SECOND LAYER:
   ModelSupport::buildCylinder(SMap,vacIndex+11,
-			      getSurfacePoint(0,1)-Y*vacPosRadius,
+			      getSurfacePoint(1,1)-Y*vacPosRadius,
 			      Z,vacPosRadius);
   ModelSupport::buildCylinder(SMap,vacIndex+12,
-			      getSurfacePoint(1,1)+Y*vacNegRadius,
+			      getSurfacePoint(1,2)+Y*vacNegRadius,
 			      Z,vacNegRadius);
-  ModelSupport::buildPlane(SMap,vacIndex+13,getSurfacePoint(2,1),X);
-  ModelSupport::buildPlane(SMap,vacIndex+14,getSurfacePoint(3,1),X);
-  ModelSupport::buildPlane(SMap,vacIndex+15,getSurfacePoint(4,1),Z);
-  ModelSupport::buildPlane(SMap,vacIndex+16,getSurfacePoint(5,1),Z);
+  ModelSupport::buildPlane(SMap,vacIndex+13,getSurfacePoint(1,3),X);
+  ModelSupport::buildPlane(SMap,vacIndex+14,getSurfacePoint(1,4),X);
+  ModelSupport::buildPlane(SMap,vacIndex+15,getSurfacePoint(1,5),Z);
+  ModelSupport::buildPlane(SMap,vacIndex+16,getSurfacePoint(1,6),Z);
 
   // TERTIARY LAYER:
   ModelSupport::buildCylinder(SMap,vacIndex+21,
-			      getSurfacePoint(0,2)-Y*vacPosRadius,
+			      getSurfacePoint(2,1)-Y*vacPosRadius,
 			      Z,vacPosRadius);
   ModelSupport::buildCylinder(SMap,vacIndex+22,
-			      getSurfacePoint(1,2)+Y*vacNegRadius,
+			      getSurfacePoint(2,2)+Y*vacNegRadius,
 			      Z,vacNegRadius);
-  ModelSupport::buildPlane(SMap,vacIndex+23,getSurfacePoint(2,2),X);
-  ModelSupport::buildPlane(SMap,vacIndex+24,getSurfacePoint(3,2),X);
-  ModelSupport::buildPlane(SMap,vacIndex+25,getSurfacePoint(4,2),Z);
-  ModelSupport::buildPlane(SMap,vacIndex+26,getSurfacePoint(5,2),Z);
+  ModelSupport::buildPlane(SMap,vacIndex+23,getSurfacePoint(2,3),X);
+  ModelSupport::buildPlane(SMap,vacIndex+24,getSurfacePoint(2,4),X);
+  ModelSupport::buildPlane(SMap,vacIndex+25,getSurfacePoint(2,5),Z);
+  ModelSupport::buildPlane(SMap,vacIndex+26,getSurfacePoint(2,6),Z);
 
   // Outer AL LAYER:
   
   ModelSupport::buildCylinder(SMap,vacIndex+31,
-			      getSurfacePoint(0,3)-Y*vacPosRadius,
+			      getSurfacePoint(3,1)-Y*vacPosRadius,
 			      Z,vacPosRadius);
   ModelSupport::buildCylinder(SMap,vacIndex+32,
-			      getSurfacePoint(1,3)+Y*vacNegRadius,
+			      getSurfacePoint(3,2)+Y*vacNegRadius,
 			      Z,vacNegRadius);
-  ModelSupport::buildPlane(SMap,vacIndex+33,getSurfacePoint(2,3),X);
-  ModelSupport::buildPlane(SMap,vacIndex+34,getSurfacePoint(3,3),X);
-  ModelSupport::buildPlane(SMap,vacIndex+35,getSurfacePoint(4,3),Z);
-  ModelSupport::buildPlane(SMap,vacIndex+36,getSurfacePoint(5,3),Z);
+  ModelSupport::buildPlane(SMap,vacIndex+33,getSurfacePoint(3,3),X);
+  ModelSupport::buildPlane(SMap,vacIndex+34,getSurfacePoint(3,4),X);
+  ModelSupport::buildPlane(SMap,vacIndex+35,getSurfacePoint(3,5),Z);
+  ModelSupport::buildPlane(SMap,vacIndex+36,getSurfacePoint(3,6),Z);
 
   // Outer Clearance
   ModelSupport::buildCylinder(SMap,vacIndex+41,
-			      getSurfacePoint(0,4)-Y*vacPosRadius,
+			      getSurfacePoint(4,1)-Y*vacPosRadius,
 			      Z,vacPosRadius);
   ModelSupport::buildCylinder(SMap,vacIndex+42,
-			      getSurfacePoint(1,4)+Y*vacNegRadius,
+			      getSurfacePoint(4,2)+Y*vacNegRadius,
 			      Z,vacNegRadius);
 
-  ModelSupport::buildPlane(SMap,vacIndex+43,getSurfacePoint(2,4),X);
-  ModelSupport::buildPlane(SMap,vacIndex+44,getSurfacePoint(3,4),X);
-  ModelSupport::buildPlane(SMap,vacIndex+45,getSurfacePoint(4,4),Z);
-  ModelSupport::buildPlane(SMap,vacIndex+46,getSurfacePoint(5,4),Z);
+  ModelSupport::buildPlane(SMap,vacIndex+43,getSurfacePoint(4,3),X);
+  ModelSupport::buildPlane(SMap,vacIndex+44,getSurfacePoint(4,4),X);
+  ModelSupport::buildPlane(SMap,vacIndex+45,getSurfacePoint(4,5),Z);
+  ModelSupport::buildPlane(SMap,vacIndex+46,getSurfacePoint(4,6),Z);
 
   return;
 }

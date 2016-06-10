@@ -100,6 +100,11 @@ class FREIA : public attachSystem::CopiedComp
   /// Bender int monolith
   std::shared_ptr<beamlineSystem::GuideLine> FocusD;
 
+  // 8.5m FOC 
+  std::shared_ptr<constructSystem::ChopperUnit> ChopperC;
+  /// Double disk chopper
+  std::shared_ptr<constructSystem::DiskChopper> FOCDiskC;
+
   void setBeamAxis(const FuncDataBase&,const GuideItem&,const bool);
   
  public:

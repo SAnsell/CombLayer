@@ -216,7 +216,7 @@ MerlinModerator::applyModification()
 
 Geometry::Vec3D
 MerlinModerator::getSurfacePoint(const size_t layerIndex,
-				 const size_t sideIndex) const
+				 const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link point
     \param sideIndex :: Side [0-5]
@@ -226,10 +226,11 @@ MerlinModerator::getSurfacePoint(const size_t layerIndex,
 {
   ELog::RegMethod RegA("MerlinModerator","getSurfacePoint");
 
-  if (sideIndex>5) 
-    throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
   if (layerIndex>2) 
     throw ColErr::IndexError<size_t>(layerIndex,2,"layer");
+  const size_t SI((sideIndex>0) ?
+                  static_cast<size_t>(sideIndex-1) :
+                  static_cast<size_t>(-1-sideIndex));
 
   // Modification map:
   std::map<size_t,double>::const_iterator mc;
@@ -237,11 +238,12 @@ MerlinModerator::getSurfacePoint(const size_t layerIndex,
   double T(0.0);
   for(size_t i=0;i<layerIndex;i++)
     {
-      mc=modLayer.find(i*10+sideIndex+1);
+      mc=modLayer.find(i*10+SI+1);
       T+=(mc!=modLayer.end()) ? mc->second : layer[i];
     }
 
-  switch(sideIndex)
+
+  switch(SI)
     {
     case 0:
       return Origin-Y*(depth/2.0+T);
@@ -256,7 +258,8 @@ MerlinModerator::getSurfacePoint(const size_t layerIndex,
     case 5:
       return Origin+Z*(height/2.0+T);
     }
-  throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
+    
+  throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex ");
 }
 
 void
@@ -272,12 +275,12 @@ MerlinModerator::createSurfaces()
   int HI(merlinIndex);
   for(size_t i=0;i<nLayer;i++)
     {
-      ModelSupport::buildPlane(SMap,HI+1,getSurfacePoint(i,0),Y);
-      ModelSupport::buildPlane(SMap,HI+2,getSurfacePoint(i,1),Y);
-      ModelSupport::buildPlane(SMap,HI+3,getSurfacePoint(i,2),X);
-      ModelSupport::buildPlane(SMap,HI+4,getSurfacePoint(i,3),X);
-      ModelSupport::buildPlane(SMap,HI+5,getSurfacePoint(i,4),Z);
-      ModelSupport::buildPlane(SMap,HI+6,getSurfacePoint(i,5),Z);
+      ModelSupport::buildPlane(SMap,HI+1,getSurfacePoint(i,1),Y);
+      ModelSupport::buildPlane(SMap,HI+2,getSurfacePoint(i,2),Y);
+      ModelSupport::buildPlane(SMap,HI+3,getSurfacePoint(i,3),X);
+      ModelSupport::buildPlane(SMap,HI+4,getSurfacePoint(i,4),X);
+      ModelSupport::buildPlane(SMap,HI+5,getSurfacePoint(i,5),Z);
+      ModelSupport::buildPlane(SMap,HI+6,getSurfacePoint(i,6),Z);
       HI+=10;
     }
  
@@ -345,12 +348,12 @@ MerlinModerator::createLinks()
   ELog::RegMethod RegA("MerlinModerator","createLinks");
 
   // set Links:
-  FixedComp::setConnect(0,getSurfacePoint(2,0),-Y);
-  FixedComp::setConnect(1,getSurfacePoint(2,1),Y);
-  FixedComp::setConnect(2,getSurfacePoint(2,2),-X);
-  FixedComp::setConnect(3,getSurfacePoint(2,3),X);
-  FixedComp::setConnect(4,getSurfacePoint(2,4),-Z);
-  FixedComp::setConnect(5,getSurfacePoint(2,5),Z);
+  FixedComp::setConnect(0,getSurfacePoint(2,1),-Y);
+  FixedComp::setConnect(1,getSurfacePoint(2,2),Y);
+  FixedComp::setConnect(2,getSurfacePoint(2,3),-X);
+  FixedComp::setConnect(3,getSurfacePoint(2,4),X);
+  FixedComp::setConnect(4,getSurfacePoint(2,5),-Z);
+  FixedComp::setConnect(5,getSurfacePoint(2,6),Z);
 
   FixedComp::setLinkSurf(0,-SMap.realSurf(merlinIndex+21));
   FixedComp::setLinkSurf(1,SMap.realSurf(merlinIndex+22));
@@ -368,12 +371,12 @@ MerlinModerator::createLinks()
   FixedComp::setLinkSurf(10,SMap.realSurf(merlinIndex+5));
   FixedComp::setLinkSurf(11,-SMap.realSurf(merlinIndex+6));
 
-  FixedComp::setConnect(6,getSurfacePoint(0,0),Y);
-  FixedComp::setConnect(7,getSurfacePoint(0,1),-Y);
-  FixedComp::setConnect(8,getSurfacePoint(0,2),X);
-  FixedComp::setConnect(9,getSurfacePoint(0,3),-X);
-  FixedComp::setConnect(10,getSurfacePoint(0,4),-Z);
-  FixedComp::setConnect(11,getSurfacePoint(0,5),Z);
+  FixedComp::setConnect(6,getSurfacePoint(0,1),Y);
+  FixedComp::setConnect(7,getSurfacePoint(0,2),-Y);
+  FixedComp::setConnect(8,getSurfacePoint(0,3),X);
+  FixedComp::setConnect(9,getSurfacePoint(0,4),-X);
+  FixedComp::setConnect(10,getSurfacePoint(0,5),-Z);
+  FixedComp::setConnect(11,getSurfacePoint(0,6),Z);
 
 
   return;

@@ -3,7 +3,7 @@
  
  * File:   moderator/Reflector.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -609,15 +609,15 @@ Reflector::getViewOrigin(const int BeamLine) const
   ELog::RegMethod RegA("Reflector","getViewOrigin");
 
   if (BeamLine<0 || BeamLine>17)
-    throw ColErr::IndexError<int>(BeamLine,18,RegA.getBase());
+    throw ColErr::IndexError<int>(BeamLine,18,"BeamLine");
   
   if (BeamLine<4)       // NARROW
     {
-      return DVacObj->getSurfacePoint(0,0);
+      return DVacObj->getSurfacePoint(0,1);
     }
   if (BeamLine<9)      // H2
     {
-      return VacObj->getSurfacePoint(1,0);
+      return VacObj->getSurfacePoint(0,2);
     }
   if (BeamLine<14)      // Groove
     {
@@ -625,7 +625,7 @@ Reflector::getViewOrigin(const int BeamLine) const
       return GrooveObj->getViewPoint();
     }
   // WISH
-  return DVacObj->getSurfacePoint(1,0);
+  return DVacObj->getSurfacePoint(0,2);
 }
 
 std::string

@@ -113,7 +113,10 @@ FREIA::FREIA(const std::string& keyName) :
   WFMDisk(new constructSystem::DiskChopper(newName+"WFMBlade")),
 
   VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
-  FocusD(new beamlineSystem::GuideLine(newName+"FD"))
+  FocusD(new beamlineSystem::GuideLine(newName+"FD")),
+
+  ChopperC(new constructSystem::ChopperUnit(newName+"ChopperC")),
+  FOCDiskC(new constructSystem::DiskChopper(newName+"FOC1BladeC"))
 
  /*!
     Constructor
@@ -138,9 +141,15 @@ FREIA::FREIA(const std::string& keyName) :
 
   OR.addObject(ChopperA);
   OR.addObject(DDisk);  
-  
+
+  OR.addObject(ChopperB);
+  OR.addObject(WFMDisk);  
+
   OR.addObject(VPipeD);
   OR.addObject(FocusD);
+
+  OR.addObject(ChopperC);
+  OR.addObject(FOCDiskC);  
 
 }
 
@@ -242,6 +251,10 @@ FREIA::build(Simulation& System,
 
   FocusD->addInsertCell(VPipeD->getCells("Void"));
   FocusD->createAll(System,*VPipeD,0,*VPipeD,0);
+
+  // 8.5m FOC chopper
+  ChopperC->addInsertCell(bunkerObj.getCell("MainVoid"));
+  ChopperC->createAll(System,FocusD->getKey("Guide0"),2);
 
   
   return;

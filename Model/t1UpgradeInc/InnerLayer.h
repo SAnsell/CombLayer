@@ -3,7 +3,7 @@
  
  * File:   t1UpgradeInc/InnerLayer.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,6 +34,8 @@ namespace ts1System
   \author S. Ansell
   \date Septeber 2014
   \brief TS1 InnerLayer upgrade
+  
+  Builds inner components in a existing layered component
 */
 
 class InnerLayer : public ts1System::CH4Layer
@@ -68,7 +70,7 @@ class InnerLayer : public ts1System::CH4Layer
   virtual ~InnerLayer();
 
   virtual Geometry::Vec3D 
-    getSurfacePoint(const size_t,const size_t) const;
+    getSurfacePoint(const size_t,const long int) const;
   virtual int 
     getLayerSurf(const size_t,const size_t) const;
   virtual std::string 

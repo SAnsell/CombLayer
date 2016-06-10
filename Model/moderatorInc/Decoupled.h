@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   moderatorInc/Decoupled.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,7 +74,7 @@ class Decoupled : public attachSystem::ContainedComp,
 
   int methCell;             ///< Methane cell
 
-  Geometry::Vec3D getDirection(const int) const;
+  Geometry::Vec3D getDirection(const size_t) const;
   void populate(const Simulation&);
   virtual void createUnitVector(const attachSystem::FixedComp&);
 
@@ -91,7 +91,7 @@ class Decoupled : public attachSystem::ContainedComp,
   virtual Decoupled* clone() const { return new Decoupled(*this); }
   virtual ~Decoupled();
 
-  Geometry::Vec3D getSurfacePoint(const int,const int) const;
+  virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
   int getDividePlane(const int) const;
   int viewSurf(const int) const;
   /// Need internal pipe

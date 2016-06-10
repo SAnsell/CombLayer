@@ -3,7 +3,7 @@
  
  * File:   t1Upgrade/TriangleMod.cxx 
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -714,7 +714,7 @@ TriangleMod::getExitWindow(const size_t outIndex,
 
 Geometry::Vec3D
 TriangleMod::getSurfacePoint(const size_t layerIndex,
-			     const size_t sideIndex) const
+			     const long int sideIndex) const
   /*!
     Simplified layer system only for top/bottom
     \param layerIndex :: layer
@@ -724,22 +724,26 @@ TriangleMod::getSurfacePoint(const size_t layerIndex,
 {
   ELog::RegMethod RegA("TriangleMod","getSurfacePoint");
 
+  const size_t SI((sideIndex>0) ?
+                  static_cast<size_t>(sideIndex-1) :
+                  static_cast<size_t>(-1-sideIndex));
+  
   double LT[3];  
-  if (sideIndex>=Outer.Pts.size()+2) 
-    throw ColErr::IndexError<size_t>(sideIndex,Outer.Pts.size()+2,
-				     "sideIndex");
+  if (SI>=Outer.Pts.size()+2) 
+    throw ColErr::IndexError<size_t>(SI,Outer.Pts.size()+2,
+                                       "SI");
   if (layerIndex>=nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
   
 
-  if (sideIndex>1)   // Main sized
+  if (SI>1)   // Main sized
     {
       LT[0]=0.0; LT[1]=LT[0]+wallThick; LT[2]=LT[1]+flatClearance;
       std::pair<Geometry::Vec3D,Geometry::Vec3D> CP=
-	cornerPair(Outer.Pts,sideIndex-2,sideIndex-1,LT[layerIndex]);
+	cornerPair(Outer.Pts,SI-2,SI-1,LT[layerIndex]);
       return (CP.first+CP.second)/2.0;
     }
-  else if (sideIndex)  // TOP
+  else if (SI)  // TOP
     {
       LT[0]=height/2.0; LT[1]=LT[0]+wallThick; LT[2]=LT[1]+topClearance;
       return Origin+Z*LT[layerIndex];

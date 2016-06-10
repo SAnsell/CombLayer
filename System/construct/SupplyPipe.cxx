@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   essBuild/SupplyPipe.cxx
  *
@@ -200,7 +200,7 @@ SupplyPipe::createUnitVector(const attachSystem::FixedComp& FC,
 		  static_cast<size_t>(-sideIndex-1));
   if (LC && sideIndex)
     {
-      Origin=LC->getSurfacePoint(layerIndex,SI);
+      Origin=LC->getSurfacePoint(layerIndex,sideIndex);
       FC.selectAltAxis(SI,X,Y,Z);
     }
   ELog::EM<<"Side ="<<sideIndex<<" X == "<<X<<ELog::endDebug;
@@ -253,7 +253,7 @@ SupplyPipe::insertInlet(const attachSystem::FixedComp& FC,
 		  static_cast<size_t>(-lSideIndex-1));
 		  
   
-  Geometry::Vec3D PtZ=LC->getSurfacePoint(0,SI);
+  Geometry::Vec3D PtZ=LC->getSurfacePoint(0,lSideIndex);
   PtZ+=layerOffset;
   const int commonSurf=LC->getCommonSurf(SI);
   const std::string commonStr=(commonSurf) ? 		       
@@ -276,10 +276,10 @@ SupplyPipe::insertInlet(const attachSystem::FixedComp& FC,
 
   for(const size_t lIndex : layerSeq)
     {
-      PtZ=LC->getSurfacePoint(lIndex,SI);
+      PtZ=LC->getSurfacePoint(lIndex,lSideIndex);
       PtZ+=layerOffset;
       Coaxial.addSurfPoint
-	(PtZ,LC->getLayerString(lIndex,SI),commonStr);
+	(PtZ,LC->getLayerString(lIndex,lSideIndex),commonStr);
     }
   return;
 }

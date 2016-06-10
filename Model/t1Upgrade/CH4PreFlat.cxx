@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1Upgrade/CH4PreFlat.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -275,7 +275,7 @@ CH4PreFlat::createObjects(Simulation& System)
 
 Geometry::Vec3D
 CH4PreFlat::getSurfacePoint(const size_t layerIndex,
-			    const size_t sideIndex) const
+			    const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link point
     \param sideIndex :: Side [0-5]
@@ -285,8 +285,12 @@ CH4PreFlat::getSurfacePoint(const size_t layerIndex,
 {
   ELog::RegMethod RegA("CH4PreFlat","getSurfacePoint");
 
-  if (sideIndex>5) 
-    throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
+  const size_t SI((sideIndex>0) ?
+                  static_cast<size_t>(sideIndex-1) :
+                  static_cast<size_t>(-1-sideIndex));
+  
+  if (SI>5) 
+    throw ColErr::IndexError<long int>(sideIndex,5,"sideIndex");
   if (layerIndex>=nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layerIndex");
 
@@ -295,7 +299,7 @@ CH4PreFlat::getSurfacePoint(const size_t layerIndex,
   const double TVec[]={0.0,alThick,alThick+vacThick};
 
   const Geometry::Vec3D XYZ[6]={-Y,Y,-X,X,-Z,Z};
-  return Origin+XYZ[sideIndex]*(LVec[sideIndex]+TVec[layerIndex]);
+  return Origin+XYZ[SI]*(LVec[SI]+TVec[layerIndex]);
 }
 
 

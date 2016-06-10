@@ -3,7 +3,7 @@
  
  * File:   t1Upgrade/H2Section.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -446,7 +446,7 @@ H2Section::createLinks()
 
 Geometry::Vec3D
 H2Section::getSurfacePoint(const size_t layerIndex,
-			  const size_t sideIndex) const
+			  const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link point
     \param sideIndex :: Side [0-5]
@@ -456,8 +456,12 @@ H2Section::getSurfacePoint(const size_t layerIndex,
 {
   ELog::RegMethod RegA("H2Section","getSurfacePoint");
 
-  if (sideIndex>5) 
-    throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
+  const size_t SI((sideIndex>0) ?
+                  static_cast<size_t>(sideIndex-1) :
+                  static_cast<size_t>(-1-sideIndex));
+  
+  if (SI>5) 
+    throw ColErr::IndexError<long int>(sideIndex,5,"sideIndex");
   if (layerIndex>6) 
     throw ColErr::IndexError<size_t>(layerIndex,6,"layerIndex");
 
@@ -474,7 +478,7 @@ H2Section::getSurfacePoint(const size_t layerIndex,
 	LA+=offset[i];
     }
 
-  return Origin+XYZ[sideIndex]*LA.Item(sideIndex);
+  return Origin+XYZ[SI]*LA.Item(SI);
 }
 
 std::string

@@ -535,11 +535,11 @@ H2Wing::createObjects(Simulation& System)
 
 Geometry::Vec3D
 H2Wing::getSurfacePoint(const size_t,
-			const size_t) const
+			const long int) const
   /*!
     Given a side and a layer calculate the link point
     \param layerIndex :: layer, 0 is inner moderator [0-6]
-    \param sideIndex :: Side [0-3] // mid sides   
+    \param sideIndex :: Side [0-3] // mid si-des   
     \return Surface point
   */
 {

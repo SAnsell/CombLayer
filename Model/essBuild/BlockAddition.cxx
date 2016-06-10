@@ -431,11 +431,11 @@ BlockAddition::createLinks()
 
 Geometry::Vec3D
 BlockAddition::getSurfacePoint(const size_t layerIndex,
-			      const size_t sideIndex) const
+                               const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link point
-    \param sideIndex  :: Side [0-5]
     \param layerIndex :: Layer, 0 is inner moderator 
+    \param sideIndex  :: Side [0-6]   
     \return Surface point
   */
 {
@@ -443,10 +443,14 @@ BlockAddition::getSurfacePoint(const size_t layerIndex,
 
   if (layerIndex>=nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"nLayer/layerIndex");
-
+  if (!sideIndex) return Origin;
+  
   const double outDist=wallThick[layerIndex];
+  const size_t SI((sideIndex>0) ?
+                  static_cast<size_t>(sideIndex-1) :
+                  static_cast<size_t>(-1-sideIndex));
 
-  switch(sideIndex)
+  switch(SI)
     {
     case 0:
       return Origin;
@@ -461,7 +465,7 @@ BlockAddition::getSurfacePoint(const size_t layerIndex,
     case 5:
       return Origin+Z*(outDist+height/2.0);
     }
-  throw ColErr::IndexError<size_t>(sideIndex,6,"sideIndex ");
+  throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
 }
 
 int

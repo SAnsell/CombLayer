@@ -435,7 +435,7 @@ CH4Moderator::createLinks()
 
 Geometry::Vec3D
 CH4Moderator::getSurfacePoint(const size_t layerIndex,
-			      const size_t sideIndex) const
+			      const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link point
     \param sideIndex :: Side [0-5]
@@ -445,8 +445,13 @@ CH4Moderator::getSurfacePoint(const size_t layerIndex,
 {
   ELog::RegMethod RegA("CH4Moderator","getSurfacePoint");
 
-  if (sideIndex>5) 
-    throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
+  /// accessor to origin:
+  if (!sideIndex) return Origin;
+
+  
+  const size_t SI((sideIndex>0) ?
+                  static_cast<size_t>(sideIndex-1) :
+                  static_cast<size_t>(-1-sideIndex));
   if (layerIndex>nLayers || nLayers!=4)           // system only build for 4 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
 
@@ -461,10 +466,11 @@ CH4Moderator::getSurfacePoint(const size_t layerIndex,
 //  for(size_t i=0;i<=layerIndex;i++)
   for(size_t i=0;i<layerIndex;i++)
     {
-      mc=modLayer.find(i*10+sideIndex+1);
+      mc=modLayer.find(i*10+SI+1);
       T+=(mc!=modLayer.end()) ? mc->second : layer[i];
     }
-  switch(sideIndex)
+  
+  switch(SI)
     {
     case 0:
       return Origin-Y*(depth/2.0+T);
@@ -475,13 +481,12 @@ CH4Moderator::getSurfacePoint(const size_t layerIndex,
     case 3:
       return Origin+X*(width/2.0+T);    
     case 4:
-//                          ELog::EM<<"case 4 = "<<Origin-Z*(height/2.0+T)<<ELog::endDebug;
       return Origin-Z*(height/2.0+T);
     case 5:
       return Origin+Z*(height/2.0+T);
     }
   // IMPOSSIBLE TO GET HERE
-  throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
+  throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex ");
 }
 
 int
@@ -571,7 +576,7 @@ CH4Moderator::createAll(Simulation& System,
   ELog::RegMethod RegA("CH4Moderator","createAll");
   populate(System);
 
-  createUnitVector(FC);
+  createUnitVector(FC); 
   createSurfaces();
 //  createObjects(System);
   createObjects(System);
