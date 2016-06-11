@@ -454,11 +454,13 @@ CH4Layer::createObjects(Simulation& System)
       Out=ModelSupport::getComposite(SMap,ch4Layer," 3 -4 5 -6 ");
       Main.procString(Out);
       Main.addIntersection(Exclude);
+      ELog::EM<<"EXCLUDE["<<keyName<<"] == "<<Exclude<<ELog::endDiag;
       Main.addIntersection(frontX);
       Main.addIntersection(backX);
       System.addCell(MonteCarlo::Qhull
 		     (cellIndex++,LVec[i].getMat(),
 		      LVec[i].getTemp(),Main.display()));
+      ELog::EM<<"cellIndex= "<<cellIndex-1<<ELog::endDiag;
       ch4Layer+=30;
     }
   ch4Layer-=30;

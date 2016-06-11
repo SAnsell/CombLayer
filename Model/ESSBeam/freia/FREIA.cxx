@@ -113,10 +113,34 @@ FREIA::FREIA(const std::string& keyName) :
   WFMDisk(new constructSystem::DiskChopper(newName+"WFMBlade")),
 
   VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
-  FocusD(new beamlineSystem::GuideLine(newName+"FD")),
+  BendD(new beamlineSystem::GuideLine(newName+"BD")),
 
   ChopperC(new constructSystem::ChopperUnit(newName+"ChopperC")),
-  FOCDiskC(new constructSystem::DiskChopper(newName+"FOC1Blade"))
+  FOCDiskC(new constructSystem::DiskChopper(newName+"FOC1Blade")),
+
+  VPipeE(new constructSystem::VacuumPipe(newName+"PipeE")),
+  BendE(new beamlineSystem::GuideLine(newName+"BE")),
+  
+  ChopperD(new constructSystem::ChopperUnit(newName+"ChopperD")),
+  WBC2Disk(new constructSystem::DiskChopper(newName+"WBC2Blade")),
+
+  VPipeF(new constructSystem::VacuumPipe(newName+"PipeF")),
+  BendF(new beamlineSystem::GuideLine(newName+"BF")),
+
+  ChopperE(new constructSystem::ChopperUnit(newName+"ChopperE")),
+  FOC2Disk(new constructSystem::DiskChopper(newName+"FOC2Blade")),
+
+  BInsert(new BunkerInsert(newName+"BInsert")),
+  FocusWall(new beamlineSystem::GuideLine(newName+"FWall")),
+
+  ChopperOutA(new constructSystem::ChopperUnit(newName+"ChopperOutA")),
+  WBC3Disk(new constructSystem::DiskChopper(newName+"WBC3Blade")),
+
+  ChopperOutB(new constructSystem::ChopperUnit(newName+"ChopperOutB")),
+  FOC3Disk(new constructSystem::DiskChopper(newName+"FOC3Blade")),
+
+  VPipeOutA(new constructSystem::VacuumPipe(newName+"PipeOutA")),
+  FocusOutA(new beamlineSystem::GuideLine(newName+"OutFA"))
 
  /*!
     Constructor
@@ -146,11 +170,35 @@ FREIA::FREIA(const std::string& keyName) :
   OR.addObject(WFMDisk);  
 
   OR.addObject(VPipeD);
-  OR.addObject(FocusD);
+  OR.addObject(BendD);
 
   OR.addObject(ChopperC);
   OR.addObject(FOCDiskC);  
 
+  OR.addObject(VPipeE);
+  OR.addObject(BendE);
+
+  OR.addObject(ChopperD);
+  OR.addObject(WBC2Disk);  
+
+  OR.addObject(VPipeF);
+  OR.addObject(BendF);
+
+  OR.addObject(ChopperE);
+  OR.addObject(FOC2Disk);  
+
+  OR.addObject(BInsert);
+  OR.addObject(FocusWall);  
+
+  OR.addObject(ChopperOutA);
+  OR.addObject(WBC3Disk);  
+
+  OR.addObject(ChopperOutB);
+  OR.addObject(FOC3Disk);  
+
+  OR.addObject(VPipeOutA);
+  OR.addObject(FocusOutA);  
+      
 }
 
 FREIA::~FREIA()
@@ -249,19 +297,86 @@ FREIA::build(Simulation& System,
   VPipeD->addInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeD->createAll(System,ChopperB->getKey("Beam"),2);
 
-  FocusD->addInsertCell(VPipeD->getCells("Void"));
-  FocusD->createAll(System,*VPipeD,0,*VPipeD,0);
+  BendD->addInsertCell(VPipeD->getCells("Void"));
+  BendD->createAll(System,*VPipeD,0,*VPipeD,0);
 
   // 8.5m FOC chopper
   ChopperC->addInsertCell(bunkerObj.getCell("MainVoid"));
-  ChopperC->createAll(System,FocusD->getKey("Guide0"),2);
+  ChopperC->createAll(System,BendD->getKey("Guide0"),2);
   // Double disk chopper
   FOCDiskC->addInsertCell(ChopperC->getCell("Void"));
   FOCDiskC->setCentreFlag(3);  // Z direction
   FOCDiskC->setOffsetFlag(1);  // Z direction
   FOCDiskC->createAll(System,ChopperC->getKey("Beam"),0);
 
+
+  VPipeE->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeE->createAll(System,ChopperC->getKey("Beam"),2);
+
+  BendE->addInsertCell(VPipeE->getCells("Void"));
+  BendE->createAll(System,*VPipeE,0,*VPipeE,0);
+
+    // 8.5m FOC chopper
+  ChopperD->addInsertCell(bunkerObj.getCell("MainVoid"));
+  ChopperD->createAll(System,BendE->getKey("Guide0"),2);
+  // Double disk chopper
+  WBC2Disk->addInsertCell(ChopperD->getCell("Void"));
+  WBC2Disk->setCentreFlag(3);  // Z direction
+  WBC2Disk->setOffsetFlag(1);  // Z direction
+  WBC2Disk->createAll(System,ChopperD->getKey("Beam"),0);
+
+  VPipeF->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeF->createAll(System,ChopperD->getKey("Beam"),2);
+
+  BendF->addInsertCell(VPipeF->getCells("Void"));
+  BendF->createAll(System,*VPipeF,0,*VPipeF,0);
+
+  // 11.1m FOC chopper
+  ChopperE->addInsertCell(bunkerObj.getCell("MainVoid"));
+  ChopperE->createAll(System,BendF->getKey("Guide0"),2);
+
+  // Double disk chopper
+  FOC2Disk->addInsertCell(ChopperE->getCell("Void"));
+  FOC2Disk->setCentreFlag(3);  // Z direction
+  FOC2Disk->setOffsetFlag(1);  // Z direction
+  FOC2Disk->createAll(System,ChopperE->getKey("Beam"),0);
+
+  if (stopPoint==2) return;                      // STOP At bunker edge
+  // IN WALL
+  // Make bunker insert
+  BInsert->createAll(System,ChopperE->getKey("Beam"),2,bunkerObj);
+  attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);  
+
+    // using 7 : mid point
+  FocusWall->addInsertCell(BInsert->getCell("Void"));
+  FocusWall->createAll(System,*BInsert,7,*BInsert,7);
+
+    // 15m WBC chopper
+  ChopperOutA->addInsertCell(voidCell);
+  ChopperOutA->createAll(System,FocusWall->getKey("Guide0"),2);
+
+  // Double disk chopper
+  WBC3Disk->addInsertCell(ChopperOutA->getCell("Void"));
+  WBC3Disk->setCentreFlag(3);  // Z direction
+  WBC3Disk->setOffsetFlag(1);  // Z direction
+  WBC3Disk->createAll(System,ChopperOutA->getKey("Beam"),0);
   
+  // 15m WBC chopper
+  ChopperOutB->addInsertCell(voidCell);
+  ChopperOutB->createAll(System,ChopperOutA->getKey("Beam"),2);
+
+  // Double disk chopper
+  FOC3Disk->addInsertCell(ChopperOutB->getCell("Void"));
+  FOC3Disk->setCentreFlag(3);  // Z direction
+  FOC3Disk->setOffsetFlag(1);  // Z direction
+  FOC3Disk->createAll(System,ChopperOutB->getKey("Beam"),0);
+
+  VPipeOutA->addInsertCell(voidCell);
+  VPipeOutA->createAll(System,ChopperOutB->getKey("Beam"),2);
+
+  FocusOutA->addInsertCell(VPipeOutA->getCells("Void"));
+  FocusOutA->createAll(System,*VPipeOutA,0,*VPipeOutA,0);
+
   return;
 }
 

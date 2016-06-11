@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuildInc/DREAM.h
+ * File:   essBuildInc/FREIA.h
  *
  * Copyright (c) 2004-2016 by Stuart Ansell
  *
@@ -98,12 +98,52 @@ class FREIA : public attachSystem::CopiedComp
   /// Pipe between chopper pairs
   std::shared_ptr<constructSystem::VacuumPipe> VPipeD;
   /// Bender int monolith
-  std::shared_ptr<beamlineSystem::GuideLine> FocusD;
+  std::shared_ptr<beamlineSystem::GuideLine> BendD;
 
-  // 8.5m FOC 
+  /// 8.5m FOC 
   std::shared_ptr<constructSystem::ChopperUnit> ChopperC;
   /// Double disk chopper
   std::shared_ptr<constructSystem::DiskChopper> FOCDiskC;
+
+  /// Pipe between chopper pairs
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeE;
+  /// Bender int monolith
+  std::shared_ptr<beamlineSystem::GuideLine> BendE;
+
+  /// 10m 
+  std::shared_ptr<constructSystem::ChopperUnit> ChopperD;
+  /// Double disk chopper [wbc2]
+  std::shared_ptr<constructSystem::DiskChopper> WBC2Disk;
+
+  /// Pipe from 10.0 to 11.1m 
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeF;
+  /// Bender in 10-11m pipe
+  std::shared_ptr<beamlineSystem::GuideLine> BendF;
+
+  /// 11.1m FOC 
+  std::shared_ptr<constructSystem::ChopperUnit> ChopperE;
+  /// Double disk chopper
+  std::shared_ptr<constructSystem::DiskChopper> FOC2Disk;
+
+  /// Bunker insert
+  std::shared_ptr<essSystem::BunkerInsert> BInsert;
+  /// Guide running to bunker wall
+  std::shared_ptr<beamlineSystem::GuideLine> FocusWall;
+
+  /// 15m WBC3 
+  std::shared_ptr<constructSystem::ChopperUnit> ChopperOutA;
+  /// Double disk chopper (WBC3)
+  std::shared_ptr<constructSystem::DiskChopper> WBC3Disk;
+
+  /// 15m FOC3 
+  std::shared_ptr<constructSystem::ChopperUnit> ChopperOutB;
+  /// Double disk chopper (FOC3)
+  std::shared_ptr<constructSystem::DiskChopper> FOC3Disk;
+
+  /// Pipe from 10.0 to 11.1m 
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeOutA;
+  /// Bender in 10-11m pipe
+  std::shared_ptr<beamlineSystem::GuideLine> FocusOutA;
 
   void setBeamAxis(const FuncDataBase&,const GuideItem&,const bool);
   

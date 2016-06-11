@@ -182,8 +182,8 @@ FREIAvariables(FuncDataBase& Control)
   Control.addVariable("freiaWFMBlade1PhaseAngle1",275.0);
   Control.addVariable("freiaWFMBlade1OpenAngle1",30.0);
 
-  generatePipe(Control,"freiaPipeD",140.0,12.0);
-  FGen.generateBender(Control,"freiaFD",136.0,4.0,4.0,20.0,16.0,
+  generatePipe(Control,"freiaPipeD",125.0,12.0);
+  FGen.generateBender(Control,"freiaBD",121.0,4.0,4.0,20.0,16.0,
                       7000.0,180.0);
 
   CGen.setMainRadius(81.0);
@@ -212,6 +212,149 @@ FREIAvariables(FuncDataBase& Control)
   Control.addVariable("freiaFOC1Blade0OpenAngle0",30.0);
   Control.addVariable("freiaFOC1Blade0PhaseAngle1",275.0);
   Control.addVariable("freiaFOC1Blade0OpenAngle1",30.0);
+
+  generatePipe(Control,"freiaPipeE",132.0,12.0);
+  FGen.generateBender(Control,"freiaBE",128.0,4.0,4.0,20.0,16.0,
+                      7000.0,180.0);
+
+  CGen.setMainRadius(56.0);
+  CGen.setFrame(120.0,120.0);
+  CGen.generateChopper(Control,"freiaChopperD",12.0,10.0,4.55);
+
+  // Double Blade chopper
+  Control.addVariable("freiaWBC2BladeXStep",0.0);
+  Control.addVariable("freiaWBC2BladeYStep",0.0);
+  Control.addVariable("freiaWBC2BladeZStep",0.0);
+  Control.addVariable("freiaWBC2BladeXYangle",0.0);
+  Control.addVariable("freiaWBC2BladeZangle",0.0);
+
+  Control.addVariable("freiaWBC2BladeGap",1.0);
+  Control.addVariable("freiaWBC2BladeInnerRadius",25.0);
+  Control.addVariable("freiaWBC2BladeOuterRadius",50.0);
+  Control.addVariable("freiaWBC2BladeNDisk",2);
+
+  Control.addVariable("freiaWBC2Blade0Thick",0.2);
+  Control.addVariable("freiaWBC2Blade1Thick",0.2);
+  Control.addVariable("freiaWBC2BladeInnerMat","Inconnel");
+  Control.addVariable("freiaWBC2BladeOuterMat","B4C");
+  
+  Control.addVariable("freiaWBC2BladeNBlades",2);
+  Control.addVariable("freiaWBC2Blade0PhaseAngle0",95.0);
+  Control.addVariable("freiaWBC2Blade0OpenAngle0",30.0);
+  Control.addVariable("freiaWBC2Blade1PhaseAngle0",95.0);
+  Control.addVariable("freiaWBC2Blade1OpenAngle0",30.0);
+
+  Control.addVariable("freiaWBC2Blade0PhaseAngle1",275.0);
+  Control.addVariable("freiaWBC2Blade0OpenAngle1",30.0);
+  Control.addVariable("freiaWBC2Blade1PhaseAngle1",275.0);
+  Control.addVariable("freiaWBC2Blade1OpenAngle1",30.0);
+
+  generatePipe(Control,"freiaPipeF",102.0,12.0);
+  FGen.generateBender(Control,"freiaBF",98.0,4.0,4.0,20.0,16.0,
+                      7000.0,180.0);
+
+
+  CGen.setMainRadius(81.0);
+  CGen.setFrame(175.0,175.0);
+  CGen.generateChopper(Control,"freiaChopperE",12.0,12.0,8.0);
+
+  // FOC chopper
+  Control.addVariable("freiaFOC2BladeXStep",0.0);
+  Control.addVariable("freiaFOC2BladeYStep",0.0);
+  Control.addVariable("freiaFOC2BladeZStep",0.0);
+  Control.addVariable("freiaFOC2BladeXYangle",0.0);
+  Control.addVariable("freiaFOC2BladeZangle",0.0);
+
+  Control.addVariable("freiaFOC2BladeGap",36.1);  // 36
+  Control.addVariable("freiaFOC2BladeInnerRadius",40.0);
+  Control.addVariable("freiaFOC2BladeOuterRadius",75.0);
+  Control.addVariable("freiaFOC2BladeNDisk",1);
+
+  Control.addVariable("freiaFOC2Blade0Thick",0.2);
+  Control.addVariable("freiaFOC2Blade1Thick",0.2);
+  Control.addVariable("freiaFOC2BladeInnerMat","Inconnel");
+  Control.addVariable("freiaFOC2BladeOuterMat","B4C");
+  
+  Control.addVariable("freiaFOC2BladeNBlades",2);
+  Control.addVariable("freiaFOC2Blade0PhaseAngle0",95.0);
+  Control.addVariable("freiaFOC2Blade0OpenAngle0",30.0);
+  Control.addVariable("freiaFOC2Blade0PhaseAngle1",275.0);
+  Control.addVariable("freiaFOC2Blade0OpenAngle1",30.0);
+
+  // BEAM INSERT:
+  Control.addVariable("freiaBInsertHeight",20.0);
+  Control.addVariable("freiaBInsertWidth",28.0);
+  Control.addVariable("freiaBInsertTopWall",1.0);
+  Control.addVariable("freiaBInsertLowWall",1.0);
+  Control.addVariable("freiaBInsertLeftWall",1.0);
+  Control.addVariable("freiaBInsertRightWall",1.0);
+  Control.addVariable("freiaBInsertWallMat","Stainless304");       
+
+  // Guide in wall
+  FGen.generateTaper(Control,"freiaFWall",308.0,6.0,6.0,6.0,6.0);
+
+  CGen.setMainRadius(56.0);
+  CGen.setFrame(120.0,120.0);
+  CGen.generateChopper(Control,"freiaChopperOutA",12.0,10.0,4.55);
+
+  // Double Blade chopper
+  Control.addVariable("freiaWBC3BladeXStep",0.0);
+  Control.addVariable("freiaWBC3BladeYStep",0.0);
+  Control.addVariable("freiaWBC3BladeZStep",0.0);
+  Control.addVariable("freiaWBC3BladeXYangle",0.0);
+  Control.addVariable("freiaWBC3BladeZangle",0.0);
+
+  Control.addVariable("freiaWBC3BladeGap",1.0);
+  Control.addVariable("freiaWBC3BladeInnerRadius",25.0);
+  Control.addVariable("freiaWBC3BladeOuterRadius",50.0);
+  Control.addVariable("freiaWBC3BladeNDisk",2);
+
+  Control.addVariable("freiaWBC3Blade0Thick",0.2);
+  Control.addVariable("freiaWBC3Blade1Thick",0.2);
+  Control.addVariable("freiaWBC3BladeInnerMat","Inconnel");
+  Control.addVariable("freiaWBC3BladeOuterMat","B4C");
+  
+  Control.addVariable("freiaWBC3BladeNBlades",2);
+  Control.addVariable("freiaWBC3Blade0PhaseAngle0",95.0);
+  Control.addVariable("freiaWBC3Blade0OpenAngle0",30.0);
+  Control.addVariable("freiaWBC3Blade1PhaseAngle0",95.0);
+  Control.addVariable("freiaWBC3Blade1OpenAngle0",30.0);
+
+  Control.addVariable("freiaWBC3Blade0PhaseAngle1",275.0);
+  Control.addVariable("freiaWBC3Blade0OpenAngle1",30.0);
+  Control.addVariable("freiaWBC3Blade1PhaseAngle1",275.0);
+  Control.addVariable("freiaWBC3Blade1OpenAngle1",30.0);
+
+  CGen.setMainRadius(81.0);
+  CGen.setFrame(175.0,175.0);
+  CGen.generateChopper(Control,"freiaChopperOutB",12.0,12.0,8.0);
+
+  // FOC chopper
+  Control.addVariable("freiaFOC3BladeXStep",0.0);
+  Control.addVariable("freiaFOC3BladeYStep",0.0);
+  Control.addVariable("freiaFOC3BladeZStep",0.0);
+  Control.addVariable("freiaFOC3BladeXYangle",0.0);
+  Control.addVariable("freiaFOC3BladeZangle",0.0);
+
+  Control.addVariable("freiaFOC3BladeGap",36.1);  // 36
+  Control.addVariable("freiaFOC3BladeInnerRadius",40.0);
+  Control.addVariable("freiaFOC3BladeOuterRadius",75.0);
+  Control.addVariable("freiaFOC3BladeNDisk",1);
+
+  Control.addVariable("freiaFOC3Blade0Thick",0.2);
+  Control.addVariable("freiaFOC3Blade1Thick",0.2);
+  Control.addVariable("freiaFOC3BladeInnerMat","Inconnel");
+  Control.addVariable("freiaFOC3BladeOuterMat","B4C");
+  
+  Control.addVariable("freiaFOC3BladeNBlades",2);
+  Control.addVariable("freiaFOC3Blade0PhaseAngle0",95.0);
+  Control.addVariable("freiaFOC3Blade0OpenAngle0",30.0);
+  Control.addVariable("freiaFOC3Blade0PhaseAngle1",275.0);
+  Control.addVariable("freiaFOC3Blade0OpenAngle1",30.0);
+
+  generatePipe(Control,"freiaPipeOutA",480.0,12.0);
+  FGen.generateTaper(Control,"freiaOutFA",472.0,4.0,4.0,20.0,16.0);
+
 
   return;
 }

@@ -182,7 +182,7 @@ DREAM::DREAM(const std::string& keyName) :
   OR.addObject(FocusD);
   OR.addObject(ChopperD);
   OR.addObject(BandADisk);
-
+  
   OR.addObject(VPipeE);
   OR.addObject(FocusE);
   OR.addObject(ChopperE);
@@ -191,6 +191,9 @@ DREAM::DREAM(const std::string& keyName) :
   OR.addObject(VPipeF);
   OR.addObject(FocusF);
 
+  OR.addObject(BInsert);
+  OR.addObject(FocusWall);
+  
   OR.addObject(T1DiskA);
   OR.addObject(FocusT1Mid);
   OR.addObject(T1DiskB);
@@ -414,7 +417,6 @@ DREAM::build(Simulation& System,
   VPipeOutB->setFront(*ShieldB,-1);
   VPipeOutB->setBack(*ShieldB,-2);
   VPipeOutB->createAll(System,*ShieldB,2);
-
 
   FocusOutB->addInsertCell(VPipeOutB->getCell("Void"));
   FocusOutB->createAll(System,*VPipeOutB,7,*VPipeOutB,7);
