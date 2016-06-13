@@ -3,7 +3,7 @@
  
  * File:   constructInc/ChopperPit.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,6 +46,8 @@ class ChopperPit :
   const int pitIndex;           ///< Index of surface offset
   int cellIndex;                ///< Cell index  
 
+  bool activeFront;             ///< Pit doesn't have front
+  HeadRule frontCut;            ///< Front cut
 
   double voidHeight;            ///< void height [top only]
   double voidWidth;             ///< void width [total]
@@ -77,6 +79,10 @@ class ChopperPit :
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
+  
+  void createCommonLinks();
+  void createFrontLinks();
+  void createFrontLinks(const attachSystem::FixedComp&,const long int);
 
  public:
 
@@ -88,6 +94,7 @@ class ChopperPit :
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 
+  void addFrontWall(const attachSystem::FixedComp&,const long int);
 };
 
 }

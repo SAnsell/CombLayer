@@ -52,6 +52,7 @@
 #include "FocusGenerator.h"
 #include "ShieldGenerator.h"
 #include "ChopperGenerator.h"
+#include "PitGenerator.h"
 
 namespace setVariable
 {
@@ -97,6 +98,15 @@ FREIAvariables(FuncDataBase& Control)
 
   setVariable::ChopperGenerator CGen;
   setVariable::FocusGenerator FGen;
+  setVariable::ShieldGenerator SGen;
+  setVariable::PitGenerator PGen;
+  SGen.addWall(1,30.0,"CastIron");
+  SGen.addRoof(1,30.0,"CastIron");
+  SGen.addFloor(1,30.0,"CastIron");
+  SGen.addFloorMat(5,"Concrete");
+  SGen.addRoofMat(5,"Concrete");
+  SGen.addWallMat(5,"Concrete");
+  
   //  setVariable::ShieldGenerator SGen;
   // extent of beamline
   Control.addVariable("freiaStopPoint",0);
@@ -352,10 +362,38 @@ FREIAvariables(FuncDataBase& Control)
   Control.addVariable("freiaFOC3Blade0PhaseAngle1",275.0);
   Control.addVariable("freiaFOC3Blade0OpenAngle1",30.0);
 
-  generatePipe(Control,"freiaPipeOutA",480.0,12.0);
-  FGen.generateTaper(Control,"freiaOutFA",472.0,4.0,4.0,20.0,16.0);
+  generatePipe(Control,"freiaPipeOutA",470.0,12.0);
+  FGen.generateTaper(Control,"freiaOutFA",462.0,4.0,4.0,20.0,16.0);
 
+  PGen.generatePit(Control,"freiaOutPitA",50.0,50.0,50.0,50.0,0,0);
+  Control.addVariable("frieaJawPitYStep",-60.5);
 
+  Control.addVariable("freiaJawPitVoidHeight",167.0);
+  Control.addVariable("freiaJawPitVoidDepth",36.0);
+  Control.addVariable("freiaJawPitVoidWidth",246.0);
+  Control.addVariable("freiaJawPitVoidLength",105.0);
+  
+  Control.addVariable("freiaJawPitFeHeight",70.0);
+  Control.addVariable("freiaJawPitFeDepth",60.0);
+  Control.addVariable("freiaJawPitFeWidth",60.0);
+  Control.addVariable("freiaJawPitFeFront",45.0);
+  Control.addVariable("freiaJawPitFeBack",70.0);
+  Control.addVariable("freiaJawPitFeMat","Stainless304");
+  
+  Control.addVariable("freiaJawPitConcHeight",50.0);
+  Control.addVariable("freiaJawPitConcDepth",50.0);
+  Control.addVariable("freiaJawPitConcWidth",50.0);
+  Control.addVariable("freiaJawPitConcFront",50.0);
+  Control.addVariable("freiaJawPitConcBack",50.0);
+  Control.addVariable("freiaJawPitConcMat","Concrete");
+
+  Control.addVariable("freiaJawPitColletHeight",15.0);
+  Control.addVariable("freiaJawPitColletDepth",15.0);
+  Control.addVariable("freiaJawPitColletWidth",40.0);
+  Control.addVariable("freiaJawPitColletLength",5.0);
+  Control.addVariable("freiaJawPitColletMat","Tungsten");
+
+  SGen.generateShield(Control,"freiaShieldA",570.0,40.0,40.0,40.0,4,8);
   return;
 }
  

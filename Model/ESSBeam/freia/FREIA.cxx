@@ -133,12 +133,15 @@ FREIA::FREIA(const std::string& keyName) :
   BInsert(new BunkerInsert(newName+"BInsert")),
   FocusWall(new beamlineSystem::GuideLine(newName+"FWall")),
 
+  OutPitA(new constructSystem::ChopperPit(newName+"OutPitA")),
   ChopperOutA(new constructSystem::ChopperUnit(newName+"ChopperOutA")),
   WBC3Disk(new constructSystem::DiskChopper(newName+"WBC3Blade")),
 
   ChopperOutB(new constructSystem::ChopperUnit(newName+"ChopperOutB")),
   FOC3Disk(new constructSystem::DiskChopper(newName+"FOC3Blade")),
 
+  JawPit(new constructSystem::ChopperPit(newName+"JawPit")),
+  ShieldA(new constructSystem::LineShield(newName+"ShieldA")),
   VPipeOutA(new constructSystem::VacuumPipe(newName+"PipeOutA")),
   FocusOutA(new beamlineSystem::GuideLine(newName+"OutFA"))
 
@@ -190,12 +193,14 @@ FREIA::FREIA(const std::string& keyName) :
   OR.addObject(BInsert);
   OR.addObject(FocusWall);  
 
+  OR.addObject(OutPitA);
   OR.addObject(ChopperOutA);
   OR.addObject(WBC3Disk);  
 
   OR.addObject(ChopperOutB);
   OR.addObject(FOC3Disk);  
 
+  OR.addObject(ShieldA);
   OR.addObject(VPipeOutA);
   OR.addObject(FocusOutA);  
       
@@ -351,6 +356,10 @@ FREIA::build(Simulation& System,
   FocusWall->addInsertCell(BInsert->getCell("Void"));
   FocusWall->createAll(System,*BInsert,7,*BInsert,7);
 
+  OutPitA->addInsertCell(voidCell);
+  OutPitA->addFrontWall(bunkerObj,2);
+  OutPitA->createAll(System,FocusWall->getKey("Guide0"),2);
+  return;
     // 15m WBC chopper
   ChopperOutA->addInsertCell(voidCell);
   ChopperOutA->createAll(System,FocusWall->getKey("Guide0"),2);
@@ -371,12 +380,24 @@ FREIA::build(Simulation& System,
   FOC3Disk->setOffsetFlag(1);  // Z direction
   FOC3Disk->createAll(System,ChopperOutB->getKey("Beam"),0);
 
+  return;
   VPipeOutA->addInsertCell(voidCell);
   VPipeOutA->createAll(System,ChopperOutB->getKey("Beam"),2);
 
   FocusOutA->addInsertCell(VPipeOutA->getCells("Void"));
   FocusOutA->createAll(System,*VPipeOutA,0,*VPipeOutA,0);
 
+  JawPit->addInsertCell(voidCell);
+  JawPit->createAll(System,FocusOutA->getKey("Guide0"),2);
+
+  ShieldA->addInsertCell(voidCell);
+  ShieldA->setFront(bunkerObj,2);
+  ShieldA->setDivider(bunkerObj,2);
+  ShieldA->setBack(JawPit->getKey("Mid"),1);
+  ShieldA->createAll(System,*BInsert,2);
+  ShieldA->insertComponent(System,"Void",*VPipeOutA);
+
+  
   return;
 }
 

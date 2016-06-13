@@ -100,16 +100,15 @@ PitGenerator::~PitGenerator()
 
   
 void
-PitGenerator::generatePit
-( FuncDataBase& Control,const std::string& keyName,
-  const double length,
-  const double side,const double height,
-  const double depth,const size_t NSeg,const size_t NLayer)  const
+PitGenerator::generatePit(FuncDataBase& Control,const std::string& keyName,
+			  const double vLength,const double vWidth,
+			  const double vHeight,const double vDepth,
+			  const size_t NSeg,const size_t NLayer)  const
   /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables 
     \param keyName :: head name for variable
-    \param length :: overall length
+    \param vLength :: length of void
     \param side :: full extent at sides
     \param height :: Full height
     \param depth :: Full depth
@@ -120,30 +119,30 @@ PitGenerator::generatePit
   ELog::RegMethod RegA("PitGenerator","generatorPit");
 
 
-  Control.addVariable("vespaPitBVoidHeight",167.0);
-  Control.addVariable("vespaPitBVoidDepth",36.0);
-  Control.addVariable("vespaPitBVoidWidth",246.0);
-  Control.addVariable("vespaPitBVoidLength",105.0);
+  Control.addVariable(keyName+"VoidHeight",vHeight);
+  Control.addVariable(keyName+"VoidDepth",vDepth);
+  Control.addVariable(keyName+"VoidWidth",vWidth);
+  Control.addVariable(keyName+"VoidLength",vLength);
   
-  Control.addVariable("vespaPitBFeHeight",70.0);
-  Control.addVariable("vespaPitBFeDepth",60.0);
-  Control.addVariable("vespaPitBFeWidth",60.0);
-  Control.addVariable("vespaPitBFeFront",45.0);
-  Control.addVariable("vespaPitBFeBack",70.0);
-  Control.addVariable("vespaPitBFeMat",feMat);
+  Control.addVariable(keyName+"FeHeight",70.0);
+  Control.addVariable(keyName+"FeDepth",60.0);
+  Control.addVariable(keyName+"FeWidth",60.0);
+  Control.addVariable(keyName+"FeFront",45.0);
+  Control.addVariable(keyName+"FeBack",70.0);
+  Control.addVariable(keyName+"FeMat",feMat);
   
-  Control.addVariable("vespaPitBConcHeight",50.0);
-  Control.addVariable("vespaPitBConcDepth",50.0);
-  Control.addVariable("vespaPitBConcWidth",50.0);
-  Control.addVariable("vespaPitBConcFront",50.0);
-  Control.addVariable("vespaPitBConcBack",50.0);
-  Control.addVariable("vespaPitBConcMat",concMat);
+  Control.addVariable(keyName+"ConcHeight",50.0);
+  Control.addVariable(keyName+"ConcDepth",50.0);
+  Control.addVariable(keyName+"ConcWidth",50.0);
+  Control.addVariable(keyName+"ConcFront",50.0);
+  Control.addVariable(keyName+"ConcBack",50.0);
+  Control.addVariable(keyName+"ConcMat",concMat);
 
-  Control.addVariable("vespaPitBColletHeight",15.0);
-  Control.addVariable("vespaPitBColletDepth",15.0);
-  Control.addVariable("vespaPitBColletWidth",40.0);
-  Control.addVariable("vespaPitBColletLength",5.0);
-  Control.addVariable("vespaPitBColletMat",colletMat);
+  Control.addVariable(keyName+"ColletHeight",15.0);
+  Control.addVariable(keyName+"ColletDepth",15.0);
+  Control.addVariable(keyName+"ColletWidth",40.0);
+  Control.addVariable(keyName+"ColletLength",5.0);
+  Control.addVariable(keyName+"ColletMat",colletMat);
 
   
   return;

@@ -45,6 +45,7 @@ namespace constructSystem
   class VacuumPipe;
   class VacuumWindow;
   class ChopperHousing;
+  class ChopperPit;
   class ChopperUnit;
 }
 
@@ -130,6 +131,8 @@ class FREIA : public attachSystem::CopiedComp
   /// Guide running to bunker wall
   std::shared_ptr<beamlineSystem::GuideLine> FocusWall;
 
+  /// Chopper at 15m [double pit]
+  std::shared_ptr<constructSystem::ChopperPit> OutPitA;
   /// 15m WBC3 
   std::shared_ptr<constructSystem::ChopperUnit> ChopperOutA;
   /// Double disk chopper (WBC3)
@@ -140,7 +143,12 @@ class FREIA : public attachSystem::CopiedComp
   /// Double disk chopper (FOC3)
   std::shared_ptr<constructSystem::DiskChopper> FOC3Disk;
 
-  /// Pipe from 10.0 to 11.1m 
+  /// Jaws at 20m
+  std::shared_ptr<constructSystem::ChopperPit> JawPit;
+
+  /// First Shield wall
+  std::shared_ptr<constructSystem::LineShield> ShieldA;  
+  /// Pipe from 15.0 to 20m 
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutA;
   /// Bender in 10-11m pipe
   std::shared_ptr<beamlineSystem::GuideLine> FocusOutA;
