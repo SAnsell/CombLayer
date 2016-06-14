@@ -305,7 +305,7 @@ FREIAvariables(FuncDataBase& Control)
 
   CGen.setMainRadius(56.0);
   CGen.setFrame(120.0,120.0);
-  CGen.generateChopper(Control,"freiaChopperOutA",12.0,10.0,4.55);
+  CGen.generateChopper(Control,"freiaChopperOutA",18.0,10.0,4.55);
 
   // Double Blade chopper
   Control.addVariable("freiaWBC3BladeXStep",0.0);
@@ -365,33 +365,15 @@ FREIAvariables(FuncDataBase& Control)
   generatePipe(Control,"freiaPipeOutA",470.0,12.0);
   FGen.generateTaper(Control,"freiaOutFA",462.0,4.0,4.0,20.0,16.0);
 
-  PGen.generatePit(Control,"freiaOutPitA",50.0,50.0,50.0,50.0,0,0);
-  Control.addVariable("frieaJawPitYStep",-60.5);
+  PGen.setFeLayer(6.0);
+  PGen.setConcLayer(10.0);
+  PGen.generatePit(Control,"freiaOutPitA",0.0,40.0,150.0,120.0,30.0);
 
-  Control.addVariable("freiaJawPitVoidHeight",167.0);
-  Control.addVariable("freiaJawPitVoidDepth",36.0);
-  Control.addVariable("freiaJawPitVoidWidth",246.0);
-  Control.addVariable("freiaJawPitVoidLength",105.0);
-  
-  Control.addVariable("freiaJawPitFeHeight",70.0);
-  Control.addVariable("freiaJawPitFeDepth",60.0);
-  Control.addVariable("freiaJawPitFeWidth",60.0);
-  Control.addVariable("freiaJawPitFeFront",45.0);
-  Control.addVariable("freiaJawPitFeBack",70.0);
-  Control.addVariable("freiaJawPitFeMat","Stainless304");
-  
-  Control.addVariable("freiaJawPitConcHeight",50.0);
-  Control.addVariable("freiaJawPitConcDepth",50.0);
-  Control.addVariable("freiaJawPitConcWidth",50.0);
-  Control.addVariable("freiaJawPitConcFront",50.0);
-  Control.addVariable("freiaJawPitConcBack",50.0);
-  Control.addVariable("freiaJawPitConcMat","Concrete");
 
-  Control.addVariable("freiaJawPitColletHeight",15.0);
-  Control.addVariable("freiaJawPitColletDepth",15.0);
-  Control.addVariable("freiaJawPitColletWidth",40.0);
-  Control.addVariable("freiaJawPitColletLength",5.0);
-  Control.addVariable("freiaJawPitColletMat","Tungsten");
+  PGen.setFeLayer(5.0);
+  PGen.setConcLayer(10.0);
+  PGen.generatePit(Control,"freiaJawPit",450.0,40.0,150.0,120.0,30.0);
+
 
   SGen.generateShield(Control,"freiaShieldA",570.0,40.0,40.0,40.0,4,8);
   return;

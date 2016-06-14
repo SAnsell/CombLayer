@@ -177,7 +177,6 @@ ChopperPit::createSurfaces()
 {
   ELog::RegMethod RegA("ChopperPit","createSurfaces");
 
-
   // Inner void
   if (!activeFront)
     ModelSupport::buildPlane(SMap,pitIndex+1,Origin-Y*(voidLength/2.0),Y);

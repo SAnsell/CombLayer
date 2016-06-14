@@ -124,7 +124,7 @@ DBMaterial::initMaterial()
   setMaterial(MObj);
   MObj.setMaterial(0,"Void","00000.00c 1.0","",MLib);
   setMaterial(MObj);
-
+  cloneMaterial("InValid","Null");
 
   MObj.setMaterial(1,"MachineTugnsten",
 		   "26000.55c 0.001773 28000.50c 0.003935 74182.70c 0.0165487 "

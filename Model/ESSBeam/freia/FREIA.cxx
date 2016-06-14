@@ -194,6 +194,7 @@ FREIA::FREIA(const std::string& keyName) :
   OR.addObject(FocusWall);  
 
   OR.addObject(OutPitA);
+  OR.addObject(JawPit);
   OR.addObject(ChopperOutA);
   OR.addObject(WBC3Disk);  
 
@@ -359,20 +360,52 @@ FREIA::build(Simulation& System,
   OutPitA->addInsertCell(voidCell);
   OutPitA->addFrontWall(bunkerObj,2);
   OutPitA->createAll(System,FocusWall->getKey("Guide0"),2);
-  return;
-    // 15m WBC chopper
-  ChopperOutA->addInsertCell(voidCell);
-  ChopperOutA->createAll(System,FocusWall->getKey("Guide0"),2);
 
+  // 15m WBC chopper
+  ChopperOutA->addInsertCell(OutPitA->getCell("Void"));
+  ChopperOutA->createAll(System,FocusWall->getKey("Guide0"),2);
   // Double disk chopper
   WBC3Disk->addInsertCell(ChopperOutA->getCell("Void"));
   WBC3Disk->setCentreFlag(3);  // Z direction
   WBC3Disk->setOffsetFlag(1);  // Z direction
   WBC3Disk->createAll(System,ChopperOutA->getKey("Beam"),0);
-  
+
+  JawPit->addInsertCell(voidCell);
+  JawPit->createAll(System,OutPitA->getKey("Inner"),0);
+  return;
+  ShieldA->addInsertCell(voidCell);
+  ShieldA->addInsertCell(OutPitA->getCells("Outer"));
+  ShieldA->addInsertCell(OutPitA->getCells("MidLayer"));
+  ShieldA->addInsertCell(JawPit->getCells("Outer"));
+  ShieldA->addInsertCell(JawPit->getCells("MidLayer"));
+  ShieldA->setFront(OutPitA->getKey("Mid"),2);
+  ShieldA->setBack(JawPit->getKey("Mid"),1);
+  ShieldA->createAll(System,OutPitA->getKey("Inner"),0);
+  //  ShieldA->insertComponent(System,"Void",*VPipeOutA);
+
+
+
+
+  return;
+ 
+     // 15m WBC chopper
+  ChopperOutA->addInsertCell(OutPitA->getCell("Void"));
+  ChopperOutA->createAll(System,FocusWall->getKey("Guide0"),2);
+  // Double disk chopper
+  WBC3Disk->addInsertCell(ChopperOutA->getCell("Void"));
+  WBC3Disk->setCentreFlag(3);  // Z direction
+  WBC3Disk->setOffsetFlag(1);  // Z direction
+  WBC3Disk->createAll(System,ChopperOutA->getKey("Beam"),0);
+
+  JawPit->addInsertCell(voidCell);
+  JawPit->createAll(System,FocusOutA->getKey("Guide0"),2);
+
+
   // 15m WBC chopper
   ChopperOutB->addInsertCell(voidCell);
   ChopperOutB->createAll(System,ChopperOutA->getKey("Beam"),2);
+
+  return;  
 
   // Double disk chopper
   FOC3Disk->addInsertCell(ChopperOutB->getCell("Void"));
@@ -390,12 +423,6 @@ FREIA::build(Simulation& System,
   JawPit->addInsertCell(voidCell);
   JawPit->createAll(System,FocusOutA->getKey("Guide0"),2);
 
-  ShieldA->addInsertCell(voidCell);
-  ShieldA->setFront(bunkerObj,2);
-  ShieldA->setDivider(bunkerObj,2);
-  ShieldA->setBack(JawPit->getKey("Mid"),1);
-  ShieldA->createAll(System,*BInsert,2);
-  ShieldA->insertComponent(System,"Void",*VPipeOutA);
 
   
   return;

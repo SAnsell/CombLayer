@@ -82,10 +82,12 @@ namespace setVariable
 {
 
 PitGenerator::PitGenerator() :
-  feHeight(40.0),
+  feHeight(40.0),feDepth(feHeight),feWidth(feHeight),
+  feFront(feHeight),feBack(feHeight),
+  concHeight(40.0),concDepth(concHeight),concWidth(concHeight),
+  concFront(concHeight),concBack(concHeight),
   feMat("CastIron"),concMat("Concrete"),
   colletMat("Tungsten")
-
   /*!
     Constructor and defaults
   */
@@ -98,44 +100,76 @@ PitGenerator::~PitGenerator()
  */
 {}
 
+
+void
+PitGenerator::setFeLayer(const double T)
+  /*!
+    Set all the Fe layers to the same value
+    \param T :: Thickness
+   */
+{
+  feHeight=T;
+  feDepth=T;
+  feWidth=T;
+  feFront=T;
+  feBack=T;
+
+  return;
+}
+
+void
+PitGenerator::setConcLayer(const double T)
+  /*!
+    Set all the concrete layers to the same value
+    \param T :: Thickness
+   */
+{
+  concHeight=T;
+  concDepth=T;
+  concWidth=T;
+  concFront=T;
+  concBack=T;
+  return;
+}
   
 void
 PitGenerator::generatePit(FuncDataBase& Control,const std::string& keyName,
-			  const double vLength,const double vWidth,
-			  const double vHeight,const double vDepth,
-			  const size_t NSeg,const size_t NLayer)  const
+			  const double yStep,const double vLength,
+                          const double vWidth,const double vHeight,
+                          const double vDepth) const
   /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables 
     \param keyName :: head name for variable
+    \param yStep :: y-offset 
     \param vLength :: length of void
-    \param side :: full extent at sides
-    \param height :: Full height
-    \param depth :: Full depth
-    \param NSeg :: number of segments
-    \param NLayer :: number of layers
+    \param vWidth :: full extent of void at sides [2x half]
+    \param vHeight :: Full void height 
+    \param vDepth :: Full void depth
   */
 {
   ELog::RegMethod RegA("PitGenerator","generatorPit");
 
 
+  Control.addVariable(keyName+"YStep",yStep);
+  
   Control.addVariable(keyName+"VoidHeight",vHeight);
   Control.addVariable(keyName+"VoidDepth",vDepth);
   Control.addVariable(keyName+"VoidWidth",vWidth);
   Control.addVariable(keyName+"VoidLength",vLength);
   
-  Control.addVariable(keyName+"FeHeight",70.0);
-  Control.addVariable(keyName+"FeDepth",60.0);
-  Control.addVariable(keyName+"FeWidth",60.0);
-  Control.addVariable(keyName+"FeFront",45.0);
-  Control.addVariable(keyName+"FeBack",70.0);
+  Control.addVariable(keyName+"FeHeight",feHeight);
+  Control.addVariable(keyName+"FeDepth",feDepth);
+  Control.addVariable(keyName+"FeWidth",feWidth);
+  Control.addVariable(keyName+"FeFront",feFront);
+  Control.addVariable(keyName+"FeBack",feBack);
   Control.addVariable(keyName+"FeMat",feMat);
   
-  Control.addVariable(keyName+"ConcHeight",50.0);
-  Control.addVariable(keyName+"ConcDepth",50.0);
-  Control.addVariable(keyName+"ConcWidth",50.0);
-  Control.addVariable(keyName+"ConcFront",50.0);
-  Control.addVariable(keyName+"ConcBack",50.0);
+  Control.addVariable(keyName+"ConcHeight",concHeight);
+  Control.addVariable(keyName+"ConcDepth",concDepth);
+  Control.addVariable(keyName+"ConcWidth",concWidth);
+  Control.addVariable(keyName+"ConcFront",concFront);
+  Control.addVariable(keyName+"ConcBack",concBack);
   Control.addVariable(keyName+"ConcMat",concMat);
 
   Control.addVariable(keyName+"ColletHeight",15.0);

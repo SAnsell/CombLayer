@@ -38,12 +38,7 @@ namespace setVariable
 class PitGenerator
 {
  private:
-  
-  double voidHeight;             ///< void height
-  double voidDepth;              ///< void depth
-  double voidWidth;              ///< void widht
-  double voidLength;              ///< void widht
-  
+     
   double feHeight;             ///< inner height
   double feDepth;              ///< inner depth
   double feWidth;              ///< inner widht
@@ -55,7 +50,7 @@ class PitGenerator
   double concWidth;              ///< outer widht
   double concFront;              ///< outer front
   double concBack;               ///< outer back
-
+  
   std::string feMat;           ///< Primary default mat
   std::string concMat;         ///< Secondary default mat
   std::string colletMat;       ///< collet  default mat
@@ -68,9 +63,17 @@ class PitGenerator
   PitGenerator& operator=(const PitGenerator&);
   ~PitGenerator();
 
+  /// set collet material
+  void setColletMat(const std::string& M)
+  { colletMat=M; }
+  /// void collett
+  void removeCollet() { colletMat="InValid"; }
+  void setFeLayer(const double);
+  void setConcLayer(const double);
+  
   void generatePit(FuncDataBase&,const std::string&,
 		      const double,const double,const double,const double,
-		      const size_t,const size_t)  const;
+		      const double)  const;
 };
 
 }
