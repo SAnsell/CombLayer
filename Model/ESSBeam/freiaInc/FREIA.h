@@ -47,6 +47,7 @@ namespace constructSystem
   class ChopperHousing;
   class ChopperPit;
   class ChopperUnit;
+  class HoleShape;
 }
 
 namespace essSystem

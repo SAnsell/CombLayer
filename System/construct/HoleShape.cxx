@@ -126,7 +126,7 @@ HoleShape::operator=(const HoleShape& A)
 }
 
 void
-HoleShape:::setShape(const std::string& ST)
+HoleShape::setShape(const std::string& ST)
   /*!
     Set the output shape:
     Options are :
@@ -138,35 +138,30 @@ HoleShape:::setShape(const std::string& ST)
     \param ST :: Shape type
   */
 {
-  size_t shapeIndex;
-  if (StrFunc::convert(ST,shapeIndex))
+  ELog::RegMethod RegA("HoleShape","setShape(string)");
+  static const std::map<std::string,size_t> SName =
     {
-      setShape(shapeIndex);
-      return;
-    }
+      {"Null",0},
+      {"Circle",1},
+      {"Square",2},
+      {"Hexagon",3},
+      {"Octagon",4}
+    };
 
-  switch(ST)
+
+  std::map<std::string,size_t>::const_iterator mc=SName.find(ST);
+  if (mc!=SName.end())
     {
-    case "Null":
-      shapeType=0;
+      shapeType=mc->second;
       return;
-    case "Circle":
-      shapeType=1;
-      return;
-    case "Square":
-      shapeType=2;
-      return;
-    case "Hexagon":
-      shapeType=3;
-      return;
-    case "Octagon":
-      shapeType=4;
-      return;
-    default:
     }
-  throw ColErr::InContainerError<std::string>
-    (ST,"Shape not defined : ST"); 
+  size_t shapeIndex;
+  if (!StrFunc::convert(ST,shapeIndex))
+    throw ColErr::InContainerError<std::string>
+      (ST,"Shape not defined : ST"); 
   
+  setShape(shapeIndex);
+  return;
 }
   
 void
@@ -201,7 +196,7 @@ HoleShape::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("HoleShape","populate");
 
   const std::string shapeName=
-    Control.EvalVar<std::string>(keyName+"Shape"));
+    Control.EvalVar<std::string>(keyName+"Shape");
   setShape(shapeName);
 
   radialStep=Control.EvalDefVar<double>(keyName+"RadialStep",0.0);
