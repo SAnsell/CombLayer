@@ -130,7 +130,6 @@ ChopperPit::populate(const FuncDataBase& Control)
   concFront=Control.EvalVar<double>(keyName+"ConcFront");
   concBack=Control.EvalVar<double>(keyName+"ConcBack");
 
-  
   colletDepth=Control.EvalDefVar<double>(keyName+"ColletDepth",0.0);
   colletHeight=Control.EvalDefVar<double>(keyName+"ColletHeight",0.0);
   colletWidth=Control.EvalDefVar<double>(keyName+"ColletWidth",0.0);

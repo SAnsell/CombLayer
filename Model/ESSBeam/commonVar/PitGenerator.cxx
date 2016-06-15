@@ -173,9 +173,8 @@ PitGenerator::generatePit(FuncDataBase& Control,const std::string& keyName,
   Control.addVariable(keyName+"ConcMat",concMat);
 
   Control.addVariable(keyName+"ColletHeight",15.0);
-  Control.addVariable(keyName+"ColletDepth",15.0);
+  Control.addVariable(keyName+"ColletDepth",5.0);
   Control.addVariable(keyName+"ColletWidth",40.0);
-  Control.addVariable(keyName+"ColletLength",5.0);
   Control.addVariable(keyName+"ColletMat",colletMat);
 
   

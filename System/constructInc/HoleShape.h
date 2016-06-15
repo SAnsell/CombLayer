@@ -3,7 +3,7 @@
  
  * File:   constructInc/HoleShape.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,7 +46,7 @@ class HoleShape : public attachSystem::ContainedComp,
 
   double angleCentre;           ///< Mid point for alignment [for interigation]
   double angleOffset;           ///< Rotation around centre point
-  double radialStep;          ///< Centre radial position
+  double radialStep;            ///< Centre radial position
   
   double radius;                ///< Shape radius
 
@@ -58,6 +58,7 @@ class HoleShape : public attachSystem::ContainedComp,
 
   
   void setShape(const size_t);
+  void setShape(const std::string&);
 
   void createCircleSurfaces();
   void createSquareSurfaces();  

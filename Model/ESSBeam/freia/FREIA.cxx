@@ -372,7 +372,7 @@ FREIA::build(Simulation& System,
 
   JawPit->addInsertCell(voidCell);
   JawPit->createAll(System,OutPitA->getKey("Inner"),0);
-  return;
+
   ShieldA->addInsertCell(voidCell);
   ShieldA->addInsertCell(OutPitA->getCells("Outer"));
   ShieldA->addInsertCell(OutPitA->getCells("MidLayer"));
@@ -381,8 +381,10 @@ FREIA::build(Simulation& System,
   ShieldA->setFront(OutPitA->getKey("Mid"),2);
   ShieldA->setBack(JawPit->getKey("Mid"),1);
   ShieldA->createAll(System,OutPitA->getKey("Inner"),0);
-  //  ShieldA->insertComponent(System,"Void",*VPipeOutA);
+  //  ShieldA->insertComponent(System,"Void",*VPipeOutA)
 
+  VPipeOutA->addInsertCell(ShieldA->getCell("Void"));
+  VPipeOutA->createAll(System,*ShieldA,-1);
 
 
 
@@ -399,8 +401,7 @@ FREIA::build(Simulation& System,
 
   JawPit->addInsertCell(voidCell);
   JawPit->createAll(System,FocusOutA->getKey("Guide0"),2);
-
-
+  
   // 15m WBC chopper
   ChopperOutB->addInsertCell(voidCell);
   ChopperOutB->createAll(System,ChopperOutA->getKey("Beam"),2);
@@ -414,8 +415,6 @@ FREIA::build(Simulation& System,
   FOC3Disk->createAll(System,ChopperOutB->getKey("Beam"),0);
 
   return;
-  VPipeOutA->addInsertCell(voidCell);
-  VPipeOutA->createAll(System,ChopperOutB->getKey("Beam"),2);
 
   FocusOutA->addInsertCell(VPipeOutA->getCells("Void"));
   FocusOutA->createAll(System,*VPipeOutA,0,*VPipeOutA,0);

@@ -3,7 +3,7 @@
  
  * File:   construct/HoleShape.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,8 +69,6 @@
 #include "SurInter.h"
 #include "HoleShape.h"
 
-#include "localRotate.h"
-#include "masterRotate.h"
 
 namespace constructSystem
 {
@@ -128,6 +126,50 @@ HoleShape::operator=(const HoleShape& A)
 }
 
 void
+HoleShape:::setShape(const std::string& ST)
+  /*!
+    Set the output shape:
+    Options are :
+    - 0 : Nothing
+    - 1 : Circle
+    - 2 : Square
+    - 3 : Hexagon
+    - 4 : Octagon
+    \param ST :: Shape type
+  */
+{
+  size_t shapeIndex;
+  if (StrFunc::convert(ST,shapeIndex))
+    {
+      setShape(shapeIndex);
+      return;
+    }
+
+  switch(ST)
+    {
+    case "Null":
+      shapeType=0;
+      return;
+    case "Circle":
+      shapeType=1;
+      return;
+    case "Square":
+      shapeType=2;
+      return;
+    case "Hexagon":
+      shapeType=3;
+      return;
+    case "Octagon":
+      shapeType=4;
+      return;
+    default:
+    }
+  throw ColErr::InContainerError<std::string>
+    (ST,"Shape not defined : ST"); 
+  
+}
+  
+void
 HoleShape::setShape(const size_t ST)
   /*!
     Set the output shape:
@@ -143,7 +185,7 @@ HoleShape::setShape(const size_t ST)
   ELog::RegMethod RegA("HoleShape","setShape");
       
   if (ST>4)
-    throw ColErr::IndexError<size_t>(ST,4,"Shape not definde : ST"); 
+    throw ColErr::IndexError<size_t>(ST,4,"Shape not defined : ST"); 
 
   shapeType=ST;
   return;
@@ -157,12 +199,15 @@ HoleShape::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("HoleShape","populate");
-  
-  setShape(Control.EvalVar<size_t>(keyName+"Shape"));
-  
-  angleCentre=Control.EvalVar<double>(keyName+"AngleCentre");
-  angleOffset=Control.EvalVar<double>(keyName+"AngleOffset");
-  radialStep=Control.EvalVar<double>(keyName+"RadialStep");
+
+  const std::string shapeName=
+    Control.EvalVar<std::string>(keyName+"Shape"));
+  setShape(shapeName);
+
+  radialStep=Control.EvalDefVar<double>(keyName+"RadialStep",0.0);
+  angleCentre=Control.EvalDefVar<double>(keyName+"AngleCentre",0.0);
+  angleOffset=Control.EvalDefVar<double>(keyName+"AngleOffset",0.0);
+
   radius=Control.EvalVar<double>(keyName+"Radius");
   return;
 }
@@ -444,8 +489,9 @@ HoleShape::createAll(Simulation& System,
 		     const long int sideIndex)
   /*!
     Generic function to create everything
-    \param System :: Simuation 
+    \param System :: Simulation 
     \param FC :: Fixed component to set axis etc
+    \param sideIndex :: side for hole
   */
 {
   ELog::RegMethod RegA("HoleShape","createAll");
@@ -459,4 +505,4 @@ HoleShape::createAll(Simulation& System,
 }
 
   
-}  // NAMESPACE shutterSystem
+}  // NAMESPACE constructSystem

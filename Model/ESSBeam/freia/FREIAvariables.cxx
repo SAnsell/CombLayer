@@ -374,7 +374,9 @@ FREIAvariables(FuncDataBase& Control)
   PGen.setConcLayer(10.0);
   PGen.generatePit(Control,"freiaJawPit",450.0,40.0,150.0,120.0,30.0);
 
-
+  Control.addVariable("freiaColletCutShape","Circle");
+  Control.addVariable("freiaColletCutRadius",5.0);
+  
   SGen.generateShield(Control,"freiaShieldA",570.0,40.0,40.0,40.0,4,8);
   return;
 }
