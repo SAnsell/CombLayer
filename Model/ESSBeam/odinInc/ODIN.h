@@ -36,6 +36,7 @@ namespace constructSystem
   class DiskChopper;
   class ChopperPit;
   class RotaryCollimator;
+  class PinHole;    
 }
 
 namespace essSystem
@@ -43,7 +44,6 @@ namespace essSystem
   class Bunker;
   class BunkerInsert;
   class Hut;
-  class PinHole;
   class RentrantBS;
   
   /*!
@@ -121,7 +121,7 @@ class ODIN : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> GuideH;
   
   /// Collimator
-  std::shared_ptr<PinHole> PinA;
+  std::shared_ptr<constructSystem::PinHole> PinA;
 
   /// BeamStop
   std::shared_ptr<RentrantBS> BeamStop;

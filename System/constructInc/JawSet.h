@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   ESSBeam/odin/PinHole.h
+ * File:   constructInc/JawSet.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef essSystem_PinHole_h
-#define essSystem_PinHole_h
+#ifndef essSystem_JawSet_h
+#define essSystem_JawSet_h
 
 class Simulation;
 
@@ -28,36 +28,27 @@ namespace constructSystem
 {
   class RotaryCollimator;
   class Jaws;
-}
-
-namespace essSystem
-{
   
 /*!
-  \class PinHole
+  \class JawSet
   \version 1.0
   \author S. Ansell
-  \date June 2015
-  \brief Container class for multi-collimator system
+  \date June 2016
+  \brief Container class for multi-Jaw system
 */
 
-class PinHole : public attachSystem::ContainedComp,
+class JawSet : public attachSystem::ContainedComp,
   public attachSystem::FixedOffset,
   public attachSystem::CellMap
 {
  private:
 
-  const int pinIndex;             ///< SurfIndex offset
+  const int jawsetIndex;             ///< SurfIndex offset
   int cellIndex;                  ///< cell index
-
-  /// First collimator
-  std::shared_ptr<constructSystem::RotaryCollimator> CollA;
-  /// Second collimator
-  std::shared_ptr<constructSystem::RotaryCollimator> CollB;
 
   /// JAW X Axis
   std::shared_ptr<constructSystem::Jaws> JawX;
-  /// JAW ZX (+45deg)
+  /// JAW ZX (+45deg) [if present]
   std::shared_ptr<constructSystem::Jaws> JawXZ;
 
 
@@ -73,10 +64,10 @@ class PinHole : public attachSystem::ContainedComp,
     
  public:
 
-  PinHole(const std::string&);
-  PinHole(const PinHole&);
-  PinHole& operator=(const PinHole&);
-  virtual ~PinHole();
+  JawSet(const std::string&);
+  JawSet(const JawSet&);
+  JawSet& operator=(const JawSet&);
+  virtual ~JawSet();
 
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,

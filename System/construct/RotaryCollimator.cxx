@@ -277,7 +277,7 @@ RotaryCollimator::createObjects(Simulation& System)
     {
       std::shared_ptr<HoleShape>& HU=Holes[i];
       HU->setFaces(SMap.realSurf(colIndex+1),-SMap.realSurf(colIndex+2));
-      HU->createAll(System,*this,0);          // Use THIS Origin (rot centre)
+      HU->createAllNoPopulate(System,*this,0);  // Use THIS Origin (rot centre)
       if (HU->getShape())
 	HoleExclude.addIntersection(HU->getExclude());
     }

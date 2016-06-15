@@ -87,11 +87,15 @@ class HoleShape : public attachSystem::ContainedComp,
   void populate(const FuncDataBase&);
   
   void setFaces(const int,const int);
+  void setFaces(const HeadRule&,const HeadRule&);
   void setMasterAngle(const double);
   /// accessor to central angle
   double getCentreAngle() const { return angleCentre; }
   /// accessor to shape
   size_t getShape() const { return shapeType; }
+  void createAllNoPopulate(Simulation&,
+			   const attachSystem::FixedComp&,
+			   const long int);
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
   

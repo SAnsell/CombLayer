@@ -148,7 +148,7 @@ HoleShape::setShape(const std::string& ST)
       {"Octagon",4}
     };
 
-
+  ELog::EM<<"Shape == "<<ST<<ELog::endDiag;
   std::map<std::string,size_t>::const_iterator mc=SName.find(ST);
   if (mc!=SName.end())
     {
@@ -229,7 +229,7 @@ HoleShape::createUnitVector(const attachSystem::FixedComp& FC,
   Qy.rotate(X);
   Qy.rotate(Z);
   FixedComp::applyShift(0,0,radialStep);  
-
+  ELog::EM<<"Hole == "<<Origin<<ELog::endDiag;
   return;
 }
 
@@ -259,6 +259,19 @@ HoleShape::setFaces(const int F,const int B)
   backFace.reset();
   frontFace.addIntersection(F);
   backFace.addIntersection(B);
+  return;
+}
+
+void
+HoleShape::setFaces(const HeadRule& F,const HeadRule& B)
+  /*!
+    Set face objects
+    \param F :: Front face
+    \param B :: Back face
+  */
+{
+  frontFace=F;
+  backFace=B;
   return;
 }
 
@@ -438,6 +451,7 @@ HoleShape::createObjects(Simulation& System)
     default:  // No work
       return;
     }
+
   System.addCell(MonteCarlo::Qhull
 		 (cellIndex++,0,0.0,Out+frontFace.display()+
 		  backFace.display()));
@@ -477,11 +491,11 @@ HoleShape::setMasterAngle(const double masterAngle)
   rotAngle=masterAngle+angleOffset+angleCentre;
   return;
 }
-  
+
 void
-HoleShape::createAll(Simulation& System,
-		     const attachSystem::FixedComp& FC,
-		     const long int sideIndex)
+HoleShape::createAllNoPopulate(Simulation& System,
+                               const attachSystem::FixedComp& FC,
+                               const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation 
@@ -489,13 +503,32 @@ HoleShape::createAll(Simulation& System,
     \param sideIndex :: side for hole
   */
 {
-  ELog::RegMethod RegA("HoleShape","createAll");
+  ELog::RegMethod RegA("HoleShape","createAllNoPopulate");
 
   createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();
+  insertObjects(System);
+    
+  return;
+}
   
+void
+HoleShape::createAll(Simulation& System,
+                     const attachSystem::FixedComp& FC,
+                     const long int sideIndex)
+  /*!
+    Generic function to create everything
+    \param System :: Simulation 
+    \param FC :: Fixed component to set axis etc
+    \param sideIndex :: side for hole
+  */
+{
+  ELog::RegMethod RegA("HoleShape","createAllNoPopulate");
+
+  populate(System.getDataBase());
+  createAllNoPopulate(System,FC,sideIndex);
   return;
 }
 

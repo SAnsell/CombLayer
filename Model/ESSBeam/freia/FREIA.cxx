@@ -87,6 +87,8 @@
 #include "DetectorTank.h"
 #include "CylSample.h"
 #include "LineShield.h"
+#include "HoleShape.h"
+#include "JawSet.h"
 
 #include "FREIA.h"
 
@@ -134,6 +136,7 @@ FREIA::FREIA(const std::string& keyName) :
   FocusWall(new beamlineSystem::GuideLine(newName+"FWall")),
 
   OutPitA(new constructSystem::ChopperPit(newName+"OutPitA")),
+  OutACut(new constructSystem::HoleShape(newName+"OutACut")),
   ChopperOutA(new constructSystem::ChopperUnit(newName+"ChopperOutA")),
   WBC3Disk(new constructSystem::DiskChopper(newName+"WBC3Blade")),
 
@@ -143,8 +146,9 @@ FREIA::FREIA(const std::string& keyName) :
   JawPit(new constructSystem::ChopperPit(newName+"JawPit")),
   ShieldA(new constructSystem::LineShield(newName+"ShieldA")),
   VPipeOutA(new constructSystem::VacuumPipe(newName+"PipeOutA")),
-  FocusOutA(new beamlineSystem::GuideLine(newName+"OutFA"))
+  FocusOutA(new beamlineSystem::GuideLine(newName+"OutFA")),
 
+  CaveJaw(new constructSystem::JawSet(newName+"CaveJaw"))
  /*!
     Constructor
  */
@@ -203,7 +207,9 @@ FREIA::FREIA(const std::string& keyName) :
 
   OR.addObject(ShieldA);
   OR.addObject(VPipeOutA);
-  OR.addObject(FocusOutA);  
+  OR.addObject(FocusOutA);
+
+  OR.addObject(CaveJaw);  
       
 }
 
@@ -361,6 +367,12 @@ FREIA::build(Simulation& System,
   OutPitA->addFrontWall(bunkerObj,2);
   OutPitA->createAll(System,FocusWall->getKey("Guide0"),2);
 
+  OutACut->addInsertCell(OutPitA->getCells("MidLayer"));
+  OutACut->addInsertCell(OutPitA->getCells("Collet"));
+  OutACut->setFaces(OutPitA->getKey("Inner").getSignedFullRule(2),
+                    OutPitA->getKey("Mid").getSignedFullRule(-2));
+  OutACut->createAll(System,OutPitA->getKey("Inner"),2);
+
   // 15m WBC chopper
   ChopperOutA->addInsertCell(OutPitA->getCell("Void"));
   ChopperOutA->createAll(System,FocusWall->getKey("Guide0"),2);
@@ -369,6 +381,15 @@ FREIA::build(Simulation& System,
   WBC3Disk->setCentreFlag(3);  // Z direction
   WBC3Disk->setOffsetFlag(1);  // Z direction
   WBC3Disk->createAll(System,ChopperOutA->getKey("Beam"),0);
+
+  ChopperOutB->addInsertCell(OutPitA->getCell("Void"));
+  ChopperOutB->createAll(System,ChopperOutA->getKey("Beam"),2);
+
+  // Double disk chopper
+  FOC3Disk->addInsertCell(ChopperOutB->getCell("Void"));
+  FOC3Disk->setCentreFlag(3);  // Z direction
+  FOC3Disk->setOffsetFlag(1);  // Z direction
+  FOC3Disk->createAll(System,ChopperOutB->getKey("Beam"),0);
 
   JawPit->addInsertCell(voidCell);
   JawPit->createAll(System,OutPitA->getKey("Inner"),0);
@@ -386,43 +407,11 @@ FREIA::build(Simulation& System,
   VPipeOutA->addInsertCell(ShieldA->getCell("Void"));
   VPipeOutA->createAll(System,*ShieldA,-1);
 
-
-
-  return;
- 
-     // 15m WBC chopper
-  ChopperOutA->addInsertCell(OutPitA->getCell("Void"));
-  ChopperOutA->createAll(System,FocusWall->getKey("Guide0"),2);
-  // Double disk chopper
-  WBC3Disk->addInsertCell(ChopperOutA->getCell("Void"));
-  WBC3Disk->setCentreFlag(3);  // Z direction
-  WBC3Disk->setOffsetFlag(1);  // Z direction
-  WBC3Disk->createAll(System,ChopperOutA->getKey("Beam"),0);
-
-  JawPit->addInsertCell(voidCell);
-  JawPit->createAll(System,FocusOutA->getKey("Guide0"),2);
-  
-  // 15m WBC chopper
-  ChopperOutB->addInsertCell(voidCell);
-  ChopperOutB->createAll(System,ChopperOutA->getKey("Beam"),2);
-
-  return;  
-
-  // Double disk chopper
-  FOC3Disk->addInsertCell(ChopperOutB->getCell("Void"));
-  FOC3Disk->setCentreFlag(3);  // Z direction
-  FOC3Disk->setOffsetFlag(1);  // Z direction
-  FOC3Disk->createAll(System,ChopperOutB->getKey("Beam"),0);
-
-  return;
-
   FocusOutA->addInsertCell(VPipeOutA->getCells("Void"));
   FocusOutA->createAll(System,*VPipeOutA,0,*VPipeOutA,0);
 
-  JawPit->addInsertCell(voidCell);
-  JawPit->createAll(System,FocusOutA->getKey("Guide0"),2);
-
-
+  CaveJaw->setInsertCell(JawPit->getCell("Void"));
+  CaveJaw->createAll(System,JawPit->getKey("Inner"),0);
   
   return;
 }

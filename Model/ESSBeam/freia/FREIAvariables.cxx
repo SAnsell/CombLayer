@@ -86,6 +86,82 @@ generatePipe(FuncDataBase& Control,
 
   return;
 }
+
+
+void
+generatePinHole(FuncDataBase& Control)
+  /*!
+    Generate the pin-hole variables
+    \param Control :: Database
+   */
+{
+    // PIN COLLIMATOR SYSTEM
+  Control.addVariable("freiaCaveJawLength",25.0);
+  Control.addVariable("freiaCaveJawRadius",30.0);
+
+  //
+  // JAWS
+  //
+  // Jaw X
+  Control.addVariable("freiaCaveJawJawVertXStep",0.0);
+  Control.addVariable("freiaCaveJawJawVertYStep",-5.0);
+  Control.addVariable("freiaCaveJawJawVertZStep",0.0);
+  Control.addVariable("freiaCaveJawJawVertXYangle",180.0);
+  Control.addVariable("freiaCaveJawJawVertZangle",0.0);
+
+  Control.addVariable("freiaCaveJawJawVertZOpen",5.5);
+  Control.addVariable("freiaCaveJawJawVertZThick",2.0);
+  Control.addVariable("freiaCaveJawJawVertZCross",15.0);
+  Control.addVariable("freiaCaveJawJawVertZLen",8.0);
+
+  Control.addVariable("freiaCaveJawJawVertGap",0.5);  
+  
+  Control.addVariable("freiaCaveJawJawVertXOpen",5.5);
+  Control.addVariable("freiaCaveJawJawVertXThick",2.0);
+  Control.addVariable("freiaCaveJawJawVertXCross",15.0);
+  Control.addVariable("freiaCaveJawJawVertXLen",8.0);  
+
+  Control.addVariable("freiaCaveJawJawVertXHeight",28.0);
+  Control.addVariable("freiaCaveJawJawVertYHeight",9.0);
+  Control.addVariable("freiaCaveJawJawVertZHeight",28.0);
+  Control.addVariable("freiaCaveJawJawVertWallThick",2.0);
+
+  Control.addVariable("freiaCaveJawJawVertxJawMat","Tungsten");
+  Control.addVariable("freiaCaveJawJawVertzJawMat","Tungsten");
+  Control.addVariable("freiaCaveJawJawVertWallMat","Aluminium");
+
+  // Jaw XZ
+  Control.addVariable("freiaCaveJawJawDiagXStep",0.0);
+  Control.addVariable("freiaCaveJawJawDiagYStep",5.0);
+  Control.addVariable("freiaCaveJawJawDiagZStep",0.0);
+  Control.addVariable("freiaCaveJawJawDiagXAngle",0.0);
+  Control.addVariable("freiaCaveJawJawDiagYAngle",45.0);
+  Control.addVariable("freiaCaveJawJawDiagZAngle",0.0);
+
+  Control.addVariable("freiaCaveJawJawDiagZOpen",5.5);
+  Control.addVariable("freiaCaveJawJawDiagZThick",2.0);
+  Control.addVariable("freiaCaveJawJawDiagZCross",15.0);
+  Control.addVariable("freiaCaveJawJawDiagZLen",8.0);
+
+  Control.addVariable("freiaCaveJawJawDiagGap",0.5);  
+  
+  Control.addVariable("freiaCaveJawJawDiagXOpen",5.5);
+  Control.addVariable("freiaCaveJawJawDiagXThick",2.0);
+  Control.addVariable("freiaCaveJawJawDiagXCross",15.0);
+  Control.addVariable("freiaCaveJawJawDiagXLen",8.0);  
+
+  Control.addVariable("freiaCaveJawJawDiagXHeight",28.0);
+  Control.addVariable("freiaCaveJawJawDiagYHeight",9.0);
+  Control.addVariable("freiaCaveJawJawDiagZHeight",28.0);
+  Control.addVariable("freiaCaveJawJawDiagWallThick",2.0);
+
+
+  Control.addVariable("freiaCaveJawJawDiagxJawMat","Tungsten");
+  Control.addVariable("freiaCaveJawJawDiagzJawMat","Tungsten");
+  Control.addVariable("freiaCaveJawJawDiagWallMat","Aluminium");
+  return;
+}
+  
   
 void
 FREIAvariables(FuncDataBase& Control)
@@ -362,21 +438,22 @@ FREIAvariables(FuncDataBase& Control)
   Control.addVariable("freiaFOC3Blade0PhaseAngle1",275.0);
   Control.addVariable("freiaFOC3Blade0OpenAngle1",30.0);
 
-  generatePipe(Control,"freiaPipeOutA",470.0,12.0);
-  FGen.generateTaper(Control,"freiaOutFA",462.0,4.0,4.0,20.0,16.0);
+  generatePipe(Control,"freiaPipeOutA",450.0,12.0);
+  FGen.generateTaper(Control,"freiaOutFA",442.0,4.0,4.0,20.0,16.0);
 
   PGen.setFeLayer(6.0);
   PGen.setConcLayer(10.0);
-  PGen.generatePit(Control,"freiaOutPitA",0.0,40.0,150.0,120.0,30.0);
+  PGen.generatePit(Control,"freiaOutPitA",0.0,40.0,170.0,150.0,30.0);
 
   PGen.setFeLayer(6.0);
   PGen.setConcLayer(10.0);
-  PGen.generatePit(Control,"freiaJawPit",450.0,40.0,150.0,120.0,30.0);
+  PGen.generatePit(Control,"freiaJawPit",485.0,40.0,150.0,120.0,30.0);
 
-  Control.addVariable("freiaOutBCutShape","Circle");
-  Control.addVariable("freiaOutBCutRadius",5.0);
+  Control.addVariable("freiaOutACutShape","Circle");
+  Control.addVariable("freiaOutACutRadius",5.0);
   
-  SGen.generateShield(Control,"freiaShieldA",570.0,40.0,40.0,40.0,4,8);
+  SGen.generateShield(Control,"freiaShieldA",470.0,40.0,40.0,40.0,4,8);
+  generatePinHole(Control);
   return;
 }
  

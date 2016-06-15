@@ -48,6 +48,7 @@ namespace constructSystem
   class ChopperPit;
   class ChopperUnit;
   class HoleShape;
+  class JawSet;
 }
 
 namespace essSystem
@@ -134,6 +135,8 @@ class FREIA : public attachSystem::CopiedComp
 
   /// Chopper at 15m [double pit]
   std::shared_ptr<constructSystem::ChopperPit> OutPitA;
+    /// 15m WBC3 
+  std::shared_ptr<constructSystem::HoleShape> OutACut;
   /// 15m WBC3 
   std::shared_ptr<constructSystem::ChopperUnit> ChopperOutA;
   /// Double disk chopper (WBC3)
@@ -151,8 +154,11 @@ class FREIA : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::LineShield> ShieldA;  
   /// Pipe from 15.0 to 20m 
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutA;
-  /// Bender in 10-11m pipe
+  /// Beamline from bunker to hutch
   std::shared_ptr<beamlineSystem::GuideLine> FocusOutA;
+
+  /// Beamline from bunker to hutch
+  std::shared_ptr<constructSystem::JawSet> CaveJaw;
 
   void setBeamAxis(const FuncDataBase&,const GuideItem&,const bool);
   

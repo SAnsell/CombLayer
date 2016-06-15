@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   ESSBeam/odin/PinHole.cxx
+ * File:   construct/JawSet.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,23 +72,19 @@
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
-#include "HoleShape.h"
-#include "RotaryCollimator.h"
 #include "Jaws.h"
 
-#include "PinHole.h"
+#include "JawSet.h"
 
-namespace essSystem
+namespace constructSystem
 {
 
-PinHole::PinHole(const std::string& Key) :
+JawSet::JawSet(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(Key,2),
   attachSystem::CellMap(),
-  pinIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(pinIndex+1),
-  CollA(new constructSystem::RotaryCollimator(Key+"CollA")),
-  CollB(new constructSystem::RotaryCollimator(Key+"CollB")),
+  jawsetIndex(ModelSupport::objectRegister::Instance().cell(Key)),
+  cellIndex(jawsetIndex+1),
   JawX(new constructSystem::Jaws(Key+"JawVert")),
   JawXZ(new constructSystem::Jaws(Key+"JawDiag"))
   /*!
@@ -99,31 +95,28 @@ PinHole::PinHole(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  OR.addObject(CollA);
-  OR.addObject(CollB);
-
   OR.addObject(JawX);
   OR.addObject(JawXZ);	  
  }
 
-PinHole::PinHole(const PinHole& A) : 
+JawSet::JawSet(const JawSet& A) : 
   attachSystem::ContainedComp(A),
   attachSystem::FixedOffset(A),
   attachSystem::CellMap(A),
-  pinIndex(A.pinIndex),cellIndex(A.cellIndex),CollA(A.CollA),
-  CollB(A.CollB),JawX(A.JawX),JawXZ(A.JawXZ),radius(A.radius),
+  jawsetIndex(A.jawsetIndex),cellIndex(A.cellIndex),
+  JawX(A.JawX),JawXZ(A.JawXZ),radius(A.radius),
   length(A.length)
   /*!
     Copy constructor
-    \param A :: PinHole to copy
+    \param A :: JawSet to copy
   */
 {}
 
-PinHole&
-PinHole::operator=(const PinHole& A)
+JawSet&
+JawSet::operator=(const JawSet& A)
   /*!
     Assignment operator
-    \param A :: PinHole to copy
+    \param A :: JawSet to copy
     \return *this
   */
 {
@@ -133,8 +126,6 @@ PinHole::operator=(const PinHole& A)
       attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
       cellIndex=A.cellIndex;
-      CollA=A.CollA;
-      CollB=A.CollB;
       JawX=A.JawX;
       JawXZ=A.JawXZ;
       radius=A.radius;
@@ -143,20 +134,20 @@ PinHole::operator=(const PinHole& A)
   return *this;
 }
 
-PinHole::~PinHole() 
+JawSet::~JawSet() 
   /*!
     Destructor
   */
 {}
 
 void
-PinHole::populate(const FuncDataBase& Control)
+JawSet::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: DataBase of variables
   */
 {
-  ELog::RegMethod RegA("PinHole","populate");
+  ELog::RegMethod RegA("JawSet","populate");
   
   FixedOffset::populate(Control);
 
@@ -168,7 +159,7 @@ PinHole::populate(const FuncDataBase& Control)
 }
 
 void
-PinHole::createUnitVector(const attachSystem::FixedComp& FC,
+JawSet::createUnitVector(const attachSystem::FixedComp& FC,
 			      const long int sideIndex)
   /*!
     Create the unit vectors
@@ -176,7 +167,7 @@ PinHole::createUnitVector(const attachSystem::FixedComp& FC,
     \param sideIndex :: Link point and direction [0 for origin]
   */
 {
-  ELog::RegMethod RegA("PinHole","createUnitVector");
+  ELog::RegMethod RegA("JawSet","createUnitVector");
   FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
 
@@ -184,33 +175,33 @@ PinHole::createUnitVector(const attachSystem::FixedComp& FC,
 }
 
 void
-PinHole::createSurfaces()
+JawSet::createSurfaces()
   /*!
     Create the surfaces
   */
 {
-  ELog::RegMethod RegA("PinHole","createSurfaces");
+  ELog::RegMethod RegA("JawSet","createSurfaces");
 
   // Inner void
-  ModelSupport::buildPlane(SMap,pinIndex+1,Origin,Y);
-  ModelSupport::buildPlane(SMap,pinIndex+2,Origin+Y*(length),Y);
-  ModelSupport::buildCylinder(SMap,pinIndex+7,Origin,Y,radius);
+  ModelSupport::buildPlane(SMap,jawsetIndex+1,Origin-Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,jawsetIndex+2,Origin+Y*(length/2.0),Y);
+  ModelSupport::buildCylinder(SMap,jawsetIndex+7,Origin,Y,radius);
 
   return;
 }
 
 void
-PinHole::createObjects(Simulation& System)
+JawSet::createObjects(Simulation& System)
   /*!
     Adds the main objects
     \param System :: Simulation to create objects in
    */
 {
-  ELog::RegMethod RegA("PinHole","createObjects");
+  ELog::RegMethod RegA("JawSet","createObjects");
 
   std::string Out;
 
-  Out=ModelSupport::getComposite(SMap,pinIndex,"1 -2 -7");
+  Out=ModelSupport::getComposite(SMap,jawsetIndex,"1 -2 -7");
   addOuterSurf(Out);
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   setCell("Void",cellIndex-1);
@@ -219,25 +210,25 @@ PinHole::createObjects(Simulation& System)
 }
 
 void
-PinHole::createLinks()
+JawSet::createLinks()
   /*!
     Simple beam transfer link points
   */
 {
   
-  ELog::RegMethod RegA("PinHole","createLinks");
+  ELog::RegMethod RegA("JawSet","createLinks");
 
   FixedComp::setConnect(0,Origin,-Y);
   FixedComp::setConnect(1,Origin+Y*length,Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(pinIndex+1));
-  FixedComp::setLinkSurf(1,SMap.realSurf(pinIndex+2));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(jawsetIndex+1));
+  FixedComp::setLinkSurf(1,SMap.realSurf(jawsetIndex+2));
   
   return;
 }
 
   
 void
-PinHole::createAll(Simulation& System,
+JawSet::createAll(Simulation& System,
 	       const attachSystem::FixedComp& FC,
 	       const long int FIndex)
   /*!
@@ -247,7 +238,7 @@ PinHole::createAll(Simulation& System,
     \param FIndex :: Fixed Index
   */
 {
-  ELog::RegMethod RegA("PinHole","createAll(FC)");
+  ELog::RegMethod RegA("JawSet","createAll(FC)");
 
   populate(System.getDataBase());
   createUnitVector(FC,FIndex);
@@ -256,17 +247,13 @@ PinHole::createAll(Simulation& System,
   createLinks();
   insertObjects(System);
 
-  CollA->setInsertCell(getCell("Void"));
-  CollB->setInsertCell(getCell("Void"));
-  CollA->createAll(System,FC,FIndex);
-  CollB->createAll(System,FC,FIndex);
   JawX->setInsertCell(getCell("Void"));
   JawX->createAll(System,FC,FIndex);
-
+  
   JawXZ->setInsertCell(getCell("Void"));
   JawXZ->createAll(System,FC,FIndex);
   
   return;
 }
   
-}  // NAMESPACE essSystem
+}  // NAMESPACE constructSystem
