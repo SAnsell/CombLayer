@@ -6,7 +6,7 @@ use CMakeList;
 use strict;
 
 ## EXECUTABLES
-my @masterprog=("fullBuild","ess","pipe","sinbad","t1Real",
+my @masterprog=("fullBuild","ess","pipe","photonMod2","t1Real",
 		"sns","reactor","t1MarkII","t1Eng","t3Expt",
 		"filter","singleItem","testMain"); 
 
@@ -173,6 +173,14 @@ $gM->addDepUnit("t1Eng", ["t1Engineer","t1Upgrade","t1Build","imat","chip",
 			  "visit","poly"]);
 
 $gM->addDepUnit("photonMod", ["photon","visit","src","simMC",
+			      "construct","physics","input","process",
+			      "transport","scatMat","endf","crystal",
+			      "source","monte","funcBase","log","monte",
+			      "tally","geometry","mersenne","src","world",
+			      "work","xml","poly","support","weights",
+			      "md5","global","attachComp","visit","poly"]);
+
+$gM->addDepUnit("photonMod2", ["photon","visit","src","simMC",
 			      "construct","physics","input","process",
 			      "transport","scatMat","endf","crystal",
 			      "source","monte","funcBase","log","monte",

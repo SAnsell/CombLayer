@@ -336,6 +336,8 @@ GammaSource::createRadialSource(SDef::Source& sourceCard) const
     \param sourceCard :: Source system
   */
 {
+  ELog::RegMethod RegA("GammaSource","createRadialSource");
+  
   sourceCard.setActive();
   sourceCard.setComp("vec",Direction);
   sourceCard.setComp("par",particleType);            /// photon (2)
@@ -368,6 +370,9 @@ GammaSource::createRectangleSource(SDef::Source& sourceCard) const
     \param sourceCard :: Source system
   */
 {
+  ELog::RegMethod RegA("GammaSource","createRectangleSource");
+
+  ELog::EM<<"REC SOURCE"<<ELog::endDiag;
   sourceCard.setActive();
   sourceCard.setComp("vec",Direction);
   sourceCard.setComp("par",particleType);            /// photon (2)
