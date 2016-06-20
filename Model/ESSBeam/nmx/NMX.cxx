@@ -180,23 +180,27 @@ NMX::build(Simulation& System,
   setBeamAxis(System.getDataBase(),GItem,1);
 
   GuideA->addInsertCell(GItem.getCells("Void"));
+  //  GuideA->addFrontCut(GItem.getKey("Beam"),-2);
   GuideA->addEndCut(GItem.getKey("Beam"),-2);
   GuideA->createAll(System,*nmxAxis,-3,*nmxAxis,-3); // beam front reversed
   if (stopPoint==1) return;                  // STOP at Monolith
-  // PIPE out of monolith
 
+
+  // PIPE after gamma shield
   VPipeA->addInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeA->createAll(System,GuideA->getKey("Guide0"),2);
-  
-  VPipeB->addInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeB->setFront(*VPipeA,2);
-  VPipeB->setBack(bunkerObj,1);
-  VPipeB->createAll(System,*VPipeA,2);
 
   BendA->addInsertCell(VPipeA->getCells("Void"));
   BendA->addInsertCell(VPipeB->getCells("Void"));
   BendA->createAll(System,GuideA->getKey("Guide0"),2,
 		   GuideA->getKey("Guide0"),2);
+  
+  return;
+  VPipeB->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeB->setFront(*VPipeA,2);
+  VPipeB->setBack(bunkerObj,1);
+  VPipeB->createAll(System,*VPipeA,2);
+
 
   if (stopPoint==2) return;                      // STOP At bunker edge
 

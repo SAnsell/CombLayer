@@ -48,7 +48,11 @@
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
-#include "variableSetup.h"
+#include "ShieldGenerator.h"
+#include "FocusGenerator.h"
+#include "ChopperGenerator.h"
+#include "PipeGenerator.h"
+#include "essVariables.h"
 
 namespace setVariable
 {
@@ -63,70 +67,31 @@ NMXvariables(FuncDataBase& Control)
   ELog::RegMethod RegA("NMXvariables[F]","NMXvariables");
 
   
+  setVariable::FocusGenerator FGen;
+  setVariable::ShieldGenerator SGen;
+  setVariable::PipeGenerator PipeGen;
+  SGen.addWall(1,20.0,"CastIron");
+  SGen.addRoof(1,20.0,"CastIron");
+  SGen.addFloor(1,20.0,"CastIron");
+  SGen.addFloorMat(5,"Concrete");
+  SGen.addRoofMat(5,"Concrete");
+  SGen.addWallMat(5,"Concrete");
+
   Control.addVariable("nmxAxisXStep",0.0);
   Control.addVariable("nmxAxisYStep",0.0);
   Control.addVariable("nmxAxisZStep",0.0);
   Control.addVariable("nmxAxisXYAngle",0.0);   // rotation 
   Control.addVariable("nmxAxisZAngle",0.0);
 
-  
-  // FIRST SECTION
-  Control.addVariable("nmxGAXStep",0.0);       
-  Control.addVariable("nmxGAYStep",0.0);       
-  Control.addVariable("nmxGAZStep",0.0);       
-  Control.addVariable("nmxGAXYAngle",0.0);
-  Control.addVariable("nmxGAZAngle",0.0);
+  FGen.setGuideMat("Copper");
+  FGen.setYOffset(0.1);
+  FGen.generateTaper(Control,"nmxGA",350.0,3.0,3.0,3.0,4.5);
   Control.addVariable("nmxGABeamXYAngle",1.0);       
-  //Control.addVariable("nmxGABeamXYAngle",-1.0);   //mod Vale 
 
-  Control.addVariable("nmxGALength",350.0);       
-  Control.addVariable("nmxGANShapes",1);       
-  Control.addVariable("nmxGANShapeLayers",3);
-  Control.addVariable("nmxGAActiveShield",0);
-
-  Control.addVariable("nmxGALayerThick1",0.4);  // glass thick
-  Control.addVariable("nmxGALayerThick2",1.5);
-
-  Control.addVariable("nmxGALayerMat0","Void");
-  Control.addVariable("nmxGALayerMat1","Aluminium");
-  Control.addVariable("nmxGALayerMat2","Void");       
-
-  Control.addVariable("nmxGA0TypeID","Taper");
-
-  Control.addVariable("nmxGA0HeightStart",3.0);
-  Control.addVariable("nmxGA0HeightEnd",4.5);
-  Control.addVariable("nmxGA0WidthStart",3.0);
-  Control.addVariable("nmxGA0WidthEnd",3.0);
-  Control.addVariable("nmxGA0Length",350.0);
-  Control.addVariable("nmxGA0ZAngle",0.0);
-    
-  Control.addVariable("nmxBAXStep",0.0);       
-  Control.addVariable("nmxBAYStep",50.0);       
-  Control.addVariable("nmxBAZStep",0.0);       
-  Control.addVariable("nmxBAXYAngle",0.0);
-  Control.addVariable("nmxBAZAngle",0.0);
-  Control.addVariable("nmxBABeamXYAngle",0.0);       
-
-  Control.addVariable("nmxBALength",1849.0);       
-  Control.addVariable("nmxBANShapes",1);       
-  Control.addVariable("nmxBANShapeLayers",3);
-  Control.addVariable("nmxBAActiveShield",0);
-
-  Control.addVariable("nmxBALayerThick1",0.4);  // glass thick
-  Control.addVariable("nmxBALayerThick2",1.5);
-
-  Control.addVariable("nmxBALayerMat0","Void");
-  Control.addVariable("nmxBALayerMat1","Aluminium");
-  Control.addVariable("nmxBALayerMat2","Void");       
-
-  Control.addVariable("nmxBA0TypeID","Bend");
-  Control.addVariable("nmxBA0AHeight",4.50);
-  Control.addVariable("nmxBA0BHeight",4.50);
-  Control.addVariable("nmxBA0AWidth",3.0);
-  Control.addVariable("nmxBA0BWidth",3.0);
-  Control.addVariable("nmxBA0AngDir",180.0);
-  Control.addVariable("nmxBA0Radius",120000.0);
-  Control.addParse<double>("nmxBA0Length","nmxBALength");
+  FGen.setGuideMat("Aluminium");
+  FGen.setYOffset(50.0);
+  FGen.generateBender(Control,"nmxBA",350.0,3.0,3.0,3.0,4.5,
+                      12000.0,180);
 
   // VACUUM PIPES:
   Control.addVariable("nmxPipeAYStep",50.0);

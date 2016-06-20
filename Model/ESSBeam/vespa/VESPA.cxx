@@ -339,7 +339,7 @@ VESPA::build(Simulation& System,
   FocusE->addInsertCell(VPipeE->getCells("Void"));
   FocusE->createAll(System,*VPipeE,0,*VPipeE,0);
 
-  // First Chopper
+  // 10m Chopper
   ChopperD->addInsertCell(bunkerObj.getCell("MainVoid"));
   ChopperD->createAll(System,FocusE->getKey("Guide0"),2);
 
@@ -356,7 +356,6 @@ VESPA::build(Simulation& System,
   FocusF->createAll(System,*VPipeF,0,*VPipeF,0);
 
   if (stopPoint==2) return;                      // STOP At bunker edge
-
   
   // IN WALL
   // Make bunker insert

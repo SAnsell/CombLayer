@@ -270,6 +270,7 @@ VESPAvariables(FuncDataBase& Control)
   Control.addVariable("vespaFA0Length",350.0);
 
   generatePipe(Control,"vespaPipeA",46.0);
+  FGen.clearYOffset();
   FGen.generateTaper(Control,"vespaFB",44.0,4.0,3.5,7.6,8.0);   
   
   // VACBOX A : 6.10m target centre

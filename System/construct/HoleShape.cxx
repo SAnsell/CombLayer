@@ -148,7 +148,6 @@ HoleShape::setShape(const std::string& ST)
       {"Octagon",4}
     };
 
-  ELog::EM<<"Shape == "<<ST<<ELog::endDiag;
   std::map<std::string,size_t>::const_iterator mc=SName.find(ST);
   if (mc!=SName.end())
     {
@@ -229,7 +228,6 @@ HoleShape::createUnitVector(const attachSystem::FixedComp& FC,
   Qy.rotate(X);
   Qy.rotate(Z);
   FixedComp::applyShift(0,0,radialStep);  
-  ELog::EM<<"Hole == "<<Origin<<ELog::endDiag;
   return;
 }
 

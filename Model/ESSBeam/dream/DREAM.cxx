@@ -261,7 +261,8 @@ DREAM::build(Simulation& System,
   setBeamAxis(GItem,1);
 
   FocusA->addInsertCell(GItem.getCells("Void"));
-  FocusA->addEndCut(GItem.getKey("Beam").getSignedLinkString(-2));
+  FocusA->addFrontCut(GItem.getKey("Beam"),-1);
+  FocusA->addEndCut(GItem.getKey("Beam"),-2);
   FocusA->createAll(System,GItem.getKey("Beam"),-1,
 		    GItem.getKey("Beam"),-1);
 
