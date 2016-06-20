@@ -3,7 +3,7 @@
  
  * File:   sourceInc/GammaSource.h
 *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,9 +52,13 @@ class GammaSource :
   
   int particleType;             ///< Particle Type
   double cutEnergy;             ///< Energy cut point
-  double radius;
-  double angleSpread;           ///< Angle spread
 
+  size_t shape;                    ///< Shape type
+  double width;                 ///< width
+  double height;                ///< height
+  double radius;                ///< radius
+  double angleSpread;           ///< Angle spread
+  
   Geometry::Vec3D FocusPoint;   ///< Focus point
   Geometry::Vec3D Direction;    ///< Beam direction
 
@@ -69,6 +73,8 @@ class GammaSource :
 			const long int);
   void calcPosition();
   void createSource(SDef::Source&) const;
+  void createRectangleSource(SDef::Source&) const;
+  void createRadialSource(SDef::Source&) const;
 
  public:
 

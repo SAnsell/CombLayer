@@ -386,7 +386,8 @@ createBeamSource(const FuncDataBase& Control,
   
 void
 createGammaSource(const FuncDataBase& Control,
-		  const std::string& keyName,Source& Card)
+		  const std::string& keyName,
+                  Source& Card)
   /*!
     Create the photon source for gamma-nuclea spectrum
     nuclear experiment source

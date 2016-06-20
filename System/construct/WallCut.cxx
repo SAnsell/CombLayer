@@ -3,7 +3,7 @@
  
  * File:   construct/WallCut.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -139,7 +139,8 @@ WallCut::~WallCut()
 void
 WallCut::populateKey(const FuncDataBase& Control)
   /*!
-    Populate key
+    Populate key : Determine the keyname for insertion
+    \param Control :: Variable Database
   */
 {  
   ELog::RegMethod RegA("WallCut","populateKey");

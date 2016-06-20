@@ -69,6 +69,9 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "BaseMap.h"
+#include "SurfMap.h"
+#include "CellMap.h"
 #include "ContainedComp.h"
 #include "insertPlate.h"
 
@@ -77,6 +80,7 @@ namespace constructSystem
 
 insertPlate::insertPlate(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
+  attachSystem::CellMap(),attachSystem::SurfMap(),
   ptIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(ptIndex+1),populated(0),
   xStep(0.0),yStep(0.0),  zStep(0.0),
@@ -89,6 +93,7 @@ insertPlate::insertPlate(const std::string& Key)  :
 
 insertPlate::insertPlate(const insertPlate& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  attachSystem::CellMap(A),attachSystem::SurfMap(A),
   ptIndex(A.ptIndex),cellIndex(A.cellIndex),
   populated(A.populated),xStep(A.xStep),yStep(A.yStep),
   zStep(A.zStep),xyAngle(A.xyAngle),zAngle(A.zAngle),
@@ -111,6 +116,8 @@ insertPlate::operator=(const insertPlate& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      attachSystem::SurfMap::operator=(A);
       cellIndex=A.cellIndex;
       populated=A.populated;
       xStep=A.xStep;
@@ -136,23 +143,25 @@ void
 insertPlate::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param Control :: Data Basex
+    \param Control :: Data Base
   */
 {
   ELog::RegMethod RegA("insertPlate","populate");
   
-
-  zStep=Control.EvalDefVar<double>(keyName+"XStep",0.0);
-  yStep=Control.EvalDefVar<double>(keyName+"YStep",0.0);
-  zStep=Control.EvalDefVar<double>(keyName+"ZStep",0.0);
-  xyAngle=Control.EvalDefVar<double>(keyName+"XYAngle",0.0);
-  zAngle=Control.EvalDefVar<double>(keyName+"ZAngle",0.0);
-  
-  width=Control.EvalVar<double>(keyName+"Width");
-  height=Control.EvalVar<double>(keyName+"Height");
-  depth=Control.EvalVar<double>(keyName+"Depth");
-  defMat=ModelSupport::EvalMat<int>(Control,keyName+"DefMat");
-  populated=1;
+  if (!populated)
+    {
+      zStep=Control.EvalDefVar<double>(keyName+"XStep",0.0);
+      yStep=Control.EvalDefVar<double>(keyName+"YStep",0.0);
+      zStep=Control.EvalDefVar<double>(keyName+"ZStep",0.0);
+      xyAngle=Control.EvalDefVar<double>(keyName+"XYAngle",0.0);
+      zAngle=Control.EvalDefVar<double>(keyName+"ZAngle",0.0);
+      
+      width=Control.EvalVar<double>(keyName+"Width");
+      height=Control.EvalVar<double>(keyName+"Height");
+      depth=Control.EvalVar<double>(keyName+"Depth");
+      defMat=ModelSupport::EvalMat<int>(Control,keyName+"DefMat");
+      populated=1;
+    }
   return;
 }
 
@@ -232,14 +241,20 @@ insertPlate::createSurfaces()
   ModelSupport::buildPlane(SMap,ptIndex+5,Origin-Z*height/2.0,Z);
   ModelSupport::buildPlane(SMap,ptIndex+6,Origin+Z*height/2.0,Z);
 
+  setSurf("Front",ptIndex+1);
+  setSurf("Back",ptIndex+2);
+  setSurf("Left",ptIndex+3);
+  setSurf("Right",ptIndex+4);
+  setSurf("Base",ptIndex+5);
+  setSurf("Top",ptIndex+6);
   return;
 }
 
 void
 insertPlate::createLinks()
   /*!
-    Create link pointsx
-   */
+    Create link points
+  */
 {
   ELog::RegMethod RegA("insertPlate","createLinks");
 
@@ -258,7 +273,7 @@ insertPlate::createLinks()
 void
 insertPlate::createObjects(Simulation& System)
   /*!
-    Adds the Chip guide components
+    Volume
     \param System :: Simulation to create objects in
   */
 {
@@ -266,8 +281,9 @@ insertPlate::createObjects(Simulation& System)
   
   std::string Out=
     ModelSupport::getComposite(SMap,ptIndex,"1 -2 3 -4 5 -6");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));
+  addCell("Main",cellIndex-1);
   addOuterSurf(Out);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out)); 
   return;
 }
 
@@ -297,9 +313,9 @@ insertPlate::findObjects(const Simulation& System)
           const double mZ(((i>>2)%2) ? -1.0 : 1.0);
           
           Geometry::Vec3D TP(Origin);
-          TP+=X*(mX*depth/2.0);
+          TP+=X*(mX*width/2.0);
           TP+=Y*(mY*depth/2.0);
-          TP+=Z*(mZ*depth/2.0);
+          TP+=Z*(mZ*height/2.0);
           OPtr=System.findCell(TP,OPtr);
           if (OPtr)
             ICells.insert(OPtr->getName());
@@ -383,6 +399,7 @@ insertPlate::createAll(Simulation& System,
     populate(System.getDataBase());  
   createUnitVector(FC,lIndex);
   mainAll(System);
+  
   return;
 }
   

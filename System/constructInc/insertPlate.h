@@ -38,7 +38,8 @@ namespace constructSystem
 */
 
 class insertPlate : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+  public attachSystem::FixedComp,public attachSystem::CellMap,
+  public attachSystem::SurfMap
 {
  private:
   

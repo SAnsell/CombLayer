@@ -3,7 +3,7 @@
  
  * File:   source/GammaSource.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,8 +68,7 @@ namespace SDef
 {
 
 GammaSource::GammaSource(const std::string& keyName) : 
-  FixedComp(keyName,0),
-  cutEnergy(0.0)
+  FixedComp(keyName,0),cutEnergy(0.0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param keyName :: main name
@@ -79,7 +78,9 @@ GammaSource::GammaSource(const std::string& keyName) :
 GammaSource::GammaSource(const GammaSource& A) : 
   attachSystem::FixedComp(A),
   xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
+  xyAngle(A.xyAngle),zAngle(A.zAngle),
   particleType(A.particleType),cutEnergy(A.cutEnergy),
+  shape(A.shape),width(A.width),height(A.height),
   radius(A.radius),angleSpread(A.angleSpread),
   FocusPoint(A.FocusPoint),Direction(A.Direction),
   weight(A.weight),Energy(A.Energy),EWeight(A.EWeight)
@@ -103,8 +104,13 @@ GammaSource::operator=(const GammaSource& A)
       xStep=A.xStep;
       yStep=A.yStep;
       zStep=A.zStep;
+      xyAngle=A.xyAngle;
+      zAngle=A.zAngle;
       particleType=A.particleType;
       cutEnergy=A.cutEnergy;
+      shape=A.shape;
+      width=A.width;
+      height=A.height;
       radius=A.radius;
       angleSpread=A.angleSpread;
       FocusPoint=A.FocusPoint;
@@ -115,7 +121,6 @@ GammaSource::operator=(const GammaSource& A)
     }
   return *this;
 }
-
 
 GammaSource::~GammaSource() 
   /*!
@@ -226,8 +231,15 @@ GammaSource::populate(const FuncDataBase& Control)
   zAngle=Control.EvalDefVar<double>(keyName+"ZAngle",0.0); 
 
   // default photon
-  particleType=Control.EvalDefVar<int>(keyName+"ParticleType",2); 
-  radius=Control.EvalVar<double>(keyName+"Radius"); 
+  particleType=Control.EvalDefVar<int>(keyName+"ParticleType",2);
+  shape=Control.EvalDefVar<size_t>(keyName+"Shape",0);
+  if (!shape)   // circle
+    radius=Control.EvalVar<double>(keyName+"Radius");
+  else
+    {
+      height=Control.EvalVar<double>(keyName+"Height");
+      width=Control.EvalVar<double>(keyName+"Width");
+    }    
   angleSpread=Control.EvalVar<double>(keyName+"ASpread"); 
 
   const std::string EList=
@@ -292,8 +304,38 @@ GammaSource::createSource(SDef::Source& sourceCard) const
   */
 {
   ELog::RegMethod RegA("GammaSource","createSource");
+  if (!shape)
+    createRadialSource(sourceCard);
+  else
+    createRectangleSource(sourceCard);
 
-  
+  ELog::EM<<"Source == "<<shape<<ELog::endDiag;
+  // Energy:
+  if (Energy.size()>1)
+    {
+      SDef::SrcData D1(1);
+      SDef::SrcInfo SI1('A');
+      SDef::SrcProb SP1;
+      SP1.setData(EWeight);
+      SI1.setData(Energy);
+      D1.addUnit(SI1);
+      D1.addUnit(SP1);
+      sourceCard.setData("erg",D1);
+    }
+  else if (!Energy.empty())
+    sourceCard.setComp("erg",Energy.front());
+
+
+  return;
+}
+
+void
+GammaSource::createRadialSource(SDef::Source& sourceCard) const
+  /*!
+    Creates a gamma bremstraual source
+    \param sourceCard :: Source system
+  */
+{
   sourceCard.setActive();
   sourceCard.setComp("vec",Direction);
   sourceCard.setComp("par",particleType);            /// photon (2)
@@ -302,36 +344,57 @@ GammaSource::createSource(SDef::Source& sourceCard) const
   ELog::EM<<"Direction  "<<Direction<<ELog::endDiag;
   ELog::EM<<"FocusPoint "<<FocusPoint<<ELog::endDiag;
   // Direction:
+
+  SDef::SrcData D2(2);
+  SDef::SrcInfo SI2;
+  SI2.addData(-1.0);
+  SI2.addData(cos(M_PI*angleSpread/180.0));
+  SI2.addData(1.0);
   
-  SDef::SrcData D1(1);
-  SDef::SrcInfo SI1;
-  SI1.addData(-1.0);
-  SI1.addData(cos(M_PI*angleSpread/180.0));
-  SI1.addData(1.0);
+  SDef::SrcProb SP2;
+  SP2.addData(0.0);
+  SP2.addData(0.0);
+  SP2.addData(1.0);
+  D2.addUnit(SI2);  
+  D2.addUnit(SP2);  
+  sourceCard.setData("dir",D2);
+  return;
+}  
 
-  SDef::SrcProb SP1;
-  SP1.addData(0.0);
-  SP1.addData(0.0);
-  SP1.addData(1.0);
-  D1.addUnit(SI1);  
-  D1.addUnit(SP1);  
-  sourceCard.setData("dir",D1);  
+void
+GammaSource::createRectangleSource(SDef::Source& sourceCard) const
+  /*!
+    Creates a gamma bremstraual source
+    \param sourceCard :: Source system
+  */
+{
+  sourceCard.setActive();
+  sourceCard.setComp("vec",Direction);
+  sourceCard.setComp("par",particleType);            /// photon (2)
 
-  // Energy:
-  if (Energy.size()>1)
-    {
-      SDef::SrcData D2(2);
-      SDef::SrcInfo SI2('A');
-      SDef::SrcProb SP2;
-      SP2.setData(EWeight);
-      SI2.setData(Energy);
-      D2.addUnit(SI2);
-      D2.addUnit(SP2);
-      sourceCard.setData("erg",D2);
-    }
-  else if (!Energy.empty())
-    sourceCard.setComp("erg",Energy.front());
+  SDef::SrcData D2(2);
+  SDef::SrcInfo SI2;
+  SI2.addData(-width/2.0);
+  SI2.addData(width/2.0);
 
+  SDef::SrcData D3(3);
+  SDef::SrcInfo SI3;
+  SI3.addData(-height/2.0);
+  SI3.addData(height/2.0);
+
+  SDef::SrcProb SP2;
+  SP2.addData(0.0);
+  SP2.addData(1.0);
+  D2.addUnit(SI2);  
+  D2.addUnit(SP2);  
+  sourceCard.setData("x",D2);
+
+  SDef::SrcProb SP3;
+  SP3.addData(0);
+  SP3.addData(1.0);
+  D3.addUnit(SI2);  
+  D3.addUnit(SP2);  
+  sourceCard.setData("z",D3);
   return;
 }  
 
@@ -351,6 +414,7 @@ GammaSource::createAll(const FuncDataBase& Control,
   createSource(sourceCard);
   return;
 }
+
 
 void
 GammaSource::createAll(const FuncDataBase& Control,

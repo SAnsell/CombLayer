@@ -119,9 +119,9 @@ fluxConstruct::processFlux(Simulation& System,
   if (!StrFunc::convert(MType,matN))
     {
       if (MType=="All" || MType=="all")
-	matN=-1;
-      else if (MType=="AllVoid" || MType=="allVoid")
 	matN=-2;
+      else if (MType=="AllNonVoid" || MType=="allNonVoid")
+	matN=-1;
       else
 	{
 	  matN=ModelSupport::DBMaterial::Instance().getIndex(MType);
@@ -133,7 +133,7 @@ fluxConstruct::processFlux(Simulation& System,
 
   if (cells.empty())
     throw ColErr::InContainerError<std::string>
-      (cellKey+":"+StrFunc::makeString(MType),"cell/mat not present in model");
+      (cellKey+"/"+StrFunc::makeString(MType),"cell/mat not present in model");
   
 
   const int nTally=System.nextTallyNum(4);
