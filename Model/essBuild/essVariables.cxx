@@ -601,6 +601,7 @@ EssVariables(FuncDataBase& Control)
   EssProtonBeam(Control);
   EssBeamLinesVariables(Control);
 
+  BEERvariables(Control);
   CSPECvariables(Control);
   DREAMvariables(Control);
   ESTIAvariables(Control);

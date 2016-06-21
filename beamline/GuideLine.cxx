@@ -609,8 +609,6 @@ GuideLine::createObjects(Simulation& System)
       // front
       const std::string front=shapeFrontSurf(true,i);
       back=shapeBackSurf(true,i);
-      ELog::EM<<keyName<<" back == "<<activeEnd<<" "<<
-              beamEndCut<<" "<<back<<ELog::endDiag;
       for(size_t j=0;j<nShapeLayers;j++)
 	{
 	  // Note that shapeUnits has own offset but

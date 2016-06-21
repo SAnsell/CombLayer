@@ -40,6 +40,7 @@ namespace setVariable
   void F5Variables(FuncDataBase&);
 
   // ESS Beamlines
+  void BEERvariables(FuncDataBase&);
   void CSPECvariables(FuncDataBase&);
   void DREAMvariables(FuncDataBase&);
   void ESTIAvariables(FuncDataBase&);

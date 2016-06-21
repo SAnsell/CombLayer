@@ -240,7 +240,7 @@ GammaSource::populate(const FuncDataBase& Control)
       height=Control.EvalVar<double>(keyName+"Height");
       width=Control.EvalVar<double>(keyName+"Width");
     }    
-  angleSpread=Control.EvalVar<double>(keyName+"ASpread"); 
+  angleSpread=Control.EvalDefVar<double>(keyName+"ASpread",0.0); 
 
   const std::string EList=
     Control.EvalDefVar<std::string>(keyName+"Energy","");
@@ -304,12 +304,10 @@ GammaSource::createSource(SDef::Source& sourceCard) const
   */
 {
   ELog::RegMethod RegA("GammaSource","createSource");
-  if (!shape)
-    createRadialSource(sourceCard);
-  else
-    createRectangleSource(sourceCard);
 
   ELog::EM<<"Source == "<<shape<<ELog::endDiag;
+  sourceCard.setComp("par",particleType);            /// photon (2)
+    
   // Energy:
   if (Energy.size()>1)
     {
@@ -326,6 +324,23 @@ GammaSource::createSource(SDef::Source& sourceCard) const
     sourceCard.setComp("erg",Energy.front());
 
 
+  if (angleSpread>Geometry::zeroTol)
+    {
+      SDef::SrcData D2(2);
+      SDef::SrcInfo SI2;
+      SI2.addData(-1.0);
+      SI2.addData(cos(M_PI*angleSpread/180.0));
+      SI2.addData(1.0);
+    }
+  else
+    sourceCard.setComp("dir",1.0);
+
+
+  if (!shape)
+    createRadialSource(sourceCard);
+  else
+    createRectangleSource(sourceCard);
+
   return;
 }
 
@@ -340,26 +355,11 @@ GammaSource::createRadialSource(SDef::Source& sourceCard) const
   
   sourceCard.setActive();
   sourceCard.setComp("vec",Direction);
-  sourceCard.setComp("par",particleType);            /// photon (2)
   sourceCard.setComp("pos",FocusPoint);
 
   ELog::EM<<"Direction  "<<Direction<<ELog::endDiag;
   ELog::EM<<"FocusPoint "<<FocusPoint<<ELog::endDiag;
-  // Direction:
 
-  SDef::SrcData D2(2);
-  SDef::SrcInfo SI2;
-  SI2.addData(-1.0);
-  SI2.addData(cos(M_PI*angleSpread/180.0));
-  SI2.addData(1.0);
-  
-  SDef::SrcProb SP2;
-  SP2.addData(0.0);
-  SP2.addData(0.0);
-  SP2.addData(1.0);
-  D2.addUnit(SI2);  
-  D2.addUnit(SP2);  
-  sourceCard.setData("dir",D2);
   return;
 }  
 
@@ -375,31 +375,31 @@ GammaSource::createRectangleSource(SDef::Source& sourceCard) const
   ELog::EM<<"REC SOURCE"<<ELog::endDiag;
   sourceCard.setActive();
   sourceCard.setComp("vec",Direction);
-  sourceCard.setComp("par",particleType);            /// photon (2)
 
-  SDef::SrcData D2(2);
-  SDef::SrcInfo SI2;
-  SI2.addData(-width/2.0);
-  SI2.addData(width/2.0);
-
+  
   SDef::SrcData D3(3);
   SDef::SrcInfo SI3;
-  SI3.addData(-height/2.0);
-  SI3.addData(height/2.0);
+  SI3.addData(-width/2.0);
+  SI3.addData(width/2.0);
 
-  SDef::SrcProb SP2;
-  SP2.addData(0.0);
-  SP2.addData(1.0);
-  D2.addUnit(SI2);  
-  D2.addUnit(SP2);  
-  sourceCard.setData("x",D2);
+  SDef::SrcData D4(4);
+  SDef::SrcInfo SI4;
+  SI4.addData(-height/2.0);
+  SI4.addData(height/2.0);
 
   SDef::SrcProb SP3;
-  SP3.addData(0);
+  SP3.addData(0.0);
   SP3.addData(1.0);
-  D3.addUnit(SI2);  
-  D3.addUnit(SP2);  
-  sourceCard.setData("z",D3);
+  D3.addUnit(SI3);  
+  D3.addUnit(SP3);  
+  sourceCard.setData("x",D3);
+
+  SDef::SrcProb SP4;
+  SP4.addData(0);
+  SP4.addData(1.0);
+  D4.addUnit(SI4);  
+  D4.addUnit(SP4);  
+  sourceCard.setData("z",D4);
   return;
 }  
 

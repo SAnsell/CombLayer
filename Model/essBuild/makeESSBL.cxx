@@ -67,6 +67,7 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "FixedOffset.h"
 #include "FixedGroup.h"
 #include "ShapeUnit.h"
 #include "Bunker.h"
@@ -75,6 +76,7 @@
 #include "essVariables.h"
 
 #include "ODIN.h"
+#include "BEER.h"
 #include "ESTIA.h"
 #include "FREIA.h"
 #include "LOKI.h"
@@ -186,6 +188,11 @@ makeESSBL::build(Simulation& System,
   if (!mainGIPtr)
     throw ColErr::InContainerError<std::string>(shutterName,"shutterObject");
 	
+  if (beamName=="BEER")
+    {
+      BEER beerBL("beer");
+      beerBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+    }  
   if (beamName=="CSPEC")
     {
       // DREAM beamline

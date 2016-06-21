@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/VOR.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,16 +71,22 @@ class VOR : public attachSystem::CopiedComp
 
   /// Elliptic forcus in bulkshield [m5]
   std::shared_ptr<beamlineSystem::GuideLine> FocusA;
-  /// Vac box for first chopper
+
+  /// Pipe between bunker and the wall
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeB;
+  /// Elliptic guide from 5.5 to 6metre
+  std::shared_ptr<beamlineSystem::GuideLine> FocusB;
+
+  /// Vac box for 
   std::shared_ptr<constructSystem::VacuumBox> VacBoxA;
   /// Double disk chopper
   std::shared_ptr<constructSystem::DiskChopper> DDisk;
   /// Double disk chopper Housing
   std::shared_ptr<constructSystem::ChopperHousing> DDiskHouse;
   /// Pipe between chopper 1 and the wall
-  std::shared_ptr<constructSystem::VacuumPipe> VPipeB;
+  //  std::shared_ptr<constructSystem::VacuumPipe> VPipeB;
   /// Elliptic forcus in bulkshield [m2.5]
-  std::shared_ptr<beamlineSystem::GuideLine> FocusB;
+  //  std::shared_ptr<beamlineSystem::GuideLine> FocusB;
   /// Bunker insert
   std::shared_ptr<essSystem::BunkerInsert> BInsert;
   /// Elliptic forcus in bulkshield [m2.5] 

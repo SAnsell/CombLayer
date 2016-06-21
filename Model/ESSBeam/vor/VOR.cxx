@@ -95,12 +95,15 @@ namespace essSystem
 VOR::VOR(const std::string& keyName) :
   attachSystem::CopiedComp("vor",keyName),
   vorAxis(new attachSystem::FixedComp(newName+"Axis",4)),
+
   FocusA(new beamlineSystem::GuideLine(newName+"FA")),
+
+  VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
+  FocusB(new beamlineSystem::GuideLine(newName+"FB")),
+
   VacBoxA(new constructSystem::VacuumBox(newName+"VacA")),
   DDisk(new constructSystem::DiskChopper(newName+"DBlade")),
   DDiskHouse(new constructSystem::ChopperHousing(newName+"DBladeHouse")),
-  VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
-  FocusB(new beamlineSystem::GuideLine(newName+"FB")),
   BInsert(new BunkerInsert(newName+"BInsert")),
 
   FocusBExtra(new beamlineSystem::GuideLine(newName+"FBextra")),
@@ -137,12 +140,13 @@ VOR::VOR(const std::string& keyName) :
   OR.cell("vorAxis");
   OR.addObject(vorAxis);
 
+  OR.addObject(VPipeB);
+  OR.addObject(FocusB);
+
   OR.addObject(FocusA);
   OR.addObject(VacBoxA);
   OR.addObject(DDisk);
   OR.addObject(DDiskHouse);
-  OR.addObject(VPipeB);
-  OR.addObject(FocusB);
   OR.addObject(BInsert);
 
   OR.addObject(FocusBExtra);
@@ -219,13 +223,21 @@ VOR::build(Simulation& System,
   ELog::EM<<"Stop point == "<<stopPoint<<ELog::endDiag;
   
   setBeamAxis(GItem,1);
+  
   FocusA->addInsertCell(GItem.getCells("Void"));
-  const std::vector<int> cN=GItem.getCells("Void");
-  FocusA->addInsertCell(bunkerObj.getCell("MainVoid"));
-  //  FocusA->addEndCut(GItem.getKey("Beam").getSignedLinkString(-2));
+  FocusA->addEndCut(GItem.getKey("Beam").getSignedLinkString(-2));
   FocusA->createAll(System,GItem.getKey("Beam"),-1,
 		    GItem.getKey("Beam"),-1);
   if (stopPoint==1) return;
+
+  VPipeB->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeB->createAll(System,FocusA->getKey("Guide0"),2);
+
+  FocusB->addInsertCell(VPipeB->getCells("Void"));
+  FocusB->createAll(System,*VPipeB,0,*VPipeB,0);
+
+  return;
+  
   // First straight section
   VacBoxA->addInsertCell(bunkerObj.getCell("MainVoid"));
   VacBoxA->createAll(System,FocusA->getKey("Guide0"),2);

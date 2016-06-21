@@ -330,10 +330,27 @@ setDefaultPhysics(Simulation& System,
 {
   ELog::RegMethod RegA("DefPhysics","setDefaultPhysics");
 
+  // LCA ielas ipreq iexisa ichoic jcoul nexite npidk noact icem ilaq 
+  // LEA ipht icc nobalc nobale ifbrk ilvden ievap nofis
+  physicsSystem::PhysicsCards& PC=System.getPC();
+  physicsSystem::LSwitchCard& lea=PC.getLEA();
+
+  const std::string PModel=IParam.getValue<std::string>("physModel");
+  setPhysicsModel(lea,PModel);
+
+  PC.setNPS(IParam.getValue<int>("nps"));
+  PC.setRND(IParam.getValue<long int>("random"));	
+  PC.setVoidCard(IParam.flag("void"));
+
   // If Reactor stuff set and void
   if (IParam.hasKey("kcode") && IParam.dataCnt("kcode"))
     {
       setReactorPhysics(System,IParam);
+      return;
+    }
+  if (IParam.hasKey("neutronOnly"))
+    {
+      setNeutronPhysics(System);
       return;
     }
 
@@ -346,7 +363,6 @@ setDefaultPhysics(Simulation& System,
   const double phtModel=IParam.getValue<double>("photonModel");
   const std::string elcAdd((elcEnergy>0 ? " e" : ""));
 
-  physicsSystem::PhysicsCards& PC=System.getPC();
   PC.setMode("n p "+PList+elcAdd);
   PC.setPrintNum("10 20 50 110");
   System.processCellsImp();
@@ -393,20 +409,41 @@ setDefaultPhysics(Simulation& System,
 	PC.addPhysCard<physicsSystem::PStandard>("phys","h");
   ph->setValues(EMax);
 
-  // LCA ielas ipreq iexisa ichoic jcoul nexite npidk noact icem ilaq 
-  // LEA ipht icc nobalc nobale ifbrk ilvden ievap nofis
-  physicsSystem::LSwitchCard& lea=PC.getLEA();
-
-  const std::string PModel=IParam.getValue<std::string>("physModel");
-  setPhysicsModel(lea,PModel);
-
-  PC.setNPS(IParam.getValue<int>("nps"));
-  PC.setRND(IParam.getValue<long int>("random"));	
-  PC.setVoidCard(IParam.flag("void"));
   
   return; 
 }
 
+
+void 
+setNeutronPhysics(Simulation& System)
+  /*!
+    Set the neutron Physics
+    \param System :: Simulation
+  */
+{
+  ELog::RegMethod RegA("DefPhysics","setDefaultPhysics");
+
+  const FuncDataBase& Control=System.getDataBase();
+  
+  const double maxEnergy=Control.EvalDefVar<double>("sdefEnergy",2000.0);
+  const std::string EMax=StrFunc::makeString(maxEnergy);
+  
+  physicsSystem::PhysicsCards& PC=System.getPC();
+  PC.setMode("n");
+  PC.setPrintNum("10 20 50 110");
+  System.processCellsImp();
+  PC.setCells("imp",1,0);            // Set a zero cell
+  
+  physicsSystem::PStandard* NCut=
+    PC.addPhysCard<physicsSystem::PStandard>("cut","n");
+  NCut->setValues(4,1.0e+8,0.0,0.4,-0.1);
+  // Process physics
+  physicsSystem::PStandard* pn=
+	PC.addPhysCard<physicsSystem::PStandard>("phys","n");
+  pn->setValues(EMax+" 0.0 j j j");
+  
+  return; 
+}
 
 
 void 
@@ -421,6 +458,8 @@ setReactorPhysics(Simulation& System,
   ELog::RegMethod RegA("DefPhysics","setDefaultPhysics");
 
   const FuncDataBase& Control=System.getDataBase();
+
+  physicsSystem::PhysicsCards& PC=System.getPC();
   
   std::string PList("");
   const double maxEnergy=Control.EvalDefVar<double>("sdefEnergy",20.0);
@@ -429,11 +468,9 @@ setReactorPhysics(Simulation& System,
   const double phtModel=IParam.getValue<double>("photonModel");
   const std::string elcAdd((elcEnergy>0 ? " e" : ""));
 
-  System.getPC().setMode("n p "+PList+elcAdd);
-  System.getPC().setPrintNum("10 110");
+  PC.setMode("n p "+PList+elcAdd);
+  PC.setPrintNum("10 110");
   System.processCellsImp();
-  physicsSystem::PhysicsCards& PC=System.getPC();
-
   PC.setCells("imp",1,0);            // Set a zero cell
   
   physicsSystem::PStandard* NCut=
@@ -475,18 +512,6 @@ setReactorPhysics(Simulation& System,
   physicsSystem::PStandard* ph=
 	PC.addPhysCard<physicsSystem::PStandard>("phys","h");
   ph->setValues(EMax);
-
-
-  // LCA ielas ipreq iexisa ichoic jcoul nexite npidk noact icem ilaq 
-  // LEA ipht icc nobalc nobale ifbrk ilvden ievap nofis
-  physicsSystem::LSwitchCard& lea=PC.getLEA();
-  // GORAN
-  const std::string PModel=IParam.getValue<std::string>("physModel");
-  setPhysicsModel(lea,PModel);
-
-  PC.setNPS(IParam.getValue<int>("nps"));
-  PC.setRND(IParam.getValue<long int>("random"));	
-  PC.setVoidCard(IParam.flag("void"));
   
   return; 
 }

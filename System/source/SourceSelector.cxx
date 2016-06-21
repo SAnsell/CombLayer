@@ -211,8 +211,6 @@ sourceSelection(Simulation& System,
     OR.getObject<attachSystem::FixedComp>(DObj);
   const long int linkIndex=getLinkIndex(DSnd);
 
-
-
   if (IParam.flag("sdefVoid"))
     {
       sourceCard.deactivate();

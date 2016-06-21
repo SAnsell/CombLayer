@@ -48,6 +48,11 @@
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
+#include "FocusGenerator.h"
+#include "ShieldGenerator.h"
+#include "ChopperGenerator.h"
+#include "PitGenerator.h"
+#include "PipeGenerator.h"
 #include "essVariables.h"
 
 namespace setVariable
@@ -62,33 +67,29 @@ VORvariables(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("VORvariables[F]","VORvariables");
 
-  // Bender in section so use cut system
-  Control.addVariable("vorFAXStep",0.0);       
-  Control.addVariable("vorFAYStep",0.0);       
-  Control.addVariable("vorFAZStep",0.0);       
-  Control.addVariable("vorFAXYAngle",0.0);
-  Control.addVariable("vorFAZAngle",0.0);
-  Control.addVariable("vorFABeamXYAngle",0.0);       
+  setVariable::ChopperGenerator CGen;
+  setVariable::FocusGenerator FGen;
+  setVariable::ShieldGenerator SGen;
+  setVariable::PitGenerator PGen;
+  setVariable::PipeGenerator PipeGen;
 
-  Control.addVariable("vorFALength",745.0);       
-  Control.addVariable("vorFANShapes",1);       
-  Control.addVariable("vorFANShapeLayers",3);
-  Control.addVariable("vorFAActiveShield",0);
+  FGen.setGuideMat("Copper");
+  FGen.setYOffset(0.1);
+  FGen.generateTaper(Control,"vorFA",350.0,2.114,3.2417,3.16,4.9228);
+  //  Control.addVariable("nmxGABeamXYAngle",1.0);       
 
-  Control.addVariable("vorFALayerThick1",0.4);  // glass thick
-  Control.addVariable("vorFALayerThick2",1.5);
+  // VACUUM PIPE in Gamma shield
+  PipeGen.generatePipe(Control,"vorPipeB",50.0,400.0);
 
-  Control.addVariable("vorFALayerMat0","Void");
-  Control.addVariable("vorFALayerMat1","Glass");
-  Control.addVariable("vorFALayerMat2","Void");       
+  FGen.setGuideMat("Aluminium");
+  FGen.clearYOffset();
+  FGen.generateTaper(Control,"vorFB",44.0,3.30,3.4028,5.0,5.1747);
 
-  Control.addVariable("vorFA0TypeID","Taper");
-  Control.addVariable("vorFA0HeightStart",3.16);
-  Control.addVariable("vorFA0HeightEnd",5.905);
-  Control.addVariable("vorFA0WidthStart",2.114);
-  Control.addVariable("vorFA0WidthEnd",3.87);
-  Control.addVariable("vorFA0Length",745.0);
 
+  
+
+
+  
   // VACBOX A : A[2.08m from Bunker wall]
   //  Length 100.7 + Width [87.0] + Height [39.0] void Depth/2 + front
   Control.addVariable("vorVacAYStep",-15.0);

@@ -56,7 +56,6 @@
 
 namespace setVariable
 {
-
  
 void
 generatePipe(FuncDataBase& Control,
