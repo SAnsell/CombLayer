@@ -83,7 +83,7 @@ VacuumPipe::VacuumPipe(const std::string& Key) :
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   vacIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(vacIndex+1),activeFront(0),activeBack(0),
-  activeDivide(0)
+  activeDivide(0),frontJoin(0),backJoin(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -188,10 +188,29 @@ VacuumPipe::createUnitVector(const attachSystem::FixedComp& FC,
   FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
   // after rotation
-  Origin+=Y*(length/2.0);
+  applyActiveFrontBack();
+
   return;
 }
 
+
+void
+VacuumPipe::applyActiveFrontBack()
+  /*!
+    Apply the active front/back point to re-calcuate Origin
+   */
+{
+  ELog::RegMethod RegA("VacuumPipe","applyActiveFrontBack");
+
+
+  const Geometry::Vec3D curFP=(frontJoin) ? FPt : Origin;
+  const Geometry::Vec3D curBP=(backJoin) ? BPt : Origin+Y*length;
+
+  Origin=(curFP+curBP)/2.0;
+  Y=(curBP-curFP).unit();
+  return;
+}
+  
 void
 VacuumPipe::getShiftedSurf(const HeadRule& HR,
 			   const int index,
@@ -501,11 +520,13 @@ VacuumPipe::setDivider(const attachSystem::FixedComp& FC,
   
 void
 VacuumPipe::setFront(const attachSystem::FixedComp& FC,
-		     const long int sideIndex)
+		     const long int sideIndex,
+		     const bool joinFlag)
   /*!
     Set front surface
     \param FC :: FixedComponent 
     \param sideIndex ::  Direction to link
+    \param joinFlag :: joint front to link object 
    */
 {
   ELog::RegMethod RegA("VacuumPipe","setFront");
@@ -514,27 +535,26 @@ VacuumPipe::setFront(const attachSystem::FixedComp& FC,
     throw ColErr::EmptyValue<long int>("SideIndex cant be zero");
 
   activeFront=1;
-  if (sideIndex>0)
+  frontSurf=FC.getSignedMainRule(sideIndex);
+  if (joinFlag)
     {
-      const size_t SI(static_cast<size_t>(sideIndex-1));
-      frontSurf=FC.getMainRule(SI);
+      frontJoin=1;
+      FPt=FC.getSignedLinkPt(sideIndex);
+      FAxis=FC.getSignedLinkAxis(sideIndex);
     }
-  else
-    {
-      const size_t SI(static_cast<size_t>(-sideIndex-1));
-      frontSurf=FC.getMainRule(SI);
-      frontSurf.makeComplement();
-    }
+    
   return;
 }
   
 void
 VacuumPipe::setBack(const attachSystem::FixedComp& FC,
-		     const long int sideIndex)
+		    const long int sideIndex,
+		    const bool joinFlag)
   /*!
     Set Back surface
     \param FC :: FixedComponent 
     \param sideIndex ::  Direction to link
+    \param joinFlag :: joint front to link object 
    */
 {
   ELog::RegMethod RegA("VacuumPipe","setBack");

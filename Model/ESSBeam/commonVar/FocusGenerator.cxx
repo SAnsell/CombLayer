@@ -123,6 +123,52 @@ FocusGenerator::generateTaper(FuncDataBase& Control,
 }
 
 void
+FocusGenerator::generateRectangle(FuncDataBase& Control,
+				  const std::string& keyName,
+				  const double length,
+				  const double H,const double V)  const
+/*!
+    Generate the focus-taper variables
+    \param Control :: Functional data base
+    \param keyName :: main name
+    \param length :: total length
+    \param H :: Horrizontal 
+    \param V :: Vertical 
+
+   */
+{
+  ELog::RegMethod RegA("FocusGenerator","generateTaper");
+  Control.addVariable(keyName+"Length",length);       
+  Control.addVariable(keyName+"XStep",0.0);       
+  if (!yStepActive)
+    Control.addParse<double>(keyName+"YStep","-"+keyName+"Length/2.0");
+  else
+    Control.addVariable<double>(keyName+"YStep",yStep);
+  Control.copyVar(keyName+"BeamY",keyName+"YStep"); 
+  Control.addVariable(keyName+"ZStep",0.0);       
+  Control.addVariable(keyName+"XYAngle",0.0);       
+  Control.addVariable(keyName+"ZAngle",0.0);
+
+  Control.addVariable(keyName+"NShapes",1);       
+  Control.addVariable(keyName+"NShapeLayers",3);
+  Control.addVariable(keyName+"ActiveShield",0);
+
+  Control.addVariable(keyName+"LayerThick1",substrateThick);  // glass thick
+  Control.addVariable(keyName+"LayerThick2",voidThick);
+
+  Control.addVariable(keyName+"LayerMat0","Void");
+  Control.addVariable(keyName+"LayerMat1",guideMat);
+  Control.addVariable(keyName+"LayerMat2","Void");       
+  
+  Control.addVariable(keyName+"0TypeID","Rectangle");
+  Control.addVariable(keyName+"0Height",V);
+  Control.addVariable(keyName+"0Width",H);
+  Control.copyVar(keyName+"0Length",keyName+"Length");
+
+  return;
+}
+
+void
 FocusGenerator::generateBender(FuncDataBase& Control,
 			       const std::string& keyName,
 			       const double length,

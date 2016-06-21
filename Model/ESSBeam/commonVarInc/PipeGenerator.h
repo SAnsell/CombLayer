@@ -46,9 +46,10 @@ class PipeGenerator
   double windowRadius;       ///< window radius (radius > WR > flangeR)
   double windowThick;        ///< window thickness
   
-  std::string pipeMat;           ///< Primary default mat
-  std::string windowMat;     ///< window mat
-  
+  std::string pipeMat;        ///< Primary default mat
+  std::string windowMat;      ///< window mat
+  std::string voidMat;        ///< void mat
+    
  public:
 
   PipeGenerator();

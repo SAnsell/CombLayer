@@ -48,10 +48,20 @@ class VacuumPipe :
   bool activeFront;             ///< Flag for front active
   bool activeBack;              ///< Flag for back active
   bool activeDivide;            ///< Flag for back active
+
+  
   HeadRule frontSurf;           ///< Front surfaces [if used]
   HeadRule backSurf;            ///< Back surfaces [if used]
   HeadRule divideSurf;          ///< divider surfaces [if used]
-  
+
+  bool frontJoin;               ///< Flag for front join
+  Geometry::Vec3D FPt;          ///< Front point
+  Geometry::Vec3D FAxis;          ///< Front point
+
+  bool backJoin;               ///< Flag for front join
+  Geometry::Vec3D BPt;          ///< Front point
+  Geometry::Vec3D BAxis;          ///< Front point
+
   double radius;                ///< void height [top only]
   double length;                ///< void length [total]
 
@@ -75,6 +85,7 @@ class VacuumPipe :
   void createLinks();
 
   void getShiftedSurf(const HeadRule&,const int,const int,const double);
+  void applyActiveFrontBack();
   
  public:
 
@@ -84,8 +95,8 @@ class VacuumPipe :
   virtual ~VacuumPipe();
 
 
-  void setFront(const attachSystem::FixedComp&,const long int);
-  void setBack(const attachSystem::FixedComp&,const long int);
+  void setFront(const attachSystem::FixedComp&,const long int,const bool =0);
+  void setBack(const attachSystem::FixedComp&,const long int,const bool =0);
   void setDivider(const attachSystem::FixedComp&,const long int);
   
   void createAll(Simulation&,const attachSystem::FixedComp&,

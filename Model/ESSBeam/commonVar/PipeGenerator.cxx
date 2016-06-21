@@ -85,7 +85,8 @@ PipeGenerator::PipeGenerator() :
   pipeRadius(8.0),pipeThick(0.5),
   flangeRadius(12.0),flangeLen(1.0),
   windowRadius(10.0),windowThick(0.5),
-  pipeMat("Aluminium"),windowMat("Silicon300K")
+  pipeMat("Aluminium"),windowMat("Silicon300K"),
+  voidMat("Void")
   /*!
     Constructor and defaults
   */
@@ -165,6 +166,7 @@ PipeGenerator::generatePipe(FuncDataBase& Control,const std::string& keyName,
   Control.addVariable(keyName+"WindowRadius",windowRadius);
   Control.addVariable(keyName+"WindowThick",windowThick);
   Control.addVariable(keyName+"WindowMat",windowMat);
+  Control.addVariable(keyName+"VoidMat",voidMat);
   
   return;
 

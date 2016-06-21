@@ -72,6 +72,10 @@ class FocusGenerator
   void clearYOffset()
   { yStepActive=0; }
   
+  void generateRectangle(FuncDataBase&,
+			 const std::string&,const double,
+			 const double,const double) const;
+
   void generateTaper(FuncDataBase&,
 		     const std::string&,const double,
 		     const double,const double,

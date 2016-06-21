@@ -70,6 +70,10 @@ NMXvariables(FuncDataBase& Control)
   setVariable::FocusGenerator FGen;
   setVariable::ShieldGenerator SGen;
   setVariable::PipeGenerator PipeGen;
+  PipeGen.setPipe(12.0,1.0);
+  PipeGen.setWindow(13.0,0.3);
+  PipeGen.setFlange(16.0,1.0);
+  
   SGen.addWall(1,20.0,"CastIron");
   SGen.addRoof(1,20.0,"CastIron");
   SGen.addFloor(1,20.0,"CastIron");
@@ -89,31 +93,31 @@ NMXvariables(FuncDataBase& Control)
   Control.addVariable("nmxGABeamXYAngle",1.0);       
 
   FGen.setGuideMat("Aluminium");
-  FGen.setYOffset(50.0);
-  FGen.generateBender(Control,"nmxBA",350.0,3.0,3.0,3.0,4.5,
+  FGen.clearYOffset();
+  FGen.generateBender(Control,"nmxBA",394.0,3.0,3.0,3.0,4.5,
                       12000.0,180);
 
   // VACUUM PIPES:
-  Control.addVariable("nmxPipeAYStep",50.0);
-  Control.addVariable("nmxPipeARadius",12.0);
-  Control.addVariable("nmxPipeALength",700.0);
-  Control.addVariable("nmxPipeAFeThick",1.0);
-  Control.addVariable("nmxPipeAFlangeRadius",14.0);
-  Control.addVariable("nmxPipeAFlangeLength",1.0);
-  Control.addVariable("nmxPipeAFeMat","Aluminium");
-  Control.addVariable("nmxPipeAVoidMat","Void");
+  PipeGen.generatePipe(Control,"nmxPipeA",50.0,400.0);
   
-  // VACUUM PIPES:
-  Control.addVariable("nmxPipeBXYAngle",-1.2);   // from -0.8
-  Control.addVariable("nmxPipeBRadius",12.0);
-  Control.addVariable("nmxPipeBLength",500.0);
-  Control.addVariable("nmxPipeBFeThick",1.0);
-  Control.addVariable("nmxPipeBFlangeRadius",16.0);
-  Control.addVariable("nmxPipeBFlangeLength",1.0);
-  Control.addVariable("nmxPipeBFeMat","Aluminium");
-  Control.addVariable("nmxPipeBVoidMat","Void");
+  FGen.setYOffset(4.5);
+  FGen.generateBender(Control,"nmxBB",394.0,3.0,3.0,3.0,4.5,
+                      12000.0,180);
+  PipeGen.generatePipe(Control,"nmxPipeB",0.0,400.0);
 
-  // BEAM INSERT:
+  FGen.generateBender(Control,"nmxBC",394.0,3.0,3.0,3.0,4.5,
+                      12000.0,180);
+  PipeGen.generatePipe(Control,"nmxPipeC",0.0,400.0);
+
+  FGen.generateBender(Control,"nmxBD",394.0,3.0,3.0,3.0,4.5,
+                      12000.0,180);
+  PipeGen.generatePipe(Control,"nmxPipeD",0.0,400.0);
+
+  FGen.generateBender(Control,"nmxBE",224.0,3.0,3.0,3.0,4.5,
+                      12000.0,180);
+  PipeGen.generatePipe(Control,"nmxPipeE",0.0,230.0);
+
+    
   Control.addVariable("nmxBInsertHeight",20.0);
   Control.addVariable("nmxBInsertWidth",28.0);
   Control.addVariable("nmxBInsertTopWall",1.0);
@@ -121,33 +125,10 @@ NMXvariables(FuncDataBase& Control)
   Control.addVariable("nmxBInsertLeftWall",1.0);
   Control.addVariable("nmxBInsertRightWall",1.0);
   Control.addVariable("nmxBInsertWallMat","Stainless304");       
-  
-    // Guide in wall
-  Control.addVariable("nmxFWallXStep",0.0);       
-  Control.addVariable("nmxFWallYStep",0.0);       
-  Control.addVariable("nmxFWallZStep",0.0);       
-  Control.addVariable("nmxFWallXYAngle",0.0);       
-  Control.addVariable("nmxFWallZAngle",0.0);
-  Control.addVariable("nmxFWallLength",318.0);       
-  
-  Control.addVariable("nmxFWallBeamYStep",1.5);
- 
-  Control.addVariable("nmxFWallNShapes",1);       
-  Control.addVariable("nmxFWallNShapeLayers",3);
-  Control.addVariable("nmxFWallActiveShield",0);
 
-  Control.addVariable("nmxFWallLayerThick1",0.4);  // glass thick
-  Control.addVariable("nmxFWallLayerThick2",1.5);
-
-  Control.addVariable("nmxFWallLayerMat0","Void");
-  Control.addVariable("nmxFWallLayerMat1","Aluminium");
-  Control.addVariable("nmxFWallLayerMat2","Void");       
-  
-  Control.addVariable("nmxFWall0TypeID","Rectangle");
-  Control.addVariable("nmxFWall0Height",6.0);
-  Control.addVariable("nmxFWall0Width",6.0);
-  Control.addVariable("nmxFWall0Length",318.0);
-
+    // BEAM INSERT:
+  FGen.clearYOffset();
+  FGen.generateRectangle(Control,"nmxFWall",318.0,4.5,4.5);
 
   Control.addVariable("nmxShieldALength",1750.0);
   Control.addVariable("nmxShieldALeft",40.0);
