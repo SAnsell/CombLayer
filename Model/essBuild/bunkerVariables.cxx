@@ -153,7 +153,9 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
 
   Control.addVariable(AKey+"BunkerPillarsR_0S_1Active",0);
   Control.addVariable(AKey+"BunkerPillarsR_0S_2Active",0);
+  Control.addVariable(AKey+"BunkerPillarsR_0S_9Active",0);
   Control.addVariable(AKey+"BunkerPillarsR_1S_2Active",0);
+
 
   //
   // RIGHT BUNKER : B PART

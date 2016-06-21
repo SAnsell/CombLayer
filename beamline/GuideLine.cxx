@@ -96,7 +96,7 @@ GuideLine::GuideLine(const std::string& Key) :
   SUItem(200),SULayer(20),
   guideIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(guideIndex+1),nShapeLayers(0),activeFront(false),
-  beamFrontCut(false),activeEnd(false),
+  beamFrontCut(false),activeEnd(false),beamEndCut(false),
   nShapes(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -585,7 +585,7 @@ GuideLine::shapeBackSurf(const bool beamFlag,
     return ModelSupport::getComposite(SMap,guideIndex," -1002 ");
 
   return (!activeEnd) ?
-	ModelSupport::getComposite(SMap,guideIndex," -2 ")  :
+    ModelSupport::getComposite(SMap,guideIndex," -2 ")  :
     endCut.display()+endCutBridge.display();
 }
   
@@ -609,6 +609,8 @@ GuideLine::createObjects(Simulation& System)
       // front
       const std::string front=shapeFrontSurf(true,i);
       back=shapeBackSurf(true,i);
+      ELog::EM<<keyName<<" back == "<<activeEnd<<" "<<
+              beamEndCut<<" "<<back<<ELog::endDiag;
       for(size_t j=0;j<nShapeLayers;j++)
 	{
 	  // Note that shapeUnits has own offset but
@@ -846,7 +848,8 @@ GuideLine::addFrontCut(const attachSystem::FixedComp& FC,
 }
 
 void
-GuideLine::addEndCut(const FixedComp& EC,const long int sideIndex)
+GuideLine::addEndCut(const FixedComp& EC,
+                     const long int sideIndex)
   /*!
     Add an end cut system
     \param EC :: End cut
@@ -858,7 +861,6 @@ GuideLine::addEndCut(const FixedComp& EC,const long int sideIndex)
   activeEnd=1;
   endCut=EC.getSignedMainRule(sideIndex);
   endCutBridge=EC.getSignedCommonRule(sideIndex);
-
   return;
 }
 
