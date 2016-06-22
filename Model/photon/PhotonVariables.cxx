@@ -255,10 +255,15 @@ PhotonVariables(FuncDataBase& Control)
   Control.addVariable("THoldDefMat","Void");
 
   Control.addVariable("laserSourceShape",1);       
+  Control.addVariable("laserSourceYStep",-5.0);
   Control.addVariable("laserSourceWidth",3.0);
   Control.addVariable("laserSourceHeight",3.0);       
 
-
+  Control.addVariable("laserSourceASpread",0.0);       
+  Control.addVariable("laserSourceEStart",1.0);
+  Control.addVariable("laserSourceNE",0);       
+  Control.addVariable("laserSourceEnergy","");
+  Control.addVariable("laserSourceEProb","");
   
   
   return;

@@ -253,15 +253,20 @@ GammaSource::populate(const FuncDataBase& Control)
       !populateEFile(EFile,1,11))
     {
       double E=Control.EvalVar<double>(keyName+"EStart"); 
-      const size_t nE=Control.EvalVar<size_t>(keyName+"NE"); 
-      const double EEnd=Control.EvalVar<double>(keyName+"EEnd"); 
-      const double EStep((EEnd-E)/(nE+1));
-      for(size_t i=0;i<nE;i++)
-	{
-	  Energy.push_back(E);
-	  EWeight.push_back(1.0);
-	  E+=EStep;
-	}
+      const size_t nE=Control.EvalVar<size_t>(keyName+"NE");
+      if (nE<1)
+        Energy.push_back(E);
+      else
+        {
+          const double EEnd=Control.EvalVar<double>(keyName+"EEnd"); 
+          const double EStep((EEnd-E)/(nE+1));
+          for(size_t i=0;i<nE;i++)
+            {
+              Energy.push_back(E);
+              EWeight.push_back(1.0);
+              E+=EStep;
+            }
+        }
     }
   return;
 }
@@ -305,7 +310,7 @@ GammaSource::createSource(SDef::Source& sourceCard) const
 {
   ELog::RegMethod RegA("GammaSource","createSource");
 
-  ELog::EM<<"Source == "<<shape<<ELog::endDiag;
+  ELog::EM<<"Source ::"<<shape<<ELog::endDiag;
   sourceCard.setComp("par",particleType);            /// photon (2)
     
   // Energy:
@@ -326,6 +331,7 @@ GammaSource::createSource(SDef::Source& sourceCard) const
 
   if (angleSpread>Geometry::zeroTol)
     {
+      ELog::EM<<"Adding ARI card"<<angleSpread<<ELog::endDiag;
       SDef::SrcData D2(2);
       SDef::SrcInfo SI2;
       SI2.addData(-1.0);
@@ -333,8 +339,10 @@ GammaSource::createSource(SDef::Source& sourceCard) const
       SI2.addData(1.0);
     }
   else
-    sourceCard.setComp("dir",1.0);
-
+    {
+      ELog::EM<<"Adding dir card"<<ELog::endDiag;
+      sourceCard.setComp("dir",1.0);
+    }
 
   if (!shape)
     createRadialSource(sourceCard);
