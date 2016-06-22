@@ -1,3 +1,4 @@
+
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
@@ -427,7 +428,7 @@ PlateUnit::getString(const ModelSupport::surfRegister& SMap,
 
 std::string
 PlateUnit::getExclude(const ModelSupport::surfRegister& SMap,
-		       const size_t layerN) const
+		      const size_t layerN) const
   /*!
     Write string for layer number
     \param SMap :: Surface register
@@ -440,5 +441,6 @@ PlateUnit::getExclude(const ModelSupport::surfRegister& SMap,
   Out.makeComplement();
   return Out.display();
 }
+
   
 }  // NAMESPACE beamlineSystem

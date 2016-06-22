@@ -37,6 +37,7 @@ namespace constructSystem
   class RotaryCollimator;
   class VacuumBox;
   class ChopperHousing;
+  class PipeCollimator;
 }
 
 namespace essSystem
@@ -87,6 +88,9 @@ class NMX : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::VacuumPipe> VPipeE;
   /// Bender in second pipe [22m-Wall]
   std::shared_ptr<beamlineSystem::GuideLine> BendE;
+
+  /// Collimator A 
+  std::shared_ptr<constructSystem::PipeCollimator> CollA;
 
   /// Bunker insert
   std::shared_ptr<essSystem::BunkerInsert> BInsert;

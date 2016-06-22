@@ -1,3 +1,4 @@
+
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
@@ -753,6 +754,8 @@ GuideLine::createGuideLinks()
   return;
 }
 
+
+  
 Geometry::Vec3D
 GuideLine::calcActiveEndIntercept() 
   /*!
@@ -860,6 +863,44 @@ GuideLine::addEndCut(const FixedComp& EC,
   endCut=EC.getSignedMainRule(sideIndex);
   endCutBridge=EC.getSignedCommonRule(sideIndex);
   return;
+}
+
+HeadRule
+GuideLine::getXSection(const size_t shapeIndex) const
+  /*!
+    Get the cross-section rule
+    \param shapeIndex :: Shape number
+    \return HeadRule of XSection
+  */
+{
+  ELog::RegMethod RegA("GuideLine","getXSection");
+
+  if (shapeIndex>=nShapes)
+    throw ColErr::IndexError<size_t>(shapeIndex,nShapes,"shapeIndex/nShapes");
+
+  const std::string shapeLayer=
+    shapeUnits[shapeIndex]->getString(SMap,nShapeLayers-1);
+
+  return HeadRule(shapeLayer);
+}
+
+HeadRule
+GuideLine::getXSectionOut(const size_t shapeIndex) const
+  /*!
+    Get the cross-section rule
+    \param shapeIndex :: Shape number
+    \return HeadRule of XSection
+  */
+{
+  ELog::RegMethod RegA("GuideLine","getXSection");
+
+  if (shapeIndex>=nShapes)
+    throw ColErr::IndexError<size_t>(shapeIndex,nShapes,"shapeIndex/nShapes");
+
+  const std::string shapeLayer=
+    shapeUnits[shapeIndex]->getExclude(SMap,nShapeLayers-1);
+
+  return HeadRule(shapeLayer);
 }
 
 void

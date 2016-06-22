@@ -124,6 +124,8 @@ class GuideLine : public attachSystem::ContainedComp,
   void addEndCut(const std::string&);
   void addEndCut(const attachSystem::FixedComp&,const long int);
 
+  HeadRule getXSection(const size_t =0) const;
+  HeadRule getXSectionOut(const size_t =0) const;
   
   virtual void createAll(Simulation&,
 			 const attachSystem::FixedComp&,const long int,

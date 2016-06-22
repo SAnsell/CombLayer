@@ -146,6 +146,11 @@ NMXvariables(FuncDataBase& Control)
   Control.addVariable("nmxShieldARoofLen1",10.0);
   Control.addVariable("nmxShieldAFloorLen1",10.0);
 
+
+  // TEST OF COLLIMATORS IN PIPE:
+  Control.addVariable("nmxCollALength",30.0);
+  Control.addVariable("nmxCollAMat","Tungsten");
+  
   return;
 }
 

@@ -84,6 +84,7 @@
 #include "BunkerInsert.h"
 #include "ChopperPit.h"
 #include "LineShield.h"
+#include "PipeCollimator.h"
 
 #include "NMX.h"
 
@@ -105,6 +106,7 @@ namespace essSystem
   BendD(new beamlineSystem::GuideLine(keyName+"BD")),
   VPipeE(new constructSystem::VacuumPipe(keyName+"PipeE")),
   BendE(new beamlineSystem::GuideLine(keyName+"BE")),
+  CollA(new constructSystem::PipeCollimator(keyName+"CollA")),
   BInsert(new BunkerInsert(keyName+"BInsert")),
   FocusWall(new beamlineSystem::GuideLine(keyName+"FWall")),
   ShieldA(new constructSystem::LineShield(keyName+"ShieldA"))
@@ -135,6 +137,8 @@ namespace essSystem
   OR.addObject(BInsert);
   OR.addObject(FocusWall);
 
+  OR.addObject(CollA);
+  
   OR.addObject(ShieldA);
 }
 
@@ -244,6 +248,12 @@ NMX::build(Simulation& System,
   BendE->createAll(System,BendD->getKey("Guide0"),2,
 		   BendD->getKey("Guide0"),2);
 
+  // EXPERIMENTAL WAY TO PLACE A SIMPLE COLLIMATOR   
+  CollA->setInnerExclude(BendC->getXSectionOut());
+  CollA->setOuter(VPipeC->getSignedFullRule(-3));
+  CollA->addInsertCell(VPipeC->getCell("Void"));
+  CollA->createAll(System,*VPipeC,0);
+  
   if (stopPoint==2) return;                      // STOP At bunker edge
 
   // First collimator [In WALL]
