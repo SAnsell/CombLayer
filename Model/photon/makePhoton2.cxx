@@ -70,6 +70,7 @@
 #include "insertSphere.h"
 #include "World.h"
 #include "AttachSupport.h"
+#include "plateInfo.h"
 #include "PlateMod.h"
 #include "EQDetector.h"
 

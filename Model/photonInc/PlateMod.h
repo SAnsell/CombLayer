@@ -27,15 +27,6 @@ class Simulation;
 namespace photonSystem
 {
 
-struct plateInfo
-{
-  double thick;                ///< Thickness
-  double vHeight;              ///< void height
-  double vWidth;               ///< void width
-  int mat;                     ///< Material
-  double temp;                 ///< temperature [K]
-};
-
 /*!
   \class PlateMod
   \author S. Ansell
@@ -46,7 +37,9 @@ struct plateInfo
 
 class PlateMod : public attachSystem::ContainedComp,
   public attachSystem::FixedOffset,
-  public attachSystem::CellMap
+  public attachSystem::CellMap,
+  public attachSystem::SurfMap
+    
 {
  private:
 

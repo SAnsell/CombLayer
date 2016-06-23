@@ -69,6 +69,8 @@
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "SurfMap.h"
+#include "plateInfo.h"
 #include "PlateMod.h"
 
 namespace photonSystem
@@ -76,6 +78,7 @@ namespace photonSystem
       
 PlateMod::PlateMod(const std::string& Key) :
   attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
+  attachSystem::CellMap(),attachSystem::SurfMap(),
   plateIndex(ModelSupport::objectRegister::Instance().cell(Key)), 
   cellIndex(plateIndex+1)
   /*!
@@ -147,7 +150,6 @@ PlateMod::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("PlateMod","populate");
   attachSystem::FixedOffset::populate(Control);
 
-
   outerHeight=Control.EvalVar<double>(keyName+"OuterHeight");
   outerWidth=Control.EvalVar<double>(keyName+"OuterWidth");
   innerHeight=Control.EvalVar<double>(keyName+"InnerHeight");
@@ -162,6 +164,8 @@ PlateMod::populate(const FuncDataBase& Control)
     {
       const std::string KN=StrFunc::makeString(i);
       plateInfo PI;
+      PI.name=Control.EvalDefVar<std::string>
+        (keyName+"Name"+KN,"Layer"+StrFunc::makeString(i));
       PI.thick=Control.EvalVar<double>(keyName+"Thick"+KN);
       PI.vHeight=Control.EvalVar<double>(keyName+"VHeight"+KN);
       PI.vWidth=Control.EvalVar<double>(keyName+"VWidth"+KN);
@@ -215,6 +219,7 @@ PlateMod::createSurfaces()
   for(const plateInfo& PI : Layer)
     {
       ModelSupport::buildPlane(SMap,SI+1,OR,Y);
+      SurfMap::addSurf(PI.name,SI+1);
       // void in middle
       if (PI.vHeight>Geometry::zeroTol &&
           PI.vWidth>Geometry::zeroTol)
@@ -228,7 +233,8 @@ PlateMod::createSurfaces()
       SI+=100;
     }
   // Add last plane
-  ModelSupport::buildPlane(SMap,SI+1,OR,Y);  
+  ModelSupport::buildPlane(SMap,SI+1,OR,Y);
+  SurfMap::addSurf("Out",SI+1);
   return; 
 }
 

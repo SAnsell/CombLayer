@@ -636,11 +636,12 @@ WeightControl::procObject(const Simulation& System,
   const size_t nSet=IParam.setCnt("weightObject");
   // default values:
   procParam(IParam,"weightControl",0,0);
+  ELog::EM<<"NSET == "<<nSet<<ELog::endDiag;
   for(size_t iSet=0;iSet<nSet;iSet++)
     {
       const std::string Key=
 	IParam.getValue<std::string>("weightObject",iSet,0);
-      ELog::EM<<"PROC OBJECT "<<Key<<ELog::endDiag;
+      ELog::EM<<"PROC OBJECT:: "<<Key<<ELog::endDiag;
       // local values:
       procParam(IParam,"weightObject",iSet,1);
 
@@ -661,6 +662,8 @@ WeightControl::procObject(const Simulation& System,
 	}
       else if (activePlane)
         {
+          //          for(const int CN : objCells)
+          //            ELog::EM<<"CN == "<<CN<<ELog::endDiag;
 	  const size_t PI(static_cast<size_t>(-activePtIndex-1));
           if (PI>=planePt.size())
             throw ColErr::IndexError<size_t>

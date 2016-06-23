@@ -383,17 +383,18 @@ GammaSource::createRectangleSource(SDef::Source& sourceCard) const
   ELog::EM<<"REC SOURCE"<<ELog::endDiag;
   sourceCard.setActive();
   sourceCard.setComp("vec",Direction);
+  sourceCard.setComp("y",Origin.Y());
 
   
   SDef::SrcData D3(3);
   SDef::SrcInfo SI3;
-  SI3.addData(-width/2.0);
-  SI3.addData(width/2.0);
+  SI3.addData(Origin[0]-width/2.0);
+  SI3.addData(Origin[0]+width/2.0);
 
   SDef::SrcData D4(4);
   SDef::SrcInfo SI4;
-  SI4.addData(-height/2.0);
-  SI4.addData(height/2.0);
+  SI4.addData(Origin[2]-height/2.0);
+  SI4.addData(Origin[2]+height/2.0);
 
   SDef::SrcProb SP3;
   SP3.addData(0.0);

@@ -570,7 +570,7 @@ objectRegister::getObjectRange(const std::string& objName) const
       
       for(int& CN : Out)
         CN=calcRenumber(CN);
-
+      
       return Out;
     }
 
@@ -605,16 +605,31 @@ objectRegister::getObjectRange(const std::string& objName) const
     }
   
   // Just an object name:
+
   const int BStart=getCell(objName);
   const int BRange=getRange(objName);
+  ELog::EM<<"ObjName = "<<objName<<" "<<BStart<<" "<<BRange<<ELog::endDiag;
   if (BStart==0)
     throw ColErr::InContainerError<std::string>
       (objName,"Object name not found");
   
   if (!BRange)
     return std::vector<int>();
-  std::vector<int> Out(static_cast<size_t>(BRange));
-  std::iota(Out.begin(),Out.end(),BStart);
+
+  // Loop forward to find first element in set :
+  // then step forward until out of range.
+  std::set<int>::const_iterator sc=activeCells.end();
+  for(int i=BStart;i<BRange+BStart &&
+        sc==activeCells.end();i++)
+    sc=activeCells.find(i);
+
+  std::vector<int> Out;
+  while(sc!=activeCells.end() &&
+        *sc<BStart+BRange)
+    {
+      Out.push_back(*sc);
+      sc++;
+    }
   for(int& CN : Out)
     CN=calcRenumber(CN);
   return Out;
