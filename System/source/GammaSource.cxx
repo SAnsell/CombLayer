@@ -384,7 +384,7 @@ GammaSource::createRectangleSource(SDef::Source& sourceCard) const
   sourceCard.setActive();
   sourceCard.setComp("vec",Direction);
   sourceCard.setComp("y",Origin.Y());
-
+  sourceCard.setComp("ara",width*height);
   
   SDef::SrcData D3(3);
   SDef::SrcInfo SI3;

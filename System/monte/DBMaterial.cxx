@@ -1042,6 +1042,14 @@ DBMaterial::initMaterial()
 		   MLib);
   setMaterial(MObj);
 
+  // Material #48 Parafin Wax:
+  MObj.setMaterial(123,"Wax","6000.70c 0.2 "
+                   "8016.70c 0.1 1001.70c 0.65 "
+                   "14028.70c 0.05","poly.01t",MLib);
+  MObj.setDensity(-1.05);
+  setMaterial(MObj);
+
+  
   // CLONE Materials: 
   cloneMaterial("CastIron","Iron");
   cloneMaterial("Aluminium","Aluminium20K");
