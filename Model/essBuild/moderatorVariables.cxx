@@ -163,21 +163,17 @@ EssButterflyModerator(FuncDataBase& Control)
 
   Control.addVariable("LowFlyLeftWaterWidth",10.6672);
   Control.addVariable("LowFlyLeftWaterWallThick",0.347);
-  Control.addVariable("LowFlyLeftWaterSideWaterThick",2.2);
-  Control.addVariable("LowFlyLeftWaterSideWaterMat","H2O");
   Control.addVariable("LowFlyLeftWaterSideWaterCutAngle",60.0);
   Control.addVariable("LowFlyLeftWaterSideWaterCutDist",0.0);
-  Control.addVariable("LowFlyLeftWaterModMat","Void");
+  Control.addVariable("LowFlyLeftWaterModMat","H2O");
   Control.addVariable("LowFlyLeftWaterWallMat","Aluminium");
   Control.addVariable("LowFlyLeftWaterModTemp",300.0);
 
   Control.addVariable("LowFlyRightWaterWidth",10.6672);
   Control.addVariable("LowFlyRightWaterWallThick",0.347);
-  Control.addVariable("LowFlyRightWaterSideWaterThick",2.2);
-  Control.addVariable("LowFlyRightWaterSideWaterMat","H2O");
   Control.addVariable("LowFlyRightWaterSideWaterCutAngle",60.0);
   Control.addVariable("LowFlyRightWaterSideWaterCutDist",0.0);
-  Control.addVariable("LowFlyRightWaterModMat","Void");
+  Control.addVariable("LowFlyRightWaterModMat","H2O");
   Control.addVariable("LowFlyRightWaterWallMat","Aluminium");
   Control.addVariable("LowFlyRightWaterModTemp",300.0);
 
@@ -284,21 +280,17 @@ EssButterflyModerator(FuncDataBase& Control)
 
   Control.addVariable("TopFlyLeftWaterWidth",10.6672);
   Control.addVariable("TopFlyLeftWaterWallThick",0.347);
-  Control.addVariable("TopFlyLeftWaterSideWaterThick",2.2);
-  Control.addVariable("TopFlyLeftWaterSideWaterMat","H2O");
   Control.addVariable("TopFlyLeftWaterSideWaterCutAngle",60.0);
   Control.addVariable("TopFlyLeftWaterSideWaterCutDist",0.0);
-  Control.addVariable("TopFlyLeftWaterModMat","Void");
+  Control.addVariable("TopFlyLeftWaterModMat","H2O");
   Control.addVariable("TopFlyLeftWaterWallMat","Aluminium");
   Control.addVariable("TopFlyLeftWaterModTemp",300.0);
 
   Control.addVariable("TopFlyRightWaterWidth",10.6672);
   Control.addVariable("TopFlyRightWaterWallThick",0.347);
-  Control.addVariable("TopFlyRightWaterSideWaterThick",2.2);
-  Control.addVariable("TopFlyRightWaterSideWaterMat","H2O");
   Control.addVariable("TopFlyRightWaterSideWaterCutAngle",60.0);
   Control.addVariable("TopFlyRightWaterSideWaterCutDist",0.0);
-  Control.addVariable("TopFlyRightWaterModMat","Void");
+  Control.addVariable("TopFlyRightWaterModMat","H2O");
   Control.addVariable("TopFlyRightWaterWallMat","Aluminium");
   Control.addVariable("TopFlyRightWaterModTemp",300.0);
 

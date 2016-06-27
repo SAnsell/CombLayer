@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/EdgeWater.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,8 +39,7 @@ namespace essSystem
 class EdgeWater : 
   public attachSystem::ContainedComp,
   public attachSystem::LayerComp,
-    public attachSystem::FixedComp,
-    public attachSystem::CellMap
+  public attachSystem::FixedComp
 {
  private:
 
@@ -49,13 +48,6 @@ class EdgeWater :
 
   double width;
   double wallThick;
-  double sideWaterThick;     ///< Side water thickness
-  int    sideWaterMat;       ///< Side water material
-  double sideWaterCutAngle;  ///< Side water cut angle
-  double sideWaterCutOffset; ///< Distance from intersection with divider where cut starts
-  double insWaterLength;        ///< water insert length. if insWaterLength<0 and insWaterHeight<0 then water insert is not built.
-  double insWaterHeight;        ///< water insert height. if negative, spans over full height
-  double insWaterThick;         ///< water insert thick
 
   int modMat;               ///< Water material
   int wallMat;              ///< Wall material
@@ -66,9 +58,10 @@ class EdgeWater :
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
 
-  void createSurfaces(const std::string&);
+  void createSurfaces();
   void createObjects(Simulation&,const std::string&,const std::string&);
   void createLinks();
+
 
  public:
 
@@ -78,13 +71,14 @@ class EdgeWater :
   virtual EdgeWater* clone() const;
   virtual ~EdgeWater();
 
+  inline const std::string getSideRule() const { return sideRule; }
+
   virtual Geometry::Vec3D getSurfacePoint(const size_t,const size_t) const;
   virtual std::string getLayerString(const size_t,const size_t) const;
   virtual int getLayerSurf(const size_t,const size_t) const;
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const std::string&,const std::string&);
-  inline const std::string getSideRule() const { return sideRule; }
 };
 
 }
