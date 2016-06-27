@@ -65,8 +65,10 @@ class WeightControl
   
   std::set<std::string> objectList;  ///< Object list to this cut [local]
 
-  bool activePlane;                           ///< Active plane
-  long int activePtIndex;                     ///< Point+1 in use [-ve == tally]
+  bool activeAdjointFlag;                   ///< Active plane
+  std::string activePtType;                      ///< ptType 
+  size_t activePtIndex;                     ///< plant/source/track pt 
+
 
   std::vector<Geometry::Plane> planePt;       ///< Plane points
   std::vector<Geometry::Vec3D> sourcePt;      ///< Source Points
@@ -90,15 +92,20 @@ class WeightControl
 
   void procSourcePoint(const mainSystem::inputParam&);
   void procPlanePoint(const mainSystem::inputParam&);
+  void procTrackLine(const mainSystem::inputParam&);
   void procObject(const Simulation&,
 		  const mainSystem::inputParam&);
   void procRebase(const Simulation&,
 		  const mainSystem::inputParam&);
+  void procTrack(const Simulation&,
+		  const mainSystem::inputParam&);
+
   void processPtString(std::string);
 
   void procCalcHelp() const;
   void procRebaseHelp() const;
   void procObjectHelp() const;
+  void procTrackHelp() const;
   
   
   void setWeights(Simulation&);
