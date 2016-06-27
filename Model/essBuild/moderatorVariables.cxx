@@ -164,7 +164,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowFlyLeftWaterWidth",15.76);
   Control.addVariable("LowFlyLeftWaterWallThick",0.347);
   Control.addVariable("LowFlyLeftWaterCutAngle",60.0);
-  Control.addVariable("LowFlyLeftWaterCutDist",2.575);
+  Control.addVariable("LowFlyLeftWaterCutThick",10.56);
   Control.addVariable("LowFlyLeftWaterModMat","H2O");
   Control.addVariable("LowFlyLeftWaterWallMat","Aluminium");
   Control.addVariable("LowFlyLeftWaterModTemp",300.0);
@@ -172,7 +172,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowFlyRightWaterWidth",15.76);
   Control.addVariable("LowFlyRightWaterWallThick",0.347);
   Control.addVariable("LowFlyRightWaterCutAngle",60.0);
-  Control.addVariable("LowFlyRightWaterCutDist",2.575);
+  Control.addVariable("LowFlyRightWaterCutThick",10.56);
   Control.addVariable("LowFlyRightWaterModMat","H2O");
   Control.addVariable("LowFlyRightWaterWallMat","Aluminium");
   Control.addVariable("LowFlyRightWaterModTemp",300.0);
@@ -281,7 +281,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopFlyLeftWaterWidth",15.76);
   Control.addVariable("TopFlyLeftWaterWallThick",0.347);
   Control.addVariable("TopFlyLeftWaterCutAngle",60.0);
-  Control.addVariable("TopFlyLeftWaterCutDist",2.575);
+  Control.addVariable("TopFlyLeftWaterCutThick",10.56);
   Control.addVariable("TopFlyLeftWaterModMat","H2O");
   Control.addVariable("TopFlyLeftWaterWallMat","Aluminium");
   Control.addVariable("TopFlyLeftWaterModTemp",300.0);
@@ -289,7 +289,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopFlyRightWaterWidth",15.76);
   Control.addVariable("TopFlyRightWaterWallThick",0.347);
   Control.addVariable("TopFlyRightWaterCutAngle",60.0);
-  Control.addVariable("TopFlyRightWaterCutDist",2.575);
+  Control.addVariable("TopFlyRightWaterCutThick",10.56);
   Control.addVariable("TopFlyRightWaterModMat","H2O");
   Control.addVariable("TopFlyRightWaterWallMat","Aluminium");
   Control.addVariable("TopFlyRightWaterModTemp",300.0);

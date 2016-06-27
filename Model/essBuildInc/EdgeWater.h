@@ -49,8 +49,8 @@ class EdgeWater :
   double width;
   double wallThick;
 
-  double cutAngle;          ///< Cut angle for the inclined beam lines
-  double cutDist;           ///< Offset for the cut area along the X-axis (note that EdgeWater is rotated by 90 deg)
+  double cutAngle;          ///< Cut angle to allow the inclined beam lines to view H2
+  double cutThick;          ///< Water thickness in its connection to the lobe
 
   int modMat;               ///< Water material
   int wallMat;              ///< Wall material
