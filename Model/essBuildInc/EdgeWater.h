@@ -49,6 +49,9 @@ class EdgeWater :
   double width;
   double wallThick;
 
+  double cutAngle;          ///< Cut angle for the inclined beam lines
+  double cutDist;           ///< Offset for the cut area along the X-axis (note that EdgeWater is rotated by 90 deg)
+
   int modMat;               ///< Water material
   int wallMat;              ///< Wall material
   double modTemp;           ///< Moderator temperature
@@ -58,7 +61,7 @@ class EdgeWater :
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
 
-  void createSurfaces();
+  void createSurfaces(const std::string&);
   void createObjects(Simulation&,const std::string&,const std::string&);
   void createLinks();
 
