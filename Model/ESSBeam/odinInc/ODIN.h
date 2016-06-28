@@ -80,11 +80,14 @@ class ODIN : public attachSystem::CopiedComp
   /// Basic tapered guid
   std::shared_ptr<beamlineSystem::GuideLine> FocusC;
 
+  /// Quad chopper housing
+  std::shared_ptr<constructSystem::ChopperUnit> ChopperB;
+  /// T0 chopper [9-9.5m]
+  std::shared_ptr<constructSystem::DiskChopper> T0Disk;
+
   
   /// Tapper Unit
   std::shared_ptr<beamlineSystem::GuideLine> GuideA;
-  /// T0 chopper [9-9.5m]
-  std::shared_ptr<constructSystem::DiskChopper> T0Chopper;
   /// Tapper Unit
   std::shared_ptr<beamlineSystem::GuideLine> GuideB;
   /// Bunker insert
@@ -111,8 +114,6 @@ class ODIN : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> GuidePitBFront;
   /// Guide from Chopper to exterior [Hutch side]
   std::shared_ptr<beamlineSystem::GuideLine> GuidePitBBack;
-  /// Guide from Chopper to exterior
-  std::shared_ptr<constructSystem::DiskChopper> ChopperB;
   /// Guide from chopper B to exterior
   std::shared_ptr<beamlineSystem::GuideLine> GuideF;
 

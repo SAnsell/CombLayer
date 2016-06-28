@@ -81,7 +81,7 @@ ODINvariables(FuncDataBase& Control)
   PipeGen.generatePipe(Control,"odinPipeB",2.0,46.0);
   FGen.setGuideMat("Aluminium");
   FGen.clearYOffset();
-  FGen.generateTaper(Control,"odinFB",44.0,3.50,3.5,4.0,4.0);
+  FGen.generateTaper(Control,"odinFB",44.0, 3.50,3.5, 4.0,4.0);
 
   CGen.setMainRadius(26.0);
   CGen.setFrame(60.0,60.0);
@@ -126,8 +126,36 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinQBlade3PhaseAngle1",275.0);
   Control.addVariable("odinQBlade3OpenAngle1",30.0);
 
+  Control.addVariable("odinGA0HeightStart",3.0);
+  Control.addVariable("odinGA0HeightEnd",3.0);
+  Control.addVariable("odinGA0WidthStart",7.0);
+  Control.addVariable("odinGA0WidthEnd",10.0);
 
+  PipeGen.generatePipe(Control,"odinPipeC",2.0,220.0);
+  FGen.generateTaper(Control,"odinFC",216.0,7.0,10.0,3.0,3.0);
 
+  CGen.setMainRadius(33.0);
+  CGen.setFrame(80.0,80.0);
+  CGen.generateChopper(Control,"odinChopperB",10.0,21.0,15.55);
+
+  // T0 Chopper disk A
+
+  Control.addVariable("odinT0InnerRadius",20.0);
+  Control.addVariable("odinT0OuterRadius",30.0);
+  Control.addVariable("odinT0NDisk",1);
+
+  Control.addVariable("odinT00InnerThick",5.4);  // to include B4C
+  Control.addVariable("odinT00Thick",3.4);  // to include B4C
+  Control.addVariable("odinT0InnerMat","Inconnel");
+  Control.addVariable("odinT0OuterMat","Void");
+  
+  Control.addVariable("odinT0NBlades",2);
+  Control.addVariable("odinT00PhaseAngle0",95.0);
+  Control.addVariable("odinT00OpenAngle0",35.0);
+  Control.addVariable("odinT00PhaseAngle1",275.0);
+  Control.addVariable("odinT00OpenAngle1",25.0);
+
+  
   /*
   
   Control.addVariable("odinGAXStep",0.0);       
