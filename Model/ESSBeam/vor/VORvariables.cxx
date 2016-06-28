@@ -85,10 +85,6 @@ VORvariables(FuncDataBase& Control)
   FGen.clearYOffset();
   FGen.generateTaper(Control,"vorFB",44.0,3.30,3.4028,5.0,5.1747);
 
-
-  
-
-
   
   // VACBOX A : A[2.08m from Bunker wall]
   //  Length 100.7 + Width [87.0] + Height [39.0] void Depth/2 + front

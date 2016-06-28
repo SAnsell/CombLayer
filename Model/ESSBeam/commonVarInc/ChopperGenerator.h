@@ -48,6 +48,15 @@ class ChopperGenerator
   double windowThick;      ///< window material thickness
   double ringRadius;       ///< Radius of the rinng 
 
+  double motorRadius;      ///< Motor radius
+  double motorOuter;       ///< Motor outer
+  double portRadius;       ///< Port radius
+  double portOuter;        ///< Port outer
+
+  double portWidth;        ///< Port width
+  double portHeight;       ///< Port height
+  double portBoltStep;     ///< Port outer
+  
   std::string wallMat;     ///< Main body material
   std::string sealMat;     ///< seal material
   std::string windowMat;     ///< seal material

@@ -100,7 +100,7 @@ DREAM::DREAM(const std::string& keyName) :
 
   FocusA(new beamlineSystem::GuideLine(newName+"FA")),
  
-  VPipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
+  VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
   FocusB(new beamlineSystem::GuideLine(newName+"FB")),
 
   ChopperA(new constructSystem::ChopperUnit(newName+"ChopperA")),
@@ -166,40 +166,52 @@ DREAM::DREAM(const std::string& keyName) :
   OR.addObject(dreamAxis);
 
   OR.addObject(FocusA);
-  OR.addObject(VPipeA);
+  OR.addObject(VPipeB);
   OR.addObject(FocusB);
   OR.addObject(ChopperA);
   OR.addObject(DDisk);  
-  OR.addObject(ChopperB);
   OR.addObject(SDisk);  
   OR.addObject(VPipeC);
   OR.addObject(FocusC);
+  OR.addObject(ChopperB);
+  OR.addObject(BandADisk);
+  
   OR.addObject(ChopperC);
   OR.addObject(T0DiskA);
   OR.addObject(FocusT0Mid);
   OR.addObject(T0DiskB);
+
   OR.addObject(VPipeD);
   OR.addObject(FocusD);
+
   OR.addObject(ChopperD);
-  OR.addObject(BandADisk);
+
+  OR.addObject(BandBDisk);
+  OR.addObject(ChopperE);
   
+  OR.addObject(T1DiskA);
+  OR.addObject(FocusT1Mid);
+  OR.addObject(T1DiskB);
+
   OR.addObject(VPipeE);
   OR.addObject(FocusE);
-  OR.addObject(ChopperE);
-  OR.addObject(BandBDisk);
 
   OR.addObject(VPipeF);
   OR.addObject(FocusF);
 
   OR.addObject(BInsert);
   OR.addObject(FocusWall);
-  
-  OR.addObject(T1DiskA);
-  OR.addObject(FocusT1Mid);
-  OR.addObject(T1DiskB);
 
+  OR.addObject(ShieldA);
+  OR.addObject(VPipeOutA);
+  OR.addObject(FocusOutA);
+  
+  OR.addObject(ShieldB);
+  OR.addObject(VPipeOutB);
+  OR.addObject(FocusOutB);
 
   OR.addObject(Cave);
+  
   OR.addObject(VPipeCaveA);
   OR.addObject(FocusCaveA);
 
@@ -268,11 +280,11 @@ DREAM::build(Simulation& System,
 
   if (stopPoint==1) return;                      // STOP At monolith edge
 
-  VPipeA->addInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeA->createAll(System,GItem.getKey("Beam"),2);
+  VPipeB->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeB->createAll(System,GItem.getKey("Beam"),2);
 
-  FocusB->addInsertCell(VPipeA->getCells("Void"));
-  FocusB->createAll(System,*VPipeA,0,*VPipeA,0);
+  FocusB->addInsertCell(VPipeB->getCells("Void"));
+  FocusB->createAll(System,*VPipeB,0,*VPipeB,0);
 
   // NEW TEST SECTION:
   ChopperA->addInsertCell(bunkerObj.getCell("MainVoid"));

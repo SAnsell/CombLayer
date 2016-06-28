@@ -48,6 +48,10 @@
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
+#include "ShieldGenerator.h"
+#include "FocusGenerator.h"
+#include "ChopperGenerator.h"
+#include "PipeGenerator.h"
 #include "variableSetup.h"
 
 namespace setVariable
@@ -62,45 +66,70 @@ ODINvariables(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("ODINvariables[F]","ODINvariables");
 
+  setVariable::ChopperGenerator CGen;
+  setVariable::FocusGenerator FGen;
+  setVariable::ShieldGenerator SGen;
+  setVariable::PipeGenerator PipeGen;
+  PipeGen.setPipe(12.0,1.0);
+  PipeGen.setWindow(13.0,0.3);
+  PipeGen.setFlange(16.0,1.0);
 
-  // Quad Blade chopper
-  Control.addVariable("odinBladeXStep",0.0);
-  Control.addVariable("odinBladeYStep",2.0);
-  Control.addVariable("odinBladeZStep",0.0);
-  Control.addVariable("odinBladeXYangle",0.0);
-  Control.addVariable("odinBladeZangle",0.0);
+  // VACUUM PIPE in Gamma shield
 
-  Control.addVariable("odinBladeGap",3.0);
-  Control.addVariable("odinBladeInnerRadius",10.0);
-  Control.addVariable("odinBladeOuterRadius",22.50);
-  Control.addVariable("odinBladeNDisk",4);
 
-  Control.addVariable("odinBlade0Thick",1.0);
-  Control.addVariable("odinBlade1Thick",1.0);
-  Control.addVariable("odinBlade2Thick",1.0);
-  Control.addVariable("odinBlade3Thick",1.0);
-  Control.addVariable("odinBladeInnerMat","Inconnel");
-  Control.addVariable("odinBladeOuterMat","Aluminium");
   
-  Control.addVariable("odinBladeNBlades",2);
-  Control.addVariable("odinBlade0PhaseAngle0",95.0);
-  Control.addVariable("odinBlade0OpenAngle0",30.0);
-  Control.addVariable("odinBlade1PhaseAngle0",95.0);
-  Control.addVariable("odinBlade1OpenAngle0",30.0);
-  Control.addVariable("odinBlade2PhaseAngle0",95.0);
-  Control.addVariable("odinBlade2OpenAngle0",30.0);
-  Control.addVariable("odinBlade3PhaseAngle0",95.0);
-  Control.addVariable("odinBlade3OpenAngle0",30.0);
+  PipeGen.generatePipe(Control,"odinPipeB",2.0,46.0);
+  FGen.setGuideMat("Aluminium");
+  FGen.clearYOffset();
+  FGen.generateTaper(Control,"odinFB",44.0,3.50,3.5,4.0,4.0);
 
-  Control.addVariable("odinBlade0PhaseAngle1",275.0);
-  Control.addVariable("odinBlade0OpenAngle1",30.0);
-  Control.addVariable("odinBlade1PhaseAngle1",275.0);
-  Control.addVariable("odinBlade1OpenAngle1",30.0);
-  Control.addVariable("odinBlade2PhaseAngle1",275.0);
-  Control.addVariable("odinBlade2OpenAngle1",30.0);
-  Control.addVariable("odinBlade3PhaseAngle1",275.0);
-  Control.addVariable("odinBlade3OpenAngle1",30.0);
+  CGen.setMainRadius(26.0);
+  CGen.setFrame(60.0,60.0);
+  CGen.generateChopper(Control,"odinChopperA",15.0,21.0,15.55);
 
+  
+  // Quad Blade chopper
+  Control.addVariable("odinQBladeXStep",0.0);
+  Control.addVariable("odinQBladeYStep",0.0);
+  Control.addVariable("odinQBladeZStep",0.0);
+  Control.addVariable("odinQBladeXYangle",0.0);
+  Control.addVariable("odinQBladeZangle",0.0);
+
+  Control.addVariable("odinQBladeGap",3.0);
+  Control.addVariable("odinQBladeInnerRadius",10.0);
+  Control.addVariable("odinQBladeOuterRadius",22.50);
+  Control.addVariable("odinQBladeNDisk",4);
+
+  Control.addVariable("odinQBlade0Thick",1.0);
+  Control.addVariable("odinQBlade1Thick",1.0);
+  Control.addVariable("odinQBlade2Thick",1.0);
+  Control.addVariable("odinQBlade3Thick",1.0);
+  Control.addVariable("odinQBladeInnerMat","Inconnel");
+  Control.addVariable("odinQBladeOuterMat","Aluminium");
+  
+  Control.addVariable("odinQBladeNBlades",2);
+  Control.addVariable("odinQBlade0PhaseAngle0",95.0);
+  Control.addVariable("odinQBlade0OpenAngle0",30.0);
+  Control.addVariable("odinQBlade1PhaseAngle0",95.0);
+  Control.addVariable("odinQBlade1OpenAngle0",30.0);
+  Control.addVariable("odinQBlade2PhaseAngle0",95.0);
+  Control.addVariable("odinQBlade2OpenAngle0",30.0);
+  Control.addVariable("odinQBlade3PhaseAngle0",95.0);
+  Control.addVariable("odinQBlade3OpenAngle0",30.0);
+
+  Control.addVariable("odinQBlade0PhaseAngle1",275.0);
+  Control.addVariable("odinQBlade0OpenAngle1",30.0);
+  Control.addVariable("odinQBlade1PhaseAngle1",275.0);
+  Control.addVariable("odinQBlade1OpenAngle1",30.0);
+  Control.addVariable("odinQBlade2PhaseAngle1",275.0);
+  Control.addVariable("odinQBlade2OpenAngle1",30.0);
+  Control.addVariable("odinQBlade3PhaseAngle1",275.0);
+  Control.addVariable("odinQBlade3OpenAngle1",30.0);
+
+
+
+  /*
+  
   Control.addVariable("odinGAXStep",0.0);       
   Control.addVariable("odinGAYStep",0.0);       
   Control.addVariable("odinGAZStep",0.0);       
@@ -849,7 +878,7 @@ ODINvariables(FuncDataBase& Control)
   
   Control.addVariable("odinBeamStopFeMat","Stainless304");
   Control.addVariable("odinBeamStopConcMat","Concrete");
-
+  */
   return;
 }
 

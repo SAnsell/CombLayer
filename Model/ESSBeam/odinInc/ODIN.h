@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/odin/ODIN.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,9 @@ namespace constructSystem
   class DiskChopper;
   class ChopperPit;
   class RotaryCollimator;
-  class PinHole;    
+  class PinHole;
+  class ChopperUnit;
+  class VacuumPipe;
 }
 
 namespace essSystem
@@ -64,8 +66,21 @@ class ODIN : public attachSystem::CopiedComp
   /// Main Beam Axis [for construction]
   std::shared_ptr<attachSystem::FixedComp> odinAxis;
 
-  /// First collimation jaws
-  std::shared_ptr<constructSystem::DiskChopper> BladeChopper;
+  /// Pipe between bunker and the wall
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeB;
+  /// Elliptic guide from 5.5 to 6metre
+  std::shared_ptr<beamlineSystem::GuideLine> FocusB;
+  /// Quad chopper housing
+  std::shared_ptr<constructSystem::ChopperUnit> ChopperA;
+  /// Quad blades
+  std::shared_ptr<constructSystem::DiskChopper> QDisk;
+
+  /// Pipe after quad chopper
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeC;
+  /// Basic tapered guid
+  std::shared_ptr<beamlineSystem::GuideLine> FocusC;
+
+  
   /// Tapper Unit
   std::shared_ptr<beamlineSystem::GuideLine> GuideA;
   /// T0 chopper [9-9.5m]
@@ -85,8 +100,6 @@ class ODIN : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> GuidePitAFront;
   /// Guide from Chopper to exterior
   std::shared_ptr<beamlineSystem::GuideLine> GuidePitABack;
-  /// Guide from Chopper to exterior
-  std::shared_ptr<constructSystem::DiskChopper> ChopperA;
 
   /// Guide from Chopper A to exterior
   std::shared_ptr<beamlineSystem::GuideLine> GuideE;

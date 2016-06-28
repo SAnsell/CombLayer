@@ -59,8 +59,11 @@ namespace setVariable
 ChopperGenerator::ChopperGenerator() :
   mainZStep(28.0),height(86.5),width(86.5),
   shortWidth(50.5),shortHeight(50.5),
-  mainRadius(38.122),
-  windowThick(0.3),ringRadius(40.0),
+  mainRadius(38.122),windowThick(0.3),
+  ringRadius(40.0),motorRadius(12.0),
+  motorOuter(15.20),portRadius(10.0),
+  portOuter(12.65),portWidth(11.6),
+  portHeight(11.6),portBoltStep(1.0),
   wallMat("Aluminium"),
   sealMat("Poly"),windowMat("Aluminium")
   /*!
@@ -120,6 +123,13 @@ ChopperGenerator::setMainRadius(const double R)
 {
   ringRadius*=R/mainRadius;
   mainZStep*=R/mainRadius;
+  motorRadius*=R/mainRadius;
+  motorOuter*=R/mainRadius;
+  portRadius*=R/mainRadius;
+  portOuter*=R/mainRadius;
+  portWidth*=R/mainRadius;
+  portHeight*=R/mainRadius;
+  portBoltStep*=R/mainRadius;
   mainRadius=R;
   return;
 }
@@ -167,16 +177,16 @@ ChopperGenerator::generateChopper(FuncDataBase& Control,
   Control.addVariable(keyName+"MainRadius",mainRadius); // estimate
   Control.addVariable(keyName+"MainThick",voidLength);  // estimate
   
-  Control.addVariable(keyName+"MotorRadius",12.00); // [5691.2]
-  Control.addVariable(keyName+"MotorOuter",15.20); // [5691.2]
+  Control.addVariable(keyName+"MotorRadius",motorRadius); // [5691.2]
+  Control.addVariable(keyName+"MotorOuter",motorOuter); // [5691.2]
   Control.addVariable(keyName+"MotorStep",0.0); // estimate
   Control.addVariable(keyName+"MotorNBolt",24); 
   Control.addVariable(keyName+"MotorBoltRadius",0.50); //M10 inc thread
   Control.addVariable(keyName+"MotorSealThick",0.2);  
   Control.addVariable(keyName+"MortorSealMat","Poly");
   
-  Control.addVariable(keyName+"PortRadius",10.0); // [5691.2]
-  Control.addVariable(keyName+"PortOuter",12.65); // [5691.2]
+  Control.addVariable(keyName+"PortRadius",portRadius); // [5691.2]
+  Control.addVariable(keyName+"PortOuter",portOuter); // [5691.2]
   Control.addVariable(keyName+"PortStep",0.0); // estimate
   Control.addVariable(keyName+"PortNBolt",24); 
   Control.addVariable(keyName+"PortBoltRadius",0.40); //M8 inc
@@ -195,8 +205,8 @@ ChopperGenerator::generateChopper(FuncDataBase& Control,
     "-("+keyName+"Length+"+keyName+"MainThick)/4.0";
   Control.addParse<double>(keyName+"IPortAYStep",kItem);
  
-  Control.addVariable(keyName+"IPortAWidth",11.6);  
-  Control.addVariable(keyName+"IPortAHeight",11.6);
+  Control.addVariable(keyName+"IPortAWidth",portWidth);  
+  Control.addVariable(keyName+"IPortAHeight",portHeight);
   Control.addVariable(keyName+"IPortALength",1.0);
   Control.addVariable(keyName+"IPortAMat","Aluminium");
   Control.addVariable(keyName+"IPortASealStep",0.5);
@@ -206,15 +216,15 @@ ChopperGenerator::generateChopper(FuncDataBase& Control,
   Control.addVariable(keyName+"IPortAWindowMat",windowMat);
 
   Control.addVariable(keyName+"IPortANBolt",8);
-  Control.addVariable(keyName+"IPortABoltStep",1.0);
+  Control.addVariable(keyName+"IPortABoltStep",portBoltStep);
   Control.addVariable(keyName+"IPortABoltRadius",0.3);
   Control.addVariable(keyName+"IPortABoltMat","Stainless304");
   
   // PORT B
   Control.addParse<double>(keyName+"IPortBYStep",
         "("+keyName+"Length+"+keyName+"MainThick)/4.0");
-  Control.addVariable(keyName+"IPortBWidth",12.0);  
-  Control.addVariable(keyName+"IPortBHeight",12.0);
+  Control.addVariable(keyName+"IPortBWidth",portWidth);  
+  Control.addVariable(keyName+"IPortBHeight",portHeight);
   Control.addVariable(keyName+"IPortBLength",1.0);
   Control.addVariable(keyName+"IPortBMat","Aluminium");
   Control.addVariable(keyName+"IPortBSealStep",0.5);
@@ -224,7 +234,7 @@ ChopperGenerator::generateChopper(FuncDataBase& Control,
   Control.addVariable(keyName+"IPortBWindowMat",windowMat);
 
   Control.addVariable(keyName+"IPortBNBolt",8);
-  Control.addVariable(keyName+"IPortBBoltStep",1.0);
+  Control.addVariable(keyName+"IPortBBoltStep",portBoltStep);
   Control.addVariable(keyName+"IPortBBoltRadius",0.3);
   Control.addVariable(keyName+"IPortBBoltMat","Stainless304");
     

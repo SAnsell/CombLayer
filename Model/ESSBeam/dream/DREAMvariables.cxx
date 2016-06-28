@@ -355,7 +355,7 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamFA0WidthEnd",2.0);
   Control.addVariable("dreamFA0Length",350.0);
 
-  generatePipe(Control,"dreamPipeA",46.0);
+  generatePipe(Control,"dreamPipeB",46.0);
   generateFocusTaper(Control,"dreamFB",44.0,2.5,2.5,4.5,4.5);   
   //  Control.addVariable("dreamFBBeamYStep",4.0);
  
