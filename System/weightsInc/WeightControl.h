@@ -66,10 +66,11 @@ class WeightControl
   std::set<std::string> objectList;  ///< Object list to this cut [local]
 
   bool activeAdjointFlag;                   ///< Active plane
-  std::string activePtType;                      ///< ptType 
+  std::string activePtType;                 ///< ptType 
   size_t activePtIndex;                     ///< plant/source/track pt 
 
 
+  std::vector<Geometry::Cone> conePt;         ///< Cone points
   std::vector<Geometry::Plane> planePt;       ///< Plane points
   std::vector<Geometry::Vec3D> sourcePt;      ///< Source Points
   
@@ -105,7 +106,7 @@ class WeightControl
   void procCalcHelp() const;
   void procRebaseHelp() const;
   void procObjectHelp() const;
-  void procTrackHelp() const;
+  void procConeHelp() const;
   
   
   void setWeights(Simulation&);
@@ -138,6 +139,8 @@ class WeightControl
 		     const std::vector<int>&,CellWeight&);
   void calcCellTrack(const Simulation&,const Geometry::Plane&,
 		     const std::vector<int>&,CellWeight&);
+  void calcCellTrack(const Simulation&,const Geometry::Cone&,
+		     CellWeight&);
 
 
  public:

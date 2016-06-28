@@ -47,6 +47,7 @@
 #include "Surface.h"
 #include "Quadratic.h"
 #include "Plane.h"
+#include "Cone.h"
 #include "support.h"
 #include "Rules.h"
 #include "varList.h"
@@ -188,7 +189,7 @@ WeightControl::processPtString(std::string ptStr)
   ELog::RegMethod RegA("WeightControl","processPtString");
 
   const static std::map<char,std::string> TypeMap
-    ({ { 'S',"Source" }, {'P',"Plane"}, {'T',"Track"} });
+    ({ { 'S',"Source" }, {'P',"Plane"}, {'C',"Cone"} });
 
   if (ptStr.size()>1)
     {
@@ -357,22 +358,6 @@ WeightControl::procObjectHelp() const
 }
 
 void
-WeightControl::procTrackHelp() const
-  /*!
-    Write the Rebase help
-  */
-{
-  ELog::EM<<"weightTrack ::: \n"
-    "TrackItem energyCut densityScalar minWeight \n"
-    " -- TSItem :: String  [TS](index)P{value} \n"
-    "       --- T/S :: tally/source to use \n"
-    "       --- index :: index [from zero] of track vector\n"
-    "       --- P{value} :: Optional value for the power [default 0.5]"
-	  <<ELog::endDiag;
-  return;
-}
-
-void
 WeightControl::procPlanePoint(const mainSystem::inputParam& IParam)
   /*!
     Determine inf the next component cat be a plane
@@ -477,7 +462,7 @@ WeightControl::cTrack(const Simulation& System,
                       const std::vector<long int>& index,
                       ItemWeight& CTrack)
   /*!
-    Calculate a specific trac from sourcePoint to  postion
+    Calculate a specific track from sourcePoint to  postion
     \param System :: Simulation to use    
     \param initPt :: point for outgoing track
     \param Pts :: Point on track
@@ -575,6 +560,39 @@ WeightControl::calcWWGTrack(const Simulation& System,
 }
    
 void
+WeightControl::calcCellTrack(const Simulation& System,
+                             const Geometry::Cone& curCone,
+                             CellWeight& CTrack)
+  /*!
+    Calculate a given cone : calculate those cells
+    that the cone intersects
+    \param System :: Simulation to use
+    \param curPlane :: current plane
+    \param cellVec :: Cells to track
+    \param CTrack :: Cell Weights for output 
+   */
+{
+  ELog::RegMethod RegA("WeightControl","calcCellTrack<Cone>");
+
+  CTrack.clear();
+  std::vector<Geometry::Vec3D> Pts;
+  std::vector<long int> index;
+  /*
+  for(const int cellN : cellVec)
+    {
+      const MonteCarlo::Qhull* CellPtr=System.findQhull(cellN);
+      if (CellPtr && CellPtr->getMat())
+	{
+	  index.push_back(CellPtr->getName());  // this should be cellN ??
+	  Pts.push_back(CellPtr->getCofM());
+	}
+    }
+  cTrack(System,curPlane,Pts,index,CTrack);
+  */
+  return;
+}
+
+  void
 WeightControl::calcCellTrack(const Simulation& System,
                              const Geometry::Plane& curPlane,
                              const std::vector<int>& cellVec,
@@ -705,9 +723,10 @@ WeightControl::procObject(const Simulation& System,
 	  else
 	    CW.invertWM(energyCut,scaleFactor,minWeight,weightPower);
 	}
-      else if (activePtType=="Track")
+      else if (activePtType=="Cone")
 	{
-	  
+	  CellWeight CW;
+          calcCellTrack(System,sourcePt[activePtIndex],objCells,CW);
 	}
       else
 	throw ColErr::InContainerError<std::string>

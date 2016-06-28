@@ -225,20 +225,31 @@ setESSSingle(defaultConfig& A,
   ELog::RegMethod RegA("DefUnitsESS[F]","setESSSingle");
 
   A.setOption("lowMod","Butterfly");
+  const std::map<std::string,std::string> beamDefNotSet=
+    {{"BIFROST","G4BLine4"},
+     {"MIRACLES","G4BLine5"},
+     {"MAGIC","G1BLine6"},
+     {"TREX","G4BLine7"},
+     {"HEIMDAL","G4BLine8"},
+     {"SLEIPNIR","G4BLine13"},   // N9
+     {"ANNI","G3BLine3"},        // E3
+     {"SURFSCATTER","G3BLine8"},        // E8
+     {"SKADI","G3BLine5"}         // E5
+    };     
   const std::map<std::string,std::string> beamDef=
-    {{"NMX","G4BLine1"},
+    {{"NMX","G4BLine1"},        // W1
      {"SHORTDREAM","G4BLine17"},
      {"SHORTODIN","G1BLine4"},
-     {"DREAM","G4BLine9"},
-     {"CSPEC","G4BLine13"},
-     {"VESPA","G4BLine15"},
-     {"VOR","G4BLine21"},   // also 17
+     {"DREAM","G3BLine19"},     // S3
+     {"CSPEC","G4BLine3"},      // W3
+     {"VESPA","G3BLine7"},      // E7
+     {"VOR","G3BLine11"},       // E11
      {"SIMPLE","G4BLine17"},
-     {"LOKI","G4BLine17"},
-     {"ODIN","G1BLine16"},   // Note reverse because on G1
-     {"ESTIA","G4BLine11"},
-     {"FREIA","G4BLine3"},      // N5
-     {"BEER","G4BLine15"}      // N5 [WRONG]
+     {"LOKI","G4BLine17"},      // N7
+     {"ODIN","G2BLine2"},       // Lower S2
+     {"ESTIA","G3BLine2"},      // E2
+     {"FREIA","G4BLine15"},     // N5
+     {"BEER","G4BLine2"}        // W2
     };     
   const std::set<std::string> beamFilled=
     {"BEER","CSPEC","DREAM","FREIA","LOKI","NMX","VESPA","VOR","SHORTDREAM"};
