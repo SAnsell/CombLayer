@@ -146,11 +146,11 @@ DiskChopper::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("DiskChopper","populate");
   
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
-  zAngle=Control.EvalVar<double>(keyName+"Zangle");
+  xStep=Control.EvalDefVar<double>(keyName+"XStep",0.0);
+  yStep=Control.EvalDefVar<double>(keyName+"YStep",0.0);
+  zStep=Control.EvalDefVar<double>(keyName+"ZStep",0.0);
+  xyAngle=Control.EvalDefVar<double>(keyName+"XYangle",0.0);
+  zAngle=Control.EvalDefVar<double>(keyName+"Zangle",0.0);
 
 
   innerRadius=Control.EvalVar<double>(keyName+"InnerRadius");
@@ -210,7 +210,6 @@ DiskChopper::createUnitVector(const attachSystem::FixedComp& FC,
 
   beamOrigin=beamFC.getCentre();
   beamAxis=beamFC.getY();
-
   if (centreFlag && centreFlag<4 && centreFlag>-4)
     {
       double XYZ[3]={0,0,0};

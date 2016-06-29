@@ -95,7 +95,7 @@ CopiedComp::process(FuncDataBase& Control) const
   std::vector<std::string>::const_iterator mc=
     std::lower_bound(keyVec.begin(),keyVec.end(),baseName,
   		     StrFunc::stringSearch());
-  ELog::EM<<"Top stack name == "<<*mc<<ELog::endDiag;
+
   StrFunc::stringSearch SItem;
   while(mc!=keyVec.end() && !SItem(baseName,*mc))
     {

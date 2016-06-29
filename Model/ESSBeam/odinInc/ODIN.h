@@ -85,13 +85,36 @@ class ODIN : public attachSystem::CopiedComp
   /// T0 chopper [9-9.5m]
   std::shared_ptr<constructSystem::DiskChopper> T0Disk;
 
+  /// Pipe after T0 [4m section]
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeD;
+  /// Basic tapered guide
+  std::shared_ptr<beamlineSystem::GuideLine> FocusD;
+
+  /// Second 4m section
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeE;
+  /// Basic tapered guide
+  std::shared_ptr<beamlineSystem::GuideLine> FocusE;
+
+  /// Second 4m section
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeF;
+  /// Basic tapered guide
+  std::shared_ptr<beamlineSystem::GuideLine> FocusF;
+
+  /// Second 4m section
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeG;
+  /// Basic tapered guide
+  std::shared_ptr<beamlineSystem::GuideLine> FocusG;
   
+
+    /// Bunker insert
+  std::shared_ptr<essSystem::BunkerInsert> BInsert;
+  /// Guide running to bunker wall
+  std::shared_ptr<beamlineSystem::GuideLine> FocusWall;
+
   /// Tapper Unit
   std::shared_ptr<beamlineSystem::GuideLine> GuideA;
   /// Tapper Unit
   std::shared_ptr<beamlineSystem::GuideLine> GuideB;
-  /// Bunker insert
-  std::shared_ptr<essSystem::BunkerInsert> BInsert;
   /// Guide in the Bunker wall
   std::shared_ptr<beamlineSystem::GuideLine> GuideC;
   /// Guide after the Bunker to first chopper
