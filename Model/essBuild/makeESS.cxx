@@ -445,10 +445,10 @@ makeESS::buildBunkerFeedThrough(Simulation& System,
         {
           const std::string bunkerName=
             IParam.getValue<std::string>("bunkerFeed",j,0);
-          const std::string feedName=
-            IParam.getValue<std::string>("bunkerFeed",j,1);
           const size_t segNumber=
-            IParam.getValue<size_t>("bunkerFeed",j,2);
+            IParam.getValue<size_t>("bunkerFeed",j,1);
+          const std::string feedName=
+            IParam.getValue<std::string>("bunkerFeed",j,2);
 
           // bunkerA/etc should be a map
           std::shared_ptr<Bunker> BPtr;

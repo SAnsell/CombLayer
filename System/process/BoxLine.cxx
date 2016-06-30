@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   process/BoxLine.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -284,7 +284,10 @@ BoxLine::createUnits(Simulation& System)
     PUnits.front()->setInitSurf(InitSurf);
 
   for(size_t i=0;i<PUnits.size();i++)
-    PUnits[i]->createAll(System,activeFlags[i],CV);
+    {
+      ELog::EM<<"Surf == "<<activeFlags[i]<<ELog::endDiag;
+      PUnits[i]->createAll(System,activeFlags[i],CV);
+    }
 
   return 0;
 }

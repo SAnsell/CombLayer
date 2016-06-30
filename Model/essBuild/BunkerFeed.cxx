@@ -203,16 +203,14 @@ BunkerFeed::moveToLayer(const Bunker& BUnit,
       const Geometry::Surface* SPtr=
         SMap.realSurfPtr(SN);
       Origin=SurInter::getLinePoint(Origin,Z,SPtr,Origin);
-      ELog::EM<<"Point== "<<Origin<<ELog::endDiag;
     }
-
   return;
 }
   
 
-  void 
-  BunkerFeed::insertColl(Simulation& System,
-                         const Bunker& BUnit)
+void 
+BunkerFeed::insertColl(Simulation& System,
+                       const Bunker& BUnit)
   /*!
     Add a feed pipe to the collimator area
     \param System :: Simulation to add pipe to
@@ -236,9 +234,11 @@ BunkerFeed::moveToLayer(const Bunker& BUnit,
 	X*trackPt[0]+Y*trackPt[1]+Z*trackPt[2];
       realPoint+=Origin;
       voidTrack->addPoint(realPoint);
+      ELog::EM<<"Adding Point == "<<realPoint<<ELog::endDiag;
     }
         
   // make void
+  ELog::EM<<"WH == "<<width<<" "<<height<<ELog::endDiag;
   voidTrack->addSection(width,height,0,0.0);
   voidTrack->setInitZAxis(Z);
   DegA.activate();
@@ -272,4 +272,4 @@ BunkerFeed::createAll(Simulation& System,
   return;
 }
   
-}  // NAMESPACE moderatorSystem
+}  // NAMESPACE essSystem
