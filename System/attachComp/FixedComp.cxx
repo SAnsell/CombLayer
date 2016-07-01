@@ -1145,13 +1145,13 @@ FixedComp::findLinkAxis(const Geometry::Vec3D& AX) const
 }
   
 void
-FixedComp::selectAltAxis(const size_t Index,Geometry::Vec3D& XOut,
-			 Geometry::Vec3D& YOut,Geometry::Vec3D& ZOut) const
+FixedComp::selectAltAxis(const long int sideIndex,
+			 Geometry::Vec3D& XOut,Geometry::Vec3D& YOut,
+			 Geometry::Vec3D& ZOut) const
   /*!
     From a given index find the optimal X,Y,Z axis to use for the
     output: YOut is compared with beam to find closes axis.
-    \param Index :: Link surface to use
- 
+    \param sideIndex :: Link surface to use
     \param XOut :: X axis
     \param YOut :: Y axis [ beam ]
     \param ZOut :: Z axis 
@@ -1159,7 +1159,7 @@ FixedComp::selectAltAxis(const size_t Index,Geometry::Vec3D& XOut,
 {
   ELog::RegMethod RegA("FixedComp","selectAltAxis");
   
-  YOut=getLinkAxis(Index);
+  YOut=getSignedLinkAxis(sideIndex);
 
   double dp[3];
   dp[0]=fabs(X.dotProd(YOut)); 

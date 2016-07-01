@@ -77,7 +77,7 @@ class BlockMod : public constructSystem::ModBase
   virtual int getMainBody() const { return modIndex+1; }
 
   virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
-  virtual int getLayerSurf(const size_t,const size_t) const;
+  virtual int getLayerSurf(const size_t,const long int) const;
   virtual int getCommonSurf(const size_t) const;
   virtual std::string getLayerString(const size_t,const size_t) const;
 

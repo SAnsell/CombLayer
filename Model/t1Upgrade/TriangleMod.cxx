@@ -756,10 +756,10 @@ TriangleMod::getSurfacePoint(const size_t layerIndex,
 
 int
 TriangleMod::getLayerSurf(const size_t layerIndex,
-			  const size_t sideIndex) const
+			  const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
-    \param sideIndex :: Side [0:Base/1:Top : side+2] 
+    \param sideIndex :: Side [1:Base/2:Top : side+3] 
     \param layerIndex :: layer, 0 is inner moderator [0-4]
     \return Surface number 
   */
@@ -768,24 +768,25 @@ TriangleMod::getLayerSurf(const size_t layerIndex,
 
   if (layerIndex>=nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layerIndex");
-  if (sideIndex>=Outer.Pts.size()+2) 
-    throw ColErr::IndexError<size_t>(sideIndex,Outer.Pts.size()+2,
-				     "sideIndex");
 
-  if (sideIndex>1)   // SIDES
-    {
-      const int lIndex=static_cast<int>(layerIndex);
-      const int SN=modIndex+100*lIndex+static_cast<int>(sideIndex-2)+101;
-      return -SMap.realSurf(SN);
-    }
-  const int addNumber=modIndex+
-    static_cast<int>(layerIndex)*10;
-
-  if (sideIndex==1)  // TOP
-    return SMap.realSurf(addNumber+6);
-  // BASE
-  return -SMap.realSurf(addNumber+5);
+  const size_t uSIndex(static_cast<size_t>(std::abs(sideIndex)));
   
+  if (!sideIndex || uSIndex>Outer.Pts.size()+2) 
+    throw ColErr::IndexError<size_t>
+      (uSIndex,Outer.Pts.size()+2,"sideIndex");
+  
+  int signValue((sideIndex<0) ? -1 : 1);
+ 
+  const int addNumber=modIndex+static_cast<int>(layerIndex)*10;
+
+  if (uSIndex==2)  // TOP
+    return signValue*SMap.realSurf(addNumber+6);
+  if (uSIndex==1)      // BASE
+    return signValue*SMap.realSurf(addNumber+5);
+
+  const int lIndex=static_cast<int>(layerIndex);
+  const int SN=modIndex+100*lIndex+101+static_cast<int>(uSIndex-3);
+  return signValue*SMap.realSurf(SN);  
 }
 
 std::string
@@ -799,7 +800,8 @@ TriangleMod::getLayerString(const size_t layerIndex,
   */
 {
   ELog::RegMethod RegA("TriangleMod","getLayerString");
-  return StrFunc::makeString(getLayerSurf(layerIndex,sideIndex));
+  return StrFunc::makeString(getLayerSurf(layerIndex,
+					  static_cast<long int>(sideIndex+1)));
 }
 
   

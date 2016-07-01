@@ -470,7 +470,7 @@ BlockAddition::getSurfacePoint(const size_t layerIndex,
 
 int
 BlockAddition::getLayerSurf(const size_t layerIndex,
-			    const size_t sideIndex) const
+			    const long int sideIndex) const
   /*!
     Given a side and a layer calculate the layerSurface
     \param sideIndex :: Side [0-5]
@@ -483,17 +483,18 @@ BlockAddition::getLayerSurf(const size_t layerIndex,
   if (layerIndex>=nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer/layerIndex");
 
-  if (sideIndex>5)
-    throw ColErr::IndexError<size_t>(sideIndex,6,"sideIndex");
+  if (sideIndex>6 || sideIndex<-6 || !sideIndex)
+    throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
 
   const int SI(blockIndex+10*static_cast<int>(layerIndex));
-  const int SN(static_cast<int>(sideIndex+1));
+  const int dirValue=(sideIndex<0) ? -1 : 1;
+  const int uSIndex(static_cast<int>(std::abs(sideIndex)));
 
-  if (sideIndex)
-    return (sideIndex % 2) ? SMap.realSurf(SN+SI) :
-      -SMap.realSurf(SN+SI);
+  if (sideIndex>1)
+    return (sideIndex % 2) ? -dirValue*SMap.realSurf(SI+uSIndex) :
+      dirValue*SMap.realSurf(SI+uSIndex);
   
-  return -SMap.realSurf(blockIndex+1);
+  return -dirValue*SMap.realSurf(blockIndex+1);
 }
 
 std::string

@@ -100,7 +100,7 @@ class BlockAddition :  public attachSystem::ContainedComp,
 		 const size_t,const size_t);
 
   virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
-  virtual int getLayerSurf(const size_t,const size_t) const;
+  virtual int getLayerSurf(const size_t,const long int) const;
   virtual std::string getLayerString(const size_t,const size_t) const;
 
 };

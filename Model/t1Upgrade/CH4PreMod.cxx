@@ -387,14 +387,14 @@ CH4PreMod::createObjects(Simulation& System,
 }
 
 size_t
-CH4PreMod::getNLayers(const size_t sideIndex) const
+CH4PreMod::getNLayers(const long int sideIndex) const
  /*!
    Return the number of layers [for the different sides]
    \param sideIndex :: Sideindex  to view
    \return number of layers in direction
  */
 {
-  return (sideIndex<2) ? 2 : 4;
+  return (std::abs(sideIndex)<3) ? 2 : 4;
 }
 
 Geometry::Vec3D
@@ -416,7 +416,7 @@ CH4PreMod::getSurfacePoint(const size_t layerIndex,
   if (SI>5) 
     throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
   // Special case as front/back have less sides
-  if (layerIndex>=getNLayers(SI))
+  if (layerIndex>=getNLayers(sideIndex))
     throw ColErr::IndexError<size_t>(layerIndex,getNLayers(sideIndex),
 				     "layerIndex");
 
@@ -445,33 +445,37 @@ CH4PreMod::getLayerString(const size_t layerIndex,
   */
 {
   ELog::RegMethod RegA("CH4PreMod","getLayerString");
-  return StrFunc::makeString(getLayerSurf(layerIndex,sideIndex));
+  return StrFunc::makeString(getLayerSurf(layerIndex,
+					  static_cast<long int>(sideIndex+1)));
 }
 
 int
 CH4PreMod::getLayerSurf(const size_t layerIndex,
-			 const size_t sideIndex) const
+			const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
-    \param sideIndex :: Side [0-5]
     \param layerIndex :: layer, 0 is inner moderator [0-4]
+    \param sideIndex :: Side [1-6] (sign is -ve surf
     \return Surface string
   */
 {
   ELog::RegMethod RegA("CH4PreFlat","getLayerSurf");
 
-  if (sideIndex>5)
-    throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
+
+  if (sideIndex>6 || !sideIndex || sideIndex<-6)
+    throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex ");
   if (layerIndex>=getNLayers(sideIndex) )
     throw ColErr::IndexError<size_t>(layerIndex,getNLayers(sideIndex),
 				     "layerIndex");
 
-  const int signValue((sideIndex % 2) ? 1 : -1);
+  int signValue((sideIndex<0) ? -1 : 1);
+  signValue *= (sideIndex % 2) ? -1 : 1;
+  const size_t uSIndex(static_cast<size_t>(std::abs(sideIndex)));
   int SI;
-  if (sideIndex<2)
-    SI=preIndex+static_cast<int>(120+layerIndex*10+sideIndex);
+  if (uSIndex<3)
+    SI=preIndex+static_cast<int>(120+layerIndex*10+uSIndex);
   else 
-    SI=preIndex+static_cast<int>(layerIndex*10+sideIndex+1);
+    SI=preIndex+static_cast<int>(layerIndex*10+uSIndex);
 
   return signValue*SMap.realSurf(SI);
 }

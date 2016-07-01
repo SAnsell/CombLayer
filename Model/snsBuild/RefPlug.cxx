@@ -398,7 +398,7 @@ RefPlug::getCommonSurf(const size_t sideIndex) const
 
 int
 RefPlug::getLayerSurf(const size_t layerIndex,
-		      const size_t sideIndex) const
+		      const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
     \param sideIndex :: Side [0-5]
@@ -412,27 +412,30 @@ RefPlug::getLayerSurf(const size_t layerIndex,
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
   
   const int SI(refIndex+static_cast<int>(layerIndex)*10);
-  switch(sideIndex)
+  const long int uSIndex(std::abs(sideIndex));
+  const int signValue((sideIndex>0) ? 1 : -1);
+
+  switch(uSIndex)
     {
-    case 0:
-      return SMap.realSurf(SI+7);
     case 1:
-      return SMap.realSurf(SI+7);
+      return signValue*SMap.realSurf(SI+7);
     case 2:
-      return SMap.realSurf(SI+7);
+      return signValue*SMap.realSurf(SI+7);
     case 3:
-      return SMap.realSurf(SI+7);
+      return signValue*SMap.realSurf(SI+7);
     case 4:
-      return -SMap.realSurf(refIndex+5);
+      return signValue*SMap.realSurf(SI+7);
     case 5:
-      return SMap.realSurf(refIndex+6);
+      return -signValue*SMap.realSurf(refIndex+5);
+    case 6:
+      return signValue*SMap.realSurf(refIndex+6);
     }
-  throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
+  throw ColErr::IndexError<long int>(sideIndex,5,"sideIndex ");
 }
 
 void
 RefPlug::createAll(Simulation& System,
-		     const attachSystem::FixedComp& FC)
+		   const attachSystem::FixedComp& FC)
   /*!
     Extrenal build everything
     \param System :: Simulation
@@ -451,4 +454,4 @@ RefPlug::createAll(Simulation& System,
   return;
 }
 
-}  // NAMESPACE instrumentSystem
+}  // NAMESPACE snsSystem

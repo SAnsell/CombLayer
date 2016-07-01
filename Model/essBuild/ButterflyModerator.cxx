@@ -242,7 +242,7 @@ ButterflyModerator::getCommonSurf(const size_t) const
 }
 
 int
-ButterflyModerator::getLayerSurf(const size_t,const size_t) const
+ButterflyModerator::getLayerSurf(const size_t,const long int) const
   /*!
     Only components have reference values
   */

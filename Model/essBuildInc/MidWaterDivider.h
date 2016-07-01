@@ -81,7 +81,7 @@ class MidWaterDivider :
 
   virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
   virtual std::string getLayerString(const size_t,const size_t) const;
-  virtual int getLayerSurf(const size_t,const size_t) const;
+  virtual int getLayerSurf(const size_t,const long int) const;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const H2Wing&,const H2Wing&);
 };

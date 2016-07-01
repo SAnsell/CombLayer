@@ -396,19 +396,19 @@ CylPreSimple::createLinks()
       FixedComp::setLinkSurf(1,SMap.realSurf(SI+7));
       FixedComp::setBridgeSurf(1,SMap.realSurf(modIndex+2));
       
-      FixedComp::setConnect(2,Origin-Z*(height[nLayers-1]/2.0),-Z);
-      FixedComp::setLinkSurf(2,-SMap.realSurf(SI+5));
+      FixedComp::setConnect(4,Origin-Z*(height[nLayers-1]/2.0),-Z);
+      FixedComp::setLinkSurf(4,-SMap.realSurf(SI+5));
 
-      FixedComp::setConnect(3,Origin+Z*(height[nLayers-1]/2.0),Z);
-      FixedComp::setLinkSurf(3,SMap.realSurf(SI+6));
+      FixedComp::setConnect(5,Origin+Z*(height[nLayers-1]/2.0),Z);
+      FixedComp::setLinkSurf(5,SMap.realSurf(SI+6));
 
-      FixedComp::setConnect(4,Origin-X*radius[nLayers-1],-X);
-      FixedComp::setLinkSurf(4,SMap.realSurf(SI+7));
-      FixedComp::addLinkSurf(4,-SMap.realSurf(modIndex+1));
+      FixedComp::setConnect(2,Origin-X*radius[nLayers-1],-X);
+      FixedComp::setLinkSurf(2,SMap.realSurf(SI+7));
+      FixedComp::addLinkSurf(2,-SMap.realSurf(modIndex+1));
 
-      FixedComp::setConnect(5,Origin+X*radius[nLayers-1],X);
-      FixedComp::setLinkSurf(5,SMap.realSurf(SI+7));
-      FixedComp::addLinkSurf(5,SMap.realSurf(modIndex+1));
+      FixedComp::setConnect(3,Origin+X*radius[nLayers-1],X);
+      FixedComp::setLinkSurf(3,SMap.realSurf(SI+7));
+      FixedComp::addLinkSurf(3,SMap.realSurf(modIndex+1));
 
     }
   else 
@@ -444,13 +444,13 @@ CylPreSimple::getSurfacePoint(const size_t layerIndex,
 	case 1:
 	  return Origin+Y*(radius[layerIndex-1]);
 	case 2:
-	  return Origin-Z*(height[layerIndex-1]);
-	case 3:
-	  return Origin+Z*(height[layerIndex-1]);
-	case 4:
 	  return Origin-X*(radius[layerIndex-1]);
-	case 5:
+	case 3:
 	  return Origin+X*(radius[layerIndex-1]);
+	case 4:
+	  return Origin-Z*(height[layerIndex-1]);
+	case 5:
+	  return Origin+Z*(height[layerIndex-1]);
 	}
     }
   else
@@ -462,23 +462,23 @@ CylPreSimple::getSurfacePoint(const size_t layerIndex,
 	case 1:
 	  return Origin+Y*innerRadius;
 	case 2:
-	  return Origin-Z*innerDepth;
-	case 3:
-	  return Origin+Z*innerHeight;
-	case 4:
 	  return Origin-X*innerRadius;
-	case 5:
+	case 3:
 	  return Origin+X*innerRadius;
+	case 4:
+	  return Origin-Z*innerDepth;
+	case 5:
+	  return Origin+Z*innerHeight;
 
 	}
     }
-  throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex ");
+  throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
 }
 
 
 int
 CylPreSimple::getLayerSurf(const size_t layerIndex,
-			const size_t sideIndex) const
+			   const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
     \param sideIndex :: Side [0-3]
@@ -493,22 +493,24 @@ CylPreSimple::getLayerSurf(const size_t layerIndex,
 
   const int SI(!layerIndex ? modIndex :
 	       10*static_cast<int>(layerIndex-1)+modIndex);
-	       
-  switch(sideIndex)
+
+  const int signValue((sideIndex<0) ? -1 : 1);
+  
+  switch(std::abs(sideIndex))
     {
-    case 0:
-    case 1:    
+    case 1:
+    case 2:    
+    case 3:
     case 4:
-    case 5:
       return (layerIndex) ? 
 	SMap.realSurf(SI+7) :
 	SMap.realSurf(modIndex+9);
-    case 2:
-      return -SMap.realSurf(SI+5);
-    case 3:
-      return SMap.realSurf(SI+6);
+    case 5:
+      return -signValue*SMap.realSurf(SI+5);
+    case 6:
+      return signValue*SMap.realSurf(SI+6);
     }
-  throw ColErr::IndexError<size_t>(sideIndex,6,"sideIndex ");
+  throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex ");
 }
 
 std::string

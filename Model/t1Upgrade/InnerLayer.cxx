@@ -307,7 +307,7 @@ InnerLayer::getLayerString(const size_t layerIndex,
 
 int
 InnerLayer::getLayerSurf(const size_t layerIndex,
-		       const size_t sideIndex) const
+			 const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
     \param sideIndex :: Side [0-5]

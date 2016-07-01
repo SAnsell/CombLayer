@@ -454,13 +454,13 @@ CH4Layer::createObjects(Simulation& System)
       Out=ModelSupport::getComposite(SMap,ch4Layer," 3 -4 5 -6 ");
       Main.procString(Out);
       Main.addIntersection(Exclude);
-      ELog::EM<<"EXCLUDE["<<keyName<<"] == "<<Exclude<<ELog::endDiag;
+
       Main.addIntersection(frontX);
       Main.addIntersection(backX);
       System.addCell(MonteCarlo::Qhull
 		     (cellIndex++,LVec[i].getMat(),
 		      LVec[i].getTemp(),Main.display()));
-      ELog::EM<<"cellIndex= "<<cellIndex-1<<ELog::endDiag;
+
       ch4Layer+=30;
     }
   ch4Layer-=30;
@@ -521,15 +521,16 @@ CH4Layer::getLayerString(const size_t layerIndex,
       
       return RX.display();
     }
-  return StrFunc::makeString(getLayerSurf(layerIndex,sideIndex));
+  return StrFunc::makeString(getLayerSurf(layerIndex,
+					  static_cast<long int>(sideIndex+1)));
 }
 
 int
 CH4Layer::getLayerSurf(const size_t layerIndex,
-		       const size_t sideIndex) const
+		       const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
-    \param sideIndex :: Side [0-5]
+    \param sideIndex :: Side [1-6]
     \param layerIndex :: layer, 0 is inner moderator [0-4]
     \return Surface size
   */
@@ -538,15 +539,20 @@ CH4Layer::getLayerSurf(const size_t layerIndex,
 
   if (layerIndex>=LVec.size()) 
     throw ColErr::IndexError<size_t>(layerIndex,LVec.size(),"layerIndex");
-  if (sideIndex>5)
-    throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
+  if (sideIndex>6 || sideIndex<-6 || !sideIndex)
+    throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
 
-  const int SI(modIndex+static_cast<int>(layerIndex*30+sideIndex+1));
-  if ((sideIndex==1 || sideIndex==0) && 
-      LVec[sideIndex].Item(sideIndex+6)>Geometry::zeroTol)
+  const size_t uSIndex(static_cast<size_t>(std::abs(sideIndex)));
+  const int SI(modIndex+static_cast<int>(layerIndex*30+uSIndex));
+  int signValue=(sideIndex % 2) ? -1 : 1;
+  if (sideIndex<0)
+    signValue*=-1;
+
+  if ((sideIndex==1 || sideIndex==2) && 
+      LVec[uSIndex-1].Item(uSIndex+5)>Geometry::zeroTol)
     return SMap.realSurf(SI);
+  
 
-  const int signValue((sideIndex % 2) ? 1 : -1);
   return signValue*SMap.realSurf(SI);
 }
 
@@ -569,7 +575,7 @@ CH4Layer::createLinks()
     }
   const size_t lIndex(LVec.size()-1);
   for(size_t i=0;i<6;i++)
-    FixedComp::setLinkSurf(i,getLayerSurf(lIndex,i));
+    FixedComp::setLinkSurf(i,getLayerSurf(lIndex,static_cast<long int>(i+1)));
 
   return;
 }

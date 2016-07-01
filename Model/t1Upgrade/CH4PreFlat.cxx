@@ -319,7 +319,7 @@ CH4PreFlat::getLayerString(const size_t layerIndex,
 
 int
 CH4PreFlat::getLayerSurf(const size_t layerIndex,
-			 const size_t sideIndex) const
+			 const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
     \param sideIndex :: Side [0-5]
@@ -331,11 +331,12 @@ CH4PreFlat::getLayerSurf(const size_t layerIndex,
 
   if (layerIndex>=nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layerIndex");
-  if (sideIndex>5)
-    throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
+  if (sideIndex>6 || sideIndex<-6 || !sideIndex)
+    throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
 
-  const int SI(preIndex+static_cast<int>(layerIndex*10+sideIndex+1));
-  const int signValue((sideIndex % 2) ? 1 : -1);
+  const size_t uSIndex(std::abs(sideIndex));
+  const int SI(preIndex+static_cast<int>(layerIndex*10+uSIndex));
+  const int signValue((sideIndex % 2) ? -1 : 1);
   return signValue*SMap.realSurf(SI);
 }
 

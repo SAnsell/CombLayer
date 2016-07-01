@@ -549,7 +549,7 @@ H2Wing::getSurfacePoint(const size_t,
 
 int
 H2Wing::getLayerSurf(const size_t layerIndex,
-		     const size_t sideIndex) const
+		     const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link point
     \param layerIndex :: layer, 0 is inner moderator [0-3]
@@ -564,26 +564,28 @@ H2Wing::getLayerSurf(const size_t layerIndex,
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layerIndex");
 
   const int triIndex(wingIndex+static_cast<int>((layerIndex+1)*100));
-  switch(sideIndex)
+  const long int uSIndex(std::abs(sideIndex));
+  const int signValue((sideIndex>0) ? 1 : -1);
+  switch(uSIndex)
     {
-    case 0:
-      return SMap.realSurf(triIndex+1);
     case 1:
-      return SMap.realSurf(triIndex+2);
+      return signValue*SMap.realSurf(triIndex+1);
     case 2:
-      return SMap.realSurf(triIndex+3);
-    case 5:
-      return -SMap.realSurf(triIndex+5);
+      return signValue*SMap.realSurf(triIndex+2);
+    case 3:
+      return signValue*SMap.realSurf(triIndex+3);
     case 6:
-      return SMap.realSurf(triIndex+6);
+      return -signValue*SMap.realSurf(triIndex+5);
     case 7:
-      return SMap.realSurf(triIndex+7);
+      return signValue*SMap.realSurf(triIndex+6);
     case 8:
-      return SMap.realSurf(triIndex+8);
+      return signValue*SMap.realSurf(triIndex+7);
     case 9:
-      return SMap.realSurf(triIndex+9);
+      return signValue*SMap.realSurf(triIndex+8);
+    case 10:
+      return signValue*SMap.realSurf(triIndex+9);
     }
-  throw ColErr::IndexError<size_t>(sideIndex,9,"sideIndex");
+  throw ColErr::IndexError<long int>(sideIndex,10,"sideIndex");
 }
 
 std::string

@@ -389,10 +389,10 @@ CylContainer::getLayerString(const size_t layerIndex,
 
 int
 CylContainer::getLayerSurf(const size_t layerIndex,
-			   const size_t sideIndex) const
+			   const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link surf. Surf points out
-    \param sideIndex :: Side [0-5]
+    \param sideIndex :: Side +/-[1-6] 
     \param layerIndex :: layer, 0 is inner moderator [0-4]
     \return Surface number [outgoing]
   */
@@ -403,19 +403,22 @@ CylContainer::getLayerSurf(const size_t layerIndex,
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layerIndex");
   
   const int SI(cylIndex+static_cast<int>(layerIndex)*10);
-  switch(sideIndex)
+  const long int uSIndex(std::abs(sideIndex));
+  const int signValue((sideIndex>0) ? 1 : -1);
+
+  switch(uSIndex)
     {
-    case 0:
-      return -SMap.realSurf(SI+1);
     case 1:
-      return SMap.realSurf(SI+2);
+      return -signValue*SMap.realSurf(SI+1);
     case 2:
+      return signValue*SMap.realSurf(SI+2);
     case 3:
     case 4:
     case 5:
-      return SMap.realSurf(SI+7);
+    case 6:
+      return signValue*SMap.realSurf(SI+7);
     }
-  throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
+  throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
 }
 
 

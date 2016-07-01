@@ -461,7 +461,7 @@ MidWaterDivider::getSurfacePoint(const size_t,
 
 int
 MidWaterDivider::getLayerSurf(const size_t,
-                              const size_t) const
+                              const long int) const
   /*!
     Given a side and a layer calculate the link point
     \param layerIndex :: layer, 0 is inner moderator [0-3]

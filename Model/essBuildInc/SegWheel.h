@@ -39,8 +39,8 @@ class SegWheel : public WheelBase
 {
  private:
   
-  int lh2Index;
-  int mainShaftCell;
+  int lh2Index;                   ///< Main indx
+  int mainShaftCell;              ///< Sharf cell
 
   double xStep;                   ///< X step
   double yStep;                   ///< y step
@@ -56,7 +56,7 @@ class SegWheel : public WheelBase
   double targetSectorAngleZ;  
   double targetSectorApertureXY;  
   double targetSectorApertureZ;
-  double targetSectorNumber;
+  size_t targetSectorNumber;
 
   double coolantThickOut;           ///< Outer Thickness of coolant
   double coolantThickIn;           ///< Inner Thickness of coolant 

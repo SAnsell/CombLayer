@@ -420,11 +420,11 @@ DiskPreMod::getSurfacePoint(const size_t layerIndex,
 
 int
 DiskPreMod::getLayerSurf(const size_t layerIndex,
-			const size_t sideIndex) const
+			const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
-    \param sideIndex :: Side [0-3]
     \param layerIndex :: layer, 0 is inner moderator [0-4]
+    \param sideIndex :: Side [1-4]
     \return Surface string
   */
 {
@@ -434,20 +434,22 @@ DiskPreMod::getLayerSurf(const size_t layerIndex,
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
 
   const int SI(10*static_cast<int>(layerIndex)+modIndex);
+  const long int uSIndex(std::abs(sideIndex));
+  const int signValue((sideIndex>0) ? 1 : -1);
 	       
-  switch(sideIndex)
+  switch(uSIndex)
     {
-    case 0:
-    case 1:    
-    case 2:
+    case 1:
+    case 2:    
     case 3:
-      return SMap.realSurf(SI+7);
     case 4:
-      return -SMap.realSurf(SI+5);
+      return signValue*SMap.realSurf(SI+7);
     case 5:
-      return SMap.realSurf(SI+6);
+      return -signValue*SMap.realSurf(SI+5);
+    case 6:
+      return signValue*SMap.realSurf(SI+6);
     }
-  throw ColErr::IndexError<size_t>(sideIndex,6,"sideIndex ");
+  throw ColErr::IndexError<long int>(sideIndex,7,"sideIndex");
 }
 
 std::string

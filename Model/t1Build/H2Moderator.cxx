@@ -464,31 +464,32 @@ H2Moderator::getLayerString(const size_t sideIndex,
 
 int
 H2Moderator::getLayerSurf(const size_t layerIndex,
-			 const size_t sideIndex) const
+			 const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
-    \param sideIndex :: Side [0-5]
+    \param sideIndex :: Side [1-6]
     \param layerIndex :: layer, 0 is inner moderator [0-4]
     \return Surface string
   */
 {
   ELog::RegMethod RegA("H2Moderator","getLayerSurf");
 
-  if (sideIndex>5) 
-    throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
+  if (sideIndex>6 || sideIndex<-6 || !sideIndex) 
+    throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
   if (layerIndex>5) 
     throw ColErr::IndexError<size_t>(layerIndex,5,"layer");
 
-  const int sign=(sideIndex % 2 ) ? 1 : -1;
-  if (sideIndex>2 || layerIndex>2)
+  const int signValue=(sideIndex % 2) ? -1 : 1;
+  const int uSIndex(static_cast<int>(std::abs(sideIndex)));
+  if (uSIndex>3 || layerIndex>2)
     {
       const int surfN(h2Index+
-		      static_cast<int>(10*layerIndex+sideIndex+1));
-      return sign*SMap.realSurf(surfN);
+		      static_cast<int>(10*layerIndex)+uSIndex);
+      return signValue*SMap.realSurf(surfN);
     }
   const int surfN(h2Index+
-		  static_cast<int>(10*layerIndex+sideIndex+7));
-  return SMap.realSurf(surfN);
+		  static_cast<int>(10*layerIndex)+uSIndex+6);
+  return (sideIndex<0) ? -SMap.realSurf(surfN) : SMap.realSurf(surfN);
 }
 
 

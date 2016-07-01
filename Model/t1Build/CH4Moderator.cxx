@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1Build/CH4Moderator.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -491,31 +491,35 @@ CH4Moderator::getSurfacePoint(const size_t layerIndex,
 
 int
 CH4Moderator::getLayerSurf(const size_t sideIndex,
-			  const size_t layerIndex) const
+			   const long int layerIndex) const
   /*!
     Given a side and a layer calculate the link surf
-    \param sideIndex :: Side [0-5]
     \param layerIndex :: layer, 0 is inner moderator [0-4]
+    \param sideIndex :: Side [1-6]
     \return Surface number
   */
 {
   ELog::RegMethod RegA("CH4Moderator","getLayerSurf");
 
-  if (sideIndex>5) 
-    throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
+  if (!sideIndex || std::abs(sideIndex)>6) 
+    throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex ");
   if (layerIndex>4) 
     throw ColErr::IndexError<size_t>(layerIndex,4,"layer");
 
-  int sign=(sideIndex % 2 ) ? 1 : -1;
-  if (sideIndex>2 || layerIndex>2)
+  int signValue=(sideIndex % 2 ) ? -1 : 1;
+  const int dirValue=(sideIndex<0) ? -1 : 1;
+  const size_t uSIndex(std::abs(sideIndex));
+  
+  if (uSIndex>3 || layerIndex>2)
     {
       const int surfN(ch4Index+
-		      static_cast<int>(10*layerIndex+sideIndex+1));
-      return sign*SMap.realSurf(surfN);
+		      static_cast<int>(10*layerIndex+uSIndex));
+      return dirValue*signValue*SMap.realSurf(surfN);
     }
+  
   const int surfN(ch4Index+
-		  static_cast<int>(10*layerIndex+sideIndex+7));
-  return SMap.realSurf(surfN);
+		  static_cast<int>(10*layerIndex+uSIndex+6));
+  return dirValue*SMap.realSurf(surfN);
 }
 
 std::string

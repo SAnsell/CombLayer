@@ -167,8 +167,8 @@ class FixedComp
 
   const Geometry::Vec3D& getExit() const;
   const Geometry::Vec3D& getExitNorm() const;
-  void selectAltAxis(const size_t,Geometry::Vec3D&,
-		      Geometry::Vec3D&,Geometry::Vec3D&) const;
+  void selectAltAxis(const long int,Geometry::Vec3D&,
+		     Geometry::Vec3D&,Geometry::Vec3D&) const;
   void calcLinkAxis(const long int,Geometry::Vec3D&,
 		    Geometry::Vec3D&,Geometry::Vec3D&) const;
 

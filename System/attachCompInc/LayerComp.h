@@ -51,13 +51,13 @@ class LayerComp
 			       const Geometry::Vec3D&) const;
 
   virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const =0;
-  virtual int getLayerSurf(const size_t,const size_t) const =0;
+  virtual int getLayerSurf(const size_t,const long int) const =0;
   virtual std::string getLayerString(const size_t,const size_t) const =0;
   /// Access to common divider surface
   virtual int getCommonSurf(const size_t) const { return 0; }
 
   /// Access to number of layers:
-  virtual size_t getNLayers(const size_t =0) const 
+  virtual size_t getNLayers(const long int =0) const 
      { return nLayers; }
   /// Access to number of layers:
   virtual size_t getNInnerLayers(const size_t =0) const 

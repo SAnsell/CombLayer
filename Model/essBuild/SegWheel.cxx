@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   essBuild/SegWheel.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -235,9 +235,11 @@ SegWheel::populate(const FuncDataBase& Control)
   targetSectorOffsetZ=Control.EvalVar<double>(keyName+"TargetSectorOffsetZ");  
   targetSectorAngleXY=Control.EvalVar<double>(keyName+"TargetSectorAngleXY");  
   targetSectorAngleZ=Control.EvalVar<double>(keyName+"TargetSectorAngleZ");  
-  targetSectorApertureXY=Control.EvalVar<double>(keyName+"TargetSectorApertureXY");  
+  targetSectorApertureXY=Control.EvalVar<double>
+    (keyName+"TargetSectorApertureXY");
+  
   targetSectorApertureZ=Control.EvalVar<double>(keyName+"TargetSectorApertureZ");  
-  targetSectorNumber=Control.EvalVar<double>(keyName+"TargetSectorNumber");  
+  targetSectorNumber=Control.EvalVar<size_t>(keyName+"TargetSectorNumber");  
  
   coolantThickOut=Control.EvalVar<double>(keyName+"CoolantThickOut");  
   coolantThickIn=Control.EvalVar<double>(keyName+"CoolantThickIn");  
@@ -368,7 +370,6 @@ SegWheel::makeShaftObjects(Simulation& System)
   
   for(size_t i=0;i<targetSectorNumber;i++)
     {
-      const size_t index((4*(i+1))/targetSectorNumber);
 
       if (i<targetSectorNumber/4-1)
 	{
