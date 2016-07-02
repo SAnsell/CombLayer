@@ -436,7 +436,7 @@ CH4PreMod::getSurfacePoint(const size_t layerIndex,
 
 std::string
 CH4PreMod::getLayerString(const size_t layerIndex,
-			  const size_t sideIndex) const
+			  const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
     \param sideIndex :: Side [0-5]
@@ -445,8 +445,7 @@ CH4PreMod::getLayerString(const size_t layerIndex,
   */
 {
   ELog::RegMethod RegA("CH4PreMod","getLayerString");
-  return StrFunc::makeString(getLayerSurf(layerIndex,
-					  static_cast<long int>(sideIndex+1)));
+  return StrFunc::makeString(getLayerSurf(layerIndex,sideIndex));
 }
 
 int

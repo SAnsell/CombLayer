@@ -454,7 +454,7 @@ DiskPreMod::getLayerSurf(const size_t layerIndex,
 
 std::string
 DiskPreMod::getLayerString(const size_t layerIndex,
-			 const size_t sideIndex) const
+			   const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
     \param layerIndex :: layer, 0 is inner moderator [0-4]
@@ -462,40 +462,45 @@ DiskPreMod::getLayerString(const size_t layerIndex,
     \return Surface string
   */
 {
-  ELog::RegMethod RegA("DiskPreMod","getLinkString");
+  ELog::RegMethod RegA("DiskPreMod","getLayerString");
 
   if (layerIndex>nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
 
   const int SI(10*static_cast<int>(layerIndex)+modIndex);
 
-  std::ostringstream cx;
-  switch(sideIndex)
+  std::string Out;
+  const long int uSIndex(std::abs(sideIndex));
+  switch(uSIndex)
     {
-    case 0:
-      cx<<" "<<SMap.realSurf(SI+7)<<" "
-	<< -SMap.realSurf(modIndex+2)<<" ";
-      return cx.str();
     case 1:
-      cx<<" "<<SMap.realSurf(SI+7)<<" "
-	<< SMap.realSurf(modIndex+2)<<" ";
-      return cx.str();
+      Out=ModelSupport::getComposite(SMap,SI,modIndex," 7 -2M ");
+      break;
     case 2:
-      cx<<" "<<SMap.realSurf(SI+7)<<" "
-	<< -SMap.realSurf(modIndex+1)<<" ";
-      return cx.str();
+      Out=ModelSupport::getComposite(SMap,SI,modIndex," 7 2M ");
+      break;
     case 3:
-      cx<<" "<<SMap.realSurf(SI+7)<<" "
-	<< SMap.realSurf(modIndex+1)<<" ";
-      return cx.str();
+      Out=ModelSupport::getComposite(SMap,SI,modIndex," 7 -1M ");
+      break;
     case 4:
-      cx<<" "<<-SMap.realSurf(SI+5)<<" ";
-      return cx.str();
+      Out=ModelSupport::getComposite(SMap,SI,modIndex," 7 1M ");
+      break;
     case 5:
-      cx<<" "<<SMap.realSurf(SI+6)<<" ";
-      return cx.str();
+      Out=ModelSupport::getComposite(SMap,SI," -5 ");
+      break;
+    case 6:
+      Out=ModelSupport::getComposite(SMap,SI," 6 ");
+      break;
+    default:
+      throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
     }
-  throw ColErr::IndexError<size_t>(sideIndex,4,"sideIndex ");
+  if (sideIndex<0)
+    {
+      HeadRule HR(Out);
+      HR.makeComplement();
+      return HR.display();
+    }
+  return Out;
 }
 
 

@@ -590,11 +590,11 @@ H2Wing::getLayerSurf(const size_t layerIndex,
 
 std::string
 H2Wing::getLayerString(const size_t layerIndex,
-		       const size_t sideIndex) const
+		       const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link point
     \param layerIndex :: layer, 0 is inner moderator [0-6]
-    \param sideIndex :: Side [0-3] // mid sides   
+    \param sideIndex :: Side [0-3]+mid sides   
     \return Surface point
   */
 {
@@ -605,34 +605,54 @@ H2Wing::getLayerString(const size_t layerIndex,
 
   const int triOffset(wingIndex+static_cast<int>((layerIndex+1)*100));
   std::string Out;
-
-  switch(sideIndex)
+  const long int uSIndex(std::abs(sideIndex));
+  switch(uSIndex)
     {
-    case 0:
-      return StrFunc::makeString(SMap.realSurf(triOffset+1));
     case 1:
-      return StrFunc::makeString(SMap.realSurf(triOffset+2));
+      Out=ModelSupport::getComposite(SMap,triOffset," 1 ");
+      break;
     case 2:
-      return StrFunc::makeString(SMap.realSurf(triOffset+3));
-    case 4:
-      return StrFunc::makeString(-SMap.realSurf(triOffset+5));
+      Out=ModelSupport::getComposite(SMap,triOffset," 2 ");
+      break;
+    case 3:
+      Out=ModelSupport::getComposite(SMap,triOffset," 3 ");
+      break;
     case 5:
-      return StrFunc::makeString(SMap.realSurf(triOffset+6));
+      Out=ModelSupport::getComposite(SMap,triOffset," -5 ");
+      break;
     case 6:
-      return ModelSupport::getComposite(SMap,triOffset,"-1 -3 (21:-7) ");
+      Out=ModelSupport::getComposite(SMap,triOffset," 6 ");
+      break;
     case 7:
-      return ModelSupport::getComposite(SMap,triOffset,"-1 -2 (22:-8) ");
+      Out=ModelSupport::getComposite(SMap,triOffset,"-1 -3 (21:-7) ");
+      break;
     case 8:
-      return ModelSupport::getComposite(SMap,triOffset,"-2 -3 (23:-9) ");
+      Out=ModelSupport::getComposite(SMap,triOffset,"-1 -2 (22:-8) ");
+      break;
     case 9:
-      return ModelSupport::getComposite(SMap,triOffset," (21:-7) ");
+      Out=ModelSupport::getComposite(SMap,triOffset,"-2 -3 (23:-9) ");
+      break;
     case 10:
-      return ModelSupport::getComposite(SMap,triOffset," (22:-8) ");
+      Out=ModelSupport::getComposite(SMap,triOffset," (21:-7) ");
+      break;
     case 11:
-      return ModelSupport::getComposite(SMap,triOffset," (23:-9) ");
+      Out=ModelSupport::getComposite(SMap,triOffset," (22:-8) ");
+      break;
+    case 12:
+      Out=ModelSupport::getComposite(SMap,triOffset," (23:-9) ");
+      break;
+    default:
+      throw ColErr::IndexError<long int>(sideIndex,12,
+					 "sideIndex + missing gap");
     }
   
-  throw ColErr::IndexError<size_t>(sideIndex,12,"sideIndex");
+  if (sideIndex<0)
+    {
+      HeadRule HR(Out);
+      HR.makeComplement();
+      return HR.display();
+    }
+  return Out;
 }
 
 

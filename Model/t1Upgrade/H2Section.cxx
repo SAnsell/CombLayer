@@ -483,7 +483,7 @@ H2Section::getSurfacePoint(const size_t layerIndex,
 
 std::string
 H2Section::getLayerString(const size_t layerIndex,
-			  const size_t sideIndex) const
+			  const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
     \param sideIndex :: Side [0-5]
@@ -492,8 +492,7 @@ H2Section::getLayerString(const size_t layerIndex,
   */
 {
   ELog::RegMethod RegA("H2Section","getLayerString");
-  return StrFunc::makeString(getLayerSurf(layerIndex,
-					  static_cast<long int>(sideIndex+1)));
+  return StrFunc::makeString(getLayerSurf(layerIndex,sideIndex));
 }
 
 int

@@ -74,7 +74,7 @@ class InnerLayer : public ts1System::CH4Layer
   virtual int 
     getLayerSurf(const size_t,const long int) const;
   virtual std::string 
-    getLayerString(const size_t,const size_t) const;
+    getLayerString(const size_t,const long int) const;
 
   /// Const accessor
   const std::vector<int>& getInnerCells() const

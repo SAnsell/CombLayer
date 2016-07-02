@@ -75,7 +75,7 @@ class H2Moderator : public attachSystem::ContainedComp,
   std::map<size_t,double> modLayer;  ///< Surface modification layer
 
   void applyModification();
-  void populate(const Simulation&);
+  void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
 
 
@@ -95,7 +95,7 @@ class H2Moderator : public attachSystem::ContainedComp,
   virtual void addToInsertChain(attachSystem::ContainedComp&) const;
 //  void createAll(Simulation&,const attachSystem::FixedComp&);
   virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
-  virtual std::string getLayerString(const size_t,const size_t) const;
+  virtual std::string getLayerString(const size_t,const long int) const;
   virtual int getLayerSurf(const size_t,const long int) const;
 
   void createAll(Simulation&,const attachSystem::FixedComp&);

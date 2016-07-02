@@ -500,29 +500,29 @@ CH4Layer::getSurfacePoint(const size_t layerIndex,
 
 std::string
 CH4Layer::getLayerString(const size_t layerIndex,
-			 const size_t sideIndex) const
+			 const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
-    \param sideIndex :: Side [0-5]
+    \param sideIndex :: Side [1-6]
     \param layerIndex :: layer, 0 is inner moderator [0-LVec]
     \return Surface string
   */
 {
   ELog::RegMethod RegA("CH4Layer","getLayerString");
-  HeadRule RX;
 
-  if (sideIndex<2)  // Front/back
+  const long int uSIndex(std::abs(sideIndex));
+  if (uSIndex==1 || uSIndex==2)  // Front/back
     {
       HeadRule RX;
-      if (!sideIndex)
+      if (uSIndex==1)
 	createFrontRule(LVec[layerIndex],modIndex,layerIndex,RX);
       else
 	createBackRule(LVec[layerIndex],modIndex,layerIndex,RX);
-      
+      if (sideIndex<0)
+	RX.makeComplement();
       return RX.display();
     }
-  return StrFunc::makeString(getLayerSurf(layerIndex,
-					  static_cast<long int>(sideIndex+1)));
+  return StrFunc::makeString(getLayerSurf(layerIndex,sideIndex));
 }
 
 int

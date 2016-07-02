@@ -113,7 +113,8 @@ LayerComp::intersectDist(const size_t layerIndex,
   
   // HEAD RULE doesn't compute surface intersection !!!!!!
   HeadRule A;
-  if (!A.procString(this->getLayerString(layerIndex,sideIndex)))
+  if (!A.procString(this->getLayerString(layerIndex,
+					 static_cast<long int>(sideIndex+1))))
     return -std::numeric_limits<double>::max();
 
   double D;

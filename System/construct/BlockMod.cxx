@@ -411,7 +411,7 @@ BlockMod::getCommonSurf(const size_t ) const
 
 std::string
 BlockMod::getLayerString(const size_t layerIndex,
-			 const size_t sideIndex) const
+			 const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
     \param layerIndex :: layer, 0 is inner moderator [0-4]
@@ -424,7 +424,7 @@ BlockMod::getLayerString(const size_t layerIndex,
   if (layerIndex>=nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
   std::ostringstream cx;
-  cx<<" "<<getLayerSurf(layerIndex,static_cast<long int>(sideIndex)+1)<<" ";
+  cx<<" "<<getLayerSurf(layerIndex,sideIndex)<<" ";
   return cx.str();
 }
 

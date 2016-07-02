@@ -791,17 +791,16 @@ TriangleMod::getLayerSurf(const size_t layerIndex,
 
 std::string
 TriangleMod::getLayerString(const size_t layerIndex,
-			    const size_t sideIndex) const
+			    const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
-    \param sideIndex :: Side [0:Base/1:Top : side+2] 
+    \param sideIndex :: Side [1:Base/2:Top : side+3] 
     \param layerIndex :: layer, 0 is inner moderator [0-4]
     \return Surface number 
   */
 {
   ELog::RegMethod RegA("TriangleMod","getLayerString");
-  return StrFunc::makeString(getLayerSurf(layerIndex,
-					  static_cast<long int>(sideIndex+1)));
+  return StrFunc::makeString(getLayerSurf(layerIndex,sideIndex));
 }
 
   

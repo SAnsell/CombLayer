@@ -104,7 +104,7 @@ makeSNS::~makeSNS()
 
 void 
 makeSNS::build(Simulation* SimPtr,
-	       const mainSystem::inputParam& IParam)
+	       const mainSystem::inputParam&)
   /*!
     Carry out the full build
     \param SimPtr :: Simulation system

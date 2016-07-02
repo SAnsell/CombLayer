@@ -95,7 +95,7 @@ class H2Wing :
   virtual ~H2Wing();
 
   virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
-  virtual std::string getLayerString(const size_t,const size_t) const;
+  virtual std::string getLayerString(const size_t,const long int) const;
   virtual int getLayerSurf(const size_t,const long int) const;
   void createAll(Simulation&,const attachSystem::FixedComp&);
 };

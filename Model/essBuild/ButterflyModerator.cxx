@@ -252,7 +252,7 @@ ButterflyModerator::getLayerSurf(const size_t,const long int) const
 }
 
 std::string
-ButterflyModerator::getLayerString(const size_t,const size_t) const
+ButterflyModerator::getLayerString(const size_t,const long int) const
   /*!
     Only components have reference values
   */

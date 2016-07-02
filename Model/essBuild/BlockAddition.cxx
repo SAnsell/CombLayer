@@ -341,9 +341,9 @@ BlockAddition::createObjects(Simulation& System,
 
   if (active)
     {
-      Out=PMod.getLayerString(layerIndex,sideIndex);
+      Out=PMod.getLayerString(layerIndex,static_cast<long int>(sideIndex+1));
       preModInner=rotateItem(Out);
-      Out=PMod.getLayerString(layerIndex+2,sideIndex);
+      Out=PMod.getLayerString(layerIndex+2,static_cast<long int>(sideIndex+1));
       preModOuter=rotateItem(Out);
 
       Out=ModelSupport::getComposite(SMap,blockIndex,"1 -2 3 -4 5 -6 ");
@@ -499,7 +499,7 @@ BlockAddition::getLayerSurf(const size_t layerIndex,
 
 std::string
 BlockAddition::getLayerString(const size_t layerIndex,
-			      const size_t sideIndex) const
+			      const long int sideIndex) const
   /*!
     Given a side and a layer calculate the layerSurface
     \param sideIndex :: Side [0-5]
@@ -512,21 +512,29 @@ BlockAddition::getLayerString(const size_t layerIndex,
   if (layerIndex>=nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
 
-  if (sideIndex>5)
-    throw ColErr::IndexError<size_t>(sideIndex,6,"sideIndex");
+  if (sideIndex>6 || sideIndex<-6 || !sideIndex)
+    throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
 
   // NEED To get conditional surface [IFF sideIndex==0]
 
   const int SI(blockIndex+10*static_cast<int>(layerIndex));
-  const int SN(static_cast<int>(sideIndex+1));
-
-  if (sideIndex>0)
+  const int uSIndex(static_cast<int>(std::abs(sideIndex)));
+  if (uSIndex>1)
     {
-      const int SurfN=(sideIndex % 2) ? 
-	SMap.realSurf(SN+SI) : -SMap.realSurf(SN+SI);
-      return StrFunc::makeString(SurfN);
+      int signValue((sideIndex<0) ? -1 : 1);
+      signValue*=((sideIndex % 2) ? -1 : 1);
+      const int SurfN= signValue*SMap.realSurf(SI+uSIndex);
+      return " "+StrFunc::makeString(SurfN)+" ";
     }
-  return preModInner+" "+StrFunc::makeString(-SMap.realSurf(blockIndex+1));
+  const std::string Out=preModInner+" "+
+    StrFunc::makeString(-SMap.realSurf(blockIndex+1));
+  if (sideIndex<0)
+    {
+      HeadRule HR(Out);
+      HR.makeComplement();
+      return HR.display();
+    }
+  return Out;
 }
 
 void

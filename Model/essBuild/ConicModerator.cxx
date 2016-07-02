@@ -366,8 +366,8 @@ ConicModerator::getSurfacePoint(const size_t layerIndex,
 }
 
 std::string
-ConicModerator::getLayerString(const size_t sideIndex,
-			       const size_t layerIndex) const
+ConicModerator::getLayerString(const size_t layerIndex,
+			       const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
     \param sideIndex :: Side [0-5]
@@ -381,11 +381,10 @@ ConicModerator::getLayerString(const size_t sideIndex,
     throw ColErr::IndexError<size_t>(layerIndex,4,"layer");
 
   //  const int SI(modIndex+static_cast<int>(layerIndex)*10);
-  std::ostringstream cx;
   switch(sideIndex)
     {
     }
-  throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex");
+  throw ColErr::IndexError<long int>(sideIndex,5,"sideIndex");
 }
 
 int

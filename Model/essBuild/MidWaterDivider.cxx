@@ -353,8 +353,8 @@ MidWaterDivider::createObjects(Simulation& System,
   const std::string Base=
     leftWing.getLinkComplement(4)+leftWing.getLinkComplement(5);
   
-  HeadRule LCut(leftWing.getLayerString(cutLayer,6));
-  HeadRule RCut(rightWing.getLayerString(cutLayer,6));
+  HeadRule LCut(leftWing.getLayerString(cutLayer,7));
+  HeadRule RCut(rightWing.getLayerString(cutLayer,7));
 
   LCut.makeComplement();
   RCut.makeComplement();
@@ -475,7 +475,7 @@ MidWaterDivider::getLayerSurf(const size_t,
 
 std::string
 MidWaterDivider::getLayerString(const size_t,
-                                const size_t) const
+                                const long int) const
   /*!
     Given a side and a layer calculate the link point
     \param layerIndex :: layer, 0 is inner moderator [0-6]

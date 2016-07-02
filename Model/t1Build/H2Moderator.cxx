@@ -1,3 +1,4 @@
+
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
@@ -153,16 +154,14 @@ H2Moderator::~H2Moderator()
 {}
 
 void
-H2Moderator::populate(const Simulation& System)
+H2Moderator::populate(const FuncDataBase& Control)
  /*!
    Populate all the variables
-   \param System :: Simulation to use
+   \param Control :: DataBase
  */
 {
   ELog::RegMethod RegA("H2Moderator","populate");
   
-  const FuncDataBase& Control=System.getDataBase();
-
   // Master values
   xStep=Control.EvalVar<double>(keyName+"XStep");
   yStep=Control.EvalVar<double>(keyName+"YStep");
@@ -201,6 +200,7 @@ H2Moderator::applyModification()
     Create the modified layer set
     layers are numbered in set of 10 going from the inner all
     (no modification) to 50 at the outer. Then in -/+ (Y,X,Z).
+    THIS IS JUNK AND SHOULD BE REMOVED
   */
 {
   modLayer[56]=clearTop;
@@ -222,7 +222,7 @@ H2Moderator::createUnitVector(const attachSystem::FixedComp& FC)
   attachSystem::FixedComp::createUnitVector(FC);
 
   applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,0);
+  applyAngleRotate(xyAngle,0.0);
   return;
 }
 
@@ -295,6 +295,7 @@ H2Moderator::addToInsertChain(attachSystem::ContainedComp& CC) const
   /*!
     Adds this object to the containedComp to be inserted.
     \param CC :: ContainedComp object to add to this
+    THIS IS JUNK TO BE REMOVED
   */
 {
   for(int i=h2Index+1;i<cellIndex;i++)
@@ -428,8 +429,8 @@ H2Moderator::getSurfacePoint(const size_t layerIndex,
 }
 
 std::string
-H2Moderator::getLayerString(const size_t sideIndex,
-			   const size_t layerIndex) const
+H2Moderator::getLayerString(const size_t layerIndex,
+			    const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
     \param sideIndex :: Side [0-5]
@@ -438,28 +439,29 @@ H2Moderator::getLayerString(const size_t sideIndex,
   */
 {
   ELog::RegMethod RegA("H2Moderator","getLayerString");
+  ELog::EM<<"CONTORL CHECK for Layer/side order "<<ELog::endErr;
 
-  if (sideIndex>5) 
-    throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
+  if (sideIndex>6 || sideIndex<-6 || !sideIndex) 
+    throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
   if (layerIndex>5) 
     throw ColErr::IndexError<size_t>(layerIndex,5,"layer");
 
-  std::ostringstream cx;
-  const int sign=(sideIndex % 2 ) ? 1 : -1;
-  if (sideIndex>2 || layerIndex>2)
+  const int signValue=(sideIndex % 2 ) ? -1 : 1;
+  const int uSIndex(static_cast<int>(std::abs(sideIndex)));
+  HeadRule HR;
+  if (uSIndex>3 || layerIndex>2)
     {
-      const int surfN(h2Index+
-		      static_cast<int>(10*layerIndex+sideIndex+1));
-      cx<<" "<<sign*SMap.realSurf(surfN)<<" ";
-
+      const int surfN(h2Index+static_cast<int>(10*layerIndex)+uSIndex);
+      HR.addIntersection(signValue*SMap.realSurf(surfN));
     }
   else
     {
-      const int surfN(h2Index+
-		      static_cast<int>(10*layerIndex+sideIndex+7));
-      cx<<" "<<SMap.realSurf(surfN)<<" ";
+      const int surfN(h2Index+static_cast<int>(10*layerIndex)+uSIndex+6);
+      HR.addIntersection(SMap.realSurf(surfN));
     }
-  return cx.str();
+  if (sideIndex<0)
+    HR.makeComplement();
+  return HR.display();
 }
 
 int
@@ -514,7 +516,7 @@ H2Moderator::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("H2Moderator","createAll");
-  populate(System);
+  populate(System.getDataBase());
 
   createUnitVector(FC);
   createSurfaces();

@@ -353,7 +353,7 @@ CylContainer::getCommonSurf(const size_t sideIndex) const
 
 std::string
 CylContainer::getLayerString(const size_t layerIndex,
-		       const size_t sideIndex) const
+			     const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
     \param layerIndex :: layer, 0 is inner moderator [0-4]
@@ -368,23 +368,30 @@ CylContainer::getLayerString(const size_t layerIndex,
 
   const int NL(static_cast<int>(layerIndex));
   const int SI(cylIndex+NL*10);
-  std::ostringstream cx;
-  switch(sideIndex)
+
+  const long int uSIndex(std::abs(sideIndex));
+  std::string Out;
+  switch(uSIndex)
     {
-    case 0:
-      cx<<" "<<-SMap.realSurf(SI+1)<<" ";
-      return cx.str();
     case 1:
-      cx<<" "<<SMap.realSurf(SI+2)<<" ";
-      return cx.str();
+      Out=ModelSupport::getComposite(SMap,SI," -1 ");
+      break;
     case 2:
+      Out=ModelSupport::getComposite(SMap,SI," 2 ");
+      break;
     case 3:
     case 4:
     case 5:
-      cx<<" "<<SMap.realSurf(SI+7)<<" ";
-      return cx.str();
+    case 6:
+      Out=ModelSupport::getComposite(SMap,SI," 7 ");
+      break;
+    default:
+      throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
     }
-  throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex");
+  HeadRule HR(Out);
+  if (sideIndex<0)
+    HR.makeComplement();
+  return HR.display();
 }
 
 int

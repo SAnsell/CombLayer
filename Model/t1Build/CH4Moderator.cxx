@@ -490,8 +490,8 @@ CH4Moderator::getSurfacePoint(const size_t layerIndex,
 }
 
 int
-CH4Moderator::getLayerSurf(const size_t sideIndex,
-			   const long int layerIndex) const
+CH4Moderator::getLayerSurf(const size_t layerIndex,
+			   const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
     \param layerIndex :: layer, 0 is inner moderator [0-4]
@@ -500,7 +500,7 @@ CH4Moderator::getLayerSurf(const size_t sideIndex,
   */
 {
   ELog::RegMethod RegA("CH4Moderator","getLayerSurf");
-
+  ELog::EM<<"CHECK OF LAYER/SIDE ORDER"<<ELog::endErr;
   if (!sideIndex || std::abs(sideIndex)>6) 
     throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex ");
   if (layerIndex>4) 
@@ -508,53 +508,56 @@ CH4Moderator::getLayerSurf(const size_t sideIndex,
 
   int signValue=(sideIndex % 2 ) ? -1 : 1;
   const int dirValue=(sideIndex<0) ? -1 : 1;
-  const size_t uSIndex(std::abs(sideIndex));
+  const int uSIndex(static_cast<int>(std::abs(sideIndex)));
   
   if (uSIndex>3 || layerIndex>2)
     {
       const int surfN(ch4Index+
-		      static_cast<int>(10*layerIndex+uSIndex));
+		      static_cast<int>(10*layerIndex)+uSIndex);
       return dirValue*signValue*SMap.realSurf(surfN);
     }
   
   const int surfN(ch4Index+
-		  static_cast<int>(10*layerIndex+uSIndex+6));
+		  static_cast<int>(10*layerIndex)+uSIndex+6);
   return dirValue*SMap.realSurf(surfN);
 }
 
 std::string
-CH4Moderator::getLayerString(const size_t sideIndex,
-			    const size_t layerIndex) const
+CH4Moderator::getLayerString(const size_t layerIndex,
+			     const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
-    \param sideIndex :: Side [0-5]
     \param layerIndex :: layer, 0 is inner moderator [0-4]
+    \param sideIndex :: Side [1-6]
     \return Surface string
   */
 {
   ELog::RegMethod RegA("CH4Moderator","getLayerString");
+  ELog::EM<<"CONTORL CHECK "<<ELog::endErr;
 
-  if (sideIndex>5) 
-    throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
+  if (sideIndex>6 || sideIndex<-6 || !sideIndex) 
+    throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
   if (layerIndex>4) 
     throw ColErr::IndexError<size_t>(layerIndex,4,"layer");
 
   std::ostringstream cx;
-  const int sign=(sideIndex % 2 ) ? 1 : -1;
-  if (sideIndex>2 || layerIndex>2)
+  const int signValue=(sideIndex % 2) ? -1 : 1;
+  const int uSIndex(static_cast<int>(std::abs(sideIndex)));
+  HeadRule HR;
+  
+  if (uSIndex>3 || layerIndex>2)
     {
-      const int surfN(ch4Index+
-		      static_cast<int>(10*layerIndex+sideIndex+1));
-      cx<<" "<<sign*SMap.realSurf(surfN)<<" ";
-
+      const int surfN(ch4Index+static_cast<int>(10*layerIndex)+uSIndex);
+      HR.addIntersection(signValue*SMap.realSurf(surfN));
     }
   else
     {
-      const int surfN(ch4Index+
-		      static_cast<int>(10*layerIndex+sideIndex+7));
-      cx<<" "<<SMap.realSurf(surfN)<<" ";
+      const int surfN(ch4Index+static_cast<int>(10*layerIndex)+uSIndex+6);
+      HR.addIntersection(SMap.realSurf(surfN));
     }
-  return cx.str();
+  if (sideIndex<0)
+    HR.makeComplement();
+  return HR.display();
 }
 
 std::string

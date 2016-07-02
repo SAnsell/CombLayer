@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   construct/CylMod.cxx
  *
@@ -424,7 +424,7 @@ CylMod::getCommonSurf(const size_t sideIndex) const
 
 std::string
 CylMod::getLayerString(const size_t layerIndex,
-		       const size_t sideIndex) const
+		       const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
     \param layerIndex :: layer, 0 is inner moderator [0-4]
@@ -439,23 +439,25 @@ CylMod::getLayerString(const size_t layerIndex,
 
   const int NL(static_cast<int>(layerIndex));
   const int SI(modIndex+NL*10);
-  std::ostringstream cx;
-  switch(sideIndex)
+  HeadRule HR;
+  switch(std::abs(sideIndex))
     {
-    case 0:
     case 1:
     case 2:
     case 3:
-      cx<<" "<<SMap.realSurf(SI+7)<<" ";
-      return cx.str();
     case 4:
-      cx<<" "<<-SMap.realSurf(SI+5)<<" ";
-      return cx.str();
+      HR.addIntersection(SMap.realSurf(SI+7));
+      break;
     case 5:
-      cx<<" "<<SMap.realSurf(SI+6)<<" ";
-      return cx.str();
+      HR.addIntersection(-SMap.realSurf(SI+5));
+      break;
+    case 6:
+      HR.addIntersection(SMap.realSurf(SI+6));
+      break;
     }
-  throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
+  if (sideIndex<0)
+    HR.makeComplement();
+  return HR.display();
 }
 
 int
@@ -493,7 +495,7 @@ CylMod::getLayerSurf(const size_t layerIndex,
     case -5:
       return -SMap.realSurf(SI+6);
     }
-  throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
+  throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
 }
 
 void

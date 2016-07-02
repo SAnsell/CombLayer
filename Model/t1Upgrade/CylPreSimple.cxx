@@ -328,9 +328,10 @@ CylPreSimple::createObjects(Simulation& System,
 
       for(size_t viewIndex=0;viewIndex<nView;viewIndex++)
 	{
-	  Out+=ModelSupport::getComposite(SMap,CI+100*static_cast<int>(viewIndex),
-					  modIndex+100*static_cast<int>(viewIndex),
-					  " (-101M:103:104:105:106) ");
+	  Out+=ModelSupport::getComposite
+	    (SMap,CI+100*static_cast<int>(viewIndex),
+	     modIndex+100*static_cast<int>(viewIndex),
+	     " (-101M:103:104:105:106) ");
 	}
       if (i)
 	Out+=ModelSupport::getComposite(SMap,SI-10," (7:-5:6) ");
@@ -515,11 +516,11 @@ CylPreSimple::getLayerSurf(const size_t layerIndex,
 
 std::string
 CylPreSimple::getLayerString(const size_t layerIndex,
-			 const size_t sideIndex) const
+			     const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
     \param layerIndex :: layer, 0 is inner moderator [0-4]
-    \param sideIndex :: Side [0-3]
+    \param sideIndex :: Side [1-4]
     \return Surface string
   */
 {
@@ -534,39 +535,50 @@ CylPreSimple::getLayerString(const size_t layerIndex,
   std::ostringstream cx;
   switch(sideIndex)
     {
-    case 0:
+    case 1:
+    case -1:
       cx<<" "<<((layerIndex) ? 
 		SMap.realSurf(SI+7) :
 		SMap.realSurf(modIndex+9)) <<" "
 	<< -SMap.realSurf(modIndex+2)<<" ";
-      return cx.str();
-    case 1:
+      break;
+    case 2:
+    case -2:
       cx<<" "<<((layerIndex) ? 
 		SMap.realSurf(SI+7) :
 		SMap.realSurf(modIndex+9)) <<" "
 	<<SMap.realSurf(modIndex+2)<<" ";
-      return cx.str();
-    case 2:
-      cx<<" "<<-SMap.realSurf(SI+5)<<" ";
-      return cx.str();
+      break;
     case 3:
-      cx<<" "<<SMap.realSurf(SI+6)<<" ";
-      return cx.str();
+    case -3:
+      cx<<" "<<-SMap.realSurf(SI+5)<<" ";
+      break;
     case 4:
+    case -4:
+      cx<<" "<<SMap.realSurf(SI+6)<<" ";
+      break;
+    case 5:
+    case -5:
       cx<<" "<<((layerIndex) ? 
 		SMap.realSurf(SI+7) :
 		SMap.realSurf(modIndex+9)) <<" "
 	<< -SMap.realSurf(modIndex+1)<<" ";
-      return cx.str();
-    case 5:
+      break;
+    case 6:
+    case -6:
       cx<<" "<<((layerIndex) ? 
 		SMap.realSurf(SI+7) :
 		SMap.realSurf(modIndex+9)) <<" "
 	<< SMap.realSurf(modIndex+1)<<" ";
-      return cx.str();
-
+      break;
     }
-  throw ColErr::IndexError<size_t>(sideIndex,4,"sideIndex ");
+  if (sideIndex<0)
+    {
+      HeadRule HR(cx.str());
+      HR.makeComplement();
+      return HR.display();
+    }
+  return cx.str();
 }
 
 void

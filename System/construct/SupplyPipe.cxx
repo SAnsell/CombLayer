@@ -192,13 +192,10 @@ SupplyPipe::createUnitVector(const attachSystem::FixedComp& FC,
   const attachSystem::LayerComp* LC=
     dynamic_cast<const attachSystem::LayerComp*>(&FC);
 
-  const size_t SI((sideIndex>0) ?
-		  static_cast<size_t>(sideIndex-1) :
-		  static_cast<size_t>(-sideIndex-1));
   if (LC)
     {
       Origin=LC->getSurfacePoint(layerIndex,sideIndex);
-      if (sideIndex) FC.selectAltAxis(SI,X,Y,Z);
+      if (sideIndex) FC.selectAltAxis(sideIndex,X,Y,Z);
     }
   else
     throw ColErr::DynamicConv("FixedComp","LayerComp","FC:"+FC.getKeyName());
@@ -262,11 +259,11 @@ SupplyPipe::insertInlet(const attachSystem::FixedComp& FC,
   if (PtZ!=Pt)
     Coaxial.addPoint(Pt);
   
-  const size_t NL(LC->getNLayers(SI));
+  const size_t NL(LC->getNLayers(lSideIndex));
 
   // First find start point in layer set: [avoid inner layer]
   Coaxial.addSurfPoint
-    (PtZ,LC->getLayerString(0,SI),commonStr);
+    (PtZ,LC->getLayerString(0,lSideIndex),commonStr);
   
   if (layerSeq.empty())
     {
@@ -280,7 +277,7 @@ SupplyPipe::insertInlet(const attachSystem::FixedComp& FC,
       PtZ=LC->getSurfacePoint(lIndex,lSideIndex);
       PtZ+=layerOffset;
       Coaxial.addSurfPoint
-	(PtZ,LC->getLayerString(lIndex,SI),commonStr);
+	(PtZ,LC->getLayerString(lIndex,lSideIndex),commonStr);
     }
   return;
 }
@@ -302,7 +299,7 @@ SupplyPipe::addExtraLayer(const attachSystem::LayerComp& LC,
                   static_cast<size_t>(-1-lSideIndex));
   
   const int commonSurf=LC.getCommonSurf(SI);
-  const size_t NL(LC.getNLayers(SI));
+  const size_t NL(LC.getNLayers(lSideIndex));
   if (NL)
     {
       const std::string commonStr=(commonSurf) ? 		       
@@ -311,7 +308,7 @@ SupplyPipe::addExtraLayer(const attachSystem::LayerComp& LC,
 	LC.getSurfacePoint(NL-1,lSideIndex)+
 	layerOffset;
       Coaxial.addSurfPoint
-	(PtZ,LC.getLayerString(NL-1,SI),commonStr);
+	(PtZ,LC.getLayerString(NL-1,lSideIndex),commonStr);
     }
   return;
 }
