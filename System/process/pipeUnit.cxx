@@ -448,7 +448,9 @@ pipeUnit::insertObjects(Simulation& System)
   Axis.makeUnit();
   const Geometry::Vec3D AX(Axis.crossNormal());
   const Geometry::Vec3D AY(AX*Axis);
-  const double radius=getOuterRadius();
+  double radius=getOuterRadius();
+  if (prev && std::abs(prev->getOuterRadius()-radius)<10.0*Geometry::zeroTol)
+    radius+=Geometry::zeroTol*100;  
 
   const double angleStep(2*M_PI/nAngle);
   double angle(0.0);

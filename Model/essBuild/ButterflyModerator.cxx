@@ -309,7 +309,9 @@ ButterflyModerator::createLinks()
   
 void
 ButterflyModerator::createExternal()
-  
+  /*!
+    Constructs the full outer exclude object 
+  */
 {
   ELog::RegMethod RegA("ButterflyModerator","createExternal");
 
@@ -369,14 +371,11 @@ ButterflyModerator::createAll(Simulation& System,
   LeftUnit->createAll(System,*this);
   RightUnit->createAll(System,*this);
   MidWater->createAll(System,*this,*LeftUnit,*RightUnit);
-  
-  std::string CutString=LeftUnit->getSignedLinkString(2);
+    
   const std::string Exclude=
     ModelSupport::getComposite(SMap,flyIndex," -7 5 -6 ");
-  LeftWater->createAll(System,*this,CutString,Exclude);
-
-  CutString=RightUnit->getSignedLinkString(2);
-  RightWater->createAll(System,*this,CutString,Exclude);
+  LeftWater->createAll(System,*LeftUnit,2,Exclude);
+  RightWater->createAll(System,*RightUnit,2,Exclude);
 
   Origin=MidWater->getCentre();
   createExternal();  // makes intermediate 

@@ -46,7 +46,7 @@ class LayerComp
   LayerComp& operator=(const LayerComp&);
   virtual ~LayerComp() { }  ///< Simple destructor
 
-  virtual double intersectDist(const size_t,const size_t,
+  virtual double intersectDist(const size_t,const long int,
 			       const Geometry::Vec3D&,
 			       const Geometry::Vec3D&) const;
 

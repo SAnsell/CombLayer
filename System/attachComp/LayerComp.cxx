@@ -97,7 +97,7 @@ LayerComp::operator=(const LayerComp& A)
 
 double
 LayerComp::intersectDist(const size_t layerIndex,
-			 const size_t sideIndex,
+			 const long int sideIndex,
 			 const Geometry::Vec3D& Origin,
 			 const Geometry::Vec3D& Unit) const
  /*!
@@ -113,8 +113,7 @@ LayerComp::intersectDist(const size_t layerIndex,
   
   // HEAD RULE doesn't compute surface intersection !!!!!!
   HeadRule A;
-  if (!A.procString(this->getLayerString(layerIndex,
-					 static_cast<long int>(sideIndex+1))))
+  if (!A.procString(this->getLayerString(layerIndex,sideIndex)))
     return -std::numeric_limits<double>::max();
 
   double D;
