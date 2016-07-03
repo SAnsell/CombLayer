@@ -74,9 +74,6 @@ class EdgeWater :
   EdgeWater& operator=(const EdgeWater&);
   virtual EdgeWater* clone() const;
   virtual ~EdgeWater();
-
-  /// EVIL Function
-  const std::string getSideRule() const { return sideRule; }
   
   virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
   virtual std::string getLayerString(const size_t,const long int) const;
