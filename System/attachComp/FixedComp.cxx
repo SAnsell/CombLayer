@@ -636,7 +636,7 @@ FixedComp::setConnect(const size_t Index,const Geometry::Vec3D& C,
    \param A :: Axis direciton
  */
 {
-  ELog::RegMethod RegA("FixedComp","setConnection");
+  ELog::RegMethod RegA("FixedComp","setConnect");
   if (Index>=LU.size())
     throw ColErr::IndexError<size_t>(Index,LU.size(),"LU.size/index");
 

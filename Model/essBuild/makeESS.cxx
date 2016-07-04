@@ -221,7 +221,7 @@ makeESS::makeTarget(Simulation& System,
 
   Target->addInsertCell("Shaft",voidCell);
   Target->addInsertCell("Wheel",voidCell);
-  Target->createAll(System,World::masterOrigin());
+  Target->createAll(System,World::masterOrigin(),0);
 
   return;
 }

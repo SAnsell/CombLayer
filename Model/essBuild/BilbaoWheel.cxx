@@ -3,7 +3,7 @@
  
  * File:   essBuild/BilbaoWheel.cxx
  *
- * Copyright (c) 2015 by Konstantin Batkov
+ * Copyright (c) 2015-2016 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,7 +70,11 @@
 #include "ContainedGroup.h"
 #include "General.h"
 #include "Plane.h"
+#include "BaseMap.h"
+#include "CellMap.h"
+
 #include "WheelBase.h"
+#include "BilbaoWheelInnerStructure.h"
 #include "BilbaoWheel.h"
 
 
@@ -78,7 +82,8 @@ namespace essSystem
 {
 
 BilbaoWheel::BilbaoWheel(const std::string& Key) :
-  WheelBase(Key)
+  WheelBase(Key),
+  InnerComp(new BilbaoWheelInnerStructure(Key + "InnerStructure"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -89,6 +94,7 @@ BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) :
   WheelBase(A),
   xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
   xyAngle(A.xyAngle),zAngle(A.zAngle),engActive(A.engActive),
+  InnerComp(new BilbaoWheelInnerStructure(*A.InnerComp)),
   targetHeight(A.targetHeight),
   voidTungstenThick(A.voidTungstenThick),
   steelTungstenThick(A.steelTungstenThick),
@@ -98,9 +104,9 @@ BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) :
   coolantRadiusIn(A.coolantRadiusIn),
   coolantRadiusOut(A.coolantRadiusOut),
   caseRadius(A.caseRadius),voidRadius(A.voidRadius),
-  aspectRatio(A.aspectRatio),nSectors(A.nSectors),
-  secSepThick(A.secSepThick),secSepMat(A.secSepMat),
-  mainTemp(A.mainTemp),nLayers(A.nLayers),radius(A.radius),
+  aspectRatio(A.aspectRatio),
+  mainTemp(A.mainTemp),nSectors(A.nSectors),
+  nLayers(A.nLayers),radius(A.radius),
   matTYPE(A.matTYPE),shaftHeight(A.shaftHeight),
   nShaftLayers(A.nShaftLayers),shaftRadius(A.shaftRadius),
   shaftMat(A.shaftMat),wMat(A.wMat),heMat(A.heMat),
@@ -129,6 +135,7 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
       xyAngle=A.xyAngle;
       zAngle=A.zAngle;
       engActive=A.engActive;
+      *InnerComp= *A.InnerComp;
       targetHeight=A.targetHeight;
       voidTungstenThick=A.voidTungstenThick;
       steelTungstenThick=A.steelTungstenThick;
@@ -142,10 +149,8 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
       caseRadius=A.caseRadius;
       voidRadius=A.voidRadius;
       aspectRatio=A.aspectRatio;
-      nSectors=A.nSectors;
-      secSepThick=A.secSepThick;
-      secSepMat=A.secSepMat;
       mainTemp=A.mainTemp;
+      nSectors=A.nSectors;
       nLayers=A.nLayers;
       radius=A.radius;
       matTYPE=A.matTYPE;
@@ -196,6 +201,7 @@ BilbaoWheel::populate(const FuncDataBase& Control)
 
   engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
 
+  nSectors=Control.EvalDefVar<size_t>(keyName+"NSectors",3);
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");   
   double R;
   int M;
@@ -220,8 +226,6 @@ BilbaoWheel::populate(const FuncDataBase& Control)
   aspectRatio=Control.EvalVar<double>(keyName+"AspectRatio");
 
   nSectors=Control.EvalVar<size_t>(keyName+"NSectors");
-  secSepThick=Control.EvalVar<double>(keyName+"SectorSepThick");
-  secSepMat=ModelSupport::EvalMat<int>(Control,keyName+"SectorSepMat");  
 
   targetHeight=Control.EvalVar<double>(keyName+"TargetHeight");
   voidTungstenThick=Control.EvalVar<double>(keyName+"VoidTungstenThick");
@@ -346,14 +350,73 @@ BilbaoWheel::getSQSurface(const double R, const double e)
 }
 
 void
-BilbaoWheel::createUnitVector(const attachSystem::FixedComp& FC)
+BilbaoWheel::createRadialSurfaces()
+  /*!
+    Create planes for the inner structure inside BilbaoWheel
+  */
+{
+  ELog::RegMethod RegA("BilbaoWheel","createRadialSurfaces");
+
+  if (nSectors<2) return;
+
+  int SI(wheelIndex+3000);
+  double theta(0.0);
+  const double dTheta = 360.0/nSectors;
+
+  for (size_t j=0; j<nSectors; j++)
+    {
+      theta = j*dTheta;
+      ModelSupport::buildPlaneRotAxis(SMap, SI+1, Origin, X, Z, theta);
+      SI += 10;
+    }
+  // add 1st surface again with reversed normal - to simplify building cells
+  SMap.addMatch(SI+1,SMap.realSurf(wheelIndex+3001));
+  return; 
+}
+
+
+void
+BilbaoWheel::divideRadial(Simulation& System,
+			  const std::string& sides,
+			  const int mat)
+  /*!
+    Divide wheel by sectors to help cell splitting
+    \param System :: Simulation
+    \param sides :: top/bottom and side cylinders
+    \param mat :: material
+  */
+{
+  ELog::RegMethod RegA("BilbaoWheel","divideRadial");
+
+  if (nSectors<2)
+    {
+      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,sides));
+      return;
+    }
+
+  std::string Out;
+  int SJ(wheelIndex+3000);
+  for(size_t j=0;j<nSectors;j++)
+    {
+      Out=ModelSupport::getComposite(SMap,SJ," 1 -11 ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out+sides));  
+      SJ+=10;
+    }
+  return;
+}
+
+  
+void
+BilbaoWheel::createUnitVector(const attachSystem::FixedComp& FC,
+			      const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Fixed Component
+    \param sideIndex :: Link point
   */
 {
   ELog::RegMethod RegA("BilbaoWheel","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC);
+  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
 
   applyShift(xStep,yStep,zStep);
   applyAngleRotate(xyAngle,zAngle);
@@ -364,7 +427,7 @@ BilbaoWheel::createUnitVector(const attachSystem::FixedComp& FC)
 void
 BilbaoWheel::createSurfaces()
   /*!
-    Create planes for the silicon and Polyethene layers
+    Create surfaces for Wheel but not Shaft
   */
 {
   ELog::RegMethod RegA("BilbaoWheel","createSurfaces");
@@ -450,6 +513,9 @@ BilbaoWheel::createSurfaces()
   
   ModelSupport::buildCylinder(SMap,wheelIndex+537,Origin,Z,voidRadius);  
 
+  createRadialSurfaces();
+  
+/*
   // segmentation
   double thetaDeg,theta;
   const double dTheta = 360.0/nSectors;
@@ -472,7 +538,7 @@ BilbaoWheel::createSurfaces()
 
       SIsec += 10;
     }
-
+*/
   return; 
 }
 
@@ -494,58 +560,27 @@ BilbaoWheel::createObjects(Simulation& System)
   // 
 
   int SI(wheelIndex);
-  int SIsec, SI1;
+  int nInner(0); // number of inner cells (must be 1)
   for(size_t i=0;i<nLayers;i++)
     {
-      if (matTYPE[i]!=3)
+      Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -17M 5 -6 ");
+
+      if ((matTYPE[i]==3) && (engActive))
 	{
-	  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -17M 5 -6 ");
-	  System.addCell(MonteCarlo::Qhull
-			 (cellIndex++,matNum[matTYPE[i]],mainTemp,Out));  
-	}
-      else // build the sectors
-	{
-	  SIsec = wheelIndex+5000;
-	  if (nSectors==1) // no sectors requested
-	    {
-	      Out=ModelSupport::getComposite
-		(SMap,wheelIndex,SI," 7M -17M 5 -6 ");
-	      System.addCell(MonteCarlo::Qhull
-			     (cellIndex++,matNum[matTYPE[i]],mainTemp,Out));
-	    }
-	  else
-	    {
-	      for (size_t j=0;j<nSectors;j++)
-		{
-		  Out1=ModelSupport::getComposite
-		    (SMap,wheelIndex,SI," 7M -17M 5 -6 ");
-		  // Tungsten
-		  SI1 = (j!=nSectors-1) ? SIsec+10 : wheelIndex+5000;
-		  Out = ModelSupport::getComposite(SMap,SIsec,SI1," 4 -3M ");
-		  System.addCell(MonteCarlo::Qhull
-				 (cellIndex++,matNum[matTYPE[i]],mainTemp,
-				Out1+Out));
-		  
-		  // Pieces of steel between Tungsten sectors
-		  // -1 is needed since planes 3 and -4 cross Tunsten in two places,
-		  //     so we need to select only one
-		  Out = ModelSupport::getComposite(SMap, SIsec, " 3 -4 -1 ");
-		  System.addCell(MonteCarlo::Qhull
-				 (cellIndex++,secSepMat,mainTemp,Out1+Out));
-		  
-		  SIsec+=10;
-		}
-	    }
-	}
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,matNum[matTYPE[i]],mainTemp,Out));  
+	  CellMap::setCell("Inner",cellIndex-1);
+	  nInner++;
+	  if (nInner>1)
+	    ELog::EM << "More than one spallation layer" << ELog::endErr;
+	} else
+	  divideRadial(System, Out, matNum[matTYPE[i]]);
+
       SI+=10;
     }
-  // Now make sections for the coolant
-  const std::string TopBase=
-    ModelSupport::getComposite(SMap,wheelIndex," 35 -36 (-5:6) ");
-  
+
   // front coolant:
   Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -517 35 -36");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,mainTemp,Out));
+  divideRadial(System, Out, heMat);
 
   // Void above/below W
   Out=ModelSupport::getComposite(SMap,wheelIndex,SI,
@@ -563,11 +598,10 @@ BilbaoWheel::createObjects(Simulation& System)
 				 " -7M 35 -36 (-25 : 26 2007)" );	// He above/below W
   System.addCell(MonteCarlo::Qhull(cellIndex++,ssVoidMat,mainTemp,Out));
 
-
   // Metal surround [ UNACCEPTABLE JUNK CELL]
   // Metal front:
   Out=ModelSupport::getComposite(SMap,wheelIndex,"-527 517 35 -36");	
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+  divideRadial(System, Out, steelMat);
 
   // forward Main sections:
   Out=ModelSupport::getComposite(SMap,wheelIndex,"-527 1027 -126 36");	 // outer above W
@@ -579,13 +613,14 @@ BilbaoWheel::createObjects(Simulation& System)
   // Void surround
   Out=ModelSupport::getComposite(SMap,wheelIndex,
 				 "1027 55 -56 -537 (-125:126:527)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  divideRadial(System, Out, 0);
   
   Out=ModelSupport::getComposite(SMap,wheelIndex,"-537 55 -56");	
   addOuterSurf("Wheel",Out);
 
   return; 
 }
+
 
 void
 BilbaoWheel::createLinks()
@@ -620,23 +655,50 @@ BilbaoWheel::createLinks()
   FixedComp::setConnect(5,Origin+Z*H,Z);
   FixedComp::setLinkSurf(5,SMap.realSurf(wheelIndex+56));
 
-  
+    // inner links (normally) point towards
+  // top/bottom of the spallation material (innet cell)
+  const double TH=targetHeight/2.0;
+  FixedComp::setConnect(6,Origin-Z*TH,Z);
+  FixedComp::setLinkSurf(6,SMap.realSurf(wheelIndex+5));
+
+  FixedComp::setConnect(7,Origin+Z*TH,-Z);
+  FixedComp::setLinkSurf(7,-SMap.realSurf(wheelIndex+6));
+
+  int SI(wheelIndex);
+  for (size_t i=0; i<nLayers; i++)
+    {
+      if (matTYPE[i]==3) // Tungsten layer
+	{
+	  FixedComp::setConnect(8, Origin+Y*radius[i-1], Y);
+	  FixedComp::setLinkSurf(8, SMap.realSurf(SI+7));
+
+	  FixedComp::setConnect(9, Origin+Y*radius[i], -Y);
+	  FixedComp::setLinkSurf(9, -SMap.realSurf(SI+17));
+
+	  return; // !!! we assume that there is only one Tungsten layer
+	}
+      SI+=10;
+    }
+
+
   return;
 }
 
 void
 BilbaoWheel::createAll(Simulation& System,
-		     const attachSystem::FixedComp& FC)
+		       const attachSystem::FixedComp& FC,
+		       const long int sideIndex)
   /*!
     Extrenal build everything
     \param System :: Simulation
     \param FC :: FixedComponent for origin
+    \param sideIndex :: sideIndex
    */
 {
   ELog::RegMethod RegA("BilbaoWheel","createAll");
   populate(System.getDataBase());
 
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   makeShaftSurfaces();
 
@@ -645,8 +707,10 @@ BilbaoWheel::createAll(Simulation& System,
 
   createLinks();
   insertObjects(System);       
+  if (engActive)
+    InnerComp->createAll(System, *this);
 
   return;
 }
 
-}  // NAMESPACE instrumentSystem
+}  // NAMESPACE essSystem

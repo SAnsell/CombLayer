@@ -67,6 +67,8 @@
 #include "FixedComp.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "WheelBase.h"
 #include "SegWheel.h"
 
@@ -442,14 +444,16 @@ SegWheel::makeShaftObjects(Simulation& System)
 }
 
 void
-SegWheel::createUnitVector(const attachSystem::FixedComp& FC)
+SegWheel::createUnitVector(const attachSystem::FixedComp& FC,
+			   const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Fixed Component
+    \param sideIndex :: sideIndex
   */
 {
   ELog::RegMethod RegA("SegWheel","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC);
+  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
 
   applyShift(xStep,yStep,zStep);
   applyAngleRotate(xyAngle,zAngle);
@@ -715,17 +719,19 @@ SegWheel::createLinks()
 
 void
 SegWheel::createAll(Simulation& System,
-		     const attachSystem::FixedComp& FC)
+		    const attachSystem::FixedComp& FC,
+		    const long int sideIndex)
   /*!
     Extrenal build everything
     \param System :: Simulation
     \param FC :: FixedComponent for origin
+    \param sideIndex :: sideIndex
    */
 {
   ELog::RegMethod RegA("SegWheel","createAll");
   populate(System.getDataBase());
 
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
 

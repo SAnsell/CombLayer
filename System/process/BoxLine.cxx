@@ -89,7 +89,7 @@ BoxLine::BoxLine(const std::string& Key)  :
 BoxLine::BoxLine(const BoxLine& A) : 
   keyName(A.keyName),ZAxis(A.ZAxis),
   CV(A.CV),Pts(A.Pts),activeFlags(A.activeFlags),
-  InitSurf(A.InitSurf)
+  startSurf(A.startSurf)
   /*!
     Copy constructor
     \param A :: BoxLine to copy
@@ -113,7 +113,7 @@ BoxLine::operator=(const BoxLine& A)
       Pts=A.Pts;
       activeFlags=A.activeFlags;
       copyPUnits(A);
-      InitSurf=A.InitSurf;
+      startSurf=A.startSurf;
     }
   return *this;
 }
@@ -206,6 +206,53 @@ BoxLine::addPoint(const Geometry::Vec3D& Pt)
   return;
 }
 
+void 
+BoxLine::addSurfPoint(const Geometry::Vec3D& Pt,const std::string& surfStr)
+  /*!
+    Add an additional point
+    \param Pt :: Point to add
+    \param surfStr :: Outgoing surface string
+   */
+{ 
+  ELog::RegMethod RegA("BoxLine","addSurfPoint");
+  addSurfPoint(Pt,surfStr,std::string());
+  return;
+}
+
+void 
+BoxLine::addSurfPoint(const Geometry::Vec3D& Pt,
+		       const std::string& surfStr,
+		       const std::string& commonStr)
+  /*!
+    Add an additional point
+    \param Pt :: Point to add
+    \param surfStr :: Outgoing surface string
+    \param commonSurf :: common surface
+   */
+{ 
+  ELog::RegMethod RegA("BoxLine","addSurfPoint");
+
+  HeadRule LSurf,CSurf;
+
+  if (LSurf.procString(surfStr)!=1)
+    throw ColErr::InvalidLine("surfStr",surfStr,0);
+
+  layerSurf.insert(std::map<size_t,HeadRule>::value_type(Pts.size(),LSurf));
+  if (!commonStr.empty())
+    {
+      if (CSurf.procString(commonStr)!=1)
+	throw ColErr::InvalidLine("commonStr",commonStr,0);
+    }
+  // insert empty rule if needed
+  commonSurf.insert(std::map<size_t,HeadRule>::value_type(Pts.size(),CSurf));
+
+  Pts.push_back(Pt);
+  if (Pts.size()>1)
+    activeFlags.push_back(0);
+
+  return;
+}
+
 void
 BoxLine::setActive(const size_t uIndex,const size_t flag)
   /*!
@@ -244,6 +291,56 @@ BoxLine::addSection(const double XS,const double ZS,
   return;
 }
 
+
+void
+BoxLine::addInsertCell(const size_t segment,const int CellN)
+  /*!
+    Add a cell number that is definatively going to be cut by the 
+    pipe. This is a method for dealing with ultra-thin cells etc.
+    \param segment :: Index of pipe segment+1 [use 0 for all]
+    \param CellN :: Cell to exclude
+  */
+{
+  ELog::RegMethod RegA("BoxLine","addInsertCell");
+  
+  typedef std::map<size_t,std::set<int> > MTYPE;
+  MTYPE::iterator mc=segExtra.find(segment);
+  if (mc==segExtra.end())
+    {
+      segExtra.insert(MTYPE::value_type(segment,std::set<int>()));
+      mc=segExtra.find(segment);
+    }
+  MTYPE::mapped_type& CSet=mc->second;
+  
+  CSet.insert(CellN);
+  
+  return; 
+}
+
+void
+BoxLine::forcedInsertCells(const size_t Index)
+  /*!
+    Force the segment extra cell numbers to the pipeUnits
+    so that we are guarranteed to insert into those cells
+    \param Index :: PipeUnits [unchecked]
+  */
+{
+  ELog::RegMethod RegA("BoxLine","forcedInsertCells");
+
+  typedef std::map<size_t,std::set<int> > MTYPE;
+  
+  MTYPE::const_iterator mc=segExtra.find(Index+1);
+  if (mc!=segExtra.end())
+    PUnits[Index]->addInsertSet(mc->second);
+  
+  // Universal
+  mc=segExtra.find(0);
+  if (mc!=segExtra.end())
+    PUnits[Index]->addInsertSet(mc->second);
+  
+  return;
+}
+  
 int
 BoxLine::createUnits(Simulation& System)
   /*!
@@ -254,50 +351,93 @@ BoxLine::createUnits(Simulation& System)
 {
   ELog::RegMethod RegA("BoxLine","createUnits");
 
+  
   if (Pts.size()<2)
     {
       ELog::EM<<"No points to create boxLine"<<ELog::endCrit;
       return -1;
     }
-
-  clearPUnits();
   // Set the points
+  HeadRule PtRule;
   for(size_t i=1;i<Pts.size();i++)
     {
-      boxUnit* PU=new boxUnit(keyName+"Unit",i);
+      boxUnit* PU=new boxUnit(keyName,i);
       PU->setPoints(Pts[i-1],Pts[i]);
+      if (layerSurf.find(i-1)!=layerSurf.end())
+	{
+	  PtRule=layerSurf[i-1];
+      	  PtRule.addIntersection(commonSurf[i-1]);
+	  PU->setASurf(PtRule);
+	}
+      // Complementary object only for modified surface
+      if (layerSurf.find(i)!=layerSurf.end())
+	{
+	  PtRule=layerSurf[i];
+	  PtRule.makeComplement();
+	  PtRule.addIntersection(commonSurf[i]);
+	  PU->setBSurf(PtRule);
+	}
       PUnits.push_back(PU);
-    }
-
-  // Set X-Y Axis:
-  PUnits.front()->setZUnit(ZAxis);
-
+    } 
   for(size_t i=0;i<PUnits.size();i++)
     {
       if (i>0)
 	PUnits[i]->connectFrom(PUnits[i-1]);
-      if ( (i+1) < PUnits.size() )
+      if (i<PUnits.size()-1)
 	PUnits[i]->connectTo(PUnits[i+1]);
     }
+
   
-  if (!InitSurf.empty())
-    PUnits.front()->setInitSurf(InitSurf);
-
+  // Actually build the units
+  if (!startSurf.empty())
+    {
+      HeadRule ARule(startSurf);
+      PUnits[0]->setASurf(ARule);
+    }
   for(size_t i=0;i<PUnits.size();i++)
-    PUnits[i]->createAll(System,activeFlags[i],CV);
-
+    {
+      forcedInsertCells(i);
+      //      PUnits[i]->setNAngle(nAngle);
+      PUnits[i]->createAll(System,activeFlags[i],CV);
+    }
   return 0;
 }
 
-
-void
-BoxLine::setInitSurfaces(const std::string& Rules)
+const boxUnit&
+BoxLine::first() const
   /*!
-    Initialize the inital surfaces
-    \param Rules :: Rule for surfaces
+    Access the first pipe unit
+    \return first PUnit
   */
 {
-  InitSurf=Rules;
+  ELog::RegMethod RegA("BoxLine","first");
+  if (PUnits.empty())
+    throw ColErr::InContainerError<size_t>(0,"PUnits.empty()");
+  return *(PUnits.front());
+}
+
+const boxUnit&
+BoxLine::last() const
+  /*!
+    Access the last pipe unit
+    \return last PUnit
+   */
+{
+  ELog::RegMethod RegA("BoxLine","last");
+  if (PUnits.empty())
+    throw ColErr::InContainerError<size_t>(0,"PUnits.empty()");
+  return *(PUnits.back());
+}
+
+  
+void
+BoxLine::setStartSurf(const std::string& startS)
+  /*!
+    Simple setter for start surf
+    \param startS :: Start surface
+  */
+{
+  startSurf=startS;
   return;
 }
 

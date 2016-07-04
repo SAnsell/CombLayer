@@ -1049,6 +1049,14 @@ DBMaterial::initMaterial()
   MObj.setDensity(-1.05);
   setMaterial(MObj);
 
+  // Tungsten at 600K -- density unchanged
+  MObj.setMaterial(124,"Tungsten600K",
+		   "74182.71c 0.016871 74183.71c 0.00911077 "
+		   "74184.71c 0.019507618 74186.71c 0.018100573 ","",MLib);
+  // density at 300 K according to the Material handbook.
+  // YJL says at 600K we should use the same density (??)
+  MObj.setDensity(-19.298); 
+  setMaterial(MObj);
   
   // CLONE Materials: 
   cloneMaterial("CastIron","Iron");

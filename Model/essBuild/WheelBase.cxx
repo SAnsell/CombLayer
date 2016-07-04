@@ -3,7 +3,7 @@
  
  * File:   essBuild/WheelBase.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,6 +66,8 @@
 #include "FixedComp.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "WheelBase.h"
 
 
@@ -73,17 +75,20 @@ namespace essSystem
 {
 
 WheelBase::WheelBase(const std::string& Key) :
-  attachSystem::ContainedGroup("Wheel","Shaft"),attachSystem::FixedComp(Key,6),
+  attachSystem::ContainedGroup("Wheel","Shaft"),attachSystem::FixedComp(Key,10),
+  attachSystem::CellMap(),
   wheelIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(wheelIndex+1)
   /*!
     Constructor
+    There are 10 links possible -- last for are used if BilbaoWheel used..
     \param Key :: Name of construction key
   */
 {}
 
 WheelBase::WheelBase(const WheelBase& A) : 
   attachSystem::ContainedGroup(A),attachSystem::FixedComp(A),
+  attachSystem::CellMap(A),
   wheelIndex(A.wheelIndex),cellIndex(A.cellIndex)
   /*!
     Copy constructor
@@ -103,6 +108,7 @@ WheelBase::operator=(const WheelBase& A)
     {
       attachSystem::ContainedGroup::operator=(A);
       attachSystem::FixedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
       cellIndex=A.cellIndex;
     }
   return *this;

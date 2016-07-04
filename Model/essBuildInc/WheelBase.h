@@ -36,7 +36,8 @@ namespace essSystem
 */
 
 class WheelBase : public attachSystem::ContainedGroup,
-    public attachSystem::FixedComp
+  public attachSystem::FixedComp,
+  public attachSystem::CellMap
 {
  protected:
   
@@ -54,7 +55,8 @@ class WheelBase : public attachSystem::ContainedGroup,
   virtual double wheelHeight() const =0;
   
   //  virtual int getCell() const =0;
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&) =0;
+  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int) =0;
   
 };
 

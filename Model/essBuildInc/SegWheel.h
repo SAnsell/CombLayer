@@ -105,7 +105,8 @@ class SegWheel : public WheelBase
   // Functions:
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const long int);
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -121,11 +122,14 @@ class SegWheel : public WheelBase
   virtual SegWheel* clone() const;
   virtual ~SegWheel();
 
-    /// total wheel void size
+  /// total wheel void size
   virtual double wheelHeight() const
-  { return targetHeight/2.0 ;} 
+  { return targetHeight/2.0 ;}
+  /// access ot main shaft
   int getCell() const { return mainShaftCell; }
-  void createAll(Simulation&,const attachSystem::FixedComp&);
+  
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
   
 };
 
