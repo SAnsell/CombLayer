@@ -220,17 +220,8 @@ FixedComp::createUnitVector(const FixedComp& FC,
       zTest=FC.getX();
       xTest=FC.getZ();
     }
-  if (keyName=="nmxPipeB")
-    ELog::EM<<"Norm == "<<yTest.dotProd(zTest)<<ELog::endDiag;
-      computeZOffPlane(xTest,yTest,zTest);
-      if (keyName=="nmxPipeB")
-    ELog::EM<<"Norm == "<<yTest.dotProd(zTest)<<ELog::endDiag;
-      
-      //      ELog::EM<<"Corrected["<<keyName<<"] == "<<yTest.dotProd(zTest)<<ELog::endDiag;
-      //    }
+  computeZOffPlane(xTest,yTest,zTest);  
   createUnitVector(LU.getConnectPt(),yTest*zTest,yTest,zTest);
-  if (keyName=="nmxPipeB")
-    ELog::EM<<"NormOut == "<<Y.dotProd(Z)<<ELog::endDiag;
   return;
 }
 
