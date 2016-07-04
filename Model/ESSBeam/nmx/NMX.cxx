@@ -211,7 +211,9 @@ NMX::build(Simulation& System,
 
   BendA->addInsertCell(VPipeA->getCells("Void"));
   BendA->createAll(System,*VPipeA,0,*VPipeA,0);
-
+  Geometry::Vec3D XX=BendA->getKey("Guide0").getX();
+  Geometry::Vec3D ZZ=BendA->getKey("Guide0").getZ();
+  ELog::EM<<"xx == "<<XX.dotProd(ZZ)<<ELog::endDiag;;
     // PIPE from 10m to 14m
   VPipeB->addInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeB->setFront(*VPipeA,2,true);
@@ -220,6 +222,9 @@ NMX::build(Simulation& System,
   BendB->addInsertCell(VPipeB->getCells("Void"));
   BendB->createAll(System,BendA->getKey("Guide0"),2,
 		   BendA->getKey("Guide0"),2);
+  XX=BendA->getKey("Guide0").getX();
+  ZZ=BendA->getKey("Guide0").getZ();
+  ELog::EM<<"xx == "<<XX.dotProd(ZZ)<<ELog::endDiag;;
 
   // PIPE from 14m to 18m
   VPipeC->addInsertCell(bunkerObj.getCell("MainVoid"));
@@ -263,6 +268,16 @@ NMX::build(Simulation& System,
     // using 7 : mid point
   FocusWall->addInsertCell(BInsert->getCell("Void"));
   FocusWall->createAll(System,*BInsert,7,*BInsert,7);
+
+    ELog::EM<<"BInsert == "<<BInsert->getSignedLinkPt(7)<<":"
+	  <<BInsert->getSignedLinkAxis(7)<<ELog::endDiag;
+  ELog::EM<<"Wall == "<<FocusWall->getKey("Guide0").getSignedLinkPt(1)<<":"
+	  <<FocusWall->getKey("Guide0").getSignedLinkAxis(1)<<ELog::endDiag;
+  ELog::EM<<"Wall == "<<FocusWall->getKey("Guide0").getSignedLinkPt(2)<<":"
+	  <<FocusWall->getKey("Guide0").getSignedLinkAxis(2)<<ELog::endDiag;
+
+  ELog::EM<<"Insert == "<<BInsert->getSignedLinkPt(1)<<":"
+	  <<BInsert->getSignedLinkAxis(0)<<ELog::endDiag;
 
   if (stopPoint==3) return;                  // STOP At bunker edge
   // Section to 24.5m

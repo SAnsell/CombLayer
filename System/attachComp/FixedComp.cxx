@@ -214,13 +214,47 @@ FixedComp::createUnitVector(const FixedComp& FC,
 
   const Geometry::Vec3D yTest=LU.getAxis()*signV;
   Geometry::Vec3D zTest=FC.getZ();
+  Geometry::Vec3D xTest=FC.getX();
   if (fabs(zTest.dotProd(yTest))>1.0-Geometry::zeroTol)
-    zTest=FC.getX();
-
+    {
+      zTest=FC.getX();
+      xTest=FC.getZ();
+    }
+  computeZOffPlane(xTest,yTest,zTest);
   createUnitVector(LU.getConnectPt(),yTest*zTest,yTest,zTest);
   return;
 }
 
+void
+FixedComp::computeZOffPlane(const Geometry::Vec3D& XAxis,
+                            const Geometry::Vec3D& YAxis,
+                            Geometry::Vec3D& ZAxis)
+  /*!
+    Rotate the ZAxis to the component of the main rotation
+    \param XAxis :: X direction [orthogonal to Z and Y]
+    \param YAxis :: Y direction [non-orthogonal]
+    \param ZAxis :: Z direction [non-orthogonal]
+   */
+{
+  ELog::RegMethod RegA("FixedComp","computeZOffPlane");
+
+  const double XPart=XAxis.dotProd(YAxis);
+  
+  Geometry::Vec3D YPrime=YAxis-XAxis*XPart;
+  if (YPrime.abs()<Geometry::zeroTol)
+    ELog::EM<<"Error with XRemoval from plane"<<ELog::endErr;
+  YPrime.makeUnit();
+
+  const double cosValue=std::abs(YPrime.dotProd(YAxis));
+  if (cosValue+Geometry::zeroTol>=1.0) return;
+  const double yAngle=acos(cosValue);
+
+  const Geometry::Quaternion QR=
+    Geometry::Quaternion::calcQRot(-yAngle,XAxis);
+
+  QR.rotate(ZAxis);
+  return;
+}
   /*
 void
 FixedComp::createUnitVector(const Geometry::Vec3D& OG,
@@ -451,7 +485,6 @@ FixedComp::addLinkSurf(const size_t Index,const int SN)
   LU[Index].addLinkSurf(SN);
   return;
 }
-
 
 void
 FixedComp::addLinkSurf(const size_t Index,

@@ -3,7 +3,7 @@
  
  * File:   attachComp/BaseMap.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -358,8 +358,9 @@ BaseMap::getName(const int cellN) const
    */
 {
   ELog::RegMethod RegA("BaseMap","getName");
+  static const std::string empty;
   // Quick check for cellN in base names
-  size_t indexCnt(0);
+
   for(const LCTYPE::value_type& IV : Items)
     {
       //      const std::string kUnit(IV.first); // care might delete it!!
@@ -370,7 +371,7 @@ BaseMap::getName(const int cellN) const
       if (vc!=SRef.end())
         return IV.first;
     }
-  return "";  // failed
+  return empty;  // failed
 }
 
 std::string

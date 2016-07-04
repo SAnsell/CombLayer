@@ -52,7 +52,10 @@ class FixedComp
   Geometry::Vec3D beamAxis;     ///< Neutron direction [if different]
 
   std::vector<LinkUnit> LU;     ///< Linked unit items
-
+  static void computeZOffPlane(const Geometry::Vec3D&,
+			       const Geometry::Vec3D&,
+			       Geometry::Vec3D&);
+  
  public:
 
   FixedComp(const std::string&,const size_t);

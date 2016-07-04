@@ -1,4 +1,3 @@
-
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
@@ -224,9 +223,9 @@ GuideLine::populate(const FuncDataBase& Control)
 
   beamXStep=Control.EvalDefVar<double>(keyName+"BeamXStep",xStep);
   beamYStep=Control.EvalDefVar<double>(keyName+"BeamYStep",yStep);
-  beamZStep=Control.EvalDefVar<double>(keyName+"BeamZStep",zStep);
+  beamZStep=Control.EvalDefVar<double>(keyName+"BeamZStep",zStep); 
   beamXYAngle=Control.EvalDefVar<double>(keyName+"BeamXYAngle",xyAngle);
-  beamZAngle=Control.EvalDefVar<double>(keyName+"BeamZAngle",xyAngle);
+  beamZAngle=Control.EvalDefVar<double>(keyName+"BeamZAngle",zAngle);
 
   activeShield=Control.EvalDefVar<int>(keyName+"ActiveShield",1);    
   length=Control.EvalVar<double>(keyName+"Length");
@@ -288,10 +287,11 @@ GuideLine::addGuideUnit(const size_t index,
     "Guide"+StrFunc::makeString(index-1) :  "GuideOrigin";
   attachSystem::FixedComp& prevFC=FixedGroup::getKey(PGKey);
 
+  
   guideFC.createUnitVector(prevFC,POrigin);
   guideFC.applyShift(bX,0.0,bZ);
   guideFC.applyAngleRotate(bXYang,bZang);
-    
+
   return;
 }
 
@@ -483,9 +483,13 @@ GuideLine::createUnitVector(const attachSystem::FixedComp& mainFC,
   shieldFC.applyAngleRotate(xyAngle,zAngle);
 
   attachSystem::FixedComp& guideFC=FixedGroup::getKey("GuideOrigin");
+  ELog::EM<<"Beam FC == "<<beamFC.getX().dotProd(beamFC.getY())<<ELog::endDiag;
   guideFC.createUnitVector(beamFC,beamLP);
   guideFC.applyShift(beamXStep,beamYStep,beamZStep);
   guideFC.applyAngleRotate(beamXYAngle,beamZAngle);
+
+  ELog::EM<<"XY["<<keyName<<"] == "<<guideFC.getX().dotProd(guideFC.getZ())<<ELog::endDiag;
+  ELog::EM<<"XY["<<keyName<<"] == "<<guideFC.getY().dotProd(guideFC.getZ())<<ELog::endDiag;
 
   setDefault("GuideOrigin");
   return;

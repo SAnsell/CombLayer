@@ -186,6 +186,8 @@ BunkerInsert::createUnitVector(const attachSystem::FixedComp& FC,
 
   FixedComp::createUnitVector(FC,orgIndex);
   applyOffset();
+  ELog::EM<<"XY == "<<X.dotProd(Z)<<ELog::endDiag;
+  ELog::EM<<"YZ == "<<Y.dotProd(Z)<<ELog::endDiag;
   return;
 }
   
