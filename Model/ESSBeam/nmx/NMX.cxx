@@ -264,15 +264,6 @@ NMX::build(Simulation& System,
   FocusWall->addInsertCell(BInsert->getCell("Void"));
   FocusWall->createAll(System,*BInsert,7,*BInsert,7);
 
-  ELog::EM<<"BInsert == "<<BInsert->getSignedLinkPt(7)<<":"
-	  <<BInsert->getSignedLinkAxis(7)<<ELog::endDiag;
-  ELog::EM<<"Wall == "<<FocusWall->getKey("Guide0").getSignedLinkPt(1)<<":"
-	  <<FocusWall->getKey("Guide0").getSignedLinkAxis(1)<<ELog::endDiag;
-  ELog::EM<<"Wall == "<<FocusWall->getKey("Guide0").getSignedLinkPt(2)<<":"
-	  <<FocusWall->getKey("Guide0").getSignedLinkAxis(2)<<ELog::endDiag;
-  ELog::EM<<"Insert == "<<BInsert->getSignedLinkPt(1)<<":"
-	  <<BInsert->getSignedLinkAxis(0)<<ELog::endDiag;
-
   if (stopPoint==3) return;                  // STOP At bunker edge
   // Section to 24.5m
   ShieldA->addInsertCell(voidCell);

@@ -47,6 +47,7 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
+#include "Quaternion.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -185,18 +186,10 @@ VacuumPipe::createUnitVector(const attachSystem::FixedComp& FC,
   ELog::RegMethod RegA("VacuumPipe","createUnitVector");
 
   FixedComp::createUnitVector(FC,sideIndex);
-  if (keyName=="nmxPipeB")
-    ELog::EM<<"CREAELLL == "<<Y.dotProd(Z)<<ELog::endDiag;
-    
   applyOffset();
-  if (keyName=="nmxPipeB")
-    ELog::EM<<"OFFSET == "<<Y.dotProd(Z)<<ELog::endDiag;
     
   // after rotation
   applyActiveFrontBack();
-
-  if (keyName=="nmxPipeB")
-    ELog::EM<<"FB == "<<Y.dotProd(Z)<<ELog::endDiag;
 
   return;
 }
@@ -215,7 +208,13 @@ VacuumPipe::applyActiveFrontBack()
   const Geometry::Vec3D curBP=(backJoin) ? BPt : Origin+Y*length;
 
   Origin=(curFP+curBP)/2.0;
-  Y=(curBP-curFP).unit();
+  Geometry::Vec3D YAxis=(curBP-curFP).unit();
+  const Geometry::Quaternion QR=
+    Geometry::Quaternion::calcQVRot(Y,YAxis);
+  QR.rotate(X);
+  QR.rotate(Z);
+  Y=YAxis;
+  
   return;
 }
   

@@ -140,9 +140,10 @@ Quaternion::calcQVRot(const Geometry::Vec3D& A,
   Geometry::Vec3D Axis=A*APrime;
   Axis.makeUnit();
   double Angle=A.dotProd(APrime)/(A.abs()*APrime.abs());
+
   Angle=
     (std::abs(Angle)<1.0-Geometry::zeroTol) ?
-      Angle=acos(Angle) : M_PI;
+      Angle=acos(Angle) : 0.0;
     
   Axis*=sin(Angle/2.0);
   return Quaternion(cos(Angle/2.0),Axis);
