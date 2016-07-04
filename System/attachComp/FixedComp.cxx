@@ -220,8 +220,17 @@ FixedComp::createUnitVector(const FixedComp& FC,
       zTest=FC.getX();
       xTest=FC.getZ();
     }
-  computeZOffPlane(xTest,yTest,zTest);
+  if (keyName=="nmxPipeB")
+    ELog::EM<<"Norm == "<<yTest.dotProd(zTest)<<ELog::endDiag;
+      computeZOffPlane(xTest,yTest,zTest);
+      if (keyName=="nmxPipeB")
+    ELog::EM<<"Norm == "<<yTest.dotProd(zTest)<<ELog::endDiag;
+      
+      //      ELog::EM<<"Corrected["<<keyName<<"] == "<<yTest.dotProd(zTest)<<ELog::endDiag;
+      //    }
   createUnitVector(LU.getConnectPt(),yTest*zTest,yTest,zTest);
+  if (keyName=="nmxPipeB")
+    ELog::EM<<"NormOut == "<<Y.dotProd(Z)<<ELog::endDiag;
   return;
 }
 
@@ -241,16 +250,17 @@ FixedComp::computeZOffPlane(const Geometry::Vec3D& XAxis,
   const double XPart=XAxis.dotProd(YAxis);
   
   Geometry::Vec3D YPrime=YAxis-XAxis*XPart;
+
   if (YPrime.abs()<Geometry::zeroTol)
     ELog::EM<<"Error with XRemoval from plane"<<ELog::endErr;
   YPrime.makeUnit();
 
-  const double cosValue=std::abs(YPrime.dotProd(YAxis));
-  if (cosValue+Geometry::zeroTol>=1.0) return;
-  const double yAngle=acos(cosValue);
+  const double cosValue=std::abs(YPrime.dotProd(ZAxis));
+  if (1.0-cosValue<Geometry::zeroTol) return;
+  const double yAngle= -asin(cosValue);  // remove 90deg.
 
   const Geometry::Quaternion QR=
-    Geometry::Quaternion::calcQRot(-yAngle,XAxis);
+    Geometry::Quaternion::calcQRot(yAngle,XAxis);
 
   QR.rotate(ZAxis);
   return;

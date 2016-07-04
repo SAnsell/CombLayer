@@ -64,7 +64,8 @@ class Quaternion
     static Quaternion calcQRot(const double,Geometry::Vec3D);
     static Quaternion calcQRotDeg(const double,const double,const double,const double);
     static Quaternion calcQRotDeg(const double,Geometry::Vec3D);
-
+    static Quaternion calcQVRot(const Geometry::Vec3D&,const Geometry::Vec3D&);
+    
     static Quaternion basisRotate
       (const Geometry::Vec3D&,const Geometry::Vec3D&,const Geometry::Vec3D&,
        const Geometry::Vec3D&,const Geometry::Vec3D&,const Geometry::Vec3D&);

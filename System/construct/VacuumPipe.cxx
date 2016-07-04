@@ -175,7 +175,7 @@ VacuumPipe::populate(const FuncDataBase& Control)
 
 void
 VacuumPipe::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int sideIndex)
+                             const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Fixed component to link to
@@ -184,11 +184,19 @@ VacuumPipe::createUnitVector(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("VacuumPipe","createUnitVector");
 
-
   FixedComp::createUnitVector(FC,sideIndex);
+  if (keyName=="nmxPipeB")
+    ELog::EM<<"CREAELLL == "<<Y.dotProd(Z)<<ELog::endDiag;
+    
   applyOffset();
+  if (keyName=="nmxPipeB")
+    ELog::EM<<"OFFSET == "<<Y.dotProd(Z)<<ELog::endDiag;
+    
   // after rotation
   applyActiveFrontBack();
+
+  if (keyName=="nmxPipeB")
+    ELog::EM<<"FB == "<<Y.dotProd(Z)<<ELog::endDiag;
 
   return;
 }
@@ -579,7 +587,7 @@ void
 VacuumPipe::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,
 		      const long int FIndex)
-/*!
+ /*!
     Generic function to create everything
     \param System :: Simulation item
     \param FC :: FixedComp

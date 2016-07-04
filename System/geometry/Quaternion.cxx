@@ -128,6 +128,27 @@ Quaternion::calcQRotDeg(const double Angle,const double a,const double b,const d
 }
 
 Quaternion
+Quaternion::calcQVRot(const Geometry::Vec3D& A,
+                      const Geometry::Vec3D& APrime)
+  /*!
+    Calculate Quaternion value for a given angle 
+    \param A :: Original vector
+    \param APrime :: Vector that is rotated too
+    \return Quaternion that rotates A to APrime
+  */
+{
+  Geometry::Vec3D Axis=A*APrime;
+  Axis.makeUnit();
+  double Angle=A.dotProd(APrime)/(A.abs()*APrime.abs());
+  Angle=
+    (std::abs(Angle)<1.0-Geometry::zeroTol) ?
+      Angle=acos(Angle) : M_PI;
+    
+  Axis*=sin(Angle/2.0);
+  return Quaternion(cos(Angle/2.0),Axis);
+}
+
+Quaternion
 Quaternion::calcQRot(const double Angle,Geometry::Vec3D Axis)
   /*!
     Calculate Quaternion value for a given angle 
@@ -599,6 +620,13 @@ Quaternion::basisRotate(const Vec3D& xa,const Vec3D& xb,
   /*!
     Given basis set A convert to basis set B
     Following the method in http://charles.karney.info/biblio/quat.html
+    \param xa :: initial X
+    \param xb :: initial Y
+    \param xc :: initial Z
+    \param ya :: new X
+    \param yb :: new Y
+    \param yc :: new Z
+    \return Quaternion
   */
 {
   Matrix<double> B(4,4);

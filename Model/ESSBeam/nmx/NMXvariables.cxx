@@ -90,31 +90,33 @@ NMXvariables(FuncDataBase& Control)
   FGen.setGuideMat("Copper");
   FGen.setYOffset(0.1);
   FGen.generateTaper(Control,"nmxGA",350.0,3.0,3.0,3.0,4.5);
-  Control.addVariable("nmxGABeamXYAngle",1.0);       
+  Control.addVariable("nmxGABeamZAngle",-1.0);       
 
   FGen.setGuideMat("Aluminium");
   FGen.clearYOffset();
+  const double bendAngle(-180.0);
+  const double bendRadius(120000.0);  
   FGen.generateBender(Control,"nmxBA",394.0,3.0,3.0,3.0,4.5,
-                      120000.0,180);
+                      bendRadius,bendAngle);
 
   // VACUUM PIPES:
   PipeGen.generatePipe(Control,"nmxPipeA",50.0,400.0);
   
   FGen.setYOffset(4.5);
   FGen.generateBender(Control,"nmxBB",394.0,3.0,3.0,3.0,4.5,
-                      120000.0,180);
+                      bendRadius,bendAngle);
   PipeGen.generatePipe(Control,"nmxPipeB",0.0,400.0);
 
   FGen.generateBender(Control,"nmxBC",394.0,3.0,3.0,3.0,4.5,
-                      120000.0,180);
+                      bendRadius,bendAngle);
   PipeGen.generatePipe(Control,"nmxPipeC",0.0,400.0);
 
   FGen.generateBender(Control,"nmxBD",394.0,3.0,3.0,3.0,4.5,
-                      120000.0,180);
+                      bendRadius,bendAngle);
   PipeGen.generatePipe(Control,"nmxPipeD",0.0,400.0);
 
   FGen.generateBender(Control,"nmxBE",224.0,3.0,3.0,3.0,4.5,
-                      120000.0,180);
+                      bendRadius,bendAngle);
   PipeGen.generatePipe(Control,"nmxPipeE",0.0,230.0);
 
     
