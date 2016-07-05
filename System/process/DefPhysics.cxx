@@ -219,35 +219,32 @@ setDefRotation(const mainSystem::inputParam& IParam)
       const std::string BItem=(IParam.itemCnt("angle",0)>1) ?
 	IParam.getValue<std::string>("angle",1) : "";
 
-      if (AItem=="chipIR" || AItem=="ChipIR")
-	MR.addRotation(Geometry::Vec3D(0,0,1),
-		       Geometry::Vec3D(0,0,0),
-		       -45.85);
-      else if (AItem=="zoom" || AItem=="Zoom")
-	{
-	  MR.addRotation(Geometry::Vec3D(0,0,1),
-			 Geometry::Vec3D(0,0,0),
-			 45.00-180.0);
-	}
-      else if (AItem=="object" || AItem=="Object")
+      if (AItem=="object" || AItem=="Object")
 	{
 	  const attachSystem::FixedComp* GIPtr=
-	    OR.getObject<attachSystem::FixedComp>(BItem);
-	  if (!GIPtr)
-	    throw ColErr::InContainerError<std::string>
-	      (BItem,"Fixed component");
-	  const std::string CItem=IParam.getDefValue<std::string>("2","angle",2);
-          const int ZFlag=IParam.getDefValue<int>(1,"angle",3);
+	    OR.getObjectThrow<attachSystem::FixedComp>(BItem,"FixedComp");
+	  const std::string CItem=
+            IParam.getDefValue<std::string>("2","angle",2);
+          const int ZFlag=IParam.getDefValue<int>(0,"angle",3);
 	  const long int axisIndex=attachSystem::getLinkIndex(CItem);
-	  // Y is beam direction -- Alignment along X
-	  const Geometry::Vec3D AxisVec=
-	    GIPtr->getSignedLinkAxis(axisIndex);
+
+          const Geometry::Vec3D AxisVec=
+            GIPtr->getSignedLinkAxis(axisIndex);
+
+          // Align item such that we put the object linkPt at +ve X
+          const Geometry::Vec3D ZRotAxis=GIPtr->getZ();
+          if (!ZFlag)
+            {
+              Geometry::Vec3D LP=GIPtr->getSignedLinkPt(axisIndex);
+              const Geometry::Quaternion QR=
+                Geometry::Quaternion::calcQVRot(LP,LP);
+            }
+
 	  const double angle=180.0*acos(AxisVec[0])/M_PI;
 	  MR.addRotation(GIPtr->getZ(),
                          Geometry::Vec3D(0,0,0),ZFlag*angle);
-	  // Z rotation.
+          // Z rotation.
 	  ELog::EM<<"ROTATION AXIS["<<ZFlag<<"] == "<<AxisVec<<ELog::endDiag;
-		  
 	  const double angleZ=90.0-180.0*acos(-AxisVec[2])/M_PI;
 	  MR.addRotation(GIPtr->getX(),Geometry::Vec3D(0,0,0),-angleZ);
 	}
@@ -261,25 +258,6 @@ setDefRotation(const mainSystem::inputParam& IParam)
       else 
 	retFlag=AItem;
     }
-  if (IParam.compValue("isolate",std::string("chipIR")))
-    {
-      MR.addRotation(Geometry::Vec3D(1,0,0),
-		     Geometry::Vec3D(0,0,0),
-		     -90);
-      MR.addMirror(Geometry::Plane
-		   (1,0,Geometry::Vec3D(0,0,0),
-		    Geometry::Vec3D(0,0,1)));
-      MR.addRotation(Geometry::Vec3D(0,0,1),
-		     Geometry::Vec3D(0,0,0),
-		     180);
-      MR.addMirror(Geometry::Plane
-		   (19,0,Geometry::Vec3D(0,0,0),
-		    Geometry::Vec3D(0,1,0)));
-
-    }
-
-      //   MR.addDisplace(Geometry::Vec3D(-1175.0,0,0));
-
   return retFlag;
 }
 

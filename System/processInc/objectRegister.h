@@ -93,6 +93,10 @@ class objectRegister
     getObject(const std::string&) const;
   template<typename T>  T*
     getObject(const std::string&);
+  template<typename T> const T*
+    getObjectThrow(const std::string&,const std::string&) const;
+  template<typename T>  T*
+    getObjectThrow(const std::string&,const std::string&);
   bool hasObject(const std::string&) const;
   void setRenumber(const std::string&,const int,const int);
   

@@ -392,6 +392,43 @@ objectRegister::getObject(const std::string& Name)
   return dynamic_cast<T*>(FCPtr);
 }
 
+template<typename T>
+const T*
+objectRegister::getObjectThrow(const std::string& Name,
+                               const std::string& Err) const
+  /*!
+    Find a FixedComp [if it exists] 
+    Throws InContainerError if not 
+    \param Name :: Name
+    \param Err :: Error string for exception
+    \return ObjectPtr 
+  */
+{
+  ELog::RegMethod RegA("objectRegister","getObjectThrow(const)");
+  const T* FCPtr=getObject<T>(Name);
+  if (!FCPtr)
+    throw ColErr::InContainerError<std::string>(Name,Err);
+  return FCPtr;
+}
+
+template<typename T>
+T*
+objectRegister::getObjectThrow(const std::string& Name,
+                                const std::string& Err) 
+  /*!
+    Find a FixedComp [if it exists]
+    \param Name :: Name
+    \param Err :: Error string for exception
+    \return ObjectPtr / 0 
+  */
+{
+  ELog::RegMethod RegA("objectRegister","getObjectThrow");
+  T* FCPtr=getObject<T>(Name);
+  if (!FCPtr)
+    throw ColErr::InContainerError<std::string>(Name,Err);
+  return FCPtr;
+}
+
 
 template<>
 const attachSystem::ContainedComp* 
@@ -732,6 +769,58 @@ template attachSystem::CellMap*
 template attachSystem::SurfMap* 
   objectRegister::getObject(const std::string&);
 
+
+
+template const attachSystem::FixedComp* 
+  objectRegister::getObjectThrow(const std::string&,const std::string&) const;
+
+template const attachSystem::ContainedComp* 
+  objectRegister::getObjectThrow(const std::string&,const std::string&) const;
+
+template const attachSystem::ContainedGroup* 
+  objectRegister::getObjectThrow(const std::string&,const std::string&) const;
+
+template const attachSystem::TwinComp* 
+  objectRegister::getObjectThrow(const std::string&,const std::string&) const;
+
+template const attachSystem::SecondTrack* 
+  objectRegister::getObjectThrow(const std::string&,const std::string&) const;
+
+template const attachSystem::LayerComp* 
+  objectRegister::getObjectThrow(const std::string&,const std::string&) const;
+
+template const attachSystem::CellMap* 
+  objectRegister::getObjectThrow(const std::string&,const std::string&) const;
+
+template const attachSystem::SurfMap* 
+  objectRegister::getObjectThrow(const std::string&,const std::string&) const;
+
+template attachSystem::FixedComp* 
+  objectRegister::getObjectThrow(const std::string&,const std::string&);
+
+template attachSystem::FixedGroup* 
+  objectRegister::getObjectThrow(const std::string&,const std::string&);
+
+template attachSystem::ContainedComp* 
+  objectRegister::getObjectThrow(const std::string&,const std::string&);
+
+template attachSystem::ContainedGroup* 
+  objectRegister::getObjectThrow(const std::string&,const std::string&);
+
+template attachSystem::TwinComp* 
+  objectRegister::getObjectThrow(const std::string&,const std::string&);
+
+template attachSystem::SecondTrack* 
+  objectRegister::getObjectThrow(const std::string&,const std::string&);
+
+template attachSystem::CellMap* 
+  objectRegister::getObjectThrow(const std::string&,const std::string&);
+
+template attachSystem::SurfMap* 
+  objectRegister::getObjectThrow(const std::string&,const std::string&);
+
+
+  
 ///\endcond TEMPLATE  
 
 } // NAMESPACE ModelSupport

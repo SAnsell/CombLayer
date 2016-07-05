@@ -131,7 +131,9 @@ Quaternion
 Quaternion::calcQVRot(const Geometry::Vec3D& A,
                       const Geometry::Vec3D& APrime)
   /*!
-    Calculate Quaternion value for a given angle 
+    Calculate Quaternion value for a given 
+    a vector and the new target vector rotated about the
+    origin
     \param A :: Original vector
     \param APrime :: Vector that is rotated too
     \return Quaternion that rotates A to APrime
