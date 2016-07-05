@@ -225,7 +225,7 @@ setDefRotation(const mainSystem::inputParam& IParam)
 	    OR.getObjectThrow<attachSystem::FixedComp>(BItem,"FixedComp");
 	  const std::string CItem=
             IParam.getDefValue<std::string>("2","angle",2);
-          const int ZFlag=IParam.getDefValue<int>(0,"angle",3);
+          const int ZFlag=IParam.getDefValue<int>(1,"angle",3);
 	  const long int axisIndex=attachSystem::getLinkIndex(CItem);
 
           const Geometry::Vec3D AxisVec=
@@ -233,12 +233,6 @@ setDefRotation(const mainSystem::inputParam& IParam)
 
           // Align item such that we put the object linkPt at +ve X
           const Geometry::Vec3D ZRotAxis=GIPtr->getZ();
-          if (!ZFlag)
-            {
-              Geometry::Vec3D LP=GIPtr->getSignedLinkPt(axisIndex);
-              const Geometry::Quaternion QR=
-                Geometry::Quaternion::calcQVRot(LP,LP);
-            }
 
 	  const double angle=180.0*acos(AxisVec[0])/M_PI;
 	  MR.addRotation(GIPtr->getZ(),
@@ -248,6 +242,23 @@ setDefRotation(const mainSystem::inputParam& IParam)
 	  const double angleZ=90.0-180.0*acos(-AxisVec[2])/M_PI;
 	  MR.addRotation(GIPtr->getX(),Geometry::Vec3D(0,0,0),-angleZ);
 	}
+      else  if (AItem=="objPoint" || AItem=="ObjPoint")
+        {
+	  const attachSystem::FixedComp* GIPtr=
+	    OR.getObjectThrow<attachSystem::FixedComp>(BItem,"FixedComp");
+	  const std::string CItem=
+            IParam.getDefValue<std::string>("2","angle",2);
+          
+          const int zeroFlag=IParam.getDefValue<int>(0,"angle",3);
+	  const long int sideIndex=attachSystem::getLinkIndex(CItem);
+
+          Geometry::Vec3D LP=GIPtr->getSignedLinkPt(axisIndex);
+          
+          const double angle=180.0*acos(AxisVec[0])/M_PI;
+          MR.addRotation(GIPtr->getX(),Geometry::Vec3D(0,0,0),-angleZ);
+        }
+
+
       else if (AItem=="free" || AItem=="FREE")
 	{
 	  const double rotAngle=
