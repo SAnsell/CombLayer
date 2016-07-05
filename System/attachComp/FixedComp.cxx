@@ -47,6 +47,7 @@
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "localRotate.h"
+#include "stringCombine.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -226,6 +227,45 @@ FixedComp::createUnitVector(const FixedComp& FC,
 }
 
 void
+FixedComp::makeOrthogonal()
+  /*!
+    Reconstructs the basis set to be orthogonal
+    Y is primary and Z is secondary
+    Assumes X,Y,Z are unitary
+  */
+{
+  ELog::RegMethod RegA("FixedComp","makeOrthogonal");
+
+  // Use this later
+  const double XYcos=X.dotProd(Y); 
+  if (std::abs(XYcos)<Geometry::zeroTol &&
+      std::abs(X.dotProd(Z))<Geometry::zeroTol &&
+      std::abs(Y.dotProd(Z))<Geometry::zeroTol)
+    return;
+  // Now have possiblity that we are not othogonal
+  // Y is PRIMARY
+  // Z is SECONDARY
+
+  if (std::abs(XYcos)>1.0-Geometry::zeroTol)
+    throw ColErr::NumericalAbort("Vectors X/Y parallel:"+
+                                 StrFunc::makeString(X));
+
+  // Calc X:
+  const Geometry::Vec3D XDir(X);
+  X=(Y*Z).unit();
+  if (XDir.dotProd(X)<0.0)
+    X*-1;
+
+  // Calc Z' to be close to Z
+  const Geometry::Vec3D ZDir(Z);
+  Z=(Y*Z).unit();
+  if (ZDir.dotProd(Z)<0.0)
+    Z*-1;
+  
+  return;
+}
+  
+void
 FixedComp::computeZOffPlane(const Geometry::Vec3D& XAxis,
                             const Geometry::Vec3D& YAxis,
                             Geometry::Vec3D& ZAxis)
@@ -256,31 +296,7 @@ FixedComp::computeZOffPlane(const Geometry::Vec3D& XAxis,
   QR.rotate(ZAxis);
   return;
 }
-  /*
-void
-FixedComp::createUnitVector(const Geometry::Vec3D& OG,
-			    const Geometry::Vec3D& BeamAxis,
-			    const Geometry::Vec3D& ZAxis)
-  /*!
-    Create the unit vectors [using beam directions]
-    \param OG :: Origin
-    \param BeamAxis :: Beamline axis line
-    \param ZAxis :: Direction for Z
-  * /
-{
-  ELog::RegMethod RegA("FixedComp","createUnitVector(Vec3D,Vec3D,Vec3D))");
 
-  //Geometry::Vec3D(-1,0,0);          // Gravity axis [up]
-  Z=ZAxis.unit();
-  Y=BeamAxis.unit();
-  X=(Y*Z);                            // horrizontal axis [across]
-
-  Origin=OG;
-  beamOrigin=OG;
-  beamAxis=Y;
-  return;
-}
-  */
 void
 FixedComp::createUnitVector(const Geometry::Vec3D& OG,
 			    const Geometry::Vec3D& XAxis,
@@ -300,7 +316,7 @@ FixedComp::createUnitVector(const Geometry::Vec3D& OG,
   X=XAxis.unit();
   Y=YAxis.unit();
   Z=ZAxis.unit();
-
+  makeOrthogonal();
   Origin=OG;
   beamOrigin=OG;
   beamAxis=Y;
@@ -328,9 +344,12 @@ FixedComp::applyAngleRotate(const double xAngle,
 			    const double yAngle,
 			    const double zAngle)
  /*!
-    Create the unit vectors
-    \param xyAngle :: XY Rotation [second]
-    \param zAngle :: Z Rotation [first]
+   Applies a triple angle rotation.
+   Rotates about:
+     Z : Y : X
+    \param xAngle :: X-rotation angle
+    \param xAngle :: Y-rotation angle
+    \param zAngle :: Z-rotation angle [first]
   */
 {
   const Geometry::Quaternion Qz=
@@ -341,12 +360,13 @@ FixedComp::applyAngleRotate(const double xAngle,
     Geometry::Quaternion::calcQRotDeg(xAngle,X);
   Qz.rotate(Y);
   Qz.rotate(X);
-  Qy.rotate(Y);
+  
   Qy.rotate(X);
+  Qy.rotate(Y);
   Qy.rotate(Z);
   
-  Qx.rotate(Y);
   Qx.rotate(X);
+  Qx.rotate(Y);
   Qx.rotate(Z);
   return;
 }
@@ -365,6 +385,7 @@ FixedComp::applyAngleRotate(const double xyAngle,
     Geometry::Quaternion::calcQRotDeg(xyAngle,Z);
   Qz.rotate(Y);
   Qz.rotate(Z);
+
   Qxy.rotate(Y);
   Qxy.rotate(X);
   Qxy.rotate(Z);
@@ -376,7 +397,7 @@ FixedComp::linkAngleRotate(const long int sideIndex,
 			   const double xyAngle,
 			   const double zAngle)
  /*!
-   Rotate a linke point axis [not connection point]
+   Rotate a link point axis [not connection point]
    \param sideIndex :: signed ink point [sign for direction]
    \param xyAngle :: XY Rotation [second]
    \param zAngle :: Z Rotation [first]

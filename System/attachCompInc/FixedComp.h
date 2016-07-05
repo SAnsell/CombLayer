@@ -55,6 +55,7 @@ class FixedComp
   static void computeZOffPlane(const Geometry::Vec3D&,
 			       const Geometry::Vec3D&,
 			       Geometry::Vec3D&);
+  void makeOrthogonal();
   
  public:
 

@@ -199,6 +199,8 @@ void
 VacuumPipe::applyActiveFrontBack()
   /*!
     Apply the active front/back point to re-calcuate Origin
+    It applies the rotation of Y to Y' to both X/Z to preserve
+    orthogonality.
    */
 {
   ELog::RegMethod RegA("VacuumPipe","applyActiveFrontBack");
