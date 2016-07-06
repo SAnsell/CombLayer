@@ -381,6 +381,9 @@ PhysicsCards::processCard(const std::string& Line)
 	    }
 	  PCards.push_back(PC);
 	}
+      else
+        delete PC;
+      
       return 1;
     }
   return 1;

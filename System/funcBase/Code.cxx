@@ -807,8 +807,8 @@ Code::printByteCode(std::ostream& OFS) const
 	      }
         }
     }
-  OFS.copyfmt(state);
   OFS.precision(ssPrec);
+  OFS.copyfmt(state);
   return;
 }
 

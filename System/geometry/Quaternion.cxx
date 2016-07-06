@@ -145,7 +145,7 @@ Quaternion::calcQVRot(const Geometry::Vec3D& A,
 
   Angle=
     (std::abs(Angle)<1.0-Geometry::zeroTol) ?
-      Angle=acos(Angle) : 0.0;
+      acos(Angle) : 0.0;
     
   Axis*=sin(Angle/2.0);
   return Quaternion(cos(Angle/2.0),Axis);

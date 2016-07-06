@@ -571,7 +571,7 @@ beamTallyConstruct::addViewInnerTally(Simulation& System,
     }
 
   std::vector<Geometry::Vec3D> VOut=
-    (faceFlag!=2 || faceFlag!=-2) ? BSPtr->createFrontViewPoints() : 
+    (faceFlag!=2 && faceFlag!=-2) ? BSPtr->createFrontViewPoints() : 
     BSPtr->createBackViewPoints();
 
   if (VOut.size()<4)

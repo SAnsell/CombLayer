@@ -410,12 +410,14 @@ NTree::actualValues() const
 	    std::vector<double> OutX=
 	      getInterval(index);
 	    Out.insert(Out.end(),OutX.begin(),OutX.end());
+            break;
 	  }
 	case IType::log:
 	  {
 	    std::vector<double> OutX=
 	      getInterval(index);
 	    Out.insert(Out.end(),OutX.begin(),OutX.end());
+            break;
 	  }
 	default:
 	  break;

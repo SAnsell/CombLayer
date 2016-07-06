@@ -325,9 +325,9 @@ Hut::createObjects(Simulation& System,const std::string& cutRule)
   // Make Wall
   Out=ModelSupport::getComposite
     (SMap,hutIndex,"1001 -1002 5 -6 (-1003:1004:-1005:1006)");
-  if (frontWallCut<0)
+  if (frontWallCut)
     Out+=ModelSupport::getComposite(SMap,hutIndex," 13 -14 ");
-  if (backWallCut>0)
+  if (backWallCut)
     Out+=ModelSupport::getComposite(SMap,hutIndex," 3 -4 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
   setCell("InnerWall",cellIndex-1);

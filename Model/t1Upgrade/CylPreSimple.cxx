@@ -360,8 +360,7 @@ CylPreSimple::createObjects(Simulation& System,
 	}
     }
   
-  // Finally the void cell:
-  return;
+  // Finally the void cell:  
   Out=ModelSupport::getComposite(SMap,modIndex,
 				 modIndex+10*static_cast<int>(nLayers-1),"9 -7M ");
 

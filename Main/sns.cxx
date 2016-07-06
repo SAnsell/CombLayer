@@ -93,81 +93,71 @@ namespace ELog
 int 
 main(int argc,char* argv[])
 {
+
   int exitFlag(0);                // Value on exit
   ELog::RegMethod RControl("","main");
   mainSystem::activateLogging(RControl);
 
   std::string Oname;
   std::vector<std::string> Names;  
-  std::map<std::string,std::string> Values;  
-  std::map<std::string,std::string> AddValues;  
-  std::map<std::string,double> IterVal;           // Variable to iterate 
 
-  // PROCESS INPUT:
-  InputControl::mainVector(argc,argv,Names);
-  mainSystem::inputParam IParam;
-  createSNSInputs(IParam);
-
-  const int iteractive(IterVal.empty() ? 0 : 1);   
-  Simulation* SimPtr=createSimulation(IParam,Names,Oname);
-  if (!SimPtr) return -1;
-
-  // The big variable setting
-  setVariable::SNSVariables(SimPtr->getDataBase());
-  InputModifications(SimPtr,IParam,Names);
-  
-  // Definitions section 
-  int MCIndex(0);
-  const int multi=IParam.getValue<int>("multi");
+  Simulation* SimPtr(0);
   try
     {
-      while(MCIndex<multi)
-	{
-	  if (MCIndex)
-	    {
-	      ELog::EM.setActive(4);    // write error only
-	      ELog::FM.setActive(4);    
-	      ELog::RN.setActive(0);    
-	    }
+      // PROCESS INPUT:
+      InputControl::mainVector(argc,argv,Names);
+      mainSystem::inputParam IParam;
+      createSNSInputs(IParam);
+      SimPtr=createSimulation(IParam,Names,Oname);
+      if (!SimPtr) return -1;
 
-	  SimPtr->resetAll();
+      // The big variable setting
+      setVariable::SNSVariables(SimPtr->getDataBase());
+      // Default units not set yet:
+      //mainSystem::setDefUnits(SimPtr->getDataBase(),IParam);
+      InputModifications(SimPtr,IParam,Names);
+  
+      // Definitions section 
+      int MCIndex(0);
+      const int multi=IParam.getValue<int>("multi");
+      
+      snsSystem::makeSNS SNSObj;
+      World::createOuterObjects(*SimPtr);
+      SNSObj.build(SimPtr,IParam);
+      SDef::sourceSelection(*SimPtr,IParam);
 
-	  snsSystem::makeSNS SNSObj;
-	  World::createOuterObjects(*SimPtr);
-	  SNSObj.build(SimPtr,IParam);
+      SimPtr->removeComplements();
+      SimPtr->removeDeadSurfaces(0);         
 
-	  SDef::sourceSelection(*SimPtr,IParam);
+      ModelSupport::setDefaultPhysics(*SimPtr,IParam);
 
-	  SimPtr->removeComplements();
-	  SimPtr->removeDeadSurfaces(0);         
+      ModelSupport::setDefRotation(IParam);
+      SimPtr->masterRotation();
 
-	  ModelSupport::setDefaultPhysics(*SimPtr,IParam);
-	  SimPtr->masterRotation();
+                
+      const int renumCellWork=tallySelection(*SimPtr,IParam);
+      if (createVTK(IParam,SimPtr,Oname))
+        {
+          delete SimPtr;
+          ModelSupport::objectRegister::Instance().reset();
+          return 0;
+        }
           
-          const int renumCellWork=tallySelection(*SimPtr,IParam);
-          if (createVTK(IParam,SimPtr,Oname))
-            {
-              delete SimPtr;
-              ModelSupport::objectRegister::Instance().reset();
-              return 0;
-            }
-          
-          SimProcess::importanceSim(*SimPtr,IParam);
-          SimProcess::inputProcessForSim(*SimPtr,IParam); // energy cut etc
-          if (renumCellWork)
-            tallyRenumberWork(*SimPtr,IParam);
-          tallyModification(*SimPtr,IParam);
+      SimProcess::importanceSim(*SimPtr,IParam);
+      SimProcess::inputProcessForSim(*SimPtr,IParam); // energy cut etc
+      if (renumCellWork)
+        tallyRenumberWork(*SimPtr,IParam);
+      tallyModification(*SimPtr,IParam);
 
-	  // Ensure we done loop
-	  do
-	    {
-	      SimProcess::writeIndexSim(*SimPtr,Oname,MCIndex);
-	      MCIndex++;
-	    }
-	  while(!iteractive && MCIndex<multi);
-	}
-      if (IParam.flag("cinder"))
-	SimPtr->writeCinder();
+      // Ensure we done loop
+      do
+        {
+          SimProcess::writeIndexSim(*SimPtr,Oname,MCIndex);
+          MCIndex++;
+        }
+      while(MCIndex<multi);
+      
+      exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
       ModelSupport::calcVolumes(SimPtr,IParam);
       ModelSupport::objectRegister::Instance().write("ObjectRegister.txt");
     }
@@ -181,6 +171,11 @@ main(int argc,char* argv[])
     {
       ELog::EM<<"EXCEPTION FAILURE :: "
 	      <<A.what()<<ELog::endCrit;
+      exitFlag= -1;
+    }
+  catch (...)
+    {
+      ELog::EM<<"GENERAL EXCEPTION"<<ELog::endCrit;
       exitFlag= -1;
     }
   delete SimPtr;

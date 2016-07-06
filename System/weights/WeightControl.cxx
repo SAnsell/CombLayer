@@ -892,6 +892,9 @@ WeightControl::procRebase(const Simulation& System,
 
       WeightSystem::WCells* WF=
 	dynamic_cast<WeightSystem::WCells*>(WM.getParticle('n'));
+      if (!WF)
+        throw ColErr::DynamicConv("WForm","WCells","neutron particles");
+      
       const std::vector<double>& baseVec=WF->getWeights(cellN);
       if (baseVec.size()<index)
 	throw ColErr::IndexError<size_t>(index,baseVec.size(),"Index range");

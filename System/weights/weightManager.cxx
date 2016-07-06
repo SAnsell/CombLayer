@@ -62,7 +62,8 @@
 namespace WeightSystem
 {
 
-weightManager::weightManager()
+weightManager::weightManager() :
+  WWGPtr(0)
   /*!
     Constructor
   */
@@ -114,7 +115,7 @@ weightManager::getParticle(const char c)
   ELog::RegMethod RegA("weightManager","getParticle");
   CtrlTYPE::iterator mc=WMap.find(c);
   if (mc==WMap.end())
-    throw ColErr::InContainerError<char>(c,RegA.getBase());
+    throw ColErr::InContainerError<char>(c,"particle not found");
   return mc->second;
 }
 

@@ -199,12 +199,13 @@ FREIA::FREIA(const std::string& keyName) :
 
   OR.addObject(OutPitA);
   OR.addObject(OutACut);
-  OR.addObject(JawPit);
   OR.addObject(ChopperOutA);
   OR.addObject(WBC3Disk);  
 
   OR.addObject(ChopperOutB);
   OR.addObject(FOC3Disk);  
+
+  OR.addObject(JawPit);
 
   OR.addObject(ShieldA);
   OR.addObject(VPipeOutA);

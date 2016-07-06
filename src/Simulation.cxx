@@ -112,7 +112,8 @@ Simulation::Simulation()  :
 }
 
 Simulation::Simulation(const Simulation& A)  :
-  inputFile(A.inputFile),CNum(A.CNum),DB(A.DB),
+  mcnpType(A.mcnpType),inputFile(A.inputFile),
+  CNum(A.CNum),DB(A.DB),
   OSMPtr(new ModelSupport::ObjSurfMap),
   TList(A.TList),  cellOutOrder(A.cellOutOrder),
   PhysPtr(new physicsSystem::PhysicsCards(*A.PhysPtr))
@@ -2043,7 +2044,9 @@ Simulation::renumberCells(const std::vector<int>& cOffset,
       vc->second->setName(nNum);      
       newMap.insert(OTYPE::value_type(nNum,vc->second));
       WM.renumberCell(cNum,nNum);
+
       OR.renumberActiveCell(cNum,nNum);
+      
       if (!vc->second->isPlaceHold())
 	{
 	  PhysPtr->substituteCell(cNum,nNum);

@@ -3,7 +3,7 @@
  
  * File:   delft/FuelLoad.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -120,7 +120,8 @@ FuelLoad::gridName(const size_t NX,const size_t NY)
   return Out;
 }
 
-FuelLoad::FuelLoad()
+FuelLoad::FuelLoad() :
+  activeXOut(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
   */

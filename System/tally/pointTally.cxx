@@ -212,7 +212,7 @@ pointTally::calcMid() const
      ELog::EM<<"Tally ["<<this->IDnum
 	     <<"] Window:Size [4] =="<<Window.size()
 	     <<ELog::endErr;;
-     throw ColErr::ExitAbort(RegA.getFull());
+     throw ColErr::ExitAbort("Window empty");
     }
 
   Geometry::Vec3D Mid=
@@ -261,7 +261,7 @@ pointTally::calcNormal() const
    {
      ELog::EM<<"Tally ["<<this->IDnum
 	     <<"] Window:Size [4] =="<<Window.size()<<ELog::endErr;
-     throw ColErr::ExitAbort(RegA.getFull());
+     throw ColErr::ExitAbort("Window size <4");
    }
 
   Geometry::Vec3D Norm=(Window[1]-Window[0])*(Window[3]-Window[0]);

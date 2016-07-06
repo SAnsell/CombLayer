@@ -305,7 +305,7 @@ LayerDivide3D::checkDivide() const
     throw ColErr::EmptyValue<int>("Wall A not set");
   if (!(BWall.first*BWall.second))
     throw ColErr::EmptyValue<int>("Wall B not set");
-  if (!(CWall.first*BWall.second))
+  if (!(CWall.first*CWall.second))
     throw ColErr::EmptyValue<int>("Wall C not set");
   return;
 }

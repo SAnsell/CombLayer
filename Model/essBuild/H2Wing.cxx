@@ -558,7 +558,6 @@ H2Wing::getLayerSurf(const size_t layerIndex,
   */
 {
   ELog::RegMethod RegA("H2Wing","getLayerSurf");
-  throw ColErr::AbsObjMethod("Not implemented yet");
 
   if (layerIndex>=nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layerIndex");

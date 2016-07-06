@@ -434,10 +434,7 @@ SupplyPipe::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("SupplyPipe","createAll");
   populate(System.getDataBase());
-  return;
   createUnitVector(FC,orgLayerIndex,orgSideIndex);
-  ELog::EM<<"Origin == "<<Origin<<ELog::endDiag;
-  ELog::EM<<"Z == "<<Z<<ELog::endDiag;
   insertInlet(FC,exitSideIndex);
   addOuterPoints();
   setActive();

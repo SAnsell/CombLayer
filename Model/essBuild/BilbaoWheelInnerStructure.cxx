@@ -557,7 +557,8 @@ BilbaoWheelInnerStructure::createBricks(Simulation& System,
 		Out1 = ModelSupport::getComposite(SMap, bOffset+20, " -1M ");
 	      sideStr = side1;
 	      mat = brickSteelMat;
-	    } else
+	    }
+          else
 	    {
 	      dist = sideIntersect(Out1+layerStr, plSide2);
 	      if (dist>Geometry::zeroTol)
@@ -566,16 +567,9 @@ BilbaoWheelInnerStructure::createBricks(Simulation& System,
 		  Out1 = ModelSupport::getComposite(SMap, bOffset, " 2 ");
 		  sideStr = side2;
 		  mat = brickSteelMat;
-		} else
-		{
-		  if (lastBrick) // set in bricks
-		    {
-		      sideStr = side2;
-		      ELog::EM << "Last brick set in bricks" << ELog::endCrit;
-		    }
-		  else
-		    sideStr = "";
 		}
+              else
+                sideStr = "";
 	    }
 	  
 	  if (firstBrick)

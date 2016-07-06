@@ -123,8 +123,6 @@ main(int argc,char* argv[])
       int MCIndex(0);
       const int multi=IParam.getValue<int>("multi");
       
-      SimPtr->resetAll();
-      
       essSystem::makeESS ESSObj;
       World::createOuterObjects(*SimPtr);
       ESSObj.build(*SimPtr,IParam);
@@ -135,8 +133,8 @@ main(int argc,char* argv[])
       ModelSupport::setDefaultPhysics(*SimPtr,IParam);
       
       ModelSupport::setDefRotation(IParam);
-
       SimPtr->masterRotation();
+
       const int renumCellWork=tallySelection(*SimPtr,IParam);
       if (createVTK(IParam,SimPtr,Oname))
 	{
@@ -176,6 +174,12 @@ main(int argc,char* argv[])
 	      <<A.what()<<ELog::endCrit;
       exitFlag= -1;
     }
+  catch (...)
+    {
+      ELog::EM<<"GENERAL EXCEPTION"<<ELog::endCrit;
+      exitFlag= -3;
+    }
+
   delete SimPtr;
   ModelSupport::objectRegister::Instance().reset();
   ModelSupport::surfIndex::Instance().reset();

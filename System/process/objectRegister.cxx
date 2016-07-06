@@ -207,7 +207,6 @@ objectRegister::renumberActiveCell(const int oldCellN,
     \param newCellN :: new cell number
   */
 {
-  return;
   ELog::RegMethod RegA("objectRegister","renumberActive");
   
   std::set<int>::iterator sc=activeCells.find(oldCellN);
@@ -632,8 +631,10 @@ objectRegister::getObjectRange(const std::string& objName) const
     }
 
   // SPECIALS:
+  
   if (objName=="All" || objName=="all")
     {
+      ELog::EM<<"ASDFSDAF "<<ELog::endDiag;
       std::vector<int> Out;
       for(const int CN : activeCells)
         Out.push_back(calcRenumber(CN));
