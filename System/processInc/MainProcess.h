@@ -88,6 +88,7 @@ namespace mainSystem
   void InputModifications(Simulation*,inputParam&,
 			  std::vector<std::string>&);
 
+  void buildFullSimulation(Simulation*,const inputParam&,const std::string&);
   void exitDelete(Simulation*);
 }
 

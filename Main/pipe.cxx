@@ -101,63 +101,28 @@ main(int argc,char* argv[])
   mainSystem::activateLogging(RControl);
   std::string Oname;
   std::vector<std::string> Names;  
-  std::map<std::string,std::string> Values;  
 
-  // PROCESS INPUT:
-  InputControl::mainVector(argc,argv,Names);
-  mainSystem::inputParam IParam;
-  createPipeInputs(IParam);
-
-  Simulation* SimPtr=createSimulation(IParam,Names,Oname);
-  if (!SimPtr) return -1;
-
-  // The big variable setting
-  setVariable::PipeVariables(SimPtr->getDataBase());
-  InputModifications(SimPtr,IParam,Names);
-  
-  // Definitions section 
-  int MCIndex(0);
-  const int multi=IParam.getValue<int>("multi");
+  Simulation* SimPtr(0);
   try
     {
-      SimPtr->resetAll();
+      SimPtr=createSimulation(IParam,Names,Oname);
+      if (!SimPtr) return -1;
       
+      // PROCESS INPUT:
+      InputControl::mainVector(argc,argv,Names);
+      mainSystem::inputParam IParam;
+      createPipeInputs(IParam);
+
+      
+      setVariable::PipeVariables(SimPtr->getDataBase());
+      InputModifications(SimPtr,IParam,Names);
+        
       pipeSystem::makePipe pipeObj;
       World::createOuterObjects(*SimPtr);
       pipeObj.build(SimPtr,IParam);
       SDef::sourceSelection(*SimPtr,IParam);
       
-      SimPtr->removeComplements();
-      SimPtr->removeDeadSurfaces(0);         
-      ModelSupport::setDefaultPhysics(*SimPtr,IParam);
-      
-      const int renumCellWork=tallySelection(*SimPtr,IParam);
-      SimPtr->masterRotation();
-      if (createVTK(IParam,SimPtr,Oname))
-	{
-	  delete SimPtr;
-	  ModelSupport::objectRegister::Instance().reset();
-	  ModelSupport::surfIndex::Instance().reset();
-	  return 0;
-	}
-      
-      if (IParam.flag("endf"))
-	SimPtr->setENDF7();
-      
-      SimProcess::importanceSim(*SimPtr,IParam);
-      SimProcess::inputProcessForSim(*SimPtr,IParam); // energy cut etc
-      
-      if (renumCellWork)
-	tallyRenumberWork(*SimPtr,IParam);
-      tallyModification(*SimPtr,IParam);
-                  
-      // Ensure we done loop
-      do
-	{
-	  SimProcess::writeIndexSim(*SimPtr,Oname,MCIndex);
-	  MCIndex++;
-	}
-      while(MCIndex<multi);
+      mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
       
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
       ModelSupport::calcVolumes(SimPtr,IParam);
@@ -175,6 +140,12 @@ main(int argc,char* argv[])
 	      <<A.what()<<ELog::endCrit;
       exitFlag= -1;
     }
+  catch (...)
+    {
+      ELog::EM<<"GENERAL EXCEPTION"<<ELog::endCrit;
+      exitFlag= -3;
+    }
+
   delete SimPtr;
   ModelSupport::objectRegister::Instance().reset();
   ModelSupport::surfIndex::Instance().reset();

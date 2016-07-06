@@ -121,50 +121,17 @@ main(int argc,char* argv[])
       InputModifications(SimPtr,IParam,Names);
       mainSystem::setMaterialsDataBase(IParam);
 
-      // Definitions section 
-      int MCIndex(0);
-      const int multi=IParam.getValue<int>("multi");
-      SimPtr->resetAll();
-            
-
       photonSystem::makePhoton2 LObj;
       World::createOuterObjects(*SimPtr);
       LObj.build(SimPtr,IParam);
       
       SDef::sourceSelection(*SimPtr,IParam);
-      
-      SimPtr->removeComplements();
-      SimPtr->removeDeadSurfaces(0);         
-      ModelSupport::setDefaultPhysics(*SimPtr,IParam);
 
-      ModelSupport::setDefRotation(IParam);
-      SimPtr->masterRotation();
-
-      const int renumCellWork=tallySelection(*SimPtr,IParam);
-      if (createVTK(IParam,SimPtr,Oname))
-        {
-          delete SimPtr;
-          ModelSupport::objectRegister::Instance().reset();
-          ModelSupport::surfIndex::Instance().reset();
-          return 0;
-        }
-
-      SimProcess::importanceSim(*SimPtr,IParam);
-      SimProcess::inputProcessForSim(*SimPtr,IParam); // energy cut etc
-      if (renumCellWork)
-        tallyRenumberWork(*SimPtr,IParam);
-      tallyModification(*SimPtr,IParam);
-
+      mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
       // Ensure we done loop
       ELog::EM<<"PHOTONMOD : variable hash: "
               <<SimPtr->getDataBase().variableHash()
               <<ELog::endBasic;
-      do
-        {
-          SimProcess::writeIndexSim(*SimPtr,Oname,MCIndex);
-          MCIndex++;
-        }
-      while(MCIndex<multi);
     
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
       ModelSupport::calcVolumes(SimPtr,IParam);
@@ -182,6 +149,12 @@ main(int argc,char* argv[])
 	      <<A.what()<<ELog::endCrit;
       exitFlag= -1;
     }
+  catch (...)
+    {
+      ELog::EM<<"GENERAL EXCEPTION"<<ELog::endCrit;
+      exitFlag= -3;
+    }
+
   delete SimPtr;
   ModelSupport::objectRegister::Instance().reset();
   ModelSupport::surfIndex::Instance().reset();

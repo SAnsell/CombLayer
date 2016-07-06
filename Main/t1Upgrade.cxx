@@ -130,48 +130,19 @@ main(int argc,char* argv[])
       InputModifications(SimPtr,IParam,Names);
       mainSystem::setVariables(*SimPtr,IParam,Names);
 
-      // Definitions section 
-      int MCIndex(0);
-      const int multi=IParam.getValue<int>("multi");
       ts1System::makeT1Upgrade T1Obj;
       World::createOuterObjects(*SimPtr);
       T1Obj.build(SimPtr,IParam);
       
       SDef::sourceSelection(*SimPtr,IParam);
-      
-      SimPtr->removeComplements();
-      SimPtr->removeDeadSurfaces(0);         
-      
-      ModelSupport::setDefaultPhysics(*SimPtr,IParam);
 
-      ModelSupport::setDefRotation(IParam);
-      SimPtr->masterRotation();
+      mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
 
-      const int renumCellWork=tallySelection(*SimPtr,IParam);
-
-      if (createVTK(IParam,SimPtr,Oname))
-        {
-          delete SimPtr;
-          ModelSupport::objectRegister::Instance().reset();
-          ModelSupport::surfIndex::Instance().reset();
-          return 0;
-        }
-
-      SimProcess::importanceSim(*SimPtr,IParam);
-      SimProcess::inputProcessForSim(*SimPtr,IParam); // energy cut etc
-      if (renumCellWork)
-	tallyRenumberWork(*SimPtr,IParam);
-      tallyModification(*SimPtr,IParam);
-      
-      // Ensure we done loop
-      do
-        {
-          SimProcess::writeIndexSim(*SimPtr,Oname,MCIndex);
-          MCIndex++;
-        }
-      while(!iteractive && MCIndex<multi);
+      exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
+      ModelSupport::calcVolumes(SimPtr,IParam);
+      ModelSupport::objectRegister::Instance().write("ObjectRegister.txt");
     }
-    catch (ColErr::ExitAbort& EA)
+  catch (ColErr::ExitAbort& EA)
     {
       if (!EA.pathFlag())
 	ELog::EM<<"Exiting from "<<EA.what()<<ELog::endCrit;

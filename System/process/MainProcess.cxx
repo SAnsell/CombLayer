@@ -63,6 +63,11 @@
 #include "variableSetup.h"
 #include "defaultConfig.h"
 #include "DBModify.h"
+#include "SimProcess.h"
+#include "DefPhysics.h"
+#include "TallySelector.h"
+#include "mainJobs.h"
+#include "SimInput.h"
 #include "MainProcess.h"
 
 namespace mainSystem
@@ -1042,7 +1047,52 @@ exitDelete(Simulation* SimPtr)
   return;
 }
 
-
+void
+buildFullSimulation(Simulation* SimPtr,
+                    const mainSystem::inputParam& IParam,
+                    const std::string& OName)
+  /*!
+    Carry out the construction of the geometry
+    and wieght/tallies
+    \param SimPtr :: Simulation point
+    \param IParam
+   */
   
+{
+  ELog::RegMethod RegA("MainProcess[F]","buildFullSimulation");
+
+  // Definitions section 
+  int MCIndex(0);
+  const int multi=IParam.getValue<int>("multi");
+  
+  SimPtr->removeComplements();
+  SimPtr->removeDeadSurfaces(0);         
+  ModelSupport::setDefaultPhysics(*SimPtr,IParam);
+      
+  ModelSupport::setDefRotation(IParam);
+  SimPtr->masterRotation();
+
+  const int renumCellWork=tallySelection(*SimPtr,IParam);
+  if (createVTK(IParam,SimPtr,OName))
+    return;
+  // 
+  SimProcess::importanceSim(*SimPtr,IParam);
+  SimProcess::inputProcessForSim(*SimPtr,IParam); // energy cut etc
+  if (renumCellWork)
+    tallyRenumberWork(*SimPtr,IParam);
+  tallyModification(*SimPtr,IParam);
+
+  // Ensure we done loop
+  do
+    {
+      SimProcess::writeIndexSim(*SimPtr,OName,MCIndex);
+      MCIndex++;
+    }
+  while(MCIndex<multi);
+
+  return;
+}
+  
+                      
 }  // NAMESPACE mainSystem
 

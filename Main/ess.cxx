@@ -118,45 +118,14 @@ main(int argc,char* argv[])
       mainSystem::setDefUnits(SimPtr->getDataBase(),IParam);
       InputModifications(SimPtr,IParam,Names);
       mainSystem::setMaterialsDataBase(IParam);
-      
-      // Definitions section 
-      int MCIndex(0);
-      const int multi=IParam.getValue<int>("multi");
-      
+            
       essSystem::makeESS ESSObj;
       World::createOuterObjects(*SimPtr);
       ESSObj.build(*SimPtr,IParam);
       SDef::sourceSelection(*SimPtr,IParam);
-      
-      SimPtr->removeComplements();
-      SimPtr->removeDeadSurfaces(0);         
-      ModelSupport::setDefaultPhysics(*SimPtr,IParam);
-      
-      ModelSupport::setDefRotation(IParam);
-      SimPtr->masterRotation();
 
-      const int renumCellWork=tallySelection(*SimPtr,IParam);
-      if (createVTK(IParam,SimPtr,Oname))
-	{
-	  delete SimPtr;
-	  ModelSupport::objectRegister::Instance().reset();
-          ModelSupport::surfIndex::Instance().reset();
-	  return 0;
-	}
+      mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
       
-      SimProcess::importanceSim(*SimPtr,IParam);
-      SimProcess::inputProcessForSim(*SimPtr,IParam); // energy cut etc
-      if (renumCellWork)
-	tallyRenumberWork(*SimPtr,IParam);
-      tallyModification(*SimPtr,IParam);
-            
-      // Ensure we done loop
-      do
-	{
-	  SimProcess::writeIndexSim(*SimPtr,Oname,MCIndex);
-	  MCIndex++;
-	}
-      while(MCIndex<multi);
       
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
       ModelSupport::calcVolumes(SimPtr,IParam);

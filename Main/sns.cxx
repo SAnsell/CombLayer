@@ -116,46 +116,13 @@ main(int argc,char* argv[])
       // Default units not set yet:
       //mainSystem::setDefUnits(SimPtr->getDataBase(),IParam);
       InputModifications(SimPtr,IParam,Names);
-  
-      // Definitions section 
-      int MCIndex(0);
-      const int multi=IParam.getValue<int>("multi");
-      
+        
       snsSystem::makeSNS SNSObj;
       World::createOuterObjects(*SimPtr);
       SNSObj.build(SimPtr,IParam);
       SDef::sourceSelection(*SimPtr,IParam);
 
-      SimPtr->removeComplements();
-      SimPtr->removeDeadSurfaces(0);         
-
-      ModelSupport::setDefaultPhysics(*SimPtr,IParam);
-
-      ModelSupport::setDefRotation(IParam);
-      SimPtr->masterRotation();
-
-                
-      const int renumCellWork=tallySelection(*SimPtr,IParam);
-      if (createVTK(IParam,SimPtr,Oname))
-        {
-          delete SimPtr;
-          ModelSupport::objectRegister::Instance().reset();
-          return 0;
-        }
-          
-      SimProcess::importanceSim(*SimPtr,IParam);
-      SimProcess::inputProcessForSim(*SimPtr,IParam); // energy cut etc
-      if (renumCellWork)
-        tallyRenumberWork(*SimPtr,IParam);
-      tallyModification(*SimPtr,IParam);
-
-      // Ensure we done loop
-      do
-        {
-          SimProcess::writeIndexSim(*SimPtr,Oname,MCIndex);
-          MCIndex++;
-        }
-      while(MCIndex<multi);
+      mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
       
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
       ModelSupport::calcVolumes(SimPtr,IParam);
