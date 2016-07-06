@@ -200,11 +200,7 @@ surfaceConstruct::processSurfObject(Simulation& System,
   if (linkPt)
     {
       const attachSystem::FixedComp* TPtr=
-	OR.getObject<attachSystem::FixedComp>(FObject);
-      if (!TPtr)
-	throw ColErr::InContainerError<std::string>
-	  (FObject,"Fixed Object not found");
-
+	OR.getObjectThrow<attachSystem::FixedComp>(FObject,"FixedComp");
       
       const size_t iLP=(linkPt>0) ?
 	static_cast<size_t>(linkPt-1) : static_cast<size_t>(-1-linkPt);
@@ -247,10 +243,7 @@ surfaceConstruct::processSurfMap(Simulation& System,
   if (linkPt)
     {
       const attachSystem::SurfMap* SPtr=
-	OR.getObject<attachSystem::SurfMap>(SObject);
-      if (!SPtr)
-	throw ColErr::InContainerError<std::string>
-	  (SObject,"Fixed Object not found");
+	OR.getObjectThrow<attachSystem::SurfMap>(SObject,"FixedComp");
 
       const int side=(linkPt>0) ? 1 : -1;
       const size_t index=(linkPt>0) ? static_cast<size_t>(linkPt-1) :

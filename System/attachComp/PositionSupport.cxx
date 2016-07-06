@@ -131,10 +131,9 @@ getCntVec3D(const mainSystem::inputParam& IParam,
   if (itemIndex+3<=NItems && DItems[itemIndex]=="object")
     {
       const attachSystem::FixedComp* TPtr=
-        OR.getObject<attachSystem::FixedComp>(DItems[itemIndex+1]);
-      if (!TPtr)
-        throw ColErr::InContainerError<std::string>
-          (DItems[itemIndex+1],"Fixed Object not found");      
+	OR.getObjectThrow<attachSystem::FixedComp>
+	(DItems[itemIndex+1],"FixedComp");
+      
       const long int linkNumber=
         attachSystem::getLinkIndex(DItems[itemIndex+2]);
       Value=TPtr->getSignedLinkPt(linkNumber);
@@ -146,10 +145,8 @@ getCntVec3D(const mainSystem::inputParam& IParam,
   if (itemIndex+4<=NItems && DItems[itemIndex]=="objOffset")
     {
       const attachSystem::FixedComp* TPtr=
-        OR.getObject<attachSystem::FixedComp>(DItems[itemIndex+1]);
-      if (!TPtr)
-        throw ColErr::InContainerError<std::string>
-          (DItems[itemIndex+1],"Fixed Object not found");      
+        OR.getObjectThrow<attachSystem::FixedComp>(DItems[itemIndex+1],
+						   "FixedComp");
       const long int linkNumber=attachSystem::getLinkIndex(DItems[itemIndex+2]);
       Value=TPtr->getSignedLinkPt(linkNumber);
 
@@ -179,10 +176,9 @@ getCntVec3D(const mainSystem::inputParam& IParam,
     {
       ELog::EM<<"Item == "<<DItems[itemIndex]<<ELog::endDiag;
       const attachSystem::FixedComp* TPtr=
-        OR.getObject<attachSystem::FixedComp>(DItems[itemIndex]);
-      if (!TPtr)
-        throw ColErr::InContainerError<std::string>
-          (DItems[itemIndex],"Fixed Object not found");      
+        OR.getObjectThrow<attachSystem::FixedComp>(DItems[itemIndex],
+						   "FixedComp");
+
       const long int linkNumber=attachSystem::getLinkIndex(DItems[itemIndex+1]);
       Value=TPtr->getSignedLinkPt(linkNumber);
       ELog::EM<<"Item == "<<DItems[itemIndex]<<" "<<Value<<ELog::endDiag;

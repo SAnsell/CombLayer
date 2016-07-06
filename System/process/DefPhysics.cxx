@@ -115,11 +115,8 @@ setItemRotate(const attachSystem::FixedComp& WMaster,
     TwinPtr=OR.getObject<attachSystem::SecondTrack>(ItemName);  
   if (!TwinPtr)
     {
-      const attachSystem::FixedComp* 
-	ItemPtr=OR.getObject<attachSystem::FixedComp>(ItemName);  
-      if (!ItemPtr)
-	throw ColErr::InContainerError<std::string>(ItemName,
-						    "Object not found");
+      const attachSystem::FixedComp* ItemPtr=
+	OR.getObjectThrow<attachSystem::FixedComp>(ItemName,"FixedComp");  
       
       newOrigin=ItemPtr->getCentre();
       QA=Geometry::Quaternion::basisRotate(WMaster.getX(),
@@ -192,10 +189,7 @@ setDefRotation(const mainSystem::inputParam& IParam)
       if (AItem=="object" || AItem=="Object")
 	{
 	  const attachSystem::FixedComp* GIPtr=
-	    OR.getObject<attachSystem::FixedComp>(BItem);
-	  if (!GIPtr)
-	    throw ColErr::InContainerError<std::string>
-	      (BItem,"Fixed component");
+	    OR.getObjectThrow<attachSystem::FixedComp>(BItem,"FixedComp");
 	  const std::string CItem=
             IParam.getDefValue<std::string>("0","offset",2);
           const long int linkIndex=attachSystem::getLinkIndex(CItem);

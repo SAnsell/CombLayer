@@ -252,11 +252,8 @@ pointConstruct::processPointWindow(Simulation& System,
   if (linkPt!=0)
     {
       const attachSystem::FixedComp* TPtr=
-	OR.getObject<attachSystem::FixedComp>(FObject);
+	OR.getObjectThrow<attachSystem::FixedComp>(FObject,"FixedComp");
 
-      if (!TPtr)
-	throw ColErr::InContainerError<std::string>
-	  (FObject,"Fixed Object not found");
       const size_t iLP=static_cast<size_t>(linkPt-1);
 
       masterPlane=TPtr->getExitWindow(iLP,Planes);
@@ -308,12 +305,8 @@ pointConstruct::processPointFree(Simulation& System,
     ModelSupport::objectRegister::Instance();
 
   const attachSystem::FixedComp* TPtr=
-    OR.getObject<attachSystem::FixedComp>(FObject);
-  
-  if (!TPtr)
-    throw ColErr::InContainerError<std::string>
-      (FObject,"Fixed Object not found");
-  
+    OR.getObjectThrow<attachSystem::FixedComp>(FObject,"FixedComp");
+    
   const int tNum=System.nextTallyNum(5);
   Geometry::Vec3D TPoint=TPtr->getSignedLinkPt(linkPt);
   TPoint+=TPtr->getSignedLinkAxis(linkPt)*OD;
@@ -343,11 +336,8 @@ pointConstruct::processPointFree(Simulation& System,
     ModelSupport::objectRegister::Instance();
 
   const attachSystem::FixedComp* TPtr=
-    OR.getObject<attachSystem::FixedComp>(FObject);
+    OR.getObjectThrow<attachSystem::FixedComp>(FObject,"FixedComp");
   
-  if (!TPtr)
-    throw ColErr::InContainerError<std::string>
-      (FObject,"Fixed Object not found");
   
   const int tNum=System.nextTallyNum(5);
   Geometry::Vec3D TPoint=TPtr->getSignedLinkPt(linkPt);

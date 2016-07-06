@@ -282,10 +282,7 @@ WedgeInsert::createObjects(Simulation& System,
   const ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
   const attachSystem::LayerComp* LCPtr=
-    OR.getObject<attachSystem::LayerComp>(FC.getKeyName());
-  if (!LCPtr)
-    throw ColErr::InContainerError<std::string>("LayerComp no found",
-						FC.getKeyName());
+    OR.getObjectThrow<attachSystem::LayerComp>(FC.getKeyName(),"LayerComp");
 
   std::string Out;
   const std::string CShape=

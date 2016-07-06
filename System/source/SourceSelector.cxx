@@ -137,20 +137,12 @@ processSDefFile(const mainSystem::inputParam& IParam,
   const attachSystem::FixedComp* LPtr(0);
   
   if (DObj=="shutter" || DObj=="torpedo")
-    {
-      LPtr=OR.getObject<attachSystem::FixedComp>
-	    (StrFunc::makeString(DObj,index));
-    }
+    LPtr=OR.getObjectThrow<attachSystem::FixedComp>
+      (StrFunc::makeString(DObj,index),DObj+"FixedComp");
   else
-    LPtr=OR.getObject<attachSystem::FixedComp>(DObj);
+    LPtr=OR.getObjectThrow<attachSystem::FixedComp>(DObj,"FixedComp");
   
   SPtr=dynamic_cast<const attachSystem::SecondTrack*>(LPtr);
-  
-  if (!LPtr)
-    {
-      ELog::EM<<"Failed to find object for :"<<DObj<<ELog::endErr;
-      return;
-    }
   
   // Construct CSDEF :
   SDef::ChipIRSource CSdef;

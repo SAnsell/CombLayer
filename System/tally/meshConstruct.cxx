@@ -118,9 +118,7 @@ meshConstruct::calcXYZ(const std::string& object,const std::string& linkPos,
     ModelSupport::objectRegister::Instance();
 
   const attachSystem::FixedComp* FC=
-    OR.getObject<attachSystem::FixedComp>(object);
-  if (!FC)
-    throw ColErr::InContainerError<std::string>(object,"Object not found");
+    OR.getObjectThrow<attachSystem::FixedComp>(object,"FixedComp");
   const long int sideIndex=attachSystem::getLinkIndex(linkPos);
 
   attachSystem::FixedComp A("tmpComp",0);

@@ -211,26 +211,16 @@ gridConstruct::calcGlobalCXY(const std::string& Place,
     ModelSupport::objectRegister::Instance();
 
   const attachSystem::FixedComp* FC=
-    OR.getObject<attachSystem::FixedComp>(Place);
-
-  if (!FC)
-    {
-      ELog::EM<<"Object not found::"<<Place<<ELog::endErr;
-      return -1;
-    }
-
-  const size_t LN=(linkNumber>0) ?
-    static_cast<size_t>(linkNumber-1) :
-    static_cast<size_t>(1-linkNumber);
+    OR.getObjectThrow<attachSystem::FixedComp>(Place,"FixedComp");
   
-  Geometry::Vec3D O,X,Y,Z;
-  O=(linkNumber) ? FC->getLinkPt(LN) : FC->getCentre();
 
+  const Geometry::Vec3D O=FC->getSignedLinkPt(linkNumber);
 
+  Geometry::Vec3D X,Y,Z;
   FC->calcLinkAxis(linkNumber,X,Y,Z);
 
   Centre=O+X*Centre.X()+Y*Centre.Y()+Z*Centre.Z();
-  ELog::EM<<"Centre == "<<XVec<<ELog::endDiag;
+  ELog::EM<<"Centre == "<<Centre<<ELog::endDiag;
   ELog::EM<<"XVEC == "<<XVec<<ELog::endDiag;
   ELog::EM<<"YVEC == "<<YVec<<ELog::endDiag;
   XVec=X*XVec.X()+Y*XVec.Y()+Z*XVec.Z();
