@@ -2194,7 +2194,7 @@ Simulation::masterRotation()
   std::map<int,Geometry::Surface*>::const_iterator sc;
   for(sc=SurMap.begin();sc!=SurMap.end();sc++)
     MR.applyFull(sc->second);
-  
+
   // Apply to QHull if calculated:
   OTYPE::iterator oc;
   for(oc=OList.begin();oc!=OList.end();oc++)

@@ -251,12 +251,8 @@ addToInsertControl(Simulation& System,
   const int cellN=OR.getCell(outerName);
   const int cellL=OR.getLast(outerName);
   attachSystem::ContainedGroup* CGPtr=
-    OR.getObject<attachSystem::ContainedGroup>(InsertFC.getKeyName());
-  
-  if (!CGPtr)
-    throw ColErr::CastError<void>(0,"Cannot convert "+
-				  InsertFC.getKeyName()+"to containedGroup");
-
+    OR.getObjectThrow<attachSystem::ContainedGroup>
+    (InsertFC.getKeyName(),"ContainedGroup");
   addToInsertControl(System,cellN,cellL,InsertFC,
 		     CGPtr->getCC(groupName));
 
@@ -285,10 +281,8 @@ addToInsertControl(Simulation& System,
   const int cellN=OR.getCell(outerName);
   const int cellL=OR.getLast(outerName);
   attachSystem::ContainedComp* CCPtr=
-    OR.getObject<attachSystem::ContainedComp>(InsertFC.getKeyName());
-  if (!CCPtr)
-    throw ColErr::CastError<void>(0,"Cannot convert "+
-				  InsertFC.getKeyName()+"to contained Comp");
+    OR.getObjectThrow<attachSystem::ContainedComp>
+    (InsertFC.getKeyName(),"ContainedComp");
   addToInsertControl(System,cellN,cellL,InsertFC,*CCPtr);
 
   return;
@@ -474,10 +468,8 @@ addToInsertOuterSurfCtrl(Simulation& System,
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
   const attachSystem::ContainedComp* BaseCC=
-    OR.getObject<attachSystem::ContainedComp>(BaseFC.getKeyName());
-  if (!BaseCC)
-    throw ColErr::InContainerError<std::string>
-      (BaseFC.getKeyName(),"getObject from base");
+    OR.getObjectThrow<attachSystem::ContainedComp>
+    (BaseFC.getKeyName(),"ContainedComp");
   
   const int cellN=OR.getCell(BaseFC.getKeyName());
   const int cellL=OR.getLast(BaseFC.getKeyName());

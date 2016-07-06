@@ -152,7 +152,6 @@ DiskChopper::populate(const FuncDataBase& Control)
   xyAngle=Control.EvalDefVar<double>(keyName+"XYangle",0.0);
   zAngle=Control.EvalDefVar<double>(keyName+"Zangle",0.0);
 
-
   innerRadius=Control.EvalVar<double>(keyName+"InnerRadius");
   outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
 

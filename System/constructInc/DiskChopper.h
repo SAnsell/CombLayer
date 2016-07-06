@@ -60,9 +60,9 @@ class DiskChopper : public attachSystem::FixedGroup,
   double outerRadius;           ///< Outer Viewed radius
   double diskGap;               ///< Gap betwen disks
   
-  size_t nDisk;                 ///< Number of disks
+  size_t nDisk;                   ///< Number of disks
   std::vector<DiskBlades> DInfo;  ///< Info on each disk
-  double totalThick;            ///< total thickness
+  double totalThick;              ///< total thickness
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);

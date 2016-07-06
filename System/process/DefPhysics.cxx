@@ -238,9 +238,11 @@ setDefRotation(const mainSystem::inputParam& IParam)
 	  MR.addRotation(GIPtr->getZ(),
                          Geometry::Vec3D(0,0,0),ZFlag*angle);
           // Z rotation.
-	  ELog::EM<<"ROTATION AXIS["<<ZFlag<<"] == "<<AxisVec<<ELog::endDiag;
 	  const double angleZ=90.0-180.0*acos(-AxisVec[2])/M_PI;
 	  MR.addRotation(GIPtr->getX(),Geometry::Vec3D(0,0,0),-angleZ);
+          ELog::EM<<"ROTATION AXIS["<<ZFlag<<"] == "
+                  <<AxisVec<<ELog::endDiag;
+
 	}
       else  if (AItem=="objPoint" || AItem=="ObjPoint")
         {
@@ -248,17 +250,17 @@ setDefRotation(const mainSystem::inputParam& IParam)
 	    OR.getObjectThrow<attachSystem::FixedComp>(BItem,"FixedComp");
 	  const std::string CItem=
             IParam.getDefValue<std::string>("2","angle",2);
-          
+
           const int zeroFlag=IParam.getDefValue<int>(0,"angle",3);
 	  const long int sideIndex=attachSystem::getLinkIndex(CItem);
-
-          Geometry::Vec3D LP=GIPtr->getSignedLinkPt(axisIndex);
           
-          const double angle=180.0*acos(AxisVec[0])/M_PI;
-          MR.addRotation(GIPtr->getX(),Geometry::Vec3D(0,0,0),-angleZ);
+          Geometry::Vec3D LP=GIPtr->getSignedLinkPt(sideIndex);
+          LP=LP.cutComponent(Geometry::Vec3D(0,0,1));
+          LP.makeUnit();
+          const double angleZ=180.0*acos(LP[0])/M_PI;
+          MR.addRotation(Geometry::Vec3D(0,0,1),
+                         Geometry::Vec3D(0,0,0),angleZ);
         }
-
-
       else if (AItem=="free" || AItem=="FREE")
 	{
 	  const double rotAngle=

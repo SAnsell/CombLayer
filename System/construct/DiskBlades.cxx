@@ -98,8 +98,8 @@ void
 DiskBlades::addOpen(const double pA,const double oA)
   /*
     Adds a single phase opening to the system
-    \param pA :: Phase angle [start]
-    \param oA :: opening value
+    \param pA :: Phase angle [mid]
+    \param oA :: opening value (half either side)
   */
 {
   ELog::RegMethod RegA("DiskBlades","addOpen");

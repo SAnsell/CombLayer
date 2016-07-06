@@ -250,6 +250,7 @@ generateT0Chopper(FuncDataBase& Control,
   Control.addVariable(diskName+"AZStep",0.0);
   Control.addVariable(diskName+"AXYangle",0.0);
   Control.addVariable(diskName+"AZangle",0.0);
+  Control.addVariable(diskName+"AZphasePos",0.0);
 
   Control.addVariable(diskName+"AInnerRadius",20.0);
   Control.addVariable(diskName+"AOuterRadius",30.0);

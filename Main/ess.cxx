@@ -135,8 +135,8 @@ main(int argc,char* argv[])
       ModelSupport::setDefaultPhysics(*SimPtr,IParam);
       
       ModelSupport::setDefRotation(IParam);
+
       SimPtr->masterRotation();
-      
       const int renumCellWork=tallySelection(*SimPtr,IParam);
       if (createVTK(IParam,SimPtr,Oname))
 	{
