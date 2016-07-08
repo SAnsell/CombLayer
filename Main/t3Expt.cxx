@@ -236,23 +236,6 @@ main(int argc,char* argv[])
 
   return exitFlag;
   
-  //   System.setDetector(200,200,30,
-  // 		     Geometry::Vec3D(0,875.0,0),
-  // 		     Geometry::Vec3D(detSize,0,0),
-  // 		     Geometry::Vec3D(0,0,detSize),
-  // 		     -0.05,-10.0);
-  // ELog::EM<<"Using Beam Type:"<<System.getBeam()->className()<<ELog::endCrit;
-
-  // // Commented out to select random track:
-  // //  System.setAimZone(&PZ);        
-  // System.runMonte(nps);
-  // //  System.getDet().write(outFile);
-  // // TEST:
-  // System.write(primaryFile,lambda);
-  // System.writeMCNPX(primaryFile+".i");
-  
-  // System.writeXML("test.xml");
-  return 0;
 }
 
 
