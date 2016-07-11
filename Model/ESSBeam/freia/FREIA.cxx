@@ -148,7 +148,9 @@ FREIA::FREIA(const std::string& keyName) :
   VPipeOutA(new constructSystem::VacuumPipe(newName+"PipeOutA")),
   FocusOutA(new beamlineSystem::GuideLine(newName+"OutFA")),
 
-  CaveJaw(new constructSystem::JawSet(newName+"CaveJaw"))
+  CaveJaw(new constructSystem::JawSet(newName+"CaveJaws")),
+  OutBCut(new constructSystem::HoleShape(newName+"OutBCut"))
+  
  /*!
     Constructor
  */
@@ -211,7 +213,8 @@ FREIA::FREIA(const std::string& keyName) :
   OR.addObject(VPipeOutA);
   OR.addObject(FocusOutA);
 
-  OR.addObject(CaveJaw);  
+  OR.addObject(CaveJaw);
+  OR.addObject(OutBCut);
       
 }
 
@@ -271,6 +274,7 @@ FREIA::build(Simulation& System,
   setBeamAxis(Control,GItem,0);
   
   BendA->addInsertCell(GItem.getCells("Void"));
+  BendA->addFrontCut(GItem.getKey("Beam"),-1);
   BendA->addEndCut(GItem.getKey("Beam").getSignedLinkString(-2));
   BendA->createAll(System,*freiaAxis,-3,*freiaAxis,-3);
   if (stopPoint==1) return;                      // STOP At monolith
@@ -411,9 +415,16 @@ FREIA::build(Simulation& System,
 
   FocusOutA->addInsertCell(VPipeOutA->getCells("Void"));
   FocusOutA->createAll(System,*VPipeOutA,0,*VPipeOutA,0);
-  return;
+
+
   CaveJaw->setInsertCell(JawPit->getCell("Void"));
   CaveJaw->createAll(System,JawPit->getKey("Inner"),0);
+
+  OutBCut->addInsertCell(JawPit->getCells("MidLayer"));
+  OutBCut->addInsertCell(JawPit->getCells("Collet"));
+  OutBCut->setFaces(JawPit->getKey("Inner").getSignedFullRule(2),
+                    JawPit->getKey("Mid").getSignedFullRule(-2));
+  OutBCut->createAll(System,JawPit->getKey("Inner"),2);
   
   return;
 }

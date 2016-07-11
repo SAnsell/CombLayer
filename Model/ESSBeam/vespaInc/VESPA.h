@@ -39,6 +39,7 @@ namespace constructSystem
   class ChopperPit;
   class DiskChopper;
   class Jaws;
+  class JawSet;
   class LineShield;
   class RotaryCollimator;
   class VacuumBox;
@@ -46,6 +47,7 @@ namespace constructSystem
   class VacuumWindow;
   class ChopperHousing;
   class ChopperUnit;
+  class HoleShape;
 }
 
 namespace essSystem

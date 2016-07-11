@@ -217,6 +217,7 @@ ChopperPit::createSurfaces()
 
   if (colletMat>=0)
     {
+      //      ELog::EM<<ELog::endErr;
       // Collet on iron exit wall:
       ModelSupport::buildPlane(SMap,pitIndex+102,
 			       Origin+Y*(colletDepth+voidLength/2.0),Y);  
@@ -261,7 +262,7 @@ ChopperPit::createObjects(Simulation& System)
       System.addCell(MonteCarlo::Qhull(cellIndex++,colletMat,0.0,Out));
       setCell("Collet",cellIndex-1);
     }
-  
+  // SPlit into three to allow beampiles more readilty
   Out=ModelSupport::getSetComposite
     (SMap,pitIndex,"11 -12 13 -14 15 -16 (-1:2:-3:4:-5:6)");
   Collet.makeComplement();

@@ -265,7 +265,6 @@ VESPA::build(Simulation& System,
     \param voidCell :: Void cell
    */
 {
-  // For output stream
   ELog::RegMethod RegA("VESPA","build");
 
   ELog::EM<<"\nBuilding VESPA on : "<<GItem.getKeyName()<<ELog::endDiag;
@@ -278,6 +277,7 @@ VESPA::build(Simulation& System,
   
   setBeamAxis(GItem,1);
   FocusA->addInsertCell(GItem.getCells("Void"));
+  FocusA->addFrontCut(GItem.getKey("Beam"),-1);
   FocusA->addEndCut(GItem.getKey("Beam").getSignedLinkString(-2));
   FocusA->createAll(System,GItem.getKey("Beam"),-1,
 		    GItem.getKey("Beam"),-1);
@@ -382,6 +382,7 @@ VESPA::build(Simulation& System,
 
   PitB->addInsertCell(voidCell);
   PitB->createAll(System,FocusOutA->getKey("Guide0"),2);
+
 
   ShieldA->addInsertCell(voidCell);
   ShieldA->setFront(bunkerObj,2);

@@ -78,7 +78,7 @@ HoleShape::HoleShape(const std::string& Key) :
   attachSystem::FixedComp(Key,2),
   holeIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(holeIndex+1),shapeType(0),
-  angleOffset(0),radialStep(0.0),radius(0.0)
+  angleOffset(0),radialStep(0.0),radius(0.0),xradius(0.0)
   /*!
     Default constructor
     \param Key :: Key name for variables
@@ -90,7 +90,7 @@ HoleShape::HoleShape(const HoleShape& A) :
   holeIndex(A.holeIndex),cellIndex(A.cellIndex),
   shapeType(A.shapeType),angleCentre(A.angleCentre),
   angleOffset(A.angleOffset),radialStep(A.radialStep),
-  radius(A.radius),rotCentre(A.rotCentre),
+  radius(A.radius),xradius(A.xradius),rotCentre(A.rotCentre),
   rotAngle(A.rotAngle),frontFace(A.frontFace),
   backFace(A.backFace)
   /*!
@@ -135,6 +135,7 @@ HoleShape::setShape(const std::string& ST)
     - 2 : Square
     - 3 : Hexagon
     - 4 : Octagon
+    - 5 : Rectangle
     \param ST :: Shape type
   */
 {
@@ -145,7 +146,8 @@ HoleShape::setShape(const std::string& ST)
       {"Circle",1},
       {"Square",2},
       {"Hexagon",3},
-      {"Octagon",4}
+      {"Octagon",4},
+      {"Rectangle",5}
     };
 
   std::map<std::string,size_t>::const_iterator mc=SName.find(ST);
@@ -173,13 +175,14 @@ HoleShape::setShape(const size_t ST)
     - 2 : Square
     - 3 : Hexagon
     - 4 : Octagon
+    - 5 : Rectangle
     \param ST :: Shape type
   */
 {
   ELog::RegMethod RegA("HoleShape","setShape");
       
-  if (ST>4)
-    throw ColErr::IndexError<size_t>(ST,4,"Shape not defined : ST"); 
+  if (ST>5)
+    throw ColErr::IndexError<size_t>(ST,5,"Shape not defined : ST"); 
 
   shapeType=ST;
   return;
@@ -203,6 +206,7 @@ HoleShape::populate(const FuncDataBase& Control)
   angleOffset=Control.EvalDefVar<double>(keyName+"AngleOffset",0.0);
 
   radius=Control.EvalVar<double>(keyName+"Radius");
+  xradius=Control.EvalDefVar<double>(keyName+"XRadius",radius);
   return;
 }
 
@@ -307,6 +311,24 @@ HoleShape::createSquareSurfaces()
   return;
 }
 
+void
+HoleShape::createRectangleSurfaces()
+  /*!
+    Construct inner shape with a square.
+    Initially a straight cyclinder cut along the axis
+    later will have a cone cut.
+  */
+{
+  ELog::RegMethod RegA("HoleShape","createSquareSurfaces");
+
+  // inner square
+  ModelSupport::buildPlane(SMap,holeIndex+33,Origin-X*xradius,X);
+  ModelSupport::buildPlane(SMap,holeIndex+34,Origin+X*xradius,X);
+  ModelSupport::buildPlane(SMap,holeIndex+35,Origin-Z*radius,Z);
+  ModelSupport::buildPlane(SMap,holeIndex+36,Origin+Z*radius,Z);
+  return;
+}
+
 std::string
 HoleShape::createSquareObj() 
   /*!
@@ -394,6 +416,22 @@ HoleShape::createOctagonObj()
   return Out;
 }
 
+std::string
+HoleShape::createRectangleObj() 
+  /*!
+    Create the octagon cutout
+    \return the exclusion surface object / set
+  */
+{
+  ELog::RegMethod RegA("HoleShape","createRectangleObj");
+
+  const std::string Out=
+    ModelSupport::getComposite(SMap,holeIndex,
+				 " -31 -32 -33 -34 ");
+
+  return Out;
+}
+
 void
 HoleShape::createSurfaces()
   /*!
@@ -445,6 +483,9 @@ HoleShape::createObjects(Simulation& System)
       break;
     case 4:  // octagon
       Out=createOctagonObj();
+      break;
+    case 5:  // rectangle
+      Out=createRectangleObj();
       break;
     default:  // No work
       return;

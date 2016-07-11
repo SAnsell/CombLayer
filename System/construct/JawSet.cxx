@@ -85,8 +85,8 @@ JawSet::JawSet(const std::string& Key) :
   attachSystem::CellMap(),
   jawsetIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(jawsetIndex+1),
-  JawX(new constructSystem::Jaws(Key+"JawVert")),
-  JawXZ(new constructSystem::Jaws(Key+"JawDiag"))
+  JawX(new constructSystem::Jaws(Key+"Vert")),
+  JawXZ(new constructSystem::Jaws(Key+"Diag"))
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName

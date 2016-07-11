@@ -243,7 +243,7 @@ setESSSingle(defaultConfig& A,
      {"DREAM","G3BLine19"},     // S3
      {"CSPEC","G4BLine3"},      // W3
      {"VESPA","G3BLine7"},      // E7
-     {"VOR","G3BLine11"},       // E11
+     {"VOR","G3BLine10"},       // E11  [CHANGED TO FIT]
      {"SIMPLE","G4BLine17"},
      {"LOKI","G4BLine17"},      // N7
      {"ODIN","G2BLine2"},       // Lower S2

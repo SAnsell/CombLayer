@@ -49,6 +49,7 @@ class HoleShape : public attachSystem::ContainedComp,
   double radialStep;            ///< Centre radial position
   
   double radius;                ///< Shape radius
+  double xradius;               ///< Extra radius [if needed]
 
   Geometry::Vec3D rotCentre;       ///< Centre position
   double rotAngle;                 ///< Angle of whole system [true pos]
@@ -64,11 +65,13 @@ class HoleShape : public attachSystem::ContainedComp,
   void createSquareSurfaces();  
   void createHexagonSurfaces();
   void createOctagonSurfaces();
+  void createRectangleSurfaces();
 
   std::string createCircleObj();
   std::string createSquareObj();
   std::string createHexagonObj();
   std::string createOctagonObj();
+  std::string createRectangleObj();
 
 
   void createUnitVector(const attachSystem::FixedComp&,

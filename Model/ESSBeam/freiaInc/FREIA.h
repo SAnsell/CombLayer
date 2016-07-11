@@ -36,7 +36,6 @@ namespace instrumentSystem
 
 namespace constructSystem
 {  
-  class ChopperPit;
   class DiskChopper;
   class Jaws;
   class LineShield;
@@ -135,7 +134,7 @@ class FREIA : public attachSystem::CopiedComp
 
   /// Chopper at 15m [double pit]
   std::shared_ptr<constructSystem::ChopperPit> OutPitA;
-    /// 15m WBC3 
+  /// Collimator hole 
   std::shared_ptr<constructSystem::HoleShape> OutACut;
   /// 15m WBC3 
   std::shared_ptr<constructSystem::ChopperUnit> ChopperOutA;
@@ -157,8 +156,11 @@ class FREIA : public attachSystem::CopiedComp
   /// Beamline from bunker to hutch
   std::shared_ptr<beamlineSystem::GuideLine> FocusOutA;
 
+
   /// Beamline from bunker to hutch
   std::shared_ptr<constructSystem::JawSet> CaveJaw;
+  /// Collimator hole after jaws
+  std::shared_ptr<constructSystem::HoleShape> OutBCut;
 
   void setBeamAxis(const FuncDataBase&,const GuideItem&,const bool);
   

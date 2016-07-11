@@ -470,11 +470,14 @@ VESPAvariables(FuncDataBase& Control)
   Control.addVariable("vespaPitBConcBack",50.0);
   Control.addVariable("vespaPitBConcMat","Concrete");
 
-  Control.addVariable("vespaPitBColletHeight",15.0);
-  Control.addVariable("vespaPitBColletDepth",15.0);
-  Control.addVariable("vespaPitBColletWidth",40.0);
-  Control.addVariable("vespaPitBColletLength",5.0);
-  Control.addVariable("vespaPitBColletMat","Tungsten");
+  Control.addVariable("vespaPitCutShape","Circle");
+  Control.addVariable("vespaPitBCutRadius",5.0);
+
+  // Control.addVariable("vespaPitBColletHeight",15.0);
+  // Control.addVariable("vespaPitBColletDepth",15.0);
+  // Control.addVariable("vespaPitBColletWidth",40.0);
+  // Control.addVariable("vespaPitBColletLength",5.0);
+  // Control.addVariable("vespaPitBColletMat","Tungsten");
 
   CGen.generateChopper(Control,"vespaChopperOutB",18.0,12.0,5.55);
   // Double Blade chopper

@@ -154,16 +154,23 @@ PipeGenerator::generatePipe(FuncDataBase& Control,const std::string& keyName,
 {
   ELog::RegMethod RegA("PipeGenerator","generatorPipe");
 
+  const double realWindowRadius=(windowRadius<0.0) ?
+    pipeRadius-windowRadius : windowRadius;
+  const double realFlangeRadius=(flangeRadius<0.0) ?
+    pipeRadius-flangeRadius : flangeRadius;
+  
     // VACUUM PIPES:
   Control.addVariable(keyName+"YStep",yStep);   // step + flange
   Control.addVariable(keyName+"Radius",pipeRadius);
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"FeThick",pipeThick);
-  Control.addVariable(keyName+"FlangeRadius",flangeRadius);
+  Control.addVariable(keyName+"FlangeRadius",realFlangeRadius);
   Control.addVariable(keyName+"FlangeLength",flangeLen);
   Control.addVariable(keyName+"FeMat",pipeMat);
   Control.addVariable(keyName+"WindowActive",3);
-  Control.addVariable(keyName+"WindowRadius",windowRadius);
+
+  Control.addVariable(keyName+"WindowRadius",realWindowRadius);
+  
   Control.addVariable(keyName+"WindowThick",windowThick);
   Control.addVariable(keyName+"WindowMat",windowMat);
   Control.addVariable(keyName+"VoidMat",voidMat);
