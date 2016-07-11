@@ -149,7 +149,8 @@ FREIA::FREIA(const std::string& keyName) :
   FocusOutA(new beamlineSystem::GuideLine(newName+"OutFA")),
 
   CaveJaw(new constructSystem::JawSet(newName+"CaveJaws")),
-  OutBCut(new constructSystem::HoleShape(newName+"OutBCut"))
+  OutBCutFront(new constructSystem::HoleShape(newName+"OutBCutFront")),
+  OutBCutBack(new constructSystem::HoleShape(newName+"OutBCutBack"))
   
  /*!
     Constructor
@@ -214,7 +215,8 @@ FREIA::FREIA(const std::string& keyName) :
   OR.addObject(FocusOutA);
 
   OR.addObject(CaveJaw);
-  OR.addObject(OutBCut);
+  OR.addObject(OutBCutFront);
+  OR.addObject(OutBCutBack);
       
 }
 
@@ -369,11 +371,13 @@ FREIA::build(Simulation& System,
   FocusWall->addInsertCell(BInsert->getCell("Void"));
   FocusWall->createAll(System,*BInsert,7,*BInsert,7);
 
+  if (stopPoint==3) return;                      // STOP Out of bunker
+  
   OutPitA->addInsertCell(voidCell);
   OutPitA->addFrontWall(bunkerObj,2);
   OutPitA->createAll(System,FocusWall->getKey("Guide0"),2);
 
-  OutACut->addInsertCell(OutPitA->getCells("MidLayer"));
+  OutACut->addInsertCell(OutPitA->getCells("MidLayerBack"));
   OutACut->addInsertCell(OutPitA->getCells("Collet"));
   OutACut->setFaces(OutPitA->getKey("Inner").getSignedFullRule(2),
                     OutPitA->getKey("Mid").getSignedFullRule(-2));
@@ -416,15 +420,19 @@ FREIA::build(Simulation& System,
   FocusOutA->addInsertCell(VPipeOutA->getCells("Void"));
   FocusOutA->createAll(System,*VPipeOutA,0,*VPipeOutA,0);
 
-
   CaveJaw->setInsertCell(JawPit->getCell("Void"));
   CaveJaw->createAll(System,JawPit->getKey("Inner"),0);
 
-  OutBCut->addInsertCell(JawPit->getCells("MidLayer"));
-  OutBCut->addInsertCell(JawPit->getCells("Collet"));
-  OutBCut->setFaces(JawPit->getKey("Inner").getSignedFullRule(2),
+  OutBCutBack->addInsertCell(JawPit->getCells("MidLayerBack"));
+  OutBCutBack->addInsertCell(JawPit->getCells("Collet"));
+  OutBCutBack->setFaces(JawPit->getKey("Inner").getSignedFullRule(2),
                     JawPit->getKey("Mid").getSignedFullRule(-2));
-  OutBCut->createAll(System,JawPit->getKey("Inner"),2);
+  OutBCutBack->createAll(System,JawPit->getKey("Inner"),2);
+
+  OutBCutFront->addInsertCell(JawPit->getCells("MidLayerFront"));
+  OutBCutFront->setFaces(JawPit->getKey("Mid").getSignedFullRule(-1),
+                         JawPit->getKey("Inner").getSignedFullRule(1));
+  OutBCutFront->createAll(System,JawPit->getKey("Inner"),-1);
   
   return;
 }

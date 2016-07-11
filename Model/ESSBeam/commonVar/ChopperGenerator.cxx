@@ -167,7 +167,6 @@ ChopperGenerator::generateChopper(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("ChopperGenerator","generateChopper");
 
-  ELog::EM<<"Y["<<keyName<<"] =="<<yStep<<ELog::endDiag;
   Control.addVariable(keyName+"YStep",yStep);
   Control.addVariable(keyName+"MainZStep",mainZStep);   // drawing [5962.2]
   Control.addVariable(keyName+"Height",height);

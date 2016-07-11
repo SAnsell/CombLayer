@@ -43,6 +43,7 @@ class BladeGenerator
 
   /// Blade thicknesses
   std::vector<double> thick;
+  std::vector<double> innerThick;  ///< Inner thickness [if different]
   std::string innerMat;     ///< inner material
   std::string outerMat;     ///< Outer material
   
@@ -61,6 +62,7 @@ class BladeGenerator
   void setMaterials(const std::string&,const std::string&);
   void setGap(const double G) { gap=G; }  ///< set gap value
   void setThick(const std::vector<double>&);
+  void setInnerThick(const std::vector<double>&);  
   void resetPhase();
   void setPhase(const size_t,const std::vector<double>&,
 		const std::vector<double>&);

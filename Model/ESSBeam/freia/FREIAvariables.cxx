@@ -263,8 +263,11 @@ FREIAvariables(FuncDataBase& Control)
   SGen.generateShield(Control,"freiaShieldA",470.0,40.0,40.0,40.0,4,8);
   JawGen.generateJaws(Control,"freiaCaveJaws",0.0);
 
-  Control.addVariable("freiaOutBCutShape","Circle");
-  Control.addVariable("freiaOutBCutRadius",5.0);
+  Control.addVariable("freiaOutBCutBackShape","Circle");
+  Control.addVariable("freiaOutBCutBackRadius",5.0);
+
+  Control.addVariable("freiaOutBCutFrontShape","Circle");
+  Control.addVariable("freiaOutBCutFrontRadius",5.0);
 
   
   return;

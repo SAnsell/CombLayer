@@ -184,7 +184,7 @@ makeESSBL::build(Simulation& System,
     OR.getObject<attachSystem::FixedComp>(shutterName);
   const GuideItem* mainGIPtr=
     dynamic_cast<const GuideItem*>(mainFCPtr);
-    
+
   if (!mainGIPtr)
     throw ColErr::InContainerError<std::string>(shutterName,"GuideItem");
 	
@@ -224,7 +224,6 @@ makeESSBL::build(Simulation& System,
   else if (beamName=="NMX")
     {
       // NMX beamline
-      ELog::EM<<"Building "<<beamName<<ELog::endDiag;
       NMX nmxBL("nmx");
       nmxBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
@@ -242,7 +241,6 @@ makeESSBL::build(Simulation& System,
     }
   else if (beamName=="VOR")
     {
-      ELog::EM<<"Building "<<beamName<<ELog::endDiag;
       VOR vorBL("vor");
       vorBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }

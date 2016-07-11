@@ -436,7 +436,7 @@ shortODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
 
   GuideCut=attachSystem::unionLink(GuideG->getKey("Shield"),{3,4,5,6});
   Cave->addInsertCell(voidCell);  
-  Cave->createAll(System,GuideG->getKey("Guide0"),2,GuideCut.display());
+  Cave->createAll(System,GuideG->getKey("Guide0"),2);
 
   // runs through wall and into void 
   GuideH->addInsertCell(Cave->getCell("VoidNose"));

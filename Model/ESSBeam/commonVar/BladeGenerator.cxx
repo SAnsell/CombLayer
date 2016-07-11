@@ -88,6 +88,38 @@ BladeGenerator::BladeGenerator() :
   */
 {}
 
+BladeGenerator::BladeGenerator(const BladeGenerator& A) : 
+  gap(A.gap),thick(A.thick),innerThick(A.innerThick),
+  innerMat(A.innerMat),outerMat(A.outerMat),
+  CentreAngle(A.CentreAngle),OpenAngle(A.OpenAngle)
+  /*!
+    Copy constructor
+    \param A :: BladeGenerator to copy
+  */
+{}
+
+BladeGenerator&
+BladeGenerator::operator=(const BladeGenerator& A)
+  /*!
+    Assignment operator
+    \param A :: BladeGenerator to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      gap=A.gap;
+      thick=A.thick;
+      innerThick=A.innerThick;
+      innerMat=A.innerMat;
+      outerMat=A.outerMat;
+      CentreAngle=A.CentreAngle;
+      OpenAngle=A.OpenAngle;
+    }
+  return *this;
+}
+
+
   
 BladeGenerator::~BladeGenerator() 
  /*!
@@ -118,7 +150,19 @@ BladeGenerator::setThick(const std::vector<double>& T)
    */
 {
   thick=T;
+  innerThick.clear();
   resetPhase();
+  return;
+}
+
+void
+BladeGenerator::setInnerThick(const std::vector<double>& T)
+  /*!
+    Set thicknesses
+    \param T :: Thickness vector [no checking]
+   */
+{
+  innerThick=T;
   return;
 }
   
@@ -215,8 +259,13 @@ BladeGenerator::generateBlades(FuncDataBase& Control,const std::string& keyName,
   Control.addVariable(keyName+"OuterRadius",outerRadius);
   Control.addVariable(keyName+"NDisk",thick.size());
 
+  for(size_t i=0;i<innerThick.size();i++)
+    Control.addVariable(keyName+StrFunc::makeString(i)+"InnerThick",
+                        innerThick[i]);
+  
   for(size_t i=0;i<thick.size();i++)
     Control.addVariable(keyName+StrFunc::makeString(i)+"Thick",thick[i]);
+
   Control.addVariable(keyName+"InnerMat",innerMat);
   Control.addVariable(keyName+"OuterMat",outerMat);
   

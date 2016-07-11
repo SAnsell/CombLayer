@@ -43,7 +43,7 @@ class ShieldGenerator
   typedef std::map<size_t,std::string> MSTYPE;
   
   std::string defMat;                         ///< Primary default mat
-  
+
   std::map<size_t,double> wallLen;            ///< wall lengths
   std::map<size_t,double> roofLen;            ///< roof lenghts
   std::map<size_t,double> floorLen;           ///< floor lengths

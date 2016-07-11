@@ -32,12 +32,17 @@ namespace attachSystem
 
 namespace constructSystem
 {
-  class Jaws;
-  class DiskChopper;
+
+
   class ChopperPit;
-  class RotaryCollimator;
-  class PinHole;
   class ChopperUnit;
+  class DiskChopper;
+  class HoleShape;
+  class Jaws;
+  class JawSet;
+  class LineShield;
+  class PinHole;
+  class RotaryCollimator;
   class VacuumPipe;
 }
 
@@ -52,8 +57,8 @@ namespace essSystem
     \class ODIN
     \version 1.0
     \author S. Ansell
-    \date January 2013
-    \brief Main moderator system for ESS
+    \date May 2015
+    \brief ODIN instrument builder
   */
   
 class ODIN : public attachSystem::CopiedComp
@@ -111,52 +116,47 @@ class ODIN : public attachSystem::CopiedComp
   /// Guide running to bunker wall
   std::shared_ptr<beamlineSystem::GuideLine> FocusWall;
 
-  /// Tapper Unit
-  std::shared_ptr<beamlineSystem::GuideLine> GuideA;
-  /// Tapper Unit
-  std::shared_ptr<beamlineSystem::GuideLine> GuideB;
-  /// Guide in the Bunker wall
-  std::shared_ptr<beamlineSystem::GuideLine> GuideC;
-  /// Guide after the Bunker to first chopper
-  std::shared_ptr<beamlineSystem::GuideLine> GuideD;
+  /// Chopper at 27.6m 
+  std::shared_ptr<constructSystem::ChopperPit> OutPitA;
+  /// Collimator hole 
+  std::shared_ptr<constructSystem::HoleShape> OutACut;
+  /// 27.9m FOC
+  std::shared_ptr<constructSystem::ChopperUnit> ChopperOutA;
+  /// Singe disk chopper (FOC5)
+  std::shared_ptr<constructSystem::DiskChopper> FOC5Disk;
 
-  /// Chopper pit for first outer bunker chopper
-  std::shared_ptr<constructSystem::ChopperPit> PitA;
-  /// Guide to Chopper to exterior
-  std::shared_ptr<beamlineSystem::GuideLine> GuidePitAFront;
-  /// Guide from Chopper to exterior
-  std::shared_ptr<beamlineSystem::GuideLine> GuidePitABack;
+  /// First Shield wall
+  std::shared_ptr<constructSystem::LineShield> ShieldA;  
+  /// Pipe from 15.0 to 20m 
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeOutA;
+  /// Beamline from bunker to hutch
+  std::shared_ptr<beamlineSystem::GuideLine> FocusOutA;
 
-  /// Guide from Chopper A to exterior
-  std::shared_ptr<beamlineSystem::GuideLine> GuideE;
+  /// Chopper at 37.9m
+  std::shared_ptr<constructSystem::ChopperPit> OutPitB;
+  /// Collimator hole 
+  std::shared_ptr<constructSystem::HoleShape> OutBCutFront;
+  /// Collimator hole 
+  std::shared_ptr<constructSystem::HoleShape> OutBCutBack;
 
+  /// 37.9m FOC
+  std::shared_ptr<constructSystem::ChopperUnit> ChopperOutB;
+  /// Singe disk chopper (FOC6)
+  std::shared_ptr<constructSystem::DiskChopper> FOC6Disk;
 
-  /// Chopper pit for second choppers:
-  std::shared_ptr<constructSystem::ChopperPit> PitB;
-  /// Guide from Chopper to exterior [target]
-  std::shared_ptr<beamlineSystem::GuideLine> GuidePitBFront;
-  /// Guide from Chopper to exterior [Hutch side]
-  std::shared_ptr<beamlineSystem::GuideLine> GuidePitBBack;
-  /// Guide from chopper B to exterior
-  std::shared_ptr<beamlineSystem::GuideLine> GuideF;
-
-
-  /// Chopper pit for third choppers:
-  std::shared_ptr<constructSystem::ChopperPit> PitC;
-  /// Guide from Chopper to exterior [target]
-  std::shared_ptr<beamlineSystem::GuideLine> GuidePitCFront;
-  /// Guide from Chopper to exterior [Hutch side]
-  std::shared_ptr<beamlineSystem::GuideLine> GuidePitCBack;
-
-
-  /// Guide from chopper C to exterior
-  std::shared_ptr<beamlineSystem::GuideLine> GuideG;
-
-  /// The Hutch
-  std::shared_ptr<Hut> Cave;
-  /// Guide in Hutch 
-  std::shared_ptr<beamlineSystem::GuideLine> GuideH;
+  /// First Shield wall
+  std::shared_ptr<constructSystem::LineShield> ShieldB;  
+  /// Pipe from 15.0 to 20m 
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeOutB;
+  /// Beamline from bunker to hutch
+  std::shared_ptr<beamlineSystem::GuideLine> FocusOutB;
   
+  
+  /// Main cave
+  std::shared_ptr<essSystem::Hut> Cave;
+  /// Enterance hole
+  std::shared_ptr<constructSystem::HoleShape> CaveCut;
+
   /// Collimator
   std::shared_ptr<constructSystem::PinHole> PinA;
 

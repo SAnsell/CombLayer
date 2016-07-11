@@ -250,8 +250,11 @@ setDefRotation(const mainSystem::inputParam& IParam)
           
           Geometry::Vec3D LP=GIPtr->getSignedLinkPt(sideIndex);
           LP=LP.cutComponent(Geometry::Vec3D(0,0,1));
+          ELog::EM<<"LP == "<<LP<<ELog::endDiag;
           LP.makeUnit();
-          const double angleZ=180.0*acos(LP[0])/M_PI;
+
+          double angleZ=180.0*acos(LP[0])/M_PI;
+          if (LP[1]>0.0) angleZ*=-1;
           MR.addRotation(Geometry::Vec3D(0,0,1),
                          Geometry::Vec3D(0,0,0),angleZ);
         }

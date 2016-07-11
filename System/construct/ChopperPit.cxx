@@ -90,6 +90,67 @@ ChopperPit::ChopperPit(const std::string& Key) :
   */
 {}
 
+ChopperPit::ChopperPit(const ChopperPit& A) : 
+  attachSystem::FixedOffsetGroup(A)
+  ,attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),
+  pitIndex(A.pitIndex),cellIndex(A.cellIndex),
+  activeFront(A.activeFront),frontCut(A.frontCut),
+  voidHeight(A.voidHeight),voidWidth(A.voidWidth),
+  voidDepth(A.voidDepth),voidLength(A.voidLength),
+  feHeight(A.feHeight),feDepth(A.feDepth),feWidth(A.feWidth),
+  feFront(A.feFront),feBack(A.feBack),
+  concHeight(A.concHeight),concDepth(A.concDepth),
+  concWidth(A.concWidth),concFront(A.concFront),
+  concBack(A.concBack),colletWidth(A.colletWidth),
+  colletDepth(A.colletDepth),colletHeight(A.colletHeight),
+  feMat(A.feMat),concMat(A.concMat),colletMat(A.colletMat)
+  /*!
+    Copy constructor
+    \param A :: ChopperPit to copy
+  */
+{}
+
+ChopperPit&
+ChopperPit::operator=(const ChopperPit& A)
+  /*!
+    Assignment operator
+    \param A :: ChopperPit to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedOffsetGroup::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      cellIndex=A.cellIndex;
+      activeFront=A.activeFront;
+      frontCut=A.frontCut;
+      voidHeight=A.voidHeight;
+      voidWidth=A.voidWidth;
+      voidDepth=A.voidDepth;
+      voidLength=A.voidLength;
+      feHeight=A.feHeight;
+      feDepth=A.feDepth;
+      feWidth=A.feWidth;
+      feFront=A.feFront;
+      feBack=A.feBack;
+      concHeight=A.concHeight;
+      concDepth=A.concDepth;
+      concWidth=A.concWidth;
+      concFront=A.concFront;
+      concBack=A.concBack;
+      colletWidth=A.colletWidth;
+      colletDepth=A.colletDepth;
+      colletHeight=A.colletHeight;
+      feMat=A.feMat;
+      concMat=A.concMat;
+      colletMat=A.colletMat;
+    }
+  return *this;
+}
+
 ChopperPit::~ChopperPit() 
   /*!
     Destructor
@@ -260,14 +321,29 @@ ChopperPit::createObjects(Simulation& System)
       Out=ModelSupport::getSetComposite(SMap,pitIndex,"2 -102 103 -104 105 -106");
       Collet.procString(Out);
       System.addCell(MonteCarlo::Qhull(cellIndex++,colletMat,0.0,Out));
+      Collet.makeComplement();
       setCell("Collet",cellIndex-1);
     }
-  // SPlit into three to allow beampiles more readilty
-  Out=ModelSupport::getSetComposite
-    (SMap,pitIndex,"11 -12 13 -14 15 -16 (-1:2:-3:4:-5:6)");
-  Collet.makeComplement();
-  Out+=Collet.display();
+
+  // Split into three to allow beampiles more readilty
+  // front:
+  if (!activeFront)
+    {
+      Out=ModelSupport::getSetComposite(SMap,pitIndex," 11 -1 3 -4 5 -6 ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out+frontSurf));
+      addCell("MidLayerFront",cellIndex-1);
+      addCell("MidLayer",cellIndex-1);
+    }
+    
+  // Sides:
+  Out=ModelSupport::getSetComposite(SMap,pitIndex,"11 -12 13 -14 15 -16 (-3:4:-5:6)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out+frontSurf));
+  addCell("MidLayerSide",cellIndex-1);
+  // back
+  Out=ModelSupport::getSetComposite(SMap,pitIndex,"2 -12 3 -4 5 -6");
+  Out+=Collet.display();
+  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
+  addCell("MidLayerBack",cellIndex-1);
   addCell("MidLayer",cellIndex-1);
   
   // Make full exclude:

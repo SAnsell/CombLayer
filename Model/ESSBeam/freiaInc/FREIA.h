@@ -159,8 +159,10 @@ class FREIA : public attachSystem::CopiedComp
 
   /// Beamline from bunker to hutch
   std::shared_ptr<constructSystem::JawSet> CaveJaw;
+  /// Semi-collimator front
+  std::shared_ptr<constructSystem::HoleShape> OutBCutFront;
   /// Collimator hole after jaws
-  std::shared_ptr<constructSystem::HoleShape> OutBCut;
+  std::shared_ptr<constructSystem::HoleShape> OutBCutBack;
 
   void setBeamAxis(const FuncDataBase&,const GuideItem&,const bool);
   

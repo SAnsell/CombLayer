@@ -82,7 +82,7 @@ class Hut :
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
-  void createObjects(Simulation&,const std::string&);
+  void createObjects(Simulation&);
   void createLinks();
 
  public:
@@ -93,7 +93,7 @@ class Hut :
   virtual ~Hut();
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int,const std::string&);
+		 const long int);
 
 };
 
