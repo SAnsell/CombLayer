@@ -214,24 +214,9 @@ DREAMvariables(FuncDataBase& Control)
   FGen.setYOffset(2.0);
   FGen.generateTaper(Control,"dreamFWall",308.0,6.0,6.0,6.0,6.0);
 
-  //  SGen.setRFLayers(3,8);
-  //  SGen.generateShield(Control,"dreamShieldA",1430.0,40.0,40.0,40.0,8,8);
+  SGen.setRFLayers(3,8);
+  SGen.generateShield(Control,"dreamShieldA",1430.0,40.0,40.0,40.0,8,8);
 
-  Control.addVariable("dreamShieldALength",1750.0-320);
-  Control.addVariable("dreamShieldALeft",40.0);
-  Control.addVariable("dreamShieldARight",40.0);
-  Control.addVariable("dreamShieldAHeight",40.0);
-  Control.addVariable("dreamShieldADepth",40.0);
-  Control.addVariable("dreamShieldADefMat","Stainless304");
-  Control.addVariable("dreamShieldANSeg",8);
-  Control.addVariable("dreamShieldANWallLayers",8);
-  Control.addVariable("dreamShieldANFloorLayers",3);
-  Control.addVariable("dreamShieldANRoofLayers",8);
-  Control.addVariable("dreamShieldAWallLen1",20.0);
-  Control.addVariable("dreamShieldAWallMat1","CastIron");
-  Control.addVariable("dreamShieldAWallMat5","Concrete");
-  Control.addVariable("dreamShieldARoofLen1",20.0);
-  Control.addVariable("dreamShieldAFloorLen1",20.0);
 
   // Guide after wall [17.5m - 3.20] for wall
 
@@ -246,24 +231,8 @@ DREAMvariables(FuncDataBase& Control)
 
   FGen.setGuideMat("Glass");
   FGen.generateTaper(Control,"dreamFOutB",2836,4.0,4.0,5.0,5.0);
-  
-  Control.addVariable("dreamShieldBLength",2850.0);
-  Control.addVariable("dreamShieldBLeft",32.0);
-  Control.addVariable("dreamShieldBRight",32.0);
-  Control.addVariable("dreamShieldBHeight",32.0);
-  Control.addVariable("dreamShieldBDepth",32.0);
-  Control.addVariable("dreamShieldBDefMat","Stainless304");
-  Control.addVariable("dreamShieldBNSeg",8);
-  Control.addVariable("dreamShieldBNWallLayers",8);
-  Control.addVariable("dreamShieldBNFloorLayers",3);
-  Control.addVariable("dreamShieldBNRoofLayers",8);
-  Control.addVariable("dreamShieldBWallLen1",20.0);
-  Control.addVariable("dreamShieldBWallMat1","CastIron");
-  Control.addVariable("dreamShieldBWallMat5","Concrete");
 
-  Control.addVariable("dreamShieldBRoofLen1",20.0);
-  Control.addVariable("dreamShieldBFloorLen1",20.0);
-  
+  SGen.generateShield(Control,"dreamShieldB",2850.0,32.0,32.0,32.0,8,8);  
 
   // HUT:
   Control.addVariable("dreamCaveYStep",0.0);
