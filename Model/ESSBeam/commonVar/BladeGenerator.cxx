@@ -163,6 +163,10 @@ BladeGenerator::setInnerThick(const std::vector<double>& T)
    */
 {
   innerThick=T;
+  for(size_t i=0;i<thick.size() && i<innerThick.size();i++)
+    if (thick[i]-innerThick[i]>Geometry::zeroTol)
+      ELog::EM<<"Error with Thickness/InnerThicknes["<<i
+	      <<"] = "<<thick[i]<<" "<<innerThick[i]<<ELog::endErr;
   return;
 }
   
