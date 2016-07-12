@@ -258,14 +258,14 @@ PinHole::createAll(Simulation& System,
 
   CollA->setInsertCell(getCell("Void"));
   CollB->setInsertCell(getCell("Void"));
-  CollA->createAll(System,FC,FIndex);
-  CollB->createAll(System,FC,FIndex);
+  CollA->createAll(System,*this,0);
+  CollB->createAll(System,*this,0);
+
   JawX->setInsertCell(getCell("Void"));
   JawX->createAll(System,FC,FIndex);
 
   JawXZ->setInsertCell(getCell("Void"));
   JawXZ->createAll(System,FC,FIndex);
-  
   return;
 }
   

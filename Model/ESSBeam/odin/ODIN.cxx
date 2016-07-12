@@ -147,9 +147,13 @@ ODIN::ODIN(const std::string& keyName) :
   FocusOutB(new beamlineSystem::GuideLine(newName+"OutFB")),
 
   Cave(new essSystem::Hut(newName+"Cave")),
-  CaveCut(new constructSystem::HoleShape(newName+"CaveCut"))
-  //  GuideH(new beamlineSystem::GuideLine(newName+"GH")),
-  //  PinA(new constructSystem::PinHole(newName+"Pin")),
+  CaveCut(new constructSystem::HoleShape(newName+"CaveCut")),
+
+  VPipeCaveA(new constructSystem::VacuumPipe(newName+"PipeCaveA")),
+  FocusCaveA(new beamlineSystem::GuideLine(newName+"CaveFA")),
+
+  
+  PinA(new constructSystem::PinHole(newName+"Pin"))
 
   //  BeamStop(new RentrantBS(newName+"BeamStop"))
  /*!
@@ -204,9 +208,14 @@ ODIN::ODIN(const std::string& keyName) :
   OR.addObject(VPipeOutB);
   OR.addObject(FocusOutB);
 
+
   OR.addObject(Cave);
   OR.addObject(CaveCut);
 
+  OR.addObject(VPipeCaveA);
+  OR.addObject(FocusCaveA);
+
+  OR.addObject(PinA);
 }
 
 ODIN::~ODIN()
@@ -400,6 +409,15 @@ ODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
   CaveCut->setFaces(Cave->getKey("Outer").getSignedFullRule(-1),
                     Cave->getKey("Inner").getSignedFullRule(1));
   CaveCut->createAll(System,Cave->getKey("Inner"),-1);
+
+  VPipeCaveA->addInsertCell(Cave->getCells("VoidNose"));
+  VPipeCaveA->createAll(System,Cave->getKey("Inner"),-1);
+
+  FocusCaveA->addInsertCell(VPipeCaveA->getCells("Void"));
+  FocusCaveA->createAll(System,*VPipeCaveA,0,*VPipeCaveA,0);
+
+  PinA->addInsertCell(Cave->getCell("VoidNose"));
+  PinA->createAll(System,FocusCaveA->getKey("Guide0"),2);
 
   return;
 

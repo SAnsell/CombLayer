@@ -234,6 +234,10 @@ DREAMvariables(FuncDataBase& Control)
 
   SGen.generateShield(Control,"dreamShieldB",2850.0,32.0,32.0,32.0,8,8);  
 
+  // Guide after wall [+17.5m] after section 1  
+  PipeGen.generatePipe(Control,"dreamPipeCaveA",0.0,500.0);
+  FGen.generateTaper(Control,"dreamFCaveA",496,4.0,4.0,5.0,5.0);
+
   // HUT:
   Control.addVariable("dreamCaveYStep",0.0);
   Control.addVariable("dreamCaveVoidFront",60.0);
@@ -260,10 +264,6 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamCaveFeMat","Stainless304");
   Control.addVariable("dreamCaveConcMat","Concrete");
 
-  // Guide after wall [+17.5m] after section 1  
-  PipeGen.generatePipe(Control,"dreamPipeCaveA",0.0,500.0);
-
-  FGen.generateTaper(Control,"dreamFCaveA",496,4.0,4.0,5.0,5.0);
   
   return;
 }

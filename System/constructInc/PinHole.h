@@ -56,7 +56,6 @@ class PinHole : public attachSystem::ContainedComp,
   /// JAW ZX (+45deg)
   std::shared_ptr<constructSystem::Jaws> JawXZ;
 
-
   double radius;           ///< Excloseing radius
   double length;           ///< Enclosing length
 

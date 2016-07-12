@@ -157,6 +157,11 @@ class ODIN : public attachSystem::CopiedComp
   /// Enterance hole
   std::shared_ptr<constructSystem::HoleShape> CaveCut;
 
+  /// Beamguide in cave
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeCaveA;
+  /// Guide in cave
+  std::shared_ptr<beamlineSystem::GuideLine> FocusCaveA;
+
   /// Collimator
   std::shared_ptr<constructSystem::PinHole> PinA;
 

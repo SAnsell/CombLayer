@@ -235,15 +235,18 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinCaveWallZGap",6.0);
   Control.addVariable("odinCaveWallMat","Stainless304");
 
-
+  // Beam port through front of cave
   Control.addVariable("odinCaveCutShape","Circle");
   Control.addVariable("odinCaveCutRadius",5.0);
 
   
-
+  PipeGen.generatePipe(Control,"odinPipeCaveA",8.0,46.0);
+  FGen.generateTaper(Control,"odinCaveFA",42.0,4.0,4.0,10.0,6.0);
+  
   // PIN COLLIMATOR SYSTEM
   Control.addVariable("odinPinLength",50.0);
   Control.addVariable("odinPinRadius",60.0);
+  Control.addVariable("odinPinYStep",20.0);
   // Collimator A:
   Control.addVariable("odinPinCollAYStep",1.0);
   Control.addVariable("odinPinCollARotDepth",20.0);
@@ -318,6 +321,8 @@ ODINvariables(FuncDataBase& Control)
   // JAWS
   //
   // Jaw X
+  JGen.generateJaws(Control,"odinPinJaw",22.0);
+  /*
   Control.addVariable("odinPinJawVertXStep",0.0);
   Control.addVariable("odinPinJawVertYStep",17.0);
   Control.addVariable("odinPinJawVertZStep",0.0);
@@ -374,7 +379,7 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinPinJawDiagxJawMat","Tungsten");
   Control.addVariable("odinPinJawDiagzJawMat","Tungsten");
   Control.addVariable("odinPinJawDiagWallMat","Aluminium");
-
+  */
   Control.addVariable("odinBeamStopYStep",1200.0);
   
   Control.addVariable("odinBeamStopWidth",360.0);
