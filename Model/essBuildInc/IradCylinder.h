@@ -45,11 +45,11 @@ class IradCylinder : public attachSystem::ContainedComp,
 
   double radius;                  ///< Main radius [from built object]
   double length;                  ///< Length of cylinder
-  double wallThick;               ///< Wall thickness
+  std::vector<double> wallThick;  ///< Wall thicknesses
 
   double temp;                    ///< Temperature
   int mat;                        ///< Main material
-  int wallMat;                    ///< Wall material
+  std::vector<int> wallMat;       ///< Wall material
 
   double sampleX;                 ///< Sample X step     
   double sampleY;                 ///< Sample Z step     

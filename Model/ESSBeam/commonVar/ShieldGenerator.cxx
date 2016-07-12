@@ -82,13 +82,14 @@ namespace setVariable
 {
 
 ShieldGenerator::ShieldGenerator() :
-  defMat("Stainless304")
+  nRoof(0),nFloor(0),defMat("Stainless304")
   /*!
     Constructor and defaults
   */
 {}
 
-ShieldGenerator::ShieldGenerator(const ShieldGenerator& A) : 
+ShieldGenerator::ShieldGenerator(const ShieldGenerator& A) :
+  nRoof(A.nRoof),nFloor(A.nFloor),
   defMat(A.defMat),wallLen(A.wallLen),roofLen(A.roofLen),
   floorLen(A.floorLen),wallMat(A.wallMat),roofMat(A.roofMat),
   floorMat(A.floorMat)
@@ -108,6 +109,8 @@ ShieldGenerator::operator=(const ShieldGenerator& A)
 {
   if (this!=&A)
     {
+      nRoof=A.nRoof;
+      nFloor=A.nFloor;
       defMat=A.defMat;
       wallLen=A.wallLen;
       roofLen=A.roofLen;
@@ -303,6 +306,19 @@ ShieldGenerator::processLayers
     }
   return;
 }
+void
+ShieldGenerator::setRFLayers(const size_t nF,const size_t nR)
+  /*!
+    Set the number of roof/floor layers
+    \param nF :: floor Number [0 use NLayers value]
+    \param nR :: roof Number [0 use NLayers value]
+   */
+{
+  nRoof=nR;
+  nFloor=nF;
+  return;
+}
+
   
 void
 ShieldGenerator::generateShield
@@ -323,6 +339,9 @@ ShieldGenerator::generateShield
   */
 {
   ELog::RegMethod RegA("ShieldGenerator","generatorShield");
+
+  const size_t NRoof(nRoof ? nRoof : NLayer);
+  const size_t NFloor(nFloor ? nFloor : NLayer);
   
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"Left",side);
@@ -332,8 +351,8 @@ ShieldGenerator::generateShield
   Control.addVariable(keyName+"DefMat",defMat);
   Control.addVariable(keyName+"NSeg",NSeg);
   Control.addVariable(keyName+"NWallLayers",NLayer);
-  Control.addVariable(keyName+"NFloorLayers",NLayer);
-  Control.addVariable(keyName+"NRoofLayers",NLayer);
+  Control.addVariable(keyName+"NFloorLayers",NFloor);
+  Control.addVariable(keyName+"NRoofLayers",NRoof);
   
   processLayers(Control,keyName);
   

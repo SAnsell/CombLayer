@@ -82,9 +82,9 @@ DREAMvariables(FuncDataBase& Control)
   PipeGen.setWindow(-2.0,0.5);
   PipeGen.setFlange(-4.0,1.0);
 
-  SGen.addWall(1,30.0,"CastIron");
-  SGen.addRoof(1,30.0,"CastIron");
-  SGen.addFloor(1,30.0,"CastIron");
+  SGen.addWall(1,20.0,"CastIron");
+  SGen.addRoof(1,20.0,"CastIron");
+  SGen.addFloor(1,20.0,"CastIron");
   SGen.addFloorMat(5,"Concrete");
   SGen.addRoofMat(5,"Concrete");
   SGen.addWallMat(5,"Concrete");
@@ -173,7 +173,7 @@ DREAMvariables(FuncDataBase& Control)
   BGen.setMaterials("Inconnel","Void");
   BGen.setThick({5.0});
   BGen.setInnerThick({5.4});
-  BGen.addPhase({95,275},{30.0,30.0});
+  BGen.addPhase({95,275},{125.0,125.0});
 
   BGen.generateBlades(Control,"dreamT1DiskA",-12.0,20.0,30.0);
   BGen.generateBlades(Control,"dreamT1DiskB",12.0,20.0,30.0);  
@@ -214,6 +214,8 @@ DREAMvariables(FuncDataBase& Control)
   FGen.setYOffset(2.0);
   FGen.generateTaper(Control,"dreamFWall",308.0,6.0,6.0,6.0,6.0);
 
+  //  SGen.setRFLayers(3,8);
+  //  SGen.generateShield(Control,"dreamShieldA",1430.0,40.0,40.0,40.0,8,8);
 
   Control.addVariable("dreamShieldALength",1750.0-320);
   Control.addVariable("dreamShieldALeft",40.0);
@@ -236,6 +238,7 @@ DREAMvariables(FuncDataBase& Control)
   PipeGen.setPipe(6.0,0.5);
   PipeGen.generatePipe(Control,"dreamPipeOutA",2.0,1430.0);  //
 
+  FGen.clearYOffset();  
   FGen.generateTaper(Control,"dreamFOutA",1422,4.5,4.97,2.24,3.05);
 
   // Guide after wall [+17.5m] after section 1  

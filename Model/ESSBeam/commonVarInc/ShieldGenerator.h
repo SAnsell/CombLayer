@@ -41,6 +41,9 @@ class ShieldGenerator
 
   typedef std::map<size_t,double> MLTYPE;
   typedef std::map<size_t,std::string> MSTYPE;
+
+  size_t nRoof;                 ///< number of roof layers
+  size_t nFloor;                ///< number of floor layers
   
   std::string defMat;                         ///< Primary default mat
 
@@ -72,7 +75,9 @@ class ShieldGenerator
   void addWallMat(const size_t,const std::string&);
   void addRoofMat(const size_t,const std::string&);
   void addFloorMat(const size_t,const std::string&);
-  
+
+  void setRFLayers(const size_t,const size_t);
+    
   void generateShield(FuncDataBase&,const std::string&,
 		      const double,const double,const double,const double,
 		      const size_t,const size_t)  const;

@@ -1057,6 +1057,15 @@ DBMaterial::initMaterial()
   // YJL says at 600K we should use the same density (??)
   MObj.setDensity(-19.298); 
   setMaterial(MObj);
+
+  // Zircalloy-2 -- 6.56g/cc
+  // NEEDS 0.1% Cr / 1.4% Sn / 0.1% Fe / 0.12% O / 0.05% Ni
+  MObj.setMaterial(125,"Zircaloy2",
+                   "40090.70c 0.00874443 40091.70c 0.00190695 "
+		   "40093.70c 0.00291481 40094.70c 0.0029539 ",
+                   "",MLib);
+  MObj.setDensity(-6.56); 
+  setMaterial(MObj);
   
   // CLONE Materials: 
   cloneMaterial("CastIron","Iron");
