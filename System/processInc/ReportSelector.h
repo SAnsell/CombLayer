@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   tallyInc/TallySelector.h
+ * File:   tallyInc/ReportSelector.h
  *
  * Copyright (c) 2004-2016 by Stuart Ansell
  *
@@ -19,20 +19,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef TallySelector_h
-#define TallySelector_h
+#ifndef ReportSelector_h
+#define ReportSelector_h
 
 class Simulation;
 
-int tallySelection(Simulation&,const mainSystem::inputParam&);
-void tallyModification(Simulation&,const mainSystem::inputParam&);
-void tallyRenumberWork(Simulation&,const mainSystem::inputParam&);
-
-int beamTallySelection(Simulation&,const mainSystem::inputParam&);
-void beamTallyRenumberWork(Simulation&,const mainSystem::inputParam&);
-
-int reactorTallySelection(Simulation&,const mainSystem::inputParam&);
-void reactorTallyRenumberWork(Simulation&,const mainSystem::inputParam&);
+void reportSelection(Simulation&,const mainSystem::inputParam&);
 
 #endif
  

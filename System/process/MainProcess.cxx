@@ -66,6 +66,7 @@
 #include "SimProcess.h"
 #include "DefPhysics.h"
 #include "TallySelector.h"
+#include "ReportSelector.h"
 #include "mainJobs.h"
 #include "SimInput.h"
 #include "MainProcess.h"
@@ -251,6 +252,7 @@ createInputs(inputParam& IParam)
   IParam.regDefItem<double>("photonModel","photonModel",1,100.0);
   IParam.regItem("PTRAC","ptrac");
   IParam.regDefItemList<std::string>("r","renum",10,RItems);
+  IParam.regMulti("R","report",1000,0);
   IParam.regFlag("sdefVoid","sdefVoid");
   IParam.regDefItem<std::string>("sdefType","sdefType",1,"");
   IParam.regDefItem<std::string>("physModel","physicsModel",1,"CEM03"); 
@@ -353,6 +355,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("photon","Photon Cut energy");
   IParam.setDesc("photonModel","Photon Model Energy [min]");
   IParam.setDesc("r","Renubmer cells");
+  IParam.setDesc("report","Report a position/axis");
   IParam.setDesc("s","RND Seed");
   IParam.setDesc("SF","File read source");
   IParam.setDesc("SA","Source Angle [deg]");
@@ -1073,6 +1076,7 @@ buildFullSimulation(Simulation* SimPtr,
   SimPtr->masterRotation();
 
   const int renumCellWork=tallySelection(*SimPtr,IParam);
+  reportSelection(*SimPtr,IParam);
   if (createVTK(IParam,SimPtr,OName))
     return;
   // 

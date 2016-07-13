@@ -172,7 +172,7 @@ pointConstruct::processPoint(Simulation& System,
       const std::string place=
 	inputItem<std::string>(IParam,Index,2,"position not given");
       const std::string snd=
-	inputItem<std::string>(IParam,Index,3,"front/back/side not give");
+	inputItem<std::string>(IParam,Index,3,"front/back/side not given");
       const double D=
 	inputItem<double>(IParam,Index,4,"Distance not given");
 
@@ -190,9 +190,10 @@ pointConstruct::processPoint(Simulation& System,
       const std::string place=
 	IParam.outputItem<std::string>("tally",Index,2,"position not given");
       const std::string snd=
-	inputItem<std::string>(IParam,Index,3,"front/back/side not given");
+        IParam.outputItem<std::string>("tally",Index,3,
+                                       "front/back/side not given");
       const double D=
-	inputItem<double>(IParam,Index,4,"Distance not given");
+	IParam.outputItem<double>("tally",Index,4,"Distance not given");
       const long int linkNumber=attachSystem::getLinkIndex(snd);
       processPointFree(System,place,linkNumber,D);
     }
