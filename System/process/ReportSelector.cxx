@@ -60,6 +60,7 @@
 #include "TwinComp.h"
 #include "LinkSupport.h"
 #include "inputParam.h"
+#include "Simulation.h"
 #include "ReportSelector.h" 
 
 
@@ -75,7 +76,7 @@ reportSelection(Simulation& System,const mainSystem::inputParam& IParam)
 
   const ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-  
+  const FuncDataBase& Control=System.getDataBase();
 
   const size_t nP=IParam.setCnt("report");
 
@@ -95,8 +96,14 @@ reportSelection(Simulation& System,const mainSystem::inputParam& IParam)
 	  ELog::EM<<ELog::endErr;
           return;
 	}
-
-      
+      else if (key=="var" || key=="variable")
+	{
+          const std::string VObject=IParam.outputItem<std::string>
+            ("report",index,1,"variable not given");
+          const std::string varValue=(Control.hasVariable(VObject)) ?
+            Control.EvalVar<std::string>(VObject) : "Not-Defined";
+          ELog::EM<<"Var["<<VObject<<"] "<<varValue<<ELog::endDiag;
+        }
       else if (key=="object")
 	{
 
