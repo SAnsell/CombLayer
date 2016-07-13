@@ -277,7 +277,7 @@ FREIA::build(Simulation& System,
   
   BendA->addInsertCell(GItem.getCells("Void"));
   BendA->addFrontCut(GItem.getKey("Beam"),-1);
-  BendA->addEndCut(GItem.getKey("Beam").getSignedLinkString(-2));
+  BendA->addEndCut(GItem.getKey("Beam"),-2);
   BendA->createAll(System,*freiaAxis,-3,*freiaAxis,-3);
   if (stopPoint==1) return;                      // STOP At monolith
                                                  // edge

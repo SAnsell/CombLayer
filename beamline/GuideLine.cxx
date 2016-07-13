@@ -222,7 +222,7 @@ GuideLine::populate(const FuncDataBase& Control)
   zAngle=Control.EvalDefVar<double>(keyName+"ZAngle",0.0);
 
   beamXStep=Control.EvalDefVar<double>(keyName+"BeamXStep",xStep);
-  beamYStep=Control.EvalDefVar<double>(keyName+"BeamYStep",yStep);
+  beamYStep=Control.EvalDefVar<double>(keyName+"BeamYStep",yStep);  // special
   beamZStep=Control.EvalDefVar<double>(keyName+"BeamZStep",zStep); 
   beamXYAngle=Control.EvalDefVar<double>(keyName+"BeamXYAngle",xyAngle);
   beamZAngle=Control.EvalDefVar<double>(keyName+"BeamZAngle",zAngle);
@@ -255,6 +255,7 @@ GuideLine::populate(const FuncDataBase& Control)
     }
 
   // set frontcut based on offset:
+  ELog::EM<<"YStep ="<<keyName<<" "<<beamYStep<<ELog::endDiag;
   beamFrontCut=(fabs(beamYStep)>Geometry::zeroTol) ? 1 : 0;
   return;
 }
@@ -285,7 +286,7 @@ GuideLine::addGuideUnit(const size_t index,
   
   const std::string PGKey=(index) ? 
     "Guide"+StrFunc::makeString(index-1) :  "GuideOrigin";
-  attachSystem::FixedComp& prevFC=FixedGroup::getKey(PGKey);
+  const attachSystem::FixedComp& prevFC=FixedGroup::getKey(PGKey);
 
   
   guideFC.createUnitVector(prevFC,POrigin);
@@ -489,7 +490,6 @@ GuideLine::createUnitVector(const attachSystem::FixedComp& mainFC,
   guideFC.applyShift(beamXStep,beamYStep,beamZStep);
   guideFC.applyAngleRotate(beamXYAngle,beamZAngle);
 
-
   setDefault("GuideOrigin");
   return;
 }
@@ -611,8 +611,8 @@ GuideLine::createObjects(Simulation& System)
   for(size_t i=0;i<nShapes;i++)
     {
       // front
-      const std::string front=shapeFrontSurf(true,i);
-      back=shapeBackSurf(true,i);
+      const std::string front=shapeFrontSurf(false,i);
+      back=shapeBackSurf(false,i);
       for(size_t j=0;j<nShapeLayers;j++)
 	{
 	  // Note that shapeUnits has own offset but

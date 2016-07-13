@@ -200,6 +200,8 @@ NMX::build(Simulation& System,
   setBeamAxis(System.getDataBase(),GItem,1);
 
   GuideA->addInsertCell(GItem.getCells("Void"));
+  GuideA->addFrontCut(GItem.getKey("Beam"),-1);
+  ELog::EM<<"Front == "<<GItem.getKey("Beam").getSignedLinkString(-1)<<ELog::endDiag;
   GuideA->addEndCut(GItem.getKey("Beam"),-2);
   GuideA->createAll(System,*nmxAxis,-3,*nmxAxis,-3); // beam front reversed
   if (stopPoint==1) return;                  // STOP at Monolith

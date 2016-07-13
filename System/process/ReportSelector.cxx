@@ -34,6 +34,8 @@
 #include <iterator>
 #include <memory>
 
+#include <boost/format.hpp>
+
 #include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
@@ -61,6 +63,7 @@
 #include "LinkSupport.h"
 #include "inputParam.h"
 #include "Simulation.h"
+#include "masterWrite.h"
 #include "ReportSelector.h" 
 
 
@@ -74,12 +77,13 @@ reportSelection(Simulation& System,const mainSystem::inputParam& IParam)
 {
   ELog::RegMethod RegA("ReportSelector[F]","reportSelection");
 
+  masterWrite& MW=masterWrite::Instance();
   const ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
   const FuncDataBase& Control=System.getDataBase();
 
   const size_t nP=IParam.setCnt("report");
-
+  //  boost::format FMTvec("%1$=%12.6g%2$=12.6g%3$=12.6g");
   for(size_t index=0;index<nP;index++)
     {
       std::vector<std::string> StrItem;
@@ -106,7 +110,7 @@ reportSelection(Simulation& System,const mainSystem::inputParam& IParam)
         }
       else if (key=="object")
 	{
-
+          boost::format FMTdouble("%12.6f");
           const std::string FObject=IParam.outputItem<std::string>
             ("report",index,1,"objectName not given");
           const std::string linkSide=
@@ -118,8 +122,15 @@ reportSelection(Simulation& System,const mainSystem::inputParam& IParam)
           
           const Geometry::Vec3D TPoint=TPtr->getSignedLinkPt(linkNumber);
           const Geometry::Vec3D TAxis=TPtr->getSignedLinkAxis(linkNumber);
-          ELog::EM<<TPtr->getKeyName()<<"["<<linkNumber<<"] "<<TPoint<<" :: "
-                  <<TAxis<<ELog::endDiag;
+          
+          ELog::EM<<TPtr->getKeyName()<<"["<<linkNumber<<"] ";
+          const size_t len=ELog::EM.Estream().str().size();
+          if (len<20)
+            ELog::EM<<std::string(20-len,' ');
+          
+          
+          ELog::EM<<MW.padNum(TPoint,12)<<" :: "
+                  <<MW.padNum(TAxis,12)<<ELog::endDiag;
 	}
       
     }

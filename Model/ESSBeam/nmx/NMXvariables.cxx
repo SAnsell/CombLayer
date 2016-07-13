@@ -94,6 +94,7 @@ NMXvariables(FuncDataBase& Control)
 
   FGen.setGuideMat("Aluminium");
   FGen.clearYOffset();
+  
   const double bendAngle(-180.0);
   const double bendRadius(120000.0);  
   FGen.generateBender(Control,"nmxBA",394.0,3.0,3.0,3.0,4.5,
