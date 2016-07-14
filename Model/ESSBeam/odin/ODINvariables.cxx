@@ -320,66 +320,9 @@ ODINvariables(FuncDataBase& Control)
   //
   // JAWS
   //
-  // Jaw X
   JGen.generateJaws(Control,"odinPinJaw",22.0);
-  /*
-  Control.addVariable("odinPinJawVertXStep",0.0);
-  Control.addVariable("odinPinJawVertYStep",17.0);
-  Control.addVariable("odinPinJawVertZStep",0.0);
-  Control.addVariable("odinPinJawVertXYangle",180.0);
-  Control.addVariable("odinPinJawVertZangle",0.0);
-
-  Control.addVariable("odinPinJawVertZOpen",1.5);
-  Control.addVariable("odinPinJawVertZThick",4.0);
-  Control.addVariable("odinPinJawVertZCross",15.0);
-  Control.addVariable("odinPinJawVertZLen",8.0);
-
-  Control.addVariable("odinPinJawVertGap",0.5);  
-  
-  Control.addVariable("odinPinJawVertXOpen",1.5);
-  Control.addVariable("odinPinJawVertXThick",4.0);
-  Control.addVariable("odinPinJawVertXCross",15.0);
-  Control.addVariable("odinPinJawVertXLen",8.0);  
-
-  Control.addVariable("odinPinJawVertXHeight",28.0);
-  Control.addVariable("odinPinJawVertYHeight",9.0);
-  Control.addVariable("odinPinJawVertZHeight",28.0);
-  Control.addVariable("odinPinJawVertWallThick",2.0);
-
-  Control.addVariable("odinPinJawVertxJawMat","Tungsten");
-  Control.addVariable("odinPinJawVertzJawMat","Tungsten");
-  Control.addVariable("odinPinJawVertWallMat","Aluminium");
-
-  // Jaw XZ
-  Control.addVariable("odinPinJawDiagXStep",0.0);
-  Control.addVariable("odinPinJawDiagYStep",32.0);
-  Control.addVariable("odinPinJawDiagZStep",0.0);
-  Control.addVariable("odinPinJawDiagXAngle",0.0);
-  Control.addVariable("odinPinJawDiagYAngle",45.0);
-  Control.addVariable("odinPinJawDiagZAngle",0.0);
-
-  Control.addVariable("odinPinJawDiagZOpen",1.5);
-  Control.addVariable("odinPinJawDiagZThick",4.0);
-  Control.addVariable("odinPinJawDiagZCross",15.0);
-  Control.addVariable("odinPinJawDiagZLen",8.0);
-
-  Control.addVariable("odinPinJawDiagGap",0.5);  
-  
-  Control.addVariable("odinPinJawDiagXOpen",1.5);
-  Control.addVariable("odinPinJawDiagXThick",4.0);
-  Control.addVariable("odinPinJawDiagXCross",15.0);
-  Control.addVariable("odinPinJawDiagXLen",8.0);  
-
-  Control.addVariable("odinPinJawDiagXHeight",28.0);
-  Control.addVariable("odinPinJawDiagYHeight",9.0);
-  Control.addVariable("odinPinJawDiagZHeight",28.0);
-  Control.addVariable("odinPinJawDiagWallThick",2.0);
 
 
-  Control.addVariable("odinPinJawDiagxJawMat","Tungsten");
-  Control.addVariable("odinPinJawDiagzJawMat","Tungsten");
-  Control.addVariable("odinPinJawDiagWallMat","Aluminium");
-  */
   Control.addVariable("odinBeamStopYStep",1200.0);
   
   Control.addVariable("odinBeamStopWidth",360.0);

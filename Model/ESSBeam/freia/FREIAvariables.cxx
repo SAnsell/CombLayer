@@ -59,38 +59,7 @@
 
 namespace setVariable
 {
- 
-void
-generatePipe(FuncDataBase& Control,
-	     const std::string& keyName,
-	     const double length,
-             const double radius)
-  /*!
-    Create general pipe
-    \param Control :: Data Base for variables
-    \param keyName :: main name
-    \param length :: length of pipe
-   */
-{
-  ELog::RegMethod RegA("FREIAvariables[F]","generatePipe");
-    // VACUUM PIPES:
-  Control.addVariable(keyName+"YStep",2.0);   // step + flange
-  Control.addVariable(keyName+"Radius",radius);
-  Control.addVariable(keyName+"Length",length);
-  Control.addVariable(keyName+"FeThick",1.0);
-  Control.addVariable(keyName+"FlangeRadius",radius+4.0);
-  Control.addVariable(keyName+"FlangeLength",1.0);
-  Control.addVariable(keyName+"FeMat","Stainless304");
-  Control.addVariable(keyName+"WindowActive",3);
-  Control.addVariable(keyName+"WindowRadius",radius+2.0);
-  Control.addVariable(keyName+"WindowThick",0.5);
-  Control.addVariable(keyName+"WindowMat","Silicon300K");
-
-  return;
-}
-
-
-  
+   
 void
 FREIAvariables(FuncDataBase& Control)
   /*!
@@ -131,6 +100,7 @@ FREIAvariables(FuncDataBase& Control)
                       7000.0,0.0);
 
   // Pipe in gamma shield
+  FGen.setGuideMat("Aluminium");
   PipeGen.generatePipe(Control,"freiaPipeB",2.0,46.0);
   FGen.clearYOffset();
   FGen.generateBender(Control,"freiaBB",44.0,4.0,4.0,17.566,18.347,

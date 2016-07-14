@@ -150,7 +150,7 @@ setRunTimeVariable(FuncDataBase& Control,
     \param AVMap :: Map of variable to add + values
    */
 {
-  ELog::RegMethod RegA("mainProcess","setRunTimeVariable");
+  ELog::RegMethod RegA("MainProcess[F]","setRunTimeVariable");
 
   std::map<std::string,std::string>::const_iterator mc;
   for(mc=VMap.begin();mc!=VMap.end();mc++)
@@ -166,12 +166,14 @@ setRunTimeVariable(FuncDataBase& Control,
     {
       if (!Control.hasVariable(mc->first))
 	{
-	  ELog::EM<<"Adding variable name "<<mc->first<<ELog::endDiag;
+	  ELog::EM<<"Adding variable name["<<mc->first<<"] "
+                  <<mc->second<<ELog::endDiag;
 	  Control.addVariable(mc->first,mc->second);
 	}
       else
 	{
-	  ELog::EM<<"Setting pre-defined variable "<<mc->second<<ELog::endDiag;
+	  ELog::EM<<"Setting pre-defined variable["<<mc->first<<"] "
+                  <<mc->second<<ELog::endDiag;
 	  Control.setVariable(mc->first,mc->second);
 	}
     }

@@ -255,7 +255,6 @@ GuideLine::populate(const FuncDataBase& Control)
     }
 
   // set frontcut based on offset:
-  ELog::EM<<"YStep ="<<keyName<<" "<<beamYStep<<ELog::endDiag;
   beamFrontCut=(fabs(beamYStep)>Geometry::zeroTol) ? 1 : 0;
   return;
 }

@@ -74,9 +74,9 @@ NMXvariables(FuncDataBase& Control)
   PipeGen.setWindow(13.0,0.3);
   PipeGen.setFlange(16.0,1.0);
   
-  SGen.addWall(1,20.0,"CastIron");
-  SGen.addRoof(1,20.0,"CastIron");
-  SGen.addFloor(1,20.0,"CastIron");
+  SGen.addWall(1,10.0,"CastIron");
+  SGen.addRoof(1,10.0,"CastIron");
+  SGen.addFloor(1,10.0,"CastIron");
   SGen.addFloorMat(5,"Concrete");
   SGen.addRoofMat(5,"Concrete");
   SGen.addWallMat(5,"Concrete");
@@ -133,22 +133,8 @@ NMXvariables(FuncDataBase& Control)
   FGen.clearYOffset();
   FGen.generateRectangle(Control,"nmxFWall",318.0,4.5,4.5);
 
-  Control.addVariable("nmxShieldALength",1750.0);
-  Control.addVariable("nmxShieldALeft",40.0);
-  Control.addVariable("nmxShieldARight",40.0);
-  Control.addVariable("nmxShieldAHeight",40.0);
-  Control.addVariable("nmxShieldADepth",40.0);
-  Control.addVariable("nmxShieldADefMat","Stainless304");
-  Control.addVariable("nmxShieldANSeg",8);
-  Control.addVariable("nmxShieldANWallLayers",8);
-  Control.addVariable("nmxShieldANFloorLayers",3);
-  Control.addVariable("nmxShieldANRoofLayers",8);
-  Control.addVariable("nmxShieldAWallLen1",10.0);
-  Control.addVariable("nmxShieldAWallMat1","CastIron");
-  Control.addVariable("nmxShieldAWallMat5","Concrete");
-  Control.addVariable("nmxShieldARoofLen1",10.0);
-  Control.addVariable("nmxShieldAFloorLen1",10.0);
-
+  SGen.setRFLayers(3,8);
+  SGen.generateShield(Control,"nmxShieldA",1750.0,40.0,40.0,40.0,8,8);
 
   // TEST OF COLLIMATORS IN PIPE:
   Control.addVariable("nmxCollALength",30.0);
