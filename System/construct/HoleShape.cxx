@@ -125,6 +125,38 @@ HoleShape::operator=(const HoleShape& A)
   return *this;
 }
 
+size_t
+HoleShape::shapeIndex(const std::string& ST)
+  /*!
+    Accessor to shape type 
+    \param ST :: name to test / of a index string
+    \return shape index
+   */
+{
+  ELog::RegMethod RegA("HoleShape","shapeIndex");
+  
+  static const std::map<std::string,size_t> SName =
+    {
+      {"Null",0},
+      {"Circle",1},
+      {"Square",2},
+      {"Hexagon",3},
+      {"Octagon",4},
+      {"Rectangle",5}
+    };
+  std::map<std::string,size_t>::const_iterator mc=
+    SName.find(ST);
+  if (mc==SName.end())
+    {
+      size_t shapeIndex;
+      if (StrFunc::convert(ST,shapeIndex) && shapeType<6)
+	return shapeIndex;
+      throw ColErr::InContainerError<std::string>(ST,"ShapeType");
+    }
+  
+  return mc->second;
+}
+  
 void
 HoleShape::setShape(const std::string& ST)
   /*!
@@ -140,28 +172,8 @@ HoleShape::setShape(const std::string& ST)
   */
 {
   ELog::RegMethod RegA("HoleShape","setShape(string)");
-  static const std::map<std::string,size_t> SName =
-    {
-      {"Null",0},
-      {"Circle",1},
-      {"Square",2},
-      {"Hexagon",3},
-      {"Octagon",4},
-      {"Rectangle",5}
-    };
 
-  std::map<std::string,size_t>::const_iterator mc=SName.find(ST);
-  if (mc!=SName.end())
-    {
-      shapeType=mc->second;
-      return;
-    }
-  size_t shapeIndex;
-  if (!StrFunc::convert(ST,shapeIndex))
-    throw ColErr::InContainerError<std::string>
-      (ST,"Shape not defined : ST"); 
-  
-  setShape(shapeIndex);
+  shapeType=shapeType(ST);
   return;
 }
   

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essInc/PinHoleGenerator.h
+ * File:   essInc/RotaryHoleGenerator.h
  *
  * Copyright (c) 2004-2016 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef setVariable_PinHoleGenerator_h
-#define setVariable_PinHoleGenerator_h
+#ifndef setVariable_RotaryHoleGenerator_h
+#define setVariable_RotaryHoleGenerator_h
 
 class FuncDataBase;
 
@@ -28,11 +28,11 @@ namespace setVariable
 {
 
 /*!
-  \class PinHoleGenerator
+  \class RotaryHoleGenerator
   \version 1.0
   \author S. Ansell
   \date May 2016
-  \brief PinHoleGenerator for variables
+  \brief RotaryHoleGenerator for variables
 */
 
 struct holeInfo
@@ -46,7 +46,7 @@ struct holeInfo
 };
  
   
-class PinHoleGenerator
+class RotaryHoleGenerator
 {
  private:
 
@@ -57,10 +57,10 @@ class PinHoleGenerator
   
  public:
 
-  PinHoleGenerator();
-  PinHoleGenerator(const PinHoleGenerator&);
-  PinHoleGenerator& operator=(const PinHoleGenerator&);
-  ~PinHoleGenerator();
+  RotaryHoleGenerator();
+  RotaryHoleGenerator(const RotaryHoleGenerator&);
+  RotaryHoleGenerator& operator=(const RotaryHoleGenerator&);
+  ~RotaryHoleGenerator();
 
 
   

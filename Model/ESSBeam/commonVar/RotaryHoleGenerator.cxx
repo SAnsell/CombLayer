@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonVar/PinHoleGenerator.cxx
+ * File:   commonVar/RotaryHoleGenerator.cxx
  *
  * Copyright (c) 2004-2016 by Stuart Ansell
  *
@@ -76,26 +76,48 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "surfExpand.h"
-#include "PinHoleGenerator.h"
+#include "RotaryHoleGenerator.h"
 
 namespace setVariable
 {
 
-PinHoleGenerator::PinHoleGenerator() :
+RotaryHoleGenerator::RotaryHoleGenerator() :
   defMat("Tungsten")
   /*!
     Constructor and defaults
   */
 {}
   
-PinHoleGenerator::~PinHoleGenerator() 
+RotaryHoleGenerator::~RotaryHoleGenerator() 
  /*!
    Destructor
  */
 {}
+
+void
+RotaryHoleGenerator::addHole(const std::string& type,
+			     const double Rad,const double xRad,
+			     const double aCent,const double aOff,
+			     const rStep)
+/*!
+  Add a simple hole
+  \param type :: type of hole []
+  \param Rad :: radius
+  \param xRad :: xRadius [if used]
+  \param aCent :: Angular centre ??
+  \param aCent :: Angular Offset 
+  \param radStep :: distance from centre
+*/
+{
+  ELog::RegMethod RegA("RotaryHoleGenerator","addHole");
+
+  if (type=="
+  return;
+}
+  
   
 void
-PinHoleGenerator::generatePinHole(FuncDataBase& Control,
+RotaryHoleGenerator::generatePinHole(FuncDataBase& Control,
                                  const std::string& keyName,
                                  const double yStep) const
 
@@ -109,7 +131,36 @@ PinHoleGenerator::generatePinHole(FuncDataBase& Control,
     \param outerRadius :: Outer radius
   */
 {
-  ELog::RegMethod RegA("PinHoleGenerator","generatorPinHole");
+  ELog::RegMethod RegA("RotaryHoleGenerator","generatorPinHole");
+
+    Control.addVariable("odinPinCollAInnerWall",1.0);
+  Control.addVariable("odinPinCollAInnerWallMat","Void");
+
+  Control.addVariable("odinPinCollANLayers",0);
+  Control.addVariable("odinPinCollAHoleIndex",0);
+  Control.addVariable("odinPinCollAHoleAngOff",0.0);
+
+  Control.addVariable("odinPinCollADefMat","Inconnel");
+  // collimator holes:
+  Control.addVariable("odinPinCollANHole",3);
+  Control.addVariable("odinPinCollAHole0Shape",1);
+  Control.addVariable("odinPinCollAHole0Radius",3.0);
+
+  Control.addVariable("odinPinCollAHole0AngleCentre",0.0);
+  Control.addVariable("odinPinCollAHole0AngleOffset",0.0);
+  Control.addVariable("odinPinCollAHole0RadialStep",20.0);
+
+  Control.addVariable("odinPinCollAHole1Shape",3);
+  Control.addVariable("odinPinCollAHole1Radius",5.0);
+  Control.addVariable("odinPinCollAHole1AngleCentre",120.0);
+  Control.addVariable("odinPinCollAHole1AngleOffset",0.0);
+  Control.addVariable("odinPinCollAHole1RadialStep",15.0);
+  
+  Control.addVariable("odinPinCollAHole2Shape",1);
+  Control.addVariable("odinPinCollAHole2Radius",4.0);
+  Control.addVariable("odinPinCollAHole2AngleCentre",240.0);
+  Control.addVariable("odinPinCollAHole2AngleOffset",0.0);
+  Control.addVariable("odinPinCollAHole2RadialStep",20.0);
 
   return;
 
