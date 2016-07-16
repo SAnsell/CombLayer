@@ -149,7 +149,7 @@ HoleShape::shapeIndex(const std::string& ST)
   if (mc==SName.end())
     {
       size_t shapeIndex;
-      if (StrFunc::convert(ST,shapeIndex) && shapeType<6)
+      if (StrFunc::convert(ST,shapeIndex) && shapeIndex<6)
 	return shapeIndex;
       throw ColErr::InContainerError<std::string>(ST,"ShapeType");
     }
@@ -173,7 +173,7 @@ HoleShape::setShape(const std::string& ST)
 {
   ELog::RegMethod RegA("HoleShape","setShape(string)");
 
-  shapeType=shapeType(ST);
+  shapeType=shapeIndex(ST);
   return;
 }
   

@@ -55,6 +55,7 @@
 #include "PipeGenerator.h"
 #include "BladeGenerator.h"
 #include "JawGenerator.h"
+#include "RotaryHoleGenerator.h"
 #include "variableSetup.h"
 
 namespace setVariable
@@ -76,6 +77,7 @@ ODINvariables(FuncDataBase& Control)
   setVariable::PitGenerator PGen;
   setVariable::BladeGenerator BGen;
   setVariable::JawGenerator JGen;
+  setVariable::RotaryHoleGenerator RotGen;
   
   SGen.addWall(1,30.0,"CastIron");
   SGen.addRoof(1,30.0,"CastIron");
@@ -246,81 +248,22 @@ ODINvariables(FuncDataBase& Control)
   // PIN COLLIMATOR SYSTEM
   Control.addVariable("odinPinLength",50.0);
   Control.addVariable("odinPinRadius",60.0);
-  Control.addVariable("odinPinYStep",20.0);
+  Control.addVariable("odinPinYStep",30.0);
   // Collimator A:
-  Control.addVariable("odinPinCollAYStep",1.0);
-  Control.addVariable("odinPinCollARotDepth",20.0);
-  Control.addVariable("odinPinCollARadius",30.0);
-  Control.addVariable("odinPinCollAThick",10.0);
-
-  Control.addVariable("odinPinCollAInnerWall",1.0);
-  Control.addVariable("odinPinCollAInnerWallMat","Void");
-
-  Control.addVariable("odinPinCollANLayers",0);
-  Control.addVariable("odinPinCollAHoleIndex",0);
-  Control.addVariable("odinPinCollAHoleAngOff",0.0);
-
-  Control.addVariable("odinPinCollADefMat","Inconnel");
-  // collimator holes:
-  Control.addVariable("odinPinCollANHole",3);
-  Control.addVariable("odinPinCollAHole0Shape",1);
-  Control.addVariable("odinPinCollAHole0Radius",3.0);
-
-  Control.addVariable("odinPinCollAHole0AngleCentre",0.0);
-  Control.addVariable("odinPinCollAHole0AngleOffset",0.0);
-  Control.addVariable("odinPinCollAHole0RadialStep",20.0);
-
-  Control.addVariable("odinPinCollAHole1Shape",3);
-  Control.addVariable("odinPinCollAHole1Radius",5.0);
-  Control.addVariable("odinPinCollAHole1AngleCentre",120.0);
-  Control.addVariable("odinPinCollAHole1AngleOffset",0.0);
-  Control.addVariable("odinPinCollAHole1RadialStep",15.0);
-  
-  Control.addVariable("odinPinCollAHole2Shape",1);
-  Control.addVariable("odinPinCollAHole2Radius",4.0);
-  Control.addVariable("odinPinCollAHole2AngleCentre",240.0);
-  Control.addVariable("odinPinCollAHole2AngleOffset",0.0);
-  Control.addVariable("odinPinCollAHole2RadialStep",20.0);
+  RotGen.setMain(30.0,10.0);
+  RotGen.addHole("Circle", 3.0, 0.0,   0.0, 20.0);
+  RotGen.addHole("Hexagon",5.0, 0.0, 120.0, 15.0);
+  RotGen.addHole("Circle", 4.0, 0.0, 240.0, 20.0);
+  RotGen.generatePinHole(Control,"odinPinCollA",-23.0,20.0);
 
   // Collimator B:
-  Control.addVariable("odinPinCollBYStep",40.0);
-  Control.addVariable("odinPinCollBRotDepth",20.0);
-  Control.addVariable("odinPinCollBRadius",30.0);
-  Control.addVariable("odinPinCollBThick",10.0);
-
-  Control.addVariable("odinPinCollBInnerWall",1.0);
-  Control.addVariable("odinPinCollBInnerWallMat","Void");
-
-  Control.addVariable("odinPinCollBNLayers",0);
-  Control.addVariable("odinPinCollBHoleIndex",0);
-  Control.addVariable("odinPinCollBHoleAngOff",0.0);
-
-  Control.addVariable("odinPinCollBDefMat","Tungsten");
-  // collimator holes:
-  Control.addVariable("odinPinCollBNHole",3);
-  Control.addVariable("odinPinCollBHole0Shape",1);
-  Control.addVariable("odinPinCollBHole0Radius",3.0);
-
-  Control.addVariable("odinPinCollBHole0AngleCentre",0.0);
-  Control.addVariable("odinPinCollBHole0AngleOffset",0.0);
-  Control.addVariable("odinPinCollBHole0RadialStep",20.0);
-
-  Control.addVariable("odinPinCollBHole1Shape",3);
-  Control.addVariable("odinPinCollBHole1Radius",5.0);
-  Control.addVariable("odinPinCollBHole1AngleCentre",120.0);
-  Control.addVariable("odinPinCollBHole1AngleOffset",0.0);
-  Control.addVariable("odinPinCollBHole1RadialStep",15.0);
-  
-  Control.addVariable("odinPinCollBHole2Shape",1);
-  Control.addVariable("odinPinCollBHole2Radius",4.0);
-  Control.addVariable("odinPinCollBHole2AngleCentre",240.0);
-  Control.addVariable("odinPinCollBHole2AngleOffset",0.0);
-  Control.addVariable("odinPinCollBHole2RadialStep",20.0);
+  RotGen.setMain(30.0,10.0);
+  RotGen.generatePinHole(Control,"odinPinCollB",13.0,20.0);
 
   //
   // JAWS
   //
-  JGen.generateJaws(Control,"odinPinJaw",22.0);
+  JGen.generateJaws(Control,"odinPinJaw",0.0);
 
 
   Control.addVariable("odinBeamStopYStep",1200.0);

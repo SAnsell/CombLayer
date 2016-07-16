@@ -83,7 +83,7 @@ namespace constructSystem
 
 PinHole::PinHole(const std::string& Key) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,2),
+  attachSystem::FixedOffset(Key,6),
   attachSystem::CellMap(),
   pinIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(pinIndex+1),
@@ -192,8 +192,8 @@ PinHole::createSurfaces()
   ELog::RegMethod RegA("PinHole","createSurfaces");
 
   // Inner void
-  ModelSupport::buildPlane(SMap,pinIndex+1,Origin,Y);
-  ModelSupport::buildPlane(SMap,pinIndex+2,Origin+Y*(length),Y);
+  ModelSupport::buildPlane(SMap,pinIndex+1,Origin-Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,pinIndex+2,Origin+Y*(length/2.0),Y);
   ModelSupport::buildCylinder(SMap,pinIndex+7,Origin,Y,radius);
 
   return;
@@ -211,9 +211,10 @@ PinHole::createObjects(Simulation& System)
   std::string Out;
 
   Out=ModelSupport::getComposite(SMap,pinIndex,"1 -2 -7");
-  addOuterSurf(Out);
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   setCell("Void",cellIndex-1);
+
+  addOuterSurf(Out);
 
   return;
 }
@@ -227,10 +228,19 @@ PinHole::createLinks()
   
   ELog::RegMethod RegA("PinHole","createLinks");
 
-  FixedComp::setConnect(0,Origin,-Y);
-  FixedComp::setConnect(1,Origin+Y*length,Y);
+  FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
+  FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
+  FixedComp::setConnect(2,Origin-X*radius,-X);
+  FixedComp::setConnect(3,Origin+X*radius,X);
+  FixedComp::setConnect(4,Origin-Z*radius,-Z);
+  FixedComp::setConnect(5,Origin+Z*radius,Z);
+
   FixedComp::setLinkSurf(0,-SMap.realSurf(pinIndex+1));
   FixedComp::setLinkSurf(1,SMap.realSurf(pinIndex+2));
+  FixedComp::setLinkSurf(2,SMap.realSurf(pinIndex+7));
+  FixedComp::setLinkSurf(3,SMap.realSurf(pinIndex+7));
+  FixedComp::setLinkSurf(4,SMap.realSurf(pinIndex+7));
+  FixedComp::setLinkSurf(5,SMap.realSurf(pinIndex+7));
   
   return;
 }
@@ -250,6 +260,7 @@ PinHole::createAll(Simulation& System,
   ELog::RegMethod RegA("PinHole","createAll(FC)");
 
   populate(System.getDataBase());
+
   createUnitVector(FC,FIndex);
   createSurfaces();
   createObjects(System);
@@ -262,11 +273,11 @@ PinHole::createAll(Simulation& System,
   CollB->createAll(System,*this,0);
 
   JawX->setInsertCell(getCell("Void"));
-  JawX->createAll(System,FC,FIndex);
+  JawX->createAll(System,*this,0);
 
   JawXZ->setInsertCell(getCell("Void"));
-  JawXZ->createAll(System,FC,FIndex);
+  JawXZ->createAll(System,*this,0);
   return;
 }
   
-}  // NAMESPACE essSystem
+}  // NAMESPACE constructSystem

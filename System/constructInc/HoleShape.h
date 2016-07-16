@@ -87,8 +87,10 @@ class HoleShape : public attachSystem::ContainedComp,
   HoleShape& operator=(const HoleShape&);
   virtual ~HoleShape() {}
 
-  void populate(const FuncDataBase&);
+  static size_t shapeIndex(const std::string&);
   
+  void populate(const FuncDataBase&);
+
   void setFaces(const int,const int);
   void setFaces(const HeadRule&,const HeadRule&);
   void setMasterAngle(const double);

@@ -37,11 +37,10 @@ namespace setVariable
 
 struct holeInfo
 {
-  int shape;         ///< Shape [number until enum]
+  size_t shape;         ///< Shape [number until enum]
   double radius;     ///< Radius
   double xradius;    ///< Radius [if needed]
   double angCent;    ///< Angle centre
-  double angOff;     ///< offset
   double radStep;    ///< out setp
 };
  
@@ -50,8 +49,16 @@ class RotaryHoleGenerator
 {
  private:
 
+
+  double mainRadius;    ///< Main radius
+  double mainThick;     ///< Main thickness
+  double innerWall;     ///< inner wall thickness
+  std::string innerMat; ///< Inner wall material
   std::string defMat;   ///< Default material
-  /// Blade thicknesses
+
+  size_t posIndex;      ///< Position index
+  double angOffset;      ///< angle relative to posIndex
+  /// Hole definitions
   std::vector<holeInfo> HData;
 
   
@@ -63,14 +70,19 @@ class RotaryHoleGenerator
   ~RotaryHoleGenerator();
 
 
-  
+  void setPosition(const size_t,const double);
+  /// access to size
+  void setMain(const double R,const double T)
+  { mainRadius=R; mainThick=T; }
+  void setWall(const double T,const std::string& M)
+  { innerWall=T; innerMat=M; }
   void resetHoles() { HData.clear(); }
-  void addHole(const std::string,const double,const double,
+  void addHole(const std::string&,const double,const double,
 	       const double,const double);
   
   
   void generatePinHole(FuncDataBase&,const std::string&,
-		       const double)  const;
+		       const double,const double)  const;
 };
 
 }

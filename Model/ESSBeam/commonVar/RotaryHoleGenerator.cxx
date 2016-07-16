@@ -48,41 +48,24 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Quaternion.h"
-#include "Surface.h"
-#include "surfIndex.h"
-#include "surfRegister.h"
-#include "objectRegister.h"
-#include "surfEqual.h"
-#include "Quadratic.h"
-#include "Plane.h"
-#include "Cylinder.h"
-#include "Line.h"
-#include "Rules.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
+#include "surfRegister.h"
 #include "HeadRule.h"
-#include "Object.h"
-#include "Qhull.h"
-#include "Simulation.h"
-#include "ModelSupport.h"
-#include "MaterialSupport.h"
-#include "generateSurf.h"
 #include "LinkUnit.h"
-#include "FixedComp.h"
 #include "ContainedComp.h"
-#include "ContainedGroup.h"
-#include "BaseMap.h"
-#include "CellMap.h"
-#include "surfExpand.h"
+#include "FixedComp.h"
+#include "HoleShape.h"
 #include "RotaryHoleGenerator.h"
 
 namespace setVariable
 {
 
 RotaryHoleGenerator::RotaryHoleGenerator() :
-  defMat("Tungsten")
+  mainRadius(30.0),mainThick(10.0),
+  innerWall(1.0),innerMat("Void"),
+  defMat("Inconnel"),posIndex(0),angOffset(0.0)
   /*!
     Constructor and defaults
   */
@@ -97,21 +80,41 @@ RotaryHoleGenerator::~RotaryHoleGenerator()
 void
 RotaryHoleGenerator::addHole(const std::string& type,
 			     const double Rad,const double xRad,
-			     const double aCent,const double aOff,
-			     const rStep)
+			     const double aCent,const double rStep)
 /*!
   Add a simple hole
   \param type :: type of hole []
   \param Rad :: radius
   \param xRad :: xRadius [if used]
   \param aCent :: Angular centre ??
-  \param aCent :: Angular Offset 
   \param radStep :: distance from centre
 */
 {
   ELog::RegMethod RegA("RotaryHoleGenerator","addHole");
+  holeInfo A;
+  A.shape=constructSystem::HoleShape::shapeIndex(type);
+  A.radius=Rad;
+  A.xradius=xRad;
+  A.angCent=aCent;
+  A.radStep=rStep;
+  HData.push_back(A);
+  return;
+}
 
-  if (type=="
+void
+RotaryHoleGenerator::setPosition(const size_t PI,const double AO)
+  /*!
+    Set the active hole position
+    \param PI :: Position index
+    \param AO :: angle offset
+  */
+{
+  ELog::RegMethod RegA("RotaryHoleGenerator","setPosition");
+
+  if (PI>=HData.size())
+    throw ColErr::IndexError<size_t>(PI,HData.size(),"PositionIndex/HData");
+  posIndex=PI;
+  angOffset=AO;
   return;
 }
   
@@ -119,48 +122,49 @@ RotaryHoleGenerator::addHole(const std::string& type,
 void
 RotaryHoleGenerator::generatePinHole(FuncDataBase& Control,
                                  const std::string& keyName,
-                                 const double yStep) const
+				     const double yStep,
+				     const double rotStep) const
 
 
   /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables 
     \param keyName :: head name for variable
-    \param yStep :: y-offset 
-    \param innerRadius :: Inner radius
-    \param outerRadius :: Outer radius
+    \param yStep :: Y step of collimator
+    \param rotStep :: Z step to rotation centre
   */
 {
   ELog::RegMethod RegA("RotaryHoleGenerator","generatorPinHole");
 
-    Control.addVariable("odinPinCollAInnerWall",1.0);
-  Control.addVariable("odinPinCollAInnerWallMat","Void");
-
-  Control.addVariable("odinPinCollANLayers",0);
-  Control.addVariable("odinPinCollAHoleIndex",0);
-  Control.addVariable("odinPinCollAHoleAngOff",0.0);
-
-  Control.addVariable("odinPinCollADefMat","Inconnel");
-  // collimator holes:
-  Control.addVariable("odinPinCollANHole",3);
-  Control.addVariable("odinPinCollAHole0Shape",1);
-  Control.addVariable("odinPinCollAHole0Radius",3.0);
-
-  Control.addVariable("odinPinCollAHole0AngleCentre",0.0);
-  Control.addVariable("odinPinCollAHole0AngleOffset",0.0);
-  Control.addVariable("odinPinCollAHole0RadialStep",20.0);
-
-  Control.addVariable("odinPinCollAHole1Shape",3);
-  Control.addVariable("odinPinCollAHole1Radius",5.0);
-  Control.addVariable("odinPinCollAHole1AngleCentre",120.0);
-  Control.addVariable("odinPinCollAHole1AngleOffset",0.0);
-  Control.addVariable("odinPinCollAHole1RadialStep",15.0);
+  Control.addVariable(keyName+"YStep",yStep);
+  Control.addVariable(keyName+"RotDepth",rotStep);
+  Control.addVariable(keyName+"Radius",mainRadius);
+  Control.addVariable(keyName+"Thick",mainThick);
   
-  Control.addVariable("odinPinCollAHole2Shape",1);
-  Control.addVariable("odinPinCollAHole2Radius",4.0);
-  Control.addVariable("odinPinCollAHole2AngleCentre",240.0);
-  Control.addVariable("odinPinCollAHole2AngleOffset",0.0);
-  Control.addVariable("odinPinCollAHole2RadialStep",20.0);
+  Control.addVariable(keyName+"InnerWall",innerWall);
+  Control.addVariable(keyName+"InnerWallMat",innerMat);
+
+  Control.addVariable(keyName+"NLayers",0); // ??
+
+  Control.addVariable(keyName+"DefMat",defMat);
+
+  // collimator holes:
+  Control.addVariable(keyName+"NHole",HData.size());
+
+  Control.addVariable(keyName+"HoleIndex",posIndex);
+  Control.addVariable(keyName+"HoleAngOff",angOffset);
+  for(size_t index=0;index<HData.size();index++)
+    {
+      const std::string holeName=
+	keyName+"Hole"+StrFunc::makeString(index);
+      const holeInfo& HI(HData[index]);
+      Control.addVariable(holeName+"Shape",HI.shape);
+      Control.addVariable(holeName+"Radius",HI.radius);
+      Control.addVariable(holeName+"XRadius",HI.xradius);
+
+      Control.addVariable(holeName+"AngleCentre",HI.angCent);
+      Control.addVariable(holeName+"RadialStep",HI.radStep);
+    }      
 
   return;
 
