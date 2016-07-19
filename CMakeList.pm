@@ -341,13 +341,9 @@ sub writeTail
   
 ## DOXYGEN
   
-  print $DX "add_custom_target(doxygen ",
-    " COMMAND  echo \"INPUT= \" ",
-  " \`ls \${ASRC}\` | doxygen - )\n";
-
-##      " COMMAND cat Doxyfile; echo \"INPUT= \" ",
-##  	" \`ls \${ASRC}\`  | doxygen \- )\n";
-
+  print $DX "add_custom_target(doxygen ".
+      " COMMAND ".
+      " { cat Doxyfile \\; echo \"INPUT=\" \${ASRC} \"\" \\;} | doxygen - )\n";
 
 ## WORDS
 
