@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/F5Calc.h
  *
- * Copyright (c) 2015 Konstantin Batkov
+ * Copyright (c) 2015-2016 Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,13 @@
 
 namespace tallySystem
 {
+/*!
+  \class F5Calc
+  \version 1.0
+  \author K. Batkov. 
+  \date May 2015
+  \brief F5 collimator system projection calculation system
+*/
 
 class F5Calc
 {

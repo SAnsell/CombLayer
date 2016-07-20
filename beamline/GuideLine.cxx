@@ -816,7 +816,7 @@ GuideLine::addFrontCut(const std::string& FC)
 void
 GuideLine::addEndCut(const std::string& EC)
   /*!
-    Add an end cut to the string
+    Add an end cut to the s:0tring
     \param EC :: End cut
   */
 {
@@ -851,7 +851,7 @@ GuideLine::addFrontCut(const attachSystem::FixedComp& FC,
 }
 
 void
-GuideLine::addEndCut(const FixedComp& EC,
+GuideLine::addEndCut(const attachSystem::FixedComp& EC,
                      const long int sideIndex)
   /*!
     Add an end cut system

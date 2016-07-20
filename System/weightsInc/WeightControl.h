@@ -45,11 +45,11 @@ namespace WeightSystem
   class WWGWeight;
   
   /*!
-    \class WeigthControl
+    \class WeightControl
     \version 1.0
     \author S. Ansell
     \date October 2015
-    \brief Input to Weights controler
+    \brief Input to Weights controller
   */
   
 class WeightControl

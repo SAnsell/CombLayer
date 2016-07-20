@@ -27,6 +27,14 @@ class FuncDataBase;
 namespace attachSystem
 {
 
+/*!
+  \struct offset 
+  \version 1.0
+  \author S. Ansell
+  \date October 2015
+  \brief Holding system to control offsets
+*/
+  
 struct offset
 {
   double xStep;       ///< x step

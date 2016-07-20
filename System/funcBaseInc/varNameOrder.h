@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   funcBaseInc/varNameOrder.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,13 +22,22 @@
 #ifndef varNameOrder_h
 #define varNameOrder_h
 
+/*!
+  \class varNameOrder
+  \version 1.0
+  \author S. Ansell
+  \date September 2012
+  \brief bool operator comparitor to sort the variables names
+*/
+
 class varNameOrder 
 {
  public:
 
   varNameOrder();
-  ~varNameOrder() {}
+  ~varNameOrder() {}  ///< destructor
 
+  /// actual comparitor
   template<typename T> bool
     operator()(const std::pair<std::string,T>& A,
 	       const std::pair<std::string,T>& B) const
@@ -36,6 +45,7 @@ class varNameOrder
       return operator()(A.first,B.first);
     }
 
+  /// comparitor for entry
   bool operator()(const std::string& A,
 		  const std::string& B) const;
 };

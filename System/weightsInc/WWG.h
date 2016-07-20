@@ -32,6 +32,13 @@ class Simulation;
 namespace WeightSystem
 {
 
+  /*!
+    \class WWG 
+    \author S. Ansell
+    \version 1.0
+    \date Jan 2016
+    \brief Storage for WWG output
+  */
   
 class WWG 
 {

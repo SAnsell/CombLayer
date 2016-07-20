@@ -2,7 +2,7 @@
   CombLayer : MCNP(X) Input builder
  
  * File:   include/DatumValues.h
-*
+ *
  * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
@@ -22,7 +22,12 @@
 #ifndef DatumValues_h
 #define DatumValues_h
 
-
+/*!
+  \struct pointDataum
+  \author S. Ansell
+  \date June 2016
+  \brief Single data point from a FixedComp
+*/
 struct pointDatum
 {
   int activeFlag;       ///< 0 Null / 1 point / 2 axis [3 both]
@@ -50,9 +55,9 @@ class DatumValues
 {
  private:
 
-  std::vector<std::string> orderName;
+  std::vector<std::string> orderName;          ///< Order to output file
 
-  std::map<std::string,PointDatum> pointMap;
+  std::map<std::string,PointDatum> pointMap;   ///< points to outpur
 
   DatumValues(const DatumValues&);
   DatumValues& operator=(const DatumValues&);

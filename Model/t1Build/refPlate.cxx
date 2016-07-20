@@ -29,7 +29,7 @@
 #include <list>
 #include <vector>
 #include <string>
-#include <boost/format.hpp>
+#include <memory>
 
 #include "Exception.h"
 #include "FileReport.h"

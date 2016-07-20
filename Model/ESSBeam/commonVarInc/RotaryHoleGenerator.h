@@ -28,6 +28,24 @@ namespace setVariable
 {
 
 /*!
+  \struct holeInfo
+  \version 1.0
+  \author S. Ansell
+  \date May 2016
+  \brief Single unit of hole data
+*/
+
+struct holeInfo
+{
+  size_t shape;      ///< Shape [number until enum]
+  double radius;     ///< Radius
+  double xradius;    ///< Radius [if needed]
+  double angCent;    ///< Angle centre
+  double radStep;    ///< out setp
+};
+ 
+
+/*!
   \class RotaryHoleGenerator
   \version 1.0
   \author S. Ansell
@@ -35,16 +53,6 @@ namespace setVariable
   \brief RotaryHoleGenerator for variables
 */
 
-struct holeInfo
-{
-  size_t shape;         ///< Shape [number until enum]
-  double radius;     ///< Radius
-  double xradius;    ///< Radius [if needed]
-  double angCent;    ///< Angle centre
-  double radStep;    ///< out setp
-};
- 
-  
 class RotaryHoleGenerator
 {
  private:

@@ -160,5 +160,9 @@ masterWrite::padNum(const Geometry::Vec3D& V,const size_t len)
  
 }
 
+///\cond TEMPLATE
+
 template std::string masterWrite::padNum(const double&,const size_t);
 template std::string masterWrite::padNum(const int&,const size_t);
+
+///\endcond TEMPLATE

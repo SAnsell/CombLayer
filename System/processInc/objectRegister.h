@@ -55,8 +55,9 @@ class objectRegister
   std::set<int> activeCells;       ///< Active cells
   cMapTYPE Components;             ///< Pointer to real objects
 
-  ///\cond SINGLETON
+
   objectRegister();
+  ///\cond SINGLETON
   objectRegister(const objectRegister&);
   objectRegister& operator=(const objectRegister&);
   ///\endcond SINGLETON
