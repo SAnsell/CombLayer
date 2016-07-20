@@ -27,6 +27,14 @@ class Simulation;
 namespace photonSystem
 {
 
+/*!
+  \struct LInfo
+  \author S. Ansell
+  \version 1.0
+  \date Janurary 2015
+  \brief Data unit for a layer in an object
+*/
+
 struct LInfo
 {
   size_t nDisk;                ///< number of units

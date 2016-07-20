@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   support/polySupport.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,6 +38,7 @@
 double
 quad(const double aa,const double bb,const double cc,const double x)
 /*!
+  Calcuate a quadratic
   \param aa :: x^2 value
   \param bb :: x^2 value
   \param cc :: const
@@ -154,7 +155,7 @@ solveCubic(const double* D,
 	   std::complex<double>& AnsC)
 /*!
   Solves Cubic equation
-  \param Coef :: iterator over all the coefients in the order
+  Iiterator over all the coefients in the order
   \f[ Ax^3+Bx^2+Cx+D \f].
   \param D :: Parameters x^3 to const
   \param AnsA :: complex roots of the equation 
@@ -173,7 +174,7 @@ solveCubic(double a,double b,double c,double d,
 	   std::complex<double>& AnsC)
 /*!
   Solves Cubic equation
-  \param Coef :: iterator over all the coefients in the order
+  Iterator over all the coefients in the order
   \f[ Ax^3+Bx^2+Cx+D \f].
   \param a :: x^3 coeff
   \param b :: x^2 coeff

@@ -25,9 +25,16 @@
 namespace WeightSystem
 {
 
+/*!
+  \struct CellItem
+  \brief Singel cell item
+  \author S. Ansell
+  \date February 2012
+*/
+  
 struct CellItem
 {
-  long int vCell;              ///< Void cell
+  long int vCell;         ///< Void cell
   double weight;          ///< weight for the cell
   double number;          ///< number of tracks
 

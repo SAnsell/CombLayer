@@ -23,9 +23,10 @@
 #define DatumValues_h
 
 /*!
-  \struct pointDataum
+  \struct pointDatum
   \author S. Ansell
   \date June 2016
+  \version 1.0
   \brief Single data point from a FixedComp
 */
 struct pointDatum
@@ -59,8 +60,10 @@ class DatumValues
 
   std::map<std::string,PointDatum> pointMap;   ///< points to outpur
 
+  ///\cond SINGLETON
   DatumValues(const DatumValues&);
   DatumValues& operator=(const DatumValues&);
+  ///\endcond SINGLETON
 	      
  public:
 

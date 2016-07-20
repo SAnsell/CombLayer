@@ -590,26 +590,33 @@ FValue<T>::write(std::ostream& OX) const
   return;
 }
 
+/// Simple Typename
 template<>
 std::string FValue<Geometry::Vec3D>::typeKey()  const
 {  return "Geometry::Vec3D"; }
 
+/// Simple Typename
 template<>
 std::string FValue<double>::typeKey()  const
 {  return "double"; }
 
+/// Simple Typename
 template<>
 std::string FValue<int>::typeKey()  const
 {  return "int"; }
 
+/// Simple Typename
 template<>
 std::string FValue<size_t>::typeKey()  const
 {  return "size_t"; }
 
+
+/// Simple Typename
 template<>
 std::string FValue<long int>::typeKey()  const
 {  return "long int"; }
 
+/// Simple Typename
 template<>
 std::string FValue<std::string>::typeKey()  const
 {  return "std::string"; }
