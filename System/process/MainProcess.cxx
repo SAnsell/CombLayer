@@ -151,7 +151,7 @@ setRunTimeVariable(FuncDataBase& Control,
    */
 {
   ELog::RegMethod RegA("MainProcess[F]","setRunTimeVariable");
-
+  
   std::map<std::string,std::string>::const_iterator mc;
   for(mc=VMap.begin();mc!=VMap.end();mc++)
     {
@@ -895,9 +895,11 @@ setVariables(Simulation& System,const inputParam& IParam,
       System.getDataBase().processXML(FileName);
     }
 
+    ELog::EM<<"Name == "<<Names.size()<<ELog::endDiag;
   mainSystem::getVariables(Names,AddValues,Values,IterVal);
+  ELog::EM<<"Name == "<<Names.size()<<ELog::endDiag;
   mainSystem::setRunTimeVariable(System.getDataBase(),Values,AddValues);
-
+  ELog::EM<<"Name == "<<Names.size()<<ELog::endDiag;
 
   if (IParam.flag("xmlout")) 
     {

@@ -217,11 +217,12 @@ FixedComp::createUnitVector(const FixedComp& FC,
   Geometry::Vec3D zTest=FC.getZ();
   Geometry::Vec3D xTest=FC.getX();
   if (fabs(zTest.dotProd(yTest))>1.0-Geometry::zeroTol)
-    {
-      zTest=FC.getX();
-      xTest=FC.getZ();
-    }
-  computeZOffPlane(xTest,yTest,zTest);  
+    zTest=FC.getY();
+  else if (fabs(xTest.dotProd(yTest))>1.0-Geometry::zeroTol)
+    xTest=FC.getY();
+  
+  computeZOffPlane(xTest,yTest,zTest);
+
   createUnitVector(LU.getConnectPt(),yTest*zTest,yTest,zTest);
   return;
 }

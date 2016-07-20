@@ -90,6 +90,7 @@ class DBMaterial
   void setNeutMaterial(const int,const scatterSystem::neutMaterial*);
 
   bool createMaterial(const std::string&);
+  int processMaterial(const std::string&);
 
   bool hasKey(const std::string&) const;
   bool hasKey(const int) const;

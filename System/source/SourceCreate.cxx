@@ -417,7 +417,7 @@ createGammaSource(const FuncDataBase& Control,
     \param Card :: Source system
    */
 {
-  ELog::RegMethod RegA("SourceCreate","createGammaSource(FC,link)");
+  ELog::RegMethod RegA("SourceCreate[F]","createGammaSource(FC,link)");
   GammaSource GX(keyName);
 
   GX.createAll(Control,FC,linkIndex,Card);

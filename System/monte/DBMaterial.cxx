@@ -1042,14 +1042,14 @@ DBMaterial::initMaterial()
 		   MLib);
   setMaterial(MObj);
 
-  // Material #48 Parafin Wax:
+  // Material #123 Parafin Wax:
   MObj.setMaterial(123,"Wax","6000.70c 0.2 "
                    "8016.70c 0.1 1001.70c 0.65 "
                    "14028.70c 0.05","poly.01t",MLib);
   MObj.setDensity(-1.05);
   setMaterial(MObj);
 
-  // Tungsten at 600K -- density unchanged
+  // # 124 Tungsten at 600K -- density unchanged
   MObj.setMaterial(124,"Tungsten600K",
 		   "74182.71c 0.016871 74183.71c 0.00911077 "
 		   "74184.71c 0.019507618 74186.71c 0.018100573 ","",MLib);
@@ -1058,7 +1058,7 @@ DBMaterial::initMaterial()
   MObj.setDensity(-19.298); 
   setMaterial(MObj);
 
-  // Zircalloy-2 -- 6.56g/cc
+  // # 125 Zircalloy-2 -- 6.56g/cc
   // NEEDS 0.1% Cr / 1.4% Sn / 0.1% Fe / 0.12% O / 0.05% Ni
   MObj.setMaterial(125,"Zircaloy2",
                    "40090.70c 0.00874443 40091.70c 0.00190695 "
@@ -1066,7 +1066,13 @@ DBMaterial::initMaterial()
                    "",MLib);
   MObj.setDensity(-6.56); 
   setMaterial(MObj);
-  
+
+  // Material #126 Polystyrene [C8H8]
+  MObj.setMaterial(126,"Polystyrene","6000.70c 0.5 "
+                   "1001.70c 0.5 ","poly.01t",MLib);
+  MObj.setDensity(-1.06);
+  setMaterial(MObj);
+
   // CLONE Materials: 
   cloneMaterial("CastIron","Iron");
   cloneMaterial("Aluminium","Aluminium20K");
@@ -1390,6 +1396,31 @@ DBMaterial::getKey(const int KeyNum) const
   return OutStr;
 }
 
+int
+DBMaterial::processMaterial(const std::string& matKey)
+  /*!
+    Produce or process the string 
+    \param matKey :: String / Index name
+    \return material index
+  */
+{
+  ELog::RegMethod RegA("DBMaterial","processMaterial");
+
+
+  if (createMaterial(matKey))
+    return getIndex(matKey);
+  
+  // Note: EvalVar converts any string into a integer [best guess]
+  int out;
+  if (!StrFunc::convert(matKey,out))
+    throw ColErr::InContainerError<std::string>(matKey,"Material not present");
+
+  if(!hasKey(out))
+    throw ColErr::InContainerError<int>(out,"Material not present");
+  
+  return out;
+}
+  
 int
 DBMaterial::getIndex(const std::string& Key) const
   /*!

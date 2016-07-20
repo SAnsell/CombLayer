@@ -194,14 +194,16 @@ WeightControl::processPtString(std::string ptStr)
   if (ptStr.size()>1)
     {
       const std::string Input(ptStr);
+      ELog::EM<<"Pt == "<<Input<<ELog::endDiag;
       const char SP=static_cast<char>(std::toupper(ptStr[0]));
       const char TP=static_cast<char>(std::toupper(ptStr[1]));
       if (SP!='T' && SP!='S')  // fail
-        throw ColErr::InvalidLine(Input,"PtStr");      
+	throw ColErr::InvalidLine(Input,"PtStr");
 
       std::map<char,std::string>::const_iterator mc=TypeMap.find(TP);
       if (mc==TypeMap.end())
-        throw ColErr::InvalidLine(Input,"PtStr");
+	
+        throw ColErr::InvalidLine(Input,"PtStr expected:: [ST] [SPC] number");
 
       activePtType=mc->second;
 
@@ -690,12 +692,11 @@ WeightControl::procObject(const Simulation& System,
 	}
       // local values:
       procParam(IParam,"weightObject",iSet,1);
-
+      
       objectList.insert(Key);
       const std::vector<int> objCells=OR.getObjectRange(Key);
       if (objCells.empty())
         ELog::EM<<"Cell["<<Key<<"] empty on renumber"<<ELog::endWarn;
-
 
       
       if (activePtType=="Plane")   

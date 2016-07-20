@@ -66,6 +66,10 @@
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
+#include "Zaid.h"
+#include "MXcards.h"
+#include "Material.h"
+#include "DBMaterial.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -83,7 +87,7 @@ insertPlate::insertPlate(const std::string& Key)  :
   attachSystem::CellMap(),attachSystem::SurfMap(),
   ptIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(ptIndex+1),populated(0),
-  xStep(0.0),yStep(0.0),  zStep(0.0),
+  xStep(0.0),yStep(0.0),zStep(0.0),
   xyAngle(0.0),zAngle(0.0),defMat(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -208,9 +212,9 @@ insertPlate::createUnitVector(const Geometry::Vec3D& OG,
   /*!
     Create the unit vectors
     \param OG :: Origin
-    \param XUnit :: Xdirection
-    \param YUnit :: Xdirection
-    \param ZUnit :: Xdirection
+    \param XUnit :: X-direction
+    \param YUnit :: Y-direction
+    \param ZUnit :: Z-direction
   */
 {
   ELog::RegMethod RegA("insertPlate","createUnitVector<Vec>");
@@ -329,6 +333,22 @@ insertPlate::findObjects(const Simulation& System)
 }
 
 void
+insertPlate::setStep(const double XS,const double YS,
+		       const double ZS)
+  /*!
+    Set the values and populate flag
+    \param XS :: X-size [width]
+    \param YS :: Y-size [depth] 
+    \param ZS :: Z-size [height]
+   */
+{
+  xStep=XS;
+  yStep=YS;
+  zStep=ZS;
+  return;
+}
+
+void
 insertPlate::setValues(const double XS,const double YS,
 		       const double ZS,const int Mat)
   /*!
@@ -344,6 +364,23 @@ insertPlate::setValues(const double XS,const double YS,
   height=ZS;
   defMat=Mat;
   populated=1;
+  return;
+}
+
+void
+insertPlate::setValues(const double XS,const double YS,
+		       const double ZS,const std::string& Mat)
+  /*!
+    Set the values and populate flag
+    \param XS :: X-size [width]
+    \param YS :: Y-size [depth] 
+    \param ZS :: Z-size [height]
+    \param Mat :: Material number
+   */
+{
+  ELog::RegMethod RegA("insertPlate","setValues");
+  ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();
+  setValues(XS,YS,ZS,DB.processMaterial(Mat));
   return;
 }
 

@@ -85,9 +85,13 @@ class insertPlate : public attachSystem::ContainedComp,
   insertPlate& operator=(const insertPlate&);
   ~insertPlate();
 
+  void setStep(const double,const double,const double);
+  void setAngles(const double,const double);
+
   void setValues(const double,const double,const double,
 		 const int);
-  void setAngles(const double,const double);
+  void setValues(const double,const double,const double,
+		 const std::string&);
   void createAll(Simulation&,const Geometry::Vec3D&,
 		 const attachSystem::FixedComp&);
 

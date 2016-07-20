@@ -223,7 +223,7 @@ GammaSource::populate(const FuncDataBase& Control)
    */
 {
   ELog::RegMethod RegA("GammaSource","populate");
-  
+
   xStep=Control.EvalVar<double>(keyName+"XStep"); 
   yStep=Control.EvalVar<double>(keyName+"YStep"); 
   zStep=Control.EvalVar<double>(keyName+"ZStep");
@@ -241,7 +241,7 @@ GammaSource::populate(const FuncDataBase& Control)
       width=Control.EvalVar<double>(keyName+"Width");
     }    
   angleSpread=Control.EvalDefVar<double>(keyName+"ASpread",0.0); 
-
+  
   const std::string EList=
     Control.EvalDefVar<std::string>(keyName+"Energy","");
   const std::string EPList=
@@ -297,7 +297,10 @@ GammaSource::calcPosition()
   */    
 {
   ELog::RegMethod RegA("GammaSource","calcPosition");
-  FocusPoint=Origin-Direction*(radius/tan(M_PI*angleSpread/180.0));
+  if (angleSpread>Geometry::zeroTol)
+    FocusPoint=Origin-Direction*(radius/tan(M_PI*angleSpread/180.0));
+  else
+    FocusPoint=Origin;
   return;
 }
 
@@ -328,7 +331,7 @@ GammaSource::createSource(SDef::Source& sourceCard) const
   else if (!Energy.empty())
     sourceCard.setComp("erg",Energy.front());
 
-
+  ELog::EM<<"AngleSPread == "<<angleSpread<<ELog::endDiag;
   if (angleSpread>Geometry::zeroTol)
     {
       ELog::EM<<"Adding ARI card"<<angleSpread<<ELog::endDiag;
@@ -337,6 +340,11 @@ GammaSource::createSource(SDef::Source& sourceCard) const
       SI2.addData(-1.0);
       SI2.addData(cos(M_PI*angleSpread/180.0));
       SI2.addData(1.0);
+      SDef::SrcProb SP2;
+      SP2.setData({0.0,0.0,1.0});
+      D2.addUnit(SI2);
+      D2.addUnit(SP2);
+      sourceCard.setData("dir",D2);
     }
   else
     {

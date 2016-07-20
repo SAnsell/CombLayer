@@ -634,7 +634,6 @@ objectRegister::getObjectRange(const std::string& objName) const
   
   if (objName=="All" || objName=="all")
     {
-      ELog::EM<<"ASDFSDAF "<<ELog::endDiag;
       std::vector<int> Out;
       for(const int CN : activeCells)
         Out.push_back(calcRenumber(CN));

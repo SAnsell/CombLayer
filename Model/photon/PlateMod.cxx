@@ -182,6 +182,7 @@ PlateMod::createUnitVector(const attachSystem::FixedComp& FC,
   /*!
     Create the unit vectors
     \param FC :: Fixed Component
+    \param sideIndex :: side for the link point
   */
 {
   ELog::RegMethod RegA("PlateMod","createUnitVector");

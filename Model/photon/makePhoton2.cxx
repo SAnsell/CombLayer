@@ -46,6 +46,7 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "inputParam.h"
+#include "stringCombine.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -103,7 +104,51 @@ makePhoton2::~makePhoton2()
    */
 {}
 
+void
+makePhoton2::buildWings(Simulation& System)
+  /*!
+    make the wings
+   */
+{
+  ELog::RegMethod RegA("makePhoton2","buildWings");
+    int voidCell(74123);
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
 
+  const FuncDataBase& Control=System.getDataBase();
+  const double H=Control.EvalDefVar<double>("SPlateHeight",1.5);
+  const double W=Control.EvalDefVar<double>("SPlateWidth",7.5);
+
+  const Geometry::Vec3D YA=PModObj->getSignedLinkPt(1);
+  const Geometry::Vec3D YB=PModObj->getSignedLinkPt(2);
+  const Geometry::Vec3D XA=PModObj->getSignedLinkPt(3);
+  const Geometry::Vec3D XB=PModObj->getSignedLinkPt(4);
+  const Geometry::Vec3D ZA=PModObj->getSignedLinkPt(5);
+  const Geometry::Vec3D ZB=PModObj->getSignedLinkPt(6);
+  
+  const double DX=XA.Distance(XB)/2.0;
+  const double DY=YA.Distance(YB);   // Not dividde
+  const double DZ=ZA.Distance(ZB)/2.0;
+  
+  for(size_t i=0;i<4;i++)
+    {
+      SPlate.push_back
+	(std::shared_ptr<constructSystem::insertPlate>
+	 (new constructSystem::insertPlate
+	  ("SPlate"+StrFunc::makeString(i))));
+
+      if (i>1)
+	SPlate[i]->setValues(5.0,H,DY,"Lead");
+      else
+	SPlate[i]->setValues(DY,H,5.0,"Lead");
+      SPlate[i]->setStep(0,H/2.0,0);
+      
+      OR.addObject(SPlate[i]);
+      SPlate[i]->addInsertCell(voidCell);
+      SPlate[i]->createAll(System,*PModObj,static_cast<long int>(i+3));
+    }
+  return;
+}
 void 
 makePhoton2::build(Simulation* SimPtr,
 		  const mainSystem::inputParam& IParam)
@@ -116,17 +161,18 @@ makePhoton2::build(Simulation* SimPtr,
   // For output stream
   ELog::RegMethod RControl("makePhoton2","build");
 
+
   int voidCell(74123);
   
   PModObj->addInsertCell(voidCell);
   PModObj->createAll(*SimPtr,World::masterOrigin(),0);
-
-
+  buildWings(*SimPtr);
   DetHold->addInsertCell(voidCell);
   DetHold->createAll(*SimPtr,World::masterOrigin(),0);
 
   DetPlate->addInsertCell(DetHold->getCell("Main"));
   DetPlate->createAll(*SimPtr,World::masterOrigin(),0);
+
 
   return;
 }

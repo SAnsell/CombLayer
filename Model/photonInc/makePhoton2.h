@@ -59,9 +59,13 @@ class makePhoton2
  private:
 
   std::shared_ptr<PlateMod> PModObj;        ///< Initial moderator
+  std::shared_ptr<PlateMod> PModObj2;        ///< Initial moderator
+  std::vector<std::shared_ptr<constructSystem::insertPlate>> SPlate;
   std::shared_ptr<constructSystem::insertPlate> DetPlate;
   std::shared_ptr<constructSystem::insertSphere> DetHold;
 
+  void buildWings(Simulation&);
+  
  public:
   
   makePhoton2();
