@@ -289,6 +289,7 @@ MidWaterDivider::createSurfaces()
 
   // Mid divider
   ModelSupport::buildPlane(SMap,divIndex+100,Origin,Y);
+  ModelSupport::buildPlane(SMap,divIndex+300,Origin,X);
 
   // +Y section
   Geometry::Plane *p3 = ModelSupport::buildPlaneRotAxis
@@ -422,10 +423,14 @@ MidWaterDivider::createObjects(Simulation& System,
   RCut.makeComplement();
   std::string Out;
 
-  Out=ModelSupport::getComposite(SMap,divIndex, divIndex+1000+1,
-				 //				 "100 (((-3 : 4) -11 -12 20M) )");
-				 "100 (((-3 : 4) -11 -12 20M) : (-20M -6M))");
-  Out+=LCut.display()+RCut.display()+Base;
+  Out=ModelSupport::getComposite(SMap,divIndex, divIndex+1000+1, 
+				 "100 -300 -3 -12"); // x-y-
+  Out+=RCut.display()+Base;
+  System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
+
+  Out=ModelSupport::getComposite(SMap,divIndex, divIndex+1000+1, 
+				 "100 300 ((4 -11 20M) : (-20M -6M))"); // x-y+
+  Out+=LCut.display()+Base;
   System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out)); // x-
 
   // Aluminium
