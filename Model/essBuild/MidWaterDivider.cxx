@@ -343,7 +343,8 @@ MidWaterDivider::createSurfaces()
 
   // Rounding of the edges
   const Geometry::Plane *pz = ModelSupport::buildPlane(SMap, divIndex+5, Origin, Z);
-  
+
+  int edgeOffset(divIndex+1000);
   std::array<Geometry::Vec3D,4> CPts; // water corners
   std::array<Geometry::Vec3D,4> APts; // points for Geometry::cornerCircle
   std::array<Geometry::Vec3D,4> NPts;
@@ -354,6 +355,8 @@ MidWaterDivider::createSurfaces()
     {
       for (size_t i=0; i<4; i++) // four edges
 	{
+	  const int ii(static_cast<int>(i)+1);
+
 	  CPts[i] = SurInter::getPoint(pSide[i], pFront[i], pz); // water corners
 	  if (i==0)
 	    APts[i] = SurInter::getPoint(pSide[0], pSide[2], pz);
@@ -382,8 +385,16 @@ MidWaterDivider::createSurfaces()
 	  else if (i==3)
 	    CutPair = Geometry::cornerCircle(CPts[i], APts[3], APts[2], 1);
 
-	  ELog::EM << "CutPair" << i << ": " << CutPair.first << "\t" << CutPair.second << ELog::endDiag;
+	  //	  ELog::EM << "CutPair" << i << ": " << CutPair.first << "\t" << CutPair.second << ELog::endDiag;
+	  // midNorm
+	  //Geometry::Vec3D a = 
+	  
+	  /*	  ModelSupport::buildPlane(SMap,edgeOffset+ii+20,
+				   CutPair.first,CutPair.second,
+				   CutPair.first+Z,MD);
+	  */
 	}
+      edgeOffset += 100;
     }
 
 
