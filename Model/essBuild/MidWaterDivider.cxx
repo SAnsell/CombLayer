@@ -435,12 +435,16 @@ MidWaterDivider::createObjects(Simulation& System,
 
   // Aluminium
   Out=ModelSupport::getComposite(SMap,divIndex,
-				 "100 (-103 : 104) -111 -112 "
-				 " ( (3  -4) : 11 : 12 ) ");
-				 
-  Out+=LCut.display()+RCut.display()+Base;
+				 "100 -300 -103 -112 ( 3 : 12 ) ");
+  Out+=RCut.display()+Base;
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out)); // x-
 
+  Out=ModelSupport::getComposite(SMap,divIndex, divIndex+1000+1,
+				 "100 300  ( -4 : 11 ) ((104 -111) ) ");
+  Out+=LCut.display()+Base;
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out)); // x-
+  
+  // outer surface:
   Out=ModelSupport::getComposite(SMap,divIndex,
 				 "100 (-103 : 104)  -111 -112 ");
   addOuterSurf(Out);
