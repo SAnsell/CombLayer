@@ -108,7 +108,7 @@ MidWaterDivider::MidWaterDivider(const MidWaterDivider& A) :
   divIndex(A.divIndex),cellIndex(A.cellIndex),midYStep(A.midYStep),
   midAngle(A.midAngle),length(A.length),height(A.height),
   wallThick(A.wallThick),modMat(A.modMat),wallMat(A.wallMat),
-  modTemp(A.modTemp)
+  modTemp(A.modTemp),edgeRadius(A.edgeRadius)
   /*!
     Copy constructor
     \param A :: MidWaterDivider to copy
@@ -137,6 +137,7 @@ MidWaterDivider::operator=(const MidWaterDivider& A)
       modMat=A.modMat;
       wallMat=A.wallMat;
       modTemp=A.modTemp;
+      edgeRadius=A.edgeRadius;
     }
   return *this;
 }
@@ -178,10 +179,12 @@ MidWaterDivider::populate(const FuncDataBase& Control)
   modMat=ModelSupport::EvalMat<int>(Control,keyName+"ModMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   modTemp=Control.EvalVar<double>(keyName+"ModTemp");
+  edgeRadius=Control.EvalVar<double>(keyName+"EdgeRadius");
 
   totalHeight=Control.EvalPair<double>(keyName,baseName,"TotalHeight");
   if (height<Geometry::zeroTol)
     height=totalHeight-2.0*wallThick;
+
   return;
 }
   
@@ -349,6 +352,7 @@ MidWaterDivider::createSurfaces()
   std::array<Geometry::Vec3D,4> APts; // points for Geometry::cornerCircle
   std::array<Geometry::Plane*,4> pSide{p11, p12, p32, p31}; // 11,12,31,32
   std::array<Geometry::Plane*,4> pFront{p4, p3,  p24, p23}; // {p4, p3, p23, p24};
+  double thick=0.0;
 
   for (size_t j=0; j<2; j++) // water and Al
     {
@@ -364,10 +368,10 @@ MidWaterDivider::createSurfaces()
 	    APts[i] = SurInter::getPoint(pFront[i-1], pFront[i], pz);
 
 	  Geometry::Vec3D RCent;
-	  RCent = Geometry::cornerCircleTouch(CPts[i], APts[i], APts[(i+1)%4], 1);
+	  RCent = Geometry::cornerCircleTouch(CPts[i], APts[i], APts[(i+1)%4], edgeRadius+thick);
 
 	  std::pair<Geometry::Vec3D, Geometry::Vec3D> CutPair;
-	  CutPair =    Geometry::cornerCircle(CPts[i], APts[i], APts[(i+1)%4], 1);
+	  CutPair =    Geometry::cornerCircle(CPts[i], APts[i], APts[(i+1)%4], edgeRadius+thick);
 
 	  //ELog::EM << "APts" << i << " " << APts[i] << ELog::endDiag;
 
@@ -383,11 +387,12 @@ MidWaterDivider::createSurfaces()
 	  ELog::EM << "plane: " <<  ii+20 << ELog::endDiag;
 
 	  ModelSupport::buildCylinder(SMap,edgeOffset+ii+6,
-				      RCent,Z,1);
+				      RCent,Z,edgeRadius+thick);
 		  
 	  
 	}
       edgeOffset += 100;
+      thick += wallThick;
     }
 
 

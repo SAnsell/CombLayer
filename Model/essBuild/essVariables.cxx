@@ -1074,6 +1074,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowFlyMidWaterModMat","H2O");
   Control.addVariable("LowFlyMidWaterWallMat","Aluminium");
   Control.addVariable("LowFlyMidWaterModTemp",300.0);
+  Control.addVariable("LowFlyMidWaterEdgeRadius",1);
 
   Control.addVariable("LowFlyLeftWaterWidth",10.6672);
   Control.addVariable("LowFlyLeftWaterWallThick",0.347);
@@ -1205,6 +1206,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopFlyLeftWaterModMat","Void");
   Control.addVariable("TopFlyLeftWaterWallMat","Aluminium");
   Control.addVariable("TopFlyLeftWaterModTemp",300.0);
+  Control.addVariable("TopFlyMidWaterEdgeRadius",1);
 
   Control.addVariable("TopFlyRightWaterWidth",10.6672);
   Control.addVariable("TopFlyRightWaterWallThick",0.347);
