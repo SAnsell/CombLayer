@@ -372,10 +372,17 @@ MidWaterDivider::createSurfaces()
 	  else if (i==3)
 	    RCent = Geometry::cornerCircleTouch(CPts[i], APts[2], APts[3], 1);
 
-	  //	  std::pair<Geometry::Vec3D, Geometry::Vec3D> CutPair;
-	  //Geometry::cornerCircle(CPts[i], APts[i], APts[(i+1)%4], 1);
+	  std::pair<Geometry::Vec3D, Geometry::Vec3D> CutPair;
+	  if (i==0)
+	    CutPair = Geometry::cornerCircle(CPts[i], APts[0], APts[1], 1);
+	  else if (i==1)
+	    CutPair = Geometry::cornerCircle(CPts[i], APts[2], APts[1], 1);
+	  else if (i==2)
+	    CutPair = Geometry::cornerCircle(CPts[i], APts[0], APts[3], 1);
+	  else if (i==3)
+	    CutPair = Geometry::cornerCircle(CPts[i], APts[3], APts[2], 1);
 
-	  ELog::EM << "RCent" << i << ": " << RCent << ELog::endDiag;
+	  ELog::EM << "CutPair" << i << ": " << CutPair.first << "\t" << CutPair.second << ELog::endDiag;
 	}
     }
 
