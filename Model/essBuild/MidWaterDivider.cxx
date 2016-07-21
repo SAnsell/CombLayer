@@ -212,7 +212,7 @@ MidWaterDivider::createLinks(const H2Wing &LA, const H2Wing &RA)
   ELog::RegMethod RegA("MidWaterDivider","createLinks");
 
   // Loop over corners that are bound by convex
-  const Geometry::Plane *pz = ModelSupport::buildPlane(SMap, divIndex+5, Origin, Z);
+  const Geometry::Plane *pz = SMap.realPtr<Geometry::Plane>(divIndex+5);
 
   const Geometry::Plane *p103 = SMap.realPtr<Geometry::Plane>(divIndex+103);
   const Geometry::Plane *p104 = SMap.realPtr<Geometry::Plane>(divIndex+104);
@@ -288,16 +288,16 @@ MidWaterDivider::createSurfaces()
   ModelSupport::buildPlane(SMap,divIndex+100,Origin,Y);
 
   // +Y section
-  ModelSupport::buildPlaneRotAxis
+  Geometry::Plane *p3 = ModelSupport::buildPlaneRotAxis
     (SMap,divIndex+3,Origin+Y*midYStep,X,-Z,-midAngle/2.0);
-  ModelSupport::buildPlaneRotAxis
+  Geometry::Plane *p4 = ModelSupport::buildPlaneRotAxis
     (SMap,divIndex+4,Origin+Y*midYStep,X,-Z,midAngle/2.0);
 
   // -Y section
-  ModelSupport::buildPlaneRotAxis
-    (SMap,divIndex+23,Origin-Y*midYStep,-X,-Z,-midAngle/2.0);
-  ModelSupport::buildPlaneRotAxis
-    (SMap,divIndex+24,Origin-Y*midYStep,-X,-Z,midAngle/2.0);
+  Geometry::Plane *p23 = ModelSupport::buildPlaneRotAxis(SMap,divIndex+23,
+							 Origin-Y*midYStep,-X,-Z,-midAngle/2.0);
+  Geometry::Plane *p24 = ModelSupport::buildPlaneRotAxis(SMap,divIndex+24,
+							 Origin-Y*midYStep,-X,-Z,midAngle/2.0);
 
   // Make lengths:
 
@@ -306,12 +306,14 @@ MidWaterDivider::createSurfaces()
   Geometry::Vec3D rightNorm(Y);
   Geometry::Quaternion::calcQRotDeg(midAngle/2.0,Z).rotate(rightNorm);  
   
-  ModelSupport::buildPlane(SMap,divIndex+11,Origin+leftNorm*length,leftNorm);
-  ModelSupport::buildPlane(SMap,divIndex+12,Origin+rightNorm*length,rightNorm);
+  Geometry::Plane *p11 = ModelSupport::buildPlane(SMap,divIndex+11,Origin+leftNorm*length,leftNorm);
+  Geometry::Plane *p12 = ModelSupport::buildPlane(SMap,divIndex+12,Origin+rightNorm*length,rightNorm);
 
   // Length below [note reverse of normals]
-  ModelSupport::buildPlane(SMap,divIndex+31,Origin-rightNorm*length,-rightNorm);
-  ModelSupport::buildPlane(SMap,divIndex+32,Origin-leftNorm*length,-leftNorm);
+  Geometry::Plane *p31 = ModelSupport::buildPlane(SMap,divIndex+31,
+						  Origin-rightNorm*length,-rightNorm);
+  Geometry::Plane *p32 = ModelSupport::buildPlane(SMap,divIndex+32,
+						  Origin-leftNorm*length,-leftNorm);
 
   
   // Aluminum layers [+100]
@@ -338,6 +340,44 @@ MidWaterDivider::createSurfaces()
 			   Origin-rightNorm*(wallThick+length),-rightNorm); // x+y+
   ModelSupport::buildPlane(SMap,divIndex+132,
 			   Origin-leftNorm*(wallThick+length),-leftNorm); // x+y-
+
+  // Rounding of the edges
+  const Geometry::Plane *pz = ModelSupport::buildPlane(SMap, divIndex+5, Origin, Z);
+  
+  std::array<Geometry::Vec3D,4> CPts; // water corners
+  std::array<Geometry::Vec3D,4> APts; // points for Geometry::cornerCircle
+  std::array<Geometry::Vec3D,4> NPts;
+  std::array<Geometry::Plane*,4> pSide{p11, p12, p31, p32};
+  std::array<Geometry::Plane*,4> pFront{p4, p3, p23, p24};
+
+  for (size_t j=0; j<2; j++) // water and Al
+    {
+      for (size_t i=0; i<4; i++) // four edges
+	{
+	  CPts[i] = SurInter::getPoint(pSide[i], pFront[i], pz); // water corners
+	  if (i==0)
+	    APts[i] = SurInter::getPoint(pSide[0], pSide[2], pz);
+	  else if (i==1)
+	    APts[i] = SurInter::getPoint(pFront[0], pFront[1], pz);
+	  else if (i==2)
+	    APts[i] = SurInter::getPoint(pSide[1], pSide[3], pz);
+	  else if (i==3)
+	    APts[i] = SurInter::getPoint(pFront[2], pFront[3], pz);
+
+	  Geometry::Vec3D RCent;
+	  if (i<2)
+	    RCent = Geometry::cornerCircleTouch(CPts[i], APts[i], APts[(i+1)%4], 1);
+	  else if (i==2)
+	    RCent = Geometry::cornerCircleTouch(CPts[i], APts[0], APts[3], 1);
+	  else if (i==3)
+	    RCent = Geometry::cornerCircleTouch(CPts[i], APts[2], APts[3], 1);
+
+	  //	  std::pair<Geometry::Vec3D, Geometry::Vec3D> CutPair;
+	  //Geometry::cornerCircle(CPts[i], APts[i], APts[(i+1)%4], 1);
+
+	  ELog::EM << "RCent" << i << ": " << RCent << ELog::endDiag;
+	}
+    }
 
 
   return;
