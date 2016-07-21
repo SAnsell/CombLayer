@@ -369,16 +369,23 @@ MidWaterDivider::createSurfaces()
 	  std::pair<Geometry::Vec3D, Geometry::Vec3D> CutPair;
 	  CutPair =    Geometry::cornerCircle(CPts[i], APts[i], APts[(i+1)%4], 1);
 
-	  ELog::EM << "APts" << i << " " << APts[i] << ELog::endDiag;
+	  //ELog::EM << "APts" << i << " " << APts[i] << ELog::endDiag;
 
 	  //	  ELog::EM << "CutPair" << i << ": " << CutPair.first << "\t" << CutPair.second << ELog::endDiag;
 	  // midNorm
-	  //Geometry::Vec3D a = 
+	  Geometry::Vec3D a = (CPts[(i+1)%4]-CPts[i]).unit();
+	  Geometry::Vec3D b = (CPts[(i+2)%4]-CPts[i]).unit();
+	  Geometry::Vec3D MD = (a+b)/2.0;
 	  
-	  /*	  ModelSupport::buildPlane(SMap,edgeOffset+ii+20,
+	  ModelSupport::buildPlane(SMap,edgeOffset+ii+20,
 				   CutPair.first,CutPair.second,
 				   CutPair.first+Z,MD);
-	  */
+	  ELog::EM << "plane: " <<  ii+20 << ELog::endDiag;
+
+	  ModelSupport::buildCylinder(SMap,edgeOffset+ii+6,
+				      RCent,Z,1);
+		  
+	  
 	}
       edgeOffset += 100;
     }
