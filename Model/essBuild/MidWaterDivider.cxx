@@ -358,7 +358,6 @@ MidWaterDivider::createSurfaces()
     {
       for (size_t i=0; i<4; i++) // four edges
 	{
-	  const int ii(static_cast<int>(i)+1);
 
 	  CPts[i] = SurInter::getPoint(pSide[i], pFront[i], pz); // water corners
 	  
@@ -366,16 +365,20 @@ MidWaterDivider::createSurfaces()
 	    APts[i] = SurInter::getPoint(pSide[i], pSide[(i+3)%4], pz);
 	  else if ((i==1) || (i==3))
 	    APts[i] = SurInter::getPoint(pFront[i-1], pFront[i], pz);
+	}
+      
+      for (size_t i=0; i<4; i++) // four edges
+	{
+	  const int ii(static_cast<int>(i)+1);
 
 	  Geometry::Vec3D RCent;
 	  RCent = Geometry::cornerCircleTouch(CPts[i], APts[i], APts[(i+1)%4], edgeRadius+thick);
+	  if (i==0)
+	    ELog::EM << (i+1)%4 << " "  << CPts[i] << "\t" << APts[i] << "\t" << APts[(i+1)%4] << ELog::endDiag;
 
 	  std::pair<Geometry::Vec3D, Geometry::Vec3D> CutPair;
 	  CutPair =    Geometry::cornerCircle(CPts[i], APts[i], APts[(i+1)%4], edgeRadius+thick);
 
-	  //ELog::EM << "APts" << i << " " << APts[i] << ELog::endDiag;
-
-	  //	  ELog::EM << "CutPair" << i << ": " << CutPair.first << "\t" << CutPair.second << ELog::endDiag;
 	  // midNorm
 	  Geometry::Vec3D a = (CPts[(i+1)%4]-CPts[i]).unit();
 	  Geometry::Vec3D b = (CPts[(i+2)%4]-CPts[i]).unit();
@@ -384,7 +387,6 @@ MidWaterDivider::createSurfaces()
 	  ModelSupport::buildPlane(SMap,edgeOffset+ii+20,
 				   CutPair.first,CutPair.second,
 				   CutPair.first+Z,MD);
-	  ELog::EM << "plane: " <<  ii+20 << ELog::endDiag;
 
 	  ModelSupport::buildCylinder(SMap,edgeOffset+ii+6,
 				      RCent,Z,edgeRadius+thick);
@@ -420,9 +422,11 @@ MidWaterDivider::createObjects(Simulation& System,
   RCut.makeComplement();
   std::string Out;
 
-  Out=ModelSupport::getComposite(SMap,divIndex,"100 (-3 : 4) -11 -12 ");
+  Out=ModelSupport::getComposite(SMap,divIndex, divIndex+1000+1,
+				 //				 "100 (((-3 : 4) -11 -12 20M) )");
+				 "100 (((-3 : 4) -11 -12 20M) : (-20M -6M))");
   Out+=LCut.display()+RCut.display()+Base;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out)); // x-
 
   // Aluminium
   Out=ModelSupport::getComposite(SMap,divIndex,
@@ -430,7 +434,7 @@ MidWaterDivider::createObjects(Simulation& System,
 				 " ( (3  -4) : 11 : 12 ) ");
 				 
   Out+=LCut.display()+RCut.display()+Base;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out)); // x-
 
   Out=ModelSupport::getComposite(SMap,divIndex,
 				 "100 (-103 : 104)  -111 -112 ");
