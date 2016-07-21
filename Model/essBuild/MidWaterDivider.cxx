@@ -347,9 +347,8 @@ MidWaterDivider::createSurfaces()
   int edgeOffset(divIndex+1000);
   std::array<Geometry::Vec3D,4> CPts; // water corners
   std::array<Geometry::Vec3D,4> APts; // points for Geometry::cornerCircle
-  std::array<Geometry::Vec3D,4> NPts;
-  std::array<Geometry::Plane*,4> pSide{p11, p12, p31, p32};
-  std::array<Geometry::Plane*,4> pFront{p4, p3, p23, p24};
+  std::array<Geometry::Plane*,4> pSide{p11, p12, p32, p31}; // 11,12,31,32
+  std::array<Geometry::Plane*,4> pFront{p4, p3,  p24, p23}; // {p4, p3, p23, p24};
 
   for (size_t j=0; j<2; j++) // water and Al
     {
@@ -358,32 +357,19 @@ MidWaterDivider::createSurfaces()
 	  const int ii(static_cast<int>(i)+1);
 
 	  CPts[i] = SurInter::getPoint(pSide[i], pFront[i], pz); // water corners
-	  if (i==0)
-	    APts[i] = SurInter::getPoint(pSide[0], pSide[2], pz);
-	  else if (i==1)
-	    APts[i] = SurInter::getPoint(pFront[0], pFront[1], pz);
-	  else if (i==2)
-	    APts[i] = SurInter::getPoint(pSide[1], pSide[3], pz);
-	  else if (i==3)
-	    APts[i] = SurInter::getPoint(pFront[2], pFront[3], pz);
+	  
+	  if ((i==0) || (i==2))
+	    APts[i] = SurInter::getPoint(pSide[i], pSide[(i+3)%4], pz);
+	  else if ((i==1) || (i==3))
+	    APts[i] = SurInter::getPoint(pFront[i-1], pFront[i], pz);
 
 	  Geometry::Vec3D RCent;
-	  if (i<2)
-	    RCent = Geometry::cornerCircleTouch(CPts[i], APts[i], APts[(i+1)%4], 1);
-	  else if (i==2)
-	    RCent = Geometry::cornerCircleTouch(CPts[i], APts[0], APts[3], 1);
-	  else if (i==3)
-	    RCent = Geometry::cornerCircleTouch(CPts[i], APts[2], APts[3], 1);
+	  RCent = Geometry::cornerCircleTouch(CPts[i], APts[i], APts[(i+1)%4], 1);
 
 	  std::pair<Geometry::Vec3D, Geometry::Vec3D> CutPair;
-	  if (i==0)
-	    CutPair = Geometry::cornerCircle(CPts[i], APts[0], APts[1], 1);
-	  else if (i==1)
-	    CutPair = Geometry::cornerCircle(CPts[i], APts[2], APts[1], 1);
-	  else if (i==2)
-	    CutPair = Geometry::cornerCircle(CPts[i], APts[0], APts[3], 1);
-	  else if (i==3)
-	    CutPair = Geometry::cornerCircle(CPts[i], APts[3], APts[2], 1);
+	  CutPair =    Geometry::cornerCircle(CPts[i], APts[i], APts[(i+1)%4], 1);
+
+	  ELog::EM << "APts" << i << " " << APts[i] << ELog::endDiag;
 
 	  //	  ELog::EM << "CutPair" << i << ": " << CutPair.first << "\t" << CutPair.second << ELog::endDiag;
 	  // midNorm
