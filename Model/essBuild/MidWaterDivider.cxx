@@ -432,8 +432,8 @@ MidWaterDivider::createObjects(Simulation& System,
   RCut.makeComplement();
   std::string Out;
 
-  Out=ModelSupport::getComposite(SMap,divIndex, divIndex+1000+1, 
-				 "100 -300 -3 -12"); // x-y-
+  Out=ModelSupport::getComposite(SMap,divIndex, divIndex+1000+2,
+				 "100 -300 ((-3 -12 20M) : (-20M -6M))"); // x-y-
   Out+=RCut.display()+Base;
   System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
 
@@ -444,7 +444,7 @@ MidWaterDivider::createObjects(Simulation& System,
 
   // Aluminium
   Out=ModelSupport::getComposite(SMap,divIndex, divIndex+1000+2,
-				 "100 -300 -103 -112 ( 3 : 12 ) ");
+				 "100 -300 ((( 3 : 12 ) (-103 -112 20M)) : (-120M 6M -106M) : (-103 -112 6M -20M 120M))");  // \todo Is it possible to optimise it more?
   Out+=RCut.display()+Base;
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out)); // x-
 
@@ -455,7 +455,7 @@ MidWaterDivider::createObjects(Simulation& System,
   
   // outer surface:
   Out=ModelSupport::getComposite(SMap,divIndex, divIndex+1000+2,
-				 "100 -300 -103 -112 ");
+				 "100 -300 (-103 -112 120M) : -106M ");
   addOuterSurf(Out);
   Out=ModelSupport::getComposite(SMap,divIndex,divIndex+1000+1,
 				 "100 300 (104 -111 120M) : -106M ");
