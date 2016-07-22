@@ -292,15 +292,15 @@ MidWaterDivider::createSurfaces()
   ModelSupport::buildPlane(SMap,divIndex+300,Origin,X);
 
   // +Y section
-  Geometry::Plane *p3 = ModelSupport::buildPlaneRotAxis
+  ModelSupport::buildPlaneRotAxis
     (SMap,divIndex+3,Origin+Y*midYStep,X,-Z,-midAngle/2.0);
-  Geometry::Plane *p4 = ModelSupport::buildPlaneRotAxis
+  ModelSupport::buildPlaneRotAxis
     (SMap,divIndex+4,Origin+Y*midYStep,X,-Z,midAngle/2.0);
 
   // -Y section
-  Geometry::Plane *p23 = ModelSupport::buildPlaneRotAxis(SMap,divIndex+23,
+  ModelSupport::buildPlaneRotAxis(SMap,divIndex+23,
 							 Origin-Y*midYStep,-X,-Z,-midAngle/2.0);
-  Geometry::Plane *p24 = ModelSupport::buildPlaneRotAxis(SMap,divIndex+24,
+  ModelSupport::buildPlaneRotAxis(SMap,divIndex+24,
 							 Origin-Y*midYStep,-X,-Z,midAngle/2.0);
 
   // Make lengths:
@@ -310,14 +310,14 @@ MidWaterDivider::createSurfaces()
   Geometry::Vec3D rightNorm(Y);
   Geometry::Quaternion::calcQRotDeg(midAngle/2.0,Z).rotate(rightNorm);  
   
-  Geometry::Plane *p11 = ModelSupport::buildPlane(SMap,divIndex+11,Origin+leftNorm*length,leftNorm);
-  Geometry::Plane *p12 = ModelSupport::buildPlane(SMap,divIndex+12,Origin+rightNorm*length,rightNorm);
+  ModelSupport::buildPlane(SMap,divIndex+11,Origin+leftNorm*length,leftNorm);
+  ModelSupport::buildPlane(SMap,divIndex+12,Origin+rightNorm*length,rightNorm);
 
   // Length below [note reverse of normals]
-  Geometry::Plane *p31 = ModelSupport::buildPlane(SMap,divIndex+31,
-						  Origin-rightNorm*length,-rightNorm);
-  Geometry::Plane *p32 = ModelSupport::buildPlane(SMap,divIndex+32,
-						  Origin-leftNorm*length,-leftNorm);
+  ModelSupport::buildPlane(SMap,divIndex+31,
+			   Origin-rightNorm*length,-rightNorm);
+  ModelSupport::buildPlane(SMap,divIndex+32,
+			   Origin-leftNorm*length,-leftNorm);
 
   
   // Aluminum layers [+100]
@@ -351,8 +351,8 @@ MidWaterDivider::createSurfaces()
   int edgeOffset(divIndex+1000);
   std::array<Geometry::Vec3D,4> CPts; // water corners
   std::array<Geometry::Vec3D,4> APts; // points for Geometry::cornerCircle
-  std::array<Geometry::Plane*,4> pSide{p11, p12, p32, p31}; // 11,12,31,32
-  std::array<Geometry::Plane*,4> pFront{p4, p3,  p24, p23}; // {p4, p3, p23, p24};
+  std::vector<int> side{11, 12, 32, 31};
+  std::vector<int> front{4, 3,  24, 23};
   double thick=0.0;
 
   for (size_t j=0; j<2; j++) // water and Al
@@ -360,12 +360,14 @@ MidWaterDivider::createSurfaces()
       for (size_t i=0; i<4; i++) // four edges
 	{
 
-	  CPts[i] = SurInter::getPoint(pSide[i], pFront[i], pz); // water corners
+	  CPts[i] = SurInter::getPoint(SMap.realPtr<Geometry::Plane>(divIndex+side[i]),
+				       SMap.realPtr<Geometry::Plane>(divIndex+front[i]), pz); // water corners
 	  
 	  if ((i==0) || (i==2))
-	    APts[i] = SurInter::getPoint(pSide[i], pSide[(i+3)%4], pz);
+	    APts[i] = SurInter::getPoint(SMap.realPtr<Geometry::Plane>(divIndex+side[i]),
+					 SMap.realPtr<Geometry::Plane>(divIndex+side[(i+3)%4]), pz);
 	  else if ((i==1) || (i==3))
-	    APts[i] = SurInter::getPoint(pFront[i-1], pFront[i], pz);
+	    APts[i] = SurInter::getPoint(SMap.realPtr<Geometry::Plane>(divIndex+front[i-1]), SMap.realPtr<Geometry::Plane>(divIndex+front[i]), pz);
 	}
       
       for (size_t i=0; i<4; i++) // four edges
