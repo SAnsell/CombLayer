@@ -299,9 +299,9 @@ MidWaterDivider::createSurfaces()
 
   // -Y section
   ModelSupport::buildPlaneRotAxis(SMap,divIndex+23,
-							 Origin-Y*midYStep,-X,-Z,-midAngle/2.0);
+				  Origin-Y*midYStep,-X,-Z,-midAngle/2.0);
   ModelSupport::buildPlaneRotAxis(SMap,divIndex+24,
-							 Origin-Y*midYStep,-X,-Z,midAngle/2.0);
+				  Origin-Y*midYStep,-X,-Z,midAngle/2.0);
 
   // Make lengths:
 
@@ -355,19 +355,26 @@ MidWaterDivider::createSurfaces()
   std::vector<int> front{4, 3,  24, 23};
   double thick=0.0;
 
+  //  std::cout << "before" << std::endl;
+  //  SMap.realPtr<Geometry::Plane>(divIndex+side[4]+100);
+  //  ELog::EM << "after" << ELog::endErr;
+  
   for (size_t j=0; j<2; j++) // water and Al
     {
       for (size_t i=0; i<4; i++) // four edges
 	{
-
-	  CPts[i] = SurInter::getPoint(SMap.realPtr<Geometry::Plane>(divIndex+side[i]),
+	  //	  std::cout << "j*100 " << j*100 << "\t" << side[i]+j*100 << " " << front[i]+j*100 << std::endl;
+	  //	  SMap.realPtr<Geometry::Plane>(divIndex+side[i]+j*100)->print();
+	  //	  SMap.realPtr<Geometry::Plane>(divIndex+front[i]+j*100)->print();
+	  CPts[i] = SurInter::getPoint(SMap.realPtr<Geometry::Plane>(divIndex+side[i]+j*100),
 				       SMap.realPtr<Geometry::Plane>(divIndex+front[i]), pz); // water corners
+	  ELog::EM << "!!! must be +j*100 in the line before" << ELog::endCrit;
 	  
 	  if ((i==0) || (i==2))
-	    APts[i] = SurInter::getPoint(SMap.realPtr<Geometry::Plane>(divIndex+side[i]),
-					 SMap.realPtr<Geometry::Plane>(divIndex+side[(i+3)%4]), pz);
+	    APts[i] = SurInter::getPoint(SMap.realPtr<Geometry::Plane>(divIndex+side[i]+j*100),
+					 SMap.realPtr<Geometry::Plane>(divIndex+side[(i+3)%4]+j*100), pz);
 	  else if ((i==1) || (i==3))
-	    APts[i] = SurInter::getPoint(SMap.realPtr<Geometry::Plane>(divIndex+front[i-1]), SMap.realPtr<Geometry::Plane>(divIndex+front[i]), pz);
+	    APts[i] = SurInter::getPoint(SMap.realPtr<Geometry::Plane>(divIndex+front[i-1]+j*100), SMap.realPtr<Geometry::Plane>(divIndex+front[i]+j*100), pz);
 	}
       
       for (size_t i=0; i<4; i++) // four edges
