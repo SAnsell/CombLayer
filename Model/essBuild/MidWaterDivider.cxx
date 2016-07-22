@@ -453,7 +453,7 @@ MidWaterDivider::createObjects(Simulation& System,
   addOuterSurf(Out);
   Out=ModelSupport::getComposite(SMap,divIndex,divIndex+1000+1,
 				 "100 300 (104 -111 120M) : -106M ");
-  addOuterUnionSurf(Out); // \todo  !!! merge this in a single addOuterSurf
+  addOuterUnionSurf(Out); 
 
   // Reverse layer
   /// water
@@ -468,18 +468,23 @@ MidWaterDivider::createObjects(Simulation& System,
   System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
 
   // Al
-  Out=ModelSupport::getComposite(SMap,divIndex,
-				 "-100 -300 -124 -132 ( -24 : 32 )");
+  Out=ModelSupport::getComposite(SMap,divIndex,divIndex+1000+3,
+  				 "-100 -300 ((( -24 : 32 ) (-124 -132 20M)) : (-120M 6M -106M) : (-124 -132 6M -20M 120M)) ");   // \todo Is it possible to optimise it more?
   Out+=RCut.display()+Base;
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out));
 
-  Out=ModelSupport::getComposite(SMap,divIndex,
-				 "-100 300 123 -131 (23 : 31 )");
+  Out=ModelSupport::getComposite(SMap,divIndex, divIndex+1000+4,
+				 "-100 300 (((23 : 31 ) (123 -131 20M)) : (-120M 6M -106M) : (123 -131 6M -20M 120M)) ");   // \todo Is it possible to optimise it more?
   Out+=LCut.display()+Base;
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out));
 
-  Out=ModelSupport::getComposite(SMap,divIndex,
-				 "-100 (123 : -124) -131 -132 ");
+  // outer surfaces
+  Out=ModelSupport::getComposite(SMap,divIndex, divIndex+1000+3,
+				 "-100 -300 (-124 -132 120M) : -106M");
+  addOuterUnionSurf(Out);
+
+  Out=ModelSupport::getComposite(SMap,divIndex, divIndex+1000+4,
+				 "-100 300 (123 -131 120M) : -106M ");
   addOuterUnionSurf(Out);
 
   HeadRule HR;
