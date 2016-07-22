@@ -331,8 +331,8 @@ MidWaterDivider::createSurfaces()
   ModelSupport::buildPlane(SMap,divIndex+104,Origin+Y*midYStep-rightNormAl*wallThick, rightNormAl);
 
   // -Y section
-  ModelSupport::buildPlane(SMap,divIndex+123,Origin-Y*midYStep+rightNormAl*wallThick, rightNormAl);
-  ModelSupport::buildPlane(SMap,divIndex+124,Origin-Y*midYStep-leftNormAl*wallThick, leftNormAl);
+  ModelSupport::buildPlane(SMap,divIndex+123,Origin-Y*midYStep-leftNormAl*wallThick, leftNormAl);
+  ModelSupport::buildPlane(SMap,divIndex+124,Origin-Y*midYStep+rightNormAl*wallThick, rightNormAl);
   
   ModelSupport::buildPlane(SMap,divIndex+111,
 			   Origin+leftNorm*(length+wallThick),leftNorm); // x-y+
@@ -466,12 +466,12 @@ MidWaterDivider::createObjects(Simulation& System,
   Out+=LCut.display()+RCut.display()+Base;
   System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
   Out=ModelSupport::getComposite(SMap,divIndex,
-				 "-100 (-123 : 124)  -131 -132 "
+				 "-100 (123 : -124)  -131 -132 "
 				 "((23  -24) : 31 : 32 )");
   Out+=LCut.display()+RCut.display()+Base;
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out));
   Out=ModelSupport::getComposite(SMap,divIndex,
-				 "-100 (-123 : 124) -131 -132 ");
+				 "-100 (123 : -124) -131 -132 ");
   addOuterUnionSurf(Out);
 
   HeadRule HR;
