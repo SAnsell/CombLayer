@@ -363,12 +363,8 @@ MidWaterDivider::createSurfaces()
     {
       for (size_t i=0; i<4; i++) // four edges
 	{
-	  //	  std::cout << "j*100 " << j*100 << "\t" << side[i]+j*100 << " " << front[i]+j*100 << std::endl;
-	  //	  SMap.realPtr<Geometry::Plane>(divIndex+side[i]+j*100)->print();
-	  //	  SMap.realPtr<Geometry::Plane>(divIndex+front[i]+j*100)->print();
 	  CPts[i] = SurInter::getPoint(SMap.realPtr<Geometry::Plane>(divIndex+side[i]+j*100),
-				       SMap.realPtr<Geometry::Plane>(divIndex+front[i] + (i<2 ? j*100 : 0)), pz); // water corners
-	  ELog::EM << "!!! must be +j*100 in the line before" << ELog::endCrit;
+				       SMap.realPtr<Geometry::Plane>(divIndex+front[i] + j*100), pz); // water corners
 	  
 	  if ((i==0) || (i==2))
 	    APts[i] = SurInter::getPoint(SMap.realPtr<Geometry::Plane>(divIndex+side[i]+j*100),
@@ -383,8 +379,6 @@ MidWaterDivider::createSurfaces()
 
 	  Geometry::Vec3D RCent;
 	  RCent = Geometry::cornerCircleTouch(CPts[i], APts[i], APts[(i+1)%4], edgeRadius+thick);
-	  if (i==0)
-	    ELog::EM << (i+1)%4 << " "  << CPts[i] << "\t" << APts[i] << "\t" << APts[(i+1)%4] << ELog::endDiag;
 
 	  std::pair<Geometry::Vec3D, Geometry::Vec3D> CutPair;
 	  CutPair =    Geometry::cornerCircle(CPts[i], APts[i], APts[(i+1)%4], edgeRadius+thick);
@@ -462,9 +456,14 @@ MidWaterDivider::createObjects(Simulation& System,
   addOuterUnionSurf(Out); // \todo  !!! merge this in a single addOuterSurf
 
   // Reverse layer
-  Out=ModelSupport::getComposite(SMap,divIndex,"-100 (-23 : 24) -31 -32 ");
-  Out+=LCut.display()+RCut.display()+Base;
+  Out=ModelSupport::getComposite(SMap,divIndex,"-100 -300 24 -32 ");
+  Out+=RCut.display()+Base;
   System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
+
+  Out=ModelSupport::getComposite(SMap,divIndex,"-100 300 -23 -31 ");
+  Out+=LCut.display()+Base;
+  System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
+
   Out=ModelSupport::getComposite(SMap,divIndex,
 				 "-100 (123 : -124)  -131 -132 "
 				 "((23  -24) : 31 : 32 )");
