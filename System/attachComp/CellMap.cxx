@@ -3,7 +3,7 @@
  
  * File:   attachComp/CellMap.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -132,7 +132,7 @@ CellMap::insertComponent(Simulation& System,
     \param CC :: Contained Component ot insert 
    */
 {
-  ELog::RegMethod RegA("CellMap","insertComponent(CC,index)");
+  ELog::RegMethod RegA("CellMap","insertComponent(index,CC)");
   
   if (CC.hasOuterSurf())
     insertComponent(System,Key,index,CC.getExclude());
@@ -160,37 +160,6 @@ CellMap::insertComponent(Simulation& System,
 void
 CellMap::insertComponent(Simulation& System,
 			 const std::string& Key,
-			 const FixedComp& FC,
-			 const long int sideIndex) const
-/*!
-    Insert a component into a cell
-    \param System :: Simulation to obtain cell from
-    \param Key :: KeyName for cell
-    \param FC :: FixedComp for link surface
-   */
-{
-  ELog::RegMethod RegA("CellMap","insertComponent(FC)");
-
-  if (sideIndex>0)
-    {
-      insertComponent
-	(System,Key,FC.getLinkString(static_cast<size_t>(sideIndex-1)));
-    }
-  else if (sideIndex<0)
-    {
-      insertComponent
-	(System,Key,FC.getLinkComplement(static_cast<size_t>(-sideIndex-1)));
-    }
-  else
-    throw ColErr::InContainerError<long int>
-      (0,"Zero line surface not define");
-  return;
-}
-
-  
-void
-CellMap::insertComponent(Simulation& System,
-			 const std::string& Key,
 			 const std::string& exclude) const
   /*!
     Insert a component into a cell
@@ -199,7 +168,7 @@ CellMap::insertComponent(Simulation& System,
     \param exclude :: Excluded key
    */
 {
-  ELog::RegMethod RegA("CellMap","insertComponent");
+  ELog::RegMethod RegA("CellMap","insertComponent(string)");
 
   const std::vector<int> CVec=getCells(Key);
   if (CVec.empty())
@@ -230,7 +199,7 @@ CellMap::insertComponent(Simulation& System,
     \param exclude :: Excluded key
    */
 {
-  ELog::RegMethod RegA("CellMap","insertComponent");
+  ELog::RegMethod RegA("CellMap","insertComponent(index,string)");
 
   const int cellNum=getCell(Key,index);
 
@@ -242,6 +211,28 @@ CellMap::insertComponent(Simulation& System,
   return;
 }
 
+void
+CellMap::insertComponent(Simulation& System,
+			 const std::string& Key,
+			 const FixedComp& FC,
+			 const long int sideIndex) const
+/*!
+    Insert an exclude component into a cell
+    \param System :: Simulation to obtain cell from
+    \param Key :: KeyName for cell
+    \param FC :: FixedComp for link surface
+    \param sideIndex :: signed direction side
+   */
+{
+  ELog::RegMethod RegA("CellMap","insertComponent(FC,index)");
+
+  if (!sideIndex)
+    throw ColErr::InContainerError<long int>
+      (0,"Zero line surface not defined for : "+FC.getKeyName());
+
+  insertComponent(System,Key,FC.getSignedLinkString(sideIndex));
+  return;
+}
 
 void
 CellMap::deleteCell(Simulation& System,

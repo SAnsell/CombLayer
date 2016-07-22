@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1Upgrade/ConicInfo.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,16 +66,16 @@ ConicInfo::ConicInfo(const Geometry::Vec3D& C,const Geometry::Vec3D& A,
 {} 
 
 ConicInfo::ConicInfo(const Geometry::Vec3D& C,const Geometry::Vec3D& A,
-		     const double R,const int M,
+		     const double Ang,const int M,
 		     const double WT,const int WM,
 		     const int CF) :
-  cylFlag(CF),Cent(C),Axis(A),angle(R),wall(WT),
+  cylFlag(CF),Cent(C),Axis(A),angle(Ang),wall(WT),
   mat(M),wallMat(WM)
  /*!
    Ugly constructor for Cent / Axis
   \param C :: Centre
   \param A :: Axis 
-  \param Radius :: Angle
+  \param Ang :: Angle [deg]
   \param M :: Fill Material
   \param WT :: wall thickness
   \param WM :: wall Material
@@ -147,4 +147,4 @@ ConicInfo::getAxis(const Geometry::Vec3D& X,
 
 
   
-}  // NAMESPACE ts1System
+}  // NAMESPACE constructSystem

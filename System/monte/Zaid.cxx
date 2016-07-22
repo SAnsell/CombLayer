@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   monte/Zaid.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -160,6 +160,26 @@ Zaid::setDensity(const double D)
   return;
 }
 
+double
+Zaid::getAtomicMass() const
+  /*!
+    Get the precise atomic mass for 
+    the isotope. If the zaid is a common zaid (X000) 
+    then return the stable mean atomic mass, otherwize
+    return the isotope mass
+    \return mean atomic mass
+  */
+{
+  const int INum=getIso();
+  if (INum) 
+    {
+      const IsoTable& IT=IsoTable::Instance();
+      return IT.getMass(getZ(),INum);
+    }
+  const Element& ET=Element::Instance();
+  return ET.mass(getZ());
+}    
+
 void
 Zaid::write(std::ostream& OX) const
   /*!
@@ -174,23 +194,4 @@ Zaid::write(std::ostream& OX) const
     OX<<" "<<FMTnum % density;
   return;
 }
-
-double
-Zaid::getAtomicMass() const
-  /*!
-    Get the precise atomic mass for 
-    the isotope. If the zaid is a common zaid (X000) 
-    then return the stable mean atomic mass, otherwize
-    return the isotope mass
-   */
-{
-  const int INum=getIso();
-  if (INum) 
-    {
-      const IsoTable& IT=IsoTable::Instance();
-      return IT.getMass(getZ(),INum);
-    }
-  const Element& ET=Element::Instance();
-  return ET.mass(getZ());
-}    
 

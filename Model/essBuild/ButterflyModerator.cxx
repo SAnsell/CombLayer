@@ -232,7 +232,7 @@ ButterflyModerator::createObjects(Simulation& System)
   
 
 int
-ButterflyModerator::getCommonSurf(const size_t) const
+ButterflyModerator::getCommonSurf(const long int) const
   /*!
     Only components have reference values
   */

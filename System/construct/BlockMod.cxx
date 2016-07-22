@@ -398,10 +398,10 @@ BlockMod::getSurfacePoint(const size_t layerIndex,
 }
 
 int
-BlockMod::getCommonSurf(const size_t ) const
+BlockMod::getCommonSurf(const long int) const
   /*!
     Given a side calculate the boundary surface
-    \param sideIndex :: Side [0-5]
+    \param sideIndex :: Side [1-6]
     \return Common dividing surface [outward pointing]
   */
 {

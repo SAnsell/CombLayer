@@ -48,14 +48,15 @@ class CellMap  : public BaseMap
   CellMap& operator=(const CellMap&);
   virtual ~CellMap() {}     ///< Destructor
 
-  /// Renmae function
+  /// Create named item
   void setCell(const std::string& K,const int CN)
     { BaseMap::setItem(K,CN); }
       
-  /// Renmae function
+  /// Add specific named item
   void setCell(const std::string& K,const size_t Index,const int CN)
     { BaseMap::setItem(K,Index,CN); }
-  
+
+  /// Add named item range
   void setCells(const std::string& K,const int CNA,const int CNB)
    { BaseMap::setItems(K,CNA,CNB); }
 

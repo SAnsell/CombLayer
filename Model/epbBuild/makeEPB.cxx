@@ -138,11 +138,11 @@ makeEPB::makeMagnets(Simulation& System)
 
 void 
 makeEPB::build(Simulation* SimPtr,
-	       const mainSystem::inputParam& IParam)
+	       const mainSystem::inputParam&)
   /*!
     Carry out the full build
     \param SimPtr :: Simulation system
-    \param IParam :: Input parameters
+    \param :: Input parameters
    */
 {
   // For output stream

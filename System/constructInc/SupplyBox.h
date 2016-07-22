@@ -71,7 +71,7 @@ class SupplyBox : public attachSystem::FixedComp
   void addExtra(const attachSystem::LayerComp&,
 		const size_t,const size_t);
   void addOuterPoints();
-  void addExtraLayer(const attachSystem::LayerComp&,const size_t);
+  void addExtraLayer(const attachSystem::LayerComp&,const long int);
 
   void setActive();
   void createLinks();
@@ -106,8 +106,8 @@ class SupplyBox : public attachSystem::FixedComp
 		 const size_t,const long int,const long int);
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const size_t,const size_t,const size_t,
-		 const attachSystem::LayerComp&,const size_t);
+		 const size_t,const long int,const long int,
+		 const attachSystem::LayerComp&,const long int);
 
 };
 

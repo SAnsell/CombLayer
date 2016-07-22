@@ -246,14 +246,9 @@ SupplyPipe::insertInlet(const attachSystem::FixedComp& FC,
   Geometry::Vec3D Pt= Origin+layerOffset+Y*PPts[0].Y();
   // GET Z Point from layer
 
-  const size_t SI((lSideIndex>0) ?
-		  static_cast<size_t>(lSideIndex-1) :
-		  static_cast<size_t>(-lSideIndex-1));
-		  
-  
   Geometry::Vec3D PtZ=LC->getSurfacePoint(0,lSideIndex);
   PtZ+=layerOffset;
-  const int commonSurf=LC->getCommonSurf(SI);
+  const int commonSurf=LC->getCommonSurf(lSideIndex);
   const std::string commonStr=(commonSurf) ? 		       
     StrFunc::makeString(commonSurf) : "";
   if (PtZ!=Pt)
@@ -267,7 +262,7 @@ SupplyPipe::insertInlet(const attachSystem::FixedComp& FC,
   
   if (layerSeq.empty())
     {
-      for(size_t index=LC->getNInnerLayers(SI)+
+      for(size_t index=LC->getNInnerLayers(lSideIndex)+
 	    wallOffset;index<NL;index+=2)
 	layerSeq.push_back(index);
     }
@@ -293,12 +288,8 @@ SupplyPipe::addExtraLayer(const attachSystem::LayerComp& LC,
 {
   ELog::RegMethod RegA("SupplyPipe","addExtraLayer");
 
-  
-  const size_t SI((lSideIndex>0) ?
-                  static_cast<size_t>(lSideIndex-1) :
-                  static_cast<size_t>(-1-lSideIndex));
-  
-  const int commonSurf=LC.getCommonSurf(SI);
+   
+  const int commonSurf=LC.getCommonSurf(lSideIndex);
   const size_t NL(LC.getNLayers(lSideIndex));
   if (NL)
     {

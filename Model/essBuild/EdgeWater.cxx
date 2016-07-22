@@ -92,6 +92,7 @@ EdgeWater::EdgeWater(const std::string& key) :
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0,0),
   attachSystem::FixedComp(key,6),
+  attachSystem::CellMap(),
   edgeIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
   cellIndex(edgeIndex+1)
   /*!
@@ -102,8 +103,8 @@ EdgeWater::EdgeWater(const std::string& key) :
 {}
 
 EdgeWater::EdgeWater(const EdgeWater& A) : 
-  attachSystem::ContainedComp(A),
-  attachSystem::LayerComp(A),attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),attachSystem::LayerComp(A),
+  attachSystem::FixedComp(A),attachSystem::CellMap(A),
   edgeIndex(A.edgeIndex),cellIndex(A.cellIndex),
   width(A.width),wallThick(A.wallThick),modMat(A.modMat),
   wallMat(A.wallMat),modTemp(A.modTemp)
@@ -126,6 +127,7 @@ EdgeWater::operator=(const EdgeWater& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::LayerComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
       cellIndex=A.cellIndex;
       width=A.width;
       wallThick=A.wallThick;
@@ -261,21 +263,25 @@ EdgeWater::createObjects(Simulation& System,
   Out=ModelSupport::getComposite(SMap,edgeIndex," 1 -2 103 -104");
   System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,
 				   modTemp,Out+container+divider));
-  
+  CellMap::setCell("Water",  cellIndex-1);
   // Two walls : otherwise divider container
   Out=ModelSupport::getComposite(SMap,edgeIndex," 11 -1 103 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out+container));
+  CellMap::addCell("Wall",  cellIndex-1);
   Out=ModelSupport::getComposite(SMap,edgeIndex," 2 -12 -104 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out+container));
-
+  CellMap::addCell("Wall",  cellIndex-1);
 
   // front walls
   Out=ModelSupport::getComposite(SMap,edgeIndex," 11 -103 203 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,
 				   Out+container+divider));
+    CellMap::addCell("Wall",  cellIndex-1);
+    CellMap::setCell("InnerAlSupply",  cellIndex-1);
   Out=ModelSupport::getComposite(SMap,edgeIndex," -12 104 -204");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,
 				   Out+container+divider));
+  CellMap::addCell("Wall",  cellIndex-1);
   
   Out=ModelSupport::getComposite(SMap,edgeIndex," 11 -12 203 -204");
   addOuterSurf(Out+divider);

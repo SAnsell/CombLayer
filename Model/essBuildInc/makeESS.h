@@ -56,6 +56,7 @@ namespace essSystem
   class BilbaoWheel;
   class BeRef;
   class essMod;
+  class ESSPipes;
   class ConicModerator;
   class CylPreMod;
   class IradCylinder;
@@ -98,31 +99,20 @@ class makeESS
 
   std::shared_ptr<moderatorSystem::BasicFlightLine> LowAFL;  ///< Lower Mode FL
   std::shared_ptr<moderatorSystem::BasicFlightLine> LowBFL;  ///< Lower Mode FL
-  std::shared_ptr<CylPreMod> LowPre;          ///< Lower Mod (Pre)
-
-  /// Lower supply 
-  std::shared_ptr<constructSystem::SupplyPipe> LowSupplyPipe; 
-  std::shared_ptr<constructSystem::SupplyPipe> LowReturnPipe;  ///< Lower supply
-
+  
   // Butterly
   /// Primary Upper Mod 
   std::shared_ptr<constructSystem::ModBase> TopMod;
   std::shared_ptr<DiskPreMod> TopPreMod;         ///< Top mod 
   std::shared_ptr<DiskPreMod> TopCapMod;         ///< Lower mod
 
-
-  
   std::shared_ptr<moderatorSystem::BasicFlightLine> TopAFL;  ///< Top Mode FL
   std::shared_ptr<moderatorSystem::BasicFlightLine> TopBFL;  ///< Top Mode FL
-  std::shared_ptr<CylPreMod> TopPre;          ///< Toper Mod (Pre)
 
-  /// Top supply 
+  std::unique_ptr<ESSPipes> ModPipes;       ///< Moderator pipes
 
-  std::shared_ptr<constructSystem::SupplyPipe> TopSupplyPipe; 
-  std::shared_ptr<constructSystem::SupplyPipe> TopReturnPipe;  ///< Top supply
 
   std::shared_ptr<BulkModule> Bulk;      ///< Main bulk module
-  std::shared_ptr<moderatorSystem::FlightLine> BulkLowAFL;  ///< Lower Mode FL
 
   /// Shutterbay objects
   std::shared_ptr<ShutterBay> ShutterBayObj;  

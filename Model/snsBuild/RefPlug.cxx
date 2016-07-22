@@ -382,30 +382,30 @@ RefPlug::getLayerString(const size_t layerIndex,
 }
 
 int
-RefPlug::getCommonSurf(const size_t sideIndex) const
+RefPlug::getCommonSurf(const long int sideIndex) const
   /*!
     Given a side calculate the boundary surface
-    \param sideIndex :: Side [0-5]
+    \param sideIndex :: Side [1-6]
     \return Common dividing surface [outward pointing]
   */
 {
   ELog::RegMethod RegA("RefPlug","getCommonSurf");
 
-  switch(sideIndex)
+  switch(std::abs(sideIndex))
     {
-    case 0:
-      return -SMap.realSurf(refIndex+2);
     case 1:
-      return SMap.realSurf(refIndex+2);
+      return -SMap.realSurf(refIndex+2);
     case 2:
-      return -SMap.realSurf(refIndex+1);
+      return SMap.realSurf(refIndex+2);
     case 3:
-      return SMap.realSurf(refIndex+1);
+      return -SMap.realSurf(refIndex+1);
     case 4:
+      return SMap.realSurf(refIndex+1);
     case 5:
+    case 6:
       return 0;
     }
-  throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
+  throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex ");
 }
 
 int

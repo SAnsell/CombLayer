@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   delftInc/FuelElement.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -78,7 +78,6 @@ class FuelElement  : public RElement
   void createSurfaces(const attachSystem::FixedComp&,
 		      const size_t,const size_t);
   void createSurfaces(const attachSystem::FixedComp&);
-  void createObjects(Simulation&,const size_t,const size_t);
   void createObjects(Simulation&);;
   void createLinks();
 

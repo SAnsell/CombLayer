@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   constructInc/hexUnit.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,8 +65,10 @@ class hexUnit
   /// Void cell
   bool isEmpty() const { return empty; }
   bool isComplete() const;
+  /// access cutter flag
   bool isCut() const { return cut; }
   bool isConnected(const hexUnit&) const;
+  /// access cutter string
   const std::string& getCut() const { return cutStr; }
   size_t nLinks() const;
   /// Access centre
@@ -76,7 +78,6 @@ class hexUnit
   void setCutString(const std::string& S) { cutStr=S; }
   void clearLinks();
 
-  int createLinkSurf();
   bool hasLink(const size_t) const;
 
   void setCyl(const int);

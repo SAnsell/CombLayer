@@ -325,30 +325,30 @@ CylContainer::getSurfacePoint(const size_t layerIndex,
 }
 
 int
-CylContainer::getCommonSurf(const size_t sideIndex) const
+CylContainer::getCommonSurf(const long int sideIndex) const
   /*!
     Given a side calculate the boundary surface
-    \param sideIndex :: Side [0-5]
+    \param sideIndex :: Side [1-6]
     \return Common dividing surface [outward pointing]
   */
 {
   ELog::RegMethod RegA("CylContainererator","getCommonSurf");
 
-  switch(sideIndex)
+  switch(std::abs(sideIndex))
     {
-    case 0:
     case 1:
-      return 0;
     case 2:
-      return -SMap.realSurf(cylIndex+103);
+      return 0;
     case 3:
-      return SMap.realSurf(cylIndex+103);
+      return -SMap.realSurf(cylIndex+103);
     case 4:
-      return -SMap.realSurf(cylIndex+105);
+      return SMap.realSurf(cylIndex+103);
     case 5:
+      return -SMap.realSurf(cylIndex+105);
+    case 6:
       return SMap.realSurf(cylIndex+105);
     }
-  throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
+  throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
 }
 
 std::string

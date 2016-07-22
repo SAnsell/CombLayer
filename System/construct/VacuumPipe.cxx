@@ -572,13 +572,16 @@ VacuumPipe::setBack(const attachSystem::FixedComp& FC,
     throw ColErr::EmptyValue<long int>("SideIndex cant be zero");
 
   activeBack=1;
-  if (sideIndex>0)
-    backSurf=FC.getMainRule(static_cast<size_t>(sideIndex-1));
-  else
+  backSurf=FC.getSignedMainRule(sideIndex);
+
+  if (joinFlag)
     {
-      backSurf=FC.getMainRule(static_cast<size_t>(-sideIndex-1));
-      backSurf.makeComplement();
+      backJoin=1;
+      BPt=FC.getSignedLinkPt(sideIndex);
+      BAxis=FC.getSignedLinkAxis(sideIndex);
     }
+
+
   return;
 }
   

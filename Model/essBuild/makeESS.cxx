@@ -99,10 +99,9 @@
 #include "RoofPillars.h"
 #include "BunkerFeed.h"
 #include "Curtain.h"
-
 #include "ConicModerator.h"
 #include "makeESSBL.h"
-
+#include "ESSPipes.h"
 // F5 collimators:
 #include "F5Calc.h"
 #include "F5Collimator.h"
@@ -123,17 +122,14 @@ makeESS::makeESS() :
   LowAFL(new moderatorSystem::BasicFlightLine("LowAFlight")),
   LowBFL(new moderatorSystem::BasicFlightLine("LowBFlight")),
 
-  LowSupplyPipe(new constructSystem::SupplyPipe("LSupply")),
-  LowReturnPipe(new constructSystem::SupplyPipe("LReturn")),
-
   TopPreMod(new DiskPreMod("TopPreMod")),
   TopCapMod(new DiskPreMod("TopCapMod")),
 
   TopAFL(new moderatorSystem::BasicFlightLine("TopAFlight")),
   TopBFL(new moderatorSystem::BasicFlightLine("TopBFlight")),
+  ModPipes(new ESSPipes()),
 
   Bulk(new BulkModule("Bulk")),
-  BulkLowAFL(new moderatorSystem::FlightLine("BulkLAFlight")),
   ShutterBayObj(new ShutterBay("ShutterBay")),
 
 
@@ -169,7 +165,6 @@ makeESS::makeESS() :
   OR.addObject(TopBFL);
 
   OR.addObject(Bulk);
-  OR.addObject(BulkLowAFL);
 
   OR.addObject(ShutterBayObj);
   OR.addObject(ABunker);
@@ -360,41 +355,6 @@ makeESS::buildTopButterfly(Simulation& System)
   return;
 }
       
-void 
-makeESS::buildLowerPipe(Simulation& System,
-			const std::string& pipeType)
-  /*!
-    Process the lower moderator pipe
-    \param System :: Simulation 
-    \param pipeType :: pipeType 
-  */
-{
-  ELog::RegMethod RegA("makeESS","buildLowerPipe");
-  
-  if (pipeType=="help")
-    {
-      ELog::EM<<"Lower Pipe Configuration [lowPipe]"<<ELog::endBasic;
-      ELog::EM<<"-- {Any} : Standard TDR edge and centre"<<ELog::endBasic;
-      ELog::EM<<"-- Top : Two pipes from the top"<<ELog::endBasic;
-      return;
-    }
-
-  LowReturnPipe->setAngleSeg(12);
-  if (pipeType=="Top")
-    {
-      LowSupplyPipe->setOption("Top");
-      LowReturnPipe->setOption("Top");
-      LowSupplyPipe->createAll(System,*LowMod,0,6,5,*LowPre,3);
-      LowReturnPipe->createAll(System,*LowMod,0,5,5,*LowPre,3);
-    }
-  else
-    {
-      ELog::EM<<"Low supply pipe"<<ELog::endDiag;
-      //      LowSupplyPipe->createAll(System,*LowMod,0,6,4,*LowPre,2);
-      //      LowReturnPipe->createAll(System,*LowMod,0,3,2,*LowPre,4);
-    }
-  return;
-}
 
 void makeESS::buildF5Collimator(Simulation& System, size_t nF5)
 /*!
@@ -500,7 +460,6 @@ makeESS::optionSummary(Simulation& System)
   ELog::RegMethod RegA("makeESS","optionSummary");
   
   makeTarget(System,"help");
-  buildLowerPipe(System,"help");
   
   return;
 }
@@ -655,10 +614,13 @@ makeESS::build(Simulation& System,
   ELog::RegMethod RegA("makeESS","build");
 
   int voidCell(74123);
+
   const std::string lowPipeType=IParam.getValue<std::string>("lowPipe");
+  const std::string topPipeType=IParam.getValue<std::string>("topPipe");
+
   const std::string lowModType=IParam.getValue<std::string>("lowMod");
   const std::string topModType=IParam.getValue<std::string>("topMod");
-  const std::string topPipeType=IParam.getValue<std::string>("topPipe");
+
   
   const std::string targetType=IParam.getValue<std::string>("targetType");
   const std::string iradLine=IParam.getValue<std::string>("iradLineType");
@@ -702,11 +664,11 @@ makeESS::build(Simulation& System,
 		       LowPreMod->getHeight()+LMHeight+LowCapMod->getHeight(),
 		       TopPreMod->getHeight()+TMHeight+TopCapMod->getHeight());
 
+
   Reflector->insertComponent(System,"targetVoid",*Target,1);
   Reflector->deleteCell(System,"lowVoid");
   Reflector->deleteCell(System,"topVoid");
   Bulk->createAll(System,*Reflector,*Reflector);
-
   // Build flightlines after bulk
   TopAFL->createAll(System,*TopMod,0,*Reflector,4,*Bulk,-3);
   TopBFL->createAll(System,*TopMod,0,*Reflector,3,*Bulk,-3);
@@ -722,6 +684,9 @@ makeESS::build(Simulation& System,
   attachSystem::addToInsertForced(System,*Bulk,TopBFL->getCC("outer"));
 
 
+    ModPipes->buildLowPipes(System,lowPipeType);
+  //  ModPipes->buildTopPipes(System,topPipeType);
+  
   buildIradComponent(System,IParam);
   // Full surround object
   ShutterBayObj->addInsertCell(voidCell);

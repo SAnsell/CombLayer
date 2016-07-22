@@ -190,7 +190,7 @@ makeLens::createTally(Simulation& System,
   ELog::RegMethod RegA("makeLens","createTally");
   
   const size_t NSTally=IParam.setCnt("surfTally");
-  const size_t NEng=IParam.setCnt("tallyEnergy");
+  //  const size_t NEng=IParam.setCnt("tallyEnergy");
   
   size_t FL;
   double Dist;

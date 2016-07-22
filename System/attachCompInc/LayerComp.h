@@ -54,13 +54,13 @@ class LayerComp
   virtual int getLayerSurf(const size_t,const long int) const =0;
   virtual std::string getLayerString(const size_t,const long int) const =0;
   /// Access to common divider surface
-  virtual int getCommonSurf(const size_t) const { return 0; }
+  virtual int getCommonSurf(const long int) const { return 0; }
 
   /// Access to number of layers:
   virtual size_t getNLayers(const long int =0) const 
      { return nLayers; }
-  /// Access to number of layers:
-  virtual size_t getNInnerLayers(const size_t =0) const 
+  /// Access to number of layers [on a given side]:
+  virtual size_t getNInnerLayers(const long int =1) const 
      { return nInnerLayers; }
 
 };

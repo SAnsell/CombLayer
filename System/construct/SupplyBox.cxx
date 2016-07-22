@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   essBuild/SupplyBox.cxx
  *
@@ -247,16 +247,11 @@ SupplyBox::insertInlet(const attachSystem::FixedComp& FC,
   layerOffset=X*PPts[0].X()+Z*PPts[0].Z();
 
   Geometry::Vec3D Pt= Origin+layerOffset+Y*PPts[0].Y();
-  // GET Z Point from layer
-
-  const size_t SI((lSideIndex>0) ?
-		  static_cast<size_t>(lSideIndex-1) :
-		  static_cast<size_t>(-lSideIndex-1));
-		  
+  // GET Z Point from layer		  
   
   Geometry::Vec3D PtZ=LC->getSurfacePoint(0,lSideIndex);
   PtZ+=layerOffset;
-  const int commonSurf=LC->getCommonSurf(SI);
+  const int commonSurf=LC->getCommonSurf(lSideIndex);
   const std::string commonStr=(commonSurf) ? 		       
     StrFunc::makeString(commonSurf) : "";
   if (PtZ!=Pt)
@@ -270,7 +265,7 @@ SupplyBox::insertInlet(const attachSystem::FixedComp& FC,
   
   if (layerSeq.empty())
     {
-      for(size_t index=LC->getNInnerLayers(SI)+
+      for(size_t index=LC->getNInnerLayers(lSideIndex)+
 	    wallOffset;index<NL;index+=2)
 	layerSeq.push_back(index);
     }
@@ -287,7 +282,7 @@ SupplyBox::insertInlet(const attachSystem::FixedComp& FC,
 
 void
 SupplyBox::addExtraLayer(const attachSystem::LayerComp& LC,
-			  const size_t lSideIndex)
+			  const long int lSideIndex)
   /*!
     Add extra Layer for a pre-mod or such
     \param LC :: LayerComp Point [pre-mod for example]
@@ -450,10 +445,10 @@ void
 SupplyBox::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,
 		      const size_t orgLayerIndex,
-		      const size_t orgSideIndex,
-		      const size_t exitSideIndex,
+		      const long int orgSideIndex,
+		      const long int exitSideIndex,
 		      const attachSystem::LayerComp& LC,
-		      const size_t extraSide)
+		      const long int extraSide)
   /*!
     Generic function to create everything
     \param System :: Simulation to create objects in
@@ -468,12 +463,10 @@ SupplyBox::createAll(Simulation& System,
   ELog::RegMethod RegA("SupplyBox","createAll<LC>");
   populate(System);
 
-  createUnitVector(FC,orgLayerIndex,
-                   static_cast<long int>(orgSideIndex));
-  const long int exitLongSideIndex=
-    static_cast<long int>(exitSideIndex);
+  createUnitVector(FC,orgLayerIndex,orgSideIndex);
+
       
-  insertInlet(FC,exitLongSideIndex);
+  insertInlet(FC,exitSideIndex);
   addExtraLayer(LC,extraSide);
   addOuterPoints();
   setActive();

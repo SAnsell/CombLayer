@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   funcBase/varList.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -234,8 +234,10 @@ varList::selectValue(const int Key,Geometry::Vec3D& oVec,
     Simple selector
     \param Key :: Variable name
     \param oVec :: output vector
-    \param oDouble :: output vector
-    \return 1 :: Vector / 0 :: double
+    \param oDbl :: output value [ selected]
+    \retval Output Type used : 0 :: double
+    \retval Output Type used : 1 :: Vector 
+    \retval Output Type used : -1 :: FAILURE 
   */
 {
   const FItem* FPtr=findVar(Key);
@@ -271,7 +273,7 @@ varList::getValue(const int Key) const
     Get the value from an time
     \param Key :: return value
     \retval value if Key exists
-    \retval 0.0 if not (should this throw)
+    \retval 0.0 if not (should this throw?)
   */
 {
   const FItem* FPtr=findVar(Key);
