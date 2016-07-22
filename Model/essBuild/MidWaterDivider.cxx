@@ -456,6 +456,7 @@ MidWaterDivider::createObjects(Simulation& System,
   addOuterUnionSurf(Out); // \todo  !!! merge this in a single addOuterSurf
 
   // Reverse layer
+  /// water
   Out=ModelSupport::getComposite(SMap,divIndex, divIndex+1000+3,
 				 "-100 -300 ((24 -32 20M) : (-20M -6M))"); // x+y-
   Out+=RCut.display()+Base;
@@ -466,11 +467,17 @@ MidWaterDivider::createObjects(Simulation& System,
   Out+=LCut.display()+Base;
   System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
 
+  // Al
   Out=ModelSupport::getComposite(SMap,divIndex,
-				 "-100 (123 : -124)  -131 -132 "
-				 "((23  -24) : 31 : 32 )");
-  Out+=LCut.display()+RCut.display()+Base;
+				 "-100 -300 -124 -132 ( -24 : 32 )");
+  Out+=RCut.display()+Base;
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out));
+
+  Out=ModelSupport::getComposite(SMap,divIndex,
+				 "-100 300 123 -131 (23 : 31 )");
+  Out+=LCut.display()+Base;
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out));
+
   Out=ModelSupport::getComposite(SMap,divIndex,
 				 "-100 (123 : -124) -131 -132 ");
   addOuterUnionSurf(Out);
