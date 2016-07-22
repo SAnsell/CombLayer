@@ -71,6 +71,7 @@ class ShapeUnit
   const Geometry::Vec3D& getBegin() const { return begPt; }
   /// Accessor
   const Geometry::Vec3D& getEnd() const { return endPt; }
+  ///\cond ABSTRACT
   virtual Geometry::Vec3D getBegAxis() const =0; 
   virtual Geometry::Vec3D getEndAxis() const =0;
 
@@ -81,6 +82,7 @@ class ShapeUnit
 
   virtual void createSurfaces(ModelSupport::surfRegister&,
 		      const std::vector<double>&) =0;
+  ///\endcond ABSTRACT
 };
 
 

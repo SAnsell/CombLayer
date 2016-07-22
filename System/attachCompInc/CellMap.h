@@ -73,16 +73,19 @@ class CellMap  : public BaseMap
   int getCell(const std::string& K,const size_t Index) const
     { return BaseMap::getItem(K,Index); }
 
+  /// return all cells found
   std::vector<int> getCells(const std::string& K) const
     { return BaseMap::getItems(K); }
 
+  /// get ALL cells
   std::vector<int> getCells() const
     { return BaseMap::getItems(); }
 
+  /// remmove a cell number [index is offset]
   std::string removeCellNumber(const int CN,const size_t Index =0)
     { return BaseMap::removeItemNumber(CN,Index); }
       
-  
+  /// remove a cell by name
   int removeCell(const std::string& K,const size_t Index=0)
     {  return BaseMap::removeItem(K,Index); }
 
@@ -100,10 +103,11 @@ class CellMap  : public BaseMap
   void insertComponent(Simulation&,const std::string&,
 		       const FixedComp&,const long int) const;
 
-    
+  
  void deleteCell(Simulation&,const std::string&,const size_t =0);
-  std::pair<int,double>
-    deleteCellWithData(Simulation&,const std::string&,const size_t =0);
+
+ std::pair<int,double>
+   deleteCellWithData(Simulation&,const std::string&,const size_t =0);
 
 };
 

@@ -94,6 +94,9 @@ FixedComp::FixedComp(const std::string& KN,const size_t NL,
     \param KN :: KeyName
     \param NL :: Number of links
     \param O :: Origin Point
+    \param xV :: X direction
+    \param yV :: Y direction
+    \param zV :: Z direction
   */
 {}
 
@@ -348,9 +351,9 @@ FixedComp::applyAngleRotate(const double xAngle,
    Applies a triple angle rotation.
    Rotates about:
      Z : Y : X
-    \param xAngle :: X-rotation angle
-    \param xAngle :: Y-rotation angle
-    \param zAngle :: Z-rotation angle [first]
+     \param xAngle :: X-rotation angle
+     \param yAngle :: Y-rotation angle
+     \param zAngle :: Z-rotation angle [first]
   */
 {
   const Geometry::Quaternion Qz=
@@ -429,7 +432,7 @@ FixedComp::applyFullRotate(const double xyAngle,
     Create the unit vectors
     \param xyAngle :: XY Rotation [second]
     \param zAngle :: Z Rotation [first]
-    \param RotCentre :: Z Rotation [first]
+    \param RotCent :: Displacement centre
   */
 {
   const Geometry::Quaternion Qz=
@@ -1254,7 +1257,7 @@ HeadRule
 FixedComp::getSignedFullRule(const long int sideIndex) const
   /*!
     Get the main full rule.
-    \param Index :: Index for LinkUnit
+    \param sideIndex :: Index for LinkUnit
     \return Main HeadRule
    */
 {
@@ -1272,7 +1275,7 @@ HeadRule
 FixedComp::getSignedMainRule(const long int sideIndex) const
   /*!
     Get the main rule.
-    \param Index :: Index for LinkUnit
+    \param sideIndex :: Index for LinkUnit
     \return Main HeadRule
    */
 {
@@ -1306,9 +1309,9 @@ HeadRule
 FixedComp::getSignedCommonRule(const long int sideIndex) const
   /*!
     Get the main rule.
-    \param Index :: Index for LinkUnit
+    \param sideIndex :: Index for LinkUnit [signed]
     \return Main HeadRule
-   */
+  */
 {
   ELog::RegMethod RegA("FixedComp","getSignedCommonRule"); 
 
@@ -1402,7 +1405,7 @@ int
 FixedComp::getMasterSurf(const size_t outIndex) const
   /*!
     Calculate the unsigned exit surface
-    \param outIdnex :: Out surface direction
+    \param outIndex :: Out surface direction
     \return surfNum
   */
 {

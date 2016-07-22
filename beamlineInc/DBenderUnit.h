@@ -30,8 +30,8 @@ namespace beamlineSystem
   \class DBenderUnit
   \version 1.0
   \author S. Ansell
-  \date September 2014
-  \brief Points associated with tracked beamline bender
+  \date September 2015
+  \brief Points associated with tracked double beamline bender
 */
 
 class DBenderUnit : public ShapeUnit
@@ -85,15 +85,16 @@ class DBenderUnit : public ShapeUnit
   void setRadii(const double,const double);
     
   void setLength(const double);
+  // Set both rotation angles
   void setRotAngle(const double A,const double B)
   { rotAng=A; sndAng=B; }
   
   void setOriginAxis(const Geometry::Vec3D&,const Geometry::Vec3D&,
 		     const Geometry::Vec3D&,const Geometry::Vec3D&);
 
-  // Accessor to beg axis
+  /// Accessor to beg axis
   Geometry::Vec3D getBegAxis() const { return AYVec; }
-  // Accessor to end axis
+  /// Accessor to end axis
   Geometry::Vec3D getEndAxis() const { return BYVec; }
   
   virtual std::string getString(const ModelSupport::surfRegister&,

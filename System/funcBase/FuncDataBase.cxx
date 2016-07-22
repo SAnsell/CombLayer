@@ -877,7 +877,7 @@ FuncDataBase::addParse(const std::string& Name,const std::string& VParse)
     Adds this function if the Code system has been 
     executed
     \param Name :: Name of the variable
-    \param V :: Variable to add
+    \param VParse :: expression to parse
   */
 {
   Parse(VParse);

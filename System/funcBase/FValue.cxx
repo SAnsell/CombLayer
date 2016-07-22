@@ -340,6 +340,7 @@ int
 FValue<T>::getValue(Geometry::Vec3D&) const
   /*!
     Sets the value
+    \return 0 (never possible)
   */
 {
   return 0;
@@ -351,6 +352,7 @@ FValue<T>::getValue(double& V) const
   /*!
     Sets the values 
     \param V :: New value 
+    \return 1 (always possible)
   */
 {
   V=static_cast<double>(Value);
@@ -364,6 +366,7 @@ FValue<T>::getValue(int& V) const
   /*!
     Sets the values 
     \param V :: New value 
+    \return 1 (always possible)
   */
 {
   V=static_cast<int>(Value);
@@ -378,6 +381,7 @@ FValue<T>::getValue(long int& V) const
   /*!
     Sets the values 
     \param V :: New value 
+    \return 1 (always possible)
   */
 {
   V=static_cast<long int>(Value);
@@ -391,6 +395,7 @@ FValue<T>::getValue(size_t& V) const
   /*!
     Sets the values 
     \param V :: New value 
+    \return 1 (always possible)
   */
 {
   if (Value<0.0)
@@ -407,6 +412,7 @@ FValue<T>::getValue(std::string& V) const
   /*!
     Puts the value into V
     \param V :: Output variable
+    \return 0 if not possbile  (1 if valid)
   */
 {
   std::stringstream cx;
@@ -422,6 +428,7 @@ FValue<std::string>::getValue(Geometry::Vec3D& V) const
   /*!
     Puts the value into V
     \param V :: Output variable
+    \return 0 if not possbile  (1 if valid)
   */
 {
   ELog::RegMethod RegA("FValue","getValue(Vec3D)");
@@ -438,6 +445,7 @@ FValue<std::string>::getValue(double& V) const
   /*!
     Puts the value into V
     \param V :: Output variable
+    \return 0 if not possbile  (1 if valid)
   */
 {
   ELog::RegMethod RegA("FValue","getValue(double)");
@@ -453,6 +461,7 @@ FValue<std::string>::getValue(long int& V) const
   /*!
     Puts the value into V
     \param V :: Output variable
+    \return 0 if not possbile  (1 if valid)
   */
 {
   ELog::RegMethod RegA("FValue","getValue(long int )");
@@ -468,6 +477,7 @@ FValue<std::string>::getValue(size_t& V) const
   /*!
     Puts the value into V
     \param V :: Output variable
+    \return 0 if not possbile  (1 if valid)
   */
 {
   ELog::RegMethod RegA("FValue","getValue(size_t)");
@@ -483,6 +493,7 @@ FValue<std::string>::getValue(int& V) const
   /*!
     Puts the value into V
     \param V :: Output variable
+    \return 0 if not possbile  (1 if valid)
   */
 {
   ELog::RegMethod RegA("FValue","getValue(int)");
@@ -499,6 +510,7 @@ FValue<std::string>::getValue(std::string& V) const
   /*!
     Puts the value into V
     \param V :: Output variable
+    \return 1 as convertable (always)
   */
 {
   V=Value;
@@ -513,6 +525,7 @@ FValue<Geometry::Vec3D>::getValue(Geometry::Vec3D& V) const
   /*!
     Puts the value into V
     \param V :: Output variable
+    \return 1 as convertable (always)
   */
 {
   V=Value;
@@ -525,6 +538,7 @@ int
 FValue<Geometry::Vec3D>::getValue(double&) const
   /*!
     Puts the value into V
+    \return  false [not possible]
   */
 {
   return 0; 
@@ -557,6 +571,7 @@ int
 FValue<Geometry::Vec3D>::getValue(int&) const
   /*!
     Puts the value into V
+    \return 0 as invalid
   */
 {
   return 0;
@@ -569,6 +584,7 @@ FValue<Geometry::Vec3D>::getValue(std::string& V) const
   /*!
     Puts the value into V
     \param V :: Output variable
+    \return 1 as convertable (always)
   */
 {
   std::ostringstream cx;

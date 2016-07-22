@@ -338,7 +338,6 @@ DBenderUnit::createSurfaces(ModelSupport::surfRegister& SMap,
   /*!
     Build the surfaces for the track
     \param SMap :: SMap to use
-    \param indexOffset :: Index offset
     \param Thick :: Thickness for each layer
    */
 {

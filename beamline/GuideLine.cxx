@@ -497,7 +497,6 @@ void
 GuideLine::createSurfaces()
   /*!
     Create All the surfaces
-    \param mainLP :: Front object construction surface
   */
 {
   ELog::RegMethod RegA("GuideLine","createSurface");
@@ -549,7 +548,7 @@ GuideLine::shapeFrontSurf(const bool beamFlag,
   /*!
     Determine the frontcutting surface
     \param beamFlag :: Consider beamoffset if true
-    \param Index :: index of shape number
+    \param index :: index of shape number
     \return cutting surface string
    */
 {
@@ -573,7 +572,7 @@ GuideLine::shapeBackSurf(const bool beamFlag,
   /*!
     Determine the backcutting surface
     \param beamFlag :: Consider beamoffset if true
-    \param Index :: index of shape number
+    \param index :: index of shape number
     \return cutting surface string
    */
 {
@@ -765,6 +764,7 @@ GuideLine::calcActiveEndIntercept()
     with the list link point.
     Note that it is not constant because it needs to
     populate the surfaces of the endCut HeadRule.
+    \return Intercept centre point
   */
 {
   ELog::RegMethod RegA("GuideLine","calcActiveEndIntercept");

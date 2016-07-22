@@ -71,10 +71,8 @@ solveQuadratic(const double* D,
 	       std::pair<std::complex<double>,
 			 std::complex<double> >& OutAns)
 /*!
-  Solves Complex Quadratic 
-  \param Coef :: iterator over all the coefients in the order
-  \f[ Ax^2+Bx+C \f].
-  \parma D :: Parameter array
+  Solves Complex Quadratic   \f[ Ax^2+Bx+C \f].
+  \param D :: Parameter array (a,b,c)
   \param OutAns :: complex roots of the equation 
   \return number of unique solutions 
 */
@@ -87,9 +85,10 @@ solveQuadratic(const double& a,const double& b,const double& c,
 	       std::pair<std::complex<double>,
 			 std::complex<double> >& OutAns)
 /*!
-  Solves Complex Quadratic 
-  \param Coef :: iterator over all the coefients in the order
-  \f[ Ax^2+Bx+C \f].
+  Solves Complex Quadratic  \f[ Ax^2+Bx+C \f].
+  \param a :: x^2 coeff
+  \param b :: x coeff
+  \param c :: const coeff
   \param OutAns :: complex roots of the equation 
   \return number of unique solutions 
 */
