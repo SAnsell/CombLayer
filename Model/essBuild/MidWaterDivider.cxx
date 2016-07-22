@@ -367,7 +367,7 @@ MidWaterDivider::createSurfaces()
 	  //	  SMap.realPtr<Geometry::Plane>(divIndex+side[i]+j*100)->print();
 	  //	  SMap.realPtr<Geometry::Plane>(divIndex+front[i]+j*100)->print();
 	  CPts[i] = SurInter::getPoint(SMap.realPtr<Geometry::Plane>(divIndex+side[i]+j*100),
-				       SMap.realPtr<Geometry::Plane>(divIndex+front[i]), pz); // water corners
+				       SMap.realPtr<Geometry::Plane>(divIndex+front[i] + (i<2 ? j*100 : 0)), pz); // water corners
 	  ELog::EM << "!!! must be +j*100 in the line before" << ELog::endCrit;
 	  
 	  if ((i==0) || (i==2))
@@ -449,7 +449,7 @@ MidWaterDivider::createObjects(Simulation& System,
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out)); // x-
 
   Out=ModelSupport::getComposite(SMap,divIndex, divIndex+1000+1,
-				 "100 300  ( -4 : 11 ) ((104 -111) ) ");
+  				 "100 300  ((( -4 : 11 ) (104 -111 20M)) : (-120M 6M -106M) : (104 -111 6M -20M 120M))");  // \todo Is it possible to optimise it more?
   Out+=LCut.display()+Base;
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out)); // x-
   
