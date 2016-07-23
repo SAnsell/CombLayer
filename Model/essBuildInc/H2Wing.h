@@ -55,16 +55,21 @@ class H2Wing :
   double xStep;
   double yStep;
   double xyOffset;           ///< xy-Angle offset
-  
+
+  double bfDepth;               ///< BF moderator lower wall thick
+  double bfHeight;              ///< BF moderator upper wall thick
+
   std::array<Geometry::Vec3D,3> Pts;    ///< Corner Points
   std::array<double,3> radius;  ///< corner radii
   double height;                ///< height of moderator cell
-  double totalHeight;           ///< total height modertoa
+  double totalHeight;           ///< total height moderator
   
   int modMat;                   ///< LH2
   double modTemp;               ///< LH2 temperature [K]
-  std::vector<double> Thick;    ///< Layer thickness
-  std::vector<double> Height,Depth;   ///< Vertical thickness
+
+  std::vector<double> Thick;        ///< Layer thickness
+  std::vector<double> layerHeight;  ///< Layer veritcal 
+  std::vector<double> layerDepth;   ///< layer depth
   std::vector<int> mat;         ///< Layer material
   std::vector<double> temp;     ///< Layer temperature
 

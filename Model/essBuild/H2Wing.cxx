@@ -184,7 +184,10 @@ H2Wing::populate(const FuncDataBase& Control)
   
   xStep=Control.EvalVar<double>(keyName+"XStep");
   yStep=Control.EvalVar<double>(keyName+"YStep");
-  
+
+  bfDepth = Control.EvalDefVar<double>(baseName+"WallDepth",0.0);
+  bfHeight = Control.EvalDefVar<double>(baseName+"WallHeight",0.0);
+
   for(size_t i=0;i<3;i++)
     {
       Pts[i]=Control.EvalVar<Geometry::Vec3D>
@@ -202,7 +205,8 @@ H2Wing::populate(const FuncDataBase& Control)
   double VH, VD;
   int M;
   Thick.push_back(0.0);
-  Height.push_back(0.0); Depth.push_back(0.0);
+  layerHeight.push_back(0.0);
+  layerDepth.push_back(0.0);
   temp.push_back(modTemp);
   mat.push_back(modMat);
   double TH(0.0);
@@ -216,8 +220,8 @@ H2Wing::populate(const FuncDataBase& Control)
       M=ModelSupport::EvalMat<int>(Control,keyName+"Mat"+Num);
 
       Thick.push_back(T);
-      Height.push_back(VH);
-      Depth.push_back(VD);
+      layerHeight.push_back(VH);
+      layerDepth.push_back(VD);
       temp.push_back(mTemp);
       mat.push_back(M);
       TH+=VH+VD;
@@ -248,7 +252,10 @@ H2Wing::createUnitVector(const attachSystem::FixedComp& FC)
   ELog::RegMethod RegA("H2Wing","createUnitVector");
 
   FixedComp::createUnitVector(FC);
-  const double dh = std::accumulate(Depth.begin(), Depth.end(), 0.0) - std::accumulate(Height.begin(), Height.end(), 0.0); // difference between total depth and total height
+  const double dh = std::accumulate(layerDepth.begin(),layerDepth.end(),0.0) -
+    std::accumulate(layerHeight.begin(),layerHeight.end(),0.0)-
+    +bfDepth-bfHeight;
+
   applyShift(xStep,yStep, dh/2.0);
   applyAngleRotate(xyOffset,0.0);
   for(size_t i=0;i<3;i++)
@@ -270,12 +277,13 @@ H2Wing::createLinks()
   std::array<Geometry::Vec3D,3> CPts;
   std::array<Geometry::Vec3D,3> NPts;
   double PDepth(0.0);
-  double VH(0.0), VD(0.0);
+  double VH(height/2.0);
+  double VD(height/2.0);
   for(size_t i=1;i<nLayers;i++)
     {
       PDepth+=Thick[i];
-      VH += Height[i];
-      VD += Depth[i];
+      VH += layerHeight[i];
+      VD += layerDepth[i];
     }
   cornerSet(PDepth,CPts,NPts);
 
@@ -290,8 +298,8 @@ H2Wing::createLinks()
     }
   // Top/bottom
 
-  FixedComp::setConnect(4,Origin-Z*(VD+height/2.0),-Z);
-  FixedComp::setConnect(5,Origin+Z*(VH+height/2.0),Z);
+  FixedComp::setConnect(4,Origin-Z*VD,-Z);
+  FixedComp::setConnect(5,Origin+Z*VH,Z);
   FixedComp::setLinkSurf(4,-SMap.realSurf(triOffset+5));
   FixedComp::setLinkSurf(5,SMap.realSurf(triOffset+6));
 
@@ -416,8 +424,8 @@ H2Wing::createSurfaces()
   for(size_t j=0;j<nLayers;j++)
     {
       PDepth+=Thick[j];
-      VH += Height[j];
-      VD += Depth[j];
+      VH += layerHeight[j];
+      VD += layerDepth[j];
       cornerSet(PDepth,CPts,NPts);
       for(size_t i=0;i<3;i++)
 	{
@@ -530,12 +538,15 @@ H2Wing::createObjects(Simulation& System)
 				     "-1 -2 -3 5 -6 (21:-7) (22:-8) (23:-9)");
   addOuterSurf(OutA);
 
+  //  sideRule=ModelSupport::getComposite(SMap,triOffset,
+  //				     "-1 -2 -3 (21:-7) (22:-8) (23:-9)");
+
   return;
 }
 
 Geometry::Vec3D
-H2Wing::getSurfacePoint(const size_t,
-			const long int) const
+H2Wing::getSurfacePoint(const size_t layerIndex,
+			const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link point
     \param layerIndex :: layer, 0 is inner moderator [0-6]
@@ -544,7 +555,41 @@ H2Wing::getSurfacePoint(const size_t,
   */
 {
   ELog::RegMethod RegA("H2Wing","getSurfacePoint");
-  throw ColErr::AbsObjMethod("Not implemented yet");
+  if (layerIndex>=nLayers)
+    throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layerIndex");
+  
+  // Loop over corners that are bound by convex
+  std::array<Geometry::Vec3D,3> CPts;
+  std::array<Geometry::Vec3D,3> NPts;
+  double PDepth(0.0);
+  double VHigh(height/2.0);
+  double VDepth(height/2.0);
+
+  for(size_t i=1;i<layerIndex;i++)
+    {
+      PDepth+=Thick[i];
+      VHigh += layerHeight[i];
+      VDepth += layerDepth[i];
+    }
+  cornerSet(PDepth,CPts,NPts);
+
+  const size_t SI=static_cast<size_t>(std::abs(sideIndex));
+  
+  switch(SI)
+    {
+    case 0:
+      return Origin;
+    case 1:
+    case 2:
+    case 3:
+      return (CPts[SI-1]+CPts[SI % 3])/2.0;
+    case 5:
+      return Origin-Z*VDepth;
+    case 6:
+      Origin+Z*VHigh;
+    }
+
+  throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
 }
 
 int

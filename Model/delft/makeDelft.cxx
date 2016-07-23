@@ -433,7 +433,7 @@ makeDelft::build(Simulation* SimPtr,
   FlightF->createAll(*SimPtr,WC,-WC.getX());
 
   R2Insert->addInsertCell(FlightA->getInnerVoid());
-  R2Insert->createAll(*SimPtr,*FlightA);
+  R2Insert->createAll(*SimPtr,*FlightA,0);
 
   if (refExtra=="R2Surround")
     {

@@ -71,88 +71,6 @@ EssVariables(FuncDataBase& Control)
 
   Control.addVariable("EngineeringActive",0);      // NO engineering
 
-  Control.addVariable("LSupplyNSegIn",2);
-  // Central point:
-  Control.addVariable("LSupplyPPt0",Geometry::Vec3D(0,-1.0,0.0));
-  Control.addVariable("LSupplyPPt1",Geometry::Vec3D(0,-19.25,0.0));
-  Control.addVariable("LSupplyPPt2",Geometry::Vec3D(3.005,-19.25,64.930));
-  // Central point [Top]:
-  Control.addVariable("LSupplyTopPPt0",Geometry::Vec3D(0,-1.0,5.0));
-  Control.addVariable("LSupplyTopPPt1",Geometry::Vec3D(0,-19.25,5.0));
-  Control.addVariable("LSupplyTopPPt2",Geometry::Vec3D(3.005,-19.25,64.930));
-
-  Control.addVariable("LSupplyNRadii",9);
-  Control.addVariable("LSupplyRadius0",1.5);
-  Control.addVariable("LSupplyRadius1",1.7);
-  Control.addVariable("LSupplyRadius2",1.8);
-  Control.addVariable("LSupplyRadius3",2.3);
-  Control.addVariable("LSupplyRadius4",2.5);
-  Control.addVariable("LSupplyRadius5",2.7);
-  Control.addVariable("LSupplyRadius6",2.9);
-  Control.addVariable("LSupplyRadius7",3.5);
-  Control.addVariable("LSupplyRadius8",3.7);
-
-  Control.addVariable("LSupplyMat0","ParaH2");
-  Control.addVariable("LSupplyMat1","Aluminium");
-  Control.addVariable("LSupplyMat2","Aluminium");
-  Control.addVariable("LSupplyMat3","Void");
-  Control.addVariable("LSupplyMat4","Aluminium");
-  Control.addVariable("LSupplyMat5","Void");
-  Control.addVariable("LSupplyMat6","Aluminium");
-  Control.addVariable("LSupplyMat7","Void");
-  Control.addVariable("LSupplyMat8","Aluminium");
-
-  Control.addVariable("LSupplyTemp0",25.0);
-  Control.addVariable("LSupplyTemp1",25.0);
-  Control.addVariable("LSupplyTemp2",25.0);
-  Control.addVariable("LSupplyTemp3",0.0);
-
-  Control.addVariable("LSupplyActive0",3);
-  Control.addVariable("LSupplyActive1",7);
-  Control.addVariable("LSupplyActive2",31);
-  Control.addVariable("LSupplyActive3",127);
-  Control.addVariable("LSupplyActive4",511);
-  Control.addVariable("LSupplyActive5",255);
-  Control.addVariable("LSupplyActive6",255);
-
-  // low mod return pipe
-
-  Control.addVariable("LReturnNSegIn",1);
-  Control.addVariable("LReturnPPt0",Geometry::Vec3D(0,0,0));
-  Control.addVariable("LReturnPPt1",Geometry::Vec3D(0,30,0));
-
-  Control.addVariable("LReturnTopNSegIn",1);
-  Control.addVariable("LReturnTopPPt0",Geometry::Vec3D(0,0,-5));
-  Control.addVariable("LReturnTopPPt1",Geometry::Vec3D(0,30,-5));
-
-  Control.addVariable("LReturnNRadii",8);
-  Control.addVariable("LReturnRadius0",1.7);
-  Control.addVariable("LReturnRadius1",1.8);
-  Control.addVariable("LReturnRadius2",2.3);
-  Control.addVariable("LReturnRadius3",2.5);
-  Control.addVariable("LReturnRadius4",2.7);
-  Control.addVariable("LReturnRadius5",2.9);
-  Control.addVariable("LReturnRadius6",3.5);
-  Control.addVariable("LReturnRadius7",3.7);
-
-  Control.addVariable("LReturnMat0","ParaH2");
-  Control.addVariable("LReturnMat1","Aluminium");
-  Control.addVariable("LReturnMat2","Void");
-  Control.addVariable("LReturnMat3","Aluminium");
-  Control.addVariable("LReturnMat4","Void");
-  Control.addVariable("LReturnMat5","Aluminium");
-  Control.addVariable("LReturnMat6","Void");
-  Control.addVariable("LReturnMat7","Aluminium");
-
-  Control.addVariable("LReturnTemp0",25.0);
-  Control.addVariable("LReturnTemp1",25.0);
-
-  Control.addVariable("LReturnActive0",3);
-  Control.addVariable("LReturnActive1",15);
-  Control.addVariable("LReturnActive2",63);
-  Control.addVariable("LReturnActive3",255);
-  Control.addVariable("LReturnActive4",127);
-  //
   Control.addVariable("LowModXStep",0.0);  
   Control.addVariable("LowModYStep",0.0);  
   Control.addVariable("LowModZStep",-18.0);
@@ -600,7 +518,8 @@ EssVariables(FuncDataBase& Control)
   
   EssProtonBeam(Control);
   EssBeamLinesVariables(Control);
-
+  EssPipeVariables(Control);
+  
   BEERvariables(Control);
   CSPECvariables(Control);
   DREAMvariables(Control);

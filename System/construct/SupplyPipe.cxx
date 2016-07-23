@@ -84,9 +84,9 @@ SupplyPipe::SupplyPipe(const std::string& Key)  :
   cellIndex(pipeIndex+1),wallOffset(2),
   Coaxial(Key+"CoAx"),nAngle(12)
   /*!
+
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
-    \param Opt :: optName
   */
 {}
 
@@ -140,7 +140,7 @@ void
 SupplyPipe::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: Database to use
   */
 {
   ELog::RegMethod RegA("SupplyPipe","populate");
@@ -183,6 +183,7 @@ SupplyPipe::createUnitVector(const attachSystem::FixedComp& FC,
   /*!
     Create the unit vectors
     \param FC :: Fixed unit that it is connected to 
+    \param layerIndex :: Surface Layer for first point
     \param sideIndex :: Connection point to use as origin [0 for origin]
   */
 {
@@ -283,7 +284,7 @@ SupplyPipe::addExtraLayer(const attachSystem::LayerComp& LC,
   /*!
     Add extra Layer for a pre-mod or such
     \param LC :: LayerComp Point [pre-mod for example]
-    \parma lSideIndex :: Layer to track through
+    \param lSideIndex :: Layer to track through
    */
 {
   ELog::RegMethod RegA("SupplyPipe","addExtraLayer");
@@ -454,7 +455,7 @@ SupplyPipe::createAll(Simulation& System,
     \param orgLayerIndex :: Surface Layer for 
     \param orgSideIndex :: Link point for X,Y,Z axis [0 for origin]
     \param exitSideIndex :: layer to pass pipe out via
-    \param ExtraLC :: Point to extra Layer Object if exist [pre-mod]
+    \param LC :: Point to extra Layer Object if exist [pre-mod]
     \param extraSide :: Side to track through object
   */
 {

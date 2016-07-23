@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   delft/BeamInsert.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -177,36 +177,23 @@ BeamInsert::populate(const Simulation& System)
 }
   
 void
-BeamInsert::createUnitVector(const attachSystem::FixedComp& FC)
+BeamInsert::createUnitVector(const attachSystem::FixedComp& FC,
+			     const long int sideIndex)
   /*!
     Create the unit vectors
     - Y Points towards the beamline
     - X Across the Face
     - Z up (towards the target)
     \param FC :: A Contained FixedComp to use as basis set
-    \param sideIndex :: Index on fixed unit
+    \param sideIndex :: link point side
   */
 {
   ELog::RegMethod RegA("BeamInsert","createUnitVector");
 
-  FixedComp::createUnitVector(FC);
-  Origin+=X*xStep+Y*yStep+Z*zStep;
-  ELog::EM<<"Origin == "<<Origin<<ELog::endDebug;
+  FixedComp::createUnitVector(FC,sideIndex);
+  applyShift(xStep,yStep,zStep);
+  applyAngleRotate(xyAngle,zAngle);
 
-  if (fabs(xyAngle)>Geometry::zeroTol || 
-      fabs(zAngle)>Geometry::zeroTol)
-    {
-      const Geometry::Quaternion Qz=
-	Geometry::Quaternion::calcQRotDeg(zAngle,X);
-      const Geometry::Quaternion Qxy=
-	Geometry::Quaternion::calcQRotDeg(xyAngle,Z);
-  
-      Qz.rotate(Y);
-      Qz.rotate(Z);
-      Qxy.rotate(Y);
-      Qxy.rotate(X);
-      Qxy.rotate(Z); 
-    }
   return;
 }
 
@@ -266,17 +253,19 @@ BeamInsert::createLinks()
 
 void
 BeamInsert::createAll(Simulation& System,
-		      const attachSystem::FixedComp& FC)
+		      const attachSystem::FixedComp& FC,
+		      const long int sideIndex)
   /*!
     Global creation of the vac-vessel
     \param System :: Simulation to add vessel to
     \param FC :: Moderator Object
+    \param sideIndex :: link point [signed]
   */
 {
   ELog::RegMethod RegA("BeamInsert","createAll");
   populate(System);
 
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

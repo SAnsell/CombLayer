@@ -84,8 +84,12 @@ ESSPipes::ESSPipes()
   registerPipes({
       "TSupplyLeftAl","TSupplyLeftConnect","TSupplyLeftInvar",
       "TSupplyRightAl","TSupplyRightConnect","TSupplyRightInvar",
+      "TReturnLeftAl","TReturnLeftConnect","TReturnLeftInvar",
+      "TReturnRightAl","TReturnRightConnect","TReturnRightInvar",
       "LSupplyLeftAl","LSupplyLeftConnect","LSupplyLeftInvar",
-      "LSupplyRightAl","LSupplyRightConnect","LSupplyRightInvar"});
+      "LSupplyRightAl","LSupplyRightConnect","LSupplyRightInvar",
+      "LReturnLeftAl","LReturnLeftConnect","LReturnLeftInvar",
+      "LReturnRightAl","LReturnRightConnect","LReturnRightInvar"});
 }
   
 ESSPipes::PipeTYPE&
@@ -112,6 +116,8 @@ ESSPipes::registerPipes(const std::vector<std::string>& PNames)
     \param PNames :: Name of pipe to register
   */
 {
+  ELog::RegMethod RegA("ESSPipes","registerPipes");
+  
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 

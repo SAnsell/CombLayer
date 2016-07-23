@@ -448,7 +448,7 @@ pipeUnit::insertObjects(Simulation& System)
   Axis.makeUnit();
   const Geometry::Vec3D AX(Axis.crossNormal());
   const Geometry::Vec3D AY(AX*Axis);
-  double radius=getOuterRadius();
+  double radius=getOuterRadius()+0.001;
   if (prev && std::abs(prev->getOuterRadius()-radius)<10.0*Geometry::zeroTol)
     radius+=Geometry::zeroTol*100;  
 
