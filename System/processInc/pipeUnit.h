@@ -102,7 +102,7 @@ class pipeUnit : public attachSystem::FixedComp,
   pipeUnit& operator=(const pipeUnit&);
   virtual ~pipeUnit();
 
-  // Set Number of angles
+  /// Set Number of angles
   void setNAngle(const size_t A) { nAngle=(A) ? A : 6; }
   /// Access Axis
   const Geometry::Vec3D& getAxis() const { return Axis; }
@@ -118,7 +118,6 @@ class pipeUnit : public attachSystem::FixedComp,
   void setBSurf(const HeadRule&);
   void connectFrom(pipeUnit*);
   void connectTo(pipeUnit*);
-  void addCutCell(const int);  
 
   void createAll(Simulation&,const size_t,const std::vector<cylValues>&);
     

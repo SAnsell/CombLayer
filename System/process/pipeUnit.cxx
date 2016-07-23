@@ -433,7 +433,6 @@ pipeUnit::insertObjects(Simulation& System)
     from creation since we need to determine those object that 
     need to have an exclude item added to them.
     \param System :: Simulation to add object to
-    \param cellIndex :: Cell index to use
   */
 {
   ELog::RegMethod RegA("pipeUnit","insertObjects");
@@ -455,12 +454,12 @@ pipeUnit::insertObjects(Simulation& System)
   const double angleStep(2*M_PI/nAngle);
   double angle(0.0);
   Geometry::Vec3D addVec;
-
   for(size_t i=0;i<=nAngle;angle+=angleStep,i++)
     {
+      Geometry::Vec3D Diff((BPt-APt).unit());
       addVec=(i<nAngle) 
 	? AX*cos(angle)*radius+AY*sin(angle)*radius 
-	: Geometry::Vec3D(0,0,0);
+	: Geometry::Vec3D(0.1,0.1,0.1);
       
       // Calculate central track
       LineTrack LT(APt+addVec,BPt+addVec);
@@ -469,11 +468,12 @@ pipeUnit::insertObjects(Simulation& System)
       const std::vector<MonteCarlo::Object*>& OVec=LT.getObjVec();
       std::vector<MonteCarlo::Object*>::const_iterator oc;
 
+      int debugCnt(0);
       for(MonteCarlo::Object* oc : OVec)
 	{	  
 	  const int ONum=oc->getName();
 	  if (OMap.find(ONum)==OMap.end())
-	    OMap.insert(MTYPE::value_type(ONum,oc));
+	    OMap.emplace(ONum,oc);
 	}
     }
 

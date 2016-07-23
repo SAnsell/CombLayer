@@ -281,6 +281,7 @@ createInputs(inputParam& IParam)
   IParam.regItem("targetType","targetType",1);
   IParam.regDefItem<int>("u","units",1,0);
   IParam.regItem("validCheck","validCheck",1);
+  IParam.regItem("validPoint","validPoint",1);
   IParam.regFlag("um","voidUnMask");
   IParam.regMulti("volume","volume",4,1);
   IParam.regItem("volCard","volCard");
@@ -388,6 +389,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("vmat","Material sections to be written by vtk output");
   IParam.setDesc("VN","Number of points in the volume integration");
   IParam.setDesc("validCheck","Run simulation to check for validity");
+  IParam.setDesc("validPoint","Point to start valid check from");
 
   IParam.setDesc("w","weightBias");
   IParam.setDesc("wExt","Extraction biasisng [see: -wExt help]");

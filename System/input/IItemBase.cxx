@@ -225,7 +225,6 @@ IItem::setObjItem(const size_t setIndex,const size_t itemIndex,
     \param setIndex :: Set number
     \param itemIndex :: Item index 
     \param V :: Convertable item
-    \return 
   */
 {
   ELog::RegMethod RegA("IItem","setObjItem");
@@ -240,8 +239,9 @@ IItem::setObj(const size_t setIndex,const size_t itemIndex,
   /*!
     Set the object based on the setIndex and the itemIndex 
     Allows a +1 basis but not more:	
-    \param setIndex :: Item number
-    \return 
+    \param setIndex :: group set number
+    \param itemIndex :: Item number
+    \param V :: String to be converted
   */
 {
   ELog::RegMethod RegA("IItem","setObj");
@@ -294,6 +294,7 @@ const std::vector<std::string>&
 IItem::getObjectItems(const size_t setIndex) const
   /*!
     Get Object [assuming setIndex/itemIndex ==0]
+    \param setIndex :: set value
     \return vector of strings 
   */
 { 
@@ -366,7 +367,7 @@ IItem::getObj(const size_t setIndex,const size_t itemIndex) const
     Get Object
     \param setIndex :: Index
     \param itemIndex :: item count
-    \return Object
+    \return Vec3D object
   */
 { 
   ELog::RegMethod RegA("IItem","getObj");
@@ -395,7 +396,7 @@ IItem::getObj(const size_t setIndex,const size_t itemIndex) const
     Get Object
     \param setIndex :: Index
     \param itemIndex :: item count
-    \return Object
+    \return string value [as stored]
   */
 { 
   ELog::RegMethod RegA("IItem","getObj<string>");
@@ -411,7 +412,7 @@ IItem::getCntVec3D(const size_t setIndex,size_t& itemIndex) const
     Get a simple Vec3D [cannot be a link component]
     \param setIndex :: Index
     \param itemIndex :: item count
-    \return Object
+    \return Vec3D if valid 
   */
 { 
   ELog::RegMethod RegA("IItem","getCntVec3D");

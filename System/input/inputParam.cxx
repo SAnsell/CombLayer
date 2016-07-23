@@ -741,7 +741,7 @@ inputParam::setValue(const std::string& K,
     Set a value based on key
     \param K :: Key to add/search
     \param A :: Object to set
-    \param I :: Index value
+    \param itemIndex :: Index value
   */
 {
   setValue<T>(K,A,0,itemIndex);
@@ -851,7 +851,6 @@ inputParam::regMulti(const std::string& K,const std::string& LK,
     \param maxSets :: Max number of sets
     \param reqData :: Required data per set
     \param maxData :: Max number of dat per set
-    \param nReq :: number of data actually required [-ve to mean all]
   */
 {
   ELog::RegMethod RegA("inputParam","regMulti");
@@ -875,8 +874,8 @@ inputParam::regDefItemList(const std::string& K,const std::string& LK,
     Registers a particular type
     \param K :: Keyname
     \param LK :: Long keyname
-    \param NData :: Number of data points
-    \param AItem :: Items with defaults [size <= NData]
+    \param reqNData :: Number of data points
+    \param AItems :: Defautl item list
   */
 {
   ELog::RegMethod RegA("inputParam","regDefItemList<T>");

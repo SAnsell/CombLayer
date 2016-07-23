@@ -1548,8 +1548,8 @@ HeadRule::createAddition(const int InterFlag,const Rule* NRptr)
   /*!
     Function to actually do the addition of a rule to 
     avoid code repeat.
-    \param InterFlag :: Intersection / Union [ 1 : -1 ] : 0 for new 
-    \param NRPtr :: New Rule pointer to add
+    \param InterFlag :: Intersection / Union [ 1 : -1 ] :: 0 for new 
+    \param NRptr :: New Rule pointer to add
    */
 {
   ELog::RegMethod RegA("HeadRule","createAddition");
@@ -1978,6 +1978,7 @@ HeadRule::Intersects(const HeadRule& A) const
      Done by line intersection along planes
      and by point intersection.
      \param A :: HeadRule to use
+     \return true on intersection
    */
 {
   ELog::RegMethod RegA("HeadRule","Intersects");

@@ -91,6 +91,30 @@ ESSPipes::ESSPipes()
       "LReturnLeftAl","LReturnLeftConnect","LReturnLeftInvar",
       "LReturnRightAl","LReturnRightConnect","LReturnRightInvar"});
 }
+
+ESSPipes::ESSPipes(const ESSPipes& A) : 
+  PipeMap(A.PipeMap)
+  /*!
+    Copy constructor
+    \param A :: ESSPipes to copy
+  */
+{}
+
+ESSPipes&
+ESSPipes::operator=(const ESSPipes& A)
+  /*!
+    Assignment operator
+    \param A :: ESSPipes to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      PipeMap=A.PipeMap;
+    }
+  return *this;
+}
+
   
 ESSPipes::PipeTYPE&
 ESSPipes::getPipe(const std::string& PName)
@@ -149,12 +173,13 @@ ESSPipes::buildH2Pipe(Simulation& System,const std::string& lobeName,
    */
   ELog::RegMethod RegA("makeESS", "buildH2Pipe");
 
+
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  std::shared_ptr<constructSystem::SupplyPipe>& pipeAl=getPipe(pipeAlName);
-  std::shared_ptr<constructSystem::SupplyPipe>& pipeConnect=getPipe(pipeConnectName);
-  std::shared_ptr<constructSystem::SupplyPipe>& pipeInvar=getPipe(pipeInvarName);
+  PipeTYPE& pipeAl=getPipe(pipeAlName);
+  PipeTYPE& pipeConnect=getPipe(pipeConnectName);
+  PipeTYPE& pipeInvar=getPipe(pipeInvarName);
 
   
   const attachSystem::FixedComp* lobe=
@@ -167,27 +192,6 @@ ESSPipes::buildH2Pipe(Simulation& System,const std::string& lobeName,
   System.populateCells();
   System.validateObjSurfMap();
 
-  // !!! this is extremaly slow. add only cells which are really needed.
-  // !!! Actually since cold Al/H can't connect with warm Al or water,
-  // !!! instead of doing this horrific thing I need to enlarge void
-  // !!! around pipes.
-  /*
-  pipeAl->addInsertCell(0, waterCM->getCell("Water"));
-  pipeConnect->addInsertCell(0, waterCM->getCell("Water"));
-  pipeInvar->addInsertCell(0, waterCM->getCell("Water"));
-
-  pipeAl->addInsertCell(0, waterCM->getCell(""));
-  pipeConnect->addInsertCell(0, waterCM->getCell("InnerAlReturn"));
-  pipeInvar->addInsertCell(0, waterCM->getCell("InnerAlReturn"));
-
-  pipeAl->addInsertCell(0, waterCM->getCell("SideWaterSupply"));
-  pipeConnect->addInsertCell(0, waterCM->getCell("SideWaterSupply"));
-  pipeInvar->addInsertCell(0, waterCM->getCell("SideWaterSupply"));
-
-  pipeAl->addInsertCell(0, waterCM->getCell("SideWaterReturn"));
-  pipeConnect->addInsertCell(0, waterCM->getCell("SideWaterReturn"));
-  pipeInvar->addInsertCell(0, waterCM->getCell("SideWaterReturn"));
-  */
   pipeAl->setAngleSeg(12);
   pipeAl->setOption(pipeSpecialization); 
   // createAll arguments:
@@ -195,9 +199,6 @@ ESSPipes::buildH2Pipe(Simulation& System,const std::string& lobeName,
   // linkPt is normal link point in fixedcomp [2]
   // layerLevel : linkPoint [2]
   pipeAl->createAll(System,*lobe,0,2,2);
-
-  System.populateCells();
-  System.validateObjSurfMap();
 
   pipeConnect->setAngleSeg(12);
   pipeConnect->setOption(pipeSpecialization);
@@ -227,19 +228,23 @@ ESSPipes::buildTopPipes(Simulation& System,
 {
   ELog::RegMethod RegA("makeESS","buildTopPipes");
 
-  
-  buildH2Pipe(System,"TopFlyLeftLobe","TopFlyLeftWater",pipeUniqName,
-              "TSupplyLeftAl","TSupplyLeftConnect", "TSupplyLeftInvar");
 
-  buildH2Pipe(System,"TopFlyLeftLobe","TopFlyLeftWater",pipeUniqName,
-              "TReturnLeftAl","TReturnLeftConnect","TReturnLeftInvar");
+  if (!pipeUniqName.empty() || pipeUniqName!="help")
+    {
 
-  buildH2Pipe(System,"TopFlyRightLobe","TopFlyRightWater",pipeUniqName,
-              "TSupplyRightAl","TSupplyRightConnect","TSupplyRightInvar");
-
-  buildH2Pipe(System,"TopFlyRightLobe","TopFlyRightWater",pipeUniqName,
-              "TReturnRightAl","TReturnRightConnect","TReturnRightInvar");
-
+      buildH2Pipe(System,"TopFlyLeftLobe","TopFlyLeftWater",pipeUniqName,
+		  "TSupplyLeftAl","TSupplyLeftConnect", "TSupplyLeftInvar");
+      
+      buildH2Pipe(System,"TopFlyLeftLobe","TopFlyLeftWater",pipeUniqName,
+		  "TReturnLeftAl","TReturnLeftConnect","TReturnLeftInvar");
+      
+      
+      buildH2Pipe(System,"TopFlyRightLobe","TopFlyRightWater",pipeUniqName,
+		  "TSupplyRightAl","TSupplyRightConnect","TSupplyRightInvar");
+      
+      buildH2Pipe(System,"TopFlyRightLobe","TopFlyRightWater",pipeUniqName,
+		  "TReturnRightAl","TReturnRightConnect","TReturnRightInvar");
+    }
   return;
 }
 
@@ -258,16 +263,16 @@ ESSPipes::buildLowPipes(Simulation& System,
   if (!pipeUniqName.empty() || pipeUniqName!="help")
     {
       buildH2Pipe(System,"LowFlyLeftLobe","LowFlyLeftWater",pipeUniqName,
-                  "TSupplyLeftAl","TSupplyLeftConnect", "TSupplyLeftInvar");
-      
+                  "LSupplyLeftAl","LSupplyLeftConnect", "LSupplyLeftInvar");
+
       buildH2Pipe(System,"LowFlyLeftLobe","LowFlyLeftWater",pipeUniqName,
-                  "TReturnLeftAl","TReturnLeftConnect","TReturnLeftInvar");
+                  "LReturnLeftAl","LReturnLeftConnect","LReturnLeftInvar");
       
       buildH2Pipe(System,"LowFlyRightLobe","LowFlyRightWater",pipeUniqName,
-                  "TSupplyRightAl","TSupplyRightConnect","TSupplyRightInvar");
+                  "LSupplyRightAl","LSupplyRightConnect","LSupplyRightInvar");
       
       buildH2Pipe(System,"LowFlyRightLobe","LowFlyRightWater",pipeUniqName,
-              "TReturnRightAl","TReturnRightConnect","TReturnRightInvar");
+              "LReturnRightAl","LReturnRightConnect","LReturnRightInvar");
     }
   return;
 }

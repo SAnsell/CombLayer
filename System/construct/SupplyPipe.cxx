@@ -326,7 +326,7 @@ SupplyPipe::addOuterPoints()
       Pt=Origin+X*PPts[i].X()+Y*PPts[i].Y()+Z*PPts[i].Z();
       Coaxial.addPoint(Pt);
     }
-    
+
   for(size_t i=0;i<Radii.size();i++)
     Coaxial.addRadius(Radii[i],Mat[i],Temp[i]);
 
@@ -425,6 +425,7 @@ SupplyPipe::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("SupplyPipe","createAll");
+
   populate(System.getDataBase());
   createUnitVector(FC,orgLayerIndex,orgSideIndex);
   insertInlet(FC,exitSideIndex);
@@ -461,7 +462,7 @@ SupplyPipe::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("SupplyPipe","createAll<LC>");
   populate(System.getDataBase());
-  
+
   createUnitVector(FC,orgLayerIndex,orgSideIndex);
       
   insertInlet(FC,exitSideIndex);

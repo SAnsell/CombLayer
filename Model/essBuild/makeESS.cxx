@@ -107,6 +107,7 @@
 #include "F5Collimator.h"
 
 #include "makeESS.h"
+#include "MainProcess.h"
 
 namespace essSystem
 {
@@ -675,7 +676,8 @@ makeESS::build(Simulation& System,
 
   LowAFL->createAll(System,*LowMod,0,*Reflector,4,*Bulk,-3);
   LowBFL->createAll(System,*LowMod,0,*Reflector,3,*Bulk,-3);   
-
+  
+  // THESE calls correct the MAIN volume so pipe work MUST be after here:
   attachSystem::addToInsertSurfCtrl(System,*Bulk,Target->getCC("Wheel"));
   attachSystem::addToInsertForced(System,*Bulk,Target->getCC("Shaft"));
   attachSystem::addToInsertForced(System,*Bulk,LowAFL->getCC("outer"));
@@ -683,9 +685,6 @@ makeESS::build(Simulation& System,
   attachSystem::addToInsertForced(System,*Bulk,TopAFL->getCC("outer"));
   attachSystem::addToInsertForced(System,*Bulk,TopBFL->getCC("outer"));
 
-
-    ModPipes->buildLowPipes(System,lowPipeType);
-  //  ModPipes->buildTopPipes(System,topPipeType);
   
   buildIradComponent(System,IParam);
   // Full surround object
@@ -714,6 +713,12 @@ makeESS::build(Simulation& System,
 
   makeBeamLine(System,IParam);
   buildF5Collimator(System, nF5);
+
+  // WARNING: THESE CALL MUST GO AFTER the main void (74123) has
+  // been completed. Otherwize we can't find the pipe in the volume.
+  ModPipes->buildLowPipes(System,lowPipeType);
+  ModPipes->buildTopPipes(System,topPipeType);
+
   return;
 }
 

@@ -67,9 +67,9 @@ class tubeUnit
   void setEmpty() { empty=1; }        ///< Set empty
   void setFilled() { empty|=2; }      ///< Set Filled
   void setOutside() { empty|=4; }      ///< Set Filled
-  bool isEmpty() const { return (empty & 1); }      ///< empty state
-  bool isFilled() const { return (empty & 2); }      ///< filled state
-  bool isOutside() const { return (empty & 4); }      ///< outer state
+  bool isEmpty() const { return (empty & 1); }     ///< empty state
+  bool isFilled() const { return (empty & 2); }    ///< filled state
+  bool isOutside() const { return (empty & 4); }   ///< outer state
   /// Links
   size_t nLinks() const;
   std::string writeID() const;

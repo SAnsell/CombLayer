@@ -72,7 +72,9 @@ class IItem
   size_t getNSets() const;
   size_t getNItems(const size_t =0) const;
 
+  /// Get required items
   size_t getReqItems() const { return reqItems; }
+  /// Get Max items
   size_t getMaxItems() const { return maxItems; }
 
   bool isValid(const size_t =0) const;

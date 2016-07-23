@@ -1331,7 +1331,6 @@ Simulation::setForCinder()
     been set. Set the system to have unit volumes
     The card is required regardless of its existance in 
     the mcnpx input deck.
-    \param volClearFlag :: To clear/not clear volumes
   */
 {
   ELog::RegMethod RegA("Simuation","setForCinder");
