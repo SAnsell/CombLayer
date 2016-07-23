@@ -484,12 +484,10 @@ PipeLine::createAll(Simulation& System)
   */
 {
   ELog::RegMethod RegA("PipeLine","createAll");
-  System.populateCells();
-  System.validateObjSurfMap();  
   createUnits(System);
 
   return;
 }
 
   
-}  // NAMESPACE moderatorSystem
+}  // NAMESPACE ModelSystem

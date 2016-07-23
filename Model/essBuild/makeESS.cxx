@@ -107,7 +107,6 @@
 #include "F5Collimator.h"
 
 #include "makeESS.h"
-#include "MainProcess.h"
 
 namespace essSystem
 {

@@ -453,14 +453,9 @@ pipeUnit::insertObjects(Simulation& System)
 
   const double angleStep(2*M_PI/nAngle);
   double angle(0.0);
-  Geometry::Vec3D addVec;
+  Geometry::Vec3D addVec(0,0,0);
   for(size_t i=0;i<=nAngle;angle+=angleStep,i++)
     {
-      Geometry::Vec3D Diff((BPt-APt).unit());
-      addVec=(i<nAngle) 
-	? AX*cos(angle)*radius+AY*sin(angle)*radius 
-	: Geometry::Vec3D(0.1,0.1,0.1);
-      
       // Calculate central track
       LineTrack LT(APt+addVec,BPt+addVec);
       LT.calculate(System);
@@ -475,6 +470,8 @@ pipeUnit::insertObjects(Simulation& System)
 	  if (OMap.find(ONum)==OMap.end())
 	    OMap.emplace(ONum,oc);
 	}
+      // set for next angle
+      addVec=AX*(cos(angle)*radius)+AY*(sin(angle)*radius);
     }
 
   // add extra cells from insert forced list [cellCut]
