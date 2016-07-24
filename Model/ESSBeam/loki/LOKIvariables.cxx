@@ -55,6 +55,7 @@
 #include "PipeGenerator.h"
 #include "JawGenerator.h"
 #include "BladeGenerator.h"
+#include "RotaryHoleGenerator.h"
 #include "essVariables.h"
 
 namespace setVariable
@@ -76,6 +77,7 @@ LOKIvariables(FuncDataBase& Control)
   setVariable::PipeGenerator PipeGen;
   setVariable::JawGenerator JawGen;
   setVariable::BladeGenerator BGen;
+  setVariable::RotaryHoleGenerator RotGen;
   
   SGen.addWall(1,30.0,"CastIron");
   SGen.addRoof(1,30.0,"CastIron");
@@ -147,10 +149,31 @@ LOKIvariables(FuncDataBase& Control)
   BGen.addPhase({95,275},{30.0,30.0});
   BGen.generateBlades(Control,"lokiSBladeC",0.0,10.0,22.50);
 
-    // Guide to third chpper 
-  PipeGen.generatePipe(Control,"lokiPipeF",6.0,25.0);
-  FGen.generateRectangle(Control,"lokiFF",21.0,3.0,3.0);
+    // Guide to bunker wall / Grid collimator 
+  PipeGen.generatePipe(Control,"lokiPipeF",6.0,35.0);
+  FGen.generateRectangle(Control,"lokiFF",31.0,3.0,3.0);
 
+  // Small :: Grid Collimator A:
+  RotGen.setMain(25.0,1.0);
+  RotGen.setWall(1.0,"Aluminium");
+  RotGen.addHole("Circle",   3.0,0.0,    0.0, 15.0);
+  RotGen.addHole("Rectangle",5.0,5.0,  120.0, 15.0);
+  RotGen.addHole("Circle",   4.0,0.0,  240.0, 15.0);
+  RotGen.generatePinHole(Control,"lokiGridA",5.0,-15.0,180.0);
+  RotGen.generatePinHole(Control,"lokiGridB",5.0,-15.0,180.0);
+  RotGen.generatePinHole(Control,"lokiGridC",5.0,-15.0,180.0);
+  RotGen.generatePinHole(Control,"lokiGridD",5.0,-15.0,180.0);
+
+  RotGen.setMain(30.0,300.0);
+  RotGen.resetHoles();
+  RotGen.addHole("Rectangle",   3.0,3.0,    0.0, 17.50);
+  RotGen.addHole("Rectangle",   5.0,5.0,  120.0, 17.50);
+  RotGen.addHole("Rectangle",    4.0,4.0,  240.0, 17.50);
+  RotGen.generatePinHole(Control,"lokiCollA",1.0,-17.5,180.0);
+  RotGen.generatePinHole(Control,"lokiCollB",1.0,-17.5,180.0);
+  RotGen.generatePinHole(Control,"lokiCollC",1.0,-17.5,180.0);
+
+  
   return;
 }
 

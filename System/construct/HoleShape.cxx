@@ -439,7 +439,7 @@ HoleShape::createRectangleObj()
 
   const std::string Out=
     ModelSupport::getComposite(SMap,holeIndex,
-				 " -31 -32 -33 -34 ");
+				 " 33 -34 35 -36 ");
 
   return Out;
 }
@@ -467,6 +467,9 @@ HoleShape::createSurfaces()
       break;
     case 4:   // Octagon
       createOctagonSurfaces();
+      break;
+    case 5:   // Rectangel
+      createRectangleSurfaces();
       // No way to get here at Shape is controlled
     }
 

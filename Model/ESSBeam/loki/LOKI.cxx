@@ -126,7 +126,17 @@ LOKI::LOKI(const std::string& keyN) :
   VPipeF(new constructSystem::VacuumPipe(newName+"PipeF")),
   FocusF(new beamlineSystem::GuideLine(newName+"FF")),
 
-  GridA(new constructSystem::RotaryCollimator(newName+"GridA"))
+  GridA(new constructSystem::RotaryCollimator(newName+"GridA")),
+  CollA(new constructSystem::RotaryCollimator(newName+"CollA")),
+
+  GridB(new constructSystem::RotaryCollimator(newName+"GridB")),
+  CollB(new constructSystem::RotaryCollimator(newName+"CollB")),
+
+  GridC(new constructSystem::RotaryCollimator(newName+"GridC")),
+  CollC(new constructSystem::RotaryCollimator(newName+"CollC")),
+
+  GridD(new constructSystem::RotaryCollimator(newName+"GridD"))
+
   /*!
     Constructor
     \param keyN :: keyName
@@ -166,8 +176,65 @@ LOKI::LOKI(const std::string& keyN) :
   
   OR.addObject(VPipeF);
   OR.addObject(FocusF);
+
   OR.addObject(GridA);
+  OR.addObject(CollA);
+  OR.addObject(GridB);
+  OR.addObject(CollB);
+  OR.addObject(GridC);
+  OR.addObject(CollC);
+  OR.addObject(GridD);
   
+}
+
+LOKI::LOKI(const LOKI& A) : 
+  attachSystem::CopiedComp(A),
+  stopPoint(A.stopPoint),lokiAxis(A.lokiAxis),BendA(A.BendA),
+  VPipeB(A.VPipeB),BendB(A.BendB),ChopperA(A.ChopperA),
+  DDiskA(A.DDiskA),VPipeC(A.VPipeC),FocusC(A.FocusC),
+  VPipeD(A.VPipeD),BendD(A.BendD),ChopperB(A.ChopperB),
+  SDiskB(A.SDiskB),VPipeE(A.VPipeE),FocusE(A.FocusE),
+  ChopperC(A.ChopperC),SDiskC(A.SDiskC),VPipeF(A.VPipeF),
+  FocusF(A.FocusF),GridA(A.GridA)
+  /*!
+    Copy constructor
+    \param A :: LOKI to copy
+  */
+{}
+
+LOKI&
+LOKI::operator=(const LOKI& A)
+  /*!
+    Assignment operator
+    \param A :: LOKI to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::CopiedComp::operator=(A);
+      stopPoint=A.stopPoint;
+      lokiAxis=A.lokiAxis;
+      BendA=A.BendA;
+      VPipeB=A.VPipeB;
+      BendB=A.BendB;
+      ChopperA=A.ChopperA;
+      DDiskA=A.DDiskA;
+      VPipeC=A.VPipeC;
+      FocusC=A.FocusC;
+      VPipeD=A.VPipeD;
+      BendD=A.BendD;
+      ChopperB=A.ChopperB;
+      SDiskB=A.SDiskB;
+      VPipeE=A.VPipeE;
+      FocusE=A.FocusE;
+      ChopperC=A.ChopperC;
+      SDiskC=A.SDiskC;
+      VPipeF=A.VPipeF;
+      FocusF=A.FocusF;
+      GridA=A.GridA;
+    }
+  return *this;
 }
 
 
@@ -216,7 +283,7 @@ LOKI::build(Simulation& System,
     Carry out the full build
     \param System :: Simulation system
     \param GItem :: Guide Item 
-    \param BunkerObj :: Bunker component [for inserts]
+    \param bunkerObj :: Bunker component [for inserts]
     \param voidCell :: Void cell
    */
 {
@@ -303,8 +370,14 @@ LOKI::build(Simulation& System,
   FocusF->addInsertCell(VPipeF->getCells("Void"));
   FocusF->createAll(System,*VPipeF,0,*VPipeF,0);
 
-  
-  
+  GridA->addInsertCell(bunkerObj.getCell("MainVoid"));
+  GridA->createAll(System,FocusF->getKey("Guide0"),2);
+
+  CollA->addInsertCell(bunkerObj.getCell("MainVoid"));
+  CollA->createAll(System,GridA->getKey("Beam"),2);
+  attachSystem::addToInsertControl(System,bunkerObj,"frontWall",
+				   CollA->getKey("Main"),*CollA);  
+
   if (stopPoint==2) return;                      // STOP At bunker edge
   
   return;

@@ -162,7 +162,7 @@ CellWeight::invertWM(const double eCut,
 
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();  
-  ELog::EM<<"ASDFASFD "<<ELog::endDiag;
+
   WeightSystem::WForm* WF=WM.getParticle('n');
   if (!WF)
     throw ColErr::InContainerError<std::string>("n","neutron has no WForm");

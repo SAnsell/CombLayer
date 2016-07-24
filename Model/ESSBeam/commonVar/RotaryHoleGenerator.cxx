@@ -65,12 +65,43 @@ namespace setVariable
 RotaryHoleGenerator::RotaryHoleGenerator() :
   mainRadius(30.0),mainThick(10.0),
   innerWall(1.0),innerMat("Void"),
-  defMat("Inconnel"),posIndex(0),angOffset(0.0)
+  defMat("Inconnel"),posIndex(0)
   /*!
     Constructor and defaults
   */
 {}
-  
+
+RotaryHoleGenerator::RotaryHoleGenerator(const RotaryHoleGenerator& A) : 
+  mainRadius(A.mainRadius),mainThick(A.mainThick),
+  innerWall(A.innerWall),innerMat(A.innerMat),defMat(A.defMat),
+  posIndex(A.posIndex),HData(A.HData)
+  /*!
+    Copy constructor
+    \param A :: RotaryHoleGenerator to copy
+  */
+{}
+
+RotaryHoleGenerator&
+RotaryHoleGenerator::operator=(const RotaryHoleGenerator& A)
+  /*!
+    Assignment operator
+    \param A :: RotaryHoleGenerator to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      mainRadius=A.mainRadius;
+      mainThick=A.mainThick;
+      innerWall=A.innerWall;
+      innerMat=A.innerMat;
+      defMat=A.defMat;
+      posIndex=A.posIndex;
+      HData=A.HData;
+    }
+  return *this;
+}
+
 RotaryHoleGenerator::~RotaryHoleGenerator() 
  /*!
    Destructor
@@ -87,7 +118,7 @@ RotaryHoleGenerator::addHole(const std::string& type,
   \param Rad :: radius
   \param xRad :: xRadius [if used]
   \param aCent :: Angular centre ??
-  \param radStep :: distance from centre
+  \param rStep :: distance from centre
 */
 {
   ELog::RegMethod RegA("RotaryHoleGenerator","addHole");
@@ -102,11 +133,10 @@ RotaryHoleGenerator::addHole(const std::string& type,
 }
 
 void
-RotaryHoleGenerator::setPosition(const size_t PI,const double AO)
+RotaryHoleGenerator::setPosition(const size_t PI)
   /*!
     Set the active hole position
     \param PI :: Position index
-    \param AO :: angle offset
   */
 {
   ELog::RegMethod RegA("RotaryHoleGenerator","setPosition");
@@ -114,16 +144,16 @@ RotaryHoleGenerator::setPosition(const size_t PI,const double AO)
   if (PI>=HData.size())
     throw ColErr::IndexError<size_t>(PI,HData.size(),"PositionIndex/HData");
   posIndex=PI;
-  angOffset=AO;
   return;
 }
   
   
 void
 RotaryHoleGenerator::generatePinHole(FuncDataBase& Control,
-                                 const std::string& keyName,
+				     const std::string& keyName,
 				     const double yStep,
-				     const double rotStep) const
+				     const double rotStep,
+				     const double primAngle) const
 
 
   /*!
@@ -131,7 +161,8 @@ RotaryHoleGenerator::generatePinHole(FuncDataBase& Control,
     \param Control :: Database to add variables 
     \param keyName :: head name for variable
     \param yStep :: Y step of collimator
-    \param rotStep :: Z step to rotation centre
+    \param rotStep :: Z step to rotation centre [ZDepth]
+    \param primAngle :: primary angle
   */
 {
   ELog::RegMethod RegA("RotaryHoleGenerator","generatorPinHole");
@@ -152,7 +183,7 @@ RotaryHoleGenerator::generatePinHole(FuncDataBase& Control,
   Control.addVariable(keyName+"NHole",HData.size());
 
   Control.addVariable(keyName+"HoleIndex",posIndex);
-  Control.addVariable(keyName+"HoleAngOff",angOffset);
+  Control.addVariable(keyName+"HoleAngOff",primAngle);
   for(size_t index=0;index<HData.size();index++)
     {
       const std::string holeName=

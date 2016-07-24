@@ -6,7 +6,7 @@ use CMakeList;
 use strict;
 
 ## EXECUTABLES
-my @masterprog=("fullBuild","ess","muBeam","photonMod2","t1Real",
+my @masterprog=("fullBuild","ess","bilbau","photonMod2","t1Real",
 		"sns","reactor","t1MarkII","t1Eng","t3Expt",
 		"filter","singleItem","testMain"); 
 
@@ -91,7 +91,7 @@ $gM->addDepUnit("filter", ["filter","photon","visit","src","simMC",
 			   "work","xml","poly","support","weights",
 			   "md5","global","attachComp","visit","poly"]);
 
-$gM->addDepUnit("bilbau", ["bibBuild","build","visit","chip","t1Upgrade",
+$gM->addDepUnit("bilbau", ["bibBuild","visit","chip","t1Upgrade",
 			   "imat","moderator","build","zoom","construct",
 			   "crystal","transport","scatMat","endf","t1Build",
 			   "src","physics","input","process","source",
@@ -99,6 +99,16 @@ $gM->addDepUnit("bilbau", ["bibBuild","build","visit","chip","t1Upgrade",
 			   "mersenne","src","work","xml","poly","support",
 			   "world","weights","md5","global","attachComp",
 			   "visit","poly"]);
+
+$gM->addDepUnit("bilbau",   ["bibBuild","visit","src","simMC",
+			     "beamline","physics","support",
+			     "input","instrument","source","monte",
+			     "funcBase","log","tally","construct",
+			     "crystal","transport","scatMat","md5",
+			     "endf","process","world","work",
+			     "monte","geometry","mersenne","src","xml","poly",
+			     "weights","global","attachComp","visit"
+    	 	             ]);
 
 $gM->addDepUnit("pressure", ["visit","zoom","src","monte","global",
 			     "funcBase","log","chip","monte","mersenne",

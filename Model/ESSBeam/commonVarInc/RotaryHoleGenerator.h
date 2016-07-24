@@ -65,7 +65,6 @@ class RotaryHoleGenerator
   std::string defMat;   ///< Default material
 
   size_t posIndex;      ///< Position index
-  double angOffset;      ///< angle relative to posIndex
   /// Hole definitions
   std::vector<holeInfo> HData;
 
@@ -78,19 +77,22 @@ class RotaryHoleGenerator
   ~RotaryHoleGenerator();
 
 
-  void setPosition(const size_t,const double);
-  /// access to size
+  void setPosition(const size_t);
+  /// access to Main radius/depth
   void setMain(const double R,const double T)
   { mainRadius=R; mainThick=T; }
+  /// Wall Thickness/Material
   void setWall(const double T,const std::string& M)
   { innerWall=T; innerMat=M; }
+  /// clear data for next pass
   void resetHoles() { HData.clear(); }
   void addHole(const std::string&,const double,const double,
 	       const double,const double);
   
   
   void generatePinHole(FuncDataBase&,const std::string&,
-		       const double,const double)  const;
+		       const double,const double,
+		       const double)  const;
 };
 
 }

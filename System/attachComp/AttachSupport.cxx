@@ -344,6 +344,7 @@ addToInsertControl(Simulation& System,
 	  CRPtr->populate();
 	  for(size_t j=0;j<NPoint;j++)
 	    {
+
 	      const Geometry::Vec3D& Pt=FC.getLinkPt(j);
 	      if (CRPtr->isValid(Pt))
 		{

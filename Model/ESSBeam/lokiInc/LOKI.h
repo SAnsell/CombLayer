@@ -110,9 +110,25 @@ class LOKI : public attachSystem::CopiedComp
   /// Guide to bunker wall
   std::shared_ptr<beamlineSystem::GuideLine> FocusF;
 
-  /// Guide to bunker wall
+  /// Cutting grid at bunker wall
   std::shared_ptr<constructSystem::RotaryCollimator> GridA;
 
+  /// Rotary collimator [first to wall]
+  std::shared_ptr<constructSystem::RotaryCollimator> CollA;
+  /// Cutting grid at bunker wall
+  std::shared_ptr<constructSystem::RotaryCollimator> GridB;
+
+  /// Rotary collimator [first to wall]
+  std::shared_ptr<constructSystem::RotaryCollimator> CollB;
+
+  /// Cutting grid at bunker wall
+  std::shared_ptr<constructSystem::RotaryCollimator> GridC;
+
+  /// Rotary collimator [first to wall]
+  std::shared_ptr<constructSystem::RotaryCollimator> CollC;
+
+  /// Final Cutting grid 
+  std::shared_ptr<constructSystem::RotaryCollimator> GridD;
   
   void setBeamAxis(const FuncDataBase&,const GuideItem&,const bool);
   

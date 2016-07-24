@@ -34,6 +34,7 @@
 #include <memory>
 #include <array>
 
+
 #include "Exception.h"
 #include "MersenneTwister.h"
 #include "FileReport.h"
@@ -48,23 +49,8 @@
 #include "InputControl.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
-#include "Tensor.h"
 #include "Vec3D.h"
 #include "inputParam.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "Tally.h"
-#include "TallyCreate.h"
-#include "Transform.h"
-#include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
-#include "Surface.h"
-#include "Quadratic.h"
-#include "Plane.h"
-#include "Cylinder.h"
-#include "Line.h"
 #include "Rules.h"
 #include "surfIndex.h"
 #include "Code.h"
@@ -73,36 +59,27 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "ModeCard.h"
-#include "PhysCard.h"
-#include "LSwitchCard.h"
-#include "PhysImp.h"
-#include "Source.h"
-#include "KCode.h"
-#include "PhysicsCards.h"
-#include "BasicWWE.h"
 #include "MainProcess.h"
 #include "SimProcess.h"
 #include "SimInput.h"
 #include "SurInter.h"
 #include "Simulation.h"
 #include "SimPHITS.h"
-#include "PointWeights.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "LinearComp.h"
 #include "mainJobs.h"
-#include "Volumes.h"
 #include "DefPhysics.h"
+#include "Volumes.h"
 #include "variableSetup.h"
+#include "defaultConfig.h"
+#include "DefUnitsESS.h"
 #include "ImportControl.h"
 #include "SourceCreate.h"
 #include "SourceSelector.h"
 #include "TallySelector.h"
 #include "World.h"
-
 #include "makeBib.h"
 
 MTRand RNG(12345UL);
@@ -137,26 +114,25 @@ main(int argc,char* argv[])
       mainSystem::inputParam IParam;
       createBilbauInputs(IParam);
 
-      Simulation* SimPtr=createSimulation(IParam,Names,Oname);
+      SimPtr=createSimulation(IParam,Names,Oname);
       if (!SimPtr) return -1;
       
       // The big variable setting
       setVariable::BilbauVariables(SimPtr->getDataBase());
-      InputModifications(SimPtr,IParam,Names);
+      InputModifications(SimPtr,IParam,
+			 Names);
       mainSystem::setVariables(*SimPtr,IParam,Names);
       
       
       bibSystem::makeBib BibObj;
       World::createOuterObjects(*SimPtr);
-      BibObj.build(SimPtr,IParam);
+      BibObj.build(*SimPtr,IParam);
       SDef::sourceSelection(*SimPtr,IParam);
-
       mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
             
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
       ModelSupport::calcVolumes(SimPtr,IParam);
       ModelSupport::objectRegister::Instance().write("ObjectRegister.txt");
-
     }
   catch (ColErr::ExitAbort& EA)
     {
@@ -169,6 +145,11 @@ main(int argc,char* argv[])
       ELog::EM<<"EXCEPTION FAILURE :: "
 	      <<A.what()<<ELog::endCrit;
       exitFlag= -1;
+    }
+  catch (...)
+    {
+      ELog::EM<<"GENERAL EXCEPTION"<<ELog::endCrit;
+      exitFlag= -3;
     }
   delete SimPtr;
   ModelSupport::objectRegister::Instance().reset();

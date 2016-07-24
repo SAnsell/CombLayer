@@ -225,11 +225,12 @@ Simulation::deleteObjects()
     Delete all the Objects 
   */
 {
-  ELog::RegMethod RegA("","del");
+  ELog::RegMethod RegA("Simulation","deleteObjects");
+  
   ModelSupport::SimTrack::Instance().setCell(this,0);
-  OTYPE::iterator mc;
-  for(mc=OList.begin();mc!=OList.end();mc++)
-    delete mc->second;
+  for(OTYPE::value_type& mc : OList)
+    delete mc.second;
+  
   OList.erase(OList.begin(),OList.end());
   cellOutOrder.clear();
   return;
@@ -450,16 +451,18 @@ Simulation::addCell(const int cellNumber,const MonteCarlo::Qhull& A)
       ELog::EM<<"Call from: "<<RegA.getBasePtr()->getItem(-1)<<ELog::endCrit;
       throw ColErr::ExitAbort("Cell number in use");
     }
-
   OList.insert(OTYPE::value_type(cellNumber,A.clone()));
   MonteCarlo::Qhull* QHptr=OList[cellNumber];
+
   QHptr->setName(cellNumber);
-  if (setMaterialDensity(cellNumber))
+
+   if (setMaterialDensity(cellNumber))
     {
       ELog::EM<<"No material in found:"<<cellNumber<<ELog::endCrit;
       throw ColErr::InContainerError<int>(cellNumber,"cellNumber");
     }
- 
+
+
   if (!QHptr->hasComplement() ||
       removeComplement(*QHptr))
     {
@@ -475,6 +478,7 @@ Simulation::addCell(const int cellNumber,const MonteCarlo::Qhull& A)
   // Add Volume unit [default]:
   PhysPtr->setVolume(cellNumber,1.0);
   OR.addActiveCell(cellNumber);
+
   // Add surfaces to OSMPtr:
   //  OSMPtr->addSurfaces(QHptr);
 

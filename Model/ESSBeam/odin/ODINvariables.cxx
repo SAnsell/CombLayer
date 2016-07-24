@@ -254,11 +254,11 @@ ODINvariables(FuncDataBase& Control)
   RotGen.addHole("Circle", 3.0, 0.0,   0.0, 20.0);
   RotGen.addHole("Hexagon",5.0, 0.0, 120.0, 15.0);
   RotGen.addHole("Circle", 4.0, 0.0, 240.0, 20.0);
-  RotGen.generatePinHole(Control,"odinPinCollA",-23.0,20.0);
+  RotGen.generatePinHole(Control,"odinPinCollA",-23.0,20.0,0.0);
 
   // Collimator B:
   RotGen.setMain(30.0,10.0);
-  RotGen.generatePinHole(Control,"odinPinCollB",13.0,20.0);
+  RotGen.generatePinHole(Control,"odinPinCollB",13.0,20.0,0.0);
 
   //
   // JAWS

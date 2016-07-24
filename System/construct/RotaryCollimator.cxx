@@ -84,7 +84,7 @@ namespace constructSystem
 
 RotaryCollimator::RotaryCollimator(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedGroup(Key,"Main",2,"Beam",2),
+  attachSystem::FixedGroup(Key,"Main",8,"Beam",2),
   attachSystem::CellMap(),
   colIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(colIndex+1),holeIndex(0),nHole(0),nLayers(0)
@@ -92,7 +92,10 @@ RotaryCollimator::RotaryCollimator(const std::string& Key)  :
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
   */
-{}
+{
+
+
+}
 
 RotaryCollimator::RotaryCollimator(const RotaryCollimator& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedGroup(A),
@@ -227,12 +230,12 @@ RotaryCollimator::createUnitVector(const attachSystem::FixedComp& FC,
   attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
 
   mainFC.createUnitVector(FC,sideIndex);
-  mainFC.createUnitVector(FC,sideIndex);
+  beamFC.createUnitVector(FC,sideIndex);
 
-  beamFC=mainFC;
   beamFC.applyShift(0,yStep,0);  
   mainFC.applyShift(xStep,yStep,zStep-rotDepth);  
   mainFC.applyAngleRotate(xyAngle,zAngle);
+
   setDefault("Main");
   return;
 }
@@ -325,6 +328,7 @@ RotaryCollimator::createLinks()
   std::pair<Geometry::Vec3D,int> PtB=
     SurInter::interceptRule(HM,beamFC.getCentre()+beamFC.getY()*thick,
 			    beamFC.getY());
+
   beamFC.setConnect(0,PtA.first,-beamFC.getY());
   beamFC.setConnect(1,PtB.first,beamFC.getY());
   beamFC.setLinkSurf(0,-SMap.realSurf(colIndex+1));
@@ -335,6 +339,16 @@ RotaryCollimator::createLinks()
   mainFC.setLinkSurf(0,-SMap.realSurf(colIndex+1));
   mainFC.setLinkSurf(1,SMap.realSurf(colIndex+2));
 
+  const size_t nExtra(6);
+  const double angleStep(2.0*M_PI/nExtra);
+  double angle(0.0);
+  for(size_t i=0;i<nExtra;i++)
+    {
+      const Geometry::Vec3D Axis(X*cos(angle)+Z*sin(angle));
+      mainFC.setConnect(i+2,Origin+Y*(thick/2.0)+Axis*radius,Axis);
+      mainFC.setLinkSurf(i+2,SMap.realSurf(colIndex+7));
+      angle+=angleStep;
+    }
   return;
 }
   

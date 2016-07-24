@@ -3,7 +3,7 @@
  
  * File:   attachComp/CopiedComp.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -80,6 +80,22 @@ CopiedComp::CopiedComp(const CopiedComp& A) :
     \param A :: object to copy
   */
 {}
+
+CopiedComp&
+CopiedComp::operator=(const CopiedComp& A)
+ /*!
+   Assignment operator
+    \param A :: object to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      baseName=A.baseName;
+      newName=A.newName;
+    }
+  return *this;
+}
 
 void
 CopiedComp::process(FuncDataBase& Control) const
