@@ -186,25 +186,25 @@ varList::findVar(const std::string& Key)
 
 
 void
-varList::copyVar(const std::string& Key,const std::string& other) 
+varList::copyVar(const std::string& newKey,const std::string& oldKey) 
   /*!
     Copy a variable into the var system [with new number]
-    \param Key :: Keyname 
-    \param other :: variable to copy
+    \param newKey :: new variable name
+    \param oldKey :: existing variable to copy [must exist]
   */
 {
   ELog::RegMethod RegA("varList","copyVar");
 
-  if (Key==other) return;
+  if (newKey==oldKey) return;
   
   std::map<std::string,FItem*>::iterator ac;
   std::map<std::string,FItem*>::const_iterator bc;
 
-  bc=varName.find(other);
+  bc=varName.find(oldKey);
   if (bc==varName.end())
-    throw ColErr::InContainerError<std::string>(other,"Var item not found");
+    throw ColErr::InContainerError<std::string>(oldKey,"Var item not found");
 
-  ac=varName.find(Key);
+  ac=varName.find(newKey);
   if (ac!=varName.end())
     {
       const int I=ac->second->getIndex();
@@ -219,7 +219,7 @@ varList::copyVar(const std::string& Key,const std::string& other)
   Ptr->setIndex(varNum);
   varNum++;
     // Now insert into master lists
-  varName.insert(std::pair<std::string,FItem*>(Key,Ptr));
+  varName.insert(std::pair<std::string,FItem*>(newKey,Ptr));
   varItem.insert(std::pair<int,FItem*>(Ptr->getIndex(),Ptr));
 
   return;
@@ -263,11 +263,9 @@ varList::copyVarSet(const std::string& oldHead,const std::string& newHead)
     throw ColErr::InContainerError<std::string>
       (oldHead,"Key part not in variable map");
 
-  for(const std::pair<std::string,std::string> Item : replaceSet)
+  for(const std::pair<std::string,std::string>& Item : replaceSet)
     {
-      ELog::EM<<"A: "<<Item.first<<" "<<Item.second<<ELog::endDiag;
-
-      copyVar(Item.first,Item.second);
+      copyVar(Item.second,Item.first);
     }
   
   return;
