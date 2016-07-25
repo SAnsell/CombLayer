@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   constructInc/Target.h
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,13 +54,13 @@ class Target : public attachSystem::ContainedComp,
   virtual TS2target* clone() const =0; 
   virtual ~TS2target();
 
-
+  ///\cond ABSTRACT
   virtual void createAll(Simulation&,
 			 const attachSystem::FixedComp&) =0;
   virtual void addProtonLine(Simulation&,
 			     const attachSystem::FixedComp&,
 			     const long int) =0;
-
+  ///\endcond ABSTRACT
 };
 
 }

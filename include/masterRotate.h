@@ -46,9 +46,6 @@ class masterRotate : public localRotate
   masterRotate(const masterRotate&);
   masterRotate& operator=(const masterRotate&);
   ///\endcond SINGLETON
-
-  void axisRotate(Geometry::Vec3D&) const;
-  void axisRotateReverse(Geometry::Vec3D&) const;
   
  public:
   
@@ -74,7 +71,10 @@ class masterRotate : public localRotate
   virtual void applyFull(Geometry::Vec3D&) const;
   virtual void applyFullAxis(Geometry::Vec3D&) const;
 
+
+  /// Rotation applied
   void setGlobal() { globalApplied=1; }
+  /// Rotation not-applied
   void clearGlobal() { globalApplied=0; }
   
 

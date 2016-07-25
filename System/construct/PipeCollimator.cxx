@@ -89,7 +89,42 @@ PipeCollimator::PipeCollimator(const std::string& Key) :
 {}
   
 
-  
+PipeCollimator::PipeCollimator(const PipeCollimator& A) : 
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::CellMap(A),attachSystem::SurfMap(A),
+  collIndex(A.collIndex),cellIndex(A.cellIndex),
+  setFlag(A.setFlag),innerStruct(A.innerStruct),
+  outerStruct(A.outerStruct),length(A.length),mat(A.mat)
+  /*!
+    Copy constructor
+    \param A :: PipeCollimator to copy
+  */
+{}
+
+PipeCollimator&
+PipeCollimator::operator=(const PipeCollimator& A)
+  /*!
+    Assignment operator
+    \param A :: PipeCollimator to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      attachSystem::SurfMap::operator=(A);
+      cellIndex=A.cellIndex;
+      setFlag=A.setFlag;
+      innerStruct=A.innerStruct;
+      outerStruct=A.outerStruct;
+      length=A.length;
+      mat=A.mat;
+    }
+  return *this;
+}
+
 
 void
 PipeCollimator::populate(const FuncDataBase& Control)

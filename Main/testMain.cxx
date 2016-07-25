@@ -175,8 +175,8 @@
 #include "testSurfRegister.h"
 #include "testSVD.h"
 #include "testTally.h"
-#include "testVec3D.h"
 #include "testVarNameOrder.h"
+#include "testVec3D.h"
 #include "testVolumes.h"
 #include "testWorkData.h"
 #include "testWrapper.h"
@@ -549,6 +549,7 @@ funcbaseTest(const int type,const int extra)
       std::cout<<"testFunction             (1)"<<std::endl;
       std::cout<<"testMD5                  (2)"<<std::endl;
       std::cout<<"testVarNameOrder         (3)"<<std::endl;
+      std::cout<<"testVarList              (4)"<<std::endl;
 
     }
 

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   bibBuildInc/BeFilter.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,22 +32,16 @@ namespace bibSystem
   \author R. Vivanco
   \version 1.0
   \date April 2013
-  \brief Specialized for filterbox
+  \brief Specialized for filterbox outside of moderator
 */
 
 class BeFilter : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+    public attachSystem::FixedOffset
 {
  private:
   
-  const int beFilterIndex;             ///< Index of surface offset
+  const int beFilterIndex;        ///< Index of surface offset
   int cellIndex;                  ///< Cell index
-
-  double xStep;                   ///< X step
-  double yStep;                   ///< y step
-  double zStep;                   ///< Z step
-  double xyAngle;                 ///< xy angle
-  double zAngle;                  ///< zAngle step
 
   double width;                   ///< width of Be filter
   double height;                  ///< height of Be filter
@@ -66,7 +60,7 @@ class BeFilter : public attachSystem::ContainedComp,
   // Functions:
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const size_t);
+  void createUnitVector(const attachSystem::FixedComp&,const long int);
 
   void createSurfaces();
   void createObjects(Simulation&,const attachSystem::ContainedComp&);
@@ -80,7 +74,7 @@ class BeFilter : public attachSystem::ContainedComp,
   virtual ~BeFilter();
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const size_t,const attachSystem::ContainedComp&);
+		 const long int,const attachSystem::ContainedComp&);
   
 };
 

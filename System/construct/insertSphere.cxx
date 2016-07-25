@@ -174,14 +174,14 @@ insertSphere::createUnitVector(const Geometry::Vec3D& OG,
   /*!
     Create the unit vectors
     \param OG :: Origin
-    \param LC :: LinearComponent to attach to
+    \param FC :: Fixed component for axis 
   */
 {
   ELog::RegMethod RegA("insertSphere","createUnitVector");
 
   FixedComp::createUnitVector(FC);
-  createUnitVector(OG,X,Y,Z);
 
+  Origin=OG;
   applyOffset();
   return;
 }
@@ -316,9 +316,7 @@ void
 insertSphere::setValues(const double R,const int Mat)
   /*!
     Set the values and populate flag
-    \param XS :: X-size [width]
-    \param YS :: Y-size [depth] 
-    \param ZS :: Z-size [height]
+    \param R :: Radius
     \param Mat :: Material number
    */
 {

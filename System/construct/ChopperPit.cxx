@@ -365,7 +365,8 @@ ChopperPit::createFrontLinks(const attachSystem::FixedComp& FC,
   /*!
     Create the front links from a fixed component
     \param FC :: Front wall
-   */
+    \param sideIndex :: Link point for front face
+  */
 {
   ELog::RegMethod RegA("ChopperPit","createFrontLinks");
 
@@ -501,7 +502,6 @@ ChopperPit::createAll(Simulation& System,
     \param System :: Simulation item
     \param FC :: FixedComp
     \param FIndex :: Fixed Index
-    \param cutRule :: Cut for main exclude
   */
 {
   ELog::RegMethod RegA("ChopperPit","createAll(FC)");

@@ -72,6 +72,7 @@
 #include "ContainedGroup.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "BaseMap.h"
 #include "SurfMap.h"
 #include "CellMap.h"

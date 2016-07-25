@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   bibBuildInc/FilterBox.h
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef bibSystem_bibFilterBox_h
-#define bibSystem_bibFilterBox_h
+#ifndef bibSystem_FilterBox_h
+#define bibSystem_FilterBox_h
 
 class Simulation;
 
@@ -36,18 +36,12 @@ namespace bibSystem
 */
 
 class FilterBox : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+    public attachSystem::FixedOffset
 {
  private:
   
   const int filterIndex;          ///< Index of surface offset
   int cellIndex;                  ///< Cell index
-
-  double xStep;                   ///< X step
-  double yStep;                   ///< y step
-  double zStep;                   ///< Z step
-  double xyAngle;                 ///< xy angle
-  double zAngle;                  ///< zAngle step
 
   double width;                   ///< width of filterbox
   double height;                  ///< height of filterbox
@@ -68,7 +62,7 @@ class FilterBox : public attachSystem::ContainedComp,
   // Functions:
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const size_t);
+  void createUnitVector(const attachSystem::FixedComp&,const long int);
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -83,7 +77,7 @@ class FilterBox : public attachSystem::ContainedComp,
 
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
-		 const size_t);
+		 const long int);
   
 };
 

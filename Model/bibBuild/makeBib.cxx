@@ -64,6 +64,7 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "LayerComp.h"
@@ -99,7 +100,6 @@ makeBib::makeBib() :
   BeFilterBackward(new FilterBox("BeFilterBackward")),
 
   ColdMod2(new ColdH2Mod("ColdMod2")),
-  FBox(new FilterBox("FBox")),
   CWall(new ConcreteWall("ConcWall"))
  /*!
     Constructor
@@ -114,7 +114,6 @@ makeBib::makeBib() :
   OR.addObject(WatMod);
   OR.addObject(ColdMod);
   OR.addObject(ColdMod2);
-  OR.addObject(FBox);
   OR.addObject(BeFilterForward);
   OR.addObject(BeFilterBackward);
   OR.addObject(CWall);
@@ -124,7 +123,7 @@ makeBib::makeBib(const makeBib& A) :
   Rotor(A.Rotor),ProtonObj(A.ProtonObj),RefObj(A.RefObj),
   WatMod(A.WatMod),ColdMod(A.ColdMod),BeFilterForward(A.BeFilterForward),
   BeFilterBackward(A.BeFilterBackward),ColdMod2(A.ColdMod2),
-  FBox(A.FBox),GuideArray(A.GuideArray),ShieldArray(A.ShieldArray),
+  GuideArray(A.GuideArray),ShieldArray(A.ShieldArray),
   CWall(A.CWall)
   /*!
     Copy constructor
@@ -150,7 +149,6 @@ makeBib::operator=(const makeBib& A)
       BeFilterForward=A.BeFilterForward;
       BeFilterBackward=A.BeFilterBackward;
       ColdMod2=A.ColdMod2;
-      FBox=A.FBox;
       GuideArray=A.GuideArray;
       ShieldArray=A.ShieldArray;
       CWall=A.CWall;
@@ -267,7 +265,7 @@ makeBib::build(Simulation& System,
 
   attachSystem::addToInsertControl(System,*RefObj,*ColdMod);
 
-  BeFilterForward->createAll(System,*ColdMod,1);
+  BeFilterForward->createAll(System,*ColdMod,2);
   attachSystem::addToInsertSurfCtrl(System,*RefObj,*BeFilterForward);
 
 
@@ -282,7 +280,7 @@ makeBib::build(Simulation& System,
   attachSystem::addToInsertForced(System,*ProtonObj,*ColdMod2);
   attachSystem::addToInsertForced(System,*CWall,*ProtonObj);
 
-  BeFilterBackward->createAll(System,*ColdMod2,1);
+  BeFilterBackward->createAll(System,*ColdMod2,2);
   attachSystem::addToInsertSurfCtrl(System,*RefObj,*BeFilterBackward);
 
   buildGuideArray(System,voidCell);

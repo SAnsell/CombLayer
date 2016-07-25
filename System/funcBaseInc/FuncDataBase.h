@@ -109,6 +109,7 @@ class FuncDataBase
   template<typename T>
   void addParse(const std::string&,const std::string&);
   void copyVar(const std::string&,const std::string&);
+  void copyVarSet(const std::string&,const std::string&);
   
   // Add variable
   template<typename T>

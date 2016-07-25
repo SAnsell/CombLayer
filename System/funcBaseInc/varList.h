@@ -63,6 +63,7 @@ class varList
   FItem* findVar(const int);
 
   void copyVar(const std::string&,const std::string&);
+  void copyVarSet(const std::string&,const std::string&);
   
   int selectValue(const int,Geometry::Vec3D&,double&) const;
 

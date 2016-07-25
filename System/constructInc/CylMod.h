@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   t1UpgradeInc/CylMod.h
+ * File:   constructInc/CylMod.h
  *
  * Copyright (c) 2004-2016 by Stuart Ansell
  *
@@ -40,7 +40,8 @@ namespace constructSystem
 class CylMod : public constructSystem::ModBase
 {
  private:
-  
+
+  /// type for wedge insert
   typedef std::shared_ptr<WedgeInsert> WTYPE;
 
   std::vector<double> radius;         ///< cylinder radii

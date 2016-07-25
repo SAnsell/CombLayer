@@ -2,8 +2,8 @@
   CombLayer : MCNP(X) Input builder
  
  * File:   constructInc/insertPlate.h
-*
- * Copyright (c) 2004-2015 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@ namespace constructSystem
 */
 
 class insertPlate : public attachSystem::ContainedComp,
-  public attachSystem::FixedComp,public attachSystem::CellMap,
+  public attachSystem::FixedOffset,public attachSystem::CellMap,
   public attachSystem::SurfMap
 {
  private:
@@ -47,18 +47,13 @@ class insertPlate : public attachSystem::ContainedComp,
   int cellIndex;                 ///< Cell index
   int populated;                 ///< externally set values
 
-  double xStep;             ///< X offset
-  double yStep;             ///< Y offset
-  double zStep;             ///< Z offset
-  double xyAngle;           ///< XY angle rotation
-  double zAngle;            ///< Z angle rotation
-
   double width;             ///< Full Width
   double height;            ///< Full Height
   double depth;             ///< Full Depth 
 
   int defMat;               ///< Material
-
+  bool delayInsert;       ///< Delay insertion         
+  
   void populate(const FuncDataBase&);
   void createUnitVector(const Geometry::Vec3D&,
 			const attachSystem::FixedComp&);
@@ -74,7 +69,6 @@ class insertPlate : public attachSystem::ContainedComp,
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
-  void findObjects(const Simulation&);
 
   void mainAll(Simulation&);
 
@@ -85,6 +79,10 @@ class insertPlate : public attachSystem::ContainedComp,
   insertPlate& operator=(const insertPlate&);
   ~insertPlate();
 
+  /// set delay flag
+  void setNoInsert() { delayInsert=1; }
+  void findObjects(const Simulation&);
+    
   void setStep(const double,const double,const double);
   void setAngles(const double,const double);
 

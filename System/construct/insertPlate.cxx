@@ -73,6 +73,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "BaseMap.h"
 #include "SurfMap.h"
 #include "CellMap.h"
@@ -83,12 +84,11 @@ namespace constructSystem
 {
 
 insertPlate::insertPlate(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
   attachSystem::CellMap(),attachSystem::SurfMap(),
   ptIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(ptIndex+1),populated(0),
-  xStep(0.0),yStep(0.0),zStep(0.0),
-  xyAngle(0.0),zAngle(0.0),defMat(0)
+  defMat(0),delayInsert(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -96,12 +96,11 @@ insertPlate::insertPlate(const std::string& Key)  :
 {}
 
 insertPlate::insertPlate(const insertPlate& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
   ptIndex(A.ptIndex),cellIndex(A.cellIndex),
-  populated(A.populated),xStep(A.xStep),yStep(A.yStep),
-  zStep(A.zStep),xyAngle(A.xyAngle),zAngle(A.zAngle),
-  width(A.width),height(A.height),depth(A.depth),defMat(A.defMat)
+  populated(A.populated),width(A.width),height(A.height),
+  depth(A.depth),defMat(A.defMat),delayInsert(A.delayInsert)
   /*!
     Copy constructor
     \param A :: insertPlate to copy
@@ -119,7 +118,7 @@ insertPlate::operator=(const insertPlate& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       cellIndex=A.cellIndex;
@@ -133,6 +132,7 @@ insertPlate::operator=(const insertPlate& A)
       height=A.height;
       depth=A.depth;
       defMat=A.defMat;
+      delayInsert=A.delayInsert;
     }
   return *this;
 }
@@ -182,8 +182,7 @@ insertPlate::createUnitVector(const attachSystem::FixedComp& FC,
 
 
   FixedComp::createUnitVector(FC,lIndex);
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
+  applyOffset();
   return;
 }
 
@@ -197,7 +196,6 @@ insertPlate::createUnitVector(const Geometry::Vec3D& OG,
   */
 {
   ELog::RegMethod RegA("insertPlate","createUnitVector");
-
 
   FixedComp::createUnitVector(FC);
   createUnitVector(OG,X,Y,Z);
@@ -224,8 +222,7 @@ insertPlate::createUnitVector(const Geometry::Vec3D& OG,
   Z=ZUnit.unit();
 
   Origin=OG;
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
+  applyOffset();
 
   return;
 }
@@ -336,7 +333,7 @@ void
 insertPlate::setStep(const double XS,const double YS,
 		       const double ZS)
   /*!
-    Set the values and populate flag
+    Set the values but NOT the populate flag
     \param XS :: X-size [width]
     \param YS :: Y-size [depth] 
     \param ZS :: Z-size [height]
@@ -345,6 +342,19 @@ insertPlate::setStep(const double XS,const double YS,
   xStep=XS;
   yStep=YS;
   zStep=ZS;
+  return;
+}
+
+void
+insertPlate::setAngles(const double XS,const double ZA)
+  /*!
+    Set the values but NOT the populate flag
+    \param XY :: XY angel
+    \param ZA :: Z angle
+   */
+{
+  xyAngle=XS;
+  zAngle=ZA;
   return;
 }
 
@@ -396,7 +406,8 @@ insertPlate::mainAll(Simulation& System)
   createSurfaces();
   createObjects(System);
   createLinks();
-  findObjects(System);
+  if (!delayInsert)
+    findObjects(System);
   insertObjects(System);
   return;
 }
@@ -439,7 +450,6 @@ insertPlate::createAll(Simulation& System,
   
   return;
 }
-  
-
+ 
   
 }  // NAMESPACE constructSystem

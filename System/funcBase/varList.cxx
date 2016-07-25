@@ -225,7 +225,53 @@ varList::copyVar(const std::string& Key,const std::string& other)
   return;
 }
 
+void
+varList::copyVarSet(const std::string& oldHead,const std::string& newHead) 
+  /*!
+    Copy a variable into the var system [with new number]
+    \param oldHead :: Old head name
+    \param newHead :: replacement head name
+  */
+{
+  ELog::RegMethod RegA("varList","copyVarSet");
 
+  if (oldHead==newHead) return;
+
+  // NOTE: map is ORDERED
+  // Thus we only need to find ONE value and then iterate through
+
+  
+  std::map<std::string,FItem*>::const_iterator oldMC;
+  const size_t subLen=oldHead.length();
+  
+  oldMC=varName.lower_bound(oldHead);
+  // Need to use a replacement set because each replacement
+  // invalidates the iterator position:
+  std::map<std::string,std::string> replaceSet;
+  
+  while(oldMC!=varName.end() &&
+        (!subLen || oldMC->first.substr(0,subLen)==oldHead))
+    {
+      // Find new key
+      const std::string newKey=(subLen) ?
+        newHead+oldMC->first.substr(subLen) : newHead+oldMC->first;
+      replaceSet.emplace(oldMC->first,newKey);
+      
+      oldMC++;
+    }
+  if (replaceSet.empty())
+    throw ColErr::InContainerError<std::string>
+      (oldHead,"Key part not in variable map");
+
+  for(const std::pair<std::string,std::string> Item : replaceSet)
+    {
+      ELog::EM<<"A: "<<Item.first<<" "<<Item.second<<ELog::endDiag;
+
+      copyVar(Item.first,Item.second);
+    }
+  
+  return;
+}
 
 int 
 varList::selectValue(const int Key,Geometry::Vec3D& oVec,

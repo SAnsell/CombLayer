@@ -71,7 +71,6 @@ class makeBib
 
 
   std::shared_ptr<ColdH2Mod> ColdMod2;           ///< Second ColdH2 moderator
-  std::shared_ptr<FilterBox> FBox;        ///< Filter box
 
   /// Array to replace the horrible list:
   std::vector<std::shared_ptr<GuideBox> > GuideArray;   ///< Guides

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testFunction.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -80,6 +80,7 @@ testFunction::applyTest(const int extra)
     {
       &testFunction::testAnalyse,
       &testFunction::testBuiltIn,
+      &testFunction::testCopyVarSet,
       &testFunction::testEval,
       &testFunction::testString, 
       &testFunction::testVariable,
@@ -91,6 +92,7 @@ testFunction::applyTest(const int extra)
     {
       "Analyse",
       "BuiltIn",
+      "CopyVarSet",
       "Eval",
       "String",
       "Variable",
@@ -197,6 +199,39 @@ testFunction::testBuiltIn()
     }
   return 0;
 }
+
+int
+testFunction::testCopyVarSet()
+  /*!
+    Test to copy Var set
+    \return 0 on succes and -ve on failure
+  */
+{
+  ELog::RegMethod RegA("testVarList","testCopyVarSet");
+
+  FuncDataBase Control;
+ 
+  Control.addVariable("fred2alpha",1);
+  Control.addVariable("fred121alpha",2);
+  Control.addVariable("A",3);
+  Control.addVariable("B",4);
+  Control.addVariable("fred123beta",5);
+  Control.addVariable("fred7beta",6);
+  Control.addVariable("freds6alpha",7);
+  Control.addVariable("fred4alpha",8);
+  
+  Control.copyVarSet("fred","John");
+
+  if (Control.EvalVar<int>("John4alpha")!=8)
+    {
+      ELog::EM<<"Failed on test alpha:"<<Control.EvalVar<int>("John4alpah")
+              <<ELog::endDiag;
+      return -1;
+    }
+
+  return 0;
+}
+
 
 int
 testFunction::testEval()

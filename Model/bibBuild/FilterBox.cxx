@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   bibBuild/FilterBox.cxx
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,6 +65,7 @@
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 
@@ -75,7 +76,7 @@ namespace bibSystem
 {
 
 FilterBox::FilterBox(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
   filterIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(filterIndex+1)
   /*!
@@ -83,12 +84,11 @@ FilterBox::FilterBox(const std::string& Key) :
     \param Key :: Name of construction key
   */
 {}
+  
 FilterBox::FilterBox(const FilterBox& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   filterIndex(A.filterIndex),cellIndex(A.cellIndex),
-  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  xyAngle(A.xyAngle),zAngle(A.zAngle),width(A.width),
-  height(A.height),length(A.length),angleA(A.angleA),
+  width(A.width),height(A.height),length(A.length),angleA(A.angleA),
   angleB(A.angleB),wallThick(A.wallThick),wallGap(A.wallGap),
   beTemp(A.beTemp),beMat(A.beMat),wallMat(A.wallMat)
   /*!
@@ -108,13 +108,8 @@ FilterBox::operator=(const FilterBox& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
       width=A.width;
       height=A.height;
       length=A.length;
@@ -143,12 +138,8 @@ FilterBox::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("FilterBox","populate");
-
-  // Master values
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-
+  FixedOffset::populate(Control);
+  
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
   length=Control.EvalVar<double>(keyName+"Length");
@@ -169,7 +160,7 @@ FilterBox::populate(const FuncDataBase& Control)
 
 void
 FilterBox::createUnitVector(const attachSystem::FixedComp& FC,
-			   const size_t sideIndex)
+                            const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Fixed Component
@@ -177,10 +168,10 @@ FilterBox::createUnitVector(const attachSystem::FixedComp& FC,
   */
 {
   ELog::RegMethod RegA("FilterBox","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC);
-  Origin=FC.getLinkPt(sideIndex); 
-
-  applyShift(xStep,yStep,zStep);
+  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
+  applyOffset();
+  //  Origin=FC.getLinkPt(sideIndex);
+  //    applyShift(xStep,yStep,zStep);
 
   return;
 }
@@ -293,7 +284,7 @@ FilterBox::createLinks()
 void
 FilterBox::createAll(Simulation& System,
 		     const attachSystem::FixedComp& FC,
-		     const size_t sideIndex)
+		     const long int sideIndex)
   /*!
     Extrenal build everything
     \param System :: Simulation

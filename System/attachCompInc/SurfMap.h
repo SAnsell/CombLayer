@@ -47,34 +47,36 @@ class SurfMap : public BaseMap
   SurfMap& operator=(const SurfMap&);
   virtual ~SurfMap() {}     ///< Destructor
 
-  /// Renmae function
+  /// Renaming function
   void setSurf(const std::string& K,const int CN)
     { BaseMap::setItem(K,CN); }
       
-  /// Renmae function
+  /// Renaming function
   void setSurf(const std::string& K,const size_t Index,const int CN)
     { BaseMap::setItem(K,Index,CN); }
 
+  /// Renaming function 
   void setSurfs(const std::string& K,const int CNA,const int CNB)
     { BaseMap::setItems(K,CNA,CNB); }
 
-  /// Rename function
+  /// Renaming function
   void addSurf(const std::string& K,const int CN)
     { BaseMap::addItem(K,CN); }
-  /// Rename function
+  /// Renaming function
   void addSurfs(const std::string& K,const std::vector<int>& CN)
     { BaseMap::addItems(K,CN); }
 
-  /// Rename function
+  /// Renaming function
   int getSurf(const std::string& K) const
     { return BaseMap::getItem(K); }
-  /// Rename function
+  /// Renaming function
   int getSurf(const std::string& K,const size_t Index) const
     { return BaseMap::getItem(K,Index); }
 
+  /// Renaming function
   std::vector<int> getSurfs(const std::string& K) const
     { return BaseMap::getItems(K); }
-
+  ///  Renaming function
   std::vector<int> getSurfs() const
     { return BaseMap::getItems(); }
     

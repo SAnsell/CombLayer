@@ -76,6 +76,7 @@
 #include "World.h"
 #include "AttachSupport.h"
 #include "GuideItem.h"
+#include "insertPlate.h"
 #include "Jaws.h"
 #include "GuideLine.h"
 #include "DiskChopper.h"
@@ -129,6 +130,7 @@ LOKI::LOKI(const std::string& keyN) :
   GridA(new constructSystem::RotaryCollimator(newName+"GridA")),
   CollA(new constructSystem::RotaryCollimator(newName+"CollA")),
 
+  CBoxB(new constructSystem::insertPlate(newName+"CBoxB")),
   GridB(new constructSystem::RotaryCollimator(newName+"GridB")),
   CollB(new constructSystem::RotaryCollimator(newName+"CollB")),
 
@@ -179,6 +181,7 @@ LOKI::LOKI(const std::string& keyN) :
 
   OR.addObject(GridA);
   OR.addObject(CollA);
+  OR.addObject(CBoxB);
   OR.addObject(GridB);
   OR.addObject(CollB);
   OR.addObject(GridC);
@@ -373,12 +376,19 @@ LOKI::build(Simulation& System,
   GridA->addInsertCell(bunkerObj.getCell("MainVoid"));
   GridA->createAll(System,FocusF->getKey("Guide0"),2);
 
+  if (stopPoint==2)       // STOP At bunker edge
+  
   CollA->addInsertCell(bunkerObj.getCell("MainVoid"));
   CollA->createAll(System,GridA->getKey("Beam"),2);
   attachSystem::addToInsertControl(System,bunkerObj,"frontWall",
 				   CollA->getKey("Main"),*CollA);  
 
-  if (stopPoint==2) return;                      // STOP At bunker edge
+  // No insert later only
+  CBoxB->createAll(System,CollA->getKey("Beam"),2);
+  attachSystem::addToInsertControl(System,bunkerObj,"frontWall",
+				   *CBoxB,*CBoxB);  
+  
+
   
   return;
 }

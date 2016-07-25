@@ -62,8 +62,8 @@ BenderUnit::BenderUnit(const int ON,const int LS)  :
   ShapeUnit(ON,LS)
   /*!
     Constructor BUT ALL variable are left unpopulated.
-    \param LS :: Layer separation
     \param ON :: offset number
+    \param LS :: Layer separation
   */
 {}
 
@@ -273,15 +273,15 @@ BenderUnit::calcWidthCent(const bool plusSide) const
 
 void
 BenderUnit::createSurfaces(ModelSupport::surfRegister& SMap,
-			  const std::vector<double>& Thick)
+                           const std::vector<double>& Thick)
   /*!
     Build the surfaces for the track
     \param SMap :: SMap to use
-    \param indexOffset :: Index offset
     \param Thick :: Thickness for each layer
    */
 {
   ELog::RegMethod RegA("BenderUnit","createSurfaces");
+
   Geometry::Vec3D PCentre= calcWidthCent(1);
   Geometry::Vec3D MCentre= calcWidthCent(0);
   // Make divider plane +ve required
@@ -339,7 +339,7 @@ BenderUnit::getExclude(const ModelSupport::surfRegister& SMap,
     Write string for layer number
     \param SMap :: Surface register
     \param layerN :: Layer number
-    \return inward string
+    \return outward string
   */
 {
   ELog::RegMethod RegA("BenderUnit","getExclude");

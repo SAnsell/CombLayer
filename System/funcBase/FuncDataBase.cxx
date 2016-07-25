@@ -3,7 +3,7 @@
  
  * File:   funcBase/FuncDataBase.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -896,6 +896,21 @@ FuncDataBase::copyVar(const std::string& Name,const std::string& otherVar)
   */
 {
   VList.copyVar(Name,otherVar);
+  return;
+}
+
+void
+FuncDataBase::copyVarSet(const std::string& oldHead,
+                         const std::string& newHead)
+/*!
+    Adds this function if the Code system has been 
+    executed
+    \param oldHead :: Head name for variables to find
+    \param newHead :: new head for variables
+  */
+{
+  
+  VList.copyVarSet(oldHead,newHead);
   return;
 }
 

@@ -36,10 +36,10 @@ namespace constructSystem
   class DiskChopper;
   class ChopperPit;
   class ChopperUnit;
+  class insertPlate;
   class RotaryCollimator;
   class VacuumBox;
   class VacuumPipe;
-  class ChopperHousing;
 }
 
 namespace essSystem
@@ -115,6 +115,8 @@ class LOKI : public attachSystem::CopiedComp
 
   /// Rotary collimator [first to wall]
   std::shared_ptr<constructSystem::RotaryCollimator> CollA;
+  /// Space in wall for grid cutter
+  std::shared_ptr<constructSystem::insertPlate> CBoxB;
   /// Cutting grid at bunker wall
   std::shared_ptr<constructSystem::RotaryCollimator> GridB;
 
