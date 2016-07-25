@@ -50,26 +50,33 @@
 #include "FuncDataBase.h"
 #include "variableSetup.h"
 
+
+///\file EssPipeVariables.cxx
+
 namespace setVariable
 {
 
 void
 EssPipeVariables(FuncDataBase& Control)
+  /*!
+    Construct the moderator pipes variable table
+    \param Control ::
+   */
 {
   ELog::RegMethod RegA("EssPipeVariables[F]","EssPipeVariables"); 
   
-  const int nRad = 2;
-  const double invarPipeHeight = 30;
-  const double invarPipeLength = 12.5;
+  const size_t nRad(4);
+  const double invarPipeHeight(30.0);
+  const double invarPipeLength(12.5);
 
-  const double AlPPt3X = 3.597;
-  const double AlPPt3Y = 11.0;
-  const double connectPipeLength = 2.0;
+  const double AlPPt3X(3.597);
+  const double AlPPt3Y(11.0);
+  const double connectPipeLength(2.0);
 
   const std::vector<double> R({1.1, 1.3, 1.5, 1.8});
 
   const std::vector<std::string> matAl
-    ({"HPARA,","Aluminium20K","Void","Aluminium"});
+    ({"HPARA","Aluminium20K","Void","Aluminium"});
 
   const std::vector<std::string> matConnect
     ({ "HPARA","SS316L","Void","SS316L"});
@@ -81,13 +88,15 @@ EssPipeVariables(FuncDataBase& Control)
 
   double signV(1.0);
   for(const std::string& MItem :
-    {"TSupplyLeft","TReturnLeft","LSupplyLeft","LReturnLeft"})
+    {"TSupplyLeft","TReturnLeft","LSupplyLeft","LReturnLeft",
+    "TSupplyRight","TReturnRight","LSupplyRight","LReturnRight"})
+
     {
       Control.addVariable(MItem+"AlNSegIn",3);
-      Control.addVariable(MItem+"AlPPt0",Geometry::Vec3D(1.9,0,0));
-      Control.addVariable(MItem+"AlPPt1",Geometry::Vec3D(1.9,2.0,0));
-      Control.addVariable(MItem+"AlPPt2",Geometry::Vec3D(AlPPt3X,3.0,0));
-      Control.addVariable(MItem+"AlPPt3",Geometry::Vec3D(AlPPt3X,AlPPt3Y,0));
+      Control.addVariable(MItem+"AlPPt0",Geometry::Vec3D(signV*1.9,0,0));
+      Control.addVariable(MItem+"AlPPt1",Geometry::Vec3D(signV*1.9,2.0,0));
+      Control.addVariable(MItem+"AlPPt2",Geometry::Vec3D(signV*AlPPt3X,3.0,0));
+      Control.addVariable(MItem+"AlPPt3",Geometry::Vec3D(signV*AlPPt3X,AlPPt3Y,0));
       Control.addVariable(MItem+"AlNRadii",nRad);
       Control.addVariable(MItem+"AlActive0",3);
       Control.addVariable(MItem+"AlActive1",15);

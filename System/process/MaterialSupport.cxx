@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   process/MaterialSupport.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -79,10 +79,12 @@ EvalMat(const FuncDataBase& Control,const std::string& Key)
   // Note: EvalVar converts any string into a integer [best guess]
   int out;
   if (!StrFunc::convert(A,out))
-    throw ColErr::InContainerError<std::string>(A,"Material not present");
+    throw ColErr::InContainerError<std::string>
+      (A,"Material not present[var="+Key+"]");
 
   if(!DB.hasKey(out))
-    throw ColErr::InContainerError<int>(out,"Material not present");
+    throw ColErr::InContainerError<int>
+      (out,"Material not present[var="+Key+"]");
 
   return out;
 }
