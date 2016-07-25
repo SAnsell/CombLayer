@@ -110,7 +110,7 @@ MidWaterDivider::MidWaterDivider(const MidWaterDivider& A) :
   divIndex(A.divIndex),cellIndex(A.cellIndex),midYStep(A.midYStep),
   midAngle(A.midAngle),length(A.length),height(A.height),
   wallThick(A.wallThick),modMat(A.modMat),wallMat(A.wallMat),
-  modTemp(A.modTemp)
+  modTemp(A.modTemp),edgeRadius(A.edgeRadius)
   /*!
     Copy constructor
     \param A :: MidWaterDivider to copy
@@ -139,6 +139,7 @@ MidWaterDivider::operator=(const MidWaterDivider& A)
       modMat=A.modMat;
       wallMat=A.wallMat;
       modTemp=A.modTemp;
+      edgeRadius=A.edgeRadius;
     }
   return *this;
 }
@@ -180,10 +181,12 @@ MidWaterDivider::populate(const FuncDataBase& Control)
   modMat=ModelSupport::EvalMat<int>(Control,keyName+"ModMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   modTemp=Control.EvalVar<double>(keyName+"ModTemp");
+  edgeRadius=Control.EvalVar<double>(keyName+"EdgeRadius");
 
   totalHeight=Control.EvalPair<double>(keyName,baseName,"TotalHeight");
   if (height<Geometry::zeroTol)
     height=totalHeight-2.0*wallThick;
+
   return;
 }
   
@@ -214,8 +217,7 @@ MidWaterDivider::createLinks(const H2Wing &LA, const H2Wing &RA)
   ELog::RegMethod RegA("MidWaterDivider","createLinks");
 
   // Loop over corners that are bound by convex
-  const double LStep(midYStep+wallThick/sin(midAngle/2.0));
-  const Geometry::Plane *pz = ModelSupport::buildPlane(SMap, divIndex+5, Origin, Z);
+  const Geometry::Plane *pz = SMap.realPtr<Geometry::Plane>(divIndex+5);
 
   const Geometry::Plane *p103 = SMap.realPtr<Geometry::Plane>(divIndex+103);
   const Geometry::Plane *p104 = SMap.realPtr<Geometry::Plane>(divIndex+104);
@@ -287,6 +289,7 @@ MidWaterDivider::createSurfaces()
 
   // Mid divider
   ModelSupport::buildPlane(SMap,divIndex+100,Origin,Y);
+  ModelSupport::buildPlane(SMap,divIndex+300,Origin,X);
 
   // +Y section
   ModelSupport::buildPlaneRotAxis
@@ -295,10 +298,10 @@ MidWaterDivider::createSurfaces()
     (SMap,divIndex+4,Origin+Y*midYStep,X,-Z,midAngle/2.0);
 
   // -Y section
-  ModelSupport::buildPlaneRotAxis
-    (SMap,divIndex+23,Origin-Y*midYStep,-X,-Z,-midAngle/2.0);
-  ModelSupport::buildPlaneRotAxis
-    (SMap,divIndex+24,Origin-Y*midYStep,-X,-Z,midAngle/2.0);
+  ModelSupport::buildPlaneRotAxis(SMap,divIndex+23,
+				  Origin-Y*midYStep,-X,-Z,-midAngle/2.0);
+  ModelSupport::buildPlaneRotAxis(SMap,divIndex+24,
+				  Origin-Y*midYStep,-X,-Z,midAngle/2.0);
 
   // Make lengths:
 
@@ -311,25 +314,25 @@ MidWaterDivider::createSurfaces()
   ModelSupport::buildPlane(SMap,divIndex+12,Origin+rightNorm*length,rightNorm);
 
   // Length below [note reverse of normals]
-  ModelSupport::buildPlane(SMap,divIndex+31,Origin-rightNorm*length,-rightNorm);
-  ModelSupport::buildPlane(SMap,divIndex+32,Origin-leftNorm*length,-leftNorm);
+  ModelSupport::buildPlane(SMap,divIndex+31,
+			   Origin-rightNorm*length,-rightNorm);
+  ModelSupport::buildPlane(SMap,divIndex+32,
+			   Origin-leftNorm*length,-leftNorm);
 
   
   // Aluminum layers [+100]
+  Geometry::Vec3D leftNormAl(X);
+  Geometry::Quaternion::calcQRotDeg(midAngle/2.0,Z).rotate(leftNormAl);  
+  Geometry::Vec3D rightNormAl(X);
+  Geometry::Quaternion::calcQRotDeg(-midAngle/2.0,Z).rotate(rightNormAl);  
+
   // +Y section
-  const double LStep(midYStep+wallThick/sin(midAngle/2.0));
-  ModelSupport::buildPlaneRotAxis
-    (SMap,divIndex+103,Origin+Y*LStep,X,-Z,-midAngle/2.0);
-  ModelSupport::buildPlaneRotAxis
-    (SMap,divIndex+104,Origin+Y*LStep,X,-Z,midAngle/2.0);
+  ModelSupport::buildPlane(SMap,divIndex+103,Origin+Y*midYStep+leftNormAl*wallThick, leftNormAl);
+  ModelSupport::buildPlane(SMap,divIndex+104,Origin+Y*midYStep-rightNormAl*wallThick, rightNormAl);
 
   // -Y section
-
-  ModelSupport::buildPlaneRotAxis
-    (SMap,divIndex+123,Origin-Y*LStep,-X,-Z,-midAngle/2.0);
-  ModelSupport::buildPlaneRotAxis
-    (SMap,divIndex+124,Origin-Y*LStep,-X,-Z,midAngle/2.0);
-
+  ModelSupport::buildPlane(SMap,divIndex+123,Origin-Y*midYStep-leftNormAl*wallThick, leftNormAl);
+  ModelSupport::buildPlane(SMap,divIndex+124,Origin-Y*midYStep+rightNormAl*wallThick, rightNormAl);
   
   ModelSupport::buildPlane(SMap,divIndex+111,
 			   Origin+leftNorm*(length+wallThick),leftNorm); // x-y+
@@ -341,6 +344,62 @@ MidWaterDivider::createSurfaces()
 			   Origin-rightNorm*(wallThick+length),-rightNorm); // x+y+
   ModelSupport::buildPlane(SMap,divIndex+132,
 			   Origin-leftNorm*(wallThick+length),-leftNorm); // x+y-
+
+  // Rounding of the edges
+  const Geometry::Plane *pz = ModelSupport::buildPlane(SMap, divIndex+5, Origin, Z);
+
+  int edgeOffset(divIndex+1000);
+  std::array<Geometry::Vec3D,4> CPts; // water corners
+  std::array<Geometry::Vec3D,4> APts; // points for Geometry::cornerCircle
+  std::vector<int> side{11, 12, 32, 31};
+  std::vector<int> front{4, 3,  24, 23};
+  double thick=0.0;
+
+  //  std::cout << "before" << std::endl;
+  //  SMap.realPtr<Geometry::Plane>(divIndex+side[4]+100);
+  //  ELog::EM << "after" << ELog::endErr;
+  
+  for (size_t j=0; j<2; j++) // water and Al
+    {
+      for (size_t i=0; i<4; i++) // four edges
+	{
+	  CPts[i] = SurInter::getPoint(SMap.realPtr<Geometry::Plane>(divIndex+side[i]+j*100),
+				       SMap.realPtr<Geometry::Plane>(divIndex+front[i] + j*100), pz); // water corners
+	  
+	  if ((i==0) || (i==2))
+	    APts[i] = SurInter::getPoint(SMap.realPtr<Geometry::Plane>(divIndex+side[i]+j*100),
+					 SMap.realPtr<Geometry::Plane>(divIndex+side[(i+3)%4]+j*100), pz);
+	  else if ((i==1) || (i==3))
+	    APts[i] = SurInter::getPoint(SMap.realPtr<Geometry::Plane>(divIndex+front[i-1]+j*100), SMap.realPtr<Geometry::Plane>(divIndex+front[i]+j*100), pz);
+	}
+      
+      for (size_t i=0; i<4; i++) // four edges
+	{
+	  const int ii(static_cast<int>(i)+1);
+
+	  Geometry::Vec3D RCent;
+	  RCent = Geometry::cornerCircleTouch(CPts[i], APts[i], APts[(i+1)%4], edgeRadius+thick);
+
+	  std::pair<Geometry::Vec3D, Geometry::Vec3D> CutPair;
+	  CutPair =    Geometry::cornerCircle(CPts[i], APts[i], APts[(i+1)%4], edgeRadius+thick);
+
+	  // midNorm
+	  Geometry::Vec3D a = (CPts[(i+1)%4]-CPts[i]).unit();
+	  Geometry::Vec3D b = (CPts[(i+2)%4]-CPts[i]).unit();
+	  Geometry::Vec3D MD = (a+b)/2.0;
+	  
+	  ModelSupport::buildPlane(SMap,edgeOffset+ii+20,
+				   CutPair.first,CutPair.second,
+				   CutPair.first+Z,MD);
+
+	  ModelSupport::buildCylinder(SMap,edgeOffset+ii+6,
+				      RCent,Z,edgeRadius+thick);
+		  
+	  
+	}
+      edgeOffset += 100;
+      thick += wallThick;
+    }
 
 
   return;
@@ -367,32 +426,65 @@ MidWaterDivider::createObjects(Simulation& System,
   RCut.makeComplement();
   std::string Out;
 
-  Out=ModelSupport::getComposite(SMap,divIndex,"100 (-3 : 4) -11 -12 ");
-  Out+=LCut.display()+RCut.display()+Base;
+  Out=ModelSupport::getComposite(SMap,divIndex, divIndex+1000+2,
+				 "100 -300 ((-3 -12 20M) : (-20M -6M))"); // x-y-
+  Out+=RCut.display()+Base;
   System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
+
+  Out=ModelSupport::getComposite(SMap,divIndex, divIndex+1000+1, 
+				 "100 300 ((4 -11 20M) : (-20M -6M))"); // x-y+
+  Out+=LCut.display()+Base;
+  System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out)); // x-
 
   // Aluminium
-  Out=ModelSupport::getComposite(SMap,divIndex,
-				 "100 (-103 : 104) -111 -112 "
-				 " ( (3  -4) : 11 : 12 ) ");
-				 
-  Out+=LCut.display()+RCut.display()+Base;
+  Out=ModelSupport::getComposite(SMap,divIndex, divIndex+1000+2,
+				 "100 -300 ((( 3 : 12 ) (-103 -112 20M)) : (-120M 6M -106M) : (-103 -112 6M -20M 120M))");  // \todo Is it possible to optimise it more?
+  Out+=RCut.display()+Base;
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out)); // x-
+
+  Out=ModelSupport::getComposite(SMap,divIndex, divIndex+1000+1,
+  				 "100 300 ((( -4 : 11 ) (104 -111 20M)) : (-120M 6M -106M) : (104 -111 6M -20M 120M))");  // \todo Is it possible to optimise it more?
+  Out+=LCut.display()+Base;
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out)); // x-
+  
+  // outer surface:
+  Out=ModelSupport::getComposite(SMap,divIndex, divIndex+1000+2,
+				 "100 -300 (-103 -112 120M) : -106M ");
+  addOuterSurf(Out);
+  Out=ModelSupport::getComposite(SMap,divIndex,divIndex+1000+1,
+				 "100 300 (104 -111 120M) : -106M ");
+  addOuterUnionSurf(Out); 
+
+  // Reverse layer
+  /// water
+  Out=ModelSupport::getComposite(SMap,divIndex, divIndex+1000+3,
+				 "-100 -300 ((24 -32 20M) : (-20M -6M))"); // x+y-
+  Out+=RCut.display()+Base;
+  System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
+
+  Out=ModelSupport::getComposite(SMap,divIndex, divIndex+1000+4,
+				 "-100 300 ((-23 -31 20M) : (-20M -6M))"); // x+y+
+  Out+=LCut.display()+Base;
+  System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
+
+  // Al
+  Out=ModelSupport::getComposite(SMap,divIndex,divIndex+1000+3,
+  				 "-100 -300 ((( -24 : 32 ) (-124 -132 20M)) : (-120M 6M -106M) : (-124 -132 6M -20M 120M)) ");   // \todo Is it possible to optimise it more?
+  Out+=RCut.display()+Base;
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out));
 
-  Out=ModelSupport::getComposite(SMap,divIndex,
-				 "100 (-103 : 104)  -111 -112 ");
-  addOuterSurf(Out);
-  // Reverse layer
-  Out=ModelSupport::getComposite(SMap,divIndex,"-100 (-23 : 24) -31 -32 ");
-  Out+=LCut.display()+RCut.display()+Base;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
-  Out=ModelSupport::getComposite(SMap,divIndex,
-				 "-100 (-123 : 124)  -131 -132 "
-				 "((23  -24) : 31 : 32 )");
-  Out+=LCut.display()+RCut.display()+Base;
+  Out=ModelSupport::getComposite(SMap,divIndex, divIndex+1000+4,
+				 "-100 300 (((23 : 31 ) (123 -131 20M)) : (-120M 6M -106M) : (123 -131 6M -20M 120M)) ");   // \todo Is it possible to optimise it more?
+  Out+=LCut.display()+Base;
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out));
-  Out=ModelSupport::getComposite(SMap,divIndex,
-				 "-100 (-123 : 124) -131 -132 ");
+
+  // outer surfaces
+  Out=ModelSupport::getComposite(SMap,divIndex, divIndex+1000+3,
+				 "-100 -300 (-124 -132 120M) : -106M");
+  addOuterUnionSurf(Out);
+
+  Out=ModelSupport::getComposite(SMap,divIndex, divIndex+1000+4,
+				 "-100 300 (123 -131 120M) : -106M ");
   addOuterUnionSurf(Out);
 
   HeadRule HR;
