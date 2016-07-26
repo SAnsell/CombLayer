@@ -51,6 +51,10 @@ namespace SurInter
 Geometry::Vec3D
 getLinePoint(const Geometry::Vec3D&,const Geometry::Vec3D&,
 	     const Geometry::Surface*,const Geometry::Vec3D&);
+
+Geometry::Vec3D
+getLinePoint(const Geometry::Vec3D&,const Geometry::Vec3D&,
+	     const HeadRule&,const HeadRule&);
 	     
   
 Geometry::Vec3D

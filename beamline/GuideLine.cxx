@@ -674,6 +674,7 @@ GuideLine::createMainLinks()
     {
       shieldFC.setLinkSurf(1,endCut);
       shieldFC.setBridgeSurf(1,endCutBridge);
+
     }
   if (activeShield)
     {

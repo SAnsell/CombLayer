@@ -84,7 +84,7 @@ namespace constructSystem
 
 RotaryCollimator::RotaryCollimator(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedGroup(Key,"Main",8,"Beam",2),
+  attachSystem::FixedGroup(Key,"Main",16,"Beam",2),
   attachSystem::CellMap(),
   colIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(colIndex+1),holeIndex(0),nHole(0),nLayers(0)
@@ -335,7 +335,7 @@ RotaryCollimator::createLinks()
   beamFC.setLinkSurf(1,SMap.realSurf(colIndex+2));
 
   mainFC.setConnect(0,Origin,-Y);
-  mainFC.setConnect(1,Origin+Y*thick,-Y);
+  mainFC.setConnect(1,Origin+Y*thick,Y);
   mainFC.setLinkSurf(0,-SMap.realSurf(colIndex+1));
   mainFC.setLinkSurf(1,SMap.realSurf(colIndex+2));
 
@@ -349,6 +349,18 @@ RotaryCollimator::createLinks()
       mainFC.setLinkSurf(i+2,SMap.realSurf(colIndex+7));
       angle+=angleStep;
     }
+  // Front/back points as well
+  const Geometry::Vec3D ADir[4]{-X,X,-Z,Z};
+  for(size_t i=0;i<4;i++)
+    {
+      // front
+      mainFC.setConnect(i+8,Origin+ADir[i]*radius,-Y);
+      mainFC.setLinkSurf(i+8,-SMap.realSurf(colIndex+1));
+      // back
+      mainFC.setConnect(i+12,Origin+Y*thick+ADir[i]*radius,Y);
+      mainFC.setLinkSurf(i+12,SMap.realSurf(colIndex+2));
+    }
+
   return;
 }
   

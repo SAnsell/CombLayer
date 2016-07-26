@@ -78,6 +78,7 @@
 #include "SurfMap.h"
 #include "CellMap.h"
 #include "ContainedComp.h"
+#include "SurInter.h"
 #include "insertPlate.h"
 
 namespace constructSystem
@@ -87,7 +88,7 @@ insertPlate::insertPlate(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
   attachSystem::CellMap(),attachSystem::SurfMap(),
   ptIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(ptIndex+1),populated(0),
+  cellIndex(ptIndex+1),populated(0),frontActive(0),backActive(0),
   defMat(0),delayInsert(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -99,7 +100,9 @@ insertPlate::insertPlate(const insertPlate& A) :
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
   ptIndex(A.ptIndex),cellIndex(A.cellIndex),
-  populated(A.populated),width(A.width),height(A.height),
+  populated(A.populated),frontActive(A.frontActive),
+  frontSurf(A.frontSurf),backActive(A.backActive),
+  backSurf(A.backSurf),width(A.width),height(A.height),
   depth(A.depth),defMat(A.defMat),delayInsert(A.delayInsert)
   /*!
     Copy constructor
@@ -123,11 +126,10 @@ insertPlate::operator=(const insertPlate& A)
       attachSystem::SurfMap::operator=(A);
       cellIndex=A.cellIndex;
       populated=A.populated;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
+      frontActive=A.frontActive;
+      frontSurf=A.frontSurf;
+      backActive=A.backActive;
+      backSurf=A.backSurf;
       width=A.width;
       height=A.height;
       depth=A.depth;
@@ -235,19 +237,32 @@ insertPlate::createSurfaces()
 {
   ELog::RegMethod RegA("insertPlate","createSurface");
 
-  ModelSupport::buildPlane(SMap,ptIndex+1,Origin-Y*depth/2.0,Y);
-  ModelSupport::buildPlane(SMap,ptIndex+2,Origin+Y*depth/2.0,Y);
+  if (!frontActive)
+    ModelSupport::buildPlane(SMap,ptIndex+1,Origin-Y*depth/2.0,Y);
+  if (!backActive)
+    ModelSupport::buildPlane(SMap,ptIndex+2,Origin+Y*depth/2.0,Y);
+
+
   ModelSupport::buildPlane(SMap,ptIndex+3,Origin-X*width/2.0,X);
   ModelSupport::buildPlane(SMap,ptIndex+4,Origin+X*width/2.0,X);
   ModelSupport::buildPlane(SMap,ptIndex+5,Origin-Z*height/2.0,Z);
   ModelSupport::buildPlane(SMap,ptIndex+6,Origin+Z*height/2.0,Z);
 
-  setSurf("Front",ptIndex+1);
-  setSurf("Back",ptIndex+2);
-  setSurf("Left",ptIndex+3);
-  setSurf("Right",ptIndex+4);
-  setSurf("Base",ptIndex+5);
-  setSurf("Top",ptIndex+6);
+
+  if (!frontActive)
+    setSurf("Front",ptIndex+1);
+  else
+    setSurf("Front",frontSurf.getPrimarySurface());
+
+  if (!backActive)
+    setSurf("Back",SMap.realSurf(ptIndex+2));
+  else
+    setSurf("Back",frontSurf.getPrimarySurface());
+
+  setSurf("Left",SMap.realSurf(ptIndex+3));
+  setSurf("Right",SMap.realSurf(ptIndex+4));
+  setSurf("Base",SMap.realSurf(ptIndex+5));
+  setSurf("Top",SMap.realSurf(ptIndex+6));
   return;
 }
 
@@ -259,15 +274,42 @@ insertPlate::createLinks()
 {
   ELog::RegMethod RegA("insertPlate","createLinks");
 
-  const double T[3]={depth,width,height};
-  const Geometry::Vec3D Dir[3]={Y,X,Z};
-
-  for(size_t i=0;i<6;i++)
+  if (frontActive)
     {
-      const double SN((i%2) ? 1.0 : -1.0);
-      FixedComp::setConnect(i,Origin+Dir[i/2]*T[i/2],Dir[i/2]*SN);
-      FixedComp::setLinkSurf(i,SMap.realSurf(ptIndex+1+static_cast<int>(i)));
+      FixedComp::setLinkSurf(0,frontSurf);
+      FixedComp::setBridgeSurf(0,frontBridge);
+      FixedComp::setConnect
+        (0,SurInter::getLinePoint(Origin,Y,frontSurf,frontBridge),-Y);
     }
+  else
+    {
+      FixedComp::setConnect(0,Origin-Y*(depth/2.0),-Y);
+      FixedComp::setLinkSurf(0,-SMap.realSurf(ptIndex+1));
+    }
+
+  if (backActive)
+    {
+      FixedComp::setLinkSurf(1,backSurf);
+      FixedComp::setBridgeSurf(1,backBridge);
+      FixedComp::setConnect
+        (1,SurInter::getLinePoint(Origin,Y,backSurf,backBridge),Y);
+    }
+  else
+    {
+      FixedComp::setConnect(1,Origin+Y*(depth/2.0),-Y);
+      FixedComp::setLinkSurf(1,SMap.realSurf(ptIndex+2));
+    }
+  
+  FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
+  FixedComp::setConnect(3,Origin+X*(width/2.0),X);
+  FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
+  FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
+
+  FixedComp::setLinkSurf(2,-SMap.realSurf(ptIndex+3));
+  FixedComp::setLinkSurf(3,SMap.realSurf(ptIndex+4));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(ptIndex+5));
+  FixedComp::setLinkSurf(5,SMap.realSurf(ptIndex+6));
+
   return;
 }
 
@@ -281,13 +323,53 @@ insertPlate::createObjects(Simulation& System)
   ELog::RegMethod RegA("insertPlate","createObjects");
   
   std::string Out=
-    ModelSupport::getComposite(SMap,ptIndex,"1 -2 3 -4 5 -6");
+    ModelSupport::getSetComposite(SMap,ptIndex,"1 -2 3 -4 5 -6");
+  if (frontActive) Out+=frontSurf.display()+frontBridge.display();
+  if (backActive) Out+=backSurf.display()+backBridge.display();
   System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));
   addCell("Main",cellIndex-1);
   addOuterSurf(Out);
   return;
 }
 
+void
+insertPlate::setFrontSurf(const attachSystem::FixedComp& FC,
+                          const long int sideIndex)
+  /*!
+    Add a front surface 
+    \param FC :: Front cut
+    \param sideIndex :: side intec
+  */
+{
+  ELog::RegMethod RegA("insertPlate","setFrontSurf");
+
+  frontActive=1;
+  frontSurf=FC.getSignedMainRule(sideIndex);
+  frontBridge=FC.getSignedCommonRule(sideIndex);
+  frontSurf.populateSurf();
+  frontBridge.populateSurf();
+  return;
+}
+
+void
+insertPlate::setBackSurf(const attachSystem::FixedComp& FC,
+                         const long int sideIndex)
+  /*!
+    Add a front surface 
+    \param FC :: Front cut
+    \param sideIndex :: side intec
+  */
+{
+  ELog::RegMethod RegA("insertPlate","setFrontSurf");
+
+  backActive=1;
+  backSurf=FC.getSignedMainRule(sideIndex);
+  backBridge=FC.getSignedCommonRule(sideIndex);
+  backSurf.populateSurf();
+  backBridge.populateSurf();
+  return;
+}
+  
 void
 insertPlate::findObjects(Simulation& System)
   /*!

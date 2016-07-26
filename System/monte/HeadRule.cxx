@@ -724,6 +724,21 @@ HeadRule::getSurfaceNumbers() const
   return Out;
 }
 
+int
+HeadRule::getPrimarySurface() const
+  /*!
+    Calculate the surfaces that are within the top level
+    and return the surface most likely to be the master surface
+    \return single surface number / 0 if not a single primary
+  */
+{
+  const std::vector<int> TSet=getTopSurfaces();
+  if (TSet.size()!=1)
+    throw ColErr::SizeError<size_t>(TSet.size(),1,
+                                    "HeadRule has wrong surface count");
+  return TSet.front();
+}
+
 std::vector<int>
 HeadRule::getTopSurfaces() const
   /*!

@@ -383,9 +383,24 @@ LOKI::build(Simulation& System,
   attachSystem::addToInsertControl(System,bunkerObj,"frontWall",
 				   CollA->getKey("Main"),*CollA);  
 
-  CBoxB->createAll(System,CollA->getKey("Beam"),2);
+  // For monment in main void : 
+  CollB->addInsertCell(voidCell);
+  CollB->createAll(System,CollA->getKey("Beam"),2);
+  attachSystem::addToInsertControl(System,bunkerObj,"frontWall",
+				   CollB->getKey("Main"),*CollB);  
+
+  CollC->addInsertCell(voidCell);
+  CollC->createAll(System,CollB->getKey("Beam"),2);
+
+
+  CBoxB->setFrontSurf(CollA->getKey("Main"),2);
+  CBoxB->setBackSurf(CollB->getKey("Main"),1);
+  CBoxB->createAll(System,CollA->getKey("Main"),2);
   attachSystem::addToInsertControl(System,bunkerObj,"frontWall",
 				   *CBoxB,*CBoxB);  
+
+  GridB->addInsertCell(CBoxB->getCell("Main"));
+  GridB->createAll(System,CollA->getKey("Beam"),2);
   
 
   

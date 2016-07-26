@@ -99,6 +99,7 @@ class HeadRule
   std::vector<const Geometry::Surface*> getSurfaces() const;
   std::vector<int> getSurfaceNumbers() const;
   std::vector<int> getTopSurfaces() const;
+  int getPrimarySurface() const;
 
   const Rule* findNode(const size_t,const size_t) const;
 

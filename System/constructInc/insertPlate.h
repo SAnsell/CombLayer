@@ -47,6 +47,13 @@ class insertPlate : public attachSystem::ContainedComp,
   int cellIndex;                 ///< Cell index
   int populated;                 ///< externally set values
 
+  bool frontActive;              ///< Front rule set
+  HeadRule frontSurf;            ///< Front rule
+  HeadRule frontBridge;          ///< Front Bridge/divider rule
+  bool backActive;               ///< back Active
+  HeadRule backSurf;             ///< Back Rule
+  HeadRule backBridge;           ///< Back Bridge/divider Rule
+  
   double width;             ///< Full Width
   double height;            ///< Full Height
   double depth;             ///< Full Depth 
@@ -81,6 +88,9 @@ class insertPlate : public attachSystem::ContainedComp,
 
   /// set delay flag
   void setNoInsert() { delayInsert=1; }
+
+  void setFrontSurf(const attachSystem::FixedComp&,const long int);
+  void setBackSurf(const attachSystem::FixedComp&,const long int);
   void findObjects(Simulation&);
     
   void setStep(const double,const double,const double);

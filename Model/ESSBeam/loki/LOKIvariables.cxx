@@ -160,23 +160,23 @@ LOKIvariables(FuncDataBase& Control)
   RotGen.addHole("Rectangle",5.0,5.0,  120.0, 15.0);
   RotGen.addHole("Circle",   4.0,0.0,  240.0, 15.0);
   RotGen.generatePinHole(Control,"lokiGridA",5.0,-15.0,180.0);
-  RotGen.generatePinHole(Control,"lokiGridB",5.0,-15.0,180.0);
-  RotGen.generatePinHole(Control,"lokiGridC",5.0,-15.0,180.0);
-  RotGen.generatePinHole(Control,"lokiGridD",5.0,-15.0,180.0);
+  RotGen.generatePinHole(Control,"lokiGridB",2.0,-15.0,180.0);
+  RotGen.generatePinHole(Control,"lokiGridC",2.0,-15.0,180.0);
+  RotGen.generatePinHole(Control,"lokiGridD",2.0,-15.0,180.0);
 
   RotGen.setMain(30.0,300.0);
   RotGen.resetHoles();
   RotGen.addHole("Rectangle",   3.0,3.0,    0.0, 17.50);
   RotGen.addHole("Rectangle",   5.0,5.0,  120.0, 17.50);
-  RotGen.addHole("Rectangle",    4.0,4.0,  240.0, 17.50);
+  RotGen.addHole("Rectangle",   4.0,4.0,  240.0, 17.50);
   RotGen.generatePinHole(Control,"lokiCollA",1.0,-17.5,180.0);
-  RotGen.generatePinHole(Control,"lokiCollB",1.0,-17.5,180.0);
-  RotGen.generatePinHole(Control,"lokiCollC",1.0,-17.5,180.0);
+  RotGen.generatePinHole(Control,"lokiCollB",5.0,-17.5,180.0);
+  RotGen.generatePinHole(Control,"lokiCollC",5.0,-17.5,180.0);
 
-  Control.addVariable("lokiCBoxBYStep",4.0);
+  Control.addVariable("lokiCBoxBYStep",2.0);
   Control.addVariable("lokiCBoxBHeight",80.0);
   Control.addVariable("lokiCBoxBWidth",80.0);
-  Control.addVariable("lokiCBoxBDepth",5.0);
+  Control.addVariable("lokiCBoxBDepth",12.0);   // THIS is half BYStep 
   Control.addVariable("lokiCBoxBDefMat","Void");
 
   return;

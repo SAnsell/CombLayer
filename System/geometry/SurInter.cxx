@@ -75,6 +75,41 @@ namespace SurInter
 
 
 Geometry::Vec3D
+getLinePoint(const Geometry::Vec3D& Origin,const Geometry::Vec3D& N,
+          const HeadRule& mainHR,const HeadRule& sndHR)
+  /*!
+    Given a line (origin:N) find the intersects wiht MainHR that
+    satisfy sndHR
+    \param mainHR :: Main headRule    
+    \param sndHR :: Secondary/ Bridge rule
+   */
+{
+  ELog::RegMethod RegA("SurInter[F]","getLinePoint");
+  
+  std::vector<Geometry::Vec3D> Pts;
+  std::vector<int> SNum;
+  mainHR.calcSurfIntersection(Origin,N,Pts,SNum);
+
+  std::vector<Geometry::Vec3D> out;
+
+  if (sndHR.hasRule())
+    {
+      for(const Geometry::Vec3D& Pt : Pts)
+        {
+          if (sndHR.isValid(Pt))
+            out.push_back(Pt);
+        }
+    }
+  else
+    out=Pts;
+  
+  if (out.size()!=1)
+    throw ColErr::SizeError<size_t>(out.size(),1,"Out points not singular");
+
+  return out.front();
+}
+
+Geometry::Vec3D
 getLinePoint(const Geometry::Vec3D& Origin,
              const Geometry::Vec3D& Axis,
 	     const Geometry::Surface* SPtr,
@@ -668,6 +703,8 @@ interceptRule(HeadRule& HR,const Geometry::Vec3D& Origin,
   return interceptRuleConst(HR,Origin,N);
 }
 
+ 
+  
 }  // NAMESPACE SurInter
 
 
