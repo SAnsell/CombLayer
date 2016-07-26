@@ -53,12 +53,68 @@
 namespace ModelSupport
 {
 
-void cloneESSMaterial()
+void
+cloneBasicMaterial()
   /*!
     Clone ESS materials if not using the ESS Database materials
   */
 {
-  ELog::RegMethod RegA("essDBMaterial[F]","cloneESSMaterial");
+  ELog::RegMethod RegA("DBModify[F]","cloneBasicMaterial");
+
+  ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();
+
+  ELog::EM<<"WARNING -- this is the basic materials build \n"
+	  <<"       The results from simualation will be approximate \n"
+	  <<ELog::endCrit;
+
+  // original name to use
+  DB.cloneMaterial("CastIron","Iron");
+  DB.cloneMaterial("Aluminium","Aluminium20K");
+  DB.cloneMaterial("Tungsten_15.1g","Tungsten151");
+  DB.cloneMaterial("Iron_10H2O","Iron10H2O");
+  DB.cloneMaterial("Void","Helium");
+  DB.cloneMaterial("Void","M2644");
+  DB.cloneMaterial("Stainless304","SS316L");
+  DB.cloneMaterial("Stainless304","SS316L785");
+
+  // Al.20t -- actually available from Los Alamos-t2
+  DB.removeThermal("Aluminium");
+  DB.removeThermal("CH4inFoam");
+  DB.removeThermal("CH4+Al22K");
+  DB.removeThermal("CH4+Al26K");
+  DB.removeThermal("CH4Al+Argon");
+  DB.removeThermal("Aluminium6061");
+
+  DB.removeThermal("Al2024");
+  DB.removeThermal("AlFoam");
+  DB.removeThermal("Al2214");
+  DB.removeThermal("Boral5");
+  DB.removeThermal("Boral5Degrade");
+  DB.removeThermal("TS1Boral");
+  DB.removeThermal("Alum5251");
+
+  // silicon si.80t - si.84t (made by S. Ansell)
+  DB.removeThermal("SiCrystal");
+  DB.removeThermal("Silicon20K");
+  DB.removeThermal("Silicon80K");
+  DB.removeThermal("Silicon300K");
+
+
+  // HYDROGENS:
+  DB.overwriteMaterial("ParaH2","H2para19K");
+  DB.cloneMaterial("H2para19K","ParaOrtho%0.5");
+  DB.cloneMaterial("H2para19K","HPARA");
+  
+  return;
+}
+
+void
+cloneESSMaterial()
+  /*!
+    Clone ESS materials if not using the ESS Database materials
+  */
+{
+  ELog::RegMethod RegA("DBModify[F]","cloneESSMaterial");
 
   ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();
   
@@ -69,30 +125,28 @@ void cloneESSMaterial()
   DB.cloneMaterial("Stainless304","SS316L");
   DB.cloneMaterial("Stainless304","SS316L785");
 
+  DB.cloneMaterial("CastIron","Iron");
+  DB.cloneMaterial("ParaH2","HPARA");
+  DB.cloneMaterial("Aluminium","Aluminium20K");
+
   return;
 }
     
-void addESSMaterial()
+void
+addESSMaterial()
   /*!
      Initialize the database of materials
+     this adds extra materials used by the ESS target division
    */
 {
 
-  ELog::RegMethod RegA("essDBMaterial[F]","addESSMaterial");
+  ELog::RegMethod RegA("DBModify[F]","addESSMaterial");
 
   const std::string MLib="hlib=.70h pnlib=70u";
   ModelSupport::DBMaterial& MDB=ModelSupport::DBMaterial::Instance();
 
   MonteCarlo::Material MObj;
   // ESS materials
-
-  MObj.setMaterial(1001,"HPARA"," 1001.70c 1.0 ","hpara.10t", MLib);
-  MObj.setDensity(-7.0e-2);
-  MDB.resetMaterial(MObj);
-  
-  MObj.setMaterial(1002,"HORTHO"," 1004.70c 1.0 ","hortho.10t", MLib);
-  MObj.setDensity(-7.0e-2);
-  MDB.resetMaterial(MObj);
 
   MObj.setMaterial(1003, "LH05ortho", " 1001.70c 99.5 "
                    "1004.70c 0.5 ","hpara.10t hortho.10t", MLib);

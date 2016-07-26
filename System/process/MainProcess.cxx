@@ -1028,9 +1028,13 @@ setMaterialsDataBase(const inputParam& IParam)
     ModelSupport::addESSMaterial();
   else if (materials=="shielding")
     ModelSupport::cloneESSMaterial();
+  else if (materials=="basic")
+    ModelSupport::cloneBasicMaterial();
   else if (materials=="help")
     {
       ELog::EM<<"Materials database setups:\n"
+	" -- basic [System that works with standard MCNP distribution\n"
+	"      (WARNING -- basic results are very approximate -- WARNING)\n"
 	" -- shielding [S.Ansell original naming]\n"
 	" -- neutronics [ESS Target division naming]"<<ELog::endDiag;
       throw ColErr::ExitAbort("help");

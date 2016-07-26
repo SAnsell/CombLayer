@@ -676,7 +676,7 @@ DBMaterial::initMaterial()
 		   "30066.70c -9.4120E-04 30067.70c -1.3829E-04 "
 		   "30068.70c -6.3250E-04 30070.70c -2.0913E-05 ",
 		   "al.20t",MLib);
-
+  setMaterial(MObj);
 
   // Material #81 Silicon with no-bragg (20K)
   MObj.setMaterial(81,"Silicon20K","14028.70c 0.0460848 "
@@ -1103,10 +1103,16 @@ DBMaterial::initMaterial()
   MObj.setDensity(-8.11);
   setMaterial(MObj);
 
-  // CLONE Materials: 
-  cloneMaterial("CastIron","Iron");
-  cloneMaterial("ParaH2","HPARA");
-  cloneMaterial("Aluminium","Aluminium20K");
+  
+  // Material #128: SAB - Liquid para-hydrogen (basic)
+  //Total atom density 0.041957 -  19 K; 0.07021 grams per cc
+  MObj.setMaterial(128,"H2para19K","1001.70c 0.041957","hpara.60t",MLib);
+  setMaterial(MObj);
+
+  // Material #129: SAB - Liquid para-hydrogen (basic)
+  //Total atom density 0.041957 -  19 K; 0.07021 grams per cc
+  MObj.setMaterial(129,"H2ortho19K","1001.70c 0.041957","hortho.60t",MLib);
+  setMaterial(MObj);
 
   return;
 }
@@ -1133,6 +1139,33 @@ DBMaterial::cloneMaterial(const std::string& oldName,
       (extraName,"Material already present");
   
   IndexMap.emplace(extraName,mc->second);
+  return;
+}
+
+void
+DBMaterial::overwriteMaterial(const std::string& original,
+			      const std::string& newMaterial)
+  /*!
+    Clone a name for use
+    \param original :: Existing material to change
+    \param newMaterial :: new material to use instead
+  */
+{
+  ELog::RegMethod RegA("DBMaterial","overwriteMaterial");
+
+  SCTYPE::const_iterator mc=IndexMap.find(original);
+  if (mc==IndexMap.end())
+    throw ColErr::InContainerError<std::string>
+      (original,"Original material not available");
+
+  SCTYPE::const_iterator nx=IndexMap.find(newMaterial);
+  if (nx==IndexMap.end())
+    throw ColErr::InContainerError<std::string>
+      (original,"New material not available");
+
+  
+  
+  IndexMap.emplace(original,mc->second);
   return;
 }
   
@@ -1277,6 +1310,27 @@ DBMaterial::createMix(const std::string& Name,
   return matNum;
 }
 
+
+void
+DBMaterial::removeThermal(const std::string& matName)
+  /*!
+    Removes the thermal treatment from a material
+    \param matName :: Material name
+   */
+{
+  ELog::RegMethod RegA("DBMaterial","removeThermal");
+
+
+  // we don't change the index card:
+  SCTYPE::const_iterator mIc=IndexMap.find(matName);
+  if (mIc==IndexMap.end())
+    throw ColErr::InContainerError<std::string>
+      (matName,"No material available");
+
+  MTYPE::iterator mc=MStore.find(mIc->second);
+  mc->second.removeSQW();
+  return;
+}
 
 void
 DBMaterial::resetMaterial(const MonteCarlo::Material& MO)
