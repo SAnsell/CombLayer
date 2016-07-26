@@ -148,7 +148,7 @@ LOKI::LOKI(const std::string& keyN) :
 
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-
+  
   // This necessary:
   OR.cell(newName+"Axis");
   OR.addObject(lokiAxis);
@@ -187,7 +187,7 @@ LOKI::LOKI(const std::string& keyN) :
   OR.addObject(GridC);
   OR.addObject(CollC);
   OR.addObject(GridD);
-  
+
 }
 
 LOKI::LOKI(const LOKI& A) : 
@@ -300,10 +300,13 @@ LOKI::build(Simulation& System,
 
   setBeamAxis(System.getDataBase(),GItem,0);
 
+
   BendA->addInsertCell(GItem.getCells("Void"));
+
   BendA->addFrontCut(GItem.getKey("Beam"),-1);
   BendA->addEndCut(GItem.getKey("Beam"),-2);
   BendA->createAll(System,*lokiAxis,-3,*lokiAxis,-3); // beam front reversed
+
 
   if (stopPoint==1) return;                // STOP At monolith edge
 
@@ -398,6 +401,7 @@ LOKI::build(Simulation& System,
   CBoxB->createAll(System,CollA->getKey("Main"),2);
   attachSystem::addToInsertControl(System,bunkerObj,"frontWall",
 				   *CBoxB,*CBoxB);  
+
 
   GridB->addInsertCell(CBoxB->getCell("Main"));
   GridB->createAll(System,CollA->getKey("Beam"),2);

@@ -661,30 +661,28 @@ GuideLine::createMainLinks()
 
   attachSystem::FixedComp& shieldFC=FixedGroup::getKey("Shield");
 
+  const Geometry::Vec3D SY(shieldFC.getY());
+  const Geometry::Vec3D SOrg(shieldFC.getCentre());
+
   if (!activeFront)
     shieldFC.setLinkSurf(0,-SMap.realSurf(guideIndex+1));
   else
     {
       shieldFC.setLinkSurf(0,frontCut);
       shieldFC.setBridgeSurf(0,frontCutBridge);
-      shieldFC.setConnect
-        (0,
-         SurInter::getLinePoint(shieldFC.getCentre(),shieldFC.getY(),
-                                frontCut,frontCutBridge),
-         -shieldFC.getY());
-         
+      const Geometry::Vec3D IPt=
+	SurInter::getLinePoint(SOrg,SY,frontCut,frontCutBridge);
+      shieldFC.setConnect(0,IPt,-SY);
     }
-
   if (!activeEnd)
     shieldFC.setLinkSurf(1,SMap.realSurf(guideIndex+2));
   else
     {
       shieldFC.setLinkSurf(1,endCut);
       shieldFC.setBridgeSurf(1,endCutBridge);
-      shieldFC.setConnect
-        (1,SurInter::getLinePoint(shieldFC.getCentre(),shieldFC.getY(),
-                                  endCut,endCutBridge),
-         shieldFC.getY());
+      const Geometry::Vec3D IPt=
+	SurInter::getLinePoint(SOrg,SY,endCut,endCutBridge);
+      shieldFC.setConnect(1,IPt,SY);
     }
   if (activeShield)
     {
@@ -858,6 +856,9 @@ GuideLine::addFrontCut(const attachSystem::FixedComp& FC,
   activeFront=1;
   frontCut=FC.getSignedMainRule(sideIndex);
   frontCutBridge=FC.getSignedCommonRule(sideIndex);
+  frontCut.populateSurf();
+  frontCutBridge.populateSurf();
+  
   return;
 }
 
@@ -875,6 +876,9 @@ GuideLine::addEndCut(const attachSystem::FixedComp& EC,
   activeEnd=1;
   endCut=EC.getSignedMainRule(sideIndex);
   endCutBridge=EC.getSignedCommonRule(sideIndex);
+  endCut.populateSurf();
+  endCutBridge.populateSurf();
+  
   return;
 }
 
