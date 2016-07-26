@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/targCoolant.h
+ * File:   t1UpgradeInc/targCoolant.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,13 +19,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef TMRSystem_targCoolant_h
-#define TMRSystem_targCoolant_h
+#ifndef ts1System_targCoolant_h
+#define ts1System_targCoolant_h
 
 class Simulation;
 
 
-namespace constructSystem
+namespace ts1System
 {
 
 /*!

@@ -3,7 +3,7 @@
  
  * File:   construct/targCoolant.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -78,7 +78,7 @@
 #include "TargetBase.h"
 #include "targCoolant.h"
 
-namespace constructSystem
+namespace ts1System
 {
 
 targCoolant::targCoolant(const std::string& Key) : 
@@ -87,8 +87,7 @@ targCoolant::targCoolant(const std::string& Key) :
   cellIndex(coolIndex+1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
-    \param MKey :: Name for Moly changers
-    \param TKey :: Name for Target
+    \param Key :: key for main name
   */
 {}
 
@@ -481,4 +480,4 @@ targCoolant::createAll(Simulation& System,
   return;
 }
   
-}  // NAMESPACE constructSystem
+}  // NAMESPACE ts1System

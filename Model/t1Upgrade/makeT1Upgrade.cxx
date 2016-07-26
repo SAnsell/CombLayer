@@ -328,8 +328,8 @@ makeT1Upgrade::buildTarget(Simulation& System,
       TarObj->setRefPlates(-RefObj->getLinkSurf(2),0);
       TarObj->createAll(System,World::masterOrigin());
 
-      std::shared_ptr<constructSystem::targCoolant> 
-	TarCool(new constructSystem::targCoolant("t1EllCylCool"));
+      std::shared_ptr<ts1System::targCoolant> 
+	TarCool(new ts1System::targCoolant("t1EllCylCool"));
       OR.addObject(TarCool);
       TarCool->addCells(TarObj->getInnerCells());
       TarCool->setContainer(TarObj->getContainer());

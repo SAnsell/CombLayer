@@ -84,7 +84,7 @@ ModBase::ModBase(const std::string& Key,const size_t nLinks)  :
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
-    \param NLink :: Number of links
+    \param nLinks :: Number of links
   */
 {}
 

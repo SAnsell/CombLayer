@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   attachCompInc/LayerComp.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,9 +50,12 @@ class LayerComp
 			       const Geometry::Vec3D&,
 			       const Geometry::Vec3D&) const;
 
+  ///\cond ABSTRACT
   virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const =0;
   virtual int getLayerSurf(const size_t,const long int) const =0;
   virtual std::string getLayerString(const size_t,const long int) const =0;
+  ///\endcond ABSTRACT
+
   /// Access to common divider surface
   virtual int getCommonSurf(const long int) const { return 0; }
 
