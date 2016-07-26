@@ -622,7 +622,7 @@ ContainedComp::insertObjects(Simulation& System)
 {
   ELog::RegMethod RegA("ContainedComp","insertObjects");
   if (!hasOuterSurf()) return;
-  
+
   for(const int CN : insertCells)
     {
       MonteCarlo::Qhull* outerObj=System.findQhull(CN);

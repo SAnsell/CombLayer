@@ -66,7 +66,7 @@ class insertSphere : public attachSystem::ContainedComp,
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
-  void findObjects(const Simulation&);
+  void findObjects(Simulation&);
 
   void mainAll(Simulation&);
 

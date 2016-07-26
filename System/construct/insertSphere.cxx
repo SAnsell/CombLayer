@@ -262,7 +262,7 @@ insertSphere::createObjects(Simulation& System)
 }
 
 void
-insertSphere::findObjects(const Simulation& System)
+insertSphere::findObjects(Simulation& System)
   /*!
     Insert the objects into the main simulation. It is separated
     from creation since we need to determine those object that 
@@ -271,6 +271,9 @@ insertSphere::findObjects(const Simulation& System)
   */
 {
   ELog::RegMethod RegA("insertSphere","findObjects");
+
+  System.populateCells();
+  System.validateObjSurfMap();
 
   if (getInsertCells().empty())
     {
@@ -329,16 +332,22 @@ insertSphere::setValues(const double R,const int Mat)
 void
 insertSphere::mainAll(Simulation& System)
   /*!
-    Common part to createAll
+    Common part to createAll:
+    Note: the strnage order -- create links and findObject
+    before createObjects. This allows findObjects not to 
+    find ourselves (and correctly to find whatever this object
+    is in).
+    
     \param System :: Simulation
    */
 {
   ELog::RegMethod RegA("insertSphere","mainAll");
   
   createSurfaces();
-  createObjects(System);
   createLinks();
   findObjects(System);
+
+  createObjects(System);
   insertObjects(System);
   return;
 }

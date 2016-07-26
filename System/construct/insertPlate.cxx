@@ -289,7 +289,7 @@ insertPlate::createObjects(Simulation& System)
 }
 
 void
-insertPlate::findObjects(const Simulation& System)
+insertPlate::findObjects(Simulation& System)
   /*!
     Insert the objects into the main simulation. It is separated
     from creation since we need to determine those object that 
@@ -299,14 +299,19 @@ insertPlate::findObjects(const Simulation& System)
 {
   ELog::RegMethod RegA("insertPlate","findObjects");
 
+
+  System.populateCells();
+  System.validateObjSurfMap();
+  
   if (getInsertCells().empty())
     {
-  
       std::set<int> ICells;
-      // Process all the corners
+      // Process all the corners:
+      // care not to include self
       MonteCarlo::Object* OPtr(System.findCell(Origin,0));
       if (OPtr)
-        ICells.insert(OPtr->getName());
+	ICells.insert(OPtr->getName());
+      
       for(int i=0;i<8;i++)
         {
           const double mX((i%2) ? -1.0 : 1.0);
@@ -318,12 +323,15 @@ insertPlate::findObjects(const Simulation& System)
           TP+=Y*(mY*depth/2.0);
           TP+=Z*(mZ*height/2.0);
           OPtr=System.findCell(TP,OPtr);
-          if (OPtr)
-            ICells.insert(OPtr->getName());
+	  if (OPtr)
+	    ICells.insert(OPtr->getName());
+	  else
+	    ELog::EM<<"Object not present "<<ELog::endErr;
+
         }
       
       for(const int IC : ICells)
-        attachSystem::ContainedComp::addInsertCell(IC);
+	attachSystem::ContainedComp::addInsertCell(IC);
     }
   
   return;
@@ -397,17 +405,26 @@ insertPlate::setValues(const double XS,const double YS,
 void
 insertPlate::mainAll(Simulation& System)
   /*!
-    Common part to createAll
+    Common part to createAll:
+    Note: the strnage order -- create links and findObject
+    before createObjects. This allows findObjects not to 
+    find ourselves (and correctly to find whatever this object
+    is in).
+    
     \param System :: Simulation
    */
 {
   ELog::RegMethod RegA("insertPlate","mainAll");
+
   
   createSurfaces();
-  createObjects(System);
   createLinks();
+
+
   if (!delayInsert)
     findObjects(System);
+  createObjects(System);
+
   insertObjects(System);
   return;
 }

@@ -173,6 +173,12 @@ LOKIvariables(FuncDataBase& Control)
   RotGen.generatePinHole(Control,"lokiCollB",1.0,-17.5,180.0);
   RotGen.generatePinHole(Control,"lokiCollC",1.0,-17.5,180.0);
 
+  Control.addVariable("lokiCBoxBYStep",4.0);
+  Control.addVariable("lokiCBoxBHeight",80.0);
+  Control.addVariable("lokiCBoxBWidth",80.0);
+  Control.addVariable("lokiCBoxBDepth",5.0);
+  Control.addVariable("lokiCBoxBDefMat","Void");
+
   return;
 }
 

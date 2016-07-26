@@ -710,13 +710,14 @@ makeESS::build(Simulation& System,
   attachSystem::addToInsertSurfCtrl(System,*Bulk,
 				    PBeam->getCC("Full"));
 
-  makeBeamLine(System,IParam);
-  buildF5Collimator(System, nF5);
-
   // WARNING: THESE CALL MUST GO AFTER the main void (74123) has
   // been completed. Otherwize we can't find the pipe in the volume.
   ModPipes->buildLowPipes(System,lowPipeType);
   ModPipes->buildTopPipes(System,topPipeType);
+
+  makeBeamLine(System,IParam);
+  buildF5Collimator(System, nF5);
+
 
   return;
 }

@@ -81,7 +81,7 @@ class insertPlate : public attachSystem::ContainedComp,
 
   /// set delay flag
   void setNoInsert() { delayInsert=1; }
-  void findObjects(const Simulation&);
+  void findObjects(Simulation&);
     
   void setStep(const double,const double,const double);
   void setAngles(const double,const double);

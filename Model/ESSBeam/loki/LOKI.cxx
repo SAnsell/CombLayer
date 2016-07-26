@@ -376,14 +376,13 @@ LOKI::build(Simulation& System,
   GridA->addInsertCell(bunkerObj.getCell("MainVoid"));
   GridA->createAll(System,FocusF->getKey("Guide0"),2);
 
-  if (stopPoint==2)       // STOP At bunker edge
-  
+  if (stopPoint==2) return;      // STOP At bunker edge
+
   CollA->addInsertCell(bunkerObj.getCell("MainVoid"));
   CollA->createAll(System,GridA->getKey("Beam"),2);
   attachSystem::addToInsertControl(System,bunkerObj,"frontWall",
 				   CollA->getKey("Main"),*CollA);  
 
-  // No insert later only
   CBoxB->createAll(System,CollA->getKey("Beam"),2);
   attachSystem::addToInsertControl(System,bunkerObj,"frontWall",
 				   *CBoxB,*CBoxB);  
