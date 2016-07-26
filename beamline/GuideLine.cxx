@@ -75,6 +75,7 @@
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
+#include "SurInter.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h" 
 #include "ContainedComp.h"
@@ -666,6 +667,12 @@ GuideLine::createMainLinks()
     {
       shieldFC.setLinkSurf(0,frontCut);
       shieldFC.setBridgeSurf(0,frontCutBridge);
+      shieldFC.setConnect
+        (0,
+         SurInter::getLinePoint(shieldFC.getCentre(),shieldFC.getY(),
+                                frontCut,frontCutBridge),
+         -shieldFC.getY());
+         
     }
 
   if (!activeEnd)
@@ -674,7 +681,10 @@ GuideLine::createMainLinks()
     {
       shieldFC.setLinkSurf(1,endCut);
       shieldFC.setBridgeSurf(1,endCutBridge);
-
+      shieldFC.setConnect
+        (1,SurInter::getLinePoint(shieldFC.getCentre(),shieldFC.getY(),
+                                  endCut,endCutBridge),
+         shieldFC.getY());
     }
   if (activeShield)
     {

@@ -320,7 +320,7 @@ LOKI::build(Simulation& System,
   // Double disk chopper
   DDiskA->addInsertCell(ChopperA->getCell("Void"));
   DDiskA->setCentreFlag(3);  // Z direction
-  DDiskA->setOffsetFlag(1);  // Z direction
+  DDiskA->setOffsetFlag(1);  // X direction
   DDiskA->createAll(System,ChopperA->getKey("Beam"),0);
 
   VPipeC->addInsertCell(bunkerObj.getCell("MainVoid"));

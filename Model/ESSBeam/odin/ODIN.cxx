@@ -349,6 +349,7 @@ ODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
   FOC5Disk->setOffsetFlag(1);  // Z direction
   FOC5Disk->createAll(System,ChopperOutA->getKey("Beam"),0);
 
+  // First put pit into the main void
   OutPitB->addInsertCell(voidCell);
   OutPitB->createAll(System,OutPitA->getKey("Inner"),0);
 
@@ -382,6 +383,7 @@ ODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
                          OutPitB->getKey("Inner").getSignedFullRule(1));
   OutBCutFront->createAll(System,OutPitB->getKey("Inner"),-1);
 
+  
   OutBCutBack->addInsertCell(OutPitB->getCells("MidLayerBack"));
   OutBCutBack->addInsertCell(OutPitB->getCells("Collet"));
   OutBCutBack->setFaces(OutPitB->getKey("Inner").getSignedFullRule(2),
