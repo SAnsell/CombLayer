@@ -316,7 +316,7 @@ insertPlate::createLinks()
 void
 insertPlate::createObjects(Simulation& System)
   /*!
-    Volume
+    Create the main volume
     \param System :: Simulation to create objects in
   */
 {

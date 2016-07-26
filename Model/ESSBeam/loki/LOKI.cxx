@@ -401,6 +401,12 @@ LOKI::build(Simulation& System,
 
   GridB->addInsertCell(CBoxB->getCell("Main"));
   GridB->createAll(System,CollA->getKey("Beam"),2);
+
+  GridC->addInsertCell(voidCell);
+  GridC->createAll(System,CollB->getKey("Beam"),2);
+
+  GridD->addInsertCell(voidCell);
+  GridD->createAll(System,CollC->getKey("Beam"),2);
   
 
   
