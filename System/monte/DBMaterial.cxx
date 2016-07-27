@@ -1286,7 +1286,7 @@ DBMaterial::createMix(const std::string& Name,
     Creates an ortho/Para Mixture
     \param Name :: Name of object
     \param MatA :: Material A [PFrac]
-    \param MatA :: Material B [1-PFrac]
+    \param MatB :: Material B [1-PFrac]
     \param PFrac :: fraction of MatA
     \return current number
    */
