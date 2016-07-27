@@ -166,9 +166,9 @@ LOKIvariables(FuncDataBase& Control)
 
   RotGen.setMain(30.0,300.0);
   RotGen.resetHoles();
-  RotGen.addHole("Rectangle",   3.0,3.0,    0.0, 17.50);
-  RotGen.addHole("Rectangle",   5.0,5.0,  120.0, 17.50);
-  RotGen.addHole("Rectangle",   4.0,4.0,  240.0, 17.50);
+  RotGen.addHole("Rectangle",   4.0,4.0,    0.0, 17.50);
+  RotGen.addHole("Rectangle",   6.0,6.0,  120.0, 17.50);
+  RotGen.addHole("Rectangle",   5.0,5.0,  240.0, 17.50);
   RotGen.generatePinHole(Control,"lokiCollA",1.0,-17.5,180.0);
   RotGen.generatePinHole(Control,"lokiCollB",5.0,-17.5,180.0);
   RotGen.generatePinHole(Control,"lokiCollC",5.0,-17.5,180.0);
@@ -179,6 +179,9 @@ LOKIvariables(FuncDataBase& Control)
   Control.addVariable("lokiCBoxBDepth",12.0);   // THIS is half BYStep 
   Control.addVariable("lokiCBoxBDefMat","Void");
 
+  // first guide in loki collimator
+  FGen.generateRectangle(Control,"lokiFCA0",296.0,3.0,3.0);
+  
   return;
 }
 

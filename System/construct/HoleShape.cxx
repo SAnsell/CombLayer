@@ -66,6 +66,8 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "SurInter.h"
 #include "HoleShape.h"
 
@@ -76,6 +78,7 @@ namespace constructSystem
 HoleShape::HoleShape(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::FixedComp(Key,2),
+  attachSystem::CellMap(),
   holeIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(holeIndex+1),shapeType(0),
   angleOffset(0),radialStep(0.0),radius(0.0),xradius(0.0)
@@ -87,6 +90,7 @@ HoleShape::HoleShape(const std::string& Key) :
 
 HoleShape::HoleShape(const HoleShape& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  attachSystem::CellMap(A),
   holeIndex(A.holeIndex),cellIndex(A.cellIndex),
   shapeType(A.shapeType),angleCentre(A.angleCentre),
   angleOffset(A.angleOffset),radialStep(A.radialStep),
@@ -111,6 +115,7 @@ HoleShape::operator=(const HoleShape& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
       cellIndex=A.cellIndex;
       shapeType=A.shapeType;
       angleCentre=A.angleCentre;
@@ -509,6 +514,7 @@ HoleShape::createObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull
 		 (cellIndex++,0,0.0,Out+frontFace.display()+
 		  backFace.display()));
+  addCell("Void",cellIndex-1);
   addOuterSurf(Out);
   return;
 }

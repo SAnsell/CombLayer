@@ -35,7 +35,8 @@ namespace constructSystem
   */
   
 class HoleShape : public attachSystem::ContainedComp,
-  public attachSystem::FixedComp
+  public attachSystem::FixedComp,
+  public attachSystem::CellMap
 {
  private:
 
@@ -56,7 +57,6 @@ class HoleShape : public attachSystem::ContainedComp,
 
   HeadRule frontFace;                ///< Front face
   HeadRule backFace;                 ///< Back face
-
   
   void setShape(const size_t);
   void setShape(const std::string&);

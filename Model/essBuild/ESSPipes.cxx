@@ -189,9 +189,6 @@ ESSPipes::buildH2Pipe(Simulation& System,const std::string& lobeName,
   const attachSystem::CellMap* waterCM=
     OR.getObjectThrow<attachSystem::CellMap>(waterName,"CellMap::Water");
 
-  System.populateCells();
-  System.validateObjSurfMap();
-
   pipeAl->setAngleSeg(12);
   pipeAl->setOption(pipeSpecialization); 
   // createAll arguments:
@@ -204,9 +201,6 @@ ESSPipes::buildH2Pipe(Simulation& System,const std::string& lobeName,
   pipeConnect->setOption(pipeSpecialization);
   pipeConnect->setStartSurf(pipeAl->getSignedLinkString(2));
   pipeConnect->createAll(System,*pipeAl,2);
-
-  System.populateCells();
-  System.validateObjSurfMap();
 
   pipeInvar->setAngleSeg(12);
   pipeInvar->setOption(pipeSpecialization);

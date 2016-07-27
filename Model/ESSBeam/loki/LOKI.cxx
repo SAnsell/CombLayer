@@ -129,6 +129,9 @@ LOKI::LOKI(const std::string& keyN) :
 
   GridA(new constructSystem::RotaryCollimator(newName+"GridA")),
   CollA(new constructSystem::RotaryCollimator(newName+"CollA")),
+  FocusCA0(new beamlineSystem::GuideLine(newName+"FCA0")),
+  FocusCA1(new beamlineSystem::GuideLine(newName+"FCA1")),
+  FocusCA2(new beamlineSystem::GuideLine(newName+"FCA2")),
 
   CBoxB(new constructSystem::insertPlate(newName+"CBoxB")),
   GridB(new constructSystem::RotaryCollimator(newName+"GridB")),
@@ -181,6 +184,9 @@ LOKI::LOKI(const std::string& keyN) :
 
   OR.addObject(GridA);
   OR.addObject(CollA);
+  OR.addObject(FocusCA0);
+  OR.addObject(FocusCA1);
+  OR.addObject(FocusCA2);
   OR.addObject(CBoxB);
   OR.addObject(GridB);
   OR.addObject(CollB);
@@ -385,6 +391,10 @@ LOKI::build(Simulation& System,
   CollA->createAll(System,GridA->getKey("Beam"),2);
   attachSystem::addToInsertControl(System,bunkerObj,"frontWall",
 				   CollA->getKey("Main"),*CollA);  
+
+  FocusCA0->addInsertCell(CollA->getCell("Void0"));
+  FocusCA0->createAll(System,CollA->getKey("Beam"),0,
+                      CollA->getKey("Beam"),0);
 
   // For monment in main void : 
   CollB->addInsertCell(voidCell);

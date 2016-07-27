@@ -92,10 +92,7 @@ RotaryCollimator::RotaryCollimator(const std::string& Key)  :
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
   */
-{
-
-
-}
+{}
 
 RotaryCollimator::RotaryCollimator(const RotaryCollimator& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedGroup(A),
@@ -283,6 +280,7 @@ RotaryCollimator::createObjects(Simulation& System)
       HU->createAllNoPopulate(System,*this,0);  // Use THIS Origin (rot centre)
       if (HU->getShape())
 	HoleExclude.addIntersection(HU->getExclude());
+      addCell("Void"+StrFunc::makeString(i),HU->getCell("Void"));
     }
   Out+=" "+HoleExclude.display();
   System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));            

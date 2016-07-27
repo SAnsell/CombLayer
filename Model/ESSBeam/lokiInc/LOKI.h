@@ -112,9 +112,15 @@ class LOKI : public attachSystem::CopiedComp
 
   /// Cutting grid at bunker wall
   std::shared_ptr<constructSystem::RotaryCollimator> GridA;
-
   /// Rotary collimator [first to wall]
   std::shared_ptr<constructSystem::RotaryCollimator> CollA;
+  /// Guide in CollA
+  std::shared_ptr<beamlineSystem::GuideLine> FocusCA0;
+  /// Guide in CollA
+  std::shared_ptr<beamlineSystem::GuideLine> FocusCA1;
+  /// Guide in CollA
+  std::shared_ptr<beamlineSystem::GuideLine> FocusCA2;
+
   /// Space in wall for grid cutter
   std::shared_ptr<constructSystem::insertPlate> CBoxB;
   /// Cutting grid at bunker wall

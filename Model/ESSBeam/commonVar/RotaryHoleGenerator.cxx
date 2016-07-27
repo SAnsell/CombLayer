@@ -56,6 +56,8 @@
 #include "LinkUnit.h"
 #include "ContainedComp.h"
 #include "FixedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "HoleShape.h"
 #include "RotaryHoleGenerator.h"
 
