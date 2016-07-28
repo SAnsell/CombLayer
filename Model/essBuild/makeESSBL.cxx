@@ -77,6 +77,7 @@
 
 #include "ODIN.h"
 #include "BEER.h"
+#include "BIFROST.h"
 #include "ESTIA.h"
 #include "FREIA.h"
 #include "LOKI.h"
@@ -193,7 +194,12 @@ makeESSBL::build(Simulation& System,
       BEER beerBL("beer");
       beerBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }  
-  if (beamName=="CSPEC")
+  else if (beamName=="BIFROST")
+    {
+      BIFROST bifrostBL("bifrost");
+      bifrostBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+    }  
+  else if (beamName=="CSPEC")
     {
       // DREAM beamline
       CSPEC cspecBL("cspec");

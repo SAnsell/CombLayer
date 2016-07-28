@@ -97,7 +97,7 @@ FocusGenerator::generateTaper(FuncDataBase& Control,
   else
     Control.addVariable<double>(keyName+"YStep",yStep);
   Control.copyVar(keyName+"BeamY",keyName+"YStep"); 
-  Control.addVariable(keyName+"ZStep",0.0);       
+  Control.addVariable(keyName+"ZStep",zStep);       
   Control.addVariable(keyName+"XYAngle",0.0);       
   Control.addVariable(keyName+"ZAngle",0.0);
 

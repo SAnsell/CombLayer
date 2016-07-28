@@ -238,6 +238,7 @@ setESSSingle(defaultConfig& A,
     };     
   const std::map<std::string,std::string> beamDef=
     {{"NMX","G4BLine1"},        // W1
+     {"BIFROST","G4BLine4"},    // W4
      {"SHORTDREAM","G4BLine17"},
      {"SHORTODIN","G1BLine4"},
      {"DREAM","G3BLine19"},     // S3
@@ -252,7 +253,8 @@ setESSSingle(defaultConfig& A,
      {"BEER","G4BLine2"}        // W2
     };     
   const std::set<std::string> beamFilled=
-    {"BEER","CSPEC","DREAM","FREIA","LOKI","NMX","VESPA","VOR","SHORTDREAM"};
+    {"BEER","BIFROST","CSPEC","DREAM","FREIA","LOKI",
+     "NMX","VESPA","VOR","SHORTDREAM"};
   
   std::map<std::string,std::string>::const_iterator mc=
     beamDef.find(beamItem);

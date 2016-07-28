@@ -521,6 +521,7 @@ EssVariables(FuncDataBase& Control)
   EssPipeVariables(Control);
   
   BEERvariables(Control);
+  BIFROSTvariables(Control);
   CSPECvariables(Control);
   DREAMvariables(Control);
   ESTIAvariables(Control);

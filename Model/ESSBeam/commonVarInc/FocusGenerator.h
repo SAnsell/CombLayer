@@ -47,6 +47,7 @@ class FocusGenerator
   double voidThick;        ///< clearance thickness
   bool yStepActive;        ///< Y step active
   double yStep;            ///< Y step
+  double zStep;            ///< Z step
   
   std::string guideMat;    ///< Main guide material
 
@@ -68,6 +69,8 @@ class FocusGenerator
   /// set the y step
   void setYOffset(const double D)
   { yStep=D; yStepActive=1; }
+  void setZOffset(const double D)
+  { zStep=D; }
   /// clear the y step
   void clearYOffset()
   { yStepActive=0; }

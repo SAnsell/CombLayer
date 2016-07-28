@@ -41,6 +41,7 @@ namespace setVariable
 
   // ESS Beamlines
   void BEERvariables(FuncDataBase&);
+  void BIFROSTvariables(FuncDataBase&);
   void CSPECvariables(FuncDataBase&);
   void DREAMvariables(FuncDataBase&);
   void ESTIAvariables(FuncDataBase&);

@@ -665,7 +665,14 @@ GuideLine::createMainLinks()
   const Geometry::Vec3D SOrg(shieldFC.getCentre());
 
   if (!activeFront)
-    shieldFC.setLinkSurf(0,-SMap.realSurf(guideIndex+1));
+    {
+      shieldFC.setLinkSurf(0,-SMap.realSurf(guideIndex+1));
+      const Geometry::Vec3D IPt=
+	SurInter::getLinePoint(SOrg,SY,
+                               SMap.realPtr<Geometry::Plane>(guideIndex+1),
+                               SOrg);
+      shieldFC.setConnect(0,IPt,-SY);
+    }
   else
     {
       shieldFC.setLinkSurf(0,frontCut);
@@ -675,7 +682,15 @@ GuideLine::createMainLinks()
       shieldFC.setConnect(0,IPt,-SY);
     }
   if (!activeEnd)
-    shieldFC.setLinkSurf(1,SMap.realSurf(guideIndex+2));
+    {
+      shieldFC.setLinkSurf(1,SMap.realSurf(guideIndex+2));
+      const Geometry::Vec3D IPt=
+	SurInter::getLinePoint(SOrg,SY,
+                               SMap.realPtr<Geometry::Plane>(guideIndex+2),
+                               SOrg);
+      shieldFC.setConnect(1,IPt,SY);
+    }
+      
   else
     {
       shieldFC.setLinkSurf(1,endCut);

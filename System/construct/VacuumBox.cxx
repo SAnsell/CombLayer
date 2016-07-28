@@ -313,7 +313,7 @@ VacuumBox::createLinks()
   FixedComp::setConnect(0,Origin-Y*(flangeLength+voidLength/2.0),-Y);
   FixedComp::setConnect(1,Origin+Y*(flangeLength+voidLength/2.0),Y);
   FixedComp::setConnect(2,Origin-X*((feWidth+voidWidth)/2.0),-X);
-  FixedComp::setConnect(3,Origin+X*((feWidth+voidWidth)/2.0),-X);
+  FixedComp::setConnect(3,Origin+X*((feWidth+voidWidth)/2.0),X);
   FixedComp::setConnect(4,Origin-Z*(feDepth+voidDepth),-Z);
   FixedComp::setConnect(5,Origin+Z*(feHeight+voidHeight),Z);  
 
