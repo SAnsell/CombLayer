@@ -86,6 +86,7 @@
 #include "DetectorTank.h"
 #include "CylSample.h"
 #include "LineShield.h"
+#include "HoleShape.h"
 
 #include "BIFROST.h"
 
@@ -141,8 +142,8 @@ BIFROST::BIFROST(const std::string& keyName) :
   FocusOutC(new beamlineSystem::GuideLine(newName+"FOutC")),
 
   OutPitA(new constructSystem::ChopperPit(newName+"OutPitA")),
-  OutBCutFront(new constructSystem::HoleShape(newName+"OutBCutFront")),
-  OutBCutBack(new constructSystem::HoleShape(newName+"OutBCutBack"))
+  OutACutFront(new constructSystem::HoleShape(newName+"OutACutFront")),
+  OutACutBack(new constructSystem::HoleShape(newName+"OutACutBack"))
 
  /*!
     Constructor
@@ -366,7 +367,7 @@ BIFROST::build(Simulation& System,
   
 
   // First put pit into the main void
- OutPitA->addInsertCell(voidCell);
+  OutPitA->addInsertCell(voidCell);
   OutPitA->createAll(System,FocusWall->getKey("Shield"),2);
   
   
@@ -410,8 +411,20 @@ BIFROST::build(Simulation& System,
 
       LinkPtr= &RecFocus[i]->getKey("Guide0");
     }
+
+  OutACutFront->addInsertCell(OutPitA->getCells("MidLayerFront"));
+  OutACutFront->setFaces(OutPitA->getKey("Mid").getSignedFullRule(-1),
+                         OutPitA->getKey("Inner").getSignedFullRule(1));
+  OutACutFront->createAll(System,OutPitA->getKey("Inner"),-1);
+
   
-  
+  // OutACutBack->addInsertCell(OutPitA->getCells("MidLayerBack"));
+  // OutACutBack->addInsertCell(OutPitA->getCells("Collet"));
+  // OutACutBack->setFaces(OutPitA->getKey("Inner").getSignedFullRule(2),
+  //                   OutPitA->getKey("Mid").getSignedFullRule(-2));
+  // OutACutBack->createAll(System,OutPitB->getKey("Inner"),2);
+
+
   return;
 }
 
