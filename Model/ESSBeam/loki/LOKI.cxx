@@ -271,13 +271,15 @@ LOKI::setBeamAxis(const FuncDataBase& Control,
   lokiAxis->createUnitVector(GItem);
   lokiAxis->setLinkCopy(0,GItem.getKey("Main"),0);
   lokiAxis->setLinkCopy(1,GItem.getKey("Main"),1);
-
   lokiAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
   lokiAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
-  // BEAM needs to be rotated:
+
+  // BEAM needs to be shifted/rotated:
+  lokiAxis->linkShift(3);
+  lokiAxis->linkShift(4);
   lokiAxis->linkAngleRotate(3);
   lokiAxis->linkAngleRotate(4);
-  
+
   if (reverseZ)
     lokiAxis->reverseZ();
   return;
@@ -392,9 +394,11 @@ LOKI::build(Simulation& System,
   attachSystem::addToInsertControl(System,bunkerObj,"frontWall",
 				   CollA->getKey("Main"),*CollA);  
 
-  FocusCA0->addInsertCell(CollA->getCell("Void0"));
-  FocusCA0->createAll(System,CollA->getKey("Beam"),0,
-                      CollA->getKey("Beam"),0);
+  ELog::EM<<"CollA == "<<CollA->getKey("Beam").getSignedLinkPt(0)
+	  <<ELog::endDiag;
+  //  FocusCA0->addInsertCell(CollA->getCell("Void0"));
+  //  FocusCA0->createAll(System,CollA->getKey("Beam"),0,
+  //                      CollA->getKey("Beam"),0);
 
   // For monment in main void : 
   CollB->addInsertCell(voidCell);

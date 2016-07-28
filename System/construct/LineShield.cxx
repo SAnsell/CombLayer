@@ -71,6 +71,7 @@
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "SurInter.h"
 #include "surfDIter.h"
 
 #include "LineShield.h"
@@ -82,8 +83,7 @@ LineShield::LineShield(const std::string& Key) :
   attachSystem::FixedOffset(Key,6),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   shieldIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(shieldIndex+1),activeFront(0),activeBack(0),
-  activeDivide(0)
+  cellIndex(shieldIndex+1),activeFront(0),activeBack(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -95,8 +95,8 @@ LineShield::LineShield(const LineShield& A) :
   attachSystem::CellMap(A),
   shieldIndex(A.shieldIndex),cellIndex(A.cellIndex),
   activeFront(A.activeFront),activeBack(A.activeBack),
-  activeDivide(A.activeDivide),frontSurf(A.frontSurf),
-  backSurf(A.backSurf),divideSurf(A.divideSurf),
+  frontSurf(A.frontSurf),frontCut(A.frontCut),
+  backSurf(A.backSurf),backCut(A.backCut),
   length(A.length),left(A.left),right(A.right),
   height(A.height),depth(A.depth),defMat(A.defMat),
   nSeg(A.nSeg),nWallLayers(A.nWallLayers),
@@ -126,10 +126,10 @@ LineShield::operator=(const LineShield& A)
       cellIndex=A.cellIndex;
       activeFront=A.activeFront;
       activeBack=A.activeBack;
-      activeDivide=A.activeDivide;
       frontSurf=A.frontSurf;
+      frontCut=A.frontCut;
       backSurf=A.backSurf;
-      divideSurf=A.divideSurf;
+      backCut=A.backCut;
       length=A.length;
       left=A.left;
       right=A.right;
@@ -324,18 +324,16 @@ LineShield::createObjects(Simulation& System)
   std::string Out;
   
   const std::string frontStr
-    (activeFront ? frontSurf.display() : 
+    (activeFront ? frontSurf.display()+frontCut.display() : 
      ModelSupport::getComposite(SMap,shieldIndex," 1 "));
   const std::string backStr
-    (activeBack ? backSurf.display() : 
+    (activeBack ? backSurf.display()+backCut.display() : 
      ModelSupport::getComposite(SMap,shieldIndex," -2 "));
-  const std::string divStr
-    (activeDivide ? divideSurf.display() :  "");
 
   // Inner void is a single segment
   Out=ModelSupport::getComposite(SMap,shieldIndex," 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+
-				   frontStr+backStr+divStr));
+				   frontStr+backStr));
   addCell("Void",cellIndex-1);
 
   // Loop over all segments:
@@ -346,10 +344,10 @@ LineShield::createObjects(Simulation& System)
     {
       FBStr=((index) ?
 	     ModelSupport::getComposite(SMap,SI," 2 ") :
-	     frontStr+divStr);
+	     frontStr);
       FBStr+= ((index+1!=nSeg) ?
 	       ModelSupport::getComposite(SMap,SI," -12 ") :
-	       backStr+divStr);
+	       backStr);
       SI+=10; 
 
       // Inner is a single component
@@ -408,7 +406,7 @@ LineShield::createObjects(Simulation& System)
     }
   // Outer
   Out=ModelSupport::getComposite(SMap,WI,FI,RI," 3 -4 5M -6N ");
-  addOuterSurf(Out+frontStr+backStr+divStr);
+  addOuterSurf(Out+frontStr+backStr);
 
   return;
 }
@@ -438,23 +436,21 @@ LineShield::createLinks()
     }
   else
     {
-      HeadRule fComp(frontSurf);
-      fComp.makeComplement();
-      FixedComp::setLinkSurf(0,fComp.display());
-      if (activeDivide)
-	FixedComp::setBridgeSurf(0,divideSurf);
+      FixedComp::setLinkSurf(0,frontSurf,1,frontCut,0);      
+      FixedComp::setConnect
+        (0,SurInter::getLinePoint(Origin,Y,frontSurf,frontCut),Y);
     }
   
   if (!activeBack)
     {
       FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
-      FixedComp::setLinkSurf(1,SMap.realSurf(shieldIndex+2));      
+      FixedComp::setLinkSurf(1,SMap.realSurf(shieldIndex+2));
     }
   else
     {
-      HeadRule bComp(backSurf);
-      bComp.makeComplement();
-      FixedComp::setLinkSurf(1,bComp.display());
+      FixedComp::setLinkSurf(0,backSurf,1,backCut,0);      
+      FixedComp::setConnect
+        (1,SurInter::getLinePoint(Origin,Y,backSurf,backCut),Y);
     }
   FixedComp::setLinkSurf(2,-SMap.realSurf(WI+3));
   FixedComp::setLinkSurf(3,SMap.realSurf(WI+4));
@@ -463,37 +459,6 @@ LineShield::createLinks()
   
   return;
 }
-
-void
-LineShield::setDivider(const attachSystem::FixedComp& FC,
-		       const long int sideIndex)
-  /*!
-    Set divider surface
-    \param FC :: FixedComponent 
-    \param sideIndex ::  Direction to link
-   */
-{
-  ELog::RegMethod RegA("LineShield","setDivider");
-  
-  if (sideIndex==0)
-    throw ColErr::EmptyValue<long int>("SideIndex cant be zero");
-
-  activeDivide=1;
-  if (sideIndex>0)
-    {
-      const size_t SI(static_cast<size_t>(sideIndex-1));
-      divideSurf=FC.getCommonRule(SI);
-    }
-  else
-    {
-      const size_t SI(static_cast<size_t>(-sideIndex-1));
-      divideSurf=FC.getCommonRule(SI);
-      divideSurf.makeComplement();
-    }
-  return;
-}
-
-  
   
 void
 LineShield::setFront(const attachSystem::FixedComp& FC,
@@ -510,27 +475,19 @@ LineShield::setFront(const attachSystem::FixedComp& FC,
     throw ColErr::EmptyValue<long int>("SideIndex cant be zero");
 
   activeFront=1;
-  if (sideIndex>0)
-    {
-      const size_t SI(static_cast<size_t>(sideIndex-1));
-      frontSurf=FC.getMainRule(SI);
-    }
-  else
-    {
-      const size_t SI(static_cast<size_t>(-sideIndex-1));
-      frontSurf=FC.getMainRule(SI);
-      frontSurf.makeComplement();
-    }
-  // negative side because we point out
-  setLinkSignedCopy(0,FC,-sideIndex);
+  frontSurf=FC.getSignedMainRule(sideIndex);
+  frontCut=FC.getSignedCommonRule(sideIndex);
+  frontSurf.populateSurf();
+  frontCut.populateSurf();
+  
   return;
 }
-  
+
 void
 LineShield::setBack(const attachSystem::FixedComp& FC,
-		     const long int sideIndex)
+		    const long int sideIndex)
   /*!
-    Set Back surface
+    Set back surface
     \param FC :: FixedComponent 
     \param sideIndex ::  Direction to link
    */
@@ -541,18 +498,15 @@ LineShield::setBack(const attachSystem::FixedComp& FC,
     throw ColErr::EmptyValue<long int>("SideIndex cant be zero");
 
   activeBack=1;
-  if (sideIndex>0)
-    backSurf=FC.getMainRule(static_cast<size_t>(sideIndex-1));
-  else
-    {
-      backSurf=FC.getMainRule(static_cast<size_t>(-sideIndex-1));
-      backSurf.makeComplement();
-    }
-  // negative side because we point out
-  setLinkSignedCopy(1,FC,-sideIndex);
-
+  backSurf=FC.getSignedMainRule(sideIndex);
+  backCut=FC.getSignedCommonRule(sideIndex);
+  backSurf.populateSurf();
+  backCut.populateSurf();
+  
   return;
 }
+
+  
     
 void
 LineShield::createAll(Simulation& System,

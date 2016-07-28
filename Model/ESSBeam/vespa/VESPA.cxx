@@ -97,7 +97,7 @@ namespace essSystem
 VESPA::VESPA(const std::string& keyName) :
   attachSystem::CopiedComp("vespa",keyName),
   stopPoint(0),
-  vespaAxis(new attachSystem::FixedComp(newName+"Axis",4)),
+  vespaAxis(new attachSystem::FixedOffset(newName+"Axis",4)),
 
   FocusA(new beamlineSystem::GuideLine(newName+"FA")),
 
@@ -246,6 +246,12 @@ VESPA::setBeamAxis(const GuideItem& GItem,
   vespaAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
   vespaAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
 
+  // BEAM needs to be shifted/rotated:
+  vespaAxis->linkShift(3);
+  vespaAxis->linkShift(4);
+  vespaAxis->linkAngleRotate(3);
+  vespaAxis->linkAngleRotate(4);
+
   if (reverseZ)
     vespaAxis->reverseZ();
   return;
@@ -373,7 +379,6 @@ VESPA::build(Simulation& System,
   //
 
   VPipeOutA->setFront(bunkerObj,2);
-  VPipeOutA->setDivider(bunkerObj,2);
   VPipeOutA->createAll(System,FocusWall->getKey("Guide0"),2);
   
   FocusOutA->addInsertCell(VPipeOutA->getCell("Void"));
@@ -387,7 +392,6 @@ VESPA::build(Simulation& System,
   ShieldA->addInsertCell(voidCell);
   ShieldA->setFront(bunkerObj,2);
   ShieldA->setBack(PitB->getKey("Mid"),1);
-  ShieldA->setDivider(bunkerObj,2);
   ShieldA->createAll(System,*BInsert,2);
   ShieldA->insertComponent(System,"Void",*VPipeOutA);
   

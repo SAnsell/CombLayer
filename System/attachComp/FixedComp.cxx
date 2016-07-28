@@ -374,6 +374,7 @@ FixedComp::applyAngleRotate(const double xAngle,
   Qx.rotate(Z);
   return;
 }
+
 void
 FixedComp::applyAngleRotate(const double xyAngle,
 			    const double zAngle)
@@ -393,6 +394,29 @@ FixedComp::applyAngleRotate(const double xyAngle,
   Qxy.rotate(Y);
   Qxy.rotate(X);
   Qxy.rotate(Z);
+  return;
+}
+
+void
+FixedComp::linkShift(const long int sideIndex,
+			   const double xStep,
+			   const double yStep,
+			   const double zStep)
+ /*!
+   Shift a link point by displacement given
+   \param sideIndex :: signed ink point [sign for direction]
+   \param xStep :: X-step
+   \param yStep :: Y-step
+   \param zStep :: Z-step
+ */
+{
+  ELog::RegMethod RegA("FixedComp","linkAngleRotate");
+
+  LinkUnit& LItem=getSignedLU(sideIndex);
+  const double signV=(sideIndex>0) ? 1.0 : -1.0;
+
+  Geometry::Vec3D Pt(LItem.getConnectPt());
+  LItem.setConnectPt(Pt+(X*xStep+Y*yStep+Z*zStep)*signV);
   return;
 }
 
@@ -560,6 +584,40 @@ FixedComp::setLinkSurf(const size_t Index,
     throw ColErr::IndexError<size_t>(Index,LU.size(),"LU size/Index");
 
   LU[Index].setLinkSurf(HR);
+  return;
+}
+
+void
+FixedComp::setLinkSurf(const size_t Index,const HeadRule& HR,
+		       const bool compFlag,const HeadRule& BR,
+		       const bool bridgeCompFlag) 
+  /*!
+    Set a link surface based on both a rule and
+    a bridgin rule
+    \param Index :: Link number
+    \param HR :: HeadRule to add
+    \param compFlag :: make primary rule complementary
+    \param BR :: Bridge rule to add
+    \param bridgeCompFlag :: make bridge surface complementary
+  */
+{
+  ELog::RegMethod RegA("FixedComp","setLinkSurf(HR,BR)");
+  if (Index>=LU.size())
+    throw ColErr::IndexError<size_t>(Index,LU.size(),"LU size/Index");
+
+  if (!compFlag)
+    LU[Index].setLinkSurf(HR);
+  else
+    LU[Index].setLinkSurf(HR.complement());
+
+  // bridge rule
+  if (BR.hasRule())
+    {
+      if (!bridgeCompFlag)
+	LU[Index].setBridgeSurf(BR);
+      else
+	LU[Index].setBridgeSurf(BR.complement());
+    }
   return;
 }
 

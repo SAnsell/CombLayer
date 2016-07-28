@@ -92,8 +92,7 @@ BIFROSTvariables(FuncDataBase& Control)
   Control.addVariable("bifrostStopPoint",0);
   Control.addVariable("bifrostAxisXYAngle",0.0);   // rotation
   Control.addVariable("bifrostAxisZAngle",0.0);   // rotation
-  Control.addVariable("bifrostAxisZStep",8.0);   // rotation
-  Control.addVariable("bifrostAxisBeamZStep",8.0);   // rotation 
+  Control.addVariable("bifrostAxisZStep",2.0);   // rotation
 
   FGen.setGuideMat("Copper");
   FGen.setYOffset(0.0);

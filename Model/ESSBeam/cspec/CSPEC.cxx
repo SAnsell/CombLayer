@@ -152,6 +152,12 @@ CSPEC::setBeamAxis(const GuideItem& GItem,
   cspecAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
   cspecAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
 
+  // BEAM needs to be shifted/rotated:
+  cspecAxis->linkShift(3);
+  cspecAxis->linkShift(4);
+  cspecAxis->linkAngleRotate(3);
+  cspecAxis->linkAngleRotate(4);
+
   if (reverseZ)
     cspecAxis->reverseZ();
   return;

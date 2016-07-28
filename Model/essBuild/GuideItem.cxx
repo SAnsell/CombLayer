@@ -527,23 +527,16 @@ GuideItem::createLinks()
       beamFC.setLinkSurf(4,-SMap.realSurf(guideIndex+1105));
       beamFC.setLinkSurf(5,SMap.realSurf(guideIndex+1106));
     }
-    
-    
 
-  // Main provides 2 things : target centre tracking:
-  
-  Origin-=Geometry::Vec3D(0,0,Origin[2]);     // TARGET CENTRE
-  MonteCarlo::LineIntersectVisit LITC(Origin,beamFC.getY());
-  const Geometry::Vec3D orgExit=
-    LI.getPoint(DPtr,Origin+Y*length.back());
-
-  mainFC.setConnect(0,Origin+Y*RInner,-Y);
+  /// TARET CENTRE TRACKING:
+  mainFC.setConnect(0,beamEnter-Geometry::Vec3D(0,0,beamEnter[2]),-bY);
   mainFC.setLinkSurf(0,-SMap.realSurf(guideIndex+7));
   mainFC.addBridgeSurf(0,SMap.realSurf(guideIndex+1));
-  
-  mainFC.setConnect(1,orgExit,Y);
+
+  mainFC.setConnect(1,beamExit-Geometry::Vec3D(0,0,beamExit[2]),bY);
   mainFC.setLinkSurf(1,SMap.realSurf(GI+7));
   mainFC.addBridgeSurf(1,SMap.realSurf(guideIndex+1));
+    
 
   return;
 }

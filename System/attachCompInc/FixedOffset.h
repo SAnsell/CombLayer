@@ -55,6 +55,7 @@ class FixedOffset  : public FixedComp
 
   virtual void populate(const FuncDataBase&);
   void applyOffset();
+  void linkShift(const long int);
   void linkAngleRotate(const long int);
   
 };

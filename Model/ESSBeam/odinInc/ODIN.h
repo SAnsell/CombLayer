@@ -69,7 +69,7 @@ class ODIN : public attachSystem::CopiedComp
   int stopPoint;  
 
   /// Main Beam Axis [for construction]
-  std::shared_ptr<attachSystem::FixedComp> odinAxis;
+  std::shared_ptr<attachSystem::FixedOffset> odinAxis;
 
   /// Pipe between bunker and the wall
   std::shared_ptr<constructSystem::VacuumPipe> VPipeB;

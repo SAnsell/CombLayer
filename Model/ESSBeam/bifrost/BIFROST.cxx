@@ -243,6 +243,11 @@ BIFROST::setBeamAxis(const FuncDataBase& Control,
   bifrostAxis->setLinkCopy(1,GItem.getKey("Main"),1);
   bifrostAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
   bifrostAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
+  
+  bifrostAxis->linkShift(3);
+  bifrostAxis->linkShift(4);
+  bifrostAxis->linkAngleRotate(3);
+  bifrostAxis->linkAngleRotate(4);
 
   if (reverseZ)
     bifrostAxis->reverseZ();
@@ -277,11 +282,12 @@ BIFROST::build(Simulation& System,
   setBeamAxis(Control,GItem,1);
   
   FocusA->addInsertCell(GItem.getCells("Void"));
-                                                 // edge
-  
   FocusA->addFrontCut(GItem.getKey("Beam"),-1);
   FocusA->addEndCut(GItem.getKey("Beam"),-2);
   FocusA->createAll(System,*bifrostAxis,-3,*bifrostAxis,-3); 
+
+  ELog::EM<<"Axis == "<<bifrostAxis->getSignedLinkPt(1)<<ELog::endDiag;
+  ELog::EM<<"Axis == "<<bifrostAxis->getSignedLinkPt(3)<<ELog::endDiag;
   
   if (stopPoint==1) return;                      // STOP At monolith
 

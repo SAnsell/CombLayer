@@ -80,11 +80,15 @@ class FixedComp
 
   void setCentre(const Geometry::Vec3D&);
   void applyShift(const double,const double,const double);
+
   void applyAngleRotate(const double,const double);
   void applyAngleRotate(const double,const double,const double);
-  void linkAngleRotate(const long int,const double,const double);
   void applyFullRotate(const double,const double,
 		       const Geometry::Vec3D&);
+
+  void linkAngleRotate(const long int,const double,const double);
+  void linkShift(const long int,const double,const double,const double);
+
   void reverseZ();
   
   void setConnect(const size_t,const Geometry::Vec3D&,const Geometry::Vec3D&);
@@ -94,6 +98,8 @@ class FixedComp
   void setLinkSurf(const size_t,const int);
   void setLinkSurf(const size_t,const std::string&);
   void setLinkSurf(const size_t,const HeadRule&);
+  void setLinkSurf(const size_t,const HeadRule&,const bool,
+		   const HeadRule&,const bool);
   void addLinkSurf(const size_t,const int);
   void addLinkSurf(const size_t,const std::string&);
 
@@ -151,7 +157,6 @@ class FixedComp
   HeadRule getSignedFullRule(const long int) const;
   HeadRule getSignedMainRule(const long int) const;
   HeadRule getSignedCommonRule(const long int) const;
-  
   
   const HeadRule& getMainRule(const size_t) const;
   const HeadRule& getCommonRule(const size_t) const;

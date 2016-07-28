@@ -245,6 +245,12 @@ FREIA::setBeamAxis(const FuncDataBase& Control,
   freiaAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
   freiaAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
 
+  // BEAM needs to be shifted/rotated:
+  freiaAxis->linkShift(3);
+  freiaAxis->linkShift(4);
+  freiaAxis->linkAngleRotate(3);
+  freiaAxis->linkAngleRotate(4);
+  
   if (reverseZ)
     freiaAxis->reverseZ();
   return;

@@ -320,7 +320,6 @@ Bunker::calcSegPosition(const size_t segIndex,
   
   const double phaseStep((rightPhase-leftPhase)/nSectors);
 
-  const double phase=leftPhase+phaseStep*(static_cast<double>(segIndex)-1);
   const double midPhaseStep((segIndex+1<nSectors) ?
                             (sectPhase[segIndex+1]-sectPhase[segIndex+1])/2.0 :
                             (sectPhase[segIndex]-sectPhase[segIndex-1])/2.0 );

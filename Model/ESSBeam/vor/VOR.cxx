@@ -205,6 +205,12 @@ VOR::setBeamAxis(const FuncDataBase& Control,
   vorAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
   vorAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
 
+  // BEAM needs to be shifted/rotated:
+  vorAxis->linkShift(3);
+  vorAxis->linkShift(4);
+  vorAxis->linkAngleRotate(3);
+  vorAxis->linkAngleRotate(4);
+
   if (reverseZ)
     vorAxis->reverseZ();
   return;

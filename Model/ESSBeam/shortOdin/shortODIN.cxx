@@ -287,7 +287,6 @@ shortODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
   VPipeA->addInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeA->setFront(GItem.getKey("Beam"),2);
   VPipeA->setBack(*VacBoxA,1);
-  VPipeA->setDivider(GItem.getKey("Beam"),2);
   VPipeA->createAll(System,GItem.getKey("Beam"),2);
 
   FocusB->addInsertCell(VPipeA->getCells("Void"));

@@ -70,7 +70,7 @@ class CSPEC : public attachSystem::CopiedComp
   int stopPoint;  
 
   /// Main Beam Axis [for construction]
-  std::shared_ptr<attachSystem::FixedComp> cspecAxis;
+  std::shared_ptr<attachSystem::FixedOffset> cspecAxis;
 
   /// Elliptic focus in bulkshield [m5]
   std::shared_ptr<beamlineSystem::GuideLine> FocusA;

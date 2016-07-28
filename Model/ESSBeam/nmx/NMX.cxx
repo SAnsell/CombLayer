@@ -169,7 +169,9 @@ NMX::setBeamAxis(const FuncDataBase& Control,
   nmxAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
   nmxAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
 
-  // BEAM needs to be rotated:
+  // BEAM needs to be shifted/rotated:
+  nmxAxis->linkShift(3);
+  nmxAxis->linkShift(4);
   nmxAxis->linkAngleRotate(3);
   nmxAxis->linkAngleRotate(4);
 
@@ -270,7 +272,6 @@ NMX::build(Simulation& System,
   // Section to 24.5m
   ShieldA->addInsertCell(voidCell);
   ShieldA->setFront(bunkerObj,2);
-  ShieldA->setDivider(bunkerObj,2);
   ShieldA->createAll(System,FocusWall->getKey("Guide0"),2);
 
   return;

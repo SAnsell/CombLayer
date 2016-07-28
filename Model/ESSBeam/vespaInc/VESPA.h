@@ -72,7 +72,7 @@ class VESPA : public attachSystem::CopiedComp
   int stopPoint;  
 
   /// Main Beam Axis [for construction]
-  std::shared_ptr<attachSystem::FixedComp> vespaAxis;
+  std::shared_ptr<attachSystem::FixedOffset> vespaAxis;
 
   /// Elliptic focus in bulkshield [m5]
   std::shared_ptr<beamlineSystem::GuideLine> FocusA;

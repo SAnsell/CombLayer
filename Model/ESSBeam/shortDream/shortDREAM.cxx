@@ -329,7 +329,6 @@ shortDREAM::build(Simulation& System,
   VPipeA->addInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeA->setFront(GItem.getKey("Beam"),2);
   VPipeA->setBack(*VacBoxA,1);
-  VPipeA->setDivider(GItem.getKey("Beam"),2);
   VPipeA->createAll(System,GItem.getKey("Beam"),2);
 
   FocusB->addInsertCell(VPipeA->getCells("Void"));
@@ -439,12 +438,10 @@ shortDREAM::build(Simulation& System,
   
   ShieldA->addInsertCell(voidCell);
   ShieldA->setFront(bunkerObj,2);
-  ShieldA->setDivider(bunkerObj,2);
   ShieldA->createAll(System,*BInsert,2);
 
   VPipeOutA->addInsertCell(ShieldA->getCell("Void"));
   VPipeOutA->setFront(bunkerObj,2);
-  VPipeOutA->setDivider(bunkerObj,2);
   VPipeOutA->setBack(*ShieldA,-2);
   VPipeOutA->createAll(System,FocusWall->getKey("Guide0"),2);
 

@@ -94,7 +94,7 @@ namespace essSystem
 ODIN::ODIN(const std::string& keyName) :
   attachSystem::CopiedComp("odin",keyName),
   stopPoint(0),
-  odinAxis(new attachSystem::FixedComp(newName+"Axis",4)),
+  odinAxis(new attachSystem::FixedOffset(newName+"Axis",4)),
 
   VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
   FocusB(new beamlineSystem::GuideLine(newName+"FB")),
@@ -238,9 +238,14 @@ ODIN::setBeamAxis(const attachSystem::FixedGroup& GItem,
   odinAxis->createUnitVector(GItem);
   odinAxis->setLinkCopy(0,GItem.getKey("Main"),0);
   odinAxis->setLinkCopy(1,GItem.getKey("Main"),1);
-
   odinAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
   odinAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
+
+  // BEAM needs to be shifted/rotated:
+  odinAxis->linkShift(3);
+  odinAxis->linkShift(4);
+  odinAxis->linkAngleRotate(3);
+  odinAxis->linkAngleRotate(4);
 
   if (reverseZ)
     odinAxis->reverseZ();

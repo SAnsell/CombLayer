@@ -96,7 +96,7 @@ namespace essSystem
 DREAM::DREAM(const std::string& keyName) :
   attachSystem::CopiedComp("dream",keyName),
   stopPoint(0),
-  dreamAxis(new attachSystem::FixedComp(newName+"Axis",4)),
+  dreamAxis(new attachSystem::FixedOffset(newName+"Axis",4)),
 
   FocusA(new beamlineSystem::GuideLine(newName+"FA")),
  
@@ -239,6 +239,12 @@ DREAM::setBeamAxis(const GuideItem& GItem,
   dreamAxis->setLinkCopy(1,GItem.getKey("Main"),1);
   dreamAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
   dreamAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
+
+  // BEAM needs to be shifted/rotated:
+  dreamAxis->linkShift(3);
+  dreamAxis->linkShift(4);
+  dreamAxis->linkAngleRotate(3);
+  dreamAxis->linkAngleRotate(4);
 
   if (reverseZ)
     dreamAxis->reverseZ();
@@ -408,12 +414,10 @@ DREAM::build(Simulation& System,
   
   ShieldA->addInsertCell(voidCell);
   ShieldA->setFront(bunkerObj,2);
-  ShieldA->setDivider(bunkerObj,2);
   ShieldA->createAll(System,*BInsert,2);
 
   VPipeOutA->addInsertCell(ShieldA->getCell("Void"));
   VPipeOutA->setFront(bunkerObj,2);
-  VPipeOutA->setDivider(bunkerObj,2);
   VPipeOutA->setBack(*ShieldA,-2);
   VPipeOutA->createAll(System,FocusWall->getKey("Guide0"),2);
   
