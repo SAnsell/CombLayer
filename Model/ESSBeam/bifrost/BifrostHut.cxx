@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essModel/LokiHut.cxx
+ * File:   essModel/BifrostHut.cxx
  *
  * Copyright (c) 2004-2016 by Stuart Ansell
  *
@@ -74,13 +74,13 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 
-#include "LokiHut.h"
+#include "BifrostHut.h"
 
 namespace essSystem
 {
 
-LokiHut::LokiHut(const std::string& Key) : 
-  attachSystem::FixedOffsetGroup(Key,"Inner",6,"Outer",6),
+BifrostHut::BifrostHut(const std::string& Key) : 
+  attachSystem::FixedOffsetGroup(Key,"Inner",6,"Mid",6,"Outer",6),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   hutIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(hutIndex+1)
@@ -90,20 +90,20 @@ LokiHut::LokiHut(const std::string& Key) :
   */
 {}
 
-LokiHut::~LokiHut() 
+BifrostHut::~BifrostHut() 
   /*!
     Destructor
   */
 {}
 
 void
-LokiHut::populate(const FuncDataBase& Control)
+BifrostHut::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: DataBase of variables
   */
 {
-  ELog::RegMethod RegA("LokiHut","populate");
+  ELog::RegMethod RegA("BifrostHut","populate");
   
   FixedOffsetGroup::populate(Control);
 
@@ -132,7 +132,7 @@ LokiHut::populate(const FuncDataBase& Control)
 }
 
 void
-LokiHut::createUnitVector(const attachSystem::FixedComp& FC,
+BifrostHut::createUnitVector(const attachSystem::FixedComp& FC,
 			      const long int sideIndex)
   /*!
     Create the unit vectors
@@ -140,14 +140,16 @@ LokiHut::createUnitVector(const attachSystem::FixedComp& FC,
     \param sideIndex :: Link point and direction [0 for origin]
   */
 {
-  ELog::RegMethod RegA("LokiHut","createUnitVector");
+  ELog::RegMethod RegA("BifrostHut","createUnitVector");
 
   // add nosecone + half centre
   yStep+=voidLength/2.0;
   attachSystem::FixedComp& Outer=getKey("Outer");
+  attachSystem::FixedComp& Mid=getKey("Mid");
   attachSystem::FixedComp& Inner=getKey("Inner");
 
   Outer.createUnitVector(FC,sideIndex);
+  Mid.createUnitVector(FC,sideIndex);
   Inner.createUnitVector(FC,sideIndex);
   applyOffset();
   setDefault("Inner");
@@ -155,12 +157,12 @@ LokiHut::createUnitVector(const attachSystem::FixedComp& FC,
 }
 
 void
-LokiHut::createSurfaces()
+BifrostHut::createSurfaces()
   /*!
     Create the surfaces
   */
 {
-  ELog::RegMethod RegA("LokiHut","createSurfaces");
+  ELog::RegMethod RegA("BifrostHut","createSurfaces");
 
   // Inner void
   ModelSupport::buildPlane(SMap,hutIndex+1,Origin-Y*(voidLength/2.0),Y);
@@ -205,13 +207,13 @@ LokiHut::createSurfaces()
 }
 
 void
-LokiHut::createObjects(Simulation& System)
+BifrostHut::createObjects(Simulation& System)
   /*!
     Adds the main objects
     \param System :: Simulation to create objects in
    */
 {
-  ELog::RegMethod RegA("LokiHut","createObjects");
+  ELog::RegMethod RegA("BifrostHut","createObjects");
 
   std::string Out;
 
@@ -233,6 +235,7 @@ LokiHut::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,hutIndex,"11 -1 13 -14 15 -16 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
   setCell("FrontWall",cellIndex-1);
+  setCell("IronFront",cellIndex-1);
 
   // Ring of concrete
   Out=ModelSupport::getComposite(SMap,hutIndex,
@@ -243,6 +246,7 @@ LokiHut::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,hutIndex,"21 -11 23 -24 25 -26 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
   addCell("FrontWall",cellIndex-1);
+  setCell("ConcFront",cellIndex-1);
   
   // Exclude:
   Out=ModelSupport::getComposite
@@ -253,15 +257,16 @@ LokiHut::createObjects(Simulation& System)
 }
 
 void
-LokiHut::createLinks()
+BifrostHut::createLinks()
   /*!
     Determines the link point on the outgoing plane.
     It must follow the beamline, but exit at the plane
   */
 {
-  ELog::RegMethod RegA("LokiHut","createLinks");
+  ELog::RegMethod RegA("BifrostHut","createLinks");
 
   attachSystem::FixedComp& innerFC=FixedGroup::getKey("Inner");
+  attachSystem::FixedComp& midFC=FixedGroup::getKey("Mid");
   attachSystem::FixedComp& outerFC=FixedGroup::getKey("Outer");
 
   // INNER VOID
@@ -272,12 +277,28 @@ LokiHut::createLinks()
   innerFC.setConnect(4,Origin-Z*voidDepth,-Z);
   innerFC.setConnect(5,Origin+Z*voidHeight,Z);  
 
-  innerFC.setLinkSurf(0,-SMap.realSurf(hutIndex+11));
+  innerFC.setLinkSurf(0,-SMap.realSurf(hutIndex+1));
   innerFC.setLinkSurf(1,SMap.realSurf(hutIndex+2));
   innerFC.setLinkSurf(2,-SMap.realSurf(hutIndex+3));
   innerFC.setLinkSurf(3,SMap.realSurf(hutIndex+4));
   innerFC.setLinkSurf(4,-SMap.realSurf(hutIndex+5));
   innerFC.setLinkSurf(5,SMap.realSurf(hutIndex+6));
+
+  
+  // INNER VOID
+  midFC.setConnect(0,Origin-Y*(feFront+voidLength/2.0),-Y);
+  midFC.setConnect(1,Origin+Y*(feBack+voidLength/2.0),Y);
+  midFC.setConnect(2,Origin-X*(feLeftWall+voidWidth/2.0),-X);
+  midFC.setConnect(3,Origin+X*(feRightWall+voidWidth/2.0),X);
+  midFC.setConnect(4,Origin-Z*(feFloor+voidDepth),-Z);
+  midFC.setConnect(5,Origin+Z*(feRoof+voidHeight),Z);  
+
+  midFC.setLinkSurf(0,-SMap.realSurf(hutIndex+11));
+  midFC.setLinkSurf(1,SMap.realSurf(hutIndex+12));
+  midFC.setLinkSurf(2,-SMap.realSurf(hutIndex+13));
+  midFC.setLinkSurf(3,SMap.realSurf(hutIndex+14));
+  midFC.setLinkSurf(4,-SMap.realSurf(hutIndex+15));
+  midFC.setLinkSurf(5,SMap.realSurf(hutIndex+16));
 
   
     // OUTER VOID
@@ -300,7 +321,7 @@ LokiHut::createLinks()
 }
 
 void
-LokiHut::createAll(Simulation& System,
+BifrostHut::createAll(Simulation& System,
 		   const attachSystem::FixedComp& FC,
 		   const long int FIndex)
   /*!
@@ -310,7 +331,7 @@ LokiHut::createAll(Simulation& System,
     \param FIndex :: Fixed Index
   */
 {
-  ELog::RegMethod RegA("LokiHut","createAll(FC)");
+  ELog::RegMethod RegA("BifrostHut","createAll(FC)");
 
   populate(System.getDataBase());
   createUnitVector(FC,FIndex);

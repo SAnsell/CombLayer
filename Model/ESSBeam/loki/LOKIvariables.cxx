@@ -181,7 +181,53 @@ LOKIvariables(FuncDataBase& Control)
 
   // first guide in loki collimator
   FGen.generateRectangle(Control,"lokiFCA0",296.0,3.0,3.0);
+
+  // HUT:
+  Control.addVariable("lokiCaveYStep",0.0);
+  Control.addVariable("lokiCaveVoidFront",60.0);
+  Control.addVariable("lokiCaveVoidHeight",300.0);
+  Control.addVariable("lokiCaveVoidDepth",183.0);
+  Control.addVariable("lokiCaveVoidWidth",400.0);
+  Control.addVariable("lokiCaveVoidLength",1600.0);
+
+
+  Control.addVariable("lokiCaveFeFront",25.0);
+  Control.addVariable("lokiCaveFeLeftWall",15.0);
+  Control.addVariable("lokiCaveFeRightWall",15.0);
+  Control.addVariable("lokiCaveFeRoof",15.0);
+  Control.addVariable("lokiCaveFeFloor",15.0);
+  Control.addVariable("lokiCaveFeBack",15.0);
+
+  Control.addVariable("lokiCaveConcFront",35.0);
+  Control.addVariable("lokiCaveConcLeftWall",35.0);
+  Control.addVariable("lokiCaveConcRightWall",35.0);
+  Control.addVariable("lokiCaveConcRoof",35.0);
+  Control.addVariable("lokiCaveConcFloor",50.0);
+  Control.addVariable("lokiCaveConcBack",35.0);
+
+  Control.addVariable("lokiCaveFeMat","Stainless304");
+  Control.addVariable("lokiCaveConcMat","Concrete");
+
+    // Vacumm tank
+  Control.addVariable("lokiVTankXStep",0.0);       
+  Control.addVariable("lokiVTankYStep",25.0);
+  Control.addVariable("lokiVTankZStep",0.0);       
+  Control.addVariable("lokiVTankXYAngle",0.0);       
+  Control.addVariable("lokiVTankZAngle",0.0);
   
+  Control.addVariable("lokiVTankRadius",144.0);
+  Control.addVariable("lokiVTankLength",1048.0);
+  Control.addVariable("lokiVTankSideThick",5.0);   // NOT CORRECT
+  Control.addVariable("lokiVTankBackThick",5.0);   // NOT CORRECT
+  Control.addVariable("lokiVTankFrontThick",1.0);  // NOT CORRECT
+
+  Control.addVariable("lokiVTankWindowInsetLen",106.0);  // NOT CORRECT
+  Control.addVariable("lokiVTankWindowThick",1.0);  // NOT CORRECT
+  Control.addVariable("lokiVTankWindowRadius",8.0);  // NOT CORRECT
+
+  Control.addVariable("lokiVTankWindowMat","SiCrystal");  // NOT CORRECT
+  Control.addVariable("lokiVTankWallMat","Stainless304");
+
   return;
 }
 

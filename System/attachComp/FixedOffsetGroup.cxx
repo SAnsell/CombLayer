@@ -230,7 +230,7 @@ FixedOffsetGroup::applyOffset()
       if (mc==GOffset.end())
         throw ColErr::InContainerError<std::string>
           (FCmc.first,"Offset not found");
-      const offset& GO=mc->second;      
+      const offset& GO=mc->second;
       FCmc.second->applyShift(xStep+GO.xStep,yStep+GO.yStep,zStep+GO.zStep);
       FCmc.second->applyAngleRotate(xyAngle+GO.xyAngle,zAngle+GO.zAngle);
     }

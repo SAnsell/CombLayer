@@ -95,7 +95,6 @@ BIFROSTvariables(FuncDataBase& Control)
   Control.addVariable("bifrostAxisZStep",2.0);   // rotation
 
   FGen.setGuideMat("Copper");
-  FGen.setYOffset(0.0);
   FGen.setYOffset(8.0);
   FGen.generateTaper(Control,"bifrostFA",350.0,8.0,5.0 ,10.0,5.0);
   
@@ -206,6 +205,8 @@ BIFROSTvariables(FuncDataBase& Control)
   // Guide in wall
   FGen.generateTaper(Control,"bifrostFWall",314.0,4.0,5.232, 4.0,5.232);
 
+  FGen.setGuideMat("Glass");
+  PipeGen.setMat("Stainless304");
   
   // VACUUM PIPE: LEAVING BUNKER
   PipeGen.setPipe(6.0,0.5);
@@ -257,13 +258,84 @@ BIFROSTvariables(FuncDataBase& Control)
 
   PGen.setFeLayer(6.0);
   PGen.setConcLayer(10.0);
-  PGen.generatePit(Control,"bifrostOutPitA",6500.0,40.0,220.0,210.0,40.0);
+  PGen.generatePit(Control,"bifrostOutPitA",6505.0,25.0,220.0,210.0,40.0);
 
   Control.addVariable("bifrostOutACutFrontShape","Square");
   Control.addVariable("bifrostOutACutFrontRadius",5.0);
   
   Control.addVariable("bifrostOutACutBackShape","Square");
   Control.addVariable("bifrostOutACutBackRadius",5.0);
+
+  // FIRST out of bunker chopper
+  CGen.setMainRadius(38.122);
+  CGen.setFrame(86.5,86.5);
+  CGen.generateChopper(Control,"bifrostChopperOutA",22.0,12.0,6.55);
+
+  // Singe Blade chopper FOC
+  BGen.setThick({0.2});
+  BGen.addPhase({95},{30.0});
+  BGen.generateBlades(Control,"bifrostFOCOutABlade",0.0,25.0,35.0);
+
+  // Shield: leaving chopper pit A
+  SGen.generateShield(Control,"bifrostShieldB",6275.0,40.0,40.0,40.0,4,8);
+
+  // ARRAY SECTION
+  double yStep(14.0);
+  for(size_t i=0;i<7;i++)
+    {
+      const std::string strNum(StrFunc::makeString(i));
+      PipeGen.generatePipe(Control,"bifrostPipeS"+strNum,yStep,600.0);
+      FGen.generateRectangle(Control,"bifrostFOutS"+strNum,596.0,8.0,8.0);
+      yStep=4.0;
+    }
+
+  FGen.setGuideMat("Copper");
+  double gap(8.0);
+  for(size_t i=0;i<4;i++)
+    {
+      const std::string strNum(StrFunc::makeString(i));
+      PipeGen.generatePipe(Control,"bifrostPipeE"+strNum,yStep,500.0);
+      FGen.generateTaper(Control,"bifrostFOutE"+strNum,496.0,
+                         gap,gap-1.0,gap,gap-1.0);
+      gap-=1.0;
+    }
+
+  // HUT:
+  
+  Control.addVariable("bifrostCaveYStep",25.0);
+  Control.addVariable("bifrostCaveXStep",100.0);
+  Control.addVariable("bifrostCaveVoidFront",60.0);
+  Control.addVariable("bifrostCaveVoidHeight",300.0);
+  Control.addVariable("bifrostCaveVoidDepth",183.0);
+  Control.addVariable("bifrostCaveVoidWidth",500.0);
+  Control.addVariable("bifrostCaveVoidLength",600.0);
+
+  Control.addVariable("bifrostCaveFeFront",25.0);
+  Control.addVariable("bifrostCaveFeLeftWall",15.0);
+  Control.addVariable("bifrostCaveFeRightWall",15.0);
+  Control.addVariable("bifrostCaveFeRoof",15.0);
+  Control.addVariable("bifrostCaveFeFloor",15.0);
+  Control.addVariable("bifrostCaveFeBack",15.0);
+
+  Control.addVariable("bifrostCaveConcFront",35.0);
+  Control.addVariable("bifrostCaveConcLeftWall",35.0);
+  Control.addVariable("bifrostCaveConcRightWall",35.0);
+  Control.addVariable("bifrostCaveConcRoof",35.0);
+  Control.addVariable("bifrostCaveConcFloor",50.0);
+  Control.addVariable("bifrostCaveConcBack",35.0);
+
+  Control.addVariable("bifrostCaveFeMat","Stainless304");
+  Control.addVariable("bifrostCaveConcMat","Concrete");
+
+  // Beam port through front of cave
+  Control.addVariable("bifrostCaveCutShape","Circle");
+  Control.addVariable("bifrostCaveCutRadius",10.0);
+
+  // Second vacuum pipe out of bunker [before chopper pit]
+  PipeGen.setPipe(6.0,0.5);
+  PipeGen.setWindow(-2.0,0.5);
+  PipeGen.setFlange(-4.0,1.0);
+  PipeGen.generatePipe(Control,"bifrostPipeCave",2.0,250.0);
 
   return;
 }

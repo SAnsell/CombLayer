@@ -57,13 +57,44 @@ namespace setVariable
 {
 
 FocusGenerator::FocusGenerator() :
-  substrateThick(0.5),voidThick(1.5),
-  guideMat("Aluminium")
+  substrateThick(0.5),voidThick(1.5),yStep(0.0),
+  zStep(0.0),guideMat("Aluminium")
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
   */
 {}
+
+FocusGenerator::FocusGenerator(const FocusGenerator& A) : 
+  substrateThick(A.substrateThick),voidThick(A.voidThick),
+  yStepActive(A.yStepActive),yStep(A.yStep),zStep(A.zStep),
+  guideMat(A.guideMat)
+  /*!
+    Copy constructor
+    \param A :: FocusGenerator to copy
+  */
+{}
+
+FocusGenerator&
+FocusGenerator::operator=(const FocusGenerator& A)
+  /*!
+    Assignment operator
+    \param A :: FocusGenerator to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      substrateThick=A.substrateThick;
+      voidThick=A.voidThick;
+      yStepActive=A.yStepActive;
+      yStep=A.yStep;
+      zStep=A.zStep;
+      guideMat=A.guideMat;
+    }
+  return *this;
+}
+
 
 FocusGenerator::~FocusGenerator() 
  /*!

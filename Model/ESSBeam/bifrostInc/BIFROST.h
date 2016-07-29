@@ -46,12 +46,14 @@ namespace constructSystem
   class VacuumPipe;
   class VacuumWindow;
 
+
 }
 
 namespace essSystem
 {  
   class GuideItem;
   class DetectorTank;
+  class BifrostHut;
 
   /*!
     \class BIFROST
@@ -65,7 +67,10 @@ class BIFROST : public attachSystem::CopiedComp
 {
  private:
 
-  const size_t nGuideSection;
+  const size_t nGuideSection;      ///< Guide section in rect unit
+  const size_t nSndSection;        ///< Guide section in snd-rec unit
+  const size_t nEllSection;        ///< Guide section in final elliptic unit
+  
   /// Stop at [0:Complete / 1:Mono Wall / 2:Inner Bunker / 3:Outer Bunker ]
   int stopPoint;  
 
@@ -156,8 +161,31 @@ class BIFROST : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::HoleShape> OutACutFront;
   /// Collimator hole 
   std::shared_ptr<constructSystem::HoleShape> OutACutBack;
+  /// First out of bunker chopper 
+  std::shared_ptr<constructSystem::ChopperUnit> ChopperOutA;
+  /// single disk chopper
+  std::shared_ptr<constructSystem::DiskChopper> FOCDiskOutA;
   
+  /// Second shield wall : chopperOutA to Cave
+  std::shared_ptr<constructSystem::LineShield> ShieldB;  
 
+  /// Vector of rectangular vac-pipe:
+  std::array<std::shared_ptr<constructSystem::VacuumPipe>,8> SndPipe;
+  /// Vector of rectangular units:
+  std::array<std::shared_ptr<beamlineSystem::GuideLine>,7> SndFocus;
+
+  /// Vector of rectangular vac-pipe:
+  std::array<std::shared_ptr<constructSystem::VacuumPipe>,4> EllPipe;
+  /// Vector of rectangular units:
+  std::array<std::shared_ptr<beamlineSystem::GuideLine>,4> EllFocus;
+
+  /// single disk chopper
+  std::shared_ptr<BifrostHut> Cave;
+  /// Enterance hole to cave
+  std::shared_ptr<constructSystem::HoleShape> CaveCut;
+
+  /// Vacuum pipe in the front of the cave
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeCave;
   
   void setBeamAxis(const FuncDataBase&,const GuideItem&,const bool);
   

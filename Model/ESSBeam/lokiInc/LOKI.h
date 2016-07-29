@@ -114,12 +114,21 @@ class LOKI : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::RotaryCollimator> GridA;
   /// Rotary collimator [first to wall]
   std::shared_ptr<constructSystem::RotaryCollimator> CollA;
+
+
+  /// Vacuum pipe in CoolA
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeCollA;
+  /// Vacuum pipe in CollB
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeCollB;
+  /// Vacuum pipe in CollC
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeCollC;
+
   /// Guide in CollA
-  std::shared_ptr<beamlineSystem::GuideLine> FocusCA0;
-  /// Guide in CollA
-  std::shared_ptr<beamlineSystem::GuideLine> FocusCA1;
-  /// Guide in CollA
-  std::shared_ptr<beamlineSystem::GuideLine> FocusCA2;
+  std::shared_ptr<beamlineSystem::GuideLine> FocusCollA;
+  /// Guide in CollB
+  std::shared_ptr<beamlineSystem::GuideLine> FocusCollB;
+  /// Guide in CollC
+  std::shared_ptr<beamlineSystem::GuideLine> FocusCollC;
 
   /// Space in wall for grid cutter
   std::shared_ptr<constructSystem::insertPlate> CBoxB;
@@ -137,7 +146,14 @@ class LOKI : public attachSystem::CopiedComp
 
   /// Final Cutting grid 
   std::shared_ptr<constructSystem::RotaryCollimator> GridD;
-  
+
+  /// Cave
+  std::shared_ptr<LokiHut> Cave;
+  /// Guide to sample
+  std::shared_ptr<beamlineSystem::GuideLine> CaveGuide;
+  /// Vacuum tank
+  std::shared_ptr<VacTank> VTank;
+
   void setBeamAxis(const FuncDataBase&,const GuideItem&,const bool);
   
  public:

@@ -84,7 +84,7 @@ namespace constructSystem
 
 RotaryCollimator::RotaryCollimator(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedGroup(Key,"Main",16,"Beam",2),
+  attachSystem::FixedGroup(Key,"Main",16,"Beam",3,"Hole",0),
   attachSystem::CellMap(),
   colIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(colIndex+1),holeIndex(0),nHole(0),nLayers(0)
@@ -318,6 +318,7 @@ RotaryCollimator::createLinks()
   
   attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
   attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+  attachSystem::FixedComp& holeFC=FixedGroup::getKey("Hole");
   // 
   const std::string Out=getExclude();
   HeadRule HM(Out);
@@ -329,6 +330,8 @@ RotaryCollimator::createLinks()
 
   beamFC.setConnect(0,PtA.first,-beamFC.getY());
   beamFC.setConnect(1,PtB.first,beamFC.getY());
+  beamFC.setConnect(2,(PtB.first+PtA.first)/2,
+                    beamFC.getY());  // mid point [NO SURF]
   beamFC.setLinkSurf(0,-SMap.realSurf(colIndex+1));
   beamFC.setLinkSurf(1,SMap.realSurf(colIndex+2));
 
@@ -359,6 +362,22 @@ RotaryCollimator::createLinks()
       mainFC.setLinkSurf(i+12,SMap.realSurf(colIndex+2));
     }
 
+  // Process holes:
+  if (nHole)
+    {
+      holeFC.setNConnect(3*nHole);
+      size_t index(0);
+      for(size_t i=0;i<nHole;i++)
+        {
+          holeFC.setLinkCopy(index,*Holes[i],0);
+          holeFC.setLinkCopy(index+1,*Holes[i],1);
+          const Geometry::Vec3D midPt((Holes[i]->getLinkPt(0)+
+                                      Holes[i]->getLinkPt(1))/2.0);
+          holeFC.setConnect(index+2,midPt,Holes[i]->getSignedLinkAxis(1));
+          index+=3;
+        }
+    }
+  
   return;
 }
   

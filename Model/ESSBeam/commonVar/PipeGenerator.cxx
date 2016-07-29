@@ -139,7 +139,6 @@ PipeGenerator::setFlange(const double R,const double L)
   flangeLen=L;
   return;
 }
-
   
 void
 PipeGenerator::generatePipe(FuncDataBase& Control,const std::string& keyName,

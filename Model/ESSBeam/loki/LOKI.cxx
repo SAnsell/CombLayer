@@ -129,9 +129,15 @@ LOKI::LOKI(const std::string& keyN) :
 
   GridA(new constructSystem::RotaryCollimator(newName+"GridA")),
   CollA(new constructSystem::RotaryCollimator(newName+"CollA")),
-  FocusCA0(new beamlineSystem::GuideLine(newName+"FCA0")),
-  FocusCA1(new beamlineSystem::GuideLine(newName+"FCA1")),
-  FocusCA2(new beamlineSystem::GuideLine(newName+"FCA2")),
+
+
+  VPipeCollA(new constructSystem::VacuumPipe(newName+"PipeCollA")),
+  VPipeCollB(new constructSystem::VacuumPipe(newName+"PipeCollB")),
+  VPipeCollC(new constructSystem::VacuumPipe(newName+"PipeCollC")),
+
+  FocusCollA(new beamlineSystem::GuideLine(newName+"FCollA")),
+  FocusCollB(new beamlineSystem::GuideLine(newName+"FCollB")),
+  FocusCollC(new beamlineSystem::GuideLine(newName+"FCollC")),
 
   CBoxB(new constructSystem::insertPlate(newName+"CBoxB")),
   GridB(new constructSystem::RotaryCollimator(newName+"GridB")),
@@ -140,8 +146,11 @@ LOKI::LOKI(const std::string& keyN) :
   GridC(new constructSystem::RotaryCollimator(newName+"GridC")),
   CollC(new constructSystem::RotaryCollimator(newName+"CollC")),
 
-  GridD(new constructSystem::RotaryCollimator(newName+"GridD"))
+  GridD(new constructSystem::RotaryCollimator(newName+"GridD")),
 
+  Cave(new LokiHut(newName+"Cave")),
+  CaveGuide(new beamlineSystem::GuideLine(newName+"CaveGuide")),
+  VTank(new VacTank(newName+"VTank"))
   /*!
     Constructor
     \param keyN :: keyName
@@ -184,15 +193,25 @@ LOKI::LOKI(const std::string& keyN) :
 
   OR.addObject(GridA);
   OR.addObject(CollA);
-  OR.addObject(FocusCA0);
-  OR.addObject(FocusCA1);
-  OR.addObject(FocusCA2);
+  
+  OR.addObject(VPipeCollA);
+  OR.addObject(VPipeCollB);
+  OR.addObject(VPipeCollC);
+
+  OR.addObject(FocusCollA);
+  OR.addObject(FocusCollB);
+  OR.addObject(FocusCollC);
+  
   OR.addObject(CBoxB);
   OR.addObject(GridB);
   OR.addObject(CollB);
   OR.addObject(GridC);
   OR.addObject(CollC);
   OR.addObject(GridD);
+
+  OR.addObject(Cave);
+  OR.addObject(CaveGuide);
+  OR.addObject(VTank);
 
 }
 
@@ -394,8 +413,15 @@ LOKI::build(Simulation& System,
   attachSystem::addToInsertControl(System,bunkerObj,"frontWall",
 				   CollA->getKey("Main"),*CollA);  
 
-  ELog::EM<<"CollA == "<<CollA->getKey("Beam").getSignedLinkPt(0)
+  ELog::EM<<"CollA == "<<CollA->getKey("Beam").getSignedLinkPt(3)
 	  <<ELog::endDiag;
+
+  VPipeCollA->addInsertCell(CollA->getCell("Void0"));  // multiple units
+  VPipeCollA->createAll(System,CollA->getKey("Beam"),2);
+
+  FocusCollA->addInsertCell(VPipeCollA->getCells("Void"));
+  FocusCollA->createAll(System,*VPipeCollA,0,*VPipeCollA,0);
+
   //  FocusCA0->addInsertCell(CollA->getCell("Void0"));
   //  FocusCA0->createAll(System,CollA->getKey("Beam"),0,
   //                      CollA->getKey("Beam"),0);
@@ -422,12 +448,24 @@ LOKI::build(Simulation& System,
 
   GridC->addInsertCell(voidCell);
   GridC->createAll(System,CollB->getKey("Beam"),2);
+ 
+  
+  Cave->addInsertCell(voidCell);
+  Cave->createAll(System,CollC->getKey("Beam"),2);
 
-  GridD->addInsertCell(voidCell);
+
+  CollC->addInsertCell(Cave->getCells("FrontWall"));
+  CollC->addInsertCell(Cave->getCell("Void"));
+  CollC->insertObjects(System);
+
+  GridD->addInsertCell(Cave->getCell("Void"));
   GridD->createAll(System,CollC->getKey("Beam"),2);
-  
 
-  
+  // Vacuum tank
+  VTank->addInsertCell(Cave->getCell("Void"));
+  //  VTank->createAll(System,CaveGuide->getKey("Guide0"),2);
+  VTank->createAll(System,GridD->getKey("Beam"),2);
+
   return;
 }
 

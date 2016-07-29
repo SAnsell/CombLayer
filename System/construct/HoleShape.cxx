@@ -533,7 +533,7 @@ HoleShape::createLinks()
     SurInter::interceptRule(backFace,Origin,Y);
 
   FixedComp::setConnect(0,Front.first,-Y);
-  FixedComp::setConnect(1,Back.first,-Y);
+  FixedComp::setConnect(1,Back.first,Y);
   FixedComp::setLinkSurf(0,SMap.realSurf(Front.second));
   FixedComp::setLinkSurf(1,SMap.realSurf(Back.second));
   return;
