@@ -181,7 +181,6 @@ shortNMX::build(Simulation& System,
 
   VPipeA->addInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeA->setFront(GItem.getKey("Beam"),2);
-  VPipeA->setDivider(GItem.getKey("Beam"),2);  
   VPipeA->createAll(System,GuideA->getKey("Guide0"),2);
 
 
