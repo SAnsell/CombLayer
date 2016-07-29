@@ -449,10 +449,10 @@ MidWaterDivider::createObjects(Simulation& System,
   
   // outer surface:
   Out=ModelSupport::getComposite(SMap,divIndex, divIndex+1000+2,
-				 "100 -300 (-103 -112 120M) : -106M ");
+				 "100 -300 (-103 -112 120M) : (-106M -120M)"); // -120M is needed to prevent geometry error at MidWaterMidAngle>90
   addOuterSurf(Out);
   Out=ModelSupport::getComposite(SMap,divIndex,divIndex+1000+1,
-				 "100 300 (104 -111 120M) : -106M ");
+				 "100 300 (104 -111 120M) : (-106M -120M)"); // -120M is needed to prevent geometry error at MidWaterMidAngle>90
   addOuterUnionSurf(Out); 
 
   // Reverse layer
@@ -473,6 +473,7 @@ MidWaterDivider::createObjects(Simulation& System,
   Out+=RCut.display()+Base;
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out));
 
+
   Out=ModelSupport::getComposite(SMap,divIndex, divIndex+1000+4,
 				 "-100 300 (((23 : 31 ) (123 -131 20M)) : (-120M 6M -106M) : (123 -131 6M -20M 120M)) ");   // \todo Is it possible to optimise it more?
   Out+=LCut.display()+Base;
@@ -480,11 +481,11 @@ MidWaterDivider::createObjects(Simulation& System,
 
   // outer surfaces
   Out=ModelSupport::getComposite(SMap,divIndex, divIndex+1000+3,
-				 "-100 -300 (-124 -132 120M) : -106M");
+				 "-100 -300 (-124 -132 120M) : (-106M -120M)"); // -120M is needed to prevent geometry error at MidWaterMidAngle>90
   addOuterUnionSurf(Out);
 
   Out=ModelSupport::getComposite(SMap,divIndex, divIndex+1000+4,
-				 "-100 300 (123 -131 120M) : -106M ");
+				 "-100 300 (123 -131 120M) : (-106M -120M)"); // -120M is needed to prevent geometry error at MidWaterMidAngle>90
   addOuterUnionSurf(Out);
 
   HeadRule HR;
