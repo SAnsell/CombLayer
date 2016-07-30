@@ -324,6 +324,10 @@ Window::setSize(const double H,const double W)
 
 void
 Window::setBaseCell(const int BNumber)
+  /*!
+    Define the included cell (for inclusion and link points)
+    \param BNumber :: Cell number
+  */
 {
   baseCell=BNumber;
   return;

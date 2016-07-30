@@ -355,7 +355,6 @@ VacuumPipe::createObjects(Simulation& System)
   /*!
     Adds the vacuum box
     \param System :: Simulation to create objects in
-    \param FC :: FixedComp of front face
    */
 {
   ELog::RegMethod RegA("VacuumPipe","createObjects");

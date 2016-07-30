@@ -36,7 +36,7 @@ namespace constructSystem
   \version 1.0
   \author S. Ansell
   \date January 2010
-  \brief Abstract top-leve target
+  \brief Abstract top-level target
 
   Provides linkage to its outside on FixedComp[0]
 */

@@ -47,9 +47,9 @@ class Window : public attachSystem::ContainedComp,
   int baseCell;                 ///< Cell that it resides
 
   Geometry::Vec3D Centre;       ///< Centre point of view
-  Geometry::Vec3D WAxis;        ///< Window axis
-  int fSign;                    ///< Surface sign
-  int bSign;                    ///< Surface sign
+  Geometry::Vec3D WAxis;        ///< Window primary axis
+  int fSign;                    ///< Front surface sign
+  int bSign;                    ///< Back surface sign
   const Geometry::Surface* FSurf;     ///< Front surface
   const Geometry::Surface* BSurf;     ///< Back surface
   int divideFlag;               ///< Dividing plane required
@@ -62,7 +62,6 @@ class Window : public attachSystem::ContainedComp,
   std::vector<int> layerMat;        ///< Material number [nlayer]
   std::vector<int> layerSurf;       ///< Surface layres
   
-  void populate(const Simulation&);
   void createUnitVector(const attachSystem::FixedComp&);
 
   void createCentre(Simulation&);

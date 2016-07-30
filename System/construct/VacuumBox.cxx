@@ -87,6 +87,7 @@ VacuumBox::VacuumBox(const std::string& Key,
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
+    \param flag :: true if the box is centred on coordinates
   */
 {}
 

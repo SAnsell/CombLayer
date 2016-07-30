@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   delftInc/Rabbit.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ namespace delftSystem
 */
 
 class Rabbit : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+    public attachSystem::FixedOffset
 {
  private:
 
@@ -46,12 +46,6 @@ class Rabbit : public attachSystem::ContainedComp,
   int cellIndex;                ///< Cell index
   
   std::string objName;          ///< FC object
-  double xStep;                 ///< Offset on X to Target
-  double yStep;                 ///< Offset on X to Target
-  double zStep;                 ///< Offset on Z top Target
-
-  double xyAngle;               ///< xyRotation angle
-  double zAngle;                ///< zRotation angle
 
   double sampleRadius;          ///< Sample radius [mid capsual]
 
@@ -73,8 +67,9 @@ class Rabbit : public attachSystem::ContainedComp,
  
   int innerVoid;                ///< Inner void cell
 
-  int populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
+  void populate(const FuncDataBase&);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const long int);
   void createUnitVector(const ReactorGrid&);
 
   void createSurfaces();

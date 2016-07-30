@@ -377,6 +377,10 @@ tubeUnit::getCell(const ModelSupport::surfRegister& SMap,
 
 std::string
 tubeUnit::writeID() const
+  /*!
+    Write out 2D-identify
+    \return ID : Index-spc-Index
+  */
 {
   std::ostringstream cx;
   cx<<iA<<" "<<iB;

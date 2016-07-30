@@ -85,6 +85,7 @@ beamSlot::beamSlot(const std::string& Key,const int SN)  :
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
+    \parma SN :: slot number  (id number)
   */
 {}
 

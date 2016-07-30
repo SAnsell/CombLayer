@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1Upgrade/voidCylVolume.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,6 +66,7 @@
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "voidCylVolume.h"
 
@@ -73,7 +74,7 @@ namespace constructSystem
 {
 
 voidCylVolume::voidCylVolume(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,0),
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,0),
   voidIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
   cellIndex(voidIndex+1),nSegment(0)
   /*!
@@ -81,6 +82,38 @@ voidCylVolume::voidCylVolume(const std::string& Key) :
     \param Key :: Name of construction key
   */
 {}
+
+voidCylVolume::voidCylVolume(const voidCylVolume& A) : 
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  voidIndex(A.voidIndex),cellIndex(A.cellIndex),
+  nSegment(A.nSegment),radius(A.radius),thick(A.thick),
+  height(A.height)
+  /*!
+    Copy constructor
+    \param A :: voidCylVolume to copy
+  */
+{}
+
+voidCylVolume&
+voidCylVolume::operator=(const voidCylVolume& A)
+  /*!
+    Assignment operator
+    \param A :: voidCylVolume to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
+      cellIndex=A.cellIndex;
+      nSegment=A.nSegment;
+      radius=A.radius;
+      thick=A.thick;
+      height=A.height;
+    }
+  return *this;
+}
 
 voidCylVolume::~voidCylVolume()
   /*!
@@ -97,14 +130,10 @@ voidCylVolume::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("voidCylVolume","populate");
 
+  FixedOffset::populate(Control);
+      
     // Master values
   nSegment=Control.EvalVar<size_t>(keyName+"NSegment");
-
-  xStep=Control.EvalDefVar<double>(keyName+"XStep",0.0);
-  yStep=Control.EvalDefVar<double>(keyName+"YStep",0.0);
-  zStep=Control.EvalDefVar<double>(keyName+"ZStep",0.0);
-  xyAngle=Control.EvalDefVar<double>(keyName+"XYangle",0.0);
-  zAngle=Control.EvalDefVar<double>(keyName+"Zangle",0.0);
 
   radius=Control.EvalVar<double>(keyName+"Radius");
   thick=Control.EvalVar<double>(keyName+"Thick");
@@ -113,17 +142,18 @@ voidCylVolume::populate(const FuncDataBase& Control)
 }
 
 void
-voidCylVolume::createUnitVector(const attachSystem::FixedComp& FC)
+voidCylVolume::createUnitVector(const attachSystem::FixedComp& FC,
+				const long int sideIndex)
   /*!
     Create the unit vectors
-    \param FC :: Fixed Component
+    \param FC :: Fixed Component for axis/origin
+    \param sideIndex :: link point
   */
 {
   ELog::RegMethod RegA("voidCylVolume","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC);
 
-  applyAngleRotate(xyAngle,zAngle);
-  applyShift(xStep,yStep,zStep);
+  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
+  applyOffset();
 
   return;
 }
@@ -217,18 +247,20 @@ voidCylVolume::createLinks()
 
 void
 voidCylVolume::createAll(Simulation& System,
-		     const attachSystem::FixedComp& FC)
+			 const attachSystem::FixedComp& FC,
+			 const long int sideIndex)
   /*!
     Extrenal build everything
     \param System :: Simulation
     \param FC :: FixedComponent for origin
+    \param sideIndex :: link point
    */
 {
   ELog::RegMethod RegA("voidCylVolume","createAll");
 
   populate(System.getDataBase());
 
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();
