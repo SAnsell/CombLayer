@@ -225,15 +225,13 @@ Reflector::~Reflector()
 {}
 
 void
-Reflector::populate(const Simulation& System)
+Reflector::populate(const FuncDataBase& Control)
 /*!
   Populate all the variables
-  \param System :: Simulation to use
+  \param Control :: Data base for variables
 */
 {
   ELog::RegMethod RegA("Reflector","populate");
-  
-  const FuncDataBase& Control=System.getDataBase();
   
   xStep=Control.EvalVar<double>(keyName+"XStep");
   yStep=Control.EvalVar<double>(keyName+"YStep");
@@ -263,7 +261,7 @@ Reflector::createUnitVector()
 
   FixedComp::createUnitVector(World::masterTS2Origin());
   Origin+=X*xStep+Y*yStep+Z*zStep;
-    
+  
   return;
 }
   
@@ -536,7 +534,7 @@ Reflector::insertPipeObjects(Simulation& System,
   */
 {
   ELog::RegMethod RegA("Reflector","insertPipeObjects");
-
+  return;
   CouplePipe CP("cplPipe");
   System.createObjSurfMap();
   CP.createAll(System,*HydObj,4,*VacObj);
@@ -653,7 +651,7 @@ Reflector::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("Reflector","createAll");
-  populate(System);
+  populate(System.getDataBase());
 
   createUnitVector();
   createSurfaces();

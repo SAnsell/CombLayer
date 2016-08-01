@@ -107,7 +107,7 @@ main(int argc,char* argv[])
       createDelftInputs(IParam);
       
       // Read XML/Variable
-      Simulation* SimPtr=createSimulation(IParam,Names,Oname);
+      SimPtr=createSimulation(IParam,Names,Oname);
       if (!SimPtr) return -1;
       
       // The big variable setting

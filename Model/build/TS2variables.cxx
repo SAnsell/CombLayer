@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   build/TS2variables.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,6 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
-#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -675,24 +674,24 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("shutter17OpenZShift",11.86);
   Control.addVariable("shutter18OpenZShift",11.86);
 
-  Control.addVariable("shutter1XYAngle",46.00);       // Angle W1
-  Control.addVariable("shutter2XYAngle",59.00);       // Angle W2
-  Control.addVariable("shutter3XYAngle",72.00);       // Angle W3
-  Control.addVariable("shutter4XYAngle",85.00);       // Angle W4
-  Control.addVariable("shutter5XYAngle",98.00);       // Hydrogen [W5]
-  Control.addVariable("shutter6XYAngle",111.00);      // W6
-  Control.addVariable("shutter7XYAngle",124.00);      // W7
-  Control.addVariable("shutter8XYAngle",137.00);      // W8
-  Control.addVariable("shutter9XYAngle",150.00);      // W9
-  Control.addVariable("shutter10XYAngle",-46.00);     // E1  [Groove]
-  Control.addVariable("shutter11XYAngle",-59.00);     // E2
-  Control.addVariable("shutter12XYAngle",-72.00);     // E3
-  Control.addVariable("shutter13XYAngle",-85.00);     // E4
-  Control.addVariable("shutter14XYAngle",-98.00);     // E5
-  Control.addVariable("shutter15XYAngle",-111.00);    // E6 [Groove/broad]
-  Control.addVariable("shutter16XYAngle",-124.00);    // E7 [Broad]
-  Control.addVariable("shutter17XYAngle",-137.00);    // E8
-  Control.addVariable("shutter18XYAngle",-150.00);    // E9                
+  Control.addVariable("shutter0XYAngle",46.00);       // Angle W1
+  Control.addVariable("shutter1XYAngle",59.00);       // Angle W2
+  Control.addVariable("shutter2XYAngle",72.00);       // Angle W3
+  Control.addVariable("shutter3XYAngle",85.00);       // Angle W4
+  Control.addVariable("shutter4XYAngle",98.00);       // Hydrogen [W5]
+  Control.addVariable("shutter5XYAngle",111.00);      // W6
+  Control.addVariable("shutter6XYAngle",124.00);      // W7
+  Control.addVariable("shutter7XYAngle",137.00);      // W8
+  Control.addVariable("shutter8XYAngle",150.00);      // W9
+  Control.addVariable("shutter9XYAngle",-46.00);     // E1  [Groove]
+  Control.addVariable("shutter10XYAngle",-59.00);     // E2
+  Control.addVariable("shutter11XYAngle",-72.00);     // E3
+  Control.addVariable("shutter12XYAngle",-85.00);     // E4
+  Control.addVariable("shutter13XYAngle",-98.00);     // E5
+  Control.addVariable("shutter14XYAngle",-111.00);    // E6 [Groove/broad]
+  Control.addVariable("shutter15XYAngle",-124.00);    // E7 [Broad]
+  Control.addVariable("shutter16XYAngle",-137.00);    // E8
+  Control.addVariable("shutter17XYAngle",-150.00);    // E9                
 
   //  Control.addVariable("shutterInsertChipGap",25);  // Shutter Insert thickness
   Control.addVariable("shutterHWidth",12.0);       // Shutter Half width

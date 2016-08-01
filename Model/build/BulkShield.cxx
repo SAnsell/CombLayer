@@ -331,7 +331,7 @@ BulkShield::createShutters(Simulation& System,
       else
 	GData.push_back(std::shared_ptr<GeneralShutter>
 			(new GeneralShutter(i,"shutter")));
-      // Not registered under KeyName 
+      // Not registered under KeyName
       OR.addObject(StrFunc::makeString(std::string("shutter"),i),GData.back());
     }
 
@@ -346,7 +346,7 @@ BulkShield::createShutters(Simulation& System,
 			    SMap.realSurf(bulkIndex+6),
 			    SMap.realSurf(bulkIndex+5));
       GData[i]->setDivide(40000);
-      GData[i]->createAll(System,0.0,0);    
+      GData[i]->createAll(System,0.0,0);
       shutterObj->addSurfString(GData[i]->getExclude());
     }
 

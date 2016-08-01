@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   essBuild/WedgeItem.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,6 +73,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "World.h"
 #include "WedgeItem.h"
@@ -81,15 +82,50 @@ namespace essSystem
 {
 
 WedgeItem::WedgeItem(const int BN,const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
-  beamNumber(BN),
-  wedgeIndex(ModelSupport::objectRegister::Instance().cell(Key,BN)),
+  attachSystem::ContainedComp(),
+  attachSystem::FixedOffset(Key+StrFunc::makeString(BN),6),
+  baseName(Key),
+  wedgeIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
   cellIndex(wedgeIndex+1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
   */
 {}
+
+WedgeItem::WedgeItem(const WedgeItem& A) : 
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  baseName(A.baseName),wedgeIndex(A.wedgeIndex),
+  cellIndex(A.cellIndex),
+  nLayer(A.nLayer),radius(A.radius),width(A.width),
+  height(A.height),mat(A.mat)
+  /*!
+    Copy constructor
+    \param A :: WedgeItem to copy
+  */
+{}
+
+WedgeItem&
+WedgeItem::operator=(const WedgeItem& A)
+  /*!
+    Assignment operator
+    \param A :: WedgeItem to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
+      cellIndex=A.cellIndex;
+      nLayer=A.nLayer;
+      radius=A.radius;
+      width=A.width;
+      height=A.height;
+      mat=A.mat;
+    }
+  return *this;
+}
 
 WedgeItem::~WedgeItem() 
   /*!
@@ -106,24 +142,11 @@ WedgeItem::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("WedgeItem","populate");
 
-  const std::string keyNum=StrFunc::makeString(keyName,beamNumber);
+  FixedOffset::populate(Control);
+  
+  mat=ModelSupport::EvalMat<int>(Control,keyName+"NLayer",baseName+"Mat");				 
 
-  xStep=Control.EvalPair<double>
-    (keyNum+"XStep",keyName+"XStep");
-  yStep=Control.EvalPair<double>
-    (keyNum+"YStep",keyName+"YStep");
-  zStep=Control.EvalPair<double>
-    (keyNum+"ZStep",keyName+"ZStep");
-  xyAngle=Control.EvalPair<double>
-    (keyNum+"XYangle",keyName+"XYangle");
-  zAngle=Control.EvalPair<double>
-    (keyNum+"Zangle",keyName+"Zangle");
-
-  mat=ModelSupport::EvalMat<int>
-    (Control,keyNum+"NLayer",keyName+"NLayer");				 
-
-  nLayer=Control.EvalPair<size_t>
-    (keyNum+"NLayer",keyName+"NLayer");
+  nLayer=Control.EvalPair<size_t>(keyName,baseName,"NLayer");
 
   if (!nLayer) return;
   
@@ -132,17 +155,14 @@ WedgeItem::populate(const FuncDataBase& Control)
       const std::string AStr=StrFunc::makeString(i);
       const std::string BStr=StrFunc::makeString(i+1);
       if (i) 
-	radius.push_back
-	  (SimProcess::getIndexVar<double>
-	   (Control,keyName,"Radius"+AStr,beamNumber));
+	radius.push_back(Control.EvalPair<double>
+			 (keyName,baseName,"Radius"+AStr));
+	  
+ 	width.push_back(Control.EvalPair<double>
+			(keyName,baseName,"Width"+BStr));
+	height.push_back(Control.EvalPair<double>
+			 (keyName,baseName,"Height"+BStr));
 
-      width.push_back
-	(SimProcess::getIndexVar<double>
-	 (Control,keyName,"Width"+BStr,beamNumber));
-
-      height.push_back
-	(SimProcess::getIndexVar<double>
-	 (Control,keyName,"Height"+BStr,beamNumber));
     }
   return;
 }

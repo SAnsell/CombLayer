@@ -39,7 +39,7 @@ class beamSlot : public attachSystem::ContainedComp,
 {
  private:
 
-  const int slotNumber;    ///< Hole index
+  const std::string baseName;  ///< Base name
   const int surfIndex;     ///< surf number
   int cellIndex;           ///< Cell index
   

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   build/makeTS2Bulk.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -149,6 +149,21 @@ makeTS2Bulk::~makeTS2Bulk()
    */
 {}
 
+
+void
+makeTS2Bulk::insertPipeObjects(Simulation* SimPtr,
+			       const mainSystem::inputParam& IParam)
+  /*!
+    Accessor function to create pipe objects 
+    \param SimPtr :: Simulation system
+    \param IParam :: Input from command line
+  */
+{
+  ELog::RegMethod RegA("makeTS2Bulk","insertPipeObjects");
+  RefObj->insertPipeObjects(*SimPtr,IParam);
+  return;
+}
+
 void 
 makeTS2Bulk::build(Simulation* SimPtr,
 		   const mainSystem::inputParam& IParam)
@@ -177,20 +192,6 @@ makeTS2Bulk::build(Simulation* SimPtr,
 	
   return;
 }
-
-void
-makeTS2Bulk::insertPipeObjects(Simulation* SimPtr,
-			       const mainSystem::inputParam& IParam)
-  /*!
-    Accessor function to create pipe objects 
-    \param SimPtr :: Simulation system
-    \param IParam :: Input from command line
-  */
-{
-  ELog::RegMethod RegA("makeTS2Bulk","insertPipeObjects");
-  RefObj->insertPipeObjects(*SimPtr,IParam);
-  return;
-}
-
+  
 
 }   // NAMESPACE moderatorSystem

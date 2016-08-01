@@ -323,8 +323,7 @@ ShieldGenerator::setRFLayers(const size_t nF,const size_t nR)
 void
 ShieldGenerator::generateShield
 ( FuncDataBase& Control,const std::string& keyName,
-  const double length,
-  const double side,const double height,
+  const double length,const double side,const double height,
   const double depth,const size_t NSeg,const size_t NLayer)  const
   /*!
     Primary funciton for setting the variables

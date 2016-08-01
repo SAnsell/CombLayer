@@ -78,9 +78,10 @@ namespace delftSystem
 {
 
 beamSlot::beamSlot(const std::string& Key,const int SN)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
-  slotNumber(SN),
-  surfIndex(ModelSupport::objectRegister::Instance().cell(Key,SN)),
+  attachSystem::ContainedComp(),
+  attachSystem::FixedComp(Key+StrFunc::makeString(SN),6),
+  baseName(Key),
+  surfIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
   cellIndex(surfIndex+1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -91,7 +92,7 @@ beamSlot::beamSlot(const std::string& Key,const int SN)  :
 
 beamSlot::beamSlot(const beamSlot& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  slotNumber(A.slotNumber),surfIndex(A.surfIndex),
+  baseName(A.baseName),surfIndex(A.surfIndex),
   cellIndex(A.cellIndex),xyAngle(A.xyAngle),zAngle(A.zAngle),
   xStep(A.xStep),zStep(A.zStep),xSize(A.xSize),
   zSize(A.zSize)
@@ -140,26 +141,26 @@ beamSlot::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("beamSlot","populate");
   
-  const std::string keyNum(keyName+StrFunc::makeString(slotNumber));
   // First get inner widths:
-  xStep=Control.EvalPair<double>(keyNum+"XStep",keyName+"XStep");
-  zStep=Control.EvalPair<double>(keyNum+"ZStep",keyName+"ZStep");
+  axisAngle=Control.EvalPair<double>(keyName+"AxisAngle",keyName+"AxisAngle");
+  
+  xStep=Control.EvalPair<double>(keyName+"XStep",baseName+"XStep");
+  zStep=Control.EvalPair<double>(keyName+"ZStep",baseName+"ZStep");
+  xyAngle=Control.EvalPair<double>(keyName+"XYAngle",baseName+"XYAngle");
+  zAngle=Control.EvalPair<double>(keyName+"ZAngle",baseName+"ZAngle");
 
-  xyAngle=Control.EvalPair<double>(keyNum+"XYAngle",keyName+"XYAngle");
-  axisAngle=Control.EvalPair<double>(keyNum+"AxisAngle",keyName+"AxisAngle");
-  zAngle=Control.EvalPair<double>(keyNum+"ZAngle",keyName+"ZAngle");
+  
+  xSize=Control.EvalPair<double>(keyName+"XSize",baseName+"XSize");
+  zSize=Control.EvalPair<double>(keyName+"ZSize",baseName+"ZSize");
 
-  xSize=Control.EvalPair<double>(keyNum+"XSize",keyName+"XSize");
-  zSize=Control.EvalPair<double>(keyNum+"ZSize",keyName+"ZSize");
+  endThick=Control.EvalPair<double>(keyName+"EndThick",baseName+"EndThick");
+  divideThick=Control.EvalPair<double>(keyName+"DivideThick",
+				       baseName+"DivideThick");
 
-  endThick=Control.EvalPair<double>(keyNum+"EndThick",keyName+"EndThick");
-  divideThick=Control.EvalPair<double>(keyNum+"DivideThick",
-				       keyName+"DivideThick");
-  NChannels=SimProcess::getIndexVar<size_t>(Control,keyName,
-					"NChannels",slotNumber);
+  NChannels=Control.EvalPair<size_t>(keyName,baseName,"NChannels");
 
-  glassMat=ModelSupport::EvalMat<int>(Control,keyNum+"GlassMat",
-				      keyName+"GlassMat");
+  glassMat=ModelSupport::EvalMat<int>(Control,keyName+"GlassMat",
+				      baseName+"GlassMat");
 
   return;
 }

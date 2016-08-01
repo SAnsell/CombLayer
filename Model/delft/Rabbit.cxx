@@ -148,7 +148,6 @@ Rabbit::populate(const FuncDataBase& Control)
       FixedOffset::populate(Control);
   
       objName=Control.EvalVar<std::string>(keyName+"GridKey");
-      
       // First get inner widths:
       length=Control.EvalPair<double>(keyName,baseName,"Length");
       capThick=Control.EvalPair<double>(keyName,baseName,"CapThick");
@@ -370,16 +369,18 @@ Rabbit::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("Rabbit","createAll");
   populate(System.getDataBase());
-  if (objName.empty())
+  if (!objName.empty())
     {
       createUnitVector(RG);
       createSurfaces();
       createObjects(System);
       createLinks();
       insertObjects(System);
+      return 1;
     }
+  return 0;
+      
 
-  return 1;
 }
 
 

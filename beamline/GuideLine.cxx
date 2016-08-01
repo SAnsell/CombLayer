@@ -852,6 +852,7 @@ GuideLine::addEndCut(const std::string& EC)
     {
       activeEnd=1;
       endCut.procString(EC);
+      endCut.populateSurf();
     }
   return;
 }

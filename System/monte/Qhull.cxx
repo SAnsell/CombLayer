@@ -312,6 +312,7 @@ Qhull::calcVertex()
   createSurfaceList();
   populate();
   calcIntersections();
+  ELog::EM<<"Cell = "<<str()<<ELog::endDiag;
   if (!VList.empty())  
     calcCentreOfMass();
     

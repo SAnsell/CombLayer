@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   moderator/VacVessel.cxx
  *
@@ -413,7 +413,7 @@ VacVessel::createLinks()
 
   // set Links:
   for(size_t i=2;i<6;i++)
-    FixedComp::setConnect(i,getSurfacePoint(i,4),getDirection(i));
+    FixedComp::setConnect(i,getSurfacePoint(4,i+1),getDirection(i));
 
   // Set Connect surfaces:
   for(int i=2;i<6;i++)
@@ -458,21 +458,25 @@ VacVessel::getDirection(const size_t side) const
 
 
 Geometry::Vec3D
-VacVessel::getSurfacePoint(const size_t side,const size_t layer) const
+VacVessel::getSurfacePoint(const size_t layer,
+			   const long int sideIndex) const
   /*!
     Get the center point for the surfaces in each layer
-    \param side :: Index to side (front/back/left/right/up/down)
     \param layer :: Layer number : 0 is inner 4 is outer
+    \param side :: Index to side (front/back/left/right/up/down)
     \return point on surface
   */
 {
   ELog::RegMethod RegA("VacVessel","getSurfacePoint");
 
-  if (side>5) 
-    throw ColErr::IndexError<size_t>(side,5,"sideIndex ");
+  if (std::abs(sideIndex)>6) 
+    throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex ");
   if (layer>4) 
-    throw ColErr::IndexError<size_t>(layer,4,"layer");
-  
+    throw ColErr::IndexError<size_t>(layer,5,"layer");
+
+  if (sideIndex==0) return Origin;
+
+  const size_t SI(static_cast<size_t>(std::abs(sideIndex))-1);
   const double frontDist[]={vacPosGap,alPos,terPos,outPos,clearPos};
   const double backDist[]={vacNegGap,alNeg,terNeg,outNeg,clearNeg};
   const double sideLDist[]={vacLSide,alSide,terSide,outSide,clearSide};
@@ -483,13 +487,13 @@ VacVessel::getSurfacePoint(const size_t side,const size_t layer) const
   const double* DPtr[]={frontDist,backDist,sideLDist,
 			sideRDist,topDist,baseDist};
 
-  const Geometry::Vec3D XYZ=getDirection(side);
+  const Geometry::Vec3D XYZ=getDirection(SI);
 
   double sumVec(0.0);
   for(size_t i=0;i<=layer;i++)
-    sumVec+=DPtr[side][i];
+    sumVec+=DPtr[SI][i];
   
-  return BVec[side]+XYZ*sumVec;
+  return BVec[SI]+XYZ*sumVec;
 }
 
 void

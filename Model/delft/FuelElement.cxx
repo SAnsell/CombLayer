@@ -537,6 +537,7 @@ FuelElement::layerProcess(Simulation& System,const FuelLoad& FuelSystem)
       for(size_t j=0;j<nFuel-1;j++)
 	{
 	  DA.addFrac(fuelFrac[j]);
+	  
 	  DA.addMaterial
 	    (FuelSystem.getMaterial(XIndex+1,YIndex+1,i+1,j+1,fuelMat));
 	}

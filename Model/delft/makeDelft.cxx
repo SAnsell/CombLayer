@@ -78,6 +78,8 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "SecondTrack.h"
 #include "TwinComp.h"
 #include "pipeUnit.h"
@@ -292,7 +294,7 @@ makeDelft::makeBlocks(Simulation& System)
     ModelSupport::objectRegister::Instance();
   
   SPType GB(new SpaceBlock("Box",1));
-  GB->addInsertCell(Pool->getPoolCell());
+  GB->addInsertCell(Pool->getCells("Water"));
   int flag=GB->createAll(System,*GridPlate,1);  
   if (flag<0) return;
   if (flag>0)
@@ -302,7 +304,7 @@ makeDelft::makeBlocks(Simulation& System)
     }
 
   GB=SPType(new SpaceBlock("Box",2));
-  GB->addInsertCell(Pool->getPoolCell());
+  GB->addInsertCell(Pool->getCells("Water"));
   flag=GB->createAll(System,*GridPlate,2);  
   if (flag<0) return;
   if (flag>0)
@@ -332,8 +334,9 @@ makeDelft::makeRabbit(Simulation& System)
   int flag(1);
   do
     {
-      RPType RB(new Rabbit("Rabbit",index));  
-      flag=RB->createAll(System,*GridPlate);  
+      RPType RB(new Rabbit("Rabbit",index));
+	
+      flag=RB->createAll(System,*GridPlate);	
       if (flag) 
 	{
 	  OR.addObject(RB); 
@@ -400,36 +403,38 @@ makeDelft::build(Simulation* SimPtr,
 
   const std::string refExtra=IParam.getValue<std::string>("refExtra");
 
+  Pool->addInsertCell(74123);
+  Pool->createAll(*SimPtr,WC,0);
+
   if (IParam.flag("fuelXML"))
     GridPlate->loadFuelXML(IParam.getValue<std::string>("fuelXML"));
+  GridPlate->addInsertCell(Pool->getCells("Water"));
   GridPlate->createAll(*SimPtr,WC);
   if (IParam.flag("FuelXML"))
     GridPlate->writeFuelXML(IParam.getValue<std::string>("FuelXML"));
 
-  Pool->addInsertCell(74123);
-  Pool->createAll(*SimPtr,WC,*GridPlate);
 
-  FlightA->addInsertCell(Pool->getPoolCell());
+  FlightA->addInsertCell(Pool->getCells("Water"));
   FlightA->addInsertCell(74123);
   FlightA->createAll(*SimPtr,WC,WC.getX());
 
-  FlightB->addInsertCell(Pool->getPoolCell());
+  FlightB->addInsertCell(Pool->getCells("Water"));
   FlightB->addInsertCell(74123);
   FlightB->createAll(*SimPtr,WC,WC.getX());
 
-  FlightC->addInsertCell(Pool->getPoolCell());
+  FlightC->addInsertCell(Pool->getCells("Water"));
   FlightC->addInsertCell(74123);
   FlightC->createAll(*SimPtr,WC,WC.getX());
 
-  FlightD->addInsertCell(Pool->getPoolCell());
+  FlightD->addInsertCell(Pool->getCells("Water"));
   FlightD->addInsertCell(74123);
   FlightD->createAll(*SimPtr,WC,-WC.getX());
 
-  FlightE->addInsertCell(Pool->getPoolCell());
+  FlightE->addInsertCell(Pool->getCells("Water"));
   FlightE->addInsertCell(74123);
   FlightE->createAll(*SimPtr,WC,-WC.getX());
 
-  FlightF->addInsertCell(Pool->getPoolCell());
+  FlightF->addInsertCell(Pool->getCells("Water"));
   FlightF->addInsertCell(74123);
   FlightF->createAll(*SimPtr,WC,-WC.getX());
 
@@ -438,34 +443,34 @@ makeDelft::build(Simulation* SimPtr,
 
   if (refExtra=="R2Surround")
     {
-      R2Be->addInsertCell(Pool->getPoolCell());
+      R2Be->addInsertCell(Pool->getCells("Water"));
       R2Be->createAll(*SimPtr,*FlightA,
 		      FlightB->getExclude()+FlightC->getExclude());
     }
   else if (refExtra=="R2Cube")
     {
-      R2Cube->addInsertCell(Pool->getPoolCell());
+      R2Cube->addInsertCell(Pool->getCells("Water"));
       R2Cube->createAll(*SimPtr,*FlightA,
 		      FlightA->getExclude());
     }
   else if (refExtra=="FullBlock")
     {
-      RFull->addInsertCell(Pool->getPoolCell());
+      RFull->addInsertCell(Pool->getCells("Water"));
       RFull->createAll(*SimPtr,*FlightA,-1);
       attachSystem::addToInsertLineCtrl(*SimPtr,*RFull,*FlightA);
       attachSystem::addToInsertLineCtrl(*SimPtr,*RFull,*FlightB);
       attachSystem::addToInsertLineCtrl(*SimPtr,*RFull,*FlightC);
-      LFull->addInsertCell(Pool->getPoolCell());
+      LFull->addInsertCell(Pool->getCells("Water"));
       LFull->createAll(*SimPtr,*FlightD,-1);
       attachSystem::addToInsertLineCtrl(*SimPtr,*LFull,*FlightD);
       attachSystem::addToInsertLineCtrl(*SimPtr,*LFull,*FlightE);
       attachSystem::addToInsertLineCtrl(*SimPtr,*LFull,*FlightF);
     }
   
-
   makeBlocks(*SimPtr);
+  ELog::EM<<"ASDFSDAF "<<ELog::endDiag;
   makeRabbit(*SimPtr);
-
+  ELog::EM<<"ASDFSDAF "<<ELog::endDiag;
   // ELog::EM<<"Insert to be removed "<<ELog::endWarn;
   if (ColdMod)
     {

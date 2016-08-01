@@ -127,7 +127,8 @@ makeTS2::build(Simulation* SimPtr,
 
 
   bulkObj.build(SimPtr,IParam);
-
+  ELog::EM<<"EARLY RETURN :: REMOVE "<<ELog::endCrit;
+  return;
   if (!IParam.flag("exclude") ||
       (!IParam.compValue("E",std::string("Bulk"))) ) 
     {
@@ -144,5 +145,5 @@ makeTS2::build(Simulation* SimPtr,
   return;
 }
 
-}   // NAMESPACE ts1System
+}   // NAMESPACE moderatorSystem
 

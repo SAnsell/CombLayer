@@ -230,10 +230,10 @@ CouplePipe::insertOuter(Simulation& System,
   const long int activeSide(5);
   // Inner Points
   GOuter.addPoint(VC.getSurfacePoint(0,activeSide)+X*Xoffset+Y*Yoffset);
+  GOuter.addPoint(VC.getSurfacePoint(1,activeSide)+X*Xoffset+Y*Yoffset);
   GOuter.addPoint(VC.getSurfacePoint(2,activeSide)+X*Xoffset+Y*Yoffset);
   GOuter.addPoint(VC.getSurfacePoint(3,activeSide)+X*Xoffset+Y*Yoffset);
-  GOuter.addPoint(VC.getSurfacePoint(4,activeSide)+X*Xoffset+Y*Yoffset);
-  GOuter.addPoint(VC.getSurfacePoint(5,activeSide)+
+  GOuter.addPoint(VC.getSurfacePoint(4,activeSide)+
                   X*Xoffset+Y*Yoffset-Z*fullLen);
   GOuter.setActive(0,3);
   GOuter.setActive(1,7);

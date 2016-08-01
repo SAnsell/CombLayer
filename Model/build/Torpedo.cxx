@@ -198,7 +198,7 @@ Torpedo::calcVoidIntercept(const attachSystem::ContainedComp& CC)
   ELog::RegMethod RegA("Torpedo","calcVoidIntercept");
   // Clear set
   innerSurf.erase(innerSurf.begin(),innerSurf.end());
-  
+
   // Create 4 lines: 
   for(int i=0;i<4;i++)
     {
@@ -208,6 +208,8 @@ Torpedo::calcVoidIntercept(const attachSystem::ContainedComp& CC)
       // and then look back
       const Geometry::Vec3D OP=Origin+Y*1000.0+Z*(zScale+zOffset)+
 	X*xScale;
+      if (i==0)
+        ELog::EM<<"Size == "<<OP<<":"<<Y<<ELog::endDiag;
       const Geometry::Line LA(OP,-Y);
       const int surfN=CC.surfOuterIntersect(LA);
       if (surfN)
@@ -242,6 +244,9 @@ Torpedo::calcConvex(Simulation& System)
   if (VC)
     {
       VC->calcVertex();
+      std::vector<Geometry::Vec3D> PT=VC->getVertex();
+      const std::string dSurf=getInnerSurf();
+      ELog::EM<<"Size == "<<PT.size()<<" "<<dSurf<<ELog::endDiag;
       vBox.setPoints(VC->getVertex());
       vBox.createAll(1);
     }
@@ -298,6 +303,7 @@ Torpedo::createObjects(Simulation& System)
   dSurf=getInnerSurf();
   Out=ModelSupport::getComposite(SMap,surfIndex,"3 -4 5 -6 -7 ");
   // ADD INNER SURF HERE:
+  ELog::EM<<"DSurf == "<<dSurf<<ELog::endDiag;
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+dSurf));
   voidCell=cellIndex-1;
 

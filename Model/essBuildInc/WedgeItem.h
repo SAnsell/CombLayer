@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   essBuildInc/WedgeItem.h
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,19 +36,14 @@ namespace essSystem
 */
 
 class WedgeItem : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+    public attachSystem::FixedOffset
 {
  private:
 
-  const int beamNumber;           ///< number of the beamline
+  const std::string baseName;     ///< BaseName
   const int wedgeIndex;           ///< Index of surface offset
   int cellIndex;                  ///< Cell index
 
-  double xStep;                   ///< X step
-  double yStep;                   ///< Y step
-  double zStep;                   ///< Z step
-  double xyAngle;                 ///< XY Angle
-  double zAngle;                  ///< Z Angle
 
   size_t nLayer;
   std::vector<double> radius;    ///< Radial cuts [nlayer-1]

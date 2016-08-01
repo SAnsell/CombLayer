@@ -135,7 +135,7 @@ PipeCollimator::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("PipeCollimator","populate");
 
-
+  FixedOffset::populate(Control);
   length=Control.EvalVar<double>(keyName+"Length");
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
   

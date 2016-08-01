@@ -46,13 +46,7 @@ namespace SimProcess
   template<typename T,typename U>
   T getDefIndexVar(const FuncDataBase&,const std::string&,
 		   const std::string&,const U&,const T&);
-  template<typename T,typename U>
-  T getIndexVar(const FuncDataBase&,const std::string&,
-		const std::string&,const U&);
 
-  template<typename T>
-  int getIndexVec(const FuncDataBase&,const std::string&,
-		  const int,const std::string&,const std::vector<T>&);
 
   template<typename T>
   std::vector<T> getVarVec(const FuncDataBase&,const std::string&);
