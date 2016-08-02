@@ -224,6 +224,7 @@ BilbaoWheel::populate(const FuncDataBase& Control)
   caseRadius=Control.EvalVar<double>(keyName+"CaseRadius");  
   voidRadius=Control.EvalVar<double>(keyName+"VoidRadius");
   aspectRatio=Control.EvalVar<double>(keyName+"AspectRatio");
+  mainTemp=Control.EvalVar<double>(keyName+"Temp");
 
   nSectors=Control.EvalVar<size_t>(keyName+"NSectors");
 

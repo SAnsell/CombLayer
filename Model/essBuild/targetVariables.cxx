@@ -83,7 +83,7 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelTargetHeight",8.0);
   Control.addVariable("BilbaoWheelVoidTungstenThick", 0.1);
   Control.addVariable("BilbaoWheelSteelTungstenThick", 0.2);
-  Control.addVariable("BilbaoWheelTemp",300.0);
+  Control.addVariable("BilbaoWheelTemp",600.0);
   Control.addVariable("BilbaoWheelCoolantThick",0.5);
   Control.addVariable("BilbaoWheelCaseThick",1.0);
   Control.addVariable("BilbaoWheelCaseThickIn",1.5);
