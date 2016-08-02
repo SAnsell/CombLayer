@@ -166,6 +166,13 @@ addESSMaterial()
   // 0.07/0.0689677 because CL for some reason changes the density. This correction works for 0.5% ortho only !!! todo !!!
   MDB.resetMaterial(MObj);
 
+  // HPARA + 5% vol Al
+  // calculated with mixtures.py (commit b777e0f)
+  MObj.setMaterial(imat++, "HPARAAl05",
+		   " 1001.70c 0.928781449666 13027.70c 0.0712185503336 ", "hpara.10t al27.10t", MLib);
+  MObj.setDensity(-0.203);
+  MDB.resetMaterial(MObj);
+
   // Generic light water
   // Simplified light water for  basic neutronic simulations
   MObj.setMaterial(imat++/*110*/, "H2O", " 1001.70c 0.66666667 "
