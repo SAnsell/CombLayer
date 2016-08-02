@@ -59,6 +59,7 @@ class MidWaterDivider :
   int modMat;               ///< Water material
   int wallMat;              ///< Wall material
   double modTemp;           ///< Moderator temperature
+  double edgeRadius;        ///< water edge radius
 
   double totalHeight;       ///< Total height of system
   
