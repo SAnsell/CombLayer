@@ -3,7 +3,7 @@
  
  * File:   essBuild/VOR.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -83,6 +83,7 @@
 #include "Bunker.h"
 #include "BunkerInsert.h"
 #include "ChopperPit.h"
+#include "ChopperUnit.h"
 #include "DHut.h"
 #include "DetectorTank.h"
 #include "CylSample.h"
@@ -94,22 +95,26 @@ namespace essSystem
 
 VOR::VOR(const std::string& keyName) :
   attachSystem::CopiedComp("vor",keyName),
-  vorAxis(new attachSystem::FixedComp(newName+"Axis",4)),
+  vorAxis(new attachSystem::FixedOffset(newName+"Axis",4)),
+
   FocusA(new beamlineSystem::GuideLine(newName+"FA")),
-  VacBoxA(new constructSystem::VacuumBox(newName+"VacA")),
-  DDisk(new constructSystem::DiskChopper(newName+"DBlade")),
-  DDiskHouse(new constructSystem::ChopperHousing(newName+"DBladeHouse")),
+
   VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
   FocusB(new beamlineSystem::GuideLine(newName+"FB")),
+
+  VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
+  FocusC(new beamlineSystem::GuideLine(newName+"FC")),
+
+  ChopperA(new constructSystem::ChopperUnit(newName+"ChopperA")),
+  DDisk(new constructSystem::DiskChopper(newName+"DBlade")),
+
   BInsert(new BunkerInsert(newName+"BInsert")),
 
   FocusBExtra(new beamlineSystem::GuideLine(newName+"FBextra")),
   PitA(new constructSystem::ChopperPit(newName+"PitA")),
   GuidePitAFront(new beamlineSystem::GuideLine(newName+"GPitAFront")),
   GuidePitABack(new beamlineSystem::GuideLine(newName+"GPitABack")),
-  ChopperA(new constructSystem::DiskChopper(newName+"ChopperA")),
 
-  FocusC(new beamlineSystem::GuideLine(newName+"FC")),
 
   PitB(new constructSystem::ChopperPit(newName+"PitB")),
   GuidePitBFront(new beamlineSystem::GuideLine(newName+"GPitBFront")),
@@ -138,20 +143,25 @@ VOR::VOR(const std::string& keyName) :
   OR.addObject(vorAxis);
 
   OR.addObject(FocusA);
-  OR.addObject(VacBoxA);
-  OR.addObject(DDisk);
-  OR.addObject(DDiskHouse);
+  
   OR.addObject(VPipeB);
   OR.addObject(FocusB);
+
+  OR.addObject(VPipeC);
+  OR.addObject(FocusC);
+
+
+  OR.addObject(ChopperA);
+  OR.addObject(DDisk);
+
   OR.addObject(BInsert);
 
   OR.addObject(FocusBExtra);
   OR.addObject(PitA);
   OR.addObject(GuidePitAFront);
   OR.addObject(GuidePitABack);
-  OR.addObject(ChopperA);
 
-  OR.addObject(FocusC);
+
   // Second chopper
   OR.addObject(PitB);
   OR.addObject(GuidePitBFront);
@@ -176,20 +186,30 @@ VOR::~VOR()
 {}
 
 void
-VOR::setBeamAxis(const GuideItem& GItem,
-		  const bool reverseZ)
+VOR::setBeamAxis(const FuncDataBase& Control,
+		 const GuideItem& GItem,
+		 const bool reverseZ)
   /*!
     Set the primary direction object
+    \param Control :: Database for variables
     \param GItem :: Guide Item to 
+    \param reverseZ :: Reverse axis (if required)
    */
 {
   ELog::RegMethod RegA("VOR","setBeamAxis");
 
+  vorAxis->populate(Control);
   vorAxis->createUnitVector(GItem);
   vorAxis->setLinkCopy(0,GItem.getKey("Main"),0);
   vorAxis->setLinkCopy(1,GItem.getKey("Main"),1);
   vorAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
   vorAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
+
+  // BEAM needs to be shifted/rotated:
+  vorAxis->linkShift(3);
+  vorAxis->linkShift(4);
+  vorAxis->linkAngleRotate(3);
+  vorAxis->linkAngleRotate(4);
 
   if (reverseZ)
     vorAxis->reverseZ();
@@ -212,20 +232,51 @@ VOR::build(Simulation& System,
   // For output stream
   ELog::RegMethod RegA("VOR","build");
 
-  ELog::EM<<"\nBuilding VOR on : "<<GItem.getKeyName()<<ELog::endDiag;
+  ELog::EM<<"\nBuilding VOR on : "<<GItem.getKeyName()
+	  <<" Bunker: "<<bunkerObj.getKeyName()<<ELog::endDiag;
   const FuncDataBase& Control=System.getDataBase();
   CopiedComp::process(System.getDataBase());
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
   ELog::EM<<"Stop point == "<<stopPoint<<ELog::endDiag;
   
-  setBeamAxis(GItem,1);
+  setBeamAxis(Control,GItem,1);
+
   FocusA->addInsertCell(GItem.getCells("Void"));
-  const std::vector<int> cN=GItem.getCells("Void");
-  FocusA->addInsertCell(bunkerObj.getCell("MainVoid"));
-  //  FocusA->addEndCut(GItem.getKey("Beam").getSignedLinkString(-2));
+  FocusA->addFrontCut(GItem.getKey("Beam"),-1);
+  FocusA->addEndCut(GItem.getKey("Beam"),-2);
   FocusA->createAll(System,GItem.getKey("Beam"),-1,
 		    GItem.getKey("Beam"),-1);
   if (stopPoint==1) return;
+
+  VPipeB->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeB->createAll(System,FocusA->getKey("Guide0"),2);
+
+  FocusB->addInsertCell(VPipeB->getCells("Void"));
+  FocusB->createAll(System,*VPipeB,0,*VPipeB,0);
+
+  VPipeC->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeC->createAll(System,FocusB->getKey("Guide0"),2);
+
+  FocusC->addInsertCell(VPipeC->getCells("Void"));
+  FocusC->createAll(System,*VPipeC,0,*VPipeC,0);
+
+
+
+  // First (green chopper)
+  ChopperA->addInsertCell(bunkerObj.getCell("MainVoid"));
+  ChopperA->createAll(System,FocusC->getKey("Guide0"),2);
+
+  // Double disk chopper
+  DDisk->addInsertCell(ChopperA->getCell("Void"));
+  DDisk->setCentreFlag(3);  // Z direction
+  DDisk->setOffsetFlag(1);  // Z direction
+  DDisk->createAll(System,ChopperA->getKey("Beam"),0);
+
+
+
+
+
+  return;
   // First straight section
   VacBoxA->addInsertCell(bunkerObj.getCell("MainVoid"));
   VacBoxA->createAll(System,FocusA->getKey("Guide0"),2);
@@ -243,6 +294,8 @@ VOR::build(Simulation& System,
   DDiskHouse->addInsertCell(bunkerObj.getCell("MainVoid"));
   DDiskHouse->createAll(System,DDisk->getKey("Main"),0);
   DDiskHouse->insertComponent(System,"Void",*DDisk);
+
+    return;
 
   //  FocusB->addInsertCell(VacBoxA->getCells("Void"));
   //FocusB->insertObjects(System);
@@ -264,9 +317,9 @@ VOR::build(Simulation& System,
   if (stopPoint==2) return;
     
   // Make bunker insert
-  const attachSystem::FixedComp& GFC(FocusB->getKey("Guide0"));
   BInsert->createAll(System,FocusB->getKey("Guide0"),-1,bunkerObj);
-  attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);
+  attachSystem::addToInsertLineCtrl(System,bunkerObj,"frontWall",
+				    *BInsert,*BInsert);
 
   //  FocusB->addInsertCell(BInsert->getCell("Void"));
   BInsert->insertComponent(System,"Void",*FocusB);
@@ -282,17 +335,17 @@ VOR::build(Simulation& System,
   HeadRule GuideCut=
     attachSystem::unionLink(FocusBExtra->getKey("Shield"),{2,3,4,5,6});
   PitA->addInsertCell(voidCell);
-  PitA->createAll(System,FocusBExtra->getKey("Guide0"),2,GuideCut.display());
-
+  PitA->createAll(System,FocusBExtra->getKey("Guide0"),2);
+  PitA->insertComponent(System,"Outer",GuideCut);
   
   GuidePitAFront->addInsertCell(PitA->getCells("MidLayer"));
   GuidePitAFront->addEndCut(PitA->getKey("Inner").getSignedLinkString(1));
   GuidePitAFront->createAll(System,FocusBExtra->getKey("Guide0"),2,
 			    FocusBExtra->getKey("Guide0"),2);
 
-  ChopperA->addInsertCell(PitA->getCell("Void"));
-  ChopperA->setCentreFlag(3);  // -Z direction
-  ChopperA->createAll(System,*PitA,0);
+  //  ChopperA->addInsertCell(PitA->getCell("Void"));
+  //  ChopperA->setCentreFlag(3);  // -Z direction
+  //  ChopperA->createAll(System,*PitA,0);
 
   
   FocusC->addInsertCell(voidCell);
@@ -312,8 +365,8 @@ VOR::build(Simulation& System,
   HeadRule GuideCutB=
     attachSystem::unionLink(FocusC->getKey("Shield"),{2,3,4,5,6});
   PitB->addInsertCell(voidCell);
-  PitB->createAll(System,FocusC->getKey("Guide0"),2,GuideCutB.display());
-  
+  PitB->createAll(System,FocusC->getKey("Guide0"),2);
+  PitB->insertComponent(System,"Outer",GuideCutB);
 
   GuidePitBFront->addInsertCell(PitB->getCells("MidLayer"));
   GuidePitBFront->addEndCut(PitB->getKey("Inner").getSignedLinkString(1));

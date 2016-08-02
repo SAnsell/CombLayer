@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   visitInc/Visit.h
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ class Visit
  public:
 
   /// Types of information to plot
-  enum VISITenum { cellID=0,material=1,density=2,weight=3};
+  enum class VISITenum : int { cellID=0,material=1,density=2,weight=3};
 
  private:
   

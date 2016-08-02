@@ -401,7 +401,7 @@ TaperedDiskPreMod::createLinks()
 
 Geometry::Vec3D
 TaperedDiskPreMod::getSurfacePoint(const size_t layerIndex,
-			   const size_t sideIndex) const
+				   const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link point
     \param sideIndex :: Side [0-5]
@@ -435,7 +435,7 @@ TaperedDiskPreMod::getSurfacePoint(const size_t layerIndex,
 
 int
 TaperedDiskPreMod::getLayerSurf(const size_t layerIndex,
-			const size_t sideIndex) const
+			const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
     \param sideIndex :: Side [0-3]
@@ -467,7 +467,7 @@ TaperedDiskPreMod::getLayerSurf(const size_t layerIndex,
 
 std::string
 TaperedDiskPreMod::getLayerString(const size_t layerIndex,
-			 const size_t sideIndex) const
+			 const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
     \param layerIndex :: layer, 0 is inner moderator [0-4]

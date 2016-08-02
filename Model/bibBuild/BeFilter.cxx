@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   bibBuild/BeFilter.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,6 +65,7 @@
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 
@@ -75,7 +76,7 @@ namespace bibSystem
 {
 
 BeFilter::BeFilter(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
   beFilterIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(beFilterIndex+1)
   /*!
@@ -85,12 +86,11 @@ BeFilter::BeFilter(const std::string& Key) :
 {}
 
 BeFilter::BeFilter(const BeFilter& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   beFilterIndex(A.beFilterIndex),cellIndex(A.cellIndex),
-  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  xyAngle(A.xyAngle),zAngle(A.zAngle),width(A.width),
-  height(A.height),length(A.length),wallThick(A.wallThick),
-  wallMat(A.wallMat),beMat(A.beMat),beTemp(A.beTemp)
+  width(A.width),height(A.height),length(A.length),
+  wallThick(A.wallThick),wallMat(A.wallMat),beMat(A.beMat),
+  beTemp(A.beTemp)
   /*!
     Copy constructor
     \param A :: BeFilter to copy
@@ -110,11 +110,6 @@ BeFilter::operator=(const BeFilter& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
       cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
       width=A.width;
       height=A.height;
       length=A.length;
@@ -142,12 +137,7 @@ BeFilter::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("BeFilter","populate");
 
-  // Master values
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
-  zAngle=Control.EvalVar<double>(keyName+"Zangle");
+  FixedOffset::populate(Control);
 
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
@@ -165,33 +155,30 @@ BeFilter::populate(const FuncDataBase& Control)
 
 void
 BeFilter::createUnitVector(const attachSystem::FixedComp& FC,
-			   const size_t sideIndex)
+			   const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Fixed Component
+    \param sideIndex :: link point [signed]
   */
 {
   ELog::RegMethod RegA("BeFilter","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC);
-  Origin=FC.getLinkPt(sideIndex); /** Aqui pide el punto*/
-  
-  // Note shift by wall thickness to allow wall creation
-  applyShift(xStep,wallThick,zStep);
-  applyAngleRotate(xyAngle,zAngle);
-
+  attachSystem::FixedComp::createUnitVector(FC,0);
+  Origin=FC.getSignedLinkPt(sideIndex);
+  applyOffset();
+  Origin+=Y*wallThick;   // accommodate wall thickness
   return;
 }
 
 void
 BeFilter::createSurfaces()
   /*!
-    Create planes for the silicon and Polyethene layers
+    Create surface for fileter and surround
   */
 {
   ELog::RegMethod RegA("BeFilter","createSurfaces");
 
   ModelSupport::buildPlane(SMap,beFilterIndex+1,Origin,Y);
-  /// Superficie cilindrica. Hay que indicar le eje normal
   ModelSupport::buildCylinder(SMap,beFilterIndex+2,Origin,Z,length); 
   
   ModelSupport::buildPlane(SMap,beFilterIndex+3,Origin-X*width/2.0,X);  
@@ -254,14 +241,18 @@ BeFilter::createLinks()
   // set Links :: Inner links:
   // Wrapper layer
   // Index : Point :: Normal
-  FixedComp::setConnect(0,Origin-Y*wallThick,-Y); /** Es importante decir donde estan los puntos, y elegir la normal a los mismos.*/
+  // Es importante decir donde estan los puntos,
+  // y elegir la normal a los mismos.
+  FixedComp::setConnect(0,Origin-Y*wallThick,-Y);
   FixedComp::setConnect(1,Origin+Y*(length+wallThick),Y);  
   FixedComp::setConnect(2,Origin-X*(width/2.0+wallThick),-X);  
   FixedComp::setConnect(3,Origin+X*(width/2.0+wallThick),X);  
   FixedComp::setConnect(4,Origin-Z*(height/2.0+wallThick),-Z);  
   FixedComp::setConnect(5,Origin+Z*(height/2.0+wallThick),Z);  
 
-  FixedComp::setLinkSurf(0,-SMap.realSurf(beFilterIndex+11)); /**Hay que respetar el numero de superficie a la que se liga el punto de vinculado (linking point)*/
+  //Hay que respetar el numero de superficie a la que se liga el 
+  // punto de vinculado (linking point)
+  FixedComp::setLinkSurf(0,-SMap.realSurf(beFilterIndex+11)); 
   FixedComp::setLinkSurf(1,SMap.realSurf(beFilterIndex+12));
   FixedComp::setLinkSurf(2,-SMap.realSurf(beFilterIndex+13));
   FixedComp::setLinkSurf(3,SMap.realSurf(beFilterIndex+14));
@@ -274,7 +265,7 @@ BeFilter::createLinks()
 void
 BeFilter::createAll(Simulation& System,
 		    const attachSystem::FixedComp& FC,
-		    const size_t sideIndex,
+		    const long int sideIndex,
 		    const attachSystem::ContainedComp& CC)
   /*!
     Extrenal build everything

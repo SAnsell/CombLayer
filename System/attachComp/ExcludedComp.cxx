@@ -3,7 +3,7 @@
  
  * File:   attachComp/ExcludedComp.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -269,10 +269,8 @@ ExcludedComp::addExcludeSurf(const std::string& FCName,
     ModelSupport::objectRegister::Instance();
   
   const attachSystem::FixedComp* FCptr=
-    OR.getObject<attachSystem::FixedComp>(FCName);
-  if (!FCptr)
-    throw ColErr::InContainerError<std::string>
-      (FCName,"FCName not found in objectRegister");
+    OR.getObjectThrow<attachSystem::FixedComp>(FCName,"FixedComp");
+
   addExcludeSurf(*FCptr,dirFlag,LIndex);
   return;
 }

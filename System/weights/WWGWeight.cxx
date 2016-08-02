@@ -46,7 +46,7 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "WeightMesh.h"
+#include "Mesh3D.h"
 #include "weightManager.h"
 #include "WWG.h"
 #include "ItemWeight.h"
@@ -111,14 +111,13 @@ WWGWeight::updateWM(WWG& wwg,
   std::fill(DVec.begin(),DVec.end(),1.0);
 
     // Work on minW first:
-  const double minW=
-    calcMinWeight(scaleFactor,minWeight,weightPower);
+  const double minW=calcMinWeight(scaleFactor,weightPower);
   const double factor=(minW<minWeight) ?
     log(minWeight)/log(minW) : 1.0;
 
   ELog::EM<<"Min W = "<<minW<<" "<<factor<<ELog::endDiag;
   
-  const WeightMesh& WGrid=wwg.getGrid();
+  const Geometry::Mesh3D& WGrid=wwg.getGrid();
 
   const size_t NX=WGrid.getXSize();
   const size_t NY=WGrid.getYSize();
@@ -179,14 +178,13 @@ WWGWeight::invertWM(WWG& wwg,
   std::fill(DVec.begin(),DVec.end(),1.0);
 
     // Work on minW first:
-  const double minW=
-    calcMinWeight(scaleFactor,minWeight,weightPower);
+  const double minW=calcMinWeight(scaleFactor,weightPower);
   const double factor=(minW<minWeight) ?
     log(minWeight)/log(minW) : 1.0;
 
   ELog::EM<<"Min W = "<<minW<<" "<<factor<<ELog::endDiag;
   
-  const WeightMesh& WGrid=wwg.getGrid();
+  const Geometry::Mesh3D& WGrid=wwg.getGrid();
 
   const size_t NX=WGrid.getXSize();
   const size_t NY=WGrid.getYSize();

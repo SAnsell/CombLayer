@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   essBuild/SegWheel.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,6 +67,8 @@
 #include "FixedComp.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "WheelBase.h"
 #include "SegWheel.h"
 
@@ -235,9 +237,11 @@ SegWheel::populate(const FuncDataBase& Control)
   targetSectorOffsetZ=Control.EvalVar<double>(keyName+"TargetSectorOffsetZ");  
   targetSectorAngleXY=Control.EvalVar<double>(keyName+"TargetSectorAngleXY");  
   targetSectorAngleZ=Control.EvalVar<double>(keyName+"TargetSectorAngleZ");  
-  targetSectorApertureXY=Control.EvalVar<double>(keyName+"TargetSectorApertureXY");  
+  targetSectorApertureXY=Control.EvalVar<double>
+    (keyName+"TargetSectorApertureXY");
+  
   targetSectorApertureZ=Control.EvalVar<double>(keyName+"TargetSectorApertureZ");  
-  targetSectorNumber=Control.EvalVar<double>(keyName+"TargetSectorNumber");  
+  targetSectorNumber=Control.EvalVar<size_t>(keyName+"TargetSectorNumber");  
  
   coolantThickOut=Control.EvalVar<double>(keyName+"CoolantThickOut");  
   coolantThickIn=Control.EvalVar<double>(keyName+"CoolantThickIn");  
@@ -368,7 +372,6 @@ SegWheel::makeShaftObjects(Simulation& System)
   
   for(size_t i=0;i<targetSectorNumber;i++)
     {
-      const size_t index((4*(i+1))/targetSectorNumber);
 
       if (i<targetSectorNumber/4-1)
 	{
@@ -441,14 +444,16 @@ SegWheel::makeShaftObjects(Simulation& System)
 }
 
 void
-SegWheel::createUnitVector(const attachSystem::FixedComp& FC)
+SegWheel::createUnitVector(const attachSystem::FixedComp& FC,
+			   const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Fixed Component
+    \param sideIndex :: sideIndex
   */
 {
   ELog::RegMethod RegA("SegWheel","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC);
+  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
 
   applyShift(xStep,yStep,zStep);
   applyAngleRotate(xyAngle,zAngle);
@@ -714,17 +719,19 @@ SegWheel::createLinks()
 
 void
 SegWheel::createAll(Simulation& System,
-		     const attachSystem::FixedComp& FC)
+		    const attachSystem::FixedComp& FC,
+		    const long int sideIndex)
   /*!
     Extrenal build everything
     \param System :: Simulation
     \param FC :: FixedComponent for origin
+    \param sideIndex :: sideIndex
    */
 {
   ELog::RegMethod RegA("SegWheel","createAll");
   populate(System.getDataBase());
 
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
 

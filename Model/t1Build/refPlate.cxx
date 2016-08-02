@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1Build/refPlate.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@
 #include <list>
 #include <vector>
 #include <string>
-#include <boost/format.hpp>
+#include <memory>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -123,6 +123,7 @@ refPlate::setOrigin(const std::string& Name,const size_t Index)
     link surface given by Index as the origin and the axis is
     the Y-axis [+ve].
     \param Name :: FixedComp keyname
+    \param Index :: Link point coordinate [\todo move to long int]
   */
 {
   ELog::RegMethod RegA("refPlate","setOrigin(Name,Index)");

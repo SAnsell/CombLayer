@@ -3,7 +3,7 @@
  
  * File:   monte/RuleItems.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -233,7 +233,7 @@ SurfPoint::isValid(const Geometry::Vec3D& Pt,
   /*! 
     Determines if a point  is valid.  
     \param Pt :: Point to test
-    \param SN :: Exclude surf number 
+    \param ExSN :: Exclude surf number 
     \retval 1 :: Pt is the +ve side of the 
     surface or on the surface
     \retval 0 :: Pt is on the -ve side of the surface
@@ -250,7 +250,7 @@ SurfPoint::isValid(const Geometry::Vec3D& Pt,
   /*! 
     Determines if a point  is valid.  
     \param Pt :: Point to test
-    \param SN :: Exclude surf numbers 
+    \param ExSN :: Exclude surf numbers 
     \retval 1 :: Pt is the +ve side of the 
     surface or on the surface
     \retval 0 :: Pt is on the -ve side of the surface
@@ -352,6 +352,7 @@ SurfPoint::display(const Geometry::Vec3D& Pt) const
   /*!
     Returns the signed surface number as
     a string.
+    \param Pt :: Point to test validity
     \returns string of the value
   */
 {

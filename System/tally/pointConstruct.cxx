@@ -3,7 +3,7 @@
  
  * File:   tally/pointConstruct.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,6 +48,7 @@
 #include "Triple.h"
 #include "support.h"
 #include "stringCombine.h"
+#include "NList.h"
 #include "NRange.h"
 #include "Tally.h"
 #include "TallyCreate.h"
@@ -71,6 +72,7 @@
 #include "FixedComp.h"
 #include "SecondTrack.h"
 #include "TwinComp.h"
+#include "LinkSupport.h"
 #include "Simulation.h"
 #include "inputParam.h"
 #include "Line.h"
@@ -170,7 +172,7 @@ pointConstruct::processPoint(Simulation& System,
       const std::string place=
 	inputItem<std::string>(IParam,Index,2,"position not given");
       const std::string snd=
-	inputItem<std::string>(IParam,Index,3,"front/back/side not give");
+	inputItem<std::string>(IParam,Index,3,"front/back/side not given");
       const double D=
 	inputItem<double>(IParam,Index,4,"Distance not given");
 
@@ -179,7 +181,7 @@ pointConstruct::processPoint(Simulation& System,
 
       checkItem<double>(IParam,Index,5,timeStep);
       checkItem<double>(IParam,Index,6,windowOffset);
-      const long int linkNumber=getLinkIndex(snd);
+      const long int linkNumber=attachSystem::getLinkIndex(snd);
       processPointWindow(System,place,linkNumber,D,timeStep,windowOffset);
     }
 
@@ -187,12 +189,12 @@ pointConstruct::processPoint(Simulation& System,
     {
       const std::string place=
 	IParam.outputItem<std::string>("tally",Index,2,"position not given");
-      
       const std::string snd=
-	inputItem<std::string>(IParam,Index,3,"front/back/side not give");
+        IParam.outputItem<std::string>("tally",Index,3,
+                                       "front/back/side not given");
       const double D=
-	inputItem<double>(IParam,Index,4,"Distance not given");
-      const long int linkNumber=getLinkIndex(snd);
+	IParam.outputItem<double>("tally",Index,4,"Distance not given");
+      const long int linkNumber=attachSystem::getLinkIndex(snd);
       processPointFree(System,place,linkNumber,D);
     }
   else if (PType=="objOffset")
@@ -205,7 +207,7 @@ pointConstruct::processPoint(Simulation& System,
       size_t itemIndex(4);
       const Geometry::Vec3D DVec=
 	IParam.getCntVec3D("tally",Index,itemIndex,"Offset");
-      const long int linkNumber=getLinkIndex(snd);
+      const long int linkNumber=attachSystem::getLinkIndex(snd);
       
       processPointFree(System,place,linkNumber,DVec);
     }
@@ -251,11 +253,8 @@ pointConstruct::processPointWindow(Simulation& System,
   if (linkPt!=0)
     {
       const attachSystem::FixedComp* TPtr=
-	OR.getObject<attachSystem::FixedComp>(FObject);
+	OR.getObjectThrow<attachSystem::FixedComp>(FObject,"FixedComp");
 
-      if (!TPtr)
-	throw ColErr::InContainerError<std::string>
-	  (FObject,"Fixed Object not found");
       const size_t iLP=static_cast<size_t>(linkPt-1);
 
       masterPlane=TPtr->getExitWindow(iLP,Planes);
@@ -293,13 +292,13 @@ pointConstruct::processPointFree(Simulation& System,
 				 const std::string& FObject,
 				 const long int linkPt,
 				 const double OD) const
-/*!
-  Process a point tally in a registered object
-  \param System :: Simulation to add tallies
-  \param FObject :: Fixed/Twin name
-  \param linkPt :: Link point [-ve for beam object]
-  \param OD :: Out distance Distance
-*/
+  /*!
+    Process a point tally in a registered object
+    \param System :: Simulation to add tallies
+    \param FObject :: Fixed/Twin name
+    \param linkPt :: Link point [-ve for beam object]
+    \param OD :: Out distance Distance
+  */
 {
   ELog::RegMethod RegA("pointConstruct","processPointFree(String)");
 
@@ -307,12 +306,8 @@ pointConstruct::processPointFree(Simulation& System,
     ModelSupport::objectRegister::Instance();
 
   const attachSystem::FixedComp* TPtr=
-    OR.getObject<attachSystem::FixedComp>(FObject);
-  
-  if (!TPtr)
-    throw ColErr::InContainerError<std::string>
-      (FObject,"Fixed Object not found");
-  
+    OR.getObjectThrow<attachSystem::FixedComp>(FObject,"FixedComp");
+    
   const int tNum=System.nextTallyNum(5);
   Geometry::Vec3D TPoint=TPtr->getSignedLinkPt(linkPt);
   TPoint+=TPtr->getSignedLinkAxis(linkPt)*OD;
@@ -342,11 +337,8 @@ pointConstruct::processPointFree(Simulation& System,
     ModelSupport::objectRegister::Instance();
 
   const attachSystem::FixedComp* TPtr=
-    OR.getObject<attachSystem::FixedComp>(FObject);
+    OR.getObjectThrow<attachSystem::FixedComp>(FObject,"FixedComp");
   
-  if (!TPtr)
-    throw ColErr::InContainerError<std::string>
-      (FObject,"Fixed Object not found");
   
   const int tNum=System.nextTallyNum(5);
   Geometry::Vec3D TPoint=TPtr->getSignedLinkPt(linkPt);

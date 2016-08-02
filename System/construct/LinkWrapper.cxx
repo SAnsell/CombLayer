@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   construct/LinkWrapper.cxx
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -233,10 +233,8 @@ LinkWrapper::addSurface(const std::string& FCName,
     ModelSupport::objectRegister::Instance();
   
   const attachSystem::FixedComp* FCptr=
-    OR.getObject<attachSystem::FixedComp>(FCName);
-  if (!FCptr)
-    throw ColErr::InContainerError<std::string>
-      (FCName,"FCName not found in objectRegister");
+    OR.getObjectThrow<attachSystem::FixedComp>(FCName,"FixedComp");
+
   addSurface(*FCptr,dirFlag,LIndex);
   return;
 }
@@ -256,10 +254,8 @@ LinkWrapper::addSurface(const std::string& FCName,
     ModelSupport::objectRegister::Instance();
   
   const attachSystem::FixedComp* FCptr=
-    OR.getObject<attachSystem::FixedComp>(FCName);
-  if (!FCptr)
-    throw ColErr::InContainerError<std::string>
-      (FCName,"FCName not found in objectRegister");
+    OR.getObjectThrow<attachSystem::FixedComp>(FCName,"FixedComp");
+
   addSurface(*FCptr,LList);
   return;
 }

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   process/surfDivide.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -402,7 +402,7 @@ surfDivide::addFrac(const double F)
 {
   ELog::RegMethod RegA("surfDivide","addFrac");
 
-  if (F<Geometry::zeroTol || F>1.0-Geometry::zeroTol)
+  if (F<Geometry::zeroTol || F>1.0+Geometry::zeroTol)
     throw ColErr::RangeError<double>(F,0,1.0,"Frac out of range");
 
   if (!frac.empty() &&

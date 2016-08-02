@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   delft/IrradElement.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -138,15 +138,14 @@ IrradElement::operator=(const IrradElement& A)
 }
 
 void
-IrradElement::populate(const Simulation& System)
+IrradElement::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     Requires that unset values are copied from previous block
-    \param System :: Simulation to use
+    \param Control :: DataBase for variables
   */
 {
   ELog::RegMethod RegA("IrradElement","populate");
-  const FuncDataBase& Control=System.getDataBase();
 
   Width=ReactorGrid::getElement<double>
     (Control,keyName+"Width",XIndex,YIndex);
@@ -363,7 +362,8 @@ IrradElement::createLinks()
 }
 
 void
-IrradElement::createAll(Simulation& System,const FixedComp& RG,
+IrradElement::createAll(Simulation& System,
+			const attachSystem::FixedComp& RG,
 			const Geometry::Vec3D& OG,
 			const FuelLoad&)
   /*!
@@ -371,10 +371,11 @@ IrradElement::createAll(Simulation& System,const FixedComp& RG,
     \param System :: Simulation to add vessel to
     \param RG :: Fixed Unit
     \param OG :: Origin
+    \param :: FuelLoad not used [not fuel!]
   */
 {
   ELog::RegMethod RegA("IrradElement","createAll");
-  populate(System);
+  populate(System.getDataBase());
 
   createUnitVector(RG,OG);
   createSurfaces(RG);

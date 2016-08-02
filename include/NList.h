@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   include/NList.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,7 +50,7 @@ class NList
   */
   typedef DTriple<int,Unit,std::string> CompUnit;   
   
-  std::vector<CompUnit> Items;                     ///< List of number Items
+  std::vector<CompUnit> Items;         ///< List of number Items
 
  public:
 
@@ -72,11 +72,12 @@ class NList
   
   void addUnits(const std::vector<Unit>&);
 
+  void splitComp();
   int changeItem(const Unit&,const Unit&);
   
-  int processString(const std::string&);    ///< process string
-  std::vector<Unit> actualItems() const;           ///< Just the items
-  void write(std::ostream&) const;                ///< Write out the range 
+  int processString(const std::string&);  
+  std::vector<Unit> actualItems() const;  
+  void write(std::ostream&) const;        
 
 };
 

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   epbBuild/Magnet.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -184,9 +184,7 @@ Magnet::createUnitVector(const attachSystem::FixedComp& FC)
 
   beamAxis=FC.getLU(segIndex+segLen-1).getAxis();
 
-  const attachSystem::LinkUnit& LU=FC.getLU(segIndex);
-  FixedComp::createUnitVector(LU.getConnectPt(),Axis,
-			      FC.getX()*Axis);
+  FixedComp::createUnitVector(FC,static_cast<long int>(segIndex+1));
   applyShift(xStep,yStep,zStep);
   applyAngleRotate(xyAngle,zAngle);
   return;
@@ -277,4 +275,4 @@ Magnet::createAll(Simulation& System,
   return;
 }
   
-}  // NAMESPACE shutterSystem
+}  // NAMESPACE epbSystem

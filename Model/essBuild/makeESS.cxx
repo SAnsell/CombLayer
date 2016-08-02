@@ -3,7 +3,7 @@
  
  * File:   essBuild/makeESS.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,6 +61,7 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "LayerComp.h"
@@ -68,7 +69,7 @@
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "World.h"
-#include "TaperedFlightLine.h"
+#include "BasicFlightLine.h"
 #include "FlightLine.h"
 #include "AttachSupport.h"
 #include "pipeUnit.h"
@@ -88,25 +89,23 @@
 #include "ButterflyModerator.h"
 #include "BlockAddition.h"
 #include "CylPreMod.h"
-#include "PreModWing.h"
+#include "IradCylinder.h"
 #include "SupplyPipe.h"
 #include "BulkModule.h"
-#include "TwisterModule.h"
 #include "ShutterBay.h"
 #include "GuideBay.h"
-#include "TaperedDiskPreMod.h"
+#include "DiskPreMod.h"
 #include "Bunker.h"
 #include "RoofPillars.h"
+#include "BunkerFeed.h"
 #include "Curtain.h"
-
 #include "ConicModerator.h"
 #include "makeESSBL.h"
-
+#include "ESSPipes.h"
 // F5 collimators:
 #include "F5Calc.h"
 #include "F5Collimator.h"
 
-#include "DBModify.h"
 #include "makeESS.h"
 
 namespace essSystem
@@ -117,56 +116,27 @@ makeESS::makeESS() :
   PBeam(new ProtonTube("ProtonTube")),
   BMon(new BeamMonitor("BeamMonitor")),
 
-  LowPreMod(new TaperedDiskPreMod("LowPreMod")),
-  LowCapMod(new TaperedDiskPreMod("LowCapMod")),
+  LowPreMod(new DiskPreMod("LowPreMod")),
+  LowCapMod(new DiskPreMod("LowCapMod")),
   
-  LowAFL(new moderatorSystem::TaperedFlightLine("LowAFlight")),
-  LowBFL(new moderatorSystem::TaperedFlightLine("LowBFlight")),
+  LowAFL(new moderatorSystem::BasicFlightLine("LowAFlight")),
+  LowBFL(new moderatorSystem::BasicFlightLine("LowBFlight")),
 
-  TopPreMod(new TaperedDiskPreMod("TopPreMod")),
-  TopCapMod(new TaperedDiskPreMod("TopCapMod")),
+  TopPreMod(new DiskPreMod("TopPreMod")),
+  TopCapMod(new DiskPreMod("TopCapMod")),
 
-  TopAFL(new moderatorSystem::TaperedFlightLine("TopAFlight")),
-  TopBFL(new moderatorSystem::TaperedFlightLine("TopBFlight")),
-
-  TopSupplyLeftAl(new constructSystem::SupplyPipe("TSupplyLeftAl")),
-  TopSupplyLeftConnect(new constructSystem::SupplyPipe("TSupplyLeftConnect")),
-  TopSupplyLeftInvar(new constructSystem::SupplyPipe("TSupplyLeftInvar")),
-
-  TopReturnLeftAl(new constructSystem::SupplyPipe("TReturnLeftAl")),
-  TopReturnLeftConnect(new constructSystem::SupplyPipe("TReturnLeftConnect")),
-  TopReturnLeftInvar(new constructSystem::SupplyPipe("TReturnLeftInvar")),
-
-  TopSupplyRightAl(new constructSystem::SupplyPipe("TSupplyRightAl")),
-  TopSupplyRightConnect(new constructSystem::SupplyPipe("TSupplyRightConnect")),
-  TopSupplyRightInvar(new constructSystem::SupplyPipe("TSupplyRightInvar")),
-
-  TopReturnRightAl(new constructSystem::SupplyPipe("TReturnRightAl")),
-  TopReturnRightConnect(new constructSystem::SupplyPipe("TReturnRightConnect")),
-  TopReturnRightInvar(new constructSystem::SupplyPipe("TReturnRightInvar")),
-
-  LowSupplyLeftAl(new constructSystem::SupplyPipe("LSupplyLeftAl")),
-  LowSupplyLeftConnect(new constructSystem::SupplyPipe("LSupplyLeftConnect")),
-  LowSupplyLeftInvar(new constructSystem::SupplyPipe("LSupplyLeftInvar")),
-
-  LowReturnLeftAl(new constructSystem::SupplyPipe("LReturnLeftAl")),
-  LowReturnLeftConnect(new constructSystem::SupplyPipe("LReturnLeftConnect")),
-  LowReturnLeftInvar(new constructSystem::SupplyPipe("LReturnLeftInvar")),
-
-  LowSupplyRightAl(new constructSystem::SupplyPipe("LSupplyRightAl")),
-  LowSupplyRightConnect(new constructSystem::SupplyPipe("LSupplyRightConnect")),
-  LowSupplyRightInvar(new constructSystem::SupplyPipe("LSupplyRightInvar")),
-
-  LowReturnRightAl(new constructSystem::SupplyPipe("LReturnRightAl")),
-  LowReturnRightConnect(new constructSystem::SupplyPipe("LReturnRightConnect")),
-  LowReturnRightInvar(new constructSystem::SupplyPipe("LReturnRightInvar")),
+  TopAFL(new moderatorSystem::BasicFlightLine("TopAFlight")),
+  TopBFL(new moderatorSystem::BasicFlightLine("TopBFlight")),
+  ModPipes(new ESSPipes()),
 
   Bulk(new BulkModule("Bulk")),
-  BulkLowAFL(new moderatorSystem::FlightLine("BulkLAFlight")),
   ShutterBayObj(new ShutterBay("ShutterBay")),
+
 
   ABunker(new Bunker("ABunker")),
   BBunker(new Bunker("BBunker")),
+  CBunker(new Bunker("CBunker")),
+  DBunker(new Bunker("DBunker")),
   ABunkerPillars(new RoofPillars("ABunkerPillars")),
   BBunkerPillars(new RoofPillars("BBunkerPillars")),
   TopCurtain(new Curtain("Curtain"))
@@ -190,41 +160,17 @@ makeESS::makeESS() :
   OR.addObject(TopPreMod);
   OR.addObject(TopCapMod);
 
-  OR.addObject(TopSupplyLeftAl);
-  OR.addObject(TopSupplyLeftConnect);
-  OR.addObject(TopSupplyLeftInvar);
-  OR.addObject(TopSupplyRightAl);
-  OR.addObject(TopSupplyRightConnect);
-  OR.addObject(TopSupplyRightInvar);
-  OR.addObject(TopReturnLeftAl);
-  OR.addObject(TopReturnLeftConnect);
-  OR.addObject(TopReturnLeftInvar);
-  OR.addObject(TopReturnRightAl);
-  OR.addObject(TopReturnRightConnect);
-  OR.addObject(TopReturnRightInvar);
 
-  OR.addObject(LowSupplyLeftAl);
-  OR.addObject(LowSupplyLeftConnect);
-  OR.addObject(LowSupplyLeftInvar);
-  OR.addObject(LowSupplyRightAl);
-  OR.addObject(LowSupplyRightConnect);
-  OR.addObject(LowSupplyRightInvar);
-  OR.addObject(LowReturnLeftAl);
-  OR.addObject(LowReturnLeftConnect);
-  OR.addObject(LowReturnLeftInvar);
-  OR.addObject(LowReturnRightAl);
-  OR.addObject(LowReturnRightConnect);
-  OR.addObject(LowReturnRightInvar);
-  
   OR.addObject(TopAFL);
   OR.addObject(TopBFL);
 
   OR.addObject(Bulk);
-  OR.addObject(BulkLowAFL);
 
   OR.addObject(ShutterBayObj);
   OR.addObject(ABunker);
   OR.addObject(BBunker);
+  OR.addObject(CBunker);
+  OR.addObject(DBunker);
   OR.addObject(ABunkerPillars);
   OR.addObject(BBunkerPillars);
   OR.addObject(TopCurtain);
@@ -270,7 +216,7 @@ makeESS::makeTarget(Simulation& System,
 
   Target->addInsertCell("Shaft",voidCell);
   Target->addInsertCell("Wheel",voidCell);
-  Target->createAll(System,World::masterOrigin());
+  Target->createAll(System,World::masterOrigin(),0);
 
   return;
 }
@@ -294,24 +240,78 @@ makeESS::createGuides(Simulation& System)
       GB->addInsertCell("Outer",ShutterBayObj->getMainCell());
       GB->setCylBoundary(Bulk->getLinkSurf(2),
 			 ShutterBayObj->getLinkSurf(2));
-
+      
       if (i<2)
-	GB->createAll(System,*LowMod);  
+	GB->createAll(System,*LowMod,0);  
       else
-	GB->createAll(System,*TopMod);
+	GB->createAll(System,*TopMod,0);
       attachSystem::addToInsertForced(System,*GB,Target->getCC("Wheel"));      
       GBArray.push_back(GB);
       attachSystem::addToInsertForced(System,*GB, Target->getCC("Wheel"));
     }
   GBArray[1]->outerMerge(System,*GBArray[2]);
   GBArray[0]->outerMerge(System,*GBArray[3]);
-  for(size_t i=0;i<4;i++)
-    GBArray[i]->createGuideItems(System);
-
+  
+  GBArray[0]->createGuideItems(System,LowMod->getComponent("MidWater"),6,5);
+  GBArray[1]->createGuideItems(System,LowMod->getComponent("MidWater"),7,8);
+  GBArray[2]->createGuideItems(System,TopMod->getComponent("MidWater"),6,5);
+  GBArray[3]->createGuideItems(System,TopMod->getComponent("MidWater"),7,8);
 
   return;
 }
 
+void
+makeESS::buildIradComponent(Simulation& System,
+                            const mainSystem::inputParam& IParam)
+  /*!
+    Build the Iradiation component. It is an object
+    within a moderator (typically). Currently not saves in 
+    the class set.
+    \param System :: Simulation
+    \param IParam :: Name of Irad component + location
+   */
+{
+  ELog::RegMethod RegA("makeESS","buildIradComponent");
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  const size_t NSet=IParam.setCnt("iradObject");
+  for(size_t j=0;j<NSet;j++)
+    {
+      const size_t NItems=IParam.itemCnt("iradObject",j);
+      // is this possible?
+      if (NItems<3)
+        throw ColErr::SizeError<size_t>
+          (NItems,3,"IradComp["+StrFunc::makeString(j)+"]");
+
+      const std::string objectName=
+        IParam.getValue<std::string>("iradObj",j,0);
+      const std::string compName=
+        IParam.getValue<std::string>("iradObj",j,1);
+      const std::string linkName=
+        IParam.getValue<std::string>("iradObj",j,2);
+
+      // First do we have an object name
+      if (objectName.substr(0,7)=="IradCyl")
+        {
+          std::shared_ptr<IradCylinder>
+            IRadComp(new IradCylinder(objectName));
+          const attachSystem::FixedComp* FC=
+            OR.getObject<attachSystem::FixedComp>(compName);
+          if (!FC)
+            throw ColErr::InContainerError<std::string>
+              (compName,"Component not found");
+          const long int linkPt=attachSystem::getLinkNumber(linkName);
+          
+          OR.addObject(IRadComp);
+          IRadComp->createAll(System,*FC,linkPt);
+          attachSystem::addToInsertLineCtrl(System,*FC,*IRadComp);
+        }
+    }
+  return;
+}
+  
 void
 makeESS::buildLowButterfly(Simulation& System)
   /*!
@@ -330,7 +330,6 @@ makeESS::buildLowButterfly(Simulation& System)
   LowMod=std::shared_ptr<constructSystem::ModBase>(BM);
   OR.addObject(LowMod);
   LowMod->createAll(System,*Reflector,LowPreMod.get(),6);
-  LowFocalPoints = BM->getFocalPoints();
   return;
 }
 
@@ -348,151 +347,14 @@ makeESS::buildTopButterfly(Simulation& System)
 
   std::shared_ptr<ButterflyModerator> BM
     (new essSystem::ButterflyModerator("TopFly"));
-
   BM->setRadiusX(Reflector->getRadius());
   TopMod=std::shared_ptr<constructSystem::ModBase>(BM);
   OR.addObject(TopMod);
   
   TopMod->createAll(System,*Reflector,TopPreMod.get(),6);
-
-  TopFocalPoints = BM->getFocalPoints();
-
   return;
 }
-
-void
-makeESS::buildH2Pipe(Simulation& System, std::string lobeName, std::string waterName, std::string pipeType,
-		    std::shared_ptr<constructSystem::SupplyPipe> pipeAl,
-		    std::shared_ptr<constructSystem::SupplyPipe> pipeConnect,
-		    std::shared_ptr<constructSystem::SupplyPipe> pipeInvar
-		    )
-{
-  /*
-    Build a pipe connected to a Butterfly lobe
-    \param System :: Simulation
-    \param lobeName :: Butterfly moderator lobe name
-    \param pipeType :: type of the pipe [currently ignored]
-    \param pipeAl  :: first piece of the pipe
-    \param pipeConnect  :: second piece of the pipe
-    \param pipeInvar  :: third piece of the pipe
-    The pieces can be made from different materials.
-   */
-  ELog::RegMethod RegA("makeESS", "buildH2Pipe");
-
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
-  const attachSystem::FixedComp* lobe=
-    OR.getObject<attachSystem::FixedComp>(lobeName);
-  if (!lobe)
-    throw ColErr::InContainerError<std::string>(lobeName,
-						"FixedComp not found");
-
-  const attachSystem::FixedComp* water=
-    OR.getObject<attachSystem::FixedComp>(waterName);
-  if (!water)
-    throw ColErr::InContainerError<std::string>(waterName,
-						"FixedComp not found");
-  const attachSystem::CellMap* CM =  dynamic_cast<const attachSystem::CellMap*>(water);
-
-
-  System.populateCells();
-  System.validateObjSurfMap();
-
-  // !!! this is extremaly slow. add only cells which are really needed.
-  // !!! Actually since cold Al/H can't connect with warm Al or water,
-  // !!! instead of doing this horrific thing I need to enlarge void around pipes.
-  pipeAl->addInsertCell(0, CM->getCell("InnerAlSupply"));
-  pipeConnect->addInsertCell(0, CM->getCell("InnerAlSupply"));
-  pipeInvar->addInsertCell(0, CM->getCell("InnerAlSupply"));
-
-  pipeAl->addInsertCell(0, CM->getCell("InnerAlReturn"));
-  pipeConnect->addInsertCell(0, CM->getCell("InnerAlReturn"));
-  pipeInvar->addInsertCell(0, CM->getCell("InnerAlReturn"));
-
-  pipeAl->addInsertCell(0, CM->getCell("SideWaterSupply"));
-  pipeConnect->addInsertCell(0, CM->getCell("SideWaterSupply"));
-  pipeInvar->addInsertCell(0, CM->getCell("SideWaterSupply"));
-
-  pipeAl->addInsertCell(0, CM->getCell("SideWaterReturn"));
-  pipeConnect->addInsertCell(0, CM->getCell("SideWaterReturn"));
-  pipeInvar->addInsertCell(0, CM->getCell("SideWaterReturn"));
-
-  pipeAl->setAngleSeg(12);
-  pipeAl->setOption(pipeType); 
-  // createAll arguments:
-  // layer level is depth into the object layers [0=> inner]
-  // linkPt is normal link point in fixedcomp [2]
-  // layerLevel : linkPoint [2]
-  pipeAl->createAll(System,*lobe,0,2,2);
-
-  System.populateCells();
-  System.validateObjSurfMap();
-
-  pipeConnect->setAngleSeg(12);
-  pipeConnect->setOption(pipeType);
-  pipeConnect->setStartSurf(pipeAl->getSignedLinkString(2));
-  pipeConnect->createAll(System,*pipeAl,2);
-
-  System.populateCells();
-  System.validateObjSurfMap();
-
-  pipeInvar->setAngleSeg(12);
-  pipeInvar->setOption(pipeType);
-  pipeInvar->setStartSurf(pipeConnect->getSignedLinkString(2));
-  pipeInvar->createAll(System,*pipeConnect,2);
-}
-
-
-void 
-makeESS::buildTopPipes(Simulation& System,
-		      const std::string& pipeType)
-  /*!
-    Process the upper moderator pipes
-    \param System :: Simulation 
-    \param pipeType :: pipeType 
-  */
-{
-  ELog::RegMethod RegA("makeESS","buildTopPipes");
-
-
-  if (pipeType=="help")
-    {
-      ELog::EM<<"Top Pipe Configuration"<<ELog::endBasic;
-      //      ELog::EM<<"-- {Any} : Standard TDR edge and centre"<<ELog::endBasic;
-      //      ELog::EM<<"-- Top : Two pipes from the top"<<ELog::endBasic;
-      return;
-    }
-  buildH2Pipe(System, "TopFlyLeftLobe", "TopFlyLeftWater", pipeType, TopSupplyLeftAl,
-              TopSupplyLeftConnect, TopSupplyLeftInvar);
-  buildH2Pipe(System, "TopFlyLeftLobe", "TopFlyLeftWater", pipeType, TopReturnLeftAl,
-              TopReturnLeftConnect, TopReturnLeftInvar);
-
-  buildH2Pipe(System, "TopFlyRightLobe", "TopFlyRightWater", pipeType, TopSupplyRightAl, TopSupplyRightConnect, TopSupplyRightInvar);
-  buildH2Pipe(System, "TopFlyRightLobe", "TopFlyRightWater", pipeType, TopReturnRightAl, TopReturnRightConnect, TopReturnRightInvar);
-
-  return;
-}
-
-void 
-makeESS::buildLowPipes(Simulation& System,
-			const std::string& pipeType)
-  /*!
-    Process the lower moderator pipe
-    \param System :: Simulation 
-    \param pipeType :: pipeType 
-  */
-{
-  ELog::RegMethod RegA("makeESS","processLowPipe");
-
-  buildH2Pipe(System, "LowFlyLeftLobe", "LowFlyLeftWater", pipeType, LowSupplyLeftAl, LowSupplyLeftConnect, LowSupplyLeftInvar);
-  buildH2Pipe(System, "LowFlyLeftLobe", "LowFlyLeftWater", pipeType, LowReturnLeftAl, LowReturnLeftConnect, LowReturnLeftInvar);
-
-  buildH2Pipe(System, "LowFlyRightLobe", "LowFlyLeftWater", pipeType, LowSupplyRightAl, LowSupplyRightConnect, LowSupplyRightInvar);
-  buildH2Pipe(System, "LowFlyRightLobe", "LowFlyLeftWater", pipeType, LowReturnRightAl, LowReturnRightConnect, LowReturnRightInvar);
-
-  return;
-}
+      
 
 void makeESS::buildF5Collimator(Simulation& System, size_t nF5)
 /*!
@@ -503,79 +365,79 @@ void makeESS::buildF5Collimator(Simulation& System, size_t nF5)
   ELog::RegMethod RegA("makeESS", "buildF5Collimator");
   ModelSupport::objectRegister& OR = ModelSupport::objectRegister::Instance();
 
-  for (size_t i=0; i<nF5; i++) {
-    std::shared_ptr<F5Collimator> F5(new F5Collimator(StrFunc::makeString("F", i*10+5).c_str()));
-    OR.addObject(F5);
-    F5->setFocalPoints(TopFocalPoints);
-    F5->addInsertCell(74123); // !!! 74123=voidCell // SA: how to exclude F5 from any cells?
-    F5->createAll(System, World::masterOrigin());
-
-    attachSystem::addToInsertSurfCtrl(System, *ABunker, *F5);
-    attachSystem::addToInsertSurfCtrl(System, *BBunker, *F5);
-
-    F5array.push_back(F5);
-  }
-
-  return;
-}
-
-void makeESS::buildF5Collimator(Simulation& System, const mainSystem::inputParam& IParam)
-/*!
-  Build F5 collimators
-  \param System :: Stardard simulation
-  \param IParam :: command line parameters. Example: --f5-collimators {top,low} {cold,thermal} theta1 theta2 theta3 ...
- */
-{
-  ELog::RegMethod RegA("makeESS", "buildF5Collimator");
-  ModelSupport::objectRegister& OR = ModelSupport::objectRegister::Instance();
-
-  std::string strtmp, moderator, range;
-  const size_t nitems = IParam.itemCnt("f5-collimators",0); // number of parameters in -f5-collimator
-
-  if (!nitems) return;
-
-  double theta(0.0);
-  size_t colIndex(0);
-  //  ELog::EM << "Use StrFunc::convert instead of atoi in the loop below. Check its return value." << ELog::endCrit;
-  for (size_t i=0; i<nitems; i++)
+  for (size_t i=0; i<nF5; i++)
     {
-      strtmp = IParam.getValue<std::string>("f5-collimators", i);
-      if ( (strtmp=="TopFly") || (strtmp=="LowFly") )
-	{
-	  moderator = strtmp;
-	  range = IParam.getValue<std::string>("f5-collimators", ++i);
-	  for (size_t j=i+1; j<nitems; j++)
-	    {
-	      strtmp = IParam.getValue<std::string>("f5-collimators", j);
-	      if ((strtmp=="TopFly") || (strtmp=="LowFly"))
-		break;
-	      // do real work here
-	      theta = atoi(strtmp.c_str()); // !!! use StrFunc::convert here !!! 
-
-	      std::shared_ptr<F5Collimator> F5(new F5Collimator(StrFunc::makeString("F", colIndex*10+5).c_str())); colIndex++;
-	      OR.addObject(F5);
-	      F5->setTheta(theta);
-	      F5->setRange(range);
-
-	      if (moderator=="TopFly")
-		F5->setFocalPoints(TopFocalPoints);
-	      else if (moderator=="LowFly")
-		F5->setFocalPoints(LowFocalPoints);
-
-	      F5->addInsertCell(74123); // !!! 74123=voidCell // SA: how to exclude F5 from any cells?
-	      F5->createAll(System, World::masterOrigin());
-
-	      attachSystem::addToInsertSurfCtrl(System, *ABunker, *F5);
-	      attachSystem::addToInsertSurfCtrl(System, *BBunker, *F5);
-	      F5array.push_back(F5);
+      std::shared_ptr<F5Collimator> F5(new F5Collimator(StrFunc::makeString("F", i*10+5).c_str()));
       
-	    }
-	}
+      OR.addObject(F5);
+      F5->addInsertCell(74123); // !!! 74123=voidCell // SA: how to exclude F5 from any cells?
+      F5->createAll(System,World::masterOrigin());
+      
+      attachSystem::addToInsertSurfCtrl(System,*ABunker,*F5);
+      F5array.push_back(F5);
     }
 
   return;
 }
 
+
+void
+makeESS::buildBunkerFeedThrough(Simulation& System,
+                                const mainSystem::inputParam& IParam)
+  /*!
+    Build the underground feedThroughs
+    \param System :: Simulation
+    \param IParam :: Input data
+  */
+{
+  ELog::RegMethod RegA("makeESS","buildBunkerFeedThrough");
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  const size_t NSet=IParam.setCnt("bunkerFeed");
+
+  
+  for(size_t j=0;j<NSet;j++)
+    {
+      const size_t NItems=IParam.itemCnt("bunkerFeed",j);
+      if (NItems>=3)
+        {
+          const std::string bunkerName=
+            IParam.getValue<std::string>("bunkerFeed",j,0);
+          const size_t segNumber=
+            IParam.getValue<size_t>("bunkerFeed",j,1);
+          const std::string feedName=
+            IParam.getValue<std::string>("bunkerFeed",j,2);
+
+          // bunkerA/etc should be a map
+          std::shared_ptr<Bunker> BPtr;
+          if (bunkerName=="BunkerA" || bunkerName=="ABunker")
+            BPtr=ABunker;
+          else if (bunkerName=="BunkerB" || bunkerName=="BBunker")
+            BPtr=BBunker;
+          else if (bunkerName=="BunkerC" || bunkerName=="CBunker")
+            BPtr=CBunker;
+          else if (bunkerName=="BunkerD" || bunkerName=="DBunker")
+            BPtr=DBunker;
+          else
+            throw ColErr::InContainerError<std::string>
+              (bunkerName,"bunkerName not know");
+          
+          std::shared_ptr<BunkerFeed> BF
+            (new BunkerFeed("BunkerFeed",j));
+          OR.addObject(BF);
+          BF->createAll(System,*BPtr,segNumber,feedName);  
+          
+          bFeedArray.push_back(BF);
+          //  attachSystem::addToInsertForced(System,*GB, Target->getCC("Wheel"));
+          
+        }
+    }
+
+  return;
+}
+  
 void
 makeESS::buildPillars(Simulation& System)
   /*!
@@ -598,7 +460,6 @@ makeESS::optionSummary(Simulation& System)
   ELog::RegMethod RegA("makeESS","optionSummary");
   
   makeTarget(System,"help");
-  buildLowPipes(System,"help");
   
   return;
 }
@@ -644,12 +505,23 @@ makeESS::makeBeamLine(Simulation& System,
 	  // FIND BUNKER HERE:::
 	  makeESSBL BLfactory(BL,Btype);
 	  std::pair<int,int> BLNum=makeESSBL::getBeamNum(BL);
-	  if ((BLNum.first==1 && BLNum.second>9) ||
-	      (BLNum.first==4 && BLNum.second<=9) )
+          ELog::EM<<"BLNum == "<<BLNum.first<<" "<<BLNum.second<<ELog::endDiag;
+
+	  if ((BLNum.first==1 && BLNum.second>10) ||
+	      (BLNum.first==4 && BLNum.second<=10) )
 	    BLfactory.build(System,*ABunker);
-	  else if ((BLNum.first==1 && BLNum.second<=9) ||
+
+	  else if ((BLNum.first==1 && BLNum.second<=10) ||
 	      (BLNum.first==4 && BLNum.second>9) )
 	    BLfactory.build(System,*BBunker);
+
+	  else if ((BLNum.first==2 && BLNum.second>10) ||
+	      (BLNum.first==3 && BLNum.second<=10) )
+	    BLfactory.build(System,*DBunker);
+
+	  else if ((BLNum.first==2 && BLNum.second<=10) ||
+	      (BLNum.first==3 && BLNum.second>10) )
+	    BLfactory.build(System,*CBunker);
 	}
     }
   return;
@@ -657,7 +529,7 @@ makeESS::makeBeamLine(Simulation& System,
 
 void
 makeESS::makeBunker(Simulation& System,
-		    const std::string& bunkerType)
+                    const mainSystem::inputParam& IParam)
   /*!
     Make the bunker system
     \param System :: Simulation 
@@ -665,89 +537,69 @@ makeESS::makeBunker(Simulation& System,
   */
 {
   ELog::RegMethod RegA("makeESS","makeBunker");
+  const int voidCell(74123);
+  const std::string bunkerType=
+    IParam.getValue<std::string>("bunkerType");
   
-  ABunker->addInsertCell(74123);
-  ABunker->setCutWall(1,0);
-  ABunker->createAll(System,*LowMod,*GBArray[0],2,true);
+  ABunker->addInsertCell(voidCell);
+  ABunker->createAll(System,*LowMod,*GBArray[0],2,true,true);
 
+  BBunker->addInsertCell(voidCell);
+  BBunker->setCutWall(0,1);
+  BBunker->createAll(System,*LowMod,*GBArray[0],2,true,true);
 
-  BBunker->addInsertCell(74123);
-  BBunker->createAll(System,*LowMod,*GBArray[0],2,true);
+  ABunker->insertComponent(System,"rightWall",*BBunker);
+  ABunker->insertComponent(System,"roofFarEdge",*BBunker);
+  ABunker->insertComponent(System,"floor",*BBunker);
 
-  BBunker->insertComponent(System,"leftWall",*ABunker);
-  BBunker->insertComponent(System,"roof0",*ABunker);
-  BBunker->insertComponent(System,"floor",*ABunker);
+  // Other side if needed :
+  
+  CBunker->addInsertCell(voidCell);
+  CBunker->createAll(System,*LowMod,*GBArray[1],2,false,true);
 
-  TopCurtain->addInsertCell("Top",74123);
-  TopCurtain->addInsertCell("Lower",74123);
-  TopCurtain->addInsertCell("Mid",74123);
-  TopCurtain->addInsertCell("Lower",ABunker->getCells("roof"));
-  TopCurtain->addInsertCell("Lower",BBunker->getCells("roof"));
-  TopCurtain->addInsertCell("Top",ABunker->getCells("roof"));
-  TopCurtain->addInsertCell("Top",BBunker->getCells("roof"));
-    
-  TopCurtain->addInsertCell("Lower",ABunker->getCells("MainVoid"));
-  TopCurtain->addInsertCell("Lower",BBunker->getCells("MainVoid"));
-  //  TopCurtain->createAll(System,*GBArray[0],2,1,true);
-  TopCurtain->createAll(System,*ShutterBayObj,6,4,*GBArray[0],2,true);
+  DBunker->addInsertCell(voidCell);
+  DBunker->setCutWall(0,1);
+  DBunker->createAll(System,*LowMod,*GBArray[1],2,false,true);
 
-  //  TopCurtain->insertComponent(System,"topVoid",*ABunker);
-  //  TopCurtain->insertComponent(System,"topVoid",*BBunker);
+  CBunker->insertComponent(System,"rightWall",*DBunker);
+  CBunker->insertComponent(System,"roofFarEdge",*DBunker);
+  CBunker->insertComponent(System,"floor",*DBunker);
+
+  if (bunkerType.find("noPillar")==std::string::npos)
+    buildPillars(System);
+
+  if (IParam.flag("bunkerFeed"))
+    buildBunkerFeedThrough(System,IParam);
+
+  if (bunkerType.find("noCurtain")==std::string::npos)
+    {
+      TopCurtain->addInsertCell("Top",74123);
+      TopCurtain->addInsertCell("Lower",74123);
+      TopCurtain->addInsertCell("Mid",74123);
+      TopCurtain->addInsertCell("Lower",ABunker->getCells("roof"));
+      TopCurtain->addInsertCell("Lower",BBunker->getCells("roof"));
+      TopCurtain->addInsertCell("Top",ABunker->getCells("roof"));
+      TopCurtain->addInsertCell("Top",BBunker->getCells("roof"));
+      
+      TopCurtain->addInsertCell("Lower",ABunker->getCells("MainVoid"));
+      TopCurtain->addInsertCell("Lower",BBunker->getCells("MainVoid"));
+      //  TopCurtain->createAll(System,*GBArray[0],2,1,true);
+      TopCurtain->createAll(System,*ShutterBayObj,6,4,*GBArray[0],2,true);
+      
+      //  TopCurtain->insertComponent(System,"topVoid",*ABunker);
+      //  TopCurtain->insertComponent(System,"topVoid",*BBunker);
+    }
+  if (bunkerType.find("help")!=std::string::npos)
+    {
+      ELog::EM<<"bunkerType :: \n"
+              <<"  noCurtain -- Disallow the curtain\n"
+              <<"  noPillar -- Disallow the pillars\n"
+              <<ELog::endBasic;
+    }
+        
   return;
 }
 
-void
-makeESS::buildPreWings(Simulation& System)
-{
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
-  enum Side {bottom, top};
-  
-  TopPreWing = std::shared_ptr<PreModWing>(new PreModWing("TopPreWing"));
-  OR.addObject(TopPreWing);
-  TopPreWing->createAll(System, *TopPreMod, 9, false, top, *TopMod);
-  attachSystem::addToInsertSurfCtrl(System, *TopPreMod, *TopPreWing);
-
-  TopCapWing = std::shared_ptr<PreModWing>(new PreModWing("TopCapWing"));
-  OR.addObject(TopCapWing);
-  TopCapWing->createAll(System, *TopCapMod, 10, false, bottom, *TopMod);
-  attachSystem::addToInsertSurfCtrl(System, *TopCapMod, *TopCapWing);
-
-  LowPreWing = std::shared_ptr<PreModWing>(new PreModWing("LowPreWing"));
-  OR.addObject(LowPreWing);
-  LowPreWing->createAll(System, *LowPreMod, 9, true, bottom, *LowMod);
-  attachSystem::addToInsertSurfCtrl(System, *LowPreMod, *LowPreWing);
-
-  LowCapWing = std::shared_ptr<PreModWing>(new PreModWing("LowCapWing"));
-  OR.addObject(LowCapWing);
-  LowCapWing->createAll(System, *LowCapMod, 10, true, top, *LowMod);
-  attachSystem::addToInsertSurfCtrl(System, *LowCapMod, *LowCapWing);
-}
-
-void
-makeESS::buildTwister(Simulation& System)
-{
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
-  Twister = std::shared_ptr<TwisterModule>(new TwisterModule("Twister"));
-  OR.addObject(Twister);
-
-  Twister->createAll(System,*Bulk);
-  attachSystem::addToInsertForced(System, *Bulk, *Twister);
-  attachSystem::addToInsertForced(System, *ShutterBayObj, *Twister);
-  attachSystem::addToInsertSurfCtrl(System, *Twister, PBeam->getCC("Sector0"));
-  attachSystem::addToInsertSurfCtrl(System, *Twister, PBeam->getCC("Sector1")); // \todo kbat ELog::EM << "remove this line after R is set correctly " << ELog::endDiag;
-  attachSystem::addToInsertControl(System, *Twister, *Reflector);
-  attachSystem::addToInsertForced(System,*Twister,TopAFL->getCC("outer"));
-  attachSystem::addToInsertForced(System,*Twister,TopBFL->getCC("outer"));
-  attachSystem::addToInsertForced(System,*Twister,LowAFL->getCC("outer"));
-  attachSystem::addToInsertForced(System,*Twister,LowBFL->getCC("outer"));
-  attachSystem::addToInsertForced(System,*Twister, Target->getCC("Wheel"));
-
-
-}
   
 void 
 makeESS::build(Simulation& System,
@@ -762,27 +614,19 @@ makeESS::build(Simulation& System,
   ELog::RegMethod RegA("makeESS","build");
 
   int voidCell(74123);
-  ModelSupport::addESSMaterial();
 
   const std::string lowPipeType=IParam.getValue<std::string>("lowPipe");
+  const std::string topPipeType=IParam.getValue<std::string>("topPipe");
+
   const std::string lowModType=IParam.getValue<std::string>("lowMod");
   const std::string topModType=IParam.getValue<std::string>("topMod");
-  const std::string topPipeType=IParam.getValue<std::string>("topPipe");
+
   
   const std::string targetType=IParam.getValue<std::string>("targetType");
   const std::string iradLine=IParam.getValue<std::string>("iradLineType");
-  const std::string bunker=IParam.getValue<std::string>("bunkerType");
-  const std::string materials=IParam.getValue<std::string>("matDB");
 
-  // Add extra materials to the DBdatabase
-  if (materials=="neutronics")
-    ModelSupport::addESSMaterial();
-  else if (materials=="shielding")
-    ModelSupport::cloneESSMaterial();
-  else
-    ELog::EM << "Material database '" << materials << "' not defined" << ELog::endErr;
 
-  //  const size_t nF5 = IParam.getValue<size_t>("nF5");
+  const size_t nF5 = IParam.getValue<size_t>("nF5");
 
   if (StrFunc::checkKey("help",lowPipeType,lowModType,targetType) ||
       StrFunc::checkKey("help",iradLine,topModType,""))
@@ -797,40 +641,42 @@ makeESS::build(Simulation& System,
   // lower moderator
   LowPreMod->createAll(System,World::masterOrigin(),0,true,
 		       Target->wheelHeight()/2.0,
-		       Reflector->getRadius(), false);
+		       Reflector->getRadius());
 
   TopPreMod->createAll(System,World::masterOrigin(),0,false,
 		       Target->wheelHeight()/2.0,
-		       Reflector->getRadius(), true);
+		       Reflector->getRadius());
+  
   buildLowButterfly(System);
   buildTopButterfly(System);
   const double LMHeight=attachSystem::calcLinkDistance(*LowMod,5,6);
   const double TMHeight=attachSystem::calcLinkDistance(*TopMod,5,6);
   
   // Cap moderator DOES not span whole unit
-  LowCapMod->createAll(System,*LowMod,6,false,
-   		       0.0,Reflector->getRadius(), true);
   TopCapMod->createAll(System,*TopMod,6,false,
-   		       0.0,Reflector->getRadius(), false);
+   		       0.0,Reflector->getRadius());
+
+  LowCapMod->createAll(System,*LowMod,6,false,
+   		       0.0,Reflector->getRadius());
+
   Reflector->createAll(System,World::masterOrigin(),
 		       Target->wheelHeight(),
 		       LowPreMod->getHeight()+LMHeight+LowCapMod->getHeight(),
 		       TopPreMod->getHeight()+TMHeight+TopCapMod->getHeight());
 
-  buildPreWings(System);
 
   Reflector->insertComponent(System,"targetVoid",*Target,1);
   Reflector->deleteCell(System,"lowVoid");
   Reflector->deleteCell(System,"topVoid");
   Bulk->createAll(System,*Reflector,*Reflector);
-
   // Build flightlines after bulk
   TopAFL->createAll(System,*TopMod,0,*Reflector,4,*Bulk,-3);
   TopBFL->createAll(System,*TopMod,0,*Reflector,3,*Bulk,-3);
 
   LowAFL->createAll(System,*LowMod,0,*Reflector,4,*Bulk,-3);
   LowBFL->createAll(System,*LowMod,0,*Reflector,3,*Bulk,-3);   
-
+  
+  // THESE calls correct the MAIN volume so pipe work MUST be after here:
   attachSystem::addToInsertSurfCtrl(System,*Bulk,Target->getCC("Wheel"));
   attachSystem::addToInsertForced(System,*Bulk,Target->getCC("Shaft"));
   attachSystem::addToInsertForced(System,*Bulk,LowAFL->getCC("outer"));
@@ -838,11 +684,8 @@ makeESS::build(Simulation& System,
   attachSystem::addToInsertForced(System,*Bulk,TopAFL->getCC("outer"));
   attachSystem::addToInsertForced(System,*Bulk,TopBFL->getCC("outer"));
 
-  // ELog::EM << "Remove me - it's slow" << ELog::endDiag;
-  // attachSystem::addToInsertForced(System,*Target,TopAFL->getCC("outer"));
-  // attachSystem::addToInsertForced(System,*Target,TopBFL->getCC("outer"));
-
-
+  
+  buildIradComponent(System,IParam);
   // Full surround object
   ShutterBayObj->addInsertCell(voidCell);
   ShutterBayObj->createAll(System,*Bulk,*Bulk);
@@ -853,31 +696,29 @@ makeESS::build(Simulation& System,
 
 
   createGuides(System);
-  makeBunker(System,bunker);
+  makeBunker(System,IParam);
 
   // PROTON BEAMLINE
   
 
-  PBeam->createAll(System,*Target,1,*ShutterBayObj,-1);
-  Reflector->insertComponent(System, "targetVoid", PBeam->getCC("Sector0"));
+  PBeam->createAll(System,*Reflector,1,*ShutterBayObj,-1);
+  // attachSystem::addToInsertSurfCtrl(System,*Reflector,
+  // 				    PBeam->getCC("Sector0"));
   
   attachSystem::addToInsertSurfCtrl(System,*ShutterBayObj,
 				    PBeam->getCC("Full"));
   attachSystem::addToInsertSurfCtrl(System,*Bulk,
 				    PBeam->getCC("Full"));
 
+  // WARNING: THESE CALL MUST GO AFTER the main void (74123) has
+  // been completed. Otherwize we can't find the pipe in the volume.
+  ModPipes->buildLowPipes(System,lowPipeType);
+  ModPipes->buildTopPipes(System,topPipeType);
+
   makeBeamLine(System,IParam);
-
-  if (IParam.flag("eng"))
-    buildTwister(System);
-  
-  //  buildF5Collimator(System, nF5);
-  buildF5Collimator(System, IParam);
+  buildF5Collimator(System, nF5);
 
 
-  //ELog::EM << "pipes are tmp removed since they do not work anymore with newer CombLayer" << ELog::endDiag;
-  //buildTopPipes(System,"");
-  //buildLowPipes(System,"");
   return;
 }
 

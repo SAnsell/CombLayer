@@ -3,7 +3,7 @@
  
  * File:   tally/TallyCreate.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -233,7 +233,7 @@ addF4Tally(Simulation& System,const int tallyNum,
 {
   tallySystem::cellFluxTally TX(tallyNum);
   TX.setParticles(pType);                  /// F4 tally on neutrons
-  TX.setSD(1.0);                           /// Weight to 1.0
+  TX.setSDField(1.0);                           /// Weight to 1.0
   TX.setActive(1);                         /// Turn it on
   TX.addCells(Units);
   TX.setCinderEnergy(pType);
@@ -257,7 +257,7 @@ addF7Tally(Simulation& System,const int tallyNum,
 {
   tallySystem::fissionTally TX(tallyNum);
   TX.setParticles("n");                  /// F4 tally on neutrons
-  TX.setSD(1.0);                           /// Weight to 1.0
+  TX.setSDField(1.0);                           /// Weight to 1.0
   TX.setActive(1);                         /// Turn it on
   TX.addCells(Units);
   System.addTally(TX);
@@ -1069,8 +1069,9 @@ setEnergy(Simulation& Sim,const int tNumber,
   Simulation::TallyTYPE::iterator mc;
   for(mc=tmap.begin();mc!=tmap.end();mc++)
     {
-      if (tNumber==0 || mc->first==tNumber)
-	{
+      if (tNumber==0 || mc->first==tNumber ||
+          (tNumber<0 && (mc->first % 10) == -tNumber))
+        {
 	  if (mc->second->setEnergy(ePart))
 	    fnum++;
 	}
@@ -1095,8 +1096,8 @@ setSingle(Simulation& Sim,const int tNumber)
   Simulation::TallyTYPE::iterator mc;
   for(mc=tmap.begin();mc!=tmap.end();mc++)
     {
-      if ( ((mc->first % 10)==4  || (mc->first % 10)==2) &&
-	   (tNumber==0 || mc->first==tNumber))
+      if (tNumber==0 || mc->first==tNumber ||
+          (tNumber<0 && (mc->first % 10) == -tNumber))
 	{
 	  if (mc->second->makeSingle())
 	    fnum++;
@@ -1107,7 +1108,7 @@ setSingle(Simulation& Sim,const int tNumber)
 
 int
 setTime(Simulation& Sim,const int tNumber,
-	     const std::string& tPart)
+        const std::string& tPart)
   /*!
     Set the energy of a tally
     \param Sim :: Simulation
@@ -1123,8 +1124,9 @@ setTime(Simulation& Sim,const int tNumber,
   Simulation::TallyTYPE::iterator mc;
   for(mc=tmap.begin();mc!=tmap.end();mc++)
     {
-      if (tNumber==0 || mc->first==tNumber)
-	{
+      if (tNumber==0 || mc->first==tNumber ||
+          (tNumber<0 && (mc->first % 10) == -tNumber))
+        {
 	  if (mc->second->setTime(tPart))
 	    fnum++;
 	}
@@ -1133,6 +1135,140 @@ setTime(Simulation& Sim,const int tNumber,
   return fnum;
 }
 
+int
+setFormat(Simulation& Sim,const int tNumber,
+          const std::string& fPart)
+  /*!
+    Set the format of a tally.
+    \param Sim :: Simulation
+    \param tNumber :: tally nubmer [-ve for type / 0 for all]
+    \param fPart :: format string [MCNP format]
+    \return number of tallies split
+   */
+{
+  ELog::RegMethod RegA("TallyCreate","setFormat");
+  
+  Simulation::TallyTYPE& tmap=Sim.getTallyMap();
+  int fnum(0);
+  Simulation::TallyTYPE::iterator mc;
+  for(mc=tmap.begin();mc!=tmap.end();mc++)
+    {
+      if (tNumber==0 || mc->first==tNumber ||
+          (tNumber<0 && (mc->first % 10)== -tNumber))
+	{
+	  if (mc->second->setFormat(fPart))
+	    fnum++;
+	}
+    }
+  
+  return fnum;
+}
+
+void
+mergeTally(Simulation& Sim,const int aNumber,
+           const int bNumber)
+  /*!
+    Merge the tallys together into one [if makes sence]
+    \param Sim :: Simulation
+    \param aNumber :: tally nubmer 
+    \param bNumber :: tally nubmer [-ve for type / 0 for all]
+    \param  :: format string [MCNP format]
+  */
+{
+  ELog::RegMethod RegA("TallyCreate","mergeTally");  
+
+  Simulation::TallyTYPE& tmap=Sim.getTallyMap();
+
+  // First tally needs to be explicit
+  Simulation::TallyTYPE::iterator ac=tmap.find(aNumber);
+  if (ac==tmap.end())
+    throw ColErr::InContainerError<int>(aNumber,"tally not present");
+
+  std::set<int> removalSet;
+  const int tType(aNumber % 10);
+  Simulation::TallyTYPE::iterator bc;
+  for(bc=tmap.begin();bc!=tmap.end();bc++)
+    {
+      const int tNum(bc->first);
+      if ( tType==(tNum % 10) &&
+           tNum!=bNumber &&
+           (bNumber==0 || tNum==bNumber ||
+            (bNumber<0 && (tNum % 10)== -bNumber)) )
+        {
+          if (bc->second->mergeTally(*ac->second))
+            removalSet.insert(bc->first);
+        }
+    }
+
+  for(const int Item : removalSet)
+    {
+      Simulation::TallyTYPE::iterator ac=
+        tmap.find(Item);
+      tmap.erase(ac);
+    }
+  return;
+}
+
+  
+  
+int
+setSDField(Simulation& Sim,const int tNumber,
+          const std::string& fPart)
+  /*!
+    Set the format of a tally.
+    \param Sim :: Simulation
+    \param tNumber :: tally nubmer [-ve for type / 0 for all]
+    \param fPart :: format string [MCNP format]
+    \return number of tallies split
+   */
+{
+  ELog::RegMethod RegA("TallyCreate","setSDField");
+  
+  Simulation::TallyTYPE& tmap=Sim.getTallyMap();
+  int fnum(0);
+  Simulation::TallyTYPE::iterator mc;
+  for(mc=tmap.begin();mc!=tmap.end();mc++)
+    {
+      if (tNumber==0 || mc->first==tNumber ||
+          (tNumber<0 && (mc->first % 10)== -tNumber))
+	{
+	  if (mc->second->setSDField(fPart))
+	    fnum++;
+	}
+    }
+
+  return fnum;
+}
+
+
+int
+setParticleType(Simulation& Sim,const int tNumber,
+                const std::string& nPart) 
+  /*!
+    Get the last tally point based on the tallynumber
+    Can use the mesh centre if no point tallies exist
+    \param Sim :: System to access tally tables
+    \param tNumber :: Tally number [0 for all]
+    \param nPart :: New Particle
+    \return tally number [0 on fail]
+  */
+{
+  ELog::RegMethod RegA("TallyCreate","setParticleType");
+
+  Simulation::TallyTYPE& tmap=Sim.getTallyMap();
+  int fnum(0);
+  Simulation::TallyTYPE::iterator mc;
+  for(mc=tmap.begin();mc!=tmap.end();mc++)
+    {
+      if (tNumber==0 || mc->first==tNumber ||
+          (tNumber<0 && (mc->first % 10) == -tNumber))
+	{
+          mc->second->setParticles(nPart);
+          fnum++;
+	}
+    }
+  return fnum;
+}
 
 int
 changeParticleType(Simulation& Sim,const int tNumber,
@@ -1155,7 +1291,8 @@ changeParticleType(Simulation& Sim,const int tNumber,
   Simulation::TallyTYPE::iterator mc;
   for(mc=tmap.begin();mc!=tmap.end();mc++)
     {
-      if (tNumber==0 || mc->first==tNumber)
+      if (tNumber==0 || mc->first==tNumber ||
+          (tNumber<0 && (mc->first % 10) == -tNumber))
 	{
 	  std::string PStr=mc->second->getParticles();
 	  std::string::size_type pos=PStr.find(oPart);
@@ -1167,7 +1304,6 @@ changeParticleType(Simulation& Sim,const int tNumber,
 	    }
 	}
     }
-
   return fnum;
 }
 

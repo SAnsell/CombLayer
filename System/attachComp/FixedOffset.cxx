@@ -3,7 +3,7 @@
  
  * File:   attachComp/FixedOffset.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,7 +63,9 @@ namespace attachSystem
 {
 
 FixedOffset::FixedOffset(const std::string& KN,const size_t NL) :
-  FixedComp(KN,NL),xStep(0.0),yStep(0.0),zStep(0.0),
+  FixedComp(KN,NL),
+  preXYAngle(0.0),preZAngle(0.0),
+  xStep(0.0),yStep(0.0),zStep(0.0),
   xyAngle(0.0),zAngle(0.0)
  /*!
     Constructor 
@@ -74,6 +76,7 @@ FixedOffset::FixedOffset(const std::string& KN,const size_t NL) :
 
 FixedOffset::FixedOffset(const FixedOffset& A) : 
   FixedComp(A),
+  preXYAngle(A.preXYAngle),preZAngle(A.preZAngle),
   xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
   xyAngle(A.xyAngle),zAngle(A.zAngle)
   /*!
@@ -93,6 +96,8 @@ FixedOffset::operator=(const FixedOffset& A)
   if (this!=&A)
     {
       FixedComp::operator=(A);
+      preXYAngle=A.preXYAngle;
+      preZAngle=A.preZAngle;
       xStep=A.xStep;
       yStep=A.yStep;
       zStep=A.zStep;
@@ -112,13 +117,14 @@ FixedOffset::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("FixedOffset","populate");
 
-  preXYAngle=Control.EvalDefVar<double>(keyName+"PreXYAngle",0.0);
-  preZAngle=Control.EvalDefVar<double>(keyName+"PreZAngle",0.0);
-  xStep=Control.EvalDefVar<double>(keyName+"XStep",0.0);
-  yStep=Control.EvalDefVar<double>(keyName+"YStep",0.0);
-  zStep=Control.EvalDefVar<double>(keyName+"ZStep",0.0);
-  xyAngle=Control.EvalDefVar<double>(keyName+"XYAngle",0.0);
-  zAngle=Control.EvalDefVar<double>(keyName+"ZAngle",0.0);
+  // defaults used to fixedoffset can be used in a setting class.
+  preXYAngle=Control.EvalDefVar<double>(keyName+"PreXYAngle",preXYAngle);
+  preZAngle=Control.EvalDefVar<double>(keyName+"PreZAngle",preZAngle);
+  xStep=Control.EvalDefVar<double>(keyName+"XStep",xStep);
+  yStep=Control.EvalDefVar<double>(keyName+"YStep",yStep);
+  zStep=Control.EvalDefVar<double>(keyName+"ZStep",zStep);
+  xyAngle=Control.EvalDefVar<double>(keyName+"XYAngle",xyAngle);
+  zAngle=Control.EvalDefVar<double>(keyName+"ZAngle",zAngle);
   return;
   
 }
@@ -130,12 +136,25 @@ FixedOffset::applyOffset()
   */
 {
   ELog::RegMethod RegA("FixedOffset","applyOffset");
-  
+
+  FixedComp::applyAngleRotate(preXYAngle,preZAngle);
   FixedComp::applyShift(xStep,yStep,zStep);
   FixedComp::applyAngleRotate(xyAngle,zAngle);
   return;
 }
 
+void
+FixedOffset::linkShift(const long int sideIndex)
+  /*!
+    Apply a rotation to a link point axis
+    \param sideIndex :: link point index [signed]
+  */
+{
+  ELog::RegMethod RegA("FixedOffset","applyOffset");
+
+  FixedComp::linkShift(sideIndex,xStep,yStep,zStep);
+  return;
+}
 
 void
 FixedOffset::linkAngleRotate(const long int sideIndex)

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   attachComp/PositionSupport.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,9 +51,13 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "surfRegister.h"
+#include "support.h"
 
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "objectRegister.h"
+#include "inputParam.h"
+#include "LinkSupport.h"
 #include "PositionSupport.h"
 
 
@@ -81,6 +85,113 @@ applyZAxisRotate(const FixedComp& FC,const double xyAngle,
   return;
 }
 
+Geometry::Vec3D
+getCntVec3D(const mainSystem::inputParam& IParam,
+            const std::string& K,const size_t setIndex,
+            size_t& itemIndex) 
+  /*!
+    Get a Vec3D [consuming a number of itemIndex]
+    \param K :: keyName
+    \param setIndex :: Index
+    \param itemIndex :: item count
+    \return Vecter point
+  */
+{ 
+  ELog::RegMethod RegA("PositionSuppport[F]","getCntVec3D");
 
+  const ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  const std::vector<std::string>& DItems=
+    IParam.getObjectItems(K,setIndex);
+
+  const size_t NItems=DItems.size();
+  if (itemIndex>=NItems)
+    throw ColErr::IndexError<size_t>
+      (itemIndex,NItems,K+":itemIndex");
+
+  Geometry::Vec3D Value;
+  // Simple Vec3D
+  if (StrFunc::convert(DItems[itemIndex],Value))
+    {
+      itemIndex++;
+      return Value;
+    }
+
+  // Flat numbers:
+  if (itemIndex+3<=NItems &&
+      StrFunc::convert(DItems[itemIndex],Value[0]) &&
+      StrFunc::convert(DItems[itemIndex+1],Value[1]) &&
+      StrFunc::convert(DItems[itemIndex+2],Value[2]) )
+    {
+      itemIndex+=3;
+      return Value;
+    }
+  // object name 
+  if (itemIndex+3<=NItems && DItems[itemIndex]=="object")
+    {
+      const attachSystem::FixedComp* TPtr=
+	OR.getObjectThrow<attachSystem::FixedComp>
+	(DItems[itemIndex+1],"FixedComp");
+      
+      const long int linkNumber=
+        attachSystem::getLinkIndex(DItems[itemIndex+2]);
+      Value=TPtr->getSignedLinkPt(linkNumber);
+      itemIndex+=3;
+      return Value;
+    }
+
+  // objOffset name 
+  if (itemIndex+4<=NItems && DItems[itemIndex]=="objOffset")
+    {
+      const attachSystem::FixedComp* TPtr=
+        OR.getObjectThrow<attachSystem::FixedComp>(DItems[itemIndex+1],
+						   "FixedComp");
+      const long int linkNumber=attachSystem::getLinkIndex(DItems[itemIndex+2]);
+      Value=TPtr->getSignedLinkPt(linkNumber);
+
+      Geometry::Vec3D DVec;
+      if (StrFunc::convert(DItems[itemIndex+3],DVec))
+        {
+          itemIndex+=4;
+        }
+      else if (itemIndex+6<NItems &&
+               StrFunc::convert(DItems[itemIndex+3],DVec[0]) &&
+               StrFunc::convert(DItems[itemIndex+4],DVec[1]) &&
+               StrFunc::convert(DItems[itemIndex+5],DVec[2]) )
+        {
+          itemIndex+=6;
+        }
+      else
+        throw ColErr::InContainerError<std::string>
+          (DItems[4],"None-converted Offset (objOffset)");      
+      
+      Geometry::Vec3D XDir,YDir,ZDir;
+      TPtr->calcLinkAxis(linkNumber,XDir,YDir,ZDir);
+      Value+=XDir*DVec[0]+YDir*DVec[1]+ZDir*DVec[2];
+      return Value;
+    }
+  // implied object name 
+  if (itemIndex+2<=NItems)
+    {
+      ELog::EM<<"Item == "<<DItems[itemIndex]<<ELog::endDiag;
+      const attachSystem::FixedComp* TPtr=
+        OR.getObjectThrow<attachSystem::FixedComp>(DItems[itemIndex],
+						   "FixedComp");
+
+      const long int linkNumber=attachSystem::getLinkIndex(DItems[itemIndex+1]);
+      Value=TPtr->getSignedLinkPt(linkNumber);
+      ELog::EM<<"Item == "<<DItems[itemIndex]<<" "<<Value<<ELog::endDiag;
+      itemIndex+=2;
+      return Value;
+    }
+  
+  throw ColErr::TypeMatch(DItems[itemIndex],
+                          "Geomtery::Vec3D",K+":convert error");
+
+}
+
+
+  
 
 }  // NAMESPACE attachSystem

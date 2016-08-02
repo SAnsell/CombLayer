@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   epbBuild/makeEPB.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -138,11 +138,11 @@ makeEPB::makeMagnets(Simulation& System)
 
 void 
 makeEPB::build(Simulation* SimPtr,
-	       const mainSystem::inputParam& IParam)
+	       const mainSystem::inputParam&)
   /*!
     Carry out the full build
     \param SimPtr :: Simulation system
-    \param IParam :: Input parameters
+    \param :: Input parameters
    */
 {
   // For output stream
@@ -154,7 +154,7 @@ makeEPB::build(Simulation* SimPtr,
 
   LineVoid->createAll(*SimPtr,World::masterOrigin());
   attachSystem::addToInsertSurfCtrl(*SimPtr,*Hall,*LineVoid);
-
+  
   makeMagnets(*SimPtr);
   return;
 }

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   funcBase/varList.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -186,25 +186,25 @@ varList::findVar(const std::string& Key)
 
 
 void
-varList::copyVar(const std::string& Key,const std::string& other) 
+varList::copyVar(const std::string& newKey,const std::string& oldKey) 
   /*!
     Copy a variable into the var system [with new number]
-    \param Key :: Keyname 
-    \param other :: variable to copy
+    \param newKey :: new variable name
+    \param oldKey :: existing variable to copy [must exist]
   */
 {
   ELog::RegMethod RegA("varList","copyVar");
 
-  if (Key==other) return;
+  if (newKey==oldKey) return;
   
   std::map<std::string,FItem*>::iterator ac;
   std::map<std::string,FItem*>::const_iterator bc;
 
-  bc=varName.find(other);
+  bc=varName.find(oldKey);
   if (bc==varName.end())
-    throw ColErr::InContainerError<std::string>(other,"Var item not found");
+    throw ColErr::InContainerError<std::string>(oldKey,"Var item not found");
 
-  ac=varName.find(Key);
+  ac=varName.find(newKey);
   if (ac!=varName.end())
     {
       const int I=ac->second->getIndex();
@@ -219,13 +219,57 @@ varList::copyVar(const std::string& Key,const std::string& other)
   Ptr->setIndex(varNum);
   varNum++;
     // Now insert into master lists
-  varName.insert(std::pair<std::string,FItem*>(Key,Ptr));
+  varName.insert(std::pair<std::string,FItem*>(newKey,Ptr));
   varItem.insert(std::pair<int,FItem*>(Ptr->getIndex(),Ptr));
 
   return;
 }
 
+void
+varList::copyVarSet(const std::string& oldHead,const std::string& newHead) 
+  /*!
+    Copy a variable into the var system [with new number]
+    \param oldHead :: Old head name
+    \param newHead :: replacement head name
+  */
+{
+  ELog::RegMethod RegA("varList","copyVarSet");
 
+  if (oldHead==newHead) return;
+
+  // NOTE: map is ORDERED
+  // Thus we only need to find ONE value and then iterate through
+
+  
+  std::map<std::string,FItem*>::const_iterator oldMC;
+  const size_t subLen=oldHead.length();
+  
+  oldMC=varName.lower_bound(oldHead);
+  // Need to use a replacement set because each replacement
+  // invalidates the iterator position:
+  std::map<std::string,std::string> replaceSet;
+  
+  while(oldMC!=varName.end() &&
+        (!subLen || oldMC->first.substr(0,subLen)==oldHead))
+    {
+      // Find new key
+      const std::string newKey=(subLen) ?
+        newHead+oldMC->first.substr(subLen) : newHead+oldMC->first;
+      replaceSet.emplace(oldMC->first,newKey);
+      
+      oldMC++;
+    }
+  if (replaceSet.empty())
+    throw ColErr::InContainerError<std::string>
+      (oldHead,"Key part not in variable map");
+
+  for(const std::pair<std::string,std::string>& Item : replaceSet)
+    {
+      copyVar(Item.second,Item.first);
+    }
+  
+  return;
+}
 
 int 
 varList::selectValue(const int Key,Geometry::Vec3D& oVec,
@@ -234,8 +278,10 @@ varList::selectValue(const int Key,Geometry::Vec3D& oVec,
     Simple selector
     \param Key :: Variable name
     \param oVec :: output vector
-    \param oDouble :: output vector
-    \return 1 :: Vector / 0 :: double
+    \param oDbl :: output value [ selected]
+    \retval Output Type used : 0 :: double
+    \retval Output Type used : 1 :: Vector 
+    \retval Output Type used : -1 :: FAILURE 
   */
 {
   const FItem* FPtr=findVar(Key);
@@ -271,7 +317,7 @@ varList::getValue(const int Key) const
     Get the value from an time
     \param Key :: return value
     \retval value if Key exists
-    \retval 0.0 if not (should this throw)
+    \retval 0.0 if not (should this throw?)
   */
 {
   const FItem* FPtr=findVar(Key);

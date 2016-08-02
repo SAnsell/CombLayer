@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   visit/Visit.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -156,13 +156,13 @@ Visit::getResult(const MonteCarlo::Object* ObjPtr) const
   if (!ObjPtr) return 0.0;
   switch(outType)
     {
-    case cellID:
+    case VISITenum::cellID:
       return ObjPtr->getName();
-    case material:
+    case VISITenum::material:
       return ObjPtr->getMat();
-    case density:
+    case VISITenum::density:
       return ObjPtr->getDensity();
-    case weight:
+    case VISITenum::weight:
       return 0.0;
     }
   return 0.0;
@@ -217,7 +217,7 @@ Visit::populate(const Simulation* SimPtr,
 	      else
 		{
 		  mesh[i][j][k]=getResult(ObjPtr);
-		  if (outType==material && 
+		  if (outType==VISITenum::material && 
 		      fabs(mesh[i][j][k]-37)<1e-4)
 		    beCnt++;
 		}

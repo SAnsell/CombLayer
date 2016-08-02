@@ -3,7 +3,7 @@
  
  * File:   monte/Material.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -360,6 +360,7 @@ Material::setMaterial(const int MIndex,
 {
 
   ELog::RegMethod RegA("Material","setMaterial(i,s,s,s,s)");
+
   const int retVal=setMaterial(MIndex,MLine,MTLine,LibLine);
   if (!retVal) Name=N;
   return retVal; 
@@ -403,21 +404,20 @@ Material::setMaterial(const int MIndex,
 
   Zaid AZ;
   double Dens;                   // density
-  std::vector<std::string>::iterator vc;
   int typeFlag(0);
   // skip first item
-  for(vc=Items.begin();vc!=Items.end();vc++)
+  for(const std::string& sUnit : Items)
     {
       if (!typeFlag)
 	{
-	  if (!AZ.setZaid(*vc))
-	    ELog::EM<<"Failed to convert Zaid:"<<*vc<<ELog::endErr;
+	  if (!AZ.setZaid(sUnit))
+	    ELog::EM<<"Failed to convert Zaid:"<<sUnit<<ELog::endErr;
 	  typeFlag=1;
 	}
       else
 	{
-	  if (!StrFunc::convert(*vc,Dens))
-	    ELog::EM<<"Failed to convert Density:"<<*vc<<ELog::endErr;
+	  if (!StrFunc::convert(sUnit,Dens))
+	    ELog::EM<<"Failed to convert Density:"<<sUnit<<ELog::endErr;
 	  AZ.setDensity(Dens);
 	  zaidVec.push_back(AZ);
 	  typeFlag=0;
@@ -425,8 +425,8 @@ Material::setMaterial(const int MIndex,
     }
   // PROCESS MT Line:
   std::vector<std::string> MTItems=StrFunc::StrParts(MTLine);
-  for(vc=MTItems.begin();vc!=MTItems.end();vc++)
-    SQW.push_back(StrFunc::fullBlock(*vc));
+  for(const std::string& sUnit : MTItems)
+    SQW.push_back(StrFunc::fullBlock(sUnit));
   
   // PROCESS LIBS
   std::vector<std::string> LibItems=StrFunc::StrParts(LibLine);

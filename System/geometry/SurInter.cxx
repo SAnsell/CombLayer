@@ -3,7 +3,7 @@
  
  * File:   geometry/SurInter.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,6 +65,7 @@
 #include "Circle.h"
 #include "Ellipse.h"
 #include "HeadRule.h"
+#include "LineIntersectVisit.h"
 #include "SurInter.h"
 
 #include "Debug.h"
@@ -72,6 +73,60 @@
 namespace SurInter
 {
 
+
+Geometry::Vec3D
+getLinePoint(const Geometry::Vec3D& Origin,const Geometry::Vec3D& N,
+          const HeadRule& mainHR,const HeadRule& sndHR)
+  /*!
+    Given a line (origin:N) find the intersects wiht MainHR that
+    satisfy sndHR
+    \param mainHR :: Main headRule    
+    \param sndHR :: Secondary/ Bridge rule
+   */
+{
+  ELog::RegMethod RegA("SurInter[F]","getLinePoint");
+  
+  std::vector<Geometry::Vec3D> Pts;
+  std::vector<int> SNum;
+  mainHR.calcSurfIntersection(Origin,N,Pts,SNum);
+
+  std::vector<Geometry::Vec3D> out;
+
+  if (sndHR.hasRule())
+    {
+      for(const Geometry::Vec3D& Pt : Pts)
+        {
+          if (sndHR.isValid(Pt))
+            out.push_back(Pt);
+        }
+    }
+  else
+    out=Pts;
+  
+  if (out.size()!=1)
+    throw ColErr::SizeError<size_t>(out.size(),1,"Out points not singular");
+
+  return out.front();
+}
+
+Geometry::Vec3D
+getLinePoint(const Geometry::Vec3D& Origin,
+             const Geometry::Vec3D& Axis,
+	     const Geometry::Surface* SPtr,
+             const Geometry::Vec3D& NPoint)
+  /*!
+    Calculate the line though a surface
+    \param Origin :: Origin of the line
+    \param Axis :: axis direction
+    \param SPtr :: surface point
+    \param NPoint :: nearest point
+    \return Point on intersect
+  */
+{
+  MonteCarlo::LineIntersectVisit trackLine(Origin,Axis);
+  return trackLine.getPoint(SPtr,NPoint);
+}
+   
 template<>
 Geometry::Intersect*
 calcIntersect(const Geometry::Plane& PlnA,
@@ -648,6 +703,8 @@ interceptRule(HeadRule& HR,const Geometry::Vec3D& Origin,
   return interceptRuleConst(HR,Origin,N);
 }
 
+ 
+  
 }  // NAMESPACE SurInter
 
 

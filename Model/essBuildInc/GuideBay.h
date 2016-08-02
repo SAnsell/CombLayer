@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/GuideBay.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,7 +69,8 @@ class GuideBay : public attachSystem::ContainedGroup,
   std::vector<std::shared_ptr<GuideItem> > GUnit;
 
   void populate(const Simulation&);
-  void createUnitVector(const attachSystem::FixedComp&);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const long int);
 
   void createSurfaces();
   void createLinks();
@@ -88,8 +89,10 @@ class GuideBay : public attachSystem::ContainedGroup,
       { innerCyl=abs(A); outerCyl=abs(B); } 
 
   void outerMerge(Simulation&,GuideBay&);
-  void createGuideItems(Simulation&);
-  void createAll(Simulation&,const attachSystem::FixedComp&);
+  void createGuideItems(Simulation&,const attachSystem::FixedComp&,
+			const long int,const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
 
 };
 

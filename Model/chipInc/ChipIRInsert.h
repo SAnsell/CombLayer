@@ -43,7 +43,7 @@ class ChipIRInsert : public BulkInsert
 {
  private:
   
-  const std::string keyName;  ///< KeyName
+  const std::string compName;  ///< local keyName
 
   Geometry::Vec3D voidOrigin; ///< Void origin
   Geometry::Vec3D Axis;       ///< Centre Cylinder axis

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testLog.cxx
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -100,15 +100,17 @@ int
 testLog::testENDL()
   /*!
     Test of the output of log 
+    Mainly to test colour
     \return 0
    */
 {
   ELog::RegMethod RegA("testLog","testENDL");
-  return 0;
+
   ELog::EM.setTypeFlag(1);
   ELog::EM<<"THIS output is in diagnostic mode"<<ELog::endDiag;
   ELog::EM<<"THIS output is in basic mode"<<ELog::endBasic;
   ELog::EM<<"THIS output is in debug mode"<<ELog::endDebug;
+  ELog::EM<<"THIS output is in crit mode"<<ELog::endCrit;
   ELog::EM<<"THIS output is in Error mode"<<ELog::endErr;
   ELog::EM<<"THIS output is in warning mode"<<ELog::endWarn;
   ELog::EM<<"THIS output is in trace mode"<<ELog::endTrace;

@@ -292,7 +292,7 @@ PhysImp::renumberCell(const int oldCellN,const int newCellN)
   */
 {
   ELog::RegMethod RegA("PhysImp","renumberCell");
-  if (oldCellN==newCellN) return;
+  if (impNum.empty() || oldCellN==newCellN) return;
   
   typedef std::map<int,double> ITYPE;
   ITYPE::iterator mc;

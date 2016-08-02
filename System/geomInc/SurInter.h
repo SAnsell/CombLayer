@@ -3,7 +3,7 @@
  
  * File:   geomInc/SurInter.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,6 +48,15 @@ namespace Geometry
 namespace SurInter
 {
 
+Geometry::Vec3D
+getLinePoint(const Geometry::Vec3D&,const Geometry::Vec3D&,
+	     const Geometry::Surface*,const Geometry::Vec3D&);
+
+Geometry::Vec3D
+getLinePoint(const Geometry::Vec3D&,const Geometry::Vec3D&,
+	     const HeadRule&,const HeadRule&);
+	     
+  
 Geometry::Vec3D
 nearPoint(const std::vector<Geometry::Vec3D>&,
 	  const Geometry::Vec3D&);
@@ -99,6 +108,7 @@ calcCentroid(const Geometry::Surface*,const Geometry::Surface*,
 	     const Geometry::Surface*,const Geometry::Surface*,
 	     const Geometry::Surface*,const Geometry::Surface*);
 
+ 
 /// Intersections:
 template<typename ATYPE,typename BTYPE>
 Geometry::Intersect*

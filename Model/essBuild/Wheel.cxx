@@ -3,7 +3,7 @@
  
  * File:   essBuild/Wheel.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,6 +67,8 @@
 #include "FixedComp.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "WheelBase.h"
 #include "Wheel.h"
 
@@ -272,14 +274,16 @@ Wheel::makeShaftObjects(Simulation& System)
 }
 
 void
-Wheel::createUnitVector(const attachSystem::FixedComp& FC)
+Wheel::createUnitVector(const attachSystem::FixedComp& FC,
+			const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Fixed Component
+    \param sideIndex :: sideIndex
   */
 {
   ELog::RegMethod RegA("Wheel","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC);
+  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
 
   applyShift(xStep,yStep,zStep);
   applyAngleRotate(xyAngle,zAngle);
@@ -495,17 +499,19 @@ Wheel::createLinks()
 
 void
 Wheel::createAll(Simulation& System,
-		     const attachSystem::FixedComp& FC)
+		 const attachSystem::FixedComp& FC,
+		 const long int sideIndex)
   /*!
     Extrenal build everything
     \param System :: Simulation
     \param FC :: FixedComponent for origin
+    \param sideIndex :: sideIndex
    */
 {
   ELog::RegMethod RegA("Wheel","createAll");
   populate(System.getDataBase());
 
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
 

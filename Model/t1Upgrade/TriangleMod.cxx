@@ -3,7 +3,7 @@
  
  * File:   t1Upgrade/TriangleMod.cxx 
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -714,7 +714,7 @@ TriangleMod::getExitWindow(const size_t outIndex,
 
 Geometry::Vec3D
 TriangleMod::getSurfacePoint(const size_t layerIndex,
-			     const size_t sideIndex) const
+			     const long int sideIndex) const
   /*!
     Simplified layer system only for top/bottom
     \param layerIndex :: layer
@@ -724,22 +724,26 @@ TriangleMod::getSurfacePoint(const size_t layerIndex,
 {
   ELog::RegMethod RegA("TriangleMod","getSurfacePoint");
 
+  const size_t SI((sideIndex>0) ?
+                  static_cast<size_t>(sideIndex-1) :
+                  static_cast<size_t>(-1-sideIndex));
+  
   double LT[3];  
-  if (sideIndex>=Outer.Pts.size()+2) 
-    throw ColErr::IndexError<size_t>(sideIndex,Outer.Pts.size()+2,
-				     "sideIndex");
+  if (SI>=Outer.Pts.size()+2) 
+    throw ColErr::IndexError<size_t>(SI,Outer.Pts.size()+2,
+                                       "SI");
   if (layerIndex>=nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
   
 
-  if (sideIndex>1)   // Main sized
+  if (SI>1)   // Main sized
     {
       LT[0]=0.0; LT[1]=LT[0]+wallThick; LT[2]=LT[1]+flatClearance;
       std::pair<Geometry::Vec3D,Geometry::Vec3D> CP=
-	cornerPair(Outer.Pts,sideIndex-2,sideIndex-1,LT[layerIndex]);
+	cornerPair(Outer.Pts,SI-2,SI-1,LT[layerIndex]);
       return (CP.first+CP.second)/2.0;
     }
-  else if (sideIndex)  // TOP
+  else if (SI)  // TOP
     {
       LT[0]=height/2.0; LT[1]=LT[0]+wallThick; LT[2]=LT[1]+topClearance;
       return Origin+Z*LT[layerIndex];
@@ -752,10 +756,10 @@ TriangleMod::getSurfacePoint(const size_t layerIndex,
 
 int
 TriangleMod::getLayerSurf(const size_t layerIndex,
-			  const size_t sideIndex) const
+			  const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
-    \param sideIndex :: Side [0:Base/1:Top : side+2] 
+    \param sideIndex :: Side [1:Base/2:Top : side+3] 
     \param layerIndex :: layer, 0 is inner moderator [0-4]
     \return Surface number 
   */
@@ -764,32 +768,33 @@ TriangleMod::getLayerSurf(const size_t layerIndex,
 
   if (layerIndex>=nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layerIndex");
-  if (sideIndex>=Outer.Pts.size()+2) 
-    throw ColErr::IndexError<size_t>(sideIndex,Outer.Pts.size()+2,
-				     "sideIndex");
 
-  if (sideIndex>1)   // SIDES
-    {
-      const int lIndex=static_cast<int>(layerIndex);
-      const int SN=modIndex+100*lIndex+static_cast<int>(sideIndex-2)+101;
-      return -SMap.realSurf(SN);
-    }
-  const int addNumber=modIndex+
-    static_cast<int>(layerIndex)*10;
-
-  if (sideIndex==1)  // TOP
-    return SMap.realSurf(addNumber+6);
-  // BASE
-  return -SMap.realSurf(addNumber+5);
+  const size_t uSIndex(static_cast<size_t>(std::abs(sideIndex)));
   
+  if (!sideIndex || uSIndex>Outer.Pts.size()+2) 
+    throw ColErr::IndexError<size_t>
+      (uSIndex,Outer.Pts.size()+2,"sideIndex");
+  
+  int signValue((sideIndex<0) ? -1 : 1);
+ 
+  const int addNumber=modIndex+static_cast<int>(layerIndex)*10;
+
+  if (uSIndex==2)  // TOP
+    return signValue*SMap.realSurf(addNumber+6);
+  if (uSIndex==1)      // BASE
+    return signValue*SMap.realSurf(addNumber+5);
+
+  const int lIndex=static_cast<int>(layerIndex);
+  const int SN=modIndex+100*lIndex+101+static_cast<int>(uSIndex-3);
+  return signValue*SMap.realSurf(SN);  
 }
 
 std::string
 TriangleMod::getLayerString(const size_t layerIndex,
-			    const size_t sideIndex) const
+			    const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
-    \param sideIndex :: Side [0:Base/1:Top : side+2] 
+    \param sideIndex :: Side [1:Base/2:Top : side+3] 
     \param layerIndex :: layer, 0 is inner moderator [0-4]
     \return Surface number 
   */

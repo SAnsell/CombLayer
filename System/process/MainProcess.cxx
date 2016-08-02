@@ -3,7 +3,7 @@
  
  * File:   process/MainProcess.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,6 +63,12 @@
 #include "variableSetup.h"
 #include "defaultConfig.h"
 #include "DBModify.h"
+#include "SimProcess.h"
+#include "DefPhysics.h"
+#include "TallySelector.h"
+#include "ReportSelector.h"
+#include "mainJobs.h"
+#include "SimInput.h"
 #include "MainProcess.h"
 
 namespace mainSystem
@@ -144,8 +150,8 @@ setRunTimeVariable(FuncDataBase& Control,
     \param AVMap :: Map of variable to add + values
    */
 {
-  ELog::RegMethod RegA("mainProcess","setRunTimeVariable");
-
+  ELog::RegMethod RegA("MainProcess[F]","setRunTimeVariable");
+  
   std::map<std::string,std::string>::const_iterator mc;
   for(mc=VMap.begin();mc!=VMap.end();mc++)
     {
@@ -160,12 +166,14 @@ setRunTimeVariable(FuncDataBase& Control,
     {
       if (!Control.hasVariable(mc->first))
 	{
-	  ELog::EM<<"Adding variable name "<<mc->first<<ELog::endDiag;
+	  ELog::EM<<"Adding variable name["<<mc->first<<"] "
+                  <<mc->second<<ELog::endDiag;
 	  Control.addVariable(mc->first,mc->second);
 	}
       else
 	{
-	  ELog::EM<<"Setting pre-defined variable "<<mc->second<<ELog::endDiag;
+	  ELog::EM<<"Setting pre-defined variable["<<mc->first<<"] "
+                  <<mc->second<<ELog::endDiag;
 	  Control.setVariable(mc->first,mc->second);
 	}
     }
@@ -215,17 +223,21 @@ createInputs(inputParam& IParam)
   IParam.regItem("C","ECut");
   IParam.regFlag("cinder","cinder");
   IParam.regItem("d","debug");
+  IParam.regItem("dbcn","dbcn");
   IParam.regItem("defaultConfig","defaultConfig");
   IParam.regDefItem<std::string>("dc","doseCalc",1,"InternalDOSE");
   IParam.regFlag("e","endf");
   IParam.regMulti("eng","engineering",10000,0);
   IParam.regItem("E","exclude");
   IParam.regDefItem<double>("electron","electron",1,-1.0);
+  IParam.regItem("event","EVENT");
   IParam.regFlag("help","help");
   IParam.regMulti("i","iterate",10000,1);
   IParam.regItem("I","isolate");
   IParam.regDefItemList<std::string>("imp","importance",10,RItems);
   IParam.regDefItem<int>("m","multi",1,1);
+  IParam.regDefItem<std::string>("matDB","materialDatabase",1,
+                                 std::string("shielding"));  
   IParam.regFlag("M","mesh");
   IParam.regItem("MA","meshA");
   IParam.regItem("MB","meshB");
@@ -237,9 +249,12 @@ createInputs(inputParam& IParam)
   IParam.regFlag("fluka","FLUKA");
   IParam.regFlag("mcnp6","MCNP6");
   IParam.regFlag("Monte","Monte");
+  IParam.regItem("offset","offset",1,4);
   IParam.regDefItem<double>("photon","photon",1,0.001);
   IParam.regDefItem<double>("photonModel","photonModel",1,100.0);
+  IParam.regItem("PTRAC","ptrac");
   IParam.regDefItemList<std::string>("r","renum",10,RItems);
+  IParam.regMulti("R","report",1000,0);
   IParam.regFlag("sdefVoid","sdefVoid");
   IParam.regDefItem<std::string>("sdefType","sdefType",1,"");
   IParam.regDefItem<std::string>("physModel","physicsModel",1,"CEM03"); 
@@ -266,8 +281,10 @@ createInputs(inputParam& IParam)
   IParam.regItem("targetType","targetType",1);
   IParam.regDefItem<int>("u","units",1,0);
   IParam.regItem("validCheck","validCheck",1);
+  IParam.regItem("validPoint","validPoint",1);
   IParam.regFlag("um","voidUnMask");
   IParam.regMulti("volume","volume",4,1);
+  IParam.regItem("volCard","volCard");
   IParam.regDefItem<int>("VN","volNum",1,20000);
   IParam.regMulti("volCell","volCells",100,1,100);
     
@@ -311,17 +328,21 @@ createInputs(inputParam& IParam)
   IParam.setDesc("ECut","Cut energy");
   IParam.setDesc("cinder","Outer Cinder files");
   IParam.setDesc("d","debug flag");
+  IParam.setDesc("dbcn","DBCN card values");
   IParam.setDesc("dc","Dose flag (internalDOSE/DOSE)");
   IParam.setDesc("defaultConfig","Set up a default configuration");
   IParam.setDesc("e","Convert materials to ENDF-VII");
   IParam.setDesc("electron","Add electron physics at Energy");
   IParam.setDesc("engineering","Select engineering detail {components}");
-  IParam.setDesc("E","exclude part of the simualtion [chipir/zoom]");
+  IParam.setDesc("E","exclude part of the simualtion [e.g. chipir/zoom]");
+  IParam.setDesc("event","Event processing : ");
   IParam.setDesc("help","Help on the diff options for building [only TS1] ");
   IParam.setDesc("i","iterate on variables");
   IParam.setDesc("I","Isolate component");
   IParam.setDesc("imp","Importance regions");
   IParam.setDesc("m","Create multiple files (diff: RNDseed)");
+  IParam.setDesc("matDB","Set the material database to use "
+                 "(shielding or neutronics)");  
   IParam.setDesc("M","Add mesh tally");
   IParam.setDesc("MA","Lower Point in mesh tally");
   IParam.setDesc("MB","Upper Point in mesh tally");
@@ -333,9 +354,11 @@ createInputs(inputParam& IParam)
   IParam.setDesc("FLUKA","FLUKA output");
   IParam.setDesc("PHITS","PHITS output");
   IParam.setDesc("Monte","MonteCarlo capable simulation");
+  IParam.setDesc("offset","Displace to component [name]");
   IParam.setDesc("photon","Photon Cut energy");
   IParam.setDesc("photonModel","Photon Model Energy [min]");
   IParam.setDesc("r","Renubmer cells");
+  IParam.setDesc("report","Report a position/axis");
   IParam.setDesc("s","RND Seed");
   IParam.setDesc("SF","File read source");
   IParam.setDesc("SA","Source Angle [deg]");
@@ -360,11 +383,13 @@ createInputs(inputParam& IParam)
   IParam.setDesc("void","Adds the void card to the simulation");
   IParam.setDesc("volume","Create volume about point/radius for f4 tally");
   IParam.setDesc("volCells","Cells [object/range]");
+  IParam.setDesc("volCard","set/delete the vol card");
   IParam.setDesc("vtk","Write out VTK plot mesh");
   IParam.setDesc("vcell","Use cell id rather than material");
   IParam.setDesc("vmat","Material sections to be written by vtk output");
   IParam.setDesc("VN","Number of points in the volume integration");
   IParam.setDesc("validCheck","Run simulation to check for validity");
+  IParam.setDesc("validPoint","Point to start valid check from");
 
   IParam.setDesc("w","weightBias");
   IParam.setDesc("wExt","Extraction biasisng [see: -wExt help]");
@@ -543,7 +568,8 @@ createPhotonInputs(inputParam& IParam)
   return;
 }
 
-void createTS1Inputs(inputParam& IParam)
+void
+createTS1Inputs(inputParam& IParam)
   /*!
     Set the specialise inputs for TS1
     \param IParam :: Input Parameters
@@ -570,7 +596,8 @@ void createTS1Inputs(inputParam& IParam)
   return;
 }
 
-void createBilbauInputs(inputParam& IParam)
+void
+createBilbauInputs(inputParam& IParam)
   /*!
     Set the specialise inputs for TS2
     \param IParam :: Input Parameters
@@ -586,7 +613,8 @@ void createBilbauInputs(inputParam& IParam)
   return;
 }
 
-void createBNCTInputs(inputParam& IParam)
+void
+createBNCTInputs(inputParam& IParam)
   /*!
     Set the specialise inputs for Boron capture beamline
     \param IParam :: Input Parameters
@@ -599,7 +627,8 @@ void createBNCTInputs(inputParam& IParam)
   return;
 }
 
-void createD4CInputs(inputParam& IParam)
+void
+createD4CInputs(inputParam& IParam)
   /*!
     Set the specialise inputs for D4C beamline
     \param IParam :: Input Parameters
@@ -618,7 +647,8 @@ void createD4CInputs(inputParam& IParam)
   return;
 }
 
-void createTS3ExptInputs(inputParam& IParam)
+void
+createTS3ExptInputs(inputParam& IParam)
   /*!
     Set the specialise inputs for TS3 Model
     \param IParam :: Input Parameters
@@ -631,7 +661,8 @@ void createTS3ExptInputs(inputParam& IParam)
   return;
 }
 
-void createCuInputs(inputParam& IParam)
+void
+createCuInputs(inputParam& IParam)
   /*!
     Set the specialise inputs for TS2
     \param IParam :: Input Parameters
@@ -644,7 +675,8 @@ void createCuInputs(inputParam& IParam)
   return;
 }
 
-void createPipeInputs(inputParam& IParam)
+void
+createPipeInputs(inputParam& IParam)
   /*!
     Set the specialise inputs for TS2
     \param IParam :: Input Parameters
@@ -660,7 +692,7 @@ void createPipeInputs(inputParam& IParam)
 void
 createESSInputs(inputParam& IParam)
   /*!
-    Set the specialise inputs for TS2
+    Set the specialise inputs for the ESS
     \param IParam :: Input Parameters
   */
 {
@@ -670,28 +702,30 @@ createESSInputs(inputParam& IParam)
   //  IParam.setValue("sdefEnergy",2503.0);    
   IParam.setValue("sdefType",std::string("ess"));  
   IParam.setValue("targetType",std::string("Bilbao"));
-
-  IParam.regDefItem<std::string>("matDB","materialDatabase",1,std::string("shielding"));
   
   IParam.regDefItem<std::string>("lowMod","lowModType",1,std::string("lowMod"));
   IParam.regDefItem<std::string>("topMod","topModType",1,std::string("topMod"));
   IParam.regDefItem<std::string>("lowPipe","lowPipeType",1,std::string("side"));
   IParam.regDefItem<std::string>("topPipe","topPipeType",1,std::string("side"));
-  IParam.regDefItem<std::string>("iradLine","iradLineType",
-				 1,std::string("void"));
+  IParam.regDefItem<std::string>("iradLine","iradLineType",1,
+                                 std::string("void"));
+  
+  IParam.regMulti("bunkerFeed","bunkerFeed",1000,1);
+  IParam.regMulti("iradObj","iradObject",1000,3);
+  
   IParam.regDefItem<std::string>("bunker","bunkerType",1,std::string("null"));
   IParam.regMulti("beamlines","beamlines",1000);
   IParam.regDefItem<int>("nF5", "nF5", 1,0);
   IParam.regMulti("f5-collimators","f5collimators",30);
 
-  
-  IParam.setDesc("matDB","Set the material database to use (shielding or neutronics)");
+  IParam.setDesc("bunkerFeed","Creates feedthroughs in bunker");
   IParam.setDesc("beamlines","Creates beamlines on the main model");
   IParam.setDesc("lowMod","Type of low moderator to be built");
   IParam.setDesc("topMod","Type of top moderator to be built");
   IParam.setDesc("lowPipe","Type of low moderator pipework");
   IParam.setDesc("topPipe","Type of top moderator pipework");
   IParam.setDesc("iradLine","Build an irradiation line [void for none]");
+  IParam.setDesc("iradObj","Build an irradiation object [void for none]");
   IParam.setDesc("beamlines","Build beamlines [void for none]");
   IParam.setDesc("bunker","Build bunker [void for none [A-D]");
   IParam.setDesc("nF5","Number of F5 collimators to build. \n"
@@ -703,7 +737,21 @@ createESSInputs(inputParam& IParam)
   return;
 }
 
-void createEPBInputs(inputParam& IParam)
+void
+createSingleItemInputs(inputParam& IParam)
+  /*!
+    Set the specialise inputs for single test item
+    \param IParam :: Input Parameters
+  */
+{
+  ELog::RegMethod RegA("MainProcess::","createSingleItemInputs");
+  createInputs(IParam);
+  return;
+}
+
+  
+void
+createEPBInputs(inputParam& IParam)
   /*!
     Set the specialise inputs for ESS EPB magnets
     \param IParam :: Input Parameters
@@ -716,7 +764,8 @@ void createEPBInputs(inputParam& IParam)
   return;
 }
 
-void createSNSInputs(inputParam& IParam)
+void
+createSNSInputs(inputParam& IParam)
   /*!
     Set the specialise inputs for SNS
     \param IParam :: Input Parameters
@@ -729,7 +778,8 @@ void createSNSInputs(inputParam& IParam)
   return;
 }
 
-void createMuonInputs(inputParam& IParam)
+void
+createMuonInputs(inputParam& IParam)
   /*!
     Set the specialise inputs for EPB on TS2
     \param IParam :: Input Parameters
@@ -852,7 +902,6 @@ setVariables(Simulation& System,const inputParam& IParam,
 
   mainSystem::getVariables(Names,AddValues,Values,IterVal);
   mainSystem::setRunTimeVariable(System.getDataBase(),Values,AddValues);
-
 
   if (IParam.flag("xmlout")) 
     {
@@ -982,9 +1031,13 @@ setMaterialsDataBase(const inputParam& IParam)
     ModelSupport::addESSMaterial();
   else if (materials=="shielding")
     ModelSupport::cloneESSMaterial();
+  else if (materials=="basic")
+    ModelSupport::cloneBasicMaterial();
   else if (materials=="help")
     {
       ELog::EM<<"Materials database setups:\n"
+	" -- basic [System that works with standard MCNP distribution\n"
+	"      (WARNING -- basic results are very approximate -- WARNING)\n"
 	" -- shielding [S.Ansell original naming]\n"
 	" -- neutronics [ESS Target division naming]"<<ELog::endDiag;
       throw ColErr::ExitAbort("help");
@@ -1007,7 +1060,53 @@ exitDelete(Simulation* SimPtr)
   return;
 }
 
-
+void
+buildFullSimulation(Simulation* SimPtr,
+                    const mainSystem::inputParam& IParam,
+                    const std::string& OName)
+  /*!
+    Carry out the construction of the geometry
+    and wieght/tallies
+    \param SimPtr :: Simulation point
+    \param IParam
+   */
   
+{
+  ELog::RegMethod RegA("MainProcess[F]","buildFullSimulation");
+
+  // Definitions section 
+  int MCIndex(0);
+  const int multi=IParam.getValue<int>("multi");
+  
+  SimPtr->removeComplements();
+  SimPtr->removeDeadSurfaces(0);         
+  ModelSupport::setDefaultPhysics(*SimPtr,IParam);
+      
+  ModelSupport::setDefRotation(IParam);
+  SimPtr->masterRotation();
+
+  const int renumCellWork=tallySelection(*SimPtr,IParam);
+  reportSelection(*SimPtr,IParam);
+  if (createVTK(IParam,SimPtr,OName))
+    return;
+  // 
+  SimProcess::importanceSim(*SimPtr,IParam);
+  SimProcess::inputProcessForSim(*SimPtr,IParam); // energy cut etc
+  if (renumCellWork)
+    tallyRenumberWork(*SimPtr,IParam);
+  tallyModification(*SimPtr,IParam);
+
+  // Ensure we done loop
+  do
+    {
+      SimProcess::writeIndexSim(*SimPtr,OName,MCIndex);
+      MCIndex++;
+    }
+  while(MCIndex<multi);
+
+  return;
+}
+  
+                      
 }  // NAMESPACE mainSystem
 

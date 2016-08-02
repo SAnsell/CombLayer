@@ -1,8 +1,8 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1BuildInc/refPlate.h
-*
+ *
  * Copyright (c) 2004-2013 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
@@ -62,7 +62,7 @@ class refPlate  : public attachSystem::ContainedComp,
 
   /// Name : Index 
   void setOrigin(const std::string&,const size_t);
-  void setOrigin(const FixedComp&,const size_t);
+  void setOrigin(const attachSystem::FixedComp&,const size_t);
   // +/-X/Y/Z/  : Name : Index
   void setPlane(const std::string&,const std::string&,const int,const size_t);
   void setPlane(const std::string&,const FixedComp&,const int,const size_t);

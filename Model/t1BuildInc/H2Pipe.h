@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1BuildInc/H2Pipe.h
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,10 +67,10 @@ class H2Pipe : public attachSystem::FixedComp
   double depthLen;             ///< Inner depth into moderator
   
   void populate(const Simulation&);
-  void createUnitVector(const attachSystem::FixedComp&,const size_t);
+  void createUnitVector(const attachSystem::FixedComp&,const long int);
 
   void insertPipes(Simulation&);
-  void insertOuter(Simulation&,const attachSystem::FixedComp&,const size_t);
+  void insertOuter(Simulation&,const attachSystem::FixedComp&,const long int);
 
  public:
 
@@ -81,7 +81,7 @@ class H2Pipe : public attachSystem::FixedComp
 
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const size_t);
+		 const long int);
 
 };
 

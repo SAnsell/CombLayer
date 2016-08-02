@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/Bunker.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -121,9 +121,9 @@ class Bunker : public attachSystem::ContainedComp,
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const attachSystem::FixedComp&,
-			const long int,const bool);
+			const long int,const bool,const bool);
 
-  void createSurfaces();
+  void createSurfaces(const bool);
   void createLinks();
   void createObjects(Simulation&,const attachSystem::FixedComp&,
 		     const long int);
@@ -144,8 +144,10 @@ class Bunker : public attachSystem::ContainedComp,
   Bunker& operator=(const Bunker&);
   virtual ~Bunker();
 
-  std::string calcSegment(const Simulation&,
-			  const Geometry::Vec3D&,
+  void calcSegPosition(const size_t,Geometry::Vec3D&,
+		       Geometry::Vec3D&,Geometry::Vec3D&,
+		       Geometry::Vec3D&) const;
+  std::string calcSegment(const Simulation&,const Geometry::Vec3D&,
 			  const Geometry::Vec3D&) const;
   
   void setCutWall(const bool,const bool);
@@ -153,7 +155,7 @@ class Bunker : public attachSystem::ContainedComp,
   void cutInsert(Simulation&,const BunkerInsert&) const;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const attachSystem::FixedComp&,
-		 const long int,const bool);
+		 const long int,const bool,const bool);
 
 };
 

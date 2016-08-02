@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1Engineering/FishGillVessel.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell/Goran Skoro
+ * Copyright (c) 2004-2016 by Stuart Ansell/Goran Skoro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -86,6 +86,52 @@ FishGillVessel::FishGillVessel(const std::string& Key)  :
     \param Key :: Name for item in search
   */
 {}
+
+FishGillVessel::FishGillVessel(const FishGillVessel& A) : 
+  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  pvIndex(A.pvIndex),cellIndex(A.cellIndex),frontClear(A.frontClear),
+  frontThick(A.frontThick),frontWaterThick(A.frontWaterThick),
+  mainRadius(A.mainRadius),radii(A.radii),length(A.length),
+  waterHeight(A.waterHeight),taVertThick(A.taVertThick),
+  taRadialThick(A.taRadialThick),clearVertThick(A.clearVertThick),
+  clearRadialThick(A.clearRadialThick),waterMat(A.waterMat),
+  wallMat(A.wallMat),innerCells(A.innerCells)
+  /*!
+    Copy constructor
+    \param A :: FishGillVessel to copy
+  */
+{}
+
+FishGillVessel&
+FishGillVessel::operator=(const FishGillVessel& A)
+  /*!
+    Assignment operator
+    \param A :: FishGillVessel to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::FixedComp::operator=(A);
+      cellIndex=A.cellIndex;
+      frontClear=A.frontClear;
+      frontThick=A.frontThick;
+      frontWaterThick=A.frontWaterThick;
+      mainRadius=A.mainRadius;
+      radii=A.radii;
+      length=A.length;
+      waterHeight=A.waterHeight;
+      taVertThick=A.taVertThick;
+      taRadialThick=A.taRadialThick;
+      clearVertThick=A.clearVertThick;
+      clearRadialThick=A.clearRadialThick;
+      waterMat=A.waterMat;
+      wallMat=A.wallMat;
+      innerCells=A.innerCells;
+    }
+  return *this;
+}
 
   
 FishGillVessel::~FishGillVessel() 

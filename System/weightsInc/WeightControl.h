@@ -45,11 +45,11 @@ namespace WeightSystem
   class WWGWeight;
   
   /*!
-    \class WeigthControl
+    \class WeightControl
     \version 1.0
     \author S. Ansell
     \date October 2015
-    \brief Input to Weights controler
+    \brief Input to Weights controller
   */
   
 class WeightControl
@@ -65,12 +65,14 @@ class WeightControl
   
   std::set<std::string> objectList;  ///< Object list to this cut [local]
 
-  bool activePlane;                           ///< Active plane
-  long int activePtIndex;                     ///< Point+1 in use [-ve == tally]
+  bool activeAdjointFlag;                   ///< Active plane
+  std::string activePtType;                 ///< ptType 
+  size_t activePtIndex;                     ///< plant/source/track pt 
 
+
+  std::vector<Geometry::Cone> conePt;         ///< Cone points
   std::vector<Geometry::Plane> planePt;       ///< Plane points
   std::vector<Geometry::Vec3D> sourcePt;      ///< Source Points
-  std::vector<Geometry::Vec3D> tallyPt;       ///< Tally Points
   
   void setHighEBand();
   void setMidEBand();
@@ -91,16 +93,20 @@ class WeightControl
 
   void procSourcePoint(const mainSystem::inputParam&);
   void procPlanePoint(const mainSystem::inputParam&);
-  void procTallyPoint(const mainSystem::inputParam&);
+  void procTrackLine(const mainSystem::inputParam&);
   void procObject(const Simulation&,
 		  const mainSystem::inputParam&);
   void procRebase(const Simulation&,
 		  const mainSystem::inputParam&);
+  void procTrack(const Simulation&,
+		  const mainSystem::inputParam&);
+
   void processPtString(std::string);
 
   void procCalcHelp() const;
   void procRebaseHelp() const;
   void procObjectHelp() const;
+  void procConeHelp() const;
   
   
   void setWeights(Simulation&);
@@ -133,6 +139,8 @@ class WeightControl
 		     const std::vector<int>&,CellWeight&);
   void calcCellTrack(const Simulation&,const Geometry::Plane&,
 		     const std::vector<int>&,CellWeight&);
+  void calcCellTrack(const Simulation&,const Geometry::Cone&,
+		     CellWeight&);
 
 
  public:

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   tally/surfaceTally.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,17 +48,27 @@
 namespace tallySystem
 {
 
-surfaceTally::surfaceTally(const int ID) :
-  Tally(ID)
+surfaceTally::surfaceTally(const bool fluxFlag,const int ID) :
+  Tally(ID),fluxType(fluxFlag)
   /*!
     Constructor
+    \param fluxFlag :: make a surface flux tally
+    \param ID :: Identity number of tally
+  */
+{}
+
+surfaceTally::surfaceTally(const int ID) :
+  Tally(ID),fluxType((ID % 10)==2)
+  /*!
+    Constructor
+    \param fluxFlag :: make a surface flux tally
     \param ID :: Identity number of tally
   */
 {}
 
 surfaceTally::surfaceTally(const surfaceTally& A) :
-  Tally(A),SurfList(A.SurfList),FSfield(A.FSfield),
-  SDfield(A.SDfield),CellFlag(A.CellFlag),
+  Tally(A),fluxType(A.fluxType),SurfList(A.SurfList),
+  FSfield(A.FSfield),SDfield(A.SDfield),CellFlag(A.CellFlag),
   SurfFlag(A.SurfFlag)
   /*!
     Copy Constructor
@@ -128,9 +138,10 @@ surfaceTally::addLine(const std::string& LX)
   std::pair<std::string,int> FUnit=Tally::getElm(Tag);
   if (FUnit.second<0)
     return -2;
-
   if (FUnit.first=="f")
     {
+      fluxType= ((FUnit.second % 10) ==2);
+
       int SN;
       std::string Lpart=LX;
       Tally::processParticles(Lpart);        // pick up particles

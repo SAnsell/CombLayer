@@ -3,7 +3,7 @@
  
  * File:   physics/PhysicsCards.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,6 +56,7 @@
 #include "LSwitchCard.h"
 #include "NList.h"
 #include "NRange.h"
+#include "nameCard.h"
 #include "dbcnCard.h"
 #include "EUnit.h"
 #include "ExtControl.h"
@@ -67,18 +68,59 @@ namespace physicsSystem
 {
 
 PhysicsCards::PhysicsCards() :
-  nps(10000),histp(0),dbCard(new dbcnCard),
+  nps(10000),histp(0),
+  RAND(new nameCard("RAND",0)),
+  PTRAC(new nameCard("PTRAC",0)),
+  dbCard(new nameCard("dbcn",1)),
   voidCard(0),nImpOut(0),prdmp("1e7 1e7 0 2 1e7"),
   Volume("vol"),ExtCard(new ExtControl),
   PWTCard(new PWTControl),DXTCard(new DXTControl)
   /*!
     Constructor
   */
-{}
+{
+  ELog::RegMethod RegA("PhysicsCards","[Constructor]");
+  
+  PTRAC->registerItems
+    (
+     {"BUFFER INT","FILE STR","MAX INT","MEPH INT","WRITE STR",
+      "COINC STR","EVENT STR","FILTER STR","TYPE STR",
+      "NPS STR","CELL STR","SURFACE STR","TALLY STR"}
+     );
+  RAND->registerItems
+    (
+     {"SEED INT"}
+     );
+
+  dbCard->registerItems
+    ({
+     "rndSeed INT 1234567871",  "debugPrint INT",
+     "eventStart INT",          "eventEnd INT",
+     "maxEvents INT",           "detUnderFlowLimit DBL",
+     "printSurfCalcFlag INT",   "histStart INT",
+     "surfTol DBL",             "default J",
+     "printCollision INT",      "default J",
+     "stride INT",              "gen INT",
+     "printVOV INT",            "histScale DBL",
+     "eleAngDefMethod INT",     "electronStragglingType INT",  // 18
+     "default J",               "default J",
+     "default J",               "default J",
+     "forcePHTVRtree INT",      "default J",
+     "default J",               "default J",
+     "default J",               "bankSize INT",            // 28
+     "default J",               "default J",
+     "default J",               "genxsType INT",
+     "ionSmooth INT",           "default J",               // 34
+     "default J",               "default J",
+     "default J",               "default J",              
+     "sqwMethod INT"                 });
+}
 
 PhysicsCards::PhysicsCards(const PhysicsCards& A) : 
   nps(A.nps),histp(A.histp),histpCells(A.histpCells),
-  dbCard(new dbcnCard(*dbCard)),Basic(A.Basic),mode(A.mode),
+  RAND(new nameCard(*A.RAND)), PTRAC(new nameCard(*A.PTRAC)),
+  dbCard(new nameCard(*dbCard)),
+  Basic(A.Basic),mode(A.mode),
   voidCard(A.voidCard),nImpOut(A.nImpOut),printNum(A.printNum),
   prdmp(A.prdmp),ImpCards(A.ImpCards),
   PCards(),LEA(A.LEA),sdefCard(A.sdefCard),
@@ -106,8 +148,11 @@ PhysicsCards::operator=(const PhysicsCards& A)
   if (this!=&A)
     {
       nps=A.nps;
+      *RAND= *A.RAND;
       histp=A.histp;
       histpCells=A.histpCells;
+      *RAND=*A.RAND;
+      *PTRAC=*A.PTRAC;
       *dbCard = *A.dbCard;
       Basic=A.Basic;      
       mode=A.mode;
@@ -165,6 +210,8 @@ PhysicsCards::clearAll()
   deletePCards();
   Volume.clear();
   sdefCard.clear();
+  RAND->reset();
+  PTRAC->reset();
   dbCard->reset();
   ExtCard->clear();
   PWTCard->clear();
@@ -289,27 +336,15 @@ PhysicsCards::processCard(const std::string& Line)
   if (pos!=std::string::npos)
     {
       long int RS;
-      size_t kType;
-      double D;
       std::string keyName;
       Comd.erase(0,pos+4);
       if (StrFunc::convert(Comd,RS))
-	dbCard->setComp("rndSeed",RS);
-      else if (StrFunc::section(Comd,keyName) &&
-	       (kType=dbCard->keyType(keyName)) )
-	{
-	  if (kType==1 && StrFunc::section(Comd,RS))
-	    dbCard->setComp(keyName,RS);
-	  else if (StrFunc::section(Comd,D))
-	    dbCard->setComp(keyName,RS);
-	  else
-	    ELog::EM<<"DBCN ["<<keyName<<"] error  == "
-		    <<Comd<<ELog::endErr;
-	}
+	dbCard->setRegItem("rndSeed",RS);
       else
 	{
 	  ELog::EM<<"DBCN [rnd] error  == "<<Comd<<ELog::endErr;
 	}
+
       return 1;
     }
   pos=Comd.find("cut:");
@@ -346,6 +381,9 @@ PhysicsCards::processCard(const std::string& Line)
 	    }
 	  PCards.push_back(PC);
 	}
+      else
+        delete PC;
+      
       return 1;
     }
   return 1;
@@ -712,9 +750,20 @@ PhysicsCards::getPhysImp(const std::string& Type,
   throw ColErr::InContainerError<std::string>
     (Type+"/"+particle,"type/particle not found");
 }
-  
+
 void
-PhysicsCards::setVolume(const std::vector<int>& cellInfo,const double defValue)
+PhysicsCards::clearVolume()
+  /*!
+    Remove the volume card
+  */
+{
+  Volume.clear();
+  return;
+}
+
+void
+PhysicsCards::setVolume(const std::vector<int>& cellInfo,
+			const double defValue)
   /*!
     Process the list of the valid cells 
     setting the volume list
@@ -752,19 +801,81 @@ PhysicsCards::setPWT(const int cellID,const double V)
 }
 
 void
-PhysicsCards::setRND(const long int N)
+PhysicsCards::setRND(const long int N,
+		     const long int H)
+  /*!
+    Set the randome number seed to N
+    \param N :: Index number
+    \param H :: History
+  */
 {
-  dbCard->setComp("rndSeed",N);
+  if (N) RAND->setRegItem("SEED",N);
+  if (H) RAND->setRegItem("HIST",H);
+
   return;
 }
 
-long int
-PhysicsCards::getRND() const
+void
+PhysicsCards::setPTRACactive(const bool F)
   /*!
-    
+    Set the PTRAC active 
+    \param F :: Flag value
+  */
+{
+  PTRAC->setActive(F);
+}
+
+void
+PhysicsCards::setDBCNactive(const bool F)
+  /*!
+    Set the PTRAC active 
+    \param F :: Flag value
+  */
+{
+  dbCard->setActive(F);
+}
+  
+template<typename T>
+void
+PhysicsCards::setPTRAC(const std::string& kY,
+		       const T& Val)
+  /*!
+    Set the ptrac card
+    \param kY :: key Value of Cardd
+    \param Val :: Value to seet
    */
 {
-  return dbCard->getComp<long int>("rndSeed");
+  ELog::RegMethod RegA("PhysicsCards","setPTRAC");
+  PTRAC->setRegItem(kY,Val);
+  return;
+}
+
+template<typename T>
+void
+PhysicsCards::setDBCN(const std::string& kY,
+                      const T& Val)
+  /*!
+    Set the dbcn card
+    \param kY :: key Value of Cardd
+    \param Val :: Value to seet
+   */
+{
+  ELog::RegMethod RegA("PhysicsCards","setDBCN");
+  dbCard->setRegItem(kY,Val);
+  return;
+}
+
+
+  
+  
+long int
+PhysicsCards::getRNDseed() const
+  /*!
+    Get the random number seed
+    \return seed
+   */
+{
+  return RAND->getItem<long int>("SEED");
 }
   
 void
@@ -829,7 +940,6 @@ PhysicsCards::rotateMaster()
 {
   return;
 }
-
   
 void
 PhysicsCards::setPrintNum(std::string Numbers) 
@@ -848,6 +958,27 @@ PhysicsCards::setPrintNum(std::string Numbers)
   return;
 }
 
+void
+PhysicsCards::writeHelp(const std::string& keyName) const
+  /*!
+    Write out help about a physics card
+    \param keyName :: Card name
+  */
+{
+  ELog::RegMethod RegA("PhysicsCards","writeHelp");
+
+  if (keyName=="ptrac")
+    PTRAC->writeHelp(ELog::EM.Estream());
+  else if (keyName=="rand")
+    RAND->writeHelp(ELog::EM.Estream());
+  else if (keyName=="event" || keyName=="dbcn")
+    dbCard->writeHelp(ELog::EM.Estream());
+
+  ELog::EM<<ELog::endDiag;
+  return;
+}
+  
+   
 void 
 PhysicsCards::write(std::ostream& OX,
 		    const std::vector<int>& cellOutOrder,
@@ -863,10 +994,12 @@ PhysicsCards::write(std::ostream& OX,
   ELog::RegMethod RegA("PhyiscsCards","write");
 
   dbCard->write(OX);
+
   OX<<"nps "<<nps<<std::endl;
   if (voidCard)
     OX<<"void"<<std::endl;
-
+  
+  
   if (histp)
     {
       std::ostringstream cx;
@@ -875,6 +1008,9 @@ PhysicsCards::write(std::ostream& OX,
 	cx<<" -500000000 "<<histpCells;
       StrFunc::writeMCNPX(cx.str(),OX);
     }
+  RAND->write(OX);
+  PTRAC->write(OX);
+  
   mode.write(OX);
   Volume.write(OX,cellOutOrder);
    for(const PhysImp& PI : ImpCards)
@@ -910,9 +1046,34 @@ PhysicsCards::write(std::ostream& OX,
   return;
 }
 
+///\cond TEMPLATE
+  
+template void
+PhysicsCards::setPTRAC(const std::string&,
+                       const std::string&);
+template void
+PhysicsCards::setPTRAC(const std::string&,
+                       const double&);
+template void
+PhysicsCards::setPTRAC(const std::string&,
+                       const long int&);
+
+template void
+PhysicsCards::setDBCN(const std::string&,
+                       const std::string&);
+template void
+PhysicsCards::setDBCN(const std::string&,
+                       const double&);
+template void
+PhysicsCards::setDBCN(const std::string&,
+                       const long int&);
+
+  
 template PStandard*
 PhysicsCards::addPhysCard(const std::string&,const std::string&);
 
-} // NAMESPACE PhysicsCards	
+///\endcond TEMPLATE
+  
+} // NAMESPACE physicsSystem
       
    

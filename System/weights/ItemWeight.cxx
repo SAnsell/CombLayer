@@ -49,7 +49,7 @@
 #include "WForm.h"
 #include "WItem.h"
 #include "WCells.h"
-#include "WeightMesh.h"
+#include "Mesh3D.h"
 #include "WWG.h"
 #include "weightManager.h"
 
@@ -126,13 +126,11 @@ ItemWeight::addTracks(const long int cN,const double value)
 
 double
 ItemWeight::calcMinWeight(const double scaleFactor,
-                          const double minWeight,
                           const double weightPower) const
   /*!
     Calculate the adjustment factor to get to the correct
     minimum weight.
     \param scaleFactor :: Scalefactor for density equivilent
-    \param minWeight :: min weight scale factor
     \param weightPower :: power for final factor W**power
     \return factor for exponent
    */
@@ -147,10 +145,7 @@ ItemWeight::calcMinWeight(const double scaleFactor,
           if (W<minW) minW=W;
         }
     }
-  // Work on minW first:
-  const double factor=(minW<minWeight) ?
-    log(minWeight)/log(minW) : 1.0;
-  return factor;
+  return minW;
 }
   
 void

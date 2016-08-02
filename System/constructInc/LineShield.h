@@ -3,7 +3,7 @@
  
  * File:   constructInc/LineShield.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,10 +47,11 @@ class LineShield :
 
   bool activeFront;             ///< Flag for front active
   bool activeBack;              ///< Flag for back active
-  bool activeDivide;            ///< Flag for back active
+
   HeadRule frontSurf;           ///< Front surfaces [if used]
+  HeadRule frontCut;            ///< front divider surfaces [if used]
   HeadRule backSurf;            ///< Back surfaces [if used]
-  HeadRule divideSurf;          ///< divider surfaces [if used]
+  HeadRule backCut;             ///< Back surfaces [if used]
   
   double length;                ///< void length [total]
   double left;                  ///< total left width
@@ -74,6 +75,8 @@ class LineShield :
   std::vector<double> floorFrac;      ///< Layer thicknesss 
   std::vector<int> floorMat;          ///< Layer materials
 
+
+  void removeFrontOverLap();
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
@@ -91,7 +94,6 @@ class LineShield :
 
   void setFront(const attachSystem::FixedComp&,const long int);
   void setBack(const attachSystem::FixedComp&,const long int);
-  void setDivider(const attachSystem::FixedComp&,const long int);
   
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

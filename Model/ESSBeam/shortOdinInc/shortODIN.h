@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/shortOdin/shortODIN.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,6 +40,7 @@ namespace constructSystem
   class VacuumBox;
   class VacuumPipe;
   class ChopperHousing;
+  class PinHole;
 }
 
 namespace essSystem
@@ -47,7 +48,6 @@ namespace essSystem
   class Bunker;
   class BunkerInsert;
   class Hut;
-  class PinHole;
   class RentrantBS;
   
   /*!
@@ -58,10 +58,12 @@ namespace essSystem
     \brief Main moderator system for ESS
   */
   
-class shortODIN
+class shortODIN : public attachSystem::CopiedComp
 {
  private:
 
+  /// Stop at [0:Complete / 1:Mono Wall / 2:Inner Bunker / 3:Outer Bunker ]
+  int stopPoint; 
   /// Main Beam Axis [for construction]
   std::shared_ptr<attachSystem::FixedComp> odinAxis;
 
@@ -143,7 +145,7 @@ class shortODIN
   std::shared_ptr<beamlineSystem::GuideLine> GuideH;
   
   // Collimator
-  std::shared_ptr<PinHole> PinA;
+  std::shared_ptr<constructSystem::PinHole> PinA;
 
   // BeamStop
   std::shared_ptr<RentrantBS> BeamStop;
@@ -162,7 +164,7 @@ class shortODIN
 
  public:
   
-  shortODIN();
+  shortODIN(const std::string&);
   shortODIN(const shortODIN&);
   shortODIN& operator=(const shortODIN&);
   ~shortODIN();

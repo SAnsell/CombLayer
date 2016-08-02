@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/BaseMap.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,14 +40,14 @@ class BaseMap
 {
  protected:
 
-  /// Name to lists
-  typedef std::map<std::string,int> LCTYPE;
   ///  Lists
-  typedef std::vector<std::vector<int>> SEQTYPE;
-
+  typedef std::map<std::string,std::vector<int>> LCTYPE;
   
-  LCTYPE Items;          ///< Named cells
-  SEQTYPE SplitUnits;    ///< Split named cells
+  LCTYPE Items;          ///< Named cell 
+
+  void removeVecUnit(const std::string&,const int);
+
+  std::string getFCKeyName() const;
   
  public:
 
@@ -58,17 +58,22 @@ class BaseMap
   
   void setItem(const std::string&,const int);
   void setItem(const std::string&,const size_t,const int);
+  void setItems(const std::string&,const int,const int);
+  void setItems(const std::string&,const std::vector<int>&);
+  
   void addItem(const std::string&,const int);
+  void addItems(const std::string&,const std::vector<int>&);
+    
   int getItem(const std::string&) const;
   int getItem(const std::string&,const size_t) const;
-
-  void setItems(const std::string&,const int,const int);
-
-  void addItems(const std::string&,const std::vector<int>&);  
-
+  const std::string& getName(const int) const;
+    
+  std::vector<std::string> getNames() const;
   std::vector<int> getItems(const std::string&) const;
   std::vector<int> getItems() const;
-  
+
+
+  std::string removeItemNumber(const int,const size_t =0);
   int removeItem(const std::string&,const size_t =0);
   
 };

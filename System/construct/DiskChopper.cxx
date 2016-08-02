@@ -3,7 +3,7 @@
  
  * File:   construct/DiskChopper.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -146,12 +146,11 @@ DiskChopper::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("DiskChopper","populate");
   
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
-  zAngle=Control.EvalVar<double>(keyName+"Zangle");
-
+  xStep=Control.EvalDefVar<double>(keyName+"XStep",0.0);
+  yStep=Control.EvalDefVar<double>(keyName+"YStep",0.0);
+  zStep=Control.EvalDefVar<double>(keyName+"ZStep",0.0);
+  xyAngle=Control.EvalDefVar<double>(keyName+"XYangle",0.0);
+  zAngle=Control.EvalDefVar<double>(keyName+"Zangle",0.0);
 
   innerRadius=Control.EvalVar<double>(keyName+"InnerRadius");
   outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
@@ -159,17 +158,22 @@ DiskChopper::populate(const FuncDataBase& Control)
   nDisk=Control.EvalVar<size_t>(keyName+"NDisk");
   diskGap= (nDisk>1) ?
     Control.EvalVar<double>(keyName+"Gap") : 0.0;
-  
+
+  totalThick=0.0;
   for(size_t i=0;i<nDisk;i++)
     {
       DiskBlades DItem;
       const std::string kN=keyName+StrFunc::makeString(i);
       DItem.thick=Control.EvalPair<double>(kN,keyName,"Thick");
+      DItem.innerThick=Control.EvalDefPair<double>
+        (kN,keyName,"InnerThick",DItem.thick);
       DItem.innerMat=ModelSupport::EvalMat<int>
 	(Control,kN+"InnerMat",keyName+"InnerMat");
       DItem.outerMat=ModelSupport::EvalMat<int>
 	(Control,kN+"OuterMat",keyName+"OuterMat");
-
+      totalThick+=DItem.thick;
+      totalThick+=(i) ? diskGap : 0.0;
+      
       const size_t NB=Control.EvalPair<size_t>(kN,keyName,"NBlades");
       for(size_t j=0;j<NB;j++)
 	{
@@ -205,7 +209,6 @@ DiskChopper::createUnitVector(const attachSystem::FixedComp& FC,
 
   beamOrigin=beamFC.getCentre();
   beamAxis=beamFC.getY();
-
   if (centreFlag && centreFlag<4 && centreFlag>-4)
     {
       double XYZ[3]={0,0,0};
@@ -215,9 +218,16 @@ DiskChopper::createUnitVector(const attachSystem::FixedComp& FC,
       else
 	XYZ[index]=((outerRadius+innerRadius)/2.0);
 
+      if (offsetFlag)
+        {
+          const double TD((offsetFlag>0) ? -totalThick/2.0 : totalThick/2.0);
+          XYZ[1] += TD;
+          beamFC.applyShift(0.0,TD,0.0);
+        }
       mainFC.applyShift(XYZ[0],XYZ[1],XYZ[2]);
     }
-  setDefault("Main");  
+  setDefault("Main");
+
   return;
 }
 
@@ -259,11 +269,13 @@ DiskChopper::createSurfaces()
   ModelSupport::buildCylinder(SMap,chpIndex+7,Origin,Y,innerRadius);
   ModelSupport::buildCylinder(SMap,chpIndex+17,Origin,Y,outerRadius);
   int CI(chpIndex);
-  Geometry::Vec3D DCent(Origin);
+  Geometry::Vec3D DCent(Origin);  
   for(const DiskBlades& DRef : DInfo)
     {
-      ModelSupport::buildPlane(SMap,CI+1,DCent,Y);
-      ModelSupport::buildPlane(SMap,CI+2,DCent+Y*DRef.getThick(),Y);
+      ModelSupport::buildPlane(SMap,CI+1,DCent-Y*(DRef.thick/2.0),Y);
+      ModelSupport::buildPlane(SMap,CI+2,DCent+Y*(DRef.thick/2.0),Y);
+      ModelSupport::buildPlane(SMap,CI+11,DCent-Y*(DRef.innerThick/2.0),Y);
+      ModelSupport::buildPlane(SMap,CI+12,DCent+Y*(DRef.innerThick/2.0),Y);
       // make inner blades
       int PI(CI);
       for(size_t index=0; index<DRef.getNPhase();index++)
@@ -298,14 +310,19 @@ DiskChopper::createObjects(Simulation& System)
       // Gap if there is previous item
       if (CI!=chpIndex)
 	{
-	  Out=ModelSupport::getComposite(SMap,chpIndex,CI-500,"2M -501M -17");
+          // Inner :
+	  Out=ModelSupport::getComposite(SMap,chpIndex,CI-500,"12M -511M -7");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+
+          // Outer
+	  Out=ModelSupport::getComposite(SMap,chpIndex,CI-500,"2M -501M 7 -17");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 	}
+      
       // inner layer
-      Out=ModelSupport::getComposite(SMap,chpIndex,CI,"1M -2M -7");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,
-				       DRef.getInnerMat(),0.0,Out));
-
+      Out=ModelSupport::getComposite(SMap,chpIndex,CI,"11M -12M -7");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,DRef.getInnerMat(),
+                                       0.0,Out));
       // Chopper opening
       const size_t NPhase=DRef.getNPhase();
         const std::string Main=
@@ -337,10 +354,20 @@ DiskChopper::createObjects(Simulation& System)
 	  PI+=10;
 	  PN+=10;
 	}
+
+      if (DRef.innerThick-DRef.thick>Geometry::zeroTol)
+        {
+          Out=ModelSupport::getComposite(SMap,chpIndex,"11 -1 7 -17");
+          System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));         
+          Out=ModelSupport::getComposite(SMap,chpIndex,"2 -12 7 -17");
+          System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));         
+        }
+
       CI+=500;
     }
 
-  Out=ModelSupport::getComposite(SMap,chpIndex,CI-500,"1 -17 -2M");
+  
+  Out=ModelSupport::getComposite(SMap,chpIndex,CI-500,"11 -17 -12M");
   addOuterSurf(Out);      
 
   return;

@@ -3,7 +3,7 @@
  
  * File:   geomInc/Vec3D.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -106,17 +106,18 @@ class Vec3D
   double makeUnit();                      ///< Convert into unit vector
   Geometry::Vec3D unit() const; 
   Geometry::Vec3D component(const Geometry::Vec3D&) const; 
-  Geometry::Vec3D cutComponent(const Geometry::Vec3D&) const; 
-  double volume() const { return fabs(x*y*z); }      ///< Calculate the volmue of a cube X*Y*Z
+  Geometry::Vec3D cutComponent(const Geometry::Vec3D&) const;
+  /// Calculate the volmue of a cube X*Y*Z
+  double volume() const { return fabs(x*y*z); }      
 
   double dotProd(const Vec3D&) const;
   double abs() const;    
   template<typename T> void rotate(const Matrix<T>&); 
 
   Vec3D& boundaryCube(const Vec3D&,const Vec3D&); 
-  int forwardBase(const Vec3D&,const Vec3D&,const Vec3D&);   
+  int forwardBase(const Vec3D&,const Vec3D&,const Vec3D&);
   int reBase(const Vec3D&,const Vec3D&,const Vec3D&);   
-  int masterDir(const double= Geometry::zeroTol) const;               
+  int masterDir(const double= Geometry::zeroTol) const;
   size_t principleDir() const;
   int nullVector(const double=Geometry::zeroTol) const;             
   int coLinear(const Vec3D&,const Vec3D&) const;

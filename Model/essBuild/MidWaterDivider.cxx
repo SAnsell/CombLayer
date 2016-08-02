@@ -3,7 +3,7 @@
  
  * File:   essBuild/MidWaterDivider.cxx 
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -80,11 +80,11 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "AttachSupport.h"
+#include "SurInter.h"
 #include "geomSupport.h"
 #include "ModBase.h"
 #include "H2Wing.h"
 #include "MidWaterDivider.h"
-#include "SurInter.h"
 
 namespace essSystem
 {
@@ -110,7 +110,7 @@ MidWaterDivider::MidWaterDivider(const MidWaterDivider& A) :
   divIndex(A.divIndex),cellIndex(A.cellIndex),midYStep(A.midYStep),
   midAngle(A.midAngle),length(A.length),height(A.height),
   wallThick(A.wallThick),modMat(A.modMat),wallMat(A.wallMat),
-  modTemp(A.modTemp),edgeRadius(A.edgeRadius)
+  modTemp(A.modTemp)
   /*!
     Copy constructor
     \param A :: MidWaterDivider to copy
@@ -139,7 +139,6 @@ MidWaterDivider::operator=(const MidWaterDivider& A)
       modMat=A.modMat;
       wallMat=A.wallMat;
       modTemp=A.modTemp;
-      edgeRadius=A.edgeRadius;
     }
   return *this;
 }
@@ -181,12 +180,10 @@ MidWaterDivider::populate(const FuncDataBase& Control)
   modMat=ModelSupport::EvalMat<int>(Control,keyName+"ModMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   modTemp=Control.EvalVar<double>(keyName+"ModTemp");
-  edgeRadius=Control.EvalVar<double>(keyName+"EdgeRadius");
 
   totalHeight=Control.EvalPair<double>(keyName,baseName,"TotalHeight");
   if (height<Geometry::zeroTol)
     height=totalHeight-2.0*wallThick;
-
   return;
 }
   
@@ -207,74 +204,65 @@ MidWaterDivider::createUnitVector(const attachSystem::FixedComp& FC)
 }
 
 void
-MidWaterDivider::createLinks(const H2Wing &LA, const H2Wing &RA)
+MidWaterDivider::createLinks(const H2Wing& leftWing,
+			     const H2Wing& rightWing)
   /*!
-    Construct links for the triangle moderator
-    The normal 1-3 and 5-6 are plane,
-    7,8,9 are 
+    Construct links:
+    - 1+2 and 3+4 are the triangle surfaces (left/right)
+    - 5+6 and 7+8 are corner points for view
+    - 9+10 are top/bottom
+    
+    \param leftWing :: H2Wing connector  [left]
+    \param rightWing :: H2Wing connector [right side]
   */
 {
   ELog::RegMethod RegA("MidWaterDivider","createLinks");
 
-  // Loop over corners that are bound by convex
-  const Geometry::Plane *pz = SMap.realPtr<Geometry::Plane>(divIndex+5);
+  // main angles
+  FixedComp::setLinkSurf(0, SMap.realSurf(divIndex+103)); 
+  FixedComp::setLinkSurf(1, -SMap.realSurf(divIndex+104));  
+  FixedComp::setLinkSurf(2, SMap.realSurf(divIndex+123));  
+  FixedComp::setLinkSurf(3, -SMap.realSurf(divIndex+124)); 
 
-  const Geometry::Plane *p103 = SMap.realPtr<Geometry::Plane>(divIndex+103);
-  const Geometry::Plane *p104 = SMap.realPtr<Geometry::Plane>(divIndex+104);
-  //FixedComp::setConnect(0, Origin+X*LStep, X); // x+
-  FixedComp::setConnect(0, SurInter::getPoint(p103, p104, pz), X);
-  //  ELog::EM << "Why x and y are swapped when the commented line is called instead of the line above? Are the plane numbers correct?" << ELog::endCrit;
-  FixedComp::setLinkSurf(0, -SMap.realSurf(divIndex+103));
-  FixedComp::addLinkSurf(0, SMap.realSurf(divIndex+104));
 
-  const Geometry::Plane *p123 = SMap.realPtr<Geometry::Plane>(divIndex+123);
-  const Geometry::Plane *p124 = SMap.realPtr<Geometry::Plane>(divIndex+124);
-  //  FixedComp::setConnect(1, Origin-X*LStep, -X); // x-
-  FixedComp::setConnect(1, SurInter::getPoint(p123, p124, pz), -X);
-  //ELog::EM << "Why x and y are swapped when the commented line is called instead of the line above? Are the plane numbers correct?" << ELog::endCrit;
-  FixedComp::setLinkSurf(1, -SMap.realSurf(divIndex+123));
-  FixedComp::addLinkSurf(1, SMap.realSurf(divIndex+124));
+  // small cutting edged
+  FixedComp::setLinkSurf(5, SMap.realSurf(divIndex+111));
+  FixedComp::setLinkSurf(6, SMap.realSurf(divIndex+112));
+  FixedComp::setLinkSurf(7, SMap.realSurf(divIndex+131));  
+  FixedComp::setLinkSurf(8, SMap.realSurf(divIndex+132));  
 
-  // minor links
-  const Geometry::Plane *pWater, *pWing;
-  int iWater; // mid water surface index
+  std::vector<int> surfN;
+  surfN.push_back(leftWing.getSignedLinkSurf(1));
+  surfN.push_back(leftWing.getSignedLinkSurf(3));
+  surfN.push_back(rightWing.getSignedLinkSurf(1));
+  surfN.push_back(rightWing.getSignedLinkSurf(3));
 
-  // === Intersections of water divider and outer/inner H2Wing surfaces ===
-  //     Inner link points are used by F5Collimators
-  // !!! Signs of surfaces for outer and inner link points must be different - check this!!!
+  // Now deterermine point which are divider points
+  const Geometry::Plane* midPlane=
+    SMap.realPtr<Geometry::Plane>(divIndex+200);
 
-  for (int i=0; i<2; i++) // 0=outer H2Wing surface, 1=inner H2Wing surface
+  const std::vector<std::pair<int,int>> InterVec =
     {
-      // x+y+
-      iWater = divIndex+131;
-      pWater = SMap.realPtr<Geometry::Plane>(iWater);
-      pWing = SMap.realPtr<Geometry::Plane>(LA.getLinkSurf(0+i*8));
-      FixedComp::setConnect(2+i*4, SurInter::getPoint(pWater, pWing, pz), pWing->getNormal());
-      FixedComp::setLinkSurf(2+i*4, SMap.realSurf(iWater));
+      {103,104},{103,104},
+      {123,124},{123,124},
+      {111,-2},{112,-3},
+      {131,-1},{132,-4}
+    };
+  const std::vector<Geometry::Vec3D> Axis
+    ({Y,Y,-Y,-Y,Y,Y,-Y,-Y});
 
-      // x-y+
-      iWater = divIndex+111;
-      pWater = SMap.realPtr<Geometry::Plane>(iWater);
-      pWing = SMap.realPtr<Geometry::Plane>(LA.getLinkSurf(2+i*8));
-      FixedComp::setConnect(3+i*4, SurInter::getPoint(pWater, pWing, pz), pWing->getNormal());
-      FixedComp::setLinkSurf(3+i*4, SMap.realSurf(iWater));
-
-      // x-y-
-      iWater = divIndex+112;
-      pWater = SMap.realPtr<Geometry::Plane>(iWater);
-      pWing = SMap.realPtr<Geometry::Plane>(RA.getLinkSurf(0+i*8));
-      FixedComp::setConnect(4+i*4, SurInter::getPoint(pWater, pWing, pz), pWing->getNormal());
-      FixedComp::setLinkSurf(4+i*4, -SMap.realSurf(iWater));
   
-      // x+y-
-      iWater = divIndex+132;
-      pWater = SMap.realPtr<Geometry::Plane>(iWater);
-      pWing = SMap.realPtr<Geometry::Plane>(RA.getLinkSurf(2+i*8));
-      FixedComp::setConnect(5+i*4, SurInter::getPoint(pWater, pWing, pz), pWing->getNormal());
-      FixedComp::setLinkSurf(5+i*4, -SMap.realSurf(iWater));
+  for(size_t index=0;index<InterVec.size();index++)
+    {
+      const std::pair<int,int>& Item(InterVec[index]);
+      const int SA(divIndex+Item.first);
+      const int SB(Item.second>0 ? divIndex+Item.second :
+		   surfN[static_cast<size_t>(-Item.second-1)]);
+      const Geometry::Plane* PA=SMap.realPtr<Geometry::Plane>(SA);
+      const Geometry::Plane* PB=SMap.realPtr<Geometry::Plane>(SB);
+      FixedComp::setConnect
+      	(index,SurInter::getPoint(PA,PB,midPlane),Axis[index]);
     }
-  //  !!! check if surface signs in setLinkSurf are ok. Since there are always 2 surfaces, use addLinkSurf for link points 2-5  in the same way as it is done for 0-1 !!!
-  // postponed until I understand surfaces in the link points 0 and 1 - I think 0 should use surfaces 123 and 124, and 1 - 103 and 104
 
   return;
 }
@@ -289,7 +277,8 @@ MidWaterDivider::createSurfaces()
 
   // Mid divider
   ModelSupport::buildPlane(SMap,divIndex+100,Origin,Y);
-  ModelSupport::buildPlane(SMap,divIndex+300,Origin,X);
+  // Mid Vertical divider
+  ModelSupport::buildPlane(SMap,divIndex+200,Origin,Z);
 
   // +Y section
   ModelSupport::buildPlaneRotAxis
@@ -298,10 +287,10 @@ MidWaterDivider::createSurfaces()
     (SMap,divIndex+4,Origin+Y*midYStep,X,-Z,midAngle/2.0);
 
   // -Y section
-  ModelSupport::buildPlaneRotAxis(SMap,divIndex+23,
-				  Origin-Y*midYStep,-X,-Z,-midAngle/2.0);
-  ModelSupport::buildPlaneRotAxis(SMap,divIndex+24,
-				  Origin-Y*midYStep,-X,-Z,midAngle/2.0);
+  ModelSupport::buildPlaneRotAxis
+    (SMap,divIndex+23,Origin-Y*midYStep,-X,-Z,-midAngle/2.0);
+  ModelSupport::buildPlaneRotAxis
+    (SMap,divIndex+24,Origin-Y*midYStep,-X,-Z,midAngle/2.0);
 
   // Make lengths:
 
@@ -314,93 +303,36 @@ MidWaterDivider::createSurfaces()
   ModelSupport::buildPlane(SMap,divIndex+12,Origin+rightNorm*length,rightNorm);
 
   // Length below [note reverse of normals]
-  ModelSupport::buildPlane(SMap,divIndex+31,
-			   Origin-rightNorm*length,-rightNorm);
-  ModelSupport::buildPlane(SMap,divIndex+32,
-			   Origin-leftNorm*length,-leftNorm);
+  ModelSupport::buildPlane(SMap,divIndex+31,Origin-rightNorm*length,-rightNorm);
+  ModelSupport::buildPlane(SMap,divIndex+32,Origin-leftNorm*length,-leftNorm);
 
   
   // Aluminum layers [+100]
-  Geometry::Vec3D leftNormAl(X);
-  Geometry::Quaternion::calcQRotDeg(midAngle/2.0,Z).rotate(leftNormAl);  
-  Geometry::Vec3D rightNormAl(X);
-  Geometry::Quaternion::calcQRotDeg(-midAngle/2.0,Z).rotate(rightNormAl);  
-
   // +Y section
-  ModelSupport::buildPlane(SMap,divIndex+103,Origin+Y*midYStep+leftNormAl*wallThick, leftNormAl);
-  ModelSupport::buildPlane(SMap,divIndex+104,Origin+Y*midYStep-rightNormAl*wallThick, rightNormAl);
+  const double LStep(midYStep+wallThick/sin(midAngle/2.0));
+  ModelSupport::buildPlaneRotAxis
+    (SMap,divIndex+103,Origin+Y*LStep,X,-Z,-midAngle/2.0);
+  ModelSupport::buildPlaneRotAxis
+    (SMap,divIndex+104,Origin+Y*LStep,X,-Z,midAngle/2.0);
 
   // -Y section
-  ModelSupport::buildPlane(SMap,divIndex+123,Origin-Y*midYStep-leftNormAl*wallThick, leftNormAl);
-  ModelSupport::buildPlane(SMap,divIndex+124,Origin-Y*midYStep+rightNormAl*wallThick, rightNormAl);
+
+  ModelSupport::buildPlaneRotAxis
+    (SMap,divIndex+123,Origin-Y*LStep,-X,-Z,-midAngle/2.0);
+  ModelSupport::buildPlaneRotAxis
+    (SMap,divIndex+124,Origin-Y*LStep,-X,-Z,midAngle/2.0);
+
   
   ModelSupport::buildPlane(SMap,divIndex+111,
-			   Origin+leftNorm*(length+wallThick),leftNorm); // x-y+
+			   Origin+leftNorm*(length+wallThick),leftNorm);
   ModelSupport::buildPlane(SMap,divIndex+112,
-			   Origin+rightNorm*(length+wallThick),rightNorm); // x-y-
+			   Origin+rightNorm*(length+wallThick),rightNorm);
 
   // Length below [note reverse of normals]
   ModelSupport::buildPlane(SMap,divIndex+131,
-			   Origin-rightNorm*(wallThick+length),-rightNorm); // x+y+
+			   Origin-rightNorm*(wallThick+length),-rightNorm);
   ModelSupport::buildPlane(SMap,divIndex+132,
-			   Origin-leftNorm*(wallThick+length),-leftNorm); // x+y-
-
-  // Rounding of the edges
-  const Geometry::Plane *pz = ModelSupport::buildPlane(SMap, divIndex+5, Origin, Z);
-
-  int edgeOffset(divIndex+1000);
-  std::array<Geometry::Vec3D,4> CPts; // water corners
-  std::array<Geometry::Vec3D,4> APts; // points for Geometry::cornerCircle
-  std::vector<int> side{11, 12, 32, 31};
-  std::vector<int> front{4, 3,  24, 23};
-  double thick=0.0;
-
-  //  std::cout << "before" << std::endl;
-  //  SMap.realPtr<Geometry::Plane>(divIndex+side[4]+100);
-  //  ELog::EM << "after" << ELog::endErr;
-  
-  for (size_t j=0; j<2; j++) // water and Al
-    {
-      for (size_t i=0; i<4; i++) // four edges
-	{
-	  CPts[i] = SurInter::getPoint(SMap.realPtr<Geometry::Plane>(divIndex+side[i]+j*100),
-				       SMap.realPtr<Geometry::Plane>(divIndex+front[i] + j*100), pz); // water corners
-	  
-	  if ((i==0) || (i==2))
-	    APts[i] = SurInter::getPoint(SMap.realPtr<Geometry::Plane>(divIndex+side[i]+j*100),
-					 SMap.realPtr<Geometry::Plane>(divIndex+side[(i+3)%4]+j*100), pz);
-	  else if ((i==1) || (i==3))
-	    APts[i] = SurInter::getPoint(SMap.realPtr<Geometry::Plane>(divIndex+front[i-1]+j*100), SMap.realPtr<Geometry::Plane>(divIndex+front[i]+j*100), pz);
-	}
-      
-      for (size_t i=0; i<4; i++) // four edges
-	{
-	  const int ii(static_cast<int>(i)+1);
-
-	  Geometry::Vec3D RCent;
-	  RCent = Geometry::cornerCircleTouch(CPts[i], APts[i], APts[(i+1)%4], edgeRadius+thick);
-
-	  std::pair<Geometry::Vec3D, Geometry::Vec3D> CutPair;
-	  CutPair =    Geometry::cornerCircle(CPts[i], APts[i], APts[(i+1)%4], edgeRadius+thick);
-
-	  // midNorm
-	  Geometry::Vec3D a = (CPts[(i+1)%4]-CPts[i]).unit();
-	  Geometry::Vec3D b = (CPts[(i+2)%4]-CPts[i]).unit();
-	  Geometry::Vec3D MD = (a+b)/2.0;
-	  
-	  ModelSupport::buildPlane(SMap,edgeOffset+ii+20,
-				   CutPair.first,CutPair.second,
-				   CutPair.first+Z,MD);
-
-	  ModelSupport::buildCylinder(SMap,edgeOffset+ii+6,
-				      RCent,Z,edgeRadius+thick);
-		  
-	  
-	}
-      edgeOffset += 100;
-      thick += wallThick;
-    }
-
+			   Origin-leftNorm*(wallThick+length),-leftNorm);
 
   return;
 }
@@ -412,6 +344,8 @@ MidWaterDivider::createObjects(Simulation& System,
   /*!
     Adds the main components
     \param System :: Simulation to create objects in
+    \param leftWing :: H2Wing connector  [left]
+    \param rightWing :: H2Wing connector [right side]
   */
 {
   ELog::RegMethod RegA("MidWaterDivider","createObjects");
@@ -419,79 +353,42 @@ MidWaterDivider::createObjects(Simulation& System,
   const std::string Base=
     leftWing.getLinkComplement(4)+leftWing.getLinkComplement(5);
   
-  HeadRule LCut(leftWing.getLayerString(cutLayer,6));
-  HeadRule RCut(rightWing.getLayerString(cutLayer,6));
+  HeadRule LCut(leftWing.getLayerString(cutLayer,7));
+  HeadRule RCut(rightWing.getLayerString(cutLayer,7));
 
   LCut.makeComplement();
   RCut.makeComplement();
   std::string Out;
 
-  Out=ModelSupport::getComposite(SMap,divIndex, divIndex+1000+2,
-				 "100 -300 ((-3 -12 20M) : (-20M -6M))"); // x-y-
-  Out+=RCut.display()+Base;
+  Out=ModelSupport::getComposite(SMap,divIndex,"100 (-3 : 4) -11 -12 ");
+  Out+=LCut.display()+RCut.display()+Base;
   System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
-
-  Out=ModelSupport::getComposite(SMap,divIndex, divIndex+1000+1, 
-				 "100 300 ((4 -11 20M) : (-20M -6M))"); // x-y+
-  Out+=LCut.display()+Base;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out)); // x-
 
   // Aluminium
-  Out=ModelSupport::getComposite(SMap,divIndex, divIndex+1000+2,
-				 "100 -300 ((( 3 : 12 ) (-103 -112 20M)) : (-120M 6M -106M) : (-103 -112 6M -20M 120M))");  // \todo Is it possible to optimise it more?
-  Out+=RCut.display()+Base;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out)); // x-
+  Out=ModelSupport::getComposite(SMap,divIndex,
+				 "100 (-103 : 104) -111 -112 "
+				 " ( (3  -4) : 11 : 12 ) ");
+				 
+  Out+=LCut.display()+RCut.display()+Base;
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out));
 
-  Out=ModelSupport::getComposite(SMap,divIndex, divIndex+1000+1,
-  				 "100 300 ((( -4 : 11 ) (104 -111 20M)) : (-120M 6M -106M) : (104 -111 6M -20M 120M))");  // \todo Is it possible to optimise it more?
-  Out+=LCut.display()+Base;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out)); // x-
-  
-  // outer surface:
-  Out=ModelSupport::getComposite(SMap,divIndex, divIndex+1000+2,
-				 "100 -300 (-103 -112 120M) : (-106M -120M)"); // -120M is needed to prevent geometry error at MidWaterMidAngle>90
+  Out=ModelSupport::getComposite(SMap,divIndex,
+				 "100 (-103 : 104)  -111 -112 ");
   addOuterSurf(Out);
-  Out=ModelSupport::getComposite(SMap,divIndex,divIndex+1000+1,
-				 "100 300 (104 -111 120M) : (-106M -120M)"); // -120M is needed to prevent geometry error at MidWaterMidAngle>90
-  addOuterUnionSurf(Out); 
-
   // Reverse layer
-  /// water
-  Out=ModelSupport::getComposite(SMap,divIndex, divIndex+1000+3,
-				 "-100 -300 ((24 -32 20M) : (-20M -6M))"); // x+y-
-  Out+=RCut.display()+Base;
+  Out=ModelSupport::getComposite(SMap,divIndex,"-100 (-23 : 24) -31 -32 ");
+  Out+=LCut.display()+RCut.display()+Base;
   System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
-
-  Out=ModelSupport::getComposite(SMap,divIndex, divIndex+1000+4,
-				 "-100 300 ((-23 -31 20M) : (-20M -6M))"); // x+y+
-  Out+=LCut.display()+Base;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
-
-  // Al
-  Out=ModelSupport::getComposite(SMap,divIndex,divIndex+1000+3,
-  				 "-100 -300 ((( -24 : 32 ) (-124 -132 20M)) : (-120M 6M -106M) : (-124 -132 6M -20M 120M)) ");   // \todo Is it possible to optimise it more?
-  Out+=RCut.display()+Base;
+  Out=ModelSupport::getComposite(SMap,divIndex,
+				 "-100 (-123 : 124)  -131 -132 "
+				 "((23  -24) : 31 : 32 )");
+  Out+=LCut.display()+RCut.display()+Base;
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out));
-
-
-  Out=ModelSupport::getComposite(SMap,divIndex, divIndex+1000+4,
-				 "-100 300 (((23 : 31 ) (123 -131 20M)) : (-120M 6M -106M) : (123 -131 6M -20M 120M)) ");   // \todo Is it possible to optimise it more?
-  Out+=LCut.display()+Base;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out));
-
-  // outer surfaces
-  Out=ModelSupport::getComposite(SMap,divIndex, divIndex+1000+3,
-				 "-100 -300 (-124 -132 120M) : (-106M -120M)"); // -120M is needed to prevent geometry error at MidWaterMidAngle>90
+  Out=ModelSupport::getComposite(SMap,divIndex,
+				 "-100 (-123 : 124) -131 -132 ");
   addOuterUnionSurf(Out);
-
-  Out=ModelSupport::getComposite(SMap,divIndex, divIndex+1000+4,
-				 "-100 300 (123 -131 120M) : (-106M -120M)"); // -120M is needed to prevent geometry error at MidWaterMidAngle>90
-  addOuterUnionSurf(Out);
-
-  HeadRule HR;
-  HR.procString(ContainedComp::getExclude());
-  HR.makeComplement();
-  sideRule = HR.display();
+  
+   
   return;
 }
 
@@ -550,7 +447,7 @@ MidWaterDivider::cutOuterWing(Simulation& System,
   
 Geometry::Vec3D
 MidWaterDivider::getSurfacePoint(const size_t,
-			const size_t) const
+			const long int) const
   /*!
     Given a side and a layer calculate the link point
     \param layerIndex :: layer, 0 is inner moderator [0-6]
@@ -563,8 +460,8 @@ MidWaterDivider::getSurfacePoint(const size_t,
 }
 
 int
-MidWaterDivider::getLayerSurf(const size_t layerIndex,
-		     const size_t sideIndex) const
+MidWaterDivider::getLayerSurf(const size_t,
+                              const long int) const
   /*!
     Given a side and a layer calculate the link point
     \param layerIndex :: layer, 0 is inner moderator [0-3]
@@ -577,8 +474,8 @@ MidWaterDivider::getLayerSurf(const size_t layerIndex,
 }
 
 std::string
-MidWaterDivider::getLayerString(const size_t layerIndex,
-		       const size_t sideIndex) const
+MidWaterDivider::getLayerString(const size_t,
+                                const long int) const
   /*!
     Given a side and a layer calculate the link point
     \param layerIndex :: layer, 0 is inner moderator [0-6]
@@ -587,8 +484,7 @@ MidWaterDivider::getLayerString(const size_t layerIndex,
   */
 {
   ELog::RegMethod RegA("MidWaterDivider","getLayerString");
-
-  throw ColErr::IndexError<size_t>(sideIndex,12,"sideIndex");
+  throw ColErr::AbsObjMethod("Not implemented yet");
 }
 
 
@@ -612,7 +508,7 @@ MidWaterDivider::createAll(Simulation& System,
   createSurfaces();
   createObjects(System,LA,RA);
   cutOuterWing(System,LA,RA);
-  createLinks(LA, RA);
+  createLinks(LA,RA);
   insertObjects(System);       
   return;
 }

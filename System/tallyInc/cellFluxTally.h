@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   tallyInc/cellFluxTally.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,6 @@ class cellFluxTally : public Tally
   
   NList<int>  cellList;                  ///< List of cells
   NList<double> FSfield;                 ///< fs card 
-  NList<double> SDfield;                 ///< sd card [scalar division]
 
  public:
   
@@ -52,12 +51,14 @@ class cellFluxTally : public Tally
       { return "cellFluxTally"; }
 
       
-  void setSD(const double);
   void addCells(const std::vector<int>&);   
   void addIndividualCells(const std::vector<int>&);   
   std::vector<int> getCells() const;
   void clearCells();
+  virtual int setSDField(const double);
+  virtual int mergeTally(const Tally&);
 
+  
   virtual int addLine(const std::string&); 
   virtual void renumberCell(const int,const int);
   virtual int makeSingle();

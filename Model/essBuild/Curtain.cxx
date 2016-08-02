@@ -3,7 +3,7 @@
  
  * File:   essBuild/Curtain.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -359,7 +359,6 @@ Curtain::layerProcess(Simulation& System,
   if (nBaseLayers>1)
     {
       const int topSurf=FC.getSignedLU(topIndex).getLinkSurf();
-      ELog::EM<<"Top surf == "<<topSurf<<ELog::endDiag;
       ModelSupport::surfDivide DA;
             
       for(size_t i=1;i<nTopLayers;i++)

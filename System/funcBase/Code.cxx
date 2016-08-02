@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   funcBase/Code.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -807,14 +807,16 @@ Code::printByteCode(std::ostream& OFS) const
 	      }
         }
     }
-  OFS.copyfmt(state);
   OFS.precision(ssPrec);
+  OFS.copyfmt(state);
   return;
 }
 
 
+///\cond TEMPLATE
 template double Code::Eval(varList*);
 template Geometry::Vec3D Code::Eval(varList*);
 
 template double Code::typeConvert(const Geometry::Vec3D&);
 template Geometry::Vec3D Code::typeConvert(const double&);
+///\endcond TEMPLATE

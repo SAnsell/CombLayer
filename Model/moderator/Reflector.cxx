@@ -3,7 +3,7 @@
  
  * File:   moderator/Reflector.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -225,15 +225,13 @@ Reflector::~Reflector()
 {}
 
 void
-Reflector::populate(const Simulation& System)
+Reflector::populate(const FuncDataBase& Control)
 /*!
   Populate all the variables
-  \param System :: Simulation to use
+  \param Control :: Data base for variables
 */
 {
   ELog::RegMethod RegA("Reflector","populate");
-  
-  const FuncDataBase& Control=System.getDataBase();
   
   xStep=Control.EvalVar<double>(keyName+"XStep");
   yStep=Control.EvalVar<double>(keyName+"YStep");
@@ -263,7 +261,7 @@ Reflector::createUnitVector()
 
   FixedComp::createUnitVector(World::masterTS2Origin());
   Origin+=X*xStep+Y*yStep+Z*zStep;
-    
+  
   return;
 }
   
@@ -536,7 +534,7 @@ Reflector::insertPipeObjects(Simulation& System,
   */
 {
   ELog::RegMethod RegA("Reflector","insertPipeObjects");
-
+  return;
   CouplePipe CP("cplPipe");
   System.createObjSurfMap();
   CP.createAll(System,*HydObj,4,*VacObj);
@@ -609,15 +607,15 @@ Reflector::getViewOrigin(const int BeamLine) const
   ELog::RegMethod RegA("Reflector","getViewOrigin");
 
   if (BeamLine<0 || BeamLine>17)
-    throw ColErr::IndexError<int>(BeamLine,18,RegA.getBase());
+    throw ColErr::IndexError<int>(BeamLine,18,"BeamLine");
   
   if (BeamLine<4)       // NARROW
     {
-      return DVacObj->getSurfacePoint(0,0);
+      return DVacObj->getSurfacePoint(0,1);
     }
   if (BeamLine<9)      // H2
     {
-      return VacObj->getSurfacePoint(1,0);
+      return VacObj->getSurfacePoint(0,2);
     }
   if (BeamLine<14)      // Groove
     {
@@ -625,7 +623,7 @@ Reflector::getViewOrigin(const int BeamLine) const
       return GrooveObj->getViewPoint();
     }
   // WISH
-  return DVacObj->getSurfacePoint(1,0);
+  return DVacObj->getSurfacePoint(0,2);
 }
 
 std::string
@@ -653,7 +651,7 @@ Reflector::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("Reflector","createAll");
-  populate(System);
+  populate(System.getDataBase());
 
   createUnitVector();
   createSurfaces();

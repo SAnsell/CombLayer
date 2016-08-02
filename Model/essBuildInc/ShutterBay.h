@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   essBuildInc/ShutterBay.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,11 +28,11 @@ namespace essSystem
 {
 
 /*!
-  \class Reflector
+  \class ShutterBay
   \version 1.0
   \author S. Ansell
   \date November 2012
-  \brief Reflector Cylindrical
+  \brief GuideUnit volume
 */
 
 class ShutterBay : public attachSystem::ContainedComp,

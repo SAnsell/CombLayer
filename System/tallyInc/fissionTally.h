@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   tallyInc/fissionTally.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,6 @@ class fissionTally : public Tally
   
   NList<int>  cellList;                  ///< List of surfaces
   NList<double> FSfield;                 ///< fs card 
-  NList<double> SDfield;                 ///< sd card 
 
  public:
   
@@ -51,7 +50,6 @@ class fissionTally : public Tally
   virtual std::string className() const 
       { return "fissionTally"; }
       
-  void setSD(const double);
   void addCells(const std::vector<int>&);   
   void addIndividualCells(const std::vector<int>&);   
   std::vector<int> getCells() const;

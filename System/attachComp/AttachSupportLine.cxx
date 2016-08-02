@@ -3,7 +3,7 @@
  
  * File:   attachComp/AttachSupport.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -230,9 +230,9 @@ addToInsertLineCtrl(Simulation& System,
 
   // Determin cells to scan
   const int cellN=OR.getCell(OuterFC.getKeyName());
-  const int cellR=OR.getRange(OuterFC.getKeyName());
+  const int cellL=OR.getLast(OuterFC.getKeyName());
 
-  for(int i=cellN+1;i<=cellN+cellR;i++)
+  for(int i=cellN+1;i<=cellL;i++)
     addToInsertLineCtrl(System,InsertFC,CC,i);
 
   return;

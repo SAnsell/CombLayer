@@ -1,3 +1,24 @@
+/********************************************************************* 
+  CombLayer : MCNP(X) Input builder
+ 
+ * File:   essBuild/ButterflyModerator.cxx
+ *
+ * Copyright (c) 2004-2016 by Stuart Ansell
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ *
+ ****************************************************************************/
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -91,11 +112,7 @@ ButterflyModerator::ButterflyModerator(const ButterflyModerator& A) :
   MidWater(A.MidWater->clone()),
   LeftWater(A.LeftWater->clone()),
   RightWater(A.LeftWater->clone()),
-  totalHeight(A.totalHeight),
-  outerRadius(A.outerRadius),
-  wallMat(A.wallMat),
-  wallDepth(A.wallDepth),
-  wallHeight(A.wallHeight)
+  outerRadius(A.outerRadius)
   /*!
     Copy constructor
     \param A :: ButterflyModerator to copy
@@ -119,11 +136,7 @@ ButterflyModerator::operator=(const ButterflyModerator& A)
       *MidWater= *A.MidWater;
       *LeftWater= *A.LeftWater;
       *RightWater= *A.RightWater;
-      totalHeight=A.totalHeight;
       outerRadius=A.outerRadius;
-      wallMat=A.wallMat;
-      wallDepth=A.wallDepth;
-      wallHeight=A.wallHeight;
     }
   return *this;
 }
@@ -156,10 +169,6 @@ ButterflyModerator::populate(const FuncDataBase& Control)
 
   ModBase::populate(Control);
   totalHeight=Control.EvalVar<double>(keyName+"TotalHeight");
-  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
-  wallDepth = Control.EvalVar<double>(keyName+"WallDepth");
-  wallHeight = Control.EvalVar<double>(keyName+"WallHeight");
-
   return;
 }
 
@@ -194,55 +203,26 @@ ButterflyModerator::createSurfaces()
   ELog::RegMethod RegA("ButterflyModerator","createSurface");
   
   ModelSupport::buildCylinder(SMap,flyIndex+7,Origin,Z,outerRadius);
-
   ModelSupport::buildPlane(SMap,flyIndex+5,Origin-Z*(totalHeight/2.0),Z);
   ModelSupport::buildPlane(SMap,flyIndex+6,Origin+Z*(totalHeight/2.0),Z);
-
-  ModelSupport::buildPlane(SMap,flyIndex+15,Origin-Z*(totalHeight/2.0-wallDepth),Z);
-  ModelSupport::buildPlane(SMap,flyIndex+16,Origin+Z*(totalHeight/2.0-wallHeight),Z);
 
   return;
 }
 
 void
 ButterflyModerator::createObjects(Simulation& System)
-    /*!
+  /*!
     Adds the main components
     \param System :: Simulation to create objects in
   */
 {
   ELog::RegMethod RegA("ButterflyModerator","createObjects");
   
-  const std::string sideRule=getSideRule(); // ContainedComp::getExclude();
-
-  HeadRule HR(sideRule);
-  HR.makeComplement();
+  const std::string Exclude=ContainedComp::getExclude();
 
   std::string Out;
-
-  if (wallDepth>Geometry::zeroTol) // \todo SA: why CL can't take care about it?
-  {
-    Out=ModelSupport::getComposite(SMap,flyIndex," -7 5 -15 ");  
-    System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+HR.display()));
-  }
-
-  if (wallHeight>Geometry::zeroTol) // \todo SA: why CL can't take care about it?
-    {
-      Out=ModelSupport::getComposite(SMap,flyIndex," -7 16 -6 ");  
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+HR.display()));
-      // otherwise split complicated cell by parts:
-      /*      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+LeftWater->getSideRule()));
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+RightWater->getSideRule()));
-      HeadRule bfHR;
-      bfHR.procString(LeftUnit->getSideRule());
-      bfHR.addUnion(RightUnit->getSideRule());
-      bfHR.addUnion(MidWater->getSideRule());
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+bfHR.display()));*/
-    }
-
   Out=ModelSupport::getComposite(SMap,flyIndex," -7 5 -6 ");  
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+sideRule));
-  setCell("ambientVoid", cellIndex-1);
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+Exclude));
 
   clearRules();
   addOuterSurf(Out);
@@ -252,7 +232,7 @@ ButterflyModerator::createObjects(Simulation& System)
   
 
 int
-ButterflyModerator::getCommonSurf(const size_t) const
+ButterflyModerator::getCommonSurf(const long int) const
   /*!
     Only components have reference values
   */
@@ -262,32 +242,28 @@ ButterflyModerator::getCommonSurf(const size_t) const
 }
 
 int
-ButterflyModerator::getLayerSurf(const size_t layerIndex,
-				 const size_t sideIndex) const
+ButterflyModerator::getLayerSurf(const size_t,const long int) const
   /*!
+    Only components have reference values
   */
 {
   ELog::RegMethod RegA("ButterflyModerator","getLayerSurf");
-  //  throw ColErr::AbsObjMethod("Not implemented yet");
-  return LeftUnit->getLayerSurf(layerIndex, sideIndex);
-  
+  throw ColErr::AbsObjMethod("Not implemented yet");
 }
 
 std::string
-ButterflyModerator::getLayerString(const size_t layerIndex,
-				   const size_t sideIndex) const
+ButterflyModerator::getLayerString(const size_t,const long int) const
   /*!
     Only components have reference values
   */
 {
   ELog::RegMethod RegA("ButterflyModerator","getLayerString");
-  //  throw ColErr::AbsObjMethod("Not implemented yet");
-  return LeftUnit->getLayerString(layerIndex, sideIndex);
+  throw ColErr::AbsObjMethod("Not implemented yet");
 }
 
 Geometry::Vec3D
-ButterflyModerator::getSurfacePoint(const size_t layerIndex,
-				    const size_t sideIndex) const
+ButterflyModerator::getSurfacePoint(const size_t,
+				    const long int) const
   /*!
     Given a side and a layer calculate the link point
     \param layerIndex :: layer, 0 is inner moderator [0-6]
@@ -296,14 +272,13 @@ ButterflyModerator::getSurfacePoint(const size_t layerIndex,
   */
 {
   ELog::RegMethod RegA("ButterflyModerator","getSurfacePoint");
-  //  throw ColErr::AbsObjMethod("Not implemented yet");
-  return LeftUnit->getSurfacePoint(layerIndex, sideIndex);
+  throw ColErr::AbsObjMethod("Not implemented yet");
 }
 
 void
 ButterflyModerator::createLinks()
   /*!
-    Create linkes but currently incomplete
+    Create links but currently incomplete
   */
 {
   ELog::RegMethod RegA("ButterflyModerator","createLinks");
@@ -321,8 +296,8 @@ ButterflyModerator::createLinks()
   
   FixedComp::setLinkCopy(4,*LeftUnit,4);
   FixedComp::setLinkCopy(5,*LeftUnit,5);
-  const double LowV= LU[4].getConnectPt().Z()-wallDepth*Z[2];
-  const double HighV= LU[5].getConnectPt().Z()+wallHeight*Z[2];
+  const double LowV= LU[4].getConnectPt().Z();
+  const double HighV= LU[5].getConnectPt().Z();
   const Geometry::Vec3D LowPt(Origin.X(),Origin.Y(),LowV);
   const Geometry::Vec3D HighPt(Origin.X(),Origin.Y(),HighV);
   FixedComp::setConnect(4,LowPt,-Z);
@@ -334,7 +309,9 @@ ButterflyModerator::createLinks()
   
 void
 ButterflyModerator::createExternal()
-  
+  /*!
+    Constructs the full outer exclude object 
+  */
 {
   ELog::RegMethod RegA("ButterflyModerator","createExternal");
 
@@ -346,6 +323,31 @@ ButterflyModerator::createExternal()
   
   return;
 }
+
+const attachSystem::FixedComp&
+ButterflyModerator::getComponent(const std::string& compName) const
+  /*!
+    Simple way to get a named component of this object
+    \param compName :: Component name
+    \return FixedComp object
+  */
+{
+  ELog::RegMethod RegA("ButterflyModerator","getComponent");
+
+  const std::string TStr=keyName+compName;
+  if (TStr==LeftUnit->getKeyName())
+    return *LeftUnit;
+  if (TStr==RightUnit->getKeyName())
+    return *RightUnit;
+  if (TStr==MidWater->getKeyName())
+    return *MidWater;
+  if (TStr==LeftWater->getKeyName())
+    return *LeftWater;
+  if (TStr==RightWater->getKeyName())
+    return *RightWater;
+  throw ColErr::InContainerError<std::string>(compName,keyName+" component");
+}
+
   
 void
 ButterflyModerator::createAll(Simulation& System,
@@ -369,14 +371,11 @@ ButterflyModerator::createAll(Simulation& System,
   LeftUnit->createAll(System,*this);
   RightUnit->createAll(System,*this);
   MidWater->createAll(System,*this,*LeftUnit,*RightUnit);
-  
-  std::string CutString=LeftUnit->getSignedLinkString(2);
+    
   const std::string Exclude=
-    ModelSupport::getComposite(SMap,flyIndex," -7 15 -16 ");
-  LeftWater->createAll(System,*this,CutString,Exclude);
-
-  CutString=RightUnit->getSignedLinkString(2);
-  RightWater->createAll(System,*this,CutString,Exclude);
+    ModelSupport::getComposite(SMap,flyIndex," -7 5 -6 ");
+  LeftWater->createAll(System,*LeftUnit,2,Exclude);
+  RightWater->createAll(System,*RightUnit,2,Exclude);
 
   Origin=MidWater->getCentre();
   createExternal();  // makes intermediate 
@@ -388,67 +387,7 @@ ButterflyModerator::createAll(Simulation& System,
   return;
 }
 
-  std::string
-  ButterflyModerator::getSideRule() const
-  /*
-    Return side rule
-    \todo // SA: Use union of link points as it is faster
-  */
-  {
-    std::string side("");
-    HeadRule HR;
-    HR.procString(LeftUnit->getSideRule());
-    HR.addUnion(RightUnit->getSideRule());
-    HR.addUnion(MidWater->getSideRule());
-    HR.addUnion(LeftWater->getSideRule());
-    HR.addUnion(RightWater->getSideRule());
-    HR.makeComplement();
-    return HR.display();
-  }
-
-  std::string
-  ButterflyModerator::getLeftRightWaterSideRule() const
-  /*
-    Return left+right water side rule
-    \todo // SA: Use union of link points as it is faster
-  */
-  {
-    std::string side("");
-    HeadRule HR;
-    HR.procString(LeftWater->getSideRule());
-    HR.addUnion(RightWater->getSideRule());
-    HR.makeComplement();
-    return HR.display();
-  }
-
-  Geometry::Vec3D ButterflyModerator::getFocalPoint(int i) const
-  /*
-    Return focal point coordinates for collimator setup
-    \param i :: link point number of MidWater
-  */
-  {
-    return MidWater->getLinkPt(i);
-  }
-
-  std::vector<Geometry::Vec3D> ButterflyModerator::getFocalPoints() const
-  /*
-    Return array of focal points + 
-    Last two items defining zmin and zmax
-  */
-  {
-    std::vector<Geometry::Vec3D> vec;
-
-    for (int i=0; i<10; i++)
-      vec.push_back(MidWater->getLinkPt(i));
-
-    Geometry::Vec3D zmin(0, 0, LeftUnit->getCentre()[2]-LeftUnit->getHeight()/2.0);
-    Geometry::Vec3D zmax(0, 0, LeftUnit->getCentre()[2]+LeftUnit->getHeight()/2.0);
 
 
-    vec.push_back(zmin);
-    vec.push_back(zmax);
-
-    return vec;
-  }
 
 }  // NAMESPACE essSystem

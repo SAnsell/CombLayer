@@ -3,7 +3,7 @@
  
  * File:   essBuild/H2Wing.cxx 
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,6 @@
 #include <algorithm>
 #include <numeric>
 #include <memory>
-#include <numeric>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -181,13 +180,14 @@ H2Wing::populate(const FuncDataBase& Control)
 
   engActive=Control.EvalTriple<int>(keyName,baseName,"","EngineeringActive");
 
-  bfDepth = Control.EvalVar<double>(baseName+"WallDepth");
-  bfHeight = Control.EvalVar<double>(baseName+"WallHeight");
-  totalHeight=Control.EvalVar<double>(baseName+"TotalHeight")-(bfDepth+bfHeight);
+  totalHeight=Control.EvalVar<double>(baseName+"TotalHeight");
   
   xStep=Control.EvalVar<double>(keyName+"XStep");
   yStep=Control.EvalVar<double>(keyName+"YStep");
-  
+
+  bfDepth = Control.EvalDefVar<double>(baseName+"WallDepth",0.0);
+  bfHeight = Control.EvalDefVar<double>(baseName+"WallHeight",0.0);
+
   for(size_t i=0;i<3;i++)
     {
       Pts[i]=Control.EvalVar<Geometry::Vec3D>
@@ -205,7 +205,8 @@ H2Wing::populate(const FuncDataBase& Control)
   double VH, VD;
   int M;
   Thick.push_back(0.0);
-  Height.push_back(0.0); Depth.push_back(0.0);
+  layerHeight.push_back(0.0);
+  layerDepth.push_back(0.0);
   temp.push_back(modTemp);
   mat.push_back(modMat);
   double TH(0.0);
@@ -219,15 +220,15 @@ H2Wing::populate(const FuncDataBase& Control)
       M=ModelSupport::EvalMat<int>(Control,keyName+"Mat"+Num);
 
       Thick.push_back(T);
-      Height.push_back(VH);
-      Depth.push_back(VD);
+      layerHeight.push_back(VH);
+      layerDepth.push_back(VD);
       temp.push_back(mTemp);
       mat.push_back(M);
       TH+=VH+VD;
     }
 
   // calculated relative to 
-  height=totalHeight-TH; // hydrogen height
+  height=totalHeight-TH;
   if (height<Geometry::zeroTol)
     throw ColErr::NumericalAbort("Unable to calculate a negative height.\n"
 				 "Thickness   == "+
@@ -251,7 +252,10 @@ H2Wing::createUnitVector(const attachSystem::FixedComp& FC)
   ELog::RegMethod RegA("H2Wing","createUnitVector");
 
   FixedComp::createUnitVector(FC);
-  const double dh = std::accumulate(Depth.begin(), Depth.end(), 0.0) - std::accumulate(Height.begin(), Height.end(), 0.0) + bfDepth - bfHeight; // difference between total depth and total height
+  const double dh = std::accumulate(layerDepth.begin(),layerDepth.end(),0.0) -
+    std::accumulate(layerHeight.begin(),layerHeight.end(),0.0)-
+    +bfDepth-bfHeight;
+
   applyShift(xStep,yStep, dh/2.0);
   applyAngleRotate(xyOffset,0.0);
   for(size_t i=0;i<3;i++)
@@ -273,12 +277,13 @@ H2Wing::createLinks()
   std::array<Geometry::Vec3D,3> CPts;
   std::array<Geometry::Vec3D,3> NPts;
   double PDepth(0.0);
-  double VH(0.0), VD(0.0);
+  double VH(height/2.0);
+  double VD(height/2.0);
   for(size_t i=1;i<nLayers;i++)
     {
       PDepth+=Thick[i];
-      VH += Height[i];
-      VD += Depth[i];
+      VH += layerHeight[i];
+      VD += layerDepth[i];
     }
   cornerSet(PDepth,CPts,NPts);
 
@@ -293,8 +298,8 @@ H2Wing::createLinks()
     }
   // Top/bottom
 
-  FixedComp::setConnect(4,Origin-Z*(VD+height/2.0),-Z);
-  FixedComp::setConnect(5,Origin+Z*(VH+height/2.0),Z);
+  FixedComp::setConnect(4,Origin-Z*VD,-Z);
+  FixedComp::setConnect(5,Origin+Z*VH,Z);
   FixedComp::setLinkSurf(4,-SMap.realSurf(triOffset+5));
   FixedComp::setLinkSurf(5,SMap.realSurf(triOffset+6));
 
@@ -419,8 +424,8 @@ H2Wing::createSurfaces()
   for(size_t j=0;j<nLayers;j++)
     {
       PDepth+=Thick[j];
-      VH += Height[j];
-      VD += Depth[j];
+      VH += layerHeight[j];
+      VD += layerDepth[j];
       cornerSet(PDepth,CPts,NPts);
       for(size_t i=0;i<3;i++)
 	{
@@ -533,27 +538,23 @@ H2Wing::createObjects(Simulation& System)
 				     "-1 -2 -3 5 -6 (21:-7) (22:-8) (23:-9)");
   addOuterSurf(OutA);
 
-  sideRule=ModelSupport::getComposite(SMap,triOffset,
-				     "-1 -2 -3 (21:-7) (22:-8) (23:-9)");
+  //  sideRule=ModelSupport::getComposite(SMap,triOffset,
+  //				     "-1 -2 -3 (21:-7) (22:-8) (23:-9)");
 
   return;
 }
 
 Geometry::Vec3D
 H2Wing::getSurfacePoint(const size_t layerIndex,
-			const size_t sideIndex) const
+			const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link point
     \param layerIndex :: layer, 0 is inner moderator [0-6]
-    \param sideIndex :: 
-           -- Side [0-2] are corners  /
-           -- Side [3-9] are 
- 
+    \param sideIndex :: Side [0-3] // mid si-des   
     \return Surface point
   */
 {
   ELog::RegMethod RegA("H2Wing","getSurfacePoint");
-
   if (layerIndex>=nLayers)
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layerIndex");
   
@@ -561,34 +562,39 @@ H2Wing::getSurfacePoint(const size_t layerIndex,
   std::array<Geometry::Vec3D,3> CPts;
   std::array<Geometry::Vec3D,3> NPts;
   double PDepth(0.0);
-  double VH(0.0), VD(0.0);
+  double VHigh(height/2.0);
+  double VDepth(height/2.0);
 
   for(size_t i=1;i<layerIndex;i++)
     {
       PDepth+=Thick[i];
-      VH += Height[i];
-      VD += Depth[i];
+      VHigh += layerHeight[i];
+      VDepth += layerDepth[i];
     }
   cornerSet(PDepth,CPts,NPts);
 
-  switch(sideIndex)
+  const size_t SI=static_cast<size_t>(std::abs(sideIndex));
+  
+  switch(SI)
     {
     case 0:
+      return Origin;
     case 1:
     case 2:
-      return (CPts[sideIndex]+CPts[(sideIndex+1)%3])/2.0;
-    case 4:
-      return Origin-Z*(VD+height/2.0);
+    case 3:
+      return (CPts[SI-1]+CPts[SI % 3])/2.0;
     case 5:
-      Origin+Z*(VH+height/2.0);
+      return Origin-Z*VDepth;
+    case 6:
+      Origin+Z*VHigh;
     }
 
-  throw ColErr::IndexError<size_t>(sideIndex,6,"sideIndex");
+  throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
 }
 
 int
 H2Wing::getLayerSurf(const size_t layerIndex,
-		     const size_t sideIndex) const
+		     const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link point
     \param layerIndex :: layer, 0 is inner moderator [0-3]
@@ -597,41 +603,42 @@ H2Wing::getLayerSurf(const size_t layerIndex,
   */
 {
   ELog::RegMethod RegA("H2Wing","getLayerSurf");
-  throw ColErr::AbsObjMethod("Not implemented yet");
 
   if (layerIndex>=nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layerIndex");
 
   const int triIndex(wingIndex+static_cast<int>((layerIndex+1)*100));
-  switch(sideIndex)
+  const long int uSIndex(std::abs(sideIndex));
+  const int signValue((sideIndex>0) ? 1 : -1);
+  switch(uSIndex)
     {
-    case 0:
-      return SMap.realSurf(triIndex+1);
     case 1:
-      return SMap.realSurf(triIndex+2);
+      return signValue*SMap.realSurf(triIndex+1);
     case 2:
-      return SMap.realSurf(triIndex+3);
-    case 5:
-      return -SMap.realSurf(triIndex+5);
+      return signValue*SMap.realSurf(triIndex+2);
+    case 3:
+      return signValue*SMap.realSurf(triIndex+3);
     case 6:
-      return SMap.realSurf(triIndex+6);
+      return -signValue*SMap.realSurf(triIndex+5);
     case 7:
-      return SMap.realSurf(triIndex+7);
+      return signValue*SMap.realSurf(triIndex+6);
     case 8:
-      return SMap.realSurf(triIndex+8);
+      return signValue*SMap.realSurf(triIndex+7);
     case 9:
-      return SMap.realSurf(triIndex+9);
+      return signValue*SMap.realSurf(triIndex+8);
+    case 10:
+      return signValue*SMap.realSurf(triIndex+9);
     }
-  throw ColErr::IndexError<size_t>(sideIndex,9,"sideIndex");
+  throw ColErr::IndexError<long int>(sideIndex,10,"sideIndex");
 }
 
 std::string
 H2Wing::getLayerString(const size_t layerIndex,
-		       const size_t sideIndex) const
+		       const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link point
     \param layerIndex :: layer, 0 is inner moderator [0-6]
-    \param sideIndex :: Side [0-3] // mid sides   
+    \param sideIndex :: Side [0-3]+mid sides   
     \return Surface point
   */
 {
@@ -642,34 +649,54 @@ H2Wing::getLayerString(const size_t layerIndex,
 
   const int triOffset(wingIndex+static_cast<int>((layerIndex+1)*100));
   std::string Out;
-
-  switch(sideIndex)
+  const long int uSIndex(std::abs(sideIndex));
+  switch(uSIndex)
     {
-    case 0:
-      return StrFunc::makeString(SMap.realSurf(triOffset+1));
     case 1:
-      return StrFunc::makeString(SMap.realSurf(triOffset+2));
+      Out=ModelSupport::getComposite(SMap,triOffset," 1 ");
+      break;
     case 2:
-      return StrFunc::makeString(SMap.realSurf(triOffset+3));
-    case 4:
-      return StrFunc::makeString(-SMap.realSurf(triOffset+5));
+      Out=ModelSupport::getComposite(SMap,triOffset," 2 ");
+      break;
+    case 3:
+      Out=ModelSupport::getComposite(SMap,triOffset," 3 ");
+      break;
     case 5:
-      return StrFunc::makeString(SMap.realSurf(triOffset+6));
+      Out=ModelSupport::getComposite(SMap,triOffset," -5 ");
+      break;
     case 6:
-      return ModelSupport::getComposite(SMap,triOffset,"-1 -3 (21:-7) ");
+      Out=ModelSupport::getComposite(SMap,triOffset," 6 ");
+      break;
     case 7:
-      return ModelSupport::getComposite(SMap,triOffset,"-1 -2 (22:-8) ");
+      Out=ModelSupport::getComposite(SMap,triOffset,"-1 -3 (21:-7) ");
+      break;
     case 8:
-      return ModelSupport::getComposite(SMap,triOffset,"-2 -3 (23:-9) ");
+      Out=ModelSupport::getComposite(SMap,triOffset,"-1 -2 (22:-8) ");
+      break;
     case 9:
-      return ModelSupport::getComposite(SMap,triOffset," (21:-7) ");
+      Out=ModelSupport::getComposite(SMap,triOffset,"-2 -3 (23:-9) ");
+      break;
     case 10:
-      return ModelSupport::getComposite(SMap,triOffset," (22:-8) ");
+      Out=ModelSupport::getComposite(SMap,triOffset," (21:-7) ");
+      break;
     case 11:
-      return ModelSupport::getComposite(SMap,triOffset," (23:-9) ");
+      Out=ModelSupport::getComposite(SMap,triOffset," (22:-8) ");
+      break;
+    case 12:
+      Out=ModelSupport::getComposite(SMap,triOffset," (23:-9) ");
+      break;
+    default:
+      throw ColErr::IndexError<long int>(sideIndex,12,
+					 "sideIndex + missing gap");
     }
   
-  throw ColErr::IndexError<size_t>(sideIndex,12,"sideIndex");
+  if (sideIndex<0)
+    {
+      HeadRule HR(Out);
+      HR.makeComplement();
+      return HR.display();
+    }
+  return Out;
 }
 
 
@@ -694,12 +721,6 @@ H2Wing::createAll(Simulation& System,
 
   if (engActive)
     InnerComp->createAll(System,*this);
-
-  // target-moderator distance check
-  if ((fabs(Origin[2]-13.7)>Geometry::zeroTol) && // TopFly
-      (fabs(Origin[2]+15.3)>Geometry::zeroTol))   // LowFly
-    ELog::EM << "Target-moderator distance is wrong for " << keyName << ": " << Origin[2] << ELog::endErr;
-
   return;
 }
   

@@ -3,7 +3,7 @@
  
  * File:   physicsInc/PhysicsCards.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@
 namespace physicsSystem
 {
   class dbcnCard;
+  class nameCard;
   class ExtControl;
   class PWTControl;
   class DXTControl;
@@ -46,12 +47,15 @@ class PhysicsCards
 {
  private:
   
-  int nps;                                ///< number of particles to run
-  int histp;                              ///< Add a histp line
-  tallySystem::NList<int> histpCells;     ///< cells for the histp list
-  std::unique_ptr<dbcnCard> dbCard;       ///< Reference to the dbcnCard
+  int nps;                             ///< number of particles to run
+  int histp;                           ///< Add a histp line
+  tallySystem::NList<int> histpCells;  ///< cells for the histp list
+
+  std::unique_ptr<nameCard> RAND;      ///< RAND card [MCNP6]
+  std::unique_ptr<nameCard> PTRAC;     ///< Particle Track card [MCNP6]
+  std::unique_ptr<nameCard> dbCard;    ///< Reference to the dbcnCard
   
-  std::vector<std::string> Basic;         ///< Basic cards (stripped of Variables)
+  std::vector<std::string> Basic;      ///< Basic cards (stripped of Variables)
 
   ModeCard mode;                          ///< Mode card
   bool voidCard;                          ///< Void card
@@ -127,10 +131,19 @@ class PhysicsCards
   // Special for type: vol
   void setVolume(const std::vector<int>&,const double =1.0);
   void setVolume(const int,const double);
+  void clearVolume();
+  
   void setPWT(const std::vector<int>&,const double =1.0);
   void setPWT(const int,const double);
   void setNPS(const int N) { nps=N; }      ///< Set the Number of particles
-  void setRND(const long int);
+  void setRND(const long int,const long int =0);
+  template<typename T>
+  void setPTRAC(const std::string&,const T&);
+  template<typename T>
+  void setDBCN(const std::string&,const T&);
+  void setDBCNactive(const bool);
+  void setPTRACactive(const bool);
+
   void setEnergyCut(const double);  
   void setMode(std::string);
   void setVoidCard(const bool V) { voidCard=V; }   ///< Set the void card
@@ -139,12 +152,14 @@ class PhysicsCards
   void setPrdmp(const std::string& P) 
     { prdmp = P; } 
 
-  long int getRND() const;
+  long int getRNDseed() const;
 
   void rotateMaster();
   void substituteCell(const int,const int);
   void substituteSurface(const int,const int); 
 
+  void writeHelp(const std::string&) const;
+  
   void write(std::ostream&,const std::vector<int>&,
 	     const std::set<int>&) const;   
 };

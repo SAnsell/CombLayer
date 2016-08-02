@@ -64,6 +64,11 @@ buildRotatedPlane(surfRegister& SMap,const int N,
 		  const Geometry::Vec3D& Centre)
   /*!
     Builds a plane that is rotated about the centre and the axis
+    \param SMap :: Surface register
+    \param PN :: Base plane
+    \param angle :: angle [degrees]
+    \param Axis :: Axis of rotation
+    \param Centre :: Centre of rotation
   */
 {
   ELog::RegMethod("generateSurf","buildRotatedPlane");
@@ -89,7 +94,7 @@ Geometry::Plane*
 buildShiftedPlane(surfRegister& SMap,const int N,
 		  const Geometry::Plane* PN,const double Dist)
   /*!
-    Builds a plane that is rotated about the centre and the axis
+    Builds a plane that is shifted relative to a current plane
     \param SMap :: Surface Map system
     \param N :: Initial Number
     \param PN :: Plane to use as template
@@ -117,7 +122,7 @@ buildShiftedPlaneReversed(surfRegister& SMap,const int N,
 			  const Geometry::Plane* PN,
 			  const double Dist)
   /*!
-    Builds a plane that is rotated about the centre and the axis
+    Builds a plane that is shifted (and normal reversed)
     \param SMap :: Surface Map system
     \param N :: Initial Number
     \param PN :: Plane to use as template

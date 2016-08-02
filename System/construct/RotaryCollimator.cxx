@@ -3,7 +3,7 @@
  
  * File:   construct/RotaryCollimator.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -84,7 +84,7 @@ namespace constructSystem
 
 RotaryCollimator::RotaryCollimator(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedGroup(Key,"Main",2,"Beam",2),
+  attachSystem::FixedGroup(Key,"Main",16,"Beam",3,"Hole",0),
   attachSystem::CellMap(),
   colIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(colIndex+1),holeIndex(0),nHole(0),nLayers(0)
@@ -227,12 +227,12 @@ RotaryCollimator::createUnitVector(const attachSystem::FixedComp& FC,
   attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
 
   mainFC.createUnitVector(FC,sideIndex);
-  mainFC.createUnitVector(FC,sideIndex);
+  beamFC.createUnitVector(FC,sideIndex);
 
-  beamFC=mainFC;
   beamFC.applyShift(0,yStep,0);  
   mainFC.applyShift(xStep,yStep,zStep-rotDepth);  
   mainFC.applyAngleRotate(xyAngle,zAngle);
+
   setDefault("Main");
   return;
 }
@@ -277,9 +277,10 @@ RotaryCollimator::createObjects(Simulation& System)
     {
       std::shared_ptr<HoleShape>& HU=Holes[i];
       HU->setFaces(SMap.realSurf(colIndex+1),-SMap.realSurf(colIndex+2));
-      HU->createAll(System,*this,0);          // Use THIS Origin (rot centre)
+      HU->createAllNoPopulate(System,*this,0);  // Use THIS Origin (rot centre)
       if (HU->getShape())
 	HoleExclude.addIntersection(HU->getExclude());
+      addCell("Void"+StrFunc::makeString(i),HU->getCell("Void"));
     }
   Out+=" "+HoleExclude.display();
   System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));            
@@ -317,6 +318,7 @@ RotaryCollimator::createLinks()
   
   attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
   attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+  attachSystem::FixedComp& holeFC=FixedGroup::getKey("Hole");
   // 
   const std::string Out=getExclude();
   HeadRule HM(Out);
@@ -325,21 +327,62 @@ RotaryCollimator::createLinks()
   std::pair<Geometry::Vec3D,int> PtB=
     SurInter::interceptRule(HM,beamFC.getCentre()+beamFC.getY()*thick,
 			    beamFC.getY());
+
   beamFC.setConnect(0,PtA.first,-beamFC.getY());
   beamFC.setConnect(1,PtB.first,beamFC.getY());
+  beamFC.setConnect(2,(PtB.first+PtA.first)/2,
+                    beamFC.getY());  // mid point [NO SURF]
   beamFC.setLinkSurf(0,-SMap.realSurf(colIndex+1));
   beamFC.setLinkSurf(1,SMap.realSurf(colIndex+2));
 
   mainFC.setConnect(0,Origin,-Y);
-  mainFC.setConnect(1,Origin+Y*thick,-Y);
+  mainFC.setConnect(1,Origin+Y*thick,Y);
   mainFC.setLinkSurf(0,-SMap.realSurf(colIndex+1));
   mainFC.setLinkSurf(1,SMap.realSurf(colIndex+2));
 
+  const size_t nExtra(6);
+  const double angleStep(2.0*M_PI/nExtra);
+  double angle(0.0);
+  for(size_t i=0;i<nExtra;i++)
+    {
+      const Geometry::Vec3D Axis(X*cos(angle)+Z*sin(angle));
+      mainFC.setConnect(i+2,Origin+Y*(thick/2.0)+Axis*radius,Axis);
+      mainFC.setLinkSurf(i+2,SMap.realSurf(colIndex+7));
+      angle+=angleStep;
+    }
+  // Front/back points as well
+  const Geometry::Vec3D ADir[4]{-X,X,-Z,Z};
+  for(size_t i=0;i<4;i++)
+    {
+      // front
+      mainFC.setConnect(i+8,Origin+ADir[i]*radius,-Y);
+      mainFC.setLinkSurf(i+8,-SMap.realSurf(colIndex+1));
+      // back
+      mainFC.setConnect(i+12,Origin+Y*thick+ADir[i]*radius,Y);
+      mainFC.setLinkSurf(i+12,SMap.realSurf(colIndex+2));
+    }
+
+  // Process holes:
+  if (nHole)
+    {
+      holeFC.setNConnect(3*nHole);
+      size_t index(0);
+      for(size_t i=0;i<nHole;i++)
+        {
+          holeFC.setLinkCopy(index,*Holes[i],0);
+          holeFC.setLinkCopy(index+1,*Holes[i],1);
+          const Geometry::Vec3D midPt((Holes[i]->getLinkPt(0)+
+                                      Holes[i]->getLinkPt(1))/2.0);
+          holeFC.setConnect(index+2,midPt,Holes[i]->getSignedLinkAxis(1));
+          index+=3;
+        }
+    }
+  
   return;
 }
   
 void 
-RotaryCollimator::layerProcess(Simulation& System)
+RotaryCollimator::layerProcess(Simulation&)
   /*!
     Processes the splitting of the surfaces into a multilayer system
     This has to deal with the three layers that invade cells:

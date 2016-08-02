@@ -82,9 +82,9 @@ class ConicModerator : public constructSystem::ModBase
   /// Access to hydrogen region
   virtual int getMainBody() const { return HCell; }
 
-  virtual Geometry::Vec3D getSurfacePoint(const size_t,const size_t) const;
-  virtual int getLayerSurf(const size_t,const size_t) const;
-  virtual std::string getLayerString(const size_t,const size_t) const;
+  virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
+  virtual int getLayerSurf(const size_t,const long int) const;
+  virtual std::string getLayerString(const size_t,const long int) const;
 
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
 			 const attachSystem::FixedComp*,const long int);

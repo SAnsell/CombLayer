@@ -3,7 +3,7 @@
  
  * File:   essBuild/LayerDivide3D.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -89,7 +89,7 @@ namespace ModelSupport
 
 LayerDivide3D::LayerDivide3D(const std::string& Key)  :
   FixedComp(Key,0),
-  divIndex(ModelSupport::objectRegister::Instance().cell(Key,-1,20000)),
+  divIndex(ModelSupport::objectRegister::Instance().cell(Key,20000)),
   cellIndex(divIndex+1),DGPtr(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -305,7 +305,7 @@ LayerDivide3D::checkDivide() const
     throw ColErr::EmptyValue<int>("Wall A not set");
   if (!(BWall.first*BWall.second))
     throw ColErr::EmptyValue<int>("Wall B not set");
-  if (!(CWall.first*BWall.second))
+  if (!(CWall.first*CWall.second))
     throw ColErr::EmptyValue<int>("Wall C not set");
   return;
 }
@@ -343,7 +343,10 @@ LayerDivide3D::divideCell(Simulation& System,const int cellN)
   int aIndex(divIndex);
   for(size_t i=0;i<ALen;i++,aIndex++)
     {
-      const std::string ACut=ModelSupport::getComposite(SMap,aIndex,"1 -2");
+      const std::string layerNum(StrFunc::makeString(i));
+      const std::string ACut=
+        ModelSupport::getComposite(SMap,aIndex,"1 -2");
+      
       int bIndex(divIndex+1000);
       
       for(size_t j=0;j<BLen;j++,bIndex++)
@@ -360,7 +363,8 @@ LayerDivide3D::divideCell(Simulation& System,const int cellN)
 	      
 	      System.addCell(MonteCarlo::Qhull(cellIndex++,Mat,0.0,
 					       CCut+divider));
-	      attachSystem::CellMap::addCell("LD3",cellIndex-1);
+	      attachSystem::CellMap::addCell
+                ("LD3:"+layerNum,cellIndex-1);
       	    }
 	}
     }

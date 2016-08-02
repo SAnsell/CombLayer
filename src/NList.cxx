@@ -273,6 +273,45 @@ NList<Unit>::addComp(const std::vector<Unit>& Obj)
 
 template<typename Unit>
 void
+NList<Unit>::splitComp()
+  /*!
+    Take the outer bracket appart
+  */
+{
+  ELog::RegMethod RegA("NList","splitComp");
+  
+  const CompUnit LeftB(1,0,"(");
+  const CompUnit RightB(1,0,")");
+      
+  typename std::vector<CompUnit>::iterator ac;    
+  // Search for match brackets
+  ac=find(Items.begin(),Items.end(),LeftB);
+  if (ac==Items.end()) return;
+
+  typename std::vector<CompUnit>::iterator bc(ac+1);
+  size_t bCnt(1);
+  do
+    {
+      if (*bc==RightB)
+        bCnt--;
+      else if (*bc==LeftB)
+        bCnt++;
+    }
+  while(bCnt && ++bc!=Items.end());
+
+  if (!bCnt)
+    {
+      std::rotate(ac,ac+1,Items.end());
+      std::rotate(bc,bc+1,Items.end());
+      Items.pop_back();
+      Items.pop_back();
+    }
+  return;    
+}
+
+  
+template<typename Unit>
+void
 NList<Unit>::addComp(const Unit& Obj) 
   /*!
     Adds a component to the list of type int/double
@@ -354,14 +393,17 @@ NList<Unit>::write(std::ostream& OX) const
   return;
 }
 
-};
 
 /// \cond TEMPLATE 
 
-template class tallySystem::NList<int>;
-template class tallySystem::NList<double>;
+template class NList<int>;
+template class NList<double>;
 
-template std::ostream& tallySystem::operator<<(std::ostream&,const tallySystem::NList<double>&);
-template std::ostream& tallySystem::operator<<(std::ostream&,const tallySystem::NList<int>&);
+template std::ostream&
+operator<<(std::ostream&,const NList<double>&);
+template std::ostream&
+operator<<(std::ostream&,const NList<int>&);
 
 /// \endcond TEMPLATE 
+
+}

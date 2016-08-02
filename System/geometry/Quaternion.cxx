@@ -3,7 +3,7 @@
  
  * File:   geometry/Quaternion.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -125,6 +125,30 @@ Quaternion::calcQRotDeg(const double Angle,const double a,const double b,const d
   A.makeUnit();
   A*=sin(M_PI*Angle/360.0);
   return Quaternion(cos(M_PI*Angle/360.0),A);
+}
+
+Quaternion
+Quaternion::calcQVRot(const Geometry::Vec3D& A,
+                      const Geometry::Vec3D& APrime)
+  /*!
+    Calculate Quaternion value for a given 
+    a vector and the new target vector rotated about the
+    origin
+    \param A :: Original vector
+    \param APrime :: Vector that is rotated too
+    \return Quaternion that rotates A to APrime
+  */
+{
+  Geometry::Vec3D Axis=A*APrime;
+  Axis.makeUnit();
+  double Angle=A.dotProd(APrime)/(A.abs()*APrime.abs());
+
+  Angle=
+    (std::abs(Angle)<1.0-Geometry::zeroTol) ?
+      acos(Angle) : 0.0;
+    
+  Axis*=sin(Angle/2.0);
+  return Quaternion(cos(Angle/2.0),Axis);
 }
 
 Quaternion
@@ -599,6 +623,13 @@ Quaternion::basisRotate(const Vec3D& xa,const Vec3D& xb,
   /*!
     Given basis set A convert to basis set B
     Following the method in http://charles.karney.info/biblio/quat.html
+    \param xa :: initial X
+    \param xb :: initial Y
+    \param xc :: initial Z
+    \param ya :: new X
+    \param yb :: new Y
+    \param yc :: new Z
+    \return Quaternion
   */
 {
   Matrix<double> B(4,4);

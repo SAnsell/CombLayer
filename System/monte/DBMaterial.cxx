@@ -3,7 +3,7 @@
  
  * File:   monte/DBMaterial.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -124,13 +124,19 @@ DBMaterial::initMaterial()
   setMaterial(MObj);
   MObj.setMaterial(0,"Void","00000.00c 1.0","",MLib);
   setMaterial(MObj);
-
+  cloneMaterial("InValid","Null");
 
   MObj.setMaterial(1,"MachineTugnsten",
 		   "26000.55c 0.001773 28000.50c 0.003935 74182.70c 0.0165487 "
 		   "74183.70c 0.0089819772 74184.70c 0.0192722  74186.70c "
 		   " 0.018014274","",MLib);
   setMaterial(MObj);
+  // Material #4 : Methane + 10% Al.
+  MObj.setMaterial(4,"CH4inFoam",
+		   "6000.70c 0.0167364 1001.70c 0.066945 13027.24c 0.0060185",
+		   "smeth.26t al.20t",MLib);
+  setMaterial(MObj);
+
   // Density --> 7.65g/cc
   MObj.setMaterial(3,"Stainless304",
 		   "6000.70c 3.18640e-4 14028.70c 1.70336e-3 "
@@ -150,11 +156,6 @@ DBMaterial::initMaterial()
 		   "30000.70c 0.000145 ","al.20t",MLib);
   setMaterial(MObj);
 
-  // Material #4 : Methane + 10% Al.
-  MObj.setMaterial(4,"CH4inFoam",
-		   "6000.70c 0.0167364 1001.70c 0.066945 13027.24c 0.0060185",
-		   "smeth.26t al.20t",MLib);
-  setMaterial(MObj);
   // Material #6: Gadolinium
   // Total atom density 0.03044578 - 7.95 grams per cc
   MObj.setMaterial(6,"Gadolinium",
@@ -311,7 +312,7 @@ DBMaterial::initMaterial()
   // Material #41 Silicon
   MObj.setMaterial(41,"SiPowder",
 		   "14028.70c 0.0460848 14029.70c 0.00234 "
-		   "14030.24c 0.0015403","",MLib);
+		   "14030.70c 0.0015403","",MLib);
   setMaterial(MObj);
 
   // Material #42 Niobium
@@ -596,7 +597,7 @@ DBMaterial::initMaterial()
 		   "29063.70c 7.671067e-05 29065.70c 3.419098e-05 "
 		   "28058.24c 5.450388e-05 28060.24c 2.099384e-05 "
 		   "28061.24c 9.118672e-07 28062.24c 2.909329e-06 "
-		   "28063.24c 7.405418e-07 "
+		   "28064.24c 7.405418e-07 "
 		   "24050.24c 3.926008e-06 24052.24c 7.570916e-05 "
 		   "24053.24c 8.584811e-06 24054.24c 2.136941e-06 "
 		   "42092.70c 7.267852e-06 42094.70c 4.530164e-06 "
@@ -675,19 +676,19 @@ DBMaterial::initMaterial()
 		   "30066.70c -9.4120E-04 30067.70c -1.3829E-04 "
 		   "30068.70c -6.3250E-04 30070.70c -2.0913E-05 ",
 		   "al.20t",MLib);
-
+  setMaterial(MObj);
 
   // Material #81 Silicon with no-bragg (20K)
   MObj.setMaterial(81,"Silicon20K","14028.70c 0.0460848 "
-		   "14029.70c 0.00234 14030.24c 0.0015403","si.81t",MLib);
+		   "14029.70c 0.00234 14030.70c 0.0015403","si.81t",MLib);
   setMaterial(MObj);
   // Material #82 Silicon with no-bragg (77K)
   MObj.setMaterial(82,"Silicon80K","14028.70c 0.0460848 "
-		   "14029.70c 0.00234 14030.24c 0.0015403","si.82t",MLib);
+		   "14029.70c 0.00234 14030.70c 0.0015403","si.82t",MLib);
   setMaterial(MObj);
   // Material #83 Silicon with no-bragg (300K)
   MObj.setMaterial(83,"Silicon300K","14028.70c 0.0460848 "
-		   "14029.70c 0.00234 14030.24c 0.0015403","si.83t",MLib);
+		   "14029.70c 0.00234 14030.70c 0.0015403","si.83t",MLib);
   setMaterial(MObj);
 
   // Material #84 Mercury
@@ -1005,7 +1006,6 @@ DBMaterial::initMaterial()
 
   // Material #120: helium liquid
   // Low density tungsten
-
   MObj.setMaterial(120, "Tungsten_15.1g",
 		   "74182.70c  0.265000000 "
 		   "74183.70c  0.143100000 "
@@ -1042,9 +1042,77 @@ DBMaterial::initMaterial()
 		   MLib);
   setMaterial(MObj);
 
-  // CLONE Materials: 
-  cloneMaterial("CastIron","Iron");
-  cloneMaterial("Aluminium","Aluminium20K");
+  // Material #123 Parafin Wax:
+  MObj.setMaterial(123,"Wax","6000.70c 0.2 "
+                   "8016.70c 0.1 1001.70c 0.65 "
+                   "14028.70c 0.05","poly.01t",MLib);
+  MObj.setDensity(-1.05);
+  setMaterial(MObj);
+
+  // # 124 Tungsten at 600K -- density unchanged
+  MObj.setMaterial(124,"Tungsten600K",
+		   "74182.71c 0.016871 74183.71c 0.00911077 "
+		   "74184.71c 0.019507618 74186.71c 0.018100573 ","",MLib);
+  // density at 300 K according to the Material handbook.
+  // YJL says at 600K we should use the same density (??)
+  MObj.setDensity(-19.298); 
+  setMaterial(MObj);
+
+  // # 125 Zircalloy-2 -- 6.56g/cc
+  // NEEDS 0.1% Cr / 1.4% Sn / 0.1% Fe / 0.12% O / 0.05% Ni
+  MObj.setMaterial(125,"Zircaloy2",
+                   "40090.70c 0.00874443 40091.70c 0.00190695 "
+		   "40093.70c 0.00291481 40094.70c 0.0029539 ",
+                   "",MLib);
+  MObj.setDensity(-6.56); 
+  setMaterial(MObj);
+
+  // Material #126 Polystyrene [C8H8]
+  MObj.setMaterial(126,"Polystyrene","6000.70c 0.5 "
+                   "1001.70c 0.5 ","poly.01t",MLib);
+  MObj.setDensity(-1.06);
+  setMaterial(MObj);
+
+  // Material #127 Invar [from K.B]
+  MObj.setMaterial(127, "Invar36",
+		   " 6000.70c  0.001000000 "
+		   " 14028.70c 0.003227805 "
+		   " 14029.70c 0.000163975 "
+		   " 14030.70c 0.000108220 "
+		   " 29063.70c 0.003457501 "
+		   " 29065.70c 0.001542499 "
+		   " 25055.70c 0.006000000 "
+		   " 15031.70c 0.000250000 "
+		   " 16032.70c 0.000237476 "
+		   " 16033.70c 0.000001875 "
+		   " 16034.70c 0.000010625 "
+		   " 16036.70c 0.000000024 "
+		   " 24050.70c 0.000217250 "
+		   " 24052.70c 0.004189450 "
+		   " 24053.70c 0.000475050 "
+		   " 24054.70c 0.000118250 "
+		   " 28058.70c 0.251884530 "
+		   " 28060.70c 0.097025471 "
+		   " 28061.70c 0.004217629 "
+		   " 28062.70c 0.013447651 "
+		   " 28064.70c 0.003424721 "
+		   " 26054.70c 0.035654500 "
+		   " 26056.70c 0.559699400 "
+		   " 26057.70c 0.012925900 "
+		   " 26058.70c  0.001720200 ", "", MLib);
+  MObj.setDensity(-8.11);
+  setMaterial(MObj);
+
+  
+  // Material #128: SAB - Liquid para-hydrogen (basic)
+  //Total atom density 0.041957 -  19 K; 0.07021 grams per cc
+  MObj.setMaterial(128,"H2para19K","1001.70c 0.041957","hpara.60t",MLib);
+  setMaterial(MObj);
+
+  // Material #129: SAB - Liquid para-hydrogen (basic)
+  //Total atom density 0.041957 -  19 K; 0.07021 grams per cc
+  MObj.setMaterial(129,"H2ortho19K","1001.70c 0.041957","hortho.60t",MLib);
+  setMaterial(MObj);
 
   return;
 }
@@ -1071,6 +1139,33 @@ DBMaterial::cloneMaterial(const std::string& oldName,
       (extraName,"Material already present");
   
   IndexMap.emplace(extraName,mc->second);
+  return;
+}
+
+void
+DBMaterial::overwriteMaterial(const std::string& original,
+			      const std::string& newMaterial)
+  /*!
+    Clone a name for use
+    \param original :: Existing material to change
+    \param newMaterial :: new material to use instead
+  */
+{
+  ELog::RegMethod RegA("DBMaterial","overwriteMaterial");
+
+  SCTYPE::const_iterator mc=IndexMap.find(original);
+  if (mc==IndexMap.end())
+    throw ColErr::InContainerError<std::string>
+      (original,"Original material not available");
+
+  SCTYPE::const_iterator nx=IndexMap.find(newMaterial);
+  if (nx==IndexMap.end())
+    throw ColErr::InContainerError<std::string>
+      (original,"New material not available");
+
+  
+  
+  IndexMap.emplace(original,mc->second);
   return;
 }
   
@@ -1233,7 +1328,7 @@ DBMaterial::createMix(const std::string& Name,
     Creates an ortho/Para Mixture
     \param Name :: Name of object
     \param MatA :: Material A [PFrac]
-    \param MatA :: Material B [1-PFrac]
+    \param MatB :: Material B [1-PFrac]
     \param PFrac :: fraction of MatA
     \return current number
    */
@@ -1257,6 +1352,27 @@ DBMaterial::createMix(const std::string& Name,
   return matNum;
 }
 
+
+void
+DBMaterial::removeThermal(const std::string& matName)
+  /*!
+    Removes the thermal treatment from a material
+    \param matName :: Material name
+   */
+{
+  ELog::RegMethod RegA("DBMaterial","removeThermal");
+
+
+  // we don't change the index card:
+  SCTYPE::const_iterator mIc=IndexMap.find(matName);
+  if (mIc==IndexMap.end())
+    throw ColErr::InContainerError<std::string>
+      (matName,"No material available");
+
+  MTYPE::iterator mc=MStore.find(mIc->second);
+  mc->second.removeSQW();
+  return;
+}
 
 void
 DBMaterial::resetMaterial(const MonteCarlo::Material& MO)
@@ -1407,6 +1523,31 @@ DBMaterial::getKey(const int KeyNum) const
   return OutStr;
 }
 
+int
+DBMaterial::processMaterial(const std::string& matKey)
+  /*!
+    Produce or process the string 
+    \param matKey :: String / Index name
+    \return material index
+  */
+{
+  ELog::RegMethod RegA("DBMaterial","processMaterial");
+
+
+  if (createMaterial(matKey))
+    return getIndex(matKey);
+  
+  // Note: EvalVar converts any string into a integer [best guess]
+  int out;
+  if (!StrFunc::convert(matKey,out))
+    throw ColErr::InContainerError<std::string>(matKey,"Material not present");
+
+  if(!hasKey(out))
+    throw ColErr::InContainerError<int>(out,"Material not present");
+  
+  return out;
+}
+  
 int
 DBMaterial::getIndex(const std::string& Key) const
   /*!

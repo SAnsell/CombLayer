@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   delft/SpaceBlock.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -166,7 +166,7 @@ SpaceBlock::populate(const FuncDataBase& Control)
   
 void
 SpaceBlock::createUnitVector(const attachSystem::FixedComp& FC,
-			     const size_t sideIndex)
+			     const long int sideIndex)
   /*!
     Create the unit vectors
     - Y Points towards the beamline
@@ -179,15 +179,7 @@ SpaceBlock::createUnitVector(const attachSystem::FixedComp& FC,
   ELog::RegMethod RegA("SpaceBlock","createUnitVector");
   
   // PROCESS Origin of a point
-  if (sideIndex)
-    {
-      const attachSystem::LinkUnit& LU=FC.getLU(sideIndex-1);
-      attachSystem::FixedComp::createUnitVector(LU.getConnectPt(),
-						LU.getAxis(),
-						FC.getZ());
-    }
-  else
-    attachSystem::FixedComp::createUnitVector(FC);
+  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
   
   attachSystem::FixedComp::applyShift(xStep,yStep,zStep);
   attachSystem::FixedComp::applyAngleRotate(xyAngle,zAngle);
@@ -259,7 +251,7 @@ SpaceBlock::createLinks()
 int
 SpaceBlock::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,
-		      const size_t sideIndex)
+		      const long int sideIndex)
   /*!
     Global creation of the vac-vessel
     \param System :: Simulation to add vessel to

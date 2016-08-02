@@ -3,7 +3,7 @@
  
  * File:   construct/BlockMod.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -361,7 +361,7 @@ BlockMod::createLinks()
 
 Geometry::Vec3D
 BlockMod::getSurfacePoint(const size_t layerIndex,
-			  const size_t sideIndex) const
+			  const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link point
     \param sideIndex :: Side [0-5]
@@ -371,13 +371,15 @@ BlockMod::getSurfacePoint(const size_t layerIndex,
 {
   ELog::RegMethod RegA("BlockMod","getSurfacePoint");
 
-  if (sideIndex>5) 
-    throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
+  const size_t SI((sideIndex>0) ?
+                  static_cast<size_t>(sideIndex-1) :
+                  static_cast<size_t>(-1-sideIndex));
+  
   if (layerIndex>=nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
 
   // Modification map:
-  switch(sideIndex)
+  switch(SI)
     {
     case 0:
       return Origin-Y*(depth[layerIndex]/2.0);
@@ -392,14 +394,14 @@ BlockMod::getSurfacePoint(const size_t layerIndex,
     case 5:
       return Origin+Z*(height[layerIndex]/2.0);
     }
-  throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
+  throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex ");
 }
 
 int
-BlockMod::getCommonSurf(const size_t ) const
+BlockMod::getCommonSurf(const long int) const
   /*!
     Given a side calculate the boundary surface
-    \param sideIndex :: Side [0-5]
+    \param sideIndex :: Side [1-6]
     \return Common dividing surface [outward pointing]
   */
 {
@@ -409,7 +411,7 @@ BlockMod::getCommonSurf(const size_t ) const
 
 std::string
 BlockMod::getLayerString(const size_t layerIndex,
-		       const size_t sideIndex) const
+			 const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
     \param layerIndex :: layer, 0 is inner moderator [0-4]
@@ -428,8 +430,8 @@ BlockMod::getLayerString(const size_t layerIndex,
 
 int
 BlockMod::getLayerSurf(const size_t layerIndex,
-		     const size_t sideIndex) const
-  /*!
+		       const long int sideIndex) const
+/*!
     Given a side and a layer calculate the link surf. Surf points out
     \param sideIndex :: Side [0-5]
     \param layerIndex :: layer, 0 is inner moderator [0-4]
@@ -440,24 +442,16 @@ BlockMod::getLayerSurf(const size_t layerIndex,
 
   if (layerIndex>=nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layerIndex");
+  if (!sideIndex || sideIndex>6 || sideIndex<-6)
+    throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
+
+  int SI(modIndex+static_cast<int>(layerIndex)*10);
+  SI+=std::abs(sideIndex);
   
-  const int SI(modIndex+static_cast<int>(layerIndex)*10);
-  switch(sideIndex)
-    {
-    case 0:
-      return -SMap.realSurf(SI+1);
-    case 1:
-      return SMap.realSurf(SI+2);
-    case 2:
-      return -SMap.realSurf(SI+3);
-    case 3:
-      return SMap.realSurf(SI+4);
-    case 4:
-      return -SMap.realSurf(SI+5);
-    case 5:
-      return SMap.realSurf(SI+6);
-    }
-  throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
+  int signValue((sideIndex<0) ? -1 : 1);
+  signValue *= (sideIndex % 2) ? -1 : 1;
+
+  return signValue*SMap.realSurf(SI);
 }
 
 void

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   delft/BeElement.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -83,6 +83,35 @@ BeElement::BeElement(const size_t XI,const size_t YI,
     Constructor BUT ALL variable are left unpopulated.
   */
 {}
+
+BeElement::BeElement(const BeElement& A) : 
+  RElement(A),
+  Width(A.Width),Depth(A.Depth),TopHeight(A.TopHeight),
+  beMat(A.beMat)
+  /*!
+    Copy constructor
+    \param A :: BeElement to copy
+  */
+{}
+  
+  BeElement&
+BeElement::operator=(const BeElement& A)
+  /*!
+    Assignment operator
+    \param A :: BeElement to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      RElement::operator=(A);
+      Width=A.Width;
+      Depth=A.Depth;
+      TopHeight=A.TopHeight;
+      beMat=A.beMat;
+    }
+  return *this;
+}
 
 void
 BeElement::populate(const Simulation& System)

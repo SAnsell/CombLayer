@@ -3,7 +3,7 @@
  
  * File:   attachComp/CopiedComp.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -81,6 +81,22 @@ CopiedComp::CopiedComp(const CopiedComp& A) :
   */
 {}
 
+CopiedComp&
+CopiedComp::operator=(const CopiedComp& A)
+ /*!
+   Assignment operator
+    \param A :: object to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      baseName=A.baseName;
+      newName=A.newName;
+    }
+  return *this;
+}
+
 void
 CopiedComp::process(FuncDataBase& Control) const
   /*!
@@ -95,7 +111,7 @@ CopiedComp::process(FuncDataBase& Control) const
   std::vector<std::string>::const_iterator mc=
     std::lower_bound(keyVec.begin(),keyVec.end(),baseName,
   		     StrFunc::stringSearch());
-  ELog::EM<<"Top stack name == "<<*mc<<ELog::endDiag;
+
   StrFunc::stringSearch SItem;
   while(mc!=keyVec.end() && !SItem(baseName,*mc))
     {

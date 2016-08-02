@@ -3,7 +3,13 @@
 
 namespace StrFunc
 {
-
+/*!
+  \struct FmtID
+  \author S. Ansell
+  \version 1.0
+  \date January 2016
+  \brief Holds a fortran write id 
+*/
 struct FmtID
 {
   size_t type;        ///< Type [0 X, 1 I, 2F]
@@ -28,8 +34,8 @@ class fortranWrite
 {
  private:
 
-  std::deque<FmtID> FmtInfo;
-  std::ostringstream outStr;
+  std::deque<FmtID> FmtInfo;          ///< list of format statements
+  std::ostringstream outStr;          ///< Final output string
 
   void parse(const std::string&);
   void consumeZeroType();

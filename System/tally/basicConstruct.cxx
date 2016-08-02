@@ -3,7 +3,7 @@
  
  * File:   tally/basicConstruct.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,6 +54,7 @@
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
+#include "LinkSupport.h"
 #include "Simulation.h"
 #include "inputParam.h"
 
@@ -194,39 +195,9 @@ basicConstruct::getLinkIndex(const mainSystem::inputParam& IParam,
       ELog::EM<<"Tally must give a direction/LinkPt"<<ELog::endErr;
       return 0;
     }
-  return getLinkIndex(Snd);
+  return attachSystem::getLinkIndex(Snd);
 }
 
-long int
-basicConstruct::getLinkIndex(const std::string& Snd) const
-  /*!
-    Convert a name front back etc into a standard link number
-    \param Snd :: Snd link work    
-    \return link number [-ve for beamFront/beamBack]
-  */
-{
-  long int linkPt(0);
-  if (!StrFunc::convert(Snd,linkPt))
-    {
-      if (Snd=="origin") 
-	linkPt=0;
-      else if (Snd=="front") 
-	linkPt=1;
-      else if (Snd=="back")
-	linkPt=2;
-      else if (Snd=="beamFront")
-	linkPt=-1;
-      else if (Snd=="beamBack")
-	linkPt=-2;
-      else
-	{
-	  ELog::EM<<"Tally direction/LinkPt not understood("
-		  <<Snd<<")"<<ELog::endErr;
-	  return 0;
-	}
-    }
-  return linkPt;
-}
 
 int
 basicConstruct::convertRange(const std::string& Word,int& RA,int &RB)
@@ -292,7 +263,7 @@ basicConstruct::convertRegion(const mainSystem::inputParam& IParam,
   RA=OR.getCell(region);
   if (RA) 
     {
-      RB=RA+OR.getRange(region);
+      RB=OR.getLast(region);
       return outFlag;
     }
 
@@ -332,43 +303,50 @@ basicConstruct::convertRegion(const mainSystem::inputParam& IParam,
   return outFlag;
 }
 
+
+  
 std::vector<int>
 basicConstruct::getCellSelection(const Simulation& System,
-				 const int matN,const int RA,
-				 const int RB) const
+                                 const int matN,
+                                 const std::string& keyName) const 
+
   /*!
-    Extract all the cells with a material between RA and RB
+    Extract all the cells with a material based on matN and keyName
     \param System :: Simulation for build [needed for nonVoidcells ] 
-    \param matN :: Material number or -1 
-           : all materials 
-	   : -2 all non zero materials
-	   : > 1000 materials containing zaid
-    \param RA :: First number
-    \param RB :: Last number
+    \param matN :: Material number
+           -1 : all materials 
+	   -2 : all non zero materials
+	   > 1000 : materials containing zaid
+    \param keyName :: keyName
    */
 {
   ELog::RegMethod RegA("basicConstruct","getCellSelection");
 
-  std::vector<int> cells;
-  if (matN==-2)
-    cells=System.getNonVoidCellVector();
-  else if (matN<0)
-    cells=System.getCellVector();
-  else if (matN>1000)
-    cells=System.getCellWithZaid(matN);
-  else
-    cells=System.getCellWithMaterial(matN);
+  const ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
 
-  // REMOVE range: [ -- add all]
-  std::vector<int>::iterator lc=
-    lower_bound(cells.begin(),cells.end(),RA);
-  if (lc!=cells.begin()) 
-    cells.erase(cells.begin(),lc);
-  lc=lower_bound(cells.begin(),cells.end(),RB);
-  if (lc!=cells.end()) lc++;
-  cells.erase(lc,cells.end());
+  std::vector<int> cells;
+  // NOTE that getting all the cells from OR is insane
+  if (keyName=="allNonVoid" || keyName=="AllNonVoid")
+    cells=System.getNonVoidCellVector();
+  else if (keyName=="All" || keyName=="all")
+    cells=System.getCellVector();
+  else
+    cells=OR.getObjectRange(keyName);
+
+  // PROCESS mat:
+  std::vector<int> Out;
+  std::vector<int> matCell;
   
-  return cells;
+  if (matN>1000)
+    matCell=System.getCellWithZaid(matN);
+  else  
+    matCell=System.getCellWithMaterial(matN);
+
+  std::set_intersection(cells.begin(),cells.end(),
+                        matCell.begin(),matCell.end(),
+                        std::back_inserter(Out));
+  return Out;
 }
 
   // TEMPLATE INSTANCES:

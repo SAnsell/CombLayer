@@ -39,29 +39,31 @@ namespace essSystem
 class EdgeWater : 
   public attachSystem::ContainedComp,
   public attachSystem::LayerComp,
-  public attachSystem::FixedComp
+  public attachSystem::FixedComp,
+  public attachSystem::CellMap
 {
  private:
 
   const int edgeIndex;       ///< Index of surface offset
   int cellIndex;            ///< Cell index
 
-  double width;
-  double wallThick;
+  double width;             ///< Full width
+  double wallThick;         ///< Thickness for walls
 
-  double cutAngle;          ///< Cut angle to allow the inclined beam lines to view H2
-  double cutThick;          ///< Water thickness in its connection to the lobe
+  double cutAngle;    ///<  Angle cut away from H2 surface
+  double cutWidth;    ///< Water thickness at its connection to the H2-lobe
 
+  std::string sideRule;      ///< Side rule ????
+    
   int modMat;               ///< Water material
   int wallMat;              ///< Wall material
   double modTemp;           ///< Moderator temperature
-
-  std::string sideRule;      ///< Side rule
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const long int);
 
-  void createSurfaces(const std::string&);
+  void createSurfaces();
   void createObjects(Simulation&,const std::string&,const std::string&);
   void createLinks();
 
@@ -73,15 +75,13 @@ class EdgeWater :
   EdgeWater& operator=(const EdgeWater&);
   virtual EdgeWater* clone() const;
   virtual ~EdgeWater();
-
-  inline const std::string getSideRule() const { return sideRule; }
-
-  virtual Geometry::Vec3D getSurfacePoint(const size_t,const size_t) const;
-  virtual std::string getLayerString(const size_t,const size_t) const;
-  virtual int getLayerSurf(const size_t,const size_t) const;
+  
+  virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
+  virtual std::string getLayerString(const size_t,const long int) const;
+  virtual int getLayerSurf(const size_t,const long int) const;
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const std::string&,const std::string&);
+		 const long int,const std::string&);
 };
 
 }

@@ -265,11 +265,11 @@ void
 ContainedGroup::addBoundarySurf(const std::string& Key,
 				const int SN)
   
-/*!
-  Add a set of surfaces to the boundary object
-  \param Key :: Key name for rule
-  \param SN ::  Signed surface number
-*/
+  /*!
+    Add a set of surfaces to the boundary object
+    \param Key :: Key name for rule
+    \param SN ::  Signed surface number
+  */
 {
   ELog::RegMethod RegA("ContainedGroup","addBoundarySurf(std::string)");
   getCC(Key).addBoundarySurf(SN);
@@ -294,11 +294,11 @@ void
 ContainedGroup::addBoundaryUnionSurf(const std::string& Key,
 				     const int SN)
   
-/*!
-  Add a set of surfaces to the boundary object in union
-  \param Key :: Key name for rule
-  \param SN ::  Signed surface number
-*/
+  /*!
+    Add a set of surfaces to the boundary object in union
+    \param Key :: Key name for rule
+    \param SN ::  Signed surface number
+  */
 {
   ELog::RegMethod RegA("ContainedGroup","addBoundaryUnionSurf(std::string)");
   getCC(Key).addBoundaryUnionSurf(SN);

@@ -3,7 +3,7 @@
  
  * File:   photon/CylContainer.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -287,7 +287,7 @@ CylContainer::createLinks()
 
 Geometry::Vec3D
 CylContainer::getSurfacePoint(const size_t layerIndex,
-			const size_t sideIndex) const
+                              const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link point
     \param sideIndex :: Side [0-5]
@@ -297,13 +297,16 @@ CylContainer::getSurfacePoint(const size_t layerIndex,
 {
   ELog::RegMethod RegA("CylContainer","getSurfacePoint");
 
-  if (sideIndex>5) 
-    throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
+  if (!sideIndex) return Origin;
+  const size_t SI((sideIndex>0) ?
+                  static_cast<size_t>(sideIndex-1) :
+                  static_cast<size_t>(-1-sideIndex));
+
   if (layerIndex>=nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
 
   // Modification map:
-  switch(sideIndex)
+  switch(SI)
     {
     case 0:
       return Origin-Y*(height[layerIndex]/2.0);
@@ -318,39 +321,39 @@ CylContainer::getSurfacePoint(const size_t layerIndex,
     case 5:
       return Origin+Z*radius[layerIndex];
     }
-  throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
+  throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex ");
 }
 
 int
-CylContainer::getCommonSurf(const size_t sideIndex) const
+CylContainer::getCommonSurf(const long int sideIndex) const
   /*!
     Given a side calculate the boundary surface
-    \param sideIndex :: Side [0-5]
+    \param sideIndex :: Side [1-6]
     \return Common dividing surface [outward pointing]
   */
 {
   ELog::RegMethod RegA("CylContainererator","getCommonSurf");
 
-  switch(sideIndex)
+  switch(std::abs(sideIndex))
     {
-    case 0:
     case 1:
-      return 0;
     case 2:
-      return -SMap.realSurf(cylIndex+103);
+      return 0;
     case 3:
-      return SMap.realSurf(cylIndex+103);
+      return -SMap.realSurf(cylIndex+103);
     case 4:
-      return -SMap.realSurf(cylIndex+105);
+      return SMap.realSurf(cylIndex+103);
     case 5:
+      return -SMap.realSurf(cylIndex+105);
+    case 6:
       return SMap.realSurf(cylIndex+105);
     }
-  throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
+  throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
 }
 
 std::string
 CylContainer::getLayerString(const size_t layerIndex,
-		       const size_t sideIndex) const
+			     const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
     \param layerIndex :: layer, 0 is inner moderator [0-4]
@@ -365,31 +368,38 @@ CylContainer::getLayerString(const size_t layerIndex,
 
   const int NL(static_cast<int>(layerIndex));
   const int SI(cylIndex+NL*10);
-  std::ostringstream cx;
-  switch(sideIndex)
+
+  const long int uSIndex(std::abs(sideIndex));
+  std::string Out;
+  switch(uSIndex)
     {
-    case 0:
-      cx<<" "<<-SMap.realSurf(SI+1)<<" ";
-      return cx.str();
     case 1:
-      cx<<" "<<SMap.realSurf(SI+2)<<" ";
-      return cx.str();
+      Out=ModelSupport::getComposite(SMap,SI," -1 ");
+      break;
     case 2:
+      Out=ModelSupport::getComposite(SMap,SI," 2 ");
+      break;
     case 3:
     case 4:
     case 5:
-      cx<<" "<<SMap.realSurf(SI+7)<<" ";
-      return cx.str();
+    case 6:
+      Out=ModelSupport::getComposite(SMap,SI," 7 ");
+      break;
+    default:
+      throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
     }
-  throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex");
+  HeadRule HR(Out);
+  if (sideIndex<0)
+    HR.makeComplement();
+  return HR.display();
 }
 
 int
 CylContainer::getLayerSurf(const size_t layerIndex,
-			   const size_t sideIndex) const
+			   const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link surf. Surf points out
-    \param sideIndex :: Side [0-5]
+    \param sideIndex :: Side +/-[1-6] 
     \param layerIndex :: layer, 0 is inner moderator [0-4]
     \return Surface number [outgoing]
   */
@@ -400,19 +410,22 @@ CylContainer::getLayerSurf(const size_t layerIndex,
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layerIndex");
   
   const int SI(cylIndex+static_cast<int>(layerIndex)*10);
-  switch(sideIndex)
+  const long int uSIndex(std::abs(sideIndex));
+  const int signValue((sideIndex>0) ? 1 : -1);
+
+  switch(uSIndex)
     {
-    case 0:
-      return -SMap.realSurf(SI+1);
     case 1:
-      return SMap.realSurf(SI+2);
+      return -signValue*SMap.realSurf(SI+1);
     case 2:
+      return signValue*SMap.realSurf(SI+2);
     case 3:
     case 4:
     case 5:
-      return SMap.realSurf(SI+7);
+    case 6:
+      return signValue*SMap.realSurf(SI+7);
     }
-  throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
+  throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
 }
 
 

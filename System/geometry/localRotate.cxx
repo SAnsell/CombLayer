@@ -202,11 +202,12 @@ localRotate::applyFull(Geometry::Surface* SPtr) const
   /*!
     Apply full rotations:
     \param SPtr :: Surface Pointer
-   */
+  */
 {
   void (transComp::*fn)(Geometry::Surface*) const =  &transComp::apply;
   for_each(Transforms.begin(),Transforms.end(),
 	   std::bind<void>(fn,std::placeholders::_1,SPtr));
+  
   return;
 }
 

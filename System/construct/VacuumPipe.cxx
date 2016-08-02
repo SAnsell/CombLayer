@@ -3,7 +3,7 @@
  
  * File:   construct/VacuumPipe.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,6 +47,7 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
+#include "Quaternion.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -71,6 +72,7 @@
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "SurInter.h"
 
 #include "VacuumPipe.h"
 
@@ -78,11 +80,11 @@ namespace constructSystem
 {
 
 VacuumPipe::VacuumPipe(const std::string& Key) : 
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedOffset(Key,7),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   vacIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(vacIndex+1),activeFront(0),activeBack(0),
-  activeDivide(0)
+  frontJoin(0),backJoin(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -93,8 +95,9 @@ VacuumPipe::VacuumPipe(const VacuumPipe& A) :
   attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),
   vacIndex(A.vacIndex),cellIndex(A.cellIndex),activeFront(A.activeFront),
-  activeBack(A.activeBack),activeDivide(A.activeDivide),
-  frontSurf(A.frontSurf),backSurf(A.backSurf),divideSurf(A.divideSurf),
+  activeBack(A.activeBack),
+  frontSurf(A.frontSurf),frontCut(A.frontCut),
+  backSurf(A.backSurf),backCut(A.backCut),
   radius(A.radius),length(A.length),
   feThick(A.feThick),flangeRadius(A.flangeRadius),
   flangeLength(A.flangeLength),voidMat(A.voidMat),
@@ -121,10 +124,10 @@ VacuumPipe::operator=(const VacuumPipe& A)
       cellIndex=A.cellIndex;
       activeFront=A.activeFront;
       activeBack=A.activeBack;
-      activeDivide=A.activeDivide;
       frontSurf=A.frontSurf;
+      frontCut=A.frontCut;
       backSurf=A.backSurf;
-      divideSurf=A.divideSurf;
+      backCut=A.backCut;
       radius=A.radius;
       length=A.length;
       feThick=A.feThick;
@@ -161,6 +164,11 @@ VacuumPipe::populate(const FuncDataBase& Control)
   flangeRadius=Control.EvalVar<double>(keyName+"FlangeRadius");
   flangeLength=Control.EvalVar<double>(keyName+"FlangeLength");
   
+  activeWindow=Control.EvalDefVar<int>(keyName+"WindowActive",0);
+  windowThick=Control.EvalDefVar<double>(keyName+"WindowThick",0.0);
+  windowRadius=Control.EvalDefVar<double>(keyName+"WindowRadius",0.0);
+  windowMat=ModelSupport::EvalDefMat<int>(Control,keyName+"WindowMat",0);
+  
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
 
@@ -169,7 +177,7 @@ VacuumPipe::populate(const FuncDataBase& Control)
 
 void
 VacuumPipe::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int sideIndex)
+                             const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Fixed component to link to
@@ -178,23 +186,52 @@ VacuumPipe::createUnitVector(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("VacuumPipe","createUnitVector");
 
-
   FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
+    
   // after rotation
-  Origin+=Y*(length/2.0);
+  applyActiveFrontBack();
+
   return;
 }
 
+
+void
+VacuumPipe::applyActiveFrontBack()
+  /*!
+    Apply the active front/back point to re-calcuate Origin
+    It applies the rotation of Y to Y' to both X/Z to preserve
+    orthogonality.
+   */
+{
+  ELog::RegMethod RegA("VacuumPipe","applyActiveFrontBack");
+
+
+  const Geometry::Vec3D curFP=(frontJoin) ? FPt : Origin;
+  const Geometry::Vec3D curBP=(backJoin) ? BPt : Origin+Y*length;
+
+  Origin=(curFP+curBP)/2.0;
+  Geometry::Vec3D YAxis=(curBP-curFP).unit();
+  const Geometry::Quaternion QR=
+    Geometry::Quaternion::calcQVRot(Y,YAxis);
+  QR.rotate(X);
+  QR.rotate(Z);
+  Y=YAxis;
+  
+  return;
+}
+  
 void
 VacuumPipe::getShiftedSurf(const HeadRule& HR,
 			   const int index,
-			   const int dFlag)
+			   const int dFlag,
+			   const double length)
   /*!
     Support function to calculate the shifted surface
     \param HR :: HeadRule to extract plane surf
     \param index :: offset index
     \param dFlag :: direction flag
+    \param length :: length to shift by
    */
 {
   ELog::RegMethod RegA("VacuumPipe","getShiftedSurf");
@@ -210,10 +247,10 @@ VacuumPipe::getShiftedSurf(const HeadRule& HR,
 	{
 	  if (SN*dFlag>0)
 	    ModelSupport::buildShiftedPlane
-	      (SMap,vacIndex+index,PPtr,dFlag*flangeLength);
+	      (SMap,vacIndex+index,PPtr,dFlag*length);
 	  else
 	    ModelSupport::buildShiftedPlaneReversed
-	      (SMap,vacIndex+index,PPtr,dFlag*flangeLength);
+	      (SMap,vacIndex+index,PPtr,dFlag*length);
 	  
 	  return;
 	}
@@ -224,7 +261,7 @@ VacuumPipe::getShiftedSurf(const HeadRule& HR,
 	{
 	  if (SN>0)
 	    ModelSupport::buildCylinder
-	      (SMap,vacIndex+index,CPtr->getCentre()+Y*flangeLength,
+	      (SMap,vacIndex+index,CPtr->getCentre()+Y*length,
 	       CPtr->getNormal(),CPtr->getRadius());
 	  else
 	    ModelSupport::buildCylinder
@@ -243,24 +280,62 @@ VacuumPipe::createSurfaces()
   */
 {
   ELog::RegMethod RegA("VacuumPipe","createSurfaces");
-
+  
+  // middle of the flange
+  const double midFlange((length-flangeLength)/2.0);
+  
   // Inner void
   if (activeFront)
-    getShiftedSurf(frontSurf,101,1);
+    {
+      getShiftedSurf(frontSurf,101,1,flangeLength);
+      if (activeWindow & 1)
+	{
+	  getShiftedSurf(frontSurf,1001,1,
+			 (flangeLength-windowThick)/2.0);
+	  getShiftedSurf(frontSurf,1002,1,
+			 (flangeLength+windowThick)/2.0);
+	}
+    }
   else
     {
       ModelSupport::buildPlane(SMap,vacIndex+1,Origin-Y*(length/2.0),Y);
       ModelSupport::buildPlane(SMap,vacIndex+101,
 			       Origin-Y*(length/2.0-flangeLength),Y);
+      if (activeWindow & 1)
+	{
+
+	  ModelSupport::buildPlane(SMap,vacIndex+1001,
+				   Origin-Y*(midFlange+windowThick/2.0),Y);
+	  ModelSupport::buildPlane(SMap,vacIndex+1002,
+				   Origin-Y*(midFlange-windowThick/2.0),Y);
+	}	    
     }
     // Inner void
   if (activeBack)
-    getShiftedSurf(backSurf,102,-1);
+    {
+      getShiftedSurf(backSurf,102,-1,flangeLength);
+      if (activeWindow & 2)
+	{
+	  getShiftedSurf(backSurf,1101,-1,
+			 (flangeLength-windowThick)/2.0);
+	  getShiftedSurf(backSurf,1102,-1,
+			 (flangeLength+windowThick)/2.0);
+	}
+    }
   else
     {
       ModelSupport::buildPlane(SMap,vacIndex+2,Origin+Y*(length/2.0),Y);
       ModelSupport::buildPlane(SMap,vacIndex+102,
 			       Origin+Y*(length/2.0-flangeLength),Y);
+      if (activeWindow & 2)
+	{
+
+	  ModelSupport::buildPlane(SMap,vacIndex+1101,
+				   Origin+Y*(midFlange+windowThick/2.0),Y);
+	  ModelSupport::buildPlane(SMap,vacIndex+1102,
+				   Origin+Y*(midFlange-windowThick/2.0),Y);
+	}	    
+
     }
   
   ModelSupport::buildCylinder(SMap,vacIndex+7,Origin,Y,radius);
@@ -269,6 +344,8 @@ VacuumPipe::createSurfaces()
 
   ModelSupport::buildCylinder(SMap,vacIndex+107,Origin,Y,flangeRadius);
 
+  if (activeWindow)
+    ModelSupport::buildCylinder(SMap,vacIndex+1007,Origin,Y,windowRadius);
   
   return;
 }
@@ -278,7 +355,6 @@ VacuumPipe::createObjects(Simulation& System)
   /*!
     Adds the vacuum box
     \param System :: Simulation to create objects in
-    \param FC :: FixedComp of front face
    */
 {
   ELog::RegMethod RegA("VacuumPipe","createObjects");
@@ -286,45 +362,70 @@ VacuumPipe::createObjects(Simulation& System)
   std::string Out;
   
   const std::string frontStr
-    (activeFront ? frontSurf.display() : 
+    (activeFront ? frontSurf.display()+frontCut.display() : 
      ModelSupport::getComposite(SMap,vacIndex," 1 "));
   const std::string backStr
-    (activeBack ? backSurf.display() : 
+    (activeBack ? backSurf.display()+backCut.display() : 
      ModelSupport::getComposite(SMap,vacIndex," -2 "));
-  const std::string divStr
-    (activeDivide ? divideSurf.display() :  "");
 
+  std::string windowFrontExclude;
+  std::string windowBackExclude;
+  if (activeWindow & 1)      // FRONT
+    { 
+      Out=ModelSupport::getComposite(SMap,vacIndex,"-1007 1001 -1002 ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,windowMat,0.0,
+				       Out+frontCut.display()));
+      addCell("Window",cellIndex-1);
+      HeadRule WHR(Out);
+      WHR.makeComplement();
+      windowFrontExclude=WHR.display();
+    }
+  if (activeWindow & 2)
+    { 
+      Out=ModelSupport::getComposite(SMap,vacIndex,"-1007 1102 -1101");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,windowMat,0.0,
+				       Out+backCut.display()));
+      addCell("Window",cellIndex-1);
+      HeadRule WHR(Out);
+      WHR.makeComplement();
+      windowBackExclude=WHR.display();
+    }
 
-  const std::string FBStr=frontStr+backStr+divStr;
-
+  
   // Void 
   Out=ModelSupport::getComposite(SMap,vacIndex," -7 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,voidMat,0.0,Out+FBStr));
+
+  System.addCell(MonteCarlo::Qhull(cellIndex++,voidMat,0.0,
+				   Out+frontStr+backStr+
+				   windowFrontExclude+windowBackExclude));
   addCell("Void",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,vacIndex,"101 -102 -17 7");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out+divStr));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
   addCell("Steel",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,vacIndex,"-101 -107 7");
   System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out+
-				   frontStr+divStr));
+				   frontStr+windowFrontExclude));
   addCell("Steel",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,vacIndex,"102 -107 7");
   System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out+
-				   backStr+divStr));
+				   backStr+windowBackExclude));
   addCell("Steel",cellIndex-1);
 
+  
   // outer void:
   Out=ModelSupport::getComposite(SMap,vacIndex,"101 -102 -107 17");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+divStr));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   addCell("OutVoid",cellIndex-1);
 
   // Outer
   Out=ModelSupport::getComposite(SMap,vacIndex,"-107 ");
-  addOuterSurf(Out+FBStr);
+  addOuterSurf(Out+frontStr+backStr);
 
+  
+  
   return;
 }
 
@@ -337,112 +438,113 @@ VacuumPipe::createLinks()
 {
   ELog::RegMethod RegA("VacuumPipe","createLinks");
 
-  FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
-  FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
+  //stufff for intersection
+  Geometry::Vec3D endPoints[2];
+  std::vector<Geometry::Vec3D> Pts;
+  std::vector<int> SNum;
+
   FixedComp::setConnect(2,Origin-X*((radius+feThick)/2.0),-X);
   FixedComp::setConnect(3,Origin+X*((radius+feThick)/2.0),X);
   FixedComp::setConnect(4,Origin-Z*((radius+feThick)/2.0),-Z);
   FixedComp::setConnect(5,Origin+Z*((radius+feThick)/2.0),Z);
 
   if (activeFront)
-    FixedComp::setLinkSurf(0,frontSurf);      
+    {
+      FixedComp::setLinkSurf(0,frontSurf,1,frontCut,0);
+      endPoints[0]=
+	SurInter::getLinePoint(Origin,Y,frontSurf,frontCut);
+    }
   else
-    FixedComp::setLinkSurf(0,-SMap.realSurf(vacIndex+1));      
+    {
+      FixedComp::setLinkSurf(0,-SMap.realSurf(vacIndex+1));
+      endPoints[0]=Origin-Y*(length/2.0);
+    }
 
   if (activeBack)
-    FixedComp::setLinkSurf(1,backSurf);      
+    {
+      FixedComp::setLinkSurf(1,backSurf,1,backCut,0);
+      endPoints[1]=
+	SurInter::getLinePoint(Origin,Y,backSurf,backCut);
+    }
   else
-    FixedComp::setLinkSurf(1,SMap.realSurf(vacIndex+2));      
+    {
+      FixedComp::setLinkSurf(1,SMap.realSurf(vacIndex+2));
+      endPoints[1]=Origin+Y*(length/2.0);
+    }
 
+  FixedComp::setConnect(0,endPoints[0],-Y);
+  FixedComp::setConnect(1,endPoints[1],Y);
+  
   FixedComp::setLinkSurf(2,SMap.realSurf(vacIndex+7));
   FixedComp::setLinkSurf(3,SMap.realSurf(vacIndex+7));
   FixedComp::setLinkSurf(4,SMap.realSurf(vacIndex+7));
   FixedComp::setLinkSurf(5,SMap.realSurf(vacIndex+7));
-  
+
+  // MID Point: [NO SURF]
+  FixedComp::setConnect(6,(endPoints[1]+endPoints[0])/2.0,Y);
+
   return;
 }
-
-void
-VacuumPipe::setDivider(const attachSystem::FixedComp& FC,
-		       const long int sideIndex)
-  /*!
-    Set divider surface
-    \param FC :: FixedComponent 
-    \param sideIndex ::  Direction to link
-   */
-{
-  ELog::RegMethod RegA("VacuumPipe","setDivider");
-  
-  if (sideIndex==0)
-    throw ColErr::EmptyValue<long int>("SideIndex cant be zero");
-
-  activeDivide=1;
-  if (sideIndex>0)
-    {
-      const size_t SI(static_cast<size_t>(sideIndex-1));
-      divideSurf=FC.getCommonRule(SI);
-    }
-  else
-    {
-      const size_t SI(static_cast<size_t>(-sideIndex-1));
-      divideSurf=FC.getCommonRule(SI);
-      divideSurf.makeComplement();
-    }
-  return;
-}
-
-  
   
 void
 VacuumPipe::setFront(const attachSystem::FixedComp& FC,
-		     const long int sideIndex)
+		     const long int sideIndex,
+		     const bool joinFlag)
   /*!
     Set front surface
     \param FC :: FixedComponent 
     \param sideIndex ::  Direction to link
+    \param joinFlag :: joint front to link object 
    */
 {
   ELog::RegMethod RegA("VacuumPipe","setFront");
-  
+ 
   if (sideIndex==0)
     throw ColErr::EmptyValue<long int>("SideIndex cant be zero");
-
+  
   activeFront=1;
-  if (sideIndex>0)
+  frontSurf=FC.getSignedMainRule(sideIndex);
+  frontCut=FC.getSignedCommonRule(sideIndex);
+  frontSurf.populateSurf();
+  frontCut.populateSurf();
+
+  if (joinFlag)
     {
-      const size_t SI(static_cast<size_t>(sideIndex-1));
-      frontSurf=FC.getMainRule(SI);
+      frontJoin=1;
+      FPt=FC.getSignedLinkPt(sideIndex);
+      FAxis=FC.getSignedLinkAxis(sideIndex);
     }
-  else
-    {
-      const size_t SI(static_cast<size_t>(-sideIndex-1));
-      frontSurf=FC.getMainRule(SI);
-      frontSurf.makeComplement();
-    }
+    
   return;
 }
   
 void
 VacuumPipe::setBack(const attachSystem::FixedComp& FC,
-		     const long int sideIndex)
+		    const long int sideIndex,
+		    const bool joinFlag)
   /*!
     Set Back surface
     \param FC :: FixedComponent 
     \param sideIndex ::  Direction to link
+    \param joinFlag :: joint front to link object 
    */
 {
   ELog::RegMethod RegA("VacuumPipe","setBack");
   
   if (sideIndex==0)
     throw ColErr::EmptyValue<long int>("SideIndex cant be zero");
-
+  
   activeBack=1;
-  if (sideIndex>0)
-    backSurf=FC.getMainRule(static_cast<size_t>(sideIndex-1));
-  else
+  backSurf=FC.getSignedMainRule(sideIndex);
+  backCut=FC.getSignedCommonRule(sideIndex);
+  backSurf.populateSurf();
+  backCut.populateSurf();
+
+  if (joinFlag)
     {
-      backSurf=FC.getMainRule(static_cast<size_t>(-sideIndex-1));
-      backSurf.makeComplement();
+      backJoin=1;
+      BPt=FC.getSignedLinkPt(sideIndex);
+      BAxis=FC.getSignedLinkAxis(sideIndex);
     }
   return;
 }
@@ -453,7 +555,7 @@ void
 VacuumPipe::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,
 		      const long int FIndex)
-/*!
+ /*!
     Generic function to create everything
     \param System :: Simulation item
     \param FC :: FixedComp

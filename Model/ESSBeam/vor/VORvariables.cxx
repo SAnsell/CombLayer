@@ -3,7 +3,7 @@
  
  * File:    ESSBeam/vor/VORvariables.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,7 +48,13 @@
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
-#include "variableSetup.h"
+#include "FocusGenerator.h"
+#include "ShieldGenerator.h"
+#include "ChopperGenerator.h"
+#include "PitGenerator.h"
+#include "PipeGenerator.h"
+#include "BladeGenerator.h"
+#include "essVariables.h"
 
 namespace setVariable
 {
@@ -62,123 +68,54 @@ VORvariables(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("VORvariables[F]","VORvariables");
 
-  // Bender in section so use cut system
-  Control.addVariable("vorFAXStep",0.0);       
-  Control.addVariable("vorFAYStep",0.0);       
-  Control.addVariable("vorFAZStep",0.0);       
-  Control.addVariable("vorFAXYAngle",0.0);
-  Control.addVariable("vorFAZAngle",0.0);
-  Control.addVariable("vorFABeamXYAngle",0.0);       
+  setVariable::ChopperGenerator CGen;
+  setVariable::FocusGenerator FGen;
+  setVariable::ShieldGenerator SGen;
+  setVariable::PitGenerator PGen;
+  setVariable::PipeGenerator PipeGen;
+  setVariable::BladeGenerator BGen;
 
-  Control.addVariable("vorFALength",745.0);       
-  Control.addVariable("vorFANShapes",1);       
-  Control.addVariable("vorFANShapeLayers",3);
-  Control.addVariable("vorFAActiveShield",0);
+  FGen.setGuideMat("Copper");
+  FGen.setYOffset(0.1);
 
-  Control.addVariable("vorFALayerThick1",0.4);  // glass thick
-  Control.addVariable("vorFALayerThick2",1.5);
+  PipeGen.setPipe(12.0,0.5);
+  PipeGen.setWindow(-2.0,0.3);
+  PipeGen.setFlange(-4.0,1.0);
 
-  Control.addVariable("vorFALayerMat0","Void");
-  Control.addVariable("vorFALayerMat1","Glass");
-  Control.addVariable("vorFALayerMat2","Void");       
-
-  Control.addVariable("vorFA0TypeID","Tapper");
-  Control.addVariable("vorFA0HeightStart",3.16);
-  Control.addVariable("vorFA0HeightEnd",5.905);
-  Control.addVariable("vorFA0WidthStart",2.114);
-  Control.addVariable("vorFA0WidthEnd",3.87);
-  Control.addVariable("vorFA0Length",745.0);
-
-  // VACBOX A : A[2.08m from Bunker wall]
-  //  Length 100.7 + Width [87.0] + Height [39.0] void Depth/2 + front
-  Control.addVariable("vorVacAYStep",-15.0);
     
-  Control.addVariable("vorVacAVoidHeight",20.0);
-  Control.addVariable("vorVacAVoidDepth",19.0);
-  Control.addVariable("vorVacAVoidWidth",87.0);
-  Control.addVariable("vorVacAVoidLength",25.7);
+  Control.addVariable("vorStopPoint",0);
+  Control.addVariable("vorAxisXYAngle",0.0);   // rotation
+  Control.addVariable("vorAxisZAngle",2.0);   // rotation 
   
-  Control.addVariable("vorVacAFeHeight",0.5);
-  Control.addVariable("vorVacAFeDepth",0.5);
-  Control.addVariable("vorVacAFeWidth",0.5);
-  Control.addVariable("vorVacAFeFront",0.5);
-  Control.addVariable("vorVacAFeBack",0.5);
-  Control.addVariable("vorVacAFlangeRadius",8.0);    // GUESS
-  Control.addVariable("vorVacAFlangeWall",1.0);      // GUESS
-  Control.addVariable("vorVacAFlangeLength",10.0);   // GUESS
-  Control.addVariable("vorVacAFeMat","Stainless304");
+  //  Control.addVariable("vorGABeamXYAngle",1.0);
+  FGen.setGuideMat("Copper");
+  FGen.setYOffset(0.1);
+  FGen.generateTaper(Control,"vorFA",350.0,2.114,3.2417,3.16,3.9228);
+
+  // VACUUM PIPE in Gamma shield
+  PipeGen.generatePipe(Control,"vorPipeB",2.0,46.0);
+
+  FGen.setGuideMat("Aluminium");
+  FGen.clearYOffset();
+  FGen.generateTaper(Control,"vorFB",44.0,3.30,3.4028,4.0,4.2);
+
+
+  // VACUUM PIPE in Gamma shield
+  PipeGen.generatePipe(Control,"vorPipeC",2.0,326.0);
+  FGen.generateTaper(Control,"vorFC",322.0,3.4028,3.87,4.2,5.906);
+
+  CGen.setMainRadius(26.0);
+  CGen.setFrame(60.0,60.0);
+  CGen.generateChopper(Control,"vorChopperA",8.0,10.0,4.55);    
 
   // Double Blade chopper
-  Control.addVariable("vorDBladeXStep",0.0);
-  Control.addVariable("vorDBladeYStep",1.0);
-  Control.addVariable("vorDBladeZStep",0.0);
-  Control.addVariable("vorDBladeXYangle",0.0);
-  Control.addVariable("vorDBladeZangle",0.0);
-
-  Control.addVariable("vorDBladeGap",1.0);
-  Control.addVariable("vorDBladeInnerRadius",10.0);
-  Control.addVariable("vorDBladeOuterRadius",22.50);
-  Control.addVariable("vorDBladeNDisk",2);
-
-  Control.addVariable("vorDBlade0Thick",1.0);
-  Control.addVariable("vorDBlade1Thick",1.0);
-  Control.addVariable("vorDBladeInnerMat","Inconnel");
-  Control.addVariable("vorDBladeOuterMat","Aluminium");
+  BGen.setMaterials("Inconnel","Aluminium");
+  BGen.setThick({0.3,0.3});
+  BGen.setGap(1.0);
+  BGen.addPhase({-15,165},{30.0,30.0});
+  BGen.addPhase({-15,165},{30.0,30.0});
+  BGen.generateBlades(Control,"vorDBlade",0.0,10.0,22.50);
   
-  Control.addVariable("vorDBladeNBlades",2);
-  Control.addVariable("vorDBlade0PhaseAngle0",-15.0);
-  Control.addVariable("vorDBlade0OpenAngle0",30.0);
-  Control.addVariable("vorDBlade1PhaseAngle0",-15.0);
-  Control.addVariable("vorDBlade1OpenAngle0",30.0);
-
-  Control.addVariable("vorDBlade0PhaseAngle1",165.0);  // 275
-  Control.addVariable("vorDBlade0OpenAngle1",30.0);
-  Control.addVariable("vorDBlade1PhaseAngle1",165.0);
-  Control.addVariable("vorDBlade1OpenAngle1",30.0);
-
-  // Double Blade chopper
-  Control.addVariable("vorDBladeHouseVoidHeight",40.0);
-  Control.addVariable("vorDBladeHouseVoidDepth",11.0);
-  Control.addVariable("vorDBladeHouseVoidThick",8.0);
-  Control.addVariable("vorDBladeHouseVoidWidth",60.0);
-  Control.addVariable("vorDBladeHouseWallThick",1.0);
-  Control.addVariable("vorDBladeHouseWallMat","Stainless304");
-
-    // VACUUM PIPES:
-  Control.addVariable("vorPipeBRadius",8.0);
-  Control.addVariable("vorPipeBLength",300.0);
-  Control.addVariable("vorPipeBFeThick",1.0);
-  Control.addVariable("vorPipeBFlangeRadius",12.0);
-  Control.addVariable("vorPipeBFlangeLength",1.0);
-  Control.addVariable("vorPipeBFeMat","Stainless304");
-
-  // SECOND SECTION
-  Control.addVariable("vorFBXStep",0.0);       
-  Control.addVariable("vorFBYStep",1.0);       
-  Control.addVariable("vorFBZStep",0.0);       
-  Control.addVariable("vorFBXYAngle",0.0);       
-  Control.addVariable("vorFBZAngle",0.0);
-  Control.addVariable("vorFBLength",940.0);       
-  
-  Control.addVariable("vorFBBeamYStep",1.0);
- 
-  Control.addVariable("vorFBNShapes",1);       
-  Control.addVariable("vorFBNShapeLayers",3);
-  Control.addVariable("vorFBActiveShield",0);
-
-  Control.addVariable("vorFBLayerThick1",0.4);  // glass thick
-  Control.addVariable("vorFBLayerThick2",1.5);
-
-  Control.addVariable("vorFBLayerMat0","Void");
-  Control.addVariable("vorFBLayerMat1","Glass");
-  Control.addVariable("vorFBLayerMat2","Void");       
-  
-  Control.addVariable("vorFB0TypeID","Tapper");
-  Control.addVariable("vorFB0HeightStart",5.92);
-  Control.addVariable("vorFB0HeightEnd",6.224);
-  Control.addVariable("vorFB0WidthStart",3.87);
-  Control.addVariable("vorFB0WidthEnd",4.10);
-  Control.addVariable("vorFB0Length",940.0);
 
   // BEAM INSERT:
   Control.addVariable("vorBInsertHeight",20.0);
@@ -216,7 +153,7 @@ VORvariables(FuncDataBase& Control)
   Control.addVariable("vorFBextraLayerMat3","Stainless304");       
 
   // This values are pro-rated relative to the FocusB guide 
-  Control.addVariable("vorFBextra0TypeID","Tapper");
+  Control.addVariable("vorFBextra0TypeID","Taper");
   Control.addVariable("vorFBextra0HeightStart",6.1226);
   Control.addVariable("vorFBextra0HeightEnd",6.224);
   Control.addVariable("vorFBextra0WidthStart",4.0233);
@@ -302,13 +239,7 @@ VORvariables(FuncDataBase& Control)
   Control.addVariable("vorGPitABack0Length",220.0);
   Control.addVariable("vorGPitABack0ZAngle",0.0);
 
-  // Chopper A : Single 1.2m disk chopper [6 phases]
-  Control.addVariable("vorChopperAXStep",0.0);
-  Control.addVariable("vorChopperAYStep",0.0);
-  Control.addVariable("vorChopperAZStep",0.0);
-  Control.addVariable("vorChopperAXYangle",0.0);
-  Control.addVariable("vorChopperAZangle",0.0);
-
+  /*
   Control.addVariable("vorChopperAGap",3.0);
   Control.addVariable("vorChopperAInnerRadius",45.0);
   Control.addVariable("vorChopperAOuterRadius",63.0);
@@ -324,43 +255,8 @@ VORvariables(FuncDataBase& Control)
 
   Control.addVariable("vorChopperA0PhaseAngle1",160.0);
   Control.addVariable("vorChopperA0OpenAngle1",160.0);
-
+  */
   // SECTION THREE:
-
-  Control.addVariable("vorFCXStep",0.0);       
-  Control.addVariable("vorFCYStep",0.0);       
-  Control.addVariable("vorFCZStep",0.0);       
-  Control.addVariable("vorFCXYAngle",0.0);       
-  Control.addVariable("vorFCZAngle",0.0);
-  Control.addVariable("vorFCLength",739.0);
-  Control.addVariable("vorFCHeight",110.0);
-  Control.addVariable("vorFCDepth",110.0);       
-  Control.addVariable("vorFCLeftWidth",65.0);       
-  Control.addVariable("vorFCRightWidth",65.0);       
-  Control.addVariable("vorFCFeMat","Concrete");       
-
-  Control.addVariable("vorFCBeamYStep",0.0);
- 
-  Control.addVariable("vorFCNShapes",1);       
-  Control.addVariable("vorFCNShapeLayers",4);
-  Control.addVariable("vorFCActiveShield",1);
-
-  Control.addVariable("vorFCLayerThick1",0.4);  // glass thick
-  Control.addVariable("vorFCLayerThick2",1.5);
-  Control.addVariable("vorFCLayerThick3",25.0);
-  
-  Control.addVariable("vorFCLayerMat0","Void");
-  Control.addVariable("vorFCLayerMat1","Glass");
-  Control.addVariable("vorFCLayerMat2","Void");       
-  Control.addVariable("vorFCLayerMat3","Stainless304");
-  
-  Control.addVariable("vorFC0TypeID","Tapper");
-  Control.addVariable("vorFC0HeightStart",6.216);
-  Control.addVariable("vorFC0HeightEnd",4.2255);
-  Control.addVariable("vorFC0WidthStart",4.098);
-  Control.addVariable("vorFC0WidthEnd",2.9014);
-  Control.addVariable("vorFC0Length",739.0);   // 7.89m -50cm of pitA
-
   
   // PIT B : 
   // Centre position is
@@ -463,7 +359,7 @@ VORvariables(FuncDataBase& Control)
   Control.addVariable("vorFDLayerMat2","Void");       
   Control.addVariable("vorFDLayerMat3","Stainless304");
   
-  Control.addVariable("vorFD0TypeID","Tapper");
+  Control.addVariable("vorFD0TypeID","Taper");
   Control.addVariable("vorFD0WidthStart",2.9013);
   Control.addVariable("vorFD0WidthEnd",2.4061);
   Control.addVariable("vorFD0HeightStart",4.22);
@@ -526,7 +422,7 @@ VORvariables(FuncDataBase& Control)
   Control.addVariable("vorFELayerMat2","Void");       
   Control.addVariable("vorFELayerMat3","Stainless304");
   
-  Control.addVariable("vorFE0TypeID","Tapper");
+  Control.addVariable("vorFE0TypeID","Taper");
   Control.addVariable("vorFE0WidthStart",2.3672);
   Control.addVariable("vorFE0WidthEnd",1.6829);
   Control.addVariable("vorFE0HeightStart",3.311);

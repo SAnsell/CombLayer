@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
- * File:   t1UpgradeInc/voidCylVolume.h
+ * File:   constructInc/voidCylVolume.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@ namespace constructSystem
 */
 
 class voidCylVolume : public attachSystem::ContainedComp,
-  public attachSystem::FixedComp
+  public attachSystem::FixedOffset
 {
  private:
 
@@ -46,11 +46,6 @@ class voidCylVolume : public attachSystem::ContainedComp,
   int cellIndex;                  ///< Cell index
 
   size_t nSegment;                ///< Number of layers
-  double xStep;                   ///< X step
-  double yStep;                   ///< Y step
-  double zStep;                   ///< Z step
-  double xyAngle;                 ///< xy rotation angle
-  double zAngle;                  ///< z rotation angle
 
   double radius;                  ///< Radius
   double thick;                   ///< Thickness
@@ -59,7 +54,8 @@ class voidCylVolume : public attachSystem::ContainedComp,
   // Functions:
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const long int);
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -73,7 +69,8 @@ class voidCylVolume : public attachSystem::ContainedComp,
   voidCylVolume& operator=(const voidCylVolume&);
   virtual ~voidCylVolume();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
   
 };
 

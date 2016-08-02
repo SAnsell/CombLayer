@@ -50,6 +50,7 @@
 #include "support.h"
 #include "mathSupport.h"
 #include "stringCombine.h"
+#include "NList.h"
 #include "NRange.h"
 #include "Tally.h"
 #include "TallyCreate.h"
@@ -157,12 +158,6 @@ ZoneUnit<T>::procZone(std::vector<std::string>& StrItem)
       const ModelSupport::objectRegister& OR= 
 	ModelSupport::objectRegister::Instance();
       std::vector<int> cellN=OR.getObjectRange(StrItem[1]);
-      //      const int cellN=OR.getCell(StrItem[1]);
-      //      const int rangeN=OR.getRange(StrItem[1]);
-      //      ELog::EM<<"Cells == "<<cellN<<" "<<rangeN<<ELog::endDiag;
-      //if (cellN==0)
-      //throw ColErr::InContainerError<std::string>(StrItem[1],"Object name");
-
       while(!cellN.empty())
 	{
 	  Zones.push_back(createMapRange(cellN));

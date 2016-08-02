@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/odin/Hut.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -89,6 +89,74 @@ Hut::Hut(const std::string& Key) :
     \param Key :: KeyName
   */
 {}
+
+Hut::Hut(const Hut& A) : 
+  attachSystem::FixedOffsetGroup(A),attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),
+  hutIndex(A.hutIndex),cellIndex(A.cellIndex),
+  voidHeight(A.voidHeight),voidWidth(A.voidWidth),
+  voidDepth(A.voidDepth),voidLength(A.voidLength),
+  voidNoseLen(A.voidNoseLen),voidNoseWidth(A.voidNoseWidth),
+  feLeftWall(A.feLeftWall),feRightWall(A.feRightWall),
+  feRoof(A.feRoof),feFloor(A.feFloor),
+  feNoseFront(A.feNoseFront),feNoseSide(A.feNoseSide),
+  feBack(A.feBack),concLeftWall(A.concLeftWall),
+  concRightWall(A.concRightWall),concRoof(A.concRoof),
+  concFloor(A.concFloor),concNoseFront(A.concNoseFront),
+  concNoseSide(A.concNoseSide),concBack(A.concBack),
+  wallYStep(A.wallYStep),wallThick(A.wallThick),
+  wallXGap(A.wallXGap),wallZGap(A.wallZGap),feMat(A.feMat),
+  concMat(A.concMat),wallMat(A.wallMat)
+  /*!
+    Copy constructor
+    \param A :: Hut to copy
+  */
+{}
+
+Hut&
+Hut::operator=(const Hut& A)
+  /*!
+    Assignment operator
+    \param A :: Hut to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedOffsetGroup::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      cellIndex=A.cellIndex;
+      voidHeight=A.voidHeight;
+      voidWidth=A.voidWidth;
+      voidDepth=A.voidDepth;
+      voidLength=A.voidLength;
+      voidNoseLen=A.voidNoseLen;
+      voidNoseWidth=A.voidNoseWidth;
+      feLeftWall=A.feLeftWall;
+      feRightWall=A.feRightWall;
+      feRoof=A.feRoof;
+      feFloor=A.feFloor;
+      feNoseFront=A.feNoseFront;
+      feNoseSide=A.feNoseSide;
+      feBack=A.feBack;
+      concLeftWall=A.concLeftWall;
+      concRightWall=A.concRightWall;
+      concRoof=A.concRoof;
+      concFloor=A.concFloor;
+      concNoseFront=A.concNoseFront;
+      concNoseSide=A.concNoseSide;
+      concBack=A.concBack;
+      wallYStep=A.wallYStep;
+      wallThick=A.wallThick;
+      wallXGap=A.wallXGap;
+      wallZGap=A.wallZGap;
+      feMat=A.feMat;
+      concMat=A.concMat;
+      wallMat=A.wallMat;
+    }
+  return *this;
+}
 
 Hut::~Hut() 
   /*!
@@ -281,11 +349,10 @@ Hut::createSurfaces()
 }
 
 void
-Hut::createObjects(Simulation& System,const std::string& cutRule)
+Hut::createObjects(Simulation& System)
   /*!
     Adds the main objects
     \param System :: Simulation to create objects in
-    \param cutRule :: Exclude from the front cut 
    */
 {
   ELog::RegMethod RegA("Hut","createObjects");
@@ -325,9 +392,9 @@ Hut::createObjects(Simulation& System,const std::string& cutRule)
   // Make Wall
   Out=ModelSupport::getComposite
     (SMap,hutIndex,"1001 -1002 5 -6 (-1003:1004:-1005:1006)");
-  if (frontWallCut<0)
+  if (frontWallCut)
     Out+=ModelSupport::getComposite(SMap,hutIndex," 13 -14 ");
-  if (backWallCut>0)
+  if (backWallCut)
     Out+=ModelSupport::getComposite(SMap,hutIndex," 3 -4 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
   setCell("InnerWall",cellIndex-1);
@@ -336,7 +403,6 @@ Hut::createObjects(Simulation& System,const std::string& cutRule)
     (SMap,hutIndex,"1001 -1002 1003 -1004 1005 -1006");
 
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-  setCell("InnerWall",cellIndex-1);
 
   
   // Fe [main]
@@ -371,9 +437,8 @@ Hut::createObjects(Simulation& System,const std::string& cutRule)
 
   // FRONT CONC SECTION:
   Out=ModelSupport::getComposite(SMap,hutIndex,"-111 211 213 -214 205 -206 ");
-  Out+=cutRule;
   System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
-
+  setCell("ConcNoseFront",cellIndex-1);
   
   // Exclude:
   Out=ModelSupport::getComposite
@@ -433,14 +498,12 @@ Hut::createLinks()
 void
 Hut::createAll(Simulation& System,
 	       const attachSystem::FixedComp& FC,
-	       const long int FIndex,
-	       const std::string& cutRule)
+	       const long int FIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
     \param FC :: FixedComp
     \param FIndex :: Fixed Index
-    \param cutRule :: Cut for main exclude
   */
 {
   ELog::RegMethod RegA("Hut","createAll(FC)");
@@ -449,7 +512,7 @@ Hut::createAll(Simulation& System,
   createUnitVector(FC,FIndex);
   
   createSurfaces();    
-  createObjects(System,cutRule);
+  createObjects(System);
   
   createLinks();
   insertObjects(System);   

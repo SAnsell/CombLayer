@@ -149,18 +149,11 @@ zoomInsertCyl::populate(const Simulation& System,
 	setVar(Control,i,cx.str());
       else if (sndBlock)
 	setVar(i,sndBlock->getVar(i));	
-      else if (sndBase && i<=commonSize)
-	 setVar(i,sndBase->getVar(i));	
       else 
 	{
-	  if (sndBase)
-	    ELog::EM<<"sndBase == "<<sndBase->typeName()<<ELog::endCrit;
 	  ELog::EM<<"Failed to connect on first component:"
 		  <<blockIndex+1<<" :: "<<cx.str()<<ELog::endCrit;
 	}
-      
-
-
     }  
   populated|=1;
   return;

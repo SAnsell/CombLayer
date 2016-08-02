@@ -3,7 +3,7 @@
  
  * File:   process/SimProcess.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -88,7 +88,7 @@ writeMany(Simulation& System,const std::string& FName,const int Number)
       cx<<FName<<i+1<<".x";
       System.write(cx.str());
       // increase the RND seed by 10
-      PC.setRND(PC.getRND()+10);
+      PC.setRND(PC.getRNDseed()+10);
     }
   return;
 }
@@ -105,7 +105,7 @@ writeIndexSim(Simulation& System,const std::string& FName,const int Number)
    */
 {
   physicsSystem::PhysicsCards& PC=System.getPC();
-  PC.setRND(PC.getRND()+Number*10);
+  PC.setRND(PC.getRNDseed()+Number*10);
   std::ostringstream cx;
   cx<<FName<<Number+1<<".x";
   System.prepareWrite();
@@ -116,7 +116,8 @@ writeIndexSim(Simulation& System,const std::string& FName,const int Number)
 }
   
 void
-writeIndexSimPHITS(Simulation& System,const std::string& FName,const int Number)
+writeIndexSimPHITS(Simulation& System,const std::string& FName,
+		   const int Number)
   /*!
     Writes out many different files, each with a new random
     number
@@ -126,7 +127,7 @@ writeIndexSimPHITS(Simulation& System,const std::string& FName,const int Number)
   */
 {
   physicsSystem::PhysicsCards& PC=System.getPC();
-  PC.setRND(PC.getRND()+Number*10);
+  PC.setRND(PC.getRNDseed()+Number*10);
   std::ostringstream cx;
   cx<<FName<<Number+1<<".x";
   System.write(cx.str());
@@ -135,31 +136,6 @@ writeIndexSimPHITS(Simulation& System,const std::string& FName,const int Number)
   return;
 }
 
-template<typename T,typename U>
-T
-getIndexVar(const FuncDataBase& Control,
-	    const std::string& FName,
-	    const std::string& BName,
-	    const U& index)
-/*!
-  Get an value item based on the FName+BName 
-  with interal index
-  \param Control :: Control name
-  \param FName :: Forward name
-  \param BName :: Back name
-  \param index :: index value
-  \return Value
-*/
- {
-   ELog::RegMethod RegA("SimProcess","getIndexVar");
-   std::ostringstream cx;
-
-   cx<<FName<<index<<BName;
-   if (Control.hasVariable(cx.str()))
-    return Control.EvalVar<T>(cx.str());
-  // rely on this to throw
-  return Control.EvalVar<T>(FName+BName);
-}
 
 template<typename T,typename U>
 T
@@ -190,72 +166,8 @@ getDefIndexVar(const FuncDataBase& Control,
   return defVal;
 }
 
-template<typename T>
-int
-getIndexVec(const FuncDataBase& Control,
-	    const std::string& FName,
-	    const int index,
-	    const std::string& BName,
-	    const std::vector<T>& outVec)
-  /*!
-    Get an item based on the FName+BName 
-    with interal index. It adds a default value to obtain
-    \tparam T :: Type of variable (int/double etc)
-    \param Control :: Control name
-    \param FName :: Forward name
-    \param index :: index value
-    \param BName :: Base name
-    \param outVec :: Output vector
-    \return Number of objects found
-  */
-{
-  ELog::RegMethod RegA("SimProcess","getIndexVec");
-  std::ostringstream cx;
-  std::ostringstream dx;
-  int sndIndex(0);
-  int valid(0);
-  do
-    {
-      valid=0;
-      cx.str("");
-      dx.str("");
-      cx<<FName<<index<<BName<<sndIndex;
-      dx<<FName<<BName<<sndIndex;
-      if (Control.hasVariable(cx.str()))
-	{
-	  outVec.push_back(Control.EvalVar<T>(cx.str()));
-	  valid=1;
-	}
-      else if (Control.hasVariable(dx.str()))
-	{
-	  outVec.push_back(Control.EvalVar<T>(dx.str()));
-	  valid=1;
-	}
-      sndIndex++;
-    } while(valid);
-
-  return sndIndex-1;
-}
 
 
-template<typename T>
-T
-getDefVar(const FuncDataBase& Control,
-	  const std::string& VName,
-	  const T& defVal)
-  /*!
-    Get a general variable
-    \tparam T :: Type of variable (int/double etc)
-    \param Control :: Control name
-    \param VName :: Variable name
-    \param defVal :: default value to return if no variable.
-    \return Value found/ defVal
-  */
-{
-  ELog::RegMethod RegA("SimProcess","getDefVar");
-  return (Control.hasVariable(VName)) ?
-    Control.EvalVar<T>(VName) : defVal;
-}
 
 void
 registerOuter(Simulation& System,const int cellNum,const int vNum)
@@ -311,30 +223,6 @@ getVarVec(const FuncDataBase& Control,
 
 ///\cond TEMPLATE
 
-template 
-double
-getIndexVar(const FuncDataBase&,const std::string&,
-	    const std::string&,const int&);
-template 
-int
-getIndexVar(const FuncDataBase&,const std::string&,
-	    const std::string&,const int&);
-template 
-size_t
-getIndexVar(const FuncDataBase&,const std::string&,
-	    const std::string&,const int&);
-template 
-double
-getIndexVar(const FuncDataBase&,const std::string&,
-	    const std::string&,const size_t&);
-template 
-int
-getIndexVar(const FuncDataBase&,const std::string&,
-	    const std::string&,const size_t&);
-template 
-size_t
-getIndexVar(const FuncDataBase&,const std::string&,
-	    const std::string&,const size_t&);
 
 template 
 int
@@ -354,13 +242,13 @@ getDefIndexVar(const FuncDataBase&,const std::string&,
 	       const std::string&,const size_t&,const double&);
 
 
-template 
-int
-getDefVar(const FuncDataBase&,const std::string&,const int&);
+// template 
+// int
+// getDefVar(const FuncDataBase&,const std::string&,const int&);
 
-template 
-double
-getDefVar(const FuncDataBase&,const std::string&,const double&);
+// template 
+// double
+// getDefVar(const FuncDataBase&,const std::string&,const double&);
 
 template
 std::vector<Geometry::Vec3D>

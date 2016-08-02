@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   include/Triple.h
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -93,6 +93,11 @@ class DTriple
   bool operator==(const DTriple<F,S,T>&) const;
   bool operator!=(const DTriple<F,S,T>&) const;
 
+  void write(std::ostream&) const;
 };
+
+template<typename F,typename S,typename T>
+std::ostream&
+operator<<(std::ostream&,const DTriple<F,S,T>&);
 
 #endif

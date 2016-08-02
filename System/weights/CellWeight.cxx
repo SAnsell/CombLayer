@@ -49,7 +49,7 @@
 #include "WForm.h"
 #include "WItem.h"
 #include "WCells.h"
-#include "WeightMesh.h"
+#include "Mesh3D.h"
 #include "weightManager.h"
 
 #include "ItemWeight.h"
@@ -120,8 +120,7 @@ CellWeight::updateWM(const double eCut,
 
     
   // Work on minW first:
-  const double minW=
-    calcMinWeight(scaleFactor,minWeight,weightPower);
+  const double minW=calcMinWeight(scaleFactor,weightPower);
   const double factor=(minW<minWeight) ?
     log(minWeight)/log(minW) : 1.0;
 
@@ -173,23 +172,25 @@ CellWeight::invertWM(const double eCut,
   std::vector<double> DVec=EVec;
   std::fill(DVec.begin(),DVec.end(),1.0);
 
-  double minW=
-    calcMinWeight(scaleFactor,minWeight,weightPower);
+  double minW=calcMinWeight(scaleFactor,weightPower);
   double factor(1.0);
+
   if (minW<minWeight)
     {
       factor= log(minWeight)/log(minW);
       minW=minWeight;
     }
-
   
+
   for(const CMapTYPE::value_type& cv : Cells)
     {
       double W=(exp(-cv.second.weight*sigmaScale*scaleFactor*factor));
-      if (W>1e-20)
+      double WA=(exp(-cv.second.weight*sigmaScale*scaleFactor));
+      if (WA>1e-20)
         {
           W=std::pow(W,weightPower);
-          W=minW/W;
+          if (W<minW) continue;
+
           for(size_t i=0;i<EVec.size();i++)
             {
               if (eCut<-1e-10 && EVec[i] <= -eCut)

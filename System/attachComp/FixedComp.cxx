@@ -3,7 +3,7 @@
  
  * File:   attachComp/FixedComp.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,6 +47,7 @@
 #include "Vec3D.h"
 #include "Quaternion.h"
 #include "localRotate.h"
+#include "stringCombine.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -93,6 +94,9 @@ FixedComp::FixedComp(const std::string& KN,const size_t NL,
     \param KN :: KeyName
     \param NL :: Number of links
     \param O :: Origin Point
+    \param xV :: X direction
+    \param yV :: Y direction
+    \param zV :: Z direction
   */
 {}
 
@@ -212,34 +216,111 @@ FixedComp::createUnitVector(const FixedComp& FC,
   const LinkUnit& LU=FC.getLU(linkIndex);
   const double signV((sideIndex>0) ? 1.0 : -1.0);
 
-  const Geometry::Vec3D yTest=LU.getAxis();
+  const Geometry::Vec3D yTest=LU.getAxis()*signV;
   Geometry::Vec3D zTest=FC.getZ();
+  Geometry::Vec3D xTest=FC.getX();
   if (fabs(zTest.dotProd(yTest))>1.0-Geometry::zeroTol)
-    zTest=FC.getX();
+    zTest=FC.getY();
+  else if (fabs(xTest.dotProd(yTest))>1.0-Geometry::zeroTol)
+    xTest=FC.getY();
+  
+  computeZOffPlane(xTest,yTest,zTest);
 
-  createUnitVector(LU.getConnectPt(),
-		   yTest*signV,zTest);
+  createUnitVector(LU.getConnectPt(),yTest*zTest,yTest,zTest);
+  return;
+}
+
+void
+FixedComp::makeOrthogonal()
+  /*!
+    Reconstructs the basis set to be orthogonal
+    Y is primary and Z is secondary
+    Assumes X,Y,Z are unitary
+  */
+{
+  ELog::RegMethod RegA("FixedComp","makeOrthogonal");
+
+  // Use this later
+  const double XYcos=X.dotProd(Y); 
+  if (std::abs(XYcos)<Geometry::zeroTol &&
+      std::abs(X.dotProd(Z))<Geometry::zeroTol &&
+      std::abs(Y.dotProd(Z))<Geometry::zeroTol)
+    return;
+  // Now have possiblity that we are not othogonal
+  // Y is PRIMARY
+  // Z is SECONDARY
+
+  if (std::abs(XYcos)>1.0-Geometry::zeroTol)
+    throw ColErr::NumericalAbort("Vectors X/Y parallel:"+
+                                 StrFunc::makeString(X));
+
+  // Calc X:
+  const Geometry::Vec3D XDir(X);
+  X=(Y*Z).unit();
+  if (XDir.dotProd(X)<0.0)
+    X*-1;
+
+  // Calc Z' to be close to Z
+  const Geometry::Vec3D ZDir(Z);
+  Z=(Y*Z).unit();
+  if (ZDir.dotProd(Z)<0.0)
+    Z*-1;
+  
   return;
 }
   
 void
+FixedComp::computeZOffPlane(const Geometry::Vec3D& XAxis,
+                            const Geometry::Vec3D& YAxis,
+                            Geometry::Vec3D& ZAxis)
+  /*!
+    Rotate the ZAxis to the component of the main rotation
+    \param XAxis :: X direction [orthogonal to Z and Y]
+    \param YAxis :: Y direction [non-orthogonal]
+    \param ZAxis :: Z direction [non-orthogonal]
+   */
+{
+  ELog::RegMethod RegA("FixedComp","computeZOffPlane");
+
+  const double XPart=XAxis.dotProd(YAxis);
+  
+  Geometry::Vec3D YPrime=YAxis-XAxis*XPart;
+
+  if (YPrime.abs()<Geometry::zeroTol)
+    ELog::EM<<"Error with XRemoval from plane"<<ELog::endErr;
+  YPrime.makeUnit();
+
+  const double cosValue=std::abs(YPrime.dotProd(ZAxis));
+  if (1.0-cosValue<Geometry::zeroTol) return;
+  const double yAngle= -asin(cosValue);  // remove 90deg.
+
+  const Geometry::Quaternion QR=
+    Geometry::Quaternion::calcQRot(yAngle,XAxis);
+
+  QR.rotate(ZAxis);
+  return;
+}
+
+void
 FixedComp::createUnitVector(const Geometry::Vec3D& OG,
-			    const Geometry::Vec3D& BeamAxis,
+			    const Geometry::Vec3D& XAxis,
+                            const Geometry::Vec3D& YAxis,
 			    const Geometry::Vec3D& ZAxis)
   /*!
     Create the unit vectors [using beam directions]
     \param OG :: Origin
-    \param BeamAxis :: Beamline axis line
+    \param XAxis :: Direction for X
+    \param YAxis :: Direction for Y
     \param ZAxis :: Direction for Z
   */
 {
   ELog::RegMethod RegA("FixedComp","createUnitVector(Vec3D,Vec3D,Vec3D))");
 
   //Geometry::Vec3D(-1,0,0);          // Gravity axis [up]
-  Z=ZAxis;
-  Y=BeamAxis.unit();
-  X=(Y*Z);                            // horrizontal axis [across]
-
+  X=XAxis.unit();
+  Y=YAxis.unit();
+  Z=ZAxis.unit();
+  makeOrthogonal();
   Origin=OG;
   beamOrigin=OG;
   beamAxis=Y;
@@ -267,9 +348,12 @@ FixedComp::applyAngleRotate(const double xAngle,
 			    const double yAngle,
 			    const double zAngle)
  /*!
-    Create the unit vectors
-    \param xyAngle :: XY Rotation [second]
-    \param zAngle :: Z Rotation [first]
+   Applies a triple angle rotation.
+   Rotates about:
+     Z : Y : X
+     \param xAngle :: X-rotation angle
+     \param yAngle :: Y-rotation angle
+     \param zAngle :: Z-rotation angle [first]
   */
 {
   const Geometry::Quaternion Qz=
@@ -280,15 +364,17 @@ FixedComp::applyAngleRotate(const double xAngle,
     Geometry::Quaternion::calcQRotDeg(xAngle,X);
   Qz.rotate(Y);
   Qz.rotate(X);
-  Qy.rotate(Y);
+  
   Qy.rotate(X);
+  Qy.rotate(Y);
   Qy.rotate(Z);
   
-  Qx.rotate(Y);
   Qx.rotate(X);
+  Qx.rotate(Y);
   Qx.rotate(Z);
   return;
 }
+
 void
 FixedComp::applyAngleRotate(const double xyAngle,
 			    const double zAngle)
@@ -304,9 +390,33 @@ FixedComp::applyAngleRotate(const double xyAngle,
     Geometry::Quaternion::calcQRotDeg(xyAngle,Z);
   Qz.rotate(Y);
   Qz.rotate(Z);
+
   Qxy.rotate(Y);
   Qxy.rotate(X);
   Qxy.rotate(Z);
+  return;
+}
+
+void
+FixedComp::linkShift(const long int sideIndex,
+			   const double xStep,
+			   const double yStep,
+			   const double zStep)
+ /*!
+   Shift a link point by displacement given
+   \param sideIndex :: signed ink point [sign for direction]
+   \param xStep :: X-step
+   \param yStep :: Y-step
+   \param zStep :: Z-step
+ */
+{
+  ELog::RegMethod RegA("FixedComp","linkAngleRotate");
+
+  LinkUnit& LItem=getSignedLU(sideIndex);
+  const double signV=(sideIndex>0) ? 1.0 : -1.0;
+
+  Geometry::Vec3D Pt(LItem.getConnectPt());
+  LItem.setConnectPt(Pt+(X*xStep+Y*yStep+Z*zStep)*signV);
   return;
 }
 
@@ -315,7 +425,7 @@ FixedComp::linkAngleRotate(const long int sideIndex,
 			   const double xyAngle,
 			   const double zAngle)
  /*!
-   Rotate a linke point axis [not connection point]
+   Rotate a link point axis [not connection point]
    \param sideIndex :: signed ink point [sign for direction]
    \param xyAngle :: XY Rotation [second]
    \param zAngle :: Z Rotation [first]
@@ -346,7 +456,7 @@ FixedComp::applyFullRotate(const double xyAngle,
     Create the unit vectors
     \param xyAngle :: XY Rotation [second]
     \param zAngle :: Z Rotation [first]
-    \param RotCentre :: Z Rotation [first]
+    \param RotCent :: Displacement centre
   */
 {
   const Geometry::Quaternion Qz=
@@ -426,7 +536,6 @@ FixedComp::addLinkSurf(const size_t Index,const int SN)
   return;
 }
 
-
 void
 FixedComp::addLinkSurf(const size_t Index,
 		       const std::string& SList) 
@@ -475,6 +584,40 @@ FixedComp::setLinkSurf(const size_t Index,
     throw ColErr::IndexError<size_t>(Index,LU.size(),"LU size/Index");
 
   LU[Index].setLinkSurf(HR);
+  return;
+}
+
+void
+FixedComp::setLinkSurf(const size_t Index,const HeadRule& HR,
+		       const bool compFlag,const HeadRule& BR,
+		       const bool bridgeCompFlag) 
+  /*!
+    Set a link surface based on both a rule and
+    a bridgin rule
+    \param Index :: Link number
+    \param HR :: HeadRule to add
+    \param compFlag :: make primary rule complementary
+    \param BR :: Bridge rule to add
+    \param bridgeCompFlag :: make bridge surface complementary
+  */
+{
+  ELog::RegMethod RegA("FixedComp","setLinkSurf(HR,BR)");
+  if (Index>=LU.size())
+    throw ColErr::IndexError<size_t>(Index,LU.size(),"LU size/Index");
+
+  if (!compFlag)
+    LU[Index].setLinkSurf(HR);
+  else
+    LU[Index].setLinkSurf(HR.complement());
+
+  // bridge rule
+  if (BR.hasRule())
+    {
+      if (!bridgeCompFlag)
+	LU[Index].setBridgeSurf(BR);
+      else
+	LU[Index].setBridgeSurf(BR.complement());
+    }
   return;
 }
 
@@ -610,7 +753,7 @@ FixedComp::setConnect(const size_t Index,const Geometry::Vec3D& C,
    \param A :: Axis direciton
  */
 {
-  ELog::RegMethod RegA("FixedComp","setConnection");
+  ELog::RegMethod RegA("FixedComp","setConnect");
   if (Index>=LU.size())
     throw ColErr::IndexError<size_t>(Index,LU.size(),"LU.size/index");
 
@@ -1097,7 +1240,7 @@ FixedComp::getExitNorm() const
 size_t
 FixedComp::findLinkAxis(const Geometry::Vec3D& AX) const
   /*!
-    Determine the Axis of the line direction
+    Determine the closest direciton to the given axis
     \param AX :: Axis point to test
     \return index value
   */
@@ -1119,12 +1262,13 @@ FixedComp::findLinkAxis(const Geometry::Vec3D& AX) const
 }
   
 void
-FixedComp::selectAltAxis(const size_t Index,Geometry::Vec3D& XOut,
-			 Geometry::Vec3D& YOut,Geometry::Vec3D& ZOut) const
+FixedComp::selectAltAxis(const long int sideIndex,
+			 Geometry::Vec3D& XOut,Geometry::Vec3D& YOut,
+			 Geometry::Vec3D& ZOut) const
   /*!
     From a given index find the optimal X,Y,Z axis to use for the
     output: YOut is compared with beam to find closes axis.
-    \param Index :: Link surface to use
+    \param sideIndex :: Link surface to use
     \param XOut :: X axis
     \param YOut :: Y axis [ beam ]
     \param ZOut :: Z axis 
@@ -1132,7 +1276,7 @@ FixedComp::selectAltAxis(const size_t Index,Geometry::Vec3D& XOut,
 {
   ELog::RegMethod RegA("FixedComp","selectAltAxis");
   
-  YOut=getLinkAxis(Index);
+  YOut=getSignedLinkAxis(sideIndex);
 
   double dp[3];
   dp[0]=fabs(X.dotProd(YOut)); 
@@ -1168,10 +1312,28 @@ FixedComp::applyRotation(const Geometry::Vec3D& Axis,
 }
 
 HeadRule
+FixedComp::getSignedFullRule(const long int sideIndex) const
+  /*!
+    Get the main full rule.
+    \param sideIndex :: Index for LinkUnit
+    \return Main HeadRule
+   */
+{
+  ELog::RegMethod RegA("FixedComp","getSignedMainRule"); 
+
+  const LinkUnit& LObj=getSignedLU(sideIndex);
+  HeadRule Out=(sideIndex>0) ? 
+    LObj.getMainRule() :
+    LObj.getMainRule().complement();
+  Out.addIntersection(LObj.getCommonRule());
+  return Out;
+}
+
+HeadRule
 FixedComp::getSignedMainRule(const long int sideIndex) const
   /*!
     Get the main rule.
-    \param Index :: Index for LinkUnit
+    \param sideIndex :: Index for LinkUnit
     \return Main HeadRule
    */
 {
@@ -1182,6 +1344,7 @@ FixedComp::getSignedMainRule(const long int sideIndex) const
     LObj.getMainRule() :
     LObj.getMainRule().complement();
 }
+
 
 const HeadRule&
 FixedComp::getMainRule(const size_t Index) const
@@ -1204,9 +1367,9 @@ HeadRule
 FixedComp::getSignedCommonRule(const long int sideIndex) const
   /*!
     Get the main rule.
-    \param Index :: Index for LinkUnit
+    \param sideIndex :: Index for LinkUnit [signed]
     \return Main HeadRule
-   */
+  */
 {
   ELog::RegMethod RegA("FixedComp","getSignedCommonRule"); 
 
@@ -1300,7 +1463,7 @@ int
 FixedComp::getMasterSurf(const size_t outIndex) const
   /*!
     Calculate the unsigned exit surface
-    \param outIdnex :: Out surface direction
+    \param outIndex :: Out surface direction
     \return surfNum
   */
 {

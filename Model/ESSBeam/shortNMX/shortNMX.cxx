@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/nmx/shortNMX.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -181,7 +181,6 @@ shortNMX::build(Simulation& System,
 
   VPipeA->addInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeA->setFront(GItem.getKey("Beam"),2);
-  VPipeA->setDivider(GItem.getKey("Beam"),2);  
   VPipeA->createAll(System,GuideA->getKey("Guide0"),2);
 
 
@@ -209,7 +208,6 @@ shortNMX::build(Simulation& System,
   // Section to 17m
   ShieldA->addInsertCell(voidCell);
   ShieldA->setFront(bunkerObj,2);
-  ShieldA->setDivider(bunkerObj,2);
   ShieldA->createAll(System,*BInsert,2);
 
   return;

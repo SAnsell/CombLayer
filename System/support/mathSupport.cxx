@@ -3,7 +3,7 @@
  
  * File:   support/mathSupport.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,12 @@ logFromLinear(const double A,const double B,const size_t N,
 	      const size_t index)
   /*!
     Calculate the log step in a range A-B
-   */
+    \param A :: Low range 
+    \param B :: High range 
+    \param N :: Numbero step [not checked]
+    \param index :: value at step size [index between 0 - N] 
+    \return value at log(Index)
+  */
 {
   const double step(log(fabs((B-A)/A))/N);
   return (A>B) ? B*exp(index*step) : A*exp(index*step);

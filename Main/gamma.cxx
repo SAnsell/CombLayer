@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   Main/gamma.cxx
  *
@@ -159,7 +159,7 @@ main(int argc,char* argv[])
 	    SimPtr->setENDF7();
 
 	  SimProcess::importanceSim(*SimPtr,IParam);
-	  SimProcess::inputPatternSim(*SimPtr,IParam); // energy cut etc
+	  SimProcess::inputProcessForSim(*SimPtr,IParam); // energy cut etc
 	  if (renumCellWork)
 	    tallyRenumberWork(*SimPtr,IParam);
 	  tallyModification(*SimPtr,IParam);

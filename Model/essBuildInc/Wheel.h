@@ -80,7 +80,8 @@ class Wheel : public WheelBase
   // Functions:
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const long int);
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -102,7 +103,8 @@ class Wheel : public WheelBase
       2.0*(coolantThickIn+caseThick+voidThick); }
 
   //  virtual int getCell() const { return mainShaftCell; }
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&);
+  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int);
   
 };
 

@@ -66,13 +66,12 @@ class basicConstruct
   int checkItem(const mainSystem::inputParam&,
 		const size_t,const size_t,T&) const;
 
-  long int getLinkIndex(const std::string&) const;
-  long int  getLinkIndex(const mainSystem::inputParam&,const size_t,
-		   const size_t) const;
+  long int getLinkIndex(const mainSystem::inputParam&,const size_t,
+			const size_t) const;
 
   std::vector<int> getCellSelection(const Simulation&,
-				    const int,const int,
-				    const int) const;
+				    const int,
+				    const std::string&) const;
 
  public:
 

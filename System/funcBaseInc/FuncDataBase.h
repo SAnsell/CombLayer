@@ -3,7 +3,7 @@
  
  * File:   funcBaseInc/FuncDataBase.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -109,6 +109,7 @@ class FuncDataBase
   template<typename T>
   void addParse(const std::string&,const std::string&);
   void copyVar(const std::string&,const std::string&);
+  void copyVarSet(const std::string&,const std::string&);
   
   // Add variable
   template<typename T>

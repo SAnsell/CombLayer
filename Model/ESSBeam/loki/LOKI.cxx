@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/loki/LOKI.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -76,15 +76,15 @@
 #include "World.h"
 #include "AttachSupport.h"
 #include "GuideItem.h"
+#include "insertPlate.h"
 #include "Jaws.h"
 #include "GuideLine.h"
 #include "DiskChopper.h"
-#include "VacuumBox.h"
 #include "VacuumPipe.h"
-#include "ChopperHousing.h"
 #include "Bunker.h"
+#include "ChopperUnit.h"
+
 #include "BunkerInsert.h"
-#include "ChopperPit.h"
 #include "Hut.h"
 #include "HoleShape.h"
 #include "RotaryCollimator.h"
@@ -102,43 +102,55 @@ LOKI::LOKI(const std::string& keyN) :
   attachSystem::CopiedComp("loki",keyN),stopPoint(0),
   lokiAxis(new attachSystem::FixedOffset(newName+"Axis",4)),
   BendA(new beamlineSystem::GuideLine(newName+"BA")),
-  VacBoxA(new constructSystem::VacuumBox(newName+"VacA")),
-  GuideA(new beamlineSystem::GuideLine(newName+"GA")),
-  DDisk(new constructSystem::DiskChopper(newName+"DBlade")),
-  DDiskHouse(new constructSystem::ChopperHousing(newName+"DBladeHouse")),
-  GuideInner(new beamlineSystem::GuideLine(newName+"GInner")),
-  SDisk(new constructSystem::DiskChopper(newName+"SBlade")),
-  SDiskHouse(new constructSystem::ChopperHousing(newName+"SBladeHouse")),
-  GuideB(new beamlineSystem::GuideLine(newName+"GB")),
+  
+  VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
   BendB(new beamlineSystem::GuideLine(newName+"BB")),
-  GuideC(new beamlineSystem::GuideLine(newName+"GC")),
-  VacBoxB(new constructSystem::VacuumBox(newName+"VacB")),
-  SingleDisk(new constructSystem::DiskChopper(newName+"10mBlade")),
-  SingleDiskHouse(new constructSystem::ChopperHousing(newName+"10mBladeHouse")),
-  GuideD(new beamlineSystem::GuideLine(newName+"GD")),
-  VacBoxC(new constructSystem::VacuumBox(newName+"VacC")),
-  D12mDisk(new constructSystem::DiskChopper(newName+"DDisk")),
-  D12mDiskHouse(new constructSystem::ChopperHousing(newName+"DDiskHouse")),
-  Guide12mInter(new beamlineSystem::GuideLine(newName+"G12mI")),
-  S12mDisk(new constructSystem::DiskChopper(newName+"SDisk")),
-  S12mDiskHouse(new constructSystem::ChopperHousing(newName+"SDiskHouse")),
-  GuideE(new beamlineSystem::GuideLine(newName+"GE")),
+
+  ChopperA(new constructSystem::ChopperUnit(newName+"ChopperA")),
+  DDiskA(new constructSystem::DiskChopper(newName+"DBladeA")),
+
+  VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
+  FocusC(new beamlineSystem::GuideLine(newName+"FC")),
+
+  VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
+  BendD(new beamlineSystem::GuideLine(newName+"BD")),
+
+  ChopperB(new constructSystem::ChopperUnit(newName+"ChopperB")),
+  SDiskB(new constructSystem::DiskChopper(newName+"SBladeB")),
+
+  VPipeE(new constructSystem::VacuumPipe(newName+"PipeE")),
+  FocusE(new beamlineSystem::GuideLine(newName+"FE")),
+
+  ChopperC(new constructSystem::ChopperUnit(newName+"ChopperC")),
+  SDiskC(new constructSystem::DiskChopper(newName+"SBladeC")),
+  
+  VPipeF(new constructSystem::VacuumPipe(newName+"PipeF")),
+  FocusF(new beamlineSystem::GuideLine(newName+"FF")),
+
   GridA(new constructSystem::RotaryCollimator(newName+"GridA")),
   CollA(new constructSystem::RotaryCollimator(newName+"CollA")),
+
+
+  VPipeCollA(new constructSystem::VacuumPipe(newName+"PipeCollA")),
+  VPipeCollB(new constructSystem::VacuumPipe(newName+"PipeCollB")),
+  VPipeCollC(new constructSystem::VacuumPipe(newName+"PipeCollC")),
+
+  FocusCollA(new beamlineSystem::GuideLine(newName+"FCollA")),
+  FocusCollB(new beamlineSystem::GuideLine(newName+"FCollB")),
+  FocusCollC(new beamlineSystem::GuideLine(newName+"FCollC")),
+
+  CBoxB(new constructSystem::insertPlate(newName+"CBoxB")),
   GridB(new constructSystem::RotaryCollimator(newName+"GridB")),
   CollB(new constructSystem::RotaryCollimator(newName+"CollB")),
+
   GridC(new constructSystem::RotaryCollimator(newName+"GridC")),
   CollC(new constructSystem::RotaryCollimator(newName+"CollC")),
+
   GridD(new constructSystem::RotaryCollimator(newName+"GridD")),
-  GuideCollA(new beamlineSystem::GuideLine(newName+"GuideCA")),
-  GuideCollB(new beamlineSystem::GuideLine(newName+"GuideCB")),
-  GuideCollC(new beamlineSystem::GuideLine(newName+"GuideCC")),
+
   Cave(new LokiHut(newName+"Cave")),
   CaveGuide(new beamlineSystem::GuideLine(newName+"CaveGuide")),
-  VTank(new VacTank(newName+"VTank")),
-  VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
-  VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
-  VPipeD(new constructSystem::VacuumPipe(newName+"PipeD"))
+  VTank(new VacTank(newName+"VTank"))
   /*!
     Constructor
     \param keyN :: keyName
@@ -148,53 +160,109 @@ LOKI::LOKI(const std::string& keyN) :
 
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-
+  
   // This necessary:
   OR.cell(newName+"Axis");
   OR.addObject(lokiAxis);
 
   OR.addObject(BendA);
-  OR.addObject(VacBoxA);
-  OR.addObject(GuideA);
-  OR.addObject(DDisk);
-  OR.addObject(DDiskHouse);
-  OR.addObject(GuideInner);
-  OR.addObject(SDisk);
-  OR.addObject(SDiskHouse);
-  OR.addObject(GuideB);
+
+  OR.addObject(ChopperA);
+  OR.addObject(DDiskA);
+
+  OR.addObject(VPipeB);
   OR.addObject(BendB);
-  OR.addObject(GuideC);
-  OR.addObject(VacBoxB);
-  OR.addObject(SingleDisk);
-  OR.addObject(SingleDiskHouse);
-  OR.addObject(GuideD);
-  OR.addObject(VacBoxC);
-  OR.addObject(D12mDisk);
-  OR.addObject(D12mDiskHouse);
-  OR.addObject(Guide12mInter);
-  OR.addObject(S12mDisk);
-  OR.addObject(S12mDiskHouse);
-  OR.addObject(GuideE);
+
+  OR.addObject(VPipeC);
+  OR.addObject(FocusC);
+
+  OR.addObject(VPipeD);
+  OR.addObject(BendD);
+
+  OR.addObject(ChopperB);
+  OR.addObject(SDiskB);
+  
+  OR.addObject(VPipeE);
+  OR.addObject(FocusE);
+
+  OR.addObject(ChopperC);
+  OR.addObject(SDiskC);
+  
+  OR.addObject(VPipeF);
+  OR.addObject(FocusF);
 
   OR.addObject(GridA);
   OR.addObject(CollA);
+  
+  OR.addObject(VPipeCollA);
+  OR.addObject(VPipeCollB);
+  OR.addObject(VPipeCollC);
+
+  OR.addObject(FocusCollA);
+  OR.addObject(FocusCollB);
+  OR.addObject(FocusCollC);
+  
+  OR.addObject(CBoxB);
   OR.addObject(GridB);
   OR.addObject(CollB);
   OR.addObject(GridC);
   OR.addObject(CollC);
   OR.addObject(GridD);
 
-  OR.addObject(GuideCollA);
-  OR.addObject(GuideCollB);
-  OR.addObject(GuideCollC);
-
   OR.addObject(Cave);
   OR.addObject(CaveGuide);
   OR.addObject(VTank);
 
-  OR.addObject(VPipeB);
-  OR.addObject(VPipeC);
-  OR.addObject(VPipeD);
+}
+
+LOKI::LOKI(const LOKI& A) : 
+  attachSystem::CopiedComp(A),
+  stopPoint(A.stopPoint),lokiAxis(A.lokiAxis),BendA(A.BendA),
+  VPipeB(A.VPipeB),BendB(A.BendB),ChopperA(A.ChopperA),
+  DDiskA(A.DDiskA),VPipeC(A.VPipeC),FocusC(A.FocusC),
+  VPipeD(A.VPipeD),BendD(A.BendD),ChopperB(A.ChopperB),
+  SDiskB(A.SDiskB),VPipeE(A.VPipeE),FocusE(A.FocusE),
+  ChopperC(A.ChopperC),SDiskC(A.SDiskC),VPipeF(A.VPipeF),
+  FocusF(A.FocusF),GridA(A.GridA)
+  /*!
+    Copy constructor
+    \param A :: LOKI to copy
+  */
+{}
+
+LOKI&
+LOKI::operator=(const LOKI& A)
+  /*!
+    Assignment operator
+    \param A :: LOKI to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::CopiedComp::operator=(A);
+      stopPoint=A.stopPoint;
+      lokiAxis=A.lokiAxis;
+      BendA=A.BendA;
+      VPipeB=A.VPipeB;
+      BendB=A.BendB;
+      ChopperA=A.ChopperA;
+      DDiskA=A.DDiskA;
+      VPipeC=A.VPipeC;
+      FocusC=A.FocusC;
+      VPipeD=A.VPipeD;
+      BendD=A.BendD;
+      ChopperB=A.ChopperB;
+      SDiskB=A.SDiskB;
+      VPipeE=A.VPipeE;
+      FocusE=A.FocusE;
+      ChopperC=A.ChopperC;
+      SDiskC=A.SDiskC;
+      VPipeF=A.VPipeF;
+      FocusF=A.FocusF;
+      GridA=A.GridA;
+    }
+  return *this;
 }
 
 
@@ -222,13 +290,15 @@ LOKI::setBeamAxis(const FuncDataBase& Control,
   lokiAxis->createUnitVector(GItem);
   lokiAxis->setLinkCopy(0,GItem.getKey("Main"),0);
   lokiAxis->setLinkCopy(1,GItem.getKey("Main"),1);
-
   lokiAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
   lokiAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
-  // BEAM needs to be rotated:
+
+  // BEAM needs to be shifted/rotated:
+  lokiAxis->linkShift(3);
+  lokiAxis->linkShift(4);
   lokiAxis->linkAngleRotate(3);
   lokiAxis->linkAngleRotate(4);
-  
+
   if (reverseZ)
     lokiAxis->reverseZ();
   return;
@@ -243,7 +313,7 @@ LOKI::build(Simulation& System,
     Carry out the full build
     \param System :: Simulation system
     \param GItem :: Guide Item 
-    \param BunkerObj :: Bunker component [for inserts]
+    \param bunkerObj :: Bunker component [for inserts]
     \param voidCell :: Void cell
    */
 {
@@ -257,232 +327,144 @@ LOKI::build(Simulation& System,
 
   setBeamAxis(System.getDataBase(),GItem,0);
 
+
   BendA->addInsertCell(GItem.getCells("Void"));
-  BendA->addInsertCell(bunkerObj.getCell("MainVoid"));
+
+  BendA->addFrontCut(GItem.getKey("Beam"),-1);
+  BendA->addEndCut(GItem.getKey("Beam"),-2);
   BendA->createAll(System,*lokiAxis,-3,*lokiAxis,-3); // beam front reversed
 
+
   if (stopPoint==1) return;                // STOP At monolith edge
-  
-  // First straight section
-  VacBoxA->addInsertCell(bunkerObj.getCell("MainVoid"));
-  VacBoxA->createAll(System,BendA->getKey("Guide0"),2);
 
-  // First straight section
-  GuideA->addInsertCell(bunkerObj.getCell("MainVoid"));
-  GuideA->addInsertCell(VacBoxA->getCells("Void"));
-  GuideA->createAll(System,BendA->getKey("Guide0"),2,
-		    BendA->getKey("Guide0"),2);
+  VPipeB->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeB->createAll(System,BendA->getKey("Guide0"),2);
+
+  BendB->addInsertCell(VPipeB->getCells("Void"));
+  BendB->createAll(System,*VPipeB,0,*VPipeB,0);
+  
+  // First [6m]
+  ChopperA->addInsertCell(bunkerObj.getCell("MainVoid"));
+  ChopperA->createAll(System,BendB->getKey("Guide0"),2);
+
   // Double disk chopper
-  DDisk->addInsertCell(VacBoxA->getCells("Void"));
-  DDisk->setCentreFlag(3);  // Z direction
-  DDisk->createAll(System,GuideA->getKey("Guide0"),2);
+  DDiskA->addInsertCell(ChopperA->getCell("Void"));
+  DDiskA->setCentreFlag(3);  // Z direction
+  DDiskA->setOffsetFlag(1);  // X direction
+  DDiskA->createAll(System,ChopperA->getKey("Beam"),0);
 
-  // Double disk chopper housing
-  DDiskHouse->addInsertCell(VacBoxA->getCells("Void"));
-  DDiskHouse->addInsertCell(VacBoxA->getCells("Box"));  // soon to become lid
-  DDiskHouse->addInsertCell(bunkerObj.getCell("MainVoid"));
-  DDiskHouse->createAll(System,DDisk->getKey("Main"),0);
-  DDiskHouse->insertComponent(System,"Void",*DDisk);
+  VPipeC->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeC->createAll(System,ChopperA->getKey("Beam"),2);
 
-  // First straight section
-  GuideInner->addInsertCell(VacBoxA->getCells("Void"));
-  GuideInner->createAll(System,DDisk->getKey("Beam"),2,
-			DDisk->getKey("Beam"),2);
+  FocusC->addInsertCell(VPipeC->getCells("Void"));
+  FocusC->createAll(System,*VPipeC,0,*VPipeC,0);
 
-  // Single disk chopper
-  SDisk->addInsertCell(VacBoxA->getCells("Void"));
-  SDisk->setCentreFlag(3);  // Z direction
-  SDisk->createAll(System,GuideInner->getKey("Guide0"),2);
+  VPipeD->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeD->setFront(*VPipeC,2,true);
+  VPipeD->createAll(System,FocusC->getKey("Guide0"),2);
 
+  BendD->addInsertCell(VPipeD->getCells("Void"));
+  BendD->createAll(System,*VPipeD,0,*VPipeD,0);
 
-  // Single disk chopper housing
-  SDiskHouse->addInsertCell(VacBoxA->getCells("Void"));
-  SDiskHouse->addInsertCell(VacBoxA->getCells("Box"));  // soon to become lid
-  SDiskHouse->addInsertCell(bunkerObj.getCell("MainVoid"));
-  SDiskHouse->createAll(System,SDisk->getKey("Main"),0);
-  SDiskHouse->insertComponent(System,"Void",*SDisk);
+  // First [9.7m]
+  ChopperB->addInsertCell(bunkerObj.getCell("MainVoid"));
+  ChopperB->createAll(System,BendD->getKey("Guide0"),2);
+
+  // Double disk chopper
+  SDiskB->addInsertCell(ChopperB->getCell("Void"));
+  SDiskB->setCentreFlag(3);  // Z direction
+  SDiskB->setOffsetFlag(1);  // Z direction
+  SDiskB->createAll(System,ChopperB->getKey("Beam"),0);
 
   
-  GuideB->addInsertCell(bunkerObj.getCell("MainVoid"));
-  GuideB->addInsertCell(VacBoxA->getCells("Void"));
-  GuideB->createAll(System,SDisk->getKey("Beam"),2,
-		    SDisk->getKey("Beam"),2);
+  VPipeE->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeE->createAll(System,SDiskB->getKey("Beam"),2);
+
+  FocusE->addInsertCell(VPipeE->getCells("Void"));
+  FocusE->createAll(System,*VPipeE,0,*VPipeE,0);
+  //  FocusE->createAll(System,SDiskB->getKey("Beam"),2,
+  //                    SDiskB->getKey("Beam"),2);
 
 
-  BendB->addInsertCell(bunkerObj.getCell("MainVoid"));
-  BendB->createAll(System,GuideB->getKey("Guide0"),2,
-		   GuideB->getKey("Guide0"),2);
-
-  // Vac box for 10m chopper
-  VacBoxB->addInsertCell(bunkerObj.getCell("MainVoid"));
-  VacBoxB->createAll(System,BendB->getKey("Guide0"),2);
-
-  BendB->addInsertCell(VacBoxB->getCells("Void"));
-  BendB->insertObjects(System);
-  
-  // Straigh section to single 10m chopper
-  GuideC->addInsertCell(bunkerObj.getCell("MainVoid"));
-  GuideC->addInsertCell(VacBoxB->getCells("Void"));
-  GuideC->createAll(System,BendB->getKey("Guide0"),2,
-		    BendB->getKey("Guide0"),2);
+  // Third [11.0m]
+  ChopperC->addInsertCell(bunkerObj.getCell("MainVoid"));
+  ChopperC->createAll(System,FocusE->getKey("Guide0"),2);
 
   // Single disk chopper
-  SingleDisk->addInsertCell(VacBoxB->getCells("Void"));
-  SingleDisk->setCentreFlag(3);  // Z direction
-  SingleDisk->createAll(System,GuideC->getKey("Guide0"),2);
+  SDiskC->addInsertCell(ChopperC->getCell("Void"));
+  SDiskC->setCentreFlag(3);  // Z direction
+  SDiskC->setOffsetFlag(1);  // Z direction
+  SDiskC->createAll(System,ChopperC->getKey("Beam"),0);
 
-    // Single disk chopper housing
-  SingleDiskHouse->addInsertCell(VacBoxB->getCells("Void"));
-  SingleDiskHouse->addInsertCell(VacBoxB->getCells("Box"));  
-  SingleDiskHouse->addInsertCell(bunkerObj.getCell("MainVoid"));
-  SingleDiskHouse->createAll(System,SingleDisk->getKey("Main"),0);
-  SingleDiskHouse->insertComponent(System,"Void",*SingleDisk);
+    
+  VPipeF->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeF->createAll(System,SDiskC->getKey("Beam"),2);
 
-  // Straight section after single 10m chopper
-  GuideD->addInsertCell(bunkerObj.getCell("MainVoid"));
-  GuideD->addInsertCell(VacBoxB->getCells("Void"));
-  GuideD->createAll(System,SingleDisk->getKey("Beam"),2,
-		    SingleDisk->getKey("Beam"),2);
+  FocusF->addInsertCell(VPipeF->getCells("Void"));
+  FocusF->createAll(System,*VPipeF,0,*VPipeF,0);
 
-  // Vac box for 12m chopper
-  VacBoxC->addInsertCell(bunkerObj.getCell("MainVoid"));
-  VacBoxC->createAll(System,GuideD->getKey("Guide0"),2);
-  GuideD->addInsertCell(VacBoxC->getCells("Void"));
-  GuideD->insertObjects(System);
-
-  // Doulbe disk chopper
-  D12mDisk->addInsertCell(VacBoxC->getCells("Void"));
-  D12mDisk->setCentreFlag(3);  // Z direction
-  D12mDisk->createAll(System,GuideD->getKey("Guide0"),2);
-
-  // D12m disk chopper housing
-  D12mDiskHouse->addInsertCell(VacBoxC->getCells("Void"));
-  D12mDiskHouse->addInsertCell(VacBoxC->getCells("Box"));  
-  D12mDiskHouse->addInsertCell(bunkerObj.getCell("MainVoid"));
-  D12mDiskHouse->createAll(System,D12mDisk->getKey("Main"),0);
-  D12mDiskHouse->insertComponent(System,"Void",*D12mDisk);
-
-    // Straight section after single 10m chopper
-  Guide12mInter->addInsertCell(VacBoxC->getCells("Void"));
-  Guide12mInter->createAll(System,D12mDisk->getKey("Beam"),2,
-			   D12mDisk->getKey("Beam"),2);
-
-  // Single disk chopper
-  S12mDisk->addInsertCell(VacBoxC->getCells("Void"));
-  S12mDisk->setCentreFlag(3);  // Z direction
-  S12mDisk->createAll(System,Guide12mInter->getKey("Guide0"),2);
-
-  // S12m disk chopper housing
-  S12mDiskHouse->addInsertCell(VacBoxC->getCells("Void"));
-  S12mDiskHouse->addInsertCell(VacBoxC->getCells("Box"));  
-  S12mDiskHouse->addInsertCell(bunkerObj.getCell("MainVoid"));
-  S12mDiskHouse->createAll(System,S12mDisk->getKey("Main"),0);
-  S12mDiskHouse->insertComponent(System,"Void",*S12mDisk);
-
-  // Straight section leaving chopper pit 3.
-  GuideE->addInsertCell(VacBoxC->getCells("Void"));
-  GuideE->addInsertCell(bunkerObj.getCell("MainVoid"));
-  GuideE->createAll(System,S12mDisk->getKey("Beam"),2,
-		    S12mDisk->getKey("Beam"),2);
-
-  // First grid cutter
   GridA->addInsertCell(bunkerObj.getCell("MainVoid"));
-  GridA->createAll(System,GuideE->getKey("Guide0"),2);
+  GridA->createAll(System,FocusF->getKey("Guide0"),2);
 
-  if (stopPoint==2) return;                      // STOP At bunker edge
-  // First collimator [In WALL]
-
-  const attachSystem::FixedComp& GFC(GridA->getKey("Beam"));
+  if (stopPoint==2) return;      // STOP At bunker edge
 
   CollA->addInsertCell(bunkerObj.getCell("MainVoid"));
-  CollA->addInsertCell(voidCell);
-  CollA->createAll(System,GFC,2);
+  CollA->createAll(System,GridA->getKey("Beam"),2);
   attachSystem::addToInsertControl(System,bunkerObj,"frontWall",
-                                   CollA->getKey("Beam"),*CollA);  
+				   CollA->getKey("Main"),*CollA);  
 
-  // Second grid cutter
-  //GridB->addInsertCell(bunkerObj.getCells(BSector));
-  GridB->createAll(System,CollA->getKey("Beam"),2);
-  attachSystem::addToInsertControl(System,bunkerObj,"frontWall",
-                                   GridB->getKey("Beam"),*GridB);  
-  
-  // Second collimator
+  ELog::EM<<"CollA == "<<CollA->getKey("Beam").getSignedLinkPt(3)
+	  <<ELog::endDiag;
+
+  VPipeCollA->addInsertCell(CollA->getCell("Void0"));  // multiple units
+  VPipeCollA->createAll(System,CollA->getKey("Beam"),2);
+
+  FocusCollA->addInsertCell(VPipeCollA->getCells("Void"));
+  FocusCollA->createAll(System,*VPipeCollA,0,*VPipeCollA,0);
+
+  //  FocusCA0->addInsertCell(CollA->getCell("Void0"));
+  //  FocusCA0->createAll(System,CollA->getKey("Beam"),0,
+  //                      CollA->getKey("Beam"),0);
+
+  // For monment in main void : 
   CollB->addInsertCell(voidCell);
-  CollB->createAll(System,GridB->getKey("Beam"),2);
-
+  CollB->createAll(System,CollA->getKey("Beam"),2);
   attachSystem::addToInsertControl(System,bunkerObj,"frontWall",
-                                   CollB->getKey("Beam"),*CollB);  
+				   CollB->getKey("Main"),*CollB);  
 
-  // Top outside of bunker 
-  if (stopPoint==3) return;                      
-                                                 
-  // Second grid cutter
+  CollC->addInsertCell(voidCell);
+  CollC->createAll(System,CollB->getKey("Beam"),2);
+
+
+  CBoxB->setFrontSurf(CollA->getKey("Main"),2);
+  CBoxB->setBackSurf(CollB->getKey("Main"),1);
+  CBoxB->createAll(System,CollA->getKey("Main"),2);
+  attachSystem::addToInsertControl(System,bunkerObj,"frontWall",
+				   *CBoxB,*CBoxB);  
+
+
+  GridB->addInsertCell(CBoxB->getCell("Main"));
+  GridB->createAll(System,CollA->getKey("Beam"),2);
+
   GridC->addInsertCell(voidCell);
   GridC->createAll(System,CollB->getKey("Beam"),2);
-
-  // Last collimator block
-  CollC->addInsertCell(voidCell);
-  CollC->createAll(System,GridC->getKey("Beam"),2);
-
-
-  // GUIDE for Collimator blocks:
-  GuideCollA->addInsertCell(CollA->getCell("Main"));
-  GuideCollA->addEndCut(CollA->getKey("Beam").getSignedLinkString(-2));
-  GuideCollA->createAll(System,CollA->getKey("Beam"),-1,
-			CollA->getKey("Beam"),-1);
-
-  // GUIDE for Collimator blocks [B]:
-  GuideCollB->addInsertCell(CollB->getCell("Main"));
-  GuideCollB->addEndCut(CollB->getKey("Beam").getSignedLinkString(-2));
-  GuideCollB->createAll(System,CollB->getKey("Beam"),-1,
-			CollB->getKey("Beam"),-1);
-
-  // GUIDE for Collimator blocks [C]:
-  GuideCollC->addInsertCell(CollC->getCell("Main"));
-  GuideCollC->addEndCut(CollC->getKey("Beam").getSignedLinkString(-2));
-  GuideCollC->createAll(System,CollC->getKey("Beam"),-1,
-			CollC->getKey("Beam"),-1);
-
-
+ 
+  
   Cave->addInsertCell(voidCell);
-  Cave->createAll(System,GuideCollC->getKey("Guide0"),2);
+  Cave->createAll(System,CollC->getKey("Beam"),2);
+
 
   CollC->addInsertCell(Cave->getCells("FrontWall"));
   CollC->addInsertCell(Cave->getCell("Void"));
   CollC->insertObjects(System);
 
-    // Final definive apperature
   GridD->addInsertCell(Cave->getCell("Void"));
   GridD->createAll(System,CollC->getKey("Beam"),2);
 
-      // Final definive apperature
-  CaveGuide->addInsertCell(Cave->getCell("Void"));
-  CaveGuide->createAll(System,GridD->getKey("Beam"),2,
-		       GridD->getKey("Beam"),2);
-  
   // Vacuum tank
   VTank->addInsertCell(Cave->getCell("Void"));
-  VTank->createAll(System,CaveGuide->getKey("Guide0"),2);
-
-
-  VPipeB->addInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeB->setFront(*VacBoxA,2);
-  VPipeB->createAll(System,*VacBoxA,2);
-  VPipeB->insertComponent(System,"Void",*GuideB);
-  VPipeB->insertComponent(System,"Void",*BendB);  
-
-    // Vacuum Pipes
-  VPipeC->addInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeC->setFront(*VacBoxB,1);
-  VPipeC->setBack(*VPipeB,2);
-  VPipeC->createAll(System,*VacBoxB,1);
-  VPipeC->insertComponent(System,"Void",*BendB);  
-
-  VPipeD->addInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeD->setFront(*VacBoxB,2);
-  VPipeD->setBack(*VacBoxC,1);
-  VPipeD->createAll(System,*VacBoxB,1);
-  VPipeD->insertComponent(System,"Void",*GuideD);  
+  //  VTank->createAll(System,CaveGuide->getKey("Guide0"),2);
+  VTank->createAll(System,GridD->getKey("Beam"),2);
 
   return;
 }

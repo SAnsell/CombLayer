@@ -3,7 +3,7 @@
  
  * File:   monteInc/DBMaterial.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -90,13 +90,18 @@ class DBMaterial
   void setNeutMaterial(const int,const scatterSystem::neutMaterial&);
   void setNeutMaterial(const int,const scatterSystem::neutMaterial*);
 
+
+
   bool createMaterial(const std::string&);
+  int processMaterial(const std::string&);
 
   bool hasKey(const std::string&) const;
   bool hasKey(const int) const;
   const std::string& getKey(const int) const;
   int getIndex(const std::string&) const;
+  void removeThermal(const std::string&);
   void cloneMaterial(const std::string&,const std::string&);
+  void overwriteMaterial(const std::string&,const std::string&);
   
   void resetActive();
   void setActive(const int);

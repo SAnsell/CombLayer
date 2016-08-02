@@ -84,7 +84,6 @@
 #include "ModBase.h"
 #include "H2Wing.h"
 #include "EdgeWater.h"
-#include "SurInter.h"
 
 namespace essSystem
 {
@@ -93,6 +92,7 @@ EdgeWater::EdgeWater(const std::string& key) :
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0,0),
   attachSystem::FixedComp(key,6),
+  attachSystem::CellMap(),
   edgeIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
   cellIndex(edgeIndex+1)
   /*!
@@ -103,12 +103,11 @@ EdgeWater::EdgeWater(const std::string& key) :
 {}
 
 EdgeWater::EdgeWater(const EdgeWater& A) : 
-  attachSystem::ContainedComp(A),
-  attachSystem::LayerComp(A),attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),attachSystem::LayerComp(A),
+  attachSystem::FixedComp(A),attachSystem::CellMap(A),
   edgeIndex(A.edgeIndex),cellIndex(A.cellIndex),
-  width(A.width),wallThick(A.wallThick),
-  cutAngle(A.cutAngle),cutThick(A.cutThick),
-  modMat(A.modMat),wallMat(A.wallMat),modTemp(A.modTemp)
+  width(A.width),wallThick(A.wallThick),modMat(A.modMat),
+  wallMat(A.wallMat),modTemp(A.modTemp)
   /*!
     Copy constructor
     \param A :: EdgeWater to copy
@@ -128,11 +127,10 @@ EdgeWater::operator=(const EdgeWater& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::LayerComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
       cellIndex=A.cellIndex;
       width=A.width;
       wallThick=A.wallThick;
-      cutAngle=A.cutAngle;
-      cutThick=A.cutThick;
       modMat=A.modMat;
       wallMat=A.wallMat;
       modTemp=A.modTemp;
@@ -169,9 +167,7 @@ EdgeWater::populate(const FuncDataBase& Control)
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
 
   cutAngle=Control.EvalVar<double>(keyName+"CutAngle");
-  cutThick=Control.EvalVar<double>(keyName+"CutThick");
-
-  modMat=ModelSupport::EvalMat<int>(Control,keyName+"ModMat");
+  cutWidth=Control.EvalVar<double>(keyName+"CutWidth");
 
   modMat=ModelSupport::EvalMat<int>(Control,keyName+"ModMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -181,18 +177,20 @@ EdgeWater::populate(const FuncDataBase& Control)
 }
   
 void
-EdgeWater::createUnitVector(const attachSystem::FixedComp& FC)
+EdgeWater::createUnitVector(const attachSystem::FixedComp& FC,
+			    const long int sideIndex)
   /*!
     Create the unit vectors
     - Y Points down the EdgeWater direction
     - X Across the EdgeWater
     - Z up (towards the target)
     \param FC :: fixed Comp [and link comp]
+    \param sideIndex :: Link direction
   */
 {
   ELog::RegMethod RegA("EdgeWater","createUnitVector");
 
-  FixedComp::createUnitVector(FC);
+  FixedComp::createUnitVector(FC,sideIndex);
   return;
 }
 
@@ -214,44 +212,35 @@ EdgeWater::createLinks()
 
 
 void
-EdgeWater::createSurfaces(const std::string &divider)
+EdgeWater::createSurfaces()
   /*!
     Create All the surfaces
-    \param :: divider - Lobe side surface
   */
 {
   ELog::RegMethod RegA("EdgeWater","createSurface");
 
-  // Only Y surfaces:
+  // Only x surfaces:
 
-  ModelSupport::buildPlane(SMap,edgeIndex+1,Origin-Y*(width/2.0),Y);
-  ModelSupport::buildPlane(SMap,edgeIndex+2,Origin+Y*(width/2.0),Y);
+  ModelSupport::buildPlane(SMap,edgeIndex+1,Origin-X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,edgeIndex+2,Origin+X*(width/2.0),X);
 
   ModelSupport::buildPlane(SMap,edgeIndex+11,
-			   Origin-Y*(wallThick+width/2.0),Y);
+			   Origin-X*(wallThick+width/2.0),X);
   ModelSupport::buildPlane(SMap,edgeIndex+12,
-			   Origin+Y*(wallThick+width/2.0),Y);
+			   Origin+X*(wallThick+width/2.0),X);
+
+
+    
+  // front dividers:
+  const Geometry::Vec3D EdPtA=Origin-X*(cutWidth/2.0);
+  const Geometry::Vec3D EdPtB=Origin+X*(cutWidth/2.0);
+  ModelSupport::buildPlaneRotAxis(SMap,edgeIndex+103,EdPtA,X,Z,cutAngle);
+  ModelSupport::buildPlaneRotAxis(SMap,edgeIndex+104,EdPtB,X,Z,-cutAngle);
   
-  // Auxiliary surfaces for the cut area
-  Geometry::Plane *pz = ModelSupport::buildPlane(SMap,edgeIndex+5,Origin,Z);
-  ModelSupport::buildPlane(SMap,edgeIndex+101,Origin,Y);
-
-  HeadRule HR(divider);
-  const Geometry::Plane *sDiv = SMap.realPtr<Geometry::Plane>(HR.getSurfaceNumbers().front());
-  const Geometry::Vec3D nDiv = sDiv->getNormal();
-  const int nSign = nDiv.dotProd(X) > 0 ? 1 : -1;
-
-  Geometry::Vec3D pt11 = SurInter::getPoint(sDiv, SMap.realPtr<Geometry::Plane>(edgeIndex+101), pz)-Y*cutThick/2.0;
-  Geometry::Vec3D pt12 = SurInter::getPoint(sDiv, SMap.realPtr<Geometry::Plane>(edgeIndex+101), pz)+Y*cutThick/2.0;
-
-  Geometry::Plane *p13 = ModelSupport::buildPlaneRotAxis
-    (SMap, edgeIndex+13, pt11, nDiv, Z*nSign, cutAngle);
-
-  Geometry::Plane *p14 = ModelSupport::buildPlaneRotAxis
-    (SMap, edgeIndex+14, pt12, nDiv, Z*nSign, -cutAngle);
-
-  ModelSupport::buildShiftedPlane(SMap, edgeIndex+23, p13, -wallThick);
-  ModelSupport::buildShiftedPlane(SMap, edgeIndex+24, p14, -wallThick);
+  ModelSupport::buildPlaneRotAxis(SMap,edgeIndex+203,EdPtA-X*wallThick,
+				  X,Z,cutAngle);
+  ModelSupport::buildPlaneRotAxis(SMap,edgeIndex+204,EdPtB+X*wallThick,
+				  X,Z,-cutAngle);
   
   return;
 }
@@ -263,38 +252,39 @@ EdgeWater::createObjects(Simulation& System,
   /*!
     Adds the main components
     \param System :: Simulation to create objects in
-    \param :: divider - Lobe side surface
-    \param container string :: wing surface ege
+    \param divition surface on lobe
+    \param container string :: wing surface edge of reflector
   */
 {
   ELog::RegMethod RegA("EdgeWater","createObjects");
 
   std::string Out;
   
-  Out=ModelSupport::getComposite(SMap,edgeIndex," 1 -2 13 14");
+  Out=ModelSupport::getComposite(SMap,edgeIndex," 1 -2 103 -104");
   System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,
-  				   modTemp,Out+container+divider));
-  
+				   modTemp,Out+container+divider));
+  CellMap::setCell("Water",  cellIndex-1);
   // Two walls : otherwise divider container
-  Out=ModelSupport::getComposite(SMap,edgeIndex," 11 -1 13");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,
-				   modTemp,Out+container)); // \todo: remove outer BeRef cylinder from this rule
-  // inclined wall
-  Out=ModelSupport::getComposite(SMap,edgeIndex," 11 -13 23");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,
-				   modTemp,Out+container+divider));
+  Out=ModelSupport::getComposite(SMap,edgeIndex," 11 -1 103 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out+container));
+  CellMap::addCell("Wall",  cellIndex-1);
+  Out=ModelSupport::getComposite(SMap,edgeIndex," 2 -12 -104 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out+container));
+  CellMap::addCell("Wall",  cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,edgeIndex," 2 -12 14");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,
-				   modTemp,Out+container)); // \todo: remove outer BeRef cylinder from this rule
-  // inclined wall
-  Out=ModelSupport::getComposite(SMap,edgeIndex," -12 -14 24");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,
-				   modTemp,Out+container+divider));
+  // front walls
+  Out=ModelSupport::getComposite(SMap,edgeIndex," 11 -103 203 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,
+				   Out+container+divider));
+    CellMap::addCell("Wall",  cellIndex-1);
+    CellMap::setCell("InnerAlSupply",  cellIndex-1);
+  Out=ModelSupport::getComposite(SMap,edgeIndex," -12 104 -204");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,
+				   Out+container+divider));
+  CellMap::addCell("Wall",  cellIndex-1);
   
-  Out=ModelSupport::getComposite(SMap,edgeIndex," 11 -12 23 24");
+  Out=ModelSupport::getComposite(SMap,edgeIndex," 11 -12 203 -204");
   addOuterSurf(Out+divider);
-  sideRule = Out+divider;
   return;
 }
 
@@ -302,7 +292,7 @@ EdgeWater::createObjects(Simulation& System,
   
 Geometry::Vec3D
 EdgeWater::getSurfacePoint(const size_t,
-			   const size_t) const
+			const long int) const
   /*!
     Given a side and a layer calculate the link point
     \param layerIndex :: layer, 0 is inner moderator [0-6]
@@ -316,7 +306,7 @@ EdgeWater::getSurfacePoint(const size_t,
 
 int
 EdgeWater::getLayerSurf(const size_t ,
-			const size_t ) const
+			const long int ) const
   /*!
     Given a side and a layer calculate the link point
     \param layerIndex :: layer, 0 is inner moderator [0-3]
@@ -330,7 +320,7 @@ EdgeWater::getLayerSurf(const size_t ,
 
 std::string
 EdgeWater::getLayerString(const size_t,
-			  const size_t) const
+			  const long int) const
   /*!
     Given a side and a layer calculate the link point
     \param layerIndex :: layer, 0 is inner moderator [0-6]
@@ -348,7 +338,7 @@ EdgeWater::getLayerString(const size_t,
 void
 EdgeWater::createAll(Simulation& System,
 		     const attachSystem::FixedComp& FC,
-		     const std::string& divider,
+		     const long int sideIndex,
 		     const std::string& container)
   /*!
     Generic function to create everything
@@ -360,8 +350,9 @@ EdgeWater::createAll(Simulation& System,
   ELog::RegMethod RegA("EdgeWater","createAll");
 
   populate(System.getDataBase());
-  createUnitVector(FC);
-  createSurfaces(divider);
+  createUnitVector(FC,sideIndex);
+  createSurfaces();
+  const std::string divider=FC.getSignedLinkString(sideIndex);
   createObjects(System,divider,container);
 
   createLinks();

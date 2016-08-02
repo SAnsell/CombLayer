@@ -264,7 +264,7 @@ BasicFlightLine::createObjects(Simulation& System,
   // Make inner object
   Out+=innerCut+outerCut;
   System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,0.0,Out));
-
+  CellMap::addCell("innerVoid",cellIndex-1);
   //Flight layers:
   for(size_t i=0;i<nLayer;i++)
     {
@@ -273,6 +273,7 @@ BasicFlightLine::createObjects(Simulation& System,
 				     "13 -14 15 -16 (-3:4:-5:6) ");
       Out+=innerCut+outerCut;
       System.addCell(MonteCarlo::Qhull(cellIndex++,lMat[i],0.0,Out));
+      CellMap::addCell("Layer"+StrFunc::makeString(i+1),cellIndex-1);
     }      
   
   return;

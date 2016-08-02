@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1BuildInc/ReflectRods.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ namespace ts1System
 
 class ReflectRods : public attachSystem::ContainedComp,
     public attachSystem::FixedComp
-    {
+{
  private:
 
   typedef std::map<int,constructSystem::hexUnit*> MTYPE;
@@ -92,7 +92,7 @@ class ReflectRods : public attachSystem::ContainedComp,
   std::string plateString() const;
   void splitRefObj();
 
-  void populate(const Simulation&);
+  void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
   void getZSurf();
 
@@ -119,6 +119,7 @@ class ReflectRods : public attachSystem::ContainedComp,
   void setCentre(const Geometry::Vec3D& TC,
 		 const Geometry::Vec3D& BC) 
   { topCentre=TC; baseCentre=BC; }
+
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const size_t);
 

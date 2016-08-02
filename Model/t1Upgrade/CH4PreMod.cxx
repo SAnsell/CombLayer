@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1Upgrade/CH4PreMod.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -387,19 +387,19 @@ CH4PreMod::createObjects(Simulation& System,
 }
 
 size_t
-CH4PreMod::getNLayers(const size_t sideIndex) const
+CH4PreMod::getNLayers(const long int sideIndex) const
  /*!
    Return the number of layers [for the different sides]
    \param sideIndex :: Sideindex  to view
    \return number of layers in direction
  */
 {
-  return (sideIndex<2) ? 2 : 4;
+  return (std::abs(sideIndex)<3) ? 2 : 4;
 }
 
 Geometry::Vec3D
 CH4PreMod::getSurfacePoint(const size_t layerIndex,
-			   const size_t sideIndex) const
+			   const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link point
     \param layerIndex :: layer, 0 is inner moderator 
@@ -409,8 +409,12 @@ CH4PreMod::getSurfacePoint(const size_t layerIndex,
 {
   ELog::RegMethod RegA("CH4PreMod","getSurfacePoint");
 
-  if (sideIndex>5) 
-    throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex");
+  const size_t SI((sideIndex>0) ?
+                  static_cast<size_t>(sideIndex-1) :
+                  static_cast<size_t>(-1-sideIndex));
+
+  if (SI>5) 
+    throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
   // Special case as front/back have less sides
   if (layerIndex>=getNLayers(sideIndex))
     throw ColErr::IndexError<size_t>(layerIndex,getNLayers(sideIndex),
@@ -423,16 +427,16 @@ CH4PreMod::getSurfacePoint(const size_t layerIndex,
   double layT(0.0);
   for(size_t i=0;i<layerIndex;i++)
     layT+=TPtr[i];
-  if (sideIndex<2)
-    layT+=(sideIndex) ? backExt : frontExt;
+  if (SI<2)
+    layT+=(SI) ? backExt : frontExt;
   // NOTE reverse:
   const Geometry::Vec3D XYZ[6]={Y,-Y,-X,X,-Z,Z};
-  return sidePts[sideIndex]+XYZ[sideIndex]*layT;
+  return sidePts[SI]+XYZ[SI]*layT;
 }
 
 std::string
 CH4PreMod::getLayerString(const size_t layerIndex,
-			  const size_t sideIndex) const
+			  const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
     \param sideIndex :: Side [0-5]
@@ -446,28 +450,31 @@ CH4PreMod::getLayerString(const size_t layerIndex,
 
 int
 CH4PreMod::getLayerSurf(const size_t layerIndex,
-			 const size_t sideIndex) const
+			const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
-    \param sideIndex :: Side [0-5]
     \param layerIndex :: layer, 0 is inner moderator [0-4]
+    \param sideIndex :: Side [1-6] (sign is -ve surf
     \return Surface string
   */
 {
   ELog::RegMethod RegA("CH4PreFlat","getLayerSurf");
 
-  if (sideIndex>5)
-    throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
+
+  if (sideIndex>6 || !sideIndex || sideIndex<-6)
+    throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex ");
   if (layerIndex>=getNLayers(sideIndex) )
     throw ColErr::IndexError<size_t>(layerIndex,getNLayers(sideIndex),
 				     "layerIndex");
 
-  const int signValue((sideIndex % 2) ? 1 : -1);
+  int signValue((sideIndex<0) ? -1 : 1);
+  signValue *= (sideIndex % 2) ? -1 : 1;
+  const size_t uSIndex(static_cast<size_t>(std::abs(sideIndex)));
   int SI;
-  if (sideIndex<2)
-    SI=preIndex+static_cast<int>(120+layerIndex*10+sideIndex);
+  if (uSIndex<3)
+    SI=preIndex+static_cast<int>(120+layerIndex*10+uSIndex);
   else 
-    SI=preIndex+static_cast<int>(layerIndex*10+sideIndex+1);
+    SI=preIndex+static_cast<int>(layerIndex*10+uSIndex);
 
   return signValue*SMap.realSurf(SI);
 }

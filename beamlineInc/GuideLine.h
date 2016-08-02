@@ -3,7 +3,7 @@
  
  * File:   beamlineInc/GuideLine.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,8 +61,6 @@ class GuideLine : public attachSystem::ContainedComp,
   double beamXYAngle;           ///< Shielding Rotation angle
   double beamZAngle;            ///< Shielding Z-Rotation angle
 
-  bool frontCut;                ///< Construct+Use plane cut
-  bool beamFrontCut;            ///< Construct+Use beam plane tu
   
   // OUTER DIMENTIONS:
   double length;               ///< Full length
@@ -75,7 +73,13 @@ class GuideLine : public attachSystem::ContainedComp,
   std::vector<double> layerThick;   ///< Thickness [inner->outer]
   std::vector<int> layerMat;        ///< Mat 
 
-  int activeEnd;               ///< Active end cut
+  bool activeFront;               ///< Active front cut
+  bool beamFrontCut;             ///< Construct+Use beam cut as well
+  HeadRule frontCut;           ///< Extra front rule cut [if required]
+  HeadRule frontCutBridge;     ///< Extra front rule cut [if required]
+
+  bool activeEnd;              ///< Active end cut
+  bool beamEndCut;             ///< Construct+Use beam cut as well
   HeadRule endCut;             ///< Extra end rule cut [if required]
   HeadRule endCutBridge;       ///< Extra end rule cut [if required]
 
@@ -87,7 +91,8 @@ class GuideLine : public attachSystem::ContainedComp,
   int activeShield;              ///< Outer layer active
   int feMat;                     ///< Layer shielding
  
-  std::string shapeBackSurf(const size_t) const;
+  std::string shapeFrontSurf(const bool,const size_t) const;
+  std::string shapeBackSurf(const bool,const size_t) const;
   
   void clear();
   void processShape(const FuncDataBase&);
@@ -100,11 +105,9 @@ class GuideLine : public attachSystem::ContainedComp,
 			const attachSystem::FixedComp&,const long int);
   
   void createSurfaces();
-  void createObjects(Simulation&,const attachSystem::FixedComp&,
-		     const long int);
-  void createMainLinks(const attachSystem::FixedComp&,
-		       const long int);
-  void createUnitLinks();
+  void createObjects(Simulation&);
+  void createMainLinks();
+  void createGuideLinks();
 
   void checkRectangle(const double,const double) const;
   Geometry::Vec3D calcActiveEndIntercept();
@@ -116,12 +119,17 @@ class GuideLine : public attachSystem::ContainedComp,
   GuideLine& operator=(const GuideLine&);
   virtual ~GuideLine();
 
+  void addFrontCut(const std::string&);
+  void addFrontCut(const attachSystem::FixedComp&,const long int);
   void addEndCut(const std::string&);
   void addEndCut(const attachSystem::FixedComp&,const long int);
+
+  HeadRule getXSection(const size_t =0) const;
+  HeadRule getXSectionOut(const size_t =0) const;
   
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const long int,const attachSystem::FixedComp&,
-			 const long int);
+  virtual void createAll(Simulation&,
+			 const attachSystem::FixedComp&,const long int,
+			 const attachSystem::FixedComp&,const long int);
 
 
 };

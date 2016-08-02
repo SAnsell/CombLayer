@@ -3,7 +3,7 @@
  
  * File:   weights/weightManager.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,7 +54,7 @@
 #include "WForm.h"
 #include "WItem.h"
 #include "WCells.h"
-#include "WeightMesh.h"
+#include "Mesh3D.h"
 #include "WWG.h"
 #include "weightManager.h"
 
@@ -62,7 +62,8 @@
 namespace WeightSystem
 {
 
-weightManager::weightManager()
+weightManager::weightManager() :
+  WWGPtr(0)
   /*!
     Constructor
   */
@@ -111,10 +112,10 @@ weightManager::getParticle(const char c)
     \return WForm pointer 
   */
 {
-  ELog::RegMethod RegA("weightManager","getItem");
+  ELog::RegMethod RegA("weightManager","getParticle");
   CtrlTYPE::iterator mc=WMap.find(c);
   if (mc==WMap.end())
-    throw ColErr::InContainerError<char>(c,RegA.getBase());
+    throw ColErr::InContainerError<char>(c,"particle not found");
   return mc->second;
 }
 
@@ -141,7 +142,7 @@ weightManager::maskCell(const int zCell)
     \param zCell :: cell to be masked in all weight systems
   */
 {
-  ELog::RegMethod RegA("weightManager","zeroCell");
+  ELog::RegMethod RegA("weightManager","maskCell");
   for(CtrlTYPE::value_type& wf : WMap)
     wf.second->maskCell(zCell);
   return;
@@ -174,7 +175,7 @@ weightManager::isMasked(const int cellN) const
     \return true/false
   */
 {
-  ELog::RegMethod RegA("weightManager","renumberCell");
+  ELog::RegMethod RegA("weightManager","isMasked");
   
   CtrlTYPE::const_iterator mc;
   for(mc=WMap.begin();mc!=WMap.end();mc++)

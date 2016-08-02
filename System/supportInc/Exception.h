@@ -3,7 +3,7 @@
  
  * File:   supportInc/Exception.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,7 +63,8 @@ class ExBase : public std::exception
   ExBase(const std::string&);
   ExBase(const ExBase&);
   ExBase& operator=(const ExBase&);
-  virtual ~ExBase() throw() {}   ///< Destructor 
+  virtual ~ExBase() throw() {}  \
+  ///< Destructor 
 
   /// Main reporting method
   virtual const char* what() const throw();
@@ -75,6 +76,29 @@ class ExBase : public std::exception
 };
 
  
+/*!
+  \class EmptyContainer
+  \brief Exception for a container in an empty state
+  \author Stuart Ansell
+  \date May 2016
+  \version 1.0
+*/
+
+class EmptyContainer : public ExBase
+{
+ private:
+
+  void setOutLine();
+
+ public:
+
+  EmptyContainer(const std::string&);
+  EmptyContainer(const EmptyContainer&);
+  EmptyContainer& operator=(const EmptyContainer&);
+  virtual ~EmptyContainer() throw() {}   ///< Destructor 
+
+};
+
 /*!
   \class IndexError
   \brief Exception for index errors

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   build/BulkShield.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -331,7 +331,7 @@ BulkShield::createShutters(Simulation& System,
       else
 	GData.push_back(std::shared_ptr<GeneralShutter>
 			(new GeneralShutter(i,"shutter")));
-      // Not registered under KeyName 
+      // Not registered under KeyName
       OR.addObject(StrFunc::makeString(std::string("shutter"),i),GData.back());
     }
 
@@ -346,7 +346,7 @@ BulkShield::createShutters(Simulation& System,
 			    SMap.realSurf(bulkIndex+6),
 			    SMap.realSurf(bulkIndex+5));
       GData[i]->setDivide(40000);
-      GData[i]->createAll(System,0.0,0);    
+      GData[i]->createAll(System,0.0,0);
       shutterObj->addSurfString(GData[i]->getExclude());
     }
 
@@ -356,7 +356,7 @@ BulkShield::createShutters(Simulation& System,
 void
 BulkShield::createBulkInserts(Simulation& System,
 			      const mainSystem::inputParam& IParam)
-  /*!
+/*!
     Construct and build all the bulk insert
     \param System :: Simulation to use
     \param IParam :: Input parameters
@@ -375,22 +375,24 @@ BulkShield::createBulkInserts(Simulation& System,
   for(size_t i=0;i<numberBeamLines;i++)
     {
       std::shared_ptr<BulkInsert> BItem;
-      
       if (i==chipShutter && chipFlag)
-	BItem=std::shared_ptr<BulkInsert>
-	       (new ChipIRInsert(i,"bulkInsert","chipInsert"));
+	{
+	  BItem=std::shared_ptr<BulkInsert>
+	    (new ChipIRInsert(i,"bulkInsert","chipInsert"));
+	}
       else if (i==imatShutter && imatFlag)
 	BItem=std::shared_ptr<BulkInsert>
 	  (new IMatBulkInsert(i,"bulkInsert","imatInsert"));
       else
 	BItem=std::shared_ptr<BulkInsert>(new BulkInsert(i,"bulkInsert"));
 
+
       BItem->setLayers(innerCell,outerCell);
       BItem->setExternal(SMap.realSurf(bulkIndex+17),
 			 SMap.realSurf(bulkIndex+27),
 			 SMap.realSurf(bulkIndex+37) );
       BItem->createAll(System,*GData[static_cast<size_t>(i)]);    
-      OR.addObject(BItem->getKeyName()+StrFunc::makeString(i),BItem);
+      OR.addObject(BItem->getKeyName(),BItem);
       BData.push_back(BItem);
     }
   return;

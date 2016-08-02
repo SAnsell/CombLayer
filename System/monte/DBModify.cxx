@@ -3,7 +3,7 @@
  
  * File:   monte/DBModify.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,12 +53,68 @@
 namespace ModelSupport
 {
 
-void cloneESSMaterial()
+void
+cloneBasicMaterial()
   /*!
     Clone ESS materials if not using the ESS Database materials
   */
 {
-  ELog::RegMethod RegA("essDBMaterial[F]","cloneESSMaterial");
+  ELog::RegMethod RegA("DBModify[F]","cloneBasicMaterial");
+
+  ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();
+
+  ELog::EM<<"WARNING -- this is the basic materials build \n"
+	  <<"       The results from simualation will be approximate \n"
+	  <<ELog::endCrit;
+
+  // original name to use
+  DB.cloneMaterial("CastIron","Iron");
+  DB.cloneMaterial("Aluminium","Aluminium20K");
+  DB.cloneMaterial("Tungsten_15.1g","Tungsten151");
+  DB.cloneMaterial("Iron_10H2O","Iron10H2O");
+  DB.cloneMaterial("Void","Helium");
+  DB.cloneMaterial("Void","M2644");
+  DB.cloneMaterial("Stainless304","SS316L");
+  DB.cloneMaterial("Stainless304","SS316L785");
+
+  // Al.20t -- actually available from Los Alamos-t2
+  DB.removeThermal("Aluminium");
+  DB.removeThermal("CH4inFoam");
+  DB.removeThermal("CH4+Al22K");
+  DB.removeThermal("CH4+Al26K");
+  DB.removeThermal("CH4Al+Argon");
+  DB.removeThermal("Aluminium6061");
+
+  DB.removeThermal("Al2024");
+  DB.removeThermal("AlFoam");
+  DB.removeThermal("Al2214");
+  DB.removeThermal("Boral5");
+  DB.removeThermal("Boral5Degrade");
+  DB.removeThermal("TS1Boral");
+  DB.removeThermal("Alum5251");
+
+  // silicon si.80t - si.84t (made by S. Ansell)
+  DB.removeThermal("SiCrystal");
+  DB.removeThermal("Silicon20K");
+  DB.removeThermal("Silicon80K");
+  DB.removeThermal("Silicon300K");
+
+
+  // HYDROGENS:
+  DB.overwriteMaterial("ParaH2","H2para19K");
+  DB.cloneMaterial("H2para19K","ParaOrtho%0.5");
+  DB.cloneMaterial("H2para19K","HPARA");
+  
+  return;
+}
+
+void
+cloneESSMaterial()
+  /*!
+    Clone ESS materials if not using the ESS Database materials
+  */
+{
+  ELog::RegMethod RegA("DBModify[F]","cloneESSMaterial");
 
   ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();
   
@@ -69,16 +125,22 @@ void cloneESSMaterial()
   DB.cloneMaterial("Stainless304","SS316L");
   DB.cloneMaterial("Stainless304","SS316L785");
 
+  DB.cloneMaterial("CastIron","Iron");
+  DB.cloneMaterial("ParaH2","HPARA");
+  DB.cloneMaterial("Aluminium","Aluminium20K");
+
   return;
 }
     
-void addESSMaterial()
+void
+addESSMaterial()
   /*!
      Initialize the database of materials
+     this adds extra materials used by the ESS target division
    */
 {
 
-  ELog::RegMethod RegA("essDBMaterial[F]","addESSMaterial");
+  ELog::RegMethod RegA("DBModify[F]","addESSMaterial");
 
   const std::string MLib="hlib=.70h pnlib=70u";
   ModelSupport::DBMaterial& MDB=ModelSupport::DBMaterial::Instance();
@@ -422,8 +484,6 @@ MObj.setMaterial(2660, "Invar36",
   MObj.setDensity(-1.595);
   MDB.resetMaterial(MObj);
 
-
-
   // Tungsten at 300 K
   MObj.setMaterial(7400, "Tungsten",
 		   "74180.50c  0.001200000 "
@@ -476,8 +536,35 @@ MObj.setMaterial(2660, "Invar36",
   MObj.setDensity(-15.6);
   MDB.resetMaterial(MObj);
 
-
   
+  MObj.setMaterial(2660, "Invar36",
+		   " 06000.70c  0.001000000 "
+		   " 14028.70c 0.003227805 "
+		   " 14029.70c 0.000163975 "
+		   " 14030.70c 0.000108220 "
+		   " 29063.70c 0.003457501 "
+		   " 29065.70c 0.001542499 "
+		   " 25055.70c 0.006000000 "
+		   " 15031.70c 0.000250000 "
+		   " 16032.70c 0.000237476 "
+		   " 16033.70c 0.000001875 "
+		   " 16034.70c 0.000010625 "
+		   " 16036.70c 0.000000024 "
+		   " 24050.70c 0.000217250 "
+		   " 24052.70c 0.004189450 "
+		   " 24053.70c 0.000475050 "
+		   " 24054.70c 0.000118250 "
+		   " 28058.70c 0.251884530 "
+		   " 28060.70c 0.097025471 "
+		   " 28061.70c 0.004217629 "
+		   " 28062.70c 0.013447651 "
+		   " 28064.70c 0.003424721 "
+		   " 26054.70c 0.035654500 "
+		   " 26056.70c 0.559699400 "
+		   " 26057.70c 0.012925900 "
+		   " 26058.70c  0.001720200 ", "", MLib);
+  MObj.setDensity(-8.11);
+  MDB.resetMaterial(MObj);
   
   return;
 }

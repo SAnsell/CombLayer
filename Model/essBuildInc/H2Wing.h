@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/H2Wing.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,23 +55,23 @@ class H2Wing :
   double xStep;
   double yStep;
   double xyOffset;           ///< xy-Angle offset
-  
+
+  double bfDepth;               ///< BF moderator lower wall thick
+  double bfHeight;              ///< BF moderator upper wall thick
+
   std::array<Geometry::Vec3D,3> Pts;    ///< Corner Points
   std::array<double,3> radius;  ///< corner radii
   double height;                ///< height of moderator cell
   double totalHeight;           ///< total height moderator
-
-  double bfDepth;               ///< BF moderator lower wall thick
-  double bfHeight;              ///< BF moderator upper wall thick
   
   int modMat;                   ///< LH2
   double modTemp;               ///< LH2 temperature [K]
-  std::vector<double> Thick;    ///< Layer thickness
-  std::vector<double> Height,Depth;   ///< Vertical thickness
+
+  std::vector<double> Thick;        ///< Layer thickness
+  std::vector<double> layerHeight;  ///< Layer veritcal 
+  std::vector<double> layerDepth;   ///< layer depth
   std::vector<int> mat;         ///< Layer material
   std::vector<double> temp;     ///< Layer temperature
-
-  std::string sideRule;      ///< Side rule
 
 
   void populate(const FuncDataBase&);
@@ -99,13 +99,10 @@ class H2Wing :
   virtual H2Wing* clone() const;
   virtual ~H2Wing();
 
-  virtual Geometry::Vec3D getSurfacePoint(const size_t,const size_t) const;
-  virtual std::string getLayerString(const size_t,const size_t) const;
-  virtual int getLayerSurf(const size_t,const size_t) const;
+  virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
+  virtual std::string getLayerString(const size_t,const long int) const;
+  virtual int getLayerSurf(const size_t,const long int) const;
   void createAll(Simulation&,const attachSystem::FixedComp&);
-
-  inline const std::string getSideRule() const { return sideRule; }
-  double getHeight() const { return height; }
 };
 
 }

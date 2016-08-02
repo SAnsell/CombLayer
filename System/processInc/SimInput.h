@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   processInc/SimInput.h
-*
- * Copyright (c) 2004-2014 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,11 @@
 
 class Simulation;
 
+namespace physicsSystem
+{
+  class PhysicsCards;
+}
+
 namespace mainSystem
 {
   class inputParam;
@@ -33,8 +38,13 @@ namespace SimProcess
 {
 
   void importanceSim(Simulation&,const mainSystem::inputParam&);
-  void inputPatternSim(Simulation&,const mainSystem::inputParam&);
+  void inputProcessForSim(Simulation&,const mainSystem::inputParam&);
   int processExitChecks(Simulation&,const mainSystem::inputParam&);
+  void processPTrack(const mainSystem::inputParam&,
+		     physicsSystem::PhysicsCards&);
+  void processEvent(const std::string&,
+		    const mainSystem::inputParam&,
+		    physicsSystem::PhysicsCards&);
   
 }  // namespace SimProcess
 

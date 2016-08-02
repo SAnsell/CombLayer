@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   essBuildInc/BilbaoWheelInnerStructure.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,40 +42,47 @@ class BilbaoWheelInnerStructure : public attachSystem::ContainedComp,
   const int insIndex;             ///< Index of surface offset
   int cellIndex;                  ///< Cell index
 
-  double xyAngle;                ///< xy angle (mainly used to place the sector with bricks in the correct place). Can't rotate the wheel by itself since ProtonTube uses its coordinate system (\todo fix it)
+  // Can't rotate the wheel by itself since ProtonTube uses its coordinate system (\todo fix it)
+  double xyAngle;                ///< xy angle (mainly used to place the sector with bricks in the correct place). 
 
   double temp;                    ///< Temperature (obtained from Inner cell of BilbaoWheel)
+  
   double brickLen;                ///< Tungsten brick length (in radial direction)
   double brickWidth;              ///< Tungsten brick width
-  int    brickMat;                ///< Tungsten brick material
   double brickGapLen;             ///< Distance between bricks in radial direction
   double brickGapWidth;           ///< Distance between bricks in normal to radial direction
-  int    brickGapMat;             ///< Material of gap between bricks
 
-  int    nSectors;                ///< Number of sectors in Tungsten
+  size_t nSectors;                ///< Number of sectors in Tungsten
+  size_t nBrickSectors;           ///< number of sectors filled with bricks
+  size_t nBrickLayers;            ///< number of radial brick layers
+  size_t nSteelLayers;            ///< number of brick layers made of steel (counting from internal cylinder)
+
   double secSepThick;             ///< Thickness of sector separator
-  int    secSepMat;               ///< Material of sector separator
 
-  int    nBrickSectors;           ///< number of sectors filled with bricks
-  int    nBrickLayers;            ///< number of radial brick layers
-  std::vector<int>  nBricks;      ///< number of bricks in each radial layer
-  int    nSteelLayers;            ///< number of brick layers made of steel (counting from internal cylinder)
-  int    brickSteelMat;           ///< Steel brick material
+  std::vector<size_t> nBricks;   ///< number of bricks in each radial layer
 
+
+  int secSepMat;               ///< Material of sector separator
+  int brickSteelMat;           ///< Steel brick material
+  int brickGapMat;             ///< Material of gap between bricks
+  int brickMat;                ///< Tungsten brick material
+  
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
 
   void createSurfaces(const attachSystem::FixedComp&);
-  void createObjects(Simulation&, attachSystem::FixedComp&);
+  void createObjects(Simulation&,attachSystem::FixedComp&);
   void createLinks();
 
   void createBrickSurfaces(const attachSystem::FixedComp&,
-			   const Geometry::Plane*, const Geometry::Plane*, const int);
-  void createBricks(Simulation&, attachSystem::FixedComp&,
-		    const std::string, const std::string, const int);
+			   const Geometry::Plane*,
+			   const Geometry::Plane*, const size_t);
+  void createBricks(Simulation&,const attachSystem::FixedComp&,
+		    const std::string&,const std::string&,const size_t);
 
   // polar angle of the given sector's centre. Clockwise starting from -Y
-  inline double getSectorAngle(int i) const { return (2*(i+1)-1)*M_PI/nSectors * 180.0/M_PI; }
+  double getSectorAngle(const size_t index) const
+  { return (2*(index+1)-1)*M_PI/nSectors * 180.0/M_PI; }
 
   double sideIntersect(const std::string&, const Geometry::Plane*);
 

@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef moderatorSystem_WaterPipe_h
-#define moderatorSystem_WaterPipe_h
+#ifndef ts1System_WaterPipe_h
+#define ts1System_WaterPipe_h
 
 class Simulation;
 
@@ -63,8 +63,8 @@ class WaterPipe : public attachSystem::FixedComp
   double ifullLen;              ///< Outer Height
   double ofullLen;              ///< Outer Height
   
-  void populate(const Simulation&);
-  void createUnitVector(const attachSystem::FixedComp&,const size_t);
+  void populate(const FuncDataBase&);
+  void createUnitVector(const attachSystem::FixedComp&,const long int);
 
   void insertPipes(Simulation&);
 
@@ -77,7 +77,7 @@ class WaterPipe : public attachSystem::FixedComp
 
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const size_t);
+		 const long int);
 
 };
 

@@ -189,7 +189,7 @@ profileMon::createSurfaces()
 void
 profileMon::createObjects(Simulation& System)
   /*!
-    Adds the Chip guide components
+    Adds main components
     \param System :: Simulation to create objects in
    */
 {

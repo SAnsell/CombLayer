@@ -42,7 +42,9 @@ sortPermutation(const std::vector<T>& mainVec,
 {
   std::vector<size_t> index(mainVec.size());
   
-  std::iota(index.begin(),index.end(),0);
+  for(size_t i=0;i<index.size();i++)
+    index.push_back(i);
+// std::iota(index.begin(),index.end(),0);
   std::sort(index.begin(),index.end(),
             [&](const size_t i, const size_t j)
 	    { return compare(mainVec[i],mainVec[j]); });

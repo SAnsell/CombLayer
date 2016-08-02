@@ -3,7 +3,7 @@
  
  * File:   source/SourceSelector.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -137,20 +137,12 @@ processSDefFile(const mainSystem::inputParam& IParam,
   const attachSystem::FixedComp* LPtr(0);
   
   if (DObj=="shutter" || DObj=="torpedo")
-    {
-      LPtr=OR.getObject<attachSystem::FixedComp>
-	    (StrFunc::makeString(DObj,index));
-    }
+    LPtr=OR.getObjectThrow<attachSystem::FixedComp>
+      (StrFunc::makeString(DObj,index),DObj+"FixedComp");
   else
-    LPtr=OR.getObject<attachSystem::FixedComp>(DObj);
+    LPtr=OR.getObjectThrow<attachSystem::FixedComp>(DObj,"FixedComp");
   
   SPtr=dynamic_cast<const attachSystem::SecondTrack*>(LPtr);
-  
-  if (!LPtr)
-    {
-      ELog::EM<<"Failed to find object for :"<<DObj<<ELog::endErr;
-      return;
-    }
   
   // Construct CSDEF :
   SDef::ChipIRSource CSdef;
@@ -200,7 +192,7 @@ sourceSelection(Simulation& System,
   
   const FuncDataBase& Control=System.getDataBase();
   SDef::Source& sourceCard=System.getPC().getSDefCard();
-  const masterRotate& MR = masterRotate::Instance();
+
   const ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
@@ -210,8 +202,6 @@ sourceSelection(Simulation& System,
   const attachSystem::FixedComp* FCPtr=
     OR.getObject<attachSystem::FixedComp>(DObj);
   const long int linkIndex=getLinkIndex(DSnd);
-
-
 
   if (IParam.flag("sdefVoid"))
     {

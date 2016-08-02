@@ -178,7 +178,8 @@ ReactorGrid::getDefElement(const FuncDataBase& Control,
    \param Name :: Master name
    \param I :: Index (A-Z) type [A on viewed face]
    \param J :: Index (Number) type
-   \return variable value
+   \param defName :: default Name for element value
+   \return variable value order:[Name+IJ, Name+Ix, Name+xJ,  defName , Name]
  */
 {
   ELog::RegMethod RegA("ReactorGrid","getElement");

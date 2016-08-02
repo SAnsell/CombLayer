@@ -61,13 +61,13 @@ class VanePoison : public attachSystem::ContainedComp,
 
   void populate(const Simulation&);
   void createUnitVector(const attachSystem::FixedComp&,
-			const size_t);
+			const long int);
 
   void createLinks();
   void createSurfaces();
   void createObjects(Simulation&,
 		     const attachSystem::FixedComp&,
-		     const size_t);
+		     const long int);
 
  public:
 
@@ -79,7 +79,7 @@ class VanePoison : public attachSystem::ContainedComp,
   virtual ~VanePoison();
 
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const size_t);
+			 const long int);
 
 };
 

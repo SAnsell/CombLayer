@@ -512,12 +512,11 @@ BinData::getIndex(const double X,const double Y) const
    Uses the mid point of (xA,xB)
    \param X :: X coordinate
    \param Y :: Y coordinate
-   \todo Add method of only iterating over the points
-   close to X.
    \return index of closest point
+   \todo Add method of only iterating over the points close to X.
  */
 {
-  ELog::RegMethod RegA("workData","getIndex");
+  ELog::RegMethod RegA("BinData","getIndex");
 
   double D(-1.0);          // Initialization to avoid g++ Warn
   size_t index=ULONG_MAX;

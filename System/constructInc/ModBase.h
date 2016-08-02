@@ -3,7 +3,7 @@
  
  * File:   constructInc/ModBase.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,7 +68,10 @@ class ModBase : public attachSystem::ContainedComp,
 
   std::string getComposite(const std::string&) const;
 
+  virtual const attachSystem::FixedComp&
+    getComponent(const std::string&) const;
   long int getSideIndex(const size_t) const;
+
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
 			 const attachSystem::FixedComp* =0,
 			 const long int =0) =0;

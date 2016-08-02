@@ -115,7 +115,7 @@ SymUnit::setComponent(const size_t index,
   */
 {
   if (index>3)
-    throw ColErr::IndexError<int>(index,3,"SymUnit::setComponent");
+    throw ColErr::IndexError<size_t>(index,3,"SymUnit::setComponent");
   if (index==3)
     ShiftVec=Unit;
   else
@@ -146,8 +146,8 @@ SymUnit::setLine(const std::string& Line)
       std::string Part=Line.substr(posA,posB-posA);
       posA=posB+1;
       int sign(1);
-      const long int PSize(Part.length());
-      for(int j=0;j<PSize;j++)
+      const size_t PSize(Part.length());
+      for(size_t j=0;j<PSize;j++)
         {
 	  char PV=static_cast<char>(tolower(Part[j]));
 	  
