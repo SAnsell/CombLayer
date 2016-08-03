@@ -207,64 +207,23 @@ namespace essSystem
     if (range=="cold")
       {
 	// link point (defined by theta)
+	ELog::EM << "Set lp also for LowFly" << ELog::endDiag;
+	int lp=0;
 	if (theta<90)
-	  Control.setVariable<int>(keyName+"LinkPoint", zStep>0 ? 6 : 7); // these maths depend on the XYangle of the moderator
+	  lp =  zStep>0 ? 6 : 7; // OK these maths depend on the XYangle of the moderator
 	else if (theta<180)
-	  Control.setVariable<int>(keyName+"LinkPoint", zStep>0 ? 9 : 8);
+	  lp =  zStep>0 ? 7 : 8;
 	else if (theta<270)
-	  Control.setVariable<int>(keyName+"LinkPoint", zStep>0 ? 8 : 9);
+	  lp =  zStep>0 ? 5 : 8; // OK
 	else // if theta>270
-	  Control.setVariable<int>(keyName+"LinkPoint", zStep>0 ? 7 : 6);
+	  lp =  zStep>0 ? 4 : 8; // OK
+	ELog::EM<< "lp: " << lp << ELog::endDiag;
+	Control.setVariable<int>(keyName+"LinkPoint", lp);
 	LinkPointCentered = false;
       }
     else if (range=="thermal")
       {
-	//	ELog::EM << "lp0: " << vecFP[0] << ELog::endDiag;
-	//	throw ColErr::AbsObjMethod("'thermal' range in F5Collimator not yet implemented");
-
-	// calculate angle between the wing side plane and the x-axis
-	// it is the same as angle b/w vtmp and the y-axis
-	// we will use this angle to determine the link point number
-	Geometry::Vec3D vtmp(vecFP[6]-vecFP[2]);
-	const double alpha = acos(vtmp.dotProd(Y)/vtmp.abs())*180/M_PI;
-	if (theta<=90-alpha)
-	  {
-	    if (thermalAlgorithm==0)
-	      Control.setVariable<int>(keyName+"LinkPoint", zStep>0 ? 2 : 3);  // these maths depend on the XYangle of the moderator
-	    else
-	      Control.setVariable<int>(keyName+"LinkPoint", zStep>0 ? 5 : 4);  // these maths depend on the XYangle of the moderator
-	  }
-	else if (abs(theta-90)<alpha)
-	  {
-	    Control.setVariable<int>(keyName+"LinkPoint", zStep>0 ? 1 : 0);
-	    LinkPointCentered = true;
-	  }
-	else if ((theta>=90+alpha) && (theta<180))
-	  {
-	    if (thermalAlgorithm==0)
-	      Control.setVariable<int>(keyName+"LinkPoint", zStep>0 ? 5 : 4);
-	    else
-	      Control.setVariable<int>(keyName+"LinkPoint", zStep>0 ? 2 : 3);
-	  }
-	else if ((theta>=180) && (theta<=270-alpha))
-	  {
-	    if (thermalAlgorithm==0)
-	      Control.setVariable<int>(keyName+"LinkPoint", zStep>0 ? 4 : 5);
-	    else
-	      Control.setVariable<int>(keyName+"LinkPoint", zStep>0 ? 7 : 2);
-	  }
-	else if (abs(theta-270)<alpha)
-	  {
-	    Control.setVariable<int>(keyName+"LinkPoint", zStep>0 ? 0 : 1);
-	    LinkPointCentered = true;
-	  }
-	else if (theta>=270+alpha)
-	  {
-	    if (thermalAlgorithm==0)
-	      Control.setVariable<int>(keyName+"LinkPoint", zStep>0 ? 7 : 2);
-	    else
-	      Control.setVariable<int>(keyName+"LinkPoint", zStep>0 ? 4 : 5);
-	  }
+	ELog::EM << "thermal not implemented yet" << ELog::endErr;
       }
     else
       {
@@ -285,17 +244,18 @@ namespace essSystem
 
     */
 
-    Geometry::Vec3D B(vecFP[LinkPoint].X(), vecFP[LinkPoint].Y(), zmax);
+    Geometry::Vec3D B(vecFP[static_cast<unsigned int>(LinkPoint)].X(), vecFP[static_cast<unsigned int>(LinkPoint)].Y(), zmax);
     Geometry::Vec3D OB(B[0]-xStep, B[1]-yStep, B[2]-zStep);
 
     // Calculate angle BOC by the law of cosines:
     double BOC = acos((2*pow(OB.abs(), 2) - pow(viewWidth, 2))/(2*pow(OB.abs(), 2)));
-    // these maths depend on the XYangle of the moderator:
+    // define direction of C with respect to B:
+    //  (these maths depend on the XYangle of the moderator)
     if (zStep>0) {// top moderator
-      if ((LinkPoint==5) || (LinkPoint==6) || (LinkPoint==7) || (LinkPoint==8))
+      if ((LinkPoint==5) || (LinkPoint==6) )
 	BOC *= -1;
     } else { // low moderator
-      if ((LinkPoint==7) || (LinkPoint==9) || (LinkPoint==2) || (LinkPoint==4))
+      if ((LinkPoint==7) || (LinkPoint==2) || (LinkPoint==4))
 	BOC *= -1;
     }
 
