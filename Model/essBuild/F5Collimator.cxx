@@ -163,7 +163,7 @@ namespace essSystem
     \param Control :: Variable table to use
   */
   {
-    ELog::RegMethod RegA("F5Collimator","populate");
+    ELog::RegMethod RegA("F5Collimator","populateWithTheta");
 
     if (theta<0) 
       {
@@ -340,6 +340,8 @@ namespace essSystem
 
   void F5Collimator::setTheta(double t)
   {
+    ELog::RegMethod RegA("F5Collimator","setTheta");
+    
     if ((t<0) || (t>360))
       throw ColErr::RangeError<double>(theta, 0, 360, "Theta must be set in range 0-360 deg");
     theta=t;
@@ -351,6 +353,8 @@ namespace essSystem
     \param CC :: ContainedComp object to add to this
   */
   {
+    ELog::RegMethod RegA("F5Collimator","addToInsertChain");
+    
     for(int i=colIndex+1;i<cellIndex;i++)
       CC.addInsertCell(i);
     
