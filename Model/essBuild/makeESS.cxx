@@ -395,6 +395,7 @@ void makeESS::buildF5Collimator(Simulation& System, const mainSystem::inputParam
 
   if (!nitems) return;
 
+  std::string midWaterName;
   double theta(0.0);
   size_t colIndex(0);
   //  ELog::EM << "Use StrFunc::convert instead of atoi in the loop below. Check its return value." << ELog::endCrit;
@@ -404,7 +405,7 @@ void makeESS::buildF5Collimator(Simulation& System, const mainSystem::inputParam
       if ( (strtmp=="TopFly") || (strtmp=="LowFly") )
 	{
 	  moderator = strtmp;
-	  range = IParam.getValue<std::string>("f5-collimators", ++i);
+	  range = IParam.getValue<std::string>("f5-collimators", ++i); // thermal or cold
 	  for (size_t j=i+1; j<nitems; j++)
 	    {
 	      strtmp = IParam.getValue<std::string>("f5-collimators", j);
@@ -416,19 +417,28 @@ void makeESS::buildF5Collimator(Simulation& System, const mainSystem::inputParam
 	      std::shared_ptr<F5Collimator> F5(new F5Collimator(StrFunc::makeString("F", colIndex*10+5).c_str())); colIndex++;
 	      OR.addObject(F5);
 	      F5->setTheta(theta);
-	      F5->setRange(range);
+	      F5->setRange(range); // thermal or cold
 
-	      if (moderator=="TopFly")
+	      /*	      if (moderator=="TopFly")
 		F5->setFocalPoints(TopFocalPoints);
 	      else if (moderator=="LowFly")
-		F5->setFocalPoints(LowFocalPoints);
+	      F5->setFocalPoints(LowFocalPoints);*/
 
+	      // get focal points
+	      midWaterName = moderator + "MidWater";
+	      const attachSystem::FixedComp* midWater = OR.getObject<attachSystem::FixedComp>(midWaterName);
+	      if (!midWater)
+		throw ColErr::InContainerError<std::string>
+		  (midWaterName,"Component not found");
+	      for (int ii=0; ii<10; ii++)
+		ELog::EM << ii << ":\t" << midWater->getLinkPt(ii) << ELog::endDiag;
+	      /////
+	      
 	      F5->addInsertCell(74123); // !!! 74123=voidCell // SA: how to exclude F5 from any cells?
-	      F5->createAll(System, World::masterOrigin());
+	      //	      F5->createAll(System, World::masterOrigin());
 
 	      attachSystem::addToInsertSurfCtrl(System, *ABunker, *F5);
 	      F5array.push_back(F5);
-      
 	    }
 	}
     }
