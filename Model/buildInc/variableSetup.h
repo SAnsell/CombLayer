@@ -39,6 +39,7 @@ namespace setVariable
   void DelftModel(FuncDataBase&);
   void EssVariables(FuncDataBase&);
   void EssPipeVariables(FuncDataBase&);
+  void F5Variables(FuncDataBase&);
   void EPBVariables(FuncDataBase&);
   void FilterVariables(FuncDataBase&);
   void gammaVariables(FuncDataBase&);
