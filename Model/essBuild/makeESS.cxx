@@ -430,14 +430,27 @@ void makeESS::buildF5Collimator(Simulation& System, const mainSystem::inputParam
 	      if (!midWater)
 		throw ColErr::InContainerError<std::string>
 		  (midWaterName,"Component not found");
-	      for (int ii=0; ii<10; ii++)
-		ELog::EM << ii << ":\t" << midWater->getLinkPt(ii) << ELog::endDiag;
+	      std::vector<Geometry::Vec3D> vecFP;
+	      for (size_t ii=0; ii<8; ii++)
+		vecFP.push_back(midWater->getLinkPt(ii));
+	      ELog::EM << "Replace these dummy values with the real ones" << ELog::endDiag;
+	      vecFP.push_back(Geometry::Vec3D(0,0,12.2));
+	      vecFP.push_back(Geometry::Vec3D(0,0,15.2));
+	      F5->setFocalPoints(vecFP);
 	      /////
 	      
 	      F5->addInsertCell(74123); // !!! 74123=voidCell // SA: how to exclude F5 from any cells?
-	      //	      F5->createAll(System, World::masterOrigin());
+	      F5->createAll(System, World::masterOrigin());
 
-	      attachSystem::addToInsertSurfCtrl(System, *ABunker, *F5);
+	      ELog::EM << "Implement special care when theta is close to normals" << ELog::endDiag;
+	      if (theta<90)
+		attachSystem::addToInsertSurfCtrl(System, *ABunker, *F5);
+	      else if (theta<180)
+		attachSystem::addToInsertSurfCtrl(System, *BBunker, *F5);
+	      else if (theta<270)
+		attachSystem::addToInsertSurfCtrl(System, *DBunker, *F5);
+	      else if (theta<360)
+		attachSystem::addToInsertSurfCtrl(System, *CBunker, *F5);
 	      F5array.push_back(F5);
 	    }
 	}
