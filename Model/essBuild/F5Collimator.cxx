@@ -197,46 +197,18 @@ namespace essSystem
     Control.setVariable<double>(keyName+"Z", (zmin+zmax)/2.0);
     zStep=Control.EvalVar<double>(keyName+"Z");
 
-
     Geometry::Vec3D gC,gB,gB2;
-    bool LinkPointCentered = false; // defines if the link point is located in the center of the viewing area
-    int thermalAlgorithm = 1; // 0=old; 1=new
-    if (thermalAlgorithm>1)
-      ELog::EM << "thermalAlgorithm must be either 0 (old) or 1 (new)" << ELog::endErr;
 
     int lp=0;
-    if (range=="cold")
-      {
-	// link point (defined by theta)
-	ELog::EM << "Set cold lp also for LowFly" << ELog::endDiag;
-	if (theta<90)
-	  lp =  zStep>0 ? 6 : 7; // OK these maths depend on the XYangle of the moderator
-	else if (theta<180)
-	  lp =  zStep>0 ? 7 : 8;
-	else if (theta<270)
-	  lp =  zStep>0 ? 5 : 8; // OK
-	else // if theta>270
-	  lp =  zStep>0 ? 4 : 8; // OK
-	LinkPointCentered = false;
-      }
-    else if (range=="thermal")
-      {
-	ELog::EM << "Set thermal lp also for LowFly" << ELog::endDiag;
-	if (theta<90)
-	  lp =  zStep>0 ? 6 : 7; // OK these maths depend on the XYangle of the moderator
-	else if (theta<180)
-	  lp =  zStep>0 ? 7 : 8;
-	else if (theta<270)
-	  lp =  zStep>0 ? 5 : 8; // OK
-	else // if theta>270
-	  lp =  zStep>0 ? 4 : 8; // OK
-	LinkPointCentered = false;
-      }
-    else
-      {
-	ELog::EM << "Range must be either 'cold' or 'thermal'" << ELog::endErr;
-      }
-    ELog::EM<< "lp: " << lp << ELog::endDiag;
+    // link point (defined by theta)
+    if (theta<90)
+      lp =  zStep>0 ? 6 : 4; // OK these maths depend on the XYangle of the moderator
+    else if (theta<180)
+      lp =  zStep>0 ? 7 : 5;
+    else if (theta<270)
+      lp =  zStep>0 ? 5 : 7; // OK
+    else // if theta>270
+      lp =  zStep>0 ? 4 : 6; // OK
     Control.setVariable<int>(keyName+"LinkPoint", lp);
     LinkPoint = Control.EvalDefVar<int>(keyName+"LinkPoint", -1);
 
@@ -266,18 +238,23 @@ namespace essSystem
 	  if ((LinkPoint==5) || (LinkPoint==6) )
 	    BOC *= -1;
 	} else { // low moderator
-	  if ((LinkPoint==7) || (LinkPoint==2) || (LinkPoint==4))
+	  if ((LinkPoint==7) || (LinkPoint==4))
 	    BOC *= -1;
 	}
-      } else // thermal
+      } else if (range=="thermal")
       {
 	if (zStep>0) {// top moderator
 	  if ((LinkPoint==4) || (LinkPoint==7) )
 	    BOC *= -1;
 	} else { // low moderator
-	  if ((LinkPoint==7) || (LinkPoint==2) || (LinkPoint==4))
+	  if ((LinkPoint==6) || (LinkPoint==5))
 	    BOC *= -1;
 	}
+      }
+    else
+      {
+	ELog::EM << "Range can be either cold or thermal" << ELog::endErr;
+	return;
       }
 
     Geometry::Vec3D OC(OB);
@@ -288,12 +265,6 @@ namespace essSystem
       ELog::EM << "Problem with tally " << keyName << ": distance between B and C is " << BC.abs() << " --- not equal to F5ViewWidth = " << viewWidth << ELog::endErr;
 
     Geometry::Vec3D C(B+BC);
-
-    if (LinkPointCentered)
-      {
-	B = B-BC/2.0;
-	C = C-BC/2.0;
-      }
 
     Control.setVariable<double>(keyName+"XB", B.X());
     Control.setVariable<double>(keyName+"YB", B.Y());
