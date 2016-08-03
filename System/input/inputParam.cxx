@@ -676,7 +676,6 @@ inputParam::compValue(const std::string& K,const T& Value) const
   if (!IPtr)
     throw ColErr::EmptyValue<void>("Key failed: "+K);
   const size_t N=IPtr->getNItems();
-
   const std::string NCValue(StrFunc::makeString(Value));
 
   for(size_t i=0;i<N;i++)

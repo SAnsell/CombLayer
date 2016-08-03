@@ -317,7 +317,6 @@ Reflector::createLinks(const Geometry::Vec3D& XR,
 
   FixedComp::setConnect(0,Origin-YR*xySize,-YR);  // chipIR OPPOSITE
   FixedComp::setConnect(1,Origin+YR*xySize,YR);   // chipIR
-
   FixedComp::setConnect(2,Origin-XR*xySize,-XR);
   FixedComp::setConnect(3,Origin+XR*xySize,XR);
   FixedComp::setConnect(4,Origin-Z*zSize,-Z);
@@ -328,16 +327,15 @@ Reflector::createLinks(const Geometry::Vec3D& XR,
   FixedComp::setConnect(8,Origin-X*cutSize,-X);
   FixedComp::setConnect(9,Origin+X*cutSize,X);
 
-  
-  FixedComp::setLinkSurf(0,SMap.realSurf(refIndex+1));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(refIndex+1));
   FixedComp::setLinkSurf(1,SMap.realSurf(refIndex+2));
-  FixedComp::setLinkSurf(2,SMap.realSurf(refIndex+3));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(refIndex+3));
   FixedComp::setLinkSurf(3,SMap.realSurf(refIndex+4));
-  FixedComp::setLinkSurf(4,SMap.realSurf(refIndex+5));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(refIndex+5));
   FixedComp::setLinkSurf(5,SMap.realSurf(refIndex+6));
-  FixedComp::setLinkSurf(6,SMap.realSurf(refIndex+11));
+  FixedComp::setLinkSurf(6,-SMap.realSurf(refIndex+11));
   FixedComp::setLinkSurf(7,SMap.realSurf(refIndex+12));
-  FixedComp::setLinkSurf(8,SMap.realSurf(refIndex+13));
+  FixedComp::setLinkSurf(8,-SMap.realSurf(refIndex+13));
   FixedComp::setLinkSurf(9,SMap.realSurf(refIndex+14));
 
   return;
@@ -375,6 +373,7 @@ Reflector::createObjects(Simulation& System)
   CdBucket->addInsertCell(cellIndex-1);
   // torpedoCell=cellIndex-1;
 
+  ELog::EM<<"ADDING COOL PADS TO MAIN"<<ELog::endDiag;
   for(CoolPad& PD : Pads)
     PD.addInsertCell(74123);
   
@@ -458,7 +457,7 @@ Reflector::createInternalObjects(Simulation& System,
     }
 
   TarObj->addProtonLineInsertCell(cellIndex-1);
-  TarObj->addProtonLine(System,*this,6);
+  TarObj->addProtonLine(System,*this,-7);
 
   GrooveObj->createAll(System,World::masterTS2Origin());
   HydObj->createAll(System,*GrooveObj,0);
@@ -517,8 +516,12 @@ Reflector::createInternalObjects(Simulation& System,
   CdBucket->addBoundarySurf(TarObj->getExclude());
   CdBucket->createAll(System,*this);
 
+  
   for(CoolPad& PD : Pads)
-    PD.createAll(System,*this);
+    {
+      PD.createAll(System,*this,1);
+      return;
+    }
 
   return;
 }

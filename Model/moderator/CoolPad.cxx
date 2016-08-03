@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   moderator/CoolPad.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -90,18 +90,18 @@ CoolPad::CoolPad(const std::string& Key,const size_t Index) :
   attachSystem::ContainedComp(),attachSystem::FixedComp(Key,1),
   ID(Index),padIndex(ModelSupport::objectRegister::Instance().
 		     cell(StrFunc::makeString(Key,Index))),
-  cellIndex(padIndex+1),fixIndex(0)
+  cellIndex(padIndex+1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
+    \param Index :: index number
   */
 {}
 
 CoolPad::CoolPad(const CoolPad& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
   ID(A.ID),padIndex(A.padIndex),cellIndex(A.cellIndex),
-  fixIndex(A.fixIndex),xStep(A.xStep),
-  zStep(A.zStep),thick(A.thick),height(A.height),
+  xStep(A.xStep),zStep(A.zStep),thick(A.thick),height(A.height),
   width(A.width),Mat(A.Mat)
   /*!
     Copy constructor
@@ -122,7 +122,6 @@ CoolPad::operator=(const CoolPad& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
       cellIndex=A.cellIndex;
-      fixIndex=A.fixIndex;
       xStep=A.xStep;
       zStep=A.zStep;
       thick=A.thick;
@@ -151,7 +150,7 @@ CoolPad::populate(const FuncDataBase& Control)
 
   // Two keys : one with a number and the default
   const std::string keyIndex(StrFunc::makeString(keyName,ID));
-  fixIndex=Control.EvalPair<size_t>(keyIndex,keyName,"FixIndex");
+  //  fixIndex=Control.EvalPair<size_t>(keyIndex,keyName,"FixIndex");
   xStep=Control.EvalPair<double>(keyIndex,keyName,"XStep");
   zStep=Control.EvalPair<double>(keyIndex,keyName,"ZStep");
   thick=Control.EvalPair<double>(keyIndex,keyName,"Thick");
@@ -177,43 +176,47 @@ CoolPad::populate(const FuncDataBase& Control)
 }
   
 void
-CoolPad::createUnitVector(const attachSystem::FixedComp& CUnit)
+CoolPad::createUnitVector(const attachSystem::FixedComp& CUnit,
+			  const long int sideIndex)
   /*!
     Create the unit vectors
     - Y Points down Target
     - X Across the target
     - Z up 
     \param CUnit :: Fixed unit that it is connected to 
+    \param sideIndex :: Side to connect to
 
   */
 {
   ELog::RegMethod RegA("CoolPad","createUnitVector");
-
-  Origin=CUnit.getLinkPt(fixIndex);
-  Y=CUnit.getLinkAxis(fixIndex);
-  Z=CUnit.getZ();
-  X=Z*Y;
-  
+  FixedComp::createUnitVector(CUnit,sideIndex);
+  // Origin=CUnit.getLinkPt(fixIndex);
+  // Y=CUnit.getLinkAxis(fixIndex);
+  // Z=CUnit.getZ();
+  // X=Z*Y;
+  applyShift(xStep,0.0,zStep);
   Origin += X*xStep+Z*zStep;
+
   // Ugly loop to put relative coordinates into absolute
   for(size_t i=0;i<CPts.size();i++)
     CPts[i]=X*CPts[i].X()+Y*CPts[i].Y()+
       Z*CPts[i].Z()+Origin;
 
+  ELog::EM<<"Y == "<<Y<<ELog::endDiag;
+
   return;
 }
 
 void
-CoolPad::createSurfaces(const attachSystem::FixedComp& CUnit)
+CoolPad::createSurfaces()
   /*!
     Create All the surfaces
-    \param dirIndex :: direction index of FixedComp
-    \param CUnit :: FixedComp (reflector) to attach pad to.
   */
 {
   ELog::RegMethod RegA("CoolPad","createSurface");
 
-  SMap.addMatch(padIndex+1,CUnit.getLinkSurf(fixIndex));
+  //SMap.addMatch(padIndex+1,CUnit.getLinkSurf(fixIndex));
+
   ModelSupport::buildPlane(SMap,padIndex+2,Origin+Y*thick,Y);
   ModelSupport::buildPlane(SMap,padIndex+3,Origin-X*(width/2.0),X);
   ModelSupport::buildPlane(SMap,padIndex+4,Origin+X*(width/2.0),X);
@@ -233,10 +236,11 @@ CoolPad::createObjects(Simulation& System)
   ELog::RegMethod RegA("CoolPad","createObjects");
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,padIndex,"1 -2 3 -4 5 -6 ");
-  addOuterSurf(Out);
+  Out=ModelSupport::getComposite(SMap,padIndex," -2 3 -4 5 -6 ");
+  Out+=hotSurf.display();
   
   System.addCell(MonteCarlo::Qhull(cellIndex++,Mat,0.0,Out));
+  addOuterSurf(Out);
 
 
   return;
@@ -264,21 +268,24 @@ CoolPad::createWaterTrack(Simulation& System)
   
 void
 CoolPad::createAll(Simulation& System,
-		   const attachSystem::FixedComp& FUnit)
+		   const attachSystem::FixedComp& FUnit,
+		   const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation to create objects in
     \param FUnit :: Fixed Base unit
   */
 {
+  return;
   ELog::RegMethod RegA("CoolPad","createAll");
   populate(System.getDataBase());
 
-  createUnitVector(FUnit);
-  createSurfaces(FUnit);
+  createUnitVector(FUnit,sideIndex);
+  createSurfaces();
+  hotSurf=FUnit.getSignedFullRule(sideIndex);
   createObjects(System);
   insertObjects(System);       
-  createWaterTrack(System);
+  //  createWaterTrack(System);
   return;
 }
   

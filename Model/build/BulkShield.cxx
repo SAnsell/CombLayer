@@ -363,13 +363,14 @@ BulkShield::createBulkInserts(Simulation& System,
   */
 {
   ELog::RegMethod RegA("BulkShield","createBulkInserts");
+  
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
   
   const bool chipFlag(!IParam.flag("exclude") || 
 		      !IParam.compValue("E",std::string("chipIR")));
   const bool imatFlag(!IParam.flag("exclude") || 
-   		      (!IParam.compValue("E",std::string("Imat")) &&
+   		      (!IParam.compValue("E",std::string("imat")) &&
 		       !IParam.compValue("E",std::string("IMat"))) );
 
   for(size_t i=0;i<numberBeamLines;i++)
