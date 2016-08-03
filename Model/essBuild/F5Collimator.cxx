@@ -204,11 +204,11 @@ namespace essSystem
     if (thermalAlgorithm>1)
       ELog::EM << "thermalAlgorithm must be either 0 (old) or 1 (new)" << ELog::endErr;
 
+    int lp=0;
     if (range=="cold")
       {
 	// link point (defined by theta)
-	ELog::EM << "Set lp also for LowFly" << ELog::endDiag;
-	int lp=0;
+	ELog::EM << "Set cold lp also for LowFly" << ELog::endDiag;
 	if (theta<90)
 	  lp =  zStep>0 ? 6 : 7; // OK these maths depend on the XYangle of the moderator
 	else if (theta<180)
@@ -217,18 +217,27 @@ namespace essSystem
 	  lp =  zStep>0 ? 5 : 8; // OK
 	else // if theta>270
 	  lp =  zStep>0 ? 4 : 8; // OK
-	ELog::EM<< "lp: " << lp << ELog::endDiag;
-	Control.setVariable<int>(keyName+"LinkPoint", lp);
 	LinkPointCentered = false;
       }
     else if (range=="thermal")
       {
-	ELog::EM << "thermal not implemented yet" << ELog::endErr;
+	ELog::EM << "Set thermal lp also for LowFly" << ELog::endDiag;
+	if (theta<90)
+	  lp =  zStep>0 ? 6 : 7; // OK these maths depend on the XYangle of the moderator
+	else if (theta<180)
+	  lp =  zStep>0 ? 7 : 8;
+	else if (theta<270)
+	  lp =  zStep>0 ? 5 : 8; // OK
+	else // if theta>270
+	  lp =  zStep>0 ? 4 : 8; // OK
+	LinkPointCentered = false;
       }
     else
       {
 	ELog::EM << "Range must be either 'cold' or 'thermal'" << ELog::endErr;
       }
+    ELog::EM<< "lp: " << lp << ELog::endDiag;
+    Control.setVariable<int>(keyName+"LinkPoint", lp);
     LinkPoint = Control.EvalDefVar<int>(keyName+"LinkPoint", -1);
 
     // Calculate the coordinate of L (the second point)
@@ -251,13 +260,25 @@ namespace essSystem
     double BOC = acos((2*pow(OB.abs(), 2) - pow(viewWidth, 2))/(2*pow(OB.abs(), 2)));
     // define direction of C with respect to B:
     //  (these maths depend on the XYangle of the moderator)
-    if (zStep>0) {// top moderator
-      if ((LinkPoint==5) || (LinkPoint==6) )
-	BOC *= -1;
-    } else { // low moderator
-      if ((LinkPoint==7) || (LinkPoint==2) || (LinkPoint==4))
-	BOC *= -1;
-    }
+    if (range=="cold")
+      {
+	if (zStep>0) {// top moderator
+	  if ((LinkPoint==5) || (LinkPoint==6) )
+	    BOC *= -1;
+	} else { // low moderator
+	  if ((LinkPoint==7) || (LinkPoint==2) || (LinkPoint==4))
+	    BOC *= -1;
+	}
+      } else // thermal
+      {
+	if (zStep>0) {// top moderator
+	  if ((LinkPoint==4) || (LinkPoint==7) )
+	    BOC *= -1;
+	} else { // low moderator
+	  if ((LinkPoint==7) || (LinkPoint==2) || (LinkPoint==4))
+	    BOC *= -1;
+	}
+      }
 
     Geometry::Vec3D OC(OB);
     Geometry::Quaternion::calcQRotDeg(BOC*180/M_PI,Z).rotate(OC);
