@@ -148,7 +148,7 @@ namespace essSystem
     ELog::RegMethod RegA("BeRefInnerStructure","populate");
 
     nLayers=Control.EvalVar<size_t>(keyName+"NLayers");
-    ModelSupport::populateDivideLen(Control,nLayers,keyName+"BaseLen", 1.0, baseFrac); // \todo check if 1.0 is correct here
+    ModelSupport::populateDivideLen(Control,nLayers,keyName+"BaseLen", 1.0, baseFrac);
     ModelSupport::populateDivide(Control,nLayers,keyName+"Mat", 0, mat);
 
     return;

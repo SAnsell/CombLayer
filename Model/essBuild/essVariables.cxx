@@ -65,6 +65,7 @@ EssVariables(FuncDataBase& Control)
 // -----------
 // GLOBAL stuff
 // -----------
+  ELog::RegMethod RegA("setVariable","EssVariables");
 
   Control.addVariable("zero",0.0);     // Zero
   Control.addVariable("one",1.0);      // one
@@ -382,7 +383,6 @@ EssVariables(FuncDataBase& Control)
   Control.Parse("TopAFlightLinerThick1"); 
   Control.addVariable("TopBFlightLinerThick1"); 
   Control.addVariable("TopBFlightLinerMat1","Aluminium");
-
   
   Control.addVariable("BeRefXStep",0.0);  
   Control.addVariable("BeRefYStep",0.0);  
@@ -399,45 +399,28 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("BeRefRefMat","Be5H2O");
   //  Control.addVariable("BeRefRefMat","Be300K");
 
-
   Control.addVariable("BeRefWallMat","Aluminium");
   Control.addVariable("BeRefTargSepMat","Void");
 
   ///< TODO : Fix double variable dependency !!!
   
-  Control.addVariable("BeRefInnerStructureWaterDiscThick", 0.6);
-  Control.addVariable("BeRefInnerStructureWaterDiscMat", "H2O");
-  Control.addVariable("BeRefInnerStructureWaterDiscWallThick", 0.3);
-  Control.addVariable("BeRefInnerStructureWaterDiscWallMat", "Aluminium");
-
   Control.addVariable("BeRefInnerStructureBeRadius", 12.5);
   Control.addVariable("BeRefInnerStructureBeMat", "Be10H2O");
   Control.addVariable("BeRefInnerStructureBeWallThick", 0.3);
   Control.addVariable("BeRefInnerStructureBeWallMat", "Aluminium");
 
-  Control.addVariable("TopBeRefWaterDiscNLayers",2);
-  Control.addVariable("TopBeRefWaterDiscHeight0",0.3);
-  Control.addVariable("TopBeRefWaterDiscDepth0",0.3);
-  Control.Parse("BeRefRadius");
-  Control.addVariable("TopBeRefWaterDiscRadius0");
-  Control.addVariable("TopBeRefWaterDiscMat0","H2O");
-  Control.addVariable("TopBeRefWaterDiscHeight1",0.4);
-  Control.addVariable("TopBeRefWaterDiscDepth1",0.0);
-  Control.Parse("BeRefWallThick");
-  Control.addVariable("TopBeRefWaterDiscRadius1");
-  Control.addVariable("TopBeRefWaterDiscMat1", "Aluminium");
-
-  Control.addVariable("LowBeRefWaterDiscNLayers",2);
-  Control.addVariable("LowBeRefWaterDiscHeight0",0.3);
-  Control.addVariable("LowBeRefWaterDiscDepth0",0.3);
-  Control.Parse("BeRefRadius");
-  Control.addVariable("LowBeRefWaterDiscRadius0");
-  Control.addVariable("LowBeRefWaterDiscMat0","H2O");
-  Control.addVariable("LowBeRefWaterDiscHeight1",0.4);
-  Control.addVariable("LowBeRefWaterDiscDepth1",0.0);
-  Control.Parse("BeRefWallThick");
-  Control.addVariable("LowBeRefWaterDiscRadius1");
-  Control.addVariable("LowBeRefWaterDiscMat1", "Aluminium");
+  Control.addVariable("BeRefInnerStructureNLayers", 6);
+  Control.addVariable("BeRefInnerStructureBaseLen1", 0.258);
+  Control.addVariable("BeRefInnerStructureBaseLen2", 0.075);
+  Control.addVariable("BeRefInnerStructureBaseLen3", 0.258);
+  Control.addVariable("BeRefInnerStructureBaseLen4", 0.075);
+  Control.addVariable("BeRefInnerStructureBaseLen5", 0.258);
+  Control.addVariable("BeRefInnerStructureMat0", "Beryllium");
+  Control.addVariable("BeRefInnerStructureMat1", "Be30H2O");
+  Control.addVariable("BeRefInnerStructureMat2", "Beryllium");
+  Control.addVariable("BeRefInnerStructureMat3", "Be30H2O");
+  Control.addVariable("BeRefInnerStructureMat4", "Beryllium");
+  Control.addVariable("BeRefInnerStructureMat5", "Be30H2O");
 
   Control.addVariable("BulkXStep",0.0);
   Control.addVariable("BulkYStep",0.0);
@@ -453,13 +436,13 @@ EssVariables(FuncDataBase& Control)
     and going to break if anyone make a change
   */
 
-  Control.Parse("BeRefHeight/2.0+BeRefWallThick+"
+  /*  Control.Parse("BeRefHeight/2.0+BeRefWallThick+"
                 "TopBeRefWaterDiscHeight0+TopBeRefWaterDiscDepth0+"
-		"TopBeRefWaterDiscHeight1+0.2");
-  Control.addVariable("BulkHeight1");
-  Control.Parse("BeRefHeight/2.0+BeRefWallThick+LowBeRefWaterDiscHeight0"
-		"+LowBeRefWaterDiscDepth0+LowBeRefWaterDiscHeight1+0.2");
-  Control.addVariable("BulkDepth1");
+		"TopBeRefWaterDiscHeight1+0.2");  */
+  Control.addVariable("BulkHeight1", 38.6);
+  /*  Control.Parse("BeRefHeight/2.0+BeRefWallThick+LowBeRefWaterDiscHeight0"
+      "+LowBeRefWaterDiscDepth0+LowBeRefWaterDiscHeight1+0.2");*/
+  Control.addVariable("BulkDepth1", 38.6);
   Control.addVariable("BulkMat1","Void");
 
   Control.addVariable("BulkRadius2",65.0);
@@ -473,7 +456,6 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("BulkDepth3",200.0);
   Control.addVariable("BulkMat3","Iron10H2O");        // SA: using hand-made mixture because CL can't generate volume fractions
 
-
   // BULK FLIGHT VOID
   Control.addVariable("BulkLAFlightSideIndex",-2);   // Index
   Control.addVariable("BulkLAFlightXStep",0.0);      // Step from centre
@@ -485,7 +467,6 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("BulkLAFlightHeight",10.0);    // Full height
   Control.addVariable("BulkLAFlightWidth",23.3);     // Full width
   Control.addVariable("BulkLAFlightNLiner",0);       // Liner
-
 
   // SHUTTER BAY
   Control.addVariable("ShutterBayXStep",0.0);  
