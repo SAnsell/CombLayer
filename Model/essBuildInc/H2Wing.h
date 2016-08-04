@@ -73,6 +73,7 @@ class H2Wing :
   std::vector<int> mat;         ///< Layer material
   std::vector<double> temp;     ///< Layer temperature
 
+  std::string sideRule;         ///< Side rule
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
@@ -102,6 +103,9 @@ class H2Wing :
   virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
   virtual std::string getLayerString(const size_t,const long int) const;
   virtual int getLayerSurf(const size_t,const long int) const;
+
+  inline const std::string getSideRule() const { return sideRule; }
+
   void createAll(Simulation&,const attachSystem::FixedComp&);
 };
 
