@@ -395,7 +395,7 @@ void makeESS::buildF5Collimator(Simulation& System, const mainSystem::inputParam
 
   if (!nitems) return;
 
-  std::string midWaterName;
+  std::string midWaterName, lobeName;
   double theta(0.0);
   size_t colIndex(0);
   //  ELog::EM << "Use StrFunc::convert instead of atoi in the loop below. Check its return value." << ELog::endCrit;
@@ -430,12 +430,18 @@ void makeESS::buildF5Collimator(Simulation& System, const mainSystem::inputParam
 	      if (!midWater)
 		throw ColErr::InContainerError<std::string>
 		  (midWaterName,"Component not found");
+
+	      lobeName = moderator + "LeftLobe";
+	      const attachSystem::FixedComp* lobe = OR.getObject<attachSystem::FixedComp>(lobeName);
+	      if (!lobe)
+		throw ColErr::InContainerError<std::string>
+		  (lobeName,"Component not found");
+
 	      std::vector<Geometry::Vec3D> vecFP;
 	      for (size_t ii=0; ii<8; ii++)
 		vecFP.push_back(midWater->getLinkPt(ii));
-	      ELog::EM << "Replace these dummy values with the real ones" << ELog::endDiag;
-	      vecFP.push_back(Geometry::Vec3D(0,0,12.2));
-	      vecFP.push_back(Geometry::Vec3D(0,0,15.2));
+	      vecFP.push_back(lobe->getLinkPt(12)); // zmin
+	      vecFP.push_back(lobe->getLinkPt(13)); // zmax
 	      F5->setFocalPoints(vecFP);
 	      /////
 	      
