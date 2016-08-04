@@ -95,7 +95,7 @@
 #include "TwisterModule.h"
 #include "ShutterBay.h"
 #include "GuideBay.h"
-#include "DiskPreMod.h"
+#include "TaperedDiskPreMod.h"
 #include "Bunker.h"
 #include "RoofPillars.h"
 #include "BunkerFeed.h"
@@ -117,14 +117,14 @@ makeESS::makeESS() :
   PBeam(new ProtonTube("ProtonTube")),
   BMon(new BeamMonitor("BeamMonitor")),
 
-  LowPreMod(new DiskPreMod("LowPreMod")),
-  LowCapMod(new DiskPreMod("LowCapMod")),
+  LowPreMod(new TaperedDiskPreMod("LowPreMod")),
+  LowCapMod(new TaperedDiskPreMod("LowCapMod")),
   
   LowAFL(new moderatorSystem::TaperedFlightLine("LowAFlight")),
   LowBFL(new moderatorSystem::TaperedFlightLine("LowBFlight")),
 
-  TopPreMod(new DiskPreMod("TopPreMod")),
-  TopCapMod(new DiskPreMod("TopCapMod")),
+  TopPreMod(new TaperedDiskPreMod("TopPreMod")),
+  TopCapMod(new TaperedDiskPreMod("TopCapMod")),
 
   TopAFL(new moderatorSystem::TaperedFlightLine("TopAFlight")),
   TopBFL(new moderatorSystem::TaperedFlightLine("TopBFlight")),
@@ -686,6 +686,38 @@ makeESS::makeBunker(Simulation& System,
   return;
 }
 
+  /*
+void
+makeESS::buildPreWings(Simulation& System)
+{
+  ELog::RegMethod RegA("makeESS","buildPreWings");
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  enum Side {bottom, top};
+  
+  TopPreWing = std::shared_ptr<PreModWing>(new PreModWing("TopPreWing"));
+  OR.addObject(TopPreWing);
+  TopPreWing->createAll(System, *TopPreMod, 9, false, top, *TopMod);
+  attachSystem::addToInsertSurfCtrl(System, *TopPreMod, *TopPreWing);
+
+  TopCapWing = std::shared_ptr<PreModWing>(new PreModWing("TopCapWing"));
+  OR.addObject(TopCapWing);
+  TopCapWing->createAll(System, *TopCapMod, 10, false, bottom, *TopMod);
+  attachSystem::addToInsertSurfCtrl(System, *TopCapMod, *TopCapWing);
+
+  LowPreWing = std::shared_ptr<PreModWing>(new PreModWing("LowPreWing"));
+  OR.addObject(LowPreWing);
+  LowPreWing->createAll(System, *LowPreMod, 9, true, bottom, *LowMod);
+  attachSystem::addToInsertSurfCtrl(System, *LowPreMod, *LowPreWing);
+
+  LowCapWing = std::shared_ptr<PreModWing>(new PreModWing("LowCapWing"));
+  OR.addObject(LowCapWing);
+  LowCapWing->createAll(System, *LowCapMod, 10, true, top, *LowMod);
+  attachSystem::addToInsertSurfCtrl(System, *LowCapMod, *LowCapWing);
+}
+  */
+  
 void
 makeESS::buildTwister(Simulation& System)
 {
@@ -752,11 +784,11 @@ makeESS::build(Simulation& System,
   // lower moderator
   LowPreMod->createAll(System,World::masterOrigin(),0,true,
 		       Target->wheelHeight()/2.0,
-		       Reflector->getRadius());
+		       Reflector->getRadius(),false);
 
   TopPreMod->createAll(System,World::masterOrigin(),0,false,
 		       Target->wheelHeight()/2.0,
-		       Reflector->getRadius());
+		       Reflector->getRadius(),true);
   
   buildLowButterfly(System);
   buildTopButterfly(System);
@@ -765,16 +797,17 @@ makeESS::build(Simulation& System,
   
   // Cap moderator DOES not span whole unit
   TopCapMod->createAll(System,*TopMod,6,false,
-   		       0.0,Reflector->getRadius());
+   		       0.0,Reflector->getRadius(),false);
 
   LowCapMod->createAll(System,*LowMod,6,false,
-   		       0.0,Reflector->getRadius());
+   		       0.0,Reflector->getRadius(),true);
 
   Reflector->createAll(System,World::masterOrigin(),
 		       Target->wheelHeight(),
 		       LowPreMod->getHeight()+LMHeight+LowCapMod->getHeight(),
 		       TopPreMod->getHeight()+TMHeight+TopCapMod->getHeight());
-
+  
+  //  buildPreWings(System);
 
   Reflector->insertComponent(System,"targetVoid",*Target,1);
   Reflector->deleteCell(System,"lowVoid");
