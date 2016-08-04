@@ -92,6 +92,7 @@
 #include "IradCylinder.h"
 #include "SupplyPipe.h"
 #include "BulkModule.h"
+#include "TwisterModule.h"
 #include "ShutterBay.h"
 #include "GuideBay.h"
 #include "DiskPreMod.h"
@@ -685,6 +686,31 @@ makeESS::makeBunker(Simulation& System,
   return;
 }
 
+void
+makeESS::buildTwister(Simulation& System)
+{
+  ELog::RegMethod RegA("makeESS","buildTwister");
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  Twister = std::shared_ptr<TwisterModule>(new TwisterModule("Twister"));
+  OR.addObject(Twister);
+
+  Twister->createAll(System,*Bulk);
+  attachSystem::addToInsertForced(System, *Bulk, *Twister);
+  attachSystem::addToInsertForced(System, *ShutterBayObj, *Twister);
+  attachSystem::addToInsertSurfCtrl(System, *Twister, PBeam->getCC("Sector0"));
+  attachSystem::addToInsertSurfCtrl(System, *Twister, PBeam->getCC("Sector1")); ELog::EM << "remove this line after R is set correctly " << ELog::endDiag;
+  attachSystem::addToInsertControl(System, *Twister, *Reflector);
+  attachSystem::addToInsertForced(System,*Twister,TopAFL->getCC("outer"));
+  attachSystem::addToInsertForced(System,*Twister,TopBFL->getCC("outer"));
+  attachSystem::addToInsertForced(System,*Twister,LowAFL->getCC("outer"));
+  attachSystem::addToInsertForced(System,*Twister,LowBFL->getCC("outer"));
+  attachSystem::addToInsertForced(System,*Twister, Target->getCC("Wheel"));
+
+  return;
+}
   
 void 
 makeESS::build(Simulation& System,
@@ -795,14 +821,19 @@ makeESS::build(Simulation& System,
   attachSystem::addToInsertSurfCtrl(System,*Bulk,
 				    PBeam->getCC("Full"));
 
-  // WARNING: THESE CALL MUST GO AFTER the main void (74123) has
-  // been completed. Otherwize we can't find the pipe in the volume.
-  ModPipes->buildLowPipes(System,lowPipeType);
-  ModPipes->buildTopPipes(System,topPipeType);
+  const int engActive = System.getDataBase().EvalVar<int>("EngineeringActive");
+  if (engActive)
+    {
+      buildTwister(System);
+    }
 
   makeBeamLine(System,IParam);
   buildF5Collimator(System, IParam);
 
+  // WARNING: THESE CALL MUST GO AFTER the main void (74123) has
+  // been completed. Otherwize we can't find the pipe in the volume.
+  ModPipes->buildLowPipes(System,lowPipeType);
+  ModPipes->buildTopPipes(System,topPipeType);
 
   return;
 }

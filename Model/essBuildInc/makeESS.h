@@ -61,6 +61,7 @@ namespace essSystem
   class CylPreMod;
   class IradCylinder;
   class BulkModule;
+  class TwisterModule;
   class ShutterBay;
   class ProtonTube;
   class GuideBay;
@@ -113,6 +114,7 @@ class makeESS
 
 
   std::shared_ptr<BulkModule> Bulk;      ///< Main bulk module
+  std::shared_ptr<TwisterModule> Twister; ///< Moderator twister module
 
   /// Shutterbay objects
   std::shared_ptr<ShutterBay> ShutterBayObj;  
@@ -163,6 +165,8 @@ class makeESS
 
   void buildF5Collimator(Simulation&, size_t); // when -nF5 is used
   void buildF5Collimator(Simulation&, const mainSystem::inputParam&); // when -f5-collimators is used
+
+  void buildTwister(Simulation&);
 
   void optionSummary(Simulation&);
 
