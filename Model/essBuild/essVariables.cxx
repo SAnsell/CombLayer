@@ -389,9 +389,9 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("BeRefZStep",0.0);
   Control.addVariable("BeRefXYangle",0.0); 
   Control.addVariable("BeRefZangle",0.0);
-  Control.addVariable("BeRefRadius",34.3);
-  Control.addVariable("BeRefHeight",74.2);
-  Control.addVariable("BeRefWallThick",0.3);
+  Control.addVariable("BeRefRadius",35);
+  Control.addVariable("BeRefHeight",74.6);
+  Control.addVariable("BeRefWallThick",3);
   Control.addVariable("BeRefWallThickLow",0.0);
   Control.addVariable("BeRefTargetSepThick",13.0);
   Control.addVariable("BeRefLowVoidThick",2.3);
@@ -399,8 +399,8 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("BeRefRefMat","Be5H2O");
   //  Control.addVariable("BeRefRefMat","Be300K");
 
-  Control.addVariable("BeRefWallMat","Aluminium");
-  Control.addVariable("BeRefTargSepMat","Void");
+  Control.addVariable("BeRefWallMat","SS316L");
+  Control.addVariable("BeRefTargSepMat","Iron10H2O");
 
   ///< TODO : Fix double variable dependency !!!
   
@@ -439,10 +439,10 @@ EssVariables(FuncDataBase& Control)
   /*  Control.Parse("BeRefHeight/2.0+BeRefWallThick+"
                 "TopBeRefWaterDiscHeight0+TopBeRefWaterDiscDepth0+"
 		"TopBeRefWaterDiscHeight1+0.2");  */
-  Control.addVariable("BulkHeight1", 38.6);
+  Control.addVariable("BulkHeight1", 41.5);
   /*  Control.Parse("BeRefHeight/2.0+BeRefWallThick+LowBeRefWaterDiscHeight0"
       "+LowBeRefWaterDiscDepth0+LowBeRefWaterDiscHeight1+0.2");*/
-  Control.addVariable("BulkDepth1", 38.6);
+  Control.addVariable("BulkDepth1", 41.5);
   Control.addVariable("BulkMat1","Void");
 
   Control.addVariable("BulkRadius2",65.0);
