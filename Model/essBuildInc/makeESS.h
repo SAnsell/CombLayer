@@ -59,6 +59,7 @@ namespace essSystem
   class ESSPipes;
   class ConicModerator;
   class CylPreMod;
+  class PreModWing;
   class IradCylinder;
   class BulkModule;
   class TwisterModule;
@@ -106,6 +107,12 @@ class makeESS
   std::shared_ptr<constructSystem::ModBase> TopMod;
   std::shared_ptr<TaperedDiskPreMod> TopPreMod;         ///< Top mod 
   std::shared_ptr<TaperedDiskPreMod> TopCapMod;         ///< Lower mod
+
+  std::shared_ptr<PreModWing> LowPreWing; ///< Low premoderator wing
+  std::shared_ptr<PreModWing> TopPreWing; ///< Top premoderator wing
+  std::shared_ptr<PreModWing> LowCapWing; ///< Low cap premoderator wing
+  std::shared_ptr<PreModWing> TopCapWing; ///< Top cap premoderator wing
+
 
   std::shared_ptr<moderatorSystem::TaperedFlightLine> TopAFL;  ///< Top Mode FL
   std::shared_ptr<moderatorSystem::TaperedFlightLine> TopBFL;  ///< Top Mode FL

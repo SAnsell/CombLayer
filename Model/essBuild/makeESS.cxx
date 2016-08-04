@@ -89,6 +89,7 @@
 #include "ButterflyModerator.h"
 #include "BlockAddition.h"
 #include "CylPreMod.h"
+#include "PreModWing.h"
 #include "IradCylinder.h"
 #include "SupplyPipe.h"
 #include "BulkModule.h"
@@ -686,7 +687,6 @@ makeESS::makeBunker(Simulation& System,
   return;
 }
 
-  /*
 void
 makeESS::buildPreWings(Simulation& System)
 {
@@ -716,7 +716,6 @@ makeESS::buildPreWings(Simulation& System)
   LowCapWing->createAll(System, *LowCapMod, 10, true, top, *LowMod);
   attachSystem::addToInsertSurfCtrl(System, *LowCapMod, *LowCapWing);
 }
-  */
   
 void
 makeESS::buildTwister(Simulation& System)
@@ -807,7 +806,7 @@ makeESS::build(Simulation& System,
 		       LowPreMod->getHeight()+LMHeight+LowCapMod->getHeight(),
 		       TopPreMod->getHeight()+TMHeight+TopCapMod->getHeight());
   
-  //  buildPreWings(System);
+  buildPreWings(System);
 
   Reflector->insertComponent(System,"targetVoid",*Target,1);
   Reflector->deleteCell(System,"lowVoid");
