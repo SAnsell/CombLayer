@@ -107,10 +107,12 @@ MidWaterDivider::MidWaterDivider(const std::string& baseKey,
 MidWaterDivider::MidWaterDivider(const MidWaterDivider& A) : 
   attachSystem::ContainedComp(A),attachSystem::LayerComp(A),
   attachSystem::FixedComp(A), baseName(A.baseName),
-  divIndex(A.divIndex),cellIndex(A.cellIndex),midYStep(A.midYStep),
-  midAngle(A.midAngle),length(A.length),height(A.height),
-  wallThick(A.wallThick),modMat(A.modMat),wallMat(A.wallMat),
-  modTemp(A.modTemp),edgeRadius(A.edgeRadius)
+  divIndex(A.divIndex),cellIndex(A.cellIndex),cutLayer(A.cutLayer),
+  midYStep(A.midYStep),midAngle(A.midAngle),
+  length(A.length),height(A.height),wallThick(A.wallThick),
+  modMat(A.modMat),wallMat(A.wallMat),modTemp(A.modTemp),
+  edgeRadius(A.edgeRadius),totalHeight(A.totalHeight),
+  sideRule(A.sideRule)
   /*!
     Copy constructor
     \param A :: MidWaterDivider to copy
@@ -131,6 +133,7 @@ MidWaterDivider::operator=(const MidWaterDivider& A)
       attachSystem::LayerComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
       cellIndex=A.cellIndex;
+      cutLayer=A.cutLayer;
       midYStep=A.midYStep;
       midAngle=A.midAngle;
       length=A.length;
@@ -140,6 +143,8 @@ MidWaterDivider::operator=(const MidWaterDivider& A)
       wallMat=A.wallMat;
       modTemp=A.modTemp;
       edgeRadius=A.edgeRadius;
+      totalHeight=A.totalHeight;
+      sideRule=A.sideRule;
     }
   return *this;
 }
@@ -482,7 +487,9 @@ MidWaterDivider::createObjects(Simulation& System,
   HeadRule HR;
   HR.procString(ContainedComp::getExclude());
   HR.makeComplement();
-  //  sideRule = HR.display();
+  
+  sideRule = HR.display();
+  
   return;
 }
 
