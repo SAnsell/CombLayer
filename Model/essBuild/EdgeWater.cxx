@@ -107,7 +107,7 @@ EdgeWater::EdgeWater(const EdgeWater& A) :
   attachSystem::FixedComp(A),attachSystem::CellMap(A),
   edgeIndex(A.edgeIndex),cellIndex(A.cellIndex),
   width(A.width),wallThick(A.wallThick),modMat(A.modMat),
-  wallMat(A.wallMat),modTemp(A.modTemp)
+  wallMat(A.wallMat),modTemp(A.modTemp),sideRule(A.sideRule)
   /*!
     Copy constructor
     \param A :: EdgeWater to copy
@@ -134,6 +134,7 @@ EdgeWater::operator=(const EdgeWater& A)
       modMat=A.modMat;
       wallMat=A.wallMat;
       modTemp=A.modTemp;
+      sideRule=A.sideRule;
     }
   return *this;
 }
@@ -283,8 +284,9 @@ EdgeWater::createObjects(Simulation& System,
 				   Out+container+divider));
   CellMap::addCell("Wall",  cellIndex-1);
   
-  Out=ModelSupport::getComposite(SMap,edgeIndex," 11 -12 203 -204");
-  addOuterSurf(Out+divider);
+  Out=ModelSupport::getComposite(SMap,edgeIndex," 11 -12 203 -204") + divider;
+  addOuterSurf(Out);
+  sideRule = Out;
   return;
 }
 
