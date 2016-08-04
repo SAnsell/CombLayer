@@ -223,7 +223,8 @@ ButterflyModerator::createObjects(Simulation& System)
   std::string Out;
   Out=ModelSupport::getComposite(SMap,flyIndex," -7 5 -6 ");  
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+Exclude));
-
+  setCell("ambientVoid", cellIndex-1);
+  
   clearRules();
   addOuterSurf(Out);
   
@@ -346,6 +347,43 @@ ButterflyModerator::getComponent(const std::string& compName) const
   if (TStr==RightWater->getKeyName())
     return *RightWater;
   throw ColErr::InContainerError<std::string>(compName,keyName+" component");
+}
+
+
+std::string
+ButterflyModerator::getSideRule() const
+/*
+  Return side rule
+  \todo // SA: Use union of link points as it is faster
+*/
+{
+  ELog::RegMethod RegA("ButterflyModerator","getSideRule");
+
+  HeadRule HR;
+  HR.procString(LeftUnit->getSideRule());
+  HR.addUnion(RightUnit->getSideRule());
+  HR.addUnion(MidWater->getSideRule());
+  HR.addUnion(LeftWater->getSideRule());
+  HR.addUnion(RightWater->getSideRule());
+  HR.makeComplement();
+
+  return HR.display();
+}
+
+std::string
+ButterflyModerator::getLeftRightWaterSideRule() const
+/*
+  Return left+right water side rule
+  \todo // SA: Use union of link points as it is faster
+*/
+{
+  std::string side("");
+  HeadRule HR;
+  HR.procString(LeftWater->getSideRule());
+  HR.addUnion(RightWater->getSideRule());
+  HR.makeComplement();
+
+  return HR.display();
 }
 
   
