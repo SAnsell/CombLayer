@@ -61,6 +61,7 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "World.h"
@@ -238,7 +239,7 @@ makeMuon::build(Simulation* SimPtr,
       ThirdShieldObj->createAll(*SimPtr,World::masterOrigin());
 
       ProfMonObj->addInsertCell(74123);
-      ProfMonObj->createAll(*SimPtr,World::masterOrigin());
+      ProfMonObj->createAll(*SimPtr,World::masterOrigin(),0);
       ThirdCollObj->addInsertCell(74123);
 
 

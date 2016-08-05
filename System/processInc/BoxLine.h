@@ -64,8 +64,6 @@ class BoxLine
   void forcedInsertCells(const size_t);
 
   int createUnits(Simulation&);
-  void createSurfaces();
-  void createObjects();
   void insertPipe(Simulation&);
 
 

@@ -269,8 +269,7 @@ boxUnit::populate(const size_t AF,const std::vector<boxValues>& CV)
   boxVar=CV;
 
   checkForward();
-  if (prev) 
-    ZUnit=prev->getZUnit();
+  if (prev) ZUnit=prev->getZUnit();
   const Geometry::Vec3D& pAxis((prev) ? prev->getAxis() : Axis);
   const Geometry::Vec3D& nAxis((next) ? -next->getAxis() : -Axis);
   calcNorm(0,Axis,pAxis);
@@ -358,11 +357,13 @@ boxUnit::createSurfaces()
     {
       ModelSupport::buildPlane(SMap,surfIndex+1,APt,ANorm);
       ASurf=HeadRule(StrFunc::makeString(SMap.realSurf(surfIndex+1)));
+      ASurf.populateSurf();
     }
   if (!BSurf.hasRule())
     {
       ModelSupport::buildPlane(SMap,surfIndex+2,BPt,BNorm);
       BSurf=HeadRule(StrFunc::makeString(SMap.realSurf(surfIndex+2)));
+      BSurf.populateSurf();
     }
   
   // No need to delete surfaces [in SMap]
@@ -381,6 +382,9 @@ boxUnit::createSurfaces()
 	  const boxValues& boxVal(boxVar[i]);
 	  for(size_t j=0;j<nSides;j++)
 	    {
+	      // ELog::EM<<"Point["<<j<<"] == "<<
+	      // 	boxVal.getDatum(j,APt,XUnit,ZUnit)<<":"<<
+	      // 	boxVal.getAxis(j,XUnit,ZUnit)<<ELog::endDiag;
 	      ModelSupport::buildPlane(SMap,surfOffset+cnt,
 				       boxVal.getDatum(j,APt,XUnit,ZUnit),
 				       boxVal.getAxis(j,XUnit,ZUnit));

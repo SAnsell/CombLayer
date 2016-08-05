@@ -245,6 +245,7 @@ Reflector::populate(const FuncDataBase& Control)
   defMat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 
   const size_t nPads=Control.EvalVar<size_t>(keyName+"NPads");
+  ELog::EM<<"NPADS == "<<nPads<<ELog::endDiag;
   for(size_t i=0;i<nPads;i++)
     Pads.push_back(CoolPad("coolPad",i+1));
 
@@ -373,7 +374,6 @@ Reflector::createObjects(Simulation& System)
   CdBucket->addInsertCell(cellIndex-1);
   // torpedoCell=cellIndex-1;
 
-  ELog::EM<<"ADDING COOL PADS TO MAIN"<<ELog::endDiag;
   for(CoolPad& PD : Pads)
     PD.addInsertCell(74123);
   
@@ -516,12 +516,8 @@ Reflector::createInternalObjects(Simulation& System,
   CdBucket->addBoundarySurf(TarObj->getExclude());
   CdBucket->createAll(System,*this);
 
-  
   for(CoolPad& PD : Pads)
-    {
-      PD.createAll(System,*this,1);
-      return;
-    }
+    PD.createAll(System,*this,2);
 
   return;
 }

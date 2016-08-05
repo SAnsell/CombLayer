@@ -143,7 +143,7 @@ void
 CoolPad::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: Database for variables
   */
 {
   ELog::RegMethod RegA("CoolPad","populate");
@@ -195,15 +195,13 @@ CoolPad::createUnitVector(const attachSystem::FixedComp& CUnit,
   // Z=CUnit.getZ();
   // X=Z*Y;
   applyShift(xStep,0.0,zStep);
-  Origin += X*xStep+Z*zStep;
 
   // Ugly loop to put relative coordinates into absolute
   for(size_t i=0;i<CPts.size();i++)
-    CPts[i]=X*CPts[i].X()+Y*CPts[i].Y()+
-      Z*CPts[i].Z()+Origin;
-
-  ELog::EM<<"Y == "<<Y<<ELog::endDiag;
-
+    {
+      CPts[i]=-X*CPts[i].X()+Y*CPts[i].Y()+
+	Z*CPts[i].Z()+Origin;
+    }
   return;
 }
 
@@ -250,16 +248,17 @@ void
 CoolPad::createWaterTrack(Simulation& System)
   /*!
     Build the cooling pad pipe line
+    \param System :: Simulation to place item
   */
 {  
   ELog::RegMethod RegA("CoolPad","createWaterTrack");
-
   ModelSupport::BoxLine WaterTrack
     (StrFunc::makeString(std::string("PadWater"),ID));
+
   WaterTrack.setPoints(CPts);
   WaterTrack.addSection(IWidth,IDepth,IMat,0.0);
-  WaterTrack.setInitZAxis(Y);
 
+  WaterTrack.setInitZAxis(Y);
   WaterTrack.createAll(System);
   // NoInsert();
   //  WaterTrack.insertPipeToCell(System,cellIndex-1);
@@ -274,18 +273,18 @@ CoolPad::createAll(Simulation& System,
     Generic function to create everything
     \param System :: Simulation to create objects in
     \param FUnit :: Fixed Base unit
+    \param sideIndex :: Link point [signed]
   */
 {
-  return;
   ELog::RegMethod RegA("CoolPad","createAll");
   populate(System.getDataBase());
-
+  
   createUnitVector(FUnit,sideIndex);
   createSurfaces();
   hotSurf=FUnit.getSignedFullRule(sideIndex);
   createObjects(System);
   insertObjects(System);       
-  //  createWaterTrack(System);
+  createWaterTrack(System);
   return;
 }
   
