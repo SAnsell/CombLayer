@@ -852,7 +852,7 @@ makeESS::build(Simulation& System,
   attachSystem::addToInsertSurfCtrl(System,*Bulk,
 				    PBeam->getCC("Full"));
 
-  const int engActive = System.getDataBase().EvalVar<int>("EngineeringActive");
+  const int engActive = System.getDataBase().EvalPair<int>("Bulk", "", "EngineeringActive");
   if (engActive)
     {
       buildTwister(System);
