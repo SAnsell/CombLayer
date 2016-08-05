@@ -63,7 +63,7 @@ class ConeModerator : public virtualMod
 
   int HCell;                ///< Main H2 cell
   
-  void populate(const Simulation&);
+  void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::SecondTrack&);
 
   void createSurfaces();

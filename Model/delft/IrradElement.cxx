@@ -63,6 +63,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 
 #include "FuelLoad.h"
@@ -81,6 +82,7 @@ IrradElement::IrradElement(const size_t XI,const size_t YI,
     Constructor BUT ALL variable are left unpopulated.
     \param XI :: Grid index  [A-F]
     \param YI :: Grid index 
+    \param Key :: Keyname for block
   */
 {}
 
@@ -199,13 +201,14 @@ IrradElement::populate(const FuncDataBase& Control)
 }
 
 void
-IrradElement::createUnitVector(const FixedComp& FC,
-			      const Geometry::Vec3D& OG)
+IrradElement::createUnitVector(const attachSystem::FixedComp& FC,
+			       const Geometry::Vec3D& OG)
   /*!
     Create the unit vectors
     - Y Down the beamline
+
     \param FC :: Reactor Grid Unit
-    \param OG :: Orgin
+    \param OG :: Origin
   */
 {
   ELog::RegMethod RegA("IrradElement","createUnitVector");
@@ -367,7 +370,7 @@ IrradElement::createAll(Simulation& System,
 			const Geometry::Vec3D& OG,
 			const FuelLoad&)
   /*!
-    Global creation of the hutch
+    Global creation of the element block
     \param System :: Simulation to add vessel to
     \param RG :: Fixed Unit
     \param OG :: Origin

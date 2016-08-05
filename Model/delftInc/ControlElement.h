@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   delftInc/ControlElement.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -79,7 +79,7 @@ class ControlElement : public FuelElement,
   ControlElement& operator=(const ControlElement&);
   virtual ~ControlElement() {}   ///< Destructor
 
-  virtual void createAll(Simulation&,const FixedComp&,
+  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
 			 const Geometry::Vec3D&,const FuelLoad&);
 
 };

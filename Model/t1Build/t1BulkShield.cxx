@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1Build/t1BulkShield.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -98,24 +98,24 @@
 namespace shutterSystem
 {
 
-const size_t t1BulkShield::sandalsShutter(0);  // North 1
-const size_t t1BulkShield::prismaShutter(1);  // North 2
-const size_t t1BulkShield::surfShutter(2);  // North 3
-const size_t t1BulkShield::crispShutter(3);  // North 4
-const size_t t1BulkShield::loqShutter(4);  // North 5
-const size_t t1BulkShield::irisShutter(5);  // North 6
-const size_t t1BulkShield::polarisIIShutter(6);  // North 7
-const size_t t1BulkShield::toscaShutter(7);  // North 8
-const size_t t1BulkShield::hetShutter(8);  // North 9
-const size_t t1BulkShield::mapsShutter(9);  // South 1
-const size_t t1BulkShield::vesuvioShutter(10);  // South 2
-const size_t t1BulkShield::sxdShutter(11);  // South 3
-const size_t t1BulkShield::merlinShutter(12);  // South 4
-const size_t t1BulkShield::s5Shutter(13);  // South 5
-const size_t t1BulkShield::mariShutter(14);  // South 6
-const size_t t1BulkShield::gemShutter(15);  // South 7
-const size_t t1BulkShield::hrpdShutter(16);  // South 8
-const size_t t1BulkShield::pearlShutter(17);  // South 9
+const size_t t1BulkShield::sandalsShutter(1);  // North 1
+const size_t t1BulkShield::prismaShutter(2);  // North 2
+const size_t t1BulkShield::surfShutter(3);  // North 3
+const size_t t1BulkShield::crispShutter(4);  // North 4
+const size_t t1BulkShield::loqShutter(5);  // North 5
+const size_t t1BulkShield::irisShutter(6);  // North 6
+const size_t t1BulkShield::polarisIIShutter(7);  // North 7
+const size_t t1BulkShield::toscaShutter(8);  // North 8
+const size_t t1BulkShield::hetShutter(9);  // North 9
+const size_t t1BulkShield::mapsShutter(10);  // South 1
+const size_t t1BulkShield::vesuvioShutter(11);  // South 2
+const size_t t1BulkShield::sxdShutter(12);  // South 3
+const size_t t1BulkShield::merlinShutter(13);  // South 4
+const size_t t1BulkShield::s5Shutter(14);  // South 5
+const size_t t1BulkShield::mariShutter(15);  // South 6
+const size_t t1BulkShield::gemShutter(16);  // South 7
+const size_t t1BulkShield::hrpdShutter(17);  // South 8
+const size_t t1BulkShield::pearlShutter(18);  // South 9
 
 t1BulkShield::t1BulkShield(const std::string& Key)  : 
   attachSystem::FixedComp(Key,3),attachSystem::ContainedComp(),
@@ -264,11 +264,11 @@ t1BulkShield::createShutters(Simulation& System,
 			IParam.compValue("E",std::string("Insert")));
 
   GData.clear();
-  for(size_t i=0;i<numberBeamLines;i++)
+  for(size_t i=1;i<=numberBeamLines;i++)
     {
       if (insertVoid)
 	GData.push_back(std::shared_ptr<GeneralShutter>
-			(new GeneralShutter(i,"shutter")));
+			(new GeneralShutter(i+1,"shutter")));
       else if (i==sandalsShutter)
 	GData.push_back(std::shared_ptr<GeneralShutter>
 			(new BlockShutter(i,"shutter","sandalsShutter")));

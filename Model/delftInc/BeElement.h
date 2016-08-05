@@ -45,8 +45,9 @@ class BeElement  : public RElement
 
   int beMat;              ///< Default [be material]
 
-  void populate(const Simulation&);
-  void createUnitVector(const FixedComp&,const Geometry::Vec3D&);
+  void populate(const FuncDataBase&);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const Geometry::Vec3D&);
   
   void createSurfaces(const attachSystem::FixedComp&);
   void createObjects(Simulation&);

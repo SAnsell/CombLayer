@@ -303,7 +303,7 @@ BIFROST::build(Simulation& System,
     Carry out the full build
     \param System :: Simulation system
     \param GItem :: Guide Item 
-    \param BunkerObj :: Bunker component [for inserts]
+    \param bunkerObj :: Bunker component [for inserts]
     \param voidCell :: Void cell
    */
 {

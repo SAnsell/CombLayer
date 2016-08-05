@@ -83,7 +83,7 @@ class Rabbit : public attachSystem::ContainedComp,
   Rabbit& operator=(const Rabbit&);
   virtual ~Rabbit();
 
-  // Accessor to inner void cell
+  /// Accessor to inner void cell
   int getInnerVoid() const { return innerVoid; }
 
   int createAll(Simulation&,const ReactorGrid&);

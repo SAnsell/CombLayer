@@ -38,7 +38,7 @@ namespace delftSystem
   and Beamline to take acount of the track (inner build)
 */
 
-class SpaceBlock :  public attachSystem::FixedComp,
+class SpaceBlock :  public attachSystem::FixedOffset,
     public attachSystem::ContainedComp
   {
  private:
@@ -46,19 +46,14 @@ class SpaceBlock :  public attachSystem::FixedComp,
   const std::string baseName;   ///< Base name
   const int boxIndex;           ///< Index of surface offset
   int cellIndex;                ///< Cell index
-  
-  double xStep;                 ///< Offset on X to Target
-  double yStep;                 ///< Offset on X to Target
-  double zStep;                 ///< Offset on Z top Target
-  double xyAngle;               ///< xyRotation angle
-  double zAngle;                ///< zRotation angle
 
+  int activeFlag;               ///< Active block
   double length;                ///< Total length
   double width;                ///< Total length
   double height;                ///< Total length
   int mat;                ///< Total length
 
-  int populate(const FuncDataBase&);
+  void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
 
@@ -73,8 +68,10 @@ class SpaceBlock :  public attachSystem::FixedComp,
   SpaceBlock& operator=(const SpaceBlock&);
   virtual ~SpaceBlock();
 
-  int createAll(Simulation&,const attachSystem::FixedComp&,
-		const long int);
+  /// accessor to flag
+  int getActiveFlag() { return activeFlag; }
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
 
 };
 

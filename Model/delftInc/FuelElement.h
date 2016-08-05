@@ -73,7 +73,8 @@ class FuelElement  : public RElement
   int topCell;                  ///< Mid cell if needed
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const FixedComp&,const Geometry::Vec3D&);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const Geometry::Vec3D&);
   
   void createSurfaces(const attachSystem::FixedComp&,
 		      const size_t,const size_t);
@@ -98,12 +99,13 @@ class FuelElement  : public RElement
   virtual ~FuelElement() {}   ///< Destructor
 
   bool isFuel(const size_t) const;
+  /// Accessor to fuel material
   int getDefMat() const { return fuelMat; } 
   /// Accessor to number blades
   size_t getNElements() const { return nElement; }
   /// Accessor to number cells in a blade
   size_t getNSections() const { return nFuel; }
-  int getMat(const size_t,const size_t) const;
+
   /// Exclude set
   const std::set<size_t>& getRemovedSet() const { return Exclude; } 
   /// Fuel Vector
@@ -111,7 +113,7 @@ class FuelElement  : public RElement
   /// Access centres [for source]
   const std::vector<Geometry::Vec3D>& getFuelCentre() const 
      { return fuelCentre; } 
-  virtual void createAll(Simulation&,const FixedComp&,
+  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
 			 const Geometry::Vec3D&,
 			 const FuelLoad&);
 

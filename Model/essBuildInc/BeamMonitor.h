@@ -8,51 +8,25 @@ namespace essSystem
 
 /*!
   \class BeamMonitor
-  \author A. Milocco
+  \author S. Ansell
   \version 1.0
   \date February 2013
-  \brief Reflector object 
+  \brief BeamMonitor
 */
 
 class BeamMonitor : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+    public attachSystem::FixedOffset
 {
  private:
 
   const int monIndex;             ///< Index of surface offset
   int cellIndex;                  ///< Cell index
 
-  double xStep;                   ///< X step
-  double yStep;                   ///< Y step
-  double zStep;                   ///< Z step
-  double xyAngle;                 ///< XY Angle
-  double zAngle;                  ///< Z Angle
-
   size_t nSec;                   ///< Number of main segments
   std::vector<double> radius;    ///< Radius of each secion
   std::vector<double> thick;     ///< Thickness
   std::vector<int> mat;          ///< Material     
   double halfThick;              ///< Mid point thickness
-
-  double sideW;
-  double frameSide;
-  double frameHeightA;
-  double frameHeightB;
-  double frameHeightC;
-  double frameHeightD;
-  double frameWidthA;
-  double frameWidthB;
-  double frameWidthC;
-  double frameThickA;  
-  double frameThickB;
-  double frameThickC;
-  int tubeN;
-  double tubeRadius;
-  double tubeThick;
-  int tubeHe;
-  int tubeAl;
-  int extTubeHe;
-  int mainPBeamACell; 
 
   // Functions:
 

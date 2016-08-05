@@ -65,6 +65,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 
 #include "FuelLoad.h"
@@ -94,7 +95,7 @@ BeElement::BeElement(const BeElement& A) :
   */
 {}
   
-  BeElement&
+BeElement&
 BeElement::operator=(const BeElement& A)
   /*!
     Assignment operator
@@ -114,15 +115,14 @@ BeElement::operator=(const BeElement& A)
 }
 
 void
-BeElement::populate(const Simulation& System)
+BeElement::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     Requires that unset values are copied from previous block
-    \param System :: Simulation to use
+    \param Control :: DataBase
   */
 {
   ELog::RegMethod RegA("BeElement","populate");
-  const FuncDataBase& Control=System.getDataBase();
 
   Width=ReactorGrid::getElement<double>
     (Control,keyName+"Width",XIndex,YIndex);
@@ -219,7 +219,7 @@ BeElement::createAll(Simulation& System,const FixedComp& RG,
   */
 {
   ELog::RegMethod RegA("BeElement","createAll");
-  populate(System);
+  populate(System.getDataBase());
 
   createUnitVector(RG,OG);
   createSurfaces(RG);

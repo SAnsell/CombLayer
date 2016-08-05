@@ -3,7 +3,7 @@
  
  * File:   delft/delftH2Moderator.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,6 +71,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "SecondTrack.h"
 #include "TwinComp.h"
 #include "ContainedComp.h"
@@ -108,8 +109,7 @@ delftH2Moderator::delftH2Moderator(const std::string& Key)  :
 
 delftH2Moderator::delftH2Moderator(const delftH2Moderator& A) : 
   virtualMod(A),
-  hydIndex(A.hydIndex),cellIndex(A.cellIndex),xStep(A.xStep),
-  yStep(A.yStep),zStep(A.zStep),depth(A.depth),
+  hydIndex(A.hydIndex),cellIndex(A.cellIndex),depth(A.depth),
   sideRadius(A.sideRadius),innerXShift(A.innerXShift),
   frontDir(A.frontDir),frontRadius(A.frontRadius),
   backDir(A.backDir),backRadius(A.backRadius),alBack(A.alBack),
@@ -135,9 +135,6 @@ delftH2Moderator::operator=(const delftH2Moderator& A)
     {
       virtualMod::operator=(A);
       cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
       depth=A.depth;
       sideRadius=A.sideRadius;
       innerXShift=A.innerXShift;
@@ -180,15 +177,13 @@ void
 delftH2Moderator::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: DataBase to used
   */
 {
   ELog::RegMethod RegA("delftH2Moderator","populate");
   
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-
+  FixedOffset::populate(Control);
+  
   depth=Control.EvalVar<double>(keyName+"Depth");
 
   sideRadius=Control.EvalVar<double>(keyName+"SideRadius");
@@ -231,7 +226,7 @@ delftH2Moderator::createUnitVector(const attachSystem::SecondTrack& CUnit)
   Z=CUnit.getBZ();
 
   Origin=CUnit.getBeamStart();
-  Origin+=X*xStep+Y*yStep+Z*zStep;
+  applyOffset();
 
   FCentre=calcCentre(frontDir,1,frontRadius);
   BCentre=calcCentre(backDir,-1,backRadius);
@@ -242,10 +237,11 @@ delftH2Moderator::createUnitVector(const attachSystem::SecondTrack& CUnit)
 
 Geometry::Vec3D
 delftH2Moderator::calcCentre(const int curveType,const int side,
-			const double R) const
+			     const double R) const
   /*!
     Calculate radius centre
-    \param side -1 for back : 1 for front
+    \param curveType :: Direction to bend [-ve inside / +ve outside]
+    \param side :: -1 for back : 1 for front
     \param R :: Radius of curve [-ve for inward]
     \return centre of cylinder/sphere
   */
@@ -348,7 +344,7 @@ delftH2Moderator::createLinks()
 void
 delftH2Moderator::createObjects(Simulation& System)
   /*!
-    Adds the Chip guide components
+    Builds 
     \param System :: Simulation to create objects in
   */
 {

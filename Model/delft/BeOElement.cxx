@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   delft/BeOElement.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,6 +65,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 
 #include "FuelLoad.h"
@@ -75,7 +76,6 @@
 namespace delftSystem
 {
 
-
 BeOElement::BeOElement(const size_t XI,const size_t YI,
 			 const std::string& Key) :
   RElement(XI,YI,Key)
@@ -85,15 +85,14 @@ BeOElement::BeOElement(const size_t XI,const size_t YI,
 {}
 
 void
-BeOElement::populate(const Simulation& System)
+BeOElement::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     Requires that unset values are copied from previous block
-    \param System :: Simulation to use
+    \param Control :: DataBase
   */
 {
   ELog::RegMethod RegA("BeOElement","populate");
-  const FuncDataBase& Control=System.getDataBase();
 
   Width=ReactorGrid::getElement<double>
     (Control,keyName+"Width",XIndex,YIndex);
@@ -119,7 +118,7 @@ BeOElement::populate(const Simulation& System)
 
 void
 BeOElement::createUnitVector(const FixedComp& FC,
-			      const Geometry::Vec3D& OG)
+			     const Geometry::Vec3D& OG)
   /*!
     Create the unit vectors
     - Y Down the beamline
@@ -152,7 +151,7 @@ BeOElement::createSurfaces(const attachSystem::FixedComp& RG)
   ModelSupport::buildPlane(SMap,surfIndex+6,Z*TopHeight,Z);
 
   double T(wallThick);
-  ELog::EM<<"Wall thick === "<<wallThick<<ELog::endDiag;
+
   ModelSupport::buildPlane(SMap,surfIndex+11,Origin-Y*(Depth/2.0-T),Y);
   ModelSupport::buildPlane(SMap,surfIndex+12,Origin+Y*(Depth/2.0-T),Y); 
   ModelSupport::buildPlane(SMap,surfIndex+13,Origin-X*(Width/2.0-T),X);
@@ -223,8 +222,8 @@ BeOElement::createAll(Simulation& System,const FixedComp& RG,
   */
 {
   ELog::RegMethod RegA("BeOElement","createAll");
-  populate(System);
 
+  populate(System.getDataBase());
   createUnitVector(RG,OG);
   createSurfaces(RG);
   createObjects(System);

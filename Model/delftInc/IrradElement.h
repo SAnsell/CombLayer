@@ -65,7 +65,8 @@ class IrradElement  : public RElement
   int waterMat;           ///< Water coolant 
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const FixedComp&,const Geometry::Vec3D&);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const Geometry::Vec3D&);
   
   void createSurfaces(const attachSystem::FixedComp&);
   void createObjects(Simulation&);

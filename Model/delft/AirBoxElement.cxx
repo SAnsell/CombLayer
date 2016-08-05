@@ -64,6 +64,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 
 #include "FuelLoad.h"
@@ -121,19 +122,30 @@ AirBoxElement::operator=(const AirBoxElement& A)
 }
 
 void
-AirBoxElement::populate(const FuncDataBase& Control,
-			const attachSystem::FixedComp& RG)
+AirBoxElement::populateWaterMat(const attachSystem::FixedComp& RG)
   /*!
-    Populate all the variables
-    Requires that unset values are copied from previous block
-    \param Control :: Database for variables
-    \param RG :: Reactor unit [cast down to ReactorGrid] for material
+    Populate the water material from a reactor grid default
+    \param RG :: FixedComp to cast to a ReactorGrid
   */
 {
   ELog::RegMethod RegA("AirBoxElement","populate");
 
   const ReactorGrid* RGPtr=dynamic_cast<const ReactorGrid*>(&RG);
   waterMat=(RGPtr) ? RGPtr->getWaterMat() : 0;
+  return;
+}
+  
+  
+void
+AirBoxElement::populate(const FuncDataBase& Control)
+  /*!
+    Populate all the variables
+    Requires that unset values are copied from previous block
+    \param Control :: Database for variables
+  */
+{
+  ELog::RegMethod RegA("AirBoxElement","populate");
+
 
   Width=ReactorGrid::getElement<double>
     (Control,keyName+"Width",XIndex,YIndex);
@@ -278,8 +290,8 @@ AirBoxElement::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("AirBoxElement","createAll");
-  populate(System.getDataBase(),RG);
-
+  populate(System.getDataBase());
+  populateWaterMat(RG);
   createUnitVector(RG,OG);
   createSurfaces(RG);
   createObjects(System);

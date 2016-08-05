@@ -185,7 +185,7 @@ LinkWrapper::createUnitVector(const attachSystem::FixedComp& FC)
 void
 LinkWrapper::addSurface(const attachSystem::FixedComp& FC,
 			std::string LList)
-  /*!
+/*!
     Add a set of boundary surfaces
     \param FC :: Fixed object to use
     \param LList :: Link surface index (as a deliminated string)
@@ -406,5 +406,5 @@ LinkWrapper::createAll(Simulation& System,
 }
 
   
-}  // NAMESPACE ts1System
+}  // NAMESPACE constructSystem
 

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   delft/SphereModerator.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,6 +70,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "SecondTrack.h"
 #include "TwinComp.h"
 #include "ContainedComp.h"
@@ -94,8 +95,8 @@ SphereModerator::SphereModerator(const std::string& Key)  :
 
 SphereModerator::SphereModerator(const SphereModerator& A) : 
   virtualMod(A),
-  hydIndex(A.hydIndex),cellIndex(A.cellIndex),xStep(A.xStep),
-  yStep(A.yStep),zStep(A.zStep),innerRadius(A.innerRadius),
+  hydIndex(A.hydIndex),cellIndex(A.cellIndex),
+  innerRadius(A.innerRadius),
   innerAl(A.innerAl),outerRadius(A.outerRadius),
   outerAl(A.outerAl),outYShift(A.outYShift),fYShift(A.fYShift),
   modTemp(A.modTemp),modMat(A.modMat),alMat(A.alMat),
@@ -118,9 +119,6 @@ SphereModerator::operator=(const SphereModerator& A)
     {
       virtualMod::operator=(A);
       cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
       innerRadius=A.innerRadius;
       innerAl=A.innerAl;
       outerRadius=A.outerRadius;
@@ -154,19 +152,16 @@ SphereModerator::~SphereModerator()
 {}
 
 void
-SphereModerator::populate(const Simulation& System)
+SphereModerator::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param System :: Simulation to use
   */
 {
   ELog::RegMethod RegA("SphereModerator","populate");
-  
-  const FuncDataBase& Control=System.getDataBase();
 
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
+  FixedOffset::populate(Control);
+  
 
   innerRadius=Control.EvalVar<double>(keyName+"InnerRadius");
   innerAl=Control.EvalVar<double>(keyName+"InnerAl");
@@ -205,7 +200,7 @@ SphereModerator::createUnitVector(const attachSystem::SecondTrack& CUnit)
   Z=CUnit.getBZ();
 
   Origin=CUnit.getBeamStart();
-  Origin+=X*xStep+Y*yStep+Z*zStep;
+  applyOffset();
 
   return;
 }
@@ -394,7 +389,7 @@ SphereModerator::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("SphereModerator","createAll");
-  populate(System);
+  populate(System.getDataBase());
 
   createUnitVector(FUnit);
   createSurfaces();
@@ -405,4 +400,4 @@ SphereModerator::createAll(Simulation& System,
   return;
 }
   
-}  // NAMESPACE moderatorSystem
+}  // NAMESPACE delftSystem

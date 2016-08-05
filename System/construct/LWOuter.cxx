@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   construct/LWOuter.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -126,15 +126,15 @@ LWOuter::createSurfaces()
   // Create outer surfaces [if needed]
   
   size_t linkIndex(0);
-      std::vector<int>::const_iterator vc;
+  std::vector<int>::const_iterator vc;
   for(vc=surfNum.begin();vc!=surfNum.end();vc++)
     FixedComp::setLinkSurf(linkIndex++,SMap.realSurf(*vc));
 
   int nSurf(refIndex+1);      
-
   for(size_t i=0;i<surfCent.size();i++)
     {
       const Geometry::Vec3D CP=Origin+surfCent[i];
+
       const Geometry::Vec3D Axis=X*surfAxis[i].X()+
 	Y*surfAxis[i].Y()+Z*surfAxis[i].Z();
   
@@ -158,11 +158,13 @@ LWOuter::createSurfaces()
     { 
       lThick+=layerThick[i];
       int lSurf(refIndex+101+100*static_cast<int>(i));
+	  
       for(size_t j=0;j<SList.size();j++)
 	{
 	  const int signV((surfNum[j]>0) ? -1 : 1);
 	  Geometry::Surface* SurOut=
 	    ModelSupport::surfaceCreateExpand(SList[j],signV*lThick);
+		
 	  SurOut->setName(lSurf);
 	  SMap.registerSurf(lSurf,SurOut);
 	  lSurf++;
