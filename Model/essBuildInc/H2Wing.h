@@ -56,6 +56,7 @@ class H2Wing :
   double yStep;
   double xyOffset;           ///< xy-Angle offset
 
+  // bfDepth and bfHeight are needed due to ButterflyModerator wallDepth and wallHeight
   double bfDepth;               ///< BF moderator lower wall thick
   double bfHeight;              ///< BF moderator upper wall thick
 
@@ -63,7 +64,7 @@ class H2Wing :
   std::array<double,3> radius;  ///< corner radii
   double height;                ///< height of moderator cell
   double totalHeight;           ///< total height moderator
-  
+
   int modMat;                   ///< LH2
   double modTemp;               ///< LH2 temperature [K]
 

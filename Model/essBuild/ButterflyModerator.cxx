@@ -112,7 +112,11 @@ ButterflyModerator::ButterflyModerator(const ButterflyModerator& A) :
   MidWater(A.MidWater->clone()),
   LeftWater(A.LeftWater->clone()),
   RightWater(A.LeftWater->clone()),
-  outerRadius(A.outerRadius)
+  totalHeight(A.totalHeight),
+  outerRadius(A.outerRadius),
+  wallMat(A.wallMat),
+  wallDepth(A.wallDepth),
+  wallHeight(A.wallHeight)
   /*!
     Copy constructor
     \param A :: ButterflyModerator to copy
@@ -136,7 +140,11 @@ ButterflyModerator::operator=(const ButterflyModerator& A)
       *MidWater= *A.MidWater;
       *LeftWater= *A.LeftWater;
       *RightWater= *A.RightWater;
+      totalHeight=A.totalHeight;
       outerRadius=A.outerRadius;
+      wallMat=A.wallMat;
+      wallDepth=A.wallDepth;
+      wallHeight=A.wallHeight;
     }
   return *this;
 }
@@ -169,6 +177,10 @@ ButterflyModerator::populate(const FuncDataBase& Control)
 
   ModBase::populate(Control);
   totalHeight=Control.EvalVar<double>(keyName+"TotalHeight");
+  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
+  wallDepth = Control.EvalVar<double>(keyName+"WallDepth");
+  wallHeight = Control.EvalVar<double>(keyName+"WallHeight");
+
   return;
 }
 
@@ -206,6 +218,9 @@ ButterflyModerator::createSurfaces()
   ModelSupport::buildPlane(SMap,flyIndex+5,Origin-Z*(totalHeight/2.0),Z);
   ModelSupport::buildPlane(SMap,flyIndex+6,Origin+Z*(totalHeight/2.0),Z);
 
+  ModelSupport::buildPlane(SMap,flyIndex+15,Origin-Z*(totalHeight/2.0-wallDepth),Z);
+  ModelSupport::buildPlane(SMap,flyIndex+16,Origin+Z*(totalHeight/2.0-wallHeight),Z);
+
   return;
 }
 
@@ -217,16 +232,46 @@ ButterflyModerator::createObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("ButterflyModerator","createObjects");
-  
-  const std::string Exclude=ContainedComp::getExclude();
+
+  // getSideRule contains only side surfaces, while getExclude - also top/bottom
+  const std::string sideRule=getSideRule(); // ContainedComp::getExclude();
+
+  HeadRule HR(sideRule);
+  HR.makeComplement();
 
   std::string Out;
+
+  if (wallDepth>Geometry::zeroTol) // \todo SA: why CL can't take care about it?
+    {
+      Out=ModelSupport::getComposite(SMap,flyIndex," -7 5 -15 ");  
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+HR.display()));
+    }
+
+  if (wallHeight>Geometry::zeroTol) // \todo SA: why CL can't take care about it?
+    {
+      Out=ModelSupport::getComposite(SMap,flyIndex," -7 16 -6 ");  
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+HR.display()));
+      // otherwise split complicated cell by parts:
+      /*      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+LeftWater->getSideRule()));
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+RightWater->getSideRule()));
+      HeadRule bfHR;
+      bfHR.procString(LeftUnit->getSideRule());
+      bfHR.addUnion(RightUnit->getSideRule());
+      bfHR.addUnion(MidWater->getSideRule());
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+bfHR.display()));*/
+    }
+
+  
+  
+  // getSideRule contains only side surfaces, while getExclude - also top/bottom
+  const std::string Exclude=sideRule;//ContainedComp::getExclude();
+
   Out=ModelSupport::getComposite(SMap,flyIndex," -7 5 -6 ");  
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+Exclude));
   setCell("ambientVoid", cellIndex-1);
-  
+
   clearRules();
-  addOuterSurf(Out);
+  addOuterSurf(Out); // Out does not take into account wallDepth and wallHeight
   
   return;
 }
@@ -297,13 +342,13 @@ ButterflyModerator::createLinks()
   
   FixedComp::setLinkCopy(4,*LeftUnit,4);
   FixedComp::setLinkCopy(5,*LeftUnit,5);
-  const double LowV= LU[4].getConnectPt().Z();
-  const double HighV= LU[5].getConnectPt().Z();
+  const double LowV= LU[4].getConnectPt().Z()-wallDepth*Z[2];
+  const double HighV= LU[5].getConnectPt().Z()+wallHeight*Z[2];
   const Geometry::Vec3D LowPt(Origin.X(),Origin.Y(),LowV);
   const Geometry::Vec3D HighPt(Origin.X(),Origin.Y(),HighV);
   FixedComp::setConnect(4,LowPt,-Z);
   FixedComp::setConnect(5,HighPt,Z);
-  
+
   return;
 }
 
@@ -411,7 +456,7 @@ ButterflyModerator::createAll(Simulation& System,
   MidWater->createAll(System,*this,*LeftUnit,*RightUnit);
     
   const std::string Exclude=
-    ModelSupport::getComposite(SMap,flyIndex," -7 5 -6 ");
+    ModelSupport::getComposite(SMap,flyIndex," -7 15 -16 ");
   LeftWater->createAll(System,*LeftUnit,2,Exclude);
   RightWater->createAll(System,*RightUnit,2,Exclude);
 

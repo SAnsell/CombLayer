@@ -180,13 +180,14 @@ H2Wing::populate(const FuncDataBase& Control)
 
   engActive=Control.EvalTriple<int>(keyName,baseName,"","EngineeringActive");
 
-  totalHeight=Control.EvalVar<double>(baseName+"TotalHeight");
+  bfDepth = Control.EvalDefVar<double>(baseName+"WallDepth",0.0);
+  bfHeight = Control.EvalDefVar<double>(baseName+"WallHeight",0.0);
+
+  totalHeight=Control.EvalVar<double>(baseName+"TotalHeight")-(bfDepth+bfHeight);
   
   xStep=Control.EvalVar<double>(keyName+"XStep");
   yStep=Control.EvalVar<double>(keyName+"YStep");
 
-  bfDepth = Control.EvalDefVar<double>(baseName+"WallDepth",0.0);
-  bfHeight = Control.EvalDefVar<double>(baseName+"WallHeight",0.0);
 
   for(size_t i=0;i<3;i++)
     {
