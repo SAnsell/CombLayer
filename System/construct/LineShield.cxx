@@ -438,7 +438,7 @@ LineShield::createLinks()
     {
       FixedComp::setLinkSurf(0,frontSurf,1,frontCut,0);      
       FixedComp::setConnect
-        (0,SurInter::getLinePoint(Origin,Y,frontSurf,frontCut),Y);
+        (0,SurInter::getLinePoint(Origin,Y,frontSurf,frontCut),-Y);
     }
   
   if (!activeBack)

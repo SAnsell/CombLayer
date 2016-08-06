@@ -84,11 +84,6 @@ class ButterflyModerator :
   virtual const attachSystem::FixedComp&
     getComponent(const std::string&) const;
 
-  std::string getSideRule() const;
-  std::string getLeftRightWaterSideRule() const;
-  Geometry::Vec3D getFocalPoint(const long int) const;
-  std::vector<Geometry::Vec3D> getFocalPoints() const;
-
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const attachSystem::FixedComp*,
 		 const long int);

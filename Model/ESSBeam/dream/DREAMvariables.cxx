@@ -211,19 +211,18 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamBInsertWallMat","Stainless304");       
 
   // Guide in wall
-  FGen.setYOffset(2.0);
+  FGen.clearYOffset();  
   FGen.generateTaper(Control,"dreamFWall",308.0,6.0,6.0,6.0,6.0);
 
   SGen.setRFLayers(3,8);
   SGen.generateShield(Control,"dreamShieldA",1430.0,40.0,40.0,40.0,8,8);
 
-
   // Guide after wall [17.5m - 3.20] for wall
 
   PipeGen.setPipe(6.0,0.5);
-  PipeGen.generatePipe(Control,"dreamPipeOutA",2.0,1430.0);  //
+  PipeGen.generatePipe(Control,"dreamPipeOutA",2.0,1422.0);  //
 
-  FGen.clearYOffset();  
+  FGen.clearYOffset();
   FGen.generateTaper(Control,"dreamFOutA",1422,4.5,4.97,2.24,3.05);
 
   // Guide after wall [+17.5m] after section 1  

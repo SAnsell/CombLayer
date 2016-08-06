@@ -406,7 +406,7 @@ FREIA::build(Simulation& System,
   FOC3Disk->setCentreFlag(3);  // Z direction
   FOC3Disk->setOffsetFlag(1);  // Z direction
   FOC3Disk->createAll(System,ChopperOutB->getKey("Beam"),0);
-
+  
   JawPit->addInsertCell(voidCell);
   JawPit->createAll(System,OutPitA->getKey("Inner"),0);
 
@@ -419,9 +419,9 @@ FREIA::build(Simulation& System,
   ShieldA->setBack(JawPit->getKey("Mid"),1);
   ShieldA->createAll(System,OutPitA->getKey("Inner"),0);
   //  ShieldA->insertComponent(System,"Void",*VPipeOutA)
-
+  
   VPipeOutA->addInsertCell(ShieldA->getCell("Void"));
-  VPipeOutA->createAll(System,*ShieldA,-1);
+  VPipeOutA->createAll(System,*ShieldA,1);
 
   FocusOutA->addInsertCell(VPipeOutA->getCells("Void"));
   FocusOutA->createAll(System,*VPipeOutA,0,*VPipeOutA,0);

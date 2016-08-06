@@ -149,7 +149,7 @@ void
 BunkerFeed::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: DataBase for variables
   */
 {
   ELog::RegMethod RegA("BunkerFeed","populate");

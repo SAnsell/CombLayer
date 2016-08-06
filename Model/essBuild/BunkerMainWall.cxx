@@ -3,7 +3,7 @@
  
  * File:   essBuild/BunkerMainWall.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,7 +53,6 @@
 #include "XMLgroup.h"
 #include "XMLcollect.h"
 #include "MaterialSupport.h"
-
 
 #include "BunkerMainWall.h"
 
@@ -120,9 +119,7 @@ int
 BunkerMainWall::loadXML(const std::string& FName) 
   /*!
     Process an XML file to set/add variables
-    
     \param FName :: filename 
-    
     \return 1 on success / 0 on fail
   */
 {
@@ -242,7 +239,7 @@ const std::string&
 BunkerMainWall::getMatString(const size_t SectIndex,
 			     const size_t VIndex,
 			     const size_t RIndex) const
-/*!
+ /*!
     Calculate the hash from the input data [NOTE: Some of the 
     data is general so must accept zeros] 
     \param SectIndex :: Sector indext
@@ -308,10 +305,9 @@ BunkerMainWall::writeXML(const std::string& FName,
     Carries out the actual writing of an XML file
 
     \param FName :: Filename for output
-    \param nSector :: number of angular sectors
+    \param nSectors :: number of angular sectors
     \param nVerts :: number of Vertical components
     \param nLayers :: number of radial components
-
    */
 {
   ELog::RegMethod RegA("BunkerMainWall","writeXML");

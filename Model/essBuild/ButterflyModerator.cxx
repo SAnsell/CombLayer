@@ -235,7 +235,9 @@ int
 ButterflyModerator::getCommonSurf(const long int) const
   /*!
     Only components have reference values
+    \return surface number
   */
+  
 {
   ELog::RegMethod RegA("ButterflyModerator","getCommonSurf");
   throw ColErr::AbsObjMethod("Not implemented yet");
@@ -243,8 +245,9 @@ ButterflyModerator::getCommonSurf(const long int) const
 
 int
 ButterflyModerator::getLayerSurf(const size_t,const long int) const
-  /*!
+/*!
     Only components have reference values
+    \return layer surface
   */
 {
   ELog::RegMethod RegA("ButterflyModerator","getLayerSurf");
@@ -254,7 +257,8 @@ ButterflyModerator::getLayerSurf(const size_t,const long int) const
 std::string
 ButterflyModerator::getLayerString(const size_t,const long int) const
   /*!
-    Only components have reference values
+    Only components have reference values [PLACEHOLDER]
+    \return surface string
   */
 {
   ELog::RegMethod RegA("ButterflyModerator","getLayerString");
@@ -386,8 +390,6 @@ ButterflyModerator::createAll(Simulation& System,
   
   return;
 }
-
-
 
 
 }  // NAMESPACE essSystem

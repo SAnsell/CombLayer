@@ -205,6 +205,7 @@ Curtain::createUnitVector(const attachSystem::FixedComp& FC,
     \param dirIndex :: direction of XYZ
     \param topIndex :: top of monolith
     \param sideIndex :: Side for monolith
+    \param reverseZ :: rotate the Z direction
   */
 {
   ELog::RegMethod RegA("Curtain","createUnitVector");
@@ -272,7 +273,8 @@ Curtain::createObjects(Simulation& System,
     Adds the all the components
     \param System :: Simulation to create objects in
     \param FC :: Side of bulk shield + divider(?)
-    \param sideIndex :: side of link point
+    \param topIndex :: Index to top of roof
+    \param sideIndex :: side of link point 
   */
 {
   ELog::RegMethod RegA("Curtain","createObjects");
@@ -427,6 +429,7 @@ Curtain::createAll(Simulation& System,
     \param sideIndex :: Side of monolith
     \param dirFC :: direction for Y,Z/X comp
     \param dirIndex :: direction for Y,Z/X
+    \param reverseZ :: rotate the Z direction
   */
 {
   ELog::RegMethod RegA("Curtain","createAll");

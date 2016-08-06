@@ -177,7 +177,6 @@ BunkerInsert::createUnitVector(const attachSystem::FixedComp& FC,
 			       const long int orgIndex)
   /*!
     Create the unit vectors
-    \param MainCentre :: Main rotation centre
     \param FC :: Linked object
     \param orgIndex :: link point
   */
@@ -218,8 +217,9 @@ BunkerInsert::createSurfaces()
 int
 BunkerInsert::objectCut(const std::vector<Geometry::Vec3D>& Corners) const
   /*!
-    Determine if Pts are within or within completely the bunker unit
-    \param Pts :: Point to check
+    Determine if a set of corners from another BunkerInsert item
+    are within, completely within, outside this bunker unit
+    \param Corners :: Points to test
     \retval 0 :: No intercept
     \retval -1 :: Partial inside
     \retval 1 :: Full inside 

@@ -354,6 +354,7 @@ Bunker::createSurfaces(const bool revX)
   const Geometry::Vec3D ZRotAxis((revX) ? Z : -Z);
   innerRadius=rotCentre.Distance(Origin);
 
+  Geometry::Vec3D CentAxis(Y);
   Geometry::Vec3D AWallDir(X);
   Geometry::Vec3D BWallDir(X);
   // rotation of axis:
@@ -361,6 +362,9 @@ Bunker::createSurfaces(const bool revX)
     rotate(AWallDir);
   Geometry::Quaternion::calcQRotDeg(rightAngle+rightPhase,-ZRotAxis).
     rotate(BWallDir);
+  Geometry::Quaternion::calcQRotDeg
+    ((leftAngle+leftPhase+rightAngle+rightPhase)/2.0,-ZRotAxis).
+    rotate(CentAxis);
   // rotation of phase points:
 
   // Points on wall
@@ -370,8 +374,10 @@ Bunker::createSurfaces(const bool revX)
   Geometry::Quaternion::calcQRotDeg(-rightPhase,ZRotAxis).rotate(BWall);
   AWall+=rotCentre;
   BWall+=rotCentre;
+  
+  
   // Divider
-  ModelSupport::buildPlane(SMap,bnkIndex+1,rotCentre,Y);
+  ModelSupport::buildPlane(SMap,bnkIndex+1,rotCentre,CentAxis);
   ModelSupport::buildCylinder(SMap,bnkIndex+7,rotCentre,Z,wallRadius);
 
   ModelSupport::buildPlane(SMap,bnkIndex+3,AWall,AWallDir);
