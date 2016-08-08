@@ -173,7 +173,7 @@ class makeESS
   void buildF5Collimator(Simulation&, size_t); // when -nF5 is used
   void buildF5Collimator(Simulation&, const mainSystem::inputParam&); // when -f5-collimators is used
 
-  void buildPreWings(Simulation&);
+  void buildPreWings(Simulation&, const std::string&);
   void buildTwister(Simulation&);
 
   void optionSummary(Simulation&);

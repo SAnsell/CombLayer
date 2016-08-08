@@ -688,7 +688,7 @@ makeESS::makeBunker(Simulation& System,
 }
 
 void
-makeESS::buildPreWings(Simulation& System)
+makeESS::buildPreWings(Simulation& System, const std::string& lowModType)
 {
   ELog::RegMethod RegA("makeESS","buildPreWings");
   ModelSupport::objectRegister& OR=
@@ -706,15 +706,18 @@ makeESS::buildPreWings(Simulation& System)
   TopCapWing->createAll(System, *TopCapMod, 10, false, bottom, *TopMod);
   attachSystem::addToInsertSurfCtrl(System, *TopCapMod, *TopCapWing);
 
-  LowPreWing = std::shared_ptr<PreModWing>(new PreModWing("LowPreWing"));
-  OR.addObject(LowPreWing);
-  LowPreWing->createAll(System, *LowPreMod, 9, true, bottom, *LowMod);
-  attachSystem::addToInsertSurfCtrl(System, *LowPreMod, *LowPreWing);
+  if (lowModType != "None")
+    {
+      LowPreWing = std::shared_ptr<PreModWing>(new PreModWing("LowPreWing"));
+      OR.addObject(LowPreWing);
+      LowPreWing->createAll(System, *LowPreMod, 9, true, bottom, *LowMod);
+      attachSystem::addToInsertSurfCtrl(System, *LowPreMod, *LowPreWing);
 
-  LowCapWing = std::shared_ptr<PreModWing>(new PreModWing("LowCapWing"));
-  OR.addObject(LowCapWing);
-  LowCapWing->createAll(System, *LowCapMod, 10, true, top, *LowMod);
-  attachSystem::addToInsertSurfCtrl(System, *LowCapMod, *LowCapWing);
+      LowCapWing = std::shared_ptr<PreModWing>(new PreModWing("LowCapWing"));
+      OR.addObject(LowCapWing);
+      LowCapWing->createAll(System, *LowCapMod, 10, true, top, *LowMod);
+      attachSystem::addToInsertSurfCtrl(System, *LowCapMod, *LowCapWing);
+    }
 }
   
 void
@@ -760,9 +763,8 @@ makeESS::build(Simulation& System,
   const std::string lowPipeType=IParam.getValue<std::string>("lowPipe");
   const std::string topPipeType=IParam.getValue<std::string>("topPipe");
 
-  const std::string lowModType=IParam.getValue<std::string>("lowMod");
+  const std::string lowModType=IParam.getValue<std::string>("lowMod"); // if None then BeRefLowVoidThick must be set to 0.0
   const std::string topModType=IParam.getValue<std::string>("topMod");
-
   
   const std::string targetType=IParam.getValue<std::string>("targetType");
   const std::string iradLine=IParam.getValue<std::string>("iradLineType");
@@ -781,32 +783,41 @@ makeESS::build(Simulation& System,
   Reflector->globalPopulate(System.getDataBase());
 
   // lower moderator
-  LowPreMod->createAll(System,World::masterOrigin(),0,true,
-		       Target->wheelHeight()/2.0,
-		       Reflector->getRadius(),false);
+  if (lowModType != "None")
+    LowPreMod->createAll(System,World::masterOrigin(),0,true,
+			 Target->wheelHeight()/2.0,
+			 Reflector->getRadius(),false);
 
   TopPreMod->createAll(System,World::masterOrigin(),0,false,
 		       Target->wheelHeight()/2.0,
 		       Reflector->getRadius(),true);
   
-  buildLowButterfly(System);
+  if (lowModType != "None")
+    buildLowButterfly(System);
   buildTopButterfly(System);
-  const double LMHeight=attachSystem::calcLinkDistance(*LowMod,5,6);
+  const double LMHeight=(lowModType == "None") ? 0.0 : attachSystem::calcLinkDistance(*LowMod,5,6);
   const double TMHeight=attachSystem::calcLinkDistance(*TopMod,5,6);
   
   // Cap moderator DOES not span whole unit
   TopCapMod->createAll(System,*TopMod,6,false,
    		       0.0,Reflector->getRadius(),false);
 
-  LowCapMod->createAll(System,*LowMod,6,false,
-   		       0.0,Reflector->getRadius(),true);
+  if (lowModType != "None")
+    LowCapMod->createAll(System,*LowMod,6,false,
+			 0.0,Reflector->getRadius(),true);
 
-  Reflector->createAll(System,World::masterOrigin(),
-		       Target->wheelHeight(),
-		       LowPreMod->getHeight()+LMHeight+LowCapMod->getHeight(),
-		       TopPreMod->getHeight()+TMHeight+TopCapMod->getHeight());
+  if (lowModType != "None")
+    Reflector->createAll(System,World::masterOrigin(),
+			 Target->wheelHeight(),
+			 LowPreMod->getHeight()+LMHeight+LowCapMod->getHeight(),
+			 TopPreMod->getHeight()+TMHeight+TopCapMod->getHeight());
+  else
+    Reflector->createAll(System,World::masterOrigin(),
+			 Target->wheelHeight(),
+			 0.0,
+			 TopPreMod->getHeight()+TMHeight+TopCapMod->getHeight());
   
-  buildPreWings(System);
+  buildPreWings(System,lowModType);
 
   Reflector->insertComponent(System,"targetVoid",*Target,1);
   Reflector->deleteCell(System,"lowVoid");
@@ -816,14 +827,20 @@ makeESS::build(Simulation& System,
   TopAFL->createAll(System,*TopMod,0,*Reflector,4,*Bulk,-3);
   TopBFL->createAll(System,*TopMod,0,*Reflector,3,*Bulk,-3);
 
-  LowAFL->createAll(System,*LowMod,0,*Reflector,4,*Bulk,-3);
-  LowBFL->createAll(System,*LowMod,0,*Reflector,3,*Bulk,-3);   
+  if (lowModType != "None")
+    {
+      LowAFL->createAll(System,*LowMod,0,*Reflector,4,*Bulk,-3);
+      LowBFL->createAll(System,*LowMod,0,*Reflector,3,*Bulk,-3);
+    }
   
   // THESE calls correct the MAIN volume so pipe work MUST be after here:
   attachSystem::addToInsertSurfCtrl(System,*Bulk,Target->getCC("Wheel"));
   attachSystem::addToInsertForced(System,*Bulk,Target->getCC("Shaft"));
-  attachSystem::addToInsertForced(System,*Bulk,LowAFL->getCC("outer"));
-  attachSystem::addToInsertForced(System,*Bulk,LowBFL->getCC("outer"));
+  if (lowModType != "None")
+    {
+      attachSystem::addToInsertForced(System,*Bulk,LowAFL->getCC("outer"));
+      attachSystem::addToInsertForced(System,*Bulk,LowBFL->getCC("outer"));
+    }
   attachSystem::addToInsertForced(System,*Bulk,TopAFL->getCC("outer"));
   attachSystem::addToInsertForced(System,*Bulk,TopBFL->getCC("outer"));
 
@@ -838,8 +855,11 @@ makeESS::build(Simulation& System,
 				  Target->getCC("Shaft"));
 
 
-  createGuides(System);
-  makeBunker(System,IParam);
+  if (lowModType != "None")
+    {
+      createGuides(System);
+      makeBunker(System,IParam);
+    }
 
   // PROTON BEAMLINE
   
@@ -858,12 +878,14 @@ makeESS::build(Simulation& System,
       buildTwister(System);
     }
 
-  makeBeamLine(System,IParam);
+  if (lowModType != "None")
+    makeBeamLine(System,IParam);
   buildF5Collimator(System, IParam);
 
   // WARNING: THESE CALL MUST GO AFTER the main void (74123) has
   // been completed. Otherwize we can't find the pipe in the volume.
-  ModPipes->buildLowPipes(System,lowPipeType);
+  if (lowModType != "None")
+    ModPipes->buildLowPipes(System,lowPipeType);
   ModPipes->buildTopPipes(System,topPipeType);
 
   return;
