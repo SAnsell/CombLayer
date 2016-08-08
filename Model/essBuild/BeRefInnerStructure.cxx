@@ -96,7 +96,11 @@ namespace essSystem
     attachSystem::FixedComp(A),
     insIndex(A.insIndex),
     cellIndex(A.cellIndex),
-    nLayers(A.nLayers)
+    nLayers(A.nLayers),
+    baseFrac(A.baseFrac),
+    mat(A.mat),
+    topActive(A.topActive),
+    lowActive(A.lowActive)
     /*!
       Copy constructor
       \param A :: BeRefInnerStructure to copy
@@ -117,6 +121,10 @@ namespace essSystem
 	attachSystem::FixedComp::operator=(A);
 	cellIndex=A.cellIndex;
 	nLayers=A.nLayers;
+	baseFrac=A.baseFrac;
+	mat=A.mat;
+	topActive=A.topActive;
+	lowActive=A.lowActive;
       }
     return *this;
   }
@@ -151,6 +159,9 @@ namespace essSystem
     ModelSupport::populateDivideLen(Control,nLayers,keyName+"BaseLen", 1.0, baseFrac);
     ModelSupport::populateDivide(Control,nLayers,keyName+"Mat", 0, mat);
 
+    topActive=Control.EvalDefVar<int>(keyName+"TopActive", 1);
+    lowActive=Control.EvalDefVar<int>(keyName+"LowActive", 1);
+
     return;
   }
 
@@ -169,17 +180,6 @@ namespace essSystem
 
 
   void
-  BeRefInnerStructure::createSurfaces(const attachSystem::FixedComp& Reflector)
-  /*!
-    Create planes for the inner structure iside BeRef
-  */
-  {
-    ELog::RegMethod RegA("BeRefInnerStructure","createSurfaces");
-
-    return; 
-  }
-
-  void
   BeRefInnerStructure::createObjects(Simulation& System, const attachSystem::FixedComp& Reflector)
   /*!
     Create the objects
@@ -189,8 +189,10 @@ namespace essSystem
   {
     ELog::RegMethod RegA("BeRefInnerStructure","createObjects");
 
-    layerProcess(System, Reflector, "topBe", 10, 7);
-    layerProcess(System, Reflector, "lowBe", 9, 6);
+    if (topActive)
+      layerProcess(System, Reflector, "topBe", 10, 7);
+    if (lowActive)
+      layerProcess(System, Reflector, "lowBe", 9, 6);
 
     return;
   }
@@ -208,7 +210,7 @@ namespace essSystem
   }
 
   void
-  BeRefInnerStructure::layerProcess(Simulation& System, const attachSystem::FixedComp& Reflector, const std::string& cellName, const int& lpS, const int& lsS)
+  BeRefInnerStructure::layerProcess(Simulation& System, const attachSystem::FixedComp& Reflector, const std::string& cellName, const size_t& lpS, const size_t& lsS)
   /*!
     Processes the splitting of the surfaces into a multilayer system
     \param System :: Simulation to work on
@@ -281,7 +283,6 @@ namespace essSystem
     populate(System.getDataBase());
     createUnitVector(FC);
 
-    createSurfaces(FC);
     createObjects(System, FC);
     createLinks();
 
