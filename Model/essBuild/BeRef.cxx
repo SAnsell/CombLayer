@@ -99,7 +99,9 @@ BeRef::BeRef(const BeRef& A) :
   wallThick(A.wallThick),wallThickLow(A.wallThickLow),
   lowVoidThick(A.lowVoidThick),
   topVoidThick(A.topVoidThick),targSepThick(A.targSepThick),
-  refMat(A.refMat),wallMat(A.wallMat),
+  topRefMat(A.topRefMat),lowRefMat(A.lowRefMat),
+  topWallMat(A.topWallMat),
+  lowWallMat(A.lowWallMat),
   targSepMat(A.targSepMat)
   /*!
     Copy constructor
@@ -135,8 +137,10 @@ BeRef::operator=(const BeRef& A)
       lowVoidThick=A.lowVoidThick;
       topVoidThick=A.topVoidThick;
       targSepThick=A.targSepThick;
-      refMat=A.refMat;
-      wallMat=A.wallMat;
+      topRefMat=A.topRefMat;
+      lowRefMat=A.lowRefMat;
+      topWallMat=A.topWallMat;
+      lowWallMat=A.lowWallMat;
       targSepMat=A.targSepMat;
 
     }
@@ -178,8 +182,10 @@ BeRef::populate(const FuncDataBase& Control,
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
   wallThickLow=Control.EvalVar<double>(keyName+"WallThickLow");
 
-  refMat=ModelSupport::EvalMat<int>(Control,keyName+"RefMat");   
-  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");   
+  topRefMat=ModelSupport::EvalMat<int>(Control,keyName+"TopRefMat");   
+  lowRefMat=ModelSupport::EvalMat<int>(Control,keyName+"LowRefMat");   
+  topWallMat=ModelSupport::EvalMat<int>(Control,keyName+"TopWallMat");   
+  lowWallMat=ModelSupport::EvalMat<int>(Control,keyName+"LowWallMat");   
   
   targSepMat=ModelSupport::EvalMat<int>
     (Control,StrFunc::makeString(keyName+"TargSepMat"));
@@ -288,7 +294,7 @@ BeRef::createObjects(Simulation& System)
   std::string Out;
   // low segment
   Out=ModelSupport::getComposite(SMap,refIndex," -7 5 -105 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,refMat,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,lowRefMat,0.0,Out));
   setCell("lowBe",cellIndex-1);
   
   // low void
@@ -306,29 +312,29 @@ BeRef::createObjects(Simulation& System)
   setCell("topVoid",cellIndex-1);
   // top segment
   Out=ModelSupport::getComposite(SMap,refIndex," -7 -6 106");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,refMat,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,topRefMat,0.0,Out));
   setCell("topBe",cellIndex-1);
   
   if (wallThick>Geometry::zeroTol)
     {
 
       Out=ModelSupport::getComposite(SMap,refIndex," -17 15 -105 (7:-5)");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+      System.addCell(MonteCarlo::Qhull(cellIndex++,lowWallMat,0.0,Out));
       setCell("lowWall",cellIndex-1);
       
       if (wallThickLow>Geometry::zeroTol) {
       // divide layer
       Out=ModelSupport::getComposite(SMap,refIndex," -17 105 -115 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+      System.addCell(MonteCarlo::Qhull(cellIndex++,lowWallMat,0.0,Out));
       setCell("lowWallDivider",cellIndex-1);
       
       // divide layer
       Out=ModelSupport::getComposite(SMap,refIndex," -17 -106 116 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+      System.addCell(MonteCarlo::Qhull(cellIndex++,topWallMat,0.0,Out));
       }
 
       Out=ModelSupport::getComposite(SMap,refIndex," -17 -16 106 (7:6)");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+      System.addCell(MonteCarlo::Qhull(cellIndex++,topWallMat,0.0,Out));
 
       Out=ModelSupport::getComposite(SMap,refIndex," -17 15 -16 ");
     }

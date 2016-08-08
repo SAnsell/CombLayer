@@ -396,10 +396,12 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("BeRefTargetSepThick",13.0);
   Control.addVariable("BeRefLowVoidThick",2.3);
   Control.addVariable("BeRefTopVoidThick",2.3);
-  Control.addVariable("BeRefRefMat","Be5H2O");
+  Control.addVariable("BeRefLowRefMat","Be5H2O");
+  Control.addVariable("BeRefTopRefMat","Be5H2O");
   //  Control.addVariable("BeRefRefMat","Be300K");
 
-  Control.addVariable("BeRefWallMat","SS316L");
+  Control.addVariable("BeRefTopWallMat","SS316L");
+  Control.addVariable("BeRefLowWallMat","SS316L");
   Control.addVariable("BeRefTargSepMat","Iron10H2O");
 
   ///< TODO : Fix double variable dependency !!!

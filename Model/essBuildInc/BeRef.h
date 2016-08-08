@@ -65,8 +65,10 @@ class BeRef : public attachSystem::ContainedComp,
 
   double targSepThick;            ///< Steel seperator at target level
 
-  int refMat;                     ///< reflector material
-  int wallMat;                    ///< wall Material
+  int topRefMat;                  ///< reflector material (upper Be tier)
+  int lowRefMat;                  ///< reflector material (lower Be tier)
+  int topWallMat;                 ///< wall Material (upper tier) 
+  int lowWallMat;                 ///< wall Material (lower tier)
   int targSepMat;                 ///< Separator Mat
 
   // Functions:
