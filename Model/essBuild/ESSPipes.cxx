@@ -222,22 +222,24 @@ ESSPipes::buildTopPipes(Simulation& System,
 {
   ELog::RegMethod RegA("makeESS","buildTopPipes");
 
-
   if (!pipeUniqName.empty() || pipeUniqName!="help")
     {
+      if (pipeUniqName.find("supply") != std::string::npos)
+	{
+	  buildH2Pipe(System,"TopFlyLeftLobe","TopFlyLeftWater",pipeUniqName,
+		      "TSupplyLeftAl","TSupplyLeftConnect", "TSupplyLeftInvar");
+	  buildH2Pipe(System,"TopFlyRightLobe","TopFlyRightWater",pipeUniqName,
+		      "TSupplyRightAl","TSupplyRightConnect","TSupplyRightInvar");
+	}
 
-      buildH2Pipe(System,"TopFlyLeftLobe","TopFlyLeftWater",pipeUniqName,
-		  "TSupplyLeftAl","TSupplyLeftConnect", "TSupplyLeftInvar");
-      
-      buildH2Pipe(System,"TopFlyLeftLobe","TopFlyLeftWater",pipeUniqName,
-		  "TReturnLeftAl","TReturnLeftConnect","TReturnLeftInvar");
-      
-      
-      buildH2Pipe(System,"TopFlyRightLobe","TopFlyRightWater",pipeUniqName,
-		  "TSupplyRightAl","TSupplyRightConnect","TSupplyRightInvar");
-      
-      buildH2Pipe(System,"TopFlyRightLobe","TopFlyRightWater",pipeUniqName,
-		  "TReturnRightAl","TReturnRightConnect","TReturnRightInvar");
+      if (pipeUniqName.find("return") != std::string::npos)
+	{
+	  buildH2Pipe(System,"TopFlyLeftLobe","TopFlyLeftWater",pipeUniqName,
+		      "TReturnLeftAl","TReturnLeftConnect","TReturnLeftInvar");
+
+	  buildH2Pipe(System,"TopFlyRightLobe","TopFlyRightWater",pipeUniqName,
+		      "TReturnRightAl","TReturnRightConnect","TReturnRightInvar");
+	}
     }
   return;
 }
@@ -256,17 +258,22 @@ ESSPipes::buildLowPipes(Simulation& System,
 
   if (!pipeUniqName.empty() || pipeUniqName!="help")
     {
-      buildH2Pipe(System,"LowFlyLeftLobe","LowFlyLeftWater",pipeUniqName,
-                  "LSupplyLeftAl","LSupplyLeftConnect", "LSupplyLeftInvar");
+      if (pipeUniqName.find("supply") != std::string::npos)
+	{
+	  buildH2Pipe(System,"LowFlyLeftLobe","LowFlyLeftWater",pipeUniqName,
+		      "LSupplyLeftAl","LSupplyLeftConnect", "LSupplyLeftInvar");
 
-      buildH2Pipe(System,"LowFlyLeftLobe","LowFlyLeftWater",pipeUniqName,
-                  "LReturnLeftAl","LReturnLeftConnect","LReturnLeftInvar");
-      
-      buildH2Pipe(System,"LowFlyRightLobe","LowFlyRightWater",pipeUniqName,
-                  "LSupplyRightAl","LSupplyRightConnect","LSupplyRightInvar");
-      
-      buildH2Pipe(System,"LowFlyRightLobe","LowFlyRightWater",pipeUniqName,
-              "LReturnRightAl","LReturnRightConnect","LReturnRightInvar");
+	  buildH2Pipe(System,"LowFlyRightLobe","LowFlyRightWater",pipeUniqName,
+		      "LSupplyRightAl","LSupplyRightConnect","LSupplyRightInvar");
+	}
+      if (pipeUniqName.find("return") != std::string::npos)
+	{
+	  buildH2Pipe(System,"LowFlyLeftLobe","LowFlyLeftWater",pipeUniqName,
+		      "LReturnLeftAl","LReturnLeftConnect","LReturnLeftInvar");
+
+	  buildH2Pipe(System,"LowFlyRightLobe","LowFlyRightWater",pipeUniqName,
+		      "LReturnRightAl","LReturnRightConnect","LReturnRightInvar");
+	}
     }
   return;
 }

@@ -705,8 +705,8 @@ createESSInputs(inputParam& IParam)
   
   IParam.regDefItem<std::string>("lowMod","lowModType",1,std::string("lowMod"));
   IParam.regDefItem<std::string>("topMod","topModType",1,std::string("topMod"));
-  IParam.regDefItem<std::string>("lowPipe","lowPipeType",1,std::string("side"));
-  IParam.regDefItem<std::string>("topPipe","topPipeType",1,std::string("side"));
+  IParam.regDefItem<std::string>("lowPipe","lowPipeType",1,std::string("side,supply,return"));
+  IParam.regDefItem<std::string>("topPipe","topPipeType",1,std::string("side,supply,return"));
   IParam.regDefItem<std::string>("iradLine","iradLineType",1,
                                  std::string("void"));
   
