@@ -50,6 +50,7 @@ class H2Wing :
   int cellIndex;             ///< Cell index
 
   int engActive;             ///< Engineering active
+  int bfType;                ///< Type (BF1 or BF2)
   std::shared_ptr<H2FlowGuide> InnerComp;    ///< Inner flow components
   
   double xStep;
@@ -79,7 +80,7 @@ class H2Wing :
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
 
-  void createSurfaces();
+  void createSurfaces(const attachSystem::FixedComp&);
   void createObjects(Simulation&);
   void createLinks();
 

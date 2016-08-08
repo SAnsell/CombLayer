@@ -107,6 +107,7 @@ ButterflyModerator::ButterflyModerator(const std::string& Key) :
 ButterflyModerator::ButterflyModerator(const ButterflyModerator& A) : 
   constructSystem::ModBase(A),
   flyIndex(A.flyIndex),cellIndex(A.cellIndex),
+  bfType(A.bfType),
   LeftUnit(A.LeftUnit->clone()),
   RightUnit(A.RightUnit->clone()),
   MidWater(A.MidWater->clone()),
@@ -135,6 +136,7 @@ ButterflyModerator::operator=(const ButterflyModerator& A)
     {
       constructSystem::ModBase::operator=(A);
       cellIndex= A.cellIndex;
+      bfType=A.bfType;
       *LeftUnit= *A.LeftUnit;
       *RightUnit= *A.RightUnit;
       *MidWater= *A.MidWater;
@@ -176,6 +178,10 @@ ButterflyModerator::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("ButterflyModerator","populate");
 
   ModBase::populate(Control);
+  bfType=Control.EvalDefVar<int>(keyName+"Type", 2);
+  if ((bfType != 1)  && (bfType != 2))
+    throw ColErr::RangeError<double>(bfType, 1, 2, "bfType");
+
   totalHeight=Control.EvalVar<double>(keyName+"TotalHeight");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   wallDepth = Control.EvalVar<double>(keyName+"WallDepth");
