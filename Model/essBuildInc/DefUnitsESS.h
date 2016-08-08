@@ -37,7 +37,7 @@ namespace mainSystem
   void setESSFull(defaultConfig&); 
   void setESSSingle(defaultConfig&,const std::string&,
 		    const std::string&,int);
-
+  void setESSNeutronics(defaultConfig&);
 }
 
 

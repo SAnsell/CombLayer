@@ -85,6 +85,9 @@ setDefUnits(FuncDataBase& Control,
 	setESSPortsOnly(A,sndItem,extraItem);
       else if (Key=="Single")
 	setESSSingle(A,sndItem,extraItem,filled);
+      else if (Key=="neutronics")
+	setESSNeutronics(A);
+	
       else if (Key=="help")
 	{
 	  ELog::EM<<"Options : "<<ELog::endDiag;
@@ -93,6 +96,7 @@ setDefUnits(FuncDataBase& Control,
 	  ELog::EM<<"  PortsOnly [lower/upper] : Nothing beyond beamport "<<ELog::endDiag;
 	  ELog::EM<<"  Single  beamLine : Single beamline [for BL devel] "
 		  <<ELog::endDiag;
+	  ELog::EM<<"  neutronics : configuration for neutronics calculations " << ELog::endDiag;
 	  throw ColErr::ExitAbort("Iparam.defaultConfig");	  
 	}
       else 
@@ -288,6 +292,26 @@ setESSSingle(defaultConfig& A,
 }
 
 void
+setESSNeutronics(defaultConfig& A)
+
+  /*!
+    Default configuration for ESS for testing single beamlines
+    for building
+    \param A :: Paramter for default config
+    \param beamItem :: Additional value for beamline name
+    \param portItem :: Additional value for port number/item
+    \param active :: Active flag
+   */
+{
+  ELog::RegMethod RegA("DefUnitsESS[F]","setESSSingle");
+
+  A.setOption("matDB", "neutronics");
+  A.setOption("lowMod", "Butterfly");
+  A.setOption("bunker", "noPillar");
+  return;
+}
+
+void
 setESS(defaultConfig& A)
   /*!
     Default configuration for ESS
@@ -326,4 +350,5 @@ setESS(defaultConfig& A)
   return;
 }
 
+  
 } // NAMESPACE mainSystem
