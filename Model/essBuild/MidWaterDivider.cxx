@@ -93,7 +93,7 @@ MidWaterDivider::MidWaterDivider(const std::string& baseKey,
 				 const std::string& extraKey) :
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0,0),
-  attachSystem::FixedComp(baseKey+extraKey,10),
+  attachSystem::FixedComp(baseKey+extraKey,14),
   baseName(baseKey),
   divIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
   cellIndex(divIndex+1)
@@ -250,13 +250,19 @@ MidWaterDivider::createLinks(const H2Wing& leftWing,
 
   const std::vector<std::pair<int,int>> InterVec =
     {
+      // centers:
       {103,104},{103,104},
       {123,124},{123,124},
+      // connections with H2Wing:
       {111,-2},{112,-3},
-      {131,-1},{132,-4}
+      {131,-1},{132,-4},
+      // water edges:
+      {111,104},{112,103},
+      {123,131},{124,132}
     };
   const std::vector<Geometry::Vec3D> Axis
-    ({Y,Y,-Y,-Y,Y,Y,-Y,-Y});
+    ({Y,Y,-Y,-Y,Y,Y,-Y,-Y,
+	Y,Y,-Y,-Y});
 
   
   for(size_t index=0;index<InterVec.size();index++)
