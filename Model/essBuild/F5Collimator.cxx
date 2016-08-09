@@ -70,7 +70,8 @@ namespace essSystem
     colIndex(A.colIndex), cellIndex(A.cellIndex),
     delta(A.delta),height(A.height),length(A.length),width(A.width),
     wall(A.wall),viewWidth(A.viewWidth),LinkPoint(A.LinkPoint),
-    radius(A.radius),theta(A.theta),vecFP(A.vecFP),range(A.range)
+    radius(A.radius),theta(A.theta),vecFP(A.vecFP),range(A.range),
+    lpAlgorithm(A.lpAlgorithm)
   {
   }
 
@@ -94,6 +95,7 @@ namespace essSystem
 	theta=A.theta;
 	vecFP=A.vecFP;
 	range=A.range;
+	lpAlgorithm=A.lpAlgorithm;
       }
     return *this;
   }
@@ -181,6 +183,7 @@ namespace essSystem
     wall=Control.EvalDefVar<double>(keyName+"WallThick", 0.5);
     viewWidth=Control.EvalVar<double>(keyName+"ViewWidth");
     delta = Control.EvalDefVar<double>(keyName+"Delta", 0.0);
+    lpAlgorithm = Control.EvalPair<std::string>(keyName, "F5", "Algorithm"); // "baseline" "edges" "middle" "manual"
 
     // xyz coordinates of F5 tally
     Control.setVariable<double>(keyName+"X", radius*sin(theta*M_PI/180.0));
@@ -198,14 +201,32 @@ namespace essSystem
 
     int lp=0;
     // link point (defined by theta)
-    if (theta<90)
-      lp =  zStep>0 ? 6 : 4; // OK these maths depend on the XYangle of the moderator
-    else if (theta<180)
-      lp =  zStep>0 ? 7 : 5;
-    else if (theta<270)
-      lp =  zStep>0 ? 5 : 7; // OK
-    else // if theta>270
-      lp =  zStep>0 ? 4 : 6; // OK
+    if (lpAlgorithm == "baseline")
+      {
+	if (theta<90)
+	  lp =  zStep>0 ? 6 : 4; // OK these maths depend on the XYangle of the moderator
+	else if (theta<180)
+	  lp =  zStep>0 ? 7 : 5;
+	else if (theta<270)
+	  lp =  zStep>0 ? 5 : 7; // OK
+	else // if theta>270
+	  lp =  zStep>0 ? 4 : 6; // OK
+      } else if (lpAlgorithm == "edges")
+      {
+	if (theta<90)
+	  lp =  zStep>0 ? 10 : 8; // OK these maths depend on the XYangle of the moderator
+	else if (theta<180)
+	  lp =  zStep>0 ? 11 : 9;
+	else if (theta<270)
+	  lp =  zStep>0 ? 9 : 11;
+	else // if theta>270
+	  lp =  zStep>0 ? 8 : 10;
+      } else if (lpAlgorithm == "middle")
+      {
+	throw ColErr::AbsObjMethod("F5Algorithm 'middle' not implemented yet");
+      } else
+      throw ColErr::InvalidLine(lpAlgorithm,"Link point algorithm not in 'baseline', 'edges', 'middle' or 'manual'");
+    
     Control.setVariable<int>(keyName+"LinkPoint", lp);
     LinkPoint = Control.EvalDefVar<int>(keyName+"LinkPoint", -1);
 
@@ -232,19 +253,19 @@ namespace essSystem
     if (range=="cold")
       {
 	if (zStep>0) {// top moderator
-	  if ((LinkPoint==5) || (LinkPoint==6) )
+	  if ((LinkPoint==5) || (LinkPoint==6) || (LinkPoint==9) || (LinkPoint==10) )
 	    BOC *= -1;
 	} else { // low moderator
-	  if ((LinkPoint==7) || (LinkPoint==4))
+	  if ((LinkPoint==4) || (LinkPoint==7) || (LinkPoint==8) || (LinkPoint==11))
 	    BOC *= -1;
 	}
       } else if (range=="thermal")
       {
 	if (zStep>0) {// top moderator
-	  if ((LinkPoint==4) || (LinkPoint==7) )
+	  if ((LinkPoint==4) || (LinkPoint==7) || (LinkPoint==8) || (LinkPoint==11) )
 	    BOC *= -1;
 	} else { // low moderator
-	  if ((LinkPoint==6) || (LinkPoint==5))
+	  if ((LinkPoint==6) || (LinkPoint==5) || (LinkPoint==9) || (LinkPoint==10))
 	    BOC *= -1;
 	}
       }

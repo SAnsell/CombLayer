@@ -47,6 +47,7 @@ namespace essSystem
 	int LinkPoint;              ///< Link point number (currently number-6 defines the quadrant as in butterfly.svgz). Not used if <0. Calculated if setTheta is used.
 	double radius;              ///< Radius for cylindrical coordinates. Defined via 'F5Radius' in essVariables
 	double theta;               ///< Theta as defined on page 183 of TDR. If theta is set vis setTheta, [xyz]Step are calculated.
+	std::string lpAlgorithm;        ///< Algorithm used to orient collimator
 
 	std::vector<Geometry::Vec3D> vecFP; ///< vector of focal points
 	std::string range; ///< Wavelengh range {cold, thermal} - to define which focal points to use
