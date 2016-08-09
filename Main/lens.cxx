@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   Main/lens.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -159,7 +159,7 @@ main(int argc,char* argv[])
 	    SimPtr->setENDF7();
 
 	  SimProcess::importanceSim(*SimPtr,IParam);
-	  SimProcess::inputPatternSim(*SimPtr,IParam); // eneryg
+	  SimProcess::inputProcessForSim(*SimPtr,IParam); // eneryg
 
 	  tallyModification(*SimPtr,IParam);
 	  // Ensure we done loop

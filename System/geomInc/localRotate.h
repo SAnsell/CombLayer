@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   geomInc/localRotate.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,13 +23,21 @@
 #define Geometry_localRotate_h
 
 class transComp;
-
+namespace MonteCarlo
+{
+  class Object;
+}
+namespace Geometry
+{
+  class Surface;
+  class Plane;
+}
 /*!
   \class localRotate
   \version 1.0
   \date October 2009
   \author S. Ansell
-  \brief Total axis rotations for model
+  \brief Set of axis/displacement rotations for model
 */
 
 class localRotate
@@ -67,6 +75,8 @@ class localRotate
   virtual void applyFull(MonteCarlo::Object*) const;
   virtual void applyFull(Geometry::Surface*) const;
   virtual void applyFull(Geometry::Vec3D&) const;
+
+  virtual void applyFullAxis(Geometry::Vec3D&) const;
 
 };
 

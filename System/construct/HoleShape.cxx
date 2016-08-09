@@ -3,7 +3,7 @@
  
  * File:   construct/HoleShape.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,11 +66,11 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "SurInter.h"
 #include "HoleShape.h"
 
-#include "localRotate.h"
-#include "masterRotate.h"
 
 namespace constructSystem
 {
@@ -78,9 +78,10 @@ namespace constructSystem
 HoleShape::HoleShape(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::FixedComp(Key,2),
+  attachSystem::CellMap(),
   holeIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(holeIndex+1),shapeType(0),
-  angleOffset(0),radialStep(0.0),radius(0.0)
+  angleOffset(0),radialStep(0.0),radius(0.0),xradius(0.0)
   /*!
     Default constructor
     \param Key :: Key name for variables
@@ -89,10 +90,11 @@ HoleShape::HoleShape(const std::string& Key) :
 
 HoleShape::HoleShape(const HoleShape& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  attachSystem::CellMap(A),
   holeIndex(A.holeIndex),cellIndex(A.cellIndex),
   shapeType(A.shapeType),angleCentre(A.angleCentre),
   angleOffset(A.angleOffset),radialStep(A.radialStep),
-  radius(A.radius),rotCentre(A.rotCentre),
+  radius(A.radius),xradius(A.xradius),rotCentre(A.rotCentre),
   rotAngle(A.rotAngle),frontFace(A.frontFace),
   backFace(A.backFace)
   /*!
@@ -113,6 +115,7 @@ HoleShape::operator=(const HoleShape& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
       cellIndex=A.cellIndex;
       shapeType=A.shapeType;
       angleCentre=A.angleCentre;
@@ -127,6 +130,58 @@ HoleShape::operator=(const HoleShape& A)
   return *this;
 }
 
+size_t
+HoleShape::shapeIndex(const std::string& ST)
+  /*!
+    Accessor to shape type 
+    \param ST :: name to test / of a index string
+    \return shape index
+   */
+{
+  ELog::RegMethod RegA("HoleShape","shapeIndex");
+  
+  static const std::map<std::string,size_t> SName =
+    {
+      {"Null",0},
+      {"Circle",1},
+      {"Square",2},
+      {"Hexagon",3},
+      {"Octagon",4},
+      {"Rectangle",5}
+    };
+  std::map<std::string,size_t>::const_iterator mc=
+    SName.find(ST);
+  if (mc==SName.end())
+    {
+      size_t shapeIndex;
+      if (StrFunc::convert(ST,shapeIndex) && shapeIndex<6)
+	return shapeIndex;
+      throw ColErr::InContainerError<std::string>(ST,"ShapeType");
+    }
+  
+  return mc->second;
+}
+  
+void
+HoleShape::setShape(const std::string& ST)
+  /*!
+    Set the output shape:
+    Options are :
+    - 0 : Nothing
+    - 1 : Circle
+    - 2 : Square
+    - 3 : Hexagon
+    - 4 : Octagon
+    - 5 : Rectangle
+    \param ST :: Shape type
+  */
+{
+  ELog::RegMethod RegA("HoleShape","setShape(string)");
+
+  shapeType=shapeIndex(ST);
+  return;
+}
+  
 void
 HoleShape::setShape(const size_t ST)
   /*!
@@ -137,13 +192,14 @@ HoleShape::setShape(const size_t ST)
     - 2 : Square
     - 3 : Hexagon
     - 4 : Octagon
+    - 5 : Rectangle
     \param ST :: Shape type
   */
 {
   ELog::RegMethod RegA("HoleShape","setShape");
       
-  if (ST>4)
-    throw ColErr::IndexError<size_t>(ST,4,"Shape not definde : ST"); 
+  if (ST>5)
+    throw ColErr::IndexError<size_t>(ST,5,"Shape not defined : ST"); 
 
   shapeType=ST;
   return;
@@ -157,13 +213,17 @@ HoleShape::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("HoleShape","populate");
-  
-  setShape(Control.EvalVar<size_t>(keyName+"Shape"));
-  
-  angleCentre=Control.EvalVar<double>(keyName+"AngleCentre");
-  angleOffset=Control.EvalVar<double>(keyName+"AngleOffset");
-  radialStep=Control.EvalVar<double>(keyName+"RadialStep");
+
+  const std::string shapeName=
+    Control.EvalVar<std::string>(keyName+"Shape");
+  setShape(shapeName);
+
+  radialStep=Control.EvalDefVar<double>(keyName+"RadialStep",0.0);
+  angleCentre=Control.EvalDefVar<double>(keyName+"AngleCentre",0.0);
+  angleOffset=Control.EvalDefVar<double>(keyName+"AngleOffset",0.0);
+
   radius=Control.EvalVar<double>(keyName+"Radius");
+  xradius=Control.EvalDefVar<double>(keyName+"XRadius",radius);
   return;
 }
 
@@ -189,7 +249,6 @@ HoleShape::createUnitVector(const attachSystem::FixedComp& FC,
   Qy.rotate(X);
   Qy.rotate(Z);
   FixedComp::applyShift(0,0,radialStep);  
-
   return;
 }
 
@@ -222,6 +281,19 @@ HoleShape::setFaces(const int F,const int B)
   return;
 }
 
+void
+HoleShape::setFaces(const HeadRule& F,const HeadRule& B)
+  /*!
+    Set face objects
+    \param F :: Front face
+    \param B :: Back face
+  */
+{
+  frontFace=F;
+  backFace=B;
+  return;
+}
+
 std::string
 HoleShape::createCircleObj() 
   /*!
@@ -251,6 +323,24 @@ HoleShape::createSquareSurfaces()
   // inner square
   ModelSupport::buildPlane(SMap,holeIndex+33,Origin-X*radius,X);
   ModelSupport::buildPlane(SMap,holeIndex+34,Origin+X*radius,X);
+  ModelSupport::buildPlane(SMap,holeIndex+35,Origin-Z*radius,Z);
+  ModelSupport::buildPlane(SMap,holeIndex+36,Origin+Z*radius,Z);
+  return;
+}
+
+void
+HoleShape::createRectangleSurfaces()
+  /*!
+    Construct inner shape with a square.
+    Initially a straight cyclinder cut along the axis
+    later will have a cone cut.
+  */
+{
+  ELog::RegMethod RegA("HoleShape","createSquareSurfaces");
+
+  // inner square
+  ModelSupport::buildPlane(SMap,holeIndex+33,Origin-X*xradius,X);
+  ModelSupport::buildPlane(SMap,holeIndex+34,Origin+X*xradius,X);
   ModelSupport::buildPlane(SMap,holeIndex+35,Origin-Z*radius,Z);
   ModelSupport::buildPlane(SMap,holeIndex+36,Origin+Z*radius,Z);
   return;
@@ -343,6 +433,22 @@ HoleShape::createOctagonObj()
   return Out;
 }
 
+std::string
+HoleShape::createRectangleObj() 
+  /*!
+    Create the octagon cutout
+    \return the exclusion surface object / set
+  */
+{
+  ELog::RegMethod RegA("HoleShape","createRectangleObj");
+
+  const std::string Out=
+    ModelSupport::getComposite(SMap,holeIndex,
+				 " 33 -34 35 -36 ");
+
+  return Out;
+}
+
 void
 HoleShape::createSurfaces()
   /*!
@@ -366,6 +472,9 @@ HoleShape::createSurfaces()
       break;
     case 4:   // Octagon
       createOctagonSurfaces();
+      break;
+    case 5:   // Rectangel
+      createRectangleSurfaces();
       // No way to get here at Shape is controlled
     }
 
@@ -395,12 +504,17 @@ HoleShape::createObjects(Simulation& System)
     case 4:  // octagon
       Out=createOctagonObj();
       break;
+    case 5:  // rectangle
+      Out=createRectangleObj();
+      break;
     default:  // No work
       return;
     }
+
   System.addCell(MonteCarlo::Qhull
 		 (cellIndex++,0,0.0,Out+frontFace.display()+
 		  backFace.display()));
+  addCell("Void",cellIndex-1);
   addOuterSurf(Out);
   return;
 }
@@ -419,7 +533,7 @@ HoleShape::createLinks()
     SurInter::interceptRule(backFace,Origin,Y);
 
   FixedComp::setConnect(0,Front.first,-Y);
-  FixedComp::setConnect(1,Back.first,-Y);
+  FixedComp::setConnect(1,Back.first,Y);
   FixedComp::setLinkSurf(0,SMap.realSurf(Front.second));
   FixedComp::setLinkSurf(1,SMap.realSurf(Back.second));
   return;
@@ -437,26 +551,46 @@ HoleShape::setMasterAngle(const double masterAngle)
   rotAngle=masterAngle+angleOffset+angleCentre;
   return;
 }
-  
+
 void
-HoleShape::createAll(Simulation& System,
-		     const attachSystem::FixedComp& FC,
-		     const long int sideIndex)
+HoleShape::createAllNoPopulate(Simulation& System,
+                               const attachSystem::FixedComp& FC,
+                               const long int sideIndex)
   /*!
     Generic function to create everything
-    \param System :: Simuation 
+    \param System :: Simulation 
     \param FC :: Fixed component to set axis etc
+    \param sideIndex :: side for hole
   */
 {
-  ELog::RegMethod RegA("HoleShape","createAll");
+  ELog::RegMethod RegA("HoleShape","createAllNoPopulate");
 
   createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();
+  insertObjects(System);
+    
+  return;
+}
   
+void
+HoleShape::createAll(Simulation& System,
+                     const attachSystem::FixedComp& FC,
+                     const long int sideIndex)
+  /*!
+    Generic function to create everything
+    \param System :: Simulation 
+    \param FC :: Fixed component to set axis etc
+    \param sideIndex :: side for hole
+  */
+{
+  ELog::RegMethod RegA("HoleShape","createAllNoPopulate");
+
+  populate(System.getDataBase());
+  createAllNoPopulate(System,FC,sideIndex);
   return;
 }
 
   
-}  // NAMESPACE shutterSystem
+}  // NAMESPACE constructSystem

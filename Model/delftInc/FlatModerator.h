@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   delftInc/FlatModerator.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,10 +42,6 @@ class FlatModerator : public virtualMod
   const int flatIndex;           ///< Index of surface offset
   int cellIndex;                ///< Cell index
 
-  double xStep;             ///< X Step
-  double yStep;             ///< YC Step
-  double zStep;             ///< Z Step
-
   double backRad;           ///< Back radius
   double frontRad;          ///< Back radius
   double depth;             ///< Centre-Centre mid dist
@@ -63,7 +59,7 @@ class FlatModerator : public virtualMod
 
   int HCell;                ///< Main H2 cell
   
-  void populate(const Simulation&);
+  void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::SecondTrack&);
 
   void createSurfaces();

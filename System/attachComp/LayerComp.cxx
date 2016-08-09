@@ -3,7 +3,7 @@
  
  * File:   attachComp/LayerComp.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -97,7 +97,7 @@ LayerComp::operator=(const LayerComp& A)
 
 double
 LayerComp::intersectDist(const size_t layerIndex,
-			 const size_t sideIndex,
+			 const long int sideIndex,
 			 const Geometry::Vec3D& Origin,
 			 const Geometry::Vec3D& Unit) const
  /*!

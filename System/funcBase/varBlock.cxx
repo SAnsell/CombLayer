@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   funcBase/varBlock.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,12 +48,18 @@
 #include "FuncDataBase.h"
 #include "varBlock.h"
 
+/// Effective template convertion to index
 template<> int varBlock::getTypeNum<double>() { return 1; }
+/// Effective template convertion to index
 template<> int varBlock::getTypeNum<int>() { return 2; }
+/// Effective template convertion to index
 template<> int varBlock::getTypeNum<Geometry::Vec3D>() { return 3; }
 
+/// Effective template convertion to name
 template<> std::string varBlock::getTypeString<double>() { return "double"; }
+/// Effective template convertion to name
 template<> std::string varBlock::getTypeString<int>() { return "int"; }
+/// Effective template convertion to name
 template<> std::string varBlock::getTypeString<Geometry::Vec3D>() 
   { return "Vec3D"; }
 
@@ -346,5 +352,6 @@ template void varBlock::setVar(const std::string&,const Geometry::Vec3D&);
 
 template double varBlock::getVar(const std::string&) const;
 template int varBlock::getVar(const std::string&) const;
+
 ///\endcond TEMPLATE 
 

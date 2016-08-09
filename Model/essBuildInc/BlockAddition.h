@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   essBuildInc/BlockAddition.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,19 +37,13 @@ namespace essSystem
 
 class BlockAddition :  public attachSystem::ContainedComp,
     public attachSystem::LayerComp,
-    public attachSystem::FixedComp
+    public attachSystem::FixedOffset
 {
  private:
   
   const int blockIndex;          ///< Index of surface offset
   int cellIndex;                 ///< Cell index
   int active;                    ///< Box active
-
-  double xStep;                  ///< xStep direction
-  double yStep;                  ///< yStep direction
-  double zStep;                  ///< zStep direction
-  double xyAngle;                ///< Rotation angle
-  double zAngle;                 ///< up/down angle
 
   double length;                 ///< Length
   double height;                 ///< height
@@ -99,9 +93,9 @@ class BlockAddition :  public attachSystem::ContainedComp,
 		 const attachSystem::LayerComp&,
 		 const size_t,const size_t);
 
-  virtual Geometry::Vec3D getSurfacePoint(const size_t,const size_t) const;
-  virtual int getLayerSurf(const size_t,const size_t) const;
-  virtual std::string getLayerString(const size_t,const size_t) const;
+  virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
+  virtual int getLayerSurf(const size_t,const long int) const;
+  virtual std::string getLayerString(const size_t,const long int) const;
 
 };
 

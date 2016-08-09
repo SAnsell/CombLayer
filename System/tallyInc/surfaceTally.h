@@ -3,7 +3,7 @@
  
  * File:   tallyInc/surfaceTally.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,13 +29,14 @@ namespace tallySystem
     \version 1.0
     \date July 2006
     \author S. Ansell
-    \brief Hold a surface tally
+    \brief Hold a surface/surface flux tally
    */
 
 class surfaceTally : public Tally
   {
    private:
 
+    bool fluxType;                 ///< Make a flux tally
     std::vector<int> SurfList;     ///< List of surfaces
     std::vector<int> FSfield;      ///< Tally Segment [surface divide]
     NList<double> SDfield;         ///< Segment divisor
@@ -44,6 +45,7 @@ class surfaceTally : public Tally
 
    public:
 
+    surfaceTally(const bool,const int);
     explicit surfaceTally(const int);
     surfaceTally(const surfaceTally&);
     virtual surfaceTally* clone() const; 

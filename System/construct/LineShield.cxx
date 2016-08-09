@@ -3,7 +3,7 @@
  
  * File:   construct/LineShield.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,6 +71,7 @@
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "SurInter.h"
 #include "surfDIter.h"
 
 #include "LineShield.h"
@@ -82,13 +83,72 @@ LineShield::LineShield(const std::string& Key) :
   attachSystem::FixedOffset(Key,6),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   shieldIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(shieldIndex+1),activeFront(0),activeBack(0),
-  activeDivide(0)
+  cellIndex(shieldIndex+1),activeFront(0),activeBack(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
 {}
+
+LineShield::LineShield(const LineShield& A) : 
+  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),
+  shieldIndex(A.shieldIndex),cellIndex(A.cellIndex),
+  activeFront(A.activeFront),activeBack(A.activeBack),
+  frontSurf(A.frontSurf),frontCut(A.frontCut),
+  backSurf(A.backSurf),backCut(A.backCut),
+  length(A.length),left(A.left),right(A.right),
+  height(A.height),depth(A.depth),defMat(A.defMat),
+  nSeg(A.nSeg),nWallLayers(A.nWallLayers),
+  wallFrac(A.wallFrac),wallMat(A.wallMat),
+  nRoofLayers(A.nRoofLayers),roofFrac(A.roofFrac),
+  roofMat(A.roofMat),nFloorLayers(A.nFloorLayers),
+  floorFrac(A.floorFrac),floorMat(A.floorMat)
+  /*!
+    Copy constructor
+    \param A :: LineShield to copy
+  */
+{}
+
+LineShield&
+LineShield::operator=(const LineShield& A)
+  /*!
+    Assignment operator
+    \param A :: LineShield to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedOffset::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      cellIndex=A.cellIndex;
+      activeFront=A.activeFront;
+      activeBack=A.activeBack;
+      frontSurf=A.frontSurf;
+      frontCut=A.frontCut;
+      backSurf=A.backSurf;
+      backCut=A.backCut;
+      length=A.length;
+      left=A.left;
+      right=A.right;
+      height=A.height;
+      depth=A.depth;
+      defMat=A.defMat;
+      nSeg=A.nSeg;
+      nWallLayers=A.nWallLayers;
+      wallFrac=A.wallFrac;
+      wallMat=A.wallMat;
+      nRoofLayers=A.nRoofLayers;
+      roofFrac=A.roofFrac;
+      roofMat=A.roofMat;
+      nFloorLayers=A.nFloorLayers;
+      floorFrac=A.floorFrac;
+      floorMat=A.floorMat;
+    }
+  return *this;
+}
 
 LineShield::~LineShield() 
   /*!
@@ -96,6 +156,41 @@ LineShield::~LineShield()
   */
 {}
 
+void
+LineShield::removeFrontOverLap()
+  /*!
+    Remove segments that are completly covered by the
+    active front.
+  */
+{
+  ELog::RegMethod RegA("LineShield","removeFrontOverLap");
+
+  if (activeFront)
+    {
+      size_t index(1);
+      const double segStep(length/static_cast<double>(nSeg));
+      // note : starts one step ahead of front.
+      Geometry::Vec3D SP(Origin-Y*(length/2.0-segStep));
+      frontSurf.populateSurf();
+      while(index<nSeg && !frontSurf.isValid(SP))
+        {
+          SP+=Y*segStep;
+          index++;
+        }
+      index--;
+      if (index>0)
+        {
+          length-=segStep*index;
+          nSeg-=index;
+          Origin+=Y*(index*segStep/2.0);
+          ELog::EM<<"Removal["<<keyName<<"] of Active segment == "
+                  <<index<<ELog::endDiag;
+        }
+    }
+  
+  return;
+}
+  
 void
 LineShield::populate(const FuncDataBase& Control)
   /*!
@@ -172,10 +267,13 @@ LineShield::createSurfaces()
   // Inner void
   if (!activeFront)
     ModelSupport::buildPlane(SMap,shieldIndex+1,Origin-Y*(length/2.0),Y);
-
+      
   if (!activeBack)
     ModelSupport::buildPlane(SMap,shieldIndex+2,Origin+Y*(length/2.0),Y);
 
+  if (activeFront)
+    removeFrontOverLap();
+  
   const double segStep(length/static_cast<double>(nSeg));
   double segLen(-length/2.0);
   int SI(shieldIndex+10);
@@ -226,18 +324,16 @@ LineShield::createObjects(Simulation& System)
   std::string Out;
   
   const std::string frontStr
-    (activeFront ? frontSurf.display() : 
+    (activeFront ? frontSurf.display()+frontCut.display() : 
      ModelSupport::getComposite(SMap,shieldIndex," 1 "));
   const std::string backStr
-    (activeBack ? backSurf.display() : 
+    (activeBack ? backSurf.display()+backCut.display() : 
      ModelSupport::getComposite(SMap,shieldIndex," -2 "));
-  const std::string divStr
-    (activeDivide ? divideSurf.display() :  "");
 
   // Inner void is a single segment
   Out=ModelSupport::getComposite(SMap,shieldIndex," 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+
-				   frontStr+backStr+divStr));
+				   frontStr+backStr));
   addCell("Void",cellIndex-1);
 
   // Loop over all segments:
@@ -246,14 +342,13 @@ LineShield::createObjects(Simulation& System)
   int WI,RI,FI;    
   for(size_t index=0;index<nSeg;index++)
     {
-	
       FBStr=((index) ?
 	     ModelSupport::getComposite(SMap,SI," 2 ") :
-	     frontStr+divStr);
+	     frontStr);
       FBStr+= ((index+1!=nSeg) ?
 	       ModelSupport::getComposite(SMap,SI," -12 ") :
-	       backStr+divStr);
-      SI+=10;
+	       backStr);
+      SI+=10; 
 
       // Inner is a single component
       // Walls are contained:
@@ -311,7 +406,7 @@ LineShield::createObjects(Simulation& System)
     }
   // Outer
   Out=ModelSupport::getComposite(SMap,WI,FI,RI," 3 -4 5M -6N ");
-  addOuterSurf(Out+frontStr+backStr+divStr);
+  addOuterSurf(Out+frontStr+backStr);
 
   return;
 }
@@ -330,55 +425,40 @@ LineShield::createLinks()
   FixedComp::setConnect(4,Origin-Z*depth,-Z);
   FixedComp::setConnect(5,Origin+Z*height,Z);
 
+  const int WI(shieldIndex+(static_cast<int>(nWallLayers)-1)*10);
+  const int RI(shieldIndex+(static_cast<int>(nRoofLayers)-1)*10);
+  const int FI(shieldIndex+(static_cast<int>(nFloorLayers)-1)*10);
+
   if (!activeFront)
     {
       FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
       FixedComp::setLinkSurf(0,-SMap.realSurf(shieldIndex+1));      
     }
+  else
+    {
+      FixedComp::setLinkSurf(0,frontSurf,1,frontCut,0);      
+      FixedComp::setConnect
+        (0,SurInter::getLinePoint(Origin,Y,frontSurf,frontCut),-Y);
+    }
+  
   if (!activeBack)
     {
       FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
-      FixedComp::setLinkSurf(1,SMap.realSurf(shieldIndex+2));      
-    }
-
-  FixedComp::setLinkSurf(2,-SMap.realSurf(shieldIndex+3));
-  FixedComp::setLinkSurf(3,SMap.realSurf(shieldIndex+4));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(shieldIndex+5));
-  FixedComp::setLinkSurf(5,SMap.realSurf(shieldIndex+6));
-  
-  return;
-}
-
-void
-LineShield::setDivider(const attachSystem::FixedComp& FC,
-		       const long int sideIndex)
-  /*!
-    Set divider surface
-    \param FC :: FixedComponent 
-    \param sideIndex ::  Direction to link
-   */
-{
-  ELog::RegMethod RegA("LineShield","setDivider");
-  
-  if (sideIndex==0)
-    throw ColErr::EmptyValue<long int>("SideIndex cant be zero");
-
-  activeDivide=1;
-  if (sideIndex>0)
-    {
-      const size_t SI(static_cast<size_t>(sideIndex-1));
-      divideSurf=FC.getCommonRule(SI);
+      FixedComp::setLinkSurf(1,SMap.realSurf(shieldIndex+2));
     }
   else
     {
-      const size_t SI(static_cast<size_t>(-sideIndex-1));
-      divideSurf=FC.getCommonRule(SI);
-      divideSurf.makeComplement();
+      FixedComp::setLinkSurf(0,backSurf,1,backCut,0);      
+      FixedComp::setConnect
+        (1,SurInter::getLinePoint(Origin,Y,backSurf,backCut),Y);
     }
+  FixedComp::setLinkSurf(2,-SMap.realSurf(WI+3));
+  FixedComp::setLinkSurf(3,SMap.realSurf(WI+4));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(FI+5));
+  FixedComp::setLinkSurf(5,SMap.realSurf(RI+6));
+  
   return;
 }
-
-  
   
 void
 LineShield::setFront(const attachSystem::FixedComp& FC,
@@ -395,27 +475,19 @@ LineShield::setFront(const attachSystem::FixedComp& FC,
     throw ColErr::EmptyValue<long int>("SideIndex cant be zero");
 
   activeFront=1;
-  if (sideIndex>0)
-    {
-      const size_t SI(static_cast<size_t>(sideIndex-1));
-      frontSurf=FC.getMainRule(SI);
-    }
-  else
-    {
-      const size_t SI(static_cast<size_t>(-sideIndex-1));
-      frontSurf=FC.getMainRule(SI);
-      frontSurf.makeComplement();
-    }
-  // negative side because we point out
-  setLinkSignedCopy(0,FC,-sideIndex);
+  frontSurf=FC.getSignedMainRule(sideIndex);
+  frontCut=FC.getSignedCommonRule(sideIndex);
+  frontSurf.populateSurf();
+  frontCut.populateSurf();
+  
   return;
 }
-  
+
 void
 LineShield::setBack(const attachSystem::FixedComp& FC,
-		     const long int sideIndex)
+		    const long int sideIndex)
   /*!
-    Set Back surface
+    Set back surface
     \param FC :: FixedComponent 
     \param sideIndex ::  Direction to link
    */
@@ -426,18 +498,15 @@ LineShield::setBack(const attachSystem::FixedComp& FC,
     throw ColErr::EmptyValue<long int>("SideIndex cant be zero");
 
   activeBack=1;
-  if (sideIndex>0)
-    backSurf=FC.getMainRule(static_cast<size_t>(sideIndex-1));
-  else
-    {
-      backSurf=FC.getMainRule(static_cast<size_t>(-sideIndex-1));
-      backSurf.makeComplement();
-    }
-  // negative side because we point out
-  setLinkSignedCopy(1,FC,-sideIndex);
-
+  backSurf=FC.getSignedMainRule(sideIndex);
+  backCut=FC.getSignedCommonRule(sideIndex);
+  backSurf.populateSurf();
+  backCut.populateSurf();
+  
   return;
 }
+
+  
     
 void
 LineShield::createAll(Simulation& System,

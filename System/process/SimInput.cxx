@@ -3,7 +3,7 @@
  
  * File:   process/SimInput.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,7 @@
 #include <string>
 #include <algorithm>
 #include <iterator>
+#include <array>
 #include <memory>
 
 #include "Exception.h"
@@ -55,6 +56,20 @@
 #include "Object.h"
 #include "Qhull.h"
 #include "Simulation.h"
+#include "Triple.h"
+#include "NList.h"
+#include "NRange.h"
+#include "SrcData.h"
+#include "SrcItem.h"
+#include "DSTerm.h"
+#include "Source.h"
+#include "KCode.h"
+#include "ModeCard.h"
+#include "PhysImp.h"
+#include "PhysCard.h"
+#include "PStandard.h"
+#include "LSwitchCard.h"
+#include "PhysicsCards.h"
 #include "ImportControl.h"
 #include "SimValid.h"
 #include "MainProcess.h"
@@ -79,15 +94,16 @@ importanceSim(Simulation& System,const mainSystem::inputParam& IParam)
   System.createObjSurfMap();
 
   WeightSystem::simulationImp(System,IParam);
+
   WeightSystem::ExtField(System,IParam);
+
+        
   WeightSystem::DXT(System,IParam);
   WeightSystem::PWT(System,IParam);
   WeightSystem::EnergyCellCut(System,IParam);
   mainSystem::renumberCells(System,IParam);
-
   WeightSystem::WeightControl WC;
   WC.processWeights(System,IParam);
-
   
   return;
 }
@@ -108,6 +124,10 @@ processExitChecks(Simulation& System,const mainSystem::inputParam& IParam)
       ELog::EM<<"SIMVALID TRACK "<<ELog::endDiag;
       ELog::EM<<"-------------- "<<ELog::endDiag;
       ModelSupport::SimValid SValidCheck;
+      
+      if (IParam.flag("validPoint"))
+	SValidCheck.setCentre(IParam.getValue<Geometry::Vec3D>("validPoint"));
+
       if (!SValidCheck.run(System,IParam.getValue<size_t>("validCheck")))
 	errFlag += -1;
     }
@@ -119,7 +139,8 @@ processExitChecks(Simulation& System,const mainSystem::inputParam& IParam)
 
 
 void
-inputPatternSim(Simulation& System,const mainSystem::inputParam& IParam)
+inputProcessForSim(Simulation& System,
+                const mainSystem::inputParam& IParam)
   /*!
     Check the validity of the simulation
     \param System :: Simuation object 
@@ -134,8 +155,79 @@ inputPatternSim(Simulation& System,const mainSystem::inputParam& IParam)
   // Cut energy tallies:
   if (IParam.flag("ECut"))
     System.setEnergy(IParam.getValue<double>("ECut"));
+
+  if (IParam.flag("endf"))
+    System.setENDF7();
+
+  if (IParam.flag("ptrac"))
+    processPTrack(IParam,System.getPC());
+
+  if (IParam.flag("event"))
+    processEvent("event",IParam,System.getPC());
+
+  if (IParam.flag("dbcn"))
+    processEvent("dbcn",IParam,System.getPC());
   
   return;
 }
 
+void
+processPTrack(const mainSystem::inputParam& IParam,
+              physicsSystem::PhysicsCards& PCard)
+  /*!
+    Process the input
+    \param IParam :: Input deck
+    \param PCard :: Physics card
+   */
+{
+  ELog::RegMethod RegA("SimInput[F]","processPTrack");
+
+  const size_t NItems=IParam.itemCnt("ptrac",0);
+  if (NItems && IParam.getValue<std::string>("ptrac",0,0)=="help")
+    {
+      PCard.writeHelp("ptrac");
+      return;
+    }
+  
+  for(size_t index=1;index<NItems;index+=2)
+    {
+      const std::string key=IParam.getValue<std::string>("ptrac",0,index-1);
+      const std::string Val=IParam.getValue<std::string>("ptrac",0,index);
+      PCard.setPTRAC(key,Val);
+    }
+  PCard.setPTRACactive(1);
+  return;
+}
+
+void
+processEvent(const std::string& typeName,
+             const mainSystem::inputParam& IParam,
+             physicsSystem::PhysicsCards& PCard)
+  /*!
+    Process the input
+    \param typeName :: name [event/dbcn]
+    \param IParam :: Input deck
+    \param PCard :: Physics card
+  */
+{
+  ELog::RegMethod RegA("SimInput[F]","processEvent");
+
+  const size_t NItems=IParam.itemCnt(typeName,0);
+  if (NItems && IParam.getValue<std::string>(typeName,0,0)=="help")
+    {
+      PCard.writeHelp(typeName);
+      return;
+    }
+  
+  for(size_t index=1;index<NItems;index+=2)
+    {
+      const std::string key=IParam.getValue<std::string>(typeName,0,index-1);
+      const std::string Val=IParam.getValue<std::string>(typeName,0,index);
+      PCard.setDBCN(key,Val);
+    }
+  PCard.setDBCNactive(1);
+  return;
+}
+
+  
 }  // NAMESPACE SimProcess

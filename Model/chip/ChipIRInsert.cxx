@@ -95,7 +95,7 @@ namespace shutterSystem
 
 ChipIRInsert::ChipIRInsert(const size_t ID,const std::string& BKey,
 			   const std::string& IKey)  : 
-  BulkInsert(ID,BKey),keyName(IKey),nLayers(0)
+  BulkInsert(ID,BKey),compName(IKey),nLayers(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param ID :: Shutter number
@@ -107,7 +107,7 @@ ChipIRInsert::ChipIRInsert(const size_t ID,const std::string& BKey,
 
 ChipIRInsert::ChipIRInsert(const ChipIRInsert& A) : 
   BulkInsert(A),
-  keyName(A.keyName),voidOrigin(A.voidOrigin),Axis(A.Axis),
+  compName(A.compName),voidOrigin(A.voidOrigin),Axis(A.Axis),
   zModAngle(A.zModAngle),xyModAngle(A.xyModAngle),
   fStep(A.fStep),bStep(A.bStep),radius(A.radius),
   lowCut(A.lowCut),rXDisp(A.rXDisp),rZDisp(A.rZDisp),
@@ -176,40 +176,40 @@ ChipIRInsert::populate(const Simulation& System)
   const FuncDataBase& Control=System.getDataBase();
   try
     {
-      zModAngle=Control.EvalDefVar<double>(keyName+"ZAngle",0.0);
-      xyModAngle=Control.EvalDefVar<double>(keyName+"XYAngle",0.0);
-      fStep=Control.EvalDefVar<double>(keyName+"FStep",0.0);
-      bStep=Control.EvalDefVar<double>(keyName+"BStep",0.0);      
-      radius=Control.EvalVar<double>(keyName+"Radius");
-      lowCut=Control.EvalVar<double>(keyName+"LowCut");
+      zModAngle=Control.EvalDefVar<double>(compName+"ZAngle",0.0);
+      xyModAngle=Control.EvalDefVar<double>(compName+"XYAngle",0.0);
+      fStep=Control.EvalDefVar<double>(compName+"FStep",0.0);
+      bStep=Control.EvalDefVar<double>(compName+"BStep",0.0);      
+      radius=Control.EvalVar<double>(compName+"Radius");
+      lowCut=Control.EvalVar<double>(compName+"LowCut");
 
-      rXDisp=Control.EvalDefVar<double>(keyName+"RXDisp",0.0);
-      rZDisp=Control.EvalDefVar<double>(keyName+"RZDisp",0.0);
+      rXDisp=Control.EvalDefVar<double>(compName+"RXDisp",0.0);
+      rZDisp=Control.EvalDefVar<double>(compName+"RZDisp",0.0);
 
-      clearTopGap=Control.EvalVar<double>(keyName+"ClearTopGap");
-      clearSideGap=Control.EvalVar<double>(keyName+"ClearSideGap");
-      clearBaseGap=Control.EvalVar<double>(keyName+"ClearBaseGap");
-      clearTopOff=Control.EvalVar<double>(keyName+"ClearTopOff");
-      clearSideOff=Control.EvalVar<double>(keyName+"ClearSideOff");
-      clearBaseOff=Control.EvalVar<double>(keyName+"ClearBaseOff");
+      clearTopGap=Control.EvalVar<double>(compName+"ClearTopGap");
+      clearSideGap=Control.EvalVar<double>(compName+"ClearSideGap");
+      clearBaseGap=Control.EvalVar<double>(compName+"ClearBaseGap");
+      clearTopOff=Control.EvalVar<double>(compName+"ClearTopOff");
+      clearSideOff=Control.EvalVar<double>(compName+"ClearSideOff");
+      clearBaseOff=Control.EvalVar<double>(compName+"ClearBaseOff");
 
 
-      frontMat=ModelSupport::EvalMat<int>(Control,keyName+"FrontMat");
-      backMat=ModelSupport::EvalMat<int>(Control,keyName+"BackMat");
-      defMat=ModelSupport::EvalMat<int>(Control,keyName+"DefMat");
+      frontMat=ModelSupport::EvalMat<int>(Control,compName+"FrontMat");
+      backMat=ModelSupport::EvalMat<int>(Control,compName+"BackMat");
+      defMat=ModelSupport::EvalMat<int>(Control,compName+"DefMat");
 
       // Layers
-      nLayers=Control.EvalDefVar<size_t>(keyName+"NLayers",0);
+      nLayers=Control.EvalDefVar<size_t>(compName+"NLayers",0);
       ModelSupport::populateDivide(Control,nLayers,
-				   keyName+"Frac_",cFrac);
+				   compName+"Frac_",cFrac);
       ModelSupport::populateDivide(Control,nLayers,
-				   keyName+"Mat_",defMat,cMat);
+				   compName+"Mat_",defMat,cMat);
       
     }
   // Exit and don't report if we are not using this scatter plate
   catch (ColErr::InContainerError<std::string>& EType)
     {
-      ELog::EM<<"ChipIRInsert "<<keyName<<" not in use Var:"
+      ELog::EM<<"ChipIRInsert "<<compName<<" not in use Var:"
 	      <<EType.getItem()<<ELog::endWarn;
     }
   return;

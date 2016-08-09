@@ -3,7 +3,7 @@
  
  * File:   essBuild/BunkerInsert.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -90,7 +90,7 @@ namespace essSystem
 {
 
 BunkerInsert::BunkerInsert(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,7),
   attachSystem::CellMap(),
   insIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(insIndex+1)
@@ -99,6 +99,47 @@ BunkerInsert::BunkerInsert(const std::string& Key)  :
     \param Key :: Name for item in search
   */
 {}
+
+BunkerInsert::BunkerInsert(const BunkerInsert& A) : 
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::CellMap(A),
+  insIndex(A.insIndex),cellIndex(A.cellIndex),backStep(A.backStep),
+  height(A.height),width(A.width),topWall(A.topWall),
+  lowWall(A.lowWall),leftWall(A.leftWall),rightWall(A.rightWall),
+  wallMat(A.wallMat),voidMat(A.voidMat),outCut(A.outCut)
+  /*!
+    Copy constructor
+    \param A :: BunkerInsert to copy
+  */
+{}
+
+BunkerInsert&
+BunkerInsert::operator=(const BunkerInsert& A)
+  /*!
+    Assignment operator
+    \param A :: BunkerInsert to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      cellIndex=A.cellIndex;
+      backStep=A.backStep;
+      height=A.height;
+      width=A.width;
+      topWall=A.topWall;
+      lowWall=A.lowWall;
+      leftWall=A.leftWall;
+      rightWall=A.rightWall;
+      wallMat=A.wallMat;
+      voidMat=A.voidMat;
+      outCut=A.outCut;
+    }
+  return *this;
+}
 
 BunkerInsert::~BunkerInsert() 
   /*!
@@ -136,7 +177,6 @@ BunkerInsert::createUnitVector(const attachSystem::FixedComp& FC,
 			       const long int orgIndex)
   /*!
     Create the unit vectors
-    \param MainCentre :: Main rotation centre
     \param FC :: Linked object
     \param orgIndex :: link point
   */
@@ -177,8 +217,9 @@ BunkerInsert::createSurfaces()
 int
 BunkerInsert::objectCut(const std::vector<Geometry::Vec3D>& Corners) const
   /*!
-    Determine if Pts are within or within completely the bunker unit
-    \param Pts :: Point to check
+    Determine if a set of corners from another BunkerInsert item
+    are within, completely within, outside this bunker unit
+    \param Corners :: Points to test
     \retval 0 :: No intercept
     \retval -1 :: Partial inside
     \retval 1 :: Full inside 
@@ -279,6 +320,18 @@ BunkerInsert::createLinks(const attachSystem::FixedComp& BUnit)
   const size_t indexB=SurInter::closestPt(Pts,Origin);
   FixedComp::setConnect(1,Pts[indexB],Y);
 
+  // Mid point [useful for guides etc]
+  FixedComp::setConnect(6,(Pts[indexA]+Pts[indexB])/2.0,Y);
+
+  FixedComp::setConnect(2,Origin-X*(width/2.0),X);
+  FixedComp::setConnect(3,Origin+X*(width/2.0),X);
+  FixedComp::setConnect(4,Origin-Z*(height/2.0),Z);
+  FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
+  
+  FixedComp::setLinkSurf(2,SMap.realSurf(insIndex+3));
+  FixedComp::setLinkSurf(3,-SMap.realSurf(insIndex+4));
+  FixedComp::setLinkSurf(4,SMap.realSurf(insIndex+5));
+  FixedComp::setLinkSurf(5,-SMap.realSurf(insIndex+6));
   
   return;
 }

@@ -3,7 +3,7 @@
  
  * File:   constructInc/VacuumPipe.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,11 +47,21 @@ class VacuumPipe :
 
   bool activeFront;             ///< Flag for front active
   bool activeBack;              ///< Flag for back active
-  bool activeDivide;              ///< Flag for back active
-  HeadRule frontSurf;           ///< Front surfaces [if used]
-  HeadRule backSurf;            ///< Back surfaces [if used]
-  HeadRule divideSurf;          ///< divider surfaces [if used]
+
   
+  HeadRule frontSurf;           ///< Front surfaces [if used]
+  HeadRule frontCut;            ///< Front divider [if used]
+  HeadRule backSurf;            ///< Back surfaces [if used]
+  HeadRule backCut;             ///< Back divider [if used]
+
+  bool frontJoin;               ///< Flag for front join
+  Geometry::Vec3D FPt;          ///< Front point
+  Geometry::Vec3D FAxis;          ///< Front point
+
+  bool backJoin;               ///< Flag for front join
+  Geometry::Vec3D BPt;          ///< Front point
+  Geometry::Vec3D BAxis;          ///< Front point
+
   double radius;                ///< void height [top only]
   double length;                ///< void length [total]
 
@@ -59,9 +69,14 @@ class VacuumPipe :
 
   double flangeRadius;          ///< Joining Flange thick
   double flangeLength;          ///< Joining Flange length
+
+  int activeWindow;             ///< Flag on window activity
+  double windowThick;           ///< Joining Flange length
+  double windowRadius;          ///< Joining Flange length
   
-  int voidMat;                  ///< Void material 
+  int voidMat;                  ///< Void material
   int feMat;                    ///< Pipe material 
+  int windowMat;                ///< Window material 
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
@@ -69,7 +84,8 @@ class VacuumPipe :
   void createObjects(Simulation&);
   void createLinks();
 
-  void getShiftedSurf(const HeadRule&,const int,const int);
+  void getShiftedSurf(const HeadRule&,const int,const int,const double);
+  void applyActiveFrontBack();
   
  public:
 
@@ -79,9 +95,8 @@ class VacuumPipe :
   virtual ~VacuumPipe();
 
 
-  void setFront(const attachSystem::FixedComp&,const long int);
-  void setBack(const attachSystem::FixedComp&,const long int);
-  void setDivider(const attachSystem::FixedComp&,const long int);
+  void setFront(const attachSystem::FixedComp&,const long int,const bool =0);
+  void setBack(const attachSystem::FixedComp&,const long int,const bool =0);
   
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

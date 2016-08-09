@@ -27,6 +27,14 @@ class Simulation;
 namespace photonSystem
 {
 
+/*!
+  \struct TUnit
+  \author S. Ansell
+  \version 1.0
+  \date Janurary 2015
+  \brief Tube componete data unit
+*/
+
 struct TUnit
 {
   Geometry::Vec3D Offset; ///< Start offset

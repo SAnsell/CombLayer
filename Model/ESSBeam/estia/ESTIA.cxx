@@ -3,7 +3,7 @@
  
  * File:   essBuild/ESTIA.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -101,9 +101,9 @@ ESTIA::ESTIA() :
   VPipeB(new constructSystem::VacuumPipe("estiaPipeB")),
   VacBoxA(new constructSystem::VacuumBox("estiaVBoxA")),
   FocusB(new beamlineSystem::GuideLine("estiaFB"))
-/*! 
+  /*! 
     Constructor
- */
+  */
 {
   ELog::RegMethod RegA("ESTIA","ESTIA");
  

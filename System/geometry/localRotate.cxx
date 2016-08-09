@@ -33,7 +33,6 @@
 #include <algorithm>
 #include <memory>
 
-
 #include "Exception.h"
 #include "FileReport.h"
 #include "GTKreport.h"
@@ -112,9 +111,9 @@ localRotate::addDisplace(const Geometry::Vec3D& DV)
 Geometry::Vec3D
 localRotate::reverseRotate(const Geometry::Vec3D& V) const
   /*!
-    Rotate a vector
+    Rotate/dispalce a vector
     \param V :: Vector to rotate [in reverse]
-    \return Vector rotated
+    \return Vector rotated/dispalces
   */
 {
   Geometry::Vec3D Vpt(V);
@@ -132,9 +131,9 @@ localRotate::reverseRotate(const Geometry::Vec3D& V) const
 Geometry::Vec3D
 localRotate::calcRotate(const Geometry::Vec3D& V) const
   /*!
-    Rotate a vector
-    \param V :: Vector to rotate
-    \return Vector rotated
+    Rotate and displace a vector
+    \param V :: Vector to rotate / displace
+    \return Vector rotated/displaces
   */
 {
   Geometry::Vec3D Vpt(V);
@@ -142,7 +141,7 @@ localRotate::calcRotate(const Geometry::Vec3D& V) const
   void (transComp::*fn)(Geometry::Vec3D&) const =  &transComp::apply;
   for_each(Transforms.begin(),Transforms.end(),
 	     std::bind<void>(fn,std::placeholders::_1,
-			       std::ref(Vpt)));
+                             std::ref(Vpt)));
   return Vpt;
 }
 
@@ -203,11 +202,12 @@ localRotate::applyFull(Geometry::Surface* SPtr) const
   /*!
     Apply full rotations:
     \param SPtr :: Surface Pointer
-   */
+  */
 {
   void (transComp::*fn)(Geometry::Surface*) const =  &transComp::apply;
   for_each(Transforms.begin(),Transforms.end(),
 	   std::bind<void>(fn,std::placeholders::_1,SPtr));
+  
   return;
 }
 
@@ -235,6 +235,17 @@ localRotate::applyFull(Geometry::Vec3D& Pt) const
   for_each(Transforms.begin(),Transforms.end(),
 	   std::bind<void>(fn,std::placeholders::_1,
 			     std::ref(Pt)));
+  return;
+}
+
+void
+localRotate::applyFullAxis(Geometry::Vec3D& Pt) const
+  /*!
+    Apply full rotations:
+    \param Pt :: Point to rotate
+  */
+{  
+  axisRotate(Pt);
   return;
 }
 

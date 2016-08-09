@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   process/PipeLine.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -174,7 +174,8 @@ PipeLine::addPoint(const Geometry::Vec3D& newPt)
           // This is to test if the axis reverses on itself
 	  if (AAxis.dotProd(BAxis)>1.0-Geometry::zeroTol)
 	    {
-	      ELog::EM<<"Points reversed at index "<<Index<<ELog::endCrit;
+	      ELog::EM<<"["<<keyName<<"] Points reversed at index "
+		      <<Index<<ELog::endCrit;
 	      ELog::EM<<"PtA "<<Pts[Index-2]<<ELog::endCrit;
 	      ELog::EM<<"PtB "<<Pts[Index-1]<<ELog::endCrit;
 	      ELog::EM<<"PtNew "<<newPt<<ELog::endErr;
@@ -199,7 +200,7 @@ PipeLine::addSurfPoint(const Geometry::Vec3D& Pt,const std::string& surfStr)
     Add an additional point
     \param Pt :: Point to add
     \param surfStr :: Outgoing surface string
-   */
+  */
 { 
   ELog::RegMethod RegA("PipeLine","addSurfPoint");
   addSurfPoint(Pt,surfStr,std::string());
@@ -214,7 +215,7 @@ PipeLine::addSurfPoint(const Geometry::Vec3D& Pt,
     Add an additional point
     \param Pt :: Point to add
     \param surfStr :: Outgoing surface string
-    \param commonSurf :: common surface
+    \param commonStr :: common surface
    */
 { 
   ELog::RegMethod RegA("PipeLine","addSurfPoint");
@@ -270,7 +271,11 @@ PipeLine::addRadius(const double R,const int M,const double T)
   ELog::RegMethod RegA("PipeLine","addRadius");
   nCylinder++;
   if (!CV.empty() && CV.back().CRadius>R)
-    ELog::EM<<"Radius for pipes must in increasing order"<<ELog::endErr;
+    {
+      ELog::EM<<"CV == "<<CV.size()<<ELog::endDiag;
+      ELog::EM<<"Radii for pipeline["<<keyName
+	      <<"] must be in increasing order"<<ELog::endErr;
+    }
    
   CV.push_back(cylValues(R,M,T));
 
@@ -405,7 +410,7 @@ PipeLine::getCap(const size_t index,const int side) const
   /*!
     Access the end cap rules
     \param index :: index to point
-    \param size :: 0 / 1 for front/back
+    \param side :: 0 / 1 for front/back
     \return HeadRule
   */  
 {
@@ -463,7 +468,7 @@ PipeLine::setStartSurf(const std::string& startS)
   /*!
     Simple setter for start surf
     \param startS :: Start surface
-   */
+  */
 {
   ELog::RegMethod RegA("PipeLine","setStartSurf");
 
@@ -474,17 +479,15 @@ PipeLine::setStartSurf(const std::string& startS)
 void
 PipeLine::createAll(Simulation& System)
   /*!
-    Global creation of the hutch
+    Global creation of pipe
     \param System :: Simulation to add vessel to
   */
 {
   ELog::RegMethod RegA("PipeLine","createAll");
-  System.populateCells();
-  System.validateObjSurfMap();  
   createUnits(System);
 
   return;
 }
 
   
-}  // NAMESPACE moderatorSystem
+}  // NAMESPACE ModelSystem

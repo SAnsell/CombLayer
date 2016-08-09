@@ -3,7 +3,7 @@
  
  * File:   src/Simulation.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -96,6 +96,8 @@
 #include "ObjSurfMap.h"
 #include "PhysicsCards.h"
 #include "ReadFunctions.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "SimTrack.h"
 #include "Simulation.h"
 
@@ -110,7 +112,8 @@ Simulation::Simulation()  :
 }
 
 Simulation::Simulation(const Simulation& A)  :
-  inputFile(A.inputFile),CNum(A.CNum),DB(A.DB),
+  mcnpType(A.mcnpType),inputFile(A.inputFile),
+  CNum(A.CNum),DB(A.DB),
   OSMPtr(new ModelSupport::ObjSurfMap),
   TList(A.TList),  cellOutOrder(A.cellOutOrder),
   PhysPtr(new physicsSystem::PhysicsCards(*A.PhysPtr))
@@ -222,11 +225,12 @@ Simulation::deleteObjects()
     Delete all the Objects 
   */
 {
-  ELog::RegMethod RegA("","del");
+  ELog::RegMethod RegA("Simulation","deleteObjects");
+  
   ModelSupport::SimTrack::Instance().setCell(this,0);
-  OTYPE::iterator mc;
-  for(mc=OList.begin();mc!=OList.end();mc++)
-    delete mc->second;
+  for(OTYPE::value_type& mc : OList)
+    delete mc.second;
+  
   OList.erase(OList.begin(),OList.end());
   cellOutOrder.clear();
   return;
@@ -435,6 +439,8 @@ Simulation::addCell(const int cellNumber,const MonteCarlo::Qhull& A)
   */
 {
   ELog::RegMethod RegA("Simulation","addCell(int,Qhull)");
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
 
   OTYPE::iterator mpt=OList.find(cellNumber);
   
@@ -445,16 +451,18 @@ Simulation::addCell(const int cellNumber,const MonteCarlo::Qhull& A)
       ELog::EM<<"Call from: "<<RegA.getBasePtr()->getItem(-1)<<ELog::endCrit;
       throw ColErr::ExitAbort("Cell number in use");
     }
-
   OList.insert(OTYPE::value_type(cellNumber,A.clone()));
   MonteCarlo::Qhull* QHptr=OList[cellNumber];
+
   QHptr->setName(cellNumber);
-  if (setMaterialDensity(cellNumber))
+
+   if (setMaterialDensity(cellNumber))
     {
       ELog::EM<<"No material in found:"<<cellNumber<<ELog::endCrit;
       throw ColErr::InContainerError<int>(cellNumber,"cellNumber");
     }
- 
+
+
   if (!QHptr->hasComplement() ||
       removeComplement(*QHptr))
     {
@@ -469,6 +477,8 @@ Simulation::addCell(const int cellNumber,const MonteCarlo::Qhull& A)
       
   // Add Volume unit [default]:
   PhysPtr->setVolume(cellNumber,1.0);
+  OR.addActiveCell(cellNumber);
+
   // Add surfaces to OSMPtr:
   //  OSMPtr->addSurfaces(QHptr);
 
@@ -1329,9 +1339,6 @@ Simulation::setForCinder()
 {
   ELog::RegMethod RegA("Simuation","setForCinder");
 
-  const std::vector<int> CL=getCellVector();
-  PhysPtr->setVolume(CL,1.0);
-  PhysPtr->setVolume(1,0);  // set cell 1 to zero volume
   PhysPtr->setHist(1);      // add histp card
   return;
 }
@@ -1871,25 +1878,30 @@ Simulation::getCellInputVector() const
 }
 
 std::vector<int>
-Simulation::getCellWithMaterial(const int Mnumber) const
+Simulation::getCellWithMaterial(const int matN) const
   /*!
     Ugly function to return the current
     vector of cells with a particular material type
-    \param Mnumber :: Material number
+    \param matN :: Material number [-1 : all not void / -2 all]
     \return vector of cell numbers (ordered)
     \todo Make this with a transform, not a loop.
   */
 {
   ELog::RegMethod RegA("Simulation","getCellWithMaterial");
+  
   std::vector<int> cellOrder;
-  OTYPE::const_iterator mc;
-  for(mc=OList.begin();mc!=OList.end();mc++)
-    {
-      if (mc->second->getMat()==Mnumber && 
-	  !mc->second->isPlaceHold())
-	cellOrder.push_back(mc->first);
-    }
 
+  for(const OTYPE::value_type& cellItem : OList)
+    {
+      const MonteCarlo::Qhull* QPtr=cellItem.second;
+      if (!QPtr->isPlaceHold() &&
+          (matN==-2 ||                            // all
+          (matN==-1 && QPtr->getMat()) ||         // not void
+           (QPtr->getMat()==matN) ) )             // match
+        {
+          cellOrder.push_back(cellItem.first);
+        }
+    }
   sort(cellOrder.begin(),cellOrder.end());
   return cellOrder;
 }
@@ -2005,6 +2017,7 @@ Simulation::renumberCells(const std::vector<int>& cOffset,
 
   std::string oldUnit,keyUnit;
   int startNum(0);
+  const attachSystem::CellMap* CMapPtr(0);
   // This is ordered:
   OTYPE::const_iterator vc;  
   for(vc=OList.begin();vc!=OList.end();vc++)
@@ -2034,6 +2047,9 @@ Simulation::renumberCells(const std::vector<int>& cOffset,
       vc->second->setName(nNum);      
       newMap.insert(OTYPE::value_type(nNum,vc->second));
       WM.renumberCell(cNum,nNum);
+
+      OR.renumberActiveCell(cNum,nNum);
+      
       if (!vc->second->isPlaceHold())
 	{
 	  PhysPtr->substituteCell(cNum,nNum);
@@ -2046,17 +2062,27 @@ Simulation::renumberCells(const std::vector<int>& cOffset,
 	    OR.setRenumber(oldUnit,startNum,nNum-1);
 	  oldUnit=keyUnit;
 	  startNum=nNum;
+          CMapPtr=OR.getObject<attachSystem::CellMap>(keyUnit);
 	}
-
+      
       ELog::RN<<"Cell Changed :"<<cNum<<" "<<nNum
-	      <<" Object:"<<keyUnit<<ELog::endBasic;
+	      <<" Object:"<<keyUnit;
+      if (CMapPtr)
+        {
+          const std::string& cName=
+            CMapPtr->getName(cNum);
+          if (!cName.empty())
+            ELog::RN<<" ("<<cName<<")";
+          const std::string& xName=
+            CMapPtr->getName(nNum);
+          if (!xName.empty())
+            ELog::EM<<"Found "<<xName<<" "<<cNum<<" "<<nNum<<ELog::endCrit;
+         }
+      ELog::RN<<ELog::endBasic;
     }
 
   // Last item
   OR.setRenumber(keyUnit,startNum,nNum);
-
-
-  
   OList=newMap;
   return;
 }
@@ -2163,6 +2189,9 @@ Simulation::masterRotation()
 {
   ELog::RegMethod RegA("Simulation","masterRotation");
 
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
   masterRotate& MR = masterRotate::Instance();
   
   const ModelSupport::surfIndex::STYPE& SurMap=
@@ -2171,7 +2200,7 @@ Simulation::masterRotation()
   std::map<int,Geometry::Surface*>::const_iterator sc;
   for(sc=SurMap.begin();sc!=SurMap.end();sc++)
     MR.applyFull(sc->second);
-  
+
   // Apply to QHull if calculated:
   OTYPE::iterator oc;
   for(oc=OList.begin();oc!=OList.end();oc++)
@@ -2188,16 +2217,17 @@ Simulation::masterRotation()
       {
 	sdef.setTransform(createSourceTransform());
 	if (sdef.rotateMaster())
-	  {
-	    ELog::EM<<"Failed on setting source term rotate"<<ELog::endErr;
-	  }
+          ELog::EM<<"Failed on setting source term rotate"<<ELog::endErr;
       }
   // Applyotations to tallies
   std::map<int,tallySystem::Tally*>::iterator mc;
   for(mc=TItem.begin();mc!=TItem.end();mc++)
     mc->second->rotateMaster();
 
+  OR.rotateMaster();
+  
   MR.setGlobal();
+
   return;
 }
 

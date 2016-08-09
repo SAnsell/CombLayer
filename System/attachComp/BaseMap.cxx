@@ -3,7 +3,7 @@
  
  * File:   attachComp/BaseMap.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,6 +46,10 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
+#include "surfRegister.h"
+#include "HeadRule.h"
+#include "LinkUnit.h"
+#include "FixedComp.h"
 #include "BaseMap.h"
 
 namespace attachSystem
@@ -58,7 +62,7 @@ BaseMap::BaseMap()
 {}
 
 BaseMap::BaseMap(const BaseMap& A) : 
-  Items(A.Items),SplitUnits(A.SplitUnits)
+  Items(A.Items)
   /*!
     Copy constructor
     \param A :: BaseMap to copy
@@ -76,11 +80,22 @@ BaseMap::operator=(const BaseMap& A)
   if (this!=&A)
     {
       Items=A.Items;
-      SplitUnits=A.SplitUnits;
     }
   return *this;
 }
 
+std::string
+BaseMap::getFCKeyName() const
+  /*!
+    Get the FixedComp keyname if this is a FixedComp
+    \return FC name / "Not-FC"
+   */
+{
+  const attachSystem::FixedComp* FCPtr=
+    dynamic_cast<const attachSystem::FixedComp*>(this);
+  return (FCPtr) ? FCPtr->getKeyName() : "Not-FC";
+}
+  
 void
 BaseMap::setItem(const std::string& Key,const int CN)
   /*!
@@ -94,10 +109,12 @@ BaseMap::setItem(const std::string& Key,const int CN)
 }
 
 void
-BaseMap::setItem(const std::string& Key,const size_t Index,
+BaseMap::setItem(const std::string& Key,
+                 const size_t Index,
 		 const int CN)
   /*!
-    Insert a cell 
+    Insert a cell into position Index.
+    - does not allow gaps in the index list
     \param Key :: Keyname
     \param Index :: Index number
     \param CN :: Item number
@@ -109,41 +126,25 @@ BaseMap::setItem(const std::string& Key,const size_t Index,
   if (mc==Items.end())
     {
       if (Index==0)
-	Items.insert(LCTYPE::value_type(Key,CN));
+        Items.insert(LCTYPE::value_type(Key,{CN}));
       else
 	throw ColErr::InContainerError<std::string>
-	  (Key,"Key not defined for index > 0");
-
+	  (Key,"Key not defined for index["+StrFunc::makeString(Index)+"]");
       return;
     }
-  
-  if (mc->second>=0)           // +1 case
+  // Replace current object [NO IDENTICAL CHECK (yet)]
+  if (mc->second.size()>Index)
     {
-      if (Index==0)
-	mc->second=CN;
-      else if (Index==1)
-	{
-	  SplitUnits.push_back(std::vector<int>({mc->second,CN}));
-	  mc->second = -static_cast<int>(SplitUnits.size());
-	}
-      else
-	throw ColErr::IndexError<size_t>
-	  (Index,0,"Key["+Key+"] index error");
+      mc->second[Index]=CN;
       return;
     }
-
-  // mc->second :: -ve
-  const size_t SI(static_cast<size_t>(-mc->second)-1);
-  const size_t SU(SplitUnits[SI].size());
-
-  if (Index<SU)
-    SplitUnits[SI][Index]=CN;
-  else if (Index==SU)
-    SplitUnits[SI].push_back(CN);
+  // ADD NEW CELL:
+  if (mc->second.size()==Index)
+    mc->second.push_back(CN);
   else
     throw ColErr::IndexError<size_t>
-      (Index,SU,"Key["+Key+"] index error");
-
+      (Index,0,"Key["+Key+"] index oversize");
+  
   return; 
 }
 
@@ -160,81 +161,33 @@ BaseMap::setItems(const std::string& Key,const int CNA,const int CNB)
   
   int mA(std::min(CNA,CNB));
   int mB(std::max(CNA,CNB));
+
   std::vector<int> Out;
   for(;mA<=mB;mA++)
     Out.push_back(mA);
-
-  LCTYPE::iterator mc=Items.find(Key);
-  if (mc==Items.end())
-    {
-      if (mA==mB)
-	Items.insert(LCTYPE::value_type(Key,mA));
-      else
-	{
-	  SplitUnits.push_back(Out);
-	  Items.insert(LCTYPE::value_type
-		       (Key,-static_cast<int>(SplitUnits.size())));
-	}      
-      return;
-    }
-  
-  if (mc->second>=0)           // +1 case
-    {
-      Out.push_back(mc->second);
-      SplitUnits.push_back(Out);
-      mc->second = -static_cast<int>(SplitUnits.size());
-      return;
-    }
-
-  // mc->second :: -ve
-  const size_t SI(static_cast<size_t>(-mc->second)-1);
-  std::move(Out.begin(),Out.end(),
-	    std::back_inserter(SplitUnits[SI]));
-
-
+  setItems(Key,Out);
   return; 
 }
 
 void
-BaseMap::addItems(const std::string& Key,
-		  const std::vector<int>& inpVec)
+BaseMap::setItems(const std::string& Key,
+                  const std::vector<int>& cVec)
   /*!
     Insert a set of cells
     \param Key :: Keyname
-    \param inpVec :: Input vector
+    \param cVec ::  
+    \param CNB :: Item number [End]
   */
 {
-  ELog::RegMethod RegA("BaseMap","setItems");
-
-  if (inpVec.empty()) return;
+  ELog::RegMethod RegA("BaseMap","setItems<Vector>");
   
   LCTYPE::iterator mc=Items.find(Key);
-  if (mc==Items.end())
-    {
-
-      if (inpVec.size()==1)
-	Items.insert(LCTYPE::value_type(Key,inpVec.front()));
-      else
-	{
-	  SplitUnits.push_back(inpVec);
-	  Items.insert(LCTYPE::value_type
-		       (Key,-static_cast<int>(SplitUnits.size())));
-	}      
-      return;
-    }
-      
-  if (mc->second>=0)           // +1 case [one item]
-    {
-      SplitUnits.push_back(inpVec);
-      SplitUnits.back().push_back(mc->second);
-      mc->second = -static_cast<int>(SplitUnits.size());
-      return;
-    }
   
-  // mc->second :: -ve
-  const size_t SI(static_cast<size_t>(-mc->second)-1);
-  std::move(inpVec.begin(),inpVec.end(),
-	    std::back_inserter(SplitUnits[SI]));
+  if (mc==Items.end())
+    Items.insert(LCTYPE::value_type(Key,cVec));
+  else
+    mc->second=cVec;
+  
   return; 
 }
 
@@ -250,17 +203,37 @@ BaseMap::addItem(const std::string& Key,const int CN)
   
   LCTYPE::iterator mc=Items.find(Key);
   if (mc==Items.end())
-    setItem(Key,0,CN);
-  else if (mc->second>=0)  // +1 case
-    setItem(Key,1,CN);
+    Items.insert(LCTYPE::value_type(Key,{CN}));    
   else
-    {
-      const size_t index=static_cast<size_t>((-mc->second-1));
-      setItem(Key,SplitUnits[index].size(),CN);
-    }
+    mc->second.push_back(CN);
   return;
 }
   
+
+void
+BaseMap::addItems(const std::string& Key,
+		  const std::vector<int>& inpVec)
+  /*!
+    Insert a set of cells
+    \param Key :: Keyname
+    \param inpVec :: Input vector
+  */
+{
+  ELog::RegMethod RegA("BaseMap","addItems");
+
+  if (inpVec.empty()) return;
+  
+  LCTYPE::iterator mc=Items.find(Key);
+  if (mc==Items.end())
+    Items.insert(LCTYPE::value_type(Key,inpVec));    
+  else
+    {
+      std::copy(inpVec.begin(),inpVec.end(),
+                std::back_inserter(mc->second));
+    }
+  return; 
+}
+
 int
 BaseMap::getItem(const std::string& Key) const
   /*!
@@ -288,21 +261,26 @@ BaseMap::getItem(const std::string& Key,const size_t Index) const
   if (mc==Items.end())
     throw ColErr::InContainerError<std::string>(Key,"Key not present");
 
-  if (mc->second>=0)
-    {
-      if (Index!=0)
-	throw ColErr::IndexError<size_t>(Index,0,"Key["+Key+"] index error");
-      return mc->second;
-    }
-  // This can't fail:
-  const size_t SI(static_cast<size_t>(-mc->second-1));
-  const size_t SU(SplitUnits[SI].size());
-  
-  if (Index>=SU)
-    throw ColErr::IndexError<size_t>(Index,SU,"Key["+Key+"] index error");
-  return SplitUnits[SI][Index];
+  if (Index>=mc->second.size())
+    throw ColErr::IndexError<size_t>(Index,0,
+                                     "Object:"+getFCKeyName()+" Key["+Key+"] index error");
+  return mc->second[Index];
 }
 
+std::vector<std::string>
+BaseMap::getNames() const
+  /*!
+    Get a list of the names in the cell
+    Mainly debugging use
+    \return vector of names
+   */
+{
+  std::vector<std::string> Out;
+  for(const LCTYPE::value_type lUnit : Items)
+    Out.push_back(lUnit.first);
+  return Out;
+}
+  
 std::vector<int>
 BaseMap::getItems(const std::string& Key) const
   /*!
@@ -312,24 +290,11 @@ BaseMap::getItems(const std::string& Key) const
     \return vector
    */
 {
-  ELog::RegMethod RegA("BaseMap","getItems");
+  ELog::RegMethod RegA("BaseMap","getItems(Key)");
 
-  std::vector<int> Out;
-  
+  std::vector<int> Out;  
   LCTYPE::const_iterator mc=Items.find(Key);
-  if (mc==Items.end())
-    return Out;
-
-  if (mc->second>=0)
-    return std::vector<int>({mc->second});
-  
-  const size_t SU(static_cast<size_t>(-mc->second-1));
-
-
-  for(const int& CN : SplitUnits[SU])
-    if (CN)
-      Out.push_back(CN);
-  return Out;
+  return (mc==Items.end()) ? std::vector<int>() : mc->second;
 }
 
 std::vector<int>
@@ -346,23 +311,102 @@ BaseMap::getItems() const
 
   for(const LCTYPE::value_type& mc : Items)
     {
-      if (mc.second>=0)
-	Out.push_back(mc.second);
-      else
-	{
-	  const size_t SU(static_cast<size_t>(-mc.second-1));
-	  for(const int& CN : SplitUnits[SU])
-	    if (CN)
-	      Out.push_back(CN);
-	}
+      for(const int& CN : mc.second)
+        if (CN)
+          Out.push_back(CN);
     }
 
   return Out;
 }
 
+void
+BaseMap::removeVecUnit(const std::string& kName,
+                       const int cellN)
+  /*!
+    Remove a value from a vector list
+    \param kName :: keyName
+    \param cellN :: cell Number
+  */
+{
+  ELog::RegMethod RegA("BaseMap","removeVecUnit");
 
+
+  LCTYPE::iterator mc=Items.find(kName);
+
+  if (mc==Items.end())
+    throw ColErr::InContainerError<std::string>(kName,"Key not present");
+
+  std::vector<int>& SRef(mc->second);
+  std::vector<int>::iterator vc=std::find(SRef.begin(),SRef.end(),cellN);
+  if (vc==SRef.end())
+    throw ColErr::InContainerError<int>(cellN,"Cell not present in :"+kName);
+
+  SRef.erase(vc);
+  if (SRef.empty())
+    Items.erase(mc);
+  return;
+}
 
   
+const std::string&
+BaseMap::getName(const int cellN) const
+  /*!
+    Given a cell number find the string(s) associated 
+    with it 
+    \param cellN :: Cell number to find
+    \return empty string on failure to find / string name
+   */
+{
+  ELog::RegMethod RegA("BaseMap","getName");
+  static const std::string empty;
+  // Quick check for cellN in base names
+
+  for(const LCTYPE::value_type& IV : Items)
+    {
+      //      const std::string kUnit(IV.first); // care might delete it!!
+      const std::vector<int>& SRef(IV.second);
+      std::vector<int>::const_iterator vc=
+        std::find(SRef.begin(),SRef.end(),cellN);
+
+      if (vc!=SRef.end())
+        return IV.first;
+    }
+  return empty;  // failed
+}
+
+std::string
+BaseMap::removeItemNumber(const int cellN,
+                          const size_t Index)
+  /*!
+    Given a cell number find the string(s) associated 
+    with it and remove it.
+    \param cellN :: Cell number to find
+    \param Index :: Item index
+    \return empty string on failure to find
+   */
+{
+  ELog::RegMethod RegA("BaseMap","removeItemNumber");
+  // Quick check for cellN in base names
+  size_t indexCnt(0);
+  for(LCTYPE::value_type& IV : Items)
+    {
+      const std::string kUnit(IV.first); // care might delete it!!
+      std::vector<int>& SRef(IV.second);
+      std::vector<int>::const_iterator vc=
+        std::find(SRef.begin(),SRef.end(),cellN);
+
+      if (vc!=SRef.end())
+        {
+          if (indexCnt==Index)
+            {
+              removeVecUnit(kUnit,cellN);
+              return kUnit;   // return string
+            }
+          indexCnt++;
+        }
+    }
+  return "";  // failed
+}
 
 int
 BaseMap::removeItem(const std::string& Key,
@@ -379,28 +423,18 @@ BaseMap::removeItem(const std::string& Key,
   LCTYPE::iterator mc=Items.find(Key);
   if (mc==Items.end())
     throw ColErr::InContainerError<std::string>(Key,"Key not present");
-  if (mc->second>=0)
-    {
-      if (Index!=0)
-	throw ColErr::IndexError<size_t>
-	  (Index,0,"Key["+Key+"] index error");
 
-      const int outCN=mc->second;
-      Items.erase(mc);
-      return outCN;
-    }
-  // NOTE HERE WE ZERO and not delete because otherwise a seti
-  // of linear calls to this function are junk.
-  const size_t SI(static_cast<size_t>(-mc->second-1));
-  const size_t SU(SplitUnits[SI].size());
-  if (Index>=SU)
-    throw ColErr::IndexError<size_t>
-      (Index,SU,"Key["+Key+"] index error");
+  std::vector<int>& SRef(mc->second);
+  if (SRef.size()<=Index)
+    throw ColErr::InContainerError<size_t>(Index,"Index not present in :"+Key);
 
-  const int outCN=SplitUnits[SI][SU];
-  SplitUnits[SI][SU]=0;
-  return outCN;
+  const int outN(SRef[Index]);
+  SRef.erase(SRef.begin()+static_cast<long int>(Index));
+  if (SRef.empty())
+    Items.erase(mc);
+  return outN;
 }
+
 
  
 }  // NAMESPACE attachSystem

@@ -49,7 +49,7 @@
 #include "WForm.h"
 #include "WItem.h"
 #include "WCells.h"
-#include "WeightMesh.h"
+#include "Mesh3D.h"
 #include "WWG.h"
 #include "weightManager.h"
 
@@ -124,7 +124,40 @@ ItemWeight::addTracks(const long int cN,const double value)
   return;
 }
 
-
+double
+ItemWeight::calcMinWeight(const double scaleFactor,
+                          const double weightPower) const
+  /*!
+    Calculate the adjustment factor to get to the correct
+    minimum weight.
+    \param scaleFactor :: Scalefactor for density equivilent
+    \param weightPower :: power for final factor W**power
+    \return factor for exponent
+   */
+{
+  double minW(1e38);
+  for(const CMapTYPE::value_type& cv : Cells)
+    {
+      double W=exp(-cv.second.weight*sigmaScale*scaleFactor);
+      if (W>1e-20)
+        {
+          W=std::pow(W,weightPower);
+          if (W<minW) minW=W;
+        }
+    }
+  return minW;
+}
+  
+void
+ItemWeight::clear()
+  /*!
+    Remove everything from the weight
+   */
+{
+  Cells.erase(Cells.begin(),Cells.end());
+  return;
+}
+  
 void
 ItemWeight::write(std::ostream& OX) const
   /*!

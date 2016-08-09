@@ -3,7 +3,7 @@
  
  * File:   moderator/Reflector.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -225,15 +225,13 @@ Reflector::~Reflector()
 {}
 
 void
-Reflector::populate(const Simulation& System)
+Reflector::populate(const FuncDataBase& Control)
 /*!
   Populate all the variables
-  \param System :: Simulation to use
+  \param Control :: Data base for variables
 */
 {
   ELog::RegMethod RegA("Reflector","populate");
-  
-  const FuncDataBase& Control=System.getDataBase();
   
   xStep=Control.EvalVar<double>(keyName+"XStep");
   yStep=Control.EvalVar<double>(keyName+"YStep");
@@ -247,6 +245,7 @@ Reflector::populate(const Simulation& System)
   defMat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 
   const size_t nPads=Control.EvalVar<size_t>(keyName+"NPads");
+  ELog::EM<<"NPADS == "<<nPads<<ELog::endDiag;
   for(size_t i=0;i<nPads;i++)
     Pads.push_back(CoolPad("coolPad",i+1));
 
@@ -263,7 +262,7 @@ Reflector::createUnitVector()
 
   FixedComp::createUnitVector(World::masterTS2Origin());
   Origin+=X*xStep+Y*yStep+Z*zStep;
-    
+  
   return;
 }
   
@@ -319,7 +318,6 @@ Reflector::createLinks(const Geometry::Vec3D& XR,
 
   FixedComp::setConnect(0,Origin-YR*xySize,-YR);  // chipIR OPPOSITE
   FixedComp::setConnect(1,Origin+YR*xySize,YR);   // chipIR
-
   FixedComp::setConnect(2,Origin-XR*xySize,-XR);
   FixedComp::setConnect(3,Origin+XR*xySize,XR);
   FixedComp::setConnect(4,Origin-Z*zSize,-Z);
@@ -330,16 +328,15 @@ Reflector::createLinks(const Geometry::Vec3D& XR,
   FixedComp::setConnect(8,Origin-X*cutSize,-X);
   FixedComp::setConnect(9,Origin+X*cutSize,X);
 
-  
-  FixedComp::setLinkSurf(0,SMap.realSurf(refIndex+1));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(refIndex+1));
   FixedComp::setLinkSurf(1,SMap.realSurf(refIndex+2));
-  FixedComp::setLinkSurf(2,SMap.realSurf(refIndex+3));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(refIndex+3));
   FixedComp::setLinkSurf(3,SMap.realSurf(refIndex+4));
-  FixedComp::setLinkSurf(4,SMap.realSurf(refIndex+5));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(refIndex+5));
   FixedComp::setLinkSurf(5,SMap.realSurf(refIndex+6));
-  FixedComp::setLinkSurf(6,SMap.realSurf(refIndex+11));
+  FixedComp::setLinkSurf(6,-SMap.realSurf(refIndex+11));
   FixedComp::setLinkSurf(7,SMap.realSurf(refIndex+12));
-  FixedComp::setLinkSurf(8,SMap.realSurf(refIndex+13));
+  FixedComp::setLinkSurf(8,-SMap.realSurf(refIndex+13));
   FixedComp::setLinkSurf(9,SMap.realSurf(refIndex+14));
 
   return;
@@ -460,7 +457,7 @@ Reflector::createInternalObjects(Simulation& System,
     }
 
   TarObj->addProtonLineInsertCell(cellIndex-1);
-  TarObj->addProtonLine(System,*this,6);
+  TarObj->addProtonLine(System,*this,-7);
 
   GrooveObj->createAll(System,World::masterTS2Origin());
   HydObj->createAll(System,*GrooveObj,0);
@@ -520,7 +517,7 @@ Reflector::createInternalObjects(Simulation& System,
   CdBucket->createAll(System,*this);
 
   for(CoolPad& PD : Pads)
-    PD.createAll(System,*this);
+    PD.createAll(System,*this,2);
 
   return;
 }
@@ -536,7 +533,7 @@ Reflector::insertPipeObjects(Simulation& System,
   */
 {
   ELog::RegMethod RegA("Reflector","insertPipeObjects");
-
+  return;
   CouplePipe CP("cplPipe");
   System.createObjSurfMap();
   CP.createAll(System,*HydObj,4,*VacObj);
@@ -609,15 +606,15 @@ Reflector::getViewOrigin(const int BeamLine) const
   ELog::RegMethod RegA("Reflector","getViewOrigin");
 
   if (BeamLine<0 || BeamLine>17)
-    throw ColErr::IndexError<int>(BeamLine,18,RegA.getBase());
+    throw ColErr::IndexError<int>(BeamLine,18,"BeamLine");
   
   if (BeamLine<4)       // NARROW
     {
-      return DVacObj->getSurfacePoint(0,0);
+      return DVacObj->getSurfacePoint(0,1);
     }
   if (BeamLine<9)      // H2
     {
-      return VacObj->getSurfacePoint(1,0);
+      return VacObj->getSurfacePoint(0,2);
     }
   if (BeamLine<14)      // Groove
     {
@@ -625,7 +622,7 @@ Reflector::getViewOrigin(const int BeamLine) const
       return GrooveObj->getViewPoint();
     }
   // WISH
-  return DVacObj->getSurfacePoint(1,0);
+  return DVacObj->getSurfacePoint(0,2);
 }
 
 std::string
@@ -653,7 +650,7 @@ Reflector::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("Reflector","createAll");
-  populate(System);
+  populate(System.getDataBase());
 
   createUnitVector();
   createSurfaces();

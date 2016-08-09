@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   delftInc/AirBoxElement.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,8 +50,10 @@ class AirBoxElement  : public RElement
   int wallMat;            ///< Wall material 
   int waterMat;           ///< Water coolant 
 
-  void populate(const Simulation&,const FixedComp&);
-  void createUnitVector(const FixedComp&,const Geometry::Vec3D&);
+  void populate(const FuncDataBase&);
+  void populateWaterMat(const attachSystem::FixedComp&);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const Geometry::Vec3D&);
   
   void createSurfaces(const attachSystem::FixedComp&);
   void createObjects(Simulation&);

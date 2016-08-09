@@ -167,8 +167,11 @@ boxValues::getAxis(const size_t Index,
   if (Index>=NSides || !setFlag)
     throw ColErr::IndexError<size_t>(Index,NSides,RegA.getFull());
 
-      
+  //ELog::EM<<"XY == "<<XDir<<" :: "<<ZDir<<ELog::endDiag;
    Geometry::Vec3D Axis(SAxis[Index]);
+   //   ELog::EM<<"SAxis == "<<Axis<<":"
+   //	   <<XDir*Axis.X()<<" :: "<<ZDir*Axis.Z()<<ELog::endDiag;
+
    return XDir*Axis.X()+ZDir*Axis.Z();
 }
 

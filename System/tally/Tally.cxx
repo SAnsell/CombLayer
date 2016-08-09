@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   tally/Tally.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,8 +43,8 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Triple.h"
-#include "NRange.h"
 #include "NList.h"
+#include "NRange.h"
 #include "Tally.h"
 
 namespace tallySystem
@@ -377,6 +377,35 @@ Tally::setModify(const std::string& FVec)
 }
 
 int
+Tally::setFormat(const std::string& FVec)
+  /*!
+    Set the timeTab line
+    \param FVec :: vector of the modification
+    \return 1 on success/0 on failure
+  */
+{
+  // special case for empty:
+  if (FVec=="empty" || FVec=="void")
+    {
+      printField.clear();
+      return 1;
+    }
+  
+  const std::vector<std::string> eParts=
+    StrFunc::splitParts(FVec,' ');
+
+  std::vector<char> newField;
+  for(const std::string& Item : eParts)
+    {
+      if (Item.size()>1)
+        return 0;
+      newField.push_back(Item[0]);
+    }
+  printField=newField;
+  return 1;
+}
+
+int
 Tally::setSpecial(const std::string& SLine)
   /*!
     Set the special line
@@ -405,33 +434,68 @@ Tally::setPrintField(std::string PField)
   return static_cast<int>(printField.size());
 }
 
+int
+Tally::setSDField(const std::string& NItems)
+  /*!
+    Set sd field
+    \param NItems :: list of items
+    \return 1 on success
+   */
+{
+  ELog::RegMethod RegA("Tally","setSDField");
+  SDfield.clear();
+
+  if (StrFunc::isEmpty(NItems))
+    return 1;
+  // Items to process
+  
+  if (!SDfield.processString(NItems))
+    {
+      ELog::EM<<"Failed to process SDField :"<<NItems<<ELog::endErr;
+      return 0;
+    }
+
+  return 1;
+}
+  
+int
+Tally::setSDField(const double V)
+  /*!
+    Sets a constant value for all FS fields.
+    \param V :: Item to add
+    \return success
+  */
+{
+  SDfield.clear();
+  SDfield.addComp(V);
+  return 1;
+}
+
 void
 Tally::setCinderEnergy(const std::string&)
   /*!
     Set the energyTab line
-    \param pType :: Particle type
+    \param pType :: Particle type [not used]
   */
 {
   ELog::RegMethod RegA("Tally","setCinderEnergy");
 
-  const double NEpts[]= { 1.e-11,5.e-9,1.e-8,1.5e-8,2.e-8,2.5e-8,
-			  3.0e-8,3.5e-8,4.2e-8,5.e-8,5.8e-8,6.7e-8,
-			  8.0e-8,1.0e-7,1.52e-7,2.51e-7,4.14e-7,6.83e-7,
-			  1.125e-6,1.855e-6,3.059e-6,5.043e-6,
-			  8.315e-6,1.371e-5,2.26e-5,3.727e-5,6.144e-5,
-			  1.013e-4,1.67e-4,2.754e-4,4.54e-4,
-			  7.485e-4,1.234e-3,2.035e-3,2.404e-3,2.840e-3,
-			  3.355e-3,5.531e-3,9.119e-3,1.503e-2,
-			  1.989e-2,2.554e-2,4.087e-2,6.738e-2,1.111e-1,
-			  1.832e-1,3.02e-1,3.887e-1,4.979e-1,
-			  0.639279,0.82085,1.10803,1.35335,1.73774,2.2313,
-			  2.86505,3.67879,4.96585,6.065,
-			  10.0,14.9182,16.9046,20.0,25.0};
+  const std::vector<double> EPts
+    ({ 1.e-11,5.e-9,1.e-8,1.5e-8,2.e-8,2.5e-8,
+        3.0e-8,3.5e-8,4.2e-8,5.e-8,5.8e-8,6.7e-8,
+        8.0e-8,1.0e-7,1.52e-7,2.51e-7,4.14e-7,6.83e-7,
+        1.125e-6,1.855e-6,3.059e-6,5.043e-6,
+        8.315e-6,1.371e-5,2.26e-5,3.727e-5,6.144e-5,
+        1.013e-4,1.67e-4,2.754e-4,4.54e-4,
+        7.485e-4,1.234e-3,2.035e-3,2.404e-3,2.840e-3,
+        3.355e-3,5.531e-3,9.119e-3,1.503e-2,
+        1.989e-2,2.554e-2,4.087e-2,6.738e-2,1.111e-1,
+        1.832e-1,3.02e-1,3.887e-1,4.979e-1,
+        0.639279,0.82085,1.10803,1.35335,1.73774,2.2313,
+        2.86505,3.67879,4.96585,6.065,
+        10.0,14.9182,16.9046,20.0,25.0});
 
-  std::vector<double> Out;
-  copy(NEpts,NEpts+sizeof(NEpts)/sizeof(double),
-       std::insert_iterator<std::vector<double> >(Out,Out.begin()));
-  Etab.setVector(Out);
+  Etab.setVector(EPts);
   if (Etab.empty())
     ELog::EM<<"Etab empty"<<ELog::endErr;
   return;
@@ -480,17 +544,6 @@ Tally::addLine(const std::string& LX)
       Treatment=Line;
       return 0;
     }
-
-  if (FUnit.first=="fq")                   /// Print card
-    {
-      std::string pItem;
-      printField.clear();
-      while(StrFunc::section(Line,pItem) && pItem.size()==1)
-        {
-	  printField.push_back(pItem[0]);
-	}
-      return 0;
-    }     
   
   if (FUnit.first=="f")
     {
@@ -618,7 +671,13 @@ Tally::writeFields(std::ostream& OX) const
       StrFunc::writeMCNPX(cx.str(),OX);
       cx.str("");
     }
-  
+  if (!SDfield.empty())
+    {
+      cx<<"sd"<<IDnum<<" "<<SDfield;
+      StrFunc::writeMCNPX(cx.str(),OX);
+      cx.str("");
+    }
+
   return;
 }
 

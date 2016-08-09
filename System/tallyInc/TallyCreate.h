@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   tallyInc/TallyCreate.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef TallyCreate_h
-#define TallyCreate_h
+#ifndef tallySystem_TallyCreate_h
+#define tallySystem_TallyCreate_h
 
 class Simulation;
 
@@ -79,13 +79,19 @@ namespace tallySystem
 
   void writePlanes(const int,const int,const std::vector<int>&);
 
-  int getFarPoint(const Simulation&,Geometry::Vec3D&);
   int changeParticleType(Simulation&,const int,
 			 const std::string&,const std::string&);
+
+  int getFarPoint(const Simulation&,Geometry::Vec3D&);
+  int setParticleType(Simulation&,const int,const std::string&);
   int setEnergy(Simulation&,const int,const std::string&);
   int setTime(Simulation&,const int,const std::string&);
+  int setFormat(Simulation&,const int,const std::string&);
+  int setSDField(Simulation&,const int,const std::string&);
   int setSingle(Simulation&,const int);
-
+  int setFormat(Simulation&,const int,const std::string&);
+  
+  void mergeTally(Simulation&,const int,const int);
   void deleteTallyType(Simulation&,const int);
   void deleteTally(Simulation&,const int);
 

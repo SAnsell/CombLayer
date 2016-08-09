@@ -1,11 +1,15 @@
+\section{Layout}
+\label{Sec:Layout}
+
 The basic program structure is given by figure \ref{MainLayout}.  The
 main program structure is normally copied from an existing project and
-the areas are constructed by the user. It is normal to add inputs
-(from the command line), variables that your project is going to use,
-and then build the geometry constructor via a call to a makeProject
-command.  There are other ways to construct the system but this allows
-a degree of autonomy from tallies/variance reduction and producing an
-appropiate output.
+the areas are constructed by the user. It is normal flow is to to call
+functions that: (i) define new input options to enter parameters from the
+command line, (ii) variables that your project is going to use,
+(iii)  build the geometry via a call to a makeProject functoin (iv)
+set up tallies (v) generate variance reduction.There are other ways
+to construct the system but this allows a degree of autonomy from
+tallies/variance reduction and producing an appropiate output.
 
 \begin{figure}[!htp]
 \begin{tikzpicture}
@@ -173,6 +177,7 @@ main(int argc,char* argv[])
 
   return exitFlag;
 }
+\label{MainProg}
 \end{lstlisting}
 
 The Main program given in listing \ref{MainProg} highlights the areas

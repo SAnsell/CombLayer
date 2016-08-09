@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   muon/profileMon.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell/Goran Skoro
+ * Copyright (c) 2004-2016 by Stuart Ansell/Goran Skoro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,13 +71,14 @@
 #include "ContainedComp.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "profileMon.h"
 
 namespace muSystem
 {
 
 profileMon::profileMon(const std::string& Key)  : 
-  attachSystem::FixedComp(Key,6),attachSystem::ContainedComp(),
+  attachSystem::FixedOffset(Key,6),attachSystem::ContainedComp(),
   profMonIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(profMonIndex+1)
   /*!
@@ -87,10 +88,9 @@ profileMon::profileMon(const std::string& Key)  :
 {}
 
 profileMon::profileMon(const profileMon& A) : 
-  attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
+  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
   profMonIndex(A.profMonIndex),cellIndex(A.cellIndex),
-  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  xyAngle(A.xyAngle),height(A.height),depth(A.depth),
+  height(A.height),depth(A.depth),
   width(A.width),steelMat(A.steelMat)
   /*!
     Copy constructor
@@ -108,13 +108,9 @@ profileMon::operator=(const profileMon& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
       height=A.height;
       depth=A.depth;
       width=A.width;
@@ -138,11 +134,7 @@ profileMon::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("profileMon","populate");
 
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYAngle");
-
+  FixedOffset::populate(Control);
   height=Control.EvalVar<double>(keyName+"Height");
   depth=Control.EvalVar<double>(keyName+"Depth");
   width=Control.EvalVar<double>(keyName+"Width");
@@ -153,16 +145,18 @@ profileMon::populate(const FuncDataBase& Control)
 }
 
 void
-profileMon::createUnitVector(const attachSystem::FixedComp& FC)
+profileMon::createUnitVector(const attachSystem::FixedComp& FC,
+			     const long int sideIndex)
   /*!
     Create the unit vectors
+    \param FC :: FixedUnit for axis/origin
+    \param sideIndex :: Signed link point
   */
 {
   ELog::RegMethod RegA("profileMon","createUnitVector");
 
-  attachSystem::FixedComp::createUnitVector(FC);
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,0);    
+  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
+  applyOffset();
   
   return;
 }
@@ -189,9 +183,9 @@ profileMon::createSurfaces()
 void
 profileMon::createObjects(Simulation& System)
   /*!
-    Adds the Chip guide components
+    Adds main components
     \param System :: Simulation to create objects in
-   */
+  */
 {
   ELog::RegMethod RegA("profileMon","createObjects");
   
@@ -235,18 +229,20 @@ profileMon::createLinks()
 
 void
 profileMon::createAll(Simulation& System,
-		      const attachSystem::FixedComp& FC)
+		      const attachSystem::FixedComp& FC,
+		      const long int sideIndex)
 
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to
     \param FC :: Fixed Component to place object within
+    \param sideIndex :: link point from FixedComp
   */
 {
   ELog::RegMethod RegA("profileMon","createAll");
 
   populate(System.getDataBase());
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

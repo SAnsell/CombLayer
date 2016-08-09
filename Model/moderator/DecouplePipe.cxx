@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   moderator/DecouplePipe.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -235,14 +235,14 @@ DecouplePipe::insertOuter(Simulation& System,const VacVessel& VC)
 {
   ELog::RegMethod RegA("DecouplePipe","insertOuter");
 
-  const int dircNum(5);
+  const long int dircNum(6);  //top
 
   // Inner Points
-  Outer.addPoint(VC.getSurfacePoint(dircNum,0)+X*Xoffset+Y*Yoffset);
-  Outer.addPoint(VC.getSurfacePoint(dircNum,2)+X*Xoffset+Y*Yoffset);
-  Outer.addPoint(VC.getSurfacePoint(dircNum,3)+X*Xoffset+Y*Yoffset);
-  Outer.addPoint(VC.getSurfacePoint(dircNum,4)+X*Xoffset+Y*Yoffset);
-  Outer.addPoint(VC.getSurfacePoint(dircNum,4)+X*Xoffset+Y*Yoffset+Z*fullLen);
+  Outer.addPoint(VC.getSurfacePoint(0,dircNum)+X*Xoffset+Y*Yoffset);
+  Outer.addPoint(VC.getSurfacePoint(2,dircNum)+X*Xoffset+Y*Yoffset);
+  Outer.addPoint(VC.getSurfacePoint(3,dircNum)+X*Xoffset+Y*Yoffset);
+  Outer.addPoint(VC.getSurfacePoint(4,dircNum)+X*Xoffset+Y*Yoffset);
+  Outer.addPoint(VC.getSurfacePoint(4,dircNum)+X*Xoffset+Y*Yoffset+Z*fullLen);
   Outer.setActive(0,3);
   Outer.setActive(1,7);
   
@@ -267,14 +267,14 @@ DecouplePipe::insertHePipe(Simulation& System,const VacVessel& VC)
   */
 {
   ELog::RegMethod RegA("DecouplePipe","insertHePipe");
-  const int dircNum(5);
+  const long int dircNum(6);
 
-  const Geometry::Vec3D APt(VC.getSurfacePoint(dircNum,0)+
+  const Geometry::Vec3D APt(VC.getSurfacePoint(0,dircNum)+
 			    X*(Xoffset+HeInXStep)+Y*(Yoffset+HeInYStep));
-  const Geometry::Vec3D BPt(VC.getSurfacePoint(dircNum,0)+
+  const Geometry::Vec3D BPt(VC.getSurfacePoint(0,dircNum)+
 			    X*(Xoffset+HeOutXStep)+Y*(Yoffset+HeOutYStep));
   // Outer Points
-  HeIn.addPoint(VC.getSurfacePoint(dircNum,4)+
+  HeIn.addPoint(VC.getSurfacePoint(4,dircNum)+
 		X*(Xoffset+HeInXStep)+Y*(Yoffset+HeInYStep)+Z*fullLen);
   HeIn.addPoint(APt);
 
@@ -286,7 +286,7 @@ DecouplePipe::insertHePipe(Simulation& System,const VacVessel& VC)
     }
   // Outer Points
   HeIn.addPoint(BPt);
-  HeIn.addPoint(VC.getSurfacePoint(dircNum,4)+
+  HeIn.addPoint(VC.getSurfacePoint(4,dircNum)+
    		X*(Xoffset+HeOutXStep)+Y*(Yoffset+HeOutYStep)+Z*fullLen);
 
   HeIn.addRadius(heRadius,heMat,0.0);

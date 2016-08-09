@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/FixedOffset.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,6 +55,7 @@ class FixedOffset  : public FixedComp
 
   virtual void populate(const FuncDataBase&);
   void applyOffset();
+  void linkShift(const long int);
   void linkAngleRotate(const long int);
   
 };

@@ -3,7 +3,7 @@
  
  * File:   weights/WWG.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,7 +57,7 @@
 #include "Simulation.h"
 #include "objectRegister.h"
 #include "inputParam.h"
-#include "WeightMesh.h"
+#include "Mesh3D.h"
 #include "WWG.h"
 
 namespace WeightSystem
@@ -108,20 +108,26 @@ WWG::operator=(const WWG& A)
 }
 
 void
-WWG::resetMesh()
+WWG::resetMesh(const std::vector<double>& W)
   /*!
     Resize the mesh
+    \param W :: Weight 
    */
 {
+  ELog::RegMethod RegA("WWG","resetMesh");
+  
   const size_t GSize=Grid.size();
   if (GSize && !EBin.empty())
     {
       WMesh.resize(GSize);
       const size_t ESize(EBin.size());
+      std::vector<double>::const_iterator  vc=
+        W.begin();
       for(std::vector<double>& MUnit : WMesh)
         {
+          const double wVal=(vc!=W.end()) ? (*vc++) : 1.0;
           MUnit.resize(ESize);
-          std::fill(MUnit.begin(),MUnit.end(),1.0);
+          std::fill(MUnit.begin(),MUnit.end(),wVal);
         }
     }
   else 
@@ -131,14 +137,19 @@ WWG::resetMesh()
 }
   
 void
-WWG::setEnergyBin(const std::vector<double>& EB)
+WWG::setEnergyBin(const std::vector<double>& EB,
+                  const std::vector<double>& DefWeight)
   /*!
     Set the energy bins and resize the WMesh
     \param EB :: Energy bins [MeV]
+    \param DefWeight :: Initial weight
   */
 {
+  ELog::RegMethod RegA("WWG","setEnergyBine");
   EBin=EB;
-  resetMesh();
+  if (EBin.empty() || EBin.back()<1e5)
+    EBin.push_back(1e5);
+  resetMesh(DefWeight);
   return;
 }
   
@@ -181,7 +192,6 @@ WWG::scaleMeshItem(const long int index,
   */
 {
   ELog::RegMethod RegA("WWG","scaleMeshItem");
-
   
   const size_t ID(static_cast<size_t>(index));
   if (ID>=WMesh.size())
@@ -220,7 +230,7 @@ WWG::writeWWINP(const std::string& FName) const
   std::ofstream OX;
   OX.open(FName.c_str());
 
-  Grid.writeWWINP(OX,EBin.size());
+  Grid.writeWWINP(OX,1,EBin.size());
   size_t itemCnt=0;
   for(const double& E : EBin)
     StrFunc::writeLine(OX,E,itemCnt,6);

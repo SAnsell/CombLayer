@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   Main/t3Expt.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -168,7 +168,7 @@ main(int argc,char* argv[])
 	    SimPtr->setENDF7();	  
 	  
 	  SimProcess::importanceSim(*SimPtr,IParam);
-	  SimProcess::inputPatternSim(*SimPtr,IParam); // energy cut etc
+	  SimProcess::inputProcessForSim(*SimPtr,IParam); // energy cut etc
 
 	  if (renumCellWork)
 	    tallyRenumberWork(*SimPtr,IParam);
@@ -236,23 +236,6 @@ main(int argc,char* argv[])
 
   return exitFlag;
   
-  //   System.setDetector(200,200,30,
-  // 		     Geometry::Vec3D(0,875.0,0),
-  // 		     Geometry::Vec3D(detSize,0,0),
-  // 		     Geometry::Vec3D(0,0,detSize),
-  // 		     -0.05,-10.0);
-  // ELog::EM<<"Using Beam Type:"<<System.getBeam()->className()<<ELog::endCrit;
-
-  // // Commented out to select random track:
-  // //  System.setAimZone(&PZ);        
-  // System.runMonte(nps);
-  // //  System.getDet().write(outFile);
-  // // TEST:
-  // System.write(primaryFile,lambda);
-  // System.writeMCNPX(primaryFile+".i");
-  
-  // System.writeXML("test.xml");
-  return 0;
 }
 
 

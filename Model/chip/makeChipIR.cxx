@@ -200,7 +200,6 @@ makeChipIR::build(Simulation* SimPtr,
   ELog::debugMethod DegA;
   const FuncDataBase& Control=SimPtr->getDataBase();  
 
-  int isoFlag(0);
   // Exit if no work to do:
   if (IParam.flag("exclude") && IParam.compValue("E",std::string("chipIR")))
     return;

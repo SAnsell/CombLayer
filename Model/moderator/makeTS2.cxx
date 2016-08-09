@@ -3,7 +3,7 @@
  
  * File:   moderator/makeTS2.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -107,7 +107,6 @@ makeTS2::build(Simulation* SimPtr,
   // For output stream
   ELog::RegMethod RControl("makeTS2","build");
 
-
   moderatorSystem::makeTS2Bulk bulkObj;
   hutchSystem::makeChipIR chipObj;
   zoomSystem::makeZoom zoomObj;
@@ -125,7 +124,6 @@ makeTS2::build(Simulation* SimPtr,
       return;
     }
 
-
   bulkObj.build(SimPtr,IParam);
 
   if (!IParam.flag("exclude") ||
@@ -135,7 +133,7 @@ makeTS2::build(Simulation* SimPtr,
 	chipObj.build(SimPtr,IParam,*bulkObj.getBulkShield());
       if (!IParam.compValue("E",std::string("zoom")))  
 	zoomObj.build(*SimPtr,IParam,*bulkObj.getBulkShield());
-      if (!IParam.compValue("E",std::string("imat")))  
+      if (!IParam.compValue("E",std::string("imat")))
 	imatObj.build(SimPtr,IParam,*bulkObj.getBulkShield());
     }
   // Insert pipes [make part of makeTS2Bulk]
@@ -144,5 +142,5 @@ makeTS2::build(Simulation* SimPtr,
   return;
 }
 
-}   // NAMESPACE ts1System
+}   // NAMESPACE moderatorSystem
 

@@ -3,7 +3,7 @@
  
  * File:   supportInc/stringSearch.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,13 @@
 
 namespace StrFunc
 {
+ /*!
+   \class stringSearch
+   \brief Facilitator for finding a short string begining longer string
+   \author S. Ansell
+   \date November 2014
+   \version 1.0
+ */
 
 class stringSearch
 {

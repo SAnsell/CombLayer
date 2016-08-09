@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   delft/FlatModerator.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,6 +66,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "SecondTrack.h"
 #include "TwinComp.h"
 #include "ContainedComp.h"
@@ -100,7 +101,6 @@ FlatModerator::clone() const
 FlatModerator::FlatModerator(const FlatModerator& A) : 
   virtualMod(A),
   flatIndex(A.flatIndex),cellIndex(A.cellIndex),
-  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
   backRad(A.backRad),frontRad(A.frontRad),depth(A.depth),
   length(A.length),radius(A.radius),sideThick(A.sideThick),
   wallThick(A.wallThick),modTemp(A.modTemp),gasTemp(A.gasTemp),
@@ -124,9 +124,6 @@ FlatModerator::operator=(const FlatModerator& A)
     {
       virtualMod::operator=(A);
       cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
       backRad=A.backRad;
       frontRad=A.frontRad;
       depth=A.depth;
@@ -153,19 +150,15 @@ FlatModerator::~FlatModerator()
 {}
 
 void
-FlatModerator::populate(const Simulation& System)
+FlatModerator::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: DataBase 
   */
 {
   ELog::RegMethod RegA("FlatModerator","populate");
   
-  const FuncDataBase& Control=System.getDataBase();
-
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
+  FixedOffset::populate(Control);
 
   depth=Control.EvalVar<double>(keyName+"Depth");
   frontRad=Control.EvalVar<double>(keyName+"FrontRad");
@@ -204,7 +197,7 @@ FlatModerator::createUnitVector(const attachSystem::SecondTrack& CUnit)
   Z=CUnit.getBZ();
 
   Origin=CUnit.getBeamStart();
-  Origin+=X*xStep+Y*yStep+Z*zStep;
+  applyOffset();
   return;
 }
 
@@ -303,7 +296,7 @@ FlatModerator::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("FlatModerator","createAll");
-  populate(System);
+  populate(System.getDataBase());
 
   createUnitVector(FUnit);
   createSurfaces();

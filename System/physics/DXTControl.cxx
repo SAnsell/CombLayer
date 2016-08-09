@@ -3,7 +3,7 @@
  
  * File:   physics/DXTControl.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -122,7 +122,8 @@ DXTControl::setUnit(const Geometry::Vec3D& Pt,
   /*!
     Add a ext component
     \param Pt :: Point for dxtran
-    \param R :: radius of dxtran sphere
+    \param R :: inner radius of dxtran sphere
+    \param RO :: second outer radius of dxtran sphere
     \param rFlag :: rotation required
   */
 {
@@ -151,7 +152,7 @@ DXTControl::setDD(const double DK,const double DM)
 
   return;
 }
-
+  
 void
 DXTControl::write(std::ostream& OX) const
   /*!
@@ -174,8 +175,7 @@ DXTControl::write(std::ostream& OX) const
         cx<<MR.forceCalcRotate(Centres[i]);
       else
         cx<<Centres[i];
-      
-      cx<<" "<<RadiiOuter[i]<<" "<<RadiiInner[i];
+      cx<<" "<<RadiiOuter[i]<<" "<<RadiiInner[i]<<" ";
     }
   StrFunc::writeMCNPX(cx.str(),OX);
 
@@ -183,7 +183,7 @@ DXTControl::write(std::ostream& OX) const
   cx<<"dd1 ";
   for(size_t i=0;i<DDk.size();i++)
     cx<<DDk[i]<<" "<<DDm[i]<<" ";
-    StrFunc::writeMCNPX(cx.str(),OX);
+  StrFunc::writeMCNPX(cx.str(),OX);
 
    
   return;

@@ -3,7 +3,7 @@
  
  * File:   essBuild/BlockAddition.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,6 +66,7 @@
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "LayerComp.h"
 #include "ContainedComp.h"
 #include "BlockAddition.h"
@@ -75,7 +76,7 @@ namespace essSystem
 
 BlockAddition::BlockAddition(const std::string& Key) :
   attachSystem::ContainedComp(),attachSystem::LayerComp(0),
-  attachSystem::FixedComp(Key,6),
+  attachSystem::FixedOffset(Key,6),
   blockIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(blockIndex+1),active(0),nLayers(0),
   edgeSurf(0)
@@ -87,10 +88,9 @@ BlockAddition::BlockAddition(const std::string& Key) :
 
 BlockAddition::BlockAddition(const BlockAddition& A) : 
   attachSystem::ContainedComp(A),attachSystem::LayerComp(A),
-  attachSystem::FixedComp(A),
+  attachSystem::FixedOffset(A),
   blockIndex(A.blockIndex),cellIndex(A.cellIndex),
-  active(A.active),xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  xyAngle(A.xyAngle),zAngle(A.zAngle),length(A.length),
+  active(A.active),length(A.length),
   height(A.height),width(A.width),nLayers(A.nLayers),
   wallThick(A.wallThick),waterMat(A.waterMat),
   edgeSurf(A.edgeSurf)
@@ -112,14 +112,9 @@ BlockAddition::operator=(const BlockAddition& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::LayerComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
       active=A.active;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
       length=A.length;
       height=A.height;
       width=A.width;
@@ -172,11 +167,7 @@ BlockAddition::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("BlockAddition","populate");
 
-  xStep=Control.EvalDefVar<double>(keyName+"XStep",0.0);
-  yStep=Control.EvalDefVar<double>(keyName+"YStep",0.0);
-  zStep=Control.EvalDefVar<double>(keyName+"ZStep",0.0);
-  xyAngle=Control.EvalDefVar<double>(keyName+"XYangle",0.0);
-  zAngle=Control.EvalDefVar<double>(keyName+"Zangle",0.0);
+  FixedOffset::populate(Control);
 
   // Extension
   length=Control.EvalVar<double>(keyName+"Length");   
@@ -218,21 +209,20 @@ BlockAddition::createUnitVector(const Geometry::Vec3D& O,
   /*!
     Create the unit vectors
     \param O :: Origin [calc from edge point]
-    \param YAxis :: Direction of Y Axis 
-    \param FC :: FixedComp [for Z]
+    \param YAxis :: Direction of Y Axis
+    \param ZAxis :: Direction of Z Axis 
   */
 {
   ELog::RegMethod RegA("BlockAddition","createUnitVector");
   const Geometry::Plane* PPtr=
     SMap.realPtr<Geometry::Plane>(edgeSurf);
-  
+
   Origin=O;
   Z=ZAxis;
   Y=YAxis;
   X=Z*Y;
-  
-  applyShift(xStep+wallThick.back(),yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
+  xStep+=wallThick.back();
+  applyOffset();
   if (PPtr && PPtr->getNormal().dotProd(X)<0.0)
     X*=-1.0;
   return;
@@ -282,7 +272,7 @@ BlockAddition::rotateItem(std::string LString)
   /*!
     Given a string convert to an angle rotate form
     \param LString :: Link string
-    \return string
+    \return string of rotated surface
   */
 {
   ELog::RegMethod RegA("BlockAddtion","rotateItem");
@@ -341,9 +331,9 @@ BlockAddition::createObjects(Simulation& System,
 
   if (active)
     {
-      Out=PMod.getLayerString(layerIndex,sideIndex);
+      Out=PMod.getLayerString(layerIndex,static_cast<long int>(sideIndex+1));
       preModInner=rotateItem(Out);
-      Out=PMod.getLayerString(layerIndex+2,sideIndex);
+      Out=PMod.getLayerString(layerIndex+2,static_cast<long int>(sideIndex+1));
       preModOuter=rotateItem(Out);
 
       Out=ModelSupport::getComposite(SMap,blockIndex,"1 -2 3 -4 5 -6 ");
@@ -431,11 +421,11 @@ BlockAddition::createLinks()
 
 Geometry::Vec3D
 BlockAddition::getSurfacePoint(const size_t layerIndex,
-			      const size_t sideIndex) const
+                               const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link point
-    \param sideIndex  :: Side [0-5]
     \param layerIndex :: Layer, 0 is inner moderator 
+    \param sideIndex  :: Side [0-6]   
     \return Surface point
   */
 {
@@ -443,10 +433,14 @@ BlockAddition::getSurfacePoint(const size_t layerIndex,
 
   if (layerIndex>=nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"nLayer/layerIndex");
-
+  if (!sideIndex) return Origin;
+  
   const double outDist=wallThick[layerIndex];
+  const size_t SI((sideIndex>0) ?
+                  static_cast<size_t>(sideIndex-1) :
+                  static_cast<size_t>(-1-sideIndex));
 
-  switch(sideIndex)
+  switch(SI)
     {
     case 0:
       return Origin;
@@ -461,12 +455,12 @@ BlockAddition::getSurfacePoint(const size_t layerIndex,
     case 5:
       return Origin+Z*(outDist+height/2.0);
     }
-  throw ColErr::IndexError<size_t>(sideIndex,6,"sideIndex ");
+  throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
 }
 
 int
 BlockAddition::getLayerSurf(const size_t layerIndex,
-			    const size_t sideIndex) const
+			    const long int sideIndex) const
   /*!
     Given a side and a layer calculate the layerSurface
     \param sideIndex :: Side [0-5]
@@ -479,22 +473,23 @@ BlockAddition::getLayerSurf(const size_t layerIndex,
   if (layerIndex>=nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer/layerIndex");
 
-  if (sideIndex>5)
-    throw ColErr::IndexError<size_t>(sideIndex,6,"sideIndex");
+  if (sideIndex>6 || sideIndex<-6 || !sideIndex)
+    throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
 
   const int SI(blockIndex+10*static_cast<int>(layerIndex));
-  const int SN(static_cast<int>(sideIndex+1));
+  const int dirValue=(sideIndex<0) ? -1 : 1;
+  const int uSIndex(static_cast<int>(std::abs(sideIndex)));
 
-  if (sideIndex)
-    return (sideIndex % 2) ? SMap.realSurf(SN+SI) :
-      -SMap.realSurf(SN+SI);
+  if (sideIndex>1)
+    return (sideIndex % 2) ? -dirValue*SMap.realSurf(SI+uSIndex) :
+      dirValue*SMap.realSurf(SI+uSIndex);
   
-  return -SMap.realSurf(blockIndex+1);
+  return -dirValue*SMap.realSurf(blockIndex+1);
 }
 
 std::string
 BlockAddition::getLayerString(const size_t layerIndex,
-			      const size_t sideIndex) const
+			      const long int sideIndex) const
   /*!
     Given a side and a layer calculate the layerSurface
     \param sideIndex :: Side [0-5]
@@ -507,21 +502,29 @@ BlockAddition::getLayerString(const size_t layerIndex,
   if (layerIndex>=nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
 
-  if (sideIndex>5)
-    throw ColErr::IndexError<size_t>(sideIndex,6,"sideIndex");
+  if (sideIndex>6 || sideIndex<-6 || !sideIndex)
+    throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
 
   // NEED To get conditional surface [IFF sideIndex==0]
 
   const int SI(blockIndex+10*static_cast<int>(layerIndex));
-  const int SN(static_cast<int>(sideIndex+1));
-
-  if (sideIndex>0)
+  const int uSIndex(static_cast<int>(std::abs(sideIndex)));
+  if (uSIndex>1)
     {
-      const int SurfN=(sideIndex % 2) ? 
-	SMap.realSurf(SN+SI) : -SMap.realSurf(SN+SI);
-      return StrFunc::makeString(SurfN);
+      int signValue((sideIndex<0) ? -1 : 1);
+      signValue*=((sideIndex % 2) ? -1 : 1);
+      const int SurfN= signValue*SMap.realSurf(SI+uSIndex);
+      return " "+StrFunc::makeString(SurfN)+" ";
     }
-  return preModInner+" "+StrFunc::makeString(-SMap.realSurf(blockIndex+1));
+  const std::string Out=preModInner+" "+
+    StrFunc::makeString(-SMap.realSurf(blockIndex+1));
+  if (sideIndex<0)
+    {
+      HeadRule HR(Out);
+      HR.makeComplement();
+      return HR.display();
+    }
+  return Out;
 }
 
 void

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   process/boxUnit.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -102,7 +102,7 @@ boxUnit::boxUnit(const boxUnit& A) :
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),prev(A.prev),
   next(A.next),APt(A.APt),BPt(A.BPt),Axis(A.Axis),
   ANorm(A.ANorm),BNorm(A.BNorm),XUnit(A.XUnit),ZUnit(A.ZUnit),
-  initSurf(A.initSurf),maxExtent(A.maxExtent),
+  maxExtent(A.maxExtent),
   activeFlag(A.activeFlag),boxVar(A.boxVar),nSides(A.nSides)
   /*!
     Copy constructor
@@ -130,7 +130,6 @@ boxUnit::operator=(const boxUnit& A)
       BNorm=A.BNorm;
       XUnit=A.XUnit;
       ZUnit=A.ZUnit;
-      initSurf=A.initSurf;
       maxExtent=A.maxExtent;
       activeFlag=A.activeFlag;
       boxVar=A.boxVar;
@@ -182,18 +181,29 @@ boxUnit::setZUnit(const Geometry::Vec3D& ZA)
   return;
 }
 
+
 void
-boxUnit::setInitSurf(const std::string& SList)
+boxUnit::setASurf(const HeadRule& AR)
   /*!
-    Set thie initial surface rule
-    \param SList :: surfaces for initrule
+    Set the initial surface
+    \param AR :: Initial surface rule
   */
 {
-  ELog::RegMethod RegA("boxUnit","setInitSurf");
-  if (!initSurf.procString(SList))
-    throw ColErr::InvalidLine(SList,"SList input");
+  ASurf=AR;
   return;
 }
+
+void
+boxUnit::setBSurf(const HeadRule& BR)
+  /*!
+    Set the final surface
+    \param BR :: Final surface rule
+  */
+{
+  BSurf=BR;
+  return;
+}
+
 
 void
 boxUnit::setPoints(const Geometry::Vec3D& A,
@@ -259,8 +269,7 @@ boxUnit::populate(const size_t AF,const std::vector<boxValues>& CV)
   boxVar=CV;
 
   checkForward();
-  if (prev) 
-    ZUnit=prev->getZUnit();
+  if (prev) ZUnit=prev->getZUnit();
   const Geometry::Vec3D& pAxis((prev) ? prev->getAxis() : Axis);
   const Geometry::Vec3D& nAxis((next) ? -next->getAxis() : -Axis);
   calcNorm(0,Axis,pAxis);
@@ -344,9 +353,18 @@ boxUnit::createSurfaces()
   ELog::RegMethod RegA("boxUnit","createSurface");
 
   // top / bottom plane
-  if (!initSurf.hasRule()) 
-    ModelSupport::buildPlane(SMap,surfIndex+1,APt,ANorm);
-  ModelSupport::buildPlane(SMap,surfIndex+2,BPt,BNorm);
+  if (!ASurf.hasRule())
+    {
+      ModelSupport::buildPlane(SMap,surfIndex+1,APt,ANorm);
+      ASurf=HeadRule(StrFunc::makeString(SMap.realSurf(surfIndex+1)));
+      ASurf.populateSurf();
+    }
+  if (!BSurf.hasRule())
+    {
+      ModelSupport::buildPlane(SMap,surfIndex+2,BPt,BNorm);
+      BSurf=HeadRule(StrFunc::makeString(SMap.realSurf(surfIndex+2)));
+      BSurf.populateSurf();
+    }
   
   // No need to delete surfaces [in SMap]
   nSides=boxVar.back().getSides();    
@@ -364,6 +382,9 @@ boxUnit::createSurfaces()
 	  const boxValues& boxVal(boxVar[i]);
 	  for(size_t j=0;j<nSides;j++)
 	    {
+	      // ELog::EM<<"Point["<<j<<"] == "<<
+	      // 	boxVal.getDatum(j,APt,XUnit,ZUnit)<<":"<<
+	      // 	boxVal.getAxis(j,XUnit,ZUnit)<<ELog::endDiag;
 	      ModelSupport::buildPlane(SMap,surfOffset+cnt,
 				       boxVal.getDatum(j,APt,XUnit,ZUnit),
 				       boxVal.getAxis(j,XUnit,ZUnit));
@@ -377,21 +398,26 @@ boxUnit::createSurfaces()
 }
 
 std::string
-boxUnit::getFaces() const
+boxUnit::createCaps() const
   /*!
-    Calculate the front/back face and make into an output string
-    \return Face string
+    Creates the caps with the appropiate surfaces
+    \return caps string [inward pointing]
   */
 {
-  ELog::RegMethod RegA("boxUnit","getFaces");
+  ELog::RegMethod RegA("pipeUnit","createCap");
 
-  std::string FBsurf;
-  if (initSurf.hasRule())
-    FBsurf=initSurf.display()+
-      ModelSupport::getComposite(SMap,surfIndex," 2 ");
-  else
-    FBsurf=ModelSupport::getComposite(SMap,surfIndex," 1 2 ");
-  return FBsurf;
+  return ASurf.display()+" "+BSurf.display(); 
+}
+
+const HeadRule&
+boxUnit::getCap(const int side) const
+  /*!
+    Get the end cap head rule
+    \param side :: side value (true => end)
+    \return cap rule
+   */
+{
+  return (side) ? BSurf : ASurf;
 }
 
 void
@@ -406,7 +432,7 @@ boxUnit::createOuterObjects()
   const size_t outerIndex=getOuterIndex();
   const int SI(surfIndex+static_cast<int>(outerIndex)*10);
 
-  const std::string FBSurf=getFaces();
+  const std::string FBSurf=createCaps();
 
   // top / bottom plane
   std::ostringstream outerCX;
@@ -427,7 +453,7 @@ boxUnit::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("boxUnit","createObjects");
 
-  const std::string FBSurf=getFaces();  
+  const std::string FBSurf=createCaps();  
 
   std::string Out;
   int SI(surfIndex);
@@ -497,6 +523,27 @@ boxUnit::calcLineTrack(Simulation& System,
       if (OMap.find(ONum)==OMap.end())
 	OMap.insert(MTYPE::value_type(ONum,(*oc)));
     }
+  return;
+}
+
+void
+boxUnit::addInsertSet(const std::set<int>& S)
+  /*!
+    Insert the extra cell set into cellCut set
+    \param S :: Set of cells to insert
+  */
+{
+  cellCut.insert(S.begin(),S.end());
+  return;
+}
+
+void
+boxUnit::clearInsertSet()
+  /*!
+    Clear the insert set
+   */
+{
+  cellCut.clear();
   return;
 }
   

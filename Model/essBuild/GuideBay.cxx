@@ -3,7 +3,7 @@
  
  * File:   essBuild/GuideBay.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -184,15 +184,17 @@ GuideBay::populate(const Simulation& System)
   
   
 void
-GuideBay::createUnitVector(const attachSystem::FixedComp& FC)
+GuideBay::createUnitVector(const attachSystem::FixedComp& FC,
+                           const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Linked object
+    \param sideIndex :: linkPoint index
   */
 {
   ELog::RegMethod RegA("GuideBay","createUnitVector");
 
-  FixedComp::createUnitVector(FC);
+  FixedComp::createUnitVector(FC,sideIndex);
   applyShift(xStep,yStep,zStep);
   applyAngleRotate(xyAngle,zAngle);
 
@@ -360,31 +362,39 @@ GuideBay::outerMerge(Simulation& System,
   
   
 void
-GuideBay::createGuideItems(Simulation& System)
+GuideBay::createGuideItems(Simulation& System,
+                           const attachSystem::FixedComp& ModFC,
+                           const long int lFocusIndex,
+                           const long int rFocusIndex)
   /*!
     Create the guide items
     \param System :: Simulation to link
+    \param GIndex :: guide Item
+    \param ModFC :: Moderator point
+    \param lfocusPoint :: left point on moderator for focus
+    \param rfocusPoint :: left point on moderator for focus
   */
 {
   ELog::RegMethod RegA("GuideBay","createGuideItems");
 
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-
+  
   const std::string BL=StrFunc::makeString("G",bayNumber)+"BLine";
 
   const int dPlane=SMap.realSurf(bayIndex+1);
   for(size_t i=0;i<nItems;i++)
     {
+      const long int FI((i>=nItems/2) ? rFocusIndex : lFocusIndex);
       std::shared_ptr<GuideItem> GA(new GuideItem(BL,i+1));
       GA->setCylBoundary(dPlane,innerCyl,outerCyl);
 
       GA->addInsertCell("Inner",getCell("Inner"));
       GA->addInsertCell("Outer",getCell("Outer"));
       if (i)
-	GA->createAll(System,*this,0,GUnit[i-1].get());
+	GA->createAll(System,ModFC,FI,GUnit[i-1].get());
       else
-	GA->createAll(System,*this,0,0);
+	GA->createAll(System,ModFC,FI,0);
 
       GUnit.push_back(GA);
       OR.addObject(GUnit.back());      
@@ -395,7 +405,8 @@ GuideBay::createGuideItems(Simulation& System)
 
 void
 GuideBay::createAll(Simulation& System,
-		    const attachSystem::FixedComp& FC)
+		    const attachSystem::FixedComp& FC,
+                    const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
@@ -405,7 +416,7 @@ GuideBay::createAll(Simulation& System,
   ELog::RegMethod RegA("GuideBay","createAll");
 
   populate(System);
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/essVariables.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef essVariables_h
-#define essVariables_h
+#ifndef setVariable_essVariables_h
+#define setVariable_essVariables_h
 
 
 namespace mainSystem
@@ -36,21 +36,31 @@ namespace setVariable
   void EssButterflyModerator(FuncDataBase&);
   void EssWheel(FuncDataBase&);
   void EssProtonBeam(FuncDataBase&);
+  void EssIradVariables(FuncDataBase&);
   void F5Variables(FuncDataBase&);
 
   // ESS Beamlines
-  void ODINvariables(FuncDataBase&);
-  void ESTIAvariables(FuncDataBase&);
+  void BEERvariables(FuncDataBase&);
+  void BIFROSTvariables(FuncDataBase&);
+  void CSPECvariables(FuncDataBase&);
   void DREAMvariables(FuncDataBase&);
+  void ESTIAvariables(FuncDataBase&);
+  void FREIAvariables(FuncDataBase&);
   void LOKIvariables(FuncDataBase&);
   void NMXvariables(FuncDataBase&);
+  void ODINvariables(FuncDataBase&);
   void VORvariables(FuncDataBase&);
+  void VESPAvariables(FuncDataBase&);
 
   // MODIFIED ESS Beamlines
   void shortDREAMvariables(FuncDataBase&);
   void shortDREAM2variables(FuncDataBase&);
   void shortODINvariables(FuncDataBase&);
+  void longLOKIvariables(FuncDataBase&);
 
+  // SIMPLE TEST ITEMS
+  void simpleITEMvariables(FuncDataBase&);
 }
+
 
 #endif

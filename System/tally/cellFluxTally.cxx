@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNPX Input builder
  
  * File:   tally/cellFluxTally.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,8 +60,7 @@ cellFluxTally::cellFluxTally(const int ID) :
 {}
 
 cellFluxTally::cellFluxTally(const cellFluxTally& A) :
-  Tally(A),cellList(A.cellList),FSfield(A.FSfield),
-  SDfield(A.SDfield)
+  Tally(A),cellList(A.cellList),FSfield(A.FSfield)
   /*!
     Copy Constructore
     \param A :: cellFluxTally object to copy
@@ -91,7 +90,6 @@ cellFluxTally::operator=(const cellFluxTally& A)
       Tally::operator=(A);
       cellList=A.cellList;
       FSfield=A.FSfield;
-      SDfield=A.SDfield;
     }
   return *this;
 }
@@ -102,19 +100,6 @@ cellFluxTally::~cellFluxTally()
   */
 {}
 
-void
-cellFluxTally::setSD(const double V)
-  /*!
-    Sets a constant value for all FS fields.
-    \param V :: Item to add
-  */
-{
-  SDfield.clear();
-  const int N=FSfield.count();
-  for(int i=0;i<N || i<1;i++)
-    SDfield.addComp(V);
-  return;
-}
 
 std::vector<int>
 cellFluxTally::getCells() const
@@ -169,6 +154,21 @@ cellFluxTally::addLine(const std::string& LX)
   return Tally::addLine(LX);
 }
 
+int
+cellFluxTally::setSDField(const double V)
+  /*!
+    Sets a constant value for all FS fields.
+    \param V :: Item to add
+  */
+{
+  SDfield.clear();
+  const int N=FSfield.count();
+  for(int i=0;i<N || i<1;i++)
+    SDfield.addComp(V);
+  return 1;
+}
+
+  
 void
 cellFluxTally::clearCells() 
   /*!
@@ -214,6 +214,28 @@ cellFluxTally::renumberCell(const int oldCell,const int newCell)
 }
 
 int
+cellFluxTally::mergeTally(const Tally& CT)
+  /*!
+    Join the cells of a tally to this tally
+    \param CT :: Other tally to join
+    \return 1 on success
+  */
+{
+  ELog::RegMethod RegA("cellFluxTally","mergeTally");
+
+  const cellFluxTally* CPtr=
+    dynamic_cast<const cellFluxTally*>(&CT);
+  if (!CPtr) return 0;
+  
+  //  const std::vector<int> cells=cellList.actualItems();
+  //  const std::vector<int> otherCells=CPtr->actualItems();
+
+  
+  return 1;
+}
+
+  
+int
 cellFluxTally::makeSingle()
   /*!
     Convert the cell flux into a set of single calculation
@@ -221,7 +243,9 @@ cellFluxTally::makeSingle()
   */
 {
   ELog::RegMethod RegA("cellFluxTally","makeSingle");
+
   const std::vector<int> cells=cellList.actualItems();
+
   std::vector<double> sd=SDfield.actualItems();
   cellList.clear();
   cellList.addUnits(cells);
@@ -323,12 +347,6 @@ cellFluxTally::write(std::ostream& OX)  const
   if (!FSfield.empty())
     {
       cx<<"fs"<<IDnum<<" "<<FSfield;
-      StrFunc::writeMCNPX(cx.str(),OX);
-      cx.str("");
-    }
-  if (!SDfield.empty())
-    {
-      cx<<"sd"<<IDnum<<" "<<SDfield;
       StrFunc::writeMCNPX(cx.str(),OX);
       cx.str("");
     }

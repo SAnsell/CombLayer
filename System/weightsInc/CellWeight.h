@@ -44,7 +44,9 @@ class CellWeight : public ItemWeight
   virtual ~CellWeight() {}          ///< Destructor
 
   void updateWM(const double,const double,
-		const double) const;
+		const double,const double) const;
+  void invertWM(const double,const double,
+		const double,const double) const;
 };
 
 }

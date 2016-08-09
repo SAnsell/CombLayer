@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   delft/BeElement.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,6 +65,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 
 #include "FuelLoad.h"
@@ -84,16 +85,44 @@ BeElement::BeElement(const size_t XI,const size_t YI,
   */
 {}
 
+BeElement::BeElement(const BeElement& A) : 
+  RElement(A),
+  Width(A.Width),Depth(A.Depth),TopHeight(A.TopHeight),
+  beMat(A.beMat)
+  /*!
+    Copy constructor
+    \param A :: BeElement to copy
+  */
+{}
+  
+BeElement&
+BeElement::operator=(const BeElement& A)
+  /*!
+    Assignment operator
+    \param A :: BeElement to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      RElement::operator=(A);
+      Width=A.Width;
+      Depth=A.Depth;
+      TopHeight=A.TopHeight;
+      beMat=A.beMat;
+    }
+  return *this;
+}
+
 void
-BeElement::populate(const Simulation& System)
+BeElement::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     Requires that unset values are copied from previous block
-    \param System :: Simulation to use
+    \param Control :: DataBase
   */
 {
   ELog::RegMethod RegA("BeElement","populate");
-  const FuncDataBase& Control=System.getDataBase();
 
   Width=ReactorGrid::getElement<double>
     (Control,keyName+"Width",XIndex,YIndex);
@@ -190,7 +219,7 @@ BeElement::createAll(Simulation& System,const FixedComp& RG,
   */
 {
   ELog::RegMethod RegA("BeElement","createAll");
-  populate(System);
+  populate(System.getDataBase());
 
   createUnitVector(RG,OG);
   createSurfaces(RG);

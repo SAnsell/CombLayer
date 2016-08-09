@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   moderator/Decoupled.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -360,7 +360,7 @@ Decoupled::viewSurf(const int side) const
 }
 
 Geometry::Vec3D
-Decoupled::getDirection(const int side) const
+Decoupled::getDirection(const size_t side) const
   /*!
     Determine the exit direction
     \param side :: Direction number [0-5] (internally checked)
@@ -384,20 +384,26 @@ Decoupled::getDirection(const int side) const
 }
 
 Geometry::Vec3D
-Decoupled::getSurfacePoint(const int side,const int layer) const
+Decoupled::getSurfacePoint(const size_t layerIndex,
+                           const long int sideIndex) const
   /*!
     Get the center point for the surfaces in each layer
-    \param side :: Index to side (front/back/left/right/up/down)
-    \param layer :: Layer number : 0 is inner 4 is outer
+    \param layerIndex :: Layer number : 0 is inner 4 is outer
+    \param sideIndex :: Index to side (front/back/left/right/up/down)
     \return point on surface
   */
 {
-  ELog::RegMethod RegA("VacVessel","getSurfacePoint");
+  ELog::RegMethod RegA("Decoupled","getSurfacePoint");
 
-  if (side<0 || side>5) 
-    throw ColErr::IndexError<int>(side,5,"sideIndex ");
-  if (layer<0 || layer>2) 
-    throw ColErr::IndexError<int>(layer,2,"layer");
+  if (!sideIndex) return Origin;
+  const size_t SI((sideIndex>0) ?
+                  static_cast<size_t>(sideIndex-1) :
+                  static_cast<size_t>(-1-sideIndex));
+
+  if (SI>5) 
+    throw ColErr::IndexError<long int>(sideIndex,5,"sideIndex");
+  if (layerIndex>2) 
+    throw ColErr::IndexError<size_t>(layerIndex,2,"layer");
 
   
   const double westDist[]={westDepth,alCurve};
@@ -411,11 +417,11 @@ Decoupled::getSurfacePoint(const int side,const int layer) const
 
   // Initialize layer pts:
   Geometry::Vec3D layerPts(Origin);
-  const Geometry::Vec3D XYZ=getDirection(side);
+  const Geometry::Vec3D XYZ=getDirection(SI);
 
   double sumVec(0.0);
-  for(int i=0;i<=layer;i++)
-    sumVec+=DPtr[side][i];
+  for(size_t i=0;i<=layerIndex;i++)
+    sumVec+=DPtr[SI][i];
   
   return layerPts+XYZ*sumVec;
 }
@@ -438,7 +444,7 @@ Decoupled::createAll(Simulation& System,
   createLinks();
   insertObjects(System);       
   VP->addInsertCell(methCell);
-  VP->createAll(System,*this,7);
+  VP->createAll(System,*this,8);
 
   return;
 }

@@ -31,7 +31,12 @@ namespace attachSystem
 class FixedComp;
 
 void applyZAxisRotate(const FixedComp& FC,const double,Geometry::Vec3D&);
+ 
+Geometry::Vec3D
+getCntVec3D(const mainSystem::inputParam&,const std::string&,
+	    const size_t,size_t&);
 
+   
 }
 
 #endif

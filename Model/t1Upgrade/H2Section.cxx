@@ -3,7 +3,7 @@
  
  * File:   t1Upgrade/H2Section.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -446,7 +446,7 @@ H2Section::createLinks()
 
 Geometry::Vec3D
 H2Section::getSurfacePoint(const size_t layerIndex,
-			  const size_t sideIndex) const
+			  const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link point
     \param sideIndex :: Side [0-5]
@@ -456,8 +456,12 @@ H2Section::getSurfacePoint(const size_t layerIndex,
 {
   ELog::RegMethod RegA("H2Section","getSurfacePoint");
 
-  if (sideIndex>5) 
-    throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
+  const size_t SI((sideIndex>0) ?
+                  static_cast<size_t>(sideIndex-1) :
+                  static_cast<size_t>(-1-sideIndex));
+  
+  if (SI>5) 
+    throw ColErr::IndexError<long int>(sideIndex,5,"sideIndex");
   if (layerIndex>6) 
     throw ColErr::IndexError<size_t>(layerIndex,6,"layerIndex");
 
@@ -474,12 +478,12 @@ H2Section::getSurfacePoint(const size_t layerIndex,
 	LA+=offset[i];
     }
 
-  return Origin+XYZ[sideIndex]*LA.Item(sideIndex);
+  return Origin+XYZ[SI]*LA.Item(SI);
 }
 
 std::string
 H2Section::getLayerString(const size_t layerIndex,
-			  const size_t sideIndex) const
+			  const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
     \param sideIndex :: Side [0-5]
@@ -493,7 +497,7 @@ H2Section::getLayerString(const size_t layerIndex,
 
 int
 H2Section::getLayerSurf(const size_t layerIndex,
-			const size_t sideIndex) const
+			const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
     \param sideIndex :: Side [0-5]
@@ -505,11 +509,13 @@ H2Section::getLayerSurf(const size_t layerIndex,
 
   if (layerIndex>=nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layerIndex");
-  if (sideIndex>5)
-    throw ColErr::IndexError<size_t>(sideIndex,5,"sideIndex ");
+  if (!sideIndex || std::abs(sideIndex)>6)
+    throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex ");
 
-  const int SI(modIndex+static_cast<int>(layerIndex*10+sideIndex+1));
-  const int signValue((sideIndex % 2) ? 1 : -1);
+  const size_t uSIndex(static_cast<size_t>(std::abs(sideIndex)));
+  const int SI(modIndex+static_cast<int>(layerIndex*10+uSIndex));
+  int signValue((sideIndex<0) ? -1 : 1);
+  signValue *= (sideIndex % 2) ? -1 : 1;
   return signValue*SMap.realSurf(SI);
 }
 

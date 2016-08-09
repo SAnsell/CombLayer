@@ -3,7 +3,7 @@
  
  * File:   Main/fullBuild.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -105,7 +105,6 @@ main(int argc,char* argv[])
 	  <<ELog::endDiag;
 
   std::vector<std::string> Names;  
-  std::map<std::string,double> IterVal;           // Variable to iterate 
   std::string Oname;
 
   Simulation* SimPtr(0);
@@ -115,10 +114,7 @@ main(int argc,char* argv[])
       InputControl::mainVector(argc,argv,Names);
       mainSystem::inputParam IParam;
       createFullInputs(IParam);
-      
-      const int iteractive(IterVal.empty() ? 0 : 1);   
-      
-      
+            
       // Read XML/Variable and set IParam
       SimPtr=createSimulation(IParam,Names,Oname);
       if (!SimPtr) return -1;
@@ -135,82 +131,16 @@ main(int argc,char* argv[])
 	    setVFlag(IParam.getValue<int>("memStack"));
 	}
       
-      // Definitions section 
-      RNG.seed(static_cast<unsigned int>(IParam.getValue<long int>("random")));
-      const std::string rotFlag=ModelSupport::setDefRotation(IParam);
+      World::createOuterObjects(*SimPtr);
+      moderatorSystem::makeTS2 TS2Obj;
+      TS2Obj.build(SimPtr,IParam);
+      // This for chipObjBuild
+      SDef::sourceSelection(*SimPtr,IParam);
       
-      int MCIndex(0);
-      const int multi=IParam.getValue<int>("multi");
-
+      mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
       ELog::EM<<"FULLBUILD : variable hash: "
 	      <<SimPtr->getDataBase().variableHash()
 	      <<ELog::endBasic;
-	
-      while(MCIndex<multi)
-        {
-	  if (MCIndex)
-	    {
-	      ELog::EM.setActive(4);    // write error only
-	      ELog::FM.setActive(4);    
-	      ELog::RN.setActive(0);    
-	      if (iteractive)
-		mainSystem::incRunTimeVariable
-		  (SimPtr->getDataBase(),IterVal);
-	    }
-	  SimPtr->resetAll();
-	  World::createOuterObjects(*SimPtr);
-	  moderatorSystem::makeTS2 TS2Obj;
-	  TS2Obj.build(SimPtr,IParam);
-	  // This for chipObjBuild
-	  SDef::sourceSelection(*SimPtr,IParam);
-
-	  //      WeightSystem::addForcedCollision(Sim,40.0);
-	  SimPtr->removeComplements();
-	  SimPtr->removeDeadSurfaces(0);         
-
-	  ModelSupport::setDefaultPhysics(*SimPtr,IParam);
-
-	  // Sets a line of tallies at different angles
-	  //	  TMRSystem::setAllTally(Sim,SInfo);
-
-	  const int renumCellWork=beamTallySelection(*SimPtr,IParam);
-
-	  if (!rotFlag.empty())
-	    {
-	      ModelSupport::setItemRotate(World::masterTS2Origin(),rotFlag);
-	      ModelSupport::setDefRotation(IParam);
-	    }
-	  SimPtr->masterRotation();
-  //	  tallySystem::addHeatBlock(*SimPtr,heatCells);
-	  
-
-	  if (IParam.flag("endf"))
-	    SimPtr->setENDF7();
-
-
-	  // NOTE : This flag must be set in tally== beamline standard
-	  SimProcess::importanceSim(*SimPtr,IParam);
-	  SimProcess::inputPatternSim(*SimPtr,IParam); // energy cut etc
-	  if (createVTK(IParam,SimPtr,Oname))
-	    {
-	      mainSystem::exitDelete(SimPtr);
-	      return 0;
-	    }
-
-	  if (renumCellWork)
-	    tallyRenumberWork(*SimPtr,IParam);
-	  tallyModification(*SimPtr,IParam);
-
-	  // Ensure we done loop
-	  do
-	    {
-	      SimProcess::writeIndexSim(*SimPtr,Oname,MCIndex);
-	      MCIndex++;
-	    }
-	  while(!iteractive && MCIndex<multi);
-	}
-      if (IParam.flag("cinder"))
-	SimPtr->writeCinder();
 
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
       ModelSupport::calcVolumes(SimPtr,IParam);
@@ -229,6 +159,12 @@ main(int argc,char* argv[])
 	      <<A.what()<<ELog::endCrit;
       exitFlag= -1;
     }
+  catch (...)
+    {
+      ELog::EM<<"GENERAL EXCEPTION"<<ELog::endCrit;
+      exitFlag= -3;
+    }
+
   mainSystem::exitDelete(SimPtr);
   ModelSupport::objectRegister::Instance().reset();
   ModelSupport::surfIndex::Instance().reset();

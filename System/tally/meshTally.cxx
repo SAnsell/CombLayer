@@ -3,7 +3,7 @@
  
  * File:   tally/meshTally.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -276,6 +276,21 @@ meshTally::rotateMaster()
 }
 
 void
+meshTally::writeCoordinates(std::ostream& OX) const
+  /*!
+    Function to write out the coordinates for the user
+    \param OX :: Oupt stream
+  */
+{
+  static char abc[]="abc";
+  
+  for(size_t i=0;i<3;i++)
+    OX<<"cor"<<abc[i]<<IDnum<<" "<<minCoord[i]<<" "
+      <<(Pts[i]-1)<<"i "<<maxCoord[i]<<std::endl;
+  return;
+}
+  
+void
 meshTally::write(std::ostream& OX) const
   /*!
     Write out the mesh tally into the tally region
@@ -285,7 +300,6 @@ meshTally::write(std::ostream& OX) const
   masterWrite& MW=masterWrite::Instance();
   if (isActive())
     {
-      const char abc[]="abc";
       const char typeLetter[]="rcs";
       OX<<"tmesh"<<std::endl;
 
@@ -311,9 +325,7 @@ meshTally::write(std::ostream& OX) const
 	  cx<<"mshmf"<<IDnum<<" "<<mshmf;
 	  StrFunc::writeMCNPX(cx.str(),OX);
 	}
-      for(size_t i=0;i<3;i++)
-	OX<<"cor"<<abc[i]<<IDnum<<" "<<minCoord[i]<<" "
-	  <<(Pts[i]-1)<<"i "<<maxCoord[i]<<std::endl;
+      writeCoordinates(OX);
       OX<<"endmd"<<std::endl;
     }
   return;

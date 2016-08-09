@@ -3,7 +3,7 @@
  
  * File:   Main/ess.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -98,6 +98,7 @@ main(int argc,char* argv[])
   int exitFlag(0);                // Value on exit
   ELog::RegMethod RControl("","main");
   mainSystem::activateLogging(RControl);
+
   std::string Oname;
   std::vector<std::string> Names;  
 
@@ -117,52 +118,14 @@ main(int argc,char* argv[])
       mainSystem::setDefUnits(SimPtr->getDataBase(),IParam);
       InputModifications(SimPtr,IParam,Names);
       mainSystem::setMaterialsDataBase(IParam);
-      
-      // Definitions section 
-      int MCIndex(0);
-      const int multi=IParam.getValue<int>("multi");
-      
-      SimPtr->resetAll();
-      
+            
       essSystem::makeESS ESSObj;
       World::createOuterObjects(*SimPtr);
       ESSObj.build(*SimPtr,IParam);
       SDef::sourceSelection(*SimPtr,IParam);
-      
-      SimPtr->removeComplements();
-      SimPtr->removeDeadSurfaces(0);         
-      ModelSupport::setDefaultPhysics(*SimPtr,IParam);
-      
-      ModelSupport::setDefRotation(IParam);
-      SimPtr->masterRotation();
-      const int renumCellWork=tallySelection(*SimPtr,IParam);
-      
-      if (createVTK(IParam,SimPtr,Oname))
-	{
-	  delete SimPtr;
-	  ModelSupport::objectRegister::Instance().reset();
-	  return 0;
-	}
-      if (IParam.flag("endf"))
-	SimPtr->setENDF7();
-      
-      SimProcess::importanceSim(*SimPtr,IParam);
-      SimProcess::inputPatternSim(*SimPtr,IParam); // energy cut etc
 
-      if (renumCellWork)
-	tallyRenumberWork(*SimPtr,IParam);
-      tallyModification(*SimPtr,IParam);
+      mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
       
-      if (IParam.flag("cinder"))
-	SimPtr->setForCinder();
-      
-      // Ensure we done loop
-      do
-	{
-	  SimProcess::writeIndexSim(*SimPtr,Oname,MCIndex);
-	  MCIndex++;
-	}
-      while(MCIndex<multi);
       
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
       ModelSupport::calcVolumes(SimPtr,IParam);
@@ -180,6 +143,12 @@ main(int argc,char* argv[])
 	      <<A.what()<<ELog::endCrit;
       exitFlag= -1;
     }
+  catch (...)
+    {
+      ELog::EM<<"GENERAL EXCEPTION"<<ELog::endCrit;
+      exitFlag= -3;
+    }
+
   delete SimPtr;
   ModelSupport::objectRegister::Instance().reset();
   ModelSupport::surfIndex::Instance().reset();

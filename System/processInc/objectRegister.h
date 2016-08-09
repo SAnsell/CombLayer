@@ -3,7 +3,7 @@
  
  * File:   processInc/objectRegister.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,11 +52,12 @@ class objectRegister
   int cellNumber;                  ///< Current new cell number
   MTYPE regionMap;                 ///< Index of kept object number
   MTYPE renumMap;                  ///< Index of renumbered units
-
+  std::set<int> activeCells;       ///< Active cells
   cMapTYPE Components;             ///< Pointer to real objects
 
-  ///\cond SINGLETON
+
   objectRegister();
+  ///\cond SINGLETON
   objectRegister(const objectRegister&);
   objectRegister& operator=(const objectRegister&);
   ///\endcond SINGLETON
@@ -72,29 +73,44 @@ class objectRegister
 
   static objectRegister& Instance();
 
-  int cell(const std::string&,const int = -1,const int = 10000);
-  int getCell(const std::string&,const int =-1) const;
-  int getRange(const std::string&,const int =-1) const;
+  int cell(const std::string&,const int = 10000);
+  int getCell(const std::string&) const;
+  int getLast(const std::string&) const;
+  int getRange(const std::string&) const;
+  
   std::string inRange(const int) const;
 
-  int getRenumberCell(const std::string&,const int =-1) const;
-  int getRenumberRange(const std::string&,const int =-1) const;
+  int getRenumberCell(const std::string&) const;
+  int getRenumberLast(const std::string&) const;
+  int getRenumberRange(const std::string&) const;
+  
   std::string inRenumberRange(const int) const;
 
   int calcRenumber(const int) const;
-  
-  
+    
   void addObject(const std::string&,const CTYPE&);
   void addObject(const CTYPE&);
   template<typename T> const T*
     getObject(const std::string&) const;
   template<typename T>  T*
     getObject(const std::string&);
+  template<typename T> const T*
+    getObjectThrow(const std::string&,const std::string&) const;
+  template<typename T>  T*
+    getObjectThrow(const std::string&,const std::string&);
   bool hasObject(const std::string&) const;
   void setRenumber(const std::string&,const int,const int);
+  
+  void addActiveCell(const int);
+  void removeActiveCell(const int);
+  void renumberActiveCell(const int,const int);
+  /// get active cells
+  const std::set<int>& getActiveCells() const
+     { return activeCells; }
 
   std::vector<int> getObjectRange(const std::string&) const;
   void reset();
+  void rotateMaster();
   void write(const std::string&) const;
   
 };

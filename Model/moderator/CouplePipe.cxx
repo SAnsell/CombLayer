@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   moderator/CouplePipe.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -215,7 +215,8 @@ CouplePipe::createUnitVector(const attachSystem::FixedComp& CUnit,
 }
 
 void 
-CouplePipe::insertOuter(Simulation& System,const VacVessel& VC)
+CouplePipe::insertOuter(Simulation& System,
+                        const VacVessel& VC)
   /*!
     Add a pipe to the hydrogen system:
     \remark This should be called after the void vessel has
@@ -226,23 +227,23 @@ CouplePipe::insertOuter(Simulation& System,const VacVessel& VC)
 {
   ELog::RegMethod RegA("CouplePipe","insertOuter");
 
+  const long int activeSide(5);
   // Inner Points
-  GOuter.addPoint(VC.getSurfacePoint(4,0)+X*Xoffset+Y*Yoffset);
-  GOuter.addPoint(VC.getSurfacePoint(4,2)+X*Xoffset+Y*Yoffset);
-  GOuter.addPoint(VC.getSurfacePoint(4,3)+X*Xoffset+Y*Yoffset);
-  GOuter.addPoint(VC.getSurfacePoint(4,4)+X*Xoffset+Y*Yoffset);
-  GOuter.addPoint(VC.getSurfacePoint(4,4)+X*Xoffset+Y*Yoffset-Z*fullLen);
+  GOuter.addPoint(VC.getSurfacePoint(0,activeSide)+X*Xoffset+Y*Yoffset);
+  GOuter.addPoint(VC.getSurfacePoint(1,activeSide)+X*Xoffset+Y*Yoffset);
+  GOuter.addPoint(VC.getSurfacePoint(2,activeSide)+X*Xoffset+Y*Yoffset);
+  GOuter.addPoint(VC.getSurfacePoint(3,activeSide)+X*Xoffset+Y*Yoffset);
+  GOuter.addPoint(VC.getSurfacePoint(4,activeSide)+
+                  X*Xoffset+Y*Yoffset-Z*fullLen);
   GOuter.setActive(0,3);
   GOuter.setActive(1,7);
   GOuter.setActive(2,31);
 
-  
   GOuter.addRadius(innerRadius,innerMat,0.0);
   GOuter.addRadius(innerAlRadius,innerAlMat,0.0);
   GOuter.addRadius(outVacRadius,outVacMat,0.0);
   GOuter.addRadius(outAlRadius,outAlMat,0.0);
   GOuter.addRadius(outRadius,outMat,0.0);
- 
  
   GOuter.createAll(System);
   return;
@@ -261,11 +262,11 @@ CouplePipe::insertPipes(Simulation& System,const VacVessel& VC)
   ELog::RegMethod RegA("CouplePipe","insertPipes");
 
   // Hydrogen inner
-  HInner.addPoint(VC.getSurfacePoint(4,3)+
+  HInner.addPoint(VC.getSurfacePoint(3,5)+
 		  X*(Xoffset+hXoffset)+
 		  Y*(Yoffset+hYoffset)-Z*fullLen);
   // added
-  HInner.addPoint(VC.getSurfacePoint(4,3)+
+  HInner.addPoint(VC.getSurfacePoint(3,5)+
 		  X*(Xoffset+hXoffset)+
 		  Y*(Yoffset+hYoffset)+Z*hLen);
   

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   delft/HfElement.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,6 +63,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 
@@ -85,10 +86,10 @@ HfElement::HfElement(const size_t XI,const size_t YI,
 	       cell(ReactorGrid::getElementName(CKey,XI,YI)))
   /*!
     Constructor BUT ALL variable are left unpopulated.
-    \parma XI :: Grid position
-    \parma YI :: Grid position 
-    \parma Key :: Keyname for basic cell
-    \parma cKey :: Keyname for control
+    \param XI :: Grid position
+    \param YI :: Grid position 
+    \param Key :: Keyname for basic cell
+    \param CKey :: Keyname for control
   */
 {}
 
@@ -295,11 +296,12 @@ HfElement::createLinks()
 }
 
 void
-HfElement::createAll(Simulation& System,const FixedComp& FC,
+HfElement::createAll(Simulation& System,
+		     const attachSystem::FixedComp& FC,
 		     const Geometry::Vec3D& OG,
 		     const FuelLoad& FuelSystem)
   /*!
-    Global creation of the hutch
+    Global creation of element
     \param System :: Simulation to add vessel to
     \param FC :: Fixed Unit
     \param OG :: Origin

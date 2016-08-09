@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   moderator/VacVessel.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -291,66 +291,66 @@ VacVessel::createSurfaces()
 
   // Inner Layers:
   ModelSupport::buildCylinder(SMap,vacIndex+1,
-			      getSurfacePoint(0,0)-Y*vacPosRadius,
+			      getSurfacePoint(0,1)-Y*vacPosRadius,
 			      Z,vacPosRadius);
   ModelSupport::buildCylinder(SMap,vacIndex+2,
-			      getSurfacePoint(1,0)+Y*vacNegRadius,
+			      getSurfacePoint(0,2)+Y*vacNegRadius,
 			      Z,vacNegRadius);
-  ModelSupport::buildPlane(SMap,vacIndex+3,getSurfacePoint(2,0),X);
-  ModelSupport::buildPlane(SMap,vacIndex+4,getSurfacePoint(3,0),X);
-  ModelSupport::buildPlane(SMap,vacIndex+5,getSurfacePoint(4,0),Z);
-  ModelSupport::buildPlane(SMap,vacIndex+6,getSurfacePoint(5,0),Z);
+  ModelSupport::buildPlane(SMap,vacIndex+3,getSurfacePoint(0,3),X);
+  ModelSupport::buildPlane(SMap,vacIndex+4,getSurfacePoint(0,4),X);
+  ModelSupport::buildPlane(SMap,vacIndex+5,getSurfacePoint(0,5),Z);
+  ModelSupport::buildPlane(SMap,vacIndex+6,getSurfacePoint(0,6),Z);
 
 
   // SECOND LAYER:
   ModelSupport::buildCylinder(SMap,vacIndex+11,
-			      getSurfacePoint(0,1)-Y*vacPosRadius,
+			      getSurfacePoint(1,1)-Y*vacPosRadius,
 			      Z,vacPosRadius);
   ModelSupport::buildCylinder(SMap,vacIndex+12,
-			      getSurfacePoint(1,1)+Y*vacNegRadius,
+			      getSurfacePoint(1,2)+Y*vacNegRadius,
 			      Z,vacNegRadius);
-  ModelSupport::buildPlane(SMap,vacIndex+13,getSurfacePoint(2,1),X);
-  ModelSupport::buildPlane(SMap,vacIndex+14,getSurfacePoint(3,1),X);
-  ModelSupport::buildPlane(SMap,vacIndex+15,getSurfacePoint(4,1),Z);
-  ModelSupport::buildPlane(SMap,vacIndex+16,getSurfacePoint(5,1),Z);
+  ModelSupport::buildPlane(SMap,vacIndex+13,getSurfacePoint(1,3),X);
+  ModelSupport::buildPlane(SMap,vacIndex+14,getSurfacePoint(1,4),X);
+  ModelSupport::buildPlane(SMap,vacIndex+15,getSurfacePoint(1,5),Z);
+  ModelSupport::buildPlane(SMap,vacIndex+16,getSurfacePoint(1,6),Z);
 
   // TERTIARY LAYER:
   ModelSupport::buildCylinder(SMap,vacIndex+21,
-			      getSurfacePoint(0,2)-Y*vacPosRadius,
+			      getSurfacePoint(2,1)-Y*vacPosRadius,
 			      Z,vacPosRadius);
   ModelSupport::buildCylinder(SMap,vacIndex+22,
-			      getSurfacePoint(1,2)+Y*vacNegRadius,
+			      getSurfacePoint(2,2)+Y*vacNegRadius,
 			      Z,vacNegRadius);
-  ModelSupport::buildPlane(SMap,vacIndex+23,getSurfacePoint(2,2),X);
-  ModelSupport::buildPlane(SMap,vacIndex+24,getSurfacePoint(3,2),X);
-  ModelSupport::buildPlane(SMap,vacIndex+25,getSurfacePoint(4,2),Z);
-  ModelSupport::buildPlane(SMap,vacIndex+26,getSurfacePoint(5,2),Z);
+  ModelSupport::buildPlane(SMap,vacIndex+23,getSurfacePoint(2,3),X);
+  ModelSupport::buildPlane(SMap,vacIndex+24,getSurfacePoint(2,4),X);
+  ModelSupport::buildPlane(SMap,vacIndex+25,getSurfacePoint(2,5),Z);
+  ModelSupport::buildPlane(SMap,vacIndex+26,getSurfacePoint(2,6),Z);
 
   // Outer AL LAYER:
   
   ModelSupport::buildCylinder(SMap,vacIndex+31,
-			      getSurfacePoint(0,3)-Y*vacPosRadius,
+			      getSurfacePoint(3,1)-Y*vacPosRadius,
 			      Z,vacPosRadius);
   ModelSupport::buildCylinder(SMap,vacIndex+32,
-			      getSurfacePoint(1,3)+Y*vacNegRadius,
+			      getSurfacePoint(3,2)+Y*vacNegRadius,
 			      Z,vacNegRadius);
-  ModelSupport::buildPlane(SMap,vacIndex+33,getSurfacePoint(2,3),X);
-  ModelSupport::buildPlane(SMap,vacIndex+34,getSurfacePoint(3,3),X);
-  ModelSupport::buildPlane(SMap,vacIndex+35,getSurfacePoint(4,3),Z);
-  ModelSupport::buildPlane(SMap,vacIndex+36,getSurfacePoint(5,3),Z);
+  ModelSupport::buildPlane(SMap,vacIndex+33,getSurfacePoint(3,3),X);
+  ModelSupport::buildPlane(SMap,vacIndex+34,getSurfacePoint(3,4),X);
+  ModelSupport::buildPlane(SMap,vacIndex+35,getSurfacePoint(3,5),Z);
+  ModelSupport::buildPlane(SMap,vacIndex+36,getSurfacePoint(3,6),Z);
 
   // Outer Clearance
   ModelSupport::buildCylinder(SMap,vacIndex+41,
-			      getSurfacePoint(0,4)-Y*vacPosRadius,
+			      getSurfacePoint(4,1)-Y*vacPosRadius,
 			      Z,vacPosRadius);
   ModelSupport::buildCylinder(SMap,vacIndex+42,
-			      getSurfacePoint(1,4)+Y*vacNegRadius,
+			      getSurfacePoint(4,2)+Y*vacNegRadius,
 			      Z,vacNegRadius);
 
-  ModelSupport::buildPlane(SMap,vacIndex+43,getSurfacePoint(2,4),X);
-  ModelSupport::buildPlane(SMap,vacIndex+44,getSurfacePoint(3,4),X);
-  ModelSupport::buildPlane(SMap,vacIndex+45,getSurfacePoint(4,4),Z);
-  ModelSupport::buildPlane(SMap,vacIndex+46,getSurfacePoint(5,4),Z);
+  ModelSupport::buildPlane(SMap,vacIndex+43,getSurfacePoint(4,3),X);
+  ModelSupport::buildPlane(SMap,vacIndex+44,getSurfacePoint(4,4),X);
+  ModelSupport::buildPlane(SMap,vacIndex+45,getSurfacePoint(4,5),Z);
+  ModelSupport::buildPlane(SMap,vacIndex+46,getSurfacePoint(4,6),Z);
 
   return;
 }
@@ -413,7 +413,7 @@ VacVessel::createLinks()
 
   // set Links:
   for(size_t i=2;i<6;i++)
-    FixedComp::setConnect(i,getSurfacePoint(i,4),getDirection(i));
+    FixedComp::setConnect(i,getSurfacePoint(4,i+1),getDirection(i));
 
   // Set Connect surfaces:
   for(int i=2;i<6;i++)
@@ -458,21 +458,25 @@ VacVessel::getDirection(const size_t side) const
 
 
 Geometry::Vec3D
-VacVessel::getSurfacePoint(const size_t side,const size_t layer) const
+VacVessel::getSurfacePoint(const size_t layer,
+			   const long int sideIndex) const
   /*!
     Get the center point for the surfaces in each layer
-    \param side :: Index to side (front/back/left/right/up/down)
     \param layer :: Layer number : 0 is inner 4 is outer
+    \param side :: Index to side (front/back/left/right/up/down)
     \return point on surface
   */
 {
   ELog::RegMethod RegA("VacVessel","getSurfacePoint");
 
-  if (side>5) 
-    throw ColErr::IndexError<size_t>(side,5,"sideIndex ");
+  if (std::abs(sideIndex)>6) 
+    throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex ");
   if (layer>4) 
-    throw ColErr::IndexError<size_t>(layer,4,"layer");
-  
+    throw ColErr::IndexError<size_t>(layer,5,"layer");
+
+  if (sideIndex==0) return Origin;
+
+  const size_t SI(static_cast<size_t>(std::abs(sideIndex))-1);
   const double frontDist[]={vacPosGap,alPos,terPos,outPos,clearPos};
   const double backDist[]={vacNegGap,alNeg,terNeg,outNeg,clearNeg};
   const double sideLDist[]={vacLSide,alSide,terSide,outSide,clearSide};
@@ -483,13 +487,13 @@ VacVessel::getSurfacePoint(const size_t side,const size_t layer) const
   const double* DPtr[]={frontDist,backDist,sideLDist,
 			sideRDist,topDist,baseDist};
 
-  const Geometry::Vec3D XYZ=getDirection(side);
+  const Geometry::Vec3D XYZ=getDirection(SI);
 
   double sumVec(0.0);
   for(size_t i=0;i<=layer;i++)
-    sumVec+=DPtr[side][i];
+    sumVec+=DPtr[SI][i];
   
-  return BVec[side]+XYZ*sumVec;
+  return BVec[SI]+XYZ*sumVec;
 }
 
 void

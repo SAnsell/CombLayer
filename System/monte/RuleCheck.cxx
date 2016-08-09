@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   monte/RuleCheck.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -99,7 +99,7 @@ RuleCheck::findKeyRule(const int SN,
     \param SN :: +ve surface number to search
     \param XRule :: Rule to cut
     \param posHeads :: Positive Key value
-    \param netHeads :: negative Key value
+    \param negHeads :: negative Key value
   */
 {
   ELog::RegMethod RegA("RuleCheck","findKeyRule");
@@ -189,7 +189,7 @@ RuleCheck::checkString(const Rule* TR,
     Iterate over the values
     \param TR :: TRuncated rule
     \param SurfSet :: Surface Set
-    \return String
+    \return String with validity for rule unit
   */
 {
   ELog::RegMethod RegA("RuleCheck","checkString");

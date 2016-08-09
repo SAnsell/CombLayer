@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   bibBuild/makeBib.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,6 +64,7 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "LayerComp.h"
@@ -99,7 +100,6 @@ makeBib::makeBib() :
   BeFilterBackward(new FilterBox("BeFilterBackward")),
 
   ColdMod2(new ColdH2Mod("ColdMod2")),
-  FBox(new FilterBox("FBox")),
   CWall(new ConcreteWall("ConcWall"))
  /*!
     Constructor
@@ -114,12 +114,47 @@ makeBib::makeBib() :
   OR.addObject(WatMod);
   OR.addObject(ColdMod);
   OR.addObject(ColdMod2);
-  OR.addObject(FBox);
   OR.addObject(BeFilterForward);
   OR.addObject(BeFilterBackward);
   OR.addObject(CWall);
 }
 
+makeBib::makeBib(const makeBib& A) : 
+  Rotor(A.Rotor),ProtonObj(A.ProtonObj),RefObj(A.RefObj),
+  WatMod(A.WatMod),ColdMod(A.ColdMod),BeFilterForward(A.BeFilterForward),
+  BeFilterBackward(A.BeFilterBackward),ColdMod2(A.ColdMod2),
+  GuideArray(A.GuideArray),ShieldArray(A.ShieldArray),
+  CWall(A.CWall)
+  /*!
+    Copy constructor
+    \param A :: makeBib to copy
+  */
+{}
+
+makeBib&
+makeBib::operator=(const makeBib& A)
+  /*!
+    Assignment operator
+    \param A :: makeBib to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      Rotor=A.Rotor;
+      ProtonObj=A.ProtonObj;
+      RefObj=A.RefObj;
+      WatMod=A.WatMod;
+      ColdMod=A.ColdMod;
+      BeFilterForward=A.BeFilterForward;
+      BeFilterBackward=A.BeFilterBackward;
+      ColdMod2=A.ColdMod2;
+      GuideArray=A.GuideArray;
+      ShieldArray=A.ShieldArray;
+      CWall=A.CWall;
+    }
+  return *this;
+}
 
 makeBib::~makeBib()
   /*!
@@ -131,7 +166,7 @@ void
 makeBib::buildGuideArray(Simulation& System,const int voidCell)
   /*!
     Construct the guide array system
-    \param SimPtr :: Simulation syste
+    \param System :: Simulation system
     \param voidCell :: Void cell number
    */
 
@@ -177,8 +212,8 @@ makeBib::buildGuideArray(Simulation& System,const int voidCell)
 void
 makeBib::buildShieldArray(Simulation& System)
   /*!
-    Construct the guide array system
-    \param SimPtr :: Simulation syste
+    Construct the guide array system (shielding)
+    \param System :: Simulation syste
    */
 {
   ELog::RegMethod RegA("makeBib","buildShieldArray");
@@ -199,11 +234,11 @@ makeBib::buildShieldArray(Simulation& System)
 }
 
 void 
-makeBib::build(Simulation* SimPtr,
+makeBib::build(Simulation& System,
 	       const mainSystem::inputParam& IParam)
   /*!
     Carry out the full build
-    \param SimPtr :: Simulation system
+    \param System :: Simulation system
     \param IParam :: Input parameters
    */
 {
@@ -213,43 +248,43 @@ makeBib::build(Simulation* SimPtr,
   int voidCell(74123);  // This number gets updated for things like a 
                         // void vessel
 
-  Rotor->createAll(*SimPtr,World::masterOrigin());
+  Rotor->createAll(System,World::masterOrigin());
 
-  RefObj->createAll(*SimPtr,*Rotor,8);
-  attachSystem::addToInsertSurfCtrl(*SimPtr,*RefObj,
+  RefObj->createAll(System,*Rotor,8);
+  attachSystem::addToInsertSurfCtrl(System,*RefObj,
 				  Rotor->getCC("Target"));
-  attachSystem::addToInsertForced(*SimPtr,*RefObj,
+  attachSystem::addToInsertForced(System,*RefObj,
 				 Rotor->getCC("Body"));
   CWall->addInsertCell(voidCell);
-  CWall->createAll(*SimPtr,*Rotor,8,*RefObj,2);
-  attachSystem::addToInsertSurfCtrl(*SimPtr,*CWall,
+  CWall->createAll(System,*Rotor,8,*RefObj,2);
+  attachSystem::addToInsertSurfCtrl(System,*CWall,
 				    Rotor->getCC("Body"));
   
   // first moderator
-  ColdMod->createAll(*SimPtr,*Rotor,12,1);
+  ColdMod->createAll(System,*Rotor,12,1);
 
-  attachSystem::addToInsertControl(*SimPtr,*RefObj,*ColdMod);
+  attachSystem::addToInsertControl(System,*RefObj,*ColdMod);
 
-  BeFilterForward->createAll(*SimPtr,*ColdMod,1);
-  attachSystem::addToInsertSurfCtrl(*SimPtr,*RefObj,*BeFilterForward);
+  BeFilterForward->createAll(System,*ColdMod,2);
+  attachSystem::addToInsertSurfCtrl(System,*RefObj,*BeFilterForward);
 
 
   ProtonObj->addInsertCell(voidCell);
-  ProtonObj->createAll(*SimPtr,*Rotor,13);
-  attachSystem::addToInsertForced(*SimPtr,*RefObj,*ProtonObj);
+  ProtonObj->createAll(System,*Rotor,13);
+  attachSystem::addToInsertForced(System,*RefObj,*ProtonObj);
 
   // Second moderator
-  ColdMod2->createAll(*SimPtr,*Rotor,12,11);
-  attachSystem::addToInsertControl(*SimPtr,*RefObj,*ColdMod2);
-  attachSystem::addToInsertSurfCtrl(*SimPtr,*ColdMod2,Rotor->getCC("Target"));
-  attachSystem::addToInsertForced(*SimPtr,*ProtonObj,*ColdMod2);
-  attachSystem::addToInsertForced(*SimPtr,*CWall,*ProtonObj);
+  ColdMod2->createAll(System,*Rotor,12,11);
+  attachSystem::addToInsertControl(System,*RefObj,*ColdMod2);
+  attachSystem::addToInsertSurfCtrl(System,*ColdMod2,Rotor->getCC("Target"));
+  attachSystem::addToInsertForced(System,*ProtonObj,*ColdMod2);
+  attachSystem::addToInsertForced(System,*CWall,*ProtonObj);
 
-  BeFilterBackward->createAll(*SimPtr,*ColdMod2,1);
-  attachSystem::addToInsertSurfCtrl(*SimPtr,*RefObj,*BeFilterBackward);
+  BeFilterBackward->createAll(System,*ColdMod2,2);
+  attachSystem::addToInsertSurfCtrl(System,*RefObj,*BeFilterBackward);
 
-  buildGuideArray(*SimPtr,voidCell);
-  buildShieldArray(*SimPtr);
+  buildGuideArray(System,voidCell);
+  buildShieldArray(System);
 
   return;
 }

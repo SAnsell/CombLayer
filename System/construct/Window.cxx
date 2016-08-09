@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   construct/Window.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -324,6 +324,10 @@ Window::setSize(const double H,const double W)
 
 void
 Window::setBaseCell(const int BNumber)
+  /*!
+    Define the included cell (for inclusion and link points)
+    \param BNumber :: Cell number
+  */
 {
   baseCell=BNumber;
   return;

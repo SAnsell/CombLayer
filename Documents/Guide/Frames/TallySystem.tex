@@ -17,7 +17,7 @@ primative but can remind the user of the bais
 \label{PointTally}
 
 Point tallies are fundamentally a 3D vector in space. In CombLayer,
-there are three levels of position available: (a) Real MCNPX output
+there are three levels of position available: (a) Real MCNP(X) output
 position, (b) CombLayer master origin position before master rotation,
 and (c) relative position to an object. Both (a) and (c) are well
 supported, however, to do option (b) there needs to be some real care
@@ -25,4 +25,13 @@ with the layout of the calling sequence in the main() function. The
 fullBuild.cxx example is a suitable option to follow, but checking
 will be needed.
 
-As
+\subsubsection{Free Point tally}
+
+The simplest way to put a point into CombLayer is to use a free point.
+\begin{bash}
+./prog -T point free 'Vec3D(300.0,10.0,5.0)' Output
+\end{bash}
+
+This creates a point tally at (300,10,5) in the final output using
+neutron tallies with the default energy and time binning system.
+

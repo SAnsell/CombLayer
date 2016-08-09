@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1Build/H2Pipe.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -192,7 +192,7 @@ H2Pipe::populate(const Simulation& System)
 
 void
 H2Pipe::createUnitVector(const attachSystem::FixedComp& CUnit,
-			     const size_t sideIndex)
+			     const long int sideIndex)
   /*!
     Create the unit vectors
     - X Across the moderator
@@ -204,14 +204,14 @@ H2Pipe::createUnitVector(const attachSystem::FixedComp& CUnit,
   ELog::RegMethod RegA("H2Pipe","createUnitVector");
 
   FixedComp::createUnitVector(CUnit);
-  Origin=CUnit.getLinkPt(sideIndex);
+  Origin=CUnit.getSignedLinkPt(sideIndex);
 
   return;
 }
 
 void 
 H2Pipe::insertOuter(Simulation& System,const attachSystem::FixedComp& FC,
-		    const size_t sideIndex)
+		    const long int sideIndex)
   /*!
     Add a pipe to the hydrogen system:
     \param System :: Simulation to add pipe to
@@ -266,7 +266,7 @@ H2Pipe::insertOuter(Simulation& System,const attachSystem::FixedComp& FC,
 void
 H2Pipe::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FUnit,
-		      const size_t sideIndex)
+		      const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation to create objects in

@@ -1,3 +1,24 @@
+/********************************************************************* 
+  CombLayer : MCNP(X) Input builder
+ 
+ * File:   essBuild/ButterflyModerator.cxx
+ *
+ * Copyright (c) 2004-2016 by Stuart Ansell
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ *
+ ****************************************************************************/
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -190,7 +211,7 @@ ButterflyModerator::createSurfaces()
 
 void
 ButterflyModerator::createObjects(Simulation& System)
-    /*!
+  /*!
     Adds the main components
     \param System :: Simulation to create objects in
   */
@@ -211,19 +232,22 @@ ButterflyModerator::createObjects(Simulation& System)
   
 
 int
-ButterflyModerator::getCommonSurf(const size_t) const
+ButterflyModerator::getCommonSurf(const long int) const
   /*!
     Only components have reference values
+    \return surface number
   */
+  
 {
   ELog::RegMethod RegA("ButterflyModerator","getCommonSurf");
   throw ColErr::AbsObjMethod("Not implemented yet");
 }
 
 int
-ButterflyModerator::getLayerSurf(const size_t,const size_t) const
-  /*!
+ButterflyModerator::getLayerSurf(const size_t,const long int) const
+/*!
     Only components have reference values
+    \return layer surface
   */
 {
   ELog::RegMethod RegA("ButterflyModerator","getLayerSurf");
@@ -231,9 +255,10 @@ ButterflyModerator::getLayerSurf(const size_t,const size_t) const
 }
 
 std::string
-ButterflyModerator::getLayerString(const size_t,const size_t) const
+ButterflyModerator::getLayerString(const size_t,const long int) const
   /*!
-    Only components have reference values
+    Only components have reference values [PLACEHOLDER]
+    \return surface string
   */
 {
   ELog::RegMethod RegA("ButterflyModerator","getLayerString");
@@ -242,7 +267,7 @@ ButterflyModerator::getLayerString(const size_t,const size_t) const
 
 Geometry::Vec3D
 ButterflyModerator::getSurfacePoint(const size_t,
-				    const size_t) const
+				    const long int) const
   /*!
     Given a side and a layer calculate the link point
     \param layerIndex :: layer, 0 is inner moderator [0-6]
@@ -257,7 +282,7 @@ ButterflyModerator::getSurfacePoint(const size_t,
 void
 ButterflyModerator::createLinks()
   /*!
-    Create linkes but currently incomplete
+    Create links but currently incomplete
   */
 {
   ELog::RegMethod RegA("ButterflyModerator","createLinks");
@@ -288,7 +313,9 @@ ButterflyModerator::createLinks()
   
 void
 ButterflyModerator::createExternal()
-  
+  /*!
+    Constructs the full outer exclude object 
+  */
 {
   ELog::RegMethod RegA("ButterflyModerator","createExternal");
 
@@ -300,6 +327,31 @@ ButterflyModerator::createExternal()
   
   return;
 }
+
+const attachSystem::FixedComp&
+ButterflyModerator::getComponent(const std::string& compName) const
+  /*!
+    Simple way to get a named component of this object
+    \param compName :: Component name
+    \return FixedComp object
+  */
+{
+  ELog::RegMethod RegA("ButterflyModerator","getComponent");
+
+  const std::string TStr=keyName+compName;
+  if (TStr==LeftUnit->getKeyName())
+    return *LeftUnit;
+  if (TStr==RightUnit->getKeyName())
+    return *RightUnit;
+  if (TStr==MidWater->getKeyName())
+    return *MidWater;
+  if (TStr==LeftWater->getKeyName())
+    return *LeftWater;
+  if (TStr==RightWater->getKeyName())
+    return *RightWater;
+  throw ColErr::InContainerError<std::string>(compName,keyName+" component");
+}
+
   
 void
 ButterflyModerator::createAll(Simulation& System,
@@ -323,14 +375,11 @@ ButterflyModerator::createAll(Simulation& System,
   LeftUnit->createAll(System,*this);
   RightUnit->createAll(System,*this);
   MidWater->createAll(System,*this,*LeftUnit,*RightUnit);
-  
-  std::string CutString=LeftUnit->getSignedLinkString(2);
+    
   const std::string Exclude=
     ModelSupport::getComposite(SMap,flyIndex," -7 5 -6 ");
-  LeftWater->createAll(System,*this,CutString,Exclude);
-
-  CutString=RightUnit->getSignedLinkString(2);
-  RightWater->createAll(System,*this,CutString,Exclude);
+  LeftWater->createAll(System,*LeftUnit,2,Exclude);
+  RightWater->createAll(System,*RightUnit,2,Exclude);
 
   Origin=MidWater->getCentre();
   createExternal();  // makes intermediate 
@@ -341,8 +390,6 @@ ButterflyModerator::createAll(Simulation& System,
   
   return;
 }
-
-
 
 
 }  // NAMESPACE essSystem

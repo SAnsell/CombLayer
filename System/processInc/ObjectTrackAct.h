@@ -42,7 +42,7 @@ namespace ModelSupport
   \version 1.0
   \author S. Ansell
   \date November 2010
-  \brief Object to Point 
+  \brief Object to Point / Plane etc
 
   This takes a simulation after each vertex point has been calculated
   for the given object.
@@ -52,31 +52,25 @@ namespace ModelSupport
   -- Support calculations based on the ObjTrackItem.
 */
 
+
 class ObjectTrackAct
 {
- private:
+ protected:
 
   /// Storage type for line units
   typedef std::map<long int,LineTrack> itemTYPE;
-  /// Target point
-  Geometry::Vec3D TargetPt;  
   /// Main data information set [Object : ItemTrack]
   itemTYPE Items; 
   
  public:
 
-  ObjectTrackAct(const Geometry::Vec3D&);
+  ObjectTrackAct();
   ObjectTrackAct(const ObjectTrackAct&);
   ObjectTrackAct& operator=(const ObjectTrackAct&);  
   /// Destructor
-  ~ObjectTrackAct() {}
+  virtual ~ObjectTrackAct() {}
 
   void clearAll();
-  //  void addDistance(const int,const int,const double);
-  /// Set target point
-  void setTarget(const Geometry::Vec3D& Pt) { TargetPt=Pt; }
-
-  void addUnit(const Simulation&,const long int,const Geometry::Vec3D&);
 
   double getMatSum(const long int) const;
   double getAttnSum(const long int) const;
@@ -84,7 +78,7 @@ class ObjectTrackAct
   /// Debug function effectivley
   //  const std::map<int,ObjTrackItem>& getMap() const { return Items; }
   void createAttenPath(std::vector<long int>&,std::vector<double>&) const;
-  void write(std::ostream&) const;
+  virtual void write(std::ostream&) const =0;
 
 };
 

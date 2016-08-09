@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   buildInc/BulkInsert.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,6 +42,7 @@ class BulkInsert : public attachSystem::TwinComp,
 {
  protected:
 
+  const std::string baseName;         ///< Base name
   const size_t shutterNumber;         ///< number of the shutter
   const int surfIndex;                ///< Index of the surface
   int cellIndex;                      ///< Index of the cells
@@ -81,7 +82,7 @@ class BulkInsert : public attachSystem::TwinComp,
   // FUNCTIONS:
   //--------------
 
-  void populate(const Simulation&,
+  void populate(const FuncDataBase&,
 		const shutterSystem::GeneralShutter&);
   void createUnitVector(const shutterSystem::GeneralShutter&);
   void createSurfaces();

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   processInc/boxUnit.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,12 +57,14 @@ class boxUnit : public attachSystem::FixedComp,
   Geometry::Vec3D XUnit;    ///< X point Axis
   Geometry::Vec3D ZUnit;    ///< Z point Axis
 
-  HeadRule initSurf;        ///< initial surface [sqr]
+  HeadRule ASurf;           ///< Start point rule if used [inward facing]
+  HeadRule BSurf;           ///< End point rule if used [inward facing]
   double maxExtent;         ///< longest length
 
   size_t activeFlag;           ///< Flag for active layers
   std::vector<boxValues> boxVar;      ///< Cylinder variables
   size_t nSides;               ///< Number of sides
+  std::set<int> cellCut;        ///< Cells the pipe 
 
 
   void calcNorm(const int,const Geometry::Vec3D&,
@@ -82,7 +84,7 @@ class boxUnit : public attachSystem::FixedComp,
   double getTanAngle(const Geometry::Vec3D&) const;
   Geometry::Vec3D getAExtra() const;
   Geometry::Vec3D getBExtra() const;
-  std::string getFaces() const;
+  std::string createCaps() const;
 
   // Main build
   void populate(const size_t,const std::vector<boxValues>&);
@@ -108,11 +110,15 @@ class boxUnit : public attachSystem::FixedComp,
   /// Access Axis vector
   const Geometry::Vec3D& getAxis() const { return Axis; }
   const Geometry::Vec3D& getPt(const int) const;
+  const HeadRule& getCap(const int) const;
 
-  /// Set surface number
+  void clearInsertSet();
+  void addInsertSet(const std::set<int>&);
 
-  void setInitSurf(const std::string&);
+
   void setPoints(const Geometry::Vec3D&,const Geometry::Vec3D&);
+  void setASurf(const HeadRule&);
+  void setBSurf(const HeadRule&);
   void setZUnit(const Geometry::Vec3D&);
   void connectFrom(boxUnit*);
   void connectTo(boxUnit*);

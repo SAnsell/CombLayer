@@ -386,7 +386,8 @@ createBeamSource(const FuncDataBase& Control,
   
 void
 createGammaSource(const FuncDataBase& Control,
-		  const std::string& keyName,Source& Card)
+		  const std::string& keyName,
+                  Source& Card)
   /*!
     Create the photon source for gamma-nuclea spectrum
     nuclear experiment source
@@ -416,7 +417,7 @@ createGammaSource(const FuncDataBase& Control,
     \param Card :: Source system
    */
 {
-  ELog::RegMethod RegA("SourceCreate","createGammaSource(FC,link)");
+  ELog::RegMethod RegA("SourceCreate[F]","createGammaSource(FC,link)");
   GammaSource GX(keyName);
 
   GX.createAll(Control,FC,linkIndex,Card);

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   construct/tubeUnit.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,6 @@
 #include <string>
 #include <algorithm>
 #include <memory>
-#include <boost/bind.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -243,6 +242,7 @@ tubeUnit::getMapIndex(const size_t I)
     Determines the relative map index based on the iteration
     value
     \param I :: Index value
+    \return flag value
   */
 {
   switch (I)
@@ -338,7 +338,8 @@ tubeUnit::getCell(const ModelSupport::surfRegister& SMap,
     from the centre out
     \param SMap :: surface register for the build region
     \param cylIindex :: index of cylindrical layer 
-   */
+    \return cell string [object unit]
+  */
 {
   ELog::RegMethod RegA("tubeUnit","getCell");
 
@@ -376,6 +377,10 @@ tubeUnit::getCell(const ModelSupport::surfRegister& SMap,
 
 std::string
 tubeUnit::writeID() const
+  /*!
+    Write out 2D-identify
+    \return ID : Index-spc-Index
+  */
 {
   std::ostringstream cx;
   cx<<iA<<" "<<iB;

@@ -3,7 +3,7 @@
  
  * File:   weightsInc/WWG.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +32,13 @@ class Simulation;
 namespace WeightSystem
 {
 
+  /*!
+    \class WWG 
+    \author S. Ansell
+    \version 1.0
+    \date Jan 2016
+    \brief Storage for WWG output
+  */
   
 class WWG 
 {
@@ -51,7 +58,7 @@ class WWG
   int switchn;         ///< read from wwinp file
   
   std::vector<double> EBin;      ///< Energy bins
-  WeightMesh Grid;               ///< Mesh Grid
+  Geometry::Mesh3D Grid;         ///< Mesh Grid
 
   std::vector<std::vector<double>> WMesh;     ///< linearized weight mesh
 
@@ -65,13 +72,14 @@ class WWG
   WWG& operator=(const WWG&);
 
   /// access to grid
-  WeightMesh& getGrid() { return Grid; }
+  Geometry::Mesh3D& getGrid() { return Grid; }
   /// access to grid
-  const WeightMesh& getGrid() const { return Grid; }
+  const Geometry::Mesh3D& getGrid() const { return Grid; }
   /// Access to EBin
   const std::vector<double>& getEBin() const { return EBin; }
-  void setEnergyBin(const std::vector<double>&);
-  void resetMesh();
+  void setEnergyBin(const std::vector<double>&,
+		    const std::vector<double>&);
+  void resetMesh(const std::vector<double>&);
 
 
   void scaleMeshItem(const long int,const std::vector<double>&);

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   snsBuild/makeSNS.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -104,7 +104,7 @@ makeSNS::~makeSNS()
 
 void 
 makeSNS::build(Simulation* SimPtr,
-	       const mainSystem::inputParam& IParam)
+	       const mainSystem::inputParam&)
   /*!
     Carry out the full build
     \param SimPtr :: Simulation system

@@ -3,7 +3,7 @@
  
  * File:   process/volUnit.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,7 +58,7 @@ operator<<(std::ostream& OX,const volUnit& A)
 }
 
 volUnit::volUnit() : 
-  npts(0),lineSum(0.0)
+  npts(0),lineSum(0.0),matNum(0)
   /*!
     Constructor
   */
@@ -113,16 +113,15 @@ volUnit::~volUnit()
 {}
 
 void 
-volUnit::setCells(const std::vector<int>& C)
+volUnit::setCells(const std::vector<int>& CIndex)
   /*!
     Set the cell list
-    \param C :: Cell indexes
+    \param CIndex :: Cell indexes
   */
 {
   cells.erase(cells.begin(),cells.end());
-  std::vector<int>::const_iterator vc;
-  for(vc=C.begin();vc!=C.end();vc++)
-    cells.insert(*vc);
+  for(const int CN : CIndex)
+    cells.insert(CN);
 
   return;
 }

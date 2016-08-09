@@ -3,7 +3,7 @@
  
  * File:   process/ObjectTrackAct.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -77,15 +77,14 @@ operator<<(std::ostream& OX,const ObjectTrackAct& A)
   return OX;
 }
 
-ObjectTrackAct::ObjectTrackAct(const Geometry::Vec3D& PtA) :
-  TargetPt(PtA)
+ObjectTrackAct::ObjectTrackAct() 
   /*! 
     Constructor 
   */
 {}
 
 ObjectTrackAct::ObjectTrackAct(const ObjectTrackAct& A) :
-  TargetPt(A.TargetPt),Items(A.Items)
+  Items(A.Items)
    /*! 
     Copy Constructor 
     \param A :: ObjectTrackAct to copy
@@ -103,7 +102,6 @@ ObjectTrackAct::operator=(const ObjectTrackAct& A)
 {
   if (this!=&A)
     {
-      TargetPt=A.TargetPt;
       Items=A.Items;
     }
   return *this;
@@ -119,29 +117,6 @@ ObjectTrackAct::clearAll()
   return;
 }
 
-void
-ObjectTrackAct::addUnit(const Simulation& System,
-			const long int objN,
-			const Geometry::Vec3D& IPt)
-  /*!
-    Create a target track between the IPt and the target point
-    \param System :: Simulation to use
-    \param objN :: Index of object
-    \param IPt :: initial point
-  */
-{
-  ELog::RegMethod RegA("ObjectTrackAct","addUnit");
-
-  // Remove old track
-  std::map<long int,LineTrack>::iterator mc=Items.find(objN);
-  if (mc!=Items.end())
-    Items.erase(mc);
-
-  LineTrack A(IPt,TargetPt);
-  A.calculate(System);
-  Items.insert(std::map<long int,LineTrack>::value_type(objN,A));
-  return;
-}  
 
 double
 ObjectTrackAct::getMatSum(const long int objN) const

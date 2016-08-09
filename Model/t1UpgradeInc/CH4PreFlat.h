@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1UpgradeInc/CH4PreFlat.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -76,11 +76,11 @@ class CH4PreFlat : public CH4PreModBase
   virtual CH4PreFlat* clone() const;
 
   virtual Geometry::Vec3D 
-    getSurfacePoint(const size_t,const size_t) const;
+    getSurfacePoint(const size_t,const long int) const;
   virtual int 
-    getLayerSurf(const size_t,const size_t) const;
+    getLayerSurf(const size_t,const long int) const;
   virtual std::string 
-    getLayerString(const size_t,const size_t) const;
+    getLayerString(const size_t,const long int) const;
 
   
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,

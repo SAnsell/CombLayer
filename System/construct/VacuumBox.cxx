@@ -3,7 +3,7 @@
  
  * File:   construct/VacuumBox.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -87,8 +87,59 @@ VacuumBox::VacuumBox(const std::string& Key,
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
+    \param flag :: true if the box is centred on coordinates
   */
 {}
+
+VacuumBox::VacuumBox(const VacuumBox& A) : 
+  attachSystem::FixedOffset(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),
+  centreConstruct(A.centreConstruct),vacIndex(A.vacIndex),
+  cellIndex(A.cellIndex),voidHeight(A.voidHeight),
+  voidWidth(A.voidWidth),voidDepth(A.voidDepth),
+  voidLength(A.voidLength),feHeight(A.feHeight),
+  feDepth(A.feDepth),feWidth(A.feWidth),feFront(A.feFront),
+  feBack(A.feBack),flangeRadius(A.flangeRadius),
+  flangeLength(A.flangeLength),flangeWall(A.flangeWall),
+  voidMat(A.voidMat),feMat(A.feMat)
+  /*!
+    Copy constructor
+    \param A :: VacuumBox to copy
+  */
+{}
+
+VacuumBox&
+VacuumBox::operator=(const VacuumBox& A)
+  /*!
+    Assignment operator
+    \param A :: VacuumBox to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedOffset::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      cellIndex=A.cellIndex;
+      voidHeight=A.voidHeight;
+      voidWidth=A.voidWidth;
+      voidDepth=A.voidDepth;
+      voidLength=A.voidLength;
+      feHeight=A.feHeight;
+      feDepth=A.feDepth;
+      feWidth=A.feWidth;
+      feFront=A.feFront;
+      feBack=A.feBack;
+      flangeRadius=A.flangeRadius;
+      flangeLength=A.flangeLength;
+      flangeWall=A.flangeWall;
+      voidMat=A.voidMat;
+      feMat=A.feMat;
+    }
+  return *this;
+}
 
 VacuumBox::~VacuumBox() 
   /*!
@@ -203,7 +254,6 @@ VacuumBox::createObjects(Simulation& System)
   /*!
     Adds the vacuum box
     \param System :: Simulation to create objects in
-    \param FC :: FixedComp of front face
    */
 {
   ELog::RegMethod RegA("VacuumBox","createObjects");
@@ -264,7 +314,7 @@ VacuumBox::createLinks()
   FixedComp::setConnect(0,Origin-Y*(flangeLength+voidLength/2.0),-Y);
   FixedComp::setConnect(1,Origin+Y*(flangeLength+voidLength/2.0),Y);
   FixedComp::setConnect(2,Origin-X*((feWidth+voidWidth)/2.0),-X);
-  FixedComp::setConnect(3,Origin+X*((feWidth+voidWidth)/2.0),-X);
+  FixedComp::setConnect(3,Origin+X*((feWidth+voidWidth)/2.0),X);
   FixedComp::setConnect(4,Origin-Z*(feDepth+voidDepth),-Z);
   FixedComp::setConnect(5,Origin+Z*(feHeight+voidHeight),Z);  
 

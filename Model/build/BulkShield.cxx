@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   build/BulkShield.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -318,21 +318,22 @@ BulkShield::createShutters(Simulation& System,
     {
       if (i==chipShutter && chipFlag)
 	GData.push_back(std::shared_ptr<GeneralShutter>
-			(new ChipIRShutterFlat(i,"shutter","chipShutter")));
+			(new ChipIRShutterFlat(i+1,"shutter","chipShutter")));
       else if (i==imatShutter && imatFlag)
 	GData.push_back(std::shared_ptr<GeneralShutter>
-			(new IMatShutter(i,"shutter","imatShutter")));
+			(new IMatShutter(i+1,"shutter","imatShutter")));
       else if (i==zoomShutter && zoomFlag)
 	GData.push_back(std::shared_ptr<GeneralShutter>
-			(new ZoomShutter(i,"shutter","zoomShutter")));
+			(new ZoomShutter(i+1,"shutter","zoomShutter")));
       else if (i==letShutter && letFlag)
 	GData.push_back(std::shared_ptr<GeneralShutter>
-			(new BlockShutter(i,"shutter","letShutter")));
+			(new BlockShutter(i+1,"shutter","letShutter")));
       else
 	GData.push_back(std::shared_ptr<GeneralShutter>
-			(new GeneralShutter(i,"shutter")));
-      // Not registered under KeyName 
-      OR.addObject(StrFunc::makeString(std::string("shutter"),i),GData.back());
+			(new GeneralShutter(i+1,"shutter")));
+      OR.addObject(GData.back());
+      //      OR.addObject(StrFunc::makeString(std::string("shutter"),i),
+      //      GData.back());
     }
 
   MonteCarlo::Qhull* shutterObj=System.findQhull(shutterCell);
@@ -346,7 +347,7 @@ BulkShield::createShutters(Simulation& System,
 			    SMap.realSurf(bulkIndex+6),
 			    SMap.realSurf(bulkIndex+5));
       GData[i]->setDivide(40000);
-      GData[i]->createAll(System,0.0,0);    
+      GData[i]->createAll(System,0.0,0);
       shutterObj->addSurfString(GData[i]->getExclude());
     }
 
@@ -356,41 +357,44 @@ BulkShield::createShutters(Simulation& System,
 void
 BulkShield::createBulkInserts(Simulation& System,
 			      const mainSystem::inputParam& IParam)
-  /*!
+/*!
     Construct and build all the bulk insert
     \param System :: Simulation to use
     \param IParam :: Input parameters
   */
 {
   ELog::RegMethod RegA("BulkShield","createBulkInserts");
+  
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
   
   const bool chipFlag(!IParam.flag("exclude") || 
 		      !IParam.compValue("E",std::string("chipIR")));
   const bool imatFlag(!IParam.flag("exclude") || 
-   		      (!IParam.compValue("E",std::string("Imat")) &&
+   		      (!IParam.compValue("E",std::string("imat")) &&
 		       !IParam.compValue("E",std::string("IMat"))) );
 
   for(size_t i=0;i<numberBeamLines;i++)
     {
       std::shared_ptr<BulkInsert> BItem;
-      
       if (i==chipShutter && chipFlag)
-	BItem=std::shared_ptr<BulkInsert>
-	       (new ChipIRInsert(i,"bulkInsert","chipInsert"));
+	{
+	  BItem=std::shared_ptr<BulkInsert>
+	    (new ChipIRInsert(i,"bulkInsert","chipInsert"));
+	}
       else if (i==imatShutter && imatFlag)
 	BItem=std::shared_ptr<BulkInsert>
 	  (new IMatBulkInsert(i,"bulkInsert","imatInsert"));
       else
 	BItem=std::shared_ptr<BulkInsert>(new BulkInsert(i,"bulkInsert"));
 
+
       BItem->setLayers(innerCell,outerCell);
       BItem->setExternal(SMap.realSurf(bulkIndex+17),
 			 SMap.realSurf(bulkIndex+27),
 			 SMap.realSurf(bulkIndex+37) );
       BItem->createAll(System,*GData[static_cast<size_t>(i)]);    
-      OR.addObject(BItem->getKeyName()+StrFunc::makeString(i),BItem);
+      OR.addObject(BItem->getKeyName(),BItem);
       BData.push_back(BItem);
     }
   return;

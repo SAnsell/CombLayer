@@ -3,7 +3,7 @@
  
  * File:   physics/PWTConstructor.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,6 +49,7 @@
 #include "Triple.h"
 #include "support.h"
 #include "stringCombine.h"
+#include "NList.h"
 #include "NRange.h"
 #include "Tally.h"
 #include "TallyCreate.h"
@@ -121,10 +122,10 @@ PWTConstructor::procZone(std::vector<std::string>& StrItem)
       const ModelSupport::objectRegister& OR= 
 	ModelSupport::objectRegister::Instance();
       const int cellN=OR.getCell(StrItem[1]);
-      const int rangeN=OR.getRange(StrItem[1]);
+      const int cellE=OR.getLast(StrItem[1]);
       if (cellN==0)
 	throw ColErr::InContainerError<std::string>(StrItem[1],"Object name");
-      Zones.push_back(MapSupport::Range<int>(cellN,cellN+rangeN));
+      Zones.push_back(MapSupport::Range<int>(cellN,cellE));
       cut=2;
     }
   else if (NS>=2 && StrItem[0]=="Cells")
@@ -200,7 +201,7 @@ PWTConstructor::procType(std::vector<std::string>& StrItem,
   /*!
     Process the Type information
     \param StrItem :: List of item from the input [Used items erased]
-    \param EX :: Control card to place data [and zone]
+    \param PWT :: Control card to place data [and zone]
     \return true on success 
   */
 {

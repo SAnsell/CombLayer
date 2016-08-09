@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   delft/BeamTube.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -153,7 +153,7 @@ void
 BeamTube::populate(const FuncDataBase& Control)
  /*!
    Populate all the variables
-   \param System :: Simulation to use
+   \param Control :: Database to used
  */
 {
   ELog::RegMethod RegA("BeamTube","populate");
@@ -527,7 +527,7 @@ BeamTube::createAll(Simulation& System,const attachSystem::FixedComp& FC,
     Global creation of the vac-vessel
     \param System :: Simulation to add vessel to
     \param FC :: Moderator Object
-    \param sideIndex :: Side index
+    \param PAxis :: directional axis
   */
 {
   ELog::RegMethod RegA("BeamTube","createAll");

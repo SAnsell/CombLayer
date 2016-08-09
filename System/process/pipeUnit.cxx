@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   process/pipeUnit.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -433,7 +433,6 @@ pipeUnit::insertObjects(Simulation& System)
     from creation since we need to determine those object that 
     need to have an exclude item added to them.
     \param System :: Simulation to add object to
-    \param cellIndex :: Cell index to use
   */
 {
   ELog::RegMethod RegA("pipeUnit","insertObjects");
@@ -448,18 +447,15 @@ pipeUnit::insertObjects(Simulation& System)
   Axis.makeUnit();
   const Geometry::Vec3D AX(Axis.crossNormal());
   const Geometry::Vec3D AY(AX*Axis);
-  const double radius=getOuterRadius();
+  double radius=getOuterRadius()+0.001;
+  if (prev && std::abs(prev->getOuterRadius()-radius)<10.0*Geometry::zeroTol)
+    radius+=Geometry::zeroTol*100;  
 
   const double angleStep(2*M_PI/nAngle);
   double angle(0.0);
-  Geometry::Vec3D addVec;
-
+  Geometry::Vec3D addVec(0,0,0);
   for(size_t i=0;i<=nAngle;angle+=angleStep,i++)
     {
-      addVec=(i<nAngle) 
-	? AX*cos(angle)*radius+AY*sin(angle)*radius 
-	: Geometry::Vec3D(0,0,0);
-      
       // Calculate central track
       LineTrack LT(APt+addVec,BPt+addVec);
       LT.calculate(System);
@@ -467,12 +463,15 @@ pipeUnit::insertObjects(Simulation& System)
       const std::vector<MonteCarlo::Object*>& OVec=LT.getObjVec();
       std::vector<MonteCarlo::Object*>::const_iterator oc;
 
+      int debugCnt(0);
       for(MonteCarlo::Object* oc : OVec)
 	{	  
 	  const int ONum=oc->getName();
 	  if (OMap.find(ONum)==OMap.end())
-	    OMap.insert(MTYPE::value_type(ONum,oc));
+	    OMap.emplace(ONum,oc);
 	}
+      // set for next angle
+      addVec=AX*(cos(angle)*radius)+AY*(sin(angle)*radius);
     }
 
   // add extra cells from insert forced list [cellCut]

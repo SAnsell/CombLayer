@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   delft/RElement.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,6 +64,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 
 #include "FuelLoad.h"
@@ -75,7 +76,7 @@ namespace delftSystem
 
 RElement::RElement(const size_t XI,const size_t YI,
 		   const std::string& Key) : 
-  attachSystem::FixedComp(Key,6),
+  attachSystem::FixedOffset(Key,6),
   attachSystem::ContainedComp(),
   XIndex(XI),YIndex(YI),
   surfIndex(ModelSupport::objectRegister::Instance().
@@ -90,11 +91,9 @@ RElement::RElement(const size_t XI,const size_t YI,
 {}
 
 RElement::RElement(const RElement& A) : 
-  attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
+  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
   XIndex(A.XIndex),YIndex(A.YIndex),surfIndex(A.surfIndex),
-  cellIndex(A.cellIndex),insertCell(A.insertCell),
-  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  xyAngle(A.xyAngle),zAngle(A.zAngle)
+  cellIndex(A.cellIndex),insertCell(A.insertCell)
   /*!
     Copy constructor
     \param A :: RElement to copy
@@ -111,15 +110,10 @@ RElement::operator=(const RElement& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       cellIndex=A.cellIndex;
       insertCell=A.insertCell;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
     }
   return *this;
 }
@@ -161,4 +155,4 @@ RElement::getItemKeyName() const
 
 
 
-} // NAMESPACE shutterSystem
+} // NAMESPACE delftSystem

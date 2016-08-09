@@ -3,7 +3,7 @@
  
  * File:   delft/Rabbit.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,6 +70,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "FuelLoad.h"
 #include "ReactorGrid.h"
@@ -80,21 +81,21 @@ namespace delftSystem
 
 Rabbit::Rabbit(const std::string& Key,const int index)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedComp(Key+StrFunc::makeString(index),3),
+  attachSystem::FixedOffset(Key+StrFunc::makeString(index),3),
   baseName(Key),
   rabbitIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
   cellIndex(rabbitIndex+1),innerVoid(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
+    \param index :: ID number
   */
 {}
 
 Rabbit::Rabbit(const Rabbit& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   baseName(A.baseName),rabbitIndex(A.rabbitIndex),
-  cellIndex(A.cellIndex),xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  xyAngle(A.xyAngle),zAngle(A.zAngle),nLayer(A.nLayer),
+  cellIndex(A.cellIndex),nLayer(A.nLayer),
   Radii(A.Radii),Mat(A.Mat),length(A.length),capThick(A.capThick),
   capMat(A.capMat),innerVoid(A.innerVoid)
   /*!
@@ -116,11 +117,6 @@ Rabbit::operator=(const Rabbit& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
       cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
       nLayer=A.nLayer;
       Radii=A.Radii;
       Mat=A.Mat;
@@ -139,58 +135,50 @@ Rabbit::~Rabbit()
  */
 {}
 
-int
+void
 Rabbit::populate(const FuncDataBase& Control)
  /*!
    Populate all the variables
-   \param System :: Simulation to use
+   \param Control :: DataBase
  */
 {
   ELog::RegMethod RegA("Rabbit","populate");
 
-
-  if (!Control.hasVariable(keyName+"GridKey"))
-    return 0;
-
-  objName=Control.EvalVar<std::string>(keyName+"GridKey");
+  if (Control.hasVariable(keyName+"GridKey"))
+    {
+      FixedOffset::populate(Control);
   
-  // First get inner widths:
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-
-  xyAngle=Control.EvalVar<double>(keyName+"XYAngle");
-  zAngle=Control.EvalVar<double>(keyName+"ZAngle");
-
-  length=Control.EvalPair<double>(keyName,baseName,"Length");
-  capThick=Control.EvalPair<double>(keyName,baseName,"CapThick");
-  capMat=ModelSupport::EvalMat<int>(Control,keyName+"CapMat",
-				    baseName+"CapMat");
-
-  nLayer=Control.EvalPair<size_t>(keyName,baseName,"NLayer");
-  double D;
-  int M;
-  for(size_t i=0;i<nLayer;i++)
-    { 
-      const std::string mName="Mat"+StrFunc::makeString(i);
-      D=Control.EvalPair<double>(keyName,baseName,
-				 "Radius"+StrFunc::makeString(i));
-      M=ModelSupport::EvalMat<int>(Control,keyName+mName,baseName+mName);
-
-      Radii.push_back(D);
-      Mat.push_back(M);
+      objName=Control.EvalVar<std::string>(keyName+"GridKey");
+      // First get inner widths:
+      length=Control.EvalPair<double>(keyName,baseName,"Length");
+      capThick=Control.EvalPair<double>(keyName,baseName,"CapThick");
+      capMat=ModelSupport::EvalMat<int>(Control,keyName+"CapMat",
+					baseName+"CapMat");
+      
+      nLayer=Control.EvalPair<size_t>(keyName,baseName,"NLayer");
+      double D;
+      int M;
+      for(size_t i=0;i<nLayer;i++)
+	{ 
+	  const std::string mName="Mat"+StrFunc::makeString(i);
+	  D=Control.EvalPair<double>(keyName,baseName,
+				     "Radius"+StrFunc::makeString(i));
+	  M=ModelSupport::EvalMat<int>(Control,keyName+mName,baseName+mName);
+	  
+	  Radii.push_back(D);
+	  Mat.push_back(M);
+	}
+      
+      sampleRadius=Control.EvalPair<double>(keyName,baseName,"SampleRadius");
+      sampleMat=ModelSupport::EvalMat<int>(Control,keyName+"SampleMat",
+					   baseName+"SampleMat");
+      capsuleRadius=Control.EvalPair<double>(keyName,baseName,"CapsuleRadius");
+      capsuleWall=Control.EvalPair<double>(keyName,baseName,"CapsuleWall");
+      capsuleLen=Control.EvalPair<double>(keyName,baseName,"CapsuleLen");
+      capsuleMat=ModelSupport::EvalMat<int>(Control,keyName+"CapsuleMat",
+					    baseName+"CapsuleMat");
     }
-
-  sampleRadius=Control.EvalPair<double>(keyName,baseName,"SampleRadius");
-  sampleMat=ModelSupport::EvalMat<int>(Control,keyName+"SampleMat",
-				       baseName+"SampleMat");
-  capsuleRadius=Control.EvalPair<double>(keyName,baseName,"CapsuleRadius");
-  capsuleWall=Control.EvalPair<double>(keyName,baseName,"CapsuleWall");
-  capsuleLen=Control.EvalPair<double>(keyName,baseName,"CapsuleLen");
-  capsuleMat=ModelSupport::EvalMat<int>(Control,keyName+"CapsuleMat",
-					baseName+"CapsuleMat");
-
-  return 1;
+  return;
 }
   
 
@@ -212,28 +200,29 @@ Rabbit::createUnitVector(const ReactorGrid& RG)
 
   const std::pair<size_t,size_t> GPt=RG.getElementNumber(objName);
   Origin=RG.getCellOrigin(GPt.first,GPt.second);
+  FixedOffset::applyOffset();
 
-  attachSystem::FixedComp::applyShift(xStep,yStep,zStep);
-  attachSystem::FixedComp::applyAngleRotate(xyAngle,zAngle);
   return;
 }
 
 void
-Rabbit::createUnitVector(const attachSystem::FixedComp& FC)
+Rabbit::createUnitVector(const attachSystem::FixedComp& FC,
+			 const long int sideIndex)
   /*!
     Create the unit vectors
     - Y Points towards the beamline
     - X Across the Face
     - Z up (towards the target)
     \param FC :: A Contained FixedComp to use as basis set
+    \param sideIndex :: link point [signed]
   */
 {
   ELog::RegMethod RegA("Rabbit","createUnitVector");
-  
+
   // PROCESS Origin of a point
-  attachSystem::FixedComp::createUnitVector(FC);
-  attachSystem::FixedComp::applyShift(xStep,yStep,zStep);
-  attachSystem::FixedComp::applyAngleRotate(xyAngle,zAngle);
+  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
+  FixedOffset::applyOffset();
+		
   return;
 }
 
@@ -378,17 +367,21 @@ Rabbit::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("Rabbit","createAll");
-  if (!populate(System.getDataBase()))
-    return 0;
-  
-  createUnitVector(RG);
-  createSurfaces();
-  createObjects(System);
-  createLinks();
-  insertObjects(System);       
+  populate(System.getDataBase());
+  if (!objName.empty())
+    {
+      createUnitVector(RG);
+      createSurfaces();
+      createObjects(System);
+      createLinks();
+      insertObjects(System);
+      return 1;
+    }
+  return 0;
+      
 
-  return 1;
 }
 
 
 } // NAMESPACE delftSystem
+

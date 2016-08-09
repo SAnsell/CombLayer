@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   construct/hexUnit.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,6 @@
 #include <string>
 #include <algorithm>
 #include <memory>
-#include <boost/bind.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -238,7 +237,8 @@ hexUnit::nLinks() const
 {
   return static_cast<size_t>
     (std::count_if(surfKey.begin(),surfKey.end(),
-		   boost::bind(std::not_equal_to<int>(),_1,0)));
+                   std::bind(std::not_equal_to<int>(),
+                             std::placeholders::_1,0)));
 }
 
 void
@@ -301,4 +301,4 @@ hexUnit::write(std::ostream& OX) const
   return;
 }
   
-}  // NAMESPACE shutterSystem
+}  // NAMESPACE constructSystem

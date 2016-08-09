@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   delftInc/SwimingPool.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,8 @@ namespace delftSystem
 */
 
 class SwimingPool : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+  public attachSystem::FixedOffset,
+  public attachSystem::CellMap
 {
  private:
   
@@ -48,10 +49,6 @@ class SwimingPool : public attachSystem::ContainedComp,
   double base;                  ///< Base distance 
   double surface;               ///< Surface distance
   
-  double xStep;                 ///< Centre step in X
-  double yStep;                 ///< Centre step in Y
-  double zStep;                 ///< Centre step in Z
-
   double frontWidth;            ///< front cut plane
   double backWidth;             ///< back cut plane [before door]
   double beamSide;              ///< Beam sides 
@@ -65,12 +62,13 @@ class SwimingPool : public attachSystem::ContainedComp,
 
   int waterMat;                  ///< Material number
 
-  void populate(const Simulation&);
-  void createUnitVector(const attachSystem::FixedComp&);
+  void populate(const FuncDataBase&);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const long int);
 
   void createSurfaces();
-  void createObjects(Simulation&,
-		     const attachSystem::ContainedComp&);
+  void createObjects(Simulation&);
+	
 
  public:
 
@@ -80,10 +78,10 @@ class SwimingPool : public attachSystem::ContainedComp,
   virtual ~SwimingPool();
 
   // Accessor to the cell
-  int getPoolCell() const { return poolIndex+1; }
+  //  int getPoolCell() const { return poolIndex+1; }
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const attachSystem::ContainedComp&);
+		 const long int);
 
 };
 

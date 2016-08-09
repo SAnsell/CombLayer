@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   delft/FuelElement.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,6 +65,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 
 #include "FuelLoad.h"
@@ -161,7 +162,7 @@ FuelElement::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     Requires that unset values are copied from previous block
-    \param System :: Simulation to use
+    \param Control :: DataBase for variables
   */
 {
   ELog::RegMethod RegA("FuelElement","populate");
@@ -478,23 +479,6 @@ FuelElement::createObjects(Simulation& System)
 }
 
 void
-FuelElement::createObjects(Simulation& System,
-			   const size_t cStart,const size_t cEnd)
-  /*!
-    Create the objects
-    \param System :: Simulation
-    \param cStart :: Exclude start for control object [inclusive]
-    \param cEnd :: Exclude end for control object [inclusive]
-  */
-{
-  ELog::RegMethod RegA("FuelElement","createObjects(cut)");
-
-  createObjects(System);
-  return;
-}
-
-
-void
 FuelElement::createLinks()
   /*!
     Creates a full attachment set
@@ -554,6 +538,7 @@ FuelElement::layerProcess(Simulation& System,const FuelLoad& FuelSystem)
       for(size_t j=0;j<nFuel-1;j++)
 	{
 	  DA.addFrac(fuelFrac[j]);
+	  
 	  DA.addMaterial
 	    (FuelSystem.getMaterial(XIndex+1,YIndex+1,i+1,j+1,fuelMat));
 	}
@@ -579,7 +564,7 @@ FuelElement::createAll(Simulation& System,const FixedComp& FC,
     Global creation of the hutch
     \param System :: Simulation to add vessel to
     \param FC :: Fixed Unit
-    \param OG :: Orgin
+    \param OG :: Origin
     \param FuelSystem :: Default fuel load
   */
 {

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   build/GeneralShutter.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -84,9 +84,9 @@ namespace shutterSystem
 {
 
 GeneralShutter::GeneralShutter(const size_t ID,const std::string& Key) : 
-  TwinComp(Key,8),ContainedComp(),shutterNumber(ID),
-  surfIndex(ModelSupport::objectRegister::Instance().
-	    cell(Key,static_cast<int>(ID),20000)),
+  TwinComp(Key+StrFunc::makeString(ID),8),ContainedComp(),
+  shutterNumber(ID),baseName(Key),
+  surfIndex(ModelSupport::objectRegister::Instance().cell(keyName,20000)),
   cellIndex(surfIndex+1),populated(0),divideSurf(0),
   DPlane(0),closed(0),reversed(0),upperCell(0),
   lowerCell(0),innerVoidCell(0)
@@ -99,7 +99,8 @@ GeneralShutter::GeneralShutter(const size_t ID,const std::string& Key) :
 
 GeneralShutter::GeneralShutter(const GeneralShutter& A) : 
   attachSystem::TwinComp(A),attachSystem::ContainedComp(A),
-  shutterNumber(A.shutterNumber),surfIndex(A.surfIndex),cellIndex(A.cellIndex),
+  shutterNumber(A.shutterNumber),baseName(A.baseName),
+  surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   populated(A.populated),divideSurf(A.divideSurf),DPlane(A.DPlane),
   voidXoffset(A.voidXoffset),innerRadius(A.innerRadius),
   outerRadius(A.outerRadius),totalHeight(A.totalHeight),
@@ -224,71 +225,48 @@ GeneralShutter::populate(const Simulation& System)
       populated |= 2;
     }
 
-  closed=SimProcess::getDefIndexVar<int>(Control,keyName,
-					 "Closed",shutterNumber+1,0);
-  reversed=SimProcess::getDefIndexVar<int>(Control,keyName,
-					 "Reversed",shutterNumber+1,0);
+  closed=Control.EvalDefPair<int>(keyName,baseName,"Closed",0);
+  reversed=Control.EvalDefPair<int>(keyName,baseName,"Reversed",0);
 
   const std::string keyNum=
     StrFunc::makeString(keyName,shutterNumber+1);
   
-  totalWidth=Control.EvalPair<double>
-    (keyNum+"Width",keyName+"Width");
+  totalWidth=Control.EvalPair<double>(keyName,baseName,"Width");
 
-  upperSteel=Control.EvalPair<double>
-    (keyNum+"UpperSteel",keyName+"UpperSteel");
-  lowerSteel=Control.EvalPair<double>
-    (keyNum+"LowerSteel",keyName+"LowerSteel");
+  upperSteel=Control.EvalPair<double>(keyName,baseName,"UpperSteel");
+  lowerSteel=Control.EvalPair<double>(keyName,baseName,"LowerSteel");
 
-  shutterHeight=Control.EvalPair<double>
-    (keyNum+"Height",keyName+"Height");
-  shutterDepth=Control.EvalPair<double>
-    (keyNum+"Depth",keyName+"Depth");
-  voidZOffset=SimProcess::getDefIndexVar<double>
-    (Control,keyName,"VoidZOffset",shutterNumber+1,0.0);
-  centZOffset=SimProcess::getDefIndexVar<double>
-    (Control,keyName,"centZOffset",shutterNumber+1,0.0);
-  openZShift=SimProcess::getDefIndexVar<double>
-    (Control,keyName,"OpenZShift",shutterNumber+1,0.0);
-  closedZShift=openZShift-Control.EvalPair<double>
-    (keyNum+"ClosedZOffset",keyName+"ClosedZOffset");
+  shutterHeight=Control.EvalPair<double>(keyName,baseName,"Height");
+  shutterDepth=Control.EvalPair<double>(keyName,baseName,"Depth");
+  voidZOffset=Control.EvalDefPair<double>(keyName,baseName,"VoidZOffset",0.0);
+  centZOffset=Control.EvalDefPair<double>(keyName,baseName,"centZOffSet",0.0);
+  openZShift=Control.EvalDefPair<double>(keyName,baseName,"OpenZShift",0.0);
+  closedZShift=openZShift-
+    Control.EvalPair<double>(keyName,baseName,"ClosedZOffset");
 
-  voidDivide=Control.EvalPair<double>
-    (keyNum+"VoidDivide",keyName+"VoidDivide");
-  voidHeight=Control.EvalPair<double>
-    (keyNum+"VoidHeight",keyName+"VoidHeight");
-  voidHeightInner=Control.EvalPair<double>
-    (keyNum+"VoidHeightInner",keyName+"VoidHeightInner");
-  voidWidthInner=Control.EvalPair<double>
-    (keyNum+"VoidWidthInner",keyName+"VoidWidthInner");
-  voidHeightOuter=Control.EvalPair<double>
-    (keyNum+"VoidHeightOuter",keyName+"VoidHeightOuter");
-  voidWidthOuter=Control.EvalPair<double>
-    (keyNum+"VoidWidthOuter",keyName+"VoidWidthOuter");  
-  xyAngle=Control.EvalPair<double>
-    (keyNum+"XYAngle",keyName+"XYAngle");
-  zAngle=SimProcess::getDefIndexVar<double>
-    (Control,keyName,"ZAngle",shutterNumber+1,0.0);
+  voidDivide=Control.EvalPair<double>(keyName,baseName,"VoidDivide");
+  voidHeight=Control.EvalPair<double>(keyName,baseName,"VoidHeight");
+  voidHeightInner=Control.EvalPair<double>(keyName,baseName,"VoidHeightInner");
+  voidWidthInner=Control.EvalPair<double>(keyName,baseName,"VoidWidthInner");
+  voidHeightOuter=Control.EvalPair<double>(keyName,baseName,"VoidHeightOuter");
+  voidWidthOuter=Control.EvalPair<double>(keyName,baseName,"VoidWidthOuter");
+  xyAngle=Control.EvalPair<double>(keyName,baseName,"XYAngle");
+  zAngle=Control.EvalDefPair<double>(keyName,baseName,"ZAngle",0.0);
 
   shutterMat=ModelSupport::EvalMat<int>
-    (Control,keyNum+"SteelMat",keyName+"SteelMat");
+    (Control,keyName+"SteelMat",baseName+"SteelMat");
 
   // Construct the clearance gaps
-  clearGap=Control.EvalPair<double>
-    (keyNum+"ClearGap",keyName+"ClearGap");
-  clearBoxStep=Control.EvalPair<double>
-    (keyNum+"ClearBoxStep",keyName+"ClearBoxStep");
-  clearBoxLen=Control.EvalPair<double>
-    (keyNum+"ClearBoxLen",keyName+"ClearBoxLen");
+  clearGap=Control.EvalPair<double>(keyName,baseName,"ClearGap");
+  clearBoxStep=Control.EvalPair<double>(keyName,baseName,"ClearBoxStep");
+  clearBoxLen=Control.EvalPair<double>(keyName,baseName,"ClearBoxLen");
   const size_t NStep= Control.EvalPair<size_t>
-    (keyNum+"ClearNStep",keyName+"ClearNStep");
+    (keyName,baseName,"ClearNStep");
   clearCent.clear();
   for(size_t i=0;i<NStep;i++)
     {
-      const std::string SCent="ClearCent"+
-	StrFunc::makeString(i);
-      const double CD=Control.EvalPair<double>
-	(keyNum+SCent,keyName+SCent);
+      const std::string SCent="ClearCent"+StrFunc::makeString(i);
+      const double CD=Control.EvalPair<double>(keyName,baseName,SCent);
       clearCent.push_back(CD);
     }
     
@@ -338,9 +316,11 @@ GeneralShutter::createUnitVector(const attachSystem::FixedComp* FCPtr)
   else
     {
       attachSystem::FixedComp::createUnitVector
-	(Y*voidXoffset,Geometry::Vec3D(0,0,-1),Geometry::Vec3D(-1,0,0));
+	(Y*voidXoffset,
+         Geometry::Vec3D(0,1,0),
+         Geometry::Vec3D(0,0,-1),
+         Geometry::Vec3D(-1,0,0));
     }
-
   return;
 }
 
@@ -356,7 +336,8 @@ GeneralShutter::applyRotations(const double ZOffset)
   XYAxis=Y;
   Geometry::Quaternion::calcQRotDeg(xyAngle,Z).rotate(XYAxis);
   // Create X 
-  attachSystem::FixedComp::createUnitVector(Y*voidXoffset,XYAxis,Z);
+  attachSystem::FixedComp::createUnitVector(Y*voidXoffset,
+                                            XYAxis*Z,XYAxis,Z);
 
   BeamAxis=XYAxis;
   zSlope=Z;
@@ -398,7 +379,7 @@ GeneralShutter::getViewOrigin() const
   /*!
     Calculate view origin			
     \return Effective centre
-   */
+  */
 {
   // view effectively down void hence -ve void added
   const double zShift=(closed % 2) ? closedZShift : openZShift;
@@ -646,11 +627,11 @@ GeneralShutter::createObjects(Simulation& System)
       System.addCell(IVHo);
       // Surrounder
       Out=ModelSupport::getComposite(SMap,surfIndex,
-				     "-25 26 (125 : -126 : -13 : 14) 3 -4 7 -100 ")+dSurf;
+		     "-25 26 (125 : -126 : -13 : 14) 3 -4 7 -100 ")+dSurf;
       System.addCell(MonteCarlo::Qhull(cellIndex++,shutterMat,0.0,Out));
 
       Out=ModelSupport::getComposite(SMap,surfIndex,
-				     "-25 26 (225 : -226 : -113 : 114) 3 -4 100 -17 ")+dSurf;
+	     "-25 26 (225 : -226 : -113 : 114) 3 -4 100 -17 ")+dSurf;
       System.addCell(MonteCarlo::Qhull(cellIndex++,shutterMat,0.0,Out));
     }
   else
@@ -663,7 +644,7 @@ GeneralShutter::createObjects(Simulation& System)
       System.addCell(IVH);
 
       Out=ModelSupport::getComposite(SMap,surfIndex,
-				     " -25 26 (125 : -126 : -13 : 14) 3 -4 7 -17 ")+dSurf;
+	     " -25 26 (125 : -126 : -13 : 14) 3 -4 7 -17 ")+dSurf;
       System.addCell(MonteCarlo::Qhull(cellIndex++,shutterMat,0.0,Out));
     }  
 

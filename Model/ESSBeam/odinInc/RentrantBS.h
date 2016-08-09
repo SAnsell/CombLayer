@@ -50,6 +50,8 @@ class RentrantBS :
   double height;                 ///< Height [+ve Z]
   double depth;                  ///< Depht [-ve Z]
   double length;                 ///< Length 
+
+  double b4cThick;               ///< b4c thickness
   
   double feRadius;               ///< Radius of cylinder
   double feLength;               ///< Length [From full cu]
@@ -61,9 +63,10 @@ class RentrantBS :
 
   double innerRadius;
   double innerFeRadius;
-  double innerFeStep;             ///< Step in [if radius bigger tha
+  double innerFeStep;             ///< Step in [if radius bigger]
   double innerCut;
 
+  int b4cMat;                 ///< B4c layer material
   int feMat;                  ///< Fe layer material 
   int concMat;                ///< Second layer material
 

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   delft/SpaceBlock.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,6 +72,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "SecondTrack.h"
 #include "TwinComp.h"
 #include "ContainedComp.h"
@@ -81,22 +82,22 @@ namespace delftSystem
 {
 
 SpaceBlock::SpaceBlock(const std::string& Key,const size_t Index)  :
-  attachSystem::FixedComp(StrFunc::makeString(Key,Index),6),
+  attachSystem::FixedOffset(StrFunc::makeString(Key,Index),6),
   attachSystem::ContainedComp(),baseName(Key),
   boxIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
   cellIndex(boxIndex+1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
+    \param Index :: ID number
   */
 {}
 
 SpaceBlock::SpaceBlock(const SpaceBlock& A) : 
-  attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
+  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
   baseName(A.baseName),boxIndex(A.boxIndex),cellIndex(A.cellIndex),
-  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  xyAngle(A.xyAngle),zAngle(A.zAngle),length(A.length),
-  width(A.width),height(A.height),mat(A.mat)
+  activeFlag(A.activeFlag),length(A.length),width(A.width),
+  height(A.height),mat(A.mat)
   /*!
     Copy constructor
     \param A :: SpaceBlock to copy
@@ -113,14 +114,10 @@ SpaceBlock::operator=(const SpaceBlock& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
+      activeFlag=A.activeFlag;
       length=A.length;
       width=A.width;
       height=A.height;
@@ -135,62 +132,44 @@ SpaceBlock::~SpaceBlock()
  */
 {}
 
-int
+void
 SpaceBlock::populate(const FuncDataBase& Control)
  /*!
    Populate all the variables
    \param Control :: FuncDatabase
-   \return build status [false on failure]
  */
 {
   ELog::RegMethod RegA("SpaceBlock","populate");
-  
 
-  const int flag=Control.EvalDefVar<int>(keyName+"Flag",-1);
-  if (flag<1)  return flag;
-
-  // First get inner widths:
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYAngle");
-  zAngle=Control.EvalVar<double>(keyName+"ZAngle");
-
-  length=Control.EvalVar<double>(keyName+"Length");
-  width=Control.EvalVar<double>(keyName+"Width");
-  height=Control.EvalVar<double>(keyName+"Height");
-  mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
-
-  return 1;
+  activeFlag=Control.EvalDefVar<int>(keyName+"Flag",0);
+  if (activeFlag>0)
+    {
+      attachSystem::FixedOffset::populate(Control);
+      length=Control.EvalVar<double>(keyName+"Length");
+      width=Control.EvalVar<double>(keyName+"Width");
+      height=Control.EvalVar<double>(keyName+"Height");
+      mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
+    }
+  return;
 }
   
 void
 SpaceBlock::createUnitVector(const attachSystem::FixedComp& FC,
-			     const size_t sideIndex)
+			     const long int sideIndex)
   /*!
     Create the unit vectors
     - Y Points towards the beamline
     - X Across the Face
     - Z up (towards the target)
     \param FC :: A Contained FixedComp to use as basis set
-    \param PAxis :: Primary axis
+    \param sideIndex :: link point for origin/axis
   */
 {
   ELog::RegMethod RegA("SpaceBlock","createUnitVector");
   
   // PROCESS Origin of a point
-  if (sideIndex)
-    {
-      const attachSystem::LinkUnit& LU=FC.getLU(sideIndex-1);
-      attachSystem::FixedComp::createUnitVector(LU.getConnectPt(),
-						LU.getAxis(),
-						FC.getZ());
-    }
-  else
-    attachSystem::FixedComp::createUnitVector(FC);
-  
-  attachSystem::FixedComp::applyShift(xStep,yStep,zStep);
-  attachSystem::FixedComp::applyAngleRotate(xyAngle,zAngle);
+  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
+  applyOffset();
   return;
 }
 
@@ -216,24 +195,25 @@ SpaceBlock::createSurfaces()
 void
 SpaceBlock::createObjects(Simulation& System)
   /*!
-    Adds the BeamLne components
-    \param System :: Simulation to add beamline to
+    Adds the block components
+    \param System :: Simulation to add object to
   */
 {
   ELog::RegMethod RegA("SpaceBlock","createObjects");
   
   std::string Out;
   Out=ModelSupport::getComposite(SMap,boxIndex," 1 -2 3 -4 5 -6 ");
-  addOuterSurf(Out);
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
-  
+
+  addOuterSurf(Out);
+
   return;
 }
 
 void
 SpaceBlock::createLinks()
   /*!
-    Create All the links:
+    Create all the links:
   */
 {
   ELog::RegMethod RegA("SpaceBlock","createLinks");
@@ -256,10 +236,10 @@ SpaceBlock::createLinks()
   return;
 }
 
-int
+void
 SpaceBlock::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,
-		      const size_t sideIndex)
+		      const long int sideIndex)
   /*!
     Global creation of the vac-vessel
     \param System :: Simulation to add vessel to
@@ -270,15 +250,15 @@ SpaceBlock::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("SpaceBlock","createAll");
 
-  const int flag=populate(System.getDataBase());
-  if (flag>0)
+  populate(System.getDataBase());
+  if (activeFlag>0)
     {
       createUnitVector(FC,sideIndex);
       createSurfaces();
       createObjects(System);
       insertObjects(System);       
     }
-  return flag;
+  return;
 }
 
   

@@ -3,7 +3,7 @@
  
  * File:   support/support.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -511,13 +511,45 @@ fullBlock(const std::string& A)
   return A.substr(posA,posB-posA);
 }
 
+int
+sectionBracket(std::string& A,std::string& out)
+  /*!
+    Given a string of type (.(.).)
+    extract the full bracket section and remove from the string
+    \param A :: string to intpu
+    \param out :: string for output
+    \return 1 if bracket closes correctly
+   */
+{
+  std::string NStr(A);
+  std::string::size_type pos(0);
+  pos=NStr.find_first_of("(",pos);
+  if(pos!=std::string::npos)
+    {
+      int bCnt(1);
+      std::string::size_type posIndex(pos+1);
+      for(;bCnt && posIndex<NStr.size();posIndex++)
+        {
+          if (NStr[posIndex]=='(') bCnt++;
+          if (NStr[posIndex]==')') bCnt--;
+        }
+      if (!bCnt)
+        {
+          out=NStr.substr(pos+1,posIndex-(pos+2));
+          A.erase(pos,posIndex-pos);
+        }
+      return 1;
+    }
+  return 0;
+}
+  
 template<typename T>
 int
 sectPartNum(std::string& A,T& out)
   /*!
     Takes a character string and evaluates 
     the first [typename T] object. The string is then 
-    erase upt to the end of number.
+    erase up to the end of number.
     The diffierence between this and section is that
     it allows trailing characters after the number. 
     \param out :: place for output
@@ -1137,8 +1169,8 @@ writeLine(std::ostream& OX,const T& V,
     Write the line in the WWG format of 13.6g
     \param OX :: Output stream
     \param V :: Value
-    \param itemCnt :: Item value
-    \param lineCut :: Value to cut line
+    \param itemCnt :: Place in line
+    \param lineCut :: Number of unit to put in line before CR
    */
 {
   static boost::format DblFMT("%13.4f");
@@ -1169,8 +1201,8 @@ writeLine(std::ostream& OX,const Geometry::Vec3D& Vec,
     Write the line in the WWG format of 13.6g
     \param OX :: Output stream
     \param V :: Value
-    \param itemCnt :: Item value
-    \param lineCut :: Value to cut line
+    \param itemCnt :: Place in line
+    \param lineCut :: Number of unit to put in line before CR
    */
 {
   for(size_t i=0;i<3;i++)
@@ -1212,6 +1244,7 @@ template int section(std::string&,DError::doubleErr&);
 
 template int sectPartNum(std::string&,double&);
 template int sectPartNum(std::string&,int&);
+template int sectPartNum(std::string&,long int&);
 template int sectPartNum(std::string&,size_t&);
 template int sectionMCNPX(std::string&,double&);
 

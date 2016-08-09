@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   attachCompInc/LinkSupport.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,12 @@ class FixedComp;
 long int getLinkIndex(const std::string&);
 int getAttachPoint(const std::string&,const std::string&,
 		    Geometry::Vec3D&,Geometry::Vec3D&);
+int getAttachPointWithXYZ(const std::string&,const std::string&,
+		   Geometry::Vec3D&,Geometry::Vec3D&,
+		   Geometry::Vec3D&,Geometry::Vec3D&);
+
+size_t getPoint(const std::vector<std::string>&,
+		const size_t,Geometry::Vec3D&);
  
 }
 

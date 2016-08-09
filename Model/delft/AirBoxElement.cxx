@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   delft/AirBoxElement.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,6 +64,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 
 #include "FuelLoad.h"
@@ -86,20 +87,65 @@ AirBoxElement::AirBoxElement(const size_t XI,const size_t YI,
   */
 {}
 
-void
-AirBoxElement::populate(const Simulation& System,
-			const attachSystem::FixedComp& RG)
+AirBoxElement::AirBoxElement(const AirBoxElement& A) : 
+  RElement(A),
+  Width(A.Width),Depth(A.Depth),Height(A.Height),
+  wallThick(A.wallThick),edgeGap(A.edgeGap),innerMat(A.innerMat),
+  wallMat(A.wallMat),waterMat(A.waterMat)
   /*!
-    Populate all the variables
-    Requires that unset values are copied from previous block
-    \param System :: Simulation to use
+    Copy constructor
+    \param A :: AirBoxElement to copy
+  */
+{}
+
+AirBoxElement&
+AirBoxElement::operator=(const AirBoxElement& A)
+  /*!
+    Assignment operator
+    \param A :: AirBoxElement to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      RElement::operator=(A);
+      Width=A.Width;
+      Depth=A.Depth;
+      Height=A.Height;
+      wallThick=A.wallThick;
+      edgeGap=A.edgeGap;
+      innerMat=A.innerMat;
+      wallMat=A.wallMat;
+      waterMat=A.waterMat;
+    }
+  return *this;
+}
+
+void
+AirBoxElement::populateWaterMat(const attachSystem::FixedComp& RG)
+  /*!
+    Populate the water material from a reactor grid default
+    \param RG :: FixedComp to cast to a ReactorGrid
   */
 {
   ELog::RegMethod RegA("AirBoxElement","populate");
-  const FuncDataBase& Control=System.getDataBase();
 
   const ReactorGrid* RGPtr=dynamic_cast<const ReactorGrid*>(&RG);
   waterMat=(RGPtr) ? RGPtr->getWaterMat() : 0;
+  return;
+}
+  
+  
+void
+AirBoxElement::populate(const FuncDataBase& Control)
+  /*!
+    Populate all the variables
+    Requires that unset values are copied from previous block
+    \param Control :: Database for variables
+  */
+{
+  ELog::RegMethod RegA("AirBoxElement","populate");
+
 
   Width=ReactorGrid::getElement<double>
     (Control,keyName+"Width",XIndex,YIndex);
@@ -122,8 +168,8 @@ AirBoxElement::populate(const Simulation& System,
 }
 
 void
-AirBoxElement::createUnitVector(const FixedComp& FC,
-			      const Geometry::Vec3D& OG)
+AirBoxElement::createUnitVector(const attachSystem::FixedComp& FC,
+				const Geometry::Vec3D& OG)
   /*!
     Create the unit vectors
     - Y Down the beamline
@@ -145,7 +191,7 @@ AirBoxElement::createSurfaces(const attachSystem::FixedComp& RG)
     \param RG :: Reactor grid
   */
 {  
-  ELog::RegMethod RegA("AirBoxElement","createSurface");
+  ELog::RegMethod RegA("AirBoxElement","createSurfaces");
 
 
   // Planes [OUTER]:
@@ -223,9 +269,7 @@ AirBoxElement::createObjects(Simulation& System)
 void
 AirBoxElement::createLinks()
   /*!
-    Creates a full attachment set
-    0 - 1 standard points
-    2 - 3 beamaxis points
+    Creates lines [currently does nothing]
   */
 {
 
@@ -234,19 +278,20 @@ AirBoxElement::createLinks()
 
 void
 AirBoxElement::createAll(Simulation& System,
-			 const FixedComp& RG,
+			 const attachSystem::FixedComp& RG,
 			 const Geometry::Vec3D& OG,
 			 const FuelLoad&)
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to
     \param RG :: Fixed Unit
-    \param OG :: Orgin
+    \param OG :: Origin
+    \param :: FuelLoad not used
   */
 {
   ELog::RegMethod RegA("AirBoxElement","createAll");
-  populate(System,RG);
-
+  populate(System.getDataBase());
+  populateWaterMat(RG);
   createUnitVector(RG,OG);
   createSurfaces(RG);
   createObjects(System);

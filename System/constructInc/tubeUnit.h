@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   constructInc/tubeUnit.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,9 +67,9 @@ class tubeUnit
   void setEmpty() { empty=1; }        ///< Set empty
   void setFilled() { empty|=2; }      ///< Set Filled
   void setOutside() { empty|=4; }      ///< Set Filled
-  bool isEmpty() const { return (empty & 1); }      ///< empty state
-  bool isFilled() const { return (empty & 2); }      ///< filled state
-  bool isOutside() const { return (empty & 4); }      ///< outer state
+  bool isEmpty() const { return (empty & 1); }     ///< empty state
+  bool isFilled() const { return (empty & 2); }    ///< filled state
+  bool isOutside() const { return (empty & 4); }   ///< outer state
   /// Links
   size_t nLinks() const;
   std::string writeID() const;

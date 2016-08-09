@@ -3,7 +3,7 @@
  
  * File:   monte/HeadRule.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -722,6 +722,21 @@ HeadRule::getSurfaceNumbers() const
 	}
     }
   return Out;
+}
+
+int
+HeadRule::getPrimarySurface() const
+  /*!
+    Calculate the surfaces that are within the top level
+    and return the surface most likely to be the master surface
+    \return single surface number / 0 if not a single primary
+  */
+{
+  const std::vector<int> TSet=getTopSurfaces();
+  if (TSet.size()!=1)
+    throw ColErr::SizeError<size_t>(TSet.size(),1,
+                                    "HeadRule has wrong surface count");
+  return TSet.front();
 }
 
 std::vector<int>
@@ -1548,8 +1563,8 @@ HeadRule::createAddition(const int InterFlag,const Rule* NRptr)
   /*!
     Function to actually do the addition of a rule to 
     avoid code repeat.
-    \param InterFlag :: Intersection / Union [ 1 : -1 ] : 0 for new 
-    \param NRPtr :: New Rule pointer to add
+    \param InterFlag :: Intersection / Union [ 1 : -1 ] :: 0 for new 
+    \param NRptr :: New Rule pointer to add
    */
 {
   ELog::RegMethod RegA("HeadRule","createAddition");
@@ -1978,6 +1993,7 @@ HeadRule::Intersects(const HeadRule& A) const
      Done by line intersection along planes
      and by point intersection.
      \param A :: HeadRule to use
+     \return true on intersection
    */
 {
   ELog::RegMethod RegA("HeadRule","Intersects");

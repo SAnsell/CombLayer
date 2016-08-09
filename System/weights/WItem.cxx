@@ -179,7 +179,7 @@ WItem::scaleWeight(const std::vector<double>& WT)
 {
   std::transform(Val.begin(),Val.end(),WT.begin(),
 		 Val.begin(),std::multiplies<double>());
-
+  
   return;
 }
 
@@ -244,7 +244,6 @@ WItem::rescale(const int cA,const int cB,const double SF)
     }
   return;
 }
-
 
 void
 WItem::write(std::ostream& OX) const

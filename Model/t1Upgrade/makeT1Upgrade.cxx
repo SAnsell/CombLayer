@@ -3,7 +3,7 @@
  
  * File:   t1Upgrade/makeT1Upgrade.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -328,8 +328,8 @@ makeT1Upgrade::buildTarget(Simulation& System,
       TarObj->setRefPlates(-RefObj->getLinkSurf(2),0);
       TarObj->createAll(System,World::masterOrigin());
 
-      std::shared_ptr<constructSystem::targCoolant> 
-	TarCool(new constructSystem::targCoolant("t1EllCylCool"));
+      std::shared_ptr<ts1System::targCoolant> 
+	TarCool(new ts1System::targCoolant("t1EllCylCool"));
       OR.addObject(TarCool);
       TarCool->addCells(TarObj->getInnerCells());
       TarCool->setContainer(TarObj->getContainer());
@@ -557,7 +557,6 @@ makeT1Upgrade::buildWaterPipe(Simulation& System,
     {
       WaterPipeObj->setWallOffset(1);
       WaterPipeObj->createAll(System,*TriMod,0,2,1);  
-      
       WaterReturnObj->setWallOffset(1);
       WaterReturnObj->createAll(System,*TriMod,0,2,1);  
     }

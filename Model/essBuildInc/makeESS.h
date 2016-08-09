@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/makeESS.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,8 +56,10 @@ namespace essSystem
   class BilbaoWheel;
   class BeRef;
   class essMod;
+  class ESSPipes;
   class ConicModerator;
   class CylPreMod;
+  class IradCylinder;
   class BulkModule;
   class ShutterBay;
   class ProtonTube;
@@ -71,6 +73,7 @@ namespace essSystem
   class ODIN;
   class LOKI;
   class VOR;
+  class BunkerFeed;
   /*!
     \class makeESS
     \version 1.0
@@ -96,12 +99,7 @@ class makeESS
 
   std::shared_ptr<moderatorSystem::BasicFlightLine> LowAFL;  ///< Lower Mode FL
   std::shared_ptr<moderatorSystem::BasicFlightLine> LowBFL;  ///< Lower Mode FL
-  std::shared_ptr<CylPreMod> LowPre;          ///< Lower Mod (Pre)
-
-  /// Lower supply 
-  std::shared_ptr<constructSystem::SupplyPipe> LowSupplyPipe; 
-  std::shared_ptr<constructSystem::SupplyPipe> LowReturnPipe;  ///< Lower supply
-
+  
   // Butterly
   /// Primary Upper Mod 
   std::shared_ptr<constructSystem::ModBase> TopMod;
@@ -110,27 +108,24 @@ class makeESS
 
   std::shared_ptr<moderatorSystem::BasicFlightLine> TopAFL;  ///< Top Mode FL
   std::shared_ptr<moderatorSystem::BasicFlightLine> TopBFL;  ///< Top Mode FL
-  std::shared_ptr<CylPreMod> TopPre;          ///< Toper Mod (Pre)
 
-  /// Top supply 
+  std::unique_ptr<ESSPipes> ModPipes;       ///< Moderator pipes
 
-  std::shared_ptr<constructSystem::SupplyPipe> TopSupplyPipe; 
-  std::shared_ptr<constructSystem::SupplyPipe> TopReturnPipe;  ///< Top supply
 
   std::shared_ptr<BulkModule> Bulk;      ///< Main bulk module
-  std::shared_ptr<moderatorSystem::FlightLine> BulkLowAFL;  ///< Lower Mode FL
 
   /// Shutterbay objects
   std::shared_ptr<ShutterBay> ShutterBayObj;  
   /// Array of Guidies
   std::vector<std::shared_ptr<GuideBay> > GBArray;  
 
-  /// Array of beamlines constructors:
-  std::vector<std::shared_ptr<beamlineSystem::beamlineConstructor> > 
-    BLArray;  
-
   std::shared_ptr<Bunker> ABunker;  ///< Right bunker [A unit]
-  std::shared_ptr<Bunker> BBunker;  ///< Right bunker [B unit]
+  std::shared_ptr<Bunker> BBunker;  ///< Left bunker [B unit]
+  std::shared_ptr<Bunker> CBunker;  ///< Opposite Right bunker [A unit]
+  std::shared_ptr<Bunker> DBunker;  ///< Opposite bunker [B unit]
+  /// A bunker freed thorugh
+  std::vector<std::shared_ptr<BunkerFeed> > bFeedArray;
+
   ///< Right bunker Pillars [A]
   std::shared_ptr<RoofPillars> ABunkerPillars;
   ///< Right bunker Pillars [B]
@@ -146,6 +141,8 @@ class makeESS
 
   void buildLowButterfly(Simulation&);
   void buildLowPreMod(Simulation&);
+  void buildIradComponent(Simulation&,const mainSystem::inputParam&);
+
 
   void buildTopButterfly(Simulation&);
   void buildLowerPipe(Simulation&,const std::string&);
@@ -154,12 +151,14 @@ class makeESS
   void buildToperPipe(Simulation&,const std::string&);
 
   void makeTarget(Simulation&,const std::string&);
-  void makeBunker(Simulation&,const std::string&);
+  void makeBunker(Simulation&,const mainSystem::inputParam&);
   
   void makeBeamLine(Simulation&,
 		    const mainSystem::inputParam&);
 
   void buildPillars(Simulation&);
+  void buildBunkerFeedThrough(Simulation&,
+			      const mainSystem::inputParam&);
 
 
   void buildF5Collimator(Simulation&, size_t);

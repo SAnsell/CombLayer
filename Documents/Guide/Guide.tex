@@ -6,7 +6,11 @@
 \usepackage{listings}
 \usepackage[absolute,overlay]{textpos}
 
-\usepackage[colorlinks=true,linkcolor=red,pagecolor=red,citecolor=blue,urlcolor=blue,breaklinks=true,hyperfootnotes=false,pdftitle={CombLayer Guide},pdfauthor={Stuart Ansell},pdfkeywords={CombLayer,MCNP,MCNPX}]{hyperref}
+\usepackage[colorlinks=true,linkcolor=red,pagecolor=red,
+  citecolor=blue,urlcolor=blue,breaklinks=true,
+  hyperfootnotes=false,pdftitle={CombLayer Guide},
+  pdfauthor={Stuart Ansell},pdfkeywords={CombLayer,MCNP,MCNPX}]
+           {hyperref}
 \renewcommand*{\rmdefault}{cmss} 
 
 \input{Frames/functions}
@@ -19,10 +23,12 @@
 \tableofcontents
 
 \input{Frames/Introduction}
+\newpage
 \input{Frames/Layout}
 \input{Frames/Installing}
 \input{Frames/LinkSystem}
 \input{Frames/ModelInitial}
+\input{Frames/TallySystem}
 
 
 \section{Components}

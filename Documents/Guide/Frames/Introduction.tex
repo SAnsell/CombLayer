@@ -1,32 +1,32 @@
 \section{Introduction}
 
 CombLayer is designed to facilitate the rapid production of complex
-MCNPX models that depend on a long list of ranged variables and a
+MCNP(X) models that depend on a long list of ranged variables and a
 number of module flags. It is also intended to help with placement of tallies,
 maintaining consistant material files and some variance reduction.
 
 \subsection{Coding Convensions}
 
 CombLayer has some coding convensions beyond the standard Scott Myers
-Efficient C++ convensions \cite{Myers}. These are typcially their for
-two reasons (i) the in a model-build system rapid build time is
-essential since it is impossible to have a sub-test framework for any
-component as the whole MCNPX model is required to check if is it
+Efficient C++ convensions \cite{Myers}. These are typcially there for
+two reasons (i) that in a model-build system, a rapid build time is
+essential since it is nearly impossible to have a sub-test framework for any
+component as the whole MCNP(X) model is required to check if is it
 valid, (ii) the code is intended to be used without complete
 understanding. Therefore as much as possible, each component is
-independent without code repetition. Akk back-references are to be minimized
+independent without code repetition. Back-references are to be minimized
 both in the run-time calling path and in the code build dependencies.
 
 \subsubsection{Include files}
 \label{Sec:IntroInclude}
- Include files (.h) are forbidden to include other
-files. This does several things (a) it reduces the {\it dependency
+Include files (.h) are forbidden to include other files.
+This does several things (a) it reduces the {\it dependency
   hell} where it is almost impossible to find the definition of a
 function and what it depends on. (b) optimization of the include tree
 can be carried out and dependency continuously observered. 
 
 Namespaces are a good method of removing global name pollution but
-many other C++ programs allows {\it using namespace X} this is almost
+many other C++ programs allows {\it using namespace X}, this is almost
 100\% forbidden except in the test for that particular namespace
 unit. This also applies to boost, stl, tr1 etc, to which helps
 distinguish external functions and domains.

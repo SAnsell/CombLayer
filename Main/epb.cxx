@@ -3,7 +3,7 @@
  
  * File:   Main/epb.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,7 +71,6 @@
 #include "PhysCard.h"
 #include "LSwitchCard.h"
 #include "PhysImp.h"
-#include "BasicWWE.h"
 #include "MainProcess.h"
 #include "SimProcess.h"
 #include "SimInput.h"
@@ -115,83 +114,62 @@ main(int argc,char* argv[])
 
   std::string Oname;
   std::vector<std::string> Names;  
-  std::map<std::string,std::string> Values;  
-  std::map<std::string,std::string> AddValues;  
-  std::map<std::string,double> IterVal;           // Variable to iterate 
-
-  // PROCESS INPUT:
-  InputControl::mainVector(argc,argv,Names);
-  mainSystem::inputParam IParam;
-  createEPBInputs(IParam);
-
-  const int iteractive(IterVal.empty() ? 0 : 1);   
-  Simulation* SimPtr=createSimulation(IParam,Names,Oname);
-  if (!SimPtr) return -1;
-
-  // The big variable setting
-  setVariable::EPBVariables(SimPtr->getDataBase());
-  InputModifications(SimPtr,IParam,Names);
-  
-  // Definitions section 
-  int MCIndex(0);
-  const int multi=IParam.getValue<int>("multi");
+  Simulation* SimPtr(0);
   try
     {
-      while(MCIndex<multi)
+      // PROCESS INPUT:
+      InputControl::mainVector(argc,argv,Names);
+      mainSystem::inputParam IParam;
+      createEPBInputs(IParam);
+
+      SimPtr=createSimulation(IParam,Names,Oname);
+      if (!SimPtr) return -1;
+
+  // The big variable setting
+      setVariable::EPBVariables(SimPtr->getDataBase());
+      InputModifications(SimPtr,IParam,Names);
+  
+      // Definitions section 
+      int MCIndex(0);
+      const int multi=IParam.getValue<int>("multi");
+      
+      epbSystem::makeEPB EPBObj;
+      World::createOuterObjects(*SimPtr);
+      EPBObj.build(SimPtr,IParam);
+      
+      SDef::sourceSelection(*SimPtr,IParam);
+      
+      SimPtr->removeComplements();
+      SimPtr->removeDeadSurfaces(0);         
+      ModelSupport::setDefaultPhysics(*SimPtr,IParam);
+
+      ModelSupport::setDefRotation(IParam);
+      SimPtr->masterRotation();
+
+      const int renumCellWork=tallySelection(*SimPtr,IParam);
+      if (createVTK(IParam,SimPtr,Oname))
 	{
-	  if (MCIndex)
-	    {
-	      ELog::EM.setActive(4);    // write error only
-	      ELog::FM.setActive(4);    
-	      ELog::RN.setActive(0);    
-	      // if (iteractive)
-	      // 	mainSystem::incRunTimeVariable
-	      // 	  (SimPtr->getDataBase(),IterVal);
-	    }
-
-	  SimPtr->resetAll();
-
-	  epbSystem::makeEPB EPBObj;
-	  World::createOuterObjects(*SimPtr);
-	  EPBObj.build(SimPtr,IParam);
-
-	  SDef::sourceSelection(*SimPtr,IParam);
-
-	  SimPtr->removeComplements();
-	  SimPtr->removeDeadSurfaces(0);         
-
-	  ModelSupport::setDefaultPhysics(*SimPtr,IParam);
-	  const int renumCellWork=tallySelection(*SimPtr,IParam);
-	  SimPtr->masterRotation();
-	  if (createVTK(IParam,SimPtr,Oname))
-	    {
-	      delete SimPtr;
-	      ModelSupport::objectRegister::Instance().reset();
-	      return 0;
-	    }
-	  if (IParam.flag("endf"))
-	    SimPtr->setENDF7();
-
-	  SimProcess::importanceSim(*SimPtr,IParam);
-	  SimProcess::inputPatternSim(*SimPtr,IParam); // energy cut etc
-
-	  if (renumCellWork)
-	    tallyRenumberWork(*SimPtr,IParam);
-	  tallyModification(*SimPtr,IParam);
-
-	  if (IParam.flag("cinder"))
-	    SimPtr->setForCinder();
-
-	  // Ensure we done loop
-	  do
-	    {
-	      SimProcess::writeIndexSim(*SimPtr,Oname,MCIndex);
-	      MCIndex++;
-	    }
-	  while(!iteractive && MCIndex<multi);
+	  delete SimPtr;
+	  ModelSupport::objectRegister::Instance().reset();
+          ModelSupport::surfIndex::Instance().reset();
+	  return 0;
 	}
-      if (IParam.flag("cinder"))
-	SimPtr->writeCinder();
+      
+      SimProcess::importanceSim(*SimPtr,IParam);
+      SimProcess::inputProcessForSim(*SimPtr,IParam); // energy cut etc
+      if (renumCellWork)
+	tallyRenumberWork(*SimPtr,IParam);
+      tallyModification(*SimPtr,IParam);
+            
+      // Ensure we done loop
+      do
+	{
+	  SimProcess::writeIndexSim(*SimPtr,Oname,MCIndex);
+	  MCIndex++;
+	}
+      while(MCIndex<multi);
+
+      exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
       ModelSupport::calcVolumes(SimPtr,IParam);
       ModelSupport::objectRegister::Instance().write("ObjectRegister.txt");
     }
@@ -207,8 +185,15 @@ main(int argc,char* argv[])
 	      <<A.what()<<ELog::endCrit;
       exitFlag= -1;
     }
+  catch (...)
+    {
+      ELog::EM<<"GENERAL EXCEPTION"<<ELog::endCrit;
+      exitFlag= -3;
+    }
+
   delete SimPtr;
   ModelSupport::objectRegister::Instance().reset();
   ModelSupport::surfIndex::Instance().reset();
   return exitFlag;
+
 }

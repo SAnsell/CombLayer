@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   processInc/SimProcess.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,13 +46,7 @@ namespace SimProcess
   template<typename T,typename U>
   T getDefIndexVar(const FuncDataBase&,const std::string&,
 		   const std::string&,const U&,const T&);
-  template<typename T,typename U>
-  T getIndexVar(const FuncDataBase&,const std::string&,
-		const std::string&,const U&);
 
-  template<typename T>
-  int getIndexVec(const FuncDataBase&,const std::string&,
-		  const int,const std::string&,const std::vector<T>&);
 
   template<typename T>
   std::vector<T> getVarVec(const FuncDataBase&,const std::string&);

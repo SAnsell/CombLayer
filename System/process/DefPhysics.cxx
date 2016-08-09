@@ -3,7 +3,7 @@
  
  * File:   process/DefPhysics.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -115,11 +115,8 @@ setItemRotate(const attachSystem::FixedComp& WMaster,
     TwinPtr=OR.getObject<attachSystem::SecondTrack>(ItemName);  
   if (!TwinPtr)
     {
-      const attachSystem::FixedComp* 
-	ItemPtr=OR.getObject<attachSystem::FixedComp>(ItemName);  
-      if (!ItemPtr)
-	throw ColErr::InContainerError<std::string>(ItemName,
-						    "Object not found");
+      const attachSystem::FixedComp* ItemPtr=
+	OR.getObjectThrow<attachSystem::FixedComp>(ItemName,"FixedComp");  
       
       newOrigin=ItemPtr->getCentre();
       QA=Geometry::Quaternion::basisRotate(WMaster.getX(),
@@ -181,6 +178,34 @@ setDefRotation(const mainSystem::inputParam& IParam)
 		   (1,0,Geometry::Vec3D(0,0,0),
 		    Geometry::Vec3D(1,0,0)));
     }
+
+  if (IParam.flag("offset"))
+    {
+      const std::string AItem=
+	IParam.getValue<std::string>("offset");
+      const std::string BItem=(IParam.itemCnt("offset",0)>1) ?
+	IParam.getValue<std::string>("offset",1) : "";
+
+      if (AItem=="object" || AItem=="Object")
+	{
+	  const attachSystem::FixedComp* GIPtr=
+	    OR.getObjectThrow<attachSystem::FixedComp>(BItem,"FixedComp");
+	  const std::string CItem=
+            IParam.getDefValue<std::string>("0","offset",2);
+          const long int linkIndex=attachSystem::getLinkIndex(CItem);
+          ELog::EM<<"Offset at "<<GIPtr->getSignedLinkPt(linkIndex)
+                  <<ELog::endDiag;
+	  MR.addDisplace(-GIPtr->getSignedLinkPt(linkIndex));
+	}
+      else if (AItem=="free" || AItem=="FREE")
+	{
+          size_t itemIndex(1);
+          const Geometry::Vec3D OffsetPos=
+            IParam.getCntVec3D("offset",0,itemIndex,"Offset need vec3D");
+	  MR.addDisplace(-OffsetPos);
+	}
+    }
+  
   if (IParam.flag("angle"))
     {
       const std::string AItem=
@@ -188,38 +213,51 @@ setDefRotation(const mainSystem::inputParam& IParam)
       const std::string BItem=(IParam.itemCnt("angle",0)>1) ?
 	IParam.getValue<std::string>("angle",1) : "";
 
-      if (AItem=="chipIR" || AItem=="ChipIR")
-	MR.addRotation(Geometry::Vec3D(0,0,1),
-		       Geometry::Vec3D(0,0,0),
-		       -45.85);
-      else if (AItem=="zoom" || AItem=="Zoom")
-	{
-	  MR.addRotation(Geometry::Vec3D(0,0,1),
-			 Geometry::Vec3D(0,0,0),
-			 45.00-180.0);
-	}
-      else if (AItem=="object" || AItem=="Object")
+      if (AItem=="object" || AItem=="Object")
 	{
 	  const attachSystem::FixedComp* GIPtr=
-	    OR.getObject<attachSystem::FixedComp>(BItem);
-	  if (!GIPtr)
-	    throw ColErr::InContainerError<std::string>
-	      (BItem,"Fixed component");
-	  const std::string CItem=IParam.getDefValue<std::string>("2","angle",2);
+	    OR.getObjectThrow<attachSystem::FixedComp>(BItem,"FixedComp");
+	  const std::string CItem=
+            IParam.getDefValue<std::string>("2","angle",2);
           const int ZFlag=IParam.getDefValue<int>(1,"angle",3);
 	  const long int axisIndex=attachSystem::getLinkIndex(CItem);
-	  // Y is beam direction -- Alignment along X
-	  const Geometry::Vec3D AxisVec=
-	    GIPtr->getSignedLinkAxis(axisIndex);
+
+          const Geometry::Vec3D AxisVec=
+            GIPtr->getSignedLinkAxis(axisIndex);
+
+          // Align item such that we put the object linkPt at +ve X
+          const Geometry::Vec3D ZRotAxis=GIPtr->getZ();
+
 	  const double angle=180.0*acos(AxisVec[0])/M_PI;
 	  MR.addRotation(GIPtr->getZ(),
                          Geometry::Vec3D(0,0,0),ZFlag*angle);
-	  // Z rotation.
-	  ELog::EM<<"AXIS["<<ZFlag<<"] == "<<AxisVec<<ELog::endDiag;
-		  
+          // Z rotation.
 	  const double angleZ=90.0-180.0*acos(-AxisVec[2])/M_PI;
 	  MR.addRotation(GIPtr->getX(),Geometry::Vec3D(0,0,0),-angleZ);
+          ELog::EM<<"ROTATION AXIS["<<ZFlag<<"] == "
+                  <<AxisVec<<ELog::endDiag;
+
 	}
+      else  if (AItem=="objPoint" || AItem=="ObjPoint")
+        {
+	  const attachSystem::FixedComp* GIPtr=
+	    OR.getObjectThrow<attachSystem::FixedComp>(BItem,"FixedComp");
+	  const std::string CItem=
+            IParam.getDefValue<std::string>("2","angle",2);
+
+          const int zeroFlag=IParam.getDefValue<int>(0,"angle",3);
+	  const long int sideIndex=attachSystem::getLinkIndex(CItem);
+          
+          Geometry::Vec3D LP=GIPtr->getSignedLinkPt(sideIndex);
+          LP=LP.cutComponent(Geometry::Vec3D(0,0,1));
+          ELog::EM<<"LP == "<<LP<<ELog::endDiag;
+          LP.makeUnit();
+
+          double angleZ=180.0*acos(LP[0])/M_PI;
+          if (LP[1]>0.0) angleZ*=-1;
+          MR.addRotation(Geometry::Vec3D(0,0,1),
+                         Geometry::Vec3D(0,0,0),angleZ);
+        }
       else if (AItem=="free" || AItem=="FREE")
 	{
 	  const double rotAngle=
@@ -230,26 +268,6 @@ setDefRotation(const mainSystem::inputParam& IParam)
       else 
 	retFlag=AItem;
     }
-
-  if (IParam.compValue("isolate",std::string("chipIR")))
-    {
-      MR.addRotation(Geometry::Vec3D(1,0,0),
-		     Geometry::Vec3D(0,0,0),
-		     -90);
-      MR.addMirror(Geometry::Plane
-		   (1,0,Geometry::Vec3D(0,0,0),
-		    Geometry::Vec3D(0,0,1)));
-      MR.addRotation(Geometry::Vec3D(0,0,1),
-		     Geometry::Vec3D(0,0,0),
-		     180);
-      MR.addMirror(Geometry::Plane
-		   (19,0,Geometry::Vec3D(0,0,0),
-		    Geometry::Vec3D(0,1,0)));
-
-    }
-
-      //   MR.addDisplace(Geometry::Vec3D(-1175.0,0,0));
-
   return retFlag;
 }
 
@@ -300,25 +318,41 @@ setDefaultPhysics(Simulation& System,
 {
   ELog::RegMethod RegA("DefPhysics","setDefaultPhysics");
 
+  // LCA ielas ipreq iexisa ichoic jcoul nexite npidk noact icem ilaq 
+  // LEA ipht icc nobalc nobale ifbrk ilvden ievap nofis
+  physicsSystem::PhysicsCards& PC=System.getPC();
+  physicsSystem::LSwitchCard& lea=PC.getLEA();
+
+  const std::string PModel=IParam.getValue<std::string>("physModel");
+  setPhysicsModel(lea,PModel);
+
+  PC.setNPS(IParam.getValue<int>("nps"));
+  PC.setRND(IParam.getValue<long int>("random"));	
+  PC.setVoidCard(IParam.flag("void"));
+
   // If Reactor stuff set and void
   if (IParam.hasKey("kcode") && IParam.dataCnt("kcode"))
     {
       setReactorPhysics(System,IParam);
       return;
     }
+  if (IParam.hasKey("neutronOnly"))
+    {
+      setNeutronPhysics(System);
+      return;
+    }
 
   const FuncDataBase& Control=System.getDataBase();
   
-  std::string PList("n h / d t s a");
+  std::string PList("h / d t s a");
   const double maxEnergy=Control.EvalDefVar<double>("sdefEnergy",2000.0);
   const double elcEnergy=IParam.getValue<double>("electron");
   const double phtEnergy=IParam.getValue<double>("photon");
   const double phtModel=IParam.getValue<double>("photonModel");
   const std::string elcAdd((elcEnergy>0 ? " e" : ""));
 
-  physicsSystem::PhysicsCards& PC=System.getPC();
   PC.setMode("n p "+PList+elcAdd);
-  PC.setPrintNum("10 110");
+  PC.setPrintNum("10 20 50 110");
   System.processCellsImp();
 
   PC.setCells("imp",1,0);            // Set a zero cell	  
@@ -363,20 +397,41 @@ setDefaultPhysics(Simulation& System,
 	PC.addPhysCard<physicsSystem::PStandard>("phys","h");
   ph->setValues(EMax);
 
-  // LCA ielas ipreq iexisa ichoic jcoul nexite npidk noact icem ilaq 
-  // LEA ipht icc nobalc nobale ifbrk ilvden ievap nofis
-  physicsSystem::LSwitchCard& lea=PC.getLEA();
-
-  const std::string PModel=IParam.getValue<std::string>("physModel");
-  setPhysicsModel(lea,PModel);
-
-  PC.setNPS(IParam.getValue<int>("nps"));
-  PC.setRND(IParam.getValue<long int>("random"));	
-  PC.setVoidCard(IParam.flag("void"));
   
   return; 
 }
 
+
+void 
+setNeutronPhysics(Simulation& System)
+  /*!
+    Set the neutron Physics
+    \param System :: Simulation
+  */
+{
+  ELog::RegMethod RegA("DefPhysics","setDefaultPhysics");
+
+  const FuncDataBase& Control=System.getDataBase();
+  
+  const double maxEnergy=Control.EvalDefVar<double>("sdefEnergy",2000.0);
+  const std::string EMax=StrFunc::makeString(maxEnergy);
+  
+  physicsSystem::PhysicsCards& PC=System.getPC();
+  PC.setMode("n");
+  PC.setPrintNum("10 20 50 110");
+  System.processCellsImp();
+  PC.setCells("imp",1,0);            // Set a zero cell
+  
+  physicsSystem::PStandard* NCut=
+    PC.addPhysCard<physicsSystem::PStandard>("cut","n");
+  NCut->setValues(4,1.0e+8,0.0,0.4,-0.1);
+  // Process physics
+  physicsSystem::PStandard* pn=
+	PC.addPhysCard<physicsSystem::PStandard>("phys","n");
+  pn->setValues(EMax+" 0.0 j j j");
+  
+  return; 
+}
 
 
 void 
@@ -391,6 +446,8 @@ setReactorPhysics(Simulation& System,
   ELog::RegMethod RegA("DefPhysics","setDefaultPhysics");
 
   const FuncDataBase& Control=System.getDataBase();
+
+  physicsSystem::PhysicsCards& PC=System.getPC();
   
   std::string PList("");
   const double maxEnergy=Control.EvalDefVar<double>("sdefEnergy",20.0);
@@ -399,11 +456,9 @@ setReactorPhysics(Simulation& System,
   const double phtModel=IParam.getValue<double>("photonModel");
   const std::string elcAdd((elcEnergy>0 ? " e" : ""));
 
-  System.getPC().setMode("n p "+PList+elcAdd);
-  System.getPC().setPrintNum("10 110");
+  PC.setMode("n p "+PList+elcAdd);
+  PC.setPrintNum("10 110");
   System.processCellsImp();
-  physicsSystem::PhysicsCards& PC=System.getPC();
-
   PC.setCells("imp",1,0);            // Set a zero cell
   
   physicsSystem::PStandard* NCut=
@@ -445,18 +500,6 @@ setReactorPhysics(Simulation& System,
   physicsSystem::PStandard* ph=
 	PC.addPhysCard<physicsSystem::PStandard>("phys","h");
   ph->setValues(EMax);
-
-
-  // LCA ielas ipreq iexisa ichoic jcoul nexite npidk noact icem ilaq 
-  // LEA ipht icc nobalc nobale ifbrk ilvden ievap nofis
-  physicsSystem::LSwitchCard& lea=PC.getLEA();
-  // GORAN
-  const std::string PModel=IParam.getValue<std::string>("physModel");
-  setPhysicsModel(lea,PModel);
-
-  PC.setNPS(IParam.getValue<int>("nps"));
-  PC.setRND(IParam.getValue<long int>("random"));	
-  PC.setVoidCard(IParam.flag("void"));
   
   return; 
 }

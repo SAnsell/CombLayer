@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   delft/IrradElement.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,6 +63,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 
 #include "FuelLoad.h"
@@ -81,6 +82,7 @@ IrradElement::IrradElement(const size_t XI,const size_t YI,
     Constructor BUT ALL variable are left unpopulated.
     \param XI :: Grid index  [A-F]
     \param YI :: Grid index 
+    \param Key :: Keyname for block
   */
 {}
 
@@ -138,15 +140,14 @@ IrradElement::operator=(const IrradElement& A)
 }
 
 void
-IrradElement::populate(const Simulation& System)
+IrradElement::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     Requires that unset values are copied from previous block
-    \param System :: Simulation to use
+    \param Control :: DataBase for variables
   */
 {
   ELog::RegMethod RegA("IrradElement","populate");
-  const FuncDataBase& Control=System.getDataBase();
 
   Width=ReactorGrid::getElement<double>
     (Control,keyName+"Width",XIndex,YIndex);
@@ -200,13 +201,14 @@ IrradElement::populate(const Simulation& System)
 }
 
 void
-IrradElement::createUnitVector(const FixedComp& FC,
-			      const Geometry::Vec3D& OG)
+IrradElement::createUnitVector(const attachSystem::FixedComp& FC,
+			       const Geometry::Vec3D& OG)
   /*!
     Create the unit vectors
     - Y Down the beamline
+
     \param FC :: Reactor Grid Unit
-    \param OG :: Orgin
+    \param OG :: Origin
   */
 {
   ELog::RegMethod RegA("IrradElement","createUnitVector");
@@ -363,18 +365,20 @@ IrradElement::createLinks()
 }
 
 void
-IrradElement::createAll(Simulation& System,const FixedComp& RG,
+IrradElement::createAll(Simulation& System,
+			const attachSystem::FixedComp& RG,
 			const Geometry::Vec3D& OG,
 			const FuelLoad&)
   /*!
-    Global creation of the hutch
+    Global creation of the element block
     \param System :: Simulation to add vessel to
     \param RG :: Fixed Unit
     \param OG :: Origin
+    \param :: FuelLoad not used [not fuel!]
   */
 {
   ELog::RegMethod RegA("IrradElement","createAll");
-  populate(System);
+  populate(System.getDataBase());
 
   createUnitVector(RG,OG);
   createSurfaces(RG);

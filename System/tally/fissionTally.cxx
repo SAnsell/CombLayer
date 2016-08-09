@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   tally/cellFluxTally.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,10 +60,10 @@ fissionTally::fissionTally(const int ID) :
 {}
 
 fissionTally::fissionTally(const fissionTally& A) :
-  Tally(A),cellList(A.cellList),FSfield(A.FSfield),
-  SDfield(A.SDfield)
+  Tally(A),cellList(A.cellList),FSfield(A.FSfield)
+
   /*!
-    Copy Constructore
+    Copy Constructor
     \param A :: fissionTally object to copy
   */
 { }
@@ -91,7 +91,6 @@ fissionTally::operator=(const fissionTally& A)
       Tally::operator=(A);
       cellList=A.cellList;
       FSfield=A.FSfield;
-      SDfield=A.SDfield;
     }
   return *this;
 }
@@ -102,19 +101,6 @@ fissionTally::~fissionTally()
   */
 {}
 
-void
-fissionTally::setSD(const double V)
-  /*!
-    Sets a constant value for all FS fields.
-    \param V :: Item to add
-  */
-{
-  SDfield.clear();
-  const int N=FSfield.count();
-  for(int i=0;i<N || i<1;i++)
-    SDfield.addComp(V);
-  return;
-}
 
 std::vector<int>
 fissionTally::getCells() const

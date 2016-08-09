@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   ESSBeam/odin/ODIN.cxx
+ * File:   ESSBeam/shortOdin/shortODIN.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,21 +58,18 @@
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Simulation.h"
-#include "debugMethod.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
-#include "ContainedGroup.h"
-#include "SecondTrack.h"
+#include "CopiedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "World.h"
 #include "AttachSupport.h"
-#include "Jaws.h"
 #include "GuideLine.h"
 #include "DiskChopper.h"
 #include "VacuumBox.h"
@@ -91,52 +88,54 @@
 namespace essSystem
 {
 
-shortODIN::shortODIN() :
-  odinAxis(new attachSystem::FixedComp("shortOdinAxis",4)),
-  VacBoxA(new constructSystem::VacuumBox("shortOdinVacA")),
-  VPipeA(new constructSystem::VacuumPipe("shortOdinPipeA")),
-  FocusB(new beamlineSystem::GuideLine("shortOdinFB")),
-  BladeChopper(new constructSystem::DiskChopper("shortOdinBlade")),
+shortODIN::shortODIN(const std::string& keyName) :
+  attachSystem::CopiedComp("shortOdin",keyName),
+  stopPoint(0),
+  odinAxis(new attachSystem::FixedComp(newName+"Axis",4)),
+  VacBoxA(new constructSystem::VacuumBox(newName+"VacA")),
+  VPipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
+  FocusB(new beamlineSystem::GuideLine(newName+"FB")),
+  BladeChopper(new constructSystem::DiskChopper(newName+"Blade")),
   
-  VacBoxB(new constructSystem::VacuumBox("shortOdinVacB")),
-  T0House(new constructSystem::ChopperHousing("shortOdinT0House")),
-  VPipeB(new constructSystem::VacuumPipe("shortOdinPipeB")),
-  FocusC(new beamlineSystem::GuideLine("shortOdinFC")),
-  T0Chopper(new constructSystem::DiskChopper("shortOdinTZero")),
+  VacBoxB(new constructSystem::VacuumBox(newName+"VacB")),
+  T0House(new constructSystem::ChopperHousing(newName+"T0House")),
+  VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
+  FocusC(new beamlineSystem::GuideLine(newName+"FC")),
+  T0Chopper(new constructSystem::DiskChopper(newName+"TZero")),
 
-  VPipeFinal(new constructSystem::VacuumPipe("shortOdinPipeFinal")),
-  FocusFinal(new beamlineSystem::GuideLine("shortOdinFFinal")),
+  VPipeFinal(new constructSystem::VacuumPipe(newName+"PipeFinal")),
+  FocusFinal(new beamlineSystem::GuideLine(newName+"FFinal")),
   
-  GuideA(new beamlineSystem::GuideLine("shortOdinGA")),
+  GuideA(new beamlineSystem::GuideLine(newName+"GA")),
 
-  GuideB(new beamlineSystem::GuideLine("shortOdinGB")),
-  BInsert(new BunkerInsert("shortOdinBInsert")),
-  GuideC(new beamlineSystem::GuideLine("shortOdinGC")),
-  GuideD(new beamlineSystem::GuideLine("shortOdinGD")),
+  GuideB(new beamlineSystem::GuideLine(newName+"GB")),
+  BInsert(new BunkerInsert(newName+"BInsert")),
+  GuideC(new beamlineSystem::GuideLine(newName+"GC")),
+  GuideD(new beamlineSystem::GuideLine(newName+"GD")),
 
-  PitA(new constructSystem::ChopperPit("shortOdinPitA")),
-  GuidePitAFront(new beamlineSystem::GuideLine("shortOdinGPitAFront")),
-  GuidePitABack(new beamlineSystem::GuideLine("shortOdinGPitABack")),
-  ChopperA(new constructSystem::DiskChopper("shortOdinChopperA")),
+  PitA(new constructSystem::ChopperPit(newName+"PitA")),
+  GuidePitAFront(new beamlineSystem::GuideLine(newName+"GPitAFront")),
+  GuidePitABack(new beamlineSystem::GuideLine(newName+"GPitABack")),
+  ChopperA(new constructSystem::DiskChopper(newName+"ChopperA")),
 
-  GuideE(new beamlineSystem::GuideLine("shortOdinGE")),
+  GuideE(new beamlineSystem::GuideLine(newName+"GE")),
 
-  PitB(new constructSystem::ChopperPit("shortOdinPitB")),
-  GuidePitBFront(new beamlineSystem::GuideLine("shortOdinGPitBFront")),
-  GuidePitBBack(new beamlineSystem::GuideLine("shortOdinGPitBBack")),
-  ChopperB(new constructSystem::DiskChopper("shortOdinChopperB")),
-  GuideF(new beamlineSystem::GuideLine("shortOdinGF")),
+  PitB(new constructSystem::ChopperPit(newName+"PitB")),
+  GuidePitBFront(new beamlineSystem::GuideLine(newName+"GPitBFront")),
+  GuidePitBBack(new beamlineSystem::GuideLine(newName+"GPitBBack")),
+  ChopperB(new constructSystem::DiskChopper(newName+"ChopperB")),
+  GuideF(new beamlineSystem::GuideLine(newName+"GF")),
 
-  PitC(new constructSystem::ChopperPit("shortOdinPitC")),
-  GuidePitCFront(new beamlineSystem::GuideLine("shortOdinGPitCFront")),
-  GuidePitCBack(new beamlineSystem::GuideLine("shortOdinGPitCBack")),
-  GuideG(new beamlineSystem::GuideLine("shortOdinGG")),
+  PitC(new constructSystem::ChopperPit(newName+"PitC")),
+  GuidePitCFront(new beamlineSystem::GuideLine(newName+"GPitCFront")),
+  GuidePitCBack(new beamlineSystem::GuideLine(newName+"GPitCBack")),
+  GuideG(new beamlineSystem::GuideLine(newName+"GG")),
 
-  Cave(new essSystem::Hut("shortOdinCave")),
-  GuideH(new beamlineSystem::GuideLine("shortOdinGH")),
-  PinA(new PinHole("shortOdinPin")),
+  Cave(new essSystem::Hut(newName+"Cave")),
+  GuideH(new beamlineSystem::GuideLine(newName+"GH")),
+  PinA(new constructSystem::PinHole(newName+"Pin")),
 
-  BeamStop(new RentrantBS("shortOdinBeamStop"))
+  BeamStop(new RentrantBS(newName+"BeamStop"))
  /*!
     Constructor
  */
@@ -276,7 +275,6 @@ shortODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
 {
   // For output stream
   ELog::RegMethod RegA("shortODIN","build");
-  ELog::debugMethod DA;
 
   ELog::EM<<"\nBuilding shortODIN on : "<<GItem.getKeyName()<<ELog::endDiag;
   setBeamAxis(GItem,1);
@@ -289,7 +287,6 @@ shortODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
   VPipeA->addInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeA->setFront(GItem.getKey("Beam"),2);
   VPipeA->setBack(*VacBoxA,1);
-  VPipeA->setDivider(GItem.getKey("Beam"),2);
   VPipeA->createAll(System,GItem.getKey("Beam"),2);
 
   FocusB->addInsertCell(VPipeA->getCells("Void"));
@@ -344,7 +341,7 @@ shortODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
   HeadRule GuideCut=
     attachSystem::unionLink(GuideD->getKey("Shield"),{2,3,4,5,6});
   PitA->addInsertCell(voidCell);
-  PitA->createAll(System,GuideD->getKey("Guide0"),2,GuideCut.display());
+  PitA->createAll(System,GuideD->getKey("Guide0"),2);
 
   ELog::EM<<"PitA == "<<PitA->getCentre()
 	  <<" :: "<<PitA->getCentre().abs()<<ELog::endDebug;
@@ -378,7 +375,7 @@ shortODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
   // Guide guide String
   GuideCut=attachSystem::unionLink(GuideE->getKey("Shield"),{2,3,4,5,6});
   PitB->addInsertCell(voidCell);
-  PitB->createAll(System,GuideE->getKey("Guide0"),2,GuideCut.display());
+  PitB->createAll(System,GuideE->getKey("Guide0"),2);
 
   ChopperB->addInsertCell(PitB->getCell("Void"));
   ChopperB->setCentreFlag(-3);  // -Z direction
@@ -412,7 +409,7 @@ shortODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
   for(size_t i=1;i<6;i++)
     GuideCut.addUnion(GOuterC.getLinkString(i));
   PitC->addInsertCell(voidCell);
-  PitC->createAll(System,GuideF->getKey("Guide0"),2,GuideCut.display());
+  PitC->createAll(System,GuideF->getKey("Guide0"),2);
 
   ELog::EM<<"PitC == "<<PitC->getCentre()
 	  <<" :: "<<PitC->getCentre().abs()<<ELog::endDebug;
@@ -438,7 +435,7 @@ shortODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
 
   GuideCut=attachSystem::unionLink(GuideG->getKey("Shield"),{3,4,5,6});
   Cave->addInsertCell(voidCell);  
-  Cave->createAll(System,GuideG->getKey("Guide0"),2,GuideCut.display());
+  Cave->createAll(System,GuideG->getKey("Guide0"),2);
 
   // runs through wall and into void 
   GuideH->addInsertCell(Cave->getCell("VoidNose"));

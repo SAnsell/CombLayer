@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/VOR.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,6 +39,7 @@ namespace constructSystem
   class Jaws;
   class DiskChopper;
   class ChopperPit;
+  class ChopperUnit;
   class RotaryCollimator;
   class VacuumBox;
   class VacuumPipe;
@@ -67,57 +68,45 @@ class VOR : public attachSystem::CopiedComp
   int stopPoint;  
 
   /// Main Beam Axis [for construction]
-  std::shared_ptr<attachSystem::FixedComp> vorAxis;
+  std::shared_ptr<attachSystem::FixedOffset> vorAxis;
 
   /// Elliptic forcus in bulkshield [m5]
   std::shared_ptr<beamlineSystem::GuideLine> FocusA;
+
+   /// Pipe between in gamma sheild
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeB;
+  /// Elliptic guide from 5.5 to 6 metre
+  std::shared_ptr<beamlineSystem::GuideLine> FocusB;
+
+  /// Pipe from gamma shield to first chopper [at 9.5m]
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeC;
+  /// Elliptic guide from 6m to 9.5m
+  std::shared_ptr<beamlineSystem::GuideLine> FocusC;
+
   /// Vac box for first chopper
-  std::shared_ptr<constructSystem::VacuumBox> VacBoxA;
+  std::shared_ptr<constructSystem::ChopperUnit> ChopperA;
   /// Double disk chopper
   std::shared_ptr<constructSystem::DiskChopper> DDisk;
-  /// Double disk chopper Housing
-  std::shared_ptr<constructSystem::ChopperHousing> DDiskHouse;
-  /// Pipe between chopper 1 and the wall
-  std::shared_ptr<constructSystem::VacuumPipe> VPipeB;
-  /// Elliptic forcus in bulkshield [m2.5]
-  std::shared_ptr<beamlineSystem::GuideLine> FocusB;
+
+
+  /// Pipe to bunker Insert
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeD;
+  /// Elliptic guide to bunker inset
+  std::shared_ptr<beamlineSystem::GuideLine> FocusD;
   /// Bunker insert
   std::shared_ptr<essSystem::BunkerInsert> BInsert;
   /// Elliptic forcus in bulkshield [m2.5] 
-  std::shared_ptr<beamlineSystem::GuideLine> FocusBExtra;
+  std::shared_ptr<beamlineSystem::GuideLine> FocusWall;
 
-   /// Chopper pit for first outer bunker chopper
-  std::shared_ptr<constructSystem::ChopperPit> PitA;
-  /// Guide from Chopper to exterior
-  std::shared_ptr<beamlineSystem::GuideLine> GuidePitAFront;
-  /// Guide from Chopper to exterior
-  std::shared_ptr<beamlineSystem::GuideLine> GuidePitABack;
-  /// Guide from Chopper to exterior
-  std::shared_ptr<constructSystem::DiskChopper> ChopperA;
-
-  /// Elliptic focus in bulkshield [m2.5]
-  std::shared_ptr<beamlineSystem::GuideLine> FocusC;
-
-  /// Chopper pit for first outer bunker chopper
-  std::shared_ptr<constructSystem::ChopperPit> PitB;
-  /// Guide from Chopper to exterior
-  std::shared_ptr<beamlineSystem::GuideLine> GuidePitBFront;
-  /// Guide from Chopper to exterior
-  std::shared_ptr<beamlineSystem::GuideLine> GuidePitBBack;
-  /// Guide from Chopper to exterior
-  std::shared_ptr<constructSystem::DiskChopper> ChopperB;
-
-  /// Elliptic focus in bulkshield [m2.5]
-  std::shared_ptr<beamlineSystem::GuideLine> FocusD;
-
-  /// Elliptic focus in bulkshield [m2.5]
-  std::shared_ptr<beamlineSystem::GuideLine> FocusE;
-
+  /// First outer shield section
+  std::shared_ptr<constructSystem::LineShield> ShieldA;
+  /// Pipe leaving bunker
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeOutA;
+  /// Guide leaving the bunker wall
+  std::shared_ptr<beamlineSystem::GuideLine> FocusOutA;  
 
   /// Cave
   std::shared_ptr<DHut> Cave;
-  /// Guide entering the cave
-  std::shared_ptr<beamlineSystem::GuideLine> FocusF;
   
   /// Detector tank
   std::shared_ptr<DetectorTank> Tank;
@@ -126,7 +115,7 @@ class VOR : public attachSystem::CopiedComp
   std::shared_ptr<instrumentSystem::CylSample> Sample;
 
   
-  void setBeamAxis(const GuideItem&,const bool);
+  void setBeamAxis(const FuncDataBase&,const GuideItem&,const bool);
   
  public:
   

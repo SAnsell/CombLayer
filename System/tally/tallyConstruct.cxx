@@ -3,7 +3,7 @@
  
  * File:   tally/tallyConstruct.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,6 +57,7 @@
 #include "Simulation.h"
 #include "inputParam.h"
 #include "MeshGrid.h"
+#include "NList.h"
 #include "NRange.h"
 #include "pairRange.h"
 #include "Tally.h"
@@ -202,15 +203,17 @@ tallyConstruct::tallySelection(Simulation& System,
       else if (TType=="mesh")
 	meshPtr->processMesh(System,IParam,i);
       else if (TType=="flux")
-	workFlag+=fluxPtr->processFlux(System,IParam,i,0);
+	workFlag+=fluxPtr->processFlux(System,IParam,i);
       else if (TType=="fission")
 	workFlag+=fissionPtr->processPower(System,IParam,i,0);
       else if (TType=="heat")
 	heatPtr->processHeat(System,IParam,i);
       else if (TType=="item")
 	itemPtr->processItem(System,IParam,i);
-      else if (TType=="surface")
-	workFlag+=surfPtr->processSurface(System,IParam,i);
+      else if (TType=="surface" || TType=="surfCurrent")
+	workFlag+=surfPtr->processSurfaceCurrent(System,IParam,i);
+      else if (TType=="surfFlux" || TType=="surfaceFlux")
+	workFlag+=surfPtr->processSurfaceFlux(System,IParam,i);
       else
 	ELog::EM<<"Unable to understand tally type :"<<TType<<ELog::endErr;
     }
@@ -240,7 +243,7 @@ tallyConstruct::tallyRenumber(Simulation& System,
 	IParam.getValue<std::string>("tally",i,0);
 
       if (TType=="flux")
-	fluxPtr->processFlux(System,IParam,i,1);
+	fluxPtr->processFlux(System,IParam,i);
       else if (TType=="heat")
 	heatPtr->processHeat(System,IParam,i);
     }

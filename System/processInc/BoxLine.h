@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   processInc/BoxLine.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,18 +47,23 @@ class BoxLine
 
   std::vector<boxValues> CV;          ///< Section Values [ one for layer]
   std::vector<Geometry::Vec3D> Pts;   ///< Points in pipe
+
+  std::map<size_t,HeadRule> layerSurf;   ///< Outgoing surface
+  std::map<size_t,HeadRule> commonSurf;  ///< common surface
+
+  std::map<size_t,std::set<int> > segExtra;  ///< Extra components to add
   std::vector<size_t> activeFlags;    ///< Activity flags : one for each PUnit
 
   std::vector<boxUnit*> PUnits;       ///< pipeUnits (1 less than Pts)
-
-  std::string InitSurf;               ///< Initial surface string [if used]
+  std::string startSurf;             ///< Start surface
+  
 
   void clearPUnits();
   void copyPUnits(const BoxLine&);
 
+  void forcedInsertCells(const size_t);
+
   int createUnits(Simulation&);
-  void createSurfaces();
-  void createObjects();
   void insertPipe(Simulation&);
 
 
@@ -69,19 +74,34 @@ class BoxLine
   BoxLine& operator=(const BoxLine&);
   ~BoxLine();
 
+  /// Number of point in pipe
+  size_t nPoints() const { return Pts.size(); }
   /// Debug accessor
   const std::vector<Geometry::Vec3D>& getPt() const
     { return Pts; }
       
   void setPoints(const std::vector<Geometry::Vec3D>&);  
   void addPoint(const Geometry::Vec3D&);
+  void addSurfPoint(const Geometry::Vec3D&,const std::string&);
+  void addSurfPoint(const Geometry::Vec3D&,const std::string&,
+		    const std::string&);
+
   void addSection(const double,const double,
 		  const int,const double);
   void setActive(const size_t,const size_t);
   void setInitZAxis(const Geometry::Vec3D&);
-  void setInitSurfaces(const std::string&);
+  void setStartSurf(const std::string&);
+
+  void addInsertCell(const size_t,const int);
 
   void insertPipeToCell(Simulation&,const int);
+
+
+  const HeadRule& getCap(const size_t,const int) const;
+  const boxUnit& first() const;
+  const boxUnit& last() const; 
+
+  
   void createAll(Simulation&);
     
 };

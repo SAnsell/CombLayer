@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   attachComp/LinkSupport.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -131,13 +131,13 @@ getAttachPoint(const std::string& FCName,
   // All these calls throw on error
   if (index<0)
     {
-      Pt=FC->getLinkPt(static_cast<size_t>(-index));
-      YAxis=-FC->getLinkAxis(static_cast<size_t>(-index));
+      Pt=FC->getLinkPt(static_cast<size_t>(-1-index));
+      YAxis=-FC->getLinkAxis(static_cast<size_t>(-1-index));
     }
   else if (index>0)
     {
-      Pt=FC->getLinkPt(static_cast<size_t>(index));
-      YAxis=-FC->getLinkAxis(static_cast<size_t>(index));
+      Pt=FC->getLinkPt(static_cast<size_t>(index-1));
+      YAxis=-FC->getLinkAxis(static_cast<size_t>(index-1));
     }
   else
     {
@@ -145,6 +145,96 @@ getAttachPoint(const std::string& FCName,
       YAxis=-FC->getY();
     }
   return 1;
+}
+
+int
+getAttachPointWithXYZ(const std::string& FCName,
+                      const std::string& linkName,
+                      Geometry::Vec3D& Pt,
+                      Geometry::Vec3D& XAxis,
+                      Geometry::Vec3D& YAxis,
+                      Geometry::Vec3D& ZAxis)
+  /*!
+    Takes the linkName and the fixed object and converts
+    this into the direction and point.
+    - Note that link points are +1 offset and 
+    \param FCName :: Name for the fixed object
+    \param linkName :: Name/number for the link point
+    \param Pt :: Link point [out]
+    \param XAxis :: X Out
+    \param YAxis :: Y Out
+    \param ZAxis :: Z Out
+    \return 1 on success / 0 on fail
+  */
+{
+  ELog::RegMethod RegA("LinkSupport","getAttachPointWithXYZ");
+
+  const ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  const FixedComp* FC=
+    OR.getObject<attachSystem::FixedComp>(FCName);
+  if (!FC) return 0;
+
+  const long int index=getLinkIndex(linkName);
+  // All these calls throw on error
+  if (index<0)
+    {
+      Pt=FC->getLinkPt(static_cast<size_t>(-1-index));
+      YAxis=-FC->getLinkAxis(static_cast<size_t>(-1-index));
+    }
+  else if (index>0)
+    {
+      Pt=FC->getLinkPt(static_cast<size_t>(index-1));
+      YAxis=-FC->getLinkAxis(static_cast<size_t>(index-1));
+    }
+  else
+    {
+      Pt=FC->getCentre();
+      YAxis=-FC->getY();
+    }
+  
+  ZAxis=FC->getZ();
+  XAxis= -(YAxis*ZAxis).unit();
+  return 1;
+}
+
+size_t 
+getPoint(const std::vector<std::string>& StrItem,
+	 const size_t index,
+	 Geometry::Vec3D& Pt)
+/*!
+    Get a vector based on a StrItem  ether using a
+    a name unit or a value.
+    \param StrItem :: List of strings
+    \param index :: Place to start in list
+    \param Pt :: Point found
+    \return 1 on success / 0 on failure
+   */
+{
+  ELog::RegMethod RegA("LinkSupport[F]","getPoint");
+
+  const size_t NS(StrItem.size());
+  // Simple Vec3D(a,b,c)
+  if (NS>=index && StrFunc::convert(StrItem[index],Pt) )
+    return 1;
+
+  // Test of FixedPoint link
+  if (NS >= index+2)
+    {
+      Geometry::Vec3D YAxis;  
+      if (attachSystem::getAttachPoint
+	  (StrItem[index],StrItem[index+1],Pt,YAxis))
+	return 2;
+    }
+  
+  // Simple vector
+  if (NS >= index+3 && StrFunc::convert(StrItem[index],Pt[0])
+	   && StrFunc::convert(StrItem[index+1],Pt[1])
+	   && StrFunc::convert(StrItem[index+2],Pt[2]) )
+    return 3;
+
+  return 0;
 }
 
 }  // NAMESPACE attachSystem

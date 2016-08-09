@@ -50,6 +50,7 @@
 #include "support.h"
 #include "mathSupport.h"
 #include "stringCombine.h"
+#include "NList.h"
 #include "NRange.h"
 #include "Tally.h"
 #include "TallyCreate.h"
@@ -104,6 +105,34 @@ ZoneUnit<T>::findItem(const int cellN) const
     }
   return 0;
 }
+
+template<typename T>
+MapSupport::Range<int>
+ZoneUnit<T>::createMapRange(std::vector<int>& CellList)
+  /*!
+    Convert the first range inthe vector into a Range
+    then remove the component
+  */
+{
+  ELog::RegMethod RegA("ZoneUnit","createMapRange");
+  
+  if (CellList.empty())
+    throw ColErr::EmptyValue<int>("CellList");
+
+  int ACell(CellList.front());
+  int BCell(ACell);
+    
+  std::vector<int>::iterator vc=CellList.begin()+1;
+  while(vc!=CellList.end() &&
+	*vc== BCell+1)
+    {
+      BCell++;  // care here because BCell must not increase if vc==end
+      vc++;
+    }
+  CellList.erase(CellList.begin(),vc);
+  return MapSupport::Range<int>(ACell,BCell);
+    
+}
   
 template<typename T>
 bool
@@ -128,12 +157,11 @@ ZoneUnit<T>::procZone(std::vector<std::string>& StrItem)
     {
       const ModelSupport::objectRegister& OR= 
 	ModelSupport::objectRegister::Instance();
-      const int cellN=OR.getCell(StrItem[1]);
-      const int rangeN=OR.getRange(StrItem[1]);
-      ELog::EM<<"Cells == "<<cellN<<" "<<rangeN<<ELog::endDiag;
-      if (cellN==0)
-	throw ColErr::InContainerError<std::string>(StrItem[1],"Object name");
-      Zones.push_back(MapSupport::Range<int>(cellN,cellN+rangeN));
+      std::vector<int> cellN=OR.getObjectRange(StrItem[1]);
+      while(!cellN.empty())
+	{
+	  Zones.push_back(createMapRange(cellN));
+	}
       cut=2;
     }
   else if (NS>=2 && StrItem[0]=="Cells")

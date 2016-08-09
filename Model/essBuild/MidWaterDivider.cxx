@@ -3,7 +3,7 @@
  
  * File:   essBuild/MidWaterDivider.cxx 
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -80,6 +80,7 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "AttachSupport.h"
+#include "SurInter.h"
 #include "geomSupport.h"
 #include "ModBase.h"
 #include "H2Wing.h"
@@ -92,7 +93,7 @@ MidWaterDivider::MidWaterDivider(const std::string& baseKey,
 				 const std::string& extraKey) :
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0,0),
-  attachSystem::FixedComp(baseKey+extraKey,8),
+  attachSystem::FixedComp(baseKey+extraKey,10),
   baseName(baseKey),
   divIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
   cellIndex(divIndex+1)
@@ -203,16 +204,65 @@ MidWaterDivider::createUnitVector(const attachSystem::FixedComp& FC)
 }
 
 void
-MidWaterDivider::createLinks()
+MidWaterDivider::createLinks(const H2Wing& leftWing,
+			     const H2Wing& rightWing)
   /*!
-    Construct links for the triangle moderator
-    The normal 1-3 and 5-6 are plane,
-    7,8,9 are 
+    Construct links:
+    - 1+2 and 3+4 are the triangle surfaces (left/right)
+    - 5+6 and 7+8 are corner points for view
+    - 9+10 are top/bottom
+    
+    \param leftWing :: H2Wing connector  [left]
+    \param rightWing :: H2Wing connector [right side]
   */
 {
   ELog::RegMethod RegA("MidWaterDivider","createLinks");
 
-  // Loop over corners that are bound by convex
+  // main angles
+  FixedComp::setLinkSurf(0, SMap.realSurf(divIndex+103)); 
+  FixedComp::setLinkSurf(1, -SMap.realSurf(divIndex+104));  
+  FixedComp::setLinkSurf(2, SMap.realSurf(divIndex+123));  
+  FixedComp::setLinkSurf(3, -SMap.realSurf(divIndex+124)); 
+
+
+  // small cutting edged
+  FixedComp::setLinkSurf(5, SMap.realSurf(divIndex+111));
+  FixedComp::setLinkSurf(6, SMap.realSurf(divIndex+112));
+  FixedComp::setLinkSurf(7, SMap.realSurf(divIndex+131));  
+  FixedComp::setLinkSurf(8, SMap.realSurf(divIndex+132));  
+
+  std::vector<int> surfN;
+  surfN.push_back(leftWing.getSignedLinkSurf(1));
+  surfN.push_back(leftWing.getSignedLinkSurf(3));
+  surfN.push_back(rightWing.getSignedLinkSurf(1));
+  surfN.push_back(rightWing.getSignedLinkSurf(3));
+
+  // Now deterermine point which are divider points
+  const Geometry::Plane* midPlane=
+    SMap.realPtr<Geometry::Plane>(divIndex+200);
+
+  const std::vector<std::pair<int,int>> InterVec =
+    {
+      {103,104},{103,104},
+      {123,124},{123,124},
+      {111,-2},{112,-3},
+      {131,-1},{132,-4}
+    };
+  const std::vector<Geometry::Vec3D> Axis
+    ({Y,Y,-Y,-Y,Y,Y,-Y,-Y});
+
+  
+  for(size_t index=0;index<InterVec.size();index++)
+    {
+      const std::pair<int,int>& Item(InterVec[index]);
+      const int SA(divIndex+Item.first);
+      const int SB(Item.second>0 ? divIndex+Item.second :
+		   surfN[static_cast<size_t>(-Item.second-1)]);
+      const Geometry::Plane* PA=SMap.realPtr<Geometry::Plane>(SA);
+      const Geometry::Plane* PB=SMap.realPtr<Geometry::Plane>(SB);
+      FixedComp::setConnect
+      	(index,SurInter::getPoint(PA,PB,midPlane),Axis[index]);
+    }
 
   return;
 }
@@ -227,6 +277,8 @@ MidWaterDivider::createSurfaces()
 
   // Mid divider
   ModelSupport::buildPlane(SMap,divIndex+100,Origin,Y);
+  // Mid Vertical divider
+  ModelSupport::buildPlane(SMap,divIndex+200,Origin,Z);
 
   // +Y section
   ModelSupport::buildPlaneRotAxis
@@ -282,7 +334,6 @@ MidWaterDivider::createSurfaces()
   ModelSupport::buildPlane(SMap,divIndex+132,
 			   Origin-leftNorm*(wallThick+length),-leftNorm);
 
-
   return;
 }
  
@@ -293,6 +344,8 @@ MidWaterDivider::createObjects(Simulation& System,
   /*!
     Adds the main components
     \param System :: Simulation to create objects in
+    \param leftWing :: H2Wing connector  [left]
+    \param rightWing :: H2Wing connector [right side]
   */
 {
   ELog::RegMethod RegA("MidWaterDivider","createObjects");
@@ -300,8 +353,8 @@ MidWaterDivider::createObjects(Simulation& System,
   const std::string Base=
     leftWing.getLinkComplement(4)+leftWing.getLinkComplement(5);
   
-  HeadRule LCut(leftWing.getLayerString(cutLayer,6));
-  HeadRule RCut(rightWing.getLayerString(cutLayer,6));
+  HeadRule LCut(leftWing.getLayerString(cutLayer,7));
+  HeadRule RCut(rightWing.getLayerString(cutLayer,7));
 
   LCut.makeComplement();
   RCut.makeComplement();
@@ -335,7 +388,7 @@ MidWaterDivider::createObjects(Simulation& System,
 				 "-100 (-123 : 124) -131 -132 ");
   addOuterUnionSurf(Out);
   
-  
+   
   return;
 }
 
@@ -394,7 +447,7 @@ MidWaterDivider::cutOuterWing(Simulation& System,
   
 Geometry::Vec3D
 MidWaterDivider::getSurfacePoint(const size_t,
-			const size_t) const
+			const long int) const
   /*!
     Given a side and a layer calculate the link point
     \param layerIndex :: layer, 0 is inner moderator [0-6]
@@ -407,8 +460,8 @@ MidWaterDivider::getSurfacePoint(const size_t,
 }
 
 int
-MidWaterDivider::getLayerSurf(const size_t layerIndex,
-		     const size_t sideIndex) const
+MidWaterDivider::getLayerSurf(const size_t,
+                              const long int) const
   /*!
     Given a side and a layer calculate the link point
     \param layerIndex :: layer, 0 is inner moderator [0-3]
@@ -421,8 +474,8 @@ MidWaterDivider::getLayerSurf(const size_t layerIndex,
 }
 
 std::string
-MidWaterDivider::getLayerString(const size_t layerIndex,
-		       const size_t sideIndex) const
+MidWaterDivider::getLayerString(const size_t,
+                                const long int) const
   /*!
     Given a side and a layer calculate the link point
     \param layerIndex :: layer, 0 is inner moderator [0-6]
@@ -431,8 +484,7 @@ MidWaterDivider::getLayerString(const size_t layerIndex,
   */
 {
   ELog::RegMethod RegA("MidWaterDivider","getLayerString");
-
-  throw ColErr::IndexError<size_t>(sideIndex,12,"sideIndex");
+  throw ColErr::AbsObjMethod("Not implemented yet");
 }
 
 
@@ -456,7 +508,7 @@ MidWaterDivider::createAll(Simulation& System,
   createSurfaces();
   createObjects(System,LA,RA);
   cutOuterWing(System,LA,RA);
-  createLinks();
+  createLinks(LA,RA);
   insertObjects(System);       
   return;
 }

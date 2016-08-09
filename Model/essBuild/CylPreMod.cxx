@@ -3,7 +3,7 @@
  
  * File:   essBuild/CylPreMod.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,6 +66,7 @@
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "LayerComp.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -508,7 +509,7 @@ CylPreMod::createLinks()
 
 Geometry::Vec3D
 CylPreMod::getSurfacePoint(const size_t layerIndex,
-			   const size_t sideIndex) const
+			   const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link point
     \param sideIndex :: Side [0-5]
@@ -521,9 +522,14 @@ CylPreMod::getSurfacePoint(const size_t layerIndex,
   if (layerIndex>nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
 
+  if (!sideIndex) return Origin;
+  const size_t SI((sideIndex>0) ?
+                  static_cast<size_t>(sideIndex-1) :
+                  static_cast<size_t>(-1-sideIndex));
+
   if (layerIndex>0)
     {
-      switch(sideIndex)
+      switch(SI)
 	{
 	case 0:
 	  return Origin-Y*(radius[layerIndex-1]);
@@ -541,7 +547,7 @@ CylPreMod::getSurfacePoint(const size_t layerIndex,
     }
   else
     {
-      switch(sideIndex)
+      switch(SI)
 	{
 	case 0:
 	  return Origin-Y*innerRadius;
@@ -555,20 +561,19 @@ CylPreMod::getSurfacePoint(const size_t layerIndex,
 	  return Origin-X*innerRadius;
 	case 5:
 	  return Origin+X*innerRadius;
-
 	}
     }
-  throw ColErr::IndexError<size_t>(sideIndex,6,"sideIndex ");
+  throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex ");
 }
 
 
 int
 CylPreMod::getLayerSurf(const size_t layerIndex,
-			const size_t sideIndex) const
+			const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
-    \param sideIndex :: Side [0-5]
     \param layerIndex :: layer, 0 is inner moderator [0-4]
+    \param sideIndex :: Side [1-6]
     \return Surface string
   */
 {
@@ -579,27 +584,28 @@ CylPreMod::getLayerSurf(const size_t layerIndex,
 
   const int SI(!layerIndex ? modIndex :
 	       10*static_cast<int>(layerIndex-1)+modIndex);
-	       
-  switch(sideIndex)
+
+  const long int uSIndex(std::abs(sideIndex));
+  switch(uSIndex)
     {
-    case 0:
-    case 1:    
-    case 4:
+    case 1:
+    case 2:    
     case 5:
+    case 6:
       return (layerIndex) ? 
 	SMap.realSurf(SI+7) :
 	SMap.realSurf(modIndex+9);
-    case 2:
-      return -SMap.realSurf(SI+5);
     case 3:
+      return -SMap.realSurf(SI+5);
+    case 4:
       return SMap.realSurf(SI+6);
     }
-  throw ColErr::IndexError<size_t>(sideIndex,6,"sideIndex ");
+  throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex ");
 }
 
 std::string
 CylPreMod::getLayerString(const size_t layerIndex,
-			 const size_t sideIndex) const
+			  const long int sideIndex) const
   /*!
     Given a side and a layer calculate the layerstring [outlooking]
     \param layerIndex :: layer, 0 is inner moderator [0-4]
@@ -616,41 +622,49 @@ CylPreMod::getLayerString(const size_t layerIndex,
 	       10*static_cast<int>(layerIndex-1)+modIndex);
 
   std::ostringstream cx;
-  switch(sideIndex)
+  const long int uSIndex(std::abs(sideIndex));
+  switch(uSIndex)
     {
-    case 0:
-      cx<<" "<<((layerIndex) ? 
-		SMap.realSurf(SI+7) :
-		SMap.realSurf(modIndex+9)) <<" "
-	<< -SMap.realSurf(modIndex+1)<<" ";
-      return cx.str();
     case 1:
       cx<<" "<<((layerIndex) ? 
 		SMap.realSurf(SI+7) :
 		SMap.realSurf(modIndex+9)) <<" "
-	<<SMap.realSurf(modIndex+1)<<" ";
-      return cx.str();
+	<< -SMap.realSurf(modIndex+1)<<" ";
+      break;
     case 2:
-      cx<<" "<<-SMap.realSurf(SI+5)<<" ";
-      return cx.str();
-    case 3:
-      cx<<" "<<SMap.realSurf(SI+6)<<" ";
-      return cx.str();
-    case 4:
       cx<<" "<<((layerIndex) ? 
 		SMap.realSurf(SI+7) :
 		SMap.realSurf(modIndex+9)) <<" "
-	<< -SMap.realSurf(modIndex+1)<<" ";
-      return cx.str();
+	<<SMap.realSurf(modIndex+1)<<" ";
+      break;
+    case 3:
+      cx<<" "<<-SMap.realSurf(SI+5)<<" ";
+      break;
+    case 4:
+      cx<<" "<<SMap.realSurf(SI+6)<<" ";
+      break;
     case 5:
       cx<<" "<<((layerIndex) ? 
 		SMap.realSurf(SI+7) :
 		SMap.realSurf(modIndex+9)) <<" "
+	<< -SMap.realSurf(modIndex+1)<<" ";
+      break;
+    case 6:
+      cx<<" "<<((layerIndex) ? 
+		SMap.realSurf(SI+7) :
+		SMap.realSurf(modIndex+9)) <<" "
 	<< SMap.realSurf(modIndex+1)<<" ";
-      return cx.str();
-
+      break;
+    default:
+      throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex ");
     }
-  throw ColErr::IndexError<size_t>(sideIndex,4,"sideIndex ");
+  if (sideIndex<0)
+    {
+      HeadRule HR(cx.str());
+      HR.makeComplement();
+      return HR.display();
+    }
+  return cx.str();
 }
 
 Geometry::Vec3D 

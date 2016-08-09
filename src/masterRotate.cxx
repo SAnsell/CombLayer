@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   src/masterRotate.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -201,5 +201,18 @@ masterRotate::applyFull(Geometry::Vec3D& Pt) const
 {
   if (!globalApplied)
     localRotate::applyFull(Pt);
+  return;
+}
+
+void
+masterRotate::applyFullAxis(Geometry::Vec3D& Axis) const
+  /*!
+    Apply full rotations:
+    \param Axis :: Apply axis rotation
+   */
+{
+  if (!globalApplied)
+    localRotate::applyFullAxis(Axis);
+
   return;
 }

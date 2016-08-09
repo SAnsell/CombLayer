@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   include/masterRotate.h
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,9 +46,6 @@ class masterRotate : public localRotate
   masterRotate(const masterRotate&);
   masterRotate& operator=(const masterRotate&);
   ///\endcond SINGLETON
-
-  void axisRotate(Geometry::Vec3D&) const;
-  void axisRotateReverse(Geometry::Vec3D&) const;
   
  public:
   
@@ -72,8 +69,12 @@ class masterRotate : public localRotate
   virtual void applyFull(MonteCarlo::Object*) const;
   virtual void applyFull(Geometry::Surface*) const;
   virtual void applyFull(Geometry::Vec3D&) const;
+  virtual void applyFullAxis(Geometry::Vec3D&) const;
 
+
+  /// Rotation applied
   void setGlobal() { globalApplied=1; }
+  /// Rotation not-applied
   void clearGlobal() { globalApplied=0; }
   
 

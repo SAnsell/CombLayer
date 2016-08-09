@@ -3,7 +3,7 @@
  
  * File:   weightsInc/WeightControl.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,10 @@
 ///\file 
 
 class Simulation;
-
+namespace Geometry
+{
+  class Plane;
+}
 
 /*!
   \namespace WeightSystem
@@ -38,13 +41,15 @@ class Simulation;
 namespace WeightSystem
 {
   class ItemWeight;
+  class CellWeight;
+  class WWGWeight;
   
   /*!
-    \class WegthControl
+    \class WeightControl
     \version 1.0
     \author S. Ansell
     \date October 2015
-    \brief Input to Weights controler
+    \brief Input to Weights controller
   */
   
 class WeightControl
@@ -54,15 +59,20 @@ class WeightControl
   double energyCut;              ///< Energy cut [MeV]
   double scaleFactor;            ///< Scale factor
   double minWeight;              ///< Min weight
+  double weightPower;            ///< makes weight W^power
   std::vector<double> EBand;     ///< Energy bandk
   std::vector<double> WT;        ///< Weight scalar
   
-  std::set<std::string> objectList;  ///< Object list
-  
-  bool sourceFlag;               ///< Set point/tally flags
-  bool tallyFlag;                ///< Set point/tally flags
-  Geometry::Vec3D sourcePt;      ///< Source Point
-  Geometry::Vec3D tallyPt;       ///< Tally Point
+  std::set<std::string> objectList;  ///< Object list to this cut [local]
+
+  bool activeAdjointFlag;                   ///< Active plane
+  std::string activePtType;                 ///< ptType 
+  size_t activePtIndex;                     ///< plant/source/track pt 
+
+
+  std::vector<Geometry::Cone> conePt;         ///< Cone points
+  std::vector<Geometry::Plane> planePt;       ///< Plane points
+  std::vector<Geometry::Vec3D> sourcePt;      ///< Source Points
   
   void setHighEBand();
   void setMidEBand();
@@ -81,34 +91,56 @@ class WeightControl
 		const size_t,const size_t);
   void procTypeHelp() const;
 
-  void procSource(const mainSystem::inputParam&);
-  void procTallyPoint(const mainSystem::inputParam&);
+  void procSourcePoint(const mainSystem::inputParam&);
+  void procPlanePoint(const mainSystem::inputParam&);
+  void procTrackLine(const mainSystem::inputParam&);
   void procObject(const Simulation&,
 		  const mainSystem::inputParam&);
   void procRebase(const Simulation&,
 		  const mainSystem::inputParam&);
-  void procRebaseHelp() const;
+  void procTrack(const Simulation&,
+		  const mainSystem::inputParam&);
 
+  void processPtString(std::string);
+
+  void procCalcHelp() const;
+  void procRebaseHelp() const;
+  void procObjectHelp() const;
+  void procConeHelp() const;
+  
   
   void setWeights(Simulation&);
   void cTrack(const Simulation&,const Geometry::Vec3D&,
 	      const std::vector<Geometry::Vec3D>&,
 	      const std::vector<long int>&,
 	      ItemWeight&);
+  void cTrack(const Simulation&,const Geometry::Plane&,
+	      const std::vector<Geometry::Vec3D>&,
+	      const std::vector<long int>&,
+	      ItemWeight&);
 
 
-  
+  void calcPoints(std::vector<Geometry::Vec3D>&,
+		  std::vector<long int>&) const;
+		  
   // WWG stuff
   void wwgGetFactors(const mainSystem::inputParam&,
 		     double&,double&) const;
 
   void wwgMesh(const mainSystem::inputParam&);
-  void wwgEnergy(const mainSystem::inputParam&);
-  void wwgCreate(Simulation&);
+  void wwgEnergy();
+  void wwgCreate(Simulation&,const mainSystem::inputParam&);
 
-  void calcWWGTrack(const Simulation&,const Geometry::Vec3D&);
+  void calcWWGTrack(const Simulation&,const Geometry::Plane&,
+		    WWGWeight&);
+  void calcWWGTrack(const Simulation&,const Geometry::Vec3D&,
+		    WWGWeight&);
   void calcCellTrack(const Simulation&,const Geometry::Vec3D&,
-		     const std::vector<int>&);
+		     const std::vector<int>&,CellWeight&);
+  void calcCellTrack(const Simulation&,const Geometry::Plane&,
+		     const std::vector<int>&,CellWeight&);
+  void calcCellTrack(const Simulation&,const Geometry::Cone&,
+		     CellWeight&);
 
 
  public:

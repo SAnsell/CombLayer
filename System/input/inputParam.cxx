@@ -433,7 +433,7 @@ inputParam::getDefValue(const T& DefVal,
   if (!IPtr)
     return DefVal;
   const size_t NItems=IPtr->getNItems(setIndex);
-  ELog::EM<<"NITem == "<<NItems<<ELog::endDiag;
+
   return (NItems>itemIndex) ?
     IPtr->getObj<T>(setIndex,itemIndex) : DefVal;
 }
@@ -515,6 +515,26 @@ inputParam::getCntVec3D(const std::string& K,
   return IPtr->getCntVec3D(setIndex,itemIndex);
 }
 
+const std::vector<std::string>&
+inputParam::getObjectItems(const std::string& K,
+                           const size_t setIndex) const
+  /*!
+    Accessor to the raw string
+    \param K :: Key to seach
+    \param setIndex :: set Value
+    \return Set of raw-strings
+  */
+{
+  ELog::RegMethod Rega("inputParam","getObjectItems");
+
+  const IItem* IPtr=getIndex(K);
+  if (!IPtr)
+    throw ColErr::EmptyValue<void>(K+":IPtr");
+  
+  return IPtr->getObjectItems(setIndex);
+}
+
+  
 template<typename T>
 T
 inputParam::outputItem(const std::string& K,
@@ -656,7 +676,6 @@ inputParam::compValue(const std::string& K,const T& Value) const
   if (!IPtr)
     throw ColErr::EmptyValue<void>("Key failed: "+K);
   const size_t N=IPtr->getNItems();
-
   const std::string NCValue(StrFunc::makeString(Value));
 
   for(size_t i=0;i<N;i++)
@@ -721,7 +740,7 @@ inputParam::setValue(const std::string& K,
     Set a value based on key
     \param K :: Key to add/search
     \param A :: Object to set
-    \param I :: Index value
+    \param itemIndex :: Index value
   */
 {
   setValue<T>(K,A,0,itemIndex);
@@ -831,7 +850,6 @@ inputParam::regMulti(const std::string& K,const std::string& LK,
     \param maxSets :: Max number of sets
     \param reqData :: Required data per set
     \param maxData :: Max number of dat per set
-    \param nReq :: number of data actually required [-ve to mean all]
   */
 {
   ELog::RegMethod RegA("inputParam","regMulti");
@@ -855,8 +873,8 @@ inputParam::regDefItemList(const std::string& K,const std::string& LK,
     Registers a particular type
     \param K :: Keyname
     \param LK :: Long keyname
-    \param NData :: Number of data points
-    \param AItem :: Items with defaults [size <= NData]
+    \param reqNData :: Number of data points
+    \param AItems :: Defautl item list
   */
 {
   ELog::RegMethod RegA("inputParam","regDefItemList<T>");

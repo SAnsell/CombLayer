@@ -3,7 +3,7 @@
  
  * File:   delft/SwimingPool.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,14 +71,18 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "SwimingPool.h"
 
 namespace delftSystem
 {
 
 SwimingPool::SwimingPool(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,1),
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,1),
+  attachSystem::CellMap(),
   poolIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(poolIndex+1)
   /*!
@@ -88,7 +92,8 @@ SwimingPool::SwimingPool(const std::string& Key)  :
 {}
 
 SwimingPool::SwimingPool(const SwimingPool& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::CellMap(A),
   poolIndex(A.poolIndex),cellIndex(A.cellIndex),
   base(A.base),surface(A.surface),
   waterMat(A.waterMat)
@@ -109,7 +114,8 @@ SwimingPool::operator=(const SwimingPool& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
+      attachSystem::CellMap::operator=(A);
       cellIndex=A.cellIndex;
       base=A.base;
       surface=A.surface;
@@ -125,24 +131,20 @@ SwimingPool::~SwimingPool()
 {}
 
 void
-SwimingPool::populate(const Simulation& System)
+SwimingPool::populate(const FuncDataBase& Control)
  /*!
    Populate all the variables
-   \param System :: Simulation to use
+   \param Control :: DataBase
  */
 {
   ELog::RegMethod RegA("SwimingPool","populate");
   
-  const FuncDataBase& Control=System.getDataBase();
 
+  FixedOffset::populate(Control);
   // First get inner widths:
 
   base=Control.EvalVar<double>(keyName+"Base");
   surface=Control.EvalVar<double>(keyName+"Surface");
-
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
 
   frontWidth=Control.EvalVar<double>(keyName+"FrontWidth");
   backWidth=Control.EvalVar<double>(keyName+"BackWidth");
@@ -161,19 +163,22 @@ SwimingPool::populate(const Simulation& System)
 }
   
 void
-SwimingPool::createUnitVector(const attachSystem::FixedComp& FC)
+SwimingPool::createUnitVector(const attachSystem::FixedComp& FC,
+			      const long int sideIndex)
   /*!
     Create the unit vectors
     - Y Points towards the beamline
     - X Across the Face
     - Z up (towards the target)
     \param FC :: A Contained FixedComp to use as basis set
+    \param sideIndex :: link point [signed]
   */
 {
   ELog::RegMethod RegA("SwimingPool","createUnitVector");
+
   
-  attachSystem::FixedComp::createUnitVector(FC);
-  attachSystem::FixedComp::applyShift(xStep,yStep,zStep);
+  FixedComp::createUnitVector(FC,sideIndex);
+  applyOffset();
   return;
 }
 
@@ -238,12 +243,11 @@ SwimingPool::createSurfaces()
 }
 
 void
-SwimingPool::createObjects(Simulation& System,
-			   const attachSystem::ContainedComp& RG)
+SwimingPool::createObjects(Simulation& System)
+		
   /*!
     Adds the BeamLne components
     \param System :: Simulation to add beamline to
-    \param RG :: Reactor grid object (inner container)
   */
 {
   ELog::RegMethod RegA("SwimingPool","createObjects");
@@ -252,9 +256,11 @@ SwimingPool::createObjects(Simulation& System,
   Out=ModelSupport::getComposite(SMap,poolIndex,
 				 " 1 (-2 : (23 -24 -12)) 7 -8 13 -14 "
 				 " (17:3) (-18:-4) 5 -6 ");
-  addOuterSurf(Out);
-  Out+=RG.getExclude();
+
+  //  Out+=RG.getExclude();
   System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));
+  addCell("Water",cellIndex-1);
+  addOuterSurf(Out);
   
   return;
 }
@@ -263,21 +269,21 @@ SwimingPool::createObjects(Simulation& System,
 void
 SwimingPool::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
-		       const attachSystem::ContainedComp& CC)
+		       const long int sideIndex)
+  
   /*!
     Global creation of the vac-vessel
     \param System :: Simulation to add vessel to
     \param FC :: Moderator Object
     \param CC :: Interal object
-    \param sideIndex :: Side index
   */
 {
   ELog::RegMethod RegA("SwimingPool","createAll");
-  populate(System);
+  populate(System.getDataBase());
 
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
-  createObjects(System,CC);
+  createObjects(System);
   insertObjects(System);       
 
   return;

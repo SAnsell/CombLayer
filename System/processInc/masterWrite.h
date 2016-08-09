@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   processInc/masterWrite.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,9 +57,14 @@ class masterWrite
   void setSigFig(const int);
   void setZero(const double);
 
+
+  template<typename T>
+  std::string padNum(const T&,const size_t);
+  
   std::string Num(const Geometry::Vec3D&);
   std::string Num(const double&);
   std::string Num(const int&);
+  std::string Num(const size_t&);
     
 };
 

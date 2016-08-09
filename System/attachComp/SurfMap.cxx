@@ -3,7 +3,7 @@
  
  * File:   attachComp/SurfMap.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,25 +46,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Surface.h"
-#include "SurInter.h"
-#include "Rules.h"
-#include "HeadRule.h"
-#include "Object.h"
-#include "BnId.h"
-#include "Acomp.h"
-#include "Algebra.h"
-#include "Line.h"
-#include "Qhull.h"
-#include "varList.h"
-#include "Code.h"
-#include "FuncDataBase.h"
-#include "Simulation.h"
-#include "surfRegister.h"
-#include "LinkUnit.h"
-#include "FixedComp.h"
-#include "AttachSupport.h"
-#include "ContainedComp.h"
 #include "BaseMap.h"
 #include "SurfMap.h"
 

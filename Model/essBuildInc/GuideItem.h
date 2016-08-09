@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/GuideItem.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -78,8 +78,7 @@ class GuideItem : public attachSystem::ContainedGroup,
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
-			const size_t);
-  void calcBeamLineTrack(const attachSystem::FixedComp&);
+			const long int);
 
   void createSurfaces();
   void createLinks();
@@ -99,7 +98,7 @@ class GuideItem : public attachSystem::ContainedGroup,
 
     
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const size_t,const GuideItem*);
+		 const long int,const GuideItem*);
 
 };
 

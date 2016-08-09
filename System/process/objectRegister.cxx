@@ -3,7 +3,7 @@
  
  * File:   process/objectRegister.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,6 +43,10 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
+#include "Quaternion.h"
+#include "localRotate.h"
+#include "masterRotate.h"
+#include "support.h"
 #include "stringCombine.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -83,8 +87,10 @@ objectRegister::reset()
   */
 {
   Components.erase(Components.begin(),Components.end());
+  activeCells.clear();
   return;
 }
+  
 objectRegister& 
 objectRegister::Instance() 
   /*!
@@ -97,57 +103,54 @@ objectRegister::Instance()
 }
 
 int
-objectRegister::getCell(const std::string& Name,const int Index) const
+objectRegister::getCell(const std::string& Name) const
   /*!
     Get the start cell of an object
     \param Name :: Name of the object to get
-    \param Index :: Offset number
-    \return Cell number
+    \return Cell number of first cell in range
   */
 {
   MTYPE::const_iterator mc;
-  if (Index>=0)
-    {
-      std::ostringstream cx;
-      cx<<Name<<Index;
-      mc=regionMap.find(cx.str());
-    }
-  else
-    mc=regionMap.find(Name);
-  if (mc!=regionMap.end())
-    return mc->second.first;
-  return 0;
+  mc=regionMap.find(Name);
+  return (mc!=regionMap.end())
+    ? mc->second.first : 0;
 }
 
 int
-objectRegister::getRange(const std::string& Name,const int Index) const
+objectRegister::getRange(const std::string& Name) const
   /*!
     Get the range of an object
     \param Name :: Name of the object to get
-    \param Index :: Offset number
     \return Range
    */
 {
-  MTYPE::const_iterator mc;
-  if (Index>=0)
-    {
-      std::ostringstream cx;
-      cx<<Name<<Index;
-      mc=regionMap.find(cx.str());
-    }
-  else
-    mc=regionMap.find(Name);
-  if (mc!=regionMap.end())
-    return mc->second.second;
-  return 0;
+  MTYPE::const_iterator mc=
+    regionMap.find(Name);
+
+  return (mc!=regionMap.end()) ?
+    (mc->second.second-mc->second.first) : 0;
 }
 
+int
+objectRegister::getLast(const std::string& Name) const
+  /*!
+    Get the last cell in the range of an object
+    \param Name :: Name of the object to get
+    \return Range
+   */
+{
+  MTYPE::const_iterator mc=
+    regionMap.find(Name);
+
+  return (mc!=regionMap.end()) ?
+    mc->second.second : 0;
+}
+  
 std::string
 objectRegister::inRange(const int Index) const
   /*!
-    Get the range of an object
-    \param Name :: Name of the object to get
-    \param Index :: Offset number
+    Determine in the cell in within range
+    \param Index :: cell number to test
     \return string
    */
 {
@@ -158,13 +161,13 @@ objectRegister::inRange(const int Index) const
 
   if (mc!=regionMap.end() && 
       Index>=mc->second.first && 
-      Index<=mc->second.first+mc->second.second)
+      Index<=mc->second.second)
     return mc->first;
     
   for(mc=regionMap.begin();mc!=regionMap.end();mc++)
     {
       const std::pair<int,int>& IP=mc->second;
-      if (Index>=IP.first && Index<=IP.first+IP.second)
+      if (Index>=IP.first && Index<=IP.second)
 	{
 	  prev=mc->first;
 	  return mc->first;
@@ -173,32 +176,70 @@ objectRegister::inRange(const int Index) const
   return std::string("");
 }
 
+void
+objectRegister::addActiveCell(const int cellN)
+  /*!
+    Adds an active cell
+    \param cellN :: cell number
+  */
+{
+  activeCells.insert(cellN);
+  return;
+}
+
+void
+objectRegister::removeActiveCell(const int cellN)
+  /*!
+    Deletes an active cell
+    \param cellN :: cell number
+  */
+{
+  activeCells.erase(cellN);
+  return;
+}
+
+void
+objectRegister::renumberActiveCell(const int oldCellN,
+                                   const int newCellN)
+  /*!
+    Renumber the active set
+    \param oldCellN :: old cell number
+    \param newCellN :: new cell number
+  */
+{
+  ELog::RegMethod RegA("objectRegister","renumberActive");
+  
+  std::set<int>::iterator sc=activeCells.find(oldCellN);
+  if (sc==activeCells.end())
+    throw ColErr::InContainerError<int>(oldCellN,"Cell number");
+
+  activeCells.erase(sc);
+  activeCells.insert(newCellN);
+
+  return;
+}
+
+  
 int
-objectRegister::cell(const std::string& Name,const int Index,const int size)
+objectRegister::cell(const std::string& Name,const int size)
   /*!
     Add a component and get a new cell number 
     \param Name :: Name of the unit
-    \param Index :: Index on number [-ve not used]
     \param size :: Size of unit to register
     \return the start number of the cellvalue
   */
 {
   ELog::RegMethod RegA("objectRegister","cell");
 
-  std::ostringstream cx;
-  cx<<Name;
-  if (Index>=0)
-    cx<<Index;
 
-  MTYPE::const_iterator mc=regionMap.find(cx.str());  
+  MTYPE::const_iterator mc=regionMap.find(Name);  
   if (mc!=regionMap.end())
     {
       if (mc->second.second<size)
-	ELog::EM<<"Insufficient space reserved for "<<cx.str()<<ELog::endErr;
+	ELog::EM<<"Insufficient space reserved for "<<Name<<ELog::endErr;
       return mc->second.first;
     }
-  regionMap.insert(MTYPE::value_type(cx.str(),
-				     std::pair<int,int>(cellNumber,size)));
+  regionMap.emplace(Name,std::pair<int,int>(cellNumber,cellNumber+size));
   cellNumber+=size;
   return cellNumber-size;
 }
@@ -350,6 +391,43 @@ objectRegister::getObject(const std::string& Name)
   return dynamic_cast<T*>(FCPtr);
 }
 
+template<typename T>
+const T*
+objectRegister::getObjectThrow(const std::string& Name,
+                               const std::string& Err) const
+  /*!
+    Find a FixedComp [if it exists] 
+    Throws InContainerError if not 
+    \param Name :: Name
+    \param Err :: Error string for exception
+    \return ObjectPtr 
+  */
+{
+  ELog::RegMethod RegA("objectRegister","getObjectThrow(const)");
+  const T* FCPtr=getObject<T>(Name);
+  if (!FCPtr)
+    throw ColErr::InContainerError<std::string>(Name,Err);
+  return FCPtr;
+}
+
+template<typename T>
+T*
+objectRegister::getObjectThrow(const std::string& Name,
+                                const std::string& Err) 
+  /*!
+    Find a FixedComp [if it exists]
+    \param Name :: Name
+    \param Err :: Error string for exception
+    \return ObjectPtr / 0 
+  */
+{
+  ELog::RegMethod RegA("objectRegister","getObjectThrow");
+  T* FCPtr=getObject<T>(Name);
+  if (!FCPtr)
+    throw ColErr::InContainerError<std::string>(Name,Err);
+  return FCPtr;
+}
+
 
 template<>
 const attachSystem::ContainedComp* 
@@ -362,6 +440,7 @@ objectRegister::getObject(const std::string& Name) const
   */
 {
   ELog::RegMethod RegA("objectRegister","getObject(containedComp)");
+  
   const std::string::size_type pos=Name.find(":");
   if (pos==std::string::npos || !pos || pos==Name.size()-1)
     {
@@ -376,64 +455,53 @@ objectRegister::getObject(const std::string& Name) const
 }
 
 int
-objectRegister::getRenumberCell(const std::string& Name,
-				const int Index) const
+objectRegister::getRenumberCell(const std::string& Name) const
   /*!
-    Get the start cell of an object
+    Get the start cell of an object [renumbered]
     \param Name :: Name of the object to get
-    \param Index :: Offset number
     \return Cell number
   */
 {
-  // NOTE: renumber not always complete as zero cell objects not present
-  std::string FullName=Name;
-  if (Index>=0)
-    FullName+=StrFunc::makeString(Index);
   MTYPE::const_iterator mc;
-  mc=renumMap.find(FullName);
+  mc=renumMap.find(Name);
   
   if (mc!=renumMap.end())
     return mc->second.first;
   // maybe we have object but it is actually zero celled
-  mc=regionMap.find(FullName);
+  mc=regionMap.find(Name);
   return (mc!=regionMap.end()) ? mc->second.first : 0;
 }
 
 int
-objectRegister::getRenumberRange(const std::string& Name,
-				 const int Index) const
+objectRegister::getRenumberRange(const std::string& Name) const
   /*!
     Get the range of cells of an object
     \param Name :: Name of the object to get
-    \param Index :: Offset number
     \return Cell number
   */
 {
-  MTYPE::const_iterator mc;
-  if (Index>=0)
-    {
-      std::ostringstream cx;
-      cx<<Name<<Index;
-      mc=renumMap.find(cx.str());
-    }
-  else
-    mc=renumMap.find(Name);
+  // NOTE: renumber not always complete as zero cell objects not present
+  MTYPE::const_iterator mc=
+    renumMap.find(Name);
+  
   if (mc!=renumMap.end())
     return mc->second.second;
-  return 0;
+  // maybe we have object but it is actually zero celled
+  mc=regionMap.find(Name);
+  return (mc!=regionMap.end()) ? mc->second.second : 0;
 }
 
 std::string
 objectRegister::inRenumberRange(const int Index) const
   /*!
     Get the range of an object
-    \param Name :: Name of the object to get
     \param Index :: Offset number
-    \return string
+    \return string of object
    */
 {
   static std::string prev;
-   MTYPE::const_iterator mc;
+  
+  MTYPE::const_iterator mc;
   // normally same as previous search
   if (!prev.empty())
     {
@@ -475,15 +543,15 @@ objectRegister::setRenumber(const std::string& key,
       else
 	renumMap.emplace(key,std::pair<int,int>(startN,endN));
     }
-      
   return;
 }
-
+  
 int
 objectRegister::calcRenumber(const int CN) const
   /*!
     Take a cell number and calculate the renumber [not ideal]
     \param CN :: oirignal cell number
+    \return correct offset nubmer
    */
 {
   const std::string key=inRange(CN);
@@ -512,40 +580,112 @@ objectRegister::getObjectRange(const std::string& objName) const
 {
   ELog::RegMethod RegA("objectRegister","getObjectRange");
 
-  const ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
   std::string::size_type pos=objName.find(":");
-  
-  if (pos==std::string::npos || !pos)
+  // CELL Range ::  objectName:cellName
+  if (pos!=0 && pos!=std::string::npos)
     {
-      const int BStart=OR.getRenumberCell(objName);
-      const int BRange=OR.getRenumberRange(objName);
-      if (BStart==0)
-        throw ColErr::InContainerError<std::string>
-          (objName,"Object name not found");
+      const std::string itemName=objName.substr(0,pos);
+      const std::string cellName=objName.substr(pos+1);
 
-      if (BStart>BRange)
-        return std::vector<int>();
-      std::vector<int> Out(static_cast<size_t>(1+BRange-BStart));
-      std::iota(Out.begin(),Out.end(),BStart);
+      const attachSystem::CellMap* CPtr=
+        getObject<attachSystem::CellMap>(itemName);
+      if (!CPtr)
+        throw ColErr::InContainerError<std::string>(itemName,"objectName:");
+      
+      std::vector<int> Out=CPtr->getCells(cellName);
+      if (Out.empty())
+        {
+          ELog::EM<<"EMPTY NAME::Possible names == "<<ELog::endDiag;
+          std::vector<std::string> NAME=
+            CPtr->getNames();
+          
+          throw ColErr::InContainerError<std::string>
+            (objName,"Object empty");
+
+        }
+      
+      for(int& CN : Out)
+        CN=calcRenumber(CN);
+      
+      return Out;
+    }
+
+  // Simple number range
+  pos=objName.find("-");
+  if (pos!=std::string::npos)
+    {
+      long int ANum,BNum;
+      const std::string AName=objName.substr(0,pos);
+      const std::string BName=objName.substr(pos+1);
+      if (!StrFunc::convert(AName,ANum) ||
+          !StrFunc::convert(BName,BNum) )
+        throw ColErr::InContainerError<std::string>
+          (objName,"objectName does not convert to numbers");
+      if (ANum>BNum)
+        std::swap(ANum,BNum);
+      std::vector<int> Out(static_cast<size_t>(1+BNum-ANum));
+      std::iota(Out.begin(),Out.end(),ANum);
+      for(int& CN : Out)
+        CN=calcRenumber(CN);
+      return Out;
+    }
+
+  // SPECIALS:
+  
+  if (objName=="All" || objName=="all")
+    {
+      std::vector<int> Out;
+      for(const int CN : activeCells)
+        Out.push_back(calcRenumber(CN));
+      ELog::EM<<"All size == "<<Out.size()<<ELog::endDiag;
       return Out;
     }
   
-  const std::string itemName=objName.substr(0,pos);
-  const std::string cellName=objName.substr(pos+1);
-  const attachSystem::CellMap* CPtr=
-    OR.getObject<attachSystem::CellMap>(itemName);
-  if (!CPtr)
+  // Just an object name:
+
+  const int BStart=getCell(objName);
+  const int BRange=getRange(objName);
+  ELog::EM<<"ObjName = "<<objName<<" "<<BStart<<" "<<BRange<<ELog::endDiag;
+  if (BStart==0)
     throw ColErr::InContainerError<std::string>
-      (itemName,"Object name not found:"+objName);
-  std::vector<int> Out=CPtr->getCells(cellName);
-  for(int& CN : Out)
-    CN=OR.calcRenumber(CN);
+      (objName,"Object name not found");
   
+  if (!BRange)
+    return std::vector<int>();
+
+  // Loop forward to find first element in set :
+  // then step forward until out of range.
+  std::set<int>::const_iterator sc=activeCells.end();
+  for(int i=BStart;i<BRange+BStart &&
+        sc==activeCells.end();i++)
+    sc=activeCells.find(i);
+
+  std::vector<int> Out;
+  while(sc!=activeCells.end() &&
+        *sc<BStart+BRange)
+    {
+      Out.push_back(*sc);
+      sc++;
+    }
+  for(int& CN : Out)
+    CN=calcRenumber(CN);
   return Out;
 }
+  
+void
+objectRegister::rotateMaster()
+  /*!
+    Apply the rotation to the object component
+   */
+{
+  ELog::RegMethod RegA("objectRegister","rotateMaster");
+  const masterRotate& MR=masterRotate::Instance();
+  
+  for(cMapTYPE::value_type& AUnit : Components)
+    AUnit.second->applyRotation(MR);
 
+  return;
+}
 
   
 void
@@ -587,7 +727,7 @@ template const attachSystem::FixedComp*
 template const attachSystem::ContainedComp* 
   objectRegister::getObject(const std::string&) const;
 
-  template const attachSystem::ContainedGroup* 
+template const attachSystem::ContainedGroup* 
   objectRegister::getObject(const std::string&) const;
 
 template const attachSystem::TwinComp* 
@@ -629,6 +769,58 @@ template attachSystem::CellMap*
 template attachSystem::SurfMap* 
   objectRegister::getObject(const std::string&);
 
+
+
+template const attachSystem::FixedComp* 
+  objectRegister::getObjectThrow(const std::string&,const std::string&) const;
+
+template const attachSystem::ContainedComp* 
+  objectRegister::getObjectThrow(const std::string&,const std::string&) const;
+
+template const attachSystem::ContainedGroup* 
+  objectRegister::getObjectThrow(const std::string&,const std::string&) const;
+
+template const attachSystem::TwinComp* 
+  objectRegister::getObjectThrow(const std::string&,const std::string&) const;
+
+template const attachSystem::SecondTrack* 
+  objectRegister::getObjectThrow(const std::string&,const std::string&) const;
+
+template const attachSystem::LayerComp* 
+  objectRegister::getObjectThrow(const std::string&,const std::string&) const;
+
+template const attachSystem::CellMap* 
+  objectRegister::getObjectThrow(const std::string&,const std::string&) const;
+
+template const attachSystem::SurfMap* 
+  objectRegister::getObjectThrow(const std::string&,const std::string&) const;
+
+template attachSystem::FixedComp* 
+  objectRegister::getObjectThrow(const std::string&,const std::string&);
+
+template attachSystem::FixedGroup* 
+  objectRegister::getObjectThrow(const std::string&,const std::string&);
+
+template attachSystem::ContainedComp* 
+  objectRegister::getObjectThrow(const std::string&,const std::string&);
+
+template attachSystem::ContainedGroup* 
+  objectRegister::getObjectThrow(const std::string&,const std::string&);
+
+template attachSystem::TwinComp* 
+  objectRegister::getObjectThrow(const std::string&,const std::string&);
+
+template attachSystem::SecondTrack* 
+  objectRegister::getObjectThrow(const std::string&,const std::string&);
+
+template attachSystem::CellMap* 
+  objectRegister::getObjectThrow(const std::string&,const std::string&);
+
+template attachSystem::SurfMap* 
+  objectRegister::getObjectThrow(const std::string&,const std::string&);
+
+
+  
 ///\endcond TEMPLATE  
 
 } // NAMESPACE ModelSupport

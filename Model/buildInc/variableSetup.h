@@ -3,7 +3,7 @@
  
  * File:   buildInc/variableSetup.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,6 +38,7 @@ namespace setVariable
   void D4CModel(FuncDataBase&);
   void DelftModel(FuncDataBase&);
   void EssVariables(FuncDataBase&);
+  void EssPipeVariables(FuncDataBase&);
   void EPBVariables(FuncDataBase&);
   void FilterVariables(FuncDataBase&);
   void gammaVariables(FuncDataBase&);
@@ -47,6 +48,7 @@ namespace setVariable
   void PipeVariables(FuncDataBase&);
   void PhotonVariables(FuncDataBase&);
   void SinbadVariables(FuncDataBase&);
+  void SingleItemVariables(FuncDataBase&);
   void SNSVariables(FuncDataBase&);
 
   void RefBolts(FuncDataBase&);

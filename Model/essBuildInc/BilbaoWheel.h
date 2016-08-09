@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/BilbaoWheel.h
  *
- * Copyright (c) 2015 Konstantin Batkov
+ * Copyright (c) 2015-2016 Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,8 @@ class Simulation;
 namespace essSystem
 {
 
+class BilbaoWheelInnerStructure;
+
 /*!
   \class BilbaoWheel
   \author Konstantin Batkov
@@ -46,6 +48,7 @@ class BilbaoWheel : public WheelBase
   double zAngle;                  ///< zAngle step
 
   int engActive;                 ///< Engineering active flag
+  std::shared_ptr<BilbaoWheelInnerStructure> InnerComp; ///< Inner components
   
   double targetHeight;           ///< Total height of target
   double voidTungstenThick;      ///< Void thickness below/above Tungsten
@@ -62,12 +65,9 @@ class BilbaoWheel : public WheelBase
   double voidRadius;             ///< Final outer radius
   double aspectRatio;            ///< Defines curvature in the yz view
 
-  size_t nSectors;                  ///< Number of sectors in Tungsten
-  double secSepThick;            ///< Thickness of sector separator
-  int secSepMat;                 ///< Material of sector separator
-
   double mainTemp;               ///< Main temperature 
   
+  size_t nSectors;               ///< number of sectors for LayerDivide3D
   size_t nLayers;                ///< number of radial layers
   std::vector<double> radius;    ///< cylinder radii
   std::vector<int> matTYPE;      ///< Material type
@@ -81,21 +81,25 @@ class BilbaoWheel : public WheelBase
   int wMat;                         ///< W material
   int heMat;                        ///< He material
   int steelMat;                     ///< Steel mat
-  int ssVoidMat;                    ///< Mixture of SS316L and void (for the simplified version)
+  int ssVoidMat;                    ///< Mixture of SS316L and void 
   
   int innerMat;                     ///< Inner Material block
 
   // Functions:
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const long int);
 
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
   void makeShaftSurfaces();
   void makeShaftObjects(Simulation&);
-  std::string getSQSurface(const double R, const double e);
+  std::string getSQSurface(const double,const double);
+
+  void createRadialSurfaces();
+  void divideRadial(Simulation&,const std::string&,const int);
 
   public:
 
@@ -107,11 +111,16 @@ class BilbaoWheel : public WheelBase
 
   /// total wheel void size
   virtual double wheelHeight() const
-  { return targetHeight+
-      2.0*(voidTungstenThick+steelTungstenThick+coolantThick+caseThickIn+voidThick); }
+  {
+    return targetHeight+
+      2.0*(voidTungstenThick+steelTungstenThick+coolantThick+
+	   caseThickIn+voidThick);
+  }
 
   //  virtual int getCell() const { return mainShaftCell; }
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&);
+  virtual void createAll(Simulation&,
+			 const attachSystem::FixedComp&,
+			 const long int);
   
 };
 

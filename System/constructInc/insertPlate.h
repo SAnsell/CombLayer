@@ -2,8 +2,8 @@
   CombLayer : MCNP(X) Input builder
  
  * File:   constructInc/insertPlate.h
-*
- * Copyright (c) 2004-2015 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,12 +19,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef ModelSupport_insertPlate_h
-#define ModelSupport_insertPlate_h
+#ifndef constructSystem_insertPlate_h
+#define constructSystem_insertPlate_h
 
 class Simulation;
 
-namespace ModelSupport
+namespace constructSystem
 {
 /*!
   \class insertPlate
@@ -38,36 +38,44 @@ namespace ModelSupport
 */
 
 class insertPlate : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+  public attachSystem::FixedOffset,public attachSystem::CellMap,
+  public attachSystem::SurfMap
 {
  private:
   
   const int ptIndex;             ///< Index of surface offset
   int cellIndex;                 ///< Cell index
-  int populated;                 ///< 1:var
+  int populated;                 ///< externally set values
 
-  double zAngle;            ///< Z angle rotation
-  double xyAngle;           ///< XY angle rotation
-
+  bool frontActive;              ///< Front rule set
+  HeadRule frontSurf;            ///< Front rule
+  HeadRule frontBridge;          ///< Front Bridge/divider rule
+  bool backActive;               ///< back Active
+  HeadRule backSurf;             ///< Back Rule
+  HeadRule backBridge;           ///< Back Bridge/divider Rule
+  
   double width;             ///< Full Width
   double height;            ///< Full Height
   double depth;             ///< Full Depth 
 
   int defMat;               ///< Material
-
+  bool delayInsert;       ///< Delay insertion         
+  
   void populate(const FuncDataBase&);
   void createUnitVector(const Geometry::Vec3D&,
 			const attachSystem::FixedComp&);
 
+  void createUnitVector(const attachSystem::FixedComp&,
+			const long int);
   void createUnitVector(const Geometry::Vec3D&,
 			const Geometry::Vec3D&,
 			const Geometry::Vec3D&,
 			const Geometry::Vec3D&);
 
+
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
-  void findObjects(const Simulation&);
 
   void mainAll(Simulation&);
 
@@ -78,16 +86,26 @@ class insertPlate : public attachSystem::ContainedComp,
   insertPlate& operator=(const insertPlate&);
   ~insertPlate();
 
+  /// set delay flag
+  void setNoInsert() { delayInsert=1; }
+
+  void setFrontSurf(const attachSystem::FixedComp&,const long int);
+  void setBackSurf(const attachSystem::FixedComp&,const long int);
+  void findObjects(Simulation&);
+    
+  void setStep(const double,const double,const double);
+  void setAngles(const double,const double);
+
   void setValues(const double,const double,const double,
 		 const int);
-  void setAngles(const double,const double);
+  void setValues(const double,const double,const double,
+		 const std::string&);
   void createAll(Simulation&,const Geometry::Vec3D&,
 		 const attachSystem::FixedComp&);
-  void createAll(Simulation&,const Geometry::Vec3D&,
-		 const Geometry::Vec3D&,
-		 const Geometry::Vec3D&,
-		 const Geometry::Vec3D&);
 
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
+  
 };
 
 }

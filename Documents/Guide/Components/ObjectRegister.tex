@@ -19,8 +19,7 @@ allocated, i.e. an initial \verb|new object(...)| is normally called
 directly or previously. A typical structrue might be:
 
 \begin{verbatim}
-std::shared_ptr<BeamPipe> A 
-   = new BeamPipe("LongPipe");
+std::shared_ptr<BeamPipe> A  = new BeamPipe("LongPipe");
 
 ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();

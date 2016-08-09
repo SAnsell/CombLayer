@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   build/Torpedo.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -180,6 +180,7 @@ Torpedo::createUnitVector(const shutterSystem::GeneralShutter& GS)
   ELog::RegMethod RegA("Torpedo","createUnitVector");
   
   attachSystem::FixedComp::createUnitVector(GS.getOrigin(),
+                                            GS.getXYAxis()*GS.getZ(),
 					    GS.getXYAxis(),
 					    GS.getZ());
   setExit(GS.getOrigin()+GS.getXYAxis()*innerRadius,GS.getXYAxis());
@@ -197,7 +198,7 @@ Torpedo::calcVoidIntercept(const attachSystem::ContainedComp& CC)
   ELog::RegMethod RegA("Torpedo","calcVoidIntercept");
   // Clear set
   innerSurf.erase(innerSurf.begin(),innerSurf.end());
-  
+
   // Create 4 lines: 
   for(int i=0;i<4;i++)
     {
@@ -241,6 +242,8 @@ Torpedo::calcConvex(Simulation& System)
   if (VC)
     {
       VC->calcVertex();
+      std::vector<Geometry::Vec3D> PT=VC->getVertex();
+      const std::string dSurf=getInnerSurf();
       vBox.setPoints(VC->getVertex());
       vBox.createAll(1);
     }

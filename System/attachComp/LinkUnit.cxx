@@ -3,7 +3,7 @@
  
  * File:   attachComp/LinkUnit.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,6 +45,8 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
+#include "Quaternion.h"
+#include "localRotate.h"
 #include "support.h"
 #include "stringCombine.h"
 #include "Surface.h"
@@ -313,6 +315,7 @@ LinkUnit::addBridgeSurf(const int SN)
   return;
 }
 
+  
 void
 LinkUnit::addBridgeSurf(const std::string& SList) 
   /*!
@@ -414,4 +417,20 @@ LinkUnit::getCommonRule() const
   return bridgeSurf;
 }
 
+void
+LinkUnit::applyRotation(const localRotate& LR)
+  /*!
+    Apply the rotation 
+    \param LR :: Local Rotate
+  */
+{
+  ELog::RegMethod RegA("LinkUnit","applyRotate(localRotate)");
+
+  LR.applyFullAxis(Axis);
+  LR.applyFull(ConnectPt);
+  
+  return;
+}
+
+  
 }  // NAMESPACE attachSystem

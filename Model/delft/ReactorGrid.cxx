@@ -3,7 +3,7 @@
  
  * File:   delft/ReactorGrid.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,6 @@
 
 #include <string>
 #include <algorithm>
-#include <boost/bind.hpp>
 #include <boost/multi_array.hpp>
 
 #include "Exception.h"
@@ -80,7 +79,8 @@
 #include "DBMaterial.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"  
-#include "FixedComp.h" 
+#include "FixedComp.h"
+#include "FixedOffset.h" 
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 
@@ -134,7 +134,8 @@ ReactorGrid::getElement(const FuncDataBase& Control,
 			const std::string& Name,const size_t I,
 			const size_t J) 
  /*!
-   Check to convert a Name + a number string into a variable state:
+   Check to convert a Name + a number string into a variable state.
+   \tparam T :: return type (string/int)
    \param Control :: Function base to search
    \param Name :: Master name
    \param I :: Index (A-Z) type [A on viewed face]
@@ -178,7 +179,8 @@ ReactorGrid::getDefElement(const FuncDataBase& Control,
    \param Name :: Master name
    \param I :: Index (A-Z) type [A on viewed face]
    \param J :: Index (Number) type
-   \return variable value
+   \param defName :: default Name for element value
+   \return variable value order:[Name+IJ, Name+Ix, Name+xJ,  defName , Name]
  */
 {
   ELog::RegMethod RegA("ReactorGrid","getElement");
@@ -744,26 +746,30 @@ ReactorGrid::createAll(Simulation& System,
   return;
 }
 
-template double 
-ReactorGrid::getElement(const FuncDataBase&,const std::string&,
-			const size_t,const size_t);
-
-template int
-ReactorGrid::getElement(const FuncDataBase&,const std::string&,
-			const size_t,const size_t);
-template size_t
-ReactorGrid::getElement(const FuncDataBase&,const std::string&,
-			const size_t,const size_t);
-
-template double 
-ReactorGrid::getDefElement(const FuncDataBase&,const std::string&,
-			const size_t,const size_t,const std::string&);
-
-template int
-ReactorGrid::getDefElement(const FuncDataBase&,const std::string&,
-			const size_t,const size_t,const std::string&);
-template size_t
-ReactorGrid::getDefElement(const FuncDataBase&,const std::string&,
-			const size_t,const size_t,const std::string&);
+///\cond TEMPLATE
   
+template double 
+ReactorGrid::getElement(const FuncDataBase&,const std::string&,
+			const size_t,const size_t);
+
+template int
+ReactorGrid::getElement(const FuncDataBase&,const std::string&,
+			const size_t,const size_t);
+template size_t
+ReactorGrid::getElement(const FuncDataBase&,const std::string&,
+			const size_t,const size_t);
+
+template double 
+ReactorGrid::getDefElement(const FuncDataBase&,const std::string&,
+			const size_t,const size_t,const std::string&);
+
+template int
+ReactorGrid::getDefElement(const FuncDataBase&,const std::string&,
+			const size_t,const size_t,const std::string&);
+template size_t
+ReactorGrid::getDefElement(const FuncDataBase&,const std::string&,
+			const size_t,const size_t,const std::string&);
+
+///\endcond TEMPLATE
+
 }  // NAMESPACE shutterSystem

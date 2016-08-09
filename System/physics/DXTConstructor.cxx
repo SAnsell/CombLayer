@@ -3,7 +3,7 @@
  
  * File:   physics/DXTConstructor.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -87,20 +87,19 @@
 #include "DXTControl.h"
 #include "DXTConstructor.h" 
 
-
 namespace physicsSystem
 {
 
 DXTConstructor::DXTConstructor() 
   /// Constructor
 {}
-
+  
 void
 DXTConstructor::processDD(Simulation& System,
 			  const mainSystem::inputParam& IParam,
 			  const size_t Index) 
   /*!
-    Add a simpel dd card
+    Add a simple dd card
     \param System :: Simulation to get physics/fixed points
     \param IParam :: Main input parameters
     \param Index :: index of the -wDXT card
@@ -138,16 +137,13 @@ DXTConstructor::processUnit(Simulation& System,
   ELog::RegMethod RegA("DXTConstructor","processPoint");
 
   const size_t NParam=IParam.itemCnt("wDXT",Index);
+
   if (NParam<1)
     throw ColErr::IndexError<size_t>(NParam,3,"Insufficient items wDXT");
 
-  std::vector<std::string> StrItem;
-  // Get all values:
-  for(size_t j=0;j<NParam;j++)
-    StrItem.push_back
-      (IParam.getValue<std::string>("wDXT",Index,j));
-
-  if (StrItem[0]=="help" || StrItem[0]=="Help")
+  std::string dxtName=IParam.getValue<std::string>("wDXT",Index,0);
+  dxtName[0]=static_cast<char>(std::tolower(dxtName[0]));
+  if (dxtName=="help")
     {
       writeHelp(ELog::EM.Estream());
       ELog::EM<<ELog::endBasic;
@@ -155,23 +151,34 @@ DXTConstructor::processUnit(Simulation& System,
     }
   DXTControl& DXT=System.getPC().getDXTCard();
   double RI,RO;
-  if (StrItem[0]=="Object" || StrItem[0]=="object")
+  if (dxtName=="object" || dxtName=="objOffset")
     {
       const std::string place=
 	IParam.outputItem<std::string>("wDXT",Index,1,"position not given");
-      
       const std::string linkPt=
 	IParam.outputItem<std::string>("wDXT",Index,2,"position not given");
-      Geometry::Vec3D PPoint,YAxis;
-      if (!attachSystem::getAttachPoint(place,linkPt,PPoint,YAxis))
+      Geometry::Vec3D PPoint,XAxis,YAxis,ZAxis;
+      if (!attachSystem::getAttachPointWithXYZ
+             (place,linkPt,PPoint,XAxis,YAxis,ZAxis) )        
 	throw ColErr::InContainerError<std::string>
 	  (place,"Fixed Object not found");
-      RI=IParam.outputItem<double>("wDXT",Index,3,"radius not given");
-      if (!IParam.checkItem("wDXT",Index,4,RO))
+      ELog::EM<<"DXT Point = "<<linkPt<<ELog::endDiag;
+      size_t itemCnt(3);
+      if (dxtName=="objOffset")
+        {
+          const Geometry::Vec3D DVec=
+            IParam.getCntVec3D("wDXT",Index,itemCnt,"Offset");
+		    
+          PPoint+=XAxis*DVec[0]+YAxis*DVec[1]+ZAxis*DVec[2];
+	  ELog::EM<<"DXT Centre Point == "<<PPoint<<ELog::endDiag;
+        }
+      
+      RI=IParam.outputItem<double>("wDXT",Index,itemCnt,"radius not given");
+      if (!IParam.checkItem("wDXT",Index,itemCnt+1,RO))
 	RO=RI;
-      DXT.setUnit(PPoint,RI,RO,1);
+      DXT.setUnit(PPoint,RI,RO,0);
     }
-  else if (StrItem[0]=="free" || StrItem[0]=="Free")
+  else if (dxtName=="free")
     {
       size_t itemIndex(1);
       const Geometry::Vec3D PPoint=
@@ -195,9 +202,12 @@ DXTConstructor::writeHelp(std::ostream& OX) const
 {
     OX<<"-wDXT PointID radius\n"
       " :: \n"
-      "   object [objectName] linkNumber radius \n"
+      "   object [objectName] linkNumber radius {radiusOuter}\n"
+      "   objOffset [objectName] linkNumber OffsetVector"
+      " radius {radiusOuter} \n"
       "   free Vec3D radius \n";
     OX<<"-wDD [Kvalue Dvalue] \n";
+    OX<<"-wDXT  \n";
   return;
 }
 

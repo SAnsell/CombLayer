@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   epbBuild/Building.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,6 @@
 #include <string>
 #include <algorithm>
 #include <memory>
-#include <boost/bind.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -94,6 +93,50 @@ Building::Building(const std::string& Key) :
     \param Key :: KeyName
   */
 {}
+
+Building::Building(const Building& A) : 
+  attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
+  hallIndex(A.hallIndex),cellIndex(A.cellIndex),
+  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
+  xyAngle(A.xyAngle),zAngle(A.zAngle),height(A.height),
+  depth(A.depth),width(A.width),length(A.length),
+  floorThick(A.floorThick),wallThick(A.wallThick),
+  roofThick(A.roofThick),concMat(A.concMat)
+  /*!
+    Copy constructor
+    \param A :: Building to copy
+  */
+{}
+
+Building&
+Building::operator=(const Building& A)
+  /*!
+    Assignment operator
+    \param A :: Building to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedComp::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
+      cellIndex=A.cellIndex;
+      xStep=A.xStep;
+      yStep=A.yStep;
+      zStep=A.zStep;
+      xyAngle=A.xyAngle;
+      zAngle=A.zAngle;
+      height=A.height;
+      depth=A.depth;
+      width=A.width;
+      length=A.length;
+      floorThick=A.floorThick;
+      wallThick=A.wallThick;
+      roofThick=A.roofThick;
+      concMat=A.concMat;
+    }
+  return *this;
+}
 
 Building::~Building() 
   /*!

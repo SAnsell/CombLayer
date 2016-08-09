@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   attachComp/TwinComp.cxx
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -138,8 +138,22 @@ TwinComp::createUnitVector(const TwinComp& TT)
   
 
 void
+TwinComp::applyRotation(const localRotate& LR)
+  /*!
+    Apply a rotation to the basis set
+    \param LR :: localRotate
+  */
+{
+  ELog::RegMethod RegA("TwinComp","applyRotation");
+
+  FixedComp::applyRotation(LR);
+  SecondTrack::applyRotation(LR);
+  return;
+}
+
+void
 TwinComp::applyRotation(const Geometry::Vec3D& Axis,
-			 const double Angle)
+                        const double Angle)
   /*!
     Apply a rotation to the basis set
     \param Axis :: rotation axis 
@@ -181,7 +195,7 @@ TwinComp::report() const
 {
   // NO ELog -- so reporting can 
   const masterRotate& MR=masterRotate::Instance();
-  ELog::EM<<"------------------------------------"<<ELog::endDebug;
+  ELog::EM<<"------------------------------------"<<ELog::endTrace;
   ELog::EM<<"Origin =="<<MR.calcRotate(Origin)<<ELog::endTrace;
   ELog::EM<<"X      =="<<MR.calcAxisRotate(X)<<ELog::endTrace;
   ELog::EM<<"Y      =="<<MR.calcAxisRotate(Y)<<ELog::endTrace;

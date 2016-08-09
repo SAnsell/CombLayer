@@ -3,7 +3,7 @@
  
  * File:   process/Volumes.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -124,13 +124,13 @@ populateCells(const Simulation& System,
 	  std::vector<int> CNumbers;
 	  for(size_t j=1;j<NItems;j++)
 	    {
-	      const int cellOffset=OR.getCell(CStr[j]);
+	      const int cellBegin=OR.getCell(CStr[j]);
 	      const int cellRange=OR.getRange(CStr[j]);
-	      if (!cellOffset)
+	      if (!cellBegin)
 		throw ColErr::InContainerError<std::string>
 		  (CStr[j]," Cell object not known");
 	      const std::vector<int> CNumPlus=
-		System.getCellVectorRange(cellOffset,cellRange);
+		System.getCellVectorRange(cellBegin,cellRange);
 	      ELog::EM<<"CNum == "<<CNumPlus.size()<<ELog::endDiag;
 	      CNumbers.insert(CNumbers.end(),CNumPlus.begin(),CNumPlus.end());
 	    }

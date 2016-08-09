@@ -3,7 +3,7 @@
  
  * File:   process/LineTrack.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -159,7 +159,6 @@ LineTrack::calculate(const Simulation& ASim)
   // Find Initial cell [no default]
   MonteCarlo::Object* OPtr=ASim.findCell(InitPt+
 					 (EndPt-InitPt).unit()*1e-5,0);
-
   if (!OPtr)
     ELog::EM<<"Initial point not in model:"<<InitPt<<ELog::endErr;
   int SN=OPtr->isOnSide(InitPt);

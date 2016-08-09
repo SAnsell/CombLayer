@@ -3,7 +3,7 @@
  
  * File:   geomInc/Quaternion.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,66 +38,67 @@ namespace Geometry
 
 class Quaternion
 {
-  private:
+ private:
   
-    double q0;       ///< Q0 value
-    Vec3D Qvec;      ///< QVec (q1,q2,q3)
-
-  public:
-
-    Quaternion();
-    Quaternion(const double,const double,const double,const double);
-    Quaternion(const double,const Geometry::Vec3D&);
-
-    Quaternion(const Quaternion&);
-    Quaternion& operator=(const Quaternion&);
-    bool operator==(const Quaternion&) const;
-    bool operator!=(const Quaternion&) const;
-    ~Quaternion();
-    
-    double operator[](const size_t) const; 
-    double& operator[](const size_t); 
-
-    static double calcQ0(const double);
-    static double calcQ0deg(const double);
-    static Quaternion calcQRot(const double,const double,const double,const double);
-    static Quaternion calcQRot(const double,Geometry::Vec3D);
-    static Quaternion calcQRotDeg(const double,const double,const double,const double);
-    static Quaternion calcQRotDeg(const double,Geometry::Vec3D);
-
-    static Quaternion basisRotate
-      (const Geometry::Vec3D&,const Geometry::Vec3D&,const Geometry::Vec3D&,
-       const Geometry::Vec3D&,const Geometry::Vec3D&,const Geometry::Vec3D&);
-
-    Quaternion& complement();
-    Quaternion& inverse();
-    
-    double modulus() const;
-    double makeUnit();
-    
-    Quaternion& operator+=(const Quaternion&);
-    Quaternion operator+(const Quaternion&) const ;
-    Quaternion& operator-=(const Quaternion&);
-    Quaternion operator-(const Quaternion&) const ;
-    Quaternion& operator*=(const Vec3D&);
-    Quaternion operator*(const Vec3D&) const;
-    Quaternion& operator*=(const Quaternion&);
-    Quaternion operator*(const Quaternion&) const;
-
-    /// Access the vector
-    const Vec3D& getVec() const { return Qvec; }
-    Vec3D getAxis() const;
-    double getTheta() const; 
-
-    Matrix<double> qMatrix() const;
-    Matrix<double> rMatrix() const;
-    Vec3D& rotate(Vec3D&) const;
-    Vec3D& invRotate(Vec3D&) const;
-
-    bool zeroAngle(const double&) const;
-
-    void read(std::istream&);
-    void write(std::ostream&) const;
+  double q0;       ///< Q0 value
+  Vec3D Qvec;      ///< QVec (q1,q2,q3)
+  
+ public:
+  
+  Quaternion();
+  Quaternion(const double,const double,const double,const double);
+  Quaternion(const double,const Geometry::Vec3D&);
+  
+  Quaternion(const Quaternion&);
+  Quaternion& operator=(const Quaternion&);
+  bool operator==(const Quaternion&) const;
+  bool operator!=(const Quaternion&) const;
+  ~Quaternion();
+  
+  double operator[](const size_t) const; 
+  double& operator[](const size_t); 
+  
+  static double calcQ0(const double);
+  static double calcQ0deg(const double);
+  static Quaternion calcQRot(const double,const double,const double,const double);
+  static Quaternion calcQRot(const double,Geometry::Vec3D);
+  static Quaternion calcQRotDeg(const double,const double,const double,const double);
+  static Quaternion calcQRotDeg(const double,Geometry::Vec3D);
+  static Quaternion calcQVRot(const Geometry::Vec3D&,const Geometry::Vec3D&);
+  
+  static Quaternion basisRotate
+    (const Geometry::Vec3D&,const Geometry::Vec3D&,const Geometry::Vec3D&,
+     const Geometry::Vec3D&,const Geometry::Vec3D&,const Geometry::Vec3D&);
+  
+  Quaternion& complement();
+  Quaternion& inverse();
+  
+  double modulus() const;
+  double makeUnit();
+  
+  Quaternion& operator+=(const Quaternion&);
+  Quaternion operator+(const Quaternion&) const ;
+  Quaternion& operator-=(const Quaternion&);
+  Quaternion operator-(const Quaternion&) const ;
+  Quaternion& operator*=(const Vec3D&);
+  Quaternion operator*(const Vec3D&) const;
+  Quaternion& operator*=(const Quaternion&);
+  Quaternion operator*(const Quaternion&) const;
+  
+  /// Access the vector
+  const Vec3D& getVec() const { return Qvec; }
+  Vec3D getAxis() const;
+  double getTheta() const; 
+  
+  Matrix<double> qMatrix() const;
+  Matrix<double> rMatrix() const;
+  Vec3D& rotate(Vec3D&) const;
+  Vec3D& invRotate(Vec3D&) const;
+  
+  bool zeroAngle(const double&) const;
+  
+  void read(std::istream&);
+  void write(std::ostream&) const;
 };
 
 

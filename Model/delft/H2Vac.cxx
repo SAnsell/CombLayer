@@ -3,7 +3,7 @@
  
  * File:   delft/H2Vac.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -193,47 +193,44 @@ H2Vac::populate(const FuncDataBase& Control)
   
 
 Geometry::Vec3D
-H2Vac::getDirection(const size_t side) const
+H2Vac::getDirection(const size_t sideIndex) const
   /*!
     Determine the exit direction
     \param side :: Direction number [0-5] (internally checked)
     \return dirction vector
   */
 {
-  switch (side) 
-    {
-    case 0:
-      return -Y;
-    case 1:
-      return Y;
-    case 2:
-      return -X;
-    case 3:
-      return X;
-    case 4:
-      return -Z;
-    }
-  return Z;
+  const Geometry::Vec3D DAxis[6]={-Y,Y,-X,X,-Z,Z};
+  return DAxis[sideIndex];
 }
 
 
 Geometry::Vec3D
 H2Vac::getSurfacePoint(const attachSystem::FixedComp& FC,
-		       const size_t side,const size_t layer) const
+		       const size_t layerIndex,
+                       const long int sideIndex) const
   /*!
     Get the center point for the surfaces in each layer
     \param FC :: Interanl object
-    \param side :: Index to side (back/front/left/right/up/down)
     \param layer :: Layer number : 0 is inner 4 is outer
+    \param sideIndex :: Index to side (back/front/left/right/up/down)
+    
     \return point on surface
   */
 {
   ELog::RegMethod RegA("H2Vac","getSurfacePoint");
 
-  if (side>2) 
-    throw ColErr::IndexError<size_t>(side,3,"sideIndex");
-  if (layer>4) 
-    throw ColErr::IndexError<size_t>(side,3,"layer");
+  /// accessor to origin:
+  if (!sideIndex) return Origin;
+
+  const size_t SI((sideIndex>0) ?
+                  static_cast<size_t>(sideIndex-1) :
+                  static_cast<size_t>(-1-sideIndex));
+  
+  if (SI>2) 
+    throw ColErr::IndexError<long int>(sideIndex,3,"sideIndex");
+  if (layerIndex>4) 
+    throw ColErr::IndexError<size_t>(layerIndex,4,"layer");
   
   const double frontDist[]={vacPosGap,alPos,terPos,outPos,clearPos};
   const double backDist[]={vacNegGap,alNeg,terNeg,outNeg,clearNeg};
@@ -241,13 +238,13 @@ H2Vac::getSurfacePoint(const attachSystem::FixedComp& FC,
 
   const double* DPtr[]={backDist,frontDist,sideDist};
 
-  const Geometry::Vec3D XYZ=getDirection(side);
+  const Geometry::Vec3D XYZ=getDirection(SI);
 
   double sumVec(0.0);
-  for(size_t i=0;i<=layer;i++)
-    sumVec+=DPtr[side][i];
+  for(size_t i=0;i<=layerIndex;i++)
+    sumVec+=DPtr[SI][i];
   
-  return FC.getLinkPt(side)+XYZ*sumVec;
+  return FC.getSignedLinkPt(sideIndex)+XYZ*sumVec;
 }
 
 void
@@ -280,30 +277,30 @@ H2Vac::createSurfaces(const attachSystem::FixedComp& FC)
   // Inner Layers:
 
   ModelSupport::buildCylinder(SMap,vacIndex+1,
-			      getSurfacePoint(FC,1,0)-Y*vacPosRadius,
+			      getSurfacePoint(FC,0,2)-Y*vacPosRadius,
 			      Z,vacPosRadius);
   ModelSupport::buildCylinder(SMap,vacIndex+2,
-			      getSurfacePoint(FC,0,0)+Y*vacNegRadius,
+			      getSurfacePoint(FC,0,1)+Y*vacNegRadius,
 			      Z,vacNegRadius);
   ModelSupport::buildCylinder(SMap,vacIndex+3,Origin,
 			      Y,sideRadius+vacSide);
 
   // SECOND LAYER:
   ModelSupport::buildCylinder(SMap,vacIndex+11,
-			      getSurfacePoint(FC,1,1)-Y*vacPosRadius,
+			      getSurfacePoint(FC,1,2)-Y*vacPosRadius,
 			      Z,vacPosRadius);
   ModelSupport::buildCylinder(SMap,vacIndex+12,
-			      getSurfacePoint(FC,0,1)+Y*vacNegRadius,
+			      getSurfacePoint(FC,1,1)+Y*vacNegRadius,
 			      Z,vacNegRadius);
   ModelSupport::buildCylinder(SMap,vacIndex+13,Origin,Y,
 			      sideRadius+vacSide+alSide);
 
   // TERTIARY LAYER:
   ModelSupport::buildCylinder(SMap,vacIndex+21,
-			      getSurfacePoint(FC,1,2)-Y*vacPosRadius,
+			      getSurfacePoint(FC,2,2)-Y*vacPosRadius,
 			      Z,vacPosRadius);
   ModelSupport::buildCylinder(SMap,vacIndex+22,
-			      getSurfacePoint(FC,0,2)+Y*vacNegRadius,
+			      getSurfacePoint(FC,2,1)+Y*vacNegRadius,
 			      Z,vacNegRadius);
   ModelSupport::buildCylinder(SMap,vacIndex+23,Origin,Y,
 			      sideRadius+vacSide+alSide+terSide);
@@ -311,20 +308,20 @@ H2Vac::createSurfaces(const attachSystem::FixedComp& FC)
 
   // Outer AL LAYER:
   ModelSupport::buildCylinder(SMap,vacIndex+31,
-			      getSurfacePoint(FC,1,3)-Y*vacPosRadius,
+			      getSurfacePoint(FC,3,2)-Y*vacPosRadius,
 			      Z,vacPosRadius);
   ModelSupport::buildCylinder(SMap,vacIndex+32,
-			      getSurfacePoint(FC,0,3)+Y*vacNegRadius,
+			      getSurfacePoint(FC,3,1)+Y*vacNegRadius,
 			      Z,vacNegRadius);
   ModelSupport::buildCylinder(SMap,vacIndex+33,Origin,Y,
 			      sideRadius+vacSide+alSide+terSide+outSide);
   
   // Outer Clearance
   ModelSupport::buildCylinder(SMap,vacIndex+41,
-			      getSurfacePoint(FC,1,4)-Y*vacPosRadius,
+			      getSurfacePoint(FC,4,2)-Y*vacPosRadius,
 			      Z,vacPosRadius);
   ModelSupport::buildCylinder(SMap,vacIndex+42,
-			      getSurfacePoint(FC,0,4)+Y*vacNegRadius,
+			      getSurfacePoint(FC,4,1)+Y*vacNegRadius,
 			      Z,vacNegRadius);
   ModelSupport::buildCylinder(SMap,vacIndex+43,Origin,Y,
 			      sideRadius+vacSide+alSide

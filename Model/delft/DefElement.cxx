@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   delft/DefElement.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,6 +63,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 
 #include "FuelLoad.h"
@@ -79,6 +80,9 @@ DefElement::DefElement(const size_t XI,const size_t YI,
   RElement(XI,YI,Key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
+    \parma XI :: Grid position
+    \parma YI :: Grid position 
+    \parma Key :: Keyname for basic cell
   */
 {}
 
@@ -130,7 +134,7 @@ void
 DefElement::createObjects(Simulation&)
   /*!
     Create the objects
-    \param System :: Simulation
+    \param :: Simulation placeholder
   */
 {
   ELog::RegMethod RegA("DefElement","createObjects");
@@ -160,7 +164,7 @@ DefElement::createAll(Simulation& System,const FixedComp& FC,
     Global creation of the hutch
     \param System :: Simulation to add vessel to
     \param FC :: Fixed Unit
-    \param OG :: Orgin
+    \param OG :: Origin
   */
 {
   ELog::RegMethod RegA("DefElement","createAll(DefElement)");

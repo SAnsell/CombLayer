@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   Main/t1Upgrade.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -112,109 +112,33 @@ main(int argc,char* argv[])
 
   std::string Oname;
   std::vector<std::string> Names;  
-  std::map<std::string,std::string> Values;  
-  std::map<std::string,std::string> AddValues;  
-  std::map<std::string,double> IterVal;           // Variable to iterate 
 
-  // PROCESS INPUT:
-  InputControl::mainVector(argc,argv,Names);
-  mainSystem::inputParam IParam;
-  createTS1Inputs(IParam);
-
-  const int iteractive(IterVal.empty() ? 0 : 1);   
-  Simulation* SimPtr=createSimulation(IParam,Names,Oname);
-  if (!SimPtr) return -1;
-
-  // The big variable setting
-  setVariable::TS1upgrade(SimPtr->getDataBase());
-  InputModifications(SimPtr,IParam,Names);
-  mainSystem::setVariables(*SimPtr,IParam,Names);
-
-  // Definitions section 
-  int MCIndex(0);
-  const int multi=IParam.getValue<int>("multi");
+  Simulation* SimPtr(0);
   try
     {
-      while(MCIndex<multi)
-	{
-	  if (MCIndex)
-	    {
-	      ELog::EM.setActive(4);    // write error only
-	      ELog::FM.setActive(4);    
-	      ELog::RN.setActive(0);    
-	      
-	      // if (iteractive)
-	      // 	mainSystem::incRunTimeVariable
-	      // 	  (SimPtr->getDataBase(),IterVal);
-	    }
+      // PROCESS INPUT:
+      InputControl::mainVector(argc,argv,Names);
+      mainSystem::inputParam IParam;
+      
+      createTS1Inputs(IParam);
+      
+      SimPtr=createSimulation(IParam,Names,Oname);
+      if (!SimPtr) return -1;
 
-	  SimPtr->resetAll();
+      // The big variable setting
+      setVariable::TS1upgrade(SimPtr->getDataBase());
+      InputModifications(SimPtr,IParam,Names);
+      mainSystem::setVariables(*SimPtr,IParam,Names);
 
-	  ts1System::makeT1Upgrade T1Obj;
-	  World::createOuterObjects(*SimPtr);
-	  T1Obj.build(SimPtr,IParam);
+      ts1System::makeT1Upgrade T1Obj;
+      World::createOuterObjects(*SimPtr);
+      T1Obj.build(SimPtr,IParam);
+      
+      SDef::sourceSelection(*SimPtr,IParam);
 
-	  SDef::sourceSelection(*SimPtr,IParam);
+      mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
 
-	  SimPtr->removeComplements();
-	  SimPtr->removeDeadSurfaces(0);         
-
-	  SimPtr->removeOppositeSurfaces();
-
-	  ModelSupport::setDefaultPhysics(*SimPtr,IParam);
-
-	  if (createVTK(IParam,SimPtr,Oname))
-	    {
-	      delete SimPtr;
-	      ModelSupport::objectRegister::Instance().reset();
-	      return 0;
-	    }
-	  if (IParam.flag("endf"))
-	    SimPtr->setENDF7();
-	  createMeshTally(IParam,SimPtr);
-
-	  // outer void to zero
-	  // RENUMBER:
-	  mainSystem::renumberCells(*SimPtr,IParam);
-
-	  // WEIGHTS:
-	  if (IParam.flag("weight") || IParam.flag("tallyWeight"))
-	    SimPtr->calcAllVertex();
-
-	  if (IParam.flag("weight"))
-	    {
-	      Geometry::Vec3D AimPoint;
-	      if (IParam.flag("weightPt"))
-		AimPoint=IParam.getValue<Geometry::Vec3D>("weightPt");
-	      else 
-		tallySystem::getFarPoint(*SimPtr,AimPoint);
-
-	      WeightSystem::setPointWeights(*SimPtr,AimPoint,
-					  IParam.getValue<double>("weight"));
-	    }
-
-	  if (IParam.flag("tallyWeight"))
-	    {
-	      tallySystem::addPointPD(*SimPtr);
-	    }
-
-	  if (IParam.flag("cinder"))
-	    SimPtr->setForCinder();
-
-	  // Cut energy tallies:
-	  if (IParam.flag("ECut"))
-	    SimPtr->setEnergy(IParam.getValue<double>("ECut"));
-
-	  // Ensure we done loop
-	  do
-	    {
-	      SimProcess::writeIndexSim(*SimPtr,Oname,MCIndex);
-	      MCIndex++;
-	    }
-	  while(!iteractive && MCIndex<multi);
-	}
-      if (IParam.flag("cinder"))
-	SimPtr->writeCinder();
+      exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
       ModelSupport::calcVolumes(SimPtr,IParam);
       ModelSupport::objectRegister::Instance().write("ObjectRegister.txt");
     }
@@ -230,6 +154,13 @@ main(int argc,char* argv[])
 	      <<A.what()<<ELog::endCrit;
       exitFlag= -1;
     }
+  catch (...)
+    {
+      ELog::EM<<"GENERAL EXCEPTION"<<ELog::endCrit;
+      exitFlag= -3;
+    }
+
+
   delete SimPtr;
   ModelSupport::objectRegister::Instance().reset();
   ModelSupport::surfIndex::Instance().reset();

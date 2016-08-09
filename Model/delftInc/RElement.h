@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   delftInc/RElement.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ namespace delftSystem
   Holds a general element object of a reactor
 */
 
-class RElement  : public attachSystem::FixedComp,
+class RElement  : public attachSystem::FixedOffset,
   public attachSystem::ContainedComp
 {
  protected:
@@ -50,12 +50,6 @@ class RElement  : public attachSystem::FixedComp,
  
   int insertCell;               ///< Cell to insert into
 
-  double xStep;         ///< xStep
-  double yStep;         ///< yStep
-  double zStep;         ///< zStep
-  double xyAngle;       ///< Rotation xy
-  double zAngle;        ///< Rotation z
-
   void populate(const FuncDataBase&);
 
  public:
@@ -66,9 +60,11 @@ class RElement  : public attachSystem::FixedComp,
   virtual ~RElement() {}   ///< Destructor
 
   virtual std::string getItemKeyName() const;
-  virtual void createAll(Simulation&,const FixedComp&,
+  ///\cond ABSTRACT
+  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
 			 const Geometry::Vec3D&,
 			 const FuelLoad&)=0;
+  ///\endcond ABSTRACT
 
 };
 

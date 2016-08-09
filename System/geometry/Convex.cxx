@@ -3,7 +3,7 @@
  
  * File:   geometry/Convex.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -309,7 +309,7 @@ int
 Convex::calcDTriangle()
  /*!
    Calculate Degulgry triangle
-   \return -ve on error 
+   \retval -ve on error 
    \retval Index of last point on success
   */
 {
@@ -608,25 +608,26 @@ Convex::isConvex() const
    \retval 1 :: success
   */
 {
-  
-  FTYPE::const_iterator fc;
-  VTYPE::const_iterator vc;
-  for(fc=FList.begin();fc!=FList.end();fc++)
-    for(vc=VList.begin();vc!=VList.end();vc++)
+
+  ELog::RegMethod RegA("Convex","isConvex");
+
+  for(const FTYPE::value_type& FacePtr : FList)
+    for(const VTYPE::value_type& VPtr : VList)
       {
-	if ( (*vc)->isDone() && (*fc)->volumeSign(**vc)<0)
-	  {
-	    ELog::EM<<"Not convex : "<<(*fc)->volumeSign(**vc)<<std::endl;
-	    ELog::EM<<**vc<<std::endl;
-	    ELog::EM<<**fc<<ELog::endErr;
-	    return 0;
-	  }
+        if (VPtr->isDone() && FacePtr->volumeSign(*VPtr)<0)
+          {
+	    ELog::EM<<"Not convex : VolSign="
+                    <<FacePtr->volumeSign(*VPtr)<<"\n"
+                    <<"  at "<<*VPtr<<"\n"
+                    "Face == "<<*FacePtr<<ELog::endErr;
+            return 0;
+          }
       }
-  ETYPE::const_iterator ec;
-  for(ec=EList.begin();ec!=EList.end();ec++)
-    if (!(*ec)->getAdjFace(0) || !(*ec)->getAdjFace(1))
+  // check edges:
+  for(const ETYPE::value_type& EdgePtr : EList)
+    if (!EdgePtr->getAdjFace(0) || !EdgePtr->getAdjFace(1))
       {
-	ELog::EM<<"Failed on Edge "<<**ec<<ELog::endErr;
+	ELog::EM<<"Failed on Edge "<<*EdgePtr<<ELog::endErr;
 	return 0;
       }
   return 1;

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1Build/ReflectRods.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,7 +82,7 @@ ReflectRods::ReflectRods(const std::string& Key,const size_t index)  :
   attachSystem::ContainedComp(),attachSystem::FixedComp(Key,0),
   rodIndex(ModelSupport::objectRegister::Instance().cell
 	   (Key+StrFunc::makeString(index))),
-  baseName(Key),cellIndex(rodIndex+1),
+  baseName(Key),cellIndex(rodIndex+1),populated(0),
   topSurf(0),baseSurf(0),RefObj(0)  
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -222,40 +222,30 @@ ReflectRods::clearHVec()
 }
 
 void
-ReflectRods::populate(const Simulation& System)
+ReflectRods::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: DataBase of variables
   */
 {
   ELog::RegMethod RegA("ReflectRods","populate");
 
-  const FuncDataBase& Control=System.getDataBase();
-  try
-    {
-      zAngle=Control.EvalPair<double>(keyName,baseName,"ZAngle");
-      xyAngle=Control.EvalPair<double>(keyName,baseName,"XYAngle");
-      
-      centSpc=Control.EvalPair<double>(keyName,baseName,"CentSpace");
-      radius=Control.EvalPair<double>(keyName,baseName,"Radius");
-      linerThick=Control.EvalPair<double>(keyName,baseName,"LinerThick");
-
-      innerMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerMat",
-					  baseName+"InnerMat");
-      linerMat=ModelSupport::EvalMat<int>(Control,keyName+"LinerMat",
-					  baseName+"LinerMat");
-      outerMat=ModelSupport::EvalMat<int>(Control,keyName+"OuterMat",
-					  baseName+"OuterMat");
-
-      populated= (radius<Geometry::zeroTol) ? 0 : 1;
-    }
-  // Exit and don't report if we are not using this scatter plate
-  catch (ColErr::InContainerError<std::string>& EType)
-    {
-      ELog::EM<<"ReflectRods "<<keyName<<" not in use Var:"
-	      <<EType.getItem()<<ELog::endWarn;
-      populated=0;   
-    }
+  zAngle=Control.EvalPair<double>(keyName,baseName,"ZAngle");
+  xyAngle=Control.EvalPair<double>(keyName,baseName,"XYAngle");
+  
+  centSpc=Control.EvalPair<double>(keyName,baseName,"CentSpace");
+  radius=Control.EvalPair<double>(keyName,baseName,"Radius");
+  linerThick=Control.EvalPair<double>(keyName,baseName,"LinerThick");
+  
+  innerMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerMat",
+				      baseName+"InnerMat");
+  linerMat=ModelSupport::EvalMat<int>(Control,keyName+"LinerMat",
+				      baseName+"LinerMat");
+  outerMat=ModelSupport::EvalMat<int>(Control,keyName+"OuterMat",
+				      baseName+"OuterMat");
+  
+  populated= (radius<Geometry::zeroTol) ? 0 : 1;
+  
   return;
 }
 
@@ -670,7 +660,6 @@ ReflectRods::createObjects(Simulation& System)
 
   const int iLayer((linerThick>Geometry::zeroTol) ? 1 : 0);
 
-  int cnt(0);
   for(const MTYPE::value_type& mc : HVec)
     {
       const constructSystem::hexUnit* APtr= mc.second;
@@ -738,7 +727,7 @@ ReflectRods::calcCornerCut(const Geometry::Vec3D& InPt,
     reflector unit
     \param InPt :: Good point
     \param OutPt :: Failed points
-    \return string
+    \return string of surfaces
   */
 {
   ELog::RegMethod RegA("ReflectorRods","calcCornerCut");
@@ -788,7 +777,7 @@ ReflectRods::createAll(Simulation& System,
  */
 {
   ELog::RegMethod RegA("ReflectRods","createAll");
-  populate(System);
+  populate(System.getDataBase());
   if (populated)
     {
       createUnitVector(FC);

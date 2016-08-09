@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1Upgrade/WedgeInsert.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -282,14 +282,12 @@ WedgeInsert::createObjects(Simulation& System,
   const ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
   const attachSystem::LayerComp* LCPtr=
-    OR.getObject<attachSystem::LayerComp>(FC.getKeyName());
-  if (!LCPtr)
-    throw ColErr::InContainerError<std::string>("LayerComp no found",
-						FC.getKeyName());
+    OR.getObjectThrow<attachSystem::LayerComp>(FC.getKeyName(),"LayerComp");
 
   std::string Out;
   const std::string CShape=
-    MonteCarlo::getComplementShape(LCPtr->getLayerString(layerIndex,sideIndex));
+    MonteCarlo::getComplementShape
+    (LCPtr->getLayerString(layerIndex,static_cast<long int>(sideIndex+1)));
 
   if (wall>Geometry::zeroTol)
     {

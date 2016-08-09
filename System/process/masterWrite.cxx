@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   process/masterWrite.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -125,3 +125,44 @@ masterWrite::Num(const Geometry::Vec3D& V)
   return Out;
 }
 
+
+template<typename T>
+std::string
+masterWrite::padNum(const T& V,const size_t len)
+  /*!
+    Write out a padded string
+    \param V :: Value
+    \param len :: length
+   */
+{
+  std::string Out=Num(V);
+  if (Out.size()<len)
+    Out+=std::string(len-Out.size(),' ');
+  return Out;
+}
+
+template<>
+std::string
+masterWrite::padNum(const Geometry::Vec3D& V,const size_t len)
+  /*!
+    Write out a padded string for a vec
+    \param V :: Value
+    \param len :: length of each component
+   */ 
+{
+  std::string Out;
+  for(size_t i=0;i<3;i++)
+    {
+      Out += padNum(V[i],len);
+      if (i!=2) Out+=" ";
+    }
+  return Out;
+ 
+}
+
+///\cond TEMPLATE
+
+template std::string masterWrite::padNum(const double&,const size_t);
+template std::string masterWrite::padNum(const int&,const size_t);
+
+///\endcond TEMPLATE

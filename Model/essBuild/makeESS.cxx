@@ -3,7 +3,7 @@
  
  * File:   essBuild/makeESS.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,6 +61,7 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "LayerComp.h"
@@ -88,6 +89,7 @@
 #include "ButterflyModerator.h"
 #include "BlockAddition.h"
 #include "CylPreMod.h"
+#include "IradCylinder.h"
 #include "SupplyPipe.h"
 #include "BulkModule.h"
 #include "ShutterBay.h"
@@ -95,11 +97,11 @@
 #include "DiskPreMod.h"
 #include "Bunker.h"
 #include "RoofPillars.h"
+#include "BunkerFeed.h"
 #include "Curtain.h"
-
 #include "ConicModerator.h"
 #include "makeESSBL.h"
-
+#include "ESSPipes.h"
 // F5 collimators:
 #include "F5Calc.h"
 #include "F5Collimator.h"
@@ -120,21 +122,21 @@ makeESS::makeESS() :
   LowAFL(new moderatorSystem::BasicFlightLine("LowAFlight")),
   LowBFL(new moderatorSystem::BasicFlightLine("LowBFlight")),
 
-  LowSupplyPipe(new constructSystem::SupplyPipe("LSupply")),
-  LowReturnPipe(new constructSystem::SupplyPipe("LReturn")),
-
   TopPreMod(new DiskPreMod("TopPreMod")),
   TopCapMod(new DiskPreMod("TopCapMod")),
 
   TopAFL(new moderatorSystem::BasicFlightLine("TopAFlight")),
   TopBFL(new moderatorSystem::BasicFlightLine("TopBFlight")),
+  ModPipes(new ESSPipes()),
 
   Bulk(new BulkModule("Bulk")),
-  BulkLowAFL(new moderatorSystem::FlightLine("BulkLAFlight")),
   ShutterBayObj(new ShutterBay("ShutterBay")),
+
 
   ABunker(new Bunker("ABunker")),
   BBunker(new Bunker("BBunker")),
+  CBunker(new Bunker("CBunker")),
+  DBunker(new Bunker("DBunker")),
   ABunkerPillars(new RoofPillars("ABunkerPillars")),
   BBunkerPillars(new RoofPillars("BBunkerPillars")),
   TopCurtain(new Curtain("Curtain"))
@@ -163,11 +165,12 @@ makeESS::makeESS() :
   OR.addObject(TopBFL);
 
   OR.addObject(Bulk);
-  OR.addObject(BulkLowAFL);
 
   OR.addObject(ShutterBayObj);
   OR.addObject(ABunker);
   OR.addObject(BBunker);
+  OR.addObject(CBunker);
+  OR.addObject(DBunker);
   OR.addObject(ABunkerPillars);
   OR.addObject(BBunkerPillars);
   OR.addObject(TopCurtain);
@@ -213,7 +216,7 @@ makeESS::makeTarget(Simulation& System,
 
   Target->addInsertCell("Shaft",voidCell);
   Target->addInsertCell("Wheel",voidCell);
-  Target->createAll(System,World::masterOrigin());
+  Target->createAll(System,World::masterOrigin(),0);
 
   return;
 }
@@ -237,24 +240,78 @@ makeESS::createGuides(Simulation& System)
       GB->addInsertCell("Outer",ShutterBayObj->getMainCell());
       GB->setCylBoundary(Bulk->getLinkSurf(2),
 			 ShutterBayObj->getLinkSurf(2));
-
+      
       if (i<2)
-	GB->createAll(System,*LowMod);  
+	GB->createAll(System,*LowMod,0);  
       else
-	GB->createAll(System,*TopMod);
+	GB->createAll(System,*TopMod,0);
       attachSystem::addToInsertForced(System,*GB,Target->getCC("Wheel"));      
       GBArray.push_back(GB);
       attachSystem::addToInsertForced(System,*GB, Target->getCC("Wheel"));
     }
   GBArray[1]->outerMerge(System,*GBArray[2]);
   GBArray[0]->outerMerge(System,*GBArray[3]);
-  for(size_t i=0;i<4;i++)
-    GBArray[i]->createGuideItems(System);
-
+  
+  GBArray[0]->createGuideItems(System,LowMod->getComponent("MidWater"),6,5);
+  GBArray[1]->createGuideItems(System,LowMod->getComponent("MidWater"),7,8);
+  GBArray[2]->createGuideItems(System,TopMod->getComponent("MidWater"),6,5);
+  GBArray[3]->createGuideItems(System,TopMod->getComponent("MidWater"),7,8);
 
   return;
 }
 
+void
+makeESS::buildIradComponent(Simulation& System,
+                            const mainSystem::inputParam& IParam)
+  /*!
+    Build the Iradiation component. It is an object
+    within a moderator (typically). Currently not saves in 
+    the class set.
+    \param System :: Simulation
+    \param IParam :: Name of Irad component + location
+   */
+{
+  ELog::RegMethod RegA("makeESS","buildIradComponent");
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  const size_t NSet=IParam.setCnt("iradObject");
+  for(size_t j=0;j<NSet;j++)
+    {
+      const size_t NItems=IParam.itemCnt("iradObject",j);
+      // is this possible?
+      if (NItems<3)
+        throw ColErr::SizeError<size_t>
+          (NItems,3,"IradComp["+StrFunc::makeString(j)+"]");
+
+      const std::string objectName=
+        IParam.getValue<std::string>("iradObj",j,0);
+      const std::string compName=
+        IParam.getValue<std::string>("iradObj",j,1);
+      const std::string linkName=
+        IParam.getValue<std::string>("iradObj",j,2);
+
+      // First do we have an object name
+      if (objectName.substr(0,7)=="IradCyl")
+        {
+          std::shared_ptr<IradCylinder>
+            IRadComp(new IradCylinder(objectName));
+          const attachSystem::FixedComp* FC=
+            OR.getObject<attachSystem::FixedComp>(compName);
+          if (!FC)
+            throw ColErr::InContainerError<std::string>
+              (compName,"Component not found");
+          const long int linkPt=attachSystem::getLinkNumber(linkName);
+          
+          OR.addObject(IRadComp);
+          IRadComp->createAll(System,*FC,linkPt);
+          attachSystem::addToInsertLineCtrl(System,*FC,*IRadComp);
+        }
+    }
+  return;
+}
+  
 void
 makeESS::buildLowButterfly(Simulation& System)
   /*!
@@ -298,41 +355,6 @@ makeESS::buildTopButterfly(Simulation& System)
   return;
 }
       
-void 
-makeESS::buildLowerPipe(Simulation& System,
-			const std::string& pipeType)
-  /*!
-    Process the lower moderator pipe
-    \param System :: Simulation 
-    \param pipeType :: pipeType 
-  */
-{
-  ELog::RegMethod RegA("makeESS","processLowPipe");
-  
-  if (pipeType=="help")
-    {
-      ELog::EM<<"Lower Pipe Configuration [lowPipe]"<<ELog::endBasic;
-      ELog::EM<<"-- {Any} : Standard TDR edge and centre"<<ELog::endBasic;
-      ELog::EM<<"-- Top : Two pipes from the top"<<ELog::endBasic;
-      return;
-    }
-
-  LowReturnPipe->setAngleSeg(12);
-  if (pipeType=="Top")
-    {
-      LowSupplyPipe->setOption("Top");
-      LowReturnPipe->setOption("Top");
-      LowSupplyPipe->createAll(System,*LowMod,0,6,4,*LowPre,2);
-      LowReturnPipe->createAll(System,*LowMod,0,5,4,*LowPre,2);
-    }
-  else
-    {
-      ELog::EM<<"Low supply pipe"<<ELog::endDiag;
-      //      LowSupplyPipe->createAll(System,*LowMod,0,6,4,*LowPre,2);
-      //      LowReturnPipe->createAll(System,*LowMod,0,3,2,*LowPre,4);
-    }
-  return;
-}
 
 void makeESS::buildF5Collimator(Simulation& System, size_t nF5)
 /*!
@@ -358,6 +380,64 @@ void makeESS::buildF5Collimator(Simulation& System, size_t nF5)
   return;
 }
 
+
+void
+makeESS::buildBunkerFeedThrough(Simulation& System,
+                                const mainSystem::inputParam& IParam)
+  /*!
+    Build the underground feedThroughs
+    \param System :: Simulation
+    \param IParam :: Input data
+  */
+{
+  ELog::RegMethod RegA("makeESS","buildBunkerFeedThrough");
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  const size_t NSet=IParam.setCnt("bunkerFeed");
+
+  
+  for(size_t j=0;j<NSet;j++)
+    {
+      const size_t NItems=IParam.itemCnt("bunkerFeed",j);
+      if (NItems>=3)
+        {
+          const std::string bunkerName=
+            IParam.getValue<std::string>("bunkerFeed",j,0);
+          const size_t segNumber=
+            IParam.getValue<size_t>("bunkerFeed",j,1);
+          const std::string feedName=
+            IParam.getValue<std::string>("bunkerFeed",j,2);
+
+          // bunkerA/etc should be a map
+          std::shared_ptr<Bunker> BPtr;
+          if (bunkerName=="BunkerA" || bunkerName=="ABunker")
+            BPtr=ABunker;
+          else if (bunkerName=="BunkerB" || bunkerName=="BBunker")
+            BPtr=BBunker;
+          else if (bunkerName=="BunkerC" || bunkerName=="CBunker")
+            BPtr=CBunker;
+          else if (bunkerName=="BunkerD" || bunkerName=="DBunker")
+            BPtr=DBunker;
+          else
+            throw ColErr::InContainerError<std::string>
+              (bunkerName,"bunkerName not know");
+          
+          std::shared_ptr<BunkerFeed> BF
+            (new BunkerFeed("BunkerFeed",j));
+          OR.addObject(BF);
+          BF->createAll(System,*BPtr,segNumber,feedName);  
+          
+          bFeedArray.push_back(BF);
+          //  attachSystem::addToInsertForced(System,*GB, Target->getCC("Wheel"));
+          
+        }
+    }
+
+  return;
+}
+  
 void
 makeESS::buildPillars(Simulation& System)
   /*!
@@ -380,7 +460,6 @@ makeESS::optionSummary(Simulation& System)
   ELog::RegMethod RegA("makeESS","optionSummary");
   
   makeTarget(System,"help");
-  buildLowerPipe(System,"help");
   
   return;
 }
@@ -426,12 +505,23 @@ makeESS::makeBeamLine(Simulation& System,
 	  // FIND BUNKER HERE:::
 	  makeESSBL BLfactory(BL,Btype);
 	  std::pair<int,int> BLNum=makeESSBL::getBeamNum(BL);
-	  if ((BLNum.first==1 && BLNum.second>9) ||
-	      (BLNum.first==4 && BLNum.second<=9) )
+          ELog::EM<<"BLNum == "<<BLNum.first<<" "<<BLNum.second<<ELog::endDiag;
+
+	  if ((BLNum.first==1 && BLNum.second>10) ||
+	      (BLNum.first==4 && BLNum.second<=10) )
 	    BLfactory.build(System,*ABunker);
-	  else if ((BLNum.first==1 && BLNum.second<=9) ||
+
+	  else if ((BLNum.first==1 && BLNum.second<=10) ||
 	      (BLNum.first==4 && BLNum.second>9) )
 	    BLfactory.build(System,*BBunker);
+
+	  else if ((BLNum.first==2 && BLNum.second>10) ||
+	      (BLNum.first==3 && BLNum.second<=10) )
+	    BLfactory.build(System,*DBunker);
+
+	  else if ((BLNum.first==2 && BLNum.second<=10) ||
+	      (BLNum.first==3 && BLNum.second>10) )
+	    BLfactory.build(System,*CBunker);
 	}
     }
   return;
@@ -439,7 +529,7 @@ makeESS::makeBeamLine(Simulation& System,
 
 void
 makeESS::makeBunker(Simulation& System,
-		    const std::string& bunkerType)
+                    const mainSystem::inputParam& IParam)
   /*!
     Make the bunker system
     \param System :: Simulation 
@@ -447,34 +537,66 @@ makeESS::makeBunker(Simulation& System,
   */
 {
   ELog::RegMethod RegA("makeESS","makeBunker");
+  const int voidCell(74123);
+  const std::string bunkerType=
+    IParam.getValue<std::string>("bunkerType");
   
-  ABunker->addInsertCell(74123);
-  ABunker->setCutWall(1,0);
-  ABunker->createAll(System,*LowMod,*GBArray[0],2,true);
+  ABunker->addInsertCell(voidCell);
+  ABunker->createAll(System,*LowMod,*GBArray[0],2,true,true);
 
+  BBunker->addInsertCell(voidCell);
+  BBunker->setCutWall(0,1);
+  BBunker->createAll(System,*LowMod,*GBArray[0],2,true,true);
 
-  BBunker->addInsertCell(74123);
-  BBunker->createAll(System,*LowMod,*GBArray[0],2,true);
+  ABunker->insertComponent(System,"rightWall",*BBunker);
+  ABunker->insertComponent(System,"roofFarEdge",*BBunker);
+  ABunker->insertComponent(System,"floor",*BBunker);
 
-  BBunker->insertComponent(System,"leftWall",*ABunker);
-  BBunker->insertComponent(System,"roof0",*ABunker);
-  BBunker->insertComponent(System,"floor",*ABunker);
+  // Other side if needed :
+  
+  CBunker->addInsertCell(voidCell);
+  CBunker->createAll(System,*LowMod,*GBArray[1],2,false,true);
 
-  TopCurtain->addInsertCell("Top",74123);
-  TopCurtain->addInsertCell("Lower",74123);
-  TopCurtain->addInsertCell("Mid",74123);
-  TopCurtain->addInsertCell("Lower",ABunker->getCells("roof"));
-  TopCurtain->addInsertCell("Lower",BBunker->getCells("roof"));
-  TopCurtain->addInsertCell("Top",ABunker->getCells("roof"));
-  TopCurtain->addInsertCell("Top",BBunker->getCells("roof"));
-    
-  TopCurtain->addInsertCell("Lower",ABunker->getCells("MainVoid"));
-  TopCurtain->addInsertCell("Lower",BBunker->getCells("MainVoid"));
-  //  TopCurtain->createAll(System,*GBArray[0],2,1,true);
-  TopCurtain->createAll(System,*ShutterBayObj,6,4,*GBArray[0],2,true);
+  DBunker->addInsertCell(voidCell);
+  DBunker->setCutWall(0,1);
+  DBunker->createAll(System,*LowMod,*GBArray[1],2,false,true);
 
-  //  TopCurtain->insertComponent(System,"topVoid",*ABunker);
-  //  TopCurtain->insertComponent(System,"topVoid",*BBunker);
+  CBunker->insertComponent(System,"rightWall",*DBunker);
+  CBunker->insertComponent(System,"roofFarEdge",*DBunker);
+  CBunker->insertComponent(System,"floor",*DBunker);
+
+  if (bunkerType.find("noPillar")==std::string::npos)
+    buildPillars(System);
+
+  if (IParam.flag("bunkerFeed"))
+    buildBunkerFeedThrough(System,IParam);
+
+  if (bunkerType.find("noCurtain")==std::string::npos)
+    {
+      TopCurtain->addInsertCell("Top",74123);
+      TopCurtain->addInsertCell("Lower",74123);
+      TopCurtain->addInsertCell("Mid",74123);
+      TopCurtain->addInsertCell("Lower",ABunker->getCells("roof"));
+      TopCurtain->addInsertCell("Lower",BBunker->getCells("roof"));
+      TopCurtain->addInsertCell("Top",ABunker->getCells("roof"));
+      TopCurtain->addInsertCell("Top",BBunker->getCells("roof"));
+      
+      TopCurtain->addInsertCell("Lower",ABunker->getCells("MainVoid"));
+      TopCurtain->addInsertCell("Lower",BBunker->getCells("MainVoid"));
+      //  TopCurtain->createAll(System,*GBArray[0],2,1,true);
+      TopCurtain->createAll(System,*ShutterBayObj,6,4,*GBArray[0],2,true);
+      
+      //  TopCurtain->insertComponent(System,"topVoid",*ABunker);
+      //  TopCurtain->insertComponent(System,"topVoid",*BBunker);
+    }
+  if (bunkerType.find("help")!=std::string::npos)
+    {
+      ELog::EM<<"bunkerType :: \n"
+              <<"  noCurtain -- Disallow the curtain\n"
+              <<"  noPillar -- Disallow the pillars\n"
+              <<ELog::endBasic;
+    }
+        
   return;
 }
 
@@ -492,14 +614,16 @@ makeESS::build(Simulation& System,
   ELog::RegMethod RegA("makeESS","build");
 
   int voidCell(74123);
+
   const std::string lowPipeType=IParam.getValue<std::string>("lowPipe");
+  const std::string topPipeType=IParam.getValue<std::string>("topPipe");
+
   const std::string lowModType=IParam.getValue<std::string>("lowMod");
   const std::string topModType=IParam.getValue<std::string>("topMod");
-  const std::string topPipeType=IParam.getValue<std::string>("topPipe");
+
   
   const std::string targetType=IParam.getValue<std::string>("targetType");
   const std::string iradLine=IParam.getValue<std::string>("iradLineType");
-  const std::string bunker=IParam.getValue<std::string>("bunkerType");
 
 
   const size_t nF5 = IParam.getValue<size_t>("nF5");
@@ -540,18 +664,19 @@ makeESS::build(Simulation& System,
 		       LowPreMod->getHeight()+LMHeight+LowCapMod->getHeight(),
 		       TopPreMod->getHeight()+TMHeight+TopCapMod->getHeight());
 
+
   Reflector->insertComponent(System,"targetVoid",*Target,1);
   Reflector->deleteCell(System,"lowVoid");
   Reflector->deleteCell(System,"topVoid");
   Bulk->createAll(System,*Reflector,*Reflector);
-
   // Build flightlines after bulk
   TopAFL->createAll(System,*TopMod,0,*Reflector,4,*Bulk,-3);
   TopBFL->createAll(System,*TopMod,0,*Reflector,3,*Bulk,-3);
 
   LowAFL->createAll(System,*LowMod,0,*Reflector,4,*Bulk,-3);
   LowBFL->createAll(System,*LowMod,0,*Reflector,3,*Bulk,-3);   
-
+  
+  // THESE calls correct the MAIN volume so pipe work MUST be after here:
   attachSystem::addToInsertSurfCtrl(System,*Bulk,Target->getCC("Wheel"));
   attachSystem::addToInsertForced(System,*Bulk,Target->getCC("Shaft"));
   attachSystem::addToInsertForced(System,*Bulk,LowAFL->getCC("outer"));
@@ -559,7 +684,8 @@ makeESS::build(Simulation& System,
   attachSystem::addToInsertForced(System,*Bulk,TopAFL->getCC("outer"));
   attachSystem::addToInsertForced(System,*Bulk,TopBFL->getCC("outer"));
 
-
+  
+  buildIradComponent(System,IParam);
   // Full surround object
   ShutterBayObj->addInsertCell(voidCell);
   ShutterBayObj->createAll(System,*Bulk,*Bulk);
@@ -570,7 +696,7 @@ makeESS::build(Simulation& System,
 
 
   createGuides(System);
-  makeBunker(System,bunker);
+  makeBunker(System,IParam);
 
   // PROTON BEAMLINE
   
@@ -584,9 +710,15 @@ makeESS::build(Simulation& System,
   attachSystem::addToInsertSurfCtrl(System,*Bulk,
 				    PBeam->getCC("Full"));
 
-  makeBeamLine(System,IParam);
+  // WARNING: THESE CALL MUST GO AFTER the main void (74123) has
+  // been completed. Otherwize we can't find the pipe in the volume.
+  ModPipes->buildLowPipes(System,lowPipeType);
+  ModPipes->buildTopPipes(System,topPipeType);
 
+  makeBeamLine(System,IParam);
   buildF5Collimator(System, nF5);
+
+
   return;
 }
 

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   buildInc/TS2ModifyTarget.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -76,11 +76,11 @@ struct coneCut
 };
 
 /*!
-  \struct spherCut
-  \brief Parameters for a back-to-back sphere cut
+  \struct sphereCut
   \author S. Ansell
   \date February 2012
-  \
+  \version 1.0
+  \brief Parameters for a back-to-back sphere cut  
 */
 
 struct sphereCut

@@ -3,7 +3,7 @@
  
  * File:   t1Upgrade/SplitInner.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -244,7 +244,7 @@ SplitInner::createObjects(Simulation& System)
 
 Geometry::Vec3D
 SplitInner::getSurfacePoint(const size_t layerIndex,
-			    const size_t sideIndex) const
+			    const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link point
     \param sideIndex :: Side [0-5]
@@ -259,7 +259,7 @@ SplitInner::getSurfacePoint(const size_t layerIndex,
 
 std::string
 SplitInner::getLayerString(const size_t layerIndex,
-			   const size_t sideIndex) const
+			   const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
     \param sideIndex :: Side [0-5]
@@ -270,12 +270,11 @@ SplitInner::getLayerString(const size_t layerIndex,
   ELog::RegMethod RegA("SplitInner","getLayerString");
 
   return CH4Layer::getLayerString(layerIndex,sideIndex);
-
 }
 
 int
 SplitInner::getLayerSurf(const size_t layerIndex,
-		       const size_t sideIndex) const
+			 const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
     \param sideIndex :: Side [0-5]

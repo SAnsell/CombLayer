@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   moderatorInc/VacVessel.h
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -109,7 +109,7 @@ class VacVessel :
   VacVessel& operator=(const VacVessel&);
   virtual ~VacVessel();
 
-  Geometry::Vec3D getSurfacePoint(const size_t,const size_t) const;
+  Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
   /// Accessor to divide surf:
   int getDivideSurf() const { return divideSurf; }
 

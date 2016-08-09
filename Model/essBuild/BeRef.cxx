@@ -3,7 +3,7 @@
  
  * File:   essBuild/BeRef.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -92,9 +92,9 @@ BeRef::BeRef(const std::string& Key) :
 BeRef::BeRef(const BeRef& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
   attachSystem::CellMap(A),
+  refIndex(A.refIndex),cellIndex(A.cellIndex),
   engActive(A.engActive),InnerComp(A.InnerComp->clone()),
-  refIndex(A.refIndex),cellIndex(A.cellIndex),xStep(A.xStep),
-  yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
+  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
   zAngle(A.zAngle),radius(A.radius),height(A.height),
   wallThick(A.wallThick),wallThickLow(A.wallThickLow),
   lowVoidThick(A.lowVoidThick),

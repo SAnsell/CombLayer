@@ -3,7 +3,7 @@
  
  * File:   essBuild/DiskPreMod.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -379,20 +379,24 @@ DiskPreMod::createLinks()
 
 Geometry::Vec3D
 DiskPreMod::getSurfacePoint(const size_t layerIndex,
-			   const size_t sideIndex) const
+                            const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link point
-    \param sideIndex :: Side [0-5]
     \param layerIndex :: layer, 0 is inner moderator [0-6]
-    \return Surface point
+    \param sideIndex :: Side [0-6] 
+   \return Surface point
   */
 {
   ELog::RegMethod RegA("DiskPreMod","getSurfacePoint");
 
   if (layerIndex>nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
+  if (!sideIndex) return Origin;
+  const size_t SI((sideIndex>0) ?
+                  static_cast<size_t>(sideIndex-1) :
+                  static_cast<size_t>(-1-sideIndex));
 
-  switch(sideIndex)
+  switch(SI)
     {
     case 0:
       return Origin-Y*(radius[layerIndex]);
@@ -410,17 +414,17 @@ DiskPreMod::getSurfacePoint(const size_t layerIndex,
     case 5:
       return Origin+Z*(height[layerIndex]);
     }
-  throw ColErr::IndexError<size_t>(sideIndex,6,"sideIndex ");
+  throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex ");
 }
 
 
 int
 DiskPreMod::getLayerSurf(const size_t layerIndex,
-			const size_t sideIndex) const
+			const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
-    \param sideIndex :: Side [0-3]
     \param layerIndex :: layer, 0 is inner moderator [0-4]
+    \param sideIndex :: Side [1-4]
     \return Surface string
   */
 {
@@ -430,25 +434,27 @@ DiskPreMod::getLayerSurf(const size_t layerIndex,
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
 
   const int SI(10*static_cast<int>(layerIndex)+modIndex);
+  const long int uSIndex(std::abs(sideIndex));
+  const int signValue((sideIndex>0) ? 1 : -1);
 	       
-  switch(sideIndex)
+  switch(uSIndex)
     {
-    case 0:
-    case 1:    
-    case 2:
+    case 1:
+    case 2:    
     case 3:
-      return SMap.realSurf(SI+7);
     case 4:
-      return -SMap.realSurf(SI+5);
+      return signValue*SMap.realSurf(SI+7);
     case 5:
-      return SMap.realSurf(SI+6);
+      return -signValue*SMap.realSurf(SI+5);
+    case 6:
+      return signValue*SMap.realSurf(SI+6);
     }
-  throw ColErr::IndexError<size_t>(sideIndex,6,"sideIndex ");
+  throw ColErr::IndexError<long int>(sideIndex,7,"sideIndex");
 }
 
 std::string
 DiskPreMod::getLayerString(const size_t layerIndex,
-			 const size_t sideIndex) const
+			   const long int sideIndex) const
   /*!
     Given a side and a layer calculate the link surf
     \param layerIndex :: layer, 0 is inner moderator [0-4]
@@ -456,40 +462,45 @@ DiskPreMod::getLayerString(const size_t layerIndex,
     \return Surface string
   */
 {
-  ELog::RegMethod RegA("DiskPreMod","getLinkString");
+  ELog::RegMethod RegA("DiskPreMod","getLayerString");
 
   if (layerIndex>nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
 
   const int SI(10*static_cast<int>(layerIndex)+modIndex);
 
-  std::ostringstream cx;
-  switch(sideIndex)
+  std::string Out;
+  const long int uSIndex(std::abs(sideIndex));
+  switch(uSIndex)
     {
-    case 0:
-      cx<<" "<<SMap.realSurf(SI+7)<<" "
-	<< -SMap.realSurf(modIndex+2)<<" ";
-      return cx.str();
     case 1:
-      cx<<" "<<SMap.realSurf(SI+7)<<" "
-	<< SMap.realSurf(modIndex+2)<<" ";
-      return cx.str();
+      Out=ModelSupport::getComposite(SMap,SI,modIndex," 7 -2M ");
+      break;
     case 2:
-      cx<<" "<<SMap.realSurf(SI+7)<<" "
-	<< -SMap.realSurf(modIndex+1)<<" ";
-      return cx.str();
+      Out=ModelSupport::getComposite(SMap,SI,modIndex," 7 2M ");
+      break;
     case 3:
-      cx<<" "<<SMap.realSurf(SI+7)<<" "
-	<< SMap.realSurf(modIndex+1)<<" ";
-      return cx.str();
+      Out=ModelSupport::getComposite(SMap,SI,modIndex," 7 -1M ");
+      break;
     case 4:
-      cx<<" "<<-SMap.realSurf(SI+5)<<" ";
-      return cx.str();
+      Out=ModelSupport::getComposite(SMap,SI,modIndex," 7 1M ");
+      break;
     case 5:
-      cx<<" "<<SMap.realSurf(SI+6)<<" ";
-      return cx.str();
+      Out=ModelSupport::getComposite(SMap,SI," -5 ");
+      break;
+    case 6:
+      Out=ModelSupport::getComposite(SMap,SI," 6 ");
+      break;
+    default:
+      throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
     }
-  throw ColErr::IndexError<size_t>(sideIndex,4,"sideIndex ");
+  if (sideIndex<0)
+    {
+      HeadRule HR(Out);
+      HR.makeComplement();
+      return HR.display();
+    }
+  return Out;
 }
 
 

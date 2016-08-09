@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   build/BulkInsert.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -85,10 +85,11 @@ namespace shutterSystem
 {
 
 BulkInsert::BulkInsert(const size_t ID,const std::string& Key) : 
-  TwinComp(Key,6),attachSystem::ContainedGroup("inner","outer"),
+  attachSystem::TwinComp(Key+StrFunc::makeString(ID+1),6),
+  attachSystem::ContainedGroup("inner","outer"),
+  baseName(Key),
   shutterNumber(ID),
-  surfIndex(ModelSupport::objectRegister::Instance().cell
-	    (Key,static_cast<int>(ID))),
+  surfIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
   cellIndex(surfIndex+1), 
   populated(0),divideSurf(0),DPlane(0)
   /*!
@@ -177,7 +178,7 @@ BulkInsert::setGlobalVariables(const double SRad,
 
 		
 void
-BulkInsert::populate(const Simulation& System,
+BulkInsert::populate(const FuncDataBase& Control,
 		     const shutterSystem::GeneralShutter& GS)
   /*!
     Populate all the variables
@@ -186,7 +187,6 @@ BulkInsert::populate(const Simulation& System,
   */
 {
   ELog::RegMethod RegA("BulkInsert","populate");
-  const FuncDataBase& Control=System.getDataBase();
 
   const std::string numName=keyName+StrFunc::makeString(shutterNumber+1);
   impZero=Control.EvalDefPair<int>(numName+"ImpZero",keyName+"ImpZero",0);  
@@ -200,29 +200,27 @@ BulkInsert::populate(const Simulation& System,
       populated |= 2;
     }
   xyAngle=GS.getAngle();
-  
-  zOffset=SimProcess::getIndexVar<double>
-    (Control,keyName,"ZOffset",shutterNumber+1);
-  innerWidth=SimProcess::getIndexVar<double>
-    (Control,keyName,"IWidth",shutterNumber+1);
-  innerHeight=SimProcess::getIndexVar<double>
-    (Control,keyName,"IHeight",shutterNumber+1);
-  outerWidth=SimProcess::getIndexVar<double>
-    (Control,keyName,"OWidth",shutterNumber+1);
-  outerHeight=SimProcess::getIndexVar<double>
-    (Control,keyName,"OHeight",shutterNumber+1);
 
+  zOffset=Control.EvalPair<double>(keyName,baseName,"ZOffset");
+  innerWidth=Control.EvalPair<double>(keyName,baseName,"IWidth");
+  innerHeight=Control.EvalPair<double>(keyName,baseName,"IHeight"
+				       );
+  outerWidth=Control.EvalPair<double>(keyName,baseName,"OWidth");
+  outerHeight=Control.EvalPair<double>(keyName,baseName,"OHeight");
+  
   
   const std::string KeyNum=StrFunc::makeString(shutterNumber+1);
-  if (Control.hasVariable(keyName+KeyNum+"InnerMat"))
-    innerMat=ModelSupport::EvalMat<int>(Control,keyName+KeyNum+"InnerMat");
-  else
-    innerMat=ModelSupport::EvalDefMat<int>(Control,keyName+"InnerMat",0);
 
-  if (Control.hasVariable(keyName+KeyNum+"OuterMat"))    
-    outerMat=ModelSupport::EvalMat<int>(Control,keyName+KeyNum+"OuterMat");
+  
+  if (Control.hasVariable(keyName+"InnerMat"))
+    innerMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerMat");
   else
-    outerMat=ModelSupport::EvalDefMat<int>(Control,keyName+"OuterMat",0);
+    innerMat=ModelSupport::EvalDefMat<int>(Control,baseName+"InnerMat",0);
+
+  if (Control.hasVariable(keyName+"OuterMat"))    
+    outerMat=ModelSupport::EvalMat<int>(Control,keyName+"OuterMat");
+  else
+    outerMat=ModelSupport::EvalDefMat<int>(Control,baseName+"OuterMat",0);
   
   populated|=1;
   return;
@@ -241,7 +239,6 @@ BulkInsert::createUnitVector(const shutterSystem::GeneralShutter& GS)
   ELog::RegMethod RegA("BulkInsert","createUnitVector");
 
   attachSystem::TwinComp::createUnitVector(GS);
-
   divideSurf=GS.getDivideSurf();
   DPlane=(divideSurf) ? SMap.realPtr<Geometry::Plane>(divideSurf) : 0;
   Origin=GS.getTargetPoint();
@@ -414,7 +411,7 @@ BulkInsert::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("BulkInsert","createAll");
 
-  populate(System,GS);
+  populate(System.getDataBase(),GS);
   createUnitVector(GS);
   createSurfaces();
   createObjects(System);

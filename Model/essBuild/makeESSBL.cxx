@@ -3,7 +3,7 @@
  
  * File:   essBuild/makeESSBL.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,6 +34,7 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
+#include <array>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -67,6 +68,7 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "FixedOffset.h"
 #include "FixedGroup.h"
 #include "ShapeUnit.h"
 #include "Bunker.h"
@@ -75,13 +77,21 @@
 #include "essVariables.h"
 
 #include "ODIN.h"
+#include "BEER.h"
+#include "BIFROST.h"
 #include "ESTIA.h"
+#include "FREIA.h"
 #include "LOKI.h"
 #include "NMX.h"
 #include "DREAM.h"
+#include "CSPEC.h"
+#include "VESPA.h"
+#include "VOR.h"
+
 #include "shortDREAM.h"
 #include "shortODIN.h"
-#include "VOR.h"
+
+#include "simpleITEM.h"
 
 #include "beamlineConstructor.h"
 #include "makeESSBL.h"
@@ -176,27 +186,42 @@ makeESSBL::build(Simulation& System,
     OR.getObject<attachSystem::FixedComp>(shutterName);
   const GuideItem* mainGIPtr=
     dynamic_cast<const GuideItem*>(mainFCPtr);
-    
+
   if (!mainGIPtr)
-    throw ColErr::InContainerError<std::string>(shutterName,"shutterObject");
+    throw ColErr::InContainerError<std::string>(shutterName,"GuideItem");
 	
-  if (beamName=="ODIN")
+  if (beamName=="BEER")
     {
-      // Odin beamline
-      ODIN OdinBL("odin");
-      OdinBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+      BEER beerBL("beer");
+      beerBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+    }  
+  else if (beamName=="BIFROST")
+    {
+      BIFROST bifrostBL("bifrost");
+      bifrostBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+    }  
+  else if (beamName=="CSPEC")
+    {
+      // DREAM beamline
+      CSPEC cspecBL("cspec");
+      cspecBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
-  else if (beamName=="SHORTODIN")
+  else if (beamName=="DREAM")
     {
-      // Odin beamline
-      ODIN OdinBL("shortOdin");
-      OdinBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+      // DREAM beamline
+      DREAM dreamBL("dream");
+      dreamBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="ESTIA")
     {
       ESTIA estiaBL;
       estiaBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
+  else if (beamName=="FREIA")
+    {
+      FREIA freiaBL("freia");
+      freiaBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+    }  
   else if (beamName=="LOKI")
     {
       // LOKI beamline
@@ -206,21 +231,31 @@ makeESSBL::build(Simulation& System,
   else if (beamName=="NMX")
     {
       // NMX beamline
-      ELog::EM<<"Building "<<beamName<<ELog::endDiag;
-      NMX nmxBL;
+      NMX nmxBL("nmx");
       nmxBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+    }
+  else if (beamName=="ODIN")
+    {
+      // Odin beamline
+      ODIN OdinBL("odin");
+      OdinBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+    }
+  else if (beamName=="VESPA")
+    {
+      // DREAM beamline
+      VESPA vespaBL("vespa");
+      vespaBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="VOR")
     {
-      ELog::EM<<"Building "<<beamName<<ELog::endDiag;
       VOR vorBL("vor");
       vorBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
-  else if (beamName=="DREAM")
+  else if (beamName=="SHORTODIN")
     {
-      // DREAM beamline
-      DREAM dreamBL("dream");
-      dreamBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+      // Odin beamline
+      ODIN OdinBL("shortOdin");
+      OdinBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="SHORTDREAM")
     {
@@ -233,6 +268,12 @@ makeESSBL::build(Simulation& System,
       // short sector dream
       DREAM dreamBL("shortDream2");
       dreamBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+    }
+  else if (beamName=="SIMPLE")
+    {
+      // LOKI beamline
+      simpleITEM simpleBL("simple");
+      simpleBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="JSANS" || beamName=="JRef")
     {

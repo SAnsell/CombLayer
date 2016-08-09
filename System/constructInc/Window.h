@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   constructInc/Window.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@ namespace constructSystem
   \version 1.0
   \author S. Ansell
   \date May 2012
-  \brief TS1 t1Reflector [insert object]
+  \brief Window system
 */
 
 class Window : public attachSystem::ContainedComp,
@@ -47,9 +47,9 @@ class Window : public attachSystem::ContainedComp,
   int baseCell;                 ///< Cell that it resides
 
   Geometry::Vec3D Centre;       ///< Centre point of view
-  Geometry::Vec3D WAxis;        ///< Window axis
-  int fSign;                    ///< Surface sign
-  int bSign;                    ///< Surface sign
+  Geometry::Vec3D WAxis;        ///< Window primary axis
+  int fSign;                    ///< Front surface sign
+  int bSign;                    ///< Back surface sign
   const Geometry::Surface* FSurf;     ///< Front surface
   const Geometry::Surface* BSurf;     ///< Back surface
   int divideFlag;               ///< Dividing plane required
@@ -62,7 +62,6 @@ class Window : public attachSystem::ContainedComp,
   std::vector<int> layerMat;        ///< Material number [nlayer]
   std::vector<int> layerSurf;       ///< Surface layres
   
-  void populate(const Simulation&);
   void createUnitVector(const attachSystem::FixedComp&);
 
   void createCentre(Simulation&);

@@ -3,7 +3,7 @@
  
  * File:   physics/ModeCard.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -108,7 +108,8 @@ ModeCard::addElm(const std::string& EN)
     \param EN :: element identifier
   */
 {
-  particles.push_back(EN);
+  if (std::find(particles.begin(),particles.end(),EN)==particles.end())
+    particles.push_back(EN);
   return;
 }
 

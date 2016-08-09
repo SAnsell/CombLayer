@@ -3,7 +3,7 @@
  
  * File:   t1Build/makeT1Real.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,11 +34,8 @@
 #include <iterator>
 #include <memory>
 
-#include <boost/format.hpp>
-
-
 #include "Exception.h"
-#include "FileReport.h"
+#include "FileReport.h" 
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "GTKreport.h"
@@ -236,7 +233,7 @@ makeT1Real::flightLines(Simulation* SimPtr)
   H2FL->addBoundarySurf("inner",Out);  
   H2FL->addBoundarySurf("outer",Out);  
   H2FL->createAll(*SimPtr,*Lh2ModObj,1);
-
+  
   RefObj->addToInsertChain(CH4NorthFL->getCC("outer"));
   Out=RefObj->getComposite(" 3 -12 ");
   Out1=Lh2ModObj->getComposite(" (-61:64)  ");
@@ -444,10 +441,11 @@ makeT1Real::build(Simulation* SimPtr,
 
   RefObj->createBoxes(*SimPtr,TarExcludeName);
 
-  WaterPipeObj->createAll(*SimPtr,*WaterModObj,5);
-  MPipeObj->createAll(*SimPtr,*MerlinMod,5);
-  H2PipeObj->createAll(*SimPtr,*Lh2ModObj,4);
-  CH4PipeObj->createAll(*SimPtr,*CH4ModObj,4);
+  WaterPipeObj->createAll(*SimPtr,*WaterModObj,6);
+  MPipeObj->createAll(*SimPtr,*MerlinMod,6);
+
+  H2PipeObj->createAll(*SimPtr,*Lh2ModObj,5);   // long int sideIndex
+  CH4PipeObj->createAll(*SimPtr,*CH4ModObj,5);  // long int sideIndex
 
   if (IParam.flag("BeRods"))
     RefObj->createRods(*SimPtr);  
