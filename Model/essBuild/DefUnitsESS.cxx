@@ -86,7 +86,7 @@ setDefUnits(FuncDataBase& Control,
       else if (Key=="Single")
 	setESSSingle(A,sndItem,extraItem,filled);
       else if (Key=="neutronics")
-	setESSNeutronics(A);
+	setESSNeutronics(A,sndItem,extraItem);
 	
       else if (Key=="help")
 	{
@@ -96,7 +96,7 @@ setDefUnits(FuncDataBase& Control,
 	  ELog::EM<<"  PortsOnly [lower/upper] : Nothing beyond beamport "<<ELog::endDiag;
 	  ELog::EM<<"  Single  beamLine : Single beamline [for BL devel] "
 		  <<ELog::endDiag;
-	  ELog::EM<<"  neutronics : configuration for neutronics calculations " << ELog::endDiag;
+	  ELog::EM<<"  neutronics {BF1,BF2} [single]: configuration for neutronics calculations " << ELog::endDiag;
 	  throw ColErr::ExitAbort("Iparam.defaultConfig");	  
 	}
       else 
@@ -292,22 +292,76 @@ setESSSingle(defaultConfig& A,
 }
 
 void
-setESSNeutronics(defaultConfig& A)
+setESSNeutronics(defaultConfig& A, const std::string& modtype, const std::string& single)
 
   /*!
     Default configuration for ESS for testing single beamlines
     for building
     \param A :: Paramter for default config
-    \param beamItem :: Additional value for beamline name
-    \param portItem :: Additional value for port number/item
-    \param active :: Active flag
+    \param modtype :: Moderator type: either BF1 or BF2
+    \param single :: if "single" then only top moderator is built;
+                     if not specified then both moderators are built.
    */
 {
   ELog::RegMethod RegA("DefUnitsESS[F]","setESSSingle");
 
+  size_t bfType=0;
+  
+  if (modtype=="BF1")
+    {
+      bfType = 1;
+      A.setVar("TopFlyLeftLobeXStep", -2.0);
+      A.setVar("TopFlyRightLobeXStep", 2.0);
+      A.setVar("TopFlyMidWaterMidYStep", 7.0);
+      A.setOption("topPipe", "supply");
+
+      A.setVar("LowFlyLeftLobeXStep", -2.0);
+      A.setVar("LowFlyRightLobeXStep", 2.0);
+      A.setVar("LowFlyMidWaterMidYStep", 7.0);
+      A.setOption("lowPipe", "supply");
+
+      // straighten the pipes
+      A.setVar("TSupplyRightAlNSegIn", 1);
+      A.setVar("TSupplyRightAlPPt0", Geometry::Vec3D(0,0,0));
+      A.setVar("TSupplyRightAlPPt1", Geometry::Vec3D(0,15,0));
+      A.setVar("TSupplyLeftAlNSegIn", 1);
+      A.setVar("TSupplyLeftAlPPt0", Geometry::Vec3D(0,0,0));
+      A.setVar("TSupplyLeftAlPPt1", Geometry::Vec3D(0,15,0));
+
+      A.setVar("LSupplyRightAlNSegIn", 1);
+      A.setVar("LSupplyRightAlPPt0", Geometry::Vec3D(0,0,0));
+      A.setVar("LSupplyRightAlPPt1", Geometry::Vec3D(0,15,0));
+      A.setVar("LSupplyLeftAlNSegIn", 1);
+      A.setVar("LSupplyLeftAlPPt0", Geometry::Vec3D(0,0,0));
+      A.setVar("LSupplyLeftAlPPt1", Geometry::Vec3D(0,15,0));
+    } else if (modtype=="BF2")
+    {
+      bfType = 2;
+      // variables are set in moderatorVariables
+    } else
+    throw ColErr::InvalidLine(modtype, "Either BF1 or BF2 are supported in defaultConfig");
+
+  if (single=="")
+    {
+      A.setOption("lowMod", "Butterfly");
+      A.setOption("topMod", "Butterfly");
+    } else if (single=="single")
+    {
+      A.setOption("lowMod", "None");
+      A.setOption("topMod", "Butterfly");
+      A.setVar("BeRefLowVoidThick", 0);
+      A.setVar("BeRefLowRefMat", "Iron10H2O");
+      A.setVar("BeRefLowWallMat", "Iron10H2O");
+      A.setVar("BeRefInnerStructureLowActive", 0);
+    } else
+    throw ColErr::InvalidLine(single,"Either 'single' or nothing are supported in defaultConfig");
+
+  A.setVar("LowFlyType", bfType);
+  A.setVar("TopFlyType", bfType);
+  
   A.setOption("matDB", "neutronics");
-  A.setOption("lowMod", "Butterfly");
   A.setOption("bunker", "noPillar");
+  
   return;
 }
 
