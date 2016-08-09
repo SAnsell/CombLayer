@@ -172,15 +172,12 @@ namespace essSystem
 	return;
       }
 
-    radius=Control.EvalDefVar<double>("F5Radius", -1);  // used with theta. If set, this value is the same for all collimators. Must be positive to be used with theta.
-    if (radius<0)
-      {
-	ELog::EM << "Radius must be positive if used with theta" << ELog::endErr;
-	return;
-      }
+    radius=Control.EvalDefPair<double>(keyName, "F5", "Radius", -1);  // used with theta. If set, this value is the same for all collimators. Must be positive to be used with theta.
+    if (radius<=0)
+	throw ColErr::RangeError<double>(radius, 0, INFINITY, "Radius must be positive if used with theta");
 
 
-    length=Control.EvalVar<double>(keyName+"Length"); // along x
+    length=Control.EvalPair<double>(keyName, "F5", "Length"); // along x
     wall=Control.EvalDefVar<double>(keyName+"WallThick", 0.5);
     viewWidth=Control.EvalVar<double>(keyName+"ViewWidth");
     delta = Control.EvalDefVar<double>(keyName+"Delta", 0.0);
