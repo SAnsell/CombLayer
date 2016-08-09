@@ -93,7 +93,7 @@ MidWaterDivider::MidWaterDivider(const std::string& baseKey,
 				 const std::string& extraKey) :
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0,0),
-  attachSystem::FixedComp(baseKey+extraKey,14),
+  attachSystem::FixedComp(baseKey+extraKey,18),
   baseName(baseKey),
   divIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
   cellIndex(divIndex+1)
@@ -231,12 +231,20 @@ MidWaterDivider::createLinks(const H2Wing& leftWing,
   FixedComp::setLinkSurf(2, SMap.realSurf(divIndex+123));  
   FixedComp::setLinkSurf(3, -SMap.realSurf(divIndex+124)); 
 
-
   // small cutting edged
   FixedComp::setLinkSurf(5, SMap.realSurf(divIndex+111));
   FixedComp::setLinkSurf(6, SMap.realSurf(divIndex+112));
   FixedComp::setLinkSurf(7, SMap.realSurf(divIndex+131));  
   FixedComp::setLinkSurf(8, SMap.realSurf(divIndex+132));  
+
+  FixedComp::setLinkSurf(9, SMap.realSurf(divIndex+111));
+  FixedComp::addLinkSurf(9, SMap.realSurf(divIndex+104));   // check sign
+  FixedComp::setLinkSurf(10,SMap.realSurf(divIndex+112));
+  FixedComp::addLinkSurf(10,SMap.realSurf(divIndex+103));   // check sign
+  FixedComp::setLinkSurf(11,SMap.realSurf(divIndex+131));  
+  FixedComp::addLinkSurf(11,SMap.realSurf(divIndex+123));   // check sign  
+  FixedComp::setLinkSurf(12,SMap.realSurf(divIndex+132));  
+  FixedComp::addLinkSurf(12,SMap.realSurf(divIndex+124));   // check sign
 
   std::vector<int> surfN;
   surfN.push_back(leftWing.getSignedLinkSurf(1));
@@ -250,7 +258,7 @@ MidWaterDivider::createLinks(const H2Wing& leftWing,
 
   const std::vector<std::pair<int,int>> InterVec =
     {
-      // centers:
+      // main angles (centers):
       {103,104},{103,104},
       {123,124},{123,124},
       // connections with H2Wing:
@@ -264,8 +272,8 @@ MidWaterDivider::createLinks(const H2Wing& leftWing,
     ({Y,Y,-Y,-Y,Y,Y,-Y,-Y,
 	Y,Y,-Y,-Y});
 
-  
-  for(size_t index=0;index<InterVec.size();index++)
+  size_t index;
+  for(index=0;index<InterVec.size();index++)
     {
       const std::pair<int,int>& Item(InterVec[index]);
       const int SA(divIndex+Item.first);
@@ -277,6 +285,10 @@ MidWaterDivider::createLinks(const H2Wing& leftWing,
       	(index,SurInter::getPoint(PA,PB,midPlane),Axis[index]);
     }
 
+  // link points in the centres of short side surfaces
+  for (size_t i=0; i<4; i++)
+    FixedComp::setConnect(index++, (getLinkPt(i+4)+getLinkPt(i+8))/2.0, Axis[i+5]);
+  
   return;
 }
 
