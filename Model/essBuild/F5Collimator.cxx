@@ -227,7 +227,14 @@ namespace essSystem
 	  lp =  zStep>0 ? 8 : 10;
       } else if (lpAlgorithm == "MidWaterSide")
       {
-	throw ColErr::AbsObjMethod("F5Algorithm 'MidWaterSide' not implemented yet");
+	if (theta<90)
+	  lp =  zStep>0 ? 14 : 12; // OK these maths depend on the XYangle of the moderator
+	else if (theta<180)
+	  lp =  zStep>0 ? 15 : 13;
+	else if (theta<270)
+	  lp =  zStep>0 ? 13 : 15;
+	else // if theta>270
+	  lp =  zStep>0 ? 12 : 14;
       } else
       throw ColErr::InvalidLine(lpAlgorithm,"Link point algorithm not in 'FocalPoints', 'MidWaterEdges', 'MidWaterSide' or 'manual'");
     
@@ -255,10 +262,10 @@ namespace essSystem
     // define direction of C with respect to B:
     //  (these maths depend on the XYangle of the moderator)
     if (zStep>0) {// top moderator
-      if ((LinkPoint==5) || (LinkPoint==6) || (LinkPoint==9) || (LinkPoint==10) )
+      if ((LinkPoint==5) || (LinkPoint==6) || (LinkPoint==9) || (LinkPoint==10) || (LinkPoint==13) || (LinkPoint==14))
 	BOC *= -1;
     } else { // low moderator
-      if ((LinkPoint==4) || (LinkPoint==7) || (LinkPoint==8) || (LinkPoint==11))
+      if ((LinkPoint==4) || (LinkPoint==7) || (LinkPoint==8) || (LinkPoint==11) || (LinkPoint==12) || (LinkPoint==15))
 	BOC *= -1;
     }
 
