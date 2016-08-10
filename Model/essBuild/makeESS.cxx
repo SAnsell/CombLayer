@@ -414,7 +414,7 @@ void makeESS::buildF5Collimator(Simulation& System, const mainSystem::inputParam
 	      if ((strtmp=="TopFly") || (strtmp=="LowFly"))
 		break;
 	      // do real work here
-	      theta = atoi(strtmp.c_str()); // !!! use StrFunc::convert here !!! 
+	      theta = atof(strtmp.c_str()); // !!! use StrFunc::convert here !!!
 
 	      std::shared_ptr<F5Collimator> F5(new F5Collimator(StrFunc::makeString("F", colIndex*10+5).c_str())); colIndex++;
 	      OR.addObject(F5);
