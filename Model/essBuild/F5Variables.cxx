@@ -64,13 +64,13 @@ F5Variables(FuncDataBase& Control)
 
     // some default values are inherited from F5:
     Control.addVariable("F5Radius", 1000);          // Radial location of all F5 tallies (valid with -f5-collimators argument)
-    Control.addVariable("F5Length", 440.0);         // Length of all F5 tallies
     Control.addVariable("F5Algorithm", "baseline"); // Algorithm of all F5 tallies
 
     std::string name;
     for (size_t i=5; i<=995; i+=5)
       {
 	name=StrFunc::makeString("F", i);
+	Control.addVariable(name+"Length", 440.0);
 	Control.addVariable(name+"Delta", 0.0);
 	Control.addVariable(name+"ViewWidth", 6);
 	Control.addVariable(name+"LinkPoint", 0.0);
