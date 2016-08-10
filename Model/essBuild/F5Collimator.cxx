@@ -183,7 +183,7 @@ namespace essSystem
     wall=Control.EvalDefVar<double>(keyName+"WallThick", 0.5);
     viewWidth=Control.EvalVar<double>(keyName+"ViewWidth");
     delta = Control.EvalDefVar<double>(keyName+"Delta", 0.0);
-    lpAlgorithm = Control.EvalPair<std::string>(keyName, "F5", "Algorithm"); // "baseline" "edges" "middle" "manual"
+    lpAlgorithm = Control.EvalPair<std::string>(keyName, "F5", "Algorithm"); // "FocalPoints" "MidWaterEdges" "MidWaterSide" "manual"
 
     // xyz coordinates of F5 tally
     Control.setVariable<double>(keyName+"X", radius*sin(theta*M_PI/180.0));
@@ -201,7 +201,7 @@ namespace essSystem
 
     int lp=0;
     // link point (defined by theta)
-    if (lpAlgorithm == "baseline")
+    if (lpAlgorithm == "FocalPoints")
       {
 	if (theta<90)
 	  lp =  zStep>0 ? 6 : 4; // OK these maths depend on the XYangle of the moderator
@@ -211,7 +211,7 @@ namespace essSystem
 	  lp =  zStep>0 ? 5 : 7; // OK
 	else // if theta>270
 	  lp =  zStep>0 ? 4 : 6; // OK
-      } else if (lpAlgorithm == "edges")
+      } else if (lpAlgorithm == "MidWaterEdges")
       {
 	if (theta<90)
 	  lp =  zStep>0 ? 10 : 8; // OK these maths depend on the XYangle of the moderator
@@ -221,11 +221,11 @@ namespace essSystem
 	  lp =  zStep>0 ? 9 : 11;
 	else // if theta>270
 	  lp =  zStep>0 ? 8 : 10;
-      } else if (lpAlgorithm == "middle")
+      } else if (lpAlgorithm == "MidWaterSide")
       {
-	throw ColErr::AbsObjMethod("F5Algorithm 'middle' not implemented yet");
+	throw ColErr::AbsObjMethod("F5Algorithm 'MidWaterSide' not implemented yet");
       } else
-      throw ColErr::InvalidLine(lpAlgorithm,"Link point algorithm not in 'baseline', 'edges', 'middle' or 'manual'");
+      throw ColErr::InvalidLine(lpAlgorithm,"Link point algorithm not in 'FocalPoints', 'MidWaterEdges', 'MidWaterSide' or 'manual'");
     
     Control.setVariable<int>(keyName+"LinkPoint", lp);
     LinkPoint = Control.EvalDefVar<int>(keyName+"LinkPoint", -1);

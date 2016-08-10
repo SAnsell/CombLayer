@@ -64,7 +64,7 @@ F5Variables(FuncDataBase& Control)
 
     // some default values are inherited from F5:
     Control.addVariable("F5Radius", 1000);          // Radial location of all F5 tallies (valid with -f5-collimators argument)
-    Control.addVariable("F5Algorithm", "baseline"); // Algorithm of all F5 tallies
+    Control.addVariable("F5Algorithm", "FocalPoints"); // Algorithm of all F5 tallies
 
     std::string name;
     for (size_t i=5; i<=995; i+=5)
