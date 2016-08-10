@@ -174,6 +174,10 @@ namespace essSystem
 	return;
       }
 
+    // check the range value:
+    if ((range.find("cold")==std::string::npos) && (range.find("thermal")==std::string::npos))
+      throw ColErr::InvalidLine(range,"range can be either \"cold\" or \"thermal\"");
+
     radius=Control.EvalDefPair<double>(keyName, "F5", "Radius", -1);  // used with theta. If set, this value is the same for all collimators. Must be positive to be used with theta.
     if (radius<=0)
 	throw ColErr::RangeError<double>(radius, 0, INFINITY, "Radius must be positive if used with theta");
@@ -250,30 +254,17 @@ namespace essSystem
     double BOC = acos((2*pow(OB.abs(), 2) - pow(viewWidth, 2))/(2*pow(OB.abs(), 2)));
     // define direction of C with respect to B:
     //  (these maths depend on the XYangle of the moderator)
-    if (range=="cold")
-      {
-	if (zStep>0) {// top moderator
-	  if ((LinkPoint==5) || (LinkPoint==6) || (LinkPoint==9) || (LinkPoint==10) )
-	    BOC *= -1;
-	} else { // low moderator
-	  if ((LinkPoint==4) || (LinkPoint==7) || (LinkPoint==8) || (LinkPoint==11))
-	    BOC *= -1;
-	}
-      } else if (range=="thermal")
-      {
-	if (zStep>0) {// top moderator
-	  if ((LinkPoint==4) || (LinkPoint==7) || (LinkPoint==8) || (LinkPoint==11) )
-	    BOC *= -1;
-	} else { // low moderator
-	  if ((LinkPoint==6) || (LinkPoint==5) || (LinkPoint==9) || (LinkPoint==10))
-	    BOC *= -1;
-	}
-      }
-    else
-      {
-	ELog::EM << "Range can be either cold or thermal" << ELog::endErr;
-	return;
-      }
+    if (zStep>0) {// top moderator
+      if ((LinkPoint==5) || (LinkPoint==6) || (LinkPoint==9) || (LinkPoint==10) )
+	BOC *= -1;
+    } else { // low moderator
+      if ((LinkPoint==4) || (LinkPoint==7) || (LinkPoint==8) || (LinkPoint==11))
+	BOC *= -1;
+    }
+
+    // thermal collimators view complementary area:
+    if (range=="thermal")
+      BOC *= -1;
 
     Geometry::Vec3D OC(OB);
     Geometry::Quaternion::calcQRotDeg(BOC*180/M_PI,Z).rotate(OC);
