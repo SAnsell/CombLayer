@@ -170,34 +170,55 @@ createESSSource(const FuncDataBase& Control,Source& sourceCard)
   sourceCard.setComp("y",yStart);
 
   const double xRange=Control.EvalDefVar<double>("sdefWidth",8.0);
-  const double step(0.5);  
+  const double zRange=Control.EvalDefVar<double>("sdefHeight",3.0);
+  const std::string pdf=Control.EvalDefVar<std::string>("sdefPDF", "gaus");
+
   std::vector<double> XPts;
   std::vector<double> XProb;
-  double XValue= -xRange-step;
-  do
-    {
-      XValue+=step;
-      XPts.push_back(XValue);
-      XProb.push_back(1.0-(XValue*XValue)/(xRange*xRange));
-    } while (XValue<xRange);
-
-  const double zRange=Control.EvalDefVar<double>("sdefHeight",3.0);
   std::vector<double> ZPts;
   std::vector<double> ZProb;
-  double ZValue= -zRange-step;
-  do
+  char siOption;
+  if (pdf=="gaus")
     {
-      ZValue+=step;
-      ZPts.push_back(ZValue);
-      ZProb.push_back(1.0-(ZValue*ZValue)/(zRange*zRange));
-    } while (ZValue<zRange);
-  
+      siOption = 'A';
+      const double step(0.5);  
+      double XValue= -xRange-step;
+      do
+	{
+	  XValue+=step;
+	  XPts.push_back(XValue);
+	  XProb.push_back(1.0-(XValue*XValue)/(xRange*xRange));
+	} while (XValue<xRange);
+
+      double ZValue= -zRange-step;
+      do
+	{
+	  ZValue+=step;
+	  ZPts.push_back(ZValue);
+	  ZProb.push_back(1.0-(ZValue*ZValue)/(zRange*zRange));
+	} while (ZValue<zRange);
+    } else if (pdf=="uniform")
+    {
+      siOption = 'h';
+      XPts.push_back(-xRange);
+      XPts.push_back(xRange);
+      XProb.push_back(0);
+      XProb.push_back(1);
+      ZPts.push_back(-zRange);
+      ZPts.push_back(zRange);
+      ZProb.push_back(0);
+      ZProb.push_back(1);
+    } else
+    {
+      throw ColErr::InvalidLine(pdf,"sdefPDF can be either \"gaus\" or \"uniform\"");
+    }
   
   SrcData D1(1);  
   SrcData D2(2);
-  
-  SrcInfo SI1('A');
-  SrcInfo SI2('A');
+
+  SrcInfo SI1(siOption);
+  SrcInfo SI2(siOption);
+
   SI1.setData(XPts);
   SI2.setData(ZPts);
 

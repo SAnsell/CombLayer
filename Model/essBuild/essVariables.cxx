@@ -557,6 +557,11 @@ EssVariables(FuncDataBase& Control)
   F5Variables(Control);
 
   Control.addVariable("sdefEnergy",2000.0);
+  Control.addVariable("sdefWidth",    7.0);
+  Control.addVariable("sdefHeight",   1.6);
+  Control.addVariable("sdefYPos",    -500);
+  Control.addVariable("sdefPDF","uniform");
+  
   // port version:
   Control.addVariable("portSourceASpread",0.0);
   Control.addVariable("portSourceHeight",3.0);
