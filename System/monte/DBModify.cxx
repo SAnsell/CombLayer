@@ -148,17 +148,19 @@ addESSMaterial()
   MonteCarlo::Material MObj;
   // ESS materials
 
+  int imat=1;
+  
   // According to Fig. 7 in 10.1103/PhysRevB.91.180301, this cross section actually had 0.5% ortho-H,
   // therefore using this material is the same as adding 0.5 ortho-H
-  MObj.setMaterial(101,"HPARA"," 1001.70c 1.0 ","hpara.10t", MLib);
+  MObj.setMaterial(imat++/*101*/,"HPARA"," 1001.70c 1.0 ","hpara.10t", MLib);
   MObj.setDensity(-7.0e-2);
   MDB.resetMaterial(MObj);
   
-  MObj.setMaterial(102,"HORTHO"," 1004.70c 1.0 ","hortho.10t", MLib);
+  MObj.setMaterial(imat++/*102*/,"HORTHO"," 1004.70c 1.0 ","hortho.10t", MLib);
   MObj.setDensity(-7.0e-2);
   MDB.resetMaterial(MObj);
 
-  MObj.setMaterial(103, "LH05ortho", " 1001.70c 99.5 "
+  MObj.setMaterial(imat++/*103*/, "LH05ortho", " 1001.70c 99.5 "
                    "1004.70c 0.5 ","hpara.10t hortho.10t", MLib);
   MObj.setDensity(-7.0e-2*(0.07/0.0689677));
   // 0.07/0.0689677 because CL for some reason changes the density. This correction works for 0.5% ortho only !!! todo !!!
@@ -166,13 +168,13 @@ addESSMaterial()
 
   // Generic light water
   // Simplified light water for  basic neutronic simulations
-  MObj.setMaterial(110, "H2O", " 1001.70c 0.66666667 "
+  MObj.setMaterial(imat++/*110*/, "H2O", " 1001.70c 0.66666667 "
 		   " 8016.70c 0.33333333 ", "lwtr.10t", MLib);
   MObj.setDensity(-1.0);
   MDB.resetMaterial(MObj);
 
   // Mix of water and 10% vol Be
-  MObj.setMaterial(141, "H2OBe10",
+  MObj.setMaterial(imat++/*141*/, "H2OBe10",
 		   " 04009.70c 0.12046753633 "
                    " 1001.70c 0.58635497578 "
                    " 8016.70c 0.29317748789 ", "lwtr.10t be.10t", MLib);
@@ -181,7 +183,7 @@ addESSMaterial()
   MDB.resetMaterial(MObj);
 
   // Mix of water and 4.7% vol Al as calculated by Marc (email from LZ 15.01.16) - checked by AT
-  MObj.setMaterial(147, "H2OAl47",
+  MObj.setMaterial(imat++/*147*/, "H2OAl47",
 		   " 1001.70c 0.647478328682 "
 		   " 13027.70c 0.0287825069767 "
 		   " 8016.70c 0.323739164341 ", "lwtr.10t al27.12t", MLib);
@@ -191,22 +193,22 @@ addESSMaterial()
   // Natural Helium. Density -1.74E-4 g/cm3
   // Temperature: 300 K
   // Reference: Material Data Compilation 21 Sep 2015
-  MObj.setMaterial(200, "Helium",
+  MObj.setMaterial(imat++/*200*/, "Helium",
   		   " 2003.70c 1.34E-6 "
   		   " 2004.70c 0.999998660 ", "", MLib);
   MObj.setDensity(-1.74E-4);
   MDB.resetMaterial(MObj);
 
-  MObj.setMaterial(1300, "Aluminium", " 13027.70c 1.0 ", "al27.12t", MLib);
+  MObj.setMaterial(imat++/*1300*/, "Aluminium", " 13027.70c 1.0 ", "al27.12t", MLib);
   MObj.setDensity(-2.7);
   MDB.resetMaterial(MObj); 
 
-  MObj.setMaterial(1301, "Aluminium20K", " 13027.70c 1.0 ", "al27.10t", MLib);
+  MObj.setMaterial(imat++/*1301*/, "Aluminium20K", " 13027.70c 1.0 ", "al27.10t", MLib);
   MObj.setDensity(-2.73);
   MDB.resetMaterial(MObj); 
 
   // ESS Iron
-  MObj.setMaterial(2600, "Iron",
+  MObj.setMaterial(imat++/*2600*/, "Iron",
 		   " 26054.70c  0.058450000 "
 		   " 26056.70c  0.917540000 "
 		   " 26057.70c  0.021190000 "
@@ -216,7 +218,7 @@ addESSMaterial()
   MDB.resetMaterial(MObj);
 
   // Homogeneous mixture of Iron and 10% volume H2O
-  MObj.setMaterial(2610, "Iron10H2O",
+  MObj.setMaterial(imat++/*2610*/, "Iron10H2O",
                    " 01001.70c 0.077534884 "
                    " 08016.70c 0.038767442 "
                    " 26054.70c 0.051652129 "
@@ -229,7 +231,7 @@ addESSMaterial()
 
   // ESS  SS316L
   // Steel composition from ESS Design Update WP3
-  MObj.setMaterial(2636, "SS316L",
+  MObj.setMaterial(imat++/*2636*/, "SS316L",
 		   " 06000.71c  0.001392603 "
 		   " 14028.71c  0.007323064 "
 		   " 14029.71c  0.000372017 "
@@ -266,7 +268,7 @@ addESSMaterial()
   MDB.resetMaterial(MObj);
 
   // Same ase 2636 but with Bilbao density of 7.93 g/cm3
-  MObj.setMaterial(2637, "SS316L793",
+  MObj.setMaterial(imat++/*2637*/, "SS316L793",
 		   " 06000.71c  0.001392603 "
 		   " 14028.71c  0.007323064 "
 		   " 14029.71c  0.000372017 "
@@ -303,7 +305,7 @@ addESSMaterial()
   MDB.resetMaterial(MObj);
 
   // Same ase 2636 but with a2t density of 7.85 g/cm3 and fe56.12t instead of fe56.14t (material 2636 in a2t200)
-  MObj.setMaterial(2638, "SS316L785",
+  MObj.setMaterial(imat++/*2638*/, "SS316L785",
 		   " 06000.71c  0.001392603 "
 		   " 14028.71c  0.007323064 "
 		   " 14029.71c  0.000372017 "
@@ -340,7 +342,7 @@ addESSMaterial()
   MDB.resetMaterial(MObj);
 
   // ESS  20% vol SS316L 80% vol void
-  MObj.setMaterial(2639, "SS316L20",
+  MObj.setMaterial(imat++/*2639*/, "SS316L20",
 		   " 06000.71c  0.001392603 "
 		   " 14028.71c  0.007323064 "
 		   " 14029.71c  0.000372017 "
@@ -380,7 +382,7 @@ addESSMaterial()
 // SS316L and void
 // density -1.62E-2
 // Reference: a2t200
-MObj.setMaterial(2644, "M2644",
+MObj.setMaterial(imat++/*2644*/, "M2644",
                  " 06000.70c  0.001392603 "
                  " 14028.70c  0.007323064 "
                  " 14029.70c  0.000372017 "
@@ -419,7 +421,7 @@ MDB.resetMaterial(MObj);
 // Invar36
 // Reference: e-mail from Esben 30 Sep 2015
 //\todo kbat ELog::EM << "Add MX/MT cards for Invar" << ELog::endCrit;
-MObj.setMaterial(2660, "Invar36",
+MObj.setMaterial(imat++/*2660*/, "Invar36",
                  " 06000.70c  0.001000000 "
                  " 14028.70c 0.003227805 "
                  " 14029.70c 0.000163975 "
@@ -451,14 +453,14 @@ MObj.setMaterial(2660, "Invar36",
 
   // Beryllium
   // Reference: Material data compilation table
-  MObj.setMaterial(4000, "Beryllium",
+  MObj.setMaterial(imat++/*4000*/, "Beryllium",
                  " 04009.70c  1.0 ", "BE.10T", MLib);
   MObj.setMXitem(4009, 70, 'c', "h", "model");
   MObj.setDensity(-1.85);
   MDB.resetMaterial(MObj);
 
   // Be + 5% H2O coolant - generated by mixtures.py 7 May 2015
-  MObj.setMaterial(4005, "Be5H2O",
+  MObj.setMaterial(imat++/*4005*/, "Be5H2O",
 		   " 1001.70c 0.0272983770406 "
 		   " 4009.70c 0.959052434439 "
 		   " 8016.70c 0.0136491885203 ", "lwtr.10t be.10t", MLib);
@@ -467,7 +469,7 @@ MObj.setMaterial(2660, "Invar36",
   MDB.resetMaterial(MObj);
 
   // Be + 10% H2O coolant
-  MObj.setMaterial(4010, "Be10H2O",
+  MObj.setMaterial(imat++/*4010*/, "Be10H2O",
 		   " 1001.70c 0.055140611 "
 		   " 4009.70c 0.91728908 "
 		   " 8016.70c 0.027570305 ", "lwtr.10t be.10t", MLib);
@@ -476,7 +478,7 @@ MObj.setMaterial(2660, "Invar36",
   MDB.resetMaterial(MObj);
 
   // Be + 30% vol H2O coolant - generated by mixtures.py 12 Jan 2016
-  MObj.setMaterial(4030, "Be30H2O",
+  MObj.setMaterial(imat++/*4030*/, "Be30H2O",
 		   " 1001.70c 0.171984352096 "
 		   " 4009.70c 0.742023471856 "
 		   " 8016.70c 0.0859921760479 ", "lwtr.10t be.10t", MLib);
@@ -485,7 +487,7 @@ MObj.setMaterial(2660, "Invar36",
   MDB.resetMaterial(MObj);
 
   // Tungsten at 300 K
-  MObj.setMaterial(7400, "Tungsten",
+  MObj.setMaterial(imat++/*7400*/, "Tungsten",
 		   "74180.50c  0.001200000 "
 		   "74182.70c  0.265000000 "
 		   "74183.70c  0.143100000 "
@@ -496,7 +498,7 @@ MObj.setMaterial(2660, "Invar36",
   MDB.resetMaterial(MObj);  
 
   // Tungsten at 600 K
-  MObj.setMaterial(7401, "Tungsten600K",
+  MObj.setMaterial(imat++/*7401*/, "Tungsten600K",
 		   "74180.50c  0.001200000 "
 		   "74182.71c  0.265000000 "
 		   "74183.71c  0.143100000 "
@@ -515,7 +517,7 @@ MObj.setMaterial(2660, "Invar36",
   // Natural Tungsten density is 19.298 \approx 19.3 g/cm3 [Material book] at 300 K,
   // therefore the density of homogenised material is 15.0766 \approx 15.1 g/cm3 
 
-  MObj.setMaterial(7451, "Tungsten151",
+  MObj.setMaterial(imat++/*7451*/, "Tungsten151",
 		   "74180.50c  0.001200000 "
 		   "74182.71c  0.265000000 "
 		   "74183.71c  0.143100000 "
@@ -526,7 +528,7 @@ MObj.setMaterial(2660, "Invar36",
   MDB.resetMaterial(MObj);
 
   // Bilbao M30001 - same ase 7400 but at 15.6 g/cm3
-  MObj.setMaterial(7456, "Tungsten156",
+  MObj.setMaterial(imat++/*7456*/, "Tungsten156",
 		   "74180.50c  0.001200000 "
 		   "74182.71c  0.265000000 "
 		   "74183.71c  0.143100000 "
@@ -537,7 +539,7 @@ MObj.setMaterial(2660, "Invar36",
   MDB.resetMaterial(MObj);
 
   
-  MObj.setMaterial(2660, "Invar36",
+  MObj.setMaterial(imat++/*2660*/, "Invar36",
 		   " 06000.70c  0.001000000 "
 		   " 14028.70c 0.003227805 "
 		   " 14029.70c 0.000163975 "
