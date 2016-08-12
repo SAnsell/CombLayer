@@ -440,7 +440,7 @@ void makeESS::buildF5Collimator(Simulation& System, const mainSystem::inputParam
 		  (lobeName,"Component not found");
 
 	      std::vector<Geometry::Vec3D> vecFP;
-	      for (size_t ii=0; ii<16; ii++) // ??? how to get total number of link points ???
+	      for (size_t ii=0; ii<20; ii++) // ??? how to get total number of link points ???
 		vecFP.push_back(midWater->getLinkPt(ii));
 	      vecFP.push_back(lobe->getLinkPt(12)); // zmin
 	      vecFP.push_back(lobe->getLinkPt(13)); // zmax

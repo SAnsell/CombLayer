@@ -93,7 +93,7 @@ MidWaterDivider::MidWaterDivider(const std::string& baseKey,
 				 const std::string& extraKey) :
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0,0),
-  attachSystem::FixedComp(baseKey+extraKey,18),
+  attachSystem::FixedComp(baseKey+extraKey,22),
   baseName(baseKey),
   divIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
   cellIndex(divIndex+1)
@@ -251,6 +251,11 @@ MidWaterDivider::createLinks(const H2Wing& leftWing,
   surfN.push_back(leftWing.getSignedLinkSurf(3));
   surfN.push_back(rightWing.getSignedLinkSurf(1));
   surfN.push_back(rightWing.getSignedLinkSurf(3));
+  // inner surfaces
+  surfN.push_back(leftWing.getSignedLinkSurf(1+8));
+  surfN.push_back(leftWing.getSignedLinkSurf(3+8));
+  surfN.push_back(rightWing.getSignedLinkSurf(1+8));
+  surfN.push_back(rightWing.getSignedLinkSurf(3+8));
 
   // Now deterermine point which are divider points
   const Geometry::Plane* midPlane=
@@ -262,15 +267,21 @@ MidWaterDivider::createLinks(const H2Wing& leftWing,
       {103,104},{103,104},
       {123,124},{123,124},
       // connections with H2Wing:
+      // outer
       {111,-2},{112,-3},
       {131,-1},{132,-4},
+      // inner
+      {111,-2-4},{112,-3-4},
+      {131,-1-4},{132,-4-4},
       // water edges:
       {111,104},{112,103},
       {123,131},{124,132}
     };
   const std::vector<Geometry::Vec3D> Axis
-    ({Y,Y,-Y,-Y,Y,Y,-Y,-Y,
-	Y,Y,-Y,-Y});
+    ({Y,Y,-Y,-Y,
+      Y,Y,-Y,-Y,
+      Y,Y,-Y,-Y,
+      Y,Y,-Y,-Y});
 
   size_t index;
   for(index=0;index<InterVec.size();index++)
@@ -287,8 +298,8 @@ MidWaterDivider::createLinks(const H2Wing& leftWing,
 
   // link points in the centres of short side surfaces
   for (size_t i=0; i<4; i++)
-    FixedComp::setConnect(index++, (getLinkPt(i+4)+getLinkPt(i+8))/2.0, Axis[i+5]);
-  
+    FixedComp::setConnect(index++, (getLinkPt(i+4)+getLinkPt(i+12))/2.0, Axis[i+5]);
+
   return;
 }
 
