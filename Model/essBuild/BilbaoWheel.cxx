@@ -340,8 +340,8 @@ BilbaoWheel::getSQSurface(const double R, const double e)
     Return MCNP(X) surface card for SQ ellipsoids
   */
 {
-  std::string surf = "sq " + StrFunc::makeString(1./pow(R,2)) + " " +
-    StrFunc::makeString(1./pow(R,2)) + " " +
+  std::string surf = "sq " + StrFunc::makeString(1./std::pow(R,2)) + " " +
+    StrFunc::makeString(1./std::pow(R,2)) + " " +
     StrFunc::makeString(e) + " 0 0 0 -1 " +
     StrFunc::makeString(Origin[0]) + " " + // X
     StrFunc::makeString(Origin[1]) + " " + // Y 

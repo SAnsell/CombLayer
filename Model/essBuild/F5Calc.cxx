@@ -178,11 +178,11 @@ F5Calc::GetHalfSizeX() const
     (F5.Y()-M.Y())*(B.Y()-C.Y());
 
   const double len =
-    sqrt(pow(F5.X()-M.X(),2)+pow(F5.Y()-M.Y(),2)) *
-    sqrt(pow(B.X()-C.X(),2)+pow(B.Y()-C.Y(),2));
+    sqrt(std::pow(F5.X()-M.X(),2)+std::pow(F5.Y()-M.Y(),2)) *
+    sqrt(std::pow(B.X()-C.X(),2)+std::pow(B.Y()-C.Y(),2));
   
   const double cosa = ab/len;
-  val *= cos(M_PI/2.0-acos(cosa));
+  val *= std::cos(M_PI/2.0-std::acos(cosa));
   return val;
 };
   

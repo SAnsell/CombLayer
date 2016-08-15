@@ -289,7 +289,7 @@ namespace essSystem
     Geometry::Vec3D OB(B[0]-xStep, B[1]-yStep, B[2]-zStep);
 
     // Calculate angle BOC by the law of cosines:
-    double BOC = acos((2*pow(OB.abs(), 2) - pow(viewWidth, 2))/(2*pow(OB.abs(), 2)));
+    double BOC = std::acos((2*std::pow(OB.abs(), 2) - std::pow(viewWidth, 2))/(2*std::pow(OB.abs(), 2)));
     // define direction of C with respect to B:
     //  (these maths depend on the XYangle of the moderator)
     if (zStep>0) {// top moderator
