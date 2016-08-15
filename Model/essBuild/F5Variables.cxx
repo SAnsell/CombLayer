@@ -64,7 +64,7 @@ F5Variables(FuncDataBase& Control)
 
     // some default values are inherited from F5:
     Control.addVariable("F5DefaultRadius", 1000);          // Radial location of all F5 tallies (valid with -f5-collimators argument)
-    Control.addVariable("F5DefaultAlgorithm", "FocalPoints"); // Algorithm of all F5 tallies
+    Control.addVariable("F5DefaultAlgorithm", "FocalPoint"); // Algorithm of all F5 tallies
     Control.addVariable("F5DefaultLength", 440.0);
     Control.addVariable("F5DefaultViewWidth", 6);
 
