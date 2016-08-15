@@ -245,11 +245,22 @@ namespace essSystem
 	  lp =  zStep>0 ? 17 : 19;
 	else // if theta>270
 	  lp =  zStep>0 ? 16 : 18;
+      } else if (lpAlgorithm == "manual")
+      {
+	// "special" link points - needed to define the BOC sign
+	if (theta<90)
+	  lp =  zStep>0 ? -3 : -1;
+	else if (theta<180)
+	  lp =  zStep>0 ? -4 : -2;
+	else if (theta<270)
+	  lp =  zStep>0 ? -2 : -4;
+	else // if theta>270
+	  lp =  zStep>0 ? -1 : -3;
       } else
       throw ColErr::InvalidLine(lpAlgorithm,"Link point algorithm not in 'FocalPoints', 'InnerFocalPoints', 'MidWaterEdges', 'MidWaterSide' or 'manual'");
     
     Control.setVariable<int>(keyName+"LinkPoint", lp);
-    LinkPoint = Control.EvalDefVar<int>(keyName+"LinkPoint", -1);
+    LinkPoint = Control.EvalVar<int>(keyName+"LinkPoint");
 
 
     // Calculate the coordinate of L (the second point)
@@ -265,7 +276,17 @@ namespace essSystem
 
     */
 
-    Geometry::Vec3D B(vecFP[static_cast<unsigned int>(LinkPoint)].X(), vecFP[static_cast<unsigned int>(LinkPoint)].Y(), zmax);
+    Geometry::Vec3D B;
+    if (LinkPoint < 0)
+      {
+	Geometry::Vec3D tmpB = Control.EvalVar<Geometry::Vec3D>(keyName+"ManualFocalPoint");
+	B = Geometry::Vec3D(tmpB.X(), tmpB.Y(), zmax);
+      } else
+      {
+	B = Geometry::Vec3D(vecFP[static_cast<unsigned int>(LinkPoint)].X(),
+			    vecFP[static_cast<unsigned int>(LinkPoint)].Y(), zmax);
+      }
+    
     Geometry::Vec3D OB(B[0]-xStep, B[1]-yStep, B[2]-zStep);
 
     // Calculate angle BOC by the law of cosines:
@@ -273,10 +294,10 @@ namespace essSystem
     // define direction of C with respect to B:
     //  (these maths depend on the XYangle of the moderator)
     if (zStep>0) {// top moderator
-      if ((LinkPoint==5) || (LinkPoint==6) || (LinkPoint==9) || (LinkPoint==10) || (LinkPoint==13) || (LinkPoint==14) || (LinkPoint==17) || (LinkPoint==18))
+      if ((LinkPoint==-2) || (LinkPoint==-3) || (LinkPoint==5) || (LinkPoint==6) || (LinkPoint==9) || (LinkPoint==10) || (LinkPoint==13) || (LinkPoint==14) || (LinkPoint==17) || (LinkPoint==18))
 	BOC *= -1;
     } else { // low moderator
-      if ((LinkPoint==4) || (LinkPoint==7) || (LinkPoint==8) || (LinkPoint==11) || (LinkPoint==12) || (LinkPoint==15) || (LinkPoint==16) || (LinkPoint==19))
+      if ((LinkPoint==-1) || (LinkPoint==-4) || (LinkPoint==4) || (LinkPoint==7) || (LinkPoint==8) || (LinkPoint==11) || (LinkPoint==12) || (LinkPoint==15) || (LinkPoint==16) || (LinkPoint==19))
 	BOC *= -1;
     }
 
