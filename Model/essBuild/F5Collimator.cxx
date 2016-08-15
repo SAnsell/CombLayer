@@ -178,16 +178,15 @@ namespace essSystem
     if ((range.find("cold")==std::string::npos) && (range.find("thermal")==std::string::npos))
       throw ColErr::InvalidLine(range,"range can be either \"cold\" or \"thermal\"");
 
-    radius=Control.EvalDefPair<double>(keyName, "F5", "Radius", -1);  // used with theta. If set, this value is the same for all collimators. Must be positive to be used with theta.
+    radius=Control.EvalDefPair<double>(keyName, "F5Default", "Radius", -1);  // Must be positive to be used with theta.
     if (radius<=0)
 	throw ColErr::RangeError<double>(radius, 0, INFINITY, "Radius must be positive if used with theta");
 
-
-    length=Control.EvalPair<double>(keyName, "F5", "Length"); // along x
+    length=Control.EvalPair<double>(keyName, "F5Default", "Length"); // along x
     wall=Control.EvalDefVar<double>(keyName+"WallThick", 0.5);
-    viewWidth=Control.EvalVar<double>(keyName+"ViewWidth");
+    viewWidth=Control.EvalPair<double>(keyName, "F5Default", "ViewWidth");
     delta = Control.EvalDefVar<double>(keyName+"Delta", 0.0);
-    lpAlgorithm = Control.EvalPair<std::string>(keyName, "F5", "Algorithm"); // "FocalPoints" "MidWaterEdges" "MidWaterSide" "manual"
+    lpAlgorithm = Control.EvalPair<std::string>(keyName, "F5Default", "Algorithm"); // "FocalPoint" "InnerFocalPoint" "MidWaterEdge" "MidWaterSide" "manual"
 
     // xyz coordinates of F5 tally
     Control.setVariable<double>(keyName+"X", radius*sin(theta*M_PI/180.0));
@@ -205,7 +204,7 @@ namespace essSystem
 
     int lp=0;
     // link point (defined by theta)
-    if (lpAlgorithm == "FocalPoints")
+    if (lpAlgorithm == "FocalPoint")
       {
 	if (theta<90)
 	  lp =  zStep>0 ? 6 : 4; // OK these maths depend on the XYangle of the moderator
@@ -215,7 +214,7 @@ namespace essSystem
 	  lp =  zStep>0 ? 5 : 7; // OK
 	else // if theta>270
 	  lp =  zStep>0 ? 4 : 6; // OK
-      } else if (lpAlgorithm == "InnerFocalPoints")
+      } else if (lpAlgorithm == "InnerFocalPoint")
       {
 	if (theta<90)
 	  lp =  zStep>0 ? 10 : 8; // OK these maths depend on the XYangle of the moderator
@@ -225,7 +224,7 @@ namespace essSystem
 	  lp =  zStep>0 ? 9 : 11;
 	else // if theta>270
 	  lp =  zStep>0 ? 8 : 10;
-      } else if (lpAlgorithm == "MidWaterEdges")
+      } else if (lpAlgorithm == "MidWaterEdge")
       {
 	if (theta<90)
 	  lp =  zStep>0 ? 14 : 12; // OK these maths depend on the XYangle of the moderator
@@ -257,7 +256,7 @@ namespace essSystem
 	else // if theta>270
 	  lp =  zStep>0 ? -1 : -3;
       } else
-      throw ColErr::InvalidLine(lpAlgorithm,"Link point algorithm not in 'FocalPoints', 'InnerFocalPoints', 'MidWaterEdges', 'MidWaterSide' or 'manual'");
+      throw ColErr::InvalidLine(lpAlgorithm,"Link point algorithm not in 'FocalPoint', 'InnerFocalPoint', 'MidWaterEdge', 'MidWaterSide' or 'manual'");
     
     Control.setVariable<int>(keyName+"LinkPoint", lp);
     LinkPoint = Control.EvalVar<int>(keyName+"LinkPoint");

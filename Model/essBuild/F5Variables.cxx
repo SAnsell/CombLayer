@@ -63,16 +63,16 @@ F5Variables(FuncDataBase& Control)
     ELog::RegMethod RegA("f5Variables[F]","f5Variables");
 
     // some default values are inherited from F5:
-    Control.addVariable("F5Radius", 1000);          // Radial location of all F5 tallies (valid with -f5-collimators argument)
-    Control.addVariable("F5Algorithm", "FocalPoints"); // Algorithm of all F5 tallies
+    Control.addVariable("F5DefaultRadius", 1000);          // Radial location of all F5 tallies (valid with -f5-collimators argument)
+    Control.addVariable("F5DefaultAlgorithm", "FocalPoints"); // Algorithm of all F5 tallies
+    Control.addVariable("F5DefaultLength", 440.0);
+    Control.addVariable("F5DefaultViewWidth", 6);
 
     std::string name;
     for (size_t i=5; i<=995; i+=5)
       {
 	name=StrFunc::makeString("F", i);
-	Control.addVariable(name+"Length", 440.0);
 	Control.addVariable(name+"Delta", 0.0);
-	Control.addVariable(name+"ViewWidth", 6);
 	Control.addVariable(name+"LinkPoint", 0.0);
 	// for manual collimtors (F5Algorithm is 'manual'):
 	Control.addVariable(name+"FocalPoint", Geometry::Vec3D(0,0,13.7)); // z is not in use
