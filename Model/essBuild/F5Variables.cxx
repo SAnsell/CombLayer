@@ -74,7 +74,9 @@ F5Variables(FuncDataBase& Control)
 	Control.addVariable(name+"Delta", 0.0);
 	Control.addVariable(name+"ViewWidth", 6);
 	Control.addVariable(name+"LinkPoint", 0.0);
-	Control.addVariable(name+"ManualFocalPoint", Geometry::Vec3D(0,0,13.7)); // z is not in use
+	// for manual collimtors (F5Algorithm is 'manual'):
+	Control.addVariable(name+"FocalPoint", Geometry::Vec3D(0,0,13.7)); // z is not in use
+	
 	Control.addVariable(name+"XB", 11.0);
 	Control.addVariable(name+"YB", -14.0);
 	Control.addVariable(name+"ZB", 14.0);

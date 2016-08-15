@@ -279,7 +279,7 @@ namespace essSystem
     Geometry::Vec3D B;
     if (LinkPoint < 0)
       {
-	Geometry::Vec3D tmpB = Control.EvalVar<Geometry::Vec3D>(keyName+"ManualFocalPoint");
+	Geometry::Vec3D tmpB = Control.EvalVar<Geometry::Vec3D>(keyName+"FocalPoint");
 	B = Geometry::Vec3D(tmpB.X(), tmpB.Y(), zmax);
       } else
       {
