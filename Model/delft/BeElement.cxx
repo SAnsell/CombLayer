@@ -138,13 +138,13 @@ BeElement::populate(const FuncDataBase& Control)
 }
 
 void
-BeElement::createUnitVector(const FixedComp& FC,
-			      const Geometry::Vec3D& OG)
+BeElement::createUnitVector(const attachSystem::FixedComp& FC,
+                            const Geometry::Vec3D& OG)
   /*!
     Create the unit vectors
-    - Y Down the beamline
+    - Y from FC
     \param FC :: Reactor Grid Unit
-    \param OG :: Orgin
+    \param OG :: Origin
   */
 {
   ELog::RegMethod RegA("BeElement","createUnitVector");
@@ -208,14 +208,15 @@ BeElement::createLinks()
 }
 
 void
-BeElement::createAll(Simulation& System,const FixedComp& RG,
+BeElement::createAll(Simulation& System,
+                     const attachSystem::FixedComp& RG,
 		     const Geometry::Vec3D& OG,
 		     const FuelLoad&)
   /*!
-    Global creation of the hutch
-    \param System :: Simulation to add vessel to
+    Creation of the Be-Reflector unit
+    \param System :: Simulation to add component to
     \param RG :: Fixed Unit
-    \param OG :: Orgin
+    \param OG :: Origin
   */
 {
   ELog::RegMethod RegA("BeElement","createAll");

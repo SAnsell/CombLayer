@@ -90,13 +90,13 @@ NMXvariables(FuncDataBase& Control)
   FGen.setGuideMat("Copper");
   FGen.setYOffset(0.1);
   FGen.generateTaper(Control,"nmxGA",350.0,3.0,3.0,3.0,4.5);
-  Control.addVariable("nmxGABeamZAngle",-1.0);       
+  Control.addVariable("nmxGABeamZAngle",0.077);         // -1.0 [BEND]
 
   FGen.setGuideMat("Aluminium");
   FGen.clearYOffset();
   
-  const double bendAngle(-180.0);
-  const double bendRadius(120000.0);  
+  const double bendAngle(90.0);
+  const double bendRadius(1200000.0);  
   FGen.generateBender(Control,"nmxBA",394.0,3.0,3.0,3.0,4.5,
                       bendRadius,bendAngle);
 

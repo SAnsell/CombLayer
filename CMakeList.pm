@@ -345,6 +345,11 @@ sub writeTail
       " COMMAND ".
       " { cat Doxyfile \\; echo \"INPUT=\" \${ASRC} \"\" \\;} | doxygen - )\n";
 
+## SLOC
+  
+  print $DX "add_custom_target(sloc ".
+      " COMMAND sloccount \${ASRC} )\n";
+
 ## WORDS
 
   my $wordString;  

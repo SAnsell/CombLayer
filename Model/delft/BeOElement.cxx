@@ -81,6 +81,9 @@ BeOElement::BeOElement(const size_t XI,const size_t YI,
   RElement(XI,YI,Key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
+    \param XI :: X grid coordinate 
+    \param YI :: Y grid coordinate
+    \param Key :: Blockname
   */
 {}
 
@@ -117,13 +120,13 @@ BeOElement::populate(const FuncDataBase& Control)
 }
 
 void
-BeOElement::createUnitVector(const FixedComp& FC,
+BeOElement::createUnitVector(const attachSystem::FixedComp& FC,
 			     const Geometry::Vec3D& OG)
   /*!
     Create the unit vectors
     - Y Down the beamline
     \param FC :: Reactor Grid Unit
-    \param OG :: Orgin
+    \param OG :: Origin
   */
 {
   ELog::RegMethod RegA("BeOElement","createUnitVector");
@@ -211,10 +214,11 @@ BeOElement::createLinks()
 }
 
 void
-BeOElement::createAll(Simulation& System,const FixedComp& RG,
-		     const Geometry::Vec3D& OG,
-		     const FuelLoad&)
-  /*!
+BeOElement::createAll(Simulation& System,
+                      const attachSystem::FixedComp& RG,
+                      const Geometry::Vec3D& OG,
+                      const FuelLoad&)
+/*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to
     \param RG :: Fixed Unit
