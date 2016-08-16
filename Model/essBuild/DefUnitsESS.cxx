@@ -363,6 +363,7 @@ setESSNeutronics(defaultConfig& A, const std::string& modtype, const std::string
   A.setVar("TopFlyType", bfType);
 
   A.setOption("matDB", "neutronics");
+  A.setOption("physModel", "BD");
 
   // simplify the bunkers
   A.setOption("bunker", "noPillar");
