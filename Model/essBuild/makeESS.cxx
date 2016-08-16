@@ -450,17 +450,32 @@ void makeESS::buildF5Collimator(Simulation& System, const mainSystem::inputParam
 	      F5->addInsertCell(74123); // !!! 74123=voidCell // SA: how to exclude F5 from any cells?
 	      F5->createAll(System, World::masterOrigin());
 
-	      ELog::EM << "Implement special care when theta is close to normals" << ELog::endDiag;
 	      if (theta<90)
-		attachSystem::addToInsertSurfCtrl(System, *ABunker, *F5);
+		{
+		  attachSystem::addToInsertSurfCtrl(System, *ABunker, *F5);
+		  if (std::abs(theta-90)<1) // Special care when theta is close to normals
+		    attachSystem::addToInsertSurfCtrl(System, *BBunker, *F5);
+		}
 	      else if (theta<180)
-		attachSystem::addToInsertSurfCtrl(System, *BBunker, *F5);
+		{
+		  attachSystem::addToInsertSurfCtrl(System, *BBunker, *F5);
+		  if (std::abs(theta-90)<1) // Special care when theta is close to normals
+		    attachSystem::addToInsertSurfCtrl(System, *ABunker, *F5);
+		}
 	      else if (theta<270)
-		attachSystem::addToInsertSurfCtrl(System, *DBunker, *F5);
+		{
+		  attachSystem::addToInsertSurfCtrl(System, *DBunker, *F5);
+		  if (std::abs(theta-270)<1) // Special care when theta is close to normals
+		    attachSystem::addToInsertSurfCtrl(System, *CBunker, *F5);
+		}
 	      else if (theta<360)
-		attachSystem::addToInsertSurfCtrl(System, *CBunker, *F5);
+		{
+		  attachSystem::addToInsertSurfCtrl(System, *CBunker, *F5);
+		  if (std::abs(theta-270)<1) // Special care when theta is close to normals
+		    attachSystem::addToInsertSurfCtrl(System, *DBunker, *F5);
+		}
 	      
-	      attachSystem::addToInsertSurfCtrl(System, *ShutterBayObj, *F5); // helps with single moderator !!! not needed with two moderators
+	      attachSystem::addToInsertSurfCtrl(System, *ShutterBayObj, *F5); // helps with single moderator !!! \todo not needed with two moderators
 	      
 	      F5array.push_back(F5);
 	    }
