@@ -3,7 +3,7 @@
  
  * File:   process/mergeTemplate.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -222,8 +222,8 @@ mergeTemplate<T,U>::processInnerOuter(const int ,
 				      std::vector<Token>& ) const
  /*!
    Process the cells 
-   \param outerFlag :: Decide if outer/inner process.
-   \param Cell :: Cell to process
+   \param :: Decide if outer/inner process.
+   \param :: Cell to process
  */
 {
   ELog::RegMethod RegA("mergeTemplate","processInnerOuter");
@@ -236,7 +236,7 @@ void
 mergeTemplate<T,U>::setInnerRule(const std::string& iStr) 
   /*!
     Process the cells 
-    \param iSTr :: Inner Head Rule
+    \param iStr :: Inner Head Rule
    */
 {
   ELog::RegMethod RegA("mergeTemplate","setInnerRule");
@@ -250,7 +250,7 @@ void
 mergeTemplate<T,U>::setOuterRule(const std::string& iStr) 
   /*!
     Process the cells 
-    \param iSTr :: Inner Head Rule
+    \param iStr :: Inner Head Rule
    */
 {
   ELog::RegMethod RegA("mergeTemplate","setInnerRule");
@@ -308,7 +308,7 @@ mergeTemplate<T,U>::containInnerRules(const Rule* PR) const
     Determine in the PR rule is a containing rule for the
     inner system
     \param PR :: Rule to test 
-    \return true/false
+    \return true if PR is a set of the rule
   */
 {
   ELog::RegMethod RegA("mergeTemplate","containInnerRules");
@@ -335,6 +335,7 @@ mergeTemplate<T,U>::containOuterRules(const Rule* PR) const
     Determine in the PR rule is a containing rule for the
     outer System
     \param PR :: Rule to test 
+    \return true if PR is a set of the rule
   */
 {
   ELog::RegMethod RegA("mergeTemplate","containOuterRules");
@@ -356,7 +357,6 @@ HeadRule
 mergeTemplate<T,U>::makeOuter() const
   /*!
     Get the outer layer from the outer template by subsitution
-    \param OX :: output stream
     \return Outer template object 
   */
 {
@@ -375,7 +375,6 @@ mergeTemplate<T,U>::makeOuterComp() const
   /*!
     Get the outer layer in complement from the 
     outer template by subsitution
-    \param OX :: output stream
     \return Outer Complement template object 
   */
 {
@@ -407,9 +406,6 @@ template class mergeTemplate<Geometry::Cylinder,Geometry::Cylinder>;
   //template class mergeTemplate<Geometry::Cylinder,Geometry::Plane>;
 
 ///\endcond TEMPLATE
-
-
-
 
 } // NAMESPACE ModelSupport
 

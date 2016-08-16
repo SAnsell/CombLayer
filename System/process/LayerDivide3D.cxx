@@ -283,7 +283,7 @@ LayerDivide3D::setXMLdata(const std::string& xmlFile,
   /*!
     Simple setter and getter for LayerDivide3D
     \param xmlFile :: XML input file
-    \param xmlFile :: XML item
+    \param xmlItem :: XML item
     \param xmlOut :: XML output file name
   */
 {
@@ -314,7 +314,7 @@ void
 LayerDivide3D::divideCell(Simulation& System,const int cellN)
   /*!
     Create a tesselated main wall
-    \param System ::Simution to use
+    \param System :: Simulation to use
     \param cellN :: Cell number
   */
 {

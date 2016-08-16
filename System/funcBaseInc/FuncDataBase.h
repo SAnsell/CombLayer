@@ -121,6 +121,8 @@ class FuncDataBase
   void setVariable(const std::string&,const T&);
   void setVariable(const std::string&);
 
+  void removeVariable(const std::string&);
+  
   int hasVariable(const std::string&) const;
 
   void writeAll(const std::string&) const; 

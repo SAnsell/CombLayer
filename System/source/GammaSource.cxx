@@ -207,7 +207,7 @@ GammaSource::populateEnergy(std::string EPts,std::string EProb)
   if (!StrFunc::isEmpty(EPts) || !StrFunc::isEmpty(EProb))
     ELog::EM<<"Trailing line info \n"
 	    <<"Energy : "<<EPts<<"\n"
-  	    <<"Energy : "<<EProb<<ELog::endErr;
+  	    <<"Prob : "<<EProb<<ELog::endErr;
 
   // // Normalize 
   // for(double& prob : EWeight)
@@ -252,10 +252,12 @@ GammaSource::populate(const FuncDataBase& Control)
   if (!populateEnergy(EList,EPList) &&
       !populateEFile(EFile,1,11))
     {
-      double E=Control.EvalVar<double>(keyName+"EStart"); 
-      const size_t nE=Control.EvalVar<size_t>(keyName+"NE");
-      if (nE<1)
-        Energy.push_back(E);
+      double E=Control.EvalDefVar<double>(keyName+"EStart",-1.0); 
+      const size_t nE=Control.EvalDefVar<size_t>(keyName+"NE",1);
+      if (nE<2)
+        {
+          Energy.push_back(E);
+        }
       else
         {
           const double EEnd=Control.EvalVar<double>(keyName+"EEnd"); 

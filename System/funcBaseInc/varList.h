@@ -77,6 +77,7 @@ class varList
   void addVar(const std::string&,const T&);
   template<typename T>
   void setVar(const std::string&,const T&);
+  void removeVar(const std::string&);
 
   /// Accessors to begin
   varStore::const_iterator begin() const { return varName.begin(); }

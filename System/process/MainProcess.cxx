@@ -126,6 +126,10 @@ getVariables(std::vector<std::string>& Names,
     {
       AddValues[varName]=varExpr;
     }
+  while(InputControl::flagVExtract(Names,"vx","delvalue",varName))
+    {
+      AddValues[varName]="DELETE";
+    }
   while(InputControl::flagVExtract(Names,"v","value",varName,varExpr))
     {
       Values[varName]=varExpr;
@@ -162,6 +166,7 @@ setRunTimeVariable(FuncDataBase& Control,
 	}
       Control.setVariable(mc->first,mc->second);
     }
+  // add/delete variables:
   for(mc=AVMap.begin();mc!=AVMap.end();mc++)
     {
       if (!Control.hasVariable(mc->first))
@@ -170,8 +175,13 @@ setRunTimeVariable(FuncDataBase& Control,
                   <<mc->second<<ELog::endDiag;
 	  Control.addVariable(mc->first,mc->second);
 	}
+      else if (mc->second=="DELETE")
+        {
+	  ELog::EM<<"Removing variable name["<<mc->first<<"] "<<ELog::endDiag;
+          Control.removeVariable(mc->first);
+        }
       else
-	{
+        {
 	  ELog::EM<<"Setting pre-defined variable["<<mc->first<<"] "
                   <<mc->second<<ELog::endDiag;
 	  Control.setVariable(mc->first,mc->second);
@@ -221,6 +231,7 @@ createInputs(inputParam& IParam)
   IParam.regItem("angle","angle",1,4);
   IParam.regDefItem<int>("c","cellRange",2,0,0);
   IParam.regItem("C","ECut");
+  IParam.regDefItem<double>("cutWeight","cutWeight",2,0.5,0.25);
   IParam.regFlag("cinder","cinder");
   IParam.regItem("d","debug");
   IParam.regItem("dbcn","dbcn");
@@ -250,7 +261,7 @@ createInputs(inputParam& IParam)
   IParam.regFlag("mcnp6","MCNP6");
   IParam.regFlag("Monte","Monte");
   IParam.regItem("offset","offset",1,4);
-  IParam.regDefItem<double>("photon","photon",1,0.001);
+  IParam.regDefItem<double>("photon","photon",1,0.001);  // 1keV
   IParam.regDefItem<double>("photonModel","photonModel",1,100.0);
   IParam.regItem("PTRAC","ptrac");
   IParam.regDefItemList<std::string>("r","renum",10,RItems);
@@ -321,10 +332,11 @@ createInputs(inputParam& IParam)
   
   IParam.regDefItem<std::string>("X","xmlout",1,"Model.xml");
   IParam.regMulti("x","xml",10000,1);
-  
+
   IParam.setDesc("angle","Orientate to component [name]");
   IParam.setDesc("axis","Rotate to main axis rotation [TS2]");
   IParam.setDesc("c","Cells to protect");
+  IParam.setDesc("cutWeight","Set the cut weights (wc1/wc2)" );
   IParam.setDesc("ECut","Cut energy");
   IParam.setDesc("cinder","Outer Cinder files");
   IParam.setDesc("d","debug flag");

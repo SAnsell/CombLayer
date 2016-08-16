@@ -207,7 +207,7 @@ DivideGrid::setPoints(const size_t AIndex,
     \param AIndex :: Sector index
     \param BIndex :: Vertical index
     \param CIndex :: Cylinder index
-    \param Corner :: corner points to add
+    \param Corners :: corner points to add
   */
 {
   const size_t HN=DivideGrid::hash(AIndex,BIndex,CIndex);
@@ -219,9 +219,9 @@ DivideGrid::setPoints(const size_t AIndex,
   
 void
 DivideGrid::setMaterial(const size_t AIndex,
-			    const size_t BIndex,
-			    const size_t CIndex,
-			    const std::string& MatName)
+                        const size_t BIndex,
+                        const size_t CIndex,
+                        const std::string& MatName)
   /*!
     Sets a given material element
     \param AIndex :: Sector index
@@ -328,15 +328,14 @@ DivideGrid::writeXML(const std::string& FName,
 		     const size_t nA,
 		     const size_t nB,
 		     const size_t nC) const
-  
   /*!
     Carries out the actual writing of an XML file
 
     \param FName :: Filename for output
+    \param objName ::  
     \param nA :: number of angular sectors
     \param nB :: number of Vertical components
     \param nC :: number of radial components
-
    */
 {
   ELog::RegMethod RegA("DivideGrid","writeXML");

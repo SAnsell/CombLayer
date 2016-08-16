@@ -346,11 +346,18 @@ setDefaultPhysics(Simulation& System,
   
   std::string PList("h / d t s a");
   const double maxEnergy=Control.EvalDefVar<double>("sdefEnergy",2000.0);
+  const double cutUp=IParam.getValue<double>("cutWeight",0);  // [1keV
+  const double cutMin=IParam.getValue<double>("cutWeight",1);  // [1keV def]
   const double elcEnergy=IParam.getValue<double>("electron");
-  const double phtEnergy=IParam.getValue<double>("photon");
+  const double phtEnergy=IParam.getValue<double>("photon");  // [1keV def]
   const double phtModel=IParam.getValue<double>("photonModel");
   const std::string elcAdd((elcEnergy>0 ? " e" : ""));
 
+  if (std::abs(cutUp)<=std::abs(cutMin))
+    throw ColErr::NumericalAbort
+      ("CutUp<=cutMin: "+StrFunc::makeString(cutUp)+
+       "<="+StrFunc::makeString(cutMin));
+  
   PC.setMode("n p "+PList+elcAdd);
   PC.setPrintNum("10 20 50 110");
   System.processCellsImp();
@@ -362,10 +369,10 @@ setDefaultPhysics(Simulation& System,
   
   physicsSystem::PStandard* allCut=
      PC.addPhysCard<physicsSystem::PStandard>("cut",PList);
-  allCut->setValues(2,1e+8,0.0);
+  allCut->setValues(4,1e+8,0.0,cutUp,cutMin);
   physicsSystem::PStandard* photonCut=
      PC.addPhysCard<physicsSystem::PStandard>("cut","p");
-  photonCut->setValues(2,1e+8,phtEnergy);
+  photonCut->setValues(4,1e+8,phtEnergy,cutUp,cutMin);
 
   if (elcEnergy>=0.0)
     {

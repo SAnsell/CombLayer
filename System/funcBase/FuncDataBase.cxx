@@ -870,6 +870,18 @@ FuncDataBase::addVariable(const std::string& Name,const char* V)
   return;
 }
 
+void
+FuncDataBase::removeVariable(const std::string& Name)
+  /*!
+    Remove this function 
+     - can cause problems re-evaluating other variables if dependeny
+    \param Name :: Name of the variable
+  */
+{
+  VList.removeVar(Name);
+  return;
+}
+
 template<typename T>
 void
 FuncDataBase::addParse(const std::string& Name,const std::string& VParse)

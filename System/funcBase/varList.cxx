@@ -342,6 +342,32 @@ varList::setValue(const int Key,const T& Value)
   return;
 }
 
+void
+varList::removeVar(const std::string& Name)
+  /*!
+    Remove a variable
+    \param Name :: Name of variable
+    \todo Improve varList as this is rubbish code
+  */
+{
+  ELog::RegMethod RegA("varList","removeVar");
+
+  varStore::iterator mc=varName.find(Name);
+  if (mc==varName.end())
+    throw ColErr::InContainerError<std::string>(Name,"Name");
+
+  std::map<int,FItem*>::iterator ic=varItem.find(mc->second->getIndex());
+  if (ic==varItem.end())
+    throw ColErr::InContainerError<int>(mc->second->getIndex(),
+                                        "NAME [INT] "+Name);
+
+  delete mc->second;
+  varItem.erase(ic);
+  varName.erase(mc);
+  return;
+}
+
+
 template<typename T>
 void
 varList::addVar(const std::string& Name,const T& Value) 

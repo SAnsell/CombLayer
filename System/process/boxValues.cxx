@@ -126,7 +126,7 @@ boxValues::getExtent() const
   /*!
     Determine the maximum extent
     \return Extent value
-   */
+  */
 {
   if  (SDist.empty())
     return 0.0;
@@ -159,8 +159,10 @@ boxValues::getAxis(const size_t Index,
 		   const Geometry::Vec3D& ZDir) const
   /*!
     Calculate the point on the plane direction
+    \param Index :: side Index
     \param XDir  :: X Unit vector
     \param ZDir  :: Z Unit vector
+    \return Direction away from box surface
   */
 {
   ELog::RegMethod RegA("boxValues","getDatum");

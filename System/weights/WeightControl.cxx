@@ -194,7 +194,6 @@ WeightControl::processPtString(std::string ptStr)
   if (ptStr.size()>1)
     {
       const std::string Input(ptStr);
-      ELog::EM<<"Pt == "<<Input<<ELog::endDiag;
       const char SP=static_cast<char>(std::toupper(ptStr[0]));
       const char TP=static_cast<char>(std::toupper(ptStr[1]));
       if (SP!='T' && SP!='S')  // fail
