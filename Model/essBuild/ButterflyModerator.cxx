@@ -272,12 +272,12 @@ ButterflyModerator::createObjects(Simulation& System)
   // getSideRule contains only side surfaces, while getExclude - also top/bottom
   const std::string Exclude=sideRule;//ContainedComp::getExclude();
 
-  Out=ModelSupport::getComposite(SMap,flyIndex," -7 5 -6 ");  
+  Out=ModelSupport::getComposite(SMap,flyIndex," -7 15 -16 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+Exclude));
   setCell("ambientVoid", cellIndex-1);
 
   clearRules();
-  addOuterSurf(Out); // Out does not take into account wallDepth and wallHeight
+  addOuterSurf(Out);
   
   return;
 }
