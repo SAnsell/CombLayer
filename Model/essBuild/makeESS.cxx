@@ -108,6 +108,9 @@
 #include "F5Calc.h"
 #include "F5Collimator.h"
 
+#include "localRotate.h"
+#include "masterRotate.h"
+
 #include "makeESS.h"
 
 namespace essSystem
@@ -906,6 +909,14 @@ makeESS::build(Simulation& System,
     ModPipes->buildLowPipes(System,lowPipeType);
   ModPipes->buildTopPipes(System,topPipeType);
 
+  if (IParam.flag("rotate")) // rotate to the Alan's coordinate system
+    // SA says I need to use master rotation here - see his t2 model
+    {
+      masterRotate& MR = masterRotate::Instance();
+      MR.addRotation(Geometry::Vec3D(1,0,0), Geometry::Vec3D(0,0,0), -90.0);
+      MR.addRotation(Geometry::Vec3D(0,1,0), Geometry::Vec3D(0,0,0), 180.0);
+    }
+  
   return;
 }
 

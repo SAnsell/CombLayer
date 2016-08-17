@@ -718,6 +718,8 @@ createESSInputs(inputParam& IParam)
   IParam.regDefItem<int>("nF5", "nF5", 1,0);
   IParam.regMulti("f5-collimators","f5collimators",30);
 
+  IParam.regFlag("rotate", "rotate");
+  
   IParam.setDesc("bunkerFeed","Creates feedthroughs in bunker");
   IParam.setDesc("beamlines","Creates beamlines on the main model");
   IParam.setDesc("lowMod","Type of low moderator to be built");
@@ -733,6 +735,8 @@ createESSInputs(inputParam& IParam)
 		 "  -- The corresponding variables must exist.");
   IParam.setDesc("f5-collimators","Space separated list of theta angles"
 		 "for F5 collimators (theta is defined on page 183 of TDR)");
+  IParam.setDesc("rotate","Rotate geometry to the coordinate system "
+		 "of the MasterModel (proton beam is not rotated!)");
 
   return;
 }
