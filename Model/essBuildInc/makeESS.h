@@ -63,16 +63,16 @@ namespace essSystem
   class BulkModule;
   class ShutterBay;
   class ProtonTube;
+  class PreModWing;
   class GuideBay;
   class BeamMonitor;
   class DiskPreMod;
+  class DiskLayerMod;
   class Bunker;
+  class TwisterModule;
   class RoofPillars;
   class Curtain;
   class F5Collimator;
-  class ODIN;
-  class LOKI;
-  class VOR;
   class BunkerFeed;
   /*!
     \class makeESS
@@ -104,16 +104,22 @@ class makeESS
   /// Primary Upper Mod 
   std::shared_ptr<constructSystem::ModBase> TopMod;
   std::shared_ptr<DiskPreMod> TopPreMod;         ///< Top mod 
-  std::shared_ptr<DiskPreMod> TopCapMod;         ///< Lower mod
+  std::shared_ptr<DiskLayerMod> TopCapMod;         ///< Lower mod
 
-  std::shared_ptr<moderatorSystem::BasicFlightLine> TopAFL;  ///< Top Mode FL
-  std::shared_ptr<moderatorSystem::BasicFlightLine> TopBFL;  ///< Top Mode FL
+  std::shared_ptr<PreModWing> LowPreWing; ///< Low premoderator wing
+  std::shared_ptr<PreModWing> TopPreWing; ///< Top premoderator wing
+  std::shared_ptr<PreModWing> LowCapWing; ///< Low cap premoderator wing
+  std::shared_ptr<PreModWing> TopCapWing; ///< Top cap premoderator wing
+
+  std::shared_ptr<moderatorSystem::BasicFlightLine> TopAFL;  ///< Top Mod FL
+  std::shared_ptr<moderatorSystem::BasicFlightLine> TopBFL;  ///< Top Mod FL
 
   std::unique_ptr<ESSPipes> ModPipes;       ///< Moderator pipes
 
 
   std::shared_ptr<BulkModule> Bulk;      ///< Main bulk module
-
+  std::shared_ptr<TwisterModule> Twister; ///< Moderator twister module
+  
   /// Shutterbay objects
   std::shared_ptr<ShutterBay> ShutterBayObj;  
   /// Array of Guidies
@@ -159,9 +165,10 @@ class makeESS
   void buildPillars(Simulation&);
   void buildBunkerFeedThrough(Simulation&,
 			      const mainSystem::inputParam&);
+  void buildPreWings(Simulation&,const std::string&);
+  void buildTwister(Simulation&);
 
-
-  void buildF5Collimator(Simulation&, size_t);
+  void buildF5Collimator(Simulation&,size_t);
 
   void optionSummary(Simulation&);
 

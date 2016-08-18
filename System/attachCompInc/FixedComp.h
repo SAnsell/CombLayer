@@ -149,11 +149,13 @@ class FixedComp
   virtual int getLinkSurf(const size_t) const;
   virtual const Geometry::Vec3D& getLinkPt(const size_t) const;
   virtual const Geometry::Vec3D& getLinkAxis(const size_t) const;
-
+  
   virtual Geometry::Vec3D getSignedLinkPt(const long int) const;
   virtual Geometry::Vec3D getSignedLinkAxis(const long int) const;
   virtual std::string getSignedLinkString(const long int) const;
+  virtual double getLinkDistance(const long int,const long int) const;
   virtual int getSignedLinkSurf(const long int) const;
+  
   HeadRule getSignedFullRule(const long int) const;
   HeadRule getSignedMainRule(const long int) const;
   HeadRule getSignedCommonRule(const long int) const;

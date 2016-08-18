@@ -469,6 +469,31 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("BulkMat3","Iron10H2O");        // SA: using hand-made mixture because CL can't generate volume fractions
 
 
+
+  // Twister
+  Control.addVariable("TwisterXStep",11.0);
+  Control.addVariable("TwisterYStep",-62.0);
+  Control.addVariable("TwisterZStep",0.0);
+  Control.addVariable("TwisterXYangle",10.0);
+  Control.addVariable("TwisterZangle",0.0);
+  Control.addVariable("TwisterShaftRadius",18.5);
+  Control.addVariable("TwisterShaftHeight",120.0+222.4);
+  Control.addVariable("TwisterShaftMat","Iron10H2O");
+  Control.addVariable("TwisterShaftWallThick",3.0);
+  Control.addVariable("TwisterShaftWallMat","Iron10H2O"); 
+  Control.addVariable("TwisterShaftBearingRadius",4);
+  Control.addVariable("TwisterShaftBearingHeight",54.4);
+  Control.addVariable("TwisterShaftBearingWallThick",12.2);
+  Control.addVariable("TwisterPlugFrameRadius",105.0);
+  Control.addVariable("TwisterPlugFrameWallThick",3.0);
+  Control.addVariable("TwisterPlugFrameHeight",57.6);
+  Control.addVariable("TwisterPlugFrameDepth",60.6);
+  Control.addVariable("TwisterPlugFrameAngle",38.0);
+  Control.addVariable("TwisterPlugFrameMat","Iron10H2O");
+  Control.addVariable("TwisterPlugFrameWallThick",3.0);
+  Control.addVariable("TwisterPlugFrameWallMat","Iron10H2O");
+
+  
   // BULK FLIGHT VOID
   Control.addVariable("BulkLAFlightSideIndex",-2);   // Index
   Control.addVariable("BulkLAFlightXStep",0.0);      // Step from centre

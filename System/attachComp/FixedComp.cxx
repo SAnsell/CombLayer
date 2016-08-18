@@ -972,6 +972,22 @@ FixedComp::getLinkPt(const size_t Index) const
   return LU[Index].getConnectPt();
 }
 
+double
+FixedComp::getLinkDistance(const long int AIndex,
+                           const long int BIndex) const
+  /*!
+    Accessor to the distance between link points
+    \param AIndex :: SIGNED +1 side index
+    \param BIndex :: SIGNED +1 side index 
+    \return Distance between points
+  */
+{
+  ELog::RegMethod RegA("FixedComp","getLinkDistance:"+keyName);
+
+  if (AIndex==BIndex) return 0.0;
+  return getSignedLinkPt(AIndex).Distance(getSignedLinkPt(BIndex));
+}
+
 Geometry::Vec3D
 FixedComp::getSignedLinkPt(const long int sideIndex) const
   /*!

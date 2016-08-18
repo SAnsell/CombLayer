@@ -306,7 +306,7 @@ ButterflyModerator::createLinks()
   const Geometry::Vec3D HighPt(Origin.X(),Origin.Y(),HighV);
   FixedComp::setConnect(4,LowPt,-Z);
   FixedComp::setConnect(5,HighPt,Z);
-  
+
   return;
 }
 

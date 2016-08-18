@@ -159,13 +159,12 @@ DiskPreMod::populate(const FuncDataBase& Control,
   /*!
     Populate all the variables
     \param Control :: Variable table to use
-    \param zShift :: Default offset height a
+    \param zShift :: Default offset height 
     \param outRadius :: Outer radius of reflector [for void fill]
   */
 {
   ELog::RegMethod RegA("DiskPreMod","populate");
 
-  ///< \todo Make this part of IParam NOT a variable
   engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
 
   zStep=Control.EvalDefVar<double>(keyName+"ZStep",zShift);

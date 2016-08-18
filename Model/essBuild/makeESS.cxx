@@ -89,12 +89,15 @@
 #include "ButterflyModerator.h"
 #include "BlockAddition.h"
 #include "CylPreMod.h"
+#include "PreModWing.h"
 #include "IradCylinder.h"
 #include "SupplyPipe.h"
 #include "BulkModule.h"
+#include "TwisterModule.h"
 #include "ShutterBay.h"
 #include "GuideBay.h"
 #include "DiskPreMod.h"
+#include "DiskLayerMod.h"
 #include "Bunker.h"
 #include "RoofPillars.h"
 #include "BunkerFeed.h"
@@ -123,7 +126,7 @@ makeESS::makeESS() :
   LowBFL(new moderatorSystem::BasicFlightLine("LowBFlight")),
 
   TopPreMod(new DiskPreMod("TopPreMod")),
-  TopCapMod(new DiskPreMod("TopCapMod")),
+  TopCapMod(new DiskLayerMod("TopCapMod")),
 
   TopAFL(new moderatorSystem::BasicFlightLine("TopAFlight")),
   TopBFL(new moderatorSystem::BasicFlightLine("TopBFlight")),
@@ -601,6 +604,77 @@ makeESS::makeBunker(Simulation& System,
 }
 
   
+void
+makeESS::buildPreWings(Simulation& System, const std::string& lowModType)
+  /*!
+    Build pre wings :: These are little layers of pre-moderator that
+    drop into the flight-line space 
+    \param System :: Simulation
+    \param lowModType :: key for lower moderator type
+   */
+{
+  ELog::RegMethod RegA("makeESS","buildPreWings");
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+  enum Side {bottom, top};
+  
+  TopPreWing = std::shared_ptr<PreModWing>(new PreModWing("TopPreWing"));
+  OR.addObject(TopPreWing);
+  TopPreWing->createAll(System,*TopPreMod,9,false,top);
+  attachSystem::addToInsertSurfCtrl(System, *TopPreMod, *TopPreWing);
+
+  TopCapWing = std::shared_ptr<PreModWing>(new PreModWing("TopCapWing"));
+  OR.addObject(TopCapWing);
+  TopCapWing->createAll(System,*TopCapMod,10,false,bottom);
+  attachSystem::addToInsertSurfCtrl(System, *TopCapMod, *TopCapWing);
+
+  if (lowModType != "None")
+    {
+      LowPreWing = std::shared_ptr<PreModWing>(new PreModWing("LowPreWing"));
+      OR.addObject(LowPreWing);
+      LowPreWing->createAll(System,*LowPreMod,9,true,bottom);
+      attachSystem::addToInsertSurfCtrl(System, *LowPreMod, *LowPreWing);
+
+      LowCapWing = std::shared_ptr<PreModWing>(new PreModWing("LowCapWing"));
+      OR.addObject(LowCapWing);
+      LowCapWing->createAll(System,*LowCapMod,10,true,top);
+      attachSystem::addToInsertSurfCtrl(System, *LowCapMod, *LowCapWing);
+    }
+  return;
+}
+
+void
+makeESS::buildTwister(Simulation& System)
+  /*!
+    Build the reflector twister extraction sytem
+    \param System :: Simulation to use
+   */
+{
+  ELog::RegMethod RegA("makeESS","buildTwister");
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  Twister = std::shared_ptr<TwisterModule>(new TwisterModule("Twister"));
+  OR.addObject(Twister);
+
+  ELog::EM<<"CALLING addInsertForce [INEFFICIENT] "<<ELog::endWarn;
+  
+  Twister->createAll(System,*Bulk,0);
+  attachSystem::addToInsertForced(System, *Bulk, *Twister);
+  attachSystem::addToInsertForced(System, *ShutterBayObj, *Twister);
+  attachSystem::addToInsertSurfCtrl(System, *Twister, PBeam->getCC("Sector0"));
+  attachSystem::addToInsertSurfCtrl(System, *Twister, PBeam->getCC("Sector1"));
+  attachSystem::addToInsertControl(System, *Twister, *Reflector);
+  attachSystem::addToInsertForced(System,*Twister,TopAFL->getCC("outer"));
+  attachSystem::addToInsertForced(System,*Twister,TopBFL->getCC("outer"));
+  attachSystem::addToInsertForced(System,*Twister,LowAFL->getCC("outer"));
+  attachSystem::addToInsertForced(System,*Twister,LowBFL->getCC("outer"));
+  attachSystem::addToInsertForced(System,*Twister, Target->getCC("Wheel"));
+
+  return;
+}
+  
 void 
 makeESS::build(Simulation& System,
 	       const mainSystem::inputParam& IParam)
@@ -613,6 +687,7 @@ makeESS::build(Simulation& System,
   // For output stream
   ELog::RegMethod RegA("makeESS","build");
 
+  const FuncDataBase& Control=System.getDataBase();
   int voidCell(74123);
 
   const std::string lowPipeType=IParam.getValue<std::string>("lowPipe");
@@ -625,9 +700,10 @@ makeESS::build(Simulation& System,
   const std::string targetType=IParam.getValue<std::string>("targetType");
   const std::string iradLine=IParam.getValue<std::string>("iradLineType");
 
-
-  const size_t nF5 = IParam.getValue<size_t>("nF5");
-
+  const size_t nF5=IParam.getValue<size_t>("nF5");
+  const int engActive=Control.EvalPair<int>
+    ("BulkEngineeringActive","EngineeringActive");
+  
   if (StrFunc::checkKey("help",lowPipeType,lowModType,targetType) ||
       StrFunc::checkKey("help",iradLine,topModType,""))
     {
@@ -636,7 +712,7 @@ makeESS::build(Simulation& System,
     }
   
   makeTarget(System,targetType);
-  Reflector->globalPopulate(System.getDataBase());
+  Reflector->globalPopulate(Control);
 
   // lower moderator
   LowPreMod->createAll(System,World::masterOrigin(),0,true,
@@ -710,14 +786,20 @@ makeESS::build(Simulation& System,
   attachSystem::addToInsertSurfCtrl(System,*Bulk,
 				    PBeam->getCC("Full"));
 
+  if (engActive)
+    buildTwister(System);
+  
   // WARNING: THESE CALL MUST GO AFTER the main void (74123) has
   // been completed. Otherwize we can't find the pipe in the volume.
-  ModPipes->buildLowPipes(System,lowPipeType);
+
   ModPipes->buildTopPipes(System,topPipeType);
-
-  makeBeamLine(System,IParam);
+  if (lowModType != "None")
+    {
+      makeBeamLine(System,IParam);
+      ModPipes->buildLowPipes(System,lowPipeType);
+    }
+  
   buildF5Collimator(System, nF5);
-
 
   return;
 }
