@@ -72,6 +72,7 @@ namespace essSystem
   class RoofPillars;
   class Curtain;
   class F5Collimator;
+  class TSMainBuilding;
   class ODIN;
   class LOKI;
   class VOR;
@@ -142,7 +143,9 @@ class makeESS
   std::shared_ptr<Curtain> TopCurtain;  ///< Conc-curtain
 
   /// collimators for F5 tallies
-  std::vector<std::shared_ptr<F5Collimator>> F5array; 
+  std::vector<std::shared_ptr<F5Collimator>> F5array;
+
+  std::shared_ptr<TSMainBuilding> TSMainBuildingObj;
   
   void topFlightLines(Simulation&);
   void lowFlightLines(Simulation&);

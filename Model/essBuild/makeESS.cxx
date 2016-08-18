@@ -107,6 +107,7 @@
 // F5 collimators:
 #include "F5Calc.h"
 #include "F5Collimator.h"
+#include "TSMainBuilding.h"
 
 #include "localRotate.h"
 #include "masterRotate.h"
@@ -136,6 +137,7 @@ makeESS::makeESS() :
 
   Bulk(new BulkModule("Bulk")),
   ShutterBayObj(new ShutterBay("ShutterBay")),
+  TSMainBuildingObj(new TSMainBuilding("TSMainBuilding")),
 
 
   ABunker(new Bunker("ABunker")),
@@ -170,6 +172,7 @@ makeESS::makeESS() :
   OR.addObject(TopBFL);
 
   OR.addObject(Bulk);
+  OR.addObject(TSMainBuildingObj);
 
   OR.addObject(ShutterBayObj);
   OR.addObject(ABunker);
@@ -762,6 +765,8 @@ makeESS::buildTwister(Simulation& System)
   attachSystem::addToInsertForced(System,*Twister,TopBFL->getCC("outer"));
   attachSystem::addToInsertForced(System,*Twister,LowAFL->getCC("outer"));
   attachSystem::addToInsertForced(System,*Twister,LowBFL->getCC("outer"));
+
+  attachSystem::addToInsertForced(System,*Twister, Target->getCC("Wheel"));
   attachSystem::addToInsertForced(System,*Twister, Target->getCC("Wheel"));
 
   return;
@@ -881,17 +886,30 @@ makeESS::build(Simulation& System,
       createGuides(System);
       makeBunker(System,IParam);
     }
+  
+  TSMainBuildingObj->addInsertCell(74123);
+  TSMainBuildingObj->createAll(System,World::masterOrigin());
+  attachSystem::addToInsertLineCtrl(System, *TSMainBuildingObj, *ShutterBayObj);
+  attachSystem::addToInsertSurfCtrl(System, *TSMainBuildingObj, *ABunker);
+  attachSystem::addToInsertSurfCtrl(System, *TSMainBuildingObj, *BBunker);
+  attachSystem::addToInsertSurfCtrl(System, *TSMainBuildingObj, *CBunker);
+  attachSystem::addToInsertSurfCtrl(System, *TSMainBuildingObj, *DBunker);
+  attachSystem::addToInsertSurfCtrl(System, *TSMainBuildingObj, TopCurtain->getCC("Top"));
+  attachSystem::addToInsertSurfCtrl(System, *TSMainBuildingObj, TopCurtain->getCC("Mid"));
+  attachSystem::addToInsertSurfCtrl(System, *TSMainBuildingObj, TopCurtain->getCC("Lower"));
+  attachSystem::addToInsertForced(System, *TSMainBuildingObj,   Target->getCC("Shaft"));
 
   // PROTON BEAMLINE
-  
 
-  PBeam->createAll(System,*Target,1,*ShutterBayObj,-1);
+  PBeam->createAll(System,*Target,1,*TSMainBuildingObj,-1);
   Reflector->insertComponent(System, "targetVoid", PBeam->getCC("Sector0"));
   
   attachSystem::addToInsertSurfCtrl(System,*ShutterBayObj,
 				    PBeam->getCC("Full"));
   attachSystem::addToInsertSurfCtrl(System,*Bulk,
 				    PBeam->getCC("Full"));
+  attachSystem::addToInsertSurfCtrl(System,*TSMainBuildingObj,
+				    PBeam->getCC("Sector3"));
 
   const int engActive = System.getDataBase().EvalPair<int>("Bulk", "", "EngineeringActive");
   if (engActive)
@@ -899,6 +917,7 @@ makeESS::build(Simulation& System,
       buildTwister(System);
     }
 
+  
   if (lowModType != "None")
     makeBeamLine(System,IParam);
   buildF5Collimator(System, IParam);
