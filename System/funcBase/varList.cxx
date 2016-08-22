@@ -228,7 +228,8 @@ varList::copyVar(const std::string& newKey,const std::string& oldKey)
 void
 varList::copyVarSet(const std::string& oldHead,const std::string& newHead) 
   /*!
-    Copy a variable into the var system [with new number]
+    Copy a set of variables all with "oldHead" and 
+    changed to "newSet"system [with new number]
     \param oldHead :: Old head name
     \param newHead :: replacement head name
   */

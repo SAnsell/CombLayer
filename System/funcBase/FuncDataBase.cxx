@@ -904,7 +904,7 @@ FuncDataBase::copyVar(const std::string& Name,const std::string& otherVar)
     Adds this function if the Code system has been 
     executed
     \param Name :: Name of the variable
-    \param otherVar :: Othe variables
+    \param otherVar :: Other variable
   */
 {
   VList.copyVar(Name,otherVar);
