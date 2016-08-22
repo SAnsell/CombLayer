@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   chip/ChipIRGuide.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -412,7 +412,7 @@ ChipIRGuide::createUnitVector(const shutterSystem::BulkShield& BS,
 
   // Output Datum [beam centre]
   // Distance to Y Plane [ gLen / (beamAxis . Y )
-  setExit(bEnter+bY*(gLen/fabs(bY.dotProd(Y))),bY);
+  setExit(bEnter+bY*(gLen/std::abs(bY.dotProd(Y))),bY);
   chipIRDatum::chipDataStore& CS=chipIRDatum::chipDataStore::Instance();
   CS.setDNum(chipIRDatum::guideExit,MR.calcRotate(getExit()));
   CS.setDNum(chipIRDatum::floodC,MR.calcRotate(getExit()-bY*210.0));
@@ -452,7 +452,7 @@ ChipIRGuide::createUnitVector(const attachSystem::FixedComp& WO,
 
   // Output Datum [beam centre]
   // Distance to Y Plane [ gLen / (beamAxis . Y )
-  setExit(bEnter+bY*(hYStart/fabs(bY.dotProd(Y))),bY);
+  setExit(bEnter+bY*(hYStart/std::abs(bY.dotProd(Y))),bY);
   chipIRDatum::chipDataStore& CS=chipIRDatum::chipDataStore::Instance();
   CS.setDNum(chipIRDatum::guideExit,MR.calcRotate(getExit()));
   CS.setDNum(chipIRDatum::floodC,MR.calcRotate(getExit()-bY*210.0));

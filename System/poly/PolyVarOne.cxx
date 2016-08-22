@@ -3,7 +3,7 @@
  
  * File:   poly/PolyVarOne.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -597,18 +597,18 @@ PolyVar<1>::operator==(const PolyVar<1>& A) const
 {
   size_t i;
   for(i=0;i<=A.iDegree && i<=iDegree;i++)
-    if (fabs(PCoeff[i]-A.PCoeff[i])>this->Eaccuracy)
+    if (std::abs(PCoeff[i]-A.PCoeff[i])>this->Eaccuracy)
       return 0;
   if (A.iDegree>iDegree)
     {
       for(;i<=A.iDegree;i++)
-	if (fabs(A.PCoeff[i])>this->Eaccuracy)
+	if (std::abs(A.PCoeff[i])>this->Eaccuracy)
 	  return 0;
     }
   else if (A.iDegree<iDegree)
     {
       for(;i<=iDegree;i++)
-	if (fabs(PCoeff[i])>this->Eaccuracy)
+	if (std::abs(PCoeff[i])>this->Eaccuracy)
 	  return 0;
     }
   return 1;
@@ -633,10 +633,10 @@ PolyVar<1>::operator==(const double& V) const
     \return 1 equal:  0 on false
   */
 {
-  if (fabs(PCoeff[0]-V)>this->Eaccuracy)
+  if (std::abs(PCoeff[0]-V)>this->Eaccuracy)
     return 0;
   for(size_t i=1;i<=iDegree;i++)
-    if (fabs(PCoeff[i])>this->Eaccuracy)
+    if (std::abs(PCoeff[i])>this->Eaccuracy)
       return 0;
   
   return 1;
@@ -756,7 +756,7 @@ PolyVar<1>::compress(const double epsilon)
   */
 {
   const double eps((epsilon>0.0) ? epsilon : this->Eaccuracy);
-  for (;iDegree>0 && fabs(PCoeff[iDegree])<=eps;iDegree--) ;
+  for (;iDegree>0 && std::abs(PCoeff[iDegree])<=eps;iDegree--) ;
   PCoeff.resize(iDegree+1);
   
   return;
@@ -827,7 +827,7 @@ PolyVar<1>::realRoots(const double epsilon)
   std::vector<std::complex<double> >::const_iterator vc;
   for(vc=Croots.begin();vc!=Croots.end();vc++)
     {
-      if (fabs(vc->imag())<eps)
+      if (std::abs(vc->imag())<eps)
 	Out.push_back(vc->real());
     }
   sort(Out.begin(),Out.end());
@@ -1019,7 +1019,7 @@ PolyVar<1>::solveQuadratic(std::complex<double>& AnsA,
       const double q=(b>=0) ? -0.5*(b+sqrt(cf)) : -0.5*(b-sqrt(cf));
       AnsA=std::complex<double>(q,0.0);
       AnsB=std::complex<double>(c/q,0.0);
-      return (fabs(cf)<1e-50) ? 1 : 2;
+      return (std::abs(cf)<1e-50) ? 1 : 2;
     }
 
 
@@ -1050,7 +1050,7 @@ PolyVar<1>::solveCubic(std::complex<double>& AnsA,std::complex<double>& AnsB,
   double s,t,termR,termI,discrim;
   double q3,r13;
 
-  if (fabs(PCoeff[3])<1e-50)
+  if (std::abs(PCoeff[3])<1e-50)
     return solveQuadratic(AnsA,AnsB);
   const double b = PCoeff[2]/PCoeff[3];
   const double c = PCoeff[1]/PCoeff[3];
@@ -1114,7 +1114,7 @@ PolyVar<1>::getCount(const double eps) const
 {
   size_t cnt(0);
   for(size_t i=0;i<=iDegree;i++)
-    if (fabs(PCoeff[i])>eps)
+    if (std::abs(PCoeff[i])>eps)
       cnt++;
   return cnt++;
 }
@@ -1160,7 +1160,7 @@ PolyVar<1>::isZero(const double eps) const
   */
 {
   size_t i;
-  for(i=0;i<=iDegree && fabs(PCoeff[i])<eps;i++) ;
+  for(i=0;i<=iDegree && std::abs(PCoeff[i])<eps;i++) ;
   return (i<=iDegree) ? 0 : 1;
 }
 
@@ -1176,10 +1176,10 @@ PolyVar<1>::isUnit(const double eps) const
   */
 {
   size_t i;
-  for(i=iDegree;i>0 && fabs(PCoeff[i])<eps;i--) ;
+  for(i=iDegree;i>0 && std::abs(PCoeff[i])<eps;i--) ;
   if (i)
     return 0;
-  if (fabs(fabs(PCoeff[0])-1.0)>eps)
+  if (std::abs(std::abs(PCoeff[0])-1.0)>eps)
     return 0;
   return (PCoeff[0]>0.0) ? 1 : -1;
 }
@@ -1201,7 +1201,7 @@ PolyVar<1>::isUnitary(const double eps) const
   for(size_t i=iDegree;  i>0 && flag<2;)
     {
       i--;
-      if (fabs(PCoeff[i])>=eps)
+      if (std::abs(PCoeff[i])>=eps)
         {
 	  item=i;
 	  flag++;
@@ -1209,7 +1209,7 @@ PolyVar<1>::isUnitary(const double eps) const
     }
   if (flag==2 || flag==0) // all zeros are also NOT unit
     return 0;
-  if (fabs(fabs(PCoeff[item])-1.0)>eps)
+  if (std::abs(std::abs(PCoeff[item])-1.0)>eps)
     return 0;
   const int sign( (PCoeff[item]>0.0) ? 1 : -1);
   return ((item==0) ? 1 : 2) * sign;
@@ -1307,15 +1307,15 @@ PolyVar<1>::write(std::ostream& OX,const int prePlus) const
   for(size_t i=iDegree+1;i>0;)
     {
       i--;
-      if (fabs(PCoeff[i])>this->Eaccuracy)
+      if (std::abs(PCoeff[i])>this->Eaccuracy)
         {
 	  if ((nowrite || prePlus) && PCoeff[i]>0.0)
 	    OX<<"+";
 	  else if (PCoeff[i]<0.0)
 	    OX<<"-";
 	  // Now write value:
-	  if (!i || fabs(fabs(PCoeff[i])-1.0)>this->Eaccuracy)
-	    OX<<MW.Num(fabs(PCoeff[i]));
+	  if (!i || std::abs(std::abs(PCoeff[i])-1.0)>this->Eaccuracy)
+	    OX<<MW.Num(std::abs(PCoeff[i]));
 	  if (i)
 	    {
 	      OX<<"x";

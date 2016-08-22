@@ -744,7 +744,7 @@ GeneralShutter::createStopBlocks(Simulation& System,const size_t BN)
   LCube[2]=SMap.realSurf(surfOffset+8);
   
   // X coordinate:
-  if (fabs(SB.edgeHGap)>Geometry::shiftTol)
+  if (std::abs(SB.edgeHGap)>Geometry::shiftTol)
     {
       ModelSupport::buildPlane(SMap,surfOffset+1,      
 			       Origin-X*(totalWidth/2.0-SB.edgeHGap),X);

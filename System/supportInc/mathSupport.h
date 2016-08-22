@@ -381,7 +381,7 @@ public:
   /// Does the absolute comparison
   bool operator()(const T& A,const T& B) const
     {
-      return (fabs(A)<fabs(B));
+      return (std::abs<T>(A)<std:abs<T>(B));
     }
 
 };
@@ -405,7 +405,7 @@ class tolEqual
   /// Comparison
   bool operator()(const double& A,const double& B)  const
     {
-      return (fabs(A-B)<tol) ? 1 : 0;
+      return (std::abs(A-B)<tol) ? 1 : 0;
     }
 
 };
