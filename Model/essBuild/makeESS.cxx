@@ -666,6 +666,7 @@ makeESS::buildTwister(Simulation& System)
   attachSystem::addToInsertSurfCtrl(System, *Twister, PBeam->getCC("Sector0"));
   attachSystem::addToInsertSurfCtrl(System, *Twister, PBeam->getCC("Sector1"));
   attachSystem::addToInsertControl(System, *Twister, *Reflector);
+  //  attachSystem::addToInsertLineCtrl(System,*Twister,TopAFL->getCC("outer"));
   attachSystem::addToInsertForced(System,*Twister,TopAFL->getCC("outer"));
   attachSystem::addToInsertForced(System,*Twister,TopBFL->getCC("outer"));
   attachSystem::addToInsertForced(System,*Twister,LowAFL->getCC("outer"));
@@ -735,7 +736,7 @@ makeESS::build(Simulation& System,
   LowCapMod->createAll(System,*LowMod,6,false,
    		       0.0,Reflector->getRadius());
 
-  Reflector->createAll(System,World::masterOrigin(),
+  Reflector->createAll(System,World::masterOrigin(),0,
 		       Target->wheelHeight(),
 		       LowPreMod->getHeight()+LMHeight+LowCapMod->getHeight(),
 		       TopPreMod->getHeight()+TMHeight+TopCapMod->getHeight());

@@ -57,8 +57,9 @@ namespace setVariable
 {
 
 FocusGenerator::FocusGenerator() :
-  substrateThick(0.5),voidThick(1.5),yStep(0.0),
-  zStep(0.0),guideMat("Aluminium")
+  substrateThick(0.5),voidThick(1.5),
+  yStepActive(0),yStep(0.0),zStep(0.0),
+  guideMat("Aluminium")
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -101,7 +102,6 @@ FocusGenerator::~FocusGenerator()
    Destructor
  */
 {}
-
 
 void
 FocusGenerator::generateTaper(FuncDataBase& Control,

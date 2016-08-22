@@ -37,7 +37,7 @@ namespace essSystem
 */
 
 class BeRef : public attachSystem::ContainedComp,
-  public attachSystem::FixedComp,
+  public attachSystem::FixedOffset,
   public attachSystem::CellMap
 {
  private:
@@ -49,12 +49,6 @@ class BeRef : public attachSystem::ContainedComp,
   /// Inner components inside Reflector (eng detail)
   std::shared_ptr<BeRefInnerStructure> InnerComp;   
 
-  double xStep;                   ///< X step
-  double yStep;                   ///< Y step
-  double zStep;                   ///< Z step
-  double xyAngle;                 ///< XY Angle
-  double zAngle;                  ///< Z Angle
-
   double radius;                  ///< Radius
   double height;                  ///< Height
   double wallThick;               ///< Wall thickness
@@ -65,14 +59,18 @@ class BeRef : public attachSystem::ContainedComp,
 
   double targSepThick;            ///< Steel seperator at target level
 
-  int refMat;                     ///< reflector material
-  int wallMat;                    ///< wall Material
+  int topRefMat;                  ///< reflector material (upper Be tier)
+  int lowRefMat;                  ///< reflector material (lower Be tier)
+  int topWallMat;                 ///< wall Material (upper tier) 
+  int lowWallMat;                 ///< wall Material (lower tier)
   int targSepMat;                 ///< Separator Mat
-
+  
   // Functions:
 
-  void populate(const FuncDataBase&,const double,const double,const double);
-  void createUnitVector(const attachSystem::FixedComp&);
+  void populateWithDef(const FuncDataBase&,const double,const double,
+		       const double);
+  
+  void createUnitVector(const attachSystem::FixedComp&,const long int);
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -87,8 +85,9 @@ class BeRef : public attachSystem::ContainedComp,
 
   void globalPopulate(const FuncDataBase&);
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const double,const double,const double);
-
+		 const long int,const double,
+		 const double,const double);
+  
   /// Access to radius
   double getRadius() const { return radius+wallThick; }
 };

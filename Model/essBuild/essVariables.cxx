@@ -386,22 +386,21 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("BeRefZangle",0.0);
   Control.addVariable("BeRefRadius",34.3);
   Control.addVariable("BeRefHeight",74.2);
-  Control.addVariable("BeRefWallThick",0.3);
+  Control.addVariable("BeRefWallThick",3.0);
   Control.addVariable("BeRefWallThickLow",0.0);
   Control.addVariable("BeRefTargetSepThick",13.0);
   Control.addVariable("BeRefLowVoidThick",2.3);
   Control.addVariable("BeRefTopVoidThick",2.3);
-  Control.addVariable("BeRefRefMat","Be5H2O");
-  //  Control.addVariable("BeRefRefMat","Be300K");
-
-
-  Control.addVariable("BeRefWallMat","Aluminium");
+  Control.addVariable("BeRefLowRefMat","Be5H2O");
+  Control.addVariable("BeRefTopRefMat","Be5H2O");
+  Control.addVariable("BeRefLowWallMat","Stainless304");
+  Control.addVariable("BeRefTopWallMat","Stainless304");
   Control.addVariable("BeRefTargSepMat","Void");
 
   ///< TODO : Fix double variable dependency !!!
   
   Control.addVariable("BeRefInnerStructureWaterDiscThick", 0.6);
-  Control.addVariable("BeRefInnerStructureWaterDiscMat", "H2O");
+  Control.addVariable("BeRefInnerStructureWaterDiscMat","H2O");
   Control.addVariable("BeRefInnerStructureWaterDiscWallThick", 0.3);
   Control.addVariable("BeRefInnerStructureWaterDiscWallMat", "Aluminium");
 

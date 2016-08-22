@@ -54,14 +54,13 @@ class MidWaterDivider :
 
   double length;            ///< Inner length
   double height;            ///< Inner height
+  double topThick;         ///< Roof thickness
   double wallThick;         ///< Wall thickness
 
   int modMat;               ///< Water material
   int wallMat;              ///< Wall material
   double modTemp;           ///< Moderator temperature
 
-  double totalHeight;       ///< Total height of system
-  
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
 

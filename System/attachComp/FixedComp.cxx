@@ -242,7 +242,7 @@ FixedComp::makeOrthogonal()
 
   // Use this later
   const double XYcos=X.dotProd(Y); 
-  if (std::abs(XYcos)<Geometry::zeroTol &&
+  if (std::abs<double>(XYcos)<Geometry::zeroTol &&
       std::abs(X.dotProd(Z))<Geometry::zeroTol &&
       std::abs(Y.dotProd(Z))<Geometry::zeroTol)
     return;

@@ -268,8 +268,10 @@ DiskPreMod::createSurfaces()
 	}
       SI+=10;
     }
+
   if (radius.empty() || radius.back()<outerRadius-Geometry::zeroTol)
     ModelSupport::buildCylinder(SMap,SI+7,Origin,Z,outerRadius);
+
   return; 
 }
 

@@ -115,6 +115,7 @@ DiskLayerMod::operator=(const DiskLayerMod& A)
       attachSystem::LayerComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
+      
       cellIndex=A.cellIndex;
       midIndex=A.midIndex;
       midZ=A.midZ;
@@ -124,6 +125,7 @@ DiskLayerMod::operator=(const DiskLayerMod& A)
       radius=A.radius;
       mat=A.mat;
       temp=A.temp;
+      
     }
   return *this;
 }
@@ -187,7 +189,9 @@ DiskLayerMod::populate(const FuncDataBase& Control,
           const std::string Num=LStr+"x"+RStr;
           if (Control.hasVariable(keyName+"Radius"+Num))
             {
-              R+=Control.EvalVar<double>(keyName+"Radius"+Num);
+              const double RItem=
+                Control.EvalVar<double>(keyName+"Radius"+Num);
+              R=(RItem>0.0) ? RItem : R+RItem;
               radius[i].push_back(R);
             }
           else
@@ -251,6 +255,7 @@ DiskLayerMod::createSurfaces()
       SI+=200;
     }
   ModelSupport::buildPlane(SMap,modIndex+5,Origin,Z);
+
   ModelSupport::buildCylinder(SMap,modIndex+7,Origin,Z,outerRadius);
   return; 
 }
@@ -264,26 +269,26 @@ DiskLayerMod::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("DiskLayerMod","createObjects");
 
-  std::string Out,outerOut,innerOut;
+  std::string Out,outerOut;
 
   int SI(modIndex);
   for(size_t i=0;i<nLayers;i++)
     {
       size_t j;
       int TI(SI);
+      std::string innerOut;  // empty string
       const std::string layerStr=
 	ModelSupport::getComposite(SMap,SI," 5 -205 ");
       for(j=0;j<radius[i].size();j++)
 	{
-	  outerOut=ModelSupport::getComposite(SMap,TI," -7M ");
+	  outerOut=ModelSupport::getComposite(SMap,TI," -207 ");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i][j],temp[i][j],
                                            layerStr+innerOut+outerOut));
 	  
-	  innerOut=ModelSupport::getComposite(SMap,TI," 207M ");
+	  innerOut=ModelSupport::getComposite(SMap,TI," 207 ");
 	  TI+=10;
 	}
       outerOut=ModelSupport::getComposite(SMap,modIndex," -7 ");
-      Out=ModelSupport::getComposite(SMap,SI,TI," 5 -205 -207M ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i][j],temp[i][j],
                                        layerStr+innerOut+outerOut));
       
@@ -291,7 +296,9 @@ DiskLayerMod::createObjects(Simulation& System)
     }
   //  int SI(modIndex);
 
-  addOuterSurf(Out);
+  //=ModelSupport::getComposite(SMap,,TI," 5 -205 - ");
+
+  addOuterSurf(outerOut);
   return; 
 }
 
@@ -306,8 +313,10 @@ DiskLayerMod::createLinks()
 {  
   ELog::RegMethod RegA("DiskLayerMod","createLinks");
 
+
+  const int SI(modIndex+static_cast<int>(nLayers)*200);
+
   /*
-  const int SI(modIndex+static_cast<int>(nLayers-1)*10);
   FixedComp::setConnect(0,Origin-Y*radius[nLayers-1],-Y);
   FixedComp::setLinkSurf(0,SMap.realSurf(SI+7));
   FixedComp::setBridgeSurf(0,-SMap.realSurf(modIndex+2));
@@ -324,14 +333,14 @@ DiskLayerMod::createLinks()
   FixedComp::setConnect(3,Origin+X*radius[nLayers-1],X);
   FixedComp::setLinkSurf(3,SMap.realSurf(SI+7));
   FixedComp::addLinkSurf(3,SMap.realSurf(modIndex+1));
-  
-  FixedComp::setConnect(4,Origin-Z*depth[nLayers-1],-Z);
+  */  
+  FixedComp::setConnect(4,Origin,-Z);
   FixedComp::setLinkSurf(4,-SMap.realSurf(SI+5));
 
-  FixedComp::setConnect(5,Origin+Z*height[nLayers-1],Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(SI+6));
+  FixedComp::setConnect(5,Origin+Z*thick[nLayers-1],Z);
+  FixedComp::setLinkSurf(5,SMap.realSurf(SI+5));
 
-  // inner links point inwards
+  /*  // inner links point inwards
   FixedComp::setConnect(6,Origin+Y*radius[0],-Y);
   FixedComp::setLinkSurf(6,-SMap.realSurf(modIndex+7));
 
