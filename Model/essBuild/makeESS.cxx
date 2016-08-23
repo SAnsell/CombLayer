@@ -125,7 +125,7 @@ makeESS::makeESS() :
   LowAFL(new moderatorSystem::BasicFlightLine("LowAFlight")),
   LowBFL(new moderatorSystem::BasicFlightLine("LowBFlight")),
 
-  TopPreMod(new DiskPreMod("TopPreMod")),
+  TopPreMod(new DiskLayerMod("TopPreMod")),
   TopCapMod(new DiskLayerMod("TopCapMod")),
 
   TopAFL(new moderatorSystem::BasicFlightLine("TopAFlight")),

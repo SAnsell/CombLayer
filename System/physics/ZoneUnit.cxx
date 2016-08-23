@@ -85,6 +85,32 @@ ZoneUnit<T>::ZoneUnit()
   /// Constructor
 {}
 
+template<typename T>  
+ZoneUnit<T>::ZoneUnit(const ZoneUnit<T>& A) :
+  Zones(A.Zones),ZoneData(A.ZoneData)
+  /*!
+    Copy constructor
+    \param A :: ZoneUnit to copy
+  */
+{}
+
+template<typename T>
+ZoneUnit<T>&
+ZoneUnit<T>::operator=(const ZoneUnit<T>& A)
+  /*!
+    Assignment operator
+    \param A :: ZoneUnit to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      Zones=A.Zones;
+      ZoneData=A.ZoneData;
+    }
+  return *this;
+}
+
 template<typename T>
 size_t
 ZoneUnit<T>::findItem(const int cellN) const

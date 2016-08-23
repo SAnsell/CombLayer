@@ -120,8 +120,7 @@ const size_t t1BulkShield::pearlShutter(18);  // South 9
 t1BulkShield::t1BulkShield(const std::string& Key)  : 
   attachSystem::FixedComp(Key,3),attachSystem::ContainedComp(),
   bulkIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(bulkIndex+1),populated(0),
-  numberBeamLines(18)
+  cellIndex(bulkIndex+1),numberBeamLines(18)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Key to use
@@ -131,7 +130,7 @@ t1BulkShield::t1BulkShield(const std::string& Key)  :
 t1BulkShield::t1BulkShield(const t1BulkShield& A) : 
   attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
   bulkIndex(A.bulkIndex),cellIndex(A.cellIndex),
-  populated(A.populated),numberBeamLines(A.numberBeamLines),
+  numberBeamLines(A.numberBeamLines),
   GData(A.GData),BData(A.BData),vYoffset(A.vYoffset),
   voidRadius(A.voidRadius),shutterRadius(A.shutterRadius),
   innerRadius(A.innerRadius),outerRadius(A.outerRadius),
@@ -157,7 +156,6 @@ t1BulkShield::operator=(const t1BulkShield& A)
       attachSystem::FixedComp::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       cellIndex=A.cellIndex;
-      populated=A.populated;
       GData=A.GData;
       BData=A.BData;
       vYoffset=A.vYoffset;
@@ -182,15 +180,13 @@ t1BulkShield::~t1BulkShield()
 {}
 
 void
-t1BulkShield::populate(const Simulation& System)
+t1BulkShield::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: Functional database to usex
   */
 {
   ELog::RegMethod RegA("t1BulkShield","populate");
-
-  const FuncDataBase& Control=System.getDataBase();
 
   vYoffset=Control.EvalVar<double>("voidYoffset");
   
@@ -202,7 +198,6 @@ t1BulkShield::populate(const Simulation& System)
   
   ironMat=ModelSupport::EvalMat<int>(Control,keyName+"IronMat");
 
-  populated = 1;
   return;
 }
 
@@ -481,7 +476,7 @@ t1BulkShield::createAll(Simulation& System,
 			const mainSystem::inputParam& IParam,
 			const t1CylVessel& CVoid)
   /*!
-    Create the shutter
+    Create the main shield
     \param System :: Simulation to process
     \param IParam :: Input Parameters
     \param CVoid :: Void Vessel containment
@@ -489,7 +484,7 @@ t1BulkShield::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("t1BulkShield","createAll");
 
-  populate(System);
+  populate(System.getDataBase());
   voidRadius=CVoid.getOuterRadius();
   createUnitVector();
   createSurfaces(CVoid);

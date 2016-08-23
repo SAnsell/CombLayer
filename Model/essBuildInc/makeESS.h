@@ -103,7 +103,7 @@ class makeESS
   // Butterly
   /// Primary Upper Mod 
   std::shared_ptr<constructSystem::ModBase> TopMod;
-  std::shared_ptr<DiskPreMod> TopPreMod;         ///< Top mod 
+  std::shared_ptr<DiskLayerMod> TopPreMod;         ///< Top mod 
   std::shared_ptr<DiskLayerMod> TopCapMod;         ///< Lower mod
 
   std::shared_ptr<PreModWing> LowPreWing; ///< Low premoderator wing
