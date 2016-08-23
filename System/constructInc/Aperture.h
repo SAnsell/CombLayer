@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/Apperature.h
+ * File:   constructInc/Aperture.h
  *
  * Copyright (c) 2004-2016 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef constructSystem_Apperature_h
-#define constructSystem_Apperature_h
+#ifndef constructSystem_Aperture_h
+#define constructSystem_Aperture_h
 
 class Simulation;
 
@@ -29,14 +29,14 @@ namespace constructSystem
 {
 
 /*!
-  \class Apperature
+  \class Aperture
   \version 1.0
   \author S. Ansell
   \date May 2012
-  \brief Apperature system
+  \brief Aperture system
 */
 
-class Apperature : public attachSystem::ContainedComp,
+class Aperture : public attachSystem::ContainedComp,
   public attachSystem::FixedOffset
 
 {  
@@ -65,10 +65,10 @@ class Apperature : public attachSystem::ContainedComp,
 
  public:
 
-  Apperature(const std::string&);
-  Apperature(const Apperature&);
-  Apperature& operator=(const Apperature&);
-  ~Apperature();
+  Aperture(const std::string&);
+  Aperture(const Aperture&);
+  Aperture& operator=(const Aperture&);
+  ~Aperture();
 
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,

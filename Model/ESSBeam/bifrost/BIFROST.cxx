@@ -75,7 +75,7 @@
 #include "World.h"
 #include "AttachSupport.h"
 #include "GuideItem.h"
-#include "Apperature.h"
+#include "Aperture.h"
 #include "Jaws.h"
 #include "GuideLine.h"
 #include "DiskChopper.h"
@@ -103,7 +103,7 @@ BIFROST::BIFROST(const std::string& keyName) :
 
   VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
   FocusB(new beamlineSystem::GuideLine(newName+"FB")),
-  AppA(new constructSystem::Apperature(newName+"AppA")),
+  AppA(new constructSystem::Aperture(newName+"AppA")),
 
   ChopperA(new constructSystem::ChopperUnit(newName+"ChopperA")),
   DDisk(new constructSystem::DiskChopper(newName+"DBlade")),
@@ -126,7 +126,7 @@ BIFROST::BIFROST(const std::string& keyName) :
   VPipeF(new constructSystem::VacuumPipe(newName+"PipeF")),
   FocusF(new beamlineSystem::GuideLine(newName+"FF")),
   
-  AppB(new constructSystem::Apperature(newName+"AppB")),
+  AppB(new constructSystem::Aperture(newName+"AppB")),
 
   BInsert(new BunkerInsert(newName+"BInsert")),
   VPipeWall(new constructSystem::VacuumPipe(newName+"PipeWall")),

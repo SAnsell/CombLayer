@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   construct/Apperature.cxx
+ * File:   construct/Aperture.cxx
  *
  * Copyright (c) 2004-2016 by Stuart Ansell
  *
@@ -74,12 +74,12 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
-#include "Apperature.h"
+#include "Aperture.h"
 
 namespace constructSystem
 {
 
-Apperature::Apperature(const std::string& Key)  :
+Aperture::Aperture(const std::string& Key)  :
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(Key,6),
   appIndex(ModelSupport::objectRegister::Instance().cell(Key)),
@@ -92,14 +92,14 @@ Apperature::Apperature(const std::string& Key)  :
 {}
 
 
-Apperature::~Apperature() 
+Aperture::~Aperture() 
   /*!
     Destructor
   */
 {}
 
 void
-Apperature::populate(const FuncDataBase& Control)
+Aperture::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: DataBase of variables
@@ -123,7 +123,7 @@ Apperature::populate(const FuncDataBase& Control)
 }
   
 void
-Apperature::createUnitVector(const attachSystem::FixedComp& FC,
+Aperture::createUnitVector(const attachSystem::FixedComp& FC,
                              const long int sideIndex)
   /*!
     Create the unit vectors
@@ -132,7 +132,7 @@ Apperature::createUnitVector(const attachSystem::FixedComp& FC,
     \param sideIndex :: Link point
   */
 {
-  ELog::RegMethod RegA("Apperature","createUnitVector");
+  ELog::RegMethod RegA("Aperture","createUnitVector");
   
   attachSystem::FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
@@ -140,12 +140,12 @@ Apperature::createUnitVector(const attachSystem::FixedComp& FC,
 }
   
 void
-Apperature::createSurfaces()
+Aperture::createSurfaces()
   /*!
     Create all the surfaces
   */
 {
-  ELog::RegMethod RegA("Apperature","createSurfaces");
+  ELog::RegMethod RegA("Aperture","createSurfaces");
   
 
   ModelSupport::buildPlane(SMap,appIndex+1,Origin-Y*depth/2.0,Y);
@@ -168,13 +168,13 @@ Apperature::createSurfaces()
 }
 
 void 
-Apperature::createObjects(Simulation& System)
+Aperture::createObjects(Simulation& System)
   /*!
     Create a window object
     \param System :: Simulation
   */
 {
-  ELog::RegMethod RegA("Apperature","createObjects");
+  ELog::RegMethod RegA("Aperture","createObjects");
   std::string Out;
 
   Out=ModelSupport::getComposite(SMap,appIndex,"1 -2 13 -14 15 -16 ");
@@ -191,7 +191,7 @@ Apperature::createObjects(Simulation& System)
 }
 
 void
-Apperature::createLinks()
+Aperture::createLinks()
   /*!
     Determines the link point on the outgoing plane.
     It must follow the beamline, but exit at the plane
@@ -219,7 +219,7 @@ Apperature::createLinks()
 
 
 void
-Apperature::createAll(Simulation& System,
+Aperture::createAll(Simulation& System,
                       const attachSystem::FixedComp& FC,
                       const long int sideIndex)
   /*!
@@ -229,7 +229,7 @@ Apperature::createAll(Simulation& System,
     \param sideIndex :: sideIndex
   */
 {
-  ELog::RegMethod RegA("Apperature","createAll");
+  ELog::RegMethod RegA("Aperture","createAll");
 
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);

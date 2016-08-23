@@ -432,7 +432,7 @@ FREIA::build(Simulation& System,
   OutBCutBack->addInsertCell(JawPit->getCells("MidLayerBack"));
   OutBCutBack->addInsertCell(JawPit->getCells("Collet"));
   OutBCutBack->setFaces(JawPit->getKey("Inner").getSignedFullRule(2),
-                    JawPit->getKey("Mid").getSignedFullRule(-2));
+                        JawPit->getKey("Mid").getSignedFullRule(-2));
   OutBCutBack->createAll(System,JawPit->getKey("Inner"),2);
 
   OutBCutFront->addInsertCell(JawPit->getCells("MidLayerFront"));

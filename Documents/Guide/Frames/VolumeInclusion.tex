@@ -9,17 +9,25 @@ Suppose, we are inserting Spoon into Mug.
 Mug is made up of N cells. Spoon is made of one contained component with outer surface.
 CombLayer provides several methods to put one object into another:
 
-\begin{lstlisting}[language=C++]{Name=essBuild}{floatplacement=H}
+\begin{cpp}{Name=essBuild}{floatplacement=H}
 attachSystem::addToInsertForced(System,   *Mug, *Spoon);
 attachSystem::addToInsertSurfCtrl(System, *Mug, *Spoon);
 attachSystem::addToInsertControl(System,  *Mug, *Spoon);
 attachSystem::addToInsertLineCtrl(System, *Mug, *Spoon);
-\end{lstlisting}
+\end{cpp}
 
 \subsubsection{addToInsertForced}
+
 The outer surface of the Spoon is excluded from the HeadRule of every single cell of Mug.
 Even if Mug contains cells which do not intersect with Spoon (e.g. its handle).
-``Forced'' means ``do it and do not think about it'', but at the same time it means that ``I have got something wrong somewhere in my mental thinking''.
+{\it Forced} means {\it do it and do not think about it}, but at the same time it means that
+{\it I have got something wrong somewhere.}  Normally this is that insufficient link points have been added
+to the object, or that the object is a set of split (single cell) volumes.  However, there is the additional
+problem that the model may not be correctly constructed at this point, so that the other options seem not to work.
+This can be checked by adding a
+\vb{SimProcess::writeIndexsim(System,\"OutputFilename.txt\",0);}
+in the code just before
+
 
 \subsubsection{addToInsertSurfCtrl}
 First, it deconvolves Mug into its surfaces.

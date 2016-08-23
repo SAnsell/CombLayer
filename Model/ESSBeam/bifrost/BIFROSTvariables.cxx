@@ -235,6 +235,7 @@ BIFROSTvariables(FuncDataBase& Control)
   PipeGen.generatePipe(Control,"bifrostPipeOutB",4.0,600);
 
   // Guide at 9.2m (part of a 4->8cm in 20m)
+
   FGen.clearYOffset();
   FGen.generateTaper(Control,"bifrostFOutB",596.0,5.84,7.04, 5.84,7.04);   
 
