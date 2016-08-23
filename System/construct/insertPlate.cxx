@@ -79,6 +79,7 @@
 #include "CellMap.h"
 #include "ContainedComp.h"
 #include "SurInter.h"
+#include "AttachSupport.h"
 #include "insertPlate.h"
 
 namespace constructSystem
@@ -189,7 +190,7 @@ insertPlate::createUnitVector(const Geometry::Vec3D& OG,
   /*!
     Create the unit vectors
     \param OG :: Origin
-    \param LC :: LinearComponent to attach to
+    \param FC :: LinearComponent to attach to
   */
 {
   ELog::RegMethod RegA("insertPlate","createUnitVector");
@@ -333,7 +334,7 @@ insertPlate::setFrontSurf(const attachSystem::FixedComp& FC,
   /*!
     Add a front surface 
     \param FC :: Front cut
-    \param sideIndex :: side intec
+    \param sideIndex :: side intection
   */
 {
   ELog::RegMethod RegA("insertPlate","setFrontSurf");
@@ -352,7 +353,7 @@ insertPlate::setBackSurf(const attachSystem::FixedComp& FC,
   /*!
     Add a front surface 
     \param FC :: Front cut
-    \param sideIndex :: side intec
+    \param sideIndex :: side intection
   */
 {
   ELog::RegMethod RegA("insertPlate","setFrontSurf");
@@ -376,40 +377,19 @@ insertPlate::findObjects(Simulation& System)
 {
   ELog::RegMethod RegA("insertPlate","findObjects");
 
-
+  typedef std::map<int,MonteCarlo::Object*> MTYPE;
+  
   System.populateCells();
   System.validateObjSurfMap();
-  
-  if (getInsertCells().empty())
-    {
-      std::set<int> ICells;
-      // Process all the corners:
-      // care not to include self
-      MonteCarlo::Object* OPtr(System.findCell(Origin,0));
-      if (OPtr)
-	ICells.insert(OPtr->getName());
-      
-      for(int i=0;i<8;i++)
-        {
-          const double mX((i%2) ? -1.0 : 1.0);
-          const double mY(((i>>1)%2) ? -1.0 : 1.0);
-          const double mZ(((i>>2)%2) ? -1.0 : 1.0);
-          
-          Geometry::Vec3D TP(Origin);
-          TP+=X*(mX*width/2.0);
-          TP+=Y*(mY*depth/2.0);
-          TP+=Z*(mZ*height/2.0);
-          OPtr=System.findCell(TP,OPtr);
-	  if (OPtr)
-	    ICells.insert(OPtr->getName());
-	  else
-	    ELog::EM<<"Object not present "<<ELog::endErr;
 
-        }
-      
-      for(const int IC : ICells)
-	attachSystem::ContainedComp::addInsertCell(IC);
-    }
+  MTYPE OMap;
+  attachSystem::lineIntersect(System,*this,OMap);
+
+  // Add exclude string
+  MTYPE::const_iterator ac;
+  for(ac=OMap.begin();ac!=OMap.end();ac++)
+    attachSystem::ContainedComp::addInsertCell(ac->first);
+  
   
   return;
 }
@@ -419,14 +399,27 @@ insertPlate::setStep(const double XS,const double YS,
 		       const double ZS)
   /*!
     Set the values but NOT the populate flag
-    \param XS :: X-size [width]
-    \param YS :: Y-size [depth] 
-    \param ZS :: Z-size [height]
+    \param XS :: X-step [width]
+    \param YS :: Y-step [depth] 
+    \param ZS :: Z-step [height]
    */
 {
   xStep=XS;
   yStep=YS;
   zStep=ZS;
+  return;
+}
+
+void
+insertPlate::setStep(const Geometry::Vec3D& XYZ)
+  /*!
+    Set the values but NOT the populate flag
+    \param XYZ :: X/Y/Z
+   */
+{
+  xStep=XYZ[0];
+  yStep=XYZ[1];
+  zStep=XYZ[2];
   return;
 }
 

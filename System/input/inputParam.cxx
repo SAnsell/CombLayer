@@ -3,7 +3,7 @@
  
  * File:   input/inputParam.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -475,6 +475,26 @@ inputParam::getValue(const std::string& K,
 }
   
 
+  
+template<typename T>
+T
+inputParam::getValueError(const std::string& K,
+			  const size_t setIndex,
+			  const size_t itemIndex,
+			  const std::string& errMessage) const
+  /*!
+    Get a value based on key
+    \param K :: Key to seach
+    \param setIndex :: set Value
+    \param itemIndex :: Index value
+    \param errMessage :: error message if failure
+    \return Value
+   */
+{
+  ELog::RegMethod RegA("inputParam","getValueError(setIndex,index)");
+  RegA.setTrack(errMessage);  
+  return getValue<T>(K,setIndex,itemIndex);
+}
 
 Geometry::Vec3D
 inputParam::getCntVec3D(const std::string& K,
@@ -1199,6 +1219,16 @@ template unsigned int inputParam::getValue(const std::string&,const size_t,const
 template long int inputParam::getValue(const std::string&,const size_t,const size_t) const;
 template std::string inputParam::getValue(const std::string&,const size_t,const size_t) const;
 template Geometry::Vec3D inputParam::getValue(const std::string&,const size_t,const size_t) const;
+
+
+  
+template double inputParam::getValueError(const std::string&,const size_t,const size_t,const std::string&) const;
+template int inputParam::getValueError(const std::string&,const size_t,const size_t,const std::string&) const;
+template size_t inputParam::getValueError(const std::string&,const size_t,const size_t,const std::string&) const;
+template unsigned int inputParam::getValueError(const std::string&,const size_t,const size_t,const std::string&) const;
+template long int inputParam::getValueError(const std::string&,const size_t,const size_t,const std::string&) const;
+template std::string inputParam::getValueError(const std::string&,const size_t,const size_t,const std::string&) const;
+template Geometry::Vec3D inputParam::getValueError(const std::string&,const size_t,const size_t,const std::string&) const;
 
 
 template double inputParam::getDefValue

@@ -94,6 +94,7 @@ class insertPlate : public attachSystem::ContainedComp,
   void findObjects(Simulation&);
     
   void setStep(const double,const double,const double);
+  void setStep(const Geometry::Vec3D&);
   void setAngles(const double,const double);
 
   void setValues(const double,const double,const double,

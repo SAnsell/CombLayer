@@ -26,6 +26,7 @@ class Simulation;
 
 int tallySelection(Simulation&,const mainSystem::inputParam&);
 void tallyModification(Simulation&,const mainSystem::inputParam&);
+void tallyAddition(Simulation&,const mainSystem::inputParam&);
 void tallyRenumberWork(Simulation&,const mainSystem::inputParam&);
 
 int beamTallySelection(Simulation&,const mainSystem::inputParam&);
