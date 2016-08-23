@@ -67,6 +67,7 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "TwisterModule.h"
@@ -75,7 +76,8 @@ namespace essSystem
 {
 
 TwisterModule::TwisterModule(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,11),
+  attachSystem::ContainedGroup("PlugFrame","Shaft","ShaftBearing"),
+  attachSystem::FixedOffset(Key,15),
   attachSystem::CellMap(),
   tIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(tIndex+1)
@@ -87,7 +89,7 @@ TwisterModule::TwisterModule(const std::string& Key) :
 }
 
 TwisterModule::TwisterModule(const TwisterModule& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::ContainedGroup(A),attachSystem::FixedOffset(A),
   attachSystem::CellMap(A),  
   tIndex(A.tIndex),cellIndex(A.cellIndex),shaftRadius(A.shaftRadius),
   shaftHeight(A.shaftHeight),shaftWallThick(A.shaftWallThick),
@@ -115,7 +117,7 @@ TwisterModule::operator=(const TwisterModule& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedComp::operator=(A);
+      attachSystem::ContainedGroup::operator=(A);
       attachSystem::FixedOffset::operator=(A);
       CellMap::operator=(A);
       cellIndex=A.cellIndex;
@@ -215,6 +217,10 @@ TwisterModule::createSurfaces()
 {
   ELog::RegMethod RegA("TwisterModule","createSurfaces");
 
+  // dividers
+  ModelSupport::buildPlane(SMap,tIndex+101,Origin,Y);
+  ModelSupport::buildPlane(SMap,tIndex+103,Origin,X);
+
   ModelSupport::buildPlane(SMap,tIndex+5,Origin-Z*plugFrameDepth,Z);
   ModelSupport::buildPlane(SMap,tIndex+6,Origin+Z*plugFrameHeight,Z);
   ModelSupport::buildPlane(SMap,tIndex+16,Origin+
@@ -278,26 +284,37 @@ TwisterModule::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,tIndex," -17 7 25 -16 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,shaftWallMat,0.0,Out));
-  //  setCell("lowBe",cellIndex-1);
+
+  Out=ModelSupport::getComposite(SMap,tIndex," -17 5 -16 ");
+  addOuterSurf("Shaft", Out);
 
   // plug frame
-  Out=ModelSupport::getComposite(SMap,tIndex," -37 25 -26 17 2 -1 11"); //  inside sector
+  //  inside sector
+  Out=ModelSupport::getComposite(SMap,tIndex," -37 25 -26 17 2 -1 11");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugFrameMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,tIndex," -37 25 -26 17 2 -21 1"); //  inside sector wall x+
+  //  inside sector wall x+
+  Out=ModelSupport::getComposite(SMap,tIndex," -37 25 -26 17 2 -21 1");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugFrameWallMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,tIndex," -27 5 -6 17 (-2:21:-31)"); // outside sector
+  // outside sector
+  Out=ModelSupport::getComposite(SMap,tIndex," -27 5 -6 17 (-2:21:-31)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugFrameMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,tIndex," -37 25 -26 17 2 31 -11"); //  inside sector wall x-
+  //  inside sector wall x-
+  Out=ModelSupport::getComposite(SMap,tIndex," -37 25 -26 17 2 31 -11");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugFrameWallMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,tIndex," -27 5 -6 (37:-25:26) 17 2 -21 31 "); // outer wall inside sector
+  // outer wall inside sector
+  Out=ModelSupport::getComposite(SMap,tIndex," -27 5 -6 (37:-25:26) 17 2 -21 31 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugFrameWallMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,tIndex," -17 47 5 -25 "); // bottom wall of the shaft
+  // bottom wall of the shaft
+  Out=ModelSupport::getComposite(SMap,tIndex," -17 47 5 -25 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,shaftWallMat,0.0,Out));
+
+  Out=ModelSupport::getComposite(SMap,tIndex, " -27 5 -6 ");
+  addOuterSurf("PlugFrame", Out);
 
   // shaft bearing
   Out=ModelSupport::getComposite(SMap,tIndex, " -47 35 -25 ");
@@ -306,9 +323,9 @@ TwisterModule::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,tIndex, " -57 47 35 -5 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,shaftWallMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,tIndex," (-17 6 -16) : (-27 5 -6) : (-57 35 -5) ");
-  addOuterSurf(Out);
-
+  Out=ModelSupport::getComposite(SMap,tIndex, " -57 35 -5 ");
+  addOuterSurf("ShaftBearing", Out);
+    
   return; 
 }
 
@@ -320,40 +337,69 @@ TwisterModule::createLinks()
   */
 {
   ELog::RegMethod RegA("TwisterModule","createLinks");
-  ELog::EM<<"WARNING: EARLY RETURN"<<ELog::endWarn;
-  
-  return;
-  
+
+  // SHAFT
   FixedComp::setConnect(0,Origin+Y*shaftRadius,-Y);
   FixedComp::setLinkSurf(0,SMap.realSurf(tIndex+17));
-  FixedComp::addLinkSurf(0,-SMap.realSurf(tIndex+1));
+  FixedComp::addLinkSurf(0,-SMap.realSurf(tIndex+101));
 
   FixedComp::setConnect(1,Origin+Y*shaftRadius,Y);
   FixedComp::setLinkSurf(1,SMap.realSurf(tIndex+17));
-  FixedComp::addLinkSurf(1,SMap.realSurf(tIndex+1));
+  FixedComp::addLinkSurf(1,SMap.realSurf(tIndex+101));
 
-  FixedComp::setConnect(2,Origin+Y*shaftRadius,-X);
+  FixedComp::setConnect(2,Origin+X*shaftRadius,-X);
   FixedComp::setLinkSurf(2,SMap.realSurf(tIndex+17));
-  FixedComp::addLinkSurf(2,-SMap.realSurf(tIndex+2));
+  FixedComp::addLinkSurf(2,-SMap.realSurf(tIndex+103));
   
-  FixedComp::setConnect(3,Origin+Y*shaftRadius,-X);
+  FixedComp::setConnect(3,Origin+X*shaftRadius,X);
   FixedComp::setLinkSurf(3,SMap.realSurf(tIndex+17));
-  FixedComp::addLinkSurf(3,SMap.realSurf(tIndex+2));
+  FixedComp::addLinkSurf(3,SMap.realSurf(tIndex+103));
   
-  FixedComp::setConnect(4,Origin-Z*(shaftHeight/2.0+shaftWallThick),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(tIndex+15));
+  FixedComp::setConnect(4,Origin+Z*(plugFrameHeight+shaftHeight),Z);
+  FixedComp::setLinkSurf(4,SMap.realSurf(tIndex+16));
 
-  FixedComp::setConnect(5,Origin+Z*(shaftHeight/2.0+shaftWallThick),Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(tIndex+16));
+  // SHAFT BEARING
+  FixedComp::setConnect(5,Origin+Y*shaftBearingRadius,-Y);
+  FixedComp::setLinkSurf(5,SMap.realSurf(tIndex+57));
+  FixedComp::addLinkSurf(5,-SMap.realSurf(tIndex+101));
 
-  FixedComp::setConnect(6,Origin-Z*(shaftHeight/2.0),-Z);
-  FixedComp::setLinkSurf(6,-SMap.realSurf(tIndex+5));
+  FixedComp::setConnect(6,Origin+Y*shaftBearingRadius,Y);
+  FixedComp::setLinkSurf(6,SMap.realSurf(tIndex+57));
+  FixedComp::addLinkSurf(6,SMap.realSurf(tIndex+101));
 
-  FixedComp::setConnect(7,Origin+Z*(shaftHeight/2.0),Z);
-  FixedComp::setLinkSurf(7,SMap.realSurf(tIndex+6));
+  FixedComp::setConnect(7,Origin+X*shaftBearingRadius,-X);
+  FixedComp::setLinkSurf(7,SMap.realSurf(tIndex+57));
+  FixedComp::addLinkSurf(7,-SMap.realSurf(tIndex+103));
+  
+  FixedComp::setConnect(8,Origin+X*shaftBearingRadius,X);
+  FixedComp::setLinkSurf(8,SMap.realSurf(tIndex+57));
+  FixedComp::addLinkSurf(8,SMap.realSurf(tIndex+103));
+  
+  FixedComp::setConnect(9,Origin-Z*(plugFrameDepth+shaftBearingHeight),-Z);
+  FixedComp::setLinkSurf(9,-SMap.realSurf(tIndex+35));
 
-  FixedComp::setConnect(8,Origin+Y*(shaftRadius),-Y);
-  FixedComp::setLinkSurf(8,-SMap.realSurf(tIndex+7));
+  // PLUG FRAME
+  FixedComp::setConnect(10,Origin+Y*plugFrameRadius,-Y);
+  FixedComp::setLinkSurf(10,SMap.realSurf(tIndex+27));
+  FixedComp::addLinkSurf(10,-SMap.realSurf(tIndex+101));
+
+  FixedComp::setConnect(11,Origin+Y*plugFrameRadius,Y);
+  FixedComp::setLinkSurf(11,SMap.realSurf(tIndex+27));
+  FixedComp::addLinkSurf(11,SMap.realSurf(tIndex+101));
+
+  FixedComp::setConnect(12,Origin+X*plugFrameRadius,-X);
+  FixedComp::setLinkSurf(12,SMap.realSurf(tIndex+27));
+  FixedComp::addLinkSurf(12,-SMap.realSurf(tIndex+103));
+  
+  FixedComp::setConnect(13,Origin+X*plugFrameRadius,X);
+  FixedComp::setLinkSurf(13,SMap.realSurf(tIndex+27));
+  FixedComp::addLinkSurf(13,SMap.realSurf(tIndex+103));
+  
+  FixedComp::setConnect(14,Origin-Z*plugFrameDepth,-Z);
+  FixedComp::setLinkSurf(14,-SMap.realSurf(tIndex+5));
+
+  FixedComp::setConnect(14,Origin+Z*plugFrameHeight,Z);
+  FixedComp::setLinkSurf(14,SMap.realSurf(tIndex+6));
 
   return;
 }
