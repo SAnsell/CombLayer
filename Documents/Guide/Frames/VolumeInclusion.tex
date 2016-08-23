@@ -25,25 +25,43 @@ Even if Mug contains cells which do not intersect with Spoon (e.g. its handle).
 to the object, or that the object is a set of split (single cell) volumes.  However, there is the additional
 problem that the model may not be correctly constructed at this point, so that the other options seem not to work.
 This can be checked by adding a
-\vb{SimProcess::writeIndexsim(System,\"OutputFilename.txt\",0);}
-in the code just before
+\prog{SimProcess::writeIndexSim(System,"OutputFilename.txt",0);}
+in the code just before the call to insertForced. If there are undefined volumes then the model is not in a state that
+any of the \prog{addToInsert} algorithms except \prog{addToInsertForced} can be used. 
 
 
 \subsubsection{addToInsertSurfCtrl}
-First, it deconvolves Mug into its surfaces.
-Then for each cell of Mug it calculates intersections between all surfaces of this cell and all surfaces of Mug.
-The Mug is inserted only into those cells of Mug which it intersects.
 
-It is not always better to call {\tt addToInsertSurfCtrl} instead of {\tt addToInsertForced}. \alert{Example needed.}
+The objective of this function is to use the surface intersections between Mug and spoon to determine which 
+cells within Mug intersect the ContainedComp of spoon. The process is done on a cell - ContainedComp level. 
+
+The process is as follows:
+\begin{enumerate}
+
+\item{Deconvolves both the Spoon's containedComponent boundary into surfaces.}
+\item{Loop over each cell in Mug : MCell}
+  \begin{enumerate}
+  \item{Calculate intersection of each surface:surface:surface triplet from the set of CC surfaces and MCell surface}
+  \item{If a point is within CC and the MCell exclude the CC from the MCell and goto next cell}
+  \end{itemize}
+\end{itemize}
+   
+Thus the spoon is inserted only into those cells of Mug which it intersects.
+
+It is not always better to call {\tt addToInsertSurfCtrl} instead of {\tt addToInsertForced} in cases that if is certain that
+an intersection can must take place (particularly if the CC / Inserting cells have large numbers of surfaces). 
 
 {\tt addToInsertSurfCtrl} is a very expensive function to call, because you have to check all the surface triplets. So, it runs a bit slower than addToInsertForced, but the geometry will be faster.
-However, there is another method which provides the same trick for less pain.
+The two remaining methods provide similar functionality but with less computational overhead, however, there are cell constructs
+which will cause them to fail.
 
 \subsubsection{addToInsertControl}
-It's a very simple method. Spoon has to have the link points defined.
-The method checks if any of these link point fit inside the outer surface of Mug. If it does, then it cuts Spoon from the Mug.
-It is possible to add a vector of link points to check as a parameter.
+
+It's a very simple method. The link points from Spoon are uses as a test for each of the cells within Mug. 
+The method checks if any of these link point fit inside each of the cells of Mug. If it does, then it cuts Spoon from the Mug cell.
+It is possible to add a vector of link points to check as a parameter to limit the search.
 
 \subsubsection{addToInsertLineCtrl}
+
 Imagine we have a (big) contained component~(Mug) and some (small) object which clips it~(Spoon). The link points are {\bf not} in the Mug~(therefore {\bf addToInsertControl} can not be used), but the lines which connect them are in the Mug.
 The method checks the lines connecting the link points and sorts out the intersections.
