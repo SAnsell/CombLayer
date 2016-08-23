@@ -127,6 +127,8 @@ class VESPA : public attachSystem::CopiedComp
   /// Guide running to bunker wall
   std::shared_ptr<beamlineSystem::GuideLine> FocusWall;
 
+  /// Shield for Chopper Out-A
+  std::shared_ptr<constructSystem::ChopperPit> OutPitA;
   /// First outer shield section
   std::shared_ptr<constructSystem::LineShield> ShieldA;
   /// First Vac pipe out of bunker
@@ -134,30 +136,29 @@ class VESPA : public attachSystem::CopiedComp
   /// Tapered guide out of bunker
   std::shared_ptr<beamlineSystem::GuideLine> FocusOutA;
 
+  /// Vac box for First Out-of-bunker chopper
+  std::shared_ptr<constructSystem::ChopperUnit> ChopperOutA;
 
   /// Shield for Chopper Out-B
-  std::shared_ptr<constructSystem::ChopperPit> PitB;
-  /// Vac box for First Out-of-bunker chopper
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperOutB;
+  std::shared_ptr<constructSystem::ChopperPit> OutPitB;
+
+
   /// Double disk chopper [Frame overlap chopper]
   std::shared_ptr<constructSystem::DiskChopper> FOCDiskB;
-
-  /// Shield out of PitB
+  /// Shield out of PitA
   std::shared_ptr<constructSystem::LineShield> ShieldB;
-  /// Vac pipe out of PitB
+  /// Vac pipe out of PitA
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutB;
-  /// Tapered guide out of PitB
+  /// Tapered guide out of PitA
   std::shared_ptr<beamlineSystem::GuideLine> FocusOutB;
 
-  /// Shield from PitB to PitC
+  /// Shield from PitA to PitC
   std::vector<std::shared_ptr<constructSystem::LineShield>> ShieldArray;
   /// Vac pipe out of PitB to PitC
   std::vector<std::shared_ptr<constructSystem::VacuumPipe>> VPipeArray;
   /// Segment from PitB to Pit C
   std::vector<std::shared_ptr<beamlineSystem::GuideLine>> FocusArray;
   
-  /// Shield for Chopper Out-C
-  std::shared_ptr<constructSystem::ChopperPit> PitC;
 
   
   void setBeamAxis(const GuideItem&,const bool);

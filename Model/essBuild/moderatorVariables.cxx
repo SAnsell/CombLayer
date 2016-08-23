@@ -329,7 +329,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopPreModNLayers",3);
   
   Control.addVariable("TopPreModThick0",0.3);
-  Control.addVariable("TopPreModThick1",3.0);
+  Control.addVariable("TopPreModThick1",2.85);
   Control.addVariable("TopPreModThick2",0.3);
   
   Control.addVariable("TopPreModRadius0x0",30.3);

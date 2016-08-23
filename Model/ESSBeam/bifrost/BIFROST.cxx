@@ -412,7 +412,6 @@ BIFROST::build(Simulation& System,
   OutPitA->addInsertCell(voidCell);
   OutPitA->createAll(System,FocusWall->getKey("Shield"),2);
   
-  
   ShieldA->addInsertCell(voidCell);
   ShieldA->setFront(*BInsert,2);
   ShieldA->addInsertCell(OutPitA->getCells("Outer"));
